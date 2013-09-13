@@ -1,304 +1,210 @@
-Content-Type: multipart/mixed; boundary="===============1552521866980058854=="
+Content-Type: multipart/mixed; boundary="===============3141387315136746216=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: 3-5% increased netperf throughput by "sched: Micro-optimize the smart wake-affine logic"
-Date: Sat, 07 Sep 2013 20:38:19 +0800
-Message-ID: <20130907123819.GA705@localhost>
+Subject: increased vmap_area_lock contentions on "n_tty: Move buffers into n_tty_data"
+Date: Fri, 13 Sep 2013 08:51:33 +0800
+Message-ID: <20130913005133.GA32479@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1552521866980058854==
+--===============3141387315136746216==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 Hi Peter,
 
-We are glad to report some measurable performance improvements by your
-commit
+FYI, we noticed much increased vmap_area_lock contentions since this
+commit:
 
-commit 7d9ffa8961482232d964173cccba6e14d2d543b2
-Author: Peter Zijlstra <peterz@infradead.org>
-Date:   Thu Jul 4 12:56:46 2013 +0800
+commit 20bafb3d23d108bc0a896eb8b7c1501f4f649b77
+Author: Peter Hurley <peter@hurleysoftware.com>
+Date:   Sat Jun 15 10:21:19 2013 -0400
 
-    sched: Micro-optimize the smart wake-affine logic
+    n_tty: Move buffers into n_tty_data
     =
 
-    Smart wake-affine is using node-size as the factor currently, but the o=
-verhead
-    of the mask operation is high.
+    Reduce pointer reloading and improve locality-of-reference;
+    allocate read_buf and echo_buf within struct n_tty_data.
     =
 
-    Thus, this patch introduce the 'sd_llc_size' percpu variable, which wil=
-l record
-    the highest cache-share domain size, and make it to be the new factor, =
-in order
-    to reduce the overhead and make it more reasonable.
-    =
+    Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-    Tested-by: Davidlohr Bueso <davidlohr.bueso@hp.com>
-    Tested-by: Michael Wang <wangyun@linux.vnet.ibm.com>
-    Signed-off-by: Peter Zijlstra <peterz@infradead.org>
-    Acked-by: Michael Wang <wangyun@linux.vnet.ibm.com>
-    Cc: Mike Galbraith <efault@gmx.de>
-    Link: http://lkml.kernel.org/r/51D5008E.6030102(a)linux.vnet.ibm.com
-    [ Tidied up the changelog. ]
-    Signed-off-by: Ingo Molnar <mingo@kernel.org>
-
-:040000 040000 e7c8a8c55bfa1261f3c6b75674a83eb76bb88a3f 129777b8d0b74ce1897=
-60ad76d9aaecd65b7ee7f M	kernel
+:040000 040000 96d92e4e242c4b2ff11b25c005bccd093865b350 2822d87b2425c3e7adc=
+7b722a20d739c9d4a3046 M	drivers
 bisect run success
 
-# bad: [37570e7ef5be99ba5188bb17ed547ac4bbf65e73] Merge remote-tracking bra=
-nch 'nfc-next/master' into devel-hourly-2013090406
-# good: [6e4664525b1db28f8c4e1130957f70a94c19213e] Linux 3.11
-git bisect start '37570e7ef5be99ba5188bb17ed547ac4bbf65e73' '6e4664525b1db2=
-8f8c4e1130957f70a94c19213e' '--'
-# good: [8bcaa20433634ac70c96d9e5f8ece4b8577c9694] Merge remote-tracking br=
-anch 'arm-soc/for-next' into devel-hourly-2013090406
-git bisect good 8bcaa20433634ac70c96d9e5f8ece4b8577c9694
-# good: [820acdf740b7d04476959189e9a144c2315339a4] drm/i915: do display pow=
-er state notification on crtc enable/disable
-git bisect good 820acdf740b7d04476959189e9a144c2315339a4
-# bad: [5bae522a51aa6bbae54bd2d745d0320f74c40b76] Merge remote-tracking bra=
-nch 'perf/perf/trace.fmt' into devel-hourly-2013090406
-git bisect bad 5bae522a51aa6bbae54bd2d745d0320f74c40b76
-# bad: [8afb4c018e21c882c8fad196772ef74d494185e2] perf tools: Re-implement =
-debug print function for linking python/perf.so
-git bisect bad 8afb4c018e21c882c8fad196772ef74d494185e2
-# good: [17f41571bb2c4a398785452ac2718a6c5d77180e] kprobes/x86: Call out in=
-to INT3 handler directly instead of using notifier
-git bisect good 17f41571bb2c4a398785452ac2718a6c5d77180e
-# bad: [34f77abcb34e1da4ee3ca5c5a41b673664eee1fa] perf annotate: Put dso na=
-me in symbol annotation title
-git bisect bad 34f77abcb34e1da4ee3ca5c5a41b673664eee1fa
-# bad: [8404db63461af62025f32f8368861fb33604e62f] perf tests: Add attr reco=
-rd group sampling test
-git bisect bad 8404db63461af62025f32f8368861fb33604e62f
-# bad: [9a545de019b536771feefb76f85e5038b65c2190] perf: Migrate per cpu eve=
-nt accounting
-git bisect bad 9a545de019b536771feefb76f85e5038b65c2190
-# good: [62470419e993f8d9d93db0effd3af4296ecb79a5] sched: Implement smarter=
- wake-affine logic
-git bisect good 62470419e993f8d9d93db0effd3af4296ecb79a5
-# bad: [90983b16078ab0fdc58f0dab3e8e3da79c9579a2] perf: Sanitize get_callch=
-ain_buffer()
-git bisect bad 90983b16078ab0fdc58f0dab3e8e3da79c9579a2
-# bad: [6050cb0b0b366092d1383bc23d7b16cd26db00f0] perf: Fix branch stack re=
-fcount leak on callchain init failure
-git bisect bad 6050cb0b0b366092d1383bc23d7b16cd26db00f0
-# bad: [7d9ffa8961482232d964173cccba6e14d2d543b2] sched: Micro-optimize the=
- smart wake-affine logic
-git bisect bad 7d9ffa8961482232d964173cccba6e14d2d543b2
-# first bad commit: [7d9ffa8961482232d964173cccba6e14d2d543b2] sched: Micro=
--optimize the smart wake-affine logic
+# bad: [9cdfea961eeaf9b6b939fb9dc822a204a1d94d08] Merge remote-tracking bra=
+nch 'ipvs-next/master' into devel-hourly-2013090112
+# good: [d4e4ab86bcba5a72779c43dc1459f71fea3d89c8] Linux 3.11-rc5
+git bisect start '9cdfea961eeaf9b6b939fb9dc822a204a1d94d08' 'd4e4ab86bcba5a=
+72779c43dc1459f71fea3d89c8' '--'
+# good: [903bc7e8c2a4f9ef8e40aed615ed48023f9460e3] Merge remote-tracking br=
+anch 'spi/for-next'
+git bisect good 903bc7e8c2a4f9ef8e40aed615ed48023f9460e3
+# bad: [d926318427c1fa8df182d3dcd7f802d7d0609225] Merge remote-tracking bra=
+nch 'bcon/master'
+git bisect bad d926318427c1fa8df182d3dcd7f802d7d0609225
+# bad: [adcb2bcd0dd2bb88f21180c8ffb9ec2549f4d883] Merge remote-tracking bra=
+nch 'usb/usb-next'
+git bisect bad adcb2bcd0dd2bb88f21180c8ffb9ec2549f4d883
+# good: [a83605266423437d8afe73cbd538df33cf8fb32b] Merge remote-tracking br=
+anch 'driver-core/driver-core-next'
+git bisect good a83605266423437d8afe73cbd538df33cf8fb32b
+# good: [224563b6ce034b82f8511969d9496113da34fb2c] Merge tag 'for-usb-next-=
+2013-08-15' of git://git.kernel.org/pub/scm/linux/kernel/git/sarah/xhci int=
+o usb-next
+git bisect good 224563b6ce034b82f8511969d9496113da34fb2c
+# bad: [5284eba7b37dfeffe75bfdf81a13e9efebe0480a] serial/arc-uart: Handle R=
+x Error Interrupts w/o any data
+git bisect bad 5284eba7b37dfeffe75bfdf81a13e9efebe0480a
+# bad: [7d88d637a3c75257b7611f9feee0c17fa187ecc9] n_tty: Factor standard pe=
+r-char i/o into separate fn
+git bisect bad 7d88d637a3c75257b7611f9feee0c17fa187ecc9
+# good: [11b9faa44df76189b8346ff602a2c01c610c37eb] tty: Merge tty_buffer_fi=
+nd() into tty_buffer_alloc()
+git bisect good 11b9faa44df76189b8346ff602a2c01c610c37eb
+# good: [019ebdf9f26fd2e43b9e1af576835183e95dc82e] n_tty: Eliminate echo_co=
+mmit memory barrier
+git bisect good 019ebdf9f26fd2e43b9e1af576835183e95dc82e
+# bad: [1bb9d562856279a217a4e581a803dee9bb48a708] n_tty: Rename process_cha=
+r_map to char_map
+git bisect bad 1bb9d562856279a217a4e581a803dee9bb48a708
+# good: [9dfd16ddea9bdbc8343340e543732db0a467ae32] n_tty: Avoid false-shari=
+ng echo buffer indices
+git bisect good 9dfd16ddea9bdbc8343340e543732db0a467ae32
+# good: [8cb06c983822103da1cfe57b9901e60a00e61f67] n_tty: Remove alias ptrs=
+ in __receive_buf()
+git bisect good 8cb06c983822103da1cfe57b9901e60a00e61f67
+# bad: [20bafb3d23d108bc0a896eb8b7c1501f4f649b77] n_tty: Move buffers into =
+n_tty_data
+git bisect bad 20bafb3d23d108bc0a896eb8b7c1501f4f649b77
+# first bad commit: [20bafb3d23d108bc0a896eb8b7c1501f4f649b77] n_tty: Move =
+buffers into n_tty_data
 
-A comparison of all good commits [*] with all bad commits [o]
-(good/bad in the sense of git bisect)
 
-                              netperf.Throughput_Mbps
+Compare of all good/bad commits in this bisect:
 
-   208 ++------------------------------------------------------------------=
+                        lock_stat.vmap_area_lock.contentions
+
+   22000 ++----------------------------------------------------------------=
 -+
-   206 +OOO O OOO     OOOO       O      O     O O O       O   O            =
+   20000 ++O    O O O    O O O O OO O O   OO O O O OO   O O O O  O O O O   =
  |
-       O     O   O   O       OO O   O O                 O          O   O O =
- O
-   204 ++                  O   O   O O O  OOOO O   OOOOO   OOO O OO OOO   O=
-O|
-   202 ++          O        O                                              =
+         O   OO       OO                O             O        O           =
  |
-       |            O                                                      =
+   18000 ++                                                                =
  |
-   200 ++                                                                  =
- |
-   198 ++                                                                  =
- |
-   196 ++                                                                  =
- |
-       |                                      *                            =
- |
-   194 ++                     ****. ***  .**** **.*******.* ***            =
- |
-   192 ++                    *     *   **                  ::              =
- |
-       | *   ***          .* :                             *               =
- |
-   190 ** *.*   **.** ****  *                                              =
- |
-   188 ++------------*-----------------------------------------------------=
--+
-
-
-                                  vmstat.system.in
-
-   1640 ++----------O------------------------------------------------------=
--+
-        O O    OO  O   O         O                O                        =
- |
-   1620 +O    O   O   O O      O   O                O      O     O     O   =
-OO
-        |    O           OOO        OO   OO      O      O O O O    OO O    =
- |
-   1600 ++ O     O            O O       O      O     OO      O    O  O   O =
- |
-        |                   O     O    O   O O           O      O         O=
- |
-   1580 ++                                  O   O  O                       =
- |
-        |                                                                  =
- |
-   1560 ++                                                   *             =
- |
-        |                       *          *     *        *  :*            =
- |
-   1540 ++ *                    :: ***.* * :**.* ::* * .** :*              =
- |
-        |  :+ * *     *       ** **     ::*     * * * *    *               =
- |
-   1520 ++*  * ::*** +:   ** :          *                                  =
- |
-        * :    *    *  :**  ::                                             =
- |
-   1500 +*-------------*----*----------------------------------------------=
--+
-
-
-                                  vmstat.system.cs
-
-   10000 ++----------------------------------------------------------------=
--+
-         *****.*****                                                       =
- |
-    9800 ++         ** .******                                             =
- |
-    9600 ++           *       :*    **  **.*  * *** .* * ****              =
- |
-         |                    * *.**  **    ** *   *  * *    *.*           =
- |
-    9400 ++                                                                =
- |
-    9200 ++                                                                =
+   16000 ++                                                                =
  |
          |                                                                 =
  |
-    9000 ++                                                                =
+   14000 ++                                                                =
  |
-    8800 ++  O                                                             =
+   12000 ++                                                                =
  |
-         O  O   OO O                    O  OOO  O    O OOO  OO  OO  OO    O=
- |
-    8600 ++O   O  O  O  OO   OO O   O O  O    OO   O  O   OO      O   O OO =
-OO
-    8400 +O         O     OOO  O  OO O O         OO            O   O       =
- |
-         |            O                                                    =
- |
-    8200 ++----------------------------------------------------------------=
--+
-
-
-                          lock_stat.slock-AF_INET.contentions
-
-   110000 ++---------------------------------------------------------------=
--+
-          |                                                                =
- |
-   105000 ++      O     O         O                O                       =
- |
-          OOO   O   O O  O OO   O   O O           O  O    O O              =
- O
-          |   O  O   O O     OOO O O   OOOOO   O      OOO    OOO O OOO OOO =
-O|
-   100000 ++ O     O                        OOO     O    O      O O       O=
- |
-          |                                      O                         =
- |
-    95000 ++                                                               =
- |
-          |                                                                =
- |
-    90000 ++                     * * .*** * ** *. * ***      ***           =
- |
-          |            *       ** * *    * *  *  * *   ****.*              =
- |
-          |  **.* **** ::*. ** :                                           =
- |
-    85000 ***    *    * *  *  *                                            =
- |
-          |                                                                =
- |
-    80000 ++---------------------------------------------------------------=
--+
-
-
-                lock_stat.slock-AF_INET.contentions.lock_sock_nested
-
-   92000 ++----------------------------------------------------------------=
--+
-   90000 ++             O         O               O                        =
- |
-         | O     O         O   O    O                O                     =
- |
-   88000 OO    O   O O   OO O   O    O  OO       O    OO  OO O O        O  =
-OO
-   86000 ++     O   O O      OO    O  OO   OO OO        O   O    OOOOOO  O =
- |
-   84000 ++ OO    O                          O     O     O      O         O=
- |
-   82000 ++                                     O                          =
+   10000 ++                                                                =
  |
          |                                                                 =
  |
-   80000 ++                                                                =
+    8000 ++                                                                =
  |
-   78000 ++                           *  *. *  * *           *.            =
+    6000 ++                                                                =
  |
-   76000 ++           *       ***.** * * : * * :* **.** *** *  *           =
+         |                                                                 =
  |
-   74000 ++ **.* *    :+   ** :     *   *     *        *   *               =
- |
-         | *    * ***:  ***  *                                             =
- |
-   72000 **          *                                                     =
- |
-   70000 ++----------------------------------------------------------------=
+    4000 *+*.**.*.*.*.**.*.*.*.*.**.*.*.*.**.*.*.*.**.*.*.*.*.**.*.*.*.**.*=
+.*
+    2000 ++----------------------------------------------------------------=
 -+
 
 
-                    lock_stat.slock-AF_INET.contentions.tcp_v4_rcv
+                lock_stat.vmap_area_lock.contentions.get_vmalloc_info
 
-   110000 ++---------------------------------------------------------------=
+   45000 ++----------------------------------------------------------------=
 -+
-          |                                                                =
+         | O                   O    O            O      O   O      O       =
  |
-   105000 ++      O     O         O                O                       =
+   40000 O+  OO O O O OO O O O   OO   O O OO O O   OO O   O   OO O   O O   =
  |
-          OOO   O   O O  O OO   O   O O           O  O    O O              =
- O
-          |   O  O   O O     OOO O O   OOOOO   O      OOO    OOO O OOO OOO =
-O|
-   100000 ++ O     O                        OOO     O    O      O O       O=
+   35000 ++                                                                =
  |
-          |                                      O                         =
+         |                                                                 =
  |
-    95000 ++                                                               =
+   30000 ++                                                                =
  |
-          |                                                                =
+         |                                                                 =
  |
-    90000 ++                     * * .*** * ** *. * ***      ***           =
+   25000 ++                                                                =
  |
-          |            *       ** * *    * *  *  * *   ****.*              =
+         |                                                                 =
  |
-          |  **.* **** ::*. ** :                                           =
+   20000 ++                                                                =
  |
-    85000 ***    *    * *  *  *                                            =
+   15000 ++                                                                =
  |
-          |                                                                =
+         |                                                                 =
  |
-    80000 ++---------------------------------------------------------------=
--+
+   10000 ++                                                                =
+ |
+         |                        *.*.     *. .*.          .*.  .*.*.      =
+ |
+    5000 *+*-**-*-*-*-**-*-*-*-*-*----*-*-*--*---*-**-*-*-*---**-----*-**-*=
+-*
 
 
---===============1552521866980058854==--
+--===============3141387315136746216==
+Content-Type: text/x-diff
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="0001-n_tty-Move-buffers-into-n_tty_data.patch"
+
+PkZyb20gMjBiYWZiM2QyM2QxMDhiYzBhODk2ZWI4YjdjMTUwMWY0ZjY0OWI3NyBNb24gU2VwIDE3
+IDAwOjAwOjAwIDIwMDEKRnJvbTogUGV0ZXIgSHVybGV5IDxwZXRlckBodXJsZXlzb2Z0d2FyZS5j
+b20+CkRhdGU6IFNhdCwgMTUgSnVuIDIwMTMgMTA6MjE6MTkgLTA0MDAKU3ViamVjdDogW1BBVENI
+XSBuX3R0eTogTW92ZSBidWZmZXJzIGludG8gbl90dHlfZGF0YQoKUmVkdWNlIHBvaW50ZXIgcmVs
+b2FkaW5nIGFuZCBpbXByb3ZlIGxvY2FsaXR5LW9mLXJlZmVyZW5jZTsKYWxsb2NhdGUgcmVhZF9i
+dWYgYW5kIGVjaG9fYnVmIHdpdGhpbiBzdHJ1Y3Qgbl90dHlfZGF0YS4KClNpZ25lZC1vZmYtYnk6
+IFBldGVyIEh1cmxleSA8cGV0ZXJAaHVybGV5c29mdHdhcmUuY29tPgpTaWduZWQtb2ZmLWJ5OiBH
+cmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPgotLS0KIGRyaXZl
+cnMvdHR5L25fdHR5LmMgfCAyNSArKysrKysrKystLS0tLS0tLS0tLS0tLS0tCiAxIGZpbGUgY2hh
+bmdlZCwgOSBpbnNlcnRpb25zKCspLCAxNiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2
+ZXJzL3R0eS9uX3R0eS5jIGIvZHJpdmVycy90dHkvbl90dHkuYwppbmRleCBkNmViYTk5Li41MWNi
+ZGQyIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9uX3R0eS5jCisrKyBiL2RyaXZlcnMvdHR5L25f
+dHR5LmMKQEAgLTEwNSw5ICsxMDUsOSBAQCBzdHJ1Y3Qgbl90dHlfZGF0YSB7CiAJdW5zaWduZWQg
+Y2hhciBsbmV4dDoxLCBlcmFzaW5nOjEsIHJhdzoxLCByZWFsX3JhdzoxLCBpY2Fub246MTsKIAog
+CS8qIHNoYXJlZCBieSBwcm9kdWNlciBhbmQgY29uc3VtZXIgKi8KLQljaGFyICpyZWFkX2J1ZjsK
+KwljaGFyIHJlYWRfYnVmW05fVFRZX0JVRl9TSVpFXTsKIAlERUNMQVJFX0JJVE1BUChyZWFkX2Zs
+YWdzLCBOX1RUWV9CVUZfU0laRSk7Ci0JdW5zaWduZWQgY2hhciAqZWNob19idWY7CisJdW5zaWdu
+ZWQgY2hhciBlY2hvX2J1ZltOX1RUWV9CVUZfU0laRV07CiAKIAlpbnQgbWluaW11bV90b193YWtl
+OwogCkBAIC0xNjk1LDkgKzE2OTUsNyBAQCBzdGF0aWMgdm9pZCBuX3R0eV9jbG9zZShzdHJ1Y3Qg
+dHR5X3N0cnVjdCAqdHR5KQogCWlmICh0dHktPmxpbmspCiAJCW5fdHR5X3BhY2tldF9tb2RlX2Zs
+dXNoKHR0eSk7CiAKLQlrZnJlZShsZGF0YS0+cmVhZF9idWYpOwotCWtmcmVlKGxkYXRhLT5lY2hv
+X2J1Zik7Ci0Ja2ZyZWUobGRhdGEpOworCXZmcmVlKGxkYXRhKTsKIAl0dHktPmRpc2NfZGF0YSA9
+IE5VTEw7CiB9CiAKQEAgLTE3MTUsNyArMTcxMyw4IEBAIHN0YXRpYyBpbnQgbl90dHlfb3Blbihz
+dHJ1Y3QgdHR5X3N0cnVjdCAqdHR5KQogewogCXN0cnVjdCBuX3R0eV9kYXRhICpsZGF0YTsKIAot
+CWxkYXRhID0ga3phbGxvYyhzaXplb2YoKmxkYXRhKSwgR0ZQX0tFUk5FTCk7CisJLyogQ3VycmVu
+dGx5IGEgbWFsbG9jIGZhaWx1cmUgaGVyZSBjYW4gcGFuaWMgKi8KKwlsZGF0YSA9IHZtYWxsb2Mo
+c2l6ZW9mKCpsZGF0YSkpOwogCWlmICghbGRhdGEpCiAJCWdvdG8gZXJyOwogCkBAIC0xNzIzLDE2
+ICsxNzIyLDE0IEBAIHN0YXRpYyBpbnQgbl90dHlfb3BlbihzdHJ1Y3QgdHR5X3N0cnVjdCAqdHR5
+KQogCW11dGV4X2luaXQoJmxkYXRhLT5hdG9taWNfcmVhZF9sb2NrKTsKIAltdXRleF9pbml0KCZs
+ZGF0YS0+b3V0cHV0X2xvY2spOwogCi0JLyogVGhlc2UgYXJlIHVnbHkuIEN1cnJlbnRseSBhIG1h
+bGxvYyBmYWlsdXJlIGhlcmUgY2FuIHBhbmljICovCi0JbGRhdGEtPnJlYWRfYnVmID0ga3phbGxv
+YyhOX1RUWV9CVUZfU0laRSwgR0ZQX0tFUk5FTCk7Ci0JbGRhdGEtPmVjaG9fYnVmID0ga3phbGxv
+YyhOX1RUWV9CVUZfU0laRSwgR0ZQX0tFUk5FTCk7Ci0JaWYgKCFsZGF0YS0+cmVhZF9idWYgfHwg
+IWxkYXRhLT5lY2hvX2J1ZikKLQkJZ290byBlcnJfZnJlZV9idWZzOwotCiAJdHR5LT5kaXNjX2Rh
+dGEgPSBsZGF0YTsKIAlyZXNldF9idWZmZXJfZmxhZ3ModHR5LT5kaXNjX2RhdGEpOwogCWxkYXRh
+LT5jb2x1bW4gPSAwOworCWxkYXRhLT5jYW5vbl9jb2x1bW4gPSAwOwogCWxkYXRhLT5taW5pbXVt
+X3RvX3dha2UgPSAxOworCWxkYXRhLT5udW1fb3ZlcnJ1biA9IDA7CisJbGRhdGEtPm5vX3Jvb20g
+PSAwOworCWxkYXRhLT5sbmV4dCA9IDA7CiAJdHR5LT5jbG9zaW5nID0gMDsKIAkvKiBpbmRpY2F0
+ZSBidWZmZXIgd29yayBtYXkgcmVzdW1lICovCiAJY2xlYXJfYml0KFRUWV9MRElTQ19IQUxURUQs
+ICZ0dHktPmZsYWdzKTsKQEAgLTE3NDAsMTAgKzE3MzcsNiBAQCBzdGF0aWMgaW50IG5fdHR5X29w
+ZW4oc3RydWN0IHR0eV9zdHJ1Y3QgKnR0eSkKIAl0dHlfdW50aHJvdHRsZSh0dHkpOwogCiAJcmV0
+dXJuIDA7Ci1lcnJfZnJlZV9idWZzOgotCWtmcmVlKGxkYXRhLT5yZWFkX2J1Zik7Ci0Ja2ZyZWUo
+bGRhdGEtPmVjaG9fYnVmKTsKLQlrZnJlZShsZGF0YSk7CiBlcnI6CiAJcmV0dXJuIC1FTk9NRU07
+CiB9Ci0tIAoxLjguMy4yCgo=
+
+--===============3141387315136746216==--
 
