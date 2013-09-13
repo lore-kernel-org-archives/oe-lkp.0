@@ -1,132 +1,680 @@
-Content-Type: multipart/mixed; boundary="===============3141387315136746216=="
+Content-Type: multipart/mixed; boundary="===============7018846506536728748=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: increased vmap_area_lock contentions on "n_tty: Move buffers into n_tty_data"
-Date: Fri, 13 Sep 2013 08:51:33 +0800
-Message-ID: <20130913005133.GA32479@localhost>
+Subject: Re: increased vmap_area_lock contentions on "n_tty: Move buffers into n_tty_data"
+Date: Fri, 13 Sep 2013 09:09:36 +0800
+Message-ID: <20130913010936.GA1291@localhost>
+In-Reply-To: <20130913005133.GA32479@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3141387315136746216==
+--===============7018846506536728748==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Peter,
+On Fri, Sep 13, 2013 at 08:51:33AM +0800, Fengguang Wu wrote:
+> Hi Peter,
+> =
 
-FYI, we noticed much increased vmap_area_lock contentions since this
-commit:
+> FYI, we noticed much increased vmap_area_lock contentions since this
+> commit:
+> =
 
-commit 20bafb3d23d108bc0a896eb8b7c1501f4f649b77
-Author: Peter Hurley <peter@hurleysoftware.com>
-Date:   Sat Jun 15 10:21:19 2013 -0400
+> commit 20bafb3d23d108bc0a896eb8b7c1501f4f649b77
+> Author: Peter Hurley <peter@hurleysoftware.com>
+> Date:   Sat Jun 15 10:21:19 2013 -0400
+> =
 
-    n_tty: Move buffers into n_tty_data
-    =
+>     n_tty: Move buffers into n_tty_data
+>     =
 
-    Reduce pointer reloading and improve locality-of-reference;
-    allocate read_buf and echo_buf within struct n_tty_data.
-    =
+>     Reduce pointer reloading and improve locality-of-reference;
+>     allocate read_buf and echo_buf within struct n_tty_data.
 
-    Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Here are some comparison between this commit [o] with its parent commit [*].
 
-:040000 040000 96d92e4e242c4b2ff11b25c005bccd093865b350 2822d87b2425c3e7adc=
-7b722a20d739c9d4a3046 M	drivers
-bisect run success
+                          slabinfo.kmalloc-128.active_objs
 
-# bad: [9cdfea961eeaf9b6b939fb9dc822a204a1d94d08] Merge remote-tracking bra=
-nch 'ipvs-next/master' into devel-hourly-2013090112
-# good: [d4e4ab86bcba5a72779c43dc1459f71fea3d89c8] Linux 3.11-rc5
-git bisect start '9cdfea961eeaf9b6b939fb9dc822a204a1d94d08' 'd4e4ab86bcba5a=
-72779c43dc1459f71fea3d89c8' '--'
-# good: [903bc7e8c2a4f9ef8e40aed615ed48023f9460e3] Merge remote-tracking br=
-anch 'spi/for-next'
-git bisect good 903bc7e8c2a4f9ef8e40aed615ed48023f9460e3
-# bad: [d926318427c1fa8df182d3dcd7f802d7d0609225] Merge remote-tracking bra=
-nch 'bcon/master'
-git bisect bad d926318427c1fa8df182d3dcd7f802d7d0609225
-# bad: [adcb2bcd0dd2bb88f21180c8ffb9ec2549f4d883] Merge remote-tracking bra=
-nch 'usb/usb-next'
-git bisect bad adcb2bcd0dd2bb88f21180c8ffb9ec2549f4d883
-# good: [a83605266423437d8afe73cbd538df33cf8fb32b] Merge remote-tracking br=
-anch 'driver-core/driver-core-next'
-git bisect good a83605266423437d8afe73cbd538df33cf8fb32b
-# good: [224563b6ce034b82f8511969d9496113da34fb2c] Merge tag 'for-usb-next-=
-2013-08-15' of git://git.kernel.org/pub/scm/linux/kernel/git/sarah/xhci int=
-o usb-next
-git bisect good 224563b6ce034b82f8511969d9496113da34fb2c
-# bad: [5284eba7b37dfeffe75bfdf81a13e9efebe0480a] serial/arc-uart: Handle R=
-x Error Interrupts w/o any data
-git bisect bad 5284eba7b37dfeffe75bfdf81a13e9efebe0480a
-# bad: [7d88d637a3c75257b7611f9feee0c17fa187ecc9] n_tty: Factor standard pe=
-r-char i/o into separate fn
-git bisect bad 7d88d637a3c75257b7611f9feee0c17fa187ecc9
-# good: [11b9faa44df76189b8346ff602a2c01c610c37eb] tty: Merge tty_buffer_fi=
-nd() into tty_buffer_alloc()
-git bisect good 11b9faa44df76189b8346ff602a2c01c610c37eb
-# good: [019ebdf9f26fd2e43b9e1af576835183e95dc82e] n_tty: Eliminate echo_co=
-mmit memory barrier
-git bisect good 019ebdf9f26fd2e43b9e1af576835183e95dc82e
-# bad: [1bb9d562856279a217a4e581a803dee9bb48a708] n_tty: Rename process_cha=
-r_map to char_map
-git bisect bad 1bb9d562856279a217a4e581a803dee9bb48a708
-# good: [9dfd16ddea9bdbc8343340e543732db0a467ae32] n_tty: Avoid false-shari=
-ng echo buffer indices
-git bisect good 9dfd16ddea9bdbc8343340e543732db0a467ae32
-# good: [8cb06c983822103da1cfe57b9901e60a00e61f67] n_tty: Remove alias ptrs=
- in __receive_buf()
-git bisect good 8cb06c983822103da1cfe57b9901e60a00e61f67
-# bad: [20bafb3d23d108bc0a896eb8b7c1501f4f649b77] n_tty: Move buffers into =
-n_tty_data
-git bisect bad 20bafb3d23d108bc0a896eb8b7c1501f4f649b77
-# first bad commit: [20bafb3d23d108bc0a896eb8b7c1501f4f649b77] n_tty: Move =
-buffers into n_tty_data
-
-
-Compare of all good/bad commits in this bisect:
-
-                        lock_stat.vmap_area_lock.contentions
-
-   22000 ++----------------------------------------------------------------=
+   10400 ++--------O---------------O---------------------------------------=
 -+
-   20000 ++O    O O O    O O O O OO O O   OO O O O OO   O O O O  O O O O   =
+         |                 O    O       O  O      O    O  O  O O  O O  O O =
+ O
+   10200 ++      O    O O     O      O       O  O    O                     =
  |
-         O   OO       OO                O             O        O           =
+   10000 ++   O                                                            =
  |
-   18000 ++                                                                =
+         O  O                                                              =
  |
-   16000 ++                                                                =
+    9800 ++                                                                =
  |
          |                                                                 =
  |
-   14000 ++                                                                =
+    9600 ++                                                                =
  |
-   12000 ++                                                                =
+         |                                                                 =
+ |
+    9400 ++                                                                =
+ |
+    9200 ++                                                                =
+ |
+         |                                                                 =
+ |
+    9000 *+.*.                                                             =
+ |
+         |    *                                                            =
+ |
+    8800 ++----------------------------------------------------------------=
+-+
+
+
+                          slabinfo.kmalloc-128.active_objs
+
+   2400 ++-----------------------------------------------------------------=
+-+
+        |                                      O  O        O     O         =
+O|
+   2200 ++     O  OO    O    O   O    O O           O    OO         O   O  =
+ O
+   2000 O+O OOO O   OOO  OOOO  OO OO O O O OOOO  O O O OO   O OOO O  OOO  O=
+ |
+        |O                                                                 =
+ |
+   1800 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   1600 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   1400 ++                                                                 =
+ |
+   1200 ++                                                                 =
+ |
+        |*                                                                 =
+ |
+   1000 ++*.*                                                              =
+ |
+        *    **                                                            =
+ |
+    800 ++-----------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89
+------------------------  ------------------------
+                  976.67      +108.3%      2034.67  lkp-a04/micro/netperf/1=
+20s-200%-TCP_STREAM
+                 8971.36       +11.4%      9997.05  nhm-white/micro/aim7/ex=
+ec_test
+                 9948.03       +20.9%     12031.72  TOTAL slabinfo.kmalloc-=
+128.active_objs
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                  976.67      +108.3%      2034.67  lkp-a04/micro/netperf/1=
+20s-200%-TCP_STREAM
+                 9127.64       +11.4%     10164.15  nhm-white/micro/aim7/ex=
+ec_test
+                10104.31       +20.7%     12198.82  TOTAL slabinfo.kmalloc-=
+128.num_objs
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   1.8e+07 ++--------------------------------------------------------------=
+-+
+           O  O   O      O         O                O  O                 O =
+ |
+   1.6e+07 ++        O      O   O     O   O  O   O         O  O   O  O     =
+ O
+   1.4e+07 ++                                                              =
+ |
+           |                                                               =
+ |
+   1.2e+07 ++                                                              =
+ |
+     1e+07 ++                                                              =
+ |
+           |                                                               =
+ |
+     8e+06 ++                                                              =
+ |
+     6e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     4e+06 ++                                                              =
+ |
+     2e+06 ++                                                              =
+ |
+           *..*...*..*...*..*...*..*..*...*                                =
+ |
+         0 ++--------------------------------------------------------------=
+-+
+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   70000 ++----------------------------------------------------------------=
+-+
+         |                O                        O                    O  =
+ |
+   60000 ++  O   O    O       O   O   O        O           O   O    O      =
+ |
+         O                                 O           O                   =
+ O
+   50000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         *...*...*....*...*                                                =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   80000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+   70000 ++                                         O                      =
+ |
+   60000 ++                                                                =
+ |
+         |                       O                                         =
+ |
+   50000 ++                                               O     O          =
+ |
+         |                                                                 =
+ O
+   40000 ++                                   O                            =
+ |
+         |                                                                 =
+ |
+   30000 O+                O                                               =
+ |
+   20000 ++    O     O                 O                              O    =
+ |
+         |                                                                 =
  |
    10000 ++                                                                =
  |
          |                                                                 =
  |
-    8000 ++                                                                =
+       0 *+----*-----*-----*-----*-----------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   90000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
  |
-    6000 ++                                                                =
+   80000 ++                                             O                  =
+ |
+   70000 ++                                                                =
  |
          |                                                                 =
  |
-    4000 *+*.**.*.*.*.**.*.*.*.*.**.*.*.*.**.*.*.*.**.*.*.*.*.**.*.*.*.**.*=
-.*
-    2000 ++----------------------------------------------------------------=
--+
-
-
-                lock_stat.vmap_area_lock.contentions.get_vmalloc_info
-
-   45000 ++----------------------------------------------------------------=
--+
-         | O                   O    O            O      O   O      O       =
+   60000 ++                                                                =
+ O
+   50000 ++                                                          O     =
  |
-   40000 O+  OO O O O OO O O O   OO   O O OO O O   OO O   O   OO O   O O   =
+         |      O     O                          O                         =
+ |
+   40000 O+                                                    O           =
+ |
+   30000 ++                         O                                      =
+ |
+         |                   O             O                               =
+ |
+   20000 ++                                                                =
+ |
+   10000 ++                                                                =
+ |
+         *......                                                           =
+ |
+       0 ++-----*-----*------*------*------*-----*-------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   80000 ++----------------------------------------------------------------=
+-+
+         |                             O              O                    =
+ |
+   70000 ++                                                                =
+ |
+   60000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   50000 ++                    O                             O       O     =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 O+     O       O                                                  =
+ |
+   20000 ++                                   O                            =
+ O
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         *......*.......    ...*                                           =
+ |
+       0 ++-------------*--------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   80000 ++-------------------------------------------------------------O--=
+-+
+         |                                 O           O   O   O           =
+ O
+   70000 ++                   O                                            =
+ |
+   60000 ++                                                         O      =
+ |
+         |                        O            O                           =
+ |
+   50000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                O                        O                       =
+ |
+   30000 ++           O               O                                    =
+ |
+   20000 O+  O   O                                                         =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+       0 *+--*---*----*----------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   80000 ++----------------------------------------------------------------=
+-+
+         |                                                     O     O     =
+ |
+   70000 ++                         O                                      =
+ O
+   60000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   50000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         O            O                                                    =
+ |
+   30000 ++     O                          O     O                         =
+ |
+   20000 ++                                             O                  =
+ |
+         |                   O                                             =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+       0 *+-----*-----*------*---------------------------------------------=
+-+
+
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   120000 ++---------------------------------------------------------------=
+-+
+          |                                                                =
+ |
+   100000 ++                                                O              =
+ O
+          |                                O                               =
+ |
+          |                                        O                       =
+ |
+    80000 ++                                                               =
+ |
+          |                                                                =
+ |
+    60000 ++                                                        O      =
+ |
+          |       O                                                        =
+ |
+    40000 O+               O                                               =
+ |
+          |                                                                =
+ |
+          |                        O                                       =
+ |
+    20000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 *+------*--------*-------*---------------------------------------=
+-+
+
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   1.6e+07 ++--------------------------------------------------------------=
+-+
+           |  O                                       O    O    O          =
+ O
+   1.4e+07 O+   O  O O  O O  O O  O O  O O  O O  O O    O    O    O  O O  O=
+ |
+   1.2e+07 ++                                                              =
+ |
+           |                                                               =
+ |
+     1e+07 ++                                                              =
+ |
+           |                                                               =
+ |
+     8e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     6e+06 ++                                                              =
+ |
+     4e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     2e+06 ++                                                              =
+ |
+           *..*.*                                                          =
+ |
+         0 ++--------------------------------------------------------------=
+-+
+
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   400000 ++---------------------------------------------------------------=
+-+
+          |                               O                      O         =
+ O
+   350000 ++ O  O  O O           O     O    O                              =
+ |
+          |                O  O     O          O     O  O  O  O    O  O    =
+ |
+   300000 O+            O                         O                      O =
+ |
+   250000 ++                                                               =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+   150000 ++                                                               =
+ |
+   100000 ++                                                               =
+ |
+          |                                                                =
+ |
+    50000 ++                                                               =
+ |
+          *..*..*                                                          =
+ |
+        0 ++---------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   60000 +O-----------O---------O-O--------O-----------------O-----------O-=
+-+
+         OOOO O OOO OO OOOOOOOOO O OOOOOOOOOOO  O O  OO OOOOO O OOOO OOOOO =
+OO
+   50000 ++  O O   O   O O           O      O OO O OO OOO O O OOO  OOO O  O=
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         **                                                                =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   350000 ++---------------------------------------------------------------=
+-+
+          |    O            O                                    O  O  O   =
+ O
+   300000 O+         O    O         O       O  O  O       O O              =
+ |
+          |  O    O    O       O  O    O  O         O  O       O         O =
+ |
+   250000 ++                                                               =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+   150000 ++                                                               =
+ |
+          |                                                                =
+ |
+   100000 ++                                                               =
+ |
+          |                                                                =
+ |
+    50000 ++                                                               =
+ |
+          *..*.*..*                                                        =
+ |
+        0 ++---------------------------------------------------------------=
+-+
+
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   300000 ++--------------------------O----O--------------O-------O--------=
+-+
+          O  O O    O              O          O O  O    O    O      O      =
+ |
+   250000 ++      O           O  O      O            O         O       O   =
+ O
+          |            O O  O                                            O =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+   150000 ++                                                               =
+ |
+          |                                                                =
+ |
+   100000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+    50000 ++                                                               =
+ |
+          *..*.*..*.*                                                      =
+ |
+        0 ++---------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   70000 ++----------------------------------------------------------------=
+-+
+         |                          O       O                         O    =
+ |
+   60000 +O  O  OOO   OO   O   O O O O  OOOO O O O OO O OO   O O   O O  O  =
+ |
+         O O  OO    OO  OO  OOO   O   O         O O    O  O O O OO  O  O  O=
+OO
+   50000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         ***.***                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   400000 ++---------------------------------------------------------------=
+-+
+          |                     O                   O           O    O     =
+ |
+   350000 O+   O    O    O O                O  O O    O O  O O             =
+ O
+          | O    O    O       O   O  O O  O                       O    O  O=
+ |
+   300000 ++                                                               =
+ |
+   250000 ++                                                               =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+   150000 ++                                                               =
+ |
+   100000 ++                                                               =
+ |
+          |                                                                =
+ |
+    50000 ++                                                               =
+ |
+          *.*..*.*..*.*                                                    =
+ |
+        0 ++---------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   80000 ++--------------------------O-------------------------------------=
+-+
+         |                      O                        O            O    =
+ |
+   70000 ++O    O    OO   OOO     OO  OO O OO O O  OOO  O OOO    OO OO OO O=
+ |
+   60000 ++   OO O OO  O O   O   O      O    O O  O   O       OOO          =
+OO
+         OO  O                 O                                           =
+ |
+   50000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         ***.***                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   50000 ++-------------------------------O--------------------------------=
+-O
+   45000 OOO OOO O   O OOO  OO O  O   O    OO  OO   O  O O      OO OOOO    =
+O|
+         |      O O O O    O  O    OOO   O       OOO  O O O OO O       OO O=
+ |
+   40000 ++                      O      O    O                O            =
  |
    35000 ++                                                                =
  |
@@ -134,7 +682,37 @@ Compare of all good/bad commits in this bisect:
  |
    30000 ++                                                                =
  |
+   25000 ++                                                                =
+ |
+   20000 ++                                                                =
+ |
          |                                                                 =
+ |
+   15000 ++                                                                =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    5000 ***.***                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   45000 ++--------------O-----------O---O---------------------------------=
+-+
+         | O OO  O  OOOO   O O OO             O O  O      OOO              =
+ |
+   40000 O+    O   O      O O     OO   OO  OO  O  O OO  OO    OO OO OOOOO O=
+OO
+   35000 +O     O                O    O      O        O         O          =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
  |
    25000 ++                                                                =
  |
@@ -148,63 +726,2035 @@ Compare of all good/bad commits in this bisect:
  |
    10000 ++                                                                =
  |
-         |                        *.*.     *. .*.          .*.  .*.*.      =
+    5000 ++                                                                =
  |
-    5000 *+*-**-*-*-*-**-*-*-*-*-*----*-*-*--*---*-**-*-*-*---**-----*-**-*=
--*
+         ***.***                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
 
 
---===============3141387315136746216==
-Content-Type: text/x-diff
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="0001-n_tty-Move-buffers-into-n_tty_data.patch"
+                       lock_stat.vmap_area_lock.holdtime-total
 
-PkZyb20gMjBiYWZiM2QyM2QxMDhiYzBhODk2ZWI4YjdjMTUwMWY0ZjY0OWI3NyBNb24gU2VwIDE3
-IDAwOjAwOjAwIDIwMDEKRnJvbTogUGV0ZXIgSHVybGV5IDxwZXRlckBodXJsZXlzb2Z0d2FyZS5j
-b20+CkRhdGU6IFNhdCwgMTUgSnVuIDIwMTMgMTA6MjE6MTkgLTA0MDAKU3ViamVjdDogW1BBVENI
-XSBuX3R0eTogTW92ZSBidWZmZXJzIGludG8gbl90dHlfZGF0YQoKUmVkdWNlIHBvaW50ZXIgcmVs
-b2FkaW5nIGFuZCBpbXByb3ZlIGxvY2FsaXR5LW9mLXJlZmVyZW5jZTsKYWxsb2NhdGUgcmVhZF9i
-dWYgYW5kIGVjaG9fYnVmIHdpdGhpbiBzdHJ1Y3Qgbl90dHlfZGF0YS4KClNpZ25lZC1vZmYtYnk6
-IFBldGVyIEh1cmxleSA8cGV0ZXJAaHVybGV5c29mdHdhcmUuY29tPgpTaWduZWQtb2ZmLWJ5OiBH
-cmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPgotLS0KIGRyaXZl
-cnMvdHR5L25fdHR5LmMgfCAyNSArKysrKysrKystLS0tLS0tLS0tLS0tLS0tCiAxIGZpbGUgY2hh
-bmdlZCwgOSBpbnNlcnRpb25zKCspLCAxNiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2
-ZXJzL3R0eS9uX3R0eS5jIGIvZHJpdmVycy90dHkvbl90dHkuYwppbmRleCBkNmViYTk5Li41MWNi
-ZGQyIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9uX3R0eS5jCisrKyBiL2RyaXZlcnMvdHR5L25f
-dHR5LmMKQEAgLTEwNSw5ICsxMDUsOSBAQCBzdHJ1Y3Qgbl90dHlfZGF0YSB7CiAJdW5zaWduZWQg
-Y2hhciBsbmV4dDoxLCBlcmFzaW5nOjEsIHJhdzoxLCByZWFsX3JhdzoxLCBpY2Fub246MTsKIAog
-CS8qIHNoYXJlZCBieSBwcm9kdWNlciBhbmQgY29uc3VtZXIgKi8KLQljaGFyICpyZWFkX2J1ZjsK
-KwljaGFyIHJlYWRfYnVmW05fVFRZX0JVRl9TSVpFXTsKIAlERUNMQVJFX0JJVE1BUChyZWFkX2Zs
-YWdzLCBOX1RUWV9CVUZfU0laRSk7Ci0JdW5zaWduZWQgY2hhciAqZWNob19idWY7CisJdW5zaWdu
-ZWQgY2hhciBlY2hvX2J1ZltOX1RUWV9CVUZfU0laRV07CiAKIAlpbnQgbWluaW11bV90b193YWtl
-OwogCkBAIC0xNjk1LDkgKzE2OTUsNyBAQCBzdGF0aWMgdm9pZCBuX3R0eV9jbG9zZShzdHJ1Y3Qg
-dHR5X3N0cnVjdCAqdHR5KQogCWlmICh0dHktPmxpbmspCiAJCW5fdHR5X3BhY2tldF9tb2RlX2Zs
-dXNoKHR0eSk7CiAKLQlrZnJlZShsZGF0YS0+cmVhZF9idWYpOwotCWtmcmVlKGxkYXRhLT5lY2hv
-X2J1Zik7Ci0Ja2ZyZWUobGRhdGEpOworCXZmcmVlKGxkYXRhKTsKIAl0dHktPmRpc2NfZGF0YSA9
-IE5VTEw7CiB9CiAKQEAgLTE3MTUsNyArMTcxMyw4IEBAIHN0YXRpYyBpbnQgbl90dHlfb3Blbihz
-dHJ1Y3QgdHR5X3N0cnVjdCAqdHR5KQogewogCXN0cnVjdCBuX3R0eV9kYXRhICpsZGF0YTsKIAot
-CWxkYXRhID0ga3phbGxvYyhzaXplb2YoKmxkYXRhKSwgR0ZQX0tFUk5FTCk7CisJLyogQ3VycmVu
-dGx5IGEgbWFsbG9jIGZhaWx1cmUgaGVyZSBjYW4gcGFuaWMgKi8KKwlsZGF0YSA9IHZtYWxsb2Mo
-c2l6ZW9mKCpsZGF0YSkpOwogCWlmICghbGRhdGEpCiAJCWdvdG8gZXJyOwogCkBAIC0xNzIzLDE2
-ICsxNzIyLDE0IEBAIHN0YXRpYyBpbnQgbl90dHlfb3BlbihzdHJ1Y3QgdHR5X3N0cnVjdCAqdHR5
-KQogCW11dGV4X2luaXQoJmxkYXRhLT5hdG9taWNfcmVhZF9sb2NrKTsKIAltdXRleF9pbml0KCZs
-ZGF0YS0+b3V0cHV0X2xvY2spOwogCi0JLyogVGhlc2UgYXJlIHVnbHkuIEN1cnJlbnRseSBhIG1h
-bGxvYyBmYWlsdXJlIGhlcmUgY2FuIHBhbmljICovCi0JbGRhdGEtPnJlYWRfYnVmID0ga3phbGxv
-YyhOX1RUWV9CVUZfU0laRSwgR0ZQX0tFUk5FTCk7Ci0JbGRhdGEtPmVjaG9fYnVmID0ga3phbGxv
-YyhOX1RUWV9CVUZfU0laRSwgR0ZQX0tFUk5FTCk7Ci0JaWYgKCFsZGF0YS0+cmVhZF9idWYgfHwg
-IWxkYXRhLT5lY2hvX2J1ZikKLQkJZ290byBlcnJfZnJlZV9idWZzOwotCiAJdHR5LT5kaXNjX2Rh
-dGEgPSBsZGF0YTsKIAlyZXNldF9idWZmZXJfZmxhZ3ModHR5LT5kaXNjX2RhdGEpOwogCWxkYXRh
-LT5jb2x1bW4gPSAwOworCWxkYXRhLT5jYW5vbl9jb2x1bW4gPSAwOwogCWxkYXRhLT5taW5pbXVt
-X3RvX3dha2UgPSAxOworCWxkYXRhLT5udW1fb3ZlcnJ1biA9IDA7CisJbGRhdGEtPm5vX3Jvb20g
-PSAwOworCWxkYXRhLT5sbmV4dCA9IDA7CiAJdHR5LT5jbG9zaW5nID0gMDsKIAkvKiBpbmRpY2F0
-ZSBidWZmZXIgd29yayBtYXkgcmVzdW1lICovCiAJY2xlYXJfYml0KFRUWV9MRElTQ19IQUxURUQs
-ICZ0dHktPmZsYWdzKTsKQEAgLTE3NDAsMTAgKzE3MzcsNiBAQCBzdGF0aWMgaW50IG5fdHR5X29w
-ZW4oc3RydWN0IHR0eV9zdHJ1Y3QgKnR0eSkKIAl0dHlfdW50aHJvdHRsZSh0dHkpOwogCiAJcmV0
-dXJuIDA7Ci1lcnJfZnJlZV9idWZzOgotCWtmcmVlKGxkYXRhLT5yZWFkX2J1Zik7Ci0Ja2ZyZWUo
-bGRhdGEtPmVjaG9fYnVmKTsKLQlrZnJlZShsZGF0YSk7CiBlcnI6CiAJcmV0dXJuIC1FTk9NRU07
-CiB9Ci0tIAoxLjguMy4yCgo=
+   45000 ++------------------------------O------O--O-----------------------=
+-+
+         |  O   O  O   O O   OOOOO  O  O     O   O  O   O  O O OO   O OO O =
+ |
+   40000 OO   OO OO  OO    O      O  OO O  OO OO     OOO  O O O   OO O    O=
+OO
+   35000 ++O            O O                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+   25000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+   15000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+    5000 ++                                                                =
+ |
+         ****.**                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
 
---===============3141387315136746216==--
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   5.5e+06 O+---------------------------O------O---------------------------=
+-+
+     5e+06 ++     O      O       O                    O       O      O     =
+ |
+           |                                                               =
+ O
+   4.5e+06 ++                                                              =
+ |
+     4e+06 ++                                                              =
+ |
+   3.5e+06 ++                                                              =
+ |
+     3e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+   2.5e+06 ++                                                              =
+ |
+     2e+06 ++                                                              =
+ |
+   1.5e+06 ++                                                              =
+ |
+     1e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+    500000 *+.....*......*.......*......*                                  =
+ |
+         0 ++--------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   7e+06 ++----------------------------------------------------------------=
+-+
+         |             O                                                   =
+ |
+   6e+06 ++O O O O O O   O O O O O   O O O  O O O O O O O O O O O O O O O O=
+ O
+         O                         O                                       =
+ |
+   5e+06 ++                                                                =
+ |
+         |                                                                 =
+ |
+   4e+06 ++                                                                =
+ |
+         |                                                                 =
+ |
+   3e+06 ++                                                                =
+ |
+         |                                                                 =
+ |
+   2e+06 ++                                                                =
+ |
+         |                                                                 =
+ |
+   1e+06 ++                                                                =
+ |
+         *.*.*.*.*.*.*.*.*.*                                               =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   45000 ++--O-------------------------------------------------------------=
+-+
+         |          O   O      O         O    O O O O O      O O O O    O  =
+ |
+   40000 O+O   O  O       O O    O O O O    O            O O          O   O=
+ |
+   35000 ++           O                                                    =
+ O
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+   25000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+   15000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+    5000 ++                                                                =
+ |
+         *.*.*                                                             =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   70000 ++----------------------------------------------------------------=
+-+
+         |                                       O                         =
+ |
+   60000 O+  O    O   O        O    O   O    O        O   O    O   O    O  =
+ O
+         |                 O                                               =
+ |
+   50000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         *...*....*                                                        =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   45000 ++----------------------------------------------------------------=
+-+
+         |         O                                                      O=
+ |
+   40000 O+    O O   O O O O   O O O O   O  O O     O O     O O O O O   O  =
+ O
+   35000 ++O O               O         O        O O     O O           O    =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+   25000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+   15000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+    5000 ++                                                                =
+ |
+         *.*.*.*                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   400000 ++---------------------------------------------------------------=
+-+
+          |               O        O             O O                 O     =
+ |
+   350000 ++       O O  O   O O  O   O  O O O O      O  O O O O  O O   O  O=
+ O
+          O    O O                                                         =
+ |
+   300000 ++O                                                              =
+ |
+   250000 ++                                                               =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+   150000 ++                                                               =
+ |
+   100000 ++                                                               =
+ |
+          |                                                                =
+ |
+    50000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 *+*--*-*---------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   50000 ++-----------------O-------O----------------------------O--------O=
+-+
+   45000 O+   O O O   OOO    OO   O   O  O OO  O OOOO   O O   OOO   OO OO  =
+O|
+         |OO O   O  OO   O O   O O O O  O O  O  O     OO O         O  O    =
+ |
+   40000 ++    O                                            OO             =
+ O
+   35000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+   25000 ++                                                                =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   15000 ++                                                                =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    5000 ***.***                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   120000 ++---------------------------------------------------------------=
+-+
+          |                   O    O O           O   O                     =
+ |
+   100000 ++              O      O          O O           O            O  O=
+ O
+          |                               O        O    O   O    O   O     =
+ |
+          |          O  O               O                                  =
+ |
+    80000 ++                O                                 O            =
+ |
+          |    O   O                                               O       =
+ |
+    60000 O+O                                                              =
+ |
+          |      O                                                         =
+ |
+    40000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+    20000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 *+*--*-*-*-------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   10000 ++----------------------------------------------------------------=
+-+
+    9000 ++             O    O    O O                 O         O    O     =
+ |
+         O                O    O       O O  O O  O O    O  O O    O    O  O=
+ O
+    8000 ++O  O O  O O                                                     =
+ |
+    7000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    6000 ++                                                                =
+ |
+    5000 ++                                                                =
+ |
+    4000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    3000 ++                                                                =
+ |
+    2000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    1000 ++                                                                =
+ |
+       0 *+*--*-*--*-*-----------------------------------------------------=
+-+
+
+
+                        lock_stat.vmap_area_lock.holdtime-total
+
+   300000 ++------------------O----------------------------------O-O-------=
+-O
+          O O  O O O O  O O O    O O O    O O O  O O O  O O O O      O O  O=
+ |
+   250000 ++                            O                                  =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+   150000 ++                                                               =
+ |
+          |                                                                =
+ |
+   100000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+    50000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 *+*--*-*-*-*-----------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   70000 ++-----------------------------------------O----------------------=
+-+
+         |      O  O  O           O O    O                   O             =
+ |
+   60000 OO O  O O   O OO     OOO    O O   OOO OOO   O     OO   O OO  O  OO=
+O|
+         | O  O   O      OOO O   O    O O     O    O  OOO O   OO    OO O   =
+ O
+   50000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         ****.**                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   50000 ++----------------------------------------------------------------=
+-+
+   45000 ++  O        O   O     O O        O         O O         OO O O   O=
+ O
+         O O     O OO   O   O       O O O O  O O O O     O O O O        O  =
+ |
+   40000 ++                   O                                            =
+ |
+   35000 ++    O                                                           =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+   25000 ++                                                                =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   15000 ++                                                                =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    5000 *+*.*.*.*.*                                                       =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                       lock_stat.vmap_area_lock.holdtime-total
+
+   60000 ++---------O----O------------O--------O--------------------------O=
+-+
+         O O    O O   O    O O      O   O    O   O O  O O O O  O O O O     =
+ O
+   50000 ++  O                 O  O        O                            O  =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         *.*.*..*.*.*                                                      =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                 3470.31     +1631.0%     60070.49  fat/micro/dd-write/1HDD=
+-cfq-ext4-10dd
+                 3339.57     +1676.9%     59340.71  fat/micro/dd-write/1HDD=
+-cfq-ext4-1dd
+                 2848.79     +1489.1%     45269.54  lkp-a04/micro/netperf/1=
+20s-200%-TCP_CRR
+                 3563.01     +1515.2%     57548.50  lkp-a04/micro/netperf/1=
+20s-200%-TCP_MAERTS
+                 2678.64     +1346.0%     38733.80  lkp-a04/micro/netperf/1=
+20s-200%-TCP_RR
+                 2839.84     +1450.2%     44022.08  lkp-a04/micro/netperf/1=
+20s-200%-TCP_SENDFILE
+                 3417.37     +1571.4%     57116.34  lkp-a04/micro/netperf/1=
+20s-200%-TCP_STREAM
+                 2558.59     +1450.8%     39677.58  lkp-a04/micro/netperf/1=
+20s-200%-UDP_RR
+                 3737.24     +1558.0%     61963.62  lkp-a04/micro/netperf/1=
+20s-200%-UDP_STREAM
+                20219.50     +1488.7%    321218.02  lkp-a06/crypto/tcrypt/2=
+s-200-204
+                21017.17     +1457.1%    327257.41  lkp-a06/crypto/tcrypt/2=
+s-205-210
+                22109.84     +1240.3%    296346.33  lkp-a06/crypto/tcrypt/2=
+s-401-417
+                17909.60     +1467.3%    280693.71  lkp-a06/micro/dbench/10=
+0%
+               489739.50      +978.5%   5281916.05  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+              1601675.63      +906.7%  16123642.52  lkp-snb01/micro/aim7/ex=
+ec_test
+                12105.00     +2453.6%    309110.42  nhm-white/micro/aim7/db=
+ase
+               822461.02     +1585.0%  13858430.62  nhm-white/micro/aim7/ex=
+ec_test
+                 9858.11     +2715.9%    277595.41  nhm-white/micro/aim7/fo=
+rk_test
+                 3452.91     +1685.5%     61650.74  nhm-white/micro/aim7/fs=
+erver
+                  300.14     +2621.5%      8168.53  nhm-white/micro/aim7/mi=
+sc_rtns_1
+               345479.21     +1624.5%   5957828.25  nhm-white/micro/aim7/sh=
+ell_rtns_1
+                 2694.48     +1974.4%     55894.19  nhm-white/sysbench/oltp=
+/100%-600-1000000
+                 4415.67     +1202.2%     57501.52  nhm8/micro/dbench/100%
+                 2284.65     +1505.2%     36672.75  snb-drag/crypto/tcrypt/=
+2s-200-204
+                 2446.02     +1537.1%     40042.87  snb-drag/crypto/tcrypt/=
+2s-205-210
+                 2484.11     +1599.6%     42219.71  snb-drag/crypto/tcrypt/=
+2s-500-504
+                 2118.55     +1155.8%     26604.99  vpx/crypto/tcrypt/2s-20=
+0-204
+                 2713.48     +1198.5%     35234.77  vpx/crypto/tcrypt/2s-20=
+5-210
+                 2711.31      +973.8%     29114.07  vpx/crypto/tcrypt/2s-30=
+1-319
+                 2369.23      +940.3%     24648.12  vpx/crypto/tcrypt/2s-40=
+1-417
+                 2620.64     +1428.7%     40060.71  vpx/crypto/tcrypt/2s-50=
+0-504
+                 1713.98     +1624.3%     29553.72  vpx/crypto/tcrypt/2s-50=
+5-509
+              3423353.12     +1184.9%  43985148.08  TOTAL lock_stat.vmap_ar=
+ea_lock.holdtime-total
+
+                 lock_stat.vmap_area_lock.contentions.get_vmalloc_info
+
+   200000 ++---------------------------------------------------------------=
+-+
+          O  O   O  O   O      O  O   O  O                                 =
+ |
+   180000 ++               O                 O      O  O   O  O   O  O   O =
+ O
+   160000 ++                                    O                          =
+ |
+          |                                                                =
+ |
+   140000 ++                                                               =
+ |
+   120000 ++                                                               =
+ |
+          |                                                                =
+ |
+   100000 ++                                                               =
+ |
+    80000 ++                                                               =
+ |
+          |                                                                =
+ |
+    60000 ++                                                               =
+ |
+    40000 ++                                                               =
+ |
+          *..*...*..*...*..*...*..*...*..*                                 =
+ |
+    20000 ++---------------------------------------------------------------=
+-+
+
+
+
+                lock_stat.vmap_area_lock.contentions.get_vmalloc_info
+
+   70000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+   60000 O+ O                                        O    O    O           =
+ O
+         |    O  O O  O O  O  O O  O O  O  O O  O O    O     O    O O  O O =
+ |
+   50000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 *+.*.*                                                            =
+ |
+         |                                                                 =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+
+                lock_stat.vmap_area_lock.contentions.get_vmalloc_info
+
+   30000 ++----------------------------------------------------------------=
+-+
+         O      O              O       O      O       O              O     =
+ |
+   25000 ++             O                                    O             =
+ O
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   15000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+    5000 *+.....*.......*......*.......*                                   =
+ |
+         |                                                                 =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+
+                lock_stat.vmap_area_lock.contentions.get_vmalloc_info
+
+   14000 ++----------------------------------------------------------------=
+-+
+         |             O                                                   =
+ |
+   12000 ++O O O O O O   O O   O            O   O O O O O       O O O O    =
+ |
+         O                   O   O O O O O    O           O O O         O O=
+ O
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    8000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    6000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    4000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    2000 ++                                                                =
+ |
+         *.*.*.*.*.*.*.*.*.*                                               =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                 4952.40      +447.0%     27090.40  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                28410.80      +556.2%    186423.00  lkp-snb01/micro/aim7/ex=
+ec_test
+                 8142.00      +615.4%     58247.33  nhm-white/micro/aim7/ex=
+ec_test
+                 1386.00      +762.6%     11955.20  nhm-white/micro/aim7/sh=
+ell_rtns_1
+                42891.20      +561.5%    283715.93  TOTAL lock_stat.vmap_ar=
+ea_lock.contentions.get_vmalloc_info
+
+                        lock_stat.vmap_area_lock.waittime-total
+
+   1.2e+06 ++--------------------------------------------------------------=
+-+
+           |             O                                                 =
+ |
+     1e+06 O+ O   O                O  O   O                                =
+ |
+           |         O      O   O            O      O  O      O          O =
+ O
+           |                                     O         O      O  O     =
+ |
+    800000 ++                                                              =
+ |
+           |                                                               =
+ |
+    600000 ++                                                              =
+ |
+           |                                                               =
+ |
+    400000 ++                                                              =
+ |
+           |                                                               =
+ |
+           |                                                               =
+ |
+    200000 ++                                                              =
+ |
+           |                                                               =
+ |
+         0 *+-*---*--*---*--*---*--*--*---*--------------------------------=
+-+
+
+
+
+                        lock_stat.vmap_area_lock.waittime-total
+
+   250000 ++---------------------------------------------------------------=
+-+
+          |      O  O                                                      =
+ |
+          O             O  O   O  O   O  O   *..*...     ..*..*...  .*...*.=
+.|
+   200000 ++ O                               :      *..*.         *.       =
+ *
+          |                                 :                              =
+ |
+          |                                 :                              =
+ |
+   150000 ++                                :                              =
+ |
+          |                                :                               =
+ |
+   100000 ++                               :                               =
+ |
+          |                                :                               =
+ |
+          |                               :                                =
+ |
+    50000 ++                              :                                =
+ |
+          |                               :                                =
+ |
+          |                              :                                 =
+ |
+        0 *+-*---*--*---*--*---*--*---*--*---------------------------------=
+-+
+
+
+
+                        lock_stat.vmap_area_lock.waittime-total
+
+   250000 ++---------------------------------------------------------------=
+-+
+          |  O                                       O    O    O           =
+ O
+          O    O  O O  O         O    O    O                 O      O    O =
+ |
+   200000 ++             O  O O    O    O     O O  O    O         O    O   =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+   150000 ++                                                               =
+ |
+          |                                                                =
+ |
+   100000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+    50000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+        0 *+-*-*-----------------------------------------------------------=
+-+
+
+
+
+                        lock_stat.vmap_area_lock.waittime-total
+
+   120000 ++---------------------------------------------------------------=
+-+
+          O      O              O      O       O      O              O     =
+ |
+   100000 ++             O                                   O             =
+ |
+          |                                                                =
+ O
+          |                                                                =
+ |
+    80000 ++                                                               =
+ |
+          |                                                                =
+ |
+    60000 ++                                                               =
+ |
+          |                                                                =
+ |
+    40000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+    20000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 *+-----*-------*------*------*-----------------------------------=
+-+
+
+
+
+                       lock_stat.vmap_area_lock.waittime-total
+
+   60000 ++----------------------------------------------------------------=
+-+
+         |             O                                                   =
+ |
+   50000 ++  O O O O O   O                  O   O O   O O       O O O O    =
+ |
+         O O               O O O O   O O O    O     O     O O O         O O=
+ O
+         |                         O                                       =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+       0 *+*-*-*-*-*-*-*-*-*-----------------------------------------------=
+-+
+
+
+
+                       lock_stat.vmap_area_lock.waittime-total
+
+   3500 ++-----------------------------------------------------------------=
+-+
+        |             O                                                    =
+ |
+   3000 ++                            O                                    =
+ |
+        |                                                                  =
+ |
+   2500 ++                                                                O=
+ |
+        |                                                                  =
+ |
+   2000 ++O                              O                                 =
+ |
+        |                      O  O             O                  O O     =
+ |
+   1500 ++   O          O  O                      O                        =
+ |
+        O                                              O    O   O      O   =
+ |
+   1000 ++     O    O        O             O                               =
+ O
+        |        O                            O          O    O            =
+ |
+    500 ++                          O                O                     =
+ |
+        |                                                                  =
+ |
+      0 *+*--*-------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                 1990.41     +5378.7%    109049.26  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                18611.42     +5349.4%   1014205.59  lkp-snb01/micro/aim7/ex=
+ec_test
+                 4171.17     +5040.7%    214427.74  lkp-snb01/micro/aim7/sh=
+ell_rtns_1
+                   10.18    +14277.7%      1463.17  nhm-white/micro/aim7/db=
+ase
+                 1715.53    +12791.3%    221153.70  nhm-white/micro/aim7/ex=
+ec_test
+                  325.21    +15376.6%     50331.77  nhm-white/micro/aim7/sh=
+ell_rtns_1
+                26823.92     +5904.5%   1610631.24  TOTAL lock_stat.vmap_ar=
+ea_lock.waittime-total
+
+
+
+                         lock_stat.vmap_area_lock.contentions
+
+   100000 ++---------------------------------------------------------------=
+-+
+          O  O   O  O   O      O  O   O  O                                 =
+ |
+    90000 ++               O                 O      O  O   O  O   O  O   O =
+ O
+    80000 ++                                    O                          =
+ |
+          |                                                                =
+ |
+    70000 ++                                                               =
+ |
+    60000 ++                                                               =
+ |
+          |                                                                =
+ |
+    50000 ++                                                               =
+ |
+    40000 ++                                                               =
+ |
+          |                                                                =
+ |
+    30000 ++                                                               =
+ |
+    20000 ++                                                               =
+ |
+          *..*...*..*...*..*...*..*...*..*                                 =
+ |
+    10000 ++---------------------------------------------------------------=
+-+
+
+
+
+                        lock_stat.vmap_area_lock.contentions
+
+   35000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+   30000 O+ O                                        O    O    O           =
+ O
+         |    O  O O  O O  O  O O  O O  O  O O  O O    O     O    O O  O O =
+ |
+   25000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   15000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    5000 *+.*.*                                                            =
+ |
+         |                                                                 =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+
+                        lock_stat.vmap_area_lock.contentions
+
+   14000 O+-----O-----------------------------O-------O--------------O-----=
+-+
+         |              O      O       O                     O             =
+ O
+   12000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    8000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    6000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+    4000 ++                                                                =
+ |
+         *......    ....*......*.......*                                   =
+ |
+    2000 ++-----*----------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                 2476.20      +447.0%     13545.20  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                14205.40      +556.2%     93211.50  lkp-snb01/micro/aim7/ex=
+ec_test
+                 4071.00      +615.4%     29123.67  nhm-white/micro/aim7/ex=
+ec_test
+                20752.60      +554.8%    135880.37  TOTAL lock_stat.vmap_ar=
+ea_lock.contentions
+
+
+
+                         lock_stat.vmap_area_lock.con-bounces
+
+   100000 ++---------------------------------------------------------------=
+-+
+          O  O   O  O   O      O  O   O  O                                 =
+ |
+    90000 ++               O                 O      O  O   O  O   O  O   O =
+ O
+    80000 ++                                    O                          =
+ |
+          |                                                                =
+ |
+    70000 ++                                                               =
+ |
+    60000 ++                                                               =
+ |
+          |                                                                =
+ |
+    50000 ++                                                               =
+ |
+    40000 ++                                                               =
+ |
+          |                                                                =
+ |
+    30000 ++                                                               =
+ |
+    20000 ++                                                               =
+ |
+          *..*...*..*...*..*...*..*...*..*                                 =
+ |
+    10000 ++---------------------------------------------------------------=
+-+
+
+
+
+                        lock_stat.vmap_area_lock.con-bounces
+
+   35000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+   30000 O+ O                                        O    O    O           =
+ O
+         |    O  O O  O O  O  O O  O O  O  O O  O O    O     O    O O  O O =
+ |
+   25000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   15000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    5000 *+.*.*                                                            =
+ |
+         |                                                                 =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+
+                        lock_stat.vmap_area_lock.con-bounces
+
+   14000 O+-----O-----------------------------O-------O--------------O-----=
+-+
+         |              O      O       O                     O             =
+ O
+   12000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   10000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    8000 ++                                                                =
+ |
+         |                                                                 =
+ |
+    6000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+    4000 ++                                                                =
+ |
+         *......    ....*......*.......*                                   =
+ |
+    2000 ++-----*----------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                 2476.20      +447.0%     13545.20  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                14205.40      +556.2%     93211.50  lkp-snb01/micro/aim7/ex=
+ec_test
+                 4071.00      +615.4%     29123.67  nhm-white/micro/aim7/ex=
+ec_test
+                20752.60      +554.8%    135880.37  TOTAL lock_stat.vmap_ar=
+ea_lock.con-bounces
+
+                                 time.system_time
+
+   550 ++--------------------------------------O------O----------O---------=
+-+
+   540 ++                                          O      O  O       O  O  =
+ O
+       |                                   O                               =
+ |
+   530 ++                                                                  =
+ |
+   520 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   510 ++                                                                  =
+ |
+   500 ++                                                                  =
+ |
+   490 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   480 O+                       O                                          =
+ |
+   470 *+..           O  O   O      O   O                                  =
+ |
+       |   *..*.. O  .*..         ..*...                                   =
+ |
+   460 ++        . ..    *...*..*.      *                                  =
+ |
+   450 ++---------*--------------------------------------------------------=
+-+
+
+
+
+                                 time.system_time
+
+   30 ++-------------------------------------------------------------------=
+-+
+      |                           O                                        =
+ |
+      |                                                                    =
+ |
+   25 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+   20 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   15 O+                   O                           O      O            =
+ O
+      |                                                                    =
+ |
+      |      O      O                           O                          =
+ |
+   10 ++                                                                   =
+ |
+      *......    ...*......*             O                           O     =
+ |
+      |      *...                                                          =
+ |
+    5 ++-------------------------------------------------------------------=
+-+
+
+
+
+                                 time.system_time
+
+   740 ++------------------------------------------------------------------=
+-+
+       |              O               O                                    =
+ |
+   730 ++                     O                                            =
+ |
+   720 O+                                                                  =
+ |
+       |       O                                                           =
+ |
+   710 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   700 ++                                                                  =
+ |
+       |                                                     O      O      =
+ |
+   690 ++                                                                  =
+ |
+   680 ++  ....*......    ....*.....         O       O                     =
+ |
+       *...           *...          ..                                     =
+ |
+   670 ++                             *                                    =
+ O
+       |                                                                   =
+ |
+   660 ++------------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                  677.85        +7.4%       728.28  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                  459.71        +2.4%       470.66  lkp-snb01/micro/aim7/ex=
+ec_test
+                    8.05       +80.1%        14.49  vpx/crypto/tcrypt/2s-50=
+5-509
+                 1145.61        +5.9%      1213.42  TOTAL time.system_time
+
+
+
+                                  time.user_time
+
+   48 ++---------------------------------------------------------O---------=
+-+
+      |                                        O      O                    =
+ |
+   47 ++                                          O                        =
+ |
+   46 ++                                                  O  O       O  O  =
+ O
+      |                                    O                               =
+ |
+   45 ++                                                                   =
+ |
+      O                                                                    =
+ |
+   44 ++                    O      O   O                                   =
+ |
+      |              O  O       O                                          =
+ |
+   43 *+..*..O   O                                                         =
+ |
+   42 ++     *..                *..*..                                     =
+ |
+      |         .  ..*..*..   ..      .                                    =
+ |
+   41 ++         *.        . .         *                                   =
+ |
+      |                     *                                              =
+ |
+   40 ++-------------------------------------------------------------------=
+-+
+
+
+
+                                  time.user_time
+
+   162 ++-----------------------------O------------------------------------=
+-+
+       O                                                                   =
+ |
+   160 ++             O       O                                            =
+ |
+   158 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   156 ++      O                                                           =
+ |
+       |                                                                   =
+ |
+   154 ++                                                    O             =
+ |
+       |                                                                   =
+ |
+   152 ++                                    O                             =
+ |
+   150 ++                    .*...                   O              O      =
+ |
+       |     ..*...        ..     ...                                      =
+ |
+   148 ++....      ..    ..          .                                     =
+ O
+       *.            . ..             *                                    =
+ |
+   146 ++-------------*----------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                  148.19        +7.8%       159.75  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                   41.96        +3.6%        43.49  lkp-snb01/micro/aim7/ex=
+ec_test
+                  190.15        +6.9%       203.23  TOTAL time.user_time
+
+
+
+                                   iostat.cpu.idle
+
+     34 ++---------------------*-------------------------------------------=
+-+
+        |                ....        .                                     =
+ |
+        *.......*......*.             *                                    =
+ |
+   33.5 O+             O                                                   =
+ |
+        |                      O      O                                    =
+ |
+        |       O                                                          =
+ |
+     33 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   32.5 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                            O                     =
+ |
+     32 ++                                                                 =
+ O
+        |                                                                  =
+ |
+        |                                     O              O      O      =
+ |
+   31.5 ++-----------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                   33.75        -1.3%        33.31  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                   33.75        -1.3%        33.31  TOTAL iostat.cpu.idle
+
+
+
+                         time.percent_of_cpu_this_job_got
+
+   270 ++--------------------------------------O------O----------O------O--=
+-+
+       |                                           O      O  O       O     =
+ O
+   265 ++                                  O                               =
+ |
+       |                                                                   =
+ |
+       |                                                                   =
+ |
+   260 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   255 ++                                                                  =
+ |
+       O                     O  O       O                                  =
+ |
+   250 ++             O                                                    =
+ |
+       *...   O          O          O                                      =
+ |
+       |   *..    O   *..         ..*..                                    =
+ |
+   245 ++     *..   ..         .*.     .                                   =
+ |
+       |         . .     *...*.         *                                  =
+ |
+   240 ++---------*--------------------------------------------------------=
+-+
+
+
+
+                         time.percent_of_cpu_this_job_got
+
+   555 ++------------------------------------------------------------------=
+-+
+   550 ++                             O                                    =
+ |
+       |              O       O                                            =
+ |
+   545 O+                                                                  =
+ |
+   540 ++      O                                                           =
+ |
+       |                                                     O             =
+ |
+   535 ++                                                           O      =
+ |
+   530 ++                                    O                             =
+ |
+   525 ++                                                                  =
+ |
+       |                                             O                     =
+ |
+   520 ++                                                                  =
+ |
+   515 ++                   ..*.....                                       =
+ O
+       *.......*......  ....        ..                                     =
+ |
+   510 ++             *.              *                                    =
+ |
+   505 ++------------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                  510.40        +7.1%       546.60  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                  244.60        +2.1%       249.80  lkp-snb01/micro/aim7/ex=
+ec_test
+                  755.00        +5.5%       796.40  TOTAL time.percent_of_c=
+pu_this_job_got
+
+
+
+                                  iostat.cpu.system
+
+   34.2 ++------------------------------------------O----------------------=
+-O
+        |                             O                                  O =
+ |
+     34 ++       O                 O                            O          =
+ |
+        |              O                               O  O  O     O  O    =
+ |
+   33.8 ++          O        O  O          O  O                            =
+ |
+        |                 O                      O                         =
+ |
+   33.6 ++                               O                                 =
+ |
+        |                                                                  =
+ |
+   33.4 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   33.2 ++                                                                 =
+ |
+        |  O  O                                                            =
+ |
+     33 *+.                                                                =
+ |
+        |  *..*                                                            =
+ |
+   32.8 ++-----------------------------------------------------------------=
+-+
+
+
+
+                                  iostat.cpu.system
+
+   34.4 ++-----------------------------------------------------------------=
+-+
+        |                           O                                      =
+ O
+   34.2 ++                            O  O      O    O    O    O    O      =
+ |
+        |              O  O    O O         O       O              O    O O =
+ |
+     34 ++                                              O    O             =
+ |
+        |                   O                 O                            =
+ |
+   33.8 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   33.6 ++                                                                 =
+ |
+        *..O      O  O                                                     =
+ |
+   33.4 O+   O    *..                                                      =
+ |
+        |  *.*..O:   *                                                     =
+ |
+   33.2 ++       :                                                         =
+ |
+        |       *                                                          =
+ |
+     33 ++-----------------------------------------------------------------=
+-+
+
+
+
+                                  iostat.cpu.system
+
+   56.6 ++----------------------------------------------------------O------=
+-+
+   56.4 ++                                    O              O             =
+ |
+        |                                                                  =
+ O
+   56.2 ++                                           O                     =
+ |
+     56 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   55.8 ++                                                                 =
+ |
+   55.6 ++                                                                 =
+ |
+   55.4 ++      O                                                          =
+ |
+        |              O       O      O                                    =
+ |
+   55.2 O+                                                                 =
+ |
+     55 *+......*......                                                    =
+ |
+        |              *.......    ...*                                    =
+ |
+   54.8 ++                     *...                                        =
+ |
+   54.6 ++-----------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                   32.94        +0.4%        33.07  lkp-a06/crypto/tcrypt/2=
+s-200-204
+                   33.31        +0.4%        33.44  lkp-a06/crypto/tcrypt/2=
+s-205-210
+                   54.91        +0.8%        55.33  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                  121.17        +0.6%       121.83  TOTAL iostat.cpu.system
+
+
+
+                                  vmstat.system.in
+
+   65500 ++----------------------------------------------------------------=
+-+
+         |     .*...         .*...  .*..                                   =
+ |
+         *...*.     *..*...*.     *.    .                                  =
+ |
+   65000 ++                              *                                 =
+ |
+         |   O  O   O                                                      =
+ |
+         |                                                                 =
+ |
+   64500 O+            O   O  O      O   O                                 =
+ |
+         |                        O                                        =
+ |
+   64000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   63500 ++                                 O                              =
+ |
+         |                                         O   O  O   O      O     =
+ |
+         |                                      O                       O  =
+ O
+   63000 ++------------------------------------------------------O---------=
+-+
+
+
+
+                                  vmstat.system.in
+
+   20600 ++-----*-------*--------------------------------------------------=
+-+
+         | .... O              *.......*                                   =
+ |
+   20500 *+                                                                =
+ |
+   20400 ++                                                                =
+ |
+         O              O      O                                           =
+ |
+   20300 ++                            O                                   =
+ |
+         |                                                                 =
+ |
+   20200 ++                                                                =
+ |
+         |                                                                 =
+ |
+   20100 ++                                                                =
+ |
+   20000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   19900 ++                                                                =
+ |
+         |                                                           O     =
+ |
+   19800 ++-----------------------------------O-------O------O-------------=
+-O
+
+
+
+                                  vmstat.system.in
+
+   1090 ++-----------------------------------------------------------------=
+-+
+        |  .*.*                                                            =
+ |
+   1088 *+*                                                             O  =
+ |
+   1086 ++                                     O                           =
+ |
+        |         O        O                                               =
+ |
+   1084 ++    O                O     O     O                      O        =
+ |
+   1082 ++      O       O                    O   O            O            =
+ |
+        |                              O           O        O              =
+ |
+   1080 ++O                        O                     O      O   O      =
+ |
+   1078 ++                                                                 =
+ |
+        |   O                            O           O                     =
+ O
+   1076 ++          O            O                     O                  O=
+ |
+   1074 O+            O                                                    =
+ |
+        |                    O                                        O    =
+ |
+   1072 ++-----------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                20557.20        -0.8%     20384.60  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                65159.10        -1.0%     64507.71  lkp-snb01/micro/aim7/ex=
+ec_test
+                 1088.00        -0.9%      1078.50  snb-drag/crypto/tcrypt/=
+2s-200-204
+                86804.30        -1.0%     85970.81  TOTAL vmstat.system.in
+
+
+
+                                 time.elapsed_time
+
+   222 ++------------------------------------------------------------------=
+-+
+       |                                   O       O  O          O         =
+ |
+   220 ++                                      O          O  O       O  O  =
+ O
+   218 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   216 ++                                                                  =
+ |
+   214 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   212 ++                                                                  =
+ |
+   210 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   208 ++                                                                  =
+ |
+   206 ++                                                                  =
+ |
+       *...*..*...O ..*..*...O .*...*...*                                  =
+ |
+   204 ++---------*----------*---------------------------------------------=
+-+
+
+
+
+                                  time.elapsed_time
+
+   160.5 ++----------------------------------------------------------------=
+-+
+     160 ++                   O   O                                        =
+ |
+         O ..*..O   O               .*...O                                 =
+ |
+   159.5 *+     *...*..*...*..*...*. O   *                                 =
+ |
+     159 ++                              :                                 =
+ |
+         |                                :                                =
+ |
+   158.5 ++                               :                                =
+ |
+     158 ++                                :                               =
+ |
+   157.5 ++                                :                               =
+ |
+         |                                 :                               =
+ |
+     157 ++                                 :                    *...      =
+ |
+   156.5 ++                                 *...          *... ..    *..   =
+ |
+         |                                      *..*... ..    *         *..=
+.|
+     156 ++                                            *                   =
+ *
+   155.5 ++----------------------------------------------------------------=
+-+
+
+
+
+                                 time.elapsed_time
+
+   280 ++------------------------------------------------------------------=
+-+
+       |       O  O    O          O         O    O  O    O     O           =
+ |
+   279 ++           O     O O       O  O  O    O            O    O  O  O O =
+ O
+   278 ++                      O                       O                   =
+ |
+       |                                                                   =
+ |
+   277 ++                                                                  =
+ |
+   276 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   275 ++                                                                  =
+ |
+   274 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   273 ++ O                                                                =
+ |
+   272 O+                                                                  =
+ |
+       *..*.*                                                              =
+ |
+   271 ++------------------------------------------------------------------=
+-+
+
+
+
+                                  time.elapsed_time
+
+     602 ++--O-------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+   601.8 ++                                                                =
+ |
+   601.6 ++                                                                =
+ O
+         |                                                                 =
+ |
+   601.4 ++                                  O                             =
+ |
+   601.2 ++           O                                   O                =
+ |
+         |                     O                                           =
+ |
+     601 ++       O                 O   O                      O           =
+ |
+   600.8 O+                                           O            O       =
+ |
+         *..               O                                               =
+ |
+   600.6 ++ .                                    O                         =
+ |
+   600.4 ++  *....                                                      O  =
+ |
+         |        *                                                        =
+ |
+   600.2 ++----------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                  600.51        +0.1%       601.28  fat/micro/dd-write/1HDD=
+-cfq-ext4-10dd
+                  204.81        +0.3%       205.38  lkp-snb01/micro/aim7/ex=
+ec_test
+                  159.50        +0.2%       159.77  lkp-snb01/micro/aim7/sh=
+ell_rtns_1
+                  271.47        +0.4%       272.49  nhm-white/micro/aim7/ex=
+ec_test
+                 1236.29        +0.2%      1238.92  TOTAL time.elapsed_time
+
+
+
+                                  vmstat.system.cs
+
+   61600 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+   61400 ++                                                                =
+ *
+   61200 ++                   *..                                          =
++|
+         |                  ..   ..        ..*....                        +=
+ |
+   61000 ++                .          ..*..       *....         ..*...   + =
+ |
+         |               ..        *..                 *.....*..      . +  =
+ |
+   60800 ++       .*....*                                              *   =
+ |
+         *....  ..                                                         =
+ |
+   60600 ++   *.                             O         O                   =
+ |
+   60400 ++   O                                                            =
+ |
+         O                    O         O         O                        =
+ |
+   60200 ++        O    O          O                                       =
+ |
+         |                                                                 =
+ |
+   60000 ++----------------------------------------------------------------=
+-+
+
+
+
+                                  vmstat.system.cs
+
+   19200 ++--------------------O-------------------------------------------=
+-+
+         |                                                                 =
+ |
+   19100 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   19000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   18900 ++            O                              O                    =
+ |
+         |          OO   O                                                 =
+ |
+   18800 ++     O                       O   O      O     O  O        O     =
+ O
+         | O     O        O     OOOO OOO       OO O  O     O  O   O   OOO  =
+O|
+         |O  O     O       OO              O OO     O   O                 O=
+ |
+   18700 *+   OO      O                  O                O    OOO  O      =
+ |
+         O**.***             O                                             =
+ |
+   18600 ++----------------------------------------------------------------=
+-+
+
+
+
+                                  vmstat.system.cs
+
+   49100 ++----------------------------------------------------------------=
+-+
+         |          ....*..                                                =
+ |
+   49000 ++    .*...       ..                                              =
+ |
+         | ....              ..                                            =
+ |
+   48900 *+                        ....*                             O     =
+ |
+         |      O              *...                                        =
+ |
+   48800 ++                                                  O             =
+ |
+         |                                    O                            =
+ O
+   48700 ++                                                                =
+ |
+         |                                            O                    =
+ |
+   48600 ++                                                                =
+ |
+         |              O                                                  =
+ |
+   48500 O+                                                                =
+ |
+         |                                                                 =
+ |
+   48400 ++--------------------O-------O-----------------------------------=
+-+
+
+
+
+                                 vmstat.system.cs
+
+   732 ++--*---------------------------------------------------------------=
+-+
+       *.*  +                                                  O           =
+ |
+   730 ++    *   O                    O        O                    O      =
+ |
+       | O O O            O         O              O              O       O=
+ |
+   728 ++                     O                                         O  =
+ |
+       |            O   O                        O       O   O        O    =
+ O
+   726 O+      O      O           O     O    O       O     O               =
+ |
+       |                                                                   =
+ |
+   724 ++                                  O                               =
+ |
+       |                                               O                   =
+ |
+   722 ++                                                                  =
+ |
+       |                        O                                          =
+ |
+   720 ++                   O                                              =
+ |
+       |                                                                   =
+ |
+   718 ++------------------------------------------------------------------=
+-+
+
+    8cb06c983822103da1cf      20bafb3d23d108bc0a89  =
+
+------------------------  ------------------------  =
+
+                18644.50        +0.3%     18702.67  lkp-a04/micro/netperf/1=
+20s-200%-UDP_RR
+                48938.00        -0.8%     48539.80  lkp-ne04/micro/aim7/she=
+ll_rtns_1
+                60751.18        -0.6%     60359.04  lkp-nex05/micro/aim7/ex=
+ec_test
+                  731.00        -0.4%       728.25  snb-drag/crypto/tcrypt/=
+2s-200-204
+               129064.68        -0.6%    128329.76  TOTAL vmstat.system.cs
+
+--===============7018846506536728748==--
 
