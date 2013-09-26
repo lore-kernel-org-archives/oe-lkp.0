@@ -1,196 +1,38 @@
-Content-Type: multipart/mixed; boundary="===============2585949137149937972=="
+Content-Type: multipart/mixed; boundary="===============2151799344633347611=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Andi Kleen <andi@firstfloor.org>
 To: lkp@lists.01.org
-Subject: Re: +157.8% netperf throughput by "ipv4: raise IP_MAX_MTU to theoretical limit"
-Date: Thu, 26 Sep 2013 09:35:58 +0800
-Message-ID: <20130926013558.GA10050@localhost>
-In-Reply-To: <20130926012144.GA9931@localhost>
+Subject: Re: increased vmap_area_lock contentions on "n_tty: Move buffers into n_tty_data"
+Date: Wed, 25 Sep 2013 20:20:37 -0700
+Message-ID: <87r4cc8e0q.fsf@tassilo.jf.intel.com>
+In-Reply-To: <1380124944.27676.1.camel@monkey32>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2585949137149937972==
+--===============2151799344633347611==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 26, 2013 at 09:21:44AM +0800, Fengguang Wu wrote:
-> Hi Eric,
-> =
+Lin Ming <minggr@gmail.com> writes:
+>
+> Would you like below patch?
 
-> We are glad to find that your below commit brings large increase in
-> lo netperf throughput:
-> =
+The loop body keeps rather complex state. It could easily =
 
->     35596b2796713c6a9dc0      734d2725db879f3f6fcd  =
+get confused by parallel RCU changes.
 
-> ------------------------  ------------------------  =
+So if the list changes in parallel you may suddenly
+report very bogus values, as the va_start - prev_end =
 
->                   761.80      +534.6%      4834.60  lkp-ib03/micro/netper=
-f/120s-200%-UDP_STREAM
->                   168.10     +1317.4%      2382.70  lkp-nex04/micro/netpe=
-rf/120s-200%-UDP_STREAM
->                   169.60      +979.4%      1830.70  lkp-nex05/micro/netpe=
-rf/120s-200%-UDP_STREAM
->                  2154.20      +135.7%      5077.50  lkp-sb03/micro/netper=
-f/120s-200%-UDP_STREAM
->                  3559.00        -3.5%      3435.20  lkp-t410/micro/netper=
-f/120s-200%-TCP_STREAM
->                  6812.70      +157.8%     17560.70  TOTAL netperf.Through=
-put_Mbps
-> =
+computation may be bogus.
 
-> The side effects are some increased/decreased lock contentions:
+Perhaps it's ok (may report bogus gaps), but it seems a bit risky.
 
-This direct view may be more clear. Before patch:
+-Andi
 
-                              class name    con-bounces    contentions   wa=
-ittime-min   waittime-max waittime-total    acq-bounces   acquis
-itions   holdtime-min   holdtime-max holdtime-total
----------------------------------------------------------------------------=
-----------------------------------------------------------------
-----------------------------------------------------
+-- =
 
-                 &(&nf->lru_lock)->rlock:      19017744       19034681     =
-      0.15        5884.35  5772892473.69       20428335       20
-475976           0.10        1109.59    77448429.38
-                 -----------------------
-                 &(&nf->lru_lock)->rlock        4905538          [<ffffffff=
-819227b9>] ip_defrag+0xa4f/0xbd3
-                 &(&nf->lru_lock)->rlock        5695105          [<ffffffff=
-8195bd6f>] inet_frag_find+0x2c7/0x30d
-                 &(&nf->lru_lock)->rlock        5629414          [<ffffffff=
-8195be74>] inet_frag_kill+0xbf/0x117
-                 &(&nf->lru_lock)->rlock        2804624          [<ffffffff=
-8195bf29>] inet_frag_evictor+0x5d/0x103
-                 -----------------------
-                 &(&nf->lru_lock)->rlock        6172104          [<ffffffff=
-8195bd6f>] inet_frag_find+0x2c7/0x30d
-                 &(&nf->lru_lock)->rlock        5348696          [<ffffffff=
-8195be74>] inet_frag_kill+0xbf/0x117
-                 &(&nf->lru_lock)->rlock        4421308          [<ffffffff=
-819227b9>] ip_defrag+0xa4f/0xbd3
-                 &(&nf->lru_lock)->rlock        3092573          [<ffffffff=
-8195bf29>] inet_frag_evictor+0x5d/0x103
+ak(a)linux.intel.com -- Speaking for myself only
 
-...........................................................................=
-...........................................................................=
-.........................................
-
-                      &(&q->lock)->rlock:       2322575        2323896     =
-      0.22        5802.58   934469091.38        3041941       13000848     =
-      0.10        5902.91  2811690638.18
-                      ------------------
-                      &(&q->lock)->rlock        2163449          [<ffffffff=
-8195bf7e>] inet_frag_evictor+0xb2/0x103
-                      &(&q->lock)->rlock         160447          [<ffffffff=
-81921e91>] ip_defrag+0x127/0xbd3
-                      ------------------
-                      &(&q->lock)->rlock        2165896          [<ffffffff=
-81921e91>] ip_defrag+0x127/0xbd3
-                      &(&q->lock)->rlock         158000          [<ffffffff=
-8195bf7e>] inet_frag_evictor+0xb2/0x103
-
-...........................................................................=
-...........................................................................=
-.........................................
-
-                   &(&zone->lock)->rlock:       1845042        1851805     =
-      0.18        4917.52    19475590.18        9003807       10134386     =
-      0.13        3747.70     8347088.06
-                   ---------------------
-                   &(&zone->lock)->rlock         866751          [<ffffffff=
-8116fbbc>] __free_pages_ok.part.47+0x94/0x2a1
-                   &(&zone->lock)->rlock         984597          [<ffffffff=
-8116f856>] get_page_from_freelist+0x4a3/0x6e8
-                   &(&zone->lock)->rlock            112          [<ffffffff=
-8116fe3b>] free_pcppages_bulk+0x35/0x31a
-                   &(&zone->lock)->rlock            116          [<ffffffff=
-8116f72c>] get_page_from_freelist+0x379/0x6e8
-                   ---------------------
-                   &(&zone->lock)->rlock         918190          [<ffffffff=
-8116fbbc>] __free_pages_ok.part.47+0x94/0x2a1
-                   &(&zone->lock)->rlock            722          [<ffffffff=
-8116f72c>] get_page_from_freelist+0x379/0x6e8
-                   &(&zone->lock)->rlock            861          [<ffffffff=
-8116fe3b>] free_pcppages_bulk+0x35/0x31a
-                   &(&zone->lock)->rlock         922607          [<ffffffff=
-8116f856>] get_page_from_freelist+0x4a3/0x6e8
-
-
-After patch, top contented locks become:
-
-                   &(&zone->lock)->rlock:      58469530       58470181     =
-      0.16        4838.84   238618042.87      107374530      107408478     =
-      0.13        3610.05    73617127.93
-                   ---------------------
-                   &(&zone->lock)->rlock       29783268          [<ffffffff=
-8116f856>] get_page_from_freelist+0x4a3/0x6e8
-                   &(&zone->lock)->rlock            837          [<ffffffff=
-8116f72c>] get_page_from_freelist+0x379/0x6e8
-                   &(&zone->lock)->rlock           1105          [<ffffffff=
-8116fe3b>] free_pcppages_bulk+0x35/0x31a
-                   &(&zone->lock)->rlock       28684627          [<ffffffff=
-8116fbbc>] __free_pages_ok.part.47+0x94/0x2a1
-                   ---------------------
-                   &(&zone->lock)->rlock          11356          [<ffffffff=
-8116fe3b>] free_pcppages_bulk+0x35/0x31a
-                   &(&zone->lock)->rlock           6741          [<ffffffff=
-8116f72c>] get_page_from_freelist+0x379/0x6e8
-                   &(&zone->lock)->rlock       28880589          [<ffffffff=
-8116f856>] get_page_from_freelist+0x4a3/0x6e8
-                   &(&zone->lock)->rlock       29558251          [<ffffffff=
-8116fbbc>] __free_pages_ok.part.47+0x94/0x2a1
-
-...........................................................................=
-...........................................................................=
-.........................................
-
-                           slock-AF_INET:        507780         508036     =
-      0.20        1167.78     2564695.48       11115246      106594271     =
-      0.12        1196.01   989718694.82
-                           -------------
-                           slock-AF_INET         434691          [<ffffffff=
-818ed738>] lock_sock_fast+0x2f/0x84
-                           slock-AF_INET          73294          [<ffffffff=
-819482dc>] udp_queue_rcv_skb+0x1ba/0x3aa
-                           slock-AF_INET             51          [<ffffffff=
-818ed6b5>] lock_sock_nested+0x34/0x88
-                           -------------
-                           slock-AF_INET         434615          [<ffffffff=
-819482dc>] udp_queue_rcv_skb+0x1ba/0x3aa
-                           slock-AF_INET          73370          [<ffffffff=
-818ed738>] lock_sock_fast+0x2f/0x84
-                           slock-AF_INET             51          [<ffffffff=
-8193fae1>] tcp_v4_rcv+0x390/0x978
-
-...........................................................................=
-...........................................................................=
-........................................
-
-                               &rq->lock:        286309         286456     =
-      0.21         294.85     1768779.90        5887506      244517912     =
-      0.09        1080.71   315600465.71
-                               ---------
-                               &rq->lock          92057          [<ffffffff=
-81a0aa65>] __schedule+0x103/0x852
-                               &rq->lock          18386          [<ffffffff=
-810ecc02>] try_to_wake_up+0x95/0x26c
-                               &rq->lock            730          [<ffffffff=
-810f13fb>] update_blocked_averages+0x30/0x47f
-                               &rq->lock            304          [<ffffffff=
-81a0af43>] __schedule+0x5e1/0x852
-                               ---------
-                               &rq->lock         107807          [<ffffffff=
-810ecd7b>] try_to_wake_up+0x20e/0x26c
-                               &rq->lock         144391          [<ffffffff=
-81a0aa65>] __schedule+0x103/0x852
-                               &rq->lock            924          [<ffffffff=
-810ecc02>] try_to_wake_up+0x95/0x26c
-                               &rq->lock             29          [<ffffffff=
-810e9090>] task_rq_lock+0x4b/0x85
-
-Thanks,
-Fengguang
-
---===============2585949137149937972==--
+--===============2151799344633347611==--
 
