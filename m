@@ -1,57 +1,47 @@
-Content-Type: multipart/mixed; boundary="===============3112845699465787015=="
+Content-Type: multipart/mixed; boundary="===============7785337746746120901=="
 MIME-Version: 1.0
 From: Peter Hurley <peter@hurleysoftware.com>
 To: lkp@lists.01.org
 Subject: Re: increased vmap_area_lock contentions on "n_tty: Move buffers into n_tty_data"
-Date: Thu, 26 Sep 2013 07:31:47 -0400
-Message-ID: <52441B23.7050704@hurleysoftware.com>
-In-Reply-To: <20130926003315.2e81bc84.akpm@linux-foundation.org>
+Date: Thu, 26 Sep 2013 07:52:23 -0400
+Message-ID: <52441FF7.1030405@hurleysoftware.com>
+In-Reply-To: <87r4cc8e0q.fsf@tassilo.jf.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3112845699465787015==
+--===============7785337746746120901==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 09/26/2013 03:33 AM, Andrew Morton wrote:
-> On Tue, 17 Sep 2013 20:22:42 -0400 Peter Hurley <peter@hurleysoftware.c=
-om> wrote:
+On 09/25/2013 11:20 PM, Andi Kleen wrote:
+> Lin Ming <minggr@gmail.com> writes:
+>>
+>> Would you like below patch?
 >
->> Looking over vmalloc.c, the critical section footprint of the vmap_area_=
-lock
->> could definitely be reduced (even nearly eliminated), but that's a proje=
-ct for
->> another day :)
+> The loop body keeps rather complex state. It could easily
+> get confused by parallel RCU changes.
 >
-> 20bafb3d23d10 ("n_tty: Move buffers into n_tty_data") switched a
-> kmalloc (which is very fast) to a vmalloc (which is very slow) without
-> so much as mentioning it in the changelog.  This should have been
-> picked up at review, btw.
+> So if the list changes in parallel you may suddenly
+> report very bogus values, as the va_start - prev_end
+> computation may be bogus.
 >
-> Revert that part of the patch and the problem will be solved.
->
-> If we are really really worried that a ~9k kmalloc might fail or will
-> be slow, then implement a fallback to vmalloc() if kmalloc(GFP_NOWARN)
-> failed.  This kinda sucks, but is practical, but really should only be
-> done if necessary - ie, if problems with using plain old kmalloc are
-> demonstrable.
->
-> Or just revert all of 20bafb3d23d10 - it was supposed to be a small
-> performance improvement but turned out to be a significant performance
-> loss.  Therefore zap.
+> Perhaps it's ok (may report bogus gaps), but it seems a bit risky.
 
-I have no particular objection to reverting the entire patch.
+I don't understand how the computed gap would be bogus; there
+_was_ a list state in which that particular gap existed. The fact
+that it may not exist anymore can also happen in the existing
+algorithm the instant get_vmalloc_info() drops the vmap_area_lock.
 
-However, it's a mischaracterization to suggest that the reason is
-because vmalloc() is very slow;  without reading /proc/meminfo,
-there is no performance loss.
+OTOH, parallel list changes could cause an rcu-based get_vmalloc_info()
+to over-report or under-report used memory due to parallel list
+changes.
 
-IOW, the lock contention this patch precipitated needs to get fixed
-regardless.
-
+If this is a problem in practice, then usage and largest chunk
+should be tracked by the allocator instead, obviating the need for
+get_vmalloc_info() to traverse the vmap_area_list at all.
 
 Regards,
 Peter Hurley
 
---===============3112845699465787015==--
+--===============7785337746746120901==--
 
