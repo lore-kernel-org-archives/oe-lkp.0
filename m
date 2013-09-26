@@ -1,38 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============2151799344633347611=="
+Content-Type: multipart/mixed; boundary="===============4729858782142560546=="
 MIME-Version: 1.0
-From: Andi Kleen <andi@firstfloor.org>
+From: Andrew Morton <akpm@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: increased vmap_area_lock contentions on "n_tty: Move buffers into n_tty_data"
-Date: Wed, 25 Sep 2013 20:20:37 -0700
-Message-ID: <87r4cc8e0q.fsf@tassilo.jf.intel.com>
-In-Reply-To: <1380124944.27676.1.camel@monkey32>
+Date: Thu, 26 Sep 2013 00:33:15 -0700
+Message-ID: <20130926003315.2e81bc84.akpm@linux-foundation.org>
+In-Reply-To: <5238F252.5070905@hurleysoftware.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2151799344633347611==
+--===============4729858782142560546==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Lin Ming <minggr@gmail.com> writes:
->
-> Would you like below patch?
+On Tue, 17 Sep 2013 20:22:42 -0400 Peter Hurley <peter@hurleysoftware.com=
+> wrote:
 
-The loop body keeps rather complex state. It could easily =
+> Looking over vmalloc.c, the critical section footprint of the vmap_area_l=
+ock
+> could definitely be reduced (even nearly eliminated), but that's a projec=
+t for
+> another day :)
 
-get confused by parallel RCU changes.
+20bafb3d23d10 ("n_tty: Move buffers into n_tty_data") switched a
+kmalloc (which is very fast) to a vmalloc (which is very slow) without
+so much as mentioning it in the changelog.  This should have been
+picked up at review, btw.
 
-So if the list changes in parallel you may suddenly
-report very bogus values, as the va_start - prev_end =
+Revert that part of the patch and the problem will be solved.
 
-computation may be bogus.
+If we are really really worried that a ~9k kmalloc might fail or will
+be slow, then implement a fallback to vmalloc() if kmalloc(GFP_NOWARN)
+failed.  This kinda sucks, but is practical, but really should only be
+done if necessary - ie, if problems with using plain old kmalloc are
+demonstrable.
 
-Perhaps it's ok (may report bogus gaps), but it seems a bit risky.
+Or just revert all of 20bafb3d23d10 - it was supposed to be a small
+performance improvement but turned out to be a significant performance
+loss.  Therefore zap.
 
--Andi
 
--- =
-
-ak(a)linux.intel.com -- Speaking for myself only
-
---===============2151799344633347611==--
+--===============4729858782142560546==--
 
