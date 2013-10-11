@@ -1,122 +1,830 @@
-Content-Type: multipart/mixed; boundary="===============2591244582779118643=="
+Content-Type: multipart/mixed; boundary="===============7998726253014445389=="
 MIME-Version: 1.0
-From: Paul Turner <pjt@google.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [tip:sched/core] sched/balancing: Fix cfs_rq-> task_h_load calculation
-Date: Mon, 30 Sep 2013 19:32:15 -0700
-Message-ID: <CAPM31RK+Pj1tUO4Do3gU_Qe2m4SS=A4kSo_6Jto16+s9=-hQbA@mail.gmail.com>
-In-Reply-To: <20131001022238.GN24743@yliu-dev.sh.intel.com>
+Subject: [page->ptl] performance changes
+Date: Fri, 11 Oct 2013 09:41:28 +0800
+Message-ID: <20131011014128.GC11191@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2591244582779118643==
+--===============7998726253014445389==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 30, 2013 at 7:22 PM, Yuanhan Liu
-<yuanhan.liu@linux.intel.com> wrote:
-> On Mon, Sep 30, 2013 at 12:14:03PM +0400, Vladimir Davydov wrote:
->> On 09/29/2013 01:47 PM, Yuanhan Liu wrote:
->> >On Fri, Sep 20, 2013 at 06:46:59AM -0700, tip-bot for Vladimir Davydov =
-wrote:
->> >>Commit-ID:  7e3115ef5149fc502e3a2e80719dba54a8e7409d
->> >>Gitweb:http://git.kernel.org/tip/7e3115ef5149fc502e3a2e80719dba54a8e74=
-09d
->> >>Author:     Vladimir Davydov<vdavydov@parallels.com>
->> >>AuthorDate: Sat, 14 Sep 2013 19:39:46 +0400
->> >>Committer:  Ingo Molnar<mingo@kernel.org>
->> >>CommitDate: Fri, 20 Sep 2013 11:59:39 +0200
->> >>
->> >>sched/balancing: Fix cfs_rq->task_h_load calculation
->> >>
->> >>Patch a003a2 (sched: Consider runnable load average in move_tasks())
->> >>sets all top-level cfs_rqs' h_load to rq->avg.load_avg_contrib, which =
-is
->> >>always 0. This mistype leads to all tasks having weight 0 when load
->> >>balancing in a cpu-cgroup enabled setup. There obviously should be sum
->> >>of weights of all runnable tasks there instead. Fix it.
->> >Hi Vladimir,
->> >
->> >FYI, Here we found a 17% netperf regression by this patch. Here are some
->> >changed stats between this commit 7e3115ef5149fc502e3a2e80719dba54a8e74=
-09d
->> >and it's parent(3029ede39373c368f402a76896600d85a4f7121b)
->>
->> Hello,
->>
->> Could you please report the following info:
->
-> Hi Vladimir,
->
-> This regression was first found at a 2-core 32 CPU Sandybridge server
-> with 64G memory. However, I can't ssh to it now and we are off work
-> this week due to holiday. So, sorry, email response may be delayed.
->
-> Then I found this regression exists at another atom micro server as
-> well. And the following machine and testcase specific info are all from i=
-t.
->
-> And to not make old data confuse you, here I also update the changed
-> stats and corresponding text plot as well in attachment.
->>
->> 1) the test machine cpu topology (i.e. output of /sys/devices/system/cpu=
-/cpu*/{thread_siblings_list,core_siblings_list})
->
-> # grep . /sys/devices/system/cpu/cpu*/topology/{thread_siblings_list,core=
-_siblings_list}
-> /sys/devices/system/cpu/cpu0/topology/thread_siblings_list:0-1
-> /sys/devices/system/cpu/cpu1/topology/thread_siblings_list:0-1
-> /sys/devices/system/cpu/cpu2/topology/thread_siblings_list:2-3
-> /sys/devices/system/cpu/cpu3/topology/thread_siblings_list:2-3
-> /sys/devices/system/cpu/cpu0/topology/core_siblings_list:0-3
-> /sys/devices/system/cpu/cpu1/topology/core_siblings_list:0-3
-> /sys/devices/system/cpu/cpu2/topology/core_siblings_list:0-3
-> /sys/devices/system/cpu/cpu3/topology/core_siblings_list:0-3
->
+Hi Kirill,
 
->> 2) kernel config you used during the test
->
-> Attached.
->
->> 3) the output of /sys/kernel/debug/sched_features (debugfs mounted).
->
-> # cat /sys/kernel/debug/sched_features
-> GENTLE_FAIR_SLEEPERS START_DEBIT NO_NEXT_BUDDY LAST_BUDDY CACHE_HOT_BUDDY
-> WAKEUP_PREEMPTION ARCH_POWER NO_HRTICK NO_DOUBLE_TICK LB_BIAS NONTASK_POW=
-ER
-> TTWU_QUEUE NO_FORCE_SD_OVERLAP RT_RUNTIME_SHARE NO_LB_MIN NO_NUMA NO_NUMA=
-_FORCE
->
->> 4) netperf server/client options
->
-> Here is our testscript we used:
->     #!/bin/bash
->     # - test
->
->     # start netserver
->     netserver
->
->     sleep 1
->
->     for i in $(seq $nr_threads)
->     do
->             netperf -t $test -c -C -l $runtime &
->     done
->
-> Where,
->   $test is TCP_SENDFILE,
->   $nr_threads is 8, two times of nr cpu
->   $runtime is 120s
->
->> 5) did you place netserver into a separate cpu cgroup?
->
-> Nope.
->
+FYI, we see big performance changes with you commit:
+
+commit b5be3c49b81094d7aa0cefafac50c69d788be2ed
+Author: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Date:   Wed Oct 9 16:45:45 2013 +0300
+
+    mm: dynamic allocate page->ptl if it cannot be embedded to struct page
+    =
+
+    Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+
+:040000 040000 17899e0220d995b818586bf7beff7717c754148b 7161f88433ea4e4cd19=
+13dadda4248731c1af9cd M	arch
+:040000 040000 d957e2d0991054a1c601d088f9fddbd79a97a262 b28decbfc775fc85862=
+6c67017d32405f61694d0 M	include
+:040000 040000 1908d09dfad8b4c0e1e088f5eecbfd47b446e144 c7799383dab307848bb=
+b891cb1f2e1ebbebe7124 M	mm
+bisect run success
+
+# bad: [7a6e4b26215d315c80d49ed3a14deaafaf276e48] Merge 'radeon-alex/drm-fi=
+xes-3.12' into devel-hourly-2013101006
+# good: [15c03dd4859ab16f9212238f29dd315654aa94f6] Linux 3.12-rc3
+git bisect start '7a6e4b26215d315c80d49ed3a14deaafaf276e48' '15c03dd4859ab1=
+6f9212238f29dd315654aa94f6' '--'
+# good: [2a02081f51ac5f9a3c61e7105be6d8f227d5ddc7] Merge 'regmap/topic/core=
+' into devel-hourly-2013101006
+git bisect good 2a02081f51ac5f9a3c61e7105be6d8f227d5ddc7
+# good: [6e3172648c99be68179beee1e2df90486a54dd8b] Merge 'arm-soc/next/dt' =
+into devel-hourly-2013101006
+git bisect good 6e3172648c99be68179beee1e2df90486a54dd8b
+# bad: [b572b6ab9498e59e475743a00658a3600f2b3f1a] Merge 'ipsec-next/testing=
+' into devel-hourly-2013101006
+git bisect bad b572b6ab9498e59e475743a00658a3600f2b3f1a
+# bad: [2d6ed245dbe4713ca7d8a106d0153acdaaf67fdf] Merge 'rcu/dev.2013.10.09=
+b' into devel-hourly-2013101006
+git bisect bad 2d6ed245dbe4713ca7d8a106d0153acdaaf67fdf
+# good: [30b8b333e4a3874146a5c7d6c95573e9ff173697] Merge 'arm-soc/mvebu/dri=
+vers' into devel-hourly-2013101006
+git bisect good 30b8b333e4a3874146a5c7d6c95573e9ff173697
+# good: [8c8f6e64847f9407f30238dd3e7ab6c0f97429ff] sh: handle pgtable_page_=
+ctor() fail
+git bisect good 8c8f6e64847f9407f30238dd3e7ab6c0f97429ff
+# good: [b6ef7255b339a978a559c7fd02a5e67f3099cccb] mlx4_fc: enable FC targe=
+t role
+git bisect good b6ef7255b339a978a559c7fd02a5e67f3099cccb
+# bad: [28c1de28a19c6efb6ef7380c5f4701018f8c7874] Merge 'kas/dynamic_ptl/v1=
+' into devel-hourly-2013101006
+git bisect bad 28c1de28a19c6efb6ef7380c5f4701018f8c7874
+# good: [ffacba0ebf499ac928254c156cc9ca80074e331e] unicore32: handle pgtabl=
+e_page_ctor() fail
+git bisect good ffacba0ebf499ac928254c156cc9ca80074e331e
+# good: [9619df7b869352bfef98f0e93ac0a2ce1f9a58be] xtensa: handle pgtable_p=
+age_ctor() fail
+git bisect good 9619df7b869352bfef98f0e93ac0a2ce1f9a58be
+# bad: [b5be3c49b81094d7aa0cefafac50c69d788be2ed] mm: dynamic allocate page=
+->ptl if it cannot be embedded to struct page
+git bisect bad b5be3c49b81094d7aa0cefafac50c69d788be2ed
+# good: [cdf8588809f4bedbf92f11d3c59f3d7a16f19d5b] iommu/arm-smmu: handle p=
+gtable_page_ctor() fail
+git bisect good cdf8588809f4bedbf92f11d3c59f3d7a16f19d5b
+# first bad commit: [b5be3c49b81094d7aa0cefafac50c69d788be2ed] mm: dynamic =
+allocate page->ptl if it cannot be embedded to struct page
 
 
-If this is causing a regression I think it actually calls into
-question the original series that included a003a25b227d59d.  This
-patch only makes h_load not be a nonsense value.
+                                  time.user_time
 
---===============2591244582779118643==--
+   160 ++------------------------------------------------------------------=
+-+
+       |                                                                   =
+ |
+   140 ++     O                                                            =
+ |
+   120 ++                                                                  =
+ |
+       |  O     O         O      O                                         =
+ |
+   100 O+O         O   O       O        O    O         O                   =
+ |
+       |         O                 O  O    O    O   O                      =
+ |
+    80 ++   O        O  O   O             O           O                    =
+ |
+       |                            O          O  O                        =
+ |
+    60 ++                    O                                             =
+ |
+    40 ++                                                                  =
+ |
+       *.         .*. .*      .*.*. *.*.                .*.             .**=
+.|
+    20 ++**.*. .**   *  *.*.**     *    *.**.*.**. .*.**   **.*.*.* .*.*   =
+ *
+       |      *                                   *                *       =
+ |
+     0 ++------------------------------------------------------------------=
+-+
+
+
+                                time.minor_page_faults
+
+   2.2e+08 ++--------------------------------------------------------------=
+-+
+           |                                                               =
+ |
+     2e+08 O+OO   OO  O   O  O    OO O  O    O O  O OO O O                 =
+ |
+   1.8e+08 ++                                                              =
+ |
+           |            O                 O     O                          =
+ |
+   1.6e+08 ++   O    O     O   OO      O    O                              =
+ |
+   1.4e+08 ++                                                              =
+ |
+           |                                                               =
+ |
+   1.2e+08 ++                                                              =
+ |
+     1e+08 ++                                                              =
+ |
+           |                                                               =
+ |
+     8e+07 ++                                                              =
+ |
+     6e+07 ++                                                              =
+ |
+           *.**.*.**.**. .**.*.**.**.*.**.*.**.**.*.**.*.**.**.*.**.*.**.**=
+.*
+     4e+07 ++-----------*--------------------------------------------------=
+-+
+
+
+                            time.voluntary_context_switches
+
+   600000 ++-O----O---------------------------O---O--O--O------------------=
+-+
+          O O    O    O  O  O    O OO   O    O     O   O                   =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+   400000 ++                                    O                          =
+ |
+          |    O    O  O   O  OO      O  O O                               =
+ |
+   300000 ++                                                               =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+          *.       .*.* .*.**.  .*.**.*.**.*. *.*. *.*.**.*.* .**.*. *.*.**=
+.|
+   100000 ++**.*.**    *      **             *    *          *      *      =
+ *
+          |                                                                =
+ |
+        0 ++---------------------------------------------------------------=
+-+
+
+
+                         will-it-scale.page_fault3.15.threads
+
+   2.2e+06 ++O-------------------------------------------------------------=
+-+
+           O  O O OO OO O OO O OO OO O OO O OO OO O OO O O                 =
+ |
+     2e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+   1.8e+06 ++                                                              =
+ |
+   1.6e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+   1.4e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+   1.2e+06 ++                                                              =
+ |
+     1e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+    800000 ++               .*. *.                            .*.       .* =
+ |
+           *.**.*.**.**.*.**   *  **.*.**.*.**.**.*.**.*.**.**   **.*.**  *=
+.*
+    600000 ++--------------------------------------------------------------=
+-+
+
+
+                      will-it-scale.page_fault3.15.threads_idle
+
+     95 ++-----------------------------------------------------------------=
+-+
+   94.5 O+OO O O OO O OO O OO O O OO O OO   OO O O OO O O                  =
+ |
+        |                                 O                                =
+ |
+     94 ++                                                                 =
+ |
+   93.5 ++                                                                 =
+ |
+        |                                                                  =
+ |
+     93 ++                                                                 =
+ |
+   92.5 ++                                                                 =
+ |
+     92 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   91.5 ++                                                                 =
+ |
+     91 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   90.5 ++*   .*.* .*. *.*.*                      .**.*.      *.           =
+ |
+     90 *+-*-*----*---*-----*-*-*-**-*-**-*-**-*-*------**-*-*--*-*-**-*-**=
+-*
+
+
+                         will-it-scale.page_fault3.30.threads
+
+   1.8e+06 ++O------------------------------------O-O----------------------=
+-+
+           O  O O OO O  O OO O O  OO O OO O OO OO    O O O                 =
+ |
+   1.6e+06 ++         O         O                                          =
+ |
+           |                                                               =
+ |
+   1.4e+06 ++                                                              =
+ |
+   1.2e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     1e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+    800000 ++                                                              =
+ |
+    600000 ++                                                              =
+ |
+           |                                                               =
+ |
+    400000 ++*                     *.   *.   *.  .*.**. .*    .*.*   .* .**=
+.|
+           *  *.*.**.**.*.**.*.**.*  *.*  *.*  **      *  *.**    *.*  *   =
+ *
+    200000 ++--------------------------------------------------------------=
+-+
+
+
+                     will-it-scale.page_fault3.30.threads_idle
+
+   88 ++-------------------------------------------------------------------=
+-+
+   87 O+O OO O O O  O O OO O O OO O O OO O O OO O O OO O                   =
+ |
+      |           O                                                        =
+ |
+   86 ++                                                                   =
+ |
+   85 ++                                                                   =
+ |
+   84 ++                                                                   =
+ |
+   83 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   82 ++                                                                   =
+ |
+   81 ++                                                                   =
+ |
+   80 ++                                                                   =
+ |
+   79 ++                                                                   =
+ |
+      |.*.                      *.        .*.      .*               .*. .**=
+.|
+   78 *+  **.*.*.**.*.*.**.*.*.*  *.*.**.*   **.*.*  *.*.*.**.*.*.**   *   =
+ *
+   77 ++-------------------------------------------------------------------=
+-+
+
+
+                         will-it-scale.page_fault3.45.threads
+
+   1.6e+06 ++--------------------------------------------------------------=
+-+
+           O    O     O                   O OO OO O OO                     =
+ |
+   1.4e+06 ++OO   OO O  O OO O OO OO O OO              O O                 =
+ |
+           |                                                               =
+ |
+   1.2e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     1e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+    800000 ++                                                              =
+ |
+           |                                                               =
+ |
+    600000 ++                                                              =
+ |
+           |                                                               =
+ |
+    400000 ++*                                                             =
+ |
+           *  *.*.**.**.*.**.*.**.**.*.**.*.**.**. .**.*.**.**.*.**.*.**.**=
+.*
+    200000 ++-------------------------------------*------------------------=
+-+
+
+
+                     will-it-scale.page_fault3.45.threads_idle
+
+   80 ++-------------------------------------------------------------------=
+-+
+      O O OO     OO   O      O OO O O OO O O OO O O OO O                   =
+ |
+   78 ++     O O    O   OO O                                               =
+ |
+   76 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   74 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   72 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   70 ++                                                                   =
+ |
+   68 ++                                                                   =
+ |
+      |.*.        *. .*.                                                   =
+ |
+   66 *+  **.*.*.*  *   **.*.*.**.*.*.**.*.*.**. .*.**.*.*.**.*.*.**.*.*.**=
+.*
+      |                                         *                          =
+ |
+   64 ++-------------------------------------------------------------------=
+-+
+
+
+                         will-it-scale.page_fault3.60.threads
+
+   1.8e+06 ++--------------------------------------------------------------=
+-+
+           |       O    O                 O     O        O                 =
+ |
+   1.6e+06 O+OO O O  O    OO O OO  O O OO   OO O  O OO O                   =
+ |
+           |          O           O                                        =
+ |
+   1.4e+06 ++                                                              =
+ |
+   1.2e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     1e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+    800000 ++                                                              =
+ |
+    600000 ++                                                              =
+ |
+           |                                                               =
+ |
+    400000 ++                                                              =
+ |
+           *.**.*.**.**. .**.*.**.* .*.**.*.**.**.*.**.*.**.**.*. *.*.**.**=
+.*
+    200000 ++-----------*----------*-----------------------------*---------=
+-+
+
+
+                     will-it-scale.page_fault3.60.threads_idle
+
+   75 O+---O---O-O--O-O------O--O---O-OO------O-----O--O-------------------=
+-+
+      | O O  O          OO O   O  O      O O O  O O  O                     =
+ |
+      |           O                                                        =
+ |
+   70 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+   65 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   60 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+   55 *+*.**.*.*.**. .*.**.*.*.**.*.*.**.*.*.**.*.*.**.*.*.**.*.*.**.*.*.**=
+.*
+      |             *                                                      =
+ |
+      |                                                                    =
+ |
+   50 ++-------------------------------------------------------------------=
+-+
+
+
+                         will-it-scale.page_fault3.90.threads
+
+   1.8e+06 ++--------------------------------------------------------------=
+-+
+           | OO O OO OO O  O O O        O O O  OO O    O O                 =
+ |
+   1.6e+06 O+             O     O OO O O     O      OO                     =
+ |
+           |                                                               =
+ |
+   1.4e+06 ++                                                              =
+ |
+   1.2e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     1e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+    800000 ++                                                              =
+ |
+    600000 ++                                                              =
+ |
+           |                                                               =
+ |
+    400000 ++                                                              =
+ |
+           *. *.*.**.**.*.**.*.**.**.*.**.*.**.**.*.**.*.**.**.*.**.*.**.**=
+.|
+    200000 ++*-------------------------------------------------------------=
+-*
+
+
+                     will-it-scale.page_fault3.90.threads_idle
+
+   70 ++-------------------------------------------------------------------=
+-+
+      |                                                                    =
+ |
+   65 ++O OO O O OO O   OO O O OO O O OO O   OO O O OO O                   =
+ |
+   60 O+              O                    O                               =
+ |
+      |                                                                    =
+ |
+   55 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   50 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   45 ++                                                                   =
+ |
+   40 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   35 ++                                                                   =
+ |
+      *.*.**.*.*.**.*.*.**.*.*.**.*.*.**.*.*.**.*.*.**.*.*.**.*.*.**.*.*.**=
+.*
+   30 ++-------------------------------------------------------------------=
+-+
+
+
+                         will-it-scale.page_fault3.120.threads
+
+   1.8e+06 ++--------------------------------------------------------------=
+-+
+           O OO O OO OO O OO O O  OO O OO O OO OO O OO O O                 =
+ |
+   1.6e+06 ++                                                              =
+ |
+           |                    O                                          =
+ |
+   1.4e+06 ++                                                              =
+ |
+   1.2e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     1e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+    800000 ++                                                              =
+ |
+    600000 ++                                                              =
+ |
+           |                                                               =
+ |
+    400000 ++                                                              =
+ |
+           *.**.*.**.**.*.**.*.**. *.*.**.*. *.**.*.**.*.**.**. .**.*.**.**=
+.*
+    200000 ++---------------------*---------*------------------*-----------=
+-+
+
+
+                    will-it-scale.page_fault3.120.threads_idle
+
+   60 ++-------------------------------------------------------------------=
+-+
+   55 O+O    O O OO O O OO O   OO O O O  O   O                             =
+ |
+      |   OO                 O         O   O  O O O OO O                   =
+ |
+   50 ++                                                                   =
+ |
+   45 ++                                                                   =
+ |
+   40 ++                                                                   =
+ |
+   35 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   30 ++                                                                   =
+ |
+   25 ++                                                                   =
+ |
+   20 ++                                                                   =
+ |
+   15 ++                                                                   =
+ |
+      *.*.**.*.*.**.*.*.**.*.*. *.*.*.**.   .**.*.*. *.*.*.**. .*.**.*. .**=
+.*
+   10 ++                       *         *.*        *         *        *   =
+ |
+    5 ++-------------------------------------------------------------------=
+-+
+
+
+                                  vmstat.system.in
+
+   18600 ++--------------------------*-------------------------------------=
+-+
+   18400 ++ *.*  *. .* .*    *.**.*.*  *.*.     *                          =
+ |
+         *.*   + : *  *  +  :              *   + *.*.* .*.  .*.* .*. *.*.**=
+.*
+   18200 ++     *         * :               *.*       *   **    *   *      =
+ |
+   18000 ++                *                                               =
+ |
+         |                                                                 =
+ |
+   17800 ++                                                                =
+ |
+   17600 ++                                                                =
+ |
+   17400 ++                                                                =
+ |
+         |                                                                 =
+ |
+   17200 O+OO           O           O            O                         =
+ |
+   17000 ++   O OO O OO   OO    O        O OO O    O O                     =
+ |
+         |                   O O  O  O          O     O O                  =
+ |
+   16800 ++                            O                                   =
+ |
+   16600 ++----------------------------------------------------------------=
+-+
+
+
+                                  vmstat.system.cs
+
+   7000 ++-----------------------------------------------------------------=
+-+
+   6500 ++OO   O OO   O    OO           O O OO O O OO O O                  =
+ |
+        O    O      O  O O    O O OO O O                                   =
+ |
+   6000 ++                                                                 =
+ |
+   5500 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   5000 ++                                                                 =
+ |
+   4500 ++                                                                 =
+ |
+   4000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   3500 ++                                                                 =
+ |
+   3000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   2500 ++         .*.                                                  .* =
+ |
+   2000 *+**-*-*-**---**-*-**-*-*-**-*-**-*-**-*-*-**-*-**-*-**-*-*-**-*--*=
+-*
+
+
+                                   vmstat.cpu.id
+
+   68 ++-----O-O-O--O---O-------O-O-O-OO-O---O-----------------------------=
+-+
+      |                                                                    =
+ |
+   67 O+O OO      O   O  O O O O           O  O O O OO O                   =
+ |
+   66 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   65 ++                                                                   =
+ |
+   64 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   63 ++                                                                   =
+ |
+   62 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   61 ++                                                                   =
+ |
+   60 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   59 *+*-**-*-*-**-*-*-**-*-*-**-*-*-**-*-*-**-*-*-**-*-*-**-*-*-**-*-*-**=
+-*
+
+
+                lock_stat.&(&mm->page_table_lock)->rlock.contentions
+
+   6e+07 ++----------------------------------------------------------------=
+-+
+         |.*                                                            .* =
+ |
+   5e+07 *+ *.*.**.*.* .*.**.*.**.*.**.*.*.**.*.**.*.**.*.**.*.**.*.**.*  *=
+.*
+         |            *                                                    =
+ |
+         |                                                                 =
+ |
+   4e+07 ++                                                                =
+ |
+         |                                                                 =
+ |
+   3e+07 ++                                                                =
+ |
+         |                                                                 =
+ |
+   2e+07 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   1e+07 ++                                                                =
+ |
+         |                                                                 =
+ |
+       0 O+OO-O-OO-O-OO-O-OO-O-OO-O-OO-O-O-OO-O-OO-O-OO-O------------------=
+-+
+
+
+                                  iostat.cpu.user
+
+   1.4 ++------------------------------------------------------------------=
+-+
+       |                                                                   =
+ |
+   1.3 ++ O   O                                                            =
+ |
+       |    O   OO                                  O                      =
+ |
+   1.2 O+O           O O                O O  O  O      O                   =
+ |
+       |           O           O O    O    O   O      O                    =
+ |
+   1.1 ++                    O     OO             O                        =
+ |
+       |                  O                                                =
+ |
+     1 ++               O   O                                              =
+ |
+       |             *                          *                          =
+ |
+   0.9 ++           + +                   **.*  :+        .*  *        *. *=
+ |
+       *.* .*.    .*   *                 +    +:  *.   *.*  :+ + .*   +  * =
++|
+   0.8 ++ *   *.**      *.*.**.*.*.    .*      *    *.*     *   *  *.*     =
+ *
+       |                           **.*                                    =
+ |
+   0.7 ++------------------------------------------------------------------=
+-+
+
+
+                                 iostat.cpu.system
+
+   40 *+--*--*---*--*---**-*-*-**-*-*-**-*-*--*---*-**-*-*-**-*-*-**-*-*-*-=
+-*
+   39 ++*  *   *  *   *                      *  *                         *=
+ |
+      |                                                                    =
+ |
+   38 ++                                                                   =
+ |
+   37 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   36 ++                                                                   =
+ |
+   35 ++                                                                   =
+ |
+   34 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   33 ++                                                                   =
+ |
+   32 ++                                                                   =
+ |
+      |                      O                                             =
+ |
+   31 O+O OO O O OO O O OO O   OO O O OO O O OO O O OO O                   =
+ |
+   30 ++-------------------------------------------------------------------=
+-+
+
+
+                                  iostat.cpu.idle
+
+   69 ++-------------------------------------------------------------------=
+-+
+   68 O+O O  O O O  O O O  O   OO O O OO O O OO   O OO O                   =
+ |
+      |    O      O      O   O                  O                          =
+ |
+   67 ++                                                                   =
+ |
+   66 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   65 ++                                                                   =
+ |
+   64 ++                                                                   =
+ |
+   63 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   62 ++                                                                   =
+ |
+   61 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   60 *+*.**.*.*.**.*.*.**.*.*. *.*.*.**. .*.**.*.*.**.*.*.**. .*.**.*.*.**=
+.|
+   59 ++-----------------------*---------*--------------------*------------=
+-*
+
+
+--===============7998726253014445389==--
 
