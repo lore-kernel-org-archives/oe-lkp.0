@@ -1,109 +1,86 @@
-Content-Type: multipart/mixed; boundary="===============3967093801816399571=="
+Content-Type: multipart/mixed; boundary="===============9086153594428574484=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [blk-lib] 6a0608544e5: fileio -77.4% max latency, -5.7% throughput
-Date: Wed, 05 Mar 2014 10:07:46 +0800
-Message-ID: <20140305020746.GA14711@localhost>
-In-Reply-To: <20140305012352.GR13647@dastard>
+Subject: [ACPI / hotplug / PCI] 1b360f44d00: -80.9% vm-scalability.stddev
+Date: Wed, 05 Mar 2014 16:23:36 +0800
+Message-ID: <20140305082336.GD17109@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3967093801816399571==
+--===============9086153594428574484==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 05, 2014 at 12:23:53PM +1100, Dave Chinner wrote:
-> On Wed, Mar 05, 2014 at 09:16:45AM +0800, Fengguang Wu wrote:
-> > On Tue, Mar 04, 2014 at 01:52:25PM -0800, Kent Overstreet wrote:
-> > > On Tue, Mar 04, 2014 at 09:21:30PM +0800, Fengguang Wu wrote:
-> > > > Hi Kent,
-> > > > =
+Hi Rafael,
 
-> > > > FYI, we noticed the below changes on
-> > > > =
+I don't know why but we are glad to find the below changes on commit
 
-> > > > git://evilpiepirate.org/~kent/linux-bcache.git for-jens
-> > > > commit 6a0608544e5672bd9a044c285119547eae41abe5 ("blk-lib.c: generi=
-c_make_request() handles large bios now")
-> > > > =
+1b360f44d009059e446532f29c1a889951e72667 ("ACPI / hotplug / PCI: Fix bridge=
+ removal race in handle_hotplug_event()")
 
-> > > > test case: snb-drag/sysbench/fileio/600s-100%-1HDD-ext4-64G-1024-se=
-qrewr-sync
-> > =
+test case: brickland2/micro/vm-scalability/300s-anon-r-rand-mt
 
-> > snb-drag is the test machine, it's a SNB desktop.
-> > =
+d42f5da23400833  1b360f44d009059e446532f29  =
 
-> > The test command is
-> > =
+---------------  -------------------------  =
 
-> >         mkfs -t ext4 -q /dev/sda2
-> >         mount -t ext4 /dev/sda2 /fs/sda2
-> >         cd /fs/sda2
-> > =
+      3.54 ~164%     -80.9%       0.68 ~37% TOTAL vm-scalability.stddev
+     14177 ~ 7%     -22.1%      11040 ~ 7%  TOTAL numa-meminfo.node0.SRecla=
+imable
+      3543 ~ 7%     -22.1%       2759 ~ 7%  TOTAL numa-vmstat.node0.nr_slab=
+_reclaimable
+    776196 ~ 6%     -10.0%     698893 ~ 5%  TOTAL numa-numastat.node2.local=
+_node
+    776196 ~ 6%     -10.0%     698894 ~ 5%  TOTAL numa-numastat.node2.numa_=
+hit
 
-> >         for i in $(seq 0 1023)
-> >         do
-> >                 fallocate -l 67108864 test_file.$i
-> >         done
-> > =
+The ~XX% numbers are stddev percent.
+The [+-]XX% is change percent.
 
-> >         sysbench --test=3Dfileio --max-requests=3D0 --num-threads=3D4 -=
--max-time=3D600 --file-test-mode=3Dseqrewr --file-total-size=3D68719476736 =
---file-io-mode=3Dsync --file-num=3D1024 run
-> > =
+The below graph shows all samples collected during the bisect
 
-> > =
+[*] bisect-good
+[O] bisect-bad ("bad" in the sense of bisect)
 
-> > > I'm trying to figure out how to parse this and the graphs - where do =
-I find the
-> > > test? And is there anything you can point me to for the graphs, or is=
- that
-> > > output from that test?
-> > > =
+In which you can see the stableness of the change and bisect.
 
-> > > > =
+                               vm-scalability.stddev
 
-> > > > 11541d5f5b7002b  6a0608544e5672bd9a044c285  =
+   16 ++-------------------------------------------------------------------=
+-+
+      |                                                                 *  =
+ |
+   14 ++                                                                :  =
+ |
+   12 ++                                                                :  =
+ |
+      |                                                                 :: =
+ |
+   10 ++                                                                :: =
+ |
+      |                                                                 :: =
+ |
+    8 ++                                                                :: =
+ |
+      |                                                                : : =
+ |
+    6 ++                                                    *          : : =
+ |
+    4 ++           *      *                                 ::         :  :=
+ |
+      |           +:     : +                       *       : :         :  :=
+ |
+    2 ++*.   *. .*  :    :  *          .*.        + :      :  :   .*   :  :=
+ |
+      |+  * +  *    *. .* O  *.*.*. .**   O.**.O.* O: *.O.* O OO.*  +  :  *=
+.|
+    0 O+O-OO-O-O-O-OO-O-O---OO-O-O-O-OO-O---OO-*-O---OO-*-O------O-O-*-*---=
+-*
 
-> > > > ---------------  -------------------------  =
-
-> > > >       1885 ~60%     -77.4%        426 ~ 7%  TOTAL fileio.request_la=
-tency_max_ms
-> > =
-
-> > The ~XX% numbers are stddev percent.
-> > The [+-]XX% is change percent.
-> =
-
-> Can you put this in as column headers so that people don't have to
-> this every time they see a report from you?
-
-Good idea!
-
-> > The below graph shows all samples collected during the bisect
-> > =
-
-> > [*] bisect-good =
-
-> > [O] bisect-bad
-> > =
-
-> > In which you can see the stableness of the change and bisect. =
-
-> =
-
-> Oh, so that's what the graphs contain. :/
-> =
-
-> Again - perhaps you should include this information with the graphs
-> rather than just dumping unlabelled data on people ;)
-
-Yeah sure. I'll follow your nice suggestions!
 
 Thanks,
 Fengguang
 
---===============3967093801816399571==--
+--===============9086153594428574484==--
 
