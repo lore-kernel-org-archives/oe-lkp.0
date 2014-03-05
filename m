@@ -1,28 +1,109 @@
-Content-Type: multipart/mixed; boundary="===============6775607552079193711=="
+Content-Type: multipart/mixed; boundary="===============3967093801816399571=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: [sched/idle] c365c292d05: ltp.sched_rr_get_interval02.1.TFAIL
-Date: Wed, 05 Mar 2014 09:51:10 +0800
-Message-ID: <20140305015110.GJ8157@localhost>
+Subject: Re: [blk-lib] 6a0608544e5: fileio -77.4% max latency, -5.7% throughput
+Date: Wed, 05 Mar 2014 10:07:46 +0800
+Message-ID: <20140305020746.GA14711@localhost>
+In-Reply-To: <20140305012352.GR13647@dastard>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6775607552079193711==
+--===============3967093801816399571==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Thomas,
+On Wed, Mar 05, 2014 at 12:23:53PM +1100, Dave Chinner wrote:
+> On Wed, Mar 05, 2014 at 09:16:45AM +0800, Fengguang Wu wrote:
+> > On Tue, Mar 04, 2014 at 01:52:25PM -0800, Kent Overstreet wrote:
+> > > On Tue, Mar 04, 2014 at 09:21:30PM +0800, Fengguang Wu wrote:
+> > > > Hi Kent,
+> > > > =
 
-We noticed ltp/syscalls test regression on
+> > > > FYI, we noticed the below changes on
+> > > > =
 
-git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/idle
+> > > > git://evilpiepirate.org/~kent/linux-bcache.git for-jens
+> > > > commit 6a0608544e5672bd9a044c285119547eae41abe5 ("blk-lib.c: generi=
+c_make_request() handles large bios now")
+> > > > =
 
-commit: c365c292d05908c6ea6f32708f331e21033fe71d ("sched: Consider pi boost=
-ing in setscheduler()")
+> > > > test case: snb-drag/sysbench/fileio/600s-100%-1HDD-ext4-64G-1024-se=
+qrewr-sync
+> > =
+
+> > snb-drag is the test machine, it's a SNB desktop.
+> > =
+
+> > The test command is
+> > =
+
+> >         mkfs -t ext4 -q /dev/sda2
+> >         mount -t ext4 /dev/sda2 /fs/sda2
+> >         cd /fs/sda2
+> > =
+
+> >         for i in $(seq 0 1023)
+> >         do
+> >                 fallocate -l 67108864 test_file.$i
+> >         done
+> > =
+
+> >         sysbench --test=3Dfileio --max-requests=3D0 --num-threads=3D4 -=
+-max-time=3D600 --file-test-mode=3Dseqrewr --file-total-size=3D68719476736 =
+--file-io-mode=3Dsync --file-num=3D1024 run
+> > =
+
+> > =
+
+> > > I'm trying to figure out how to parse this and the graphs - where do =
+I find the
+> > > test? And is there anything you can point me to for the graphs, or is=
+ that
+> > > output from that test?
+> > > =
+
+> > > > =
+
+> > > > 11541d5f5b7002b  6a0608544e5672bd9a044c285  =
+
+> > > > ---------------  -------------------------  =
+
+> > > >       1885 ~60%     -77.4%        426 ~ 7%  TOTAL fileio.request_la=
+tency_max_ms
+> > =
+
+> > The ~XX% numbers are stddev percent.
+> > The [+-]XX% is change percent.
+> =
+
+> Can you put this in as column headers so that people don't have to
+> this every time they see a report from you?
+
+Good idea!
+
+> > The below graph shows all samples collected during the bisect
+> > =
+
+> > [*] bisect-good =
+
+> > [O] bisect-bad
+> > =
+
+> > In which you can see the stableness of the change and bisect. =
+
+> =
+
+> Oh, so that's what the graphs contain. :/
+> =
+
+> Again - perhaps you should include this information with the graphs
+> rather than just dumping unlabelled data on people ;)
+
+Yeah sure. I'll follow your nice suggestions!
 
 Thanks,
 Fengguang
 
---===============6775607552079193711==--
+--===============3967093801816399571==--
 
