@@ -1,92 +1,104 @@
-Content-Type: multipart/mixed; boundary="===============7170252835371539953=="
+Content-Type: multipart/mixed; boundary="===============1567936901487926481=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: [loopback] b17c706987f: +91.0% qperf.sctp_bw.bw.MB_sec
-Date: Thu, 13 Mar 2014 17:29:33 +0800
-Message-ID: <20140313092933.GA31360@localhost>
+Subject: [sched] 373e9ec30ad: -11.2% qperf.udp_bw.send_bw.MB_sec
+Date: Fri, 14 Mar 2014 14:20:43 +0800
+Message-ID: <20140314062043.GA28336@localhost>
+In-Reply-To: <20140314061643.GA28194@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7170252835371539953==
+--===============1567936901487926481==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Daniel,
+Alex, we noticed the below changes on
 
-We are glad to notice this big performance gain on
-
-git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-commit b17c706987fa6f28bdc1771c8266e7a69e22adcb ("loopback: sctp: add NETIF=
-_F_SCTP_CSUM to device features")
+https://github.com/alexshi/power-scheduling.git single-balance
+commit 373e9ec30ad1efee2c4ba6b58fc317626e6482d0 ("sched: only do load balan=
+ce on tick_do_timer_cpu")
 
 test case: lkp-a06/micro/qperf/600s
 
-72f8e06f3ea022d  b17c706987fa6f28bdc1771c8  =
+      v3.14-rc6  373e9ec30ad1efee2c4ba6b58  =
 
 ---------------  -------------------------  =
 
-     39.30 ~ 3%     +91.0%      75.06 ~11%  TOTAL qperf.sctp_bw.bw.MB_sec
-       126 ~ 0%      -3.2%        122 ~ 0%  TOTAL qperf.sctp_lat.latency.us
-    216270 ~ 2%     -46.5%     115740 ~ 4%  TOTAL cpuidle.C4.usage
-  48722971 ~ 5%     +45.1%   70681678 ~ 7%  TOTAL cpuidle.C2.time
-    370655 ~ 2%     +46.8%     543952 ~ 7%  TOTAL cpuidle.C2.usage
-      1.00 ~13%     -22.8%       0.77 ~15%  TOTAL perf-profile.cpu-cycles.a=
-cpi_processor_ffh_cstate_enter.acpi_idle_enter_bm.cpuidle_enter_state.cpuid=
-le_idle_call.arch_cpu_idle
-  15233974 ~ 0%     +14.2%   17397187 ~ 3%  TOTAL proc-vmstat.pgalloc_normal
-  24268359 ~ 0%     +14.2%   27716949 ~ 3%  TOTAL proc-vmstat.pgfree
-   9034872 ~ 0%     +14.2%   10321019 ~ 3%  TOTAL proc-vmstat.pgalloc_dma32
-     51262 ~ 2%     -10.0%      46151 ~ 3%  TOTAL time.involuntary_context_=
-switches
-     13874 ~ 1%      +4.8%      14540 ~ 0%  TOTAL vmstat.system.cs
-       812 ~ 0%      -3.4%        784 ~ 1%  TOTAL time.system_time
-   4125867 ~ 1%      +3.9%    4285302 ~ 0%  TOTAL time.voluntary_context_sw=
+       273 ~ 0%     -11.2%        242 ~ 1%  TOTAL qperf.udp_bw.send_bw.MB_s=
+ec
+       268 ~ 0%      -9.8%        242 ~ 0%  TOTAL qperf.tcp_bw.bw.MB_sec
+       266 ~ 0%      -9.8%        240 ~ 1%  TOTAL qperf.udp_bw.recv_bw.MB_s=
+ec
+     48281 ~ 2%     -81.3%       9035 ~ 1%  TOTAL softirqs.SCHED
+   1359067 ~ 4%     -30.7%     942510 ~ 2%  TOTAL interrupts.RES
+  10201776 ~14%     -30.1%    7133067 ~10%  TOTAL cpuidle.C3.time
+  52277488 ~ 4%     -26.6%   38366608 ~ 6%  TOTAL cpuidle.C2.time
+        28 ~14%     -25.3%         21 ~18%  TOTAL cpuidle.POLL.usage
+      1516 ~16%     -27.0%       1107 ~22%  TOTAL cpuidle.POLL.time
+      3955 ~ 7%     -24.8%       2972 ~14%  TOTAL cpuidle.C3.usage
+      1.10 ~ 9%     -17.0%       0.91 ~16%  TOTAL perf-profile.cpu-cycles.m=
+enu_select.cpuidle_idle_call.arch_cpu_idle.cpu_startup_entry.start_secondary
+   9066611 ~ 0%      -8.3%    8313872 ~ 1%  TOTAL proc-vmstat.pgalloc_dma32
+  24350865 ~ 0%      -8.3%   22328921 ~ 1%  TOTAL proc-vmstat.pgfree
+  15285179 ~ 0%      -8.3%   14016032 ~ 1%  TOTAL proc-vmstat.pgalloc_normal
+      2961 ~ 3%     -19.7%       2378 ~ 3%  TOTAL vmstat.system.in
+   3887389 ~20%      +9.7%    4262549 ~ 0%  TOTAL time.voluntary_context_sw=
 itches
+     14152 ~ 1%      +2.2%      14464 ~ 0%  TOTAL vmstat.system.cs
 
 Legend:
 	~XX%    - stddev percent
 	[+-]XX% - change percent
 
 
-                              qperf.sctp_bw.bw.MB_sec
+                            qperf.udp_bw.send_bw.MB_sec
 
-   90 ++------------------------------------------------------------O------=
+   280 ++------------------------------------------------------------------=
 -+
-      |            O                             O                         =
+       |                                        .*.....                    =
  |
-   80 ++              O  O       O    O     O         O                    =
+   275 *+...*.....*....        ...*....*....  ..       *                   =
  |
-      O  O O  O                     O               O            O       O =
+   270 ++              *....*..             *.                             =
  |
-      |          O          O            O    O                O           =
+       |                                                                   =
  |
-   70 ++                                                 O  O              =
+   265 ++                                                                  =
+ |
+   260 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   255 ++                                                                  =
+ |
+   250 ++                                              O                   =
+ |
+       |                                                                   =
+ |
+   245 ++                              O                                   =
+ |
+   240 O+   O     O               O         O                    O     O   =
  O
-      |                                                                O   =
+       |               O    O                               O              =
  |
-   60 ++                      O                                            =
- |
-      |                                                                    =
- |
-   50 ++                                                                   =
- |
-      |                                                                    =
- |
-      |      .*..               .*..         .*..  .*.     .*..            =
- |
-   40 *+.*.*.    *.*..*..*..*.*.    *.*..*..*    *.   *..*.    *.*..*..*   =
- |
-      |                                                                    =
- |
-   30 ++-------------------------------------------------------------------=
+   235 ++----------------------------------------O-------------------------=
 -+
 
-	[O] bisect-bad  sample
 	[*] bisect-good sample
+	[O] bisect-bad  sample
 
 Thanks,
 Fengguang
 
---===============7170252835371539953==--
+--===============1567936901487926481==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.ksh"
+
+Li9xcGVyZgouL3FwZXJmIDEyNy4wLjAuMSAtLXRpbWUgMTAwIHRjcF9idyB0Y3BfbGF0IHVkcF9i
+dyB1ZHBfbGF0IHNjdHBfYncgc2N0cF9sYXQgcXVpdAo=
+
+--===============1567936901487926481==--
 
