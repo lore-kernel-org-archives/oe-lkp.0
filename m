@@ -1,125 +1,339 @@
-Content-Type: multipart/mixed; boundary="===============3179922345505487630=="
+Content-Type: multipart/mixed; boundary="===============8336440064240317915=="
 MIME-Version: 1.0
-From: Alex Shi <alex.shi@linaro.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/balance] BUG: unable to handle kernel paging request at ffffffff00000058
-Date: Mon, 17 Mar 2014 10:11:39 +0800
-Message-ID: <532659DB.1050709@linaro.org>
-In-Reply-To: <20140315014643.GB19456@localhost>
+Subject: [map_pages] 66431c4de99: -55.4% proc-vmstat.pgfault
+Date: Wed, 19 Mar 2014 10:21:21 +0800
+Message-ID: <20140319022121.GA14115@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3179922345505487630==
+--===============8336440064240317915==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 03/15/2014 09:46 AM, Fengguang Wu wrote:
-> Alex, we noticed the below changes in
-> =
+Hi Kirill,
 
-> https://github.com/alexshi/power-scheduling.git single-balance
-> commit e1f728f230025ba2f2ed71e19b156291f53b68fe ("sched/balance: replace =
-idle_balance")
-> =
+FYI, we noticed decreased page faults and increased mapped pages on
+
+git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+commit 66431c4de9921a9b3c7f3556bada4285912aedb7 ("mm: implement ->map_pages=
+ for page cache")
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+    591248 ~ 0%     -56.1%     259664 ~ 0%  lkp-t410/micro/netperf/120s-200=
+%-TCP_MAERTS
+   5090162 ~ 0%     -55.4%    2272005 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+   5681411 ~ 0%     -55.4%    2531670 ~ 0%  TOTAL proc-vmstat.pgfault
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      1413 ~ 0%     +95.2%       2759 ~ 1%  lkp-t410/micro/netperf/120s-200=
+%-TCP_MAERTS
+      1458 ~ 0%     +94.4%       2835 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+      2872 ~ 0%     +94.8%       5594 ~ 1%  TOTAL time.maximum_resident_set=
+_size
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      4332 ~ 0%     +48.9%       6449 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+      4332 ~ 0%     +48.9%       6449 ~ 0%  TOTAL numa-meminfo.node1.Mapped
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      1082 ~ 0%     +48.9%       1612 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+      1082 ~ 0%     +48.9%       1612 ~ 0%  TOTAL numa-vmstat.node1.nr_mapp=
+ed
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      4349 ~ 0%     +48.6%       6465 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+      4349 ~ 0%     +48.6%       6465 ~ 0%  TOTAL numa-meminfo.node0.Mapped
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      1087 ~ 0%     +48.7%       1616 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+      1087 ~ 0%     +48.7%       1616 ~ 0%  TOTAL numa-vmstat.node0.nr_mapp=
+ed
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      7426 ~ 0%     +45.1%      10773 ~ 0%  lkp-t410/micro/netperf/120s-200=
+%-TCP_MAERTS
+      8682 ~ 0%     +48.7%      12911 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+     16108 ~ 0%     +47.0%      23684 ~ 0%  TOTAL meminfo.Mapped
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      1852 ~ 0%     +45.4%       2693 ~ 0%  lkp-t410/micro/netperf/120s-200=
+%-TCP_MAERTS
+      2170 ~ 0%     +48.7%       3227 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+      4022 ~ 0%     +47.2%       5921 ~ 0%  TOTAL proc-vmstat.nr_mapped
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      0.93 ~ 4%     +24.2%       1.15 ~ 5%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+      0.93 ~ 4%     +24.2%       1.15 ~ 5%  TOTAL perf-profile.cpu-cycles.v=
+fs_write.sys_write.system_call_fastpath.write
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      1968 ~ 0%     +17.5%       2313 ~ 1%  lkp-t410/micro/netperf/120s-200=
+%-TCP_MAERTS
+      1968 ~ 0%     +17.5%       2313 ~ 1%  TOTAL proc-vmstat.pgactivate
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      3.34 ~ 1%     -10.7%       2.98 ~ 2%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+      3.34 ~ 1%     -10.7%       2.98 ~ 2%  TOTAL perf-profile.cpu-cycles.e=
+xt4_mark_iloc_dirty.ext4_mark_inode_dirty.ext4_dirty_inode.__mark_inode_dir=
+ty.generic_write_end
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+      3258 ~ 0%     -59.1%       1331 ~ 0%  lkp-t410/micro/netperf/120s-200=
+%-TCP_MAERTS
+    162827 ~ 0%     -59.3%      66299 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+    166085 ~ 0%     -59.3%      67630 ~ 0%  TOTAL time.minor_page_faults
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+   5093318 ~ 0%     -55.7%    2257903 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+   5093318 ~ 0%     -55.7%    2257903 ~ 0%  TOTAL perf-stat.minor-faults
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+   5092110 ~ 0%     -55.7%    2257193 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+   5092110 ~ 0%     -55.7%    2257193 ~ 0%  TOTAL perf-stat.page-faults
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+ 3.698e+11 ~ 0%     -11.3%   3.28e+11 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+ 3.698e+11 ~ 0%     -11.3%   3.28e+11 ~ 0%  TOTAL perf-stat.L1-icache-load-=
+misses
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+     45.26 ~ 3%      +8.4%      49.05 ~ 3%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+     45.26 ~ 3%      +8.4%      49.05 ~ 3%  TOTAL iostat.sdd.wrqm/s
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+ 1.824e+10 ~ 0%      -5.3%  1.727e+10 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+ 1.824e+10 ~ 0%      -5.3%  1.727e+10 ~ 0%  TOTAL perf-stat.branch-misses
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+ 2.802e+12 ~ 0%      -4.7%   2.67e+12 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+ 2.802e+12 ~ 0%      -4.7%   2.67e+12 ~ 0%  TOTAL perf-stat.L1-icache-loads
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+ 7.246e+08 ~ 2%      -4.5%  6.922e+08 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+ 7.246e+08 ~ 2%      -4.5%  6.922e+08 ~ 1%  TOTAL perf-stat.iTLB-load-misses
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+ 3.314e+09 ~ 1%      -4.8%  3.154e+09 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+ 3.314e+09 ~ 1%      -4.8%  3.154e+09 ~ 1%  TOTAL perf-stat.LLC-load-misses
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+ 3.324e+09 ~ 1%      -4.4%  3.179e+09 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+ 3.324e+09 ~ 1%      -4.4%  3.179e+09 ~ 0%  TOTAL perf-stat.node-loads
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+ 3.554e+08 ~ 3%      +5.7%  3.755e+08 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+ 3.554e+08 ~ 3%      +5.7%  3.755e+08 ~ 1%  TOTAL perf-stat.node-store-miss=
+es
+
+c9161c06019b342  66431c4de9921a9b3c7f3556b  =
+
+---------------  -------------------------  =
+
+ 8.409e+12 ~ 0%      -2.5%  8.196e+12 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-10dd
+ 8.409e+12 ~ 0%      -2.5%  8.196e+12 ~ 1%  TOTAL perf-stat.cpu-cycles
+
+Legend:
+	~XX%    - stddev percent
+	[+-]XX% - change percent
 
 
+                                time.minor_page_faults
 
-Thanks a lot for your data! But I am wondering if the buggy commit
-location is right? Since the following panic looks like due to original
-kernel, not on my code, since I neither touched any functions on call
-path, nor change the struct in panic function.
-
-Could you use addr2line locate the issue line in function
-wq_worker_waking_up().
-
-void wq_worker_waking_up(struct task_struct *task, int cpu)
-{
-        struct worker *worker =3D kthread_data(task);
-
-        if (!(worker->flags & WORKER_NOT_RUNNING)) {
-                WARN_ON_ONCE(worker->pool->cpu !=3D cpu);
-                atomic_inc(&worker->pool->nr_running);
-        }
-}
-
-> [    3.814901] PM: Registering ACPI NVS region [mem 0x650a0000-0x65375fff=
-] (2973696 bytes)
-> [    3.816130] PM: Registering ACPI NVS region [mem 0x65df8000-0x66df7fff=
-] (16777216 bytes)
-> [    3.820540] PM: Registering ACPI NVS region [mem 0x7accf000-0x7b6fefff=
-] (10682368 bytes)
-> [    3.824649] BUG: unable to handle kernel paging request at ffffffff000=
-00058
-> [    3.828000] IP: [<ffffffff810f6389>] wq_worker_waking_up+0x14/0x5b
-> [    3.828000] PGD 220d067 PUD 0 =
-
-> [    3.828000] Oops: 0000 [#1] SMP =
-
-> [    3.828000] Modules linked in:
-> [    3.828000] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.14.0-rc6-00009=
--ge1f728f #1
-> [    3.828000] Hardware name: Intel Corporation BRICKLAND/BRICKLAND, BIOS=
- BKLDSDP1.86B.0031.R01.1304221600 04/22/2013
-> [    3.828000] task: ffff8808541f8000 ti: ffff8808541e6000 task.ti: ffff8=
-808541e6000
-> [    3.828000] RIP: 0010:[<ffffffff810f6389>]  [<ffffffff810f6389>] wq_wo=
-rker_waking_up+0x14/0x5b
-> [    3.828000] RSP: 0000:ffff8808541e7cf0  EFLAGS: 00010002
-> [    3.828000] RAX: ffffffff00000000 RBX: ffff8808543b0910 RCX: ffffffff8=
-24ee1c0
-> [    3.828000] RDX: 00000005811058a8 RSI: 0000000000000001 RDI: ffff88085=
-43b0910
-> [    3.828000] RBP: ffff8808541e7d00 R08: 000000000000064d R09: 000000000=
-000b7f9
-> [    3.828000] R10: 0000000000000027 R11: 0000000000006bd9 R12: 000000000=
-0000001
-> [    3.828000] R13: 0000000000013000 R14: 0000000000000001 R15: 000000000=
-0000001
-> [    3.828000] FS:  0000000000000000(0000) GS:ffff88085f800000(0000) knlG=
-S:0000000000000000
-> [    3.828000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    3.828000] CR2: ffffffff00000058 CR3: 000000000220c000 CR4: 000000000=
-01407f0
-> [    3.828000] Stack:
-> [    3.828000]  ffff8808543b0910 ffff88085f833000 ffff8808541e7d20 ffffff=
-ff81105a04
-> [    3.828000]  ffff8808543b0910 ffff88085f833000 ffff8808541e7d68 ffffff=
-ff81108259
-> [    3.828000]  0000000000000046 ffff8808543b0f24 ffff8808543b0910 ffff88=
-085f838560
-> [    3.828000] Call Trace:
-> [    3.828000]  [<ffffffff81105a04>] ttwu_do_activate.constprop.88+0x4f/0=
-x61
-> [    3.828000]  [<ffffffff81108259>] try_to_wake_up+0x1f7/0x228
-> [    3.828000]  [<ffffffff811082be>] wake_up_process+0x34/0x37
-> [    3.828000]  [<ffffffff810f43c0>] wake_up_worker+0x24/0x26
-> [    3.828000]  [<ffffffff810f4e4f>] pwq_adjust_max_active+0x7f/0xaa
-> [    3.828000]  [<ffffffff810f4ea9>] link_pwq+0x2f/0x4a
-> [    3.828000]  [<ffffffff810f7a4b>] __alloc_workqueue_key+0x29c/0x459
-> [    3.828000]  [<ffffffff8236ece1>] ? pm_debugfs_init+0x24/0x24
-> [    3.828000]  [<ffffffff8236ecff>] pm_init+0x1e/0x7b
-> [    3.828000]  [<ffffffff810002d2>] do_one_initcall+0xa4/0x13a
-> [    3.828000]  [<ffffffff810f9a0e>] ? parse_args+0x25f/0x33d
-> [    3.828000]  [<ffffffff8234ff94>] kernel_init_freeable+0x1a9/0x22e
-> [    3.828000]  [<ffffffff8234f78f>] ? do_early_param+0x88/0x88
-> [    3.828000]  [<ffffffff81a31495>] ? rest_init+0x89/0x89
-> [    3.828000]  [<ffffffff81a314a3>] kernel_init+0xe/0xdf
-> [    3.828000]  [<ffffffff81a4e3bc>] ret_from_fork+0x7c/0xb0
-> [    3.828000]  [<ffffffff81a31495>] ? rest_init+0x89/0x89
-> [    3.828000] Code: 46 40 83 60 14 df 48 83 c4 28 31 c0 5b 41 5c 41 5d 4=
-1 5e 41 5f 5d c3 0f 1f 44 00 00 55 48 89 e5 41 54 41 89 f4 53 e8 c6 53 00 0=
-0 <f7> 40 58 c8 01 00 00 48 89 c3 75 36 48 8b 40 48 44 39 60 04 74 =
-
-> [    3.828000] RIP  [<ffffffff810f6389>] wq_worker_waking_up+0x14/0x5b
-> [    3.828000]  RSP <ffff8808541e7cf0>
-> [    3.828000] CR2: ffffffff00000058
-> [    3.828000] ---[ end trace 5d87af0bad79b4cd ]---
+   170000 ++---------------------------------------------------------------=
+-+
+   160000 *+*.*..*.*.*.*.*..*.*.*.*.*..*.*.*.*.*..*.*.*.*.*..*.*.*.*.*..*.*=
+.*
+          |                                                                =
+ |
+   150000 ++                                                               =
+ |
+   140000 ++                                                               =
+ |
+   130000 ++                                                               =
+ |
+   120000 ++                                                               =
+ |
+          |                                                                =
+ |
+   110000 ++                                                               =
+ |
+   100000 ++                                                               =
+ |
+    90000 ++                                                               =
+ |
+    80000 ++                                                               =
+ |
+          |                                                                =
+ |
+    70000 O+O O  O O O O O  O O O O O  O O O O O  O O O O O  O             =
+ |
+    60000 ++---------------------------------------------------------------=
+-+
 
 
--- =
+                                 perf-stat.page-faults
 
-Thanks
-    Alex
+   5.5e+06 ++--------------------------------------------------------------=
+-+
+           |                                                               =
+ |
+     5e+06 *+*.*..*.*.*.*.*.*..*.*.*.*.*.*..*.*.*.*.*.*..*.*.*.*.*.*..*.*.*=
+.*
+           |                                                               =
+ |
+   4.5e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     4e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+   3.5e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     3e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+   2.5e+06 ++                                                              =
+ |
+           O O O  O O O O O O  O O O O O O  O O O O O O  O O O             =
+ |
+     2e+06 ++--------------------------------------------------------------=
+-+
 
---===============3179922345505487630==--
+
+                                perf-stat.minor-faults
+
+   5.5e+06 ++--------------------------------------------------------------=
+-+
+           |                                                               =
+ |
+     5e+06 *+*.*..*.*.*.*.*.*..*.*.*.*.*.*..*.*.*.*.*.*..*.*.*.*.*.*..*.*.*=
+.*
+           |                                                               =
+ |
+   4.5e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     4e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+   3.5e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+     3e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+   2.5e+06 ++                                                              =
+ |
+           O O O  O O O O O O  O O O O O O  O O O O O O  O O O             =
+ |
+     2e+06 ++--------------------------------------------------------------=
+-+
+
+
+	[*] bisect-good sample
+	[O] bisect-bad  sample
+
+Thanks,
+Fengguang
+
+--===============8336440064240317915==--
 
