@@ -1,39 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============5374090044488641783=="
+Content-Type: multipart/mixed; boundary="===============2307738906912331837=="
 MIME-Version: 1.0
-From: Al Viro <viro@ZenIV.linux.org.uk>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [rcuwalk] e2a728c2785: -29.4% aim7.2000.jobs-per-min, +71% turbostat.Pkg_W
-Date: Sat, 22 Mar 2014 13:54:12 +0000
-Message-ID: <20140322135412.GF18016@ZenIV.linux.org.uk>
-In-Reply-To: <20140322115636.GA14400@localhost>
+Subject: [aio] e52ddd946a: xfstests generic/211 fail
+Date: Sun, 23 Mar 2014 08:40:09 +0800
+Message-ID: <20140323004009.GA13869@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5374090044488641783==
+--===============2307738906912331837==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Mar 22, 2014 at 07:56:36PM +0800, Fengguang Wu wrote:
-> Hi Al,
-> =
+Hi Benjamin,
 
-> We noticed the below changes on
-> =
+We noticed xfstests fail and the first bad commit is
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git untested-mnt_h=
-ash
-> commit e2a728c2785d6aab45d1a6d2c61e986d385c30bf ("rcuwalk: recheck mount_=
-lock after mountpoint crossing attempts")
+commit e52ddd946ab1def55c8282c8b3d0e80403abae12
+Author:     Benjamin LaHaise <bcrl@kvack.org>
+AuthorDate: Fri Mar 21 14:26:43 2014 -0400
 
-*doh*
+    aio: ensure access to ctx->ring_pages is correctly serialised
+    =
 
-Sorry about that - what happens is that __follow_mount_rcu() does that
-check every time it's called, not on every negative lookup from
-__lookup_mnt().  IOW, it's a massive overkill - most of the time
-we don't call __lookup_mnt() at all, due to d_mountpoint() being false,
-or get a positive from it.
+# good: [dcb99fd9b08cfe1afe426af4d8d3cbc429190f15] Linux 3.14-rc7
+git bisect good dcb99fd9b08cfe1afe426af4d8d3cbc429190f15
+# bad: [61fabf948117a9f91e679323b49e6a0cf56d25a6] 0day head guard for 'deve=
+l-hourly-2014032214'
+git bisect bad 61fabf948117a9f91e679323b49e6a0cf56d25a6
+# good: [56ba91913d9f2c108be0e33eeb4a473863d91600] Merge 'regulator/topic/b=
+cm590xx' into devel-hourly-2014032214
+git bisect good 56ba91913d9f2c108be0e33eeb4a473863d91600
+# good: [a3b8ced9d666d7e4da8e4867d58767e8e5e0a7c9] Merge 'kees/nak_fw-relat=
+ive' into devel-hourly-2014032214
+git bisect good a3b8ced9d666d7e4da8e4867d58767e8e5e0a7c9
+# bad: [7a74b3c608ebb48fd99791f570c24387104dd425] Merge 'kees/nak_recv-leak=
+' into devel-hourly-2014032214
+git bisect bad 7a74b3c608ebb48fd99791f570c24387104dd425
+# good: [4b518d474c67c909d82f4ed6242dee38a681daf8] Merge 'ath6kl/ath-next-t=
+est' into devel-hourly-2014032214
+git bisect good 4b518d474c67c909d82f4ed6242dee38a681daf8
+# good: [37e32762b783f435265c1a8a86dd074c81ad87f2] Merge 'spi/for-next' int=
+o devel-hourly-2014032214
+git bisect good 37e32762b783f435265c1a8a86dd074c81ad87f2
+# bad: [655a90c342c5878de4a3fef60b1a7a0cd18bc08c] Merge 'aio-next/master' i=
+nto devel-hourly-2014032214
+git bisect bad 655a90c342c5878de4a3fef60b1a7a0cd18bc08c
+# good: [v3.14-rc6] Linux 3.14-rc6
+git bisect good v3.14-rc6
+# bad: [e52ddd946ab1def55c8282c8b3d0e80403abae12] aio: ensure access to ctx=
+->ring_pages is correctly serialised
+git bisect bad e52ddd946ab1def55c8282c8b3d0e80403abae12
+# good: [v3.14-rc6] Linux 3.14-rc6
+git bisect good v3.14-rc6
+# bad: [e52ddd946ab1def55c8282c8b3d0e80403abae12] aio: ensure access to ctx=
+->ring_pages is correctly serialised
+git bisect bad e52ddd946ab1def55c8282c8b3d0e80403abae12
+# good: [e6a4b6f5eaa8478b7a0b9a17e40c51463631db1a] Merge branch 'for-linus'=
+ of git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs
+git bisect good e6a4b6f5eaa8478b7a0b9a17e40c51463631db1a
+# good: [8712a00514e50aafa7c9bf5cd3955fa60758e53b] Merge branch 'akpm' (pat=
+ches from Andrew Morton)
+git bisect good 8712a00514e50aafa7c9bf5cd3955fa60758e53b
+# first bad commit: [e52ddd946ab1def55c8282c8b3d0e80403abae12] aio: ensure =
+access to ctx->ring_pages is correctly serialised
 
-Fixed and force-pushed; should get much better now...
+Thanks,
+Fengguang
 
---===============5374090044488641783==--
+--===============2307738906912331837==--
 
