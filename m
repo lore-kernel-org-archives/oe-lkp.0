@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============7212300442397773692=="
+Content-Type: multipart/mixed; boundary="===============3150508575976134404=="
 MIME-Version: 1.0
 From: Paolo Bonzini <pbonzini@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [KVM] BUG: unable to handle kernel NULL pointer dereference at 00000000000002b0
-Date: Wed, 26 Mar 2014 15:50:51 +0100
-Message-ID: <5332E94B.3050407@redhat.com>
+Date: Wed, 26 Mar 2014 15:52:01 +0100
+Message-ID: <5332E991.5070307@redhat.com>
 In-Reply-To: <20140326144053.GC26721@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7212300442397773692==
+--===============3150508575976134404==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -25,6 +25,12 @@ g MPX in nested virtualization")
 Ouch.  Out of curiosity is this on Skylake prototypes, or is it also =
 
 visible on some released silicon?
+
+I'm sending a patch to kvm(a)vger.kernel.org and CCing you---would be nice =
+
+to have your Tested-by.
+
+Thanks,
 
 Paolo
 
@@ -89,5 +95,5 @@ ff810039dc
 >
 
 
---===============7212300442397773692==--
+--===============3150508575976134404==--
 
