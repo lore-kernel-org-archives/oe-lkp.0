@@ -1,634 +1,1704 @@
-Content-Type: multipart/mixed; boundary="===============1610212805264901861=="
+Content-Type: multipart/mixed; boundary="===============4370880071469170390=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sched] 177672afd93: -40.9% dbench.throughput-MB/sec
-Date: Tue, 08 Apr 2014 10:08:50 +0800
-Message-ID: <20140408020850.GC8796@localhost>
-In-Reply-To: <20140405141642.GB13106@localhost>
+Subject: [writeback] 6903673566d: +2.5% fileio.requests_per_sec
+Date: Thu, 10 Apr 2014 20:41:37 +0800
+Message-ID: <20140410124137.GA17720@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1610212805264901861==
+--===============4370880071469170390==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Tim,
+Hi Jan,
 
-Here are the test summary.
+I tried your writeback dirty list patchset and noticed some ups/downs.
+The main performance changes are
 
-% compare -ia wfg/tim-idle-load-balance
-    98      perf-index  wfg/tim-idle-load-balance
-   124     power-index  wfg/tim-idle-load-balance
-    94   latency-index  wfg/tim-idle-load-balance
+1) +2.5% fileio.requests_per_sec
+2) -7.1% iostat.md0.wkB/s
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-     85.38           +0.2%      85.51       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-ext4-64G-1024-rndrd-sync
-     72.32          -11.1%      64.29       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-ext4-64G-1024-rndrw-sync
-      0.10          -30.0%       0.07       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-ext4-64G-1024-rndwr-sync
-      1.07          -16.8%       0.89       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-ext4-64G-1024-seqrd-sync
-      0.09          +55.6%       0.14       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-ext4-64G-1024-seqrewr-sync
-      0.13           +0.0%       0.13       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-ext4-64G-1024-seqwr-sync
-     95.90          -15.3%      81.25       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-xfs-64G-1024-rndrd-sync
-     94.65          -24.1%      71.80       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-xfs-64G-1024-rndrw-sync
-      0.09          -22.2%       0.07       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-xfs-64G-1024-rndwr-sync
-      0.97          -17.5%       0.80       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-xfs-64G-1024-seqrd-sync
-      0.10          -10.0%       0.09       kbuildx/sysbench/fileio/600s-10=
-0%-1HDD-xfs-64G-1024-seqwr-sync
-     45.06           +1.5%      45.72       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-rndrd-sync
-     43.70           +0.1%      43.75       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-rndrw-sync
-      0.03           +0.0%       0.03       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-rndwr-sync
-      2.57           -0.4%       2.56       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-seqrd-sync
-      0.02         +100.0%       0.04       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-seqrewr-sync
-      0.03          +66.7%       0.05       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-seqwr-sync
-     49.21           +0.4%      49.39       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-xfs-64G-1024-rndrd-sync
-     52.78           +1.1%      53.34       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-xfs-64G-1024-rndrw-sync
-      0.01         +100.0%       0.02       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-xfs-64G-1024-rndwr-sync
-      2.58           -0.4%       2.57       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-xfs-64G-1024-seqrd-sync
-      0.02 ~ 0%     +50.0%       0.03       snb-drag/sysbench/fileio/600s-1=
+git://bee.sh.intel.com/git/wfg/linux-devel.git jan-dirty-list
+commit 6903673566d0289680e593dac088c787d119b067 ("writeback: Replace severa=
+l writeback lists with inode tagging")
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      6526 ~ 0%      +3.2%       6736 ~ 0%  snb-drag/sysbench/fileio/600s-1=
 00%-1HDD-xfs-64G-1024-seqrewr-sync
-      0.02 ~ 0%    +100.0%       0.04       snb-drag/sysbench/fileio/600s-1=
+      6441 ~ 0%      +1.8%       6558 ~ 0%  snb-drag/sysbench/fileio/600s-1=
 00%-1HDD-xfs-64G-1024-seqwr-sync
-    546.83           -8.1%     502.58       TOTAL fileio.request_latency_95=
-%_ms
+     12968 ~ 0%      +2.5%      13295 ~ 0%  TOTAL fileio.requests_per_sec
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-   3081836          +31.0%    4037172       kbuildx/micro/will-it-scale/brk1
-    579081          -27.4%     420172       kbuildx/micro/will-it-scale/con=
-text_switch1
-   2677858           +8.7%    2911814       kbuildx/micro/will-it-scale/eve=
-ntfd1
-   4997685           -6.8%    4658574       kbuildx/micro/will-it-scale/fut=
-ex1
-   4820209          -16.4%    4029473       kbuildx/micro/will-it-scale/fut=
-ex2
-   9175395          +42.3%   13060407       kbuildx/micro/will-it-scale/fut=
-ex3
-   8687050           -9.7%    7841336       kbuildx/micro/will-it-scale/fut=
-ex4
-  19857489           -2.2%   19424336       kbuildx/micro/will-it-scale/get=
-ppid1
-   3202049           +1.2%    3241283       kbuildx/micro/will-it-scale/loc=
-k1
-  14974024          +13.0%   16917603       kbuildx/micro/will-it-scale/lse=
-ek1
-  15898842           -6.0%   14940232       kbuildx/micro/will-it-scale/lse=
-ek2
-    182873           +0.9%     184579       kbuildx/micro/will-it-scale/mal=
-loc1
-  29201757           -5.4%   27615173       kbuildx/micro/will-it-scale/mal=
-loc2
-    606390          +24.5%     755057       kbuildx/micro/will-it-scale/mma=
-p1
-    717868           -4.2%     687408       kbuildx/micro/will-it-scale/mma=
-p2
-    576186          +39.0%     800981       kbuildx/micro/will-it-scale/ope=
-n1
-    685080          -31.8%     467132       kbuildx/micro/will-it-scale/ope=
-n2
-   1433105          -17.0%    1189039       kbuildx/micro/will-it-scale/pag=
-e_fault1
-    353697           +4.8%     370642       kbuildx/micro/will-it-scale/pag=
-e_fault2
-   1012142           +1.0%    1021800       kbuildx/micro/will-it-scale/pag=
-e_fault3
-   2019546           -5.6%    1907225       kbuildx/micro/will-it-scale/pip=
-e1
-  12270196           -3.0%   11907480       kbuildx/micro/will-it-scale/pol=
-l1
-    667919          -15.1%     567346       kbuildx/micro/will-it-scale/pol=
-l2
-  40532111           -2.7%   39430596       kbuildx/micro/will-it-scale/pos=
-ix_semaphore1
-   2626698          -40.2%    1570040       kbuildx/micro/will-it-scale/pre=
-ad1
-   1289351          -32.3%     872712       kbuildx/micro/will-it-scale/pre=
-ad2
- 2.079e+08           -6.2%  1.949e+08       kbuildx/micro/will-it-scale/pth=
-read_mutex1
- 2.325e+08           -2.9%  2.258e+08       kbuildx/micro/will-it-scale/pth=
-read_mutex2
-    862265           -0.6%     856735       kbuildx/micro/will-it-scale/pwr=
-ite2
-   1624163           +8.7%    1764808       kbuildx/micro/will-it-scale/rea=
-d1
-   1912821           -8.9%    1742796       kbuildx/micro/will-it-scale/rea=
-d2
-   1994084          +14.8%    2288540       kbuildx/micro/will-it-scale/rea=
-dseek
-   3395276          +18.1%    4011241       kbuildx/micro/will-it-scale/sch=
-ed_yield
-    806280          +20.0%     967611       kbuildx/micro/will-it-scale/sig=
-nal1
-   1152264          -44.6%     638204       kbuildx/micro/will-it-scale/uni=
-x1
-    119564          -61.2%      46401       kbuildx/micro/will-it-scale/unl=
-ink1
-    130399           -8.1%     119824       kbuildx/micro/will-it-scale/unl=
-ink2
-   1093555          +11.3%    1216816       kbuildx/micro/will-it-scale/wri=
-te1
-   1109424          -16.4%     927781       kbuildx/micro/will-it-scale/wri=
-teseek
-    498136           +1.7%     506398       lkp-a03/micro/will-it-scale/brk1
-     60368           -1.0%      59758       lkp-a03/micro/will-it-scale/con=
-text_switch1
-    546167           -2.4%     532971       lkp-a03/micro/will-it-scale/eve=
-ntfd1
-   1188127          +11.3%    1322807       lkp-a03/micro/will-it-scale/fut=
-ex1
-   1049210           -0.8%    1041086       lkp-a03/micro/will-it-scale/fut=
-ex2
-   2554426           +6.4%    2719162       lkp-a03/micro/will-it-scale/fut=
-ex3
-   2055294           -3.6%    1982080       lkp-a03/micro/will-it-scale/fut=
-ex4
-   4648715           +1.1%    4701250       lkp-a03/micro/will-it-scale/get=
-ppid1
-    407376           +1.4%     413147       lkp-a03/micro/will-it-scale/loc=
-k1
-   3632575          -11.4%    3220162       lkp-a03/micro/will-it-scale/lse=
-ek1
-   3640279           -8.7%    3323511       lkp-a03/micro/will-it-scale/lse=
-ek2
-     35692           -0.4%      35556       lkp-a03/micro/will-it-scale/mal=
-loc1
-   4013513           +0.1%    4016965       lkp-a03/micro/will-it-scale/mal=
-loc2
-    123417           -3.2%     119459       lkp-a03/micro/will-it-scale/mma=
-p1
-    104039           -2.7%     101178       lkp-a03/micro/will-it-scale/mma=
-p2
-    111741           -1.1%     110490       lkp-a03/micro/will-it-scale/ope=
-n1
-    106721           -3.7%     102749       lkp-a03/micro/will-it-scale/ope=
-n2
-    176734           -0.2%     176416       lkp-a03/micro/will-it-scale/pag=
-e_fault1
-     78942           +0.3%      79155       lkp-a03/micro/will-it-scale/pag=
-e_fault2
-    328452           +2.4%     336252       lkp-a03/micro/will-it-scale/pag=
-e_fault3
-    300951           -3.4%     290822       lkp-a03/micro/will-it-scale/pip=
-e1
-   1947407           -3.0%    1889571       lkp-a03/micro/will-it-scale/pol=
-l1
-     94646           -4.1%      90743       lkp-a03/micro/will-it-scale/pol=
-l2
-  12867597           -0.6%   12796431       lkp-a03/micro/will-it-scale/pos=
-ix_semaphore1
-    438853           -1.8%     430800       lkp-a03/micro/will-it-scale/pre=
-ad1
-    361487           +3.0%     372426       lkp-a03/micro/will-it-scale/pre=
-ad2
-  19178035           -0.0%   19175900       lkp-a03/micro/will-it-scale/pth=
-read_mutex1
-  19708674           +0.8%   19869328       lkp-a03/micro/will-it-scale/pth=
-read_mutex2
-    318874           +1.5%     323607       lkp-a03/micro/will-it-scale/pwr=
-ite1
-    157182           +7.1%     168264       lkp-a03/micro/will-it-scale/pwr=
-ite2
-    213621           -0.5%     212548       lkp-a03/micro/will-it-scale/rea=
-d1
-    216775           -9.3%     196697       lkp-a03/micro/will-it-scale/rea=
-d2
- 7.179e+08           -2.9%  6.968e+08       TOTAL will-it-scale.per_process=
-_ops
+836ecc5f024669e  6903673566d0289680e593dac  =
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-    948797          +26.1%    1196716       kbuildx/micro/will-it-scale/brk1
-    661343          -28.2%     474896       kbuildx/micro/will-it-scale/con=
-text_switch1
-   2158125           +4.3%    2249953       kbuildx/micro/will-it-scale/eve=
-ntfd1
-   3652285           +9.8%    4010569       kbuildx/micro/will-it-scale/fut=
-ex1
-   3754095          -20.1%    3001278       kbuildx/micro/will-it-scale/fut=
-ex2
-   8788557          +48.5%   13050354       kbuildx/micro/will-it-scale/fut=
-ex3
-   8673483           -7.9%    7986162       kbuildx/micro/will-it-scale/fut=
-ex4
-  20234106           -3.7%   19482740       kbuildx/micro/will-it-scale/get=
-ppid1
-   2394550           -2.9%    2324504       kbuildx/micro/will-it-scale/loc=
-k1
-  10095004          -12.3%    8853616       kbuildx/micro/will-it-scale/lse=
-ek1
-  10575795          -18.4%    8630257       kbuildx/micro/will-it-scale/lse=
-ek2
-     78582           -3.2%      76051       kbuildx/micro/will-it-scale/mal=
-loc1
-  19801191           -3.7%   19059934       kbuildx/micro/will-it-scale/mal=
-loc2
-    343349           -8.3%     314825       kbuildx/micro/will-it-scale/mma=
-p1
-    307814          -10.0%     276911       kbuildx/micro/will-it-scale/mma=
-p2
-    624368           +6.7%     666086       kbuildx/micro/will-it-scale/ope=
-n1
-    655417          -30.9%     452597       kbuildx/micro/will-it-scale/ope=
-n2
-   1349106          -20.5%    1072202       kbuildx/micro/will-it-scale/pag=
-e_fault1
-    266167          +12.9%     300623       kbuildx/micro/will-it-scale/pag=
-e_fault2
-    777867          +18.4%     921059       kbuildx/micro/will-it-scale/pag=
-e_fault3
-   1694974           -6.2%    1589896       kbuildx/micro/will-it-scale/pip=
-e1
-   8668422           -2.4%    8462421       kbuildx/micro/will-it-scale/pol=
-l1
-    293735          -16.7%     244608       kbuildx/micro/will-it-scale/pol=
-l2
-  41949373           -2.5%   40900774       kbuildx/micro/will-it-scale/pos=
-ix_semaphore1
-   2483471          -44.7%    1373995       kbuildx/micro/will-it-scale/pre=
-ad1
-   1135715          -16.9%     943591       kbuildx/micro/will-it-scale/pre=
-ad2
-  15835319          -10.3%   14211477       kbuildx/micro/will-it-scale/pth=
-read_mutex1
-  40177023           -3.1%   38920694       kbuildx/micro/will-it-scale/pth=
-read_mutex2
-    821973           -0.3%     819155       kbuildx/micro/will-it-scale/pwr=
-ite2
-   1253787          +16.7%    1463384       kbuildx/micro/will-it-scale/rea=
-d1
-   1836961          -27.5%    1331083       kbuildx/micro/will-it-scale/rea=
-d2
-   1414293          +30.8%    1849544       kbuildx/micro/will-it-scale/rea=
-dseek
-   3526509          +14.1%    4023058       kbuildx/micro/will-it-scale/sch=
-ed_yield
-    532969          +25.2%     667522       kbuildx/micro/will-it-scale/sig=
-nal1
-    961817          -48.6%     494097       kbuildx/micro/will-it-scale/uni=
-x1
-    137380          -66.1%      46573       kbuildx/micro/will-it-scale/unl=
-ink1
-    136350           +3.4%     140956       kbuildx/micro/will-it-scale/unl=
-ink2
-   1156972          -10.1%    1040055       kbuildx/micro/will-it-scale/wri=
-te1
-    869136           -8.0%     799273       kbuildx/micro/will-it-scale/wri=
-teseek
-    158163           +1.2%     160072       lkp-a03/micro/will-it-scale/brk1
-     64538           -1.7%      63460       lkp-a03/micro/will-it-scale/con=
-text_switch1
-    497874           +3.9%     517442       lkp-a03/micro/will-it-scale/eve=
-ntfd1
-   1019236           +4.9%    1068744       lkp-a03/micro/will-it-scale/fut=
-ex1
-    893740           +3.1%     921073       lkp-a03/micro/will-it-scale/fut=
-ex2
-   2574637           +5.7%    2721713       lkp-a03/micro/will-it-scale/fut=
-ex3
-   2062343           -4.0%    1980391       lkp-a03/micro/will-it-scale/fut=
-ex4
-   4709987           -0.2%    4700300       lkp-a03/micro/will-it-scale/get=
-ppid1
-    386629           -5.4%     365931       lkp-a03/micro/will-it-scale/loc=
-k1
-   2796133          -20.2%    2230663       lkp-a03/micro/will-it-scale/lse=
-ek1
-   2792667          -19.9%    2235883       lkp-a03/micro/will-it-scale/lse=
-ek2
-     11484           -0.9%      11385       lkp-a03/micro/will-it-scale/mal=
-loc1
-   3720961           +0.2%    3728026       lkp-a03/micro/will-it-scale/mal=
-loc2
-     57486           -6.2%      53937       lkp-a03/micro/will-it-scale/mma=
-p1
-     50497           -6.6%      47156       lkp-a03/micro/will-it-scale/mma=
-p2
-    107160           -1.4%     105677       lkp-a03/micro/will-it-scale/ope=
-n1
-    102768           -4.4%      98252       lkp-a03/micro/will-it-scale/ope=
-n2
-    173361           -0.2%     173029       lkp-a03/micro/will-it-scale/pag=
-e_fault1
-     69486           +0.2%      69658       lkp-a03/micro/will-it-scale/pag=
-e_fault2
-    282496           +1.3%     286097       lkp-a03/micro/will-it-scale/pag=
-e_fault3
-    289102           -1.8%     283850       lkp-a03/micro/will-it-scale/pip=
-e1
-   1648368           -1.5%    1624062       lkp-a03/micro/will-it-scale/pol=
-l1
-     69681          -14.6%      59513       lkp-a03/micro/will-it-scale/pol=
-l2
-  12941190           -0.0%   12939294       lkp-a03/micro/will-it-scale/pos=
-ix_semaphore1
-    433232           -2.5%     422342       lkp-a03/micro/will-it-scale/pre=
-ad1
-    349203           +1.4%     353918       lkp-a03/micro/will-it-scale/pre=
-ad2
-   4257776           +0.4%    4275753       lkp-a03/micro/will-it-scale/pth=
-read_mutex1
-  11883360           +0.0%   11888242       lkp-a03/micro/will-it-scale/pth=
-read_mutex2
-    296769           +4.3%     309658       lkp-a03/micro/will-it-scale/pwr=
-ite1
-    163776           -7.3%     151813       lkp-a03/micro/will-it-scale/pwr=
-ite2
-    230938          -18.1%     189029       lkp-a03/micro/will-it-scale/rea=
-d1
-    218200           -9.6%     197232       lkp-a03/micro/will-it-scale/rea=
-d2
- 276339421           -3.0%  267957084       TOTAL will-it-scale.per_thread_=
-ops
+---------------  -------------------------  =
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-      0.77          +24.8%       0.95       kbuildx/micro/will-it-scale/brk1
-      0.82          -30.1%       0.57       kbuildx/micro/will-it-scale/con=
-text_switch1
-      0.90          -31.0%       0.62       kbuildx/micro/will-it-scale/eve=
-ntfd1
-      0.85          -36.7%       0.54       kbuildx/micro/will-it-scale/fut=
-ex1
-      0.92          +28.3%       1.18       kbuildx/micro/will-it-scale/fut=
-ex2
-      0.94           -1.9%       0.92       kbuildx/micro/will-it-scale/fut=
-ex3
-      0.97           -8.1%       0.89       kbuildx/micro/will-it-scale/fut=
-ex4
-      0.81          -12.5%       0.70       kbuildx/micro/will-it-scale/get=
-ppid1
-      1.03          -24.6%       0.78       kbuildx/micro/will-it-scale/loc=
-k1
-      1.00          -10.1%       0.90       kbuildx/micro/will-it-scale/lse=
-ek1
-      1.13          +24.8%       1.41       kbuildx/micro/will-it-scale/lse=
-ek2
-      0.71          -11.7%       0.63       kbuildx/micro/will-it-scale/mal=
-loc1
-      0.89           -0.5%       0.88       kbuildx/micro/will-it-scale/mal=
-loc2
-      0.49          +69.3%       0.82       kbuildx/micro/will-it-scale/mma=
-p1
-      0.78          +15.0%       0.90       kbuildx/micro/will-it-scale/mma=
-p2
-      0.36         +148.3%       0.89       kbuildx/micro/will-it-scale/ope=
-n1
-      0.79          -54.5%       0.36       kbuildx/micro/will-it-scale/ope=
-n2
-      0.63          -20.7%       0.50       kbuildx/micro/will-it-scale/pag=
-e_fault1
-      0.54          +22.9%       0.66       kbuildx/micro/will-it-scale/pag=
-e_fault2
-      0.71          -17.6%       0.59       kbuildx/micro/will-it-scale/pag=
-e_fault3
-      0.68          +36.8%       0.94       kbuildx/micro/will-it-scale/pip=
-e1
-      0.82          +11.4%       0.92       kbuildx/micro/will-it-scale/pol=
-l1
-      1.48          -66.2%       0.50       kbuildx/micro/will-it-scale/pol=
-l2
-      0.81           +1.0%       0.82       kbuildx/micro/will-it-scale/pos=
-ix_semaphore1
-      0.98          -27.3%       0.71       kbuildx/micro/will-it-scale/pre=
-ad1
-      0.17          +54.5%       0.26       kbuildx/micro/will-it-scale/pre=
-ad2
-      1.00          +18.1%       1.18       kbuildx/micro/will-it-scale/pth=
-read_mutex1
-      0.92           +1.5%       0.94       kbuildx/micro/will-it-scale/pth=
-read_mutex2
-      0.13           -5.2%       0.13       kbuildx/micro/will-it-scale/pwr=
-ite2
-      0.53          +17.4%       0.62       kbuildx/micro/will-it-scale/rea=
-d1
-      0.83          -34.1%       0.55       kbuildx/micro/will-it-scale/rea=
-d2
-      0.57          +64.8%       0.94       kbuildx/micro/will-it-scale/rea=
-dseek
-      0.60          +46.9%       0.89       kbuildx/micro/will-it-scale/sch=
-ed_yield
-      1.08          -24.8%       0.81       kbuildx/micro/will-it-scale/sig=
-nal1
-      0.61          +52.0%       0.93       kbuildx/micro/will-it-scale/uni=
-x1
-      0.21          +38.5%       0.29       kbuildx/micro/will-it-scale/unl=
-ink1
-      0.32          +62.3%       0.52       kbuildx/micro/will-it-scale/unl=
-ink2
-      0.50         +222.0%       1.61       kbuildx/micro/will-it-scale/wri=
-te1
-      0.44         +112.4%       0.94       kbuildx/micro/will-it-scale/wri=
-teseek
-      0.59           +1.2%       0.59       lkp-a03/micro/will-it-scale/brk1
-      1.05           +1.0%       1.06       lkp-a03/micro/will-it-scale/con=
-text_switch1
-      0.54           +1.7%       0.55       lkp-a03/micro/will-it-scale/eve=
-ntfd1
-      0.49          +17.7%       0.57       lkp-a03/micro/will-it-scale/fut=
-ex1
-      0.48          +17.6%       0.56       lkp-a03/micro/will-it-scale/fut=
-ex2
-      0.65           +1.1%       0.65       lkp-a03/micro/will-it-scale/fut=
-ex3
-      0.62           +3.5%       0.65       lkp-a03/micro/will-it-scale/fut=
-ex4
-      0.72           +3.3%       0.75       lkp-a03/micro/will-it-scale/get=
-ppid1
-      0.49           -1.4%       0.49       lkp-a03/micro/will-it-scale/loc=
-k1
-      0.69           +7.1%       0.74       lkp-a03/micro/will-it-scale/lse=
-ek1
-      0.70           +0.9%       0.70       lkp-a03/micro/will-it-scale/lse=
-ek2
-      0.62           +2.3%       0.64       lkp-a03/micro/will-it-scale/mal=
-loc1
-      0.62           -0.3%       0.62       lkp-a03/micro/will-it-scale/mal=
-loc2
-      0.57           +0.9%       0.57       lkp-a03/micro/will-it-scale/mma=
-p1
-      0.56           +4.1%       0.59       lkp-a03/micro/will-it-scale/mma=
-p2
-      0.63           +0.8%       0.64       lkp-a03/micro/will-it-scale/ope=
-n1
-      0.63           -0.8%       0.62       lkp-a03/micro/will-it-scale/ope=
-n2
-      0.32           +0.3%       0.32       lkp-a03/micro/will-it-scale/pag=
-e_fault1
-      0.49           -0.6%       0.49       lkp-a03/micro/will-it-scale/pag=
-e_fault2
-      0.53           -3.6%       0.51       lkp-a03/micro/will-it-scale/pag=
-e_fault3
-      0.52           -1.9%       0.51       lkp-a03/micro/will-it-scale/pip=
-e1
-      0.66           +2.0%       0.67       lkp-a03/micro/will-it-scale/pol=
-l1
-      0.73           -4.5%       0.70       lkp-a03/micro/will-it-scale/pol=
-l2
-      0.84           -1.3%       0.83       lkp-a03/micro/will-it-scale/pos=
-ix_semaphore1
-      0.48           +2.1%       0.49       lkp-a03/micro/will-it-scale/pre=
-ad1
-      0.34           -7.5%       0.32       lkp-a03/micro/will-it-scale/pre=
-ad2
-      0.81           -0.4%       0.81       lkp-a03/micro/will-it-scale/pth=
-read_mutex1
-      0.82           +0.4%       0.83       lkp-a03/micro/will-it-scale/pth=
-read_mutex2
-      0.49           -1.4%       0.48       lkp-a03/micro/will-it-scale/pwr=
-ite1
-      0.13           -2.3%       0.13       lkp-a03/micro/will-it-scale/pwr=
-ite2
-      0.57           +0.9%       0.58       lkp-a03/micro/will-it-scale/rea=
-d1
-      0.51          +56.2%       0.80       lkp-a03/micro/will-it-scale/rea=
-d2
-     47.63           +4.2%      49.62       TOTAL will-it-scale.scalability
+    398147 ~ 0%      -7.1%     369866 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+    398147 ~ 0%      -7.1%     369866 ~ 0%  TOTAL iostat.md0.wkB/s
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-       485           -2.4%        473       lkp-a06/micro/dbench/100%
-      8220 ~ 0%     -40.9%       4854 ~ 0%  nhm8/micro/dbench/100%
-      7894 ~ 0%      -1.1%       7807       nhm8/micro/dbench/100%
-     16599          -20.9%      13135       TOTAL dbench.throughput-MB/sec
+836ecc5f024669e  6903673566d0289680e593dac  =
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-     11.47           +2.2%      11.73       lkp-a06/micro/dbench/100%
-      8.06 ~49%      -9.6%       7.28 ~13%  nhm8/micro/dbench/100%
-     11.26 ~35%     -40.2%       6.73       nhm8/micro/dbench/100%
-     30.79          -16.4%      25.75       TOTAL dbench.max_latency
+---------------  -------------------------  =
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-    111600 ~ 4%      +7.7%     120192       lkp-ne04/micro/aim7/brk_test
-    117829 ~ 3%      +5.0%     123774       lkp-ne04/micro/aim7/compute
-    107116 ~ 1%     -10.6%      95731       lkp-ne04/micro/aim7/creat-clo
-    543847 ~ 0%      -0.5%     541271       lkp-ne04/micro/aim7/disk_src
-    131390 ~ 2%      +4.1%     136783       lkp-ne04/micro/aim7/exec_test
-     20891 ~ 0%      -2.4%      20398       lkp-ne04/micro/aim7/fork_test
-    187049 ~ 0%      -4.4%     178784       lkp-ne04/micro/aim7/link_test
-    198430 ~ 0%      +0.6%     199667       lkp-ne04/micro/aim7/mem_rtns_1
-    663560 ~ 0%      +0.0%     663716       lkp-ne04/micro/aim7/misc_rtns_1
-    151714 ~ 0%      +2.1%     154858       lkp-ne04/micro/aim7/shell_rtns_1
-    324456 ~ 2%      +3.5%     335664       lkp-ne04/micro/aim7/signal_test
-    205058 ~ 0%      -0.2%     204638       lkp-ne04/micro/aim7/sort_rtns_1
-    106244 ~ 0%      -1.7%     104429       lkp-ne04/micro/aim7/string_rtns
-    136249 ~ 6%      +6.6%     145278       lkp-ne04/micro/aim7/trig_rtns
-   3005440 ~ 1%      +0.7%    3025190       TOTAL aim7.2000.jobs-per-min
+       861 ~30%     -78.7%        183 ~33%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+       464 ~48%     -91.7%         38 ~27%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       109 ~18%  +54509.0%      59960 ~ 2%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      1436 ~35%   +4089.8%      60182 ~ 2%  TOTAL proc-vmstat.nr_vmscan_imm=
+ediate_reclaim
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-    114483          +43.7%     164557       lkp-nex05/micro/hackbench/800%-=
-process-pipe
-     96611          +38.4%     133733       lkp-nex05/micro/hackbench/800%-=
-process-socket
-     79522          +84.0%     146293       lkp-nex05/micro/hackbench/800%-=
-threads-pipe
-     62330         +123.9%     139559       lkp-nex05/micro/hackbench/800%-=
-threads-socket
-    135181           -2.6%     131680       lkp-ws02/micro/hackbench/1600%-=
-process-pipe
-    149093          -15.7%     125723       lkp-ws02/micro/hackbench/1600%-=
-threads-pipe
-     90124          +10.0%      99179       lkp-ws02/micro/hackbench/1600%-=
-threads-socket
-    727348          +29.3%     940728       TOTAL hackbench.throughput
+836ecc5f024669e  6903673566d0289680e593dac  =
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-       952          +16.4%       1108       kbuildx/micro/tbench/100%
-       182           +0.1%        182       lkp-a06/micro/tbench/100%
-      1134          +13.8%       1290       TOTAL tbench.throughput-MB/sec
+---------------  -------------------------  =
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-      2.13          +21.9%       2.60       kbuildx/micro/tbench/100%
-      6.29           +7.1%       6.73       lkp-a06/micro/tbench/100%
-      8.42          +10.8%       9.33       TOTAL tbench.max_latency
+       123 ~29%     -94.3%          7 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       123 ~29%     -94.3%          7 ~ 0%  TOTAL ftrace.writeback_single_i=
+node.md0.age
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-     56.12          +15.2%      64.66       kbuildx/micro/pigz/100%
-    399.12           -0.7%     396.46       lkp-nex04/micro/pigz/100%
-    306.11          +29.1%     395.08       lkp-nex06/micro/pigz/100%
-    761.36          +12.5%     856.20       TOTAL pigz.throughput
+836ecc5f024669e  6903673566d0289680e593dac  =
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-     24.70           -2.1%      24.18       snb-drag/crypto/tcrypt/2s-200-2=
-04
-     24.14           -2.3%      23.58       snb-drag/crypto/tcrypt/2s-205-2=
-10
-     23.80           -0.6%      23.65       snb-drag/crypto/tcrypt/2s-301-3=
-19
-     23.98           -0.4%      23.89       snb-drag/crypto/tcrypt/2s-401-4=
-17
-     25.24           -3.1%      24.46       snb-drag/crypto/tcrypt/2s-500-5=
-04
-     24.66           -1.6%      24.26       snb-drag/crypto/tcrypt/2s-505-5=
-09
-      5.64           -6.4%       5.28       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-rndrd-sync
-      6.45           -8.2%       5.92       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-rndrw-sync
-      5.37           -3.0%       5.21       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-rndwr-sync
-      7.56           -6.5%       7.07       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-seqrd-sync
-     16.74          -52.2%       8.01       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-seqrewr-sync
-     17.18          -52.3%       8.19       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-ext4-64G-1024-seqwr-sync
-      6.98          -19.6%       5.61       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-xfs-64G-1024-rndrd-sync
-      6.91          -17.8%       5.68       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-xfs-64G-1024-rndrw-sync
-      4.82           -3.1%       4.67       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-xfs-64G-1024-rndwr-sync
-      8.87          -16.2%       7.43       snb-drag/sysbench/fileio/600s-1=
-00%-1HDD-xfs-64G-1024-seqrd-sync
-     17.27 ~ 2%     -53.2%       8.09       snb-drag/sysbench/fileio/600s-1=
+---------------  -------------------------  =
+
+        55 ~19%  +19305.5%      10750 ~17%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+        55 ~19%  +19305.5%      10750 ~17%  TOTAL numa-vmstat.node1.nr_vmsc=
+an_immediate_reclaim
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+        38 ~26%  +22737.7%       8815 ~17%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+        38 ~26%  +22737.7%       8815 ~17%  TOTAL numa-vmstat.node0.nr_vmsc=
+an_immediate_reclaim
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       145 ~16%    +668.1%       1115 ~17%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+       145 ~16%    +668.1%       1115 ~17%  TOTAL proc-vmstat.pgrotated
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      1477 ~ 0%    +275.0%       5541 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      1477 ~ 0%    +275.0%       5541 ~ 1%  TOTAL meminfo.Buffers
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      1486 ~ 0%    +273.3%       5546 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      1486 ~ 0%    +273.3%       5546 ~ 1%  TOTAL vmstat.memory.buff
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     13328 ~ 0%     -68.6%       4180 ~ 7%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+     13328 ~ 0%     -68.6%       4180 ~ 7%  TOTAL proc-vmstat.pgpgin
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      0.36 ~11%     -78.9%       0.08 ~16%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      0.12 ~ 6%     -22.0%       0.09 ~ 8%  snb-drag/sysbench/fileio/600s-1=
 00%-1HDD-xfs-64G-1024-seqrewr-sync
-     16.73 ~ 4%     -51.3%       8.15       snb-drag/sysbench/fileio/600s-1=
+      0.48 ~10%     -65.0%       0.17 ~11%  TOTAL turbostat.%pc3
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+         2 ~ 0%     +50.0%          3 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+         1 ~ 0%    +300.0%          4 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+         3 ~ 0%    +133.3%          7 ~ 0%  TOTAL ftrace.writeback_single_i=
+node.sda.age
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       105 ~11%    +125.9%        237 ~ 9%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+       105 ~11%    +125.9%        237 ~ 9%  TOTAL slabinfo.xfs_trans.active=
+_objs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       105 ~11%    +125.9%        237 ~ 9%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+       105 ~11%    +125.9%        237 ~ 9%  TOTAL slabinfo.xfs_trans.num_ob=
+js
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       868 ~ 2%    +124.1%       1946 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+       868 ~ 2%    +124.1%       1946 ~ 1%  TOTAL slabinfo.journal_head.act=
+ive_objs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       868 ~ 2%    +124.1%       1946 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+       868 ~ 2%    +124.1%       1946 ~ 1%  TOTAL slabinfo.journal_head.num=
+_objs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       725 ~ 9%    +119.1%       1589 ~ 6%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+       194 ~ 0%     +56.2%        303 ~13%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+       919 ~ 7%    +105.8%       1892 ~ 7%  TOTAL slabinfo.blkdev_ioc.num_o=
+bjs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       725 ~ 9%    +118.5%       1584 ~ 6%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+       194 ~ 0%     +56.2%        303 ~13%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+       919 ~ 7%    +105.3%       1887 ~ 7%  TOTAL slabinfo.blkdev_ioc.activ=
+e_objs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     13970 ~20%     -35.8%       8963 ~12%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+     13970 ~20%     -35.8%       8963 ~12%  TOTAL numa-vmstat.node1.nr_anon=
+_pages
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     55871 ~20%     -35.8%      35844 ~12%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+     55871 ~20%     -35.8%      35844 ~12%  TOTAL numa-meminfo.node1.AnonPa=
+ges
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     55793 ~20%     -35.9%      35791 ~12%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+     55793 ~20%     -35.9%      35791 ~12%  TOTAL numa-meminfo.node1.Active=
+(anon)
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     13949 ~20%     -35.8%       8950 ~12%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+     13949 ~20%     -35.8%       8950 ~12%  TOTAL numa-vmstat.node1.nr_acti=
+ve_anon
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      0.64 ~ 8%     +53.1%       0.98 ~ 3%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      0.64 ~ 8%     +53.1%       0.98 ~ 3%  TOTAL perf-profile.cpu-cycles.s=
+ys_write.system_call_fastpath.write
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       727 ~ 1%     +41.3%       1027 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+       727 ~ 1%     +41.3%       1027 ~ 1%  TOTAL slabinfo.dquot.num_objs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       727 ~ 1%     +41.3%       1027 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+       727 ~ 1%     +41.3%       1027 ~ 1%  TOTAL slabinfo.dquot.active_objs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+        17 ~ 4%     -17.6%         14 ~13%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+        17 ~ 4%     -17.6%         14 ~13%  TOTAL ftrace.balance_dirty_page=
+s.sdj.think
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     41483 ~ 1%     -25.4%      30966 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     41483 ~ 1%     -25.4%      30966 ~ 0%  TOTAL ftrace.writeback_single_i=
+node.md0.wrote
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      0.42 ~26%     -35.4%       0.27 ~ 9%  snb-drag/sysbench/fileio/600s-1=
 00%-1HDD-xfs-64G-1024-seqwr-sync
-    267.04          -16.4%     223.33       TOTAL turbostat.Pkg_W
+      0.42 ~26%     -35.4%       0.27 ~ 9%  TOTAL turbostat.%pc6
 
-          v3.13  177672afd93461854abe26c05
----------------  -------------------------
-      4.26          -49.8%       2.14       lkp-t410/micro/netperf/300s-200=
-%-SCTP_STREAM
-   4899.57           -0.4%    4882.11       lkp-t410/micro/netperf/300s-200=
-%-TCP_SENDFILE
-     81.77          -50.7%      40.31       lkp-t410/micro/netperf/900s-200=
-%-SCTP_STREAM_MANY
-   2244.16           -3.7%    2160.07       lkp-t410/micro/netperf/900s-200=
-%-TCP_MAERTS
-   2265.85           -3.8%    2179.04       lkp-t410/micro/netperf/900s-200=
-%-TCP_STREAM
-   9495.60           -2.4%    9263.66       TOTAL netperf.Throughput_Mbps
+836ecc5f024669e  6903673566d0289680e593dac  =
 
---===============1610212805264901861==--
+---------------  -------------------------  =
+
+      1.00 ~ 3%     +33.3%       1.33 ~ 5%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      1.00 ~ 3%     +33.3%       1.33 ~ 5%  TOTAL perf-profile.cpu-cycles._=
+_generic_file_aio_write.generic_file_aio_write.ext4_file_write.do_sync_writ=
+e.vfs_write
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      0.52 ~24%     +66.5%       0.87 ~25%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+      0.52 ~24%     +66.5%       0.87 ~25%  TOTAL perf-profile.cpu-cycles.d=
+o_sync_write.vfs_write.sys_write.system_call_fastpath.write
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     17614 ~ 0%     -18.5%      14355 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     39820 ~ 2%     -20.9%      31511 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     57435 ~ 1%     -20.1%      45866 ~ 0%  TOTAL proc-vmstat.nr_writeback
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     70430 ~ 0%     -18.5%      57410 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+    159175 ~ 2%     -21.0%     125784 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+    229605 ~ 1%     -20.2%     183195 ~ 0%  TOTAL meminfo.Writeback
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      8.14 ~ 8%     -16.0%       6.83 ~ 8%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+      8.14 ~ 8%     -16.0%       6.83 ~ 8%  TOTAL perf-profile.cpu-cycles._=
+_block_write_begin.xfs_vm_write_begin.generic_file_buffered_write.xfs_file_=
+buffered_aio_write.xfs_file_aio_write
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     17680 ~ 0%     -18.2%      14463 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     39997 ~ 1%     -20.6%      31757 ~ 2%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     57677 ~ 1%     -19.9%      46220 ~ 1%  TOTAL ftrace.global_dirty_state=
+.writeback
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     31031 ~ 5%     -23.4%      23763 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+    439570 ~ 3%     +11.8%     491310 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+    470602 ~ 3%      +9.4%     515073 ~ 1%  TOTAL ftrace.writeback_single_i=
+node.sda.index
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+   2239375 ~ 5%     -20.2%    1787786 ~ 3%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+   2239375 ~ 5%     -20.2%    1787786 ~ 3%  TOTAL ftrace.writeback_single_i=
+node.md0.index
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      0.89 ~ 9%     -20.0%       0.71 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      0.89 ~ 9%     -20.0%       0.71 ~ 1%  TOTAL perf-profile.cpu-cycles.v=
+fs_read.sys_read.system_call_fastpath.read
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       518 ~ 1%     +21.7%        630 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+      4406 ~ 0%     -17.6%       3629 ~ 2%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+      4924 ~ 0%     -13.5%       4260 ~ 2%  TOTAL ftrace.writeback_single_i=
+node.sda.wrote
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      2.46 ~10%     -16.8%       2.05 ~ 5%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+      2.46 ~10%     -16.8%       2.05 ~ 5%  TOTAL perf-profile.cpu-cycles._=
+_clear_user.read_zero.read_zero.vfs_read.sys_read
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      0.77 ~ 7%     -14.5%       0.66 ~ 7%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqwr-sync
+      0.77 ~ 7%     -14.5%       0.66 ~ 7%  TOTAL turbostat.%pc2
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       753 ~ 6%     -17.2%        623 ~ 4%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+       753 ~ 6%     -17.2%        623 ~ 4%  TOTAL ftrace.bdi_dirty_ratelimi=
+t.sda.task_ratelimit
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      1.45 ~ 7%     -18.5%       1.18 ~14%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+      1.45 ~ 7%     -18.5%       1.18 ~14%  TOTAL perf-profile.cpu-cycles.x=
+fs_file_aio_write.do_sync_write.vfs_write.sys_write.system_call_fastpath
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     67019 ~ 5%     -15.5%      56616 ~ 3%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+     67019 ~ 5%     -15.5%      56616 ~ 3%  TOTAL numa-vmstat.node1.nr_free=
+_pages
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+    268013 ~ 5%     -15.6%     226330 ~ 3%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+    268013 ~ 5%     -15.6%     226330 ~ 3%  TOTAL numa-meminfo.node1.MemFree
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 2.716e+08 ~ 7%     -10.2%  2.438e+08 ~ 8%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 2.716e+08 ~ 7%     -10.2%  2.438e+08 ~ 8%  TOTAL cpuidle.C1-NHM.time
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      1.30 ~ 6%     +15.0%       1.49 ~ 3%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      1.30 ~ 6%     +15.0%       1.49 ~ 3%  TOTAL perf-profile.cpu-cycles.j=
+bd2_journal_stop.__ext4_journal_stop.ext4_da_write_end.generic_file_buffere=
+d_write.__generic_file_aio_write
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+   5624475 ~ 0%     -14.3%    4817546 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+   5624475 ~ 0%     -14.3%    4817546 ~ 0%  TOTAL ftrace.global_dirty_state=
+.written
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+   5665317 ~ 0%     -14.2%    4858497 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+   5665317 ~ 0%     -14.2%    4858497 ~ 0%  TOTAL ftrace.global_dirty_state=
+.dirtied
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+    284093 ~ 0%     -14.3%     243524 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+    284093 ~ 0%     -14.3%     243524 ~ 1%  TOTAL softirqs.TIMER
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+    144616 ~ 2%     -13.1%     125601 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+    144616 ~ 2%     -13.1%     125601 ~ 0%  TOTAL interrupts.RES
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  10513311 ~ 1%     -14.2%    9018488 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  10513311 ~ 1%     -14.2%    9018488 ~ 0%  TOTAL proc-vmstat.pgsteal_kswap=
+d_dma32
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  10616278 ~ 1%     -14.1%    9120337 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  10616278 ~ 1%     -14.1%    9120337 ~ 0%  TOTAL proc-vmstat.pgdeactivate
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  10646283 ~ 1%     -14.1%    9150342 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  10646283 ~ 1%     -14.1%    9150342 ~ 0%  TOTAL proc-vmstat.pgrefill_dma32
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  10700780 ~ 1%     -13.9%    9213386 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  10700780 ~ 1%     -13.9%    9213386 ~ 0%  TOTAL proc-vmstat.pgscan_kswapd=
+_dma32
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     97209 ~ 0%     +16.0%     112763 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     97209 ~ 0%     +16.0%     112763 ~ 0%  TOTAL interrupts.46:PCI-MSI-edg=
+e.ahci
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     48817 ~ 0%     +15.8%      56548 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     48817 ~ 0%     +15.8%      56548 ~ 0%  TOTAL interrupts.CAL
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+        32 ~ 2%     +13.7%         36 ~ 2%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+        32 ~ 2%     +13.7%         36 ~ 2%  TOTAL ftrace.balance_dirty_page=
+s.sda.pause
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  42947776 ~ 1%     -13.8%   37036031 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  42947776 ~ 1%     -13.8%   37036031 ~ 0%  TOTAL proc-vmstat.pgpgout
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  10738479 ~ 1%     -13.8%    9260807 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  10738479 ~ 1%     -13.8%    9260807 ~ 0%  TOTAL proc-vmstat.nr_written
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  10756692 ~ 1%     -13.7%    9282691 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  10756692 ~ 1%     -13.7%    9282691 ~ 0%  TOTAL proc-vmstat.nr_dirtied
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     71616 ~ 1%     -13.6%      61867 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     71616 ~ 1%     -13.6%      61867 ~ 0%  TOTAL ftrace.bdi_dirty_ratelimi=
+t.sda.write_bw
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     72368 ~ 1%     -13.7%      62469 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     72368 ~ 1%     -13.7%      62469 ~ 0%  TOTAL ftrace.bdi_dirty_ratelimi=
+t.sda.dirty_rate
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     50797 ~ 0%     +15.3%      58562 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     50797 ~ 0%     +15.3%      58562 ~ 0%  TOTAL softirqs.BLOCK
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     71851 ~ 1%     -13.5%      62185 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     71851 ~ 1%     -13.5%      62185 ~ 0%  TOTAL ftrace.bdi_dirty_ratelimi=
+t.sda.awrite_bw
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  11603962 ~ 1%     -12.9%   10106747 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  11603962 ~ 1%     -12.9%   10106747 ~ 0%  TOTAL proc-vmstat.pgfree
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  11598185 ~ 1%     -12.9%   10103278 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  11598185 ~ 1%     -12.9%   10103278 ~ 0%  TOTAL proc-vmstat.numa_local
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  11598185 ~ 1%     -12.9%   10103278 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  11598185 ~ 1%     -12.9%   10103278 ~ 0%  TOTAL proc-vmstat.numa_hit
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  11615252 ~ 1%     -12.9%   10119889 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  11615252 ~ 1%     -12.9%   10119889 ~ 0%  TOTAL proc-vmstat.pgalloc_dma32
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     23008 ~ 1%     +14.2%      26276 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     23008 ~ 1%     +14.2%      26276 ~ 0%  TOTAL proc-vmstat.nr_dirty
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     92088 ~ 1%     +14.2%     105124 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     92088 ~ 1%     +14.2%     105124 ~ 0%  TOTAL meminfo.Dirty
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     23126 ~ 1%     +14.3%      26444 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     23126 ~ 1%     +14.3%      26444 ~ 0%  TOTAL ftrace.global_dirty_state=
+.dirty
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      1.78 ~17%     -30.2%       1.24 ~14%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+      1.78 ~17%     -30.2%       1.24 ~14%  TOTAL perf-profile.cpu-cycles.g=
+eneric_file_buffered_write.xfs_file_buffered_aio_write.xfs_file_aio_write.d=
+o_sync_write.vfs_write
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+    541298 ~ 1%     -11.9%     476647 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+    541298 ~ 1%     -11.9%     476647 ~ 0%  TOTAL meminfo.MemFree
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+    135390 ~ 1%     -11.9%     119229 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+    135390 ~ 1%     -11.9%     119229 ~ 0%  TOTAL proc-vmstat.nr_free_pages
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+        32 ~ 2%     +12.2%         36 ~ 2%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+        32 ~ 2%     +12.2%         36 ~ 2%  TOTAL ftrace.balance_dirty_page=
+s.sda.period
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+    550275 ~ 1%     -11.1%     489385 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+    550275 ~ 1%     -11.1%     489385 ~ 0%  TOTAL vmstat.memory.free
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+    362273 ~ 1%     -11.0%     322470 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+    362273 ~ 1%     -11.0%     322470 ~ 0%  TOTAL proc-vmstat.pgactivate
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      4191 ~ 1%     -10.0%       3772 ~ 2%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+      4191 ~ 1%     -10.0%       3772 ~ 2%  TOTAL proc-vmstat.kswapd_high_w=
+mark_hit_quickly
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       516 ~ 5%     +13.4%        585 ~ 5%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+       516 ~ 5%     +13.4%        585 ~ 5%  TOTAL numa-vmstat.node0.nr_page=
+_table_pages
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      1085 ~ 5%     +10.0%       1194 ~ 2%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      1085 ~ 5%     +10.0%       1194 ~ 2%  TOTAL slabinfo.task_struct.num_=
+objs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+        31 ~ 1%      -8.2%         29 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+        31 ~ 1%      -8.2%         29 ~ 0%  TOTAL ftrace.balance_dirty_page=
+s.sda.dirtied_pause
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+    227121 ~ 0%      -9.4%     205850 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+    227121 ~ 0%      -9.4%     205850 ~ 1%  TOTAL softirqs.RCU
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      2055 ~ 5%     +13.5%       2332 ~ 5%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      2055 ~ 5%     +13.5%       2332 ~ 5%  TOTAL numa-meminfo.node0.PageTa=
+bles
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      1069 ~ 3%     -10.8%        954 ~ 4%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+      1069 ~ 3%     -10.8%        954 ~ 4%  TOTAL ftrace.balance_dirty_page=
+s.sda.task_ratelimit
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     23923 ~ 0%     -76.5%       5626 ~11%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+     23923 ~ 0%     -76.5%       5626 ~11%  TOTAL time.file_system_inputs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      4.79 ~ 2%    +806.0%      43.40 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+      1.64 ~ 0%      +3.8%       1.71 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqrewr-sync
+      6.43 ~ 2%    +601.0%      45.11 ~ 1%  TOTAL iostat.sda.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       546 ~ 2%     +91.7%       1047 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       546 ~ 2%     +91.7%       1047 ~ 0%  TOTAL iostat.sdj.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       129 ~ 2%     +91.6%        248 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       129 ~ 2%     +91.6%        248 ~ 0%  TOTAL iostat.sdj.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       538 ~ 1%     +92.4%       1035 ~ 2%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       538 ~ 1%     +92.4%       1035 ~ 2%  TOTAL iostat.sde.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       127 ~ 1%     +92.2%        244 ~ 2%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       127 ~ 1%     +92.2%        244 ~ 2%  TOTAL iostat.sde.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       535 ~ 1%     +91.6%       1026 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       535 ~ 1%     +91.6%       1026 ~ 1%  TOTAL iostat.sdd.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       126 ~ 1%     +91.5%        242 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       126 ~ 1%     +91.5%        242 ~ 1%  TOTAL iostat.sdd.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       551 ~ 2%     +89.5%       1045 ~ 2%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       551 ~ 2%     +89.5%       1045 ~ 2%  TOTAL iostat.sdf.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       130 ~ 2%     +89.3%        247 ~ 2%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       130 ~ 2%     +89.3%        247 ~ 2%  TOTAL iostat.sdf.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       538 ~ 1%     +92.2%       1034 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       538 ~ 1%     +92.2%       1034 ~ 0%  TOTAL iostat.sdc.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       127 ~ 1%     +92.0%        244 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       127 ~ 1%     +92.0%        244 ~ 0%  TOTAL iostat.sdc.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       543 ~ 1%     +91.8%       1041 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       543 ~ 1%     +91.8%       1041 ~ 1%  TOTAL iostat.sdi.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       128 ~ 1%     +91.6%        246 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       128 ~ 1%     +91.6%        246 ~ 1%  TOTAL iostat.sdi.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       129 ~ 1%     +91.2%        247 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       129 ~ 1%     +91.2%        247 ~ 1%  TOTAL iostat.sdb.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       545 ~ 1%     +91.3%       1043 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       545 ~ 1%     +91.3%       1043 ~ 1%  TOTAL iostat.sdb.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       546 ~ 2%     +91.1%       1045 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       546 ~ 2%     +91.1%       1045 ~ 1%  TOTAL iostat.sdh.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       129 ~ 2%     +91.1%        247 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       129 ~ 2%     +91.1%        247 ~ 1%  TOTAL iostat.sdh.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       552 ~ 2%     +88.6%       1041 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       552 ~ 2%     +88.6%       1041 ~ 1%  TOTAL iostat.sdl.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       130 ~ 2%     +88.6%        246 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       130 ~ 2%     +88.6%        246 ~ 1%  TOTAL iostat.sdl.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       556 ~ 2%     +88.5%       1048 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       556 ~ 2%     +88.5%       1048 ~ 1%  TOTAL iostat.sdg.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       131 ~ 2%     +88.4%        248 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       131 ~ 2%     +88.4%        248 ~ 1%  TOTAL iostat.sdg.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       555 ~ 3%     +88.2%       1044 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       555 ~ 3%     +88.2%       1044 ~ 1%  TOTAL iostat.sdk.rkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       131 ~ 3%     +88.1%        247 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+       131 ~ 3%     +88.1%        247 ~ 1%  TOTAL iostat.sdk.rrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      3290 ~ 1%     -69.0%       1019 ~ 7%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+   3596794 ~ 0%      +3.3%    3714366 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqrewr-sync
+   3546724 ~ 0%      +1.9%    3614254 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqwr-sync
+   7146809 ~ 0%      +2.6%    7329639 ~ 0%  TOTAL time.voluntary_context_sw=
+itches
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       879 ~ 1%     -25.2%        657 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+       879 ~ 1%     -25.2%        657 ~ 0%  TOTAL iostat.sda.avgrq-sz
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  48923640 ~ 7%     +33.4%   65269752 ~ 7%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+  48923640 ~ 7%     +33.4%   65269752 ~ 7%  TOTAL perf-stat.dTLB-store-miss=
+es
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 1.478e+10 ~13%     +18.6%  1.753e+10 ~ 5%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 1.478e+10 ~13%     +18.6%  1.753e+10 ~ 5%  TOTAL perf-stat.dTLB-load-misses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       161 ~ 0%     +16.0%        186 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+       161 ~ 0%     +16.0%        186 ~ 0%  TOTAL iostat.sda.w/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       877 ~ 0%     -12.9%        763 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+       877 ~ 0%     -12.9%        763 ~ 0%  TOTAL iostat.sda.await
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       877 ~ 0%     -12.9%        763 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+       877 ~ 0%     -12.9%        763 ~ 0%  TOTAL iostat.sda.w_await
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 9.069e+08 ~ 1%      +6.2%  9.628e+08 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 3.994e+09 ~ 1%      +8.0%  4.312e+09 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 1.377e+10 ~ 0%     -18.7%   1.12e+10 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 1.867e+10 ~ 1%     -11.8%  1.648e+10 ~ 0%  TOTAL perf-stat.branch-misses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 3.005e+08 ~ 2%     -11.1%   2.67e+08 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 3.005e+08 ~ 2%     -11.1%   2.67e+08 ~ 0%  TOTAL perf-stat.LLC-stores
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 1.477e+11 ~ 0%     -14.4%  1.265e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 2.034e+11 ~ 0%      -7.9%  1.874e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 9.544e+11 ~ 0%      -8.2%  8.766e+11 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 1.306e+12 ~ 0%      -8.8%  1.191e+12 ~ 0%  TOTAL perf-stat.dTLB-loads
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  4.27e+11 ~ 2%     -14.2%  3.664e+11 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 5.714e+11 ~ 1%      -7.1%  5.306e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 3.604e+12 ~ 0%      -7.3%  3.341e+12 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 4.603e+12 ~ 0%      -7.9%  4.238e+12 ~ 0%  TOTAL perf-stat.L1-icache-loads
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  93487860 ~ 2%     -16.4%   78168769 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  1.09e+08 ~ 0%      -4.3%  1.044e+08 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 1.792e+09 ~ 0%      -7.1%  1.665e+09 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 1.995e+09 ~ 0%      -7.4%  1.847e+09 ~ 0%  TOTAL perf-stat.LLC-store-misses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 1.484e+11 ~ 1%     -14.5%  1.269e+11 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 2.041e+11 ~ 0%      -7.6%  1.886e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 9.549e+11 ~ 0%      -8.1%  8.778e+11 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 1.489e+12 ~ 0%      +3.0%  1.534e+12 ~ 2%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 2.797e+12 ~ 0%      -2.5%  2.728e+12 ~ 1%  TOTAL perf-stat.L1-dcache-loads
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 7.739e+10 ~ 2%     -12.1%  6.799e+10 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 1.104e+11 ~ 0%      -6.6%  1.031e+11 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 4.741e+11 ~ 0%      -6.5%  4.432e+11 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 6.618e+11 ~ 0%      -7.2%  6.143e+11 ~ 0%  TOTAL perf-stat.branch-loads
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 3.927e+11 ~ 2%     -11.8%  3.465e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 5.519e+11 ~ 1%      -5.8%  5.198e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 2.415e+12 ~ 0%      -6.9%   2.25e+12 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+  3.36e+12 ~ 0%      -7.3%  3.116e+12 ~ 0%  TOTAL perf-stat.instructions
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 9.313e+10 ~ 1%     -12.4%  8.163e+10 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 1.283e+11 ~ 0%      -5.2%  1.217e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 5.998e+11 ~ 0%      -7.0%  5.576e+11 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 8.213e+11 ~ 0%      -7.3%  7.609e+11 ~ 0%  TOTAL perf-stat.L1-dcache-stores
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 9.304e+10 ~ 1%     -12.2%  8.167e+10 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 1.284e+11 ~ 1%      -5.7%  1.211e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 5.981e+11 ~ 0%      -6.3%  5.603e+11 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 8.196e+11 ~ 0%      -6.9%  7.631e+11 ~ 0%  TOTAL perf-stat.dTLB-stores
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 7.728e+10 ~ 1%     -11.9%  6.808e+10 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 1.096e+11 ~ 0%      -6.2%  1.028e+11 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 4.747e+11 ~ 0%      -6.7%   4.43e+11 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 6.615e+11 ~ 0%      -7.2%  6.139e+11 ~ 0%  TOTAL perf-stat.branch-instruct=
+ions
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 3.934e+11 ~ 1%     -11.9%  3.466e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+  5.51e+11 ~ 1%      -6.1%  5.174e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 2.417e+12 ~ 0%      -6.5%  2.261e+12 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 3.362e+12 ~ 0%      -7.0%  3.125e+12 ~ 0%  TOTAL perf-stat.iTLB-loads
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 6.663e+08 ~ 3%      +7.5%  7.164e+08 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 6.663e+08 ~ 3%      +7.5%  7.164e+08 ~ 1%  TOTAL perf-stat.LLC-prefetch-mi=
+sses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 6.128e+10 ~ 1%     -11.2%  5.441e+10 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 7.652e+10 ~ 0%      -5.6%  7.222e+10 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 5.005e+11 ~ 0%      -6.6%  4.677e+11 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 6.383e+11 ~ 0%      -6.9%  5.944e+11 ~ 0%  TOTAL perf-stat.bus-cycles
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+    100757 ~ 7%     -17.1%      83525 ~ 2%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     75328 ~ 2%      -4.8%      71699 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+    229589 ~ 0%      +1.8%     233703 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+    405674 ~ 2%      -4.1%     388927 ~ 1%  TOTAL perf-stat.cpu-migrations
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 1.753e+09 ~ 2%      -6.7%  1.635e+09 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 3.862e+10 ~ 0%      -6.5%  3.609e+10 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 4.037e+10 ~ 0%      -6.5%  3.773e+10 ~ 1%  TOTAL perf-stat.L1-dcache-load-=
+misses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9670 ~ 0%      -7.0%       8996 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9670 ~ 0%      -7.0%       8996 ~ 0%  TOTAL iostat.sdd.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9671 ~ 0%      -7.0%       8996 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9671 ~ 0%      -7.0%       8996 ~ 0%  TOTAL iostat.sdl.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9670 ~ 0%      -7.0%       8997 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9670 ~ 0%      -7.0%       8997 ~ 0%  TOTAL iostat.sdg.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9672 ~ 0%      -7.0%       8997 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9672 ~ 0%      -7.0%       8997 ~ 0%  TOTAL iostat.sdj.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9671 ~ 0%      -7.0%       8996 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9671 ~ 0%      -7.0%       8996 ~ 0%  TOTAL iostat.sdk.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9670 ~ 0%      -7.0%       8996 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9670 ~ 0%      -7.0%       8996 ~ 0%  TOTAL iostat.sdf.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9671 ~ 0%      -7.0%       8996 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9671 ~ 0%      -7.0%       8996 ~ 0%  TOTAL iostat.sdb.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9671 ~ 0%      -7.0%       8996 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9671 ~ 0%      -7.0%       8996 ~ 0%  TOTAL iostat.sdc.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9670 ~ 0%      -6.9%       8998 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9670 ~ 0%      -6.9%       8998 ~ 0%  TOTAL iostat.sdh.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39934 ~ 0%      -6.9%      37184 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39934 ~ 0%      -6.9%      37184 ~ 0%  TOTAL iostat.sdd.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9670 ~ 0%      -7.0%       8998 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9670 ~ 0%      -7.0%       8998 ~ 0%  TOTAL iostat.sde.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      9672 ~ 0%      -7.0%       9000 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      9672 ~ 0%      -7.0%       9000 ~ 0%  TOTAL iostat.sdi.wrqm/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39938 ~ 0%      -6.9%      37180 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39938 ~ 0%      -6.9%      37180 ~ 0%  TOTAL iostat.sdl.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39932 ~ 0%      -6.9%      37188 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39932 ~ 0%      -6.9%      37188 ~ 0%  TOTAL iostat.sdg.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39943 ~ 0%      -6.9%      37188 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39943 ~ 0%      -6.9%      37188 ~ 0%  TOTAL iostat.sdj.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39938 ~ 0%      -6.9%      37184 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39938 ~ 0%      -6.9%      37184 ~ 0%  TOTAL iostat.sdk.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 5.549e+11 ~ 1%     -11.4%  4.915e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 6.897e+11 ~ 0%      -5.5%  6.517e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 4.012e+12 ~ 0%      -6.7%  3.745e+12 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 5.776e+12 ~ 1%      +5.4%  6.087e+12 ~ 2%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 1.103e+13 ~ 0%      -0.5%  1.098e+13 ~ 1%  TOTAL perf-stat.ref-cycles
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39933 ~ 0%      -6.9%      37182 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39933 ~ 0%      -6.9%      37182 ~ 0%  TOTAL iostat.sdf.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39935 ~ 0%      -6.9%      37181 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39935 ~ 0%      -6.9%      37181 ~ 0%  TOTAL iostat.sdb.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39937 ~ 0%      -6.9%      37183 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39937 ~ 0%      -6.9%      37183 ~ 0%  TOTAL iostat.sdc.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39932 ~ 0%      -6.9%      37189 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39932 ~ 0%      -6.9%      37189 ~ 0%  TOTAL iostat.sde.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39940 ~ 0%      -6.9%      37198 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     39940 ~ 0%      -6.9%      37198 ~ 0%  TOTAL iostat.sdi.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 4.924e+11 ~ 1%     -12.1%  4.326e+11 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 6.465e+11 ~ 0%      -5.1%  6.136e+11 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 4.012e+12 ~ 0%      -6.7%  3.744e+12 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 5.844e+12 ~ 1%      +4.0%  6.078e+12 ~ 2%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+   1.1e+13 ~ 0%      -1.2%  1.087e+13 ~ 1%  TOTAL perf-stat.cpu-cycles
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      3114 ~ 0%      -6.7%       2904 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+      3114 ~ 0%      -6.7%       2904 ~ 0%  TOTAL iostat.md0.w/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 7.507e+09 ~ 1%     -11.4%  6.648e+09 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 9.442e+09 ~ 1%      -2.7%  9.183e+09 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 7.953e+10 ~ 0%      -6.2%  7.464e+10 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 1.016e+10 ~ 1%      +6.2%   1.08e+10 ~ 2%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 1.066e+11 ~ 0%      -5.0%  1.013e+11 ~ 0%  TOTAL perf-stat.L1-dcache-store=
+-misses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 1.429e+08 ~ 3%      +6.7%  1.524e+08 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 1.429e+08 ~ 3%      +6.7%  1.524e+08 ~ 1%  TOTAL perf-stat.node-prefetch-m=
+isses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 3.414e+08 ~ 1%     -10.2%  3.064e+08 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 3.344e+08 ~ 0%      -5.7%  3.153e+08 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 4.325e+09 ~ 0%      -6.5%  4.045e+09 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 7.883e+09 ~ 2%      +4.2%   8.21e+09 ~ 2%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 1.288e+10 ~ 2%      -0.0%  1.288e+10 ~ 1%  TOTAL perf-stat.cache-misses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+  2.17e+08 ~ 1%      -9.4%  1.965e+08 ~ 2%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+   1.8e+08 ~ 1%      -3.2%  1.741e+08 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 1.902e+09 ~ 0%      -6.6%  1.776e+09 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 2.298e+09 ~ 0%      -6.6%  2.146e+09 ~ 0%  TOTAL perf-stat.LLC-load-misses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+        15 ~ 0%      +6.7%         16 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqrewr-sync
+        15 ~ 0%      +6.7%         16 ~ 0%  TOTAL time.percent_of_cpu_this_=
+job_got
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     71087 ~ 1%     -13.7%      61323 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     96152 ~ 0%      -4.6%      91690 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+    398295 ~ 0%      -7.1%     369881 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+    101932 ~ 0%      +3.3%     105271 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqrewr-sync
+    100595 ~ 0%      +1.9%     102504 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqwr-sync
+    768062 ~ 0%      -4.9%     730670 ~ 0%  TOTAL vmstat.io.bo
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     71101 ~ 1%     -13.7%      61338 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+     96102 ~ 0%      -4.6%      91674 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+    101782 ~ 0%      +3.3%     105125 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqrewr-sync
+    100447 ~ 0%      +1.9%     102354 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqwr-sync
+    369434 ~ 0%      -2.4%     360491 ~ 0%  TOTAL iostat.sda.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 6.563e+08 ~ 5%      +7.1%   7.03e+08 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 6.563e+08 ~ 5%      +7.1%   7.03e+08 ~ 0%  TOTAL perf-stat.node-prefetches
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 3.096e+09 ~ 0%      +8.9%  3.373e+09 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 1.218e+10 ~ 0%      +8.2%  1.318e+10 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 3.118e+11 ~ 0%      +1.9%  3.177e+11 ~ 1%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 3.271e+11 ~ 0%      +2.2%  3.342e+11 ~ 1%  TOTAL perf-stat.L1-icache-load-=
+misses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+   1144176 ~ 2%      -6.4%    1071004 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+    844745 ~ 0%      -5.9%     795214 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+   1988921 ~ 1%      -6.2%    1866219 ~ 0%  TOTAL perf-stat.context-switches
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 1.193e+09 ~ 1%      -4.4%  1.141e+09 ~ 1%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 1.705e+10 ~ 1%      -6.2%  1.599e+10 ~ 2%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 1.824e+10 ~ 1%      -6.1%  1.713e+10 ~ 2%  TOTAL perf-stat.LLC-loads
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 9.048e+08 ~ 1%      +6.4%  9.628e+08 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 4.005e+09 ~ 1%      +7.6%  4.309e+09 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 9.552e+11 ~ 0%      -2.5%  9.314e+11 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+ 9.601e+11 ~ 0%      -2.4%  9.367e+11 ~ 0%  TOTAL perf-stat.branch-load-mis=
+ses
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     39933 ~ 0%      -6.9%      37192 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+     63184 ~ 0%      +1.8%      64293 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+    103117 ~ 0%      -1.6%     101486 ~ 0%  TOTAL iostat.sdh.wkB/s
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+      1887 ~ 2%      -6.4%       1766 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+      1394 ~ 0%      -5.9%       1311 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+     12273 ~ 0%      +3.2%      12672 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqrewr-sync
+     12106 ~ 0%      +2.0%      12349 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqwr-sync
+     27661 ~ 0%      +1.6%      28099 ~ 0%  TOTAL vmstat.system.cs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 7.941e+09 ~ 0%      +6.4%  8.451e+09 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+ 4.571e+10 ~ 0%      +2.1%  4.666e+10 ~ 1%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+ 5.365e+10 ~ 0%      +2.7%  5.511e+10 ~ 0%  TOTAL perf-stat.cache-references
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 1.779e+08 ~ 0%      -4.5%  1.698e+08 ~ 2%  bay/micro/dd-write/1HDD-cfq-xfs=
+-100dd
+ 2.702e+09 ~ 0%      -2.5%  2.634e+09 ~ 0%  lkp-st02/micro/dd-write/11HDD-R=
+AID5-cfq-xfs-10dd
+  2.88e+09 ~ 0%      -2.6%  2.804e+09 ~ 1%  TOTAL perf-stat.L1-dcache-prefe=
+tches
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+     15.16 ~ 1%      +2.5%      15.54 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+      6.83 ~ 0%      +3.4%       7.07 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqrewr-sync
+      7.43 ~ 0%      +1.8%       7.56 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqwr-sync
+     29.42 ~ 0%      +2.5%      30.17 ~ 0%  TOTAL turbostat.%c0
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+ 1.253e+08 ~ 0%      +3.2%  1.294e+08 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqrewr-sync
+ 1.237e+08 ~ 0%      +1.8%  1.259e+08 ~ 0%  snb-drag/sysbench/fileio/600s-1=
+00%-1HDD-xfs-64G-1024-seqwr-sync
+  2.49e+08 ~ 0%      +2.5%  2.553e+08 ~ 0%  TOTAL time.file_system_outputs
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       135 ~ 0%      +1.5%        137 ~ 0%  bay/micro/dd-write/1HDD-cfq-xfs=
+-10dd
+       135 ~ 0%      +1.5%        137 ~ 0%  TOTAL iostat.sda.avgqu-sz
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       139 ~ 0%      +1.1%        141 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+       139 ~ 0%      +1.1%        141 ~ 0%  TOTAL iostat.sdg.avgqu-sz
+
+836ecc5f024669e  6903673566d0289680e593dac  =
+
+---------------  -------------------------  =
+
+       139 ~ 0%      +0.9%        141 ~ 0%  lkp-ws02/micro/dd-write/11HDD-J=
+BOD-cfq-ext4-1dd
+       139 ~ 0%      +0.9%        141 ~ 0%  TOTAL iostat.sdj.avgqu-sz
+
+
+Legend:
+	~XX%    - stddev percent
+	[+-]XX% - change percent
+
+
+                           time.voluntary_context_switches
+
+   3500 ++----------------------------------------*------------------------=
+-+
+        *...*...*..*...*...*...*..*...*...*...*.     *...*...*...*..*...*..=
+.*
+   3000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+   2500 ++                                                                 =
+ |
+        |                  O                                               =
+ |
+   2000 ++                                                                 =
+ |
+        |                         O                                        =
+ |
+   1500 ++                                                                 =
+ |
+        |       O              O      O              O       O             =
+ |
+        |          O   O                      O   O      O       O      O  =
+ |
+   1000 O+                                O                         O      =
+ |
+        |   O                                                              =
+ |
+    500 ++-----------------------------------------------------------------=
+-+
+
+
+	[*] bisect-good sample
+	[O] bisect-bad  sample
+
+Thanks,
+Fengguang
+
+--===============4370880071469170390==--
 
