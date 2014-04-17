@@ -1,115 +1,363 @@
-Content-Type: multipart/mixed; boundary="===============8275048631175879957=="
+Content-Type: multipart/mixed; boundary="===============2226387633539598391=="
 MIME-Version: 1.0
-From: Alex Shi <alex.shi@linaro.org>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [sched] INFO: rcu_sched self-detected stall on CPU { 3}
-Date: Thu, 17 Apr 2014 16:28:32 +0800
-Message-ID: <534F90B0.4010803@linaro.org>
-In-Reply-To: <534F8FF8.4040107@intel.com>
+Subject: Re: [sched, rcu] b84c4e08143: +3.1% will-it-scale.per_thread_ops
+Date: Thu, 17 Apr 2014 06:55:03 -0700
+Message-ID: <20140417135503.GK4496@linux.vnet.ibm.com>
+In-Reply-To: <20140417040353.GF8702@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8275048631175879957==
+--===============2226387633539598391==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 04/17/2014 04:25 PM, Jet Chen wrote:
-> Hi Alex
+On Thu, Apr 17, 2014 at 12:03:53PM +0800, Fengguang Wu wrote:
+> Hi Paul,
 > =
 
-> We noticed the below kernel BUG on
+> FYI, this improves will-it-scale/open1 throughput.
 
-Thank a lot Jet!
+Cool!  Not a planned benefit, but I will take it.  ;-)
+
+> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2=
+014.04.14a
+> commit b84c4e08143c98dad4b4d139f08db0b98b0d3ec4 ("sched,rcu: Make cond_re=
+sched() report RCU quiescent states")
+
+But how should I read the data below?  I see lots of positive percentages
+and lots of negative percentages for the delta, and all near zero for
+standard deviation.  Is the overall improvement an average of these or
+some such?  What is being measured?
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>     563496 ~ 0%      +3.1%     581059 ~ 0%  nhm4/micro/will-it-scale/open1
+>     563496 ~ 0%      +3.1%     581059 ~ 0%  TOTAL will-it-scale.per_threa=
+d_ops
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>     756894 ~ 0%      +2.8%     778452 ~ 0%  nhm4/micro/will-it-scale/open1
+>     756894 ~ 0%      +2.8%     778452 ~ 0%  TOTAL will-it-scale.per_proce=
+ss_ops
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       0.57 ~ 0%      -2.7%       0.55 ~ 0%  nhm4/micro/will-it-scale/open1
+>       0.57 ~ 0%      -2.7%       0.55 ~ 0%  TOTAL will-it-scale.scalabili=
+ty
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>     346764 ~ 2%     -74.0%      90164 ~ 1%  nhm4/micro/will-it-scale/open1
+>     346764 ~ 2%     -74.0%      90164 ~ 1%  TOTAL slabinfo.kmalloc-256.ac=
+tive_objs
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>      10837 ~ 2%     -73.9%       2824 ~ 1%  nhm4/micro/will-it-scale/open1
+>      10837 ~ 2%     -73.9%       2824 ~ 1%  TOTAL slabinfo.kmalloc-256.ac=
+tive_slabs
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>      10837 ~ 2%     -73.9%       2824 ~ 1%  nhm4/micro/will-it-scale/open1
+>      10837 ~ 2%     -73.9%       2824 ~ 1%  TOTAL slabinfo.kmalloc-256.nu=
+m_slabs
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>     346821 ~ 2%     -73.9%      90393 ~ 1%  nhm4/micro/will-it-scale/open1
+>     346821 ~ 2%     -73.9%      90393 ~ 1%  TOTAL slabinfo.kmalloc-256.nu=
+m_objs
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>     105961 ~ 1%     -63.0%      39153 ~ 1%  nhm4/micro/will-it-scale/open1
+>     105961 ~ 1%     -63.0%      39153 ~ 1%  TOTAL meminfo.SUnreclaim
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>      26432 ~ 1%     -62.9%       9814 ~ 1%  nhm4/micro/will-it-scale/open1
+>      26432 ~ 1%     -62.9%       9814 ~ 1%  TOTAL proc-vmstat.nr_slab_unr=
+eclaimable
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>      50298 ~ 0%    +194.3%     148011 ~ 0%  nhm4/micro/will-it-scale/open1
+>      37020 ~ 0%     +42.6%      52798 ~ 1%  nhm4/micro/will-it-scale/sign=
+al1
+>      87318 ~ 0%    +130.0%     200809 ~ 0%  TOTAL softirqs.RCU
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>     140354 ~ 1%     -47.6%      73490 ~ 0%  nhm4/micro/will-it-scale/open1
+>     140354 ~ 1%     -47.6%      73490 ~ 0%  TOTAL meminfo.Slab
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>      77391 ~ 1%     -46.7%      41235 ~ 2%  nhm4/micro/will-it-scale/sign=
+al1
+>      77391 ~ 1%     -46.7%      41235 ~ 2%  TOTAL cpuidle.C6-NHM.usage
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>      19871 ~ 2%     -37.6%      12397 ~ 2%  nhm4/micro/will-it-scale/open1
+>      18497 ~ 1%     -37.5%      11556 ~ 1%  nhm4/micro/will-it-scale/sign=
+al1
+>      38368 ~ 2%     -37.6%      23954 ~ 2%  TOTAL softirqs.SCHED
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       1.24 ~ 4%     -35.4%       0.80 ~ 3%  nhm4/micro/will-it-scale/open1
+>       1.24 ~ 4%     -35.4%       0.80 ~ 3%  TOTAL perf-profile.cpu-cycles=
+.do_notify_resume.int_signal.close
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       1.43 ~ 4%     +41.9%       2.03 ~ 4%  nhm4/micro/will-it-scale/open1
+>       1.43 ~ 4%     +41.9%       2.03 ~ 4%  TOTAL perf-profile.cpu-cycles=
+.rcu_process_callbacks.__do_softirq.irq_exit.smp_apic_timer_interrupt.apic_=
+timer_interrupt
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       1.27 ~ 3%     -30.0%       0.89 ~ 6%  nhm4/micro/will-it-scale/open1
+>       1.27 ~ 3%     -30.0%       0.89 ~ 6%  TOTAL perf-profile.cpu-cycles=
+.setup_object.isra.46.new_slab.__slab_alloc.kmem_cache_alloc.get_empty_filp
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       1.54 ~ 7%     +35.6%       2.09 ~ 8%  nhm4/micro/will-it-scale/open1
+>       1.54 ~ 7%     +35.6%       2.09 ~ 8%  TOTAL perf-profile.cpu-cycles=
+.kmem_cache_alloc.getname_flags.getname.do_sys_open.sys_open
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       4.21 ~ 2%     -29.1%       2.98 ~ 3%  nhm4/micro/will-it-scale/open1
+>       4.21 ~ 2%     -29.1%       2.98 ~ 3%  TOTAL perf-profile.cpu-cycles=
+.link_path_walk.path_openat.do_filp_open.do_sys_open.sys_open
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       1.37 ~ 4%     -23.1%       1.05 ~ 7%  nhm4/micro/will-it-scale/open1
+>       1.37 ~ 4%     -23.1%       1.05 ~ 7%  TOTAL perf-profile.cpu-cycles=
+.__d_lookup_rcu.lookup_fast.link_path_walk.path_openat.do_filp_open
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       0.88 ~17%     +29.1%       1.14 ~ 9%  nhm4/micro/will-it-scale/open1
+>       0.88 ~17%     +29.1%       1.14 ~ 9%  TOTAL perf-profile.cpu-cycles=
+.path_init.path_openat.do_filp_open.do_sys_open.sys_open
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       0.67 ~16%     +33.6%       0.90 ~10%  nhm4/micro/will-it-scale/sign=
+al1
+>       0.67 ~16%     +33.6%       0.90 ~10%  TOTAL perf-profile.cpu-cycles=
+.restore_sigcontext.sys_rt_sigreturn.stub_rt_sigreturn.raise
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       3.19 ~ 1%     +17.4%       3.74 ~ 5%  nhm4/micro/will-it-scale/open1
+>       3.19 ~ 1%     +17.4%       3.74 ~ 5%  TOTAL perf-profile.cpu-cycles=
+.file_free_rcu.rcu_process_callbacks.__do_softirq.irq_exit.smp_apic_timer_i=
+nterrupt
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       4329 ~ 7%     +15.2%       4986 ~ 5%  nhm4/micro/will-it-scale/open1
+>       4329 ~ 7%     +15.2%       4986 ~ 5%  TOTAL slabinfo.vm_area_struct=
+.active_objs
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       2536 ~ 1%     -75.8%        614 ~ 9%  nhm4/micro/will-it-scale/open1
+>       2536 ~ 1%     -75.8%        614 ~ 9%  TOTAL time.involuntary_contex=
+t_switches
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>      32593 ~ 1%     -62.1%      12349 ~ 2%  nhm4/micro/will-it-scale/sign=
+al1
+>      32593 ~ 1%     -62.1%      12349 ~ 2%  TOTAL interrupts.0:IO-APIC-ed=
+ge.timer
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       4374 ~14%    +124.7%       9830 ~ 8%  nhm4/micro/will-it-scale/open1
+>       2559 ~ 2%     +20.3%       3078 ~ 3%  nhm4/micro/will-it-scale/sign=
+al1
+>       6934 ~ 9%     +86.2%      12908 ~ 7%  TOTAL interrupts.RES
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>        490 ~ 1%     -37.3%        307 ~ 1%  nhm4/micro/will-it-scale/sign=
+al1
+>        490 ~ 1%     -37.3%        307 ~ 1%  TOTAL vmstat.system.cs
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>       1639 ~ 0%      -8.8%       1495 ~ 0%  nhm4/micro/will-it-scale/sign=
+al1
+>       1639 ~ 0%      -8.8%       1495 ~ 0%  TOTAL vmstat.system.in
+> =
+
+> ad86a04266f9b49  b84c4e08143c98dad4b4d139f  =
+
+> ---------------  -------------------------  =
+
+>     419046 ~ 0%      -1.5%     412661 ~ 0%  nhm4/micro/will-it-scale/open1
+>     400635 ~ 0%      -5.9%     376866 ~ 0%  nhm4/micro/will-it-scale/sign=
+al1
+>     819681 ~ 0%      -3.7%     789527 ~ 0%  TOTAL interrupts.LOC
+> =
 
 > =
 
-> https://github.com/alexshi/power-scheduling.git noload
-> =
-
-> commit 6b74b2031e15ae58470fd8dde7438df35e358c62
-> Author:     Alex Shi <alex.shi@linaro.org>
-> AuthorDate: Fri Apr 4 17:49:30 2014 +0800
-> Commit:     Alex Shi <alex.shi@linaro.org>
-> CommitDate: Fri Apr 4 17:49:30 2014 +0800
-> =
-
->     sched: let task moving destination cpu do active balance
-> =
-
->     Now we let the task source cpu do the active balance, while the
->     destination cpu maybe idle. At that time the task will be stopped
->     on resource cpu and wait the destination cpu up. That hurt the
->     performace. Let destination cpu do active balance will give task
+> Legend:
+> 	~XX%    - stddev percent
+> 	[+-]XX% - change percent
 > =
 
 > =
 
-> <3>[  614.504149] INFO: rcu_sched self-detected stall on CPU { 3} =
-
-> (t=3D100007 jiffies g=3D1455 c=3D1454 q=3D87882)
-> <6>[  614.504731] sending NMI to all CPUs:
-> <4>[  614.505003] NMI backtrace for cpu 0
-> <4>[  614.505228] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
-> 3.14.0-01205-g0e2d6b2 #1
-> <4>[  614.505671] Hardware name:                  /DX58SO, BIOS
-> SOX5810J.86A.4196.2009.0715.1958 07/15/2009
-> <4>[  614.506185] task: ffffffff82011440 ti: ffffffff82000000 task.ti:
-> ffffffff82000000
-> <4>[  614.506637] RIP: 0010:[<ffffffff814c7599>]  [<ffffffff814c7599>]
-> intel_idle+0xdc/0x132
-> <4>[  614.507116] RSP: 0018:ffffffff82001e48  EFLAGS: 00000046
-> <4>[  614.507401] RAX: 0000000000000020 RBX: 0000000000000008 RCX:
-> 0000000000000001
-> <4>[  614.507750] RDX: 0000000000000000 RSI: 0000000000000046 RDI:
-> 0000000000000046
-> <4>[  614.508100] RBP: ffffffff82001e70 R08: ffff8800bf213ebc R09:
-> 00000000000000ca
-> <4>[  614.508449] R10: 0000000000000006 R11: 000000000000049a R12:
-> 0000000000000004
-> <4>[  614.508799] R13: 0000000000000020 R14: 0000000000000003 R15:
-> 0000000000000000
-> <4>[  614.509148] FS:  0000000000000000(0000) GS:ffff8800bf200000(0000)
-> knlGS:0000000000000000
-> <4>[  614.509622] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-> <4>[  614.509922] CR2: 00000000025ae424 CR3: 000000000200c000 CR4:
-> 00000000000007f0
-> <4>[  614.510271] Stack:
-> <4>[  614.510440]  0000000000000018 ffff8800bf21dd00 ffffffff820a2a18
-> 0000008f0b6dd4cf
-> <4>[  614.510918]  0000000008004000 ffffffff82001eb0 ffffffff81866cb1
-> 0000000400000006
-> <4>[  614.511396]  ffffffff820a28a0 ffff8800bf21dd00 0000000000000004
-> ffffffff820a28a0
-> <4>[  614.511874] Call Trace:
-> <4>[  614.512061]  [<ffffffff81866cb1>] cpuidle_enter_state+0x45/0xb5
-> <4>[  614.512369]  [<ffffffff81866e2c>] cpuidle_idle_call+0x10b/0x1db
-> <4>[  614.512678]  [<ffffffff8104241b>] arch_cpu_idle+0xe/0x28
-> <4>[  614.512965]  [<ffffffff8112452b>] cpu_startup_entry+0x131/0x20a
-> <4>[  614.513273]  [<ffffffff819aae53>] rest_init+0x87/0x89
-> <4>[  614.513550]  [<ffffffff8214fde0>] start_kernel+0x407/0x412
-> <4>[  614.513842]  [<ffffffff8214f7e7>] ? repair_env_string+0x58/0x58
-> <4>[  614.514150]  [<ffffffff8214f120>] ? early_idt_handlers+0x120/0x120
-> <4>[  614.514466]  [<ffffffff8214f4a2>] x86_64_start_reservations+0x2a/0x=
-2c
-> <4>[  614.514792]  [<ffffffff8214f5df>] x86_64_start_kernel+0x13b/0x148
-> <4>[  614.515104] Code: b9 00 00 48 89 d1 48 2d c8 1f 00 00 0f 01 c8 65
-> 48 8b 04 25 60 b9 00 00 48 8b 80 38 e0 ff ff a8 08 75 08 b1 01 4c 89 e8
-> 0f 01 c9 <65> 48 8b 04 25 60 b9 00 00 83 a0 3c e0 ff ff fb 0f ae f0 65 48
-> <4>[  614.519105] NMI backtrace for cpu 1
+>                           time.involuntary_context_switches
 > =
 
-> Full dmesg & Kconifg are attached, and more details can be provided on
-> your request.
+>    3500 ++---------------------------------------------------------------=
+---+
+>         |             .*..                                               =
+   |
+>    3000 ++         .*.    *..*..  .*..*.. .*..                           =
+   |
+>         *..*..*..*.             *.       *                               =
+   |
+>         |                                     *..*..     .*..     .*..*  =
+   |
+>    2500 ++                                          *..*.    *..*.       =
+   |
+>         |                                                                =
+   |
+>    2000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>    1500 ++                                                               =
+   |
+>         |                                                                =
+   |
+>         |                                                                =
+   |
+>    1000 ++                                                               =
+   |
+>         |     O  O  O              O  O                   O  O     O     =
+   O
+>     500 O+-O-----------O--O--O--O--------O-O--O--O--O--O--------O-----O--=
+O--+
 > =
+
+> =
+
+> 	[*] bisect-good sample
+> 	[O] bisect-bad  sample
+
+So the good case increases involuntary context switches, but helps something
+else?  Or does the benefit stem from increased involuntary context switches
+and thus less time spinning or some such?
+
+							Thanx, Paul
 
 > Thanks,
-> Jet
+> Fengguang
+> =
 
 
--- =
 
-Thanks
-    Alex
-
---===============8275048631175879957==--
+--===============2226387633539598391==--
 
