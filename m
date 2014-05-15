@@ -1,32 +1,153 @@
-Content-Type: multipart/mixed; boundary="===============8752935538283140530=="
+Content-Type: multipart/mixed; boundary="===============7590288656811686633=="
 MIME-Version: 1.0
-From: Mike Galbraith <umgwanakikbuti@gmail.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [cgroup] a0f9ec1f181: -4.3% will-it-scale.per_thread_ops
-Date: Thu, 15 May 2014 09:11:17 +0200
-Message-ID: <1400137877.5175.147.camel@marge.simpson.net>
+Date: Thu, 15 May 2014 16:16:05 +0800
+Message-ID: <20140515081605.GA15053@localhost>
 In-Reply-To: <20140515061422.GC5539@mtj.dyndns.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8752935538283140530==
+--===============7590288656811686633==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2014-05-15 at 02:14 -0400, Tejun Heo wrote:
+On Thu, May 15, 2014 at 02:14:22AM -0400, Tejun Heo wrote:
+> Hello, Fengguang.
+> =
+
+> On Thu, May 15, 2014 at 02:00:26PM +0800, Fengguang Wu wrote:
+> > > > 2074b6e38668e62  a0f9ec1f181534694cb5bf40b
+> > > > ---------------  -------------------------
+> > =
+
+> > 2074b6e38668e62 is the base of comparison. So "-4.3% will-it-scale.per_=
+thread_ops"
+> > in the below line means a0f9ec1f18 has lower will-it-scale throughput.
+> > =
+
+> > > >    1027273 ~ 0%      -4.3%     982732 ~ 0%  TOTAL will-it-scale.per=
+_thread_ops
+> > > >        136 ~ 3%     -43.1%         77 ~43%  TOTAL proc-vmstat.nr_di=
+rtied
+> > > >       0.51 ~ 3%     +98.0%       1.01 ~ 4%  TOTAL perf-profile.cpu-=
+cycles.shmem_write_end.generic_perform_write.__generic_file_aio_write.gener=
+ic_file_aio_write.do_sync_write
+> > > >       1078 ~ 9%     -16.3%        903 ~11%  TOTAL numa-meminfo.node=
+0.Unevictable
+> > > >        269 ~ 9%     -16.2%        225 ~11%  TOTAL numa-vmstat.node0=
+.nr_unevictable
+> > > >       1.64 ~ 1%     -14.3%       1.41 ~ 4%  TOTAL perf-profile.cpu-=
+cycles.find_lock_entry.shmem_getpage_gfp.shmem_write_begin.generic_perform_=
+write.__generic_file_aio_write
+> > > >       1.62 ~ 2%     +14.1%       1.84 ~ 1%  TOTAL perf-profile.cpu-=
+cycles.lseek64
+> > =
+
+> > The perf-profile.cpu-cycles.* lines are from "perf record/report".
+> > =
+
+> > The last line shows that lseek64() takes 1.62% CPU cycles for
+> > commit 2074b6e38668e62 and that percent increased by +14.1% on
+> > a0f9ec1f181. One of the raw perf record output is
+> > =
+
+> >      1.84%  writeseek_proce  libc-2.17.so         [.] lseek64          =
+                     =
+
+> >             |
+> >             --- lseek64
+> > =
+
+> > There are 5 runs and 1.62% is the average value.
+> > =
+
+> > > I have no idea how to read the above.  Which direction is plus and
+> > > which is minus? Are they counting cpu cycles?  Which files is the
+> > > test seeking?
+> > =
+
+> > It's tmpfs files. Because the will-it-scale test case is mean to
+> > measure scalability of syscalls. We do not use HDD/SSD etc. storage
+> > devices when running it.
+> =
 
 > Hmmm... I'm completely stumped.  The commit in question has nothing to
 > do with tmpfs.  It only affects three cgroup files - "tasks",
 > "cgroup.procs" and "release_agent".  It can't possibly have any effect
 > on tmpfs operation.  Maybe random effect through code alignment?  Even
-> that is highly unlikely.
+> that is highly unlikely.  I'll look into it tomorrow but can you
+> please try to repeat the test?  It really doesn't make any sense to
+> me.
 
-Unlikely, but it happens.  I bisected a tbench regression down to a
-completely unrelated driver change, and watched it repeatably drop
-throughput 5% despite skeptical "No way, show me that trick again".
+Yes, sorry! Even though the "first bad" commit a0f9ec1f1 and its
+parent commit 2074b6e38 has clear and stable performance changes:
 
--Mike
+5 runs of a0f9ec1f1:
 
+  "will-it-scale.per_thread_ops": [
+    983098,
+    985112,
+    982690,
+    976157,
+    986606
+  ],
 
---===============8752935538283140530==--
+5 runs of 2074b6e38:
+
+  "will-it-scale.per_thread_ops": [
+    1027667,
+    1029414,
+    1026736,
+    1025678,
+    1026871
+  ],
+
+Comparing the bisect-good and bisect-bad *kernels*, you'll find the
+performance changes are not as stable:
+
+                             will-it-scale.per_thread_ops
+  =
+
+  1.14e+06 ++--------------------------------------------------------------=
+-+
+  1.12e+06 ++                               *..                            =
+ |
+           |                               :   *                           =
+ |
+   1.1e+06 ++                              :    :                          =
+ |
+  1.08e+06 ++                             :     :                          =
+ |
+           |                              :      :                         =
+ |
+  1.06e+06 ++                            :       :                         =
+ |
+  1.04e+06 *+.*...*..*..*..*...*..*..    :        :    ..*..*..            =
+ |
+  1.02e+06 ++              O         *..*         *..*.        *..*...*..*.=
+.*
+           |                   O                  O                        =
+ |
+     1e+06 O+ O   O  O  O                      O                           =
+ |
+    980000 ++                           O   O        O   O  O  O  O        =
+ |
+           |                                                               =
+ |
+    960000 ++                     O  O                                     =
+ |
+    940000 ++--------------------------------------------------------------=
+-+
+
+        [*] bisect-good sample
+        [O] bisect-bad  sample
+
+So it might be some subtle data padding/alignment issue.
+
+Thanks,
+Fengguang
+
+--===============7590288656811686633==--
 
