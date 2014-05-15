@@ -1,65 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============7428030683238420763=="
+Content-Type: multipart/mixed; boundary="===============3993686493903252897=="
 MIME-Version: 1.0
 From: Jet Chen <jet.chen@intel.com>
 To: lkp@lists.01.org
-Subject: [uprobes/x86] 8ad8e9d3fd6: -7.5% aim7.2000.jobs-per-min, -45.7% turbostat.%c1
-Date: Thu, 15 May 2014 11:56:51 +0800
-Message-ID: <53743B03.7030404@intel.com>
+Subject: [tracing] b1169cc69ba: +10060.4% proc-vmstat.numa_pte_updates
+Date: Thu, 15 May 2014 12:06:26 +0800
+Message-ID: <53743D42.3070309@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7428030683238420763==
+--===============3993686493903252897==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Oleg,
+Hi Steven,
 
-we noticed the below changes on
+FYI, we noticed the below changes on
 
-git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-commit 8ad8e9d3fd64f101eed6652964670672d699e563 ("uprobes/x86: Introduce up=
-robe_xol_ops and arch_uprobe->ops")
+git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git ftrac=
+e/core
+commit b1169cc69ba96b124df820904a6d3eb775491d7f ("tracing: Remove mock up p=
+oll wait function")
 
-Test case: lkp-snb01/aim7/signal_test
-
-34e7317d6ae8f61  8ad8e9d3fd64f101eed665296
+f4874261049e3ab  b1169cc69ba96b124df820904
 ---------------  -------------------------
-    230689 ~ 0%      -7.5%     213485 ~ 0%  TOTAL aim7.2000.jobs-per-min
-      0.51 ~30%     -45.7%       0.28 ~10%  TOTAL turbostat.%c1
-       430 ~17%     +27.8%        549 ~15%  TOTAL vmstat.procs.r
-      0.83 ~14%     +38.1%       1.15 ~12%  TOTAL perf-profile.cpu-cycles.c=
-opy_pte_range.copy_page_range.copy_process.do_fork.sys_clone
-    106076 ~ 4%     +22.4%     129816 ~ 3%  TOTAL softirqs.RCU
-     12117 ~ 6%      -9.9%      10914 ~ 6%  TOTAL slabinfo.kmalloc-256.acti=
-ve_objs
-     32163 ~17%     +39.4%      44824 ~12%  TOTAL time.voluntary_context_sw=
-itches
-    276487 ~ 1%     +16.5%     322091 ~ 1%  TOTAL time.involuntary_context_=
-switches
-     83.14 ~ 0%     +13.3%      94.21 ~ 0%  TOTAL time.user_time
-    108800 ~ 2%      +9.4%     119014 ~ 3%  TOTAL time.minor_page_faults
-      1255 ~ 0%      +9.9%       1379 ~ 0%  TOTAL time.system_time
-      6774 ~ 1%      +8.8%       7373 ~ 1%  TOTAL vmstat.system.cs
-     52.15 ~ 0%      +8.0%      56.34 ~ 0%  TOTAL time.elapsed_time
-     25185 ~ 0%      +2.4%      25784 ~ 0%  TOTAL vmstat.system.in
-     79.23 ~ 0%      +2.0%      80.80 ~ 0%  TOTAL turbostat.%c0
-      2567 ~ 0%      +1.9%       2615 ~ 0%  TOTAL time.percent_of_cpu_this_=
-job_got
-       112 ~ 0%      +1.3%        113 ~ 0%  TOTAL turbostat.Cor_W
-       138 ~ 0%      +1.0%        139 ~ 0%  TOTAL turbostat.Pkg_W
+       191 ~15%  +10060.4%      19487 ~ 8%  lkp-ne04/dd-write/1HDD-ext4-2dd=
+.4k
+       191 ~15%  +10060.4%      19487 ~ 8%  TOTAL proc-vmstat.numa_pte_upda=
+tes
+
+f4874261049e3ab  b1169cc69ba96b124df820904
+---------------  -------------------------
+   2419721 ~ 0%     +88.0%    4549654 ~ 2%  lkp-ws02/dd-write/11HDD-JBOD-cf=
+q-xfs-1dd
+   2419721 ~ 0%     +88.0%    4549654 ~ 2%  TOTAL perf-stat.context-switches
+
+f4874261049e3ab  b1169cc69ba96b124df820904
+---------------  -------------------------
+       954 ~ 0%     +52.7%       1457 ~ 0%  lkp-ne04/dd-write/1HDD-ext4-2dd=
+.4k
+      3932 ~ 0%     +89.1%       7438 ~ 2%  lkp-ws02/dd-write/11HDD-JBOD-cf=
+q-xfs-1dd
+      4887 ~ 0%     +82.0%       8895 ~ 2%  TOTAL vmstat.system.cs
+
+f4874261049e3ab  b1169cc69ba96b124df820904
+---------------  -------------------------
+    163477 ~ 0%     +60.1%     261769 ~ 0%  lkp-ws02/dd-write/11HDD-JBOD-cf=
+q-xfs-1dd
+    163477 ~ 0%     +60.1%     261769 ~ 0%  TOTAL perf-stat.cpu-migrations
+
+f4874261049e3ab  b1169cc69ba96b124df820904
+---------------  -------------------------
+     28742 ~ 0%      +6.4%      30574 ~ 0%  lkp-ws02/dd-write/11HDD-JBOD-cf=
+q-xfs-1dd
+     28742 ~ 0%      +6.4%      30574 ~ 0%  TOTAL vmstat.system.in
 
 
 Legend:
 	~XX%    - stddev percent
 	[+-]XX% - change percent
 
+	=
 
 Thanks,
 Jet
 
 
 
---===============7428030683238420763==
+--===============3993686493903252897==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -76,37 +83,25 @@ L3N5c3RlbS9jcHUvY3B1MTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFu
 Y2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJu
 b3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE1L2NwdWZy
 ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
-bS9jcHUvY3B1MTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
-c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNy9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
-byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE4L2NwdWZyZXEvc2Nh
-bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
-Y3B1MTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
-dmljZXMvc3lzdGVtL2NwdS9jcHUyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZv
-cm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjAvY3B1ZnJlcS9zY2FsaW5nX2dv
-dmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyMS9j
-cHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9z
-eXN0ZW0vY3B1L2NwdTIyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNl
-ID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9y
-CmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNC9jcHVmcmVx
+bS9jcHUvY3B1Mi9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9z
+eXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8g
+cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU0L2NwdWZyZXEvc2NhbGlu
+Z19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1
+NS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNl
+cy9zeXN0ZW0vY3B1L2NwdTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFu
+Y2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU3L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5v
+cgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1OC9jcHVmcmVx
 L3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0v
-Y3B1L2NwdTI1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5
-cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8g
-cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNy9jcHVmcmVxL3NjYWxp
-bmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2Nw
-dTI4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
-Y2VzL3N5c3RlbS9jcHUvY3B1MjkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
-bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUzL2NwdWZyZXEvc2NhbGluZ19nb3Zl
-cm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzAvY3B1
-ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lz
-dGVtL2NwdS9jcHUzMS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+
-IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVj
-aG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU1L2NwdWZyZXEvc2Nh
-bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
-Y3B1Ni9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2
-aWNlcy9zeXN0ZW0vY3B1L2NwdTcvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
-bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU4L2NwdWZyZXEvc2NhbGluZ19nb3Zl
-cm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1OS9jcHVm
-cmVxL3NjYWxpbmdfZ292ZXJub3IKCgo=
+Y3B1L2NwdTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCm1rZnMgLXQgZXh0NCAtcSAvZGV2L3Nk
+YTIKZWNobyAxID4gL3N5cy9rZXJuZWwvZGVidWcvdHJhY2luZy9ldmVudHMvd3JpdGViYWNrL2Jh
+bGFuY2VfZGlydHlfcGFnZXMvZW5hYmxlCmVjaG8gMSA+IC9zeXMva2VybmVsL2RlYnVnL3RyYWNp
+bmcvZXZlbnRzL3dyaXRlYmFjay9iZGlfZGlydHlfcmF0ZWxpbWl0L2VuYWJsZQplY2hvIDEgPiAv
+c3lzL2tlcm5lbC9kZWJ1Zy90cmFjaW5nL2V2ZW50cy93cml0ZWJhY2svZ2xvYmFsX2RpcnR5X3N0
+YXRlL2VuYWJsZQplY2hvIDEgPiAvc3lzL2tlcm5lbC9kZWJ1Zy90cmFjaW5nL2V2ZW50cy93cml0
+ZWJhY2svd3JpdGViYWNrX3NpbmdsZV9pbm9kZS9lbmFibGUKbW91bnQgLXQgZXh0NCAvZGV2L3Nk
+YTIgL2ZzL3NkYTIKZGQgYnM9NGsgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGEyL3plcm8tMSBzdGF0
+dXM9bm9uZSAmCmRkIGJzPTRrIGlmPS9kZXYvemVybyBvZj0vZnMvc2RhMi96ZXJvLTIgc3RhdHVz
+PW5vbmUgJgpzbGVlcCA2MDAKa2lsbGFsbCAtOSBkZAoKCg==
 
---===============7428030683238420763==--
+--===============3993686493903252897==--
 
