@@ -1,153 +1,64 @@
-Content-Type: multipart/mixed; boundary="===============7590288656811686633=="
+Content-Type: multipart/mixed; boundary="===============6144435886954056834=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Oleg Nesterov <oleg@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [cgroup] a0f9ec1f181: -4.3% will-it-scale.per_thread_ops
-Date: Thu, 15 May 2014 16:16:05 +0800
-Message-ID: <20140515081605.GA15053@localhost>
-In-Reply-To: <20140515061422.GC5539@mtj.dyndns.org>
+Subject: Re: [uprobes/x86] 8ad8e9d3fd6: -7.5% aim7.2000.jobs-per-min, -45.7% turbostat.%c1
+Date: Thu, 15 May 2014 14:33:32 +0200
+Message-ID: <20140515123332.GA15139@redhat.com>
+In-Reply-To: <53743B03.7030404@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7590288656811686633==
+--===============6144435886954056834==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 15, 2014 at 02:14:22AM -0400, Tejun Heo wrote:
-> Hello, Fengguang.
-> =
+Hi Jet,
 
-> On Thu, May 15, 2014 at 02:00:26PM +0800, Fengguang Wu wrote:
-> > > > 2074b6e38668e62  a0f9ec1f181534694cb5bf40b
-> > > > ---------------  -------------------------
-> > =
+On 05/15, Jet Chen wrote:
+>
+> we noticed the below changes on
+>
+> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> commit 8ad8e9d3fd64f101eed6652964670672d699e563 ("uprobes/x86: Introduce =
+uprobe_xol_ops and arch_uprobe->ops")
+>
+> Test case: lkp-snb01/aim7/signal_test
+>
+> 34e7317d6ae8f61  8ad8e9d3fd64f101eed665296
+> ---------------  -------------------------
+>     230689 ~ 0%      -7.5%     213485 ~ 0%  TOTAL aim7.2000.jobs-per-min
+>       0.51 ~30%     -45.7%       0.28 ~10%  TOTAL turbostat.%c1
+>        430 ~17%     +27.8%        549 ~15%  TOTAL vmstat.procs.r
+>       0.83 ~14%     +38.1%       1.15 ~12%  TOTAL perf-profile.cpu-cycles=
+.copy_pte_range.copy_page_range.copy_process.do_fork.sys_clone
+>     106076 ~ 4%     +22.4%     129816 ~ 3%  TOTAL softirqs.RCU
+>      12117 ~ 6%      -9.9%      10914 ~ 6%  TOTAL slabinfo.kmalloc-256.ac=
+tive_objs
+>      32163 ~17%     +39.4%      44824 ~12%  TOTAL time.voluntary_context_=
+switches
+>     276487 ~ 1%     +16.5%     322091 ~ 1%  TOTAL time.involuntary_contex=
+t_switches
+>      83.14 ~ 0%     +13.3%      94.21 ~ 0%  TOTAL time.user_time
+>     108800 ~ 2%      +9.4%     119014 ~ 3%  TOTAL time.minor_page_faults
+>       1255 ~ 0%      +9.9%       1379 ~ 0%  TOTAL time.system_time
+>       6774 ~ 1%      +8.8%       7373 ~ 1%  TOTAL vmstat.system.cs
+>      52.15 ~ 0%      +8.0%      56.34 ~ 0%  TOTAL time.elapsed_time
+>      25185 ~ 0%      +2.4%      25784 ~ 0%  TOTAL vmstat.system.in
+>      79.23 ~ 0%      +2.0%      80.80 ~ 0%  TOTAL turbostat.%c0
+>       2567 ~ 0%      +1.9%       2615 ~ 0%  TOTAL time.percent_of_cpu_thi=
+s_job_got
+>        112 ~ 0%      +1.3%        113 ~ 0%  TOTAL turbostat.Cor_W
+>        138 ~ 0%      +1.0%        139 ~ 0%  TOTAL turbostat.Pkg_W
 
-> > 2074b6e38668e62 is the base of comparison. So "-4.3% will-it-scale.per_=
-thread_ops"
-> > in the below line means a0f9ec1f18 has lower will-it-scale throughput.
-> > =
+Cough... this looks simply impossible ;)
 
-> > > >    1027273 ~ 0%      -4.3%     982732 ~ 0%  TOTAL will-it-scale.per=
-_thread_ops
-> > > >        136 ~ 3%     -43.1%         77 ~43%  TOTAL proc-vmstat.nr_di=
-rtied
-> > > >       0.51 ~ 3%     +98.0%       1.01 ~ 4%  TOTAL perf-profile.cpu-=
-cycles.shmem_write_end.generic_perform_write.__generic_file_aio_write.gener=
-ic_file_aio_write.do_sync_write
-> > > >       1078 ~ 9%     -16.3%        903 ~11%  TOTAL numa-meminfo.node=
-0.Unevictable
-> > > >        269 ~ 9%     -16.2%        225 ~11%  TOTAL numa-vmstat.node0=
-.nr_unevictable
-> > > >       1.64 ~ 1%     -14.3%       1.41 ~ 4%  TOTAL perf-profile.cpu-=
-cycles.find_lock_entry.shmem_getpage_gfp.shmem_write_begin.generic_perform_=
-write.__generic_file_aio_write
-> > > >       1.62 ~ 2%     +14.1%       1.84 ~ 1%  TOTAL perf-profile.cpu-=
-cycles.lseek64
-> > =
+Not only this patch "obviously can not" cause any noticable difference
+performance-wise, the code changed by this patch is not executed unless
+you play with uprobes?
 
-> > The perf-profile.cpu-cycles.* lines are from "perf record/report".
-> > =
+Oleg.
 
-> > The last line shows that lseek64() takes 1.62% CPU cycles for
-> > commit 2074b6e38668e62 and that percent increased by +14.1% on
-> > a0f9ec1f181. One of the raw perf record output is
-> > =
 
-> >      1.84%  writeseek_proce  libc-2.17.so         [.] lseek64          =
-                     =
-
-> >             |
-> >             --- lseek64
-> > =
-
-> > There are 5 runs and 1.62% is the average value.
-> > =
-
-> > > I have no idea how to read the above.  Which direction is plus and
-> > > which is minus? Are they counting cpu cycles?  Which files is the
-> > > test seeking?
-> > =
-
-> > It's tmpfs files. Because the will-it-scale test case is mean to
-> > measure scalability of syscalls. We do not use HDD/SSD etc. storage
-> > devices when running it.
-> =
-
-> Hmmm... I'm completely stumped.  The commit in question has nothing to
-> do with tmpfs.  It only affects three cgroup files - "tasks",
-> "cgroup.procs" and "release_agent".  It can't possibly have any effect
-> on tmpfs operation.  Maybe random effect through code alignment?  Even
-> that is highly unlikely.  I'll look into it tomorrow but can you
-> please try to repeat the test?  It really doesn't make any sense to
-> me.
-
-Yes, sorry! Even though the "first bad" commit a0f9ec1f1 and its
-parent commit 2074b6e38 has clear and stable performance changes:
-
-5 runs of a0f9ec1f1:
-
-  "will-it-scale.per_thread_ops": [
-    983098,
-    985112,
-    982690,
-    976157,
-    986606
-  ],
-
-5 runs of 2074b6e38:
-
-  "will-it-scale.per_thread_ops": [
-    1027667,
-    1029414,
-    1026736,
-    1025678,
-    1026871
-  ],
-
-Comparing the bisect-good and bisect-bad *kernels*, you'll find the
-performance changes are not as stable:
-
-                             will-it-scale.per_thread_ops
-  =
-
-  1.14e+06 ++--------------------------------------------------------------=
--+
-  1.12e+06 ++                               *..                            =
- |
-           |                               :   *                           =
- |
-   1.1e+06 ++                              :    :                          =
- |
-  1.08e+06 ++                             :     :                          =
- |
-           |                              :      :                         =
- |
-  1.06e+06 ++                            :       :                         =
- |
-  1.04e+06 *+.*...*..*..*..*...*..*..    :        :    ..*..*..            =
- |
-  1.02e+06 ++              O         *..*         *..*.        *..*...*..*.=
-.*
-           |                   O                  O                        =
- |
-     1e+06 O+ O   O  O  O                      O                           =
- |
-    980000 ++                           O   O        O   O  O  O  O        =
- |
-           |                                                               =
- |
-    960000 ++                     O  O                                     =
- |
-    940000 ++--------------------------------------------------------------=
--+
-
-        [*] bisect-good sample
-        [O] bisect-bad  sample
-
-So it might be some subtle data padding/alignment issue.
-
-Thanks,
-Fengguang
-
---===============7590288656811686633==--
+--===============6144435886954056834==--
 
