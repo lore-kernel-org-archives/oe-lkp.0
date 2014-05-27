@@ -1,41 +1,35 @@
-Content-Type: multipart/mixed; boundary="===============8039606003027267894=="
+Content-Type: multipart/mixed; boundary="===============5078864238583034073=="
 MIME-Version: 1.0
-From: Miklos Szeredi <mszeredi@suse.cz>
+From: Dave Hansen <dave.hansen@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [vfs] 662aa027bda: -7.2% will-it-scale.scalability
-Date: Tue, 27 May 2014 18:25:39 +0200
-Message-ID: <1401207939.5731.12.camel@tucsk.piliscsaba.szeredi.hu>
+Date: Tue, 27 May 2014 11:19:40 -0700
+Message-ID: <5384D73C.2030109@intel.com>
 In-Reply-To: <5384B634.7080902@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8039606003027267894==
+--===============5078864238583034073==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2014-05-27 at 23:58 +0800, Jet Chen wrote:
-> Hi Miklos,
-> =
+On 05/27/2014 08:58 AM, Jet Chen wrote:
+> 9f498c77b4332b4  662aa027bdaa082aa3dd21886
+> ---------------  -------------------------
+>       0.63 ~ 0%      -7.2%       0.58 ~ 0%  TOTAL will-it-scale.scalabili=
+ty
+>   12861563 ~ 0%      -1.1%   12715565 ~ 0%  TOTAL will-it-scale.per_proce=
+ss_ops
 
-> FYI, we noticed the below changes on
-> =
+There's something funky here.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/mszeredi/vfs.git overlayfs.=
-v22
-> commit 662aa027bdaa082aa3dd21886830c97a1dd4c184 ("vfs: add RENAME_WHITEOU=
-T")
-> =
+What are the numbers being factored in to 'will-it-scale.scalability'
+and 'will-it-scale.per_process_ops'?  Could you share the raw csv's that
+will-it-scale generated?
 
-> test case: lkp-wsx01/will-it-scale/lseek2
+Since 'per_process_ops' is only off by 1.1%, my suspicion is that some
+consistent skew on the 1-process case is getting magnified in to the
+scalability number.
 
-The only thing I see in that commit that could affect performance is the
-slightly larger icache footprint of ext4_rename().
-
-Is the regression reproducible across different -rc versions?
-
-Thanks,
-Miklos
-
-
---===============8039606003027267894==--
+--===============5078864238583034073==--
 
