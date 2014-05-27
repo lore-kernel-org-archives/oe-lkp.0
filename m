@@ -1,88 +1,86 @@
-Content-Type: multipart/mixed; boundary="===============1715059203890940776=="
+Content-Type: multipart/mixed; boundary="===============7038232355856690226=="
 MIME-Version: 1.0
 From: Maurizio Lombardi <mlombard@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [jet.chen@intel.com: [bio] kernel BUG at drivers/block/virtio_blk.c:166!]
-Date: Tue, 27 May 2014 10:44:00 +0200
-Message-ID: <20140527084359.GD2205@dhcp-27-189.brq.redhat.com>
-In-Reply-To: <CACVXFVOaF-EOioE38sy9=2f-+rKECJnzUCSHrL-VZJi1Ycj_wA@mail.gmail.com>
+Date: Tue, 27 May 2014 13:24:59 +0200
+Message-ID: <20140527112459.GF2205@dhcp-27-189.brq.redhat.com>
+In-Reply-To: <20140527084359.GD2205@dhcp-27-189.brq.redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1715059203890940776==
+--===============7038232355856690226==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 27, 2014 at 12:03:29PM +0800, Ming Lei wrote:
-> On Tue, May 27, 2014 at 3:43 AM, Maurizio Lombardi <mlombard@redhat.com=
-> wrote:
-> > Hi Jens,
-> >
-> > looks like that commit 3979ef4dcf3d1de55a560a3a4016c30a835df44d ("bio-m=
-odify-__bio_add_page-to-accept-pages-that-dont-start-a-new-segment-v3")
-> > introduces a regression, as reported by Jet Chan.
-> >
-> > Do you have any idea about the possible problem with this patch?
-> >
-> > it is the one that performs a recount of the segments in case of failur=
-e in __bio_add_page()
-> >
-> > http://www.spinics.net/lists/mm-commits/msg103684.html
-> >
-> > I would not be surprised if the bug was introduced by fceb38f36f, becau=
-se it
-> > contained a mystake that commit 3979ef4dcf supposedly fixed.
-> > But learning that commit 3979ef4dcf is introducing a regression leaves
-> > me quite puzzled.
+On Tue, May 27, 2014 at 10:43:59AM +0200, Maurizio Lombardi wrote:
 > =
 
-> From code of __blk_recalc_rq_segments(), looks it
-> won't check if recounted physical segment number is
-> bigger than queue_max_segments(), so wondering if
-> blk_recount_segments() can always decrease
-> physical segment number.
+> But now I'm suspicious of this part of commit 3979ef4dcf:
+> =
+
+>  failed:
+>         bvec->bv_page =3D NULL;
+>         bvec->bv_len =3D 0;
+>         bvec->bv_offset =3D 0;
+>         bio->bi_vcnt--;  <----------------
+>         blk_recount_segments(q, bio);
+>         return 0;
+> =
+
+> Is decreasing bi_vcnt sufficient to guarantee that blk_recount_segments()
+> recalculates the correct number of physical segments?
+> Looking at the __blk_recalc_rq_segments() it appears it may not be the ca=
+se.
+> =
+
+> The question is how can we restore the correct number of physical segment=
+s in case
+> of failure without breaking anything...
 >
 
-This is what __bio_add_page() did before both fceb38f36f and 3979ef4dcf at =
-line 757
+If my hypothesis is correct, the following patch should trigger a kernel pa=
+nic,
+Jet Chen, can you try it and let me know whether the BUG_ON is hit or not?
 
+diff --git a/block/bio.c b/block/bio.c
+index 0443694..763868f 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -701,6 +701,7 @@ static int __bio_add_page(struct request_queue *q, stru=
+ct bio *bio, struct page
+ 			  unsigned int max_sectors)
+ {
+ 	int retried_segments =3D 0;
++	unsigned int phys_segments_orig;
+ 	struct bio_vec *bvec;
+ =
 
-        while (bio->bi_phys_segments >=3D queue_max_segments(q)) {
+ 	/*
+@@ -751,6 +752,9 @@ static int __bio_add_page(struct request_queue *q, stru=
+ct bio *bio, struct page
+ 	if (bio->bi_vcnt >=3D bio->bi_max_vecs)
+ 		return 0;
+ =
 
-                if (retried_segments)
-                        return 0;
++	blk_recount_segments(q, bio);
++	phys_segments_orig =3D bio->bi_phys_segments;
++
+ 	/*
+ 	 * setup the new entry, we might clear it again later if we
+ 	 * cannot add the page
+@@ -811,6 +815,7 @@ static int __bio_add_page(struct request_queue *q, stru=
+ct bio *bio, struct page
+ 	bvec->bv_offset =3D 0;
+ 	bio->bi_vcnt--;
+ 	blk_recount_segments(q, bio);
++	BUG_ON(phys_segments_orig !=3D bio->bi_phys_segments);
+ 	return 0;
+ }
 
-                retried_segments =3D 1;
-                blk_recount_segments(q, bio);
-        }
-
-so it is possible, in case of error, to return from the function even if th=
-e recounted
-physical segments are bigger than queue_max_segments(q).
-
----------
-
-But now I'm suspicious of this part of commit 3979ef4dcf:
-
- failed:
-        bvec->bv_page =3D NULL;
-        bvec->bv_len =3D 0;
-        bvec->bv_offset =3D 0;
-        bio->bi_vcnt--;  <----------------
-        blk_recount_segments(q, bio);
-        return 0;
-
-Is decreasing bi_vcnt sufficient to guarantee that blk_recount_segments()
-recalculates the correct number of physical segments?
-Looking@the __blk_recalc_rq_segments() it appears it may not be the case.
-
-The question is how can we restore the correct number of physical segments =
-in case
-of failure without breaking anything...
 
 Regards,
-Maurizio Lombardi
+Maurizio Lombardi=20
 
-
---===============1715059203890940776==--
+--===============7038232355856690226==--
 
