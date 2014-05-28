@@ -1,35 +1,104 @@
-Content-Type: multipart/mixed; boundary="===============5078864238583034073=="
+Content-Type: multipart/mixed; boundary="===============9214816723801159459=="
 MIME-Version: 1.0
-From: Dave Hansen <dave.hansen@intel.com>
+From: Dongsu Park <dongsu.park@profitbricks.com>
 To: lkp@lists.01.org
-Subject: Re: [vfs] 662aa027bda: -7.2% will-it-scale.scalability
-Date: Tue, 27 May 2014 11:19:40 -0700
-Message-ID: <5384D73C.2030109@intel.com>
-In-Reply-To: <5384B634.7080902@intel.com>
+Subject: Re: [jet.chen@intel.com: [bio] kernel BUG at drivers/block/virtio_blk.c:166!]
+Date: Wed, 28 May 2014 17:09:24 +0200
+Message-ID: <20140528150924.GA5301@gmail.com>
+In-Reply-To: <20140527112459.GF2205@dhcp-27-189.brq.redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5078864238583034073==
+--===============9214816723801159459==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 05/27/2014 08:58 AM, Jet Chen wrote:
-> 9f498c77b4332b4  662aa027bdaa082aa3dd21886
-> ---------------  -------------------------
->       0.63 ~ 0%      -7.2%       0.58 ~ 0%  TOTAL will-it-scale.scalabili=
-ty
->   12861563 ~ 0%      -1.1%   12715565 ~ 0%  TOTAL will-it-scale.per_proce=
-ss_ops
+Hi,
 
-There's something funky here.
+On 27.05.2014 13:24, Maurizio Lombardi wrote:
+> On Tue, May 27, 2014 at 10:43:59AM +0200, Maurizio Lombardi wrote:
+> > =
 
-What are the numbers being factored in to 'will-it-scale.scalability'
-and 'will-it-scale.per_process_ops'?  Could you share the raw csv's that
-will-it-scale generated?
+> > But now I'm suspicious of this part of commit 3979ef4dcf:
+> > =
 
-Since 'per_process_ops' is only off by 1.1%, my suspicion is that some
-consistent skew on the 1-process case is getting magnified in to the
-scalability number.
+> >  failed:
+> >         bvec->bv_page =3D NULL;
+> >         bvec->bv_len =3D 0;
+> >         bvec->bv_offset =3D 0;
+> >         bio->bi_vcnt--;  <----------------
+> >         blk_recount_segments(q, bio);
+> >         return 0;
+> > =
 
---===============5078864238583034073==--
+> > Is decreasing bi_vcnt sufficient to guarantee that blk_recount_segments=
+()
+> > recalculates the correct number of physical segments?
+> > Looking at the __blk_recalc_rq_segments() it appears it may not be the =
+case.
+> > =
+
+> > The question is how can we restore the correct number of physical segme=
+nts in case
+> > of failure without breaking anything...
+> =
+
+> If my hypothesis is correct, the following patch should trigger a kernel =
+panic,
+> Jet Chen, can you try it and let me know whether the BUG_ON is hit or not?
+
+I was also able to reproduce this bug just as reported by Jet Chen,
+and now I think I've found out a solution. I'll send out a patch.
+
+Regards,
+Dongsu
+
+> diff --git a/block/bio.c b/block/bio.c
+> index 0443694..763868f 100644
+> --- a/block/bio.c
+> +++ b/block/bio.c
+> @@ -701,6 +701,7 @@ static int __bio_add_page(struct request_queue *q, st=
+ruct bio *bio, struct page
+>  			  unsigned int max_sectors)
+>  {
+>  	int retried_segments =3D 0;
+> +	unsigned int phys_segments_orig;
+>  	struct bio_vec *bvec;
+>  =
+
+>  	/*
+> @@ -751,6 +752,9 @@ static int __bio_add_page(struct request_queue *q, st=
+ruct bio *bio, struct page
+>  	if (bio->bi_vcnt >=3D bio->bi_max_vecs)
+>  		return 0;
+>  =
+
+> +	blk_recount_segments(q, bio);
+> +	phys_segments_orig =3D bio->bi_phys_segments;
+> +
+>  	/*
+>  	 * setup the new entry, we might clear it again later if we
+>  	 * cannot add the page
+> @@ -811,6 +815,7 @@ static int __bio_add_page(struct request_queue *q, st=
+ruct bio *bio, struct page
+>  	bvec->bv_offset =3D 0;
+>  	bio->bi_vcnt--;
+>  	blk_recount_segments(q, bio);
+> +	BUG_ON(phys_segments_orig !=3D bio->bi_phys_segments);
+>  	return 0;
+>  }
+> =
+
+> =
+
+> Regards,
+> Maurizio Lombardi =
+
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo(a)vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+
+--===============9214816723801159459==--
 
