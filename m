@@ -1,381 +1,521 @@
-Content-Type: multipart/mixed; boundary="===============4200780377139037483=="
+Content-Type: multipart/mixed; boundary="===============8500500605809323239=="
 MIME-Version: 1.0
-From: Rong Chen <rong.a.chen@intel.com>
+From: Jet Chen <jet.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/mgag200] 90f479ae51: vm-scalability.median -18.8% regression
-Date: Wed, 08 Jan 2020 02:28:50 +0000
-Message-ID: <654bacf5-0567-0552-5cdb-c155d96d92bf@intel.com>
-In-Reply-To: <89eedbfc-6174-e59d-921e-b92d11a52331@suse.de>
+Subject: [rcu] 5057f55e543: +1307.4% time.involuntary_context_switches
+Date: Tue, 03 Jun 2014 10:49:11 +0800
+Message-ID: <538D37A7.8050200@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4200780377139037483==
+--===============8500500605809323239==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Thomas,
+TO: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+CC: LKML <linux-kernel@vger.kernel.org>
+CC: lkp(a)01.org
 
-The previous throughput was reduced from 43955 to 35691, and there is a lit=
-tle increase in next-20200106,
-but there is no obvious change after the patchset:
-  =
+FYI, we noticed the below changes on
 
-commit:
-   f1f8555dfb ("drm/bochs: Use shadow buffer for bochs framebuffer console")
-   90f479ae51 ("drm/mgag200: Replace struct mga_fbdev with generic framebuf=
-fer emulation")
+git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/fix=
+es
+commit 5057f55e543b7859cfd26bc281291795eac93f8a ("rcu: Bind RCU grace-perio=
+d kthreads if NO_HZ_FULL")
 
-f1f8555dfb9a70a2 90f479ae51afa45efab97afdde9
----------------- ---------------------------
-          %stddev     %change         %stddev
-              \          |                \
-      43955 =C2=B1  2%     -18.8%      35691        vm-scalability.median
+Here highlight some major changes:
 
-commit:
-
-   9eb1b48ca4 ("Add linux-next specific files for 20200106")
-   5f20199bac ("drm/fb-helper: Synchronize dirty worker with vblank")
-
-  next-20200106  5f20199bac9b2de71fd2158b90
-----------------  --------------------------
-          %stddev      change         %stddev
-              \          |                \
-      38550                       38744
-      38549                       38744        vm-scalability.median
-
-
-Best Regards,
-Rong Chen
-
-On 1/6/20 9:19 PM, Thomas Zimmermann wrote:
-> Hi Feng,
->
-> do you still have the test setup that produced the performance penalty?
->
-> If so, could you give a try to the patchset at [1]? I think I've fixed
-> the remaining issues in earlier versions and I'd like to see if it
-> actually improves performance.
->
-> Best regards
-> Thomas
->
-> [1]
-> https://lists.freedesktop.org/archives/dri-devel/2019-December/247771.html
->
-> Am 05.08.19 um 14:52 schrieb Feng Tang:
->> Hi Thomas,
->>
->> On Mon, Aug 05, 2019 at 12:22:11PM +0200, Thomas Zimmermann wrote:
->>
->> 	[snip]
->>
->>>>>    2019-08-03 19:29:17  ./case-anon-cow-seq-hugetlb
->>>>>    2019-08-03 19:29:17  ./usemem --runtime 300 -n 4 --prealloc --pref=
-ault
->>>>>      -O -U 815394406
->>>>>    917318700 bytes / 659419 usecs =3D 1358497 KB/s
->>>>>    917318700 bytes / 659658 usecs =3D 1358005 KB/s
->>>>>    917318700 bytes / 659916 usecs =3D 1357474 KB/s
->>>>>    917318700 bytes / 660168 usecs =3D 1356956 KB/s
->>>>>
->>>>> Rong, Feng, could you confirm this by disabling the cursor or blinkin=
-g?
->>>> Glad to know this method restored the drop. Rong is running the case.
->>>>
->>>> While I have another finds, as I noticed your patch changed the bpp fr=
-om
->>>> 24 to 32, I had a patch to change it back to 24, and run the case in
->>>> the weekend, the -18% regrssion was reduced to about -5%. Could this
->>>> be related?
->>> In the original code, the fbdev console already ran with 32 bpp [1] and
->>> 16 bpp was selected for low-end devices. [2][3] The patch only set the
->>> same values for userspace; nothing changed for the console.
->> I did the experiment becasue I checked the commit
->>
->> 90f479ae51afa4 drm/mgag200: Replace struct mga_fbdev with generic frameb=
-uffer emulation
->>
->> in which there is code:
->>
->> diff --git a/drivers/gpu/drm/mgag200/mgag200_main.c b/drivers/gpu/drm/mg=
-ag200/mgag200_main.c
->> index b10f726..a977333 100644
->> --- a/drivers/gpu/drm/mgag200/mgag200_main.c
->> +++ b/drivers/gpu/drm/mgag200/mgag200_main.c
->> @@ -162,7 +162,7 @@ int mgag200_driver_load(struct drm_device *dev, unsi=
-gned long flags)
->>   	if (IS_G200_SE(mdev) && mdev->mc.vram_size < (2048*1024))
->>   		dev->mode_config.preferred_depth =3D 16;
->>   	else
->> -		dev->mode_config.preferred_depth =3D 24;
->> +		dev->mode_config.preferred_depth =3D 32;
->>   	dev->mode_config.prefer_shadow =3D 1;
->>   =
-
->> My debug patch was kind of restoring of this part.
->>
->> Thanks,
->> Feng
->>
->>> Best regards
->>> Thomas
->>>
->>> [1]
->>> https://cgit.freedesktop.org/drm/drm-tip/tree/drivers/gpu/drm/mgag200/m=
-gag200_fb.c?id=3D5d17718997367c435dbe5341a8e270d9b19478d3#n259
->>> [2]
->>> https://cgit.freedesktop.org/drm/drm-tip/tree/drivers/gpu/drm/mgag200/m=
-gag200_fb.c?id=3D5d17718997367c435dbe5341a8e270d9b19478d3#n263
->>> [3]
->>> https://cgit.freedesktop.org/drm/drm-tip/tree/drivers/gpu/drm/mgag200/m=
-gag200_fb.c?id=3D5d17718997367c435dbe5341a8e270d9b19478d3#n286
->>>
->>>> commit:
->>>>    f1f8555dfb9 drm/bochs: Use shadow buffer for bochs framebuffer cons=
-ole
->>>>    90f479ae51a drm/mgag200: Replace struct mga_fbdev with generic fram=
-ebuffer emulation
->>>>    01e75fea0d5 mgag200: restore the depth back to 24
->>>>
->>>> f1f8555dfb9a70a2 90f479ae51afa45efab97afdde9 01e75fea0d5ff39d3e588c20e=
-c5
->>>> ---------------- --------------------------- -------------------------=
---
->>>>       43921 =C2=B1  2%     -18.3%      35884            -4.8%      418=
-26        vm-scalability.median
->>>>    14889337           -17.5%   12291029            -4.1%   14278574   =
-     vm-scalability.throughput
->>>>   =
-
->>>> commit 01e75fea0d5ff39d3e588c20ec52e7a4e6588a74
->>>> Author: Feng Tang <feng.tang@intel.com>
->>>> Date:   Fri Aug 2 15:09:19 2019 +0800
->>>>
->>>>      mgag200: restore the depth back to 24
->>>>      =
-
->>>>      Signed-off-by: Feng Tang <feng.tang@intel.com>
->>>>
->>>> diff --git a/drivers/gpu/drm/mgag200/mgag200_main.c b/drivers/gpu/drm/=
-mgag200/mgag200_main.c
->>>> index a977333..ac8f6c9 100644
->>>> --- a/drivers/gpu/drm/mgag200/mgag200_main.c
->>>> +++ b/drivers/gpu/drm/mgag200/mgag200_main.c
->>>> @@ -162,7 +162,7 @@ int mgag200_driver_load(struct drm_device *dev, un=
-signed long flags)
->>>>   	if (IS_G200_SE(mdev) && mdev->mc.vram_size < (2048*1024))
->>>>   		dev->mode_config.preferred_depth =3D 16;
->>>>   	else
->>>> -		dev->mode_config.preferred_depth =3D 32;
->>>> +		dev->mode_config.preferred_depth =3D 24;>  	dev->mode_config.prefer=
-_shadow =3D 1;
->>>>   =
-
->>>>   	r =3D mgag200_modeset_init(mdev);
->>>>
->>>> Thanks,
->>>> Feng
->>>>
->>>>>
->>>>> The difference between mgag200's original fbdev support and generic
->>>>> fbdev emulation is generic fbdev's worker task that updates the VRAM
->>>>> buffer from the shadow buffer. mgag200 does this immediately, but rel=
-ies
->>>>> on drm_can_sleep(), which is deprecated.
->>>>>
->>>>> I think that the worker task interferes with the test case, as the
->>>>> worker has been in fbdev emulation since forever and no performance
->>>>> regressions have been reported so far.
->>>>>
->>>>>
->>>>> So unless there's a report where this problem happens in a real-world
->>>>> use case, I'd like to keep code as it is. And apparently there's alwa=
-ys
->>>>> the workaround of disabling the cursor blinking.
->>>>>
->>>>> Best regards
->>>>> Thomas
->>>>>
->>> -- =
-
->>> Thomas Zimmermann
->>> Graphics Driver Developer
->>> SUSE Linux GmbH, Maxfeldstrasse 5, 90409 Nuernberg, Germany
->>> GF: Felix Imend=C3=B6rffer, Mary Higgins, Sri Rasiah
->>> HRB 21284 (AG N=C3=BCrnberg)
->>>
->>
->>
->> _______________________________________________
->> dri-devel mailing list
->> dri-devel(a)lists.freedesktop.org
->> https://lists.freedesktop.org/mailman/listinfo/dri-devel
->>
+      7946 ~13%   +1307.4%     111846 ~ 2%  TOTAL time.involuntary_context_=
+switches
+ 2.127e+09 ~ 0%     -23.5%  1.628e+09 ~ 4%  TOTAL qperf.udp.recv_bw
+ 2.128e+09 ~ 0%     -23.3%  1.633e+09 ~ 4%  TOTAL qperf.udp.send_bw
+ 2.101e+10 ~ 2%     -18.7%  1.707e+10 ~ 2%  TOTAL iperf.tcp.receiver.bps
+ 2.101e+10 ~ 2%     -18.7%  1.707e+10 ~ 2%  TOTAL iperf.tcp.sender.bps
+ 6.115e+09 ~ 5%     -17.9%  5.022e+09 ~ 6%  TOTAL qperf.sctp.bw
+  2.83e+09 ~ 1%     -12.5%  2.476e+09 ~ 3%  TOTAL qperf.tcp.bw
+     26070 ~ 0%      -1.2%      25768 ~ 0%  TOTAL will-it-scale.per_process=
+_ops
+      0.40 ~ 0%      +1.9%       0.41 ~ 1%  TOTAL will-it-scale.scalability
+   1113433 ~ 7%    +137.1%    2639530 ~ 3%  TOTAL cpuidle.C4-ATM.time
+       786 ~20%     +71.8%       1350 ~15%  TOTAL cpuidle.POLL.usage
+     47106 ~ 8%     +53.8%      72472 ~ 3%  TOTAL cpuidle.C1E-ATM.usage
+       659 ~ 7%     +50.6%        992 ~ 3%  TOTAL cpuidle.C3-IVT.usage
+      3026 ~ 8%     +42.9%       4324 ~ 3%  TOTAL cpuidle.C4-ATM.usage
+   5062629 ~ 4%     +26.6%    6408492 ~ 2%  TOTAL cpuidle.C1E-ATM.time
+    402345 ~ 2%     -18.9%     326211 ~ 0%  TOTAL cpuidle.C6-IVT.usage
+       944 ~ 9%     +17.0%       1105 ~ 8%  TOTAL cpuidle.C1E-IVT.usage
+    403926 ~ 0%     -17.3%     333985 ~ 1%  TOTAL cpuidle.C7-SNB.usage
+    124425 ~ 0%     -16.4%     103999 ~ 0%  TOTAL cpuidle.C6-ATM.usage
 
 
---===============4200780377139037483==
-Content-Type: text/html
+full comparison result:
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+ 2.127e+09 ~ 0%     -23.5%  1.628e+09 ~ 4%  bens/qperf/600s
+ 2.127e+09 ~ 0%     -23.5%  1.628e+09 ~ 4%  TOTAL qperf.udp.recv_bw
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+ 2.128e+09 ~ 0%     -23.3%  1.633e+09 ~ 4%  bens/qperf/600s
+ 2.128e+09 ~ 0%     -23.3%  1.633e+09 ~ 4%  TOTAL qperf.udp.send_bw
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+ 2.101e+10 ~ 2%     -18.7%  1.707e+10 ~ 2%  bens/iperf/300s-tcp
+ 2.101e+10 ~ 2%     -18.7%  1.707e+10 ~ 2%  TOTAL iperf.tcp.receiver.bps
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+ 2.101e+10 ~ 2%     -18.7%  1.707e+10 ~ 2%  bens/iperf/300s-tcp
+ 2.101e+10 ~ 2%     -18.7%  1.707e+10 ~ 2%  TOTAL iperf.tcp.sender.bps
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+ 1.331e+09 ~ 2%      -5.8%  1.255e+09 ~ 2%  bens/qperf/600s
+   2.4e+09 ~ 6%     -30.4%  1.671e+09 ~12%  brickland3/qperf/600s
+ 2.384e+09 ~ 7%     -12.1%  2.096e+09 ~ 3%  lkp-sb03/qperf/600s
+ 6.115e+09 ~ 5%     -17.9%  5.022e+09 ~ 6%  TOTAL qperf.sctp.bw
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+  2.83e+09 ~ 1%     -12.5%  2.476e+09 ~ 3%  bens/qperf/600s
+  2.83e+09 ~ 1%     -12.5%  2.476e+09 ~ 3%  TOTAL qperf.tcp.bw
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     26070 ~ 0%      -1.2%      25768 ~ 0%  lkp-a03/will-it-scale/unlink1
+     26070 ~ 0%      -1.2%      25768 ~ 0%  TOTAL will-it-scale.per_process=
+_ops
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      0.40 ~ 0%      +1.9%       0.41 ~ 1%  lkp-a03/will-it-scale/unlink1
+      0.40 ~ 0%      +1.9%       0.41 ~ 1%  TOTAL will-it-scale.scalability
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      5951 ~ 4%     -61.0%       2318 ~ 4%  lkp-a03/will-it-scale/unlink1
+      5951 ~ 4%     -61.0%       2318 ~ 4%  TOTAL slabinfo.kmalloc-256.acti=
+ve_objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       373 ~ 4%     -60.7%        146 ~ 4%  lkp-a03/will-it-scale/unlink1
+       373 ~ 4%     -60.7%        146 ~ 4%  TOTAL slabinfo.kmalloc-256.num_=
+slabs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       373 ~ 4%     -60.7%        146 ~ 4%  lkp-a03/will-it-scale/unlink1
+       373 ~ 4%     -60.7%        146 ~ 4%  TOTAL slabinfo.kmalloc-256.acti=
+ve_slabs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      5990 ~ 4%     -60.7%       2355 ~ 4%  lkp-a03/will-it-scale/unlink1
+      5990 ~ 4%     -60.7%       2355 ~ 4%  TOTAL slabinfo.kmalloc-256.num_=
+objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+ 2.272e+08 ~ 1%     -13.3%   1.97e+08 ~ 2%  bens/qperf/600s
+   1507825 ~ 0%     -20.5%    1198788 ~ 0%  lkp-a03/will-it-scale/unlink1
+ 2.287e+08 ~ 1%     -13.3%  1.982e+08 ~ 2%  TOTAL proc-vmstat.pgalloc_dma32
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+   1113433 ~ 7%    +137.1%    2639530 ~ 3%  lkp-a03/will-it-scale/unlink1
+   1113433 ~ 7%    +137.1%    2639530 ~ 3%  TOTAL cpuidle.C4-ATM.time
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      6269 ~ 4%     -57.8%       2647 ~ 4%  lkp-a03/will-it-scale/unlink1
+      6269 ~ 4%     -57.8%       2647 ~ 4%  TOTAL slabinfo.shmem_inode_cach=
+e.active_objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      6306 ~ 4%     -57.4%       2688 ~ 4%  lkp-a03/will-it-scale/unlink1
+      6306 ~ 4%     -57.4%       2688 ~ 4%  TOTAL slabinfo.shmem_inode_cach=
+e.num_objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       262 ~ 4%     -57.5%        111 ~ 4%  lkp-a03/will-it-scale/unlink1
+       262 ~ 4%     -57.5%        111 ~ 4%  TOTAL slabinfo.shmem_inode_cach=
+e.active_slabs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       262 ~ 4%     -57.5%        111 ~ 4%  lkp-a03/will-it-scale/unlink1
+       262 ~ 4%     -57.5%        111 ~ 4%  TOTAL slabinfo.shmem_inode_cach=
+e.num_slabs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       786 ~20%     +71.8%       1350 ~15%  lkp-sb03/qperf/600s
+       786 ~20%     +71.8%       1350 ~15%  TOTAL cpuidle.POLL.usage
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      0.23 ~ 7%     -40.0%       0.14 ~ 5%  lkp-sb03/qperf/600s
+      0.23 ~ 7%     -40.0%       0.14 ~ 5%  TOTAL turbostat.%c3
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     47106 ~ 8%     +53.8%      72472 ~ 3%  lkp-a03/will-it-scale/unlink1
+     47106 ~ 8%     +53.8%      72472 ~ 3%  TOTAL cpuidle.C1E-ATM.usage
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1.14 ~28%     -45.0%       0.63 ~43%  lkp-sb03/qperf/600s
+      1.14 ~28%     -45.0%       0.63 ~43%  TOTAL perf-profile.cpu-cycles.c=
+opy_user_generic_string.skb_copy_datagram_iovec.tcp_recvmsg.inet_recvmsg.so=
+ck_aio_read
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       659 ~ 7%     +50.6%        992 ~ 3%  brickland3/qperf/600s
+       659 ~ 7%     +50.6%        992 ~ 3%  TOTAL cpuidle.C3-IVT.usage
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      3026 ~ 8%     +42.9%       4324 ~ 3%  lkp-a03/will-it-scale/unlink1
+      3026 ~ 8%     +42.9%       4324 ~ 3%  TOTAL cpuidle.C4-ATM.usage
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       258 ~ 9%     -19.8%        207 ~13%  brickland3/qperf/600s
+       258 ~ 9%     -19.8%        207 ~13%  TOTAL numa-vmstat.node1.nr_page=
+_table_pages
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1041 ~ 9%     -19.3%        839 ~12%  brickland3/qperf/600s
+      1041 ~ 9%     -19.3%        839 ~12%  TOTAL numa-meminfo.node1.PageTa=
+bles
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     53062 ~ 2%     -35.1%      34464 ~ 3%  bens/qperf/600s
+    109531 ~13%     +46.9%     160928 ~ 5%  brickland3/qperf/600s
+     72773 ~ 1%     +40.8%     102483 ~ 1%  lkp-a03/will-it-scale/unlink1
+     67902 ~ 1%     +13.8%      77302 ~ 3%  lkp-sb03/qperf/600s
+    303269 ~ 6%     +23.7%     375178 ~ 3%  TOTAL softirqs.RCU
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     80344 ~ 1%     -26.2%      59325 ~ 2%  bens/qperf/600s
+     65012 ~ 0%     -30.9%      44916 ~ 0%  lkp-a03/will-it-scale/unlink1
+    145357 ~ 1%     -28.3%     104241 ~ 1%  TOTAL softirqs.SCHED
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+   5062629 ~ 4%     +26.6%    6408492 ~ 2%  lkp-a03/will-it-scale/unlink1
+   5062629 ~ 4%     +26.6%    6408492 ~ 2%  TOTAL cpuidle.C1E-ATM.time
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      5015 ~ 0%     -19.1%       4054 ~ 0%  lkp-a03/will-it-scale/unlink1
+      5015 ~ 0%     -19.1%       4054 ~ 0%  TOTAL proc-vmstat.nr_slab_unrec=
+laimable
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+    402345 ~ 2%     -18.9%     326211 ~ 0%  brickland3/qperf/600s
+    402345 ~ 2%     -18.9%     326211 ~ 0%  TOTAL cpuidle.C6-IVT.usage
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       944 ~ 9%     +17.0%       1105 ~ 8%  brickland3/qperf/600s
+       944 ~ 9%     +17.0%       1105 ~ 8%  TOTAL cpuidle.C1E-IVT.usage
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     32956 ~ 3%     +17.5%      38713 ~ 8%  brickland3/qperf/600s
+     32956 ~ 3%     +17.5%      38713 ~ 8%  TOTAL numa-meminfo.node3.Active
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     19858 ~ 1%     -18.1%      16267 ~ 0%  lkp-a03/will-it-scale/unlink1
+     19858 ~ 1%     -18.1%      16267 ~ 0%  TOTAL meminfo.SUnreclaim
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+    403926 ~ 0%     -17.3%     333985 ~ 1%  lkp-sb03/qperf/600s
+    403926 ~ 0%     -17.3%     333985 ~ 1%  TOTAL cpuidle.C7-SNB.usage
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+  74689352 ~ 1%     -13.3%   64771743 ~ 2%  bens/qperf/600s
+   2539322 ~ 0%     -20.6%    2015084 ~ 0%  lkp-a03/will-it-scale/unlink1
+  77228675 ~ 1%     -13.5%   66786827 ~ 2%  TOTAL proc-vmstat.pgalloc_normal
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+ 3.019e+08 ~ 1%     -13.3%  2.618e+08 ~ 2%  bens/qperf/600s
+   4047283 ~ 0%     -20.6%    3214087 ~ 0%  lkp-a03/will-it-scale/unlink1
+ 3.059e+08 ~ 1%     -13.4%   2.65e+08 ~ 2%  TOTAL proc-vmstat.pgfree
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+    124425 ~ 0%     -16.4%     103999 ~ 0%  lkp-a03/will-it-scale/unlink1
+    124425 ~ 0%     -16.4%     103999 ~ 0%  TOTAL cpuidle.C6-ATM.usage
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+  23538414 ~ 0%     -12.9%   20506157 ~ 2%  bens/qperf/600s
+   2496727 ~ 0%     -19.5%    2010351 ~ 0%  lkp-a03/will-it-scale/unlink1
+  26035141 ~ 0%     -13.5%   22516509 ~ 2%  TOTAL proc-vmstat.numa_hit
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+  23538414 ~ 0%     -12.9%   20506157 ~ 2%  bens/qperf/600s
+   2496727 ~ 0%     -19.5%    2010351 ~ 0%  lkp-a03/will-it-scale/unlink1
+  26035141 ~ 0%     -13.5%   22516509 ~ 2%  TOTAL proc-vmstat.numa_local
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      4196 ~ 4%     -18.1%       3438 ~ 4%  brickland3/qperf/600s
+      4196 ~ 4%     -18.1%       3438 ~ 4%  TOTAL meminfo.PageTables
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1036 ~ 4%     -17.6%        853 ~ 4%  brickland3/qperf/600s
+      1036 ~ 4%     -17.6%        853 ~ 4%  TOTAL proc-vmstat.nr_page_table=
+_pages
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+   5817789 ~ 8%     +18.0%    6867050 ~ 7%  lkp-sb03/qperf/600s
+   5817789 ~ 8%     +18.0%    6867050 ~ 7%  TOTAL meminfo.DirectMap2M
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     48.12 ~ 0%     -11.7%      42.46 ~ 6%  brickland3/qperf/600s
+     48.12 ~ 0%     -11.7%      42.46 ~ 6%  TOTAL turbostat.%pc2
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      6542 ~ 6%     +12.6%       7364 ~ 4%  brickland3/qperf/600s
+      6542 ~ 6%     +12.6%       7364 ~ 4%  TOTAL numa-meminfo.node3.Active=
+(anon)
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1636 ~ 6%     +12.5%       1841 ~ 4%  brickland3/qperf/600s
+      1636 ~ 6%     +12.5%       1841 ~ 4%  TOTAL numa-vmstat.node3.nr_acti=
+ve_anon
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1415 ~ 3%     +13.3%       1602 ~ 1%  brickland3/qperf/600s
+      1415 ~ 3%     +13.3%       1602 ~ 1%  TOTAL numa-meminfo.node1.Kernel=
+Stack
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     47493 ~ 4%     -11.0%      42252 ~ 5%  brickland3/qperf/600s
+     47493 ~ 4%     -11.0%      42252 ~ 5%  TOTAL numa-meminfo.node1.Slab
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     12789 ~ 1%     -10.9%      11391 ~ 2%  bens/qperf/600s
+     12789 ~ 1%     -10.9%      11391 ~ 2%  TOTAL softirqs.HRTIMER
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1275 ~ 7%     -12.2%       1120 ~ 4%  brickland3/qperf/600s
+      1275 ~ 7%     -12.2%       1120 ~ 4%  TOTAL numa-vmstat.node1.nr_anon=
+_pages
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      8813 ~ 4%     -11.7%       7784 ~ 6%  brickland3/qperf/600s
+      8813 ~ 4%     -11.7%       7784 ~ 6%  TOTAL numa-vmstat.node1.nr_slab=
+_unreclaimable
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     35254 ~ 4%     -11.7%      31138 ~ 6%  brickland3/qperf/600s
+     35254 ~ 4%     -11.7%      31138 ~ 6%  TOTAL numa-meminfo.node1.SUnrec=
+laim
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      5095 ~ 7%     -12.1%       4478 ~ 4%  brickland3/qperf/600s
+      5095 ~ 7%     -12.1%       4478 ~ 4%  TOTAL numa-meminfo.node1.AnonPa=
+ges
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      6764 ~ 5%     +11.5%       7542 ~ 4%  brickland3/qperf/600s
+      6764 ~ 5%     +11.5%       7542 ~ 4%  TOTAL numa-meminfo.node3.AnonPa=
+ges
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1691 ~ 5%     +11.4%       1884 ~ 4%  brickland3/qperf/600s
+      1691 ~ 5%     +11.4%       1884 ~ 4%  TOTAL numa-vmstat.node3.nr_anon=
+_pages
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      0.99 ~10%     +16.0%       1.15 ~ 8%  bens/qperf/600s
+      0.99 ~10%     +16.0%       1.15 ~ 8%  TOTAL perf-profile.cpu-cycles.t=
+cp_rcv_established.tcp_v4_do_rcv.tcp_prequeue_process.tcp_recvmsg.inet_recv=
+msg
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     10946 ~ 2%      -9.0%       9957 ~ 1%  lkp-sb03/qperf/600s
+     10946 ~ 2%      -9.0%       9957 ~ 1%  TOTAL slabinfo.kmalloc-192.acti=
+ve_objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      0.78 ~10%     +18.9%       0.92 ~ 7%  lkp-sb03/qperf/600s
+      0.78 ~10%     +18.9%       0.92 ~ 7%  TOTAL perf-profile.cpu-cycles.e=
+nqueue_entity.enqueue_task_fair.enqueue_task.activate_task.ttwu_do_activate
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      4838 ~ 4%      -7.7%       4465 ~ 2%  brickland3/qperf/600s
+      4838 ~ 4%      -7.7%       4465 ~ 2%  TOTAL slabinfo.signal_cache.num=
+_objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      4838 ~ 4%      -7.7%       4465 ~ 2%  brickland3/qperf/600s
+      4838 ~ 4%      -7.7%       4465 ~ 2%  TOTAL slabinfo.signal_cache.act=
+ive_objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     10948 ~ 2%      -8.9%       9977 ~ 1%  lkp-sb03/qperf/600s
+     10948 ~ 2%      -8.9%       9977 ~ 1%  TOTAL slabinfo.kmalloc-192.num_=
+objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      8138 ~ 7%     -12.2%       7145 ~ 2%  lkp-sb03/qperf/600s
+      8138 ~ 7%     -12.2%       7145 ~ 2%  TOTAL slabinfo.anon_vma.active_=
+objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      8138 ~ 7%     -12.2%       7145 ~ 2%  lkp-sb03/qperf/600s
+      8138 ~ 7%     -12.2%       7145 ~ 2%  TOTAL slabinfo.anon_vma.num_objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1877 ~ 0%      -9.5%       1699 ~ 0%  lkp-a03/will-it-scale/unlink1
+      1877 ~ 0%      -9.5%       1699 ~ 0%  TOTAL slabinfo.dentry.active_sl=
+abs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1877 ~ 0%      -9.5%       1699 ~ 0%  lkp-a03/will-it-scale/unlink1
+      1877 ~ 0%      -9.5%       1699 ~ 0%  TOTAL slabinfo.dentry.num_slabs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     39391 ~ 0%      -9.5%      35638 ~ 0%  lkp-a03/will-it-scale/unlink1
+     39391 ~ 0%      -9.5%      35638 ~ 0%  TOTAL slabinfo.dentry.active_ob=
+js
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     39441 ~ 0%      -9.5%      35702 ~ 0%  lkp-a03/will-it-scale/unlink1
+     39441 ~ 0%      -9.5%      35702 ~ 0%  TOTAL slabinfo.dentry.num_objs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+    481253 ~ 0%      -8.9%     438624 ~ 0%  bens/qperf/600s
+    481253 ~ 0%      -8.9%     438624 ~ 0%  TOTAL softirqs.TIMER
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1297 ~33%    +565.9%       8640 ~ 7%  bens/iperf/300s-tcp
+      2788 ~ 3%    +588.8%      19204 ~ 4%  bens/qperf/600s
+      1191 ~ 5%   +1200.9%      15493 ~ 4%  brickland3/qperf/600s
+      1535 ~ 9%   +3404.4%      53799 ~ 0%  lkp-a03/will-it-scale/unlink1
+      1135 ~26%   +1195.9%      14709 ~ 4%  lkp-sb03/qperf/600s
+      7946 ~13%   +1307.4%     111846 ~ 2%  TOTAL time.involuntary_context_=
+switches
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+  42351859 ~ 0%      -5.3%   40114932 ~ 0%  bens/qperf/600s
+  43015383 ~ 1%      -4.4%   41143092 ~ 0%  brickland3/qperf/600s
+      7205 ~14%    +320.9%      30329 ~ 5%  lkp-a03/will-it-scale/unlink1
+  85374447 ~ 1%      -4.8%   81288354 ~ 0%  TOTAL time.voluntary_context_sw=
+itches
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+    141174 ~ 1%      -5.4%     133551 ~ 0%  bens/qperf/600s
+    143982 ~ 1%      -4.4%     137600 ~ 0%  brickland3/qperf/600s
+      2199 ~ 3%     +34.1%       2949 ~ 1%  lkp-a03/will-it-scale/unlink1
+    287355 ~ 1%      -4.6%     274101 ~ 0%  TOTAL vmstat.system.cs
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+     72398 ~ 1%      -5.4%      68503 ~ 0%  bens/qperf/600s
+      3708 ~ 0%      +2.0%       3781 ~ 0%  lkp-a03/will-it-scale/unlink1
+      8789 ~ 4%     +22.3%      10749 ~15%  lkp-sb03/qperf/600s
+     84895 ~ 1%      -2.2%      83034 ~ 2%  TOTAL vmstat.system.in
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+      1.51 ~ 0%      -5.3%       1.43 ~ 1%  brickland3/qperf/600s
+      5.43 ~ 1%      -2.8%       5.28 ~ 0%  lkp-sb03/qperf/600s
+      6.94 ~ 1%      -3.3%       6.71 ~ 0%  TOTAL turbostat.%c0
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       146 ~ 0%      -2.2%        143 ~ 0%  bens/qperf/600s
+       147 ~ 1%      -4.8%        140 ~ 1%  brickland3/qperf/600s
+       293 ~ 0%      -3.5%        283 ~ 0%  TOTAL time.percent_of_cpu_this_=
+job_got
+
+71a9b26963f8c2d  5057f55e543b7859cfd26bc28
+---------------  -------------------------
+       872 ~ 0%      -2.3%        853 ~ 0%  bens/qperf/600s
+       874 ~ 1%      -4.6%        834 ~ 1%  brickland3/qperf/600s
+      1747 ~ 0%      -3.4%       1687 ~ 0%  TOTAL time.system_time
+
+
+Legend:
+	~XX%    - stddev percent
+	[+-]XX% - change percent
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
+
+Thanks,
+Jet
+
+
+--===============8500500605809323239==
+Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.htm"
+Content-Disposition: attachment; filename="reproduce.ksh"
 
-PGh0bWw+CiAgPGhlYWQ+CiAgICA8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVR5cGUiIGNvbnRl
-bnQ9InRleHQvaHRtbDsgY2hhcnNldD1VVEYtOCI+CiAgPC9oZWFkPgogIDxib2R5IHRleHQ9IiMw
-MDAwMDAiIGJnY29sb3I9IiNGRkZGRkYiPgogICAgPHByZSBzdHlsZT0iZm9udC1zaXplOiAxM3B4
-OyBmb250LWZhbWlseTogbW9ub3NwYWNlOyB3aGl0ZS1zcGFjZTogcHJlLXdyYXA7IGNvbG9yOiBy
-Z2IoMCwgMCwgMCk7IGZvbnQtc3R5bGU6IG5vcm1hbDsgZm9udC12YXJpYW50LWxpZ2F0dXJlczog
-bm9ybWFsOyBmb250LXZhcmlhbnQtY2Fwczogbm9ybWFsOyBmb250LXdlaWdodDogNDAwOyBsZXR0
-ZXItc3BhY2luZzogbm9ybWFsOyBvcnBoYW5zOiAyOyB0ZXh0LWFsaWduOiBzdGFydDsgdGV4dC1p
-bmRlbnQ6IDBweDsgdGV4dC10cmFuc2Zvcm06IG5vbmU7IHdpZG93czogMjsgd29yZC1zcGFjaW5n
-OiAwcHg7IC13ZWJraXQtdGV4dC1zdHJva2Utd2lkdGg6IDBweDsgdGV4dC1kZWNvcmF0aW9uLXN0
-eWxlOiBpbml0aWFsOyB0ZXh0LWRlY29yYXRpb24tY29sb3I6IGluaXRpYWw7Ij5IaSBUaG9tYXMs
-CgpUaGUgcHJldmlvdXMgdGhyb3VnaHB1dCB3YXMgcmVkdWNlZCBmcm9tIDQzOTU1IHRvIDM1Njkx
-LCBhbmQgdGhlcmUgaXMgYSBsaXR0bGUgaW5jcmVhc2UgaW4gbmV4dC0yMDIwMDEwNiwKYnV0IHRo
-ZXJlIGlzIG5vIG9idmlvdXMgY2hhbmdlIGFmdGVyIHRoZSBwYXRjaHNldDoKwqAKY29tbWl0OiAK
-ICBmMWY4NTU1ZGZiICgiZHJtL2JvY2hzOiBVc2Ugc2hhZG93IGJ1ZmZlciBmb3IgYm9jaHMgZnJh
-bWVidWZmZXIgY29uc29sZSIpCiAgOTBmNDc5YWU1MSAoImRybS9tZ2FnMjAwOiBSZXBsYWNlIHN0
-cnVjdCBtZ2FfZmJkZXYgd2l0aCBnZW5lcmljIGZyYW1lYnVmZmVyIGVtdWxhdGlvbiIpCgpmMWY4
-NTU1ZGZiOWE3MGEyIDkwZjQ3OWFlNTFhZmE0NWVmYWI5N2FmZGRlOSAKLS0tLS0tLS0tLS0tLS0t
-LSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gCiAgICAgICAgICVzdGRkZXYgICAgICVjaGFu
-Z2UgICAgICAgICAlc3RkZGV2CiAgICAgICAgICAgICBcICAgICAgICAgIHwgICAgICAgICAgICAg
-ICAgXCAgCiAgICAgNDM5NTUgwrEgIDIlICAgICAtMTguOCUgICAgICAzNTY5MSAgICAgICAgdm0t
-c2NhbGFiaWxpdHkubWVkaWFuCgpjb21taXQ6IAoKICA5ZWIxYjQ4Y2E0ICgiQWRkIGxpbnV4LW5l
-eHQgc3BlY2lmaWMgZmlsZXMgZm9yIDIwMjAwMTA2IikKICA1ZjIwMTk5YmFjICgiZHJtL2ZiLWhl
-bHBlcjogU3luY2hyb25pemUgZGlydHkgd29ya2VyIHdpdGggdmJsYW5rIikKCiBuZXh0LTIwMjAw
-MTA2ICA1ZjIwMTk5YmFjOWIyZGU3MWZkMjE1OGI5MAotLS0tLS0tLS0tLS0tLS0tICAtLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAgICAlc3RkZGV2ICAgICAgY2hhbmdlICAgICAgICAg
-JXN0ZGRldgogICAgICAgICAgICAgXCAgICAgICAgICB8ICAgICAgICAgICAgICAgIFwgIAogICAg
-IDM4NTUwICAgICAgICAgICAgICAgICAgICAgICAzODc0NCAgICAgICAKICAgICAzODU0OSAgICAg
-ICAgICAgICAgICAgICAgICAgMzg3NDQgICAgICAgIHZtLXNjYWxhYmlsaXR5Lm1lZGlhbgo8L3By
-ZT4KICAgIDxicj4KICAgIEJlc3QgUmVnYXJkcyw8YnI+CiAgICBSb25nIENoZW48YnI+CiAgICA8
-YnI+CiAgICA8ZGl2IGNsYXNzPSJtb3otY2l0ZS1wcmVmaXgiPk9uIDEvNi8yMCA5OjE5IFBNLCBU
-aG9tYXMgWmltbWVybWFubgogICAgICB3cm90ZTo8YnI+CiAgICA8L2Rpdj4KICAgIDxibG9ja3F1
-b3RlIHR5cGU9ImNpdGUiCiAgICAgIGNpdGU9Im1pZDo4OWVlZGJmYy02MTc0LWU1OWQtOTIxZS1i
-OTJkMTFhNTIzMzFAc3VzZS5kZSI+CiAgICAgIDxwcmUgY2xhc3M9Im1vei1xdW90ZS1wcmUiIHdy
-YXA9IiI+SGkgRmVuZywKCmRvIHlvdSBzdGlsbCBoYXZlIHRoZSB0ZXN0IHNldHVwIHRoYXQgcHJv
-ZHVjZWQgdGhlIHBlcmZvcm1hbmNlIHBlbmFsdHk/CgpJZiBzbywgY291bGQgeW91IGdpdmUgYSB0
-cnkgdG8gdGhlIHBhdGNoc2V0IGF0IFsxXT8gSSB0aGluayBJJ3ZlIGZpeGVkCnRoZSByZW1haW5p
-bmcgaXNzdWVzIGluIGVhcmxpZXIgdmVyc2lvbnMgYW5kIEknZCBsaWtlIHRvIHNlZSBpZiBpdAph
-Y3R1YWxseSBpbXByb3ZlcyBwZXJmb3JtYW5jZS4KCkJlc3QgcmVnYXJkcwpUaG9tYXMKClsxXQo8
-YSBjbGFzcz0ibW96LXR4dC1saW5rLWZyZWV0ZXh0IiBocmVmPSJodHRwczovL2xpc3RzLmZyZWVk
-ZXNrdG9wLm9yZy9hcmNoaXZlcy9kcmktZGV2ZWwvMjAxOS1EZWNlbWJlci8yNDc3NzEuaHRtbCI+
-aHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvYXJjaGl2ZXMvZHJpLWRldmVsLzIwMTktRGVj
-ZW1iZXIvMjQ3NzcxLmh0bWw8L2E+CgpBbSAwNS4wOC4xOSB1bSAxNDo1MiBzY2hyaWViIEZlbmcg
-VGFuZzoKPC9wcmU+CiAgICAgIDxibG9ja3F1b3RlIHR5cGU9ImNpdGUiPgogICAgICAgIDxwcmUg
-Y2xhc3M9Im1vei1xdW90ZS1wcmUiIHdyYXA9IiI+SGkgVGhvbWFzLAoKT24gTW9uLCBBdWcgMDUs
-IDIwMTkgYXQgMTI6MjI6MTFQTSArMDIwMCwgVGhvbWFzIFppbW1lcm1hbm4gd3JvdGU6CgoJW3Nu
-aXBdIAoKPC9wcmU+CiAgICAgICAgPGJsb2NrcXVvdGUgdHlwZT0iY2l0ZSI+CiAgICAgICAgICA8
-YmxvY2txdW90ZSB0eXBlPSJjaXRlIj4KICAgICAgICAgICAgPGJsb2NrcXVvdGUgdHlwZT0iY2l0
-ZSI+CiAgICAgICAgICAgICAgPHByZSBjbGFzcz0ibW96LXF1b3RlLXByZSIgd3JhcD0iIj4gIDIw
-MTktMDgtMDMgMTk6Mjk6MTcgIC4vY2FzZS1hbm9uLWNvdy1zZXEtaHVnZXRsYgogIDIwMTktMDgt
-MDMgMTk6Mjk6MTcgIC4vdXNlbWVtIC0tcnVudGltZSAzMDAgLW4gNCAtLXByZWFsbG9jIC0tcHJl
-ZmF1bHQKICAgIC1PIC1VIDgxNTM5NDQwNgogIDkxNzMxODcwMCBieXRlcyAvIDY1OTQxOSB1c2Vj
-cyA9IDEzNTg0OTcgS0IvcwogIDkxNzMxODcwMCBieXRlcyAvIDY1OTY1OCB1c2VjcyA9IDEzNTgw
-MDUgS0IvcwogIDkxNzMxODcwMCBieXRlcyAvIDY1OTkxNiB1c2VjcyA9IDEzNTc0NzQgS0Ivcwog
-IDkxNzMxODcwMCBieXRlcyAvIDY2MDE2OCB1c2VjcyA9IDEzNTY5NTYgS0IvcwoKUm9uZywgRmVu
-ZywgY291bGQgeW91IGNvbmZpcm0gdGhpcyBieSBkaXNhYmxpbmcgdGhlIGN1cnNvciBvciBibGlu
-a2luZz8KPC9wcmU+CiAgICAgICAgICAgIDwvYmxvY2txdW90ZT4KICAgICAgICAgICAgPHByZSBj
-bGFzcz0ibW96LXF1b3RlLXByZSIgd3JhcD0iIj4KR2xhZCB0byBrbm93IHRoaXMgbWV0aG9kIHJl
-c3RvcmVkIHRoZSBkcm9wLiBSb25nIGlzIHJ1bm5pbmcgdGhlIGNhc2UuCgpXaGlsZSBJIGhhdmUg
-YW5vdGhlciBmaW5kcywgYXMgSSBub3RpY2VkIHlvdXIgcGF0Y2ggY2hhbmdlZCB0aGUgYnBwIGZy
-b20KMjQgdG8gMzIsIEkgaGFkIGEgcGF0Y2ggdG8gY2hhbmdlIGl0IGJhY2sgdG8gMjQsIGFuZCBy
-dW4gdGhlIGNhc2UgaW4KdGhlIHdlZWtlbmQsIHRoZSAtMTglIHJlZ3Jzc2lvbiB3YXMgcmVkdWNl
-ZCB0byBhYm91dCAtNSUuIENvdWxkIHRoaXMKYmUgcmVsYXRlZD8KPC9wcmU+CiAgICAgICAgICA8
-L2Jsb2NrcXVvdGU+CiAgICAgICAgICA8cHJlIGNsYXNzPSJtb3otcXVvdGUtcHJlIiB3cmFwPSIi
-PgpJbiB0aGUgb3JpZ2luYWwgY29kZSwgdGhlIGZiZGV2IGNvbnNvbGUgYWxyZWFkeSByYW4gd2l0
-aCAzMiBicHAgWzFdIGFuZAoxNiBicHAgd2FzIHNlbGVjdGVkIGZvciBsb3ctZW5kIGRldmljZXMu
-IFsyXVszXSBUaGUgcGF0Y2ggb25seSBzZXQgdGhlCnNhbWUgdmFsdWVzIGZvciB1c2Vyc3BhY2U7
-IG5vdGhpbmcgY2hhbmdlZCBmb3IgdGhlIGNvbnNvbGUuCjwvcHJlPgogICAgICAgIDwvYmxvY2tx
-dW90ZT4KICAgICAgICA8cHJlIGNsYXNzPSJtb3otcXVvdGUtcHJlIiB3cmFwPSIiPgpJIGRpZCB0
-aGUgZXhwZXJpbWVudCBiZWNhc3VlIEkgY2hlY2tlZCB0aGUgY29tbWl0IAoKOTBmNDc5YWU1MWFm
-YTQgZHJtL21nYWcyMDA6IFJlcGxhY2Ugc3RydWN0IG1nYV9mYmRldiB3aXRoIGdlbmVyaWMgZnJh
-bWVidWZmZXIgZW11bGF0aW9uCgppbiB3aGljaCB0aGVyZSBpcyBjb2RlOgoKZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvZ3B1L2RybS9tZ2FnMjAwL21nYWcyMDBfbWFpbi5jIGIvZHJpdmVycy9ncHUvZHJt
-L21nYWcyMDAvbWdhZzIwMF9tYWluLmMKaW5kZXggYjEwZjcyNi4uYTk3NzMzMyAxMDA2NDQKLS0t
-IGEvZHJpdmVycy9ncHUvZHJtL21nYWcyMDAvbWdhZzIwMF9tYWluLmMKKysrIGIvZHJpdmVycy9n
-cHUvZHJtL21nYWcyMDAvbWdhZzIwMF9tYWluLmMKQEAgLTE2Miw3ICsxNjIsNyBAQCBpbnQgbWdh
-ZzIwMF9kcml2ZXJfbG9hZChzdHJ1Y3QgZHJtX2RldmljZSAqZGV2LCB1bnNpZ25lZCBsb25nIGZs
-YWdzKQogCWlmIChJU19HMjAwX1NFKG1kZXYpICZhbXA7JmFtcDsgbWRldi0mZ3Q7bWMudnJhbV9z
-aXplICZsdDsgKDIwNDgqMTAyNCkpCiAJCWRldi0mZ3Q7bW9kZV9jb25maWcucHJlZmVycmVkX2Rl
-cHRoID0gMTY7CiAJZWxzZQotCQlkZXYtJmd0O21vZGVfY29uZmlnLnByZWZlcnJlZF9kZXB0aCA9
-IDI0OworCQlkZXYtJmd0O21vZGVfY29uZmlnLnByZWZlcnJlZF9kZXB0aCA9IDMyOwogCWRldi0m
-Z3Q7bW9kZV9jb25maWcucHJlZmVyX3NoYWRvdyA9IDE7CiAKTXkgZGVidWcgcGF0Y2ggd2FzIGtp
-bmQgb2YgcmVzdG9yaW5nIG9mIHRoaXMgcGFydC4KClRoYW5rcywKRmVuZwoKPC9wcmU+CiAgICAg
-ICAgPGJsb2NrcXVvdGUgdHlwZT0iY2l0ZSI+CiAgICAgICAgICA8cHJlIGNsYXNzPSJtb3otcXVv
-dGUtcHJlIiB3cmFwPSIiPgpCZXN0IHJlZ2FyZHMKVGhvbWFzCgpbMV0KPGEgY2xhc3M9Im1vei10
-eHQtbGluay1mcmVldGV4dCIgaHJlZj0iaHR0cHM6Ly9jZ2l0LmZyZWVkZXNrdG9wLm9yZy9kcm0v
-ZHJtLXRpcC90cmVlL2RyaXZlcnMvZ3B1L2RybS9tZ2FnMjAwL21nYWcyMDBfZmIuYz9pZD01ZDE3
-NzE4OTk3MzY3YzQzNWRiZTUzNDFhOGUyNzBkOWIxOTQ3OGQzI24yNTkiPmh0dHBzOi8vY2dpdC5m
-cmVlZGVza3RvcC5vcmcvZHJtL2RybS10aXAvdHJlZS9kcml2ZXJzL2dwdS9kcm0vbWdhZzIwMC9t
-Z2FnMjAwX2ZiLmM/aWQ9NWQxNzcxODk5NzM2N2M0MzVkYmU1MzQxYThlMjcwZDliMTk0NzhkMyNu
-MjU5PC9hPgpbMl0KPGEgY2xhc3M9Im1vei10eHQtbGluay1mcmVldGV4dCIgaHJlZj0iaHR0cHM6
-Ly9jZ2l0LmZyZWVkZXNrdG9wLm9yZy9kcm0vZHJtLXRpcC90cmVlL2RyaXZlcnMvZ3B1L2RybS9t
-Z2FnMjAwL21nYWcyMDBfZmIuYz9pZD01ZDE3NzE4OTk3MzY3YzQzNWRiZTUzNDFhOGUyNzBkOWIx
-OTQ3OGQzI24yNjMiPmh0dHBzOi8vY2dpdC5mcmVlZGVza3RvcC5vcmcvZHJtL2RybS10aXAvdHJl
-ZS9kcml2ZXJzL2dwdS9kcm0vbWdhZzIwMC9tZ2FnMjAwX2ZiLmM/aWQ9NWQxNzcxODk5NzM2N2M0
-MzVkYmU1MzQxYThlMjcwZDliMTk0NzhkMyNuMjYzPC9hPgpbM10KPGEgY2xhc3M9Im1vei10eHQt
-bGluay1mcmVldGV4dCIgaHJlZj0iaHR0cHM6Ly9jZ2l0LmZyZWVkZXNrdG9wLm9yZy9kcm0vZHJt
-LXRpcC90cmVlL2RyaXZlcnMvZ3B1L2RybS9tZ2FnMjAwL21nYWcyMDBfZmIuYz9pZD01ZDE3NzE4
-OTk3MzY3YzQzNWRiZTUzNDFhOGUyNzBkOWIxOTQ3OGQzI24yODYiPmh0dHBzOi8vY2dpdC5mcmVl
-ZGVza3RvcC5vcmcvZHJtL2RybS10aXAvdHJlZS9kcml2ZXJzL2dwdS9kcm0vbWdhZzIwMC9tZ2Fn
-MjAwX2ZiLmM/aWQ9NWQxNzcxODk5NzM2N2M0MzVkYmU1MzQxYThlMjcwZDliMTk0NzhkMyNuMjg2
-PC9hPgoKPC9wcmU+CiAgICAgICAgICA8YmxvY2txdW90ZSB0eXBlPSJjaXRlIj4KICAgICAgICAg
-ICAgPHByZSBjbGFzcz0ibW96LXF1b3RlLXByZSIgd3JhcD0iIj4KY29tbWl0OiAKICBmMWY4NTU1
-ZGZiOSBkcm0vYm9jaHM6IFVzZSBzaGFkb3cgYnVmZmVyIGZvciBib2NocyBmcmFtZWJ1ZmZlciBj
-b25zb2xlCiAgOTBmNDc5YWU1MWEgZHJtL21nYWcyMDA6IFJlcGxhY2Ugc3RydWN0IG1nYV9mYmRl
-diB3aXRoIGdlbmVyaWMgZnJhbWVidWZmZXIgZW11bGF0aW9uCiAgMDFlNzVmZWEwZDUgbWdhZzIw
-MDogcmVzdG9yZSB0aGUgZGVwdGggYmFjayB0byAyNAoKZjFmODU1NWRmYjlhNzBhMiA5MGY0Nzlh
-ZTUxYWZhNDVlZmFiOTdhZmRkZTkgMDFlNzVmZWEwZDVmZjM5ZDNlNTg4YzIwZWM1IAotLS0tLS0t
-LS0tLS0tLS0tIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSAtLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0gCiAgICAgNDM5MjEgwrEgIDIlICAgICAtMTguMyUgICAgICAzNTg4NCAgICAgICAg
-ICAgIC00LjglICAgICAgNDE4MjYgICAgICAgIHZtLXNjYWxhYmlsaXR5Lm1lZGlhbgogIDE0ODg5
-MzM3ICAgICAgICAgICAtMTcuNSUgICAxMjI5MTAyOSAgICAgICAgICAgIC00LjElICAgMTQyNzg1
-NzQgICAgICAgIHZtLXNjYWxhYmlsaXR5LnRocm91Z2hwdXQKIApjb21taXQgMDFlNzVmZWEwZDVm
-ZjM5ZDNlNTg4YzIwZWM1MmU3YTRlNjU4OGE3NApBdXRob3I6IEZlbmcgVGFuZyA8YSBjbGFzcz0i
-bW96LXR4dC1saW5rLXJmYzIzOTZFIiBocmVmPSJtYWlsdG86ZmVuZy50YW5nQGludGVsLmNvbSI+
-Jmx0O2ZlbmcudGFuZ0BpbnRlbC5jb20mZ3Q7PC9hPgpEYXRlOiAgIEZyaSBBdWcgMiAxNTowOTox
-OSAyMDE5ICswODAwCgogICAgbWdhZzIwMDogcmVzdG9yZSB0aGUgZGVwdGggYmFjayB0byAyNAog
-ICAgCiAgICBTaWduZWQtb2ZmLWJ5OiBGZW5nIFRhbmcgPGEgY2xhc3M9Im1vei10eHQtbGluay1y
-ZmMyMzk2RSIgaHJlZj0ibWFpbHRvOmZlbmcudGFuZ0BpbnRlbC5jb20iPiZsdDtmZW5nLnRhbmdA
-aW50ZWwuY29tJmd0OzwvYT4KCmRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vbWdhZzIwMC9t
-Z2FnMjAwX21haW4uYyBiL2RyaXZlcnMvZ3B1L2RybS9tZ2FnMjAwL21nYWcyMDBfbWFpbi5jCmlu
-ZGV4IGE5NzczMzMuLmFjOGY2YzkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvZ3B1L2RybS9tZ2FnMjAw
-L21nYWcyMDBfbWFpbi5jCisrKyBiL2RyaXZlcnMvZ3B1L2RybS9tZ2FnMjAwL21nYWcyMDBfbWFp
-bi5jCkBAIC0xNjIsNyArMTYyLDcgQEAgaW50IG1nYWcyMDBfZHJpdmVyX2xvYWQoc3RydWN0IGRy
-bV9kZXZpY2UgKmRldiwgdW5zaWduZWQgbG9uZyBmbGFncykKIAlpZiAoSVNfRzIwMF9TRShtZGV2
-KSAmYW1wOyZhbXA7IG1kZXYtJmd0O21jLnZyYW1fc2l6ZSAmbHQ7ICgyMDQ4KjEwMjQpKQogCQlk
-ZXYtJmd0O21vZGVfY29uZmlnLnByZWZlcnJlZF9kZXB0aCA9IDE2OwogCWVsc2UKLQkJZGV2LSZn
-dDttb2RlX2NvbmZpZy5wcmVmZXJyZWRfZGVwdGggPSAzMjsKKwkJZGV2LSZndDttb2RlX2NvbmZp
-Zy5wcmVmZXJyZWRfZGVwdGggPSAyNDsmZ3Q7ICAJZGV2LSZndDttb2RlX2NvbmZpZy5wcmVmZXJf
-c2hhZG93ID0gMTsKIAogCXIgPSBtZ2FnMjAwX21vZGVzZXRfaW5pdChtZGV2KTsKClRoYW5rcywK
-RmVuZwoKPC9wcmU+CiAgICAgICAgICAgIDxibG9ja3F1b3RlIHR5cGU9ImNpdGUiPgogICAgICAg
-ICAgICAgIDxwcmUgY2xhc3M9Im1vei1xdW90ZS1wcmUiIHdyYXA9IiI+CgpUaGUgZGlmZmVyZW5j
-ZSBiZXR3ZWVuIG1nYWcyMDAncyBvcmlnaW5hbCBmYmRldiBzdXBwb3J0IGFuZCBnZW5lcmljCmZi
-ZGV2IGVtdWxhdGlvbiBpcyBnZW5lcmljIGZiZGV2J3Mgd29ya2VyIHRhc2sgdGhhdCB1cGRhdGVz
-IHRoZSBWUkFNCmJ1ZmZlciBmcm9tIHRoZSBzaGFkb3cgYnVmZmVyLiBtZ2FnMjAwIGRvZXMgdGhp
-cyBpbW1lZGlhdGVseSwgYnV0IHJlbGllcwpvbiBkcm1fY2FuX3NsZWVwKCksIHdoaWNoIGlzIGRl
-cHJlY2F0ZWQuCgpJIHRoaW5rIHRoYXQgdGhlIHdvcmtlciB0YXNrIGludGVyZmVyZXMgd2l0aCB0
-aGUgdGVzdCBjYXNlLCBhcyB0aGUKd29ya2VyIGhhcyBiZWVuIGluIGZiZGV2IGVtdWxhdGlvbiBz
-aW5jZSBmb3JldmVyIGFuZCBubyBwZXJmb3JtYW5jZQpyZWdyZXNzaW9ucyBoYXZlIGJlZW4gcmVw
-b3J0ZWQgc28gZmFyLgoKClNvIHVubGVzcyB0aGVyZSdzIGEgcmVwb3J0IHdoZXJlIHRoaXMgcHJv
-YmxlbSBoYXBwZW5zIGluIGEgcmVhbC13b3JsZAp1c2UgY2FzZSwgSSdkIGxpa2UgdG8ga2VlcCBj
-b2RlIGFzIGl0IGlzLiBBbmQgYXBwYXJlbnRseSB0aGVyZSdzIGFsd2F5cwp0aGUgd29ya2Fyb3Vu
-ZCBvZiBkaXNhYmxpbmcgdGhlIGN1cnNvciBibGlua2luZy4KCkJlc3QgcmVnYXJkcwpUaG9tYXMK
-CjwvcHJlPgogICAgICAgICAgICA8L2Jsb2NrcXVvdGU+CiAgICAgICAgICA8L2Jsb2NrcXVvdGU+
-CiAgICAgICAgICA8cHJlIGNsYXNzPSJtb3otcXVvdGUtcHJlIiB3cmFwPSIiPgotLSAKVGhvbWFz
-IFppbW1lcm1hbm4KR3JhcGhpY3MgRHJpdmVyIERldmVsb3BlcgpTVVNFIExpbnV4IEdtYkgsIE1h
-eGZlbGRzdHJhc3NlIDUsIDkwNDA5IE51ZXJuYmVyZywgR2VybWFueQpHRjogRmVsaXggSW1lbmTD
-tnJmZmVyLCBNYXJ5IEhpZ2dpbnMsIFNyaSBSYXNpYWgKSFJCIDIxMjg0IChBRyBOw7xybmJlcmcp
-Cgo8L3ByZT4KICAgICAgICA8L2Jsb2NrcXVvdGU+CiAgICAgICAgPHByZSBjbGFzcz0ibW96LXF1
-b3RlLXByZSIgd3JhcD0iIj4KCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CjxhIGNsYXNzPSJtb3otdHh0LWxpbmst
-YWJicmV2aWF0ZWQiIGhyZWY9Im1haWx0bzpkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
-Ij5kcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnPC9hPgo8YSBjbGFzcz0ibW96LXR4dC1s
-aW5rLWZyZWV0ZXh0IiBocmVmPSJodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2RyaS1kZXZlbCI+aHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1h
-bi9saXN0aW5mby9kcmktZGV2ZWw8L2E+Cgo8L3ByZT4KICAgICAgPC9ibG9ja3F1b3RlPgogICAg
-ICA8cHJlIGNsYXNzPSJtb3otcXVvdGUtcHJlIiB3cmFwPSIiPgo8L3ByZT4KICAgIDwvYmxvY2tx
-dW90ZT4KICAgIDxicj4KICA8L2JvZHk+CjwvaHRtbD4K
+ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTAvY3B1ZnJlcS9z
+Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
+dS9jcHUxL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
+ZXZpY2VzL3N5c3RlbS9jcHUvY3B1Mi9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJm
+b3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTMvY3B1ZnJlcS9zY2FsaW5nX2dv
+dmVybm9yCi4vcnVudGVzdC5weSB1bmxpbmsxIDMyIDEgMiAzIDQKCg==
 
---===============4200780377139037483==--
+--===============8500500605809323239==--
 
