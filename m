@@ -1,27 +1,231 @@
-Content-Type: multipart/mixed; boundary="===============0865131229179533367=="
+Content-Type: multipart/mixed; boundary="===============5571849284257727514=="
 MIME-Version: 1.0
-From: David Rientjes <rientjes@google.com>
+From: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
 To: lkp@lists.01.org
-Subject: Re: [net] b58537a1f56: +89.2% netperf.Throughput_Mbps
-Date: Wed, 18 Jun 2014 13:41:18 -0700
-Message-ID: <alpine.DEB.2.02.1406181340380.13111@chino.kir.corp.google.com>
-In-Reply-To: <53A1F8D9.7070704@redhat.com>
+Subject: Re: [tracing] 939c7a4f04f: -46.4% cpuidle.C3-IVT.time
+Date: Thu, 19 Jun 2014 15:04:22 +0900
+Message-ID: <53A27D66.6070409@hitachi.com>
+In-Reply-To: <53A10460.1040705@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0865131229179533367==
+--===============5571849284257727514==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 18 Jun 2014, Daniel Borkmann wrote:
+Hi Jet,
 
-> One assumption could be that netperf was setting this knob
-> internally and ignoring the result of it (error/success), but
-> that we might need to look up in netperf source to confirm.
-> =
+Thank you for your report.
+I have some questions for your test.
+
+1. Did you enable ftrace?
+This patch added a feature for ftrace. If you disabled ftrace in
+this test, my patch will not affect the system. Moreover, in my patch,
+arrays for saved_cmdlines were just changed from using static global
+variables to using kmalloc() on default setting. So, even if you enabled
+ftrace, this patch will not induce a big problem, I think.
+
+2. How did you test it and what does the result mean?
+Please tell me the workload, how to calculate the score,
+system settings, etc...
+
+Thanks,
+Yoshihiro YUNOMAE
+
+(2014/06/18 12:15), Jet Chen wrote:
+> Hi Yoshihiro,
+>
+> FYI, we noticed the below changes on
+>
+> commit 939c7a4f04fcd2162109744e8bf88194948a6e65 ("tracing: Introduce
+> saved_cmdlines_size file")
+>
+> test case: brickland3/aim7/3000-brk_test
+>
+> beba4bb096201ce  939c7a4f04fcd2162109744e8
+> ---------------  -------------------------
+>      352643 ~40%     -46.4%     189136 ~15%  TOTAL cpuidle.C3-IVT.time
+>         750 ~ 2%     -13.3%        650 ~ 2%  TOTAL vmstat.procs.b
+>      362016 ~ 3%      -6.0%     340296 ~ 3%  TOTAL
+> proc-vmstat.pgmigrate_success
+>      362016 ~ 3%      -6.0%     340296 ~ 3%  TOTAL
+> proc-vmstat.numa_pages_migrated
+>     1642328 ~ 3%     +13.3%    1860721 ~ 2%  TOTAL softirqs.RCU
+>     2278829 ~ 2%     -14.0%    1959647 ~ 2%  TOTAL
+> time.voluntary_context_switches
+>         207 ~ 0%     -10.4%        185 ~ 0%  TOTAL time.user_time
+>              ~ 0%      +8.5%            ~ 0%  TOTAL turbostat.RAM_W
+>     4418246 ~ 3%      -6.4%    4136447 ~ 1%  TOTAL time.minor_page_faults
+>             ~ 0%      +3.4%            ~ 0%  TOTAL turbostat.Cor_W
+>             ~ 0%      +3.0%            ~ 0%  TOTAL turbostat.Pkg_W
+>    11354889 ~ 0%      +2.0%   11579897 ~ 0%  TOTAL
+> time.involuntary_context_switches
+>
+> Legend:
+>      ~XX%    - stddev percent
+>      [+-]XX% - change percent
+>
+>
+>                              time.voluntary_context_switches
+>
+>    2.4e+06
+> ++---------------------------------------------------*------------+
+>            *..                         *..                    ..
+> ..         |
+>    2.3e+06 ++      .*..          *.. ..
+> *               |
+>            |  *..*.    .  .*.. ..   *     *..               +
+> *..   *..*
+>            |            *.    *              .     .*..*.. +
+> ..   |
+>    2.2e+06 ++                                 *..*.       *
+> *     |
+>
+> |                                                                 |
+>    2.1e+06
+> ++                                                                |
+>
+> |                                                                 |
+>      2e+06 O+                                 O           O
+> O     |
+>            |                     O     O                     O
+> O        |
+>            |        O   O  O  O
+> O                           |
+>    1.9e+06 ++ O  O                                  O
+> O            |
+>            |                        O     O
+> O                     |
+>    1.8e+06
+> ++----------------------------------------------------------------+
+>
+>
+>                                    turbostat.Pkg_W
+>
+>     ++-------------------------------------------------------------------=
+-+
+>     O+ O   O     O      O                O                               =
+ |
+>     |         O      O     O   O  O  O      O      O     O   O  O  O     =
+ |
+>     ++                                         O      O                  =
+ |
+>     ++                                                                   =
+ |
+>     ++                                                                   =
+ |
+>     ++                                                                   =
+ |
+>     |                                                                    =
+ |
+>     ++                                                                   =
+ |
+>     ++                                                                   =
+ |
+>     ++        *..      .*..                                              =
+ |
+>     *+.*... ..   *...*.    *...*..*..*...*..*..  ..*..   *...*..*..*...*.=
+.*
+>     |      *                                   *.      ..                =
+ |
+>     ++                                                *                  =
+ |
+>     ++-------------------------------------------------------------------=
+-+
+>
+>
+>                                    turbostat.Cor_W
+>
+>     ++-------------------------------------------------------------------=
+-+
+>     O+ O   O  O  O   O  O                O  O                      O     =
+ |
+>     |                      O   O  O  O         O   O  O  O   O  O        =
+ |
+>     ++                                                                   =
+ |
+>     ++                                                                   =
+ |
+>     |                                                                    =
+ |
+>     ++                                                                   =
+ |
+>     ++                                                                   =
+ |
+>     ++                                                                   =
+ |
+>     |                                                                    =
+ |
+>     ++        *..                                                        =
+ |
+>     *+.*... ..   *...*..*..*...*..*..*...*..*..  ..*..   *...  .*..*...*.=
+.*
+>     |      *                                   *.      ..    *.          =
+ |
+>     ++                                                *                  =
+ |
+>     ++-------------------------------------------------------------------=
+-+
+>
+>
+>                                   turbostat.RAM_W
+>
+>    ++--------------------------------------------------------------------=
+-+
+>    |  O      O         O                O   O         O         O  O     =
+ |
+>    O+     O         O      O  O  O   O         O  O      O  O            =
+ |
+>    |             O                                                       =
+ |
+>    ++                                                                    =
+ |
+>    |                                                                     =
+ |
+>    ++                                                                    =
+ |
+>    |                                                                     =
+ |
+>    ++                                                                    =
+ |
+>    |                   *                                                 =
+ |
+>    ++                .. +                      *..                       =
+ |
+>    |            .*..*    +    *..       *..   +     ..*..*..      .*...  =
+ |
+>    ++         ..          + ..        ..   . +    *.        *...*.     *.=
+.*
+>    *..*...*..*             *     *...*      *                            =
+ |
+>    ++--------------------------------------------------------------------=
+-+
+>
+>
+>      [*] bisect-good sample
+>      [O] bisect-bad  sample
+>
+>
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are
+> provided
+> for informational purposes only. Any difference in system hardware or
+> software
+> design or configuration may affect actual performance.
+>
+> Thanks,
+> Jet
+>
+>
+
+-- =
+
+Yoshihiro YUNOMAE
+Software Platform Research Dept. Linux Technology Center
+Hitachi, Ltd., Yokohama Research Laboratory
+E-mail: yoshihiro.yunomae.ez(a)hitachi.com
 
 
-Confirmed netperf-2.4.5 doesn't do this.
 
---===============0865131229179533367==--
+--===============5571849284257727514==--
 
