@@ -1,51 +1,153 @@
-Content-Type: multipart/mixed; boundary="===============5834978430822849380=="
+Content-Type: multipart/mixed; boundary="===============3811460518062379586=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 To: lkp@lists.01.org
-Subject: Re: [clockevents] WARNING: CPU: 0 PID: 0 at kernel/time/tick-oneshot.c:32 tick_stop_event()
-Date: Mon, 23 Jun 2014 17:39:25 +0800
-Message-ID: <20140623093925.GA1454@localhost>
-In-Reply-To: <CAKohpomtHuXP0Q9QnWvJj1d2O=AewMR+nVNE3N_KFJkMpcCHYA@mail.gmail.com>
+Subject: Re: [cpufreq] kernel BUG at kernel/irq_work.c:175!
+Date: Wed, 25 Jun 2014 09:39:24 +0000
+Message-ID: <CAKohpo=qmJktRviycErY205xo=-MJ1NZG-uGidRXjO+aAEczEg@mail.gmail.com>
+In-Reply-To: <20140625093650.GD27280@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5834978430822849380==
+--===============3811460518062379586==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Viresh,
+On 25 June 2014 15:06, Fengguang Wu <fengguang.wu@intel.com> wrote:
+> FYI, we find similar bug message in Viresh's tree, which contains 8
+> cpufreq patches based on next-20140625.
+>
+> tree:   git://git.linaro.org/people/vireshk/linux cpufreq/cpu0-exynos
+> head:   d51c9fbdf49983fc3303ec576d02e8ef97da3d8b
+> commit: d51c9fbdf49983fc3303ec576d02e8ef97da3d8b [8/8] cpufreq: cpu0: Add=
+ support for multiple 'struct cpufreq_policy' instances
+>
+> +------------------------------------------------------------------------=
+-----+-----------+---------------+------------+
+> |                                                                        =
+     | v3.16-rc2 | next-20140625 | d51c9fbdf4 |
+> +------------------------------------------------------------------------=
+-----+-----------+---------------+------------+
+> | boot_successes                                                         =
+     | 3         | 3             | 1          |
+> | boot_failures                                                          =
+     | 0         | 0             | 2          |
+> | kernel_BUG_at_kernel/irq_work.c                                        =
+     | 0         | 0             | 2          |
+> | invalid_opcode                                                         =
+     | 0         | 0             | 2          |
+> | RIP:irq_work_run                                                       =
+     | 0         | 0             | 2          |
+> | BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/rws=
+em.c | 0         | 0             | 2          |
+> | backtrace:smpboot_thread_fn                                            =
+     | 0         | 0             | 2          |
+> +------------------------------------------------------------------------=
+-----+-----------+---------------+------------+
+>
+> mount.nfs: access denied by server while mounting bee:/nfsroot/trinity
+> run-parts: /etc/kernel-tests/99-trinity exited with return code 32
+> [   66.841357] ------------[ cut here ]------------
+> [   66.841772] kernel BUG at kernel/irq_work.c:175!
+> [   66.842302] invalid opcode: 0000 [#1] SMP
+> [   66.842686] Modules linked in:
+> [   66.842969] CPU: 1 PID: 10 Comm: migration/1 Not tainted 3.16.0-rc2-ne=
+xt-20140625-00008-gd51c9fb #6
+> [   66.843747] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+> [   66.844010] task: ffff88001eb75e60 ti: ffff88001e03c000 task.ti: ffff8=
+8001e03c000
+> [   66.844010] RIP: 0010:[<ffffffff811820fd>]  [<ffffffff811820fd>] irq_w=
+ork_run+0xf/0x22
+> [   66.844010] RSP: 0018:ffff88001e03fcc0  EFLAGS: 00010046
+> [   66.844010] RAX: 0000000080000001 RBX: 0000000000000000 RCX: 000000000=
+0000005
+> [   66.844010] RDX: 0000000000000001 RSI: 0000000000000008 RDI: 000000000=
+0000000
+> [   66.844010] RBP: ffff88001e03fce0 R08: 0000000000000200 R09: ffffffff8=
+2137030
+> [   66.844010] R10: 0000000000001c24 R11: 0000000000007c00 R12: ffff88001=
+fd13940
+> [   66.844010] R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff8=
+2073270
+> [   66.844010] FS:  0000000000000000(0000) GS:ffff88001fd00000(0000) knlG=
+S:0000000000000000
+> [   66.844010] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+> [   66.844010] CR2: 00007f10054a6000 CR3: 0000000000030000 CR4: 000000000=
+00006e0
+> [   66.844010] Stack:
+> [   66.844010]  ffffffff811412f7 0000000000000001 ffff88001fd13980 ffffff=
+ff82055fb0
+> [   66.844010]  ffff88001e03fd00 ffffffff811413ea 0000000000000001 000000=
+00fffffff0
+> [   66.844010]  ffff88001e03fd48 ffffffff81105027 0000000000000001 000000=
+0000000008
+> [   66.844010] Call Trace:
+> [   66.844010]  [<ffffffff811412f7>] ? flush_smp_call_function_queue+0xab=
+/0x10e
+> [   66.844010]  [<ffffffff811413ea>] hotplug_cfd+0x90/0x97
+> [   66.844010]  [<ffffffff81105027>] notifier_call_chain+0x6d/0x93
+> [   66.844010]  [<ffffffff811050c5>] __raw_notifier_call_chain+0xe/0x10
+> [   66.844010]  [<ffffffff810e5408>] __cpu_notify+0x20/0x37
+> [   66.844010]  [<ffffffff810e5432>] cpu_notify+0x13/0x15
+> [   66.844010]  [<ffffffff819bd4ab>] take_cpu_down+0x27/0x3a
+> [   66.844010]  [<ffffffff81155737>] multi_cpu_stop+0x93/0xed
+> [   66.844010]  [<ffffffff811556a4>] ? cpu_stop_park+0x63/0x63
+> [   66.844010]  [<ffffffff811559b3>] cpu_stopper_thread+0x92/0x114
+> [   66.844010]  [<ffffffff819d1e64>] ? retint_restore_args+0x13/0x13
+> [   66.844010]  [<ffffffff819d0bbf>] ? _raw_spin_lock_irqsave+0x25/0x56
+> [   66.844010]  [<ffffffff81107069>] smpboot_thread_fn+0x187/0x1a5
+> [   66.844010]  [<ffffffff81106ee2>] ? SyS_setgroups+0x10c/0x10c
+> [   66.844010]  [<ffffffff81101627>] kthread+0xdb/0xe3
+> [   66.844010]  [<ffffffff8110154c>] ? kthread_create_on_node+0x174/0x174
+> [   66.844010]  [<ffffffff819d127c>] ret_from_fork+0x7c/0xb0
+> [   66.844010]  [<ffffffff8110154c>] ? kthread_create_on_node+0x174/0x174
+> [   66.844010] Code: cd 81 e8 dc 31 f6 ff c6 05 46 c3 f8 00 01 eb 05 e8 9=
+1 ff ff ff b8 01 00 00 00 5d c3 65 8b 04 25 50 b9 00 00 a9 00 00 0f 00 75 0=
+2 <0f> 0b 55 48 89 e5 e8 70 ff ff ff 5d c3 55 48 89 e5 5d c3 55 48
+> [   66.844010] RIP  [<ffffffff811820fd>] irq_work_run+0xf/0x22
+> [   66.844010]  RSP <ffff88001e03fcc0>
+> [   66.844010] ---[ end trace 043717361af3ed47 ]---
+> [   66.844010] BUG: sleeping function called from invalid context at kern=
+el/locking/rwsem.c:41
 
-On Mon, Jun 23, 2014 at 02:02:25PM +0530, Viresh Kumar wrote:
-> On 23 June 2014 13:50, Jet Chen <jet.chen@intel.com> wrote:
-> > Hi Viresh,
-> >
-> > 0day kernel testing robot got the below dmesg and the first bad commit =
-is
-> >
-> > git://git.linaro.org/people/vireshk/linux tick/ONESHOT-STOPPED
-> =
+Nothing specific to my tree, its there in linux-next and PeterZ is
+already working on it:
 
-> Hi Jet/Fengguang,
-> =
+https://lkml.org/lkml/2014/6/25/25
 
-> Why did your scripts Cc'd LKML for this report? It never used to
-> happen for my trees Atleast.
+Last diff from him:
 
-Yeah our build error reports are mostly private emails. However we do
-CC LKML for runtime regressions - because there is no easy way for us
-to tell whether the reported regression has reached more people.
+---
+ kernel/irq_work.c |   12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-> These patches haven't been posted to LKML yet and sending
-> reports there for these wouldn't be good for their fate :)
+Index: linux-2.6/kernel/irq_work.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.orig/kernel/irq_work.c
++++ linux-2.6/kernel/irq_work.c
+@@ -160,21 +160,11 @@ static void irq_work_run_list(struct lli
+        }
+ }
 
-Sorry if it hurts. :)
+-static void __irq_work_run(void)
++static void irq_work_run(void)
+ {
+        irq_work_run_list(&__get_cpu_var(raised_list));
+        irq_work_run_list(&__get_cpu_var(lazy_list));
+ }
+-
+-/*
+- * Run the irq_work entries on this cpu. Requires to be ran from hardirq
+- * context with local IRQs disabled.
+- */
+-void irq_work_run(void)
+-{
+-       BUG_ON(!in_irq());
+-       __irq_work_run();
+-}
+ EXPORT_SYMBOL_GPL(irq_work_run);
 
-> Anyway, will look at what broke. Thanks.
-
-Thank you!
-
-Cheers,
-Fengguang
-
---===============5834978430822849380==--
+--===============3811460518062379586==--
 
