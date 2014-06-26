@@ -1,22 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============8855087087612566261=="
+Content-Type: multipart/mixed; boundary="===============0898627830674389661=="
 MIME-Version: 1.0
 From: Du, Yuyang <yuyang.du@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [sched] cec017ed87c: -35.9% fileio.requests_per_sec
-Date: Thu, 26 Jun 2014 02:28:39 +0000
-Message-ID: <0DA73B5D686AEC4AAEF6054BE04DA1CD118955F2@shsmsx102.ccr.corp.intel.com>
+Date: Thu, 26 Jun 2014 02:35:44 +0000
+Message-ID: <0DA73B5D686AEC4AAEF6054BE04DA1CD11895624@shsmsx102.ccr.corp.intel.com>
 In-Reply-To: <20140626022544.GD14734@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8855087087612566261==
+--===============0898627830674389661==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Then, that is interesting and confusing... By removing some useless codes (=
-in critical patch) in scheduler, a regression?
-
-Yuyang
+Oh, is it for the CC patchset or just "Remove update_rq_runnable_avg"?
 
 -----Original Message-----
 From: Wu, Fengguang =
@@ -365,5 +362,5 @@ software design or configuration may affect actual performance.
 > Thanks,
 > Fengguang
 
---===============8855087087612566261==--
+--===============0898627830674389661==--
 
