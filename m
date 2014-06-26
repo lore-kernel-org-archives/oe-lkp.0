@@ -1,17 +1,30 @@
-Content-Type: multipart/mixed; boundary="===============7106459801268056316=="
+Content-Type: multipart/mixed; boundary="===============8855087087612566261=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Du, Yuyang <yuyang.du@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [sched] cec017ed87c: -35.9% fileio.requests_per_sec
-Date: Thu, 26 Jun 2014 10:25:44 +0800
-Message-ID: <20140626022544.GD14734@localhost>
-In-Reply-To: <0DA73B5D686AEC4AAEF6054BE04DA1CD118955BA@shsmsx102.ccr.corp.intel.com>
+Date: Thu, 26 Jun 2014 02:28:39 +0000
+Message-ID: <0DA73B5D686AEC4AAEF6054BE04DA1CD118955F2@shsmsx102.ccr.corp.intel.com>
+In-Reply-To: <20140626022544.GD14734@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7106459801268056316==
+--===============8855087087612566261==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+
+Then, that is interesting and confusing... By removing some useless codes (=
+in critical patch) in scheduler, a regression?
+
+Yuyang
+
+-----Original Message-----
+From: Wu, Fengguang =
+
+Sent: Thursday, June 26, 2014 10:26 AM
+To: Du, Yuyang
+Cc: Hansen, Dave; lkp(a)01.org; Chen, Jet
+Subject: Re: [sched] cec017ed87c: -35.9% fileio.requests_per_sec
 
 Yuyang,
 
@@ -20,15 +33,14 @@ On Thu, Jun 26, 2014 at 10:20:14AM +0800, Du, Yuyang wrote:
 t? Only I did not expect to be so big an impact.
  =
 
-Unfortunately it looks like a performance regression: the fileio
-throughput dropped by 35.9%.
+Unfortunately it looks like a performance regression: the fileio throughput=
+ dropped by 35.9%.
 
 Thanks,
 Fengguang
 
 > -----Original Message-----
-> From: Wu, Fengguang =
-
+> From: Wu, Fengguang
 > Sent: Thursday, June 26, 2014 10:06 AM
 > To: Du, Yuyang
 > Cc: Hansen, Dave; lkp(a)01.org; Chen, Jet
@@ -41,8 +53,11 @@ Fengguang
 > FYI, we noticed the below changes on
 > =
 
-> git://bee.sh.intel.com/git/ydu19/linux cc-v3-on-3.15-rc8 commit cec017ed8=
-7c7e5298fabaf1718f4f3c0fada0adb ("Remove update_rq_runnable_avg")
+> git://bee.sh.intel.com/git/ydu19/linux cc-v3-on-3.15-rc8 commit =
+
+> cec017ed87c7e5298fabaf1718f4f3c0fada0adb ("Remove =
+
+> update_rq_runnable_avg")
 > =
 
 > Test case: snb-drag/fileio/600s-100%-1HDD-xfs-64G-1024f-seqrewr-sync
@@ -137,8 +152,10 @@ switches
    |
 >      O    O   O    O    O                                                =
    |
->   15 ++------------------------------------------------------------------=
----+
+>   15 =
+
+> ++--------------------------------------------------------------------
+> -+
 > =
 
 > =
@@ -174,8 +191,9 @@ switches
    |
 >           O   O    O   O    O                                            =
    |
->         0 ++-------------------------------------------------------------=
----+
+>         0 =
+
+> ++----------------------------------------------------------------+
 > =
 
 > =
@@ -211,8 +229,9 @@ switches
    |
 >    8.5e+07 ++                                                            =
    |
->      8e+07 O+--O----O---O---O----O---O---O----O---O---O----O---O---O----O=
----O
+>      8e+07 =
+
+> O+--O----O---O---O----O---O---O----O---O---O----O---O---O----O---O
 > =
 
 > =
@@ -248,8 +267,9 @@ switches
    |
 >        O    O   O    O   O    O    O   O    O   O    O    O   O    O   O =
    O
->   4000 ++----------------------------------------------------------------=
----+
+>   4000 =
+
+> ++-------------------------------------------------------------------+
 > =
 
 > =
@@ -285,8 +305,9 @@ switches
    |
 >        |                      *                                          =
    |
->    400 ++----------------------------------------------------------------=
----+
+>    400 =
+
+> ++-------------------------------------------------------------------+
 > =
 
 > =
@@ -322,8 +343,9 @@ switches
    |
 >        |                      *                                          =
    |
->    400 ++----------------------------------------------------------------=
----+
+>    400 =
+
+> ++-------------------------------------------------------------------+
 > =
 
 > =
@@ -343,5 +365,5 @@ software design or configuration may affect actual performance.
 > Thanks,
 > Fengguang
 
---===============7106459801268056316==--
+--===============8855087087612566261==--
 
