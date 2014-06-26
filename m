@@ -1,59 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============4060567697211308936=="
+Content-Type: multipart/mixed; boundary="===============1203217224349551896=="
 MIME-Version: 1.0
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Horiguchi, Naoya <Naoya.Horiguchi@necam.com>
 To: lkp@lists.01.org
-Subject: Re: [clockevents] d5a085970b0: -9.2% will-it-scale.per_thread_ops
-Date: Thu, 26 Jun 2014 16:37:58 +0530
-Message-ID: <CAKohpomYaDm+Gf=KpO7Fy=7=++O57WT75Ty88WnmWA9daZFCDw@mail.gmail.com>
-In-Reply-To: <20140626014648.GC12239@localhost>
+Subject: Re: [mempolicy] 5507231dd04: -18.2% vm-scalability.migrate_mbps
+Date: Thu, 26 Jun 2014 07:59:41 -0500
+Message-ID: <FC3CA273EA98D94B96901B237F5F506BB61DB1@irvmail101.necam.prv>
+In-Reply-To: <a2aff3e6884b425481b1dd542effbb87@BPXC19GP.gisp.nec.co.jp>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4060567697211308936==
+--===============1203217224349551896==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 26 June 2014 07:16, Fengguang Wu <fengguang.wu@intel.com> wrote:
-> Hi Viresh,
->
-> I'm not sure how the simple commit will impact will-it-scale/pwrite2
-> throughput. Just in case you can see more clues.
->
-> git://git.linaro.org/people/vireshk/linux tick/ONESHOT-STOPPED
-> commit d5a085970b0b88b8c82303d2c45f09c9427fd02a ("clockevents: x86: add s=
-upport for ONESHOT_STOPPED mode")
->
-> test case: nhm4/will-it-scale/pwrite2
->
-> f4f5df6f142f679  d5a085970b0b88b8c82303d2c
-> ---------------  -------------------------
->     773859 ~ 0%      -9.2%     702704 ~ 0%  TOTAL will-it-scale.per_threa=
-d_ops
->
-> Legend:
->         ~XX%    - stddev percent
->         [+-]XX% - change percent
->
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
+> Hi Naoya,                                                                =
+                      =
 
-Hi Fengguang,
+>
+> FYI, we noticed the below changes on
+>
+> git://git.kernel.org/pub/scm/linux/kernel/git/balbi/usb.git am437x-starte=
+rkit
+> commit 5507231dd04d3d68796bafe83e6a20c985a0ef68 ("mempolicy: apply page t=
+able walker on queue_pages_range()")
 
-Thanks for your link: https://github.com/antonblanchard/will-it-scale.git
+This patch is to be revised with one with less performance impact,
+where I stop calling ->pte_entry() callback heavily.
 
-You saw these changes because the simple commit you were talking about
-changes behavior of code.
+Thanks,
+Naoya Horiguchi
 
-To be specific, we are stopping the clock-event devices now when they
-aren't used. i.e. during idle periods or in full dynticks.
+--===============1203217224349551896==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.html"
 
-I still fail to understand why performance came down by 9.2%..
-Adding Frederic in CC, in case he can throw some light. But he is currently
-on vacations and I don't expect him to reply immediately :)
-
---===============4060567697211308936==--
+PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9XM0MvL0RURCBIVE1MIDMuMi8vRU4iPgo8SFRNTD4K
+PEhFQUQ+CjxNRVRBIEhUVFAtRVFVSVY9IkNvbnRlbnQtVHlwZSIgQ09OVEVOVD0idGV4dC9odG1s
+OyBjaGFyc2V0PWlzby0yMDIyLWpwIj4KPE1FVEEgTkFNRT0iR2VuZXJhdG9yIiBDT05URU5UPSJN
+UyBFeGNoYW5nZSBTZXJ2ZXIgdmVyc2lvbiA2LjUuNzY1NC4xMiI+CjxUSVRMRT5SRTogW21lbXBv
+bGljeV0gNTUwNzIzMWRkMDQ6IC0xOC4yJSB2bS1zY2FsYWJpbGl0eS5taWdyYXRlX21icHM8L1RJ
+VExFPgo8L0hFQUQ+CjxCT0RZPgo8IS0tIENvbnZlcnRlZCBmcm9tIHRleHQvcGxhaW4gZm9ybWF0
+IC0tPgoKPFA+PEZPTlQgU0laRT0yPiZndDsgSGkgTmFveWEsJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5i
+c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7
+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5i
+c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7
+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5i
+c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7
+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5i
+c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7
+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5i
+c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PEJSPgomZ3Q7PEJSPgomZ3Q7IEZZSSwg
+d2Ugbm90aWNlZCB0aGUgYmVsb3cgY2hhbmdlcyBvbjxCUj4KJmd0OzxCUj4KJmd0OyBnaXQ6Ly9n
+aXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvYmFsYmkvdXNiLmdpdCBhbTQz
+N3gtc3RhcnRlcmtpdDxCUj4KJmd0OyBjb21taXQgNTUwNzIzMWRkMDRkM2Q2ODc5NmJhZmU4M2U2
+YTIwYzk4NWEwZWY2OCAoJnF1b3Q7bWVtcG9saWN5OiBhcHBseSBwYWdlIHRhYmxlIHdhbGtlciBv
+biBxdWV1ZV9wYWdlc19yYW5nZSgpJnF1b3Q7KTxCUj4KPEJSPgpUaGlzIHBhdGNoIGlzIHRvIGJl
+IHJldmlzZWQgd2l0aCBvbmUgd2l0aCBsZXNzIHBlcmZvcm1hbmNlIGltcGFjdCw8QlI+CndoZXJl
+IEkgc3RvcCBjYWxsaW5nIC0mZ3Q7cHRlX2VudHJ5KCkgY2FsbGJhY2sgaGVhdmlseS48QlI+CjxC
+Uj4KVGhhbmtzLDxCUj4KTmFveWEgSG9yaWd1Y2hpPEJSPgo8L0ZPTlQ+CjwvUD4KCjwvQk9EWT4K
+PC9IVE1MPg==
+--===============1203217224349551896==--
 
