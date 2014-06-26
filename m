@@ -1,17 +1,31 @@
-Content-Type: multipart/mixed; boundary="===============1005606390599602032=="
+Content-Type: multipart/mixed; boundary="===============7358024623582914683=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Du, Yuyang <yuyang.du@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [sched] cec017ed87c: -35.9% fileio.requests_per_sec
-Date: Thu, 26 Jun 2014 12:10:46 +0800
-Message-ID: <20140626041046.GA17188@localhost>
-In-Reply-To: <0DA73B5D686AEC4AAEF6054BE04DA1CD11895624@shsmsx102.ccr.corp.intel.com>
+Date: Thu, 26 Jun 2014 04:33:41 +0000
+Message-ID: <0DA73B5D686AEC4AAEF6054BE04DA1CD118957AC@shsmsx102.ccr.corp.intel.com>
+In-Reply-To: <20140626041046.GA17188@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1005606390599602032==
+--===============7358024623582914683==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+
+Then, it occurs to me that does not make sense, maybe we should do the test=
+ again.
+
+Thanks,
+Yuyang
+
+-----Original Message-----
+From: Wu, Fengguang =
+
+Sent: Thursday, June 26, 2014 12:11 PM
+To: Du, Yuyang
+Cc: Hansen, Dave; lkp(a)01.org; Chen, Jet
+Subject: Re: [sched] cec017ed87c: -35.9% fileio.requests_per_sec
 
 On Thu, Jun 26, 2014 at 10:35:44AM +0800, Du, Yuyang wrote:
 > Oh, is it for the CC patchset or just "Remove update_rq_runnable_avg"?
@@ -24,8 +38,7 @@ Fengguang
 
 
 > -----Original Message-----
-> From: Wu, Fengguang =
-
+> From: Wu, Fengguang
 > Sent: Thursday, June 26, 2014 10:26 AM
 > To: Du, Yuyang
 > Cc: Hansen, Dave; lkp(a)01.org; Chen, Jet
@@ -64,8 +77,7 @@ ut dropped by 35.9%.
 
 > > git://bee.sh.intel.com/git/ydu19/linux cc-v3-on-3.15-rc8 commit =
 
-> > cec017ed87c7e5298fabaf1718f4f3c0fada0adb ("Remove =
-
+> > cec017ed87c7e5298fabaf1718f4f3c0fada0adb ("Remove
 > > update_rq_runnable_avg")
 > > =
 
@@ -163,9 +175,9 @@ O    O
      |
 > >      O    O   O    O    O                                              =
      |
-> >   15 =
-
-> > ++--------------------------------------------------------------------
+> >   15
+> > ++------------------------------------------------------------------
+> > ++--
 > > -+
 > > =
 
@@ -202,8 +214,7 @@ O    O
      |
 > >           O   O    O   O    O                                          =
      |
-> >         0 =
-
+> >         0
 > > ++----------------------------------------------------------------+
 > > =
 
@@ -240,8 +251,7 @@ O    O
      |
 > >    8.5e+07 ++                                                          =
      |
-> >      8e+07 =
-
+> >      8e+07
 > > O+--O----O---O---O----O---O---O----O---O---O----O---O---O----O---O
 > > =
 
@@ -278,8 +288,7 @@ O    O
      |
 > >        O    O   O    O   O    O    O   O    O   O    O    O   O    O   =
 O    O
-> >   4000 =
-
+> >   4000
 > > ++-------------------------------------------------------------------+
 > > =
 
@@ -316,8 +325,7 @@ O    O
      |
 > >        |                      *                                        =
      |
-> >    400 =
-
+> >    400
 > > ++-------------------------------------------------------------------+
 > > =
 
@@ -354,8 +362,7 @@ O    O
      |
 > >        |                      *                                        =
      |
-> >    400 =
-
+> >    400
 > > ++-------------------------------------------------------------------+
 > > =
 
@@ -376,5 +383,5 @@ r software design or configuration may affect actual performance.
 > > Thanks,
 > > Fengguang
 
---===============1005606390599602032==--
+--===============7358024623582914683==--
 
