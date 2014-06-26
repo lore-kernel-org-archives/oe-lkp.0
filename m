@@ -1,105 +1,663 @@
-Content-Type: multipart/mixed; boundary="===============7451010360236667752=="
+Content-Type: multipart/mixed; boundary="===============2973375200843841606=="
 MIME-Version: 1.0
 From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [rcu] 7c66b15f870: +1.8% turbostat.Pkg_W
-Date: Wed, 25 Jun 2014 19:10:23 -0700
-Message-ID: <20140626021023.GO4603@linux.vnet.ibm.com>
-In-Reply-To: <20140626013308.GA12239@localhost>
+Subject: Re: [rcu] 34577530114: +247.4% qperf.tcp.bw, -3.3% turbostat.Pkg_W
+Date: Wed, 25 Jun 2014 19:15:33 -0700
+Message-ID: <20140626021533.GP4603@linux.vnet.ibm.com>
+In-Reply-To: <20140626020011.GE12239@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7451010360236667752==
+--===============2973375200843841606==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 26, 2014 at 09:33:08AM +0800, Fengguang Wu wrote:
+On Thu, Jun 26, 2014 at 10:00:11AM +0800, Fengguang Wu wrote:
 > Hi Paul,
 > =
 
-> We noticed increased power consumption in our internal merge commit.
-> It's not a direct evidence, however in the hope you can see any
-> obvious clues. :)
+> We are pleased to notice huge throughput increases in the qperf/iperf
+> tests, together with noticeable reduce of power consumption!
 
-Hello, Fengguang,
+This one was identified by your testing efforts, so thank you for giving
+me the hints needed to make this change!  Looks like some negatives to
+go with the positives, though eyeballing it looks mostly positive.
 
-This particular branch is obsolete, and has been replaced by commit
-4a81e8328d37 (Reduce overhead of cond_resched() checks for RCU).
-
-Just out of curiosity, how do you measure the power consumption?
+Just out of curiosity, what hardware configuration is this running on?
+I am guessing a largish number of CPUs.
 
 							Thanx, Paul
 
-> git://internal_merge_and_test_tree devel-hourly-2014062315
-> commit 7c66b15f8704703f6861faa246387342f7a05108 ("Merge 'rcu/rcu_cond_res=
-ched.2014.06.20c' into devel-hourly-2014062315")
+> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/d=
+ev
+> commit 34577530114e9b1de10f3aa9665bb28c8ce585ba ("rcu: Bind grace-period =
+kthreads to non-NO_HZ_FULL CPUs")
 > =
 
-> Merge sequence is:
-> =
-
-> 7c66b15 Merge 'rcu/rcu_cond_resched.2014.06.20c' into devel-hourly-201406=
-2315
-> db47b74 Merge 'ipvs-next/master' into devel-hourly-2014062315
-> ca8d737 Merge 'regulator/topic/ab8500' into devel-hourly-2014062315
-> aee9255 Merge 'renesas/devel' into devel-hourly-2014062315
-> af18816 Merge 'vireshk/tick/lowres-go-tickless' into devel-hourly-2014062=
-315
-> 3cf94bc1 Merge 'vireshk/tick/ONESHOT-STOPPED' into devel-hourly-2014062315
-> 94ae897 Merge 'asoc/topic/tlv320aic32x4' into devel-hourly-2014062315
-> 28ef1ff Merge 'tianyu/dep_support' into devel-hourly-2014062315
-> f04bc00 Merge 'robclark/msm-next' into devel-hourly-2014062315
-> 03f1b1e Merge 'net/master' into devel-hourly-2014062315
-> a1a9b33 Merge 'spi/fix/qup' into devel-hourly-2014062315
-> 45bf5db Merge 'renesas/next' into devel-hourly-2014062315
-> fb20fce Merge 'asoc/for-next' into devel-hourly-2014062315
-> a385be7 Merge 'asoc/topic/samsung' into devel-hourly-2014062315
-> 1a9f804 0day base guard for 'devel-hourly-2014062315'
-> a497c3b Linux 3.16-rc2
-> =
-
-> test case: brickland3/vm-scalability/300s-anon-rx-seq-mt
-> =
-
-> db47b74b78e1623  7c66b15f8704703f6861faa24  =
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
 
 > ---------------  -------------------------  =
 
->       0.73 ~ 7%     -13.4%       0.64 ~ 6%  TOTAL turbostat.%c1
->       1499 ~ 5%     +11.6%       1672 ~ 2%  TOTAL slabinfo.sock_inode_cac=
-he.num_objs
->       1499 ~ 5%     +11.6%       1672 ~ 2%  TOTAL slabinfo.sock_inode_cac=
-he.active_objs
->       4.36 ~ 1%      -8.1%       4.01 ~ 1%  TOTAL turbostat.%c6
->      11782 ~ 1%      +8.0%      12726 ~ 2%  TOTAL time.involuntary_contex=
-t_switches
->       2848 ~ 0%      +4.8%       2983 ~ 0%  TOTAL time.user_time
->      24.26 ~ 0%      +4.4%      25.33 ~ 0%  TOTAL time.elapsed_time
->        402 ~ 0%      +2.0%        410 ~ 0%  TOTAL turbostat.Cor_W
->        469 ~ 0%      +1.8%        477 ~ 0%  TOTAL turbostat.Pkg_W
+>   8.23e+08 ~ 6%    +247.4%  2.859e+09 ~ 0%  bens/qperf/600s
+>   8.23e+08 ~ 6%    +247.4%  2.859e+09 ~ 0%  TOTAL qperf.tcp.bw
 > =
 
-> c8bb7487275a9b7  7c66b15f8704703f6861faa24
-> ---------------  -------------------------
->  2.047e+08 ~ 0%      -5.2%  1.942e+08 ~ 0%  TOTAL vm-scalability.throughp=
-ut
->      58629 ~11%     +25.1%      73348 ~13%  TOTAL numa-numastat.node3.loc=
-al_node
->      58670 ~11%     +25.1%      73387 ~13%  TOTAL numa-numastat.node3.num=
-a_hit
->         41 ~ 6%     -12.6%         36 ~ 1%  TOTAL numa-numastat.node2.oth=
-er_node
->     493777 ~ 2%     -12.7%     431077 ~ 3%  TOTAL proc-vmstat.pgfault
->     386476 ~ 1%     -10.1%     347456 ~ 2%  TOTAL proc-vmstat.pgalloc_nor=
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>  7.065e+09 ~ 3%    +210.0%   2.19e+10 ~ 8%  bens/iperf/300s-tcp
+>  7.065e+09 ~ 3%    +210.0%   2.19e+10 ~ 8%  TOTAL iperf.tcp.sender.bps
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>  7.065e+09 ~ 3%    +210.0%   2.19e+10 ~ 8%  bens/iperf/300s-tcp
+>  7.065e+09 ~ 3%    +210.0%   2.19e+10 ~ 8%  TOTAL iperf.tcp.receiver.bps
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>  7.718e+08 ~ 3%    +177.8%  2.144e+09 ~ 1%  bens/qperf/600s
+>  7.718e+08 ~ 3%    +177.8%  2.144e+09 ~ 1%  TOTAL qperf.udp.recv_bw
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>  7.745e+08 ~ 3%    +177.0%  2.145e+09 ~ 1%  bens/qperf/600s
+>  7.745e+08 ~ 3%    +177.0%  2.145e+09 ~ 1%  TOTAL qperf.udp.send_bw
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   1.65e+09 ~ 1%      +4.3%  1.721e+09 ~ 0%  bens/qperf/600s
+>   1.65e+09 ~ 1%      +4.3%  1.721e+09 ~ 0%  TOTAL qperf.sctp.bw
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      13579 ~ 1%      -2.3%      13264 ~ 1%  bens/qperf/600s
+>      13579 ~ 1%      -2.3%      13264 ~ 1%  TOTAL qperf.sctp.latency
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       8545 ~ 0%      +1.9%       8705 ~ 0%  bens/qperf/600s
+>       8545 ~ 0%      +1.9%       8705 ~ 0%  TOTAL qperf.udp.latency
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      12770 ~ 0%      -1.0%      12637 ~ 0%  ivb43/netperf/300s-25%-TCP_CRR
+>      12770 ~ 0%      -1.0%      12637 ~ 0%  TOTAL netperf.Throughput_tps
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       1015 ~ 2%     -92.1%         80 ~24%  ivb43/netperf/300s-25%-TCP_CRR
+>       1015 ~ 2%     -92.1%         80 ~24%  TOTAL cpuidle.POLL.usage
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>     104620 ~31%     -83.2%      17544 ~11%  ivb43/netperf/300s-25%-TCP_CRR
+>     104620 ~31%     -83.2%      17544 ~11%  TOTAL numa-vmstat.node1.numa_=
+other
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       0.12 ~ 7%     -73.3%       0.03 ~12%  ivb43/netperf/300s-25%-TCP_CRR
+>       0.12 ~ 7%     -73.3%       0.03 ~12%  TOTAL turbostat.%c3
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   53226067 ~ 3%     -78.2%   11579930 ~14%  ivb43/netperf/300s-25%-TCP_CRR
+>    3327687 ~28%     +86.6%    6208767 ~42%  ivb44/pigz/25%-128K
+>   56553754 ~ 4%     -68.5%   17788697 ~24%  TOTAL cpuidle.C1E-IVT.time
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>     878601 ~ 3%     -75.2%     217607 ~12%  ivb43/netperf/300s-25%-TCP_CRR
+>       9282 ~27%     +99.2%      18495 ~49%  ivb44/pigz/25%-128K
+>     887884 ~ 4%     -73.4%     236102 ~15%  TOTAL cpuidle.C1E-IVT.usage
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   28174239 ~ 6%     -61.0%   10981001 ~ 8%  ivb43/netperf/300s-25%-TCP_CRR
+>   28174239 ~ 6%     -61.0%   10981001 ~ 8%  TOTAL cpuidle.C3-IVT.time
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        237 ~20%    +141.1%        572 ~ 9%  xbm/pigz/25%-512K
+>        237 ~20%    +141.1%        572 ~ 9%  TOTAL cpuidle.C3-SNB.usage
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>    8192746 ~ 3%    +202.8%   24806641 ~ 7%  bens/iperf/300s-tcp
+>   15458478 ~ 1%     +69.2%   26148854 ~ 0%  bens/qperf/600s
+>   23651225 ~ 2%    +115.4%   50955496 ~ 4%  TOTAL proc-vmstat.numa_hit
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>    8192746 ~ 3%    +202.8%   24806641 ~ 7%  bens/iperf/300s-tcp
+>   15458478 ~ 1%     +69.2%   26148854 ~ 0%  bens/qperf/600s
+>   23651225 ~ 2%    +115.4%   50955496 ~ 4%  TOTAL proc-vmstat.numa_local
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   63502648 ~ 3%    +209.1%  1.963e+08 ~ 8%  bens/iperf/300s-tcp
+>  2.191e+08 ~ 1%     +55.9%  3.416e+08 ~ 0%  bens/qperf/600s
+>  2.826e+08 ~ 2%     +90.3%  5.379e+08 ~ 3%  TOTAL proc-vmstat.pgfree
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   15752293 ~ 3%    +209.0%   48677753 ~ 8%  bens/iperf/300s-tcp
+>   54168455 ~ 1%     +56.0%   84483873 ~ 0%  bens/qperf/600s
+>   69920749 ~ 2%     +90.4%  133161627 ~ 3%  TOTAL proc-vmstat.pgalloc_nor=
 mal
->     366616 ~ 2%      -9.6%     331587 ~ 2%  TOTAL proc-vmstat.numa_hit
->     366489 ~ 2%      -9.6%     331475 ~ 2%  TOTAL proc-vmstat.numa_local
->      11970 ~ 2%      +6.3%      12726 ~ 2%  TOTAL time.involuntary_contex=
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>    9737163 ~ 2%     -56.7%    4213811 ~ 6%  ivb43/netperf/300s-25%-TCP_CRR
+>    9737163 ~ 2%     -56.7%    4213811 ~ 6%  TOTAL cpuidle.C6-IVT.usage
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>    5033341 ~ 3%    +192.9%   14743041 ~12%  bens/iperf/300s-tcp
+>   21147143 ~ 0%     +30.9%   27679992 ~ 0%  bens/qperf/600s
+>   26180485 ~ 1%     +62.0%   42423033 ~ 4%  TOTAL softirqs.NET_RX
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       0.45 ~37%    +109.7%       0.95 ~34%  bens/qperf/600s
+>       0.45 ~37%    +109.7%       0.95 ~34%  TOTAL perf-profile.cpu-cycles=
+.copy_user_generic_string.skb_copy_datagram_iovec.tcp_recvmsg.inet_recvmsg.=
+sock_aio_read
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      87907 ~29%    +145.9%     216127 ~27%  xbm/pigz/25%-512K
+>      87907 ~29%    +145.9%     216127 ~27%  TOTAL cpuidle.C3-SNB.time
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>     646521 ~ 7%     -49.5%     326622 ~ 9%  ivb43/netperf/300s-25%-TCP_CRR
+>     646521 ~ 7%     -49.5%     326622 ~ 9%  TOTAL cpuidle.C3-IVT.usage
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        658 ~13%    +109.3%       1377 ~11%  xbm/pigz/25%-512K
+>        658 ~13%    +109.3%       1377 ~11%  TOTAL cpuidle.C1E-SNB.usage
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   47748828 ~ 3%    +209.2%  1.476e+08 ~ 8%  bens/iperf/300s-tcp
+>   1.65e+08 ~ 1%     +55.9%  2.571e+08 ~ 0%  bens/qperf/600s
+>    2741315 ~ 3%      +7.4%    2943780 ~ 5%  ivb43/netperf/300s-25%-TCP_CRR
+>  2.155e+08 ~ 2%     +89.2%  4.077e+08 ~ 3%  TOTAL proc-vmstat.pgalloc_dma=
+32
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>  2.826e+08 ~ 9%     -31.4%  1.938e+08 ~16%  lkp-sb03/nuttcp/300s
+>  2.826e+08 ~ 9%     -31.4%  1.938e+08 ~16%  TOTAL cpuidle.C1-SNB.time
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      47008 ~ 4%     +52.7%      71784 ~ 4%  bens/qperf/600s
+>      20704 ~ 4%     +49.2%      30899 ~ 3%  xbm/pigz/25%-512K
+>      67712 ~ 4%     +51.6%     102683 ~ 4%  TOTAL softirqs.RCU
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       8643 ~ 7%     -32.8%       5805 ~ 1%  ivb43/netperf/300s-25%-TCP_CRR
+>       8643 ~ 7%     -32.8%       5805 ~ 1%  TOTAL proc-vmstat.numa_hint_f=
+aults
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       8949 ~ 7%     -31.5%       6129 ~ 1%  ivb43/netperf/300s-25%-TCP_CRR
+>       8949 ~ 7%     -31.5%       6129 ~ 1%  TOTAL proc-vmstat.numa_pte_up=
+dates
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      29.25 ~ 0%     +41.8%      41.49 ~ 1%  ivb43/netperf/300s-25%-TCP_CRR
+>      29.25 ~ 0%     +41.8%      41.49 ~ 1%  TOTAL turbostat.%c6
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        486 ~ 6%     -26.3%        358 ~ 8%  ivb43/netperf/300s-25%-TCP_CRR
+>        524 ~ 9%     -24.4%        396 ~ 6%  ivb44/pigz/25%-128K
+>        486 ~ 6%     -31.6%        332 ~ 7%  lkp-sb03/nuttcp/300s
+>       1497 ~ 7%     -27.4%       1088 ~ 7%  TOTAL slabinfo.kmem_cache.num=
+_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        486 ~ 6%     -26.3%        358 ~ 8%  ivb43/netperf/300s-25%-TCP_CRR
+>        524 ~ 9%     -24.4%        396 ~ 6%  ivb44/pigz/25%-128K
+>        486 ~ 6%     -31.6%        332 ~ 7%  lkp-sb03/nuttcp/300s
+>       1497 ~ 7%     -27.4%       1088 ~ 7%  TOTAL slabinfo.kmem_cache.act=
+ive_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       7914 ~ 6%     -29.6%       5575 ~ 1%  ivb43/netperf/300s-25%-TCP_CRR
+>       7914 ~ 6%     -29.6%       5575 ~ 1%  TOTAL proc-vmstat.numa_hint_f=
+aults_local
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      37.08 ~ 0%     -34.3%      24.36 ~ 2%  ivb43/netperf/300s-25%-TCP_CRR
+>      12.48 ~ 3%     -13.8%      10.76 ~ 6%  lkp-sb03/nuttcp/300s
+>      49.56 ~ 1%     -29.2%      35.11 ~ 3%  TOTAL turbostat.%c1
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        596 ~ 5%     -21.5%        468 ~ 6%  ivb43/netperf/300s-25%-TCP_CRR
+>        634 ~ 7%     -20.2%        506 ~ 5%  ivb44/pigz/25%-128K
+>        596 ~ 5%     -25.8%        442 ~ 5%  lkp-sb03/nuttcp/300s
+>       1827 ~ 6%     -22.4%       1418 ~ 5%  TOTAL slabinfo.kmem_cache_nod=
+e.active_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      98347 ~ 1%     +66.0%     163290 ~ 9%  bens/iperf/300s-tcp
+>     263164 ~ 0%     +15.4%     303781 ~ 1%  bens/qperf/600s
+>     181866 ~ 3%     -15.0%     154551 ~ 7%  ivb44/pigz/25%-128K
+>      16865 ~ 1%     +14.6%      19322 ~ 4%  xbm/pigz/25%-512K
+>     560243 ~ 1%     +14.4%     640945 ~ 5%  TOTAL softirqs.SCHED
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        614 ~ 5%     -20.8%        486 ~ 6%  ivb43/netperf/300s-25%-TCP_CRR
+>        652 ~ 7%     -19.6%        524 ~ 4%  ivb44/pigz/25%-128K
+>        614 ~ 5%     -25.0%        460 ~ 5%  lkp-sb03/nuttcp/300s
+>       1881 ~ 5%     -21.8%       1472 ~ 5%  TOTAL slabinfo.kmem_cache_nod=
+e.num_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       1.05 ~ 6%     -20.1%       0.84 ~ 5%  bens/qperf/600s
+>       1.05 ~ 6%     -20.1%       0.84 ~ 5%  TOTAL perf-profile.cpu-cycles=
+.tcp_rcv_established.tcp_v4_do_rcv.tcp_prequeue_process.tcp_recvmsg.inet_re=
+cvmsg
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      10097 ~ 0%     +26.7%      12797 ~ 2%  bens/qperf/600s
+>      10097 ~ 0%     +26.7%      12797 ~ 2%  TOTAL softirqs.HRTIMER
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       0.78 ~ 3%     +22.5%       0.96 ~ 3%  bens/qperf/600s
+>       0.78 ~ 3%     +22.5%       0.96 ~ 3%  TOTAL perf-profile.cpu-cycles=
+.tcp_v4_rcv.ip_local_deliver_finish.ip_local_deliver.ip_rcv_finish.ip_rcv
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>  2.835e+09 ~ 0%     -16.5%  2.368e+09 ~ 0%  ivb43/netperf/300s-25%-TCP_CRR
+>  2.835e+09 ~ 0%     -16.5%  2.368e+09 ~ 0%  TOTAL cpuidle.C1-IVT.time
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>    5915033 ~13%     +14.3%    6761676 ~ 7%  ivb43/netperf/300s-25%-TCP_CRR
+>    5915033 ~13%     +14.3%    6761676 ~ 7%  TOTAL meminfo.DirectMap2M
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>     264559 ~ 0%     +15.6%     305707 ~ 0%  bens/iperf/300s-tcp
+>     264559 ~ 0%     +15.6%     305707 ~ 0%  TOTAL softirqs.TIMER
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      92365 ~ 3%     -12.9%      80487 ~ 9%  ivb44/pigz/25%-128K
+>      92365 ~ 3%     -12.9%      80487 ~ 9%  TOTAL meminfo.DirectMap4k
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   24143956 ~ 3%      -8.1%   22198708 ~ 5%  ivb43/netperf/300s-25%-TCP_CRR
+>   24143956 ~ 3%      -8.1%   22198708 ~ 5%  TOTAL numa-numastat.node1.num=
+a_hit
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   24140149 ~ 3%      -8.1%   22196166 ~ 5%  ivb43/netperf/300s-25%-TCP_CRR
+>   24140149 ~ 3%      -8.1%   22196166 ~ 5%  TOTAL numa-numastat.node1.loc=
+al_node
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   12512229 ~ 3%      -7.6%   11556940 ~ 6%  ivb43/netperf/300s-25%-TCP_CRR
+>   12512229 ~ 3%      -7.6%   11556940 ~ 6%  TOTAL numa-vmstat.node1.numa_=
+hit
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   12407607 ~ 3%      -7.0%   11539395 ~ 6%  ivb43/netperf/300s-25%-TCP_CRR
+>   12407607 ~ 3%      -7.0%   11539395 ~ 6%  TOTAL numa-vmstat.node1.numa_=
+local
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   25536237 ~ 3%      +6.8%   27272147 ~ 5%  ivb43/netperf/300s-25%-TCP_CRR
+>   25536237 ~ 3%      +6.8%   27272147 ~ 5%  TOTAL numa-numastat.node0.loc=
+al_node
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   25538777 ~ 3%      +6.8%   27275952 ~ 5%  ivb43/netperf/300s-25%-TCP_CRR
+>   25538777 ~ 3%      +6.8%   27275952 ~ 5%  TOTAL numa-numastat.node0.num=
+a_hit
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       1159 ~ 3%     -10.9%       1033 ~ 1%  xbm/pigz/25%-512K
+>       1159 ~ 3%     -10.9%       1033 ~ 1%  TOTAL slabinfo.kmalloc-96.num=
+_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       1159 ~ 3%     -10.9%       1033 ~ 1%  xbm/pigz/25%-512K
+>       1159 ~ 3%     -10.9%       1033 ~ 1%  TOTAL slabinfo.kmalloc-96.act=
+ive_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       1.33 ~ 2%     -10.5%       1.19 ~ 3%  bens/qperf/600s
+>       1.33 ~ 2%     -10.5%       1.19 ~ 3%  TOTAL perf-profile.cpu-cycles=
+.tcp_sendmsg.inet_sendmsg.sock_aio_write.do_sync_write.vfs_write
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       1126 ~ 1%      -9.7%       1017 ~ 1%  bens/iperf/300s-tcp
+>       1126 ~ 1%      -9.7%       1017 ~ 1%  TOTAL proc-vmstat.pgactivate
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      12269 ~ 4%      +5.5%      12946 ~ 4%  ivb43/netperf/300s-25%-TCP_CRR
+>      12269 ~ 4%      +5.5%      12946 ~ 4%  TOTAL slabinfo.kmalloc-192.nu=
+m_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      12258 ~ 4%      +5.6%      12946 ~ 4%  ivb43/netperf/300s-25%-TCP_CRR
+>      12258 ~ 4%      +5.6%      12946 ~ 4%  TOTAL slabinfo.kmalloc-192.ac=
+tive_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       1.16 ~ 4%      +9.2%       1.26 ~ 3%  ivb43/netperf/300s-25%-TCP_CRR
+>       1.16 ~ 4%      +9.2%       1.26 ~ 3%  TOTAL perf-profile.cpu-cycles=
+.get_next_timer_interrupt.tick_nohz_stop_sched_tick.__tick_nohz_idle_enter.=
+tick_nohz_idle_enter.cpu_idle_loop
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       3135 ~ 2%      +8.4%       3398 ~ 1%  ivb44/pigz/25%-128K
+>       3135 ~ 2%      +8.4%       3398 ~ 1%  TOTAL slabinfo.task_xstate.ac=
+tive_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>       3135 ~ 2%      +8.4%       3398 ~ 1%  ivb44/pigz/25%-128K
+>       3135 ~ 2%      +8.4%       3398 ~ 1%  TOTAL slabinfo.task_xstate.nu=
+m_objs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      11496 ~ 5%     -96.2%        435 ~12%  bens/iperf/300s-tcp
+>      23777 ~ 1%     -86.3%       3264 ~10%  bens/qperf/600s
+>      22961 ~ 1%     -76.7%       5351 ~ 4%  ivb44/pigz/25%-128K
+>      13976 ~ 2%     -97.5%        349 ~22%  lkp-sb03/nuttcp/300s
+>      11345 ~ 0%     -88.0%       1361 ~25%  xbm/pigz/25%-512K
+>      83555 ~ 2%     -87.1%      10761 ~ 9%  TOTAL time.involuntary_contex=
 t_switches
->       2829 ~ 0%      +5.5%       2983 ~ 0%  TOTAL time.user_time
->      24.02 ~ 0%      +5.5%      25.33 ~ 0%  TOTAL time.elapsed_time
->        402 ~ 0%      +2.0%        410 ~ 0%  TOTAL turbostat.Cor_W
->        469 ~ 0%      +1.7%        477 ~ 0%  TOTAL turbostat.Pkg_W
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>   36820683 ~ 0%     +17.5%   43253042 ~ 0%  bens/qperf/600s
+>   36820683 ~ 0%     +17.5%   43253042 ~ 0%  TOTAL time.voluntary_context_=
+switches
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      13302 ~ 0%     +49.0%      19817 ~14%  bens/iperf/300s-tcp
+>      62977 ~ 0%     +17.3%      73856 ~ 0%  bens/qperf/600s
+>      76279 ~ 0%     +22.8%      93674 ~ 3%  TOTAL vmstat.system.in
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      23681 ~ 0%     +48.9%      35273 ~15%  bens/iperf/300s-tcp
+>     122654 ~ 0%     +17.4%     143989 ~ 0%  bens/qperf/600s
+>     759769 ~ 0%     -10.5%     680088 ~ 0%  ivb43/netperf/300s-25%-TCP_CRR
+>     906105 ~ 0%      -5.2%     859351 ~ 1%  TOTAL vmstat.system.cs
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        144 ~ 0%      +5.4%        152 ~ 0%  bens/qperf/600s
+>        144 ~ 0%      +5.4%        152 ~ 0%  TOTAL time.percent_of_cpu_thi=
+s_job_got
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        122 ~ 0%      -4.2%        116 ~ 0%  ivb43/netperf/300s-25%-TCP_CRR
+>            ~ 0%      -4.2%            ~ 0%  TOTAL turbostat.Cor_W
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        299 ~ 0%      -2.8%        290 ~ 2%  bens/iperf/300s-tcp
+>        863 ~ 0%      +5.2%        908 ~ 0%  bens/qperf/600s
+>       1162 ~ 0%      +3.2%       1199 ~ 0%  TOTAL time.system_time
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>        153 ~ 0%      -3.3%        147 ~ 0%  ivb43/netperf/300s-25%-TCP_CRR
+>            ~ 0%      -3.3%            ~ 0%  TOTAL turbostat.Pkg_W
+> =
+
+> 221031cb1b33258  34577530114e9b1de10f3aa96  =
+
+> ---------------  -------------------------  =
+
+>      33.55 ~ 0%      +1.7%      34.12 ~ 0%  ivb43/netperf/300s-25%-TCP_CRR
+>      33.55 ~ 0%      +1.7%      34.12 ~ 0%  TOTAL turbostat.%c0
+> =
+
 > =
 
 > Legend:
@@ -109,112 +667,112 @@ t_switches
 
 > =
 
->                                   time.user_time
+>                                  iperf.tcp.sender.bps
 > =
 
->   3000 ++----------------------------------------------------------------=
+>   2.4e+10 ++----------O--------------------------------------O-----------=
 ---+
->   2980 ++O O O O     O   O   O O O O   O  O O                            =
+>           O     O  O     O     O  O  O  O  O  O  O  O  O        O        =
    |
->        |         O O   O   O         O                                   =
+>   2.2e+10 ++ O              O                                      O     =
    |
->   2960 O+                                                                =
+>     2e+10 ++                                                             =
    |
->   2940 ++                                                                =
+>           |                                               O              =
    |
->        |                                                                 =
+>   1.8e+10 ++                                                             =
    |
->   2920 ++                                                                =
+>   1.6e+10 ++                                                             =
    |
->   2900 ++                                                                =
+>           |                                                              =
    |
->   2880 ++                                                                =
+>   1.4e+10 ++                                                             =
    |
->        |                                                                 =
+>   1.2e+10 ++                                                             =
    |
->   2860 ++        *. .*.   .*.                                   *.   .*. =
+>           |                                                              =
    |
->   2840 ++       +  *   *.*   *.                                +  *.*   *=
-.  |
->        *.   .*.*               *.*.*.*.*..*.*.*. .*.*.*.*.*.*.*          =
- *.*
->   2820 ++*.*                                    *                        =
+>     1e+10 ++                                                             =
    |
->   2800 ++----------------------------------------------------------------=
----+
-> =
-
-> =
-
->                                  time.elapsed_time
-> =
-
->     29 ++----------------------------------------------------------------=
----+
->   28.5 O+                                                                =
+>     8e+09 ++                                                             =
    |
->        |                                                                 =
-   |
->     28 ++                                                                =
-   |
->   27.5 ++                                                                =
-   |
->     27 ++                                                                =
-   |
->   26.5 ++                                                                =
-   |
->        |                                                                 =
-   |
->     26 ++                                                                =
-   |
->   25.5 ++O O O O O O O   O O O O O O O O  O O                            =
-   |
->     25 ++              O                                                 =
-   |
->   24.5 ++                                                                =
-   |
->        |    .*. .*.*.*.*.*.*.*.                                .*.*.*.*.*=
-.  |
->     24 *+*.*   *               *.*.*.*.*..*.*.*.*.*.*.*.*.*.*.*          =
- *.*
->   23.5 ++----------------------------------------------------------------=
+>           *..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..=
+*..*
+>     6e+09 ++-------------------------------------------------------------=
 ---+
 > =
 
 > =
 
->                                vm-scalability.throughput
+>                                 iperf.tcp.receiver.bps
 > =
 
->   2.06e+08 ++*-*---------------------------------*-----------------------=
+>   2.4e+10 ++----------O--------------------------------------O-----------=
 ---+
->            *    +                 *.*.*.*.*.**.*   *.*.*.*.*.*.*         =
- *.|
->   2.04e+08 ++    *.*.            +                              +        =
-+  *
->            |         **.*.*.*.*.*                                **.*.*.*=
+>           O     O  O     O     O  O  O  O  O  O  O  O  O        O        =
    |
->   2.02e+08 ++                                                            =
+>   2.2e+10 ++ O              O                                      O     =
    |
->            |                                                             =
+>     2e+10 ++                                                             =
    |
->      2e+08 ++                                                            =
+>           |                                               O              =
    |
->            |                                                             =
+>   1.8e+10 ++                                                             =
    |
->   1.98e+08 ++                                                            =
+>   1.6e+10 ++                                                             =
    |
->            |                                                             =
+>           |                                                              =
    |
->   1.96e+08 O+                                                            =
+>   1.4e+10 ++                                                             =
    |
->            | O       OO   O                                              =
+>   1.2e+10 ++                                                             =
    |
->   1.94e+08 ++  O O O    O   O O O O O O O O OO                           =
+>           |                                                              =
    |
->            |                                                             =
+>     1e+10 ++                                                             =
    |
->   1.92e+08 ++------------------------------------------------------------=
+>     8e+09 ++                                                             =
+   |
+>           *..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..=
+*..*
+>     6e+09 ++-------------------------------------------------------------=
+---+
+> =
+
+> =
+
+>                           time.involuntary_context_switches
+> =
+
+>   14000 ++---------------------------------------------------------------=
+---+
+>         |                                                                =
+   |
+>   12000 *+.        .*..  ..*..*..*..*..  .*..*..*..*..*..  ..*..*..*..*..=
+   *
+>         |    .*..*.    *.              *.                *.              =
+ ..|
+>   10000 ++ *.                                                            =
+*  |
+>         |                                                                =
+   |
+>    8000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>    6000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>    4000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>    2000 ++                                                               =
+   |
+>         |     O                                          O               =
+   |
+>       0 O+-O-----O--O--O---O--O--O--O--O--O--O--O--O--O------O--O--O-----=
 ---+
 > =
 
@@ -236,9 +794,10 @@ tware
 
 > Thanks,
 > Fengguang
-> =
+
+> ./iperf3 -s
+> ./iperf3 -t 300 -f M -J -c 127.0.0.1
 
 
-
---===============7451010360236667752==--
+--===============2973375200843841606==--
 
