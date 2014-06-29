@@ -1,92 +1,204 @@
-Content-Type: multipart/mixed; boundary="===============9212661363249189835=="
+Content-Type: multipart/mixed; boundary="===============4508246328352847384=="
 MIME-Version: 1.0
-From: Stephan Mueller <smueller@chronox.de>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [crypto] BUG: unable to handle kernel paging request at ffff88000bb88000
-Date: Sun, 29 Jun 2014 19:43:35 +0000
-Message-ID: <42550233.Kxs179MjQV@myon.chronox.de>
-In-Reply-To: <20140629145246.GA9134@localhost>
+Subject: Re: [rcu] 2d033d5c0d4: +225.2% iperf.tcp.sender.bps
+Date: Sun, 29 Jun 2014 15:47:00 -0700
+Message-ID: <20140629224700.GT4603@linux.vnet.ibm.com>
+In-Reply-To: <20140629151544.GA11875@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9212661363249189835==
+--===============4508246328352847384==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Am Sonntag, 29. Juni 2014, 22:52:46 schrieb Fengguang Wu:
-
-Hi Fengguang,
-
-> Greetings,
+On Sun, Jun 29, 2014 at 11:15:44PM +0800, Fengguang Wu wrote:
+> Hi Paul,
 > =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+> FYI, we noticed the below changes on
+> =
 
-May I ask whether there is anything special in your kernel config?
+> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/n=
+ext
+> commit 2d033d5c0d424b7029abd0fc82e940ebc318fd89 ("rcu: Bind grace-period =
+kthreads to non-NO_HZ_FULL CPUs")
 
-This very bug should have been triggered already in all previous code level=
-s! =
+Nice!  Clearly outlines the hazards of providing too few housekeeping CPUs,
+I would guess.
 
-I am seriously wondering why this bug was not triggered before -- does kall=
-oc =
+							Thanx, Paul
 
-somehow allocates more memory than you requested? And only your specific =
+> test case: bens/iperf/300s-tcp
+> =
 
-kernel config made kalloc to allocate the exact amount of memory that was =
+> e17adc3f20bc9a1  2d033d5c0d424b7029abd0fc8  =
 
-requested?
+> ---------------  -------------------------  =
 
-The background can be summarized by the following: the scratchpad->temp buf=
-fer =
+>  7.011e+09 ~ 1%    +225.2%   2.28e+10 ~ 2%  TOTAL iperf.tcp.sender.bps
+>  7.011e+09 ~ 1%    +225.2%   2.28e+10 ~ 2%  TOTAL iperf.tcp.receiver.bps
+>   15620691 ~ 1%    +224.3%   50663012 ~ 2%  TOTAL proc-vmstat.pgalloc_nor=
+mal
+>   62969722 ~ 1%    +224.3%  2.042e+08 ~ 2%  TOTAL proc-vmstat.pgfree
+>   47347349 ~ 1%    +224.3%  1.535e+08 ~ 2%  TOTAL proc-vmstat.pgalloc_dma=
+32
+>    4996590 ~ 1%    +218.9%   15933563 ~ 3%  TOTAL softirqs.NET_RX
+>    8084072 ~ 1%    +218.4%   25739055 ~ 2%  TOTAL proc-vmstat.numa_hit
+>    8084072 ~ 1%    +218.4%   25739055 ~ 2%  TOTAL proc-vmstat.numa_local
+>      28676 ~ 2%     -47.5%      15059 ~11%  TOTAL softirqs.RCU
+>      99756 ~ 2%     +76.0%     175606 ~ 2%  TOTAL softirqs.SCHED
+>        562 ~11%     +50.9%        848 ~17%  TOTAL slabinfo.proc_inode_cac=
+he.active_objs
+>        620 ~ 8%     +38.7%        860 ~15%  TOTAL slabinfo.proc_inode_cac=
+he.num_objs
+>     271905 ~ 4%     +17.4%     319216 ~ 0%  TOTAL softirqs.TIMER
+>       1117 ~ 1%      -9.1%       1015 ~ 2%  TOTAL proc-vmstat.pgactivate
+>       9049 ~11%     -94.6%        485 ~26%  TOTAL time.involuntary_contex=
+t_switches
+>      23233 ~ 1%     +72.1%      39979 ~ 2%  TOTAL vmstat.system.cs
+>      13078 ~ 1%     +69.1%      22117 ~ 1%  TOTAL vmstat.system.in
+> =
 
-(i.e. the memory location immediately before the tfm variable upon which th=
-e =
+> Legend:
+> 	~XX%    - stddev percent
+> 	[+-]XX% - change percent
+> =
 
-kernel crashed) is the buffer that the BCC function operates on. BCC operat=
-es =
+> =
 
-blockwise. drbg_statelen(drbg) is sufficient when the DRBG state length is =
-a =
+>                                  iperf.tcp.sender.bps
+> =
 
-multiple of the block size. For AES192 (and maybe other ciphers) this is no=
-t =
+>   2.4e+10 ++----O-----O-----------O--------------O-----O--------O-----O--=
+---+
+>           |        O     O  O  O     O  O                    O           =
+O  |
+>   2.2e+10 O+ O                             O                       O     =
+   |
+>     2e+10 ++                                  O                          =
+   |
+>           |                                                              =
+   |
+>   1.8e+10 ++                                                             =
+   |
+>   1.6e+10 ++                                        O     O              =
+   |
+>           |                                                              =
+   |
+>   1.4e+10 ++                                                             =
+   |
+>   1.2e+10 ++                                                             =
+   |
+>           |                                                              =
+   |
+>     1e+10 ++                                                             =
+   |
+>     8e+09 ++                                                             =
+   |
+>           *..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..=
+*..*
+>     6e+09 ++-------------------------------------------------------------=
+---+
+> =
 
-correct and the length for temp is insufficient (yes, that also means for s=
-uch =
+> =
 
-ciphers, the final output of all BCC rounds are truncated before used to =
+>                                 iperf.tcp.receiver.bps
+> =
 
-update the state of the DRBG!!).
+>   2.4e+10 ++----O-----O-----------O--------------O-----O--------O-----O--=
+---+
+>           |        O     O  O  O     O  O                    O           =
+O  |
+>   2.2e+10 O+ O                             O                       O     =
+   |
+>     2e+10 ++                                  O                          =
+   |
+>           |                                                              =
+   |
+>   1.8e+10 ++                                                             =
+   |
+>   1.6e+10 ++                                        O     O              =
+   |
+>           |                                                              =
+   |
+>   1.4e+10 ++                                                             =
+   |
+>   1.2e+10 ++                                                             =
+   |
+>           |                                                              =
+   |
+>     1e+10 ++                                                             =
+   |
+>     8e+09 ++                                                             =
+   |
+>           *..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..*..=
+*..*
+>     6e+09 ++-------------------------------------------------------------=
+---+
+> =
 
-The DRBG code that triggered the bug defined the buffer to be drbg_statelen=
-() =
+> =
 
-in size. As described, the bug therefore triggered with the AES192 cipher. =
-The =
+>                           time.involuntary_context_switches
+> =
 
-patch is simply to enlarge the buffer by blocklen. This ensures that we hav=
-e =
+>   14000 ++---------------------------------------------------------------=
+---+
+>         |                                                                =
+   |
+>   12000 *+.        .*..  ..*..*..  .*..                                  =
+   |
+>         |    .*..*.    *.        *.                                      =
+   |
+>   10000 ++ *.                          *..*..  .*..*..*..  ..*..*..      =
+   *
+>         |                                    *.          *.          .*..=
+ ..|
+>    8000 ++                                                         *.    =
+*  |
+>         |                                                                =
+   |
+>    6000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>    4000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>    2000 ++                                                               =
+   |
+>         |                                          O     O         O     =
+O  |
+>       0 O+-O--O--O--O--O---O--O--O--O--O--O--O--O-----O------O--O-----O--=
+---+
+> =
 
-no memory corruption.
+> =
 
-An official patch is created and released shortly.
+> 	[*] bisect-good sample
+> 	[O] bisect-bad  sample
+> =
 
-More and more I look into and work with SP800-90A, I feel that at least the =
+> =
 
-CTR DRBG and to a lesser degree the Hash DRBG have severe shortcomings. =
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are prov=
+ided
+> for informational purposes only. Any difference in system hardware or sof=
+tware
+> design or configuration may affect actual performance.
+> =
 
-Throwing away information derived from the seed by the aforementioned =
+> Thanks,
+> Fengguang
 
-truncation is definitely not wise. This truncation is in addition to other =
+> ./iperf3 -s
+> ./iperf3 -t 300 -f M -J -c 127.0.0.1
 
-very odd operations on the seed definitely result in a loss of entropy IMHO.
 
-Though, thanks a lot for the bug report and your testing.
-
--- =
-
-Ciao
-Stephan
-
---===============9212661363249189835==--
+--===============4508246328352847384==--
 
