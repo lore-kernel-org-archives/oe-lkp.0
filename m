@@ -1,65 +1,81 @@
-Content-Type: multipart/mixed; boundary="===============5326532857964863586=="
+Content-Type: multipart/mixed; boundary="===============1219282443004540539=="
 MIME-Version: 1.0
-From: Jet Chen <jet.chen@intel.com>
+From: Stephan Mueller <smueller@chronox.de>
 To: lkp@lists.01.org
-Subject: Re: [clockevents] WARNING: CPU: 1 PID: 0 at kernel/time/clockevents.c:281 clockevents_program_event()
-Date: Mon, 30 Jun 2014 15:06:28 +0800
-Message-ID: <53B10C74.4060409@intel.com>
-In-Reply-To: <CAKohpomfxodayivDUriZKKgvQ7NnWGAYXc=2tAjMe9x2F8JfkA@mail.gmail.com>
+Subject: Re: [crypto] BUG: unable to handle kernel paging request at ffff88000bb88000
+Date: Mon, 30 Jun 2014 13:38:55 +0000
+Message-ID: <1485256.DS9rzaQkMP@tauon>
+In-Reply-To: <20140630053126.GA13887@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5326532857964863586==
+--===============1219282443004540539==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 06/30/2014 12:40 PM, Viresh Kumar wrote:
-> On 29 June 2014 20:28, Fengguang Wu <fengguang.wu@intel.com> wrote:
->> Greetings,
->>
->> 0day kernel testing robot got the below dmesg and the first bad commit is
->>
->> git://bee.sh.intel.com/git/tchen37/linux.git test
->> commit 2f89103f5b85386245b434e8e9f66d25df929e65
->> Author:     Viresh Kumar <viresh.kumar@linaro.org>
->> AuthorDate: Tue Jun 10 13:52:25 2014 +0530
->> Commit:     Viresh Kumar <viresh.kumar@linaro.org>
->> CommitDate: Tue Jun 24 10:54:12 2014 +0530
->>
->>      clockevents: x86: add support for ONESHOT_STOPPED mode
->>
->>      Clockevent devices can be stopped from core (hrtimers/tick) when th=
-ey aren't
->>      used anymore. This will mostly happen on a idle or tickless cpu. Th=
-is is done to
->>      avoid getting spurious interrupts when core doesn't want to handle =
-them anymore.
->>
->>      For stopping clockevent devices, core requests drivers to switch to=
- a special
->>      optional mode: CLOCK_EVT_MODE_ONESHOT_STOPPED. At this time platfor=
-ms can also
->>      save some power by disabling these devices.
->>
->>      This patch adds support for handling CLOCK_EVT_MODE_ONESHOT_STOPPED=
- mode for x86
->>      drivers.
->>
->>      Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
->
-> Hmm, I have made some changes and pushed stuff again, please see if it
-> still breaks:
->
-> git://git.kernel.org/pub/scm/linux/kernel/git/vireshk/linux.git
-> tick/oneshot-stopped
+Am Montag, 30. Juni 2014, 13:31:26 schrieb Fengguang Wu:
 
-Changes fixes the issue.
+Hi Fengguang,
 
-Tested-by: Jet Chen <jet.chen@intel.com>
-
+>Hi Stephan,
 >
-> Thanks.
->
+>On Sun, Jun 29, 2014 at 09:45:48PM +0200, Stephan Mueller wrote:
+>> Am Sonntag, 29. Juni 2014, 22:52:46 schrieb Fengguang Wu:
+>> =
 
---===============5326532857964863586==--
+>> Hi Fengguang,
+>> =
+
+>> > Greetings,
+>> > =
+
+>> > 0day kernel testing robot got the below dmesg and the first bad
+>> > commit is> =
+
+>> May I ask whether there is anything special in your kernel config?
+>
+>It's an x86_64 randconfig. You may find it in the attachment of the
+>original report email.
+
+Thanks, I used that config. I was just wondering whether there were some =
+
+special config options that changed the memory allocation mechanism. The =
+
+kernel configs I used never triggered the issue albeit it should have =
+
+had.
+
+I ran stress tests months ago (with the bug present) where I invoked the =
+
+DRBG for one day, causing billions of rounds of RNG operation where each =
+
+round should have triggered the bug.
+>
+>> This very bug should have been triggered already in all previous code
+>> levels! I am seriously wondering why this bug was not triggered
+>> before -- does kalloc somehow allocates more memory than you
+>> requested? And only your specific kernel config made kalloc to
+>> allocate the exact amount of memory that was requested?
+>
+>Yeah the bug may have been triggered in other places. If you see
+>anything valuable from this bisect result, it would be great. Judging
+>from the comparison of 64d1cdfbe2 and its parent commit 3332ee2a17,
+>it's pretty reproducible, so easy to verify the possible fixes.
+
+Well, it is not so reproducible as you may think. And I as far as I can =
+
+see the other oops that you send was caused by the same issue.
+
+When I was debugging the issue and just adding some printk statements, =
+
+the crasher went away (reliably) or it crashed at some other random =
+
+places. It was very bizarre. But after adding my fix, I did not see any =
+
+crash any more.
+
+Ciao
+Stephan
+
+--===============1219282443004540539==--
 
