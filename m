@@ -1,84 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============5072474956074905336=="
+Content-Type: multipart/mixed; boundary="===============5326532857964863586=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Jet Chen <jet.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [crypto] BUG: unable to handle kernel paging request at ffff88000bb88000
-Date: Mon, 30 Jun 2014 05:28:14 +0000
-Message-ID: <20140630053126.GA13887@localhost>
-In-Reply-To: <42550233.Kxs179MjQV@myon.chronox.de>
+Subject: Re: [clockevents] WARNING: CPU: 1 PID: 0 at kernel/time/clockevents.c:281 clockevents_program_event()
+Date: Mon, 30 Jun 2014 15:06:28 +0800
+Message-ID: <53B10C74.4060409@intel.com>
+In-Reply-To: <CAKohpomfxodayivDUriZKKgvQ7NnWGAYXc=2tAjMe9x2F8JfkA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5072474956074905336==
+--===============5326532857964863586==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Stephan,
+On 06/30/2014 12:40 PM, Viresh Kumar wrote:
+> On 29 June 2014 20:28, Fengguang Wu <fengguang.wu@intel.com> wrote:
+>> Greetings,
+>>
+>> 0day kernel testing robot got the below dmesg and the first bad commit is
+>>
+>> git://bee.sh.intel.com/git/tchen37/linux.git test
+>> commit 2f89103f5b85386245b434e8e9f66d25df929e65
+>> Author:     Viresh Kumar <viresh.kumar@linaro.org>
+>> AuthorDate: Tue Jun 10 13:52:25 2014 +0530
+>> Commit:     Viresh Kumar <viresh.kumar@linaro.org>
+>> CommitDate: Tue Jun 24 10:54:12 2014 +0530
+>>
+>>      clockevents: x86: add support for ONESHOT_STOPPED mode
+>>
+>>      Clockevent devices can be stopped from core (hrtimers/tick) when th=
+ey aren't
+>>      used anymore. This will mostly happen on a idle or tickless cpu. Th=
+is is done to
+>>      avoid getting spurious interrupts when core doesn't want to handle =
+them anymore.
+>>
+>>      For stopping clockevent devices, core requests drivers to switch to=
+ a special
+>>      optional mode: CLOCK_EVT_MODE_ONESHOT_STOPPED. At this time platfor=
+ms can also
+>>      save some power by disabling these devices.
+>>
+>>      This patch adds support for handling CLOCK_EVT_MODE_ONESHOT_STOPPED=
+ mode for x86
+>>      drivers.
+>>
+>>      Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+>
+> Hmm, I have made some changes and pushed stuff again, please see if it
+> still breaks:
+>
+> git://git.kernel.org/pub/scm/linux/kernel/git/vireshk/linux.git
+> tick/oneshot-stopped
 
-On Sun, Jun 29, 2014 at 09:45:48PM +0200, Stephan Mueller wrote:
-> Am Sonntag, 29. Juni 2014, 22:52:46 schrieb Fengguang Wu:
-> =
+Changes fixes the issue.
 
-> Hi Fengguang,
-> =
+Tested-by: Jet Chen <jet.chen@intel.com>
 
-> > Greetings,
-> > =
+>
+> Thanks.
+>
 
-> > 0day kernel testing robot got the below dmesg and the first bad commit =
-is
-> =
-
-> May I ask whether there is anything special in your kernel config?
-
-It's an x86_64 randconfig. You may find it in the attachment of the
-original report email.
-
-> This very bug should have been triggered already in all previous code lev=
-els! =
-
-> I am seriously wondering why this bug was not triggered before -- does ka=
-lloc =
-
-> somehow allocates more memory than you requested? And only your specific =
-
-> kernel config made kalloc to allocate the exact amount of memory that was =
-
-> requested?
-
-Yeah the bug may have been triggered in other places. If you see
-anything valuable from this bisect result, it would be great. Judging
-from the comparison of 64d1cdfbe2 and its parent commit 3332ee2a17,
-it's pretty reproducible, so easy to verify the possible fixes.
-
-+--------------------------------------------------------------------------=
---+------------+------------+
-|                                                                          =
-  | 3332ee2a17 | 64d1cdfbe2 |
-+--------------------------------------------------------------------------=
---+------------+------------+
-| boot_successes                                                           =
-  | 81         | 3          |
-| boot_failures                                                            =
-  | 0          | 23         |
-| BUG:unable_to_handle_kernel_paging_request                               =
-  | 0          | 20         |
-| Oops                                                                     =
-  | 0          | 19         |
-| RIP:kzfree                                                               =
-  | 0          | 15         |
-| WARNING:CPU:PID:at_kernel/rcu/tree.c:rcu_do_batch()                      =
-  | 0          | 9          |
-| backtrace:cryptomgr_test                                                 =
-  | 0          | 18         |
-| backtrace:cpu_startup_entry                                              =
-  | 0          | 3          |
-| kernel_BUG_at_include/linux/mm.h                                         =
-  | 0          | 1          |
-...
-
-Thanks,
-Fengguang
-
---===============5072474956074905336==--
+--===============5326532857964863586==--
 
