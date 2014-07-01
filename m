@@ -1,49 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============2276818693245897557=="
+Content-Type: multipart/mixed; boundary="===============1883742397749638726=="
 MIME-Version: 1.0
 From: Stephan Mueller <smueller@chronox.de>
 To: lkp@lists.01.org
-Subject: [PATCH 1/4] DRBG: Select correct DRBG core for stdrng
-Date: Tue, 01 Jul 2014 15:13:42 +0000
-Message-ID: <2048210.Q12HSlDxg7@myon.chronox.de>
-In-Reply-To: <36957559.tbJt1gJF6I@myon.chronox.de>
+Subject: [PATCH 0/4] DRBG: Fixes for code review comments
+Date: Tue, 01 Jul 2014 15:15:06 +0000
+Message-ID: <36957559.tbJt1gJF6I@myon.chronox.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2276818693245897557==
+--===============1883742397749638726==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-When the DRBG is initialized, the core is looked up using the DRBG name.
-The name that can be used for the lookup is registered in
-cra_driver_name. The cra_name value contains stdrng.
+Hi,
 
-Thus, the lookup code must use crypto_tfm_alg_driver_name to obtain the
-precise DRBG name and select the correct DRBG.
+the following fixes cover comments from code reviewers. The patch set
+is an addition to the patch set offered several days ago [1].
 
-Signed-off-by: Stephan Mueller <smueller@chronox.de>
----
- crypto/drbg.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+[1] https://lkml.org/lkml/2014/6/28/497
 
-diff --git a/crypto/drbg.c b/crypto/drbg.c
-index 53ff20d..14495df 100644
---- a/crypto/drbg.c
-+++ b/crypto/drbg.c
-@@ -1764,7 +1764,7 @@ static int drbg_kcapi_init(struct crypto_tfm *tfm)
- 	bool pr =3D false;
- 	int coreref =3D 0;
- =
+Stephan Mueller (4):
+  DRBG: Select correct DRBG core for stdrng
+  DRBG: Mix a time stamp into DRBG state
+  DRBG: fix memory corruption for AES192
+  DRBG: HMAC-SHA1 DRBG has crypto strength of 128 bits
 
--	drbg_convert_tfm_core(crypto_tfm_alg_name(tfm), &coreref, &pr);
-+	drbg_convert_tfm_core(crypto_tfm_alg_driver_name(tfm), &coreref, &pr);
- 	/*
- 	 * when personalization string is needed, the caller must call reset
- 	 * and provide the personalization string as seed information
+ crypto/drbg.c         | 77 ++++++++++++++++++++++++++++++++---------------=
+----
+ include/crypto/drbg.h |  2 +-
+ 2 files changed, 49 insertions(+), 30 deletions(-)
+
 -- =
 
 1.9.3
 
 
 
---===============2276818693245897557==--
+--===============1883742397749638726==--
 
