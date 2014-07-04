@@ -1,50 +1,97 @@
-Content-Type: multipart/mixed; boundary="===============5773657321648879580=="
+Content-Type: multipart/mixed; boundary="===============1874619475364383160=="
 MIME-Version: 1.0
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Stephan Mueller <smueller@chronox.de>
 To: lkp@lists.01.org
 Subject: Re: [PATCH 3/4] DRBG: fix memory corruption for AES192
-Date: Fri, 04 Jul 2014 11:12:35 +0800
-Message-ID: <20140704031235.GA22340@gondor.apana.org.au>
-In-Reply-To: <3083657.SRQmeelhqi@myon.chronox.de>
+Date: Fri, 04 Jul 2014 05:32:56 +0200
+Message-ID: <5597906.Ka0eDGbAv1@myon.chronox.de>
+In-Reply-To: <20140704030810.GA22255@gondor.apana.org.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5773657321648879580==
+--===============1874619475364383160==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 01, 2014 at 05:08:48PM +0200, Stephan Mueller wrote:
-> For the CTR DRBG, the drbg_state->scratchpad temp buffer (i.e. the
-> memory location immediately before the drbg_state->tfm variable
-> is the buffer that the BCC function operates on. BCC operates
-> blockwise. Making the temp buffer drbg_statelen(drbg) in size is
-> sufficient when the DRBG state length is a multiple of the block
-> size. For AES192 this is not the case and the length for temp is
-> insufficient (yes, that also means for such ciphers, the final
-> output of all BCC rounds are truncated before used to update the
-> state of the DRBG!!).
+Am Freitag, 4. Juli 2014, 11:08:10 schrieb Herbert Xu:
+
+Hi Herbert,
+
+> On Tue, Jul 01, 2014 at 05:08:48PM +0200, Stephan Mueller wrote:
+> > For the CTR DRBG, the drbg_state->scratchpad temp buffer (i.e. the
+> > memory location immediately before the drbg_state->tfm variable
+> > is the buffer that the BCC function operates on. BCC operates
+> > blockwise. Making the temp buffer drbg_statelen(drbg) in size is
+> > sufficient when the DRBG state length is a multiple of the block
+> > size. For AES192 this is not the case and the length for temp is
+> > insufficient (yes, that also means for such ciphers, the final
+> > output of all BCC rounds are truncated before used to update the
+> > state of the DRBG!!).
+> > =
+
+> > The patch enlarges the temp buffer from drbg_statelen to
+> > drbg_statelen + drbg_blocklen to have sufficient space.
+> > =
+
+> > Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+> > Signed-off-by: Stephan Mueller <smueller@chronox.de>
 > =
 
-> The patch enlarges the temp buffer from drbg_statelen to
-> drbg_statelen + drbg_blocklen to have sufficient space.
-> =
+> I have applied just this patch out of your series.  You patches
+> depend on the previous four patches which I have not yet applied
+> since there are still outstanding issues with two of them.
 
-> Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-> Signed-off-by: Stephan Mueller <smueller@chronox.de>
+Thank you.
 
-BTW your patches were all corrupted by your mailer so I had to
-fix them by hand.  Please check the cryptodev tree to ensure
-that my fixes are correct.
+The raised issues are for patches [1] and [2].
 
-In future please test your patches by applying your own patches
-returned via the list.
+The issue around [1] is whether there is Kconfig solution for the problem o=
+f =
 
-Thanks,
+selecting at least one or more than one configure option from a set of =
+
+options. This should avoid having a module init function with returns an =
+
+error. The selection of DRBG cores shall allow the user to compile the DRBG=
+ to =
+
+suit his needs and reduce the footprint of the DRBG. Since at least one DRB=
+G =
+
+core must be selected as otherwise the DRBG is meaningless. Unfortunately I =
+
+have not found a solution with Kconfig and all given suggestions also did n=
+ot =
+
+lead to a solution. So, if anybody has a suggestion on how to solve the iss=
+ue, =
+
+I will try it out.
+
+Regarding [2], the issue is that ARRAY_SIZE returns different variable type=
+s =
+
+on different platforms (e.g. unsigned long on x86_64 vs unsigned int on i38=
+6). =
+
+Thus I have to use a type cast. This issue may be fixed by forcing a =
+
+particular type to ARRAY_SIZE. Such change, however, may have quite some =
+
+ripple effects throughout the kernel. Therefore, IMHO such a patch should n=
+ot =
+
+be made in the realm of the DRBG patchset and the type cast should be allow=
+ed.
+
+[1] https://lkml.org/lkml/2014/6/28/489
+
+[2] https://lkml.org/lkml/2014/6/28/492
+
 -- =
 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Ciao
+Stephan
 
---===============5773657321648879580==--
+--===============1874619475364383160==--
 
