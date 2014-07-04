@@ -1,311 +1,47 @@
-Content-Type: multipart/mixed; boundary="===============0956708679185827855=="
+Content-Type: multipart/mixed; boundary="===============9068994552268907562=="
 MIME-Version: 1.0
-From: Du, Yuyang <yuyang.du@intel.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 To: lkp@lists.01.org
-Subject: Re: [sched] cec017ed87c: -35.9% fileio.requests_per_sec
-Date: Wed, 02 Jul 2014 03:30:51 +0000
-Message-ID: <0DA73B5D686AEC4AAEF6054BE04DA1CD118A4B72@shsmsx102.ccr.corp.intel.com>
-In-Reply-To: <20140626020629.GG12239@localhost>
+Subject: Re: [PATCH 3/4] DRBG: fix memory corruption for AES192
+Date: Fri, 04 Jul 2014 11:08:10 +0800
+Message-ID: <20140704030810.GA22255@gondor.apana.org.au>
+In-Reply-To: <3083657.SRQmeelhqi@myon.chronox.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0956708679185827855==
+--===============9068994552268907562==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Fengguang,
+On Tue, Jul 01, 2014 at 05:08:48PM +0200, Stephan Mueller wrote:
+> For the CTR DRBG, the drbg_state->scratchpad temp buffer (i.e. the
+> memory location immediately before the drbg_state->tfm variable
+> is the buffer that the BCC function operates on. BCC operates
+> blockwise. Making the temp buffer drbg_statelen(drbg) in size is
+> sufficient when the DRBG state length is a multiple of the block
+> size. For AES192 this is not the case and the length for temp is
+> insufficient (yes, that also means for such ciphers, the final
+> output of all BCC rounds are truncated before used to update the
+> state of the DRBG!!).
+> =
 
-Yesterday, I started cc v4.5 which corrects the bug you reported (hopefully=
-). And also you may help keep an eye on the "Remove update_rq_runnable_avg"=
- patch, whether it incurs perf regression.
+> The patch enlarges the temp buffer from drbg_statelen to
+> drbg_statelen + drbg_blocklen to have sufficient space.
+> =
 
-Thanks,
-Yuyang
+> Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+> Signed-off-by: Stephan Mueller <smueller@chronox.de>
 
------Original Message-----
-From: Wu, Fengguang =
+I have applied just this patch out of your series.  You patches
+depend on the previous four patches which I have not yet applied
+since there are still outstanding issues with two of them.
 
-Sent: Thursday, June 26, 2014 10:06 AM
-To: Du, Yuyang
-Cc: Hansen, Dave; lkp(a)01.org; Chen, Jet
-Subject: [sched] cec017ed87c: -35.9% fileio.requests_per_sec
+Cheers,
+-- =
 
-Yuyang,
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
-FYI, we noticed the below changes on
-
-git://bee.sh.intel.com/git/ydu19/linux cc-v3-on-3.15-rc8 commit cec017ed87c=
-7e5298fabaf1718f4f3c0fada0adb ("Remove update_rq_runnable_avg")
-
-Test case: snb-drag/fileio/600s-100%-1HDD-xfs-64G-1024f-seqrewr-sync
-
-      v3.15-rc8  cec017ed87c7e5298fabaf171
----------------  -------------------------
-      6522 ~ 0%     -35.9%       4183 ~ 0%  TOTAL fileio.requests_per_sec
-     26744 ~11%     -87.8%       3251 ~ 0%  TOTAL proc-vmstat.workingset_no=
-dereclaim
-    117412 ~ 0%     -74.7%      29747 ~ 0%  TOTAL proc-vmstat.slabs_scanned
-      1833 ~ 3%     -63.8%        664 ~ 5%  TOTAL proc-vmstat.kswapd_high_w=
-mark_hit_quickly
-      2959 ~ 2%     -45.6%       1610 ~ 2%  TOTAL proc-vmstat.pageoutrun
-   7158189 ~ 0%     -39.1%    4359933 ~ 0%  TOTAL proc-vmstat.pgsteal_kswap=
-d_dma32
-   7225747 ~ 0%     -39.0%    4410503 ~ 0%  TOTAL proc-vmstat.pgsteal_kswap=
-d_normal
-   7202579 ~ 0%     -38.8%    4406846 ~ 0%  TOTAL proc-vmstat.pgscan_kswapd=
-_dma32
-   7272151 ~ 0%     -38.7%    4461197 ~ 0%  TOTAL proc-vmstat.pgscan_kswapd=
-_normal
-   3305425 ~ 0%     -37.9%    2052786 ~ 0%  TOTAL cpuidle.C1-SNB.usage
-  15453350 ~ 0%     -36.5%    9816203 ~ 0%  TOTAL proc-vmstat.nr_written
-  15454708 ~ 0%     -36.6%    9790561 ~ 0%  TOTAL proc-vmstat.pgfree
-  61898955 ~ 0%     -36.4%   39352814 ~ 0%  TOTAL proc-vmstat.pgpgout
-     62643 ~ 0%     -35.9%      40129 ~ 0%  TOTAL softirqs.BLOCK
-  15654950 ~ 0%     -35.9%   10040787 ~ 0%  TOTAL proc-vmstat.nr_dirtied
-  16729217 ~ 0%     -33.9%   11065396 ~ 0%  TOTAL proc-vmstat.numa_hit
-  16729217 ~ 0%     -33.9%   11065396 ~ 0%  TOTAL proc-vmstat.numa_local
-   8354814 ~ 0%     -33.8%    5534438 ~ 0%  TOTAL proc-vmstat.pgalloc_dma32
-   8419660 ~ 0%     -33.8%    5575636 ~ 0%  TOTAL proc-vmstat.pgalloc_normal
-  42342300 ~ 3%     -31.0%   29195355 ~ 3%  TOTAL cpuidle.C3-SNB.time
-  40089990 ~ 3%     -28.1%   28834724 ~ 2%  TOTAL cpuidle.C1E-SNB.time
-     26312 ~ 3%     -27.6%      19054 ~ 2%  TOTAL cpuidle.C3-SNB.usage
-     38112 ~ 3%     -19.3%      30755 ~ 1%  TOTAL cpuidle.C1E-SNB.usage
-      1122 ~ 1%     +11.2%       1248 ~ 3%  TOTAL proc-vmstat.pgactivate
-    330418 ~ 4%     -11.7%     291792 ~ 1%  TOTAL cpuidle.C6-SNB.usage
-       650 ~11%     +69.8%       1103 ~ 0%  TOTAL iostat.sda.w_await
-       650 ~11%     +69.8%       1103 ~ 0%  TOTAL iostat.sda.await
-   3540598 ~ 0%     -35.9%    2269116 ~ 0%  TOTAL time.voluntary_context_sw=
-itches
- 1.252e+08 ~ 0%     -35.9%   80326643 ~ 0%  TOTAL time.file_system_outputs
-     94546 ~11%     -31.3%      64935 ~ 0%  TOTAL iostat.sda.wkB/s
-       186 ~11%     -31.3%        128 ~ 0%  TOTAL iostat.sda.w/s
-     94678 ~11%     -31.3%      65072 ~ 0%  TOTAL vmstat.io.bo
-     50.09 ~ 0%     -34.6%      32.75 ~ 0%  TOTAL time.system_time
-     11273 ~11%     -29.4%       7964 ~ 0%  TOTAL vmstat.system.cs
-      1.56 ~11%     -27.8%       1.12 ~ 0%  TOTAL iostat.sda.wrqm/s
-    131.77 ~11%      +8.1%     142.40 ~ 0%  TOTAL iostat.sda.avgqu-sz
-       662 ~14%      -9.0%        602 ~ 0%  TOTAL time.elapsed_time
-
-Legend:
-	~XX%    - stddev percent
-	[+-]XX% - change percent
-
-
-                                time.system_time
-
-  55 ++--------------------------------------------------------------------=
--+
-     |                                                                     =
- |
-  50 *+...*...*....*....*....*...*                                         =
- |
-  45 ++                                                                    =
- |
-     |                                                                     =
- |
-  40 ++                                                                    =
- |
-     |                                                                     =
- |
-  35 ++                                                                    =
- |
-     |                       O   O    O    O    O   O    O    O    O   O   =
- O
-  30 ++                                                                    =
- |
-  25 ++                                                                    =
- |
-     |                                                                     =
- |
-  20 ++                                                                    =
- |
-     O    O   O    O    O                                                  =
- |
-  15 ++--------------------------------------------------------------------=
--+
-
-
-                            time.voluntary_context_switches
-
-    4e+06 ++---------------------------------------------------------------=
--+
-          |                                                                =
- |
-  3.5e+06 *+..*....*...*....*...*...*                                      =
- |
-    3e+06 ++                                                               =
- |
-          |                                                                =
- |
-  2.5e+06 ++                                                               =
- |
-          |                     O   O    O   O    O   O   O    O   O    O  =
- O
-    2e+06 ++                                                               =
- |
-          |                                                                =
- |
-  1.5e+06 ++                                                               =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          O   O    O   O    O                                              =
- |
-        0 ++---------------------------------------------------------------=
--+
-
-
-                               time.file_system_outputs
-
-   1.3e+08 ++--------------------------------------------------------------=
--+
-  1.25e+08 *+..*....*...*...*....*...*                                     =
- |
-           |                                                               =
- |
-   1.2e+08 ++                                                              =
- |
-  1.15e+08 ++                                                              =
- |
-           |                                                               =
- |
-   1.1e+08 ++                                                              =
- |
-  1.05e+08 ++                                                              =
- |
-     1e+08 ++                                                              =
- |
-           |                                                               =
- |
-   9.5e+07 ++                                                              =
- |
-     9e+07 ++                                                              =
- |
-           |                                                               =
- |
-   8.5e+07 ++                                                              =
- |
-     8e+07 O+--O----O---O---O----O---O---O----O---O---O----O---O---O----O--=
--O
-
-
-                              fileio.requests_per_sec
-
-  7000 ++------------------------------------------------------------------=
--+
-       |                                                                   =
- |
-  6500 *+...*...*....*...*....*....*                                       =
- |
-       |                                                                   =
- |
-       |                                                                   =
- |
-  6000 ++                                                                  =
- |
-       |                                                                   =
- |
-  5500 ++                                                                  =
- |
-       |                                                                   =
- |
-  5000 ++                                                                  =
- |
-       |                                                                   =
- |
-       |                                                                   =
- |
-  4500 ++                                                                  =
- |
-       O    O   O    O   O    O    O   O    O   O    O    O   O    O   O   =
- O
-  4000 ++------------------------------------------------------------------=
--+
-
-
-                                 iostat.sda.await
-
-  1200 ++------------------------------------------------------------------=
--+
-       |                                                                   =
- |
-  1100 O+   O   O    O   O    O    O   O    O   O    O    O   O    O   O   =
- O
-  1000 ++                                                                  =
- |
-       |                                                                   =
- |
-   900 ++                                                                  =
- |
-       |                                                                   =
- |
-   800 ++                                                                  =
- |
-       |                                                                   =
- |
-   700 ++ ..*...*....*...*.        *                                       =
- |
-   600 *+.                 ..     .                                        =
- |
-       |                     .  ..                                         =
- |
-   500 ++                      .                                           =
- |
-       |                      *                                            =
- |
-   400 ++------------------------------------------------------------------=
--+
-
-
-                                iostat.sda.w_await
-
-  1200 ++------------------------------------------------------------------=
--+
-       |                                                                   =
- |
-  1100 O+   O   O    O   O    O    O   O    O   O    O    O   O    O   O   =
- O
-  1000 ++                                                                  =
- |
-       |                                                                   =
- |
-   900 ++                                                                  =
- |
-       |                                                                   =
- |
-   800 ++                                                                  =
- |
-       |                                                                   =
- |
-   700 ++ ..*...*....*...*.        *                                       =
- |
-   600 *+.                 ..     .                                        =
- |
-       |                     .  ..                                         =
- |
-   500 ++                      .                                           =
- |
-       |                      *                                            =
- |
-   400 ++------------------------------------------------------------------=
--+
-
-
-	[*] bisect-good sample
-	[O] bisect-bad  sample
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed for informational purposes only. Any difference in system hardware or so=
-ftware design or configuration may affect actual performance.
-
-Thanks,
-Fengguang
-
---===============0956708679185827855==--
+--===============9068994552268907562==--
 
