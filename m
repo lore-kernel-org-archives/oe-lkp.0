@@ -1,74 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============0772205342452726714=="
+Content-Type: multipart/mixed; boundary="===============1067233753529640362=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Tejun Heo <tj@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [rcu] c0f489d2c6f: -1.5% netperf.Throughput_tps
-Date: Fri, 25 Jul 2014 22:31:24 +0800
-Message-ID: <53D26A3C.6080707@intel.com>
-In-Reply-To: <1406281461.5162.38.camel@marge.simpson.net>
+Subject: Re: [workqueue] WARNING: CPU: 0 PID: 76 at drivers/block/floppy.c:968 schedule_bh()
+Date: Tue, 08 Jul 2014 10:04:30 -0400
+Message-ID: <20140708140430.GE4979@htj.dyndns.org>
+In-Reply-To: <20140708021149.GA12956@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0772205342452726714==
+--===============1067233753529640362==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 07/25/2014 05:44 PM, Mike Galbraith wrote:
-> On Fri, 2014-07-25 at 16:05 +0800, Aaron Lu wrote: =
+(cc'ing Jiri)
 
->> On 07/25/2014 03:35 PM, Mike Galbraith wrote:
->>> On Fri, 2014-07-25 at 14:45 +0800, Aaron Lu wrote: =
-
->>>> FYI, we noticed the below changes on
->>>>
->>>> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mast=
-er
->>>> commit c0f489d2c6fec8994c642c2ec925eb858727dc7b ("rcu: Bind grace-peri=
-od kthreads to non-NO_HZ_FULL CPUs")
->>>>
->>>> abaa93d9e1de2c2  c0f489d2c6fec8994c642c2ec  =
-
->>>> ---------------  -------------------------  =
-
->>>>      12654 ~ 0%      -1.5%      12470 ~ 0%  ivb43/netperf/300s-25%-TCP=
-_CRR
->>>>      12654 ~ 0%      -1.5%      12470 ~ 0%  TOTAL netperf.Throughput_t=
-ps
->>>
->>> Out of curiosity, what parameters do you use for this test?  In my
->>
->> The cmdline for this test is:
->> netperf -t TCP_CRR -c -C -l 300
+On Tue, Jul 08, 2014 at 10:11:49AM +0800, Fengguang Wu wrote:
+> Greetings,
 > =
 
-> Thanks.  That doesn't switch as heftily as plain TCP_RR, but I'd still
-> expect memory layout etc to make bisection frustrating as heck.  But no
-> matter, I was just curious.
-
-The bisect is done by the LKP test system(developed by Fengguang)
-automatically so it's not that painful for me :-) But as you have said,
-the 1.5% change is too small and probably doesn't worth a report, I'll
-be more careful next time when examining the report.
-
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
-> Aside: running unbound, the load may get beaten up pretty bad by nohz if
-> it's enabled.  Maybe for testing the network stack it'd be better to
-> remove that variable?  Dunno, just a thought.  I only mention it because
-
-The CONFIG_NO_HZ_FULL is set to y, I'll disable it to see if the number
-changes, thanks for the tips.
-
-Regards,
-Aaron
-
-> your numbers look very low unless the box is ancient or CPU is dinky.
+> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> commit b22ce2785d97423846206cceec4efee0c4afd980
+> Author:     Tejun Heo <tj@kernel.org>
+> AuthorDate: Wed Aug 28 17:33:37 2013 -0400
+> Commit:     Tejun Heo <tj@kernel.org>
+> CommitDate: Thu Aug 29 09:19:28 2013 -0400
 > =
 
-> -Mike
-> =
+>     workqueue: cond_resched() after processing each work item
+...
+> [   45.121121] PCI: setting IRQ 11 as level-triggered
+> [   45.407538] e1000 0000:00:03.0: setting latency timer to 64
+> [   45.686040] ------------[ cut here ]------------
+> [   45.975060] WARNING: CPU: 0 PID: 76 at drivers/block/floppy.c:968 sche=
+dule_bh+0x47/0x80()
+> [   47.312537] CPU: 0 PID: 76 Comm: kworker/u2:1 Not tainted 3.11.0-rc7-0=
+0025-gb22ce27 #8
+> [   47.848171] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S Bochs 01/01/2011
+> [   48.433222] Workqueue: events_unbound async_run_entry_fn
+> [   48.725491]  00000000 d25d7e0c c2745b10 d25d7e3c c105472d c2ff0b10 000=
+00000 0000004c
+> [   49.494639]  c30df57c 000003c8 c1a2fb57 c1a2fb57 00000001 c1a33aa0 c39=
+a0ca0 d25d7e4c
+> [   51.548252]  c1054812 00000009 00000000 d25d7e5c c1a2fb57 00000000 000=
+00000 d25d7e84
+> [   56.319716] Call Trace:
+> [   58.164457]  [<c2745b10>] dump_stack+0x16/0x18
+> [   61.355641]  [<c105472d>] warn_slowpath_common+0x8d/0xb0
+> [   62.920432]  [<c1054812>] warn_slowpath_null+0x22/0x30
+> [   63.411821]  [<c1a2fb57>] schedule_bh+0x47/0x80
+> [   66.271423]  [<c1a33ed5>] wait_til_done+0x15/0x230
+> [   75.990887]  [<c1a348d7>] user_reset_fdc+0xa7/0x110
+> [   78.921153]  [<c384c939>] floppy_async_init+0x9ee/0x1263
+> [   83.512228]  [<c108a0e4>] async_run_entry_fn+0x44/0x1e0
+> [   89.499077]  [<c1075f5b>] process_one_work+0x33b/0x840
+> [   91.634105]  [<c1076874>] worker_thread+0x414/0x890
+> [   92.265965]  [<c1080ba6>] kthread+0xa6/0xb0
+> [   92.658144]  [<c2763f57>] ret_from_kernel_thread+0x1b/0x28
+> [   93.254541] ---[ end trace 857f8343e4eb716b ]---
+> [   93.508601] floppy0: no floppy controllers found
 
+Hmmm... this is schedule_bh() in floppy.c complaining that the work
+item is already pending.  The cond_resched() addition by b22ce2785d97
+doesn't change the semantics around work item execution although it
+could have exposed an existing problem in the floppy driver.  I'll
+look into how this could happen.
 
+Thanks.
 
---===============0772205342452726714==--
+-- =
+
+tejun
+
+--===============1067233753529640362==--
 
