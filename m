@@ -1,160 +1,232 @@
-Content-Type: multipart/mixed; boundary="===============2817541374684694906=="
+Content-Type: multipart/mixed; boundary="===============4006462317708039993=="
 MIME-Version: 1.0
-From: Jiang Liu <jiang.liu@linux.intel.com>
+From: Aaron Lu <aaron.lu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86, irq, ACPI] WARNING: CPU: 13 PID: 11079 at fs/proc/generic.c:521 remove_proc_entry+0x19f/0x1b0()
-Date: Wed, 16 Jul 2014 14:31:08 +0800
-Message-ID: <53C61C2C.2050808@linux.intel.com>
-In-Reply-To: <53C5FD6F.6040907@intel.com>
+Subject: [fix sd bug] cc77bf69aa5: -100.0% dmesg.WARNING:CPU:PID:at_kernel/sched/core.c:build_sched_domain()
+Date: Wed, 16 Jul 2014 16:12:39 +0800
+Message-ID: <53C633F7.3080901@intel.com>
+In-Reply-To: <53c34cec.GHsrFwBByQ4WdFmQ%fengguang.wu@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2817541374684694906==
+--===============4006462317708039993==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Aaron,
-	Thanks for reporting this issue. Yinghai has already posted
-a patch to fix the issue by disabling freeing of irq in case of system
-shutdown. Please refer to:
-https://lkml.org/lkml/2014/6/26/619
+FYI, we noticed the below changes on
 
-Or could you please help to try following patch, which USB free irq
-when shutting down USB controller.
---------------------------------------------------------
-diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
-index 82044b5d6113..efc953119ce2 100644
---- a/drivers/usb/core/hcd-pci.c
-+++ b/drivers/usb/core/hcd-pci.c
-@@ -380,6 +380,8 @@ void usb_hcd_pci_shutdown(struct pci_dev *dev)
-        if (test_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags) &&
-                        hcd->driver->shutdown) {
-                hcd->driver->shutdown(hcd);
-+               if (usb_hcd_is_primary_hcd(hcd) && hcd->irq > 0)
-+                       free_irq(hcd->irq, hcd);
-                pci_disable_device(dev);
-        }
- }
-------------------------------------------------------
-Regards!
-Gerry
+git://bee.sh.intel.com/git/ydu19/linux cc-v4.5-on-3.16-rc2
+commit cc77bf69aa534146fe5aa967dff73f8756045c87 ("fix sd bug")
 
-On 2014/7/16 12:19, Aaron Lu wrote:
-> FYI, we noticed the below changes on
-> =
+0a25ea50beea784  cc77bf69aa534146fe5aa967d  =
 
-> git://internal_merge_and_test_tree devel-athens-arm-201406220544
-> commit 6a38fa0e3c94dfd1394a71a2d47c9c4d47367374 ("x86, irq, ACPI: Release=
- IOAPIC pin when PCI device is disabled")
-> =
+---------------  -------------------------  =
 
-> +----------------------------------------------------------+------------+=
-------------+
-> |                                                          | df334bead7 |=
- 6a38fa0e3c |
-> +----------------------------------------------------------+------------+=
-------------+
-> | boot_successes                                           | 25         |=
- 10         |
-> | early-boot-hang                                          | 1          |=
-            |
-> | boot_failures                                            | 0          |=
- 8          |
-> | WARNING:CPU:PID:at_fs/proc/generic.c:remove_proc_entry() | 0          |=
- 8          |
-> | backtrace:SYSC_reboot                                    | 0          |=
- 8          |
-> | backtrace:SyS_reboot                                     | 0          |=
- 8          |
-> +----------------------------------------------------------+------------+=
-------------+
-> =
+         1 ~ 0%    -100.0%          0 ~ 0%  ivb43/kbuild/50%
+         1 ~ 0%    -100.0%          0 ~ 0%  ivb44/pigz/100%-128K
+         1 ~ 0%    -100.0%          0 ~ 0%  ivb44/pigz/100%-512K
+         1 ~ 0%    -100.0%          0 ~ 0%  ivb44/pigz/25%-128K
+         1 ~ 0%    -100.0%          0 ~ 0%  ivb44/pigz/25%-512K
+         1 ~ 0%    -100.0%          0 ~ 0%  lkp-ne02/fio-jbod/12HDD-ext4-ra=
+ndwrite-sync-64k
+         1 ~ 0%    -100.0%          0 ~ 0%  loslunas/unixbench/fsbuffer
+         1 ~ 0%    -100.0%          0 ~ 0%  loslunas/unixbench/fsdisk
+         1 ~ 0%    -100.0%          0 ~ 0%  loslunas/unixbench/fstime
+         1 ~ 0%    -100.0%          0 ~ 0%  nhm-white/unixbench/fsdisk
+        10 ~ 0%    -100.0%          0 ~ 0%  TOTAL dmesg.WARNING:CPU:PID:at_=
+kernel/sched/core.c:build_sched_domain()
 
-> =
 
-> kexecing...
-> kexec -l /tmp//kernel/x86_64-rhel/aab037e6194df2251b558935d1ed497678a28a9=
-8/vmlinuz-3.16.0-rc5-01780-gaab037e --initrd=3D/tmp/initrd-10749 --append=
-=3D"user=3Dlkp job=3D/lkp/scheduled/ivb43/cyclic_netperf-300s-25%-SCTP_STRE=
-AM-HEAD-aab037e6194df2251b558935d1ed497678a28a98.yaml ARCH=3Dx86_64 BOOT_IM=
-AGE=3D/kernel/x86_64-rhel/aab037e6194df2251b558935d1ed497678a28a98/vmlinuz-=
-3.16.0-rc5-01780-gaab037e kconfig=3Dx86_64-rhel commit=3Daab037e6194df2251b=
-558935d1ed497678a28a98 initrd=3D/kernel-tests/initrd/lkp-rootfs.cgz root=3D=
-/dev/ram0 bm_initrd=3D/lkp/benchmarks/netperf.cgz modules_initrd=3D/kernel/=
-x86_64-rhel/aab037e6194df2251b558935d1ed497678a28a98/modules.cgz max_uptime=
-=3D1500 RESULT_ROOT=3D/result/ivb43/netperf/300s-25%-SCTP_STREAM/x86_64-rhe=
-l/aab037e6194df2251b558935d1ed497678a28a98/0 ip=3D::::ivb43::dhcp oops=3Dpa=
-nic earlyprintk=3DttyS0,115200 debug apic=3Ddebug sysrq_always_enabled rcup=
-date.rcu_cpu_stall_timeout=3D100 panic=3D10 softlockup_panic=3D1 nmi_watchd=
-og=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 console=3DttyS0,115200 cons
-ole=3D
-> tty0 vga=3Dnormal"
-> [  337.887999] remove_proc_entry: removing non-empty directory 'irq/20', =
-leaking at least 'ehci_hcd:usb2'
-> [  337.898418] Modules linked in: sctp ipmi_watchdog dm_mod fuse mgag200 =
-syscopyarea sysfillrect snd_pcm sysimgblt ttm snd_timer ahci drm_kms_helper=
- libahci snd sb_edac soundcore libata drm edac_core i2c_i801 pcspkr wmi ipm=
-i_si ipmi_msghandler
-> [  337.922594] CPU: 37 PID: 11079 Comm: kexec Not tainted 3.16.0-rc5-0178=
-0-gaab037e #1
-> [  337.931164] Hardware name: Intel Corporation S2600WP/S2600WP, BIOS SE5=
-C600.86B.02.02.0002.122320131210 12/23/2013
-> [  337.942650]  0000000000000009 ffff880ffd1e3b30 ffffffff8182cb42 ffff88=
-0ffd1e3b78
-> [  337.950976]  ffff880ffd1e3b68 ffffffff8106d0cd ffff8808108e3a00 000000=
-0000000002
-> [  337.959316]  ffff880ffd1e3c3e ffff880801a60ab0 ffff8808108e3a75 ffff88=
-0ffd1e3bc8
-> [  337.967653] Call Trace:
-> [  337.970396]  [<ffffffff8182cb42>] dump_stack+0x4d/0x66
-> [  337.976153]  [<ffffffff8106d0cd>] warn_slowpath_common+0x7d/0xa0
-> [  337.982867]  [<ffffffff8106d13c>] warn_slowpath_fmt+0x4c/0x50
-> [  337.989303]  [<ffffffff81233ccf>] remove_proc_entry+0x19f/0x1b0
-> [  337.995931]  [<ffffffff810d111f>] unregister_irq_proc+0xbf/0xd0
-> [  338.002558]  [<ffffffff810cb031>] free_desc+0x31/0x90
-> [  338.008212]  [<ffffffff810cb0cc>] irq_free_descs+0x3c/0x80
-> [  338.014354]  [<ffffffff810d08b6>] irq_dispose_mapping+0x36/0x50
-> [  338.020983]  [<ffffffff8104b741>] mp_unmap_irq+0x81/0xb0
-> [  338.026932]  [<ffffffff81041ed1>] acpi_unregister_gsi_ioapic+0x31/0x40
-> [  338.034239]  [<ffffffff81041dd7>] acpi_unregister_gsi+0x17/0x20
-> [  338.040869]  [<ffffffff814546a5>] acpi_pci_irq_disable+0x8f/0x98
-> [  338.047594]  [<ffffffff816dbaa0>] pcibios_disable_device+0x20/0x30
-> [  338.054517]  [<ffffffff81411e72>] do_pci_disable_device+0x52/0x60
-> [  338.061338]  [<ffffffff81411ec8>] pci_disable_device+0x48/0xb0
-> [  338.067870]  [<ffffffff8162004f>] usb_hcd_pci_shutdown+0x3f/0x50
-> [  338.074593]  [<ffffffff81413f96>] pci_device_shutdown+0x36/0x70
-> [  338.081222]  [<ffffffff814e2a38>] device_shutdown+0xc8/0x180
-> [  338.087558]  [<ffffffff810966f6>] kernel_restart_prepare+0x36/0x40
-> [  338.094479]  [<ffffffff810f150f>] kernel_kexec+0x15f/0x180
-> [  338.100620]  [<ffffffff81096ae5>] SYSC_reboot+0x215/0x240
-> [  338.106667]  [<ffffffff811de9a4>] ? dentry_free+0x34/0x40
-> [  338.112710]  [<ffffffff811dfa23>] ? __dentry_kill+0x153/0x1e0
-> [  338.119146]  [<ffffffff811dfb55>] ? dput+0xa5/0x180
-> [  338.124608]  [<ffffffff811e8874>] ? mntput+0x24/0x40
-> [  338.130168]  [<ffffffff811cae53>] ? __fput+0x1a3/0x230
-> [  338.135922]  [<ffffffff8108d62c>] ? task_work_run+0xcc/0xe0
-> [  338.142164]  [<ffffffff81013c27>] ? do_notify_resume+0x97/0xb0
-> [  338.148696]  [<ffffffff81096bae>] SyS_reboot+0xe/0x10
-> [  338.154353]  [<ffffffff81835969>] system_call_fastpath+0x16/0x1b
-> [  338.161078] ---[ end trace 658129a0d50846f5 ]---
-> [  338.166362] ------------[ cut here ]------------
-> =
+Legend:
+	~XX%    - stddev percent
+	[+-]XX% - change percent
 
-> =
 
-> =
+                           time.involuntary_context_switches
 
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
-> =
+  1.6e+06 ++---------------------------------------------------------------=
+-+
+          O  O O  O    O  O O  O  O    O  O O  O  O O  O  O O  O           =
+ |
+  1.4e+06 ++         O              O                                      =
+ |
+          |                                                                =
+ |
+  1.2e+06 ++                                                          .*   =
+ |
+    1e+06 ++                                                       .*.  :  =
+ |
+          |                                                      *.     :  =
+ |
+   800000 ++                                                    +        *.=
+.*
+          *..*.*..*..*.*..*.*..*..*.*..*..*.*..*..*.*..*    *..*           =
+ |
+   600000 ++                                            :   :              =
+ |
+   400000 ++                                            :  :               =
+ |
+          |                                              : :               =
+ |
+   200000 ++                                             : :               =
+ |
+          |                                               :                =
+ |
+        0 ++----------------------------------------------*----------------=
+-+
 
-> Thanks,
-> Aaron
->=20
 
---===============2817541374684694906==--
+         dmesg.WARNING:CPU:PID:at_kernel/sched/core.c:build_sched_domain()
+
+    1 ++-------------------------------------------*--*-*--*--*--*--*-*--*-=
+-*
+      |                                            :                       =
+ |
+      |                                            :                       =
+ |
+  0.8 ++                                          :                        =
+ |
+      |                                           :                        =
+ |
+      |                                           :                        =
+ |
+  0.6 ++                                          :                        =
+ |
+      |                                           :                        =
+ |
+  0.4 ++                                         :                         =
+ |
+      |                                          :                         =
+ |
+      |                                          :                         =
+ |
+  0.2 ++                                         :                         =
+ |
+      |                                         :                          =
+ |
+      |                                         :                          =
+ |
+    0 O+-O--O-O--O--O--O--O-O--O--O--O--O-O--O--O--O--O-O--O--O------------=
+-+
+
+
+               dmesg.IP-Config:Auto-configuration_of_network_failed
+
+    1 ++------------------------------------------------*------------------=
+-+
+      |                                                 :                  =
+ |
+      |                                                 :                  =
+ |
+  0.8 ++                                                ::                 =
+ |
+      |                                                : :                 =
+ |
+      |                                                : :                 =
+ |
+  0.6 ++                                               : :                 =
+ |
+      |                                                :  :                =
+ |
+  0.4 ++                                               :  :                =
+ |
+      |                                                :  :                =
+ |
+      |                                                :  :                =
+ |
+  0.2 ++                                              :   :                =
+ |
+      |                                               :    :               =
+ |
+      |                                               :    :               =
+ |
+    0 O+-O--O-O--O--O--O--O-O--O--O--O--O-O--O--O--O--O-O--O--O--*--*-*--*-=
+-*
+
+
+	[*] bisect-good sample
+	[O] bisect-bad  sample
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
+
+Thanks,
+Aaron
+
+--===============4006462317708039993==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.ksh"
+
+ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTAvY3B1ZnJlcS9z
+Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
+dS9jcHUxL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
+ZXZpY2VzL3N5c3RlbS9jcHUvY3B1MTAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVy
+Zm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxMS9jcHVmcmVxL3NjYWxpbmdf
+Z292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTEy
+L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2Vz
+L3N5c3RlbS9jcHUvY3B1MTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFu
+Y2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJu
+b3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE1L2NwdWZy
+ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1MTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
+c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNy9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
+byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE4L2NwdWZyZXEvc2Nh
+bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
+Y3B1MTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
+dmljZXMvc3lzdGVtL2NwdS9jcHUyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZv
+cm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjAvY3B1ZnJlcS9zY2FsaW5nX2dv
+dmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyMS9j
+cHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9z
+eXN0ZW0vY3B1L2NwdTIyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNl
+ID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9y
+CmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNC9jcHVmcmVx
+L3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0v
+Y3B1L2NwdTI1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5
+cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8g
+cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNy9jcHVmcmVxL3NjYWxp
+bmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2Nw
+dTI4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
+Y2VzL3N5c3RlbS9jcHUvY3B1MjkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
+bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUzL2NwdWZyZXEvc2NhbGluZ19nb3Zl
+cm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzAvY3B1
+ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lz
+dGVtL2NwdS9jcHUzMS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+
+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTMyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgpl
+Y2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzMvY3B1ZnJlcS9z
+Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
+dS9jcHUzNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMv
+ZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTM1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBl
+cmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzYvY3B1ZnJlcS9zY2FsaW5n
+X2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUz
+Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNl
+cy9zeXN0ZW0vY3B1L2NwdTM4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1h
+bmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVy
+bm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU0L2NwdWZy
+ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1NDAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
+c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU0MS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
+byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQyL2NwdWZyZXEvc2Nh
+bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
+Y3B1NDMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
+dmljZXMvc3lzdGVtL2NwdS9jcHU0NC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJm
+b3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQ1L2NwdWZyZXEvc2NhbGluZ19n
+b3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NDYv
+Y3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMv
+c3lzdGVtL2NwdS9jcHU0Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5j
+ZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTUvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9y
+CmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU2L2NwdWZyZXEv
+c2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9j
+cHUvY3B1Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMv
+ZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTgvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVy
+Zm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU5L2NwdWZyZXEvc2NhbGluZ19n
+b3Zlcm5vcgoK
+
+--===============4006462317708039993==--
 
