@@ -1,170 +1,27 @@
-Content-Type: multipart/mixed; boundary="===============5453682192380941470=="
+Content-Type: multipart/mixed; boundary="===============0427345016440797796=="
 MIME-Version: 1.0
-From: Jiang Liu <jiang.liu@linux.intel.com>
+From: Andi Kleen <ak@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86, irq, ACPI] WARNING: CPU: 13 PID: 11079 at fs/proc/generic.c:521 remove_proc_entry+0x19f/0x1b0()
-Date: Mon, 21 Jul 2014 10:15:44 +0800
-Message-ID: <53CC77D0.8070704@linux.intel.com>
-In-Reply-To: <53C8CFC7.7080106@intel.com>
+Subject: Re: [Tree sweep] BUG: sleeping function called from invalid context at include/linux/highmem.h:58
+Date: Sun, 20 Jul 2014 22:19:27 -0700
+Message-ID: <20140721051927.GR5803@tassilo.jf.intel.com>
+In-Reply-To: <53CC6872.70402@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5453682192380941470==
+--===============0427345016440797796==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Thanks for testing, Aaron.
-
-On 2014/7/18 15:41, Aaron Lu wrote:
-> On 07/16/2014 02:31 PM, Jiang Liu wrote:
->> Hi Aaron,
->> 	Thanks for reporting this issue. Yinghai has already posted
->> a patch to fix the issue by disabling freeing of irq in case of system
->> shutdown. Please refer to:
->> https://lkml.org/lkml/2014/6/26/619
->>
->> Or could you please help to try following patch, which USB free irq
->> when shutting down USB controller.
+On Mon, Jul 21, 2014 at 09:10:10AM +0800, Jet Chen wrote:
+> Hi Andi,
 > =
 
-> Yes, the patch makes the warning gone.
-> =
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 
-> Regards,
-> Aaron
-> =
+Thanks. That branch is not quite ready yet.
 
->> --------------------------------------------------------
->> diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
->> index 82044b5d6113..efc953119ce2 100644
->> --- a/drivers/usb/core/hcd-pci.c
->> +++ b/drivers/usb/core/hcd-pci.c
->> @@ -380,6 +380,8 @@ void usb_hcd_pci_shutdown(struct pci_dev *dev)
->>         if (test_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags) &&
->>                         hcd->driver->shutdown) {
->>                 hcd->driver->shutdown(hcd);
->> +               if (usb_hcd_is_primary_hcd(hcd) && hcd->irq > 0)
->> +                       free_irq(hcd->irq, hcd);
->>                 pci_disable_device(dev);
->>         }
->>  }
->> ------------------------------------------------------
->> Regards!
->> Gerry
->>
->> On 2014/7/16 12:19, Aaron Lu wrote:
->>> FYI, we noticed the below changes on
->>>
->>> git://internal_merge_and_test_tree devel-athens-arm-201406220544
->>> commit 6a38fa0e3c94dfd1394a71a2d47c9c4d47367374 ("x86, irq, ACPI: Relea=
-se IOAPIC pin when PCI device is disabled")
->>>
->>> +----------------------------------------------------------+-----------=
--+------------+
->>> |                                                          | df334bead7=
- | 6a38fa0e3c |
->>> +----------------------------------------------------------+-----------=
--+------------+
->>> | boot_successes                                           | 25        =
- | 10         |
->>> | early-boot-hang                                          | 1         =
- |            |
->>> | boot_failures                                            | 0         =
- | 8          |
->>> | WARNING:CPU:PID:at_fs/proc/generic.c:remove_proc_entry() | 0         =
- | 8          |
->>> | backtrace:SYSC_reboot                                    | 0         =
- | 8          |
->>> | backtrace:SyS_reboot                                     | 0         =
- | 8          |
->>> +----------------------------------------------------------+-----------=
--+------------+
->>>
->>>
->>> kexecing...
->>> kexec -l /tmp//kernel/x86_64-rhel/aab037e6194df2251b558935d1ed497678a28=
-a98/vmlinuz-3.16.0-rc5-01780-gaab037e --initrd=3D/tmp/initrd-10749 --append=
-=3D"user=3Dlkp job=3D/lkp/scheduled/ivb43/cyclic_netperf-300s-25%-SCTP_STRE=
-AM-HEAD-aab037e6194df2251b558935d1ed497678a28a98.yaml ARCH=3Dx86_64 BOOT_IM=
-AGE=3D/kernel/x86_64-rhel/aab037e6194df2251b558935d1ed497678a28a98/vmlinuz-=
-3.16.0-rc5-01780-gaab037e kconfig=3Dx86_64-rhel commit=3Daab037e6194df2251b=
-558935d1ed497678a28a98 initrd=3D/kernel-tests/initrd/lkp-rootfs.cgz root=3D=
-/dev/ram0 bm_initrd=3D/lkp/benchmarks/netperf.cgz modules_initrd=3D/kernel/=
-x86_64-rhel/aab037e6194df2251b558935d1ed497678a28a98/modules.cgz max_uptime=
-=3D1500 RESULT_ROOT=3D/result/ivb43/netperf/300s-25%-SCTP_STREAM/x86_64-rhe=
-l/aab037e6194df2251b558935d1ed497678a28a98/0 ip=3D::::ivb43::dhcp oops=3Dpa=
-nic earlyprintk=3DttyS0,115200 debug apic=3Ddebug sysrq_always_enabled rcup=
-date.rcu_cpu_stall_timeout=3D100 panic=3D10 softlockup_panic=3D1 nmi_watchd=
-og=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 console=3DttyS0,115200 co
-ns
-> =
+-Andi
 
->> ole=3D
->>> tty0 vga=3Dnormal"
->>> [  337.887999] remove_proc_entry: removing non-empty directory 'irq/20'=
-, leaking at least 'ehci_hcd:usb2'
->>> [  337.898418] Modules linked in: sctp ipmi_watchdog dm_mod fuse mgag20=
-0 syscopyarea sysfillrect snd_pcm sysimgblt ttm snd_timer ahci drm_kms_help=
-er libahci snd sb_edac soundcore libata drm edac_core i2c_i801 pcspkr wmi i=
-pmi_si ipmi_msghandler
->>> [  337.922594] CPU: 37 PID: 11079 Comm: kexec Not tainted 3.16.0-rc5-01=
-780-gaab037e #1
->>> [  337.931164] Hardware name: Intel Corporation S2600WP/S2600WP, BIOS S=
-E5C600.86B.02.02.0002.122320131210 12/23/2013
->>> [  337.942650]  0000000000000009 ffff880ffd1e3b30 ffffffff8182cb42 ffff=
-880ffd1e3b78
->>> [  337.950976]  ffff880ffd1e3b68 ffffffff8106d0cd ffff8808108e3a00 0000=
-000000000002
->>> [  337.959316]  ffff880ffd1e3c3e ffff880801a60ab0 ffff8808108e3a75 ffff=
-880ffd1e3bc8
->>> [  337.967653] Call Trace:
->>> [  337.970396]  [<ffffffff8182cb42>] dump_stack+0x4d/0x66
->>> [  337.976153]  [<ffffffff8106d0cd>] warn_slowpath_common+0x7d/0xa0
->>> [  337.982867]  [<ffffffff8106d13c>] warn_slowpath_fmt+0x4c/0x50
->>> [  337.989303]  [<ffffffff81233ccf>] remove_proc_entry+0x19f/0x1b0
->>> [  337.995931]  [<ffffffff810d111f>] unregister_irq_proc+0xbf/0xd0
->>> [  338.002558]  [<ffffffff810cb031>] free_desc+0x31/0x90
->>> [  338.008212]  [<ffffffff810cb0cc>] irq_free_descs+0x3c/0x80
->>> [  338.014354]  [<ffffffff810d08b6>] irq_dispose_mapping+0x36/0x50
->>> [  338.020983]  [<ffffffff8104b741>] mp_unmap_irq+0x81/0xb0
->>> [  338.026932]  [<ffffffff81041ed1>] acpi_unregister_gsi_ioapic+0x31/0x=
-40
->>> [  338.034239]  [<ffffffff81041dd7>] acpi_unregister_gsi+0x17/0x20
->>> [  338.040869]  [<ffffffff814546a5>] acpi_pci_irq_disable+0x8f/0x98
->>> [  338.047594]  [<ffffffff816dbaa0>] pcibios_disable_device+0x20/0x30
->>> [  338.054517]  [<ffffffff81411e72>] do_pci_disable_device+0x52/0x60
->>> [  338.061338]  [<ffffffff81411ec8>] pci_disable_device+0x48/0xb0
->>> [  338.067870]  [<ffffffff8162004f>] usb_hcd_pci_shutdown+0x3f/0x50
->>> [  338.074593]  [<ffffffff81413f96>] pci_device_shutdown+0x36/0x70
->>> [  338.081222]  [<ffffffff814e2a38>] device_shutdown+0xc8/0x180
->>> [  338.087558]  [<ffffffff810966f6>] kernel_restart_prepare+0x36/0x40
->>> [  338.094479]  [<ffffffff810f150f>] kernel_kexec+0x15f/0x180
->>> [  338.100620]  [<ffffffff81096ae5>] SYSC_reboot+0x215/0x240
->>> [  338.106667]  [<ffffffff811de9a4>] ? dentry_free+0x34/0x40
->>> [  338.112710]  [<ffffffff811dfa23>] ? __dentry_kill+0x153/0x1e0
->>> [  338.119146]  [<ffffffff811dfb55>] ? dput+0xa5/0x180
->>> [  338.124608]  [<ffffffff811e8874>] ? mntput+0x24/0x40
->>> [  338.130168]  [<ffffffff811cae53>] ? __fput+0x1a3/0x230
->>> [  338.135922]  [<ffffffff8108d62c>] ? task_work_run+0xcc/0xe0
->>> [  338.142164]  [<ffffffff81013c27>] ? do_notify_resume+0x97/0xb0
->>> [  338.148696]  [<ffffffff81096bae>] SyS_reboot+0xe/0x10
->>> [  338.154353]  [<ffffffff81835969>] system_call_fastpath+0x16/0x1b
->>> [  338.161078] ---[ end trace 658129a0d50846f5 ]---
->>> [  338.166362] ------------[ cut here ]------------
->>>
->>>
->>>
->>> Disclaimer:
->>> Results have been estimated based on internal Intel analysis and are pr=
-ovided
->>> for informational purposes only. Any difference in system hardware or s=
-oftware
->>> design or configuration may affect actual performance.
->>>
->>> Thanks,
->>> Aaron
->>>
->=20
-
---===============5453682192380941470==--
+--===============0427345016440797796==--
 
