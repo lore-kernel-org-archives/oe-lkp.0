@@ -1,129 +1,111 @@
-Content-Type: multipart/mixed; boundary="===============8271401254923422435=="
+Content-Type: multipart/mixed; boundary="===============7381250891829090021=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Tom Herbert <therbert@google.com>
 To: lkp@lists.01.org
-Subject: [net] 11ef7a8996d: +27.3% netperf.Throughput_Mbps
-Date: Fri, 25 Jul 2014 14:31:17 +0800
-Message-ID: <53D1F9B5.8050500@intel.com>
-In-Reply-To: <53d1f50b.CEZoGFBjN5Kgc+zm%fengguang.wu@intel.com>
+Subject: Re: [net] 11ef7a8996d: +27.3% netperf.Throughput_Mbps
+Date: Thu, 24 Jul 2014 23:37:07 -0700
+Message-ID: <CA+mtBx-26J=r_aH0Y72ghRhDpUCbEzRxkrA1Xmtame_msHKnUQ@mail.gmail.com>
+In-Reply-To: <53D1F9B5.8050500@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8271401254923422435==
+--===============7381250891829090021==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
+Are you pointing out a regressions in this?
 
-commit 11ef7a8996d5d433c9cd75d80651297eccbf6d42 ("net: Performance fix for =
-process_backlog")
+On Thu, Jul 24, 2014 at 11:31 PM, Aaron Lu <aaron.lu@intel.com> wrote:
+> FYI, we noticed the below changes on
+>
+> commit 11ef7a8996d5d433c9cd75d80651297eccbf6d42 ("net: Performance fix fo=
+r process_backlog")
+>
+> test case: lkp-t410/netperf/300s-200%-10K-SCTP_STREAM_MANY
+>
+> 68b7107b62983f2  11ef7a8996d5d433c9cd75d80
+> ---------------  -------------------------
+>       1023 ~ 3%     +27.3%       1302 ~ 0%  TOTAL netperf.Throughput_Mbps
+>       0.72 ~10%     -91.4%       0.06 ~23%  TOTAL turbostat.%c3
+>      13385 ~12%     -92.6%        987 ~12%  TOTAL cpuidle.C6-NHM.usage
+>      22745 ~10%     -95.5%       1016 ~40%  TOTAL cpuidle.C3-NHM.usage
+>   42675736 ~12%     -84.6%    6571705 ~19%  TOTAL cpuidle.C6-NHM.time
+>      88342 ~11%     -82.1%      15811 ~ 9%  TOTAL softirqs.SCHED
+>   19148006 ~12%     -95.7%     821873 ~27%  TOTAL cpuidle.C3-NHM.time
+>     439.94 ~10%     -77.5%      99.05 ~ 5%  TOTAL uptime.idle
+>       1.35 ~ 6%     -65.8%       0.46 ~24%  TOTAL turbostat.%c6
+>          4 ~23%    +114.3%          9 ~ 0%  TOTAL vmstat.procs.r
+>       1680 ~ 3%     +40.4%       2359 ~ 3%  TOTAL proc-vmstat.nr_alloc_ba=
+tch
+>     447921 ~ 4%     +36.2%     610047 ~ 0%  TOTAL softirqs.TIMER
+>       9.09 ~ 9%     +27.6%      11.60 ~ 8%  TOTAL perf-profile.cpu-cycles=
+.memcpy.sctp_outq_flush.sctp_outq_uncork.sctp_cmd_interpreter.sctp_do_sm
+>    2350916 ~ 4%     +35.4%    3184088 ~ 0%  TOTAL proc-vmstat.pgalloc_dma
+>       7.82 ~ 9%     +24.1%       9.71 ~ 4%  TOTAL perf-profile.cpu-cycles=
+.copy_user_generic_string.sctp_user_addto_chunk.sctp_datamsg_from_user.sctp=
+_sendmsg.inet_sendmsg
+>   38837537 ~ 3%     +27.1%   49358639 ~ 0%  TOTAL proc-vmstat.numa_local
+>   38837537 ~ 3%     +27.1%   49358639 ~ 0%  TOTAL proc-vmstat.numa_hit
+>      50216 ~ 1%     +17.0%      58745 ~ 6%  TOTAL softirqs.RCU
+>       1.41 ~ 4%     +11.6%       1.58 ~ 1%  TOTAL perf-profile.cpu-cycles=
+.get_page_from_freelist.__alloc_pages_nodemask.alloc_kmem_pages_node.kmallo=
+c_large_node.__kmalloc_node_track_caller
+>      48539 ~ 1%     -25.5%      36171 ~ 1%  TOTAL vmstat.system.cs
+>      75.64 ~ 4%     +30.6%      98.82 ~ 0%  TOTAL turbostat.%c0
+>       3949 ~ 2%     +13.4%       4478 ~ 0%  TOTAL vmstat.system.in
+>
+> Legend:
+>         ~XX%    - stddev percent
+>         [+-]XX% - change percent
+>
+>
+>                                   vmstat.system.cs
+>
+>   52000 ++---------------------------------------------------------------=
+---+
+>   50000 ++  *      .*   *.                   **        *. *  *.          =
+   |
+>         | .* + *.**  *. : **.* .* .**.**. * +  +    *.*  * + : * .**. *. =
+ .**
+>   48000 **    *        *      *  *       * *    * .*        *   *    *  *=
+*  |
+>   46000 ++                                       *                       =
+   |
+>         |                                                                =
+   |
+>   44000 ++                                                               =
+   |
+>   42000 ++                                                               =
+   |
+>   40000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>   38000 +O  O                      O                                     =
+   |
+>   36000 O+    O  O   O  O OO OO OO  O  O   O  O  O OO  O OO O            =
+   |
+>         |  O   O  O O  O                  O           O                  =
+   |
+>   34000 ++                            O  O   O  O                        =
+   |
+>   32000 ++---------------------------------------------------------------=
+---+
+>
+>
+>         [*] bisect-good sample
+>         [O] bisect-bad  sample
+>
+>
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are prov=
+ided
+> for informational purposes only. Any difference in system hardware or sof=
+tware
+> design or configuration may affect actual performance.
+>
+> Thanks,
+> Aaron
 
-test case: lkp-t410/netperf/300s-200%-10K-SCTP_STREAM_MANY
-
-68b7107b62983f2  11ef7a8996d5d433c9cd75d80  =
-
----------------  -------------------------  =
-
-      1023 ~ 3%     +27.3%       1302 ~ 0%  TOTAL netperf.Throughput_Mbps
-      0.72 ~10%     -91.4%       0.06 ~23%  TOTAL turbostat.%c3
-     13385 ~12%     -92.6%        987 ~12%  TOTAL cpuidle.C6-NHM.usage
-     22745 ~10%     -95.5%       1016 ~40%  TOTAL cpuidle.C3-NHM.usage
-  42675736 ~12%     -84.6%    6571705 ~19%  TOTAL cpuidle.C6-NHM.time
-     88342 ~11%     -82.1%      15811 ~ 9%  TOTAL softirqs.SCHED
-  19148006 ~12%     -95.7%     821873 ~27%  TOTAL cpuidle.C3-NHM.time
-    439.94 ~10%     -77.5%      99.05 ~ 5%  TOTAL uptime.idle
-      1.35 ~ 6%     -65.8%       0.46 ~24%  TOTAL turbostat.%c6
-         4 ~23%    +114.3%          9 ~ 0%  TOTAL vmstat.procs.r
-      1680 ~ 3%     +40.4%       2359 ~ 3%  TOTAL proc-vmstat.nr_alloc_batch
-    447921 ~ 4%     +36.2%     610047 ~ 0%  TOTAL softirqs.TIMER
-      9.09 ~ 9%     +27.6%      11.60 ~ 8%  TOTAL perf-profile.cpu-cycles.m=
-emcpy.sctp_outq_flush.sctp_outq_uncork.sctp_cmd_interpreter.sctp_do_sm
-   2350916 ~ 4%     +35.4%    3184088 ~ 0%  TOTAL proc-vmstat.pgalloc_dma
-      7.82 ~ 9%     +24.1%       9.71 ~ 4%  TOTAL perf-profile.cpu-cycles.c=
-opy_user_generic_string.sctp_user_addto_chunk.sctp_datamsg_from_user.sctp_s=
-endmsg.inet_sendmsg
-  38837537 ~ 3%     +27.1%   49358639 ~ 0%  TOTAL proc-vmstat.numa_local
-  38837537 ~ 3%     +27.1%   49358639 ~ 0%  TOTAL proc-vmstat.numa_hit
-     50216 ~ 1%     +17.0%      58745 ~ 6%  TOTAL softirqs.RCU
-      1.41 ~ 4%     +11.6%       1.58 ~ 1%  TOTAL perf-profile.cpu-cycles.g=
-et_page_from_freelist.__alloc_pages_nodemask.alloc_kmem_pages_node.kmalloc_=
-large_node.__kmalloc_node_track_caller
-     48539 ~ 1%     -25.5%      36171 ~ 1%  TOTAL vmstat.system.cs
-     75.64 ~ 4%     +30.6%      98.82 ~ 0%  TOTAL turbostat.%c0
-      3949 ~ 2%     +13.4%       4478 ~ 0%  TOTAL vmstat.system.in
-
-Legend:
-	~XX%    - stddev percent
-	[+-]XX% - change percent
-
-
-                                  vmstat.system.cs
-
-  52000 ++-----------------------------------------------------------------=
--+
-  50000 ++  *      .*   *.                   **        *. *  *.            =
- |
-        | .* + *.**  *. : **.* .* .**.**. * +  +    *.*  * + : * .**. *.  .=
-**
-  48000 **    *        *      *  *       * *    * .*        *   *    *  ** =
- |
-  46000 ++                                       *                         =
- |
-        |                                                                  =
- |
-  44000 ++                                                                 =
- |
-  42000 ++                                                                 =
- |
-  40000 ++                                                                 =
- |
-        |                                                                  =
- |
-  38000 +O  O                      O                                       =
- |
-  36000 O+    O  O   O  O OO OO OO  O  O   O  O  O OO  O OO O              =
- |
-        |  O   O  O O  O                  O           O                    =
- |
-  34000 ++                            O  O   O  O                          =
- |
-  32000 ++-----------------------------------------------------------------=
--+
-
-
-	[*] bisect-good sample
-	[O] bisect-bad  sample
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
-
-Thanks,
-Aaron
-
---===============8271401254923422435==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTAvY3B1ZnJlcS9z
-Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
-dS9jcHUxL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
-ZXZpY2VzL3N5c3RlbS9jcHUvY3B1Mi9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJm
-b3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTMvY3B1ZnJlcS9zY2FsaW5nX2dv
-dmVybm9yCm5ldHNlcnZlcgpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAw
-IC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1t
-IDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpu
-ZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJm
-IC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFND
-VFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RS
-RUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01B
-TlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwoK
-
---===============8271401254923422435==--
+--===============7381250891829090021==--
 
