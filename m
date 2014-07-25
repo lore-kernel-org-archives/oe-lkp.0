@@ -1,41 +1,76 @@
-Content-Type: multipart/mixed; boundary="===============0145286277014056090=="
+Content-Type: multipart/mixed; boundary="===============7609683547457444617=="
 MIME-Version: 1.0
-From: Mike Galbraith <umgwanakikbuti@gmail.com>
+From: Aaron Lu <aaron.lu@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [rcu] c0f489d2c6f: -1.5% netperf.Throughput_tps
-Date: Fri, 25 Jul 2014 09:35:21 +0200
-Message-ID: <1406273721.5162.9.camel@marge.simpson.net>
-In-Reply-To: <53D1FD0E.4080406@intel.com>
+Date: Fri, 25 Jul 2014 16:05:36 +0800
+Message-ID: <53D20FD0.90204@intel.com>
+In-Reply-To: <1406273721.5162.9.camel@marge.simpson.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0145286277014056090==
+--===============7609683547457444617==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2014-07-25 at 14:45 +0800, Aaron Lu wrote: =
+On 07/25/2014 03:35 PM, Mike Galbraith wrote:
+> On Fri, 2014-07-25 at 14:45 +0800, Aaron Lu wrote: =
 
-> FYI, we noticed the below changes on
+>> FYI, we noticed the below changes on
+>>
+>> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+>> commit c0f489d2c6fec8994c642c2ec925eb858727dc7b ("rcu: Bind grace-period=
+ kthreads to non-NO_HZ_FULL CPUs")
+>>
+>> abaa93d9e1de2c2  c0f489d2c6fec8994c642c2ec  =
+
+>> ---------------  -------------------------  =
+
+>>      12654 ~ 0%      -1.5%      12470 ~ 0%  ivb43/netperf/300s-25%-TCP_C=
+RR
+>>      12654 ~ 0%      -1.5%      12470 ~ 0%  TOTAL netperf.Throughput_tps
 > =
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> commit c0f489d2c6fec8994c642c2ec925eb858727dc7b ("rcu: Bind grace-period =
-kthreads to non-NO_HZ_FULL CPUs")
-> =
+> Out of curiosity, what parameters do you use for this test?  In my
 
-> abaa93d9e1de2c2  c0f489d2c6fec8994c642c2ec  =
+The cmdline for this test is:
+netperf -t TCP_CRR -c -C -l 300
 
-> ---------------  -------------------------  =
+> piddling around with high frequency switching loads, they tend to have
+> too much build to build and boot to boot variance to track 1.5%.
 
->      12654 ~ 0%      -1.5%      12470 ~ 0%  ivb43/netperf/300s-25%-TCP_CRR
->      12654 ~ 0%      -1.5%      12470 ~ 0%  TOTAL netperf.Throughput_tps
+The actual results are not 100% stable, here is the values of the 5
+runs:
 
-Out of curiosity, what parameters do you use for this test?  In my
-piddling around with high frequency switching loads, they tend to have
-too much build to build and boot to boot variance to track 1.5%.
+$ cat [0-4]/netperf.json =
 
--Mike
+{
+  "netperf.Throughput_tps": [
+    12674.061666666668
+  ]
+}{
+  "netperf.Throughput_tps": [
+    12705.6325
+  ]
+}{
+  "netperf.Throughput_tps": [
+    12621.97333333333
+  ]
+}{
+  "netperf.Throughput_tps": [
+    12604.785000000002
+  ]
+}{
+  "netperf.Throughput_tps": [
+    12664.158333333333
+  ]
 
+I suppose the way the stddev% is calculated by first calculating the
+average and then compare the individual value with the average.
+Fengguang, is this correct?
 
---===============0145286277014056090==--
+Thanks,
+Aaron
+
+--===============7609683547457444617==--
 
