@@ -1,265 +1,151 @@
-Content-Type: multipart/mixed; boundary="===============4918979587792479787=="
+Content-Type: multipart/mixed; boundary="===============7782026122861390456=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Rik van Riel <riel@redhat.com>
 To: lkp@lists.01.org
-Subject: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
-Date: Tue, 29 Jul 2014 13:24:05 +0800
-Message-ID: <53D72FF5.90908@intel.com>
-In-Reply-To: <53d70ee6.JsUEmW5dWsv8dev+%fengguang.wu@intel.com>
+Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
+Date: Tue, 29 Jul 2014 02:39:40 -0400
+Message-ID: <20140729023940.37b6aebc@annuminas.surriel.com>
+In-Reply-To: <53D72FF5.90908@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4918979587792479787==
+--===============7782026122861390456==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
-
-git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-commit a43455a1d572daf7b730fe12eb747d1e17411365 ("sched/numa: Ensure task_n=
-uma_migrate() checks the preferred node")
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-     94500 ~ 3%    +115.6%     203711 ~ 6%  ivb42/hackbench/50%-threads-pipe
-     67745 ~ 4%     +64.1%     111174 ~ 5%  lkp-snb01/hackbench/50%-threads=
--socket
-    162245 ~ 3%     +94.1%     314885 ~ 6%  TOTAL proc-vmstat.numa_hint_fau=
-lts_local
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-    147474 ~ 3%     +70.6%     251650 ~ 5%  ivb42/hackbench/50%-threads-pipe
-     94889 ~ 3%     +46.3%     138815 ~ 5%  lkp-snb01/hackbench/50%-threads=
--socket
-    242364 ~ 3%     +61.1%     390465 ~ 5%  TOTAL proc-vmstat.numa_pte_upda=
-tes
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-    147104 ~ 3%     +69.5%     249306 ~ 5%  ivb42/hackbench/50%-threads-pipe
-     94431 ~ 3%     +43.9%     135902 ~ 5%  lkp-snb01/hackbench/50%-threads=
--socket
-    241535 ~ 3%     +59.5%     385209 ~ 5%  TOTAL proc-vmstat.numa_hint_fau=
-lts
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-       308 ~ 8%     +24.1%        382 ~ 5%  lkp-snb01/hackbench/50%-threads=
--socket
-       308 ~ 8%     +24.1%        382 ~ 5%  TOTAL numa-vmstat.node0.nr_page=
-_table_pages
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-      1234 ~ 8%     +24.0%       1530 ~ 5%  lkp-snb01/hackbench/50%-threads=
--socket
-      1234 ~ 8%     +24.0%       1530 ~ 5%  TOTAL numa-meminfo.node0.PageTa=
-bles
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-       381 ~ 6%     -17.9%        313 ~ 6%  lkp-snb01/hackbench/50%-threads=
--socket
-       381 ~ 6%     -17.9%        313 ~ 6%  TOTAL numa-vmstat.node1.nr_page=
-_table_pages
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-      1528 ~ 6%     -18.0%       1253 ~ 6%  lkp-snb01/hackbench/50%-threads=
--socket
-      1528 ~ 6%     -18.0%       1253 ~ 6%  TOTAL numa-meminfo.node1.PageTa=
-bles
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-     24533 ~ 2%     -16.2%      20560 ~ 3%  ivb42/hackbench/50%-threads-pipe
-     13551 ~ 2%     -10.7%      12096 ~ 2%  lkp-snb01/hackbench/50%-threads=
--socket
-     38084 ~ 2%     -14.2%      32657 ~ 3%  TOTAL proc-vmstat.numa_pages_mi=
-grated
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-     24533 ~ 2%     -16.2%      20560 ~ 3%  ivb42/hackbench/50%-threads-pipe
-     13551 ~ 2%     -10.7%      12096 ~ 2%  lkp-snb01/hackbench/50%-threads=
--socket
-     38084 ~ 2%     -14.2%      32657 ~ 3%  TOTAL proc-vmstat.pgmigrate_suc=
-cess
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-      3538 ~ 7%     +11.6%       3949 ~ 7%  lkp-snb01/hackbench/50%-threads=
--socket
-      3538 ~ 7%     +11.6%       3949 ~ 7%  TOTAL numa-vmstat.node0.nr_anon=
-_pages
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-     14154 ~ 7%     +11.6%      15799 ~ 7%  lkp-snb01/hackbench/50%-threads=
--socket
-     14154 ~ 7%     +11.6%      15799 ~ 7%  TOTAL numa-meminfo.node0.AnonPa=
-ges
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-      3511 ~ 7%     +11.0%       3898 ~ 7%  lkp-snb01/hackbench/50%-threads=
--socket
-      3511 ~ 7%     +11.0%       3898 ~ 7%  TOTAL numa-vmstat.node0.nr_acti=
-ve_anon
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-     14044 ~ 7%     +11.1%      15597 ~ 7%  lkp-snb01/hackbench/50%-threads=
--socket
-     14044 ~ 7%     +11.1%      15597 ~ 7%  TOTAL numa-meminfo.node0.Active=
-(anon)
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-    187958 ~ 2%     +56.6%     294375 ~ 5%  ivb42/hackbench/50%-threads-pipe
-    124490 ~ 2%     +35.0%     168004 ~ 4%  lkp-snb01/hackbench/50%-threads=
--socket
-    312448 ~ 2%     +48.0%     462379 ~ 5%  TOTAL time.minor_page_faults
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-     11.47 ~ 1%      -2.8%      11.15 ~ 1%  ivb42/hackbench/50%-threads-pipe
-     11.47 ~ 1%      -2.8%      11.15 ~ 1%  TOTAL turbostat.RAM_W
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
- 3.649e+08 ~ 0%      -2.4%  3.562e+08 ~ 0%  lkp-snb01/hackbench/50%-threads=
--socket
- 3.649e+08 ~ 0%      -2.4%  3.562e+08 ~ 0%  TOTAL time.involuntary_context_=
-switches
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-   1924472 ~ 0%      -2.6%    1874425 ~ 0%  ivb42/hackbench/50%-threads-pipe
-   1924472 ~ 0%      -2.6%    1874425 ~ 0%  TOTAL vmstat.system.in
-
-ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
-
----------------  -------------------------  =
-
-  1.38e+09 ~ 0%      -1.8%  1.355e+09 ~ 0%  lkp-snb01/hackbench/50%-threads=
--socket
-  1.38e+09 ~ 0%      -1.8%  1.355e+09 ~ 0%  TOTAL time.voluntary_context_sw=
-itches
-
-
-Legend:
-	~XX%    - stddev percent
-	[+-]XX% - change percent
-
-
-	[*] bisect-good sample
-	[O] bisect-bad  sample
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
-
-Thanks,
-Aaron
-
---===============4918979587792479787==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTAvY3B1ZnJlcS9z
-Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
-dS9jcHUxL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
-ZXZpY2VzL3N5c3RlbS9jcHUvY3B1MTAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVy
-Zm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxMS9jcHVmcmVxL3NjYWxpbmdf
-Z292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTEy
-L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2Vz
-L3N5c3RlbS9jcHUvY3B1MTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFu
-Y2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJu
-b3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE1L2NwdWZy
-ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
-bS9jcHUvY3B1MTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
-c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNy9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
-byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE4L2NwdWZyZXEvc2Nh
-bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
-Y3B1MTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
-dmljZXMvc3lzdGVtL2NwdS9jcHUyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZv
-cm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjAvY3B1ZnJlcS9zY2FsaW5nX2dv
-dmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyMS9j
-cHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9z
-eXN0ZW0vY3B1L2NwdTIyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNl
-ID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9y
-CmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNC9jcHVmcmVx
-L3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0v
-Y3B1L2NwdTI1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5
-cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8g
-cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNy9jcHVmcmVxL3NjYWxp
-bmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2Nw
-dTI4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
-Y2VzL3N5c3RlbS9jcHUvY3B1MjkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
-bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUzL2NwdWZyZXEvc2NhbGluZ19nb3Zl
-cm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzAvY3B1
-ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lz
-dGVtL2NwdS9jcHUzMS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+
-IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVj
-aG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU1L2NwdWZyZXEvc2Nh
-bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
-Y3B1Ni9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2
-aWNlcy9zeXN0ZW0vY3B1L2NwdTcvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
-bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU4L2NwdWZyZXEvc2NhbGluZ19nb3Zl
-cm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1OS9jcHVm
-cmVxL3NjYWxpbmdfZ292ZXJub3IKL3Vzci9iaW4vaGFja2JlbmNoIC1nIDE2IC0tdGhyZWFkcyAt
-bCA2MDAwMAovdXNyL2Jpbi9oYWNrYmVuY2ggLWcgMTYgLS10aHJlYWRzIC1sIDYwMDAwCi91c3Iv
-YmluL2hhY2tiZW5jaCAtZyAxNiAtLXRocmVhZHMgLWwgNjAwMDAKL3Vzci9iaW4vaGFja2JlbmNo
-IC1nIDE2IC0tdGhyZWFkcyAtbCA2MDAwMAovdXNyL2Jpbi9oYWNrYmVuY2ggLWcgMTYgLS10aHJl
-YWRzIC1sIDYwMDAwCi91c3IvYmluL2hhY2tiZW5jaCAtZyAxNiAtLXRocmVhZHMgLWwgNjAwMDAK
-L3Vzci9iaW4vaGFja2JlbmNoIC1nIDE2IC0tdGhyZWFkcyAtbCA2MDAwMAovdXNyL2Jpbi9oYWNr
-YmVuY2ggLWcgMTYgLS10aHJlYWRzIC1sIDYwMDAwCi91c3IvYmluL2hhY2tiZW5jaCAtZyAxNiAt
-LXRocmVhZHMgLWwgNjAwMDAKL3Vzci9iaW4vaGFja2JlbmNoIC1nIDE2IC0tdGhyZWFkcyAtbCA2
-MDAwMAovdXNyL2Jpbi9oYWNrYmVuY2ggLWcgMTYgLS10aHJlYWRzIC1sIDYwMDAwCi91c3IvYmlu
-L2hhY2tiZW5jaCAtZyAxNiAtLXRocmVhZHMgLWwgNjAwMDAKL3Vzci9iaW4vaGFja2JlbmNoIC1n
-IDE2IC0tdGhyZWFkcyAtbCA2MDAwMAoK
-
---===============4918979587792479787==--
+On Tue, 29 Jul 2014 13:24:05 +0800
+Aaron Lu <aaron.lu@intel.com> wrote:
+
+> FYI, we noticed the below changes on
+> =
+
+> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> commit a43455a1d572daf7b730fe12eb747d1e17411365 ("sched/numa: Ensure task=
+_numa_migrate() checks the preferred node")
+> =
+
+> ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
+
+> ---------------  -------------------------  =
+
+>      94500 ~ 3%    +115.6%     203711 ~ 6%  ivb42/hackbench/50%-threads-p=
+ipe
+>      67745 ~ 4%     +64.1%     111174 ~ 5%  lkp-snb01/hackbench/50%-threa=
+ds-socket
+>     162245 ~ 3%     +94.1%     314885 ~ 6%  TOTAL proc-vmstat.numa_hint_f=
+aults_local
+
+Hi Aaron,
+
+Jirka Hladky has reported a regression with that changeset as
+well, and I have already spent some time debugging the issue.
+
+I added tracing code to task_numa_compare() and saw a number
+of thread swaps with tiny improvements.
+
+Does preventing those help your workload, or am I barking up
+the wrong tree again?  (I have been looking at this for a while...)
+
+---8<---
+
+Subject: sched,numa: prevent task moves with marginal benefit
+
+Commit a43455a1d57 makes task_numa_migrate() always check the
+preferred node for task placement. This is causing a performance
+regression with hackbench, as well as SPECjbb2005.
+
+Tracing task_numa_compare() with a single instance of SPECjbb2005
+on a 4 node system, I have seen several thread swaps with tiny
+improvements. =
+
+
+It appears that the hysteresis code that was added to task_numa_compare
+is not doing what we needed it to do, and a simple threshold could be
+better.
+
+Reported-by: Aaron Lu <aaron.lu@intel.com>
+Reported-by: Jirka Hladky <jhladky@redhat.com>
+Signed-off-by: Rik van Riel <riel@redhat.com>
+---
+ kernel/sched/fair.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 4f5e3c2..bedbc3e 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -924,10 +924,12 @@ static inline unsigned long group_faults_cpu(struct n=
+uma_group *group, int nid)
+ =
+
+ /*
+  * These return the fraction of accesses done by a particular task, or
+- * task group, on a particular numa node.  The group weight is given a
+- * larger multiplier, in order to group tasks together that are almost
+- * evenly spread out between numa nodes.
++ * task group, on a particular numa node.  The NUMA move threshold
++ * prevents task moves with marginal improvement, and is set to 5%.
+  */
++#define NUMA_SCALE 1000
++#define NUMA_MOVE_THRESH 50
++
+ static inline unsigned long task_weight(struct task_struct *p, int nid)
+ {
+ 	unsigned long total_faults;
+@@ -940,7 +942,7 @@ static inline unsigned long task_weight(struct task_str=
+uct *p, int nid)
+ 	if (!total_faults)
+ 		return 0;
+ =
+
+-	return 1000 * task_faults(p, nid) / total_faults;
++	return NUMA_SCALE * task_faults(p, nid) / total_faults;
+ }
+ =
+
+ static inline unsigned long group_weight(struct task_struct *p, int nid)
+@@ -948,7 +950,7 @@ static inline unsigned long group_weight(struct task_st=
+ruct *p, int nid)
+ 	if (!p->numa_group || !p->numa_group->total_faults)
+ 		return 0;
+ =
+
+-	return 1000 * group_faults(p, nid) / p->numa_group->total_faults;
++	return NUMA_SCALE * group_faults(p, nid) / p->numa_group->total_faults;
+ }
+ =
+
+ bool should_numa_migrate_memory(struct task_struct *p, struct page * page,
+@@ -1181,11 +1183,11 @@ static void task_numa_compare(struct task_numa_env =
+*env,
+ 			imp =3D taskimp + task_weight(cur, env->src_nid) -
+ 			      task_weight(cur, env->dst_nid);
+ 			/*
+-			 * Add some hysteresis to prevent swapping the
+-			 * tasks within a group over tiny differences.
++			 * Do not swap tasks within a group around unless
++			 * there is a significant improvement.
+ 			 */
+-			if (cur->numa_group)
+-				imp -=3D imp/16;
++			if (cur->numa_group && imp < NUMA_MOVE_THRESH)
++				goto unlock;
+ 		} else {
+ 			/*
+ 			 * Compare the group weights. If a task is all by
+@@ -1205,6 +1207,10 @@ static void task_numa_compare(struct task_numa_env *=
+env,
+ 		goto unlock;
+ =
+
+ 	if (!cur) {
++		/* Only move if there is a significant improvement. */
++		if (imp < NUMA_MOVE_THRESH)
++			goto unlock;
++
+ 		/* Is there capacity@our destination? */
+ 		if (env->src_stats.has_free_capacity &&
+ 		    !env->dst_stats.has_free_capacity)
+
+--===============7782026122861390456==--
 
