@@ -1,89 +1,90 @@
-Content-Type: multipart/mixed; boundary="===============5575255883751711462=="
+Content-Type: multipart/mixed; boundary="===============1660747458746391502=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@suse.de>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] b72fd1470c9: -41.7% perf-profile.cpu-cycles.get_page_from_freelist.__alloc_pages_nodemask.alloc_pages_current.__page_cache_alloc.pagecache_get_page
-Date: Thu, 31 Jul 2014 10:32:41 +0100
-Message-ID: <20140731093241.GQ10819@suse.de>
-In-Reply-To: <20140731090130.GB23367@aaronlu.sh.intel.com>
+Subject: Re: [scheduler] BUG: unable to handle kernel paging request at 000000000000ce50
+Date: Thu, 31 Jul 2014 18:42:26 +0800
+Message-ID: <20140731104226.GB9455@localhost>
+In-Reply-To: <alpine.DEB.2.11.1407300954420.4608@gentwo.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5575255883751711462==
+--===============1660747458746391502==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 31, 2014 at 05:01:30PM +0800, Aaron Lu wrote:
-> On Thu, Jul 31, 2014 at 09:48:32AM +0100, Mel Gorman wrote:
-> > On Thu, Jul 31, 2014 at 01:50:35PM +0800, Aaron Lu wrote:
-> > > FYI, we noticed the below changes on
-> > > =
+Christoph,
 
-> > > git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mas=
-ter
-> > > commit b72fd1470c9735f53485d089aa918dc327a86077 ("mm: rearrange zone =
-fields into read-only, page alloc, statistics and page reclaim lines")
-> > > =
-
-> > > test case: lkp-st02/dd-write/5m-11HDD-JBOD-cfq-xfs-10dd
-> > > =
-
-> > > e28c951ff01a805  b72fd1470c9735f53485d089a  =
-
-> > > ---------------  -------------------------  =
-
-> > >       1.06 ~ 6%     -41.7%       0.62 ~ 3%  TOTAL perf-profile.cpu-cy=
-cles.get_page_from_freelist.__alloc_pages_nodemask.alloc_pages_current.__pa=
-ge_cache_alloc.pagecache_get_page
-> > >       1.34 ~ 2%     -19.8%       1.07 ~ 2%  TOTAL perf-profile.cpu-cy=
-cles.__block_write_begin.xfs_vm_write_begin.generic_perform_write.xfs_file_=
-buffered_aio_write.xfs_file_write_iter
-> > >       1.19 ~ 5%     -12.1%       1.05 ~ 4%  TOTAL perf-profile.cpu-cy=
-cles.copy_from_user_atomic_iovec.iov_iter_copy_from_user_atomic.generic_per=
-form_write.xfs_file_buffered_aio_write.xfs_file_write_iter
-> > >       2.78 ~ 1%     -16.3%       2.32 ~ 4%  TOTAL perf-profile.cpu-cy=
-cles.__clear_user.read_zero.read_zero.vfs_read.sys_read
-> > >   2.96e+09 ~ 4%      -5.2%  2.806e+09 ~ 0%  TOTAL perf-stat.cache-mis=
-ses
-> > >   3.86e+12 ~ 5%      -5.2%  3.658e+12 ~ 1%  TOTAL perf-stat.ref-cycles
-> > > =
-
-> > > Legend:
-> > > 	~XX%    - stddev percent
-> > > 	[+-]XX% - change percent
-> > > =
-
-> > =
-
-> > I'm not exactly sure what I'm reading here. I think it is reporting on =
-cpu
-> > cycles and cache misses used in various kernel functions. It's not clea=
-r what
-> > the units are but it looks like percentages of overall cycles spent in =
-the
-> > reported functions. That may or may not be good depending on whether th=
-ere
-> > is a higher cost elsewhere pushing the percentages down but that detail
-> > is not in the report. It looks like this is reporting that fewer clock
-> > cycles are being spent and incurring fewer cache misses. What is the pr=
-oblem?
+On Wed, Jul 30, 2014 at 09:55:29AM -0500, Christoph Lameter wrote:
+> On Wed, 30 Jul 2014, Fengguang Wu wrote:
 > =
 
-> LKP does not report problems only, it will also report commits that make
-> things better :-)
+> > FYI, this commit seems to convert some kernel boot hang bug into
+> > different BUG messages.
 > =
 
-> From the perf-stat.cache-misses, I think it is indicating your commit
-> does something for good.
+> Hmmm. Still a bit confused as to why these messages occur.. Does this
+> patch do any good?
+
+Sorry I find that next-20140730 no long show the BUG. So there is no
+way to test whether this patch fixed the problem.
+
+Thanks,
+Fengguang
+
 > =
 
+> Subject: vmstat ondemand: Fix online/offline races
+> =
 
-Hooray! Thanks for the good news :D
+> Do not allow onlining/offlining while the shepherd task is checking
+> for vmstat threads.
+> =
 
--- =
+> On offlining a processor do the right thing cancelling the vmstat
+> worker thread if it exista and also exclude it from the shepherd
+> process checks.
+> =
 
-Mel Gorman
-SUSE Labs
+> Signed-off-by: Christoph Lameter <cl@linux.com>
+> =
 
---===============5575255883751711462==--
+> Index: linux/mm/vmstat.c
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --- linux.orig/mm/vmstat.c	2014-07-30 09:35:54.602662306 -0500
+> +++ linux/mm/vmstat.c	2014-07-30 09:43:07.109037043 -0500
+> @@ -1317,6 +1317,7 @@ static void vmstat_shepherd(struct work_
+>  {
+>  	int cpu;
+> =
+
+> +	get_online_cpus();
+>  	/* Check processors whose vmstat worker threads have been disabled */
+>  	for_each_cpu(cpu, cpu_stat_off)
+>  		if (need_update(cpu) &&
+> @@ -1325,6 +1326,7 @@ static void vmstat_shepherd(struct work_
+>  			schedule_delayed_work_on(cpu, &per_cpu(vmstat_work, cpu),
+>  				__round_jiffies_relative(sysctl_stat_interval, cpu));
+> =
+
+> +	put_online_cpus();
+> =
+
+>  	schedule_delayed_work(&shepherd,
+>  		round_jiffies_relative(sysctl_stat_interval));
+> @@ -1380,8 +1382,8 @@ static int vmstat_cpuup_callback(struct
+>  		break;
+>  	case CPU_DOWN_PREPARE:
+>  	case CPU_DOWN_PREPARE_FROZEN:
+> -		if (!cpumask_test_and_set_cpu(cpu, cpu_stat_off))
+> -			cancel_delayed_work_sync(&per_cpu(vmstat_work, cpu));
+> +		cancel_delayed_work_sync(&per_cpu(vmstat_work, cpu));
+> +		cpumask_clear_cpu(cpu, cpu_stat_off);
+>  		break;
+>  	case CPU_DOWN_FAILED:
+>  	case CPU_DOWN_FAILED_FROZEN:
+
+--===============1660747458746391502==--
 
