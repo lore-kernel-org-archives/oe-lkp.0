@@ -1,560 +1,120 @@
-Content-Type: multipart/mixed; boundary="===============2076595738057300760=="
+Content-Type: multipart/mixed; boundary="===============2478892684155253521=="
 MIME-Version: 1.0
-From: Artem Fetishev <Artem_Fetishev@epam.com>
+From: Aaron Lu <aaron.lu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86] BUG: unable to handle kernel paging request at ffff880012770000
-Date: Thu, 31 Jul 2014 06:41:51 +0000
-Message-ID: <80081a6051c941d29a4e84b259a79244@EPBYMINSA0001.epam.com>
-In-Reply-To: <20140730040739.GH16537@localhost>
+Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
+Date: Thu, 31 Jul 2014 14:53:56 +0800
+Message-ID: <20140731065356.GA20462@aaronlu.sh.intel.com>
+In-Reply-To: <53D9E0BF.1020600@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2076595738057300760==
+--===============2478892684155253521==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Fengguang,
+On Thu, Jul 31, 2014 at 02:22:55AM -0400, Rik van Riel wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+> =
 
-Reproduced with your config and script. Working on locating the cause...
+> On 07/31/2014 01:04 AM, Aaron Lu wrote:
+> > On Wed, Jul 30, 2014 at 10:25:03AM -0400, Rik van Riel wrote:
+> >> On 07/29/2014 10:14 PM, Aaron Lu wrote:
+> >>> On Tue, Jul 29, 2014 at 04:04:37PM -0400, Rik van Riel wrote:
+> >>>> On Tue, 29 Jul 2014 10:17:12 +0200 Peter Zijlstra
+> >>>> <peterz@infradead.org> wrote:
+> >>>> =
 
-Thanks,
--Artem
+> >>>>>> +#define NUMA_SCALE 1000 +#define NUMA_MOVE_THRESH 50
+> >>>>> =
 
------Original Message-----
-From: Fengguang Wu [mailto:fengguang.wu(a)intel.com] =
+> >>>>> Please make that 1024, there's no reason not to use power
+> >>>>> of two here. This base 10 factor thing annoyed me no end
+> >>>>> already, its time for it to die.
+> >>>> =
 
-Sent: Wednesday, July 30, 2014 7:08 AM
-To: Artem Fetishev
-Cc: Jet Chen; Su Tao; Yuanhan Liu; LKP; linux-kernel(a)vger.kernel.org
-Subject: [x86] BUG: unable to handle kernel paging request at ffff880012770=
-000
+> >>>> That's easy enough.  However, it would be good to know
+> >>>> whether this actually helps with the regression Aaron found
+> >>>> :)
+> >>> =
 
-Hi Artem,
+> >>> Sorry for the delay.
+> >>> =
 
-FYI, this bisect has noise errors, so I'm not sure if it's a correct bisect.
+> >>> I applied the last patch and queued the hackbench job to the
+> >>> ivb42 test machine for it to run 5 times, and here is the
+> >>> result(regarding the proc-vmstat.numa_hint_faults_local
+> >>> field): 173565 201262 192317 198342 198595 avg: 192816
+> >>> =
 
-git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-commit 825600c0f20e595daaa7a6dd8970f84fa2a2ee57
-Author:     Artem Fetishev <artem_fetishev@epam.com>
-AuthorDate: Fri Mar 28 13:33:39 2014 -0700
-Commit:     Linus Torvalds <torvalds@linux-foundation.org>
-CommitDate: Fri Mar 28 13:56:58 2014 -0700
+> >>> It seems it is still very big than previous kernels.
+> >> =
 
-    x86: fix boot on uniprocessor systems
-    =
+> >> It looks like a step in the right direction, though.
+> >> =
 
-    On x86 uniprocessor systems topology_physical_package_id() returns -1
-    which causes rapl_cpu_prepare() to leave rapl_pmu variable uninitialized
-    which leads to GPF in rapl_pmu_init().
-    =
+> >> Could you try running with a larger threshold?
+> >> =
 
-    See arch/x86/kernel/cpu/perf_event_intel_rapl.c.
-    =
+> >>>> +++ b/kernel/sched/fair.c @@ -924,10 +924,12 @@ static inline
+> >>>> unsigned long group_faults_cpu(struct numa_group *group, int
+> >>>> nid)
+> >>>> =
 
-    It turns out that physical_package_id and core_id can actually be
-    retreived for uniprocessor systems too.  Enabling them also fixes
-    rapl_pmu code.
-    =
+> >>>> /* * These return the fraction of accesses done by a
+> >>>> particular task, or - * task group, on a particular numa
+> >>>> node.  The group weight is given a - * larger multiplier, in
+> >>>> order to group tasks together that are almost - * evenly
+> >>>> spread out between numa nodes. + * task group, on a
+> >>>> particular numa node.  The NUMA move threshold + * prevents
+> >>>> task moves with marginal improvement, and is set to 5%. */ =
 
-    Signed-off-by: Artem Fetishev <artem_fetishev@epam.com>
-    Cc: Stephane Eranian <eranian@google.com>
-    Cc: Ingo Molnar <mingo@elte.hu>
-    Cc: "H. Peter Anvin" <hpa@zytor.com>
-    Cc: Thomas Gleixner <tglx@linutronix.de>
-    Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
-    Cc: <stable@vger.kernel.org>
-    Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+> >>>> +#define NUMA_SCALE 1024 +#define NUMA_MOVE_THRESH (5 *
+> >>>> NUMA_SCALE / 100)
+> >> =
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-PARENT COMMIT NOT CLEAN. LOOK OUT FOR WRONG BISECT!
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-Attached dmesg for the parent commit, too, to help confirm whether it is a =
-noise error.
+> >> It would be good to see if changing NUMA_MOVE_THRESH to =
 
-+-----------------------------------------------------------+------------+-=
------------+---------------+
-|                                                           | d9060742fb | =
-825600c0f2 | next-20140723 |
-+-----------------------------------------------------------+------------+-=
------------+---------------+
-| boot_successes                                            | 167        | =
-48         | 9             |
-| boot_failures                                             | 97         | =
-18         | 2             |
-| BUG:unable_to_handle_kernel_NULL_pointer_dereference      | 97         | =
-14         | 2             |
-| Oops                                                      | 97         | =
-3          | 2             |
-| RIP:rapl_pmu_init                                         | 97         | =
-           |               |
-| Kernel_panic-not_syncing:Attempted_to_kill_init_exitcode=3D | 97         =
-|            |               |
-| backtrace:rapl_pmu_init                                   | 97         | =
-           |               |
-| backtrace:kernel_init_freeable                            | 97         | =
-3          |               |
-| BUG:unable_to_handle_kernel_paging_request                | 0          | =
-17         | 2             |
-| BUG:unable_to_handle_kernel_NULL_pointer                  | 0          | =
-1          |               |
-| RIP:slob_page_alloc                                       | 0          | =
-3          |               |
-| backtrace:proc_create_data                                | 0          | =
-3          |               |
-| backtrace:init_timer_list_procfs                          | 0          | =
-3          |               |
-| BUG:unable_to_handle                                      | 0          | =
-1          |               |
-| BUG:unable_to_handl                                       | 0          | =
-1          |               |
-| BUG:unable_to_handle_ker                                  | 0          | =
-1          |               |
-| BUG:kernel_boot_hang                                      | 0          | =
-1          |               |
-| RIP:memset                                                | 0          | =
-0          | 2             |
-| RIP:__rmqueue                                             | 0          | =
-0          | 2             |
-| backtrace:cryptomgr_test                                  | 0          | =
-0          | 2             |
-| backtrace:do_fork                                         | 0          | =
-0          | 2             |
-+-----------------------------------------------------------+------------+-=
------------+---------------+
+> >> (NUMA_SCALE / 8) does the trick.
+> > =
 
-[    1.026545] cryptomgr_test (20) used greatest stack depth: 5632 bytes le=
-ft
-[    1.030491] AVX version of gcm_enc/dec engaged.
-[    1.033812] alg: No test for __gcm-aes-aesni (__driver-gcm-aes-aesni)
-[    1.038806] BUG: unable to handle kernel paging request at ffff880012770=
-000
-[    1.040058] IP: [<ffffffff8161d18f>] memset+0x1f/0xb0
-[    1.040058] PGD 4170067 PUD 4171067 PMD 13bee067 PTE 8000000012770060
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+> > With your 2nd patch and the above change, the result is:
+> > =
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+> > "proc-vmstat.numa_hint_faults_local": [ 199708, 209152, 200638, =
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+> > 187324, 196654 ],
+> > =
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+> > avg: 198695
+> =
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+> OK, so it is still a little higher than your original 162245.
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+The original number is 94500 for ivb42 machine, the 162245 is the sum
+of the two numbers above it that are tested on two machines - one is the
+number for ivb42 and one is for lkp-snb01. Sorry if that is not clear.
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+And for the numbers I have given with your patch applied, they are all
+for ivb42 alone.
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+> =
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+> I guess this is to be expected, since the code will be more
+> successful at placing a task on the right node, which results
+> in the task scanning its memory more rapidly for a little bit.
+> =
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+> Are you seeing any changes in throughput?
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+The throughput has almost no change. Your 2nd patch with scale changed
+has seen a decrease of 0.1% compared to your original commit that
+triggered the report, and that original commit has a increase of 1.2%
+compared to its parent commit.
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
+Regards,
+Aaron
 
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] BUG: unable to handle kernel paging request at ffff880012776=
-440
-[    1.040058] IP: [<ffffffff810fb846>] match_held_lock+0x16/0x2f0
-[    1.040058] PGD 4170067 PUD 4171067 PMD 13bee067 PTE 8000000012776060
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000068
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-0000000000072
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-[    1.040058] IP: [<ffffffff820d66f6>] no_context+0x34e/0x3f4
-[    1.040058] PGD 0 =
-
-[    1.040058] BUG: unable to handle kernel NULL pointer dereference at 000=
-000000000006a
-
-git bisect start v3.14 v3.13 --
-git bisect good 494479038d97f1b9f76fc633a360a681acdf035c  # 20:32     66+  =
-   28  Merge tag 'pinctrl-v3.14-2' of git://git.kernel.org/pub/scm/linux/ke=
-rnel/git/linusw/linux-pinctrl
-git bisect good 751a03c3728ed393287374078b98c3094a0b3bd2  # 20:36     66+  =
-   67  Merge tag 'pm+acpi-3.14-rc5' of git://git.kernel.org/pub/scm/linux/k=
-ernel/git/rafael/linux-pm
-git bisect good 18f2af2d68815e1c4d5c275ebd030e27ef627582  # 20:43     66+  =
-   55  Merge tag 'for-linus' of git://git.kernel.org/pub/scm/virt/kvm/kvm
-git bisect good 708f04d2abf4e90abee61d9ffb1f165038017ecf  # 20:46     66+  =
-   58  block: free q->flush_rq in blk_init_allocated_queue error paths
-git bisect good 75c5a52da3fc2a06abb6c6192bdf5d680e56d37d  # 20:48     66+  =
-   31  vfs: Allocate anon_inode_inode in anon_inode_init()
-git bisect  bad 0f2776e6151a123552fd06b666fe755fa780a967  # 20:48      0-  =
-   18  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kerne=
-l/git/sage/ceph-client
-git bisect good 1fac1fa965a9fbdb38d8a4b945db3521f801c946  # 20:57     66+  =
-   26  Merge branch 'drm-fixes' of git://people.freedesktop.org/~airlied/li=
-nux
-git bisect  bad bc53267e97e4942e7f22c31cd8cf87840796accb  # 21:01      1-  =
-    5  Merge branch 'akpm' (patches from Andrew Morton)
-git bisect good 2946369ee277fa9fcc3372aabddc9c15dfabf744  # 21:11     66+  =
-    0  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kerne=
-l/git/dtor/input
-git bisect  bad 825600c0f20e595daaa7a6dd8970f84fa2a2ee57  # 21:30      0-  =
-    7  x86: fix boot on uniprocessor systems
-git bisect good d9060742fbf630fe31951dfc10b798deb2813f01  # 22:39     66+  =
-   29  ocfs2: check if cluster name exists before deref
-# first bad commit: [825600c0f20e595daaa7a6dd8970f84fa2a2ee57] x86: fix boo=
-t on uniprocessor systems
-git bisect good d9060742fbf630fe31951dfc10b798deb2813f01  # 22:49    198+  =
-   97  ocfs2: check if cluster name exists before deref
-git bisect  bad 5eb00b037d9bb650b18b8f331bb9fb7a66559b5f  # 22:51      0-  =
-    2  Add linux-next specific files for 20140723
-git bisect  bad 82e13c71bc655b6dc7110da4e164079dadb44892  # 23:12      0-  =
-   77  Merge branch 'for-3.16' of git://linux-nfs.org/~bfields/linux
-git bisect  bad 1a58d9909611972fd1c081bb04a9f7dc2571e612  # 23:23      2-  =
-    1  Add linux-next specific files for 20140724
-
-
-This script may reproduce the error.
-
-----------------------------------------------------------------------------
-#!/bin/bash
-
-kernel=3D$1
-initrd=3Dyocto-minimal-x86_64.cgz
-
-wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/blob/ma=
-ster/initrd/$initrd
-
-kvm=3D(
-	qemu-system-x86_64
-	-enable-kvm
-	-cpu Haswell,+smep,+smap
-	-kernel $kernel
-	-initrd $initrd
-	-m 320
-	-smp 1
-	-net nic,vlan=3D1,model=3De1000
-	-net user,vlan=3D1
-	-boot order=3Dnc
-	-no-reboot
-	-watchdog i6300esb
-	-rtc base=3Dlocaltime
-	-serial stdio
-	-display none
-	-monitor null =
-
-)
-
-append=3D(
-	hung_task_panic=3D1
-	earlyprintk=3DttyS0,115200
-	debug
-	apic=3Ddebug
-	sysrq_always_enabled
-	rcupdate.rcu_cpu_stall_timeout=3D100
-	panic=3D10
-	softlockup_panic=3D1
-	nmi_watchdog=3Dpanic
-	prompt_ramdisk=3D0
-	console=3DttyS0,115200
-	console=3Dtty0
-	vga=3Dnormal
-	root=3D/dev/ram0
-	rw
-	drbd.minor_count=3D8
-)
-
-"${kvm[@]}" --append "${append[*]}"
-----------------------------------------------------------------------------
-
-Thanks,
-Fengguang
-
---===============2076595738057300760==--
+--===============2478892684155253521==--
 
