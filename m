@@ -1,177 +1,133 @@
-Content-Type: multipart/mixed; boundary="===============8186459992175393583=="
+Content-Type: multipart/mixed; boundary="===============7790700108889968692=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+From: Andy Lutomirski <luto@amacapital.net>
 To: lkp@lists.01.org
-Subject: Re: [x86, kaslr] [ 0.000000] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/cpu/common.c:1422 warn_pre_alternatives()
-Date: Thu, 31 Jul 2014 07:17:33 -0700
-Message-ID: <20140731141733.GJ11241@linux.vnet.ibm.com>
-In-Reply-To: <20140731112747.GA13753@localhost>
+Subject: Re: [x86_64, vsyscall] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+Date: Thu, 31 Jul 2014 07:42:42 -0700
+Message-ID: <CALCETrVuhs+z0Z4j9waMeRvy3zScYHgO_dS4s4bGASJqC76f0g@mail.gmail.com>
+In-Reply-To: <20140731110450.GC9455@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8186459992175393583==
+--===============7790700108889968692==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 31, 2014 at 07:27:47PM +0800, Fengguang Wu wrote:
-> On Wed, Jul 30, 2014 at 07:58:37PM -0700, Paul E. McKenney wrote:
-> > On Thu, Jul 31, 2014 at 10:42:12AM +0800, Fengguang Wu wrote:
-> > > On Wed, Jul 30, 2014 at 08:52:07AM -0700, Paul E. McKenney wrote:
-> > > > On Wed, Jul 30, 2014 at 10:17:32PM +0800, Fengguang Wu wrote:
-> > > > > On Wed, Jul 30, 2014 at 10:07:56PM +0800, Fengguang Wu wrote:
-> > > > > > Hi Andy,
-> > > > > > =
+On Jul 31, 2014 4:05 AM, "Fengguang Wu" <fengguang.wu@intel.com> wrote:
+>
+> On Wed, Jul 30, 2014 at 01:14:06PM -0700, Andy Lutomirski wrote:
+> > On Wed, Jul 30, 2014 at 8:33 AM, Fengguang Wu <fengguang.wu@intel.com=
+> wrote:
+> > > On Wed, Jul 30, 2014 at 07:58:13AM -0700, Andy Lutomirski wrote:
+> > >> On Wed, Jul 30, 2014 at 7:29 AM, Fengguang Wu <fengguang.wu@intel.=
+com> wrote:
+> > >> > Greetings,
+> > >> >
+> > >> > 0day kernel testing robot got the below dmesg and the first bad co=
+mmit is
+> > >> >
+> > >> > git://git.kernel.org/pub/scm/linux/kernel/git/luto/linux.git x86/v=
+syscall
+> > >> > commit 442aba0c6131f0c41dfc5edb6bfb88335556523f
+> > >> > Author:     Andy Lutomirski <luto@amacapital.net>
+> > >> > AuthorDate: Mon Jun 16 18:50:12 2014 -0700
+> > >> > Commit:     Andy Lutomirski <luto@amacapital.net>
+> > >> > CommitDate: Mon Jun 30 14:32:44 2014 -0700
+> > >>
+> > >> Was this a merge?
+> > >
+> > > It's not a merge commit.
+> >
+> > Hmm.  It looks like that commit is from a version of x86/vsyscall
+> > that's rather out-of-date.  Is it possible that the script is testing
+> > an old version of the tree?  I haven't touched it in almost a week, I
+> > think.
+>
+> The current luto/x86/vsyscall HEAD commit
+> 1e67c32df4dddf763271c3ace52fdec66877740c has these errors:
+>
+> +-----------------------------------------------------------+---+
+> |                                                           |   |
+> +-----------------------------------------------------------+---+
+> | boot_successes                                            | 1 |
+> | boot_failures                                             | 9 |
+> | general_protection_fault                                  | 3 |
+> | RIP:crypto_ahash_setkey                                   | 3 |
+> | Kernel_panic-not_syncing:Fatal_exception                  | 8 |
+> | backtrace:cryptomgr_test                                  | 8 |
+> | BUG:unable_to_handle_kernel_paging_request                | 5 |
+> | Oops                                                      | 5 |
+> | RIP:kzfree                                                | 5 |
+> | Kernel_panic-not_syncing:Attempted_to_kill_init_exitcode=3D | 1 |
+> | INFO:suspicious_RCU_usage                                 | 1 |
+> +-----------------------------------------------------------+---+
+>
+> mount: can't read '/proc/mounts': No such file or directory
+> [   32.915296] init[1]: segfault at ffffffffff600400 ip ffffffffff600400 =
+sp 00007fff994dc878 error 15
 
-> > > > > > Here is another WARNING message for the same commit.
-> > > > > > =
+It looks like your initramfs uses an old glibc that needs vsyscalls,
+and it looks like you've built a config that turns off
+CONFIG_X86_VSYSCALL_EMULATION.  :)
 
-> > > > > > commit d07c7f1ed61789e175fa975134855be32263be2c
-> > > > > > Author:     Andy Lutomirski <luto@amacapital.net>
-> > > > > > AuthorDate: Tue Jul 15 18:34:20 2014 -0700
-> > > > > > Commit:     Andy Lutomirski <luto@amacapital.net>
-> > > > > > CommitDate: Wed Jul 16 10:01:27 2014 -0700
-> > > > > > =
+This is very unlikely to make it into Linux 3.17, though.
 
-> > > > > >     x86,kaslr: Use MSR_KVM_GET_RNG_SEED for KASLR if available
-> > > > > >     =
+> [   32.916078] init[1]: segfault at ffffffffff600400 ip ffffffffff600400 =
+sp 00007fff994dbe78 error 15
+> [   32.916925] Kernel panic - not syncing: Attempted to kill init! exitco=
+de=3D0x0000000b
+> [   32.916925]
+> [   32.917698] CPU: 0 PID: 1 Comm: init Not tainted 3.16.0-rc4-00019-g1e6=
+7c32 #1
+> [   32.918301]  0000000000000000 ffff880000033cc0 ffffffff81ff4e8f ffff88=
+0000033d38
+> [   32.918944]  ffffffff81ff1972 ffff880000000010 ffff880000033d48 ffff88=
+0000033ce8
+> [   32.919611]  ffffffff82c440c0 000000000000000b 8c6318c6318c6320 000000=
+07aa003caf
+> [   32.920011] Call Trace:
+> [   32.920011]  [<ffffffff81ff4e8f>] dump_stack+0x19/0x1b
+> [   32.920011]  [<ffffffff81ff1972>] panic+0xcb/0x1fb
+> [   32.920011]  [<ffffffff81093b3c>] do_exit+0x3dd/0x80f
+> [   32.920011]  [<ffffffff810b0739>] ? local_clock+0x14/0x1d
+> [   32.920011]  [<ffffffff8109400f>] do_group_exit+0x75/0xb4
+> [   32.920011]  [<ffffffff8109c803>] get_signal_to_deliver+0x48a/0x4aa
+> [   32.920011]  [<ffffffff8100231a>] do_signal+0x43/0x5ba
+> [   32.920011]  [<ffffffff810b4b95>] ? lock_release_holdtime+0x6c/0x77
+> [   32.920011]  [<ffffffff810b83d1>] ? lock_release_non_nested+0xd0/0x21e
+> [   32.920011]  [<ffffffff810b0662>] ? sched_clock_cpu+0x4e/0x62
+> [   32.920011]  [<ffffffff810fd43f>] ? might_fault+0x4f/0x9c
+> [   32.920011]  [<ffffffff810b617f>] ? trace_hardirqs_off_caller+0x36/0xa5
+> [   32.920011]  [<ffffffff820048d8>] ? retint_signal+0x11/0x99
+> [   32.920011]  [<ffffffff810028b5>] do_notify_resume+0x24/0x53
+> [   32.920011]  [<ffffffff82004914>] retint_signal+0x4d/0x99
+> [   32.920011] Kernel Offset: 0x0 from 0xffffffff81000000 (relocation ran=
+ge: 0xffffffff80000000-0xffffffff9fffffff)
+> [   32.920011] drm_kms_helper: panic occurred, switching back to text con=
+sole
+> [   32.920011]
+> [   32.920011] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [   32.920011] [ INFO: suspicious RCU usage. ]
+> [   32.920011] 3.16.0-rc4-00019-g1e67c32 #1 Not tainted
+> [   32.920011] -------------------------------
+> [   32.920011] include/linux/rcupdate.h:539 Illegal context switch in RCU=
+ read-side critical section!
 
-> > > > > >     It's considerably better than any of the alternatives on KV=
-M.
-> > > > > >     =
-
-> > > > > >     Rather than reinventing all of the cpu feature query code, =
-this fixes
-> > > > > >     native_cpuid to work in PIC objects.
-> > > > > >     =
-
-> > > > > >     I haven't combined it with boot/cpuflags.c's cpuid implemen=
-tation:
-> > > > > >     including asm/processor.h from boot/cpuflags.c results in a=
- flood of
-> > > > > >     unrelated errors, and fixing it might be messy.
-> > > > > >     =
-
-> > > > > >     Signed-off-by: Andy Lutomirski <luto@amacapital.net>
-> > > > > > =
-
-> > > > > > +--------------------------------------------------------------=
------------+------------+------------+
-> > > > > > |                                                              =
-           | c6f07a6360 | d07c7f1ed6 |
-> > > > > > +--------------------------------------------------------------=
------------+------------+------------+
-> > > > > > | boot_successes                                               =
-           | 1000       | 636        |
-> > > > > > | boot_failures                                                =
-           | 0          | 84         |
-> > > > > > | WARNING:CPU:PID:at_arch/x86/kernel/cpu/common.c:warn_pre_alte=
-rnatives() | 0          | 84         |
-> > > > > > | BUG:unable_to_handle_kernel_NULL_pointer_dereference         =
-           | 0          | 84         |
-> > > > > > | Oops                                                         =
-           | 0          | 84         |
-> > > > > > | RIP:__free_pages_bootmem                                     =
-           | 0          | 84         |
-> > > > > > | Kernel_panic-not_syncing:Fatal_exception                     =
-           | 0          | 84         |
-> > > > > > | backtrace:free_all_bootmem                                   =
-           | 0          | 84         |
-> > > > > > | backtrace:mem_init                                           =
-           | 0          | 84         |
-> > > > > > +--------------------------------------------------------------=
------------+------------+------------+
-> > > > > > =
-
-> > > > > > [    0.000000] PID hash table entries: 2048 (order: 2, 16384 by=
-tes)
-> > > > > > [    0.000000] xsave: enabled xstate_bv 0x7, cntxt size 0x0
-> > > > > > [    0.000000] ------------[ cut here ]------------
-> > > > > > [    0.000000] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/cpu/co=
-mmon.c:1422 warn_pre_alternatives+0x1e/0x20()
-> > > > > > [    0.000000] You're using static_cpu_has before alternatives =
-have run!
-> > > > > > [    0.000000] Modules linked in:
-> > > > > > [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 3.16.0-r=
-c5-00004-gd07c7f1 #4
-> > > > > > [    0.000000] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
-> > > > > > [    0.000000]  0000000000000000 ffffffff81803c18 ffffffff813a7=
-bd2 ffffffff81803c60
-> > > > > > [    0.000000]  ffffffff81803c50 ffffffff810a5485 ffffffff81010=
-2f9 ffffffff81803e08
-> > > > > > [    0.000000]  0000000000000002 000000000000077c 0000000000000=
-000 ffffffff81803cb0
-> > > > > > [    0.000000] Call Trace:
-> > > > > > [    0.000000]  [<ffffffff813a7bd2>] dump_stack+0x4d/0x66
-> > > > > > [    0.000000]  [<ffffffff810a5485>] warn_slowpath_common+0x7f/=
-0x98
-> > > > > > [    0.000000]  [<ffffffff810102f9>] ? warn_pre_alternatives+0x=
-1e/0x20
-> > > > > > [    0.000000]  [<ffffffff810a54ea>] warn_slowpath_fmt+0x4c/0x4e
-> > > > > > [    0.000000]  [<ffffffff813b14e3>] ? restore_args+0x30/0x30
-> > > > > > [    0.000000]  [<ffffffff810102f9>] warn_pre_alternatives+0x1e=
-/0x20
-> > > > > > [    0.000000]  [<ffffffff810378b5>] __do_page_fault+0x1bd/0x7ca
-> > > > > > [    0.000000]  [<ffffffff810f5782>] ? console_unlock+0x377/0x3=
-c1
-> > > > > > [    0.000000]  [<ffffffff810e912e>] ? trace_hardirqs_off+0xd/0=
-xf
-> > > > > > [    0.000000]  [<ffffffff813afcc5>] ? _raw_spin_unlock_irqrest=
-ore+0x40/0x5e
-> > > > > > [    0.000000]  [<ffffffff81b93d22>] ? __next_mem_range_rev+0x2=
-05/0x232
-> > > > > > [    0.000000]  [<ffffffff810e90e0>] ? trace_hardirqs_off_calle=
-r+0xe7/0x128
-> > > > > > [    0.000000]  [<ffffffff81226d8a>] ? trace_hardirqs_off_thunk=
-+0x3a/0x3c
-> > > > > > [    0.000000]  [<ffffffff81037ee4>] do_page_fault+0x22/0x27
-> > > > > > [    0.000000]  [<ffffffff813b2378>] page_fault+0x28/0x30
-> > > > > > [    0.000000]  [<ffffffff81b74f76>] ? __free_pages_bootmem+0x2=
-d/0xf9
-> > > > > > [    0.000000]  [<ffffffff81b78d61>] __free_memory_core+0xa7/0x=
-be
-> > > > > > [    0.000000]  [<ffffffff81b78fe9>] free_all_bootmem+0x51/0xd2
-> > > > > > [    0.000000]  [<ffffffff81b67188>] mem_init+0x5c/0x8d
-> > > > > > [    0.000000]  [<ffffffff81b53cca>] start_kernel+0x1f7/0x53d
-> > > > > > [    0.000000]  [<ffffffff81b53814>] ? set_init_arg+0x55/0x55
-> > > > > > [    0.000000]  [<ffffffff81b53120>] ? early_idt_handlers+0x120=
-/0x120
-> > > > > > [    0.000000]  [<ffffffff81b53471>] x86_64_start_reservations+=
-0x2a/0x2c
-> > > > > > [    0.000000]  [<ffffffff81b535b3>] x86_64_start_kernel+0x140/=
-0x14d
-> > > > > > [    0.000000] ---[ end trace e4962b91bd705c64 ]---
-> > > > > > [    0.000000] BUG: unable to handle kernel NULL pointer derefe=
-rence at 000000000000077c
-> > > > > =
-
-> > > > > =
-
-> > > > > Interestingly, the other bisect result for the above WARNING mess=
-age
-> > > > > is
-> > > > > =
-
-> > > > > commit ddfb3b363440172d62ce62fbffdf046670d3ce2b
-> > > > =
-
-> > > > This is an obsolete commit, but...
-> > > =
-
-> > > Paul, would you suggest me to test any new commit or branch HEAD?
-> > =
-
-> > The latest branch containing this commit is rcu/dev.2014.07.28e,
-> > might be worth a shot.
-> =
-
-> The current rcu/dev.2014.07.28e HEAD commit
-> 8a73ddf16763989f53e85e422ab6af7ca8114c98 looks fine: 110 boots without
-> a single error!
-
-Whew!  ;-)
-
-							Thanx, Paul
+This one is unrelated, I hope.
 
 
---===============8186459992175393583==--
+> Oops, github needs this link for downloading big files:
+>
+> https://github.com/fengguang/reproduce-kernel-bug/raw/master/initrd/yocto=
+-minimal-i386.cgz
+
+Or https://github.com/fengguang/reproduce-kernel-bug/blob/master/initrd/yoc=
+to-minimal-x86_64.cgz,
+I guess?  The particular failure you're seeing here is only possible
+on 64-bit kernels.
+
+--Andy
+
+--===============7790700108889968692==--
 
