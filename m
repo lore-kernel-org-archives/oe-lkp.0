@@ -1,120 +1,305 @@
-Content-Type: multipart/mixed; boundary="===============2478892684155253521=="
+Content-Type: multipart/mixed; boundary="===============3101610598626833421=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Lai Jiangshan <laijs@cn.fujitsu.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
-Date: Thu, 31 Jul 2014 14:53:56 +0800
-Message-ID: <20140731065356.GA20462@aaronlu.sh.intel.com>
-In-Reply-To: <53D9E0BF.1020600@redhat.com>
+Subject: Re: [scheduler] BUG: unable to handle kernel paging request at 000000000000ce50
+Date: Thu, 31 Jul 2014 15:56:02 +0800
+Message-ID: <53D9F692.2090103@cn.fujitsu.com>
+In-Reply-To: <20140730135616.GK16537@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2478892684155253521==
+--===============3101610598626833421==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 31, 2014 at 02:22:55AM -0400, Rik van Riel wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
+On 07/30/2014 09:56 PM, Fengguang Wu wrote:
+> Hi Christoph,
 > =
 
-> On 07/31/2014 01:04 AM, Aaron Lu wrote:
-> > On Wed, Jul 30, 2014 at 10:25:03AM -0400, Rik van Riel wrote:
-> >> On 07/29/2014 10:14 PM, Aaron Lu wrote:
-> >>> On Tue, Jul 29, 2014 at 04:04:37PM -0400, Rik van Riel wrote:
-> >>>> On Tue, 29 Jul 2014 10:17:12 +0200 Peter Zijlstra
-> >>>> <peterz@infradead.org> wrote:
-> >>>> =
-
-> >>>>>> +#define NUMA_SCALE 1000 +#define NUMA_MOVE_THRESH 50
-> >>>>> =
-
-> >>>>> Please make that 1024, there's no reason not to use power
-> >>>>> of two here. This base 10 factor thing annoyed me no end
-> >>>>> already, its time for it to die.
-> >>>> =
-
-> >>>> That's easy enough.  However, it would be good to know
-> >>>> whether this actually helps with the regression Aaron found
-> >>>> :)
-> >>> =
-
-> >>> Sorry for the delay.
-> >>> =
-
-> >>> I applied the last patch and queued the hackbench job to the
-> >>> ivb42 test machine for it to run 5 times, and here is the
-> >>> result(regarding the proc-vmstat.numa_hint_faults_local
-> >>> field): 173565 201262 192317 198342 198595 avg: 192816
-> >>> =
-
-> >>> It seems it is still very big than previous kernels.
-> >> =
-
-> >> It looks like a step in the right direction, though.
-> >> =
-
-> >> Could you try running with a larger threshold?
-> >> =
-
-> >>>> +++ b/kernel/sched/fair.c @@ -924,10 +924,12 @@ static inline
-> >>>> unsigned long group_faults_cpu(struct numa_group *group, int
-> >>>> nid)
-> >>>> =
-
-> >>>> /* * These return the fraction of accesses done by a
-> >>>> particular task, or - * task group, on a particular numa
-> >>>> node.  The group weight is given a - * larger multiplier, in
-> >>>> order to group tasks together that are almost - * evenly
-> >>>> spread out between numa nodes. + * task group, on a
-> >>>> particular numa node.  The NUMA move threshold + * prevents
-> >>>> task moves with marginal improvement, and is set to 5%. */ =
-
-> >>>> +#define NUMA_SCALE 1024 +#define NUMA_MOVE_THRESH (5 *
-> >>>> NUMA_SCALE / 100)
-> >> =
-
-> >> It would be good to see if changing NUMA_MOVE_THRESH to =
-
-> >> (NUMA_SCALE / 8) does the trick.
-> > =
-
-> > With your 2nd patch and the above change, the result is:
-> > =
-
-> > "proc-vmstat.numa_hint_faults_local": [ 199708, 209152, 200638, =
-
-> > 187324, 196654 ],
-> > =
-
-> > avg: 198695
+> FYI, this commit seems to convert some kernel boot hang bug into
+> different BUG messages.
 > =
 
-> OK, so it is still a little higher than your original 162245.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tj/percpu.git for-3.17-cons=
+istent-ops
+> commit 9b0c63851edaf54e909475fe2a0946f57810e98a
+> Author:     Christoph Lameter <cl@linux.com>
+> AuthorDate: Fri Jun 20 14:31:18 2014 -0500
+> Commit:     Tejun Heo <tj@kernel.org>
+> CommitDate: Fri Jul 18 19:21:39 2014 -0400
+> =
 
-The original number is 94500 for ivb42 machine, the 162245 is the sum
-of the two numbers above it that are tested on two machines - one is the
-number for ivb42 and one is for lkp-snb01. Sorry if that is not clear.
+>     scheduler: Replace __get_cpu_var with this_cpu_ptr
+>     =
 
-And for the numbers I have given with your patch applied, they are all
-for ivb42 alone.
+>     Convert all uses of __get_cpu_var for address calculation to use
+>     this_cpu_ptr instead.
+
+
+-	struct cpumask *cpus =3D __get_cpu_var(load_balance_mask);
++	struct cpumask *cpus =3D this_cpu_ptr(load_balance_mask);
+
+
+I think the conversion is wrong. it should be
+			*this_cpu_ptr(&load_balance_mask);
+
+there are several such mistakes in the patch.
+
+>     =
+
+>     Cc: Peter Zijlstra <peterz@infradead.org>
+>     Acked-by: Ingo Molnar <mingo@kernel.org>
+>     Signed-off-by: Christoph Lameter <cl@linux.com>
+>     Signed-off-by: Tejun Heo <tj@kernel.org>
+> =
+
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+> PARENT COMMIT NOT CLEAN. LOOK OUT FOR WRONG BISECT!
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+> Attached dmesg for the parent commit, too, to help confirm whether it is =
+a noise error.
+> =
+
+> +-----------------------------------------------------------+------------=
++------------+------------+
+> |                                                           | 9dfcba84af =
+| 9b0c63851e | e65347f54c |
+> +-----------------------------------------------------------+------------=
++------------+------------+
+> | boot_successes                                            | 1058       =
+| 129        | 38         |
+> | boot_failures                                             | 302        =
+| 231        | 3          |
+> | BUG:kernel_boot_hang                                      | 302        =
+|            |            |
+> | BUG:unable_to_handle_kernel_paging_request                | 0          =
+| 230        | 3          |
+> | Oops                                                      | 0          =
+| 230        | 3          |
+> | RIP:load_balance                                          | 0          =
+| 230        | 3          |
+> | backtrace:__alloc_workqueue_key                           | 0          =
+| 214        | 3          |
+> | backtrace:usermodehelper_init                             | 0          =
+| 214        | 3          |
+> | backtrace:kernel_init_freeable                            | 0          =
+| 214        | 3          |
+> | backtrace:schedule                                        | 0          =
+| 16         |            |
+> | backtrace:smpboot_thread_fn                               | 0          =
+| 2          |            |
+> | kernel_BUG_at_kernel/smpboot.c                            | 0          =
+| 1          |            |
+> | invalid_opcode                                            | 0          =
+| 1          |            |
+> | RIP:smpboot_thread_fn                                     | 0          =
+| 1          |            |
+> | Kernel_panic-not_syncing:Attempted_to_kill_init_exitcode=3D | 0        =
+  | 1          |            |
+> +-----------------------------------------------------------+------------=
++------------+------------+
+> =
+
+> [    0.260658] Good, all   2 testcases passed! |
+> [    0.261298] ---------------------------------
+> [    0.261951] smpboot: Total of 2 processors activated (10773.32 BogoMIP=
+S)
+> [    0.263759] BUG: unable to handle kernel paging request at 00000000000=
+0ce50
+> [    0.263759] IP: [<ffffffff8110d4e8>] load_balance+0x48/0xce0
+> [    0.263759] PGD 0 =
+
+> [    0.263759] Oops: 0000 [#1] SMP DEBUG_PAGEALLOC
+> [    0.263759] Modules linked in:
+> [    0.263777] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.16.0-rc5-00154=
+-g9b0c638 #2
+> [    0.264811] task: ffff880000188000 ti: ffff88000018c000 task.ti: ffff8=
+8000018c000
+> [    0.265805] RIP: 0010:[<ffffffff8110d4e8>]  [<ffffffff8110d4e8>] load_=
+balance+0x48/0xce0
+> [    0.267010] RSP: 0000:ffff88000018fa18  EFLAGS: 00010002
+> [    0.267856] RAX: 0000000000000000 RBX: ffff88000020d7a0 RCX: 000000000=
+0000002
+> [    0.269009] RDX: ffff88000020d7a0 RSI: ffff8800123d1840 RDI: 000000000=
+0000000
+> [    0.270000] RBP: ffff88000018faf8 R08: ffff88000018fb3c R09: 000000000=
+0000001
+> [    0.270000] R10: 0000000000000002 R11: 0000000000000000 R12: 000000000=
+0000000
+> [    0.270000] R13: 00000000ffff8b4e R14: 0000000000000000 R15: ffff88000=
+020d7a0
+> [    0.270000] FS:  0000000000000000(0000) GS:ffff880012200000(0000) knlG=
+S:0000000000000000
+> [    0.270000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    0.270000] CR2: 000000000000ce50 CR3: 0000000001f2f000 CR4: 000000000=
+00406b0
+> [    0.270000] Stack:
+> [    0.270000]  ffff88000018fb3c 0000000200188710 ffff88000018fa38 000000=
+0000000000
+> [    0.270000]  ffff88000020d7a0 ffffffff00000000 ffff880000188000 000000=
+0000000000
+> [    0.270000]  ffff88000018fa90 0000000000000002 0000000000000006 ffff88=
+00123d1840
+> [    0.270000] Call Trace:
+> [    0.270000]  [<ffffffff81048f85>] ? kvm_clock_read+0x35/0x50
+> [    0.270000]  [<ffffffff81010c80>] ? sched_clock+0x10/0x20
+> [    0.270000]  [<ffffffff810ff564>] ? sched_clock_local+0x64/0xe0
+> [    0.270000]  [<ffffffff8110eebe>] pick_next_task_fair+0x50e/0xb30
+> [    0.270000]  [<ffffffff8110ece0>] ? pick_next_task_fair+0x330/0xb30
+> [    0.270000]  [<ffffffff81a2f402>] __schedule+0x1e2/0xca0
+> [    0.270000]  [<ffffffff81a303fc>] schedule+0x1c/0x30
+> [    0.270000]  [<ffffffff81a2ec4c>] schedule_timeout+0x1fc/0x260
+> [    0.270000]  [<ffffffff810ff95f>] ? sched_clock_cpu+0x10f/0x140
+> [    0.270000]  [<ffffffff810ff9c2>] ? local_clock+0x32/0x60
+> [    0.270000]  [<ffffffff81a37c5a>] ? _raw_spin_unlock_irq+0x4a/0x80
+> [    0.270000]  [<ffffffff81125a04>] ? trace_hardirqs_on_caller+0x1f4/0x2=
+c0
+> [    0.270000]  [<ffffffff81a31836>] wait_for_completion_killable+0x116/0=
+x230
+> [    0.270000]  [<ffffffff810fb080>] ? try_to_wake_up+0x5c0/0x5c0
+> [    0.270000]  [<ffffffff810d9aa0>] ? process_one_work+0x6d0/0x6d0
+> [    0.270000]  [<ffffffff810e59de>] kthread_create_on_node+0x13e/0x240
+> [    0.270000]  [<ffffffff810ff95f>] ? sched_clock_cpu+0x10f/0x140
+> [    0.270000]  [<ffffffff81a31774>] ? wait_for_completion_killable+0x54/=
+0x230
+> [    0.270000]  [<ffffffff81125a04>] ? trace_hardirqs_on_caller+0x1f4/0x2=
+c0
+> [    0.270000]  [<ffffffff810ddec7>] __alloc_workqueue_key+0x717/0x940
+> [    0.270000]  [<ffffffff8133eb3f>] ? alloc_cpumask_var_node+0x4f/0xa0
+> [    0.270000]  [<ffffffff8133ebf6>] ? zalloc_cpumask_var_node+0x16/0x20
+> [    0.270000]  [<ffffffff82541860>] ? sched_init_smp+0x51d/0x533
+> [    0.270000]  [<ffffffff8253fc2f>] usermodehelper_init+0x38/0x5d
+> [    0.270000]  [<ffffffff82523911>] kernel_init_freeable+0x249/0x427
+> [    0.270000]  [<ffffffff81a1fe50>] ? kernel_init+0x10/0x190
+> [    0.270000]  [<ffffffff81a1fe40>] ? rest_init+0x220/0x220
+> [    0.270000]  [<ffffffff81a1fe50>] kernel_init+0x10/0x190
+> [    0.270000]  [<ffffffff81a391fc>] ret_from_fork+0x7c/0xb0
+> [    0.270000]  [<ffffffff81a1fe40>] ? rest_init+0x220/0x220
+> [    0.270000] Code: 48 ff 05 7c dd 57 01 89 bd 58 ff ff ff 48 8b 02 48 8=
+9 95 40 ff ff ff 89 8d 2c ff ff ff 4c 89 85 20 ff ff ff 48 89 85 38 ff ff f=
+f <48> 8b 05 61 f9 ef 7e 65 48 03 04 25 18 ca 00 00 4c 8d 6d 80 48 =
+
+> [    0.270000] RIP  [<ffffffff8110d4e8>] load_balance+0x48/0xce0
+> [    0.270000]  RSP <ffff88000018fa18>
+> [    0.270000] CR2: 000000000000ce50
+> [    0.270000] ---[ end trace e47ac2652bc5a17c ]---
+> [    0.270000] ---[ end trace e47ac2652bc5a17c ]---
+> =
+
+> git bisect start e65347f54cfc1a17a3b734a0e268433dad019f3f 1795cd9b3a91d4b=
+5473c97f491d63892442212ab --
+> git bisect  bad 5a346c7c81b1e10381e5790134b79b4e6fb4434a  # 11:00      0-=
+     72  Merge 'pm/bleeding-edge' into devel-lkp-hsx01-x86_64-201407191600
+> git bisect  bad 8024b4314b39f7d45c621a6492a6b49078f8da5a  # 11:00    120-=
+      2  Merge 'percpu/for-3.17-consistent-ops' into devel-lkp-hsx01-x86_64=
+-201407191600
+> git bisect good deebbfe3e05e145d25b065a792b3f57436ea9e06  # 11:10    360+=
+     51  0day base guard for 'devel-lkp-hsx01-x86_64-201407191600'
+> git bisect good d672f939bc81513d28a5bfc570ed2f17d8f5b34a  # 11:31    360+=
+     16  Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel=
+/git/linville/wireless into for-davem
+> git bisect good d14aef3872bd25af5355a10ad5235556ac83fcfd  # 11:50    360+=
+     75  Merge branch 'perf-urgent-for-linus' of git://git.kernel.org/pub/s=
+cm/linux/kernel/git/tip/tip
+> git bisect  bad 6b233d1fb6da79d7bf86e0cb7c03e56ef7c6d39b  # 11:53      0-=
+     14  drivers/cpuidle: Replace __get_cpu_var uses for address calculation
+> git bisect good 22d368544b0ed9093a3db3ee4e00a842540fcecd  # 12:15    360+=
+     69  Merge tag 'trace-fixes-v3.16-rc5-v2' of git://git.kernel.org/pub/s=
+cm/linux/kernel/git/rostedt/linux-trace
+> git bisect good 9dfcba84af450d8685e3b7af9eea98bf1bea5b1e  # 12:22    360+=
+    157  kernel misc: Replace __get_cpu_var uses
+> git bisect  bad 2c20d34275287784397fdeb995c9686f3208fc5e  # 12:24      0-=
+     10  block: Replace __this_cpu_ptr with raw_cpu_ptr
+> git bisect  bad 9b0c63851edaf54e909475fe2a0946f57810e98a  # 12:27      1-=
+     71  scheduler: Replace __get_cpu_var with this_cpu_ptr
+> # first bad commit: [9b0c63851edaf54e909475fe2a0946f57810e98a] scheduler:=
+ Replace __get_cpu_var with this_cpu_ptr
+> git bisect good 9dfcba84af450d8685e3b7af9eea98bf1bea5b1e  # 13:48   1000+=
+    302  kernel misc: Replace __get_cpu_var uses
+> git bisect  bad e65347f54cfc1a17a3b734a0e268433dad019f3f  # 13:48      0-=
+      3  0day head guard for 'devel-lkp-hsx01-x86_64-201407191600'
+> git bisect good f83971912231fe5390d2357442b6c25bb8076d9b  # 13:57   1000+=
+    262  Merge tag 'gfs2-fixes' of git://git.kernel.org/pub/scm/linux/kerne=
+l/git/steve/gfs2-3.0-fixes
+> git bisect good 58e323c3ee94f1abcecdeeef211a27d1c106c2b3  # 14:10   1000+=
+    100  Add linux-next specific files for 20140718
+> =
 
 > =
 
-> I guess this is to be expected, since the code will be more
-> successful at placing a task on the right node, which results
-> in the task scanning its memory more rapidly for a little bit.
+> This script may reproduce the error.
 > =
 
-> Are you seeing any changes in throughput?
+> -------------------------------------------------------------------------=
+---
+> #!/bin/bash
+> =
 
-The throughput has almost no change. Your 2nd patch with scale changed
-has seen a decrease of 0.1% compared to your original commit that
-triggered the report, and that original commit has a increase of 1.2%
-compared to its parent commit.
+> kernel=3D$1
+> =
 
-Regards,
-Aaron
+> kvm=3D(
+> 	qemu-system-x86_64
+> 	-enable-kvm
+> 	-cpu Haswell,+smep,+smap
+> 	-kernel $kernel
+> 	-m 320
+> 	-smp 2
+> 	-net nic,vlan=3D1,model=3De1000
+> 	-net user,vlan=3D1
+> 	-boot order=3Dnc
+> 	-no-reboot
+> 	-watchdog i6300esb
+> 	-rtc base=3Dlocaltime
+> 	-serial stdio
+> 	-display none
+> 	-monitor null =
 
---===============2478892684155253521==--
+> )
+> =
+
+> append=3D(
+> 	hung_task_panic=3D1
+> 	earlyprintk=3DttyS0,115200
+> 	debug
+> 	apic=3Ddebug
+> 	sysrq_always_enabled
+> 	rcupdate.rcu_cpu_stall_timeout=3D100
+> 	panic=3D10
+> 	softlockup_panic=3D1
+> 	nmi_watchdog=3Dpanic
+> 	prompt_ramdisk=3D0
+> 	console=3DttyS0,115200
+> 	console=3Dtty0
+> 	vga=3Dnormal
+> 	root=3D/dev/ram0
+> 	rw
+> 	drbd.minor_count=3D8
+> )
+> =
+
+> "${kvm[@]}" --append "${append[*]}"
+> -------------------------------------------------------------------------=
+---
+> =
+
+> Thanks,
+> Fengguang
+> =
+
+> =
+
+> =
+
+> _______________________________________________
+> LKP mailing list
+> LKP(a)linux.intel.com
+
+
+--===============3101610598626833421==--
 
