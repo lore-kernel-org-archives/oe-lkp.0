@@ -1,158 +1,95 @@
-Content-Type: multipart/mixed; boundary="===============3292419082208526446=="
+Content-Type: multipart/mixed; boundary="===============6851543555833888211=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+From: Aaron Lu <aaron.lu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86, kaslr] [ 0.000000] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/cpu/common.c:1422 warn_pre_alternatives()
-Date: Wed, 30 Jul 2014 19:58:37 -0700
-Message-ID: <20140731025837.GC11241@linux.vnet.ibm.com>
-In-Reply-To: <20140731024212.GB10184@localhost>
+Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
+Date: Thu, 31 Jul 2014 13:04:54 +0800
+Message-ID: <20140731050454.GA9386@aaronlu.sh.intel.com>
+In-Reply-To: <53D9003F.3050900@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3292419082208526446==
+--===============6851543555833888211==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 31, 2014 at 10:42:12AM +0800, Fengguang Wu wrote:
-> On Wed, Jul 30, 2014 at 08:52:07AM -0700, Paul E. McKenney wrote:
-> > On Wed, Jul 30, 2014 at 10:17:32PM +0800, Fengguang Wu wrote:
-> > > On Wed, Jul 30, 2014 at 10:07:56PM +0800, Fengguang Wu wrote:
-> > > > Hi Andy,
-> > > > =
-
-> > > > Here is another WARNING message for the same commit.
-> > > > =
-
-> > > > commit d07c7f1ed61789e175fa975134855be32263be2c
-> > > > Author:     Andy Lutomirski <luto@amacapital.net>
-> > > > AuthorDate: Tue Jul 15 18:34:20 2014 -0700
-> > > > Commit:     Andy Lutomirski <luto@amacapital.net>
-> > > > CommitDate: Wed Jul 16 10:01:27 2014 -0700
-> > > > =
-
-> > > >     x86,kaslr: Use MSR_KVM_GET_RNG_SEED for KASLR if available
-> > > >     =
-
-> > > >     It's considerably better than any of the alternatives on KVM.
-> > > >     =
-
-> > > >     Rather than reinventing all of the cpu feature query code, this=
- fixes
-> > > >     native_cpuid to work in PIC objects.
-> > > >     =
-
-> > > >     I haven't combined it with boot/cpuflags.c's cpuid implementati=
-on:
-> > > >     including asm/processor.h from boot/cpuflags.c results in a flo=
-od of
-> > > >     unrelated errors, and fixing it might be messy.
-> > > >     =
-
-> > > >     Signed-off-by: Andy Lutomirski <luto@amacapital.net>
-> > > > =
-
-> > > > +------------------------------------------------------------------=
--------+------------+------------+
-> > > > |                                                                  =
-       | c6f07a6360 | d07c7f1ed6 |
-> > > > +------------------------------------------------------------------=
--------+------------+------------+
-> > > > | boot_successes                                                   =
-       | 1000       | 636        |
-> > > > | boot_failures                                                    =
-       | 0          | 84         |
-> > > > | WARNING:CPU:PID:at_arch/x86/kernel/cpu/common.c:warn_pre_alternat=
-ives() | 0          | 84         |
-> > > > | BUG:unable_to_handle_kernel_NULL_pointer_dereference             =
-       | 0          | 84         |
-> > > > | Oops                                                             =
-       | 0          | 84         |
-> > > > | RIP:__free_pages_bootmem                                         =
-       | 0          | 84         |
-> > > > | Kernel_panic-not_syncing:Fatal_exception                         =
-       | 0          | 84         |
-> > > > | backtrace:free_all_bootmem                                       =
-       | 0          | 84         |
-> > > > | backtrace:mem_init                                               =
-       | 0          | 84         |
-> > > > +------------------------------------------------------------------=
--------+------------+------------+
-> > > > =
-
-> > > > [    0.000000] PID hash table entries: 2048 (order: 2, 16384 bytes)
-> > > > [    0.000000] xsave: enabled xstate_bv 0x7, cntxt size 0x0
-> > > > [    0.000000] ------------[ cut here ]------------
-> > > > [    0.000000] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/cpu/common=
-.c:1422 warn_pre_alternatives+0x1e/0x20()
-> > > > [    0.000000] You're using static_cpu_has before alternatives have=
- run!
-> > > > [    0.000000] Modules linked in:
-> > > > [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 3.16.0-rc5-0=
-0004-gd07c7f1 #4
-> > > > [    0.000000] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
-> > > > [    0.000000]  0000000000000000 ffffffff81803c18 ffffffff813a7bd2 =
-ffffffff81803c60
-> > > > [    0.000000]  ffffffff81803c50 ffffffff810a5485 ffffffff810102f9 =
-ffffffff81803e08
-> > > > [    0.000000]  0000000000000002 000000000000077c 0000000000000000 =
-ffffffff81803cb0
-> > > > [    0.000000] Call Trace:
-> > > > [    0.000000]  [<ffffffff813a7bd2>] dump_stack+0x4d/0x66
-> > > > [    0.000000]  [<ffffffff810a5485>] warn_slowpath_common+0x7f/0x98
-> > > > [    0.000000]  [<ffffffff810102f9>] ? warn_pre_alternatives+0x1e/0=
-x20
-> > > > [    0.000000]  [<ffffffff810a54ea>] warn_slowpath_fmt+0x4c/0x4e
-> > > > [    0.000000]  [<ffffffff813b14e3>] ? restore_args+0x30/0x30
-> > > > [    0.000000]  [<ffffffff810102f9>] warn_pre_alternatives+0x1e/0x20
-> > > > [    0.000000]  [<ffffffff810378b5>] __do_page_fault+0x1bd/0x7ca
-> > > > [    0.000000]  [<ffffffff810f5782>] ? console_unlock+0x377/0x3c1
-> > > > [    0.000000]  [<ffffffff810e912e>] ? trace_hardirqs_off+0xd/0xf
-> > > > [    0.000000]  [<ffffffff813afcc5>] ? _raw_spin_unlock_irqrestore+=
-0x40/0x5e
-> > > > [    0.000000]  [<ffffffff81b93d22>] ? __next_mem_range_rev+0x205/0=
-x232
-> > > > [    0.000000]  [<ffffffff810e90e0>] ? trace_hardirqs_off_caller+0x=
-e7/0x128
-> > > > [    0.000000]  [<ffffffff81226d8a>] ? trace_hardirqs_off_thunk+0x3=
-a/0x3c
-> > > > [    0.000000]  [<ffffffff81037ee4>] do_page_fault+0x22/0x27
-> > > > [    0.000000]  [<ffffffff813b2378>] page_fault+0x28/0x30
-> > > > [    0.000000]  [<ffffffff81b74f76>] ? __free_pages_bootmem+0x2d/0x=
-f9
-> > > > [    0.000000]  [<ffffffff81b78d61>] __free_memory_core+0xa7/0xbe
-> > > > [    0.000000]  [<ffffffff81b78fe9>] free_all_bootmem+0x51/0xd2
-> > > > [    0.000000]  [<ffffffff81b67188>] mem_init+0x5c/0x8d
-> > > > [    0.000000]  [<ffffffff81b53cca>] start_kernel+0x1f7/0x53d
-> > > > [    0.000000]  [<ffffffff81b53814>] ? set_init_arg+0x55/0x55
-> > > > [    0.000000]  [<ffffffff81b53120>] ? early_idt_handlers+0x120/0x1=
-20
-> > > > [    0.000000]  [<ffffffff81b53471>] x86_64_start_reservations+0x2a=
-/0x2c
-> > > > [    0.000000]  [<ffffffff81b535b3>] x86_64_start_kernel+0x140/0x14d
-> > > > [    0.000000] ---[ end trace e4962b91bd705c64 ]---
-> > > > [    0.000000] BUG: unable to handle kernel NULL pointer dereferenc=
-e at 000000000000077c
-> > > =
-
-> > > =
-
-> > > Interestingly, the other bisect result for the above WARNING message
-> > > is
-> > > =
-
-> > > commit ddfb3b363440172d62ce62fbffdf046670d3ce2b
+On Wed, Jul 30, 2014 at 10:25:03AM -0400, Rik van Riel wrote:
+> On 07/29/2014 10:14 PM, Aaron Lu wrote:
+> > On Tue, Jul 29, 2014 at 04:04:37PM -0400, Rik van Riel wrote:
+> >> On Tue, 29 Jul 2014 10:17:12 +0200
+> >> Peter Zijlstra <peterz@infradead.org> wrote:
+> >>
+> >>>> +#define NUMA_SCALE 1000
+> >>>> +#define NUMA_MOVE_THRESH 50
+> >>>
+> >>> Please make that 1024, there's no reason not to use power of two here.
+> >>> This base 10 factor thing annoyed me no end already, its time for it =
+to
+> >>> die.
+> >>
+> >> That's easy enough.  However, it would be good to know whether
+> >> this actually helps with the regression Aaron found :)
 > > =
 
-> > This is an obsolete commit, but...
+> > Sorry for the delay.
+> > =
+
+> > I applied the last patch and queued the hackbench job to the ivb42 test
+> > machine for it to run 5 times, and here is the result(regarding the
+> > proc-vmstat.numa_hint_faults_local field):
+> > 173565
+> > 201262
+> > 192317
+> > 198342
+> > 198595
+> > avg:
+> > 192816
+> > =
+
+> > It seems it is still very big than previous kernels.
 > =
 
-> Paul, would you suggest me to test any new commit or branch HEAD?
+> It looks like a step in the right direction, though.
+> =
 
-The latest branch containing this commit is rcu/dev.2014.07.28e,
-might be worth a shot.
+> Could you try running with a larger threshold?
+> =
 
-							Thanx, Paul
+> >> +++ b/kernel/sched/fair.c
+> >> @@ -924,10 +924,12 @@ static inline unsigned long group_faults_cpu(str=
+uct numa_group *group, int nid)
+> >>  =
 
+> >>  /*
+> >>   * These return the fraction of accesses done by a particular task, or
+> >> - * task group, on a particular numa node.  The group weight is given a
+> >> - * larger multiplier, in order to group tasks together that are almost
+> >> - * evenly spread out between numa nodes.
+> >> + * task group, on a particular numa node.  The NUMA move threshold
+> >> + * prevents task moves with marginal improvement, and is set to 5%.
+> >>   */
+> >> +#define NUMA_SCALE 1024
+> >> +#define NUMA_MOVE_THRESH (5 * NUMA_SCALE / 100)
+> =
 
---===============3292419082208526446==--
+> It would be good to see if changing NUMA_MOVE_THRESH to
+> (NUMA_SCALE / 8) does the trick.
+
+With your 2nd patch and the above change, the result is:
+
+"proc-vmstat.numa_hint_faults_local": [
+  199708,
+  209152,
+  200638,
+  187324,
+  196654
+  ],
+
+avg:
+198695
+
+Regards,
+Aaron
+
+--===============6851543555833888211==--
 
