@@ -1,55 +1,149 @@
-Content-Type: multipart/mixed; boundary="===============8642998028069534759=="
+Content-Type: multipart/mixed; boundary="===============4846538212525191713=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [delayed_fput] BUG: unable to handle kernel paging request at ffff8800122a0ad0
-Date: Thu, 31 Jul 2014 10:40:14 +0800
-Message-ID: <20140731024014.GA10184@localhost>
-In-Reply-To: <CAADnVQ+OwgG-RJQ7QwfW2qrvpV9XYySckTbNmcacW7K0KxQqvA@mail.gmail.com>
+Subject: Re: [x86, kaslr] [ 0.000000] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/cpu/common.c:1422 warn_pre_alternatives()
+Date: Thu, 31 Jul 2014 10:42:12 +0800
+Message-ID: <20140731024212.GB10184@localhost>
+In-Reply-To: <20140730155207.GM11241@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8642998028069534759==
+--===============4846538212525191713==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 30, 2014 at 04:00:58PM -0700, Alexei Starovoitov wrote:
-> On Wed, Jul 30, 2014 at 3:51 PM, David Rientjes <rientjes@google.com> w=
-rote:
-> > On Wed, 30 Jul 2014, Christoph Hellwig wrote:
-> >
-> >> On Wed, Jul 30, 2014 at 11:55:41AM +0800, Fengguang Wu wrote:
-> >> > Greetings,
-> >> >
-> >> > 0day kernel testing robot got the below dmesg and the first bad comm=
-it is
-> >>
-> >> How does this manage to trip over a 2 year old commit now?
+On Wed, Jul 30, 2014 at 08:52:07AM -0700, Paul E. McKenney wrote:
+> On Wed, Jul 30, 2014 at 10:17:32PM +0800, Fengguang Wu wrote:
+> > On Wed, Jul 30, 2014 at 10:07:56PM +0800, Fengguang Wu wrote:
+> > > Hi Andy,
+> > > =
+
+> > > Here is another WARNING message for the same commit.
+> > > =
+
+> > > commit d07c7f1ed61789e175fa975134855be32263be2c
+> > > Author:     Andy Lutomirski <luto@amacapital.net>
+> > > AuthorDate: Tue Jul 15 18:34:20 2014 -0700
+> > > Commit:     Andy Lutomirski <luto@amacapital.net>
+> > > CommitDate: Wed Jul 16 10:01:27 2014 -0700
+> > > =
+
+> > >     x86,kaslr: Use MSR_KVM_GET_RNG_SEED for KASLR if available
+> > >     =
+
+> > >     It's considerably better than any of the alternatives on KVM.
+> > >     =
+
+> > >     Rather than reinventing all of the cpu feature query code, this f=
+ixes
+> > >     native_cpuid to work in PIC objects.
+> > >     =
+
+> > >     I haven't combined it with boot/cpuflags.c's cpuid implementation:
+> > >     including asm/processor.h from boot/cpuflags.c results in a flood=
+ of
+> > >     unrelated errors, and fixing it might be messy.
+> > >     =
+
+> > >     Signed-off-by: Andy Lutomirski <luto@amacapital.net>
+> > > =
+
+> > > +--------------------------------------------------------------------=
+-----+------------+------------+
+> > > |                                                                    =
+     | c6f07a6360 | d07c7f1ed6 |
+> > > +--------------------------------------------------------------------=
+-----+------------+------------+
+> > > | boot_successes                                                     =
+     | 1000       | 636        |
+> > > | boot_failures                                                      =
+     | 0          | 84         |
+> > > | WARNING:CPU:PID:at_arch/x86/kernel/cpu/common.c:warn_pre_alternativ=
+es() | 0          | 84         |
+> > > | BUG:unable_to_handle_kernel_NULL_pointer_dereference               =
+     | 0          | 84         |
+> > > | Oops                                                               =
+     | 0          | 84         |
+> > > | RIP:__free_pages_bootmem                                           =
+     | 0          | 84         |
+> > > | Kernel_panic-not_syncing:Fatal_exception                           =
+     | 0          | 84         |
+> > > | backtrace:free_all_bootmem                                         =
+     | 0          | 84         |
+> > > | backtrace:mem_init                                                 =
+     | 0          | 84         |
+> > > +--------------------------------------------------------------------=
+-----+------------+------------+
+> > > =
+
+> > > [    0.000000] PID hash table entries: 2048 (order: 2, 16384 bytes)
+> > > [    0.000000] xsave: enabled xstate_bv 0x7, cntxt size 0x0
+> > > [    0.000000] ------------[ cut here ]------------
+> > > [    0.000000] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/cpu/common.c=
+:1422 warn_pre_alternatives+0x1e/0x20()
+> > > [    0.000000] You're using static_cpu_has before alternatives have r=
+un!
+> > > [    0.000000] Modules linked in:
+> > > [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 3.16.0-rc5-000=
+04-gd07c7f1 #4
+> > > [    0.000000] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+> > > [    0.000000]  0000000000000000 ffffffff81803c18 ffffffff813a7bd2 ff=
+ffffff81803c60
+> > > [    0.000000]  ffffffff81803c50 ffffffff810a5485 ffffffff810102f9 ff=
+ffffff81803e08
+> > > [    0.000000]  0000000000000002 000000000000077c 0000000000000000 ff=
+ffffff81803cb0
+> > > [    0.000000] Call Trace:
+> > > [    0.000000]  [<ffffffff813a7bd2>] dump_stack+0x4d/0x66
+> > > [    0.000000]  [<ffffffff810a5485>] warn_slowpath_common+0x7f/0x98
+> > > [    0.000000]  [<ffffffff810102f9>] ? warn_pre_alternatives+0x1e/0x20
+> > > [    0.000000]  [<ffffffff810a54ea>] warn_slowpath_fmt+0x4c/0x4e
+> > > [    0.000000]  [<ffffffff813b14e3>] ? restore_args+0x30/0x30
+> > > [    0.000000]  [<ffffffff810102f9>] warn_pre_alternatives+0x1e/0x20
+> > > [    0.000000]  [<ffffffff810378b5>] __do_page_fault+0x1bd/0x7ca
+> > > [    0.000000]  [<ffffffff810f5782>] ? console_unlock+0x377/0x3c1
+> > > [    0.000000]  [<ffffffff810e912e>] ? trace_hardirqs_off+0xd/0xf
+> > > [    0.000000]  [<ffffffff813afcc5>] ? _raw_spin_unlock_irqrestore+0x=
+40/0x5e
+> > > [    0.000000]  [<ffffffff81b93d22>] ? __next_mem_range_rev+0x205/0x2=
+32
+> > > [    0.000000]  [<ffffffff810e90e0>] ? trace_hardirqs_off_caller+0xe7=
+/0x128
+> > > [    0.000000]  [<ffffffff81226d8a>] ? trace_hardirqs_off_thunk+0x3a/=
+0x3c
+> > > [    0.000000]  [<ffffffff81037ee4>] do_page_fault+0x22/0x27
+> > > [    0.000000]  [<ffffffff813b2378>] page_fault+0x28/0x30
+> > > [    0.000000]  [<ffffffff81b74f76>] ? __free_pages_bootmem+0x2d/0xf9
+> > > [    0.000000]  [<ffffffff81b78d61>] __free_memory_core+0xa7/0xbe
+> > > [    0.000000]  [<ffffffff81b78fe9>] free_all_bootmem+0x51/0xd2
+> > > [    0.000000]  [<ffffffff81b67188>] mem_init+0x5c/0x8d
+> > > [    0.000000]  [<ffffffff81b53cca>] start_kernel+0x1f7/0x53d
+> > > [    0.000000]  [<ffffffff81b53814>] ? set_init_arg+0x55/0x55
+> > > [    0.000000]  [<ffffffff81b53120>] ? early_idt_handlers+0x120/0x120
+> > > [    0.000000]  [<ffffffff81b53471>] x86_64_start_reservations+0x2a/0=
+x2c
+> > > [    0.000000]  [<ffffffff81b535b3>] x86_64_start_kernel+0x140/0x14d
+> > > [    0.000000] ---[ end trace e4962b91bd705c64 ]---
+> > > [    0.000000] BUG: unable to handle kernel NULL pointer dereference =
+at 000000000000077c
+> > =
+
+> > =
+
+> > Interestingly, the other bisect result for the above WARNING message
+> > is
+> > =
+
+> > commit ddfb3b363440172d62ce62fbffdf046670d3ce2b
 > =
 
-> may be because all kernels are built with gcc 4.8.2 ?
-> Fengguang, did you recently switch to new compiler?
-> I think all older builds were with 4.6.3
+> This is an obsolete commit, but...
 
-Alexei, I've been using gcc 4.8.2 for 4 months.
-
-Maybe it's because I test new randconfigs every day. And the problem
-may only show up with very specific kernel config?
+Paul, would you suggest me to test any new commit or branch HEAD?
 
 Thanks,
 Fengguang
 
-> > I think there's something weird going on with the testing of CONFIG_SLO=
-B,
-> > same as http://permalink.gmane.org/gmane.linux.kernel/1759314 that
-> > identified a harmless commit that only initializes a field of
-> > struct mm_struct and then ended up exploded in slob freeing.
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-kernel"=
- in
-> > the body of a message to majordomo(a)vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > Please read the FAQ at  http://www.tux.org/lkml/
-
---===============8642998028069534759==--
+--===============4846538212525191713==--
 
