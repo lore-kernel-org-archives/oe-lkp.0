@@ -1,47 +1,69 @@
-Content-Type: multipart/mixed; boundary="===============2758789383842673399=="
+Content-Type: multipart/mixed; boundary="===============3032679588965893164=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Mel Gorman <mgorman@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
-Date: Thu, 31 Jul 2014 10:33:30 +0200
-Message-ID: <20140731083330.GO19379@twins.programming.kicks-ass.net>
-In-Reply-To: <20140730021425.GA25023@aaronlu.sh.intel.com>
+Subject: Re: [mm] b72fd1470c9: -41.7% perf-profile.cpu-cycles.get_page_from_freelist.__alloc_pages_nodemask.alloc_pages_current.__page_cache_alloc.pagecache_get_page
+Date: Thu, 31 Jul 2014 09:48:32 +0100
+Message-ID: <20140731084832.GP10819@suse.de>
+In-Reply-To: <20140731055035.GB19742@aaronlu.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2758789383842673399==
+--===============3032679588965893164==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 30, 2014 at 10:14:25AM +0800, Aaron Lu wrote:
-> 118881 ~ 0%            +1.2%    120325 ~ 0% ivb42/hackbench/50%-threads-p=
-ipe
+On Thu, Jul 31, 2014 at 01:50:35PM +0800, Aaron Lu wrote:
+> FYI, we noticed the below changes on
+> =
 
-What kind of IVB is that EP or EX (or rather, how many sockets)? Also
-what arguments to hackbench do you use?
+> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> commit b72fd1470c9735f53485d089aa918dc327a86077 ("mm: rearrange zone fiel=
+ds into read-only, page alloc, statistics and page reclaim lines")
+> =
+
+> test case: lkp-st02/dd-write/5m-11HDD-JBOD-cfq-xfs-10dd
+> =
+
+> e28c951ff01a805  b72fd1470c9735f53485d089a  =
+
+> ---------------  -------------------------  =
+
+>       1.06 ~ 6%     -41.7%       0.62 ~ 3%  TOTAL perf-profile.cpu-cycles=
+.get_page_from_freelist.__alloc_pages_nodemask.alloc_pages_current.__page_c=
+ache_alloc.pagecache_get_page
+>       1.34 ~ 2%     -19.8%       1.07 ~ 2%  TOTAL perf-profile.cpu-cycles=
+.__block_write_begin.xfs_vm_write_begin.generic_perform_write.xfs_file_buff=
+ered_aio_write.xfs_file_write_iter
+>       1.19 ~ 5%     -12.1%       1.05 ~ 4%  TOTAL perf-profile.cpu-cycles=
+.copy_from_user_atomic_iovec.iov_iter_copy_from_user_atomic.generic_perform=
+_write.xfs_file_buffered_aio_write.xfs_file_write_iter
+>       2.78 ~ 1%     -16.3%       2.32 ~ 4%  TOTAL perf-profile.cpu-cycles=
+.__clear_user.read_zero.read_zero.vfs_read.sys_read
+>   2.96e+09 ~ 4%      -5.2%  2.806e+09 ~ 0%  TOTAL perf-stat.cache-misses
+>   3.86e+12 ~ 5%      -5.2%  3.658e+12 ~ 1%  TOTAL perf-stat.ref-cycles
+> =
+
+> Legend:
+> 	~XX%    - stddev percent
+> 	[+-]XX% - change percent
+> =
 
 
---===============2758789383842673399==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.sig"
+I'm not exactly sure what I'm reading here. I think it is reporting on cpu
+cycles and cache misses used in various kernel functions. It's not clear wh=
+at
+the units are but it looks like percentages of overall cycles spent in the
+reported functions. That may or may not be good depending on whether there
+is a higher cost elsewhere pushing the percentages down but that detail
+is not in the report. It looks like this is reporting that fewer clock
+cycles are being spent and incurring fewer cache misses. What is the proble=
+m?
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEuNC4xMiAoR05V
-L0xpbnV4KQoKaVFJY0JBRUJBZ0FHQlFKVDJmOWFBQW9KRUhaSDRhUkx3T1M2Y1k0UC8wcWdwZ1lG
-VTZiUkpzcVF3VjVLdC9GeQppMWZseDRMUTRzZnF2QkhKVnVUY0VUaHZyZkw5Yy9ZT2xkWVpGMW1p
-KzZwcG1ScC8rV0x1Y1RwNjFFamw4ZDhqCnphZUxyVVgyclozUTZzSjc0ZTkybytObDk1TUpOUTRo
-emVQY1BOUFljNlU0a0IxNUFsVWw1LytTVS8zdUxwR3MKTXdZV1UzSHJ0NU15dGdtZG9LdFFZSzQ1
-TXNxN0dKQmxqcWhHVG5ING9rN3hrUVVmMjJyTm9STE1INDg2SHpTSApqR3BrQVI4N1Jrd0svUUdv
-cmhYK05vTWVMRCtUREZWcXJUSjB2elEzTEM5MURGZ2lhS01lWVVzbGp1Uml3d1R6CnF1QTBRQ3Fv
-SGN4bUp3V25EVHZ5MlZwQkZKaE5NUkFtV0NhZUxVWEkyNXUxYmZ1a1VpcTN0cmlwWDlEblNHeWoK
-SW0vVlI3ZzlPRTR4SXdkSWpkK3VMYUtwRDd6aGIwanUzaitpelpNTmpxbnVsYS9PaVRzcCtrRTJo
-OU1mdUtNKwpwdE9xUTk5ejhlKzN2M2ZYWDZEeDJPR2lhSVdDTkZjWGZnN0JDQU5NT2FRV21hN2pa
-TnB6cTFCOWcvTTRURk90CjR2SDY0SUhrSkdiRTFhRjd2dkpDc3RhbDIxSVZGWVhMeXNrdi80MTBH
-V3hiSE8xZFROQ2xtdVo3WTRPTXlmTmsKT3hBRitQOG12d05CN2VWdTdZQng4VzNXUk1qTnJVN0Fv
-ai9hLzJxTS9UQVI1TFh0dElQKzQzUEt5WkNqajBtVQpldTRkUzVidXJmMEZnWjFwQXFscnQvYzE3
-dE0wdGViTHd5THY1eTJGWGNsS3NaTStjT3ZHbklhMEpXNG02YVZZCitxNTRYVHZRMzZVYi9rMGU2
-TEp2Cj1MZTdiCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
+-- =
 
---===============2758789383842673399==--
+Mel Gorman
+SUSE Labs
+
+--===============3032679588965893164==--
 
