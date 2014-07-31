@@ -1,187 +1,114 @@
-Content-Type: multipart/mixed; boundary="===============6683340510487807516=="
+Content-Type: multipart/mixed; boundary="===============0389947354207575539=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Rik van Riel <riel@redhat.com>
 To: lkp@lists.01.org
-Subject: [mm] b72fd1470c9: -41.7% perf-profile.cpu-cycles.get_page_from_freelist.__alloc_pages_nodemask.alloc_pages_current.__page_cache_alloc.pagecache_get_page
-Date: Thu, 31 Jul 2014 13:50:35 +0800
-Message-ID: <20140731055035.GB19742@aaronlu.sh.intel.com>
+Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
+Date: Thu, 31 Jul 2014 02:22:55 -0400
+Message-ID: <53D9E0BF.1020600@redhat.com>
+In-Reply-To: <20140731050454.GA9386@aaronlu.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6683340510487807516==
+--===============0389947354207575539==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-commit b72fd1470c9735f53485d089aa918dc327a86077 ("mm: rearrange zone fields=
- into read-only, page alloc, statistics and page reclaim lines")
+On 07/31/2014 01:04 AM, Aaron Lu wrote:
+> On Wed, Jul 30, 2014 at 10:25:03AM -0400, Rik van Riel wrote:
+>> On 07/29/2014 10:14 PM, Aaron Lu wrote:
+>>> On Tue, Jul 29, 2014 at 04:04:37PM -0400, Rik van Riel wrote:
+>>>> On Tue, 29 Jul 2014 10:17:12 +0200 Peter Zijlstra
+>>>> <peterz@infradead.org> wrote:
+>>>> =
 
-test case: lkp-st02/dd-write/5m-11HDD-JBOD-cfq-xfs-10dd
+>>>>>> +#define NUMA_SCALE 1000 +#define NUMA_MOVE_THRESH 50
+>>>>> =
 
-e28c951ff01a805  b72fd1470c9735f53485d089a  =
+>>>>> Please make that 1024, there's no reason not to use power
+>>>>> of two here. This base 10 factor thing annoyed me no end
+>>>>> already, its time for it to die.
+>>>> =
 
----------------  -------------------------  =
+>>>> That's easy enough.  However, it would be good to know
+>>>> whether this actually helps with the regression Aaron found
+>>>> :)
+>>> =
 
-      1.06 ~ 6%     -41.7%       0.62 ~ 3%  TOTAL perf-profile.cpu-cycles.g=
-et_page_from_freelist.__alloc_pages_nodemask.alloc_pages_current.__page_cac=
-he_alloc.pagecache_get_page
-      1.34 ~ 2%     -19.8%       1.07 ~ 2%  TOTAL perf-profile.cpu-cycles._=
-_block_write_begin.xfs_vm_write_begin.generic_perform_write.xfs_file_buffer=
-ed_aio_write.xfs_file_write_iter
-      1.19 ~ 5%     -12.1%       1.05 ~ 4%  TOTAL perf-profile.cpu-cycles.c=
-opy_from_user_atomic_iovec.iov_iter_copy_from_user_atomic.generic_perform_w=
-rite.xfs_file_buffered_aio_write.xfs_file_write_iter
-      2.78 ~ 1%     -16.3%       2.32 ~ 4%  TOTAL perf-profile.cpu-cycles._=
-_clear_user.read_zero.read_zero.vfs_read.sys_read
-  2.96e+09 ~ 4%      -5.2%  2.806e+09 ~ 0%  TOTAL perf-stat.cache-misses
-  3.86e+12 ~ 5%      -5.2%  3.658e+12 ~ 1%  TOTAL perf-stat.ref-cycles
+>>> Sorry for the delay.
+>>> =
 
-Legend:
-	~XX%    - stddev percent
-	[+-]XX% - change percent
+>>> I applied the last patch and queued the hackbench job to the
+>>> ivb42 test machine for it to run 5 times, and here is the
+>>> result(regarding the proc-vmstat.numa_hint_faults_local
+>>> field): 173565 201262 192317 198342 198595 avg: 192816
+>>> =
 
+>>> It seems it is still very big than previous kernels.
+>> =
 
+>> It looks like a step in the right direction, though.
+>> =
 
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
+>> Could you try running with a larger threshold?
+>> =
 
-Thanks,
-Aaron
+>>>> +++ b/kernel/sched/fair.c @@ -924,10 +924,12 @@ static inline
+>>>> unsigned long group_faults_cpu(struct numa_group *group, int
+>>>> nid)
+>>>> =
 
---===============6683340510487807516==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
+>>>> /* * These return the fraction of accesses done by a
+>>>> particular task, or - * task group, on a particular numa
+>>>> node.  The group weight is given a - * larger multiplier, in
+>>>> order to group tasks together that are almost - * evenly
+>>>> spread out between numa nodes. + * task group, on a
+>>>> particular numa node.  The NUMA move threshold + * prevents
+>>>> task moves with marginal improvement, and is set to 5%. */ =
 
-ZWNobyAxID4gL3N5cy9rZXJuZWwvZGVidWcvdHJhY2luZy9ldmVudHMvd3JpdGViYWNrL2JhbGFu
-Y2VfZGlydHlfcGFnZXMvZW5hYmxlCmVjaG8gMSA+IC9zeXMva2VybmVsL2RlYnVnL3RyYWNpbmcv
-ZXZlbnRzL3dyaXRlYmFjay9iZGlfZGlydHlfcmF0ZWxpbWl0L2VuYWJsZQplY2hvIDEgPiAvc3lz
-L2tlcm5lbC9kZWJ1Zy90cmFjaW5nL2V2ZW50cy93cml0ZWJhY2svZ2xvYmFsX2RpcnR5X3N0YXRl
-L2VuYWJsZQplY2hvIDEgPiAvc3lzL2tlcm5lbC9kZWJ1Zy90cmFjaW5nL2V2ZW50cy93cml0ZWJh
-Y2svd3JpdGViYWNrX3NpbmdsZV9pbm9kZS9lbmFibGUKbWtmcyAtdCB4ZnMgL2Rldi9zZGIxCm1r
-ZnMgLXQgeGZzIC9kZXYvc2RqMQpta2ZzIC10IHhmcyAvZGV2L3NkaDEKbWtmcyAtdCB4ZnMgL2Rl
-di9zZGUxCm1rZnMgLXQgeGZzIC9kZXYvc2RjMQpta2ZzIC10IHhmcyAvZGV2L3NkazEKbWtmcyAt
-dCB4ZnMgL2Rldi9zZGQxCm1rZnMgLXQgeGZzIC9kZXYvc2RmMQpta2ZzIC10IHhmcyAvZGV2L3Nk
-ZzEKbWtmcyAtdCB4ZnMgL2Rldi9zZGkxCm1rZnMgLXQgeGZzIC9kZXYvc2RsMQptb3VudCAtdCB4
-ZnMgLW8gbm9iYXJyaWVyLGlub2RlNjQgL2Rldi9zZGIxIC9mcy9zZGIxCm1vdW50IC10IHhmcyAt
-byBub2JhcnJpZXIsaW5vZGU2NCAvZGV2L3NkYzEgL2ZzL3NkYzEKbW91bnQgLXQgeGZzIC1vIG5v
-YmFycmllcixpbm9kZTY0IC9kZXYvc2RkMSAvZnMvc2RkMQptb3VudCAtdCB4ZnMgLW8gbm9iYXJy
-aWVyLGlub2RlNjQgL2Rldi9zZGUxIC9mcy9zZGUxCm1vdW50IC10IHhmcyAtbyBub2JhcnJpZXIs
-aW5vZGU2NCAvZGV2L3NkZjEgL2ZzL3NkZjEKbW91bnQgLXQgeGZzIC1vIG5vYmFycmllcixpbm9k
-ZTY0IC9kZXYvc2RnMSAvZnMvc2RnMQptb3VudCAtdCB4ZnMgLW8gbm9iYXJyaWVyLGlub2RlNjQg
-L2Rldi9zZGgxIC9mcy9zZGgxCm1vdW50IC10IHhmcyAtbyBub2JhcnJpZXIsaW5vZGU2NCAvZGV2
-L3NkaTEgL2ZzL3NkaTEKbW91bnQgLXQgeGZzIC1vIG5vYmFycmllcixpbm9kZTY0IC9kZXYvc2Rq
-MSAvZnMvc2RqMQptb3VudCAtdCB4ZnMgLW8gbm9iYXJyaWVyLGlub2RlNjQgL2Rldi9zZGsxIC9m
-cy9zZGsxCm1vdW50IC10IHhmcyAtbyBub2JhcnJpZXIsaW5vZGU2NCAvZGV2L3NkbDEgL2ZzL3Nk
-bDEKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RiMS96ZXJvLTEgc3RhdHVzPW5veGZlciAmCmRk
-ICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkYzEvemVyby0xIHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9
-L2Rldi96ZXJvIG9mPS9mcy9zZGQxL3plcm8tMSBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYv
-emVybyBvZj0vZnMvc2RlMS96ZXJvLTEgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8g
-b2Y9L2ZzL3NkZjEvemVyby0xIHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9m
-cy9zZGcxL3plcm8tMSBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2Ro
-MS96ZXJvLTEgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkaTEvemVy
-by0xIHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGoxL3plcm8tMSBz
-dGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RrMS96ZXJvLTEgc3RhdHVz
-PW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkbDEvemVyby0xIHN0YXR1cz1ub3hm
-ZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGIxL3plcm8tMiBzdGF0dXM9bm94ZmVyICYK
-ZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RjMS96ZXJvLTIgc3RhdHVzPW5veGZlciAmCmRkICBp
-Zj0vZGV2L3plcm8gb2Y9L2ZzL3NkZDEvemVyby0yIHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rl
-di96ZXJvIG9mPS9mcy9zZGUxL3plcm8tMiBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVy
-byBvZj0vZnMvc2RmMS96ZXJvLTIgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9
-L2ZzL3NkZzEvemVyby0yIHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9z
-ZGgxL3plcm8tMiBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RpMS96
-ZXJvLTIgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkajEvemVyby0y
-IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGsxL3plcm8tMiBzdGF0
-dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RsMS96ZXJvLTIgc3RhdHVzPW5v
-eGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkYjEvemVyby0zIHN0YXR1cz1ub3hmZXIg
-JgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGMxL3plcm8tMyBzdGF0dXM9bm94ZmVyICYKZGQg
-IGlmPS9kZXYvemVybyBvZj0vZnMvc2RkMS96ZXJvLTMgc3RhdHVzPW5veGZlciAmCmRkICBpZj0v
-ZGV2L3plcm8gb2Y9L2ZzL3NkZTEvemVyby0zIHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96
-ZXJvIG9mPS9mcy9zZGYxL3plcm8tMyBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBv
-Zj0vZnMvc2RnMS96ZXJvLTMgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2Zz
-L3NkaDEvemVyby0zIHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGkx
-L3plcm8tMyBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RqMS96ZXJv
-LTMgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkazEvemVyby0zIHN0
-YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGwxL3plcm8tMyBzdGF0dXM9
-bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RiMS96ZXJvLTQgc3RhdHVzPW5veGZl
-ciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkYzEvemVyby00IHN0YXR1cz1ub3hmZXIgJgpk
-ZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGQxL3plcm8tNCBzdGF0dXM9bm94ZmVyICYKZGQgIGlm
-PS9kZXYvemVybyBvZj0vZnMvc2RlMS96ZXJvLTQgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2
-L3plcm8gb2Y9L2ZzL3NkZjEvemVyby00IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJv
-IG9mPS9mcy9zZGcxL3plcm8tNCBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0v
-ZnMvc2RoMS96ZXJvLTQgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3Nk
-aTEvemVyby00IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGoxL3pl
-cm8tNCBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RrMS96ZXJvLTQg
-c3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkbDEvemVyby00IHN0YXR1
-cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGIxL3plcm8tNSBzdGF0dXM9bm94
-ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RjMS96ZXJvLTUgc3RhdHVzPW5veGZlciAm
-CmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkZDEvemVyby01IHN0YXR1cz1ub3hmZXIgJgpkZCAg
-aWY9L2Rldi96ZXJvIG9mPS9mcy9zZGUxL3plcm8tNSBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9k
-ZXYvemVybyBvZj0vZnMvc2RmMS96ZXJvLTUgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3pl
-cm8gb2Y9L2ZzL3NkZzEvemVyby01IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9m
-PS9mcy9zZGgxL3plcm8tNSBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMv
-c2RpMS96ZXJvLTUgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkajEv
-emVyby01IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGsxL3plcm8t
-NSBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RsMS96ZXJvLTUgc3Rh
-dHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkYjEvemVyby02IHN0YXR1cz1u
-b3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGMxL3plcm8tNiBzdGF0dXM9bm94ZmVy
-ICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RkMS96ZXJvLTYgc3RhdHVzPW5veGZlciAmCmRk
-ICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkZTEvemVyby02IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9
-L2Rldi96ZXJvIG9mPS9mcy9zZGYxL3plcm8tNiBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYv
-emVybyBvZj0vZnMvc2RnMS96ZXJvLTYgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8g
-b2Y9L2ZzL3NkaDEvemVyby02IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9m
-cy9zZGkxL3plcm8tNiBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2Rq
-MS96ZXJvLTYgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkazEvemVy
-by02IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGwxL3plcm8tNiBz
-dGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RiMS96ZXJvLTcgc3RhdHVz
-PW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkYzEvemVyby03IHN0YXR1cz1ub3hm
-ZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGQxL3plcm8tNyBzdGF0dXM9bm94ZmVyICYK
-ZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RlMS96ZXJvLTcgc3RhdHVzPW5veGZlciAmCmRkICBp
-Zj0vZGV2L3plcm8gb2Y9L2ZzL3NkZjEvemVyby03IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rl
-di96ZXJvIG9mPS9mcy9zZGcxL3plcm8tNyBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVy
-byBvZj0vZnMvc2RoMS96ZXJvLTcgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9
-L2ZzL3NkaTEvemVyby03IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9z
-ZGoxL3plcm8tNyBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RrMS96
-ZXJvLTcgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkbDEvemVyby03
-IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGIxL3plcm8tOCBzdGF0
-dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RjMS96ZXJvLTggc3RhdHVzPW5v
-eGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkZDEvemVyby04IHN0YXR1cz1ub3hmZXIg
-JgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGUxL3plcm8tOCBzdGF0dXM9bm94ZmVyICYKZGQg
-IGlmPS9kZXYvemVybyBvZj0vZnMvc2RmMS96ZXJvLTggc3RhdHVzPW5veGZlciAmCmRkICBpZj0v
-ZGV2L3plcm8gb2Y9L2ZzL3NkZzEvemVyby04IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96
-ZXJvIG9mPS9mcy9zZGgxL3plcm8tOCBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBv
-Zj0vZnMvc2RpMS96ZXJvLTggc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2Zz
-L3NkajEvemVyby04IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGsx
-L3plcm8tOCBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RsMS96ZXJv
-LTggc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkYjEvemVyby05IHN0
-YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGMxL3plcm8tOSBzdGF0dXM9
-bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RkMS96ZXJvLTkgc3RhdHVzPW5veGZl
-ciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkZTEvemVyby05IHN0YXR1cz1ub3hmZXIgJgpk
-ZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGYxL3plcm8tOSBzdGF0dXM9bm94ZmVyICYKZGQgIGlm
-PS9kZXYvemVybyBvZj0vZnMvc2RnMS96ZXJvLTkgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2
-L3plcm8gb2Y9L2ZzL3NkaDEvemVyby05IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJv
-IG9mPS9mcy9zZGkxL3plcm8tOSBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0v
-ZnMvc2RqMS96ZXJvLTkgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3Nk
-azEvemVyby05IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGwxL3pl
-cm8tOSBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RiMS96ZXJvLTEw
-IHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGMxL3plcm8tMTAgc3Rh
-dHVzPW5veGZlciAmCmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkZDEvemVyby0xMCBzdGF0dXM9
-bm94ZmVyICYKZGQgIGlmPS9kZXYvemVybyBvZj0vZnMvc2RlMS96ZXJvLTEwIHN0YXR1cz1ub3hm
-ZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9mPS9mcy9zZGYxL3plcm8tMTAgc3RhdHVzPW5veGZlciAm
-CmRkICBpZj0vZGV2L3plcm8gb2Y9L2ZzL3NkZzEvemVyby0xMCBzdGF0dXM9bm94ZmVyICYKZGQg
-IGlmPS9kZXYvemVybyBvZj0vZnMvc2RoMS96ZXJvLTEwIHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9
-L2Rldi96ZXJvIG9mPS9mcy9zZGkxL3plcm8tMTAgc3RhdHVzPW5veGZlciAmCmRkICBpZj0vZGV2
-L3plcm8gb2Y9L2ZzL3NkajEvemVyby0xMCBzdGF0dXM9bm94ZmVyICYKZGQgIGlmPS9kZXYvemVy
-byBvZj0vZnMvc2RrMS96ZXJvLTEwIHN0YXR1cz1ub3hmZXIgJgpkZCAgaWY9L2Rldi96ZXJvIG9m
-PS9mcy9zZGwxL3plcm8tMTAgc3RhdHVzPW5veGZlciAmCnNsZWVwIDI5OApraWxsYWxsIC05IGRk
-Cg==
+>>>> +#define NUMA_SCALE 1024 +#define NUMA_MOVE_THRESH (5 *
+>>>> NUMA_SCALE / 100)
+>> =
 
---===============6683340510487807516==--
+>> It would be good to see if changing NUMA_MOVE_THRESH to =
+
+>> (NUMA_SCALE / 8) does the trick.
+> =
+
+> With your 2nd patch and the above change, the result is:
+> =
+
+> "proc-vmstat.numa_hint_faults_local": [ 199708, 209152, 200638, =
+
+> 187324, 196654 ],
+> =
+
+> avg: 198695
+
+OK, so it is still a little higher than your original 162245.
+
+I guess this is to be expected, since the code will be more
+successful at placing a task on the right node, which results
+in the task scanning its memory more rapidly for a little bit.
+
+Are you seeing any changes in throughput?
+
+- -- =
+
+All rights reversed
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQEcBAEBAgAGBQJT2eC/AAoJEM553pKExN6DIFMH/23LsoEJ8cUqMTdWUzhXesEb
+TW0yncraZ6tDkGHopTU4oFmck93XUUVSJRVjLC3lxvxAIdWt8M4GCbWN8RD1yicX
+Ii9s18+2r2vkc30gkIgh2yahaqQUun9sUkuaQ4BaKlbP+hwQzB3OfU1GjR7iStFE
+t04krgCAL+xL63H/4mN0Y9ZjOBUz2QYbkspS21+oEWKkFY2FyyQn+hOSnA6lSvqy
+o7v4tmC8jtRXsQY+hfy1aOtMUZO5sRcYHOttlxgjE5MbnW/whhsC+oB7cWw646St
+LhvhhIykl/g2Bz+E3KbfnREGn5OO7NmEhv3am2Dj5XsNHnEfxYJH/m/aTA4az/s=3D
+=3D/IeV
+-----END PGP SIGNATURE-----
+
+--===============0389947354207575539==--
 
