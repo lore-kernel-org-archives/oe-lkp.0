@@ -1,65 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============2303705236507128560=="
+Content-Type: multipart/mixed; boundary="===============5765172325536561697=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Yuyang Du <yuyang.du@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [perf/x86/RAPL] BUG: unable to handle kernel NULL pointer dereference at 00000028
-Date: Fri, 01 Aug 2014 07:59:42 +0800
-Message-ID: <20140731235942.GA5635@localhost>
-In-Reply-To: <CABPqkBQ5WagvWLa4ojLAZB2fgBUa53YstBsmLS6JqVzjZ2aEaQ@mail.gmail.com>
+Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
+Date: Fri, 01 Aug 2014 07:58:25 +0800
+Message-ID: <20140731235825.GH28673@intel.com>
+In-Reply-To: <20140801072911.GE19379@twins.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2303705236507128560==
+--===============5765172325536561697==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 31, 2014 at 07:57:25PM +0200, Stephane Eranian wrote:
-> On Thu, Jul 31, 2014 at 4:32 AM, Fengguang Wu <fengguang.wu@intel.com> =
-wrote:
-> > Hi Stephane,
-> >
-> > On Wed, Jul 30, 2014 at 07:56:11PM +0200, Stephane Eranian wrote:
-> >> On Wed, Jul 30, 2014 at 7:53 AM, Fengguang Wu <fengguang.wu@intel.co=
-m> wrote:
-> >> > On Wed, Jul 30, 2014 at 06:45:58AM +0200, Stephane Eranian wrote:
-> >> >> On Wed, Jul 30, 2014 at 6:00 AM, Fengguang Wu <fengguang.wu@intel=
-.com> wrote:
-> >> >> > Greetings,
-> >> >> >
-> >> >> > 0day kernel testing robot got the below dmesg and the first bad c=
-ommit is
-> >> >> >
-> >> >> Is this booting a guest kernel or native?
-> >> >
-> >> > It's a guest kernel.
-> >> >
-> >> >> What is the  host CPU?
-> >> >
-> >> > The host CPU is E5-2680, Sandy Bridge-EP.
-> >> >
-> >> I thought this problem had already be mentioned a while back.
-> >>
-> >> See https://lkml.org/lkml/2014/3/6/685
-> >> And https://lkml.org/lkml/2014/4/23/512
-> >>
-> >> So what you are telling here is that those two fixes never made it or
-> >> that you are
-> >> running an older kernel.
-> >
-> > I just checked linux-next and find that the bug in rapl_pmu_init() has
-> > been fixed. linux-next happen to have the same "BUG: unable to handle
-> > kernel NULL pointer dereference" message but at another function
-> > validate_chain().. Attached is the dmesg in linux-next.
-> >
-> > Sorry for the noise!
-> >
-> Is it fixed with the two patches I referred you to?
+On Fri, Aug 01, 2014 at 09:29:11AM +0200, Peter Zijlstra wrote:
+> On Fri, Aug 01, 2014 at 10:03:30AM +0800, Aaron Lu wrote:
+> > > > > ebe06187bf2aec1  a43455a1d572daf7b730fe12e  =
 
-Yes.
+> > > > > ---------------  -------------------------  =
 
-Thanks,
-Fengguang
+> > > > >      94500 ~ 3%    +115.6%     203711 ~ 6%  ivb42/hackbench/50%-t=
+hreads-pipe
+> > > > >      67745 ~ 4%     +64.1%     111174 ~ 5%  lkp-snb01/hackbench/5=
+0%-threads-socket
+> > > > >     162245 ~ 3%     +94.1%     314885 ~ 6%  TOTAL proc-vmstat.num=
+a_hint_faults_local
+> =
 
+> > It means, for commit ebe06187bf2aec1, the number for
+> > num_hint_local_faults is 94500 for ivb42 machine and 67745 for lkp-snb01
+> > machine. The 3%, 4% following that number means the deviation of the
+> > different runs to their average(we usually run it multiple times to
+> > phase out possible sharp values). We should probably remove that
+> > percentage, as they cause confusion if no detailed explanation and may
+> > not mean much to the commit author and others(if the deviation is big
+> > enough, we should simply drop that result).
+> =
 
---===============2303705236507128560==--
+> Nah, variance is good, but the typical symbol would be +- or the fancy
+> =C2=B1.
+> =
+
+> ~ when used as a unary op means 'approx' or 'about' or 'same order'
+> ~ when used as a binary op means equivalence, a weaker equal, often in
+> the vein of the unary op meaning.
+> =
+
+> Also see: http://en.wikipedia.org/wiki/Tilde#Mathematics
+> =
+
+> So while I think having a measure of variance is good, I think you
+> picked entirely the wrong symbol.
+
+Or, maybe you can use =CF=83 (lower case sigma) to indicate stddev, :)
+
+--===============5765172325536561697==--
 
