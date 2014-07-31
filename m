@@ -1,96 +1,47 @@
-Content-Type: multipart/mixed; boundary="===============8981324500050789823=="
+Content-Type: multipart/mixed; boundary="===============2758789383842673399=="
 MIME-Version: 1.0
-From: Lai Jiangshan <laijs@cn.fujitsu.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [scheduler] BUG: unable to handle kernel paging request at 000000000000ce50
-Date: Thu, 31 Jul 2014 16:05:17 +0800
-Message-ID: <53D9F8BD.8010205@cn.fujitsu.com>
-In-Reply-To: <alpine.DEB.2.11.1407300954420.4608@gentwo.org>
+Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
+Date: Thu, 31 Jul 2014 10:33:30 +0200
+Message-ID: <20140731083330.GO19379@twins.programming.kicks-ass.net>
+In-Reply-To: <20140730021425.GA25023@aaronlu.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8981324500050789823==
+--===============2758789383842673399==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 07/30/2014 10:55 PM, Christoph Lameter wrote:
-> On Wed, 30 Jul 2014, Fengguang Wu wrote:
-> =
+On Wed, Jul 30, 2014 at 10:14:25AM +0800, Aaron Lu wrote:
+> 118881 ~ 0%            +1.2%    120325 ~ 0% ivb42/hackbench/50%-threads-p=
+ipe
 
->> FYI, this commit seems to convert some kernel boot hang bug into
->> different BUG messages.
-> =
-
-> Hmmm. Still a bit confused as to why these messages occur.. Does this
-> patch do any good?
-
-The vmstat bug can't propagate to scheduler.
-
-I also hope the following patch to be tested earlier for the vmstat bug.
-
-> =
-
-> =
-
-> Subject: vmstat ondemand: Fix online/offline races
-> =
-
-> Do not allow onlining/offlining while the shepherd task is checking
-> for vmstat threads.
-> =
-
-> On offlining a processor do the right thing cancelling the vmstat
-> worker thread if it exista and also exclude it from the shepherd
-> process checks.
-> =
-
-> Signed-off-by: Christoph Lameter <cl@linux.com>
-> =
-
-> Index: linux/mm/vmstat.c
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- linux.orig/mm/vmstat.c	2014-07-30 09:35:54.602662306 -0500
-> +++ linux/mm/vmstat.c	2014-07-30 09:43:07.109037043 -0500
-> @@ -1317,6 +1317,7 @@ static void vmstat_shepherd(struct work_
->  {
->  	int cpu;
-> =
-
-> +	get_online_cpus();
->  	/* Check processors whose vmstat worker threads have been disabled */
->  	for_each_cpu(cpu, cpu_stat_off)
->  		if (need_update(cpu) &&
-> @@ -1325,6 +1326,7 @@ static void vmstat_shepherd(struct work_
->  			schedule_delayed_work_on(cpu, &per_cpu(vmstat_work, cpu),
->  				__round_jiffies_relative(sysctl_stat_interval, cpu));
-> =
-
-> +	put_online_cpus();
-> =
-
->  	schedule_delayed_work(&shepherd,
->  		round_jiffies_relative(sysctl_stat_interval));
-> @@ -1380,8 +1382,8 @@ static int vmstat_cpuup_callback(struct
->  		break;
->  	case CPU_DOWN_PREPARE:
->  	case CPU_DOWN_PREPARE_FROZEN:
-> -		if (!cpumask_test_and_set_cpu(cpu, cpu_stat_off))
-> -			cancel_delayed_work_sync(&per_cpu(vmstat_work, cpu));
-> +		cancel_delayed_work_sync(&per_cpu(vmstat_work, cpu));
-> +		cpumask_clear_cpu(cpu, cpu_stat_off);
->  		break;
->  	case CPU_DOWN_FAILED:
->  	case CPU_DOWN_FAILED_FROZEN:
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo(a)vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> =
+What kind of IVB is that EP or EX (or rather, how many sockets)? Also
+what arguments to hackbench do you use?
 
 
+--===============2758789383842673399==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.sig"
 
---===============8981324500050789823==--
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEuNC4xMiAoR05V
+L0xpbnV4KQoKaVFJY0JBRUJBZ0FHQlFKVDJmOWFBQW9KRUhaSDRhUkx3T1M2Y1k0UC8wcWdwZ1lG
+VTZiUkpzcVF3VjVLdC9GeQppMWZseDRMUTRzZnF2QkhKVnVUY0VUaHZyZkw5Yy9ZT2xkWVpGMW1p
+KzZwcG1ScC8rV0x1Y1RwNjFFamw4ZDhqCnphZUxyVVgyclozUTZzSjc0ZTkybytObDk1TUpOUTRo
+emVQY1BOUFljNlU0a0IxNUFsVWw1LytTVS8zdUxwR3MKTXdZV1UzSHJ0NU15dGdtZG9LdFFZSzQ1
+TXNxN0dKQmxqcWhHVG5ING9rN3hrUVVmMjJyTm9STE1INDg2SHpTSApqR3BrQVI4N1Jrd0svUUdv
+cmhYK05vTWVMRCtUREZWcXJUSjB2elEzTEM5MURGZ2lhS01lWVVzbGp1Uml3d1R6CnF1QTBRQ3Fv
+SGN4bUp3V25EVHZ5MlZwQkZKaE5NUkFtV0NhZUxVWEkyNXUxYmZ1a1VpcTN0cmlwWDlEblNHeWoK
+SW0vVlI3ZzlPRTR4SXdkSWpkK3VMYUtwRDd6aGIwanUzaitpelpNTmpxbnVsYS9PaVRzcCtrRTJo
+OU1mdUtNKwpwdE9xUTk5ejhlKzN2M2ZYWDZEeDJPR2lhSVdDTkZjWGZnN0JDQU5NT2FRV21hN2pa
+TnB6cTFCOWcvTTRURk90CjR2SDY0SUhrSkdiRTFhRjd2dkpDc3RhbDIxSVZGWVhMeXNrdi80MTBH
+V3hiSE8xZFROQ2xtdVo3WTRPTXlmTmsKT3hBRitQOG12d05CN2VWdTdZQng4VzNXUk1qTnJVN0Fv
+ai9hLzJxTS9UQVI1TFh0dElQKzQzUEt5WkNqajBtVQpldTRkUzVidXJmMEZnWjFwQXFscnQvYzE3
+dE0wdGViTHd5THY1eTJGWGNsS3NaTStjT3ZHbklhMEpXNG02YVZZCitxNTRYVHZRMzZVYi9rMGU2
+TEp2Cj1MZTdiCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
+
+--===============2758789383842673399==--
 
