@@ -1,75 +1,27 @@
-Content-Type: multipart/mixed; boundary="===============0826518633460066753=="
+Content-Type: multipart/mixed; boundary="===============0105852969735258822=="
 MIME-Version: 1.0
 From: Davidlohr Bueso <davidlohr@hp.com>
 To: lkp@lists.01.org
 Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
-Date: Fri, 01 Aug 2014 13:46:40 -0700
-Message-ID: <1406926000.16021.6.camel@buesod1.americas.hpqcorp.net>
-In-Reply-To: <53DA6BDA.8080000@redhat.com>
+Date: Fri, 01 Aug 2014 13:48:51 -0700
+Message-ID: <1406926131.16021.7.camel@buesod1.americas.hpqcorp.net>
+In-Reply-To: <1406926000.16021.6.camel@buesod1.americas.hpqcorp.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0826518633460066753==
+--===============0105852969735258822==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2014-07-31 at 18:16 +0200, Jirka Hladky wrote:
-> Peter, I'm seeing regressions for
+On Fri, 2014-08-01 at 13:46 -0700, Davidlohr Bueso wrote:
+> So both these are pretty similar, however, when reverting, on avg we
+> increase the amount of bops a mere ~4%:
 > =
 
-> SINGLE SPECjbb instance for number of warehouses being the same as total =
+> tip/master + reverted:
 
-> number of cores in the box.
-> =
-
-> Example: 4 NUMA node box, each CPU has 6 cores =3D> biggest regression is =
-
-> for 24 warehouses.
-
-By looking at your graph, that's around a 10% difference.
-
-So I'm not seeing anywhere near as bad a regression on a 80-core box.
-Testing single with 80 warehouses, I get:
-
-tip/master baseline:
-677476.36 bops
-705826.70 bops
-704870.87 bops
-681741.20 bops =
-
-707014.59 bops
-
-Avg: 695385.94 bops
-
-tip/master + patch (NUMA_SCALE/8 variant):
-698242.66 bops
-693873.18 bops =
-
-707852.28 bops
-691785.96 bops =
-
-747206.03 bopsthis =
+Just to be clear, this is reverting a43455a1d57.
 
 
-Avg: 707792.022 bops
-
-So both these are pretty similar, however, when reverting, on avg we
-increase the amount of bops a mere ~4%:
-
-tip/master + reverted:
-778416.02 bops =
-
-702602.62 bops =
-
-712557.32 bops =
-
-713982.90 bops
-783300.36 bops
-
-Avg: 738171.84 bops
-
-Are there perhaps any special specjbb options you are using?
-
-
---===============0826518633460066753==--
+--===============0105852969735258822==--
 
