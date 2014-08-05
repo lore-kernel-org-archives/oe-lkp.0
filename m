@@ -1,67 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============4040262182933074002=="
+Content-Type: multipart/mixed; boundary="===============6572669234059544895=="
 MIME-Version: 1.0
-From: Rik van Riel <riel@redhat.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/numa] a43455a1d57: +94.1% proc-vmstat.numa_hint_faults_local
-Date: Tue, 05 Aug 2014 17:43:13 -0400
-Message-ID: <53E14FF1.50904@redhat.com>
-In-Reply-To: <20140731050454.GA9386@aaronlu.sh.intel.com>
+Subject: [setsockopt] WARNING: CPU: 0 PID: 1444 at kernel/sched/core.c:7088 __might_sleep+0x51/0x16f()
+Date: Wed, 06 Aug 2014 05:46:24 +0800
+Message-ID: <20140805214624.GA9973@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4040262182933074002==
+--===============6572669234059544895==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Greetings,
 
-On 07/31/2014 01:04 AM, Aaron Lu wrote:
+Here is a microcode/load_module error triggered by debug check commit
+64c2181bc433b17f04da8fe8592aa83cceac9606 ("sched: Debug nested sleeps"):
 
->>>> +++ b/kernel/sched/fair.c @@ -924,10 +924,12 @@ static inline
->>>> unsigned long group_faults_cpu(struct numa_group *group, int
->>>> nid)
->>>> =
+[main] Setsockopt(1 8 80d1000 4) on fd 21 [1:2:1]
+[main] Setsockopt(1 2f 80d1000 4) on fd 22 [4:2:60]
+[   14.027148] ------------[ cut here ]------------
+[   14.027864] WARNING: CPU: 0 PID: 210 at kernel/sched/core.c:7088 __might=
+_sleep+0x40/0x68()
+[   14.029295] do not call blocking ops when !TASK_RUNNING; state=3D2 set a=
+t [<c144e379>] prepare_to_wait+0x35/0x56
+[   14.030590] Modules linked in:
+[   14.031136] CPU: 0 PID: 210 Comm: trinity-main Not tainted 3.16.0-02167-=
+g254135e #972
+[   14.032263]  00000000 c0f4de4c c0f4de24 c196630c c0f4de3c c142f01a c1447=
+632 c0f1dbb0
+[   14.033480]  00000002 b0066140 c0f4de54 c142f057 00000009 c0f4de4c c1b3b=
+ac8 c0f4de68
+[   14.034640]  c0f4de88 c1447632 c1b3bb12 00001bb0 c1b3bac8 00000002 c144e=
+379 c144e379
+[   14.035983] Call Trace:
+[   14.036355]  [<c196630c>] dump_stack+0x16/0x18
+[   14.037005]  [<c142f01a>] warn_slowpath_common+0x55/0x6c
+[   14.037715]  [<c1447632>] ? __might_sleep+0x40/0x68
+[   14.038372]  [<c142f057>] warn_slowpath_fmt+0x26/0x2a
+[   14.039097]  [<c1447632>] __might_sleep+0x40/0x68
+[   14.039787]  [<c144e379>] ? prepare_to_wait+0x35/0x56
+[   14.040595]  [<c144e379>] ? prepare_to_wait+0x35/0x56
+[   14.041272]  [<c14a837e>] kmem_cache_alloc+0x39/0xb0
+[   14.041934]  [<c18fa2de>] ? __alloc_skb+0x3c/0x154
+[   14.042572]  [<c18fa2de>] __alloc_skb+0x3c/0x154
+[   14.043339]  [<c145117a>] ? mark_held_locks+0x44/0x60
+[   14.044141]  [<c1946093>] sigd_enq2+0x2a/0xff
+[   14.044836]  [<c1946188>] sigd_enq+0x20/0x2a
+[   14.045405]  [<c19467fb>] svc_listen+0x8b/0x11f
+[   14.046009]  [<c144e5a6>] ? __wake_up_sync+0xd/0xd
+[   14.046653]  [<c18f4132>] SyS_listen+0x37/0x51
+[   14.047423]  [<c18f4ce5>] SyS_socketcall+0x90/0x1c0
+[   14.048328]  [<c145136e>] ? trace_hardirqs_on+0xb/0xd
+[   14.049061]  [<c19729f6>] ? restore_all+0xf/0xf
+[   14.049665]  [<c19729bd>] syscall_call+0x7/0x7
+[   14.050253]  [<c1970000>] ? __ww_mutex_lock_interruptible+0x165/0x573
+[   14.051147] ---[ end trace 6f1365c63eafedde ]---
+[main] Setsockopt(1 2d 80d1000 f0) on fd 25 [1:1:1]
 
->>>> /* * These return the fraction of accesses done by a
->>>> particular task, or - * task group, on a particular numa
->>>> node.  The group weight is given a - * larger multiplier, in
->>>> order to group tasks together that are almost - * evenly
->>>> spread out between numa nodes. + * task group, on a
->>>> particular numa node.  The NUMA move threshold + * prevents
->>>> task moves with marginal improvement, and is set to 5%. */ =
+Thanks,
+Fengguang
 
->>>> +#define NUMA_SCALE 1024 +#define NUMA_MOVE_THRESH (5 *
->>>> NUMA_SCALE / 100)
->> =
-
->> It would be good to see if changing NUMA_MOVE_THRESH to =
-
->> (NUMA_SCALE / 8) does the trick.
-> =
-
-> With your 2nd patch and the above change, the result is:
-
-Peter,
-
-the threshold does not seem to make a difference for the
-performance tests on my system, I guess you can drop this
-patch :)
-
-- -- =
-
-All rights reversed
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQEcBAEBAgAGBQJT4U/xAAoJEM553pKExN6DY4oH/ihJDmcCSZ0sKqGbyzJqLrFY
-KWCEXhfiN6hQJBrmeOvrbzlHsMH0LzYfgTVnc1nteAcnUXiBeqkgxwf+S1dmvoFr
-DZSxC+9tQ68ho0YcLd7rpEMfsnwOQAB9BgX8GxxwMb8q5zZ9Bz3r9NKVF0P2D3cj
-eeJ8Z3EGaKOteVhwAPVPeuTf7xwhqoqp4ujLgTL7BcaifqvGhi3+uo9/KcavE15d
-eale3MuhbCIsAQeyB4SwgGwilE/oZTPTos4BNdUrIyxO4nDajbeLb1qsLSHYcirH
-CA7++bTE9V6TvO1tBLVpeYdSAGcDKKUBHM6N+0UDwkR/Tp4oRyQ115Peo2H34ak=3D
-=3DkFxZ
------END PGP SIGNATURE-----
-
---===============4040262182933074002==--
+--===============6572669234059544895==--
 
