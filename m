@@ -1,212 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============2604546233336620228=="
+Content-Type: multipart/mixed; boundary="===============6217833547896681552=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Nick Krause <xerofoify@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [sched] 36932a9e2b1: +121.2% boot-meminfo.SUnreclaim
-Date: Wed, 06 Aug 2014 10:21:55 +0200
-Message-ID: <20140806082155.GP9918@twins.programming.kicks-ass.net>
-In-Reply-To: <20140805212948.GE14042@localhost>
+Subject: Re: [setsockopt] WARNING: CPU: 0 PID: 1444 at kernel/sched/core.c:7088 __might_sleep+0x51/0x16f()
+Date: Wed, 06 Aug 2014 09:52:51 -0400
+Message-ID: <CAPDOMVi_b3tmSAEdhQo6UviAhi_Tx9BfjZ-jP851OSOQztN_yg@mail.gmail.com>
+In-Reply-To: <20140805215434.GA10047@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2604546233336620228==
+--===============6217833547896681552==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 06, 2014 at 05:29:48AM +0800, Fengguang Wu wrote:
-> Hi Peter,
-> =
+On Tue, Aug 5, 2014 at 5:54 PM, Fengguang Wu <fengguang.wu@intel.com> wro=
+te:
+> On Wed, Aug 06, 2014 at 05:46:24AM +0800, Fengguang Wu wrote:
+>> Greetings,
+>>
+>> Here is a microcode/load_module error triggered by debug check commit
+>
+> Sorry for the copy&paste error! This warning is not related to
+> microcode/load_module..
+>
+> Thanks,
+> Fengguang
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo(a)vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+Hey Fenngaug,
+I looking through this trace.
 
-> FYI, we noticed the below changes on
-> =
+213 skb =3D kmem_cache_alloc_node(cache, gfp_mask & ~__GFP_DMA, node);
+214 if (!skb)
+215 goto out;
+This lines seem to be an issue as after tracing to were you are
+getting a warning,
+might_sleep is written as
 
-> git://internal_merge_and_test_tree devel-athens-alpha-201408042000
-> commit 36932a9e2b1043506d06414fa988cd5b9592841f ("sched: Fix finish_task_=
-switch vs prev_state")
-> =
+might_sleep_if(flags & __GFP_WAIT);
+This means that the flag for GFP_WAIT is probably set and sure enough you w=
+ould
+be getting an error after sleeping in __alloc_skb.
+Regards Nick
 
-> test case: vm-vp-1G/boot/1
-> =
-
-> 11b4855f1d9f1cc  36932a9e2b1043506d06414fa =
-
-> ---------------  ------------------------- =
-
->       8524 =C2=B1 1%    +121.2%      18858 =C2=B1 0%  TOTAL boot-meminfo.=
-SUnreclaim
->       1321 =C2=B1 9%   +3196.6%      43568 =C2=B1 0%  TOTAL boot-meminfo.=
-KernelStack
->       8756 =C2=B1 0%     +29.8%      11363 =C2=B1 0%  TOTAL boot-slabinfo=
-.num_pages
->      34982 =C2=B1 0%     +29.5%      45311 =C2=B1 0%  TOTAL boot-meminfo.=
-Slab
->     535601 =C2=B1 0%      -9.9%     482375 =C2=B1 0%  TOTAL boot-meminfo.=
-MemFree
->     116621 =C2=B1 0%      +9.4%     127548 =C2=B1 0%  TOTAL boot-slabinfo=
-.num_objs
-
-
-*blink*.. how does that happen?
-
-For reference, that's the below patch (I've since given it an actual
-Changelog, but the patch is the same).
-
----
-Subject: sched: Fix finish_task_switch vs prev_state
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Tue, 29 Jul 2014 11:22:37 +0200
-
-Oleg wondered about the prev_state comment in finish_task_switch().
-
-Aside from it being confusingly worded -- we neither initially
-understood the actual problem being described -- we found that we'd
-broken the scenario described.
-
-Ever since commit e4a52bcb9a18 ("sched: Remove rq->lock from the first
-half of ttwu()") we don't actually acquire rq->lock on wakeups anymore
-and therefore holding rq->lock after the switch is no good.
-
-Even if we did, __ARCH_WANT_UNLOCKED_CTXSW was already broken, because
-it explicitly didn't hold the rq->lock anymore.
-
-We could fix things by placing a full barrier between the prev->state
-read and the next->on_cpu =3D 0 store, seeing how the remote wakeup code
-waits for ->on_cpu to become false before proceeding with the wakeup
-(so as to avoid having the task running on two cpus at the same time),
-however full barriers are expensive.
-
-Instead we read prev->state before the context switch and propagate it
-unto finish_task_switch. This trivially solves the problem without
-adding extra (and costly) memory barriers.
-
-I'm not sure why we've never seen crashes due to this, it appears
-entirely possible.
-
-Fixes: e4a52bcb9a18 ("sched: Remove rq->lock from the first half of ttwu()")
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: John Stultz <john.stultz@linaro.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Frederic Weisbecker <fweisbec@gmail.com>
-Cc: Dave Jones <davej@redhat.com>
-Cc: Andrey Ryabinin <a.ryabinin@samsung.com>
-Cc: Sasha Levin <sasha.levin@oracle.com>
-Cc: Manfred Spraul <manfred@colorfullife.com>
-Reported-by: Oleg Nesterov <oleg@redhat.com>
-Signed-off-by: Peter Zijlstra <peterz@infradead.org>
-Link: http://lkml.kernel.org/r/20140729092237.GU12054(a)laptop.lan
----
- kernel/sched/core.c |   36 ++++++++++++++++++++----------------
- 1 file changed, 20 insertions(+), 16 deletions(-)
-
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -2190,6 +2190,7 @@ prepare_task_switch(struct rq *rq, struc
-  * finish_task_switch - clean up after a task-switch
-  * @rq: runqueue associated with task-switch
-  * @prev: the thread we just switched away from.
-+ * @prev_state: the state of @prev before we switched away from it.
-  *
-  * finish_task_switch must be called after the context switch, paired
-  * with a prepare_task_switch call before the context switch.
-@@ -2201,26 +2202,14 @@ prepare_task_switch(struct rq *rq, struc
-  * with the lock held can cause deadlocks; see schedule() for
-  * details.)
-  */
--static void finish_task_switch(struct rq *rq, struct task_struct *prev)
-+static void
-+finish_task_switch(struct rq *rq, struct task_struct *prev, long prev_stat=
-e)
- 	__releases(rq->lock)
- {
- 	struct mm_struct *mm =3D rq->prev_mm;
--	long prev_state;
- =
-
- 	rq->prev_mm =3D NULL;
- =
-
--	/*
--	 * A task struct has one reference for the use as "current".
--	 * If a task dies, then it sets TASK_DEAD in tsk->state and calls
--	 * schedule one last time. The schedule call will never return, and
--	 * the scheduled task must drop that reference.
--	 * The test for TASK_DEAD must occur while the runqueue locks are
--	 * still held, otherwise prev could be scheduled on another cpu, die
--	 * there before we look at prev->state, and then the reference would
--	 * be dropped twice.
--	 *		Manfred Spraul <manfred@colorfullife.com>
--	 */
--	prev_state =3D prev->state;
- 	vtime_task_switch(prev);
- 	finish_arch_switch(prev);
- 	perf_event_task_sched_in(prev, current);
-@@ -2279,7 +2268,7 @@ asmlinkage __visible void schedule_tail(
- {
- 	struct rq *rq =3D this_rq();
- =
-
--	finish_task_switch(rq, prev);
-+	finish_task_switch(rq, prev, 0);
- =
-
- 	/*
- 	 * FIXME: do we need to worry about rq being invalidated by the
-@@ -2304,6 +2293,21 @@ context_switch(struct rq *rq, struct tas
- 	       struct task_struct *next)
- {
- 	struct mm_struct *mm, *oldmm;
-+	/*
-+	 * A task struct has one reference for the use as "current".
-+	 * If a task dies, then it sets TASK_DEAD in tsk->state and calls
-+	 * schedule one last time. The schedule call will never return, and
-+	 * the scheduled task must drop that reference.
-+	 *
-+	 * We must observe prev->state before clearing prev->on_cpu (in
-+	 * finish_lock_switch), otherwise a concurrent wakeup can get prev
-+	 * running on another CPU and we could race with its RUNNING -> DEAD
-+	 * transition, and then the reference would be dropped twice.
-+	 *
-+	 * We avoid the race by observing prev->state while it is still
-+	 * current.
-+	 */
-+	long prev_state =3D prev->state;
- =
-
- 	prepare_task_switch(rq, prev, next);
- =
-
-@@ -2347,7 +2351,7 @@ context_switch(struct rq *rq, struct tas
- 	 * CPUs since it called schedule(), thus the 'rq' on its stack
- 	 * frame will be invalid.
- 	 */
--	finish_task_switch(this_rq(), prev);
-+	finish_task_switch(this_rq(), prev, prev_state);
- }
- =
-
- /*
-
---===============2604546233336620228==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.sig"
-
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEuNC4xMiAoR05V
-L0xpbnV4KQoKaVFJY0JBRUJBZ0FHQlFKVDRlV2pBQW9KRUhaSDRhUkx3T1M2T2RJUC9SV1dNdUNT
-cDN4dU81aGtDZzZJZ1B3LwpWN0RmVnYzZnNjOHZoaFhHeHh2Tjk2Vkgyay9GVTNMQTd1ZThFWFFz
-ckVSbk1zcWRLVGRpQVBqOXdXNTlmT2w1CnpMNE1nNnZjaHZySE5hckt4OXFWOTYxR3RZcGd0a2tC
-U1lTbHk1bEpiWjNWNWFKUDFBZnNjdU1BTUJFSkpoQUsKZnVQUDVqZnorOXJWcTg5UkVHbS9DNFFK
-N3FtZGkwSnVBL1IvQU5JcXpPclUyUmJ1TFhmYUp0cFBTVThkL2ZHSAo5WFN5OTVNZ1FsSDM3SXY3
-RXF2MmxhYjFmV3JVOUhmYmRISnRVVVZsU3NFNllJc1RwZEFWL3hIMWJFa3duaFZQCkJRMGhOalFx
-OHFFNHBJalpJQU8veGJldmUyU0l6K2tIUHhsc1pKaXF2V3pZZUtVQ0tic2xmWmV2bHRNTEJlc3UK
-UU5HUE9PRlE5ZU5nTHRLd3Jtakw3TDJZcTZSdDk1VlZoRjNvRHA4L1ZFSG9PSVVZVXFOYzNuditq
-R3g1N1BVagpzUmo5WnNTaS9YaHlrZVZkUFZGbDl0WFBrWmU0bTZtUjRyc3BEVHFEZUJpbUJaOFow
-K0x1ZjRsSkM1WFRmZHVuCnc0cVdyZkZycE52emNPMkpuMDlLMEJmM25QMHI1Y3dUVmRqY0FZVGEw
-dGpvNGlmdU56K001eHFKSGkrYkFKbmcKUVlDMm1QV045M2xSeDdaRG41bXJqcXZQTE4vTFE4enB3
-VEdRREU3VjVzUWQ1ekxodlpNTTg2L2lLUjJ3RFRpWgoxM1ZqWUdvYmhlQjZESFgzTXJPSTBWQ05Z
-UEU3WEtmaUdjS2c4UmJqOEhOblk0SEV4WklkUzFEVjA1Z0syNklaCnlMQWxhbkZJeGxtZHR2MnBn
-T0JyCj0xY1dkCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
-
---===============2604546233336620228==--
+--===============6217833547896681552==--
 
