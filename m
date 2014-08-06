@@ -1,298 +1,212 @@
-Content-Type: multipart/mixed; boundary="===============6694560787708325058=="
+Content-Type: multipart/mixed; boundary="===============2604546233336620228=="
 MIME-Version: 1.0
-From: Nick Krause <xerofoify@gmail.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [cxgb4i] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:586
-Date: Tue, 05 Aug 2014 21:17:42 -0400
-Message-ID: <CAPDOMVg7hNGUR7a6wiNRdSaAmdEnTT7rq7FtqtgoC8_h1oTSEA@mail.gmail.com>
-In-Reply-To: <20140730140235.GA13959@localhost>
+Subject: Re: [sched] 36932a9e2b1: +121.2% boot-meminfo.SUnreclaim
+Date: Wed, 06 Aug 2014 10:21:55 +0200
+Message-ID: <20140806082155.GP9918@twins.programming.kicks-ass.net>
+In-Reply-To: <20140805212948.GE14042@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6694560787708325058==
+--===============2604546233336620228==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 30, 2014 at 10:02 AM, Fengguang Wu <fengguang.wu@intel.com> w=
-rote:
-> Hi Anish,
->
-> FYI, here is another bisect result for
->
-> commit 759a0cc5a3e1bc2cc48fa3c0b91bdcad8b8f87d6
-> Author:     Anish Bhatt <anish@chelsio.com>
-> AuthorDate: Thu Jul 17 00:18:18 2014 -0700
-> Commit:     David S. Miller <davem@davemloft.net>
-> CommitDate: Thu Jul 17 16:06:03 2014 -0700
->
->     cxgb4i: Add ipv6 code to driver, call into libcxgbi ipv6 api
->
->     Signed-off-by: Anish Bhatt <anish@chelsio.com>
->     Signed-off-by: Karen Xie <kxie@chelsio.com>
->     Signed-off-by: Manoj Malviya <manojmalviya@chelsio.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> PARENT COMMIT NOT CLEAN. LOOK OUT FOR WRONG BISECT!
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> Attached dmesg for the parent commit, too, to help confirm whether it is =
-a noise error.
->
-> +------------------------------------------------------------------------=
------+------------+------------+------------------+
-> |                                                                        =
-     | fc8d0590d9 | 759a0cc5a3 | v3.16-rc5_071821 |
-> +------------------------------------------------------------------------=
------+------------+------------+------------------+
-> | boot_successes                                                         =
-     | 495        | 11         | 0                |
-> | boot_failures                                                          =
-     | 825        | 319        | 11               |
-> | BUG:kernel_boot_hang                                                   =
-     | 798        | 114        | 1                |
-> | general_protection_fault                                               =
-     | 13         | 2          |                  |
-> | RIP:__lock_acquire                                                     =
-     | 13         | 2          |                  |
-> | Kernel_panic-not_syncing:Attempted_to_kill_init_exitcode=3D            =
-       | 13         | 2          |                  |
-> | backtrace:free_reserved_area                                           =
-     | 13         | 2          |                  |
-> | backtrace:free_init_pages                                              =
-     | 13         | 2          |                  |
-> | backtrace:populate_rootfs                                              =
-     | 13         | 2          |                  |
-> | backtrace:kernel_init_freeable                                         =
-     | 13         | 2          |                  |
-> | BUG:kernel_boot_crashed                                                =
-     | 14         |            |                  |
-> | BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/mut=
-ex.c | 0          | 203        | 10               |
-> | backtrace:do_vfs_ioctl                                                 =
-     | 0          | 203        | 10               |
-> | backtrace:SyS_ioctl                                                    =
-     | 0          | 203        | 10               |
-> +------------------------------------------------------------------------=
------+------------+------------+------------------+
->
-> /etc/init.d/rc: /etc/rcS.d/S37populate-volatile.sh: line 172: can't open =
-/proc/cmdline: no such file
-> grep: /proc/filesystems: No such file or directory
-> Configuring network interfaces...
-> [    7.138372] BUG: sleeping function called from invalid context at kern=
-el/locking/mutex.c:586
-> [    7.140148] in_atomic(): 0, irqs_disabled(): 0, pid: 261, name: ifconf=
-ig
-> [    7.141280] 3 locks held by ifconfig/261:
-> [    7.141947]  #0:  (rtnl_mutex){+.+.+.}, at: [<ffffffff87901830>] rtnl_=
-lock+0x12/0x14
-> [    7.143427]  #1:  (rcu_read_lock){......}, at: [<ffffffff8689976a>] rc=
-u_lock_acquire+0x0/0x23
-> [    7.144976]  #2:  (rcu_read_lock){......}, at: [<ffffffff870bf4a4>] rc=
-u_read_lock+0x0/0x69
-> [    7.146558] Preemption disabled at:[<ffffffff8682a7ea>] smp_apic_timer=
-_interrupt+0x21/0x3c
-> [    7.147977]
-> [    7.148266] CPU: 0 PID: 261 Comm: ifconfig Not tainted 3.16.0-rc5-0112=
-6-g759a0cc #8
-> [    7.149535]  0000000000000000 ffff880010927a48 ffffffff87ad0d0c ffff88=
-0010910550
-> [    7.150862]  ffff880010927a78 ffffffff868a15f3 ffffffff886cd160 000000=
-0000000000
-> [    7.152216]  ffff88001375a000 ffff880010910550 ffff880010927af8 ffffff=
-ff87ae6dbb
-> [    7.153533] Call Trace:
-> [    7.153969]  [<ffffffff87ad0d0c>] dump_stack+0x4e/0x7a
-> [    7.154841]  [<ffffffff868a15f3>] __might_sleep+0x1f2/0x1fb
-> [    7.155792]  [<ffffffff87ae6dbb>] mutex_lock_nested+0x37/0x414
-> [    7.156784]  [<ffffffff868ae892>] ? __lock_acquire+0x3a8/0xde4
-> [    7.157764]  [<ffffffff870b8441>] cxgbi_device_find_by_netdev+0x5e/0xfd
-> [    7.158866]  [<ffffffff870bf549>] cxgbi_inet6addr_handler+0x3c/0x99
-> [    7.159915]  [<ffffffff86899859>] notifier_call_chain+0x94/0xc0
-> [    7.160912]  [<ffffffff8689997c>] __atomic_notifier_call_chain+0x7c/0x=
-e2
-> [    7.162031]  [<ffffffff868999f1>] atomic_notifier_call_chain+0xf/0x11
-> [    7.163110]  [<ffffffff879c95f6>] inet6addr_notifier_call_chain+0x16/0=
-x18
-> [    7.164241]  [<ffffffff879966e1>] ipv6_add_addr+0x105/0x404
-> [    7.165174]  [<ffffffff8799aa38>] add_addr+0x2c/0x6e
-> [    7.165980]  [<ffffffff8799bcd9>] addrconf_notify+0x3b0/0x6ec
-> [    7.166951]  [<ffffffff868abcf8>] ? __lock_is_held+0x38/0x50
-> [    7.167904]  [<ffffffff86899859>] notifier_call_chain+0x94/0xc0
-> [    7.168898]  [<ffffffff86899b7b>] raw_notifier_call_chain+0xf/0x11
-> [    7.169938]  [<ffffffff878f0363>] call_netdevice_notifiers_info+0x4d/0=
-x54
-> [    7.171068]  [<ffffffff878f3484>] call_netdevice_notifiers+0xe/0x10
-> [    7.172114]  [<ffffffff878f647e>] __dev_notify_flags+0x4f/0x7d
-> [    7.173091]  [<ffffffff878f6a28>] dev_change_flags+0x48/0x53
-> [    7.174040]  [<ffffffff879661c3>] devinet_ioctl+0x289/0x5b9
-> [    7.174950]  [<ffffffff87966a92>] inet_ioctl+0x8c/0xa6
-> [    7.175822]  [<ffffffff878e10be>] sock_ioctl+0x1a7/0x1c9
-> [    7.176731]  [<ffffffff86929882>] do_vfs_ioctl+0x3a7/0x470
-> [    7.177652]  [<ffffffff869317f4>] ? rcu_read_lock_held+0x36/0x38
-> [    7.178658]  [<ffffffff869319d4>] ? __fcheck_files.isra.8+0x4b/0x57
-> [    7.179712]  [<ffffffff86929996>] SyS_ioctl+0x4b/0x76
-> [    7.180561]  [<ffffffff87aea869>] system_call_fastpath+0x16/0x1b
-> ifup: can't open '/var/run/ifstate': No such file or directory
-> done.
-> hwclock: can't open '/dev/misc/rtc': No such file or directory
->
-> git bisect start 9931f57b978a5b5ff5934ece85cf8bf7db5d2f67 1795cd9b3a91d4b=
-5473c97f491d63892442212ab --
-> git bisect  bad 64f2bc8ec801297316bf7189c640e5da60c5b77b  # 01:06      0-=
-    341  Merge 'renesas/devel' into devel-hourly-2014071821
-> git bisect  bad 3f322c0abf13c5644ff308cd5f72c08e398878e6  # 01:09     31-=
-    263  Merge 'pm/pm-sleep' into devel-hourly-2014071821
-> git bisect  bad 9326a554df9c49570ff4c69ed8b28f9bff72b9ad  # 01:13     11-=
-     26  Merge 'usb/usb-linus' into devel-hourly-2014071821
-> git bisect good 5bc464435ec4aca3288a75c503280cedc875f72d  # 01:54    330+=
-    192  Merge 'microblaze/next' into devel-hourly-2014071821
-> git bisect good 366124999766417afff537a44e74c695aede3f04  # 02:10    330+=
-    110  Merge 'pm/acpi-video' into devel-hourly-2014071821
-> git bisect  bad 67ba0ca140433b242d9cb0920cf0572856b3dd38  # 02:18      1-=
-    105  Merge 'can/master' into devel-hourly-2014071821
-> git bisect good 90fb5679e568b11b89e02b87f7f4fe00c7589ce0  # 02:38    330+=
-     85  Merge branch 'sctp_command_queue'
-> git bisect good 95d01a669bd35d0e8eb28dd8a946876c00a9a61a  # 02:54    330+=
-    115  Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel=
-/git/linville/wireless-next into for-davem
-> git bisect good b6603fe574af289dbe9eb9fb4c540bca04f5a053  # 03:07    330+=
-    194  Merge tag 'for-linus-20140716' of git://git.infradead.org/linux-mtd
-> git bisect good f54424412b6b2f64cae4d7c39d981ca14ce0052c  # 03:27    330+=
-    173  bonding: permit enslaving interfaces without set_mac support
-> git bisect good 2dc41cff7545d55c6294525c811594576f8e119c  # 03:40    330+=
-    185  udp: Use hash2 for long hash1 chains in __udp*_lib_mcast_deliver.
-> git bisect  bad 759a0cc5a3e1bc2cc48fa3c0b91bdcad8b8f87d6  # 03:53      0-=
-      4  cxgb4i: Add ipv6 code to driver, call into libcxgbi ipv6 api
-> git bisect good 4bbe3f5c7174e989989c04d41e6640ac0b944dac  # 04:08    330+=
-    154  Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel=
-/git/jkirsher/net-next
-> git bisect good 92abf75033d2677a684c623d60f093b130c4b38f  # 04:30    330+=
-    147  bonding: update bonding.txt for Layer2 hash factors
-> git bisect good a3e3b2857d35988819bc396c012c53898b8223e6  # 04:46    330+=
-    222  cxgb4: Export symbols required by cxgb4i for ipv6 support and requ=
-ired defines
-> git bisect good fc8d0590d9142d01e4ccea3aa57c894bd6e53662  # 04:59    330+=
-    173  libcxgbi: Add ipv6 api to driver
-> # first bad commit: [759a0cc5a3e1bc2cc48fa3c0b91bdcad8b8f87d6] cxgb4i: Ad=
-d ipv6 code to driver, call into libcxgbi ipv6 api
-> git bisect good fc8d0590d9142d01e4ccea3aa57c894bd6e53662  # 05:14    990+=
-    825  libcxgbi: Add ipv6 api to driver
-> git bisect  bad 9931f57b978a5b5ff5934ece85cf8bf7db5d2f67  # 05:14      0-=
-     11  0day head guard for 'devel-hourly-2014071821'
-> git bisect good f83971912231fe5390d2357442b6c25bb8076d9b  # 05:56    990+=
-    300  Merge tag 'gfs2-fixes' of git://git.kernel.org/pub/scm/linux/kerne=
-l/git/steve/gfs2-3.0-fixes
->
->
-> This script may reproduce the error.
->
-> -------------------------------------------------------------------------=
+On Wed, Aug 06, 2014 at 05:29:48AM +0800, Fengguang Wu wrote:
+> Hi Peter,
+> =
+
+> FYI, we noticed the below changes on
+> =
+
+> git://internal_merge_and_test_tree devel-athens-alpha-201408042000
+> commit 36932a9e2b1043506d06414fa988cd5b9592841f ("sched: Fix finish_task_=
+switch vs prev_state")
+> =
+
+> test case: vm-vp-1G/boot/1
+> =
+
+> 11b4855f1d9f1cc  36932a9e2b1043506d06414fa =
+
+> ---------------  ------------------------- =
+
+>       8524 =C2=B1 1%    +121.2%      18858 =C2=B1 0%  TOTAL boot-meminfo.=
+SUnreclaim
+>       1321 =C2=B1 9%   +3196.6%      43568 =C2=B1 0%  TOTAL boot-meminfo.=
+KernelStack
+>       8756 =C2=B1 0%     +29.8%      11363 =C2=B1 0%  TOTAL boot-slabinfo=
+.num_pages
+>      34982 =C2=B1 0%     +29.5%      45311 =C2=B1 0%  TOTAL boot-meminfo.=
+Slab
+>     535601 =C2=B1 0%      -9.9%     482375 =C2=B1 0%  TOTAL boot-meminfo.=
+MemFree
+>     116621 =C2=B1 0%      +9.4%     127548 =C2=B1 0%  TOTAL boot-slabinfo=
+.num_objs
+
+
+*blink*.. how does that happen?
+
+For reference, that's the below patch (I've since given it an actual
+Changelog, but the patch is the same).
+
 ---
-> #!/bin/bash
->
-> kernel=3D$1
-> initrd=3Dyocto-minimal-x86_64.cgz
->
-> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/blob/=
-master/initrd/$initrd
->
-> kvm=3D(
->         qemu-system-x86_64
->         -enable-kvm
->         -cpu Haswell,+smep,+smap
->         -kernel $kernel
->         -initrd $initrd
->         -m 320
->         -smp 1
->         -net nic,vlan=3D1,model=3De1000
->         -net user,vlan=3D1
->         -boot order=3Dnc
->         -no-reboot
->         -watchdog i6300esb
->         -rtc base=3Dlocaltime
->         -serial stdio
->         -display none
->         -monitor null
-> )
->
-> append=3D(
->         hung_task_panic=3D1
->         earlyprintk=3DttyS0,115200
->         debug
->         apic=3Ddebug
->         sysrq_always_enabled
->         rcupdate.rcu_cpu_stall_timeout=3D100
->         panic=3D10
->         softlockup_panic=3D1
->         nmi_watchdog=3Dpanic
->         prompt_ramdisk=3D0
->         console=3DttyS0,115200
->         console=3Dtty0
->         vga=3Dnormal
->         root=3D/dev/ram0
->         rw
->         drbd.minor_count=3D8
-> )
->
-> "${kvm[@]}" --append "${append[*]}"
-> -------------------------------------------------------------------------=
+Subject: sched: Fix finish_task_switch vs prev_state
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Tue, 29 Jul 2014 11:22:37 +0200
+
+Oleg wondered about the prev_state comment in finish_task_switch().
+
+Aside from it being confusingly worded -- we neither initially
+understood the actual problem being described -- we found that we'd
+broken the scenario described.
+
+Ever since commit e4a52bcb9a18 ("sched: Remove rq->lock from the first
+half of ttwu()") we don't actually acquire rq->lock on wakeups anymore
+and therefore holding rq->lock after the switch is no good.
+
+Even if we did, __ARCH_WANT_UNLOCKED_CTXSW was already broken, because
+it explicitly didn't hold the rq->lock anymore.
+
+We could fix things by placing a full barrier between the prev->state
+read and the next->on_cpu =3D 0 store, seeing how the remote wakeup code
+waits for ->on_cpu to become false before proceeding with the wakeup
+(so as to avoid having the task running on two cpus at the same time),
+however full barriers are expensive.
+
+Instead we read prev->state before the context switch and propagate it
+unto finish_task_switch. This trivially solves the problem without
+adding extra (and costly) memory barriers.
+
+I'm not sure why we've never seen crashes due to this, it appears
+entirely possible.
+
+Fixes: e4a52bcb9a18 ("sched: Remove rq->lock from the first half of ttwu()")
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: John Stultz <john.stultz@linaro.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: Dave Jones <davej@redhat.com>
+Cc: Andrey Ryabinin <a.ryabinin@samsung.com>
+Cc: Sasha Levin <sasha.levin@oracle.com>
+Cc: Manfred Spraul <manfred@colorfullife.com>
+Reported-by: Oleg Nesterov <oleg@redhat.com>
+Signed-off-by: Peter Zijlstra <peterz@infradead.org>
+Link: http://lkml.kernel.org/r/20140729092237.GU12054(a)laptop.lan
 ---
->
-> Thanks,
-> Fengguang
->
-> _______________________________________________
-> LKP mailing list
-> LKP(a)linux.intel.com
->
+ kernel/sched/core.c |   36 ++++++++++++++++++++----------------
+ 1 file changed, 20 insertions(+), 16 deletions(-)
 
-Hey Fenngguang,
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2190,6 +2190,7 @@ prepare_task_switch(struct rq *rq, struc
+  * finish_task_switch - clean up after a task-switch
+  * @rq: runqueue associated with task-switch
+  * @prev: the thread we just switched away from.
++ * @prev_state: the state of @prev before we switched away from it.
+  *
+  * finish_task_switch must be called after the context switch, paired
+  * with a prepare_task_switch call before the context switch.
+@@ -2201,26 +2202,14 @@ prepare_task_switch(struct rq *rq, struc
+  * with the lock held can cause deadlocks; see schedule() for
+  * details.)
+  */
+-static void finish_task_switch(struct rq *rq, struct task_struct *prev)
++static void
++finish_task_switch(struct rq *rq, struct task_struct *prev, long prev_stat=
+e)
+ 	__releases(rq->lock)
+ {
+ 	struct mm_struct *mm =3D rq->prev_mm;
+-	long prev_state;
+ =
 
-196 static struct cxgbi_device *cxgbi_device_find_by_netdev(struct
-net_device *ndev,
-197 int *port)
-198 {
-199 struct net_device *vdev =3D NULL;
-200 struct cxgbi_device *cdev, *tmp;
-201 int i;
-202
-203 if (ndev->priv_flags & IFF_802_1Q_VLAN) {
-204 vdev =3D ndev;
-205 ndev =3D vlan_dev_real_dev(ndev);
-206 log_debug(1 << CXGBI_DBG_DEV,
-207 "vlan dev %s -> %s.\n", vdev->name, ndev->name);
-208 }
-209
-210 mutex_lock(&cdev_mutex);
-211 list_for_each_entry_safe(cdev, tmp, &cdev_list, list_head) {
-212 for (i =3D 0; i < cdev->nports; i++) {
-213 if (ndev =3D=3D cdev->ports[i]) {
-214 cdev->hbas[i]->vdev =3D vdev;
-215 mutex_unlock(&cdev_mutex);
-216 if (port)
-217 *port =3D i;
-218 return cdev;
-219 }
-220 }
-221 }
-222 mutex_unlock(&cdev_mutex);
-223 log_debug(1 << CXGBI_DBG_DEV,
-224 "ndev 0x%p, %s, NO match found.\n", ndev, ndev->name);
-225 return NULL;
-226 }
+ 	rq->prev_mm =3D NULL;
+ =
 
-This is the function where we are sleeping based on your kernel oops output.
-If we are sleeping or can in this list we should change this to a spinlock =
-as
-that would stop sleeping issues here, unless  this function itself never sl=
-eeps
-and we have an issue in another part of your trace that I am missing.
-Regards Nick
+-	/*
+-	 * A task struct has one reference for the use as "current".
+-	 * If a task dies, then it sets TASK_DEAD in tsk->state and calls
+-	 * schedule one last time. The schedule call will never return, and
+-	 * the scheduled task must drop that reference.
+-	 * The test for TASK_DEAD must occur while the runqueue locks are
+-	 * still held, otherwise prev could be scheduled on another cpu, die
+-	 * there before we look at prev->state, and then the reference would
+-	 * be dropped twice.
+-	 *		Manfred Spraul <manfred@colorfullife.com>
+-	 */
+-	prev_state =3D prev->state;
+ 	vtime_task_switch(prev);
+ 	finish_arch_switch(prev);
+ 	perf_event_task_sched_in(prev, current);
+@@ -2279,7 +2268,7 @@ asmlinkage __visible void schedule_tail(
+ {
+ 	struct rq *rq =3D this_rq();
+ =
 
---===============6694560787708325058==--
+-	finish_task_switch(rq, prev);
++	finish_task_switch(rq, prev, 0);
+ =
+
+ 	/*
+ 	 * FIXME: do we need to worry about rq being invalidated by the
+@@ -2304,6 +2293,21 @@ context_switch(struct rq *rq, struct tas
+ 	       struct task_struct *next)
+ {
+ 	struct mm_struct *mm, *oldmm;
++	/*
++	 * A task struct has one reference for the use as "current".
++	 * If a task dies, then it sets TASK_DEAD in tsk->state and calls
++	 * schedule one last time. The schedule call will never return, and
++	 * the scheduled task must drop that reference.
++	 *
++	 * We must observe prev->state before clearing prev->on_cpu (in
++	 * finish_lock_switch), otherwise a concurrent wakeup can get prev
++	 * running on another CPU and we could race with its RUNNING -> DEAD
++	 * transition, and then the reference would be dropped twice.
++	 *
++	 * We avoid the race by observing prev->state while it is still
++	 * current.
++	 */
++	long prev_state =3D prev->state;
+ =
+
+ 	prepare_task_switch(rq, prev, next);
+ =
+
+@@ -2347,7 +2351,7 @@ context_switch(struct rq *rq, struct tas
+ 	 * CPUs since it called schedule(), thus the 'rq' on its stack
+ 	 * frame will be invalid.
+ 	 */
+-	finish_task_switch(this_rq(), prev);
++	finish_task_switch(this_rq(), prev, prev_state);
+ }
+ =
+
+ /*
+
+--===============2604546233336620228==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.sig"
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEuNC4xMiAoR05V
+L0xpbnV4KQoKaVFJY0JBRUJBZ0FHQlFKVDRlV2pBQW9KRUhaSDRhUkx3T1M2T2RJUC9SV1dNdUNT
+cDN4dU81aGtDZzZJZ1B3LwpWN0RmVnYzZnNjOHZoaFhHeHh2Tjk2Vkgyay9GVTNMQTd1ZThFWFFz
+ckVSbk1zcWRLVGRpQVBqOXdXNTlmT2w1CnpMNE1nNnZjaHZySE5hckt4OXFWOTYxR3RZcGd0a2tC
+U1lTbHk1bEpiWjNWNWFKUDFBZnNjdU1BTUJFSkpoQUsKZnVQUDVqZnorOXJWcTg5UkVHbS9DNFFK
+N3FtZGkwSnVBL1IvQU5JcXpPclUyUmJ1TFhmYUp0cFBTVThkL2ZHSAo5WFN5OTVNZ1FsSDM3SXY3
+RXF2MmxhYjFmV3JVOUhmYmRISnRVVVZsU3NFNllJc1RwZEFWL3hIMWJFa3duaFZQCkJRMGhOalFx
+OHFFNHBJalpJQU8veGJldmUyU0l6K2tIUHhsc1pKaXF2V3pZZUtVQ0tic2xmWmV2bHRNTEJlc3UK
+UU5HUE9PRlE5ZU5nTHRLd3Jtakw3TDJZcTZSdDk1VlZoRjNvRHA4L1ZFSG9PSVVZVXFOYzNuditq
+R3g1N1BVagpzUmo5WnNTaS9YaHlrZVZkUFZGbDl0WFBrWmU0bTZtUjRyc3BEVHFEZUJpbUJaOFow
+K0x1ZjRsSkM1WFRmZHVuCnc0cVdyZkZycE52emNPMkpuMDlLMEJmM25QMHI1Y3dUVmRqY0FZVGEw
+dGpvNGlmdU56K001eHFKSGkrYkFKbmcKUVlDMm1QV045M2xSeDdaRG41bXJqcXZQTE4vTFE4enB3
+VEdRREU3VjVzUWQ1ekxodlpNTTg2L2lLUjJ3RFRpWgoxM1ZqWUdvYmhlQjZESFgzTXJPSTBWQ05Z
+UEU3WEtmaUdjS2c4UmJqOEhOblk0SEV4WklkUzFEVjA1Z0syNklaCnlMQWxhbkZJeGxtZHR2MnBn
+T0JyCj0xY1dkCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
+
+--===============2604546233336620228==--
 
