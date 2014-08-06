@@ -1,82 +1,180 @@
-Content-Type: multipart/mixed; boundary="===============6191868310369929786=="
+Content-Type: multipart/mixed; boundary="===============1594585331689792786=="
 MIME-Version: 1.0
 From: Nick Krause <xerofoify@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [sbc_gxx] kernel BUG at include/linux/mtd/map.h:148!
-Date: Tue, 05 Aug 2014 20:08:57 -0400
-Message-ID: <CAPDOMVgN=tc_o7E19ss4j5FAG4vpgUSzuUXYLSNGfpWCvPsAwA@mail.gmail.com>
-In-Reply-To: <20140805135947.GA5593@localhost>
+Subject: Re: [blkg_stat] WARNING: CPU: 0 PID: 85 at kernel/softirq.c:156 _local_bh_enable_ip()
+Date: Tue, 05 Aug 2014 21:01:32 -0400
+Message-ID: <CAPDOMVivdpnkd9f5GL-8__P=i-uXvqfxsqrr9fm4K792nQ9XyQ@mail.gmail.com>
+In-Reply-To: <20140802025046.GA6683@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6191868310369929786==
+--===============1594585331689792786==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 5, 2014 at 9:59 AM, Fengguang Wu <fengguang.wu@intel.com> wro=
-te:
-> Hello,
+On Fri, Aug 1, 2014 at 10:50 PM, Fengguang Wu <fengguang.wu@intel.com> wr=
+ote:
+> Greetings,
 >
-> This is an old BUG that still lives in linux-next.
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 >
-> [    4.284620] device id =3D 2670
-> [    4.286157] SBC-GXx flash: IO:0x258-0x259 MEM:0xdc000-0xdffff
-> [    4.287060] ------------[ cut here ]------------
-> [    4.287722] kernel BUG at include/linux/mtd/map.h:148!
-> [    4.288048] invalid opcode: 0000 [#1] PREEMPT SMP
-> [    4.288048] CPU 1
-> [    4.288048] Pid: 1, comm: swapper/0 Not tainted 3.5.0-rc4-00162-g49099=
-c4 #17 Bochs Bochs
-> [    4.288048] RIP: 0010:[<ffffffff8177e8de>]  [<ffffffff8177e8de>] mtd_d=
-o_chip_probe+0x1d/0x1f
-> [    4.288048] RSP: 0018:ffff880011049e20  EFLAGS: 00010246
-> [    4.288048] RAX: 0000000000000000 RBX: ffffffff82a23550 RCX: 000000000=
-0000000
-> [    4.288048] RDX: ffff880011049e20 RSI: ffffffff82a23580 RDI: ffff88001=
-1049e80
-> [    4.288048] RBP: ffff880011049e80 R08: 0000000000000003 R09: ffffffff8=
-10d6c93
-> [    4.288048] R10: 0000000000000000 R11: 0000000000000001 R12: ffffffff8=
-2a23eb0
-> [    4.288048] R13: ffffffff828790ce R14: 0000000000000000 R15: 000000000=
-0000000
-> [    4.288048] FS:  0000000000000000(0000) GS:ffff880012600000(0000) knlG=
-S:0000000000000000
-> [    4.288048] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-> [    4.288048] CR2: 0000000000000000 CR3: 000000000298c000 CR4: 000000000=
-00406e0
-> [    4.288048] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
-0000000
-> [    4.288048] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 000000000=
-0000400
-> [    4.288048] Process swapper/0 (pid: 1, threadinfo ffff880011048000, ta=
-sk ffff880011040000)
-> [    4.288048] Stack:
-> [    4.288048]  0000000000000000 0000000000000000 0000000000000000 000000=
-0000000000
-> [    4.288048]  0000000000000000 0000000000000000 0000000000000000 000000=
-0000000000
-> [    4.288048]  0000000000000000 0000000000000000 0000000000000000 000000=
-0000000000
-> [    4.288048] Call Trace:
-> [    4.288048]  [<ffffffff81779e05>] cfi_probe+0x15/0x17
-> [    4.288048]  [<ffffffff81779d9b>] do_map_probe+0xa0/0xac
-> [    4.288048]  [<ffffffff834d1aac>] ? physmap_init+0x12/0x12
-> [    4.288048]  [<ffffffff834d1bb0>] init_sbc_gxx+0x104/0x15b
-> [    4.288048]  [<ffffffff8348d1b3>] do_one_initcall+0x86/0x208
-> [    4.288048]  [<ffffffff8348d442>] kernel_init+0x10d/0x1c2
-> [    4.288048]  [<ffffffff8348c739>] ? do_early_param+0xc3/0xc3
-> [    4.288048]  [<ffffffff8207b2f4>] kernel_thread_helper+0x4/0x10
-> [    4.288048]  [<ffffffff820797b4>] ? retint_restore_args+0x13/0x13
-> [    4.288048]  [<ffffffff8348d335>] ? do_one_initcall+0x208/0x208
-> [    4.288048]  [<ffffffff8207b2f0>] ? gs_change+0x13/0x13
-> [    4.288048] Code: 83 c4 58 5b 41 5c 41 5d 41 5e 41 5f 5d c3 55 48 89 e=
-5 48 83 ec 60 66 66 66 66 90 31 c0 b9 18 00 00 00 48 8d 55 a0 48 89 d7 f3 a=
-b <0f> 0b 55 48 89 e5 66 66 66 66 90 48 c7 c6 a0 39 a2 82 e8 cc ff
-> [    4.288048] RIP  [<ffffffff8177e8de>] mtd_do_chip_probe+0x1d/0x1f
-> [    4.288048]  RSP <ffff880011049e20>
-> [    4.321423] ---[ end trace 169195d5d1f9be6e ]---
-> [    4.322118] swapper/0 (1) used greatest stack depth: 3768 bytes left
+> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> commit 2c575026fae6e63771bd2a4c1d407214a8096a89
+> Author:     Hong Zhiguo <zhiguohong@tencent.com>
+> AuthorDate: Wed Nov 20 10:35:05 2013 -0700
+> Commit:     Jens Axboe <axboe@kernel.dk>
+> CommitDate: Wed Nov 20 15:33:04 2013 -0700
+>
+>     Update of blkg_stat and blkg_rwstat may happen in bh context.
+>     While u64_stats_fetch_retry is only preempt_disable on 32bit
+>     UP system. This is not enough to avoid preemption by bh and
+>     may read strange 64 bit value.
+>
+>     Signed-off-by: Hong Zhiguo <zhiguohong@tencent.com>
+>     Acked-by: Tejun Heo <tj@kernel.org>
+>     Cc: stable(a)kernel.org
+>     Signed-off-by: Jens Axboe <axboe@kernel.dk>
+>
+> +------------------------------------------------------------------------=
+-----+------------+------------+------------------+
+> |                                                                        =
+     | 82023bb7f7 | 2c575026fa | v3.16-rc7_080120 |
+> +------------------------------------------------------------------------=
+-----+------------+------------+------------------+
+> | boot_successes                                                         =
+     | 270        | 22         | 7                |
+> | boot_failures                                                          =
+     | 0          | 68         | 4                |
+> | BUG:unable_to_handle_kernel_NULL_pointer_dereference                   =
+     | 0          | 1          |                  |
+> | Oops                                                                   =
+     | 0          | 1          |                  |
+> | EIP_is_at_strlen                                                       =
+     | 0          | 1          |                  |
+> | BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/rws=
+em.c | 0          | 1          |                  |
+> | INFO:lockdep_is_turned_off                                             =
+     | 0          | 1          |                  |
+> | backtrace:vfs_write                                                    =
+     | 0          | 1          |                  |
+> | backtrace:SyS_write                                                    =
+     | 0          | 1          |                  |
+> | WARNING:CPU:PID:at_kernel/softirq.c:_local_bh_enable_ip()              =
+     | 0          | 67         |                  |
+> | inconsistent_SOFTIRQ-ON-W-IN-SOFTIRQ-W_usage                           =
+     | 0          | 67         | 4                |
+> | backtrace:redo_fd_request                                              =
+     | 0          | 67         |                  |
+> | backtrace:floppy_work_workfn                                           =
+     | 0          | 0          | 4                |
+> | backtrace:cpu_startup_entry                                            =
+     | 0          | 0          | 4                |
+> +------------------------------------------------------------------------=
+-----+------------+------------+------------------+
+>
+> [    2.848648] NX-protecting the kernel data: 5832k
+> [    2.903073] udev[122]: starting version 164
+> [    3.123339] ------------[ cut here ]------------
+> [    3.123386] WARNING: CPU: 0 PID: 85 at kernel/softirq.c:156 _local_bh_=
+enable_ip+0x34/0x97()
+> [    3.123386] Modules linked in:
+> [    3.123386] CPU: 0 PID: 85 Comm: kworker/u2:2 Not tainted 3.12.0-10878=
+-g2c57502 #1
+> [    3.123386] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+> [    3.123386] Workqueue: floppy redo_fd_request
+> [    3.123386]  c0258bca 00000000 d277bce8 c0646df5 d277bd00 c022d793 c02=
+30f4d c04297b7
+> [    3.123386]  d2746634 d277bd6c d277bd10 c022d81d 00000009 00000000 d27=
+7bd1c c0230f4d
+> [    3.123386]  d277bd4c d277bd24 c0230fc0 d277bd38 c04297b7 c001be10 d27=
+46400 d2743c00
+> [    3.123386] Call Trace:
+> [    3.123386]  [<c0258bca>] ? console_unlock+0x355/0x382
+> [    3.123386]  [<c0646df5>] dump_stack+0x16/0x18
+> [    3.123386]  [<c022d793>] warn_slowpath_common+0x5f/0x76
+> [    3.123386]  [<c0230f4d>] ? _local_bh_enable_ip+0x34/0x97
+> [    3.123386]  [<c04297b7>] ? blkg_rwstat_read+0x1d/0x24
+> [    3.123386]  [<c022d81d>] warn_slowpath_null+0x14/0x18
+> [    3.123386]  [<c0230f4d>] _local_bh_enable_ip+0x34/0x97
+> [    3.123386]  [<c0230fc0>] local_bh_enable+0x10/0x12
+> [    3.123386]  [<c04297b7>] blkg_rwstat_read+0x1d/0x24
+> [    3.123386]  [<c042ab0a>] __cfq_set_active_queue+0x65/0x165
+> [    3.123386]  [<c025348b>] ? mark_lock+0x1e/0x1d3
+> [    3.123386]  [<c025348b>] ? mark_lock+0x1e/0x1d3
+> [    3.123386]  [<c0252132>] ? __lock_is_held+0x2d/0x43
+> [    3.123386]  [<c021d2e1>] ? pvclock_clocksource_read+0xb1/0xda
+> [    3.123386]  [<c021c888>] ? kvm_clock_read+0x14/0x1d
+> [    3.123386]  [<c0206476>] ? paravirt_sched_clock+0x9/0xd
+> [    3.123386]  [<c042d08d>] cfq_dispatch_requests+0x521/0x78a
+> [    3.123386]  [<c0253f5c>] ? __lock_acquire+0x523/0xbdf
+> [    3.123386]  [<c0253f5c>] ? __lock_acquire+0x523/0xbdf
+> [    3.123386]  [<c025348b>] ? mark_lock+0x1e/0x1d3
+> [    3.123386]  [<c02548e7>] ? lock_acquire+0xa3/0xfc
+> [    3.123386]  [<c04f73a5>] ? redo_fd_request+0x3f/0xc0c
+> [    3.123386]  [<c041a1a4>] blk_peek_request+0x59/0x211
+> [    3.123386]  [<c041a36a>] blk_fetch_request+0xe/0x1e
+> [    3.123386]  [<c04f73e0>] redo_fd_request+0x7a/0xc0c
+> [    3.123386]  [<c02407ab>] ? process_one_work+0x13c/0x398
+> [    3.123386]  [<c0240843>] process_one_work+0x1d4/0x398
+> [    3.123386]  [<c0241092>] worker_thread+0x12b/0x1c8
+> [    3.123386]  [<c0240f67>] ? rescuer_thread+0x1ff/0x1ff
+> [    3.123386]  [<c0244b79>] kthread+0x8b/0x90
+> [    3.123386]  [<c064ccb7>] ret_from_kernel_thread+0x1b/0x28
+> [    3.123386]  [<c0244aee>] ? insert_kthread_work+0x5a/0x5a
+> [    3.123386] ---[ end trace 470268993472ede8 ]---
+> [    3.246919] end_request: I/O error, dev fd0, sector 0
+>
+> git bisect start v3.13 v3.12 --
+> git bisect good 3bad8bb5cd3048a67df43ac6b1e2f191f19d9ff0  # 22:45     62+=
+      0  Merge branch 'for-next' of git://git.samba.org/sfrench/cifs-2.6
+> git bisect  bad dd0508093b79141e0044ca02f0acb6319f69f546  # 22:59      0-=
+     62  Merge branch 'sched-urgent-for-linus' of git://git.kernel.org/pub/=
+scm/linux/kernel/git/tip/tip
+> git bisect  bad 3f02ff5c2c69753666787ed125708d283a823ffb  # 23:11      5-=
+     26  Merge tag 'tty-3.13-rc3' of git://git.kernel.org/pub/scm/linux/ker=
+nel/git/gregkh/tty
+> git bisect good 1ab231b274ba51a54acebec23c6aded0f3cdf54e  # 23:19     62+=
+      5  Merge branch 'timers-urgent-for-linus' of git://git.kernel.org/pub=
+/scm/linux/kernel/git/tip/tip
+> git bisect  bad 5ee540613db504a10e15fafaf4c08cac96aa1823  # 23:32      7-=
+      5  Merge branch 'for-linus' of git://git.kernel.dk/linux-block
+> git bisect good 53c6de50262a8edd6932bb59a32db7b9d92f8d67  # 23:39     90+=
+      0  Merge branch 'x86/urgent' of git://git.kernel.org/pub/scm/linux/ke=
+rnel/git/tip/tip
+> git bisect good 59fb2f0e9e30ad99a8bab0ff1efaf8f4a3b7105f  # 00:12     90+=
+      0  Merge tag 'fbdev-fixes-3.13' of git://git.kernel.org/pub/scm/linux=
+/kernel/git/tomba/linux
+> git bisect good ef1e4e32d595d3e6c9a6d3d2956f087d5886c5e5  # 01:00     90+=
+      0  Merge tag 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel=
+/git/mason/linux-btrfs
+> git bisect good 29be6345bbaec8502a70c4e2204d5818b48c4e8f  # 01:08     90+=
+      0  Merge tag 'nfs-for-3.13-3' of git://git.linux-nfs.org/projects/tro=
+ndmy/linux-nfs
+> git bisect  bad e345d767f6530ec9cb0aabab7ea248072a9c6975  # 01:38     31-=
+     32  Merge branch 'stable/for-jens-3.13-take-two' of git://git.kernel.o=
+rg/pub/scm/linux/kernel/git/xen/tip into for-linus
+> git bisect  bad c170bbb45febc03ac4d34ba2b8bb55e06104b7e7  # 01:43     28-=
+     19  block: submit_bio_wait() conversions
+> git bisect  bad 2c575026fae6e63771bd2a4c1d407214a8096a89  # 02:04      6-=
+     16  Update of blkg_stat and blkg_rwstat may happen in bh context. Whil=
+e u64_stats_fetch_retry is only preempt_disable on 32bit UP system. This is=
+ not enough to avoid preemption by bh and may read strange 64 bit value.
+> # first bad commit: [2c575026fae6e63771bd2a4c1d407214a8096a89] Update of =
+blkg_stat and blkg_rwstat may happen in bh context. While u64_stats_fetch_r=
+etry is only preempt_disable on 32bit UP system. This is not enough to avoi=
+d preemption by bh and may read strange 64 bit value.
+> git bisect good 82023bb7f75b0052f40d3e74169d191c3e4e6286  # 02:29    270+=
+      0  Merge tag 'pm+acpi-2-3.13-rc1' of git://git.kernel.org/pub/scm/lin=
+ux/kernel/git/rafael/linux-pm
+> git bisect  bad f1f29248d675d4762e7b7f498be50d2fb9c294f3  # 02:30      0-=
+      4  0day head guard for 'devel-hourly-2014080120'
+> git bisect  bad 6f0928036bcbd8dd2ebee9201580da8bcc0a81af  # 03:31     20-=
+     20  Merge tag 'pm+acpi-3.16-rc8' of git://git.kernel.org/pub/scm/linux=
+/kernel/git/rafael/linux-pm
+> git bisect  bad 4198cf324ddea447daac3f83d3c2319ced774201  # 03:38     16-=
+     17  Add linux-next specific files for 20140801
+>
 >
 > This script may reproduce the error.
 >
@@ -85,7 +183,7 @@ b <0f> 0b 55 48 89 e5 66 66 66 66 90 48 c7 c6 a0 39 a2 82 e8 cc ff
 > #!/bin/bash
 >
 > kernel=3D$1
-> initrd=3Dquantal-core-x86_64.cgz
+> initrd=3Dyocto-minimal-i386.cgz
 >
 > wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/m=
 aster/initrd/$initrd
@@ -97,7 +195,7 @@ aster/initrd/$initrd
 >         -kernel $kernel
 >         -initrd $initrd
 >         -m 320
->         -smp 2
+>         -smp 1
 >         -net nic,vlan=3D1,model=3De1000
 >         -net user,vlan=3D1
 >         -boot order=3Dnc
@@ -139,12 +237,90 @@ aster/initrd/$initrd
 > LKP mailing list
 > LKP(a)linux.intel.com
 >
-I am new , here and will try to trace your issue on linus's tree
-unless there is a major difference between Linus's tree and
-linux-next.
-If there is please let me known before I start tracing this.
-Best Regards ,
-Nick
+Hey Fenngguag,
+I assume this is the commit your are talking about after the robot
+runs git bisect.
+commit 2c575026fae6e63771bd2a4c1d407214a8096a89
+Author: Hong Zhiguo <zhiguohong@tencent.com>
+Date:   Wed Nov 20 10:35:05 2013 -0700
 
---===============6191868310369929786==--
+    Update of blkg_stat and blkg_rwstat may happen in bh context.
+    While u64_stats_fetch_retry is only preempt_disable on 32bit
+    UP system. This is not enough to avoid preemption by bh and
+    may read strange 64 bit value.
+
+    Signed-off-by: Hong Zhiguo <zhiguohong@tencent.com>
+    Acked-by: Tejun Heo <tj@kernel.org>
+    Cc: stable(a)kernel.org
+    Signed-off-by: Jens Axboe <axboe@kernel.dk>
+
+diff --git a/block/blk-cgroup.h b/block/blk-cgroup.h
+index 1610b22..86154ea 100644
+--- a/block/blk-cgroup.h
++++ b/block/blk-cgroup.h
+@@ -435,9 +435,9 @@ static inline uint64_t blkg_stat_read(struct
+blkg_stat *stat)
+        uint64_t v;
+
+        do {
+-               start =3D u64_stats_fetch_begin(&stat->syncp);
++               start =3D u64_stats_fetch_begin_bh(&stat->syncp);
+                v =3D stat->cnt;
+-       } while (u64_stats_fetch_retry(&stat->syncp, start));
++       } while (u64_stats_fetch_retry_bh(&stat->syncp, start));
+
+        return v;
+ }
+@@ -508,9 +508,9 @@ static inline struct blkg_rwstat
+blkg_rwstat_read(struct blkg_rwstat *rwstat)
+        struct blkg_rwstat tmp;
+
+        do {
+-               start =3D u64_stats_fetch_begin(&rwstat->syncp);
++               start =3D u64_stats_fetch_begin_bh(&rwstat->syncp);
+                tmp =3D *rwstat;
+-       } while (u64_stats_fetch_retry(&rwstat->syncp, start));
++       } while (u64_stats_fetch_retry_bh(&rwstat->syncp, start));
+
+        return tmp;
+ }
+
+After tracing i actually get the same call with irqs functions instead
+of bottom halves,
+maybe it's just the lxr I am using but it seems that this may be the issue =
+we
+are now calling in irqs, and not bottom halves. I am putting my function tr=
+aces
+below with the line numbers I am hitting in linus's tree after updating tod=
+ay.
+Regards
+
+static inline uint64_t blkg_stat_read(struct blkg_stat *stat)
+434 {
+435 unsigned int start;
+436 uint64_t v;
+437
+438 do {
+439 start =3D u64_stats_fetch_begin_irq(&stat->syncp);
+440 v =3D stat->cnt;
+441 } while (u64_stats_fetch_retry_irq(&stat->syncp, start));
+442
+443 return v;
+444 }
+
+506 static inline struct blkg_rwstat blkg_rwstat_read(struct
+blkg_rwstat *rwstat)
+507 {
+508 unsigned int start;
+509 struct blkg_rwstat tmp;
+510
+511 do {
+512 start =3D u64_stats_fetch_begin_irq(&rwstat->syncp);
+513 tmp =3D *rwstat;
+514 } while (u64_stats_fetch_retry_irq(&rwstat->syncp, start));
+515
+516 return tmp;
+517 }
+
+--===============1594585331689792786==--
 
