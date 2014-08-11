@@ -1,152 +1,183 @@
-Content-Type: multipart/mixed; boundary="===============4915929415787678077=="
+Content-Type: multipart/mixed; boundary="===============5286261650350569609=="
 MIME-Version: 1.0
-From: Oleg Nesterov <oleg@redhat.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sched] Out of memory: Kill process 2999 (rc) score 9 or sacrifice child
-Date: Sun, 10 Aug 2014 17:29:14 +0200
-Message-ID: <20140810152914.GA11947@redhat.com>
-In-Reply-To: <20140809184616.GQ9918@twins.programming.kicks-ass.net>
+Subject: Re: [sched] 143e1e28cb4: +17.9% aim7.jobs-per-min, -9.7% hackbench.throughput
+Date: Mon, 11 Aug 2014 09:23:40 +0800
+Message-ID: <20140811012340.GA6593@localhost>
+In-Reply-To: <20140810150503.GV9918@twins.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4915929415787678077==
+--===============5286261650350569609==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 08/09, Peter Zijlstra wrote:
->
-> That would suggest we're failing to do the TASK_DEAD thing properly, and
-> ARGH! bloody obvious why, see the this_rq() comment right before the
-> finish_task_switch() call in context_switch().
+On Sun, Aug 10, 2014 at 05:05:03PM +0200, Peter Zijlstra wrote:
+> On Sun, Aug 10, 2014 at 06:54:13PM +0800, Fengguang Wu wrote:
+> > The "brickland1/aim7/6000-page_test" is the test case part.
+> > =
 
-Off-topic, but perhaps we can make this a bit more clear?
+> > The "TOTAL XXX" is the metric part. One test run may generate lots of
+> > metrics, reflecting different aspect of the system dynamics.
+> > =
 
-Hmm. But after I actually did this change I can't understand if it makes
-this more clean or uglifies the code. See the patch below.
+> > This view may be easier to read, by grouping the metrics by test case.
+> =
 
-OTOH, "int cpu" in __schedule() looks pointless and should die? Both
-rcu_note_context_switch() and wq_worker_sleeping() can use
-raw_smp_processor_id() ? In fact I think wq_worker_sleeping() doesn't
-need the "task" argument too.
+> Right, at least that makes more sense.
+> =
 
-And... Doesn't schedule_tail() need preempt_enable() before
-finish_task_switch() ? IOW, shouldn't it do
+> > test case: brickland1/aim7/6000-page_test
+> =
 
-	#ifndef __ARCH_WANT_UNLOCKED_CTXSW
-		preempt_disable();
-	#endif
-		finish_task_switch();
-		post_schedule(rq);
+> Ok, so next question, what is a brickland? I suspect its a machine of
+> sorts, seeing how some others had wsm in that part of the test. Now I
+> know what a westmere is, but I've never heard of a brickland.
 
-		preempt_enable();
+As Ingo says, it's the "Brickland" platform with "Ivy Bridge-EX" CPU.
 
-or I am totally confused?
+Sorry this part can be improved -- I'll add description of the test
+boxes in future reports.
 
-Oleg.
+> Please describe the machine, this is a topology patch, so we need to
+> know the topology of the affected machines.
 
+Here they are. If you need more (or less) information (now and future),
+please let me know.
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 3bdf01b..e37259f 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -2192,10 +2192,16 @@ prepare_task_switch(struct rq *rq, struct task_stru=
-ct *prev,
-  * so, we finish that here outside of the runqueue lock. (Doing it
-  * with the lock held can cause deadlocks; see schedule() for
-  * details.)
-+ *
-+ * The context switch have flipped the stack from under us and restored the
-+ * local variables which were saved when this task called schedule() in the
-+ * past. prev =3D=3D current is still correct but we need to recalculate t=
-his_rq
-+ * because prev may have moved to another CPU.
-  */
--static void finish_task_switch(struct rq *rq, struct task_struct *prev)
-+static struct rq *finish_task_switch(struct task_struct *prev)
- 	__releases(rq->lock)
- {
-+	struct rq *rq =3D this_rq();
- 	struct mm_struct *mm =3D rq->prev_mm;
- 	long prev_state;
- =
+brickland1: Brickland Ivy Bridge-EX
+Memory: 128G
 
-@@ -2235,6 +2241,7 @@ static void finish_task_switch(struct rq *rq, struct =
-task_struct *prev)
- 	}
- =
+brickland3: Brickland Ivy Bridge-EX
+Memory: 512G
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                120
+On-line CPU(s) list:   0-119
+Thread(s) per core:    2
+Core(s) per socket:    15
+Socket(s):             4
+NUMA node(s):          4
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 62
+Stepping:              7
+CPU MHz:               3192.875
+BogoMIPS:              5593.49
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              38400K
+NUMA node0 CPU(s):     0-14,60-74
+NUMA node1 CPU(s):     15-29,75-89
+NUMA node2 CPU(s):     30-44,90-104
+NUMA node3 CPU(s):     45-59,105-119
 
- 	tick_nohz_task_switch(current);
-+	return rq;
- }
- =
+lkp-snb01: Sandy Bridge-EP
+Memory: 32G
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                32
+On-line CPU(s) list:   0-31
+Thread(s) per core:    2
+Core(s) per socket:    8
+Socket(s):             2
+NUMA node(s):          2
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 45
+Stepping:              6
+CPU MHz:               3498.820
+BogoMIPS:              5391.31
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              20480K
+NUMA node0 CPU(s):     0-7,16-23
+NUMA node1 CPU(s):     8-15,24-31
 
- #ifdef CONFIG_SMP
-@@ -2269,10 +2276,7 @@ static inline void post_schedule(struct rq *rq)
- asmlinkage __visible void schedule_tail(struct task_struct *prev)
- 	__releases(rq->lock)
- {
--	struct rq *rq =3D this_rq();
--
--	finish_task_switch(rq, prev);
--
-+	struct rq *rq =3D finish_task_switch(prev);
- 	/*
- 	 * FIXME: do we need to worry about rq being invalidated by the
- 	 * task_switch?
-@@ -2291,9 +2295,8 @@ asmlinkage __visible void schedule_tail(struct task_s=
-truct *prev)
-  * context_switch - switch to the new MM and the new
-  * thread's register state.
-  */
--static inline void
--context_switch(struct rq *rq, struct task_struct *prev,
--	       struct task_struct *next)
-+static inline struct rq *
-+context_switch(struct rq *rq, struct task_struct *prev, struct task_struct=
- *next)
- {
- 	struct mm_struct *mm, *oldmm;
- =
+wsm: Westmere
+Memory: 6G
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                12
+On-line CPU(s) list:   0-11
+Thread(s) per core:    2
+Core(s) per socket:    6
+Socket(s):             1
+NUMA node(s):          1
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 44
+Stepping:              2
+CPU MHz:               3458.000
+BogoMIPS:              6756.46
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              12288K
+NUMA node0 CPU(s):     0-11
 
-@@ -2332,14 +2335,9 @@ context_switch(struct rq *rq, struct task_struct *pr=
-ev,
- 	context_tracking_task_switch(prev, next);
- 	/* Here we just switch the register state and the stack. */
- 	switch_to(prev, next, prev);
--
- 	barrier();
--	/*
--	 * this_rq must be evaluated again because prev may have moved
--	 * CPUs since it called schedule(), thus the 'rq' on its stack
--	 * frame will be invalid.
--	 */
--	finish_task_switch(this_rq(), prev);
-+
-+	return finish_task_switch(prev);
- }
- =
+lkp-nex04: Nehalem-EX
+Memory: 256G
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                64
+On-line CPU(s) list:   0-63
+Thread(s) per core:    2
+Core(s) per socket:    8
+Socket(s):             4
+NUMA node(s):          4
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 46
+Stepping:              6
+CPU MHz:               2262.000
+BogoMIPS:              4521.30
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              24576K
+NUMA node0 CPU(s):     0-7,32-39
+NUMA node1 CPU(s):     8-15,40-47
+NUMA node2 CPU(s):     16-23,48-55
+NUMA node3 CPU(s):     24-31,56-63
 
- /*
-@@ -2792,15 +2790,8 @@ need_resched:
- 		rq->curr =3D next;
- 		++*switch_count;
- =
+nhm4: Nehalem
+Memory: 4G
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                8
+On-line CPU(s) list:   0-7
+Thread(s) per core:    2
+Core(s) per socket:    4
+Socket(s):             1
+NUMA node(s):          1
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 26
+Stepping:              4
+CPU MHz:               3193.000
+BogoMIPS:              6400.40
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              8192K
+NUMA node0 CPU(s):     0-7
 
--		context_switch(rq, prev, next); /* unlocks the rq */
--		/*
--		 * The context switch have flipped the stack from under us
--		 * and restored the local variables which were saved when
--		 * this task called schedule() in the past. prev =3D=3D current
--		 * is still correct, but it can be moved to another cpu/rq.
--		 */
-+		rq =3D context_switch(rq, prev, next); /* unlocks the rq */
- 		cpu =3D smp_processor_id();
--		rq =3D cpu_rq(cpu);
- 	} else
- 		raw_spin_unlock_irq(&rq->lock);
- =
+Thanks,
+Fengguang
 
-
-
---===============4915929415787678077==--
+--===============5286261650350569609==--
 
