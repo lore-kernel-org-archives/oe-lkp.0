@@ -1,117 +1,302 @@
-Content-Type: multipart/mixed; boundary="===============0879131729560294922=="
+Content-Type: multipart/mixed; boundary="===============2945045169581414910=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Weston Andros Adamson <dros@primarydata.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/numa] 096aa33863a: -21.4% hackbench.throughput, -20.2% netperf.Throughput_Mbps
-Date: Mon, 11 Aug 2014 16:17:36 +0200
-Message-ID: <20140811141736.GD9918@twins.programming.kicks-ass.net>
-In-Reply-To: <53E3C270.1010302@redhat.com>
+Subject: Re: [nfs] BUG: sleeping function called from invalid context at include/linux/wait.h:976
+Date: Mon, 11 Aug 2014 22:52:38 -0400
+Message-ID: <7EA40233-6820-4F0E-A2B7-687DC01BDD78@primarydata.com>
+In-Reply-To: <CAPDOMVibdcRRdqGRsK4kq+cdh3yBjBU4XB7JjTfyOMFk+jYyvA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0879131729560294922==
+--===============2945045169581414910==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 07, 2014 at 02:16:16PM -0400, Rik van Riel wrote:
-> On 08/07/2014 06:53 AM, Fengguang Wu wrote:
-> > Hi Rik,
-> > =
+Hi,
 
-> > We noticed the below performance regression in commit
-> > 096aa33863a5e48de52d2ff30e0801b7487944f4 ("sched/numa: Decay
-> > ->wakee_flips instead of zeroing")
-> > =
+I posted a 5 patch series to the nfs list last week with the cover letter t=
+itled
+"nfs_page_group_lock cleanup=E2=80=9D, but neglected to mail the wider list.
 
-> > b1ad065e65f5610  096aa33863a5e48de52d2ff30  testbox/testcase/testparams
-> > ---------------  -------------------------  ---------------------------
-> >     122361 =C2=B1 0%     -21.4%      96140 =C2=B1 0%  lkp-snb01/hackben=
-ch/50%-process-pipe
-> >     122361 =C2=B1 0%     -21.4%      96140 =C2=B1 0%  TOTAL hackbench.t=
-hroughput
-> =
+The might_sleep check was being hit because nfs_page_group_lock with wait=
+=3DFalse called
+wait_on_bit_lock (which might sleep). I also had to be careful to ignore th=
+e nonblock argument
+in nfs_lock_and_join_requests and always call nonblocking, because the inod=
+e lock is held.
+Blocking is handled by dropping the inode lock, calling wait_on_bit(), then=
+ trying again.
 
-> I guess the performance of that benchmark depends on it
-> "slipping under the wire" after each time the kernel
-> zeroes out ->wakee_flips.
-> =
+The cover letter for the patchset is below.
 
-> Depending on repeatedly pulling the wakee back to the same
-> node as the waker suggests something else in the kernel may
-> be pulling the wakee to another place in the system repeatedly,
-> as well, just at a lower frequency (load balancer?).
-> =
+Thanks!
+-dros
 
-> I have also noticed that select_idle_sibling often fails to
-> find an idle sibling within the LLC domain, even when it
-> exists. Fixing that bug sometimes results in lower performance.
-> =
 
-> It appears that some of the performance results of the scheduler
-> appear on the code acting in an opposite way to its documented
-> intention.
-> =
+These patches clean up some issues surrouding nfs_page_group_lock:
 
-> It may be best to revert 096aa33863a for now...
+- normalize wait/nonblock argument
+- make nonblocking calls really nonblocking
+- handle errors
+- ensure that we don't call blocking nfs_page_group_lock when holding the
+  inode spinlock
 
-Does something like so cure anything? Is that a 'normal' hackbench run?
-lemme see if I can reproduce on anything.
+This cleanup was inspired by Fengguang Wu's report that we were sleeping wi=
+th
+locks held in nfs_lock_and_join_requests.
 
+Weston Andros Adamson (5):
+ nfs: change nfs_page_group_lock argument
+ nfs: fix nonblocking calls to nfs_page_group_lock
+ nfs: use blocking page_group_lock in add_request
+ nfs: fix error handling in lock_and_join_requests
+ nfs: don't sleep with inode lock in lock_and_join_requests
+
+fs/nfs/pagelist.c        | 59 ++++++++++++++++++++++++++++++---------------=
 ---
- kernel/sched/fair.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+fs/nfs/write.c           | 21 +++++++++++++----
+include/linux/nfs_page.h |  1 +
+3 files changed, 55 insertions(+), 26 deletions(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index bfa3c86d0d68..13f00daf8028 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -4098,14 +4098,19 @@ static unsigned long cpu_avg_load_per_task(int cpu)
- =
 
- static void record_wakee(struct task_struct *p)
- {
-+	unsigned long now =3D jiffies;
- 	/*
- 	 * Rough decay (wiping) for cost saving, don't worry
- 	 * about the boundary, really active task won't care
- 	 * about the loss.
- 	 */
--	if (time_after(jiffies, current->wakee_flip_decay_ts + HZ)) {
-+	if (time_after(now, current->wakee_flip_decay_ts + BITS_PER_LONG * HZ)) {
-+		current->wakee_flips =3D 0;
-+		current->wakee_flip_decay_ts =3D now;
-+	} else while (time_after(now, current->wakee_flip_decay_ts + HZ) && =
+On Aug 9, 2014, at 12:11 AM, Nick Krause <xerofoify@gmail.com> wrote:
 
-+		      current->wakee_flips) {
- 		current->wakee_flips >>=3D 1;
--		current->wakee_flip_decay_ts =3D jiffies;
-+		current->wakee_flip_decay_ts +=3D HZ;
- 	}
- =
+> On Tue, Aug 5, 2014 at 11:08 AM, Weston Andros Adamson
+> <dros@primarydata.com> wrote:
+>> Thanks, I=E2=80=99ll investigate.
+>> =
 
- 	if (current->last_wakee !=3D p) {
+>> -dros
+>> =
 
---===============0879131729560294922==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.sig"
+>> =
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEuNC4xMiAoR05V
-L0xpbnV4KQoKaVFJY0JBRUJBZ0FHQlFKVDZOQ0FBQW9KRUhaSDRhUkx3T1M2QXRvUC8wN05QZGl6
-c2tXeURNdVB0R3RXbVZHRwpoVnBFYVZEMTV3bzNrTVBlVXdwRWtYVmVWS1RZTTJTYUpWM1dHSmFJ
-UGlkajlNNEd3QmxxRnBXUDUwZUtTUHBKCmQvQ05NOWRKWEtGWmE2bllKWi80V2FDVzJLNWNhbkto
-Qm9VN3pRTElzalZ6M2ZmR2N1K3pVZlQ3dDgvVENVNWkKdWNsUFJwWm9FMUNxOEVici91ZnEvMEJp
-dmErZDJMcytGc08rSTlzcW5xUk1lK3pvM1FUMmxWRW9zWTRTbzkvSQo2MHg5M25CeEV5OEtNU05Z
-b280UWpIQkZ6ZEpvd240aHJYZDJsanZ5eWlmd2tXenVwUFJrQjZUeEdSR0l0M2ZLCmE1MXJYTFdP
-bHEwUjhqUHh4bEExaXFtbWkvYyt5TVcxV09Dd0pJTmFja2ZhSk9nWVAyUi96ZnhpMnc5enZFc2YK
-cHk5NFR4ekYxU0I2aVVuZjNsdGdaRHozYU1KWW1iaXdaSGdmQWdObnlIQ3RZUDYweXVvUFVhMllr
-enMrUmdMeApTbmRUdGd2S0JmcjVvOG9kaUN2aXY1N01zNjhvNmswc3hRbWJJbWh4OC9aZ1lubGxM
-aTlyY2hRWEkzd3NYdlkwCmQrOExoZFFzVUgvOXpKcGVKRG1KdGl2VjB0OW80Q2E1MFRGdEVKUHhH
-NU1ySk1hdFA5M0lwaElGMkR2YWRlUkIKWUhzZzliUVNHbTZpZHhXU05wbHNSdTVxOFgxOXJQQnlr
-M1UyaTdZZmk0aEtQSk9XNnpMYUl4TGtLMjBqRnZMQQo0WGg1VlNKb2ZMNTNVUjN6SmtUN0xQK1Y2
-dHZCeEFuOFlwZmZFVVI4bmYweUt6ZGF4RWlrOUZ0My85d1piTjY4CjFkSFQ4S0FOMG03amJpY1Qr
-bjNmCj10L08rCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
+>> On Aug 5, 2014, at 10:03 AM, Fengguang Wu <fengguang.wu@intel.com> wro=
+te:
+>> =
 
---===============0879131729560294922==--
+>>> Greetings,
+>>> =
+
+>>> Here is an NFS error triggered by this debug check.
+>>> =
+
+>>> git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/wa=
+it
+>>> commit b87699e5fa31f451987a992b9cbda22d29ebcb46
+>>> Author:     Peter Zijlstra <peterz@infradead.org>
+>>> AuthorDate: Mon Aug 4 11:12:21 2014 +0200
+>>> Commit:     Peter Zijlstra <a.p.zijlstra@chello.nl>
+>>> CommitDate: Mon Aug 4 13:29:57 2014 +0200
+>>> =
+
+>>>   wait: Add might_sleep()
+>>> =
+
+>>>   Add more might_sleep() checks, suppose someone put a wait_event() like
+>>>   thing in a wait loop..
+>>> =
+
+>>>   Can't put might_sleep() in ___wait_event() because there's the locked
+>>>   primitives which call ___wait_event() with locks held.
+>>> =
+
+>>>   Signed-off-by: Peter Zijlstra <peterz@infradead.org>
+>>>   Link: http://lkml.kernel.org/n/tip-amr894sd1j012khd3fgyh9m8(a)git.ker=
+nel.org
+>>> =
+
+>>> =
+
+>>> [   13.363454] BUG: sleeping function called from invalid context at in=
+clude/linux/wait.h:976
+>>> [   13.365679] in_atomic(): 1, irqs_disabled(): 0, pid: 2715, name: dme=
+sg
+>>> [   13.367109] CPU: 1 PID: 2715 Comm: dmesg Not tainted 3.16.0-00048-gb=
+87699e #1
+>>> [   13.368385] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+>>> [   13.369544]  0000000000000000 ffff88003e3efad0 ffffffff819c6bad ffff=
+880035e9e480
+>>> [   13.371838]  ffff88003e3efae0 ffffffff81106e96 ffff88003e3efb00 ffff=
+ffff81306a2e
+>>> [   13.373822]  ffff880035e9e480 ffff88001b8a1a40 ffff88003e3efb48 ffff=
+ffff8130975a
+>>> [   13.376165] Call Trace:
+>>> [   13.376890]  [<ffffffff819c6bad>] dump_stack+0x4d/0x66
+>>> [   13.377903]  [<ffffffff81106e96>] __might_sleep+0x10a/0x10c
+>>> [   13.379247]  [<ffffffff81306a2e>] nfs_page_group_lock+0x4e/0x7b
+>>> [   13.380739]  [<ffffffff8130975a>] nfs_lock_and_join_requests+0x83/0x=
+334
+>>> [   13.381884]  [<ffffffff81309a9f>] nfs_do_writepage+0x94/0x191
+>>> [   13.383078]  [<ffffffff81309baf>] nfs_writepages_callback+0x13/0x25
+>>> [   13.384592]  [<ffffffff81309b9c>] ? nfs_do_writepage+0x191/0x191
+>>> [   13.385745]  [<ffffffff811963d0>] write_cache_pages+0x281/0x3a9
+>>> [   13.386829]  [<ffffffff81309b9c>] ? nfs_do_writepage+0x191/0x191
+>>> [   13.388524]  [<ffffffff8130a1fd>] nfs_writepages+0xa9/0x10f
+>>> [   13.389903]  [<ffffffff811994e1>] ? release_pages+0x1a2/0x20b
+>>> [   13.391087]  [<ffffffff81194835>] ? free_pcppages_bulk+0x298/0x33c
+>>> [   13.392198]  [<ffffffff81197c8b>] do_writepages+0x1e/0x2c
+>>> [   13.393202]  [<ffffffff8118e3f4>] __filemap_fdatawrite_range+0x55/0x=
+57
+>>> [   13.394313]  [<ffffffff8118e4b4>] filemap_write_and_wait_range+0x2a/=
+0x58
+>>> [   13.395448]  [<ffffffff812ff101>] nfs_file_fsync+0x4e/0x10c
+>>> [   13.396546]  [<ffffffff81211395>] vfs_fsync_range+0x1b/0x23
+>>> [   13.397567]  [<ffffffff812113b9>] vfs_fsync+0x1c/0x1e
+>>> [   13.398517]  [<ffffffff812ff679>] nfs_file_flush+0x6c/0x6f
+>>> [   13.399513]  [<ffffffff811e918b>] filp_close+0x3c/0x72
+>>> [   13.400646]  [<ffffffff8120295a>] put_files_struct+0x67/0xb3
+>>> [   13.401759]  [<ffffffff81202a43>] exit_files+0x4a/0x4f
+>>> [   13.402756]  [<ffffffff810e4073>] do_exit+0x3c9/0x985
+>>> [   13.403740]  [<ffffffff8106e605>] ? trace_do_page_fault+0x52/0xb7
+>>> [   13.404875]  [<ffffffff810e46a9>] do_group_exit+0x44/0xac
+>>> [   13.405878]  [<ffffffff810e4725>] SyS_exit_group+0x14/0x14
+>>> [   13.406892]  [<ffffffff819ce6a9>] system_call_fastpath+0x16/0x1b
+>>> [   15.733276] BUG: sleeping function called from invalid context at in=
+clude/linux/wait.h:976
+>>> [   15.735154] in_atomic(): 1, irqs_disabled(): 0, pid: 2716, name: cat
+>>> [   15.736263] CPU: 1 PID: 2716 Comm: cat Not tainted 3.16.0-00048-gb87=
+699e #1
+>>> [   15.737414] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+>>> [   15.738754]  0000000000000000 ffff88000068b910 ffffffff819c6bad ffff=
+880035e9e080
+>>> [   15.746872]  ffff88000068b920 ffffffff81106e96 ffff88000068b940 ffff=
+ffff81306a2e
+>>> [   15.748694]  ffff880035e9e080 ffff88001b8a1a40 ffff88000068b988 ffff=
+ffff8130975a
+>>> [   15.750479] Call Trace:
+>>> [   15.751164]  [<ffffffff819c6bad>] dump_stack+0x4d/0x66
+>>> [   15.752141]  [<ffffffff81106e96>] __might_sleep+0x10a/0x10c
+>>> [   15.753148]  [<ffffffff81306a2e>] nfs_page_group_lock+0x4e/0x7b
+>>> [   15.754183]  [<ffffffff8130975a>] nfs_lock_and_join_requests+0x83/0x=
+334
+>>> [   15.755294]  [<ffffffff81309a9f>] nfs_do_writepage+0x94/0x191
+>>> [   15.756335]  [<ffffffff81309baf>] nfs_writepages_callback+0x13/0x25
+>>> [   15.757405]  [<ffffffff81309b9c>] ? nfs_do_writepage+0x191/0x191
+>>> [   15.758452]  [<ffffffff811963d0>] write_cache_pages+0x281/0x3a9
+>>> [   15.759483]  [<ffffffff81309b9c>] ? nfs_do_writepage+0x191/0x191
+>>> [   15.760547]  [<ffffffff8130a1fd>] nfs_writepages+0xa9/0x10f
+>>> [   15.761541]  [<ffffffff81197c8b>] do_writepages+0x1e/0x2c
+>>> [   15.762514]  [<ffffffff8118e3f4>] __filemap_fdatawrite_range+0x55/0x=
+57
+>>> [   15.763612]  [<ffffffff8118e4b4>] filemap_write_and_wait_range+0x2a/=
+0x58
+>>> [   15.764746]  [<ffffffff812ff101>] nfs_file_fsync+0x4e/0x10c
+>>> [   15.765748]  [<ffffffff81211395>] vfs_fsync_range+0x1b/0x23
+>>> [   15.766745]  [<ffffffff812113b9>] vfs_fsync+0x1c/0x1e
+>>> [   15.767681]  [<ffffffff812ff679>] nfs_file_flush+0x6c/0x6f
+>>> [   15.768690]  [<ffffffff811e918b>] filp_close+0x3c/0x72
+>>> [   15.769638]  [<ffffffff8120295a>] put_files_struct+0x67/0xb3
+>>> [   15.770635]  [<ffffffff81202a43>] exit_files+0x4a/0x4f
+>>> [   15.771581]  [<ffffffff810e4073>] do_exit+0x3c9/0x985
+>>> [   15.772537]  [<ffffffff819caf04>] ? __schedule+0x4cb/0x734
+>>> [   15.773522]  [<ffffffff810e46a9>] do_group_exit+0x44/0xac
+>>> [   15.774493]  [<ffffffff810f0c03>] get_signal_to_deliver+0x53b/0x5cb
+>>> [   15.775575]  [<ffffffff810392b9>] do_signal+0x49/0x511
+>>> [   15.776561]  [<ffffffff81127334>] ? do_syslog+0x141/0x4a8
+>>> [   15.777564]  [<ffffffff8124915d>] ? kmsg_read+0x2d/0x54
+>>> [   15.778513]  [<ffffffff8123d924>] ? proc_reg_read+0x56/0x69
+>>> [   15.779504]  [<ffffffff810397b6>] do_notify_resume+0x35/0x72
+>>> [   15.780521]  [<ffffffff819ce908>] int_signal+0x12/0x17
+>>> =
+
+>>> This script may reproduce the error.
+>>> =
+
+>>> -----------------------------------------------------------------------=
+-----
+>>> #!/bin/bash
+>>> =
+
+>>> kernel=3D$1
+>>> initrd=3Ddebian-x86_64.cgz
+>>> =
+
+>>> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw=
+/master/initrd/$initrd
+>>> =
+
+>>> kvm=3D(
+>>>      qemu-system-x86_64
+>>>      -enable-kvm
+>>>      -cpu Nehalem
+>>>      -kernel $kernel
+>>>      -initrd $initrd
+>>>      -m 1024
+>>>      -smp 2
+>>>      -net nic,vlan=3D1,model=3De1000
+>>>      -net user,vlan=3D1
+>>>      -boot order=3Dnc
+>>>      -no-reboot
+>>>      -watchdog i6300esb
+>>>      -rtc base=3Dlocaltime
+>>>      -serial stdio
+>>>      -display none
+>>>      -monitor null
+>>> )
+>>> =
+
+>>> append=3D(
+>>>      root=3D/dev/ram0
+>>>      ip=3D::::vm-vp-1G-5::dhcp
+>>>      oops=3Dpanic
+>>>      earlyprintk=3DttyS0,115200
+>>>      debug
+>>>      apic=3Ddebug
+>>>      sysrq_always_enabled
+>>>      rcupdate.rcu_cpu_stall_timeout=3D100
+>>>      panic=3D10
+>>>      softlockup_panic=3D1
+>>>      nmi_watchdog=3Dpanic
+>>>      load_ramdisk=3D2
+>>>      prompt_ramdisk=3D0
+>>>      console=3DttyS0,115200
+>>>      console=3Dtty0
+>>>      vga=3Dnormal
+>>> )
+>>> =
+
+>>> "${kvm[@]}" --append "${append[*]}"
+>>> -----------------------------------------------------------------------=
+-----
+>>> =
+
+>>> Thanks,
+>>> Fengguang
+>>> _______________________________________________
+>>> LKP mailing list
+>>> LKP(a)linux.intel.com
+>> =
+
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" =
+in
+>> the body of a message to majordomo(a)vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> Please read the FAQ at  http://www.tux.org/lkml/
+> Hey Weston,
+> After doing the trace for you . seems the issue is in ,nfs_page_group_loc=
+k.
+> As due to the head not being equal to head be are hitiing a warn on.
+> =
+
+> 152 nfs_page_group_lock(struct nfs_page *req)
+> 153 {
+> 154 struct nfs_page *head =3D req->wb_head;
+> 155
+> 156 WARN_ON_ONCE(head !=3D head->wb_head);
+> 157
+> 158 wait_on_bit_lock(&head->wb_flags, PG_HEADLOCK,
+> 159 nfs_wait_bit_uninterruptible,
+> 160 TASK_UNINTERRUPTIBLE);
+> 161 }
+> =
+
+> I am pasting the function for your convenience.
+> Please CC me to let me known how this goes.
+> Cheers Nick
+
+
+--===============2945045169581414910==--
 
