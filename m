@@ -1,102 +1,49 @@
-Content-Type: multipart/mixed; boundary="===============2826111480472754692=="
+Content-Type: multipart/mixed; boundary="===============1405473474669728869=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: [ext4] 71d4f7d0321: -49.6% xfstests.generic.274.seconds
-Date: Thu, 21 Aug 2014 22:30:06 +0800
-Message-ID: <20140821143006.GA19943@localhost>
+Subject: Re: [nfs] BUG: sleeping function called from invalid context at include/linux/wait.h:976
+Date: Tue, 12 Aug 2014 08:59:58 +0200
+Message-ID: <20140812065958.GL9918@twins.programming.kicks-ass.net>
+In-Reply-To: <7EA40233-6820-4F0E-A2B7-687DC01BDD78@primarydata.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2826111480472754692==
+--===============1405473474669728869==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Ted,
+On Mon, Aug 11, 2014 at 10:52:38PM -0400, Weston Andros Adamson wrote:
+> Weston Andros Adamson (5):
+>  nfs: change nfs_page_group_lock argument
+>  nfs: fix nonblocking calls to nfs_page_group_lock
+>  nfs: use blocking page_group_lock in add_request
+>  nfs: fix error handling in lock_and_join_requests
+>  nfs: don't sleep with inode lock in lock_and_join_requests
 
-We noticed increased xfstests 274's test speed and the first good
-commit is 71d4f7d032149b935a26eb3ff85c6c837f3714e1 ("ext4: remove
-metadata reservation checks").
+Thanks for taking care of that!
 
-test case: snb-drag/xfstests/4HDD-ext4-generic-slow2
-snb-drag is a Sandy Bridge PC with 6G memory.
-
-d5e03cbb0c88cd1  71d4f7d032149b935a26eb3ff =
-
----------------  ------------------------- =
-
-        51 =C2=B1 2%     -49.6%         25 =C2=B1 1%  TOTAL xfstests.generi=
-c.274.seconds
-       817 =C2=B1 1%      -3.0%        792 =C2=B1 1%  TOTAL time.elapsed_ti=
-me
-
-                          xfstests.generic.274.seconds
-
-  60 ++--------------------------------------------------------------------=
--+
-     |                                                                     =
- |
-  55 ++         .*..*..             *..               *..                  =
- |
-     |       .*.       .          ..                ..                     =
- |
-  50 *+.*..*.           *..*..*..*     *..*..*..*..*     *                 =
- |
-     |                                                                     =
- |
-  45 ++                                                                    =
- |
-     |                                                                     =
- |
-  40 ++                                                                    =
- |
-     |                                                                     =
- |
-  35 ++                                                                    =
- |
-     |                                                                     =
- |
-  30 ++                                                                    =
- |
-     |                                                                     =
- |
-  25 O+-O--O--O--O--O---O--O--O--O--O--O--O--O--O--O--O--O---O--O--O--O--O-=
--O
-
-
-	[*] bisect-good sample
-	[O] bisect-bad  sample
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
-
-Thanks,
-Fengguang
-
---===============2826111480472754692==
-Content-Type: text/plain
+--===============1405473474669728869==
+Content-Type: application/pgp-signature
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
+Content-Disposition: attachment; filename="attachment.sig"
 
-ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTAvY3B1ZnJlcS9z
-Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
-dS9jcHUxL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
-ZXZpY2VzL3N5c3RlbS9jcHUvY3B1Mi9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJm
-b3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTMvY3B1ZnJlcS9zY2FsaW5nX2dv
-dmVybm9yCm1rZnMgLXQgZXh0NCAtcSAvZGV2L3NkYTcKbWtmcyAtdCBleHQ0IC1xIC9kZXYvc2Rh
-MTAKbWtmcyAtdCBleHQ0IC1xIC9kZXYvc2RhNgpta2ZzIC10IGV4dDQgLXEgL2Rldi9zZGE1Cm1v
-dW50IC10IGV4dDQgL2Rldi9zZGExMCAvZnMvc2RhMTAKbW91bnQgLXQgZXh0NCAvZGV2L3NkYTUg
-L2ZzL3NkYTUKbW91bnQgLXQgZXh0NCAvZGV2L3NkYTYgL2ZzL3NkYTYKbW91bnQgLXQgZXh0NCAv
-ZGV2L3NkYTcgL2ZzL3NkYTcKZXhwb3J0IFRFU1RfRElSPS9mcy9zZGExMApleHBvcnQgVEVTVF9E
-RVY9L2Rldi9zZGExMApleHBvcnQgU0NSQVRDSF9NTlQ9L2ZzL3NjcmF0Y2gKbWtkaXIgL2ZzL3Nj
-cmF0Y2ggLXAKZXhwb3J0IFNDUkFUQ0hfREVWPS9kZXYvc2RhNwouL2NoZWNrIGdlbmVyaWMvMjI0
-IGdlbmVyaWMvMjMxIGdlbmVyaWMvMjc0IGdlbmVyaWMvMjk5IGdlbmVyaWMvMzAwCg==
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEuNC4xMiAoR05V
+L0xpbnV4KQoKaVFJY0JBRUJBZ0FHQlFKVDZidHVBQW9KRUhaSDRhUkx3T1M2VlhJUC9BcU84eFJM
+N05PN05WYXZ5d2pwUFY0UQp1TTB1bW1JYUF0WUkvaVVLK3BaOERQbktDQzZaZ0lXcUNxbGFIZWxk
+NEFCTUNEOWhLUnRENDJDRml6OTAxbnhwCmxja3pMTXNSeUFQZVlGZlJvdkx3alJ4cndCRndLd3Vw
+ZENIQkswK0pyNmlmd3Zyb215YTVieDE5QWdPMSsrMFgKTngyTDdxSDhLRk42Wk5DMHV4ZHZMcmJ3
+T2RpV2RRQjJvekN2LzdFRnRFK09CSlhMemZBRmx1SlhwRHRCMGNINwpPQXNyZ3VTbCsrb25lYlhm
+RmU1ekRwRmp6U2hwNWhQcjVKZElQVDNSS1E4U2tPVDNFU3FQVWllWWVhRXBuU3dKCnNvVFVycExH
+Q2V3ajRlWWpQUTVJM1ROR2RwWVM4ODVGT1pzQmo1K29JSDJVL1NjdXZuVDIrcXpxeHZid09lZnMK
+ZnAxL2dpTVdIVG1lMFJETENXUWNPUGJYdnVRRWJoQ0Y1U2dTRWxQNU5KYzBrWUdwc1kxekVoeDRM
+RmpaNEg0VQpTUUxwVVl1RFRCYXlRNUx6VXV6MzUyK25udkpsd1NjYnV1S2VHSWpFZDc4SzhsRFA5
+NEpEMVVxQUpxYXA0a3FPCmJIMFV5NkhRM3ZjVTBJNXdrR1gxaGpnaTBkSTRoRzdFLzROSm12T0FJ
+bE44b0xTeUZqMjBqZFFTUUJkWnNOWjgKR01MRlBSSEZKSVNyQUtuOU1tTGlTWkcyb3VqaFNvd21D
+V1dqeUpObS9iQWE3LzlsZm1VNFlFa2dyZ1VtN3NQZgpEQ1pCa0RMcVAzVkFONzZ2UEhpSit4WEp4
+T21TT3M2ZXlDVHpRRWs0ZmlpOElHMGZvU05jVnZPd3NCaWk5VE9yClJ1L3IwNUFPUGE2Rk9EUVUr
+M3hMCj1vS0ZHCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
 
---===============2826111480472754692==--
+--===============1405473474669728869==--
 
