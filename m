@@ -1,220 +1,817 @@
-Content-Type: multipart/mixed; boundary="===============3812800437922569832=="
+Content-Type: multipart/mixed; boundary="===============1340212111224536623=="
 MIME-Version: 1.0
-From: Gaurav Minocha <gaurav.minocha.os@gmail.com>
+From: kernel test robot <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [OF test] BUG: unable to handle kernel NULL pointer dereference at 00000038
-Date: Fri, 29 Aug 2014 10:38:23 -0700
-Message-ID: <CA+rpMbJhdYLgCroZSMOZ19oixvtATEnL1udeR2Gjsnc2OnXp7Q@mail.gmail.com>
-In-Reply-To: <20140827130404.GA19038@localhost>
+Subject: [net] 8f61059a96c: +26.4% netperf.Throughput_Mbps
+Date: Wed, 13 Aug 2014 09:19:00 +0800
+Message-ID: <20140813011900.GC11210@yliu-dev.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3812800437922569832==
+--===============1340212111224536623==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 27, 2014 at 6:04 AM, Fengguang Wu <fengguang.wu@intel.com> wr=
-ote:
-> Greetings,
->
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+FYI, we are glad to inform you that we noticed the below good changes on
 
-It failed because CONFIG_SYSFS isn't enabled in your configuration.
-Will discuss with Grant and patch it soon. Thanks!
+commit 8f61059a96c2a29c1cc5a39dfe23d06ef5b4b065 ("net: sctp: improve timer =
+slack calculation for transport HBs")
 
->
-> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> commit b951f9dc7f25fc1e39aafda5edb4b47b38285d9f
-> Author:     Gaurav Minocha <gaurav.minocha.os@gmail.com>
-> AuthorDate: Sat Jul 26 12:48:50 2014 -0700
-> Commit:     Grant Likely <grant.likely@linaro.org>
-> CommitDate: Sat Aug 16 09:03:56 2014 +0100
->
->     Enabling OF selftest to run without machine's devicetree
->
->     If there is no devicetree present, this patch adds the selftest
->     data as a live devicetree. It also removes the same after the
->     testcase execution is complete.
->
->     Tested with and without machine's devicetree.
->
->     Signed-off-by: Gaurav Minocha <gaurav.minocha.os@gmail.com>
->     Signed-off-by: Grant Likely <grant.likely@linaro.org>
->
-> +------------------------------------------------------+------------+----=
---------+---------------+
-> |                                                      | b5f2a8c026 | b95=
-1f9dc7f | next-20140827 |
-> +------------------------------------------------------+------------+----=
---------+---------------+
-> | boot_successes                                       | 60         | 0  =
-        | 0             |
-> | boot_failures                                        | 0          | 20 =
-        | 11            |
-> | BUG:unable_to_handle_kernel_NULL_pointer_dereference | 0          | 20 =
-        | 11            |
-> | Oops                                                 | 0          | 20 =
-        | 11            |
-> | EIP_is_at_kernfs_find_ns                             | 0          | 20 =
-        | 11            |
-> | Kernel_panic-not_syncing:Fatal_exception             | 0          | 20 =
-        | 11            |
-> | backtrace:of_selftest                                | 0          | 20 =
-        | 11            |
-> | backtrace:kernel_init_freeable                       | 0          | 20 =
-        | 11            |
-> +------------------------------------------------------+------------+----=
---------+---------------+
->
-> [    2.779062] rtc-test rtc-test.0: setting system clock to 2014-08-27 12=
-:23:45 UTC (1409142225)
-> [    2.779708] BIOS EDD facility v0.16 2004-Jun-25, 0 devices found
-> [    2.780171] EDD information not available.
-> [    2.780575] BUG: unable to handle kernel NULL pointer dereference at 0=
-0000038
-> [    2.781133] IP: [<b10e6578>] kernfs_find_ns+0xd/0xe4
-> [    2.781518] *pde =3D 00000000
-> [    2.781747] Oops: 0000 [#1] PREEMPT
-> [    2.782037] Modules linked in:
-> [    2.782291] CPU: 0 PID: 1 Comm: swapper Not tainted 3.16.0-04165-gb951=
-f9d #8
-> [    2.782799] task: c34c1000 ti: c34c4000 task.ti: c34c4000
-> [    2.783200] EIP: 0060:[<b10e6578>] EFLAGS: 00010282 CPU: 0
-> [    2.783599] EIP is at kernfs_find_ns+0xd/0xe4
-> [    2.783921] EAX: 00000000 EBX: 00000000 ECX: 00000000 EDX: b158c20a
-> [    2.784164] ESI: 00000000 EDI: c34f0df0 EBP: c34c5e94 ESP: c34c5e80
-> [    2.784164]  DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068
-> [    2.784164] CR0: 8005003b CR2: 00000038 CR3: 01675000 CR4: 000006d0
-> [    2.784164] Stack:
-> [    2.784164]  000036b0 b0085008 00000000 b158c20a c34f0df0 c34c5ea8 b10=
-e6674 00000000
-> [    2.784164]  b158c20a 00000000 c34c5ec0 b13552ea b158c20a b0088000 b00=
-88000 00000000
-> [    2.784164]  c34c5ed0 b13563df b164a3b5 b0088000 c34c5f34 b164a456 b13=
-de13e 00000003
-> [    2.784164] Call Trace:
-> [    2.784164]  [<b10e6674>] kernfs_find_and_get_ns+0x25/0x3d
-> [    2.784164]  [<b13552ea>] safe_name+0x4d/0x70
-> [    2.784164]  [<b13563df>] __of_attach_node_sysfs+0x2d/0xa5
-> [    2.784164]  [<b164a3b5>] ? of_selftest_platform_populate+0x1ca/0x1ca
-> [    2.784164]  [<b164a456>] of_selftest+0xa1/0xf46
-> [    2.784164]  [<b13de13e>] ? _raw_spin_unlock_irqrestore+0x39/0x54
-> [    2.784164]  [<b104b60c>] ? trace_hardirqs_on+0xb/0xd
-> [    2.784164]  [<b10a6390>] ? slob_free+0x217/0x21f
-> [    2.784164]  [<b164a3b5>] ? of_selftest_platform_populate+0x1ca/0x1ca
-> [    2.784164]  [<b164a3b5>] ? of_selftest_platform_populate+0x1ca/0x1ca
-> [    2.784164]  [<b100045b>] do_one_initcall+0xce/0x160
-> [    2.784164]  [<b1626400>] ? do_early_param+0x51/0x75
-> [    2.784164]  [<b103eeb9>] ? parse_args+0x182/0x23b
-> [    2.784164]  [<b1626beb>] kernel_init_freeable+0x184/0x20e
-> [    2.784164]  [<b13d5b3c>] kernel_init+0x8/0xb8
-> [    2.784164]  [<b13de840>] ret_from_kernel_thread+0x20/0x30
-> [    2.784164]  [<b13d5b34>] ? rest_init+0xa0/0xa0
-> [    2.784164] Code: 5e 2f 00 89 d8 e8 21 b9 fd ff 85 c0 0f 95 c0 0f b6 c=
-0 eb 06 b8 f6 ff ff ff c3 5b 5e 5d c3 55 89 e5 57 56 89 c6 53 89 cb 83 ec 0=
-8 <8b> 78 38 66 8b 40 4c 89 55 f0 66 c1 e8 05 83 e0 01 83 3d 94 9c
-> [    2.784164] EIP: [<b10e6578>] kernfs_find_ns+0xd/0xe4 SS:ESP 0068:c34c=
-5e80
-> [    2.784164] CR2: 0000000000000038
-> [    2.784164] ---[ end trace 411ad12a024bcda1 ]---
-> [    2.784164] Kernel panic - not syncing: Fatal exception
->
-> git bisect start 52addcf9d6669fa439387610bc65c92fa0980cef v3.16 --
-> git bisect good ad1f5caf34390bb20fdbb4eaf71b0494e89936f0  # 19:54     20+=
-      0  Merge branch 'fixes' of git://ftp.arm.linux.org.uk/~rmk/linux-arm
-> git bisect good 179c0ac67b9d947d2de69e9f08a743e7c74a8dce  # 20:01     20+=
-      0  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/sparc
-> git bisect  bad 3951ad2e051543f6cd01706da477a73f19165eb6  # 20:03      0-=
-     20  Merge branch 'for_linus' of git://cavan.codon.org.uk/platform-driv=
-ers-x86
-> git bisect good 90c80969145d006eb6294a3aa501d0e156f5e244  # 20:07     20+=
-      0  Merge branch 'rng-queue' of git://git.kernel.org/pub/scm/linux/ker=
-nel/git/amit/virtio
-> git bisect  bad 7ac0bbf99d44c827c88aa7a9064050526e723ebb  # 20:10      0-=
-     20  Merge tag 'devicetree-for-linus' of git://git.secretlab.ca/git/lin=
-ux
-> git bisect good 605f884d05cc0de8c3bde36281d58216011f51a5  # 20:12     20+=
-      0  Merge branch 'for_linus' of git://cavan.codon.org.uk/platform-driv=
-ers-x86
-> git bisect good 7d1311b93e58ed55f3a31cc8f94c4b8fe988a2b9  # 20:18     20+=
-      0  Linux 3.17-rc1
-> git bisect good f325f1643abca9fac5b8e04e9faa46effc984a61  # 20:21     20+=
-      0  frv: Define cpu_relax_lowlatency()
-> git bisect  bad b951f9dc7f25fc1e39aafda5edb4b47b38285d9f  # 20:24      0-=
-     20  Enabling OF selftest to run without machine's devicetree
-> git bisect good b5f2a8c02697c3685ccbbb66495465742ffa0dc1  # 20:38     20+=
-      0  of: Allow mem_reserve of memory with a base address of zero
-> # first bad commit: [b951f9dc7f25fc1e39aafda5edb4b47b38285d9f] Enabling O=
-F selftest to run without machine's devicetree
-> git bisect good b5f2a8c02697c3685ccbbb66495465742ffa0dc1  # 20:41     60+=
-      0  of: Allow mem_reserve of memory with a base address of zero
-> git bisect  bad d05446ae2128064a4bb8f74c84f6901ffb5c94bc  # 20:41      0-=
-     11  Add linux-next specific files for 20140827
-> git bisect  bad 68e370289c29e3beac99d59c6d840d470af9dfcf  # 20:56      0-=
-     60  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/ker=
-nel/git/s390/linux
-> git bisect  bad d05446ae2128064a4bb8f74c84f6901ffb5c94bc  # 20:56      0-=
-     11  Add linux-next specific files for 20140827
->
->
-> This script may reproduce the error.
->
-> -------------------------------------------------------------------------=
----
-> #!/bin/bash
->
-> kernel=3D$1
-> initrd=3Dyocto-minimal-i386.cgz
->
-> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/m=
-aster/initrd/$initrd
->
-> kvm=3D(
->         qemu-system-x86_64
->         -cpu kvm64
->         -enable-kvm
->         -kernel $kernel
->         -initrd $initrd
->         -m 320
->         -smp 1
->         -net nic,vlan=3D1,model=3De1000
->         -net user,vlan=3D1
->         -boot order=3Dnc
->         -no-reboot
->         -watchdog i6300esb
->         -rtc base=3Dlocaltime
->         -serial stdio
->         -display none
->         -monitor null
-> )
->
-> append=3D(
->         hung_task_panic=3D1
->         earlyprintk=3DttyS0,115200
->         debug
->         apic=3Ddebug
->         sysrq_always_enabled
->         rcupdate.rcu_cpu_stall_timeout=3D100
->         panic=3D-1
->         softlockup_panic=3D1
->         nmi_watchdog=3Dpanic
->         oops=3Dpanic
->         load_ramdisk=3D2
->         prompt_ramdisk=3D0
->         console=3DttyS0,115200
->         console=3Dtty0
->         vga=3Dnormal
->         root=3D/dev/ram0
->         rw
->         drbd.minor_count=3D8
-> )
->
-> "${kvm[@]}" --append "${append[*]}"
-> -------------------------------------------------------------------------=
----
->
-> Thanks,
-> Fengguang
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  testbox/testcase/testparams
+---------------  -------------------------  ---------------------------
+     %stddev        %change               %stddev
+            \          |                 /
+      2586 =C2=B1 0%     +11.1%       2873 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      1349 =C2=B1 2%     +55.7%       2101 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      3936 =C2=B1 0%     +26.4%       4974 =C2=B1 0%  TOTAL netperf.Through=
+put_Mbps
 
---===============3812800437922569832==--
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+    170805 =C2=B112%    +398.9%     852164 =C2=B114%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+    170805 =C2=B112%    +398.9%     852164 =C2=B114%  TOTAL cpuidle.C1-NHM.=
+usage
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      4.18 =C2=B1 5%    -100.0%       0.00 =C2=B1 0%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      4.18 =C2=B1 5%    -100.0%       0.00 =C2=B1 0%  TOTAL perf-profile.cp=
+u-cycles._raw_spin_lock_irqsave.mod_timer.sctp_transport_reset_timers.sctp_=
+outq_flush.sctp_outq_uncork
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      3.06 =C2=B1 2%     -98.4%       0.05 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      3.06 =C2=B1 2%     -98.4%       0.05 =C2=B1 0%  TOTAL perf-profile.cp=
+u-cycles._raw_spin_lock_irqsave.lock_timer_base.mod_timer.sctp_transport_re=
+set_timers.sctp_outq_flush
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      4.31 =C2=B1 2%     -99.3%       0.03 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+     10.60 =C2=B1 2%     -99.7%       0.03 =C2=B114%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+     14.92 =C2=B1 2%     -99.6%       0.06 =C2=B1 7%  TOTAL perf-profile.cp=
+u-cycles.sctp_transport_timeout.sctp_transport_reset_timers.sctp_outq_flush=
+.sctp_outq_uncork.sctp_cmd_interpreter
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      4.42 =C2=B1 2%     -99.5%       0.02 =C2=B118%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      4.42 =C2=B1 2%     -99.5%       0.02 =C2=B118%  TOTAL perf-profile.cp=
+u-cycles.lock_timer_base.isra.34.mod_timer.sctp_transport_reset_timers.sctp=
+_outq_flush.sctp_outq_uncork
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      1.77 =C2=B1 4%     -78.8%       0.38 =C2=B1 4%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      1.77 =C2=B1 4%     -78.8%       0.38 =C2=B1 4%  TOTAL perf-profile.cp=
+u-cycles.sctp_outq_flush.sctp_outq_uncork.sctp_cmd_interpreter.sctp_do_sm.s=
+ctp_assoc_bh_rcv
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+    131114 =C2=B1 5%     -71.1%      37873 =C2=B1 3%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+    131114 =C2=B1 5%     -71.1%      37873 =C2=B1 3%  TOTAL cpuidle.C1E-SNB=
+.usage
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+  14540720 =C2=B117%    +162.1%   38114453 =C2=B115%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+  14540720 =C2=B117%    +162.1%   38114453 =C2=B115%  TOTAL cpuidle.C1-NHM.=
+time
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      4.37 =C2=B1 1%     +36.5%       5.96 =C2=B1 1%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      3.42 =C2=B111%    +196.0%      10.11 =C2=B1 5%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      7.78 =C2=B1 5%    +106.5%      16.07 =C2=B1 4%  TOTAL perf-profile.cp=
+u-cycles._raw_spin_lock.free_one_page.__free_pages_ok.__free_pages.__free_k=
+mem_pages
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      4.04 =C2=B1 1%     +32.3%       5.35 =C2=B1 1%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      3.52 =C2=B110%    +174.1%       9.64 =C2=B1 6%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      7.56 =C2=B1 6%     +98.3%      14.99 =C2=B1 4%  TOTAL perf-profile.cp=
+u-cycles._raw_spin_lock_irqsave.get_page_from_freelist.__alloc_pages_nodema=
+sk.alloc_kmem_pages_node.kmalloc_large_node
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+     26132 =C2=B1 1%     +45.8%      38103 =C2=B125%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+     26132 =C2=B1 1%     +45.8%      38103 =C2=B125%  TOTAL numa-vmstat.nod=
+e2.nr_file_pages
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+    104532 =C2=B1 1%     +45.8%     152358 =C2=B125%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+    104532 =C2=B1 1%     +45.8%     152358 =C2=B125%  TOTAL numa-meminfo.no=
+de2.FilePages
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+    643556 =C2=B1 9%     +56.2%    1005209 =C2=B1 5%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+    643556 =C2=B1 9%     +56.2%    1005209 =C2=B1 5%  TOTAL cpuidle.C1-SNB.=
+usage
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      2894 =C2=B132%     +98.4%       5742 =C2=B131%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      2894 =C2=B132%     +98.4%       5742 =C2=B131%  TOTAL cpuidle.C6-SNB.=
+time
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+  18604327 =C2=B1 7%     -43.0%   10606401 =C2=B112%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+  18604327 =C2=B1 7%     -43.0%   10606401 =C2=B112%  TOTAL cpuidle.C1E-NHM=
+.time
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 1.253e+08 =C2=B1 2%     +55.0%  1.942e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.253e+08 =C2=B1 2%     +55.0%  1.942e+08 =C2=B1 1%  TOTAL numa-vmstat.nod=
+e3.numa_local
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 1.253e+08 =C2=B1 2%     +55.0%  1.942e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.253e+08 =C2=B1 2%     +55.0%  1.942e+08 =C2=B1 1%  TOTAL numa-vmstat.nod=
+e3.numa_hit
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 2.554e+08 =C2=B1 2%     +53.1%   3.91e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.554e+08 =C2=B1 2%     +53.1%   3.91e+08 =C2=B1 1%  TOTAL numa-numastat.n=
+ode3.local_node
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 2.554e+08 =C2=B1 2%     +53.1%   3.91e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.554e+08 =C2=B1 2%     +53.1%   3.91e+08 =C2=B1 1%  TOTAL numa-numastat.n=
+ode3.numa_hit
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 4.133e+08 =C2=B1 0%     +13.6%  4.695e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.094e+08 =C2=B1 4%     +70.5%  1.866e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 5.228e+08 =C2=B1 1%     +25.5%  6.561e+08 =C2=B1 0%  TOTAL proc-vmstat.pga=
+lloc_dma32
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      0.17 =C2=B110%     +52.9%       0.27 =C2=B121%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      0.17 =C2=B110%     +52.9%       0.27 =C2=B121%  TOTAL turbostat.%c1
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 1.981e+08 =C2=B1 0%     +14.0%  2.259e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.267e+08 =C2=B1 2%     +63.0%  2.066e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 3.248e+08 =C2=B1 1%     +33.1%  4.325e+08 =C2=B1 0%  TOTAL numa-vmstat.nod=
+e0.numa_local
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 1.981e+08 =C2=B1 0%     +14.0%  2.259e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.267e+08 =C2=B1 2%     +63.0%  2.066e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 3.249e+08 =C2=B1 1%     +33.1%  4.325e+08 =C2=B1 0%  TOTAL numa-vmstat.nod=
+e0.numa_hit
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 3.989e+08 =C2=B1 0%     +13.1%   4.51e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.582e+08 =C2=B1 2%     +60.9%  4.155e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 6.571e+08 =C2=B1 1%     +31.9%  8.665e+08 =C2=B1 0%  TOTAL numa-numastat.n=
+ode0.local_node
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 3.989e+08 =C2=B1 0%     +13.1%   4.51e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.582e+08 =C2=B1 2%     +60.9%  4.155e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 6.571e+08 =C2=B1 1%     +31.9%  8.665e+08 =C2=B1 0%  TOTAL numa-numastat.n=
+ode0.numa_hit
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 1.905e+08 =C2=B1 1%     +13.0%  2.153e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.256e+08 =C2=B1 1%     +55.7%  1.956e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 3.161e+08 =C2=B1 1%     +30.0%  4.109e+08 =C2=B1 0%  TOTAL numa-vmstat.nod=
+e1.numa_local
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 1.905e+08 =C2=B1 1%     +13.0%  2.153e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.257e+08 =C2=B1 1%     +55.7%  1.957e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 3.162e+08 =C2=B1 1%     +30.0%   4.11e+08 =C2=B1 0%  TOTAL numa-vmstat.nod=
+e1.numa_hit
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 3.836e+08 =C2=B1 1%     +12.4%  4.314e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.561e+08 =C2=B1 1%     +53.9%  3.942e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 6.397e+08 =C2=B1 1%     +29.0%  8.256e+08 =C2=B1 0%  TOTAL numa-numastat.n=
+ode1.local_node
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 3.836e+08 =C2=B1 1%     +12.4%  4.314e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.561e+08 =C2=B1 1%     +53.9%  3.942e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 6.397e+08 =C2=B1 1%     +29.0%  8.256e+08 =C2=B1 0%  TOTAL numa-numastat.n=
+ode1.numa_hit
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 1.952e+08 =C2=B1 1%     +10.0%  2.148e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.251e+08 =C2=B1 2%     +56.3%  1.955e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 3.202e+08 =C2=B1 1%     +28.1%  4.102e+08 =C2=B1 0%  TOTAL numa-vmstat.nod=
+e2.numa_local
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 1.952e+08 =C2=B1 1%     +10.0%  2.148e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.251e+08 =C2=B1 2%     +56.3%  1.955e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 3.203e+08 =C2=B1 1%     +28.1%  4.103e+08 =C2=B1 0%  TOTAL numa-vmstat.nod=
+e2.numa_hit
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 8.277e+09 =C2=B1 0%     +11.1%  9.194e+09 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+   5.4e+09 =C2=B1 2%     +55.7%  8.406e+09 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.368e+10 =C2=B1 1%     +28.7%   1.76e+10 =C2=B1 0%  TOTAL proc-vmstat.pgf=
+ree
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 2.853e+08 =C2=B1 0%     +11.1%  3.169e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.861e+08 =C2=B1 2%     +55.7%  2.897e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 4.713e+08 =C2=B1 1%     +28.7%  6.065e+08 =C2=B1 0%  TOTAL softirqs.NET_RX
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+  1.57e+09 =C2=B1 0%     +11.1%  1.744e+09 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.024e+09 =C2=B1 2%     +55.6%  1.594e+09 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.594e+09 =C2=B1 1%     +28.7%  3.338e+09 =C2=B1 0%  TOTAL proc-vmstat.num=
+a_local
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+  1.57e+09 =C2=B1 0%     +11.1%  1.744e+09 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.024e+09 =C2=B1 2%     +55.6%  1.594e+09 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.594e+09 =C2=B1 1%     +28.7%  3.338e+09 =C2=B1 0%  TOTAL proc-vmstat.num=
+a_hit
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 7.864e+09 =C2=B1 0%     +11.0%  8.725e+09 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+  5.29e+09 =C2=B1 2%     +55.4%   8.22e+09 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 1.315e+10 =C2=B1 1%     +28.8%  1.694e+10 =C2=B1 0%  TOTAL proc-vmstat.pga=
+lloc_normal
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 3.927e+08 =C2=B1 1%      +9.6%  4.305e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.547e+08 =C2=B1 2%     +54.5%  3.936e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 6.474e+08 =C2=B1 1%     +27.3%   8.24e+08 =C2=B1 0%  TOTAL numa-numastat.n=
+ode2.local_node
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+ 3.927e+08 =C2=B1 1%      +9.6%  4.305e+08 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 2.547e+08 =C2=B1 2%     +54.5%  3.936e+08 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+ 6.474e+08 =C2=B1 1%     +27.3%   8.24e+08 =C2=B1 0%  TOTAL numa-numastat.n=
+ode2.numa_hit
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      1294 =C2=B1 4%     -17.2%       1071 =C2=B111%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      1294 =C2=B1 4%     -17.2%       1071 =C2=B111%  TOTAL numa-vmstat.nod=
+e0.nr_page_table_pages
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      5176 =C2=B1 4%     -17.2%       4288 =C2=B111%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      5176 =C2=B1 4%     -17.2%       4288 =C2=B111%  TOTAL numa-meminfo.no=
+de0.PageTables
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      1.58 =C2=B1 3%     +20.3%       1.90 =C2=B1 0%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      1.58 =C2=B1 3%     +20.3%       1.90 =C2=B1 0%  TOTAL perf-profile.cp=
+u-cycles.get_page_from_freelist.__alloc_pages_nodemask.alloc_kmem_pages_nod=
+e.kmalloc_large_node.__kmalloc_node_track_caller
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      3.29 =C2=B1 1%      +9.8%       3.62 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      2.60 =C2=B1 1%     +16.3%       3.02 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      5.89 =C2=B1 1%     +12.6%       6.63 =C2=B1 1%  TOTAL perf-profile.cp=
+u-cycles.memcpy.sctp_packet_transmit_chunk.sctp_outq_flush.sctp_outq_uncork=
+.sctp_cmd_interpreter
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      1400 =C2=B1 7%     +11.9%       1566 =C2=B1 4%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      1400 =C2=B1 7%     +11.9%       1566 =C2=B1 4%  TOTAL slabinfo.nfs_re=
+ad_data.active_objs
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      1400 =C2=B1 7%     +11.9%       1566 =C2=B1 4%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      1400 =C2=B1 7%     +11.9%       1566 =C2=B1 4%  TOTAL slabinfo.nfs_re=
+ad_data.num_objs
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      6.49 =C2=B1 0%     +12.8%       7.32 =C2=B1 2%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      6.49 =C2=B1 0%     +12.8%       7.32 =C2=B1 2%  TOTAL perf-profile.cp=
+u-cycles.copy_user_generic_string.skb_copy_datagram_iovec.sctp_recvmsg.sock=
+_common_recvmsg.sock_recvmsg
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+     11700 =C2=B1 4%     +18.7%      13891 =C2=B1 7%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+     11700 =C2=B1 4%     +18.7%      13891 =C2=B1 7%  TOTAL proc-vmstat.pgm=
+igrate_success
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+     11700 =C2=B1 4%     +18.7%      13891 =C2=B1 7%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+     11700 =C2=B1 4%     +18.7%      13891 =C2=B1 7%  TOTAL proc-vmstat.num=
+a_pages_migrated
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+    139702 =C2=B1 1%     +16.3%     162521 =C2=B1 5%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+    139702 =C2=B1 1%     +16.3%     162521 =C2=B1 5%  TOTAL proc-vmstat.num=
+a_hint_faults
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+       977 =C2=B1 2%     +16.0%       1133 =C2=B1 8%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+       977 =C2=B1 2%     +16.0%       1133 =C2=B1 8%  TOTAL proc-vmstat.pgm=
+igrate_fail
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      7.74 =C2=B1 0%     +10.4%       8.54 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      6.81 =C2=B1 0%     +12.2%       7.64 =C2=B1 2%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+     14.55 =C2=B1 0%     +11.2%      16.18 =C2=B1 1%  TOTAL perf-profile.cp=
+u-cycles.copy_user_generic_string.sctp_user_addto_chunk.sctp_datamsg_from_u=
+ser.sctp_sendmsg.inet_sendmsg
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      4.98 =C2=B1 0%     +11.8%       5.57 =C2=B1 2%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      4.98 =C2=B1 0%     +11.8%       5.57 =C2=B1 2%  TOTAL perf-profile.cp=
+u-cycles.memcpy.sctp_outq_flush.sctp_outq_uncork.sctp_cmd_interpreter.sctp_=
+do_sm
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+    160357 =C2=B1 1%     +14.2%     183117 =C2=B1 4%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+    160357 =C2=B1 1%     +14.2%     183117 =C2=B1 4%  TOTAL proc-vmstat.num=
+a_pte_updates
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+      1653 =C2=B1 3%      -8.5%       1512 =C2=B1 4%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+      1653 =C2=B1 3%      -8.5%       1512 =C2=B1 4%  TOTAL numa-vmstat.nod=
+e0.nr_alloc_batch
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+    474850 =C2=B1 0%     +11.3%     528286 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+    310335 =C2=B1 2%     +55.9%     483905 =C2=B1 1%  lkp-wsx02/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+    785185 =C2=B1 1%     +28.9%    1012192 =C2=B1 0%  TOTAL vmstat.system.cs
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+       354 =C2=B1 0%      +3.2%        366 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+       354 =C2=B1 0%      +3.2%        366 =C2=B1 0%  TOTAL turbostat.Cor_W
+
+eb1ac820c61d0d8  8f61059a96c2a29c1cc5a39df  =
+
+---------------  -------------------------  =
+
+       410 =C2=B1 0%      +2.8%        422 =C2=B1 0%  lkp-sbx04/netperf/300=
+s-200%-10K-SCTP_STREAM_MANY
+       410 =C2=B1 0%      +2.8%        422 =C2=B1 0%  TOTAL turbostat.Pkg_W
+
+
+
+
+	[*] bisect-good sample
+	[O] bisect-bad  sample
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
+
+Thanks,
+Fengguang
+
+_______________________________________________
+LKP mailing list
+LKP(a)linux.intel.com
+
+--===============1340212111224536623==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.ksh"
+
+ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTAvY3B1ZnJlcS9z
+Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
+dS9jcHUxL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
+ZXZpY2VzL3N5c3RlbS9jcHUvY3B1MTAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVy
+Zm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxMS9jcHVmcmVxL3NjYWxpbmdf
+Z292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTEy
+L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2Vz
+L3N5c3RlbS9jcHUvY3B1MTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFu
+Y2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJu
+b3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE1L2NwdWZy
+ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1MTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
+c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNy9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
+byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE4L2NwdWZyZXEvc2Nh
+bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
+Y3B1MTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
+dmljZXMvc3lzdGVtL2NwdS9jcHUyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZv
+cm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjAvY3B1ZnJlcS9zY2FsaW5nX2dv
+dmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyMS9j
+cHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9z
+eXN0ZW0vY3B1L2NwdTIyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNl
+ID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9y
+CmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNC9jcHVmcmVx
+L3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0v
+Y3B1L2NwdTI1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5
+cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8g
+cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNy9jcHVmcmVxL3NjYWxp
+bmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2Nw
+dTI4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
+Y2VzL3N5c3RlbS9jcHUvY3B1MjkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
+bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUzL2NwdWZyZXEvc2NhbGluZ19nb3Zl
+cm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzAvY3B1
+ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lz
+dGVtL2NwdS9jcHUzMS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+
+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTMyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgpl
+Y2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzMvY3B1ZnJlcS9z
+Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
+dS9jcHUzNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMv
+ZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTM1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBl
+cmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzYvY3B1ZnJlcS9zY2FsaW5n
+X2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUz
+Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNl
+cy9zeXN0ZW0vY3B1L2NwdTM4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1h
+bmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVy
+bm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU0L2NwdWZy
+ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1NDAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
+c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU0MS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
+byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQyL2NwdWZyZXEvc2Nh
+bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
+Y3B1NDMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
+dmljZXMvc3lzdGVtL2NwdS9jcHU0NC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJm
+b3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQ1L2NwdWZyZXEvc2NhbGluZ19n
+b3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NDYv
+Y3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMv
+c3lzdGVtL2NwdS9jcHU0Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5j
+ZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQ4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5v
+cgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NDkvY3B1ZnJl
+cS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVt
+L2NwdS9jcHU1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5
+cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NTAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8g
+cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU1MS9jcHVmcmVxL3NjYWxp
+bmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2Nw
+dTUyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
+Y2VzL3N5c3RlbS9jcHUvY3B1NTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
+bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU1NC9jcHVmcmVxL3NjYWxpbmdfZ292
+ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTU1L2Nw
+dWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5
+c3RlbS9jcHUvY3B1NTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2Ug
+PiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU1Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IK
+ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTU4L2NwdWZyZXEv
+c2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9j
+cHUvY3B1NTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lz
+L2RldmljZXMvc3lzdGVtL2NwdS9jcHU2L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBl
+cmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NjAvY3B1ZnJlcS9zY2FsaW5n
+X2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU2
+MS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNl
+cy9zeXN0ZW0vY3B1L2NwdTYyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1h
+bmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NjMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVy
+bm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU3L2NwdWZy
+ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1OC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9z
+eXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCm5ldHNl
+cnZlcgpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpu
+ZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJm
+IC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFND
+VFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RS
+RUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01B
+TlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMg
+LUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwg
+MzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0t
+IC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEw
+SwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRw
+ZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10
+IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBf
+U1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFN
+X01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkg
+LWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMg
+LWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAw
+IC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1t
+IDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpu
+ZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJm
+IC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFND
+VFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RS
+RUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01B
+TlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMg
+LUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwg
+MzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0t
+IC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEw
+SwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRw
+ZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10
+IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBf
+U1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFN
+X01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkg
+LWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMg
+LWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAw
+IC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1t
+IDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpu
+ZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJm
+IC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFND
+VFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RS
+RUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01B
+TlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMg
+LUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwg
+MzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0t
+IC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEw
+SwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRw
+ZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10
+IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBf
+U1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFN
+X01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkg
+LWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMg
+LWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAw
+IC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1t
+IDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpu
+ZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJm
+IC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFND
+VFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RS
+RUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01B
+TlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMg
+LUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwg
+MzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0t
+IC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEw
+SwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRw
+ZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10
+IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBf
+U1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFN
+X01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkg
+LWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMg
+LWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAw
+IC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1t
+IDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpu
+ZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJm
+IC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFND
+VFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RS
+RUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01B
+TlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMg
+LUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwg
+MzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0t
+IC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEw
+SwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRw
+ZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10
+IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBf
+U1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFN
+X01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkg
+LWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMg
+LWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAw
+IC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1t
+IDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpu
+ZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJm
+IC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFND
+VFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RS
+RUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01B
+TlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMg
+LUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwg
+MzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0t
+IC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEw
+SwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRw
+ZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10
+IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBf
+U1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFN
+X01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkg
+LWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMg
+LWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAw
+IC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1t
+IDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpu
+ZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJm
+IC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFND
+VFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RS
+RUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01B
+TlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMg
+LUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwg
+MzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0t
+IC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEw
+SwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRw
+ZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10
+IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBf
+U1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwo=
+
+--===============1340212111224536623==--
 
