@@ -1,114 +1,209 @@
-Content-Type: multipart/mixed; boundary="===============1119450289069913906=="
+Content-Type: multipart/mixed; boundary="===============3428424562614384618=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: [mm] f7b5d647946: -3.0% dbench.throughput-MB/sec
-Date: Tue, 19 Aug 2014 12:41:34 +0800
-Message-ID: <20140819044134.GB8798@localhost>
+Subject: [vfs mnt_set_mountpoint] BUG: unable to handle kernel paging request at 5a5a5a5e
+Date: Tue, 19 Aug 2014 19:40:03 +0800
+Message-ID: <20140819114003.GA18960@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1119450289069913906==
+--===============3428424562614384618==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Mel,
+Greetings,
 
-We noticed a minor dbench throughput regression on commit
-f7b5d647946aae1647bf5cd26c16b3a793c1ac49 ("mm: page_alloc: abort fair
-zone allocation policy when remotes nodes are encountered").
+0day kernel testing robot got the below dmesg and the first bad commit is
 
-testcase: ivb44/dbench/100%
+git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+commit 89f7ca1af15bdfe7a6aed343032a84af2a69f736
+Author:     Eric W. Biederman <ebiederman@twitter.com>
+AuthorDate: Sun Sep 22 19:37:01 2013 -0700
+Commit:     Al Viro <viro@zeniv.linux.org.uk>
+CommitDate: Sun Aug 17 07:02:00 2014 -0400
 
-bb0b6dffa2ccfbd  f7b5d647946aae1647bf5cd26
----------------  -------------------------
-     25692 =C2=B1 0%      -3.0%      24913 =C2=B1 0%  dbench.throughput-MB/=
-sec
-   6974259 =C2=B1 6%     -12.1%    6127616 =C2=B1 0%  meminfo.DirectMap2M
-     18.43 =C2=B1 0%      -4.6%      17.59 =C2=B1 0%  turbostat.RAM_W
-      9302 =C2=B1 0%      -3.6%       8965 =C2=B1 1%  time.user_time
-   1425791 =C2=B1 1%      -2.0%    1396598 =C2=B1 0%  time.involuntary_cont=
-ext_switches
+    vfs: Keep a list of mounts on a mount point
+    =
 
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
+    To spot any possible problems call BUG if a mountpoint
+    is put when it's list of mounts is not empty.
+    =
+
+    AV: use hlist instead of list_head
+    =
+
+    Reviewed-by: Miklos Szeredi <miklos@szeredi.hu>
+    Signed-off-by: Eric W. Biederman <ebiederman@twitter.com>
+    Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+
++--------------------------------------------------------------------------=
+---+------------+------------+---------------+
+|                                                                          =
+   | de0ed92a2f | 89f7ca1af1 | next-20140818 |
++--------------------------------------------------------------------------=
+---+------------+------------+---------------+
+| boot_successes                                                           =
+   | 40         | 0          | 0             |
+| boot_failures                                                            =
+   | 40         | 20         | 11            |
+| BUG:kernel_boot_hang                                                     =
+   | 39         |            |               |
+| BUG:kernel_boot_crashed                                                  =
+   | 1          |            |               |
+| BUG:unable_to_handle_kernel_paging_request                               =
+   | 0          | 20         | 11            |
+| Oops                                                                     =
+   | 0          | 20         | 11            |
+| EIP_is_at_mnt_set_mountpoint                                             =
+   | 0          | 20         | 11            |
+| BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/rwsem=
+.c | 0          | 20         | 11            |
+| INFO:lockdep_is_turned_off                                               =
+   | 0          | 20         | 11            |
+| Kernel_panic-not_syncing:Attempted_to_kill_init_exitcode=3D              =
+     | 0          | 14         | 10            |
+| backtrace:do_mount                                                       =
+   | 0          | 20         | 11            |
+| backtrace:SyS_mount                                                      =
+   | 0          | 20         | 11            |
++--------------------------------------------------------------------------=
+---+------------+------------+---------------+
+
+[   12.976559] Key type encrypted registered
+[   12.979538] rtc_cmos 00:00: setting system clock to 2014-08-19 16:00:57 =
+UTC (1408464057)
+[   12.981664] debug: unmapping init [mem 0x7aff4000-0x7b220fff]
+[   12.986791] BUG: unable to handle kernel paging request at 5a5a5a5e
+[   12.987028] IP: [<7922d346>] mnt_set_mountpoint+0x76/0x90
+[   12.987028] *pde =3D 00000000 =
+
+[   12.987028] Oops: 0002 [#1] SMP DEBUG_PAGEALLOC
+[   12.987028] CPU: 0 PID: 1 Comm: init Not tainted 3.16.0-10739-g89f7ca1 #1
+[   12.987028] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[   12.987028] task: 87cc1320 ti: 87cc4000 task.ti: 87cc4000
+[   12.987028] EIP: 0060:[<7922d346>] EFLAGS: 00010202 CPU: 0
+[   12.987028] EIP is at mnt_set_mountpoint+0x76/0x90
+[   12.987028] EAX: 00000001 EBX: 5a5a5a5a ECX: 87c93700 EDX: 7cc308a0
+[   12.987028] ESI: 87c93778 EDI: 00000001 EBP: 87cc5ebc ESP: 87cc5ea8
+[   12.987028]  DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
+[   12.987028] CR0: 80050033 CR2: 5a5a5a5e CR3: 04c51000 CR4: 00040690
+[   12.987028] Stack:
+[   12.987028]  87c93700 7cc308a0 87c93700 87c93b80 00000001 87cc5eec 7922e=
+b3c 00000000
+[   12.987028]  00000001 00000000 7922eca4 00000001 7cc308a0 00000000 00004=
+000 00000000
+[   12.987028]  00000001 87cc5f08 7922eca4 00000000 87c93b80 00000000 7cc30=
+8a0 87c93700
+[   12.987028] Call Trace:
+[   12.987028]  [<7922eb3c>] attach_recursive_mnt+0x1cc/0x2b0
+[   12.987028]  [<7922eca4>] ? graft_tree+0x84/0xa0
+[   12.987028]  [<7922eca4>] graft_tree+0x84/0xa0
+[   12.987028]  [<7922ede3>] do_add_mount+0x123/0x190
+[   12.987028]  [<79230b64>] do_mount+0xfb4/0x12f0
+[   12.987028]  [<7922fb84>] ? copy_mount_string+0x54/0x80
+[   12.987028]  [<79231301>] SyS_mount+0xf1/0x120
+[   12.987028]  [<7a2b26f7>] syscall_call+0x7/0x7
+[   12.987028] Code: 31 c0 89 59 08 8d 71 78 89 51 74 8b 5a 0c 85 db 0f 95 =
+c0 8b 3c 85 ac 38 c8 7a 89 59 78 83 c7 01 85 c0 89 3c 85 ac 38 c8 7a 74 03 =
+<89> 73 04 89 72 0c 83 c2 0c 89 51 7c 83 c4 08 5b 5e 5f 5d c3 8d
+[   12.987028] EIP: [<7922d346>] mnt_set_mountpoint+0x76/0x90 SS:ESP 0068:8=
+7cc5ea8
+[   12.987028] CR2: 000000005a5a5a5e
+[   12.987028] ---[ end trace ee8b0a2eb2e91b64 ]---
+[   12.987028] BUG: sleeping function called from invalid context at kernel=
+/locking/rwsem.c:41
+
+git bisect start f68f82364938548b58b51d4b926642b0a3cf4c27 7d1311b93e58ed55f=
+3a31cc8f94c4b8fe988a2b9 --
+git bisect  bad 473f9639819684765e78d298f192b8030fe1290c  # 15:02      0-  =
+    9  Merge remote-tracking branch 'block/for-next'
+git bisect good 9a9d24bbcb7185700286b300e1db132a481d0e1f  # 15:07     20+  =
+    1  Merge remote-tracking branch 'tile/master'
+git bisect  bad c0698b7d9847e0cbc46881368ec9c72474968ad8  # 15:10      0-  =
+   20  Merge remote-tracking branch 'hid/for-next'
+git bisect good f55058463a57a59e8b5a59f8b4ae1875c7a91a44  # 15:14     20+  =
+    9  Merge remote-tracking branch 'fscache/fscache'
+git bisect good 76bb1241bec5f597b025b997d6ae7e193dab8289  # 15:26     20+  =
+    6  Merge remote-tracking branch 'logfs/master'
+git bisect  bad 9016ceb4b3699bc95ffaeed371e5fd0745bab224  # 15:48      0-  =
+   20  Merge remote-tracking branch 'vfs/for-next'
+git bisect  bad 76a8a45241be2aff38944e74811e23d1024a71fa  # 15:59      0-  =
+    1  vfs: Make d_invalidate return void
+git bisect  bad 89f7ca1af15bdfe7a6aed343032a84af2a69f736  # 16:03      0-  =
+   18  vfs: Keep a list of mounts on a mount point
+git bisect good 7fed866b5ce6f45fb0c226c6ff897d7af3a1176a  # 16:11     20+  =
+    4  vfs: Document the effect of d_revalidate on d_find_alias
+git bisect good de0ed92a2fbb9eb93a97da7612363c8c3130ec20  # 16:26     20+  =
+   13  vfs: Don't allow overwriting mounts in the current mount namespace
+# first bad commit: [89f7ca1af15bdfe7a6aed343032a84af2a69f736] vfs: Keep a =
+list of mounts on a mount point
+git bisect good de0ed92a2fbb9eb93a97da7612363c8c3130ec20  # 16:39     60+  =
+   40  vfs: Don't allow overwriting mounts in the current mount namespace
+git bisect  bad f68f82364938548b58b51d4b926642b0a3cf4c27  # 16:39      0-  =
+   11  Add linux-next specific files for 20140818
+git bisect good 7d1311b93e58ed55f3a31cc8f94c4b8fe988a2b9  # 16:44     60+  =
+   16  Linux 3.17-rc1
+git bisect  bad f68f82364938548b58b51d4b926642b0a3cf4c27  # 16:44      0-  =
+   11  Add linux-next specific files for 20140818
+
+
+This script may reproduce the error.
+
+----------------------------------------------------------------------------
+#!/bin/bash
+
+kernel=3D$1
+initrd=3Dquantal-core-i386.cgz
+
+wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/mas=
+ter/initrd/$initrd
+
+kvm=3D(
+	qemu-system-x86_64
+	-enable-kvm
+	-cpu Haswell,+smep,+smap
+	-kernel $kernel
+	-initrd $initrd
+	-m 320
+	-smp 2
+	-net nic,vlan=3D1,model=3De1000
+	-net user,vlan=3D1
+	-boot order=3Dnc
+	-no-reboot
+	-watchdog i6300esb
+	-rtc base=3Dlocaltime
+	-serial stdio
+	-display none
+	-monitor null =
+
+)
+
+append=3D(
+	hung_task_panic=3D1
+	earlyprintk=3DttyS0,115200
+	debug
+	apic=3Ddebug
+	sysrq_always_enabled
+	rcupdate.rcu_cpu_stall_timeout=3D100
+	panic=3D10
+	softlockup_panic=3D1
+	nmi_watchdog=3Dpanic
+	load_ramdisk=3D2
+	prompt_ramdisk=3D0
+	console=3DttyS0,115200
+	console=3Dtty0
+	vga=3Dnormal
+	root=3D/dev/ram0
+	rw
+	drbd.minor_count=3D8
+)
+
+"${kvm[@]}" --append "${append[*]}"
+----------------------------------------------------------------------------
 
 Thanks,
 Fengguang
 
---===============1119450289069913906==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTAvY3B1ZnJlcS9z
-Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
-dS9jcHUxL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
-ZXZpY2VzL3N5c3RlbS9jcHUvY3B1MTAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVy
-Zm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxMS9jcHVmcmVxL3NjYWxpbmdf
-Z292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTEy
-L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2Vz
-L3N5c3RlbS9jcHUvY3B1MTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFu
-Y2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJu
-b3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE1L2NwdWZy
-ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
-bS9jcHUvY3B1MTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
-c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNy9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
-byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE4L2NwdWZyZXEvc2Nh
-bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
-Y3B1MTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
-dmljZXMvc3lzdGVtL2NwdS9jcHUyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZv
-cm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjAvY3B1ZnJlcS9zY2FsaW5nX2dv
-dmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyMS9j
-cHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9z
-eXN0ZW0vY3B1L2NwdTIyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNl
-ID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9y
-CmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNC9jcHVmcmVx
-L3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0v
-Y3B1L2NwdTI1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5
-cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8g
-cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNy9jcHVmcmVxL3NjYWxp
-bmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2Nw
-dTI4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
-Y2VzL3N5c3RlbS9jcHUvY3B1MjkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
-bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUzL2NwdWZyZXEvc2NhbGluZ19nb3Zl
-cm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzAvY3B1
-ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lz
-dGVtL2NwdS9jcHUzMS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+
-IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTMyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgpl
-Y2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzMvY3B1ZnJlcS9z
-Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
-dS9jcHUzNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMv
-ZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTM1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBl
-cmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzYvY3B1ZnJlcS9zY2FsaW5n
-X2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUz
-Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNl
-cy9zeXN0ZW0vY3B1L2NwdTM4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1h
-bmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVy
-bm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU0L2NwdWZy
-ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
-bS9jcHUvY3B1NDAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
-c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU0MS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
-byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQyL2NwdWZyZXEvc2Nh
-bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
-Y3B1NDMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
-dmljZXMvc3lzdGVtL2NwdS9jcHU0NC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJm
-b3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQ1L2NwdWZyZXEvc2NhbGluZ19n
-b3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NDYv
-Y3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMv
-c3lzdGVtL2NwdS9jcHU0Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5j
-ZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTUvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9y
-CmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU2L2NwdWZyZXEv
-c2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9j
-cHUvY3B1Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMv
-ZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTgvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVy
-Zm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU5L2NwdWZyZXEvc2NhbGluZ19n
-b3Zlcm5vcgpkYmVuY2ggNDggLWMgL3Vzci9zaGFyZS9kYmVuY2gvY2xpZW50LnR4dAo=
-
---===============1119450289069913906==--
+--===============3428424562614384618==--
 
