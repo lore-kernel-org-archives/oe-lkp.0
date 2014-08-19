@@ -1,52 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============4921148319840175679=="
+Content-Type: multipart/mixed; boundary="===============0893819210179817274=="
 MIME-Version: 1.0
-From: Chris Mason <clm@fb.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] 8d875f95: xfstests.generic.226.fail
-Date: Tue, 19 Aug 2014 10:58:09 -0400
-Message-ID: <53F36601.5020609@fb.com>
-In-Reply-To: <20140819142348.GU1553@twin.jikos.cz>
+Subject: Re: [mm] f7b5d647946: -3.0% dbench.throughput-MB/sec
+Date: Tue, 19 Aug 2014 23:43:51 +0800
+Message-ID: <20140819154351.GA2697@localhost>
+In-Reply-To: <20140819143428.GC10146@suse.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4921148319840175679==
+--===============0893819210179817274==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 08/19/2014 10:23 AM, David Sterba wrote:
-> On Tue, Aug 19, 2014 at 07:58:20PM +0800, Fengguang Wu wrote:
->> We noticed an xfstests failure on commit
->>
->> 8d875f95da43c6a8f18f77869f2ef26e9594fecc ("btrfs: disable strict file fl=
-ushes for renames and truncates")
->>
->> It's 100% reproducible in the 5 test runs.
+On Tue, Aug 19, 2014 at 03:34:28PM +0100, Mel Gorman wrote:
+> On Tue, Aug 19, 2014 at 12:41:34PM +0800, Fengguang Wu wrote:
+> > Hi Mel,
+> > =
+
+> > We noticed a minor dbench throughput regression on commit
+> > f7b5d647946aae1647bf5cd26c16b3a793c1ac49 ("mm: page_alloc: abort fair
+> > zone allocation policy when remotes nodes are encountered").
+> > =
+
+> > testcase: ivb44/dbench/100%
+> > =
+
+> > bb0b6dffa2ccfbd  f7b5d647946aae1647bf5cd26
+> > ---------------  -------------------------
+> >      25692 =C2=B1 0%      -3.0%      24913 =C2=B1 0%  dbench.throughput=
+-MB/sec
+> >    6974259 =C2=B1 6%     -12.1%    6127616 =C2=B1 0%  meminfo.DirectMap=
+2M
+> >      18.43 =C2=B1 0%      -4.6%      17.59 =C2=B1 0%  turbostat.RAM_W
+> >       9302 =C2=B1 0%      -3.6%       8965 =C2=B1 1%  time.user_time
+> >    1425791 =C2=B1 1%      -2.0%    1396598 =C2=B1 0%  time.involuntary_=
+context_switches
+> > =
+
+> > Disclaimer:
+> > Results have been estimated based on internal Intel analysis and are pr=
+ovided
+> > for informational purposes only. Any difference in system hardware or s=
+oftware
+> > design or configuration may affect actual performance.
+> > =
+
 > =
 
-> Same here, different mkfs configurations.
-> =
+> DirectMap2M changing is a major surprise and doesn't make sense for this
+> machine.
 
-> generic/226 28s ...    [16:11:52] [16:12:55] - output mismatch (see /root=
-/xfstests/results//generic/226.out.bad)
->     --- tests/generic/226.out   2013-05-29 17:16:03.000000000 +0200
->     +++ /root/xfstests/results//generic/226.out.bad     2014-08-19 16:12:=
-55.000000000 +0200
->     @@ -1,6 +1,8 @@
->      QA output created by 226
->      --> mkfs 256m filesystem
->      --> 16 buffered 64m writes in a loop
->     -1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
->     +1 2 3 4 pwrite64: No space left on device
->     +5 6 7 8 9 10 11 12 pwrite64: No space left on device
->     +13 14 15 16
-> =
+The ivb44's hardware configuration is
 
-> enospc on a small filesystem (256M)
+        model: Ivytown Ivy Bridge-EP
+        nr_cpu: 48
+        memory: 64G
 
-I'm calling filemap flush more often, but otherwise everything else is
-the same.  I'll take a look.
+And note that this is an in-memory dbench run, which is why
+dbench.throughput-MB/sec is so high.
 
--chris
+> Did the amount of memory in the machine change between two tests?
 
---===============4921148319840175679==--
+Nope. They are back-to-back test runs, so the environment pretty much
+remains the same.
+
+Thanks,
+Fengguang
+
+--===============0893819210179817274==--
 
