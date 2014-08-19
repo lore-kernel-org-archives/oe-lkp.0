@@ -1,58 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============7391660118116112054=="
+Content-Type: multipart/mixed; boundary="===============4921148319840175679=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@suse.de>
+From: Chris Mason <clm@fb.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] f7b5d647946: -3.0% dbench.throughput-MB/sec
-Date: Tue, 19 Aug 2014 15:34:28 +0100
-Message-ID: <20140819143428.GC10146@suse.de>
-In-Reply-To: <20140819044134.GB8798@localhost>
+Subject: Re: [btrfs] 8d875f95: xfstests.generic.226.fail
+Date: Tue, 19 Aug 2014 10:58:09 -0400
+Message-ID: <53F36601.5020609@fb.com>
+In-Reply-To: <20140819142348.GU1553@twin.jikos.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7391660118116112054==
+--===============4921148319840175679==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 19, 2014 at 12:41:34PM +0800, Fengguang Wu wrote:
-> Hi Mel,
+On 08/19/2014 10:23 AM, David Sterba wrote:
+> On Tue, Aug 19, 2014 at 07:58:20PM +0800, Fengguang Wu wrote:
+>> We noticed an xfstests failure on commit
+>>
+>> 8d875f95da43c6a8f18f77869f2ef26e9594fecc ("btrfs: disable strict file fl=
+ushes for renames and truncates")
+>>
+>> It's 100% reproducible in the 5 test runs.
 > =
 
-> We noticed a minor dbench throughput regression on commit
-> f7b5d647946aae1647bf5cd26c16b3a793c1ac49 ("mm: page_alloc: abort fair
-> zone allocation policy when remotes nodes are encountered").
+> Same here, different mkfs configurations.
 > =
 
-> testcase: ivb44/dbench/100%
+> generic/226 28s ...    [16:11:52] [16:12:55] - output mismatch (see /root=
+/xfstests/results//generic/226.out.bad)
+>     --- tests/generic/226.out   2013-05-29 17:16:03.000000000 +0200
+>     +++ /root/xfstests/results//generic/226.out.bad     2014-08-19 16:12:=
+55.000000000 +0200
+>     @@ -1,6 +1,8 @@
+>      QA output created by 226
+>      --> mkfs 256m filesystem
+>      --> 16 buffered 64m writes in a loop
+>     -1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+>     +1 2 3 4 pwrite64: No space left on device
+>     +5 6 7 8 9 10 11 12 pwrite64: No space left on device
+>     +13 14 15 16
 > =
 
-> bb0b6dffa2ccfbd  f7b5d647946aae1647bf5cd26
-> ---------------  -------------------------
->      25692 =C2=B1 0%      -3.0%      24913 =C2=B1 0%  dbench.throughput-M=
-B/sec
->    6974259 =C2=B1 6%     -12.1%    6127616 =C2=B1 0%  meminfo.DirectMap2M
->      18.43 =C2=B1 0%      -4.6%      17.59 =C2=B1 0%  turbostat.RAM_W
->       9302 =C2=B1 0%      -3.6%       8965 =C2=B1 1%  time.user_time
->    1425791 =C2=B1 1%      -2.0%    1396598 =C2=B1 0%  time.involuntary_co=
-ntext_switches
-> =
+> enospc on a small filesystem (256M)
 
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
-> =
+I'm calling filemap flush more often, but otherwise everything else is
+the same.  I'll take a look.
 
+-chris
 
-DirectMap2M changing is a major surprise and doesn't make sense for this
-machine. Did the amount of memory in the machine change between two
-tests?
-
--- =
-
-Mel Gorman
-SUSE Labs
-
---===============7391660118116112054==--
+--===============4921148319840175679==--
 
