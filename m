@@ -1,54 +1,71 @@
-Content-Type: multipart/mixed; boundary="===============4815760540687306406=="
+Content-Type: multipart/mixed; boundary="===============8908514102076463225=="
 MIME-Version: 1.0
-From: David Sterba <dsterba@suse.cz>
+From: Mel Gorman <mgorman@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] 8d875f95: xfstests.generic.226.fail
-Date: Tue, 19 Aug 2014 16:23:48 +0200
-Message-ID: <20140819142348.GU1553@twin.jikos.cz>
-In-Reply-To: <20140819115820.GA21418@localhost>
+Subject: Re: [mm] 3484b2de949: -56.2% vm-scalability.throughput, +9.3% turbostat.Pkg_W
+Date: Tue, 19 Aug 2014 15:29:25 +0100
+Message-ID: <20140819142925.GB10146@suse.de>
+In-Reply-To: <20140819043252.GA8798@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4815760540687306406==
+--===============8908514102076463225==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 19, 2014 at 07:58:20PM +0800, Fengguang Wu wrote:
-> We noticed an xfstests failure on commit
+On Tue, Aug 19, 2014 at 12:32:52PM +0800, Fengguang Wu wrote:
+> Hi Mel,
 > =
 
-> 8d875f95da43c6a8f18f77869f2ef26e9594fecc ("btrfs: disable strict file flu=
-shes for renames and truncates")
+> We noticed the below vm-scalability performance/power regressions on
+> commit 3484b2de9499df23c4604a513b36f96326ae81ad ("mm: rearrange zone
+> fields into read-only, page alloc, statistics and page reclaim lines").
 > =
 
-> It's 100% reproducible in the 5 test runs.
+> 24b7e5819ad5cbe  3484b2de9499df23c4604a513  testbox/testcase/testparams
+> ---------------  -------------------------  ---------------------------
+>      %stddev        %change               %stddev
+>             \          |                 /
+>       9.95 =C2=B1 2%     +69.1%      16.83 =C2=B1 5%  brickland3/vm-scala=
+bility/300s-lru-file-mmap-read
+>       2.32 =C2=B1 6%    +229.4%       7.63 =C2=B1 5%  brickland3/vm-scala=
+bility/300s-lru-file-readonce
+>      12.27 =C2=B1 3%     +99.4%      24.46 =C2=B1 5%  TOTAL vm-scalabilit=
+y.stddev
+> =
 
-Same here, different mkfs configurations.
+> 24b7e5819ad5cbe  3484b2de9499df23c4604a513  =
 
-generic/226 28s ...    [16:11:52] [16:12:55] - output mismatch (see /root/x=
-fstests/results//generic/226.out.bad)
-    --- tests/generic/226.out   2013-05-29 17:16:03.000000000 +0200
-    +++ /root/xfstests/results//generic/226.out.bad     2014-08-19 16:12:55=
-.000000000 +0200
-    @@ -1,6 +1,8 @@
-     QA output created by 226
-     --> mkfs 256m filesystem
-     --> 16 buffered 64m writes in a loop
-    -1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
-    +1 2 3 4 pwrite64: No space left on device
-    +5 6 7 8 9 10 11 12 pwrite64: No space left on device
-    +13 14 15 16
+> ---------------  -------------------------  =
 
-enospc on a small filesystem (256M)
+>   13882598 =C2=B1 0%     -35.8%    8915310 =C2=B1 1%  brickland3/vm-scala=
+bility/300s-lru-file-mmap-read
+>   36379953 =C2=B1 1%     -64.0%   13093373 =C2=B1 0%  brickland3/vm-scala=
+bility/300s-lru-file-readonce
+>   50262551 =C2=B1 0%     -56.2%   22008683 =C2=B1 0%  TOTAL vm-scalabilit=
+y.throughput
+> =
 
-# btrfs fi df /mnt/a2
-System, single: total=3D4.00MiB, used=3D4.00KiB
-Data+Metadata, single: total=3D252.00MiB, used=3D31.09MiB
-GlobalReserve, single: total=3D4.00MiB, used=3D0.00B
 
-$ df -h /mnt/a2
-Filesystem            Size  Used Avail Use% Mounted on
-/dev/sda9             256M   16M  241M   6% /mnt/a2
 
---===============4815760540687306406==--
+What units are these? It's completely unclear what is good and bad from the
+figures. 300s-lru-file-mmap-read appears multiple times in this report,
+each with different numbers beside them but little clue as to what they
+mean or what I'm meant to be looking for :(
+
+This is the same patch that was reported as having a performance gain in
+another set of tests from lkp so am a little confused.
+
+More importantly, as this patch is primary abougt cache misses it should
+be very unlikely that it makes a noticable difference to IO as the
+relative cost of a cache miss is so low. Similarly any difference it
+makes to reclaim activity is likely to be a coincidence or due to test
+variance.
+
+-- =
+
+Mel Gorman
+SUSE Labs
+
+--===============8908514102076463225==--
 
