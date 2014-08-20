@@ -1,53 +1,111 @@
-Content-Type: multipart/mixed; boundary="===============0361692458987767993=="
+Content-Type: multipart/mixed; boundary="===============8588574257956188551=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Miao Xie <miaox@cn.fujitsu.com>
 To: lkp@lists.01.org
-Subject: Re: [sched] 143e1e28cb4: +17.9% aim7.jobs-per-min, -9.7% hackbench.throughput
-Date: Tue, 12 Aug 2014 08:41:56 +0200
-Message-ID: <20140812064156.GK9918@twins.programming.kicks-ass.net>
-In-Reply-To: <53E99117.9010500@linux.vnet.ibm.com>
+Subject: Re: [btrfs] 8d875f95: xfstests.generic.226.fail
+Date: Wed, 20 Aug 2014 18:52:55 +0800
+Message-ID: <53F47E07.3080807@cn.fujitsu.com>
+In-Reply-To: <53F36601.5020609@fb.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0361692458987767993==
+--===============8588574257956188551==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 12, 2014 at 09:29:19AM +0530, Preeti U Murthy wrote:
-> On 08/11/2014 07:03 PM, Peter Zijlstra wrote:
-> > =
-
-> > Now I think I see why this is; we've reduced load balancing frequency
-> > significantly on this machine due to:
+On Tue, 19 Aug 2014 10:58:09 -0400, Chris Mason wrote:
+> On 08/19/2014 10:23 AM, David Sterba wrote:
+>> On Tue, Aug 19, 2014 at 07:58:20PM +0800, Fengguang Wu wrote:
+>>> We noticed an xfstests failure on commit
+>>>
+>>> 8d875f95da43c6a8f18f77869f2ef26e9594fecc ("btrfs: disable strict file f=
+lushes for renames and truncates")
+>>>
+>>> It's 100% reproducible in the 5 test runs.
+>>
+>> Same here, different mkfs configurations.
+>>
+>> generic/226 28s ...    [16:11:52] [16:12:55] - output mismatch (see /roo=
+t/xfstests/results//generic/226.out.bad)
+>>     --- tests/generic/226.out   2013-05-29 17:16:03.000000000 +0200
+>>     +++ /root/xfstests/results//generic/226.out.bad     2014-08-19 16:12=
+:55.000000000 +0200
+>>     @@ -1,6 +1,8 @@
+>>      QA output created by 226
+>>      --> mkfs 256m filesystem
+>>      --> 16 buffered 64m writes in a loop
+>>     -1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+>>     +1 2 3 4 pwrite64: No space left on device
+>>     +5 6 7 8 9 10 11 12 pwrite64: No space left on device
+>>     +13 14 15 16
+>>
+>> enospc on a small filesystem (256M)
 > =
 
-> We have also changed the value of busy_factor to 32 from 64 across all
-> domains. This would contribute to increased frequency of load balancing?
+> I'm calling filemap flush more often, but otherwise everything else is
+> the same.  I'll take a look.
 
-Not enough to offset the changes in min/max. Lowering it makes sense
-because we've increased min/max for most situations.=20
+The above patch also introduced a performance regression(~70%DOWN).
+We can reproduce this regression by fio, here is the config:
 
---===============0361692458987767993==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.sig"
+[global]
+ioengine=3Dfalloc
+iodepth=3D1
+direct=3D0
+buffered=3D0
+directory=3D<mnt>
+nrfiles=3D1
+filesize=3D100m
+group_reporting
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEuNC4xMiAoR05V
-L0xpbnV4KQoKaVFJY0JBRUJBZ0FHQlFKVDZiYzBBQW9KRUhaSDRhUkx3T1M2bm5vUUFMRG1YZ2Vo
-NUZHenBnVWdRWHBPUDVMQwpIRlRDTk9haUFBbmgyS21xSmJXdHVIRmVpQ0JNc2JTQW14dGplSW55
-TGlYMEFDNU5ndk1sUWIyekR1N0dFakZKCmUvb1l3WTBseHorc2xNdVU2aWlGcFNrNys4NWJRQ0Nw
-Tklsa1p1STVESHFSQ2pJRXZjYVorcHZ3OGkrSk9aZlgKSWozUFdCenBvLzdPTHI2WDc0Z0gwQlJs
-MXFBQnJuODY0MGdRaUlDK3hwWGNwVTdBdFBTSlpJYkpHNWdMZzJJRApWN25pTUtIdnViUkVFYTN0
-b3ZmdEY3VktCV0JaY2t6T0IzZDQ3VG0rSjNtdWgxNlZUZWU5dDc1dWp3QWpRSjFzCjFMTEsrQ1FZ
-VnQ1NFRSZE1IN0tKUGhmZlR3WjBzZE80azdtTXF3NzhUL0hURW9VRThSNlNnNkpNb2EwR3gyRkIK
-T0dpSUxJcDZqQnhVcTBXdlhtQXhmN3NCMDNzK1NLM3I2S1V6SHhBNy90dlo3dkJicExqanRQUURO
-N3c2RncrbAplRU5jdzdPQlh5ZFVnc095Wi9ienRVUXVrWmtVQmFwSlNDT1RjNXdFRlBaYlpqaS94
-dFN2THFVMEdwUjZmK3ZKCnRnOFJramh0MHYyWFBqVFJkS1lST1VXMEdsU3VxcGx4TXhTaVoyTE9G
-TitMbnkyeTJLNzZtV0Q0V2xLSVJMMW8KbjdYRzhUeEkxWlZFajdjUWUrWFo4QU85RDRnS1pXZ2Q4
-SkZtZVlwY0FOUmNZaVgzS09ya21PaXFIQ0VGQW5kbQp5akt0c3VFNGl1eTlFaEZybWxQV2xoSkVw
-SWJHSDBRV2tKQ0ZiWXY2SU1kNDUyTXpXM0lxT2U3Z2VrM2NqREhlCmFETWxyT1VVVlRocVZyQWl3
-cm5yCj1XeTJtCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
+[sequential aio-dio write]
+stonewall
+ioengine=3Dposixaio
+numjobs=3D1
+iodepth=3D128
+buffered=3D0
+direct=3D0
+rw=3Dwrite
+bs=3D64k
+filename=3Dfragmented_file
 
---===============0361692458987767993==--
+I found the problem is caused by the following function:
+
+int btrfs_release_file(struct inode *inode, struct file *filp)
+{
+	...
+	filemap_flush(inode->i_mapping);
+	return 0;
+}
+
+I don't think we need flush file at most situation. Ext4 flushes the file o=
+nly
+after someone truncate the file to be zero-length, I don't know the real re=
+ason
+why ext4 flush the file only after the file is truncated, someone said it i=
+s to
+reduce the risk that the users find a zero-length file after a crash, which=
+ happens
+after truncate-write-close process.
+
+If we change btrfs_release_file by ext4's implementation, both the failure =
+of
+xfstests's generic/226  and performance regression can be fixed.
+
+Thanks
+Miao
+
+> =
+
+> -chris
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo(a)vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> =
+
+
+
+--===============8588574257956188551==--
 
