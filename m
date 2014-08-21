@@ -1,434 +1,85 @@
-Content-Type: multipart/mixed; boundary="===============6756729064401241631=="
+Content-Type: multipart/mixed; boundary="===============8777753150561312767=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Pranith Kumar <bobby.prani@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/fair] caeb178c60f: +252.0% cpuidle.C1-SNB.time, +3.1% turbostat.Pkg_W
-Date: Thu, 21 Aug 2014 23:00:50 +0800
-Message-ID: <20140821150050.GA22665@localhost>
-In-Reply-To: <53F5FF2D.4010406@redhat.com>
+Subject: Re: [rcu] 0eb885afb20: -25.8% softirqs.RCU
+Date: Thu, 21 Aug 2014 13:52:30 -0400
+Message-ID: <CAJhHMCA-R6L6pwyhXZZTWXjc-MpajBMzK4_uLv9Eqb5v+OKrRQ@mail.gmail.com>
+In-Reply-To: <20140821135035.GA19246@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6756729064401241631==
+--===============8777753150561312767==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 21, 2014 at 10:16:13AM -0400, Rik van Riel wrote:
-> On 08/21/2014 10:01 AM, Fengguang Wu wrote:
-> > Hi Rik,
-> > =
+On Thu, Aug 21, 2014 at 9:50 AM, Fengguang Wu <fengguang.wu@intel.com>
+wrote:
 
-> > FYI, we noticed the below changes on
-> > =
+> Hi Pranith,
+>
+> FYI, these changes look nice:
+>
+> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
+> rcu/dev
+> commit 0eb885afb20317016670c1c5dd3a436c91e1e910 ("rcu: Use
+> rcu_gp_kthread_wake() to wake up grace period kthreads")
+>
+> test case: lkp-a04/aim7/400-disk_rr
+>
+> It's an in-memory aim7/disk_rr test.
+> lkp-a04 is an Atom micro server with 8G Memory.
+>
+> 5db6a289a3a0a69  0eb885afb20317016670c1c5d
+> ---------------  -------------------------
+>     150860 =C2=B1 1%     -25.8%     111937 =C2=B1 1%  TOTAL softirqs.RCU
+>       2809 =C2=B1 1%     -12.5%       2457 =C2=B1 1%  TOTAL vmstat.system=
+.cs
+>       4202 =C2=B1 1%      -6.9%       3911 =C2=B1 1%  TOTAL vmstat.system=
+.in
+>     212421 =C2=B1 2%      -7.7%     196035 =C2=B1 3%  TOTAL
+> time.involuntary_context_switches
+>
 
-> > git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
-> > commit caeb178c60f4f93f1b45c0bc056b5cf6d217b67f ("sched/fair: Make upda=
-te_sd_pick_busiest() return 'true' on a busier sd")
-> > =
+Great! Thanks for the analysis.
 
-> > testbox/testcase/testparams: lkp-sb03/nepim/300s-100%-tcp6
-> =
+-- =
 
-> Is this good or bad?
+Pranith
 
-It seems mixed results. The throughput is 2.4% better in sequential
-write test, while the power consumption (turbostat.Pkg_W) increases
-by 3.1% in the nepim/300s-100%-tcp test.
+--===============8777753150561312767==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.html"
 
-> The numbers suggest the xfs + raid5 workload is doing around 2.4%
-> more IO to disk per second with this change in, and there is more
+PGRpdiBkaXI9Imx0ciI+PGJyPjxkaXYgY2xhc3M9ImdtYWlsX2V4dHJhIj48YnI+PGJyPjxkaXYg
+Y2xhc3M9ImdtYWlsX3F1b3RlIj5PbiBUaHUsIEF1ZyAyMSwgMjAxNCBhdCA5OjUwIEFNLCBGZW5n
+Z3VhbmcgV3UgPHNwYW4gZGlyPSJsdHIiPiZsdDs8YSBocmVmPSJtYWlsdG86ZmVuZ2d1YW5nLnd1
+QGludGVsLmNvbSIgdGFyZ2V0PSJfYmxhbmsiPmZlbmdndWFuZy53dUBpbnRlbC5jb208L2E+Jmd0
+Ozwvc3Bhbj4gd3JvdGU6PGJyPgoKPGJsb2NrcXVvdGUgY2xhc3M9ImdtYWlsX3F1b3RlIiBzdHls
+ZT0ibWFyZ2luOjAgMCAwIC44ZXg7Ym9yZGVyLWxlZnQ6MXB4ICNjY2Mgc29saWQ7cGFkZGluZy1s
+ZWZ0OjFleCI+SGkgUHJhbml0aCw8YnI+Cjxicj4KRllJLCB0aGVzZSBjaGFuZ2VzIGxvb2sgbmlj
+ZTo8YnI+Cjxicj4KZ2l0Oi8vPGEgaHJlZj0iaHR0cDovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20v
+bGludXgva2VybmVsL2dpdC9wYXVsbWNrL2xpbnV4LXJjdS5naXQiIHRhcmdldD0iX2JsYW5rIj5n
+aXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvcGF1bG1jay9saW51eC1yY3Uu
+Z2l0PC9hPiByY3UvZGV2PGJyPgpjb21taXQgMGViODg1YWZiMjAzMTcwMTY2NzBjMWM1ZGQzYTQz
+NmM5MWUxZTkxMCAoJnF1b3Q7cmN1OiBVc2UgcmN1X2dwX2t0aHJlYWRfd2FrZSgpIHRvIHdha2Ug
+dXAgZ3JhY2UgcGVyaW9kIGt0aHJlYWRzJnF1b3Q7KTxicj4KPGJyPgp0ZXN0IGNhc2U6IGxrcC1h
+MDQvYWltNy80MDAtZGlza19ycjxicj4KPGJyPgpJdCYjMzk7cyBhbiBpbi1tZW1vcnkgYWltNy9k
+aXNrX3JyIHRlc3QuPGJyPgpsa3AtYTA0IGlzIGFuIEF0b20gbWljcm8gc2VydmVyIHdpdGggOEcg
+TWVtb3J5Ljxicj4KPGJyPgo1ZGI2YTI4OWEzYTBhNjnCoCAwZWI4ODVhZmIyMDMxNzAxNjY3MGMx
+YzVkPGJyPgotLS0tLS0tLS0tLS0tLS3CoCAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tPGJyPgrC
+oCDCoCAxNTA4NjAgwrEgMSXCoCDCoCDCoC0yNS44JcKgIMKgIMKgMTExOTM3IMKxIDElwqAgVE9U
+QUwgc29mdGlycXMuUkNVPGJyPgrCoCDCoCDCoCAyODA5IMKxIDElwqAgwqAgwqAtMTIuNSXCoCDC
+oCDCoCDCoDI0NTcgwrEgMSXCoCBUT1RBTCB2bXN0YXQuc3lzdGVtLmNzPGJyPgrCoCDCoCDCoCA0
+MjAyIMKxIDElwqAgwqAgwqAgLTYuOSXCoCDCoCDCoCDCoDM5MTEgwrEgMSXCoCBUT1RBTCA8YSBo
+cmVmPSJodHRwOi8vdm1zdGF0LnN5c3RlbS5pbiIgdGFyZ2V0PSJfYmxhbmsiPnZtc3RhdC5zeXN0
+ZW0uaW48L2E+PGJyPgrCoCDCoCAyMTI0MjEgwrEgMiXCoCDCoCDCoCAtNy43JcKgIMKgIMKgMTk2
+MDM1IMKxIDMlwqAgVE9UQUwgdGltZS5pbnZvbHVudGFyeV9jb250ZXh0X3N3aXRjaGVzPGJyPjwv
+YmxvY2txdW90ZT48ZGl2Pjxicj48L2Rpdj48ZGl2PkdyZWF0ISBUaGFua3MgZm9yIHRoZSBhbmFs
+eXNpcy48YnI+PC9kaXY+PGRpdj48YnI+PC9kaXY+PC9kaXY+LS0gPGJyPlByYW5pdGgKPC9kaXY+
+PC9kaXY+Cg==
 
-Right.
-
-> CPU idle time in the system...
-
-Sorry "cpuidle" is the monitor name. You can find its code here:
-
-https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/tree/monitor=
-s/cpuidle
-
-"cpuidle.C1-SNB.time" means the time spend in C1 state.
-
-> For the tcp test, I see no throughput numbers, but I see more
-> idle time as well as more time in turbo mode, and more softirqs,
-> which could mean that more packets were handled.
-
-Again, "turbostat" is a monitor name. "turbostat.Pkg_W" means the
-CPU package watts reported by the turbostat tool.
-
-> Does the patch introduce any performance issues, or did it
-> simply trip up something in the statistics that your script
-> noticed?
-
-In normal LKP reports, only changed stats are listed. Here is the
-performance/power index comparison, which lists all performance/power
-related stats. The index is geometric average of all results. Baseline
-is 100 for 743cb1ff191f00f.
-
-   100      perf-index (the larger, the better)
-    98     power-index (the larger, the better)
-
-743cb1ff191f00f  caeb178c60f4f93f1b45c0bc0  testbox/testcase/testparams
----------------  -------------------------  ---------------------------
-     %stddev        %change               %stddev
-            \          |                 /
-    691053 =C2=B1 4%      -5.1%     656100 =C2=B1 4%  lkp-sb03/nepim/300s-1=
-00%-tcp
-    570185 =C2=B1 7%      +5.4%     600774 =C2=B1 4%  lkp-sb03/nepim/300s-1=
-00%-tcp6
-   1261238 =C2=B1 5%      -0.3%    1256875 =C2=B1 4%  TOTAL nepim.tcp.avg.k=
-bps_in
-
-743cb1ff191f00f  caeb178c60f4f93f1b45c0bc0  =
-
----------------  -------------------------  =
-
-    691216 =C2=B1 4%      -5.1%     656264 =C2=B1 4%  lkp-sb03/nepim/300s-1=
-00%-tcp
-    570347 =C2=B1 7%      +5.4%     600902 =C2=B1 4%  lkp-sb03/nepim/300s-1=
-00%-tcp6
-   1261564 =C2=B1 5%      -0.3%    1257167 =C2=B1 4%  TOTAL nepim.tcp.avg.k=
-bps_out
-
-743cb1ff191f00f  caeb178c60f4f93f1b45c0bc0  =
-
----------------  -------------------------  =
-
-     77.48 =C2=B1 1%      +3.1%      79.91 =C2=B1 1%  lkp-sb03/nepim/300s-1=
-00%-tcp
-     79.69 =C2=B1 2%      -0.6%      79.21 =C2=B1 1%  lkp-sb03/nepim/300s-1=
-00%-tcp6
-    157.17 =C2=B1 2%      +1.2%     159.13 =C2=B1 1%  TOTAL turbostat.Pkg_W
-
-743cb1ff191f00f  caeb178c60f4f93f1b45c0bc0  =
-
----------------  -------------------------  =
-
-      6.05 =C2=B1 1%      +1.2%       6.12 =C2=B1 1%  lkp-sb03/nepim/300s-1=
-00%-tcp
-      6.06 =C2=B1 0%      +1.0%       6.12 =C2=B1 1%  lkp-sb03/nepim/300s-1=
-00%-tcp6
-     12.11 =C2=B1 1%      +1.1%      12.24 =C2=B1 1%  TOTAL turbostat.%c0
-
-743cb1ff191f00f  caeb178c60f4f93f1b45c0bc0                   =
-
----------------  -------------------------                   =
-
-    325759 =C2=B1 0%      +2.4%     333577 =C2=B1 0%  lkp-st02/dd-write/5m-=
-11HDD-RAID5-cfq-xfs-1dd
-    325759 =C2=B1 0%      +2.4%     333577 =C2=B1 0%  TOTAL iostat.md0.wkB/s
-
-The nepim throughput numbers are not stable enough comparing to the
-change, so are not regarded as real changes in the original email.
-I will need to increase its test time to make it more stable..
-
-Thanks,
-Fengguang
-
-> > 743cb1ff191f00f  caeb178c60f4f93f1b45c0bc0
-> > ---------------  -------------------------
-> >   29718911 =C2=B145%    +329.5%  1.277e+08 =C2=B110%  cpuidle.C1E-SNB.t=
-ime
-> >        861 =C2=B134%   +1590.4%      14564 =C2=B131%  cpuidle.C3-SNB.us=
-age
-> >   1.65e+08 =C2=B120%    +175.4%  4.544e+08 =C2=B115%  cpuidle.C1-SNB.ti=
-me
-> >         24 =C2=B141%    +247.6%         86 =C2=B123%  numa-numastat.nod=
-e1.other_node
-> >      27717 =C2=B111%     +98.7%      55085 =C2=B1 6%  softirqs.RCU
-> >     180767 =C2=B111%     +86.7%     337416 =C2=B110%  cpuidle.C7-SNB.us=
-age
-> >     104591 =C2=B114%     +77.4%     185581 =C2=B110%  cpuidle.C1E-SNB.u=
-sage
-> >        384 =C2=B110%     +33.3%        512 =C2=B111%  slabinfo.kmem_cac=
-he.num_objs
-> >        384 =C2=B110%     +33.3%        512 =C2=B111%  slabinfo.kmem_cac=
-he.active_objs
-> >        494 =C2=B1 8%     +25.9%        622 =C2=B1 9%  slabinfo.kmem_cac=
-he_node.active_objs
-> >        512 =C2=B1 7%     +25.0%        640 =C2=B1 8%  slabinfo.kmem_cac=
-he_node.num_objs
-> >      83427 =C2=B1 6%     +10.3%      92028 =C2=B1 5%  meminfo.DirectMap=
-4k
-> >       9508 =C2=B1 1%     +21.3%      11534 =C2=B1 7%  slabinfo.kmalloc-=
-512.active_objs
-> >       9838 =C2=B1 1%     +20.5%      11852 =C2=B1 6%  slabinfo.kmalloc-=
-512.num_objs
-> >      53997 =C2=B1 6%     +11.1%      59981 =C2=B1 4%  numa-meminfo.node=
-1.Slab
-> >       2662 =C2=B1 3%      -9.0%       2424 =C2=B1 3%  slabinfo.kmalloc-=
-96.active_objs
-> >       2710 =C2=B1 3%      -8.6%       2478 =C2=B1 3%  slabinfo.kmalloc-=
-96.num_objs
-> >        921 =C2=B141%   +3577.7%      33901 =C2=B114%  time.involuntary_=
-context_switches
-> >       2371 =C2=B1 2%     +15.5%       2739 =C2=B1 2%  vmstat.system.in
-> > =
-
-> > testbox/testcase/testparams: lkp-sb03/nepim/300s-100%-tcp
-> > =
-
-> > 743cb1ff191f00f  caeb178c60f4f93f1b45c0bc0
-> > ---------------  -------------------------
-> >   20657207 =C2=B131%    +358.2%   94650352 =C2=B118%  cpuidle.C1E-SNB.t=
-ime
-> >   29718911 =C2=B145%    +329.5%  1.277e+08 =C2=B110%  cpuidle.C1E-SNB.t=
-ime
-> >        861 =C2=B134%   +1590.4%      14564 =C2=B131%  cpuidle.C3-SNB.us=
-age
-> >       0.05 =C2=B146%    +812.5%       0.44 =C2=B134%  turbostat.%c3
-> >   1.12e+08 =C2=B125%    +364.8%  5.207e+08 =C2=B115%  cpuidle.C1-SNB.ti=
-me
-> >   1.65e+08 =C2=B120%    +175.4%  4.544e+08 =C2=B115%  cpuidle.C1-SNB.ti=
-me
-> >         35 =C2=B119%    +105.6%         72 =C2=B128%  numa-numastat.nod=
-e1.other_node
-> >         24 =C2=B141%    +247.6%         86 =C2=B123%  numa-numastat.nod=
-e1.other_node
-> >         43 =C2=B122%     +86.2%         80 =C2=B126%  numa-vmstat.node0=
-.nr_dirtied
-> >      24576 =C2=B1 6%    +113.9%      52574 =C2=B1 1%  softirqs.RCU
-> >      27717 =C2=B111%     +98.7%      55085 =C2=B1 6%  softirqs.RCU
-> >     211533 =C2=B1 6%     +58.4%     334990 =C2=B1 8%  cpuidle.C7-SNB.us=
-age
-> >     180767 =C2=B111%     +86.7%     337416 =C2=B110%  cpuidle.C7-SNB.us=
-age
-> >      77739 =C2=B113%     +52.9%     118876 =C2=B118%  cpuidle.C1E-SNB.u=
-sage
-> >     104591 =C2=B114%     +77.4%     185581 =C2=B110%  cpuidle.C1E-SNB.u=
-sage
-> >      32.09 =C2=B114%     -24.8%      24.12 =C2=B118%  turbostat.%pc2
-> >       9.04 =C2=B1 6%     +41.6%      12.80 =C2=B1 6%  turbostat.%c1
-> >        384 =C2=B110%     +33.3%        512 =C2=B111%  slabinfo.kmem_cac=
-he.num_objs
-> >        384 =C2=B110%     +33.3%        512 =C2=B111%  slabinfo.kmem_cac=
-he.active_objs
-> >        494 =C2=B1 8%     +25.9%        622 =C2=B1 9%  slabinfo.kmem_cac=
-he_node.active_objs
-> >        512 =C2=B1 7%     +25.0%        640 =C2=B1 8%  slabinfo.kmem_cac=
-he_node.num_objs
-> >        379 =C2=B1 9%     +16.7%        443 =C2=B1 7%  numa-vmstat.node0=
-.nr_page_table_pages
-> >      83427 =C2=B1 6%     +10.3%      92028 =C2=B1 5%  meminfo.DirectMap=
-4k
-> >       1579 =C2=B1 6%     -15.3%       1338 =C2=B1 7%  numa-meminfo.node=
-1.PageTables
-> >        394 =C2=B1 6%     -15.1%        334 =C2=B1 7%  numa-vmstat.node1=
-.nr_page_table_pages
-> >       1509 =C2=B1 7%     +16.6%       1760 =C2=B1 7%  numa-meminfo.node=
-0.PageTables
-> >      12681 =C2=B1 1%     -17.3%      10482 =C2=B114%  numa-meminfo.node=
-1.AnonPages
-> >       3169 =C2=B1 1%     -17.3%       2620 =C2=B114%  numa-vmstat.node1=
-.nr_anon_pages
-> >      10171 =C2=B1 3%     +10.9%      11283 =C2=B1 3%  slabinfo.kmalloc-=
-512.active_objs
-> >       9508 =C2=B1 1%     +21.3%      11534 =C2=B1 7%  slabinfo.kmalloc-=
-512.active_objs
-> >      10481 =C2=B1 3%     +10.9%      11620 =C2=B1 3%  slabinfo.kmalloc-=
-512.num_objs
-> >       9838 =C2=B1 1%     +20.5%      11852 =C2=B1 6%  slabinfo.kmalloc-=
-512.num_objs
-> >      53997 =C2=B1 6%     +11.1%      59981 =C2=B1 4%  numa-meminfo.node=
-1.Slab
-> >       5072 =C2=B1 1%     +11.6%       5662 =C2=B1 3%  slabinfo.kmalloc-=
-2048.num_objs
-> >       4974 =C2=B1 1%     +11.6%       5551 =C2=B1 3%  slabinfo.kmalloc-=
-2048.active_objs
-> >      12824 =C2=B1 2%     -16.1%      10754 =C2=B114%  numa-meminfo.node=
-1.Active(anon)
-> >       3205 =C2=B1 2%     -16.2%       2687 =C2=B114%  numa-vmstat.node1=
-.nr_active_anon
-> >       2662 =C2=B1 3%      -9.0%       2424 =C2=B1 3%  slabinfo.kmalloc-=
-96.active_objs
-> >       2710 =C2=B1 3%      -8.6%       2478 =C2=B1 3%  slabinfo.kmalloc-=
-96.num_objs
-> >      15791 =C2=B1 1%     +15.2%      18192 =C2=B1 9%  numa-meminfo.node=
-0.AnonPages
-> >       3949 =C2=B1 1%     +15.2%       4549 =C2=B1 9%  numa-vmstat.node0=
-.nr_anon_pages
-> >      13669 =C2=B1 1%      -7.5%      12645 =C2=B1 2%  slabinfo.kmalloc-=
-16.num_objs
-> >        662 =C2=B123%   +4718.6%      31918 =C2=B112%  time.involuntary_=
-context_switches
-> >        921 =C2=B141%   +3577.7%      33901 =C2=B114%  time.involuntary_=
-context_switches
-> >       2463 =C2=B1 1%     +13.1%       2786 =C2=B1 3%  vmstat.system.in
-> >       2371 =C2=B1 2%     +15.5%       2739 =C2=B1 2%  vmstat.system.in
-> >      49.40 =C2=B1 2%      +4.8%      51.79 =C2=B1 2%  turbostat.Cor_W
-> >      77.48 =C2=B1 1%      +3.1%      79.91 =C2=B1 1%  turbostat.Pkg_W
-> > =
-
-> > testbox/testcase/testparams: lkp-st02/dd-write/5m-11HDD-RAID5-cfq-xfs-1=
-dd
-> > =
-
-> > 743cb1ff191f00f  caeb178c60f4f93f1b45c0bc0
-> > ---------------  -------------------------
-> >      18571 =C2=B1 7%     +31.4%      24396 =C2=B1 4%  proc-vmstat.pgsca=
-n_direct_normal
-> >      39983 =C2=B1 2%     +38.3%      55286 =C2=B1 0%  perf-stat.cpu-mig=
-rations
-> >    4193962 =C2=B1 2%     +20.9%    5072009 =C2=B1 3%  perf-stat.iTLB-lo=
-ad-misses
-> >  4.568e+09 =C2=B1 2%     -17.2%  3.781e+09 =C2=B1 1%  perf-stat.L1-icac=
-he-load-misses
-> >  1.762e+10 =C2=B1 0%      -7.8%  1.625e+10 =C2=B1 1%  perf-stat.cache-r=
-eferences
-> >  1.408e+09 =C2=B1 1%      -6.6%  1.315e+09 =C2=B1 1%  perf-stat.branch-=
-load-misses
-> >  1.407e+09 =C2=B1 1%      -6.5%  1.316e+09 =C2=B1 1%  perf-stat.branch-=
-misses
-> >  6.839e+09 =C2=B1 1%      +5.0%  7.185e+09 =C2=B1 2%  perf-stat.LLC-loa=
-ds
-> >  1.558e+10 =C2=B1 0%      +3.5%  1.612e+10 =C2=B1 1%  perf-stat.L1-dcac=
-he-load-misses
-> >  1.318e+12 =C2=B1 0%      +3.4%  1.363e+12 =C2=B1 0%  perf-stat.L1-icac=
-he-loads
-> >  2.979e+10 =C2=B1 1%      +2.4%  3.051e+10 =C2=B1 0%  perf-stat.L1-dcac=
-he-store-misses
-> >  1.893e+11 =C2=B1 0%      +2.5%   1.94e+11 =C2=B1 0%  perf-stat.branch-=
-instructions
-> >  2.298e+11 =C2=B1 0%      +2.7%  2.361e+11 =C2=B1 0%  perf-stat.L1-dcac=
-he-stores
-> >  1.016e+12 =C2=B1 0%      +2.6%  1.042e+12 =C2=B1 0%  perf-stat.instruc=
-tions
-> >  1.892e+11 =C2=B1 0%      +2.5%   1.94e+11 =C2=B1 0%  perf-stat.branch-=
-loads
-> >   3.71e+11 =C2=B1 0%      +2.4%  3.799e+11 =C2=B1 0%  perf-stat.dTLB-lo=
-ads
-> >  3.711e+11 =C2=B1 0%      +2.3%  3.798e+11 =C2=B1 0%  perf-stat.L1-dcac=
-he-loads
-> >     325768 =C2=B1 0%      +2.7%     334461 =C2=B1 0%  vmstat.io.bo
-> >       8083 =C2=B1 0%      +2.4%       8278 =C2=B1 0%  iostat.sdf.wrqm/s
-> >       8083 =C2=B1 0%      +2.4%       8278 =C2=B1 0%  iostat.sdk.wrqm/s
-> >       8082 =C2=B1 0%      +2.4%       8276 =C2=B1 0%  iostat.sdg.wrqm/s
-> >      32615 =C2=B1 0%      +2.4%      33398 =C2=B1 0%  iostat.sdf.wkB/s
-> >      32617 =C2=B1 0%      +2.4%      33401 =C2=B1 0%  iostat.sdk.wkB/s
-> >      32612 =C2=B1 0%      +2.4%      33393 =C2=B1 0%  iostat.sdg.wkB/s
-> >       8083 =C2=B1 0%      +2.4%       8277 =C2=B1 0%  iostat.sdl.wrqm/s
-> >       8083 =C2=B1 0%      +2.4%       8276 =C2=B1 0%  iostat.sdi.wrqm/s
-> >       8082 =C2=B1 0%      +2.4%       8277 =C2=B1 0%  iostat.sdc.wrqm/s
-> >      32614 =C2=B1 0%      +2.4%      33396 =C2=B1 0%  iostat.sdl.wkB/s
-> >       8083 =C2=B1 0%      +2.4%       8278 =C2=B1 0%  iostat.sde.wrqm/s
-> >       8082 =C2=B1 0%      +2.4%       8277 =C2=B1 0%  iostat.sdh.wrqm/s
-> >       8083 =C2=B1 0%      +2.4%       8277 =C2=B1 0%  iostat.sdd.wrqm/s
-> >      32614 =C2=B1 0%      +2.4%      33393 =C2=B1 0%  iostat.sdi.wkB/s
-> >      32611 =C2=B1 0%      +2.4%      33395 =C2=B1 0%  iostat.sdc.wkB/s
-> >     325759 =C2=B1 0%      +2.4%     333577 =C2=B1 0%  iostat.md0.wkB/s
-> >       1274 =C2=B1 0%      +2.4%       1305 =C2=B1 0%  iostat.md0.w/s
-> >       8082 =C2=B1 0%      +2.4%       8277 =C2=B1 0%  iostat.sdb.wrqm/s
-> >      32618 =C2=B1 0%      +2.4%      33398 =C2=B1 0%  iostat.sde.wkB/s
-> >      32612 =C2=B1 0%      +2.4%      33395 =C2=B1 0%  iostat.sdh.wkB/s
-> >      32618 =C2=B1 0%      +2.4%      33397 =C2=B1 0%  iostat.sdd.wkB/s
-> >       8084 =C2=B1 0%      +2.4%       8278 =C2=B1 0%  iostat.sdj.wrqm/s
-> >      32611 =C2=B1 0%      +2.4%      33396 =C2=B1 0%  iostat.sdb.wkB/s
-> >      32618 =C2=B1 0%      +2.4%      33400 =C2=B1 0%  iostat.sdj.wkB/s
-> >    2.3e+11 =C2=B1 0%      +2.5%  2.357e+11 =C2=B1 0%  perf-stat.dTLB-st=
-ores
-> >       4898 =C2=B1 0%      +2.1%       5003 =C2=B1 0%  vmstat.system.cs
-> >  1.017e+12 =C2=B1 0%      +2.4%  1.042e+12 =C2=B1 0%  perf-stat.iTLB-lo=
-ads
-> >    1518279 =C2=B1 0%      +2.1%    1549457 =C2=B1 0%  perf-stat.context=
--switches
-> >  1.456e+12 =C2=B1 0%      +1.4%  1.476e+12 =C2=B1 0%  perf-stat.cpu-cyc=
-les
-> >  1.456e+12 =C2=B1 0%      +1.3%  1.475e+12 =C2=B1 0%  perf-stat.ref-cyc=
-les
-> >  1.819e+11 =C2=B1 0%      +1.3%  1.843e+11 =C2=B1 0%  perf-stat.bus-cyc=
-les
-> > =
-
-> > lkp-sb03 is a Sandy Bridge-EP server.
-> > Memory: 64G
-> > Architecture:          x86_64
-> > CPU op-mode(s):        32-bit, 64-bit
-> > Byte Order:            Little Endian
-> > CPU(s):                32
-> > On-line CPU(s) list:   0-31
-> > Thread(s) per core:    2
-> > Core(s) per socket:    8
-> > Socket(s):             2
-> > NUMA node(s):          2
-> > Vendor ID:             GenuineIntel
-> > CPU family:            6
-> > Model:                 45
-> > Stepping:              6
-> > CPU MHz:               3500.613
-> > BogoMIPS:              5391.16
-> > Virtualization:        VT-x
-> > L1d cache:             32K
-> > L1i cache:             32K
-> > L2 cache:              256K
-> > L3 cache:              20480K
-> > NUMA node0 CPU(s):     0-7,16-23
-> > NUMA node1 CPU(s):     8-15,24-31
-> > =
-
-> > lkp-st02 is Core2
-> > Memory: 8G
-> > =
-
-> > =
-
-> > =
-
-> > =
-
-> >                           time.involuntary_context_switches
-> > =
-
-> >   40000 O+-------------------------------------------------------------=
------+
-> >         |        O               O          O                          =
-     |
-> >   35000 ++O  O O        O   O             O                            =
-     |
-> >   30000 ++         O                 O         O                       =
-     |
-> >         |                 O    O   O                                   =
-     |
-> >   25000 ++            O                 O                              =
-     |
-> >         |                                                              =
-     |
-> >   20000 ++                                                             =
-     |
-> >         |                                                              =
-     |
-> >   15000 ++                                                             =
-     |
-> >   10000 ++                                                             =
-     |
-> >         |                                                              =
-     |
-> >    5000 ++                                                             =
-     |
-> >         |                                                .*.           =
-     |
-> >       0 *+*--*-*-*-*--*-*-*-*--*-*-*-*--*-*-*--*-*-*-*--*---*-*--*-*-*-=
-*--*-*
-> > =
-
-> > =
-
-> > 	[*] bisect-good sample
-> > 	[O] bisect-bad  sample
-> > =
-
-> > =
-
-> > Disclaimer:
-> > Results have been estimated based on internal Intel analysis and are pr=
-ovided
-> > for informational purposes only. Any difference in system hardware or s=
-oftware
-> > design or configuration may affect actual performance.
-> > =
-
-> > Thanks,
-> > Fengguang
-> >=20
-
---===============6756729064401241631==--
+--===============8777753150561312767==--
 
