@@ -1,147 +1,104 @@
-Content-Type: multipart/mixed; boundary="===============6229762983007650048=="
+Content-Type: multipart/mixed; boundary="===============8706461851640189824=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+From: Vincent Guittot <vincent.guittot@linaro.org>
 To: lkp@lists.01.org
-Subject: Re: [rcu] 0eb885afb20: -25.8% softirqs.RCU
-Date: Sat, 23 Aug 2014 09:35:04 -0700
-Message-ID: <20140823163504.GA5333@linux.vnet.ibm.com>
-In-Reply-To: <20140821135035.GA19246@localhost>
+Subject: Re: [sched] 143e1e28cb4: +17.9% aim7.jobs-per-min, -9.7% hackbench.throughput
+Date: Mon, 25 Aug 2014 15:47:39 +0200
+Message-ID: <CAKfTPtBnyeO1+1=Sbf6On-eXRG3th=0gsfhDectyQQuMCLeP-g@mail.gmail.com>
+In-Reply-To: <20140811133352.GC9918@twins.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6229762983007650048==
+--===============8706461851640189824==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 21, 2014 at 09:50:35PM +0800, Fengguang Wu wrote:
-> Hi Pranith,
-> =
+On 11 August 2014 15:33, Peter Zijlstra <peterz@infradead.org> wrote:
 
-> FYI, these changes look nice:
-> =
+[snip]
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/d=
-ev
-> commit 0eb885afb20317016670c1c5dd3a436c91e1e910 ("rcu: Use rcu_gp_kthread=
-_wake() to wake up grace period kthreads")
-> =
+>
+>
+> Now I think I see why this is; we've reduced load balancing frequency
+> significantly on this machine due to:
 
-> test case: lkp-a04/aim7/400-disk_rr
+I agree with you about the root cause
 
-Good show, Pranith!!!
+>
+>
+> -#define SD_SIBLING_INIT (struct sched_domain) {                         =
+       \
+> -       .min_interval           =3D 1,                                   =
+ \
+> -       .max_interval           =3D 2,                                   =
+ \
+>
+>
+> -#define SD_MC_INIT (struct sched_domain) {                             \
+> -       .min_interval           =3D 1,                                   =
+ \
+> -       .max_interval           =3D 4,                                   =
+ \
+>
+>
+> -#define SD_CPU_INIT (struct sched_domain) {                            \
+> -       .min_interval           =3D 1,                                   =
+ \
+> -       .max_interval           =3D 4,                                   =
+ \
+>
+>
+>         *sd =3D (struct sched_domain){
+>                 .min_interval           =3D sd_weight,
+>                 .max_interval           =3D 2*sd_weight,
+>
+> Which both increased the min and max value significantly for all domains
+> involved.
+>
+> That said; I think we might want to do something like the below; I can
+> imagine decreasing load balancing too much will negatively impact other
+> workloads.
+>
+> Maybe slightly modified to make sure the first domain has a min_interval
+> of 1.
+>
+> ---
+>  kernel/sched/core.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index 1211575a2208..67ed5d854da1 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -6049,8 +6049,8 @@ sd_init(struct sched_domain_topology_level *tl, int=
+ cpu)
+>                 sd_flags &=3D ~TOPOLOGY_SD_FLAGS;
+>
+>         *sd =3D (struct sched_domain){
+> -               .min_interval           =3D sd_weight,
+> -               .max_interval           =3D 2*sd_weight,
+> +               .min_interval           =3D max(1, sd_weight/2),
+> +               .max_interval           =3D sd_weight,
 
-							Thanx, Paul
+What about using ilog2 like the default scaling mode of other
+scheduler tunables ?
 
-> It's an in-memory aim7/disk_rr test.
-> lkp-a04 is an Atom micro server with 8G Memory.
-> =
+Regards,
+Vincent
 
-> 5db6a289a3a0a69  0eb885afb20317016670c1c5d =
+>                 .busy_factor            =3D 32,
+>                 .imbalance_pct          =3D 125,
+>
+> @@ -6076,7 +6076,7 @@ sd_init(struct sched_domain_topology_level *tl, int=
+ cpu)
+>                                         ,
+>
+>                 .last_balance           =3D jiffies,
+> -               .balance_interval       =3D sd_weight,
+> +               .balance_interval       =3D max(1, sd_weight/2),
+>                 .smt_gain               =3D 0,
+>                 .max_newidle_lb_cost    =3D 0,
+>                 .next_decay_max_lb_cost =3D jiffies,
 
-> ---------------  ------------------------- =
-
->     150860 =C2=B1 1%     -25.8%     111937 =C2=B1 1%  TOTAL softirqs.RCU
->       2809 =C2=B1 1%     -12.5%       2457 =C2=B1 1%  TOTAL vmstat.system=
-.cs
->       4202 =C2=B1 1%      -6.9%       3911 =C2=B1 1%  TOTAL vmstat.system=
-.in
->     212421 =C2=B1 2%      -7.7%     196035 =C2=B1 3%  TOTAL time.involunt=
-ary_context_switches
-> =
-
->                                  vmstat.system.in
-> =
-
->   4300 ++----------------------------------------------------------------=
----+
->        | .*..                  *..        .*..                     *     =
-   |
->   4250 *+            .*..     +        .*.    *              *.. .. :    =
-   |
->   4200 ++    *..*..*.    *.. +    *..*.        :           ..   *    :   =
-   |
->        |                    *                   :        .*          :  .=
-*  |
->   4150 ++                                       :  .*..*.             *. =
-   |
->   4100 ++                                        *.                      =
-   |
->        |                                                                 =
-   |
->   4050 ++                                                                =
-   |
->   4000 ++                                                                =
-   |
->        |  O  O              O              O                             =
-O  |
->   3950 O+       O  O     O     O     O  O        O     O  O     O        =
-   |
->   3900 ++             O                       O     O              O     =
-   |
->        |                                                     O           =
-   |
->   3850 ++-------------------------O-----------------------------------O--=
----O
-> =
-
-> =
-
->                                  vmstat.system.cs
-> =
-
->   3000 ++----------------------------------------------------------------=
----+
->        |                                                                 =
-   |
->   2900 ++                      *..                                       =
-   |
->        *..*..*..*..*..*..*.. ..   *..*..*..*..*..           .*..  .*..   =
-   |
->   2800 ++                   *                            .*.    *.      .=
-*  |
->        |                                         *..*..*.             *. =
-   |
->   2700 ++                                                                =
-   |
->        |                                                                 =
-   |
->   2600 ++                                                                =
-   |
->        |              O                 O                                =
-   |
->   2500 O+ O  O     O        O  O     O     O              O     O  O     =
-O  |
->        |        O        O        O              O     O                 =
-   |
->   2400 ++                                     O     O                 O  =
-   O
->        |                                                     O           =
-   |
->   2300 ++----------------------------------------------------------------=
----+
-> =
-
-> =
-
-> 	[*] bisect-good sample
-> 	[O] bisect-bad  sample
-> =
-
-> =
-
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
-> =
-
-> Thanks,
-> Fengguang
-> =
-
-
-
---===============6229762983007650048==--
+--===============8706461851640189824==--
 
