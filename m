@@ -1,56 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============5875609459809415383=="
+Content-Type: multipart/mixed; boundary="===============1593636878835966241=="
 MIME-Version: 1.0
-From: Pranith Kumar <bobby.prani@gmail.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [rcu] BUG: unable to handle kernel NULL pointer dereference at 000000da
-Date: Fri, 12 Sep 2014 20:41:03 +0000
-Message-ID: <CAJhHMCCevxQVctMtM83+_TN1PbcsQ9H_VaPOigv_OvZP32puYw@mail.gmail.com>
-In-Reply-To: <20140912190238.GJ4775@linux.vnet.ibm.com>
+Date: Sat, 13 Sep 2014 00:20:43 +0000
+Message-ID: <20140913002005.GA9550@localhost>
+In-Reply-To: <20140912192659.GM4775@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5875609459809415383==
+--===============1593636878835966241==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 12, 2014 at 3:02 PM, Paul E. McKenney
-<paulmck@linux.vnet.ibm.com> wrote:
-> On Mon, Sep 01, 2014 at 04:44:04PM +0800, Fengguang Wu wrote:
->> Greetings,
->>
->> 0day kernel testing robot got the below dmesg and the first bad commit is
->>
->> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->> commit d860d40327dde251d508a234fa00bd0d90fbb656
->> Author:     Shan Wei <davidshan@tencent.com>
->> AuthorDate: Thu Jun 19 14:12:44 2014 -0700
->> Commit:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
->> CommitDate: Wed Jul 9 09:15:21 2014 -0700
->
-> Hearing nothing from Shan or Pranith...
->
-> So, I am not seeing this failure in my testing, but my best guess is
-> that the problem is due to the fact that force_quiescent_state() is
-> sometimes invoked with preemption enabled, which breaks __this_cpu_read()
-> though perhaps with very low probability.  The common-case call (from
-> __call_rcu_core()) -does- have preemption disabled, in fact, it has
-> interrupts disabled.
->> So unless I hear otherwise, I will simply revert this commit.
+On Fri, Sep 12, 2014 at 12:26:59PM -0700, Paul E. McKenney wrote:
+> On Fri, Sep 12, 2014 at 02:19:57PM -0500, Christoph Lameter wrote:
+> > On Fri, 12 Sep 2014, Paul E. McKenney wrote:
+> > =
 
-I missed this report as I was not CC'ed and this is the first time I
-am seeing this. As Christoph said later in the thread, it really is
-not clear how this change is triggering the bug.
+> > > So, I am not seeing this failure in my testing, but my best guess is
+> > > that the problem is due to the fact that force_quiescent_state() is
+> > > sometimes invoked with preemption enabled, which breaks __this_cpu_re=
+ad()
+> > > though perhaps with very low probability.  The common-case call (from
+> > > __call_rcu_core()) -does- have preemption disabled, in fact, it has
+> > > interrupts disabled.
+> > =
 
-The tracer testing triggers this bug which is a corrupt stack and we
-see no force_quiescent_state() in the back trace. So may be this is
-exposing a bug somewhere else? Not really sure how to look at this.
+> > How could __this_cpu_read() break in a way that would make a difference=
+ to
+> > the code? There was no disabling/enabling of preemption before the patch
+> > and there is nothing like that after the patch. If there was a race then
+> > it still exists. The modification certainly cannot create a race.
+> =
 
-> [    0.420978] Testing tracer branch:
-> [    0.421701] BUG: unable to handle kernel NULL pointer dereference at 0=
-00000da
-> [    0.422857] IP: [<c1061074>] update_curr+0x1a3/0x2c3
-> [    0.423639] *pdpt =3D 0000000000000000 *pde =3D f000ff53f000ff53
-> [    0.424000] Thread overran stack, or stack corrupted
+> Excellent question.  Yet Fengguang's tests show breakage.
+> =
 
---===============5875609459809415383==--
+> Fengguang, any possibility of a false positive here?
+
+Yes, it is possible. I find the first bad commit and its parent
+commit's kernels are built in 2 different machines which might
+cause subtle changes. I'll redo the bisect.
+
+Thanks,
+Fengguang
+
+--===============1593636878835966241==--
 
