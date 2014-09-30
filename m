@@ -1,216 +1,206 @@
-Content-Type: multipart/mixed; boundary="===============2453884070647638863=="
+Content-Type: multipart/mixed; boundary="===============1649228243905085439=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+From: Chen, Tiejun <tiejun.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [torture] BUG: unable to handle kernel NULL pointer dereference at (null)
-Date: Tue, 30 Sep 2014 02:58:42 -0700
-Message-ID: <20140930095842.GR5015@linux.vnet.ibm.com>
-In-Reply-To: <20140930022740.GA4723@wfg-t540p.sh.intel.com>
+Subject: Re: [x86, kvm] WARNING: at arch/x86/kernel/pvclock.c:182 pvclock_init_vsyscall()
+Date: Tue, 30 Sep 2014 18:25:01 +0800
+Message-ID: <542A84FD.6000702@intel.com>
+In-Reply-To: <20140930075927.GC9561@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2453884070647638863==
+--===============1649228243905085439==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 30, 2014 at 10:27:40AM +0800, Fengguang Wu wrote:
-> On Fri, Sep 26, 2014 at 12:42:23AM -0700, Paul E. McKenney wrote:
-> > On Thu, Sep 18, 2014 at 09:17:51PM +0800, Fengguang Wu wrote:
-> > > Hi Paul,
-> > > =
+On 2014/9/30 15:59, Fengguang Wu wrote:
+> Greetings,
+>
+> 0day kernel testing robot got the below dmesg and the first bad commit is
+>
+> commit 3dc4f7cfb7441e5e0fed3a02fc81cdaabd28300a
+> Author:     Marcelo Tosatti <mtosatti@redhat.com>
+> AuthorDate: Tue Nov 27 23:28:56 2012 -0200
+> Commit:     Marcelo Tosatti <mtosatti@redhat.com>
+> CommitDate: Tue Nov 27 23:29:10 2012 -0200
+>
+>      x86: kvm guest: pvclock vsyscall support
+>
+>      Hook into generic pvclock vsyscall code, with the aim to
+>      allow userspace to have visibility into pvclock data.
+>
+>      Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+>
+> +--------------------------------------------------------------+---------=
+---+------------+------------+
+> |                                                              | 71056ae2=
+2d | 3dc4f7cfb7 | d778df51c0 |
+> +--------------------------------------------------------------+---------=
+---+------------+------------+
+> | boot_successes                                               | 141     =
+   | 0          | 0          |
+> | boot_failures                                                | 0       =
+   | 47         | 11         |
+> | WARNING:at_arch/x86/kernel/pvclock.c:pvclock_init_vsyscall() | 0       =
+   | 47         | 11         |
+> | backtrace:pvclock_init_vsyscall                              | 0       =
+   | 47         | 11         |
+> | backtrace:warn_slowpath_null                                 | 0       =
+   | 47         | 11         |
+> | backtrace:kvm_setup_vsyscall_timeinfo                        | 0       =
+   | 47         | 11         |
+> | backtrace:kvm_guest_init                                     | 0       =
+   | 47         | 11         |
+> | Kernel_panic-not_syncing:Attempted_to_kill_init_exitcode=3D    | 0     =
+     | 0          | 7          |
+> | BUG:kernel_boot_hang                                         | 0       =
+   | 0          | 4          |
+> +--------------------------------------------------------------+---------=
+---+------------+------------+
+>
+> [    0.000000] mapped IOAPIC to ffffffffff5f9000 (fec00000)
+> [    0.000000] nr_irqs_gsi: 40
+> [    0.000000] ------------[ cut here ]------------
+> [    0.000000] WARNING: at arch/x86/kernel/pvclock.c:182 pvclock_init_vsy=
+scall+0x41/0x8e()
+> [    0.000000] Hardware name: Standard PC (i440FX + PIIX, 1996)
+> [    0.000000] Modules linked in:
+> [    0.000000] Pid: 0, comm: swapper Not tainted 3.7.0-rc3-00112-g3dc4f7c=
+ #1
 
-> > > > > > > plymouth-upstart-bridge: ply-event-loop.c:497: ply_event_loop=
-_new: Assertion `loop->epoll_fd >=3D 0' failed.
-> > > > > > > /etc/lsb-base-logging.sh: line 5:  2580 Aborted              =
-   plymouth --ping > /dev/null 2>&1
-> > > > > > > /etc/lsb-base-logging.sh: line 5:  2585 Aborted              =
-   plymouth --ping > /dev/null 2>&1
-> > > > > > > mount: proc has wrong device number or fs type proc not suppo=
-rted
-> > > > > > > /etc/lsb-base-logging.sh: line 5:  2601 Aborted              =
-   plymouth --ping > /dev/null 2>&1
-> > > > > > > /etc/rc6.d/S40umountfs: line 20: /proc/mounts: No such file o=
-r directory
-> > > > > > > cat: /proc/1/maps: No such file or directory
-> > > > > > > cat: /proc/1/maps: No such file or directory
-> > > > > > > cat: /proc/1/maps: No such file or directory
-> > > > > > > cat: /proc/1/maps: No such file or directory
-> > > > > > > cat: /proc/1/maps: No such file or directory
-> > > > > > > cat: /proc/1/maps: No such file or directory
-> > > > > > > umount: /var/run: not mounted
-> > > > > > > umount: /var/lock: not mounted
-> > > > > > > umount: /dev/shm: not mounted
-> > > > > > > mount: / is busy
-> > > > > > >  * Will now restart
-> > > > =
+Looks you're working with old kernel, so its worth trying the latest again.
 
-> > > > Are these expected behavior?
-> > > =
+Tiejun
 
-> > > Yes, because it's randconfig boot tests, the user space may well
-> > > complain about random stuff and I'll ignore them all as long as it
-> > > will eventually call the shutdown command to finish the test in time.=
-  :)
-> > > =
+> [    0.000000] Call Trace:
+> [    0.000000]  [<ffffffff8104f750>] warn_slowpath_common+0x70/0xa0
+> [    0.000000]  [<ffffffff8104f83a>] warn_slowpath_null+0x1a/0x20
+> [    0.000000]  [<ffffffff8219a6af>] pvclock_init_vsyscall+0x41/0x8e
+> [    0.000000]  [<ffffffff8219a623>] kvm_setup_vsyscall_timeinfo+0x48/0x78
+> [    0.000000]  [<ffffffff8219a397>] kvm_guest_init+0x98/0xe1
+> [    0.000000]  [<ffffffff82190eb8>] setup_arch+0xa9b/0xb10
+> [    0.000000]  [<ffffffff818eeae8>] ? printk+0x4f/0x57
+> [    0.000000]  [<ffffffff8218e856>] start_kernel+0x93/0x388
+> [    0.000000]  [<ffffffff8218e120>] ? early_idt_handlers+0x120/0x120
+> [    0.000000]  [<ffffffff8218e2b4>] x86_64_start_reservations+0xb0/0xb3
+> [    0.000000]  [<ffffffff8218e3b9>] x86_64_start_kernel+0x102/0x10f
+> [    0.000000] ---[ end trace c9f7d63dd24af7e7 ]---
+> [    0.000000] KVM setup async PF for cpu 0
+>
+> git bisect start v3.8 v3.7 --
+> git bisect  bad 8d91a42e54eebc43f4d8f6064751ccba73528275  # 21:30      0-=
+      5  Merge tag 'omap-late-cleanups' of git://git.kernel.org/pub/scm/lin=
+ux/kernel/git/arm/arm-soc
+> git bisect  bad 770b6cb4d21fb3e3df2a7a51e186a3c14db1ec30  # 21:35      0-=
+      1  ARM: OMAP: Fix drivers to depend on omap for internal devices
+> git bisect good 9977d9b379cb77e0f67bd6f4563618106e58e11d  # 21:40     30+=
+      0  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/ker=
+nel/git/viro/signal
+> git bisect  bad e777d192ffb9f2929d547a2f8a5f65b7db7a9552  # 21:44      4-=
+     26  Merge tag 'scsi-misc' of git://git.kernel.org/pub/scm/linux/kernel=
+/git/jejb/scsi
+> git bisect good 8b0cab14951fbf8126795ab301835a8f8126a988  # 22:00     30+=
+      0  Merge tag 'regulator-3.8' of git://git.kernel.org/pub/scm/linux/ke=
+rnel/git/broonie/regulator
+> git bisect good c7708fac5a878d6e0f2de0aa19f9749cff4f707f  # 22:11     30+=
+      0  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/ker=
+nel/git/s390/linux
+> git bisect  bad e05a1c6397a73d09389e033b6b2c25c954d2177c  # 22:17      0-=
+      1  Merge tag 'ktest-v3.8' of git://git.kernel.org/pub/scm/linux/kerne=
+l/git/rostedt/linux-ktest
+> git bisect good 896ea17d3da5f44b2625c9cda9874d7dfe447393  # 22:36     30+=
+      0  Merge tag 'stable/for-linus-3.8-rc0-tag' of git://git.kernel.org/p=
+ub/scm/linux/kernel/git/konrad/xen
+> git bisect  bad 66cdd0ceaf65a18996f561b770eedde1d123b019  # 22:41      3-=
+      3  Merge tag 'kvm-3.8-1' of git://git.kernel.org/pub/scm/virt/kvm/kvm
+> git bisect good 8455d79e2163997e479931b8d5b7e60a92cd2b86  # 23:04     30+=
+      0  KVM: PPC: Book3S HV: Run virtual core whenever any vcpus in it can=
+ run
+> git bisect  bad 78c634402a1825f1f5bef13077f0985f3b8a3212  # 23:11      3-=
+     23  kvm: deliver msi interrupts from irq handler
+> git bisect good 189e11731aa858597095fbe1e6d243bad26bd96b  # 23:19     30+=
+      0  x86: pvclock: add note about rdtsc barriers
+> git bisect  bad b48aa97e38206a84bf8485e7c553412274708ce5  # 23:42     22-=
+      8  KVM: x86: require matched TSC offsets for master clock
+> git bisect  bad 886b470cb14733a0286e365c77f1844c240c33a4  # 00:28      2-=
+      5  KVM: x86: pass host_tsc to read_l1_tsc
+> git bisect good 71056ae22d43f58d7e0f793af18ace2eaf5b74eb  # 01:09     47+=
+      0  x86: pvclock: generic pvclock vsyscall initialization
+> git bisect  bad 51c19b4f5927f5a646e93d69f73c7e89ea14e737  # 02:16      0-=
+      1  x86: vdso: pvclock gettime support
+> git bisect  bad 3dc4f7cfb7441e5e0fed3a02fc81cdaabd28300a  # 02:45      0-=
+     24  x86: kvm guest: pvclock vsyscall support
+> # first bad commit: [3dc4f7cfb7441e5e0fed3a02fc81cdaabd28300a] x86: kvm g=
+uest: pvclock vsyscall support
+> git bisect good 71056ae22d43f58d7e0f793af18ace2eaf5b74eb  # 04:11    141+=
+      0  x86: pvclock: generic pvclock vsyscall initialization
+>
+>
+> This script may reproduce the error.
+>
+> -------------------------------------------------------------------------=
+---
+> #!/bin/bash
+>
+> kernel=3D$1
+> initrd=3Dquantal-core-x86_64.cgz
+>
+> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/m=
+aster/initrd/$initrd
+>
+> kvm=3D(
+> 	qemu-system-x86_64
+> 	-cpu kvm64
+> 	-enable-kvm
+> 	-kernel $kernel
+> 	-initrd $initrd
+> 	-m 320
+> 	-smp 2
+> 	-net nic,vlan=3D1,model=3De1000
+> 	-net user,vlan=3D1
+> 	-boot order=3Dnc
+> 	-no-reboot
+> 	-watchdog i6300esb
+> 	-rtc base=3Dlocaltime
+> 	-serial stdio
+> 	-display none
+> 	-monitor null
+> )
+>
+> append=3D(
+> 	hung_task_panic=3D1
+> 	earlyprintk=3DttyS0,115200
+> 	debug
+> 	apic=3Ddebug
+> 	sysrq_always_enabled
+> 	rcupdate.rcu_cpu_stall_timeout=3D100
+> 	panic=3D-1
+> 	softlockup_panic=3D1
+> 	nmi_watchdog=3Dpanic
+> 	oops=3Dpanic
+> 	load_ramdisk=3D2
+> 	prompt_ramdisk=3D0
+> 	console=3DttyS0,115200
+> 	console=3Dtty0
+> 	vga=3Dnormal
+> 	root=3D/dev/ram0
+> 	rw
+> 	drbd.minor_count=3D8
+> )
+>
+> "${kvm[@]}" --append "${append[*]}"
+> -------------------------------------------------------------------------=
+---
+>
+> Thanks,
+> Fengguang
+>
+>
+>
+> _______________________________________________
+> LKP mailing list
+> LKP(a)linux.intel.com
+>
 
-> > > > So again, I can invoke this commit without losing much (sendkey
-> > > > alt-sysrq-z is after all my friend), but it is not clear to me that=
- we
-> > > > have gotten to the root of this problem.
-> > > =
-
-> > > Sorry about that! If you see any debug tricks that I can try, or
-> > > information I can collect, please let me know.
-> > =
-
-> > Hmmm...
-> > =
-
-> > Looks like rcutorture might be starting too soon.  With all the selftes=
-ts,
-> > it is taking 3-4 minutes to boot.
-> =
-
-> Sorry my scripts reboot the machine quickly, there is no logic to wait fo=
-r the
-> completion of rcutorture tests.  Looking at the dmesg, the BUG shows up d=
-uring
-> the shutdown stage:
-> =
-
-> =3D=3D>     Sending all processes the TERM signal...
->         mount: mounting proc on /proc failed: No such device
->         [  121.930088] Dumping ftrace buffer:
->         [  121.930453] ---------------------------------
->         [  121.930865] BUG: unable to handle kernel NULL pointer derefere=
-nce at           (null)
->         [  121.931644] IP: [<ffffffff8959b074>] print_trace_line+0x2b0/0x=
-38a
-
-Fair point.
-
-> > One approach would be to set
-> > rcutorture.stat_interval=3D200 or whatever the duration of boot is.
-> > Another would be to set rcutorture.torture_runnable=3D0, and to change:
-> > =
-
-> > 	int rcutorture_runnable =3D RCUTORTURE_RUNNABLE_INIT;
-> > 	module_param(rcutorture_runnable, int, 0444);
-> > 	MODULE_PARM_DESC(rcutorture_runnable, "Start rcutorture at boot");
-> > =
-
-> > To:
-> > =
-
-> > 	int rcutorture_runnable =3D RCUTORTURE_RUNNABLE_INIT;
-> > 	module_param(rcutorture_runnable, int, 0644);
-> > 	MODULE_PARM_DESC(rcutorture_runnable, "Start rcutorture at boot");
-> > =
-
-> > In kernel/rcu/rcutorture.c.
-> > =
-
-> > Then have your scripts set rcutorture_runnable=3D1 from sysfs once boot
-> > completes.
-> =
-
-> That looks suitable to run as a functional test case in LKP.
-> =
-
-> I can enable the below options in the LKP test kernel (hope they will not
-> bring noticeable runtime overheads when not insmod):
-> =
-
-> CONFIG_TORTURE_TEST=3Dm
-> CONFIG_RCU_TORTURE_TEST=3Dm
-> CONFIG_LOCK_TORTURE_TEST=3Dm
-> =
-
-> and write a simple test case for it. To start the torture test,
-> it should be as simple as
-> =
-
->          modproble rcutorture
-
-"modprobe", but yes.  ;-)
-
->          echo 1 > /proc/sys/kernel/rcutorture_runnable
-> =
-
-> To determine if the test has finished, will this do the job in the
-> normal cases?
-> =
-
->          dmesg | grep "--- End of test:"
-
-Well, rcutorture won't stop unless you tell it to.  The usual way to
-tell it to stop is via rmmod.
-
-> Can I reasonably set the max test timeout to 5 or 10 or more minutes?
-> When exceeded, LKP will assume the machine is dead and need a force reboo=
-t.
-
-One thing would be something like this:
-
-	( sleep 300; rmmod rcutorture ) &
-
-Running both locktorture and rcutorture concurrently is not supported
-at the moment because both make the assumption that they have the entire
-system at their disposal.
-
-> > Alternatively, if poking sysfs is not reasonable (and it
-> > would not be in my test scripts), put a delay just after the
-> > rcutorture_record_test_transition() in rcu_torture_init().  For example,
-> > schedule_timeout_interruptible(200 * HZ) to delay 200 seconds.
-> =
-
-> I'd prefer the boot test to complete sooner than later, which helps
-> improve the test efficiency. :)
-
-Good point...  It would not be hard to make this a timeout-based delay,
-though.  But your earlier point about this being during shutdown is
-a good one here, also.
-
-> The 0day boot tests works by running this in a init.d script
-> =
-
->         run CPU hotplug tests in the background
->         enable tracing events [optional]
->         run trinity for 100 seconds
->         ### if feasible, we can add a wait-for-rcutorture-finish here
->         reboot
-> =
-
-> > Another approach would be for me to figure out some way for rcutorture
-> > to figure out that boot was not far enough along for it to safely
-> > do much, probably enabled by a third value of rcutorture_runnable.
-> =
-
-> Will it be *easy* to have a blockable syswrite to "stop rcutorture tests",
-> which will return when all tests have been stopped?
-
-I am not eager to handle the races between such a mechanism and rmmod.  ;-)
-
-> Anyway, I'm already happy with the above two options (where the kernel
-> printk some test completion message for the user space to grep).
-
-OK, but rmmod already exists and already shuts down rcutorture and waits
-for it to complete.
-
-> > One more approach would be to replace DUMP_ALL with DUMP_NONE in
-> > kernel/rcu/rcutorture.c's rcutorture_trace_dump() function.  Or
-> > to remove the ftrace_dump() statement entirely.  (The question that
-> > this might help answer is which part of rcutorture_trace_dump() is
-> > causing the problem.)
-> =
-
-> It should be unnecessary in testing POV. Unless if it is a bug.
-
-It might be that it is illegal to do ftrace_dump() too far into shutdown.
-I should check with Steven Rostedt.
-
-							Thanx, Paul
-
-
---===============2453884070647638863==--
+--===============1649228243905085439==--
 
