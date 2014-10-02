@@ -1,52 +1,78 @@
-Content-Type: multipart/mixed; boundary="===============1601536282522514823=="
+Content-Type: multipart/mixed; boundary="===============4960253161560276273=="
 MIME-Version: 1.0
-From: Oleg Nesterov <oleg@redhat.com>
+From: Peter Hurley <peter@hurleysoftware.com>
 To: lkp@lists.01.org
 Subject: Re: [rfcomm_run] WARNING: CPU: 1 PID: 79 at kernel/sched/core.c:7156 __might_sleep()
-Date: Thu, 02 Oct 2014 21:18:46 +0200
-Message-ID: <20141002191846.GB30606@redhat.com>
-In-Reply-To: <20141002165739.GC10583@worktop.programming.kicks-ass.net>
+Date: Thu, 02 Oct 2014 15:49:05 -0400
+Message-ID: <542DAC31.8030504@hurleysoftware.com>
+In-Reply-To: <20141002191114.GA30606@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1601536282522514823==
+--===============4960253161560276273==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Ah, somehow I missed this email, I already replied to the previous one.
+On 10/02/2014 03:11 PM, Oleg Nesterov wrote:
+> On 10/02, Peter Zijlstra wrote:
+>>
+>> On Thu, Oct 02, 2014 at 03:52:50PM +0200, Peter Zijlstra wrote:
+>>>> If yes, then wakeups from signals don't work either, right?
+>>>
+>>> Its a kthread, there should not be any signals.
+>>
+>> That said, in the tty patch we do appear to have this problem.
+>>
+>> Oleg, do we want something like the below on top to make that work
+>> again?
+>>
+>> ---
+>> --- a/kernel/sched/wait.c
+>> +++ b/kernel/sched/wait.c
+>> @@ -326,8 +326,10 @@ long wait_woken(wait_queue_t *wait, unsi
+>>  	 * woken_wake_function() such that if we observe WQ_FLAG_WOKEN we must
+>>  	 * also observe all state before the wakeup.
+>>  	 */
+>> -	if (!(wait->flags & WQ_FLAG_WOKEN))
+>> -		timeout =3D schedule_timeout(timeout);
+>> +	if (!(wait->flags & WQ_FLAG_WOKEN)) {
+>> +		if (___wait_is_interruptible(mode) && !signal_pending_state(mode, cur=
+rent))
+>> +			timeout =3D schedule_timeout(timeout);
+>> +	}
+>>  	__set_current_state(TASK_RUNNING);
+> =
 
-On 10/02, Peter Zijlstra wrote:
->
-> In any case, if we change wait_woken() like the below, then we can
-> simplify the loops by taking out their signal_pending checks and using
-> the wait_woken() return value instead.
+> I am a bit confused... but for what?
+> =
 
-Yes, but let me repeat,
+> schedule() won't sleep if signal_pending_state(mode) anyway, so we
+> do not need this correctness-wise. And the caller needs to check
+> signal_pending() anyway.
+> =
 
-> +++ b/kernel/sched/wait.c
-> @@ -326,8 +326,14 @@ long wait_woken(wait_queue_t *wait, unsi
->  	 * woken_wake_function() such that if we observe WQ_FLAG_WOKEN we must
->  	 * also observe all state before the wakeup.
->  	 */
-> -	if (!(wait->flags & WQ_FLAG_WOKEN))
-> -		timeout =3D schedule_timeout(timeout);
-> +	if (!(wait->flags & WQ_FLAG_WOKEN)) {
-> +		if (___wait_is_interruptible(mode)) {
+> We can probably add
+> =
 
-___wait_is_interruptible() is pointless, signal_pending_state() does
-the same checks. Not to mention it will always return T in this case,
-note that __builtin_constant_p(state) =3D=3D F.
+> 	if (signal_pending_state(mode, current))
+> 		return -EINTR;
+> =
 
+> at the start of wait_woken(), even before set_current_state(mode).
+> Then the caller can check "ret < 0" and avoid signal_pending().
+> Not sure this makes sense.
 
-> +		       if (signal_pending_state(mode, current))
-> +			       timeout =3D -ERESTARTSYS;
+The confusion is my fault; I see now that signals don't suffer from the
+missed wakeup problem to which other condition testing is prone. Thanks
+for setting me straight, Oleg.
 
-OK, but unless I missed something this looks overcomplicated. You can
-simply do this at the start of wait_woken(). Not need to play with
-current->state, no need to clear WQ_FLAG_WOKEN.
+So just back to the kthread wakeup problem then.
 
-Oleg.
+Regards,
+Peter Hurley
 
 
---===============1601536282522514823==--
+
+
+--===============4960253161560276273==--
 
