@@ -1,59 +1,85 @@
-Content-Type: multipart/mixed; boundary="===============3083601653585670616=="
+Content-Type: multipart/mixed; boundary="===============6001225204202986034=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Peter Hurley <peter@hurleysoftware.com>
 To: lkp@lists.01.org
 Subject: Re: [rfcomm_run] WARNING: CPU: 1 PID: 79 at kernel/sched/core.c:7156 __might_sleep()
-Date: Thu, 02 Oct 2014 15:41:56 +0200
-Message-ID: <20141002134156.GA10583@worktop.programming.kicks-ass.net>
-In-Reply-To: <542D4DA6.2090607@hurleysoftware.com>
+Date: Thu, 02 Oct 2014 09:49:04 -0400
+Message-ID: <542D57D0.4030904@hurleysoftware.com>
+In-Reply-To: <20141002124247.GD6324@worktop.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3083601653585670616==
+--===============6001225204202986034==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 02, 2014 at 09:05:42AM -0400, Peter Hurley wrote:
+On 10/02/2014 08:42 AM, Peter Zijlstra wrote:
+> On Thu, Oct 02, 2014 at 02:31:50PM +0200, Peter Zijlstra wrote:
+>> @@ -2086,24 +2086,22 @@ static void rfcomm_kill_listener(void)
+>>  =
 
-> >>> While at it, rename rfcomm_schedule to rfcomm_wake, since that is what
-> >>> it actually does.
-> >>
-> >> rfcomm_schedule() as in schedule_work(), which is how it's used.
-> > =
+>>  static int rfcomm_run(void *unused)
+>>  {
+>> +	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>  	BT_DBG("");
+>>  =
 
-> > Not really, all it does is wake the rfcomm_thread. The thread then does
-> > a linear walk of all known sessions looking for work -- which is clearly
-> > suboptimal as well, but I didn't feel like fixing that.
-> > =
+>>  	set_user_nice(current, -10);
+>>  =
 
-> > Also, the current implementation already disagrees with you, all it
-> > basically does it call wake_up_process() which is a big clue right
-> > there.
+>>  	rfcomm_add_listener(BDADDR_ANY);
+>>  =
+
+>> -	while (1) {
+>> -		set_current_state(TASK_INTERRUPTIBLE);
+>> -
+>> -		if (kthread_should_stop())
+>> -			break;
+>> +	add_wait_queue(&rfcomm_wq, &wait);
+>> +	while (!kthread_should_stop()) {
+>>  =
+
+>>  		/* Process stuff */
+>>  		rfcomm_process_sessions();
+>>  =
+
+>> -		schedule();
+>> +		wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
+>>  	}
+>> -	__set_current_state(TASK_RUNNING);
+>> +	remove_wait_queue(&rfcomm_wq, &wait);
+>>  =
+
+>>  	rfcomm_kill_listener();
+>>  =
+
 > =
 
-> You're thinking of it from the point of view of the scheduler, so to you
-> it should be named what it does.
+> Hmm, I think there's a problem there. If someone were to do
+> kthread_stop() before wait_woken() we'd not actually stop, because
+> wait_woken() doesn't test KTHREAD_SHOULD_STOP before calling schedule().
 
-Of course I am, that thing is called 'schedule' so its natural to think
-about the scheduler :-)
+Do you mean this situation?
 
-> However, from the users' point of view, it's an abstraction of work
-> dispatching; the fact that a kthread (which needs waking) does the work
-> is irrelevant.
+CPU 0                                    | CPU 1
+                                         |
+rfcomm_run()                             | kthread_stop()
+  ...                                    |
+  if (!test_bit(KTHREAD_SHOULD_STOP))    |
+                                         |   set_bit(KTHREAD_SHOULD_STOP)
+                                         |   wake_up_process()
+    wait_woken()                         |   wait_for_completion()
+      set_current_state(INTERRUPTIBLE)   |
+      if (!WQ_FLAG_WOKEN)                |
+        schedule_timeout()               |
+                                         |
 
-Still a misnomer, see below.
+Now both tasks are sleeping forever.
 
-> Consider if the kthread is converted to work_structs instead and your now-
-> renamed rfcomm_wake() is calling schedule_work().
+If yes, then wakeups from signals don't work either, right?
 
-Then it would probably be less buggy and more efficient -- where I'm
-assuming it would queue work per session and avoid the endless scanning
-of sessions.
+Regards,
+Peter Hurley
 
-Also schedule_work() is somewhat sanely named in that you schedule the
-work for later execution, so here we can use the term. The thread
-however might already be scheduled or even running, so there it is not
-appropriate.
-
---===============3083601653585670616==--
+--===============6001225204202986034==--
 
