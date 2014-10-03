@@ -1,138 +1,113 @@
-Content-Type: multipart/mixed; boundary="===============3616762532263299669=="
+Content-Type: multipart/mixed; boundary="===============4288512672033034320=="
 MIME-Version: 1.0
-From: Oleg Nesterov <oleg@redhat.com>
+From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
-Subject: Re: [rfcomm_run] WARNING: CPU: 1 PID: 79 at kernel/sched/core.c:7156 __might_sleep()
-Date: Fri, 03 Oct 2014 21:30:29 +0200
-Message-ID: <20141003193029.GA24399@redhat.com>
-In-Reply-To: <20141003175654.GA14952@redhat.com>
+Subject: Re: [perf/x86/intel] WARNING: CPU: 48 PID: 7540 at arch/x86/kernel/cpu/perf_event_intel_ds.c:316 reserve_ds_buffers+0x208/0x430()
+Date: Fri, 03 Oct 2014 15:44:22 -0700
+Message-ID: <alpine.DEB.2.02.1410031542440.15421@chino.kir.corp.google.com>
+In-Reply-To: <20141003132657.GB32634@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3616762532263299669==
+--===============4288512672033034320==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 10/03, Oleg Nesterov wrote:
->
-> OK, this is fixable.  rfcomm_run() can do
->
-> 	add_wait_queue(&rfcomm_wq, &wait);
-> 	while (!kthread_should_stop()) {
-> 		rfcomm_process_sessions();
->
-> 		set_kthread_wants_signal(true);
-> 		wait_woken(TASK_INTERRUPTIBLE);
-> 		set_kthread_wants_signal(false);
-> 	}
-> 	remove_wait_queue(&rfcomm_wq, &wait);
+On Fri, 3 Oct 2014, Fengguang Wu wrote:
 
-And in this case set_kthread_wants_signal(true) needs to avoid the races
-with kthread_stop() too. See the hopefully complete patch at the end.
+> Hi David,
+> =
 
-However,
+> FYI, we noticed the below changes on commit
+> =
 
-> Or. perhaps we can change wait_woken
->
-> 	-	set_current_state(mode);
-> 	+	if (mode)
-> 	+		set_current_state(mode);
->
->
-> then rfcomm_run() can do
->
-> 	for (;;) {
-> 		rfcomm_process_sessions();
->
-> 		set_current_state(TASK_INTERRUPTIBLE);
-> 		if (kthread_should_stop())
-> 			break;
-> 		wait_woken(0);
-> 	}
->
-> Or perhaps we can split wait_woken() into 2 helpers,
->
-> 	static inline long wait_woken(wq, mode, timeout)
-> 	{
-> 		set_current_state(mode);
-> 		schedule_woken(wq, timeout); // does the rest
-> 	}
->
-> to avoid "mode =3D=3D 0" hack; rfcomm_run() should use schedule_woken().
+> 4485154138f6ffa5b252cb490aba3e8eb30124e4 ("perf/x86/intel: Avoid spamming=
+ kernel log for BTS buffer failure")
+> =
 
-probably this makes more sense in this particular case...
+> +------------------------------------------------------------------------=
+---+------------+------------+
+> |                                                                        =
+   | 338b522ca4 | 4485154138 |
+> +------------------------------------------------------------------------=
+---+------------+------------+
+> | boot_successes                                                         =
+   | 3          | 5          |
+> | boot_failures                                                          =
+   | 21         | 15         |
+> | page_allocation_failure:order:,mode                                    =
+   | 11         |            |
+> | backtrace:reserve_ds_buffers                                           =
+   | 11         | 5          |
+> | backtrace:x86_pmu_event_init                                           =
+   | 11         | 5          |
+> | backtrace:perf_init_event                                              =
+   | 11         | 5          |
+> | backtrace:SYSC_perf_event_open                                         =
+   | 11         | 5          |
+> | backtrace:SyS_perf_event_open                                          =
+   | 11         | 5          |
+> | BUG:kernel_test_crashed                                                =
+   | 10         | 10         |
+> | WARNING:at_arch/x86/kernel/cpu/perf_event_intel_ds.c:reserve_ds_buffers=
+() | 0          | 5          |
+> +------------------------------------------------------------------------=
+---+------------+------------+
+> =
 
-Oleg.
----
+> =
 
---- x/kernel/kthread.c
-+++ x/kernel/kthread.c
-@@ -48,6 +48,7 @@ struct kthread {
- =
+> 2014-10-03 01:27:35 ./usemem --runtime 300 -t 64 -f /tmp/vm-scalability/s=
+parse-mremap-xread-rand-mt-60 -E --prealloc --readonly --random 17179869184
+> 2014-10-03 01:27:36 ./usemem --runtime 300 -t 64 -f /tmp/vm-scalability/s=
+parse-mremap-xread-rand-mt-62 -E --prealloc --readonly --random 17179869184
+> [  192.496567] ------------[ cut here ]------------
+> [  192.505045] WARNING: CPU: 48 PID: 7540 at arch/x86/kernel/cpu/perf_eve=
+nt_intel_ds.c:316 reserve_ds_buffers+0x208/0x430()
+> [  192.524168] alloc_bts_buffer: BTS buffer allocation failure
+> [  192.533339] Modules linked in: loop ipmi_watchdog nfsd auth_rpcgss dm_=
+mod fuse sg sd_mod crct10dif_generic sr_mod crc_t10dif cdrom crct10dif_comm=
+on ata_generic pata_acpi mgag200 syscopyarea snd_pcm sysfillrect sysimgblt =
+snd_timer ttm snd drm_kms_helper soundcore ata_piix pcspkr i7core_edac drm =
+libata megaraid_sas i2c_i801 edac_core ipmi_si ipmi_msghandler acpi_cpufreq
+> [  192.581450] CPU: 48 PID: 7540 Comm: perf Not tainted 3.16.0-rc2-00011-=
+g4485154 #1
+> [  192.592393] Hardware name: Quanta MP Server/QSSC-S4R, BIOS QSSC-S4R.QC=
+I.01.00.0028.090220101116 09/02/2010
+> [  192.606455]  0000000000000009 ffff88005de53ce8 ffffffff81844e55 ffff88=
+005de53d30
+> [  192.618370]  ffff88005de53d20 ffffffff8106de6d 0000000000000000 000000=
+0000010528
+> [  192.630786]  0000000000000000 0000000000000000 0000000000000000 ffff88=
+005de53d80
+> [  192.642465] Call Trace:
+> [  192.647913]  [<ffffffff81844e55>] dump_stack+0x4d/0x66
+> [  192.656643]  [<ffffffff8106de6d>] warn_slowpath_common+0x7d/0xa0
+> [  192.666961]  [<ffffffff8106dedc>] warn_slowpath_fmt+0x4c/0x50
+> [  192.677047]  [<ffffffff81030863>] ? reserve_ds_buffers+0x2b3/0x430
+> [  192.687420]  [<ffffffff810307b8>] reserve_ds_buffers+0x208/0x430
+> [  192.697838]  [<ffffffff8118abec>] ? handle_mm_fault+0x8ac/0xf70
+> [  192.707522]  [<ffffffff8102a354>] x86_pmu_event_init+0x434/0x450
+> [  192.717351]  [<ffffffff8115241b>] perf_init_event+0xdb/0x140
+> [  192.727292]  [<ffffffff81152808>] perf_event_alloc+0x388/0x440
+> [  192.738117]  [<ffffffff81152c60>] SYSC_perf_event_open+0x3a0/0xd20
+> [  192.750511]  [<ffffffff81153979>] SyS_perf_event_open+0x9/0x10
+> [  192.761657]  [<ffffffff8184da29>] system_call_fastpath+0x16/0x1b
+> [  192.771904] ---[ end trace 6d601571820ebee0 ]---
 
- enum KTHREAD_BITS {
- 	KTHREAD_IS_PER_CPU =3D 0,
-+	KTHREAD_WANTS_SIGNAL,
- 	KTHREAD_SHOULD_STOP,
- 	KTHREAD_SHOULD_PARK,
- 	KTHREAD_IS_PARKED,
-@@ -442,6 +443,45 @@ int kthread_park(struct task_struct *k)
- 	return ret;
- }
- =
+Thanks for the report.
 
-+void set_kthread_wants_signal(bool on)
-+{
-+	struct kthread *kthread =3D to_kthread(current);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&current->sighand->siglock, flags);
-+	if (on) {
-+		set_bit(KTHREAD_WANTS_SIGNAL, &kthread->flags);
-+		smp_mb__after_atomic();
-+		if (kthread_should_stop())
-+			set_thread_flag(TIF_SIGPENDING);
-+	} else {
-+		clear_bit(KTHREAD_WANTS_SIGNAL, &kthread->flags);
-+		recalc_sigpending();
-+	}
-+	spin_unlock_irqrestore(&current->sighand->siglock, flags);
-+}
-+
-+static void kthread_kill(struct task_struct *k, struct kthread *kthread)
-+{
-+	smp_mb__before_atomic();
-+	if (test_bit(KTHREAD_WANTS_SIGNAL, &kthread->flags)) {
-+		unsigned long flags;
-+		bool kill =3D true;
-+
-+		if (lock_task_sighand(k, &flags)) {
-+			kill =3D test_bit(KTHREAD_WANTS_SIGNAL, &kthread->flags);
-+			if (kill)
-+				signal_wake_up(k, 0);
-+			unlock_task_sighand(k, &flags);
-+		}
-+
-+		if (kill)
-+			return;
-+	}
-+
-+	wake_up_process(k);
-+}
-+
- /**
-  * kthread_stop - stop a thread created by kthread_create().
-  * @k: thread created by kthread_create().
-@@ -469,7 +509,7 @@ int kthread_stop(struct task_struct *k)
- 	if (kthread) {
- 		set_bit(KTHREAD_SHOULD_STOP, &kthread->flags);
- 		__kthread_unpark(k, kthread);
--		wake_up_process(k);
-+		kthread_kill(k, kthread);
- 		wait_for_completion(&kthread->exited);
- 	}
- 	ret =3D k->exit_code;
+This is the intended behavior.  Before commit 4485154138f6 =
 
+("perf/x86/intel: Avoid spamming kernel log for BTS buffer failure") this =
 
---===============3616762532263299669==--
+would result in page allocation failure warnings everytime the kzalloc() =
+
+failed.  The patch turns this into a WARN_ON_ONCE() to only print it once =
+
+to avoid spamming the kernel log, it just has a different format than page =
+
+allocation failure warnings.
+
+--===============4288512672033034320==--
 
