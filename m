@@ -1,104 +1,106 @@
-Content-Type: multipart/mixed; boundary="===============7124746001193572220=="
+Content-Type: multipart/mixed; boundary="===============3370941486059790495=="
 MIME-Version: 1.0
-From: Steven Noonan <steven@uplinklabs.net>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [compiler/gcc4] a9f180345f5: -100.0% last_state.is_incomplete_run
-Date: Thu, 02 Oct 2014 17:46:34 -0700
-Message-ID: <CAKbGBLhyXOdy9cbyabDRf0RQEinzz5nqqhh7FVfrs9sWDTmu0A@mail.gmail.com>
-In-Reply-To: <20140930081412.GF9561@wfg-t540p.sh.intel.com>
+Subject: Re: [rfcomm_run] WARNING: CPU: 1 PID: 79 at kernel/sched/core.c:7156 __might_sleep()
+Date: Fri, 03 Oct 2014 13:50:20 +0200
+Message-ID: <20141003115020.GG10583@worktop.programming.kicks-ass.net>
+In-Reply-To: <20141002201020.GA8907@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7124746001193572220==
+--===============3370941486059790495==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 30, 2014 at 1:14 AM, Fengguang Wu <fengguang.wu@intel.com> wr=
-ote:
-> Hi Steven,
->
-> FYI, we noticed that your commit a9f180345f5378ac87d80ed0bea55ba421d83859
-> ("compiler/gcc4: Make quirk for asm_volatile_goto() unconditional") fixed
-> a number of machine boot failures in our LKP test farm. This is really he=
-lpful!
-> Our gcc version is 4.9.1 (Debian 4.9.1-11).
+On Thu, Oct 02, 2014 at 10:10:20PM +0200, Oleg Nesterov wrote:
+> You know, I already thought about the patch below for other reasons, it
+> can probably simplify other users of kthread_should_stop(). Because this
+> way we can rely on the signal checks in schedule(). (Just in case, the
+> patch is not complete, see TODO).
+> =
 
-Hey cool, that's good news!
+> As for rfcomm_run(), perhaps it can ise it too?
+> =
 
-I rather wish we could find the root cause of the miscompiles, though,
-so we could conditionalize the quirk on something again. I'm terrible
-at debugging GCC behavior, though, so I'm not the right person for it.
+> 	set_kthread_wants_signal(true);
+> =
 
-- Steven
+> 	add_wait_queue(&rfcomm_wq, &wait);
+> 	for (;;) {
+> 		// This is only possible if kthread_should_stop() =3D=3D T
 
->
-> 569d6557ab957d6  a9f180345f5378ac87d80ed0b
-> ---------------  -------------------------
->      %stddev        %change               %stddev
->             \          |                 /
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-st02/dd-write/5=
-m-11HDD-RAID5-cfq-btrfs-100dd
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  TOTAL dmesg.kernel_=
-BUG_at_fs/nfs/pagelist.c
->
-> 569d6557ab957d6  a9f180345f5378ac87d80ed0b
-> ---------------  -------------------------
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-st02/dd-write/5=
-m-11HDD-RAID5-cfq-btrfs-100dd
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  TOTAL dmesg.Kernel_=
-panic-not_syncing:Fatal_exception
->
-> 569d6557ab957d6  a9f180345f5378ac87d80ed0b
-> ---------------  -------------------------
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-st02/dd-write/5=
-m-11HDD-RAID5-cfq-btrfs-100dd
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  TOTAL dmesg.invalid=
-_opcode
->
-> 569d6557ab957d6  a9f180345f5378ac87d80ed0b
-> ---------------  -------------------------
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  ivb42/will-it-scale=
-/futex4
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  ivb44/fsmark/1x-1t-=
-1HDD-xfs-4M-60G-NoSync
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  ivb44/fsmark/1x-64t=
--1BRD_48G-btrfs-4M-40G-fsyncBeforeClose
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-bdw01/blogbench=
-/1SSD-btrfs
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-hsw01/vm-scalab=
-ility/300s-anon-rx-rand-mt
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-sbx04/will-it-s=
-cale/futex3
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-sbx04/will-it-s=
-cale/page_fault3
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-st02/dd-write/5=
-m-11HDD-RAID5-cfq-btrfs-100dd
->          8 =C2=B1 0%    -100.0%          0 =C2=B1 0%  TOTAL last_state.is=
-_incomplete_run
->
-> 569d6557ab957d6  a9f180345f5378ac87d80ed0b
-> ---------------  -------------------------
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  ivb42/will-it-scale=
-/futex4
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  ivb44/fsmark/1x-1t-=
-1HDD-xfs-4M-60G-NoSync
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  ivb44/fsmark/1x-64t=
--1BRD_48G-btrfs-4M-40G-fsyncBeforeClose
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-bdw01/blogbench=
-/1SSD-btrfs
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-hsw01/vm-scalab=
-ility/300s-anon-rx-rand-mt
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-sbx04/will-it-s=
-cale/futex3
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-sbx04/will-it-s=
-cale/page_fault3
->          1 =C2=B1 0%    -100.0%          0 =C2=B1 0%  lkp-st02/dd-write/5=
-m-11HDD-RAID5-cfq-btrfs-100dd
->          8 =C2=B1 0%    -100.0%          0 =C2=B1 0%  TOTAL last_state.bo=
-oting
->
-> Thanks,
-> Fengguang
+True because kthreads SIG_IGN everything, right?
 
---===============7124746001193572220==--
+> 		if (signal_pending(current))
+> 			break;
+> =
+
+> 		rfcomm_process_sessions();
+> 		wait_woken(TASK_INTERRUPTIBLE);
+> 	}
+> =
+
+> Of course, this assumes that rfcomm_process_sessions() can't do something
+> "really bad" if signal_pending() is true.
+
+So from what I can think of, everything that does an INTERRUPTIBLE sleep
+will 'malfunction' after that, right? Which might be quite a lot
+actually.
+
+> What do you think?
+
+Interesting approach, but somewhat risky I tihnk, due to that
+INTERRUPTIBLE thing.
+
+> --- x/kernel/kthread.c
+> +++ x/kernel/kthread.c
+> @@ -49,6 +49,7 @@ struct kthread {
+>  enum KTHREAD_BITS {
+>  	KTHREAD_IS_PER_CPU =3D 0,
+>  	KTHREAD_SHOULD_STOP,
+> +	KTHREAD_WANTS_SIGNAL,
+>  	KTHREAD_SHOULD_PARK,
+>  	KTHREAD_IS_PARKED,
+>  };
+> @@ -442,6 +443,21 @@ int kthread_park(struct task_struct *k)
+>  	return ret;
+>  }
+>  =
+
+> +void set_kthread_wants_signal(bool on)
+> +{
+> +	unsigned long *kflags =3D &to_kthread(current)->flags;
+> +	unsigned long irqflags;
+> +
+> +	if (on) {
+> +		set_bit(KTHREAD_WANTS_SIGNAL, kflags);
+> +	} else {
+> +		spin_lock_irqsave(&current->sighand->siglock, irqflags);
+> +		clear_bit(KTHREAD_WANTS_SIGNAL, kflags);
+> +		recalc_sigpending();
+> +		spin_unlock_irqrestore(&current->sighand->siglock, irqflags);
+> +	}
+> +}
+> +
+>  /**
+>   * kthread_stop - stop a thread created by kthread_create().
+>   * @k: thread created by kthread_create().
+> @@ -469,6 +485,9 @@ int kthread_stop(struct task_struct *k)
+>  	if (kthread) {
+>  		set_bit(KTHREAD_SHOULD_STOP, &kthread->flags);
+>  		__kthread_unpark(k, kthread);
+> +		// TODO: this is racy, we need ->siglock.
+> +		if (test_bit(KTHREAD_WANTS_SIGNAL, &to_kthread(k)->flags))
+> +			 set_tsk_thread_flag(k, TIF_SIGPENDING);
+
+Right, but taking that should not really be a problem afaict, this is a
+slow path if ever there was one.
+
+>  		wake_up_process(k);
+>  		wait_for_completion(&kthread->exited);
+>  	}
+>=20
+
+--===============3370941486059790495==--
 
