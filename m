@@ -1,100 +1,138 @@
-Content-Type: multipart/mixed; boundary="===============8021651778381542468=="
+Content-Type: multipart/mixed; boundary="===============3616762532263299669=="
 MIME-Version: 1.0
 From: Oleg Nesterov <oleg@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [rfcomm_run] WARNING: CPU: 1 PID: 79 at kernel/sched/core.c:7156 __might_sleep()
-Date: Fri, 03 Oct 2014 19:56:54 +0200
-Message-ID: <20141003175654.GA14952@redhat.com>
-In-Reply-To: <20141003115020.GG10583@worktop.programming.kicks-ass.net>
+Date: Fri, 03 Oct 2014 21:30:29 +0200
+Message-ID: <20141003193029.GA24399@redhat.com>
+In-Reply-To: <20141003175654.GA14952@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8021651778381542468==
+--===============3616762532263299669==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 10/03, Peter Zijlstra wrote:
+On 10/03, Oleg Nesterov wrote:
 >
-> On Thu, Oct 02, 2014 at 10:10:20PM +0200, Oleg Nesterov wrote:
+> OK, this is fixable.  rfcomm_run() can do
 >
-> > As for rfcomm_run(), perhaps it can ise it too?
-> >
-> > 	set_kthread_wants_signal(true);
-> >
-> > 	add_wait_queue(&rfcomm_wq, &wait);
-> > 	for (;;) {
-> > 		// This is only possible if kthread_should_stop() =3D=3D T
+> 	add_wait_queue(&rfcomm_wq, &wait);
+> 	while (!kthread_should_stop()) {
+> 		rfcomm_process_sessions();
 >
-> True because kthreads SIG_IGN everything, right?
+> 		set_kthread_wants_signal(true);
+> 		wait_woken(TASK_INTERRUPTIBLE);
+> 		set_kthread_wants_signal(false);
+> 	}
+> 	remove_wait_queue(&rfcomm_wq, &wait);
 
-Yes,
+And in this case set_kthread_wants_signal(true) needs to avoid the races
+with kthread_stop() too. See the hopefully complete patch at the end.
 
-> > 		if (signal_pending(current))
-> > 			break;
-> >
-> > 		rfcomm_process_sessions();
-> > 		wait_woken(TASK_INTERRUPTIBLE);
-> > 	}
-> >
-> > Of course, this assumes that rfcomm_process_sessions() can't do somethi=
-ng
-> > "really bad" if signal_pending() is true.
+However,
+
+> Or. perhaps we can change wait_woken
 >
-> So from what I can think of, everything that does an INTERRUPTIBLE sleep
-> will 'malfunction' after that, right? Which might be quite a lot
-> actually.
-
-Yes.
-
-> > What do you think?
+> 	-	set_current_state(mode);
+> 	+	if (mode)
+> 	+		set_current_state(mode);
 >
-> Interesting approach, but somewhat risky I tihnk, due to that
-> INTERRUPTIBLE thing.
+>
+> then rfcomm_run() can do
+>
+> 	for (;;) {
+> 		rfcomm_process_sessions();
+>
+> 		set_current_state(TASK_INTERRUPTIBLE);
+> 		if (kthread_should_stop())
+> 			break;
+> 		wait_woken(0);
+> 	}
+>
+> Or perhaps we can split wait_woken() into 2 helpers,
+>
+> 	static inline long wait_woken(wq, mode, timeout)
+> 	{
+> 		set_current_state(mode);
+> 		schedule_woken(wq, timeout); // does the rest
+> 	}
+>
+> to avoid "mode =3D=3D 0" hack; rfcomm_run() should use schedule_woken().
 
-OK, this is fixable.  rfcomm_run() can do
-
-	add_wait_queue(&rfcomm_wq, &wait);
-	while (!kthread_should_stop()) {
-		rfcomm_process_sessions();
-
-		set_kthread_wants_signal(true);
-		wait_woken(TASK_INTERRUPTIBLE);
-		set_kthread_wants_signal(false);
-	}
-	remove_wait_queue(&rfcomm_wq, &wait);
-
-Or. perhaps we can change wait_woken
-
-	-	set_current_state(mode);
-	+	if (mode)
-	+		set_current_state(mode);
-
-
-then rfcomm_run() can do
-
-	for (;;) {
-		rfcomm_process_sessions();
-
-		set_current_state(TASK_INTERRUPTIBLE);
-		if (kthread_should_stop())
-			break;
-		wait_woken(0);
-	}
-
-Or perhaps we can split wait_woken() into 2 helpers,
-
-	static inline long wait_woken(wq, mode, timeout)
-	{
-		set_current_state(mode);
-		schedule_woken(wq, timeout); // does the rest
-	}
-
-to avoid "mode =3D=3D 0" hack; rfcomm_run() should use schedule_woken().
-
-What do you think?
+probably this makes more sense in this particular case...
 
 Oleg.
+---
+
+--- x/kernel/kthread.c
++++ x/kernel/kthread.c
+@@ -48,6 +48,7 @@ struct kthread {
+ =
+
+ enum KTHREAD_BITS {
+ 	KTHREAD_IS_PER_CPU =3D 0,
++	KTHREAD_WANTS_SIGNAL,
+ 	KTHREAD_SHOULD_STOP,
+ 	KTHREAD_SHOULD_PARK,
+ 	KTHREAD_IS_PARKED,
+@@ -442,6 +443,45 @@ int kthread_park(struct task_struct *k)
+ 	return ret;
+ }
+ =
+
++void set_kthread_wants_signal(bool on)
++{
++	struct kthread *kthread =3D to_kthread(current);
++	unsigned long flags;
++
++	spin_lock_irqsave(&current->sighand->siglock, flags);
++	if (on) {
++		set_bit(KTHREAD_WANTS_SIGNAL, &kthread->flags);
++		smp_mb__after_atomic();
++		if (kthread_should_stop())
++			set_thread_flag(TIF_SIGPENDING);
++	} else {
++		clear_bit(KTHREAD_WANTS_SIGNAL, &kthread->flags);
++		recalc_sigpending();
++	}
++	spin_unlock_irqrestore(&current->sighand->siglock, flags);
++}
++
++static void kthread_kill(struct task_struct *k, struct kthread *kthread)
++{
++	smp_mb__before_atomic();
++	if (test_bit(KTHREAD_WANTS_SIGNAL, &kthread->flags)) {
++		unsigned long flags;
++		bool kill =3D true;
++
++		if (lock_task_sighand(k, &flags)) {
++			kill =3D test_bit(KTHREAD_WANTS_SIGNAL, &kthread->flags);
++			if (kill)
++				signal_wake_up(k, 0);
++			unlock_task_sighand(k, &flags);
++		}
++
++		if (kill)
++			return;
++	}
++
++	wake_up_process(k);
++}
++
+ /**
+  * kthread_stop - stop a thread created by kthread_create().
+  * @k: thread created by kthread_create().
+@@ -469,7 +509,7 @@ int kthread_stop(struct task_struct *k)
+ 	if (kthread) {
+ 		set_bit(KTHREAD_SHOULD_STOP, &kthread->flags);
+ 		__kthread_unpark(k, kthread);
+-		wake_up_process(k);
++		kthread_kill(k, kthread);
+ 		wait_for_completion(&kthread->exited);
+ 	}
+ 	ret =3D k->exit_code;
 
 
---===============8021651778381542468==--
+--===============3616762532263299669==--
 
