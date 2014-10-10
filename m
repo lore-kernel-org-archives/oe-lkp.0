@@ -1,59 +1,75 @@
-Content-Type: multipart/mixed; boundary="===============5551454966832861652=="
+Content-Type: multipart/mixed; boundary="===============7114899654036625754=="
 MIME-Version: 1.0
-From: Chuck Ebbert <cebbert.lkml@gmail.com>
+From: Yuyang Du <yuyang.du@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [sched] BUG: unable to handle kernel NULL pointer dereference at 0000000000000040
-Date: Sat, 11 Oct 2014 01:00:48 -0500
-Message-ID: <20141011010048.7b9bfd54@as>
-In-Reply-To: <20141011051530.GA21803@wfg-t540p.sh.intel.com>
+Date: Sat, 11 Oct 2014 06:23:20 +0800
+Message-ID: <20141010222320.GA5044@intel.com>
+In-Reply-To: <20141011010048.7b9bfd54@as>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5551454966832861652==
+--===============7114899654036625754==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, 11 Oct 2014 13:15:30 +0800
-Fengguang Wu <fengguang.wu@intel.com> wrote:
+Yes, thanks.
 
-> FYI, we noticed the below changes on commit
+How come it is sent to whole list. Please ignore this. Sorry.
+
+On Sat, Oct 11, 2014 at 01:00:48AM -0500, Chuck Ebbert wrote:
+> On Sat, 11 Oct 2014 13:15:30 +0800
+> Fengguang Wu <fengguang.wu@intel.com> wrote:
 > =
 
-> 445d95d7c384741d133251a9adac935866591c92 ("sched: Remove update_rq_runnab=
-le_avg")
+> > FYI, we noticed the below changes on commit
+> > =
+
+> > 445d95d7c384741d133251a9adac935866591c92 ("sched: Remove update_rq_runn=
+able_avg")
+> > =
+
+> > [   67.303839] BUG: unable to handle kernel NULL pointer dereference at=
+ 0000000000000040
+> > [   67.304014] IP: [<ffffffff810b1d52>] print_cfs_rq+0x4a3/0xa96
 > =
 
-> [   67.303839] BUG: unable to handle kernel NULL pointer dereference at 0=
-000000000000040
-> [   67.304014] IP: [<ffffffff810b1d52>] print_cfs_rq+0x4a3/0xa96
+> Well that one's pretty obvious:
+> =
 
-Well that one's pretty obvious:
+> =
 
+> --- a/kernel/sched/debug.c
+> +++ b/kernel/sched/debug.c
+> @@ -68,14 +68,6 @@ static void print_cfs_group_stats(struct seq_file *m, =
+int cpu, struct task_group
+>  #define PN(F) \
+>  	SEQ_printf(m, "  .%-30s: %lld.%06ld\n", #F, SPLIT_NS((long long)F))
+>  =
 
---- a/kernel/sched/debug.c
-+++ b/kernel/sched/debug.c
-@@ -68,14 +68,6 @@ static void print_cfs_group_stats(struct seq_file *m, in=
-t cpu, struct task_group
- #define PN(F) \
- 	SEQ_printf(m, "  .%-30s: %lld.%06ld\n", #F, SPLIT_NS((long long)F))
- =
+> -	if (!se) {
+> -		struct sched_avg *avg =3D &cpu_rq(cpu)->avg;
+> -		P(avg->runnable_avg_sum);
+> -		P(avg->runnable_avg_period);
+> -		return;
+> -	}
+> -
+> -
+>  	PN(se->exec_start);
+>  	PN(se->vruntime);
+>  	PN(se->sum_exec_runtime);
+> =
 
--	if (!se) {
--		struct sched_avg *avg =3D &cpu_rq(cpu)->avg;
--		P(avg->runnable_avg_sum);
--		P(avg->runnable_avg_period);
--		return;
--	}
--
--
- 	PN(se->exec_start);
- 	PN(se->vruntime);
- 	PN(se->sum_exec_runtime);
+> =
 
+> You can remove the P() calls from that if statement, but you can't
+> remove the whole thing because you will try to dereference a NULL se
+> immediately afterward if you do.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo(a)vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
 
-You can remove the P() calls from that if statement, but you can't
-remove the whole thing because you will try to dereference a NULL se
-immediately afterward if you do.
-
---===============5551454966832861652==--
+--===============7114899654036625754==--
 
