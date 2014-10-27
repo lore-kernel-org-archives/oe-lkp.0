@@ -1,66 +1,49 @@
-Content-Type: multipart/mixed; boundary="===============7882606969641715979=="
+Content-Type: multipart/mixed; boundary="===============7985094580492248454=="
 MIME-Version: 1.0
-From: Jan Kara <jack@suse.cz>
+From: Tejun Heo <tj@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [vfs] WARNING: CPU: 3 PID: 2339 at mm/truncate.c:758 pagecache_isize_extended+0xdd/0x120()
-Date: Mon, 27 Oct 2014 10:58:12 +0100
-Message-ID: <20141027095812.GA16093@quack.suse.cz>
-In-Reply-To: <20141027010422.GA16186@dastard>
+Subject: Re: [AHCI] 18dcf433f3d: -3.3% fileio.requests_per_sec
+Date: Mon, 27 Oct 2014 08:58:33 -0400
+Message-ID: <20141027125833.GB4436@htj.dyndns.org>
+In-Reply-To: <20141027021651.GF27038@yliu-dev.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7882606969641715979==
+--===============7985094580492248454==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 27-10-14 12:04:22, Dave Chinner wrote:
-> On Thu, Oct 16, 2014 at 01:01:27PM +0200, Jan Kara wrote:
-> > From de3426d6495f4b44b14c09b7c7202e9a86d864b9 Mon Sep 17 00:00:00 2001
-> > From: Jan Kara <jack@suse.cz>
-> > Date: Thu, 16 Oct 2014 12:58:42 +0200
-> > Subject: [PATCH] mm: Remove false WARN_ON from pagecache_isize_extended=
-()
-> > =
-
-> > The WARN_ON checking whether i_mutex is held in
-> > pagecache_isize_extended() was wrong because some filesystems (e.g.
-> > XFS) use different locks for serialization of truncates / writes. So
-> > just remove the check.
-> > =
-
-> > Signed-off-by: Jan Kara <jack@suse.cz>
-> > ---
-> >  mm/truncate.c | 1 -
-> >  1 file changed, 1 deletion(-)
-> > =
-
-> > diff --git a/mm/truncate.c b/mm/truncate.c
-> > index 261eaf6e5a19..c646084e5eec 100644
-> > --- a/mm/truncate.c
-> > +++ b/mm/truncate.c
-> > @@ -755,7 +755,6 @@ void pagecache_isize_extended(struct inode *inode, =
-loff_t from, loff_t to)
-> >  	struct page *page;
-> >  	pgoff_t index;
-> >  =
-
-> > -	WARN_ON(!mutex_is_locked(&inode->i_mutex));
-> >  	WARN_ON(to > inode->i_size);
-> >  =
-
-> >  	if (from >=3D to || bsize =3D=3D PAGE_CACHE_SIZE)
+On Mon, Oct 27, 2014 at 10:16:51AM +0800, kernel test robot wrote:
+> FYI, we noticed the below changes on
 > =
 
-> Jan, Have you sent this patch upstream yet? I'm seeing it fire in
-> my testing in 3.18-rc1 kernels, so I was wondering what your plans
-> are for this...
-  I did send it but it got lost somewhere. I'll resend it.
+> commit 18dcf433f3ded61eb140a55e7048ec2fef79e723 ("AHCI: Optimize single I=
+RQ interrupt processing")
+> =
 
-								Honza
+> =
+
+> 227dfb4dbf109596  18dcf433f3ded61eb140a55e70  testbox/testcase/testparams
+> ----------------  --------------------------  ---------------------------
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>      61.60 =C2=B1  1%      -3.3%      59.56 =C2=B1  0%  bay/fileio/perfor=
+mance-600s-100%-1HDD-btrfs-64G-1024f-rndrw-sync
+>      61.60            -3.3%      59.56        GEO-MEAN fileio.requests_pe=
+r_sec
+
+Just skimmed through it and it looks like we're getting lower IO rate
+w/ way higher task switch rate.  Maybe this is more pronounced w/
+btrfs because it also makes heavy use of worker threads.  Alexander,
+can you please look into it?  It looks like we might have to revert
+the commit, drop the threaded IRQ and do the split locking after that.
+
+Thanks.
+
 -- =
 
-Jan Kara <jack@suse.cz>
-SUSE Labs, CR
+tejun
 
---===============7882606969641715979==--
+--===============7985094580492248454==--
 
