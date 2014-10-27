@@ -1,112 +1,64 @@
-Content-Type: multipart/mixed; boundary="===============7390188546820646184=="
+Content-Type: multipart/mixed; boundary="===============0883179484515118280=="
 MIME-Version: 1.0
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] BUG: Int 6: CR2 (null)
-Date: Thu, 23 Oct 2014 09:46:42 +0200
-Message-ID: <5448B262.5080401@samsung.com>
-In-Reply-To: <CAL1ERfOneR5ix3y0Q6GFyPondQp8MpPZY=8nJWZc9n1FC=d9Gw@mail.gmail.com>
+Subject: Re: [vfs] WARNING: CPU: 3 PID: 2339 at mm/truncate.c:758 pagecache_isize_extended+0xdd/0x120()
+Date: Mon, 27 Oct 2014 12:04:22 +1100
+Message-ID: <20141027010422.GA16186@dastard>
+In-Reply-To: <20141016110127.GD6085@quack.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7390188546820646184==
+--===============0883179484515118280==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hello,
+On Thu, Oct 16, 2014 at 01:01:27PM +0200, Jan Kara wrote:
+> From de3426d6495f4b44b14c09b7c7202e9a86d864b9 Mon Sep 17 00:00:00 2001
+> From: Jan Kara <jack@suse.cz>
+> Date: Thu, 16 Oct 2014 12:58:42 +0200
+> Subject: [PATCH] mm: Remove false WARN_ON from pagecache_isize_extended()
+> =
 
-On 2014-10-23 08:03, Weijie Yang wrote:
-> On Thu, Oct 9, 2014 at 10:04 AM, Fengguang Wu <fengguang.wu@intel.com> =
-wrote:
->> FYI, we noticed the below changes on
->>
->> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
->> commit 478e86d7c8c5f41e29abb81b05b459d24bdc71a2 ("mm: cma: adjust addres=
-s limit to avoid hitting low/high memory boundary")
->>
->>
->> +------------------------------------------+------------+------------+
->> |                                          | 81febe58a8 | 478e86d7c8 |
->> +------------------------------------------+------------+------------+
->> | boot_successes                           | 10         | 0          |
->> | boot_failures                            | 5          | 10         |
->> | kernel_BUG_at_arch/x86/mm/physaddr.c     | 5          |            |
->> | invalid_opcode                           | 5          |            |
->> | EIP_is_at__phys_addr                     | 5          |            |
->> | Kernel_panic-not_syncing:Fatal_exception | 5          |            |
->> | backtrace:vm_mmap_pgoff                  | 5          |            |
->> | backtrace:SyS_mmap_pgoff                 | 5          |            |
->> | BUG:Int_CR2(null)                        | 0          | 10         |
->> +------------------------------------------+------------+------------+
->>
->> [    0.000000] BRK [0x025ee000, 0x025eefff] PGTABLE
->> [    0.000000] cma: dma_contiguous_reserve(limit 13ffe000)
->> [    0.000000] cma: dma_contiguous_reserve: reserving 31 MiB for global =
-area
->> [    0.000000] BUG: Int 6: CR2   (null)
->> [    0.000000]      EDI c0000000  ESI   (null)  EBP 41c11ea4  EBX 425cc1=
-01
->> [    0.000000]      ESP 41c11e98   ES 0000007b   DS 0000007b
->> [    0.000000]      EDX 00000001  ECX   (null)  EAX 41cd8150
->> [    0.000000]      vec 00000006  err   (null)  EIP 41072227   CS 000000=
-60  flg 00210002
->> [    0.000000] Stack: 425cc150   (null)   (null) 41c11ef4 41d4ee4d   (nu=
-ll) 13ffe000 41c11ec4
->> [    0.000000]        41c2d900   (null) 13ffe000   (null) 4185793e 00000=
-02e 410c2982 41c11f00
->> [    0.000000]        410c2df5   (null)   (null)   (null) 425cc150 00013=
-efe   (null) 41c11f28
->> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 3.17.0-next-20141=
-008 #815
->> [    0.000000]  00000000 425cc101 41c11e48 41850786 41c11ea4 41d2b1db 41=
-d95f71 00000006
->> [    0.000000]  00000000 c0000000 00000000 41c11ea4 425cc101 41c11e98 00=
-00007b 0000007b
->> [    0.000000]  00000001 00000000 41cd8150 00000006 00000000 41072227 00=
-000060 00210002
->> [    0.000000] Call Trace:
->> [    0.000000]  [<41850786>] dump_stack+0x16/0x18
->> [    0.000000]  [<41d2b1db>] early_idt_handler+0x6b/0x6b
->> [    0.000000]  [<41072227>] ? __phys_addr+0x2e/0xca
->> [    0.000000]  [<41d4ee4d>] cma_declare_contiguous+0x3c/0x2d7
->> [    0.000000]  [<4185793e>] ? _raw_spin_unlock_irqrestore+0x59/0x91
->> [    0.000000]  [<410c2982>] ? wake_up_klogd+0x8/0x33
->> [    0.000000]  [<410c2df5>] ? console_unlock+0x448/0x461
->> [    0.000000]  [<41d6d359>] dma_contiguous_reserve_area+0x27/0x47
->> [    0.000000]  [<41d6d4d1>] dma_contiguous_reserve+0x158/0x163
->> [    0.000000]  [<41d33e0f>] setup_arch+0x79b/0xc68
->> [    0.000000]  [<4184c0b4>] ? printk+0x1c/0x1e
->> [    0.000000]  [<41d2b7cf>] start_kernel+0x9c/0x456
->> [    0.000000]  [<41d2b2ca>] i386_start_kernel+0x79/0x7d
->>
-> I notice that code has been merged into mainline kernel without fix,
-> maybe fengguang's mail was missed.
->
-> I review the code, dma_contiguous_reserve() is called before initmem_init=
-(),
-> so the variable high_memory is not initialized and calculated by
-> __pa(high_memory),
-> in x86 arch high_memory is initialized after dma_contiguous_reserve(), wh=
-ile
-> in arm arch high_memory is initialized before dma_contiguous_reserve(),
-> I think that is the reason which causes the BUG in x86.
->
-> However, I'm not familiar with system init sequence, so I send this
-> notice mail rather than a patch :-(
+> The WARN_ON checking whether i_mutex is held in
+> pagecache_isize_extended() was wrong because some filesystems (e.g.
+> XFS) use different locks for serialization of truncates / writes. So
+> just remove the check.
+> =
 
-Thanks for your analysis. I agree that the simplest way of fixing this =
+> Signed-off-by: Jan Kara <jack@suse.cz>
+> ---
+>  mm/truncate.c | 1 -
+>  1 file changed, 1 deletion(-)
+> =
 
-issue is
-to move dma_contiguous_reserve() after initmem_init(). Could you prepare =
+> diff --git a/mm/truncate.c b/mm/truncate.c
+> index 261eaf6e5a19..c646084e5eec 100644
+> --- a/mm/truncate.c
+> +++ b/mm/truncate.c
+> @@ -755,7 +755,6 @@ void pagecache_isize_extended(struct inode *inode, lo=
+ff_t from, loff_t to)
+>  	struct page *page;
+>  	pgoff_t index;
+>  =
 
-such patch?
+> -	WARN_ON(!mutex_is_locked(&inode->i_mutex));
+>  	WARN_ON(to > inode->i_size);
+>  =
 
-Best regards
+>  	if (from >=3D to || bsize =3D=3D PAGE_CACHE_SIZE)
+
+Jan, Have you sent this patch upstream yet? I'm seeing it fire in
+my testing in 3.18-rc1 kernels, so I was wondering what your plans
+are for this...
+
+Cheers,
+
+Dave.
 -- =
 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Dave Chinner
+david(a)fromorbit.com
 
-
---===============7390188546820646184==--
+--===============0883179484515118280==--
 
