@@ -1,35 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============1076805616114469562=="
+Content-Type: multipart/mixed; boundary="===============7621187971589218592=="
 MIME-Version: 1.0
-From: David Miller <davem@davemloft.net>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] netdev: Fix sleeping inside wait event
-Date: Wed, 29 Oct 2014 13:38:43 -0400
-Message-ID: <20141029.133843.1944866828262153726.davem@davemloft.net>
-In-Reply-To: <20141029173110.GE15602@worktop.programming.kicks-ass.net>
+Subject: Re: [vfs] WARNING: CPU: 3 PID: 2339 at mm/truncate.c:758 pagecache_isize_extended+0xdd/0x120()
+Date: Tue, 28 Oct 2014 08:05:23 +1100
+Message-ID: <20141027210523.GD6880@dastard>
+In-Reply-To: <20141027095812.GA16093@quack.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1076805616114469562==
+--===============7621187971589218592==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Wed, 29 Oct 2014 18:31:10 +0100
+On Mon, Oct 27, 2014 at 10:58:12AM +0100, Jan Kara wrote:
+> On Mon 27-10-14 12:04:22, Dave Chinner wrote:
+> > On Thu, Oct 16, 2014 at 01:01:27PM +0200, Jan Kara wrote:
+> > > From de3426d6495f4b44b14c09b7c7202e9a86d864b9 Mon Sep 17 00:00:00 2001
+> > > From: Jan Kara <jack@suse.cz>
+> > > Date: Thu, 16 Oct 2014 12:58:42 +0200
+> > > Subject: [PATCH] mm: Remove false WARN_ON from pagecache_isize_extend=
+ed()
+> > > =
 
-> On Wed, Oct 29, 2014 at 06:13:45PM +0100, Peter Zijlstra wrote:
->> On Wed, Oct 29, 2014 at 09:29:55AM -0700, Cong Wang wrote:
->> > While you are on it, please fix rtnl_lock_unregistering_all() too?
->> =
+> > > The WARN_ON checking whether i_mutex is held in
+> > > pagecache_isize_extended() was wrong because some filesystems (e.g.
+> > > XFS) use different locks for serialization of truncates / writes. So
+> > > just remove the check.
+> > > =
 
->> Ah, that's hidden someplace else, sure I can do that. Thanks for
->> pointing it out.
-> =
+> > > Signed-off-by: Jan Kara <jack@suse.cz>
+> > > ---
+> > >  mm/truncate.c | 1 -
+> > >  1 file changed, 1 deletion(-)
+> > > =
 
-> Here goes..
+> > > diff --git a/mm/truncate.c b/mm/truncate.c
+> > > index 261eaf6e5a19..c646084e5eec 100644
+> > > --- a/mm/truncate.c
+> > > +++ b/mm/truncate.c
+> > > @@ -755,7 +755,6 @@ void pagecache_isize_extended(struct inode *inode=
+, loff_t from, loff_t to)
+> > >  	struct page *page;
+> > >  	pgoff_t index;
+> > >  =
 
-For this as well:
+> > > -	WARN_ON(!mutex_is_locked(&inode->i_mutex));
+> > >  	WARN_ON(to > inode->i_size);
+> > >  =
 
-Acked-by: David S. Miller <davem@davemloft.net>
+> > >  	if (from >=3D to || bsize =3D=3D PAGE_CACHE_SIZE)
+> > =
 
---===============1076805616114469562==--
+> > Jan, Have you sent this patch upstream yet? I'm seeing it fire in
+> > my testing in 3.18-rc1 kernels, so I was wondering what your plans
+> > are for this...
+>   I did send it but it got lost somewhere. I'll resend it.
+
+If it comes to it, I can push it through the XFS tree - I've got a
+few patches I need to send for -rc3...
+
+Cheers,
+
+Dave.
+-- =
+
+Dave Chinner
+david(a)fromorbit.com
+
+--===============7621187971589218592==--
 
