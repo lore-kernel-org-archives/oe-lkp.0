@@ -1,195 +1,119 @@
-Content-Type: multipart/mixed; boundary="===============3141374490463432651=="
+Content-Type: multipart/mixed; boundary="===============2905695307129864847=="
 MIME-Version: 1.0
-From: Kirill Tkhai <ktkhai@parallels.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [sched] [ INFO: suspicious RCU usage. ]
-Date: Wed, 29 Oct 2014 08:08:31 +0300
-Message-ID: <1414559311.8574.14.camel@tkhai>
-In-Reply-To: <20141028142715.GB19097@wfg-t540p.sh.intel.com>
+Subject: [PATCH] netdev: Fix sleeping inside wait event
+Date: Wed, 29 Oct 2014 17:16:57 +0100
+Message-ID: <20141029161657.GF3337@twins.programming.kicks-ass.net>
+In-Reply-To: <20141028142541.GA19097@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3141374490463432651==
+--===============2905695307129864847==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Thanks, Fengguang.
+On Tue, Oct 28, 2014 at 10:25:41PM +0800, Fengguang Wu wrote:
+> [  122.247299] ------------[ cut here ]------------
+> [  122.247328] WARNING: CPU: 0 PID: 61 at kernel/sched/core.c:7312 __migh=
+t_sleep+0x50/0x249()
+> [  122.247334] do not call blocking ops when !TASK_RUNNING; state=3D2 set=
+ at [<c106ffd9>] prepare_to_wait+0x3c/0x5f
+> [  122.247339] Modules linked in:
+> [  122.247349] CPU: 0 PID: 61 Comm: kworker/u2:1 Not tainted 3.18.0-rc2-0=
+0037-g24574709 #136
+> [  122.247350] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+> [  122.247368] Workqueue: netns cleanup_net
+> [  122.247377]  c1071d83 d2b83dd8 d2b83dac c15887b1 d2b83dc8 c104c4c6 000=
+01c90 c1068ebf
+> [  122.247383]  00000000 c17b67e3 0000026d d2b83de0 c104c508 00000009 d2b=
+83dd8 c17b5d4b
+> [  122.247388]  d2b83df4 d2b83e0c c1068ebf c17b5cec 00001c90 c17b5d4b 000=
+00002 c106ffd9
+> [  122.247389] Call Trace:
+> [  122.247393]  [<c1071d83>] ? down_trylock+0x23/0x2c
+> [  122.247402]  [<c15887b1>] dump_stack+0x16/0x18
+> [  122.247413]  [<c104c4c6>] warn_slowpath_common+0x66/0x7d
+> [  122.247416]  [<c1068ebf>] ? __might_sleep+0x50/0x249
+> [  122.247419]  [<c104c508>] warn_slowpath_fmt+0x2b/0x2f
+> [  122.247422]  [<c1068ebf>] __might_sleep+0x50/0x249
+> [  122.247424]  [<c106ffd9>] ? prepare_to_wait+0x3c/0x5f
+> [  122.247426]  [<c106ffd9>] ? prepare_to_wait+0x3c/0x5f
+> [  122.247432]  [<c158c364>] mutex_lock_nested+0x23/0x347
+> [  122.247436]  [<c1075105>] ? trace_hardirqs_on+0xb/0xd
+> [  122.247439]  [<c158eb0c>] ? _raw_spin_unlock_irqrestore+0x66/0x78
+> [  122.247445]  [<c1570e10>] rtnl_lock+0x14/0x16
+> [  122.247449]  [<c156516b>] default_device_exit_batch+0x54/0xf3
+> [  122.247452]  [<c1570e1f>] ? rtnl_unlock+0xd/0xf
+> [  122.247454]  [<c1070233>] ? __wake_up_sync+0x12/0x12
+> [  122.247461]  [<c155e35d>] ops_exit_list+0x20/0x40
+> [  122.247464]  [<c155ec96>] cleanup_net+0xbe/0x140
+> [  122.247473]  [<c105ffe4>] process_one_work+0x29e/0x643
+> [  122.247479]  [<c1061215>] worker_thread+0x23a/0x311
+> [  122.247482]  [<c1060fdb>] ? rescuer_thread+0x204/0x204
+> [  122.247486]  [<c10648cc>] kthread+0xbe/0xc3
+> [  122.247490]  [<c158f4c0>] ret_from_kernel_thread+0x20/0x30
+> [  122.247492]  [<c106480e>] ? kthread_stop+0x364/0x364
+> [  122.247495] ---[ end trace 2073c37ae3c8b3b4 ]---
 
-I've suggested this patch https://lkml.org/lkml/2014/10/28/41.
+Ah, more of that. Thanks!
 
-=D0=92 =D0=92=D1=82, 28/10/2014 =D0=B2 22:27 +0800, Fengguang Wu =D0=BF=D0=
-=B8=D1=88=D0=B5=D1=82:
-> Greetings,
-> =
+Dave, this relies on bits currently in tip/sched/core, if you're ok I'll
+merge it through that tree.
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
-
-> git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/urge=
-nt
-> commit f6a2b544517d33f6a1e428567bda96fd859ce1c9
-> Author:     Kirill Tkhai <ktkhai@parallels.com>
-> AuthorDate: Mon Oct 27 14:18:25 2014 +0400
-> Commit:     Peter Zijlstra <peterz@infradead.org>
-> CommitDate: Mon Oct 27 13:23:31 2014 +0100
-> =
-
->     sched: Fix race between task_group and sched_task_group
->     =
-
->     The race may happen when somebody is changing task_group of a forking=
- task.
->     Child's cgroup is the same as parent's after dup_task_struct() (there=
- just
->     memory copying). Also, cfs_rq and rt_rq are the same as parent's.
->     =
-
->     But if parent changes its task_group before it's called cgroup_post_f=
-ork(),
->     we do not reflect this situation on child. Child's cfs_rq and rt_rq r=
-emain
->     the same, while child's task_group changes in cgroup_post_fork().
->     =
-
->     To fix this we introduce fork() method, which calls sched_move_task()=
- directly.
->     This function changes sched_task_group on appropriate (also its logic=
- has
->     no problem with freshly created tasks, so we shouldn't introduce some=
-thing
->     special; we are able just to use it).
->     =
-
->     Possibly, this decides the Burke Libbey's problem: https://lkml.org/l=
-kml/2014/10/24/456
->     =
-
->     Signed-off-by: Kirill Tkhai <ktkhai@parallels.com>
->     Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
->     Link: http://lkml.kernel.org/r/1414405105.19914.169.camel(a)tkhai
-> =
-
-> +---------------------------+-----------+------------+------------+
-> |                           | v3.18-rc2 | f6a2b54451 | 8e5859c73b |
-> +---------------------------+-----------+------------+------------+
-> | boot_successes            | 200       | 0          | 0          |
-> | boot_failures             | 1         | 20         | 11         |
-> | BUG:kernel_boot_hang      | 1         |            |            |
-> | INFO:suspicious_RCU_usage | 0         | 20         | 11         |
-> | backtrace:do_fork         | 0         | 20         | 11         |
-> +---------------------------+-----------+------------+------------+
-> =
-
-> [    0.060187] =
-
-> [    0.060500] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [    0.060500] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [    0.061307] [ INFO: suspicious RCU usage. ]
-> [    0.061307] [ INFO: suspicious RCU usage. ]
-> [    0.062109] 3.18.0-rc2-gf6a2b54 #404 Not tainted
-> [    0.062109] 3.18.0-rc2-gf6a2b54 #404 Not tainted
-> [    0.063049] -------------------------------
-> =
-
-> git bisect start 8e5859c73b9f45602222441a23eba899bb24c82e 522e980064c24d3=
-dd9859e9375e17417496567cf --
-> git bisect  bad 259820751fd17a4b49098429c68c2c0adfd1c9ed  # 21:11      0-=
-      2  Merge branch 'sched/core'
-> git bisect  bad 8c64bf8de891aa51e916b51a3f7992321ec19b63  # 21:15      0-=
-      1  Merge branch 'sched/urgent'
-> git bisect  bad fd457f2bafdc4e367d1814ac395035a35980783f  # 21:27      0-=
-      7  sched/fair: Care divide error in update_task_scan_period()
-> git bisect  bad fb5b330f079e243dcc831e9a3d65b9b9fbbed7f8  # 21:36      0-=
-      1  sched/deadline: don't replenish from a !SCHED_DEADLINE entity
-> git bisect  bad f6a2b544517d33f6a1e428567bda96fd859ce1c9  # 21:41      0-=
-      2  sched: Fix race between task_group and sched_task_group
-> # first bad commit: [f6a2b544517d33f6a1e428567bda96fd859ce1c9] sched: Fix=
- race between task_group and sched_task_group
-> git bisect good cac7f2429872d3733dc3f9915857b1691da2eb2f  # 21:58     60+=
-      1  Linux 3.18-rc2
-> git bisect  bad 8e5859c73b9f45602222441a23eba899bb24c82e  # 22:00      0-=
-     11  Merge branch 'sched/wait'
-> git bisect good cac7f2429872d3733dc3f9915857b1691da2eb2f  # 22:05     60+=
-      1  Linux 3.18-rc2
-> git bisect good 7a891e6323e963f3301e44bdeee734028e34d390  # 22:14     60+=
-      0  Add linux-next specific files for 20141027
-> =
-
-> =
-
-> This script may reproduce the error.
-> =
-
-> -------------------------------------------------------------------------=
 ---
-> #!/bin/bash
-> =
+Subject: netdev: Fix sleeping inside wait event
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Wed Oct 29 17:04:56 CET 2014
 
-> kernel=3D$1
-> initrd=3Dquantal-core-x86_64.cgz
-> =
+rtnl_lock_unregistering() takes rtnl_lock() -- a mutex -- inside a
+wait loop. The wait loop relies on current->state to function, but so
+does mutex_lock(), nesting them makes for the inner to destroy the
+outer state.
 
-> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/m=
-aster/initrd/$initrd
-> =
+Fix this using the new wait_woken() bits.
 
-> kvm=3D(
-> 	qemu-system-x86_64
-> 	-cpu kvm64
-> 	-enable-kvm
-> 	-kernel $kernel
-> 	-initrd $initrd
-> 	-m 320
-> 	-smp 2
-> 	-net nic,vlan=3D1,model=3De1000
-> 	-net user,vlan=3D1
-> 	-boot order=3Dnc
-> 	-no-reboot
-> 	-watchdog i6300esb
-> 	-rtc base=3Dlocaltime
-> 	-serial stdio
-> 	-display none
-> 	-monitor null =
-
-> )
-> =
-
-> append=3D(
-> 	hung_task_panic=3D1
-> 	earlyprintk=3DttyS0,115200
-> 	debug
-> 	apic=3Ddebug
-> 	sysrq_always_enabled
-> 	rcupdate.rcu_cpu_stall_timeout=3D100
-> 	panic=3D-1
-> 	softlockup_panic=3D1
-> 	nmi_watchdog=3Dpanic
-> 	oops=3Dpanic
-> 	load_ramdisk=3D2
-> 	prompt_ramdisk=3D0
-> 	console=3DttyS0,115200
-> 	console=3Dtty0
-> 	vga=3Dnormal
-> 	root=3D/dev/ram0
-> 	rw
-> 	drbd.minor_count=3D8
-> )
-> =
-
-> "${kvm[@]}" --append "${append[*]}"
-> -------------------------------------------------------------------------=
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Eric Biederman <ebiederm@xmission.com>
+Cc: David Miller <davem@davemloft.net>
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
-> =
+ net/core/dev.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-> Thanks,
-> Fengguang
-> _______________________________________________
-> LKP mailing list
-> LKP(a)linux.intel.com
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -7196,11 +7196,10 @@ static void __net_exit rtnl_lock_unregis
+ 	 */
+ 	struct net *net;
+ 	bool unregistering;
+-	DEFINE_WAIT(wait);
++	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+ =
 
++	add_wait_queue(&netdev_unregistering_wq, &wait);
+ 	for (;;) {
+-		prepare_to_wait(&netdev_unregistering_wq, &wait,
+-				TASK_UNINTERRUPTIBLE);
+ 		unregistering =3D false;
+ 		rtnl_lock();
+ 		list_for_each_entry(net, net_list, exit_list) {
+@@ -7212,9 +7211,10 @@ static void __net_exit rtnl_lock_unregis
+ 		if (!unregistering)
+ 			break;
+ 		__rtnl_unlock();
+-		schedule();
++
++		wait_woken(&wait, TASK_UNINTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
+ 	}
+-	finish_wait(&netdev_unregistering_wq, &wait);
++	remove_wait_queue(&netdev_unregistering_wq, &wait);
+ }
+ =
 
+ static void __net_exit default_device_exit_batch(struct list_head *net_lis=
+t)
 
---===============3141374490463432651==--
+--===============2905695307129864847==--
 
