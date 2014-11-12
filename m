@@ -1,802 +1,2519 @@
-Content-Type: multipart/mixed; boundary="===============5047208624672656046=="
+Content-Type: multipart/mixed; boundary="===============1768983962475500252=="
 MIME-Version: 1.0
-From: lkp@01.org
+From: Vincent Guittot <vincent.guittot@linaro.org>
 To: lkp@lists.01.org
-Subject: [ftrace/x86] WARNING: CPU: 0 PID: 1795 at kernel/trace/ftrace.c:2033 ftrace_get_addr_new+0x6e/0xb6()
-Date: Wed, 12 Nov 2014 18:27:06 +0800
-Message-ID: <20141112102706.GF1705@yliu-dev.sh.intel.com>
+Subject: Re: [sched] 9597d64116d: -16.1% hackbench.throughput
+Date: Wed, 12 Nov 2014 15:44:34 +0100
+Message-ID: <CAKfTPtArGfgkDERN7fg+Kr_eqm_CAOrFdf3fnwym_OC6wFzNqA@mail.gmail.com>
+In-Reply-To: <20141110055453.GE1705@yliu-dev.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5047208624672656046==
+--===============1768983962475500252==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
+On 10 November 2014 06:54,  <lkp@01.org> wrote:
+> FYI, we noticed the below changes on
+>
+> https://git.linaro.org/people/mturquette/linux.git eas-next
+> commit 9597d64116d0d441dea32e7f5f05fa135d16f44b ("sched: replace capacity=
+_factor by usage")
+>
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f  testbox/testcase/testparams
+> ----------------  --------------------------  ---------------------------
+>          %stddev     %change         %stddev
+>              \          |                \
+>     104249 =C4=85  0%     -16.1%      87436 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     104249           -16.1%      87436        GEO-MEAN hackbench.throughp=
+ut
 
-git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-commit 12cce594fa8f12e002e7eb5d10141853c1e6a112 ("ftrace/x86: Allow !CONFIG=
-_PREEMPT dynamic ops to use allocated trampolines")
+Hi yuanhan,
 
+i understand this email as a 16% drop in hackbench performance when
+the number of group is half the number of CPUs. Is it the only test
+for which you  have seen some decreases ? where can i find the list of
+tests that you have passed ?
 
-+--------------------------------------------------------+------------+----=
---------+
-|                                                        | 15d5b02cc5 | 12c=
-ce594fa |
-+--------------------------------------------------------+------------+----=
---------+
-| boot_successes                                         | 42         | 17 =
-        |
-| boot_failures                                          | 4          | 4  =
-        |
-| BUG:kernel_test_crashed                                | 4          | 1  =
-        |
-| WARNING:at_kernel/trace/ftrace.c:ftrace_get_addr_new() | 0          | 3  =
-        |
-| backtrace:perf_tp_event_init                           | 0          | 3  =
-        |
-| backtrace:perf_init_event                              | 0          | 3  =
-        |
-| backtrace:perf_event_alloc                             | 0          | 3  =
-        |
-| backtrace:SyS_perf_event_open                          | 0          | 3  =
-        |
-| backtrace:perf_ftrace_event_register                   | 0          | 3  =
-        |
-| backtrace:perf_trace_init                              | 0          | 3  =
-        |
-| backtrace:tipc_disc_init_msg                           | 0          | 1  =
-        |
-| backtrace:tipc_msg_init                                | 0          | 1  =
-        |
-| backtrace:tipc_nametbl_init                            | 0          | 1  =
-        |
-| backtrace:tipc_sk_ref_table_init                       | 0          | 1  =
-        |
-| backtrace:tipc_socket_init                             | 0          | 1  =
-        |
-| backtrace:sysctl_net_init                              | 0          | 1  =
-        |
-| backtrace:init_memory_mapping                          | 0          | 1  =
-        |
-| backtrace:profile_init                                 | 0          | 1  =
-        |
-| backtrace:zone_wait_table_init                         | 0          | 1  =
-        |
-| backtrace:pcrypt_init_padata                           | 0          | 1  =
-        |
-| backtrace:run_init_process                             | 0          | 2  =
-        |
-| backtrace:try_to_run_init_process                      | 0          | 2  =
-        |
-| backtrace:init_linuxrc                                 | 0          | 2  =
-        |
-| backtrace:kvm_vcpu_init                                | 0          | 2  =
-        |
-| backtrace:kvm_init                                     | 0          | 2  =
-        |
-| backtrace:kvm_gfn_to_hva_cache_init                    | 0          | 2  =
-        |
-| backtrace:kvm_ioapic_init                              | 0          | 2  =
-        |
-| backtrace:kvm_coalesced_mmio_init                      | 0          | 2  =
-        |
-| backtrace:kvm_eventfd_init                             | 0          | 2  =
-        |
-| backtrace:kvm_irqfd_init                               | 0          | 2  =
-        |
-| backtrace:kvm_vfio_ops_init                            | 0          | 2  =
-        |
-| backtrace:kvm_async_pf_init                            | 0          | 2  =
-        |
-| backtrace:kvm_async_pf_vcpu_init                       | 0          | 2  =
-        |
-| backtrace:init_emulate_ctxt                            | 0          | 2  =
-        |
-| backtrace:kvm_timer_init                               | 0          | 2  =
-        |
-| backtrace:fx_init                                      | 0          | 2  =
-        |
-| backtrace:kvm_arch_init                                | 0          | 2  =
-        |
-| backtrace:kvm_arch_vcpu_init                           | 0          | 2  =
-        |
-| backtrace:kvm_arch_init_vm                             | 0          | 2  =
-        |
-| backtrace:shadow_walk_init                             | 0          | 2  =
-        |
-+--------------------------------------------------------+------------+----=
---------+
+I'm going to try to reproduce the test in my local setup
+
+Regards,
+Vincent
 
 
-[    5.251562] random: trinity urandom read with 7 bits of entropy available
-[   15.332185] sock: process `trinity-main' is using obsolete setsockopt SO=
-_BSDCOMPAT
-[   16.288125] ------------[ cut here ]------------
-[   16.290326] WARNING: CPU: 0 PID: 1795 at kernel/trace/ftrace.c:2033 ftra=
-ce_get_addr_new+0x6e/0xb6()
-[   16.294978] Modules linked in:
-[   16.296969] CPU: 0 PID: 1795 Comm: trinity-main Not tainted 3.18.0-rc4-w=
-l-g55fe5ef #1
-[   16.300668] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
-[   16.303231]  0000000000000009 ffff88001025fbe8 ffffffff819ef520 00000000=
-000033e2
-[   16.307863]  0000000000000000 ffff88001025fc28 ffffffff810e6d54 00000000=
-00000000
-[   16.312524]  ffffffff81164804 ffffffff8205e000 ffff880013700000 ffffffff=
-810001c8
-[   16.317320] Call Trace:
-[   16.318874]  [<ffffffff819ef520>] dump_stack+0x4e/0x68
-[   16.321334]  [<ffffffff810e6d54>] warn_slowpath_common+0x81/0x9b
-[   16.324410]  [<ffffffff81164804>] ? ftrace_get_addr_new+0x6e/0xb6
-[   16.326934]  [<ffffffff810001c8>] ? 0xffffffff810001c8
-[   16.329336]  [<ffffffff810e6e11>] warn_slowpath_null+0x1a/0x1c
-[   16.331850]  [<ffffffff81164804>] ftrace_get_addr_new+0x6e/0xb6
-[   16.334488]  [<ffffffff81064ec9>] ftrace_replace_code+0xda/0x330
-[   16.337164]  [<ffffffff8116520a>] ftrace_modify_all_code+0x44/0xcf
-[   16.339768]  [<ffffffff8106512f>] arch_ftrace_update_code+0x10/0x19
-[   16.342442]  [<ffffffff81165695>] ftrace_run_update_code+0x21/0x42
-[   16.345128]  [<ffffffff811656e8>] ftrace_startup_enable+0x32/0x34
-[   16.347724]  [<ffffffff8116583d>] ftrace_startup+0x153/0x166
-[   16.350306]  [<ffffffff8116589f>] register_ftrace_function+0x4f/0x68
-[   16.352935]  [<ffffffff8117e28c>] perf_ftrace_event_register+0x3e/0xf2
-[   16.355626]  [<ffffffff8117e10a>] perf_trace_init+0x256/0x28a
-[   16.358275]  [<ffffffff8118bf49>] perf_tp_event_init+0x27/0x3a
-[   16.360813]  [<ffffffff811923b5>] perf_init_event+0xc6/0xfd
-[   16.363320]  [<ffffffff81192699>] perf_event_alloc+0x2ad/0x336
-[   16.365990]  [<ffffffff81192e5b>] SyS_perf_event_open+0x42b/0x97d
-[   16.368650]  [<ffffffff811c5a00>] ? do_brk+0x175/0x267
-[   16.370981]  [<ffffffff819f8b89>] ia32_do_call+0x13/0x13
-[   16.373447] ---[ end trace 15858d6d5a0d0548 ]---
-[   16.375508] Bad trampoline accounting at: ffffffff810001c8 (run_init_pro=
-cess+0x0/0x2d) (10000001)
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       0.88 =C4=85 25%    +209.7%       2.74 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       0.88          +209.7%       2.74        GEO-MEAN perf-profile.cpu-c=
+ycles.ttwu_do_activate.constprop.87.sched_ttwu_pending.scheduler_ipi.smp_re=
+schedule_interrupt.reschedule_interrupt
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       0.76 =C4=85 26%    +209.2%       2.36 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       0.76          +209.2%       2.36        GEO-MEAN perf-profile.cpu-c=
+ycles.activate_task.ttwu_do_activate.sched_ttwu_pending.scheduler_ipi.smp_r=
+eschedule_interrupt
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       0.76 =C4=85 26%    +210.6%       2.35 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       0.76          +210.6%       2.35        GEO-MEAN perf-profile.cpu-c=
+ycles.enqueue_task.activate_task.ttwu_do_activate.sched_ttwu_pending.schedu=
+ler_ipi
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       0.70 =C4=85 25%    +203.1%       2.13 =C4=85  6%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       0.70          +203.1%       2.13        GEO-MEAN perf-profile.cpu-c=
+ycles.enqueue_task_fair.enqueue_task.activate_task.ttwu_do_activate.sched_t=
+twu_pending
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     243252 =C4=85 46%    +242.5%     833240 =C4=85 42%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     243252          +242.5%     833240        GEO-MEAN sched_debug.cfs_rq=
+[2]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>         98 =C4=85 36%     -49.1%         50 =C4=85 34%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>         98           -49.1%         50        GEO-MEAN sched_debug.cfs_rq=
+[18]:/.blocked_load_avg
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1067752 =C4=85 25%     +65.3%    1764542 =C4=85 11%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1067752           +65.3%    1764542        GEO-MEAN sched_debug.cfs_rq=
+[16]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     923375 =C4=85 22%     +96.3%    1812750 =C4=85 21%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     923375           +96.3%    1812750        GEO-MEAN sched_debug.cfs_rq=
+[14]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1008818 =C4=85 20%     +70.9%    1724167 =C4=85 14%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1008818           +70.9%    1724167        GEO-MEAN sched_debug.cfs_rq=
+[6]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1109100 =C4=85 25%     +53.9%    1707190 =C4=85 16%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1109100           +53.9%    1707190        GEO-MEAN sched_debug.cfs_rq=
+[15]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1006499 =C4=85 33%     +67.8%    1688436 =C4=85 22%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1006499           +67.8%    1688436        GEO-MEAN sched_debug.cfs_rq=
+[13]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     915637 =C4=85 16%     +93.4%    1771080 =C4=85 18%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     915637           +93.4%    1771080        GEO-MEAN sched_debug.cfs_rq=
+[7]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     783024 =C4=85 10%     +67.2%    1309563 =C4=85 22%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     783024           +67.2%    1309563        GEO-MEAN sched_debug.cfs_rq=
+[5]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      16155 =C4=85  3%     +66.8%      26952 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      16155           +66.8%      26952        GEO-MEAN proc-vmstat.numa_p=
+ages_migrated
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      16155 =C4=85  3%     +66.8%      26952 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      16155           +66.8%      26952        GEO-MEAN proc-vmstat.pgmigr=
+ate_success
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1443204 =C4=85 24%     +51.5%    2187058 =C4=85  6%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1443204           +51.5%    2187058        GEO-MEAN sched_debug.cfs_rq=
+[23]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       2.26 =C4=85  4%     -38.0%       1.40 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       2.26           -38.0%       1.40        GEO-MEAN perf-profile.cpu-c=
+ycles._raw_spin_lock.try_to_wake_up.default_wake_function.autoremove_wake_f=
+unction.__wake_up_common
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1203841 =C4=85 25%     +53.0%    1842451 =C4=85 19%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1203841           +53.0%    1842451        GEO-MEAN sched_debug.cfs_rq=
+[17]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>        119 =C4=85 32%     -41.7%         69 =C4=85 23%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>        119           -41.7%         69        GEO-MEAN sched_debug.cfs_rq=
+[18]:/.tg_load_contrib
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1128380 =C4=85 24%     +67.1%    1886076 =C4=85 15%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1128380           +67.1%    1886076        GEO-MEAN sched_debug.cfs_rq=
+[8]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      35577 =C4=85 20%     +42.9%      50840 =C4=85 15%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      35577           +42.9%      50840        GEO-MEAN sched_debug.cpu#11=
+.avg_idle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       4.45 =C4=85  4%     -35.2%       2.88 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       4.45           -35.2%       2.88        GEO-MEAN perf-profile.cpu-c=
+ycles.enqueue_task_fair.enqueue_task.activate_task.ttwu_do_activate.try_to_=
+wake_up
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1230679 =C4=85  9%     +65.1%    2032295 =C4=85 14%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1230679           +65.1%    2032295        GEO-MEAN sched_debug.cfs_rq=
+[10]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       6.42 =C4=85  4%     -33.1%       4.30 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       6.42           -33.1%       4.30        GEO-MEAN perf-profile.cpu-c=
+ycles.ttwu_do_activate.constprop.87.try_to_wake_up.default_wake_function.au=
+toremove_wake_function.__wake_up_common
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       5.13 =C4=85  4%     -33.8%       3.40 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       5.13           -33.8%       3.40        GEO-MEAN perf-profile.cpu-c=
+ycles.enqueue_task.activate_task.ttwu_do_activate.try_to_wake_up.default_wa=
+ke_function
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       5.14 =C4=85  4%     -33.8%       3.41 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       5.14           -33.8%       3.41        GEO-MEAN perf-profile.cpu-c=
+ycles.activate_task.ttwu_do_activate.try_to_wake_up.default_wake_function.a=
+utoremove_wake_function
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.11 =C4=85  3%     -29.1%       0.78 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.11           -29.1%       0.78        GEO-MEAN perf-profile.cpu-c=
+ycles.check_preempt_curr.ttwu_do_wakeup.ttwu_do_activate.try_to_wake_up.def=
+ault_wake_function
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.22 =C4=85  3%     -29.1%       0.87 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.22           -29.1%       0.87        GEO-MEAN perf-profile.cpu-c=
+ycles.ttwu_do_wakeup.ttwu_do_activate.try_to_wake_up.default_wake_function.=
+autoremove_wake_function
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1357971 =C4=85 14%     +41.3%    1918898 =C4=85  9%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1357971           +41.3%    1918898        GEO-MEAN sched_debug.cfs_rq=
+[9]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1304331 =C4=85 11%     +49.2%    1946271 =C4=85 13%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1304331           +49.2%    1946271        GEO-MEAN sched_debug.cfs_rq=
+[11]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>        608 =C4=85  3%     -28.7%        433 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>        608           -28.7%        433        GEO-MEAN cpuidle.POLL.usage
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     424656 =C4=85  2%     +37.7%     584637 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     424656           +37.7%     584637        GEO-MEAN cpuidle.C6-IVT.usa=
+ge
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1508175 =C4=85 18%     +37.7%    2076043 =C4=85 16%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1508175           +37.7%    2076043        GEO-MEAN sched_debug.cfs_rq=
+[21]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     287269 =C4=85  4%     +32.4%     380327 =C4=85  6%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     287268           +32.4%     380326        GEO-MEAN proc-vmstat.numa_h=
+int_faults
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   22221059 =C4=85  1%     -25.7%   16516998 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   22221059           -25.7%   16516998        GEO-MEAN sched_debug.cpu#23=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1468667 =C4=85 15%     +43.2%    2102926 =C4=85  9%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1468667           +43.2%    2102926        GEO-MEAN sched_debug.cfs_rq=
+[22]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     291407 =C4=85  4%     +31.7%     383859 =C4=85  6%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     291407           +31.7%     383859        GEO-MEAN proc-vmstat.numa_p=
+te_updates
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20399319 =C4=85  1%     -24.9%   15320065 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20399319           -24.9%   15320065        GEO-MEAN sched_debug.cpu#47=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21955842 =C4=85  1%     -25.2%   16425955 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21955842           -25.2%   16425955        GEO-MEAN sched_debug.cpu#19=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21384750 =C4=85  0%     -24.7%   16103640 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21384750           -24.7%   16103640        GEO-MEAN sched_debug.cpu#21=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19455420 =C4=85  1%     -24.4%   14708872 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19455420           -24.4%   14708872        GEO-MEAN sched_debug.cpu#44=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.48 =C4=85  4%     -23.7%       1.13 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.48           -23.7%       1.13        GEO-MEAN perf-profile.cpu-c=
+ycles.__switch_to
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       2.70 =C4=85  5%     +27.7%       3.45 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       2.70           +27.7%       3.45        GEO-MEAN perf-profile.cpu-c=
+ycles.idle_cpu.select_idle_sibling.select_task_rq_fair.try_to_wake_up.defau=
+lt_wake_function
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20991987 =C4=85  0%     -24.1%   15929117 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20991987           -24.1%   15929117        GEO-MEAN sched_debug.cpu#20=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20232670 =C4=85  1%     -24.7%   15244668 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20232670           -24.7%   15244668        GEO-MEAN sched_debug.cpu#43=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21686213 =C4=85  1%     -24.5%   16369380 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21686213           -24.5%   16369380        GEO-MEAN sched_debug.cpu#12=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21654231 =C4=85  1%     -24.3%   16385202 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21654231           -24.3%   16385202        GEO-MEAN sched_debug.cpu#13=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19800323 =C4=85  1%     -24.6%   14937832 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19800323           -24.6%   14937832        GEO-MEAN sched_debug.cpu#45=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20091416 =C4=85  0%     -24.4%   15193784 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20091416           -24.4%   15193784        GEO-MEAN sched_debug.cpu#38=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19904854 =C4=85  1%     -24.2%   15083433 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19904854           -24.2%   15083433        GEO-MEAN sched_debug.cpu#36=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20172173 =C4=85  0%     -24.0%   15328449 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20172173           -24.0%   15328448        GEO-MEAN sched_debug.cpu#39=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.25 =C4=85  2%     -25.4%       0.93 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.25           -25.4%       0.93        GEO-MEAN perf-profile.cpu-c=
+ycles.update_cfs_shares.dequeue_entity.dequeue_task_fair.dequeue_task.deact=
+ivate_task
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21661306 =C4=85  0%     -24.2%   16411873 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21661306           -24.2%   16411873        GEO-MEAN sched_debug.cpu#14=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21896234 =C4=85  0%     -24.2%   16598293 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21896234           -24.2%   16598293        GEO-MEAN sched_debug.cpu#15=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19221661 =C4=85  1%     -23.7%   14665426 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19221661           -23.7%   14665426        GEO-MEAN sched_debug.cpu#40=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21058318 =C4=85  1%     -24.2%   15959916 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21058318           -24.2%   15959916        GEO-MEAN sched_debug.cpu#17=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21754207 =C4=85  0%     -24.2%   16487812 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21754207           -24.2%   16487812        GEO-MEAN sched_debug.cpu#22=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19963010 =C4=85  1%     -24.1%   15143746 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19963009           -24.1%   15143746        GEO-MEAN sched_debug.cpu#37=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20748744 =C4=85  1%     -23.7%   15832368 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20748743           -23.7%   15832368        GEO-MEAN sched_debug.cpu#16=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19955834 =C4=85  0%     -23.9%   15189591 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19955834           -23.9%   15189591        GEO-MEAN sched_debug.cpu#46=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26674784 =C4=85  1%     -23.1%   20500535 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26674784           -23.1%   20500535        GEO-MEAN sched_debug.cpu#22=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26689071 =C4=85  1%     -23.1%   20511407 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26689071           -23.1%   20511407        GEO-MEAN sched_debug.cpu#22=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21264995 =C4=85  1%     -23.6%   16250715 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21264995           -23.6%   16250715        GEO-MEAN sched_debug.cpu#18=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19641786 =C4=85  1%     -23.5%   15029146 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19641786           -23.5%   15029146        GEO-MEAN sched_debug.cpu#42=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      26923 =C4=85  2%     +29.2%      34786 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      26923           +29.2%      34786        GEO-MEAN cpuidle.C3-IVT.usa=
+ge
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19417423 =C4=85  1%     -23.3%   14891714 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19417423           -23.3%   14891714        GEO-MEAN sched_debug.cpu#41=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26079901 =C4=85  0%     -22.7%   20147877 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26079901           -22.7%   20147877        GEO-MEAN sched_debug.cpu#18=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26104071 =C4=85  0%     -22.7%   20165898 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26104071           -22.7%   20165898        GEO-MEAN sched_debug.cpu#18=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25569796 =C4=85  0%     -21.9%   19978756 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25569796           -21.9%   19978756        GEO-MEAN sched_debug.cpu#14=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25580176 =C4=85  0%     -21.8%   19998098 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25580176           -21.8%   19998098        GEO-MEAN sched_debug.cpu#14=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1336731 =C4=85 24%     +41.1%    1886101 =C4=85 10%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1336731           +41.1%    1886101        GEO-MEAN sched_debug.cfs_rq=
+[18]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    7138831 =C4=85  1%     -22.1%    5563134 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    7138831           -22.1%    5563134        GEO-MEAN proc-vmstat.pgfree
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    7160822 =C4=85  1%     -22.0%    5584442 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    7160822           -22.0%    5584442        GEO-MEAN proc-vmstat.pgallo=
+c_normal
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25705305 =C4=85  0%     -22.1%   20026342 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25705305           -22.1%   20026342        GEO-MEAN sched_debug.cpu#15=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26577794 =C4=85  0%     -22.0%   20738980 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26577794           -22.0%   20738980        GEO-MEAN sched_debug.cpu#23=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25887804 =C4=85  0%     -21.3%   20372718 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25887804           -21.3%   20372718        GEO-MEAN sched_debug.cpu#19=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25686569 =C4=85  1%     -21.6%   20148163 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25686569           -21.6%   20148163        GEO-MEAN sched_debug.cpu#13=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25905972 =C4=85  0%     -21.3%   20386581 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25905972           -21.3%   20386581        GEO-MEAN sched_debug.cpu#19=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26595019 =C4=85  0%     -21.8%   20795049 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26595019           -21.8%   20795049        GEO-MEAN sched_debug.cpu#23=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25682384 =C4=85  0%     -22.1%   20009219 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25682384           -22.1%   20009218        GEO-MEAN sched_debug.cpu#15=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25625064 =C4=85  1%     -21.6%   20086187 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25625064           -21.6%   20086187        GEO-MEAN sched_debug.cpu#13=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26289191 =C4=85  1%     -21.5%   20639754 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26289191           -21.5%   20639754        GEO-MEAN sched_debug.cpu#20=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26272949 =C4=85  1%     -21.5%   20616474 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26272949           -21.5%   20616474        GEO-MEAN sched_debug.cpu#20=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25785235 =C4=85  0%     -21.6%   20221040 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25785235           -21.6%   20221040        GEO-MEAN sched_debug.cpu#12=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25525885 =C4=85  0%     -21.5%   20037162 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25525885           -21.5%   20037162        GEO-MEAN sched_debug.cpu#17=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25575741 =C4=85  0%     -21.4%   20104812 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25575741           -21.4%   20104812        GEO-MEAN sched_debug.cpu#17=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25842972 =C4=85  0%     -21.5%   20284708 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25842972           -21.5%   20284708        GEO-MEAN sched_debug.cpu#12=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25395850 =C4=85  0%     -21.3%   19996864 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25395850           -21.3%   19996864        GEO-MEAN sched_debug.cpu#16=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25385835 =C4=85  0%     -21.3%   19979026 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25385835           -21.3%   19979026        GEO-MEAN sched_debug.cpu#16=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26295715 =C4=85  1%     -21.6%   20610286 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26295715           -21.6%   20610286        GEO-MEAN sched_debug.cpu#21=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26311333 =C4=85  1%     -21.6%   20632524 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26311333           -21.6%   20632524        GEO-MEAN sched_debug.cpu#21=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30824379 =C4=85  1%     -20.1%   24621183 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30824379           -20.1%   24621183        GEO-MEAN sched_debug.cpu#42=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30849469 =C4=85  1%     -20.1%   24636230 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30849469           -20.1%   24636230        GEO-MEAN sched_debug.cpu#42=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31513770 =C4=85  0%     -20.1%   25180158 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31513770           -20.1%   25180158        GEO-MEAN sched_debug.cpu#46=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31530459 =C4=85  0%     -20.1%   25191647 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31530459           -20.1%   25191647        GEO-MEAN sched_debug.cpu#46=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      31534 =C4=85 13%     +41.8%      44720 =C4=85 14%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      31534           +41.8%      44720        GEO-MEAN sched_debug.cpu#38=
+.avg_idle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3311434 =C4=85  8%     +19.3%    3950522 =C4=85 12%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3311434           +19.3%    3950522        GEO-MEAN sched_debug.cfs_rq=
+[46]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25599960 =C4=85  0%     -19.5%   20605928 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25599960           -19.5%   20605928        GEO-MEAN sched_debug.cpu#0.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25587783 =C4=85  0%     -19.5%   20590387 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25587783           -19.5%   20590387        GEO-MEAN sched_debug.cpu#0.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30196745 =C4=85  1%     -19.4%   24347741 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30196745           -19.4%   24347740        GEO-MEAN sched_debug.cpu#41=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    2845181 =C4=85 10%     +25.9%    3581780 =C4=85  9%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    2845181           +25.9%    3581780        GEO-MEAN sched_debug.cfs_rq=
+[40]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30227050 =C4=85  1%     -19.3%   24406165 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30227049           -19.3%   24406164        GEO-MEAN sched_debug.cpu#41=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30720180 =C4=85  0%     -19.4%   24772598 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30720180           -19.4%   24772598        GEO-MEAN sched_debug.cpu#36=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30769646 =C4=85  1%     -19.3%   24823365 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30769646           -19.3%   24823365        GEO-MEAN sched_debug.cpu#36=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30527777 =C4=85  1%     -19.2%   24677022 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30527776           -19.2%   24677022        GEO-MEAN sched_debug.cpu#37=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      22044 =C4=85  1%     +25.8%      27733 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      22044           +25.8%      27733        GEO-MEAN cpuidle.C1E-IVT.us=
+age
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3387494 =C4=85  6%     +16.9%    3960647 =C4=85  7%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3387494           +16.9%    3960647        GEO-MEAN sched_debug.cfs_rq=
+[33]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31508807 =C4=85  0%     -19.2%   25447218 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31508807           -19.2%   25447218        GEO-MEAN sched_debug.cpu#47=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30884674 =C4=85  0%     -18.7%   25097824 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30884674           -18.7%   25097824        GEO-MEAN sched_debug.cpu#24=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31529669 =C4=85  0%     -19.1%   25504070 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31529669           -19.1%   25504070        GEO-MEAN sched_debug.cpu#47=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30891431 =C4=85  0%     -18.7%   25116019 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30891431           -18.7%   25116019        GEO-MEAN sched_debug.cpu#24=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    2877453 =C4=85  6%     +25.4%    3608032 =C4=85  6%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    2877453           +25.4%    3608032        GEO-MEAN sched_debug.cfs_rq=
+[26]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30686015 =C4=85  0%     -19.0%   24852515 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30686015           -19.0%   24852515        GEO-MEAN sched_debug.cpu#43=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30567772 =C4=85  1%     -19.1%   24719285 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30567772           -19.1%   24719285        GEO-MEAN sched_debug.cpu#37=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30700393 =C4=85  0%     -19.0%   24871670 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30700393           -19.0%   24871669        GEO-MEAN sched_debug.cpu#43=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25429518 =C4=85  0%     -19.0%   20597694 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25429518           -19.0%   20597693        GEO-MEAN sched_debug.cpu#1.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30426640 =C4=85  0%     -18.9%   24661763 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30426640           -18.9%   24661762        GEO-MEAN sched_debug.cpu#38=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25437824 =C4=85  0%     -19.0%   20602002 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25437824           -19.0%   20602002        GEO-MEAN sched_debug.cpu#1.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30443857 =C4=85  0%     -18.9%   24679394 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30443857           -18.9%   24679394        GEO-MEAN sched_debug.cpu#38=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3170186 =C4=85 12%     +20.8%    3830642 =C4=85  8%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3170186           +20.8%    3830642        GEO-MEAN sched_debug.cfs_rq=
+[41]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30345040 =C4=85  1%     -18.8%   24632965 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30345040           -18.8%   24632965        GEO-MEAN sched_debug.cpu#39=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30316596 =C4=85  1%     -18.8%   24607293 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30316596           -18.8%   24607293        GEO-MEAN sched_debug.cpu#39=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   29982666 =C4=85  0%     -18.4%   24458570 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   29982666           -18.4%   24458570        GEO-MEAN sched_debug.cpu#40=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   29960708 =C4=85  0%     -18.4%   24438001 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   29960708           -18.4%   24438001        GEO-MEAN sched_debug.cpu#40=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31047087 =C4=85  1%     -19.2%   25085514 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31047087           -19.2%   25085514        GEO-MEAN sched_debug.cpu#45=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31032942 =C4=85  1%     -19.2%   25067720 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31032942           -19.2%   25067720        GEO-MEAN sched_debug.cpu#45=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25578650 =C4=85  1%     -18.4%   20864649 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25578650           -18.4%   20864649        GEO-MEAN sched_debug.cpu#4.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.53 =C4=85  3%     +23.0%       1.88 =C4=85  7%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.53           +23.0%       1.88        GEO-MEAN perf-profile.cpu-c=
+ycles.fput.system_call_fastpath
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25532967 =C4=85  1%     -18.3%   20857796 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25532967           -18.3%   20857796        GEO-MEAN sched_debug.cpu#4.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3155171 =C4=85  2%     +19.0%    3753143 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3155171           +19.0%    3753143        GEO-MEAN sched_debug.cfs_rq=
+[31]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26700103 =C4=85  1%     -19.1%   21595767 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26700103           -19.1%   21595767        GEO-MEAN sched_debug.cpu#9.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26710729 =C4=85  1%     -19.1%   21602428 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26710729           -19.1%   21602428        GEO-MEAN sched_debug.cpu#9.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31156436 =C4=85  0%     -18.7%   25325830 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31156435           -18.7%   25325830        GEO-MEAN sched_debug.cpu#44=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31140524 =C4=85  0%     -18.8%   25300128 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31140524           -18.8%   25300128        GEO-MEAN sched_debug.cpu#44=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26524961 =C4=85  0%     -17.8%   21793394 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26524961           -17.8%   21793394        GEO-MEAN sched_debug.cpu#10=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3335586 =C4=85  3%     +22.0%    4070327 =C4=85  8%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3335586           +22.0%    4070327        GEO-MEAN sched_debug.cfs_rq=
+[34]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25755165 =C4=85  0%     -18.0%   21119793 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25755165           -18.0%   21119793        GEO-MEAN sched_debug.cpu#6.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25808917 =C4=85  0%     -18.1%   21133286 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25808917           -18.1%   21133286        GEO-MEAN sched_debug.cpu#6.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31373706 =C4=85  0%     -18.0%   25734789 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31373706           -18.0%   25734789        GEO-MEAN sched_debug.cpu#33=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31356060 =C4=85  0%     -17.9%   25728656 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31356060           -17.9%   25728656        GEO-MEAN sched_debug.cpu#33=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26544024 =C4=85  0%     -17.7%   21833203 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26544024           -17.7%   21833203        GEO-MEAN sched_debug.cpu#10=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26226903 =C4=85  1%     -17.9%   21539753 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26226903           -17.9%   21539753        GEO-MEAN sched_debug.cpu#8.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26216240 =C4=85  1%     -17.9%   21529356 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26216240           -17.9%   21529356        GEO-MEAN sched_debug.cpu#8.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26008985 =C4=85  0%     -17.3%   21498163 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26008985           -17.3%   21498162        GEO-MEAN sched_debug.cpu#7.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25640553 =C4=85  0%     -18.0%   21025853 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25640553           -18.0%   21025853        GEO-MEAN sched_debug.cpu#5.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25624862 =C4=85  0%     -18.0%   21018684 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25624862           -18.0%   21018684        GEO-MEAN sched_debug.cpu#5.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26021354 =C4=85  0%     -17.3%   21510179 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26021354           -17.3%   21510179        GEO-MEAN sched_debug.cpu#7.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     254353 =C4=85  4%     +18.7%     302028 =C4=85  7%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     254353           +18.7%     302028        GEO-MEAN proc-vmstat.numa_h=
+int_faults_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25398742 =C4=85  1%     -18.1%   20807675 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25398742           -18.1%   20807675        GEO-MEAN sched_debug.cpu#3.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25405187 =C4=85  1%     -18.1%   20818635 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25405187           -18.1%   20818635        GEO-MEAN sched_debug.cpu#3.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     881319 =C4=85  1%     -16.5%     735645 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     881319           -16.5%     735645        GEO-MEAN sched_debug.cpu#19=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30533255 =C4=85  0%     -17.4%   25208231 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30533255           -17.4%   25208231        GEO-MEAN sched_debug.cpu#25=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26692010 =C4=85  0%     -17.7%   21973527 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26692010           -17.7%   21973527        GEO-MEAN sched_debug.cpu#11=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   26676971 =C4=85  0%     -17.7%   21964784 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   26676971           -17.7%   21964784        GEO-MEAN sched_debug.cpu#11=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30548238 =C4=85  0%     -17.4%   25222173 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30548238           -17.4%   25222173        GEO-MEAN sched_debug.cpu#25=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30313545 =C4=85  1%     -17.1%   25125827 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30313545           -17.1%   25125827        GEO-MEAN sched_debug.cpu#26=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30325190 =C4=85  1%     -17.1%   25139575 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30325190           -17.1%   25139575        GEO-MEAN sched_debug.cpu#26=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30298989 =C4=85  0%     -17.1%   25132450 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30298989           -17.1%   25132450        GEO-MEAN sched_debug.cpu#28=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30364476 =C4=85  0%     -17.2%   25142879 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30364476           -17.2%   25142879        GEO-MEAN sched_debug.cpu#28=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       3.63 =C4=85  3%     +17.9%       4.29 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       3.63           +17.9%       4.29        GEO-MEAN perf-profile.cpu-c=
+ycles.select_idle_sibling.select_task_rq_fair.try_to_wake_up.default_wake_f=
+unction.autoremove_wake_function
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     885971 =C4=85  1%     -17.6%     730417 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     885971           -17.6%     730417        GEO-MEAN sched_debug.cpu#22=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.61 =C4=85  1%     -14.9%       1.37 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.61           -14.9%       1.37        GEO-MEAN perf-profile.cpu-c=
+ycles.pick_next_task_fair.__sched_text_start.schedule.schedule_timeout.unix=
+_stream_recvmsg
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1487383 =C4=85  1%     -17.0%    1233892 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1487383           -17.0%    1233892        GEO-MEAN sched_debug.cpu#22=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     873433 =C4=85  1%     -15.8%     735098 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     873433           -15.8%     735098        GEO-MEAN sched_debug.cpu#12=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25242747 =C4=85  1%     -18.0%   20695565 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25242747           -18.0%   20695565        GEO-MEAN sched_debug.cpu#2.=
+nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   25252993 =C4=85  1%     -18.0%   20700339 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   25252993           -18.0%   20700338        GEO-MEAN sched_debug.cpu#2.=
+sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     876946 =C4=85  1%     -16.9%     728531 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     876946           -16.9%     728531        GEO-MEAN sched_debug.cpu#21=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30929790 =C4=85  1%     -16.7%   25766295 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30929790           -16.7%   25766295        GEO-MEAN sched_debug.cpu#32=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30944860 =C4=85  1%     -16.7%   25778928 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30944860           -16.7%   25778928        GEO-MEAN sched_debug.cpu#32=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31340929 =C4=85  0%     -16.7%   26094438 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31340929           -16.7%   26094438        GEO-MEAN sched_debug.cpu#34=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31354076 =C4=85  0%     -16.7%   26120882 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31354075           -16.7%   26120882        GEO-MEAN sched_debug.cpu#34=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       3.01 =C4=85  2%     -18.4%       2.46 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       3.01           -18.4%       2.46        GEO-MEAN perf-profile.cpu-c=
+ycles.dequeue_entity.dequeue_task_fair.dequeue_task.deactivate_task.__sched=
+_text_start
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     884857 =C4=85  0%     -16.3%     741031 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     884857           -16.3%     741031        GEO-MEAN sched_debug.cpu#23=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   22693545 =C4=85  0%     -16.6%   18915402 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   22693545           -16.6%   18915402        GEO-MEAN sched_debug.cpu#11=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30424082 =C4=85  0%     -16.8%   25305405 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30424082           -16.8%   25305405        GEO-MEAN sched_debug.cpu#30=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30485250 =C4=85  0%     -16.9%   25323543 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30485250           -16.9%   25323542        GEO-MEAN sched_debug.cpu#30=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30917867 =C4=85  0%     -16.9%   25707653 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30917867           -16.9%   25707653        GEO-MEAN sched_debug.cpu#31=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30924268 =C4=85  0%     -16.8%   25716265 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30924268           -16.8%   25716265        GEO-MEAN sched_debug.cpu#31=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30468014 =C4=85  1%     -17.2%   25213426 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30468014           -17.2%   25213426        GEO-MEAN sched_debug.cpu#27=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30477512 =C4=85  1%     -17.2%   25229055 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30477512           -17.2%   25229055        GEO-MEAN sched_debug.cpu#27=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30130205 =C4=85  0%     -16.7%   25101385 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30130205           -16.7%   25101385        GEO-MEAN sched_debug.cpu#29=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   22458882 =C4=85  0%     -16.7%   18703491 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   22458882           -16.7%   18703491        GEO-MEAN sched_debug.cpu#10=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   30140313 =C4=85  0%     -16.7%   25115800 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   30140313           -16.7%   25115800        GEO-MEAN sched_debug.cpu#29=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     868193 =C4=85  1%     -15.6%     732542 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     868193           -15.6%     732542        GEO-MEAN sched_debug.cpu#13=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1374659 =C4=85 25%     +37.8%    1894017 =C4=85  8%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1374659           +37.8%    1894017        GEO-MEAN sched_debug.cfs_rq=
+[19]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20829936 =C4=85  0%     -17.0%   17279112 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20829936           -17.0%   17279112        GEO-MEAN sched_debug.cpu#35=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1418996 =C4=85  0%     -16.4%    1186744 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1418996           -16.4%    1186744        GEO-MEAN sched_debug.cpu#16=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31557915 =C4=85  0%     -16.4%   26383001 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31557915           -16.4%   26383001        GEO-MEAN sched_debug.cpu#35=
+.nr_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   31570143 =C4=85  0%     -16.4%   26389314 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   31570143           -16.4%   26389314        GEO-MEAN sched_debug.cpu#35=
+.sched_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1420038 =C4=85  1%     -16.0%    1193250 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1420038           -16.0%    1193250        GEO-MEAN sched_debug.cpu#13=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1450656 =C4=85  1%     -17.1%    1202921 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1450656           -17.1%    1202921        GEO-MEAN sched_debug.cpu#18=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20626695 =C4=85  0%     -16.6%   17207030 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20626695           -16.6%   17207030        GEO-MEAN sched_debug.cpu#31=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   22476314 =C4=85  1%     -16.3%   18802789 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   22476314           -16.3%   18802789        GEO-MEAN sched_debug.cpu#7.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20008939 =C4=85  0%     -15.6%   16896437 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20008939           -15.6%   16896437        GEO-MEAN sched_debug.cpu#32=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1447302 =C4=85  0%     -16.4%    1210584 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1447302           -16.4%    1210584        GEO-MEAN sched_debug.cpu#19=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1429701 =C4=85  1%     -16.2%    1198182 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1429701           -16.2%    1198181        GEO-MEAN sched_debug.cpu#15=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     872462 =C4=85  0%     -15.4%     737745 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     872462           -15.4%     737745        GEO-MEAN sched_debug.cpu#15=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.53 =C4=85  3%     -16.4%       1.28 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.53           -16.4%       1.28        GEO-MEAN perf-profile.cpu-c=
+ycles.update_cfs_shares.enqueue_entity.enqueue_task_fair.enqueue_task.activ=
+ate_task
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20534273 =C4=85  1%     -15.8%   17284516 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20534273           -15.8%   17284516        GEO-MEAN sched_debug.cpu#25=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20560704 =C4=85  0%     -16.2%   17227893 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20560704           -16.2%   17227893        GEO-MEAN sched_debug.cpu#34=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     862442 =C4=85  0%     -15.1%     732316 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     862442           -15.1%     732316        GEO-MEAN sched_debug.cpu#14=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1443239 =C4=85  0%     -16.5%    1205709 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1443239           -16.5%    1205709        GEO-MEAN sched_debug.cpu#12=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       0.98 =C4=85  3%     +20.0%       1.18 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       0.98           +20.0%       1.18        GEO-MEAN perf-profile.cpu-c=
+ycles._raw_spin_lock_irqsave.skb_queue_tail.unix_stream_sendmsg.sock_aio_wr=
+ite.do_sync_write
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1487380 =C4=85  1%     -16.3%    1244520 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1487380           -16.3%    1244520        GEO-MEAN sched_debug.cpu#23=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>  1.356e+08 =C4=85  0%     -15.5%  1.147e+08 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>  1.356e+08           -15.5%  1.147e+08        GEO-MEAN cpuidle.C1-IVT.usa=
+ge
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20314951 =C4=85  0%     -15.6%   17140944 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20314951           -15.6%   17140944        GEO-MEAN sched_debug.cpu#30=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1473950 =C4=85  1%     -16.2%    1235367 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1473950           -16.2%    1235367        GEO-MEAN sched_debug.cpu#20=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     867410 =C4=85  1%     -15.8%     730524 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     867410           -15.8%     730524        GEO-MEAN sched_debug.cpu#20=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.33 =C4=85  2%     -16.4%       1.11 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.33           -16.4%       1.11        GEO-MEAN perf-profile.cpu-c=
+ycles.__sched_text_start.schedule_user.sysret_careful
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1472841 =C4=85  1%     -15.7%    1241382 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1472841           -15.7%    1241382        GEO-MEAN sched_debug.cpu#21=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1423709 =C4=85  0%     -15.8%    1198274 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1423709           -15.8%    1198274        GEO-MEAN sched_debug.cpu#17=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     851770 =C4=85  0%     -15.3%     721480 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     851770           -15.3%     721480        GEO-MEAN sched_debug.cpu#17=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.40 =C4=85  2%     -16.1%       1.17 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.40           -16.1%       1.17        GEO-MEAN perf-profile.cpu-c=
+ycles.sysret_careful
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21736276 =C4=85  0%     -15.7%   18334370 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21736276           -15.7%   18334370        GEO-MEAN sched_debug.cpu#8.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1417611 =C4=85  1%     -16.1%    1189420 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1417611           -16.1%    1189420        GEO-MEAN sched_debug.cpu#14=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20609132 =C4=85  0%     -15.8%   17362846 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20609132           -15.8%   17362846        GEO-MEAN sched_debug.cpu#26=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   22069167 =C4=85  0%     -15.4%   18674407 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   22069167           -15.4%   18674407        GEO-MEAN sched_debug.cpu#6.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    2820456 =C4=85  4%     +23.4%    3479484 =C4=85  7%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    2820456           +23.4%    3479484        GEO-MEAN sched_debug.cfs_rq=
+[27]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20618809 =C4=85  0%     -15.7%   17385264 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20618809           -15.7%   17385264        GEO-MEAN sched_debug.cpu#27=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19897448 =C4=85  1%     -15.2%   16867976 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19897448           -15.2%   16867976        GEO-MEAN sched_debug.cpu#29=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   22444826 =C4=85  1%     -14.2%   19266125 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   22444826           -14.2%   19266125        GEO-MEAN sched_debug.cpu#0.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3341263 =C4=85 11%     +20.3%    4019480 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3341263           +20.3%    4019480        GEO-MEAN sched_debug.cfs_rq=
+[45]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   22509799 =C4=85  0%     -15.2%   19080882 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   22509799           -15.2%   19080882        GEO-MEAN sched_debug.cpu#2.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   22483652 =C4=85  1%     -15.0%   19119883 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   22483652           -15.0%   19119883        GEO-MEAN sched_debug.cpu#1.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20020943 =C4=85  0%     -14.5%   17120192 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20020943           -14.5%   17120192        GEO-MEAN sched_debug.cpu#33=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21609616 =C4=85  0%     -14.6%   18459478 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21609616           -14.6%   18459478        GEO-MEAN sched_debug.cpu#5.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   19520181 =C4=85  0%     -14.6%   16662350 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   19520181           -14.6%   16662349        GEO-MEAN sched_debug.cpu#28=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.37 =C4=85  3%     -15.6%       1.15 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.37           -15.6%       1.15        GEO-MEAN perf-profile.cpu-c=
+ycles.schedule_user.sysret_careful
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   22662241 =C4=85  0%     -15.3%   19188484 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   22662241           -15.3%   19188484        GEO-MEAN sched_debug.cpu#3.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     866621 =C4=85  1%     -15.9%     728734 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     866621           -15.9%     728734        GEO-MEAN sched_debug.cpu#18=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1039319 =C4=85  1%     -14.8%     885271 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1039319           -14.8%     885271        GEO-MEAN numa-numastat.node=
+0.local_node
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21798079 =C4=85  1%     -14.6%   18621574 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21798079           -14.6%   18621574        GEO-MEAN sched_debug.cpu#9.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3043317 =C4=85  9%     +25.3%    3814417 =C4=85 13%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3043317           +25.3%    3814417        GEO-MEAN sched_debug.cfs_rq=
+[38]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   20231936 =C4=85  0%     -13.8%   17436914 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   20231936           -13.8%   17436914        GEO-MEAN sched_debug.cpu#24=
+.ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>         20 =C4=85  4%     -10.7%         18 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>         20           -10.7%         18        GEO-MEAN sched_debug.cpu#16=
+.cpu_load[0]
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>         20 =C4=85  3%      -9.8%         18 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>         20            -9.8%         18        GEO-MEAN sched_debug.cpu#16=
+.cpu_load[1]
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       0.92 =C4=85  3%     +16.1%       1.07 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       0.92           +16.1%       1.07        GEO-MEAN perf-profile.cpu-c=
+ycles._raw_spin_lock.unix_stream_recvmsg.sock_aio_read.sock_aio_read.do_syn=
+c_read
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>   21278578 =C4=85  0%     -14.0%   18299464 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>   21278578           -14.0%   18299464        GEO-MEAN sched_debug.cpu#4.=
+ttwu_count
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1043155 =C4=85  1%     -14.6%     891335 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1043155           -14.6%     891335        GEO-MEAN numa-numastat.node=
+0.numa_hit
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     860946 =C4=85  1%     -13.4%     745561 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     860946           -13.4%     745561        GEO-MEAN sched_debug.cpu#45=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     846804 =C4=85  1%     -14.7%     722316 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     846804           -14.7%     722316        GEO-MEAN sched_debug.cpu#16=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3100432 =C4=85 12%     +22.4%    3793805 =C4=85  6%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3100432           +22.4%    3793805        GEO-MEAN sched_debug.cfs_rq=
+[37]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     860253 =C4=85  1%     -13.1%     747838 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     860253           -13.1%     747838        GEO-MEAN sched_debug.cpu#44=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    2896486 =C4=85  7%     +19.6%    3463508 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    2896486           +19.6%    3463508        GEO-MEAN sched_debug.cfs_rq=
+[25]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     871677 =C4=85  0%     -13.2%     756998 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     871677           -13.2%     756998        GEO-MEAN sched_debug.cpu#47=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3230592 =C4=85  8%     +14.9%    3712705 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3230592           +14.9%    3712705        GEO-MEAN sched_debug.cfs_rq=
+[30]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       3.91 =C4=85  1%     -14.3%       3.35 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       3.91           -14.3%       3.35        GEO-MEAN perf-profile.cpu-c=
+ycles.dequeue_task_fair.dequeue_task.deactivate_task.__sched_text_start.sch=
+edule
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     860005 =C4=85  1%     -12.9%     748893 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     860005           -12.9%     748893        GEO-MEAN sched_debug.cpu#42=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3321870 =C4=85  7%     +14.8%    3811901 =C4=85  7%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3321870           +14.8%    3811901        GEO-MEAN sched_debug.cfs_rq=
+[47]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14483 =C4=85  2%     -11.5%      12813 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14483           -11.5%      12813        GEO-MEAN sched_debug.cpu#7.=
+curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14.50 =C4=85  1%     -13.3%      12.57 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14.50           -13.3%      12.57        GEO-MEAN perf-profile.cpu-c=
+ycles.default_wake_function.autoremove_wake_function.__wake_up_common.__wak=
+e_up_sync_key.sock_def_readable
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3234028 =C4=85  9%     +15.2%    3724307 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3234028           +15.2%    3724307        GEO-MEAN sched_debug.cfs_rq=
+[39]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     863531 =C4=85  1%     -12.4%     756423 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     863531           -12.4%     756423        GEO-MEAN sched_debug.cpu#46=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3276492 =C4=85  5%     +15.5%    3784016 =C4=85  8%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3276492           +15.5%    3784016        GEO-MEAN sched_debug.cfs_rq=
+[35]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     860124 =C4=85  0%     -12.8%     750152 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     860124           -12.8%     750152        GEO-MEAN sched_debug.cpu#38=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       4.32 =C4=85  2%     +13.3%       4.90 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       4.32           +13.3%       4.90        GEO-MEAN perf-profile.cpu-c=
+ycles.select_task_rq_fair.try_to_wake_up.default_wake_function.autoremove_w=
+ake_function.__wake_up_common
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       4025 =C4=85  6%      -8.3%       3691 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       4025            -8.3%       3691        GEO-MEAN slabinfo.RAW.num_o=
+bjs
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     859082 =C4=85  1%     -12.0%     756012 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     859082           -12.0%     756012        GEO-MEAN sched_debug.cpu#37=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     870131 =C4=85  1%     -13.0%     757186 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     870131           -13.0%     757185        GEO-MEAN sched_debug.cpu#43=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14.53 =C4=85  1%     -12.9%      12.66 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14.53           -12.9%      12.66        GEO-MEAN perf-profile.cpu-c=
+ycles.try_to_wake_up.default_wake_function.autoremove_wake_function.__wake_=
+up_common.__wake_up_sync_key
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14.75 =C4=85  1%     -12.6%      12.89 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14.75           -12.6%      12.89        GEO-MEAN perf-profile.cpu-c=
+ycles.autoremove_wake_function.__wake_up_common.__wake_up_sync_key.sock_def=
+_readable.unix_stream_sendmsg
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     870275 =C4=85  1%     -13.3%     754578 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     870275           -13.3%     754578        GEO-MEAN sched_debug.cpu#36=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       3989 =C4=85  5%      -8.8%       3639 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       3989            -8.8%       3639        GEO-MEAN slabinfo.RAW.activ=
+e_objs
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.03 =C4=85  1%     -13.2%       0.89 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.03           -13.2%       0.89        GEO-MEAN perf-profile.cpu-c=
+ycles.skb_unlink.unix_stream_recvmsg.sock_aio_read.sock_aio_read.do_sync_re=
+ad
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     885844 =C4=85  1%     -11.8%     780892 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     885844           -11.8%     780892        GEO-MEAN sched_debug.cpu#10=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     895578 =C4=85  2%     -11.5%     792265 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     895578           -11.5%     792265        GEO-MEAN sched_debug.cpu#11=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     883237 =C4=85  2%     -11.9%     777826 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     883237           -11.9%     777826        GEO-MEAN sched_debug.cpu#1.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    2115995 =C4=85  0%     -11.9%    1863524 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    2115994           -11.9%    1863523        GEO-MEAN proc-vmstat.numa_l=
+ocal
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    2122348 =C4=85  0%     -11.9%    1869613 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    2122348           -11.9%    1869613        GEO-MEAN proc-vmstat.numa_h=
+it
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       2.57 =C4=85  4%     +13.8%       2.92 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       2.57           +13.8%       2.92        GEO-MEAN perf-profile.cpu-c=
+ycles._raw_spin_lock.unix_stream_sendmsg.sock_aio_write.do_sync_write.vfs_w=
+rite
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1406705 =C4=85  1%     -10.8%    1254824 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1406705           -10.8%    1254824        GEO-MEAN sched_debug.cpu#0.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      15.05 =C4=85  1%     -11.8%      13.27 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      15.05           -11.8%      13.27        GEO-MEAN perf-profile.cpu-c=
+ycles.__wake_up_common.__wake_up_sync_key.sock_def_readable.unix_stream_sen=
+dmsg.sock_aio_write
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     879602 =C4=85  1%     -11.5%     778421 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     879602           -11.5%     778421        GEO-MEAN sched_debug.cpu#8.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     884715 =C4=85  2%     -11.6%     782521 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     884714           -11.6%     782521        GEO-MEAN sched_debug.cpu#9.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     869234 =C4=85  1%     -10.1%     781750 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     869234           -10.1%     781749        GEO-MEAN sched_debug.cpu#3.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      13928 =C4=85  3%     -10.0%      12532 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      13928           -10.0%      12531        GEO-MEAN sched_debug.cpu#34=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.65 =C4=85  3%     -11.9%       1.45 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.65           -11.9%       1.45        GEO-MEAN perf-profile.cpu-c=
+ycles.__kmalloc_reserve.isra.26.__alloc_skb.sock_alloc_send_pskb.unix_strea=
+m_sendmsg.sock_aio_write
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     860847 =C4=85  2%     -11.2%     764541 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     860847           -11.2%     764541        GEO-MEAN sched_debug.cpu#39=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     839076 =C4=85  1%     -11.6%     741571 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     839076           -11.6%     741571        GEO-MEAN sched_debug.cpu#41=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     875043 =C4=85  2%     -10.0%     787246 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     875042           -10.0%     787246        GEO-MEAN sched_debug.cpu#34=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      23.87 =C4=85  1%     -10.7%      21.31 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      23.87           -10.7%      21.31        GEO-MEAN perf-profile.cpu-c=
+ycles.__wake_up_sync_key.sock_def_readable.unix_stream_sendmsg.sock_aio_wri=
+te.do_sync_write
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       4.45 =C4=85  1%     -11.6%       3.93 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       4.45           -11.6%       3.93        GEO-MEAN perf-profile.cpu-c=
+ycles.deactivate_task.__sched_text_start.schedule.schedule_timeout.unix_str=
+eam_recvmsg
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     873852 =C4=85  2%     -10.8%     779782 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     873852           -10.8%     779782        GEO-MEAN sched_debug.cpu#31=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     872491 =C4=85  2%     -10.3%     782420 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     872491           -10.3%     782420        GEO-MEAN sched_debug.cpu#6.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.11 =C4=85  7%     -12.5%       0.97 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.11           -12.5%       0.97        GEO-MEAN perf-profile.cpu-c=
+ycles.selinux_file_permission.security_file_permission.rw_verify_area.vfs_r=
+ead.sys_read
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       8.05 =C4=85  2%     -12.5%       7.04 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       8.05           -12.5%       7.04        GEO-MEAN perf-profile.cpu-c=
+ycles._raw_spin_lock_irqsave.__wake_up_sync_key.sock_def_readable.unix_stre=
+am_sendmsg.sock_aio_write
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.36 =C4=85  3%     -11.6%       1.20 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.36           -11.6%       1.20        GEO-MEAN perf-profile.cpu-c=
+ycles.__kmalloc_node_track_caller.__kmalloc_reserve.__alloc_skb.sock_alloc_=
+send_pskb.unix_stream_sendmsg
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     884511 =C4=85  1%     -10.9%     788238 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     884511           -10.9%     788238        GEO-MEAN sched_debug.cpu#7.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1423158 =C4=85  1%     -10.2%    1278070 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1423157           -10.2%    1278070        GEO-MEAN sched_debug.cpu#4.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.39 =C4=85  2%     +11.9%       1.56 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.39           +11.9%       1.56        GEO-MEAN perf-profile.cpu-c=
+ycles.skb_queue_tail.unix_stream_sendmsg.sock_aio_write.do_sync_write.vfs_w=
+rite
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       4.46 =C4=85  1%     -11.2%       3.96 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       4.46           -11.2%       3.96        GEO-MEAN perf-profile.cpu-c=
+ycles.dequeue_task.deactivate_task.__sched_text_start.schedule.schedule_tim=
+eout
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     882994 =C4=85  2%      -9.2%     801606 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     882994            -9.2%     801606        GEO-MEAN sched_debug.cpu#25=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14371 =C4=85  1%     -10.2%      12907 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14371           -10.2%      12907        GEO-MEAN sched_debug.cpu#22=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14692 =C4=85  1%     -10.8%      13111 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14692           -10.8%      13111        GEO-MEAN sched_debug.cpu#10=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14093 =C4=85  3%      -9.5%      12748 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14093            -9.5%      12748        GEO-MEAN sched_debug.cpu#25=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1495572 =C4=85  0%     -10.9%    1333271 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1495571           -10.9%    1333271        GEO-MEAN sched_debug.cpu#9.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14153 =C4=85  3%      -9.4%      12817 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14153            -9.4%      12817        GEO-MEAN sched_debug.cpu#27=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14374 =C4=85  1%      -9.7%      12976 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14374            -9.7%      12976        GEO-MEAN sched_debug.cpu#32=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     860018 =C4=85  2%     -10.0%     773781 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     860018           -10.0%     773781        GEO-MEAN sched_debug.cpu#4.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     863792 =C4=85  1%     -10.0%     777585 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     863792           -10.0%     777585        GEO-MEAN sched_debug.cpu#32=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14193 =C4=85  2%     -10.5%      12697 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14193           -10.5%      12697        GEO-MEAN sched_debug.cpu#46=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1394923 =C4=85  0%      -9.3%    1265094 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1394922            -9.3%    1265094        GEO-MEAN sched_debug.cpu#3.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1427072 =C4=85  1%      -9.9%    1285217 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1427072            -9.9%    1285217        GEO-MEAN sched_debug.cpu#5.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>         20 =C4=85  3%     -10.9%         18 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>         20           -10.9%         17        GEO-MEAN sched_debug.cpu#5.=
+cpu_load[0]
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       1.30 =C4=85  2%     -10.9%       1.16 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       1.30           -10.9%       1.16        GEO-MEAN perf-profile.cpu-c=
+ycles.skb_copy_datagram_from_iovec.unix_stream_sendmsg.sock_aio_write.do_sy=
+nc_write.vfs_write
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1404122 =C4=85  0%     -10.1%    1262026 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1404122           -10.1%    1262026        GEO-MEAN sched_debug.cpu#2.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     871725 =C4=85  3%      -9.5%     788740 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     871725            -9.5%     788740        GEO-MEAN sched_debug.cpu#35=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       2.62 =C4=85  1%     +10.8%       2.90 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       2.62           +10.8%       2.90        GEO-MEAN perf-profile.cpu-c=
+ycles.skb_copy_datagram_iovec.unix_stream_recvmsg.sock_aio_read.sock_aio_re=
+ad.do_sync_read
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1440886 =C4=85  0%     -10.0%    1296355 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1440886           -10.0%    1296355        GEO-MEAN sched_debug.cpu#6.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14332 =C4=85  2%      -9.0%      13045 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14332            -9.0%      13045        GEO-MEAN sched_debug.cpu#33=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     882824 =C4=85  1%     -10.1%     793313 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     882824           -10.1%     793312        GEO-MEAN sched_debug.cpu#0.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    3116277 =C4=85  7%     +13.2%    3527174 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    3116277           +13.2%    3527174        GEO-MEAN sched_debug.cfs_rq=
+[29]:/.spread0
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       2.38 =C4=85  1%     +12.1%       2.67 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       2.38           +12.1%       2.67        GEO-MEAN perf-profile.cpu-c=
+ycles.__fdget_pos.sys_write.system_call_fastpath
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14095 =C4=85  2%      -9.6%      12748 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14095            -9.6%      12748        GEO-MEAN sched_debug.cpu#12=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1499703 =C4=85  0%      -9.7%    1354350 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1499703            -9.7%    1354350        GEO-MEAN sched_debug.cpu#10=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14050 =C4=85  2%      -9.9%      12664 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14050            -9.9%      12664        GEO-MEAN sched_debug.cpu#47=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1493710 =C4=85  1%     -10.0%    1344628 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1493710           -10.0%    1344628        GEO-MEAN sched_debug.cpu#11=
+.sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     882178 =C4=85  2%      -8.7%     805480 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     882178            -8.7%     805480        GEO-MEAN sched_debug.cpu#26=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1451847 =C4=85  1%      -9.6%    1311874 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1451847            -9.6%    1311874        GEO-MEAN sched_debug.cpu#7.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     869997 =C4=85  1%     -10.0%     782794 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     869997           -10.0%     782794        GEO-MEAN sched_debug.cpu#2.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14168 =C4=85  3%     -11.3%      12566 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14168           -11.3%      12565        GEO-MEAN sched_debug.cpu#44=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     863764 =C4=85  1%      -9.4%     782356 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     863764            -9.4%     782356        GEO-MEAN sched_debug.cpu#5.=
+ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>         20 =C4=85  2%      -9.7%         18 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>         20            -9.7%         18        GEO-MEAN sched_debug.cpu#16=
+.cpu_load[3]
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>         20 =C4=85  2%      -8.7%         18 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>         20            -8.7%         18        GEO-MEAN sched_debug.cpu#16=
+.cpu_load[4]
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>         20 =C4=85  3%      -8.7%         19 =C4=85  5%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>         20            -8.7%         18        GEO-MEAN sched_debug.cfs_rq=
+[5]:/.runnable_load_avg
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1471462 =C4=85  1%      -9.5%    1331414 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1471462            -9.5%    1331414        GEO-MEAN sched_debug.cpu#8.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     877064 =C4=85  0%      -8.9%     799209 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     877064            -8.9%     799208        GEO-MEAN sched_debug.cpu#27=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1081809 =C4=85  1%      -9.1%     983451 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1081809            -9.1%     983451        GEO-MEAN numa-numastat.node=
+1.local_node
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14225 =C4=85  2%      -7.6%      13149 =C4=85  3%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14225            -7.6%      13149        GEO-MEAN sched_debug.cpu#36=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1084327 =C4=85  1%      -9.3%     983476 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1084327            -9.3%     983475        GEO-MEAN numa-numastat.node=
+1.numa_hit
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       2.29 =C4=85  1%     +11.9%       2.57 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       2.29           +11.9%       2.57        GEO-MEAN perf-profile.cpu-c=
+ycles.__fget_light.__fdget_pos.sys_write.system_call_fastpath
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     847788 =C4=85  3%     -12.0%     746038 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     847788           -12.0%     746038        GEO-MEAN sched_debug.cpu#40=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     865949 =C4=85  2%      -8.8%     789915 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     865949            -8.8%     789915        GEO-MEAN sched_debug.cpu#33=
+.ttwu_local
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14384 =C4=85  2%     -10.9%      12817 =C4=85  2%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14384           -10.9%      12816        GEO-MEAN sched_debug.cpu#23=
+.curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1395020 =C4=85  0%     -10.0%    1255965 =C4=85  1%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1395020           -10.0%    1255965        GEO-MEAN sched_debug.cpu#1.=
+sched_goidle
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>      14326 =C4=85  3%      -7.6%      13231 =C4=85  4%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>      14326            -7.6%      13231        GEO-MEAN sched_debug.cpu#9.=
+curr->pid
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>       9.40 =C4=85  2%     +52.1%      14.30 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>       9.40           +52.1%      14.30        GEO-MEAN turbostat.RAM_W
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>     328603 =C4=85  4%     +28.0%     420733 =C4=85  6%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>     328603           +28.0%     420732        GEO-MEAN time.minor_page_fa=
+ults
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>  2.029e+09 =C4=85  0%     -19.6%  1.632e+09 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>  2.029e+09           -19.6%  1.632e+09        GEO-MEAN time.voluntary_con=
+text_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>  5.504e+08 =C4=85  0%     -18.7%  4.477e+08 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>  5.504e+08           -18.7%  4.477e+08        GEO-MEAN time.involuntary_c=
+ontext_switches
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    4221419 =C4=85  0%     -18.2%    3451963 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    4221418           -18.2%    3451963        GEO-MEAN vmstat.system.cs
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>        808 =C4=85  0%     -10.7%        721 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>        808           -10.7%        721        GEO-MEAN time.user_time
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>    1096082 =C4=85  1%     +11.3%    1220347 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>    1096082           +11.3%    1220347        GEO-MEAN vmstat.system.in
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>        173 =C4=85  0%      -3.0%        168 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>        173            -3.0%        168        GEO-MEAN turbostat.Cor_W
+>
+> b57a1e0afff2cbac  9597d64116d0d441dea32e7f5f
+> ----------------  --------------------------
+>        204 =C4=85  0%      -1.8%        200 =C4=85  0%  ivb42/hackbench/p=
+erformance-50%-threads-socket
+>        204            -1.8%        200        GEO-MEAN turbostat.Pkg_W
+>
+>
+> ivb42: Ivytown Ivy Bridge-EP
+> Memory: 64G
+>
+>
+> To reproduce:
+>
+>         apt-get install ruby ruby-oj
+>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-t=
+ests.git
+>         cd lkp-tests
+>         bin/setup-local job.yaml # the job file attached in this email
+>         bin/run-local   job.yaml
+>
+>
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are prov=
+ided
+> for informational purposes only. Any difference in system hardware or sof=
+tware
+> design or configuration may affect actual performance.
+>
+> _______________________________________________
+> LKP mailing list
+> LKP(a)linux.intel.com
+>
 
-_______________________________________________
-LKP mailing list
-LKP(a)linux.intel.com
-
---===============5047208624672656046==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="dmesg.ksh"
-
-ZWFybHkgY29uc29sZSBpbiBzZXR1cCBjb2RlClByb2JpbmcgRUREIChlZGQ9b2ZmIHRvIGRpc2Fi
-bGUpLi4uIG9rCmVhcmx5IGNvbnNvbGUgaW4gZGVjb21wcmVzc19rZXJuZWwKaW5wdXRfZGF0YTog
-MHgwMDAwMDAwMDAxZjhhM2I0CmlucHV0X2xlbjogMHgwMDAwMDAwMDAwNzViM2Y4Cm91dHB1dDog
-MHgwMDAwMDAwMDAxMDAwMDAwCm91dHB1dF9sZW46IDB4MDAwMDAwMDAwMTZkMzlmMApydW5fc2l6
-ZTogMHgwMDAwMDAwMDAxODhmMDAwCgpEZWNvbXByZXNzaW5nIExpbnV4Li4uIFBhcnNpbmcgRUxG
-Li4uIGRvbmUuCkJvb3RpbmcgdGhlIGtlcm5lbC4KWyAgICAwLjAwMDAwMF0gSW5pdGlhbGl6aW5n
-IGNncm91cCBzdWJzeXMgY3B1c2V0ClsgICAgMC4wMDAwMDBdIEluaXRpYWxpemluZyBjZ3JvdXAg
-c3Vic3lzIGNwdQpbICAgIDAuMDAwMDAwXSBMaW51eCB2ZXJzaW9uIDMuMTguMC1yYzQtd2wtZzU1
-ZmU1ZWYgKGtidWlsZEB4aWFuKSAoZ2NjIHZlcnNpb24gNC45LjEgKERlYmlhbiA0LjkuMS0xOSkg
-KSAjMSBTTVAgV2VkIE5vdiAxMiAxMTo0Mzo0OSBDU1QgMjAxNApbICAgIDAuMDAwMDAwXSBDb21t
-YW5kIGxpbmU6IHVzZXI9bGtwIGpvYj0vbGtwL3NjaGVkdWxlZC92bS1rYnVpbGQteW9jdG8taWEz
-Mi0xOC9ib290X2Jvb3QtMS15b2N0by1taW5pbWFsLWkzODYuY2d6LXg4Nl82NC1sa3AtNTVmZTVl
-ZmU0MDcwMDU0MWEyZTc3YTdhZmEyNDdjN2U0YzU4YmZlMi0wLnlhbWwgQVJDSD14ODZfNjQgQk9P
-VF9JTUFHRT0va2VybmVsL3g4Nl82NC1sa3AvNTVmZTVlZmU0MDcwMDU0MWEyZTc3YTdhZmEyNDdj
-N2U0YzU4YmZlMi92bWxpbnV6LTMuMTguMC1yYzQtd2wtZzU1ZmU1ZWYga2NvbmZpZz14ODZfNjQt
-bGtwIGNvbW1pdD01NWZlNWVmZTQwNzAwNTQxYTJlNzdhN2FmYTI0N2M3ZTRjNThiZmUyIGJyYW5j
-aD1saW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxNDExMTIxMCByb290PS9kZXYvcmFtMCBtYXhf
-dXB0aW1lPTM2MDAgUkVTVUxUX1JPT1Q9L3Jlc3VsdC92bS1rYnVpbGQteW9jdG8taWEzMi9ib290
-LzEveW9jdG8tbWluaW1hbC1pMzg2LmNnei94ODZfNjQtbGtwLzU1ZmU1ZWZlNDA3MDA1NDFhMmU3
-N2E3YWZhMjQ3YzdlNGM1OGJmZTIvMCBpcD06Ojo6dm0ta2J1aWxkLXlvY3RvLWlhMzItMTg6OmRo
-Y3AgZWFybHlwcmludGs9dHR5UzAsMTE1MjAwIGRlYnVnIGFwaWM9ZGVidWcgc3lzcnFfYWx3YXlz
-X2VuYWJsZWQgcmN1cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0PTEwMCBwYW5pYz0tMSBzb2Z0
-bG9ja3VwX3BhbmljPTEgbm1pX3dhdGNoZG9nPXBhbmljIG9vcHM9cGFuaWMgbG9hZF9yYW1kaXNr
-PTIgcHJvbXB0X3JhbWRpc2s9MCBjb25zb2xlPXR0eVMwLDExNTIwMCBjb25zb2xlPXR0eTAgdmdh
-PW5vcm1hbCBydyBkcmJkLm1pbm9yX2NvdW50PTgKWyAgICAwLjAwMDAwMF0gZTgyMDogQklPUy1w
-cm92aWRlZCBwaHlzaWNhbCBSQU0gbWFwOgpbICAgIDAuMDAwMDAwXSBCSU9TLWU4MjA6IFttZW0g
-MHgwMDAwMDAwMDAwMDAwMDAwLTB4MDAwMDAwMDAwMDA5ZmJmZl0gdXNhYmxlClsgICAgMC4wMDAw
-MDBdIEJJT1MtZTgyMDogW21lbSAweDAwMDAwMDAwMDAwOWZjMDAtMHgwMDAwMDAwMDAwMDlmZmZm
-XSByZXNlcnZlZApbICAgIDAuMDAwMDAwXSBCSU9TLWU4MjA6IFttZW0gMHgwMDAwMDAwMDAwMGYw
-MDAwLTB4MDAwMDAwMDAwMDBmZmZmZl0gcmVzZXJ2ZWQKWyAgICAwLjAwMDAwMF0gQklPUy1lODIw
-OiBbbWVtIDB4MDAwMDAwMDAwMDEwMDAwMC0weDAwMDAwMDAwMTNmZmRmZmZdIHVzYWJsZQpbICAg
-IDAuMDAwMDAwXSBCSU9TLWU4MjA6IFttZW0gMHgwMDAwMDAwMDEzZmZlMDAwLTB4MDAwMDAwMDAx
-M2ZmZmZmZl0gcmVzZXJ2ZWQKWyAgICAwLjAwMDAwMF0gQklPUy1lODIwOiBbbWVtIDB4MDAwMDAw
-MDBmZWZmYzAwMC0weDAwMDAwMDAwZmVmZmZmZmZdIHJlc2VydmVkClsgICAgMC4wMDAwMDBdIEJJ
-T1MtZTgyMDogW21lbSAweDAwMDAwMDAwZmZmYzAwMDAtMHgwMDAwMDAwMGZmZmZmZmZmXSByZXNl
-cnZlZApbICAgIDAuMDAwMDAwXSBib290Y29uc29sZSBbZWFybHlzZXIwXSBlbmFibGVkClsgICAg
-MC4wMDAwMDBdIE5YIChFeGVjdXRlIERpc2FibGUpIHByb3RlY3Rpb246IGFjdGl2ZQpbICAgIDAu
-MDAwMDAwXSBTTUJJT1MgMi40IHByZXNlbnQuClsgICAgMC4wMDAwMDBdIERNSTogQm9jaHMgQm9j
-aHMsIEJJT1MgQm9jaHMgMDEvMDEvMjAxMQpbICAgIDAuMDAwMDAwXSBIeXBlcnZpc29yIGRldGVj
-dGVkOiBLVk0KWyAgICAwLjAwMDAwMF0gZTgyMDogdXBkYXRlIFttZW0gMHgwMDAwMDAwMC0weDAw
-MDAwZmZmXSB1c2FibGUgPT0+IHJlc2VydmVkClsgICAgMC4wMDAwMDBdIGU4MjA6IHJlbW92ZSBb
-bWVtIDB4MDAwYTAwMDAtMHgwMDBmZmZmZl0gdXNhYmxlClsgICAgMC4wMDAwMDBdIEFHUDogTm8g
-QUdQIGJyaWRnZSBmb3VuZApbICAgIDAuMDAwMDAwXSBlODIwOiBsYXN0X3BmbiA9IDB4MTNmZmUg
-bWF4X2FyY2hfcGZuID0gMHg0MDAwMDAwMDAKWyAgICAwLjAwMDAwMF0gTVRSUiBkZWZhdWx0IHR5
-cGU6IHdyaXRlLWJhY2sKWyAgICAwLjAwMDAwMF0gTVRSUiBmaXhlZCByYW5nZXMgZW5hYmxlZDoK
-WyAgICAwLjAwMDAwMF0gICAwMDAwMC05RkZGRiB3cml0ZS1iYWNrClsgICAgMC4wMDAwMDBdICAg
-QTAwMDAtQkZGRkYgdW5jYWNoYWJsZQpbICAgIDAuMDAwMDAwXSAgIEMwMDAwLUZGRkZGIHdyaXRl
-LXByb3RlY3QKWyAgICAwLjAwMDAwMF0gTVRSUiB2YXJpYWJsZSByYW5nZXMgZW5hYmxlZDoKWyAg
-ICAwLjAwMDAwMF0gICAwIGJhc2UgMDA4MDAwMDAwMCBtYXNrIEZGODAwMDAwMDAgdW5jYWNoYWJs
-ZQpbICAgIDAuMDAwMDAwXSAgIDEgZGlzYWJsZWQKWyAgICAwLjAwMDAwMF0gICAyIGRpc2FibGVk
-ClsgICAgMC4wMDAwMDBdICAgMyBkaXNhYmxlZApbICAgIDAuMDAwMDAwXSAgIDQgZGlzYWJsZWQK
-WyAgICAwLjAwMDAwMF0gICA1IGRpc2FibGVkClsgICAgMC4wMDAwMDBdICAgNiBkaXNhYmxlZApb
-ICAgIDAuMDAwMDAwXSAgIDcgZGlzYWJsZWQKWyAgICAwLjAwMDAwMF0geDg2IFBBVCBlbmFibGVk
-OiBjcHUgMCwgb2xkIDB4NzA0MDYsIG5ldyAweDcwMTA2MDAwNzAxMDYKWyAgICAwLjAwMDAwMF0g
-U2NhbiBmb3IgU01QIGluIFttZW0gMHgwMDAwMDAwMC0weDAwMDAwM2ZmXQpbICAgIDAuMDAwMDAw
-XSBTY2FuIGZvciBTTVAgaW4gW21lbSAweDAwMDlmYzAwLTB4MDAwOWZmZmZdClsgICAgMC4wMDAw
-MDBdIFNjYW4gZm9yIFNNUCBpbiBbbWVtIDB4MDAwZjAwMDAtMHgwMDBmZmZmZl0KWyAgICAwLjAw
-MDAwMF0gZm91bmQgU01QIE1QLXRhYmxlIGF0IFttZW0gMHgwMDBmZGFmMC0weDAwMGZkYWZmXSBt
-YXBwZWQgYXQgW2ZmZmY4ODAwMDAwZmRhZjBdClsgICAgMC4wMDAwMDBdICAgbXBjOiBmZGIwMC1m
-ZGJlOApbICAgIDAuMDAwMDAwXSBTY2FubmluZyAxIGFyZWFzIGZvciBsb3cgbWVtb3J5IGNvcnJ1
-cHRpb24KWyAgICAwLjAwMDAwMF0gQmFzZSBtZW1vcnkgdHJhbXBvbGluZSBhdCBbZmZmZjg4MDAw
-MDA5OTAwMF0gOTkwMDAgc2l6ZSAyNDU3NgpbICAgIDAuMDAwMDAwXSBpbml0X21lbW9yeV9tYXBw
-aW5nOiBbbWVtIDB4MDAwMDAwMDAtMHgwMDBmZmZmZl0KWyAgICAwLjAwMDAwMF0gIFttZW0gMHgw
-MDAwMDAwMC0weDAwMGZmZmZmXSBwYWdlIDRrClsgICAgMC4wMDAwMDBdIEJSSyBbMHgwMjQ2YTAw
-MCwgMHgwMjQ2YWZmZl0gUEdUQUJMRQpbICAgIDAuMDAwMDAwXSBCUksgWzB4MDI0NmIwMDAsIDB4
-MDI0NmJmZmZdIFBHVEFCTEUKWyAgICAwLjAwMDAwMF0gQlJLIFsweDAyNDZjMDAwLCAweDAyNDZj
-ZmZmXSBQR1RBQkxFClsgICAgMC4wMDAwMDBdIGluaXRfbWVtb3J5X21hcHBpbmc6IFttZW0gMHgx
-MzgwMDAwMC0weDEzOWZmZmZmXQpbICAgIDAuMDAwMDAwXSAgW21lbSAweDEzODAwMDAwLTB4MTM5
-ZmZmZmZdIHBhZ2UgMk0KWyAgICAwLjAwMDAwMF0gaW5pdF9tZW1vcnlfbWFwcGluZzogW21lbSAw
-eDEwMDAwMDAwLTB4MTM3ZmZmZmZdClsgICAgMC4wMDAwMDBdICBbbWVtIDB4MTAwMDAwMDAtMHgx
-MzdmZmZmZl0gcGFnZSAyTQpbICAgIDAuMDAwMDAwXSBpbml0X21lbW9yeV9tYXBwaW5nOiBbbWVt
-IDB4MDAxMDAwMDAtMHgwZmZmZmZmZl0KWyAgICAwLjAwMDAwMF0gIFttZW0gMHgwMDEwMDAwMC0w
-eDAwMWZmZmZmXSBwYWdlIDRrClsgICAgMC4wMDAwMDBdICBbbWVtIDB4MDAyMDAwMDAtMHgwZmZm
-ZmZmZl0gcGFnZSAyTQpbICAgIDAuMDAwMDAwXSBpbml0X21lbW9yeV9tYXBwaW5nOiBbbWVtIDB4
-MTNhMDAwMDAtMHgxM2ZmZGZmZl0KWyAgICAwLjAwMDAwMF0gIFttZW0gMHgxM2EwMDAwMC0weDEz
-ZGZmZmZmXSBwYWdlIDJNClsgICAgMC4wMDAwMDBdICBbbWVtIDB4MTNlMDAwMDAtMHgxM2ZmZGZm
-Zl0gcGFnZSA0awpbICAgIDAuMDAwMDAwXSBCUksgWzB4MDI0NmQwMDAsIDB4MDI0NmRmZmZdIFBH
-VEFCTEUKWyAgICAwLjAwMDAwMF0gUkFNRElTSzogW21lbSAweDEzYjIwMDAwLTB4MTNmZWZmZmZd
-ClsgICAgMC4wMDAwMDBdIEFDUEk6IEVhcmx5IHRhYmxlIGNoZWNrc3VtIHZlcmlmaWNhdGlvbiBk
-aXNhYmxlZApbICAgIDAuMDAwMDAwXSBBQ1BJOiBSU0RQIDB4MDAwMDAwMDAwMDBGRDk5MCAwMDAw
-MTQgKHYwMCBCT0NIUyApClsgICAgMC4wMDAwMDBdIEFDUEk6IFJTRFQgMHgwMDAwMDAwMDEzRkZF
-NEIwIDAwMDAzNCAodjAxIEJPQ0hTICBCWFBDUlNEVCAwMDAwMDAwMSBCWFBDIDAwMDAwMDAxKQpb
-ICAgIDAuMDAwMDAwXSBBQ1BJOiBGQUNQIDB4MDAwMDAwMDAxM0ZGRkY4MCAwMDAwNzQgKHYwMSBC
-T0NIUyAgQlhQQ0ZBQ1AgMDAwMDAwMDEgQlhQQyAwMDAwMDAwMSkKWyAgICAwLjAwMDAwMF0gQUNQ
-STogRFNEVCAweDAwMDAwMDAwMTNGRkU0RjAgMDAxMUE5ICh2MDEgQlhQQyAgIEJYRFNEVCAgIDAw
-MDAwMDAxIElOVEwgMjAxMDA1MjgpClsgICAgMC4wMDAwMDBdIEFDUEk6IEZBQ1MgMHgwMDAwMDAw
-MDEzRkZGRjQwIDAwMDA0MApbICAgIDAuMDAwMDAwXSBBQ1BJOiBTU0RUIDB4MDAwMDAwMDAxM0ZG
-RjgwMCAwMDA3MzUgKHYwMSBCT0NIUyAgQlhQQ1NTRFQgMDAwMDAwMDEgQlhQQyAwMDAwMDAwMSkK
-WyAgICAwLjAwMDAwMF0gQUNQSTogQVBJQyAweDAwMDAwMDAwMTNGRkY2RTAgMDAwMDc4ICh2MDEg
-Qk9DSFMgIEJYUENBUElDIDAwMDAwMDAxIEJYUEMgMDAwMDAwMDEpClsgICAgMC4wMDAwMDBdIEFD
-UEk6IEhQRVQgMHgwMDAwMDAwMDEzRkZGNkEwIDAwMDAzOCAodjAxIEJPQ0hTICBCWFBDSFBFVCAw
-MDAwMDAwMSBCWFBDIDAwMDAwMDAxKQpbICAgIDAuMDAwMDAwXSBBQ1BJOiBMb2NhbCBBUElDIGFk
-ZHJlc3MgMHhmZWUwMDAwMApbICAgIDAuMDAwMDAwXSBtYXBwZWQgQVBJQyB0byBmZmZmZmZmZmZm
-NWY1MDAwICggICAgICAgIGZlZTAwMDAwKQpbICAgIDAuMDAwMDAwXSBObyBOVU1BIGNvbmZpZ3Vy
-YXRpb24gZm91bmQKWyAgICAwLjAwMDAwMF0gRmFraW5nIGEgbm9kZSBhdCBbbWVtIDB4MDAwMDAw
-MDAwMDAwMDAwMC0weDAwMDAwMDAwMTNmZmRmZmZdClsgICAgMC4wMDAwMDBdIE5PREVfREFUQSgw
-KSBhbGxvY2F0ZWQgW21lbSAweDEzZmZhMDAwLTB4MTNmZmRmZmZdClsgICAgMC4wMDAwMDBdIGt2
-bS1jbG9jazogVXNpbmcgbXNycyA0YjU2NGQwMSBhbmQgNGI1NjRkMDAKWyAgICAwLjAwMDAwMF0g
-a3ZtLWNsb2NrOiBjcHUgMCwgbXNyIDA6MTNmZjIwMDEsIHByaW1hcnkgY3B1IGNsb2NrClsgICAg
-MC4wMDAwMDBdICBbZmZmZmVhMDAwMDAwMDAwMC1mZmZmZWEwMDAwNWZmZmZmXSBQTUQgLT4gW2Zm
-ZmY4ODAwMTJjMDAwMDAtZmZmZjg4MDAxMzFmZmZmZl0gb24gbm9kZSAwClsgICAgMC4wMDAwMDBd
-IFpvbmUgcmFuZ2VzOgpbICAgIDAuMDAwMDAwXSAgIERNQSAgICAgIFttZW0gMHgwMDAwMTAwMC0w
-eDAwZmZmZmZmXQpbICAgIDAuMDAwMDAwXSAgIERNQTMyICAgIFttZW0gMHgwMTAwMDAwMC0weGZm
-ZmZmZmZmXQpbICAgIDAuMDAwMDAwXSAgIE5vcm1hbCAgIGVtcHR5ClsgICAgMC4wMDAwMDBdIE1v
-dmFibGUgem9uZSBzdGFydCBmb3IgZWFjaCBub2RlClsgICAgMC4wMDAwMDBdIEVhcmx5IG1lbW9y
-eSBub2RlIHJhbmdlcwpbICAgIDAuMDAwMDAwXSAgIG5vZGUgICAwOiBbbWVtIDB4MDAwMDEwMDAt
-MHgwMDA5ZWZmZl0KWyAgICAwLjAwMDAwMF0gICBub2RlICAgMDogW21lbSAweDAwMTAwMDAwLTB4
-MTNmZmRmZmZdClsgICAgMC4wMDAwMDBdIEluaXRtZW0gc2V0dXAgbm9kZSAwIFttZW0gMHgwMDAw
-MTAwMC0weDEzZmZkZmZmXQpbICAgIDAuMDAwMDAwXSBPbiBub2RlIDAgdG90YWxwYWdlczogODE4
-MjAKWyAgICAwLjAwMDAwMF0gICBETUEgem9uZTogNjQgcGFnZXMgdXNlZCBmb3IgbWVtbWFwClsg
-ICAgMC4wMDAwMDBdICAgRE1BIHpvbmU6IDIxIHBhZ2VzIHJlc2VydmVkClsgICAgMC4wMDAwMDBd
-ICAgRE1BIHpvbmU6IDM5OTggcGFnZXMsIExJRk8gYmF0Y2g6MApbICAgIDAuMDAwMDAwXSAgIERN
-QTMyIHpvbmU6IDEyMTYgcGFnZXMgdXNlZCBmb3IgbWVtbWFwClsgICAgMC4wMDAwMDBdICAgRE1B
-MzIgem9uZTogNzc4MjIgcGFnZXMsIExJRk8gYmF0Y2g6MTUKWyAgICAwLjAwMDAwMF0gQUNQSTog
-UE0tVGltZXIgSU8gUG9ydDogMHhiMDA4ClsgICAgMC4wMDAwMDBdIEFDUEk6IExvY2FsIEFQSUMg
-YWRkcmVzcyAweGZlZTAwMDAwClsgICAgMC4wMDAwMDBdIG1hcHBlZCBBUElDIHRvIGZmZmZmZmZm
-ZmY1ZjUwMDAgKCAgICAgICAgZmVlMDAwMDApClsgICAgMC4wMDAwMDBdIEFDUEk6IExBUElDIChh
-Y3BpX2lkWzB4MDBdIGxhcGljX2lkWzB4MDBdIGVuYWJsZWQpClsgICAgMC4wMDAwMDBdIEFDUEk6
-IExBUElDX05NSSAoYWNwaV9pZFsweGZmXSBkZmwgZGZsIGxpbnRbMHgxXSkKWyAgICAwLjAwMDAw
-MF0gQUNQSTogSU9BUElDIChpZFsweDAwXSBhZGRyZXNzWzB4ZmVjMDAwMDBdIGdzaV9iYXNlWzBd
-KQpbICAgIDAuMDAwMDAwXSBJT0FQSUNbMF06IGFwaWNfaWQgMCwgdmVyc2lvbiAxNywgYWRkcmVz
-cyAweGZlYzAwMDAwLCBHU0kgMC0yMwpbICAgIDAuMDAwMDAwXSBBQ1BJOiBJTlRfU1JDX09WUiAo
-YnVzIDAgYnVzX2lycSAwIGdsb2JhbF9pcnEgMiBkZmwgZGZsKQpbICAgIDAuMDAwMDAwXSBJbnQ6
-IHR5cGUgMCwgcG9sIDAsIHRyaWcgMCwgYnVzIDAwLCBJUlEgMDAsIEFQSUMgSUQgMCwgQVBJQyBJ
-TlQgMDIKWyAgICAwLjAwMDAwMF0gQUNQSTogSU5UX1NSQ19PVlIgKGJ1cyAwIGJ1c19pcnEgNSBn
-bG9iYWxfaXJxIDUgaGlnaCBsZXZlbCkKWyAgICAwLjAwMDAwMF0gSW50OiB0eXBlIDAsIHBvbCAx
-LCB0cmlnIDMsIGJ1cyAwMCwgSVJRIDA1LCBBUElDIElEIDAsIEFQSUMgSU5UIDA1ClsgICAgMC4w
-MDAwMDBdIEFDUEk6IElOVF9TUkNfT1ZSIChidXMgMCBidXNfaXJxIDkgZ2xvYmFsX2lycSA5IGhp
-Z2ggbGV2ZWwpClsgICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBwb2wgMSwgdHJpZyAzLCBidXMg
-MDAsIElSUSAwOSwgQVBJQyBJRCAwLCBBUElDIElOVCAwOQpbICAgIDAuMDAwMDAwXSBBQ1BJOiBJ
-TlRfU1JDX09WUiAoYnVzIDAgYnVzX2lycSAxMCBnbG9iYWxfaXJxIDEwIGhpZ2ggbGV2ZWwpClsg
-ICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBwb2wgMSwgdHJpZyAzLCBidXMgMDAsIElSUSAwYSwg
-QVBJQyBJRCAwLCBBUElDIElOVCAwYQpbICAgIDAuMDAwMDAwXSBBQ1BJOiBJTlRfU1JDX09WUiAo
-YnVzIDAgYnVzX2lycSAxMSBnbG9iYWxfaXJxIDExIGhpZ2ggbGV2ZWwpClsgICAgMC4wMDAwMDBd
-IEludDogdHlwZSAwLCBwb2wgMSwgdHJpZyAzLCBidXMgMDAsIElSUSAwYiwgQVBJQyBJRCAwLCBB
-UElDIElOVCAwYgpbICAgIDAuMDAwMDAwXSBBQ1BJOiBJUlEwIHVzZWQgYnkgb3ZlcnJpZGUuClsg
-ICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBwb2wgMCwgdHJpZyAwLCBidXMgMDAsIElSUSAwMSwg
-QVBJQyBJRCAwLCBBUElDIElOVCAwMQpbICAgIDAuMDAwMDAwXSBJbnQ6IHR5cGUgMCwgcG9sIDAs
-IHRyaWcgMCwgYnVzIDAwLCBJUlEgMDMsIEFQSUMgSUQgMCwgQVBJQyBJTlQgMDMKWyAgICAwLjAw
-MDAwMF0gSW50OiB0eXBlIDAsIHBvbCAwLCB0cmlnIDAsIGJ1cyAwMCwgSVJRIDA0LCBBUElDIElE
-IDAsIEFQSUMgSU5UIDA0ClsgICAgMC4wMDAwMDBdIEFDUEk6IElSUTUgdXNlZCBieSBvdmVycmlk
-ZS4KWyAgICAwLjAwMDAwMF0gSW50OiB0eXBlIDAsIHBvbCAwLCB0cmlnIDAsIGJ1cyAwMCwgSVJR
-IDA2LCBBUElDIElEIDAsIEFQSUMgSU5UIDA2ClsgICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBw
-b2wgMCwgdHJpZyAwLCBidXMgMDAsIElSUSAwNywgQVBJQyBJRCAwLCBBUElDIElOVCAwNwpbICAg
-IDAuMDAwMDAwXSBJbnQ6IHR5cGUgMCwgcG9sIDAsIHRyaWcgMCwgYnVzIDAwLCBJUlEgMDgsIEFQ
-SUMgSUQgMCwgQVBJQyBJTlQgMDgKWyAgICAwLjAwMDAwMF0gQUNQSTogSVJROSB1c2VkIGJ5IG92
-ZXJyaWRlLgpbICAgIDAuMDAwMDAwXSBBQ1BJOiBJUlExMCB1c2VkIGJ5IG92ZXJyaWRlLgpbICAg
-IDAuMDAwMDAwXSBBQ1BJOiBJUlExMSB1c2VkIGJ5IG92ZXJyaWRlLgpbICAgIDAuMDAwMDAwXSBJ
-bnQ6IHR5cGUgMCwgcG9sIDAsIHRyaWcgMCwgYnVzIDAwLCBJUlEgMGMsIEFQSUMgSUQgMCwgQVBJ
-QyBJTlQgMGMKWyAgICAwLjAwMDAwMF0gSW50OiB0eXBlIDAsIHBvbCAwLCB0cmlnIDAsIGJ1cyAw
-MCwgSVJRIDBkLCBBUElDIElEIDAsIEFQSUMgSU5UIDBkClsgICAgMC4wMDAwMDBdIEludDogdHlw
-ZSAwLCBwb2wgMCwgdHJpZyAwLCBidXMgMDAsIElSUSAwZSwgQVBJQyBJRCAwLCBBUElDIElOVCAw
-ZQpbICAgIDAuMDAwMDAwXSBJbnQ6IHR5cGUgMCwgcG9sIDAsIHRyaWcgMCwgYnVzIDAwLCBJUlEg
-MGYsIEFQSUMgSUQgMCwgQVBJQyBJTlQgMGYKWyAgICAwLjAwMDAwMF0gVXNpbmcgQUNQSSAoTUFE
-VCkgZm9yIFNNUCBjb25maWd1cmF0aW9uIGluZm9ybWF0aW9uClsgICAgMC4wMDAwMDBdIEFDUEk6
-IEhQRVQgaWQ6IDB4ODA4NmEyMDEgYmFzZTogMHhmZWQwMDAwMApbICAgIDAuMDAwMDAwXSBzbXBi
-b290OiBBbGxvd2luZyAxIENQVXMsIDAgaG90cGx1ZyBDUFVzClsgICAgMC4wMDAwMDBdIG1hcHBl
-ZCBJT0FQSUMgdG8gZmZmZmZmZmZmZjVmNDAwMCAoZmVjMDAwMDApClsgICAgMC4wMDAwMDBdIFBN
-OiBSZWdpc3RlcmVkIG5vc2F2ZSBtZW1vcnk6IFttZW0gMHgwMDAwMDAwMC0weDAwMDAwZmZmXQpb
-ICAgIDAuMDAwMDAwXSBQTTogUmVnaXN0ZXJlZCBub3NhdmUgbWVtb3J5OiBbbWVtIDB4MDAwOWYw
-MDAtMHgwMDA5ZmZmZl0KWyAgICAwLjAwMDAwMF0gUE06IFJlZ2lzdGVyZWQgbm9zYXZlIG1lbW9y
-eTogW21lbSAweDAwMGEwMDAwLTB4MDAwZWZmZmZdClsgICAgMC4wMDAwMDBdIFBNOiBSZWdpc3Rl
-cmVkIG5vc2F2ZSBtZW1vcnk6IFttZW0gMHgwMDBmMDAwMC0weDAwMGZmZmZmXQpbICAgIDAuMDAw
-MDAwXSBlODIwOiBbbWVtIDB4MTQwMDAwMDAtMHhmZWZmYmZmZl0gYXZhaWxhYmxlIGZvciBQQ0kg
-ZGV2aWNlcwpbICAgIDAuMDAwMDAwXSBCb290aW5nIHBhcmF2aXJ0dWFsaXplZCBrZXJuZWwgb24g
-S1ZNClsgICAgMC4wMDAwMDBdIHNldHVwX3BlcmNwdTogTlJfQ1BVUzo1MTIgbnJfY3B1bWFza19i
-aXRzOjUxMiBucl9jcHVfaWRzOjEgbnJfbm9kZV9pZHM6MQpbICAgIDAuMDAwMDAwXSBQRVJDUFU6
-IEVtYmVkZGVkIDI5IHBhZ2VzL2NwdSBAZmZmZjg4MDAxMzgwMDAwMCBzODE5MjAgcjgxOTIgZDI4
-NjcyIHUyMDk3MTUyClsgICAgMC4wMDAwMDBdIHBjcHUtYWxsb2M6IHM4MTkyMCByODE5MiBkMjg2
-NzIgdTIwOTcxNTIgYWxsb2M9MSoyMDk3MTUyClsgICAgMC4wMDAwMDBdIHBjcHUtYWxsb2M6IFsw
-XSAwIApbICAgIDAuMDAwMDAwXSBLVk0gc2V0dXAgYXN5bmMgUEYgZm9yIGNwdSAwClsgICAgMC4w
-MDAwMDBdIGt2bS1zdGVhbHRpbWU6IGNwdSAwLCBtc3IgMTM4MGQxNDAKWyAgICAwLjAwMDAwMF0g
-QnVpbHQgMSB6b25lbGlzdHMgaW4gTm9kZSBvcmRlciwgbW9iaWxpdHkgZ3JvdXBpbmcgb24uICBU
-b3RhbCBwYWdlczogODA1MTkKWyAgICAwLjAwMDAwMF0gUG9saWN5IHpvbmU6IERNQTMyClsgICAg
-MC4wMDAwMDBdIEtlcm5lbCBjb21tYW5kIGxpbmU6IHVzZXI9bGtwIGpvYj0vbGtwL3NjaGVkdWxl
-ZC92bS1rYnVpbGQteW9jdG8taWEzMi0xOC9ib290X2Jvb3QtMS15b2N0by1taW5pbWFsLWkzODYu
-Y2d6LXg4Nl82NC1sa3AtNTVmZTVlZmU0MDcwMDU0MWEyZTc3YTdhZmEyNDdjN2U0YzU4YmZlMi0w
-LnlhbWwgQVJDSD14ODZfNjQgQk9PVF9JTUFHRT0va2VybmVsL3g4Nl82NC1sa3AvNTVmZTVlZmU0
-MDcwMDU0MWEyZTc3YTdhZmEyNDdjN2U0YzU4YmZlMi92bWxpbnV6LTMuMTguMC1yYzQtd2wtZzU1
-ZmU1ZWYga2NvbmZpZz14ODZfNjQtbGtwIGNvbW1pdD01NWZlNWVmZTQwNzAwNTQxYTJlNzdhN2Fm
-YTI0N2M3ZTRjNThiZmUyIGJyYW5jaD1saW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxNDExMTIx
-MCByb290PS9kZXYvcmFtMCBtYXhfdXB0aW1lPTM2MDAgUkVTVUxUX1JPT1Q9L3Jlc3VsdC92bS1r
-YnVpbGQteW9jdG8taWEzMi9ib290LzEveW9jdG8tbWluaW1hbC1pMzg2LmNnei94ODZfNjQtbGtw
-LzU1ZmU1ZWZlNDA3MDA1NDFhMmU3N2E3YWZhMjQ3YzdlNGM1OGJmZTIvMCBpcD06Ojo6dm0ta2J1
-aWxkLXlvY3RvLWlhMzItMTg6OmRoY3AgZWFybHlwcmludGs9dHR5UzAsMTE1MjAwIGRlYnVnIGFw
-aWM9ZGVidWcgc3lzcnFfYWx3YXlzX2VuYWJsZWQgcmN1cGRhdGUucmN1X2NwdV9zdGFsbF90aW1l
-b3V0PTEwMCBwYW5pYz0tMSBzb2Z0bG9ja3VwX3BhbmljPTEgbm1pX3dhdGNoZG9nPXBhbmljIG9v
-cHM9cGFuaWMgbG9hZF9yYW1kaXNrPTIgcHJvbXB0X3JhbWRpc2s9MCBjb25zb2xlPXR0eVMwLDEx
-NTIwMCBjb25zb2xlPXR0eTAgdmdhPW5vcm1hbCBydyBkcmJkLm1pbm9yX2NvdW50PTgKWyAgICAw
-LjAwMDAwMF0gc3lzcnE6IHN5c3JxIGFsd2F5cyBlbmFibGVkLgpbICAgIDAuMDAwMDAwXSBQSUQg
-aGFzaCB0YWJsZSBlbnRyaWVzOiAyMDQ4IChvcmRlcjogMiwgMTYzODQgYnl0ZXMpClsgICAgMC4w
-MDAwMDBdIEFHUDogQ2hlY2tpbmcgYXBlcnR1cmUuLi4KWyAgICAwLjAwMDAwMF0gQUdQOiBObyBB
-R1AgYnJpZGdlIGZvdW5kClsgICAgMC4wMDAwMDBdIE1lbW9yeTogMjk0Nzk2Sy8zMjcyODBLIGF2
-YWlsYWJsZSAoMTAyMjVLIGtlcm5lbCBjb2RlLCAxMzkwSyByd2RhdGEsIDQzMzZLIHJvZGF0YSwg
-MTQ1MksgaW5pdCwgMTYyNEsgYnNzLCAzMjQ4NEsgcmVzZXJ2ZWQpClsgICAgMC4wMDAwMDBdIFNM
-VUI6IEhXYWxpZ249NjQsIE9yZGVyPTAtMywgTWluT2JqZWN0cz0wLCBDUFVzPTEsIE5vZGVzPTEK
-WyAgICAwLjAwMDAwMF0gSGllcmFyY2hpY2FsIFJDVSBpbXBsZW1lbnRhdGlvbi4KWyAgICAwLjAw
-MDAwMF0gUkNVOiBBZGp1c3RpbmcgZ2VvbWV0cnkgZm9yIHJjdV9mYW5vdXRfbGVhZj0xNiwgbnJf
-Y3B1X2lkcz0xClsgICAgMC4wMDAwMDBdIE5SX0lSUVM6MzMwMjQgbnJfaXJxczoyNTYgMTYKWyAg
-ICAwLjAwMDAwMF0gQ29uc29sZTogY29sb3VyIFZHQSsgODB4MjUKWyAgICAwLjAwMDAwMF0gY29u
-c29sZSBbdHR5MF0gZW5hYmxlZApbICAgIDAuMDAwMDAwXSBib290Y29uc29sZSBbZWFybHlzZXIw
-XSBkaXNhYmxlZApbICAgIDAuMDAwMDAwXSBJbml0aWFsaXppbmcgY2dyb3VwIHN1YnN5cyBjcHVz
-ZXQKWyAgICAwLjAwMDAwMF0gSW5pdGlhbGl6aW5nIGNncm91cCBzdWJzeXMgY3B1ClsgICAgMC4w
-MDAwMDBdIExpbnV4IHZlcnNpb24gMy4xOC4wLXJjNC13bC1nNTVmZTVlZiAoa2J1aWxkQHhpYW4p
-IChnY2MgdmVyc2lvbiA0LjkuMSAoRGViaWFuIDQuOS4xLTE5KSApICMxIFNNUCBXZWQgTm92IDEy
-IDExOjQzOjQ5IENTVCAyMDE0ClsgICAgMC4wMDAwMDBdIENvbW1hbmQgbGluZTogdXNlcj1sa3Ag
-am9iPS9sa3Avc2NoZWR1bGVkL3ZtLWtidWlsZC15b2N0by1pYTMyLTE4L2Jvb3RfYm9vdC0xLXlv
-Y3RvLW1pbmltYWwtaTM4Ni5jZ3oteDg2XzY0LWxrcC01NWZlNWVmZTQwNzAwNTQxYTJlNzdhN2Fm
-YTI0N2M3ZTRjNThiZmUyLTAueWFtbCBBUkNIPXg4Nl82NCBCT09UX0lNQUdFPS9rZXJuZWwveDg2
-XzY0LWxrcC81NWZlNWVmZTQwNzAwNTQxYTJlNzdhN2FmYTI0N2M3ZTRjNThiZmUyL3ZtbGludXot
-My4xOC4wLXJjNC13bC1nNTVmZTVlZiBrY29uZmlnPXg4Nl82NC1sa3AgY29tbWl0PTU1ZmU1ZWZl
-NDA3MDA1NDFhMmU3N2E3YWZhMjQ3YzdlNGM1OGJmZTIgYnJhbmNoPWxpbnV4LWRldmVsL2RldmVs
-LWhvdXJseS0yMDE0MTExMjEwIHJvb3Q9L2Rldi9yYW0wIG1heF91cHRpbWU9MzYwMCBSRVNVTFRf
-Uk9PVD0vcmVzdWx0L3ZtLWtidWlsZC15b2N0by1pYTMyL2Jvb3QvMS95b2N0by1taW5pbWFsLWkz
-ODYuY2d6L3g4Nl82NC1sa3AvNTVmZTVlZmU0MDcwMDU0MWEyZTc3YTdhZmEyNDdjN2U0YzU4YmZl
-Mi8wIGlwPTo6Ojp2bS1rYnVpbGQteW9jdG8taWEzMi0xODo6ZGhjcCBlYXJseXByaW50az10dHlT
-MCwxMTUyMDAgZGVidWcgYXBpYz1kZWJ1ZyBzeXNycV9hbHdheXNfZW5hYmxlZCByY3VwZGF0ZS5y
-Y3VfY3B1X3N0YWxsX3RpbWVvdXQ9MTAwIHBhbmljPS0xIHNvZnRsb2NrdXBfcGFuaWM9MSBubWlf
-d2F0Y2hkb2c9cGFuaWMgb29wcz1wYW5pYyBsb2FkX3JhbWRpc2s9MiBwcm9tcHRfcmFtZGlzaz0w
-IGNvbnNvbGU9dHR5UzAsMTE1MjAwIGNvbnNvbGU9dHR5MCB2Z2E9bm9ybWFsIHJ3IGRyYmQubWlu
-b3JfY291bnQ9OApbICAgIDAuMDAwMDAwXSBlODIwOiBCSU9TLXByb3ZpZGVkIHBoeXNpY2FsIFJB
-TSBtYXA6ClsgICAgMC4wMDAwMDBdIEJJT1MtZTgyMDogW21lbSAweDAwMDAwMDAwMDAwMDAwMDAt
-MHgwMDAwMDAwMDAwMDlmYmZmXSB1c2FibGUKWyAgICAwLjAwMDAwMF0gQklPUy1lODIwOiBbbWVt
-IDB4MDAwMDAwMDAwMDA5ZmMwMC0weDAwMDAwMDAwMDAwOWZmZmZdIHJlc2VydmVkClsgICAgMC4w
-MDAwMDBdIEJJT1MtZTgyMDogW21lbSAweDAwMDAwMDAwMDAwZjAwMDAtMHgwMDAwMDAwMDAwMGZm
-ZmZmXSByZXNlcnZlZApbICAgIDAuMDAwMDAwXSBCSU9TLWU4MjA6IFttZW0gMHgwMDAwMDAwMDAw
-MTAwMDAwLTB4MDAwMDAwMDAxM2ZmZGZmZl0gdXNhYmxlClsgICAgMC4wMDAwMDBdIEJJT1MtZTgy
-MDogW21lbSAweDAwMDAwMDAwMTNmZmUwMDAtMHgwMDAwMDAwMDEzZmZmZmZmXSByZXNlcnZlZApb
-ICAgIDAuMDAwMDAwXSBCSU9TLWU4MjA6IFttZW0gMHgwMDAwMDAwMGZlZmZjMDAwLTB4MDAwMDAw
-MDBmZWZmZmZmZl0gcmVzZXJ2ZWQKWyAgICAwLjAwMDAwMF0gQklPUy1lODIwOiBbbWVtIDB4MDAw
-MDAwMDBmZmZjMDAwMC0weDAwMDAwMDAwZmZmZmZmZmZdIHJlc2VydmVkClsgICAgMC4wMDAwMDBd
-IGJvb3Rjb25zb2xlIFtlYXJseXNlcjBdIGVuYWJsZWQKWyAgICAwLjAwMDAwMF0gTlggKEV4ZWN1
-dGUgRGlzYWJsZSkgcHJvdGVjdGlvbjogYWN0aXZlClsgICAgMC4wMDAwMDBdIFNNQklPUyAyLjQg
-cHJlc2VudC4KWyAgICAwLjAwMDAwMF0gRE1JOiBCb2NocyBCb2NocywgQklPUyBCb2NocyAwMS8w
-MS8yMDExClsgICAgMC4wMDAwMDBdIEh5cGVydmlzb3IgZGV0ZWN0ZWQ6IEtWTQpbICAgIDAuMDAw
-MDAwXSBlODIwOiB1cGRhdGUgW21lbSAweDAwMDAwMDAwLTB4MDAwMDBmZmZdIHVzYWJsZSA9PT4g
-cmVzZXJ2ZWQKWyAgICAwLjAwMDAwMF0gZTgyMDogcmVtb3ZlIFttZW0gMHgwMDBhMDAwMC0weDAw
-MGZmZmZmXSB1c2FibGUKWyAgICAwLjAwMDAwMF0gQUdQOiBObyBBR1AgYnJpZGdlIGZvdW5kClsg
-ICAgMC4wMDAwMDBdIGU4MjA6IGxhc3RfcGZuID0gMHgxM2ZmZSBtYXhfYXJjaF9wZm4gPSAweDQw
-MDAwMDAwMApbICAgIDAuMDAwMDAwXSBNVFJSIGRlZmF1bHQgdHlwZTogd3JpdGUtYmFjawpbICAg
-IDAuMDAwMDAwXSBNVFJSIGZpeGVkIHJhbmdlcyBlbmFibGVkOgpbICAgIDAuMDAwMDAwXSAgIDAw
-MDAwLTlGRkZGIHdyaXRlLWJhY2sKWyAgICAwLjAwMDAwMF0gICBBMDAwMC1CRkZGRiB1bmNhY2hh
-YmxlClsgICAgMC4wMDAwMDBdICAgQzAwMDAtRkZGRkYgd3JpdGUtcHJvdGVjdApbICAgIDAuMDAw
-MDAwXSBNVFJSIHZhcmlhYmxlIHJhbmdlcyBlbmFibGVkOgpbICAgIDAuMDAwMDAwXSAgIDAgYmFz
-ZSAwMDgwMDAwMDAwIG1hc2sgRkY4MDAwMDAwMCB1bmNhY2hhYmxlClsgICAgMC4wMDAwMDBdICAg
-MSBkaXNhYmxlZApbICAgIDAuMDAwMDAwXSAgIDIgZGlzYWJsZWQKWyAgICAwLjAwMDAwMF0gICAz
-IGRpc2FibGVkClsgICAgMC4wMDAwMDBdICAgNCBkaXNhYmxlZApbICAgIDAuMDAwMDAwXSAgIDUg
-ZGlzYWJsZWQKWyAgICAwLjAwMDAwMF0gICA2IGRpc2FibGVkClsgICAgMC4wMDAwMDBdICAgNyBk
-aXNhYmxlZApbICAgIDAuMDAwMDAwXSB4ODYgUEFUIGVuYWJsZWQ6IGNwdSAwLCBvbGQgMHg3MDQw
-NiwgbmV3IDB4NzAxMDYwMDA3MDEwNgpbICAgIDAuMDAwMDAwXSBTY2FuIGZvciBTTVAgaW4gW21l
-bSAweDAwMDAwMDAwLTB4MDAwMDAzZmZdClsgICAgMC4wMDAwMDBdIFNjYW4gZm9yIFNNUCBpbiBb
-bWVtIDB4MDAwOWZjMDAtMHgwMDA5ZmZmZl0KWyAgICAwLjAwMDAwMF0gU2NhbiBmb3IgU01QIGlu
-IFttZW0gMHgwMDBmMDAwMC0weDAwMGZmZmZmXQpbICAgIDAuMDAwMDAwXSBmb3VuZCBTTVAgTVAt
-dGFibGUgYXQgW21lbSAweDAwMGZkYWYwLTB4MDAwZmRhZmZdIG1hcHBlZCBhdCBbZmZmZjg4MDAw
-MDBmZGFmMF0KWyAgICAwLjAwMDAwMF0gICBtcGM6IGZkYjAwLWZkYmU4ClsgICAgMC4wMDAwMDBd
-IFNjYW5uaW5nIDEgYXJlYXMgZm9yIGxvdyBtZW1vcnkgY29ycnVwdGlvbgpbICAgIDAuMDAwMDAw
-XSBCYXNlIG1lbW9yeSB0cmFtcG9saW5lIGF0IFtmZmZmODgwMDAwMDk5MDAwXSA5OTAwMCBzaXpl
-IDI0NTc2ClsgICAgMC4wMDAwMDBdIGluaXRfbWVtb3J5X21hcHBpbmc6IFttZW0gMHgwMDAwMDAw
-MC0weDAwMGZmZmZmXQpbICAgIDAuMDAwMDAwXSAgW21lbSAweDAwMDAwMDAwLTB4MDAwZmZmZmZd
-IHBhZ2UgNGsKWyAgICAwLjAwMDAwMF0gQlJLIFsweDAyNDZhMDAwLCAweDAyNDZhZmZmXSBQR1RB
-QkxFClsgICAgMC4wMDAwMDBdIEJSSyBbMHgwMjQ2YjAwMCwgMHgwMjQ2YmZmZl0gUEdUQUJMRQpb
-ICAgIDAuMDAwMDAwXSBCUksgWzB4MDI0NmMwMDAsIDB4MDI0NmNmZmZdIFBHVEFCTEUKWyAgICAw
-LjAwMDAwMF0gaW5pdF9tZW1vcnlfbWFwcGluZzogW21lbSAweDEzODAwMDAwLTB4MTM5ZmZmZmZd
-ClsgICAgMC4wMDAwMDBdICBbbWVtIDB4MTM4MDAwMDAtMHgxMzlmZmZmZl0gcGFnZSAyTQpbICAg
-IDAuMDAwMDAwXSBpbml0X21lbW9yeV9tYXBwaW5nOiBbbWVtIDB4MTAwMDAwMDAtMHgxMzdmZmZm
-Zl0KWyAgICAwLjAwMDAwMF0gIFttZW0gMHgxMDAwMDAwMC0weDEzN2ZmZmZmXSBwYWdlIDJNClsg
-ICAgMC4wMDAwMDBdIGluaXRfbWVtb3J5X21hcHBpbmc6IFttZW0gMHgwMDEwMDAwMC0weDBmZmZm
-ZmZmXQpbICAgIDAuMDAwMDAwXSAgW21lbSAweDAwMTAwMDAwLTB4MDAxZmZmZmZdIHBhZ2UgNGsK
-WyAgICAwLjAwMDAwMF0gIFttZW0gMHgwMDIwMDAwMC0weDBmZmZmZmZmXSBwYWdlIDJNClsgICAg
-MC4wMDAwMDBdIGluaXRfbWVtb3J5X21hcHBpbmc6IFttZW0gMHgxM2EwMDAwMC0weDEzZmZkZmZm
-XQpbICAgIDAuMDAwMDAwXSAgW21lbSAweDEzYTAwMDAwLTB4MTNkZmZmZmZdIHBhZ2UgMk0KWyAg
-ICAwLjAwMDAwMF0gIFttZW0gMHgxM2UwMDAwMC0weDEzZmZkZmZmXSBwYWdlIDRrClsgICAgMC4w
-MDAwMDBdIEJSSyBbMHgwMjQ2ZDAwMCwgMHgwMjQ2ZGZmZl0gUEdUQUJMRQpbICAgIDAuMDAwMDAw
-XSBSQU1ESVNLOiBbbWVtIDB4MTNiMjAwMDAtMHgxM2ZlZmZmZl0KWyAgICAwLjAwMDAwMF0gQUNQ
-STogRWFybHkgdGFibGUgY2hlY2tzdW0gdmVyaWZpY2F0aW9uIGRpc2FibGVkClsgICAgMC4wMDAw
-MDBdIEFDUEk6IFJTRFAgMHgwMDAwMDAwMDAwMEZEOTkwIDAwMDAxNCAodjAwIEJPQ0hTICkKWyAg
-ICAwLjAwMDAwMF0gQUNQSTogUlNEVCAweDAwMDAwMDAwMTNGRkU0QjAgMDAwMDM0ICh2MDEgQk9D
-SFMgIEJYUENSU0RUIDAwMDAwMDAxIEJYUEMgMDAwMDAwMDEpClsgICAgMC4wMDAwMDBdIEFDUEk6
-IEZBQ1AgMHgwMDAwMDAwMDEzRkZGRjgwIDAwMDA3NCAodjAxIEJPQ0hTICBCWFBDRkFDUCAwMDAw
-MDAwMSBCWFBDIDAwMDAwMDAxKQpbICAgIDAuMDAwMDAwXSBBQ1BJOiBEU0RUIDB4MDAwMDAwMDAx
-M0ZGRTRGMCAwMDExQTkgKHYwMSBCWFBDICAgQlhEU0RUICAgMDAwMDAwMDEgSU5UTCAyMDEwMDUy
-OCkKWyAgICAwLjAwMDAwMF0gQUNQSTogRkFDUyAweDAwMDAwMDAwMTNGRkZGNDAgMDAwMDQwClsg
-ICAgMC4wMDAwMDBdIEFDUEk6IFNTRFQgMHgwMDAwMDAwMDEzRkZGODAwIDAwMDczNSAodjAxIEJP
-Q0hTICBCWFBDU1NEVCAwMDAwMDAwMSBCWFBDIDAwMDAwMDAxKQpbICAgIDAuMDAwMDAwXSBBQ1BJ
-OiBBUElDIDB4MDAwMDAwMDAxM0ZGRjZFMCAwMDAwNzggKHYwMSBCT0NIUyAgQlhQQ0FQSUMgMDAw
-MDAwMDEgQlhQQyAwMDAwMDAwMSkKWyAgICAwLjAwMDAwMF0gQUNQSTogSFBFVCAweDAwMDAwMDAw
-MTNGRkY2QTAgMDAwMDM4ICh2MDEgQk9DSFMgIEJYUENIUEVUIDAwMDAwMDAxIEJYUEMgMDAwMDAw
-MDEpClsgICAgMC4wMDAwMDBdIEFDUEk6IExvY2FsIEFQSUMgYWRkcmVzcyAweGZlZTAwMDAwClsg
-ICAgMC4wMDAwMDBdIG1hcHBlZCBBUElDIHRvIGZmZmZmZmZmZmY1ZjUwMDAgKCAgICAgICAgZmVl
-MDAwMDApClsgICAgMC4wMDAwMDBdIE5vIE5VTUEgY29uZmlndXJhdGlvbiBmb3VuZApbICAgIDAu
-MDAwMDAwXSBGYWtpbmcgYSBub2RlIGF0IFttZW0gMHgwMDAwMDAwMDAwMDAwMDAwLTB4MDAwMDAw
-MDAxM2ZmZGZmZl0KWyAgICAwLjAwMDAwMF0gTk9ERV9EQVRBKDApIGFsbG9jYXRlZCBbbWVtIDB4
-MTNmZmEwMDAtMHgxM2ZmZGZmZl0KWyAgICAwLjAwMDAwMF0ga3ZtLWNsb2NrOiBVc2luZyBtc3Jz
-IDRiNTY0ZDAxIGFuZCA0YjU2NGQwMApbICAgIDAuMDAwMDAwXSBrdm0tY2xvY2s6IGNwdSAwLCBt
-c3IgMDoxM2ZmMjAwMSwgcHJpbWFyeSBjcHUgY2xvY2sKWyAgICAwLjAwMDAwMF0gIFtmZmZmZWEw
-MDAwMDAwMDAwLWZmZmZlYTAwMDA1ZmZmZmZdIFBNRCAtPiBbZmZmZjg4MDAxMmMwMDAwMC1mZmZm
-ODgwMDEzMWZmZmZmXSBvbiBub2RlIDAKWyAgICAwLjAwMDAwMF0gWm9uZSByYW5nZXM6ClsgICAg
-MC4wMDAwMDBdICAgRE1BICAgICAgW21lbSAweDAwMDAxMDAwLTB4MDBmZmZmZmZdClsgICAgMC4w
-MDAwMDBdICAgRE1BMzIgICAgW21lbSAweDAxMDAwMDAwLTB4ZmZmZmZmZmZdClsgICAgMC4wMDAw
-MDBdICAgTm9ybWFsICAgZW1wdHkKWyAgICAwLjAwMDAwMF0gTW92YWJsZSB6b25lIHN0YXJ0IGZv
-ciBlYWNoIG5vZGUKWyAgICAwLjAwMDAwMF0gRWFybHkgbWVtb3J5IG5vZGUgcmFuZ2VzClsgICAg
-MC4wMDAwMDBdICAgbm9kZSAgIDA6IFttZW0gMHgwMDAwMTAwMC0weDAwMDllZmZmXQpbICAgIDAu
-MDAwMDAwXSAgIG5vZGUgICAwOiBbbWVtIDB4MDAxMDAwMDAtMHgxM2ZmZGZmZl0KWyAgICAwLjAw
-MDAwMF0gSW5pdG1lbSBzZXR1cCBub2RlIDAgW21lbSAweDAwMDAxMDAwLTB4MTNmZmRmZmZdClsg
-ICAgMC4wMDAwMDBdIE9uIG5vZGUgMCB0b3RhbHBhZ2VzOiA4MTgyMApbICAgIDAuMDAwMDAwXSAg
-IERNQSB6b25lOiA2NCBwYWdlcyB1c2VkIGZvciBtZW1tYXAKWyAgICAwLjAwMDAwMF0gICBETUEg
-em9uZTogMjEgcGFnZXMgcmVzZXJ2ZWQKWyAgICAwLjAwMDAwMF0gICBETUEgem9uZTogMzk5OCBw
-YWdlcywgTElGTyBiYXRjaDowClsgICAgMC4wMDAwMDBdICAgRE1BMzIgem9uZTogMTIxNiBwYWdl
-cyB1c2VkIGZvciBtZW1tYXAKWyAgICAwLjAwMDAwMF0gICBETUEzMiB6b25lOiA3NzgyMiBwYWdl
-cywgTElGTyBiYXRjaDoxNQpbICAgIDAuMDAwMDAwXSBBQ1BJOiBQTS1UaW1lciBJTyBQb3J0OiAw
-eGIwMDgKWyAgICAwLjAwMDAwMF0gQUNQSTogTG9jYWwgQVBJQyBhZGRyZXNzIDB4ZmVlMDAwMDAK
-WyAgICAwLjAwMDAwMF0gbWFwcGVkIEFQSUMgdG8gZmZmZmZmZmZmZjVmNTAwMCAoICAgICAgICBm
-ZWUwMDAwMCkKWyAgICAwLjAwMDAwMF0gQUNQSTogTEFQSUMgKGFjcGlfaWRbMHgwMF0gbGFwaWNf
-aWRbMHgwMF0gZW5hYmxlZCkKWyAgICAwLjAwMDAwMF0gQUNQSTogTEFQSUNfTk1JIChhY3BpX2lk
-WzB4ZmZdIGRmbCBkZmwgbGludFsweDFdKQpbICAgIDAuMDAwMDAwXSBBQ1BJOiBJT0FQSUMgKGlk
-WzB4MDBdIGFkZHJlc3NbMHhmZWMwMDAwMF0gZ3NpX2Jhc2VbMF0pClsgICAgMC4wMDAwMDBdIElP
-QVBJQ1swXTogYXBpY19pZCAwLCB2ZXJzaW9uIDE3LCBhZGRyZXNzIDB4ZmVjMDAwMDAsIEdTSSAw
-LTIzClsgICAgMC4wMDAwMDBdIEFDUEk6IElOVF9TUkNfT1ZSIChidXMgMCBidXNfaXJxIDAgZ2xv
-YmFsX2lycSAyIGRmbCBkZmwpClsgICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBwb2wgMCwgdHJp
-ZyAwLCBidXMgMDAsIElSUSAwMCwgQVBJQyBJRCAwLCBBUElDIElOVCAwMgpbICAgIDAuMDAwMDAw
-XSBBQ1BJOiBJTlRfU1JDX09WUiAoYnVzIDAgYnVzX2lycSA1IGdsb2JhbF9pcnEgNSBoaWdoIGxl
-dmVsKQpbICAgIDAuMDAwMDAwXSBJbnQ6IHR5cGUgMCwgcG9sIDEsIHRyaWcgMywgYnVzIDAwLCBJ
-UlEgMDUsIEFQSUMgSUQgMCwgQVBJQyBJTlQgMDUKWyAgICAwLjAwMDAwMF0gQUNQSTogSU5UX1NS
-Q19PVlIgKGJ1cyAwIGJ1c19pcnEgOSBnbG9iYWxfaXJxIDkgaGlnaCBsZXZlbCkKWyAgICAwLjAw
-MDAwMF0gSW50OiB0eXBlIDAsIHBvbCAxLCB0cmlnIDMsIGJ1cyAwMCwgSVJRIDA5LCBBUElDIElE
-IDAsIEFQSUMgSU5UIDA5ClsgICAgMC4wMDAwMDBdIEFDUEk6IElOVF9TUkNfT1ZSIChidXMgMCBi
-dXNfaXJxIDEwIGdsb2JhbF9pcnEgMTAgaGlnaCBsZXZlbCkKWyAgICAwLjAwMDAwMF0gSW50OiB0
-eXBlIDAsIHBvbCAxLCB0cmlnIDMsIGJ1cyAwMCwgSVJRIDBhLCBBUElDIElEIDAsIEFQSUMgSU5U
-IDBhClsgICAgMC4wMDAwMDBdIEFDUEk6IElOVF9TUkNfT1ZSIChidXMgMCBidXNfaXJxIDExIGds
-b2JhbF9pcnEgMTEgaGlnaCBsZXZlbCkKWyAgICAwLjAwMDAwMF0gSW50OiB0eXBlIDAsIHBvbCAx
-LCB0cmlnIDMsIGJ1cyAwMCwgSVJRIDBiLCBBUElDIElEIDAsIEFQSUMgSU5UIDBiClsgICAgMC4w
-MDAwMDBdIEFDUEk6IElSUTAgdXNlZCBieSBvdmVycmlkZS4KWyAgICAwLjAwMDAwMF0gSW50OiB0
-eXBlIDAsIHBvbCAwLCB0cmlnIDAsIGJ1cyAwMCwgSVJRIDAxLCBBUElDIElEIDAsIEFQSUMgSU5U
-IDAxClsgICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBwb2wgMCwgdHJpZyAwLCBidXMgMDAsIElS
-USAwMywgQVBJQyBJRCAwLCBBUElDIElOVCAwMwpbICAgIDAuMDAwMDAwXSBJbnQ6IHR5cGUgMCwg
-cG9sIDAsIHRyaWcgMCwgYnVzIDAwLCBJUlEgMDQsIEFQSUMgSUQgMCwgQVBJQyBJTlQgMDQKWyAg
-ICAwLjAwMDAwMF0gQUNQSTogSVJRNSB1c2VkIGJ5IG92ZXJyaWRlLgpbICAgIDAuMDAwMDAwXSBJ
-bnQ6IHR5cGUgMCwgcG9sIDAsIHRyaWcgMCwgYnVzIDAwLCBJUlEgMDYsIEFQSUMgSUQgMCwgQVBJ
-QyBJTlQgMDYKWyAgICAwLjAwMDAwMF0gSW50OiB0eXBlIDAsIHBvbCAwLCB0cmlnIDAsIGJ1cyAw
-MCwgSVJRIDA3LCBBUElDIElEIDAsIEFQSUMgSU5UIDA3ClsgICAgMC4wMDAwMDBdIEludDogdHlw
-ZSAwLCBwb2wgMCwgdHJpZyAwLCBidXMgMDAsIElSUSAwOCwgQVBJQyBJRCAwLCBBUElDIElOVCAw
-OApbICAgIDAuMDAwMDAwXSBBQ1BJOiBJUlE5IHVzZWQgYnkgb3ZlcnJpZGUuClsgICAgMC4wMDAw
-MDBdIEFDUEk6IElSUTEwIHVzZWQgYnkgb3ZlcnJpZGUuClsgICAgMC4wMDAwMDBdIEFDUEk6IElS
-UTExIHVzZWQgYnkgb3ZlcnJpZGUuClsgICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBwb2wgMCwg
-dHJpZyAwLCBidXMgMDAsIElSUSAwYywgQVBJQyBJRCAwLCBBUElDIElOVCAwYwpbICAgIDAuMDAw
-MDAwXSBJbnQ6IHR5cGUgMCwgcG9sIDAsIHRyaWcgMCwgYnVzIDAwLCBJUlEgMGQsIEFQSUMgSUQg
-MCwgQVBJQyBJTlQgMGQKWyAgICAwLjAwMDAwMF0gSW50OiB0eXBlIDAsIHBvbCAwLCB0cmlnIDAs
-IGJ1cyAwMCwgSVJRIDBlLCBBUElDIElEIDAsIEFQSUMgSU5UIDBlClsgICAgMC4wMDAwMDBdIElu
-dDogdHlwZSAwLCBwb2wgMCwgdHJpZyAwLCBidXMgMDAsIElSUSAwZiwgQVBJQyBJRCAwLCBBUElD
-IElOVCAwZgpbICAgIDAuMDAwMDAwXSBVc2luZyBBQ1BJIChNQURUKSBmb3IgU01QIGNvbmZpZ3Vy
-YXRpb24gaW5mb3JtYXRpb24KWyAgICAwLjAwMDAwMF0gQUNQSTogSFBFVCBpZDogMHg4MDg2YTIw
-MSBiYXNlOiAweGZlZDAwMDAwClsgICAgMC4wMDAwMDBdIHNtcGJvb3Q6IEFsbG93aW5nIDEgQ1BV
-cywgMCBob3RwbHVnIENQVXMKWyAgICAwLjAwMDAwMF0gbWFwcGVkIElPQVBJQyB0byBmZmZmZmZm
-ZmZmNWY0MDAwIChmZWMwMDAwMCkKWyAgICAwLjAwMDAwMF0gUE06IFJlZ2lzdGVyZWQgbm9zYXZl
-IG1lbW9yeTogW21lbSAweDAwMDAwMDAwLTB4MDAwMDBmZmZdClsgICAgMC4wMDAwMDBdIFBNOiBS
-ZWdpc3RlcmVkIG5vc2F2ZSBtZW1vcnk6IFttZW0gMHgwMDA5ZjAwMC0weDAwMDlmZmZmXQpbICAg
-IDAuMDAwMDAwXSBQTTogUmVnaXN0ZXJlZCBub3NhdmUgbWVtb3J5OiBbbWVtIDB4MDAwYTAwMDAt
-MHgwMDBlZmZmZl0KWyAgICAwLjAwMDAwMF0gUE06IFJlZ2lzdGVyZWQgbm9zYXZlIG1lbW9yeTog
-W21lbSAweDAwMGYwMDAwLTB4MDAwZmZmZmZdClsgICAgMC4wMDAwMDBdIGU4MjA6IFttZW0gMHgx
-NDAwMDAwMC0weGZlZmZiZmZmXSBhdmFpbGFibGUgZm9yIFBDSSBkZXZpY2VzClsgICAgMC4wMDAw
-MDBdIEJvb3RpbmcgcGFyYXZpcnR1YWxpemVkIGtlcm5lbCBvbiBLVk0KWyAgICAwLjAwMDAwMF0g
-c2V0dXBfcGVyY3B1OiBOUl9DUFVTOjUxMiBucl9jcHVtYXNrX2JpdHM6NTEyIG5yX2NwdV9pZHM6
-MSBucl9ub2RlX2lkczoxClsgICAgMC4wMDAwMDBdIFBFUkNQVTogRW1iZWRkZWQgMjkgcGFnZXMv
-Y3B1IEBmZmZmODgwMDEzODAwMDAwIHM4MTkyMCByODE5MiBkMjg2NzIgdTIwOTcxNTIKWyAgICAw
-LjAwMDAwMF0gcGNwdS1hbGxvYzogczgxOTIwIHI4MTkyIGQyODY3MiB1MjA5NzE1MiBhbGxvYz0x
-KjIwOTcxNTIKWyAgICAwLjAwMDAwMF0gcGNwdS1hbGxvYzogWzBdIDAgClsgICAgMC4wMDAwMDBd
-IEtWTSBzZXR1cCBhc3luYyBQRiBmb3IgY3B1IDAKWyAgICAwLjAwMDAwMF0ga3ZtLXN0ZWFsdGlt
-ZTogY3B1IDAsIG1zciAxMzgwZDE0MApbICAgIDAuMDAwMDAwXSBCdWlsdCAxIHpvbmVsaXN0cyBp
-biBOb2RlIG9yZGVyLCBtb2JpbGl0eSBncm91cGluZyBvbi4gIFRvdGFsIHBhZ2VzOiA4MDUxOQpb
-ICAgIDAuMDAwMDAwXSBQb2xpY3kgem9uZTogRE1BMzIKWyAgICAwLjAwMDAwMF0gS2VybmVsIGNv
-bW1hbmQgbGluZTogdXNlcj1sa3Agam9iPS9sa3Avc2NoZWR1bGVkL3ZtLWtidWlsZC15b2N0by1p
-YTMyLTE4L2Jvb3RfYm9vdC0xLXlvY3RvLW1pbmltYWwtaTM4Ni5jZ3oteDg2XzY0LWxrcC01NWZl
-NWVmZTQwNzAwNTQxYTJlNzdhN2FmYTI0N2M3ZTRjNThiZmUyLTAueWFtbCBBUkNIPXg4Nl82NCBC
-T09UX0lNQUdFPS9rZXJuZWwveDg2XzY0LWxrcC81NWZlNWVmZTQwNzAwNTQxYTJlNzdhN2FmYTI0
-N2M3ZTRjNThiZmUyL3ZtbGludXotMy4xOC4wLXJjNC13bC1nNTVmZTVlZiBrY29uZmlnPXg4Nl82
-NC1sa3AgY29tbWl0PTU1ZmU1ZWZlNDA3MDA1NDFhMmU3N2E3YWZhMjQ3YzdlNGM1OGJmZTIgYnJh
-bmNoPWxpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE0MTExMjEwIHJvb3Q9L2Rldi9yYW0wIG1h
-eF91cHRpbWU9MzYwMCBSRVNVTFRfUk9PVD0vcmVzdWx0L3ZtLWtidWlsZC15b2N0by1pYTMyL2Jv
-b3QvMS95b2N0by1taW5pbWFsLWkzODYuY2d6L3g4Nl82NC1sa3AvNTVmZTVlZmU0MDcwMDU0MWEy
-ZTc3YTdhZmEyNDdjN2U0YzU4YmZlMi8wIGlwPTo6Ojp2bS1rYnVpbGQteW9jdG8taWEzMi0xODo6
-ZGhjcCBlYXJseXByaW50az10dHlTMCwxMTUyMDAgZGVidWcgYXBpYz1kZWJ1ZyBzeXNycV9hbHdh
-eXNfZW5hYmxlZCByY3VwZGF0ZS5yY3VfY3B1X3N0YWxsX3RpbWVvdXQ9MTAwIHBhbmljPS0xIHNv
-ZnRsb2NrdXBfcGFuaWM9MSBubWlfd2F0Y2hkb2c9cGFuaWMgb29wcz1wYW5pYyBsb2FkX3JhbWRp
-c2s9MiBwcm9tcHRfcmFtZGlzaz0wIGNvbnNvbGU9dHR5UzAsMTE1MjAwIGNvbnNvbGU9dHR5MCB2
-Z2E9bm9ybWFsIHJ3IGRyYmQubWlub3JfY291bnQ9OApbICAgIDAuMDAwMDAwXSBzeXNycTogc3lz
-cnEgYWx3YXlzIGVuYWJsZWQuClsgICAgMC4wMDAwMDBdIFBJRCBoYXNoIHRhYmxlIGVudHJpZXM6
-IDIwNDggKG9yZGVyOiAyLCAxNjM4NCBieXRlcykKWyAgICAwLjAwMDAwMF0gQUdQOiBDaGVja2lu
-ZyBhcGVydHVyZS4uLgpbICAgIDAuMDAwMDAwXSBBR1A6IE5vIEFHUCBicmlkZ2UgZm91bmQKWyAg
-ICAwLjAwMDAwMF0gTWVtb3J5OiAyOTQ3OTZLLzMyNzI4MEsgYXZhaWxhYmxlICgxMDIyNUsga2Vy
-bmVsIGNvZGUsIDEzOTBLIHJ3ZGF0YSwgNDMzNksgcm9kYXRhLCAxNDUySyBpbml0LCAxNjI0SyBi
-c3MsIDMyNDg0SyByZXNlcnZlZCkKWyAgICAwLjAwMDAwMF0gU0xVQjogSFdhbGlnbj02NCwgT3Jk
-ZXI9MC0zLCBNaW5PYmplY3RzPTAsIENQVXM9MSwgTm9kZXM9MQpbICAgIDAuMDAwMDAwXSBIaWVy
-YXJjaGljYWwgUkNVIGltcGxlbWVudGF0aW9uLgpbICAgIDAuMDAwMDAwXSBSQ1U6IEFkanVzdGlu
-ZyBnZW9tZXRyeSBmb3IgcmN1X2Zhbm91dF9sZWFmPTE2LCBucl9jcHVfaWRzPTEKWyAgICAwLjAw
-MDAwMF0gTlJfSVJRUzozMzAyNCBucl9pcnFzOjI1NiAxNgpbICAgIDAuMDAwMDAwXSBDb25zb2xl
-OiBjb2xvdXIgVkdBKyA4MHgyNQpbICAgIDAuMDAwMDAwXSBjb25zb2xlIFt0dHkwXSBlbmFibGVk
-ClsgICAgMC4wMDAwMDBdIGJvb3Rjb25zb2xlIFtlYXJseXNlcjBdIGRpc2FibGVkClsgICAgMC4w
-MDAwMDBdIGNvbnNvbGUgW3R0eVMwXSBlbmFibGVkClsgICAgMC4wMDAwMDBdIGFsbG9jYXRlZCAx
-NTcyODY0IGJ5dGVzIG9mIHBhZ2VfY2dyb3VwClsgICAgMC4wMDAwMDBdIHBsZWFzZSB0cnkgJ2Nn
-cm91cF9kaXNhYmxlPW1lbW9yeScgb3B0aW9uIGlmIHlvdSBkb24ndCB3YW50IG1lbW9yeSBjZ3Jv
-dXBzClsgICAgMC4wMDAwMDBdIGhwZXQgY2xvY2tldmVudCByZWdpc3RlcmVkClsgICAgMC4wMDAw
-MDBdIHRzYzogRGV0ZWN0ZWQgMjY5My40MTggTUh6IHByb2Nlc3NvcgpbICAgIDAuMDA4MDAwXSBD
-YWxpYnJhdGluZyBkZWxheSBsb29wIChza2lwcGVkKSBwcmVzZXQgdmFsdWUuLiA1Mzg2LjgzIEJv
-Z29NSVBTIChscGo9MTA3NzM2NzIpClsgICAgMC4wMDk4MDRdIHBpZF9tYXg6IGRlZmF1bHQ6IDMy
-NzY4IG1pbmltdW06IDMwMQpbICAgIDAuMDExMzI0XSBBQ1BJOiBDb3JlIHJldmlzaW9uIDIwMTQw
-OTI2ClsgICAgMC4wMTY4MDldIEFDUEk6IEFsbCBBQ1BJIFRhYmxlcyBzdWNjZXNzZnVsbHkgYWNx
-dWlyZWQKWyAgICAwLjAxODc2NF0gRGVudHJ5IGNhY2hlIGhhc2ggdGFibGUgZW50cmllczogNjU1
-MzYgKG9yZGVyOiA3LCA1MjQyODggYnl0ZXMpClsgICAgMC4wMjAxNjhdIElub2RlLWNhY2hlIGhh
-c2ggdGFibGUgZW50cmllczogMzI3NjggKG9yZGVyOiA2LCAyNjIxNDQgYnl0ZXMpClsgICAgMC4w
-MjIxNTZdIE1vdW50LWNhY2hlIGhhc2ggdGFibGUgZW50cmllczogMTAyNCAob3JkZXI6IDEsIDgx
-OTIgYnl0ZXMpClsgICAgMC4wMjQwMjBdIE1vdW50cG9pbnQtY2FjaGUgaGFzaCB0YWJsZSBlbnRy
-aWVzOiAxMDI0IChvcmRlcjogMSwgODE5MiBieXRlcykKWyAgICAwLjAyODI4OV0gSW5pdGlhbGl6
-aW5nIGNncm91cCBzdWJzeXMgbWVtb3J5ClsgICAgMC4wMjk3NzFdIEluaXRpYWxpemluZyBjZ3Jv
-dXAgc3Vic3lzIGRldmljZXMKWyAgICAwLjAzMjAxMV0gSW5pdGlhbGl6aW5nIGNncm91cCBzdWJz
-eXMgZnJlZXplcgpbICAgIDAuMDMzNDk0XSBJbml0aWFsaXppbmcgY2dyb3VwIHN1YnN5cyBibGtp
-bwpbICAgIDAuMDM2MDEwXSBJbml0aWFsaXppbmcgY2dyb3VwIHN1YnN5cyBwZXJmX2V2ZW50Clsg
-ICAgMC4wMzc1NTFdIEluaXRpYWxpemluZyBjZ3JvdXAgc3Vic3lzIGh1Z2V0bGIKWyAgICAwLjA0
-MDEwNV0gbWNlOiBDUFUgc3VwcG9ydHMgMTAgTUNFIGJhbmtzClsgICAgMC4wNDQwNjNdIExhc3Qg
-bGV2ZWwgaVRMQiBlbnRyaWVzOiA0S0IgMCwgMk1CIDAsIDRNQiAwClsgICAgMC4wNDQwNjNdIExh
-c3QgbGV2ZWwgZFRMQiBlbnRyaWVzOiA0S0IgMCwgMk1CIDAsIDRNQiAwLCAxR0IgMApbICAgIDAu
-MDg0Mzk4XSBGcmVlaW5nIFNNUCBhbHRlcm5hdGl2ZXMgbWVtb3J5OiA0MEsgKGZmZmZmZmZmODIy
-YzgwMDAgLSBmZmZmZmZmZjgyMmQyMDAwKQpbICAgIDAuMDkyOTM0XSBmdHJhY2U6IGFsbG9jYXRp
-bmcgMzk3NjkgZW50cmllcyBpbiAxNTYgcGFnZXMKWyAgICAwLjExMjEzMl0gR2V0dGluZyBWRVJT
-SU9OOiA1MDAxNApbICAgIDAuMTE2MDE1XSBHZXR0aW5nIFZFUlNJT046IDUwMDE0ClsgICAgMC4x
-MTc2NzVdIEdldHRpbmcgSUQ6IDAKWyAgICAwLjEyMDAxOF0gR2V0dGluZyBJRDogZmYwMDAwMDAK
-WyAgICAwLjEyNDAxOV0gR2V0dGluZyBMVlQwOiA4NzAwClsgICAgMC4xMjU1OTNdIEdldHRpbmcg
-TFZUMTogODQwMApbICAgIDAuMTI3MjY3XSBlbmFibGVkIEV4dElOVCBvbiBDUFUjMApbICAgIDAu
-MTI5NDEwXSBFTkFCTElORyBJTy1BUElDIElSUXMKWyAgICAwLjEzMTA2MV0gaW5pdCBJT19BUElD
-IElSUXMKWyAgICAwLjEzMjAwOF0gIGFwaWMgMCBwaW4gMCBub3QgY29ubmVjdGVkClsgICAgMC4x
-MzYwMTNdIElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtMSAtPiAweDMxIC0+IElSUSAx
-IE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4xNDAwMzNdIElPQVBJQ1swXTogU2V0IHJv
-dXRpbmcgZW50cnkgKDAtMiAtPiAweDMwIC0+IElSUSAwIE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEp
-ClsgICAgMC4xNDQwMzBdIElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtMiAtPiAweDMw
-IC0+IElSUSAwIE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4xNDgwMjldIElPQVBJQ1sw
-XTogU2V0IHJvdXRpbmcgZW50cnkgKDAtMyAtPiAweDMzIC0+IElSUSAzIE1vZGU6MCBBY3RpdmU6
-MCBEZXN0OjEpClsgICAgMC4xNTIwMjhdIElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAt
-NCAtPiAweDM0IC0+IElSUSA0IE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4xNTYwMzFd
-IElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtNSAtPiAweDM1IC0+IElSUSA1IE1vZGU6
-MSBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4xNjAwMjldIElPQVBJQ1swXTogU2V0IHJvdXRpbmcg
-ZW50cnkgKDAtNiAtPiAweDM2IC0+IElSUSA2IE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsgICAg
-MC4xNjQwMjRdIElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtNyAtPiAweDM3IC0+IElS
-USA3IE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4xNjgwMjRdIElPQVBJQ1swXTogU2V0
-IHJvdXRpbmcgZW50cnkgKDAtOCAtPiAweDM4IC0+IElSUSA4IE1vZGU6MCBBY3RpdmU6MCBEZXN0
-OjEpClsgICAgMC4xNzA2NzVdIElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtOSAtPiAw
-eDM5IC0+IElSUSA5IE1vZGU6MSBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4xNzIwMzBdIElPQVBJ
-Q1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtMTAgLT4gMHgzYSAtPiBJUlEgMTAgTW9kZToxIEFj
-dGl2ZTowIERlc3Q6MSkKWyAgICAwLjE3NDcyMF0gSU9BUElDWzBdOiBTZXQgcm91dGluZyBlbnRy
-eSAoMC0xMSAtPiAweDNiIC0+IElSUSAxMSBNb2RlOjEgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAu
-MTc2MDI0XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTEyIC0+IDB4M2MgLT4gSVJR
-IDEyIE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4xODAwMjRdIElPQVBJQ1swXTogU2V0
-IHJvdXRpbmcgZW50cnkgKDAtMTMgLT4gMHgzZCAtPiBJUlEgMTMgTW9kZTowIEFjdGl2ZTowIERl
-c3Q6MSkKWyAgICAwLjE4NDAyNV0gSU9BUElDWzBdOiBTZXQgcm91dGluZyBlbnRyeSAoMC0xNCAt
-PiAweDNlIC0+IElSUSAxNCBNb2RlOjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuMTg4MDI1XSBJ
-T0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTE1IC0+IDB4M2YgLT4gSVJRIDE1IE1vZGU6
-MCBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4xOTIwMjJdICBhcGljIDAgcGluIDE2IG5vdCBjb25u
-ZWN0ZWQKWyAgICAwLjE5NjAwNV0gIGFwaWMgMCBwaW4gMTcgbm90IGNvbm5lY3RlZApbICAgIDAu
-MjAwMDA1XSAgYXBpYyAwIHBpbiAxOCBub3QgY29ubmVjdGVkClsgICAgMC4yMDE0MDVdICBhcGlj
-IDAgcGluIDE5IG5vdCBjb25uZWN0ZWQKWyAgICAwLjIwNDAwNV0gIGFwaWMgMCBwaW4gMjAgbm90
-IGNvbm5lY3RlZApbICAgIDAuMjA4MDA1XSAgYXBpYyAwIHBpbiAyMSBub3QgY29ubmVjdGVkClsg
-ICAgMC4yMTIwMDRdICBhcGljIDAgcGluIDIyIG5vdCBjb25uZWN0ZWQKWyAgICAwLjIxMzQxMV0g
-IGFwaWMgMCBwaW4gMjMgbm90IGNvbm5lY3RlZApbICAgIDAuMjE2MTU2XSAuLlRJTUVSOiB2ZWN0
-b3I9MHgzMCBhcGljMT0wIHBpbjE9MiBhcGljMj0tMSBwaW4yPS0xClsgICAgMC4yMjAwMDRdIHNt
-cGJvb3Q6IENQVTA6IEludGVsIFdlc3RtZXJlIEU1Nnh4L0w1Nnh4L1g1Nnh4IChOZWhhbGVtLUMp
-IChmYW06IDA2LCBtb2RlbDogMmMsIHN0ZXBwaW5nOiAwMSkKWyAgICAwLjIyODAwNV0gVXNpbmcg
-bG9jYWwgQVBJQyB0aW1lciBpbnRlcnJ1cHRzLgpbICAgIDAuMjI4MDA1XSBjYWxpYnJhdGluZyBB
-UElDIHRpbWVyIC4uLgpbICAgIDAuMjM2MDAwXSAuLi4gbGFwaWMgZGVsdGEgPSA3MzMzNDc4Clsg
-ICAgMC4yMzYwMDBdIC4uLiBQTS1UaW1lciBkZWx0YSA9IDQyMDAxNgpbICAgIDAuMjM2MDAwXSBB
-UElDIGNhbGlicmF0aW9uIG5vdCBjb25zaXN0ZW50IHdpdGggUE0tVGltZXI6IDExN21zIGluc3Rl
-YWQgb2YgMTAwbXMKWyAgICAwLjIzNjAwMF0gQVBJQyBkZWx0YSBhZGp1c3RlZCB0byBQTS1UaW1l
-cjogNjI0OTg3NSAoNzMzMzQ3OCkKWyAgICAwLjIzNjAwMF0gVFNDIGRlbHRhIGFkanVzdGVkIHRv
-IFBNLVRpbWVyOiAyNjkzNTQzNDUgKDMxNjA1NDk1MykKWyAgICAwLjIzNjAwMF0gLi4uLi4gZGVs
-dGEgNjI0OTg3NQpbICAgIDAuMjM2MDAwXSAuLi4uLiBtdWx0OiAyNjg0MzAwODcKWyAgICAwLjIz
-NjAwMF0gLi4uLi4gY2FsaWJyYXRpb24gcmVzdWx0OiAzOTk5OTIwClsgICAgMC4yMzYwMDBdIC4u
-Li4uIENQVSBjbG9jayBzcGVlZCBpcyAyNjkzLjIxNzMgTUh6LgpbICAgIDAuMjM2MDAwXSAuLi4u
-LiBob3N0IGJ1cyBjbG9jayBzcGVlZCBpcyA5OTkuMzkyMCBNSHouClsgICAgMC4yMzYxMTVdIFBl
-cmZvcm1hbmNlIEV2ZW50czogdW5zdXBwb3J0ZWQgcDYgQ1BVIG1vZGVsIDQ0IG5vIFBNVSBkcml2
-ZXIsIHNvZnR3YXJlIGV2ZW50cyBvbmx5LgpbICAgIDAuMjQ1MTc5XSB4ODY6IEJvb3RlZCB1cCAx
-IG5vZGUsIDEgQ1BVcwpbICAgIDAuMjQ2NTIxXSBzbXBib290OiBUb3RhbCBvZiAxIHByb2Nlc3Nv
-cnMgYWN0aXZhdGVkICg1Mzg2LjgzIEJvZ29NSVBTKQpbICAgIDAuMjQ4NDQ3XSBkZXZ0bXBmczog
-aW5pdGlhbGl6ZWQKWyAgICAwLjI1NDI2MF0geG9yOiBtZWFzdXJpbmcgc29mdHdhcmUgY2hlY2tz
-dW0gc3BlZWQKWyAgICAwLjI5MjAzNF0gICAgcHJlZmV0Y2g2NC1zc2U6ICAgMTEzLjAwMCBNQi9z
-ZWMKWyAgICAwLjMzMjAzNl0gICAgZ2VuZXJpY19zc2U6ICAgMTEyLjAwMCBNQi9zZWMKWyAgICAw
-LjMzMzY3NF0geG9yOiB1c2luZyBmdW5jdGlvbjogcHJlZmV0Y2g2NC1zc2UgKDExMy4wMDAgTUIv
-c2VjKQpbICAgIDAuMzM1NTEzXSBhdG9taWM2NF90ZXN0OiBwYXNzZWQgZm9yIHg4Ni02NCBwbGF0
-Zm9ybSB3aXRoIENYOCBhbmQgd2l0aCBTU0UKWyAgICAwLjMzNjI2MV0gTkVUOiBSZWdpc3RlcmVk
-IHByb3RvY29sIGZhbWlseSAxNgpbICAgIDAuMzQwMzE3XSBjcHVpZGxlOiB1c2luZyBnb3Zlcm5v
-ciBsYWRkZXIKWyAgICAwLjM0MjA4Nl0gY3B1aWRsZTogdXNpbmcgZ292ZXJub3IgbWVudQpbICAg
-IDAuMzQ0NDc4XSBBQ1BJOiBidXMgdHlwZSBQQ0kgcmVnaXN0ZXJlZApbICAgIDAuMzQ1ODU0XSBh
-Y3BpcGhwOiBBQ1BJIEhvdCBQbHVnIFBDSSBDb250cm9sbGVyIERyaXZlciB2ZXJzaW9uOiAwLjUK
-WyAgICAwLjM0Nzg3NF0gUENJOiBVc2luZyBjb25maWd1cmF0aW9uIHR5cGUgMSBmb3IgYmFzZSBh
-Y2Nlc3MKWyAgICAwLjQyNDAxNV0gcmFpZDY6IHNzZTJ4MSAgICA0NjQzIE1CL3MKWyAgICAwLjQ5
-MjAxNF0gcmFpZDY6IHNzZTJ4MiAgICA2MTE0IE1CL3MKWyAgICAwLjU2NDAwOF0gcmFpZDY6IHNz
-ZTJ4NCAgICA1NzA0IE1CL3MKWyAgICAwLjU2ODAwNl0gcmFpZDY6IHVzaW5nIGFsZ29yaXRobSBz
-c2UyeDIgKDYxMTQgTUIvcykKWyAgICAwLjU2OTU1M10gcmFpZDY6IHVzaW5nIHNzc2UzeDIgcmVj
-b3ZlcnkgYWxnb3JpdGhtClsgICAgMC41NzgzMDBdIEFDUEk6IEFkZGVkIF9PU0koTW9kdWxlIERl
-dmljZSkKWyAgICAwLjU3OTcxMV0gQUNQSTogQWRkZWQgX09TSShQcm9jZXNzb3IgRGV2aWNlKQpb
-ICAgIDAuNTgwMDE2XSBBQ1BJOiBBZGRlZCBfT1NJKDMuMCBfU0NQIEV4dGVuc2lvbnMpClsgICAg
-MC41ODE0OTZdIEFDUEk6IEFkZGVkIF9PU0koUHJvY2Vzc29yIEFnZ3JlZ2F0b3IgRGV2aWNlKQpb
-ICAgIDAuNTg0ODg5XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTkgLT4gMHgzOSAt
-PiBJUlEgOSBNb2RlOjEgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuNTkwMDA0XSBBQ1BJOiBJbnRl
-cnByZXRlciBlbmFibGVkClsgICAgMC41OTEzMzBdIEFDUEkgRXhjZXB0aW9uOiBBRV9OT1RfRk9V
-TkQsIFdoaWxlIGV2YWx1YXRpbmcgU2xlZXAgU3RhdGUgW1xfUzFfXSAoMjAxNDA5MjYvaHd4ZmFj
-ZS01ODApClsgICAgMC42MDAyNDBdIEFDUEkgRXhjZXB0aW9uOiBBRV9OT1RfRk9VTkQsIFdoaWxl
-IGV2YWx1YXRpbmcgU2xlZXAgU3RhdGUgW1xfUzJfXSAoMjAxNDA5MjYvaHd4ZmFjZS01ODApClsg
-ICAgMC42MDMzMjNdIEFDUEk6IChzdXBwb3J0cyBTMCBTMyBTNCBTNSkKWyAgICAwLjYwNDAwN10g
-QUNQSTogVXNpbmcgSU9BUElDIGZvciBpbnRlcnJ1cHQgcm91dGluZwpbICAgIDAuNjA1NjM3XSBQ
-Q0k6IFVzaW5nIGhvc3QgYnJpZGdlIHdpbmRvd3MgZnJvbSBBQ1BJOyBpZiBuZWNlc3NhcnksIHVz
-ZSAicGNpPW5vY3JzIiBhbmQgcmVwb3J0IGEgYnVnClsgICAgMC42MTUwODNdIEFDUEk6IFBDSSBS
-b290IEJyaWRnZSBbUENJMF0gKGRvbWFpbiAwMDAwIFtidXMgMDAtZmZdKQpbICAgIDAuNjE2MDYw
-XSBhY3BpIFBOUDBBMDM6MDA6IF9PU0M6IE9TIHN1cHBvcnRzIFtBU1BNIENsb2NrUE0gU2VnbWVu
-dHMgTVNJXQpbICAgIDAuNjE4Mjc4XSBhY3BpIFBOUDBBMDM6MDA6IF9PU0MgZmFpbGVkIChBRV9O
-T1RfRk9VTkQpOyBkaXNhYmxpbmcgQVNQTQpbICAgIDAuNjIwMjcyXSBhY3BpIFBOUDBBMDM6MDA6
-IGZhaWwgdG8gYWRkIE1NQ09ORklHIGluZm9ybWF0aW9uLCBjYW4ndCBhY2Nlc3MgZXh0ZW5kZWQg
-UENJIGNvbmZpZ3VyYXRpb24gc3BhY2UgdW5kZXIgdGhpcyBicmlkZ2UuClsgICAgMC42MjQ2MTNd
-IGFjcGlwaHA6IFNsb3QgWzNdIHJlZ2lzdGVyZWQKWyAgICAwLjYyNjAxNV0gYWNwaXBocDogU2xv
-dCBbNF0gcmVnaXN0ZXJlZApbICAgIDAuNjI4MDY1XSBhY3BpcGhwOiBTbG90IFs1XSByZWdpc3Rl
-cmVkClsgICAgMC42Mjk2ODBdIGFjcGlwaHA6IFNsb3QgWzZdIHJlZ2lzdGVyZWQKWyAgICAwLjYz
-MTQ1Nl0gYWNwaXBocDogU2xvdCBbN10gcmVnaXN0ZXJlZApbICAgIDAuNjMyMTMyXSBhY3BpcGhw
-OiBTbG90IFs4XSByZWdpc3RlcmVkClsgICAgMC42MzM5MTJdIGFjcGlwaHA6IFNsb3QgWzldIHJl
-Z2lzdGVyZWQKWyAgICAwLjYzNjEwNV0gYWNwaXBocDogU2xvdCBbMTBdIHJlZ2lzdGVyZWQKWyAg
-ICAwLjYzNzg5NV0gYWNwaXBocDogU2xvdCBbMTFdIHJlZ2lzdGVyZWQKWyAgICAwLjY0MDA1NF0g
-YWNwaXBocDogU2xvdCBbMTJdIHJlZ2lzdGVyZWQKWyAgICAwLjY0MTQ2NV0gYWNwaXBocDogU2xv
-dCBbMTNdIHJlZ2lzdGVyZWQKWyAgICAwLjY0Mjg3Nl0gYWNwaXBocDogU2xvdCBbMTRdIHJlZ2lz
-dGVyZWQKWyAgICAwLjY0NDExNV0gYWNwaXBocDogU2xvdCBbMTVdIHJlZ2lzdGVyZWQKWyAgICAw
-LjY0NTY2Nl0gYWNwaXBocDogU2xvdCBbMjRdIHJlZ2lzdGVyZWQKWyAgICAwLjY0NzA3M10gYWNw
-aXBocDogU2xvdCBbMjVdIHJlZ2lzdGVyZWQKWyAgICAwLjY0ODEwMF0gYWNwaXBocDogU2xvdCBb
-MjZdIHJlZ2lzdGVyZWQKWyAgICAwLjY0OTg3NF0gYWNwaXBocDogU2xvdCBbMjddIHJlZ2lzdGVy
-ZWQKWyAgICAwLjY1MjEzNl0gYWNwaXBocDogU2xvdCBbMjhdIHJlZ2lzdGVyZWQKWyAgICAwLjY1
-Mzk1M10gYWNwaXBocDogU2xvdCBbMjldIHJlZ2lzdGVyZWQKWyAgICAwLjY1NjA2OV0gYWNwaXBo
-cDogU2xvdCBbMzBdIHJlZ2lzdGVyZWQKWyAgICAwLjY1Nzg1OV0gYWNwaXBocDogU2xvdCBbMzFd
-IHJlZ2lzdGVyZWQKWyAgICAwLjY1OTM2MF0gUENJIGhvc3QgYnJpZGdlIHRvIGJ1cyAwMDAwOjAw
-ClsgICAgMC42NjAwNzVdIHBjaV9idXMgMDAwMDowMDogcm9vdCBidXMgcmVzb3VyY2UgW2J1cyAw
-MC1mZl0KWyAgICAwLjY2MTcxMV0gcGNpX2J1cyAwMDAwOjAwOiByb290IGJ1cyByZXNvdXJjZSBb
-aW8gIDB4MDAwMC0weDBjZjddClsgICAgMC42NjQxMDddIHBjaV9idXMgMDAwMDowMDogcm9vdCBi
-dXMgcmVzb3VyY2UgW2lvICAweDBkMDAtMHhmZmZmXQpbICAgIDAuNjY1ODQ1XSBwY2lfYnVzIDAw
-MDA6MDA6IHJvb3QgYnVzIHJlc291cmNlIFttZW0gMHgwMDBhMDAwMC0weDAwMGJmZmZmXQpbICAg
-IDAuNjY4MDY0XSBwY2lfYnVzIDAwMDA6MDA6IHJvb3QgYnVzIHJlc291cmNlIFttZW0gMHg4MDAw
-MDAwMC0weGZlYmZmZmZmXQpbICAgIDAuNjcyMTU4XSBwY2kgMDAwMDowMDowMC4wOiBbODA4Njox
-MjM3XSB0eXBlIDAwIGNsYXNzIDB4MDYwMDAwClsgICAgMC42NzY2MjddIHBjaSAwMDAwOjAwOjAx
-LjA6IFs4MDg2OjcwMDBdIHR5cGUgMDAgY2xhc3MgMHgwNjAxMDAKWyAgICAwLjY3OTEzM10gcGNp
-IDAwMDA6MDA6MDEuMTogWzgwODY6NzAxMF0gdHlwZSAwMCBjbGFzcyAweDAxMDE4MApbICAgIDAu
-Njg0MzM2XSBwY2kgMDAwMDowMDowMS4xOiByZWcgMHgyMDogW2lvICAweGMwODAtMHhjMDhmXQpb
-ICAgIDAuNjg3MjM2XSBwY2kgMDAwMDowMDowMS4xOiBsZWdhY3kgSURFIHF1aXJrOiByZWcgMHgx
-MDogW2lvICAweDAxZjAtMHgwMWY3XQpbICAgIDAuNjg4MDY4XSBwY2kgMDAwMDowMDowMS4xOiBs
-ZWdhY3kgSURFIHF1aXJrOiByZWcgMHgxNDogW2lvICAweDAzZjZdClsgICAgMC42OTIwMDldIHBj
-aSAwMDAwOjAwOjAxLjE6IGxlZ2FjeSBJREUgcXVpcms6IHJlZyAweDE4OiBbaW8gIDB4MDE3MC0w
-eDAxNzddClsgICAgMC42OTYwMDVdIHBjaSAwMDAwOjAwOjAxLjE6IGxlZ2FjeSBJREUgcXVpcms6
-IHJlZyAweDFjOiBbaW8gIDB4MDM3Nl0KWyAgICAwLjcwMDA2Ml0gcGNpIDAwMDA6MDA6MDEuMzog
-WzgwODY6NzExM10gdHlwZSAwMCBjbGFzcyAweDA2ODAwMApbICAgIDAuNzAyNzMzXSBwY2kgMDAw
-MDowMDowMS4zOiBxdWlyazogW2lvICAweGIwMDAtMHhiMDNmXSBjbGFpbWVkIGJ5IFBJSVg0IEFD
-UEkKWyAgICAwLjcwNDAyMl0gcGNpIDAwMDA6MDA6MDEuMzogcXVpcms6IFtpbyAgMHhiMTAwLTB4
-YjEwZl0gY2xhaW1lZCBieSBQSUlYNCBTTUIKWyAgICAwLjcwODYxOV0gcGNpIDAwMDA6MDA6MDIu
-MDogWzEwMTM6MDBiOF0gdHlwZSAwMCBjbGFzcyAweDAzMDAwMApbICAgIDAuNzE2MDY5XSBwY2kg
-MDAwMDowMDowMi4wOiByZWcgMHgxMDogW21lbSAweGZjMDAwMDAwLTB4ZmRmZmZmZmYgcHJlZl0K
-WyAgICAwLjcyMDEwNF0gcGNpIDAwMDA6MDA6MDIuMDogcmVnIDB4MTQ6IFttZW0gMHhmZWJmMDAw
-MC0weGZlYmYwZmZmXQpbICAgIDAuNzMxMDg5XSBwY2kgMDAwMDowMDowMi4wOiByZWcgMHgzMDog
-W21lbSAweGZlYmUwMDAwLTB4ZmViZWZmZmYgcHJlZl0KWyAgICAwLjczMzc2OF0gcGNpIDAwMDA6
-MDA6MDMuMDogWzgwODY6MTAwZV0gdHlwZSAwMCBjbGFzcyAweDAyMDAwMApbICAgIDAuNzM3Mjcy
-XSBwY2kgMDAwMDowMDowMy4wOiByZWcgMHgxMDogW21lbSAweGZlYmEwMDAwLTB4ZmViYmZmZmZd
-ClsgICAgMC43NDEyMDRdIHBjaSAwMDAwOjAwOjAzLjA6IHJlZyAweDE0OiBbaW8gIDB4YzAwMC0w
-eGMwM2ZdClsgICAgMC43NTA0MThdIHBjaSAwMDAwOjAwOjAzLjA6IHJlZyAweDMwOiBbbWVtIDB4
-ZmViYzAwMDAtMHhmZWJkZmZmZiBwcmVmXQpbICAgIDAuNzUyNDMzXSBwY2kgMDAwMDowMDowNC4w
-OiBbMWFmNDoxMDAxXSB0eXBlIDAwIGNsYXNzIDB4MDEwMDAwClsgICAgMC43NTc3MTBdIHBjaSAw
-MDAwOjAwOjA0LjA6IHJlZyAweDEwOiBbaW8gIDB4YzA0MC0weGMwN2ZdClsgICAgMC43NjA2Njhd
-IHBjaSAwMDAwOjAwOjA0LjA6IHJlZyAweDE0OiBbbWVtIDB4ZmViZjEwMDAtMHhmZWJmMWZmZl0K
-WyAgICAwLjc3NDU1NF0gcGNpIDAwMDA6MDA6MDUuMDogWzgwODY6MjVhYl0gdHlwZSAwMCBjbGFz
-cyAweDA4ODAwMApbICAgIDAuNzc3Mjg0XSBwY2kgMDAwMDowMDowNS4wOiByZWcgMHgxMDogW21l
-bSAweGZlYmYyMDAwLTB4ZmViZjIwMGZdClsgICAgMC43ODUxNjddIEFDUEk6IFBDSSBJbnRlcnJ1
-cHQgTGluayBbTE5LQV0gKElSUXMgNSAqMTAgMTEpClsgICAgMC43ODgzMDhdIEFDUEk6IFBDSSBJ
-bnRlcnJ1cHQgTGluayBbTE5LQl0gKElSUXMgNSAqMTAgMTEpClsgICAgMC43OTA3NDRdIEFDUEk6
-IFBDSSBJbnRlcnJ1cHQgTGluayBbTE5LQ10gKElSUXMgNSAxMCAqMTEpClsgICAgMC43OTM1ODFd
-IEFDUEk6IFBDSSBJbnRlcnJ1cHQgTGluayBbTE5LRF0gKElSUXMgNSAxMCAqMTEpClsgICAgMC43
-OTYxNTFdIEFDUEk6IFBDSSBJbnRlcnJ1cHQgTGluayBbTE5LU10gKElSUXMgKjkpClsgICAgMC43
-OTk1ODRdIEFDUEk6IEVuYWJsZWQgMTYgR1BFcyBpbiBibG9jayAwMCB0byAwRgpbICAgIDAuODAw
-NDIzXSB2Z2FhcmI6IHNldHRpbmcgYXMgYm9vdCBkZXZpY2U6IFBDSTowMDAwOjAwOjAyLjAKWyAg
-ICAwLjgwMjEwM10gdmdhYXJiOiBkZXZpY2UgYWRkZWQ6IFBDSTowMDAwOjAwOjAyLjAsZGVjb2Rl
-cz1pbyttZW0sb3ducz1pbyttZW0sbG9ja3M9bm9uZQpbICAgIDAuODA0MDA3XSB2Z2FhcmI6IGxv
-YWRlZApbICAgIDAuODA1MzE2XSB2Z2FhcmI6IGJyaWRnZSBjb250cm9sIHBvc3NpYmxlIDAwMDA6
-MDA6MDIuMApbICAgIDAuODA4MzY3XSBTQ1NJIHN1YnN5c3RlbSBpbml0aWFsaXplZApbICAgIDAu
-ODA5OTA4XSBsaWJhdGEgdmVyc2lvbiAzLjAwIGxvYWRlZC4KWyAgICAwLjgxMjE0Nl0gQUNQSTog
-YnVzIHR5cGUgVVNCIHJlZ2lzdGVyZWQKWyAgICAwLjgxMzY3OV0gdXNiY29yZTogcmVnaXN0ZXJl
-ZCBuZXcgaW50ZXJmYWNlIGRyaXZlciB1c2JmcwpbICAgIDAuODE2MDQ2XSB1c2Jjb3JlOiByZWdp
-c3RlcmVkIG5ldyBpbnRlcmZhY2UgZHJpdmVyIGh1YgpbICAgIDAuODE4MDk5XSB1c2Jjb3JlOiBy
-ZWdpc3RlcmVkIG5ldyBkZXZpY2UgZHJpdmVyIHVzYgpbICAgIDAuODE5ODg2XSBwcHNfY29yZTog
-TGludXhQUFMgQVBJIHZlci4gMSByZWdpc3RlcmVkClsgICAgMC44MjAwMTRdIHBwc19jb3JlOiBT
-b2Z0d2FyZSB2ZXIuIDUuMy42IC0gQ29weXJpZ2h0IDIwMDUtMjAwNyBSb2RvbGZvIEdpb21ldHRp
-IDxnaW9tZXR0aUBsaW51eC5pdD4KWyAgICAwLjgyNDA1MV0gUFRQIGNsb2NrIHN1cHBvcnQgcmVn
-aXN0ZXJlZApbICAgIDAuODI1NjMzXSBFREFDIE1DOiBWZXI6IDMuMC4wClsgICAgMC44Mjk1OTJd
-IFBDSTogVXNpbmcgQUNQSSBmb3IgSVJRIHJvdXRpbmcKWyAgICAwLjgzMjAyMV0gUENJOiBwY2lf
-Y2FjaGVfbGluZV9zaXplIHNldCB0byA2NCBieXRlcwpbICAgIDAuODMzNzUwXSBlODIwOiByZXNl
-cnZlIFJBTSBidWZmZXIgW21lbSAweDAwMDlmYzAwLTB4MDAwOWZmZmZdClsgICAgMC44MzU0NzNd
-IGU4MjA6IHJlc2VydmUgUkFNIGJ1ZmZlciBbbWVtIDB4MTNmZmUwMDAtMHgxM2ZmZmZmZl0KWyAg
-ICAwLjgzNzI4MF0gSFBFVDogMyB0aW1lcnMgaW4gdG90YWwsIDAgdGltZXJzIHdpbGwgYmUgdXNl
-ZCBmb3IgcGVyLWNwdSB0aW1lcgpbICAgIDAuODQwMTQzXSBocGV0MDogYXQgTU1JTyAweGZlZDAw
-MDAwLCBJUlFzIDIsIDgsIDAKWyAgICAwLjg0MjEyNl0gaHBldDA6IDMgY29tcGFyYXRvcnMsIDY0
-LWJpdCAxMDAuMDAwMDAwIE1IeiBjb3VudGVyClsgICAgMC44NDgyNTddIFN3aXRjaGVkIHRvIGNs
-b2Nrc291cmNlIGt2bS1jbG9jawpbICAgIDAuODgzMjM5XSBwbnA6IFBuUCBBQ1BJIGluaXQKWyAg
-ICAwLjg4NDY5N10gSU9BUElDWzBdOiBTZXQgcm91dGluZyBlbnRyeSAoMC04IC0+IDB4MzggLT4g
-SVJRIDggTW9kZTowIEFjdGl2ZTowIERlc3Q6MSkKWyAgICAwLjg5Nzc1OF0gcG5wIDAwOjAwOiBQ
-bHVnIGFuZCBQbGF5IEFDUEkgZGV2aWNlLCBJRHMgUE5QMGIwMCAoYWN0aXZlKQpbICAgIDAuODk5
-NjA5XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTEgLT4gMHgzMSAtPiBJUlEgMSBN
-b2RlOjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuOTAyNDExXSBwbnAgMDA6MDE6IFBsdWcgYW5k
-IFBsYXkgQUNQSSBkZXZpY2UsIElEcyBQTlAwMzAzIChhY3RpdmUpClsgICAgMC45MDQzMDVdIElP
-QVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtMTIgLT4gMHgzYyAtPiBJUlEgMTIgTW9kZTow
-IEFjdGl2ZTowIERlc3Q6MSkKWyAgICAwLjkxNzM2MF0gcG5wIDAwOjAyOiBQbHVnIGFuZCBQbGF5
-IEFDUEkgZGV2aWNlLCBJRHMgUE5QMGYxMyAoYWN0aXZlKQpbICAgIDAuOTE5MjIxXSBJT0FQSUNb
-MF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTYgLT4gMHgzNiAtPiBJUlEgNiBNb2RlOjAgQWN0aXZl
-OjAgRGVzdDoxKQpbICAgIDAuOTIxOTc3XSBwbnAgMDA6MDM6IFtkbWEgMl0KWyAgICAwLjkyMzI3
-OV0gcG5wIDAwOjAzOiBQbHVnIGFuZCBQbGF5IEFDUEkgZGV2aWNlLCBJRHMgUE5QMDcwMCAoYWN0
-aXZlKQpbICAgIDAuOTM1NTAyXSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTcgLT4g
-MHgzNyAtPiBJUlEgNyBNb2RlOjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuOTM4MzE0XSBwbnAg
-MDA6MDQ6IFBsdWcgYW5kIFBsYXkgQUNQSSBkZXZpY2UsIElEcyBQTlAwNDAwIChhY3RpdmUpClsg
-ICAgMC45NDY4NDldIElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtNCAtPiAweDM0IC0+
-IElSUSA0IE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC45NDk2NTNdIHBucCAwMDowNTog
-UGx1ZyBhbmQgUGxheSBBQ1BJIGRldmljZSwgSURzIFBOUDA1MDEgKGFjdGl2ZSkKWyAgICAwLjk1
-MTUyMF0gSU9BUElDWzBdOiBTZXQgcm91dGluZyBlbnRyeSAoMC0zIC0+IDB4MzMgLT4gSVJRIDMg
-TW9kZTowIEFjdGl2ZTowIERlc3Q6MSkKWyAgICAwLjk1NDMxNl0gcG5wIDAwOjA2OiBQbHVnIGFu
-ZCBQbGF5IEFDUEkgZGV2aWNlLCBJRHMgUE5QMDUwMSAoYWN0aXZlKQpbICAgIDAuOTY2NzI0XSBw
-bnA6IFBuUCBBQ1BJOiBmb3VuZCA3IGRldmljZXMKWyAgICAwLjk4NjAwN10gcGNpX2J1cyAwMDAw
-OjAwOiByZXNvdXJjZSA0IFtpbyAgMHgwMDAwLTB4MGNmN10KWyAgICAwLjk4NzY0MF0gcGNpX2J1
-cyAwMDAwOjAwOiByZXNvdXJjZSA1IFtpbyAgMHgwZDAwLTB4ZmZmZl0KWyAgICAwLjk4OTMwNF0g
-cGNpX2J1cyAwMDAwOjAwOiByZXNvdXJjZSA2IFttZW0gMHgwMDBhMDAwMC0weDAwMGJmZmZmXQpb
-ICAgIDAuOTkxMDQ1XSBwY2lfYnVzIDAwMDA6MDA6IHJlc291cmNlIDcgW21lbSAweDgwMDAwMDAw
-LTB4ZmViZmZmZmZdClsgICAgMC45OTMwMjZdIE5FVDogUmVnaXN0ZXJlZCBwcm90b2NvbCBmYW1p
-bHkgMgpbICAgIDEuMDA2Njk3XSBUQ1AgZXN0YWJsaXNoZWQgaGFzaCB0YWJsZSBlbnRyaWVzOiA0
-MDk2IChvcmRlcjogMywgMzI3NjggYnl0ZXMpClsgICAgMS4wMDg3MTNdIFRDUCBiaW5kIGhhc2gg
-dGFibGUgZW50cmllczogNDA5NiAob3JkZXI6IDQsIDY1NTM2IGJ5dGVzKQpbICAgIDEuMDEwNTM2
-XSBUQ1A6IEhhc2ggdGFibGVzIGNvbmZpZ3VyZWQgKGVzdGFibGlzaGVkIDQwOTYgYmluZCA0MDk2
-KQpbICAgIDEuMDEyNDg2XSBUQ1A6IHJlbm8gcmVnaXN0ZXJlZApbICAgIDEuMDEzNzI2XSBVRFAg
-aGFzaCB0YWJsZSBlbnRyaWVzOiAyNTYgKG9yZGVyOiAxLCA4MTkyIGJ5dGVzKQpbICAgIDEuMDI1
-NDczXSBVRFAtTGl0ZSBoYXNoIHRhYmxlIGVudHJpZXM6IDI1NiAob3JkZXI6IDEsIDgxOTIgYnl0
-ZXMpClsgICAgMS4wMjc2MDddIE5FVDogUmVnaXN0ZXJlZCBwcm90b2NvbCBmYW1pbHkgMQpbICAg
-IDEuMDI5MzA4XSBSUEM6IFJlZ2lzdGVyZWQgbmFtZWQgVU5JWCBzb2NrZXQgdHJhbnNwb3J0IG1v
-ZHVsZS4KWyAgICAxLjAzMTAwN10gUlBDOiBSZWdpc3RlcmVkIHVkcCB0cmFuc3BvcnQgbW9kdWxl
-LgpbICAgIDEuMDMyNTA4XSBSUEM6IFJlZ2lzdGVyZWQgdGNwIHRyYW5zcG9ydCBtb2R1bGUuClsg
-ICAgMS4wMzM5NzldIFJQQzogUmVnaXN0ZXJlZCB0Y3AgTkZTdjQuMSBiYWNrY2hhbm5lbCB0cmFu
-c3BvcnQgbW9kdWxl
---===============5047208624672656046==--
+--===============1768983962475500252==--
 
