@@ -1,71 +1,96 @@
-Content-Type: multipart/mixed; boundary="===============5252366504332536352=="
+Content-Type: multipart/mixed; boundary="===============4355270453215466783=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Jiang Liu <jiang.liu@linux.intel.com>
 To: lkp@lists.01.org
-Subject: [x86, irq] BUG: kernel boot hang
-Date: Thu, 13 Nov 2014 21:41:39 +0800
-Message-ID: <20141113134139.GA22488@wfg-t540p.sh.intel.com>
-In-Reply-To: <20141113123958.GA15348@wfg-t540p.sh.intel.com>
+Subject: Re: [x86, irq] BUG: kernel boot hang
+Date: Thu, 13 Nov 2014 22:08:11 +0800
+Message-ID: <5464BB4B.7010505@linux.intel.com>
+In-Reply-To: <20141113134139.GA22488@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5252366504332536352==
+--===============4355270453215466783==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi Fengguang,
+	This seems like a bug caused by my changes, several
+bisecting report the same commit. There's some subtle changes
+in the way to write IOAPIC registers, will check it tomorrow:)
+Thanks!
+Gerry
 
-Hi Jiang,
+On 2014/11/13 21:41, Fengguang Wu wrote:
+> =
 
-This is another bisect result.
+> Hi Jiang,
+> =
 
-https://github.com/jiangliu/linux.git irqdomain/p4v2
-commit b8c2d075135a41f69254a75c4f26162559503ab4 ("x86, irq: Use cached IOAP=
-IC entry instead of reading from hardware")
+> This is another bisect result.
+> =
 
+> https://github.com/jiangliu/linux.git irqdomain/p4v2
+> commit b8c2d075135a41f69254a75c4f26162559503ab4 ("x86, irq: Use cached IO=
+APIC entry instead of reading from hardware")
+> =
 
-+----------------------+------------+------------+
-|                      | 384c30d19a | b8c2d07513 |
-+----------------------+------------+------------+
-| boot_successes       | 20         | 5          |
-| early-boot-hang      | 1          |            |
-| boot_failures        | 0          | 15         |
-| BUG:kernel_boot_hang | 0          | 15         |
-+----------------------+------------+------------+
+> =
 
+> +----------------------+------------+------------+
+> |                      | 384c30d19a | b8c2d07513 |
+> +----------------------+------------+------------+
+> | boot_successes       | 20         | 5          |
+> | early-boot-hang      | 1          |            |
+> | boot_failures        | 0          | 15         |
+> | BUG:kernel_boot_hang | 0          | 15         |
+> +----------------------+------------+------------+
+> =
 
-[  289.616037] Waiting up to 30 more seconds for network.
-[  299.616037] Waiting up to 20 more seconds for network.
+> =
 
-BUG: kernel boot hang
-Elapsed time: 310
-qemu-system-x86_64 -enable-kvm -kernel /kernel/x86_64-lkp/349d0daa5e14b9b40=
-2a2dea3e602ef1cb109173b/vmlinuz-3.18.0-rc3-g349d0da -append 'user=3Dlkp job=
-=3D/lkp/scheduled/vm-vp-quantal-x86_64-27/rand_boot-1-quantal-core-x86_64.c=
-gz-x86_64-lkp-349d0daa5e14b9b402a2dea3e602ef1cb109173b-1.yaml ARCH=3Dx86_64=
- BOOT_IMAGE=3D/kernel/x86_64-lkp/349d0daa5e14b9b402a2dea3e602ef1cb109173b/v=
-mlinuz-3.18.0-rc3-g349d0da kconfig=3Dx86_64-lkp commit=3D349d0daa5e14b9b402=
-a2dea3e602ef1cb109173b branch=3Djiangliu/irqdomain/p4v2 root=3D/dev/ram0 ma=
-x_uptime=3D3600 RESULT_ROOT=3D/result/vm-vp-quantal-x86_64/boot/1/quantal-c=
-ore-x86_64.cgz/x86_64-lkp/349d0daa5e14b9b402a2dea3e602ef1cb109173b/0 ip=3D:=
-:::vm-vp-quantal-x86_64-27::dhcp earlyprintk=3DttyS0,115200 debug apic=3Dde=
-bug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 panic=3D-1 so=
-ftlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_ramdisk=3D2 promp=
-t_ramdisk=3D0 console=3DttyS0,115200 console=3Dtty0 vga=3Dnormal rw drbd.mi=
-nor_count=3D8'  -initrd /fs/sdf1/initrd-vm-vp-quantal-x86_64-27 -m 360 -smp=
- 2 -net nic,vlan=3D1,model=3De1000 -net user,vlan=3D1 -boot order=3Dnc -no-=
-reboot -watchdog i6300esb -rtc base=3Dlocaltime -pidfile /dev/shm/kboot/pid=
--vm-vp-quantal-x86_64-27 -serial file:/dev/shm/kboot/serial-vm-vp-quantal-x=
-86_64-27 -daemonize -display none -monitor null =
+> [  289.616037] Waiting up to 30 more seconds for network.
+> [  299.616037] Waiting up to 20 more seconds for network.
+> =
 
+> BUG: kernel boot hang
+> Elapsed time: 310
+> qemu-system-x86_64 -enable-kvm -kernel /kernel/x86_64-lkp/349d0daa5e14b9b=
+402a2dea3e602ef1cb109173b/vmlinuz-3.18.0-rc3-g349d0da -append 'user=3Dlkp j=
+ob=3D/lkp/scheduled/vm-vp-quantal-x86_64-27/rand_boot-1-quantal-core-x86_64=
+.cgz-x86_64-lkp-349d0daa5e14b9b402a2dea3e602ef1cb109173b-1.yaml ARCH=3Dx86_=
+64 BOOT_IMAGE=3D/kernel/x86_64-lkp/349d0daa5e14b9b402a2dea3e602ef1cb109173b=
+/vmlinuz-3.18.0-rc3-g349d0da kconfig=3Dx86_64-lkp commit=3D349d0daa5e14b9b4=
+02a2dea3e602ef1cb109173b branch=3Djiangliu/irqdomain/p4v2 root=3D/dev/ram0 =
+max_uptime=3D3600 RESULT_ROOT=3D/result/vm-vp-quantal-x86_64/boot/1/quantal=
+-core-x86_64.cgz/x86_64-lkp/349d0daa5e14b9b402a2dea3e602ef1cb109173b/0 ip=
+=3D::::vm-vp-quantal-x86_64-27::dhcp earlyprintk=3DttyS0,115200 debug apic=
+=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 panic=3D=
+-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_ramdisk=3D2 =
+prompt_ramdisk=3D0 console=3DttyS0,115200 console=3Dtty0 vga=3Dnormal rw dr=
+bd.minor_count=3D8'  -initrd /fs/sdf1/initrd-vm-vp-quantal-x86_64-27 -m 3
+60 -smp 2 -net nic,vlan=3D1,model=3De1000 -net user,vlan=3D1 -boot order=3D=
+nc -no-reboot -watchdog i6300esb -rtc base=3Dlocaltime -pidfile /dev/shm/kb=
+oot/pid-vm-vp-quantal-x86_64-27 -serial file:/dev/shm/kboot/serial-vm-vp-qu=
+antal-x86_64-27 -daemonize -display none -monitor null =
 
+> =
 
+> =
 
-Thanks,
-Fengguang
+> =
 
-_______________________________________________
-LKP mailing list
-LKP(a)linux.intel.com
+> Thanks,
+> Fengguang
+> =
 
---===============5252366504332536352==--
+> =
+
+> =
+
+> _______________________________________________
+> LKP mailing list
+> LKP(a)linux.intel.com
+>=20
+
+--===============4355270453215466783==--
 
