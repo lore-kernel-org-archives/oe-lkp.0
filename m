@@ -1,102 +1,470 @@
-Content-Type: multipart/mixed; boundary="===============3025953300041305032=="
+Content-Type: multipart/mixed; boundary="===============1944732495449640336=="
 MIME-Version: 1.0
-From: Steven Rostedt <rostedt@goodmis.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: [for-next][PATCH 1/9] ftrace: Have the control_ops get a trampoline
-Date: Fri, 14 Nov 2014 18:24:02 -0500
-Message-ID: <20141114232452.063132042@goodmis.org>
-In-Reply-To: <20141114232401.493543108@goodmis.org>
+Subject: [x86, mm] BUG: Bad page state in process swapper/0 pfn:020c0
+Date: Sat, 15 Nov 2014 18:22:25 +0800
+Message-ID: <20141115102225.GA6679@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3025953300041305032==
+--===============1944732495449640336==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: "Steven Rostedt (Red Hat)" <rostedt@goodmis.org>
+Greetings,
 
-With the new logic, if only a single user of ftrace function hooks is
-used, it will get its own trampoline assigned to it.
+0day kernel testing robot got the below dmesg and the first bad commit is
 
-The problem is that the control_ops is an indirect ops that perf ops
-uses. What that means is that when perf registers its ops with
-register_ftrace_function(), it has the CONTROL flag set and gets added
-to the control list instead of the global ftrace list. The control_ops
-gets added to that instead and the mcount trampoline calls the control_ops
-function. The control_ops function will iterate the control list and
-call the ops functions that are attached to it.
+git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git x86/pmd-nx
 
-But currently the trampoline is added to the perf ops and not the
-control ops, and when ftrace tries to find a trampoline hook for it,
-it fails to find one and gives the following splat:
+commit 3622dcc2b4f4eaf23bae2511a30fc449d0e5f0d9
+Author:     Kees Cook <keescook@chromium.org>
+AuthorDate: Fri Nov 14 11:36:17 2014 -0800
+Commit:     Kees Cook <keescook@chromium.org>
+CommitDate: Fri Nov 14 13:36:37 2014 -0800
 
- ------------[ cut here ]------------
- WARNING: CPU: 0 PID: 10133 at kernel/trace/ftrace.c:2033 ftrace_get_addr_n=
-ew+0x6f/0xc0()
- Modules linked in: [...]
- CPU: 0 PID: 10133 Comm: perf Tainted: P               3.18.0-rc1-test+ #388
- Hardware name: Hewlett-Packard HP Compaq Pro 6300 SFF/339A, BIOS K01 v02.0=
-5 05/07/2012
-  00000000000007f1 ffff8800c2643bc8 ffffffff814fca6e ffff88011ea0ed01
-  0000000000000000 ffff8800c2643c08 ffffffff81041ffd 0000000000000000
-  ffffffff810c388c ffffffff81a5a350 ffff880119b00000 ffffffff810001c8
- Call Trace:
-  [<ffffffff814fca6e>] dump_stack+0x46/0x58
-  [<ffffffff81041ffd>] warn_slowpath_common+0x81/0x9b
-  [<ffffffff810c388c>] ? ftrace_get_addr_new+0x6f/0xc0
-  [<ffffffff810001c8>] ? 0xffffffff810001c8
-  [<ffffffff81042031>] warn_slowpath_null+0x1a/0x1c
-  [<ffffffff810c388c>] ftrace_get_addr_new+0x6f/0xc0
-  [<ffffffff8102e938>] ftrace_replace_code+0xd6/0x334
-  [<ffffffff810c4116>] ftrace_modify_all_code+0x41/0xc5
-  [<ffffffff8102eba6>] arch_ftrace_update_code+0x10/0x19
-  [<ffffffff810c293c>] ftrace_run_update_code+0x21/0x42
-  [<ffffffff810c298f>] ftrace_startup_enable+0x32/0x34
-  [<ffffffff810c3049>] ftrace_startup+0x14e/0x15a
-  [<ffffffff810c307c>] register_ftrace_function+0x27/0x40
-  [<ffffffff810dc118>] perf_ftrace_event_register+0x3e/0xee
-  [<ffffffff810dbfbe>] perf_trace_init+0x29d/0x2a9
-  [<ffffffff810eb422>] perf_tp_event_init+0x27/0x3a
-  [<ffffffff810f18bc>] perf_init_event+0x9e/0xed
-  [<ffffffff810f1ba4>] perf_event_alloc+0x299/0x330
-  [<ffffffff810f236b>] SYSC_perf_event_open+0x3ee/0x816
-  [<ffffffff8115a066>] ? mntput+0x2d/0x2f
-  [<ffffffff81142b00>] ? __fput+0xa7/0x1b2
-  [<ffffffff81091300>] ? do_gettimeofday+0x22/0x3a
-  [<ffffffff810f279c>] SyS_perf_event_open+0x9/0xb
-  [<ffffffff81502a92>] system_call_fastpath+0x12/0x17
- ---[ end trace 81a53565150e4982 ]---
- Bad trampoline accounting at: ffffffff810001c8 (run_init_process+0x0/0x2d)=
- (10000001)
+    x86, mm: set NX across entire PMD at boot
+    =
 
-Update the control_ops trampoline instead of the perf ops one.
+    When setting up permissions on kernel memory at boot, the end of the
+    PMD that was split from bss remained executable. It should be NX like
+    the rest. This performs a PMD alignment instead of a PAGE alignment to
+    get the correct span of memory, and should be freed.
+    =
 
-Reported-by: lkp(a)01.org
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
----
- kernel/trace/ftrace.c | 2 ++
- 1 file changed, 2 insertions(+)
+    Before:
+    ---[ High Kernel Mapping ]---
+    ...
+    0xffffffff8202d000-0xffffffff82200000  1868K     RW       GLB NX pte
+    0xffffffff82200000-0xffffffff82c00000    10M     RW   PSE GLB NX pmd
+    0xffffffff82c00000-0xffffffff82df5000  2004K     RW       GLB NX pte
+    0xffffffff82df5000-0xffffffff82e00000    44K     RW       GLB x  pte
+    0xffffffff82e00000-0xffffffffc0000000   978M                     pmd
+    =
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 4043332f6720..1a13e615a068 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -418,6 +418,8 @@ static int __register_ftrace_function(struct ftrace_ops=
- *ops)
- 		if (control_ops_alloc(ops))
- 			return -ENOMEM;
- 		add_ftrace_list_ops(&ftrace_control_list, &control_ops, ops);
-+		/* The control_ops needs the trampoline update */
-+		ops =3D &control_ops;
- 	} else
- 		add_ftrace_ops(&ftrace_ops_list, ops);
- =
+    After:
+    ---[ High Kernel Mapping ]---
+    ...
+    0xffffffff8202d000-0xffffffff82200000  1868K     RW       GLB NX pte
+    0xffffffff82200000-0xffffffff82c00000    10M     RW   PSE GLB NX pmd
+    0xffffffff82c00000-0xffffffff82df5000  2004K     RW       GLB NX pte
+    0xffffffff82df5000-0xffffffff82e00000    44K     RW           NX pte
+    0xffffffff82e00000-0xffffffffc0000000   978M                     pmd
+    =
 
--- =
+    Signed-off-by: Kees Cook <keescook@chromium.org>
 
-2.1.1
++------------------------------------------+------------+------------+-----=
+-------+
+|                                          | b23dc5a7cc | 3622dcc2b4 | 1924=
+95a3a4 |
++------------------------------------------+------------+------------+-----=
+-------+
+| boot_successes                           | 64         | 0          | 0   =
+       |
+| boot_failures                            | 1          | 20         | 14  =
+       |
+| BUG:kernel_boot_hang                     | 1          |            |     =
+       |
+| BUG:Bad_page_state_in_process            | 0          | 20         | 14  =
+       |
+| BUG:Bad_page_map_in_process              | 0          | 15         | 10  =
+       |
+| backtrace:free_reserved_area             | 0          | 20         | 14  =
+       |
+| backtrace:free_init_pages                | 0          | 20         | 14  =
+       |
+| backtrace:mark_rodata_ro                 | 0          | 20         | 14  =
+       |
+| backtrace:do_execve_common               | 0          | 3          | 2   =
+       |
+| backtrace:SyS_execve                     | 0          | 3          | 2   =
+       |
+| backtrace:do_group_exit                  | 0          | 13         | 7   =
+       |
+| backtrace:SyS_exit_group                 | 0          | 13         | 7   =
+       |
+| general_protection_fault                 | 0          | 7          | 6   =
+       |
+| RIP:release_pages                        | 0          | 5          | 5   =
+       |
+| Kernel_panic-not_syncing:Fatal_exception | 0          | 10         | 5   =
+       |
+| backtrace:vfs_read                       | 0          | 4          | 3   =
+       |
+| backtrace:SyS_read                       | 0          | 4          | 3   =
+       |
+| BUG:unable_to_handle_kernel              | 0          | 3          |     =
+       |
+| Oops                                     | 0          | 3          |     =
+       |
+| RIP:__delete_from_page_cache             | 0          | 2          |     =
+       |
+| backtrace:SYSC_renameat2                 | 0          | 2          |     =
+       |
+| backtrace:SyS_rename                     | 0          | 2          |     =
+       |
+| RIP:__page_cache_release                 | 0          | 2          |     =
+       |
+| RIP:free_pcppages_bulk                   | 0          | 1          |     =
+       |
+| backtrace:vfs_write                      | 0          | 0          | 1   =
+       |
+| backtrace:SyS_write                      | 0          | 0          | 1   =
+       |
++------------------------------------------+------------+------------+-----=
+-------+
+
+[    2.615868]   #3: Internal PC-Speaker at port 0x61
+[    2.617590] Freeing unused kernel memory: 924K (ffffffff81f15000 - fffff=
+fff81ffc000)
+[    2.619355] Write protecting the kernel read-only data: 14336k
+[    2.621361] BUG: Bad page state in process swapper/0  pfn:020c0
+[    2.622959] page:ffff880012f69000 count:0 mapcount:-127 mapping:        =
+  (null) index:0x2
+[    2.624982] flags: 0x80000000000()
+[    2.626452] page dumped because: nonzero mapcount
+[    2.627529] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.18.0-rc4-g3622dc=
+c2 #1477
+[    2.629672] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[    2.630904]  ffffffff81caf350 ffff88001289fd78 ffffffff819360c5 00000000=
+00000000
+[    2.633079]  ffff880012f69000 ffff88001289fda8 ffffffff8113046b 00000000=
+00000001
+[    2.635141]  ffff880012f69000 0000000000000000 ffff880012f69040 ffff8800=
+1289fdf8
+[    2.637254] Call Trace:
+[    2.637950]  [<ffffffff819360c5>] dump_stack+0x4f/0x7c
+[    2.639063]  [<ffffffff8113046b>] bad_page+0xdb/0x130
+[    2.640278]  [<ffffffff811305fe>] free_pages_prepare+0x13e/0x160
+[    2.641536]  [<ffffffff8113272c>] free_hot_cold_page+0x4c/0x1e0
+[    2.642757]  [<ffffffff81132947>] __free_pages+0x27/0x30
+[    2.643885]  [<ffffffff81132c5f>] free_reserved_area+0xcf/0x150
+[    2.645144]  [<ffffffff810350c4>] free_init_pages+0x74/0xb0
+[    2.646327]  [<ffffffff8193fc9c>] ? bad_gs+0x299/0x171d
+[    2.647451]  [<ffffffff81035d04>] mark_rodata_ro+0xb4/0x120
+[    2.648678]  [<ffffffff819288a0>] ? rest_init+0x80/0x80
+[    2.650138]  [<ffffffff819288b8>] kernel_init+0x18/0xf0
+[    2.651258]  [<ffffffff8193d6bc>] ret_from_fork+0x7c/0xb0
+[    2.652420]  [<ffffffff819288a0>] ? rest_init+0x80/0x80
+[    2.653559] Disabling lock debugging due to kernel taint
+[    2.659112] BUG: Bad page state in process swapper/0  pfn:02100
+[    2.660356] page:ffff880012f6a000 count:0 mapcount:-127 mapping:        =
+  (null) index:0x2
+[    2.662165] flags: 0x80000000000()
+[    2.663090] page dumped because: nonzero mapcount
+[    2.664137] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G    B          3.18.=
+0-rc4-g3622dcc2 #1477
+[    2.665978] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[    2.667168]  ffffffff81caf350 ffff88001289fd78 ffffffff819360c5 00000000=
+00000000
+[    2.669248]  ffff880012f6a000 ffff88001289fda8 ffffffff8113046b 00000000=
+00000001
+[    2.671299]  ffff880012f6a000 0000000000000000 ffff880012f6a040 ffff8800=
+1289fdf8
+[    2.673381] Call Trace:
+[    2.674071]  [<ffffffff819360c5>] dump_stack+0x4f/0x7c
+[    2.675168]  [<ffffffff8113046b>] bad_page+0xdb/0x130
+[    2.676378]  [<ffffffff811305fe>] free_pages_prepare+0x13e/0x160
+[    2.677627]  [<ffffffff8113272c>] free_hot_cold_page+0x4c/0x1e0
+[    2.678853]  [<ffffffff81132947>] __free_pages+0x27/0x30
+[    2.679983]  [<ffffffff81132c5f>] free_reserved_area+0xcf/0x150
+[    2.681233]  [<ffffffff810350c4>] free_init_pages+0x74/0xb0
+[    2.682411]  [<ffffffff8193fc9c>] ? bad_gs+0x299/0x171d
+[    2.683531]  [<ffffffff81035d04>] mark_rodata_ro+0xb4/0x120
+[    2.684729]  [<ffffffff819288a0>] ? rest_init+0x80/0x80
+[    2.685849]  [<ffffffff819288b8>] kernel_init+0x18/0xf0
+[    2.686967]  [<ffffffff8193d6bc>] ret_from_fork+0x7c/0xb0
+[    2.688125]  [<ffffffff819288a0>] ? rest_init+0x80/0x80
+[    2.689990] Freeing unused kernel memory: 1284K (ffffffff820bf000 - ffff=
+ffff82200000)
+[    2.694431] Freeing unused kernel memory: 752K (ffff880001944000 - ffff8=
+80001a00000)
+[    2.697790] Freeing unused kernel memory: 456K (ffff880001d8e000 - ffff8=
+80001e00000)
+[    2.807184] BUG: Bad page state in process udevd  pfn:020bf
+[    2.813249] BUG: Bad page map in process udevd  pte:80000000020bf045 pmd=
+:0fd3a067
+[    2.815394] page:ffff880012f68fc0 count:2 mapcount:-1 mapping:ffff88000f=
+ceb7a9 index:0x2
+[    2.817744] flags: 0x80000080068(uptodate|lru|active|swapbacked)
+[    2.819911] page dumped because: bad pte
+[    2.821153] addr:00007fffba69d000 vm_flags:00100173 anon_vma:ffff88000fd=
+347a8 mapping:          (null) index:7fffffff6
+[    2.824010] CPU: 0 PID: 141 Comm: udevd Tainted: G    B          3.18.0-=
+rc4-g3622dcc2 #1477
+[    2.826355] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[    2.827847]  ffff88000fd283f0 ffff88000fd33c28 ffffffff819360c5 00000000=
+00000000
+[    2.830479]  00007fffba69d000 ffff88000fd33c78 ffffffff8114da8a ffff8800=
+12f68fc0
+[    2.833278]  0000000000000000 00007fffba6a6000 ffff88000fd3a4e8 ffff8800=
+12f68fc0
+[    2.834890] Call Trace:
+[    2.835394]  [<ffffffff819360c5>] dump_stack+0x4f/0x7c
+[    2.836228]  [<ffffffff8114da8a>] print_bad_pte+0x1ba/0x280
+[    2.837097]  [<ffffffff8114f063>] unmap_page_range+0x713/0x7c0
+[    2.838191]  [<ffffffff8114f164>] unmap_single_vma+0x54/0xd0
+[    2.839438]  [<ffffffff8114fc91>] unmap_vmas+0x41/0x60
+[    2.840554]  [<ffffffff81158cfc>] exit_mmap+0x8c/0x160
+[    2.841367]  [<ffffffff810aa820>] mmput+0x40/0xd0
+[    2.842133]  [<ffffffff810af43b>] do_exit+0x31b/0xa40
+[    2.842942]  [<ffffffff815153c3>] ? __this_cpu_preempt_check+0x13/0x20
+[    2.843905]  [<ffffffff810afbe2>] do_group_exit+0x42/0xc0
+[    2.844868]  [<ffffffff810afc6f>] SyS_exit_group+0xf/0x10
+[    2.845930]  [<ffffffff8193d93d>] tracesys_phase2+0xd8/0xdd
+[    2.875770] page:ffff880012f68fc0 count:2 mapcount:-1 mapping:ffff88000f=
+ceb7a9 index:0x2
+[    2.890680] BUG: Bad page map in process udevd  pte:80000000020c5045 pmd=
+:0feed067
+[    2.892246] page:ffff880012f69140 count:39 mapcount:-128 mapping:ffff880=
+00fcbfdc9 index:0x61f
+[    2.894275] flags: 0x80000080068(uptodate|lru|active|swapbacked)
+[    2.896077] page dumped because: bad pte
+[    2.896999] addr:000000000061f000 vm_flags:00100073 anon_vma:ffff88000f5=
+ed498 mapping:          (null) index:61f
+[    2.899209] CPU: 0 PID: 202 Comm: udevd Tainted: G    B          3.18.0-=
+rc4-g3622dcc2 #1477
+[    2.901739] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[    2.903219]  ffff88000f4a01f8 ffff88000fedbc28 ffffffff819360c5 00000000=
+00000000
+[    2.905844]  000000000061f000 ffff88000fedbc78 ffffffff8114da8a ffff8800=
+12f69140
+[    2.908544]  0000000000000000 000000000063f000 ffff88000feed0f8 ffff8800=
+12f69140
+[    2.911174] Call Trace:
+[    2.911855]  [<ffffffff819360c5>] dump_stack+0x4f/0x7c
+[    2.913263]  [<ffffffff8114da8a>] print_bad_pte+0x1ba/0x280
+[    2.914788]  [<ffffffff8114f063>] unmap_page_range+0x713/0x7c0
+[    2.916371]  [<ffffffff8114f164>] unmap_single_vma+0x54/0xd0
+[    2.917922]  [<ffffffff8114fc91>] unmap_vmas+0x41/0x60
+[    2.919354]  [<ffffffff81158cfc>] exit_mmap+0x8c/0x160
+[    2.920825]  [<ffffffff810aa820>] mmput+0x40/0xd0
+[    2.922158]  [<ffffffff810af43b>] do_exit+0x31b/0xa40
+[    2.923598]  [<ffffffff815153c3>] ? __this_cpu_preempt_check+0x13/0x20
+[    2.925297]  [<ffffffff810afbe2>] do_group_exit+0x42/0xc0
+[    2.926762]  [<ffffffff810afc6f>] SyS_exit_group+0xf/0x10
+[    2.928258]  [<ffffffff8193d93d>] tracesys_phase2+0xd8/0xdd
+[    2.929764] BUG: Bad page map in process udevd  pte:80000000020c6045 pmd=
+:0feed067
+[    2.931917] page:ffff880012f69180 count:39 mapcount:-128 mapping:ffff880=
+00fcbfdc9 index:0x625
+[    2.934302] flags: 0x80000080068(uptodate|lru|active|swapbacked)
+[    2.936576] page dumped because: bad pte
+[    2.937501] addr:0000000000625000 vm_flags:00100073 anon_vma:ffff88000f5=
+ed498 mapping:          (null) index:625
+[    2.940062] CPU: 0 PID: 202 Comm: udevd Tainted: G    B          3.18.0-=
+rc4-g3622dcc2 #1477
+[    2.942520] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[    2.944001]  ffff88000f4a01f8 ffff88000fedbc28 ffffffff819360c5 00000000=
+00000000
+[    2.946229]  0000000000625000 ffff88000fedbc78 ffffffff8114da8a ffff8800=
+12f69180
+[    2.948384]  0000000000000000 000000000063f000 ffff88000feed128 ffff8800=
+12f69180
+[    2.950556] Call Trace:
+[    2.951224]  [<ffffffff819360c5>] dump_stack+0x4f/0x7c
+[    2.952561]  [<ffffffff8114da8a>] print_bad_pte+0x1ba/0x280
+[    2.953723]  [<ffffffff8114f063>] unmap_page_range+0x713/0x7c0
+[    2.955039]  [<ffffffff8114f164>] unmap_single_vma+0x54/0xd0
+[    2.956316]  [<ffffffff8114fc91>] unmap_vmas+0x41/0x60
+[    2.957419]  [<ffffffff81158cfc>] exit_mmap+0x8c/0x160
+[    2.958646]  [<ffffffff810aa820>] mmput+0x40/0xd0
+[    2.959746]  [<ffffffff810af43b>] do_exit+0x31b/0xa40
+[    2.960877]  [<ffffffff815153c3>] ? __this_cpu_preempt_check+0x13/0x20
+[    2.962281]  [<ffffffff810afbe2>] do_group_exit+0x42/0xc0
+[    2.963484]  [<ffffffff810afc6f>] SyS_exit_group+0xf/0x10
+[    2.964663]  [<ffffffff8193d93d>] tracesys_phase2+0xd8/0xdd
+[    2.966091] BUG: Bad page map in process udevd  pte:80000000020c5045 pmd=
+:0f49d067
+[    2.967933] page:ffff880012f69140 count:39 mapcount:-129 mapping:ffff880=
+00fcbfdc9 index:0x61f
+[    2.969878] flags: 0x80000080068(uptodate|lru|active|swapbacked)
+[    2.971684] page dumped because: bad pte
+[    2.972598] addr:000000000061f000 vm_flags:00100073 anon_vma:ffff88000f4=
+a5188 mapping:          (null) index:61f
+[    2.974838] CPU: 0 PID: 203 Comm: udevd Tainted: G    B          3.18.0-=
+rc4-g3622dcc2 #1477
+[    2.976811] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[    2.978111]  ffff88000feb29d8 ffff880000867c28 ffffffff819360c5 00000000=
+00000000
+[    2.980364]  000000000061f000 ffff880000867c78 ffffffff8114da8a ffff8800=
+12f69140
+[    2.982611]  0000000000000000 000000000063f000 ffff88000f49d0f8 ffff8800=
+12f69140
+[    2.984865] Call Trace:
+[    2.985620]  [<ffffffff819360c5>] dump_stack+0x4f/0x7c
+[    2.986824]  [<ffffffff8114da8a>] print_bad_pte+0x1ba/0x280
+[    2.988113]  [<ffffffff8114f063>] unmap_page_range+0x713/0x7c0
+[    2.989428]  [<ffffffff8114f164>] unmap_single_vma+0x54/0xd0
+[    2.990715]  [<ffffffff8114fc91>] unmap_vmas+0x41/0x60
+[    2.991913]  [<ffffffff81158cfc>] exit_mmap+0x8c/0x160
+[    2.993136]  [<ffffffff810aa820>] mmput+0x40/0xd0
+[    2.994274]  [<ffffffff810af43b>] do_exit+0x31b/0xa40
+[    2.995465]  [<ffffffff815153c3>] ? __this_cpu_preempt_check+0x13/0x20
+[    2.996910]  [<ffffffff810afbe2>] do_group_exit+0x42/0xc0
+[    2.998156]  [<ffffffff810afc6f>] SyS_exit_group+0xf/0x10
+[    2.999390]  [<ffffffff8193d93d>] tracesys_phase2+0xd8/0xdd
+[    3.000690] BUG: Bad page map in process udevd  pte:80000000020c6045 pmd=
+:0f49d067
+[    3.002514] page:ffff880012f69180 count:39 mapcount:-129 mapping:ffff880=
+00fcbfdc9 index:0x625
+[    3.004534] flags: 0x80000080068(uptodate|lru|active|swapbacked)
+[    3.006404] page dumped because: bad pte
+[    3.007396] addr:0000000000625000 vm_flags:00100073 anon_vma:ffff88000f4=
+a5188 mapping:          (null) index:625
+[    3.009709] CPU: 0 PID: 203 Comm: udevd Tainted: G    B          3.18.0-=
+rc4-g3622dcc2 #1477
+[    3.011682] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[    3.012999]  ffff88000feb29d8 ffff880000867c28 ffffffff819360c5 00000000=
+00000000
+[    3.015236]  0000000000625000 ffff880000867c78 ffffffff8114da8a ffff8800=
+12f69180
+[    3.017500]  0000000000000000 000000000063f000 ffff88000f49d128 ffff8800=
+12f69180
+[    3.019726] Call Trace:
+[    3.025162]  [<ffffffff819360c5>] dump_stack+0x4f/0x7c
+[    3.026361]  [<ffffffff8114da8a>] print_bad_pte+0x1ba/0x280
+[    3.027635]  [<ffffffff8114f063>] unmap_page_range+0x713/0x7c0
+[    3.029108]  [<ffffffff8114f164>] unmap_single_vma+0x54/0xd0
+[    3.030650]  [<ffffffff8114fc91>] unmap_vmas+0x41/0x60
+[    3.032108]  [<ffffffff81158cfc>] exit_mmap+0x8c/0x160
+[    3.033563]  [<ffffffff810aa820>] mmput+0x40/0xd0
+[    3.034918]  [<ffffffff810af43b>] do_exit+0x31b/0xa40
+[    3.036356]  [<ffffffff815153c3>] ? __this_cpu_preempt_check+0x13/0x20
+[    3.038062]  [<ffffffff810afbe2>] do_group_exit+0x42/0xc0
+[    3.039548]  [<ffffffff810afc6f>] SyS_exit_group+0xf/0x10
+[    3.041066]  [<ffffffff8193d93d>] tracesys_phase2+0xd8/0xdd
+[    3.042759] BUG: Bad page map in process udevd  pte:80000000020c5045 pmd=
+:0f42d067
+[    3.044939] page:ffff880012f69140 count:39 mapcount:-130 mapping:ffff880=
+00fcbfdc9 index:0x61f
+[    3.047288] flags: 0x80000080068(uptodate|lru|active|swapbacked)
+[    3.049519] page dumped because: bad pte
+[    3.050684] addr:000000000061f000 vm_flags:00100073 anon_vma:ffff88000f4=
+bf620 mapping:          (null) index:61f
+[    3.053409] CPU: 0 PID: 204 Comm: udevd Tainted: G    B          3.18.0-=
+rc4-g3622dcc2 #1477
+[    3.055763] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[    3.057309]  ffff88000f604dc8 ffff88000feb7c28 ffffffff819360c5 00000000=
+00000000
+[    3.059963]  000000000061f000 ffff88000feb7c78 ffffffff8114da8a ffff8800=
+12f69140
+[    3.062398]  0000000000000000 000000000063f000 ffff88000f42d0f8 ffff8800=
+12f69140
+[    3.064485] Call Trace:
+[    3.065168]  [<ffffffff819360c5>] dump_stack+0x4f/0x7c
+[    3.066268]  [<ffffffff8114da8a>] print_bad_pte+0x1ba/0x280
+[    3.067450]  [<ffffffff8114f063>] unmap_page_range+0x713/0x7c0
+[    3.068686]  [<ffffffff8114f164>] unmap_single_vma+0x54/0xd0
+[    3.069906]  [<ffffffff8114fc91>] unmap_vmas+0x41/0x60
+[    3.071011]  [<ffffffff81158cfc>] exit_mmap+0x8c/0x160
+[    3.072134]  [<ffffffff810aa820>] mmput+0x40/0xd0
+[    3.073177]  [<ffffffff810af43b>] do_exit+0x31b/0xa40
+[    3.074265]  [<ffffffff815153c3>] ? __this_cpu_preempt_check+0x13/0x20
+[    3.075584]  [<ffffffff810afbe2>] do_group_exit+0x42/0xc0
+[    3.076741]  [<ffffffff810afc6f>] SyS_exit_group+0xf/0x10
+[    3.078076]  [<ffffffff8193d93d>] tracesys_phase2+0xd8/0xdd
+[    3.079678] BUG: Bad page map in process udevd  pte:80000000020c6045 pmd=
+:0f42d067
+[    3.081997] page:ffff880012f69180 count:39 mapcount:-130 mapping:ffff880=
+00fcbfdc9 index:0x625
+[    3.084528] flags: 0x80000080068(uptodate|lru|active|swapbacked)
+[    3.086633] page dumped because: bad pte
+[    3.087631] addr:0000000000625000 vm_flags:00100073 anon_vma:ffff88000f4=
+bf620 mapping:          (null) index:625
+[    3.089937] CPU: 0 PID: 204 Comm: udevd Tainted: G    B          3.18.0-=
+rc4-g3622dcc2 #1477
+[    3.091915] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[    3.093234]  ffff88000f604dc8 ffff88000feb7c28 ffffffff819360c5 00000000=
+00000000
+
+git bisect start 192495a3a4e9b8caa94cdd6b8200e6c6bf121aac 206c5f60a3d902bc4=
+b56dab2de3e88de5eb06108 --
+git bisect good 61a8059d0afcc6b1b0a9c2a966dd62d8783f53ed  # 08:39     20+  =
+    0  Merge 'kees/nak/proc-r' into devel-lkp-hsx01-x86_64-201411150620
+git bisect  bad 5da0b3a5296b6f5d556aa8e531a2284a15318eac  # 08:52      0-  =
+   18  Merge 'kees/x86/pmd-nx' into devel-lkp-hsx01-x86_64-201411150620
+git bisect good ac9d677530d3f02a83dbffbca150f95e47f9953e  # 09:16     20+  =
+    0  Merge 'kees/nak/tcp-simult' into devel-lkp-hsx01-x86_64-201411150620
+git bisect good d3299c8c39943125e642787d34bf34d947eac7b3  # 09:26     20+  =
+    0  Merge 'kees/ptdump' into devel-lkp-hsx01-x86_64-201411150620
+git bisect good b6044f9cbd7c128ada23e491ec0b1ac365a20eeb  # 09:41     20+  =
+    0  Merge 'kees/seccomp/arm64' into devel-lkp-hsx01-x86_64-201411150620
+git bisect  bad 3622dcc2b4f4eaf23bae2511a30fc449d0e5f0d9  # 09:54      0-  =
+    2  x86, mm: set NX across entire PMD at boot
+# first bad commit: [3622dcc2b4f4eaf23bae2511a30fc449d0e5f0d9] x86, mm: set=
+ NX across entire PMD at boot
+git bisect good b23dc5a7cc6ebc9a0d57351da7a0e8454c9ffea3  # 09:59     60+  =
+    1  Merge tag 'for_linus' of git://git.kernel.org/pub/scm/linux/kernel/g=
+it/mst/vhost
+git bisect  bad 192495a3a4e9b8caa94cdd6b8200e6c6bf121aac  # 09:59      0-  =
+   14  0day head guard for 'devel-lkp-hsx01-x86_64-201411150620'
+git bisect good 56c381f93d57b88a3e667a2f55137947315c17e2  # 10:03     60+  =
+    0  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kerne=
+l/git/dtor/input
+git bisect good d7e5a72b951a4ef6d97b2aa43cad37f237ba8030  # 11:07     60+  =
+    1  Add linux-next specific files for 20141114
 
 
+This script may reproduce the error.
 
---===============3025953300041305032==--
+----------------------------------------------------------------------------
+#!/bin/bash
+
+kernel=3D$1
+initrd=3Dyocto-minimal-x86_64.cgz
+
+wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/mas=
+ter/initrd/$initrd
+
+kvm=3D(
+	qemu-system-x86_64
+	-cpu kvm64
+	-enable-kvm
+	-kernel $kernel
+	-initrd $initrd
+	-m 320
+	-smp 1
+	-net nic,vlan=3D1,model=3De1000
+	-net user,vlan=3D1
+	-boot order=3Dnc
+	-no-reboot
+	-watchdog i6300esb
+	-rtc base=3Dlocaltime
+	-serial stdio
+	-display none
+	-monitor null =
+
+)
+
+append=3D(
+	hung_task_panic=3D1
+	earlyprintk=3DttyS0,115200
+	debug
+	apic=3Ddebug
+	sysrq_always_enabled
+	rcupdate.rcu_cpu_stall_timeout=3D100
+	panic=3D-1
+	softlockup_panic=3D1
+	nmi_watchdog=3Dpanic
+	oops=3Dpanic
+	load_ramdisk=3D2
+	prompt_ramdisk=3D0
+	console=3DttyS0,115200
+	console=3Dtty0
+	vga=3Dnormal
+	root=3D/dev/ram0
+	rw
+	drbd.minor_count=3D8
+)
+
+"${kvm[@]}" --append "${append[*]}"
+----------------------------------------------------------------------------
+
+Thanks,
+Fengguang
+
+--===============1944732495449640336==--
 
