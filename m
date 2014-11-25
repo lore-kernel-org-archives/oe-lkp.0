@@ -1,39 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============7497297704851358001=="
+Content-Type: multipart/mixed; boundary="===============4881236822413710109=="
 MIME-Version: 1.0
-From: Willem de Bruijn <willemb@google.com>
+From: pang.xunlei <pang.xunlei@linaro.org>
 To: lkp@lists.01.org
-Subject: Re: [net] 4ed2d765dfa:
-Date: Mon, 24 Nov 2014 10:55:37 -0500
-Message-ID: <CA+FuTSfE5dU7TOzHB_X-esvMVJ=Q2MyrKaTJc7UzQV6vS7piew@mail.gmail.com>
-In-Reply-To: <20141124123859.GD7310@yliu-dev.sh.intel.com>
+Subject: [PATCH] time: Avoid possible NTP adjustment mult overflow
+Date: Tue, 25 Nov 2014 09:16:20 +0800
+Message-ID: <1416878180-25312-1-git-send-email-pang.xunlei@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7497297704851358001==
+--===============4881236822413710109==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 24, 2014 at 7:38 AM, Yuanhan Liu
-<yuanhan.liu@linux.intel.com> wrote:
-> FYI, we noticed the below changes on
->
-> commit 4ed2d765dfaccff5ebdac68e2064b59125033a3b ("net-timestamp: TCP time=
-stamping")
+Ideally, __clocksource_updatefreq_scale, selects the largest shift
+value possible for a clocksource. This results in the mult memember
+of struct clocksource being particularly large, although not so large
+that NTP would adjust the clock to cause it to overflow.
 
-> e7fd2885385157d4  4ed2d765dfaccff5ebdac68e20
-> ----------------  --------------------------
->            :10         100%           5:5     ltp.recv01.fail
->            :10         100%           5:5     ltp.recvfrom01.fail
->            :10         100%           5:5     ltp.recvmsg01.fail
+That said, nothing actually prohibits an overflow from occurring, its
+just that it "shouldn't" occur.
 
-This has been discussed before:
+So while very unlikely, and so far never observed, the value of
+(cs->mult+cs->maxadj) may have a chance to reach very near 0xFFFFFFFF,
+so there is a possibility it may overflow when doing NTP positive
+adjustment
 
-  LTP recv/recvmsg tests failing on 3.17
-  http://comments.gmane.org/gmane.linux.network/331750
+See the following detail: When NTP slewes the clock, kernel goes
+through update_wall_time()->...->timekeeping_apply_adjustment():
+		 tk->tkr.mult +=3D mult_adj;
 
-and
+Since there is no guard against it, its possible tk->tkr.mult may
+overflow during this operation.
 
-  https://lkml.org/lkml/2014/10/1/379
+This patch avoids any possible mult overflow by judging the overflow
+case before adding mult_adj to mult, also adds the WARNING message
+when capturing such case.
 
---===============7497297704851358001==--
+Signed-off-by: pang.xunlei <pang.xunlei@linaro.org>
+---
+Fix the problem in the former patch catched by Fengguang's 0day robot:
+[time] WARNING: CPU: 0 PID: 1 at kernel/time/timekeeping.c:1337 update_wall=
+_time()
+
+ kernel/time/timekeeping.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+index 0aef92a..9a1482e 100644
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -1390,6 +1390,12 @@ static __always_inline void timekeeping_apply_adjust=
+ment(struct timekeeper *tk,
+ 	 *
+ 	 * XXX - TODO: Doc ntp_error calculation.
+ 	 */
++	if (mult_adj > 0 && (tk->tkr.mult + mult_adj < mult_adj)) {
++		/* NTP adjustment caused clocksource mult overflow */
++		WARN_ON_ONCE(1);
++		return;
++	}
++
+ 	tk->tkr.mult +=3D mult_adj;
+ 	tk->xtime_interval +=3D interval;
+ 	tk->tkr.xtime_nsec -=3D offset;
+-- =
+
+1.7.9.5
+
+
+--===============4881236822413710109==--
 
