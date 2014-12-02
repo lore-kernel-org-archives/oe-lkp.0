@@ -1,198 +1,296 @@
-Content-Type: multipart/mixed; boundary="===============9112985487007076790=="
+Content-Type: multipart/mixed; boundary="===============4425203313268523778=="
 MIME-Version: 1.0
-From: Jin, Yao <yao.jin@linux.intel.com>
+From: Joonsoo Kim <iamjoonsoo.kim@lge.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/i915/gt] 8c3b1ba0e7: perf-sanity-tests.Parse_event_definition_strings.fail
-Date: Fri, 26 Feb 2021 08:41:26 +0800
-Message-ID: <d416a908-6a54-5e4c-e377-dc9d2b778941@linux.intel.com>
-In-Reply-To: <YDf0fP8XmnTrkIT8@krava>
+Subject: Re: [mm] BUG: unable to handle kernel paging request at c2446ffc
+Date: Tue, 02 Dec 2014 13:36:38 +0900
+Message-ID: <20141202043638.GB6268@js1304-P5Q-DELUXE>
+In-Reply-To: <20141128101000.GB8289@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9112985487007076790==
+--===============4425203313268523778==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jiri,
-
-On 2/26/2021 3:03 AM, Jiri Olsa wrote:
-> On Thu, Feb 25, 2021 at 07:50:46PM +0100, Jiri Olsa wrote:
->> On Thu, Feb 25, 2021 at 07:16:44PM +0100, Jiri Olsa wrote:
->>> On Thu, Feb 25, 2021 at 02:33:57PM +0100, Jiri Olsa wrote:
->>>> On Thu, Feb 25, 2021 at 04:06:23PM +0800, Jin, Yao wrote:
->>>>> Hi Chris, Arnaldo, Jiri,
->>>>>
->>>>> We observe the parsing error for "software/xxx/" on some platforms.
->>>>>
->>>>> For example,
->>>>>
->>>>> # perf stat -e software/r1a/ -a -- sleep 1
->>>>> event syntax error: 'software/r1a/'
->>>>>                       \___ parser error
->>>>> Run 'perf list' for a list of valid events
->>>>>
->>>>>   Usage: perf stat [<options>] [<command>]
->>>>>
->>>>>      -e, --event <event>   event selector. use 'perf list' to list av=
-ailable events
->>>>>
->>>>> And perf test is failed too.
->>>>>
->>>>> # perf test 6 -vv
->>>>> ...
->>>>> running test 4 'software/r1a/'failed to parse event 'software/r1a/', =
-err 1, str 'parser error'
->>>>> event syntax error: 'software/r1a/'
->>>>>                       \___ parser error
->>>>>
->>>>> running test 4 'software/r0x1a/'failed to parse event 'software/r0x1a=
-/', err 1, str 'parser error'
->>>>> event syntax error: 'software/r0x1a/'
->>>>>                       \___ parser error
->>>>> ...
->>>>>
->>>>> The issue should be the conflict between event "i915/software-gt-awak=
-e-time/" and pmu "software".
->>>>>
->>>>> # perf list | grep i915/software
->>>>>    i915/software-gt-awake-time/                       [Kernel PMU eve=
-nt]
->>>>>
->>>>> Perf supports the event format as "prefix-xxx-suffix", so the "softwa=
-re"
->>>>> string in "software-gt-awake-time" is added to perf_pmu_events_list as
->>>>> PMU_EVENT_SYMBOL_PREFIX. When parsing the string such as "software/xx=
-x/",
->>>>> it=E2=80=99s parsed as PMU_EVENT_SYMBOL_PREFIX for "software", then i=
-t would error
->>>>> out in next processing.
->>>>>
->>>>> So the easy way is to rename "software-gt-awake-time" to "gt-awake-ti=
-me",
->>>>> right? Otherwise we have to hardcode something in perf tool.
->>>>>
->>>>> What do you think of this issue and the solution?
->>>>>
->>>>> BTW, as the robot reported, it's related to the commit 8c3b1ba0e7ea
->>>>> ("drm/i915/gt: Track the overall awake/busy time").
->>>>
->>>> yes, I think you're right.. I'll try to reproduce and check on this
->>>>
->>>> I'm still not clear why is that parsing fail if those 2 events are
->>>> distinguished by - and / ... but yep, we are asking for trouble in
->>>> here ;-)
->>>>
->>>> I think we could either prioritaze one or add extra check when we
->>>> add prefix-xxx-suffix events and do not add ones that have conflict..
->>>> that seems like best solution to me now
->>>
->>> would patch below work for you?
->>>
->>> jirka
->>
->> and now with more fixes after I ran tests ;-)
->>
->> we should perhaps add also same check for non '-' aliases, I'll check
+On Fri, Nov 28, 2014 at 02:10:00AM -0800, Fengguang Wu wrote:
+> Greetings,
 > =
 
-> and one more version ;-)
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
-> jirka
+> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
 > =
 
+> commit 1e491e9be4c97229a3a88763aada9582e37c7eaf
+> Author:     Joonsoo Kim <iamjoonsoo.kim@lge.com>
+> AuthorDate: Thu Nov 27 11:09:34 2014 +1100
+> Commit:     Stephen Rothwell <sfr@canb.auug.org.au>
+> CommitDate: Thu Nov 27 11:09:34 2014 +1100
 > =
 
-> ---
-> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-event=
-s.c
-> index 42c84adeb2fb..d9e795056d15 100644
-> --- a/tools/perf/util/parse-events.c
-> +++ b/tools/perf/util/parse-events.c
-> @@ -2028,30 +2028,49 @@ static void perf_pmu__parse_init(void)
->   		perf_pmu_events_list_num =3D -1;
->   		return;
->   	}
-> -	perf_pmu_events_list =3D malloc(sizeof(struct perf_pmu_event_symbol) * =
-len);
-> +	perf_pmu_events_list =3D zalloc(sizeof(struct perf_pmu_event_symbol) * =
-len);
->   	if (!perf_pmu_events_list)
->   		return;
-> -	perf_pmu_events_list_num =3D len;
->   =
+>     mm/debug-pagealloc: prepare boottime configurable on/off
+>     =
 
->   	len =3D 0;
->   	pmu =3D NULL;
->   	while ((pmu =3D perf_pmu__scan(pmu)) !=3D NULL) {
->   		list_for_each_entry(alias, &pmu->aliases, list) {
->   			struct perf_pmu_event_symbol *p =3D perf_pmu_events_list + len;
-> -			char *tmp =3D strchr(alias->name, '-');
-> +			char *prefix =3D strdup(alias->name);
-> +			char *tmp =3D strchr(prefix, '-');
-> +
-> +			if (tmp !=3D NULL)
-> +				*tmp =3D 0;
-> +
-> +			/*
-> +			 * Skip any prefix that conflicts with pmu name,
-> +			 * otherwise the event parser gets confused.
-> +			 */
-> +			if (perf_pmu__find(prefix)) {
-> +				pr_debug2("perf_pmu__parse_init: skipping conflicting alias '%s'\n",
-> +					  alias->name);
-> +				free(prefix);
-> +				continue;
-> +			}
->   =
+>     Until now, debug-pagealloc needs extra flags in struct page, so we ne=
+ed to
+>     recompile whole source code when we decide to use it.  This is really
+>     painful, because it takes some time to recompile and sometimes rebuil=
+d is
+>     not possible due to third party module depending on struct page.  So,=
+ we
+>     can't use this good feature in many cases.
+>     =
 
->   			if (tmp !=3D NULL) {
-> -				SET_SYMBOL(strndup(alias->name, tmp - alias->name),
-> -						PMU_EVENT_SYMBOL_PREFIX);
-> +				SET_SYMBOL(prefix, PMU_EVENT_SYMBOL_PREFIX);
->   				p++;
->   				SET_SYMBOL(strdup(++tmp), PMU_EVENT_SYMBOL_SUFFIX);
->   				len +=3D 2;
->   			} else {
-> -				SET_SYMBOL(strdup(alias->name), PMU_EVENT_SYMBOL);
-> +				SET_SYMBOL(prefix, PMU_EVENT_SYMBOL);
->   				len++;
->   			}
->   		}
->   	}
-> +
-> +	/* unlikely, but still.. */
-> +	if (!len)
-> +		goto err;
-> +	perf_pmu_events_list_num =3D len;
-> +
->   	qsort(perf_pmu_events_list, len,
->   		sizeof(struct perf_pmu_event_symbol), comp_pmu);
->   =
+>     Now, we have the page extension feature that allows us to insert extra
+>     flags to outside of struct page.  This gets rid of third party module
+>     issue mentioned above.  And, this allows us to determine if we need e=
+xtra
+>     memory for this page extension in boottime.  With these property, we =
+can
+>     avoid using debug-pagealloc in boottime with low computational overhe=
+ad in
+>     the kernel built with CONFIG_DEBUG_PAGEALLOC.  This will help our
+>     development process greatly.
+>     =
+
+>     This patch is the preparation step to achive above goal.  debug-pagea=
+lloc
+>     originally uses extra field of struct page, but, after this patch, it=
+ will
+>     use field of struct page_ext.  Because memory for page_ext is allocat=
+ed
+>     later than initialization of page allocator in CONFIG_SPARSEMEM, we s=
+hould
+>     disable debug-pagealloc feature temporarily until initialization of
+>     page_ext.  This patch implements this.
+>     =
+
+>     Signed-off-by: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+>     Cc: Mel Gorman <mgorman@suse.de>
+>     Cc: Johannes Weiner <hannes@cmpxchg.org>
+>     Cc: Minchan Kim <minchan@kernel.org>
+>     Cc: Dave Hansen <dave@sr71.net>
+>     Cc: Michal Nazarewicz <mina86@mina86.com>
+>     Cc: Jungsoo Son <jungsoo.son@lge.com>
+>     Cc: Ingo Molnar <mingo@redhat.com>
+>     Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+>     Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> =
+
+> Attached dmesg for the parent commit, too, to help confirm whether it is =
+a noise error.
+> =
+
+> +-------------------------------------------------+------------+---------=
+---+---------------+
+> |                                                 | 34bf7903e1 | 1e491e9b=
+e4 | next-20141127 |
+> +-------------------------------------------------+------------+---------=
+---+---------------+
+> | boot_successes                                  | 95         | 26      =
+   | 11            |
+> | boot_failures                                   | 10         | 9       =
+   | 3             |
+> | BUG:kernel_early_hang_without_any_printk_output | 10         | 8       =
+   |               |
+> | BUG:unable_to_handle_kernel                     | 0          | 1       =
+   | 3             |
+> | Oops                                            | 0          | 1       =
+   | 3             |
+> | EIP_is_at__free_pages_ok                        | 0          | 1       =
+   | 3             |
+> | Kernel_panic-not_syncing:Fatal_exception        | 0          | 1       =
+   | 3             |
+> | backtrace:put_tty_driver                        | 0          | 1       =
+   | 3             |
+> | backtrace:rp_init                               | 0          | 1       =
+   | 3             |
+> | backtrace:kernel_init_freeable                  | 0          | 1       =
+   | 3             |
+> +-------------------------------------------------+------------+---------=
+---+---------------+
+> =
+
+> [   13.206984] RocketPort device driver module, version 2.09, 12-June-2003
+> [   13.208641] No rocketport ports found; unloading driver
+> [   13.208641] No rocketport ports found; unloading driver
+> [   13.213422] BUG: unable to handle kernel =
+
+> [   13.213422] BUG: unable to handle kernel paging requestpaging request =
+at c2446ffc
+>  at c2446ffc
+> [   13.214380] IP:
+> [   13.214380] IP: [<b11ab6fe>] __free_pages_ok+0x376/0x62c
+>  [<b11ab6fe>] __free_pages_ok+0x376/0x62c
+> [   13.214380] *pde =3D 123ca067 =
+
+> [   13.214380] *pde =3D 123ca067 *pte =3D 12446060 *pte =3D 12446060 =
 
 > =
 
+> [   13.214380] Oops: 0000 [#1] =
 
-Thanks so much for the patch! It works with my tests.
+> [   13.214380] Oops: 0000 [#1] SMP SMP DEBUG_PAGEALLOCDEBUG_PAGEALLOC
+> =
 
-# ./perf test 6
-  6: Parse event definition strings                                  : Ok
+> [   13.214380] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.18.0-rc6-00201=
+-g1e491e9 #14
+> [   13.214380] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.18.0-rc6-00201=
+-g1e491e9 #14
+> [   13.214380] task: c1c40000 ti: c1c48000 task.ti: c1c48000
+> [   13.214380] task: c1c40000 ti: c1c48000 task.ti: c1c48000
+> [   13.214380] EIP: 0060:[<b11ab6fe>] EFLAGS: 00010097 CPU: 0
+> [   13.214380] EIP: 0060:[<b11ab6fe>] EFLAGS: 00010097 CPU: 0
+> [   13.214380] EIP is at __free_pages_ok+0x376/0x62c
+> [   13.214380] EIP is at __free_pages_ok+0x376/0x62c
+> [   13.214380] EAX: c2446ffc EBX: c2513200 ECX: 00000004 EDX: c2447000
+> [   13.214380] EAX: c2446ffc EBX: c2513200 ECX: 00000004 EDX: c2447000
+> [   13.214380] ESI: c2513300 EDI: 00000004 EBP: c1c49e94 ESP: c1c49e64
+> [   13.214380] ESI: c2513300 EDI: 00000004 EBP: c1c49e94 ESP: c1c49e64
+> [   13.214380]  DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
+> [   13.214380]  DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
+> [   13.214380] CR0: 8005003b CR2: c2446ffc CR3: 02729000 CR4: 00000690
+> [   13.214380] CR0: 8005003b CR2: c2446ffc CR3: 02729000 CR4: 00000690
+> [   13.214380] Stack:
+> [   13.214380] Stack:
+> [   13.214380]  00000008
+> [   13.214380]  00000008 b26054ec b26054ec b2605440 b2605440 00000246 000=
+00246 00000010 00000010 00000000 00000000 c2513000 c2513000 00000000 000000=
+00
+> =
 
-# ./perf stat -e software/r1a/ -a -- sleep 1
+> [   13.214380]  00000003
+> [   13.214380]  00000003 00000000 00000000 c2513300 c2513300 00000000 000=
+00000 c1c49e9c c1c49e9c b11aba32 b11aba32 c1c49ea4 c1c49ea4 b11abc52 b11abc=
+52
+> =
 
-  Performance counter stats for 'system wide':
+> [   13.214380]  c1c49ec4
+> [   13.214380]  c1c49ec4 b1204fb5 b1204fb5 c1c49ebc c1c49ebc b10deca7 b10=
+deca7 b0018000 b0018000 bbf20984 bbf20984 00000100 00000100 bbf20980 bbf209=
+80
+> =
 
-    <not supported>      software/r1a/
+> [   13.214380] Call Trace:
+> [   13.214380] Call Trace:
+> [   13.214380]  [<b11aba32>] __free_pages+0x7e/0x8e
+> [   13.214380]  [<b11aba32>] __free_pages+0x7e/0x8e
+> [   13.214380]  [<b11abc52>] __free_kmem_pages+0x16/0x26
+> [   13.214380]  [<b11abc52>] __free_kmem_pages+0x16/0x26
+> [   13.214380]  [<b1204fb5>] kfree+0x292/0x4e1
+> [   13.214380]  [<b1204fb5>] kfree+0x292/0x4e1
+> [   13.214380]  [<b10deca7>] ? debug_mutex_unlock+0x2f3/0x398
+> [   13.214380]  [<b10deca7>] ? debug_mutex_unlock+0x2f3/0x398
+> [   13.214380]  [<b14f5c36>] destruct_tty_driver+0xee/0x158
+> [   13.214380]  [<b14f5c36>] destruct_tty_driver+0xee/0x158
+> [   13.214380]  [<b14f5fe5>] tty_driver_kref_put+0xb4/0xc6
+> [   13.214380]  [<b14f5fe5>] tty_driver_kref_put+0xb4/0xc6
+> [   13.214380]  [<b14f6121>] put_tty_driver+0x16/0x26
+> [   13.214380]  [<b14f6121>] put_tty_driver+0x16/0x26
+> [   13.214380]  [<b26aa177>] rp_init+0xc04/0xc23
+> [   13.214380]  [<b26aa177>] rp_init+0xc04/0xc23
+> [   13.214380]  [<b12050e9>] ? kfree+0x3c6/0x4e1
+> [   13.214380]  [<b12050e9>] ? kfree+0x3c6/0x4e1
+> [   13.214380]  [<b26a9573>] ? register_PCI+0x1091/0x1091
+> [   13.214380]  [<b26a9573>] ? register_PCI+0x1091/0x1091
+> [   13.214380]  [<b26469d2>] do_one_initcall+0x1ed/0x356
+> [   13.214380]  [<b26469d2>] do_one_initcall+0x1ed/0x356
+> [   13.214380]  [<b2646d8b>] kernel_init_freeable+0x250/0x3ab
+> [   13.214380]  [<b2646d8b>] kernel_init_freeable+0x250/0x3ab
+> [   13.214380]  [<b1d95dd0>] kernel_init+0x16/0x1e7
+> [   13.214380]  [<b1d95dd0>] kernel_init+0x16/0x1e7
+> [   13.214380]  [<b1dcdd01>] ret_from_kernel_thread+0x21/0x30
+> [   13.214380]  [<b1dcdd01>] ret_from_kernel_thread+0x21/0x30
+> [   13.214380]  [<b1d95dba>] ? rest_init+0x15b/0x15b
+> [   13.214380]  [<b1d95dba>] ? rest_init+0x15b/0x15b
+> [   13.214380] Code:
+> [   13.214380] Code: 31 31 d0 d0 29 29 d0 d0 c1 c1 e0 e0 05 05 80 80 3d 3=
+d 00 00 30 30 64 64 b2 b2 00 00 8d 8d 14 14 03 03 74 74 71 71 83 83 05 05 2=
+8 28 90 90 da da b2 b2 01 01 89 89 d0 d0 89 89 55 55 e8 e8 83 83 15 15 2c 2=
+c 90 90 da da b2 b2 00 00 e8 e8 67 67 d9 d9 05 05 00 00 <8b> <8b> 00 00 83 =
+83 05 05 30 30 90 90 da da b2 b2 01 01 83 83 15 15 34 34 90 90 da da b2 b2 =
+00 00 a8 a8 02 02 8b 8b 55 55 e8 e8
+> =
 
-        1.000940433 seconds time elapsed
+> [   13.214380] EIP: [<b11ab6fe>] =
 
-In theory, do we also need to check suffix as well? I think returning PMU_E=
-VENT_SYMBOL_SUFFIX may =
+> [   13.214380] EIP: [<b11ab6fe>] __free_pages_ok+0x376/0x62c__free_pages_=
+ok+0x376/0x62c SS:ESP 0068:c1c49e64
+>  SS:ESP 0068:c1c49e64
+> [   13.214380] CR2: 00000000c2446ffc
+> [   13.214380] CR2: 00000000c2446ffc
+> [   13.214380] ---[ end trace fe261d43ae421f43 ]---
+> [   13.214380] ---[ end trace fe261d43ae421f43 ]---
+> =
 
-also confuse the parser. But yes, we don't have this case now.
+> git bisect start 3bcf494d225fd193d02e8cb2e2c3fe3cc476ff3f 5d01410fe4d9208=
+1f349b013a2e7a95429e4f2c9 --
+> git bisect good 14692f2c9f01c7f21f83d41a8cb99fea1e4f803f  # 10:20     35+=
+      0  Merge remote-tracking branch 'dlm/next'
+> git bisect good 17623427488fe306376e18e0ee63c2c1bcbf5612  # 10:42     35+=
+      0  Merge remote-tracking branch 'edac-amd/for-next'
+> git bisect good 6acfd0c5752274ad5099152d9a00c99f81c273b5  # 10:54     35+=
+      0  Merge remote-tracking branch 'char-misc/char-misc-next'
+> git bisect good 574733068e280900745b7241a51f26815f25ca64  # 11:24     35+=
+      5  Merge remote-tracking branch 'userns/for-next'
+> git bisect good d3d6c2b2574a1700a33c3f40a8adcd11db728926  # 11:36     35+=
+     11  Merge remote-tracking branch 'llvmlinux/for-next'
+> git bisect good 749230afd0fa54770f95063071b1bdfb6dee9bc2  # 11:45     35+=
+     13  Merge remote-tracking branch 'y2038/y2038'
+> git bisect  bad 35cc8c3f978f75a04ac96b3cb72b8f7630ea04f4  # 11:50      0-=
+      1  Merge branch 'akpm-current/current'
+> git bisect  bad 6aab9099af555bf5a464f318d312ba5baa5cf516  # 11:59      0-=
+      1  stacktrace: introduce snprint_stack_trace for buffer output
+> git bisect good 15c2416b0e6f21f17152e0ba32202bb1354394e3  # 12:10     35+=
+     18  mm-compaction-more-focused-lru-and-pcplists-draining-fix
+> git bisect good c5c825302103a196aa94efa121c011121ffff14b  # 12:17     35+=
+      2  uprobes: share the i_mmap_rwsem
+> git bisect good b225ec73923a04a6d00dd28c6372c167780921b8  # 12:24     35+=
+      0  hugetlb: hugetlb_register_all_nodes(): add __init marker
+> git bisect good 4fb10ba778d4c4ccefee3ce833e487a6695068b1  # 12:32     35+=
+      1  mm: support madvise(MADV_FREE)
+> git bisect good 0aba43a2670028ec26cfeb59d3c2610ab0ee140b  # 12:42     35+=
+      4  arm64: add pmd_[dirty|mkclean] for THP
+> git bisect  bad 1e491e9be4c97229a3a88763aada9582e37c7eaf  # 12:51      0-=
+      1  mm/debug-pagealloc: prepare boottime configurable on/off
+> git bisect good 34bf7903e195347898a225220357f3a49dd65e7e  # 12:57     35+=
+      0  mm/page_ext: resurrect struct page extending code for debugging
+> # first bad commit: [1e491e9be4c97229a3a88763aada9582e37c7eaf] mm/debug-p=
+agealloc: prepare boottime configurable on/off
+> git bisect good 34bf7903e195347898a225220357f3a49dd65e7e  # 13:01    105+=
+     10  mm/page_ext: resurrect struct page extending code for debugging
+> # extra tests on HEAD of next/master
+> git bisect  bad 3bcf494d225fd193d02e8cb2e2c3fe3cc476ff3f  # 13:01      0-=
+      3  Add linux-next specific files for 20141127
+> # extra tests on tree/branch next/master
+> git bisect  bad 3bcf494d225fd193d02e8cb2e2c3fe3cc476ff3f  # 13:01      0-=
+      3  Add linux-next specific files for 20141127
+> # extra tests on tree/branch linus/master
+> git bisect good 98e8d2e094de67315f786cd81b1dccb4ac040cc2  # 13:11    105+=
+     21  Merge branch 'upstream' of git://git.linux-mips.org/pub/scm/ralf/u=
+pstream-linus
+> # extra tests on tree/branch next/master
+> git bisect  bad 3bcf494d225fd193d02e8cb2e2c3fe3cc476ff3f  # 13:11      0-=
+      3  Add linux-next specific files for 20141127
 
-Thanks
-Jin Yao
+Hello, Fengguang.
 
---===============9112985487007076790==--
+First of all, thanks for reporting!
+It always helps me a lot.
+
+But, in this time, I can't reproduce this failure with your attached
+configuration. Instead of this failure, sometimes, OOM happens in my
+testing with your configuration. I don't know why it happens. :)
+
+Could you have another configuration to trigger this bug?
+
+Anyway, this calltrace is really suspicious, because it looks like
+failure of tty driver initialization. Why it is failed in this early
+phase? Maybe, it is also related to OOM mentioned above.
+
+Thanks.
+
+--===============4425203313268523778==--
 
