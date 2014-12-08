@@ -1,90 +1,113 @@
-Content-Type: multipart/mixed; boundary="===============8954114528243278915=="
+Content-Type: multipart/mixed; boundary="===============4662505960927889184=="
 MIME-Version: 1.0
-From: Steven Rostedt <rostedt@goodmis.org>
+From: Anton Blanchard <anton@samba.org>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] kthread: kthread_bind fails to enforce CPU affinity (fixes kernel BUG at kernel/smpboot.c:134!)
-Date: Mon, 08 Dec 2014 08:54:05 -0500
-Message-ID: <20141208085405.730577a3@gandalf.local.home>
-In-Reply-To: <1418009221-12719-1-git-send-email-anton@samba.org>
+Subject: [PATCH] powerpc: secondary CPUs signal to master before setting active and online (fixes kernel BUG at kernel/smpboot.c:134!)
+Date: Tue, 09 Dec 2014 10:58:19 +1100
+Message-ID: <20141209105819.0e847b4b@kryten>
+In-Reply-To: <20141208211859.6e81ec81@kryten>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8954114528243278915==
+--===============4662505960927889184==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon,  8 Dec 2014 14:27:01 +1100
-Anton Blanchard <anton@samba.org> wrote:
+Hi Ingo,
 
-> I have a busy ppc64le KVM box where guests sometimes hit the infamous
-> "kernel BUG at kernel/smpboot.c:134!" issue during boot:
-> =
+> At that point I thought the previous task_cpu() was somewhat ingrained
+> in the scheduler and came up with the patch. If not, we could go on a
+> hunt to see what else needs fixing.
 
-> BUG_ON(td->cpu !=3D smp_processor_id());
-> =
+I had another look. The scheduled does indeed make assumptions about the
+previous task_cpu, but we have a hammer to fix it up called
+select_fallback_rq.
 
-> Basically a per CPU hotplug thread scheduled on the wrong CPU. The oops
-> output confirms it:
-> =
+I annotated select_fallback_rq, and did hit a case where the CPU was
+not active. ppc64 patch below.
 
-> CPU: 0
-> Comm: watchdog/130
-> =
+I think x86 have a similar (although harder to hit) issue. While it
+does wait for the cpu_online bit to be set:
 
-> The issue is in kthread_bind where we set the cpus_allowed mask, but do
-> not touch task_thread_info(p)->cpu. The scheduler assumes the previously
-> scheduled CPU is in the cpus_allowed mask, but in this case we are
-> moving a thread to another CPU so it is not.
-> =
+        while (!cpu_online(cpu)) {
+                cpu_relax();
+                touch_nmi_watchdog();
+        }
 
+The cpu_active bit is set after the cpu_online bit:
 
-Does this happen always on boot up, and always with the watchdog thread?
+void set_cpu_online(unsigned int cpu, bool online)
+{
+        if (online) {
+                cpumask_set_cpu(cpu, to_cpumask(cpu_online_bits));
+                cpumask_set_cpu(cpu, to_cpumask(cpu_active_bits));
 
-I followed the logic that starts the watchdog threads.
+If the CPU got delayed between the two stores (eg a KVM guest had the CPU
+scheduled out), then we'd end up with cpu_active unset and hit the same
+issue in select_fallback_rq.
 
-watchdog_enable_all_cpus()
-  smpboot_register_percpu-thread() {
+Anton
+--
 
-    for_each_online_cpu(cpu) { ... }
+I have a busy ppc64le KVM box where guests sometimes hit the infamous
+"kernel BUG at kernel/smpboot.c:134!" issue during boot:
 
-Where watchdog_enable_all_cpus() can be called by
-lockup_detector_init() before SMP is started, but also by
-proc_dowatchdog() which is called by the sysctl commands (after SMP is
-up and running).
+BUG_ON(td->cpu !=3D smp_processor_id());
 
-I noticed there's no "get_online_cpus()" anywhere, although the
-unregister_percpu_thread() has it. Is it possible that we created a
-thread on a CPU that wasn't fully online yet?
+Basically a per CPU hotplug thread scheduled on the wrong CPU. The oops
+output confirms it:
 
-Perhaps the following patch is needed? Even if this isn't the solution
-to this bug, it is probably needed as watchdog_enable_all_cpus() can be
-called after boot up too.
+CPU: 0
+Comm: watchdog/130
 
--- Steve
+The problem is that we aren't ensuring the CPU active and online bits are s=
+et
+before allowing the master to continue on. The master unparks the secondary
+CPUs kthreads and the scheduler looks for a CPU to run on. It calls
+select_task_rq and realises the suggested CPU is not in the cpus_allowed
+mask. It then ends up in select_fallback_rq, and since the active and
+online bits aren't set we choose some other CPU to run on.
 
-diff --git a/kernel/smpboot.c b/kernel/smpboot.c
-index eb89e1807408..60d35ac5d3f1 100644
---- a/kernel/smpboot.c
-+++ b/kernel/smpboot.c
-@@ -279,6 +279,7 @@ int smpboot_register_percpu_thread(struct smp_hotplug_t=
-hread *plug_thread)
- 	unsigned int cpu;
- 	int ret =3D 0;
+Cc: stable(a)vger.kernel.org
+Signed-off-by: Anton Blanchard <anton@samba.org>
+---
+ arch/powerpc/kernel/smp.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index 71e186d..d40e46e 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -700,7 +700,6 @@ void start_secondary(void *unused)
+ 	smp_store_cpu_info(cpu);
+ 	set_dec(tb_ticks_per_jiffy);
+ 	preempt_disable();
+-	cpu_callin_map[cpu] =3D 1;
  =
 
-+	get_online_cpus();
- 	mutex_lock(&smpboot_threads_lock);
- 	for_each_online_cpu(cpu) {
- 		ret =3D __smpboot_create_thread(plug_thread, cpu);
-@@ -291,6 +292,7 @@ int smpboot_register_percpu_thread(struct smp_hotplug_t=
-hread *plug_thread)
- 	list_add(&plug_thread->list, &hotplug_threads);
- out:
- 	mutex_unlock(&smpboot_threads_lock);
-+	put_online_cpus();
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(smpboot_register_percpu_thread);
+ 	if (smp_ops->setup_cpu)
+ 		smp_ops->setup_cpu(cpu);
+@@ -739,6 +738,14 @@ void start_secondary(void *unused)
+ 	notify_cpu_starting(cpu);
+ 	set_cpu_online(cpu, true);
+ =
 
---===============8954114528243278915==--
++	/*
++	 * CPU must be marked active and online before we signal back to the
++	 * master, because the scheduler needs to see the cpu_online and
++	 * cpu_active bits set.
++	 */
++	smp_wmb();
++	cpu_callin_map[cpu] =3D 1;
++
+ 	local_irq_enable();
+ =
+
+ 	cpu_startup_entry(CPUHP_ONLINE);
+-- =
+
+2.1.0
+
+
+--===============4662505960927889184==--
 
