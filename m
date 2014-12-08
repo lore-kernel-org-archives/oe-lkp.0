@@ -1,68 +1,90 @@
-Content-Type: multipart/mixed; boundary="===============7996454096658284957=="
+Content-Type: multipart/mixed; boundary="===============8954114528243278915=="
 MIME-Version: 1.0
-From: Anton Blanchard <anton@samba.org>
+From: Steven Rostedt <rostedt@goodmis.org>
 To: lkp@lists.01.org
 Subject: Re: [PATCH] kthread: kthread_bind fails to enforce CPU affinity (fixes kernel BUG at kernel/smpboot.c:134!)
-Date: Mon, 08 Dec 2014 21:18:59 +1100
-Message-ID: <20141208211859.6e81ec81@kryten>
-In-Reply-To: <20141208083408.GA8023@gmail.com>
+Date: Mon, 08 Dec 2014 08:54:05 -0500
+Message-ID: <20141208085405.730577a3@gandalf.local.home>
+In-Reply-To: <1418009221-12719-1-git-send-email-anton@samba.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7996454096658284957==
+--===============8954114528243278915==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Mon,  8 Dec 2014 14:27:01 +1100
+Anton Blanchard <anton@samba.org> wrote:
 
-Hi Ingo,
-
-> So we cannot call set_task_cpu() because in the normal life time =
-
-> of a task the ->cpu value gets set on wakeup. So if a task is =
-
-> blocked right now, and its affinity changes, it ought to get a =
-
-> correct ->cpu selected on wakeup. The affinity mask and the =
-
-> current value of ->cpu getting out of sync is thus 'normal'.
+> I have a busy ppc64le KVM box where guests sometimes hit the infamous
+> "kernel BUG at kernel/smpboot.c:134!" issue during boot:
 > =
 
-> (Check for example how set_cpus_allowed_ptr() works: we first set =
-
-> the new allowed mask, then do we migrate the task away if =
-
-> necessary.)
+> BUG_ON(td->cpu !=3D smp_processor_id());
 > =
 
-> In the kthread_bind() case this is explicitly assumed: it only =
-
-> calls do_set_cpus_allowed().
+> Basically a per CPU hotplug thread scheduled on the wrong CPU. The oops
+> output confirms it:
 > =
 
-> But obviously the bug triggers in kernel/smpboot.c, and that =
+> CPU: 0
+> Comm: watchdog/130
+> =
 
-> assert shows a real bug - and your patch makes the assert go =
+> The issue is in kthread_bind where we set the cpus_allowed mask, but do
+> not touch task_thread_info(p)->cpu. The scheduler assumes the previously
+> scheduled CPU is in the cpus_allowed mask, but in this case we are
+> moving a thread to another CPU so it is not.
+> =
 
-> away, so the question is, how did the kthread get woken up and =
 
-> put on a runqueue without its ->cpu getting set?
+Does this happen always on boot up, and always with the watchdog thread?
 
-I started going down this line earlier today, and found things like:
+I followed the logic that starts the watchdog threads.
 
-select_task_rq_fair:
+watchdog_enable_all_cpus()
+  smpboot_register_percpu-thread() {
 
-        if (p->nr_cpus_allowed =3D=3D 1)
-                return prev_cpu;
+    for_each_online_cpu(cpu) { ... }
 
-I tried returning cpumask_first(tsk_cpus_allowed()) instead, and while
-I couldn't hit the BUG I did manage to get a scheduler lockup during
-testing.
+Where watchdog_enable_all_cpus() can be called by
+lockup_detector_init() before SMP is started, but also by
+proc_dowatchdog() which is called by the sysctl commands (after SMP is
+up and running).
 
-At that point I thought the previous task_cpu() was somewhat ingrained
-in the scheduler and came up with the patch. If not, we could go on a
-hunt to see what else needs fixing.
+I noticed there's no "get_online_cpus()" anywhere, although the
+unregister_percpu_thread() has it. Is it possible that we created a
+thread on a CPU that wasn't fully online yet?
 
-Anton
+Perhaps the following patch is needed? Even if this isn't the solution
+to this bug, it is probably needed as watchdog_enable_all_cpus() can be
+called after boot up too.
 
---===============7996454096658284957==--
+-- Steve
+
+diff --git a/kernel/smpboot.c b/kernel/smpboot.c
+index eb89e1807408..60d35ac5d3f1 100644
+--- a/kernel/smpboot.c
++++ b/kernel/smpboot.c
+@@ -279,6 +279,7 @@ int smpboot_register_percpu_thread(struct smp_hotplug_t=
+hread *plug_thread)
+ 	unsigned int cpu;
+ 	int ret =3D 0;
+ =
+
++	get_online_cpus();
+ 	mutex_lock(&smpboot_threads_lock);
+ 	for_each_online_cpu(cpu) {
+ 		ret =3D __smpboot_create_thread(plug_thread, cpu);
+@@ -291,6 +292,7 @@ int smpboot_register_percpu_thread(struct smp_hotplug_t=
+hread *plug_thread)
+ 	list_add(&plug_thread->list, &hotplug_threads);
+ out:
+ 	mutex_unlock(&smpboot_threads_lock);
++	put_online_cpus();
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(smpboot_register_percpu_thread);
+
+--===============8954114528243278915==--
 
