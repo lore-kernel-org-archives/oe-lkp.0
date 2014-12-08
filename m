@@ -1,76 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============6481611521277553850=="
+Content-Type: multipart/mixed; boundary="===============9098356733683321027=="
 MIME-Version: 1.0
-From: Anton Blanchard <anton@samba.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: [PATCH] kthread: kthread_bind fails to enforce CPU affinity (fixes kernel BUG at kernel/smpboot.c:134!)
-Date: Mon, 08 Dec 2014 14:27:01 +1100
-Message-ID: <1418009221-12719-1-git-send-email-anton@samba.org>
+Subject: Re: [PATCH] kthread: kthread_bind fails to enforce CPU affinity (fixes kernel BUG at kernel/smpboot.c:134!)
+Date: Sun, 07 Dec 2014 20:28:34 -0800
+Message-ID: <CA+55aFw6gMN5VxONPo9xtJA_+p2iLArSaK-m_4vDL+L07Z6vuA@mail.gmail.com>
+In-Reply-To: <1418009221-12719-1-git-send-email-anton@samba.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6481611521277553850==
+--===============9098356733683321027==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-I have a busy ppc64le KVM box where guests sometimes hit the infamous
-"kernel BUG at kernel/smpboot.c:134!" issue during boot:
+On Sun, Dec 7, 2014 at 7:27 PM, Anton Blanchard <anton@samba.org> wrote:
+>
+> Since we cannot call set_task_cpu (the task is in a sleeping state),
+> just do an explicit set of task_thread_info(p)->cpu.
 
-BUG_ON(td->cpu !=3D smp_processor_id());
+Scheduler people: is this sufficient and ok?
 
-Basically a per CPU hotplug thread scheduled on the wrong CPU. The oops
-output confirms it:
+The __set_task_cpu() function does various other things too:
 
-CPU: 0
-Comm: watchdog/130
+        set_task_rq(p, cpu);
+  #ifdef CONFIG_SMP
+        /*
+         * After ->cpu is set up to a new value, task_rq_lock(p, ...) can be
+         * successfuly executed on another CPU. We must ensure that updates=
+ of
+         * per-task data have been completed by this moment.
+         */
+        smp_wmb();
+        task_thread_info(p)->cpu =3D cpu;
+        p->wake_cpu =3D cpu;
+  #endif
 
-The issue is in kthread_bind where we set the cpus_allowed mask, but do
-not touch task_thread_info(p)->cpu. The scheduler assumes the previously
-scheduled CPU is in the cpus_allowed mask, but in this case we are
-moving a thread to another CPU so it is not.
+which makes me worry about just setting the thread_info->cpu value.
+That set_task_rq() initializes various group scheduling things, an
+dthat whole "wake_cpu" thing seems relevant too.
 
-We used to call set_task_cpu which sets task_thread_info(p)->cpu (in fact
-kthread_bind still has a comment suggesting this). That was removed in
-e2912009fb7b ("sched: Ensure set_task_cpu() is never called on blocked
-tasks").
+I'm not saying the patch is wrong, I just want confirmation/ack for
+it. Although to be honest, I'd rather see this come in through the
+scheduler tree anyway.
 
-Since we cannot call set_task_cpu (the task is in a sleeping state),
-just do an explicit set of task_thread_info(p)->cpu.
+Hmm? This seems to go back to 2.6.33 if that "Fixes" line is accurate,
+so it's been around forever (almost exactly five years). Comments?
 
-Fixes: e2912009fb7b ("sched: Ensure set_task_cpu() is never called on block=
-ed tasks")
-Cc: stable(a)vger.kernel.org
-Signed-off-by: Anton Blanchard <anton@samba.org>
----
- kernel/kthread.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+                    Linus
 
-diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 10e489c..e40ab1d 100644
---- a/kernel/kthread.c
-+++ b/kernel/kthread.c
-@@ -327,13 +327,14 @@ EXPORT_SYMBOL(kthread_create_on_node);
- =
-
- static void __kthread_bind(struct task_struct *p, unsigned int cpu, long s=
-tate)
- {
--	/* Must have done schedule() in kthread() before we set_task_cpu */
-+	/* Must have done schedule() in kthread() before we change affinity */
- 	if (!wait_task_inactive(p, state)) {
- 		WARN_ON(1);
- 		return;
- 	}
- 	/* It's safe because the task is inactive. */
- 	do_set_cpus_allowed(p, cpumask_of(cpu));
-+	task_thread_info(p)->cpu =3D cpu;
- 	p->flags |=3D PF_NO_SETAFFINITY;
- }
- =
-
--- =
-
-2.1.0
-
-
---===============6481611521277553850==--
+--===============9098356733683321027==--
 
