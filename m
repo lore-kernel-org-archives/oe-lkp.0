@@ -1,33 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============1598310778783189543=="
+Content-Type: multipart/mixed; boundary="===============7465475766849260991=="
 MIME-Version: 1.0
-From: Theodore Ts'o <tytso@mit.edu>
+From: Dave Jones <davej@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [ext4] fdfe0739876: Failed to mount
-Date: Thu, 11 Dec 2014 23:10:27 -0500
-Message-ID: <20141212041027.GD10189@thunk.org>
-In-Reply-To: <1418353365.5745.95.camel@intel.com>
+Subject: Re: [net: sock] BUG: unable to handle kernel NULL pointer dereference at 0000000000000007
+Date: Wed, 10 Dec 2014 20:00:53 -0500
+Message-ID: <20141211010053.GA23742@redhat.com>
+In-Reply-To: <CAMEtUuxexMXtvK_R7YZEvx_iyK9mAx_zrqr1bkj3PsUwoq0p5A@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1598310778783189543==
+--===============7465475766849260991==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 12, 2014 at 11:02:45AM +0800, Huang Ying wrote:
-> FYI, we noticed the below changes on
-> =
+On Wed, Dec 10, 2014 at 03:51:33PM -0800, Alexei Starovoitov wrote:
+ > On Wed, Dec 10, 2014 at 3:29 PM, Fengguang Wu <fengguang.wu@intel.com>=
+ wrote:
+ > > Greetings,
+ > >
+ > > 0day kernel testing robot got the below dmesg and the first bad commit=
+ is
+ > >
+ > >     net: sock: allow eBPF programs to be attached to sockets
+ > =
 
-> After the commit, the file system failed to mount as in stderr file attac=
-hed.
-> =
+ > > [init] Kernel was tainted on startup. Will ignore flags that are alrea=
+dy set.
+ > > [init] Started watchdog process, PID is 9354
+ > > [main] Main thread is alive.
+ > > [   21.233581] BUG: unable to handle kernel NULL pointer dereference a=
+t 0000000000000007
+ > > [   21.234709] IP: [<ffffffff8156ebda>] sk_attach_bpf+0x39/0xc2
+ > =
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git dev
-> commit fdfe073987619ec375da8d8a2701ab271d1b1339 ("ext4: fix potential use=
- after free during resize")
+ > thanks for the report! syscall fuzzer is great.
+ > I missed an extra check. Working on a fix.
 
-This was dropped from the ext4 dev branch a few days ago....
+This might be the first time I've seen it trip up the bpf code iirc.
+Daniel wrote some pretty nifty bpf generator code in trinity,
+(net/bpf.c) that you might want to see if you can think of enhancing.
 
-     	 	      	       	   	    - Ted
+Though it might be the case that we're not even needing to do anything
+that complicated to hit this particular bug..
 
---===============1598310778783189543==--
+	Dave
+
+
+--===============7465475766849260991==--
 
