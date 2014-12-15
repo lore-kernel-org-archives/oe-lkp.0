@@ -1,1919 +1,4408 @@
-Content-Type: multipart/mixed; boundary="===============0063573300524478871=="
+Content-Type: multipart/mixed; boundary="===============8802856200260867354=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@intel.com>
+From: Huang Ying <ying.huang@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] INFO: rcu_sched detected stalls on CPUs/tasks: { 1} (detected by 0, t=10002 jiffies, g=945, c=944, q=0)
-Date: Mon, 15 Dec 2014 15:29:51 +0800
-Message-ID: <1418628591.5745.191.camel@intel.com>
-In-Reply-To: <20141215072804.GA4898@js1304-P5Q-DELUXE>
+Subject: [vfs] 75cbe701a42: +40.5% vmstat.system.in
+Date: Mon, 15 Dec 2014 16:25:55 +0800
+Message-ID: <1418631955.5745.193.camel@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0063573300524478871==
+--===============8802856200260867354==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2014-12-15 at 16:28 +0900, Joonsoo Kim wrote:
-> On Thu, Dec 11, 2014 at 04:00:30PM +0800, Huang Ying wrote:
-> > FYI, we noticed the below changes on
-> > =
+FYI, we noticed the below changes on
 
-> > git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
-> > commit 6a7d22008b2294f1dacbc77632a26f2142f2d4b0 ("mm: Fix boot crash wi=
-th f7426b983a6a ("mm: cma: adjust address limit to avoid hitting low/high m=
-emory boundary")")
-> > =
-
-> > The original boot failures are fixed, but there are some boot hang now.
-> > Sometimes because of OOM for trinity test.
-> =
-
-> CCing relevant people.
-> =
-
-> Hmm... My fix is just work-around to avoid validation when VA to PA
-> conversion. So, it would be irrelevant to this problem. Blaming
-> original patch makes more sense to me.
-> =
-
-> Anyway, I looked at the original commit f7426b983a6a and found that
-> it doesn't have any effect after reserving CMA region. Attached dmesg
-> say that reservation is successful. So I wonder what cause this stall.
-> Could you share your config to help debug?
-
-The config is attached.
-
-Best Regards,
-Huang, Ying
-
-> And, dmesg log also say that 16 MB is reserved for CMA. Is there any
-> possibility this memory reservation cause this stall? Possibly, your
-> OOM report is related to this reservation.
-> =
-
-> Thanks.
-> =
+commit 75cbe701a4251fcd8b846d52ae42f88c9a8e5e93 ("vfs: Remove i_dquot field=
+ from inode")
 
 
+testbox/testcase/testparams: lkp-nex05/will-it-scale/performance-pwrite3
 
---===============0063573300524478871==
-Content-Type: text/x-mpsub
+507e1fa697097b48  75cbe701a4251fcd8b846d52ae  =
+
+----------------  --------------------------  =
+
+         %stddev     %change         %stddev
+             \          |                \  =
+
+    157162 =C2=B1 12%    +420.1%     817388 =C2=B1 41%  sched_debug.cfs_rq[=
+0]:/.min_vruntime
+         6 =C2=B1  7%    +533.8%         41 =C2=B1 42%  sched_debug.cfs_rq[=
+22]:/.tg_load_contrib
+         1 =C2=B1  0%    +440.0%          5 =C2=B1 43%  sched_debug.cpu#26.=
+cpu_load[1]
+         0 =C2=B1  0%      +Inf%          5 =C2=B1 45%  sched_debug.cfs_rq[=
+26]:/.runnable_load_avg
+         0 =C2=B1  0%      +Inf%          5 =C2=B1 36%  sched_debug.cpu#30.=
+cpu_load[0]
+   8431.40 =C2=B1 30%    -100.0%       0.00 =C2=B1  0%  sched_debug.cfs_rq[=
+34]:/.MIN_vruntime
+   8431.40 =C2=B1 30%    -100.0%       0.00 =C2=B1  0%  sched_debug.cfs_rq[=
+34]:/.max_vruntime
+         0 =C2=B1  0%      +Inf%          3 =C2=B1 19%  sched_debug.cpu#57.=
+cpu_load[4]
+    145948 =C2=B1 31%     -65.3%      50659 =C2=B1 47%  sched_debug.cpu#3.s=
+ched_count
+         2 =C2=B1 20%    +388.0%         12 =C2=B1 44%  sched_debug.cfs_rq[=
+33]:/.runnable_load_avg
+    102647 =C2=B1 42%     -65.2%      35676 =C2=B1 24%  sched_debug.cpu#11.=
+sched_count
+    185980 =C2=B1 17%     -59.1%      76091 =C2=B1 43%  sched_debug.cpu#10.=
+sched_count
+     92451 =C2=B1 16%     -65.8%      31628 =C2=B1 13%  sched_debug.cpu#10.=
+sched_goidle
+    185092 =C2=B1 16%     -65.7%      63435 =C2=B1 13%  sched_debug.cpu#10.=
+nr_switches
+    191359 =C2=B1  6%    +227.3%     626233 =C2=B1 42%  sched_debug.cfs_rq[=
+34]:/.min_vruntime
+     87689 =C2=B1 15%     -64.2%      31375 =C2=B1 13%  sched_debug.cpu#10.=
+ttwu_count
+    205303 =C2=B1 10%    +195.9%     607409 =C2=B1 43%  sched_debug.cfs_rq[=
+38]:/.min_vruntime
+     40762 =C2=B1 27%     -45.8%      22112 =C2=B1 37%  sched_debug.cpu#25.=
+ttwu_count
+     41187 =C2=B1 23%     -45.7%      22347 =C2=B1 37%  sched_debug.cpu#25.=
+sched_goidle
+     82643 =C2=B1 23%     -45.4%      45095 =C2=B1 37%  sched_debug.cpu#25.=
+nr_switches
+      2702 =C2=B1  9%    +155.2%       6896 =C2=B1 45%  sched_debug.cfs_rq[=
+43]:/.avg->runnable_avg_sum
+        58 =C2=B1 10%    +158.3%        149 =C2=B1 46%  sched_debug.cfs_rq[=
+43]:/.tg_runnable_contrib
+     83542 =C2=B1 22%     -43.9%      46893 =C2=B1 36%  sched_debug.cpu#25.=
+sched_count
+        51 =C2=B1  8%    +187.4%        148 =C2=B1 42%  sched_debug.cfs_rq[=
+49]:/.tg_runnable_contrib
+      2394 =C2=B1  9%    +184.2%       6805 =C2=B1 42%  sched_debug.cfs_rq[=
+49]:/.avg->runnable_avg_sum
+    292617 =C2=B1 23%     -41.0%     172597 =C2=B1 42%  sched_debug.cpu#6.s=
+ched_count
+    145348 =C2=B1 23%     -41.6%      84899 =C2=B1 41%  sched_debug.cpu#6.s=
+ched_goidle
+    290925 =C2=B1 23%     -41.6%     169994 =C2=B1 41%  sched_debug.cpu#6.n=
+r_switches
+     34916 =C2=B1 10%     -45.2%      19148 =C2=B1 31%  sched_debug.cpu#17.=
+sched_goidle
+     70132 =C2=B1 10%     -44.8%      38690 =C2=B1 31%  sched_debug.cpu#17.=
+nr_switches
+      3371 =C2=B1 20%    +542.7%      21665 =C2=B1 42%  sched_debug.cfs_rq[=
+13]:/.exec_clock
+     33857 =C2=B1 13%     -43.0%      19297 =C2=B1 29%  sched_debug.cpu#17.=
+ttwu_count
+       464 =C2=B1  0%    +288.4%       1804 =C2=B1 47%  sched_debug.cpu#7.c=
+urr->pid
+        93 =C2=B1 11%    +128.0%        212 =C2=B1 34%  sched_debug.cfs_rq[=
+42]:/.tg_runnable_contrib
+      4288 =C2=B1 11%    +126.8%       9724 =C2=B1 33%  sched_debug.cfs_rq[=
+42]:/.avg->runnable_avg_sum
+     70149 =C2=B1 10%     -43.6%      39548 =C2=B1 29%  sched_debug.cpu#17.=
+sched_count
+       310 =C2=B1  6%    +432.2%       1652 =C2=B1 45%  sched_debug.cpu#18.=
+curr->pid
+      2155 =C2=B1  7%    +329.7%       9262 =C2=B1 45%  sched_debug.cfs_rq[=
+23]:/.exec_clock
+    166703 =C2=B1 21%     -49.1%      84791 =C2=B1 30%  sched_debug.cpu#2.s=
+ched_goidle
+    333623 =C2=B1 21%     -49.1%     169785 =C2=B1 30%  sched_debug.cpu#2.n=
+r_switches
+    333958 =C2=B1 21%     -44.4%     185671 =C2=B1 35%  sched_debug.cpu#2.s=
+ched_count
+      9362 =C2=B1  9%    +118.8%      20488 =C2=B1 37%  sched_debug.cfs_rq[=
+42]:/.exec_clock
+         0 =C2=B1  0%      +Inf%          2 =C2=B1 41%  sched_debug.cpu#11.=
+cpu_load[4]
+     72346 =C2=B1 28%     -40.5%      43020 =C2=B1 23%  sched_debug.cpu#19.=
+sched_count
+     22735 =C2=B1  9%     -35.8%      14591 =C2=B1 29%  sched_debug.cpu#29.=
+ttwu_count
+     88509 =C2=B1 10%     -42.9%      50561 =C2=B1 32%  sched_debug.cpu#5.s=
+ched_goidle
+    177345 =C2=B1 10%     -42.8%     101466 =C2=B1 31%  sched_debug.cpu#5.n=
+r_switches
+         0 =C2=B1  0%      +Inf%          3 =C2=B1 36%  sched_debug.cpu#11.=
+cpu_load[3]
+    178372 =C2=B1 10%     -39.4%     108021 =C2=B1 19%  sched_debug.cpu#5.s=
+ched_count
+       176 =C2=B1 46%    +778.8%       1551 =C2=B1 42%  sched_debug.cpu#14.=
+curr->pid
+         1 =C2=B1  0%    +500.0%          6 =C2=B1 34%  sched_debug.cpu#20.=
+cpu_load[0]
+     22743 =C2=B1 12%     -32.4%      15363 =C2=B1 29%  sched_debug.cpu#29.=
+sched_goidle
+     68316 =C2=B1 13%     -27.5%      49497 =C2=B1 33%  sched_debug.cpu#4.t=
+twu_count
+     26811 =C2=B1 16%     -36.8%      16949 =C2=B1 30%  sched_debug.cpu#11.=
+ttwu_count
+     45868 =C2=B1 12%     -31.6%      31356 =C2=B1 29%  sched_debug.cpu#29.=
+nr_switches
+     96945 =C2=B1 12%     -40.3%      57836 =C2=B1 34%  sched_debug.cpu#5.t=
+twu_count
+     25741 =C2=B1 14%     -33.3%      17166 =C2=B1 26%  sched_debug.cpu#11.=
+sched_goidle
+     51764 =C2=B1 13%     -33.0%      34703 =C2=B1 25%  sched_debug.cpu#11.=
+nr_switches
+     63300 =C2=B1 13%     -20.0%      50621 =C2=B1 18%  sched_debug.cpu#26.=
+sched_goidle
+    126782 =C2=B1 13%     -20.0%     101443 =C2=B1 18%  sched_debug.cpu#26.=
+nr_switches
+         5 =C2=B1 40%    +116.0%         10 =C2=B1 15%  sched_debug.cpu#48.=
+cpu_load[4]
+         0 =C2=B1  0%      +Inf%          5 =C2=B1 36%  sched_debug.cfs_rq[=
+20]:/.runnable_load_avg
+     59777 =C2=B1 12%     -19.2%      48285 =C2=B1 17%  sched_debug.cpu#26.=
+ttwu_count
+         7 =C2=B1  6%     +52.0%         11 =C2=B1 10%  sched_debug.cpu#40.=
+cpu_load[4]
+         1 =C2=B1 33%    +220.0%          4 =C2=B1 24%  sched_debug.cpu#57.=
+cpu_load[3]
+       483 =C2=B1 19%    +378.2%       2312 =C2=B1 36%  sched_debug.cpu#0.c=
+urr->pid
+       172 =C2=B1  4%     +71.5%        295 =C2=B1 22%  sched_debug.cfs_rq[=
+40]:/.tg_runnable_contrib
+     55388 =C2=B1 24%     -24.6%      41749 =C2=B1 39%  sched_debug.cpu#57.=
+sched_goidle
+      7887 =C2=B1  4%     +71.3%      13512 =C2=B1 23%  sched_debug.cfs_rq[=
+40]:/.avg->runnable_avg_sum
+         5 =C2=B1 40%    +120.0%         11 =C2=B1 16%  sched_debug.cpu#48.=
+cpu_load[3]
+     46362 =C2=B1 11%     -25.4%      34597 =C2=B1 24%  sched_debug.cpu#29.=
+sched_count
+        43 =C2=B1 13%    +309.8%        176 =C2=B1 35%  sched_debug.cfs_rq[=
+9]:/.tg_runnable_contrib
+        75 =C2=B1 14%    +158.7%        194 =C2=B1 39%  sched_debug.cfs_rq[=
+37]:/.tg_runnable_contrib
+      3468 =C2=B1 14%    +157.2%       8919 =C2=B1 39%  sched_debug.cfs_rq[=
+37]:/.avg->runnable_avg_sum
+      2015 =C2=B1 13%    +302.0%       8102 =C2=B1 35%  sched_debug.cfs_rq[=
+9]:/.avg->runnable_avg_sum
+        32 =C2=B1  9%    +297.5%        127 =C2=B1 42%  sched_debug.cfs_rq[=
+15]:/.tg_runnable_contrib
+      1507 =C2=B1  7%    +290.1%       5878 =C2=B1 42%  sched_debug.cfs_rq[=
+15]:/.avg->runnable_avg_sum
+      3998 =C2=B1  8%     -14.1%       3433 =C2=B1  9%  cpuidle.C1E-NHM.usa=
+ge
+    111142 =C2=B1 24%     -24.5%      83920 =C2=B1 39%  sched_debug.cpu#57.=
+nr_switches
+    111162 =C2=B1 24%     -24.3%      84203 =C2=B1 39%  sched_debug.cpu#57.=
+sched_count
+        63 =C2=B1 19%    +187.6%        181 =C2=B1 36%  sched_debug.cfs_rq[=
+35]:/.tg_runnable_contrib
+        71 =C2=B1  4%    +145.6%        174 =C2=B1 26%  sched_debug.cfs_rq[=
+61]:/.tg_runnable_contrib
+      2927 =C2=B1 18%    +185.8%       8365 =C2=B1 36%  sched_debug.cfs_rq[=
+35]:/.avg->runnable_avg_sum
+      3276 =C2=B1  3%    +144.9%       8022 =C2=B1 26%  sched_debug.cfs_rq[=
+61]:/.avg->runnable_avg_sum
+       459 =C2=B1 10%     -25.0%        344 =C2=B1 12%  sched_debug.cpu#40.=
+ttwu_local
+       196 =C2=B1  3%     -14.0%        169 =C2=B1 10%  sched_debug.cpu#46.=
+ttwu_local
+    178384 =C2=B1  0%     -32.1%     121086 =C2=B1 29%  sched_debug.cpu#62.=
+ttwu_count
+       252 =C2=B1 24%    +336.6%       1100 =C2=B1 37%  sched_debug.cpu#15.=
+curr->pid
+      2364 =C2=B1  5%    +257.1%       8441 =C2=B1 38%  sched_debug.cfs_rq[=
+18]:/.avg->runnable_avg_sum
+         6 =C2=B1  0%    +103.3%         12 =C2=B1 24%  sched_debug.cpu#48.=
+cpu_load[0]
+         4 =C2=B1 33%    +148.9%         11 =C2=B1 19%  sched_debug.cpu#48.=
+cpu_load[2]
+         8 =C2=B1 12%     +45.0%         11 =C2=B1 11%  sched_debug.cpu#40.=
+cpu_load[3]
+         5 =C2=B1 20%    +128.0%         11 =C2=B1 21%  sched_debug.cpu#48.=
+cpu_load[1]
+      8886 =C2=B1  8%    +114.1%      19030 =C2=B1 35%  sched_debug.cfs_rq[=
+37]:/.exec_clock
+        51 =C2=B1 11%    +253.7%        180 =C2=B1 36%  sched_debug.cfs_rq[=
+22]:/.tg_runnable_contrib
+      2358 =C2=B1 11%    +251.6%       8293 =C2=B1 36%  sched_debug.cfs_rq[=
+22]:/.avg->runnable_avg_sum
+       331 =C2=B1  0%     -16.1%        278 =C2=B1  4%  sched_debug.cpu#49.=
+ttwu_local
+     26574 =C2=B1  8%     +47.3%      39151 =C2=B1 16%  sched_debug.cfs_rq[=
+34]:/.exec_clock
+      8204 =C2=B1  3%     +65.0%      13540 =C2=B1 24%  sched_debug.cfs_rq[=
+36]:/.avg->runnable_avg_sum
+       179 =C2=B1  3%     +65.3%        295 =C2=B1 24%  sched_debug.cfs_rq[=
+36]:/.tg_runnable_contrib
+       330 =C2=B1 17%    +325.6%       1404 =C2=B1 37%  sched_debug.cpu#20.=
+curr->pid
+         2 =C2=B1  0%    +180.0%          5 =C2=B1 40%  sched_debug.cfs_rq[=
+62]:/.runnable_load_avg
+       597 =C2=B1  5%    +155.0%       1523 =C2=B1 27%  sched_debug.cpu#42.=
+curr->pid
+       555 =C2=B1 23%    +115.5%       1197 =C2=B1 43%  sched_debug.cpu#41.=
+curr->pid
+      8581 =C2=B1  0%     +56.5%      13426 =C2=B1 25%  sched_debug.cfs_rq[=
+60]:/.avg->runnable_avg_sum
+       187 =C2=B1  0%     +56.2%        292 =C2=B1 25%  sched_debug.cfs_rq[=
+60]:/.tg_runnable_contrib
+         2 =C2=B1 50%    +210.0%          6 =C2=B1 27%  sched_debug.cpu#57.=
+cpu_load[2]
+     71489 =C2=B1  4%     -49.9%      35802 =C2=B1 30%  sched_debug.cpu#55.=
+sched_goidle
+      7457 =C2=B1 17%     +63.9%      12222 =C2=B1 19%  sched_debug.cfs_rq[=
+38]:/.avg->runnable_avg_sum
+       163 =C2=B1 17%     +63.4%        266 =C2=B1 19%  sched_debug.cfs_rq[=
+38]:/.tg_runnable_contrib
+       923 =C2=B1  9%    +105.2%       1894 =C2=B1 28%  sched_debug.cpu#60.=
+curr->pid
+         4 =C2=B1  0%    +185.0%         11 =C2=B1 48%  sched_debug.cpu#41.=
+cpu_load[0]
+        43 =C2=B1  9%    +202.8%        130 =C2=B1 43%  sched_debug.cfs_rq[=
+31]:/.blocked_load_avg
+    143344 =C2=B1  4%     -49.7%      72109 =C2=B1 30%  sched_debug.cpu#55.=
+nr_switches
+    154157 =C2=B1 16%     -41.3%      90499 =C2=B1 24%  sched_debug.cpu#33.=
+sched_goidle
+      7157 =C2=B1 13%     +80.3%      12902 =C2=B1 24%  sched_debug.cfs_rq[=
+34]:/.avg->runnable_avg_sum
+    143368 =C2=B1  4%     -49.6%      72207 =C2=B1 30%  sched_debug.cpu#55.=
+sched_count
+    398727 =C2=B1  7%     -25.0%     299212 =C2=B1 33%  sched_debug.cpu#56.=
+ttwu_count
+       331 =C2=B1 38%     -53.2%        154 =C2=B1 38%  sched_debug.cfs_rq[=
+45]:/.blocked_load_avg
+       155 =C2=B1 14%     +81.0%        281 =C2=B1 24%  sched_debug.cfs_rq[=
+34]:/.tg_runnable_contrib
+        17 =C2=B1 14%     -30.3%         12 =C2=B1 34%  sched_debug.cfs_rq[=
+59]:/.runnable_load_avg
+        37 =C2=B1  4%    +202.4%        113 =C2=B1 39%  sched_debug.cfs_rq[=
+23]:/.tg_runnable_contrib
+    173012 =C2=B1 19%     -42.7%      99216 =C2=B1 27%  sched_debug.cpu#33.=
+ttwu_count
+     75987 =C2=B1  4%     -50.1%      37929 =C2=B1 31%  sched_debug.cpu#55.=
+ttwu_count
+    308942 =C2=B1 16%     -41.3%     181404 =C2=B1 24%  sched_debug.cpu#33.=
+nr_switches
+         3 =C2=B1 14%    +180.0%          9 =C2=B1 35%  sched_debug.cpu#41.=
+cpu_load[1]
+      1780 =C2=B1  4%    +194.9%       5248 =C2=B1 39%  sched_debug.cfs_rq[=
+23]:/.avg->runnable_avg_sum
+         3 =C2=B1 14%    +128.6%          8 =C2=B1 28%  sched_debug.cpu#41.=
+cpu_load[2]
+        29 =C2=B1 10%    +263.4%        105 =C2=B1 46%  sched_debug.cfs_rq[=
+21]:/.tg_runnable_contrib
+    308995 =C2=B1 16%     -41.2%     181562 =C2=B1 24%  sched_debug.cpu#33.=
+sched_count
+        74 =C2=B1 14%     -53.5%         34 =C2=B1 45%  sched_debug.cfs_rq[=
+12]:/.tg_load_contrib
+      1388 =C2=B1  9%    +250.5%       4865 =C2=B1 45%  sched_debug.cfs_rq[=
+21]:/.avg->runnable_avg_sum
+         2 =C2=B1 20%    +180.0%          7 =C2=B1 40%  sched_debug.cfs_rq[=
+41]:/.runnable_load_avg
+    191260 =C2=B1 12%     -43.1%     108749 =C2=B1 25%  sched_debug.cpu#45.=
+ttwu_count
+     68784 =C2=B1  0%     -36.6%      43633 =C2=B1 40%  sched_debug.cpu#53.=
+ttwu_count
+    173314 =C2=B1  9%     -45.9%      93834 =C2=B1 26%  sched_debug.cpu#45.=
+sched_goidle
+        40 =C2=B1 17%     -40.0%         24 =C2=B1 21%  sched_debug.cfs_rq[=
+32]:/.runnable_load_avg
+     55810 =C2=B1 12%     -26.3%      41131 =C2=B1 30%  sched_debug.cpu#39.=
+sched_goidle
+    179862 =C2=B1  1%     -35.8%     115446 =C2=B1 38%  sched_debug.cpu#50.=
+ttwu_count
+        23 =C2=B1 17%     -43.5%         13 =C2=B1 40%  sched_debug.cpu#59.=
+load
+        23 =C2=B1 17%     -43.5%         13 =C2=B1 40%  sched_debug.cfs_rq[=
+59]:/.load
+       211 =C2=B1 21%     -47.3%        111 =C2=B1 36%  sched_debug.cfs_rq[=
+5]:/.blocked_load_avg
+        39 =C2=B1 18%     -37.7%         24 =C2=B1 24%  sched_debug.cpu#32.=
+cpu_load[1]
+    347042 =C2=B1  9%     -45.8%     188111 =C2=B1 25%  sched_debug.cpu#45.=
+nr_switches
+        89 =C2=B1 10%     -52.6%         42 =C2=B1 40%  sched_debug.cfs_rq[=
+2]:/.tg_load_contrib
+    111996 =C2=B1 12%     -26.2%      82661 =C2=B1 29%  sched_debug.cpu#39.=
+nr_switches
+    347092 =C2=B1  9%     -45.8%     188225 =C2=B1 25%  sched_debug.cpu#45.=
+sched_count
+         9 =C2=B1 26%     -43.2%          5 =C2=B1 44%  sched_debug.cpu#47.=
+cpu_load[1]
+       337 =C2=B1 37%     -51.7%        162 =C2=B1 37%  sched_debug.cfs_rq[=
+45]:/.tg_load_contrib
+      6701 =C2=B1 12%    +137.1%      15886 =C2=B1 29%  sched_debug.cfs_rq[=
+0]:/.avg->runnable_avg_sum
+    171660 =C2=B1  8%     -33.6%     114067 =C2=B1 27%  sched_debug.cpu#54.=
+ttwu_count
+       146 =C2=B1 12%    +135.8%        345 =C2=B1 29%  sched_debug.cfs_rq[=
+0]:/.tg_runnable_contrib
+     60240 =C2=B1 12%     -27.1%      43911 =C2=B1 29%  sched_debug.cpu#39.=
+ttwu_count
+    180017 =C2=B1  5%     -34.2%     118414 =C2=B1 26%  sched_debug.cpu#54.=
+sched_goidle
+         6 =C2=B1  7%     +96.9%         12 =C2=B1 18%  sched_debug.cpu#34.=
+cpu_load[4]
+        48 =C2=B1 19%    +180.0%        135 =C2=B1 44%  sched_debug.cfs_rq[=
+31]:/.tg_load_contrib
+      5564 =C2=B1 25%    +196.0%      16471 =C2=B1 49%  sched_debug.cfs_rq[=
+1]:/.exec_clock
+    164454 =C2=B1 22%     -39.4%      99729 =C2=B1 29%  sched_debug.cpu#41.=
+sched_goidle
+    113012 =C2=B1 11%     -26.8%      82773 =C2=B1 29%  sched_debug.cpu#39.=
+sched_count
+    184124 =C2=B1  1%     -36.6%     116679 =C2=B1 38%  sched_debug.cpu#50.=
+sched_goidle
+    360271 =C2=B1  5%     -34.2%     237049 =C2=B1 26%  sched_debug.cpu#54.=
+nr_switches
+        39 =C2=B1 18%     -34.7%         25 =C2=B1 23%  sched_debug.cpu#32.=
+cpu_load[0]
+    360327 =C2=B1  5%     -34.2%     237201 =C2=B1 26%  sched_debug.cpu#54.=
+sched_count
+       339 =C2=B1  5%     -16.4%        283 =C2=B1 13%  sched_debug.cpu#51.=
+ttwu_local
+    329307 =C2=B1 22%     -39.3%     199906 =C2=B1 29%  sched_debug.cpu#41.=
+nr_switches
+    329356 =C2=B1 22%     -39.3%     200070 =C2=B1 29%  sched_debug.cpu#41.=
+sched_count
+    368489 =C2=B1  1%     -36.6%     233598 =C2=B1 37%  sched_debug.cpu#50.=
+nr_switches
+        37 =C2=B1 13%     -30.3%         25 =C2=B1 23%  sched_debug.cpu#32.=
+cpu_load[2]
+         6 =C2=B1 16%     -26.7%          4 =C2=B1 23%  sched_debug.cpu#55.=
+cpu_load[3]
+    368543 =C2=B1  1%     -36.3%     234920 =C2=B1 38%  sched_debug.cpu#50.=
+sched_count
+        60 =C2=B1 26%     -24.0%         45 =C2=B1 41%  sched_debug.cfs_rq[=
+38]:/.blocked_load_avg
+         1 =C2=B1 33%    +233.3%          5 =C2=B1 35%  sched_debug.cpu#18.=
+cpu_load[1]
+       176 =C2=B1 25%     -29.0%        125 =C2=B1 41%  sched_debug.cfs_rq[=
+37]:/.blocked_load_avg
+         9 =C2=B1 11%     -37.8%          5 =C2=B1 24%  sched_debug.cpu#55.=
+cpu_load[2]
+    183394 =C2=B1 27%     -36.5%     116428 =C2=B1 29%  sched_debug.cpu#41.=
+ttwu_count
+       188 =C2=B1 26%     -28.1%        135 =C2=B1 40%  sched_debug.cfs_rq[=
+37]:/.tg_load_contrib
+     30994 =C2=B1 21%    +103.6%      63115 =C2=B1 24%  sched_debug.cfs_rq[=
+0]:/.exec_clock
+        17 =C2=B1 35%    +103.5%         34 =C2=B1 15%  sched_debug.cfs_rq[=
+0]:/.load
+         6 =C2=B1  7%    +100.0%         13 =C2=B1 20%  sched_debug.cpu#34.=
+cpu_load[3]
+       130 =C2=B1 17%     -40.2%         78 =C2=B1 20%  sched_debug.cfs_rq[=
+7]:/.tg_load_contrib
+        12 =C2=B1  4%     -42.4%          7 =C2=B1 28%  sched_debug.cpu#55.=
+cpu_load[0]
+     71751 =C2=B1  4%     -40.6%      42585 =C2=B1 38%  sched_debug.cpu#47.=
+ttwu_count
+       216 =C2=B1 20%     -44.6%        120 =C2=B1 34%  sched_debug.cfs_rq[=
+5]:/.tg_load_contrib
+       436 =C2=B1 22%     -31.8%        297 =C2=B1 15%  sched_debug.cpu#33.=
+ttwu_local
+        14 =C2=B1 17%    +159.3%         37 =C2=B1 39%  sched_debug.cfs_rq[=
+28]:/.tg_load_contrib
+        11 =C2=B1  4%     -42.6%          6 =C2=B1 22%  sched_debug.cpu#55.=
+cpu_load[1]
+     68501 =C2=B1  3%     -41.2%      40278 =C2=B1 38%  sched_debug.cpu#47.=
+sched_goidle
+    137399 =C2=B1  3%     -41.0%      81095 =C2=B1 38%  sched_debug.cpu#47.=
+nr_switches
+       118 =C2=B1 15%     -40.6%         70 =C2=B1 25%  sched_debug.cfs_rq[=
+7]:/.blocked_load_avg
+         7 =C2=B1  0%     +88.6%         13 =C2=B1 18%  sched_debug.cpu#34.=
+cpu_load[2]
+    139101 =C2=B1  2%     -41.6%      81205 =C2=B1 37%  sched_debug.cpu#47.=
+sched_count
+        24 =C2=B1 25%     -24.2%         18 =C2=B1 48%  sched_debug.cfs_rq[=
+60]:/.load
+ 1.571e+10 =C2=B1  1%      -9.5%  1.421e+10 =C2=B1  5%  cpuidle.C3-NHM.time
+        66 =C2=B1 24%     -14.3%         57 =C2=B1 26%  sched_debug.cfs_rq[=
+38]:/.tg_load_contrib
+     40806 =C2=B1  6%     +72.3%      70294 =C2=B1 20%  sched_debug.cpu#0.n=
+r_load_updates
+        58 =C2=B1 28%    +160.2%        152 =C2=B1 37%  sched_debug.cfs_rq[=
+11]:/.tg_load_contrib
+   3310987 =C2=B1  1%     -30.0%    2316926 =C2=B1 21%  cpuidle.C3-NHM.usage
+        67 =C2=B1  0%     +90.5%        128 =C2=B1 28%  sched_debug.cfs_rq[=
+9]:/.blocked_load_avg
+        80 =C2=B1 27%    +109.2%        168 =C2=B1 22%  sched_debug.cfs_rq[=
+47]:/.blocked_load_avg
+    186538 =C2=B1  0%     -37.4%     116738 =C2=B1 33%  sched_debug.cpu#46.=
+ttwu_count
+         8 =C2=B1  0%     +65.0%         13 =C2=B1 18%  sched_debug.cpu#34.=
+cpu_load[1]
+    194298 =C2=B1  1%     -38.6%     119356 =C2=B1 33%  sched_debug.cpu#46.=
+sched_goidle
+        71 =C2=B1  4%     +89.1%        135 =C2=B1 25%  sched_debug.cfs_rq[=
+9]:/.tg_load_contrib
+       188 =C2=B1 15%     +97.7%        372 =C2=B1 33%  sched_debug.cfs_rq[=
+59]:/.blocked_load_avg
+    388833 =C2=B1  1%     -38.6%     238921 =C2=B1 33%  sched_debug.cpu#46.=
+nr_switches
+    358921 =C2=B1  1%     -13.8%     309431 =C2=B1  6%  softirqs.SCHED
+      2.34 =C2=B1  2%     -37.8%       1.46 =C2=B1 41%  perf-profile.cpu-cy=
+cles.__srcu_read_lock.fsnotify.vfs_write.sys_pwrite64.system_call_fastpath
+        53 =C2=B1  3%     -34.0%         35 =C2=B1 13%  sched_debug.cfs_rq[=
+32]:/.load
+        50 =C2=B1  8%     -31.1%         34 =C2=B1 13%  sched_debug.cpu#32.=
+load
+       206 =C2=B1 12%     +86.8%        385 =C2=B1 31%  sched_debug.cfs_rq[=
+59]:/.tg_load_contrib
+    388897 =C2=B1  1%     -38.5%     239075 =C2=B1 33%  sched_debug.cpu#46.=
+sched_count
+        34 =C2=B1 23%    +163.5%         89 =C2=B1 47%  sched_debug.cfs_rq[=
+0]:/.tg_load_contrib
+     62.72 =C2=B1  2%     -15.4%      53.04 =C2=B1 10%  turbostat.%c3
+        82 =C2=B1 10%     -29.0%         58 =C2=B1 15%  sched_debug.cfs_rq[=
+32]:/.tg_load_contrib
+    780606 =C2=B1  7%      -7.6%     721141 =C2=B1  5%  sched_debug.cpu#43.=
+avg_idle
+    111634 =C2=B1  4%     -12.2%      97988 =C2=B1 10%  sched_debug.cpu#32.=
+nr_load_updates
+      0.93 =C2=B1  8%     -20.4%       0.74 =C2=B1 27%  perf-profile.cpu-cy=
+cles.shmem_write_begin.generic_perform_write.__generic_file_write_iter.gene=
+ric_file_write_iter.new_sync_write
+    774084 =C2=B1  8%      -8.3%     710179 =C2=B1  4%  sched_debug.cpu#39.=
+avg_idle
+       200 =C2=B1  9%     -16.7%        166 =C2=B1  8%  numa-vmstat.node3.n=
+r_unevictable
+       200 =C2=B1  9%     -16.7%        166 =C2=B1  8%  numa-vmstat.node3.n=
+r_mlock
+       672 =C2=B1 12%     -12.5%        588 =C2=B1 18%  slabinfo.xfs_buf.ac=
+tive_objs
+       672 =C2=B1 12%     -12.5%        588 =C2=B1 18%  slabinfo.xfs_buf.nu=
+m_objs
+    711853 =C2=B1  1%     -12.6%     622436 =C2=B1  7%  sched_debug.cpu#37.=
+avg_idle
+     42208 =C2=B1  2%     +26.6%      53451 =C2=B1  9%  sched_debug.cpu#14.=
+nr_load_updates
+     43074 =C2=B1  5%     +31.3%      56552 =C2=B1  8%  sched_debug.cpu#13.=
+nr_load_updates
+    774013 =C2=B1  6%     -10.1%     696106 =C2=B1  9%  sched_debug.cpu#20.=
+avg_idle
+    742537 =C2=B1  4%     -12.4%     650469 =C2=B1  9%  sched_debug.cpu#8.a=
+vg_idle
+    657723 =C2=B1  5%     -10.2%     590877 =C2=B1  8%  sched_debug.cpu#6.a=
+vg_idle
+    779627 =C2=B1  1%     -15.0%     662459 =C2=B1 14%  sched_debug.cpu#24.=
+avg_idle
+     43298 =C2=B1  2%     +25.2%      54214 =C2=B1 12%  sched_debug.cpu#18.=
+nr_load_updates
+     40657 =C2=B1  1%     +11.9%      45515 =C2=B1  8%  sched_debug.cpu#15.=
+nr_load_updates
+    652300 =C2=B1  5%      -8.3%     598417 =C2=B1  2%  sched_debug.cpu#58.=
+avg_idle
+    870884 =C2=B1  4%     -12.9%     758163 =C2=B1  5%  sched_debug.cpu#31.=
+avg_idle
+     44351 =C2=B1  2%     +31.7%      58432 =C2=B1 19%  sched_debug.cpu#24.=
+nr_load_updates
+    763225 =C2=B1  4%     -15.6%     644390 =C2=B1 11%  sched_debug.cpu#12.=
+avg_idle
+    776029 =C2=B1  0%     -13.1%     674169 =C2=B1  8%  sched_debug.cpu#18.=
+avg_idle
+    838004 =C2=B1  2%     -15.9%     704595 =C2=B1  6%  sched_debug.cpu#30.=
+avg_idle
+       193 =C2=B1  3%     -14.3%        165 =C2=B1 11%  sched_debug.cpu#58.=
+ttwu_local
+     54047 =C2=B1  1%      -8.8%      49303 =C2=B1  5%  numa-meminfo.node0.=
+Slab
+      1.24 =C2=B1  2%     -19.2%       1.00 =C2=B1  9%  perf-profile.cpu-cy=
+cles.osq_unlock.mutex_optimistic_spin.__mutex_lock_slowpath.mutex_lock.gene=
+ric_file_write_iter
+     40061 =C2=B1  0%     +12.7%      45154 =C2=B1  5%  sched_debug.cpu#23.=
+nr_load_updates
+    795000 =C2=B1  0%     -14.5%     679866 =C2=B1  9%  sched_debug.cpu#13.=
+avg_idle
+    752969 =C2=B1  1%     -11.2%     668306 =C2=B1  5%  sched_debug.cpu#14.=
+avg_idle
+    148074 =C2=B1  4%      -9.5%     133968 =C2=B1  5%  numa-numastat.node0=
+.local_node
+    298993 =C2=B1  1%      -9.6%     270299 =C2=B1  7%  softirqs.RCU
+    835755 =C2=B1  0%     -11.4%     740167 =C2=B1  8%  sched_debug.cpu#23.=
+avg_idle
+    156339 =C2=B1  4%      -9.0%     142236 =C2=B1  5%  numa-numastat.node0=
+.numa_hit
+      1785 =C2=B1  5%      -8.0%       1642 =C2=B1  3%  slabinfo.sock_inode=
+_cache.active_objs
+      1785 =C2=B1  5%      -8.0%       1642 =C2=B1  3%  slabinfo.sock_inode=
+_cache.num_objs
+    238242 =C2=B1  3%      -9.7%     215107 =C2=B1  2%  numa-vmstat.node0.n=
+uma_local
+    826398 =C2=B1  5%      -7.2%     766511 =C2=B1  9%  sched_debug.cpu#19.=
+avg_idle
+    245728 =C2=B1  3%      -9.4%     222564 =C2=B1  2%  numa-vmstat.node0.n=
+uma_hit
+      1022 =C2=B1  2%      -8.7%        932 =C2=B1  5%  slabinfo.RAW.num_ob=
+js
+      1022 =C2=B1  2%      -8.7%        932 =C2=B1  5%  slabinfo.RAW.active=
+_objs
+    904008 =C2=B1  2%     -16.3%     756394 =C2=B1 18%  sched_debug.cpu#29.=
+avg_idle
+    850180 =C2=B1  0%     -10.3%     762690 =C2=B1  5%  sched_debug.cpu#25.=
+avg_idle
+     15949 =C2=B1  1%      -7.4%      14765 =C2=B1  3%  slabinfo.anon_vma.a=
+ctive_objs
+     15949 =C2=B1  1%      -7.4%      14765 =C2=B1  3%  slabinfo.anon_vma.n=
+um_objs
+        38 =C2=B1 24%     +46.5%         56 =C2=B1 13%  sched_debug.cfs_rq[=
+48]:/.blocked_load_avg
+      1179 =C2=B1  3%      -5.1%       1118 =C2=B1  5%  numa-vmstat.node0.n=
+r_alloc_batch
+     14112 =C2=B1  3%     +40.5%      19822 =C2=B1 11%  vmstat.system.in
+
+testbox/testcase/testparams: lkp-nex06/vm-scalability/performance-300s-smal=
+l-allocs
+
+507e1fa697097b48  75cbe701a4251fcd8b846d52ae  =
+
+----------------  --------------------------  =
+
+      1.35 =C2=B1 17%     -56.0%       0.59 =C2=B1 10%  vm-scalability.stdd=
+ev
+   8850363 =C2=B1  0%     -19.9%    7092322 =C2=B1  0%  vm-scalability.thro=
+ughput
+       136 =C2=B1 11%    +429.6%        720 =C2=B1  5%  sched_debug.cfs_rq[=
+41]:/.tg_runnable_contrib
+         2 =C2=B1 35%    +575.0%         13 =C2=B1 12%  sched_debug.cpu#41.=
+cpu_load[4]
+      6253 =C2=B1 11%    +429.4%      33102 =C2=B1  5%  sched_debug.cfs_rq[=
+41]:/.avg->runnable_avg_sum
+    407488 =C2=B1 11%   +1302.5%    5714993 =C2=B1  1%  sched_debug.cfs_rq[=
+40]:/.min_vruntime
+     20998 =C2=B1  4%    +487.3%     123327 =C2=B1  2%  sched_debug.cfs_rq[=
+40]:/.exec_clock
+    548704 =C2=B1 13%    +945.3%    5735835 =C2=B1  1%  sched_debug.cfs_rq[=
+39]:/.min_vruntime
+   1121563 =C2=B1  6%    +439.2%    6047753 =C2=B1  2%  sched_debug.cfs_rq[=
+0]:/.min_vruntime
+    757728 =C2=B1 12%    +716.5%    6186567 =C2=B1  1%  sched_debug.cfs_rq[=
+63]:/.min_vruntime
+         2 =C2=B1 19%    +422.2%         11 =C2=B1  9%  sched_debug.cpu#42.=
+cpu_load[4]
+   1112970 =C2=B1  8%    +446.4%    6081015 =C2=B1  0%  sched_debug.cfs_rq[=
+1]:/.min_vruntime
+         2 =C2=B1 35%    +500.0%         12 =C2=B1  5%  sched_debug.cpu#37.=
+cpu_load[4]
+    555081 =C2=B1 11%    +934.1%    5740165 =C2=B1  1%  sched_debug.cfs_rq[=
+36]:/.min_vruntime
+    566546 =C2=B1  9%    +919.3%    5774630 =C2=B1  0%  sched_debug.cfs_rq[=
+35]:/.min_vruntime
+     21140 =C2=B1 15%    +476.2%     121799 =C2=B1  1%  sched_debug.cfs_rq[=
+43]:/.exec_clock
+   1113551 =C2=B1  7%    +440.8%    6022454 =C2=B1  1%  sched_debug.cfs_rq[=
+4]:/.min_vruntime
+    409522 =C2=B1 17%   +1278.1%    5643706 =C2=B1  1%  sched_debug.cfs_rq[=
+43]:/.min_vruntime
+    564685 =C2=B1 11%    +912.5%    5717371 =C2=B1  1%  sched_debug.cfs_rq[=
+33]:/.min_vruntime
+    588577 =C2=B1 12%    +879.1%    5762530 =C2=B1  2%  sched_debug.cfs_rq[=
+32]:/.min_vruntime
+    510891 =C2=B1  2%     -86.1%      70759 =C2=B1  1%  sched_debug.cpu#31.=
+ttwu_count
+    467778 =C2=B1  4%     -87.5%      58637 =C2=B1  4%  sched_debug.cpu#31.=
+sched_goidle
+    936797 =C2=B1  4%     -87.0%     121998 =C2=B1  4%  sched_debug.cpu#31.=
+nr_switches
+    519499 =C2=B1  2%     -86.5%      70274 =C2=B1  1%  sched_debug.cpu#30.=
+ttwu_count
+    506902 =C2=B1  4%     -87.5%      63322 =C2=B1  1%  sched_debug.cpu#30.=
+sched_goidle
+   1031191 =C2=B1  3%     -87.1%     133375 =C2=B1  1%  sched_debug.cpu#30.=
+sched_count
+     20787 =C2=B1 20%    +493.7%     123415 =C2=B1  2%  sched_debug.cfs_rq[=
+44]:/.exec_clock
+    409766 =C2=B1 21%   +1295.5%    5718172 =C2=B1  3%  sched_debug.cfs_rq[=
+44]:/.min_vruntime
+   1015080 =C2=B1  4%     -87.0%     131581 =C2=B1  1%  sched_debug.cpu#30.=
+nr_switches
+       127 =C2=B1 25%    +455.2%        709 =C2=B1  2%  sched_debug.cfs_rq[=
+44]:/.tg_runnable_contrib
+   1057283 =C2=B1  7%    +462.5%    5947320 =C2=B1  3%  sched_debug.cfs_rq[=
+8]:/.min_vruntime
+      5880 =C2=B1 25%    +453.7%      32564 =C2=B1  2%  sched_debug.cfs_rq[=
+44]:/.avg->runnable_avg_sum
+    507560 =C2=B1  3%     -85.8%      71967 =C2=B1  1%  sched_debug.cpu#28.=
+ttwu_count
+    529976 =C2=B1  2%     -88.3%      61987 =C2=B1  2%  sched_debug.cpu#28.=
+sched_goidle
+   1081294 =C2=B1  1%     -87.9%     130386 =C2=B1  2%  sched_debug.cpu#28.=
+sched_count
+   1061187 =C2=B1  2%     -87.8%     129262 =C2=B1  2%  sched_debug.cpu#28.=
+nr_switches
+    450376 =C2=B1 19%   +1167.0%    5706353 =C2=B1  2%  sched_debug.cfs_rq[=
+45]:/.min_vruntime
+         1 =C2=B1 34%    +240.0%          4 =C2=B1 30%  sched_debug.cfs_rq[=
+45]:/.nr_spread_over
+    516365 =C2=B1  2%     -86.1%      71689 =C2=B1  1%  sched_debug.cpu#27.=
+ttwu_count
+    467103 =C2=B1  4%     -87.1%      60129 =C2=B1  5%  sched_debug.cpu#27.=
+sched_goidle
+    935433 =C2=B1  4%     -86.6%     125428 =C2=B1  5%  sched_debug.cpu#27.=
+nr_switches
+   1054821 =C2=B1  2%     -87.2%     134954 =C2=B1  6%  sched_debug.cpu#26.=
+sched_count
+   1283469 =C2=B1  7%    +411.7%    6568077 =C2=B1  0%  sched_debug.cfs_rq[=
+25]:/.min_vruntime
+     19517 =C2=B1 19%    +522.5%     121491 =C2=B1  1%  sched_debug.cfs_rq[=
+46]:/.exec_clock
+    387725 =C2=B1 23%   +1349.9%    5621538 =C2=B1  1%  sched_debug.cfs_rq[=
+46]:/.min_vruntime
+       130 =C2=B1 16%    +463.8%        735 =C2=B1  6%  sched_debug.cfs_rq[=
+46]:/.tg_runnable_contrib
+   1296121 =C2=B1  7%    +412.8%    6646523 =C2=B1  0%  sched_debug.cfs_rq[=
+24]:/.min_vruntime
+    521743 =C2=B1  4%     -85.6%      75227 =C2=B1  0%  sched_debug.cpu#24.=
+ttwu_count
+    523738 =C2=B1  1%     -87.9%      63237 =C2=B1  4%  sched_debug.cpu#24.=
+sched_goidle
+   1060028 =C2=B1  0%     -87.3%     134602 =C2=B1  5%  sched_debug.cpu#24.=
+sched_count
+      6007 =C2=B1 16%    +463.6%      33854 =C2=B1  6%  sched_debug.cfs_rq[=
+46]:/.avg->runnable_avg_sum
+   1048862 =C2=B1  1%     -87.4%     132535 =C2=B1  5%  sched_debug.cpu#24.=
+nr_switches
+    415579 =C2=B1  1%     -84.0%      66558 =C2=B1  1%  sched_debug.cpu#23.=
+ttwu_count
+    399591 =C2=B1  3%     -83.8%      64773 =C2=B1  1%  sched_debug.cpu#23.=
+sched_goidle
+    802364 =C2=B1  3%     -82.0%     144403 =C2=B1  6%  sched_debug.cpu#23.=
+sched_count
+    800051 =C2=B1  3%     -83.2%     134420 =C2=B1  0%  sched_debug.cpu#23.=
+nr_switches
+   1088620 =C2=B1  9%    +445.7%    5940679 =C2=B1  1%  sched_debug.cfs_rq[=
+22]:/.min_vruntime
+   1034659 =C2=B1  8%    +474.7%    5946605 =C2=B1  0%  sched_debug.cfs_rq[=
+13]:/.min_vruntime
+    417590 =C2=B1  1%     -83.8%      67501 =C2=B1  2%  sched_debug.cpu#22.=
+ttwu_count
+    430636 =C2=B1  4%     -83.5%      70888 =C2=B1  3%  sched_debug.cpu#22.=
+sched_goidle
+    865193 =C2=B1  4%     -81.4%     160862 =C2=B1  9%  sched_debug.cpu#22.=
+sched_count
+   1052369 =C2=B1  8%    +466.8%    5965329 =C2=B1  1%  sched_debug.cfs_rq[=
+14]:/.min_vruntime
+    862183 =C2=B1  4%     -83.0%     146429 =C2=B1  3%  sched_debug.cpu#22.=
+nr_switches
+    750218 =C2=B1 13%    +733.4%    6252541 =C2=B1  1%  sched_debug.cfs_rq[=
+62]:/.min_vruntime
+     19311 =C2=B1 11%    +527.4%     121159 =C2=B1  0%  sched_debug.cfs_rq[=
+47]:/.exec_clock
+    387976 =C2=B1 13%   +1346.7%    5612772 =C2=B1  1%  sched_debug.cfs_rq[=
+47]:/.min_vruntime
+    409721 =C2=B1  3%     -83.7%      66715 =C2=B1  1%  sched_debug.cpu#21.=
+ttwu_count
+    407184 =C2=B1  2%     -83.2%      68502 =C2=B1 11%  sched_debug.cpu#21.=
+sched_goidle
+        20 =C2=B1 40%    +379.3%         98 =C2=B1 30%  sched_debug.cpu#21.=
+nr_uninterruptible
+    815235 =C2=B1  2%     -82.5%     142411 =C2=B1 11%  sched_debug.cpu#21.=
+nr_switches
+   1080091 =C2=B1  9%    +455.0%    5994880 =C2=B1  1%  sched_debug.cfs_rq[=
+20]:/.min_vruntime
+    415446 =C2=B1  1%     -83.8%      67443 =C2=B1  2%  sched_debug.cpu#20.=
+ttwu_count
+    442408 =C2=B1  1%     -84.4%      68875 =C2=B1  1%  sched_debug.cpu#20.=
+sched_goidle
+    888757 =C2=B1  1%     -82.5%     155372 =C2=B1  7%  sched_debug.cpu#20.=
+sched_count
+    885847 =C2=B1  1%     -83.9%     142506 =C2=B1  1%  sched_debug.cpu#20.=
+nr_switches
+   1091055 =C2=B1  9%    +453.4%    6038436 =C2=B1  1%  sched_debug.cfs_rq[=
+19]:/.min_vruntime
+    417773 =C2=B1  1%     -83.9%      67398 =C2=B1  1%  sched_debug.cpu#19.=
+ttwu_count
+    398066 =C2=B1  3%     -83.9%      63958 =C2=B1  2%  sched_debug.cpu#19.=
+sched_goidle
+    500150 =C2=B1 16%   +1041.3%    5708010 =C2=B1  1%  sched_debug.cfs_rq[=
+48]:/.min_vruntime
+        17 =C2=B1 33%    +360.6%         81 =C2=B1 16%  sched_debug.cpu#19.=
+nr_uninterruptible
+    797029 =C2=B1  3%     -83.4%     132566 =C2=B1  2%  sched_debug.cpu#19.=
+nr_switches
+       133 =C2=B1 25%    +446.0%        727 =C2=B1  3%  sched_debug.cfs_rq[=
+48]:/.tg_runnable_contrib
+   1093025 =C2=B1  9%    +448.3%    5993418 =C2=B1  1%  sched_debug.cfs_rq[=
+18]:/.min_vruntime
+    417854 =C2=B1  1%     -84.0%      66789 =C2=B1  2%  sched_debug.cpu#18.=
+ttwu_count
+    428863 =C2=B1  3%     -84.3%      67425 =C2=B1  3%  sched_debug.cpu#18.=
+sched_goidle
+    860091 =C2=B1  2%     -79.7%     174594 =C2=B1 28%  sched_debug.cpu#18.=
+sched_count
+    858626 =C2=B1  3%     -83.7%     139729 =C2=B1  3%  sched_debug.cpu#18.=
+nr_switches
+      6134 =C2=B1 25%    +445.2%      33448 =C2=B1  3%  sched_debug.cfs_rq[=
+48]:/.avg->runnable_avg_sum
+   1069314 =C2=B1  8%    +465.0%    6041367 =C2=B1  0%  sched_debug.cfs_rq[=
+17]:/.min_vruntime
+   1084018 =C2=B1  8%    +455.3%    6020039 =C2=B1  1%  sched_debug.cfs_rq[=
+16]:/.min_vruntime
+    415085 =C2=B1  3%     -83.5%      68307 =C2=B1  2%  sched_debug.cpu#16.=
+ttwu_count
+   1073942 =C2=B1  8%    +447.6%    5881393 =C2=B1  2%  sched_debug.cfs_rq[=
+21]:/.min_vruntime
+    435899 =C2=B1  1%     -83.8%      70769 =C2=B1  2%  sched_debug.cpu#16.=
+sched_goidle
+    876150 =C2=B1  1%     -78.0%     193078 =C2=B1 38%  sched_debug.cpu#16.=
+sched_count
+    872710 =C2=B1  1%     -83.2%     146906 =C2=B1  2%  sched_debug.cpu#16.=
+nr_switches
+   1042616 =C2=B1 10%    +470.0%    5943066 =C2=B1  0%  sched_debug.cfs_rq[=
+15]:/.min_vruntime
+    392967 =C2=B1  3%     -81.6%      72239 =C2=B1  3%  sched_debug.cpu#15.=
+ttwu_count
+    380826 =C2=B1  2%     -81.3%      71372 =C2=B1  2%  sched_debug.cpu#15.=
+sched_goidle
+    762638 =C2=B1  2%     -80.4%     149503 =C2=B1  2%  sched_debug.cpu#15.=
+nr_switches
+    395697 =C2=B1  3%     -81.9%      71526 =C2=B1  3%  sched_debug.cpu#14.=
+ttwu_count
+    411944 =C2=B1  3%     -82.5%      72082 =C2=B1  1%  sched_debug.cpu#14.=
+sched_goidle
+    834606 =C2=B1  2%     -80.6%     162017 =C2=B1  5%  sched_debug.cpu#14.=
+sched_count
+        13 =C2=B1 26%    +463.0%         76 =C2=B1 34%  sched_debug.cpu#23.=
+nr_uninterruptible
+    824706 =C2=B1  3%     -81.8%     150178 =C2=B1  2%  sched_debug.cpu#14.=
+nr_switches
+    390571 =C2=B1  3%     -81.8%      71105 =C2=B1  2%  sched_debug.cpu#13.=
+ttwu_count
+    384103 =C2=B1  2%     -81.6%      70579 =C2=B1  1%  sched_debug.cpu#13.=
+sched_goidle
+    785013 =C2=B1  2%     -80.3%     155000 =C2=B1  3%  sched_debug.cpu#13.=
+sched_count
+   1090952 =C2=B1  9%    +444.6%    5941241 =C2=B1  1%  sched_debug.cfs_rq[=
+23]:/.min_vruntime
+    512564 =C2=B1 14%   +1013.4%    5706910 =C2=B1  1%  sched_debug.cfs_rq[=
+50]:/.min_vruntime
+    769118 =C2=B1  2%     -80.8%     147440 =C2=B1  2%  sched_debug.cpu#13.=
+nr_switches
+         1 =C2=B1 34%    +280.0%          4 =C2=B1 31%  sched_debug.cfs_rq[=
+12]:/.nr_spread_over
+   1044080 =C2=B1  7%    +462.3%    5871045 =C2=B1  2%  sched_debug.cfs_rq[=
+12]:/.min_vruntime
+    391582 =C2=B1  3%     -81.7%      71718 =C2=B1  3%  sched_debug.cpu#12.=
+ttwu_count
+    421874 =C2=B1  2%     -81.5%      77886 =C2=B1  9%  sched_debug.cpu#12.=
+sched_goidle
+    862416 =C2=B1  2%     -79.9%     172919 =C2=B1 13%  sched_debug.cpu#12.=
+sched_count
+    844625 =C2=B1  2%     -80.7%     162752 =C2=B1  9%  sched_debug.cpu#12.=
+nr_switches
+   1058728 =C2=B1  8%    +465.3%    5985054 =C2=B1  0%  sched_debug.cfs_rq[=
+11]:/.min_vruntime
+        16 =C2=B1 33%    +662.7%        127 =C2=B1 22%  sched_debug.cpu#11.=
+nr_uninterruptible
+   1062298 =C2=B1  8%    +464.6%    5997504 =C2=B1  1%  sched_debug.cfs_rq[=
+10]:/.min_vruntime
+    517857 =C2=B1 19%   +1001.2%    5702462 =C2=B1  1%  sched_debug.cfs_rq[=
+51]:/.min_vruntime
+   1048051 =C2=B1  7%    +471.3%    5987193 =C2=B1  1%  sched_debug.cfs_rq[=
+9]:/.min_vruntime
+    392612 =C2=B1  3%     -81.3%      73222 =C2=B1  2%  sched_debug.cpu#9.t=
+twu_count
+    384344 =C2=B1  1%     -81.0%      73003 =C2=B1  6%  sched_debug.cpu#9.s=
+ched_goidle
+    740882 =C2=B1 11%    +736.6%    6197903 =C2=B1  1%  sched_debug.cfs_rq[=
+61]:/.min_vruntime
+    957109 =C2=B1  3%     -86.7%     127218 =C2=B1  5%  sched_debug.cpu#27.=
+sched_count
+        18 =C2=B1 47%    +529.7%        116 =C2=B1 23%  sched_debug.cpu#9.n=
+r_uninterruptible
+    769524 =C2=B1  1%     -80.3%     151526 =C2=B1  6%  sched_debug.cpu#9.n=
+r_switches
+    399029 =C2=B1  3%     -82.0%      71669 =C2=B1  0%  sched_debug.cpu#8.t=
+twu_count
+    420425 =C2=B1  1%     -81.0%      79992 =C2=B1 10%  sched_debug.cpu#8.s=
+ched_goidle
+    843535 =C2=B1  1%     -80.3%     166159 =C2=B1 10%  sched_debug.cpu#8.n=
+r_switches
+   1117965 =C2=B1  8%    +435.3%    5984125 =C2=B1  0%  sched_debug.cfs_rq[=
+7]:/.min_vruntime
+    511997 =C2=B1  9%   +1015.9%    5713356 =C2=B1  0%  sched_debug.cfs_rq[=
+52]:/.min_vruntime
+   1119452 =C2=B1  8%    +438.3%    6025524 =C2=B1  1%  sched_debug.cfs_rq[=
+6]:/.min_vruntime
+   1107077 =C2=B1  7%    +438.6%    5963136 =C2=B1  1%  sched_debug.cfs_rq[=
+5]:/.min_vruntime
+         2 =C2=B1 35%    +550.0%         13 =C2=B1  5%  sched_debug.cpu#53.=
+cpu_load[4]
+    507924 =C2=B1 15%   +1034.2%    5760828 =C2=B1  1%  sched_debug.cfs_rq[=
+53]:/.min_vruntime
+    462841 =C2=B1  3%     -85.0%      69313 =C2=B1  4%  sched_debug.cpu#4.s=
+ched_goidle
+    978113 =C2=B1  7%     -84.5%     151685 =C2=B1  7%  sched_debug.cpu#4.s=
+ched_count
+    926708 =C2=B1  3%     -84.5%     143697 =C2=B1  5%  sched_debug.cpu#4.n=
+r_switches
+   1122648 =C2=B1  9%    +435.9%    6016455 =C2=B1  1%  sched_debug.cfs_rq[=
+3]:/.min_vruntime
+    941488 =C2=B1  4%     -86.9%     123539 =C2=B1  3%  sched_debug.cpu#31.=
+sched_count
+    430229 =C2=B1  2%     -83.3%      71773 =C2=B1  1%  sched_debug.cpu#3.t=
+twu_count
+    415077 =C2=B1  4%     -83.8%      67085 =C2=B1  4%  sched_debug.cpu#3.s=
+ched_goidle
+         2 =C2=B1 50%    +575.0%         13 =C2=B1 12%  sched_debug.cpu#54.=
+cpu_load[4]
+    514866 =C2=B1 15%   +1015.3%    5742085 =C2=B1  1%  sched_debug.cfs_rq[=
+54]:/.min_vruntime
+    831241 =C2=B1  4%     -83.2%     139398 =C2=B1  4%  sched_debug.cpu#3.n=
+r_switches
+   1132874 =C2=B1  9%    +434.5%    6055152 =C2=B1  1%  sched_debug.cfs_rq[=
+2]:/.min_vruntime
+    396510 =C2=B1 13%   +1326.7%    5656886 =C2=B1  1%  sched_debug.cfs_rq[=
+41]:/.min_vruntime
+    510648 =C2=B1 17%   +1017.0%    5703966 =C2=B1  0%  sched_debug.cfs_rq[=
+55]:/.min_vruntime
+    432018 =C2=B1  2%     -82.4%      76046 =C2=B1  1%  sched_debug.cpu#1.t=
+twu_count
+    435032 =C2=B1  3%     -84.2%      68773 =C2=B1  5%  sched_debug.cpu#1.s=
+ched_goidle
+    898167 =C2=B1  6%     -82.8%     154598 =C2=B1  9%  sched_debug.cpu#1.s=
+ched_count
+    871402 =C2=B1  3%     -83.6%     143032 =C2=B1  5%  sched_debug.cpu#1.n=
+r_switches
+    439884 =C2=B1  3%     -81.6%      81117 =C2=B1  0%  sched_debug.cpu#0.t=
+twu_count
+    467463 =C2=B1  4%     -83.4%      77658 =C2=B1 11%  sched_debug.cpu#0.s=
+ched_goidle
+    968052 =C2=B1  5%     -79.3%     200488 =C2=B1 26%  sched_debug.cpu#0.s=
+ched_count
+    939022 =C2=B1  4%     -82.6%     163789 =C2=B1 11%  sched_debug.cpu#0.n=
+r_switches
+    728509 =C2=B1  9%    +763.8%    6292757 =C2=B1  0%  sched_debug.cfs_rq[=
+56]:/.min_vruntime
+    733898 =C2=B1 12%    +758.7%    6302006 =C2=B1  1%  sched_debug.cfs_rq[=
+57]:/.min_vruntime
+    752642 =C2=B1 12%    +739.9%    6321565 =C2=B1  1%  sched_debug.cfs_rq[=
+58]:/.min_vruntime
+  34452061 =C2=B1  0%     -82.4%    6069487 =C2=B1  0%  cpuidle.C1-NHM.usage
+    563860 =C2=B1 14%    +920.1%    5751802 =C2=B1  0%  sched_debug.cfs_rq[=
+37]:/.min_vruntime
+    753969 =C2=B1 10%    +729.8%    6256638 =C2=B1  0%  sched_debug.cfs_rq[=
+59]:/.min_vruntime
+         3 =C2=B1  0%    +416.7%         15 =C2=B1  3%  sched_debug.cpu#57.=
+cpu_load[4]
+    522652 =C2=B1 15%    +986.5%    5678738 =C2=B1  1%  sched_debug.cfs_rq[=
+49]:/.min_vruntime
+         3 =C2=B1 23%    +375.0%         14 =C2=B1 10%  sched_debug.cpu#60.=
+cpu_load[4]
+    735034 =C2=B1 12%    +746.0%    6218721 =C2=B1  1%  sched_debug.cfs_rq[=
+60]:/.min_vruntime
+    419503 =C2=B1 25%   +1238.4%    5614621 =C2=B1  0%  sched_debug.cfs_rq[=
+42]:/.min_vruntime
+     20513 =C2=B1 10%    +496.7%     122398 =C2=B1  0%  sched_debug.cfs_rq[=
+41]:/.exec_clock
+   1278013 =C2=B1  7%    +402.3%    6419733 =C2=B1  0%  sched_debug.cfs_rq[=
+29]:/.min_vruntime
+   1288072 =C2=B1  8%    +401.4%    6458783 =C2=B1  1%  sched_debug.cfs_rq[=
+27]:/.min_vruntime
+   1289452 =C2=B1  8%    +402.9%    6484674 =C2=B1  0%  sched_debug.cfs_rq[=
+26]:/.min_vruntime
+   1273611 =C2=B1  8%    +405.4%    6436316 =C2=B1  0%  sched_debug.cfs_rq[=
+28]:/.min_vruntime
+    883280 =C2=B1  6%     -80.0%     176592 =C2=B1  8%  sched_debug.cpu#8.s=
+ched_count
+       143 =C2=B1 25%    +392.9%        708 =C2=B1  2%  sched_debug.cfs_rq[=
+50]:/.tg_runnable_contrib
+      6628 =C2=B1 25%    +391.8%      32593 =C2=B1  2%  sched_debug.cfs_rq[=
+50]:/.avg->runnable_avg_sum
+   1273326 =C2=B1  8%    +402.6%    6399707 =C2=B1  1%  sched_debug.cfs_rq[=
+31]:/.min_vruntime
+    819313 =C2=B1  1%     -80.6%     159234 =C2=B1 14%  sched_debug.cpu#21.=
+sched_count
+   1288398 =C2=B1  8%    +394.4%    6370426 =C2=B1  0%  sched_debug.cfs_rq[=
+30]:/.min_vruntime
+    798719 =C2=B1  4%     -79.7%     162260 =C2=B1 11%  sched_debug.cpu#9.s=
+ched_count
+       426 =C2=B1 14%    +391.4%       2093 =C2=B1 14%  sched_debug.cpu#47.=
+ttwu_local
+       502 =C2=B1 43%    +296.1%       1991 =C2=B1 10%  sched_debug.cpu#33.=
+curr->pid
+       151 =C2=B1 12%    +375.9%        721 =C2=B1  7%  sched_debug.cfs_rq[=
+54]:/.tg_runnable_contrib
+      6970 =C2=B1 12%    +375.1%      33114 =C2=B1  6%  sched_debug.cfs_rq[=
+54]:/.avg->runnable_avg_sum
+       394 =C2=B1 33%    +379.3%       1890 =C2=B1  6%  sched_debug.cpu#48.=
+curr->pid
+         2 =C2=B1 36%    +477.8%         13 =C2=B1 19%  sched_debug.cpu#49.=
+cpu_load[4]
+         2 =C2=B1 20%    +420.0%         13 =C2=B1  9%  sched_debug.cpu#51.=
+cpu_load[4]
+         3 =C2=B1 33%    +323.1%         13 =C2=B1 10%  sched_debug.cpu#38.=
+cpu_load[4]
+         2 =C2=B1 39%    +390.9%         13 =C2=B1  3%  sched_debug.cfs_rq[=
+48]:/.runnable_load_avg
+         2 =C2=B1 39%    +372.7%         13 =C2=B1 19%  sched_debug.cpu#49.=
+cpu_load[3]
+    251433 =C2=B1  3%     -78.1%      55111 =C2=B1  4%  sched_debug.cpu#61.=
+sched_goidle
+    251186 =C2=B1  2%     -78.1%      54906 =C2=B1  4%  sched_debug.cpu#63.=
+sched_goidle
+    269668 =C2=B1  4%     -78.0%      59278 =C2=B1  2%  sched_debug.cpu#60.=
+sched_goidle
+     27195 =C2=B1 12%    +352.0%     122916 =C2=B1  0%  sched_debug.cfs_rq[=
+55]:/.exec_clock
+      5673 =C2=B1 19%    +423.4%      29691 =C2=B1  5%  sched_debug.cfs_rq[=
+47]:/.avg->runnable_avg_sum
+       123 =C2=B1 19%    +425.0%        645 =C2=B1  5%  sched_debug.cfs_rq[=
+47]:/.tg_runnable_contrib
+    861367 =C2=B1  8%     -82.7%     148638 =C2=B1 10%  sched_debug.cpu#7.s=
+ched_count
+     27168 =C2=B1 11%    +355.5%     123756 =C2=B1  0%  sched_debug.cfs_rq[=
+54]:/.exec_clock
+     27600 =C2=B1 15%    +345.5%     122946 =C2=B1  1%  sched_debug.cfs_rq[=
+51]:/.exec_clock
+     23537 =C2=B1 15%    +422.8%     123064 =C2=B1  1%  sched_debug.cfs_rq[=
+45]:/.exec_clock
+    862841 =C2=B1  7%     -82.4%     151999 =C2=B1  8%  sched_debug.cpu#3.s=
+ched_count
+    504662 =C2=B1  4%     -77.1%     115592 =C2=B1  4%  sched_debug.cpu#61.=
+sched_count
+    503667 =C2=B1  3%     -77.3%     114372 =C2=B1  4%  sched_debug.cpu#61.=
+nr_switches
+    264568 =C2=B1  1%     -77.6%      59369 =C2=B1  0%  sched_debug.cpu#62.=
+sched_goidle
+    503203 =C2=B1  2%     -77.3%     113986 =C2=B1  4%  sched_debug.cpu#63.=
+nr_switches
+    503461 =C2=B1  2%     -77.2%     114736 =C2=B1  4%  sched_debug.cpu#63.=
+sched_count
+    540170 =C2=B1  4%     -77.3%     122790 =C2=B1  2%  sched_debug.cpu#60.=
+nr_switches
+    540222 =C2=B1  4%     -77.2%     122950 =C2=B1  3%  sched_debug.cpu#60.=
+sched_count
+     26706 =C2=B1 12%    +364.5%     124058 =C2=B1  1%  sched_debug.cfs_rq[=
+53]:/.exec_clock
+    264009 =C2=B1  3%     -77.6%      59237 =C2=B1  5%  sched_debug.cpu#58.=
+sched_goidle
+     27131 =C2=B1  6%    +353.8%     123122 =C2=B1  0%  sched_debug.cfs_rq[=
+52]:/.exec_clock
+    253780 =C2=B1  3%     -77.5%      57202 =C2=B1  7%  sched_debug.cpu#59.=
+sched_goidle
+    769924 =C2=B1  2%     -75.5%     188277 =C2=B1 32%  sched_debug.cpu#15.=
+sched_count
+      7048 =C2=B1 14%    +357.6%      32254 =C2=B1  1%  sched_debug.cfs_rq[=
+53]:/.avg->runnable_avg_sum
+       153 =C2=B1 14%    +358.2%        702 =C2=B1  1%  sched_debug.cfs_rq[=
+53]:/.tg_runnable_contrib
+    529978 =C2=B1  1%     -76.8%     122764 =C2=B1  0%  sched_debug.cpu#62.=
+nr_switches
+         2 =C2=B1 30%    +372.7%         13 =C2=B1  5%  sched_debug.cpu#52.=
+cpu_load[4]
+         3 =C2=B1 23%    +325.0%         12 =C2=B1  6%  sched_debug.cpu#53.=
+cpu_load[3]
+         2 =C2=B1 36%    +477.8%         13 =C2=B1  5%  sched_debug.cpu#33.=
+cpu_load[4]
+         2 =C2=B1 20%    +410.0%         12 =C2=B1  6%  sched_debug.cpu#59.=
+cpu_load[4]
+         3 =C2=B1 40%    +316.7%         12 =C2=B1 14%  sched_debug.cfs_rq[=
+49]:/.runnable_load_avg
+         3 =C2=B1 23%    +300.0%         12 =C2=B1 21%  sched_debug.cfs_rq[=
+36]:/.runnable_load_avg
+    264953 =C2=B1  3%     -76.9%      61283 =C2=B1  3%  sched_debug.cpu#56.=
+sched_goidle
+     26622 =C2=B1 12%    +361.8%     122941 =C2=B1  1%  sched_debug.cfs_rq[=
+48]:/.exec_clock
+       457 =C2=B1 12%    +337.7%       2003 =C2=B1 20%  sched_debug.cpu#36.=
+curr->pid
+    765141 =C2=B1  1%     -79.3%     158075 =C2=B1  7%  sched_debug.cpu#11.=
+sched_count
+    530129 =C2=B1  1%     -76.6%     123998 =C2=B1  1%  sched_debug.cpu#62.=
+sched_count
+       516 =C2=B1 41%    +282.1%       1972 =C2=B1 10%  sched_debug.cpu#54.=
+curr->pid
+     27223 =C2=B1 11%    +351.4%     122887 =C2=B1  1%  sched_debug.cfs_rq[=
+50]:/.exec_clock
+    529094 =C2=B1  3%     -76.8%     122624 =C2=B1  5%  sched_debug.cpu#58.=
+nr_switches
+    530320 =C2=B1  3%     -76.6%     123934 =C2=B1  5%  sched_debug.cpu#58.=
+sched_count
+    855966 =C2=B1  5%     -80.6%     166023 =C2=B1  9%  sched_debug.cpu#10.=
+sched_count
+    413120 =C2=B1  2%     -82.1%      73890 =C2=B1  2%  sched_debug.cpu#10.=
+sched_goidle
+    828115 =C2=B1  2%     -81.4%     154252 =C2=B1  3%  sched_debug.cpu#10.=
+nr_switches
+       158 =C2=B1 18%    +360.1%        727 =C2=B1  2%  sched_debug.cfs_rq[=
+51]:/.tg_runnable_contrib
+      7287 =C2=B1 18%    +358.8%      33434 =C2=B1  2%  sched_debug.cfs_rq[=
+51]:/.avg->runnable_avg_sum
+     29543 =C2=B1 13%    +317.6%     123370 =C2=B1  1%  sched_debug.cfs_rq[=
+38]:/.exec_clock
+    555797 =C2=B1  9%    +929.8%    5723364 =C2=B1  1%  sched_debug.cfs_rq[=
+34]:/.min_vruntime
+    508378 =C2=B1  3%     -76.6%     118881 =C2=B1  7%  sched_debug.cpu#59.=
+nr_switches
+    508565 =C2=B1  3%     -76.5%     119331 =C2=B1  7%  sched_debug.cpu#59.=
+sched_count
+    275963 =C2=B1  5%     -75.9%      66628 =C2=B1  1%  sched_debug.cpu#63.=
+ttwu_count
+    279203 =C2=B1  2%     -76.0%      67079 =C2=B1  0%  sched_debug.cpu#59.=
+ttwu_count
+    530676 =C2=B1  3%     -76.1%     127010 =C2=B1  3%  sched_debug.cpu#56.=
+nr_switches
+    531314 =C2=B1  4%     -75.8%     128404 =C2=B1  4%  sched_debug.cpu#56.=
+sched_count
+     27764 =C2=B1 12%    +342.0%     122721 =C2=B1  1%  sched_debug.cfs_rq[=
+49]:/.exec_clock
+      1327 =C2=B1 12%    +196.1%       3930 =C2=B1 49%  sched_debug.cpu#13.=
+ttwu_local
+    399237 =C2=B1  2%     -81.9%      72338 =C2=B1  3%  sched_debug.cpu#10.=
+ttwu_count
+         4 =C2=B1 25%    +287.5%         15 =C2=B1  5%  sched_debug.cfs_rq[=
+57]:/.runnable_load_avg
+    274076 =C2=B1  6%     -75.4%      67499 =C2=B1  0%  sched_debug.cpu#58.=
+ttwu_count
+       158 =C2=B1 19%    +349.8%        714 =C2=B1  3%  sched_debug.cfs_rq[=
+52]:/.tg_runnable_contrib
+      7300 =C2=B1 19%    +349.4%      32806 =C2=B1  3%  sched_debug.cfs_rq[=
+52]:/.avg->runnable_avg_sum
+     28800 =C2=B1  9%    +329.2%     123619 =C2=B1  0%  sched_debug.cfs_rq[=
+39]:/.exec_clock
+    267405 =C2=B1  3%     -75.0%      66863 =C2=B1  0%  sched_debug.cpu#61.=
+ttwu_count
+    264134 =C2=B1  4%     -74.7%      66769 =C2=B1  0%  sched_debug.cpu#60.=
+ttwu_count
+     29402 =C2=B1  6%    +320.8%     123727 =C2=B1  1%  sched_debug.cfs_rq[=
+36]:/.exec_clock
+     30362 =C2=B1  4%    +309.9%     124471 =C2=B1  0%  sched_debug.cfs_rq[=
+35]:/.exec_clock
+    560496 =C2=B1 16%    +922.0%    5728023 =C2=B1  1%  sched_debug.cfs_rq[=
+38]:/.min_vruntime
+         3 =C2=B1 40%    +308.3%         12 =C2=B1 14%  sched_debug.cpu#39.=
+cpu_load[4]
+         2 =C2=B1 44%    +390.0%         12 =C2=B1  3%  sched_debug.cpu#44.=
+cpu_load[4]
+         2 =C2=B1 36%    +444.4%         12 =C2=B1 20%  sched_debug.cpu#36.=
+cpu_load[4]
+         3 =C2=B1 24%    +228.6%         11 =C2=B1 13%  sched_debug.cpu#42.=
+cpu_load[3]
+         5 =C2=B1 34%    +200.0%         15 =C2=B1 12%  sched_debug.cfs_rq[=
+61]:/.runnable_load_avg
+         3 =C2=B1 40%    +300.0%         12 =C2=B1  5%  sched_debug.cpu#37.=
+cpu_load[3]
+         4 =C2=B1 17%    +293.8%         15 =C2=B1  6%  sched_debug.cpu#57.=
+cpu_load[0]
+         3 =C2=B1 42%    +228.6%         11 =C2=B1  4%  sched_debug.cfs_rq[=
+37]:/.runnable_load_avg
+         4 =C2=B1 43%    +206.2%         12 =C2=B1  8%  sched_debug.cpu#37.=
+cpu_load[1]
+         1 =C2=B1 34%    +160.0%          3 =C2=B1 39%  sched_debug.cfs_rq[=
+47]:/.nr_spread_over
+         3 =C2=B1 23%    +291.7%         11 =C2=B1 21%  sched_debug.cpu#36.=
+cpu_load[3]
+    426620 =C2=B1  2%     -83.6%      69920 =C2=B1  1%  sched_debug.cpu#6.t=
+twu_count
+     30042 =C2=B1  8%    +310.5%     123314 =C2=B1  0%  sched_debug.cfs_rq[=
+33]:/.exec_clock
+    264870 =C2=B1  4%     -74.4%      67820 =C2=B1  0%  sched_debug.cpu#57.=
+ttwu_count
+       177 =C2=B1 12%    +299.6%        707 =C2=B1  3%  sched_debug.cfs_rq[=
+33]:/.tg_runnable_contrib
+    514194 =C2=B1  3%     -85.5%      74348 =C2=B1  1%  sched_debug.cpu#25.=
+ttwu_count
+         3 =C2=B1 45%    +307.7%         13 =C2=B1  6%  sched_debug.cpu#33.=
+cpu_load[2]
+      7350 =C2=B1 11%    +320.9%      30942 =C2=B1  4%  sched_debug.cfs_rq[=
+55]:/.avg->runnable_avg_sum
+      8172 =C2=B1 12%    +297.8%      32506 =C2=B1  3%  sched_debug.cfs_rq[=
+33]:/.avg->runnable_avg_sum
+    488344 =C2=B1  1%     -88.0%      58541 =C2=B1  5%  sched_debug.cpu#25.=
+sched_goidle
+       159 =C2=B1 11%    +321.4%        673 =C2=B1  3%  sched_debug.cfs_rq[=
+55]:/.tg_runnable_contrib
+    978040 =C2=B1  1%     -87.4%     122822 =C2=B1  5%  sched_debug.cpu#25.=
+nr_switches
+         3 =C2=B1 39%    +293.3%         14 =C2=B1  7%  sched_debug.cpu#61.=
+cpu_load[4]
+       510 =C2=B1  8%    +261.4%       1843 =C2=B1  7%  sched_debug.cpu#41.=
+ttwu_local
+     31508 =C2=B1  8%    +294.5%     124313 =C2=B1  2%  sched_debug.cfs_rq[=
+32]:/.exec_clock
+      6215 =C2=B1 20%    +420.7%      32363 =C2=B1  4%  sched_debug.cfs_rq[=
+43]:/.avg->runnable_avg_sum
+       134 =C2=B1 20%    +423.0%        703 =C2=B1  4%  sched_debug.cfs_rq[=
+43]:/.tg_runnable_contrib
+    423696 =C2=B1  1%     -83.7%      69089 =C2=B1  1%  sched_debug.cpu#7.t=
+twu_count
+    985152 =C2=B1  1%     -87.3%     125087 =C2=B1  4%  sched_debug.cpu#25.=
+sched_count
+       176 =C2=B1  7%    +293.3%        693 =C2=B1  7%  sched_debug.cfs_rq[=
+39]:/.tg_runnable_contrib
+      8113 =C2=B1  7%    +293.2%      31898 =C2=B1  7%  sched_debug.cfs_rq[=
+39]:/.avg->runnable_avg_sum
+       158 =C2=B1 14%    +346.4%        706 =C2=B1 11%  sched_debug.cfs_rq[=
+49]:/.tg_runnable_contrib
+       588 =C2=B1 43%    +204.5%       1791 =C2=B1  5%  sched_debug.cpu#42.=
+ttwu_local
+      7280 =C2=B1 14%    +346.0%      32470 =C2=B1 11%  sched_debug.cfs_rq[=
+49]:/.avg->runnable_avg_sum
+       189 =C2=B1 11%    +276.3%        711 =C2=B1  2%  sched_debug.cfs_rq[=
+32]:/.tg_runnable_contrib
+         3 =C2=B1 22%    +273.3%         14 =C2=B1  8%  sched_debug.cpu#62.=
+cpu_load[4]
+         3 =C2=B1 29%    +266.7%         13 =C2=B1  9%  sched_debug.cfs_rq[=
+60]:/.runnable_load_avg
+         4 =C2=B1 38%    +223.5%         13 =C2=B1 11%  sched_debug.cpu#46.=
+cpu_load[3]
+         4 =C2=B1 17%    +250.0%         14 =C2=B1 11%  sched_debug.cpu#60.=
+cpu_load[3]
+         5 =C2=B1 46%    +175.0%         13 =C2=B1 11%  sched_debug.cpu#46.=
+cpu_load[2]
+         6 =C2=B1 19%    +103.7%         13 =C2=B1 13%  sched_debug.cpu#11.=
+cpu_load[0]
+         3 =C2=B1 22%    +286.7%         14 =C2=B1  7%  sched_debug.cpu#58.=
+cpu_load[4]
+         3 =C2=B1 39%    +330.8%         14 =C2=B1 12%  sched_debug.cpu#46.=
+cpu_load[4]
+         3 =C2=B1 33%    +350.0%         13 =C2=B1 15%  sched_debug.cpu#54.=
+cpu_load[3]
+      8706 =C2=B1 11%    +275.5%      32690 =C2=B1  2%  sched_debug.cfs_rq[=
+32]:/.avg->runnable_avg_sum
+    415474 =C2=B1  5%     -84.4%      64948 =C2=B1  2%  sched_debug.cpu#7.s=
+ched_goidle
+    161883 =C2=B1 18%    +221.3%     520122 =C2=B1 28%  sched_debug.cfs_rq[=
+25]:/.spread0
+    831974 =C2=B1  5%     -83.8%     135081 =C2=B1  2%  sched_debug.cpu#7.n=
+r_switches
+    932620 =C2=B1  9%     -83.7%     151771 =C2=B1  4%  sched_debug.cpu#6.s=
+ched_count
+    448439 =C2=B1  5%     -84.1%      71489 =C2=B1  4%  sched_debug.cpu#6.s=
+ched_goidle
+    897830 =C2=B1  5%     -83.5%     148047 =C2=B1  4%  sched_debug.cpu#6.n=
+r_switches
+       474 =C2=B1 19%    +304.2%       1916 =C2=B1  4%  sched_debug.cpu#44.=
+ttwu_local
+    408625 =C2=B1  3%     -84.3%      64169 =C2=B1  5%  sched_debug.cpu#17.=
+sched_goidle
+    818333 =C2=B1  3%     -83.7%     133510 =C2=B1  5%  sched_debug.cpu#17.=
+nr_switches
+     57425 =C2=B1  2%    +124.8%     129088 =C2=B1  0%  sched_debug.cfs_rq[=
+13]:/.exec_clock
+      9922 =C2=B1  7%    +278.2%      37525 =C2=B1  2%  sched_debug.cfs_rq[=
+57]:/.avg->runnable_avg_sum
+       216 =C2=B1  7%    +276.9%        814 =C2=B1  2%  sched_debug.cfs_rq[=
+57]:/.tg_runnable_contrib
+     57426 =C2=B1  6%    +127.5%     130639 =C2=B1  2%  sched_debug.cfs_rq[=
+15]:/.exec_clock
+    409805 =C2=B1  3%     -83.5%      67449 =C2=B1  2%  sched_debug.cpu#17.=
+ttwu_count
+       646 =C2=B1 25%    +207.4%       1987 =C2=B1 10%  sched_debug.cpu#7.c=
+urr->pid
+       553 =C2=B1  8%    +280.4%       2104 =C2=B1 12%  sched_debug.cpu#38.=
+curr->pid
+         7 =C2=B1 17%     +92.9%         13 =C2=B1 15%  sched_debug.cpu#11.=
+cpu_load[1]
+         6 =C2=B1 20%    +128.0%         14 =C2=B1  5%  sched_debug.cpu#18.=
+cpu_load[4]
+       124 =C2=B1  9%    +434.9%        663 =C2=B1  7%  sched_debug.cfs_rq[=
+42]:/.tg_runnable_contrib
+      5723 =C2=B1  9%    +432.6%      30482 =C2=B1  7%  sched_debug.cfs_rq[=
+42]:/.avg->runnable_avg_sum
+    820458 =C2=B1  3%     -82.6%     142803 =C2=B1  5%  sched_debug.cpu#17.=
+sched_count
+       907 =C2=B1  6%    +109.9%       1905 =C2=B1  7%  sched_debug.cpu#18.=
+curr->pid
+      7596 =C2=B1 27%    +317.1%      31685 =C2=B1  5%  sched_debug.cfs_rq[=
+45]:/.avg->runnable_avg_sum
+         3 =C2=B1 43%    +246.7%         13 =C2=B1  5%  sched_debug.cpu#33.=
+cpu_load[1]
+     60531 =C2=B1  4%    +113.4%     129160 =C2=B1  0%  sched_debug.cfs_rq[=
+23]:/.exec_clock
+        48 =C2=B1 39%    +205.2%        147 =C2=B1 34%  sched_debug.cfs_rq[=
+33]:/.tg_load_contrib
+    453444 =C2=B1  4%     -84.1%      72012 =C2=B1  4%  sched_debug.cpu#2.s=
+ched_goidle
+    907983 =C2=B1  4%     -83.5%     149609 =C2=B1  4%  sched_debug.cpu#2.n=
+r_switches
+    974782 =C2=B1 10%     -83.9%     157156 =C2=B1  2%  sched_debug.cpu#2.s=
+ched_count
+       165 =C2=B1 27%    +317.1%        688 =C2=B1  5%  sched_debug.cfs_rq[=
+45]:/.tg_runnable_contrib
+       522 =C2=B1 12%    +239.3%       1771 =C2=B1 12%  sched_debug.cpu#39.=
+ttwu_local
+     22377 =C2=B1 19%    +441.3%     121128 =C2=B1  0%  sched_debug.cfs_rq[=
+42]:/.exec_clock
+    167866 =C2=B1 22%    +160.2%     436709 =C2=B1 34%  sched_debug.cfs_rq[=
+26]:/.spread0
+         3 =C2=B1 29%    +226.7%         12 =C2=B1 21%  sched_debug.cpu#36.=
+cpu_load[1]
+         4 =C2=B1 17%    +231.2%         13 =C2=B1  6%  sched_debug.cpu#59.=
+cpu_load[0]
+         3 =C2=B1 42%    +278.6%         13 =C2=B1  9%  sched_debug.cfs_rq[=
+54]:/.runnable_load_avg
+         3 =C2=B1 31%    +285.7%         13 =C2=B1 12%  sched_debug.cpu#41.=
+cpu_load[3]
+         3 =C2=B1 47%    +246.7%         13 =C2=B1  9%  sched_debug.cpu#63.=
+cpu_load[4]
+         6 =C2=B1 20%    +112.5%         12 =C2=B1 14%  sched_debug.cpu#11.=
+cpu_load[4]
+         3 =C2=B1 11%    +226.7%         12 =C2=B1 21%  sched_debug.cpu#36.=
+cpu_load[0]
+         4 =C2=B1 35%    +225.0%         13 =C2=B1  7%  sched_debug.cpu#53.=
+cpu_load[1]
+         5 =C2=B1 47%    +140.9%         13 =C2=B1  9%  sched_debug.cpu#46.=
+cpu_load[1]
+         4 =C2=B1 25%    +205.9%         13 =C2=B1 12%  sched_debug.cpu#53.=
+cpu_load[0]
+       500 =C2=B1 18%    +262.1%       1810 =C2=B1 15%  sched_debug.cpu#45.=
+ttwu_local
+       451 =C2=B1  8%    +230.7%       1493 =C2=B1 19%  sched_debug.cpu#54.=
+ttwu_local
+ 1.156e+10 =C2=B1  0%     -71.2%  3.326e+09 =C2=B1  1%  cpuidle.C1-NHM.time
+    799819 =C2=B1  2%     -82.4%     140789 =C2=B1  6%  sched_debug.cpu#19.=
+sched_count
+        50 =C2=B1 16%     +93.0%         97 =C2=B1 15%  sched_debug.cpu#31.=
+nr_uninterruptible
+       228 =C2=B1  4%    +239.6%        776 =C2=B1  4%  sched_debug.cfs_rq[=
+58]:/.tg_runnable_contrib
+     10517 =C2=B1  4%    +239.3%      35688 =C2=B1  4%  sched_debug.cfs_rq[=
+58]:/.avg->runnable_avg_sum
+    156424 =C2=B1 23%    +137.7%     371749 =C2=B1 37%  sched_debug.cfs_rq[=
+29]:/.spread0
+        44 =C2=B1 41%    +201.7%        133 =C2=B1 37%  sched_debug.cfs_rq[=
+33]:/.blocked_load_avg
+         7 =C2=B1 17%     +79.3%         13 =C2=B1 15%  sched_debug.cpu#11.=
+cpu_load[2]
+         7 =C2=B1 15%     +72.4%         12 =C2=B1  4%  sched_debug.cfs_rq[=
+18]:/.runnable_load_avg
+         6 =C2=B1 13%     +96.0%         12 =C2=B1 12%  sched_debug.cpu#21.=
+cpu_load[4]
+     38958 =C2=B1  6%    +249.7%     136223 =C2=B1  0%  sched_debug.cfs_rq[=
+56]:/.exec_clock
+    166485 =C2=B1 27%    +146.8%     410810 =C2=B1 40%  sched_debug.cfs_rq[=
+27]:/.spread0
+       903 =C2=B1  9%    +122.0%       2006 =C2=B1  2%  sched_debug.cpu#25.=
+curr->pid
+     10608 =C2=B1  7%    +232.5%      35277 =C2=B1  5%  sched_debug.cfs_rq[=
+62]:/.avg->runnable_avg_sum
+       231 =C2=B1  7%    +232.4%        767 =C2=B1  5%  sched_debug.cfs_rq[=
+62]:/.tg_runnable_contrib
+    510864 =C2=B1  4%     -85.9%      71998 =C2=B1  0%  sched_debug.cpu#29.=
+ttwu_count
+       497 =C2=B1 14%    +258.9%       1783 =C2=B1 30%  sched_debug.cpu#55.=
+ttwu_local
+       584 =C2=B1 27%    +251.9%       2057 =C2=B1  9%  sched_debug.cpu#58.=
+curr->pid
+       577 =C2=B1 14%    +214.3%       1815 =C2=B1 12%  sched_debug.cpu#51.=
+curr->pid
+    424410 =C2=B1  4%     -84.9%      64153 =C2=B1  1%  sched_debug.cpu#5.s=
+ched_goidle
+       464 =C2=B1 14%     -39.7%        280 =C2=B1  6%  sched_debug.cpu#24.=
+nr_uninterruptible
+    849809 =C2=B1  4%     -84.3%     133474 =C2=B1  1%  sched_debug.cpu#5.n=
+r_switches
+         6 =C2=B1 19%     +88.9%         12 =C2=B1 14%  sched_debug.cpu#11.=
+cpu_load[3]
+    893664 =C2=B1  8%     -84.3%     140385 =C2=B1  2%  sched_debug.cpu#5.s=
+ched_count
+      1050 =C2=B1 22%     +92.7%       2023 =C2=B1  4%  sched_debug.cpu#14.=
+curr->pid
+         6 =C2=B1 41%     +84.0%         11 =C2=B1  9%  sched_debug.cpu#20.=
+cpu_load[0]
+       562 =C2=B1 26%    +264.2%       2049 =C2=B1  2%  sched_debug.cpu#56.=
+curr->pid
+    484950 =C2=B1  3%     -87.6%      60072 =C2=B1  4%  sched_debug.cpu#29.=
+sched_goidle
+       631 =C2=B1 20%    +204.4%       1921 =C2=B1 13%  sched_debug.cpu#35.=
+curr->pid
+       400 =C2=B1  9%     +91.0%        765 =C2=B1  3%  sched_debug.cfs_rq[=
+29]:/.tg_runnable_contrib
+    221437 =C2=B1  4%     -69.0%      68559 =C2=B1  1%  sched_debug.cpu#32.=
+sched_goidle
+    151736 =C2=B1 28%    +131.8%     351711 =C2=B1 34%  sched_debug.cfs_rq[=
+31]:/.spread0
+     39350 =C2=B1  8%    +241.4%     134348 =C2=B1  0%  sched_debug.cfs_rq[=
+60]:/.exec_clock
+    424957 =C2=B1  2%     -83.4%      70675 =C2=B1  2%  sched_debug.cpu#4.t=
+twu_count
+    399685 =C2=B1  1%     -82.2%      71004 =C2=B1  0%  sched_debug.cpu#11.=
+ttwu_count
+    971165 =C2=B1  3%     -87.1%     125255 =C2=B1  4%  sched_debug.cpu#29.=
+nr_switches
+    423917 =C2=B1  3%     -83.7%      69106 =C2=B1  1%  sched_debug.cpu#5.t=
+twu_count
+         8 =C2=B1 19%     +63.6%         13 =C2=B1 15%  sched_debug.cpu#22.=
+cpu_load[1]
+         7 =C2=B1 19%     +71.0%         13 =C2=B1 12%  sched_debug.cpu#22.=
+cpu_load[2]
+         6 =C2=B1 19%     +96.3%         13 =C2=B1 12%  sched_debug.cpu#22.=
+cpu_load[3]
+       608 =C2=B1 20%    +258.9%       2182 =C2=B1  6%  sched_debug.cpu#57.=
+curr->pid
+         4 =C2=B1 30%    +205.9%         13 =C2=B1  5%  sched_debug.cpu#33.=
+cpu_load[0]
+    376316 =C2=B1  1%     -81.4%      70115 =C2=B1  2%  sched_debug.cpu#11.=
+sched_goidle
+    754666 =C2=B1  1%     -80.6%     146300 =C2=B1  2%  sched_debug.cpu#11.=
+nr_switches
+    511244 =C2=B1  3%     -87.5%      63857 =C2=B1  6%  sched_debug.cpu#26.=
+sched_goidle
+   1023764 =C2=B1  3%     -87.0%     133252 =C2=B1  6%  sched_debug.cpu#26.=
+nr_switches
+         2 =C2=B1 35%    +600.0%         14 =C2=B1  5%  sched_debug.cpu#48.=
+cpu_load[4]
+         6 =C2=B1 30%     +76.0%         11 =C2=B1  6%  sched_debug.cfs_rq[=
+20]:/.runnable_load_avg
+     39811 =C2=B1  7%    +236.6%     134001 =C2=B1  1%  sched_debug.cfs_rq[=
+61]:/.exec_clock
+        76 =C2=B1 17%     +64.7%        126 =C2=B1 12%  sched_debug.cpu#28.=
+nr_uninterruptible
+         8 =C2=B1 16%     +57.1%         13 =C2=B1 14%  sched_debug.cpu#23.=
+cpu_load[0]
+     58133 =C2=B1  3%    +126.1%     131423 =C2=B1  2%  sched_debug.cfs_rq[=
+14]:/.exec_clock
+    516681 =C2=B1  2%     -85.9%      72656 =C2=B1  1%  sched_debug.cpu#26.=
+ttwu_count
+    206503 =C2=B1  3%     -68.6%      64766 =C2=B1  1%  sched_debug.cpu#32.=
+ttwu_count
+     18371 =C2=B1  9%     +91.0%      35082 =C2=B1  3%  sched_debug.cfs_rq[=
+29]:/.avg->runnable_avg_sum
+         3 =C2=B1 33%    +308.3%         12 =C2=B1  6%  sched_debug.cpu#55.=
+cpu_load[4]
+         3 =C2=B1 14%    +257.1%         12 =C2=B1  4%  sched_debug.cpu#59.=
+cpu_load[3]
+         4 =C2=B1 33%    +161.1%         11 =C2=B1 13%  sched_debug.cpu#42.=
+cpu_load[2]
+         4 =C2=B1 30%    +225.0%         13 =C2=B1  9%  sched_debug.cpu#32.=
+cpu_load[3]
+         3 =C2=B1 31%    +264.3%         12 =C2=B1 11%  sched_debug.cpu#35.=
+cpu_load[4]
+         3 =C2=B1 29%    +240.0%         12 =C2=B1 11%  sched_debug.cfs_rq[=
+53]:/.runnable_load_avg
+         3 =C2=B1 29%    +240.0%         12 =C2=B1  6%  sched_debug.cpu#53.=
+cpu_load[2]
+         3 =C2=B1 22%    +246.7%         13 =C2=B1  5%  sched_debug.cpu#52.=
+cpu_load[3]
+         3 =C2=B1 31%    +257.1%         12 =C2=B1  8%  sched_debug.cpu#51.=
+cpu_load[3]
+         3 =C2=B1 39%    +300.0%         13 =C2=B1  5%  sched_debug.cpu#32.=
+cpu_load[4]
+         4 =C2=B1 30%    +212.5%         12 =C2=B1  4%  sched_debug.cpu#40.=
+cpu_load[2]
+         4 =C2=B1 38%    +194.1%         12 =C2=B1  4%  sched_debug.cpu#40.=
+cpu_load[1]
+         2 =C2=B1 19%    +466.7%         12 =C2=B1  8%  sched_debug.cpu#40.=
+cpu_load[4]
+         2 =C2=B1 47%    +372.7%         13 =C2=B1  5%  sched_debug.cpu#33.=
+cpu_load[3]
+         4 =C2=B1 10%    +200.0%         12 =C2=B1  6%  sched_debug.cpu#59.=
+cpu_load[1]
+         4 =C2=B1 38%    +194.1%         12 =C2=B1  4%  sched_debug.cpu#40.=
+cpu_load[0]
+         3 =C2=B1 29%    +220.0%         12 =C2=B1 21%  sched_debug.cpu#36.=
+cpu_load[2]
+         4 =C2=B1 17%    +212.5%         12 =C2=B1 14%  sched_debug.cpu#39.=
+cpu_load[3]
+         4 =C2=B1 27%    +147.4%         11 =C2=B1 19%  sched_debug.cpu#42.=
+cpu_load[1]
+         4 =C2=B1  0%    +287.5%         15 =C2=B1  3%  sched_debug.cpu#57.=
+cpu_load[3]
+         4 =C2=B1  0%    +212.5%         12 =C2=B1  4%  sched_debug.cpu#59.=
+cpu_load[2]
+    190817 =C2=B1  7%     -69.0%      59123 =C2=B1  5%  sched_debug.cpu#37.=
+sched_goidle
+       683 =C2=B1  5%    +204.3%       2080 =C2=B1  9%  sched_debug.cpu#61.=
+curr->pid
+       109 =C2=B1 10%     +37.0%        150 =C2=B1 21%  sched_debug.cpu#26.=
+nr_uninterruptible
+       528 =C2=B1 18%    +232.1%       1755 =C2=B1 12%  sched_debug.cpu#55.=
+curr->pid
+       540 =C2=B1 32%    +257.9%       1934 =C2=B1  9%  sched_debug.cpu#39.=
+curr->pid
+    429861 =C2=B1  1%     -82.7%      74351 =C2=B1  1%  sched_debug.cpu#2.t=
+twu_count
+     39439 =C2=B1  8%    +245.8%     136399 =C2=B1  0%  sched_debug.cfs_rq[=
+57]:/.exec_clock
+       973 =C2=B1 25%    +110.9%       2052 =C2=B1 10%  sched_debug.cpu#0.c=
+urr->pid
+     40253 =C2=B1  9%    +235.4%     135015 =C2=B1  0%  sched_debug.cfs_rq[=
+62]:/.exec_clock
+  73690739 =C2=B1  3%     -67.6%   23868773 =C2=B1 10%  cpuidle.C1E-NHM.time
+    443566 =C2=B1  4%     -67.9%     142393 =C2=B1  1%  sched_debug.cpu#32.=
+nr_switches
+       133 =C2=B1 15%    +429.1%        705 =C2=B1  5%  sched_debug.cfs_rq[=
+40]:/.tg_runnable_contrib
+    247383 =C2=B1  3%     -77.8%      54929 =C2=B1  5%  sched_debug.cpu#57.=
+sched_goidle
+      6128 =C2=B1 15%    +428.5%      32386 =C2=B1  5%  sched_debug.cfs_rq[=
+40]:/.avg->runnable_avg_sum
+       586 =C2=B1  9%    +204.9%       1787 =C2=B1  8%  sched_debug.cpu#36.=
+ttwu_local
+         5 =C2=B1 27%    +177.3%         15 =C2=B1  9%  sched_debug.cpu#61.=
+cpu_load[2]
+         4 =C2=B1  9%    +236.8%         16 =C2=B1  4%  sched_debug.cpu#57.=
+cpu_load[1]
+         9 =C2=B1 20%     +45.9%         13 =C2=B1  3%  sched_debug.cpu#30.=
+cpu_load[4]
+         2 =C2=B1 30%    +400.0%         13 =C2=B1  3%  sched_debug.cpu#48.=
+cpu_load[3]
+       230 =C2=B1  5%    +224.5%        748 =C2=B1  2%  sched_debug.cfs_rq[=
+59]:/.tg_runnable_contrib
+       625 =C2=B1 32%    +207.4%       1922 =C2=B1 17%  sched_debug.cpu#32.=
+curr->pid
+    984354 =C2=B1  2%     -87.2%     126424 =C2=B1  5%  sched_debug.cpu#29.=
+sched_count
+    181989 =C2=B1 11%     -65.9%      62130 =C2=B1  1%  sched_debug.cpu#49.=
+ttwu_count
+       473 =C2=B1  7%    +219.2%       1512 =C2=B1 22%  sched_debug.cpu#52.=
+ttwu_local
+     10613 =C2=B1  5%    +224.4%      34424 =C2=B1  2%  sched_debug.cfs_rq[=
+59]:/.avg->runnable_avg_sum
+       581 =C2=B1 12%    +185.7%       1661 =C2=B1 17%  sched_debug.cpu#48.=
+ttwu_local
+     40432 =C2=B1  8%    +237.9%     136634 =C2=B1  1%  sched_debug.cfs_rq[=
+58]:/.exec_clock
+    193465 =C2=B1  9%     -67.5%      62936 =C2=B1  1%  sched_debug.cpu#37.=
+ttwu_count
+       308 =C2=B1 10%    +140.7%        742 =C2=B1  5%  sched_debug.cfs_rq[=
+9]:/.tg_runnable_contrib
+       176 =C2=B1 11%    +288.1%        683 =C2=B1  5%  sched_debug.cfs_rq[=
+37]:/.tg_runnable_contrib
+    187261 =C2=B1  7%     -68.1%      59804 =C2=B1  6%  sched_debug.cpu#35.=
+sched_goidle
+      8109 =C2=B1 10%    +287.2%      31401 =C2=B1  5%  sched_debug.cfs_rq[=
+37]:/.avg->runnable_avg_sum
+     14139 =C2=B1  9%    +141.3%      34124 =C2=B1  5%  sched_debug.cfs_rq[=
+9]:/.avg->runnable_avg_sum
+    382269 =C2=B1  7%     -67.9%     122882 =C2=B1  5%  sched_debug.cpu#37.=
+nr_switches
+       315 =C2=B1  4%    +135.6%        742 =C2=B1  4%  sched_debug.cfs_rq[=
+15]:/.tg_runnable_contrib
+     14456 =C2=B1  4%    +136.0%      34117 =C2=B1  4%  sched_debug.cfs_rq[=
+15]:/.avg->runnable_avg_sum
+    281534 =C2=B1  3%     -86.8%      37215 =C2=B1  6%  cpuidle.C1E-NHM.usa=
+ge
+       603 =C2=B1 38%    +208.4%       1862 =C2=B1  8%  sched_debug.cpu#40.=
+curr->pid
+    495617 =C2=B1  3%     -77.0%     114184 =C2=B1  5%  sched_debug.cpu#57.=
+nr_switches
+    198497 =C2=B1  3%     -67.6%      64225 =C2=B1  0%  sched_debug.cpu#35.=
+ttwu_count
+    498597 =C2=B1  4%     -76.9%     115414 =C2=B1  4%  sched_debug.cpu#57.=
+sched_count
+    446635 =C2=B1  3%     -61.0%     174387 =C2=B1 28%  sched_debug.cpu#32.=
+sched_count
+         8 =C2=B1 16%     +62.9%         14 =C2=B1 15%  sched_debug.cpu#23.=
+cpu_load[1]
+    202136 =C2=B1  5%     -68.5%      63771 =C2=B1  3%  sched_debug.cpu#36.=
+sched_goidle
+       568 =C2=B1 24%    +226.5%       1856 =C2=B1  8%  sched_debug.cpu#53.=
+curr->pid
+       869 =C2=B1 19%    +109.7%       1822 =C2=B1  7%  sched_debug.cpu#12.=
+curr->pid
+     40794 =C2=B1  8%    +228.5%     133993 =C2=B1  1%  sched_debug.cfs_rq[=
+63]:/.exec_clock
+    191084 =C2=B1  7%     -66.8%      63524 =C2=B1  1%  sched_debug.cpu#36.=
+ttwu_count
+    183888 =C2=B1  8%     -65.6%      63297 =C2=B1  6%  sched_debug.cpu#52.=
+sched_goidle
+        10 =C2=B1 18%     +29.3%         13 =C2=B1  3%  sched_debug.cpu#30.=
+cpu_load[3]
+         5 =C2=B1 31%    +170.0%         13 =C2=B1 11%  sched_debug.cpu#9.c=
+pu_load[4]
+    189595 =C2=B1  8%     -66.4%      63732 =C2=B1  2%  sched_debug.cpu#34.=
+ttwu_count
+       181 =C2=B1 15%    +284.3%        696 =C2=B1  7%  sched_debug.cfs_rq[=
+35]:/.tg_runnable_contrib
+     10639 =C2=B1 12%    +240.2%      36198 =C2=B1  2%  sched_debug.cfs_rq[=
+56]:/.avg->runnable_avg_sum
+       231 =C2=B1 12%    +239.3%        785 =C2=B1  2%  sched_debug.cfs_rq[=
+56]:/.tg_runnable_contrib
+       558 =C2=B1 15%    +230.8%       1848 =C2=B1  4%  sched_debug.cpu#52.=
+curr->pid
+    375242 =C2=B1  7%     -66.9%     124149 =C2=B1  6%  sched_debug.cpu#35.=
+nr_switches
+       229 =C2=B1  2%    +238.5%        777 =C2=B1  1%  sched_debug.cfs_rq[=
+61]:/.tg_runnable_contrib
+      8353 =C2=B1 14%    +283.7%      32054 =C2=B1  7%  sched_debug.cfs_rq[=
+35]:/.avg->runnable_avg_sum
+    173742 =C2=B1 13%     -64.5%      61631 =C2=B1  5%  sched_debug.cpu#49.=
+sched_goidle
+     10571 =C2=B1  2%    +237.9%      35717 =C2=B1  1%  sched_debug.cfs_rq[=
+61]:/.avg->runnable_avg_sum
+    197826 =C2=B1  8%     -67.3%      64771 =C2=B1  4%  sched_debug.cpu#38.=
+sched_goidle
+    404925 =C2=B1  5%     -67.4%     132191 =C2=B1  3%  sched_debug.cpu#36.=
+nr_switches
+    368375 =C2=B1  8%     -64.4%     131038 =C2=B1  6%  sched_debug.cpu#52.=
+nr_switches
+         4 =C2=B1 38%    +170.6%         11 =C2=B1 19%  sched_debug.cfs_rq[=
+55]:/.runnable_load_avg
+         5 =C2=B1 14%    +185.0%         14 =C2=B1  9%  sched_debug.cpu#60.=
+cpu_load[1]
+         4 =C2=B1 39%    +262.5%         14 =C2=B1  7%  sched_debug.cpu#56.=
+cpu_load[4]
+         5 =C2=B1 14%    +195.0%         14 =C2=B1  7%  sched_debug.cpu#58.=
+cpu_load[3]
+         4 =C2=B1 31%    +205.3%         14 =C2=B1  5%  sched_debug.cfs_rq[=
+58]:/.runnable_load_avg
+         1 =C2=B1 34%    +120.0%          2 =C2=B1 30%  sched_debug.cfs_rq[=
+9]:/.nr_spread_over
+         1 =C2=B1  0%    +200.0%          3 =C2=B1 40%  sched_debug.cfs_rq[=
+1]:/.nr_spread_over
+         4 =C2=B1 19%    +216.7%         14 =C2=B1  9%  sched_debug.cpu#60.=
+cpu_load[2]
+         4 =C2=B1 25%    +237.5%         13 =C2=B1 15%  sched_debug.cpu#54.=
+cpu_load[2]
+         5 =C2=B1 37%    +200.0%         15 =C2=B1  9%  sched_debug.cpu#61.=
+cpu_load[3]
+         4 =C2=B1 24%    +205.6%         13 =C2=B1 12%  sched_debug.cpu#54.=
+cpu_load[1]
+       445 =C2=B1  5%    +332.8%       1929 =C2=B1 12%  sched_debug.cpu#40.=
+ttwu_local
+       661 =C2=B1 16%    +184.0%       1877 =C2=B1  7%  sched_debug.cpu#37.=
+curr->pid
+    176233 =C2=B1  8%     -64.5%      62640 =C2=B1  2%  sched_debug.cpu#52.=
+ttwu_count
+       453 =C2=B1 19%    +319.1%       1898 =C2=B1 11%  sched_debug.cpu#46.=
+ttwu_local
+    167768 =C2=B1 12%     -64.8%      59130 =C2=B1  6%  sched_debug.cpu#53.=
+sched_goidle
+    383507 =C2=B1  7%     -66.9%     126751 =C2=B1  4%  sched_debug.cpu#37.=
+sched_count
+    189267 =C2=B1 14%     -66.6%      63161 =C2=B1  1%  sched_debug.cpu#38.=
+ttwu_count
+    271885 =C2=B1  4%     -75.2%      67422 =C2=B1  0%  sched_debug.cpu#62.=
+ttwu_count
+    396300 =C2=B1  8%     -66.1%     134542 =C2=B1  5%  sched_debug.cpu#38.=
+nr_switches
+    198817 =C2=B1  9%     -66.0%      67505 =C2=B1  4%  sched_debug.cpu#34.=
+sched_goidle
+     16468 =C2=B1  4%    +185.9%      47080 =C2=B1  1%  sched_debug.cfs_rq[=
+3]:/.tg->runnable_avg
+     16466 =C2=B1  4%    +185.8%      47066 =C2=B1  1%  sched_debug.cfs_rq[=
+4]:/.tg->runnable_avg
+     16459 =C2=B1  4%    +186.0%      47082 =C2=B1  1%  sched_debug.cfs_rq[=
+2]:/.tg->runnable_avg
+     16458 =C2=B1  4%    +186.0%      47063 =C2=B1  1%  sched_debug.cfs_rq[=
+1]:/.tg->runnable_avg
+     16484 =C2=B1  4%    +185.5%      47069 =C2=B1  1%  sched_debug.cfs_rq[=
+6]:/.tg->runnable_avg
+     10545 =C2=B1 10%    +215.5%      33271 =C2=B1  3%  sched_debug.cfs_rq[=
+63]:/.avg->runnable_avg_sum
+     16455 =C2=B1  4%    +186.0%      47061 =C2=B1  1%  sched_debug.cfs_rq[=
+0]:/.tg->runnable_avg
+     16495 =C2=B1  4%    +185.4%      47078 =C2=B1  1%  sched_debug.cfs_rq[=
+7]:/.tg->runnable_avg
+     16481 =C2=B1  4%    +185.5%      47062 =C2=B1  1%  sched_debug.cfs_rq[=
+5]:/.tg->runnable_avg
+        10 =C2=B1 48%    +182.9%         29 =C2=B1 44%  sched_debug.cfs_rq[=
+34]:/.load
+       229 =C2=B1 10%    +214.5%        722 =C2=B1  3%  sched_debug.cfs_rq[=
+63]:/.tg_runnable_contrib
+    405011 =C2=B1  5%     -66.1%     137434 =C2=B1  6%  sched_debug.cpu#36.=
+sched_count
+     16507 =C2=B1  4%    +185.2%      47087 =C2=B1  1%  sched_debug.cfs_rq[=
+8]:/.tg->runnable_avg
+     16516 =C2=B1  4%    +185.1%      47086 =C2=B1  1%  sched_debug.cfs_rq[=
+9]:/.tg->runnable_avg
+     16527 =C2=B1  4%    +185.1%      47117 =C2=B1  1%  sched_debug.cfs_rq[=
+12]:/.tg->runnable_avg
+     16525 =C2=B1  4%    +185.0%      47099 =C2=B1  1%  sched_debug.cfs_rq[=
+11]:/.tg->runnable_avg
+     16522 =C2=B1  4%    +185.0%      47089 =C2=B1  1%  sched_debug.cfs_rq[=
+10]:/.tg->runnable_avg
+     16528 =C2=B1  4%    +185.1%      47115 =C2=B1  1%  sched_debug.cfs_rq[=
+13]:/.tg->runnable_avg
+    348070 =C2=B1 13%     -63.1%     128384 =C2=B1  5%  sched_debug.cpu#49.=
+nr_switches
+       506 =C2=B1  6%    +197.3%       1504 =C2=B1  4%  sched_debug.cpu#53.=
+ttwu_local
+     16538 =C2=B1  4%    +184.9%      47115 =C2=B1  1%  sched_debug.cfs_rq[=
+15]:/.tg->runnable_avg
+     16539 =C2=B1  4%    +184.9%      47116 =C2=B1  1%  sched_debug.cfs_rq[=
+14]:/.tg->runnable_avg
+     16549 =C2=B1  4%    +184.8%      47129 =C2=B1  1%  sched_debug.cfs_rq[=
+17]:/.tg->runnable_avg
+     16543 =C2=B1  4%    +184.8%      47118 =C2=B1  1%  sched_debug.cfs_rq[=
+16]:/.tg->runnable_avg
+    184779 =C2=B1 11%     -66.2%      62497 =C2=B1  5%  sched_debug.cpu#48.=
+sched_goidle
+       941 =C2=B1 14%    +100.2%       1883 =C2=B1 11%  sched_debug.cpu#15.=
+curr->pid
+     16591 =C2=B1  4%    +184.2%      47159 =C2=B1  1%  sched_debug.cfs_rq[=
+24]:/.tg->runnable_avg
+     16562 =C2=B1  4%    +184.6%      47131 =C2=B1  1%  sched_debug.cfs_rq[=
+18]:/.tg->runnable_avg
+     16594 =C2=B1  4%    +184.2%      47166 =C2=B1  1%  sched_debug.cfs_rq[=
+25]:/.tg->runnable_avg
+     16593 =C2=B1  4%    +184.4%      47195 =C2=B1  1%  sched_debug.cfs_rq[=
+28]:/.tg->runnable_avg
+     16591 =C2=B1  4%    +184.4%      47192 =C2=B1  1%  sched_debug.cfs_rq[=
+29]:/.tg->runnable_avg
+     16597 =C2=B1  4%    +184.3%      47181 =C2=B1  1%  sched_debug.cfs_rq[=
+26]:/.tg->runnable_avg
+     16597 =C2=B1  4%    +184.4%      47195 =C2=B1  1%  sched_debug.cfs_rq[=
+27]:/.tg->runnable_avg
+     16570 =C2=B1  4%    +184.5%      47138 =C2=B1  1%  sched_debug.cfs_rq[=
+19]:/.tg->runnable_avg
+     16593 =C2=B1  4%    +184.2%      47152 =C2=B1  1%  sched_debug.cfs_rq[=
+23]:/.tg->runnable_avg
+     16587 =C2=B1  4%    +184.2%      47138 =C2=B1  1%  sched_debug.cfs_rq[=
+22]:/.tg->runnable_avg
+     16612 =C2=B1  4%    +184.1%      47192 =C2=B1  1%  sched_debug.cfs_rq[=
+32]:/.tg->runnable_avg
+     16600 =C2=B1  4%    +184.2%      47176 =C2=B1  1%  sched_debug.cfs_rq[=
+30]:/.tg->runnable_avg
+     16606 =C2=B1  4%    +184.2%      47196 =C2=B1  1%  sched_debug.cfs_rq[=
+31]:/.tg->runnable_avg
+     16580 =C2=B1  4%    +184.3%      47142 =C2=B1  1%  sched_debug.cfs_rq[=
+21]:/.tg->runnable_avg
+     16577 =C2=B1  4%    +184.4%      47142 =C2=B1  1%  sched_debug.cfs_rq[=
+20]:/.tg->runnable_avg
+     16626 =C2=B1  4%    +183.9%      47201 =C2=B1  1%  sched_debug.cfs_rq[=
+34]:/.tg->runnable_avg
+     16628 =C2=B1  4%    +183.9%      47199 =C2=B1  1%  sched_debug.cfs_rq[=
+33]:/.tg->runnable_avg
+     16636 =C2=B1  4%    +183.8%      47207 =C2=B1  1%  sched_debug.cfs_rq[=
+36]:/.tg->runnable_avg
+     16633 =C2=B1  4%    +183.8%      47204 =C2=B1  1%  sched_debug.cfs_rq[=
+35]:/.tg->runnable_avg
+     16641 =C2=B1  4%    +183.7%      47206 =C2=B1  1%  sched_debug.cfs_rq[=
+37]:/.tg->runnable_avg
+    183606 =C2=B1 14%     -66.0%      62470 =C2=B1  2%  sched_debug.cpu#51.=
+ttwu_count
+     16652 =C2=B1  4%    +183.5%      47213 =C2=B1  1%  sched_debug.cfs_rq[=
+40]:/.tg->runnable_avg
+     16650 =C2=B1  4%    +183.6%      47221 =C2=B1  1%  sched_debug.cfs_rq[=
+41]:/.tg->runnable_avg
+     16677 =C2=B1  4%    +183.3%      47243 =C2=B1  1%  sched_debug.cfs_rq[=
+45]:/.tg->runnable_avg
+    336124 =C2=B1 12%     -63.6%     122396 =C2=B1  6%  sched_debug.cpu#53.=
+nr_switches
+     16674 =C2=B1  4%    +183.4%      47248 =C2=B1  1%  sched_debug.cfs_rq[=
+51]:/.tg->runnable_avg
+     16659 =C2=B1  4%    +183.5%      47226 =C2=B1  1%  sched_debug.cfs_rq[=
+42]:/.tg->runnable_avg
+     16672 =C2=B1  4%    +183.3%      47235 =C2=B1  1%  sched_debug.cfs_rq[=
+49]:/.tg->runnable_avg
+     16653 =C2=B1  4%    +183.4%      47199 =C2=B1  1%  sched_debug.cfs_rq[=
+39]:/.tg->runnable_avg
+     16674 =C2=B1  4%    +183.3%      47243 =C2=B1  1%  sched_debug.cfs_rq[=
+44]:/.tg->runnable_avg
+     16651 =C2=B1  4%    +183.4%      47195 =C2=B1  1%  sched_debug.cfs_rq[=
+38]:/.tg->runnable_avg
+     14838 =C2=B1  7%    +126.6%      33617 =C2=B1  3%  sched_debug.cfs_rq[=
+18]:/.avg->runnable_avg_sum
+     16677 =C2=B1  4%    +183.2%      47238 =C2=B1  1%  sched_debug.cfs_rq[=
+50]:/.tg->runnable_avg
+     16675 =C2=B1  4%    +183.2%      47224 =C2=B1  1%  sched_debug.cfs_rq[=
+48]:/.tg->runnable_avg
+     16683 =C2=B1  4%    +183.3%      47256 =C2=B1  1%  sched_debug.cfs_rq[=
+52]:/.tg->runnable_avg
+     16666 =C2=B1  4%    +183.4%      47227 =C2=B1  1%  sched_debug.cfs_rq[=
+43]:/.tg->runnable_avg
+        16 =C2=B1  6%    +193.9%         48 =C2=B1  1%  vmstat.procs.r
+     16679 =C2=B1  4%    +183.2%      47228 =C2=B1  1%  sched_debug.cfs_rq[=
+46]:/.tg->runnable_avg
+     16680 =C2=B1  4%    +183.0%      47213 =C2=B1  1%  sched_debug.cfs_rq[=
+47]:/.tg->runnable_avg
+     16686 =C2=B1  4%    +183.2%      47259 =C2=B1  1%  sched_debug.cfs_rq[=
+53]:/.tg->runnable_avg
+     16704 =C2=B1  4%    +182.9%      47264 =C2=B1  1%  sched_debug.cfs_rq[=
+55]:/.tg->runnable_avg
+     16700 =C2=B1  4%    +183.0%      47264 =C2=B1  1%  sched_debug.cfs_rq[=
+54]:/.tg->runnable_avg
+     16720 =C2=B1  4%    +182.7%      47261 =C2=B1  1%  sched_debug.cfs_rq[=
+57]:/.tg->runnable_avg
+     16730 =C2=B1  4%    +182.5%      47256 =C2=B1  1%  sched_debug.cfs_rq[=
+59]:/.tg->runnable_avg
+     16726 =C2=B1  4%    +182.6%      47266 =C2=B1  1%  sched_debug.cfs_rq[=
+58]:/.tg->runnable_avg
+     16734 =C2=B1  4%    +182.5%      47268 =C2=B1  1%  sched_debug.cfs_rq[=
+61]:/.tg->runnable_avg
+     16733 =C2=B1  4%    +182.4%      47260 =C2=B1  1%  sched_debug.cfs_rq[=
+60]:/.tg->runnable_avg
+     16714 =C2=B1  4%    +182.8%      47260 =C2=B1  1%  sched_debug.cfs_rq[=
+56]:/.tg->runnable_avg
+     16759 =C2=B1  5%    +182.1%      47272 =C2=B1  1%  sched_debug.cfs_rq[=
+63]:/.tg->runnable_avg
+     16740 =C2=B1  4%    +182.3%      47264 =C2=B1  1%  sched_debug.cfs_rq[=
+62]:/.tg->runnable_avg
+    398244 =C2=B1  8%     -65.7%     136524 =C2=B1  5%  sched_debug.cpu#38.=
+sched_count
+    348117 =C2=B1 13%     -61.1%     135573 =C2=B1  9%  sched_debug.cpu#49.=
+sched_count
+    336174 =C2=B1 12%     -62.4%     126449 =C2=B1  7%  sched_debug.cpu#53.=
+sched_count
+     61049 =C2=B1  5%    +113.0%     130050 =C2=B1  0%  sched_debug.cfs_rq[=
+18]:/.exec_clock
+    398443 =C2=B1  9%     -64.9%     140004 =C2=B1  3%  sched_debug.cpu#34.=
+nr_switches
+         3 =C2=B1 39%    +323.1%         13 =C2=B1  3%  sched_debug.cpu#48.=
+cpu_load[0]
+         3 =C2=B1 25%    +323.1%         13 =C2=B1  3%  sched_debug.cpu#48.=
+cpu_load[2]
+         3 =C2=B1 33%    +284.6%         12 =C2=B1  4%  sched_debug.cpu#40.=
+cpu_load[3]
+         3 =C2=B1 31%    +292.9%         13 =C2=B1  3%  sched_debug.cpu#48.=
+cpu_load[1]
+    370157 =C2=B1 11%     -65.0%     129455 =C2=B1  4%  sched_debug.cpu#48.=
+nr_switches
+    173811 =C2=B1 10%     -63.9%      62775 =C2=B1  0%  sched_debug.cpu#48.=
+ttwu_count
+    376459 =C2=B1  7%     -64.9%     132057 =C2=B1  9%  sched_debug.cpu#35.=
+sched_count
+         5 =C2=B1 20%    +147.6%         13 =C2=B1 14%  sched_debug.cfs_rq[=
+7]:/.runnable_load_avg
+         4 =C2=B1 24%    +200.0%         13 =C2=B1  8%  sched_debug.cpu#38.=
+cpu_load[3]
+         4 =C2=B1 30%    +231.2%         13 =C2=B1  9%  sched_debug.cpu#54.=
+cpu_load[0]
+         5 =C2=B1 37%    +160.0%         13 =C2=B1 12%  sched_debug.cfs_rq[=
+38]:/.runnable_load_avg
+         5 =C2=B1 42%    +155.0%         12 =C2=B1 10%  sched_debug.cpu#50.=
+cpu_load[0]
+    398843 =C2=B1  9%     -64.4%     141829 =C2=B1  4%  sched_debug.cpu#34.=
+sched_count
+     29862 =C2=B1 10%    +315.1%     123964 =C2=B1  0%  sched_debug.cfs_rq[=
+37]:/.exec_clock
+     69.47 =C2=B1  1%     -64.5%      24.64 =C2=B1  1%  turbostat.%c1
+       326 =C2=B1  5%    +125.0%        734 =C2=B1  6%  sched_debug.cfs_rq[=
+22]:/.tg_runnable_contrib
+     14948 =C2=B1  5%    +125.7%      33739 =C2=B1  6%  sched_debug.cfs_rq[=
+22]:/.avg->runnable_avg_sum
+       565 =C2=B1 18%    +214.6%       1779 =C2=B1 13%  sched_debug.cpu#37.=
+ttwu_local
+       452 =C2=B1 18%    +283.9%       1737 =C2=B1 18%  sched_debug.cpu#49.=
+ttwu_local
+       721 =C2=B1 23%    +174.1%       1978 =C2=B1  7%  sched_debug.cpu#62.=
+curr->pid
+     29298 =C2=B1  4%    +320.8%     123279 =C2=B1  1%  sched_debug.cfs_rq[=
+34]:/.exec_clock
+     40698 =C2=B1  6%    +232.5%     135315 =C2=B1  0%  sched_debug.cfs_rq[=
+59]:/.exec_clock
+       534 =C2=B1 12%    +248.3%       1862 =C2=B1 30%  sched_debug.cpu#38.=
+ttwu_local
+        35 =C2=B1 35%     -54.3%         16 =C2=B1  8%  sched_debug.cfs_rq[=
+14]:/.load
+        35 =C2=B1 32%     -55.2%         16 =C2=B1  8%  sched_debug.cpu#14.=
+load
+      7610 =C2=B1  9%    +311.8%      31343 =C2=B1 13%  sched_debug.cfs_rq[=
+36]:/.avg->runnable_avg_sum
+       686 =C2=B1 23%    +179.2%       1915 =C2=B1  2%  sched_debug.cpu#17.=
+curr->pid
+       166 =C2=B1  9%    +310.7%        681 =C2=B1 13%  sched_debug.cfs_rq[=
+36]:/.tg_runnable_contrib
+    368896 =C2=B1  7%     -62.8%     137215 =C2=B1  7%  sched_debug.cpu#52.=
+sched_count
+       791 =C2=B1 30%    +117.7%       1722 =C2=B1  9%  sched_debug.cpu#20.=
+curr->pid
+         5 =C2=B1 24%    +152.4%         13 =C2=B1  6%  sched_debug.cfs_rq[=
+62]:/.runnable_load_avg
+         6 =C2=B1 26%    +140.0%         15 =C2=B1 12%  sched_debug.cpu#61.=
+cpu_load[0]
+         5 =C2=B1 18%    +160.9%         15 =C2=B1  8%  sched_debug.cpu#58.=
+cpu_load[2]
+         6 =C2=B1 26%    +140.0%         15 =C2=B1 12%  sched_debug.cpu#61.=
+cpu_load[1]
+       680 =C2=B1 24%    +198.1%       2028 =C2=B1 12%  sched_debug.cpu#42.=
+curr->pid
+    174536 =C2=B1 16%    +243.0%     598575 =C2=B1 24%  sched_debug.cfs_rq[=
+24]:/.spread0
+       606 =C2=B1 34%    +242.2%       2075 =C2=B1  8%  sched_debug.cpu#41.=
+curr->pid
+      9829 =C2=B1 11%    +263.3%      35712 =C2=B1  5%  sched_debug.cfs_rq[=
+60]:/.avg->runnable_avg_sum
+       213 =C2=B1 11%    +263.4%        776 =C2=B1  5%  sched_debug.cfs_rq[=
+60]:/.tg_runnable_contrib
+         4 =C2=B1 40%    +172.2%         12 =C2=B1 10%  sched_debug.cfs_rq[=
+42]:/.runnable_load_avg
+         4 =C2=B1 19%    +211.8%         13 =C2=B1  8%  sched_debug.cpu#52.=
+cpu_load[2]
+         5 =C2=B1 48%    +131.8%         12 =C2=B1  8%  sched_debug.cfs_rq[=
+46]:/.runnable_load_avg
+         4 =C2=B1 11%    +255.6%         16 =C2=B1  4%  sched_debug.cpu#57.=
+cpu_load[2]
+         4 =C2=B1 19%    +205.9%         13 =C2=B1  5%  sched_debug.cpu#52.=
+cpu_load[1]
+         4 =C2=B1 30%    +182.4%         12 =C2=B1 14%  sched_debug.cfs_rq[=
+51]:/.runnable_load_avg
+         4 =C2=B1 25%    +231.2%         13 =C2=B1  3%  sched_debug.cpu#52.=
+cpu_load[0]
+         5 =C2=B1 14%    +150.0%         12 =C2=B1 14%  sched_debug.cpu#39.=
+cpu_load[2]
+         4 =C2=B1 25%    +225.0%         13 =C2=B1  5%  sched_debug.cfs_rq[=
+52]:/.runnable_load_avg
+         4 =C2=B1 40%    +172.2%         12 =C2=B1 17%  sched_debug.cpu#42.=
+cpu_load[0]
+         4 =C2=B1 34%    +194.1%         12 =C2=B1  8%  sched_debug.cpu#51.=
+cpu_load[2]
+         4 =C2=B1 24%    +177.8%         12 =C2=B1 14%  sched_debug.cpu#35.=
+cpu_load[3]
+      1308 =C2=B1  1%    +126.4%       2962 =C2=B1 49%  sched_debug.cpu#14.=
+ttwu_local
+       530 =C2=B1 29%    +206.5%       1626 =C2=B1 12%  sched_debug.cpu#50.=
+ttwu_local
+    170379 =C2=B1  7%     -66.0%      57923 =C2=B1  1%  sched_debug.cpu#55.=
+sched_goidle
+      9222 =C2=B1  9%    +248.6%      32152 =C2=B1  4%  sched_debug.cfs_rq[=
+38]:/.avg->runnable_avg_sum
+       523 =C2=B1 36%    +237.7%       1766 =C2=B1  7%  sched_debug.cpu#59.=
+curr->pid
+       200 =C2=B1  9%    +249.4%        698 =C2=B1  4%  sched_debug.cfs_rq[=
+38]:/.tg_runnable_contrib
+       540 =C2=B1 22%    +250.5%       1894 =C2=B1  6%  sched_debug.cpu#60.=
+curr->pid
+    167034 =C2=B1 14%     -62.4%      62885 =C2=B1  5%  sched_debug.cpu#51.=
+sched_goidle
+         8 =C2=B1 23%     +81.2%         14 =C2=B1 14%  sched_debug.cpu#23.=
+cpu_load[2]
+       584 =C2=B1 25%    +189.3%       1691 =C2=B1  6%  sched_debug.cpu#43.=
+ttwu_local
+     59537 =C2=B1  3%    +114.7%     127808 =C2=B1  1%  sched_debug.cfs_rq[=
+21]:/.exec_clock
+   3500275 =C2=B1  3%    +151.4%    8797983 =C2=B1  0%  softirqs.TIMER
+    341326 =C2=B1  7%     -64.6%     120668 =C2=B1  1%  sched_debug.cpu#55.=
+nr_switches
+    370336 =C2=B1 11%     -62.9%     137515 =C2=B1  7%  sched_debug.cpu#48.=
+sched_count
+         5 =C2=B1 25%    +178.3%         16 =C2=B1 22%  sched_debug.cpu#1.c=
+pu_load[4]
+         4 =C2=B1 45%    +222.2%         14 =C2=B1  7%  sched_debug.cpu#56.=
+cpu_load[3]
+         2 =C2=B1  0%    +125.0%          4 =C2=B1 24%  sched_debug.cfs_rq[=
+0]:/.nr_spread_over
+         5 =C2=B1 31%    +175.0%         13 =C2=B1  9%  sched_debug.cpu#38.=
+cpu_load[2]
+    190067 =C2=B1  3%     -66.9%      62977 =C2=B1  3%  sched_debug.cpu#33.=
+sched_goidle
+      8888 =C2=B1 12%    +265.4%      32480 =C2=B1  2%  sched_debug.cfs_rq[=
+34]:/.avg->runnable_avg_sum
+    341372 =C2=B1  7%     -63.7%     123871 =C2=B1  3%  sched_debug.cpu#55.=
+sched_count
+    259809 =C2=B1  2%     -73.9%      67736 =C2=B1  1%  sched_debug.cpu#56.=
+ttwu_count
+       193 =C2=B1 12%    +265.1%        706 =C2=B1  2%  sched_debug.cfs_rq[=
+34]:/.tg_runnable_contrib
+    334659 =C2=B1 14%     -61.1%     130211 =C2=B1  5%  sched_debug.cpu#51.=
+nr_switches
+      1453 =C2=B1 22%    +136.1%       3431 =C2=B1 24%  sched_debug.cpu#12.=
+ttwu_local
+       328 =C2=B1  5%    +137.7%        780 =C2=B1  6%  sched_debug.cfs_rq[=
+23]:/.tg_runnable_contrib
+         7 =C2=B1 17%     +93.1%         14 =C2=B1  7%  sched_debug.cpu#18.=
+cpu_load[3]
+    190052 =C2=B1  4%     -66.3%      64136 =C2=B1  1%  sched_debug.cpu#33.=
+ttwu_count
+    181149 =C2=B1  7%     -65.5%      62508 =C2=B1  0%  sched_debug.cpu#55.=
+ttwu_count
+    380828 =C2=B1  3%     -65.7%     130803 =C2=B1  3%  sched_debug.cpu#33.=
+nr_switches
+       838 =C2=B1 11%    +128.7%       1918 =C2=B1  7%  sched_debug.cpu#23.=
+curr->pid
+     60928 =C2=B1  5%    +111.6%     128950 =C2=B1  1%  sched_debug.cfs_rq[=
+22]:/.exec_clock
+         5 =C2=B1 41%    +145.5%         13 =C2=B1 13%  sched_debug.cpu#41.=
+cpu_load[1]
+     15049 =C2=B1  5%    +138.4%      35879 =C2=B1  6%  sched_debug.cfs_rq[=
+23]:/.avg->runnable_avg_sum
+       782 =C2=B1 49%    +144.9%       1917 =C2=B1 19%  sched_debug.cpu#34.=
+curr->pid
+         4 =C2=B1 36%    +200.0%         13 =C2=B1 13%  sched_debug.cpu#41.=
+cpu_load[2]
+     14510 =C2=B1  3%    +133.1%      33826 =C2=B1  3%  sched_debug.cfs_rq[=
+20]:/.avg->runnable_avg_sum
+       316 =C2=B1  3%    +132.9%        737 =C2=B1  3%  sched_debug.cfs_rq[=
+20]:/.tg_runnable_contrib
+       612 =C2=B1 36%    +200.3%       1839 =C2=B1  4%  sched_debug.cpu#50.=
+curr->pid
+       337 =C2=B1  4%    +109.3%        705 =C2=B1  5%  sched_debug.cfs_rq[=
+21]:/.tg_runnable_contrib
+    382766 =C2=B1  3%     -64.5%     135808 =C2=B1  4%  sched_debug.cpu#33.=
+sched_count
+     14583 =C2=B1  4%    +141.9%      35280 =C2=B1  5%  sched_debug.cfs_rq[=
+13]:/.avg->runnable_avg_sum
+       318 =C2=B1  4%    +141.3%        768 =C2=B1  5%  sched_debug.cfs_rq[=
+13]:/.tg_runnable_contrib
+     15468 =C2=B1  5%    +109.6%      32424 =C2=B1  5%  sched_debug.cfs_rq[=
+21]:/.avg->runnable_avg_sum
+       787 =C2=B1 29%    +171.7%       2138 =C2=B1  7%  sched_debug.cpu#24.=
+curr->pid
+     20340 =C2=B1  1%     -57.8%       8589 =C2=B1  1%  uptime.idle
+       950 =C2=B1 35%     +98.9%       1890 =C2=B1 11%  sched_debug.cpu#2.c=
+urr->pid
+       315 =C2=B1  7%    +130.6%        726 =C2=B1  6%  sched_debug.cfs_rq[=
+12]:/.tg_runnable_contrib
+     14440 =C2=B1  7%    +131.2%      33389 =C2=B1  6%  sched_debug.cfs_rq[=
+12]:/.avg->runnable_avg_sum
+       432 =C2=B1  5%    +124.7%        972 =C2=B1 10%  sched_debug.cpu#60.=
+ttwu_local
+         5 =C2=B1 20%    +175.0%         13 =C2=B1  7%  sched_debug.cpu#62.=
+cpu_load[3]
+         5 =C2=B1 20%    +195.5%         16 =C2=B1 27%  sched_debug.cpu#8.c=
+pu_load[4]
+         5 =C2=B1 14%    +143.5%         14 =C2=B1 17%  sched_debug.cpu#15.=
+cpu_load[4]
+         6 =C2=B1 17%    +124.0%         14 =C2=B1 13%  sched_debug.cpu#13.=
+cpu_load[4]
+         5 =C2=B1 20%    +154.5%         14 =C2=B1  8%  sched_debug.cpu#5.c=
+pu_load[4]
+         5 =C2=B1 14%    +134.8%         13 =C2=B1 12%  sched_debug.cpu#22.=
+cpu_load[4]
+         5 =C2=B1  9%    +150.0%         13 =C2=B1  7%  sched_debug.cpu#60.=
+cpu_load[0]
+    335869 =C2=B1 14%     -59.3%     136745 =C2=B1  7%  sched_debug.cpu#51.=
+sched_count
+       866 =C2=B1 17%    +113.6%       1850 =C2=B1 17%  sched_debug.cpu#16.=
+curr->pid
+     14550 =C2=B1  1%    +136.4%      34401 =C2=B1  3%  sched_debug.cfs_rq[=
+19]:/.avg->runnable_avg_sum
+       843 =C2=B1 20%    +139.5%       2020 =C2=B1  7%  sched_debug.cpu#11.=
+curr->pid
+    598054 =C2=B1 10%     -53.8%     276304 =C2=B1 21%  sched_debug.cpu#42.=
+avg_idle
+         7 =C2=B1 14%     +64.5%         12 =C2=B1  6%  sched_debug.cpu#12.=
+cpu_load[1]
+       317 =C2=B1  1%    +135.9%        749 =C2=B1  3%  sched_debug.cfs_rq[=
+19]:/.tg_runnable_contrib
+       826 =C2=B1 17%    +146.3%       2036 =C2=B1  8%  sched_debug.cpu#3.c=
+urr->pid
+         4 =C2=B1 43%    +173.7%         13 =C2=B1 14%  sched_debug.cfs_rq[=
+41]:/.runnable_load_avg
+     15098 =C2=B1  6%    +130.7%      34838 =C2=B1  2%  sched_debug.cfs_rq[=
+7]:/.avg->runnable_avg_sum
+    148254 =C2=B1 11%     -55.9%      65306 =C2=B1  0%  sched_debug.cpu#45.=
+ttwu_count
+       329 =C2=B1  6%    +130.3%        758 =C2=B1  2%  sched_debug.cfs_rq[=
+7]:/.tg_runnable_contrib
+    170167 =C2=B1  9%     -63.0%      63030 =C2=B1  2%  sched_debug.cpu#53.=
+ttwu_count
+       343 =C2=B1  8%    +113.8%        734 =C2=B1  4%  sched_debug.cfs_rq[=
+4]:/.tg_runnable_contrib
+         6 =C2=B1 23%    +130.8%         15 =C2=B1  8%  sched_debug.cpu#58.=
+cpu_load[1]
+     14279 =C2=B1  4%    +138.7%      34087 =C2=B1  1%  sched_debug.cfs_rq[=
+8]:/.avg->runnable_avg_sum
+       311 =C2=B1  4%    +137.7%        741 =C2=B1  1%  sched_debug.cfs_rq[=
+8]:/.tg_runnable_contrib
+       939 =C2=B1 17%     +97.2%       1852 =C2=B1 10%  sched_debug.cpu#35.=
+ttwu_local
+    148294 =C2=B1 16%     -56.5%      64514 =C2=B1  1%  sched_debug.cpu#45.=
+sched_goidle
+     15760 =C2=B1  8%    +113.6%      33671 =C2=B1  4%  sched_debug.cfs_rq[=
+4]:/.avg->runnable_avg_sum
+         8 =C2=B1 19%     +68.8%         13 =C2=B1  3%  sched_debug.cpu#18.=
+cpu_load[2]
+         4 =C2=B1 33%    +177.8%         12 =C2=B1 16%  sched_debug.cfs_rq[=
+32]:/.runnable_load_avg
+    180819 =C2=B1  5%     -67.1%      59533 =C2=B1  3%  sched_debug.cpu#39.=
+sched_goidle
+      2125 =C2=B1 39%     +45.1%       3083 =C2=B1 38%  numa-vmstat.node2.n=
+r_anon_pages
+      8496 =C2=B1 39%     +45.2%      12333 =C2=B1 38%  numa-meminfo.node2.=
+AnonPages
+    177750 =C2=B1  9%     -65.1%      61959 =C2=B1  1%  sched_debug.cpu#50.=
+ttwu_count
+         5 =C2=B1 20%    +147.6%         13 =C2=B1 14%  sched_debug.cpu#32.=
+cpu_load[1]
+     15552 =C2=B1  2%    +124.5%      34911 =C2=B1  5%  sched_debug.cfs_rq[=
+6]:/.avg->runnable_avg_sum
+     15315 =C2=B1  4%    +121.2%      33874 =C2=B1  5%  sched_debug.cfs_rq[=
+10]:/.avg->runnable_avg_sum
+       339 =C2=B1  2%    +124.3%        760 =C2=B1  5%  sched_debug.cfs_rq[=
+6]:/.tg_runnable_contrib
+    297130 =C2=B1 16%     -54.9%     134084 =C2=B1  2%  sched_debug.cpu#45.=
+nr_switches
+       324 =C2=B1  7%    +126.0%        732 =C2=B1  3%  sched_debug.cfs_rq[=
+18]:/.tg_runnable_contrib
+       319 =C2=B1  5%    +124.3%        716 =C2=B1  3%  sched_debug.cfs_rq[=
+11]:/.tg_runnable_contrib
+       334 =C2=B1  4%    +120.6%        737 =C2=B1  4%  sched_debug.cfs_rq[=
+10]:/.tg_runnable_contrib
+     14627 =C2=B1  5%    +124.6%      32849 =C2=B1  3%  sched_debug.cfs_rq[=
+11]:/.avg->runnable_avg_sum
+        62 =C2=B1 15%     +81.7%        114 =C2=B1 22%  sched_debug.cfs_rq[=
+35]:/.tg_load_contrib
+     57625 =C2=B1  3%    +126.3%     130409 =C2=B1  1%  sched_debug.cfs_rq[=
+9]:/.exec_clock
+     15710 =C2=B1  6%    +126.1%      35526 =C2=B1  3%  sched_debug.cfs_rq[=
+3]:/.avg->runnable_avg_sum
+     17785 =C2=B1  4%    +114.5%      38148 =C2=B1  2%  sched_debug.cfs_rq[=
+24]:/.avg->runnable_avg_sum
+    362283 =C2=B1  5%     -65.8%     123900 =C2=B1  3%  sched_debug.cpu#39.=
+nr_switches
+      9255 =C2=B1 40%     +41.6%      13110 =C2=B1 30%  numa-meminfo.node2.=
+Active(anon)
+      2315 =C2=B1 40%     +41.6%       3277 =C2=B1 30%  numa-vmstat.node2.n=
+r_active_anon
+       388 =C2=B1  4%    +113.7%        829 =C2=B1  2%  sched_debug.cfs_rq[=
+24]:/.tg_runnable_contrib
+     14664 =C2=B1  7%    +125.3%      33037 =C2=B1  5%  sched_debug.cfs_rq[=
+14]:/.avg->runnable_avg_sum
+    297259 =C2=B1 16%     -53.6%     138074 =C2=B1  1%  sched_debug.cpu#45.=
+sched_count
+     57759 =C2=B1  3%    +124.4%     129607 =C2=B1  3%  sched_debug.cfs_rq[=
+12]:/.exec_clock
+       343 =C2=B1  6%    +125.0%        773 =C2=B1  3%  sched_debug.cfs_rq[=
+3]:/.tg_runnable_contrib
+       320 =C2=B1  8%    +124.7%        719 =C2=B1  5%  sched_debug.cfs_rq[=
+14]:/.tg_runnable_contrib
+     15258 =C2=B1  8%    +123.9%      34162 =C2=B1  6%  sched_debug.cfs_rq[=
+1]:/.avg->runnable_avg_sum
+       355 =C2=B1  8%    +113.2%        757 =C2=B1  1%  sched_debug.cfs_rq[=
+2]:/.tg_runnable_contrib
+     59869 =C2=B1  4%    +119.1%     131193 =C2=B1  0%  sched_debug.cfs_rq[=
+17]:/.exec_clock
+     60764 =C2=B1  1%    +113.8%     129936 =C2=B1  3%  sched_debug.cfs_rq[=
+8]:/.exec_clock
+     16268 =C2=B1  8%    +113.6%      34751 =C2=B1  1%  sched_debug.cfs_rq[=
+2]:/.avg->runnable_avg_sum
+       333 =C2=B1  8%    +123.1%        743 =C2=B1  6%  sched_debug.cfs_rq[=
+1]:/.tg_runnable_contrib
+     15124 =C2=B1  9%    +125.6%      34123 =C2=B1  6%  sched_debug.cfs_rq[=
+0]:/.avg->runnable_avg_sum
+       333 =C2=B1  7%    +117.8%        726 =C2=B1  4%  sched_debug.cfs_rq[=
+5]:/.tg_runnable_contrib
+    177540 =C2=B1  9%     -64.7%      62756 =C2=B1  1%  sched_debug.cpu#54.=
+ttwu_count
+     15308 =C2=B1  7%    +118.0%      33371 =C2=B1  4%  sched_debug.cfs_rq[=
+5]:/.avg->runnable_avg_sum
+     59954 =C2=B1  6%    +117.7%     130516 =C2=B1  0%  sched_debug.cfs_rq[=
+11]:/.exec_clock
+     15754 =C2=B1 10%    +107.9%      32747 =C2=B1  6%  sched_debug.cfs_rq[=
+16]:/.avg->runnable_avg_sum
+         5 =C2=B1 22%    +134.8%         13 =C2=B1 11%  sched_debug.cpu#9.c=
+pu_load[3]
+       331 =C2=B1  9%    +124.8%        744 =C2=B1  6%  sched_debug.cfs_rq[=
+0]:/.tg_runnable_contrib
+       343 =C2=B1 10%    +107.4%        712 =C2=B1  6%  sched_debug.cfs_rq[=
+16]:/.tg_runnable_contrib
+         5 =C2=B1 20%    +127.3%         12 =C2=B1 14%  sched_debug.cpu#39.=
+cpu_load[0]
+         4 =C2=B1 27%    +168.4%         12 =C2=B1  8%  sched_debug.cpu#51.=
+cpu_load[1]
+         5 =C2=B1 14%    +113.0%         12 =C2=B1  6%  sched_debug.cfs_rq[=
+17]:/.runnable_load_avg
+         5 =C2=B1 30%    +122.7%         12 =C2=B1 17%  sched_debug.cfs_rq[=
+35]:/.runnable_load_avg
+         4 =C2=B1 27%    +157.9%         12 =C2=B1 10%  sched_debug.cpu#51.=
+cpu_load[0]
+         5 =C2=B1 20%    +127.3%         12 =C2=B1 14%  sched_debug.cpu#39.=
+cpu_load[1]
+         5 =C2=B1 32%    +131.8%         12 =C2=B1  8%  sched_debug.cpu#63.=
+cpu_load[3]
+         6 =C2=B1 19%     +81.5%         12 =C2=B1 12%  sched_debug.cpu#16.=
+cpu_load[4]
+         5 =C2=B1 24%    +138.1%         12 =C2=B1 14%  sched_debug.cpu#35.=
+cpu_load[2]
+    183707 =C2=B1  5%     -65.1%      64034 =C2=B1  1%  sched_debug.cpu#39.=
+ttwu_count
+    182822 =C2=B1  7%     -64.0%      65856 =C2=B1  4%  sched_debug.cpu#54.=
+sched_goidle
+         3 =C2=B1 43%    +233.3%         12 =C2=B1  8%  sched_debug.cpu#34.=
+cpu_load[4]
+        56 =C2=B1 20%     +78.4%        101 =C2=B1 24%  sched_debug.cfs_rq[=
+35]:/.blocked_load_avg
+    139252 =C2=B1 16%     -54.0%      64000 =C2=B1  2%  sched_debug.cpu#42.=
+ttwu_count
+     60499 =C2=B1  4%    +116.0%     130668 =C2=B1  0%  sched_debug.cfs_rq[=
+16]:/.exec_clock
+     15134 =C2=B1  9%    +129.3%      34698 =C2=B1  2%  sched_debug.cfs_rq[=
+17]:/.avg->runnable_avg_sum
+     60021 =C2=B1  4%    +116.8%     130132 =C2=B1  1%  sched_debug.cfs_rq[=
+20]:/.exec_clock
+     60178 =C2=B1  7%    +119.3%     131954 =C2=B1  3%  sched_debug.cfs_rq[=
+10]:/.exec_clock
+     60603 =C2=B1  4%    +116.1%     130941 =C2=B1  1%  sched_debug.cfs_rq[=
+19]:/.exec_clock
+         5 =C2=B1 22%    +147.8%         14 =C2=B1  9%  sched_debug.cpu#19.=
+cpu_load[4]
+         6 =C2=B1 21%    +133.3%         15 =C2=B1 19%  sched_debug.cpu#1.c=
+pu_load[3]
+         7 =C2=B1 20%    +114.3%         15 =C2=B1 12%  sched_debug.cpu#23.=
+cpu_load[3]
+         7 =C2=B1 10%    +103.6%         14 =C2=B1  5%  sched_debug.cpu#3.c=
+pu_load[4]
+         6 =C2=B1 26%    +125.0%         13 =C2=B1 15%  sched_debug.cfs_rq[=
+11]:/.runnable_load_avg
+         5 =C2=B1 37%    +145.5%         13 =C2=B1 12%  sched_debug.cpu#38.=
+cpu_load[1]
+         6 =C2=B1 20%    +140.0%         15 =C2=B1 12%  sched_debug.cpu#23.=
+cpu_load[4]
+         6 =C2=B1 26%    +103.7%         13 =C2=B1 13%  sched_debug.cfs_rq[=
+19]:/.runnable_load_avg
+       887 =C2=B1 19%    +138.4%       2114 =C2=B1  1%  sched_debug.cpu#1.c=
+urr->pid
+       330 =C2=B1  9%    +128.9%        756 =C2=B1  2%  sched_debug.cfs_rq[=
+17]:/.tg_runnable_contrib
+     61838 =C2=B1  3%    +113.9%     132255 =C2=B1  0%  sched_debug.cfs_rq[=
+1]:/.exec_clock
+    125542 =C2=B1  9%     -48.0%      65277 =C2=B1  2%  sched_debug.cpu#41.=
+sched_goidle
+    363290 =C2=B1  5%     -64.2%     129971 =C2=B1  3%  sched_debug.cpu#39.=
+sched_count
+     61549 =C2=B1  2%    +110.5%     129558 =C2=B1  1%  sched_debug.cfs_rq[=
+5]:/.exec_clock
+    179177 =C2=B1  9%     -64.1%      64237 =C2=B1  4%  sched_debug.cpu#50.=
+sched_goidle
+     62105 =C2=B1  2%    +110.7%     130860 =C2=B1  1%  sched_debug.cfs_rq[=
+4]:/.exec_clock
+    366224 =C2=B1  7%     -62.8%     136064 =C2=B1  4%  sched_debug.cpu#54.=
+nr_switches
+       785 =C2=B1 17%    +144.2%       1918 =C2=B1  6%  sched_debug.cpu#63.=
+curr->pid
+         5 =C2=B1 24%    +155.0%         12 =C2=B1 15%  sched_debug.cpu#32.=
+cpu_load[0]
+    366355 =C2=B1  7%     -61.6%     140522 =C2=B1  7%  sched_debug.cpu#54.=
+sched_count
+     17897 =C2=B1  7%    +111.1%      37790 =C2=B1  4%  sched_debug.cfs_rq[=
+31]:/.avg->runnable_avg_sum
+     18221 =C2=B1  8%    +102.9%      36980 =C2=B1  4%  sched_debug.cfs_rq[=
+25]:/.avg->runnable_avg_sum
+    139298 =C2=B1 21%     -49.4%      70496 =C2=B1  4%  sched_debug.cpu#44.=
+sched_goidle
+       533 =C2=B1 26%    +188.1%       1535 =C2=B1  9%  sched_debug.cpu#51.=
+ttwu_local
+    251646 =C2=B1  9%     -46.2%     135449 =C2=B1  2%  sched_debug.cpu#41.=
+nr_switches
+        81 =C2=B1 31%     +92.0%        156 =C2=B1 16%  sched_debug.cpu#27.=
+nr_uninterruptible
+       397 =C2=B1  8%    +102.3%        803 =C2=B1  4%  sched_debug.cfs_rq[=
+25]:/.tg_runnable_contrib
+     62563 =C2=B1  4%    +111.3%     132217 =C2=B1  1%  sched_debug.cfs_rq[=
+2]:/.exec_clock
+        15 =C2=B1 20%     +68.3%         25 =C2=B1 42%  sched_debug.cfs_rq[=
+61]:/.load
+        15 =C2=B1 20%     +68.3%         25 =C2=B1 42%  sched_debug.cpu#61.=
+load
+       391 =C2=B1  7%    +110.3%        822 =C2=B1  4%  sched_debug.cfs_rq[=
+31]:/.tg_runnable_contrib
+    252106 =C2=B1  9%     -45.5%     137280 =C2=B1  3%  sched_debug.cpu#41.=
+sched_count
+    637864 =C2=B1 12%     -48.7%     327236 =C2=B1 15%  sched_debug.cpu#46.=
+avg_idle
+    358959 =C2=B1  9%     -63.0%     132896 =C2=B1  5%  sched_debug.cpu#50.=
+nr_switches
+         4 =C2=B1 31%    +173.7%         13 =C2=B1  9%  sched_debug.cpu#32.=
+cpu_load[2]
+         4 =C2=B1 25%    +206.2%         12 =C2=B1  8%  sched_debug.cpu#55.=
+cpu_load[3]
+     62121 =C2=B1  4%    +110.7%     130896 =C2=B1  1%  sched_debug.cfs_rq[=
+6]:/.exec_clock
+        64 =C2=B1 23%    +111.6%        136 =C2=B1 27%  sched_debug.cpu#8.n=
+r_uninterruptible
+    359157 =C2=B1  9%     -55.6%     159516 =C2=B1 28%  sched_debug.cpu#50.=
+sched_count
+       923 =C2=B1 21%    +112.5%       1963 =C2=B1 10%  sched_debug.cpu#19.=
+curr->pid
+     61984 =C2=B1  4%    +109.6%     129941 =C2=B1  0%  sched_debug.cfs_rq[=
+7]:/.exec_clock
+      1121 =C2=B1 19%     +89.5%       2125 =C2=B1  5%  sched_debug.cpu#31.=
+curr->pid
+     17994 =C2=B1  5%     +98.5%      35718 =C2=B1  1%  sched_debug.cfs_rq[=
+27]:/.avg->runnable_avg_sum
+       102 =C2=B1 36%     -47.1%         54 =C2=B1 24%  sched_debug.cfs_rq[=
+58]:/.blocked_load_avg
+       392 =C2=B1  5%     +97.5%        775 =C2=B1  1%  sched_debug.cfs_rq[=
+27]:/.tg_runnable_contrib
+    279111 =C2=B1 21%     -47.7%     145948 =C2=B1  4%  sched_debug.cpu#44.=
+nr_switches
+     62503 =C2=B1  4%    +109.2%     130769 =C2=B1  0%  sched_debug.cfs_rq[=
+3]:/.exec_clock
+    129420 =C2=B1  6%     -48.2%      67042 =C2=B1  2%  sched_debug.cpu#40.=
+ttwu_count
+         8 =C2=B1 13%     +55.9%         13 =C2=B1  6%  sched_debug.cpu#18.=
+cpu_load[1]
+     18170 =C2=B1  8%     +99.1%      36176 =C2=B1  6%  sched_debug.cfs_rq[=
+26]:/.avg->runnable_avg_sum
+       396 =C2=B1  8%     +98.7%        788 =C2=B1  6%  sched_debug.cfs_rq[=
+26]:/.tg_runnable_contrib
+      1100 =C2=B1  5%     +91.6%       2108 =C2=B1  8%  sched_debug.cpu#34.=
+ttwu_local
+    125224 =C2=B1 22%     -47.0%      66368 =C2=B1  1%  sched_debug.cpu#44.=
+ttwu_count
+    131648 =C2=B1 15%     -51.2%      64301 =C2=B1  0%  sched_debug.cpu#43.=
+ttwu_count
+         5 =C2=B1 25%    +117.4%         12 =C2=B1  6%  sched_debug.cpu#20.=
+cpu_load[4]
+         8 =C2=B1 13%     +87.9%         15 =C2=B1 18%  sched_debug.cpu#36.=
+load
+         7 =C2=B1 17%    +132.1%         16 =C2=B1 27%  sched_debug.cpu#8.c=
+pu_load[3]
+         1 =C2=B1 33%    +150.0%          3 =C2=B1 22%  sched_debug.cfs_rq[=
+13]:/.nr_spread_over
+         5 =C2=B1 37%    +163.6%         14 =C2=B1 10%  sched_debug.cpu#56.=
+cpu_load[2]
+         6 =C2=B1 16%    +111.1%         14 =C2=B1  7%  sched_debug.cpu#7.c=
+pu_load[3]
+         5 =C2=B1 31%    +130.4%         13 =C2=B1 11%  sched_debug.cpu#38.=
+cpu_load[0]
+         8 =C2=B1 13%     +81.8%         15 =C2=B1 16%  sched_debug.cfs_rq[=
+36]:/.load
+         6 =C2=B1 13%    +128.0%         14 =C2=B1  7%  sched_debug.cpu#7.c=
+pu_load[4]
+         6 =C2=B1 25%    +107.7%         13 =C2=B1  8%  sched_debug.cpu#62.=
+cpu_load[0]
+         7 =C2=B1 10%     +92.9%         13 =C2=B1 16%  sched_debug.cpu#15.=
+cpu_load[3]
+         6 =C2=B1 26%    +103.7%         13 =C2=B1  3%  sched_debug.cpu#17.=
+cpu_load[4]
+         5 =C2=B1 41%    +152.2%         14 =C2=B1 10%  sched_debug.cpu#56.=
+cpu_load[1]
+         5 =C2=B1 41%    +139.1%         13 =C2=B1  7%  sched_debug.cpu#56.=
+cpu_load[0]
+         8 =C2=B1 13%     +69.7%         14 =C2=B1 14%  sched_debug.cpu#19.=
+cpu_load[1]
+         6 =C2=B1 16%     +85.2%         12 =C2=B1 12%  sched_debug.cfs_rq[=
+16]:/.runnable_load_avg
+         6 =C2=B1 26%    +129.2%         13 =C2=B1  7%  sched_debug.cpu#62.=
+cpu_load[2]
+         5 =C2=B1 31%    +130.4%         13 =C2=B1  9%  sched_debug.cpu#35.=
+cpu_load[0]
+         7 =C2=B1 20%    +103.6%         14 =C2=B1 12%  sched_debug.cpu#7.c=
+pu_load[0]
+         5 =C2=B1 24%    +133.3%         12 =C2=B1  8%  sched_debug.cpu#55.=
+cpu_load[2]
+         6 =C2=B1 33%    +122.2%         15 =C2=B1  8%  sched_debug.cpu#58.=
+cpu_load[0]
+     18222 =C2=B1  6%     +96.9%      35875 =C2=B1  4%  sched_debug.cfs_rq[=
+28]:/.avg->runnable_avg_sum
+    146795 =C2=B1 16%     -53.1%      68791 =C2=B1  3%  sched_debug.cpu#42.=
+sched_goidle
+    128302 =C2=B1  7%     -48.8%      65646 =C2=B1  1%  sched_debug.cpu#41.=
+ttwu_count
+       397 =C2=B1  6%     +96.2%        780 =C2=B1  4%  sched_debug.cfs_rq[=
+28]:/.tg_runnable_contrib
+    279405 =C2=B1 21%     -45.8%     151308 =C2=B1  3%  sched_debug.cpu#44.=
+sched_count
+     68673 =C2=B1  1%    +101.0%     138021 =C2=B1  1%  sched_debug.cfs_rq[=
+0]:/.exec_clock
+     72077 =C2=B1  5%    +100.8%     144728 =C2=B1  0%  sched_debug.cpu#46.=
+nr_load_updates
+     71626 =C2=B1  3%    +101.8%     144571 =C2=B1  0%  sched_debug.cpu#47.=
+nr_load_updates
+       440 =C2=B1 10%     +96.9%        867 =C2=B1  8%  sched_debug.cpu#61.=
+ttwu_local
+    141858 =C2=B1  1%     -50.0%      70866 =C2=B1  3%  sched_debug.cpu#40.=
+sched_goidle
+        33 =C2=B1 36%     -49.3%         17 =C2=B1  4%  sched_debug.cfs_rq[=
+0]:/.load
+     73919 =C2=B1  0%     +97.9%     146324 =C2=B1  1%  sched_debug.cpu#40.=
+nr_load_updates
+     73274 =C2=B1  3%     +98.0%     145097 =C2=B1  0%  sched_debug.cpu#41.=
+nr_load_updates
+     17741 =C2=B1  7%    +102.7%      35954 =C2=B1  1%  sched_debug.cfs_rq[=
+30]:/.avg->runnable_avg_sum
+     73236 =C2=B1  2%     +98.0%     145027 =C2=B1  0%  sched_debug.cfs_rq[=
+24]:/.exec_clock
+     72077 =C2=B1  2%     +99.4%     143704 =C2=B1  0%  sched_debug.cfs_rq[=
+25]:/.exec_clock
+       387 =C2=B1  7%    +102.1%        783 =C2=B1  1%  sched_debug.cfs_rq[=
+30]:/.tg_runnable_contrib
+         5 =C2=B1 46%    +145.0%         12 =C2=B1 12%  sched_debug.cpu#34.=
+cpu_load[3]
+        33 =C2=B1 39%     -49.3%         17 =C2=B1  7%  sched_debug.cpu#0.l=
+oad
+    294115 =C2=B1 16%     -51.6%     142381 =C2=B1  3%  sched_debug.cpu#42.=
+nr_switches
+       933 =C2=B1 18%    +112.0%       1978 =C2=B1 20%  sched_debug.cpu#22.=
+curr->pid
+       850 =C2=B1 14%    +111.4%       1797 =C2=B1  4%  sched_debug.cpu#4.c=
+urr->pid
+         5 =C2=B1 20%    +118.2%         12 =C2=B1 15%  sched_debug.cpu#55.=
+cpu_load[0]
+     71684 =C2=B1  3%     +95.6%     140217 =C2=B1  0%  sched_debug.cfs_rq[=
+29]:/.exec_clock
+     73607 =C2=B1  6%     +98.7%     146254 =C2=B1  1%  sched_debug.cpu#44.=
+nr_load_updates
+    114289 =C2=B1 13%     -42.7%      65451 =C2=B1  0%  sched_debug.cpu#47.=
+ttwu_count
+     71217 =C2=B1  3%     +96.7%     140070 =C2=B1  0%  sched_debug.cfs_rq[=
+28]:/.exec_clock
+     72279 =C2=B1  3%     +95.6%     141391 =C2=B1  0%  sched_debug.cfs_rq[=
+26]:/.exec_clock
+       480 =C2=B1  2%     +76.0%        845 =C2=B1 11%  sched_debug.cpu#63.=
+ttwu_local
+     71428 =C2=B1  4%     +95.5%     139650 =C2=B1  0%  sched_debug.cfs_rq[=
+31]:/.exec_clock
+     72174 =C2=B1  4%     +94.9%     140663 =C2=B1  0%  sched_debug.cfs_rq[=
+27]:/.exec_clock
+     73935 =C2=B1  4%     +95.9%     144836 =C2=B1  0%  sched_debug.cpu#43.=
+nr_load_updates
+       469 =C2=B1  6%     +92.1%        902 =C2=B1 13%  sched_debug.cpu#59.=
+ttwu_local
+      1004 =C2=B1 21%     +95.8%       1966 =C2=B1  4%  sched_debug.cpu#29.=
+curr->pid
+      1103 =C2=B1 13%     +68.5%       1859 =C2=B1 11%  sched_debug.cpu#28.=
+curr->pid
+    284228 =C2=B1  1%     -48.4%     146748 =C2=B1  3%  sched_debug.cpu#40.=
+nr_switches
+    533580 =C2=B1  6%     -43.9%     299569 =C2=B1 15%  sched_debug.cpu#52.=
+avg_idle
+       985 =C2=B1  9%     +95.8%       1928 =C2=B1  5%  sched_debug.cpu#33.=
+ttwu_local
+       150 =C2=B1 16%     -55.5%         67 =C2=B1 32%  sched_debug.cfs_rq[=
+52]:/.blocked_load_avg
+         8 =C2=B1  9%     +91.4%         16 =C2=B1  4%  sched_debug.cpu#24.=
+cpu_load[4]
+        34 =C2=B1 36%     -51.4%         16 =C2=B1 14%  sched_debug.cfs_rq[=
+28]:/.load
+         9 =C2=B1 41%     +77.8%         16 =C2=B1 11%  sched_debug.cpu#54.=
+load
+         9 =C2=B1 41%     +77.8%         16 =C2=B1 11%  sched_debug.cfs_rq[=
+54]:/.load
+    288105 =C2=B1  2%     -48.2%     149355 =C2=B1  3%  sched_debug.cpu#40.=
+sched_count
+    574987 =C2=B1 15%     -44.0%     321728 =C2=B1 24%  sched_debug.cpu#49.=
+avg_idle
+     75106 =C2=B1  6%     +92.2%     144349 =C2=B1  0%  sched_debug.cpu#42.=
+nr_load_updates
+       887 =C2=B1 23%    +117.8%       1933 =C2=B1 10%  sched_debug.cpu#5.c=
+urr->pid
+         7 =C2=B1 10%     +80.6%         14 =C2=B1 11%  sched_debug.cpu#19.=
+cpu_load[2]
+         7 =C2=B1 14%     +86.7%         14 =C2=B1 11%  sched_debug.cpu#5.c=
+pu_load[2]
+         7 =C2=B1 14%    +103.6%         14 =C2=B1  9%  sched_debug.cpu#19.=
+cpu_load[3]
+         7 =C2=B1 19%     +83.9%         14 =C2=B1  5%  sched_debug.cpu#3.c=
+pu_load[0]
+         6 =C2=B1 41%    +103.8%         13 =C2=B1 13%  sched_debug.cfs_rq[=
+9]:/.runnable_load_avg
+         7 =C2=B1 19%     +93.5%         15 =C2=B1 12%  sched_debug.cpu#1.c=
+pu_load[2]
+         7 =C2=B1 26%    +100.0%         14 =C2=B1  8%  sched_debug.cfs_rq[=
+1]:/.runnable_load_avg
+     72318 =C2=B1  4%     +91.9%     138766 =C2=B1  0%  sched_debug.cfs_rq[=
+30]:/.exec_clock
+    294503 =C2=B1 16%     -50.5%     145879 =C2=B1  4%  sched_debug.cpu#42.=
+sched_count
+         6 =C2=B1 21%     +77.8%         12 =C2=B1  8%  sched_debug.cpu#20.=
+cpu_load[2]
+         7 =C2=B1 20%     +80.0%         13 =C2=B1 15%  sched_debug.cpu#13.=
+cpu_load[3]
+         7 =C2=B1 20%     +70.0%         12 =C2=B1  3%  sched_debug.cfs_rq[=
+12]:/.runnable_load_avg
+         7 =C2=B1 36%     +82.1%         12 =C2=B1  8%  sched_debug.cpu#63.=
+cpu_load[2]
+         6 =C2=B1 20%    +104.0%         12 =C2=B1  6%  sched_debug.cpu#12.=
+cpu_load[4]
+         5 =C2=B1 20%    +122.7%         12 =C2=B1 13%  sched_debug.cpu#55.=
+cpu_load[1]
+         7 =C2=B1 35%     +73.3%         13 =C2=B1  5%  sched_debug.cfs_rq[=
+0]:/.runnable_load_avg
+         6 =C2=B1 20%    +104.0%         12 =C2=B1 11%  sched_debug.cpu#35.=
+cpu_load[1]
+         7 =C2=B1 26%     +71.4%         12 =C2=B1  8%  sched_debug.cpu#20.=
+cpu_load[1]
+         6 =C2=B1  6%     +92.6%         13 =C2=B1  5%  sched_debug.cfs_rq[=
+3]:/.runnable_load_avg
+         6 =C2=B1  7%    +107.7%         13 =C2=B1 11%  sched_debug.cpu#6.c=
+pu_load[4]
+         7 =C2=B1 26%     +82.1%         12 =C2=B1  3%  sched_debug.cpu#4.c=
+pu_load[4]
+         6 =C2=B1 27%     +96.2%         12 =C2=B1  3%  sched_debug.cpu#14.=
+cpu_load[4]
+         7 =C2=B1 10%     +71.4%         12 =C2=B1 13%  sched_debug.cpu#16.=
+cpu_load[3]
+    152023 =C2=B1 25%    +155.4%     388338 =C2=B1 34%  sched_debug.cfs_rq[=
+28]:/.spread0
+       905 =C2=B1 21%    +107.1%       1874 =C2=B1 15%  sched_debug.cpu#6.c=
+urr->pid
+      1065 =C2=B1 14%     +82.7%       1945 =C2=B1  8%  sched_debug.cpu#30.=
+curr->pid
+    109213 =C2=B1 14%     -39.5%      66094 =C2=B1  2%  sched_debug.cpu#47.=
+sched_goidle
+       969 =C2=B1 27%    +110.6%       2042 =C2=B1  3%  sched_debug.cpu#9.c=
+urr->pid
+    123361 =C2=B1 14%     -45.7%      66953 =C2=B1  4%  sched_debug.cpu#43.=
+sched_goidle
+     76544 =C2=B1  5%     +90.2%     145574 =C2=B1  0%  sched_debug.cpu#45.=
+nr_load_updates
+    624604 =C2=B1  7%     -46.8%     331988 =C2=B1 13%  sched_debug.cpu#44.=
+avg_idle
+    218936 =C2=B1 14%     -37.2%     137507 =C2=B1  2%  sched_debug.cpu#47.=
+nr_switches
+    519754 =C2=B1 12%     -38.6%     318976 =C2=B1  6%  sched_debug.cpu#33.=
+avg_idle
+      1048 =C2=B1  4%     +90.7%       1999 =C2=B1  4%  sched_debug.cpu#27.=
+curr->pid
+         9 =C2=B1 32%     +77.8%         16 =C2=B1 17%  sched_debug.cpu#50.=
+load
+         9 =C2=B1 32%     +75.0%         15 =C2=B1 15%  sched_debug.cfs_rq[=
+50]:/.load
+     80125 =C2=B1  3%     +80.9%     144977 =C2=B1  0%  sched_debug.cpu#54.=
+nr_load_updates
+     79744 =C2=B1  4%     +82.3%     145334 =C2=B1  1%  sched_debug.cpu#53.=
+nr_load_updates
+         6 =C2=B1 41%    +104.0%         12 =C2=B1 14%  sched_debug.cpu#34.=
+cpu_load[2]
+     80391 =C2=B1  2%     +79.7%     144447 =C2=B1  0%  sched_debug.cpu#52.=
+nr_load_updates
+     80078 =C2=B1  4%     +80.5%     144562 =C2=B1  0%  sched_debug.cpu#48.=
+nr_load_updates
+     80441 =C2=B1  5%     +79.8%     144606 =C2=B1  0%  sched_debug.cpu#51.=
+nr_load_updates
+     80274 =C2=B1  3%     +79.6%     144142 =C2=B1  0%  sched_debug.cpu#55.=
+nr_load_updates
+         8 =C2=B1 13%     +70.6%         14 =C2=B1 14%  sched_debug.cpu#5.c=
+pu_load[1]
+         8 =C2=B1 16%     +74.3%         15 =C2=B1 12%  sched_debug.cpu#0.c=
+pu_load[3]
+         8 =C2=B1 19%     +96.9%         15 =C2=B1 11%  sched_debug.cpu#0.c=
+pu_load[4]
+         9 =C2=B1 21%     +60.5%         15 =C2=B1  5%  sched_debug.cfs_rq[=
+52]:/.load
+    622405 =C2=B1  3%     -45.1%     341805 =C2=B1 14%  sched_debug.cpu#41.=
+avg_idle
+    247262 =C2=B1 14%     -43.8%     138983 =C2=B1  4%  sched_debug.cpu#43.=
+nr_switches
+    556949 =C2=B1 13%     -40.8%     329934 =C2=B1 13%  sched_debug.cpu#48.=
+avg_idle
+    220428 =C2=B1 13%     -29.8%     154692 =C2=B1 13%  sched_debug.cpu#47.=
+sched_count
+      1136 =C2=B1 12%     +67.9%       1907 =C2=B1  7%  sched_debug.cpu#26.=
+curr->pid
+       852 =C2=B1 18%    +117.6%       1855 =C2=B1  9%  sched_debug.cpu#8.c=
+urr->pid
+         6 =C2=B1 23%    +112.0%         13 =C2=B1  8%  sched_debug.cpu#9.c=
+pu_load[2]
+     80479 =C2=B1  3%     +79.5%     144456 =C2=B1  0%  sched_debug.cpu#50.=
+nr_load_updates
+ 5.655e+09 =C2=B1  3%     -58.4%  2.351e+09 =C2=B1  2%  cpuidle.C3-NHM.time
+      1846 =C2=B1 11%     +59.3%       2941 =C2=B1 16%  sched_debug.cpu#2.t=
+twu_local
+         7 =C2=B1 14%     +80.6%         14 =C2=B1 10%  sched_debug.cpu#7.c=
+pu_load[1]
+         8 =C2=B1 17%     +78.1%         14 =C2=B1  7%  sched_debug.cpu#1.c=
+pu_load[1]
+         7 =C2=B1  5%     +58.1%         12 =C2=B1 14%  sched_debug.cpu#16.=
+cpu_load[2]
+         6 =C2=B1 19%    +103.7%         13 =C2=B1  7%  sched_debug.cpu#62.=
+cpu_load[1]
+         7 =C2=B1 14%     +74.2%         13 =C2=B1  3%  sched_debug.cpu#2.c=
+pu_load[4]
+         7 =C2=B1 14%     +80.6%         14 =C2=B1 10%  sched_debug.cpu#7.c=
+pu_load[2]
+         6 =C2=B1 19%    +100.0%         13 =C2=B1  8%  sched_debug.cpu#5.c=
+pu_load[3]
+         7 =C2=B1 14%     +61.3%         12 =C2=B1 25%  sched_debug.cfs_rq[=
+15]:/.runnable_load_avg
+         6 =C2=B1 31%    +107.7%         13 =C2=B1 13%  sched_debug.cfs_rq[=
+63]:/.runnable_load_avg
+         7 =C2=B1 10%    +106.5%         16 =C2=B1 29%  sched_debug.cpu#8.c=
+pu_load[2]
+         8 =C2=B1  8%     +75.0%         14 =C2=B1  5%  sched_debug.cpu#3.c=
+pu_load[3]
+         7 =C2=B1 23%     +80.6%         14 =C2=B1  5%  sched_debug.cpu#17.=
+cpu_load[3]
+         8 =C2=B1 15%     +96.9%         15 =C2=B1 30%  sched_debug.cpu#8.c=
+pu_load[0]
+     83696 =C2=B1  0%     +74.1%     145676 =C2=B1  0%  sched_debug.cpu#34.=
+nr_load_updates
+     81108 =C2=B1  4%     +77.9%     144284 =C2=B1  0%  sched_debug.cpu#49.=
+nr_load_updates
+      1152 =C2=B1 10%     +93.6%       2230 =C2=B1  8%  sched_debug.cpu#32.=
+ttwu_local
+     83482 =C2=B1  4%     +74.1%     145347 =C2=B1  0%  sched_debug.cpu#38.=
+nr_load_updates
+    563098 =C2=B1 11%     -40.3%     336316 =C2=B1 11%  sched_debug.cpu#53.=
+avg_idle
+       473 =C2=B1 11%     +73.6%        821 =C2=B1  6%  sched_debug.cpu#62.=
+ttwu_local
+     84691 =C2=B1  1%     +72.7%     146295 =C2=B1  0%  sched_debug.cpu#35.=
+nr_load_updates
+        28 =C2=B1 37%     -43.8%         15 =C2=B1 16%  sched_debug.cfs_rq[=
+13]:/.load
+        27 =C2=B1 38%     -42.7%         15 =C2=B1 16%  sched_debug.cpu#13.=
+load
+     82882 =C2=B1  2%     +75.6%     145577 =C2=B1  0%  sched_debug.cpu#39.=
+nr_load_updates
+    498258 =C2=B1  7%     -32.4%     336924 =C2=B1 21%  sched_debug.cpu#34.=
+avg_idle
+     83560 =C2=B1  1%     +74.4%     145717 =C2=B1  0%  sched_debug.cpu#36.=
+nr_load_updates
+       469 =C2=B1 10%     +71.8%        807 =C2=B1  8%  sched_debug.cpu#57.=
+ttwu_local
+    247486 =C2=B1 14%     -41.8%     143921 =C2=B1  3%  sched_debug.cpu#43.=
+sched_count
+       155 =C2=B1 17%     -49.3%         78 =C2=B1 43%  sched_debug.cfs_rq[=
+49]:/.blocked_load_avg
+    527328 =C2=B1 14%     -32.7%     354686 =C2=B1 30%  sched_debug.cpu#50.=
+avg_idle
+       951 =C2=B1 18%     +96.5%       1868 =C2=B1 12%  sched_debug.cpu#21.=
+curr->pid
+       446 =C2=B1  8%     +88.5%        840 =C2=B1  8%  sched_debug.cpu#56.=
+ttwu_local
+         6 =C2=B1 17%     +84.6%         12 =C2=B1  5%  sched_debug.cpu#20.=
+cpu_load[3]
+     84258 =C2=B1  2%     +72.9%     145705 =C2=B1  0%  sched_debug.cpu#33.=
+nr_load_updates
+     84000 =C2=B1  3%     +73.6%     145816 =C2=B1  0%  sched_debug.cpu#37.=
+nr_load_updates
+         7 =C2=B1 48%    +103.3%         15 =C2=B1 15%  sched_debug.cfs_rq[=
+49]:/.load
+        10 =C2=B1 36%     +67.5%         16 =C2=B1  8%  sched_debug.cpu#41.=
+load
+    553971 =C2=B1 16%     -38.8%     338817 =C2=B1 26%  sched_debug.cpu#45.=
+avg_idle
+      1048 =C2=B1 22%     +89.7%       1988 =C2=B1 11%  sched_debug.cpu#10.=
+curr->pid
+     90262 =C2=B1  2%     +57.1%     141765 =C2=B1  1%  sched_debug.cpu#0.n=
+r_load_updates
+       883 =C2=B1  3%     -42.0%        512 =C2=B1  4%  cpuidle.POLL.usage
+   2381442 =C2=B1  0%     -45.9%    1288111 =C2=B1  0%  cpuidle.C3-NHM.usage
+    503911 =C2=B1 14%     -41.6%     294421 =C2=B1 20%  sched_debug.cpu#54.=
+avg_idle
+         8 =C2=B1 16%     +60.0%         14 =C2=B1  7%  sched_debug.cpu#3.c=
+pu_load[1]
+         8 =C2=B1  9%     +54.3%         13 =C2=B1 15%  sched_debug.cpu#19.=
+cpu_load[0]
+         8 =C2=B1 19%     +71.9%         13 =C2=B1  9%  sched_debug.cpu#17.=
+cpu_load[1]
+         9 =C2=B1 21%     +60.5%         15 =C2=B1  2%  sched_debug.cpu#52.=
+load
+       107 =C2=B1 34%     -36.0%         68 =C2=B1 17%  sched_debug.cfs_rq[=
+58]:/.tg_load_contrib
+    112841 =C2=B1 17%     -41.9%      65594 =C2=B1  1%  sched_debug.cpu#46.=
+ttwu_count
+    604642 =C2=B1  8%     -34.9%     393664 =C2=B1 28%  sched_debug.cpu#40.=
+avg_idle
+       154 =C2=B1 16%     -47.8%         80 =C2=B1 26%  sched_debug.cfs_rq[=
+52]:/.tg_load_contrib
+         7 =C2=B1 11%     +73.3%         13 =C2=B1  5%  sched_debug.cpu#18.=
+cpu_load[0]
+         7 =C2=B1 34%     +64.5%         12 =C2=B1  8%  sched_debug.cpu#63.=
+cpu_load[1]
+         6 =C2=B1 19%     +88.9%         12 =C2=B1  6%  sched_debug.cpu#12.=
+cpu_load[3]
+         7 =C2=B1  6%     +76.7%         13 =C2=B1  8%  sched_debug.cpu#6.c=
+pu_load[3]
+         5 =C2=B1 49%    +108.7%         12 =C2=B1 13%  sched_debug.cpu#45.=
+cpu_load[0]
+         7 =C2=B1 19%     +64.5%         12 =C2=B1  6%  sched_debug.cpu#4.c=
+pu_load[3]
+         7 =C2=B1 11%     +65.5%         12 =C2=B1 13%  sched_debug.cpu#21.=
+cpu_load[3]
+         7 =C2=B1 38%     +70.0%         12 =C2=B1  8%  sched_debug.cpu#63.=
+cpu_load[0]
+         7 =C2=B1 14%     +70.0%         12 =C2=B1  6%  sched_debug.cpu#12.=
+cpu_load[2]
+         7 =C2=B1 11%     +75.9%         12 =C2=B1  6%  sched_debug.cpu#12.=
+cpu_load[0]
+         7 =C2=B1 14%     +73.3%         13 =C2=B1  9%  sched_debug.cpu#10.=
+cpu_load[4]
+         6 =C2=B1 43%     +96.3%         13 =C2=B1 16%  sched_debug.cpu#34.=
+cpu_load[1]
+         7 =C2=B1 20%     +82.8%         13 =C2=B1  8%  sched_debug.cpu#9.c=
+pu_load[1]
+         7 =C2=B1 29%     +76.7%         13 =C2=B1 13%  sched_debug.cpu#9.c=
+pu_load[0]
+         6 =C2=B1 28%    +125.9%         15 =C2=B1 37%  sched_debug.cfs_rq[=
+8]:/.runnable_load_avg
+         8 =C2=B1  8%     +50.0%         12 =C2=B1 13%  sched_debug.cpu#21.=
+cpu_load[2]
+        99 =C2=B1 22%     -36.4%         63 =C2=B1 40%  sched_debug.cfs_rq[=
+16]:/.tg_load_contrib
+     92714 =C2=B1  2%     +65.3%     153258 =C2=B1  0%  sched_debug.cpu#56.=
+nr_load_updates
+    122255 =C2=B1 18%     -42.8%      69927 =C2=B1  3%  sched_debug.cpu#46.=
+sched_goidle
+      1038 =C2=B1 12%     +93.7%       2010 =C2=B1 21%  sched_debug.cpu#13.=
+curr->pid
+    637159 =C2=B1  6%     -42.8%     364152 =C2=B1 16%  sched_debug.cpu#47.=
+avg_idle
+         9 =C2=B1 20%     +75.0%         15 =C2=B1 13%  sched_debug.cfs_rq[=
+53]:/.load
+         8 =C2=B1 18%     +77.1%         15 =C2=B1 30%  sched_debug.cpu#5.c=
+pu_load[0]
+        10 =C2=B1  7%     +55.0%         15 =C2=B1  3%  sched_debug.cpu#24.=
+cpu_load[2]
+        10 =C2=B1 18%     +52.5%         15 =C2=B1  9%  sched_debug.cpu#0.c=
+pu_load[2]
+         9 =C2=B1 15%     +70.3%         15 =C2=B1 13%  sched_debug.cpu#53.=
+load
+         9 =C2=B1  8%     +64.1%         16 =C2=B1  4%  sched_debug.cpu#24.=
+cpu_load[3]
+     93245 =C2=B1  3%     +64.3%     153239 =C2=B1  0%  sched_debug.cpu#57.=
+nr_load_updates
+     93978 =C2=B1  3%     +63.3%     153433 =C2=B1  0%  sched_debug.cpu#58.=
+nr_load_updates
+        53 =C2=B1 20%     -48.1%         27 =C2=B1 39%  sched_debug.cfs_rq[=
+24]:/.tg_load_contrib
+     93568 =C2=B1  3%     +62.6%     152138 =C2=B1  0%  sched_debug.cpu#62.=
+nr_load_updates
+    505486 =C2=B1 18%     -33.6%     335452 =C2=B1 14%  sched_debug.cpu#35.=
+avg_idle
+     93233 =C2=B1  3%     +62.7%     151695 =C2=B1  0%  sched_debug.cpu#60.=
+nr_load_updates
+    245017 =C2=B1 18%     -40.9%     144877 =C2=B1  3%  sched_debug.cpu#46.=
+nr_switches
+     93586 =C2=B1  3%     +61.9%     151487 =C2=B1  0%  sched_debug.cpu#61.=
+nr_load_updates
+        11 =C2=B1 18%     +47.8%         17 =C2=B1 12%  sched_debug.cfs_rq[=
+58]:/.load
+        11 =C2=B1 27%     +54.5%         17 =C2=B1 12%  sched_debug.cpu#58.=
+load
+        27 =C2=B1 17%     -33.6%         18 =C2=B1  7%  sched_debug.cfs_rq[=
+31]:/.load
+     94340 =C2=B1  2%     +61.7%     152558 =C2=B1  0%  sched_debug.cpu#59.=
+nr_load_updates
+     94212 =C2=B1  3%     +60.6%     151306 =C2=B1  0%  sched_debug.cpu#63.=
+nr_load_updates
+       785 =C2=B1 14%     +29.1%       1014 =C2=B1 18%  sched_debug.cpu#30.=
+ttwu_local
+         8 =C2=B1 23%     +71.9%         13 =C2=B1  7%  sched_debug.cpu#17.=
+cpu_load[2]
+         8 =C2=B1 17%     +63.6%         13 =C2=B1  6%  sched_debug.cpu#2.c=
+pu_load[3]
+         8 =C2=B1 13%     +64.7%         14 =C2=B1  5%  sched_debug.cpu#3.c=
+pu_load[2]
+         9 =C2=B1  4%     +48.6%         13 =C2=B1  3%  sched_debug.cpu#27.=
+cpu_load[4]
+         8 =C2=B1 20%     +54.3%         13 =C2=B1  6%  sched_debug.cpu#2.c=
+pu_load[2]
+         7 =C2=B1 24%     +82.8%         13 =C2=B1 11%  sched_debug.cpu#17.=
+cpu_load[0]
+         8 =C2=B1 16%     +62.9%         14 =C2=B1  7%  sched_debug.cpu#1.c=
+pu_load[0]
+         8 =C2=B1 10%     +93.9%         16 =C2=B1 29%  sched_debug.cpu#8.c=
+pu_load[1]
+         8 =C2=B1 10%     +63.6%         13 =C2=B1 16%  sched_debug.cpu#15.=
+cpu_load[2]
+         9 =C2=B1 23%     +38.9%         12 =C2=B1 12%  sched_debug.cpu#16.=
+cpu_load[0]
+         8 =C2=B1  5%     +55.9%         13 =C2=B1  9%  sched_debug.cpu#10.=
+cpu_load[3]
+         8 =C2=B1 13%     +47.1%         12 =C2=B1 12%  sched_debug.cpu#16.=
+cpu_load[1]
+         6 =C2=B1 36%     +92.6%         13 =C2=B1 12%  sched_debug.cfs_rq[=
+6]:/.runnable_load_avg
+    502140 =C2=B1 12%     -35.6%     323535 =C2=B1 15%  sched_debug.cpu#51.=
+avg_idle
+    746062 =C2=B1  1%     -47.1%     394583 =C2=B1  0%  softirqs.SCHED
+      1078 =C2=B1  4%     +50.7%       1625 =C2=B1  9%  sched_debug.cpu#22.=
+ttwu_local
+       740 =C2=B1 12%     +35.0%        999 =C2=B1 11%  sched_debug.cpu#25.=
+ttwu_local
+    245937 =C2=B1 18%     -39.0%     150096 =C2=B1  4%  sched_debug.cpu#46.=
+sched_count
+        78 =C2=B1 43%     -53.5%         36 =C2=B1 44%  sched_debug.cfs_rq[=
+57]:/.tg_load_contrib
+        28 =C2=B1 19%     -33.9%         18 =C2=B1  8%  sched_debug.cpu#31.=
+load
+         7 =C2=B1 14%     +76.7%         13 =C2=B1 16%  sched_debug.cfs_rq[=
+22]:/.runnable_load_avg
+        10 =C2=B1 12%     +41.9%         15 =C2=B1  2%  sched_debug.cpu#24.=
+cpu_load[1]
+        22 =C2=B1  7%     -31.1%         15 =C2=B1  7%  sched_debug.cpu#21.=
+load
+         7 =C2=B1  6%     +56.7%         11 =C2=B1  9%  sched_debug.cfs_rq[=
+4]:/.runnable_load_avg
+         9 =C2=B1 37%     +52.6%         14 =C2=B1 10%  sched_debug.cpu#2.c=
+pu_load[0]
+         7 =C2=B1 14%     +56.7%         11 =C2=B1 18%  sched_debug.cfs_rq[=
+21]:/.runnable_load_avg
+         9 =C2=B1 33%     +78.9%         17 =C2=B1  9%  sched_debug.cpu#42.=
+load
+      3.40 =C2=B1  2%     -45.0%       1.87 =C2=B1  8%  turbostat.%c3
+        73 =C2=B1 29%     +66.6%        122 =C2=B1 21%  sched_debug.cpu#29.=
+nr_uninterruptible
+    611173 =C2=B1  6%     -49.8%     306820 =C2=B1 15%  sched_debug.cpu#43.=
+avg_idle
+   2095578 =C2=B1  1%     -31.4%    1438534 =C2=B1  0%  numa-meminfo.node3.=
+SUnreclaim
+    523718 =C2=B1  1%     -31.3%     359624 =C2=B1  0%  numa-vmstat.node3.n=
+r_slab_unreclaimable
+   2106490 =C2=B1  1%     -31.2%    1449462 =C2=B1  0%  numa-meminfo.node3.=
+Slab
+    886663 =C2=B1  1%     -31.2%     609723 =C2=B1  0%  numa-meminfo.node3.=
+PageTables
+    221608 =C2=B1  1%     -31.2%     152413 =C2=B1  0%  numa-vmstat.node3.n=
+r_page_table_pages
+        10 =C2=B1 23%     +52.5%         15 =C2=B1 12%  sched_debug.cpu#31.=
+cpu_load[4]
+         9 =C2=B1 32%     +70.3%         15 =C2=B1  6%  sched_debug.cfs_rq[=
+42]:/.load
+     86466 =C2=B1  2%     +69.6%     146665 =C2=B1  1%  sched_debug.cpu#32.=
+nr_load_updates
+      3404 =C2=B1 17%     +27.2%       4329 =C2=B1 12%  numa-meminfo.node2.=
+Mapped
+         8 =C2=B1 16%     +51.4%         13 =C2=B1 17%  sched_debug.cpu#13.=
+cpu_load[2]
+         8 =C2=B1 13%     +52.9%         13 =C2=B1  9%  sched_debug.cpu#6.c=
+pu_load[0]
+         7 =C2=B1 33%     +58.1%         12 =C2=B1 15%  sched_debug.cpu#21.=
+cpu_load[0]
+         8 =C2=B1 10%     +57.6%         13 =C2=B1  9%  sched_debug.cpu#6.c=
+pu_load[2]
+         8 =C2=B1 21%     +47.1%         12 =C2=B1  4%  sched_debug.cpu#14.=
+cpu_load[2]
+         9 =C2=B1 15%     +44.4%         13 =C2=B1  9%  sched_debug.cpu#4.c=
+pu_load[1]
+         8 =C2=B1 21%     +50.0%         12 =C2=B1  6%  sched_debug.cpu#4.c=
+pu_load[2]
+         8 =C2=B1 15%     +48.5%         12 =C2=B1 15%  sched_debug.cpu#21.=
+cpu_load[1]
+         8 =C2=B1 23%     +71.9%         13 =C2=B1 13%  sched_debug.cfs_rq[=
+23]:/.runnable_load_avg
+         8 =C2=B1 24%     +40.0%         12 =C2=B1 12%  sched_debug.cfs_rq[=
+10]:/.runnable_load_avg
+        27 =C2=B1 13%     -38.0%         16 =C2=B1 14%  sched_debug.cpu#28.=
+load
+    403384 =C2=B1  8%     -29.5%     284499 =C2=B1 10%  sched_debug.cpu#56.=
+avg_idle
+       852 =C2=B1 17%     +26.8%       1080 =C2=B1 12%  numa-vmstat.node2.n=
+r_mapped
+   3218544 =C2=B1  1%     -29.6%    2264649 =C2=B1  0%  numa-meminfo.node3.=
+MemUsed
+       703 =C2=B1 10%     +33.3%        938 =C2=B1 13%  sched_debug.cpu#31.=
+ttwu_local
+    488743 =C2=B1 12%     -37.1%     307311 =C2=B1  7%  sched_debug.cpu#39.=
+avg_idle
+         8 =C2=B1 37%     +88.6%         16 =C2=B1 10%  sched_debug.cfs_rq[=
+39]:/.load
+         9 =C2=B1 39%     +83.3%         16 =C2=B1 10%  sched_debug.cpu#39.=
+load
+         9 =C2=B1  5%     +39.5%         13 =C2=B1  9%  sched_debug.cpu#10.=
+cpu_load[2]
+         9 =C2=B1 14%     +48.6%         13 =C2=B1  3%  sched_debug.cfs_rq[=
+25]:/.runnable_load_avg
+        10 =C2=B1  7%     +35.0%         13 =C2=B1  8%  sched_debug.cpu#28.=
+cpu_load[3]
+         9 =C2=B1 15%     +43.2%         13 =C2=B1 18%  sched_debug.cpu#15.=
+cpu_load[1]
+        10 =C2=B1  7%     +35.0%         13 =C2=B1  3%  sched_debug.cpu#27.=
+cpu_load[3]
+         8 =C2=B1 14%     +51.4%         13 =C2=B1  9%  sched_debug.cpu#6.c=
+pu_load[1]
+         9 =C2=B1  8%     +45.9%         13 =C2=B1  8%  sched_debug.cpu#28.=
+cpu_load[4]
+    944754 =C2=B1  0%     -28.1%     678924 =C2=B1  1%  numa-numastat.node3=
+.local_node
+    948941 =C2=B1  0%     -28.0%     683119 =C2=B1  1%  numa-numastat.node3=
+.numa_hit
+    114901 =C2=B1  2%     +34.7%     154715 =C2=B1  1%  sched_debug.cpu#9.n=
+r_load_updates
+        25 =C2=B1  6%     -31.0%         17 =C2=B1 11%  sched_debug.cpu#30.=
+load
+      1460 =C2=B1 19%     +37.8%       2013 =C2=B1 10%  sched_debug.cpu#7.t=
+twu_local
+    460171 =C2=B1  5%     -30.5%     319618 =C2=B1 10%  sched_debug.cpu#32.=
+avg_idle
+        10 =C2=B1 14%     +36.6%         14 =C2=B1  8%  sched_debug.cpu#25.=
+cpu_load[4]
+         8 =C2=B1 31%     +65.7%         14 =C2=B1  7%  sched_debug.cfs_rq[=
+24]:/.runnable_load_avg
+    607228 =C2=B1  1%     -27.9%     437862 =C2=B1  3%  numa-vmstat.node3.n=
+uma_local
+    114663 =C2=B1  1%     +33.1%     152576 =C2=B1  1%  sched_debug.cpu#12.=
+nr_load_updates
+    513031 =C2=B1 16%     -32.2%     347796 =C2=B1 10%  sched_debug.cpu#37.=
+avg_idle
+      2004 =C2=B1 18%     +44.1%       2888 =C2=B1 11%  proc-vmstat.numa_pa=
+ges_migrated
+      2004 =C2=B1 18%     +44.1%       2888 =C2=B1 11%  proc-vmstat.pgmigra=
+te_success
+    644441 =C2=B1  1%     -26.3%     474922 =C2=B1  3%  numa-vmstat.node3.n=
+uma_hit
+         7 =C2=B1 27%     +66.7%         12 =C2=B1 12%  sched_debug.cfs_rq[=
+5]:/.runnable_load_avg
+        11 =C2=B1 15%     +38.6%         15 =C2=B1 12%  sched_debug.cpu#31.=
+cpu_load[3]
+        11 =C2=B1 11%     +35.6%         15 =C2=B1 12%  sched_debug.cpu#31.=
+cpu_load[2]
+         7 =C2=B1 22%     +63.3%         12 =C2=B1  3%  sched_debug.cpu#14.=
+cpu_load[3]
+    116422 =C2=B1  2%     +32.4%     154101 =C2=B1  1%  sched_debug.cpu#10.=
+nr_load_updates
+       129 =C2=B1  9%     -36.4%         82 =C2=B1 27%  sched_debug.cfs_rq[=
+44]:/.blocked_load_avg
+    514997 =C2=B1 15%     -26.5%     378518 =C2=B1  6%  sched_debug.cpu#55.=
+avg_idle
+    511213 =C2=B1 14%     -23.4%     391526 =C2=B1 21%  sched_debug.cpu#36.=
+avg_idle
+      1107 =C2=B1  6%     +41.2%       1564 =C2=B1 14%  sched_debug.cpu#23.=
+ttwu_local
+    421195 =C2=B1  6%     -28.2%     302545 =C2=B1 12%  sched_debug.cpu#57.=
+avg_idle
+    116187 =C2=B1  1%     +31.2%     152493 =C2=B1  0%  sched_debug.cpu#11.=
+nr_load_updates
+    117788 =C2=B1  1%     +29.6%     152672 =C2=B1  1%  sched_debug.cpu#8.n=
+r_load_updates
+         9 =C2=B1 20%     +44.4%         13 =C2=B1  5%  sched_debug.cpu#4.c=
+pu_load[0]
+        10 =C2=B1 10%     +29.3%         13 =C2=B1  3%  sched_debug.cpu#27.=
+cpu_load[2]
+        10 =C2=B1 12%     +35.0%         13 =C2=B1  6%  sched_debug.cpu#28.=
+cpu_load[2]
+        10 =C2=B1  7%     +35.0%         13 =C2=B1 19%  sched_debug.cpu#13.=
+cpu_load[1]
+     41426 =C2=B1  7%     +36.8%      56660 =C2=B1  5%  proc-vmstat.numa_hi=
+nt_faults_local
+    114514 =C2=B1  1%     +34.0%     153480 =C2=B1  1%  sched_debug.cpu#14.=
+nr_load_updates
+    113983 =C2=B1  1%     +34.3%     153134 =C2=B1  1%  sched_debug.cpu#13.=
+nr_load_updates
+    117248 =C2=B1  1%     +29.9%     152335 =C2=B1  0%  sched_debug.cpu#17.=
+nr_load_updates
+    117878 =C2=B1  1%     +29.0%     152058 =C2=B1  0%  sched_debug.cpu#19.=
+nr_load_updates
+    118372 =C2=B1  1%     +28.3%     151813 =C2=B1  0%  sched_debug.cpu#16.=
+nr_load_updates
+        10 =C2=B1 14%     +23.8%         13 =C2=B1  7%  sched_debug.cpu#10.=
+cpu_load[0]
+        10 =C2=B1  8%     +26.8%         13 =C2=B1  7%  sched_debug.cpu#10.=
+cpu_load[1]
+        11 =C2=B1 12%     +22.7%         13 =C2=B1  3%  sched_debug.cpu#27.=
+cpu_load[1]
+         9 =C2=B1 27%     +52.8%         13 =C2=B1  7%  sched_debug.cpu#2.c=
+pu_load[1]
+    117488 =C2=B1  1%     +28.1%     150510 =C2=B1  0%  sched_debug.cpu#22.=
+nr_load_updates
+        13 =C2=B1 24%     +38.9%         18 =C2=B1  4%  sched_debug.cfs_rq[=
+57]:/.load
+        13 =C2=B1 26%     +38.9%         18 =C2=B1  4%  sched_debug.cpu#57.=
+load
+    117379 =C2=B1  1%     +27.9%     150133 =C2=B1  0%  sched_debug.cpu#21.=
+nr_load_updates
+   1602483 =C2=B1  3%     -19.6%    1288298 =C2=B1  0%  numa-meminfo.node0.=
+SUnreclaim
+    238564 =C2=B1 15%     +29.9%     309806 =C2=B1  6%  sched_debug.cpu#27.=
+avg_idle
+    311032 =C2=B1  2%     -22.7%     240441 =C2=B1  5%  sched_debug.cpu#8.a=
+vg_idle
+    400457 =C2=B1  3%     -19.6%     322053 =C2=B1  0%  numa-vmstat.node0.n=
+r_slab_unreclaimable
+      1394 =C2=B1 12%     +28.9%       1797 =C2=B1  7%  sched_debug.cpu#6.t=
+twu_local
+    120507 =C2=B1  1%     +26.0%     151799 =C2=B1  1%  sched_debug.cpu#6.n=
+r_load_updates
+    348850 =C2=B1  6%     -24.7%     262520 =C2=B1 21%  sched_debug.cpu#6.a=
+vg_idle
+    675626 =C2=B1  3%     -19.6%     543470 =C2=B1  0%  numa-meminfo.node0.=
+PageTables
+    168838 =C2=B1  3%     -19.5%     135853 =C2=B1  0%  numa-vmstat.node0.n=
+r_page_table_pages
+    120183 =C2=B1  3%     +26.2%     151615 =C2=B1  0%  sched_debug.cpu#20.=
+nr_load_updates
+    120277 =C2=B1  1%     +25.9%     151380 =C2=B1  0%  sched_debug.cpu#7.n=
+r_load_updates
+  35935589 =C2=B1  0%     -20.4%   28606880 =C2=B1  0%  slabinfo.vm_area_st=
+ruct.num_objs
+    816717 =C2=B1  0%     -20.4%     650156 =C2=B1  0%  slabinfo.vm_area_st=
+ruct.active_slabs
+    816717 =C2=B1  0%     -20.4%     650156 =C2=B1  0%  slabinfo.vm_area_st=
+ruct.num_slabs
+    118159 =C2=B1  1%     +26.1%     148944 =C2=B1  0%  sched_debug.cpu#1.n=
+r_load_updates
+  35891627 =C2=B1  0%     -20.3%   28590239 =C2=B1  0%  slabinfo.vm_area_st=
+ruct.active_objs
+    120720 =C2=B1  1%     +24.9%     150796 =C2=B1  0%  sched_debug.cpu#4.n=
+r_load_updates
+    474282 =C2=B1  6%     -22.9%     365875 =C2=B1 19%  sched_debug.cpu#38.=
+avg_idle
+   1651580 =C2=B1  0%     -20.1%    1319009 =C2=B1  0%  proc-vmstat.nr_slab=
+_unreclaimable
+   6606619 =C2=B1  0%     -20.1%    5276360 =C2=B1  0%  meminfo.SUnreclaim
+    120367 =C2=B1  1%     +24.9%     150388 =C2=B1  0%  sched_debug.cpu#5.n=
+r_load_updates
+        11 =C2=B1 14%     +34.1%         14 =C2=B1 10%  sched_debug.cfs_rq[=
+31]:/.runnable_load_avg
+        20 =C2=B1  5%     -24.7%         15 =C2=B1  8%  sched_debug.cfs_rq[=
+21]:/.load
+        12 =C2=B1  8%     +16.3%         14 =C2=B1  5%  sched_debug.cpu#25.=
+cpu_load[0]
+    696867 =C2=B1  0%     -20.0%     557635 =C2=B1  0%  proc-vmstat.nr_page=
+_table_pages
+   6653178 =C2=B1  0%     -20.0%    5322573 =C2=B1  0%  meminfo.Slab
+    248196 =C2=B1  9%     +25.4%     311208 =C2=B1 12%  sched_debug.cpu#24.=
+avg_idle
+   2787604 =C2=B1  0%     -20.0%    2230917 =C2=B1  0%  meminfo.PageTables
+ 5.922e+08 =C2=B1  0%     -19.9%  4.747e+08 =C2=B1  0%  proc-vmstat.pgfault
+    118211 =C2=B1  2%     +28.0%     151343 =C2=B1  0%  sched_debug.cpu#18.=
+nr_load_updates
+    120807 =C2=B1  1%     +24.7%     150598 =C2=B1  0%  sched_debug.cpu#3.n=
+r_load_updates
+    128900 =C2=B1  1%     +24.2%     160040 =C2=B1  0%  sched_debug.cpu#25.=
+nr_load_updates
+    121256 =C2=B1  1%     +24.3%     150777 =C2=B1  1%  sched_debug.cpu#2.n=
+r_load_updates
+    114909 =C2=B1  3%     +34.0%     153977 =C2=B1  1%  sched_debug.cpu#15.=
+nr_load_updates
+    128637 =C2=B1  1%     +23.4%     158697 =C2=B1  0%  sched_debug.cpu#26.=
+nr_load_updates
+    424064 =C2=B1 10%     -22.4%     328912 =C2=B1 13%  sched_debug.cpu#63.=
+avg_idle
+   2518148 =C2=B1  2%     -17.3%    2082266 =C2=B1  0%  numa-meminfo.node0.=
+MemUsed
+    377009 =C2=B1 10%     -22.9%     290499 =C2=B1 10%  sched_debug.cpu#58.=
+avg_idle
+      1751 =C2=B1  9%     +27.3%       2230 =C2=B1  8%  sched_debug.cpu#3.t=
+twu_local
+    128243 =C2=B1  1%     +22.8%     157484 =C2=B1  0%  sched_debug.cpu#28.=
+nr_load_updates
+    128594 =C2=B1  1%     +22.3%     157264 =C2=B1  0%  sched_debug.cpu#29.=
+nr_load_updates
+    128398 =C2=B1  1%     +23.1%     158004 =C2=B1  0%  sched_debug.cpu#27.=
+nr_load_updates
+    129844 =C2=B1  1%     +24.5%     161710 =C2=B1  0%  sched_debug.cpu#24.=
+nr_load_updates
+    128589 =C2=B1  1%     +21.7%     156520 =C2=B1  0%  sched_debug.cpu#30.=
+nr_load_updates
+    127546 =C2=B1  1%     +22.9%     156748 =C2=B1  0%  sched_debug.cpu#31.=
+nr_load_updates
+       134 =C2=B1  7%     -29.4%         95 =C2=B1 24%  sched_debug.cfs_rq[=
+44]:/.tg_load_contrib
+     70304 =C2=B1  8%     +22.6%      86182 =C2=B1  3%  proc-vmstat.numa_hi=
+nt_faults
+        29 =C2=B1 39%     -37.0%         18 =C2=B1  2%  sched_debug.cfs_rq[=
+25]:/.load
+        28 =C2=B1 44%     -33.6%         18 =C2=B1  2%  sched_debug.cpu#25.=
+load
+    272672 =C2=B1  2%     -15.8%     229700 =C2=B1  1%  proc-vmstat.pgalloc=
+_dma32
+    363798 =C2=B1 12%     -21.2%     286629 =C2=B1 13%  sched_debug.cpu#59.=
+avg_idle
+   1613943 =C2=B1  3%     -19.5%    1298521 =C2=B1  0%  numa-meminfo.node0.=
+Slab
+    117340 =C2=B1  1%     +28.4%     150721 =C2=B1  0%  sched_debug.cpu#23.=
+nr_load_updates
+   4814407 =C2=B1  0%     -16.8%    4004118 =C2=B1  1%  proc-vmstat.pgfree
+   1552099 =C2=B1  0%     -16.8%    1291492 =C2=B1  0%  numa-meminfo.node2.=
+Slab
+    649904 =C2=B1  0%     -16.7%     541350 =C2=B1  0%  numa-meminfo.node2.=
+PageTables
+    162410 =C2=B1  0%     -16.7%     135321 =C2=B1  0%  numa-vmstat.node2.n=
+r_page_table_pages
+   1540899 =C2=B1  0%     -17.0%    1279172 =C2=B1  0%  numa-meminfo.node2.=
+SUnreclaim
+    385059 =C2=B1  0%     -17.0%     319769 =C2=B1  0%  numa-vmstat.node2.n=
+r_slab_unreclaimable
+   4548086 =C2=B1  0%     -16.4%    3804042 =C2=B1  1%  proc-vmstat.pgalloc=
+_normal
+   1255200 =C2=B1  0%     +19.0%    1493504 =C2=B1  0%  numa-vmstat.node3.n=
+r_free_pages
+   5019891 =C2=B1  0%     +19.0%    5973786 =C2=B1  0%  numa-meminfo.node3.=
+MemFree
+      5905 =C2=B1  2%     -14.0%       5081 =C2=B1  0%  sched_debug.cfs_rq[=
+2]:/.tg_load_avg
+      5916 =C2=B1  2%     -14.2%       5077 =C2=B1  0%  sched_debug.cfs_rq[=
+0]:/.tg_load_avg
+      5918 =C2=B1  2%     -14.0%       5087 =C2=B1  0%  sched_debug.cfs_rq[=
+1]:/.tg_load_avg
+   2423291 =C2=B1  1%     -15.3%    2052984 =C2=B1  0%  numa-meminfo.node2.=
+MemUsed
+        10 =C2=B1 12%     +26.8%         13 =C2=B1  9%  sched_debug.cpu#28.=
+cpu_load[1]
+      0.13 =C2=B1  3%     -15.7%       0.11 =C2=B1 10%  turbostat.%pc3
+   3420656 =C2=B1  0%     -15.1%    2903309 =C2=B1  2%  proc-vmstat.numa_lo=
+cal
+   3433217 =C2=B1  0%     -15.1%    2915876 =C2=B1  2%  proc-vmstat.numa_hit
+    838458 =C2=B1  1%     -13.0%     729220 =C2=B1  2%  numa-numastat.node0=
+.local_node
+    736674 =C2=B1  3%     +18.6%     874029 =C2=B1  1%  softirqs.RCU
+    840554 =C2=B1  1%     -12.9%     732351 =C2=B1  2%  numa-numastat.node0=
+.numa_hit
+      5802 =C2=B1  3%     -12.5%       5078 =C2=B1  0%  sched_debug.cfs_rq[=
+3]:/.tg_load_avg
+      5730 =C2=B1  3%     -11.3%       5083 =C2=B1  0%  sched_debug.cfs_rq[=
+4]:/.tg_load_avg
+    533590 =C2=B1  2%     -11.2%     473739 =C2=B1  1%  numa-vmstat.node0.n=
+uma_local
+    237268 =C2=B1  7%     +27.6%     302850 =C2=B1 13%  sched_debug.cpu#28.=
+avg_idle
+    565252 =C2=B1  2%     -10.4%     506412 =C2=B1  1%  numa-vmstat.node0.n=
+uma_hit
+      5709 =C2=B1  3%     -11.1%       5077 =C2=B1  0%  sched_debug.cfs_rq[=
+5]:/.tg_load_avg
+    111048 =C2=B1  5%     -13.4%      96201 =C2=B1 10%  meminfo.DirectMap4k
+      5698 =C2=B1  3%     -10.8%       5084 =C2=B1  0%  sched_debug.cfs_rq[=
+6]:/.tg_load_avg
+    270517 =C2=B1  8%     +11.1%     300584 =C2=B1  4%  sched_debug.cpu#29.=
+avg_idle
+        12 =C2=B1 19%     +32.7%         16 =C2=B1  6%  sched_debug.cpu#38.=
+load
+        12 =C2=B1 19%     +32.7%         16 =C2=B1  6%  sched_debug.cfs_rq[=
+38]:/.load
+      5703 =C2=B1  3%     -11.1%       5071 =C2=B1  0%  sched_debug.cfs_rq[=
+7]:/.tg_load_avg
+      5701 =C2=B1  3%     -10.9%       5081 =C2=B1  0%  sched_debug.cfs_rq[=
+8]:/.tg_load_avg
+    537830 =C2=B1  1%     -12.3%     471678 =C2=B1  1%  numa-vmstat.node2.n=
+uma_local
+      5708 =C2=B1  2%     -10.6%       5102 =C2=B1  0%  sched_debug.cfs_rq[=
+9]:/.tg_load_avg
+    824960 =C2=B1  2%     -10.8%     735556 =C2=B1  1%  numa-numastat.node2=
+.local_node
+    829145 =C2=B1  2%     -10.9%     738701 =C2=B1  1%  numa-numastat.node2=
+.numa_hit
+      5670 =C2=B1  2%     -10.0%       5101 =C2=B1  0%  sched_debug.cfs_rq[=
+10]:/.tg_load_avg
+      5663 =C2=B1  2%      -9.9%       5100 =C2=B1  0%  sched_debug.cfs_rq[=
+11]:/.tg_load_avg
+    574968 =C2=B1  0%     -11.6%     508060 =C2=B1  1%  numa-vmstat.node2.n=
+uma_hit
+      5660 =C2=B1  2%      -9.7%       5109 =C2=B1  0%  sched_debug.cfs_rq[=
+12]:/.tg_load_avg
+      5580 =C2=B1  1%      -9.5%       5050 =C2=B1  1%  sched_debug.cfs_rq[=
+34]:/.tg_load_avg
+      5578 =C2=B1  1%      -9.5%       5049 =C2=B1  1%  sched_debug.cfs_rq[=
+33]:/.tg_load_avg
+      5655 =C2=B1  1%     -10.1%       5085 =C2=B1  1%  sched_debug.cfs_rq[=
+14]:/.tg_load_avg
+      5651 =C2=B1  1%      -9.9%       5092 =C2=B1  0%  sched_debug.cfs_rq[=
+15]:/.tg_load_avg
+      5656 =C2=B1  2%      -9.6%       5111 =C2=B1  0%  sched_debug.cfs_rq[=
+13]:/.tg_load_avg
+      5615 =C2=B1  1%      -9.4%       5086 =C2=B1  1%  sched_debug.cfs_rq[=
+19]:/.tg_load_avg
+      5631 =C2=B1  1%      -9.7%       5085 =C2=B1  1%  sched_debug.cfs_rq[=
+20]:/.tg_load_avg
+      9735 =C2=B1  6%     +11.7%      10878 =C2=B1  3%  slabinfo.anon_vma.a=
+ctive_objs
+      9735 =C2=B1  6%     +11.7%      10878 =C2=B1  3%  slabinfo.anon_vma.n=
+um_objs
+      5635 =C2=B1  1%      -9.6%       5094 =C2=B1  1%  sched_debug.cfs_rq[=
+21]:/.tg_load_avg
+      5645 =C2=B1  1%      -9.8%       5090 =C2=B1  0%  sched_debug.cfs_rq[=
+16]:/.tg_load_avg
+      5400 =C2=B1  1%      -8.4%       4949 =C2=B1  2%  sched_debug.cfs_rq[=
+63]:/.tg_load_avg
+      5388 =C2=B1  2%      -8.2%       4948 =C2=B1  2%  sched_debug.cfs_rq[=
+62]:/.tg_load_avg
+      5569 =C2=B1  1%      -9.0%       5070 =C2=B1  1%  sched_debug.cfs_rq[=
+35]:/.tg_load_avg
+      5566 =C2=B1  1%      -9.1%       5060 =C2=B1  1%  sched_debug.cfs_rq[=
+40]:/.tg_load_avg
+      5392 =C2=B1  2%      -8.1%       4955 =C2=B1  2%  sched_debug.cfs_rq[=
+61]:/.tg_load_avg
+      5623 =C2=B1  1%      -9.5%       5087 =C2=B1  1%  sched_debug.cfs_rq[=
+18]:/.tg_load_avg
+      5562 =C2=B1  1%      -9.0%       5064 =C2=B1  1%  sched_debug.cfs_rq[=
+37]:/.tg_load_avg
+      5395 =C2=B1  2%      -7.8%       4974 =C2=B1  2%  sched_debug.cfs_rq[=
+60]:/.tg_load_avg
+      5638 =C2=B1  1%      -9.9%       5081 =C2=B1  0%  sched_debug.cfs_rq[=
+17]:/.tg_load_avg
+      5565 =C2=B1  1%      -8.9%       5070 =C2=B1  1%  sched_debug.cfs_rq[=
+36]:/.tg_load_avg
+      5502 =C2=B1  2%      -9.4%       4985 =C2=B1  2%  sched_debug.cfs_rq[=
+47]:/.tg_load_avg
+      5581 =C2=B1  1%      -9.6%       5042 =C2=B1  1%  sched_debug.cfs_rq[=
+43]:/.tg_load_avg
+      5526 =C2=B1  3%      -9.6%       4995 =C2=B1  2%  sched_debug.cfs_rq[=
+46]:/.tg_load_avg
+      5558 =C2=B1  1%      -8.9%       5063 =C2=B1  1%  sched_debug.cfs_rq[=
+39]:/.tg_load_avg
+      5581 =C2=B1  1%      -8.8%       5091 =C2=B1  1%  sched_debug.cfs_rq[=
+32]:/.tg_load_avg
+      5622 =C2=B1  1%      -9.3%       5102 =C2=B1  1%  sched_debug.cfs_rq[=
+27]:/.tg_load_avg
+      5559 =C2=B1  1%      -8.8%       5070 =C2=B1  1%  sched_debug.cfs_rq[=
+38]:/.tg_load_avg
+      5567 =C2=B1  1%      -9.7%       5028 =C2=B1  1%  sched_debug.cfs_rq[=
+45]:/.tg_load_avg
+      5588 =C2=B1  1%      -9.9%       5036 =C2=B1  1%  sched_debug.cfs_rq[=
+44]:/.tg_load_avg
+      5603 =C2=B1  1%      -8.9%       5102 =C2=B1  1%  sched_debug.cfs_rq[=
+28]:/.tg_load_avg
+     40992 =C2=B1  8%    +525.7%     256479 =C2=B1  1%  time.involuntary_co=
+ntext_switches
+  37575247 =C2=B1  0%     -81.1%    7104211 =C2=B1  1%  time.voluntary_cont=
+ext_switches
+    206833 =C2=B1  0%     -78.8%      43766 =C2=B1  0%  vmstat.system.cs
+      5002 =C2=B1  4%    +209.3%      15474 =C2=B1  0%  time.system_time
+      1649 =C2=B1  3%    +185.0%       4701 =C2=B1  0%  time.percent_of_cpu=
+_this_job_got
+     27.13 =C2=B1  3%    +170.9%      73.49 =C2=B1  0%  turbostat.%c0
+     24116 =C2=B1  5%    +133.1%      56210 =C2=B1  9%  vmstat.system.in
+ 5.909e+08 =C2=B1  0%     -19.9%  4.734e+08 =C2=B1  0%  time.minor_page_fau=
+lts
+       369 =C2=B1  0%      -4.6%        352 =C2=B1  0%  time.elapsed_time
+
+lkp-nex05: Nehalem-EX
+Memory: 192G
+
+lkp-nex06: Nehalem-EX
+Memory: 64G
+
+
+
+
+                                 time.elapsed_time
+
+  375 ++-------------------------------------------------------------------=
+-+
+      |                 *..      .*...  .*...  .*.                         =
+ |
+      |               ..   *...*.     *.     *.   ..                       =
+ |
+  370 ++             .                                .*...*..      .*...*.=
+.*
+      *...*..*...*..*                               *.        *...*.       =
+ |
+      |                                                                    =
+ |
+  365 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  360 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  355 O+  O         O                                                      =
+ |
+      |      O                 O  O             O                 O        =
+ |
+      |          O      O  O          O  O          O  O   O  O      O   O =
+ O
+  350 ++-------------------------------------O-----------------------------=
+-+
+
+
+                                time.minor_page_faults
+
+  6.2e+08 ++---------------------------------------------------------------=
+-+
+          |                  .*..                                          =
+ |
+    6e+08 *+.*...*..*..  ..*.    *..*...*..*..*...*..                  ..*.=
+.*
+  5.8e+08 ++           *.                            *..*...*..*..*..*.    =
+ |
+          |                                                                =
+ |
+  5.6e+08 ++                                                               =
+ |
+          |                                                                =
+ |
+  5.4e+08 ++                                                               =
+ |
+          |                                                                =
+ |
+  5.2e+08 ++                                                               =
+ |
+    5e+08 O+ O   O  O  O                                                   =
+ |
+          |                                                                =
+ |
+  4.8e+08 ++                                                               =
+ |
+          |                O  O  O  O   O  O  O   O  O  O   O  O  O  O   O =
+ O
+  4.6e+08 ++---------------------------------------------------------------=
+-+
+
+
+                               vm-scalability.throughput
+
+  9.5e+06 ++---------------------------------------------------------------=
+-+
+          |                                                                =
+ |
+    9e+06 ++             ..*..*..               ..*..                      =
+ |
+          *..*...*..*..*.        *..*...*..*..*.     *..*...*..*..*..*...*.=
+.*
+          |                                                                =
+ |
+  8.5e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    8e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  7.5e+06 O+ O   O  O  O                                                   =
+ |
+          |                                                                =
+ |
+          |                   O  O      O     O   O  O  O   O  O  O  O   O =
+ O
+    7e+06 ++               O        O      O                               =
+ |
+          |                                                                =
+ |
+  6.5e+06 ++---------------------------------------------------------------=
+-+
+
+
+                                cpuidle.C1E-NHM.time
+
+  8e+07 ++----------------------------------------------*--*---------*-----=
+-+
+        |                                           *.        *...*.     *.=
+.|
+  7e+07 ++       .*...                   .*..     ..                       =
+ *
+  6e+07 *+.*...*.     *..*..   .*..*...*.      ..*                         =
+ |
+        |                    ..              *.                            =
+ |
+  5e+07 ++                  *                                              =
+ |
+        |                                                                  =
+ |
+  4e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  3e+07 ++               O  O   O  O   O  O      O                   O     =
+ |
+  2e+07 ++                                   O      O   O  O  O   O      O =
+ O
+        |                                                                  =
+ |
+  1e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 O+-O---O--O---O----------------------------------------------------=
+-+
+
+
+                                cpuidle.C1E-NHM.usage
+
+  300000 ++---------------------------------------------*--*---*-----*-----=
+-+
+         |                                           *.           *.     *.=
+.*
+  250000 ++                                        ..                      =
+ |
+         *..*...*..*..*...*..   *...*..*...*..*.. .                        =
+ |
+         |                    ..                 *                         =
+ |
+  200000 ++                  *                                             =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+   50000 ++               O  O  O   O  O   O  O  O   O  O  O   O  O  O   O =
+ O
+         O  O   O  O  O                                                    =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                           proc-vmstat.nr_slab_unreclaimable
+
+   1.7e+06 ++------------------*------------------*------------------------=
+-+
+           *..*...*..*..  .*.     *..*..*...*..*.                       .*.=
+.*
+  1.65e+06 ++           *.                           *...*..*..*..*...*.   =
+ |
+   1.6e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+  1.55e+06 ++                                                              =
+ |
+   1.5e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+  1.45e+06 ++                                                              =
+ |
+   1.4e+06 O+ O   O  O  O                                                  =
+ |
+           |                                                               =
+ |
+  1.35e+06 ++                                                              =
+ |
+   1.3e+06 ++              O   O  O  O  O   O  O  O  O   O  O  O  O   O  O =
+ O
+           |                                                               =
+ |
+  1.25e+06 ++--------------------------------------------------------------=
+-+
+
+
+                           proc-vmstat.nr_page_table_pages
+
+  720000 ++------------------*---------------------------------------------=
+-+
+         *..            ..*.    *...*..*...*..*..*...                      =
+ |
+  700000 ++ *...*..*..*.                             *..*..*...*..*..*...*.=
+.*
+  680000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  660000 ++                                                                =
+ |
+  640000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  620000 ++                                                                =
+ |
+  600000 ++                                                                =
+ |
+         O  O   O  O  O                                                    =
+ |
+  580000 ++                                                                =
+ |
+  560000 ++                                                              O =
+ |
+         |                O  O  O   O  O   O  O  O   O  O  O   O  O  O     =
+ O
+  540000 ++----------------------------------------------------------------=
+-+
+
+
+                                 proc-vmstat.numa_hit
+
+  3.6e+06 ++---------------------------------------------------------------=
+-+
+          |                   *..                                          =
+ |
+  3.5e+06 ++                ..   *..  ..*..*..*...*..                  ..*.=
+.|
+          *..*...*..*..*...*        *.                 .*...*..*..*..*.    =
+ *
+  3.4e+06 ++                                         *.                    =
+ |
+  3.3e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  3.2e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  3.1e+06 ++                                                               =
+ |
+    3e+06 O+ O   O  O                                                      =
+ |
+          |            O      O     O         O      O      O            O =
+ |
+  2.9e+06 ++               O     O      O  O      O     O      O  O        =
+ O
+          |                                                                =
+ |
+  2.8e+06 ++---------------------------------------------------------O-----=
+-+
+
+
+                                proc-vmstat.numa_local
+
+  3.6e+06 ++---------------------------------------------------------------=
+-+
+          |                                                                =
+ |
+  3.5e+06 ++                 .*..     ..*..  .*...*..                  ..*.=
+.|
+          *..*...*..*..*...*.    *..*.     *.          .*...*..*..*..*.    =
+ |
+  3.4e+06 ++                                         *.                    =
+ *
+  3.3e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  3.2e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  3.1e+06 ++                                                               =
+ |
+    3e+06 ++     O  O                                                      =
+ |
+          O  O         O      O     O         O      O      O            O =
+ |
+  2.9e+06 ++               O     O         O      O     O      O  O        =
+ O
+          |                             O                                  =
+ |
+  2.8e+06 ++---------------------------------------------------------O-----=
+-+
+
+
+                              proc-vmstat.pgalloc_normal
+
+  4.7e+06 ++---------------------------------------------------------------=
+-+
+  4.6e+06 ++                 .*..     ..*..*..*...*                    ..*.=
+.|
+          *..*...*..*..*...*.      .*.             +    *...*..*..*..*.    =
+ *
+  4.5e+06 ++                     *.                 + ..                   =
+ |
+  4.4e+06 ++                                         *                     =
+ |
+          |                                                                =
+ |
+  4.3e+06 ++                                                               =
+ |
+  4.2e+06 ++                                                               =
+ |
+  4.1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    4e+06 ++ O   O  O                                                      =
+ |
+  3.9e+06 O+           O                                                 O =
+ |
+          |                   O     O         O      O      O     O        =
+ |
+  3.8e+06 ++               O     O      O  O      O     O      O           =
+ O
+  3.7e+06 ++---------------------------------------------------------O-----=
+-+
+
+
+                                  proc-vmstat.pgfree
+
+    5e+06 ++---------------------------------------------------------------=
+-+
+          |                  .*..     ..*..  .*...*..                      =
+ |
+  4.8e+06 ++.*...  .*..*...*.    *..*.     *.          .*...*..*..*..*...*.=
+.|
+          *.     *.                                  *.                    =
+ *
+          |                                                                =
+ |
+  4.6e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  4.4e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  4.2e+06 O+ O   O  O                                                      =
+ |
+          |            O                                                   =
+ |
+          |                   O  O      O     O   O  O  O   O  O         O =
+ O
+    4e+06 ++               O        O      O                      O  O     =
+ |
+          |                                                                =
+ |
+  3.8e+06 ++---------------------------------------------------------------=
+-+
+
+
+                                  proc-vmstat.pgfault
+
+  6.2e+08 ++---------------------------------------------------------------=
+-+
+          |                  .*..               ..*..                      =
+ |
+    6e+08 *+.*...*..*..*...*.    *..*...*..*..*.              .*..*..  ..*.=
+.*
+  5.8e+08 ++                                         *..*...*.       *.    =
+ |
+          |                                                                =
+ |
+  5.6e+08 ++                                                               =
+ |
+          |                                                                =
+ |
+  5.4e+08 ++                                                               =
+ |
+          |                                                                =
+ |
+  5.2e+08 ++                                                               =
+ |
+    5e+08 O+ O   O  O  O                                                   =
+ |
+          |                                                                =
+ |
+  4.8e+08 ++                                                             O =
+ |
+          |                O  O  O  O   O  O  O   O  O  O   O  O  O  O     =
+ O
+  4.6e+08 ++---------------------------------------------------------------=
+-+
+
+
+                                     meminfo.Slab
+
+    7e+06 ++---------------------------------------------------------------=
+-+
+          |                  .*..               ..*..                      =
+ |
+  6.8e+06 *+.  ..*..     ..*.    *..*...*..*..*.                           =
+ |
+  6.6e+06 ++ *.     *..*.                            *..*...*..*..*..*...*.=
+.*
+          |                                                                =
+ |
+  6.4e+06 ++                                                               =
+ |
+  6.2e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    6e+06 ++                                                               =
+ |
+  5.8e+06 ++                                                               =
+ |
+          O  O   O     O                                                   =
+ |
+  5.6e+06 ++        O                                                      =
+ |
+  5.4e+06 ++                                                               =
+ |
+          |                   O  O  O   O     O   O  O  O   O  O  O  O   O =
+ O
+  5.2e+06 ++---------------O---------------O-------------------------------=
+-+
+
+
+                                  meminfo.SUnreclaim
+
+  6.8e+06 ++------------------*-------------------*------------------------=
+-+
+          *..*...*..*..  ..*.    *..*...*..*..*.                       ..*.=
+.*
+  6.6e+06 ++           *.                            *..*...*..*..*..*.    =
+ |
+  6.4e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  6.2e+06 ++                                                               =
+ |
+    6e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  5.8e+06 ++                                                               =
+ |
+  5.6e+06 O+ O   O  O  O                                                   =
+ |
+          |                                                                =
+ |
+  5.4e+06 ++                                                               =
+ |
+  5.2e+06 ++               O  O  O  O   O  O  O   O  O  O   O  O  O  O   O =
+ O
+          |                                                                =
+ |
+    5e+06 ++---------------------------------------------------------------=
+-+
+
+
+                                  meminfo.PageTables
+
+  2.9e+06 ++---------------------------------------------------------------=
+-+
+          |              ..*..*..*..*...*..*..*...*..                      =
+ |
+  2.8e+06 *+.*...*..*..*.                            *..*...*..*..*..*...*.=
+.*
+          |                                                                =
+ |
+  2.7e+06 ++                                                               =
+ |
+  2.6e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  2.5e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  2.4e+06 O+ O   O     O                                                   =
+ |
+  2.3e+06 ++        O                                                      =
+ |
+          |                                                                =
+ |
+  2.2e+06 ++               O  O  O  O   O  O  O   O  O  O   O  O  O  O   O =
+ O
+          |                                                                =
+ |
+  2.1e+06 ++---------------------------------------------------------------=
+-+
+
+
+                          slabinfo.vm_area_struct.active_objs
+
+  3.7e+07 ++------------------*-------------------*------------------------=
+-+
+          *..*...  .*..  ..*.    *..*...*..*..*.                           =
+ |
+  3.6e+07 ++     *.    *.                            *..*...*..*..*..*...*.=
+.*
+  3.5e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+  3.4e+07 ++                                                               =
+ |
+  3.3e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+  3.2e+07 ++                                                               =
+ |
+  3.1e+07 ++                                                               =
+ |
+          O  O   O  O  O                                                   =
+ |
+    3e+07 ++                                                               =
+ |
+  2.9e+07 ++                                                               =
+ |
+          |                   O  O  O   O     O   O  O  O   O  O  O  O   O =
+ O
+  2.8e+07 ++---------------O---------------O-------------------------------=
+-+
+
+
+                           slabinfo.vm_area_struct.num_objs
+
+  3.7e+07 ++------------------*-------------------*------------------------=
+-+
+          *..*...*..*..  ..*.    *..*...*..*..*.                       ..*.=
+.|
+  3.6e+07 ++           *.                            *..*...*..*..*..*.    =
+ *
+  3.5e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+  3.4e+07 ++                                                               =
+ |
+  3.3e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+  3.2e+07 ++                                                               =
+ |
+  3.1e+07 ++                                                               =
+ |
+          O  O   O  O  O                                                   =
+ |
+    3e+07 ++                                                               =
+ |
+  2.9e+07 ++                                                               =
+ |
+          |                   O  O  O   O  O  O   O  O  O   O  O  O  O   O =
+ O
+  2.8e+07 ++---------------O-----------------------------------------------=
+-+
+
+
+                        slabinfo.vm_area_struct.active_slabs
+
+  840000 ++------------------*-------------------*-------------------------=
+-+
+  820000 *+.*...*..*..  ..*.    *...*..*...*..*.    .                  ..*.=
+.*
+         |            *.                             *..*..*...*..*..*.    =
+ |
+  800000 ++                                                                =
+ |
+  780000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  760000 ++                                                                =
+ |
+  740000 ++                                                                =
+ |
+  720000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  700000 O+ O   O  O  O                                                    =
+ |
+  680000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  660000 ++                     O      O      O  O   O  O  O   O  O      O =
+ O
+  640000 ++---------------O--O------O------O-------------------------O-----=
+-+
+
+
+                          slabinfo.vm_area_struct.num_slabs
+
+  840000 ++------------------*-------------------*-------------------------=
+-+
+  820000 *+.*...*..*..  ..*.    *...*..*...*..*.    .                  ..*.=
+.*
+         |            *.                             *..*..*...*..*..*.    =
+ |
+  800000 ++                                                                =
+ |
+  780000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  760000 ++                                                                =
+ |
+  740000 ++                                                                =
+ |
+  720000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  700000 O+ O   O  O  O                                                    =
+ |
+  680000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  660000 ++                     O      O      O  O   O  O  O   O  O      O =
+ O
+  640000 ++---------------O--O------O------O-------------------------O-----=
+-+
+
+
+                           sched_debug.cpu#39.nr_switches
+
+  600000 ++---------------------*------------------------------------------=
+-+
+         |                      ::                                         =
+ |
+  500000 ++                    :  :                  *..                   =
+ |
+         |                     :  :                 +   *..                =
+ |
+         |         *..        :    :               +       *..             =
+ |
+  400000 *+.      :           :     *..           +           .  .*..      =
+.*
+         |  *..   :   *...*..:                *..*             *.    *...*.=
+ |
+  300000 ++    . :           *         *... ..                             =
+ |
+         |      *                          *                               =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         O  O         O   O  O  O   O  O   O  O  O   O  O  O   O  O  O   O =
+ O
+  100000 ++     O                                                          =
+ |
+         |         O                                                       =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                           sched_debug.cpu#39.sched_count
+
+  600000 ++---------------------*------------------------------------------=
+-+
+         |                      ::                   *..                   =
+ |
+  500000 ++                    :  :                 :                      =
+ |
+         |                     :  :                :    *..                =
+ |
+         |         *..        :    :               :       *..             =
+ |
+  400000 *+.      :           :     *..           :           .  .*..      =
+.*
+         |  *..   :   *...*..:                *..*             *.    *...*.=
+ |
+  300000 ++    . :           *         *... ..                             =
+ |
+         |      *                          *                               =
+ |
+  200000 ++                                                                =
+ |
+         |  O                                                              =
+ |
+         O            O   O  O  O   O  O   O  O  O   O  O  O   O  O  O   O =
+ O
+  100000 ++     O  O                                                       =
+ |
+         |                                                                 =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                           sched_debug.cpu#39.sched_goidle
+
+  300000 ++---------------------*------------------------------------------=
+-+
+         |                      ::                                         =
+ |
+  250000 ++                    :  :                  *..                   =
+ |
+         |                     :  :                 +   *..                =
+ |
+         |         *..        :    :               +       *..             =
+ |
+  200000 *+.      :           :     *..           +           .  .*..      =
+.*
+         |  *..   :   *...*..:                *..*             *.    *...*.=
+ |
+  150000 ++    . :           *         *... ..                             =
+ |
+         |      *                          *                               =
+ |
+  100000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         O  O         O   O  O  O   O  O   O  O  O   O  O  O   O  O  O   O =
+ O
+   50000 ++     O                                                          =
+ |
+         |         O                                                       =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                            sched_debug.cpu#39.ttwu_count
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                      *                                          =
+ |
+  300000 ++                     ::                                         =
+ |
+         |                     :  :                  *..                   =
+ |
+  250000 ++                    :  :                 +                      =
+ |
+         |         *..        :    :               +    *..*..             =
+ |
+  200000 *+.      +           :     *..           +           .  .*..*...  =
+ |
+         |  *... +    *...*..:               .*..*             *.        *.=
+.*
+  150000 ++     *            *         *...*.                              =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         O  O         O   O  O  O   O  O      O  O      O      O  O  O   O =
+ O
+   50000 ++     O                          O         O     O               =
+ |
+         |         O                                                       =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                           sched_debug.cpu#53.nr_switches
+
+  400000 ++----------------------------------------------------------------=
+-+
+         |                             *.                      *..*..*     =
+ |
+  350000 ++             ..*..*        :  ..   *..   .*..*     :       +    =
+ |
+         *           .*.      :       :     ..    ..     :   :         +   =
+ |
+  300000 ++    .*..*.          :     :     *     *        :  :          +  =
+.*
+         | + ..                :  ..*                     : :            *.=
+ |
+  250000 ++ *                   *.                         *               =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                     O   O                                      =
+ |
+         |                O  O         O      O  O   O  O  O   O  O  O   O =
+ O
+  100000 ++ O   O  O  O                    O                               =
+ |
+         O                                                                 =
+ |
+   50000 ++----------------------------------------------------------------=
+-+
+
+
+                           sched_debug.cpu#53.sched_count
+
+  400000 ++----------------------------------------------------------------=
+-+
+         |                             *.                      *..*..*     =
+ |
+  350000 ++             ..*..*        +  ..   *..   .*..*     :       +    =
+ |
+         *      *..  .*.      :      +      ..    ..     :   :         +   =
+ |
+  300000 ++   ..   *.          :   .*      *     *        :  :          +  =
+.*
+         | + .                 : ..                       : :            *.=
+ |
+  250000 ++ *                   *                          *               =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                     O   O                O     O      O        =
+ |
+         |                O  O         O      O  O      O      O     O   O =
+ O
+  100000 ++ O   O  O  O                    O                               =
+ |
+         O                                                                 =
+ |
+   50000 ++----------------------------------------------------------------=
+-+
+
+
+                           sched_debug.cpu#53.sched_goidle
+
+  200000 ++----------------------------------------------------------------=
+-+
+         |                             *.                      *..*..*.    =
+ |
+  180000 ++             ..*..*        +  ..   *..   .*..*     :        ..  =
+ |
+  160000 *+          .*.      :      +      ..    ..     :   :             =
+ |
+         |+    .*..*.          :   .*      *     *        :  :           *.=
+.*
+  140000 +++ ..                : ..                       : :              =
+ |
+  120000 ++ *                   *                          *               =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+   80000 ++                                                                =
+ |
+         |                      O   O         O                            =
+ |
+   60000 ++               O  O         O   O     O   O  O  O   O  O  O   O =
+ O
+   40000 ++ O   O  O  O                                                    =
+ |
+         O                                                                 =
+ |
+   20000 ++----------------------------------------------------------------=
+-+
+
+
+                            sched_debug.cpu#53.ttwu_count
+
+  200000 ++----------------------------*-----------------------------------=
+-+
+         |                   *         :+                      *..*..*.    =
+ |
+  180000 *+                .. :       :  +    *..      .*     :        ..  =
+ |
+  160000 ++           *...*   :       :   + ..   *...*.  :   :             =
+ |
+         | +        ..         :     :     *              :  :           *.=
+.*
+  140000 ++ *...*..*           :     :                    : :              =
+ |
+         |                      *...*                      *               =
+ |
+  120000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+   80000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   60000 ++ O             O  O  O   O  O   O  O  O   O  O  O   O  O  O   O =
+ O
+         |      O  O  O                                                    =
+ |
+   40000 O+----------------------------------------------------------------=
+-+
+
+
+                          kmsg.hrtimer:interrupt_took#ns
+
+    1 ++--------------------------O----------O--------------------O--------=
+-+
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  0.8 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  0.6 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  0.4 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  0.2 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+    0 O+--O--O---O--O---O--O---O------O--O------O---O--O---O--O------O---O-=
+-O
+
+
+                    kmsg.CE:hpet_increased_min_delta_ns_to#nsec
+
+    1 ++------------------------------O------------------------------------=
+-+
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  0.8 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  0.6 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  0.4 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  0.2 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+    0 O+--O--O---O--O---O--O---O--O------O---O--O---O--O---O--O---O--O---O-=
+-O
+
+
+                   kmsg.DHCP/BOOTP:Reply_not_for_us,op[#]xid[#]
+
+    1 ++--------------------------*----------------------------------------=
+-+
+      |                           :                                        =
+ |
+      |                           ::                                       =
+ |
+  0.8 ++                         : :                                       =
+ |
+      |                          : :                                       =
+ |
+      |                          : :                                       =
+ |
+  0.6 ++                         :  :                                      =
+ |
+      |                          :  :                                      =
+ |
+  0.4 ++                        :   :                                      =
+ |
+      |                         :    :                                     =
+ |
+      |                         :    :                                     =
+ |
+  0.2 ++                        :    :                                     =
+ |
+      |                        :     :                                     =
+ |
+      |                        :      :                                    =
+ |
+    0 O+--O--O---O--O---O--O---O--O---O--O---O--O---O--O---O--O---O--O---O-=
+-O
+
+
+                     kmsg.dmar:DRHD:handling_fault_status_reg
+
+    1 ++--------------------------------------------*----------------------=
+-+
+      |                                             :                      =
+ |
+      |                                            ::                      =
+ |
+  0.8 ++                                           : :                     =
+ |
+      |                                            : :                     =
+ |
+      |                                            : :                     =
+ |
+  0.6 ++                                          :  :                     =
+ |
+      |                                           :   :                    =
+ |
+  0.4 ++                                          :   :                    =
+ |
+      |                                          :    :                    =
+ |
+      |                                          :    :                    =
+ |
+  0.2 ++                                         :    :                    =
+ |
+      |                                          :     :                   =
+ |
+      |                                         :      :                   =
+ |
+    0 O+--O--O---O--O---O--O---O--O---O--O---O--O---O--O---O--O---O--O---O-=
+-O
+
+
+           kmsg.dmar:INTR-REMAP:Request_device[[f0:#f.#]fault_index_c9b0
+
+    1 ++--------------------------------------------*----------------------=
+-+
+      |                                             :                      =
+ |
+      |                                            ::                      =
+ |
+  0.8 ++                                           : :                     =
+ |
+      |                                            : :                     =
+ |
+      |                                            : :                     =
+ |
+  0.6 ++                                          :  :                     =
+ |
+      |                                           :   :                    =
+ |
+  0.4 ++                                          :   :                    =
+ |
+      |                                          :    :                    =
+ |
+      |                                          :    :                    =
+ |
+  0.2 ++                                         :    :                    =
+ |
+      |                                          :     :                   =
+ |
+      |                                         :      :                   =
+ |
+    0 O+--O--O---O--O---O--O---O--O---O--O---O--O---O--O---O--O---O--O---O-=
+-O
+
+
+ kmsg.INTR-REMAP:[fault_reason#]Blocked_a_compatibility_format_interrupt_re=
+quest
+
+    1 ++--------------------------------------------*----------------------=
+-+
+      |                                             :                      =
+ |
+      |                                            ::                      =
+ |
+  0.8 ++                                           : :                     =
+ |
+      |                                            : :                     =
+ |
+      |                                            : :                     =
+ |
+  0.6 ++                                          :  :                     =
+ |
+      |                                           :   :                    =
+ |
+  0.4 ++                                          :   :                    =
+ |
+      |                                          :    :                    =
+ |
+      |                                          :    :                    =
+ |
+  0.2 ++                                         :    :                    =
+ |
+      |                                          :     :                   =
+ |
+      |                                         :      :                   =
+ |
+    0 O+--O--O---O--O---O--O---O--O---O--O---O--O---O--O---O--O---O--O---O-=
+-O
+
+	[*] bisect-good sample
+	[O] bisect-bad  sample
+
+To reproduce:
+
+	apt-get install ruby ruby-oj
+	git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tests.git
+	cd lkp-tests
+	bin/setup-local job.yaml # the job file attached in this email
+	bin/run-local   job.yaml
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
+
+
+Thanks,
+Fengguang
+
+
+_______________________________________________
+LKP mailing list
+LKP(a)linux.intel.com
+
+
+--===============8802856200260867354==
+Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="config-3.18.0-02022-g6a7d220"
+Content-Disposition: attachment; filename="job.yaml"
 
-IwojIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZpbGU7IERPIE5PVCBFRElULgojIExpbnV4L2kz
-ODYgMy4xOC4wIEtlcm5lbCBDb25maWd1cmF0aW9uCiMKIyBDT05GSUdfNjRCSVQgaXMgbm90IHNl
-dApDT05GSUdfWDg2XzMyPXkKQ09ORklHX1g4Nj15CkNPTkZJR19JTlNUUlVDVElPTl9ERUNPREVS
-PXkKQ09ORklHX1BFUkZfRVZFTlRTX0lOVEVMX1VOQ09SRT15CkNPTkZJR19PVVRQVVRfRk9STUFU
-PSJlbGYzMi1pMzg2IgpDT05GSUdfQVJDSF9ERUZDT05GSUc9ImFyY2gveDg2L2NvbmZpZ3MvaTM4
-Nl9kZWZjb25maWciCkNPTkZJR19MT0NLREVQX1NVUFBPUlQ9eQpDT05GSUdfU1RBQ0tUUkFDRV9T
-VVBQT1JUPXkKQ09ORklHX0hBVkVfTEFURU5DWVRPUF9TVVBQT1JUPXkKQ09ORklHX01NVT15CkNP
-TkZJR19ORUVEX1NHX0RNQV9MRU5HVEg9eQpDT05GSUdfR0VORVJJQ19JU0FfRE1BPXkKQ09ORklH
-X0dFTkVSSUNfQlVHPXkKQ09ORklHX0dFTkVSSUNfSFdFSUdIVD15CkNPTkZJR19BUkNIX01BWV9I
-QVZFX1BDX0ZEQz15CkNPTkZJR19SV1NFTV9YQ0hHQUREX0FMR09SSVRITT15CkNPTkZJR19HRU5F
-UklDX0NBTElCUkFURV9ERUxBWT15CkNPTkZJR19BUkNIX0hBU19DUFVfUkVMQVg9eQpDT05GSUdf
-QVJDSF9IQVNfQ0FDSEVfTElORV9TSVpFPXkKQ09ORklHX0hBVkVfU0VUVVBfUEVSX0NQVV9BUkVB
-PXkKQ09ORklHX05FRURfUEVSX0NQVV9FTUJFRF9GSVJTVF9DSFVOSz15CkNPTkZJR19ORUVEX1BF
-Ul9DUFVfUEFHRV9GSVJTVF9DSFVOSz15CkNPTkZJR19BUkNIX0hJQkVSTkFUSU9OX1BPU1NJQkxF
-PXkKQ09ORklHX0FSQ0hfU1VTUEVORF9QT1NTSUJMRT15CkNPTkZJR19BUkNIX1dBTlRfSFVHRV9Q
-TURfU0hBUkU9eQpDT05GSUdfQVJDSF9XQU5UX0dFTkVSQUxfSFVHRVRMQj15CiMgQ09ORklHX1pP
-TkVfRE1BMzIgaXMgbm90IHNldAojIENPTkZJR19BVURJVF9BUkNIIGlzIG5vdCBzZXQKQ09ORklH
-X0FSQ0hfU1VQUE9SVFNfT1BUSU1JWkVEX0lOTElOSU5HPXkKQ09ORklHX0FSQ0hfU1VQUE9SVFNf
-REVCVUdfUEFHRUFMTE9DPXkKQ09ORklHX1g4Nl9JTlRFTF9NUFg9eQpDT05GSUdfWDg2XzMyX1NN
-UD15CkNPTkZJR19YODZfSFQ9eQpDT05GSUdfQVJDSF9IV0VJR0hUX0NGTEFHUz0iLWZjYWxsLXNh
-dmVkLWVjeCAtZmNhbGwtc2F2ZWQtZWR4IgpDT05GSUdfQVJDSF9TVVBQT1JUU19VUFJPQkVTPXkK
-Q09ORklHX0ZJWF9FQVJMWUNPTl9NRU09eQpDT05GSUdfREVGQ09ORklHX0xJU1Q9Ii9saWIvbW9k
-dWxlcy8kVU5BTUVfUkVMRUFTRS8uY29uZmlnIgpDT05GSUdfQ09OU1RSVUNUT1JTPXkKQ09ORklH
-X0lSUV9XT1JLPXkKQ09ORklHX0JVSUxEVElNRV9FWFRBQkxFX1NPUlQ9eQoKIwojIEdlbmVyYWwg
-c2V0dXAKIwpDT05GSUdfSU5JVF9FTlZfQVJHX0xJTUlUPTMyCkNPTkZJR19DUk9TU19DT01QSUxF
-PSIiCiMgQ09ORklHX0NPTVBJTEVfVEVTVCBpcyBub3Qgc2V0CkNPTkZJR19MT0NBTFZFUlNJT049
-IiIKQ09ORklHX0xPQ0FMVkVSU0lPTl9BVVRPPXkKQ09ORklHX0hBVkVfS0VSTkVMX0daSVA9eQpD
-T05GSUdfSEFWRV9LRVJORUxfQlpJUDI9eQpDT05GSUdfSEFWRV9LRVJORUxfTFpNQT15CkNPTkZJ
-R19IQVZFX0tFUk5FTF9YWj15CkNPTkZJR19IQVZFX0tFUk5FTF9MWk89eQpDT05GSUdfSEFWRV9L
-RVJORUxfTFo0PXkKIyBDT05GSUdfS0VSTkVMX0daSVAgaXMgbm90IHNldAojIENPTkZJR19LRVJO
-RUxfQlpJUDIgaXMgbm90IHNldAojIENPTkZJR19LRVJORUxfTFpNQSBpcyBub3Qgc2V0CkNPTkZJ
-R19LRVJORUxfWFo9eQojIENPTkZJR19LRVJORUxfTFpPIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VS
-TkVMX0xaNCBpcyBub3Qgc2V0CkNPTkZJR19ERUZBVUxUX0hPU1ROQU1FPSIobm9uZSkiCkNPTkZJ
-R19TV0FQPXkKIyBDT05GSUdfU1lTVklQQyBpcyBub3Qgc2V0CiMgQ09ORklHX1BPU0lYX01RVUVV
-RSBpcyBub3Qgc2V0CkNPTkZJR19DUk9TU19NRU1PUllfQVRUQUNIPXkKIyBDT05GSUdfRkhBTkRM
-RSBpcyBub3Qgc2V0CkNPTkZJR19VU0VMSUI9eQpDT05GSUdfQVVESVQ9eQpDT05GSUdfSEFWRV9B
-UkNIX0FVRElUU1lTQ0FMTD15CiMgQ09ORklHX0FVRElUU1lTQ0FMTCBpcyBub3Qgc2V0CgojCiMg
-SVJRIHN1YnN5c3RlbQojCkNPTkZJR19HRU5FUklDX0lSUV9QUk9CRT15CkNPTkZJR19HRU5FUklD
-X0lSUV9TSE9XPXkKQ09ORklHX0dFTkVSSUNfUEVORElOR19JUlE9eQpDT05GSUdfR0VORVJJQ19J
-UlFfQ0hJUD15CkNPTkZJR19JUlFfRE9NQUlOPXkKQ09ORklHX0lSUV9ET01BSU5fSElFUkFSQ0hZ
-PXkKQ09ORklHX0dFTkVSSUNfTVNJX0lSUT15CkNPTkZJR19HRU5FUklDX01TSV9JUlFfRE9NQUlO
-PXkKQ09ORklHX0lSUV9ET01BSU5fREVCVUc9eQpDT05GSUdfSVJRX0ZPUkNFRF9USFJFQURJTkc9
-eQpDT05GSUdfU1BBUlNFX0lSUT15CkNPTkZJR19DTE9DS1NPVVJDRV9XQVRDSERPRz15CkNPTkZJ
-R19BUkNIX0NMT0NLU09VUkNFX0RBVEE9eQpDT05GSUdfQ0xPQ0tTT1VSQ0VfVkFMSURBVEVfTEFT
-VF9DWUNMRT15CkNPTkZJR19HRU5FUklDX1RJTUVfVlNZU0NBTEw9eQpDT05GSUdfR0VORVJJQ19D
-TE9DS0VWRU5UUz15CkNPTkZJR19HRU5FUklDX0NMT0NLRVZFTlRTX0JVSUxEPXkKQ09ORklHX0dF
-TkVSSUNfQ0xPQ0tFVkVOVFNfQlJPQURDQVNUPXkKQ09ORklHX0dFTkVSSUNfQ0xPQ0tFVkVOVFNf
-TUlOX0FESlVTVD15CkNPTkZJR19HRU5FUklDX0NNT1NfVVBEQVRFPXkKCiMKIyBUaW1lcnMgc3Vi
-c3lzdGVtCiMKQ09ORklHX0haX1BFUklPRElDPXkKIyBDT05GSUdfTk9fSFpfSURMRSBpcyBub3Qg
-c2V0CiMgQ09ORklHX05PX0haIGlzIG5vdCBzZXQKIyBDT05GSUdfSElHSF9SRVNfVElNRVJTIGlz
-IG5vdCBzZXQKCiMKIyBDUFUvVGFzayB0aW1lIGFuZCBzdGF0cyBhY2NvdW50aW5nCiMKQ09ORklH
-X1RJQ0tfQ1BVX0FDQ09VTlRJTkc9eQojIENPTkZJR19JUlFfVElNRV9BQ0NPVU5USU5HIGlzIG5v
-dCBzZXQKIyBDT05GSUdfQlNEX1BST0NFU1NfQUNDVCBpcyBub3Qgc2V0CiMgQ09ORklHX1RBU0tT
-VEFUUyBpcyBub3Qgc2V0CgojCiMgUkNVIFN1YnN5c3RlbQojCkNPTkZJR19UUkVFX1JDVT15CiMg
-Q09ORklHX1RBU0tTX1JDVSBpcyBub3Qgc2V0CkNPTkZJR19SQ1VfU1RBTExfQ09NTU9OPXkKQ09O
-RklHX1JDVV9GQU5PVVQ9MzIKQ09ORklHX1JDVV9GQU5PVVRfTEVBRj0xNgojIENPTkZJR19SQ1Vf
-RkFOT1VUX0VYQUNUIGlzIG5vdCBzZXQKIyBDT05GSUdfVFJFRV9SQ1VfVFJBQ0UgaXMgbm90IHNl
-dApDT05GSUdfUkNVX05PQ0JfQ1BVPXkKIyBDT05GSUdfUkNVX05PQ0JfQ1BVX05PTkUgaXMgbm90
-IHNldAojIENPTkZJR19SQ1VfTk9DQl9DUFVfWkVSTyBpcyBub3Qgc2V0CkNPTkZJR19SQ1VfTk9D
-Ql9DUFVfQUxMPXkKQ09ORklHX0JVSUxEX0JJTjJDPXkKQ09ORklHX0lLQ09ORklHPXkKIyBDT05G
-SUdfSUtDT05GSUdfUFJPQyBpcyBub3Qgc2V0CkNPTkZJR19MT0dfQlVGX1NISUZUPTE3CkNPTkZJ
-R19MT0dfQ1BVX01BWF9CVUZfU0hJRlQ9MTIKQ09ORklHX0hBVkVfVU5TVEFCTEVfU0NIRURfQ0xP
-Q0s9eQpDT05GSUdfQ0dST1VQUz15CiMgQ09ORklHX0NHUk9VUF9ERUJVRyBpcyBub3Qgc2V0CkNP
-TkZJR19DR1JPVVBfRlJFRVpFUj15CkNPTkZJR19DR1JPVVBfREVWSUNFPXkKIyBDT05GSUdfQ1BV
-U0VUUyBpcyBub3Qgc2V0CiMgQ09ORklHX0NHUk9VUF9DUFVBQ0NUIGlzIG5vdCBzZXQKIyBDT05G
-SUdfUkVTT1VSQ0VfQ09VTlRFUlMgaXMgbm90IHNldAojIENPTkZJR19DR1JPVVBfUEVSRiBpcyBu
-b3Qgc2V0CkNPTkZJR19DR1JPVVBfU0NIRUQ9eQpDT05GSUdfRkFJUl9HUk9VUF9TQ0hFRD15CiMg
-Q09ORklHX0NGU19CQU5EV0lEVEggaXMgbm90IHNldApDT05GSUdfUlRfR1JPVVBfU0NIRUQ9eQpD
-T05GSUdfQkxLX0NHUk9VUD15CkNPTkZJR19ERUJVR19CTEtfQ0dST1VQPXkKIyBDT05GSUdfQ0hF
-Q0tQT0lOVF9SRVNUT1JFIGlzIG5vdCBzZXQKQ09ORklHX05BTUVTUEFDRVM9eQojIENPTkZJR19V
-VFNfTlMgaXMgbm90IHNldAojIENPTkZJR19VU0VSX05TIGlzIG5vdCBzZXQKQ09ORklHX1BJRF9O
-Uz15CkNPTkZJR19ORVRfTlM9eQpDT05GSUdfU0NIRURfQVVUT0dST1VQPXkKIyBDT05GSUdfU1lT
-RlNfREVQUkVDQVRFRCBpcyBub3Qgc2V0CkNPTkZJR19SRUxBWT15CkNPTkZJR19CTEtfREVWX0lO
-SVRSRD15CkNPTkZJR19JTklUUkFNRlNfU09VUkNFPSIiCkNPTkZJR19SRF9HWklQPXkKQ09ORklH
-X1JEX0JaSVAyPXkKQ09ORklHX1JEX0xaTUE9eQpDT05GSUdfUkRfWFo9eQpDT05GSUdfUkRfTFpP
-PXkKQ09ORklHX1JEX0xaND15CkNPTkZJR19DQ19PUFRJTUlaRV9GT1JfU0laRT15CkNPTkZJR19T
-WVNDVEw9eQpDT05GSUdfQU5PTl9JTk9ERVM9eQpDT05GSUdfSEFWRV9VSUQxNj15CkNPTkZJR19T
-WVNDVExfRVhDRVBUSU9OX1RSQUNFPXkKQ09ORklHX0hBVkVfUENTUEtSX1BMQVRGT1JNPXkKQ09O
-RklHX0JQRj15CiMgQ09ORklHX0VYUEVSVCBpcyBub3Qgc2V0CkNPTkZJR19VSUQxNj15CkNPTkZJ
-R19TR0VUTUFTS19TWVNDQUxMPXkKQ09ORklHX1NZU0ZTX1NZU0NBTEw9eQojIENPTkZJR19TWVND
-VExfU1lTQ0FMTCBpcyBub3Qgc2V0CkNPTkZJR19LQUxMU1lNUz15CkNPTkZJR19LQUxMU1lNU19B
-TEw9eQpDT05GSUdfUFJJTlRLPXkKQ09ORklHX0JVRz15CkNPTkZJR19FTEZfQ09SRT15CkNPTkZJ
-R19QQ1NQS1JfUExBVEZPUk09eQpDT05GSUdfQkFTRV9GVUxMPXkKQ09ORklHX0ZVVEVYPXkKQ09O
-RklHX0VQT0xMPXkKQ09ORklHX1NJR05BTEZEPXkKQ09ORklHX1RJTUVSRkQ9eQpDT05GSUdfRVZF
-TlRGRD15CiMgQ09ORklHX0JQRl9TWVNDQUxMIGlzIG5vdCBzZXQKQ09ORklHX1NITUVNPXkKQ09O
-RklHX0FJTz15CkNPTkZJR19BRFZJU0VfU1lTQ0FMTFM9eQpDT05GSUdfUENJX1FVSVJLUz15CiMg
-Q09ORklHX0VNQkVEREVEIGlzIG5vdCBzZXQKQ09ORklHX0hBVkVfUEVSRl9FVkVOVFM9eQpDT05G
-SUdfUEVSRl9VU0VfVk1BTExPQz15CgojCiMgS2VybmVsIFBlcmZvcm1hbmNlIEV2ZW50cyBBbmQg
-Q291bnRlcnMKIwpDT05GSUdfUEVSRl9FVkVOVFM9eQpDT05GSUdfREVCVUdfUEVSRl9VU0VfVk1B
-TExPQz15CkNPTkZJR19WTV9FVkVOVF9DT1VOVEVSUz15CkNPTkZJR19DT01QQVRfQlJLPXkKQ09O
-RklHX1NMQUI9eQojIENPTkZJR19TTFVCIGlzIG5vdCBzZXQKIyBDT05GSUdfU1lTVEVNX1RSVVNU
-RURfS0VZUklORyBpcyBub3Qgc2V0CiMgQ09ORklHX1BST0ZJTElORyBpcyBub3Qgc2V0CkNPTkZJ
-R19UUkFDRVBPSU5UUz15CkNPTkZJR19IQVZFX09QUk9GSUxFPXkKQ09ORklHX09QUk9GSUxFX05N
-SV9USU1FUj15CkNPTkZJR19KVU1QX0xBQkVMPXkKIyBDT05GSUdfVVBST0JFUyBpcyBub3Qgc2V0
-CiMgQ09ORklHX0hBVkVfNjRCSVRfQUxJR05FRF9BQ0NFU1MgaXMgbm90IHNldApDT05GSUdfSEFW
-RV9FRkZJQ0lFTlRfVU5BTElHTkVEX0FDQ0VTUz15CkNPTkZJR19BUkNIX1VTRV9CVUlMVElOX0JT
-V0FQPXkKQ09ORklHX0hBVkVfSU9SRU1BUF9QUk9UPXkKQ09ORklHX0hBVkVfS1BST0JFUz15CkNP
-TkZJR19IQVZFX0tSRVRQUk9CRVM9eQpDT05GSUdfSEFWRV9PUFRQUk9CRVM9eQpDT05GSUdfSEFW
-RV9LUFJPQkVTX09OX0ZUUkFDRT15CkNPTkZJR19IQVZFX0FSQ0hfVFJBQ0VIT09LPXkKQ09ORklH
-X0hBVkVfRE1BX0FUVFJTPXkKQ09ORklHX0hBVkVfRE1BX0NPTlRJR1VPVVM9eQpDT05GSUdfR0VO
-RVJJQ19TTVBfSURMRV9USFJFQUQ9eQpDT05GSUdfSEFWRV9SRUdTX0FORF9TVEFDS19BQ0NFU1Nf
-QVBJPXkKQ09ORklHX0hBVkVfQ0xLPXkKQ09ORklHX0hBVkVfRE1BX0FQSV9ERUJVRz15CkNPTkZJ
-R19IQVZFX0hXX0JSRUFLUE9JTlQ9eQpDT05GSUdfSEFWRV9NSVhFRF9CUkVBS1BPSU5UU19SRUdT
-PXkKQ09ORklHX0hBVkVfVVNFUl9SRVRVUk5fTk9USUZJRVI9eQpDT05GSUdfSEFWRV9QRVJGX0VW
-RU5UU19OTUk9eQpDT05GSUdfSEFWRV9QRVJGX1JFR1M9eQpDT05GSUdfSEFWRV9QRVJGX1VTRVJf
-U1RBQ0tfRFVNUD15CkNPTkZJR19IQVZFX0FSQ0hfSlVNUF9MQUJFTD15CkNPTkZJR19BUkNIX0hB
-VkVfTk1JX1NBRkVfQ01QWENIRz15CkNPTkZJR19IQVZFX0NNUFhDSEdfTE9DQUw9eQpDT05GSUdf
-SEFWRV9DTVBYQ0hHX0RPVUJMRT15CkNPTkZJR19BUkNIX1dBTlRfSVBDX1BBUlNFX1ZFUlNJT049
-eQpDT05GSUdfSEFWRV9BUkNIX1NFQ0NPTVBfRklMVEVSPXkKQ09ORklHX1NFQ0NPTVBfRklMVEVS
-PXkKQ09ORklHX0hBVkVfQ0NfU1RBQ0tQUk9URUNUT1I9eQpDT05GSUdfQ0NfU1RBQ0tQUk9URUNU
-T1I9eQojIENPTkZJR19DQ19TVEFDS1BST1RFQ1RPUl9OT05FIGlzIG5vdCBzZXQKQ09ORklHX0ND
-X1NUQUNLUFJPVEVDVE9SX1JFR1VMQVI9eQojIENPTkZJR19DQ19TVEFDS1BST1RFQ1RPUl9TVFJP
-TkcgaXMgbm90IHNldApDT05GSUdfSEFWRV9JUlFfVElNRV9BQ0NPVU5USU5HPXkKQ09ORklHX0hB
-VkVfQVJDSF9UUkFOU1BBUkVOVF9IVUdFUEFHRT15CkNPTkZJR19NT0RVTEVTX1VTRV9FTEZfUkVM
-PXkKQ09ORklHX0NMT05FX0JBQ0tXQVJEUz15CkNPTkZJR19PTERfU0lHU1VTUEVORDM9eQpDT05G
-SUdfT0xEX1NJR0FDVElPTj15CgojCiMgR0NPVi1iYXNlZCBrZXJuZWwgcHJvZmlsaW5nCiMKQ09O
-RklHX0dDT1ZfS0VSTkVMPXkKIyBDT05GSUdfR0NPVl9QUk9GSUxFX0FMTCBpcyBub3Qgc2V0CiMg
-Q09ORklHX0dDT1ZfRk9STUFUX0FVVE9ERVRFQ1QgaXMgbm90IHNldApDT05GSUdfR0NPVl9GT1JN
-QVRfM180PXkKIyBDT05GSUdfR0NPVl9GT1JNQVRfNF83IGlzIG5vdCBzZXQKQ09ORklHX0hBVkVf
-R0VORVJJQ19ETUFfQ09IRVJFTlQ9eQpDT05GSUdfU0xBQklORk89eQpDT05GSUdfUlRfTVVURVhF
-Uz15CkNPTkZJR19CQVNFX1NNQUxMPTAKIyBDT05GSUdfTU9EVUxFUyBpcyBub3Qgc2V0CkNPTkZJ
-R19TVE9QX01BQ0hJTkU9eQpDT05GSUdfQkxPQ0s9eQpDT05GSUdfTEJEQUY9eQpDT05GSUdfQkxL
-X0RFVl9CU0c9eQpDT05GSUdfQkxLX0RFVl9CU0dMSUI9eQpDT05GSUdfQkxLX0RFVl9JTlRFR1JJ
-VFk9eQojIENPTkZJR19CTEtfREVWX1RIUk9UVExJTkcgaXMgbm90IHNldApDT05GSUdfQkxLX0NN
-RExJTkVfUEFSU0VSPXkKCiMKIyBQYXJ0aXRpb24gVHlwZXMKIwpDT05GSUdfUEFSVElUSU9OX0FE
-VkFOQ0VEPXkKIyBDT05GSUdfQUNPUk5fUEFSVElUSU9OIGlzIG5vdCBzZXQKQ09ORklHX0FJWF9Q
-QVJUSVRJT049eQpDT05GSUdfT1NGX1BBUlRJVElPTj15CkNPTkZJR19BTUlHQV9QQVJUSVRJT049
-eQojIENPTkZJR19BVEFSSV9QQVJUSVRJT04gaXMgbm90IHNldAojIENPTkZJR19NQUNfUEFSVElU
-SU9OIGlzIG5vdCBzZXQKQ09ORklHX01TRE9TX1BBUlRJVElPTj15CiMgQ09ORklHX0JTRF9ESVNL
-TEFCRUwgaXMgbm90IHNldApDT05GSUdfTUlOSVhfU1VCUEFSVElUSU9OPXkKQ09ORklHX1NPTEFS
-SVNfWDg2X1BBUlRJVElPTj15CiMgQ09ORklHX1VOSVhXQVJFX0RJU0tMQUJFTCBpcyBub3Qgc2V0
-CkNPTkZJR19MRE1fUEFSVElUSU9OPXkKIyBDT05GSUdfTERNX0RFQlVHIGlzIG5vdCBzZXQKQ09O
-RklHX1NHSV9QQVJUSVRJT049eQpDT05GSUdfVUxUUklYX1BBUlRJVElPTj15CkNPTkZJR19TVU5f
-UEFSVElUSU9OPXkKQ09ORklHX0tBUk1BX1BBUlRJVElPTj15CkNPTkZJR19FRklfUEFSVElUSU9O
-PXkKQ09ORklHX1NZU1Y2OF9QQVJUSVRJT049eQpDT05GSUdfQ01ETElORV9QQVJUSVRJT049eQoK
-IwojIElPIFNjaGVkdWxlcnMKIwpDT05GSUdfSU9TQ0hFRF9OT09QPXkKQ09ORklHX0lPU0NIRURf
-REVBRExJTkU9eQpDT05GSUdfSU9TQ0hFRF9DRlE9eQojIENPTkZJR19DRlFfR1JPVVBfSU9TQ0hF
-RCBpcyBub3Qgc2V0CkNPTkZJR19ERUZBVUxUX0RFQURMSU5FPXkKIyBDT05GSUdfREVGQVVMVF9D
-RlEgaXMgbm90IHNldAojIENPTkZJR19ERUZBVUxUX05PT1AgaXMgbm90IHNldApDT05GSUdfREVG
-QVVMVF9JT1NDSEVEPSJkZWFkbGluZSIKQ09ORklHX1BBREFUQT15CkNPTkZJR19VTklOTElORV9T
-UElOX1VOTE9DSz15CkNPTkZJR19BUkNIX1NVUFBPUlRTX0FUT01JQ19STVc9eQpDT05GSUdfUldT
-RU1fU1BJTl9PTl9PV05FUj15CkNPTkZJR19BUkNIX1VTRV9RVUVVRV9SV0xPQ0s9eQpDT05GSUdf
-UVVFVUVfUldMT0NLPXkKQ09ORklHX0ZSRUVaRVI9eQoKIwojIFByb2Nlc3NvciB0eXBlIGFuZCBm
-ZWF0dXJlcwojCkNPTkZJR19aT05FX0RNQT15CkNPTkZJR19TTVA9eQpDT05GSUdfWDg2X0ZFQVRV
-UkVfTkFNRVM9eQojIENPTkZJR19YODZfTVBQQVJTRSBpcyBub3Qgc2V0CiMgQ09ORklHX1g4Nl9C
-SUdTTVAgaXMgbm90IHNldApDT05GSUdfWDg2X0VYVEVOREVEX1BMQVRGT1JNPXkKIyBDT05GSUdf
-WDg2X0dPTERGSVNIIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9JTlRFTF9MUFNTPXkKQ09ORklHX0lP
-U0ZfTUJJPXkKIyBDT05GSUdfSU9TRl9NQklfREVCVUcgaXMgbm90IHNldApDT05GSUdfWDg2X1JE
-QzMyMVg9eQojIENPTkZJR19YODZfMzJfTk9OX1NUQU5EQVJEIGlzIG5vdCBzZXQKQ09ORklHX1g4
-Nl8zMl9JUklTPXkKIyBDT05GSUdfU0NIRURfT01JVF9GUkFNRV9QT0lOVEVSIGlzIG5vdCBzZXQK
-IyBDT05GSUdfS1ZNVE9PTF9URVNUX0VOQUJMRSBpcyBub3Qgc2V0CkNPTkZJR19IWVBFUlZJU09S
-X0dVRVNUPXkKQ09ORklHX1BBUkFWSVJUPXkKIyBDT05GSUdfUEFSQVZJUlRfREVCVUcgaXMgbm90
-IHNldAojIENPTkZJR19QQVJBVklSVF9TUElOTE9DS1MgaXMgbm90IHNldAojIENPTkZJR19YRU4g
-aXMgbm90IHNldApDT05GSUdfS1ZNX0dVRVNUPXkKIyBDT05GSUdfS1ZNX0RFQlVHX0ZTIGlzIG5v
-dCBzZXQKIyBDT05GSUdfTEdVRVNUX0dVRVNUIGlzIG5vdCBzZXQKIyBDT05GSUdfUEFSQVZJUlRf
-VElNRV9BQ0NPVU5USU5HIGlzIG5vdCBzZXQKQ09ORklHX1BBUkFWSVJUX0NMT0NLPXkKQ09ORklH
-X05PX0JPT1RNRU09eQpDT05GSUdfTUVNVEVTVD15CiMgQ09ORklHX000ODYgaXMgbm90IHNldAoj
-IENPTkZJR19NNTg2IGlzIG5vdCBzZXQKIyBDT05GSUdfTTU4NlRTQyBpcyBub3Qgc2V0CiMgQ09O
-RklHX001ODZNTVggaXMgbm90IHNldAojIENPTkZJR19NNjg2IGlzIG5vdCBzZXQKIyBDT05GSUdf
-TVBFTlRJVU1JSSBpcyBub3Qgc2V0CiMgQ09ORklHX01QRU5USVVNSUlJIGlzIG5vdCBzZXQKQ09O
-RklHX01QRU5USVVNTT15CiMgQ09ORklHX01QRU5USVVNNCBpcyBub3Qgc2V0CiMgQ09ORklHX01L
-NiBpcyBub3Qgc2V0CiMgQ09ORklHX01LNyBpcyBub3Qgc2V0CiMgQ09ORklHX01LOCBpcyBub3Qg
-c2V0CiMgQ09ORklHX01DUlVTT0UgaXMgbm90IHNldAojIENPTkZJR19NRUZGSUNFT04gaXMgbm90
-IHNldAojIENPTkZJR19NV0lOQ0hJUEM2IGlzIG5vdCBzZXQKIyBDT05GSUdfTVdJTkNISVAzRCBp
-cyBub3Qgc2V0CiMgQ09ORklHX01FTEFOIGlzIG5vdCBzZXQKIyBDT05GSUdfTUdFT0RFR1gxIGlz
-IG5vdCBzZXQKIyBDT05GSUdfTUdFT0RFX0xYIGlzIG5vdCBzZXQKIyBDT05GSUdfTUNZUklYSUlJ
-IGlzIG5vdCBzZXQKIyBDT05GSUdfTVZJQUMzXzIgaXMgbm90IHNldAojIENPTkZJR19NVklBQzcg
-aXMgbm90IHNldAojIENPTkZJR19NQ09SRTIgaXMgbm90IHNldAojIENPTkZJR19NQVRPTSBpcyBu
-b3Qgc2V0CkNPTkZJR19YODZfR0VORVJJQz15CkNPTkZJR19YODZfSU5URVJOT0RFX0NBQ0hFX1NI
-SUZUPTYKQ09ORklHX1g4Nl9MMV9DQUNIRV9TSElGVD02CkNPTkZJR19YODZfSU5URUxfVVNFUkNP
-UFk9eQpDT05GSUdfWDg2X1VTRV9QUFJPX0NIRUNLU1VNPXkKQ09ORklHX1g4Nl9UU0M9eQpDT05G
-SUdfWDg2X0NNUFhDSEc2ND15CkNPTkZJR19YODZfQ01PVj15CkNPTkZJR19YODZfTUlOSU1VTV9D
-UFVfRkFNSUxZPTUKQ09ORklHX1g4Nl9ERUJVR0NUTE1TUj15CkNPTkZJR19DUFVfU1VQX0lOVEVM
-PXkKQ09ORklHX0NQVV9TVVBfQU1EPXkKQ09ORklHX0NQVV9TVVBfQ0VOVEFVUj15CkNPTkZJR19D
-UFVfU1VQX1RSQU5TTUVUQV8zMj15CkNPTkZJR19IUEVUX1RJTUVSPXkKQ09ORklHX0hQRVRfRU1V
-TEFURV9SVEM9eQpDT05GSUdfRE1JPXkKQ09ORklHX05SX0NQVVM9OApDT05GSUdfU0NIRURfU01U
-PXkKQ09ORklHX1NDSEVEX01DPXkKQ09ORklHX1BSRUVNUFRfTk9ORT15CiMgQ09ORklHX1BSRUVN
-UFRfVk9MVU5UQVJZIGlzIG5vdCBzZXQKIyBDT05GSUdfUFJFRU1QVCBpcyBub3Qgc2V0CkNPTkZJ
-R19QUkVFTVBUX0NPVU5UPXkKQ09ORklHX1g4Nl9MT0NBTF9BUElDPXkKQ09ORklHX1g4Nl9JT19B
-UElDPXkKIyBDT05GSUdfWDg2X1JFUk9VVEVfRk9SX0JST0tFTl9CT09UX0lSUVMgaXMgbm90IHNl
-dAojIENPTkZJR19YODZfTUNFIGlzIG5vdCBzZXQKQ09ORklHX1ZNODY9eQpDT05GSUdfWDg2XzE2
-QklUPXkKQ09ORklHX1g4Nl9FU1BGSVgzMj15CkNPTkZJR19UT1NISUJBPXkKQ09ORklHX0k4Sz15
-CkNPTkZJR19YODZfUkVCT09URklYVVBTPXkKQ09ORklHX01JQ1JPQ09ERT15CkNPTkZJR19NSUNS
-T0NPREVfSU5URUw9eQojIENPTkZJR19NSUNST0NPREVfQU1EIGlzIG5vdCBzZXQKQ09ORklHX01J
-Q1JPQ09ERV9PTERfSU5URVJGQUNFPXkKQ09ORklHX01JQ1JPQ09ERV9JTlRFTF9FQVJMWT15CiMg
-Q09ORklHX01JQ1JPQ09ERV9BTURfRUFSTFkgaXMgbm90IHNldApDT05GSUdfTUlDUk9DT0RFX0VB
-UkxZPXkKQ09ORklHX1g4Nl9NU1I9eQpDT05GSUdfWDg2X0NQVUlEPXkKQ09ORklHX05PSElHSE1F
-TT15CiMgQ09ORklHX0hJR0hNRU00RyBpcyBub3Qgc2V0CiMgQ09ORklHX0hJR0hNRU02NEcgaXMg
-bm90IHNldApDT05GSUdfUEFHRV9PRkZTRVQ9MHhDMDAwMDAwMApDT05GSUdfWDg2X1BBRT15CkNP
-TkZJR19BUkNIX1BIWVNfQUREUl9UXzY0QklUPXkKQ09ORklHX0FSQ0hfRkxBVE1FTV9FTkFCTEU9
-eQpDT05GSUdfQVJDSF9TUEFSU0VNRU1fRU5BQkxFPXkKQ09ORklHX0FSQ0hfU0VMRUNUX01FTU9S
-WV9NT0RFTD15CkNPTkZJR19JTExFR0FMX1BPSU5URVJfVkFMVUU9MApDT05GSUdfU0VMRUNUX01F
-TU9SWV9NT0RFTD15CkNPTkZJR19GTEFUTUVNX01BTlVBTD15CiMgQ09ORklHX1NQQVJTRU1FTV9N
-QU5VQUwgaXMgbm90IHNldApDT05GSUdfRkxBVE1FTT15CkNPTkZJR19GTEFUX05PREVfTUVNX01B
-UD15CkNPTkZJR19TUEFSU0VNRU1fU1RBVElDPXkKQ09ORklHX0hBVkVfTUVNQkxPQ0s9eQpDT05G
-SUdfSEFWRV9NRU1CTE9DS19OT0RFX01BUD15CkNPTkZJR19BUkNIX0RJU0NBUkRfTUVNQkxPQ0s9
-eQpDT05GSUdfTUVNT1JZX0lTT0xBVElPTj15CiMgQ09ORklHX0hBVkVfQk9PVE1FTV9JTkZPX05P
-REUgaXMgbm90IHNldApDT05GSUdfUEFHRUZMQUdTX0VYVEVOREVEPXkKQ09ORklHX1NQTElUX1BU
-TE9DS19DUFVTPTQKQ09ORklHX0FSQ0hfRU5BQkxFX1NQTElUX1BNRF9QVExPQ0s9eQpDT05GSUdf
-Q09NUEFDVElPTj15CkNPTkZJR19NSUdSQVRJT049eQpDT05GSUdfUEhZU19BRERSX1RfNjRCSVQ9
-eQpDT05GSUdfWk9ORV9ETUFfRkxBRz0xCiMgQ09ORklHX0JPVU5DRSBpcyBub3Qgc2V0CkNPTkZJ
-R19ORUVEX0JPVU5DRV9QT09MPXkKQ09ORklHX1ZJUlRfVE9fQlVTPXkKQ09ORklHX01NVV9OT1RJ
-RklFUj15CiMgQ09ORklHX0tTTSBpcyBub3Qgc2V0CkNPTkZJR19ERUZBVUxUX01NQVBfTUlOX0FE
-RFI9NDA5NgojIENPTkZJR19UUkFOU1BBUkVOVF9IVUdFUEFHRSBpcyBub3Qgc2V0CiMgQ09ORklH
-X0NMRUFOQ0FDSEUgaXMgbm90IHNldApDT05GSUdfRlJPTlRTV0FQPXkKQ09ORklHX0NNQT15CkNP
-TkZJR19DTUFfREVCVUc9eQpDT05GSUdfQ01BX0FSRUFTPTcKQ09ORklHX1pTV0FQPXkKQ09ORklH
-X1pQT09MPXkKQ09ORklHX1pCVUQ9eQpDT05GSUdfWlNNQUxMT0M9eQpDT05GSUdfUEdUQUJMRV9N
-QVBQSU5HPXkKQ09ORklHX0dFTkVSSUNfRUFSTFlfSU9SRU1BUD15CiMgQ09ORklHX1g4Nl9DSEVD
-S19CSU9TX0NPUlJVUFRJT04gaXMgbm90IHNldApDT05GSUdfWDg2X1JFU0VSVkVfTE9XPTY0CkNP
-TkZJR19NQVRIX0VNVUxBVElPTj15CkNPTkZJR19NVFJSPXkKIyBDT05GSUdfTVRSUl9TQU5JVEla
-RVIgaXMgbm90IHNldApDT05GSUdfWDg2X1BBVD15CkNPTkZJR19BUkNIX1VTRVNfUEdfVU5DQUNI
-RUQ9eQpDT05GSUdfQVJDSF9SQU5ET009eQpDT05GSUdfWDg2X1NNQVA9eQpDT05GSUdfRUZJPXkK
-Q09ORklHX0VGSV9TVFVCPXkKQ09ORklHX1NFQ0NPTVA9eQpDT05GSUdfSFpfMTAwPXkKIyBDT05G
-SUdfSFpfMjUwIGlzIG5vdCBzZXQKIyBDT05GSUdfSFpfMzAwIGlzIG5vdCBzZXQKIyBDT05GSUdf
-SFpfMTAwMCBpcyBub3Qgc2V0CkNPTkZJR19IWj0xMDAKIyBDT05GSUdfU0NIRURfSFJUSUNLIGlz
-IG5vdCBzZXQKIyBDT05GSUdfS0VYRUMgaXMgbm90IHNldApDT05GSUdfUEhZU0lDQUxfU1RBUlQ9
-MHgxMDAwMDAwCkNPTkZJR19SRUxPQ0FUQUJMRT15CiMgQ09ORklHX1JBTkRPTUlaRV9CQVNFIGlz
-IG5vdCBzZXQKQ09ORklHX1g4Nl9ORUVEX1JFTE9DUz15CkNPTkZJR19QSFlTSUNBTF9BTElHTj0w
-eDIwMDAwMApDT05GSUdfSE9UUExVR19DUFU9eQpDT05GSUdfQk9PVFBBUkFNX0hPVFBMVUdfQ1BV
-MD15CiMgQ09ORklHX0RFQlVHX0hPVFBMVUdfQ1BVMCBpcyBub3Qgc2V0CiMgQ09ORklHX0NPTVBB
-VF9WRFNPIGlzIG5vdCBzZXQKIyBDT05GSUdfQ01ETElORV9CT09MIGlzIG5vdCBzZXQKCiMKIyBQ
-b3dlciBtYW5hZ2VtZW50IGFuZCBBQ1BJIG9wdGlvbnMKIwpDT05GSUdfU1VTUEVORD15CkNPTkZJ
-R19TVVNQRU5EX0ZSRUVaRVI9eQojIENPTkZJR19ISUJFUk5BVElPTiBpcyBub3Qgc2V0CkNPTkZJ
-R19QTV9TTEVFUD15CkNPTkZJR19QTV9TTEVFUF9TTVA9eQpDT05GSUdfUE1fQVVUT1NMRUVQPXkK
-IyBDT05GSUdfUE1fV0FLRUxPQ0tTIGlzIG5vdCBzZXQKQ09ORklHX1BNX1JVTlRJTUU9eQpDT05G
-SUdfUE09eQojIENPTkZJR19QTV9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19QTV9DTEs9eQpDT05G
-SUdfV1FfUE9XRVJfRUZGSUNJRU5UX0RFRkFVTFQ9eQpDT05GSUdfQUNQST15CkNPTkZJR19BQ1BJ
-X0xFR0FDWV9UQUJMRVNfTE9PS1VQPXkKQ09ORklHX0FSQ0hfTUlHSFRfSEFWRV9BQ1BJX1BEQz15
-CkNPTkZJR19BQ1BJX1NMRUVQPXkKQ09ORklHX0FDUElfUFJPQ0ZTX1BPV0VSPXkKQ09ORklHX0FD
-UElfRUNfREVCVUdGUz15CkNPTkZJR19BQ1BJX0FDPXkKQ09ORklHX0FDUElfQkFUVEVSWT15CkNP
-TkZJR19BQ1BJX0JVVFRPTj15CkNPTkZJR19BQ1BJX1ZJREVPPXkKQ09ORklHX0FDUElfRkFOPXkK
-Q09ORklHX0FDUElfRE9DSz15CkNPTkZJR19BQ1BJX1BST0NFU1NPUj15CiMgQ09ORklHX0FDUElf
-SVBNSSBpcyBub3Qgc2V0CkNPTkZJR19BQ1BJX0hPVFBMVUdfQ1BVPXkKQ09ORklHX0FDUElfUFJP
-Q0VTU09SX0FHR1JFR0FUT1I9eQpDT05GSUdfQUNQSV9USEVSTUFMPXkKIyBDT05GSUdfQUNQSV9D
-VVNUT01fRFNEVCBpcyBub3Qgc2V0CiMgQ09ORklHX0FDUElfSU5JVFJEX1RBQkxFX09WRVJSSURF
-IGlzIG5vdCBzZXQKQ09ORklHX0FDUElfREVCVUc9eQpDT05GSUdfQUNQSV9QQ0lfU0xPVD15CkNP
-TkZJR19YODZfUE1fVElNRVI9eQpDT05GSUdfQUNQSV9DT05UQUlORVI9eQpDT05GSUdfQUNQSV9I
-T1RQTFVHX0lPQVBJQz15CiMgQ09ORklHX0FDUElfU0JTIGlzIG5vdCBzZXQKQ09ORklHX0FDUElf
-SEVEPXkKIyBDT05GSUdfQUNQSV9DVVNUT01fTUVUSE9EIGlzIG5vdCBzZXQKQ09ORklHX0FDUElf
-QkdSVD15CiMgQ09ORklHX0FDUElfUkVEVUNFRF9IQVJEV0FSRV9PTkxZIGlzIG5vdCBzZXQKQ09O
-RklHX0hBVkVfQUNQSV9BUEVJPXkKQ09ORklHX0hBVkVfQUNQSV9BUEVJX05NST15CkNPTkZJR19B
-Q1BJX0FQRUk9eQpDT05GSUdfQUNQSV9BUEVJX0dIRVM9eQpDT05GSUdfQUNQSV9BUEVJX0VJTko9
-eQojIENPTkZJR19BQ1BJX0FQRUlfRVJTVF9ERUJVRyBpcyBub3Qgc2V0CiMgQ09ORklHX1NGSSBp
-cyBub3Qgc2V0CkNPTkZJR19YODZfQVBNX0JPT1Q9eQpDT05GSUdfQVBNPXkKIyBDT05GSUdfQVBN
-X0lHTk9SRV9VU0VSX1NVU1BFTkQgaXMgbm90IHNldApDT05GSUdfQVBNX0RPX0VOQUJMRT15CiMg
-Q09ORklHX0FQTV9DUFVfSURMRSBpcyBub3Qgc2V0CiMgQ09ORklHX0FQTV9ESVNQTEFZX0JMQU5L
-IGlzIG5vdCBzZXQKQ09ORklHX0FQTV9BTExPV19JTlRTPXkKCiMKIyBDUFUgRnJlcXVlbmN5IHNj
-YWxpbmcKIwpDT05GSUdfQ1BVX0ZSRVE9eQpDT05GSUdfQ1BVX0ZSRVFfR09WX0NPTU1PTj15CiMg
-Q09ORklHX0NQVV9GUkVRX1NUQVQgaXMgbm90IHNldAojIENPTkZJR19DUFVfRlJFUV9ERUZBVUxU
-X0dPVl9QRVJGT1JNQU5DRSBpcyBub3Qgc2V0CiMgQ09ORklHX0NQVV9GUkVRX0RFRkFVTFRfR09W
-X1VTRVJTUEFDRSBpcyBub3Qgc2V0CiMgQ09ORklHX0NQVV9GUkVRX0RFRkFVTFRfR09WX09OREVN
-QU5EIGlzIG5vdCBzZXQKQ09ORklHX0NQVV9GUkVRX0RFRkFVTFRfR09WX0NPTlNFUlZBVElWRT15
-CkNPTkZJR19DUFVfRlJFUV9HT1ZfUEVSRk9STUFOQ0U9eQojIENPTkZJR19DUFVfRlJFUV9HT1Zf
-UE9XRVJTQVZFIGlzIG5vdCBzZXQKQ09ORklHX0NQVV9GUkVRX0dPVl9VU0VSU1BBQ0U9eQpDT05G
-SUdfQ1BVX0ZSRVFfR09WX09OREVNQU5EPXkKQ09ORklHX0NQVV9GUkVRX0dPVl9DT05TRVJWQVRJ
-VkU9eQoKIwojIHg4NiBDUFUgZnJlcXVlbmN5IHNjYWxpbmcgZHJpdmVycwojCiMgQ09ORklHX1g4
-Nl9JTlRFTF9QU1RBVEUgaXMgbm90IHNldAojIENPTkZJR19YODZfUENDX0NQVUZSRVEgaXMgbm90
-IHNldApDT05GSUdfWDg2X0FDUElfQ1BVRlJFUT15CkNPTkZJR19YODZfQUNQSV9DUFVGUkVRX0NQ
-Qj15CiMgQ09ORklHX1g4Nl9QT1dFUk5PV19LNiBpcyBub3Qgc2V0CkNPTkZJR19YODZfUE9XRVJO
-T1dfSzc9eQpDT05GSUdfWDg2X1BPV0VSTk9XX0s3X0FDUEk9eQpDT05GSUdfWDg2X1BPV0VSTk9X
-X0s4PXkKIyBDT05GSUdfWDg2X0FNRF9GUkVRX1NFTlNJVElWSVRZIGlzIG5vdCBzZXQKQ09ORklH
-X1g4Nl9HWF9TVVNQTU9EPXkKQ09ORklHX1g4Nl9TUEVFRFNURVBfQ0VOVFJJTk89eQpDT05GSUdf
-WDg2X1NQRUVEU1RFUF9DRU5UUklOT19UQUJMRT15CiMgQ09ORklHX1g4Nl9TUEVFRFNURVBfSUNI
-IGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9TUEVFRFNURVBfU01JPXkKQ09ORklHX1g4Nl9QNF9DTE9D
-S01PRD15CkNPTkZJR19YODZfQ1BVRlJFUV9ORk9SQ0UyPXkKQ09ORklHX1g4Nl9MT05HUlVOPXkK
-Q09ORklHX1g4Nl9MT05HSEFVTD15CkNPTkZJR19YODZfRV9QT1dFUlNBVkVSPXkKCiMKIyBzaGFy
-ZWQgb3B0aW9ucwojCkNPTkZJR19YODZfU1BFRURTVEVQX0xJQj15CkNPTkZJR19YODZfU1BFRURT
-VEVQX1JFTEFYRURfQ0FQX0NIRUNLPXkKCiMKIyBDUFUgSWRsZQojCkNPTkZJR19DUFVfSURMRT15
-CkNPTkZJR19DUFVfSURMRV9HT1ZfTEFEREVSPXkKQ09ORklHX0NQVV9JRExFX0dPVl9NRU5VPXkK
-IyBDT05GSUdfQVJDSF9ORUVEU19DUFVfSURMRV9DT1VQTEVEIGlzIG5vdCBzZXQKIyBDT05GSUdf
-SU5URUxfSURMRSBpcyBub3Qgc2V0CgojCiMgQnVzIG9wdGlvbnMgKFBDSSBldGMuKQojCkNPTkZJ
-R19QQ0k9eQojIENPTkZJR19QQ0lfR09CSU9TIGlzIG5vdCBzZXQKQ09ORklHX1BDSV9HT01NQ09O
-RklHPXkKIyBDT05GSUdfUENJX0dPRElSRUNUIGlzIG5vdCBzZXQKIyBDT05GSUdfUENJX0dPQU5Z
-IGlzIG5vdCBzZXQKQ09ORklHX1BDSV9ESVJFQ1Q9eQpDT05GSUdfUENJX01NQ09ORklHPXkKQ09O
-RklHX1BDSV9ET01BSU5TPXkKIyBDT05GSUdfUENJRVBPUlRCVVMgaXMgbm90IHNldApDT05GSUdf
-UENJX01TST15CkNPTkZJR19QQ0lfTVNJX0lSUV9ET01BSU49eQojIENPTkZJR19QQ0lfREVCVUcg
-aXMgbm90IHNldApDT05GSUdfUENJX1JFQUxMT0NfRU5BQkxFX0FVVE89eQpDT05GSUdfUENJX1NU
-VUI9eQojIENPTkZJR19IVF9JUlEgaXMgbm90IHNldApDT05GSUdfUENJX0FUUz15CiMgQ09ORklH
-X1BDSV9JT1YgaXMgbm90IHNldApDT05GSUdfUENJX1BSST15CiMgQ09ORklHX1BDSV9QQVNJRCBp
-cyBub3Qgc2V0CkNPTkZJR19QQ0lfTEFCRUw9eQoKIwojIFBDSSBob3N0IGNvbnRyb2xsZXIgZHJp
-dmVycwojCkNPTkZJR19JU0FfRE1BX0FQST15CiMgQ09ORklHX0lTQSBpcyBub3Qgc2V0CkNPTkZJ
-R19TQ3gyMDA9eQpDT05GSUdfU0N4MjAwSFJfVElNRVI9eQojIENPTkZJR19BTElYIGlzIG5vdCBz
-ZXQKQ09ORklHX05FVDU1MDE9eQpDT05GSUdfR0VPUz15CkNPTkZJR19BTURfTkI9eQpDT05GSUdf
-UENDQVJEPXkKIyBDT05GSUdfUENNQ0lBIGlzIG5vdCBzZXQKQ09ORklHX0NBUkRCVVM9eQoKIwoj
-IFBDLWNhcmQgYnJpZGdlcwojCkNPTkZJR19ZRU5UQT15CkNPTkZJR19ZRU5UQV9PMj15CkNPTkZJ
-R19ZRU5UQV9SSUNPSD15CkNPTkZJR19ZRU5UQV9UST15CkNPTkZJR19ZRU5UQV9FTkVfVFVORT15
-CkNPTkZJR19ZRU5UQV9UT1NISUJBPXkKIyBDT05GSUdfSE9UUExVR19QQ0kgaXMgbm90IHNldApD
-T05GSUdfUkFQSURJTz15CkNPTkZJR19SQVBJRElPX0RJU0NfVElNRU9VVD0zMApDT05GSUdfUkFQ
-SURJT19FTkFCTEVfUlhfVFhfUE9SVFM9eQojIENPTkZJR19SQVBJRElPX0RNQV9FTkdJTkUgaXMg
-bm90IHNldApDT05GSUdfUkFQSURJT19ERUJVRz15CkNPTkZJR19SQVBJRElPX0VOVU1fQkFTSUM9
-eQoKIwojIFJhcGlkSU8gU3dpdGNoIGRyaXZlcnMKIwpDT05GSUdfUkFQSURJT19UU0k1N1g9eQpD
-T05GSUdfUkFQSURJT19DUFNfWFg9eQojIENPTkZJR19SQVBJRElPX1RTSTU2OCBpcyBub3Qgc2V0
-CkNPTkZJR19SQVBJRElPX0NQU19HRU4yPXkKIyBDT05GSUdfWDg2X1NZU0ZCIGlzIG5vdCBzZXQK
-CiMKIyBFeGVjdXRhYmxlIGZpbGUgZm9ybWF0cyAvIEVtdWxhdGlvbnMKIwpDT05GSUdfQklORk1U
-X0VMRj15CkNPTkZJR19BUkNIX0JJTkZNVF9FTEZfUkFORE9NSVpFX1BJRT15CkNPTkZJR19DT1JF
-X0RVTVBfREVGQVVMVF9FTEZfSEVBREVSUz15CkNPTkZJR19CSU5GTVRfU0NSSVBUPXkKQ09ORklH
-X0hBVkVfQU9VVD15CkNPTkZJR19CSU5GTVRfQU9VVD15CkNPTkZJR19CSU5GTVRfTUlTQz15CkNP
-TkZJR19DT1JFRFVNUD15CkNPTkZJR19IQVZFX0FUT01JQ19JT01BUD15CkNPTkZJR19QTUNfQVRP
-TT15CkNPTkZJR19ORVQ9eQoKIwojIE5ldHdvcmtpbmcgb3B0aW9ucwojCiMgQ09ORklHX1BBQ0tF
-VCBpcyBub3Qgc2V0CkNPTkZJR19VTklYPXkKIyBDT05GSUdfVU5JWF9ESUFHIGlzIG5vdCBzZXQK
-Q09ORklHX1hGUk09eQpDT05GSUdfWEZSTV9BTEdPPXkKIyBDT05GSUdfWEZSTV9TVUJfUE9MSUNZ
-IGlzIG5vdCBzZXQKIyBDT05GSUdfWEZSTV9NSUdSQVRFIGlzIG5vdCBzZXQKQ09ORklHX05FVF9L
-RVk9eQojIENPTkZJR19ORVRfS0VZX01JR1JBVEUgaXMgbm90IHNldAojIENPTkZJR19JTkVUIGlz
-IG5vdCBzZXQKQ09ORklHX05FVFdPUktfU0VDTUFSSz15CkNPTkZJR19ORVRfUFRQX0NMQVNTSUZZ
-PXkKQ09ORklHX05FVFdPUktfUEhZX1RJTUVTVEFNUElORz15CkNPTkZJR19ORVRGSUxURVI9eQpD
-T05GSUdfTkVURklMVEVSX0RFQlVHPXkKQ09ORklHX05FVEZJTFRFUl9BRFZBTkNFRD15CgojCiMg
-REVDbmV0OiBOZXRmaWx0ZXIgQ29uZmlndXJhdGlvbgojCkNPTkZJR19ERUNORVRfTkZfR1JBQlVM
-QVRPUj15CkNPTkZJR19BVE09eQojIENPTkZJR19BVE1fTEFORSBpcyBub3Qgc2V0CkNPTkZJR19T
-VFA9eQpDT05GSUdfQlJJREdFPXkKQ09ORklHX0JSSURHRV9WTEFOX0ZJTFRFUklORz15CkNPTkZJ
-R19IQVZFX05FVF9EU0E9eQpDT05GSUdfTkVUX0RTQT15CkNPTkZJR19ORVRfRFNBX1RBR19EU0E9
-eQpDT05GSUdfTkVUX0RTQV9UQUdfVFJBSUxFUj15CkNPTkZJR19WTEFOXzgwMjFRPXkKIyBDT05G
-SUdfVkxBTl84MDIxUV9HVlJQIGlzIG5vdCBzZXQKIyBDT05GSUdfVkxBTl84MDIxUV9NVlJQIGlz
-IG5vdCBzZXQKQ09ORklHX0RFQ05FVD15CkNPTkZJR19ERUNORVRfUk9VVEVSPXkKQ09ORklHX0xM
-Qz15CkNPTkZJR19MTEMyPXkKQ09ORklHX0lQWD15CiMgQ09ORklHX0lQWF9JTlRFUk4gaXMgbm90
-IHNldApDT05GSUdfQVRBTEs9eQpDT05GSUdfREVWX0FQUExFVEFMSz15CiMgQ09ORklHX0lQRERQ
-IGlzIG5vdCBzZXQKQ09ORklHX1gyNT15CkNPTkZJR19MQVBCPXkKQ09ORklHX1BIT05FVD15CkNP
-TkZJR19JRUVFODAyMTU0PXkKIyBDT05GSUdfTUFDODAyMTU0IGlzIG5vdCBzZXQKIyBDT05GSUdf
-TkVUX1NDSEVEIGlzIG5vdCBzZXQKIyBDT05GSUdfRENCIGlzIG5vdCBzZXQKQ09ORklHX0ROU19S
-RVNPTFZFUj15CkNPTkZJR19CQVRNQU5fQURWPXkKQ09ORklHX0JBVE1BTl9BRFZfTkM9eQpDT05G
-SUdfQkFUTUFOX0FEVl9NQ0FTVD15CkNPTkZJR19CQVRNQU5fQURWX0RFQlVHPXkKIyBDT05GSUdf
-T1BFTlZTV0lUQ0ggaXMgbm90IHNldAojIENPTkZJR19WU09DS0VUUyBpcyBub3Qgc2V0CiMgQ09O
-RklHX05FVExJTktfTU1BUCBpcyBub3Qgc2V0CiMgQ09ORklHX05FVExJTktfRElBRyBpcyBub3Qg
-c2V0CkNPTkZJR19ORVRfTVBMU19HU089eQojIENPTkZJR19IU1IgaXMgbm90IHNldApDT05GSUdf
-UlBTPXkKQ09ORklHX1JGU19BQ0NFTD15CkNPTkZJR19YUFM9eQpDT05GSUdfQ0dST1VQX05FVF9Q
-UklPPXkKQ09ORklHX0NHUk9VUF9ORVRfQ0xBU1NJRD15CkNPTkZJR19ORVRfUlhfQlVTWV9QT0xM
-PXkKQ09ORklHX0JRTD15CkNPTkZJR19ORVRfRkxPV19MSU1JVD15CgojCiMgTmV0d29yayB0ZXN0
-aW5nCiMKQ09ORklHX0hBTVJBRElPPXkKCiMKIyBQYWNrZXQgUmFkaW8gcHJvdG9jb2xzCiMKQ09O
-RklHX0FYMjU9eQpDT05GSUdfQVgyNV9EQU1BX1NMQVZFPXkKQ09ORklHX05FVFJPTT15CiMgQ09O
-RklHX1JPU0UgaXMgbm90IHNldAoKIwojIEFYLjI1IG5ldHdvcmsgZGV2aWNlIGRyaXZlcnMKIwoj
-IENPTkZJR19NS0lTUyBpcyBub3Qgc2V0CkNPTkZJR182UEFDSz15CkNPTkZJR19CUFFFVEhFUj15
-CkNPTkZJR19CQVlDT01fU0VSX0ZEWD15CiMgQ09ORklHX0JBWUNPTV9TRVJfSERYIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfQkFZQ09NX1BBUiBpcyBub3Qgc2V0CkNPTkZJR19CQVlDT01fRVBQPXkKQ09O
-RklHX1lBTT15CkNPTkZJR19DQU49eQpDT05GSUdfQ0FOX1JBVz15CiMgQ09ORklHX0NBTl9CQ00g
-aXMgbm90IHNldAojIENPTkZJR19DQU5fR1cgaXMgbm90IHNldAoKIwojIENBTiBEZXZpY2UgRHJp
-dmVycwojCiMgQ09ORklHX0NBTl9WQ0FOIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0FOX1NMQ0FOIGlz
-IG5vdCBzZXQKQ09ORklHX0NBTl9ERVY9eQojIENPTkZJR19DQU5fQ0FMQ19CSVRUSU1JTkcgaXMg
-bm90IHNldAojIENPTkZJR19DQU5fTEVEUyBpcyBub3Qgc2V0CkNPTkZJR19DQU5fSkFOWl9JQ0FO
-Mz15CiMgQ09ORklHX1BDSF9DQU4gaXMgbm90IHNldApDT05GSUdfQ0FOX1NKQTEwMDA9eQpDT05G
-SUdfQ0FOX1NKQTEwMDBfSVNBPXkKIyBDT05GSUdfQ0FOX1NKQTEwMDBfUExBVEZPUk0gaXMgbm90
-IHNldApDT05GSUdfQ0FOX0VNU19QQ0k9eQpDT05GSUdfQ0FOX1BFQUtfUENJPXkKIyBDT05GSUdf
-Q0FOX1BFQUtfUENJRUMgaXMgbm90IHNldAojIENPTkZJR19DQU5fS1ZBU0VSX1BDSSBpcyBub3Qg
-c2V0CkNPTkZJR19DQU5fUExYX1BDST15CkNPTkZJR19DQU5fQ19DQU49eQojIENPTkZJR19DQU5f
-Q19DQU5fUExBVEZPUk0gaXMgbm90IHNldAojIENPTkZJR19DQU5fQ19DQU5fUENJIGlzIG5vdCBz
-ZXQKQ09ORklHX0NBTl9NX0NBTj15CiMgQ09ORklHX0NBTl9DQzc3MCBpcyBub3Qgc2V0CgojCiMg
-Q0FOIFNQSSBpbnRlcmZhY2VzCiMKQ09ORklHX0NBTl9NQ1AyNTFYPXkKCiMKIyBDQU4gVVNCIGlu
-dGVyZmFjZXMKIwpDT05GSUdfQ0FOX0VNU19VU0I9eQojIENPTkZJR19DQU5fRVNEX1VTQjIgaXMg
-bm90IHNldAojIENPTkZJR19DQU5fR1NfVVNCIGlzIG5vdCBzZXQKQ09ORklHX0NBTl9LVkFTRVJf
-VVNCPXkKQ09ORklHX0NBTl9QRUFLX1VTQj15CkNPTkZJR19DQU5fOERFVl9VU0I9eQpDT05GSUdf
-Q0FOX1NPRlRJTkc9eQojIENPTkZJR19DQU5fREVCVUdfREVWSUNFUyBpcyBub3Qgc2V0CkNPTkZJ
-R19JUkRBPXkKCiMKIyBJckRBIHByb3RvY29scwojCkNPTkZJR19JUkxBTj15CkNPTkZJR19JUk5F
-VD15CkNPTkZJR19JUkNPTU09eQojIENPTkZJR19JUkRBX1VMVFJBIGlzIG5vdCBzZXQKCiMKIyBJ
-ckRBIG9wdGlvbnMKIwpDT05GSUdfSVJEQV9DQUNIRV9MQVNUX0xTQVA9eQpDT05GSUdfSVJEQV9G
-QVNUX1JSPXkKIyBDT05GSUdfSVJEQV9ERUJVRyBpcyBub3Qgc2V0CgojCiMgSW5mcmFyZWQtcG9y
-dCBkZXZpY2UgZHJpdmVycwojCgojCiMgU0lSIGRldmljZSBkcml2ZXJzCiMKQ09ORklHX0lSVFRZ
-X1NJUj15CgojCiMgRG9uZ2xlIHN1cHBvcnQKIwojIENPTkZJR19ET05HTEUgaXMgbm90IHNldAoj
-IENPTkZJR19LSU5HU1VOX0RPTkdMRSBpcyBub3Qgc2V0CkNPTkZJR19LU0RBWlpMRV9ET05HTEU9
-eQojIENPTkZJR19LUzk1OV9ET05HTEUgaXMgbm90IHNldAoKIwojIEZJUiBkZXZpY2UgZHJpdmVy
-cwojCkNPTkZJR19VU0JfSVJEQT15CkNPTkZJR19TSUdNQVRFTF9GSVI9eQpDT05GSUdfTlNDX0ZJ
-Uj15CkNPTkZJR19XSU5CT05EX0ZJUj15CkNPTkZJR19UT1NISUJBX0ZJUj15CkNPTkZJR19TTUNf
-SVJDQ19GSVI9eQojIENPTkZJR19BTElfRklSIGlzIG5vdCBzZXQKIyBDT05GSUdfVkxTSV9GSVIg
-aXMgbm90IHNldApDT05GSUdfVklBX0ZJUj15CiMgQ09ORklHX01DU19GSVIgaXMgbm90IHNldApD
-T05GSUdfQlQ9eQojIENPTkZJR19CVF9SRkNPTU0gaXMgbm90IHNldAojIENPTkZJR19CVF9CTkVQ
-IGlzIG5vdCBzZXQKIyBDT05GSUdfQlRfQ01UUCBpcyBub3Qgc2V0CiMgQ09ORklHX0JUX0hJRFAg
-aXMgbm90IHNldAoKIwojIEJsdWV0b290aCBkZXZpY2UgZHJpdmVycwojCkNPTkZJR19CVF9IQ0lC
-VFVTQj15CkNPTkZJR19CVF9IQ0lVQVJUPXkKQ09ORklHX0JUX0hDSVVBUlRfSDQ9eQpDT05GSUdf
-QlRfSENJVUFSVF9CQ1NQPXkKIyBDT05GSUdfQlRfSENJVUFSVF9BVEgzSyBpcyBub3Qgc2V0CkNP
-TkZJR19CVF9IQ0lVQVJUX0xMPXkKQ09ORklHX0JUX0hDSVVBUlRfM1dJUkU9eQpDT05GSUdfQlRf
-SENJQkNNMjAzWD15CkNPTkZJR19CVF9IQ0lCUEExMFg9eQpDT05GSUdfQlRfSENJQkZVU0I9eQpD
-T05GSUdfQlRfSENJVkhDST15CiMgQ09ORklHX0JUX01SVkwgaXMgbm90IHNldAojIENPTkZJR19C
-VF9BVEgzSyBpcyBub3Qgc2V0CkNPTkZJR19CVF9XSUxJTks9eQpDT05GSUdfRklCX1JVTEVTPXkK
-IyBDT05GSUdfV0lSRUxFU1MgaXMgbm90IHNldApDT05GSUdfV0lNQVg9eQpDT05GSUdfV0lNQVhf
-REVCVUdfTEVWRUw9OApDT05GSUdfUkZLSUxMPXkKQ09ORklHX1JGS0lMTF9JTlBVVD15CkNPTkZJ
-R19SRktJTExfUkVHVUxBVE9SPXkKQ09ORklHX1JGS0lMTF9HUElPPXkKQ09ORklHX05FVF85UD15
-CkNPTkZJR19ORVRfOVBfVklSVElPPXkKIyBDT05GSUdfTkVUXzlQX0RFQlVHIGlzIG5vdCBzZXQK
-Q09ORklHX0NBSUY9eQpDT05GSUdfQ0FJRl9ERUJVRz15CkNPTkZJR19DQUlGX05FVERFVj15CkNP
-TkZJR19DQUlGX1VTQj15CkNPTkZJR19ORkM9eQpDT05GSUdfTkZDX0RJR0lUQUw9eQpDT05GSUdf
-TkZDX05DST15CiMgQ09ORklHX05GQ19OQ0lfU1BJIGlzIG5vdCBzZXQKIyBDT05GSUdfTkZDX0hD
-SSBpcyBub3Qgc2V0CgojCiMgTmVhciBGaWVsZCBDb21tdW5pY2F0aW9uIChORkMpIGRldmljZXMK
-IwpDT05GSUdfTkZDX1BONTMzPXkKQ09ORklHX05GQ19XSUxJTks9eQojIENPTkZJR19ORkNfVFJG
-Nzk3MEEgaXMgbm90IHNldApDT05GSUdfTkZDX1NJTT15CiMgQ09ORklHX05GQ19QT1JUMTAwIGlz
-IG5vdCBzZXQKQ09ORklHX05GQ19NUlZMPXkKQ09ORklHX05GQ19NUlZMX1VTQj15CkNPTkZJR19O
-RkNfU1QyMU5GQ0I9eQpDT05GSUdfTkZDX1NUMjFORkNCX0kyQz15CgojCiMgRGV2aWNlIERyaXZl
-cnMKIwoKIwojIEdlbmVyaWMgRHJpdmVyIE9wdGlvbnMKIwojIENPTkZJR19VRVZFTlRfSEVMUEVS
-IGlzIG5vdCBzZXQKIyBDT05GSUdfREVWVE1QRlMgaXMgbm90IHNldApDT05GSUdfU1RBTkRBTE9O
-RT15CiMgQ09ORklHX1BSRVZFTlRfRklSTVdBUkVfQlVJTEQgaXMgbm90IHNldApDT05GSUdfRldf
-TE9BREVSPXkKQ09ORklHX0ZJUk1XQVJFX0lOX0tFUk5FTD15CkNPTkZJR19FWFRSQV9GSVJNV0FS
-RT0iIgpDT05GSUdfRldfTE9BREVSX1VTRVJfSEVMUEVSPXkKIyBDT05GSUdfRldfTE9BREVSX1VT
-RVJfSEVMUEVSX0ZBTExCQUNLIGlzIG5vdCBzZXQKQ09ORklHX0FMTE9XX0RFVl9DT1JFRFVNUD15
-CiMgQ09ORklHX0RFQlVHX0RSSVZFUiBpcyBub3Qgc2V0CkNPTkZJR19ERUJVR19ERVZSRVM9eQoj
-IENPTkZJR19TWVNfSFlQRVJWSVNPUiBpcyBub3Qgc2V0CiMgQ09ORklHX0dFTkVSSUNfQ1BVX0RF
-VklDRVMgaXMgbm90IHNldApDT05GSUdfR0VORVJJQ19DUFVfQVVUT1BST0JFPXkKQ09ORklHX1JF
-R01BUD15CkNPTkZJR19SRUdNQVBfSTJDPXkKQ09ORklHX1JFR01BUF9TUEk9eQpDT05GSUdfUkVH
-TUFQX01NSU89eQpDT05GSUdfUkVHTUFQX0lSUT15CkNPTkZJR19ETUFfU0hBUkVEX0JVRkZFUj15
-CkNPTkZJR19GRU5DRV9UUkFDRT15CkNPTkZJR19ETUFfQ01BPXkKCiMKIyBEZWZhdWx0IGNvbnRp
-Z3VvdXMgbWVtb3J5IGFyZWEgc2l6ZToKIwpDT05GSUdfQ01BX1NJWkVfTUJZVEVTPTE2CkNPTkZJ
-R19DTUFfU0laRV9QRVJDRU5UQUdFPTEwCiMgQ09ORklHX0NNQV9TSVpFX1NFTF9NQllURVMgaXMg
-bm90IHNldAojIENPTkZJR19DTUFfU0laRV9TRUxfUEVSQ0VOVEFHRSBpcyBub3Qgc2V0CkNPTkZJ
-R19DTUFfU0laRV9TRUxfTUlOPXkKIyBDT05GSUdfQ01BX1NJWkVfU0VMX01BWCBpcyBub3Qgc2V0
-CkNPTkZJR19DTUFfQUxJR05NRU5UPTgKCiMKIyBCdXMgZGV2aWNlcwojCiMgQ09ORklHX0NPTk5F
-Q1RPUiBpcyBub3Qgc2V0CkNPTkZJR19NVEQ9eQpDT05GSUdfTVREX1JFREJPT1RfUEFSVFM9eQpD
-T05GSUdfTVREX1JFREJPT1RfRElSRUNUT1JZX0JMT0NLPS0xCkNPTkZJR19NVERfUkVEQk9PVF9Q
-QVJUU19VTkFMTE9DQVRFRD15CkNPTkZJR19NVERfUkVEQk9PVF9QQVJUU19SRUFET05MWT15CkNP
-TkZJR19NVERfQ01ETElORV9QQVJUUz15CkNPTkZJR19NVERfQVI3X1BBUlRTPXkKCiMKIyBVc2Vy
-IE1vZHVsZXMgQW5kIFRyYW5zbGF0aW9uIExheWVycwojCkNPTkZJR19NVERfQkxLREVWUz15CkNP
-TkZJR19NVERfQkxPQ0s9eQpDT05GSUdfRlRMPXkKQ09ORklHX05GVEw9eQojIENPTkZJR19ORlRM
-X1JXIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5GVEwgaXMgbm90IHNldAojIENPTkZJR19SRkRfRlRM
-IGlzIG5vdCBzZXQKIyBDT05GSUdfU1NGREMgaXMgbm90IHNldApDT05GSUdfU01fRlRMPXkKQ09O
-RklHX01URF9PT1BTPXkKIyBDT05GSUdfTVREX1NXQVAgaXMgbm90IHNldAoKIwojIFJBTS9ST00v
-Rmxhc2ggY2hpcCBkcml2ZXJzCiMKQ09ORklHX01URF9DRkk9eQpDT05GSUdfTVREX0pFREVDUFJP
-QkU9eQpDT05GSUdfTVREX0dFTl9QUk9CRT15CkNPTkZJR19NVERfQ0ZJX0FEVl9PUFRJT05TPXkK
-IyBDT05GSUdfTVREX0NGSV9OT1NXQVAgaXMgbm90IHNldAojIENPTkZJR19NVERfQ0ZJX0JFX0JZ
-VEVfU1dBUCBpcyBub3Qgc2V0CkNPTkZJR19NVERfQ0ZJX0xFX0JZVEVfU1dBUD15CkNPTkZJR19N
-VERfQ0ZJX0dFT01FVFJZPXkKIyBDT05GSUdfTVREX01BUF9CQU5LX1dJRFRIXzEgaXMgbm90IHNl
-dAojIENPTkZJR19NVERfTUFQX0JBTktfV0lEVEhfMiBpcyBub3Qgc2V0CkNPTkZJR19NVERfTUFQ
-X0JBTktfV0lEVEhfND15CkNPTkZJR19NVERfTUFQX0JBTktfV0lEVEhfOD15CkNPTkZJR19NVERf
-TUFQX0JBTktfV0lEVEhfMTY9eQpDT05GSUdfTVREX01BUF9CQU5LX1dJRFRIXzMyPXkKIyBDT05G
-SUdfTVREX0NGSV9JMSBpcyBub3Qgc2V0CkNPTkZJR19NVERfQ0ZJX0kyPXkKQ09ORklHX01URF9D
-RklfSTQ9eQojIENPTkZJR19NVERfQ0ZJX0k4IGlzIG5vdCBzZXQKIyBDT05GSUdfTVREX09UUCBp
-cyBub3Qgc2V0CkNPTkZJR19NVERfQ0ZJX0lOVEVMRVhUPXkKQ09ORklHX01URF9DRklfQU1EU1RE
-PXkKIyBDT05GSUdfTVREX0NGSV9TVEFBIGlzIG5vdCBzZXQKQ09ORklHX01URF9DRklfVVRJTD15
-CkNPTkZJR19NVERfUkFNPXkKQ09ORklHX01URF9ST009eQpDT05GSUdfTVREX0FCU0VOVD15Cgoj
-CiMgTWFwcGluZyBkcml2ZXJzIGZvciBjaGlwIGFjY2VzcwojCkNPTkZJR19NVERfQ09NUExFWF9N
-QVBQSU5HUz15CkNPTkZJR19NVERfUEhZU01BUD15CiMgQ09ORklHX01URF9QSFlTTUFQX0NPTVBB
-VCBpcyBub3Qgc2V0CkNPTkZJR19NVERfU0JDX0dYWD15CkNPTkZJR19NVERfU0N4MjAwX0RPQ0ZM
-QVNIPXkKQ09ORklHX01URF9BTUQ3NlhST009eQojIENPTkZJR19NVERfSUNIWFJPTSBpcyBub3Qg
-c2V0CkNPTkZJR19NVERfRVNCMlJPTT15CkNPTkZJR19NVERfQ0s4MDRYUk9NPXkKIyBDT05GSUdf
-TVREX1NDQjJfRkxBU0ggaXMgbm90IHNldAojIENPTkZJR19NVERfTkVUdGVsIGlzIG5vdCBzZXQK
-IyBDT05GSUdfTVREX0w0NDBHWCBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9QQ0kgaXMgbm90IHNl
-dAojIENPTkZJR19NVERfR1BJT19BRERSIGlzIG5vdCBzZXQKQ09ORklHX01URF9JTlRFTF9WUl9O
-T1I9eQpDT05GSUdfTVREX1BMQVRSQU09eQojIENPTkZJR19NVERfTEFUQ0hfQUREUiBpcyBub3Qg
-c2V0CgojCiMgU2VsZi1jb250YWluZWQgTVREIGRldmljZSBkcml2ZXJzCiMKQ09ORklHX01URF9Q
-TUM1NTE9eQpDT05GSUdfTVREX1BNQzU1MV9CVUdGSVg9eQpDT05GSUdfTVREX1BNQzU1MV9ERUJV
-Rz15CkNPTkZJR19NVERfREFUQUZMQVNIPXkKIyBDT05GSUdfTVREX0RBVEFGTEFTSF9XUklURV9W
-RVJJRlkgaXMgbm90IHNldApDT05GSUdfTVREX0RBVEFGTEFTSF9PVFA9eQpDT05GSUdfTVREX00y
-NVA4MD15CkNPTkZJR19NVERfU1NUMjVMPXkKQ09ORklHX01URF9TTFJBTT15CkNPTkZJR19NVERf
-UEhSQU09eQojIENPTkZJR19NVERfTVREUkFNIGlzIG5vdCBzZXQKIyBDT05GSUdfTVREX0JMT0NL
-Mk1URCBpcyBub3Qgc2V0CgojCiMgRGlzay1Pbi1DaGlwIERldmljZSBEcml2ZXJzCiMKQ09ORklH
-X01URF9ET0NHMz15CkNPTkZJR19CQ0hfQ09OU1RfTT0xNApDT05GSUdfQkNIX0NPTlNUX1Q9NApD
-T05GSUdfTVREX05BTkRfRUNDPXkKQ09ORklHX01URF9OQU5EX0VDQ19TTUM9eQojIENPTkZJR19N
-VERfTkFORCBpcyBub3Qgc2V0CkNPTkZJR19NVERfT05FTkFORD15CkNPTkZJR19NVERfT05FTkFO
-RF9WRVJJRllfV1JJVEU9eQpDT05GSUdfTVREX09ORU5BTkRfR0VORVJJQz15CkNPTkZJR19NVERf
-T05FTkFORF9PVFA9eQpDT05GSUdfTVREX09ORU5BTkRfMlhfUFJPR1JBTT15CgojCiMgTFBERFIg
-JiBMUEREUjIgUENNIG1lbW9yeSBkcml2ZXJzCiMKQ09ORklHX01URF9MUEREUj15CkNPTkZJR19N
-VERfUUlORk9fUFJPQkU9eQpDT05GSUdfTVREX1NQSV9OT1I9eQojIENPTkZJR19NVERfU1BJX05P
-Ul9VU0VfNEtfU0VDVE9SUyBpcyBub3Qgc2V0CkNPTkZJR19NVERfVUJJPXkKQ09ORklHX01URF9V
-QklfV0xfVEhSRVNIT0xEPTQwOTYKQ09ORklHX01URF9VQklfQkVCX0xJTUlUPTIwCiMgQ09ORklH
-X01URF9VQklfRkFTVE1BUCBpcyBub3Qgc2V0CkNPTkZJR19NVERfVUJJX0dMVUVCST15CkNPTkZJ
-R19NVERfVUJJX0JMT0NLPXkKQ09ORklHX0FSQ0hfTUlHSFRfSEFWRV9QQ19QQVJQT1JUPXkKQ09O
-RklHX1BBUlBPUlQ9eQojIENPTkZJR19QQVJQT1JUX1BDIGlzIG5vdCBzZXQKIyBDT05GSUdfUEFS
-UE9SVF9HU0MgaXMgbm90IHNldAojIENPTkZJR19QQVJQT1JUX0FYODg3OTYgaXMgbm90IHNldApD
-T05GSUdfUEFSUE9SVF8xMjg0PXkKQ09ORklHX1BBUlBPUlRfTk9UX1BDPXkKQ09ORklHX1BOUD15
-CkNPTkZJR19QTlBfREVCVUdfTUVTU0FHRVM9eQoKIwojIFByb3RvY29scwojCkNPTkZJR19QTlBB
-Q1BJPXkKQ09ORklHX0JMS19ERVY9eQojIENPTkZJR19CTEtfREVWX05VTExfQkxLIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfQkxLX0RFVl9GRCBpcyBub3Qgc2V0CiMgQ09ORklHX0JMS19ERVZfUENJRVNT
-RF9NVElQMzJYWCBpcyBub3Qgc2V0CiMgQ09ORklHX1pSQU0gaXMgbm90IHNldAojIENPTkZJR19C
-TEtfQ1BRX0NJU1NfREEgaXMgbm90IHNldAojIENPTkZJR19CTEtfREVWX0RBQzk2MCBpcyBub3Qg
-c2V0CiMgQ09ORklHX0JMS19ERVZfVU1FTSBpcyBub3Qgc2V0CiMgQ09ORklHX0JMS19ERVZfQ09X
-X0NPTU1PTiBpcyBub3Qgc2V0CiMgQ09ORklHX0JMS19ERVZfTE9PUCBpcyBub3Qgc2V0CgojCiMg
-RFJCRCBkaXNhYmxlZCBiZWNhdXNlIFBST0NfRlMgb3IgSU5FVCBub3Qgc2VsZWN0ZWQKIwojIENP
-TkZJR19CTEtfREVWX05CRCBpcyBub3Qgc2V0CiMgQ09ORklHX0JMS19ERVZfTlZNRSBpcyBub3Qg
-c2V0CiMgQ09ORklHX0JMS19ERVZfU1g4IGlzIG5vdCBzZXQKIyBDT05GSUdfQkxLX0RFVl9SQU0g
-aXMgbm90IHNldAojIENPTkZJR19DRFJPTV9QS1RDRFZEIGlzIG5vdCBzZXQKIyBDT05GSUdfQVRB
-X09WRVJfRVRIIGlzIG5vdCBzZXQKIyBDT05GSUdfVklSVElPX0JMSyBpcyBub3Qgc2V0CiMgQ09O
-RklHX0JMS19ERVZfSEQgaXMgbm90IHNldAojIENPTkZJR19CTEtfREVWX1JTWFggaXMgbm90IHNl
-dAoKIwojIE1pc2MgZGV2aWNlcwojCkNPTkZJR19TRU5TT1JTX0xJUzNMVjAyRD15CkNPTkZJR19B
-RDUyNVhfRFBPVD15CiMgQ09ORklHX0FENTI1WF9EUE9UX0kyQyBpcyBub3Qgc2V0CkNPTkZJR19B
-RDUyNVhfRFBPVF9TUEk9eQpDT05GSUdfRFVNTVlfSVJRPXkKQ09ORklHX0lCTV9BU009eQpDT05G
-SUdfUEhBTlRPTT15CkNPTkZJR19TR0lfSU9DND15CkNPTkZJR19USUZNX0NPUkU9eQpDT05GSUdf
-VElGTV83WFgxPXkKQ09ORklHX0lDUzkzMlM0MDE9eQpDT05GSUdfRU5DTE9TVVJFX1NFUlZJQ0VT
-PXkKQ09ORklHX0hQX0lMTz15CkNPTkZJR19BUERTOTgwMkFMUz15CkNPTkZJR19JU0wyOTAwMz15
-CkNPTkZJR19JU0wyOTAyMD15CiMgQ09ORklHX1NFTlNPUlNfVFNMMjU1MCBpcyBub3Qgc2V0CkNP
-TkZJR19TRU5TT1JTX0JIMTc4MD15CiMgQ09ORklHX1NFTlNPUlNfQkgxNzcwIGlzIG5vdCBzZXQK
-IyBDT05GSUdfU0VOU09SU19BUERTOTkwWCBpcyBub3Qgc2V0CkNPTkZJR19ITUM2MzUyPXkKQ09O
-RklHX0RTMTY4Mj15CiMgQ09ORklHX1RJX0RBQzc1MTIgaXMgbm90IHNldAojIENPTkZJR19WTVdB
-UkVfQkFMTE9PTiBpcyBub3Qgc2V0CkNPTkZJR19CTVAwODU9eQpDT05GSUdfQk1QMDg1X0kyQz15
-CkNPTkZJR19CTVAwODVfU1BJPXkKQ09ORklHX1BDSF9QSFVCPXkKQ09ORklHX1VTQl9TV0lUQ0hf
-RlNBOTQ4MD15CiMgQ09ORklHX0xBVFRJQ0VfRUNQM19DT05GSUcgaXMgbm90IHNldApDT05GSUdf
-U1JBTT15CkNPTkZJR19DMlBPUlQ9eQojIENPTkZJR19DMlBPUlRfRFVSQU1BUl8yMTUwIGlzIG5v
-dCBzZXQKCiMKIyBFRVBST00gc3VwcG9ydAojCkNPTkZJR19FRVBST01fQVQyND15CiMgQ09ORklH
-X0VFUFJPTV9BVDI1IGlzIG5vdCBzZXQKQ09ORklHX0VFUFJPTV9MRUdBQ1k9eQpDT05GSUdfRUVQ
-Uk9NX01BWDY4NzU9eQojIENPTkZJR19FRVBST01fOTNDWDYgaXMgbm90IHNldApDT05GSUdfRUVQ
-Uk9NXzkzWFg0Nj15CkNPTkZJR19DQjcxMF9DT1JFPXkKIyBDT05GSUdfQ0I3MTBfREVCVUcgaXMg
-bm90IHNldApDT05GSUdfQ0I3MTBfREVCVUdfQVNTVU1QVElPTlM9eQoKIwojIFRleGFzIEluc3Ry
-dW1lbnRzIHNoYXJlZCB0cmFuc3BvcnQgbGluZSBkaXNjaXBsaW5lCiMKQ09ORklHX1RJX1NUPXkK
-Q09ORklHX1NFTlNPUlNfTElTM19JMkM9eQoKIwojIEFsdGVyYSBGUEdBIGZpcm13YXJlIGRvd25s
-b2FkIG1vZHVsZQojCiMgQ09ORklHX0FMVEVSQV9TVEFQTCBpcyBub3Qgc2V0CkNPTkZJR19JTlRF
-TF9NRUk9eQpDT05GSUdfSU5URUxfTUVJX01FPXkKQ09ORklHX0lOVEVMX01FSV9UWEU9eQojIENP
-TkZJR19WTVdBUkVfVk1DSSBpcyBub3Qgc2V0CgojCiMgSW50ZWwgTUlDIEJ1cyBEcml2ZXIKIwoK
-IwojIEludGVsIE1JQyBIb3N0IERyaXZlcgojCgojCiMgSW50ZWwgTUlDIENhcmQgRHJpdmVyCiMK
-Q09ORklHX0VDSE89eQojIENPTkZJR19DWExfQkFTRSBpcyBub3Qgc2V0CkNPTkZJR19IQVZFX0lE
-RT15CkNPTkZJR19JREU9eQoKIwojIFBsZWFzZSBzZWUgRG9jdW1lbnRhdGlvbi9pZGUvaWRlLnR4
-dCBmb3IgaGVscC9pbmZvIG9uIElERSBkcml2ZXMKIwpDT05GSUdfSURFX1hGRVJfTU9ERT15CkNP
-TkZJR19JREVfQVRBUEk9eQpDT05GSUdfQkxLX0RFVl9JREVfU0FUQT15CkNPTkZJR19JREVfR0Q9
-eQojIENPTkZJR19JREVfR0RfQVRBIGlzIG5vdCBzZXQKQ09ORklHX0lERV9HRF9BVEFQST15CiMg
-Q09ORklHX0JMS19ERVZfREVMS0lOIGlzIG5vdCBzZXQKIyBDT05GSUdfQkxLX0RFVl9JREVDRCBp
-cyBub3Qgc2V0CkNPTkZJR19CTEtfREVWX0lERVRBUEU9eQpDT05GSUdfQkxLX0RFVl9JREVBQ1BJ
-PXkKQ09ORklHX0lERV9UQVNLX0lPQ1RMPXkKIyBDT05GSUdfSURFX1BST0NfRlMgaXMgbm90IHNl
-dAoKIwojIElERSBjaGlwc2V0IHN1cHBvcnQvYnVnZml4ZXMKIwpDT05GSUdfSURFX0dFTkVSSUM9
-eQpDT05GSUdfQkxLX0RFVl9QTEFURk9STT15CiMgQ09ORklHX0JMS19ERVZfQ01ENjQwIGlzIG5v
-dCBzZXQKQ09ORklHX0JMS19ERVZfSURFUE5QPXkKQ09ORklHX0JMS19ERVZfSURFRE1BX1NGRj15
-CgojCiMgUENJIElERSBjaGlwc2V0cyBzdXBwb3J0CiMKQ09ORklHX0JMS19ERVZfSURFUENJPXkK
-Q09ORklHX0lERVBDSV9QQ0lCVVNfT1JERVI9eQpDT05GSUdfQkxLX0RFVl9PRkZCT0FSRD15CkNP
-TkZJR19CTEtfREVWX0dFTkVSSUM9eQpDT05GSUdfQkxLX0RFVl9PUFRJNjIxPXkKQ09ORklHX0JM
-S19ERVZfUloxMDAwPXkKQ09ORklHX0JMS19ERVZfSURFRE1BX1BDST15CkNPTkZJR19CTEtfREVW
-X0FFQzYyWFg9eQojIENPTkZJR19CTEtfREVWX0FMSTE1WDMgaXMgbm90IHNldAojIENPTkZJR19C
-TEtfREVWX0FNRDc0WFggaXMgbm90IHNldApDT05GSUdfQkxLX0RFVl9BVElJWFA9eQojIENPTkZJ
-R19CTEtfREVWX0NNRDY0WCBpcyBub3Qgc2V0CkNPTkZJR19CTEtfREVWX1RSSUZMRVg9eQpDT05G
-SUdfQkxLX0RFVl9DUzU1MjA9eQpDT05GSUdfQkxLX0RFVl9DUzU1MzA9eQojIENPTkZJR19CTEtf
-REVWX0NTNTUzNSBpcyBub3Qgc2V0CkNPTkZJR19CTEtfREVWX0NTNTUzNj15CiMgQ09ORklHX0JM
-S19ERVZfSFBUMzY2IGlzIG5vdCBzZXQKQ09ORklHX0JMS19ERVZfSk1JQ1JPTj15CkNPTkZJR19C
-TEtfREVWX1NDMTIwMD15CiMgQ09ORklHX0JMS19ERVZfUElJWCBpcyBub3Qgc2V0CkNPTkZJR19C
-TEtfREVWX0lUODE3Mj15CkNPTkZJR19CTEtfREVWX0lUODIxMz15CkNPTkZJR19CTEtfREVWX0lU
-ODIxWD15CkNPTkZJR19CTEtfREVWX05TODc0MTU9eQpDT05GSUdfQkxLX0RFVl9QREMyMDJYWF9P
-TEQ9eQpDT05GSUdfQkxLX0RFVl9QREMyMDJYWF9ORVc9eQpDT05GSUdfQkxLX0RFVl9TVldLUz15
-CiMgQ09ORklHX0JMS19ERVZfU0lJTUFHRSBpcyBub3Qgc2V0CkNPTkZJR19CTEtfREVWX1NJUzU1
-MTM9eQpDT05GSUdfQkxLX0RFVl9TTEM5MEU2Nj15CiMgQ09ORklHX0JMS19ERVZfVFJNMjkwIGlz
-IG5vdCBzZXQKIyBDT05GSUdfQkxLX0RFVl9WSUE4MkNYWFggaXMgbm90IHNldAojIENPTkZJR19C
-TEtfREVWX1RDODZDMDAxIGlzIG5vdCBzZXQKQ09ORklHX0JMS19ERVZfSURFRE1BPXkKCiMKIyBT
-Q1NJIGRldmljZSBzdXBwb3J0CiMKQ09ORklHX1NDU0lfTU9EPXkKIyBDT05GSUdfUkFJRF9BVFRS
-UyBpcyBub3Qgc2V0CkNPTkZJR19TQ1NJPXkKQ09ORklHX1NDU0lfRE1BPXkKQ09ORklHX1NDU0lf
-TkVUTElOSz15CiMgQ09ORklHX1NDU0lfTVFfREVGQVVMVCBpcyBub3Qgc2V0CkNPTkZJR19TQ1NJ
-X1BST0NfRlM9eQoKIwojIFNDU0kgc3VwcG9ydCB0eXBlIChkaXNrLCB0YXBlLCBDRC1ST00pCiMK
-Q09ORklHX0JMS19ERVZfU0Q9eQpDT05GSUdfQ0hSX0RFVl9TVD15CkNPTkZJR19DSFJfREVWX09T
-U1Q9eQpDT05GSUdfQkxLX0RFVl9TUj15CiMgQ09ORklHX0JMS19ERVZfU1JfVkVORE9SIGlzIG5v
-dCBzZXQKQ09ORklHX0NIUl9ERVZfU0c9eQpDT05GSUdfQ0hSX0RFVl9TQ0g9eQojIENPTkZJR19T
-Q1NJX0VOQ0xPU1VSRSBpcyBub3Qgc2V0CkNPTkZJR19TQ1NJX0NPTlNUQU5UUz15CkNPTkZJR19T
-Q1NJX0xPR0dJTkc9eQojIENPTkZJR19TQ1NJX1NDQU5fQVNZTkMgaXMgbm90IHNldAoKIwojIFND
-U0kgVHJhbnNwb3J0cwojCkNPTkZJR19TQ1NJX1NQSV9BVFRSUz15CkNPTkZJR19TQ1NJX0ZDX0FU
-VFJTPXkKQ09ORklHX1NDU0lfSVNDU0lfQVRUUlM9eQpDT05GSUdfU0NTSV9TQVNfQVRUUlM9eQoj
-IENPTkZJR19TQ1NJX1NBU19MSUJTQVMgaXMgbm90IHNldApDT05GSUdfU0NTSV9TUlBfQVRUUlM9
-eQojIENPTkZJR19TQ1NJX0xPV0xFVkVMIGlzIG5vdCBzZXQKQ09ORklHX1NDU0lfREg9eQojIENP
-TkZJR19TQ1NJX0RIX1JEQUMgaXMgbm90IHNldAojIENPTkZJR19TQ1NJX0RIX0hQX1NXIGlzIG5v
-dCBzZXQKQ09ORklHX1NDU0lfREhfRU1DPXkKQ09ORklHX1NDU0lfREhfQUxVQT15CkNPTkZJR19T
-Q1NJX09TRF9JTklUSUFUT1I9eQojIENPTkZJR19TQ1NJX09TRF9VTEQgaXMgbm90IHNldApDT05G
-SUdfU0NTSV9PU0RfRFBSSU5UX1NFTlNFPTEKQ09ORklHX1NDU0lfT1NEX0RFQlVHPXkKQ09ORklH
-X0FUQT15CiMgQ09ORklHX0FUQV9OT05TVEFOREFSRCBpcyBub3Qgc2V0CkNPTkZJR19BVEFfVkVS
-Qk9TRV9FUlJPUj15CiMgQ09ORklHX0FUQV9BQ1BJIGlzIG5vdCBzZXQKQ09ORklHX1NBVEFfUE1Q
-PXkKCiMKIyBDb250cm9sbGVycyB3aXRoIG5vbi1TRkYgbmF0aXZlIGludGVyZmFjZQojCkNPTkZJ
-R19TQVRBX0FIQ0k9eQpDT05GSUdfU0FUQV9BSENJX1BMQVRGT1JNPXkKQ09ORklHX1NBVEFfSU5J
-QzE2Mlg9eQpDT05GSUdfU0FUQV9BQ0FSRF9BSENJPXkKQ09ORklHX1NBVEFfU0lMMjQ9eQpDT05G
-SUdfQVRBX1NGRj15CgojCiMgU0ZGIGNvbnRyb2xsZXJzIHdpdGggY3VzdG9tIERNQSBpbnRlcmZh
-Y2UKIwpDT05GSUdfUERDX0FETUE9eQpDT05GSUdfU0FUQV9RU1RPUj15CkNPTkZJR19TQVRBX1NY
-ND15CkNPTkZJR19BVEFfQk1ETUE9eQoKIwojIFNBVEEgU0ZGIGNvbnRyb2xsZXJzIHdpdGggQk1E
-TUEKIwpDT05GSUdfQVRBX1BJSVg9eQojIENPTkZJR19TQVRBX01WIGlzIG5vdCBzZXQKQ09ORklH
-X1NBVEFfTlY9eQpDT05GSUdfU0FUQV9QUk9NSVNFPXkKQ09ORklHX1NBVEFfU0lMPXkKQ09ORklH
-X1NBVEFfU0lTPXkKQ09ORklHX1NBVEFfU1ZXPXkKQ09ORklHX1NBVEFfVUxJPXkKQ09ORklHX1NB
-VEFfVklBPXkKQ09ORklHX1NBVEFfVklURVNTRT15CgojCiMgUEFUQSBTRkYgY29udHJvbGxlcnMg
-d2l0aCBCTURNQQojCiMgQ09ORklHX1BBVEFfQUxJIGlzIG5vdCBzZXQKIyBDT05GSUdfUEFUQV9B
-TUQgaXMgbm90IHNldAojIENPTkZJR19QQVRBX0FSVE9QIGlzIG5vdCBzZXQKIyBDT05GSUdfUEFU
-QV9BVElJWFAgaXMgbm90IHNldApDT05GSUdfUEFUQV9BVFA4NjdYPXkKIyBDT05GSUdfUEFUQV9D
-TUQ2NFggaXMgbm90IHNldApDT05GSUdfUEFUQV9DUzU1MjA9eQpDT05GSUdfUEFUQV9DUzU1MzA9
-eQojIENPTkZJR19QQVRBX0NTNTUzNSBpcyBub3Qgc2V0CiMgQ09ORklHX1BBVEFfQ1M1NTM2IGlz
-IG5vdCBzZXQKQ09ORklHX1BBVEFfQ1lQUkVTUz15CiMgQ09ORklHX1BBVEFfRUZBUiBpcyBub3Qg
-c2V0CkNPTkZJR19QQVRBX0hQVDM2Nj15CkNPTkZJR19QQVRBX0hQVDM3WD15CiMgQ09ORklHX1BB
-VEFfSFBUM1gyTiBpcyBub3Qgc2V0CiMgQ09ORklHX1BBVEFfSFBUM1gzIGlzIG5vdCBzZXQKQ09O
-RklHX1BBVEFfSVQ4MjEzPXkKQ09ORklHX1BBVEFfSVQ4MjFYPXkKQ09ORklHX1BBVEFfSk1JQ1JP
-Tj15CkNPTkZJR19QQVRBX01BUlZFTEw9eQpDT05GSUdfUEFUQV9ORVRDRUxMPXkKIyBDT05GSUdf
-UEFUQV9OSU5KQTMyIGlzIG5vdCBzZXQKQ09ORklHX1BBVEFfTlM4NzQxNT15CiMgQ09ORklHX1BB
-VEFfT0xEUElJWCBpcyBub3Qgc2V0CkNPTkZJR19QQVRBX09QVElETUE9eQpDT05GSUdfUEFUQV9Q
-REMyMDI3WD15CkNPTkZJR19QQVRBX1BEQ19PTEQ9eQpDT05GSUdfUEFUQV9SQURJU1lTPXkKQ09O
-RklHX1BBVEFfUkRDPXkKQ09ORklHX1BBVEFfU0MxMjAwPXkKQ09ORklHX1BBVEFfU0NIPXkKIyBD
-T05GSUdfUEFUQV9TRVJWRVJXT1JLUyBpcyBub3Qgc2V0CkNPTkZJR19QQVRBX1NJTDY4MD15CkNP
-TkZJR19QQVRBX1NJUz15CkNPTkZJR19QQVRBX1RPU0hJQkE9eQpDT05GSUdfUEFUQV9UUklGTEVY
-PXkKQ09ORklHX1BBVEFfVklBPXkKQ09ORklHX1BBVEFfV0lOQk9ORD15CgojCiMgUElPLW9ubHkg
-U0ZGIGNvbnRyb2xsZXJzCiMKQ09ORklHX1BBVEFfQ01ENjQwX1BDST15CkNPTkZJR19QQVRBX01Q
-SUlYPXkKQ09ORklHX1BBVEFfTlM4NzQxMD15CiMgQ09ORklHX1BBVEFfT1BUSSBpcyBub3Qgc2V0
-CiMgQ09ORklHX1BBVEFfUloxMDAwIGlzIG5vdCBzZXQKCiMKIyBHZW5lcmljIGZhbGxiYWNrIC8g
-bGVnYWN5IGRyaXZlcnMKIwojIENPTkZJR19BVEFfR0VORVJJQyBpcyBub3Qgc2V0CkNPTkZJR19Q
-QVRBX0xFR0FDWT15CiMgQ09ORklHX01EIGlzIG5vdCBzZXQKQ09ORklHX1RBUkdFVF9DT1JFPXkK
-Q09ORklHX1RDTV9JQkxPQ0s9eQojIENPTkZJR19UQ01fRklMRUlPIGlzIG5vdCBzZXQKIyBDT05G
-SUdfVENNX1BTQ1NJIGlzIG5vdCBzZXQKIyBDT05GSUdfVENNX1VTRVIgaXMgbm90IHNldApDT05G
-SUdfTE9PUEJBQ0tfVEFSR0VUPXkKIyBDT05GSUdfSVNDU0lfVEFSR0VUIGlzIG5vdCBzZXQKQ09O
-RklHX0ZVU0lPTj15CkNPTkZJR19GVVNJT05fU1BJPXkKIyBDT05GSUdfRlVTSU9OX0ZDIGlzIG5v
-dCBzZXQKQ09ORklHX0ZVU0lPTl9TQVM9eQpDT05GSUdfRlVTSU9OX01BWF9TR0U9MTI4CkNPTkZJ
-R19GVVNJT05fQ1RMPXkKIyBDT05GSUdfRlVTSU9OX0xPR0dJTkcgaXMgbm90IHNldAoKIwojIElF
-RUUgMTM5NCAoRmlyZVdpcmUpIHN1cHBvcnQKIwojIENPTkZJR19GSVJFV0lSRSBpcyBub3Qgc2V0
-CkNPTkZJR19GSVJFV0lSRV9OT1NZPXkKQ09ORklHX0kyTz15CiMgQ09ORklHX0kyT19MQ1RfTk9U
-SUZZX09OX0NIQU5HRVMgaXMgbm90IHNldAojIENPTkZJR19JMk9fRVhUX0FEQVBURUMgaXMgbm90
-IHNldApDT05GSUdfSTJPX0NPTkZJRz15CiMgQ09ORklHX0kyT19DT05GSUdfT0xEX0lPQ1RMIGlz
-IG5vdCBzZXQKIyBDT05GSUdfSTJPX0JVUyBpcyBub3Qgc2V0CkNPTkZJR19JMk9fQkxPQ0s9eQpD
-T05GSUdfSTJPX1NDU0k9eQpDT05GSUdfSTJPX1BST0M9eQojIENPTkZJR19NQUNJTlRPU0hfRFJJ
-VkVSUyBpcyBub3Qgc2V0CkNPTkZJR19ORVRERVZJQ0VTPXkKQ09ORklHX01JST15CkNPTkZJR19O
-RVRfQ09SRT15CiMgQ09ORklHX0RVTU1ZIGlzIG5vdCBzZXQKQ09ORklHX0VRVUFMSVpFUj15CkNP
-TkZJR19ORVRfRkM9eQpDT05GSUdfTkVUX1RFQU09eQpDT05GSUdfTkVUX1RFQU1fTU9ERV9CUk9B
-RENBU1Q9eQojIENPTkZJR19ORVRfVEVBTV9NT0RFX1JPVU5EUk9CSU4gaXMgbm90IHNldApDT05G
-SUdfTkVUX1RFQU1fTU9ERV9SQU5ET009eQpDT05GSUdfTkVUX1RFQU1fTU9ERV9BQ1RJVkVCQUNL
-VVA9eQpDT05GSUdfTkVUX1RFQU1fTU9ERV9MT0FEQkFMQU5DRT15CkNPTkZJR19NQUNWTEFOPXkK
-IyBDT05GSUdfTkVUQ09OU09MRSBpcyBub3Qgc2V0CiMgQ09ORklHX05FVFBPTEwgaXMgbm90IHNl
-dAojIENPTkZJR19ORVRfUE9MTF9DT05UUk9MTEVSIGlzIG5vdCBzZXQKIyBDT05GSUdfUklPTkVU
-IGlzIG5vdCBzZXQKQ09ORklHX1ZFVEg9eQpDT05GSUdfVklSVElPX05FVD15CkNPTkZJR19OTE1P
-Tj15CkNPTkZJR19BUkNORVQ9eQojIENPTkZJR19BUkNORVRfMTIwMSBpcyBub3Qgc2V0CiMgQ09O
-RklHX0FSQ05FVF8xMDUxIGlzIG5vdCBzZXQKQ09ORklHX0FSQ05FVF9SQVc9eQojIENPTkZJR19B
-UkNORVRfQ0FQIGlzIG5vdCBzZXQKIyBDT05GSUdfQVJDTkVUX0NPTTkweHggaXMgbm90IHNldAoj
-IENPTkZJR19BUkNORVRfQ09NOTB4eElPIGlzIG5vdCBzZXQKIyBDT05GSUdfQVJDTkVUX1JJTV9J
-IGlzIG5vdCBzZXQKQ09ORklHX0FSQ05FVF9DT00yMDAyMD15CiMgQ09ORklHX0FSQ05FVF9DT00y
-MDAyMF9QQ0kgaXMgbm90IHNldAojIENPTkZJR19BVE1fRFJJVkVSUyBpcyBub3Qgc2V0CgojCiMg
-Q0FJRiB0cmFuc3BvcnQgZHJpdmVycwojCiMgQ09ORklHX0NBSUZfVFRZIGlzIG5vdCBzZXQKIyBD
-T05GSUdfQ0FJRl9TUElfU0xBVkUgaXMgbm90IHNldApDT05GSUdfQ0FJRl9IU0k9eQpDT05GSUdf
-Q0FJRl9WSVJUSU89eQpDT05GSUdfVkhPU1RfTkVUPXkKQ09ORklHX1ZIT1NUX1JJTkc9eQpDT05G
-SUdfVkhPU1Q9eQoKIwojIERpc3RyaWJ1dGVkIFN3aXRjaCBBcmNoaXRlY3R1cmUgZHJpdmVycwoj
-CkNPTkZJR19ORVRfRFNBX01WODhFNlhYWD15CkNPTkZJR19ORVRfRFNBX01WODhFNjA2MD15CkNP
-TkZJR19ORVRfRFNBX01WODhFNlhYWF9ORUVEX1BQVT15CkNPTkZJR19ORVRfRFNBX01WODhFNjEz
-MT15CiMgQ09ORklHX05FVF9EU0FfTVY4OEU2MTIzXzYxXzY1IGlzIG5vdCBzZXQKIyBDT05GSUdf
-TkVUX0RTQV9NVjg4RTYxNzEgaXMgbm90IHNldAojIENPTkZJR19ORVRfRFNBX0JDTV9TRjIgaXMg
-bm90IHNldAojIENPTkZJR19FVEhFUk5FVCBpcyBub3Qgc2V0CkNPTkZJR19GRERJPXkKQ09ORklH
-X0RFRlhYPXkKQ09ORklHX0RFRlhYX01NSU89eQpDT05GSUdfU0tGUD15CiMgQ09ORklHX05FVF9T
-QjEwMDAgaXMgbm90IHNldApDT05GSUdfUEhZTElCPXkKCiMKIyBNSUkgUEhZIGRldmljZSBkcml2
-ZXJzCiMKQ09ORklHX0FUODAzWF9QSFk9eQpDT05GSUdfQU1EX1BIWT15CkNPTkZJR19NQVJWRUxM
-X1BIWT15CkNPTkZJR19EQVZJQ09NX1BIWT15CkNPTkZJR19RU0VNSV9QSFk9eQpDT05GSUdfTFhU
-X1BIWT15CkNPTkZJR19DSUNBREFfUEhZPXkKQ09ORklHX1ZJVEVTU0VfUEhZPXkKQ09ORklHX1NN
-U0NfUEhZPXkKQ09ORklHX0JST0FEQ09NX1BIWT15CkNPTkZJR19CQ003WFhYX1BIWT15CiMgQ09O
-RklHX0JDTTg3WFhfUEhZIGlzIG5vdCBzZXQKIyBDT05GSUdfSUNQTFVTX1BIWSBpcyBub3Qgc2V0
-CiMgQ09ORklHX1JFQUxURUtfUEhZIGlzIG5vdCBzZXQKQ09ORklHX05BVElPTkFMX1BIWT15CkNP
-TkZJR19TVEUxMFhQPXkKIyBDT05GSUdfTFNJX0VUMTAxMUNfUEhZIGlzIG5vdCBzZXQKQ09ORklH
-X01JQ1JFTF9QSFk9eQpDT05GSUdfRklYRURfUEhZPXkKQ09ORklHX01ESU9fQklUQkFORz15CiMg
-Q09ORklHX01ESU9fR1BJTyBpcyBub3Qgc2V0CkNPTkZJR19NRElPX0JDTV9VTklNQUM9eQpDT05G
-SUdfTUlDUkVMX0tTODk5NU1BPXkKIyBDT05GSUdfUExJUCBpcyBub3Qgc2V0CkNPTkZJR19QUFA9
-eQpDT05GSUdfUFBQX0JTRENPTVA9eQpDT05GSUdfUFBQX0RFRkxBVEU9eQojIENPTkZJR19QUFBf
-RklMVEVSIGlzIG5vdCBzZXQKIyBDT05GSUdfUFBQX01QUEUgaXMgbm90IHNldApDT05GSUdfUFBQ
-X01VTFRJTElOSz15CiMgQ09ORklHX1BQUE9BVE0gaXMgbm90IHNldApDT05GSUdfUFBQT0U9eQoj
-IENPTkZJR19QUFBfQVNZTkMgaXMgbm90IHNldApDT05GSUdfUFBQX1NZTkNfVFRZPXkKQ09ORklH
-X1NMSVA9eQpDT05GSUdfU0xIQz15CkNPTkZJR19TTElQX0NPTVBSRVNTRUQ9eQpDT05GSUdfU0xJ
-UF9TTUFSVD15CiMgQ09ORklHX1NMSVBfTU9ERV9TTElQNiBpcyBub3Qgc2V0CkNPTkZJR19VU0Jf
-TkVUX0RSSVZFUlM9eQpDT05GSUdfVVNCX0NBVEM9eQpDT05GSUdfVVNCX0tBV0VUSD15CiMgQ09O
-RklHX1VTQl9QRUdBU1VTIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX1JUTDgxNTAgaXMgbm90IHNl
-dApDT05GSUdfVVNCX1JUTDgxNTI9eQpDT05GSUdfVVNCX1VTQk5FVD15CiMgQ09ORklHX1VTQl9O
-RVRfQVg4ODE3WCBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9ORVRfQVg4ODE3OV8xNzhBIGlzIG5v
-dCBzZXQKQ09ORklHX1VTQl9ORVRfQ0RDRVRIRVI9eQojIENPTkZJR19VU0JfTkVUX0NEQ19FRU0g
-aXMgbm90IHNldApDT05GSUdfVVNCX05FVF9DRENfTkNNPXkKIyBDT05GSUdfVVNCX05FVF9IVUFX
-RUlfQ0RDX05DTSBpcyBub3Qgc2V0CkNPTkZJR19VU0JfTkVUX0NEQ19NQklNPXkKIyBDT05GSUdf
-VVNCX05FVF9ETTk2MDEgaXMgbm90IHNldAojIENPTkZJR19VU0JfTkVUX1NSOTcwMCBpcyBub3Qg
-c2V0CiMgQ09ORklHX1VTQl9ORVRfU1I5ODAwIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9ORVRfU01T
-Qzc1WFg9eQojIENPTkZJR19VU0JfTkVUX1NNU0M5NVhYIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNC
-X05FVF9HTDYyMEEgaXMgbm90IHNldApDT05GSUdfVVNCX05FVF9ORVQxMDgwPXkKQ09ORklHX1VT
-Ql9ORVRfUExVU0I9eQojIENPTkZJR19VU0JfTkVUX01DUzc4MzAgaXMgbm90IHNldApDT05GSUdf
-VVNCX05FVF9STkRJU19IT1NUPXkKQ09ORklHX1VTQl9ORVRfQ0RDX1NVQlNFVD15CkNPTkZJR19V
-U0JfQUxJX001NjMyPXkKIyBDT05GSUdfVVNCX0FOMjcyMCBpcyBub3Qgc2V0CiMgQ09ORklHX1VT
-Ql9CRUxLSU4gaXMgbm90IHNldAojIENPTkZJR19VU0JfQVJNTElOVVggaXMgbm90IHNldApDT05G
-SUdfVVNCX0VQU09OMjg4OD15CiMgQ09ORklHX1VTQl9LQzIxOTAgaXMgbm90IHNldApDT05GSUdf
-VVNCX05FVF9aQVVSVVM9eQojIENPTkZJR19VU0JfTkVUX0NYODIzMTBfRVRIIGlzIG5vdCBzZXQK
-Q09ORklHX1VTQl9ORVRfS0FMTUlBPXkKQ09ORklHX1VTQl9ORVRfUU1JX1dXQU49eQpDT05GSUdf
-VVNCX0hTTz15CiMgQ09ORklHX1VTQl9ORVRfSU5UNTFYMSBpcyBub3Qgc2V0CiMgQ09ORklHX1VT
-Ql9DRENfUEhPTkVUIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9JUEhFVEg9eQpDT05GSUdfVVNCX1NJ
-RVJSQV9ORVQ9eQojIENPTkZJR19VU0JfVkw2MDAgaXMgbm90IHNldAojIENPTkZJR19XTEFOIGlz
-IG5vdCBzZXQKCiMKIyBXaU1BWCBXaXJlbGVzcyBCcm9hZGJhbmQgZGV2aWNlcwojCkNPTkZJR19X
-SU1BWF9JMjQwME09eQpDT05GSUdfV0lNQVhfSTI0MDBNX1VTQj15CkNPTkZJR19XSU1BWF9JMjQw
-ME1fREVCVUdfTEVWRUw9OAojIENPTkZJR19XQU4gaXMgbm90IHNldApDT05GSUdfSUVFRTgwMjE1
-NF9EUklWRVJTPXkKQ09ORklHX0lFRUU4MDIxNTRfRkFLRUhBUkQ9eQpDT05GSUdfSVNETj15CkNP
-TkZJR19JU0ROX0k0TD15CiMgQ09ORklHX0lTRE5fQVVESU8gaXMgbm90IHNldAojIENPTkZJR19J
-U0ROX1gyNSBpcyBub3Qgc2V0CgojCiMgSVNETiBmZWF0dXJlIHN1Ym1vZHVsZXMKIwpDT05GSUdf
-SVNETl9ESVZFUlNJT049eQoKIwojIElTRE40TGludXggaGFyZHdhcmUgZHJpdmVycwojCgojCiMg
-UGFzc2l2ZSBjYXJkcwojCkNPTkZJR19JU0ROX0RSVl9ISVNBWD15CgojCiMgRC1jaGFubmVsIHBy
-b3RvY29sIGZlYXR1cmVzCiMKIyBDT05GSUdfSElTQVhfRVVSTyBpcyBub3Qgc2V0CkNPTkZJR19I
-SVNBWF8xVFI2PXkKIyBDT05GSUdfSElTQVhfTkkxIGlzIG5vdCBzZXQKQ09ORklHX0hJU0FYX01B
-WF9DQVJEUz04CgojCiMgSGlTYXggc3VwcG9ydGVkIGNhcmRzCiMKQ09ORklHX0hJU0FYXzE2XzM9
-eQojIENPTkZJR19ISVNBWF9URUxFU1BDSSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJU0FYX1MwQk9Y
-IGlzIG5vdCBzZXQKQ09ORklHX0hJU0FYX0ZSSVRaUENJPXkKQ09ORklHX0hJU0FYX0FWTV9BMV9Q
-Q01DSUE9eQpDT05GSUdfSElTQVhfRUxTQT15CiMgQ09ORklHX0hJU0FYX0RJRUhMRElWQSBpcyBu
-b3Qgc2V0CkNPTkZJR19ISVNBWF9TRURMQkFVRVI9eQpDT05GSUdfSElTQVhfTkVUSkVUPXkKQ09O
-RklHX0hJU0FYX05FVEpFVF9VPXkKIyBDT05GSUdfSElTQVhfTklDQ1kgaXMgbm90IHNldAojIENP
-TkZJR19ISVNBWF9CS01fQTRUIGlzIG5vdCBzZXQKIyBDT05GSUdfSElTQVhfU0NUX1FVQURSTyBp
-cyBub3Qgc2V0CkNPTkZJR19ISVNBWF9HQVpFTD15CkNPTkZJR19ISVNBWF9IRkNfUENJPXkKIyBD
-T05GSUdfSElTQVhfVzY2OTIgaXMgbm90IHNldApDT05GSUdfSElTQVhfSEZDX1NYPXkKIyBDT05G
-SUdfSElTQVhfRU5URVJOT1dfUENJIGlzIG5vdCBzZXQKIyBDT05GSUdfSElTQVhfREVCVUcgaXMg
-bm90IHNldAoKIwojIEhpU2F4IFBDTUNJQSBjYXJkIHNlcnZpY2UgbW9kdWxlcwojCgojCiMgSGlT
-YXggc3ViIGRyaXZlciBtb2R1bGVzCiMKQ09ORklHX0hJU0FYX1NUNTQ4MT15CiMgQ09ORklHX0hJ
-U0FYX0hGQ1VTQiBpcyBub3Qgc2V0CiMgQ09ORklHX0hJU0FYX0hGQzRTOFMgaXMgbm90IHNldAoj
-IENPTkZJR19ISVNBWF9GUklUWl9QQ0lQTlAgaXMgbm90IHNldAoKIwojIEFjdGl2ZSBjYXJkcwoj
-CkNPTkZJR19JU0ROX0NBUEk9eQpDT05GSUdfQ0FQSV9UUkFDRT15CkNPTkZJR19JU0ROX0NBUElf
-Q0FQSTIwPXkKIyBDT05GSUdfSVNETl9DQVBJX01JRERMRVdBUkUgaXMgbm90IHNldApDT05GSUdf
-SVNETl9DQVBJX0NBUElEUlY9eQpDT05GSUdfSVNETl9DQVBJX0NBUElEUlZfVkVSQk9TRT15Cgoj
-CiMgQ0FQSSBoYXJkd2FyZSBkcml2ZXJzCiMKQ09ORklHX0NBUElfQVZNPXkKIyBDT05GSUdfSVNE
-Tl9EUlZfQVZNQjFfQjFQQ0kgaXMgbm90IHNldAojIENPTkZJR19JU0ROX0RSVl9BVk1CMV9UMVBD
-SSBpcyBub3Qgc2V0CiMgQ09ORklHX0lTRE5fRFJWX0FWTUIxX0M0IGlzIG5vdCBzZXQKIyBDT05G
-SUdfQ0FQSV9FSUNPTiBpcyBub3Qgc2V0CiMgQ09ORklHX0lTRE5fRFJWX0dJR0FTRVQgaXMgbm90
-IHNldApDT05GSUdfTUlTRE49eQojIENPTkZJR19NSVNETl9EU1AgaXMgbm90IHNldApDT05GSUdf
-TUlTRE5fTDFPSVA9eQoKIwojIG1JU0ROIGhhcmR3YXJlIGRyaXZlcnMKIwojIENPTkZJR19NSVNE
-Tl9IRkNQQ0kgaXMgbm90IHNldAojIENPTkZJR19NSVNETl9IRkNNVUxUSSBpcyBub3Qgc2V0CiMg
-Q09ORklHX01JU0ROX0hGQ1VTQiBpcyBub3Qgc2V0CkNPTkZJR19NSVNETl9BVk1GUklUWj15CkNP
-TkZJR19NSVNETl9TUEVFREZBWD15CkNPTkZJR19NSVNETl9JTkZJTkVPTj15CkNPTkZJR19NSVNE
-Tl9XNjY5Mj15CiMgQ09ORklHX01JU0ROX05FVEpFVCBpcyBub3Qgc2V0CkNPTkZJR19NSVNETl9J
-UEFDPXkKQ09ORklHX01JU0ROX0lTQVI9eQpDT05GSUdfSVNETl9IRExDPXkKCiMKIyBJbnB1dCBk
-ZXZpY2Ugc3VwcG9ydAojCkNPTkZJR19JTlBVVD15CkNPTkZJR19JTlBVVF9GRl9NRU1MRVNTPXkK
-Q09ORklHX0lOUFVUX1BPTExERVY9eQpDT05GSUdfSU5QVVRfU1BBUlNFS01BUD15CkNPTkZJR19J
-TlBVVF9NQVRSSVhLTUFQPXkKCiMKIyBVc2VybGFuZCBpbnRlcmZhY2VzCiMKQ09ORklHX0lOUFVU
-X01PVVNFREVWPXkKIyBDT05GSUdfSU5QVVRfTU9VU0VERVZfUFNBVVggaXMgbm90IHNldApDT05G
-SUdfSU5QVVRfTU9VU0VERVZfU0NSRUVOX1g9MTAyNApDT05GSUdfSU5QVVRfTU9VU0VERVZfU0NS
-RUVOX1k9NzY4CiMgQ09ORklHX0lOUFVUX0pPWURFViBpcyBub3Qgc2V0CkNPTkZJR19JTlBVVF9F
-VkRFVj15CkNPTkZJR19JTlBVVF9FVkJVRz15CgojCiMgSW5wdXQgRGV2aWNlIERyaXZlcnMKIwpD
-T05GSUdfSU5QVVRfS0VZQk9BUkQ9eQpDT05GSUdfS0VZQk9BUkRfQURQNTUyMD15CkNPTkZJR19L
-RVlCT0FSRF9BRFA1NTg4PXkKQ09ORklHX0tFWUJPQVJEX0FEUDU1ODk9eQpDT05GSUdfS0VZQk9B
-UkRfQVRLQkQ9eQpDT05GSUdfS0VZQk9BUkRfUVQxMDcwPXkKQ09ORklHX0tFWUJPQVJEX1FUMjE2
-MD15CkNPTkZJR19LRVlCT0FSRF9MS0tCRD15CiMgQ09ORklHX0tFWUJPQVJEX0dQSU8gaXMgbm90
-IHNldApDT05GSUdfS0VZQk9BUkRfR1BJT19QT0xMRUQ9eQpDT05GSUdfS0VZQk9BUkRfVENBNjQx
-Nj15CkNPTkZJR19LRVlCT0FSRF9UQ0E4NDE4PXkKQ09ORklHX0tFWUJPQVJEX01BVFJJWD15CiMg
-Q09ORklHX0tFWUJPQVJEX0xNODMyMyBpcyBub3Qgc2V0CkNPTkZJR19LRVlCT0FSRF9MTTgzMzM9
-eQojIENPTkZJR19LRVlCT0FSRF9NQVg3MzU5IGlzIG5vdCBzZXQKQ09ORklHX0tFWUJPQVJEX01D
-Uz15CkNPTkZJR19LRVlCT0FSRF9NUFIxMjE9eQojIENPTkZJR19LRVlCT0FSRF9ORVdUT04gaXMg
-bm90IHNldApDT05GSUdfS0VZQk9BUkRfT1BFTkNPUkVTPXkKQ09ORklHX0tFWUJPQVJEX1NBTVNV
-Tkc9eQpDT05GSUdfS0VZQk9BUkRfU1RPV0FXQVk9eQpDT05GSUdfS0VZQk9BUkRfU1VOS0JEPXkK
-Q09ORklHX0tFWUJPQVJEX1RDMzU4OVg9eQpDT05GSUdfS0VZQk9BUkRfWFRLQkQ9eQpDT05GSUdf
-S0VZQk9BUkRfQ1JPU19FQz15CkNPTkZJR19JTlBVVF9NT1VTRT15CkNPTkZJR19NT1VTRV9QUzI9
-eQpDT05GSUdfTU9VU0VfUFMyX0FMUFM9eQpDT05GSUdfTU9VU0VfUFMyX0xPR0lQUzJQUD15CkNP
-TkZJR19NT1VTRV9QUzJfU1lOQVBUSUNTPXkKQ09ORklHX01PVVNFX1BTMl9DWVBSRVNTPXkKQ09O
-RklHX01PVVNFX1BTMl9MSUZFQk9PSz15CkNPTkZJR19NT1VTRV9QUzJfVFJBQ0tQT0lOVD15CkNP
-TkZJR19NT1VTRV9QUzJfRUxBTlRFQ0g9eQpDT05GSUdfTU9VU0VfUFMyX1NFTlRFTElDPXkKQ09O
-RklHX01PVVNFX1BTMl9UT1VDSEtJVD15CkNPTkZJR19NT1VTRV9TRVJJQUw9eQojIENPTkZJR19N
-T1VTRV9BUFBMRVRPVUNIIGlzIG5vdCBzZXQKIyBDT05GSUdfTU9VU0VfQkNNNTk3NCBpcyBub3Qg
-c2V0CiMgQ09ORklHX01PVVNFX0NZQVBBIGlzIG5vdCBzZXQKQ09ORklHX01PVVNFX1ZTWFhYQUE9
-eQpDT05GSUdfTU9VU0VfR1BJTz15CiMgQ09ORklHX01PVVNFX1NZTkFQVElDU19JMkMgaXMgbm90
-IHNldApDT05GSUdfTU9VU0VfU1lOQVBUSUNTX1VTQj15CiMgQ09ORklHX0lOUFVUX0pPWVNUSUNL
-IGlzIG5vdCBzZXQKIyBDT05GSUdfSU5QVVRfVEFCTEVUIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5Q
-VVRfVE9VQ0hTQ1JFRU4gaXMgbm90IHNldApDT05GSUdfSU5QVVRfTUlTQz15CiMgQ09ORklHX0lO
-UFVUXzg4UE04NjBYX09OS0VZIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5QVVRfQUQ3MTRYIGlzIG5v
-dCBzZXQKIyBDT05GSUdfSU5QVVRfQk1BMTUwIGlzIG5vdCBzZXQKQ09ORklHX0lOUFVUX1BDU1BL
-Uj15CiMgQ09ORklHX0lOUFVUX01BWDc3NjkzX0hBUFRJQyBpcyBub3Qgc2V0CkNPTkZJR19JTlBV
-VF9NQVg4OTI1X09OS0VZPXkKIyBDT05GSUdfSU5QVVRfTUMxMzc4M19QV1JCVVRUT04gaXMgbm90
-IHNldApDT05GSUdfSU5QVVRfTU1BODQ1MD15CkNPTkZJR19JTlBVVF9NUFUzMDUwPXkKIyBDT05G
-SUdfSU5QVVRfQVBBTkVMIGlzIG5vdCBzZXQKQ09ORklHX0lOUFVUX0dQMkE9eQpDT05GSUdfSU5Q
-VVRfR1BJT19CRUVQRVI9eQojIENPTkZJR19JTlBVVF9HUElPX1RJTFRfUE9MTEVEIGlzIG5vdCBz
-ZXQKQ09ORklHX0lOUFVUX1dJU1RST05fQlROUz15CiMgQ09ORklHX0lOUFVUX0FUTEFTX0JUTlMg
-aXMgbm90IHNldApDT05GSUdfSU5QVVRfQVRJX1JFTU9URTI9eQpDT05GSUdfSU5QVVRfS0VZU1BB
-Tl9SRU1PVEU9eQpDT05GSUdfSU5QVVRfS1hUSjk9eQpDT05GSUdfSU5QVVRfS1hUSjlfUE9MTEVE
-X01PREU9eQpDT05GSUdfSU5QVVRfUE9XRVJNQVRFPXkKQ09ORklHX0lOUFVUX1lFQUxJTks9eQpD
-T05GSUdfSU5QVVRfQ00xMDk9eQojIENPTkZJR19JTlBVVF9SRVRVX1BXUkJVVFRPTiBpcyBub3Qg
-c2V0CiMgQ09ORklHX0lOUFVUX1VJTlBVVCBpcyBub3Qgc2V0CkNPTkZJR19JTlBVVF9QQ0Y1MDYz
-M19QTVU9eQpDT05GSUdfSU5QVVRfUENGODU3ND15CkNPTkZJR19JTlBVVF9QV01fQkVFUEVSPXkK
-Q09ORklHX0lOUFVUX0dQSU9fUk9UQVJZX0VOQ09ERVI9eQpDT05GSUdfSU5QVVRfREE5MDUyX09O
-S0VZPXkKQ09ORklHX0lOUFVUX1dNODMxWF9PTj15CkNPTkZJR19JTlBVVF9BRFhMMzRYPXkKQ09O
-RklHX0lOUFVUX0FEWEwzNFhfSTJDPXkKIyBDT05GSUdfSU5QVVRfQURYTDM0WF9TUEkgaXMgbm90
-IHNldApDT05GSUdfSU5QVVRfSU1TX1BDVT15CkNPTkZJR19JTlBVVF9DTUEzMDAwPXkKIyBDT05G
-SUdfSU5QVVRfQ01BMzAwMF9JMkMgaXMgbm90IHNldApDT05GSUdfSU5QVVRfSURFQVBBRF9TTElE
-RUJBUj15CkNPTkZJR19JTlBVVF9EUlYyNjBYX0hBUFRJQ1M9eQpDT05GSUdfSU5QVVRfRFJWMjY2
-N19IQVBUSUNTPXkKCiMKIyBIYXJkd2FyZSBJL08gcG9ydHMKIwpDT05GSUdfU0VSSU89eQpDT05G
-SUdfQVJDSF9NSUdIVF9IQVZFX1BDX1NFUklPPXkKQ09ORklHX1NFUklPX0k4MDQyPXkKIyBDT05G
-SUdfU0VSSU9fU0VSUE9SVCBpcyBub3Qgc2V0CiMgQ09ORklHX1NFUklPX0NUODJDNzEwIGlzIG5v
-dCBzZXQKQ09ORklHX1NFUklPX1BBUktCRD15CiMgQ09ORklHX1NFUklPX1BDSVBTMiBpcyBub3Qg
-c2V0CkNPTkZJR19TRVJJT19MSUJQUzI9eQojIENPTkZJR19TRVJJT19SQVcgaXMgbm90IHNldApD
-T05GSUdfU0VSSU9fQUxURVJBX1BTMj15CkNPTkZJR19TRVJJT19QUzJNVUxUPXkKQ09ORklHX1NF
-UklPX0FSQ19QUzI9eQojIENPTkZJR19HQU1FUE9SVCBpcyBub3Qgc2V0CgojCiMgQ2hhcmFjdGVy
-IGRldmljZXMKIwpDT05GSUdfVFRZPXkKQ09ORklHX1ZUPXkKQ09ORklHX0NPTlNPTEVfVFJBTlNM
-QVRJT05TPXkKQ09ORklHX1ZUX0NPTlNPTEU9eQpDT05GSUdfVlRfQ09OU09MRV9TTEVFUD15CkNP
-TkZJR19IV19DT05TT0xFPXkKQ09ORklHX1ZUX0hXX0NPTlNPTEVfQklORElORz15CkNPTkZJR19V
-TklYOThfUFRZUz15CkNPTkZJR19ERVZQVFNfTVVMVElQTEVfSU5TVEFOQ0VTPXkKQ09ORklHX0xF
-R0FDWV9QVFlTPXkKQ09ORklHX0xFR0FDWV9QVFlfQ09VTlQ9MjU2CiMgQ09ORklHX1NFUklBTF9O
-T05TVEFOREFSRCBpcyBub3Qgc2V0CkNPTkZJR19OT1pPTUk9eQpDT05GSUdfTl9HU009eQojIENP
-TkZJR19UUkFDRV9TSU5LIGlzIG5vdCBzZXQKIyBDT05GSUdfREVWS01FTSBpcyBub3Qgc2V0Cgoj
-CiMgU2VyaWFsIGRyaXZlcnMKIwpDT05GSUdfU0VSSUFMX0VBUkxZQ09OPXkKQ09ORklHX1NFUklB
-TF84MjUwPXkKIyBDT05GSUdfU0VSSUFMXzgyNTBfREVQUkVDQVRFRF9PUFRJT05TIGlzIG5vdCBz
-ZXQKQ09ORklHX1NFUklBTF84MjUwX1BOUD15CkNPTkZJR19TRVJJQUxfODI1MF9DT05TT0xFPXkK
-Q09ORklHX1NFUklBTF84MjUwX0RNQT15CkNPTkZJR19TRVJJQUxfODI1MF9QQ0k9eQpDT05GSUdf
-U0VSSUFMXzgyNTBfTlJfVUFSVFM9NApDT05GSUdfU0VSSUFMXzgyNTBfUlVOVElNRV9VQVJUUz00
-CiMgQ09ORklHX1NFUklBTF84MjUwX0VYVEVOREVEIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFM
-XzgyNTBfRFcgaXMgbm90IHNldApDT05GSUdfU0VSSUFMXzgyNTBfRklOVEVLPXkKCiMKIyBOb24t
-ODI1MCBzZXJpYWwgcG9ydCBzdXBwb3J0CiMKQ09ORklHX1NFUklBTF9NQVgzMTAwPXkKQ09ORklH
-X1NFUklBTF9NQVgzMTBYPXkKQ09ORklHX1NFUklBTF9NRkRfSFNVPXkKIyBDT05GSUdfU0VSSUFM
-X01GRF9IU1VfQ09OU09MRSBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfVUFSVExJVEU9eQojIENP
-TkZJR19TRVJJQUxfVUFSVExJVEVfQ09OU09MRSBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfQ09S
-RT15CkNPTkZJR19TRVJJQUxfQ09SRV9DT05TT0xFPXkKIyBDT05GSUdfU0VSSUFMX0pTTSBpcyBu
-b3Qgc2V0CkNPTkZJR19TRVJJQUxfU0NDTlhQPXkKIyBDT05GSUdfU0VSSUFMX1NDQ05YUF9DT05T
-T0xFIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFMX1NDMTZJUzdYWCBpcyBub3Qgc2V0CkNPTkZJ
-R19TRVJJQUxfVElNQkVSREFMRT15CiMgQ09ORklHX1NFUklBTF9BTFRFUkFfSlRBR1VBUlQgaXMg
-bm90IHNldApDT05GSUdfU0VSSUFMX0FMVEVSQV9VQVJUPXkKQ09ORklHX1NFUklBTF9BTFRFUkFf
-VUFSVF9NQVhQT1JUUz00CkNPTkZJR19TRVJJQUxfQUxURVJBX1VBUlRfQkFVRFJBVEU9MTE1MjAw
-CkNPTkZJR19TRVJJQUxfQUxURVJBX1VBUlRfQ09OU09MRT15CkNPTkZJR19TRVJJQUxfSUZYNlg2
-MD15CkNPTkZJR19TRVJJQUxfUENIX1VBUlQ9eQojIENPTkZJR19TRVJJQUxfUENIX1VBUlRfQ09O
-U09MRSBpcyBub3Qgc2V0CiMgQ09ORklHX1NFUklBTF9BUkMgaXMgbm90IHNldAojIENPTkZJR19T
-RVJJQUxfUlAyIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFMX0ZTTF9MUFVBUlQgaXMgbm90IHNl
-dApDT05GSUdfU0VSSUFMX01FTl9aMTM1PXkKQ09ORklHX1BSSU5URVI9eQpDT05GSUdfTFBfQ09O
-U09MRT15CkNPTkZJR19QUERFVj15CkNPTkZJR19IVkNfRFJJVkVSPXkKQ09ORklHX1ZJUlRJT19D
-T05TT0xFPXkKQ09ORklHX0lQTUlfSEFORExFUj15CkNPTkZJR19JUE1JX1BBTklDX0VWRU5UPXkK
-Q09ORklHX0lQTUlfUEFOSUNfU1RSSU5HPXkKIyBDT05GSUdfSVBNSV9ERVZJQ0VfSU5URVJGQUNF
-IGlzIG5vdCBzZXQKQ09ORklHX0lQTUlfU0k9eQojIENPTkZJR19JUE1JX1NJX1BST0JFX0RFRkFV
-TFRTIGlzIG5vdCBzZXQKQ09ORklHX0lQTUlfV0FUQ0hET0c9eQpDT05GSUdfSVBNSV9QT1dFUk9G
-Rj15CkNPTkZJR19IV19SQU5ET009eQojIENPTkZJR19IV19SQU5ET01fVElNRVJJT01FTSBpcyBu
-b3Qgc2V0CkNPTkZJR19IV19SQU5ET01fSU5URUw9eQojIENPTkZJR19IV19SQU5ET01fQU1EIGlz
-IG5vdCBzZXQKQ09ORklHX0hXX1JBTkRPTV9HRU9ERT15CkNPTkZJR19IV19SQU5ET01fVklBPXkK
-IyBDT05GSUdfSFdfUkFORE9NX1ZJUlRJTyBpcyBub3Qgc2V0CkNPTkZJR19OVlJBTT15CkNPTkZJ
-R19SMzk2ND15CkNPTkZJR19BUFBMSUNPTT15CkNPTkZJR19TT05ZUEk9eQpDT05GSUdfTVdBVkU9
-eQojIENPTkZJR19TQ3gyMDBfR1BJTyBpcyBub3Qgc2V0CiMgQ09ORklHX1BDODczNnhfR1BJTyBp
-cyBub3Qgc2V0CiMgQ09ORklHX05TQ19HUElPIGlzIG5vdCBzZXQKIyBDT05GSUdfUkFXX0RSSVZF
-UiBpcyBub3Qgc2V0CkNPTkZJR19IUEVUPXkKIyBDT05GSUdfSFBFVF9NTUFQIGlzIG5vdCBzZXQK
-IyBDT05GSUdfSEFOR0NIRUNLX1RJTUVSIGlzIG5vdCBzZXQKIyBDT05GSUdfVENHX1RQTSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1RFTENMT0NLIGlzIG5vdCBzZXQKQ09ORklHX0RFVlBPUlQ9eQpDT05G
-SUdfWElMTFlCVVM9eQpDT05GSUdfWElMTFlCVVNfUENJRT15CgojCiMgSTJDIHN1cHBvcnQKIwpD
-T05GSUdfSTJDPXkKIyBDT05GSUdfQUNQSV9JMkNfT1BSRUdJT04gaXMgbm90IHNldApDT05GSUdf
-STJDX0JPQVJESU5GTz15CkNPTkZJR19JMkNfQ09NUEFUPXkKQ09ORklHX0kyQ19DSEFSREVWPXkK
-Q09ORklHX0kyQ19NVVg9eQoKIwojIE11bHRpcGxleGVyIEkyQyBDaGlwIHN1cHBvcnQKIwpDT05G
-SUdfSTJDX01VWF9HUElPPXkKQ09ORklHX0kyQ19NVVhfUENBOTU0MT15CiMgQ09ORklHX0kyQ19N
-VVhfUENBOTU0eCBpcyBub3Qgc2V0CkNPTkZJR19JMkNfTVVYX1BJTkNUUkw9eQpDT05GSUdfSTJD
-X0hFTFBFUl9BVVRPPXkKQ09ORklHX0kyQ19TTUJVUz15CkNPTkZJR19JMkNfQUxHT0JJVD15Cgoj
-CiMgSTJDIEhhcmR3YXJlIEJ1cyBzdXBwb3J0CiMKCiMKIyBQQyBTTUJ1cyBob3N0IGNvbnRyb2xs
-ZXIgZHJpdmVycwojCkNPTkZJR19JMkNfQUxJMTUzNT15CiMgQ09ORklHX0kyQ19BTEkxNTYzIGlz
-IG5vdCBzZXQKIyBDT05GSUdfSTJDX0FMSTE1WDMgaXMgbm90IHNldApDT05GSUdfSTJDX0FNRDc1
-Nj15CkNPTkZJR19JMkNfQU1ENzU2X1M0ODgyPXkKQ09ORklHX0kyQ19BTUQ4MTExPXkKQ09ORklH
-X0kyQ19JODAxPXkKIyBDT05GSUdfSTJDX0lTQ0ggaXMgbm90IHNldApDT05GSUdfSTJDX0lTTVQ9
-eQpDT05GSUdfSTJDX1BJSVg0PXkKQ09ORklHX0kyQ19ORk9SQ0UyPXkKQ09ORklHX0kyQ19ORk9S
-Q0UyX1M0OTg1PXkKIyBDT05GSUdfSTJDX1NJUzU1OTUgaXMgbm90IHNldApDT05GSUdfSTJDX1NJ
-UzYzMD15CkNPTkZJR19JMkNfU0lTOTZYPXkKQ09ORklHX0kyQ19WSUE9eQojIENPTkZJR19JMkNf
-VklBUFJPIGlzIG5vdCBzZXQKCiMKIyBBQ1BJIGRyaXZlcnMKIwojIENPTkZJR19JMkNfU0NNSSBp
-cyBub3Qgc2V0CgojCiMgSTJDIHN5c3RlbSBidXMgZHJpdmVycyAobW9zdGx5IGVtYmVkZGVkIC8g
-c3lzdGVtLW9uLWNoaXApCiMKQ09ORklHX0kyQ19DQlVTX0dQSU89eQpDT05GSUdfSTJDX0RFU0lH
-TldBUkVfQ09SRT15CiMgQ09ORklHX0kyQ19ERVNJR05XQVJFX1BMQVRGT1JNIGlzIG5vdCBzZXQK
-Q09ORklHX0kyQ19ERVNJR05XQVJFX1BDST15CiMgQ09ORklHX0kyQ19FRzIwVCBpcyBub3Qgc2V0
-CkNPTkZJR19JMkNfR1BJTz15CkNPTkZJR19JMkNfT0NPUkVTPXkKIyBDT05GSUdfSTJDX1BDQV9Q
-TEFURk9STSBpcyBub3Qgc2V0CiMgQ09ORklHX0kyQ19QWEFfUENJIGlzIG5vdCBzZXQKIyBDT05G
-SUdfSTJDX1NJTVRFQyBpcyBub3Qgc2V0CkNPTkZJR19JMkNfWElMSU5YPXkKCiMKIyBFeHRlcm5h
-bCBJMkMvU01CdXMgYWRhcHRlciBkcml2ZXJzCiMKQ09ORklHX0kyQ19ESU9MQU5fVTJDPXkKQ09O
-RklHX0kyQ19QQVJQT1JUPXkKQ09ORklHX0kyQ19QQVJQT1JUX0xJR0hUPXkKQ09ORklHX0kyQ19S
-T0JPVEZVWlpfT1NJRj15CiMgQ09ORklHX0kyQ19UQU9TX0VWTSBpcyBub3Qgc2V0CkNPTkZJR19J
-MkNfVElOWV9VU0I9eQoKIwojIE90aGVyIEkyQy9TTUJ1cyBidXMgZHJpdmVycwojCiMgQ09ORklH
-X0kyQ19DUk9TX0VDX1RVTk5FTCBpcyBub3Qgc2V0CkNPTkZJR19TQ3gyMDBfQUNCPXkKIyBDT05G
-SUdfSTJDX0RFQlVHX0NPUkUgaXMgbm90IHNldAojIENPTkZJR19JMkNfREVCVUdfQUxHTyBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0kyQ19ERUJVR19CVVMgaXMgbm90IHNldApDT05GSUdfU1BJPXkKQ09O
-RklHX1NQSV9ERUJVRz15CkNPTkZJR19TUElfTUFTVEVSPXkKCiMKIyBTUEkgTWFzdGVyIENvbnRy
-b2xsZXIgRHJpdmVycwojCkNPTkZJR19TUElfQUxURVJBPXkKQ09ORklHX1NQSV9CSVRCQU5HPXkK
-Q09ORklHX1NQSV9CVVRURVJGTFk9eQpDT05GSUdfU1BJX0dQSU89eQpDT05GSUdfU1BJX0xNNzBf
-TExQPXkKQ09ORklHX1NQSV9PQ19USU5ZPXkKQ09ORklHX1NQSV9QWEEyWFhfRE1BPXkKQ09ORklH
-X1NQSV9QWEEyWFg9eQpDT05GSUdfU1BJX1BYQTJYWF9QQ0k9eQojIENPTkZJR19TUElfU0MxOElT
-NjAyIGlzIG5vdCBzZXQKQ09ORklHX1NQSV9UT1BDTElGRl9QQ0g9eQpDT05GSUdfU1BJX1hDT01N
-PXkKQ09ORklHX1NQSV9YSUxJTlg9eQojIENPTkZJR19TUElfREVTSUdOV0FSRSBpcyBub3Qgc2V0
-CgojCiMgU1BJIFByb3RvY29sIE1hc3RlcnMKIwpDT05GSUdfU1BJX1NQSURFVj15CkNPTkZJR19T
-UElfVExFNjJYMD15CkNPTkZJR19TUE1JPXkKIyBDT05GSUdfSFNJIGlzIG5vdCBzZXQKCiMKIyBQ
-UFMgc3VwcG9ydAojCkNPTkZJR19QUFM9eQojIENPTkZJR19QUFNfREVCVUcgaXMgbm90IHNldApD
-T05GSUdfTlRQX1BQUz15CgojCiMgUFBTIGNsaWVudHMgc3VwcG9ydAojCiMgQ09ORklHX1BQU19D
-TElFTlRfS1RJTUVSIGlzIG5vdCBzZXQKIyBDT05GSUdfUFBTX0NMSUVOVF9MRElTQyBpcyBub3Qg
-c2V0CkNPTkZJR19QUFNfQ0xJRU5UX1BBUlBPUlQ9eQpDT05GSUdfUFBTX0NMSUVOVF9HUElPPXkK
-CiMKIyBQUFMgZ2VuZXJhdG9ycyBzdXBwb3J0CiMKCiMKIyBQVFAgY2xvY2sgc3VwcG9ydAojCkNP
-TkZJR19QVFBfMTU4OF9DTE9DSz15CkNPTkZJR19EUDgzNjQwX1BIWT15CiMgQ09ORklHX1BUUF8x
-NTg4X0NMT0NLX1BDSCBpcyBub3Qgc2V0CkNPTkZJR19QSU5DVFJMPXkKCiMKIyBQaW4gY29udHJv
-bGxlcnMKIwojIENPTkZJR19ERUJVR19QSU5DVFJMIGlzIG5vdCBzZXQKIyBDT05GSUdfUElOQ1RS
-TF9CQVlUUkFJTCBpcyBub3Qgc2V0CkNPTkZJR19BUkNIX1dBTlRfT1BUSU9OQUxfR1BJT0xJQj15
-CkNPTkZJR19HUElPTElCPXkKQ09ORklHX0dQSU9fREVWUkVTPXkKQ09ORklHX0dQSU9fQUNQST15
-CkNPTkZJR19HUElPTElCX0lSUUNISVA9eQojIENPTkZJR19ERUJVR19HUElPIGlzIG5vdCBzZXQK
-Q09ORklHX0dQSU9fU1lTRlM9eQpDT05GSUdfR1BJT19HRU5FUklDPXkKIyBDT05GSUdfR1BJT19E
-QTkwNTIgaXMgbm90IHNldApDT05GSUdfR1BJT19NQVg3MzBYPXkKCiMKIyBNZW1vcnkgbWFwcGVk
-IEdQSU8gZHJpdmVyczoKIwpDT05GSUdfR1BJT19HRU5FUklDX1BMQVRGT1JNPXkKQ09ORklHX0dQ
-SU9fRFdBUEI9eQojIENPTkZJR19HUElPX0lUODc2MUUgaXMgbm90IHNldApDT05GSUdfR1BJT19G
-NzE4OFg9eQpDT05GSUdfR1BJT19TQ0gzMTFYPXkKQ09ORklHX0dQSU9fU0NIPXkKQ09ORklHX0dQ
-SU9fSUNIPXkKQ09ORklHX0dQSU9fVlg4NTU9eQojIENPTkZJR19HUElPX0xZTlhQT0lOVCBpcyBu
-b3Qgc2V0CgojCiMgSTJDIEdQSU8gZXhwYW5kZXJzOgojCkNPTkZJR19HUElPX0FSSVpPTkE9eQoj
-IENPTkZJR19HUElPX0xQMzk0MyBpcyBub3Qgc2V0CiMgQ09ORklHX0dQSU9fTUFYNzMwMCBpcyBu
-b3Qgc2V0CkNPTkZJR19HUElPX01BWDczMlg9eQpDT05GSUdfR1BJT19NQVg3MzJYX0lSUT15CiMg
-Q09ORklHX0dQSU9fUENBOTUzWCBpcyBub3Qgc2V0CkNPTkZJR19HUElPX1BDRjg1N1g9eQpDT05G
-SUdfR1BJT19TWDE1MFg9eQpDT05GSUdfR1BJT19UQzM1ODlYPXkKQ09ORklHX0dQSU9fV004MzFY
-PXkKQ09ORklHX0dQSU9fV004MzUwPXkKQ09ORklHX0dQSU9fQURQNTUyMD15CkNPTkZJR19HUElP
-X0FEUDU1ODg9eQpDT05GSUdfR1BJT19BRFA1NTg4X0lSUT15CgojCiMgUENJIEdQSU8gZXhwYW5k
-ZXJzOgojCkNPTkZJR19HUElPX0JUOFhYPXkKIyBDT05GSUdfR1BJT19BTUQ4MTExIGlzIG5vdCBz
-ZXQKQ09ORklHX0dQSU9fSU5URUxfTUlEPXkKQ09ORklHX0dQSU9fUENIPXkKQ09ORklHX0dQSU9f
-TUxfSU9IPXkKQ09ORklHX0dQSU9fVElNQkVSREFMRT15CiMgQ09ORklHX0dQSU9fUkRDMzIxWCBp
-cyBub3Qgc2V0CgojCiMgU1BJIEdQSU8gZXhwYW5kZXJzOgojCkNPTkZJR19HUElPX01BWDczMDE9
-eQpDT05GSUdfR1BJT19NQ1AyM1MwOD15CiMgQ09ORklHX0dQSU9fTUMzMzg4MCBpcyBub3Qgc2V0
-CgojCiMgQUM5NyBHUElPIGV4cGFuZGVyczoKIwoKIwojIExQQyBHUElPIGV4cGFuZGVyczoKIwoK
-IwojIE1PRFVMYnVzIEdQSU8gZXhwYW5kZXJzOgojCkNPTkZJR19HUElPX0pBTlpfVFRMPXkKCiMK
-IyBVU0IgR1BJTyBleHBhbmRlcnM6CiMKQ09ORklHX1cxPXkKCiMKIyAxLXdpcmUgQnVzIE1hc3Rl
-cnMKIwojIENPTkZJR19XMV9NQVNURVJfTUFUUk9YIGlzIG5vdCBzZXQKIyBDT05GSUdfVzFfTUFT
-VEVSX0RTMjQ5MCBpcyBub3Qgc2V0CiMgQ09ORklHX1cxX01BU1RFUl9EUzI0ODIgaXMgbm90IHNl
-dAojIENPTkZJR19XMV9NQVNURVJfRFMxV00gaXMgbm90IHNldApDT05GSUdfVzFfTUFTVEVSX0dQ
-SU89eQoKIwojIDEtd2lyZSBTbGF2ZXMKIwpDT05GSUdfVzFfU0xBVkVfVEhFUk09eQpDT05GSUdf
-VzFfU0xBVkVfU01FTT15CkNPTkZJR19XMV9TTEFWRV9EUzI0MDg9eQpDT05GSUdfVzFfU0xBVkVf
-RFMyNDA4X1JFQURCQUNLPXkKQ09ORklHX1cxX1NMQVZFX0RTMjQxMz15CkNPTkZJR19XMV9TTEFW
-RV9EUzI0MDY9eQojIENPTkZJR19XMV9TTEFWRV9EUzI0MjMgaXMgbm90IHNldApDT05GSUdfVzFf
-U0xBVkVfRFMyNDMxPXkKQ09ORklHX1cxX1NMQVZFX0RTMjQzMz15CkNPTkZJR19XMV9TTEFWRV9E
-UzI0MzNfQ1JDPXkKQ09ORklHX1cxX1NMQVZFX0RTMjc2MD15CkNPTkZJR19XMV9TTEFWRV9EUzI3
-ODA9eQpDT05GSUdfVzFfU0xBVkVfRFMyNzgxPXkKQ09ORklHX1cxX1NMQVZFX0RTMjhFMDQ9eQoj
-IENPTkZJR19XMV9TTEFWRV9CUTI3MDAwIGlzIG5vdCBzZXQKQ09ORklHX1BPV0VSX1NVUFBMWT15
-CiMgQ09ORklHX1BPV0VSX1NVUFBMWV9ERUJVRyBpcyBub3Qgc2V0CiMgQ09ORklHX1BEQV9QT1dF
-UiBpcyBub3Qgc2V0CkNPTkZJR19NQVg4OTI1X1BPV0VSPXkKQ09ORklHX1dNODMxWF9CQUNLVVA9
-eQpDT05GSUdfV004MzFYX1BPV0VSPXkKQ09ORklHX1dNODM1MF9QT1dFUj15CiMgQ09ORklHX1RF
-U1RfUE9XRVIgaXMgbm90IHNldApDT05GSUdfQkFUVEVSWV84OFBNODYwWD15CkNPTkZJR19CQVRU
-RVJZX0RTMjc2MD15CkNPTkZJR19CQVRURVJZX0RTMjc4MD15CiMgQ09ORklHX0JBVFRFUllfRFMy
-NzgxIGlzIG5vdCBzZXQKQ09ORklHX0JBVFRFUllfRFMyNzgyPXkKQ09ORklHX0JBVFRFUllfU0JT
-PXkKQ09ORklHX0JBVFRFUllfQlEyN3gwMD15CkNPTkZJR19CQVRURVJZX0JRMjdYMDBfSTJDPXkK
-IyBDT05GSUdfQkFUVEVSWV9CUTI3WDAwX1BMQVRGT1JNIGlzIG5vdCBzZXQKIyBDT05GSUdfQkFU
-VEVSWV9EQTkwMzAgaXMgbm90IHNldApDT05GSUdfQkFUVEVSWV9EQTkwNTI9eQpDT05GSUdfQkFU
-VEVSWV9NQVgxNzA0MD15CiMgQ09ORklHX0JBVFRFUllfTUFYMTcwNDIgaXMgbm90IHNldAojIENP
-TkZJR19DSEFSR0VSXzg4UE04NjBYIGlzIG5vdCBzZXQKQ09ORklHX0NIQVJHRVJfUENGNTA2MzM9
-eQojIENPTkZJR19DSEFSR0VSX0lTUDE3MDQgaXMgbm90IHNldAojIENPTkZJR19DSEFSR0VSX01B
-WDg5MDMgaXMgbm90IHNldAojIENPTkZJR19DSEFSR0VSX0xQODcyNyBpcyBub3Qgc2V0CkNPTkZJ
-R19DSEFSR0VSX0dQSU89eQpDT05GSUdfQ0hBUkdFUl9NQU5BR0VSPXkKQ09ORklHX0NIQVJHRVJf
-QlEyNDE1WD15CkNPTkZJR19DSEFSR0VSX0JRMjQxOTA9eQpDT05GSUdfQ0hBUkdFUl9CUTI0NzM1
-PXkKQ09ORklHX0NIQVJHRVJfU01CMzQ3PXkKIyBDT05GSUdfQ0hBUkdFUl9UUFM2NTA5MCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1BPV0VSX1JFU0VUIGlzIG5vdCBzZXQKQ09ORklHX1BPV0VSX0FWUz15
-CkNPTkZJR19IV01PTj15CkNPTkZJR19IV01PTl9WSUQ9eQpDT05GSUdfSFdNT05fREVCVUdfQ0hJ
-UD15CgojCiMgTmF0aXZlIGRyaXZlcnMKIwpDT05GSUdfU0VOU09SU19BQklUVUdVUlU9eQojIENP
-TkZJR19TRU5TT1JTX0FCSVRVR1VSVTMgaXMgbm90IHNldAojIENPTkZJR19TRU5TT1JTX0FENzMx
-NCBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfQUQ3NDE0IGlzIG5vdCBzZXQKQ09ORklHX1NF
-TlNPUlNfQUQ3NDE4PXkKQ09ORklHX1NFTlNPUlNfQURNMTAyMT15CkNPTkZJR19TRU5TT1JTX0FE
-TTEwMjU9eQojIENPTkZJR19TRU5TT1JTX0FETTEwMjYgaXMgbm90IHNldApDT05GSUdfU0VOU09S
-U19BRE0xMDI5PXkKIyBDT05GSUdfU0VOU09SU19BRE0xMDMxIGlzIG5vdCBzZXQKQ09ORklHX1NF
-TlNPUlNfQURNOTI0MD15CkNPTkZJR19TRU5TT1JTX0FEVDdYMTA9eQpDT05GSUdfU0VOU09SU19B
-RFQ3MzEwPXkKQ09ORklHX1NFTlNPUlNfQURUNzQxMD15CiMgQ09ORklHX1NFTlNPUlNfQURUNzQx
-MSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0FEVDc0NjI9eQojIENPTkZJR19TRU5TT1JTX0FE
-VDc0NzAgaXMgbm90IHNldAojIENPTkZJR19TRU5TT1JTX0FEVDc0NzUgaXMgbm90IHNldApDT05G
-SUdfU0VOU09SU19BU0M3NjIxPXkKQ09ORklHX1NFTlNPUlNfSzhURU1QPXkKQ09ORklHX1NFTlNP
-UlNfSzEwVEVNUD15CkNPTkZJR19TRU5TT1JTX0ZBTTE1SF9QT1dFUj15CkNPTkZJR19TRU5TT1JT
-X0FQUExFU01DPXkKQ09ORklHX1NFTlNPUlNfQVNCMTAwPXkKIyBDT05GSUdfU0VOU09SU19BVFhQ
-MSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0RTNjIwPXkKQ09ORklHX1NFTlNPUlNfRFMxNjIx
-PXkKQ09ORklHX1NFTlNPUlNfREE5MDUyX0FEQz15CkNPTkZJR19TRU5TT1JTX0k1S19BTUI9eQpD
-T05GSUdfU0VOU09SU19GNzE4MDVGPXkKQ09ORklHX1NFTlNPUlNfRjcxODgyRkc9eQpDT05GSUdf
-U0VOU09SU19GNzUzNzVTPXkKIyBDT05GSUdfU0VOU09SU19NQzEzNzgzX0FEQyBpcyBub3Qgc2V0
-CkNPTkZJR19TRU5TT1JTX0ZTQ0hNRD15CkNPTkZJR19TRU5TT1JTX0dMNTE4U009eQojIENPTkZJ
-R19TRU5TT1JTX0dMNTIwU00gaXMgbm90IHNldAojIENPTkZJR19TRU5TT1JTX0c3NjBBIGlzIG5v
-dCBzZXQKQ09ORklHX1NFTlNPUlNfRzc2Mj15CiMgQ09ORklHX1NFTlNPUlNfR1BJT19GQU4gaXMg
-bm90IHNldApDT05GSUdfU0VOU09SU19ISUg2MTMwPXkKQ09ORklHX1NFTlNPUlNfSUJNQUVNPXkK
-Q09ORklHX1NFTlNPUlNfSUJNUEVYPXkKIyBDT05GSUdfU0VOU09SU19DT1JFVEVNUCBpcyBub3Qg
-c2V0CiMgQ09ORklHX1NFTlNPUlNfSVQ4NyBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfSkM0
-MiBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX1BPV1IxMjIwPXkKQ09ORklHX1NFTlNPUlNfTElO
-RUFHRT15CkNPTkZJR19TRU5TT1JTX0xUQzI5NDU9eQpDT05GSUdfU0VOU09SU19MVEM0MTUxPXkK
-Q09ORklHX1NFTlNPUlNfTFRDNDIxNT15CiMgQ09ORklHX1NFTlNPUlNfTFRDNDIyMiBpcyBub3Qg
-c2V0CkNPTkZJR19TRU5TT1JTX0xUQzQyNDU9eQpDT05GSUdfU0VOU09SU19MVEM0MjYwPXkKQ09O
-RklHX1NFTlNPUlNfTFRDNDI2MT15CkNPTkZJR19TRU5TT1JTX01BWDExMTE9eQpDT05GSUdfU0VO
-U09SU19NQVgxNjA2NT15CiMgQ09ORklHX1NFTlNPUlNfTUFYMTYxOSBpcyBub3Qgc2V0CiMgQ09O
-RklHX1NFTlNPUlNfTUFYMTY2OCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX01BWDE5Nz15CiMg
-Q09ORklHX1NFTlNPUlNfTUFYNjYzOSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX01BWDY2NDI9
-eQojIENPTkZJR19TRU5TT1JTX01BWDY2NTAgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19NQVg2
-Njk3PXkKQ09ORklHX1NFTlNPUlNfSFRVMjE9eQpDT05GSUdfU0VOU09SU19NQ1AzMDIxPXkKIyBD
-T05GSUdfU0VOU09SU19BRENYWCBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfTE02MyBpcyBu
-b3Qgc2V0CkNPTkZJR19TRU5TT1JTX0xNNzA9eQojIENPTkZJR19TRU5TT1JTX0xNNzMgaXMgbm90
-IHNldApDT05GSUdfU0VOU09SU19MTTc1PXkKIyBDT05GSUdfU0VOU09SU19MTTc3IGlzIG5vdCBz
-ZXQKIyBDT05GSUdfU0VOU09SU19MTTc4IGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfTE04MD15
-CiMgQ09ORklHX1NFTlNPUlNfTE04MyBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfTE04NSBp
-cyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfTE04NyBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNP
-UlNfTE05MCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0xNOTI9eQpDT05GSUdfU0VOU09SU19M
-TTkzPXkKQ09ORklHX1NFTlNPUlNfTE05NTIzND15CkNPTkZJR19TRU5TT1JTX0xNOTUyNDE9eQpD
-T05GSUdfU0VOU09SU19MTTk1MjQ1PXkKQ09ORklHX1NFTlNPUlNfUEM4NzM2MD15CkNPTkZJR19T
-RU5TT1JTX1BDODc0Mjc9eQpDT05GSUdfU0VOU09SU19OVENfVEhFUk1JU1RPUj15CkNPTkZJR19T
-RU5TT1JTX05DVDY2ODM9eQojIENPTkZJR19TRU5TT1JTX05DVDY3NzUgaXMgbm90IHNldAojIENP
-TkZJR19TRU5TT1JTX1BDRjg1OTEgaXMgbm90IHNldAojIENPTkZJR19QTUJVUyBpcyBub3Qgc2V0
-CkNPTkZJR19TRU5TT1JTX1NIVDE1PXkKQ09ORklHX1NFTlNPUlNfU0hUMjE9eQpDT05GSUdfU0VO
-U09SU19TSFRDMT15CiMgQ09ORklHX1NFTlNPUlNfU0lTNTU5NSBpcyBub3Qgc2V0CkNPTkZJR19T
-RU5TT1JTX0RNRTE3Mzc9eQpDT05GSUdfU0VOU09SU19FTUMxNDAzPXkKQ09ORklHX1NFTlNPUlNf
-RU1DMjEwMz15CkNPTkZJR19TRU5TT1JTX0VNQzZXMjAxPXkKIyBDT05GSUdfU0VOU09SU19TTVND
-NDdNMSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX1NNU0M0N00xOTI9eQpDT05GSUdfU0VOU09S
-U19TTVNDNDdCMzk3PXkKQ09ORklHX1NFTlNPUlNfU0NINTZYWF9DT01NT049eQpDT05GSUdfU0VO
-U09SU19TQ0g1NjI3PXkKQ09ORklHX1NFTlNPUlNfU0NINTYzNj15CiMgQ09ORklHX1NFTlNPUlNf
-U01NNjY1IGlzIG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19BREMxMjhEODE4IGlzIG5vdCBzZXQK
-Q09ORklHX1NFTlNPUlNfQURTMTAxNT15CiMgQ09ORklHX1NFTlNPUlNfQURTNzgyOCBpcyBub3Qg
-c2V0CiMgQ09ORklHX1NFTlNPUlNfQURTNzg3MSBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNf
-QU1DNjgyMSBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfSU5BMjA5IGlzIG5vdCBzZXQKQ09O
-RklHX1NFTlNPUlNfSU5BMlhYPXkKQ09ORklHX1NFTlNPUlNfVEhNQzUwPXkKQ09ORklHX1NFTlNP
-UlNfVE1QMTAyPXkKQ09ORklHX1NFTlNPUlNfVE1QMTAzPXkKQ09ORklHX1NFTlNPUlNfVE1QNDAx
-PXkKQ09ORklHX1NFTlNPUlNfVE1QNDIxPXkKQ09ORklHX1NFTlNPUlNfVklBX0NQVVRFTVA9eQpD
-T05GSUdfU0VOU09SU19WSUE2ODZBPXkKQ09ORklHX1NFTlNPUlNfVlQxMjExPXkKQ09ORklHX1NF
-TlNPUlNfVlQ4MjMxPXkKQ09ORklHX1NFTlNPUlNfVzgzNzgxRD15CiMgQ09ORklHX1NFTlNPUlNf
-VzgzNzkxRCBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfVzgzNzkyRCBpcyBub3Qgc2V0CkNP
-TkZJR19TRU5TT1JTX1c4Mzc5Mz15CkNPTkZJR19TRU5TT1JTX1c4Mzc5NT15CiMgQ09ORklHX1NF
-TlNPUlNfVzgzNzk1X0ZBTkNUUkwgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19XODNMNzg1VFM9
-eQpDT05GSUdfU0VOU09SU19XODNMNzg2Tkc9eQojIENPTkZJR19TRU5TT1JTX1c4MzYyN0hGIGlz
-IG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19XODM2MjdFSEYgaXMgbm90IHNldApDT05GSUdfU0VO
-U09SU19XTTgzMVg9eQpDT05GSUdfU0VOU09SU19XTTgzNTA9eQoKIwojIEFDUEkgZHJpdmVycwoj
-CkNPTkZJR19TRU5TT1JTX0FDUElfUE9XRVI9eQojIENPTkZJR19TRU5TT1JTX0FUSzAxMTAgaXMg
-bm90IHNldApDT05GSUdfVEhFUk1BTD15CkNPTkZJR19USEVSTUFMX0hXTU9OPXkKQ09ORklHX1RI
-RVJNQUxfREVGQVVMVF9HT1ZfU1RFUF9XSVNFPXkKIyBDT05GSUdfVEhFUk1BTF9ERUZBVUxUX0dP
-Vl9GQUlSX1NIQVJFIGlzIG5vdCBzZXQKIyBDT05GSUdfVEhFUk1BTF9ERUZBVUxUX0dPVl9VU0VS
-X1NQQUNFIGlzIG5vdCBzZXQKQ09ORklHX1RIRVJNQUxfR09WX0ZBSVJfU0hBUkU9eQpDT05GSUdf
-VEhFUk1BTF9HT1ZfU1RFUF9XSVNFPXkKQ09ORklHX1RIRVJNQUxfR09WX0JBTkdfQkFORz15CkNP
-TkZJR19USEVSTUFMX0dPVl9VU0VSX1NQQUNFPXkKQ09ORklHX1RIRVJNQUxfRU1VTEFUSU9OPXkK
-Q09ORklHX0lOVEVMX1BPV0VSQ0xBTVA9eQojIENPTkZJR19JTlRFTF9TT0NfRFRTX1RIRVJNQUwg
-aXMgbm90IHNldApDT05GSUdfSU5UMzQwWF9USEVSTUFMPXkKQ09ORklHX0FDUElfVEhFUk1BTF9S
-RUw9eQoKIwojIFRleGFzIEluc3RydW1lbnRzIHRoZXJtYWwgZHJpdmVycwojCkNPTkZJR19XQVRD
-SERPRz15CkNPTkZJR19XQVRDSERPR19DT1JFPXkKIyBDT05GSUdfV0FUQ0hET0dfTk9XQVlPVVQg
-aXMgbm90IHNldAoKIwojIFdhdGNoZG9nIERldmljZSBEcml2ZXJzCiMKQ09ORklHX1NPRlRfV0FU
-Q0hET0c9eQpDT05GSUdfREE5MDUyX1dBVENIRE9HPXkKIyBDT05GSUdfV004MzFYX1dBVENIRE9H
-IGlzIG5vdCBzZXQKQ09ORklHX1dNODM1MF9XQVRDSERPRz15CkNPTkZJR19YSUxJTlhfV0FUQ0hE
-T0c9eQojIENPTkZJR19EV19XQVRDSERPRyBpcyBub3Qgc2V0CkNPTkZJR19SRVRVX1dBVENIRE9H
-PXkKQ09ORklHX0FDUVVJUkVfV0RUPXkKQ09ORklHX0FEVkFOVEVDSF9XRFQ9eQpDT05GSUdfQUxJ
-TTE1MzVfV0RUPXkKQ09ORklHX0FMSU03MTAxX1dEVD15CkNPTkZJR19GNzE4MDhFX1dEVD15CiMg
-Q09ORklHX1NQNTEwMF9UQ08gaXMgbm90IHNldApDT05GSUdfU0JDX0ZJVFBDMl9XQVRDSERPRz15
-CiMgQ09ORklHX0VVUk9URUNIX1dEVCBpcyBub3Qgc2V0CiMgQ09ORklHX0lCNzAwX1dEVCBpcyBu
-b3Qgc2V0CkNPTkZJR19JQk1BU1I9eQojIENPTkZJR19XQUZFUl9XRFQgaXMgbm90IHNldApDT05G
-SUdfSTYzMDBFU0JfV0RUPXkKQ09ORklHX0lFNlhYX1dEVD15CkNPTkZJR19JVENPX1dEVD15CkNP
-TkZJR19JVENPX1ZFTkRPUl9TVVBQT1JUPXkKQ09ORklHX0lUODcxMkZfV0RUPXkKIyBDT05GSUdf
-SVQ4N19XRFQgaXMgbm90IHNldApDT05GSUdfSFBfV0FUQ0hET0c9eQojIENPTkZJR19IUFdEVF9O
-TUlfREVDT0RJTkcgaXMgbm90IHNldAojIENPTkZJR19TQzEyMDBfV0RUIGlzIG5vdCBzZXQKQ09O
-RklHX1NDeDIwMF9XRFQ9eQpDT05GSUdfUEM4NzQxM19XRFQ9eQojIENPTkZJR19OVl9UQ08gaXMg
-bm90IHNldApDT05GSUdfUkRDMzIxWF9XRFQ9eQpDT05GSUdfNjBYWF9XRFQ9eQojIENPTkZJR19T
-QkM4MzYwX1dEVCBpcyBub3Qgc2V0CiMgQ09ORklHX1NCQzcyNDBfV0RUIGlzIG5vdCBzZXQKQ09O
-RklHX0NQVTVfV0RUPXkKQ09ORklHX1NNU0NfU0NIMzExWF9XRFQ9eQpDT05GSUdfU01TQzM3Qjc4
-N19XRFQ9eQojIENPTkZJR19WSUFfV0RUIGlzIG5vdCBzZXQKQ09ORklHX1c4MzYyN0hGX1dEVD15
-CkNPTkZJR19XODM4NzdGX1dEVD15CkNPTkZJR19XODM5NzdGX1dEVD15CiMgQ09ORklHX01BQ0ha
-X1dEVCBpcyBub3Qgc2V0CkNPTkZJR19TQkNfRVBYX0MzX1dBVENIRE9HPXkKIyBDT05GSUdfTUVO
-X0EyMV9XRFQgaXMgbm90IHNldAoKIwojIFBDSS1iYXNlZCBXYXRjaGRvZyBDYXJkcwojCiMgQ09O
-RklHX1BDSVBDV0FUQ0hET0cgaXMgbm90IHNldAojIENPTkZJR19XRFRQQ0kgaXMgbm90IHNldAoK
-IwojIFVTQi1iYXNlZCBXYXRjaGRvZyBDYXJkcwojCkNPTkZJR19VU0JQQ1dBVENIRE9HPXkKQ09O
-RklHX1NTQl9QT1NTSUJMRT15CgojCiMgU29uaWNzIFNpbGljb24gQmFja3BsYW5lCiMKIyBDT05G
-SUdfU1NCIGlzIG5vdCBzZXQKQ09ORklHX0JDTUFfUE9TU0lCTEU9eQoKIwojIEJyb2FkY29tIHNw
-ZWNpZmljIEFNQkEKIwojIENPTkZJR19CQ01BIGlzIG5vdCBzZXQKCiMKIyBNdWx0aWZ1bmN0aW9u
-IGRldmljZSBkcml2ZXJzCiMKQ09ORklHX01GRF9DT1JFPXkKIyBDT05GSUdfTUZEX0NTNTUzNSBp
-cyBub3Qgc2V0CkNPTkZJR19NRkRfQVMzNzExPXkKQ09ORklHX1BNSUNfQURQNTUyMD15CiMgQ09O
-RklHX01GRF9BQVQyODcwX0NPUkUgaXMgbm90IHNldAojIENPTkZJR19NRkRfQkNNNTkwWFggaXMg
-bm90IHNldAojIENPTkZJR19NRkRfQVhQMjBYIGlzIG5vdCBzZXQKQ09ORklHX01GRF9DUk9TX0VD
-PXkKQ09ORklHX01GRF9DUk9TX0VDX0kyQz15CkNPTkZJR19QTUlDX0RBOTAzWD15CkNPTkZJR19Q
-TUlDX0RBOTA1Mj15CkNPTkZJR19NRkRfREE5MDUyX1NQST15CiMgQ09ORklHX01GRF9EQTkwNTJf
-STJDIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX0RBOTA1NSBpcyBub3Qgc2V0CiMgQ09ORklHX01G
-RF9EQTkwNjMgaXMgbm90IHNldApDT05GSUdfTUZEX01DMTNYWFg9eQojIENPTkZJR19NRkRfTUMx
-M1hYWF9TUEkgaXMgbm90IHNldApDT05GSUdfTUZEX01DMTNYWFhfSTJDPXkKQ09ORklHX0hUQ19Q
-QVNJQzM9eQojIENPTkZJR19IVENfSTJDUExEIGlzIG5vdCBzZXQKQ09ORklHX0xQQ19JQ0g9eQpD
-T05GSUdfTFBDX1NDSD15CiMgQ09ORklHX0lOVEVMX1NPQ19QTUlDIGlzIG5vdCBzZXQKQ09ORklH
-X01GRF9KQU5aX0NNT0RJTz15CiMgQ09ORklHX01GRF9LRU1QTEQgaXMgbm90IHNldAojIENPTkZJ
-R19NRkRfODhQTTgwMCBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF84OFBNODA1IGlzIG5vdCBzZXQK
-Q09ORklHX01GRF84OFBNODYwWD15CiMgQ09ORklHX01GRF9NQVgxNDU3NyBpcyBub3Qgc2V0CiMg
-Q09ORklHX01GRF9NQVg3NzY4NiBpcyBub3Qgc2V0CkNPTkZJR19NRkRfTUFYNzc2OTM9eQpDT05G
-SUdfTUZEX01BWDg5MDc9eQpDT05GSUdfTUZEX01BWDg5MjU9eQojIENPTkZJR19NRkRfTUFYODk5
-NyBpcyBub3Qgc2V0CkNPTkZJR19NRkRfTUFYODk5OD15CiMgQ09ORklHX01GRF9NRU5GMjFCTUMg
-aXMgbm90IHNldAojIENPTkZJR19FWlhfUENBUCBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9WSVBF
-UkJPQVJEIGlzIG5vdCBzZXQKQ09ORklHX01GRF9SRVRVPXkKQ09ORklHX01GRF9QQ0Y1MDYzMz15
-CkNPTkZJR19QQ0Y1MDYzM19BREM9eQpDT05GSUdfUENGNTA2MzNfR1BJTz15CkNPTkZJR19NRkRf
-UkRDMzIxWD15CiMgQ09ORklHX01GRF9SVFNYX1BDSSBpcyBub3Qgc2V0CkNPTkZJR19NRkRfUlRT
-WF9VU0I9eQojIENPTkZJR19NRkRfUkM1VDU4MyBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9STjVU
-NjE4IGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX1NFQ19DT1JFIGlzIG5vdCBzZXQKQ09ORklHX01G
-RF9TSTQ3NlhfQ09SRT15CkNPTkZJR19NRkRfU001MDE9eQpDT05GSUdfTUZEX1NNNTAxX0dQSU89
-eQojIENPTkZJR19NRkRfU01TQyBpcyBub3Qgc2V0CkNPTkZJR19BQlg1MDBfQ09SRT15CkNPTkZJ
-R19BQjMxMDBfQ09SRT15CkNPTkZJR19BQjMxMDBfT1RQPXkKQ09ORklHX01GRF9TWVNDT049eQpD
-T05GSUdfTUZEX1RJX0FNMzM1WF9UU0NBREM9eQpDT05GSUdfTUZEX0xQMzk0Mz15CkNPTkZJR19N
-RkRfTFA4Nzg4PXkKIyBDT05GSUdfTUZEX1BBTE1BUyBpcyBub3Qgc2V0CkNPTkZJR19UUFM2MTA1
-WD15CiMgQ09ORklHX1RQUzY1MDEwIGlzIG5vdCBzZXQKIyBDT05GSUdfVFBTNjUwN1ggaXMgbm90
-IHNldApDT05GSUdfTUZEX1RQUzY1MDkwPXkKIyBDT05GSUdfTUZEX1RQUzY1MjE3IGlzIG5vdCBz
-ZXQKQ09ORklHX01GRF9UUFM2NTIxOD15CiMgQ09ORklHX01GRF9UUFM2NTg2WCBpcyBub3Qgc2V0
-CiMgQ09ORklHX01GRF9UUFM2NTkxMCBpcyBub3Qgc2V0CkNPTkZJR19NRkRfVFBTNjU5MTI9eQoj
-IENPTkZJR19NRkRfVFBTNjU5MTJfSTJDIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX1RQUzY1OTEy
-X1NQSSBpcyBub3Qgc2V0CkNPTkZJR19NRkRfVFBTODAwMzE9eQojIENPTkZJR19UV0w0MDMwX0NP
-UkUgaXMgbm90IHNldAojIENPTkZJR19UV0w2MDQwX0NPUkUgaXMgbm90IHNldAojIENPTkZJR19N
-RkRfV0wxMjczX0NPUkUgaXMgbm90IHNldApDT05GSUdfTUZEX0xNMzUzMz15CkNPTkZJR19NRkRf
-VElNQkVSREFMRT15CkNPTkZJR19NRkRfVEMzNTg5WD15CiMgQ09ORklHX01GRF9UTUlPIGlzIG5v
-dCBzZXQKQ09ORklHX01GRF9WWDg1NT15CkNPTkZJR19NRkRfQVJJWk9OQT15CkNPTkZJR19NRkRf
-QVJJWk9OQV9JMkM9eQojIENPTkZJR19NRkRfQVJJWk9OQV9TUEkgaXMgbm90IHNldAojIENPTkZJ
-R19NRkRfV001MTAyIGlzIG5vdCBzZXQKQ09ORklHX01GRF9XTTUxMTA9eQojIENPTkZJR19NRkRf
-V004OTk3IGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX1dNODQwMCBpcyBub3Qgc2V0CkNPTkZJR19N
-RkRfV004MzFYPXkKQ09ORklHX01GRF9XTTgzMVhfSTJDPXkKQ09ORklHX01GRF9XTTgzMVhfU1BJ
-PXkKQ09ORklHX01GRF9XTTgzNTA9eQpDT05GSUdfTUZEX1dNODM1MF9JMkM9eQojIENPTkZJR19N
-RkRfV004OTk0IGlzIG5vdCBzZXQKQ09ORklHX1JFR1VMQVRPUj15CkNPTkZJR19SRUdVTEFUT1Jf
-REVCVUc9eQpDT05GSUdfUkVHVUxBVE9SX0ZJWEVEX1ZPTFRBR0U9eQojIENPTkZJR19SRUdVTEFU
-T1JfVklSVFVBTF9DT05TVU1FUiBpcyBub3Qgc2V0CkNPTkZJR19SRUdVTEFUT1JfVVNFUlNQQUNF
-X0NPTlNVTUVSPXkKQ09ORklHX1JFR1VMQVRPUl84OFBNODYwNz15CkNPTkZJR19SRUdVTEFUT1Jf
-QUNUODg2NT15CiMgQ09ORklHX1JFR1VMQVRPUl9BRDUzOTggaXMgbm90IHNldAojIENPTkZJR19S
-RUdVTEFUT1JfQU5BVE9QIGlzIG5vdCBzZXQKIyBDT05GSUdfUkVHVUxBVE9SX0FCMzEwMCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1JFR1VMQVRPUl9BUzM3MTEgaXMgbm90IHNldAojIENPTkZJR19SRUdV
-TEFUT1JfREE5MDNYIGlzIG5vdCBzZXQKQ09ORklHX1JFR1VMQVRPUl9EQTkwNTI9eQpDT05GSUdf
-UkVHVUxBVE9SX0RBOTIxMD15CkNPTkZJR19SRUdVTEFUT1JfREE5MjExPXkKIyBDT05GSUdfUkVH
-VUxBVE9SX0ZBTjUzNTU1IGlzIG5vdCBzZXQKQ09ORklHX1JFR1VMQVRPUl9HUElPPXkKIyBDT05G
-SUdfUkVHVUxBVE9SX0lTTDkzMDUgaXMgbm90IHNldApDT05GSUdfUkVHVUxBVE9SX0lTTDYyNzFB
-PXkKQ09ORklHX1JFR1VMQVRPUl9MUDM5NzE9eQpDT05GSUdfUkVHVUxBVE9SX0xQMzk3Mj15CiMg
-Q09ORklHX1JFR1VMQVRPUl9MUDg3MlggaXMgbm90IHNldApDT05GSUdfUkVHVUxBVE9SX0xQODc1
-NT15CkNPTkZJR19SRUdVTEFUT1JfTFA4Nzg4PXkKQ09ORklHX1JFR1VMQVRPUl9MVEMzNTg5PXkK
-Q09ORklHX1JFR1VMQVRPUl9NQVgxNTg2PXkKQ09ORklHX1JFR1VMQVRPUl9NQVg4NjQ5PXkKQ09O
-RklHX1JFR1VMQVRPUl9NQVg4NjYwPXkKIyBDT05GSUdfUkVHVUxBVE9SX01BWDg5MDcgaXMgbm90
-IHNldApDT05GSUdfUkVHVUxBVE9SX01BWDg5MjU9eQojIENPTkZJR19SRUdVTEFUT1JfTUFYODk1
-MiBpcyBub3Qgc2V0CkNPTkZJR19SRUdVTEFUT1JfTUFYODk3Mz15CiMgQ09ORklHX1JFR1VMQVRP
-Ul9NQVg4OTk4IGlzIG5vdCBzZXQKQ09ORklHX1JFR1VMQVRPUl9NQVg3NzY5Mz15CiMgQ09ORklH
-X1JFR1VMQVRPUl9NQzEzNzgzIGlzIG5vdCBzZXQKIyBDT05GSUdfUkVHVUxBVE9SX01DMTM4OTIg
-aXMgbm90IHNldApDT05GSUdfUkVHVUxBVE9SX1BDRjUwNjMzPXkKQ09ORklHX1JFR1VMQVRPUl9Q
-RlVaRTEwMD15CiMgQ09ORklHX1JFR1VMQVRPUl9QV00gaXMgbm90IHNldApDT05GSUdfUkVHVUxB
-VE9SX1RQUzUxNjMyPXkKIyBDT05GSUdfUkVHVUxBVE9SX1RQUzYxMDVYIGlzIG5vdCBzZXQKQ09O
-RklHX1JFR1VMQVRPUl9UUFM2MjM2MD15CkNPTkZJR19SRUdVTEFUT1JfVFBTNjUwMjM9eQpDT05G
-SUdfUkVHVUxBVE9SX1RQUzY1MDdYPXkKIyBDT05GSUdfUkVHVUxBVE9SX1RQUzY1MDkwIGlzIG5v
-dCBzZXQKIyBDT05GSUdfUkVHVUxBVE9SX1RQUzY1MjRYIGlzIG5vdCBzZXQKQ09ORklHX1JFR1VM
-QVRPUl9UUFM4MDAzMT15CiMgQ09ORklHX1JFR1VMQVRPUl9XTTgzMVggaXMgbm90IHNldApDT05G
-SUdfUkVHVUxBVE9SX1dNODM1MD15CkNPTkZJR19NRURJQV9TVVBQT1JUPXkKCiMKIyBNdWx0aW1l
-ZGlhIGNvcmUgc3VwcG9ydAojCiMgQ09ORklHX01FRElBX0NBTUVSQV9TVVBQT1JUIGlzIG5vdCBz
-ZXQKQ09ORklHX01FRElBX0FOQUxPR19UVl9TVVBQT1JUPXkKQ09ORklHX01FRElBX0RJR0lUQUxf
-VFZfU1VQUE9SVD15CiMgQ09ORklHX01FRElBX1JBRElPX1NVUFBPUlQgaXMgbm90IHNldAojIENP
-TkZJR19NRURJQV9TRFJfU1VQUE9SVCBpcyBub3Qgc2V0CkNPTkZJR19NRURJQV9SQ19TVVBQT1JU
-PXkKQ09ORklHX1ZJREVPX0RFVj15CkNPTkZJR19WSURFT19WNEwyPXkKIyBDT05GSUdfVklERU9f
-QURWX0RFQlVHIGlzIG5vdCBzZXQKIyBDT05GSUdfVklERU9fRklYRURfTUlOT1JfUkFOR0VTIGlz
-IG5vdCBzZXQKQ09ORklHX1ZJREVPX1RVTkVSPXkKQ09ORklHX1ZJREVPQlVGX0dFTj15CkNPTkZJ
-R19WSURFT0JVRl9WTUFMTE9DPXkKQ09ORklHX1ZJREVPQlVGMl9DT1JFPXkKQ09ORklHX1ZJREVP
-QlVGMl9NRU1PUFM9eQpDT05GSUdfVklERU9CVUYyX1ZNQUxMT0M9eQpDT05GSUdfRFZCX0NPUkU9
-eQpDT05GSUdfVFRQQ0lfRUVQUk9NPXkKQ09ORklHX0RWQl9NQVhfQURBUFRFUlM9OAojIENPTkZJ
-R19EVkJfRFlOQU1JQ19NSU5PUlMgaXMgbm90IHNldAoKIwojIE1lZGlhIGRyaXZlcnMKIwpDT05G
-SUdfUkNfQ09SRT15CkNPTkZJR19SQ19NQVA9eQojIENPTkZJR19SQ19ERUNPREVSUyBpcyBub3Qg
-c2V0CkNPTkZJR19SQ19ERVZJQ0VTPXkKIyBDT05GSUdfUkNfQVRJX1JFTU9URSBpcyBub3Qgc2V0
-CiMgQ09ORklHX0lSX0VORSBpcyBub3Qgc2V0CiMgQ09ORklHX0lSX0hJWDVIRDIgaXMgbm90IHNl
-dAojIENPTkZJR19JUl9JTU9OIGlzIG5vdCBzZXQKQ09ORklHX0lSX01DRVVTQj15CkNPTkZJR19J
-Ul9JVEVfQ0lSPXkKQ09ORklHX0lSX0ZJTlRFSz15CiMgQ09ORklHX0lSX05VVk9UT04gaXMgbm90
-IHNldApDT05GSUdfSVJfUkVEUkFUMz15CkNPTkZJR19JUl9TVFJFQU1aQVA9eQojIENPTkZJR19J
-Ul9XSU5CT05EX0NJUiBpcyBub3Qgc2V0CiMgQ09ORklHX0lSX0lHVUFOQSBpcyBub3Qgc2V0CkNP
-TkZJR19JUl9UVFVTQklSPXkKQ09ORklHX0lSX0lNRz15CkNPTkZJR19JUl9JTUdfUkFXPXkKIyBD
-T05GSUdfSVJfSU1HX0hXIGlzIG5vdCBzZXQKIyBDT05GSUdfUkNfTE9PUEJBQ0sgaXMgbm90IHNl
-dApDT05GSUdfSVJfR1BJT19DSVI9eQpDT05GSUdfTUVESUFfVVNCX1NVUFBPUlQ9eQoKIwojIEFu
-YWxvZyBUViBVU0IgZGV2aWNlcwojCkNPTkZJR19WSURFT19QVlJVU0IyPXkKIyBDT05GSUdfVklE
-RU9fUFZSVVNCMl9TWVNGUyBpcyBub3Qgc2V0CkNPTkZJR19WSURFT19QVlJVU0IyX0RWQj15CkNP
-TkZJR19WSURFT19IRFBWUj15CkNPTkZJR19WSURFT19VU0JWSVNJT049eQpDT05GSUdfVklERU9f
-U1RLMTE2MF9DT01NT049eQpDT05GSUdfVklERU9fU1RLMTE2MD15CgojCiMgQW5hbG9nL2RpZ2l0
-YWwgVFYgVVNCIGRldmljZXMKIwpDT05GSUdfVklERU9fQVUwODI4PXkKQ09ORklHX1ZJREVPX0FV
-MDgyOF9WNEwyPXkKIyBDT05GSUdfVklERU9fQVUwODI4X1JDIGlzIG5vdCBzZXQKIyBDT05GSUdf
-VklERU9fQ1gyMzFYWCBpcyBub3Qgc2V0CkNPTkZJR19WSURFT19UTTYwMDA9eQpDT05GSUdfVklE
-RU9fVE02MDAwX0RWQj15CgojCiMgRGlnaXRhbCBUViBVU0IgZGV2aWNlcwojCkNPTkZJR19EVkJf
-VVNCPXkKQ09ORklHX0RWQl9VU0JfREVCVUc9eQpDT05GSUdfRFZCX1VTQl9BODAwPXkKIyBDT05G
-SUdfRFZCX1VTQl9ESUJVU0JfTUIgaXMgbm90IHNldApDT05GSUdfRFZCX1VTQl9ESUJVU0JfTUM9
-eQpDT05GSUdfRFZCX1VTQl9ESUIwNzAwPXkKQ09ORklHX0RWQl9VU0JfVU1UXzAxMD15CkNPTkZJ
-R19EVkJfVVNCX0NYVVNCPXkKIyBDT05GSUdfRFZCX1VTQl9NOTIwWCBpcyBub3Qgc2V0CiMgQ09O
-RklHX0RWQl9VU0JfRElHSVRWIGlzIG5vdCBzZXQKIyBDT05GSUdfRFZCX1VTQl9WUDcwNDUgaXMg
-bm90IHNldApDT05GSUdfRFZCX1VTQl9WUDcwMlg9eQpDT05GSUdfRFZCX1VTQl9HUDhQU0s9eQpD
-T05GSUdfRFZCX1VTQl9OT1ZBX1RfVVNCMj15CiMgQ09ORklHX0RWQl9VU0JfVFRVU0IyIGlzIG5v
-dCBzZXQKQ09ORklHX0RWQl9VU0JfRFRUMjAwVT15CiMgQ09ORklHX0RWQl9VU0JfT1BFUkExIGlz
-IG5vdCBzZXQKQ09ORklHX0RWQl9VU0JfQUY5MDA1PXkKIyBDT05GSUdfRFZCX1VTQl9BRjkwMDVf
-UkVNT1RFIGlzIG5vdCBzZXQKQ09ORklHX0RWQl9VU0JfUENUVjQ1MkU9eQpDT05GSUdfRFZCX1VT
-Ql9EVzIxMDI9eQpDT05GSUdfRFZCX1VTQl9DSU5FUkdZX1QyPXkKQ09ORklHX0RWQl9VU0JfRFRW
-NTEwMD15CiMgQ09ORklHX0RWQl9VU0JfRlJJSU8gaXMgbm90IHNldAojIENPTkZJR19EVkJfVVNC
-X0FaNjAyNyBpcyBub3Qgc2V0CiMgQ09ORklHX0RWQl9VU0JfVEVDSE5JU0FUX1VTQjIgaXMgbm90
-IHNldApDT05GSUdfRFZCX1VTQl9WMj15CiMgQ09ORklHX0RWQl9VU0JfQUY5MDE1IGlzIG5vdCBz
-ZXQKQ09ORklHX0RWQl9VU0JfQUY5MDM1PXkKIyBDT05GSUdfRFZCX1VTQl9BTllTRUUgaXMgbm90
-IHNldApDT05GSUdfRFZCX1VTQl9BVTY2MTA9eQpDT05GSUdfRFZCX1VTQl9BWjYwMDc9eQojIENP
-TkZJR19EVkJfVVNCX0NFNjIzMCBpcyBub3Qgc2V0CkNPTkZJR19EVkJfVVNCX0VDMTY4PXkKQ09O
-RklHX0RWQl9VU0JfR0w4NjE9eQojIENPTkZJR19EVkJfVVNCX0xNRTI1MTAgaXMgbm90IHNldAoj
-IENPTkZJR19EVkJfVVNCX01YTDExMVNGIGlzIG5vdCBzZXQKQ09ORklHX0RWQl9VU0JfUlRMMjhY
-WFU9eQpDT05GSUdfRFZCX1VTQl9EVkJTS1k9eQpDT05GSUdfRFZCX1RUVVNCX0JVREdFVD15CiMg
-Q09ORklHX0RWQl9UVFVTQl9ERUMgaXMgbm90IHNldApDT05GSUdfU01TX1VTQl9EUlY9eQpDT05G
-SUdfRFZCX0IyQzJfRkxFWENPUF9VU0I9eQojIENPTkZJR19EVkJfQjJDMl9GTEVYQ09QX1VTQl9E
-RUJVRyBpcyBub3Qgc2V0CiMgQ09ORklHX0RWQl9BUzEwMiBpcyBub3Qgc2V0CgojCiMgV2ViY2Ft
-LCBUViAoYW5hbG9nL2RpZ2l0YWwpIFVTQiBkZXZpY2VzCiMKIyBDT05GSUdfVklERU9fRU0yOFhY
-IGlzIG5vdCBzZXQKIyBDT05GSUdfTUVESUFfUENJX1NVUFBPUlQgaXMgbm90IHNldAoKIwojIFN1
-cHBvcnRlZCBNTUMvU0RJTyBhZGFwdGVycwojCkNPTkZJR19NRURJQV9DT01NT05fT1BUSU9OUz15
-CgojCiMgY29tbW9uIGRyaXZlciBvcHRpb25zCiMKQ09ORklHX1ZJREVPX0NYMjM0MVg9eQpDT05G
-SUdfVklERU9fVFZFRVBST009eQpDT05GSUdfQ1lQUkVTU19GSVJNV0FSRT15CkNPTkZJR19EVkJf
-QjJDMl9GTEVYQ09QPXkKQ09ORklHX1NNU19TSUFOT19NRFRWPXkKIyBDT05GSUdfU01TX1NJQU5P
-X1JDIGlzIG5vdCBzZXQKCiMKIyBNZWRpYSBhbmNpbGxhcnkgZHJpdmVycyAodHVuZXJzLCBzZW5z
-b3JzLCBpMmMsIGZyb250ZW5kcykKIwojIENPTkZJR19NRURJQV9TVUJEUlZfQVVUT1NFTEVDVCBp
-cyBub3Qgc2V0CkNPTkZJR19WSURFT19JUl9JMkM9eQoKIwojIEVuY29kZXJzLCBkZWNvZGVycywg
-c2Vuc29ycyBhbmQgb3RoZXIgaGVscGVyIGNoaXBzCiMKCiMKIyBBdWRpbyBkZWNvZGVycywgcHJv
-Y2Vzc29ycyBhbmQgbWl4ZXJzCiMKQ09ORklHX1ZJREVPX1RWQVVESU89eQpDT05GSUdfVklERU9f
-VERBNzQzMj15CkNPTkZJR19WSURFT19UREE5ODQwPXkKQ09ORklHX1ZJREVPX1RFQTY0MTVDPXkK
-Q09ORklHX1ZJREVPX1RFQTY0MjA9eQpDT05GSUdfVklERU9fTVNQMzQwMD15CiMgQ09ORklHX1ZJ
-REVPX0NTNTM0NSBpcyBub3Qgc2V0CkNPTkZJR19WSURFT19DUzUzTDMyQT15CkNPTkZJR19WSURF
-T19UTFYzMjBBSUMyM0I9eQojIENPTkZJR19WSURFT19VREExMzQyIGlzIG5vdCBzZXQKQ09ORklH
-X1ZJREVPX1dNODc3NT15CiMgQ09ORklHX1ZJREVPX1dNODczOSBpcyBub3Qgc2V0CkNPTkZJR19W
-SURFT19WUDI3U01QWD15CiMgQ09ORklHX1ZJREVPX1NPTllfQlRGX01QWCBpcyBub3Qgc2V0Cgoj
-CiMgUkRTIGRlY29kZXJzCiMKIyBDT05GSUdfVklERU9fU0FBNjU4OCBpcyBub3Qgc2V0CgojCiMg
-VmlkZW8gZGVjb2RlcnMKIwpDT05GSUdfVklERU9fQURWNzE4MD15CkNPTkZJR19WSURFT19BRFY3
-MTgzPXkKIyBDT05GSUdfVklERU9fQlQ4MTkgaXMgbm90IHNldApDT05GSUdfVklERU9fQlQ4NTY9
-eQpDT05GSUdfVklERU9fQlQ4NjY9eQojIENPTkZJR19WSURFT19LUzAxMjcgaXMgbm90IHNldAoj
-IENPTkZJR19WSURFT19NTDg2Vjc2NjcgaXMgbm90IHNldApDT05GSUdfVklERU9fU0FBNzExMD15
-CkNPTkZJR19WSURFT19TQUE3MTFYPXkKQ09ORklHX1ZJREVPX1NBQTcxOTE9eQpDT05GSUdfVklE
-RU9fVFZQNTE0WD15CiMgQ09ORklHX1ZJREVPX1RWUDUxNTAgaXMgbm90IHNldApDT05GSUdfVklE
-RU9fVFZQNzAwMj15CkNPTkZJR19WSURFT19UVzI4MDQ9eQojIENPTkZJR19WSURFT19UVzk5MDMg
-aXMgbm90IHNldApDT05GSUdfVklERU9fVFc5OTA2PXkKIyBDT05GSUdfVklERU9fVlBYMzIyMCBp
-cyBub3Qgc2V0CgojCiMgVmlkZW8gYW5kIGF1ZGlvIGRlY29kZXJzCiMKIyBDT05GSUdfVklERU9f
-U0FBNzE3WCBpcyBub3Qgc2V0CkNPTkZJR19WSURFT19DWDI1ODQwPXkKCiMKIyBWaWRlbyBlbmNv
-ZGVycwojCiMgQ09ORklHX1ZJREVPX1NBQTcxMjcgaXMgbm90IHNldAojIENPTkZJR19WSURFT19T
-QUE3MTg1IGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX0FEVjcxNzA9eQpDT05GSUdfVklERU9fQURW
-NzE3NT15CkNPTkZJR19WSURFT19BRFY3MzQzPXkKQ09ORklHX1ZJREVPX0FEVjczOTM9eQojIENP
-TkZJR19WSURFT19BSzg4MVggaXMgbm90IHNldApDT05GSUdfVklERU9fVEhTODIwMD15CgojCiMg
-Q2FtZXJhIHNlbnNvciBkZXZpY2VzCiMKCiMKIyBGbGFzaCBkZXZpY2VzCiMKCiMKIyBWaWRlbyBp
-bXByb3ZlbWVudCBjaGlwcwojCkNPTkZJR19WSURFT19VUEQ2NDAzMUE9eQojIENPTkZJR19WSURF
-T19VUEQ2NDA4MyBpcyBub3Qgc2V0CgojCiMgQXVkaW8vVmlkZW8gY29tcHJlc3Npb24gY2hpcHMK
-IwpDT05GSUdfVklERU9fU0FBNjc1MkhTPXkKCiMKIyBNaXNjZWxsYW5lb3VzIGhlbHBlciBjaGlw
-cwojCkNPTkZJR19WSURFT19USFM3MzAzPXkKQ09ORklHX1ZJREVPX001Mjc5MD15CgojCiMgU2Vu
-c29ycyB1c2VkIG9uIHNvY19jYW1lcmEgZHJpdmVyCiMKQ09ORklHX01FRElBX1RVTkVSPXkKCiMK
-IyBDdXN0b21pemUgVFYgdHVuZXJzCiMKQ09ORklHX01FRElBX1RVTkVSX1NJTVBMRT15CkNPTkZJ
-R19NRURJQV9UVU5FUl9UREE4MjkwPXkKQ09ORklHX01FRElBX1RVTkVSX1REQTgyN1g9eQpDT05G
-SUdfTUVESUFfVFVORVJfVERBMTgyNzE9eQpDT05GSUdfTUVESUFfVFVORVJfVERBOTg4Nz15CiMg
-Q09ORklHX01FRElBX1RVTkVSX1RFQTU3NjEgaXMgbm90IHNldApDT05GSUdfTUVESUFfVFVORVJf
-VEVBNTc2Nz15CiMgQ09ORklHX01FRElBX1RVTkVSX01TSTAwMSBpcyBub3Qgc2V0CkNPTkZJR19N
-RURJQV9UVU5FUl9NVDIwWFg9eQpDT05GSUdfTUVESUFfVFVORVJfTVQyMDYwPXkKQ09ORklHX01F
-RElBX1RVTkVSX01UMjA2Mz15CiMgQ09ORklHX01FRElBX1RVTkVSX01UMjI2NiBpcyBub3Qgc2V0
-CiMgQ09ORklHX01FRElBX1RVTkVSX01UMjEzMSBpcyBub3Qgc2V0CiMgQ09ORklHX01FRElBX1RV
-TkVSX1FUMTAxMCBpcyBub3Qgc2V0CkNPTkZJR19NRURJQV9UVU5FUl9YQzIwMjg9eQpDT05GSUdf
-TUVESUFfVFVORVJfWEM1MDAwPXkKQ09ORklHX01FRElBX1RVTkVSX1hDNDAwMD15CkNPTkZJR19N
-RURJQV9UVU5FUl9NWEw1MDA1Uz15CiMgQ09ORklHX01FRElBX1RVTkVSX01YTDUwMDdUIGlzIG5v
-dCBzZXQKQ09ORklHX01FRElBX1RVTkVSX01DNDRTODAzPXkKQ09ORklHX01FRElBX1RVTkVSX01B
-WDIxNjU9eQpDT05GSUdfTUVESUFfVFVORVJfVERBMTgyMTg9eQpDT05GSUdfTUVESUFfVFVORVJf
-RkMwMDExPXkKQ09ORklHX01FRElBX1RVTkVSX0ZDMDAxMj15CiMgQ09ORklHX01FRElBX1RVTkVS
-X0ZDMDAxMyBpcyBub3Qgc2V0CkNPTkZJR19NRURJQV9UVU5FUl9UREExODIxMj15CkNPTkZJR19N
-RURJQV9UVU5FUl9FNDAwMD15CiMgQ09ORklHX01FRElBX1RVTkVSX0ZDMjU4MCBpcyBub3Qgc2V0
-CkNPTkZJR19NRURJQV9UVU5FUl9NODhUUzIwMjI9eQpDT05GSUdfTUVESUFfVFVORVJfVFVBOTAw
-MT15CkNPTkZJR19NRURJQV9UVU5FUl9TSTIxNTc9eQojIENPTkZJR19NRURJQV9UVU5FUl9JVDkx
-M1ggaXMgbm90IHNldApDT05GSUdfTUVESUFfVFVORVJfUjgyMFQ9eQojIENPTkZJR19NRURJQV9U
-VU5FUl9NWEwzMDFSRiBpcyBub3Qgc2V0CkNPTkZJR19NRURJQV9UVU5FUl9RTTFEMUMwMDQyPXkK
-CiMKIyBDdXN0b21pc2UgRFZCIEZyb250ZW5kcwojCgojCiMgTXVsdGlzdGFuZGFyZCAoc2F0ZWxs
-aXRlKSBmcm9udGVuZHMKIwpDT05GSUdfRFZCX1NUQjA4OTk9eQpDT05GSUdfRFZCX1NUQjYxMDA9
-eQpDT05GSUdfRFZCX1NUVjA5MHg9eQojIENPTkZJR19EVkJfU1RWNjExMHggaXMgbm90IHNldApD
-T05GSUdfRFZCX004OERTMzEwMz15CgojCiMgTXVsdGlzdGFuZGFyZCAoY2FibGUgKyB0ZXJyZXN0
-cmlhbCkgZnJvbnRlbmRzCiMKIyBDT05GSUdfRFZCX0RSWEsgaXMgbm90IHNldApDT05GSUdfRFZC
-X1REQTE4MjcxQzJERD15CiMgQ09ORklHX0RWQl9TSTIxNjUgaXMgbm90IHNldAoKIwojIERWQi1T
-IChzYXRlbGxpdGUpIGZyb250ZW5kcwojCkNPTkZJR19EVkJfQ1gyNDExMD15CiMgQ09ORklHX0RW
-Ql9DWDI0MTIzIGlzIG5vdCBzZXQKIyBDT05GSUdfRFZCX01UMzEyIGlzIG5vdCBzZXQKQ09ORklH
-X0RWQl9aTDEwMDM2PXkKIyBDT05GSUdfRFZCX1pMMTAwMzkgaXMgbm90IHNldAojIENPTkZJR19E
-VkJfUzVIMTQyMCBpcyBub3Qgc2V0CiMgQ09ORklHX0RWQl9TVFYwMjg4IGlzIG5vdCBzZXQKIyBD
-T05GSUdfRFZCX1NUQjYwMDAgaXMgbm90IHNldApDT05GSUdfRFZCX1NUVjAyOTk9eQpDT05GSUdf
-RFZCX1NUVjYxMTA9eQpDT05GSUdfRFZCX1NUVjA5MDA9eQpDT05GSUdfRFZCX1REQTgwODM9eQoj
-IENPTkZJR19EVkJfVERBMTAwODYgaXMgbm90IHNldApDT05GSUdfRFZCX1REQTgyNjE9eQojIENP
-TkZJR19EVkJfVkVTMVg5MyBpcyBub3Qgc2V0CkNPTkZJR19EVkJfVFVORVJfSVREMTAwMD15CiMg
-Q09ORklHX0RWQl9UVU5FUl9DWDI0MTEzIGlzIG5vdCBzZXQKIyBDT05GSUdfRFZCX1REQTgyNlgg
-aXMgbm90IHNldApDT05GSUdfRFZCX1RVQTYxMDA9eQpDT05GSUdfRFZCX0NYMjQxMTY9eQpDT05G
-SUdfRFZCX0NYMjQxMTc9eQojIENPTkZJR19EVkJfU0kyMVhYIGlzIG5vdCBzZXQKQ09ORklHX0RW
-Ql9UUzIwMjA9eQpDT05GSUdfRFZCX0RTMzAwMD15CkNPTkZJR19EVkJfTUI4NkExNj15CiMgQ09O
-RklHX0RWQl9UREExMDA3MSBpcyBub3Qgc2V0CgojCiMgRFZCLVQgKHRlcnJlc3RyaWFsKSBmcm9u
-dGVuZHMKIwpDT05GSUdfRFZCX1NQODg3MD15CiMgQ09ORklHX0RWQl9TUDg4N1ggaXMgbm90IHNl
-dAojIENPTkZJR19EVkJfQ1gyMjcwMCBpcyBub3Qgc2V0CkNPTkZJR19EVkJfQ1gyMjcwMj15CiMg
-Q09ORklHX0RWQl9TNUgxNDMyIGlzIG5vdCBzZXQKQ09ORklHX0RWQl9EUlhEPXkKQ09ORklHX0RW
-Ql9MNjQ3ODE9eQojIENPTkZJR19EVkJfVERBMTAwNFggaXMgbm90IHNldApDT05GSUdfRFZCX05Y
-VDYwMDA9eQpDT05GSUdfRFZCX01UMzUyPXkKQ09ORklHX0RWQl9aTDEwMzUzPXkKQ09ORklHX0RW
-Ql9ESUIzMDAwTUI9eQpDT05GSUdfRFZCX0RJQjMwMDBNQz15CkNPTkZJR19EVkJfRElCNzAwME09
-eQojIENPTkZJR19EVkJfRElCNzAwMFAgaXMgbm90IHNldApDT05GSUdfRFZCX0RJQjkwMDA9eQpD
-T05GSUdfRFZCX1REQTEwMDQ4PXkKQ09ORklHX0RWQl9BRjkwMTM9eQpDT05GSUdfRFZCX0VDMTAw
-PXkKIyBDT05GSUdfRFZCX0hEMjlMMiBpcyBub3Qgc2V0CkNPTkZJR19EVkJfU1RWMDM2Nz15CkNP
-TkZJR19EVkJfQ1hEMjgyMFI9eQpDT05GSUdfRFZCX1JUTDI4MzA9eQpDT05GSUdfRFZCX1JUTDI4
-MzI9eQojIENPTkZJR19EVkJfU0kyMTY4IGlzIG5vdCBzZXQKIyBDT05GSUdfRFZCX0FTMTAyX0ZF
-IGlzIG5vdCBzZXQKCiMKIyBEVkItQyAoY2FibGUpIGZyb250ZW5kcwojCkNPTkZJR19EVkJfVkVT
-MTgyMD15CiMgQ09ORklHX0RWQl9UREExMDAyMSBpcyBub3Qgc2V0CkNPTkZJR19EVkJfVERBMTAw
-MjM9eQpDT05GSUdfRFZCX1NUVjAyOTc9eQoKIwojIEFUU0MgKE5vcnRoIEFtZXJpY2FuL0tvcmVh
-biBUZXJyZXN0cmlhbC9DYWJsZSBEVFYpIGZyb250ZW5kcwojCkNPTkZJR19EVkJfTlhUMjAwWD15
-CkNPTkZJR19EVkJfT1I1MTIxMT15CiMgQ09ORklHX0RWQl9PUjUxMTMyIGlzIG5vdCBzZXQKIyBD
-T05GSUdfRFZCX0JDTTM1MTAgaXMgbm90IHNldApDT05GSUdfRFZCX0xHRFQzMzBYPXkKQ09ORklH
-X0RWQl9MR0RUMzMwNT15CiMgQ09ORklHX0RWQl9MRzIxNjAgaXMgbm90IHNldApDT05GSUdfRFZC
-X1M1SDE0MDk9eQpDT05GSUdfRFZCX0FVODUyMj15CkNPTkZJR19EVkJfQVU4NTIyX0RUVj15CkNP
-TkZJR19EVkJfQVU4NTIyX1Y0TD15CiMgQ09ORklHX0RWQl9TNUgxNDExIGlzIG5vdCBzZXQKCiMK
-IyBJU0RCLVQgKHRlcnJlc3RyaWFsKSBmcm9udGVuZHMKIwojIENPTkZJR19EVkJfUzkyMSBpcyBu
-b3Qgc2V0CkNPTkZJR19EVkJfRElCODAwMD15CiMgQ09ORklHX0RWQl9NQjg2QTIwUyBpcyBub3Qg
-c2V0CiMgQ09ORklHX0RWQl9UQzkwNTIyIGlzIG5vdCBzZXQKCiMKIyBEaWdpdGFsIHRlcnJlc3Ry
-aWFsIG9ubHkgdHVuZXJzL1BMTAojCiMgQ09ORklHX0RWQl9QTEwgaXMgbm90IHNldApDT05GSUdf
-RFZCX1RVTkVSX0RJQjAwNzA9eQpDT05GSUdfRFZCX1RVTkVSX0RJQjAwOTA9eQoKIwojIFNFQyBj
-b250cm9sIGRldmljZXMgZm9yIERWQi1TCiMKIyBDT05GSUdfRFZCX0RSWDM5WFlKIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfRFZCX0xOQlAyMSBpcyBub3Qgc2V0CkNPTkZJR19EVkJfTE5CUDIyPXkKQ09O
-RklHX0RWQl9JU0w2NDA1PXkKIyBDT05GSUdfRFZCX0lTTDY0MjEgaXMgbm90IHNldAojIENPTkZJ
-R19EVkJfSVNMNjQyMyBpcyBub3Qgc2V0CkNPTkZJR19EVkJfQTgyOTM9eQpDT05GSUdfRFZCX1NQ
-Mj15CkNPTkZJR19EVkJfTEdTOEdMNT15CkNPTkZJR19EVkJfTEdTOEdYWD15CiMgQ09ORklHX0RW
-Ql9BVEJNODgzMCBpcyBub3Qgc2V0CkNPTkZJR19EVkJfVERBNjY1eD15CkNPTkZJR19EVkJfSVgy
-NTA1Vj15CkNPTkZJR19EVkJfTTg4UlMyMDAwPXkKQ09ORklHX0RWQl9BRjkwMzM9eQoKIwojIFRv
-b2xzIHRvIGRldmVsb3AgbmV3IGZyb250ZW5kcwojCkNPTkZJR19EVkJfRFVNTVlfRkU9eQoKIwoj
-IEdyYXBoaWNzIHN1cHBvcnQKIwpDT05GSUdfQUdQPXkKQ09ORklHX0FHUF9BTEk9eQojIENPTkZJ
-R19BR1BfQVRJIGlzIG5vdCBzZXQKQ09ORklHX0FHUF9BTUQ9eQpDT05GSUdfQUdQX0FNRDY0PXkK
-Q09ORklHX0FHUF9JTlRFTD15CiMgQ09ORklHX0FHUF9OVklESUEgaXMgbm90IHNldApDT05GSUdf
-QUdQX1NJUz15CiMgQ09ORklHX0FHUF9TV09SS1MgaXMgbm90IHNldApDT05GSUdfQUdQX1ZJQT15
-CiMgQ09ORklHX0FHUF9FRkZJQ0VPTiBpcyBub3Qgc2V0CkNPTkZJR19JTlRFTF9HVFQ9eQpDT05G
-SUdfVkdBX0FSQj15CkNPTkZJR19WR0FfQVJCX01BWF9HUFVTPTE2CiMgQ09ORklHX1ZHQV9TV0lU
-Q0hFUk9PIGlzIG5vdCBzZXQKCiMKIyBEaXJlY3QgUmVuZGVyaW5nIE1hbmFnZXIKIwpDT05GSUdf
-RFJNPXkKQ09ORklHX0RSTV9LTVNfSEVMUEVSPXkKQ09ORklHX0RSTV9LTVNfRkJfSEVMUEVSPXkK
-Q09ORklHX0RSTV9MT0FEX0VESURfRklSTVdBUkU9eQpDT05GSUdfRFJNX1RUTT15CgojCiMgSTJD
-IGVuY29kZXIgb3IgaGVscGVyIGNoaXBzCiMKQ09ORklHX0RSTV9JMkNfQ0g3MDA2PXkKQ09ORklH
-X0RSTV9JMkNfU0lMMTY0PXkKQ09ORklHX0RSTV9JMkNfTlhQX1REQTk5OFg9eQpDT05GSUdfRFJN
-X1BUTjM0NjA9eQpDT05GSUdfRFJNX1RERlg9eQpDT05GSUdfRFJNX1IxMjg9eQpDT05GSUdfRFJN
-X1JBREVPTj15CkNPTkZJR19EUk1fUkFERU9OX1VNUz15CiMgQ09ORklHX0RSTV9OT1VWRUFVIGlz
-IG5vdCBzZXQKQ09ORklHX0RSTV9JODEwPXkKQ09ORklHX0RSTV9JOTE1PXkKIyBDT05GSUdfRFJN
-X0k5MTVfS01TIGlzIG5vdCBzZXQKIyBDT05GSUdfRFJNX0k5MTVfRkJERVYgaXMgbm90IHNldAoj
-IENPTkZJR19EUk1fSTkxNV9QUkVMSU1JTkFSWV9IV19TVVBQT1JUIGlzIG5vdCBzZXQKIyBDT05G
-SUdfRFJNX01HQSBpcyBub3Qgc2V0CkNPTkZJR19EUk1fU0lTPXkKQ09ORklHX0RSTV9WSUE9eQpD
-T05GSUdfRFJNX1NBVkFHRT15CiMgQ09ORklHX0RSTV9WTVdHRlggaXMgbm90IHNldAojIENPTkZJ
-R19EUk1fR01BNTAwIGlzIG5vdCBzZXQKQ09ORklHX0RSTV9VREw9eQpDT05GSUdfRFJNX0FTVD15
-CkNPTkZJR19EUk1fTUdBRzIwMD15CkNPTkZJR19EUk1fQ0lSUlVTX1FFTVU9eQojIENPTkZJR19E
-Uk1fUVhMIGlzIG5vdCBzZXQKQ09ORklHX0RSTV9CT0NIUz15CgojCiMgRnJhbWUgYnVmZmVyIERl
-dmljZXMKIwpDT05GSUdfRkI9eQpDT05GSUdfRklSTVdBUkVfRURJRD15CkNPTkZJR19GQl9DTURM
-SU5FPXkKQ09ORklHX0ZCX0REQz15CkNPTkZJR19GQl9CT09UX1ZFU0FfU1VQUE9SVD15CkNPTkZJ
-R19GQl9DRkJfRklMTFJFQ1Q9eQpDT05GSUdfRkJfQ0ZCX0NPUFlBUkVBPXkKQ09ORklHX0ZCX0NG
-Ql9JTUFHRUJMSVQ9eQojIENPTkZJR19GQl9DRkJfUkVWX1BJWEVMU19JTl9CWVRFIGlzIG5vdCBz
-ZXQKQ09ORklHX0ZCX1NZU19GSUxMUkVDVD15CkNPTkZJR19GQl9TWVNfQ09QWUFSRUE9eQpDT05G
-SUdfRkJfU1lTX0lNQUdFQkxJVD15CkNPTkZJR19GQl9GT1JFSUdOX0VORElBTj15CiMgQ09ORklH
-X0ZCX0JPVEhfRU5ESUFOIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfQklHX0VORElBTiBpcyBub3Qg
-c2V0CkNPTkZJR19GQl9MSVRUTEVfRU5ESUFOPXkKQ09ORklHX0ZCX1NZU19GT1BTPXkKQ09ORklH
-X0ZCX0RFRkVSUkVEX0lPPXkKQ09ORklHX0ZCX1NWR0FMSUI9eQojIENPTkZJR19GQl9NQUNNT0RF
-UyBpcyBub3Qgc2V0CkNPTkZJR19GQl9CQUNLTElHSFQ9eQpDT05GSUdfRkJfTU9ERV9IRUxQRVJT
-PXkKQ09ORklHX0ZCX1RJTEVCTElUVElORz15CgojCiMgRnJhbWUgYnVmZmVyIGhhcmR3YXJlIGRy
-aXZlcnMKIwpDT05GSUdfRkJfQ0lSUlVTPXkKQ09ORklHX0ZCX1BNMj15CkNPTkZJR19GQl9QTTJf
-RklGT19ESVNDT05ORUNUPXkKIyBDT05GSUdfRkJfQ1lCRVIyMDAwIGlzIG5vdCBzZXQKIyBDT05G
-SUdfRkJfQVJDIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfQVNJTElBTlQgaXMgbm90IHNldAojIENP
-TkZJR19GQl9JTVNUVCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1ZHQTE2IGlzIG5vdCBzZXQKQ09O
-RklHX0ZCX1ZFU0E9eQojIENPTkZJR19GQl9FRkkgaXMgbm90IHNldAojIENPTkZJR19GQl9ONDEx
-IGlzIG5vdCBzZXQKQ09ORklHX0ZCX0hHQT15CiMgQ09ORklHX0ZCX09QRU5DT1JFUyBpcyBub3Qg
-c2V0CkNPTkZJR19GQl9TMUQxM1hYWD15CiMgQ09ORklHX0ZCX05WSURJQSBpcyBub3Qgc2V0CkNP
-TkZJR19GQl9SSVZBPXkKQ09ORklHX0ZCX1JJVkFfSTJDPXkKIyBDT05GSUdfRkJfUklWQV9ERUJV
-RyBpcyBub3Qgc2V0CkNPTkZJR19GQl9SSVZBX0JBQ0tMSUdIVD15CkNPTkZJR19GQl9JNzQwPXkK
-Q09ORklHX0ZCX0k4MTA9eQojIENPTkZJR19GQl9JODEwX0dURiBpcyBub3Qgc2V0CkNPTkZJR19G
-Ql9MRTgwNTc4PXkKQ09ORklHX0ZCX0NBUklMTE9fUkFOQ0g9eQpDT05GSUdfRkJfTUFUUk9YPXkK
-Q09ORklHX0ZCX01BVFJPWF9NSUxMRU5JVU09eQpDT05GSUdfRkJfTUFUUk9YX01ZU1RJUVVFPXkK
-IyBDT05GSUdfRkJfTUFUUk9YX0cgaXMgbm90IHNldApDT05GSUdfRkJfTUFUUk9YX0kyQz15CkNP
-TkZJR19GQl9SQURFT049eQojIENPTkZJR19GQl9SQURFT05fSTJDIGlzIG5vdCBzZXQKIyBDT05G
-SUdfRkJfUkFERU9OX0JBQ0tMSUdIVCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1JBREVPTl9ERUJV
-RyBpcyBub3Qgc2V0CkNPTkZJR19GQl9BVFkxMjg9eQpDT05GSUdfRkJfQVRZMTI4X0JBQ0tMSUdI
-VD15CiMgQ09ORklHX0ZCX0FUWSBpcyBub3Qgc2V0CkNPTkZJR19GQl9TMz15CkNPTkZJR19GQl9T
-M19EREM9eQpDT05GSUdfRkJfU0FWQUdFPXkKQ09ORklHX0ZCX1NBVkFHRV9JMkM9eQpDT05GSUdf
-RkJfU0FWQUdFX0FDQ0VMPXkKIyBDT05GSUdfRkJfU0lTIGlzIG5vdCBzZXQKQ09ORklHX0ZCX1ZJ
-QT15CiMgQ09ORklHX0ZCX1ZJQV9ESVJFQ1RfUFJPQ0ZTIGlzIG5vdCBzZXQKQ09ORklHX0ZCX1ZJ
-QV9YX0NPTVBBVElCSUxJVFk9eQpDT05GSUdfRkJfTkVPTUFHSUM9eQpDT05GSUdfRkJfS1lSTz15
-CkNPTkZJR19GQl8zREZYPXkKIyBDT05GSUdfRkJfM0RGWF9BQ0NFTCBpcyBub3Qgc2V0CkNPTkZJ
-R19GQl8zREZYX0kyQz15CiMgQ09ORklHX0ZCX1ZPT0RPTzEgaXMgbm90IHNldApDT05GSUdfRkJf
-VlQ4NjIzPXkKIyBDT05GSUdfRkJfVFJJREVOVCBpcyBub3Qgc2V0CkNPTkZJR19GQl9BUks9eQoj
-IENPTkZJR19GQl9QTTMgaXMgbm90IHNldAojIENPTkZJR19GQl9DQVJNSU5FIGlzIG5vdCBzZXQK
-Q09ORklHX0ZCX0dFT0RFPXkKQ09ORklHX0ZCX0dFT0RFX0xYPXkKQ09ORklHX0ZCX0dFT0RFX0dY
-PXkKQ09ORklHX0ZCX0dFT0RFX0dYMT15CkNPTkZJR19GQl9TTTUwMT15CkNPTkZJR19GQl9TTVND
-VUZYPXkKQ09ORklHX0ZCX1VETD15CiMgQ09ORklHX0ZCX1ZJUlRVQUwgaXMgbm90IHNldAojIENP
-TkZJR19GQl9NRVRST05PTUUgaXMgbm90IHNldAojIENPTkZJR19GQl9NQjg2MlhYIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfRkJfQlJPQURTSEVFVCBpcyBub3Qgc2V0CkNPTkZJR19GQl9BVU9fSzE5MFg9
-eQpDT05GSUdfRkJfQVVPX0sxOTAwPXkKIyBDT05GSUdfRkJfQVVPX0sxOTAxIGlzIG5vdCBzZXQK
-Q09ORklHX0ZCX1NJTVBMRT15CkNPTkZJR19CQUNLTElHSFRfTENEX1NVUFBPUlQ9eQpDT05GSUdf
-TENEX0NMQVNTX0RFVklDRT15CkNPTkZJR19MQ0RfTDRGMDAyNDJUMDM9eQojIENPTkZJR19MQ0Rf
-TE1TMjgzR0YwNSBpcyBub3Qgc2V0CkNPTkZJR19MQ0RfTFRWMzUwUVY9eQojIENPTkZJR19MQ0Rf
-SUxJOTIyWCBpcyBub3Qgc2V0CkNPTkZJR19MQ0RfSUxJOTMyMD15CkNPTkZJR19MQ0RfVERPMjRN
-PXkKQ09ORklHX0xDRF9WR0cyNDMyQTQ9eQpDT05GSUdfTENEX1BMQVRGT1JNPXkKQ09ORklHX0xD
-RF9TNkU2M00wPXkKQ09ORklHX0xDRF9MRDkwNDA9eQojIENPTkZJR19MQ0RfQU1TMzY5RkcwNiBp
-cyBub3Qgc2V0CiMgQ09ORklHX0xDRF9MTVM1MDFLRjAzIGlzIG5vdCBzZXQKQ09ORklHX0xDRF9I
-WDgzNTc9eQpDT05GSUdfQkFDS0xJR0hUX0NMQVNTX0RFVklDRT15CkNPTkZJR19CQUNLTElHSFRf
-R0VORVJJQz15CkNPTkZJR19CQUNLTElHSFRfTE0zNTMzPXkKQ09ORklHX0JBQ0tMSUdIVF9DQVJJ
-TExPX1JBTkNIPXkKQ09ORklHX0JBQ0tMSUdIVF9QV009eQpDT05GSUdfQkFDS0xJR0hUX0RBOTAz
-WD15CiMgQ09ORklHX0JBQ0tMSUdIVF9EQTkwNTIgaXMgbm90IHNldApDT05GSUdfQkFDS0xJR0hU
-X01BWDg5MjU9eQojIENPTkZJR19CQUNLTElHSFRfQVBQTEUgaXMgbm90IHNldApDT05GSUdfQkFD
-S0xJR0hUX1NBSEFSQT15CiMgQ09ORklHX0JBQ0tMSUdIVF9XTTgzMVggaXMgbm90IHNldAojIENP
-TkZJR19CQUNLTElHSFRfQURQNTUyMCBpcyBub3Qgc2V0CiMgQ09ORklHX0JBQ0tMSUdIVF9BRFA4
-ODYwIGlzIG5vdCBzZXQKIyBDT05GSUdfQkFDS0xJR0hUX0FEUDg4NzAgaXMgbm90IHNldApDT05G
-SUdfQkFDS0xJR0hUXzg4UE04NjBYPXkKQ09ORklHX0JBQ0tMSUdIVF9QQ0Y1MDYzMz15CkNPTkZJ
-R19CQUNLTElHSFRfTE0zNjMwQT15CiMgQ09ORklHX0JBQ0tMSUdIVF9MTTM2MzkgaXMgbm90IHNl
-dAojIENPTkZJR19CQUNLTElHSFRfTFA4NTVYIGlzIG5vdCBzZXQKQ09ORklHX0JBQ0tMSUdIVF9M
-UDg3ODg9eQpDT05GSUdfQkFDS0xJR0hUX0FTMzcxMT15CkNPTkZJR19CQUNLTElHSFRfR1BJTz15
-CiMgQ09ORklHX0JBQ0tMSUdIVF9MVjUyMDdMUCBpcyBub3Qgc2V0CkNPTkZJR19CQUNLTElHSFRf
-QkQ2MTA3PXkKQ09ORklHX1ZHQVNUQVRFPXkKQ09ORklHX0hETUk9eQoKIwojIENvbnNvbGUgZGlz
-cGxheSBkcml2ZXIgc3VwcG9ydAojCkNPTkZJR19WR0FfQ09OU09MRT15CiMgQ09ORklHX1ZHQUNP
-Tl9TT0ZUX1NDUk9MTEJBQ0sgaXMgbm90IHNldApDT05GSUdfRFVNTVlfQ09OU09MRT15CkNPTkZJ
-R19GUkFNRUJVRkZFUl9DT05TT0xFPXkKQ09ORklHX0ZSQU1FQlVGRkVSX0NPTlNPTEVfREVURUNU
-X1BSSU1BUlk9eQojIENPTkZJR19GUkFNRUJVRkZFUl9DT05TT0xFX1JPVEFUSU9OIGlzIG5vdCBz
-ZXQKQ09ORklHX0xPR089eQojIENPTkZJR19MT0dPX0xJTlVYX01PTk8gaXMgbm90IHNldApDT05G
-SUdfTE9HT19MSU5VWF9WR0ExNj15CiMgQ09ORklHX0xPR09fTElOVVhfQ0xVVDIyNCBpcyBub3Qg
-c2V0CkNPTkZJR19TT1VORD15CiMgQ09ORklHX1NPVU5EX09TU19DT1JFIGlzIG5vdCBzZXQKIyBD
-T05GSUdfU05EIGlzIG5vdCBzZXQKIyBDT05GSUdfU09VTkRfUFJJTUUgaXMgbm90IHNldAoKIwoj
-IEhJRCBzdXBwb3J0CiMKQ09ORklHX0hJRD15CiMgQ09ORklHX0hJRF9CQVRURVJZX1NUUkVOR1RI
-IGlzIG5vdCBzZXQKQ09ORklHX0hJRFJBVz15CiMgQ09ORklHX1VISUQgaXMgbm90IHNldApDT05G
-SUdfSElEX0dFTkVSSUM9eQoKIwojIFNwZWNpYWwgSElEIGRyaXZlcnMKIwpDT05GSUdfSElEX0E0
-VEVDSD15CkNPTkZJR19ISURfQUNSVVg9eQpDT05GSUdfSElEX0FDUlVYX0ZGPXkKQ09ORklHX0hJ
-RF9BUFBMRT15CkNPTkZJR19ISURfQVVSRUFMPXkKQ09ORklHX0hJRF9CRUxLSU49eQpDT05GSUdf
-SElEX0NIRVJSWT15CkNPTkZJR19ISURfQ0hJQ09OWT15CkNPTkZJR19ISURfQ1lQUkVTUz15CkNP
-TkZJR19ISURfRFJBR09OUklTRT15CiMgQ09ORklHX0RSQUdPTlJJU0VfRkYgaXMgbm90IHNldAoj
-IENPTkZJR19ISURfRU1TX0ZGIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9FTEVDT009eQpDT05GSUdf
-SElEX0VaS0VZPXkKQ09ORklHX0hJRF9LRVlUT1VDSD15CkNPTkZJR19ISURfS1lFPXkKQ09ORklH
-X0hJRF9VQ0xPR0lDPXkKQ09ORklHX0hJRF9XQUxUT1A9eQpDT05GSUdfSElEX0dZUkFUSU9OPXkK
-Q09ORklHX0hJRF9JQ0FERT15CkNPTkZJR19ISURfVFdJTkhBTj15CkNPTkZJR19ISURfS0VOU0lO
-R1RPTj15CiMgQ09ORklHX0hJRF9MQ1BPV0VSIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9MRU5PVk89
-eQpDT05GSUdfSElEX0xPR0lURUNIPXkKIyBDT05GSUdfSElEX0xPR0lURUNIX0RKIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfTE9HSVRFQ0hfRkYgaXMgbm90IHNldAojIENPTkZJR19MT0dJUlVNQkxFUEFE
-Ml9GRiBpcyBub3Qgc2V0CiMgQ09ORklHX0xPR0lHOTQwX0ZGIGlzIG5vdCBzZXQKIyBDT05GSUdf
-TE9HSVdIRUVMU19GRiBpcyBub3Qgc2V0CkNPTkZJR19ISURfTUFHSUNNT1VTRT15CkNPTkZJR19I
-SURfTUlDUk9TT0ZUPXkKQ09ORklHX0hJRF9NT05URVJFWT15CiMgQ09ORklHX0hJRF9NVUxUSVRP
-VUNIIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9PUlRFSz15CiMgQ09ORklHX0hJRF9QQU5USEVSTE9S
-RCBpcyBub3Qgc2V0CkNPTkZJR19ISURfUEVUQUxZTlg9eQpDT05GSUdfSElEX1BJQ09MQ0Q9eQpD
-T05GSUdfSElEX1BJQ09MQ0RfRkI9eQpDT05GSUdfSElEX1BJQ09MQ0RfQkFDS0xJR0hUPXkKQ09O
-RklHX0hJRF9QSUNPTENEX0xDRD15CkNPTkZJR19ISURfUElDT0xDRF9MRURTPXkKQ09ORklHX0hJ
-RF9QSUNPTENEX0NJUj15CkNPTkZJR19ISURfUFJJTUFYPXkKQ09ORklHX0hJRF9TQUlURUs9eQpD
-T05GSUdfSElEX1NBTVNVTkc9eQojIENPTkZJR19ISURfU1BFRURMSU5LIGlzIG5vdCBzZXQKQ09O
-RklHX0hJRF9TVEVFTFNFUklFUz15CiMgQ09ORklHX0hJRF9TVU5QTFVTIGlzIG5vdCBzZXQKIyBD
-T05GSUdfSElEX1JNSSBpcyBub3Qgc2V0CkNPTkZJR19ISURfR1JFRU5BU0lBPXkKIyBDT05GSUdf
-R1JFRU5BU0lBX0ZGIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1NNQVJUSk9ZUExVUyBpcyBub3Qg
-c2V0CiMgQ09ORklHX0hJRF9USVZPIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9UT1BTRUVEPXkKIyBD
-T05GSUdfSElEX1RISU5HTSBpcyBub3Qgc2V0CkNPTkZJR19ISURfVEhSVVNUTUFTVEVSPXkKQ09O
-RklHX1RIUlVTVE1BU1RFUl9GRj15CkNPTkZJR19ISURfV0FDT009eQpDT05GSUdfSElEX1dJSU1P
-VEU9eQpDT05GSUdfSElEX1hJTk1PPXkKQ09ORklHX0hJRF9aRVJPUExVUz15CiMgQ09ORklHX1pF
-Uk9QTFVTX0ZGIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1pZREFDUk9OIGlzIG5vdCBzZXQKQ09O
-RklHX0hJRF9TRU5TT1JfSFVCPXkKCiMKIyBVU0IgSElEIHN1cHBvcnQKIwojIENPTkZJR19VU0Jf
-SElEIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1BJRCBpcyBub3Qgc2V0CgojCiMgSTJDIEhJRCBz
-dXBwb3J0CiMKIyBDT05GSUdfSTJDX0hJRCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfT0hDSV9MSVRU
-TEVfRU5ESUFOPXkKQ09ORklHX1VTQl9TVVBQT1JUPXkKQ09ORklHX1VTQl9DT01NT049eQpDT05G
-SUdfVVNCX0FSQ0hfSEFTX0hDRD15CkNPTkZJR19VU0I9eQpDT05GSUdfVVNCX0FOTk9VTkNFX05F
-V19ERVZJQ0VTPXkKCiMKIyBNaXNjZWxsYW5lb3VzIFVTQiBvcHRpb25zCiMKQ09ORklHX1VTQl9E
-RUZBVUxUX1BFUlNJU1Q9eQojIENPTkZJR19VU0JfRFlOQU1JQ19NSU5PUlMgaXMgbm90IHNldApD
-T05GSUdfVVNCX09URz15CkNPTkZJR19VU0JfT1RHX1dISVRFTElTVD15CiMgQ09ORklHX1VTQl9P
-VEdfQkxBQ0tMSVNUX0hVQiBpcyBub3Qgc2V0CkNPTkZJR19VU0JfT1RHX0ZTTT15CkNPTkZJR19V
-U0JfTU9OPXkKQ09ORklHX1VTQl9XVVNCPXkKQ09ORklHX1VTQl9XVVNCX0NCQUY9eQpDT05GSUdf
-VVNCX1dVU0JfQ0JBRl9ERUJVRz15CgojCiMgVVNCIEhvc3QgQ29udHJvbGxlciBEcml2ZXJzCiMK
-Q09ORklHX1VTQl9DNjdYMDBfSENEPXkKQ09ORklHX1VTQl9YSENJX0hDRD15CkNPTkZJR19VU0Jf
-WEhDSV9QQ0k9eQpDT05GSUdfVVNCX1hIQ0lfUExBVEZPUk09eQpDT05GSUdfVVNCX0VIQ0lfSENE
-PXkKQ09ORklHX1VTQl9FSENJX1JPT1RfSFVCX1RUPXkKIyBDT05GSUdfVVNCX0VIQ0lfVFRfTkVX
-U0NIRUQgaXMgbm90IHNldApDT05GSUdfVVNCX0VIQ0lfUENJPXkKQ09ORklHX1VTQl9FSENJX0hD
-RF9QTEFURk9STT15CkNPTkZJR19VU0JfT1hVMjEwSFBfSENEPXkKQ09ORklHX1VTQl9JU1AxMTZY
-X0hDRD15CiMgQ09ORklHX1VTQl9JU1AxNzYwX0hDRCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfSVNQ
-MTM2Ml9IQ0Q9eQojIENPTkZJR19VU0JfRlVTQkgyMDBfSENEIGlzIG5vdCBzZXQKIyBDT05GSUdf
-VVNCX0ZPVEcyMTBfSENEIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9NQVgzNDIxX0hDRD15CkNPTkZJ
-R19VU0JfT0hDSV9IQ0Q9eQpDT05GSUdfVVNCX09IQ0lfSENEX1BDST15CkNPTkZJR19VU0JfT0hD
-SV9IQ0RfUExBVEZPUk09eQpDT05GSUdfVVNCX1VIQ0lfSENEPXkKIyBDT05GSUdfVVNCX1NMODEx
-X0hDRCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfUjhBNjY1OTdfSENEPXkKIyBDT05GSUdfVVNCX1dI
-Q0lfSENEIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9IV0FfSENEPXkKQ09ORklHX1VTQl9IQ0RfVEVT
-VF9NT0RFPXkKCiMKIyBVU0IgRGV2aWNlIENsYXNzIGRyaXZlcnMKIwpDT05GSUdfVVNCX0FDTT15
-CkNPTkZJR19VU0JfUFJJTlRFUj15CkNPTkZJR19VU0JfV0RNPXkKQ09ORklHX1VTQl9UTUM9eQoK
-IwojIE5PVEU6IFVTQl9TVE9SQUdFIGRlcGVuZHMgb24gU0NTSSBidXQgQkxLX0RFVl9TRCBtYXkK
-IwoKIwojIGFsc28gYmUgbmVlZGVkOyBzZWUgVVNCX1NUT1JBR0UgSGVscCBmb3IgbW9yZSBpbmZv
-CiMKQ09ORklHX1VTQl9TVE9SQUdFPXkKIyBDT05GSUdfVVNCX1NUT1JBR0VfREVCVUcgaXMgbm90
-IHNldApDT05GSUdfVVNCX1NUT1JBR0VfUkVBTFRFSz15CiMgQ09ORklHX1JFQUxURUtfQVVUT1BN
-IGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX1NUT1JBR0VfREFUQUZBQiBpcyBub3Qgc2V0CiMgQ09O
-RklHX1VTQl9TVE9SQUdFX0ZSRUVDT00gaXMgbm90IHNldApDT05GSUdfVVNCX1NUT1JBR0VfSVNE
-MjAwPXkKQ09ORklHX1VTQl9TVE9SQUdFX1VTQkFUPXkKQ09ORklHX1VTQl9TVE9SQUdFX1NERFIw
-OT15CiMgQ09ORklHX1VTQl9TVE9SQUdFX1NERFI1NSBpcyBub3Qgc2V0CkNPTkZJR19VU0JfU1RP
-UkFHRV9KVU1QU0hPVD15CkNPTkZJR19VU0JfU1RPUkFHRV9BTEFVREE9eQpDT05GSUdfVVNCX1NU
-T1JBR0VfT05FVE9VQ0g9eQpDT05GSUdfVVNCX1NUT1JBR0VfS0FSTUE9eQpDT05GSUdfVVNCX1NU
-T1JBR0VfQ1lQUkVTU19BVEFDQj15CkNPTkZJR19VU0JfU1RPUkFHRV9FTkVfVUI2MjUwPXkKQ09O
-RklHX1VTQl9VQVM9eQoKIwojIFVTQiBJbWFnaW5nIGRldmljZXMKIwpDT05GSUdfVVNCX01EQzgw
-MD15CiMgQ09ORklHX1VTQl9NSUNST1RFSyBpcyBub3Qgc2V0CkNPTkZJR19VU0JJUF9DT1JFPXkK
-IyBDT05GSUdfVVNCSVBfVkhDSV9IQ0QgaXMgbm90IHNldApDT05GSUdfVVNCSVBfSE9TVD15CiMg
-Q09ORklHX1VTQklQX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9NVVNCX0hEUkM9eQojIENP
-TkZJR19VU0JfTVVTQl9IT1NUIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9NVVNCX0dBREdFVD15CiMg
-Q09ORklHX1VTQl9NVVNCX0RVQUxfUk9MRSBpcyBub3Qgc2V0CkNPTkZJR19VU0JfTVVTQl9UVVNC
-NjAxMD15CiMgQ09ORklHX1VTQl9NVVNCX1VYNTAwIGlzIG5vdCBzZXQKQ09ORklHX01VU0JfUElP
-X09OTFk9eQpDT05GSUdfVVNCX0RXQzM9eQojIENPTkZJR19VU0JfRFdDM19IT1NUIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfVVNCX0RXQzNfR0FER0VUIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9EV0MzX0RV
-QUxfUk9MRT15CgojCiMgUGxhdGZvcm0gR2x1ZSBEcml2ZXIgU3VwcG9ydAojCiMgQ09ORklHX1VT
-Ql9EV0MzX1BDSSBpcyBub3Qgc2V0CgojCiMgRGVidWdnaW5nIGZlYXR1cmVzCiMKIyBDT05GSUdf
-VVNCX0RXQzNfREVCVUcgaXMgbm90IHNldAojIENPTkZJR19EV0MzX0hPU1RfVVNCM19MUE1fRU5B
-QkxFIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9EV0MyPXkKQ09ORklHX1VTQl9EV0MyX0hPU1Q9eQpD
-T05GSUdfVVNCX0RXQzJfUExBVEZPUk09eQpDT05GSUdfVVNCX0RXQzJfUENJPXkKCiMKIyBHYWRn
-ZXQgbW9kZSByZXF1aXJlcyBVU0IgR2FkZ2V0IHN1cHBvcnQgdG8gYmUgZW5hYmxlZAojCkNPTkZJ
-R19VU0JfRFdDMl9QRVJJUEhFUkFMPXkKIyBDT05GSUdfVVNCX0RXQzJfREVCVUcgaXMgbm90IHNl
-dAojIENPTkZJR19VU0JfRFdDMl9UUkFDS19NSVNTRURfU09GUyBpcyBub3Qgc2V0CkNPTkZJR19V
-U0JfQ0hJUElERUE9eQpDT05GSUdfVVNCX0NISVBJREVBX1VEQz15CkNPTkZJR19VU0JfQ0hJUElE
-RUFfSE9TVD15CiMgQ09ORklHX1VTQl9DSElQSURFQV9ERUJVRyBpcyBub3Qgc2V0CgojCiMgVVNC
-IHBvcnQgZHJpdmVycwojCkNPTkZJR19VU0JfVVNTNzIwPXkKIyBDT05GSUdfVVNCX1NFUklBTCBp
-cyBub3Qgc2V0CgojCiMgVVNCIE1pc2NlbGxhbmVvdXMgZHJpdmVycwojCkNPTkZJR19VU0JfRU1J
-NjI9eQpDT05GSUdfVVNCX0VNSTI2PXkKQ09ORklHX1VTQl9BRFVUVVg9eQpDT05GSUdfVVNCX1NF
-VlNFRz15CkNPTkZJR19VU0JfUklPNTAwPXkKQ09ORklHX1VTQl9MRUdPVE9XRVI9eQpDT05GSUdf
-VVNCX0xDRD15CkNPTkZJR19VU0JfTEVEPXkKQ09ORklHX1VTQl9DWVBSRVNTX0NZN0M2Mz15CiMg
-Q09ORklHX1VTQl9DWVRIRVJNIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0lETU9VU0UgaXMgbm90
-IHNldAojIENPTkZJR19VU0JfRlRESV9FTEFOIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9BUFBMRURJ
-U1BMQVk9eQpDT05GSUdfVVNCX1NJU1VTQlZHQT15CkNPTkZJR19VU0JfU0lTVVNCVkdBX0NPTj15
-CkNPTkZJR19VU0JfTEQ9eQpDT05GSUdfVVNCX1RSQU5DRVZJQlJBVE9SPXkKIyBDT05GSUdfVVNC
-X0lPV0FSUklPUiBpcyBub3Qgc2V0CkNPTkZJR19VU0JfVEVTVD15CkNPTkZJR19VU0JfRUhTRVRf
-VEVTVF9GSVhUVVJFPXkKQ09ORklHX1VTQl9JU0lHSFRGVz15CkNPTkZJR19VU0JfWVVSRVg9eQpD
-T05GSUdfVVNCX0VaVVNCX0ZYMj15CkNPTkZJR19VU0JfSFNJQ19VU0IzNTAzPXkKQ09ORklHX1VT
-Ql9MSU5LX0xBWUVSX1RFU1Q9eQojIENPTkZJR19VU0JfQVRNIGlzIG5vdCBzZXQKCiMKIyBVU0Ig
-UGh5c2ljYWwgTGF5ZXIgZHJpdmVycwojCkNPTkZJR19VU0JfUEhZPXkKQ09ORklHX05PUF9VU0Jf
-WENFSVY9eQpDT05GSUdfVVNCX0dQSU9fVkJVUz15CkNPTkZJR19UQUhWT19VU0I9eQpDT05GSUdf
-VEFIVk9fVVNCX0hPU1RfQllfREVGQVVMVD15CkNPTkZJR19VU0JfSVNQMTMwMT15CkNPTkZJR19V
-U0JfR0FER0VUPXkKQ09ORklHX1VTQl9HQURHRVRfREVCVUc9eQpDT05GSUdfVVNCX0dBREdFVF9W
-RVJCT1NFPXkKIyBDT05GSUdfVVNCX0dBREdFVF9ERUJVR19GSUxFUyBpcyBub3Qgc2V0CkNPTkZJ
-R19VU0JfR0FER0VUX0RFQlVHX0ZTPXkKQ09ORklHX1VTQl9HQURHRVRfVkJVU19EUkFXPTIKQ09O
-RklHX1VTQl9HQURHRVRfU1RPUkFHRV9OVU1fQlVGRkVSUz0yCgojCiMgVVNCIFBlcmlwaGVyYWwg
-Q29udHJvbGxlcgojCiMgQ09ORklHX1VTQl9GT1RHMjEwX1VEQyBpcyBub3Qgc2V0CiMgQ09ORklH
-X1VTQl9HUl9VREMgaXMgbm90IHNldApDT05GSUdfVVNCX1I4QTY2NTk3PXkKQ09ORklHX1VTQl9Q
-WEEyN1g9eQojIENPTkZJR19VU0JfTVZfVURDIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX01WX1Uz
-RCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfTTY2NTkyPXkKIyBDT05GSUdfVVNCX0FNRDU1MzZVREMg
-aXMgbm90IHNldApDT05GSUdfVVNCX05FVDIyNzI9eQpDT05GSUdfVVNCX05FVDIyNzJfRE1BPXkK
-Q09ORklHX1VTQl9ORVQyMjgwPXkKIyBDT05GSUdfVVNCX0dPS1UgaXMgbm90IHNldApDT05GSUdf
-VVNCX0VHMjBUPXkKQ09ORklHX1VTQl9EVU1NWV9IQ0Q9eQpDT05GSUdfVVNCX0xJQkNPTVBPU0lU
-RT15CkNPTkZJR19VU0JfVV9FVEhFUj15CkNPTkZJR19VU0JfRl9FQ009eQpDT05GSUdfVVNCX0Zf
-U1VCU0VUPXkKQ09ORklHX1VTQl9GX1JORElTPXkKIyBDT05GSUdfVVNCX0NPTkZJR0ZTIGlzIG5v
-dCBzZXQKIyBDT05GSUdfVVNCX1pFUk8gaXMgbm90IHNldApDT05GSUdfVVNCX0VUSD15CkNPTkZJ
-R19VU0JfRVRIX1JORElTPXkKIyBDT05GSUdfVVNCX0VUSF9FRU0gaXMgbm90IHNldAojIENPTkZJ
-R19VU0JfR19OQ00gaXMgbm90IHNldAojIENPTkZJR19VU0JfR0FER0VURlMgaXMgbm90IHNldAoj
-IENPTkZJR19VU0JfRlVOQ1RJT05GUyBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9NQVNTX1NUT1JB
-R0UgaXMgbm90IHNldAojIENPTkZJR19VU0JfR0FER0VUX1RBUkdFVCBpcyBub3Qgc2V0CiMgQ09O
-RklHX1VTQl9HX1NFUklBTCBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9HX1BSSU5URVIgaXMgbm90
-IHNldAojIENPTkZJR19VU0JfQ0RDX0NPTVBPU0lURSBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9H
-X05PS0lBIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dfQUNNX01TIGlzIG5vdCBzZXQKIyBDT05G
-SUdfVVNCX0dfTVVMVEkgaXMgbm90IHNldAojIENPTkZJR19VU0JfR19ISUQgaXMgbm90IHNldAoj
-IENPTkZJR19VU0JfR19EQkdQIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dfV0VCQ0FNIGlzIG5v
-dCBzZXQKQ09ORklHX1VXQj15CkNPTkZJR19VV0JfSFdBPXkKIyBDT05GSUdfVVdCX1dIQ0kgaXMg
-bm90IHNldApDT05GSUdfVVdCX0kxNDgwVT15CiMgQ09ORklHX01NQyBpcyBub3Qgc2V0CkNPTkZJ
-R19NRU1TVElDSz15CiMgQ09ORklHX01FTVNUSUNLX0RFQlVHIGlzIG5vdCBzZXQKCiMKIyBNZW1v
-cnlTdGljayBkcml2ZXJzCiMKQ09ORklHX01FTVNUSUNLX1VOU0FGRV9SRVNVTUU9eQpDT05GSUdf
-TVNQUk9fQkxPQ0s9eQojIENPTkZJR19NU19CTE9DSyBpcyBub3Qgc2V0CgojCiMgTWVtb3J5U3Rp
-Y2sgSG9zdCBDb250cm9sbGVyIERyaXZlcnMKIwpDT05GSUdfTUVNU1RJQ0tfVElGTV9NUz15CkNP
-TkZJR19NRU1TVElDS19KTUlDUk9OXzM4WD15CkNPTkZJR19NRU1TVElDS19SNTkyPXkKQ09ORklH
-X01FTVNUSUNLX1JFQUxURUtfVVNCPXkKQ09ORklHX05FV19MRURTPXkKQ09ORklHX0xFRFNfQ0xB
-U1M9eQoKIwojIExFRCBkcml2ZXJzCiMKIyBDT05GSUdfTEVEU184OFBNODYwWCBpcyBub3Qgc2V0
-CkNPTkZJR19MRURTX0xNMzUzMD15CkNPTkZJR19MRURTX0xNMzUzMz15CkNPTkZJR19MRURTX0xN
-MzY0Mj15CkNPTkZJR19MRURTX1BDQTk1MzI9eQojIENPTkZJR19MRURTX1BDQTk1MzJfR1BJTyBp
-cyBub3Qgc2V0CkNPTkZJR19MRURTX0dQSU89eQpDT05GSUdfTEVEU19MUDM5NDQ9eQpDT05GSUdf
-TEVEU19MUDU1WFhfQ09NTU9OPXkKIyBDT05GSUdfTEVEU19MUDU1MjEgaXMgbm90IHNldApDT05G
-SUdfTEVEU19MUDU1MjM9eQpDT05GSUdfTEVEU19MUDU1NjI9eQojIENPTkZJR19MRURTX0xQODUw
-MSBpcyBub3Qgc2V0CkNPTkZJR19MRURTX0xQODc4OD15CkNPTkZJR19MRURTX0NMRVZPX01BSUw9
-eQpDT05GSUdfTEVEU19QQ0E5NTVYPXkKQ09ORklHX0xFRFNfUENBOTYzWD15CkNPTkZJR19MRURT
-X1dNODMxWF9TVEFUVVM9eQojIENPTkZJR19MRURTX1dNODM1MCBpcyBub3Qgc2V0CiMgQ09ORklH
-X0xFRFNfREE5MDNYIGlzIG5vdCBzZXQKQ09ORklHX0xFRFNfREE5MDUyPXkKQ09ORklHX0xFRFNf
-REFDMTI0UzA4NT15CiMgQ09ORklHX0xFRFNfUFdNIGlzIG5vdCBzZXQKQ09ORklHX0xFRFNfUkVH
-VUxBVE9SPXkKQ09ORklHX0xFRFNfQkQyODAyPXkKQ09ORklHX0xFRFNfSU5URUxfU1M0MjAwPXkK
-IyBDT05GSUdfTEVEU19MVDM1OTMgaXMgbm90IHNldApDT05GSUdfTEVEU19BRFA1NTIwPXkKQ09O
-RklHX0xFRFNfREVMTF9ORVRCT09LUz15CkNPTkZJR19MRURTX01DMTM3ODM9eQpDT05GSUdfTEVE
-U19UQ0E2NTA3PXkKQ09ORklHX0xFRFNfTE0zNTV4PXkKIyBDT05GSUdfTEVEU19PVDIwMCBpcyBu
-b3Qgc2V0CgojCiMgTEVEIGRyaXZlciBmb3IgYmxpbmsoMSkgVVNCIFJHQiBMRUQgaXMgdW5kZXIg
-U3BlY2lhbCBISUQgZHJpdmVycyAoSElEX1RISU5HTSkKIwpDT05GSUdfTEVEU19CTElOS009eQoK
-IwojIExFRCBUcmlnZ2VycwojCiMgQ09ORklHX0xFRFNfVFJJR0dFUlMgaXMgbm90IHNldAojIENP
-TkZJR19BQ0NFU1NJQklMSVRZIGlzIG5vdCBzZXQKIyBDT05GSUdfRURBQyBpcyBub3Qgc2V0CkNP
-TkZJR19SVENfTElCPXkKQ09ORklHX1JUQ19DTEFTUz15CkNPTkZJR19SVENfSENUT1NZUz15CiMg
-Q09ORklHX1JUQ19TWVNUT0hDIGlzIG5vdCBzZXQKQ09ORklHX1JUQ19IQ1RPU1lTX0RFVklDRT0i
-cnRjMCIKIyBDT05GSUdfUlRDX0RFQlVHIGlzIG5vdCBzZXQKCiMKIyBSVEMgaW50ZXJmYWNlcwoj
-CiMgQ09ORklHX1JUQ19JTlRGX1NZU0ZTIGlzIG5vdCBzZXQKQ09ORklHX1JUQ19JTlRGX1BST0M9
-eQpDT05GSUdfUlRDX0lOVEZfREVWPXkKQ09ORklHX1JUQ19JTlRGX0RFVl9VSUVfRU1VTD15CkNP
-TkZJR19SVENfRFJWX1RFU1Q9eQoKIwojIEkyQyBSVEMgZHJpdmVycwojCkNPTkZJR19SVENfRFJW
-Xzg4UE04NjBYPXkKIyBDT05GSUdfUlRDX0RSVl9EUzEzMDcgaXMgbm90IHNldAojIENPTkZJR19S
-VENfRFJWX0RTMTM3NCBpcyBub3Qgc2V0CkNPTkZJR19SVENfRFJWX0RTMTY3Mj15CkNPTkZJR19S
-VENfRFJWX0RTMzIzMj15CkNPTkZJR19SVENfRFJWX0xQODc4OD15CiMgQ09ORklHX1JUQ19EUlZf
-TUFYNjkwMCBpcyBub3Qgc2V0CkNPTkZJR19SVENfRFJWX01BWDg5MDc9eQpDT05GSUdfUlRDX0RS
-Vl9NQVg4OTI1PXkKIyBDT05GSUdfUlRDX0RSVl9NQVg4OTk4IGlzIG5vdCBzZXQKQ09ORklHX1JU
-Q19EUlZfUlM1QzM3Mj15CiMgQ09ORklHX1JUQ19EUlZfSVNMMTIwOCBpcyBub3Qgc2V0CiMgQ09O
-RklHX1JUQ19EUlZfSVNMMTIwMjIgaXMgbm90IHNldApDT05GSUdfUlRDX0RSVl9JU0wxMjA1Nz15
-CiMgQ09ORklHX1JUQ19EUlZfWDEyMDUgaXMgbm90IHNldAojIENPTkZJR19SVENfRFJWX1BDRjIx
-MjcgaXMgbm90IHNldAojIENPTkZJR19SVENfRFJWX1BDRjg1MjMgaXMgbm90IHNldApDT05GSUdf
-UlRDX0RSVl9QQ0Y4NTYzPXkKQ09ORklHX1JUQ19EUlZfUENGODUwNjM9eQpDT05GSUdfUlRDX0RS
-Vl9QQ0Y4NTgzPXkKQ09ORklHX1JUQ19EUlZfTTQxVDgwPXkKIyBDT05GSUdfUlRDX0RSVl9NNDFU
-ODBfV0RUIGlzIG5vdCBzZXQKQ09ORklHX1JUQ19EUlZfQlEzMks9eQpDT05GSUdfUlRDX0RSVl9U
-UFM4MDAzMT15CiMgQ09ORklHX1JUQ19EUlZfUzM1MzkwQSBpcyBub3Qgc2V0CkNPTkZJR19SVENf
-RFJWX0ZNMzEzMD15CkNPTkZJR19SVENfRFJWX1JYODU4MT15CiMgQ09ORklHX1JUQ19EUlZfUlg4
-MDI1IGlzIG5vdCBzZXQKQ09ORklHX1JUQ19EUlZfRU0zMDI3PXkKQ09ORklHX1JUQ19EUlZfUlYz
-MDI5QzI9eQoKIwojIFNQSSBSVEMgZHJpdmVycwojCkNPTkZJR19SVENfRFJWX000MVQ5Mz15CkNP
-TkZJR19SVENfRFJWX000MVQ5ND15CkNPTkZJR19SVENfRFJWX0RTMTMwNT15CkNPTkZJR19SVENf
-RFJWX0RTMTM0Mz15CkNPTkZJR19SVENfRFJWX0RTMTM0Nz15CiMgQ09ORklHX1JUQ19EUlZfRFMx
-MzkwIGlzIG5vdCBzZXQKIyBDT05GSUdfUlRDX0RSVl9NQVg2OTAyIGlzIG5vdCBzZXQKQ09ORklH
-X1JUQ19EUlZfUjk3MDE9eQpDT05GSUdfUlRDX0RSVl9SUzVDMzQ4PXkKQ09ORklHX1JUQ19EUlZf
-RFMzMjM0PXkKQ09ORklHX1JUQ19EUlZfUENGMjEyMz15CiMgQ09ORklHX1JUQ19EUlZfUlg0NTgx
-IGlzIG5vdCBzZXQKQ09ORklHX1JUQ19EUlZfTUNQNzk1PXkKCiMKIyBQbGF0Zm9ybSBSVEMgZHJp
-dmVycwojCkNPTkZJR19SVENfRFJWX0NNT1M9eQojIENPTkZJR19SVENfRFJWX0RTMTI4NiBpcyBu
-b3Qgc2V0CkNPTkZJR19SVENfRFJWX0RTMTUxMT15CkNPTkZJR19SVENfRFJWX0RTMTU1Mz15CkNP
-TkZJR19SVENfRFJWX0RTMTc0Mj15CiMgQ09ORklHX1JUQ19EUlZfRFMyNDA0IGlzIG5vdCBzZXQK
-Q09ORklHX1JUQ19EUlZfREE5MDUyPXkKQ09ORklHX1JUQ19EUlZfU1RLMTdUQTg9eQpDT05GSUdf
-UlRDX0RSVl9NNDhUODY9eQojIENPTkZJR19SVENfRFJWX000OFQzNSBpcyBub3Qgc2V0CkNPTkZJ
-R19SVENfRFJWX000OFQ1OT15CiMgQ09ORklHX1JUQ19EUlZfTVNNNjI0MiBpcyBub3Qgc2V0CkNP
-TkZJR19SVENfRFJWX0JRNDgwMj15CiMgQ09ORklHX1JUQ19EUlZfUlA1QzAxIGlzIG5vdCBzZXQK
-Q09ORklHX1JUQ19EUlZfVjMwMjA9eQpDT05GSUdfUlRDX0RSVl9XTTgzMVg9eQojIENPTkZJR19S
-VENfRFJWX1dNODM1MCBpcyBub3Qgc2V0CkNPTkZJR19SVENfRFJWX1BDRjUwNjMzPXkKIyBDT05G
-SUdfUlRDX0RSVl9BQjMxMDAgaXMgbm90IHNldAoKIwojIG9uLUNQVSBSVEMgZHJpdmVycwojCiMg
-Q09ORklHX1JUQ19EUlZfTUMxM1hYWCBpcyBub3Qgc2V0CkNPTkZJR19SVENfRFJWX1hHRU5FPXkK
-CiMKIyBISUQgU2Vuc29yIFJUQyBkcml2ZXJzCiMKQ09ORklHX0RNQURFVklDRVM9eQojIENPTkZJ
-R19ETUFERVZJQ0VTX0RFQlVHIGlzIG5vdCBzZXQKCiMKIyBETUEgRGV2aWNlcwojCkNPTkZJR19J
-TlRFTF9NSURfRE1BQz15CkNPTkZJR19JTlRFTF9JT0FURE1BPXkKQ09ORklHX0RXX0RNQUNfQ09S
-RT15CkNPTkZJR19EV19ETUFDPXkKQ09ORklHX0RXX0RNQUNfUENJPXkKIyBDT05GSUdfVElNQl9E
-TUEgaXMgbm90IHNldApDT05GSUdfUENIX0RNQT15CkNPTkZJR19ETUFfRU5HSU5FPXkKQ09ORklH
-X0RNQV9BQ1BJPXkKCiMKIyBETUEgQ2xpZW50cwojCiMgQ09ORklHX0FTWU5DX1RYX0RNQSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0RNQVRFU1QgaXMgbm90IHNldApDT05GSUdfRE1BX0VOR0lORV9SQUlE
-PXkKQ09ORklHX0RDQT15CiMgQ09ORklHX0FVWERJU1BMQVkgaXMgbm90IHNldApDT05GSUdfVUlP
-PXkKQ09ORklHX1VJT19DSUY9eQojIENPTkZJR19VSU9fUERSVl9HRU5JUlEgaXMgbm90IHNldAoj
-IENPTkZJR19VSU9fRE1FTV9HRU5JUlEgaXMgbm90IHNldAojIENPTkZJR19VSU9fQUVDIGlzIG5v
-dCBzZXQKQ09ORklHX1VJT19TRVJDT1MzPXkKIyBDT05GSUdfVUlPX1BDSV9HRU5FUklDIGlzIG5v
-dCBzZXQKQ09ORklHX1VJT19ORVRYPXkKQ09ORklHX1VJT19NRjYyND15CkNPTkZJR19WSVJUX0RS
-SVZFUlM9eQpDT05GSUdfVklSVElPPXkKCiMKIyBWaXJ0aW8gZHJpdmVycwojCiMgQ09ORklHX1ZJ
-UlRJT19QQ0kgaXMgbm90IHNldAojIENPTkZJR19WSVJUSU9fQkFMTE9PTiBpcyBub3Qgc2V0CkNP
-TkZJR19WSVJUSU9fTU1JTz15CkNPTkZJR19WSVJUSU9fTU1JT19DTURMSU5FX0RFVklDRVM9eQoK
-IwojIE1pY3Jvc29mdCBIeXBlci1WIGd1ZXN0IHN1cHBvcnQKIwojIENPTkZJR19IWVBFUlYgaXMg
-bm90IHNldAojIENPTkZJR19TVEFHSU5HIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9QTEFURk9STV9E
-RVZJQ0VTPXkKQ09ORklHX0FDRVJfV01JPXkKQ09ORklHX0FDRVJIREY9eQojIENPTkZJR19BTElF
-TldBUkVfV01JIGlzIG5vdCBzZXQKQ09ORklHX0FTVVNfTEFQVE9QPXkKQ09ORklHX0RFTExfTEFQ
-VE9QPXkKQ09ORklHX0RFTExfV01JPXkKIyBDT05GSUdfREVMTF9XTUlfQUlPIGlzIG5vdCBzZXQK
-Q09ORklHX0RFTExfU01PODgwMD15CkNPTkZJR19GVUpJVFNVX0xBUFRPUD15CiMgQ09ORklHX0ZV
-SklUU1VfTEFQVE9QX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX0ZVSklUU1VfVEFCTEVUPXkKQ09O
-RklHX0FNSUxPX1JGS0lMTD15CkNPTkZJR19UQzExMDBfV01JPXkKQ09ORklHX0hQX0FDQ0VMPXkK
-IyBDT05GSUdfSFBfV0lSRUxFU1MgaXMgbm90IHNldAojIENPTkZJR19IUF9XTUkgaXMgbm90IHNl
-dApDT05GSUdfTVNJX0xBUFRPUD15CkNPTkZJR19QQU5BU09OSUNfTEFQVE9QPXkKQ09ORklHX0NP
-TVBBTF9MQVBUT1A9eQpDT05GSUdfU09OWV9MQVBUT1A9eQpDT05GSUdfU09OWVBJX0NPTVBBVD15
-CkNPTkZJR19JREVBUEFEX0xBUFRPUD15CiMgQ09ORklHX1RISU5LUEFEX0FDUEkgaXMgbm90IHNl
-dApDT05GSUdfU0VOU09SU19IREFQUz15CiMgQ09ORklHX0lOVEVMX01FTkxPVyBpcyBub3Qgc2V0
-CkNPTkZJR19BQ1BJX1dNST15CkNPTkZJR19NU0lfV01JPXkKQ09ORklHX1RPUFNUQVJfTEFQVE9Q
-PXkKIyBDT05GSUdfQUNQSV9UT1NISUJBIGlzIG5vdCBzZXQKIyBDT05GSUdfVE9TSElCQV9CVF9S
-RktJTEwgaXMgbm90IHNldAojIENPTkZJR19UT1NISUJBX0hBUFMgaXMgbm90IHNldApDT05GSUdf
-QUNQSV9DTVBDPXkKIyBDT05GSUdfSU5URUxfSVBTIGlzIG5vdCBzZXQKQ09ORklHX0lCTV9SVEw9
-eQpDT05GSUdfU0FNU1VOR19MQVBUT1A9eQojIENPTkZJR19NWE1fV01JIGlzIG5vdCBzZXQKIyBD
-T05GSUdfSU5URUxfT0FLVFJBSUwgaXMgbm90IHNldApDT05GSUdfU0FNU1VOR19RMTA9eQpDT05G
-SUdfQVBQTEVfR01VWD15CiMgQ09ORklHX0lOVEVMX1JTVCBpcyBub3Qgc2V0CiMgQ09ORklHX0lO
-VEVMX1NNQVJUQ09OTkVDVCBpcyBub3Qgc2V0CkNPTkZJR19QVlBBTklDPXkKQ09ORklHX0NIUk9N
-RV9QTEFURk9STVM9eQpDT05GSUdfQ0hST01FT1NfTEFQVE9QPXkKIyBDT05GSUdfQ0hST01FT1Nf
-UFNUT1JFIGlzIG5vdCBzZXQKCiMKIyBTT0MgKFN5c3RlbSBPbiBDaGlwKSBzcGVjaWZpYyBEcml2
-ZXJzCiMKQ09ORklHX1NPQ19UST15CkNPTkZJR19DTEtERVZfTE9PS1VQPXkKQ09ORklHX0hBVkVf
-Q0xLX1BSRVBBUkU9eQpDT05GSUdfQ09NTU9OX0NMSz15CgojCiMgQ29tbW9uIENsb2NrIEZyYW1l
-d29yawojCkNPTkZJR19DT01NT05fQ0xLX1dNODMxWD15CkNPTkZJR19DT01NT05fQ0xLX1NJNTM1
-MT15CiMgQ09ORklHX0NPTU1PTl9DTEtfUFhBIGlzIG5vdCBzZXQKCiMKIyBIYXJkd2FyZSBTcGlu
-bG9jayBkcml2ZXJzCiMKCiMKIyBDbG9jayBTb3VyY2UgZHJpdmVycwojCkNPTkZJR19DTEtTUkNf
-STgyNTM9eQpDT05GSUdfQ0xLRVZUX0k4MjUzPXkKQ09ORklHX0k4MjUzX0xPQ0s9eQpDT05GSUdf
-Q0xLQkxEX0k4MjUzPXkKIyBDT05GSUdfQVRNRUxfUElUIGlzIG5vdCBzZXQKIyBDT05GSUdfU0hf
-VElNRVJfQ01UIGlzIG5vdCBzZXQKIyBDT05GSUdfU0hfVElNRVJfTVRVMiBpcyBub3Qgc2V0CiMg
-Q09ORklHX1NIX1RJTUVSX1RNVSBpcyBub3Qgc2V0CiMgQ09ORklHX0VNX1RJTUVSX1NUSSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX01BSUxCT1ggaXMgbm90IHNldAojIENPTkZJR19JT01NVV9TVVBQT1JU
-IGlzIG5vdCBzZXQKCiMKIyBSZW1vdGVwcm9jIGRyaXZlcnMKIwojIENPTkZJR19TVEVfTU9ERU1f
-UlBST0MgaXMgbm90IHNldAoKIwojIFJwbXNnIGRyaXZlcnMKIwoKIwojIFNPQyAoU3lzdGVtIE9u
-IENoaXApIHNwZWNpZmljIERyaXZlcnMKIwojIENPTkZJR19QTV9ERVZGUkVRIGlzIG5vdCBzZXQK
-Q09ORklHX0VYVENPTj15CgojCiMgRXh0Y29uIERldmljZSBEcml2ZXJzCiMKQ09ORklHX0VYVENP
-Tl9HUElPPXkKQ09ORklHX0VYVENPTl9NQVg3NzY5Mz15CiMgQ09ORklHX0VYVENPTl9SVDg5NzNB
-IGlzIG5vdCBzZXQKIyBDT05GSUdfRVhUQ09OX1NNNTUwMiBpcyBub3Qgc2V0CkNPTkZJR19NRU1P
-Ulk9eQojIENPTkZJR19JSU8gaXMgbm90IHNldAojIENPTkZJR19OVEIgaXMgbm90IHNldAojIENP
-TkZJR19WTUVfQlVTIGlzIG5vdCBzZXQKQ09ORklHX1BXTT15CkNPTkZJR19QV01fU1lTRlM9eQpD
-T05GSUdfUFdNX0xQMzk0Mz15CkNPTkZJR19QV01fTFBTUz15CiMgQ09ORklHX1BXTV9MUFNTX1BD
-SSBpcyBub3Qgc2V0CkNPTkZJR19QV01fTFBTU19QTEFURk9STT15CkNPTkZJR19JUEFDS19CVVM9
-eQpDT05GSUdfQk9BUkRfVFBDSTIwMD15CkNPTkZJR19TRVJJQUxfSVBPQ1RBTD15CiMgQ09ORklH
-X1JFU0VUX0NPTlRST0xMRVIgaXMgbm90IHNldApDT05GSUdfRk1DPXkKQ09ORklHX0ZNQ19GQUtF
-REVWPXkKIyBDT05GSUdfRk1DX1RSSVZJQUwgaXMgbm90IHNldApDT05GSUdfRk1DX1dSSVRFX0VF
-UFJPTT15CkNPTkZJR19GTUNfQ0hBUkRFVj15CgojCiMgUEhZIFN1YnN5c3RlbQojCkNPTkZJR19H
-RU5FUklDX1BIWT15CkNPTkZJR19CQ01fS09OQV9VU0IyX1BIWT15CiMgQ09ORklHX1BIWV9TQU1T
-VU5HX1VTQjIgaXMgbm90IHNldApDT05GSUdfUE9XRVJDQVA9eQpDT05GSUdfSU5URUxfUkFQTD15
-CkNPTkZJR19NQ0I9eQpDT05GSUdfTUNCX1BDST15CkNPTkZJR19USFVOREVSQk9MVD15CgojCiMg
-RmlybXdhcmUgRHJpdmVycwojCiMgQ09ORklHX0VERCBpcyBub3Qgc2V0CkNPTkZJR19GSVJNV0FS
-RV9NRU1NQVA9eQpDT05GSUdfREVMTF9SQlU9eQpDT05GSUdfRENEQkFTPXkKIyBDT05GSUdfRE1J
-SUQgaXMgbm90IHNldApDT05GSUdfRE1JX1NZU0ZTPXkKQ09ORklHX0RNSV9TQ0FOX01BQ0hJTkVf
-Tk9OX0VGSV9GQUxMQkFDSz15CkNPTkZJR19JU0NTSV9JQkZUX0ZJTkQ9eQojIENPTkZJR19HT09H
-TEVfRklSTVdBUkUgaXMgbm90IHNldAoKIwojIEVGSSAoRXh0ZW5zaWJsZSBGaXJtd2FyZSBJbnRl
-cmZhY2UpIFN1cHBvcnQKIwojIENPTkZJR19FRklfVkFSUyBpcyBub3Qgc2V0CkNPTkZJR19FRklf
-UlVOVElNRV9XUkFQUEVSUz15CkNPTkZJR19VRUZJX0NQRVI9eQoKIwojIEZpbGUgc3lzdGVtcwoj
-CkNPTkZJR19EQ0FDSEVfV09SRF9BQ0NFU1M9eQpDT05GSUdfRVhUMl9GUz15CiMgQ09ORklHX0VY
-VDJfRlNfWEFUVFIgaXMgbm90IHNldApDT05GSUdfRVhUMl9GU19YSVA9eQpDT05GSUdfRVhUM19G
-Uz15CkNPTkZJR19FWFQzX0RFRkFVTFRTX1RPX09SREVSRUQ9eQojIENPTkZJR19FWFQzX0ZTX1hB
-VFRSIGlzIG5vdCBzZXQKQ09ORklHX0VYVDRfRlM9eQojIENPTkZJR19FWFQ0X0ZTX1BPU0lYX0FD
-TCBpcyBub3Qgc2V0CkNPTkZJR19FWFQ0X0ZTX1NFQ1VSSVRZPXkKIyBDT05GSUdfRVhUNF9ERUJV
-RyBpcyBub3Qgc2V0CkNPTkZJR19GU19YSVA9eQpDT05GSUdfSkJEPXkKQ09ORklHX0pCRF9ERUJV
-Rz15CkNPTkZJR19KQkQyPXkKIyBDT05GSUdfSkJEMl9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19G
-U19NQkNBQ0hFPXkKQ09ORklHX1JFSVNFUkZTX0ZTPXkKQ09ORklHX1JFSVNFUkZTX0NIRUNLPXkK
-IyBDT05GSUdfUkVJU0VSRlNfUFJPQ19JTkZPIGlzIG5vdCBzZXQKQ09ORklHX1JFSVNFUkZTX0ZT
-X1hBVFRSPXkKIyBDT05GSUdfUkVJU0VSRlNfRlNfUE9TSVhfQUNMIGlzIG5vdCBzZXQKIyBDT05G
-SUdfUkVJU0VSRlNfRlNfU0VDVVJJVFkgaXMgbm90IHNldAojIENPTkZJR19KRlNfRlMgaXMgbm90
-IHNldApDT05GSUdfWEZTX0ZTPXkKIyBDT05GSUdfWEZTX1FVT1RBIGlzIG5vdCBzZXQKIyBDT05G
-SUdfWEZTX1BPU0lYX0FDTCBpcyBub3Qgc2V0CkNPTkZJR19YRlNfUlQ9eQpDT05GSUdfWEZTX0RF
-QlVHPXkKQ09ORklHX0dGUzJfRlM9eQpDT05GSUdfT0NGUzJfRlM9eQojIENPTkZJR19PQ0ZTMl9G
-U19PMkNCIGlzIG5vdCBzZXQKIyBDT05GSUdfT0NGUzJfRlNfU1RBVFMgaXMgbm90IHNldAojIENP
-TkZJR19PQ0ZTMl9ERUJVR19NQVNLTE9HIGlzIG5vdCBzZXQKIyBDT05GSUdfT0NGUzJfREVCVUdf
-RlMgaXMgbm90IHNldApDT05GSUdfQlRSRlNfRlM9eQpDT05GSUdfQlRSRlNfRlNfUE9TSVhfQUNM
-PXkKQ09ORklHX0JUUkZTX0ZTX0NIRUNLX0lOVEVHUklUWT15CiMgQ09ORklHX0JUUkZTX0ZTX1JV
-Tl9TQU5JVFlfVEVTVFMgaXMgbm90IHNldApDT05GSUdfQlRSRlNfREVCVUc9eQojIENPTkZJR19C
-VFJGU19BU1NFUlQgaXMgbm90IHNldAojIENPTkZJR19OSUxGUzJfRlMgaXMgbm90IHNldApDT05G
-SUdfRlNfUE9TSVhfQUNMPXkKQ09ORklHX0VYUE9SVEZTPXkKQ09ORklHX0ZJTEVfTE9DS0lORz15
-CkNPTkZJR19GU05PVElGWT15CiMgQ09ORklHX0ROT1RJRlkgaXMgbm90IHNldApDT05GSUdfSU5P
-VElGWV9VU0VSPXkKIyBDT05GSUdfRkFOT1RJRlkgaXMgbm90IHNldApDT05GSUdfUVVPVEE9eQpD
-T05GSUdfUVVPVEFfTkVUTElOS19JTlRFUkZBQ0U9eQpDT05GSUdfUFJJTlRfUVVPVEFfV0FSTklO
-Rz15CkNPTkZJR19RVU9UQV9ERUJVRz15CkNPTkZJR19RVU9UQV9UUkVFPXkKQ09ORklHX1FGTVRf
-VjE9eQpDT05GSUdfUUZNVF9WMj15CkNPTkZJR19RVU9UQUNUTD15CiMgQ09ORklHX0FVVE9GUzRf
-RlMgaXMgbm90IHNldApDT05GSUdfRlVTRV9GUz15CkNPTkZJR19DVVNFPXkKIyBDT05GSUdfT1ZF
-UkxBWV9GUyBpcyBub3Qgc2V0CgojCiMgQ2FjaGVzCiMKIyBDT05GSUdfRlNDQUNIRSBpcyBub3Qg
-c2V0CgojCiMgQ0QtUk9NL0RWRCBGaWxlc3lzdGVtcwojCkNPTkZJR19JU085NjYwX0ZTPXkKIyBD
-T05GSUdfSk9MSUVUIGlzIG5vdCBzZXQKQ09ORklHX1pJU09GUz15CiMgQ09ORklHX1VERl9GUyBp
-cyBub3Qgc2V0CgojCiMgRE9TL0ZBVC9OVCBGaWxlc3lzdGVtcwojCkNPTkZJR19GQVRfRlM9eQpD
-T05GSUdfTVNET1NfRlM9eQpDT05GSUdfVkZBVF9GUz15CkNPTkZJR19GQVRfREVGQVVMVF9DT0RF
-UEFHRT00MzcKQ09ORklHX0ZBVF9ERUZBVUxUX0lPQ0hBUlNFVD0iaXNvODg1OS0xIgojIENPTkZJ
-R19OVEZTX0ZTIGlzIG5vdCBzZXQKCiMKIyBQc2V1ZG8gZmlsZXN5c3RlbXMKIwpDT05GSUdfUFJP
-Q19GUz15CkNPTkZJR19QUk9DX0tDT1JFPXkKQ09ORklHX1BST0NfU1lTQ1RMPXkKQ09ORklHX1BS
-T0NfUEFHRV9NT05JVE9SPXkKQ09ORklHX0tFUk5GUz15CkNPTkZJR19TWVNGUz15CkNPTkZJR19U
-TVBGUz15CkNPTkZJR19UTVBGU19QT1NJWF9BQ0w9eQpDT05GSUdfVE1QRlNfWEFUVFI9eQojIENP
-TkZJR19IVUdFVExCRlMgaXMgbm90IHNldAojIENPTkZJR19IVUdFVExCX1BBR0UgaXMgbm90IHNl
-dApDT05GSUdfQ09ORklHRlNfRlM9eQpDT05GSUdfTUlTQ19GSUxFU1lTVEVNUz15CkNPTkZJR19B
-REZTX0ZTPXkKQ09ORklHX0FERlNfRlNfUlc9eQpDT05GSUdfQUZGU19GUz15CiMgQ09ORklHX0VD
-UllQVF9GUyBpcyBub3Qgc2V0CkNPTkZJR19IRlNfRlM9eQpDT05GSUdfSEZTUExVU19GUz15CkNP
-TkZJR19IRlNQTFVTX0ZTX1BPU0lYX0FDTD15CkNPTkZJR19CRUZTX0ZTPXkKQ09ORklHX0JFRlNf
-REVCVUc9eQojIENPTkZJR19CRlNfRlMgaXMgbm90IHNldApDT05GSUdfRUZTX0ZTPXkKIyBDT05G
-SUdfSkZGUzJfRlMgaXMgbm90IHNldApDT05GSUdfVUJJRlNfRlM9eQpDT05GSUdfVUJJRlNfRlNf
-QURWQU5DRURfQ09NUFI9eQojIENPTkZJR19VQklGU19GU19MWk8gaXMgbm90IHNldAojIENPTkZJ
-R19VQklGU19GU19aTElCIGlzIG5vdCBzZXQKIyBDT05GSUdfTE9HRlMgaXMgbm90IHNldApDT05G
-SUdfQ1JBTUZTPXkKIyBDT05GSUdfU1FVQVNIRlMgaXMgbm90IHNldApDT05GSUdfVlhGU19GUz15
-CkNPTkZJR19NSU5JWF9GUz15CkNPTkZJR19PTUZTX0ZTPXkKQ09ORklHX0hQRlNfRlM9eQpDT05G
-SUdfUU5YNEZTX0ZTPXkKQ09ORklHX1FOWDZGU19GUz15CiMgQ09ORklHX1FOWDZGU19ERUJVRyBp
-cyBub3Qgc2V0CiMgQ09ORklHX1JPTUZTX0ZTIGlzIG5vdCBzZXQKQ09ORklHX1BTVE9SRT15CkNP
-TkZJR19QU1RPUkVfQ09OU09MRT15CiMgQ09ORklHX1BTVE9SRV9GVFJBQ0UgaXMgbm90IHNldApD
-T05GSUdfUFNUT1JFX1JBTT15CkNPTkZJR19TWVNWX0ZTPXkKQ09ORklHX1VGU19GUz15CkNPTkZJ
-R19VRlNfRlNfV1JJVEU9eQpDT05GSUdfVUZTX0RFQlVHPXkKQ09ORklHX0YyRlNfRlM9eQpDT05G
-SUdfRjJGU19TVEFUX0ZTPXkKIyBDT05GSUdfRjJGU19GU19YQVRUUiBpcyBub3Qgc2V0CiMgQ09O
-RklHX0YyRlNfQ0hFQ0tfRlMgaXMgbm90IHNldAojIENPTkZJR19FRklWQVJfRlMgaXMgbm90IHNl
-dAojIENPTkZJR19ORVRXT1JLX0ZJTEVTWVNURU1TIGlzIG5vdCBzZXQKQ09ORklHX05MUz15CkNP
-TkZJR19OTFNfREVGQVVMVD0iaXNvODg1OS0xIgojIENPTkZJR19OTFNfQ09ERVBBR0VfNDM3IGlz
-IG5vdCBzZXQKQ09ORklHX05MU19DT0RFUEFHRV83Mzc9eQpDT05GSUdfTkxTX0NPREVQQUdFXzc3
-NT15CiMgQ09ORklHX05MU19DT0RFUEFHRV84NTAgaXMgbm90IHNldApDT05GSUdfTkxTX0NPREVQ
-QUdFXzg1Mj15CiMgQ09ORklHX05MU19DT0RFUEFHRV84NTUgaXMgbm90IHNldAojIENPTkZJR19O
-TFNfQ09ERVBBR0VfODU3IGlzIG5vdCBzZXQKQ09ORklHX05MU19DT0RFUEFHRV84NjA9eQpDT05G
-SUdfTkxTX0NPREVQQUdFXzg2MT15CiMgQ09ORklHX05MU19DT0RFUEFHRV84NjIgaXMgbm90IHNl
-dAojIENPTkZJR19OTFNfQ09ERVBBR0VfODYzIGlzIG5vdCBzZXQKQ09ORklHX05MU19DT0RFUEFH
-RV84NjQ9eQojIENPTkZJR19OTFNfQ09ERVBBR0VfODY1IGlzIG5vdCBzZXQKQ09ORklHX05MU19D
-T0RFUEFHRV84NjY9eQojIENPTkZJR19OTFNfQ09ERVBBR0VfODY5IGlzIG5vdCBzZXQKIyBDT05G
-SUdfTkxTX0NPREVQQUdFXzkzNiBpcyBub3Qgc2V0CkNPTkZJR19OTFNfQ09ERVBBR0VfOTUwPXkK
-Q09ORklHX05MU19DT0RFUEFHRV85MzI9eQpDT05GSUdfTkxTX0NPREVQQUdFXzk0OT15CkNPTkZJ
-R19OTFNfQ09ERVBBR0VfODc0PXkKIyBDT05GSUdfTkxTX0lTTzg4NTlfOCBpcyBub3Qgc2V0CiMg
-Q09ORklHX05MU19DT0RFUEFHRV8xMjUwIGlzIG5vdCBzZXQKQ09ORklHX05MU19DT0RFUEFHRV8x
-MjUxPXkKQ09ORklHX05MU19BU0NJST15CkNPTkZJR19OTFNfSVNPODg1OV8xPXkKQ09ORklHX05M
-U19JU084ODU5XzI9eQojIENPTkZJR19OTFNfSVNPODg1OV8zIGlzIG5vdCBzZXQKIyBDT05GSUdf
-TkxTX0lTTzg4NTlfNCBpcyBub3Qgc2V0CiMgQ09ORklHX05MU19JU084ODU5XzUgaXMgbm90IHNl
-dAojIENPTkZJR19OTFNfSVNPODg1OV82IGlzIG5vdCBzZXQKQ09ORklHX05MU19JU084ODU5Xzc9
-eQpDT05GSUdfTkxTX0lTTzg4NTlfOT15CkNPTkZJR19OTFNfSVNPODg1OV8xMz15CiMgQ09ORklH
-X05MU19JU084ODU5XzE0IGlzIG5vdCBzZXQKQ09ORklHX05MU19JU084ODU5XzE1PXkKQ09ORklH
-X05MU19LT0k4X1I9eQojIENPTkZJR19OTFNfS09JOF9VIGlzIG5vdCBzZXQKQ09ORklHX05MU19N
-QUNfUk9NQU49eQojIENPTkZJR19OTFNfTUFDX0NFTFRJQyBpcyBub3Qgc2V0CkNPTkZJR19OTFNf
-TUFDX0NFTlRFVVJPPXkKQ09ORklHX05MU19NQUNfQ1JPQVRJQU49eQpDT05GSUdfTkxTX01BQ19D
-WVJJTExJQz15CkNPTkZJR19OTFNfTUFDX0dBRUxJQz15CiMgQ09ORklHX05MU19NQUNfR1JFRUsg
-aXMgbm90IHNldApDT05GSUdfTkxTX01BQ19JQ0VMQU5EPXkKQ09ORklHX05MU19NQUNfSU5VSVQ9
-eQojIENPTkZJR19OTFNfTUFDX1JPTUFOSUFOIGlzIG5vdCBzZXQKQ09ORklHX05MU19NQUNfVFVS
-S0lTSD15CkNPTkZJR19OTFNfVVRGOD15CgojCiMgS2VybmVsIGhhY2tpbmcKIwpDT05GSUdfVFJB
-Q0VfSVJRRkxBR1NfU1VQUE9SVD15CgojCiMgcHJpbnRrIGFuZCBkbWVzZyBvcHRpb25zCiMKQ09O
-RklHX1BSSU5US19USU1FPXkKQ09ORklHX01FU1NBR0VfTE9HTEVWRUxfREVGQVVMVD00CkNPTkZJ
-R19CT09UX1BSSU5US19ERUxBWT15CiMgQ09ORklHX0RZTkFNSUNfREVCVUcgaXMgbm90IHNldAoK
-IwojIENvbXBpbGUtdGltZSBjaGVja3MgYW5kIGNvbXBpbGVyIG9wdGlvbnMKIwojIENPTkZJR19E
-RUJVR19JTkZPIGlzIG5vdCBzZXQKQ09ORklHX0VOQUJMRV9XQVJOX0RFUFJFQ0FURUQ9eQpDT05G
-SUdfRU5BQkxFX01VU1RfQ0hFQ0s9eQpDT05GSUdfRlJBTUVfV0FSTj0xMDI0CiMgQ09ORklHX1NU
-UklQX0FTTV9TWU1TIGlzIG5vdCBzZXQKIyBDT05GSUdfUkVBREFCTEVfQVNNIGlzIG5vdCBzZXQK
-IyBDT05GSUdfVU5VU0VEX1NZTUJPTFMgaXMgbm90IHNldApDT05GSUdfREVCVUdfRlM9eQpDT05G
-SUdfSEVBREVSU19DSEVDSz15CkNPTkZJR19ERUJVR19TRUNUSU9OX01JU01BVENIPXkKQ09ORklH
-X0FSQ0hfV0FOVF9GUkFNRV9QT0lOVEVSUz15CkNPTkZJR19GUkFNRV9QT0lOVEVSPXkKIyBDT05G
-SUdfREVCVUdfRk9SQ0VfV0VBS19QRVJfQ1BVIGlzIG5vdCBzZXQKIyBDT05GSUdfTUFHSUNfU1lT
-UlEgaXMgbm90IHNldApDT05GSUdfREVCVUdfS0VSTkVMPXkKCiMKIyBNZW1vcnkgRGVidWdnaW5n
-CiMKQ09ORklHX0RFQlVHX1BBR0VBTExPQz15CkNPTkZJR19XQU5UX1BBR0VfREVCVUdfRkxBR1M9
-eQpDT05GSUdfUEFHRV9HVUFSRD15CiMgQ09ORklHX0RFQlVHX09CSkVDVFMgaXMgbm90IHNldApD
-T05GSUdfREVCVUdfU0xBQj15CkNPTkZJR19ERUJVR19TTEFCX0xFQUs9eQpDT05GSUdfSEFWRV9E
-RUJVR19LTUVNTEVBSz15CiMgQ09ORklHX0RFQlVHX0tNRU1MRUFLIGlzIG5vdCBzZXQKQ09ORklH
-X0RFQlVHX1NUQUNLX1VTQUdFPXkKQ09ORklHX0RFQlVHX1ZNPXkKQ09ORklHX0RFQlVHX1ZNX1ZN
-QUNBQ0hFPXkKIyBDT05GSUdfREVCVUdfVk1fUkIgaXMgbm90IHNldApDT05GSUdfREVCVUdfVklS
-VFVBTD15CkNPTkZJR19ERUJVR19NRU1PUllfSU5JVD15CiMgQ09ORklHX0RFQlVHX1BFUl9DUFVf
-TUFQUyBpcyBub3Qgc2V0CkNPTkZJR19IQVZFX0RFQlVHX1NUQUNLT1ZFUkZMT1c9eQojIENPTkZJ
-R19ERUJVR19TVEFDS09WRVJGTE9XIGlzIG5vdCBzZXQKQ09ORklHX0hBVkVfQVJDSF9LTUVNQ0hF
-Q0s9eQpDT05GSUdfREVCVUdfU0hJUlE9eQoKIwojIERlYnVnIExvY2t1cHMgYW5kIEhhbmdzCiMK
-IyBDT05GSUdfTE9DS1VQX0RFVEVDVE9SIGlzIG5vdCBzZXQKQ09ORklHX0RFVEVDVF9IVU5HX1RB
-U0s9eQpDT05GSUdfREVGQVVMVF9IVU5HX1RBU0tfVElNRU9VVD0xMjAKIyBDT05GSUdfQk9PVFBB
-UkFNX0hVTkdfVEFTS19QQU5JQyBpcyBub3Qgc2V0CkNPTkZJR19CT09UUEFSQU1fSFVOR19UQVNL
-X1BBTklDX1ZBTFVFPTAKIyBDT05GSUdfUEFOSUNfT05fT09QUyBpcyBub3Qgc2V0CkNPTkZJR19Q
-QU5JQ19PTl9PT1BTX1ZBTFVFPTAKQ09ORklHX1BBTklDX1RJTUVPVVQ9MApDT05GSUdfU0NIRURf
-REVCVUc9eQpDT05GSUdfU0NIRURTVEFUUz15CiMgQ09ORklHX1NDSEVEX1NUQUNLX0VORF9DSEVD
-SyBpcyBub3Qgc2V0CiMgQ09ORklHX1RJTUVSX1NUQVRTIGlzIG5vdCBzZXQKCiMKIyBMb2NrIERl
-YnVnZ2luZyAoc3BpbmxvY2tzLCBtdXRleGVzLCBldGMuLi4pCiMKQ09ORklHX0RFQlVHX1JUX01V
-VEVYRVM9eQpDT05GSUdfREVCVUdfU1BJTkxPQ0s9eQpDT05GSUdfREVCVUdfTVVURVhFUz15CkNP
-TkZJR19ERUJVR19XV19NVVRFWF9TTE9XUEFUSD15CkNPTkZJR19ERUJVR19MT0NLX0FMTE9DPXkK
-IyBDT05GSUdfUFJPVkVfTE9DS0lORyBpcyBub3Qgc2V0CkNPTkZJR19MT0NLREVQPXkKQ09ORklH
-X0xPQ0tfU1RBVD15CkNPTkZJR19ERUJVR19MT0NLREVQPXkKQ09ORklHX0RFQlVHX0FUT01JQ19T
-TEVFUD15CiMgQ09ORklHX0RFQlVHX0xPQ0tJTkdfQVBJX1NFTEZURVNUUyBpcyBub3Qgc2V0CiMg
-Q09ORklHX0xPQ0tfVE9SVFVSRV9URVNUIGlzIG5vdCBzZXQKQ09ORklHX1NUQUNLVFJBQ0U9eQoj
-IENPTkZJR19ERUJVR19LT0JKRUNUIGlzIG5vdCBzZXQKQ09ORklHX0RFQlVHX0JVR1ZFUkJPU0U9
-eQpDT05GSUdfREVCVUdfTElTVD15CkNPTkZJR19ERUJVR19QSV9MSVNUPXkKQ09ORklHX0RFQlVH
-X1NHPXkKIyBDT05GSUdfREVCVUdfTk9USUZJRVJTIGlzIG5vdCBzZXQKIyBDT05GSUdfREVCVUdf
-Q1JFREVOVElBTFMgaXMgbm90IHNldAoKIwojIFJDVSBEZWJ1Z2dpbmcKIwojIENPTkZJR19TUEFS
-U0VfUkNVX1BPSU5URVIgaXMgbm90IHNldApDT05GSUdfVE9SVFVSRV9URVNUPXkKQ09ORklHX1JD
-VV9UT1JUVVJFX1RFU1Q9eQojIENPTkZJR19SQ1VfVE9SVFVSRV9URVNUX1JVTk5BQkxFIGlzIG5v
-dCBzZXQKQ09ORklHX1JDVV9DUFVfU1RBTExfVElNRU9VVD0yMQojIENPTkZJR19SQ1VfQ1BVX1NU
-QUxMX0lORk8gaXMgbm90IHNldAojIENPTkZJR19SQ1VfVFJBQ0UgaXMgbm90IHNldAojIENPTkZJ
-R19ERUJVR19CTE9DS19FWFRfREVWVCBpcyBub3Qgc2V0CkNPTkZJR19OT1RJRklFUl9FUlJPUl9J
-TkpFQ1RJT049eQojIENPTkZJR19DUFVfTk9USUZJRVJfRVJST1JfSU5KRUNUIGlzIG5vdCBzZXQK
-Q09ORklHX1BNX05PVElGSUVSX0VSUk9SX0lOSkVDVD15CiMgQ09ORklHX0ZBVUxUX0lOSkVDVElP
-TiBpcyBub3Qgc2V0CkNPTkZJR19MQVRFTkNZVE9QPXkKQ09ORklHX0FSQ0hfSEFTX0RFQlVHX1NU
-UklDVF9VU0VSX0NPUFlfQ0hFQ0tTPXkKIyBDT05GSUdfREVCVUdfU1RSSUNUX1VTRVJfQ09QWV9D
-SEVDS1MgaXMgbm90IHNldApDT05GSUdfVVNFUl9TVEFDS1RSQUNFX1NVUFBPUlQ9eQpDT05GSUdf
-Tk9QX1RSQUNFUj15CkNPTkZJR19IQVZFX0ZVTkNUSU9OX1RSQUNFUj15CkNPTkZJR19IQVZFX0ZV
-TkNUSU9OX0dSQVBIX1RSQUNFUj15CkNPTkZJR19IQVZFX0ZVTkNUSU9OX0dSQVBIX0ZQX1RFU1Q9
-eQpDT05GSUdfSEFWRV9EWU5BTUlDX0ZUUkFDRT15CkNPTkZJR19IQVZFX0RZTkFNSUNfRlRSQUNF
-X1dJVEhfUkVHUz15CkNPTkZJR19IQVZFX0ZUUkFDRV9NQ09VTlRfUkVDT1JEPXkKQ09ORklHX0hB
-VkVfU1lTQ0FMTF9UUkFDRVBPSU5UUz15CkNPTkZJR19IQVZFX0NfUkVDT1JETUNPVU5UPXkKQ09O
-RklHX1RSQUNFUl9NQVhfVFJBQ0U9eQpDT05GSUdfVFJBQ0VfQ0xPQ0s9eQpDT05GSUdfUklOR19C
-VUZGRVI9eQpDT05GSUdfRVZFTlRfVFJBQ0lORz15CkNPTkZJR19DT05URVhUX1NXSVRDSF9UUkFD
-RVI9eQpDT05GSUdfVFJBQ0lORz15CkNPTkZJR19HRU5FUklDX1RSQUNFUj15CkNPTkZJR19UUkFD
-SU5HX1NVUFBPUlQ9eQpDT05GSUdfRlRSQUNFPXkKQ09ORklHX0ZVTkNUSU9OX1RSQUNFUj15CiMg
-Q09ORklHX0lSUVNPRkZfVFJBQ0VSIGlzIG5vdCBzZXQKQ09ORklHX1NDSEVEX1RSQUNFUj15CkNP
-TkZJR19GVFJBQ0VfU1lTQ0FMTFM9eQpDT05GSUdfVFJBQ0VSX1NOQVBTSE9UPXkKIyBDT05GSUdf
-VFJBQ0VSX1NOQVBTSE9UX1BFUl9DUFVfU1dBUCBpcyBub3Qgc2V0CkNPTkZJR19CUkFOQ0hfUFJP
-RklMRV9OT05FPXkKIyBDT05GSUdfUFJPRklMRV9BTk5PVEFURURfQlJBTkNIRVMgaXMgbm90IHNl
-dAojIENPTkZJR19QUk9GSUxFX0FMTF9CUkFOQ0hFUyBpcyBub3Qgc2V0CkNPTkZJR19TVEFDS19U
-UkFDRVI9eQpDT05GSUdfQkxLX0RFVl9JT19UUkFDRT15CiMgQ09ORklHX1VQUk9CRV9FVkVOVCBp
-cyBub3Qgc2V0CiMgQ09ORklHX1BST0JFX0VWRU5UUyBpcyBub3Qgc2V0CkNPTkZJR19EWU5BTUlD
-X0ZUUkFDRT15CkNPTkZJR19EWU5BTUlDX0ZUUkFDRV9XSVRIX1JFR1M9eQojIENPTkZJR19GVU5D
-VElPTl9QUk9GSUxFUiBpcyBub3Qgc2V0CkNPTkZJR19GVFJBQ0VfTUNPVU5UX1JFQ09SRD15CkNP
-TkZJR19GVFJBQ0VfU0VMRlRFU1Q9eQpDT05GSUdfRlRSQUNFX1NUQVJUVVBfVEVTVD15CkNPTkZJ
-R19FVkVOVF9UUkFDRV9URVNUX1NZU0NBTExTPXkKQ09ORklHX01NSU9UUkFDRT15CiMgQ09ORklH
-X1RSQUNFUE9JTlRfQkVOQ0hNQVJLIGlzIG5vdCBzZXQKQ09ORklHX1JJTkdfQlVGRkVSX0JFTkNI
-TUFSSz15CkNPTkZJR19SSU5HX0JVRkZFUl9TVEFSVFVQX1RFU1Q9eQoKIwojIFJ1bnRpbWUgVGVz
-dGluZwojCiMgQ09ORklHX0xLRFRNIGlzIG5vdCBzZXQKIyBDT05GSUdfVEVTVF9MSVNUX1NPUlQg
-aXMgbm90IHNldAojIENPTkZJR19CQUNLVFJBQ0VfU0VMRl9URVNUIGlzIG5vdCBzZXQKQ09ORklH
-X1JCVFJFRV9URVNUPXkKIyBDT05GSUdfQVRPTUlDNjRfU0VMRlRFU1QgaXMgbm90IHNldApDT05G
-SUdfVEVTVF9TVFJJTkdfSEVMUEVSUz15CkNPTkZJR19URVNUX0tTVFJUT1g9eQojIENPTkZJR19U
-RVNUX1JIQVNIVEFCTEUgaXMgbm90IHNldApDT05GSUdfUFJPVklERV9PSENJMTM5NF9ETUFfSU5J
-VD15CiMgQ09ORklHX0JVSUxEX0RPQ1NSQyBpcyBub3Qgc2V0CiMgQ09ORklHX0RNQV9BUElfREVC
-VUcgaXMgbm90IHNldApDT05GSUdfVEVTVF9GSVJNV0FSRT15CiMgQ09ORklHX1RFU1RfVURFTEFZ
-IGlzIG5vdCBzZXQKIyBDT05GSUdfU0FNUExFUyBpcyBub3Qgc2V0CkNPTkZJR19IQVZFX0FSQ0hf
-S0dEQj15CiMgQ09ORklHX0tHREIgaXMgbm90IHNldApDT05GSUdfU1RSSUNUX0RFVk1FTT15CkNP
-TkZJR19YODZfVkVSQk9TRV9CT09UVVA9eQpDT05GSUdfRUFSTFlfUFJJTlRLPXkKQ09ORklHX0VB
-UkxZX1BSSU5US19EQkdQPXkKIyBDT05GSUdfRUFSTFlfUFJJTlRLX0VGSSBpcyBub3Qgc2V0CkNP
-TkZJR19YODZfUFREVU1QPXkKQ09ORklHX0VGSV9QR1RfRFVNUD15CiMgQ09ORklHX0RFQlVHX1JP
-REFUQSBpcyBub3Qgc2V0CkNPTkZJR19ET1VCTEVGQVVMVD15CiMgQ09ORklHX0RFQlVHX1RMQkZM
-VVNIIGlzIG5vdCBzZXQKQ09ORklHX0lPTU1VX1NUUkVTUz15CkNPTkZJR19IQVZFX01NSU9UUkFD
-RV9TVVBQT1JUPXkKQ09ORklHX0lPX0RFTEFZX1RZUEVfMFg4MD0wCkNPTkZJR19JT19ERUxBWV9U
-WVBFXzBYRUQ9MQpDT05GSUdfSU9fREVMQVlfVFlQRV9VREVMQVk9MgpDT05GSUdfSU9fREVMQVlf
-VFlQRV9OT05FPTMKIyBDT05GSUdfSU9fREVMQVlfMFg4MCBpcyBub3Qgc2V0CkNPTkZJR19JT19E
-RUxBWV8wWEVEPXkKIyBDT05GSUdfSU9fREVMQVlfVURFTEFZIGlzIG5vdCBzZXQKIyBDT05GSUdf
-SU9fREVMQVlfTk9ORSBpcyBub3Qgc2V0CkNPTkZJR19ERUZBVUxUX0lPX0RFTEFZX1RZUEU9MQoj
-IENPTkZJR19ERUJVR19CT09UX1BBUkFNUyBpcyBub3Qgc2V0CiMgQ09ORklHX0NQQV9ERUJVRyBp
-cyBub3Qgc2V0CiMgQ09ORklHX09QVElNSVpFX0lOTElOSU5HIGlzIG5vdCBzZXQKIyBDT05GSUdf
-REVCVUdfTk1JX1NFTEZURVNUIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9ERUJVR19TVEFUSUNfQ1BV
-X0hBUz15CgojCiMgU2VjdXJpdHkgb3B0aW9ucwojCkNPTkZJR19LRVlTPXkKIyBDT05GSUdfUEVS
-U0lTVEVOVF9LRVlSSU5HUyBpcyBub3Qgc2V0CiMgQ09ORklHX0JJR19LRVlTIGlzIG5vdCBzZXQK
-Q09ORklHX0VOQ1JZUFRFRF9LRVlTPXkKQ09ORklHX0tFWVNfREVCVUdfUFJPQ19LRVlTPXkKQ09O
-RklHX1NFQ1VSSVRZX0RNRVNHX1JFU1RSSUNUPXkKQ09ORklHX1NFQ1VSSVRZPXkKQ09ORklHX1NF
-Q1VSSVRZRlM9eQpDT05GSUdfU0VDVVJJVFlfTkVUV09SSz15CkNPTkZJR19TRUNVUklUWV9ORVRX
-T1JLX1hGUk09eQpDT05GSUdfU0VDVVJJVFlfUEFUSD15CiMgQ09ORklHX1NFQ1VSSVRZX1RPTU9Z
-TyBpcyBub3Qgc2V0CkNPTkZJR19TRUNVUklUWV9BUFBBUk1PUj15CkNPTkZJR19TRUNVUklUWV9B
-UFBBUk1PUl9CT09UUEFSQU1fVkFMVUU9MQojIENPTkZJR19TRUNVUklUWV9BUFBBUk1PUl9IQVNI
-IGlzIG5vdCBzZXQKQ09ORklHX1NFQ1VSSVRZX1lBTUE9eQojIENPTkZJR19TRUNVUklUWV9ZQU1B
-X1NUQUNLRUQgaXMgbm90IHNldApDT05GSUdfSU5URUdSSVRZPXkKQ09ORklHX0lOVEVHUklUWV9T
-SUdOQVRVUkU9eQojIENPTkZJR19JTlRFR1JJVFlfQVNZTU1FVFJJQ19LRVlTIGlzIG5vdCBzZXQK
-IyBDT05GSUdfSU5URUdSSVRZX0FVRElUIGlzIG5vdCBzZXQKIyBDT05GSUdfSU1BIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfRVZNIGlzIG5vdCBzZXQKQ09ORklHX0RFRkFVTFRfU0VDVVJJVFlfQVBQQVJN
-T1I9eQojIENPTkZJR19ERUZBVUxUX1NFQ1VSSVRZX1lBTUEgaXMgbm90IHNldAojIENPTkZJR19E
-RUZBVUxUX1NFQ1VSSVRZX0RBQyBpcyBub3Qgc2V0CkNPTkZJR19ERUZBVUxUX1NFQ1VSSVRZPSJh
-cHBhcm1vciIKQ09ORklHX1hPUl9CTE9DS1M9eQpDT05GSUdfQ1JZUFRPPXkKCiMKIyBDcnlwdG8g
-Y29yZSBvciBoZWxwZXIKIwpDT05GSUdfQ1JZUFRPX0FMR0FQST15CkNPTkZJR19DUllQVE9fQUxH
-QVBJMj15CkNPTkZJR19DUllQVE9fQUVBRD15CkNPTkZJR19DUllQVE9fQUVBRDI9eQpDT05GSUdf
-Q1JZUFRPX0JMS0NJUEhFUj15CkNPTkZJR19DUllQVE9fQkxLQ0lQSEVSMj15CkNPTkZJR19DUllQ
-VE9fSEFTSD15CkNPTkZJR19DUllQVE9fSEFTSDI9eQpDT05GSUdfQ1JZUFRPX1JORz15CkNPTkZJ
-R19DUllQVE9fUk5HMj15CkNPTkZJR19DUllQVE9fUENPTVA9eQpDT05GSUdfQ1JZUFRPX1BDT01Q
-Mj15CkNPTkZJR19DUllQVE9fTUFOQUdFUj15CkNPTkZJR19DUllQVE9fTUFOQUdFUjI9eQojIENP
-TkZJR19DUllQVE9fVVNFUiBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9fTUFOQUdFUl9ESVNBQkxF
-X1RFU1RTPXkKQ09ORklHX0NSWVBUT19HRjEyOE1VTD15CiMgQ09ORklHX0NSWVBUT19OVUxMIGlz
-IG5vdCBzZXQKQ09ORklHX0NSWVBUT19QQ1JZUFQ9eQpDT05GSUdfQ1JZUFRPX1dPUktRVUVVRT15
-CkNPTkZJR19DUllQVE9fQ1JZUFREPXkKIyBDT05GSUdfQ1JZUFRPX01DUllQVEQgaXMgbm90IHNl
-dApDT05GSUdfQ1JZUFRPX0FVVEhFTkM9eQpDT05GSUdfQ1JZUFRPX0FCTEtfSEVMUEVSPXkKQ09O
-RklHX0NSWVBUT19HTFVFX0hFTFBFUl9YODY9eQoKIwojIEF1dGhlbnRpY2F0ZWQgRW5jcnlwdGlv
-biB3aXRoIEFzc29jaWF0ZWQgRGF0YQojCkNPTkZJR19DUllQVE9fQ0NNPXkKIyBDT05GSUdfQ1JZ
-UFRPX0dDTSBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9fU0VRSVY9eQoKIwojIEJsb2NrIG1vZGVz
-CiMKQ09ORklHX0NSWVBUT19DQkM9eQpDT05GSUdfQ1JZUFRPX0NUUj15CkNPTkZJR19DUllQVE9f
-Q1RTPXkKQ09ORklHX0NSWVBUT19FQ0I9eQpDT05GSUdfQ1JZUFRPX0xSVz15CkNPTkZJR19DUllQ
-VE9fUENCQz15CkNPTkZJR19DUllQVE9fWFRTPXkKCiMKIyBIYXNoIG1vZGVzCiMKQ09ORklHX0NS
-WVBUT19DTUFDPXkKQ09ORklHX0NSWVBUT19ITUFDPXkKQ09ORklHX0NSWVBUT19YQ0JDPXkKIyBD
-T05GSUdfQ1JZUFRPX1ZNQUMgaXMgbm90IHNldAoKIwojIERpZ2VzdAojCkNPTkZJR19DUllQVE9f
-Q1JDMzJDPXkKQ09ORklHX0NSWVBUT19DUkMzMkNfSU5URUw9eQpDT05GSUdfQ1JZUFRPX0NSQzMy
-PXkKIyBDT05GSUdfQ1JZUFRPX0NSQzMyX1BDTE1VTCBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9f
-Q1JDVDEwRElGPXkKQ09ORklHX0NSWVBUT19HSEFTSD15CiMgQ09ORklHX0NSWVBUT19NRDQgaXMg
-bm90IHNldApDT05GSUdfQ1JZUFRPX01ENT15CkNPTkZJR19DUllQVE9fTUlDSEFFTF9NSUM9eQoj
-IENPTkZJR19DUllQVE9fUk1EMTI4IGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19STUQxNjA9eQoj
-IENPTkZJR19DUllQVE9fUk1EMjU2IGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19STUQzMjA9eQpD
-T05GSUdfQ1JZUFRPX1NIQTE9eQpDT05GSUdfQ1JZUFRPX1NIQTI1Nj15CkNPTkZJR19DUllQVE9f
-U0hBNTEyPXkKIyBDT05GSUdfQ1JZUFRPX1RHUjE5MiBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9f
-V1A1MTI9eQoKIwojIENpcGhlcnMKIwpDT05GSUdfQ1JZUFRPX0FFUz15CkNPTkZJR19DUllQVE9f
-QUVTXzU4Nj15CkNPTkZJR19DUllQVE9fQUVTX05JX0lOVEVMPXkKIyBDT05GSUdfQ1JZUFRPX0FO
-VUJJUyBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9fQVJDND15CkNPTkZJR19DUllQVE9fQkxPV0ZJ
-U0g9eQpDT05GSUdfQ1JZUFRPX0JMT1dGSVNIX0NPTU1PTj15CkNPTkZJR19DUllQVE9fQ0FNRUxM
-SUE9eQojIENPTkZJR19DUllQVE9fQ0FTVDUgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9fQ0FT
-VDYgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9fREVTIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZ
-UFRPX0ZDUllQVCBpcyBub3Qgc2V0CiMgQ09ORklHX0NSWVBUT19LSEFaQUQgaXMgbm90IHNldApD
-T05GSUdfQ1JZUFRPX1NBTFNBMjA9eQpDT05GSUdfQ1JZUFRPX1NBTFNBMjBfNTg2PXkKQ09ORklH
-X0NSWVBUT19TRUVEPXkKQ09ORklHX0NSWVBUT19TRVJQRU5UPXkKQ09ORklHX0NSWVBUT19TRVJQ
-RU5UX1NTRTJfNTg2PXkKQ09ORklHX0NSWVBUT19URUE9eQpDT05GSUdfQ1JZUFRPX1RXT0ZJU0g9
-eQpDT05GSUdfQ1JZUFRPX1RXT0ZJU0hfQ09NTU9OPXkKIyBDT05GSUdfQ1JZUFRPX1RXT0ZJU0hf
-NTg2IGlzIG5vdCBzZXQKCiMKIyBDb21wcmVzc2lvbgojCiMgQ09ORklHX0NSWVBUT19ERUZMQVRF
-IGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19aTElCPXkKQ09ORklHX0NSWVBUT19MWk89eQojIENP
-TkZJR19DUllQVE9fTFo0IGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19MWjRIQz15CgojCiMgUmFu
-ZG9tIE51bWJlciBHZW5lcmF0aW9uCiMKIyBDT05GSUdfQ1JZUFRPX0FOU0lfQ1BSTkcgaXMgbm90
-IHNldAojIENPTkZJR19DUllQVE9fRFJCR19NRU5VIGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19V
-U0VSX0FQST15CkNPTkZJR19DUllQVE9fVVNFUl9BUElfSEFTSD15CkNPTkZJR19DUllQVE9fVVNF
-Ul9BUElfU0tDSVBIRVI9eQojIENPTkZJR19DUllQVE9fSFcgaXMgbm90IHNldAojIENPTkZJR19B
-U1lNTUVUUklDX0tFWV9UWVBFIGlzIG5vdCBzZXQKQ09ORklHX0hBVkVfS1ZNPXkKIyBDT05GSUdf
-VklSVFVBTElaQVRJT04gaXMgbm90IHNldApDT05GSUdfQklOQVJZX1BSSU5URj15CgojCiMgTGli
-cmFyeSByb3V0aW5lcwojCkNPTkZJR19SQUlENl9QUT15CkNPTkZJR19CSVRSRVZFUlNFPXkKQ09O
-RklHX1JBVElPTkFMPXkKQ09ORklHX0dFTkVSSUNfU1RSTkNQWV9GUk9NX1VTRVI9eQpDT05GSUdf
-R0VORVJJQ19TVFJOTEVOX1VTRVI9eQpDT05GSUdfR0VORVJJQ19ORVRfVVRJTFM9eQpDT05GSUdf
-R0VORVJJQ19GSU5EX0ZJUlNUX0JJVD15CkNPTkZJR19HRU5FUklDX1BDSV9JT01BUD15CkNPTkZJ
-R19HRU5FUklDX0lPTUFQPXkKQ09ORklHX0dFTkVSSUNfSU89eQpDT05GSUdfQVJDSF9IQVNfRkFT
-VF9NVUxUSVBMSUVSPXkKQ09ORklHX0NSQ19DQ0lUVD15CkNPTkZJR19DUkMxNj15CkNPTkZJR19D
-UkNfVDEwRElGPXkKQ09ORklHX0NSQ19JVFVfVD15CkNPTkZJR19DUkMzMj15CiMgQ09ORklHX0NS
-QzMyX1NFTEZURVNUIGlzIG5vdCBzZXQKQ09ORklHX0NSQzMyX1NMSUNFQlk4PXkKIyBDT05GSUdf
-Q1JDMzJfU0xJQ0VCWTQgaXMgbm90IHNldAojIENPTkZJR19DUkMzMl9TQVJXQVRFIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfQ1JDMzJfQklUIGlzIG5vdCBzZXQKQ09ORklHX0NSQzc9eQpDT05GSUdfTElC
-Q1JDMzJDPXkKQ09ORklHX0NSQzg9eQpDT05GSUdfQVVESVRfR0VORVJJQz15CiMgQ09ORklHX0FV
-RElUX0FSQ0hfQ09NUEFUX0dFTkVSSUMgaXMgbm90IHNldAojIENPTkZJR19SQU5ET00zMl9TRUxG
-VEVTVCBpcyBub3Qgc2V0CkNPTkZJR19aTElCX0lORkxBVEU9eQpDT05GSUdfWkxJQl9ERUZMQVRF
-PXkKQ09ORklHX0xaT19DT01QUkVTUz15CkNPTkZJR19MWk9fREVDT01QUkVTUz15CkNPTkZJR19M
-WjRIQ19DT01QUkVTUz15CkNPTkZJR19MWjRfREVDT01QUkVTUz15CkNPTkZJR19YWl9ERUM9eQpD
-T05GSUdfWFpfREVDX1g4Nj15CkNPTkZJR19YWl9ERUNfUE9XRVJQQz15CkNPTkZJR19YWl9ERUNf
-SUE2ND15CkNPTkZJR19YWl9ERUNfQVJNPXkKQ09ORklHX1haX0RFQ19BUk1USFVNQj15CkNPTkZJ
-R19YWl9ERUNfU1BBUkM9eQpDT05GSUdfWFpfREVDX0JDSj15CiMgQ09ORklHX1haX0RFQ19URVNU
-IGlzIG5vdCBzZXQKQ09ORklHX0RFQ09NUFJFU1NfR1pJUD15CkNPTkZJR19ERUNPTVBSRVNTX0Ja
-SVAyPXkKQ09ORklHX0RFQ09NUFJFU1NfTFpNQT15CkNPTkZJR19ERUNPTVBSRVNTX1haPXkKQ09O
-RklHX0RFQ09NUFJFU1NfTFpPPXkKQ09ORklHX0RFQ09NUFJFU1NfTFo0PXkKQ09ORklHX0dFTkVS
-SUNfQUxMT0NBVE9SPXkKQ09ORklHX1JFRURfU09MT01PTj15CkNPTkZJR19SRUVEX1NPTE9NT05f
-RU5DOD15CkNPTkZJR19SRUVEX1NPTE9NT05fREVDOD15CkNPTkZJR19CQ0g9eQpDT05GSUdfQkNI
-X0NPTlNUX1BBUkFNUz15CkNPTkZJR19JTlRFUlZBTF9UUkVFPXkKQ09ORklHX0FTU09DSUFUSVZF
-X0FSUkFZPXkKQ09ORklHX0hBU19JT01FTT15CkNPTkZJR19IQVNfSU9QT1JUX01BUD15CkNPTkZJ
-R19IQVNfRE1BPXkKQ09ORklHX0NIRUNLX1NJR05BVFVSRT15CkNPTkZJR19DUFVfUk1BUD15CkNP
-TkZJR19EUUw9eQpDT05GSUdfR0xPQj15CkNPTkZJR19HTE9CX1NFTEZURVNUPXkKQ09ORklHX05M
-QVRUUj15CkNPTkZJR19BUkNIX0hBU19BVE9NSUM2NF9ERUNfSUZfUE9TSVRJVkU9eQpDT05GSUdf
-QVZFUkFHRT15CkNPTkZJR19DTFpfVEFCPXkKQ09ORklHX0NPUkRJQz15CiMgQ09ORklHX0REUiBp
-cyBub3Qgc2V0CkNPTkZJR19NUElMSUI9eQpDT05GSUdfU0lHTkFUVVJFPXkKQ09ORklHX1VDUzJf
-U1RSSU5HPXkKQ09ORklHX0ZPTlRfU1VQUE9SVD15CkNPTkZJR19GT05UUz15CkNPTkZJR19GT05U
-Xzh4OD15CkNPTkZJR19GT05UXzh4MTY9eQpDT05GSUdfRk9OVF82eDExPXkKQ09ORklHX0ZPTlRf
-N3gxND15CiMgQ09ORklHX0ZPTlRfUEVBUkxfOHg4IGlzIG5vdCBzZXQKIyBDT05GSUdfRk9OVF9B
-Q09STl84eDggaXMgbm90IHNldApDT05GSUdfRk9OVF9NSU5JXzR4Nj15CiMgQ09ORklHX0ZPTlRf
-NngxMCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZPTlRfU1VOOHgxNiBpcyBub3Qgc2V0CiMgQ09ORklH
-X0ZPTlRfU1VOMTJ4MjIgaXMgbm90IHNldAojIENPTkZJR19GT05UXzEweDE4IGlzIG5vdCBzZXQK
-Q09ORklHX0FSQ0hfSEFTX1NHX0NIQUlOPXkK
+LS0tCnRlc3RjYXNlOiB2bS1zY2FsYWJpbGl0eQpkZWZhdWx0X21vbml0b3JzOgogIHdhaXQ6IHBy
+ZS10ZXN0CiAgdXB0aW1lOiAKICBpb3N0YXQ6IAogIHZtc3RhdDogCiAgbnVtYS1udW1hc3RhdDog
+CiAgbnVtYS12bXN0YXQ6IAogIG51bWEtbWVtaW5mbzogCiAgcHJvYy12bXN0YXQ6IAogIHByb2Mt
+c3RhdDogCiAgbWVtaW5mbzogCiAgc2xhYmluZm86IAogIGludGVycnVwdHM6IAogIGxvY2tfc3Rh
+dDogCiAgbGF0ZW5jeV9zdGF0czogCiAgc29mdGlycXM6IAogIGJkaV9kZXZfbWFwcGluZzogCiAg
+ZGlza3N0YXRzOiAKICBjcHVpZGxlOiAKICBjcHVmcmVxOiAKICB0dXJib3N0YXQ6IAogIHNjaGVk
+X2RlYnVnOgogICAgaW50ZXJ2YWw6IDEwCiAgcG1ldGVyOiAKZGVmYXVsdF93YXRjaGRvZ3M6CiAg
+d2F0Y2gtb29tOiAKICB3YXRjaGRvZzogCmNwdWZyZXFfZ292ZXJub3I6Ci0gcGVyZm9ybWFuY2UK
+Y29tbWl0OiA4MTkxZDA3ZGJiMTZhZTg4Y2MyYmM0NzU1ODRiOWYxODVmMDI3OTVmCm1vZGVsOiBO
+ZWhhbGVtLUVYCm1lbW9yeTogNjRHCm5yX2NwdTogNjQKbnJfaGRkX3BhcnRpdGlvbnM6IDAKaGRk
+X3BhcnRpdGlvbnM6IApzd2FwX3BhcnRpdGlvbnM6IApyb290ZnNfcGFydGl0aW9uOiAKcm9vdGZz
+OiBjbGVhcmxpbnV4LXg4Nl82NC0yMDE0MTExOS5jZ3oKcGVyZi1wcm9maWxlOiAKcnVudGltZTog
+MzAwcwpzaXplOiAKdm0tc2NhbGFiaWxpdHk6CiAgdGVzdDoKICAtIHNtYWxsLWFsbG9jcwp0ZXN0
+Ym94OiBsa3AtbmV4MDYKdGJveF9ncm91cDogbGtwLW5leDA2Cmtjb25maWc6IHg4Nl82NC1yaGVs
+CmVucXVldWVfdGltZTogMjAxNC0xMi0wNSAxNToyMzoxNC45NDUwOTIyNDYgKzA4OjAwCmhlYWRf
+Y29tbWl0OiA4MTkxZDA3ZGJiMTZhZTg4Y2MyYmM0NzU1ODRiOWYxODVmMDI3OTVmCmJhc2VfY29t
+bWl0OiAwMDlkMDQzMWMzOTE0ZGU2NDY2NmJlYzBkMzUwZTU0ZmRkNTlkZjZhCmJyYW5jaDogbmV4
+dC9tYXN0ZXIKa2VybmVsOiAiL2tlcm5lbC94ODZfNjQtcmhlbC84MTkxZDA3ZGJiMTZhZTg4Y2My
+YmM0NzU1ODRiOWYxODVmMDI3OTVmL3ZtbGludXotMy4xOC4wLXJjNy1uZXh0LTIwMTQxMjA1LWc4
+MTkxZDA3Igp1c2VyOiBsa3AKcXVldWU6IGN5Y2xpYwpyZXN1bHRfcm9vdDogIi9yZXN1bHQvbGtw
+LW5leDA2L3ZtLXNjYWxhYmlsaXR5L3BlcmZvcm1hbmNlLTMwMHMtc21hbGwtYWxsb2NzL2NsZWFy
+bGludXgteDg2XzY0LTIwMTQxMTE5LmNnei94ODZfNjQtcmhlbC84MTkxZDA3ZGJiMTZhZTg4Y2My
+YmM0NzU1ODRiOWYxODVmMDI3OTVmLzAiCmpvYl9maWxlOiAiL2xrcC9zY2hlZHVsZWQvbGtwLW5l
+eDA2L2N5Y2xpY192bS1zY2FsYWJpbGl0eS1wZXJmb3JtYW5jZS0zMDBzLXNtYWxsLWFsbG9jcy1j
+bGVhcmxpbnV4LXg4Nl82NC5jZ3oteDg2XzY0LXJoZWwtSEVBRC04MTkxZDA3ZGJiMTZhZTg4Y2My
+YmM0NzU1ODRiOWYxODVmMDI3OTVmLTAueWFtbCIKZGVxdWV1ZV90aW1lOiAyMDE0LTEyLTA2IDAy
+OjM5OjIyLjkzMDYxNTM5MyArMDg6MDAKam9iX3N0YXRlOiBmaW5pc2hlZApsb2FkYXZnOiA1Mi45
+MCA0My4xMyAyMC4yMiAxLzUyOSAxMjQ1MQpzdGFydF90aW1lOiAnMTQxNzgzMzY0OCcKZW5kX3Rp
+bWU6ICcxNDE3ODM0MDA0Jwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE0MTIwNS0wMTAxMjIi
+Cg==
 
---===============0063573300524478871==--
+--===============8802856200260867354==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.ksh"
+
+ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTAvY3B1ZnJlcS9z
+Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
+dS9jcHUxL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
+ZXZpY2VzL3N5c3RlbS9jcHUvY3B1MTAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVy
+Zm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxMS9jcHVmcmVxL3NjYWxpbmdf
+Z292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTEy
+L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2Vz
+L3N5c3RlbS9jcHUvY3B1MTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFu
+Y2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJu
+b3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE1L2NwdWZy
+ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1MTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
+c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNy9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
+byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE4L2NwdWZyZXEvc2Nh
+bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
+Y3B1MTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
+dmljZXMvc3lzdGVtL2NwdS9jcHUyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZv
+cm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjAvY3B1ZnJlcS9zY2FsaW5nX2dv
+dmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyMS9j
+cHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9z
+eXN0ZW0vY3B1L2NwdTIyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNl
+ID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9y
+CmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNC9jcHVmcmVx
+L3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0v
+Y3B1L2NwdTI1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5
+cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8g
+cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUyNy9jcHVmcmVxL3NjYWxp
+bmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2Nw
+dTI4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
+Y2VzL3N5c3RlbS9jcHUvY3B1MjkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
+bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUzL2NwdWZyZXEvc2NhbGluZ19nb3Zl
+cm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzAvY3B1
+ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lz
+dGVtL2NwdS9jcHUzMS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+
+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTMyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgpl
+Y2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzMvY3B1ZnJlcS9z
+Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
+dS9jcHUzNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMv
+ZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTM1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBl
+cmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzYvY3B1ZnJlcS9zY2FsaW5n
+X2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUz
+Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNl
+cy9zeXN0ZW0vY3B1L2NwdTM4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1h
+bmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MzkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVy
+bm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU0L2NwdWZy
+ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1NDAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAv
+c3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU0MS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNo
+byBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQyL2NwdWZyZXEvc2Nh
+bGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
+Y3B1NDMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2Rl
+dmljZXMvc3lzdGVtL2NwdS9jcHU0NC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJm
+b3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQ1L2NwdWZyZXEvc2NhbGluZ19n
+b3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NDYv
+Y3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMv
+c3lzdGVtL2NwdS9jcHU0Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5j
+ZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQ4L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5v
+cgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NDkvY3B1ZnJl
+cS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVt
+L2NwdS9jcHU1L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5
+cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NTAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8g
+cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU1MS9jcHVmcmVxL3NjYWxp
+bmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2Nw
+dTUyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
+Y2VzL3N5c3RlbS9jcHUvY3B1NTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9y
+bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU1NC9jcHVmcmVxL3NjYWxpbmdfZ292
+ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTU1L2Nw
+dWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5
+c3RlbS9jcHUvY3B1NTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2Ug
+PiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU1Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IK
+ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTU4L2NwdWZyZXEv
+c2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9j
+cHUvY3B1NTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lz
+L2RldmljZXMvc3lzdGVtL2NwdS9jcHU2L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBl
+cmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NjAvY3B1ZnJlcS9zY2FsaW5n
+X2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU2
+MS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNl
+cy9zeXN0ZW0vY3B1L2NwdTYyL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1h
+bmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NjMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVy
+bm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHU3L2NwdWZy
+ZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1OC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJmb3JtYW5jZSA+IC9z
+eXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCm1vdW50
+IC10IHRtcGZzIC1vIHNpemU9MTAwJSB2bS1zY2FsYWJpbGl0eS10bXAgL3RtcC92bS1zY2FsYWJp
+bGl0eS10bXAKdHJ1bmNhdGUgLXMgMzM2MDcyNDk5MjAgL3RtcC92bS1zY2FsYWJpbGl0eS5pbWcK
+bWtmcy54ZnMgLXEgL3RtcC92bS1zY2FsYWJpbGl0eS5pbWcKbW91bnQgLW8gbG9vcCAvdG1wL3Zt
+LXNjYWxhYmlsaXR5LmltZyAvdG1wL3ZtLXNjYWxhYmlsaXR5Ci4vY2FzZS1zbWFsbC1hbGxvY3MK
+Li91c2VtZW0gLS1ydW50aW1lIDMwMCAtbiA2NCAtLXJlYWRvbmx5IC0tdW5pdCA0MDk2MCA2ODcx
+OTQ3NjczNgp1bW91bnQgL3RtcC92bS1zY2FsYWJpbGl0eS10bXAKdW1vdW50IC90bXAvdm0tc2Nh
+bGFiaWxpdHkKcm0gL3RtcC92bS1zY2FsYWJpbGl0eS5pbWcK
+
+--===============8802856200260867354==--
 
