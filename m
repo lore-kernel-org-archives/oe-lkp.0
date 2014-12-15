@@ -1,47 +1,177 @@
-Content-Type: multipart/mixed; boundary="===============2071062554909651860=="
+Content-Type: multipart/mixed; boundary="===============8633110186954459991=="
 MIME-Version: 1.0
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Pan, Jacob jun <jacob.jun.pan@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [userns] BUG: unable to handle kernel NULL pointer dereference at (null)
-Date: Mon, 15 Dec 2014 11:31:10 -0600
-Message-ID: <87iohcx1k1.fsf@x220.int.ebiederm.org>
-In-Reply-To: <1418613661.5745.164.camel@intel.com>
+Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
+Date: Mon, 15 Dec 2014 21:24:51 +0000
+Message-ID: <DD415AA12F8FF042BF4EA69DF123C1478AF76532@ORSMSX106.amr.corp.intel.com>
+In-Reply-To: <548EAD4A.6070506@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2071062554909651860==
+--===============8633110186954459991==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Huang Ying <ying.huang@intel.com> writes:
 
-> FYI, we noticed the below changes on
->
-> git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git=
- for-testing
-> commit bbea5f5532501fdd67f46442ba7b1122d7ff3123 =
 
-> ("userns: Add a knob to disable setgroups on a per user namespace basis")
+-----Original Message-----
+From: Preeti U Murthy [mailto:preeti(a)linux.vnet.ibm.com] =
 
-Thank you.
+Sent: Monday, December 15, 2014 1:44 AM
+To: Viresh Kumar; Thomas Gleixner; Wu, Fengguang
+Cc: Frederic Weisbecker; Pan, Jacob jun; LKML; LKP
+Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
 
-I am quite puzzled by this failure.  There was an similar failure when
-/proc/[pid]/setgroups was read (if I recall correctly).  I don't see how
-that change could result at failures during open or failures during
-boot.  I added a new file to proc which any reasonable system should
-leave alone.  Are you by chance running trinity during boot?
+On 12/15/2014 03:02 PM, Viresh Kumar wrote:
+> On 15 December 2014 at 12:55, Preeti U Murthy <preeti@linux.vnet.ibm.co=
+m> wrote:
+>> Hi Viresh,
+>>
+>> Let me explain why I think this is happening.
+>>
+>> 1. tick_nohz_irq_enter/exit() both get called *only if the cpu is =
 
-If the reproducer gave me any clue about which file that was opened or
-which code path this happened on I would be bery interested.  If for no
-other reason that to confirm that I have fixed the issue.
+>> idle* and receives an interrupt.
+> =
 
-I have rewritten the implementation of /proc/[pid]/setgroups so it is
-simpler and more robust and does not have any errors I can detect.
+> Bang on target. Yeah that's the part we missed while writing this =
 
-Thank you very much for picking up my for-testing branch and beating up
-on it.
+> patch :)
+> =
 
-Eric
+>> 2. Commit 2a16fc93d2c9568e1, cancels programming of tick_sched timer =
 
---===============2071062554909651860==--
+>> in its handler, assuming that tick_nohz_irq_exit() will take care of =
+
+>> programming the clock event device appropriately, and hence it would =
+
+>> requeue or cancel the tick_sched timer.
+> =
+
+> Correct.
+> =
+
+>> 3. But the intel_powerclamp driver injects an idle period only.
+>> *The CPU however is not idle*. It has work on its runqueue and the
+>> rq->curr !=3D idle. This means that *tick_nohz_irq_enter()/exit() will =
+
+>> rq->not
+>> get called on any interrupt*.
+> =
+
+> Still good..
+> =
+
+>> 4. As a consequence, when we get a hrtimer interrupt during the =
+
+>> period that the powerclamp driver is mimicking idle, the exit path of =
+
+>> the interrupt never calls tick_nohz_irq_exit(). Hence the tick_sched =
+
+>> timer that would have got removed due to the above commit will not =
+
+>> get enqueued back on for any pending timers that there might be. =
+
+>> Besides this, *jiffies never gets updated*.
+> =
+
+> Jiffies can be updated by any CPU and there is something called a =
+
+> control cpu with powerclamp driver. BUT we may have got interrupted =
+
+> before the powerclamp timer expired and so we are stuck in the
+> =
+
+> while (time_before(jiffies, target_jiffies))
+> =
+
+> loop for ever.
+> =
+
+>> Hope the above explanation makes sense.
+> =
+
+> Mostly good. Thanks for helping out.
+> =
+
+> Now, what's the right solution going forward ?
+> =
+
+> - Revert the offending commit ..
+> - Or still try to avoid reprogramming if we can ..
+> =
+
+> This is what I could come up with to still avoid reprogramming of tick:
+> =
+
+> diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c index =
+
+> cc0a5b6f741b..49f4278f69e2 100644
+> --- a/kernel/time/tick-sched.c
+> +++ b/kernel/time/tick-sched.c
+> @@ -1100,7 +1100,7 @@ static enum hrtimer_restart =
+
+> tick_sched_timer(struct hrtimer *timer)
+>                 tick_sched_handle(ts, regs);
+> =
+
+>         /* No need to reprogram if we are in idle or full dynticks mode */
+> -       if (unlikely(ts->tick_stopped))
+> +       if (unlikely(ts->tick_stopped && (is_idle_task(current) ||
+> !ts->inidle)))
+>                 return HRTIMER_NORESTART;
+> =
+
+>         hrtimer_forward(timer, now, tick_period);
+> =
+
+> =
+
+
+Looks good to me. You can add my Reviewed-by to the above patch.
+
+> =
+
+> Above change checks why we have stopped tick..
+> - The cpu has gone idle (really): is_idle_task(current)
+> - The cpu isn't in idle mode, i.e. its in nohz-full mode: !ts->inidle
+> =
+
+> This fixed the issues with powerclamp in my case.
+> =
+
+> @Fengguang: Can you please check if this fixes it for you as well?
+> =
+
+I have tested this fix and confirm powerclamp is working properly now.
+
+However, we also have a planned patch for consolidated idle loop. With this=
+ patch it causes some erratic behavior in idle injection.
+I can=E2=80=99t seem to synchronize/align idle time around jiffies with thi=
+s patch + fix.
+
+Any suggestions welcome.
+https://lkml.org/lkml/2014/6/4/56
+
++peter
+
+> @Thomas: Please let me know if you want me to send this fix or you =
+
+> want to revert the original commit itself.
+
+Regards
+Preeti U Murthy
+> =
+
+> Thanks.
+> =
+
+> --
+> Viresh
+> =
+
+
+
+--===============8633110186954459991==--
 
