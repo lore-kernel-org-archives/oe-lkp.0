@@ -1,168 +1,110 @@
-Content-Type: multipart/mixed; boundary="===============8326490078977809399=="
+Content-Type: multipart/mixed; boundary="===============1177080992196909002=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@linux.intel.com>
+From: Andy Lutomirski <luto@amacapital.net>
 To: lkp@lists.01.org
-Subject: [aio] 6098b45b32e: 2200.00% xfstests.generic.239.seconds
-Date: Mon, 15 Dec 2014 09:02:09 +0800
-Message-ID: <1418605329.5745.141.camel@linux.intel.com>
+Subject: Re: [x86_64, vsyscall] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+Date: Sun, 14 Dec 2014 17:03:05 -0800
+Message-ID: <CALCETrUYd3obWmBRWooA+J1fpxvsjvLEyReZ=2weMUQHhgykrg@mail.gmail.com>
+In-Reply-To: <1418605089.5745.139.camel@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8326490078977809399==
+--===============1177080992196909002==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
+On Sun, Dec 14, 2014 at 4:58 PM, Huang Ying <ying.huang@linux.intel.com> =
+wrote:
+> FYI, we noticed the below changes on
+>
+> commit 1ad83c858c7d4ea210429142c99a1548e6715a35 ("x86_64,vsyscall: Make v=
+syscall emulation configurable")
+>
 
-commit 6098b45b32e6baeacc04790773ced9340601d511 ("aio: block exit_aio() unt=
-il all context requests are completed")
+This is expected.  You turned off an expert option, disabling
+emulation of a deprecated feature that your init needs. :)  If you
+enable that option but boot with vsyscall=3Dnone, you'll get the same
+OOPS, but you'll get a helpful error message, too.
 
+Either force CONFIG_X86_VSYSCALL_EMULATION=3Dy or upgrade to a modern
+gilbc and make sure you rebuild all your static binaries.
 
-testbox/testcase/testparams: vm-vp-2G/xfstests/4HDD-btrfs-generic-quick
+--Andy
 
-2ff396be602f10b5  6098b45b32e6baeacc04790773  =
-
-----------------  --------------------------  =
-
-         %stddev     %change         %stddev
-             \          |                \  =
-
-     26352 =C2=B1  9%     -13.6%      22774 =C2=B1  1%  vmstat.system.cs
-     10342 =C2=B1  6%     -12.3%       9066 =C2=B1  0%  vmstat.system.in
-        37 =C2=B1  4%     -12.1%         32 =C2=B1  3%  time.percent_of_cpu=
-_this_job_got
-      1197 =C2=B1  2%     -14.2%       1028 =C2=B1  0%  vmstat.io.bi
-     18470 =C2=B1  2%     -10.1%      16609 =C2=B1  1%  vmstat.io.bo
-       157 =C2=B1  3%     +13.7%        179 =C2=B1  0%  time.elapsed_time
-
-vm-vp-2G: qemu-system-x86_64 -enable-kvm -cpu Penryn
-Memory: 2G
-
-                          xfstests.generic.239.seconds
-
-  30 ++-----------O--------------------------------------------------------=
--+
-     |              O         O            O         O                     =
- |
-  25 ++                O                                                   =
- |
-     |  O O  O O            O    O O  O  O    O O  O                       =
- |
-     |                   O                                                 =
- |
-  20 O+                                                                    =
- |
-     |                                                                     =
- |
-  15 ++                                                                    =
- |
-     |                                                                     =
- |
-  10 ++                                                                    =
- |
-     |                                                                     =
- |
-     |                                                                     =
- |
-   5 ++                                                                    =
- |
-     |                                                                     =
- |
-   0 *+-*-*--*-*--*-*--*-*--*-*--*-*--*--*-*--*-*--*-*--*-*--*-*--*-*--*-*-=
--*
-
-
-	[*] bisect-good sample
-	[O] bisect-bad  sample
-
-To reproduce:
-
-	apt-get install ruby ruby-oj
-	git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tests.git
-	cd lkp-tests
-	bin/setup-local job.yaml # the job file attached in this email
-	bin/run-local   job.yaml
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
-
-
-Thanks,
-Fengguang
-
-
-_______________________________________________
-LKP mailing list
-LKP(a)linux.intel.com
+>
+> +-----------------------------------------------------------+------------=
++------------+
+> |                                                           | 95c46b5692 =
+| 1ad83c858c |
+> +-----------------------------------------------------------+------------=
++------------+
+> | boot_successes                                            | 20         =
+| 1          |
+> | early-boot-hang                                           | 1          =
+|            |
+> | boot_failures                                             | 0          =
+| 9          |
+> | Kernel_panic-not_syncing:Attempted_to_kill_init!exitcode=3D | 0        =
+  | 9          |
+> +-----------------------------------------------------------+------------=
++------------+
+>
+>
+> bootlogd.
+> [   18.959051] init[1]: segfault at ffffffffff600400 ip ffffffffff600400 =
+sp 00007fffa5199598 error 15
+> [   18.960174] init[1]: segfault at ffffffffff600400 ip ffffffffff600400 =
+sp 00007fffa5198a78 error 15
+> [   18.961242] Kernel panic - not syncing: Attempted to kill init! exitco=
+de=3D0x0000000b
+> [   18.961242]
+> [   18.962183] CPU: 0 PID: 1 Comm: init Not tainted 3.18.0-g5fbea33 #102
+> [   18.962834] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+> [   18.963339]  0000000000000001 ffff88001146fc38 ffffffff820e3f19 000000=
+0000000001
+> [   18.963339]  ffffffff82a10f58 ffff88001146fcb8 ffffffff820df795 ffffff=
+ff8116cf66
+> [   18.963339]  0000000000000010 ffff88001146fcc8 ffff88001146fc68 ffff88=
+001146fc98
+> [   18.963339] Call Trace:
+> [   18.963339]  [<ffffffff820e3f19>] dump_stack+0x7c/0xa9
+> [   18.963339]  [<ffffffff820df795>] panic+0x107/0x2b3
+> [   18.963339]  [<ffffffff8116cf66>] ? do_exit+0xd86/0x1100
+> [   18.963339]  [<ffffffff8116d278>] do_exit+0x1098/0x1100
+> [   18.963339]  [<ffffffff81176bf2>] ? __sigqueue_free+0x52/0x60
+> [   18.963339]  [<ffffffff8116d3cf>] do_group_exit+0x7f/0x140
+> [   18.963339]  [<ffffffff8117ce35>] get_signal+0xb85/0xd00
+> [   18.963339]  [<ffffffff811ae619>] ? sched_clock_cpu+0x159/0x190
+> [   18.963339]  [<ffffffff81072654>] do_signal+0x24/0x1b0
+> [   18.963339]  [<ffffffff811dc678>] ? do_raw_spin_unlock+0xf8/0x150
+> [   18.963339]  [<ffffffff811e0000>] ? state_store+0xe0/0x120
+> [   18.963339]  [<ffffffff820dfc79>] ? printk+0x4d/0x56
+> [   18.963339]  [<ffffffff811af6e1>] ? vtime_account_user+0x91/0xa0
+> [   18.963339]  [<ffffffff812ac5ce>] ? context_tracking_user_exit+0x13e/0=
+x200
+> [   18.963339]  [<ffffffff81072998>] do_notify_resume+0x1b8/0x200
+> [   18.963339]  [<ffffffff821080bc>] retint_signal+0x48/0x8c
+> [   18.963339] Kernel Offset: 0x0 from 0xffffffff81000000 (relocation ran=
+ge: 0xffffffff80000000-0xffffffff9fffffff)
+>
+> Elapsed time: 25
+>
+> Thanks,
+> Huang, Ying
+>
+>
+> _______________________________________________
+> LKP mailing list
+> LKP(a)linux.intel.com
+>
+>
 
 
---===============8326490078977809399==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job.yaml"
 
-LS0tCnRlc3RjYXNlOiB4ZnN0ZXN0cwpkZWZhdWx0X21vbml0b3JzOgogIHdhaXQ6IHByZS10ZXN0
-CiAgdm1zdGF0OiAKZGVmYXVsdF93YXRjaGRvZ3M6CiAgd2F0Y2gtb29tOiAKICB3YXRjaGRvZzog
-CmNwdWZyZXFfZ292ZXJub3I6IAptb2RlbDogcWVtdS1zeXN0ZW0teDg2XzY0IC1lbmFibGUta3Zt
-IC1jcHUgUGVucnluCm5yX3ZtOiA0Cm5yX2NwdTogNAptZW1vcnk6IDJHCnJvb3RmczogZGViaWFu
-LXg4Nl82NC5jZ3oKaGRkX3BhcnRpdGlvbnM6ICIvZGV2L3ZkYSAvZGV2L3ZkYiAvZGV2L3ZkYyAv
-ZGV2L3ZkZCAvZGV2L3ZkZSIKc3dhcF9wYXJ0aXRpb25zOiAiL2Rldi92ZGYiCmRpc2s6IDRIREQK
-ZnM6Ci0gYnRyZnMKeGZzdGVzdHM6CiAgdGVzdDoKICAtIGdlbmVyaWMtcXVpY2sKZW5xdWV1ZV90
-aW1lOiAyMDE0LTEyLTEyIDE0OjEwOjM1Ljk1MzM0MDE2NSArMDg6MDAKYnJhbmNoOiByZW5lc2Fz
-LWRyaXZlcnMvbWFzdGVyCmNvbW1pdDogYmZlMDFhNWJhMjQ5MGYyOTllMWQyZDU1MDhjYmJiYWRk
-ODk3YmJlOQp0ZXN0Ym94OiB2bS12cC0yRy0xCnRib3hfZ3JvdXA6IHZtLXZwLTJHCmtjb25maWc6
-IHg4Nl82NC1sa3AKdXNlcjogbGtwCnF1ZXVlOiByZWNvbmZpcm0KcmVzdWx0X3Jvb3Q6ICIvcmVz
-dWx0L3ZtLXZwLTJHL3hmc3Rlc3RzLzRIREQtYnRyZnMtZ2VuZXJpYy1xdWljay9kZWJpYW4teDg2
-XzY0LmNnei94ODZfNjQtbGtwL2JmZTAxYTViYTI0OTBmMjk5ZTFkMmQ1NTA4Y2JiYmFkZDg5N2Ji
-ZTkvMCIKam9iX2ZpbGU6ICIvbGtwL3NjaGVkdWxlZC92bS12cC0yRy0xL3JlY29uZmlybV94ZnN0
-ZXN0cy00SERELWJ0cmZzLWdlbmVyaWMtcXVpY2stZGViaWFuLXg4Nl82NC5jZ3oteDg2XzY0LWxr
-cC1iZmUwMWE1YmEyNDkwZjI5OWUxZDJkNTUwOGNiYmJhZGQ4OTdiYmU5LTQueWFtbCIKcmVwZWF0
-X3RvOiA1Cmtlcm5lbDogIi9rZXJuZWwveDg2XzY0LWxrcC9iZmUwMWE1YmEyNDkwZjI5OWUxZDJk
-NTUwOGNiYmJhZGQ4OTdiYmU5L3ZtbGludXotMy4xNy4wIgpkZXF1ZXVlX3RpbWU6IDIwMTQtMTIt
-MTIgMTQ6Mjc6NDcuNjc5MDg3NTM3ICswODowMApqb2Jfc3RhdGU6IGZpbmlzaGVkCmxvYWRhdmc6
-IDYzLjg3IDI3LjMzIDEwLjE4IDEvMTA4IDY2ODMKc3RhcnRfdGltZTogJzE0MTgzNjU3MTInCmVu
-ZF90aW1lOiAnMTQxODM2NjAwMicKdmVyc2lvbjogIi9sa3AvbGtwLy5zcmMtMjAxNDEyMTItMDc1
-MzAxIgo=
+-- =
 
---===============8326490078977809399==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
+Andy Lutomirski
+AMA Capital Management, LLC
 
-bWtmcyAtdCBidHJmcyAvZGV2L3ZkYg0KbWtmcyAtdCBidHJmcyAvZGV2L3ZkZA0KbWtmcyAtdCBi
-dHJmcyAvZGV2L3ZkYQ0KbWtmcyAtdCBidHJmcyAvZGV2L3ZkYw0KbW91bnQgLXQgYnRyZnMgL2Rl
-di92ZGEgL2ZzL3ZkYQ0KbW91bnQgLXQgYnRyZnMgL2Rldi92ZGIgL2ZzL3ZkYg0KbW91bnQgLXQg
-YnRyZnMgL2Rldi92ZGMgL2ZzL3ZkYw0KbW91bnQgLXQgYnRyZnMgL2Rldi92ZGQgL2ZzL3ZkZA0K
-ZXhwb3J0IFRFU1RfRElSPS9mcy92ZGENCmV4cG9ydCBURVNUX0RFVj0vZGV2L3ZkYQ0KZXhwb3J0
-IEZTVFlQPWJ0cmZzDQpleHBvcnQgU0NSQVRDSF9NTlQ9L2ZzL3NjcmF0Y2gNCm1rZGlyIC9mcy9z
-Y3JhdGNoIC1wDQpleHBvcnQgU0NSQVRDSF9ERVZfUE9PTD0iL2Rldi92ZGIgL2Rldi92ZGMgL2Rl
-di92ZGQiDQouL2NoZWNrIGdlbmVyaWMvMDAxIGdlbmVyaWMvMDAyIGdlbmVyaWMvMDAzIGdlbmVy
-aWMvMDA0IGdlbmVyaWMvMDA1IGdlbmVyaWMvMDA2IGdlbmVyaWMvMDA3IGdlbmVyaWMvMDA4IGdl
-bmVyaWMvMDA5IGdlbmVyaWMvMDEwIGdlbmVyaWMvMDExIGdlbmVyaWMvMDEyIGdlbmVyaWMvMDE0
-IGdlbmVyaWMvMDE1IGdlbmVyaWMvMDE2IGdlbmVyaWMvMDE3IGdlbmVyaWMvMDE4IGdlbmVyaWMv
-MDE5IGdlbmVyaWMvMDIwIGdlbmVyaWMvMDIxIGdlbmVyaWMvMDIyIGdlbmVyaWMvMDIzIGdlbmVy
-aWMvMDI0IGdlbmVyaWMvMDI1IGdlbmVyaWMvMDI2IGdlbmVyaWMvMDI4IGdlbmVyaWMvMDUzIGdl
-bmVyaWMvMDYyIGdlbmVyaWMvMDY5IGdlbmVyaWMvMDc2IGdlbmVyaWMvMDc3IGdlbmVyaWMvMDc5
-IGdlbmVyaWMvMDg4IGdlbmVyaWMvMDg5IGdlbmVyaWMvMDkzIGdlbmVyaWMvMDk3IGdlbmVyaWMv
-MDk5IGdlbmVyaWMvMTA1IGdlbmVyaWMvMTIzIGdlbmVyaWMvMTI0IGdlbmVyaWMvMTI2IGdlbmVy
-aWMvMTI4IGdlbmVyaWMvMTI5IGdlbmVyaWMvMTMxIGdlbmVyaWMvMTM1IGdlbmVyaWMvMTQxIGdl
-bmVyaWMvMTY5IGdlbmVyaWMvMTg0IGdlbmVyaWMvMTkzIGdlbmVyaWMvMTk4IGdlbmVyaWMvMjA3
-IGdlbmVyaWMvMjEwIGdlbmVyaWMvMjExIGdlbmVyaWMvMjEyIGdlbmVyaWMvMjEzIGdlbmVyaWMv
-MjE0IGdlbmVyaWMvMjE1IGdlbmVyaWMvMjE5IGdlbmVyaWMvMjIxIGdlbmVyaWMvMjI4IGdlbmVy
-aWMvMjM0IGdlbmVyaWMvMjM1IGdlbmVyaWMvMjM2IGdlbmVyaWMvMjM3IGdlbmVyaWMvMjM5IGdl
-bmVyaWMvMjQwIGdlbmVyaWMvMjQ1IGdlbmVyaWMvMjQ2IGdlbmVyaWMvMjQ4IGdlbmVyaWMvMjQ5
-IGdlbmVyaWMvMjUxIGdlbmVyaWMvMjU1IGdlbmVyaWMvMjU3IGdlbmVyaWMvMjU4IGdlbmVyaWMv
-MjYwIGdlbmVyaWMvMjc3IGdlbmVyaWMvMjgwIGdlbmVyaWMvMjg1IGdlbmVyaWMvMjg2IGdlbmVy
-aWMvMjg4IGdlbmVyaWMvMjk0IGdlbmVyaWMvMzA3IGdlbmVyaWMvMzA4IGdlbmVyaWMvMzA5IGdl
-bmVyaWMvMzEyIGdlbmVyaWMvMzEzIGdlbmVyaWMvMzE0IGdlbmVyaWMvMzE1IGdlbmVyaWMvMzE2
-IGdlbmVyaWMvMzE3IGdlbmVyaWMvMzE4IGdlbmVyaWMvMzIwIGdlbmVyaWMvMzIxIGdlbmVyaWMv
-MzIyDQoN
---===============8326490078977809399==--
+--===============1177080992196909002==--
 
