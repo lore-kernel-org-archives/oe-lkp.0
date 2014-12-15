@@ -1,96 +1,47 @@
-Content-Type: multipart/mixed; boundary="===============2825250470378762480=="
+Content-Type: multipart/mixed; boundary="===============2071062554909651860=="
 MIME-Version: 1.0
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Eric W. Biederman <ebiederm@xmission.com>
 To: lkp@lists.01.org
-Subject: Re: [genirq] c291ee62216:
-Date: Mon, 15 Dec 2014 15:25:24 +0100
-Message-ID: <alpine.DEB.2.11.1412151220330.16494@nanos>
-In-Reply-To: <1418627248.5745.186.camel@intel.com>
+Subject: Re: [userns] BUG: unable to handle kernel NULL pointer dereference at (null)
+Date: Mon, 15 Dec 2014 11:31:10 -0600
+Message-ID: <87iohcx1k1.fsf@x220.int.ebiederm.org>
+In-Reply-To: <1418613661.5745.164.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2825250470378762480==
+--===============2071062554909651860==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 15 Dec 2014, Huang Ying wrote:
+Huang Ying <ying.huang@intel.com> writes:
+
 > FYI, we noticed the below changes on
-> =
+>
+> git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git=
+ for-testing
+> commit bbea5f5532501fdd67f46442ba7b1122d7ff3123 =
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/urgent
-> commit c291ee622165cb2c8d4e7af63fffd499354a23be ("genirq: Prevent proc ra=
-ce against freeing of irq descriptors")
-> =
+> ("userns: Add a knob to disable setgroups on a per user namespace basis")
 
-> testbox/testcase/testparams: lkp-nex04/netperf/performance-300s-200%-SCTP=
-_STREAM
+Thank you.
 
->                            time.voluntary_context_switches
-> =
+I am quite puzzled by this failure.  There was an similar failure when
+/proc/[pid]/setgroups was read (if I recall correctly).  I don't see how
+that change could result at failures during open or failures during
+boot.  I added a new file to proc which any reasonable system should
+leave alone.  Are you by chance running trinity during boot?
 
->   100500 ++--------------------------------------------------------------=
----+
->          O       O                    O          O                       =
-   |
->          |  O                            O          O                    =
-   |
->   100000 ++           O  O  O O     O          O                         =
-   |
->          |    O                  O          O          O                 =
-   |
->          |          O                                                    =
-   |
->    99500 ++                                                              =
-   |
->          |                                                               =
-   |
->    99000 ++                                                              =
-   |
->          |                                                               =
-   |
->          |                                                               =
-   |
->    98500 ++        .*.*..                          .*.. .*..    .*..*..  =
-   |
->          *..*.*..*.      *..*.*..*..*.*..*..*..*.*.    *    *..*       *.=
-*..*
->          |                                                               =
-   |
->    98000 ++--------------------------------------------------------------=
----+
-> =
+If the reproducer gave me any clue about which file that was opened or
+which code path this happened on I would be bery interested.  If for no
+other reason that to confirm that I have fixed the issue.
 
-> =
+I have rewritten the implementation of /proc/[pid]/setgroups so it is
+simpler and more robust and does not have any errors I can detect.
 
-> 	[*] bisect-good sample
-> 	[O] bisect-bad  sample
+Thank you very much for picking up my for-testing branch and beating up
+on it.
 
-Cute. Looking at netperf source it seems to do a high frequency
-readout of /proc/stat from all involved threads. Which of course
-explains that the number of context switches is going up as the stuff
-is going to content on the sparse_irq_mutex.
+Eric
 
-While its possible to fix^W band aid that case, I'm really not too
-happy to do so just to please a wreckaged use case. High frequency
-polling of /proc/stat is just asking for trouble and on larger
-machines it's a complete scalability fail. Especially the interrupt
-part is amazingly horrible
-
-      for_each_irq_nr()
-	for_each_possible_cpu()
-
-Is it really required for netperf to do that stat poll in a loop or
-can it be made smarter?
-
-Btw, in that test scenario runs netserver and the test threads on the
-same machine. So the utilization data is pretty useless anyway because
-all threads will read more or less the same data which cannot be
-correlated to a particular instance.
-
-Thanks,
-
-	tglx
-
-
---===============2825250470378762480==--
+--===============2071062554909651860==--
 
