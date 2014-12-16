@@ -1,37 +1,47 @@
-Content-Type: multipart/mixed; boundary="===============7232007128205505590=="
+Content-Type: multipart/mixed; boundary="===============2513807375270216594=="
 MIME-Version: 1.0
-From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 To: lkp@lists.01.org
-Subject: Re: [ipmi] BUG: key ffff880fcfc51ed0 not in .data!
-Date: Mon, 15 Dec 2014 18:53:13 -0800
-Message-ID: <CAADnVQJ8MT9mUbp2cyMOd-TUZh_fp+y35CGBiw+GEcbCRb+GrA@mail.gmail.com>
-In-Reply-To: <548BBAB2.7010003@mvista.com>
+Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
+Date: Tue, 16 Dec 2014 09:48:42 +0530
+Message-ID: <CAKohpokZCK3TAZx1mwo3zLxugkxg-h7MAXkTxA4LVWausufDYg@mail.gmail.com>
+In-Reply-To: <DD415AA12F8FF042BF4EA69DF123C1478AF76532@ORSMSX106.amr.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7232007128205505590==
+--===============2513807375270216594==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 12, 2014 at 8:04 PM, Corey Minyard <cminyard@mvista.com> wrot=
-e:
-> On 12/11/2014 09:20 PM, Huang Ying wrote:
->> FYI, we noticed the below changes on
->>
->> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
->> commit 2ed09fc090fc0488e2ab27604a141679fe2ef610 ("ipmi: clean up the dev=
-ice handling for the bmc device")
->
-> Thanks.  The surprising thing is that this didn't give an error before.
->
-> But this should be fixed in linux-next the next time.
+On 16 December 2014 at 02:54, Pan, Jacob jun <jacob.jun.pan@intel.com> wr=
+ote:
 
-when specifically? Is there a fix already?
-Quite annoying to see this every boot:
-[    4.778018] BUG: key ffff88046458fe20 not in .data!
-[    4.778021] ------------[ cut here ]------------
-[    4.778061] WARNING: CPU: 1 PID: 1428 at
-../kernel/locking/lockdep.c:2991 lockdep_init_map+0x4cd/0x500()
+> Looks good to me. You can add my Reviewed-by to the above patch.
 
---===============7232007128205505590==--
+Thanks.
+
+> I have tested this fix and confirm powerclamp is working properly now.
+
+Oh, nice.
+
+> However, we also have a planned patch for consolidated idle loop. With th=
+is patch it causes some erratic behavior in idle injection.
+> I can=E2=80=99t seem to synchronize/align idle time around jiffies with t=
+his patch + fix.
+>
+> Any suggestions welcome.
+> https://lkml.org/lkml/2014/6/4/56
+
+And all works fine without this patch ?
+2a16fc93d2c9 ("nohz: Avoid tick's double reprogramming in highres mode")
+
+I really don't know what stuff out of the two patches I posted (The above o=
+ne
+and the fix I posted yesterday), will possible make the synchronization bad=
+ ..
+
+--
+viresh
+
+--===============2513807375270216594==--
 
