@@ -1,104 +1,119 @@
-Content-Type: multipart/mixed; boundary="===============6940779250267802814=="
+Content-Type: multipart/mixed; boundary="===============6929856703569014301=="
 MIME-Version: 1.0
 From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
-Date: Tue, 16 Dec 2014 15:56:53 +0100
-Message-ID: <20141216145653.GY3337@twins.programming.kicks-ass.net>
-In-Reply-To: <alpine.DEB.2.11.1412161510000.17382@nanos>
+Subject: Re: [sched] WARNING: CPU: 0 PID: 13608 at kernel/sched/core.c:7323 __might_sleep+0xbd/0xd0()
+Date: Tue, 16 Dec 2014 16:28:38 +0100
+Message-ID: <20141216152838.GZ3337@twins.programming.kicks-ass.net>
+In-Reply-To: <20141203024001.GD10048@yliu-dev.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6940779250267802814==
+--===============6929856703569014301==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 16, 2014 at 03:32:28PM +0100, Thomas Gleixner wrote:
-> @@ -4997,6 +5025,8 @@ pick_next_task_fair(struct rq *rq, struct task_stru=
-ct *prev)
->  	struct task_struct *p;
->  	int new_tasks;
->  =
-
-> +	if (class_fair_disabled())
-> +		goto idle;
-
-We don't want to do new idle balancing here I think, just return NULL.
-
->  again:
->  #ifdef CONFIG_FAIR_GROUP_SCHED
->  	if (!cfs_rq->nr_running)
+On Wed, Dec 03, 2014 at 10:40:01AM +0800, Yuanhan Liu wrote:
+> <4>[  839.494114] ------------[ cut here ]------------
+> <4>[  839.494131] WARNING: CPU: 0 PID: 13608 at /kbuild/src/lkp/kernel/sc=
+hed/core.c:7323 __might_sleep+0xbd/0xd0()
+> <4>[  839.494137] do not call blocking ops when !TASK_RUNNING; state=3D1 =
+set at [<ffffffff810b3fff>] prepare_to_wait+0x2f/0x90
+> <4>[  839.494256] Modules linked in: tun ipmi_watchdog loop btrfs xor rai=
+d6_pq sg sd_mod ast snd_pcm syscopyarea sysfillrect snd_timer sysimgblt snd=
+ ie6xx_wdt ttm i2c_isch drm_kms_helper soundcore drm ahci libahci pcspkr i2=
+c_ismt lpc_sch ipmi_si libata shpchp ipmi_msghandler acpi_cpufreq
+> <4>[  839.494264] CPU: 0 PID: 13608 Comm: fanotify01 Not tainted 3.18.0-r=
+c4-next-20141117 #1
+> <4>[  839.494266] Hardware name: To be filled by O.E.M. To be filled by O=
+.E.M./Double Cove , BIOS BWDEXT.86B.000.012.D127 10/08/2012
+> <4>[  839.494273]  ffffffff81b5ebb8 ffff88023cf37d18 ffffffff81892f54 000=
+0000064026402
+> <4>[  839.494277]  ffff88023cf37d68 ffff88023cf37d58 ffffffff8107047a fff=
+f88023cf37db8
+> <4>[  839.494281]  ffffffff81b5f5e8 0000000000000061 0000000000000000 000=
+0000000006000
+> <4>[  839.494285] Call Trace:
+> <4>[  839.494315]  [<ffffffff81892f54>] dump_stack+0x4c/0x65
+> <4>[  839.494323]  [<ffffffff8107047a>] warn_slowpath_common+0x8a/0xc0
+> <4>[  839.494327]  [<ffffffff810704f6>] warn_slowpath_fmt+0x46/0x50
+> <4>[  839.494333]  [<ffffffff810b3fff>] ? prepare_to_wait+0x2f/0x90
+> <4>[  839.494337]  [<ffffffff810b3fff>] ? prepare_to_wait+0x2f/0x90
+> <4>[  839.494341]  [<ffffffff810961fd>] __might_sleep+0xbd/0xd0
+> <4>[  839.494348]  [<ffffffff81898974>] mutex_lock+0x24/0x50
+> <4>[  839.494354]  [<ffffffff812250f5>] fanotify_read+0xd5/0x620
+> <4>[  839.494370]  [<ffffffff8139c906>] ? selinux_file_permission+0xa6/0x=
+120
+> <4>[  839.494374]  [<ffffffff810b43e0>] ? wait_woken+0xc0/0xc0
+> <4>[  839.494381]  [<ffffffff811e14c8>] __vfs_read+0x18/0x50
+> <4>[  839.494385]  [<ffffffff811e158a>] vfs_read+0x8a/0x140
+> <4>[  839.494390]  [<ffffffff811e1686>] SyS_read+0x46/0xb0
+> <4>[  839.494403]  [<ffffffff8189b629>] system_call_fastpath+0x12/0x17
+> <4>[  839.494409] ---[ end trace 5a2207521429f889 ]---
 > =
 
-> The static key is enabled once the powerclamp mess starts. So nobody
-> else than powerclamp users are affected by this and rightfully so.
-> =
 
-> Not pretty, but better than a gazillion workarounds all over the place
-> to make "pretending I'm idle" actually work. This is basically the
-> same mechanism as we have with the RT throttler, where a RT hog will
-> be put onto hold for some time. We just put all sched other tasks on
-> hold while still allowing RT tasks and everything else to work.
-> =
+As per e23738a7300a ("sched, inotify: Deal with nested sleeps").
 
-> Thoughts?
+Does this fix things?
 
-Other than hating it on sight right? ;-)
+---
+ fs/notify/fanotify/fanotify_user.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-So let me try and understand the problem with the emulated idle thing
-better (running idle from FIFO threads).
+diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanoti=
+fy_user.c
+index c991616acca9..bff8567aa42d 100644
+--- a/fs/notify/fanotify/fanotify_user.c
++++ b/fs/notify/fanotify/fanotify_user.c
+@@ -259,16 +259,15 @@ static ssize_t fanotify_read(struct file *file, char =
+__user *buf,
+ 	struct fsnotify_event *kevent;
+ 	char __user *start;
+ 	int ret;
+-	DEFINE_WAIT(wait);
++	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+ =
 
-Suppose we are in nohz_full:
+ 	start =3D buf;
+ 	group =3D file->private_data;
+ =
 
- ts->inidle     ts->infullnohz  ts->tick_stopped
+ 	pr_debug("%s: group=3D%p\n", __func__, group);
+ =
 
-  0              1               1               valid
++	add_wait_queue(&group->notification_waitq, &wait);
+ 	while (1) {
+-		prepare_to_wait(&group->notification_waitq, &wait, TASK_INTERRUPTIBLE);
+-
+ 		mutex_lock(&group->notification_mutex);
+ 		kevent =3D get_one_event(group, count);
+ 		mutex_unlock(&group->notification_mutex);
+@@ -289,7 +288,8 @@ static ssize_t fanotify_read(struct file *file, char __=
+user *buf,
+ =
 
-Then the powerclamp fake idle thread comes in, this increase nr_running
-and will result in leaving infullnohz and will re-start the
-tick_stopped.
+ 			if (start !=3D buf)
+ 				break;
+-			schedule();
++
++			wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
+ 			continue;
+ 		}
+ =
 
- 0              0               0               valid
+@@ -318,8 +318,8 @@ static ssize_t fanotify_read(struct file *file, char __=
+user *buf,
+ 		buf +=3D ret;
+ 		count -=3D ret;
+ 	}
++	remove_wait_queue(&group->notification_waitq, &wait);
+ =
 
-Then we 'start' the idle loop, and end up in:
+-	finish_wait(&group->notification_waitq, &wait);
+ 	if (start !=3D buf && ret !=3D -EFAULT)
+ 		ret =3D buf - start;
+ 	return ret;
 
- 1              0               1               valid
-
-No problem there, right? And it looks to be the same in reverse.
-
-
-I suppose the tricky bit is what happens when the cpu was idle; in that
-case we'll end up with 1 running thread in state:
-
- 1              0               1               valid
-
-But need to avoid ending up in:
-
- 1              1               1               BUG
-
-Which should be relatively simple by never entering nohzfull when 'idle'.
-
-
-
-However with your proposed thingy, I think we'll end up in:
-
- 1              1               1               BUG
-
-Because we don't start another thread, so infullnohz will stay valid,
-however we'll also be 'forced' into idle (with nr_running > 0) and stop
-the tick.
-
-A remote wakeup might result in nr_running going from 1->2 and seeing
-infullnohz =3D=3D 1, try and restart the tick, while we're idle!
-
-Of course, we can fix that too, by clearing nohzfull when going 'idle',
-after all, nohzfull will re-establish itself automagically when the tick
-detects but the one task afterwards.
-
-
-So both cases need work, neither works out of the box afaict. But I
-can't see one really being better than the other either -- am I missing
-obvious things again?
-
---===============6940779250267802814==--
+--===============6929856703569014301==--
 
