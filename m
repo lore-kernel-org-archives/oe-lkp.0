@@ -1,47 +1,147 @@
-Content-Type: multipart/mixed; boundary="===============2513807375270216594=="
+Content-Type: multipart/mixed; boundary="===============0360064774393536433=="
 MIME-Version: 1.0
 From: Viresh Kumar <viresh.kumar@linaro.org>
 To: lkp@lists.01.org
 Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
-Date: Tue, 16 Dec 2014 09:48:42 +0530
-Message-ID: <CAKohpokZCK3TAZx1mwo3zLxugkxg-h7MAXkTxA4LVWausufDYg@mail.gmail.com>
-In-Reply-To: <DD415AA12F8FF042BF4EA69DF123C1478AF76532@ORSMSX106.amr.corp.intel.com>
+Date: Tue, 16 Dec 2014 10:23:14 +0530
+Message-ID: <CAKohpokOuOqvpNt4_y2tHPTM8nKLyEg=-gN4NDe1_mqpy=Vrow@mail.gmail.com>
+In-Reply-To: <20141215234443.GA23297@lerouge>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2513807375270216594==
+--===============0360064774393536433==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 16 December 2014 at 02:54, Pan, Jacob jun <jacob.jun.pan@intel.com> wr=
++ Peter from Jacob's mail ..
+
+On 16 December 2014 at 05:14, Frederic Weisbecker <fweisbec@gmail.com> wr=
 ote:
+> So to summarize: I see it enqueues a timer then it loops on that timer ex=
+piration.
+> On that loop we stop the CPU and we expect the timer to fire and wake the=
+ thread up.
+> But if the delayed tick fires too early, before the timer actually
+> expires, then we go to sleep again because we haven't yet reached the del=
+ay,
+> but since tick_nohz_irq_exit() is only called on idle tasks and not for t=
+hreads
+> like powerclamp, the tick isn't rescheduled to handle the remaining timer=
+ slice
+> so we sleep forever.
 
-> Looks good to me. You can add my Reviewed-by to the above patch.
+Perfect !!
 
-Thanks.
-
-> I have tested this fix and confirm powerclamp is working properly now.
-
-Oh, nice.
-
-> However, we also have a planned patch for consolidated idle loop. With th=
-is patch it causes some erratic behavior in idle injection.
-> I can=E2=80=99t seem to synchronize/align idle time around jiffies with t=
-his patch + fix.
+> Hence if we really want to stop the tick when we mimic idle from powercla=
+mp driver,
+> we must call tick_nohz_irq_exit() on irq exit to do it correctly.
 >
-> Any suggestions welcome.
-> https://lkml.org/lkml/2014/6/4/56
+> It happened to work by accident before the commit because we were resched=
+uling the
+> tick from itself without tick_nohz_irq_exit() to cancel anything. And tha=
+t restored
+> the periodic behaviour necessary to complete the delay.
+>
+> So the above change is rather a hack than a solution.
+>
+> We have several choices:
+>
+> 1) Revert the commit. But this has to be a temporary solution really. Pow=
+erclamp has
+> to be fixed and handle tick_nohz_irq_exit().
+>
+> 2) Remove powerclamp tick stop until somebody fixes it to handle nohz pro=
+perly.
+>
+> 2) Fix it directly. But I believe there is a release that is going to mis=
+s the fix
+> and suffer the regression. Does the regression matter for anybody? Is pow=
+erclamp
+> meant for anything else than testing (I have no idea what it's used for)?
+>
+> So to fix powerclamp to handle nohz correctly, tick_nohz_irq_exit() must =
+be called
+> for both idle tasks and powerclamp kthreads. Checking ts->inidle can be a=
+ good way to match
+> both. That means we might need to use a reduced part of idle_cpu() to avo=
+id redundant checks.
+> tick_irq_enter() must be called as well for powerclamp, in case it's the =
+only CPU running, it
+> has to fixup the timekeeping alone.
 
-And all works fine without this patch ?
-2a16fc93d2c9 ("nohz: Avoid tick's double reprogramming in highres mode")
+Yeah, you can call my fix a Hacky one. I agree..
 
-I really don't know what stuff out of the two patches I posted (The above o=
-ne
-and the fix I posted yesterday), will possible make the synchronization bad=
- ..
+But I don't know if calling tick_nohz_irq_exit() from these threads wouldn't
+be hacky as well. And ofcourse my knowledge wouldn't be adequate here to
+judge that :)
+
+It looked a bit odd to me. Why should we call irq-exit from the threads wor=
+king
+with idle? And that's not what we do even for the real-idle loop as well ..
+
+Also from Jacob's referenced patch, we would be moving to a consolidated
+idle-loop for both real idle and threads like powerclamp, and this part may=
+ be
+tricky then..
+
+Untested, but what about something like this?
+
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index 5918d227730f..5e4bfc367735 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -321,7 +321,7 @@ asmlinkage __visible void do_softirq(void)
+ void irq_enter(void)
+ {
+        rcu_irq_enter();
+-       if (is_idle_task(current) && !in_interrupt()) {
++       if (tick_idle_active() && !in_interrupt()) {
+                /*
+                 * Prevent raise_softirq from needlessly waking up ksoftirqd
+                 * here, as softirq will be serviced on return from interru=
+pt.
+@@ -363,7 +363,7 @@ static inline void tick_irq_exit(void)
+        int cpu =3D smp_processor_id();
+
+        /* Make sure that timer wheel updates are propagated */
+-       if ((idle_cpu(cpu) && !need_resched()) || tick_nohz_full_cpu(cpu)) {
++       if ((tick_idle_active() && !need_resched()) ||
+tick_nohz_full_cpu(cpu)) {
+                if (!in_interrupt())
+                        tick_nohz_irq_exit();
+        }
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index 07c2bad0afce..e52b76037c0a 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -46,6 +46,13 @@ struct tick_sched *tick_get_tick_sched(int cpu)
+        return &per_cpu(tick_cpu_sched, cpu);
+ }
+
++bool tick_idle_active(void)
++{
++       struct tick_sched *ts =3D &__get_cpu_var(tick_cpu_sched);
++
++       return ts->idle_active;
++}
++
+ /*
+  * Must be called with interrupts disabled !
+  */
+
+
+I am not sure of the purpose of the idle-checks in the irq-paths.
+All I understood from git logs is, these are to check if we
+came out of dynticks mode and need to start/stop ticks again..
+
+Then why not handle these idle mimicking threads as well?
+We just need to check ts->idle_active which will take care of both
+the cases, real idle and these threads..
+
+Sorry, if this will break things further :(
 
 --
 viresh
 
---===============2513807375270216594==--
+--===============0360064774393536433==--
 
