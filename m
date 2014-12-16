@@ -1,110 +1,119 @@
-Content-Type: multipart/mixed; boundary="===============0729848828030524970=="
+Content-Type: multipart/mixed; boundary="===============8920218816334981496=="
 MIME-Version: 1.0
 From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
 Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
-Date: Tue, 16 Dec 2014 15:32:28 +0100
-Message-ID: <alpine.DEB.2.11.1412161510000.17382@nanos>
-In-Reply-To: <alpine.DEB.2.11.1412161105470.17382@nanos>
+Date: Tue, 16 Dec 2014 15:50:39 +0100
+Message-ID: <alpine.DEB.2.11.1412161533210.17382@nanos>
+In-Reply-To: <20141216142029.GA27375@lerouge>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0729848828030524970==
+--===============8920218816334981496==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 16 Dec 2014, Thomas Gleixner wrote:
-> Now the powerclamp mess is a different story.
+On Tue, 16 Dec 2014, Frederic Weisbecker wrote:
+> On Tue, Dec 16, 2014 at 01:49:03PM +0100, Thomas Gleixner wrote:
+> > And that's where the whole problem starts. The nohz full stuff is
+> > trying to evaluate everything dynamically which is just insane.
+> > =
+
+> > So we want to have functions which do:
+> > =
+
+> >    tick_nohz_full_enter()
+> >      ts->infullnohz =3D true;
+> >      if (stop_possible)
+> >      	stop_tick(ts);
+> > =
+
+> >    tick_nohz_full_exit()
+> >      ts->infullnohz =3D false;
+> >      if (ts->tick_stopped)
+> >      	start_tick(ts);
+> > =
+
+> > Plus irq_exit would become:     =
+
+> > =
+
+> > irq_exit
+> > 	if (ts->inidle)
+> > 	   tick_nohz_update_sched_tick();
+> > =
+
+> > 	else if (ts->infullnohz)
+> > 	   tick_nohz_full_update_sched_tick();
 > =
 
-> Calling tick_nohz_idle_enter()/exit() from outside the idle task is
-> just broken. Period.
+> So I can do that indeed. But then it's going to break the jump label that=
+'s
+> off in 99.99% of the case.
+
+Why so?
+
+> Now I can wrap that into parallel functions:
 > =
 
-> Trying to work around that madness in the core code is just fiddling
-> with the symptoms and ignoring the root cause. And the root cause is
-> simply that powerclamp calls tick_nohz_idle_enter()/exit().
+> irq_exit
+> 	if (tick_nohz_idle())
+> 	   tick_nohz_update_sched_tick();
+> =
 
-The only sane solution for that insanity is to rip out the thread code
-from powerclamp and replace it with a simple per cpu timer.
+> 	else if (tick_nohz_full())
+> 	   tick_nohz_full_update_sched_tick();
+> =
 
-timerfn() =
+> Just to be sure I understand you well. By ts->infullnohz, you mean
+> the fact that a CPU _wants_ to be in full nohz, not whether it _can_
+> right? Whether the CPU wants to be in full nohz is decided in
+> boottime with nohz_full=3D parameter.
 
-{
-   too_hot =3D magic();
-   sched_fair_this_cpu_wreckaged(too_hot);   =
+NO. Whether I read it from ts->infullnohz or from the cpumask is the
+same. What I care about is the state change.
 
-   restart_clamp_timer();
-}
-
-And have the following in sched
-
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index df2cdf77f899..d257b62ee533 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -4989,6 +4989,34 @@ preempt:
- 		set_last_buddy(se);
- }
+In the NOHZ idle case we do not care whether NOHZ=3Dy and nohz=3Don/off on
+the kernel command line. All we care about is ts->inidle and we have
+very clear points of changing that state. See below.
  =
 
-+#ifdef CONFIG_WRECKAGE_SCHED_FAIR
-+static struct static_key wreckage_key =3D STATIC_KEY_INIT;
-+static DEFINE_PER_CPU(cpu_is_wreckaged, bool);
-+
-+void sched_fair_this_cpu_wreckaged(bool wreckaged)
-+{
-+	this_cpu_write(sched_block_fair, wreckaged);
-+}
-+
-+void sched_fair_cpu_wreckage_control(bool on)
-+{
-+	if (on)
-+		static_key_slow_inc(&wreckage_key);
-+	else
-+		static_key_slow_dec(&wreckage_key);
-+}
-+
-+static inline bool class_fair_disabled(void)
-+{
-+	if (static_key_false(&wreckage_key))
-+		return false;
-+	return this_cpu_read(sched_block_fair);
-+}
-+
-+#else
-+static inline bool class_fair_disabled(void) { return false; }
-+#endif
-+
- static struct task_struct *
- pick_next_task_fair(struct rq *rq, struct task_struct *prev)
- {
-@@ -4997,6 +5025,8 @@ pick_next_task_fair(struct rq *rq, struct task_struct=
- *prev)
- 	struct task_struct *p;
- 	int new_tasks;
+> Whether it can is dynamically checked on top of scheduler, perf,
+> posix cpu timers, etc...
+
+Look at it the same way as idle. We do not care whether the cpu marks
+itself as idle at some random place, we care about the internal state
+of NOHZ.
+
+>From NOHZ point of view the relevant places are tick_nohz_idle_enter()
+and tick_nohz_idle_exit(). We mark that with ts->inidle and we take
+care of preparing on enter (evtl. stopping the tick) and cleaning up
+on exit (evtl. restarting the tick). And the information that we are
+inidle is important in the irq_exit() path. If the NOHZ facility is
+NOT inidle then it has nothing to do. You CANNOT rely on asynchronous
+state. That simply never works reliably and just leads to band aids
+and random state checks all over the place.
+
+Now in the nohz full case, we want proper functions which say:
+
+    this_cpu_enters_nohz_full_now()
+and
+    this_cpu_exits_nohz_full_now()
+
+So like we do in tick_nohz_idle_enter() and tick_nohz_idle_exit() we
+have a clear state change in the nohz code and not something which is
+randomly deduced from async state all over the place.
+
+So that only tells the NOHZ core that the rest of the system decided
+that the cpu can actually go into full nohz mode. Whether the tick
+code disables the tick or not is decided by the tick code.
+
+It's not different from idle.
  =
-
-+	if (class_fair_disabled())
-+		goto idle;
- again:
- #ifdef CONFIG_FAIR_GROUP_SCHED
- 	if (!cfs_rq->nr_running)
-
-The static key is enabled once the powerclamp mess starts. So nobody
-else than powerclamp users are affected by this and rightfully so.
-
-Not pretty, but better than a gazillion workarounds all over the place
-to make "pretending I'm idle" actually work. This is basically the
-same mechanism as we have with the RT throttler, where a RT hog will
-be put onto hold for some time. We just put all sched other tasks on
-hold while still allowing RT tasks and everything else to work.
-
-Thoughts?
 
 Thanks,
 
 	tglx
 
---===============0729848828030524970==--
+--===============8920218816334981496==--
 
