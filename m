@@ -1,92 +1,68 @@
-Content-Type: multipart/mixed; boundary="===============8429148476729220314=="
+Content-Type: multipart/mixed; boundary="===============6804833048192158114=="
 MIME-Version: 1.0
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: lkp@lists.01.org
 Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
-Date: Tue, 16 Dec 2014 17:54:58 +0100
-Message-ID: <alpine.DEB.2.11.1412161741480.17382@nanos>
-In-Reply-To: <20141216145653.GY3337@twins.programming.kicks-ass.net>
+Date: Tue, 16 Dec 2014 09:15:28 -0800
+Message-ID: <20141216091528.17ee429d@ultegra>
+In-Reply-To: <CAKohpokZCK3TAZx1mwo3zLxugkxg-h7MAXkTxA4LVWausufDYg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8429148476729220314==
+--===============6804833048192158114==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 16 Dec 2014, Peter Zijlstra wrote:
-> On Tue, Dec 16, 2014 at 03:32:28PM +0100, Thomas Gleixner wrote:
-> So let me try and understand the problem with the emulated idle thing
-> better (running idle from FIFO threads).
+On Tue, 16 Dec 2014 09:48:42 +0530
+Viresh Kumar <viresh.kumar@linaro.org> wrote:
+
+> On 16 December 2014 at 02:54, Pan, Jacob jun
+> <jacob.jun.pan@intel.com> wrote:
 > =
 
-> I suppose the tricky bit is what happens when the cpu was idle; in that
-> case we'll end up with 1 running thread in state:
+> > Looks good to me. You can add my Reviewed-by to the above patch.
 > =
 
->  1              0               1               valid
+> Thanks.
 > =
 
-> But need to avoid ending up in:
+> > I have tested this fix and confirm powerclamp is working properly
+> > now.
 > =
 
->  1              1               1               BUG
+> Oh, nice.
 > =
 
-> Which should be relatively simple by never entering nohzfull when 'idle'.
-
-Well, yes. =
-
- =
-
-> However with your proposed thingy, I think we'll end up in:
+> > However, we also have a planned patch for consolidated idle loop.
+> > With this patch it causes some erratic behavior in idle injection.
+> > I can=E2=80=99t seem to synchronize/align idle time around jiffies with
+> > this patch + fix.
+> >
+> > Any suggestions welcome.
+> > https://lkml.org/lkml/2014/6/4/56
 > =
 
->  1              1               1               BUG
+> And all works fine without this patch ?
+well, there are other things i need to improve. but this patch
+definitely causes some new unwanted behavior.
+> 2a16fc93d2c9 ("nohz: Avoid tick's double reprogramming in highres
+> mode")
 > =
 
-> Because we don't start another thread, so infullnohz will stay valid,
-> however we'll also be 'forced' into idle (with nr_running > 0) and stop
-> the tick.
-
-Indeed.
- =
-
-> A remote wakeup might result in nr_running going from 1->2 and seeing
-> infullnohz =3D=3D 1, try and restart the tick, while we're idle!
+> I really don't know what stuff out of the two patches I posted (The
+> above one and the fix I posted yesterday), will possible make the
+> synchronization bad ..
 > =
 
-> Of course, we can fix that too, by clearing nohzfull when going 'idle',
-> after all, nohzfull will re-establish itself automagically when the tick
-> detects but the one task afterwards.
-> =
+But since your patch has real benefits and does not cause regression
+with the current code, there is no reason to hold it back. I was just
+hoping to get help on debugging this.
 
-> So both cases need work, neither works out of the box afaict. But I
+thanks,
 
-Agreed.
+Jacob
+> --
+> viresh
 
-> can't see one really being better than the other either -- am I missing
-> obvious things again?
-
-No, it's both butt ugly, though what really bothers me is that we
-pretend to be idle without being in the idle thread. That makes a lot
-of stuff really weird.
-
-Anything which relies on is_idle_task(current), idle_cpu() and a bunch
-of other things just fail to work while we pretend being "the idle"
-task.
-
-That's just wrong. That powerclamp stuff needs to put the cpu
-(including the scheduler, etc.) into a well defined state.
-
-The fake idle task is everything else than well defined state, really.
-
-Thanks,
-
-	tglx
-
-   =
-
-
-
---===============8429148476729220314==--
+--===============6804833048192158114==--
 
