@@ -1,104 +1,75 @@
-Content-Type: multipart/mixed; boundary="===============4128332832204264302=="
+Content-Type: multipart/mixed; boundary="===============6172923513669036498=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
 Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
-Date: Tue, 16 Dec 2014 23:49:03 +0100
-Message-ID: <20141216224903.GS3219@twins.programming.kicks-ass.net>
-In-Reply-To: <alpine.DEB.2.11.1412161802570.17382@nanos>
+Date: Tue, 16 Dec 2014 23:54:51 +0100
+Message-ID: <alpine.DEB.2.11.1412162350110.17382@nanos>
+In-Reply-To: <20141216224903.GS3219@twins.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4128332832204264302==
+--===============6172923513669036498==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 16, 2014 at 10:21:27PM +0100, Thomas Gleixner wrote:
-> DEFINE_PER_CPU(nohz_full_must_tick, unsigned long);
+On Tue, 16 Dec 2014, Peter Zijlstra wrote:
+> On Tue, Dec 16, 2014 at 10:21:27PM +0100, Thomas Gleixner wrote:
+> > /* rq->lock is held for evaluating rq->nr_running */
+> > static void sched_ttwu_remote_nohz(struct rq *rq)
+> > {
+> > 	if (nohz_full_disabled())
+> > 		return;
+> > =
+
+> > 	if (rq->nr_running !=3D 2)
+> > 	   	return;
+> > 	/*
+> > 	 * Force smp_send_reschedule(). irq_exit() on the
+> > 	 * remote cpu will handle the rest.
+> > 	 */
 > =
 
-> enum {
->      NOHZ_SCHED_NEEDS_TICK,
->      NOHZ_POSIXTIMER_NEEDS_TICK,
->      NOHZ_PERF_NEEEDS_TICK,
-> };
+> smp_send_reschedule() is magic and does not guarantee irq_{enter,exit}()
+> being called, although we could audit and fix that.
+
+I know. I did not want to do all the work for the nohz
+folks. Otherwise I would have simply sent a patch. :)
+ =
+
+> > 	if (!task_uses_posix_timers(task))
+> > 		clear_bit(NOHZ_POSIXTIMER_NEEDS_TICK,
+> > 			  this_cpu_ptr(nohz_full_must_tick));
+> > 	else
+> > 		set_bit(NOHZ_POSIXTIMER_NEEDS_TICK,
+> > 			this_cpu_ptr(nohz_full_must_tick));
+> > =
+
 > =
 
-> /* rq->lock is held for evaluating rq->nr_running */
-> static void sched_ttwu_nohz(struct rq *rq)
-> {
-> 	if (nohz_full_disabled())
-> 		return;
+> /me hands you a few spare {} :-)
+
+Without the proper instruction manual they are pretty useless.
+ =
+
+> Arguably test state before doing a possibly pointless update?
 > =
 
-> 	if (rq->nr_running !=3D 2)
-> 		return;
-> 	set_bit(NOHZ_SCHED_NEEDS_TICK, this_cpu_ptr(nohz_full_must_tick);
-> }
+> > 	local_irq_disable();
+> > 	tick_full_nohz_update_state();
+> > 	local_irq_enable();
+> > }
 > =
 
-> /* rq->lock is held for evaluating rq->nr_running */
-> static void sched_ttwu_remote_nohz(struct rq *rq)
-> {
-> 	if (nohz_full_disabled())
-> 		return;
-> =
+> But yes, that should work just fine..
 
-> 	if (rq->nr_running !=3D 2)
-> 	   	return;
-> 	/*
-> 	 * Force smp_send_reschedule(). irq_exit() on the
-> 	 * remote cpu will handle the rest.
-> 	 */
+So I'm not the only one who thinks that this needs a proper
+reimplementation :)
 
-smp_send_reschedule() is magic and does not guarantee irq_{enter,exit}()
-being called, although we could audit and fix that.
+Thanks,
 
-> 	set_bit(NOHZ_SCHED_NEEDS_TICK, per_cpu_ptr(nohz_full_must_tick, rq->cpu);
-> 	rq->force_send_resched =3D true;
-> }
-
-I'd make that force_send_resched the return value or so..
-
-> /* rq->lock is held for evaluating rq->nr_running */
-> static void sched_out_nohz(struct rq *rq)
-> {
-> 	if (nohz_full_disabled())
-> 		return;
-> =
-
-> 	if (rq->nr_running >=3D 2)
-> 	   	return;
-> 	clear_bit(NOHZ_SCHED_NEEDS_TICK, this_cpu_ptr(nohz_full_must_tick);
-> }
-> =
-
-> /* preeemption is disabled */
-> static void sched_in_nohz(struct task_struct *task)
-> {
-> 	if (nohz_full_disabled())
-> 		return;
-> =
-
-> 	if (!task_uses_posix_timers(task))
-> 		clear_bit(NOHZ_POSIXTIMER_NEEDS_TICK,
-> 			  this_cpu_ptr(nohz_full_must_tick));
-> 	else
-> 		set_bit(NOHZ_POSIXTIMER_NEEDS_TICK,
-> 			this_cpu_ptr(nohz_full_must_tick));
-> =
+	tglx
 
 
-/me hands you a few spare {} :-)
-
-Arguably test state before doing a possibly pointless update?
-
-> 	local_irq_disable();
-> 	tick_full_nohz_update_state();
-> 	local_irq_enable();
-> }
-
-But yes, that should work just fine..
-
---===============4128332832204264302==--
+--===============6172923513669036498==--
 
