@@ -1,272 +1,104 @@
-Content-Type: multipart/mixed; boundary="===============6237657513675546775=="
+Content-Type: multipart/mixed; boundary="===============4128332832204264302=="
 MIME-Version: 1.0
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
 Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
-Date: Tue, 16 Dec 2014 22:21:27 +0100
-Message-ID: <alpine.DEB.2.11.1412161802570.17382@nanos>
-In-Reply-To: <alpine.DEB.2.11.1412161533210.17382@nanos>
+Date: Tue, 16 Dec 2014 23:49:03 +0100
+Message-ID: <20141216224903.GS3219@twins.programming.kicks-ass.net>
+In-Reply-To: <alpine.DEB.2.11.1412161802570.17382@nanos>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6237657513675546775==
+--===============4128332832204264302==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 16 Dec 2014, Thomas Gleixner wrote:
-> On Tue, 16 Dec 2014, Frederic Weisbecker wrote:
-> So like we do in tick_nohz_idle_enter() and tick_nohz_idle_exit() we
-> have a clear state change in the nohz code and not something which is
-> randomly deduced from async state all over the place.
+On Tue, Dec 16, 2014 at 10:21:27PM +0100, Thomas Gleixner wrote:
+> DEFINE_PER_CPU(nohz_full_must_tick, unsigned long);
 > =
 
-> So that only tells the NOHZ core that the rest of the system decided
-> that the cpu can actually go into full nohz mode. Whether the tick
-> code disables the tick or not is decided by the tick code.
+> enum {
+>      NOHZ_SCHED_NEEDS_TICK,
+>      NOHZ_POSIXTIMER_NEEDS_TICK,
+>      NOHZ_PERF_NEEEDS_TICK,
+> };
 > =
 
-> It's not different from idle.
+> /* rq->lock is held for evaluating rq->nr_running */
+> static void sched_ttwu_nohz(struct rq *rq)
+> {
+> 	if (nohz_full_disabled())
+> 		return;
+> =
 
-That made me look deeper into it. So we have a full zoo of functions
-related to this nohz full stuff
+> 	if (rq->nr_running !=3D 2)
+> 		return;
+> 	set_bit(NOHZ_SCHED_NEEDS_TICK, this_cpu_ptr(nohz_full_must_tick);
+> }
+> =
 
-extern void __tick_nohz_full_check(void);
-extern void tick_nohz_full_kick(void);
-extern void tick_nohz_full_kick_cpu(int cpu);
-extern void tick_nohz_full_kick_all(void);
-extern void __tick_nohz_task_switch(struct task_struct *tsk);
+> /* rq->lock is held for evaluating rq->nr_running */
+> static void sched_ttwu_remote_nohz(struct rq *rq)
+> {
+> 	if (nohz_full_disabled())
+> 		return;
+> =
 
-Plus a few inline functions
+> 	if (rq->nr_running !=3D 2)
+> 	   	return;
+> 	/*
+> 	 * Force smp_send_reschedule(). irq_exit() on the
+> 	 * remote cpu will handle the rest.
+> 	 */
 
-static inline bool tick_nohz_full_enabled(void)
-{
-	if (!context_tracking_is_enabled())
-		return false;
+smp_send_reschedule() is magic and does not guarantee irq_{enter,exit}()
+being called, although we could audit and fix that.
 
-	return tick_nohz_full_running;
-}
+> 	set_bit(NOHZ_SCHED_NEEDS_TICK, per_cpu_ptr(nohz_full_must_tick, rq->cpu);
+> 	rq->force_send_resched =3D true;
+> }
 
-static inline void tick_nohz_full_check(void)
-{
-	if (tick_nohz_full_enabled())
-		__tick_nohz_full_check();
-}
+I'd make that force_send_resched the return value or so..
 
-static inline void tick_nohz_task_switch(struct task_struct *tsk)
-{
-	if (tick_nohz_full_enabled())
-		__tick_nohz_task_switch(tsk);
-}
+> /* rq->lock is held for evaluating rq->nr_running */
+> static void sched_out_nohz(struct rq *rq)
+> {
+> 	if (nohz_full_disabled())
+> 		return;
+> =
 
-context_tracking_is_enabled() is actually the static key you talked
-about, right? Very intuitive - NOT!
+> 	if (rq->nr_running >=3D 2)
+> 	   	return;
+> 	clear_bit(NOHZ_SCHED_NEEDS_TICK, this_cpu_ptr(nohz_full_must_tick);
+> }
+> =
 
-Now lets look at the call site of tick_nohz_task_switch(). That's
-invoked at the end of finish_task_switch(). Looking at one of the
-worst case call chains here:
+> /* preeemption is disabled */
+> static void sched_in_nohz(struct task_struct *task)
+> {
+> 	if (nohz_full_disabled())
+> 		return;
+> =
 
-finish_task_switch()
-  tick_nohz_task_switch()
-    __tick_nohz_task_switch()
-        tick_nohz_tick_stopped()
-	can_stop_full_tick()
-	  sched_can_stop_tick()
-	  posix_cpu_timers_can_stop_tick()
-	  perf_event_can_stop_tick()
-	tick_nohz_full_kick()
-	  tick_nohz_full_kick()
-	    irq_work_queue()
-	      arch_irq_work_raise()
-
-And then you take the self ipi and do:
-
-    irq_work_run()
-	can_stop_full_tick()
-	  sched_can_stop_tick()
-	  posix_cpu_timers_can_stop_tick()
-	  perf_event_can_stop_tick()
-	tick_nohz_restart_sched_tick();
-
-and right after that:
-
-    irq_exit()
-      tick_nohz_full_stop_tick()
-	can_stop_full_tick()
-	  sched_can_stop_tick()
-	  posix_cpu_timers_can_stop_tick()
-	  perf_event_can_stop_tick()
-
-What a trainwreck in the scheduler hotpath!
-
-So you have three states which can change the nohzfull state:
-
- 1)  rq->nr_running > 1
- 2)  current->uses_posix_timer
- 3)  perf needing the tick
-
-So instead of evaluating the whole nonsense a gazillion times in a row
-and firing pointless self ipis why are you not looking at the obvious
-solution of sane state change tracking?
-
-DEFINE_PER_CPU(nohz_full_must_tick, unsigned long);
-
-enum {
-     NOHZ_SCHED_NEEDS_TICK,
-     NOHZ_POSIXTIMER_NEEDS_TICK,
-     NOHZ_PERF_NEEEDS_TICK,
-};
-
-/* rq->lock is held for evaluating rq->nr_running */
-static void sched_ttwu_nohz(struct rq *rq)
-{
-	if (nohz_full_disabled())
-		return;
-
-	if (rq->nr_running !=3D 2)
-		return;
-	set_bit(NOHZ_SCHED_NEEDS_TICK, this_cpu_ptr(nohz_full_must_tick);
-}
-
-/* rq->lock is held for evaluating rq->nr_running */
-static void sched_ttwu_remote_nohz(struct rq *rq)
-{
-	if (nohz_full_disabled())
-		return;
-
-	if (rq->nr_running !=3D 2)
-	   	return;
-	/*
-	 * Force smp_send_reschedule(). irq_exit() on the
-	 * remote cpu will handle the rest.
-	 */
-	set_bit(NOHZ_SCHED_NEEDS_TICK, per_cpu_ptr(nohz_full_must_tick, rq->cpu);
-	rq->force_send_resched =3D true;
-}
-
-/* rq->lock is held for evaluating rq->nr_running */
-static void sched_out_nohz(struct rq *rq)
-{
-	if (nohz_full_disabled())
-		return;
-
-	if (rq->nr_running >=3D 2)
-	   	return;
-	clear_bit(NOHZ_SCHED_NEEDS_TICK, this_cpu_ptr(nohz_full_must_tick);
-}
-
-/* preeemption is disabled */
-static void sched_in_nohz(struct task_struct *task)
-{
-	if (nohz_full_disabled())
-		return;
-
-	if (!task_uses_posix_timers(task))
-		clear_bit(NOHZ_POSIXTIMER_NEEDS_TICK,
-			  this_cpu_ptr(nohz_full_must_tick));
-	else
-		set_bit(NOHZ_POSIXTIMER_NEEDS_TICK,
-			this_cpu_ptr(nohz_full_must_tick));
-
-	local_irq_disable();
-	tick_full_nohz_update_state();
-	local_irq_enable();
-}
-
-/* interrupts are disabled */
-void tick_full_nohz_update_state(void)
-{
-        struct tick_sched *ts =3D this_cpu_ptr(&tick_cpu_sched);
-
-	if (this_cpu_read(nohz_full_must_tick)) {
-	   	if (ts->infullnohz)
-			tick_full_nohz_exit();
-	} else {
-	        if (!ts->infullnohz)
-			tick_full_nohz_enter();
-	   	else
-			__tick_full_nohz_enter();
-	}
-}
-
-So the irq_exit() path becomes:
-
-/* interrupts are disabled */
-void tick_nohz_irq_exit(void)
-{
-        struct tick_sched *ts =3D this_cpu_ptr(&tick_cpu_sched);
-
-        if (ts->inidle) {
-                __tick_nohz_idle_enter();
-		return;
-	}
-	if (nohz_full_disabled())
-		return;
-	tick_nohz_update_state();
-}
-
-No self IPI, no irq work, no triple evaluation of the same condition
-chain and proper state tracking of infullnohz inside of the tick code.
-
-Precicely TWO points where the NOHZ internal state gets updated:
-
-   switch_to() and irq_exit()	  	  =
+> 	if (!task_uses_posix_timers(task))
+> 		clear_bit(NOHZ_POSIXTIMER_NEEDS_TICK,
+> 			  this_cpu_ptr(nohz_full_must_tick));
+> 	else
+> 		set_bit(NOHZ_POSIXTIMER_NEEDS_TICK,
+> 			this_cpu_ptr(nohz_full_must_tick));
+> =
 
 
-No conflict between infullnohz and inidle because it's all internal to
-the NOHZ code.
+/me hands you a few spare {} :-)
 
-Simple, isn't it?
+Arguably test state before doing a possibly pointless update?
 
-Now for perf and posix cpu timers I'm sure you'll find equally simple
-solutions which do not add extra update points. switch_to() and
-irq_exit() are enough. It's really not rocket science.
+> 	local_irq_disable();
+> 	tick_full_nohz_update_state();
+> 	local_irq_enable();
+> }
 
-While at it let me rant about some other things.
+But yes, that should work just fine..
 
- 1) Remote accounting
- =
-
-    I really cannot understand why all of you NOHZ enthusiasts just
-    avoid to make that work in the first place as it reduces the
-    problem space significantly.
-
-    Instead of that you folks come up with broken patches for
-    debugfs/sysfs/sysctl/... to forcefully disable the tick. Sure it's
-    harder to implement remote accounting proper than hacking up some
-    random disable mechanism, but the latter is just utter waste of
-    time and resources.
-
-    I told all of you from the very beginning that remote accounting
-    is a key mechanism for this, but you keep insisting on hacking
-    around it.
-
-    If done right, then the whole kick ALL cpus nonsense in posix cpu
-    timers can just go away. You can do the complete posix cpu timer
-    thing from the housekeeper cpu(s) once you have remote accounting
-    implemented.
-
- 2) Perf
-
-    I doubt that the tick_nohz_full_kick() in __perf_event_overflow()
-    is actually necessary when you implement the above scheme.
-
-    The nr_freq_events kick ALL cpus is horrible as well. This really
-    wants to be restricted on the target cpus and not wholesale global
-    just because it is conveniant.
-
-Managerial summary:
-
- 1) Stop fiddling on symptoms. Tackle the root causes
-
- 2) Stop creating overengineered monstrosities which just create more
-    race conditions and corner cases than actual functionality
-
- 3) Fix that ASAP before I slap BROKEN on it or get annoyed enough to
-    rip it out completely.
-
-Thanks,
-
-	tglx
-
---===============6237657513675546775==--
+--===============4128332832204264302==--
 
