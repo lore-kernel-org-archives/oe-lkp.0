@@ -1,87 +1,43 @@
-Content-Type: multipart/mixed; boundary="===============8245850828381411186=="
+Content-Type: multipart/mixed; boundary="===============4621574388369550354=="
 MIME-Version: 1.0
-From: Frederic Weisbecker <fweisbec@gmail.com>
+From: Corey Minyard <minyard@acm.org>
 To: lkp@lists.01.org
-Subject: Re: [nohz] 2a16fc93d2c: kernel lockup on idle injection
-Date: Wed, 17 Dec 2014 13:47:30 +0100
-Message-ID: <20141217124724.GB20739@lerouge>
-In-Reply-To: <alpine.DEB.2.11.1412171008260.17382@nanos>
+Subject: Re: [ipmi] BUG: key ffff880fcfc51ed0 not in .data!
+Date: Wed, 17 Dec 2014 07:03:56 -0600
+Message-ID: <54917F3C.4090007@acm.org>
+In-Reply-To: <CAADnVQLerROn=H=w0T29wt-wO=SbHaggrso_B7aGCajrAJ3TvA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8245850828381411186==
+--===============4621574388369550354==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 17, 2014 at 10:11:58AM +0100, Thomas Gleixner wrote:
-> On Wed, 17 Dec 2014, Frederic Weisbecker wrote:
-> > On Tue, Dec 16, 2014 at 10:21:27PM +0100, Thomas Gleixner wrote:
-> > > So instead of evaluating the whole nonsense a gazillion times in a row
-> > > and firing pointless self ipis why are you not looking at the obvious
-> > > solution of sane state change tracking?
-> > =
+On 12/16/2014 07:05 PM, Alexei Starovoitov wrote:
+> On Tue, Dec 16, 2014 at 5:08 AM, Corey Minyard <cminyard@mvista.com> wr=
+ote:
+>> Yes, should be fixed by:
+>>
+>> commit 693726299ba87a6e267993806bc1320a266e5c5e
+>> Author: Corey Minyard <cminyard@mvista.com>
+>> Date:   Fri Dec 12 19:06:07 2014 -0600
+>>
+>>     ipmi: Finish cleanup of BMC attributes
+>>
+>> which should be in linux-next now.  I was able to reproduce and verify
+>> that this fixed it.  I've verified that the branch is correct in the
+>> repository.
+> thanks. cleared the warning for me as well:
+> Tested-by: Alexei Starovoitov <ast@plumgrid.com>
+>
+> Are you planning to send a pull request
+> before the merge window is over or for rc2 ?
 
-> > Because I had to do it wrong first before somebody like you with a fres=
-h mind
-> > comes, look at the whole picture and propose a rethink :-)
-> =
+Yes, I believe I will.  I was planning to wait until it was in
+linux-next for a little while, but a "Tested-by" from you and Huang Ying
+would give me more confidence :).
 
-> Point taken.
->  =
+-corey
 
-> > >     I told all of you from the very beginning that remote accounting
-> > >     is a key mechanism for this, but you keep insisting on hacking
-> > >     around it.
-> > =
-
-> > I don't, and I think everybody has understood we are not going to accept
-> > hacks to solve the 1hz issue.
-> =
-
-> You wish.
-> =
-
-> > I'm pretty sure you know what this is about to maintain a project with a
-> > (variably) cruel lack of manpower ;-)
-> =
-
-> Oh yes! :(
->  =
-
-> > Moreover I'm not the kind of kernel developer who ignores reviews (whet=
-her pre or
-> > post merge).
-> =
-
-> I know that.
->  =
-
-> > So, no point in threatening a dependency to BROKEN or ripping out excep=
-t perhaps to
-> > push me out to other projects with more thankful managers.
-> =
-
-> This was not directed to you, really.
-> =
-
-> This was directed at the folks who randomly "fix" that code by voodoo
-> bandaids instead of analyzing the root causes in the first
-> place. You're the least one to blame for that.
-
-Well I was about to propose a bad fix for powerclamp and I sometimes take
-overengineering directions. I'm still to blame for several things 8-)
-
-Sorry I got too touchy :-)
-
-Anyway, I'll give a try to your proposition. Somehow I have always felt that
-something was wrong with this tick_nohz_can_stop_tick() called all over the=
- place,
-that plus the IPI that's often near the scheduler IPI.
-
-I'm pretty sure this is going to help fixing some overhead issues I got rep=
-orted.
-
-Thanks a lot!
-
---===============8245850828381411186==--
+--===============4621574388369550354==--
 
