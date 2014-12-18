@@ -1,310 +1,193 @@
-Content-Type: multipart/mixed; boundary="===============2038410722740548861=="
+Content-Type: multipart/mixed; boundary="===============5008154229133101852=="
 MIME-Version: 1.0
-From: Grumbach, Emmanuel <emmanuel.grumbach@intel.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [iwlwifi] BUG: unable to handle kernel
-Date: Thu, 18 Dec 2014 19:42:17 +0000
-Message-ID: <1418931737.4679.1.camel@egrumbacBox>
-In-Reply-To: <20141218171309.GD9298@wfg-t540p.sh.intel.com>
+Subject: Re: [PATCH] tick/powerclamp: Remove tick_nohz_idle abuse
+Date: Thu, 18 Dec 2014 11:52:39 -0800
+Message-ID: <20141218115239.53d17e39@jacob-VirtualBox>
+In-Reply-To: <DD415AA12F8FF042BF4EA69DF123C1478AF91730@ORSMSX101.amr.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2038410722740548861==
+--===============5008154229133101852==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2014-12-18 at 09:13 -0800, Fengguang Wu wrote:
-> Hi All,
+>
 > =
 
-> I don't see any relationship between the BUG and this bisected commit.
-> Anyway, it's better to report it to the lists than to ignore.
+> -----Original Message-----
+> From: Preeti U Murthy [mailto:preeti(a)linux.vnet.ibm.com] =
 
-Right - but I have to say that I have no clue how this comment can cause
-the bug you are seeing...
-Do you even have an Intel Wireless device the VM could access?
-
+> Sent: Thursday, December 18, 2014 9:28 AM
+> To: Thomas Gleixner; Preeti Murthy; Pan, Jacob jun; Peter Zijlstra
+> Cc: Viresh Kumar; Frederic Weisbecker; Wu, Fengguang; Frederic
+> Weisbecker; LKML; LKP; Zhang, Rui Subject: Re: [PATCH]
+> tick/powerclamp: Remove tick_nohz_idle abuse
 > =
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/iwlwifi-fixes.git m=
-aster
+> Hi Thomas,
 > =
 
-> commit 03d6c3b0fa4f5f0379cede079ec828a6c999fe43
-> Author:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> AuthorDate: Wed Dec 3 10:39:07 2014 +0200
-> Commit:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> CommitDate: Sun Dec 14 10:20:29 2014 +0200
-> =
+> On 12/18/2014 04:21 PM, Thomas Gleixner wrote:
+> > commit 4dbd27711cd9 "tick: export nohz tick idle symbols for module =
 
->     iwlwifi: pcie: re-ACK all interrupts after device reset
->     =
+> > use" was merged via the thermal tree without an explicit ack from
+> > the relevant maintainers.
+> > =
 
->     When we reset the device, the CSR_INT gets cleared as well
->     as CSR_INT_MASK. Meaning that we shouldn't get any interrupt
->     but, due to a hardware bug, recent devices will keep sending
->     interrupts. This leads to an interrupt storm while stopping
->     the device.
->     The way to fix this is to ACK all the interrupts after the
->     device is reset so that the value of CSR_INT will stay
->     0xffffffff.
->     =
+> > The exports are abused by the intel powerclamp driver which
+> > implements a fake idle state from a sched FIFO task. This causes
+> > all kinds of wreckage in the NOHZ core code which rightfully
+> > assumes that tick_nohz_idle_enter/exit() are only called from the
+> > idle task itself.
+> > =
 
->     Fixes: 522713c81e4e ("iwlwifi: pcie: properly reset the device")
->     Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> =
+> > Recent changes in the NOHZ core lead to a failure of the powerclamp =
 
-> +------------------------------------------+------------+------------+---=
----------+
-> |                                          | 0a79a0c011 | 03d6c3b0fa | iw=
-lwifi-fi |
-> +------------------------------------------+------------+------------+---=
----------+
-> | boot_successes                           | 60         | 19         | 3 =
-         |
-> | boot_failures                            | 0          | 1          | 9 =
-         |
-> | BUG:unable_to_handle_kernel              | 0          | 1          | 9 =
-         |
-> | Oops                                     | 0          | 1          | 9 =
-         |
-> | RIP:strcmp                               | 0          | 1          | 9 =
-         |
-> | Kernel_panic-not_syncing:Fatal_exception | 0          | 1          | 9 =
-         |
-> | backtrace:led_trigger_register_simple    | 0          | 1          | 9 =
-         |
-> | backtrace:ledtrig_usb_init               | 0          | 1          | 9 =
-         |
-> | backtrace:kernel_init_freeable           | 0          | 1          | 9 =
-         |
-> +------------------------------------------+------------+------------+---=
----------+
-> =
+> > driver and now people try to hack completely broken and backwards =
 
-> [    5.345018] g_serial gadget: Gadget Serial v2.4
-> [    5.345927] g_serial gadget: g_serial ready
-> [    5.345927] g_serial gadget: g_serial ready
-> [    5.346777] BUG: unable to handle kernel =
+> > workarounds into the NOHZ core code. This is completely
+> > unacceptable.
+> > =
 
-> [    5.346777] BUG: unable to handle kernel paging requestpaging request =
-at ffff88000004e5f0
->  at ffff88000004e5f0
-> [    5.348183] IP:
-> [    5.348183] IP: [<ffffffff81446a68>] strcmp+0x6/0x20
->  [<ffffffff81446a68>] strcmp+0x6/0x20
-> [    5.349183] PGD 37f1067 =
+> > The real solution is to fix the powerclamp driver by rewriting it
+> > with a sane concept, but that's beyond the scope of this.
+> > =
 
-> [    5.349183] PGD 37f1067 PUD 37f2067 PUD 37f2067 PMD 37f3067 PMD 37f306=
-7 PTE 800000000004e060PTE 800000000004e060
-> =
+> > So the only solution for now is to remove the calls into the core
+> > NOHZ code from the powerclamp trainwreck along with the exports.
+> > =
 
-> [    5.350498] Oops: 0000 [#1] =
+> > Fixes: d6d71ee4a14a "PM: Introduce Intel PowerClamp Driver"
+> > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> > ---
+> > diff --git a/drivers/thermal/intel_powerclamp.c =
 
-> [    5.350498] Oops: 0000 [#1] DEBUG_PAGEALLOCDEBUG_PAGEALLOC
-> =
+> > b/drivers/thermal/intel_powerclamp.c
+> > index b46c706e1cac..e98b4249187c 100644
+> > --- a/drivers/thermal/intel_powerclamp.c
+> > +++ b/drivers/thermal/intel_powerclamp.c
+> > @@ -435,7 +435,6 @@ static int clamp_thread(void *arg)
+> >  		 * allowed. thus jiffies are updated properly.
+> >  		 */
+> >  		preempt_disable();
+> > -		tick_nohz_idle_enter();
+> >  		/* mwait until target jiffies is reached */
+> >  		while (time_before(jiffies, target_jiffies)) {
+> >  			unsigned long ecx =3D 1;
+> > @@ -451,7 +450,6 @@ static int clamp_thread(void *arg)
+> >  			start_critical_timings();
+> >  			atomic_inc(&idle_wakeup_counter);
+> >  		}
+> > -		tick_nohz_idle_exit();
+> >  		preempt_enable();
+> >  	}
+> >  	del_timer_sync(&wakeup_timer);
+> > diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+> > index 4d54b7540585..1363d58f07e9 100644
+> > --- a/kernel/time/tick-sched.c
+> > +++ b/kernel/time/tick-sched.c
+> > @@ -847,7 +847,6 @@ void tick_nohz_idle_enter(void)
+> > =
 
-> [    5.351360] CPU: 0 PID: 1 Comm: swapper Not tainted 3.18.0-g03d6c3b #1
-> [    5.351360] CPU: 0 PID: 1 Comm: swapper Not tainted 3.18.0-g03d6c3b #1
-> [    5.352660] task: ffff880012060000 ti: ffff88001204c000 task.ti: ffff8=
-8001204c000
-> [    5.352660] task: ffff880012060000 ti: ffff88001204c000 task.ti: ffff8=
-8001204c000
-> [    5.354143] RIP: 0010:[<ffffffff81446a68>] =
+> >  	local_irq_enable();
+> >  }
+> > -EXPORT_SYMBOL_GPL(tick_nohz_idle_enter);
+> > =
 
-> [    5.354143] RIP: 0010:[<ffffffff81446a68>]  [<ffffffff81446a68>] strcm=
-p+0x6/0x20
->  [<ffffffff81446a68>] strcmp+0x6/0x20
-> [    5.354451] RSP: 0000:ffff88001204fe28  EFLAGS: 00010246
-> [    5.354451] RSP: 0000:ffff88001204fe28  EFLAGS: 00010246
-> [    5.354451] RAX: 0000000000000000 RBX: ffff88000c08fe00 RCX: ffffffff8=
-1d35310
-> [    5.354451] RAX: 0000000000000000 RBX: ffff88000c08fe00 RCX: ffffffff8=
-1d35310
-> [    5.354451] RDX: ffff88000c08fe68 RSI: ffffffff826d05be RDI: ffff88000=
-004e5f0
-> [    5.354451] RDX: ffff88000c08fe68 RSI: ffffffff826d05be RDI: ffff88000=
-004e5f0
-> [    5.354451] RBP: ffff88001204fe28 R08: 0000000000000001 R09: 000000000=
-000033a
-> [    5.354451] RBP: ffff88001204fe28 R08: 0000000000000001 R09: 000000000=
-000033a
-> [    5.354451] R10: 0000000000000000 R11: ffffffff82531cd1 R12: ffff88000=
-c19fa00
-> [    5.354451] R10: 0000000000000000 R11: ffffffff82531cd1 R12: ffff88000=
-c19fa00
-> [    5.354451] R13: 0000000000000000 R14: ffffffff837958b8 R15: 000000000=
-0000000
-> [    5.354451] R13: 0000000000000000 R14: ffffffff837958b8 R15: 000000000=
-0000000
-> [    5.354451] FS:  0000000000000000(0000) GS:ffffffff82789000(0000) knlG=
-S:0000000000000000
-> [    5.354451] FS:  0000000000000000(0000) GS:ffffffff82789000(0000) knlG=
-S:0000000000000000
-> [    5.354451] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-> [    5.354451] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-> [    5.354451] CR2: ffff88000004e5f0 CR3: 0000000002776000 CR4: 000000000=
-00006b0
-> [    5.354451] CR2: ffff88000004e5f0 CR3: 0000000002776000 CR4: 000000000=
-00006b0
-> [    5.354451] Stack:
-> [    5.354451] Stack:
-> [    5.354451]  ffff88001204fe58
-> [    5.354451]  ffff88001204fe58 ffffffff81d35334 ffffffff81d35334 000000=
-0000000000 0000000000000000 ffff88000c19fa00 ffff88000c19fa00
-> =
+> >  /**
+> >   * tick_nohz_irq_exit - update next tick event from interrupt exit
+> > @@ -974,7 +973,6 @@ void tick_nohz_idle_exit(void)
+> > =
 
-> [    5.354451]  ffffffff826d05be
-> [    5.354451]  ffffffff826d05be 0000000000000000 0000000000000000 ffff88=
-001204fe88 ffff88001204fe88 ffffffff81d35648 ffffffff81d35648
-> =
+> >  	local_irq_enable();
+> >  }
+> > -EXPORT_SYMBOL_GPL(tick_nohz_idle_exit);
+> > =
 
-> [    5.354451]  ffff88000e3bbcc0
-> [    5.354451]  ffff88000e3bbcc0 ffffffff82b3fe61 ffffffff82b3fe61 000000=
-0000000000 0000000000000000 ffffffff82b98910 ffffffff82b98910
-> =
-
-> [    5.354451] Call Trace:
-> [    5.354451] Call Trace:
-> [    5.354451]  [<ffffffff81d35334>] led_trigger_register+0x63/0x129
-> [    5.354451]  [<ffffffff81d35334>] led_trigger_register+0x63/0x129
-> [    5.354451]  [<ffffffff81d35648>] led_trigger_register_simple+0x35/0x79
-> [    5.354451]  [<ffffffff81d35648>] led_trigger_register_simple+0x35/0x79
-> [    5.354451]  [<ffffffff82b3fe61>] ? gs_bind+0xea/0xea
-> [    5.354451]  [<ffffffff82b3fe61>] ? gs_bind+0xea/0xea
-> [    5.354451]  [<ffffffff82b3fe78>] ledtrig_usb_init+0x17/0x2e
-> [    5.354451]  [<ffffffff82b3fe78>] ledtrig_usb_init+0x17/0x2e
-> [    5.354451]  [<ffffffff82b00044>] do_one_initcall+0xe6/0x171
-> [    5.354451]  [<ffffffff82b00044>] do_one_initcall+0xe6/0x171
-> [    5.354451]  [<ffffffff82b001c7>] kernel_init_freeable+0xf8/0x180
-> [    5.354451]  [<ffffffff82b001c7>] kernel_init_freeable+0xf8/0x180
-> [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
-> [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
-> [    5.354451]  [<ffffffff8206079a>] kernel_init+0x9/0xd0
-> [    5.354451]  [<ffffffff8206079a>] kernel_init+0x9/0xd0
-> [    5.354451]  [<ffffffff8207d2ba>] ret_from_fork+0x7a/0xb0
-> [    5.354451]  [<ffffffff8207d2ba>] ret_from_fork+0x7a/0xb0
-> [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
-> [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
-> [    5.354451] Code: =
-
-> [    5.354451] Code: c0 c0 eb eb f5 f5 31 31 c9 c9 40 40 8a 8a 3c 3c 0e 0=
-e 4d 4d 8d 8d 0c 0c 08 08 40 40 84 84 ff ff 41 41 88 88 3c 3c 08 08 74 74 0=
-d 0d 48 48 ff ff c1 c1 48 48 39 39 ca ca 75 75 e7 e7 41 41 c6 c6 41 41 01 0=
-1 00 00 5d 5d c3 c3 55 55 31 31 c0 c0 48 48 89 89 e5 e5 <8a> <8a> 14 14 07 =
-07 3a 3a 14 14 06 06 74 74 07 07 19 19 c0 c0 83 83 c8 c8 01 01 eb eb 09 09 =
-48 48 ff ff c0 c0 84 84 d2 d2 75 75 =
+> >  static int tick_nohz_reprogram(struct tick_sched *ts, ktime_t
+> > now)  {
+> > =
 
 > =
 
-> [    5.354451] RIP =
+(switching to my linux email)
 
-> [    5.354451] RIP  [<ffffffff81446a68>] strcmp+0x6/0x20
->  [<ffffffff81446a68>] strcmp+0x6/0x20
-> [    5.354451]  RSP <ffff88001204fe28>
-> [    5.354451]  RSP <ffff88001204fe28>
-> [    5.354451] CR2: ffff88000004e5f0
-> [    5.354451] CR2: ffff88000004e5f0
-> [    5.354451] ---[ end trace 8f9377b34c860a0c ]---
-> [    5.354451] ---[ end trace 8f9377b34c860a0c ]---
+OK I agree, also as I mentioned earlier, Peter already has a patch for
+consolidated idle loop and remove tick_nohz_idle_enter/exit call from
+powerclamp driver. I have been working on a few tweaks to maintain the
+functionality and efficiency with the consolidated idle loop.
+We can apply the patches on top of yours.
+
+> Ok the solution looks apt to me.
 > =
 
-> git bisect start baa21e834941ee5fbe4bd421c871f7c0c5f9a086 70e71ca0af244f4=
-8a5dcf56dc435243792e3a495 --
-> git bisect  bad 03d6c3b0fa4f5f0379cede079ec828a6c999fe43  # 16:23      0-=
-      1  iwlwifi: pcie: re-ACK all interrupts after device reset
-> git bisect good 0a79a0c011cb291675e3b80760a452fcba5c59d9  # 16:28     20+=
-      0  iwlwifi: mvm: clear IN_HW_RESTART flag on stop()
-> # first bad commit: [03d6c3b0fa4f5f0379cede079ec828a6c999fe43] iwlwifi: p=
-cie: re-ACK all interrupts after device reset
-> git bisect good 0a79a0c011cb291675e3b80760a452fcba5c59d9  # 16:30     60+=
-      0  iwlwifi: mvm: clear IN_HW_RESTART flag on stop()
-> # extra tests on HEAD of iwlwifi-fixes/master
-> git bisect  bad baa21e834941ee5fbe4bd421c871f7c0c5f9a086  # 16:30      0-=
-      9  iwlwifi: pcie: limit fw chunk sizes given to fh
-> # extra tests on tree/branch iwlwifi-fixes/master
-> git bisect  bad baa21e834941ee5fbe4bd421c871f7c0c5f9a086  # 16:30      0-=
-      9  iwlwifi: pcie: limit fw chunk sizes given to fh
-> # extra tests on tree/branch linus/master
-> git bisect good 44e8967d591686463e84a88b46b03beba3ab49fb  # 16:32     60+=
-      0  Ceph: remove left-over reject file
-> # extra tests on tree/branch next/master
-> git bisect good cfaa3a95dd2b402599b1d8122dc3107478db8717  # 16:35     60+=
-      1  Add linux-next specific files for 20141218
+> Let me see if I can come up with a sane solution for powerclamp based
+> on the suggestions that you gave in the previous thread. I was
+> thinking of the below steps towards its implementation. The idea is
+> based on the throttling mechanism that you had suggested.
 > =
 
+> 1. Queue a deferable periodic timer whose handler checks if idle
+> needs to be injected. If so, it sets rq->need_throttle for the cpu.
+> If its already in the fake idle period, it clears rq->need_throttle
+> and sets need_resched.
 > =
 
-> This script may reproduce the error.
+The key to powerclamp driver is to achieve package level idle
+states, which implies synchronized idle injection. From
+power/performance standpoint, only package level idle states is worth
+injection.
+
+IMHO, percpu the deferrable timer based solution makes it hard to
+synchronize. And you have to be able to request deepest idle.
+
+Some background on why we do this:
+As the power consumption in package level idle goes lower and lower with
+new processors, it became negligible compared to running states.
+Therefore, powerclamp driver can give you near linear power-performance
+throttling. Idle injection at per cpu core level may not be worthwhile
+in most of todays' cpus.
+
+Just some background on the use case, if you want to try powerclamp on
+your ultrabook, you will be able compare the effectiveness in
+controlling cpu thermal. You can use tmon tool in kernel source.
+e.g.
+$tools/thermal/tmon$ sudo ./tmon -z 1 -c intel_powerclamp
+(choose -z thermal zone of your processor zone, pkg-temp or acpi tz)
+
+
+> 2. pick_next_task_fair() checks rq->need_throttle and dequeues all
+> tasks in the rq if this is set and puts them on a throttled list.
+> This mechanism is similar to throttling cfs rq today. This function
+> hence fails to return a task, and if no task from any other sched
+> class exists, idle task is picked.
 > =
 
-> -------------------------------------------------------------------------=
----
-> #!/bin/bash
+> Peter thoughts?
 > =
 
-> kernel=3D$1
-> initrd=3Dquantal-core-x86_64.cgz
+> 3. So we are now in the idle injected period. The scheduler state is
+> sane because the cpu is idle, rq->nr_running =3D 0, rq->curr =3D
+> rq->idle. The nohz state is sane, because ts->inidle =3D 1 and
+> tick_stopped may or may not be 1 and they are set by an idle task.
 > =
 
-> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/m=
-aster/initrd/$initrd
+> 4. When need_resched is set again, the idle task of course unsets
+> inidle and restarts tick. In the following scheduler tick,
+> pick_next_task_fair() sees that rq->need_throttle is cleared,
+> enqueues back the tasks and returns one of them to run.
 > =
 
-> kvm=3D(
-> 	qemu-system-x86_64
-> 	-cpu kvm64
-> 	-enable-kvm
-> 	-kernel $kernel
-> 	-initrd $initrd
-> 	-m 320
-> 	-smp 2
-> 	-net nic,vlan=3D1,model=3De1000
-> 	-net user,vlan=3D1
-> 	-boot order=3Dnc
-> 	-no-reboot
-> 	-watchdog i6300esb
-> 	-rtc base=3Dlocaltime
-> 	-serial stdio
-> 	-display none
-> 	-monitor null =
-
-> )
+> Of course there may be several points that I have missed. But how
+> does the approach appear? If it looks sane enough, the cases which do
+> not obviously fall in place can be worked upon.
 > =
 
-> append=3D(
-> 	hung_task_panic=3D1
-> 	earlyprintk=3DttyS0,115200
-> 	debug
-> 	apic=3Ddebug
-> 	sysrq_always_enabled
-> 	rcupdate.rcu_cpu_stall_timeout=3D100
-> 	panic=3D-1
-> 	softlockup_panic=3D1
-> 	nmi_watchdog=3Dpanic
-> 	oops=3Dpanic
-> 	load_ramdisk=3D2
-> 	prompt_ramdisk=3D0
-> 	console=3DttyS0,115200
-> 	console=3Dtty0
-> 	vga=3Dnormal
-> 	root=3D/dev/ram0
-> 	rw
-> 	drbd.minor_count=3D8
-> )
-> =
+> Regards
+> Preeti U Murthy
+>=20
 
-> "${kvm[@]}" --append "${append[*]}"
-> -------------------------------------------------------------------------=
----
-> =
-
-> Thanks,
-> Fengguang
-> _______________________________________________
-> LKP mailing list
-> LKP(a)linux.intel.com
-
-
---===============2038410722740548861==--
+--===============5008154229133101852==--
 
