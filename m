@@ -1,138 +1,137 @@
-Content-Type: multipart/mixed; boundary="===============5295051431821027349=="
+Content-Type: multipart/mixed; boundary="===============3572278533276785680=="
 MIME-Version: 1.0
-From: Oded Gabbay <oded.gabbay@amd.com>
+From: Eduardo Valentin <edubezval@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/radeon] BUG: unable to handle kernel paging request at 03200000
-Date: Thu, 18 Dec 2014 14:07:44 +0200
-Message-ID: <5492C390.6040305@amd.com>
-In-Reply-To: <5492BDAA.90408@amd.com>
+Subject: Re: [PATCH] tick/powerclamp: Remove tick_nohz_idle abuse
+Date: Thu, 18 Dec 2014 10:01:12 -0400
+Message-ID: <20141218140106.GA6323@developer>
+In-Reply-To: <alpine.DEB.2.11.1412181110110.17382@nanos>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5295051431821027349==
+--===============3572278533276785680==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hello Thomas,
+
+On Thu, Dec 18, 2014 at 11:51:01AM +0100, Thomas Gleixner wrote:
+> commit 4dbd27711cd9 "tick: export nohz tick idle symbols for module
+> use" was merged via the thermal tree without an explicit ack from the
+> relevant maintainers.
+> =
 
 
-On 12/18/2014 01:42 PM, Oded Gabbay wrote:
->
->
-> On 12/18/2014 10:26 AM, Huang Ying wrote:
->> On Thu, 2014-12-18 at 10:20 +0200, Oded Gabbay wrote:
->>> On 12/18/2014 10:17 AM, Huang Ying wrote:
->>>> FYI, we noticed the below changes on
->>>>
->>>> commit e28740ece34d314002b1ddfa14e8fb7c7b909489 ("drm/radeon: Add rade=
-on
->>>> <--> amdkfd interface")
->>>>
->>>>
->>>> +------------------------------------------+------------+------------+
->>>> |                                          | 1c0a46255f | e28740ece3 |
->>>> +------------------------------------------+------------+------------+
->>>> | boot_successes                           | 0          | 0          |
->>>> | boot_failures                            | 10         | 13         |
->>>> | BUG:kernel_boot_hang                     | 9          | 9          |
->>>> | INFO:suspicious_RCU_usage                | 1          | 3          |
->>>> | backtrace:do_fork                        | 1          | 3          |
->>>> | BUG:unable_to_handle_kernel              | 0          | 3          |
->>>> | Oops                                     | 0          | 3          |
->>>> | Kernel_panic-not_syncing:Fatal_exception | 0          | 3          |
->>>> | backtrace:radeon_init                    | 0          | 3          |
->>>> | backtrace:kernel_init_freeable           | 0          | 3          |
->>>> | BUG:kernel_boot_crashed                  | 0          | 1          |
->>>> +------------------------------------------+------------+------------+
->>>>
->>>>
->>>> [    5.407193] Linux agpgart interface v0.103
->>>> [    5.428469] [drm] Initialized drm 1.1.0 20060810
->>>> [    5.438456] [drm] radeon kernel modesetting enabled.
->>>> [    5.439741] BUG: unable to handle kernel paging request at 03200000
->>>> [    5.440063] IP: [<03200000>] 0x3200000
->>>> [    5.440063] *pde =3D 00000000
->>>> [    5.440063] Oops: 0000 [#1] SMP
->>>> [    5.440063] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.18.0-g603ba=
-7e #14
->>>> [    5.440063] task: 42e08000 ti: 42e02000 task.ti: 42e02000
->>>> [    5.440063] EIP: 0060:[<03200000>] EFLAGS: 00010246 CPU: 0
->>>> [    5.440063] EIP is at 0x3200000
->>>> [    5.440063] EAX: 00000001 EBX: 00000000 ECX: 4738b460 EDX: 45735a64
->>>> [    5.440063] ESI: 4662d0dd EDI: 401fafa0 EBP: 42e03f20 ESP: 42e03f18
->>>> [    5.440063]  DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
->>>> [    5.440063] CR0: 8005003b CR2: 03200000 CR3: 067f0000 CR4: 00000690
->>>> [    5.440063] Stack:
->>>> [    5.440063]  44bf19b1 00000000 42e03f28 4662d20b 42e03f8c 465b6e5d
->>>> 00000000 00000000
->>>> [    5.440063]  00000000 00000000 00000000 00000000 000000ea 00000000
->>>> 00000000 00000101
->>>> [    5.440063]  45f2dfba 00000010 00000012 00000200 47fdcf54 47fdcf54
->>>> 00000006 00000291
->>>> [    5.440063] Call Trace:
->>>> [    5.440063]  [<44bf19b1>] ? radeon_kfd_init+0x67/0xab
->>>> [    5.440063]  [<4662d20b>] radeon_init+0x12e/0x15c
->>>> [    5.440063]  [<465b6e5d>] do_one_initcall+0x25f/0x41e
->>>> [    5.440063]  [<465b7291>] kernel_init_freeable+0x275/0x423
->>>> [    5.440063]  [<455b4e52>] kernel_init+0x1c/0x293
->>>> [    5.440063]  [<455df181>] ret_from_kernel_thread+0x21/0x30
->>>> [    5.440063]  [<455b4e36>] ? rest_init+0x33e/0x33e
->>>> [    5.440063] Code:  Bad EIP value.
->>>> [    5.440063] EIP: [<03200000>] 0x3200000 SS:ESP 0068:42e03f18
->>>> [    5.440063] CR2: 0000000003200000
->>>> [    5.440063] ---[ end trace 1959b295b01c0c14 ]---
->>>> [    5.440063] Kernel panic - not syncing: Fatal exception
->>>>
->>>>
->>>> Thanks,
->>>> Huang, Ying
->>>>
->>>>
->>>>
->>>>
->>>> _______________________________________________
->>>> LKP mailing list
->>>> LKP(a)linux.intel.com
->>>>
->>>
->>> Is this a 32-bit kernel ?
->>> Is amdkfd compiled ?
->>
->> The kconfig file is attached in the original email.  From it, it is
->> 32-bit kernel.  I don't find AMDKFD in config file.  Could you help me
->> to check it?
->>
->> Best Regards,
->> Huang, Ying
->>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-kernel" =
-in
->> the body of a message to majordomo(a)vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->> Please read the FAQ at  http://www.tux.org/lkml/
->>
->
-> Are you using some specific distribution or h/w ?
-> I'm compiling that commit with the Kconfig you sent me, installing it on a
-> Debian 7.7 32-bit installation inside VirtualBox, and it doesn't even boo=
-t.
->
-> Must I use a native installation ?
->
->      Oded
-I tried also running it more or less like you do, in qemu, but I don't get =
-past =
+This is a shame. Rui, do you have any comments on this?
 
-the line:
-Booting the kernel.
+> The exports are abused by the intel powerclamp driver which implements
+> a fake idle state from a sched FIFO task. This causes all kinds of
+> wreckage in the NOHZ core code which rightfully assumes that
+> tick_nohz_idle_enter/exit() are only called from the idle task itself.
+> =
 
-I'm not used to working with 32-bit kernels, as amdkfd doesn't support that=
- at =
 
-all. Could you give me some help to make the kernel run at all ?
+OK.
 
-	Oded
+> Recent changes in the NOHZ core lead to a failure of the powerclamp
+> driver and now people try to hack completely broken and backwards
+> workarounds into the NOHZ core code. This is completely unacceptable.
+> =
 
---===============5295051431821027349==--
+
+I see.
+
+> The real solution is to fix the powerclamp driver by rewriting it with
+> a sane concept, but that's beyond the scope of this.
+> =
+
+
+Do you have suggestions on what exactly is the expected rewriting or the
+correct sane concepts?
+
+> So the only solution for now is to remove the calls into the core NOHZ
+> code from the powerclamp trainwreck along with the exports.
+> =
+
+> Fixes: d6d71ee4a14a "PM: Introduce Intel PowerClamp Driver"
+
+If I got it right, the driver is currently broken due to changes in NOHZ
+core. So, does this patch fix power clamp behavior ?
+
+If I got your proposal right, in the end power clamp will be still
+broken, but at least won't be abusing NOHZ. Is that what you are
+proposing?
+
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+> diff --git a/drivers/thermal/intel_powerclamp.c b/drivers/thermal/intel_p=
+owerclamp.c
+> index b46c706e1cac..e98b4249187c 100644
+> --- a/drivers/thermal/intel_powerclamp.c
+> +++ b/drivers/thermal/intel_powerclamp.c
+> @@ -435,7 +435,6 @@ static int clamp_thread(void *arg)
+>  		 * allowed. thus jiffies are updated properly.
+>  		 */
+>  		preempt_disable();
+> -		tick_nohz_idle_enter();
+>  		/* mwait until target jiffies is reached */
+>  		while (time_before(jiffies, target_jiffies)) {
+>  			unsigned long ecx =3D 1;
+> @@ -451,7 +450,6 @@ static int clamp_thread(void *arg)
+>  			start_critical_timings();
+>  			atomic_inc(&idle_wakeup_counter);
+>  		}
+> -		tick_nohz_idle_exit();
+>  		preempt_enable();
+>  	}
+>  	del_timer_sync(&wakeup_timer);
+> diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+> index 4d54b7540585..1363d58f07e9 100644
+> --- a/kernel/time/tick-sched.c
+> +++ b/kernel/time/tick-sched.c
+> @@ -847,7 +847,6 @@ void tick_nohz_idle_enter(void)
+>  =
+
+>  	local_irq_enable();
+>  }
+> -EXPORT_SYMBOL_GPL(tick_nohz_idle_enter);
+>  =
+
+>  /**
+>   * tick_nohz_irq_exit - update next tick event from interrupt exit
+> @@ -974,7 +973,6 @@ void tick_nohz_idle_exit(void)
+>  =
+
+>  	local_irq_enable();
+>  }
+> -EXPORT_SYMBOL_GPL(tick_nohz_idle_exit);
+>  =
+
+>  static int tick_nohz_reprogram(struct tick_sched *ts, ktime_t now)
+>  {
+> =
+
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo(a)vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+
+--===============3572278533276785680==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIKCmlRRWNCQUVC
+QWdBR0JRSlVrdDM4QUFvSkVNTFVPNGQ5cE9KVzVIY0gvajVBcFg1ZHljTG1uNXYzbFc2SEZPa0EK
+TU9WOWtTdExuYUp0czBpWjA1WG1BL08raDRGajA0RTQ1TXF4akx0ZnJaaEZhK082U0hUZ3drTVg5
+MWwzZXZBTApLN1dhWXZJaUNURGJPUHZCa1FvOEZCNStKb2t1WTRVMmZyM1FBNUc3elVWdVBjYWpO
+ZlkvdUJhaVRDb0sxNjduCkp3K3gyZ3g4bURpTDdncUZoQy9BWXgxRXUzdkFpWEp2dUcvdkd4R1pp
+SWd2UTM4L1haVndETmszQjRsbmM0dHkKaTI0SjZxWmpoT1RQZDljb3hMQThIME5lUGNpMUxXNG5a
+ZjllYTVONlEyb1NxTkQ3TTRiR1dLZXFJQ1g1dFMweAp5Z2l0emtSTXJOM21PMEl6aFdMSks3VnF2
+Q2lzL0hnMFRLbU1CTnBxclR4T1JrQkZnUHRTRWY4SVc3TU9nTjA9Cj1abXFUCi0tLS0tRU5EIFBH
+UCBTSUdOQVRVUkUtLS0tLQo=
+
+--===============3572278533276785680==--
 
