@@ -1,338 +1,128 @@
-Content-Type: multipart/mixed; boundary="===============4281275635322372012=="
+Content-Type: multipart/mixed; boundary="===============0464849634703324105=="
 MIME-Version: 1.0
-From: Grumbach, Emmanuel <emmanuel.grumbach@intel.com>
+From: Thierry Reding <treding@nvidia.com>
 To: lkp@lists.01.org
-Subject: Re: [iwlwifi] BUG: unable to handle kernel
-Date: Fri, 19 Dec 2014 05:59:25 +0000
-Message-ID: <1418968765.11138.0.camel@egrumbacBox>
-In-Reply-To: <20141218210705.GA26694@wfg-t540p.sh.intel.com>
+Subject: Re: [drm/fb-helper] BUG: unable to handle kernel paging request at 95d24c70
+Date: Fri, 19 Dec 2014 11:15:44 +0100
+Message-ID: <20141219101543.GA16504@ulmo.nvidia.com>
+In-Reply-To: <20141219020445.GA10008@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4281275635322372012==
+--===============0464849634703324105==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2014-12-18 at 13:07 -0800, Fengguang Wu wrote:
-> On Fri, Dec 19, 2014 at 03:42:17AM +0800, Grumbach, Emmanuel wrote:
-> > On Thu, 2014-12-18 at 09:13 -0800, Fengguang Wu wrote:
-> > > Hi All,
-> > > =
-
-> > > I don't see any relationship between the BUG and this bisected commit.
-> > > Anyway, it's better to report it to the lists than to ignore.
-> > =
-
-> > Right - but I have to say that I have no clue how this comment can cause
-> > the bug you are seeing...
+On Thu, Dec 18, 2014 at 06:04:45PM -0800, Fengguang Wu wrote:
 > =
 
-> s?comment?commit?
+> Hi Thierry,
 > =
 
+> FYI, here is another bisect result.
 
-Yes :)
+Thanks. Looking at the cirrus driver more closely it already employs the
+big hammer upon failure and ends up calling drm_fb_helper_fini() via the
+cirrus_driver_unload() call in cirrus_driver_load()'s cleanup path.
 
-> > Do you even have an Intel Wireless device the VM could access?
+> commit 7bf2844ed14de049a4ccec26eb3d8b4c3d5c1971
+> Author:     Thierry Reding <treding@nvidia.com>
+> AuthorDate: Wed Dec 17 16:39:59 2014 +0100
+> Commit:     Daniel Vetter <daniel.vetter@ffwll.ch>
+> CommitDate: Wed Dec 17 22:05:08 2014 +0100
 > =
 
-> Nope. It's simple QEMU virtual machine boot test.
-> =
+>     drm/fb-helper: Propagate errors from initial config failure
+>     =
 
+>     Make drm_fb_helper_initial_config() return an int rather than a bool =
+so
+>     that the error can be properly propagated. While at it, update drivers
+>     to propagate errors further rather than just ignore them.
+>     =
 
-In that case - this just can't be right... Don't know what to say...
+>     Cc: David Airlie <airlied@linux.ie>
+>     Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+>     Cc: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+>     Cc: Rob Clark <robdclark@gmail.com>
+>     Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+>     Cc: Alex Deucher <alexander.deucher@amd.com>
+>     Cc: Christian K=C3=B6nig <christian.koenig@amd.com>
+>     Cc: Ben Skeggs <bskeggs@redhat.com>
+>     Signed-off-by: Thierry Reding <treding@nvidia.com>
+>     Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+>     Reviewed-by: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+>     Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-> Thanks,
-> Fengguang
-> =
+Using the attached patch on top of this I can no longer reproduce either
+this or the earlier result. I'll send a revised patch with this squashed
+in.
 
-> > > =
+Thanks,
+Thierry
 
-> > > git://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/iwlwifi-fixes.g=
-it master
-> > > =
+diff --git a/drivers/gpu/drm/cirrus/cirrus_fbdev.c b/drivers/gpu/drm/cirrus=
+/cirrus_fbdev.c
+index 0682210b068b..f7e8c6530beb 100644
+--- a/drivers/gpu/drm/cirrus/cirrus_fbdev.c
++++ b/drivers/gpu/drm/cirrus/cirrus_fbdev.c
+@@ -318,26 +318,20 @@ int cirrus_fbdev_init(struct cirrus_device *cdev)
+ 	ret =3D drm_fb_helper_init(cdev->dev, &gfbdev->helper,
+ 				 cdev->num_crtc, CIRRUSFB_CONN_LIMIT);
+ 	if (ret)
+-		goto free;
++		return ret;
+ =
 
-> > > commit 03d6c3b0fa4f5f0379cede079ec828a6c999fe43
-> > > Author:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> > > AuthorDate: Wed Dec 3 10:39:07 2014 +0200
-> > > Commit:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> > > CommitDate: Sun Dec 14 10:20:29 2014 +0200
-> > > =
+ 	ret =3D drm_fb_helper_single_add_all_connectors(&gfbdev->helper);
+ 	if (ret)
+-		goto fini;
++		return ret;
+ =
 
-> > >     iwlwifi: pcie: re-ACK all interrupts after device reset
-> > >     =
+ 	/* disable all the possible outputs/crtcs before entering KMS mode */
+ 	drm_helper_disable_unused_functions(cdev->dev);
+ =
 
-> > >     When we reset the device, the CSR_INT gets cleared as well
-> > >     as CSR_INT_MASK. Meaning that we shouldn't get any interrupt
-> > >     but, due to a hardware bug, recent devices will keep sending
-> > >     interrupts. This leads to an interrupt storm while stopping
-> > >     the device.
-> > >     The way to fix this is to ACK all the interrupts after the
-> > >     device is reset so that the value of CSR_INT will stay
-> > >     0xffffffff.
-> > >     =
+ 	ret =3D drm_fb_helper_initial_config(&gfbdev->helper, bpp_sel);
+ 	if (ret)
+-		goto fini;
++		return ret;;
+ =
 
-> > >     Fixes: 522713c81e4e ("iwlwifi: pcie: properly reset the device")
-> > >     Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> > > =
+ 	return 0;
+-
+-free:
+-	kfree(gfbdev);
+-fini:
+-	drm_fb_helper_fini(&gfbdev->helper);
+-	return ret;
+ }
+ =
 
-> > > +------------------------------------------+------------+------------=
-+------------+
-> > > |                                          | 0a79a0c011 | 03d6c3b0fa =
-| iwlwifi-fi |
-> > > +------------------------------------------+------------+------------=
-+------------+
-> > > | boot_successes                           | 60         | 19         =
-| 3          |
-> > > | boot_failures                            | 0          | 1          =
-| 9          |
-> > > | BUG:unable_to_handle_kernel              | 0          | 1          =
-| 9          |
-> > > | Oops                                     | 0          | 1          =
-| 9          |
-> > > | RIP:strcmp                               | 0          | 1          =
-| 9          |
-> > > | Kernel_panic-not_syncing:Fatal_exception | 0          | 1          =
-| 9          |
-> > > | backtrace:led_trigger_register_simple    | 0          | 1          =
-| 9          |
-> > > | backtrace:ledtrig_usb_init               | 0          | 1          =
-| 9          |
-> > > | backtrace:kernel_init_freeable           | 0          | 1          =
-| 9          |
-> > > +------------------------------------------+------------+------------=
-+------------+
-> > > =
+ void cirrus_fbdev_fini(struct cirrus_device *cdev)
 
-> > > [    5.345018] g_serial gadget: Gadget Serial v2.4
-> > > [    5.345927] g_serial gadget: g_serial ready
-> > > [    5.345927] g_serial gadget: g_serial ready
-> > > [    5.346777] BUG: unable to handle kernel =
+--===============0464849634703324105==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.sig"
 
-> > > [    5.346777] BUG: unable to handle kernel paging requestpaging requ=
-est at ffff88000004e5f0
-> > >  at ffff88000004e5f0
-> > > [    5.348183] IP:
-> > > [    5.348183] IP: [<ffffffff81446a68>] strcmp+0x6/0x20
-> > >  [<ffffffff81446a68>] strcmp+0x6/0x20
-> > > [    5.349183] PGD 37f1067 =
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIKCmlRSWNCQUVC
+QWdBR0JRSlVrL3JQQUFvSkVOMGpyTmQvUHJPaGJta1FBSlpZV09uTEV3c3VLSE5NeVp6WU1iRW8K
+TzBjZ0xZUGs2Si9WbmU0QU5mMXVEMm05QmFPekhsTkVXNEZDcmd3c2JYTkROd0JVbk1oc1I3Ujdi
+V2JjQjBvYwpxUm1sYklWUGxXVDQ4Ulg3dkpjOXpFSVljM2FuMXQvMG9LcmJaS1hiTlV6bkN3eDJi
+bmdORE9jUDl3K0QrRVFOCnhUeVoxVWMvcWw2a2IxYXZTQjViK1k3cS9IbjN0TXVIVldGZ3dENnc5
+Q05aMGpaL1BkWTBvUWRCRmpkRVhPb2UKak55RVdEcXBrLzJHUUsrcUNNM1UvUXJnL0tlRXlpMUhl
+REJBaEFwMW1sdXNPSXIwK3NzcU5zeVFpVG11cDlkLwpMc1lNVU9ZN01ta25PajNncTVzKzBXMlk0
+bmM2UUJEWWQ0UGJTR0FhcVJxaFdpQ0V6TjJwVmgxbk5Va3Q2Y1ZwCkx6UkZMMFd1aU5iVkgwMlFV
+dGExRjJZNjN2K08reWlmQnBJMVpSS2pGdjlteklyMy9NMVgxTzFDby9TVytVUlIKbWkyaktEdldO
+Uzc0YWtOS0liTnBaNWZnbTRHd21FYXREemwxZHdkZ3VqYjVaTHJHQzNTTjlvK0c1Rk4zL1RLZwo5
+RE0vYk9jUldiTEl0MkdrZEptZXI4Qk5YT21td3ZZUmlhTnM3WEVTakJ6aU5MZnBwSXZXamU3VW5t
+M2R3YUw4CkE4ZHd6bUt6K1JwOGFUa3gycnAzL3VSSmVuODRrNzdSTTlxMTRrR2U5M2NKRTZudHM5
+bExJaWJ4R2ZQVTl5NGwKOEcrY25VaEdWRUllaFgwUG43ZjJBYW9tNExZZlpHVUhOLzE4SjhqNk1I
+b3dNWHZMOC9VblVORVM5THgwMnJUZAp0YVpHY3JEWTdHQXAxNWNHUXpTego9bjB1VwotLS0tLUVO
+RCBQR1AgU0lHTkFUVVJFLS0tLS0K
 
-> > > [    5.349183] PGD 37f1067 PUD 37f2067 PUD 37f2067 PMD 37f3067 PMD 37=
-f3067 PTE 800000000004e060PTE 800000000004e060
-> > > =
-
-> > > [    5.350498] Oops: 0000 [#1] =
-
-> > > [    5.350498] Oops: 0000 [#1] DEBUG_PAGEALLOCDEBUG_PAGEALLOC
-> > > =
-
-> > > [    5.351360] CPU: 0 PID: 1 Comm: swapper Not tainted 3.18.0-g03d6c3=
-b #1
-> > > [    5.351360] CPU: 0 PID: 1 Comm: swapper Not tainted 3.18.0-g03d6c3=
-b #1
-> > > [    5.352660] task: ffff880012060000 ti: ffff88001204c000 task.ti: f=
-fff88001204c000
-> > > [    5.352660] task: ffff880012060000 ti: ffff88001204c000 task.ti: f=
-fff88001204c000
-> > > [    5.354143] RIP: 0010:[<ffffffff81446a68>] =
-
-> > > [    5.354143] RIP: 0010:[<ffffffff81446a68>]  [<ffffffff81446a68>] s=
-trcmp+0x6/0x20
-> > >  [<ffffffff81446a68>] strcmp+0x6/0x20
-> > > [    5.354451] RSP: 0000:ffff88001204fe28  EFLAGS: 00010246
-> > > [    5.354451] RSP: 0000:ffff88001204fe28  EFLAGS: 00010246
-> > > [    5.354451] RAX: 0000000000000000 RBX: ffff88000c08fe00 RCX: fffff=
-fff81d35310
-> > > [    5.354451] RAX: 0000000000000000 RBX: ffff88000c08fe00 RCX: fffff=
-fff81d35310
-> > > [    5.354451] RDX: ffff88000c08fe68 RSI: ffffffff826d05be RDI: ffff8=
-8000004e5f0
-> > > [    5.354451] RDX: ffff88000c08fe68 RSI: ffffffff826d05be RDI: ffff8=
-8000004e5f0
-> > > [    5.354451] RBP: ffff88001204fe28 R08: 0000000000000001 R09: 00000=
-0000000033a
-> > > [    5.354451] RBP: ffff88001204fe28 R08: 0000000000000001 R09: 00000=
-0000000033a
-> > > [    5.354451] R10: 0000000000000000 R11: ffffffff82531cd1 R12: ffff8=
-8000c19fa00
-> > > [    5.354451] R10: 0000000000000000 R11: ffffffff82531cd1 R12: ffff8=
-8000c19fa00
-> > > [    5.354451] R13: 0000000000000000 R14: ffffffff837958b8 R15: 00000=
-00000000000
-> > > [    5.354451] R13: 0000000000000000 R14: ffffffff837958b8 R15: 00000=
-00000000000
-> > > [    5.354451] FS:  0000000000000000(0000) GS:ffffffff82789000(0000) =
-knlGS:0000000000000000
-> > > [    5.354451] FS:  0000000000000000(0000) GS:ffffffff82789000(0000) =
-knlGS:0000000000000000
-> > > [    5.354451] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-> > > [    5.354451] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-> > > [    5.354451] CR2: ffff88000004e5f0 CR3: 0000000002776000 CR4: 00000=
-000000006b0
-> > > [    5.354451] CR2: ffff88000004e5f0 CR3: 0000000002776000 CR4: 00000=
-000000006b0
-> > > [    5.354451] Stack:
-> > > [    5.354451] Stack:
-> > > [    5.354451]  ffff88001204fe58
-> > > [    5.354451]  ffff88001204fe58 ffffffff81d35334 ffffffff81d35334 00=
-00000000000000 0000000000000000 ffff88000c19fa00 ffff88000c19fa00
-> > > =
-
-> > > [    5.354451]  ffffffff826d05be
-> > > [    5.354451]  ffffffff826d05be 0000000000000000 0000000000000000 ff=
-ff88001204fe88 ffff88001204fe88 ffffffff81d35648 ffffffff81d35648
-> > > =
-
-> > > [    5.354451]  ffff88000e3bbcc0
-> > > [    5.354451]  ffff88000e3bbcc0 ffffffff82b3fe61 ffffffff82b3fe61 00=
-00000000000000 0000000000000000 ffffffff82b98910 ffffffff82b98910
-> > > =
-
-> > > [    5.354451] Call Trace:
-> > > [    5.354451] Call Trace:
-> > > [    5.354451]  [<ffffffff81d35334>] led_trigger_register+0x63/0x129
-> > > [    5.354451]  [<ffffffff81d35334>] led_trigger_register+0x63/0x129
-> > > [    5.354451]  [<ffffffff81d35648>] led_trigger_register_simple+0x35=
-/0x79
-> > > [    5.354451]  [<ffffffff81d35648>] led_trigger_register_simple+0x35=
-/0x79
-> > > [    5.354451]  [<ffffffff82b3fe61>] ? gs_bind+0xea/0xea
-> > > [    5.354451]  [<ffffffff82b3fe61>] ? gs_bind+0xea/0xea
-> > > [    5.354451]  [<ffffffff82b3fe78>] ledtrig_usb_init+0x17/0x2e
-> > > [    5.354451]  [<ffffffff82b3fe78>] ledtrig_usb_init+0x17/0x2e
-> > > [    5.354451]  [<ffffffff82b00044>] do_one_initcall+0xe6/0x171
-> > > [    5.354451]  [<ffffffff82b00044>] do_one_initcall+0xe6/0x171
-> > > [    5.354451]  [<ffffffff82b001c7>] kernel_init_freeable+0xf8/0x180
-> > > [    5.354451]  [<ffffffff82b001c7>] kernel_init_freeable+0xf8/0x180
-> > > [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
-> > > [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
-> > > [    5.354451]  [<ffffffff8206079a>] kernel_init+0x9/0xd0
-> > > [    5.354451]  [<ffffffff8206079a>] kernel_init+0x9/0xd0
-> > > [    5.354451]  [<ffffffff8207d2ba>] ret_from_fork+0x7a/0xb0
-> > > [    5.354451]  [<ffffffff8207d2ba>] ret_from_fork+0x7a/0xb0
-> > > [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
-> > > [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
-> > > [    5.354451] Code: =
-
-> > > [    5.354451] Code: c0 c0 eb eb f5 f5 31 31 c9 c9 40 40 8a 8a 3c 3c =
-0e 0e 4d 4d 8d 8d 0c 0c 08 08 40 40 84 84 ff ff 41 41 88 88 3c 3c 08 08 74 =
-74 0d 0d 48 48 ff ff c1 c1 48 48 39 39 ca ca 75 75 e7 e7 41 41 c6 c6 41 41 =
-01 01 00 00 5d 5d c3 c3 55 55 31 31 c0 c0 48 48 89 89 e5 e5 <8a> <8a> 14 14=
- 07 07 3a 3a 14 14 06 06 74 74 07 07 19 19 c0 c0 83 83 c8 c8 01 01 eb eb 09=
- 09 48 48 ff ff c0 c0 84 84 d2 d2 75 75 =
-
-> > > =
-
-> > > [    5.354451] RIP =
-
-> > > [    5.354451] RIP  [<ffffffff81446a68>] strcmp+0x6/0x20
-> > >  [<ffffffff81446a68>] strcmp+0x6/0x20
-> > > [    5.354451]  RSP <ffff88001204fe28>
-> > > [    5.354451]  RSP <ffff88001204fe28>
-> > > [    5.354451] CR2: ffff88000004e5f0
-> > > [    5.354451] CR2: ffff88000004e5f0
-> > > [    5.354451] ---[ end trace 8f9377b34c860a0c ]---
-> > > [    5.354451] ---[ end trace 8f9377b34c860a0c ]---
-> > > =
-
-> > > git bisect start baa21e834941ee5fbe4bd421c871f7c0c5f9a086 70e71ca0af2=
-44f48a5dcf56dc435243792e3a495 --
-> > > git bisect  bad 03d6c3b0fa4f5f0379cede079ec828a6c999fe43  # 16:23    =
-  0-      1  iwlwifi: pcie: re-ACK all interrupts after device reset
-> > > git bisect good 0a79a0c011cb291675e3b80760a452fcba5c59d9  # 16:28    =
- 20+      0  iwlwifi: mvm: clear IN_HW_RESTART flag on stop()
-> > > # first bad commit: [03d6c3b0fa4f5f0379cede079ec828a6c999fe43] iwlwif=
-i: pcie: re-ACK all interrupts after device reset
-> > > git bisect good 0a79a0c011cb291675e3b80760a452fcba5c59d9  # 16:30    =
- 60+      0  iwlwifi: mvm: clear IN_HW_RESTART flag on stop()
-> > > # extra tests on HEAD of iwlwifi-fixes/master
-> > > git bisect  bad baa21e834941ee5fbe4bd421c871f7c0c5f9a086  # 16:30    =
-  0-      9  iwlwifi: pcie: limit fw chunk sizes given to fh
-> > > # extra tests on tree/branch iwlwifi-fixes/master
-> > > git bisect  bad baa21e834941ee5fbe4bd421c871f7c0c5f9a086  # 16:30    =
-  0-      9  iwlwifi: pcie: limit fw chunk sizes given to fh
-> > > # extra tests on tree/branch linus/master
-> > > git bisect good 44e8967d591686463e84a88b46b03beba3ab49fb  # 16:32    =
- 60+      0  Ceph: remove left-over reject file
-> > > # extra tests on tree/branch next/master
-> > > git bisect good cfaa3a95dd2b402599b1d8122dc3107478db8717  # 16:35    =
- 60+      1  Add linux-next specific files for 20141218
-> > > =
-
-> > > =
-
-> > > This script may reproduce the error.
-> > > =
-
-> > > ---------------------------------------------------------------------=
--------
-> > > #!/bin/bash
-> > > =
-
-> > > kernel=3D$1
-> > > initrd=3Dquantal-core-x86_64.cgz
-> > > =
-
-> > > wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/r=
-aw/master/initrd/$initrd
-> > > =
-
-> > > kvm=3D(
-> > > 	qemu-system-x86_64
-> > > 	-cpu kvm64
-> > > 	-enable-kvm
-> > > 	-kernel $kernel
-> > > 	-initrd $initrd
-> > > 	-m 320
-> > > 	-smp 2
-> > > 	-net nic,vlan=3D1,model=3De1000
-> > > 	-net user,vlan=3D1
-> > > 	-boot order=3Dnc
-> > > 	-no-reboot
-> > > 	-watchdog i6300esb
-> > > 	-rtc base=3Dlocaltime
-> > > 	-serial stdio
-> > > 	-display none
-> > > 	-monitor null =
-
-> > > )
-> > > =
-
-> > > append=3D(
-> > > 	hung_task_panic=3D1
-> > > 	earlyprintk=3DttyS0,115200
-> > > 	debug
-> > > 	apic=3Ddebug
-> > > 	sysrq_always_enabled
-> > > 	rcupdate.rcu_cpu_stall_timeout=3D100
-> > > 	panic=3D-1
-> > > 	softlockup_panic=3D1
-> > > 	nmi_watchdog=3Dpanic
-> > > 	oops=3Dpanic
-> > > 	load_ramdisk=3D2
-> > > 	prompt_ramdisk=3D0
-> > > 	console=3DttyS0,115200
-> > > 	console=3Dtty0
-> > > 	vga=3Dnormal
-> > > 	root=3D/dev/ram0
-> > > 	rw
-> > > 	drbd.minor_count=3D8
-> > > )
-> > > =
-
-> > > "${kvm[@]}" --append "${append[*]}"
-> > > ---------------------------------------------------------------------=
--------
-> > > =
-
-> > > Thanks,
-> > > Fengguang
-> > > _______________________________________________
-> > > LKP mailing list
-> > > LKP(a)linux.intel.com
-> > =
-
-
-
---===============4281275635322372012==--
+--===============0464849634703324105==--
 
