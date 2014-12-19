@@ -1,128 +1,114 @@
-Content-Type: multipart/mixed; boundary="===============0464849634703324105=="
+Content-Type: multipart/mixed; boundary="===============5280102993545452164=="
 MIME-Version: 1.0
-From: Thierry Reding <treding@nvidia.com>
+From: tip-bot for Thomas Gleixner <tipbot@zytor.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/fb-helper] BUG: unable to handle kernel paging request at 95d24c70
-Date: Fri, 19 Dec 2014 11:15:44 +0100
-Message-ID: <20141219101543.GA16504@ulmo.nvidia.com>
-In-Reply-To: <20141219020445.GA10008@wfg-t540p.sh.intel.com>
+Subject: [tip:timers/urgent] tick/powerclamp: Remove tick_nohz_idle abuse
+Date: Fri, 19 Dec 2014 05:09:37 -0800
+Message-ID: <tip-a5fd9733a30d18d7ac23f17080e7e07bb3205b69@git.kernel.org>
+In-Reply-To: <alpine.DEB.2.11.1412181110110.17382@nanos>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0464849634703324105==
+--===============5280102993545452164==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 18, 2014 at 06:04:45PM -0800, Fengguang Wu wrote:
-> =
+Commit-ID:  a5fd9733a30d18d7ac23f17080e7e07bb3205b69
+Gitweb:     http://git.kernel.org/tip/a5fd9733a30d18d7ac23f17080e7e07bb3205=
+b69
+Author:     Thomas Gleixner <tglx@linutronix.de>
+AuthorDate: Thu, 18 Dec 2014 11:51:01 +0100
+Committer:  Thomas Gleixner <tglx@linutronix.de>
+CommitDate: Fri, 19 Dec 2014 14:05:52 +0100
 
-> Hi Thierry,
-> =
+tick/powerclamp: Remove tick_nohz_idle abuse
 
-> FYI, here is another bisect result.
+commit 4dbd27711cd9 "tick: export nohz tick idle symbols for module
+use" was merged via the thermal tree without an explicit ack from the
+relevant maintainers.
 
-Thanks. Looking at the cirrus driver more closely it already employs the
-big hammer upon failure and ends up calling drm_fb_helper_fini() via the
-cirrus_driver_unload() call in cirrus_driver_load()'s cleanup path.
+The exports are abused by the intel powerclamp driver which implements
+a fake idle state from a sched FIFO task. This causes all kinds of
+wreckage in the NOHZ core code which rightfully assumes that
+tick_nohz_idle_enter/exit() are only called from the idle task itself.
 
-> commit 7bf2844ed14de049a4ccec26eb3d8b4c3d5c1971
-> Author:     Thierry Reding <treding@nvidia.com>
-> AuthorDate: Wed Dec 17 16:39:59 2014 +0100
-> Commit:     Daniel Vetter <daniel.vetter@ffwll.ch>
-> CommitDate: Wed Dec 17 22:05:08 2014 +0100
-> =
+Recent changes in the NOHZ core lead to a failure of the powerclamp
+driver and now people try to hack completely broken and backwards
+workarounds into the NOHZ core code. This is completely unacceptable
+and just papers over the real problem. There are way more subtle
+issues lurking around the corner.
 
->     drm/fb-helper: Propagate errors from initial config failure
->     =
+The real solution is to fix the powerclamp driver by rewriting it with
+a sane concept, but that's beyond the scope of this.
 
->     Make drm_fb_helper_initial_config() return an int rather than a bool =
-so
->     that the error can be properly propagated. While at it, update drivers
->     to propagate errors further rather than just ignore them.
->     =
+So the only solution for now is to remove the calls into the core NOHZ
+code from the powerclamp trainwreck along with the exports. =
 
->     Cc: David Airlie <airlied@linux.ie>
->     Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
->     Cc: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
->     Cc: Rob Clark <robdclark@gmail.com>
->     Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
->     Cc: Alex Deucher <alexander.deucher@amd.com>
->     Cc: Christian K=C3=B6nig <christian.koenig@amd.com>
->     Cc: Ben Skeggs <bskeggs@redhat.com>
->     Signed-off-by: Thierry Reding <treding@nvidia.com>
->     Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
->     Reviewed-by: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
->     Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-Using the attached patch on top of this I can no longer reproduce either
-this or the earlier result. I'll send a revised patch with this squashed
-in.
+Fixes: d6d71ee4a14a "PM: Introduce Intel PowerClamp Driver"
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Preeti U Murthy <preeti@linux.vnet.ibm.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: Fengguang Wu <fengguang.wu@intel.com>
+Cc: Frederic Weisbecker <frederic@kernel.org>
+Cc: Pan Jacob jun <jacob.jun.pan@intel.com>
+Cc: LKP <lkp@01.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Zhang Rui <rui.zhang@intel.com>
+Cc: stable(a)vger.kernel.org
+Link: http://lkml.kernel.org/r/alpine.DEB.2.11.1412181110110.17382(a)nanos
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ drivers/thermal/intel_powerclamp.c | 2 --
+ kernel/time/tick-sched.c           | 2 --
+ 2 files changed, 4 deletions(-)
 
-Thanks,
-Thierry
-
-diff --git a/drivers/gpu/drm/cirrus/cirrus_fbdev.c b/drivers/gpu/drm/cirrus=
-/cirrus_fbdev.c
-index 0682210b068b..f7e8c6530beb 100644
---- a/drivers/gpu/drm/cirrus/cirrus_fbdev.c
-+++ b/drivers/gpu/drm/cirrus/cirrus_fbdev.c
-@@ -318,26 +318,20 @@ int cirrus_fbdev_init(struct cirrus_device *cdev)
- 	ret =3D drm_fb_helper_init(cdev->dev, &gfbdev->helper,
- 				 cdev->num_crtc, CIRRUSFB_CONN_LIMIT);
- 	if (ret)
--		goto free;
-+		return ret;
+diff --git a/drivers/thermal/intel_powerclamp.c b/drivers/thermal/intel_pow=
+erclamp.c
+index 95cb7fc..6cb7849 100644
+--- a/drivers/thermal/intel_powerclamp.c
++++ b/drivers/thermal/intel_powerclamp.c
+@@ -435,7 +435,6 @@ static int clamp_thread(void *arg)
+ 		 * allowed. thus jiffies are updated properly.
+ 		 */
+ 		preempt_disable();
+-		tick_nohz_idle_enter();
+ 		/* mwait until target jiffies is reached */
+ 		while (time_before(jiffies, target_jiffies)) {
+ 			unsigned long ecx =3D 1;
+@@ -451,7 +450,6 @@ static int clamp_thread(void *arg)
+ 			start_critical_timings();
+ 			atomic_inc(&idle_wakeup_counter);
+ 		}
+-		tick_nohz_idle_exit();
+ 		preempt_enable();
+ 	}
+ 	del_timer_sync(&wakeup_timer);
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index 1f43560..ff3ec34 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -847,7 +847,6 @@ void tick_nohz_idle_enter(void)
  =
 
- 	ret =3D drm_fb_helper_single_add_all_connectors(&gfbdev->helper);
- 	if (ret)
--		goto fini;
-+		return ret;
- =
-
- 	/* disable all the possible outputs/crtcs before entering KMS mode */
- 	drm_helper_disable_unused_functions(cdev->dev);
- =
-
- 	ret =3D drm_fb_helper_initial_config(&gfbdev->helper, bpp_sel);
- 	if (ret)
--		goto fini;
-+		return ret;;
- =
-
- 	return 0;
--
--free:
--	kfree(gfbdev);
--fini:
--	drm_fb_helper_fini(&gfbdev->helper);
--	return ret;
+ 	local_irq_enable();
  }
+-EXPORT_SYMBOL_GPL(tick_nohz_idle_enter);
  =
 
- void cirrus_fbdev_fini(struct cirrus_device *cdev)
+ /**
+  * tick_nohz_irq_exit - update next tick event from interrupt exit
+@@ -974,7 +973,6 @@ void tick_nohz_idle_exit(void)
+ =
 
---===============0464849634703324105==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.sig"
+ 	local_irq_enable();
+ }
+-EXPORT_SYMBOL_GPL(tick_nohz_idle_exit);
+ =
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIKCmlRSWNCQUVC
-QWdBR0JRSlVrL3JQQUFvSkVOMGpyTmQvUHJPaGJta1FBSlpZV09uTEV3c3VLSE5NeVp6WU1iRW8K
-TzBjZ0xZUGs2Si9WbmU0QU5mMXVEMm05QmFPekhsTkVXNEZDcmd3c2JYTkROd0JVbk1oc1I3Ujdi
-V2JjQjBvYwpxUm1sYklWUGxXVDQ4Ulg3dkpjOXpFSVljM2FuMXQvMG9LcmJaS1hiTlV6bkN3eDJi
-bmdORE9jUDl3K0QrRVFOCnhUeVoxVWMvcWw2a2IxYXZTQjViK1k3cS9IbjN0TXVIVldGZ3dENnc5
-Q05aMGpaL1BkWTBvUWRCRmpkRVhPb2UKak55RVdEcXBrLzJHUUsrcUNNM1UvUXJnL0tlRXlpMUhl
-REJBaEFwMW1sdXNPSXIwK3NzcU5zeVFpVG11cDlkLwpMc1lNVU9ZN01ta25PajNncTVzKzBXMlk0
-bmM2UUJEWWQ0UGJTR0FhcVJxaFdpQ0V6TjJwVmgxbk5Va3Q2Y1ZwCkx6UkZMMFd1aU5iVkgwMlFV
-dGExRjJZNjN2K08reWlmQnBJMVpSS2pGdjlteklyMy9NMVgxTzFDby9TVytVUlIKbWkyaktEdldO
-Uzc0YWtOS0liTnBaNWZnbTRHd21FYXREemwxZHdkZ3VqYjVaTHJHQzNTTjlvK0c1Rk4zL1RLZwo5
-RE0vYk9jUldiTEl0MkdrZEptZXI4Qk5YT21td3ZZUmlhTnM3WEVTakJ6aU5MZnBwSXZXamU3VW5t
-M2R3YUw4CkE4ZHd6bUt6K1JwOGFUa3gycnAzL3VSSmVuODRrNzdSTTlxMTRrR2U5M2NKRTZudHM5
-bExJaWJ4R2ZQVTl5NGwKOEcrY25VaEdWRUllaFgwUG43ZjJBYW9tNExZZlpHVUhOLzE4SjhqNk1I
-b3dNWHZMOC9VblVORVM5THgwMnJUZAp0YVpHY3JEWTdHQXAxNWNHUXpTego9bjB1VwotLS0tLUVO
-RCBQR1AgU0lHTkFUVVJFLS0tLS0K
+ static int tick_nohz_reprogram(struct tick_sched *ts, ktime_t now)
+ {
 
---===============0464849634703324105==--
+--===============5280102993545452164==--
 
