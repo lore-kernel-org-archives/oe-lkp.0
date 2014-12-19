@@ -1,134 +1,338 @@
-Content-Type: multipart/mixed; boundary="===============8641534876838859361=="
+Content-Type: multipart/mixed; boundary="===============4281275635322372012=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@intel.com>
+From: Grumbach, Emmanuel <emmanuel.grumbach@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sb_edac] 50d1bb93672: EDAC sbridge: ECC is disabled. Aborting
-Date: Fri, 19 Dec 2014 13:26:59 +0800
-Message-ID: <1418966819.26403.33.camel@intel.com>
-In-Reply-To: <20141218090536.0d671dca@recife.lan>
+Subject: Re: [iwlwifi] BUG: unable to handle kernel
+Date: Fri, 19 Dec 2014 05:59:25 +0000
+Message-ID: <1418968765.11138.0.camel@egrumbacBox>
+In-Reply-To: <20141218210705.GA26694@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8641534876838859361==
+--===============4281275635322372012==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2014-12-18 at 09:05 -0200, Mauro Carvalho Chehab wrote:
-> Hi Huang,
-> =
+On Thu, 2014-12-18 at 13:07 -0800, Fengguang Wu wrote:
+> On Fri, Dec 19, 2014 at 03:42:17AM +0800, Grumbach, Emmanuel wrote:
+> > On Thu, 2014-12-18 at 09:13 -0800, Fengguang Wu wrote:
+> > > Hi All,
+> > > =
 
-> Em Thu, 18 Dec 2014 16:13:26 +0800
-> Huang Ying <ying.huang@intel.com> escreveu:
-> =
-
-> > FYI, we noticed the below changes on
+> > > I don't see any relationship between the BUG and this bisected commit.
+> > > Anyway, it's better to report it to the lists than to ignore.
 > > =
 
-> > commit 50d1bb93672fa2f42cec6e06ce799fbe864f57e9 ("sb_edac: add support =
-for Haswell based systems")
-> > =
-
-> > Something new in kernel log.  This may be expected.  Just FYI.
-> > =
-
-> > [   12.490615] EDAC sbridge: Seeking for: PCI ID 8086:2fa0
-> > [   12.491031] EDAC sbridge: Seeking for: PCI ID 8086:2fa0
-> > [   12.491454] EDAC sbridge: Seeking for: PCI ID 8086:2ffc
-> > [   12.491865] EDAC sbridge: Seeking for: PCI ID 8086:2ffc
-> > [   12.492284] EDAC sbridge: Seeking for: PCI ID 8086:2ffd
-> > [   12.492698] EDAC sbridge: Seeking for: PCI ID 8086:2ffd
-> > [   12.493110] EDAC sbridge: Seeking for: PCI ID 8086:2f60
-> > [   12.493528] EDAC sbridge: Seeking for: PCI ID 8086:2fa8
-> > [   12.493943] EDAC sbridge: Seeking for: PCI ID 8086:2fa8
-> > [   12.494359] EDAC sbridge: Seeking for: PCI ID 8086:2f71
-> > [   12.494789] EDAC sbridge: Seeking for: PCI ID 8086:2f71
-> > [   12.495206] EDAC sbridge: Seeking for: PCI ID 8086:2faa
-> > [   12.495622] EDAC sbridge: Seeking for: PCI ID 8086:2faa
-> > [   12.496040] EDAC sbridge: Seeking for: PCI ID 8086:2fab
-> > [   12.496462] EDAC sbridge: Seeking for: PCI ID 8086:2fab
-> > [   12.496878] EDAC sbridge: Seeking for: PCI ID 8086:2fac
-> > [   12.497297] EDAC sbridge: Seeking for: PCI ID 8086:2fac
-> > [   12.497714] EDAC sbridge: Seeking for: PCI ID 8086:2fad
-> > [   12.497923] IOAPIC[0]: Set routing entry (8-22 -> 0xb3 -> IRQ 22 Mod=
-e:1 Active:1 Dest:1)
-> > [   12.497927] IOAPIC[0]: Set IRTE entry (P:1 FPD:0 Dst_Mode:1 Redir_hi=
-nt:1 Trig_Mode:0 Dlvry_Mode:1 Avail:0 Vector:B3 Dest:00000001 SID:F0FF SQ:0=
- SVT:1)
-> > [   12.497981] snd_hda_intel 0000:00:1b.0: irq 75 for MSI/MSI-X
-> > [   12.498086] IOAPIC[1]: Set routing entry (9-12 -> 0xe3 -> IRQ 36 Mod=
-e:1 Active:1 Dest:1)
-> > [   12.498089] IOAPIC[1]: Set IRTE entry (P:1 FPD:0 Dst_Mode:1 Redir_hi=
-nt:1 Trig_Mode:0 Dlvry_Mode:1 Avail:0 Vector:E3 Dest:00000001 SID:002C SQ:0=
- SVT:1)
-> > [   12.498093] snd_hda_intel 0000:02:00.1: Disabling MSI
-> > [   12.498109] snd_hda_intel 0000:02:00.1: Handle VGA-switcheroo audio =
-client
-> > [   12.502542] EDAC sbridge: Seeking for: PCI ID 8086:2fad
-> > [   12.502956] EDAC sbridge: Seeking for: PCI ID 8086:2fbd
-> > [   12.503365] EDAC sbridge: Seeking for: PCI ID 8086:2f68
-> > [   12.503781] EDAC sbridge: Seeking for: PCI ID 8086:2f68
-> > [   12.504197] EDAC sbridge: Seeking for: PCI ID 8086:2f79
-> > [   12.504620] EDAC sbridge: Seeking for: PCI ID 8086:2f6a
-> > [   12.505041] EDAC sbridge: Seeking for: PCI ID 8086:2f6b
-> > [   12.505452] EDAC sbridge: Seeking for: PCI ID 8086:2f6c
-> > [   12.505869] EDAC sbridge: Seeking for: PCI ID 8086:2f6d
-> > [   12.506298] EDAC sbridge: ECC is disabled. Aborting
-> > [   12.506718] EDAC sbridge: Couldn't find mci handler
+> > Right - but I have to say that I have no clue how this comment can cause
+> > the bug you are seeing...
 > =
 
-> Not sure about what are you complaining, since you didn't show how was
-> the log before.
-
-In fact, I am not complaining :-), just FYI. As I said, this may be a
-expected behavior because this is a Haswell machine and the Haswell
-support was added in this patch.
-
-> From the above, what looks weird, from EDAC driver PoV, is:
-> 	[   12.506298] EDAC sbridge: ECC is disabled. Aborting
-
-This is what I want help from you to confirm whether it is abnormal.
-
-> Does it used to work before? If so, was there any BIOS setting change?
-> Does the memories used on this machine have ECC?
-
-This is a high-end desktop, there is something as below in dmidecode
-output.  Is there some other way to tell whether the memories have ECC?
-
-Handle 0x0018, DMI type 16, 23 bytes
-Physical Memory Array
-        Location: System Board Or Motherboard
-        Use: System Memory
-        Error Correction Type: Multi-bit ECC
-        Maximum Capacity: 128 GB
-        Error Information Handle: Not Provided
-        Number Of Devices: 4
-
-Handle 0x001A, DMI type 17, 34 bytes
-Memory Device
-        Array Handle: 0x0018
-        Error Information Handle: Not Provided
-        Total Width: 72 bits
-        Data Width: 72 bits
-        Size: 8192 MB
-        Form Factor: DIMM
-        Set: None
-        Locator: DIMM_A1
-        Bank Locator: CPU 0
-        Type: <OUT OF SPEC>
-        Type Detail: Synchronous
-        Speed: 1067 MHz
-        Manufacturer: 0x11
-        Serial Number: Unknown
-        Asset Tag: Unknown
-        Part Number: Unknown
-        Rank: 1
-        Configured Clock Speed: Unknown
+> s?comment?commit?
+> =
 
 
-Best Regards,
-Huang, Ying
+Yes :)
+
+> > Do you even have an Intel Wireless device the VM could access?
+> =
+
+> Nope. It's simple QEMU virtual machine boot test.
+> =
+
+
+In that case - this just can't be right... Don't know what to say...
+
+> Thanks,
+> Fengguang
+> =
+
+> > > =
+
+> > > git://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/iwlwifi-fixes.g=
+it master
+> > > =
+
+> > > commit 03d6c3b0fa4f5f0379cede079ec828a6c999fe43
+> > > Author:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+> > > AuthorDate: Wed Dec 3 10:39:07 2014 +0200
+> > > Commit:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+> > > CommitDate: Sun Dec 14 10:20:29 2014 +0200
+> > > =
+
+> > >     iwlwifi: pcie: re-ACK all interrupts after device reset
+> > >     =
+
+> > >     When we reset the device, the CSR_INT gets cleared as well
+> > >     as CSR_INT_MASK. Meaning that we shouldn't get any interrupt
+> > >     but, due to a hardware bug, recent devices will keep sending
+> > >     interrupts. This leads to an interrupt storm while stopping
+> > >     the device.
+> > >     The way to fix this is to ACK all the interrupts after the
+> > >     device is reset so that the value of CSR_INT will stay
+> > >     0xffffffff.
+> > >     =
+
+> > >     Fixes: 522713c81e4e ("iwlwifi: pcie: properly reset the device")
+> > >     Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+> > > =
+
+> > > +------------------------------------------+------------+------------=
++------------+
+> > > |                                          | 0a79a0c011 | 03d6c3b0fa =
+| iwlwifi-fi |
+> > > +------------------------------------------+------------+------------=
++------------+
+> > > | boot_successes                           | 60         | 19         =
+| 3          |
+> > > | boot_failures                            | 0          | 1          =
+| 9          |
+> > > | BUG:unable_to_handle_kernel              | 0          | 1          =
+| 9          |
+> > > | Oops                                     | 0          | 1          =
+| 9          |
+> > > | RIP:strcmp                               | 0          | 1          =
+| 9          |
+> > > | Kernel_panic-not_syncing:Fatal_exception | 0          | 1          =
+| 9          |
+> > > | backtrace:led_trigger_register_simple    | 0          | 1          =
+| 9          |
+> > > | backtrace:ledtrig_usb_init               | 0          | 1          =
+| 9          |
+> > > | backtrace:kernel_init_freeable           | 0          | 1          =
+| 9          |
+> > > +------------------------------------------+------------+------------=
++------------+
+> > > =
+
+> > > [    5.345018] g_serial gadget: Gadget Serial v2.4
+> > > [    5.345927] g_serial gadget: g_serial ready
+> > > [    5.345927] g_serial gadget: g_serial ready
+> > > [    5.346777] BUG: unable to handle kernel =
+
+> > > [    5.346777] BUG: unable to handle kernel paging requestpaging requ=
+est at ffff88000004e5f0
+> > >  at ffff88000004e5f0
+> > > [    5.348183] IP:
+> > > [    5.348183] IP: [<ffffffff81446a68>] strcmp+0x6/0x20
+> > >  [<ffffffff81446a68>] strcmp+0x6/0x20
+> > > [    5.349183] PGD 37f1067 =
+
+> > > [    5.349183] PGD 37f1067 PUD 37f2067 PUD 37f2067 PMD 37f3067 PMD 37=
+f3067 PTE 800000000004e060PTE 800000000004e060
+> > > =
+
+> > > [    5.350498] Oops: 0000 [#1] =
+
+> > > [    5.350498] Oops: 0000 [#1] DEBUG_PAGEALLOCDEBUG_PAGEALLOC
+> > > =
+
+> > > [    5.351360] CPU: 0 PID: 1 Comm: swapper Not tainted 3.18.0-g03d6c3=
+b #1
+> > > [    5.351360] CPU: 0 PID: 1 Comm: swapper Not tainted 3.18.0-g03d6c3=
+b #1
+> > > [    5.352660] task: ffff880012060000 ti: ffff88001204c000 task.ti: f=
+fff88001204c000
+> > > [    5.352660] task: ffff880012060000 ti: ffff88001204c000 task.ti: f=
+fff88001204c000
+> > > [    5.354143] RIP: 0010:[<ffffffff81446a68>] =
+
+> > > [    5.354143] RIP: 0010:[<ffffffff81446a68>]  [<ffffffff81446a68>] s=
+trcmp+0x6/0x20
+> > >  [<ffffffff81446a68>] strcmp+0x6/0x20
+> > > [    5.354451] RSP: 0000:ffff88001204fe28  EFLAGS: 00010246
+> > > [    5.354451] RSP: 0000:ffff88001204fe28  EFLAGS: 00010246
+> > > [    5.354451] RAX: 0000000000000000 RBX: ffff88000c08fe00 RCX: fffff=
+fff81d35310
+> > > [    5.354451] RAX: 0000000000000000 RBX: ffff88000c08fe00 RCX: fffff=
+fff81d35310
+> > > [    5.354451] RDX: ffff88000c08fe68 RSI: ffffffff826d05be RDI: ffff8=
+8000004e5f0
+> > > [    5.354451] RDX: ffff88000c08fe68 RSI: ffffffff826d05be RDI: ffff8=
+8000004e5f0
+> > > [    5.354451] RBP: ffff88001204fe28 R08: 0000000000000001 R09: 00000=
+0000000033a
+> > > [    5.354451] RBP: ffff88001204fe28 R08: 0000000000000001 R09: 00000=
+0000000033a
+> > > [    5.354451] R10: 0000000000000000 R11: ffffffff82531cd1 R12: ffff8=
+8000c19fa00
+> > > [    5.354451] R10: 0000000000000000 R11: ffffffff82531cd1 R12: ffff8=
+8000c19fa00
+> > > [    5.354451] R13: 0000000000000000 R14: ffffffff837958b8 R15: 00000=
+00000000000
+> > > [    5.354451] R13: 0000000000000000 R14: ffffffff837958b8 R15: 00000=
+00000000000
+> > > [    5.354451] FS:  0000000000000000(0000) GS:ffffffff82789000(0000) =
+knlGS:0000000000000000
+> > > [    5.354451] FS:  0000000000000000(0000) GS:ffffffff82789000(0000) =
+knlGS:0000000000000000
+> > > [    5.354451] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+> > > [    5.354451] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+> > > [    5.354451] CR2: ffff88000004e5f0 CR3: 0000000002776000 CR4: 00000=
+000000006b0
+> > > [    5.354451] CR2: ffff88000004e5f0 CR3: 0000000002776000 CR4: 00000=
+000000006b0
+> > > [    5.354451] Stack:
+> > > [    5.354451] Stack:
+> > > [    5.354451]  ffff88001204fe58
+> > > [    5.354451]  ffff88001204fe58 ffffffff81d35334 ffffffff81d35334 00=
+00000000000000 0000000000000000 ffff88000c19fa00 ffff88000c19fa00
+> > > =
+
+> > > [    5.354451]  ffffffff826d05be
+> > > [    5.354451]  ffffffff826d05be 0000000000000000 0000000000000000 ff=
+ff88001204fe88 ffff88001204fe88 ffffffff81d35648 ffffffff81d35648
+> > > =
+
+> > > [    5.354451]  ffff88000e3bbcc0
+> > > [    5.354451]  ffff88000e3bbcc0 ffffffff82b3fe61 ffffffff82b3fe61 00=
+00000000000000 0000000000000000 ffffffff82b98910 ffffffff82b98910
+> > > =
+
+> > > [    5.354451] Call Trace:
+> > > [    5.354451] Call Trace:
+> > > [    5.354451]  [<ffffffff81d35334>] led_trigger_register+0x63/0x129
+> > > [    5.354451]  [<ffffffff81d35334>] led_trigger_register+0x63/0x129
+> > > [    5.354451]  [<ffffffff81d35648>] led_trigger_register_simple+0x35=
+/0x79
+> > > [    5.354451]  [<ffffffff81d35648>] led_trigger_register_simple+0x35=
+/0x79
+> > > [    5.354451]  [<ffffffff82b3fe61>] ? gs_bind+0xea/0xea
+> > > [    5.354451]  [<ffffffff82b3fe61>] ? gs_bind+0xea/0xea
+> > > [    5.354451]  [<ffffffff82b3fe78>] ledtrig_usb_init+0x17/0x2e
+> > > [    5.354451]  [<ffffffff82b3fe78>] ledtrig_usb_init+0x17/0x2e
+> > > [    5.354451]  [<ffffffff82b00044>] do_one_initcall+0xe6/0x171
+> > > [    5.354451]  [<ffffffff82b00044>] do_one_initcall+0xe6/0x171
+> > > [    5.354451]  [<ffffffff82b001c7>] kernel_init_freeable+0xf8/0x180
+> > > [    5.354451]  [<ffffffff82b001c7>] kernel_init_freeable+0xf8/0x180
+> > > [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
+> > > [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
+> > > [    5.354451]  [<ffffffff8206079a>] kernel_init+0x9/0xd0
+> > > [    5.354451]  [<ffffffff8206079a>] kernel_init+0x9/0xd0
+> > > [    5.354451]  [<ffffffff8207d2ba>] ret_from_fork+0x7a/0xb0
+> > > [    5.354451]  [<ffffffff8207d2ba>] ret_from_fork+0x7a/0xb0
+> > > [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
+> > > [    5.354451]  [<ffffffff82060791>] ? rest_init+0xbd/0xbd
+> > > [    5.354451] Code: =
+
+> > > [    5.354451] Code: c0 c0 eb eb f5 f5 31 31 c9 c9 40 40 8a 8a 3c 3c =
+0e 0e 4d 4d 8d 8d 0c 0c 08 08 40 40 84 84 ff ff 41 41 88 88 3c 3c 08 08 74 =
+74 0d 0d 48 48 ff ff c1 c1 48 48 39 39 ca ca 75 75 e7 e7 41 41 c6 c6 41 41 =
+01 01 00 00 5d 5d c3 c3 55 55 31 31 c0 c0 48 48 89 89 e5 e5 <8a> <8a> 14 14=
+ 07 07 3a 3a 14 14 06 06 74 74 07 07 19 19 c0 c0 83 83 c8 c8 01 01 eb eb 09=
+ 09 48 48 ff ff c0 c0 84 84 d2 d2 75 75 =
+
+> > > =
+
+> > > [    5.354451] RIP =
+
+> > > [    5.354451] RIP  [<ffffffff81446a68>] strcmp+0x6/0x20
+> > >  [<ffffffff81446a68>] strcmp+0x6/0x20
+> > > [    5.354451]  RSP <ffff88001204fe28>
+> > > [    5.354451]  RSP <ffff88001204fe28>
+> > > [    5.354451] CR2: ffff88000004e5f0
+> > > [    5.354451] CR2: ffff88000004e5f0
+> > > [    5.354451] ---[ end trace 8f9377b34c860a0c ]---
+> > > [    5.354451] ---[ end trace 8f9377b34c860a0c ]---
+> > > =
+
+> > > git bisect start baa21e834941ee5fbe4bd421c871f7c0c5f9a086 70e71ca0af2=
+44f48a5dcf56dc435243792e3a495 --
+> > > git bisect  bad 03d6c3b0fa4f5f0379cede079ec828a6c999fe43  # 16:23    =
+  0-      1  iwlwifi: pcie: re-ACK all interrupts after device reset
+> > > git bisect good 0a79a0c011cb291675e3b80760a452fcba5c59d9  # 16:28    =
+ 20+      0  iwlwifi: mvm: clear IN_HW_RESTART flag on stop()
+> > > # first bad commit: [03d6c3b0fa4f5f0379cede079ec828a6c999fe43] iwlwif=
+i: pcie: re-ACK all interrupts after device reset
+> > > git bisect good 0a79a0c011cb291675e3b80760a452fcba5c59d9  # 16:30    =
+ 60+      0  iwlwifi: mvm: clear IN_HW_RESTART flag on stop()
+> > > # extra tests on HEAD of iwlwifi-fixes/master
+> > > git bisect  bad baa21e834941ee5fbe4bd421c871f7c0c5f9a086  # 16:30    =
+  0-      9  iwlwifi: pcie: limit fw chunk sizes given to fh
+> > > # extra tests on tree/branch iwlwifi-fixes/master
+> > > git bisect  bad baa21e834941ee5fbe4bd421c871f7c0c5f9a086  # 16:30    =
+  0-      9  iwlwifi: pcie: limit fw chunk sizes given to fh
+> > > # extra tests on tree/branch linus/master
+> > > git bisect good 44e8967d591686463e84a88b46b03beba3ab49fb  # 16:32    =
+ 60+      0  Ceph: remove left-over reject file
+> > > # extra tests on tree/branch next/master
+> > > git bisect good cfaa3a95dd2b402599b1d8122dc3107478db8717  # 16:35    =
+ 60+      1  Add linux-next specific files for 20141218
+> > > =
+
+> > > =
+
+> > > This script may reproduce the error.
+> > > =
+
+> > > ---------------------------------------------------------------------=
+-------
+> > > #!/bin/bash
+> > > =
+
+> > > kernel=3D$1
+> > > initrd=3Dquantal-core-x86_64.cgz
+> > > =
+
+> > > wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/r=
+aw/master/initrd/$initrd
+> > > =
+
+> > > kvm=3D(
+> > > 	qemu-system-x86_64
+> > > 	-cpu kvm64
+> > > 	-enable-kvm
+> > > 	-kernel $kernel
+> > > 	-initrd $initrd
+> > > 	-m 320
+> > > 	-smp 2
+> > > 	-net nic,vlan=3D1,model=3De1000
+> > > 	-net user,vlan=3D1
+> > > 	-boot order=3Dnc
+> > > 	-no-reboot
+> > > 	-watchdog i6300esb
+> > > 	-rtc base=3Dlocaltime
+> > > 	-serial stdio
+> > > 	-display none
+> > > 	-monitor null =
+
+> > > )
+> > > =
+
+> > > append=3D(
+> > > 	hung_task_panic=3D1
+> > > 	earlyprintk=3DttyS0,115200
+> > > 	debug
+> > > 	apic=3Ddebug
+> > > 	sysrq_always_enabled
+> > > 	rcupdate.rcu_cpu_stall_timeout=3D100
+> > > 	panic=3D-1
+> > > 	softlockup_panic=3D1
+> > > 	nmi_watchdog=3Dpanic
+> > > 	oops=3Dpanic
+> > > 	load_ramdisk=3D2
+> > > 	prompt_ramdisk=3D0
+> > > 	console=3DttyS0,115200
+> > > 	console=3Dtty0
+> > > 	vga=3Dnormal
+> > > 	root=3D/dev/ram0
+> > > 	rw
+> > > 	drbd.minor_count=3D8
+> > > )
+> > > =
+
+> > > "${kvm[@]}" --append "${append[*]}"
+> > > ---------------------------------------------------------------------=
+-------
+> > > =
+
+> > > Thanks,
+> > > Fengguang
+> > > _______________________________________________
+> > > LKP mailing list
+> > > LKP(a)linux.intel.com
+> > =
 
 
 
---===============8641534876838859361==--
+--===============4281275635322372012==--
 
