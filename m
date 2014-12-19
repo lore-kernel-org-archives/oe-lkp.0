@@ -1,87 +1,77 @@
-Content-Type: multipart/mixed; boundary="===============2864864613545993138=="
+Content-Type: multipart/mixed; boundary="===============8726296140374964495=="
 MIME-Version: 1.0
-From: Dietmar Eggemann <dietmar.eggemann@arm.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sched] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/cpu/common.c:1439 warn_pre_alternatives()
-Date: Fri, 19 Dec 2014 15:51:22 +0100
-Message-ID: <54943B6A.9050309@arm.com>
-In-Reply-To: <20141210232645.GD24163@wfg-t540p.sh.intel.com>
+Subject: Re: [PATCH] tick/powerclamp: Remove tick_nohz_idle abuse
+Date: Fri, 19 Dec 2014 10:39:00 -0800
+Message-ID: <20141219103900.101f6c6d@jacob-VirtualBox>
+In-Reply-To: <alpine.DEB.2.11.1412182209010.17382@nanos>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2864864613545993138==
+--===============8726296140374964495==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Fengguang,
+On Thu, 18 Dec 2014 22:12:57 +0100 (CET)
+Thomas Gleixner <tglx@linutronix.de> wrote:
 
-On 11/12/14 00:26, Fengguang Wu wrote:
-> Hi Dietmar,
+> On Thu, 18 Dec 2014, Jacob Pan wrote:
+> > OK I agree, also as I mentioned earlier, Peter already has a patch
+> > for consolidated idle loop and remove tick_nohz_idle_enter/exit
+> > call from powerclamp driver. I have been working on a few tweaks to
+> > maintain the functionality and efficiency with the consolidated
+> > idle loop. We can apply the patches on top of yours.
+> =
+
+> No. This is equally wrong as I pointed out before. The 'unified' idle
+> loop is still fake and just pretending to be idle.
+> =
+
+In terms of efficiency, the consolidated idle loop will allow turning
+off sched tick during idle injection period. If we just take out the
+tick_nohz_idle_xxx call, the effectiveness of powerclamp is going down
+significantly. I am not arguing the design but from fixing regression
+perspective or short term solution.
+> If simple standard interfaces like cpu_idle() are not working from
+> idle code anymore then this simply stinks. And that's what any fake
+> idle thread will do.
+> =
+
+> The whole approach is wrong. Implement a sched fair throttler and you
+> can avoid the whoile trainwreck.
 >
-> FYI, here is another bisect result.
+I agree with you that fake idle always have dilemma. on one
+side, idle injection threads are really busy injecting idle, so from
+that standpoint it is not idle. But on the other side, we have to stop
+tick to avoid being woken up all the time. So we can't just simply take
+control of the cpu periodically and execute mwait.
+I need to do some study here, thanks for the pointers,
 
-thanks for testing this on another arch then ARM!
+Jacob
 
-The problem is that the weak arch_scale_cpu_capacity calls =
+> > > 1. Queue a deferable periodic timer whose handler checks if idle
+> > > needs to be injected. If so, it sets rq->need_throttle for the
+> > > cpu. If its already in the fake idle period, it clears
+> > > rq->need_throttle and sets need_resched.
+> > > =
 
-default_scale_cpu_capacity on a system which doesn't overwrite it and =
+> > The key to powerclamp driver is to achieve package level idle
+> > states, which implies synchronized idle injection. From
+> > power/performance standpoint, only package level idle states is
+> > worth injection.
+> =
 
-the default one accesses the sched_domain which is not allocated that =
+> Then use a synchronized non deferrable timer on all cpus. It's simple
+> enough.
+>  =
 
-early when called by scheduler_tick.
+> Thanks,
+> =
 
-I only tested it on an ARM system which in this tree which overwrites =
+> 	tglx
 
-arch_scale_cpu_capacity and does not access sched_domain.
+[Jacob Pan]
 
-Have to look into it and will test the default case from now on too.
-
--- Dietmar
-
->
-> https://git.linaro.org/people/mturquette/linux.git eas-next
-> commit 1fadb581b0be9420b143e43ff2f4a07ea7e45f6c
-> Author:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-> AuthorDate: Tue Dec 2 14:06:24 2014 +0000
-> Commit:     Michael Turquette <mturquette@deferred.io>
-> CommitDate: Tue Dec 9 20:33:17 2014 -0800
->
->      sched: Make usage and load tracking cpu scale-invariant
->
->      Besides the existing frequency scale-invariance correction factor, a=
-pply
->      cpu scale-invariance correction factor to usage and load tracking.
->
->      Cpu scale-invariance takes cpu performance deviations due to
->      micro-architectural differences (i.e. instructions per seconds) betw=
-een
->      cpus in HMP systems (e.g. big.LITTLE) and differences in the frequen=
-cy
->      value of the highest OPP between cpus in SMP systems into considerat=
-ion.
->
->      Each segment of the sched_avg::{running_avg_sum, runnable_avg_sum}
->      geometric series is now scaled by the cpu performance factor too so =
-the
->      sched_avg::{utilization_avg_contrib, load_avg_contrib} of each entit=
-y will
->      be invariant from the particular cpu of the HMP/SMP system it is gat=
-hered
->      on. As a result, cfs_rq::runnable_load_avg which is the sum of
->      sched_avg::load_avg_contrib, becomes cpu scale-invariant too.
->
->      So the {usage, load} level that is returned by {get_cpu_usage,
->      weighted_cpuload} stays relative to the max cpu performance of the s=
-ystem.
->
->      Cc: Ingo Molnar <mingo@redhat.com>
->      Cc: Peter Zijlstra <peterz@infradead.org>
->      Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
->
-
-[...]
-
-
-
---===============2864864613545993138==--
+--===============8726296140374964495==--
 
