@@ -1,129 +1,171 @@
-Content-Type: multipart/mixed; boundary="===============2965693886242693307=="
+Content-Type: multipart/mixed; boundary="===============5681242110060944912=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@intel.com>
+From: Jacob Pan <jacob.jun.pan@intel.com>
 To: lkp@lists.01.org
-Subject: [ftrace] fef5aeeee9e: -27.2% boot-slabinfo.num_objs
-Date: Tue, 23 Dec 2014 11:10:17 +0800
-Message-ID: <1419304217.26403.44.camel@intel.com>
+Subject: Re: [RFC PATCH] drivers/intel_powerclamp : Redesign implementation of idle injection
+Date: Mon, 22 Dec 2014 10:16:09 -0800
+Message-ID: <20141222101609.620e1ce7@jacob-VirtualBox>
+In-Reply-To: <5497E222.8090001@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2965693886242693307==
+--===============5681242110060944912==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
+On Mon, 22 Dec 2014 14:49:30 +0530
+Preeti U Murthy <preeti@linux.vnet.ibm.com> wrote:
 
-commit fef5aeeee9e3717e7aea991a7ae9ff6a7a2d4c85 ("ftrace: Replace tramp_has=
-h with old_*_hash to save space")
+> On 12/22/2014 12:07 PM, Amit Kucheria wrote:
+> > On Sun, Dec 21, 2014 at 3:59 PM, Preeti U Murthy
+> > <preeti@linux.vnet.ibm.com> wrote:
+> > =
 
+> > <snip>
+> > =
 
-testbox/testcase/testparams: vm-kbuild-4G/boot/1
+> >> This patch is compile tested only. The goal is to get a consensus
+> >> on the design first. There are some points that need to be given a
+> >> thought as far as I can see:
+> >>
+> >> 1. The idle task chosen during the idle injection period needs to
+> >> enter a specific mwait state. The cpuidle governors cannot choose
+> >> any idle state like they do generally for idle tasks.
+> > =
 
-e1effa0144a1ddf5  fef5aeeee9e3717e7aea991a7a  =
+> > That information should be hidden in the platform-specific driver
+> > (intel_idle in this case?) through some flag and not in sched core
+> > which is gradually learning to driving idle directly.
+> =
 
-----------------  --------------------------  =
+> Hmm? How do we communicate the clamping information to the cpuidle
+> driver ? Will not a pm_qos_add_request() to initialize the
+> PM_QOS_CPU_DMA_LATENCY class to the value 0 from the powerclamp driver
+> during throttling periods suffice? The governor will read this value
+> anyway.
+> =
 
-         %stddev     %change         %stddev
-             \          |                \  =
++rafael
 
-    437752 =C2=B1  0%     -27.2%     318545 =C2=B1  0%  boot-slabinfo.num_o=
-bjs
-
-vm-kbuild-4G: qemu-system-x86_64 -enable-kvm
-Memory: 4G
-
-
-
-                               boot-slabinfo.num_objs
-
-  440000 *+*--*-*-*------*----*-*-*--*--------*-*--*-*-*--*----------------=
--+
-         |           *.*   *.          *.*..*                              =
- |
-  420000 ++                                                                =
- |
-         |                                                                 =
- |
-  400000 ++                                                                =
- |
-         |                                                                 =
- |
-  380000 ++                                                                =
- |
-         |                                                                 =
- |
-  360000 ++                                                                =
- |
-         |                                                                 =
- |
-  340000 ++                                                                =
- |
-         |                                                                 =
- |
-  320000 O+O  O   O  O O O O  O O O  O O    O O O    O O  O O O O  O O O  O=
- O
-         |      O                        O         O                       =
- |
-  300000 ++----------------------------------------------------------------=
--+
-
-	[*] bisect-good sample
-	[O] bisect-bad  sample
-
-To reproduce:
-
-	apt-get install ruby ruby-oj
-	git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tests.git
-	cd lkp-tests
-	bin/setup-local job.yaml # the job file attached in this email
-	bin/run-local   job.yaml
+or we can use this call to bypass governor and system qos.
+diff --git a/drivers/cpuidle/cpuidle.c b/drivers/cpuidle/cpuidle.c
+index 125150d..5de79c2 100644
+--- a/drivers/cpuidle/cpuidle.c
++++ b/drivers/cpuidle/cpuidle.c
+@@ -79,6 +79,7 @@ void cpuidle_use_deepest_state(bool enable)
+ {
+        use_deepest_state =3D enable;
+ }
++EXPORT_SYMBOL_GPL(cpuidle_use_deepest_state);
 
 
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
+> > =
+
+> >> 2. We throttle runqueue when the bandwidth is available. We do not
+> >> touch any parameters around the cfs_rq bandwidth in this patch. It
+> >> is supposed to bypass the bandwidth checks entirely. But will
+> >> there be any serious consequence as a result?
+> > =
+
+> >> 3. There can be cases when the runqueues are throttled when
+> >> bandwidths are exceeded too. What are the consequences of the
+> >> powerclamp driver running parallely?
+> >>
+> >> 4. The idle periods should stand synchronized across all cpus
+> >> because the change in the design is to start timers to expire
+> >> immediately instead of waking up kthreads. The only concern is cpu
+> >> hotplug operations when the cpu coming online can go out of sync
+> >> with the idle periods. But that situation exists today as well.
+> > =
+
+> >   5. Will the maintainers be horrified if this throttle_rq API is
+> > used to wean users off hotplug? What are the consequences of
+> > "permanent throttling"? IOW, some platform drivers could throttle
+> > the rqs of an entire cpu cluster until the right usecase comes by
+> > when that processing power is needed.
+> =
+
+> This bothers me as well. As of now I am unable to see how else we can
+> enable the powerclamp driver to throttle runqueues.
+> Need some pointers here.
+> =
+
+> > =
+
+> >> Signed-off-by: Preeti U Murthy <preeti@linux.vnet.ibm.com>
+> >> ---
+> >>
+> >>  drivers/thermal/intel_powerclamp.c |  227
+> >> ++++++++++++++----------------------
+> >> include/linux/sched.h              |    2
+> >> kernel/sched/fair.c                |   29 ++++- 3 files changed,
+> >> 117 insertions(+), 141 deletions(-)
+> > =
+
+> > <snip>
+> > =
+
+> >> diff --git a/include/linux/sched.h b/include/linux/sched.h
+> >> index 5e344bb..5843b7e 100644
+> >> --- a/include/linux/sched.h
+> >> +++ b/include/linux/sched.h
+> >> @@ -2075,9 +2075,11 @@ static inline int
+> >> set_cpus_allowed_ptr(struct task_struct *p, #ifdef
+> >> CONFIG_NO_HZ_COMMON void calc_load_enter_idle(void);
+> >>  void calc_load_exit_idle(void);
+> >> +void throttle_rq(int cpu, int throttle);
+> >>  #else
+> >>  static inline void calc_load_enter_idle(void) { }
+> >>  static inline void calc_load_exit_idle(void) { }
+> >> +static inline void throttle_rq(int cpu, int throttle);
+> >>  #endif /* CONFIG_NO_HZ_COMMON */
+> >>
+> >>  #ifndef CONFIG_CPUMASK_OFFSTACK
+> >> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> >> index ef2b104..01785cb 100644
+> >> --- a/kernel/sched/fair.c
+> >> +++ b/kernel/sched/fair.c
+> >> @@ -3417,8 +3417,15 @@ static void throttle_cfs_rq(struct cfs_rq
+> >> *cfs_rq)
+> >>          * distribute_cfs_runtime will not see us
+> >>          */
+> >>         list_add_rcu(&cfs_rq->throttled_list,
+> >> &cfs_b->throttled_cfs_rq);
+> >> -       if (!cfs_b->timer_active)
+> >> +
+> >> +       /*
+> >> +        * Check if the cfs_rq is throttled inspite of having
+> >> sufficient
+> >> +        * bandwidth. If so, do not meddle with the bandwidth
+> >> since this
+> >> +        * is a case of forced idle injection
+> >> +        */
+> >> +       if (cfs_rq_throttled(cfs_rq) && !cfs_b->timer_active)
+> >>                 __start_cfs_bandwidth(cfs_b, false);
+> >> +
+> >>         raw_spin_unlock(&cfs_b->lock);
+> >>  }
+> >>
+> >> @@ -3469,6 +3476,17 @@ void unthrottle_cfs_rq(struct cfs_rq
+> >> *cfs_rq) resched_curr(rq);
+> >>  }
+> >>
+> >> +void throttle_rq(int cpu, int throttle)
+> > =
+
+> > Suggest renaming to force_throttle_rq to make it clear this this is
+> > being forced upon us externally.
+> =
+
+> Sure, thanks!
+> =
+
+> Regards
+> Preeti U Murthy
+> =
 
 
-Thanks,
-Huang, Ying
+[Jacob Pan]
 
-
-_______________________________________________
-LKP mailing list
-LKP(a)linux.intel.com
-
-
---===============2965693886242693307==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job.yaml"
-
-LS0tCnRlc3RjYXNlOiBib290CmRlZmF1bHRfbW9uaXRvcnM6CiAgYm9vdHRpbWU6IAogIGtlcm5l
-bC1zaXplOiAKZGVmYXVsdF93YXRjaGRvZ3M6CiAgd2F0Y2gtb29tOiAKICB3YXRjaGRvZzogCmNw
-dWZyZXFfZ292ZXJub3I6IAptb2RlbDogcWVtdS1zeXN0ZW0teDg2XzY0IC1lbmFibGUta3ZtCm5y
-X3ZtOiA4Cm5yX2NwdTogNAptZW1vcnk6IDRHCnJvb3RmczogZGViaWFuLXg4Nl82NC5jZ3oKaGRk
-X3BhcnRpdGlvbnM6ICIvZGV2L3ZkYSAvZGV2L3ZkYiAvZGV2L3ZkYyAvZGV2L3ZkZCIKc3dhcF9w
-YXJ0aXRpb25zOiAiL2Rldi92ZGUiCmJvb3QtbWVtaW5mbzogCmJvb3Qtc2xhYmluZm86IApib290
-LW1lbW9yeTogCm1lbW1hcDogCmJvb3RtZW06IApzbGVlcDogMQpicmFuY2g6IGxpbnVzL21hc3Rl
-cgpjb21taXQ6IGIyNzc2YmY3MTQ5YmRkZDFmNDE2MWYxNGY3OTUyMGYxN2ZjMWQ3MWQKdGVzdGJv
-eDogdm0ta2J1aWxkLTRHLTEKdGJveF9ncm91cDogdm0ta2J1aWxkLTRHCmtjb25maWc6IHg4Nl82
-NC1hbGx5ZXNkZWJpYW4KZW5xdWV1ZV90aW1lOiAyMDE0LTEyLTE1IDA3OjAwOjIyLjI2NzM5MjUz
-MSArMDg6MDAKa2VybmVsOiAiL2tlcm5lbC94ODZfNjQtYWxseWVzZGViaWFuL2IyNzc2YmY3MTQ5
-YmRkZDFmNDE2MWYxNGY3OTUyMGYxN2ZjMWQ3MWQvdm1saW51ei0zLjE4LjAiCnVzZXI6IGxrcApx
-dWV1ZTogcmFuZApyZXN1bHRfcm9vdDogIi9yZXN1bHQvdm0ta2J1aWxkLTRHL2Jvb3QvMS9kZWJp
-YW4teDg2XzY0LmNnei94ODZfNjQtYWxseWVzZGViaWFuL2IyNzc2YmY3MTQ5YmRkZDFmNDE2MWYx
-NGY3OTUyMGYxN2ZjMWQ3MWQvMCIKam9iX2ZpbGU6ICIvbGtwL3NjaGVkdWxlZC92bS1rYnVpbGQt
-NEctMS9yYW5kX2Jvb3QtMS1kZWJpYW4teDg2XzY0LmNnei14ODZfNjQtYWxseWVzZGViaWFuLWIy
-Nzc2YmY3MTQ5YmRkZDFmNDE2MWYxNGY3OTUyMGYxN2ZjMWQ3MWQtMC55YW1sIgpkZXF1ZXVlX3Rp
-bWU6IDIwMTQtMTItMTUgMDc6MDE6NTIuMDAwMDkyOTAwICswODowMApqb2Jfc3RhdGU6IGZpbmlz
-aGVkCmxvYWRhdmc6IDIuNTQgMS40NyAwLjU4IDIvMTk2IDU3MzQKc3RhcnRfdGltZTogJzE0MTg1
-OTgzMDInCmVuZF90aW1lOiAnMTQxODU5ODMwMycKdmVyc2lvbjogIi9sa3AvbGtwLy5zcmMtMjAx
-NDEyMTQtMTMzNTMxIgo=
-
---===============2965693886242693307==--
+--===============5681242110060944912==--
 
