@@ -1,147 +1,126 @@
-Content-Type: multipart/mixed; boundary="===============3763919664086371384=="
+Content-Type: multipart/mixed; boundary="===============8295364032468633655=="
 MIME-Version: 1.0
-From: Preeti U Murthy <preeti@linux.vnet.ibm.com>
+From: Oded Gabbay <oded.gabbay@amd.com>
 To: lkp@lists.01.org
-Subject: Re: [RFC PATCH] drivers/intel_powerclamp : Redesign implementation of idle injection
-Date: Mon, 22 Dec 2014 14:49:30 +0530
-Message-ID: <5497E222.8090001@linux.vnet.ibm.com>
-In-Reply-To: <CAHLCerM2tNg46ZqUAg+uiZ913TH_ForkLQPUL_3ZWeTbm74gKQ@mail.gmail.com>
+Subject: Re: [drm/radeon] BUG: unable to handle kernel paging request at 03200000
+Date: Mon, 22 Dec 2014 11:25:58 +0200
+Message-ID: <5497E3A6.7070600@amd.com>
+In-Reply-To: <1418891181.26403.9.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3763919664086371384==
+--===============8295364032468633655==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 12/22/2014 12:07 PM, Amit Kucheria wrote:
-> On Sun, Dec 21, 2014 at 3:59 PM, Preeti U Murthy
-> <preeti@linux.vnet.ibm.com> wrote:
-> =
 
-> <snip>
-> =
 
->> This patch is compile tested only. The goal is to get a consensus on the=
- design first.
->> There are some points that need to be given a thought as far as I can se=
-e:
+On 12/18/2014 10:26 AM, Huang Ying wrote:
+> On Thu, 2014-12-18 at 10:20 +0200, Oded Gabbay wrote:
+>> On 12/18/2014 10:17 AM, Huang Ying wrote:
+>>> FYI, we noticed the below changes on
+>>>
+>>> commit e28740ece34d314002b1ddfa14e8fb7c7b909489 ("drm/radeon: Add radeo=
+n <--> amdkfd interface")
+>>>
+>>>
+>>> +------------------------------------------+------------+------------+
+>>> |                                          | 1c0a46255f | e28740ece3 |
+>>> +------------------------------------------+------------+------------+
+>>> | boot_successes                           | 0          | 0          |
+>>> | boot_failures                            | 10         | 13         |
+>>> | BUG:kernel_boot_hang                     | 9          | 9          |
+>>> | INFO:suspicious_RCU_usage                | 1          | 3          |
+>>> | backtrace:do_fork                        | 1          | 3          |
+>>> | BUG:unable_to_handle_kernel              | 0          | 3          |
+>>> | Oops                                     | 0          | 3          |
+>>> | Kernel_panic-not_syncing:Fatal_exception | 0          | 3          |
+>>> | backtrace:radeon_init                    | 0          | 3          |
+>>> | backtrace:kernel_init_freeable           | 0          | 3          |
+>>> | BUG:kernel_boot_crashed                  | 0          | 1          |
+>>> +------------------------------------------+------------+------------+
+>>>
+>>>
+>>> [    5.407193] Linux agpgart interface v0.103
+>>> [    5.428469] [drm] Initialized drm 1.1.0 20060810
+>>> [    5.438456] [drm] radeon kernel modesetting enabled.
+>>> [    5.439741] BUG: unable to handle kernel paging request at 03200000
+>>> [    5.440063] IP: [<03200000>] 0x3200000
+>>> [    5.440063] *pde =3D 00000000
+>>> [    5.440063] Oops: 0000 [#1] SMP
+>>> [    5.440063] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.18.0-g603ba7=
+e #14
+>>> [    5.440063] task: 42e08000 ti: 42e02000 task.ti: 42e02000
+>>> [    5.440063] EIP: 0060:[<03200000>] EFLAGS: 00010246 CPU: 0
+>>> [    5.440063] EIP is at 0x3200000
+>>> [    5.440063] EAX: 00000001 EBX: 00000000 ECX: 4738b460 EDX: 45735a64
+>>> [    5.440063] ESI: 4662d0dd EDI: 401fafa0 EBP: 42e03f20 ESP: 42e03f18
+>>> [    5.440063]  DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
+>>> [    5.440063] CR0: 8005003b CR2: 03200000 CR3: 067f0000 CR4: 00000690
+>>> [    5.440063] Stack:
+>>> [    5.440063]  44bf19b1 00000000 42e03f28 4662d20b 42e03f8c 465b6e5d 0=
+0000000 00000000
+>>> [    5.440063]  00000000 00000000 00000000 00000000 000000ea 00000000 0=
+0000000 00000101
+>>> [    5.440063]  45f2dfba 00000010 00000012 00000200 47fdcf54 47fdcf54 0=
+0000006 00000291
+>>> [    5.440063] Call Trace:
+>>> [    5.440063]  [<44bf19b1>] ? radeon_kfd_init+0x67/0xab
+>>> [    5.440063]  [<4662d20b>] radeon_init+0x12e/0x15c
+>>> [    5.440063]  [<465b6e5d>] do_one_initcall+0x25f/0x41e
+>>> [    5.440063]  [<465b7291>] kernel_init_freeable+0x275/0x423
+>>> [    5.440063]  [<455b4e52>] kernel_init+0x1c/0x293
+>>> [    5.440063]  [<455df181>] ret_from_kernel_thread+0x21/0x30
+>>> [    5.440063]  [<455b4e36>] ? rest_init+0x33e/0x33e
+>>> [    5.440063] Code:  Bad EIP value.
+>>> [    5.440063] EIP: [<03200000>] 0x3200000 SS:ESP 0068:42e03f18
+>>> [    5.440063] CR2: 0000000003200000
+>>> [    5.440063] ---[ end trace 1959b295b01c0c14 ]---
+>>> [    5.440063] Kernel panic - not syncing: Fatal exception
+>>>
+>>>
+>>> Thanks,
+>>> Huang, Ying
+>>>
+>>>
+>>>
+>>>
+>>> _______________________________________________
+>>> LKP mailing list
+>>> LKP(a)linux.intel.com
+>>>
 >>
->> 1. The idle task chosen during the idle injection period needs to enter =
-a specific mwait
->> state. The cpuidle governors cannot choose any idle state like they do g=
-enerally for idle
->> tasks.
-> =
+>> Is this a 32-bit kernel ?
+>> Is amdkfd compiled ?
+>
+> The kconfig file is attached in the original email.  From it, it is
+> 32-bit kernel.  I don't find AMDKFD in config file.  Could you help me
+> to check it?
+>
+> Best Regards,
+> Huang, Ying
+>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo(a)vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+>
+OK, I found the culprit.
+If you define 32-bit kernel, No modules and random kernel base, than the =
 
-> That information should be hidden in the platform-specific driver
-> (intel_idle in this case?) through some flag and not in sched core
-> which is gradually learning to driving idle directly.
+symbol_request function doesn't return NULL if the symbol doesn't exists, w=
+hich =
 
-Hmm? How do we communicate the clamping information to the cpuidle
-driver ? Will not a pm_qos_add_request() to initialize the
-PM_QOS_CPU_DMA_LATENCY class to the value 0 from the powerclamp driver
-during throttling periods suffice? The governor will read this value anyway.
+causes the rest of the code to have undefined results.
 
-> =
+I prepared a patch to fix it and hopefully it will be in -rc2. I will sent =
+it to =
 
->> 2. We throttle runqueue when the bandwidth is available. We do not touch=
- any parameters
->> around the cfs_rq bandwidth in this patch. It is supposed to bypass the =
-bandwidth checks
->> entirely. But will there be any serious consequence as a result?
-> =
+dri-devel as usual.
 
->> 3. There can be cases when the runqueues are throttled when bandwidths a=
-re exceeded too.
->> What are the consequences of the powerclamp driver running parallely?
->>
->> 4. The idle periods should stand synchronized across all cpus because th=
-e change in the
->> design is to start timers to expire immediately instead of waking up kth=
-reads. The only
->> concern is cpu hotplug operations when the cpu coming online can go out =
-of sync with
->> the idle periods. But that situation exists today as well.
-> =
+	Oded
 
->   5. Will the maintainers be horrified if this throttle_rq API is used
-> to wean users off hotplug? What are the consequences of "permanent
-> throttling"? IOW, some platform drivers could throttle the rqs of an
-> entire cpu cluster until the right usecase comes by when that
-> processing power is needed.
-
-This bothers me as well. As of now I am unable to see how else we can
-enable the powerclamp driver to throttle runqueues.
-Need some pointers here.
-
-> =
-
->> Signed-off-by: Preeti U Murthy <preeti@linux.vnet.ibm.com>
->> ---
->>
->>  drivers/thermal/intel_powerclamp.c |  227 ++++++++++++++---------------=
--------
->>  include/linux/sched.h              |    2
->>  kernel/sched/fair.c                |   29 ++++-
->>  3 files changed, 117 insertions(+), 141 deletions(-)
-> =
-
-> <snip>
-> =
-
->> diff --git a/include/linux/sched.h b/include/linux/sched.h
->> index 5e344bb..5843b7e 100644
->> --- a/include/linux/sched.h
->> +++ b/include/linux/sched.h
->> @@ -2075,9 +2075,11 @@ static inline int set_cpus_allowed_ptr(struct tas=
-k_struct *p,
->>  #ifdef CONFIG_NO_HZ_COMMON
->>  void calc_load_enter_idle(void);
->>  void calc_load_exit_idle(void);
->> +void throttle_rq(int cpu, int throttle);
->>  #else
->>  static inline void calc_load_enter_idle(void) { }
->>  static inline void calc_load_exit_idle(void) { }
->> +static inline void throttle_rq(int cpu, int throttle);
->>  #endif /* CONFIG_NO_HZ_COMMON */
->>
->>  #ifndef CONFIG_CPUMASK_OFFSTACK
->> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
->> index ef2b104..01785cb 100644
->> --- a/kernel/sched/fair.c
->> +++ b/kernel/sched/fair.c
->> @@ -3417,8 +3417,15 @@ static void throttle_cfs_rq(struct cfs_rq *cfs_rq)
->>          * distribute_cfs_runtime will not see us
->>          */
->>         list_add_rcu(&cfs_rq->throttled_list, &cfs_b->throttled_cfs_rq);
->> -       if (!cfs_b->timer_active)
->> +
->> +       /*
->> +        * Check if the cfs_rq is throttled inspite of having sufficient
->> +        * bandwidth. If so, do not meddle with the bandwidth since this
->> +        * is a case of forced idle injection
->> +        */
->> +       if (cfs_rq_throttled(cfs_rq) && !cfs_b->timer_active)
->>                 __start_cfs_bandwidth(cfs_b, false);
->> +
->>         raw_spin_unlock(&cfs_b->lock);
->>  }
->>
->> @@ -3469,6 +3476,17 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
->>                 resched_curr(rq);
->>  }
->>
->> +void throttle_rq(int cpu, int throttle)
-> =
-
-> Suggest renaming to force_throttle_rq to make it clear this this is
-> being forced upon us externally.
-
-Sure, thanks!
-
-Regards
-Preeti U Murthy
-
-
---===============3763919664086371384==--
+--===============8295364032468633655==--
 
