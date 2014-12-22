@@ -1,120 +1,54 @@
-Content-Type: multipart/mixed; boundary="===============8965066334469934558=="
+Content-Type: multipart/mixed; boundary="===============0342425258643470758=="
 MIME-Version: 1.0
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Andi Kleen <ak@linux.intel.com>
 To: lkp@lists.01.org
-Subject: [PATCH 5/5] hwrng: core - Move hwrng_init call into set_current_rng
-Date: Tue, 23 Dec 2014 16:40:22 +1100
-Message-ID: <E1Y3ICk-0007dg-OB@gondolin.me.apana.org.au>
-In-Reply-To: <20141223053909.GA28001@gondor.apana.org.au>
+Subject: Re: [PATCH] drm/radeon: Try to init amdkfd only if 64 bit kernel
+Date: Mon, 22 Dec 2014 10:49:40 -0800
+Message-ID: <20141222184940.GB17192@tassilo.jf.intel.com>
+In-Reply-To: <CADnq5_MY3+4BdWzUYffTnRWF3J4Z7nb6zyrGZK4RNwVU3axvuw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8965066334469934558==
+--===============0342425258643470758==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-We always do hwrng_init in set_current_rng.  In fact, our current
-reference count system relies on this.  So make this explicit by
-moving hwrng_init into set_current_rng.
+On Mon, Dec 22, 2014 at 11:58:43AM -0500, Alex Deucher wrote:
+> On Mon, Dec 22, 2014 at 6:11 AM, Oded Gabbay <oded.gabbay@amd.com> wrot=
+e:
+> > amdkfd driver can be compiled only in 64-bit kernel. Therefore, there i=
+s no
+> > point in trying to initialize amdkfd in 32-bit kernel.
+> >
+> > In addition, in case of specific configuration of 32-bit kernel, no mod=
+ules and
+> > random kernel base, the symbol_request function doesn't work as expecte=
+d - It
+> > doesn't return NULL if the symbol doesn't exists. That makes the kernel=
+ panic.
+> > Therefore, the as amdkfd doesn't compile in 32-bit kernel, the best way=
+ is just
+> > to return false immediately.
+> >
+> > Signed-off-by: Oded Gabbay <oded.gabbay@amd.com>
+> =
 
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
----
+> Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
 
- drivers/char/hw_random/core.c |   30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+Sorry but the patch is just bogus. X-bit only code is usually
+a very bad sign for the code. This is not windows programing after all.
 
-diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
-index 787ef42..32a8a86 100644
---- a/drivers/char/hw_random/core.c
-+++ b/drivers/char/hw_random/core.c
-@@ -71,6 +71,7 @@ MODULE_PARM_DESC(default_quality,
- 		 "default entropy content of hwrng per mill");
- =
+Even if you wanted to do a 64bit only driver -- which
+you probably don't -- the standard way would be to exclude
+it in Kconfig.
 
- static void drop_current_rng(void);
-+static int hwrng_init(struct hwrng *rng);
- static void start_khwrngd(void);
- =
+Please root-cause why symbol_request doesn't work on 32bit
+and fix it properly.
 
- static inline int rng_get_data(struct hwrng *rng, u8 *buffer, size_t size,
-@@ -103,11 +104,20 @@ static inline void cleanup_rng(struct kref *kref)
- 	complete(&rng->cleanup_done);
- }
- =
++rusty.
 
--static void set_current_rng(struct hwrng *rng)
-+static int set_current_rng(struct hwrng *rng)
- {
-+	int err;
-+
- 	BUG_ON(!mutex_is_locked(&rng_mutex));
-+
-+	err =3D hwrng_init(rng);
-+	if (err)
-+		return err;
-+
- 	drop_current_rng();
- 	current_rng =3D rng;
-+
-+	return 0;
- }
- =
+-Andi
 
- static void drop_current_rng(void)
-@@ -149,7 +159,7 @@ static void put_rng(struct hwrng *rng)
- 	mutex_unlock(&rng_mutex);
- }
- =
 
--static inline int hwrng_init(struct hwrng *rng)
-+static int hwrng_init(struct hwrng *rng)
- {
- 	if (kref_get_unless_zero(&rng->ref))
- 		goto skip_init;
-@@ -310,15 +320,9 @@ static ssize_t hwrng_attr_current_store(struct device =
-*dev,
- 	err =3D -ENODEV;
- 	list_for_each_entry(rng, &rng_list, list) {
- 		if (strcmp(rng->name, buf) =3D=3D 0) {
--			if (rng =3D=3D current_rng) {
--				err =3D 0;
--				break;
--			}
--			err =3D hwrng_init(rng);
--			if (err)
--				break;
--			set_current_rng(rng);
- 			err =3D 0;
-+			if (rng !=3D current_rng)
-+				err =3D set_current_rng(rng);
- 			break;
- 		}
- 	}
-@@ -481,10 +485,9 @@ int hwrng_register(struct hwrng *rng)
- 	old_rng =3D current_rng;
- 	err =3D 0;
- 	if (!old_rng) {
--		err =3D hwrng_init(rng);
-+		err =3D set_current_rng(rng);
- 		if (err)
- 			goto out_unlock;
--		set_current_rng(rng);
- 	}
- 	list_add_tail(&rng->list, &rng_list);
- =
-
-@@ -518,8 +521,7 @@ void hwrng_unregister(struct hwrng *rng)
- =
-
- 			tail =3D list_entry(rng_list.prev, struct hwrng, list);
- =
-
--			if (hwrng_init(tail) =3D=3D 0)
--				set_current_rng(tail);
-+			set_current_rng(tail);
- 		}
- 	}
-=20
-
---===============8965066334469934558==--
+--===============0342425258643470758==--
 
