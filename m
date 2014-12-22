@@ -1,57 +1,60 @@
-Content-Type: multipart/mixed; boundary="===============5473895101380054034=="
+Content-Type: multipart/mixed; boundary="===============2599553551157628676=="
 MIME-Version: 1.0
-From: Rusty Russell <rusty@rustcorp.com.au>
+From: Andi Kleen <ak@linux.intel.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH] drm/radeon: Try to init amdkfd only if 64 bit kernel
-Date: Wed, 24 Dec 2014 09:31:13 +1030
-Message-ID: <874msmt1hi.fsf@rustcorp.com.au>
-In-Reply-To: <54986EA2.106@amd.com>
+Date: Mon, 22 Dec 2014 11:00:41 -0800
+Message-ID: <20141222190041.GC17192@tassilo.jf.intel.com>
+In-Reply-To: <20141222184940.GB17192@tassilo.jf.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5473895101380054034==
+--===============2599553551157628676==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Oded Gabbay <oded.gabbay@amd.com> writes:
-> I didn't say it doesn't always work.
-> The actual thing that doesn't work is the define symbol_get and only in a
-> specific case of 32bit kernel AND CONFIG_MODULES is unset AND
-> CONFIG_RANDOMIZE_BASE is set.
-> The define in that case is:
-> #define symbol_get(x) ({ extern typeof(x) x __attribute__((weak)); &(x); =
-})
->
-> Why it doesn't work (doesn't return NULL when symbol doesn't exists) ?
+On Mon, Dec 22, 2014 at 10:49:40AM -0800, Andi Kleen wrote:
+> On Mon, Dec 22, 2014 at 11:58:43AM -0500, Alex Deucher wrote:
+> > On Mon, Dec 22, 2014 at 6:11 AM, Oded Gabbay <oded.gabbay@amd.com> wr=
+ote:
+> > > amdkfd driver can be compiled only in 64-bit kernel. Therefore, there=
+ is no
+> > > point in trying to initialize amdkfd in 32-bit kernel.
+> > >
+> > > In addition, in case of specific configuration of 32-bit kernel, no m=
+odules and
+> > > random kernel base, the symbol_request function doesn't work as expec=
+ted - It
+> > > doesn't return NULL if the symbol doesn't exists. That makes the kern=
+el panic.
+> > > Therefore, the as amdkfd doesn't compile in 32-bit kernel, the best w=
+ay is just
+> > > to return false immediately.
+> > >
+> > > Signed-off-by: Oded Gabbay <oded.gabbay@amd.com>
+> > =
 
-Hmm, I'd guess CONFIG_RANDOMIZE_BASE is relocating NULL symbols...
+> > Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+> =
 
-No, I can't reproduce this.  Please send your .config privately.
+> Sorry but the patch is just bogus. X-bit only code is usually
+> a very bad sign for the code. This is not windows programing after all.
+> =
 
-Here's my test case:
+> Even if you wanted to do a 64bit only driver -- which
+> you probably don't -- the standard way would be to exclude
+> it in Kconfig.
+> =
 
-diff --git a/init/main.c b/init/main.c
-index 61b993767db5..a3ee1ec97ec3 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -683,6 +683,12 @@ asmlinkage __visible void __init start_kernel(void)
- =
+> Please root-cause why symbol_request doesn't work on 32bit
+> and fix it properly.
+> =
 
- 	ftrace_init();
- =
+> +rusty.
 
-+	{
-+		extern void nonexistent_fn(void);
-+		printk("symbol_get(nonexistent_fn) =3D %p\n",
-+		       symbol_get(nonexistent_fn));
-+	}
-+
- 	/* Do the rest non-__init'ed, we're now alive */
- 	rest_init();
- }
+And also with correct email.
 
-Thanks,
-Rusty.
+-Andi
 
---===============5473895101380054034==--
+--===============2599553551157628676==--
 
