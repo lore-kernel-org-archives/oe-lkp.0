@@ -1,125 +1,57 @@
-Content-Type: multipart/mixed; boundary="===============1638800849021661587=="
+Content-Type: multipart/mixed; boundary="===============5473895101380054034=="
 MIME-Version: 1.0
-From: Steven Rostedt <rostedt@goodmis.org>
+From: Rusty Russell <rusty@rustcorp.com.au>
 To: lkp@lists.01.org
-Subject: Re: [ftrace] fef5aeeee9e: -27.2% boot-slabinfo.num_objs
-Date: Tue, 23 Dec 2014 08:32:14 -0500
-Message-ID: <20141223083214.0b199465@gandalf.local.home>
-In-Reply-To: <1419304217.26403.44.camel@intel.com>
+Subject: Re: [PATCH] drm/radeon: Try to init amdkfd only if 64 bit kernel
+Date: Wed, 24 Dec 2014 09:31:13 +1030
+Message-ID: <874msmt1hi.fsf@rustcorp.com.au>
+In-Reply-To: <54986EA2.106@amd.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1638800849021661587==
+--===============5473895101380054034==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 23 Dec 2014 11:10:17 +0800
-Huang Ying <ying.huang@intel.com> wrote:
+Oded Gabbay <oded.gabbay@amd.com> writes:
+> I didn't say it doesn't always work.
+> The actual thing that doesn't work is the define symbol_get and only in a
+> specific case of 32bit kernel AND CONFIG_MODULES is unset AND
+> CONFIG_RANDOMIZE_BASE is set.
+> The define in that case is:
+> #define symbol_get(x) ({ extern typeof(x) x __attribute__((weak)); &(x); =
+})
+>
+> Why it doesn't work (doesn't return NULL when symbol doesn't exists) ?
 
-> FYI, we noticed the below changes on
-> =
+Hmm, I'd guess CONFIG_RANDOMIZE_BASE is relocating NULL symbols...
 
-> commit fef5aeeee9e3717e7aea991a7ae9ff6a7a2d4c85 ("ftrace: Replace tramp_h=
-ash with old_*_hash to save space")
-> =
+No, I can't reproduce this.  Please send your .config privately.
 
-> =
+Here's my test case:
 
-> testbox/testcase/testparams: vm-kbuild-4G/boot/1
-> =
+diff --git a/init/main.c b/init/main.c
+index 61b993767db5..a3ee1ec97ec3 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -683,6 +683,12 @@ asmlinkage __visible void __init start_kernel(void)
+ =
 
-> e1effa0144a1ddf5  fef5aeeee9e3717e7aea991a7a  =
+ 	ftrace_init();
+ =
 
-> ----------------  --------------------------  =
++	{
++		extern void nonexistent_fn(void);
++		printk("symbol_get(nonexistent_fn) =3D %p\n",
++		       symbol_get(nonexistent_fn));
++	}
++
+ 	/* Do the rest non-__init'ed, we're now alive */
+ 	rest_init();
+ }
 
->          %stddev     %change         %stddev
->              \          |                \  =
+Thanks,
+Rusty.
 
->     437752 =C2=B1  0%     -27.2%     318545 =C2=B1  0%  boot-slabinfo.num=
-_objs
-> =
-
-> vm-kbuild-4G: qemu-system-x86_64 -enable-kvm
-> Memory: 4G
-
-I have no idea what this test does. Is this good or bad? Is that -27.2%
-a performance regression, or memory regression?
-
--- Steve
-
-
-> =
-
-> =
-
-> =
-
->                                boot-slabinfo.num_objs
-> =
-
->   440000 *+*--*-*-*------*----*-*-*--*--------*-*--*-*-*--*--------------=
----+
->          |           *.*   *.          *.*..*                            =
-   |
->   420000 ++                                                              =
-   |
->          |                                                               =
-   |
->   400000 ++                                                              =
-   |
->          |                                                               =
-   |
->   380000 ++                                                              =
-   |
->          |                                                               =
-   |
->   360000 ++                                                              =
-   |
->          |                                                               =
-   |
->   340000 ++                                                              =
-   |
->          |                                                               =
-   |
->   320000 O+O  O   O  O O O O  O O O  O O    O O O    O O  O O O O  O O O =
- O O
->          |      O                        O         O                     =
-   |
->   300000 ++--------------------------------------------------------------=
----+
-> =
-
-> 	[*] bisect-good sample
-> 	[O] bisect-bad  sample
-> =
-
-> To reproduce:
-> =
-
-> 	apt-get install ruby ruby-oj
-> 	git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tests.git
-> 	cd lkp-tests
-> 	bin/setup-local job.yaml # the job file attached in this email
-> 	bin/run-local   job.yaml
-> =
-
-> =
-
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
-> =
-
-> =
-
-> Thanks,
-> Huang, Ying
-> =
-
-
-
---===============1638800849021661587==--
+--===============5473895101380054034==--
 
