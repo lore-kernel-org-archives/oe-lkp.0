@@ -1,59 +1,120 @@
-Content-Type: multipart/mixed; boundary="===============6406571153818934738=="
+Content-Type: multipart/mixed; boundary="===============8965066334469934558=="
 MIME-Version: 1.0
 From: Herbert Xu <herbert@gondor.apana.org.au>
 To: lkp@lists.01.org
-Subject: [PATCH 4/5] hwrng: core - Drop current rng in set_current_rng
-Date: Tue, 23 Dec 2014 16:40:21 +1100
-Message-ID: <E1Y3ICj-0007dO-44@gondolin.me.apana.org.au>
+Subject: [PATCH 5/5] hwrng: core - Move hwrng_init call into set_current_rng
+Date: Tue, 23 Dec 2014 16:40:22 +1100
+Message-ID: <E1Y3ICk-0007dg-OB@gondolin.me.apana.org.au>
 In-Reply-To: <20141223053909.GA28001@gondor.apana.org.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6406571153818934738==
+--===============8965066334469934558==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Rather than having callers of set_current_rng call drop_current_rng,
-we can do it directly in set_current_rng.
+We always do hwrng_init in set_current_rng.  In fact, our current
+reference count system relies on this.  So make this explicit by
+moving hwrng_init into set_current_rng.
 
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 ---
 
- drivers/char/hw_random/core.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/char/hw_random/core.c |   30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
-index 1d342f0..787ef42 100644
+index 787ef42..32a8a86 100644
 --- a/drivers/char/hw_random/core.c
 +++ b/drivers/char/hw_random/core.c
-@@ -70,6 +70,7 @@ module_param(default_quality, ushort, 0644);
- MODULE_PARM_DESC(default_quality,
+@@ -71,6 +71,7 @@ MODULE_PARM_DESC(default_quality,
  		 "default entropy content of hwrng per mill");
  =
 
-+static void drop_current_rng(void);
+ static void drop_current_rng(void);
++static int hwrng_init(struct hwrng *rng);
  static void start_khwrngd(void);
  =
 
  static inline int rng_get_data(struct hwrng *rng, u8 *buffer, size_t size,
-@@ -105,6 +106,7 @@ static inline void cleanup_rng(struct kref *kref)
- static void set_current_rng(struct hwrng *rng)
- {
- 	BUG_ON(!mutex_is_locked(&rng_mutex));
-+	drop_current_rng();
- 	current_rng =3D rng;
+@@ -103,11 +104,20 @@ static inline void cleanup_rng(struct kref *kref)
+ 	complete(&rng->cleanup_done);
  }
  =
 
-@@ -315,7 +317,6 @@ static ssize_t hwrng_attr_current_store(struct device *=
-dev,
- 			err =3D hwrng_init(rng);
- 			if (err)
- 				break;
--			drop_current_rng();
- 			set_current_rng(rng);
- 			err =3D 0;
- 			break;
+-static void set_current_rng(struct hwrng *rng)
++static int set_current_rng(struct hwrng *rng)
+ {
++	int err;
++
+ 	BUG_ON(!mutex_is_locked(&rng_mutex));
++
++	err =3D hwrng_init(rng);
++	if (err)
++		return err;
++
+ 	drop_current_rng();
+ 	current_rng =3D rng;
++
++	return 0;
+ }
+ =
 
---===============6406571153818934738==--
+ static void drop_current_rng(void)
+@@ -149,7 +159,7 @@ static void put_rng(struct hwrng *rng)
+ 	mutex_unlock(&rng_mutex);
+ }
+ =
+
+-static inline int hwrng_init(struct hwrng *rng)
++static int hwrng_init(struct hwrng *rng)
+ {
+ 	if (kref_get_unless_zero(&rng->ref))
+ 		goto skip_init;
+@@ -310,15 +320,9 @@ static ssize_t hwrng_attr_current_store(struct device =
+*dev,
+ 	err =3D -ENODEV;
+ 	list_for_each_entry(rng, &rng_list, list) {
+ 		if (strcmp(rng->name, buf) =3D=3D 0) {
+-			if (rng =3D=3D current_rng) {
+-				err =3D 0;
+-				break;
+-			}
+-			err =3D hwrng_init(rng);
+-			if (err)
+-				break;
+-			set_current_rng(rng);
+ 			err =3D 0;
++			if (rng !=3D current_rng)
++				err =3D set_current_rng(rng);
+ 			break;
+ 		}
+ 	}
+@@ -481,10 +485,9 @@ int hwrng_register(struct hwrng *rng)
+ 	old_rng =3D current_rng;
+ 	err =3D 0;
+ 	if (!old_rng) {
+-		err =3D hwrng_init(rng);
++		err =3D set_current_rng(rng);
+ 		if (err)
+ 			goto out_unlock;
+-		set_current_rng(rng);
+ 	}
+ 	list_add_tail(&rng->list, &rng_list);
+ =
+
+@@ -518,8 +521,7 @@ void hwrng_unregister(struct hwrng *rng)
+ =
+
+ 			tail =3D list_entry(rng_list.prev, struct hwrng, list);
+ =
+
+-			if (hwrng_init(tail) =3D=3D 0)
+-				set_current_rng(tail);
++			set_current_rng(tail);
+ 		}
+ 	}
+=20
+
+--===============8965066334469934558==--
 
