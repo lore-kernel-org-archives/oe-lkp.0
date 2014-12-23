@@ -1,121 +1,69 @@
-Content-Type: multipart/mixed; boundary="===============7681217049522169040=="
+Content-Type: multipart/mixed; boundary="===============7001343539651486633=="
 MIME-Version: 1.0
 From: Rusty Russell <rusty@rustcorp.com.au>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 3/5] hwrng: core - Do not register device opportunistically
-Date: Wed, 24 Dec 2014 09:59:41 +1030
-Message-ID: <87mw6egd22.fsf@rustcorp.com.au>
-In-Reply-To: <E1Y3ICh-0007d7-SM@gondolin.me.apana.org.au>
+Subject: Re: [PATCH 2/5] hwrng: core - Fix current_rng init/cleanup race yet again
+Date: Wed, 24 Dec 2014 09:56:36 +1030
+Message-ID: <87ppbagd77.fsf@rustcorp.com.au>
+In-Reply-To: <E1Y3ICg-0007cq-Kj@gondolin.me.apana.org.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7681217049522169040==
+--===============7001343539651486633==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 Herbert Xu <herbert@gondor.apana.org.au> writes:
-> Currently we only register the device when a valid RNG is added.
-> However the way it's done is buggy because we test whether there
-> is a current RNG to determine whether we need to register.  As
-> the current RNG may be missing due to a reinitialisation error
-> this can lead to a reregistration of the device.
+> The kref solution is still buggy because we were only focusing
+> on the register/unregister race.  The same race affects the
+> setting of current_rng through sysfs.
 >
-> As the device already has to handle a NULL current RNG anyway,
-> let's just register the device always and remove the complexity.
-
-Does this break userspace by creating a device which will just return
--ENODEV on read?  Sure, callers *should* handle it...
-
-I far prefer this (simpler) model, though.
-
-Thanks,
-Rusty.
-
+> This patch fixes it by using kref_get_unless_zero.
 >
 > Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-> ---
->
->  drivers/char/hw_random/core.c |   23 ++++++++++++-----------
->  1 file changed, 12 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
-> index 42827fd..1d342f0 100644
-> --- a/drivers/char/hw_random/core.c
-> +++ b/drivers/char/hw_random/core.c
-> @@ -372,14 +372,14 @@ static DEVICE_ATTR(rng_available, S_IRUGO,
->  		   NULL);
->  =
 
->  =
+This patch scares me a little!
 
-> -static void unregister_miscdev(void)
-> +static void __exit unregister_miscdev(void)
+I'll have to pull the tree to review it properly, but the theory was
+that the reference count was counting users of the rng.  Now I don't
+know what it's counting:
+
+>  static inline int hwrng_init(struct hwrng *rng)
 >  {
->  	device_remove_file(rng_miscdev.this_device, &dev_attr_rng_available);
->  	device_remove_file(rng_miscdev.this_device, &dev_attr_rng_current);
->  	misc_deregister(&rng_miscdev);
->  }
+> +	if (kref_get_unless_zero(&rng->ref))
+> +		goto skip_init;
+> +
+>  	if (rng->init) {
+>  		int ret;
+
+OK, so this skip_init branch is triggered when the rng is being
+shut down as it's no longer current_rng?
+
+> +
+> +	kref_init(&rng->ref);
+> +	reinit_completion(&rng->cleanup_done);
+> +
+> +skip_init:
+>  	add_early_randomness(rng);
+
+Then we use it to add randomness?
+
 >  =
 
-> -static int register_miscdev(void)
-> +static int __init register_miscdev(void)
->  {
->  	int err;
->  =
-
-> @@ -484,12 +484,6 @@ int hwrng_register(struct hwrng *rng)
->  		if (err)
+>  	current_quality =3D rng->quality ? : default_quality;
+> @@ -467,6 +474,9 @@ int hwrng_register(struct hwrng *rng)
 >  			goto out_unlock;
->  		set_current_rng(rng);
-> -
-> -		err =3D register_miscdev();
-> -		if (err) {
-> -			drop_current_rng();
-> -			goto out_unlock;
-> -		}
 >  	}
->  	list_add_tail(&rng->list, &rng_list);
 >  =
 
-> @@ -530,7 +524,6 @@ void hwrng_unregister(struct hwrng *rng)
->  =
-
->  	if (list_empty(&rng_list)) {
->  		mutex_unlock(&rng_mutex);
-> -		unregister_miscdev();
->  		if (hwrng_fill)
->  			kthread_stop(hwrng_fill);
->  	} else
-> @@ -540,16 +533,24 @@ void hwrng_unregister(struct hwrng *rng)
->  }
->  EXPORT_SYMBOL_GPL(hwrng_unregister);
->  =
-
-> -static void __exit hwrng_exit(void)
-> +static int __init hwrng_modinit(void)
-> +{
-> +	return register_miscdev();
-> +}
+> +	init_completion(&rng->cleanup_done);
+> +	complete(&rng->cleanup_done);
 > +
-> +static void __exit hwrng_modexit(void)
->  {
->  	mutex_lock(&rng_mutex);
->  	BUG_ON(current_rng);
->  	kfree(rng_buffer);
->  	kfree(rng_fillbuf);
->  	mutex_unlock(&rng_mutex);
-> +
-> +	unregister_miscdev();
->  }
->  =
 
-> -module_exit(hwrng_exit);
-> +module_init(hwrng_modinit);
-> +module_exit(hwrng_modexit);
->  =
+This code smells very bad.
 
->  MODULE_DESCRIPTION("H/W Random Number Generator (RNG) driver");
->  MODULE_LICENSE("GPL");
+Cheers,
+Rusty.
 
---===============7681217049522169040==--
+--===============7001343539651486633==--
 
