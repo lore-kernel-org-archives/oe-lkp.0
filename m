@@ -1,111 +1,121 @@
-Content-Type: multipart/mixed; boundary="===============6434622732464243902=="
+Content-Type: multipart/mixed; boundary="===============7681217049522169040=="
 MIME-Version: 1.0
 From: Rusty Russell <rusty@rustcorp.com.au>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 1/5] hwrng: core - Use struct completion for cleanup_done
-Date: Wed, 24 Dec 2014 09:49:10 +1030
-Message-ID: <87tx0mgdjl.fsf@rustcorp.com.au>
-In-Reply-To: <E1Y3ICf-0007cX-B9@gondolin.me.apana.org.au>
+Subject: Re: [PATCH 3/5] hwrng: core - Do not register device opportunistically
+Date: Wed, 24 Dec 2014 09:59:41 +1030
+Message-ID: <87mw6egd22.fsf@rustcorp.com.au>
+In-Reply-To: <E1Y3ICh-0007d7-SM@gondolin.me.apana.org.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6434622732464243902==
+--===============7681217049522169040==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 Herbert Xu <herbert@gondor.apana.org.au> writes:
-> There is no point in doing a manual completion for cleanup_done
-> when struct completion fits in perfectly.
+> Currently we only register the device when a valid RNG is added.
+> However the way it's done is buggy because we test whether there
+> is a current RNG to determine whether we need to register.  As
+> the current RNG may be missing due to a reinitialisation error
+> this can lead to a reregistration of the device.
 >
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> As the device already has to handle a NULL current RNG anyway,
+> let's just register the device always and remove the complexity.
 
-Indeed.
+Does this break userspace by creating a device which will just return
+-ENODEV on read?  Sure, callers *should* handle it...
 
-Acked-by: Rusty Russell <rusty@rustcorp.com.au>
+I far prefer this (simpler) model, though.
 
 Thanks,
 Rusty.
 
+>
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 > ---
 >
->  drivers/char/hw_random/core.c |   12 +++---------
->  include/linux/hw_random.h     |    3 ++-
->  2 files changed, 5 insertions(+), 10 deletions(-)
+>  drivers/char/hw_random/core.c |   23 ++++++++++++-----------
+>  1 file changed, 12 insertions(+), 11 deletions(-)
 >
 > diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
-> index 6ec4225..3dba2cf 100644
+> index 42827fd..1d342f0 100644
 > --- a/drivers/char/hw_random/core.c
 > +++ b/drivers/char/hw_random/core.c
-> @@ -60,7 +60,6 @@ static DEFINE_MUTEX(rng_mutex);
->  static DEFINE_MUTEX(reading_mutex);
->  static int data_avail;
->  static u8 *rng_buffer, *rng_fillbuf;
-> -static DECLARE_WAIT_QUEUE_HEAD(rng_done);
->  static unsigned short current_quality;
->  static unsigned short default_quality; /* =3D 0; default to "off" */
+> @@ -372,14 +372,14 @@ static DEVICE_ATTR(rng_available, S_IRUGO,
+>  		   NULL);
 >  =
 
-> @@ -100,10 +99,7 @@ static inline void cleanup_rng(struct kref *kref)
->  	if (rng->cleanup)
->  		rng->cleanup(rng);
 >  =
 
-> -	/* cleanup_done should be updated after cleanup finishes */
-> -	smp_wmb();
-> -	rng->cleanup_done =3D true;
-> -	wake_up_all(&rng_done);
-> +	complete(&rng->cleanup_done);
+> -static void unregister_miscdev(void)
+> +static void __exit unregister_miscdev(void)
+>  {
+>  	device_remove_file(rng_miscdev.this_device, &dev_attr_rng_available);
+>  	device_remove_file(rng_miscdev.this_device, &dev_attr_rng_current);
+>  	misc_deregister(&rng_miscdev);
 >  }
 >  =
 
->  static void set_current_rng(struct hwrng *rng)
-> @@ -498,7 +494,7 @@ int hwrng_register(struct hwrng *rng)
->  		add_early_randomness(rng);
+> -static int register_miscdev(void)
+> +static int __init register_miscdev(void)
+>  {
+>  	int err;
+>  =
+
+> @@ -484,12 +484,6 @@ int hwrng_register(struct hwrng *rng)
+>  		if (err)
+>  			goto out_unlock;
+>  		set_current_rng(rng);
+> -
+> -		err =3D register_miscdev();
+> -		if (err) {
+> -			drop_current_rng();
+> -			goto out_unlock;
+> -		}
 >  	}
+>  	list_add_tail(&rng->list, &rng_list);
 >  =
 
-> -	rng->cleanup_done =3D false;
-> +	init_completion(&rng->cleanup_done);
+> @@ -530,7 +524,6 @@ void hwrng_unregister(struct hwrng *rng)
 >  =
 
->  out_unlock:
->  	mutex_unlock(&rng_mutex);
-> @@ -532,9 +528,7 @@ void hwrng_unregister(struct hwrng *rng)
->  	} else
+>  	if (list_empty(&rng_list)) {
 >  		mutex_unlock(&rng_mutex);
->  =
-
-> -	/* Just in case rng is reading right now, wait. */
-> -	wait_event(rng_done, rng->cleanup_done &&
-> -		   atomic_read(&rng->ref.refcount) =3D=3D 0);
-> +	wait_for_completion(&rng->cleanup_done);
+> -		unregister_miscdev();
+>  		if (hwrng_fill)
+>  			kthread_stop(hwrng_fill);
+>  	} else
+> @@ -540,16 +533,24 @@ void hwrng_unregister(struct hwrng *rng)
 >  }
 >  EXPORT_SYMBOL_GPL(hwrng_unregister);
 >  =
 
-> diff --git a/include/linux/hw_random.h b/include/linux/hw_random.h
-> index 7832e50..eb7b414 100644
-> --- a/include/linux/hw_random.h
-> +++ b/include/linux/hw_random.h
-> @@ -12,6 +12,7 @@
->  #ifndef LINUX_HWRANDOM_H_
->  #define LINUX_HWRANDOM_H_
+> -static void __exit hwrng_exit(void)
+> +static int __init hwrng_modinit(void)
+> +{
+> +	return register_miscdev();
+> +}
+> +
+> +static void __exit hwrng_modexit(void)
+>  {
+>  	mutex_lock(&rng_mutex);
+>  	BUG_ON(current_rng);
+>  	kfree(rng_buffer);
+>  	kfree(rng_fillbuf);
+>  	mutex_unlock(&rng_mutex);
+> +
+> +	unregister_miscdev();
+>  }
 >  =
 
-> +#include <linux/completion.h>
->  #include <linux/types.h>
->  #include <linux/list.h>
->  #include <linux/kref.h>
-> @@ -46,7 +47,7 @@ struct hwrng {
->  	/* internal. */
->  	struct list_head list;
->  	struct kref ref;
-> -	bool cleanup_done;
-> +	struct completion cleanup_done;
->  };
+> -module_exit(hwrng_exit);
+> +module_init(hwrng_modinit);
+> +module_exit(hwrng_modexit);
 >  =
 
->  /** Register a new Hardware Random Number Generator driver. */
+>  MODULE_DESCRIPTION("H/W Random Number Generator (RNG) driver");
+>  MODULE_LICENSE("GPL");
 
---===============6434622732464243902==--
+--===============7681217049522169040==--
 
