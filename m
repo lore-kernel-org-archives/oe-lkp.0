@@ -1,134 +1,110 @@
-Content-Type: multipart/mixed; boundary="===============8649569118935954986=="
+Content-Type: multipart/mixed; boundary="===============2412392607409956213=="
 MIME-Version: 1.0
-From: Oded Gabbay <oded.gabbay@amd.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] drm/radeon: Try to init amdkfd only if 64 bit kernel
-Date: Sun, 28 Dec 2014 11:05:04 +0200
-Message-ID: <549FC7C0.7040800@amd.com>
-In-Reply-To: <549C038E.1030206@vodafone.de>
+Subject: Re: [PATCH] tick/powerclamp: Remove tick_nohz_idle abuse
+Date: Mon, 22 Dec 2014 18:57:08 -0800
+Message-ID: <20141222185708.15bbdd17@jacob-VirtualBox>
+In-Reply-To: <5494D160.8060808@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8649569118935954986==
+--===============2412392607409956213==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Sat, 20 Dec 2014 07:01:12 +0530
+Preeti U Murthy <preeti@linux.vnet.ibm.com> wrote:
+
+> On 12/20/2014 01:26 AM, Thomas Gleixner wrote:
+> > On Fri, 19 Dec 2014, Jacob Pan wrote:
+> > =
+
+> >> On Thu, 18 Dec 2014 22:12:57 +0100 (CET)
+> >> Thomas Gleixner <tglx@linutronix.de> wrote:
+> >>
+> >>> On Thu, 18 Dec 2014, Jacob Pan wrote:
+> >>>> OK I agree, also as I mentioned earlier, Peter already has a
+> >>>> patch for consolidated idle loop and remove
+> >>>> tick_nohz_idle_enter/exit call from powerclamp driver. I have
+> >>>> been working on a few tweaks to maintain the functionality and
+> >>>> efficiency with the consolidated idle loop. We can apply the
+> >>>> patches on top of yours.
+> >>>
+> >>> No. This is equally wrong as I pointed out before. The 'unified'
+> >>> idle loop is still fake and just pretending to be idle.
+> >>>
+> >> In terms of efficiency, the consolidated idle loop will allow
+> >> turning off sched tick during idle injection period. If we just
+> >> take out the tick_nohz_idle_xxx call, the effectiveness of
+> >> powerclamp is going down significantly. I am not arguing the
+> >> design but from fixing regression perspective or short term
+> >> solution.
+> > =
+
+> > There is no perspective. Period.
+> > =
+
+> > Its violates every rightful assumption of the nohz_IDLE_* code and
+> > just ever worked by chance. There is so much subtle wreckage lurking
+> > there that the only sane solution is to forbid it. End of story.
+> > =
+
+> > Thanks,
+> > =
+
+> > 	tglx
+> > =
+
+> Hi Jacob,
+> =
+
+> Like Thomas pointed out, we can design a sane solution for powerclamp.
+> Idle injection is nothing but throttling of runqueue. If the runqueue
+> is throttled, no fair tasks will be selected and the natural choice
+> in the absence of tasks from any other sched class is the idle task.
+> =
+
+> The idle loop will automatically be called and the nohz state will
+> also fall in place. The cpu is really idle now: the runqueue has no
+> tasks and the task running on the cpu is the idle thread. The
+> throttled tasks are on a separate list.
+> =
+
+> When the period of idle injection is over, we unthrottle the runqueue.
+> All this being taken care of my a non-deferrable timer. This design
+> ensures that the intention of powerclamp is not hampered while at the
+> same time maintaining a sane state for nohz; you will get the
+> efficiency you want.
+> =
+
+> Of course there may be corner cases and challenges around
+> synchronization of package idle, which I am sure we can work around
+> with a better design such as the above. I am working on that patchset
+> and will post out in a day. You can take a look and let us know the
+> pieces we are missing.
+> =
+
+> I find that implementing the above design is not too hard.
+> =
+
+Hi Preeti,
+Yeah, it seems to be a good approach. looking forward to work with you
+on this. Timer may scale better for larger systems. One question, will
+timer irq gets unpredictable delays if run by ksoftirqd?
+BTW, I may not be able to respond quickly during the holidays. If
+things workout, it may benefit ACPI PAD driver as well.
 
 
-On 12/25/2014 02:31 PM, Christian K=C3=B6nig wrote:
-> Am 22.12.2014 um 20:18 schrieb Oded Gabbay:
->>
->> On 12/22/2014 09:00 PM, Andi Kleen wrote:
->>> On Mon, Dec 22, 2014 at 10:49:40AM -0800, Andi Kleen wrote:
->>>> On Mon, Dec 22, 2014 at 11:58:43AM -0500, Alex Deucher wrote:
->>>>> On Mon, Dec 22, 2014 at 6:11 AM, Oded Gabbay <oded.gabbay@amd.com> =
-wrote:
->>>>>> amdkfd driver can be compiled only in 64-bit kernel. Therefore, ther=
-e is no
->>>>>> point in trying to initialize amdkfd in 32-bit kernel.
->>>>>>
->>>>>> In addition, in case of specific configuration of 32-bit kernel, no
->>>>>> modules and
->>>>>> random kernel base, the symbol_request function doesn't work as expe=
-cted - It
->>>>>> doesn't return NULL if the symbol doesn't exists. That makes the ker=
-nel
->>>>>> panic.
->>>>>> Therefore, the as amdkfd doesn't compile in 32-bit kernel, the best =
-way is
->>>>>> just
->>>>>> to return false immediately.
->>>>>>
->>>>>> Signed-off-by: Oded Gabbay <oded.gabbay@amd.com>
->>>>> Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
->>>> Sorry but the patch is just bogus. X-bit only code is usually
->>>> a very bad sign for the code. This is not windows programing after all.
->> Hi Andi,
->>
->> Strange, I have never programmed for Windows in my life (except maybe in=
- a
->> few courses during my degree) :)
->>>> Even if you wanted to do a 64bit only driver -- which
->>>> you probably don't -- the standard way would be to exclude
->>>> it in Kconfig.
->> So amdkfd actually *only* supports 64bit user processes, because AMD's H=
-SA
->> stack on Linux supports *only* 64bit user processes. So, yes, I definite=
-ly
->> want to do a 64bit only driver.
->> If you look at kfd_open(), it fails the open of /dev/kfd if the process =
-is
->> 32bit.
->> In addition, in Kconfig of amdkfd, it is written:
->> "depends on DRM_RADEON && AMD_IOMMU_V2 && X86_64"
->>
->> The problem here is that there is code in radeon, which is a driver that=
- can
->> compile in 32bit, which tries to load amdkfd. I didn't see a point in tr=
-ying
->> to load a driver which can't be compiled in 32bit.
->
-> Well in this case couldn't we make the code in radeon depend on whether o=
-r not
-> the KFD driver is compiled in or not instead of checking the system archi=
-tecture?
->
-> Regards,
-> Christian.
->
-If we are going down that path, we need something like:
+Thanks,
 
-bool radeon_kfd_init(void)
-{
-#if defined(CONFIG_HSA_AMD_MODULE)
-	current code (symbol request and call to symbol)
-#elif defined(CONFIG_HSA_AMD)
-	direct call to kgd2kfd_init
-#else
-	return false;
-#endif
-}
-
-Now, the original concept of the symbol_request call was to prevent writing =
-
-something like the above pseudo-code, but because symbol_request is not =
-
-currently working in all cases, I think that this is a good band-aid as any.
-
-	Oded
+Jacob
+> Regards
+> Preeti U Murthy
+> =
 
 
+[Jacob Pan]
 
->>
->>>> Please root-cause why symbol_request doesn't work on 32bit
->>>> and fix it properly.
->> I didn't say it doesn't always work.
->> The actual thing that doesn't work is the define symbol_get and only in a
->> specific case of 32bit kernel AND CONFIG_MODULES is unset AND
->> CONFIG_RANDOMIZE_BASE is set.
->> The define in that case is:
->> #define symbol_get(x) ({ extern typeof(x) x __attribute__((weak)); &(x);=
- })
->>
->> Why it doesn't work (doesn't return NULL when symbol doesn't exists) ?
->> I don't know, probably because of some elf/makefile/c language magic. I'm
->> not that big of an expert on those issues, and I wanted to provide a fix=
- for
->> this problem during the -rc stages. If someone can help me solving the r=
-oot
->> cause, I would be more than happy.
->>
->>     Oded
->>>> +rusty.
->>> And also with correct email.
->>>
->>> -Andi
->>>
->> _______________________________________________
->> dri-devel mailing list
->> dri-devel(a)lists.freedesktop.org
->> http://lists.freedesktop.org/mailman/listinfo/dri-devel
->
-
---===============8649569118935954986==--
+--===============2412392607409956213==--
 
