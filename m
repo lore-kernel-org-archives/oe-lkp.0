@@ -1,597 +1,125 @@
-Content-Type: multipart/mixed; boundary="===============3164176476199748525=="
+Content-Type: multipart/mixed; boundary="===============1638800849021661587=="
 MIME-Version: 1.0
-From: Kirill Tkhai <tkhai@yandex.ru>
+From: Steven Rostedt <rostedt@goodmis.org>
 To: lkp@lists.01.org
-Subject: Re: [sched] a15b12ac36a: -46.9% time.voluntary_context_switches +1.5% will-it-scale.per_process_ops
-Date: Tue, 23 Dec 2014 11:57:13 +0300
-Message-ID: <4750651419325033@web14h.yandex.ru>
-In-Reply-To: <1419311754.26403.51.camel@intel.com>
+Subject: Re: [ftrace] fef5aeeee9e: -27.2% boot-slabinfo.num_objs
+Date: Tue, 23 Dec 2014 08:32:14 -0500
+Message-ID: <20141223083214.0b199465@gandalf.local.home>
+In-Reply-To: <1419304217.26403.44.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3164176476199748525==
+--===============1638800849021661587==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Huang,
+On Tue, 23 Dec 2014 11:10:17 +0800
+Huang Ying <ying.huang@intel.com> wrote:
 
-what do these digits mean? What test does?
-
-23.12.2014, 08:16, "Huang Ying" <ying.huang@intel.com>:
 > FYI, we noticed the below changes on
->
-> commit a15b12ac36ad4e7b856a4ae54937ae26a51aebad ("sched: Do not stop cpu =
-in set_cpus_allowed_ptr() if task is not running")
->
-> testbox/testcase/testparams: lkp-g5/will-it-scale/performance-lock1
->
-> 1ba93d42727c4400 =C2=A0a15b12ac36ad4e7b856a4ae549
-> ---------------- =C2=A0--------------------------
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0%stddev =C2=A0=C2=
-=A0=C2=A0=C2=A0%change =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0%std=
-dev
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0\ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| =C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0\
-> =C2=A0=C2=A0=C2=A01517261 =C2=B1 =C2=A00% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0+=
-1.5% =C2=A0=C2=A0=C2=A01539994 =C2=B1 =C2=A00% =C2=A0will-it-scale.per_proc=
-ess_ops
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0247 =C2=B1 30% =C2=A0=C2=A0=C2=
-=A0+131.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0573 =C2=B1 49% =C2=A0s=
-ched_debug.cpu#61.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0225 =C2=B1 22% =C2=A0=C2=A0=C2=
-=A0+142.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0546 =C2=B1 34% =C2=A0s=
-ched_debug.cpu#81.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A015115 =C2=B1 44% =C2=A0=C2=A0=C2=A0=C2=A0+3=
-7.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A020746 =C2=B1 40% =C2=A0numa-meminfo.node=
-7.Active
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01028 =C2=B1 38% =C2=A0=C2=A0=C2=A0+11=
-5.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02214 =C2=B1 36% =C2=A0sched_debug.=
-cpu#16.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02 =C2=B1 19% =C2=A0=
-=C2=A0=C2=A0+133.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05=
- =C2=B1 43% =C2=A0sched_debug.cpu#89.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A021 =C2=B1 45% =C2=A0=C2=
-=A0=C2=A0=C2=A0+88.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A040 =
-=C2=B1 23% =C2=A0sched_debug.cfs_rq[99]:/.tg_load_contrib
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0414 =C2=B1 33% =C2=A0=C2=A0=C2=
-=A0=C2=A0+98.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0823 =C2=B1 28% =
-=C2=A0sched_debug.cpu#81.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04 =C2=B1 10% =C2=A0=
-=C2=A0=C2=A0=C2=A0+88.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A08 =C2=B1 12% =C2=A0sched_debug.cfs_rq[33]:/.runnable_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A022 =C2=B1 26% =C2=A0=C2=
-=A0=C2=A0=C2=A0+80.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A040 =
-=C2=B1 24% =C2=A0sched_debug.cfs_rq[103]:/.tg_load_contrib
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07 =C2=B1 17% =C2=A0=
-=C2=A0=C2=A0=C2=A0-41.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A04 =C2=B1 25% =C2=A0sched_debug.cfs_rq[41]:/.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07 =C2=B1 17% =C2=A0=
-=C2=A0=C2=A0=C2=A0-37.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A04 =C2=B1 19% =C2=A0sched_debug.cpu#41.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03 =C2=B1 22% =C2=A0=
-=C2=A0=C2=A0+106.7% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07=
- =C2=B1 10% =C2=A0sched_debug.cfs_rq[36]:/.runnable_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0174 =C2=B1 13% =C2=A0=C2=A0=C2=
-=A0=C2=A0+48.7% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0259 =C2=B1 31% =
-=C2=A0sched_debug.cpu#112.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04 =C2=B1 19% =C2=A0=
-=C2=A0=C2=A0=C2=A0+88.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A08 =C2=B1 =C2=A05% =C2=A0sched_debug.cfs_rq[35]:/.runnable_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0260 =C2=B1 10% =C2=A0=C2=A0=C2=
-=A0=C2=A0+55.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0405 =C2=B1 26% =
-=C2=A0numa-vmstat.node3.nr_anon_pages
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01042 =C2=B1 10% =C2=A0=C2=A0=C2=A0=C2=
-=A0+56.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01626 =C2=B1 26% =C2=A0numa-me=
-minfo.node3.AnonPages
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A026 =C2=B1 22% =C2=A0=C2=
-=A0=C2=A0=C2=A0+74.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A045 =
-=C2=B1 16% =C2=A0sched_debug.cfs_rq[65]:/.tg_load_contrib
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A021 =C2=B1 43% =C2=A0=C2=
-=A0=C2=A0=C2=A0+71.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A037 =
-=C2=B1 26% =C2=A0sched_debug.cfs_rq[100]:/.tg_load_contrib
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03686 =C2=B1 21% =C2=A0=C2=A0=C2=A0=C2=
-=A0+40.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05167 =C2=B1 19% =C2=A0sched_d=
-ebug.cpu#16.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0142 =C2=B1 =C2=A09% =C2=A0=C2=
-=A0=C2=A0=C2=A0+34.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0191 =C2=B1 =
-24% =C2=A0sched_debug.cpu#112.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05 =C2=B1 18% =C2=A0=
-=C2=A0=C2=A0=C2=A0+69.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A09 =C2=B1 15% =C2=A0sched_debug.cfs_rq[35]:/.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02 =C2=B1 30% =C2=A0=
-=C2=A0=C2=A0+100.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05=
- =C2=B1 37% =C2=A0sched_debug.cpu#106.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03 =C2=B1 23% =C2=A0=
-=C2=A0=C2=A0+100.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06=
- =C2=B1 48% =C2=A0sched_debug.cpu#106.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05 =C2=B1 18% =C2=A0=
-=C2=A0=C2=A0=C2=A0+69.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A09 =C2=B1 15% =C2=A0sched_debug.cpu#35.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A09 =C2=B1 20% =C2=A0=
-=C2=A0=C2=A0=C2=A0+48.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A013=
- =C2=B1 16% =C2=A0sched_debug.cfs_rq[7]:/.runnable_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01727 =C2=B1 15% =C2=A0=C2=A0=C2=A0=C2=
-=A0+43.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02484 =C2=B1 30% =C2=A0sched_d=
-ebug.cpu#34.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 17% =C2=A0=C2=
-=A0=C2=A0=C2=A0-40.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A06 =C2=B1 13% =C2=A0sched_debug.cpu#41.cpu_load[0]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 14% =C2=A0=C2=
-=A0=C2=A0=C2=A0-29.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 =C2=A05% =C2=A0sched_debug.cpu#45.cpu_load[4]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 17% =C2=A0=C2=
-=A0=C2=A0=C2=A0-33.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 10% =C2=A0sched_debug.cpu#41.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06121 =C2=B1 =C2=A08% =C2=A0=C2=A0=C2=
-=A0=C2=A0+56.7% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A09595 =C2=B1 30% =C2=A0s=
-ched_debug.cpu#13.sched_goidle
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A013 =C2=B1 =C2=A08% =C2=A0=
-=C2=A0=C2=A0=C2=A0-25.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010=
- =C2=B1 17% =C2=A0sched_debug.cpu#39.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A012 =C2=B1 16% =C2=A0=C2=
-=A0=C2=A0=C2=A0-24.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A09 =C2=B1 15% =C2=A0sched_debug.cpu#37.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0492 =C2=B1 17% =C2=A0=C2=A0=C2=
-=A0=C2=A0-21.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0387 =C2=B1 24% =
-=C2=A0sched_debug.cpu#46.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03761 =C2=B1 11% =C2=A0=C2=A0=C2=A0=C2=
-=A0-23.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02863 =C2=B1 15% =C2=A0sched_d=
-ebug.cpu#93.curr->pid
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0570 =C2=B1 19% =C2=A0=C2=A0=C2=
-=A0=C2=A0+43.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0816 =C2=B1 17% =
-=C2=A0sched_debug.cpu#86.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05279 =C2=B1 =C2=A08% =C2=A0=C2=A0=C2=
-=A0=C2=A0+63.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08631 =C2=B1 33% =C2=A0s=
-ched_debug.cpu#13.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0377 =C2=B1 22% =C2=A0=C2=A0=C2=
-=A0=C2=A0-28.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0269 =C2=B1 14% =
-=C2=A0sched_debug.cpu#46.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05396 =C2=B1 10% =C2=A0=C2=A0=C2=A0=C2=
-=A0+29.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07007 =C2=B1 14% =C2=A0sched_d=
-ebug.cpu#16.sched_goidle
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01959 =C2=B1 12% =C2=A0=C2=A0=C2=A0=C2=
-=A0+36.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02683 =C2=B1 15% =C2=A0numa-vm=
-stat.node2.nr_slab_reclaimable
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07839 =C2=B1 12% =C2=A0=C2=A0=C2=A0=C2=
-=A0+37.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A010736 =C2=B1 15% =C2=A0numa-meminfo=
-.node2.SReclaimable
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05 =C2=B1 15% =C2=A0=
-=C2=A0=C2=A0=C2=A0+66.7% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A08 =C2=B1 =C2=A09% =C2=A0sched_debug.cfs_rq[33]:/.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05 =C2=B1 25% =C2=A0=
-=C2=A0=C2=A0=C2=A0+47.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A08 =C2=B1 10% =C2=A0sched_debug.cfs_rq[37]:/.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02 =C2=B1 =C2=A00% =
-=C2=A0=C2=A0=C2=A0=C2=A0+87.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A03 =C2=B1 34% =C2=A0sched_debug.cpu#89.cpu_load[4]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05 =C2=B1 15% =C2=A0=
-=C2=A0=C2=A0=C2=A0+66.7% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A08 =C2=B1 =C2=A09% =C2=A0sched_debug.cpu#33.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06 =C2=B1 23% =C2=A0=
-=C2=A0=C2=A0=C2=A0+41.7% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A08 =C2=B1 10% =C2=A0sched_debug.cpu#37.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08 =C2=B1 10% =C2=A0=
-=C2=A0=C2=A0=C2=A0-26.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A06 =C2=B1 =C2=A06% =C2=A0sched_debug.cpu#51.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07300 =C2=B1 37% =C2=A0=C2=A0=C2=A0=C2=
-=A0+63.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A011943 =C2=B1 16% =C2=A0softirqs.TAS=
-KLET
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02984 =C2=B1 =C2=A06% =C2=A0=C2=A0=C2=
-=A0=C2=A0+43.1% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04271 =C2=B1 23% =C2=A0s=
-ched_debug.cpu#20.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0328 =C2=B1 =C2=A04% =C2=A0=C2=
-=A0=C2=A0=C2=A0+40.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0462 =C2=B1 =
-25% =C2=A0sched_debug.cpu#26.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 =C2=A07% =C2=A0=
-=C2=A0=C2=A0=C2=A0-27.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A07 =C2=B1 =C2=A05% =C2=A0sched_debug.cpu#43.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A09 =C2=B1 =C2=A08% =
-=C2=A0=C2=A0=C2=A0=C2=A0-30.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A06 =C2=B1 =C2=A06% =C2=A0sched_debug.cpu#41.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A09 =C2=B1 =C2=A08% =
-=C2=A0=C2=A0=C2=A0=C2=A0-27.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A06 =C2=B1 =C2=A06% =C2=A0sched_debug.cpu#41.cpu_load[4]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 14% =C2=A0=C2=
-=A0=C2=A0=C2=A0-32.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A06 =C2=B1 =C2=A06% =C2=A0sched_debug.cpu#41.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A016292 =C2=B1 =C2=A06% =C2=A0=C2=A0=C2=A0=C2=
-=A0+42.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A023260 =C2=B1 25% =C2=A0sched_debug.=
-cpu#13.nr_switches
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A014 =C2=B1 28% =C2=A0=C2=
-=A0=C2=A0=C2=A0+55.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A023 =
-=C2=B1 =C2=A08% =C2=A0sched_debug.cpu#99.cpu_load[0]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05 =C2=B1 =C2=A08% =
-=C2=A0=C2=A0=C2=A0=C2=A0+28.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A06 =C2=B1 12% =C2=A0sched_debug.cpu#17.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A013 =C2=B1 =C2=A07% =C2=A0=
-=C2=A0=C2=A0=C2=A0-23.1% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010=
- =C2=B1 12% =C2=A0sched_debug.cpu#39.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07 =C2=B1 10% =C2=A0=
-=C2=A0=C2=A0=C2=A0-35.7% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A04 =C2=B1 11% =C2=A0sched_debug.cfs_rq[45]:/.runnable_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05076 =C2=B1 13% =C2=A0=C2=A0=C2=A0=C2=
-=A0-21.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03970 =C2=B1 11% =C2=A0numa-vm=
-stat.node0.nr_slab_unreclaimable
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A020306 =C2=B1 13% =C2=A0=C2=A0=C2=A0=C2=A0-2=
-1.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A015886 =C2=B1 11% =C2=A0numa-meminfo.node=
-0.SUnreclaim
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 10% =C2=A0=C2=
-=A0=C2=A0=C2=A0-28.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 =C2=A06% =C2=A0sched_debug.cpu#45.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A011 =C2=B1 11% =C2=A0=C2=
-=A0=C2=A0=C2=A0-29.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 14% =C2=A0sched_debug.cpu#45.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 12% =C2=A0=C2=
-=A0=C2=A0=C2=A0-26.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 =C2=A06% =C2=A0sched_debug.cpu#44.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 10% =C2=A0=C2=
-=A0=C2=A0=C2=A0-28.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 =C2=A06% =C2=A0sched_debug.cpu#44.cpu_load[0]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07 =C2=B1 17% =C2=A0=
-=C2=A0=C2=A0=C2=A0+48.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010=
- =C2=B1 =C2=A07% =C2=A0sched_debug.cfs_rq[11]:/.runnable_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A011 =C2=B1 12% =C2=A0=C2=
-=A0=C2=A0=C2=A0-34.1% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 11% =C2=A0sched_debug.cpu#47.cpu_load[0]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 10% =C2=A0=C2=
-=A0=C2=A0=C2=A0-27.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 =C2=A05% =C2=A0sched_debug.cpu#47.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 =C2=A08% =C2=A0=
-=C2=A0=C2=A0=C2=A0-26.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A07 =C2=B1 11% =C2=A0sched_debug.cpu#47.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 =C2=A08% =C2=A0=
-=C2=A0=C2=A0=C2=A0-28.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A07 =C2=B1 14% =C2=A0sched_debug.cpu#43.cpu_load[0]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 10% =C2=A0=C2=
-=A0=C2=A0=C2=A0-27.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 10% =C2=A0sched_debug.cpu#43.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 10% =C2=A0=C2=
-=A0=C2=A0=C2=A0-28.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 =C2=A06% =C2=A0sched_debug.cpu#43.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A012940 =C2=B1 =C2=A03% =C2=A0=C2=A0=C2=A0=C2=
-=A0+49.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A019387 =C2=B1 35% =C2=A0numa-meminfo=
-.node2.Active(anon)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03235 =C2=B1 =C2=A02% =C2=A0=C2=A0=C2=
-=A0=C2=A0+49.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04844 =C2=B1 35% =C2=A0n=
-uma-vmstat.node2.nr_active_anon
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A017 =C2=B1 17% =C2=A0=C2=
-=A0=C2=A0=C2=A0+36.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A024 =
-=C2=B1 =C2=A09% =C2=A0sched_debug.cpu#97.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A014725 =C2=B1 =C2=A08% =C2=A0=C2=A0=C2=A0=C2=
-=A0+21.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A017928 =C2=B1 11% =C2=A0sched_debug.=
-cpu#16.nr_switches
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0667 =C2=B1 10% =C2=A0=C2=A0=C2=
-=A0=C2=A0+45.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0969 =C2=B1 22% =
-=C2=A0sched_debug.cpu#17.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03257 =C2=B1 =C2=A05% =C2=A0=C2=A0=C2=
-=A0=C2=A0+22.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03988 =C2=B1 11% =C2=A0s=
-ched_debug.cpu#118.curr->pid
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03144 =C2=B1 15% =C2=A0=C2=A0=C2=A0=C2=
-=A0-20.7% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02493 =C2=B1 =C2=A08% =C2=A0sc=
-hed_debug.cpu#95.curr->pid
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02192 =C2=B1 11% =C2=A0=C2=A0=C2=A0=C2=
-=A0+50.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03308 =C2=B1 37% =C2=A0sched_d=
-ebug.cpu#18.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06 =C2=B1 11% =C2=A0=
-=C2=A0=C2=A0=C2=A0+37.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A08 =C2=B1 19% =C2=A0sched_debug.cfs_rq[22]:/.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A012 =C2=B1 =C2=A05% =C2=A0=
-=C2=A0=C2=A0=C2=A0+27.1% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A015=
- =C2=B1 =C2=A08% =C2=A0sched_debug.cpu#5.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A011 =C2=B1 12% =C2=A0=C2=
-=A0=C2=A0=C2=A0-23.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A09 =C2=B1 13% =C2=A0sched_debug.cpu#37.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06 =C2=B1 11% =C2=A0=
-=C2=A0=C2=A0=C2=A0+37.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A08 =C2=B1 19% =C2=A0sched_debug.cpu#22.load
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08 =C2=B1 =C2=A08% =
-=C2=A0=C2=A0=C2=A0=C2=A0-25.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A06 =C2=B1 =C2=A00% =C2=A0sched_debug.cpu#51.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07 =C2=B1 =C2=A06% =
-=C2=A0=C2=A0=C2=A0=C2=A0-20.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A06 =C2=B1 11% =C2=A0sched_debug.cpu#55.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A011 =C2=B1 =C2=A09% =C2=A0=
-=C2=A0=C2=A0=C2=A0-17.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A09 =C2=B1 =C2=A09% =C2=A0sched_debug.cpu#39.cpu_load[4]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A012 =C2=B1 =C2=A05% =C2=A0=
-=C2=A0=C2=A0=C2=A0-22.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A09 =C2=B1 11% =C2=A0sched_debug.cpu#38.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0420 =C2=B1 13% =C2=A0=C2=A0=C2=
-=A0=C2=A0+43.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0601 =C2=B1 =C2=A0=
-9% =C2=A0sched_debug.cpu#30.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01682 =C2=B1 14% =C2=A0=C2=A0=C2=A0=C2=
-=A0+38.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02329 =C2=B1 17% =C2=A0numa-me=
-minfo.node7.AnonPages
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0423 =C2=B1 13% =C2=A0=C2=A0=C2=
-=A0=C2=A0+37.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0579 =C2=B1 16% =
-=C2=A0numa-vmstat.node7.nr_anon_pages
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A015 =C2=B1 13% =C2=A0=C2=
-=A0=C2=A0=C2=A0+41.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A022 =
-=C2=B1 =C2=A05% =C2=A0sched_debug.cpu#99.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06 =C2=B1 20% =C2=A0=
-=C2=A0=C2=A0=C2=A0+44.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A09 =C2=B1 13% =C2=A0sched_debug.cfs_rq[19]:/.runnable_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A09 =C2=B1 =C2=A04% =
-=C2=A0=C2=A0=C2=A0=C2=A0-24.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A07 =C2=B1 =C2=A00% =C2=A0sched_debug.cpu#43.cpu_load[4]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06341 =C2=B1 =C2=A07% =C2=A0=C2=A0=C2=
-=A0=C2=A0-19.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05100 =C2=B1 16% =C2=A0s=
-ched_debug.cpu#43.curr->pid
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02577 =C2=B1 11% =C2=A0=C2=A0=C2=A0=C2=
-=A0-11.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02270 =C2=B1 10% =C2=A0sched_d=
-ebug.cpu#33.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A013 =C2=B1 =C2=A06% =C2=A0=
-=C2=A0=C2=A0=C2=A0-18.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A011=
- =C2=B1 12% =C2=A0sched_debug.cpu#40.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04828 =C2=B1 =C2=A06% =C2=A0=C2=A0=C2=
-=A0=C2=A0+23.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05979 =C2=B1 =C2=A06% =
-=C2=A0sched_debug.cpu#34.curr->pid
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04351 =C2=B1 12% =C2=A0=C2=A0=C2=A0=C2=
-=A0+33.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05824 =C2=B1 12% =C2=A0sched_d=
-ebug.cpu#36.curr->pid
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 =C2=A08% =C2=A0=
-=C2=A0=C2=A0=C2=A0-23.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A08 =C2=B1 =C2=A08% =C2=A0sched_debug.cpu#37.cpu_load[4]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 14% =C2=A0=C2=
-=A0=C2=A0=C2=A0-28.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A07 =C2=B1 =C2=A06% =C2=A0sched_debug.cpu#45.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A017 =C2=B1 22% =C2=A0=C2=
-=A0=C2=A0=C2=A0+40.6% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A024 =
-=C2=B1 =C2=A07% =C2=A0sched_debug.cpu#97.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A011 =C2=B1 =C2=A09% =C2=A0=
-=C2=A0=C2=A0=C2=A0+21.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A014=
- =C2=B1 =C2=A05% =C2=A0sched_debug.cpu#7.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010 =C2=B1 =C2=A08% =C2=A0=
-=C2=A0=C2=A0=C2=A0-26.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A07 =C2=B1 10% =C2=A0sched_debug.cpu#36.cpu_load[4]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A012853 =C2=B1 =C2=A02% =C2=A0=C2=A0=C2=A0=C2=
-=A0+20.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A015429 =C2=B1 11% =C2=A0numa-meminfo=
-.node2.AnonPages
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04744 =C2=B1 =C2=A08% =C2=A0=C2=A0=C2=
-=A0=C2=A0+30.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06204 =C2=B1 11% =C2=A0s=
-ched_debug.cpu#35.curr->pid
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03214 =C2=B1 =C2=A02% =C2=A0=C2=A0=C2=
-=A0=C2=A0+20.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03856 =C2=B1 11% =C2=A0n=
-uma-vmstat.node2.nr_anon_pages
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06181 =C2=B1 =C2=A06% =C2=A0=C2=A0=C2=
-=A0=C2=A0+24.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07718 =C2=B1 =C2=A09% =
-=C2=A0sched_debug.cpu#13.curr->pid
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06675 =C2=B1 23% =C2=A0=C2=A0=C2=A0=C2=
-=A0+27.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08510 =C2=B1 10% =C2=A0sched_d=
-ebug.cfs_rq[91]:/.tg_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0171261 =C2=B1 =C2=A05% =C2=A0=C2=A0=C2=A0=C2=A0-2=
-2.2% =C2=A0=C2=A0=C2=A0=C2=A0133177 =C2=B1 15% =C2=A0numa-numastat.node0.lo=
-cal_node
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06589 =C2=B1 21% =C2=A0=C2=A0=C2=A0=C2=
-=A0+29.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08522 =C2=B1 11% =C2=A0sched_d=
-ebug.cfs_rq[89]:/.tg_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06508 =C2=B1 20% =C2=A0=C2=A0=C2=A0=C2=
-=A0+28.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08331 =C2=B1 =C2=A08% =C2=A0sc=
-hed_debug.cfs_rq[88]:/.tg_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06598 =C2=B1 22% =C2=A0=C2=A0=C2=A0=C2=
-=A0+29.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08525 =C2=B1 11% =C2=A0sched_d=
-ebug.cfs_rq[90]:/.tg_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0590 =C2=B1 13% =C2=A0=C2=A0=C2=
-=A0=C2=A0-21.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0464 =C2=B1 =C2=A0=
-7% =C2=A0sched_debug.cpu#105.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0175392 =C2=B1 =C2=A05% =C2=A0=C2=A0=C2=A0=C2=A0-2=
-1.7% =C2=A0=C2=A0=C2=A0=C2=A0137308 =C2=B1 14% =C2=A0numa-numastat.node0.nu=
-ma_hit
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A011 =C2=B1 =C2=A06% =C2=A0=
-=C2=A0=C2=A0=C2=A0-18.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A09 =C2=B1 =C2=A07% =C2=A0sched_debug.cpu#38.cpu_load[4]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06643 =C2=B1 23% =C2=A0=C2=A0=C2=A0=C2=
-=A0+27.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08465 =C2=B1 10% =C2=A0sched_d=
-ebug.cfs_rq[94]:/.tg_load_avg
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06764 =C2=B1 =C2=A07% =C2=A0=C2=A0=C2=
-=A0=C2=A0+13.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07695 =C2=B1 =C2=A07% =
-=C2=A0sched_debug.cpu#12.curr->pid
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A029 =C2=B1 28% =C2=A0=C2=
-=A0=C2=A0=C2=A0+34.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A039 =
-=C2=B1 =C2=A05% =C2=A0sched_debug.cfs_rq[98]:/.tg_load_contrib
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01776 =C2=B1 =C2=A07% =C2=A0=C2=A0=C2=
-=A0=C2=A0+29.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A02298 =C2=B1 13% =C2=A0s=
-ched_debug.cpu#11.ttwu_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A013 =C2=B1 =C2=A00% =C2=A0=
-=C2=A0=C2=A0=C2=A0-19.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A010=
- =C2=B1 =C2=A08% =C2=A0sched_debug.cpu#40.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07 =C2=B1 =C2=A05% =
-=C2=A0=C2=A0=C2=A0=C2=A0-17.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A06 =C2=B1 =C2=A00% =C2=A0sched_debug.cpu#51.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07371 =C2=B1 20% =C2=A0=C2=A0=C2=A0=C2=
-=A0-18.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06045 =C2=B1 =C2=A03% =C2=A0sc=
-hed_debug.cpu#1.sched_goidle
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A026560 =C2=B1 =C2=A02% =C2=A0=C2=A0=C2=A0=C2=
-=A0+14.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A030287 =C2=B1 =C2=A07% =C2=A0numa-me=
-minfo.node2.Slab
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A016161 =C2=B1 =C2=A06% =C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0-9.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A014646 =C2=B1 =C2=A01% =C2=A0sc=
-hed_debug.cfs_rq[27]:/.avg->runnable_avg_sum
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0351 =C2=B1 =C2=A06% =C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0-9.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0318 =
-=C2=B1 =C2=A01% =C2=A0sched_debug.cfs_rq[27]:/.tg_runnable_contrib
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07753 =C2=B1 27% =C2=A0=C2=A0=C2=A0=C2=
-=A0-22.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A05976 =C2=B1 =C2=A05% =C2=A0sc=
-hed_debug.cpu#2.sched_goidle
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03828 =C2=B1 =C2=A09% =C2=A0=C2=A0=C2=
-=A0=C2=A0+17.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04490 =C2=B1 =C2=A06% =
-=C2=A0sched_debug.cpu#23.sched_goidle
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A023925 =C2=B1 =C2=A02% =C2=A0=C2=A0=C2=A0=C2=
-=A0+23.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A029419 =C2=B1 23% =C2=A0numa-meminfo=
-.node2.Active
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A047 =C2=B1 =C2=A06% =C2=A0=
-=C2=A0=C2=A0=C2=A0-15.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A040=
- =C2=B1 19% =C2=A0sched_debug.cpu#42.cpu_load[1]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0282 =C2=B1 =C2=A05% =C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0-9.7% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0254 =
-=C2=B1 =C2=A07% =C2=A0sched_debug.cfs_rq[109]:/.tg_runnable_contrib
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0349 =C2=B1 =C2=A05% =C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0-9.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0317 =
-=C2=B1 =C2=A01% =C2=A0sched_debug.cfs_rq[26]:/.tg_runnable_contrib
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A06941 =C2=B1 =C2=A03% =C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0+8.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A07558 =C2=B1 =C2=A0=
-7% =C2=A0sched_debug.cpu#61.nr_switches
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A016051 =C2=B1 =C2=A05% =C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0-8.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A014618 =C2=B1 =C2=A01% =C2=A0sc=
-hed_debug.cfs_rq[26]:/.avg->runnable_avg_sum
-> =C2=A0=C2=A0=C2=A0=C2=A0238944 =C2=B1 =C2=A03% =C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0+9.2% =C2=A0=C2=A0=C2=A0=C2=A0260958 =C2=B1 =C2=A05% =C2=A0numa-vmsta=
-t.node2.numa_local
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A012966 =C2=B1 =C2=A05% =C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0-9.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A011732 =C2=B1 =C2=A06% =C2=A0sc=
-hed_debug.cfs_rq[109]:/.avg->runnable_avg_sum
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01004 =C2=B1 =C2=A03% =C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0+8.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01086 =C2=B1 =C2=A0=
-4% =C2=A0sched_debug.cpu#118.sched_goidle
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A020746 =C2=B1 =C2=A04% =C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0-8.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A019000 =C2=B1 =C2=A01% =C2=A0sc=
-hed_debug.cfs_rq[45]:/.avg->runnable_avg_sum
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0451 =C2=B1 =C2=A04% =C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0-8.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0413 =
-=C2=B1 =C2=A01% =C2=A0sched_debug.cfs_rq[45]:/.tg_runnable_contrib
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03538 =C2=B1 =C2=A04% =C2=A0=C2=A0=C2=
-=A0=C2=A0+17.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04147 =C2=B1 =C2=A08% =
-=C2=A0sched_debug.cpu#26.ttwu_count
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A016 =C2=B1 =C2=A09% =C2=A0=
-=C2=A0=C2=A0=C2=A0+13.8% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A018=
- =C2=B1 =C2=A02% =C2=A0sched_debug.cpu#99.cpu_load[3]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01531 =C2=B1 =C2=A00% =C2=A0=C2=A0=C2=
-=A0=C2=A0+11.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01704 =C2=B1 =C2=A01% =
-=C2=A0numa-meminfo.node7.KernelStack
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A03569 =C2=B1 =C2=A03% =C2=A0=C2=A0=C2=
-=A0=C2=A0+17.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04182 =C2=B1 10% =C2=A0s=
-ched_debug.cpu#24.sched_goidle
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01820 =C2=B1 =C2=A03% =C2=A0=C2=A0=C2=
-=A0=C2=A0-12.5% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01594 =C2=B1 =C2=A08% =
-=C2=A0slabinfo.taskstats.num_objs
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01819 =C2=B1 =C2=A03% =C2=A0=C2=A0=C2=
-=A0=C2=A0-12.4% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01594 =C2=B1 =C2=A08% =
-=C2=A0slabinfo.taskstats.active_objs
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04006 =C2=B1 =C2=A05% =C2=A0=C2=A0=C2=
-=A0=C2=A0+19.1% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A04769 =C2=B1 =C2=A08% =
-=C2=A0sched_debug.cpu#17.sched_goidle
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A021412 =C2=B1 19% =C2=A0=C2=A0=C2=A0=C2=A0-1=
-7.0% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A017779 =C2=B1 =C2=A03% =C2=A0sched_debug.=
-cpu#2.nr_switches
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A016 =C2=B1 =C2=A09% =C2=A0=
-=C2=A0=C2=A0=C2=A0+24.2% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A020=
- =C2=B1 =C2=A04% =C2=A0sched_debug.cpu#99.cpu_load[2]
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A010493 =C2=B1 =C2=A07% =C2=A0=C2=A0=C2=A0=C2=
-=A0+13.3% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A011890 =C2=B1 =C2=A04% =C2=A0sched_d=
-ebug.cpu#23.nr_switches
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A01207 =C2=B1 =C2=A02% =C2=A0=C2=A0=C2=
-=A0=C2=A0-46.9% =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0640 =C2=B1 =C2=A0=
-4% =C2=A0time.voluntary_context_switches
->
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0time.voluntary_context_switches
->
-> =C2=A0=C2=A01300 ++-----------*--*--------------------*------------------=
--------------+
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0*..*.*..*.. + =C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0*.*..*..*.*..*..* =C2=A0=C2=A0=C2=A0=C2=A0.*..*..*. =C2=A0.*=
-..*.*..*.. =C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A01200 ++ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0* =C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0* =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0*. =C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0*.*..*
-> =C2=A0=C2=A01100 ++ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| =C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A01000 ++ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| =C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0900 ++ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| =C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0800 ++ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0700 ++ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0O =C2=A0=C2=A0=C2=A0O =C2=A0=C2=
-=A0=C2=A0=C2=A0O =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0O O =C2=A0O =C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0O =C2=A0O O =C2=A0O O =C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0O =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0O =C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0600 ++ O =C2=A0=C2=A0=C2=A0O =C2=A0=C2=A0=C2=A0O =C2=A0=
-O =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0O O =C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0O =C2=A0=C2=A0=C2=A0O =C2=A0O =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| =C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0O =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|
-> =C2=A0=C2=A0=C2=A0500 ++-------------------------------------------------=
-------------------+
->
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0[*] bisect-good sample
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0[O] bisect-bad =C2=A0samp=
-le
->
+> =
+
+> commit fef5aeeee9e3717e7aea991a7ae9ff6a7a2d4c85 ("ftrace: Replace tramp_h=
+ash with old_*_hash to save space")
+> =
+
+> =
+
+> testbox/testcase/testparams: vm-kbuild-4G/boot/1
+> =
+
+> e1effa0144a1ddf5  fef5aeeee9e3717e7aea991a7a  =
+
+> ----------------  --------------------------  =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>     437752 =C2=B1  0%     -27.2%     318545 =C2=B1  0%  boot-slabinfo.num=
+_objs
+> =
+
+> vm-kbuild-4G: qemu-system-x86_64 -enable-kvm
+> Memory: 4G
+
+I have no idea what this test does. Is this good or bad? Is that -27.2%
+a performance regression, or memory regression?
+
+-- Steve
+
+
+> =
+
+> =
+
+> =
+
+>                                boot-slabinfo.num_objs
+> =
+
+>   440000 *+*--*-*-*------*----*-*-*--*--------*-*--*-*-*--*--------------=
+---+
+>          |           *.*   *.          *.*..*                            =
+   |
+>   420000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   400000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   380000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   360000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   340000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   320000 O+O  O   O  O O O O  O O O  O O    O O O    O O  O O O O  O O O =
+ O O
+>          |      O                        O         O                     =
+   |
+>   300000 ++--------------------------------------------------------------=
+---+
+> =
+
+> 	[*] bisect-good sample
+> 	[O] bisect-bad  sample
+> =
+
 > To reproduce:
->
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0apt-get install ruby ruby=
--oj
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0git clone git://git.kerne=
-l.org/pub/scm/linux/kernel/git/wfg/lkp-tests.git
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0cd lkp-tests
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0bin/setup-local job.yaml =
-# the job file attached in this email
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0bin/run-local =C2=A0=C2=
-=A0job.yaml
->
+> =
+
+> 	apt-get install ruby ruby-oj
+> 	git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tests.git
+> 	cd lkp-tests
+> 	bin/setup-local job.yaml # the job file attached in this email
+> 	bin/run-local   job.yaml
+> =
+
+> =
+
 > Disclaimer:
 > Results have been estimated based on internal Intel analysis and are prov=
 ided
 > for informational purposes only. Any difference in system hardware or sof=
 tware
 > design or configuration may affect actual performance.
->
+> =
 
-Regards,
-Kirill
+> =
 
---===============3164176476199748525==--
+> Thanks,
+> Huang, Ying
+> =
+
+
+
+--===============1638800849021661587==--
 
