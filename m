@@ -1,103 +1,111 @@
-Content-Type: multipart/mixed; boundary="===============4616069258483944073=="
+Content-Type: multipart/mixed; boundary="===============6434622732464243902=="
 MIME-Version: 1.0
-From: Christian König <deathsimple@vodafone.de>
+From: Rusty Russell <rusty@rustcorp.com.au>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] drm/radeon: Try to init amdkfd only if 64 bit kernel
-Date: Thu, 25 Dec 2014 13:31:10 +0100
-Message-ID: <549C038E.1030206@vodafone.de>
-In-Reply-To: <54986EA2.106@amd.com>
+Subject: Re: [PATCH 1/5] hwrng: core - Use struct completion for cleanup_done
+Date: Wed, 24 Dec 2014 09:49:10 +1030
+Message-ID: <87tx0mgdjl.fsf@rustcorp.com.au>
+In-Reply-To: <E1Y3ICf-0007cX-B9@gondolin.me.apana.org.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4616069258483944073==
+--===============6434622732464243902==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Am 22.12.2014 um 20:18 schrieb Oded Gabbay:
+Herbert Xu <herbert@gondor.apana.org.au> writes:
+> There is no point in doing a manual completion for cleanup_done
+> when struct completion fits in perfectly.
 >
-> On 12/22/2014 09:00 PM, Andi Kleen wrote:
->> On Mon, Dec 22, 2014 at 10:49:40AM -0800, Andi Kleen wrote:
->>> On Mon, Dec 22, 2014 at 11:58:43AM -0500, Alex Deucher wrote:
->>>> On Mon, Dec 22, 2014 at 6:11 AM, Oded Gabbay <oded.gabbay@amd.com> w=
-rote:
->>>>> amdkfd driver can be compiled only in 64-bit kernel. Therefore, there=
- is no
->>>>> point in trying to initialize amdkfd in 32-bit kernel.
->>>>>
->>>>> In addition, in case of specific configuration of 32-bit kernel, no m=
-odules and
->>>>> random kernel base, the symbol_request function doesn't work as expec=
-ted - It
->>>>> doesn't return NULL if the symbol doesn't exists. That makes the kern=
-el panic.
->>>>> Therefore, the as amdkfd doesn't compile in 32-bit kernel, the best w=
-ay is just
->>>>> to return false immediately.
->>>>>
->>>>> Signed-off-by: Oded Gabbay <oded.gabbay@amd.com>
->>>> Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
->>> Sorry but the patch is just bogus. X-bit only code is usually
->>> a very bad sign for the code. This is not windows programing after all.
-> Hi Andi,
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+
+Indeed.
+
+Acked-by: Rusty Russell <rusty@rustcorp.com.au>
+
+Thanks,
+Rusty.
+
+> ---
 >
-> Strange, I have never programmed for Windows in my life (except maybe in a
-> few courses during my degree) :)
->>> Even if you wanted to do a 64bit only driver -- which
->>> you probably don't -- the standard way would be to exclude
->>> it in Kconfig.
-> So amdkfd actually *only* supports 64bit user processes, because AMD's HSA
-> stack on Linux supports *only* 64bit user processes. So, yes, I definitely
-> want to do a 64bit only driver.
-> If you look at kfd_open(), it fails the open of /dev/kfd if the process is
-> 32bit.
-> In addition, in Kconfig of amdkfd, it is written:
-> "depends on DRM_RADEON && AMD_IOMMU_V2 && X86_64"
+>  drivers/char/hw_random/core.c |   12 +++---------
+>  include/linux/hw_random.h     |    3 ++-
+>  2 files changed, 5 insertions(+), 10 deletions(-)
 >
-> The problem here is that there is code in radeon, which is a driver that =
-can
-> compile in 32bit, which tries to load amdkfd. I didn't see a point in try=
-ing
-> to load a driver which can't be compiled in 32bit.
+> diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
+> index 6ec4225..3dba2cf 100644
+> --- a/drivers/char/hw_random/core.c
+> +++ b/drivers/char/hw_random/core.c
+> @@ -60,7 +60,6 @@ static DEFINE_MUTEX(rng_mutex);
+>  static DEFINE_MUTEX(reading_mutex);
+>  static int data_avail;
+>  static u8 *rng_buffer, *rng_fillbuf;
+> -static DECLARE_WAIT_QUEUE_HEAD(rng_done);
+>  static unsigned short current_quality;
+>  static unsigned short default_quality; /* =3D 0; default to "off" */
+>  =
 
-Well in this case couldn't we make the code in radeon depend on whether =
+> @@ -100,10 +99,7 @@ static inline void cleanup_rng(struct kref *kref)
+>  	if (rng->cleanup)
+>  		rng->cleanup(rng);
+>  =
 
-or not the KFD driver is compiled in or not instead of checking the =
+> -	/* cleanup_done should be updated after cleanup finishes */
+> -	smp_wmb();
+> -	rng->cleanup_done =3D true;
+> -	wake_up_all(&rng_done);
+> +	complete(&rng->cleanup_done);
+>  }
+>  =
 
-system architecture?
+>  static void set_current_rng(struct hwrng *rng)
+> @@ -498,7 +494,7 @@ int hwrng_register(struct hwrng *rng)
+>  		add_early_randomness(rng);
+>  	}
+>  =
 
-Regards,
-Christian.
+> -	rng->cleanup_done =3D false;
+> +	init_completion(&rng->cleanup_done);
+>  =
 
->
->>> Please root-cause why symbol_request doesn't work on 32bit
->>> and fix it properly.
-> I didn't say it doesn't always work.
-> The actual thing that doesn't work is the define symbol_get and only in a
-> specific case of 32bit kernel AND CONFIG_MODULES is unset AND
-> CONFIG_RANDOMIZE_BASE is set.
-> The define in that case is:
-> #define symbol_get(x) ({ extern typeof(x) x __attribute__((weak)); &(x); =
-})
->
-> Why it doesn't work (doesn't return NULL when symbol doesn't exists) ?
-> I don't know, probably because of some elf/makefile/c language magic. I'm
-> not that big of an expert on those issues, and I wanted to provide a fix =
-for
-> this problem during the -rc stages. If someone can help me solving the ro=
-ot
-> cause, I would be more than happy.
->
-> 	Oded
->>> +rusty.
->> And also with correct email.
->>
->> -Andi
->>
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel(a)lists.freedesktop.org
-> http://lists.freedesktop.org/mailman/listinfo/dri-devel
+>  out_unlock:
+>  	mutex_unlock(&rng_mutex);
+> @@ -532,9 +528,7 @@ void hwrng_unregister(struct hwrng *rng)
+>  	} else
+>  		mutex_unlock(&rng_mutex);
+>  =
 
+> -	/* Just in case rng is reading right now, wait. */
+> -	wait_event(rng_done, rng->cleanup_done &&
+> -		   atomic_read(&rng->ref.refcount) =3D=3D 0);
+> +	wait_for_completion(&rng->cleanup_done);
+>  }
+>  EXPORT_SYMBOL_GPL(hwrng_unregister);
+>  =
 
---===============4616069258483944073==--
+> diff --git a/include/linux/hw_random.h b/include/linux/hw_random.h
+> index 7832e50..eb7b414 100644
+> --- a/include/linux/hw_random.h
+> +++ b/include/linux/hw_random.h
+> @@ -12,6 +12,7 @@
+>  #ifndef LINUX_HWRANDOM_H_
+>  #define LINUX_HWRANDOM_H_
+>  =
+
+> +#include <linux/completion.h>
+>  #include <linux/types.h>
+>  #include <linux/list.h>
+>  #include <linux/kref.h>
+> @@ -46,7 +47,7 @@ struct hwrng {
+>  	/* internal. */
+>  	struct list_head list;
+>  	struct kref ref;
+> -	bool cleanup_done;
+> +	struct completion cleanup_done;
+>  };
+>  =
+
+>  /** Register a new Hardware Random Number Generator driver. */
+
+--===============6434622732464243902==--
 
