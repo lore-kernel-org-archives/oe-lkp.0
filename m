@@ -1,110 +1,139 @@
-Content-Type: multipart/mixed; boundary="===============2412392607409956213=="
+Content-Type: multipart/mixed; boundary="===============1126351612180397881=="
 MIME-Version: 1.0
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: Huang Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] tick/powerclamp: Remove tick_nohz_idle abuse
-Date: Mon, 22 Dec 2014 18:57:08 -0800
-Message-ID: <20141222185708.15bbdd17@jacob-VirtualBox>
-In-Reply-To: <5494D160.8060808@linux.vnet.ibm.com>
+Subject: Re: [ftrace] fef5aeeee9e: -27.2% boot-slabinfo.num_objs
+Date: Mon, 29 Dec 2014 10:28:15 +0800
+Message-ID: <1419820095.26403.77.camel@intel.com>
+In-Reply-To: <20141223083214.0b199465@gandalf.local.home>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2412392607409956213==
+--===============1126351612180397881==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, 20 Dec 2014 07:01:12 +0530
-Preeti U Murthy <preeti@linux.vnet.ibm.com> wrote:
+On Tue, 2014-12-23 at 08:32 -0500, Steven Rostedt wrote:
+> On Tue, 23 Dec 2014 11:10:17 +0800
+> Huang Ying <ying.huang@intel.com> wrote:
+> =
 
-> On 12/20/2014 01:26 AM, Thomas Gleixner wrote:
-> > On Fri, 19 Dec 2014, Jacob Pan wrote:
+> > FYI, we noticed the below changes on
 > > =
 
-> >> On Thu, 18 Dec 2014 22:12:57 +0100 (CET)
-> >> Thomas Gleixner <tglx@linutronix.de> wrote:
-> >>
-> >>> On Thu, 18 Dec 2014, Jacob Pan wrote:
-> >>>> OK I agree, also as I mentioned earlier, Peter already has a
-> >>>> patch for consolidated idle loop and remove
-> >>>> tick_nohz_idle_enter/exit call from powerclamp driver. I have
-> >>>> been working on a few tweaks to maintain the functionality and
-> >>>> efficiency with the consolidated idle loop. We can apply the
-> >>>> patches on top of yours.
-> >>>
-> >>> No. This is equally wrong as I pointed out before. The 'unified'
-> >>> idle loop is still fake and just pretending to be idle.
-> >>>
-> >> In terms of efficiency, the consolidated idle loop will allow
-> >> turning off sched tick during idle injection period. If we just
-> >> take out the tick_nohz_idle_xxx call, the effectiveness of
-> >> powerclamp is going down significantly. I am not arguing the
-> >> design but from fixing regression perspective or short term
-> >> solution.
+> > commit fef5aeeee9e3717e7aea991a7ae9ff6a7a2d4c85 ("ftrace: Replace tramp=
+_hash with old_*_hash to save space")
 > > =
 
-> > There is no perspective. Period.
 > > =
 
-> > Its violates every rightful assumption of the nohz_IDLE_* code and
-> > just ever worked by chance. There is so much subtle wreckage lurking
-> > there that the only sane solution is to forbid it. End of story.
+> > testbox/testcase/testparams: vm-kbuild-4G/boot/1
+> > =
+
+> > e1effa0144a1ddf5  fef5aeeee9e3717e7aea991a7a  =
+
+> > ----------------  --------------------------  =
+
+> >          %stddev     %change         %stddev
+> >              \          |                \  =
+
+> >     437752 =C2=B1  0%     -27.2%     318545 =C2=B1  0%  boot-slabinfo.n=
+um_objs
+> > =
+
+> > vm-kbuild-4G: qemu-system-x86_64 -enable-kvm
+> > Memory: 4G
+> =
+
+> I have no idea what this test does. Is this good or bad? Is that -27.2%
+> a performance regression, or memory regression?
+
+IMO, it is good.  Memory usage is reduced.
+
+Best Regards,
+Huang, Ying
+
+> -- Steve
+> =
+
+> =
+
+> > =
+
+> > =
+
+> > =
+
+> >                                boot-slabinfo.num_objs
+> > =
+
+> >   440000 *+*--*-*-*------*----*-*-*--*--------*-*--*-*-*--*------------=
+-----+
+> >          |           *.*   *.          *.*..*                          =
+     |
+> >   420000 ++                                                            =
+     |
+> >          |                                                             =
+     |
+> >   400000 ++                                                            =
+     |
+> >          |                                                             =
+     |
+> >   380000 ++                                                            =
+     |
+> >          |                                                             =
+     |
+> >   360000 ++                                                            =
+     |
+> >          |                                                             =
+     |
+> >   340000 ++                                                            =
+     |
+> >          |                                                             =
+     |
+> >   320000 O+O  O   O  O O O O  O O O  O O    O O O    O O  O O O O  O O =
+O  O O
+> >          |      O                        O         O                   =
+     |
+> >   300000 ++------------------------------------------------------------=
+-----+
+> > =
+
+> > 	[*] bisect-good sample
+> > 	[O] bisect-bad  sample
+> > =
+
+> > To reproduce:
+> > =
+
+> > 	apt-get install ruby ruby-oj
+> > 	git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tests.=
+git
+> > 	cd lkp-tests
+> > 	bin/setup-local job.yaml # the job file attached in this email
+> > 	bin/run-local   job.yaml
+> > =
+
+> > =
+
+> > Disclaimer:
+> > Results have been estimated based on internal Intel analysis and are pr=
+ovided
+> > for informational purposes only. Any difference in system hardware or s=
+oftware
+> > design or configuration may affect actual performance.
+> > =
+
 > > =
 
 > > Thanks,
+> > Huang, Ying
 > > =
 
-> > 	tglx
-> > =
-
-> Hi Jacob,
-> =
-
-> Like Thomas pointed out, we can design a sane solution for powerclamp.
-> Idle injection is nothing but throttling of runqueue. If the runqueue
-> is throttled, no fair tasks will be selected and the natural choice
-> in the absence of tasks from any other sched class is the idle task.
-> =
-
-> The idle loop will automatically be called and the nohz state will
-> also fall in place. The cpu is really idle now: the runqueue has no
-> tasks and the task running on the cpu is the idle thread. The
-> throttled tasks are on a separate list.
-> =
-
-> When the period of idle injection is over, we unthrottle the runqueue.
-> All this being taken care of my a non-deferrable timer. This design
-> ensures that the intention of powerclamp is not hampered while at the
-> same time maintaining a sane state for nohz; you will get the
-> efficiency you want.
-> =
-
-> Of course there may be corner cases and challenges around
-> synchronization of package idle, which I am sure we can work around
-> with a better design such as the above. I am working on that patchset
-> and will post out in a day. You can take a look and let us know the
-> pieces we are missing.
-> =
-
-> I find that implementing the above design is not too hard.
-> =
-
-Hi Preeti,
-Yeah, it seems to be a good approach. looking forward to work with you
-on this. Timer may scale better for larger systems. One question, will
-timer irq gets unpredictable delays if run by ksoftirqd?
-BTW, I may not be able to respond quickly during the holidays. If
-things workout, it may benefit ACPI PAD driver as well.
-
-
-Thanks,
-
-Jacob
-> Regards
-> Preeti U Murthy
 > =
 
 
-[Jacob Pan]
 
---===============2412392607409956213==--
+
+--===============1126351612180397881==--
 
