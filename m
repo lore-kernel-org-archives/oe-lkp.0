@@ -1,411 +1,284 @@
-Content-Type: multipart/mixed; boundary="===============5415114887085602684=="
+Content-Type: multipart/mixed; boundary="===============1455057363846396587=="
 MIME-Version: 1.0
 From: Huang Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sched] a15b12ac36a: -46.9% time.voluntary_context_switches +1.5% will-it-scale.per_process_ops
-Date: Sun, 04 Jan 2015 08:39:34 +0800
-Message-ID: <1420331974.8652.2.camel@intel.com>
-In-Reply-To: <4750651419325033@web14h.yandex.ru>
+Subject: [net/socket.c ] 0cf00c6f360: -3.1% netperf.Throughput_Mbps
+Date: Sun, 04 Jan 2015 10:18:35 +0800
+Message-ID: <1420337915.6201.3.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5415114887085602684==
+--===============1455057363846396587==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Kirill,
+FYI, we noticed the below changes on
 
-Sorry for late.
+commit 0cf00c6f360a3f7b97be000520f1acde88800536 ("net/socket.c : introduce =
+helper function do_sock_sendmsg to replace reduplicate code")
 
-On Tue, 2014-12-23 at 11:57 +0300, Kirill Tkhai wrote:
-> Hi, Huang,
-> =
 
-> what do these digits mean? What test does?
-> =
+testbox/testcase/testparams: lkp-t410/netperf/performance-300s-200%-10K-SCT=
+P_STREAM_MANY
 
-> 23.12.2014, 08:16, "Huang Ying" <ying.huang@intel.com>:
-> > FYI, we noticed the below changes on
-> >
-> > commit a15b12ac36ad4e7b856a4ae54937ae26a51aebad ("sched: Do not stop cp=
-u in set_cpus_allowed_ptr() if task is not running")
-> >
-> > testbox/testcase/testparams: lkp-g5/will-it-scale/performance-lock1
-> >
-> > 1ba93d42727c4400  a15b12ac36ad4e7b856a4ae549
-> > ----------------  --------------------------
+42eef7a0bb0989cd  0cf00c6f360a3f7b97be000520  =
 
-Above is the good commit and the bad commit.
+----------------  --------------------------  =
 
-> >          %stddev     %change         %stddev
-> >              \          |                \
-> >    1517261 =C2=B1  0%      +1.5%    1539994 =C2=B1  0%  will-it-scale.p=
-er_process_ops
+         %stddev     %change         %stddev
+             \          |                \  =
 
-We have basic description of data above, where %stddev is standard
-deviation.
+   1293786 =C2=B1  4%     -17.0%    1073209 =C2=B1  4%  netperf.time.volunt=
+ary_context_switches
+     13.73 =C2=B1  3%      -8.2%      12.61 =C2=B1  1%  netperf.time.user_t=
+ime
+      1198 =C2=B1  0%      -3.1%       1162 =C2=B1  0%  netperf.Throughput_=
+Mbps
+       220 =C2=B1  0%      -2.8%        214 =C2=B1  0%  netperf.time.percen=
+t_of_cpu_this_job_got
+       653 =C2=B1  0%      -2.7%        635 =C2=B1  0%  netperf.time.system=
+_time
+      5.91 =C2=B1 22%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles._raw_spin_unlock_bh.release_sock.sctp_sendmsg.inet_sendmsg.sock_sendmsg
+         0 =C2=B1  0%      +Inf%        131 =C2=B1  1%  latency_stats.avg.s=
+ctp_sendmsg.[sctp].inet_sendmsg.do_sock_sendmsg.___sys_sendmsg.__sys_sendms=
+g.SyS_sendmsg.system_call_fastpath
+         0 =C2=B1  0%      +Inf%       4976 =C2=B1  0%  latency_stats.max.s=
+ctp_sendmsg.[sctp].inet_sendmsg.do_sock_sendmsg.___sys_sendmsg.__sys_sendms=
+g.SyS_sendmsg.system_call_fastpath
+     15.58 =C2=B1  5%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_datamsg_from_user.sctp_sendmsg.inet_sendmsg.sock_sendmsg.___sys_s=
+endmsg
+     21.57 =C2=B1  6%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_primitive_SEND.sctp_sendmsg.inet_sendmsg.sock_sendmsg.___sys_send=
+msg
+     21.10 =C2=B1  6%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.release_sock.sctp_sendmsg.inet_sendmsg.sock_sendmsg.___sys_sendmsg
+     62.06 =C2=B1  2%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_sendmsg.inet_sendmsg.sock_sendmsg.___sys_sendmsg.__sys_sendmsg
+     62.68 =C2=B1  2%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.inet_sendmsg.sock_sendmsg.___sys_sendmsg.__sys_sendmsg.sys_sendmsg
+     63.26 =C2=B1  2%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sock_sendmsg.___sys_sendmsg.__sys_sendmsg.sys_sendmsg.system_call_fast=
+path
+         0 =C2=B1  0%      +Inf%    1068435 =C2=B1  4%  latency_stats.hits.=
+sctp_sendmsg.[sctp].inet_sendmsg.do_sock_sendmsg.___sys_sendmsg.__sys_sendm=
+sg.SyS_sendmsg.system_call_fastpath
+     14.88 =C2=B1  1%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_backlog_rcv.release_sock.sctp_sendmsg.inet_sendmsg.sock_sendmsg
+     12.33 =C2=B1  4%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_do_sm.sctp_primitive_SEND.sctp_sendmsg.inet_sendmsg.sock_sendmsg
+         0 =C2=B1  0%      +Inf%  1.404e+08 =C2=B1  3%  latency_stats.sum.s=
+ctp_sendmsg.[sctp].inet_sendmsg.do_sock_sendmsg.___sys_sendmsg.__sys_sendms=
+g.SyS_sendmsg.system_call_fastpath
+      8.68 =C2=B1  5%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_user_addto_chunk.sctp_datamsg_from_user.sctp_sendmsg.inet_sendmsg=
+.sock_sendmsg
+      5.78 =C2=B1  6%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_make_datafrag_empty.sctp_datamsg_from_user.sctp_sendmsg.inet_send=
+msg.sock_sendmsg
+      4960 =C2=B1  1%    -100.0%          0 =C2=B1  0%  latency_stats.max.s=
+ctp_sendmsg.[sctp].inet_sendmsg.sock_sendmsg.___sys_sendmsg.__sys_sendmsg.S=
+yS_sendmsg.system_call_fastpath
+       135 =C2=B1  3%    -100.0%          0 =C2=B1  0%  latency_stats.avg.s=
+ctp_sendmsg.[sctp].inet_sendmsg.sock_sendmsg.___sys_sendmsg.__sys_sendmsg.S=
+yS_sendmsg.system_call_fastpath
+ 1.755e+08 =C2=B1  5%    -100.0%          0 =C2=B1  0%  latency_stats.sum.s=
+ctp_sendmsg.[sctp].inet_sendmsg.sock_sendmsg.___sys_sendmsg.__sys_sendmsg.S=
+yS_sendmsg.system_call_fastpath
+   1289900 =C2=B1  4%    -100.0%          0 =C2=B1  0%  latency_stats.hits.=
+sctp_sendmsg.[sctp].inet_sendmsg.sock_sendmsg.___sys_sendmsg.__sys_sendmsg.=
+SyS_sendmsg.system_call_fastpath
+      0.00 =C2=B1  0%      +Inf%       5.88 =C2=B1  9%  perf-profile.cpu-cy=
+cles._raw_spin_unlock_bh.release_sock.sctp_sendmsg.inet_sendmsg.do_sock_sen=
+dmsg
+      0.00 =C2=B1  0%      +Inf%       6.16 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_make_datafrag_empty.sctp_datamsg_from_user.sctp_sendmsg.inet_send=
+msg.do_sock_sendmsg
+      0.00 =C2=B1  0%      +Inf%       8.69 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_user_addto_chunk.sctp_datamsg_from_user.sctp_sendmsg.inet_sendmsg=
+.do_sock_sendmsg
+      0.00 =C2=B1  0%      +Inf%      12.81 =C2=B1  3%  perf-profile.cpu-cy=
+cles.sctp_do_sm.sctp_primitive_SEND.sctp_sendmsg.inet_sendmsg.do_sock_sendm=
+sg
+      0.00 =C2=B1  0%      +Inf%      22.40 =C2=B1  4%  perf-profile.cpu-cy=
+cles.sctp_primitive_SEND.sctp_sendmsg.inet_sendmsg.do_sock_sendmsg.___sys_s=
+endmsg
+      0.00 =C2=B1  0%      +Inf%      16.02 =C2=B1  0%  perf-profile.cpu-cy=
+cles.sctp_datamsg_from_user.sctp_sendmsg.inet_sendmsg.do_sock_sendmsg.___sy=
+s_sendmsg
+      0.00 =C2=B1  0%      +Inf%      20.81 =C2=B1  3%  perf-profile.cpu-cy=
+cles.release_sock.sctp_sendmsg.inet_sendmsg.do_sock_sendmsg.___sys_sendmsg
+      0.00 =C2=B1  0%      +Inf%      64.24 =C2=B1  2%  perf-profile.cpu-cy=
+cles.do_sock_sendmsg.___sys_sendmsg.__sys_sendmsg.sys_sendmsg.system_call_f=
+astpath
+      0.00 =C2=B1  0%      +Inf%      63.64 =C2=B1  2%  perf-profile.cpu-cy=
+cles.inet_sendmsg.do_sock_sendmsg.___sys_sendmsg.__sys_sendmsg.sys_sendmsg
+      0.00 =C2=B1  0%      +Inf%      63.01 =C2=B1  2%  perf-profile.cpu-cy=
+cles.sctp_sendmsg.inet_sendmsg.do_sock_sendmsg.___sys_sendmsg.__sys_sendmsg
+      0.00 =C2=B1  0%      +Inf%      14.61 =C2=B1  1%  perf-profile.cpu-cy=
+cles.sctp_backlog_rcv.release_sock.sctp_sendmsg.inet_sendmsg.do_sock_sendmsg
+      1911 =C2=B1 30%     +92.9%       3687 =C2=B1 19%  latency_stats.sum.d=
+own.console_lock.console_device.tty_open.chrdev_open.do_dentry_open.vfs_ope=
+n.do_last.path_openat.do_filp_open.do_sys_open.SyS_open
+    197535 =C2=B1 24%     +45.6%     287661 =C2=B1 14%  sched_debug.cpu#1.s=
+ched_goidle
+      2800 =C2=B1  7%     +58.9%       4449 =C2=B1 12%  cpuidle.C6-NHM.usage
+   8319130 =C2=B1  3%     +48.0%   12315380 =C2=B1 12%  cpuidle.C6-NHM.time
+  16345940 =C2=B1 12%     +52.9%   24992140 =C2=B1  9%  cpuidle.C1-NHM.time
+      4.83 =C2=B1 13%     +52.6%       7.37 =C2=B1 10%  turbostat.%c1
+  36210370 =C2=B1 14%     +54.4%   55904924 =C2=B1 10%  cpuidle.C1E-NHM.time
+      4763 =C2=B1 14%     +70.5%       8121 =C2=B1  7%  cpuidle.C3-NHM.usage
+    740074 =C2=B1 13%     +54.9%    1146007 =C2=B1  9%  cpuidle.C1E-NHM.usa=
+ge
+    201068 =C2=B1 19%     +38.3%     277987 =C2=B1 11%  sched_debug.cpu#0.s=
+ched_goidle
+      0.23 =C2=B1 10%     +60.4%       0.36 =C2=B1 27%  turbostat.%c6
+      0.14 =C2=B1 16%     +27.8%       0.17 =C2=B1 19%  turbostat.%c3
+    198646 =C2=B1 19%     +44.9%     287931 =C2=B1 11%  sched_debug.cpu#2.s=
+ched_goidle
+    401326 =C2=B1 16%     +47.4%     591389 =C2=B1 10%  cpuidle.C1-NHM.usage
+       115 =C2=B1 10%     -23.6%         88 =C2=B1 16%  latency_stats.avg.r=
+pc_wait_bit_killable.__rpc_execute.rpc_execute.rpc_run_task.rpc_call_sync.n=
+fs3_rpc_wrapper.nfs3_proc_access.nfs_do_access.nfs_permission.__inode_permi=
+ssion.inode_permission.may_open
+     34172 =C2=B1  7%     +30.3%      44535 =C2=B1  5%  softirqs.SCHED
+   3363437 =C2=B1 11%     +34.9%    4538159 =C2=B1 14%  cpuidle.C3-NHM.time
+       156 =C2=B1  5%     +26.1%        197 =C2=B1  6%  uptime.idle
+    212838 =C2=B1 17%     +39.3%     296432 =C2=B1  7%  sched_debug.cpu#3.s=
+ched_goidle
+       151 =C2=B1  5%     -18.5%        123 =C2=B1  3%  latency_stats.avg.s=
+ctp_skb_recv_datagram.[sctp].sctp_recvmsg.[sctp].sock_common_recvmsg.sock_r=
+ecvmsg.___sys_recvmsg.__sys_recvmsg.SyS_recvmsg.system_call_fastpath
+   1137848 =C2=B1  9%     +15.6%    1314801 =C2=B1  4%  sched_debug.cpu#1.s=
+ched_count
+   1137594 =C2=B1  9%     +15.5%    1314483 =C2=B1  4%  sched_debug.cpu#1.n=
+r_switches
+       427 =C2=B1  7%     +15.8%        495 =C2=B1  5%  sched_debug.cpu#3.l=
+oad
+    607501 =C2=B1  6%     -11.3%     539116 =C2=B1  4%  sched_debug.cpu#2.t=
+twu_local
+   1063918 =C2=B1  4%     -10.4%     952749 =C2=B1  6%  latency_stats.sum.d=
+o_wait.SyS_wait4.system_call_fastpath
+   3700692 =C2=B1  3%     +12.8%    4174394 =C2=B1  2%  latency_stats.hits.=
+sctp_skb_recv_datagram.[sctp].sctp_recvmsg.[sctp].sock_common_recvmsg.sock_=
+recvmsg.___sys_recvmsg.__sys_recvmsg.SyS_recvmsg.system_call_fastpath
+      1.05 =C2=B1  4%     +10.2%       1.16 =C2=B1  4%  perf-profile.cpu-cy=
+cles.kmalloc_large_node.__kmalloc_node_track_caller.__kmalloc_reserve.__all=
+oc_skb.sctp_packet_transmit
+      2.93 =C2=B1  5%      +7.9%       3.16 =C2=B1  3%  perf-profile.cpu-cy=
+cles.__kmalloc_reserve.isra.26.__alloc_skb._sctp_make_chunk.sctp_make_dataf=
+rag_empty.sctp_datamsg_from_user
+    334282 =C2=B1  4%      -7.3%     309726 =C2=B1  2%  sched_debug.cfs_rq[=
+1]:/.min_vruntime
+      0.91 =C2=B1  7%     -11.0%       0.81 =C2=B1  3%  perf-profile.cpu-cy=
+cles.nf_hook_slow.ip_output.ip_local_out_sk.ip_queue_xmit.sctp_v4_xmit
+      2.74 =C2=B1  2%      +8.2%       2.97 =C2=B1  2%  perf-profile.cpu-cy=
+cles.get_page_from_freelist.__alloc_pages_nodemask.alloc_kmem_pages_node.km=
+alloc_large_node.__kmalloc_node_track_caller
+    245637 =C2=B1  3%     -13.0%     213811 =C2=B1  9%  sched_debug.cfs_rq[=
+1]:/.MIN_vruntime
+    245637 =C2=B1  3%     -13.0%     213811 =C2=B1  9%  sched_debug.cfs_rq[=
+1]:/.max_vruntime
+    623176 =C2=B1  4%      -9.9%     561641 =C2=B1  5%  sched_debug.cpu#3.t=
+twu_local
+       437 =C2=B1  2%      -7.7%        403 =C2=B1  4%  sched_debug.cpu#1.c=
+pu_load[3]
+   1293786 =C2=B1  4%     -17.0%    1073209 =C2=B1  4%  time.voluntary_cont=
+ext_switches
+     27545 =C2=B1  3%     +11.2%      30617 =C2=B1  1%  vmstat.system.cs
+     94.80 =C2=B1  0%      -2.9%      92.09 =C2=B1  0%  turbostat.%c0
+       220 =C2=B1  0%      -2.8%        214 =C2=B1  0%  time.percent_of_cpu=
+_this_job_got
+       653 =C2=B1  0%      -2.7%        635 =C2=B1  0%  time.system_time
 
-What's more do you want?
+lkp-t410: Westmere
+Memory: 2G
 
-Best Regards,
+
+To reproduce:
+
+	apt-get install ruby ruby-oj
+	git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tests.git
+	cd lkp-tests
+	bin/setup-local job.yaml # the job file attached in this email
+	bin/run-local   job.yaml
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
+
+
+Thanks,
 Huang, Ying
 
-> >        247 =C2=B1 30%    +131.8%        573 =C2=B1 49%  sched_debug.cpu=
-#61.ttwu_count
-> >        225 =C2=B1 22%    +142.8%        546 =C2=B1 34%  sched_debug.cpu=
-#81.ttwu_local
-> >      15115 =C2=B1 44%     +37.3%      20746 =C2=B1 40%  numa-meminfo.no=
-de7.Active
-> >       1028 =C2=B1 38%    +115.3%       2214 =C2=B1 36%  sched_debug.cpu=
-#16.ttwu_local
-> >          2 =C2=B1 19%    +133.3%          5 =C2=B1 43%  sched_debug.cpu=
-#89.cpu_load[3]
-> >         21 =C2=B1 45%     +88.2%         40 =C2=B1 23%  sched_debug.cfs=
-_rq[99]:/.tg_load_contrib
-> >        414 =C2=B1 33%     +98.6%        823 =C2=B1 28%  sched_debug.cpu=
-#81.ttwu_count
-> >          4 =C2=B1 10%     +88.2%          8 =C2=B1 12%  sched_debug.cfs=
-_rq[33]:/.runnable_load_avg
-> >         22 =C2=B1 26%     +80.9%         40 =C2=B1 24%  sched_debug.cfs=
-_rq[103]:/.tg_load_contrib
-> >          7 =C2=B1 17%     -41.4%          4 =C2=B1 25%  sched_debug.cfs=
-_rq[41]:/.load
-> >          7 =C2=B1 17%     -37.9%          4 =C2=B1 19%  sched_debug.cpu=
-#41.load
-> >          3 =C2=B1 22%    +106.7%          7 =C2=B1 10%  sched_debug.cfs=
-_rq[36]:/.runnable_load_avg
-> >        174 =C2=B1 13%     +48.7%        259 =C2=B1 31%  sched_debug.cpu=
-#112.ttwu_count
-> >          4 =C2=B1 19%     +88.9%          8 =C2=B1  5%  sched_debug.cfs=
-_rq[35]:/.runnable_load_avg
-> >        260 =C2=B1 10%     +55.6%        405 =C2=B1 26%  numa-vmstat.nod=
-e3.nr_anon_pages
-> >       1042 =C2=B1 10%     +56.0%       1626 =C2=B1 26%  numa-meminfo.no=
-de3.AnonPages
-> >         26 =C2=B1 22%     +74.3%         45 =C2=B1 16%  sched_debug.cfs=
-_rq[65]:/.tg_load_contrib
-> >         21 =C2=B1 43%     +71.3%         37 =C2=B1 26%  sched_debug.cfs=
-_rq[100]:/.tg_load_contrib
-> >       3686 =C2=B1 21%     +40.2%       5167 =C2=B1 19%  sched_debug.cpu=
-#16.ttwu_count
-> >        142 =C2=B1  9%     +34.4%        191 =C2=B1 24%  sched_debug.cpu=
-#112.ttwu_local
-> >          5 =C2=B1 18%     +69.6%          9 =C2=B1 15%  sched_debug.cfs=
-_rq[35]:/.load
-> >          2 =C2=B1 30%    +100.0%          5 =C2=B1 37%  sched_debug.cpu=
-#106.cpu_load[1]
-> >          3 =C2=B1 23%    +100.0%          6 =C2=B1 48%  sched_debug.cpu=
-#106.cpu_load[2]
-> >          5 =C2=B1 18%     +69.6%          9 =C2=B1 15%  sched_debug.cpu=
-#35.load
-> >          9 =C2=B1 20%     +48.6%         13 =C2=B1 16%  sched_debug.cfs=
-_rq[7]:/.runnable_load_avg
-> >       1727 =C2=B1 15%     +43.9%       2484 =C2=B1 30%  sched_debug.cpu=
-#34.ttwu_local
-> >         10 =C2=B1 17%     -40.5%          6 =C2=B1 13%  sched_debug.cpu=
-#41.cpu_load[0]
-> >         10 =C2=B1 14%     -29.3%          7 =C2=B1  5%  sched_debug.cpu=
-#45.cpu_load[4]
-> >         10 =C2=B1 17%     -33.3%          7 =C2=B1 10%  sched_debug.cpu=
-#41.cpu_load[1]
-> >       6121 =C2=B1  8%     +56.7%       9595 =C2=B1 30%  sched_debug.cpu=
-#13.sched_goidle
-> >         13 =C2=B1  8%     -25.9%         10 =C2=B1 17%  sched_debug.cpu=
-#39.cpu_load[2]
-> >         12 =C2=B1 16%     -24.0%          9 =C2=B1 15%  sched_debug.cpu=
-#37.cpu_load[2]
-> >        492 =C2=B1 17%     -21.3%        387 =C2=B1 24%  sched_debug.cpu=
-#46.ttwu_count
-> >       3761 =C2=B1 11%     -23.9%       2863 =C2=B1 15%  sched_debug.cpu=
-#93.curr->pid
-> >        570 =C2=B1 19%     +43.2%        816 =C2=B1 17%  sched_debug.cpu=
-#86.ttwu_count
-> >       5279 =C2=B1  8%     +63.5%       8631 =C2=B1 33%  sched_debug.cpu=
-#13.ttwu_count
-> >        377 =C2=B1 22%     -28.6%        269 =C2=B1 14%  sched_debug.cpu=
-#46.ttwu_local
-> >       5396 =C2=B1 10%     +29.9%       7007 =C2=B1 14%  sched_debug.cpu=
-#16.sched_goidle
-> >       1959 =C2=B1 12%     +36.9%       2683 =C2=B1 15%  numa-vmstat.nod=
-e2.nr_slab_reclaimable
-> >       7839 =C2=B1 12%     +37.0%      10736 =C2=B1 15%  numa-meminfo.no=
-de2.SReclaimable
-> >          5 =C2=B1 15%     +66.7%          8 =C2=B1  9%  sched_debug.cfs=
-_rq[33]:/.load
-> >          5 =C2=B1 25%     +47.8%          8 =C2=B1 10%  sched_debug.cfs=
-_rq[37]:/.load
-> >          2 =C2=B1  0%     +87.5%          3 =C2=B1 34%  sched_debug.cpu=
-#89.cpu_load[4]
-> >          5 =C2=B1 15%     +66.7%          8 =C2=B1  9%  sched_debug.cpu=
-#33.load
-> >          6 =C2=B1 23%     +41.7%          8 =C2=B1 10%  sched_debug.cpu=
-#37.load
-> >          8 =C2=B1 10%     -26.5%          6 =C2=B1  6%  sched_debug.cpu=
-#51.cpu_load[1]
-> >       7300 =C2=B1 37%     +63.6%      11943 =C2=B1 16%  softirqs.TASKLET
-> >       2984 =C2=B1  6%     +43.1%       4271 =C2=B1 23%  sched_debug.cpu=
-#20.ttwu_count
-> >        328 =C2=B1  4%     +40.5%        462 =C2=B1 25%  sched_debug.cpu=
-#26.ttwu_local
-> >         10 =C2=B1  7%     -27.5%          7 =C2=B1  5%  sched_debug.cpu=
-#43.cpu_load[3]
-> >          9 =C2=B1  8%     -30.8%          6 =C2=B1  6%  sched_debug.cpu=
-#41.cpu_load[3]
-> >          9 =C2=B1  8%     -27.0%          6 =C2=B1  6%  sched_debug.cpu=
-#41.cpu_load[4]
-> >         10 =C2=B1 14%     -32.5%          6 =C2=B1  6%  sched_debug.cpu=
-#41.cpu_load[2]
-> >      16292 =C2=B1  6%     +42.8%      23260 =C2=B1 25%  sched_debug.cpu=
-#13.nr_switches
-> >         14 =C2=B1 28%     +55.9%         23 =C2=B1  8%  sched_debug.cpu=
-#99.cpu_load[0]
-> >          5 =C2=B1  8%     +28.6%          6 =C2=B1 12%  sched_debug.cpu=
-#17.load
-> >         13 =C2=B1  7%     -23.1%         10 =C2=B1 12%  sched_debug.cpu=
-#39.cpu_load[3]
-> >          7 =C2=B1 10%     -35.7%          4 =C2=B1 11%  sched_debug.cfs=
-_rq[45]:/.runnable_load_avg
-> >       5076 =C2=B1 13%     -21.8%       3970 =C2=B1 11%  numa-vmstat.nod=
-e0.nr_slab_unreclaimable
-> >      20306 =C2=B1 13%     -21.8%      15886 =C2=B1 11%  numa-meminfo.no=
-de0.SUnreclaim
-> >         10 =C2=B1 10%     -28.6%          7 =C2=B1  6%  sched_debug.cpu=
-#45.cpu_load[3]
-> >         11 =C2=B1 11%     -29.5%          7 =C2=B1 14%  sched_debug.cpu=
-#45.cpu_load[1]
-> >         10 =C2=B1 12%     -26.8%          7 =C2=B1  6%  sched_debug.cpu=
-#44.cpu_load[1]
-> >         10 =C2=B1 10%     -28.6%          7 =C2=B1  6%  sched_debug.cpu=
-#44.cpu_load[0]
-> >          7 =C2=B1 17%     +48.3%         10 =C2=B1  7%  sched_debug.cfs=
-_rq[11]:/.runnable_load_avg
-> >         11 =C2=B1 12%     -34.1%          7 =C2=B1 11%  sched_debug.cpu=
-#47.cpu_load[0]
-> >         10 =C2=B1 10%     -27.9%          7 =C2=B1  5%  sched_debug.cpu=
-#47.cpu_load[1]
-> >         10 =C2=B1  8%     -26.8%          7 =C2=B1 11%  sched_debug.cpu=
-#47.cpu_load[2]
-> >         10 =C2=B1  8%     -28.6%          7 =C2=B1 14%  sched_debug.cpu=
-#43.cpu_load[0]
-> >         10 =C2=B1 10%     -27.9%          7 =C2=B1 10%  sched_debug.cpu=
-#43.cpu_load[1]
-> >         10 =C2=B1 10%     -28.6%          7 =C2=B1  6%  sched_debug.cpu=
-#43.cpu_load[2]
-> >      12940 =C2=B1  3%     +49.8%      19387 =C2=B1 35%  numa-meminfo.no=
-de2.Active(anon)
-> >       3235 =C2=B1  2%     +49.8%       4844 =C2=B1 35%  numa-vmstat.nod=
-e2.nr_active_anon
-> >         17 =C2=B1 17%     +36.6%         24 =C2=B1  9%  sched_debug.cpu=
-#97.cpu_load[2]
-> >      14725 =C2=B1  8%     +21.8%      17928 =C2=B1 11%  sched_debug.cpu=
-#16.nr_switches
-> >        667 =C2=B1 10%     +45.3%        969 =C2=B1 22%  sched_debug.cpu=
-#17.ttwu_local
-> >       3257 =C2=B1  5%     +22.4%       3988 =C2=B1 11%  sched_debug.cpu=
-#118.curr->pid
-> >       3144 =C2=B1 15%     -20.7%       2493 =C2=B1  8%  sched_debug.cpu=
-#95.curr->pid
-> >       2192 =C2=B1 11%     +50.9%       3308 =C2=B1 37%  sched_debug.cpu=
-#18.ttwu_count
-> >          6 =C2=B1 11%     +37.5%          8 =C2=B1 19%  sched_debug.cfs=
-_rq[22]:/.load
-> >         12 =C2=B1  5%     +27.1%         15 =C2=B1  8%  sched_debug.cpu=
-#5.cpu_load[1]
-> >         11 =C2=B1 12%     -23.4%          9 =C2=B1 13%  sched_debug.cpu=
-#37.cpu_load[3]
-> >          6 =C2=B1 11%     +37.5%          8 =C2=B1 19%  sched_debug.cpu=
-#22.load
-> >          8 =C2=B1  8%     -25.0%          6 =C2=B1  0%  sched_debug.cpu=
-#51.cpu_load[2]
-> >          7 =C2=B1  6%     -20.0%          6 =C2=B1 11%  sched_debug.cpu=
-#55.cpu_load[3]
-> >         11 =C2=B1  9%     -17.4%          9 =C2=B1  9%  sched_debug.cpu=
-#39.cpu_load[4]
-> >         12 =C2=B1  5%     -22.9%          9 =C2=B1 11%  sched_debug.cpu=
-#38.cpu_load[3]
-> >        420 =C2=B1 13%     +43.0%        601 =C2=B1  9%  sched_debug.cpu=
-#30.ttwu_local
-> >       1682 =C2=B1 14%     +38.5%       2329 =C2=B1 17%  numa-meminfo.no=
-de7.AnonPages
-> >        423 =C2=B1 13%     +37.0%        579 =C2=B1 16%  numa-vmstat.nod=
-e7.nr_anon_pages
-> >         15 =C2=B1 13%     +41.9%         22 =C2=B1  5%  sched_debug.cpu=
-#99.cpu_load[1]
-> >          6 =C2=B1 20%     +44.0%          9 =C2=B1 13%  sched_debug.cfs=
-_rq[19]:/.runnable_load_avg
-> >          9 =C2=B1  4%     -24.3%          7 =C2=B1  0%  sched_debug.cpu=
-#43.cpu_load[4]
-> >       6341 =C2=B1  7%     -19.6%       5100 =C2=B1 16%  sched_debug.cpu=
-#43.curr->pid
-> >       2577 =C2=B1 11%     -11.9%       2270 =C2=B1 10%  sched_debug.cpu=
-#33.ttwu_count
-> >         13 =C2=B1  6%     -18.5%         11 =C2=B1 12%  sched_debug.cpu=
-#40.cpu_load[2]
-> >       4828 =C2=B1  6%     +23.8%       5979 =C2=B1  6%  sched_debug.cpu=
-#34.curr->pid
-> >       4351 =C2=B1 12%     +33.9%       5824 =C2=B1 12%  sched_debug.cpu=
-#36.curr->pid
-> >         10 =C2=B1  8%     -23.8%          8 =C2=B1  8%  sched_debug.cpu=
-#37.cpu_load[4]
-> >         10 =C2=B1 14%     -28.6%          7 =C2=B1  6%  sched_debug.cpu=
-#45.cpu_load[2]
-> >         17 =C2=B1 22%     +40.6%         24 =C2=B1  7%  sched_debug.cpu=
-#97.cpu_load[1]
-> >         11 =C2=B1  9%     +21.3%         14 =C2=B1  5%  sched_debug.cpu=
-#7.cpu_load[2]
-> >         10 =C2=B1  8%     -26.2%          7 =C2=B1 10%  sched_debug.cpu=
-#36.cpu_load[4]
-> >      12853 =C2=B1  2%     +20.0%      15429 =C2=B1 11%  numa-meminfo.no=
-de2.AnonPages
-> >       4744 =C2=B1  8%     +30.8%       6204 =C2=B1 11%  sched_debug.cpu=
-#35.curr->pid
-> >       3214 =C2=B1  2%     +20.0%       3856 =C2=B1 11%  numa-vmstat.nod=
-e2.nr_anon_pages
-> >       6181 =C2=B1  6%     +24.9%       7718 =C2=B1  9%  sched_debug.cpu=
-#13.curr->pid
-> >       6675 =C2=B1 23%     +27.5%       8510 =C2=B1 10%  sched_debug.cfs=
-_rq[91]:/.tg_load_avg
-> >     171261 =C2=B1  5%     -22.2%     133177 =C2=B1 15%  numa-numastat.n=
-ode0.local_node
-> >       6589 =C2=B1 21%     +29.3%       8522 =C2=B1 11%  sched_debug.cfs=
-_rq[89]:/.tg_load_avg
-> >       6508 =C2=B1 20%     +28.0%       8331 =C2=B1  8%  sched_debug.cfs=
-_rq[88]:/.tg_load_avg
-> >       6598 =C2=B1 22%     +29.2%       8525 =C2=B1 11%  sched_debug.cfs=
-_rq[90]:/.tg_load_avg
-> >        590 =C2=B1 13%     -21.4%        464 =C2=B1  7%  sched_debug.cpu=
-#105.ttwu_local
-> >     175392 =C2=B1  5%     -21.7%     137308 =C2=B1 14%  numa-numastat.n=
-ode0.numa_hit
-> >         11 =C2=B1  6%     -18.2%          9 =C2=B1  7%  sched_debug.cpu=
-#38.cpu_load[4]
-> >       6643 =C2=B1 23%     +27.4%       8465 =C2=B1 10%  sched_debug.cfs=
-_rq[94]:/.tg_load_avg
-> >       6764 =C2=B1  7%     +13.8%       7695 =C2=B1  7%  sched_debug.cpu=
-#12.curr->pid
-> >         29 =C2=B1 28%     +34.5%         39 =C2=B1  5%  sched_debug.cfs=
-_rq[98]:/.tg_load_contrib
-> >       1776 =C2=B1  7%     +29.4%       2298 =C2=B1 13%  sched_debug.cpu=
-#11.ttwu_local
-> >         13 =C2=B1  0%     -19.2%         10 =C2=B1  8%  sched_debug.cpu=
-#40.cpu_load[3]
-> >          7 =C2=B1  5%     -17.2%          6 =C2=B1  0%  sched_debug.cpu=
-#51.cpu_load[3]
-> >       7371 =C2=B1 20%     -18.0%       6045 =C2=B1  3%  sched_debug.cpu=
-#1.sched_goidle
-> >      26560 =C2=B1  2%     +14.0%      30287 =C2=B1  7%  numa-meminfo.no=
-de2.Slab
-> >      16161 =C2=B1  6%      -9.4%      14646 =C2=B1  1%  sched_debug.cfs=
-_rq[27]:/.avg->runnable_avg_sum
-> >        351 =C2=B1  6%      -9.3%        318 =C2=B1  1%  sched_debug.cfs=
-_rq[27]:/.tg_runnable_contrib
-> >       7753 =C2=B1 27%     -22.9%       5976 =C2=B1  5%  sched_debug.cpu=
-#2.sched_goidle
-> >       3828 =C2=B1  9%     +17.3%       4490 =C2=B1  6%  sched_debug.cpu=
-#23.sched_goidle
-> >      23925 =C2=B1  2%     +23.0%      29419 =C2=B1 23%  numa-meminfo.no=
-de2.Active
-> >         47 =C2=B1  6%     -15.8%         40 =C2=B1 19%  sched_debug.cpu=
-#42.cpu_load[1]
-> >        282 =C2=B1  5%      -9.7%        254 =C2=B1  7%  sched_debug.cfs=
-_rq[109]:/.tg_runnable_contrib
-> >        349 =C2=B1  5%      -9.3%        317 =C2=B1  1%  sched_debug.cfs=
-_rq[26]:/.tg_runnable_contrib
-> >       6941 =C2=B1  3%      +8.9%       7558 =C2=B1  7%  sched_debug.cpu=
-#61.nr_switches
-> >      16051 =C2=B1  5%      -8.9%      14618 =C2=B1  1%  sched_debug.cfs=
-_rq[26]:/.avg->runnable_avg_sum
-> >     238944 =C2=B1  3%      +9.2%     260958 =C2=B1  5%  numa-vmstat.nod=
-e2.numa_local
-> >      12966 =C2=B1  5%      -9.5%      11732 =C2=B1  6%  sched_debug.cfs=
-_rq[109]:/.avg->runnable_avg_sum
-> >       1004 =C2=B1  3%      +8.2%       1086 =C2=B1  4%  sched_debug.cpu=
-#118.sched_goidle
-> >      20746 =C2=B1  4%      -8.4%      19000 =C2=B1  1%  sched_debug.cfs=
-_rq[45]:/.avg->runnable_avg_sum
-> >        451 =C2=B1  4%      -8.3%        413 =C2=B1  1%  sched_debug.cfs=
-_rq[45]:/.tg_runnable_contrib
-> >       3538 =C2=B1  4%     +17.2%       4147 =C2=B1  8%  sched_debug.cpu=
-#26.ttwu_count
-> >         16 =C2=B1  9%     +13.8%         18 =C2=B1  2%  sched_debug.cpu=
-#99.cpu_load[3]
-> >       1531 =C2=B1  0%     +11.3%       1704 =C2=B1  1%  numa-meminfo.no=
-de7.KernelStack
-> >       3569 =C2=B1  3%     +17.2%       4182 =C2=B1 10%  sched_debug.cpu=
-#24.sched_goidle
-> >       1820 =C2=B1  3%     -12.5%       1594 =C2=B1  8%  slabinfo.taskst=
-ats.num_objs
-> >       1819 =C2=B1  3%     -12.4%       1594 =C2=B1  8%  slabinfo.taskst=
-ats.active_objs
-> >       4006 =C2=B1  5%     +19.1%       4769 =C2=B1  8%  sched_debug.cpu=
-#17.sched_goidle
-> >      21412 =C2=B1 19%     -17.0%      17779 =C2=B1  3%  sched_debug.cpu=
-#2.nr_switches
-> >         16 =C2=B1  9%     +24.2%         20 =C2=B1  4%  sched_debug.cpu=
-#99.cpu_load[2]
-> >      10493 =C2=B1  7%     +13.3%      11890 =C2=B1  4%  sched_debug.cpu=
-#23.nr_switches
-> >       1207 =C2=B1  2%     -46.9%        640 =C2=B1  4%  time.voluntary_=
-context_switches
-> >
-> >                           time.voluntary_context_switches
-> >
-> >   1300 ++-----------*--*--------------------*--------------------------=
------+
-> >        *..*.*..*.. +      *.*..*..*.*..*..*     .*..*..*.  .*..*.*..*..=
-     |
-> >   1200 ++         *                            *         *.            =
-*.*..*
-> >   1100 ++                                                              =
-     |
-> >        |                                                               =
-     |
-> >   1000 ++                                                              =
-     |
-> >        |                                                               =
-     |
-> >    900 ++                                                              =
-     |
-> >        |                                                               =
-     |
-> >    800 ++                                                              =
-     |
-> >    700 ++                                                              =
-     |
-> >        O    O     O       O O  O       O  O O  O O       O       O     =
-     |
-> >    600 ++ O    O    O  O          O O                  O    O  O       =
-     |
-> >        |                                            O                  =
-     |
-> >    500 ++--------------------------------------------------------------=
------+
-> >
-> >         [*] bisect-good sample
-> >         [O] bisect-bad  sample
-> >
-> > To reproduce:
-> >
-> >         apt-get install ruby ruby-oj
-> >         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp=
--tests.git
-> >         cd lkp-tests
-> >         bin/setup-local job.yaml # the job file attached in this email
-> >         bin/run-local   job.yaml
-> >
-> > Disclaimer:
-> > Results have been estimated based on internal Intel analysis and are pr=
-ovided
-> > for informational purposes only. Any difference in system hardware or s=
-oftware
-> > design or configuration may affect actual performance.
-> >
-> =
 
-> Regards,
-> Kirill
+_______________________________________________
+LKP mailing list
+LKP(a)linux.intel.com
 
 
+--===============1455057363846396587==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="job.yaml"
 
---===============5415114887085602684==--
+LS0tCnRlc3RjYXNlOiBuZXRwZXJmCmRlZmF1bHRfbW9uaXRvcnM6CiAgd2FpdDogcHJlLXRlc3QK
+ICB1cHRpbWU6IAogIGlvc3RhdDogCiAgdm1zdGF0OiAKICBudW1hLW51bWFzdGF0OiAKICBudW1h
+LXZtc3RhdDogCiAgbnVtYS1tZW1pbmZvOiAKICBwcm9jLXZtc3RhdDogCiAgcHJvYy1zdGF0OiAK
+ICBtZW1pbmZvOiAKICBzbGFiaW5mbzogCiAgaW50ZXJydXB0czogCiAgbG9ja19zdGF0OiAKICBs
+YXRlbmN5X3N0YXRzOiAKICBzb2Z0aXJxczogCiAgYmRpX2Rldl9tYXBwaW5nOiAKICBkaXNrc3Rh
+dHM6IAogIGNwdWlkbGU6IAogIGNwdWZyZXE6IAogIHR1cmJvc3RhdDogCiAgc2NoZWRfZGVidWc6
+CiAgICBpbnRlcnZhbDogMTAKICBwbWV0ZXI6IApkZWZhdWx0X3dhdGNoZG9nczoKICB3YXRjaC1v
+b206IAogIHdhdGNoZG9nOiAKY3B1ZnJlcV9nb3Zlcm5vcjoKLSBwZXJmb3JtYW5jZQpjb21taXQ6
+IDk3YmY2YWYxZjkyODIxNmZkNmM1YTY2ZThhNTdiZmE5NWE2NTk2NzIKbW9kZWw6IFdlc3RtZXJl
+Cm1lbW9yeTogMkcKaGRkX3BhcnRpdGlvbnM6ICIvZGV2L2Rpc2svYnktaWQvYXRhLUZVSklUU1Vf
+TUpBMjI1MEJIX0cyX0s5NUNUOUMyRzI5Vy1wYXJ0NiIKc3dhcF9wYXJ0aXRpb25zOiAKcm9vdGZz
+X3BhcnRpdGlvbjogIi9kZXYvZGlzay9ieS1pZC9hdGEtRlVKSVRTVV9NSkEyMjUwQkhfRzJfSzk1
+Q1Q5QzJHMjlXLXBhcnQ3IgpydW50aW1lOiAzMDBzCm5yX3RocmVhZHM6Ci0gMjAwJQpwZXJmLXBy
+b2ZpbGU6CiAgZnJlcTogODAwCm5ldHBlcmY6CiAgc2VuZF9zaXplOiAxMEsKICB0ZXN0OgogIC0g
+U0NUUF9TVFJFQU1fTUFOWQp0ZXN0Ym94OiBsa3AtdDQxMAp0Ym94X2dyb3VwOiBsa3AtdDQxMApr
+Y29uZmlnOiB4ODZfNjQtcmhlbAplbnF1ZXVlX3RpbWU6IDIwMTQtMTItMTUgMTM6NDA6NTQuODQz
+OTcwNjQ4ICswODowMApoZWFkX2NvbW1pdDogN2NkYWY0Y2MyYTA3ZDI0NjdhYmU4MmI4NDdmYzNi
+ZDJiYzllMDE3YgpiYXNlX2NvbW1pdDogOTdiZjZhZjFmOTI4MjE2ZmQ2YzVhNjZlOGE1N2JmYTk1
+YTY1OTY3MgpicmFuY2g6IGxpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE0MTIyMzE5Cmtlcm5l
+bDogIi9rZXJuZWwveDg2XzY0LXJoZWwvOTdiZjZhZjFmOTI4MjE2ZmQ2YzVhNjZlOGE1N2JmYTk1
+YTY1OTY3Mi92bWxpbnV6LTMuMTkuMC1yYzEtZzk3YmY2YWYiCnVzZXI6IGxrcApxdWV1ZTogY3lj
+bGljCnJvb3RmczogZGViaWFuLXg4Nl82NC5jZ3oKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L2xrcC10
+NDEwL25ldHBlcmYvcGVyZm9ybWFuY2UtMzAwcy0yMDAlLTEwSy1TQ1RQX1NUUkVBTV9NQU5ZL2Rl
+Ymlhbi14ODZfNjQuY2d6L3g4Nl82NC1yaGVsLzk3YmY2YWYxZjkyODIxNmZkNmM1YTY2ZThhNTdi
+ZmE5NWE2NTk2NzIvMCIKam9iX2ZpbGU6ICIvbGtwL3NjaGVkdWxlZC9sa3AtdDQxMC9jeWNsaWNf
+bmV0cGVyZi1wZXJmb3JtYW5jZS0zMDBzLTIwMCUtMTBLLVNDVFBfU1RSRUFNX01BTlkteDg2XzY0
+LXJoZWwtQkFTRS05N2JmNmFmMWY5MjgyMTZmZDZjNWE2NmU4YTU3YmZhOTVhNjU5NjcyLTAueWFt
+bCIKZGVxdWV1ZV90aW1lOiAyMDE0LTEyLTIzIDIxOjI2OjIwLjIyODg2NDIxOCArMDg6MDAKam9i
+X3N0YXRlOiBmaW5pc2hlZApsb2FkYXZnOiA3LjE3IDUuMjMgMi4zMSAxLzk5IDU0NDIKc3RhcnRf
+dGltZTogJzE0MTkzNDEyMTInCmVuZF90aW1lOiAnMTQxOTM0MTUxNCcKdmVyc2lvbjogIi9sa3Av
+bGtwLy5zcmMtMjAxNDEyMjMtMTEyOTI3Igo=
+
+--===============1455057363846396587==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.ksh"
+
+ZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTAvY3B1ZnJlcS9z
+Y2FsaW5nX2dvdmVybm9yCmVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
+dS9jcHUxL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgplY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
+ZXZpY2VzL3N5c3RlbS9jcHUvY3B1Mi9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZWNobyBwZXJm
+b3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTMvY3B1ZnJlcS9zY2FsaW5nX2dv
+dmVybm9yCm5ldHNlcnZlcgpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAw
+IC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1t
+IDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpu
+ZXRwZXJmIC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJm
+IC10IFNDVFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFND
+VFBfU1RSRUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RS
+RUFNX01BTlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwpuZXRwZXJmIC10IFNDVFBfU1RSRUFNX01B
+TlkgLWMgLUMgLWwgMzAwIC0tIC1tIDEwSwo=
+
+--===============1455057363846396587==--
 
