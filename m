@@ -1,104 +1,81 @@
-Content-Type: multipart/mixed; boundary="===============3317784961158887952=="
+Content-Type: multipart/mixed; boundary="===============0596976558391389107=="
 MIME-Version: 1.0
-From: Rusty Russell <rusty@rustcorp.com.au>
+From: Aristeu Rozanski <aris@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] drm/radeon: Try to init amdkfd only if 64 bit kernel
-Date: Mon, 05 Jan 2015 14:58:54 +1030
-Message-ID: <87r3v96ebd.fsf@rustcorp.com.au>
-In-Reply-To: <549A85DE.1040006@amd.com>
+Subject: Re: [sb_edac] 50d1bb93672: EDAC sbridge: ECC is disabled. Aborting
+Date: Mon, 05 Jan 2015 09:06:06 -0500
+Message-ID: <20150105140606.GA25309@redhat.com>
+In-Reply-To: <1418966819.26403.33.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3317784961158887952==
+--===============0596976558391389107==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Oded Gabbay <oded.gabbay@amd.com> writes:
-> On 12/24/2014 01:01 AM, Rusty Russell wrote:
->> Oded Gabbay <oded.gabbay@amd.com> writes:
->>> I didn't say it doesn't always work.
->>> The actual thing that doesn't work is the define symbol_get and only in=
- a
->>> specific case of 32bit kernel AND CONFIG_MODULES is unset AND
->>> CONFIG_RANDOMIZE_BASE is set.
->>> The define in that case is:
->>> #define symbol_get(x) ({ extern typeof(x) x __attribute__((weak)); &(x)=
-; })
->>>
->>> Why it doesn't work (doesn't return NULL when symbol doesn't exists) ?
->>
->> Hmm, I'd guess CONFIG_RANDOMIZE_BASE is relocating NULL symbols...
->>
->> No, I can't reproduce this.  Please send your .config privately.
->>
->> Here's my test case:
->>
->> diff --git a/init/main.c b/init/main.c
->> index 61b993767db5..a3ee1ec97ec3 100644
->> --- a/init/main.c
->> +++ b/init/main.c
->> @@ -683,6 +683,12 @@ asmlinkage __visible void __init start_kernel(void)
->>
->>   	ftrace_init();
->>
->> +	{
->> +		extern void nonexistent_fn(void);
->> +		printk("symbol_get(nonexistent_fn) =3D %p\n",
->> +		       symbol_get(nonexistent_fn));
->> +	}
->> +
->>   	/* Do the rest non-__init'ed, we're now alive */
->>   	rest_init();
->>   }
->>
->> Thanks,
->> Rusty.
->>
-> Hi Rusty,
->
-> Attached is the bad config file. (config-bad)
-> I have narrowed the changes you need to do to the config file in order to =
+Hi,
+On Fri, Dec 19, 2014 at 01:26:59PM +0800, Huang Ying wrote:
+> In fact, I am not complaining :-), just FYI. As I said, this may be a
+> expected behavior because this is a Haswell machine and the Haswell
+> support was added in this patch.
+> =
 
-> reproduce this bug.
-> The base assumption is a 32-bit kernel and without modules support. Rest =
-of the =
+> > From the above, what looks weird, from EDAC driver PoV, is:
+> > 	[   12.506298] EDAC sbridge: ECC is disabled. Aborting
+> =
 
-> config file is pretty standard, IMO.
-> Then, its not enough to enable CONFIG_RANDOMIZE_BASE like I wrote in my o=
-riginal =
+> This is what I want help from you to confirm whether it is abnormal.
+> =
 
-> post. You need also to unset CONFIG_HIBERNATION.
+> > Does it used to work before? If so, was there any BIOS setting change?
+> > Does the memories used on this machine have ECC?
+> =
 
-Indeed, thanks; your config breaks as reported.  With CONFIG_HIBERNATION
-the kernel offset is 0, so we don't see this.
+> This is a high-end desktop, there is something as below in dmidecode
+> output.  Is there some other way to tell whether the memories have ECC?
+> =
 
-Kees, as far as I can tell you need another 0-terminated vmlinux.relocs
-section for weak symbols.  These should not be relocated if already 0.
+> Handle 0x0018, DMI type 16, 23 bytes
+> Physical Memory Array
+>         Location: System Board Or Motherboard
+>         Use: System Memory
+>         Error Correction Type: Multi-bit ECC
+>         Maximum Capacity: 128 GB
+>         Error Information Handle: Not Provided
+>         Number Of Devices: 4
+> =
 
-Put this somewhere to test.  It fails for x86_64, too:
+> Handle 0x001A, DMI type 17, 34 bytes
+> Memory Device
+>         Array Handle: 0x0018
+>         Error Information Handle: Not Provided
+>         Total Width: 72 bits
+>         Data Width: 72 bits
+>         Size: 8192 MB
+>         Form Factor: DIMM
+>         Set: None
+>         Locator: DIMM_A1
+>         Bank Locator: CPU 0
+>         Type: <OUT OF SPEC>
+>         Type Detail: Synchronous
+>         Speed: 1067 MHz
+>         Manufacturer: 0x11
+>         Serial Number: Unknown
+>         Asset Tag: Unknown
+>         Part Number: Unknown
+>         Rank: 1
+>         Configured Clock Speed: Unknown
 
-diff --git a/init/main.c b/init/main.c
-index 61b993767db5..c9e0195c792a 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -683,6 +683,12 @@ asmlinkage __visible void __init start_kernel(void)
- =
+unfortunately with this I can't say :(
+Do you mind checking on EFI or maybe looking at the memory modules' part
+number?
 
- 	ftrace_init();
- =
+(sorry for the delay, was on vacations since 12/18)
 
-+	{
-+		extern void __attribute__((weak)) nonexistent_fn(void);
-+		printk("nonexistent_fn =3D %p\n", nonexistent_fn);
-+		BUG_ON(nonexistent_fn !=3D NULL);
-+	}
-+
- 	/* Do the rest non-__init'ed, we're now alive */
- 	rest_init();
- }
+-- =
 
-Cheers,
-Rusty.
+Aristeu
 
---===============3317784961158887952==--
+
+--===============0596976558391389107==--
 
