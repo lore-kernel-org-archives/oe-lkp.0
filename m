@@ -1,133 +1,112 @@
-Content-Type: multipart/mixed; boundary="===============1702867883546365513=="
+Content-Type: multipart/mixed; boundary="===============1822089726229156895=="
 MIME-Version: 1.0
-From: Luis Henriques <luis.henriques@canonical.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: [3.16.y-ckt stable] Patch "tick/powerclamp: Remove tick_nohz_idle abuse" has been added to staging queue
-Date: Wed, 07 Jan 2015 10:32:24 +0000
-Message-ID: <1420626744-30091-1-git-send-email-luis.henriques@canonical.com>
+Subject: Re: [sched/core] BUG: unable to handle kernel NULL pointer dereference at 0000000000000068
+Date: Wed, 07 Jan 2015 12:40:24 +0100
+Message-ID: <20150107114024.GE23965@worktop.programming.kicks-ass.net>
+In-Reply-To: <20150106230818.GB19001@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1702867883546365513==
+--===============1822089726229156895==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-This is a note to let you know that I have just added a patch titled
+On Tue, Jan 06, 2015 at 03:08:18PM -0800, Fengguang Wu wrote:
+> [    0.000000] Calgary: detecting Calgary via BIOS EBDA area
+> [    0.000000] Calgary: Unable to locate Rio Grande table in EBDA - baili=
+ng!
+> [    0.000000] Memory: 293508K/327280K available (9326K kernel code, 3522=
+K rwdata, 2656K rodata, 1108K init, 5048K bss, 33772K reserved, 0K cma-rese=
+rved)
+> [    0.000000] BUG: unable to handle kernel NULL pointer dereference at 0=
+000000000000068
+> [    0.000000] IP: [<ffffffff880bebe6>] do_set_cpus_allowed+0x18/0x51
+> [    0.000000] PGD 0 =
 
-    tick/powerclamp: Remove tick_nohz_idle abuse
+> [    0.000000] Oops: 0000 [#1] SMP =
 
-to the linux-3.16.y-queue branch of the 3.16.y-ckt extended stable tree =
+> [    0.000000] Modules linked in:
+> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 3.19.0-rc2-gbb8263=
+5 #49
+> [    0.000000] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+> [    0.000000] task: ffffffff88e14e80 ti: ffffffff88e00000 task.ti: fffff=
+fff88e00000
+> [    0.000000] RIP: 0010:[<ffffffff880bebe6>]  [<ffffffff880bebe6>] do_se=
+t_cpus_allowed+0x18/0x51
+> [    0.000000] RSP: 0000:ffffffff88e03ec8  EFLAGS: 00010002
+> [    0.000000] RAX: 0000000000000000 RBX: ffffffff88e14e80 RCX: 000000000=
+0000001
+> [    0.000000] RDX: 0000000000000000 RSI: ffffffff88a146c8 RDI: ffffffff8=
+8e14e80
+> [    0.000000] RBP: ffffffff88e03ed8 R08: ffffffff88e15000 R09: 000000000=
+0000000
+> [    0.000000] R10: ffffffff8916a4e8 R11: 0000000000000000 R12: ffffffff8=
+8a146c8
+> [    0.000000] R13: 0000000000000008 R14: 0000000000000002 R15: 000000000=
+0000000
+> [    0.000000] FS:  0000000000000000(0000) GS:ffff880013a00000(0000) knlG=
+S:0000000000000000
+> [    0.000000] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+> [    0.000000] CR2: 0000000000000068 CR3: 0000000008e0e000 CR4: 000000000=
+00006b0
+> [    0.000000] Stack:
+> [    0.000000]  ffffffff88e14e80 ffff880013a11a00 ffffffff88e03f18 ffffff=
+ff880bf136
+> [    0.000000]  00000000ffffffff ffff880013a11a00 0000000000000008 000000=
+0000000008
+> [    0.000000]  0000000000011a00 0000000000014500 ffffffff88e03f48 ffffff=
+ff891a8c10
+> [    0.000000] Call Trace:
+> [    0.000000]  [<ffffffff880bf136>] init_idle+0x88/0x142
+> [    0.000000]  [<ffffffff891a8c10>] sched_init+0x2c5/0x333
+> [    0.000000]  [<ffffffff891861db>] start_kernel+0x32d/0x7f5
+> [    0.000000]  [<ffffffff89185120>] ? early_idt_handlers+0x120/0x120
+> [    0.000000]  [<ffffffff8918559c>] x86_64_start_reservations+0x46/0x4f
+> [    0.000000]  [<ffffffff891856e7>] x86_64_start_kernel+0x142/0x158
+> [    0.000000] Code: 31 db 48 83 c4 18 89 d8 5b 41 5c 41 5d 41 5e 41 5f 5=
+d c3 55 48 ff 05 7a 5b 25 01 48 89 e5 41 54 49 89 f4 53 48 89 fb 48 8b 47 6=
+0 <48> 8b 40 68 48 85 c0 74 09 48 ff 05 62 5b 25 01 ff d0 49 8b 04 =
 
-which can be found at:
+> [    0.000000] RIP  [<ffffffff880bebe6>] do_set_cpus_allowed+0x18/0x51
+> [    0.000000]  RSP <ffffffff88e03ec8>
+> [    0.000000] CR2: 0000000000000068
+> [    0.000000] ---[ end trace cfb024ef67550cb2 ]---
+> [    0.000000] Kernel panic - not syncing: Fatal exception
 
- http://kernel.ubuntu.com/git?p=3Dubuntu/linux.git;a=3Dshortlog;h=3Drefs/he=
-ads/linux-3.16.y-queue
+The below delta seems to fix this...
 
-This patch is scheduled to be released in version 3.16.7-ckt4.
-
-If you, or anyone else, feels it should not be added to this tree, please =
-
-reply to this email.
-
-For more information about the 3.16.y-ckt tree, see
-https://wiki.ubuntu.com/Kernel/Dev/ExtendedStable
-
-Thanks.
--Luis
-
-------
-
->From 2aed2b98cb3fa4be806451524afb480cfebe0fbc Mon Sep 17 00:00:00 2001
-From: Thomas Gleixner <tglx@linutronix.de>
-Date: Thu, 18 Dec 2014 11:51:01 +0100
-Subject: tick/powerclamp: Remove tick_nohz_idle abuse
-
-commit a5fd9733a30d18d7ac23f17080e7e07bb3205b69 upstream.
-
-commit 4dbd27711cd9 "tick: export nohz tick idle symbols for module
-use" was merged via the thermal tree without an explicit ack from the
-relevant maintainers.
-
-The exports are abused by the intel powerclamp driver which implements
-a fake idle state from a sched FIFO task. This causes all kinds of
-wreckage in the NOHZ core code which rightfully assumes that
-tick_nohz_idle_enter/exit() are only called from the idle task itself.
-
-Recent changes in the NOHZ core lead to a failure of the powerclamp
-driver and now people try to hack completely broken and backwards
-workarounds into the NOHZ core code. This is completely unacceptable
-and just papers over the real problem. There are way more subtle
-issues lurking around the corner.
-
-The real solution is to fix the powerclamp driver by rewriting it with
-a sane concept, but that's beyond the scope of this.
-
-So the only solution for now is to remove the calls into the core NOHZ
-code from the powerclamp trainwreck along with the exports.
-
-Fixes: d6d71ee4a14a "PM: Introduce Intel PowerClamp Driver"
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Preeti U Murthy <preeti@linux.vnet.ibm.com>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: Frederic Weisbecker <fweisbec@gmail.com>
-Cc: Fengguang Wu <fengguang.wu@intel.com>
-Cc: Frederic Weisbecker <frederic@kernel.org>
-Cc: Pan Jacob jun <jacob.jun.pan@intel.com>
-Cc: LKP <lkp@01.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Zhang Rui <rui.zhang@intel.com>
-Link: http://lkml.kernel.org/r/alpine.DEB.2.11.1412181110110.17382(a)nanos
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Luis Henriques <luis.henriques@canonical.com>
 ---
- drivers/thermal/intel_powerclamp.c | 2 --
- kernel/time/tick-sched.c           | 2 --
- 2 files changed, 4 deletions(-)
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -7254,6 +7254,11 @@ void __init sched_init(void)
+ 	enter_lazy_tlb(&init_mm, current);
+ =
 
-diff --git a/drivers/thermal/intel_powerclamp.c b/drivers/thermal/intel_pow=
-erclamp.c
-index 95cb7fc20e17..6cb78497076a 100644
---- a/drivers/thermal/intel_powerclamp.c
-+++ b/drivers/thermal/intel_powerclamp.c
-@@ -435,7 +435,6 @@ static int clamp_thread(void *arg)
- 		 * allowed. thus jiffies are updated properly.
- 		 */
- 		preempt_disable();
--		tick_nohz_idle_enter();
- 		/* mwait until target jiffies is reached */
- 		while (time_before(jiffies, target_jiffies)) {
- 			unsigned long ecx =3D 1;
-@@ -451,7 +450,6 @@ static int clamp_thread(void *arg)
- 			start_critical_timings();
- 			atomic_inc(&idle_wakeup_counter);
- 		}
--		tick_nohz_idle_exit();
- 		preempt_enable();
- 	}
- 	del_timer_sync(&wakeup_timer);
-diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-index 6558b7ac112d..8c08a6f9cca0 100644
---- a/kernel/time/tick-sched.c
-+++ b/kernel/time/tick-sched.c
-@@ -807,7 +807,6 @@ void tick_nohz_idle_enter(void)
+ 	/*
++	 * During early bootup we pretend to be a normal task:
++	 */
++	current->sched_class =3D &fair_sched_class;
++
++	/*
+ 	 * Make us the idle thread. Technically, schedule() should not be
+ 	 * called from this thread, however somewhere below it might be,
+ 	 * but because we are the idle thread, we just pick up running again
+@@ -7263,11 +7268,6 @@ void __init sched_init(void)
+ =
 
- 	local_irq_enable();
- }
--EXPORT_SYMBOL_GPL(tick_nohz_idle_enter);
+ 	calc_load_update =3D jiffies + LOAD_FREQ;
+ =
 
- /**
-  * tick_nohz_irq_exit - update next tick event from interrupt exit
-@@ -934,7 +933,6 @@ void tick_nohz_idle_exit(void)
+-	/*
+-	 * During early bootup we pretend to be a normal task:
+-	 */
+-	current->sched_class =3D &fair_sched_class;
+-
+ #ifdef CONFIG_SMP
+ 	zalloc_cpumask_var(&sched_domains_tmpmask, GFP_NOWAIT);
+ 	/* May be allocated at isolcpus cmdline parse time */
 
- 	local_irq_enable();
- }
--EXPORT_SYMBOL_GPL(tick_nohz_idle_exit);
-
- static int tick_nohz_reprogram(struct tick_sched *ts, ktime_t now)
- {
---
-2.1.4
-
-
---===============1702867883546365513==--
+--===============1822089726229156895==--
 
