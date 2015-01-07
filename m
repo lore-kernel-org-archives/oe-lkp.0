@@ -1,115 +1,133 @@
-Content-Type: multipart/mixed; boundary="===============6699695311035862014=="
+Content-Type: multipart/mixed; boundary="===============1702867883546365513=="
 MIME-Version: 1.0
-From: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+From: Luis Henriques <luis.henriques@canonical.com>
 To: lkp@lists.01.org
-Subject: Re: [sb_edac] 50d1bb93672: EDAC sbridge: ECC is disabled. Aborting
-Date: Wed, 07 Jan 2015 08:27:14 -0200
-Message-ID: <20150107082714.65fcdddf@concha.lan>
-In-Reply-To: <1420616586.6201.74.camel@intel.com>
+Subject: [3.16.y-ckt stable] Patch "tick/powerclamp: Remove tick_nohz_idle abuse" has been added to staging queue
+Date: Wed, 07 Jan 2015 10:32:24 +0000
+Message-ID: <1420626744-30091-1-git-send-email-luis.henriques@canonical.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6699695311035862014==
+--===============1702867883546365513==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Em Wed, 07 Jan 2015 15:43:06 +0800
-Huang Ying <ying.huang@intel.com> escreveu:
+This is a note to let you know that I have just added a patch titled
 
-> On Mon, 2015-01-05 at 09:06 -0500, Aristeu Rozanski wrote:
-> > Hi,
-> > On Fri, Dec 19, 2014 at 01:26:59PM +0800, Huang Ying wrote:
-> > > In fact, I am not complaining :-), just FYI. As I said, this may be a
-> > > expected behavior because this is a Haswell machine and the Haswell
-> > > support was added in this patch.
-> > > =
+    tick/powerclamp: Remove tick_nohz_idle abuse
 
-> > > > From the above, what looks weird, from EDAC driver PoV, is:
-> > > > 	[   12.506298] EDAC sbridge: ECC is disabled. Aborting
-> > > =
+to the linux-3.16.y-queue branch of the 3.16.y-ckt extended stable tree =
 
-> > > This is what I want help from you to confirm whether it is abnormal.
-> > > =
+which can be found at:
 
-> > > > Does it used to work before? If so, was there any BIOS setting chan=
-ge?
-> > > > Does the memories used on this machine have ECC?
-> > > =
+ http://kernel.ubuntu.com/git?p=3Dubuntu/linux.git;a=3Dshortlog;h=3Drefs/he=
+ads/linux-3.16.y-queue
 
-> > > This is a high-end desktop, there is something as below in dmidecode
-> > > output.  Is there some other way to tell whether the memories have EC=
-C?
-> > > =
+This patch is scheduled to be released in version 3.16.7-ckt4.
 
-> > > Handle 0x0018, DMI type 16, 23 bytes
-> > > Physical Memory Array
-> > >         Location: System Board Or Motherboard
-> > >         Use: System Memory
-> > >         Error Correction Type: Multi-bit ECC
-> > >         Maximum Capacity: 128 GB
-> > >         Error Information Handle: Not Provided
-> > >         Number Of Devices: 4
-> > > =
+If you, or anyone else, feels it should not be added to this tree, please =
 
-> > > Handle 0x001A, DMI type 17, 34 bytes
-> > > Memory Device
-> > >         Array Handle: 0x0018
-> > >         Error Information Handle: Not Provided
-> > >         Total Width: 72 bits
-> > >         Data Width: 72 bits
-> > >         Size: 8192 MB
-> > >         Form Factor: DIMM
-> > >         Set: None
-> > >         Locator: DIMM_A1
-> > >         Bank Locator: CPU 0
-> > >         Type: <OUT OF SPEC>
-> > >         Type Detail: Synchronous
-> > >         Speed: 1067 MHz
-> > >         Manufacturer: 0x11
-> > >         Serial Number: Unknown
-> > >         Asset Tag: Unknown
-> > >         Part Number: Unknown
-> > >         Rank: 1
-> > >         Configured Clock Speed: Unknown
-> > =
+reply to this email.
 
-> > unfortunately with this I can't say :(
-> > Do you mind checking on EFI or maybe looking at the memory modules' part
-> > number?
-> =
+For more information about the 3.16.y-ckt tree, see
+https://wiki.ubuntu.com/Kernel/Dev/ExtendedStable
 
-> Do not find memory modules' part number in EFI menu.  Some information
-> about memory is:
-> =
+Thanks.
+-Luis
 
-> 2133MT/s Micron DRx8 8GB UDIMM
+------
 
-This doesn't help much. You'll need then to open your machine and check
-the model number there physically at the DIMMs. =
+>From 2aed2b98cb3fa4be806451524afb480cfebe0fbc Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 18 Dec 2014 11:51:01 +0100
+Subject: tick/powerclamp: Remove tick_nohz_idle abuse
+
+commit a5fd9733a30d18d7ac23f17080e7e07bb3205b69 upstream.
+
+commit 4dbd27711cd9 "tick: export nohz tick idle symbols for module
+use" was merged via the thermal tree without an explicit ack from the
+relevant maintainers.
+
+The exports are abused by the intel powerclamp driver which implements
+a fake idle state from a sched FIFO task. This causes all kinds of
+wreckage in the NOHZ core code which rightfully assumes that
+tick_nohz_idle_enter/exit() are only called from the idle task itself.
+
+Recent changes in the NOHZ core lead to a failure of the powerclamp
+driver and now people try to hack completely broken and backwards
+workarounds into the NOHZ core code. This is completely unacceptable
+and just papers over the real problem. There are way more subtle
+issues lurking around the corner.
+
+The real solution is to fix the powerclamp driver by rewriting it with
+a sane concept, but that's beyond the scope of this.
+
+So the only solution for now is to remove the calls into the core NOHZ
+code from the powerclamp trainwreck along with the exports.
+
+Fixes: d6d71ee4a14a "PM: Introduce Intel PowerClamp Driver"
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Preeti U Murthy <preeti@linux.vnet.ibm.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: Fengguang Wu <fengguang.wu@intel.com>
+Cc: Frederic Weisbecker <frederic@kernel.org>
+Cc: Pan Jacob jun <jacob.jun.pan@intel.com>
+Cc: LKP <lkp@01.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Zhang Rui <rui.zhang@intel.com>
+Link: http://lkml.kernel.org/r/alpine.DEB.2.11.1412181110110.17382(a)nanos
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Luis Henriques <luis.henriques@canonical.com>
+---
+ drivers/thermal/intel_powerclamp.c | 2 --
+ kernel/time/tick-sched.c           | 2 --
+ 2 files changed, 4 deletions(-)
+
+diff --git a/drivers/thermal/intel_powerclamp.c b/drivers/thermal/intel_pow=
+erclamp.c
+index 95cb7fc20e17..6cb78497076a 100644
+--- a/drivers/thermal/intel_powerclamp.c
++++ b/drivers/thermal/intel_powerclamp.c
+@@ -435,7 +435,6 @@ static int clamp_thread(void *arg)
+ 		 * allowed. thus jiffies are updated properly.
+ 		 */
+ 		preempt_disable();
+-		tick_nohz_idle_enter();
+ 		/* mwait until target jiffies is reached */
+ 		while (time_before(jiffies, target_jiffies)) {
+ 			unsigned long ecx =3D 1;
+@@ -451,7 +450,6 @@ static int clamp_thread(void *arg)
+ 			start_critical_timings();
+ 			atomic_inc(&idle_wakeup_counter);
+ 		}
+-		tick_nohz_idle_exit();
+ 		preempt_enable();
+ 	}
+ 	del_timer_sync(&wakeup_timer);
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index 6558b7ac112d..8c08a6f9cca0 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -807,7 +807,6 @@ void tick_nohz_idle_enter(void)
+
+ 	local_irq_enable();
+ }
+-EXPORT_SYMBOL_GPL(tick_nohz_idle_enter);
+
+ /**
+  * tick_nohz_irq_exit - update next tick event from interrupt exit
+@@ -934,7 +933,6 @@ void tick_nohz_idle_exit(void)
+
+ 	local_irq_enable();
+ }
+-EXPORT_SYMBOL_GPL(tick_nohz_idle_exit);
+
+ static int tick_nohz_reprogram(struct tick_sched *ts, ktime_t now)
+ {
+--
+2.1.4
 
 
-Also, you need to check if the specific CPU model that you have supports
-ECC or not. Not sure about Haswell, but, on Sandy Bridge, not all CPU
-models support it.
-
-Regards,
-Mauro
-
-> =
-
-> Best Regards,
-> Huang, Ying
-> =
-
-> =
-
-
-
--- =
-
-
-Cheers,
-Mauro
-
---===============6699695311035862014==--
+--===============1702867883546365513==--
 
