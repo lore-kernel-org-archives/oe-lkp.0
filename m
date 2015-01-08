@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============6588637854939908952=="
+Content-Type: multipart/mixed; boundary="===============8668022520072172688=="
 MIME-Version: 1.0
-From: Davidlohr Bueso <dave@stgolabs.net>
+From: Huang Ying <ying.huang@linux.intel.com>
 To: lkp@lists.01.org
 Subject: Re: [mm] c8c06efa8b5: -7.6% unixbench.score
-Date: Wed, 07 Jan 2015 23:50:14 -0800
-Message-ID: <1420703414.12346.12.camel@stgolabs.net>
+Date: Thu, 08 Jan 2015 16:24:04 +0800
+Message-ID: <1420705444.6201.103.camel@linux.intel.com>
 In-Reply-To: <1420703154.12346.10.camel@stgolabs.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6588637854939908952==
+--===============8668022520072172688==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -16,8 +16,7 @@ Content-Transfer-Encoding: quoted-printable
 On Wed, 2015-01-07 at 23:45 -0800, Davidlohr Bueso wrote:
 > On Thu, 2015-01-08 at 10:27 +0800, Huang Ying wrote:
 > Cc'ing Peter.
-
-Err, resending with the complete msg.
+> =
 
 > > FYI, we noticed the below changes on
 > > =
@@ -46,7 +45,8 @@ voluntary_context_switches
 
 > And this workload appears to be from execl, right? Make sense with some
 > of those numbers!!
-> =
+
+Yes.  The test we run for unixbench is execl.
 
 > >  2.323e+08 =C2=B1  0%      -7.2%  2.157e+08 =C2=B1  1%  unixbench.time.=
 minor_page_faults
@@ -68,32 +68,29 @@ fixup.SyS_mprotect.system_call_fastpath
 > operations, I doubt it means that its the amount of calls into the
 > slowpath... in addition the lock is obviously contended so we can forget
 > about anything in the fastpath.
-> =
+
+I think because you changed mutex to rwsem so there was no rwsem related
+statistics data for the parent commit.
+
+Best Regards,
+Huang, Ying
 
 > So this is a call_rwsem_down_write_failed() vs __mutex_lock_common()
 > issue.
+> =
 
-It's late, but for some initial thoughts I believe this comes down to
-differences in how mutexes and rwsems deal with ultimately blocking (and
-based on the nasty sched_debug numbers reported by Huang). We now do in
-call_rwsem_down_write_failed:
+> =
 
-	/* wait to be given the lock */
-	while (true) {
-		set_task_state(tsk, TASK_UNINTERRUPTIBLE);
-		if (!waiter.task)
-			break;
-		schedule();
-	}
+> Thanks,
+> Davidlohr
+> =
 
-In which that waiter.task check forces us to need the barrier in
-set_task_state() -- while in mutexes we get away with it. We could
-disable preemption during this whole slowpath step and stabilize things,
-just like we do with mutexes.
-
-Thanks,
-Davidlohr
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
 
 
---===============6588637854939908952==--
+
+--===============8668022520072172688==--
 
