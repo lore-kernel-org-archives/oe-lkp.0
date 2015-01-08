@@ -1,58 +1,77 @@
-Content-Type: multipart/mixed; boundary="===============2694076607327674058=="
+Content-Type: multipart/mixed; boundary="===============6281487023617943974=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: David Vrabel <david.vrabel@citrix.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] c8c06efa8b5: -7.6% unixbench.score
-Date: Thu, 08 Jan 2015 11:37:08 +0100
-Message-ID: <20150108103708.GE29390@twins.programming.kicks-ass.net>
-In-Reply-To: <1420707599.12346.14.camel@stgolabs.net>
+Subject: Re: [xen] 054954eb051f: -49.7% kernel-size.bss
+Date: Thu, 08 Jan 2015 14:43:13 +0000
+Message-ID: <54AE9781.5050501@citrix.com>
+In-Reply-To: <1420685923.6201.91.camel@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2694076607327674058==
+--===============6281487023617943974==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 08, 2015 at 12:59:59AM -0800, Davidlohr Bueso wrote:
-> > > >     721721 =C2=B1  1%    +303.6%    2913110 =C2=B1  3%  unixbench.t=
-ime.voluntary_context_switches
-> > > >      11767 =C2=B1  0%      -7.6%      10867 =C2=B1  1%  unixbench.s=
-core
-
-> heh I was actually looking at the reader code. We really do:
+On 08/01/15 02:58, Huang Ying wrote:
+> FYI, we noticed the below changes on
 > =
 
-> 	/* wait until we successfully acquire the lock */
-> 	set_current_state(TASK_UNINTERRUPTIBLE);
-> 	while (true) {
-> 		if (rwsem_try_write_lock(count, sem))
-> 			break;
-> 		raw_spin_unlock_irq(&sem->wait_lock);
+> commit 054954eb051f35e74b75a566a96fe756015352c8 ("xen: switch to linear v=
+irtual mapped sparse p2m list")
 > =
 
-> 		/* Block until there are no active lockers. */
-> 		do {
-> 			schedule();
-> 			set_current_state(TASK_UNINTERRUPTIBLE);
-> 		} while ((count =3D sem->count) & RWSEM_ACTIVE_MASK);
+> testbox/testcase/testparams: vm-kbuild-yocto-ia32/boot/1
 > =
 
-> 		raw_spin_lock_irq(&sem->wait_lock);
-> 	}
+> 0aad5689837c882d  054954eb051f35e74b75a566a9  =
+
+> ----------------  --------------------------  =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>    4161536 =C2=B1  0%     -49.7%    2093056 =C2=B1  0%  kernel-size.bss
+
+This is a good thing, right?
+
+>                                     kernel-size.bss
 > =
 
-> =
+>   4.5e+06 *+-*--*--*-*--*--*--*--*--*--*--*-*--*--*--*-------------------=
+---+
+>           |                                             *..*..           =
+   |
+>           |                                                   *..*.*..*..=
+*..*
+>     4e+06 ++                                                             =
+   |
+>           |                                                              =
+   |
+>           |                                                              =
+   |
+>   3.5e+06 ++                                                             =
+   |
+>           |                                                              =
+   |
+>     3e+06 ++                                                             =
+   |
+>           |                                                              =
+   |
+>           |                                                              =
+   |
+>   2.5e+06 ++                                                             =
+   |
+>           |                                                              =
+   |
+>           O  O  O  O O  O  O  O  O  O  O  O O  O  O  O  O  O  O  O O     =
+   |
+>     2e+06 ++-------------------------------------------------------------=
+---+
 
-> Which still has similar issues with even two barriers, I guess for both
-> the rwsem_try_write_lock call (less severe) and count checks. Anyway...
+I have no idea what this graph is supposed to be showing.
 
-So its actually scheduling a lot more, this could also mean the opt
-spinning thing isn't working as well (I've no real idea what the
-workload is).
+David
 
-One thing I noticed is that we set sem->owner very late in comparison
-with the mutex code, this could cause us to break out of the spin loop
-prematurely.
-
---===============2694076607327674058==--
+--===============6281487023617943974==--
 
