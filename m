@@ -1,91 +1,91 @@
-Content-Type: multipart/mixed; boundary="===============6117628979366423129=="
+Content-Type: multipart/mixed; boundary="===============5386538017040966270=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@linux.intel.com>
+From: Davidlohr Bueso <dave@stgolabs.net>
 To: lkp@lists.01.org
-Subject: Re: [xen] 054954eb051f: -49.7% kernel-size.bss
-Date: Fri, 09 Jan 2015 08:46:14 +0800
-Message-ID: <1420764374.6201.116.camel@linux.intel.com>
-In-Reply-To: <54AE9781.5050501@citrix.com>
+Subject: Re: [mm] c8c06efa8b5: -7.6% unixbench.score
+Date: Thu, 08 Jan 2015 18:47:53 -0800
+Message-ID: <1420771673.12346.16.camel@stgolabs.net>
+In-Reply-To: <1420684064.6201.86.camel@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6117628979366423129==
+--===============5386538017040966270==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2015-01-08 at 14:43 +0000, David Vrabel wrote:
-> On 08/01/15 02:58, Huang Ying wrote:
-> > FYI, we noticed the below changes on
-> > =
-
-> > commit 054954eb051f35e74b75a566a96fe756015352c8 ("xen: switch to linear=
- virtual mapped sparse p2m list")
-> > =
-
-> > testbox/testcase/testparams: vm-kbuild-yocto-ia32/boot/1
-> > =
-
-> > 0aad5689837c882d  054954eb051f35e74b75a566a9  =
-
-> > ----------------  --------------------------  =
-
-> >          %stddev     %change         %stddev
-> >              \          |                \  =
-
-> >    4161536 =C2=B1  0%     -49.7%    2093056 =C2=B1  0%  kernel-size.bss
+On Thu, 2015-01-08 at 10:27 +0800, Huang Ying wrote:
+> FYI, we noticed the below changes on
 > =
 
-> This is a good thing, right?
-
-Yes.  I think so.
-
-> >                                     kernel-size.bss
-> > =
-
-> >   4.5e+06 *+-*--*--*-*--*--*--*--*--*--*--*-*--*--*--*-----------------=
------+
-> >           |                                             *..*..         =
-     |
-> >           |                                                   *..*.*..*=
-..*..*
-> >     4e+06 ++                                                           =
-     |
-> >           |                                                            =
-     |
-> >           |                                                            =
-     |
-> >   3.5e+06 ++                                                           =
-     |
-> >           |                                                            =
-     |
-> >     3e+06 ++                                                           =
-     |
-> >           |                                                            =
-     |
-> >           |                                                            =
-     |
-> >   2.5e+06 ++                                                           =
-     |
-> >           |                                                            =
-     |
-> >           O  O  O  O O  O  O  O  O  O  O  O O  O  O  O  O  O  O  O O   =
-     |
-> >     2e+06 ++-----------------------------------------------------------=
------+
+> commit c8c06efa8b552608493b7066c234cfa82c47fcea ("mm: convert i_mmap_mute=
+x to rwsem")
 > =
 
-> I have no idea what this graph is supposed to be showing.
 > =
 
+> testbox/testcase/testparams: lituya/unixbench/performance-execl
+> =
 
-It shows the kernel-size.bss during bisection.  From it, it can be seen
-that the bisect should be good, the good value points are separated with
-the bad value points clearly.
+> 83cde9e8ba95d180  c8c06efa8b552608493b7066c2  =
 
-Best Regards,
-Huang, Ying
+> ----------------  --------------------------  =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>     721721 =C2=B1  1%    +303.6%    2913110 =C2=B1  3%  unixbench.time.vo=
+luntary_context_switches
+>      11767 =C2=B1  0%      -7.6%      10867 =C2=B1  1%  unixbench.score
+
+I simply cannot reproduce this, not even on a large box.
+
+mutex (83cde9e8ba95d180):
+run1:
+Execl Throughput                               3974.3 lps   (30.0 s, 2 samp=
+les)
+Voluntary context switches: 377039
+
+run2:
+Execl Throughput                               4115.5 lps   (30.0 s, 2 samp=
+les)
+Voluntary context switches: 391260
+
+run3:
+Execl Throughput                               4000.2 lps   (30.0 s, 2 samp=
+les)
+Voluntary context switches: 378674
+
+rwsem (c8c06efa8b552608493b7066c2):
+run1:
+Execl Throughput                               4166.0 lps   (30.0 s, 2 samp=
+les)
+Voluntary context switches: 385740
+
+run2:
+Execl Throughput                               4115.5 lps   (30.0 s, 2 samp=
+les)
+Voluntary context switches: 391260
+
+run3:
+Execl Throughput                               4110.5 lps   (29.9 s, 2 samp=
+les)
+Voluntary context switches: 387053
+
+Since throughput is in the ballpark, so is the benchmark score (in fact
+the rwsem score is slightly better).
+
+Is this a one time thing or can you observe it again? Any special things
+you guys are doing when running the benchmark? Here are some things I've
+done: cpu gov set to performance, Unixbench taken from
+(http://byte-unixbench.googlecode.com/files/UnixBench5.1.3.tgz ), used
+default compiler options from unixbench Makefile (that is using the
+solaris 2 option). This pretty much matches the environment info you've
+provided. We've done this lock type comparison exercise plenty of times
+in the past, and I'm a bit surprised to see your numbers.
+
+Thanks,
+Davidlohr
 
 
-
---===============6117628979366423129==--
+--===============5386538017040966270==--
 
