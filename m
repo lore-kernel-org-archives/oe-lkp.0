@@ -1,58 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============7258085667028174453=="
+Content-Type: multipart/mixed; boundary="===============7225854393549019597=="
 MIME-Version: 1.0
-From: Rusty Russell <rusty@rustcorp.com.au>
+From: David Miller <davem@davemloft.net>
 To: lkp@lists.01.org
-Subject: Re: [params] RIP: 0010:[<ffffffff811c1a04>] [<ffffffff811c1a04>] sysfs_add_file_mode_ns+0x64/0x1f0
-Date: Tue, 13 Jan 2015 13:38:11 +1030
-Message-ID: <871tmzz8bo.fsf@rustcorp.com.au>
-In-Reply-To: <1421030743.6201.154.camel@intel.com>
+Subject: Re: [PATCH net-next] rhashtable: Lower/upper bucket may map to same lock while shrinking
+Date: Tue, 13 Jan 2015 00:25:39 -0500
+Message-ID: <20150113.002539.865888654705925013.davem@davemloft.net>
+In-Reply-To: <20150112235821.GB16617@casper.infradead.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7258085667028174453==
+--===============7225854393549019597==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Huang Ying <ying.huang@intel.com> writes:
-> FYI, we noticed the below changes on
->
-> commit 18eb74fa94161380c1acc9cf562cb835c4e54a25 ("params: cleanup sysfs a=
-llocation")
+From: Thomas Graf <tgraf@suug.ch>
+Date: Mon, 12 Jan 2015 23:58:21 +0000
 
-Thanks!
+> Each per bucket lock covers a configurable number of buckets. While
+> shrinking, two buckets in the old table contain entries for a single
+> bucket in the new table. We need to lock down both while linking.
+> Check if they are protected by different locks to avoid a recursive
+> lock.
+> =
 
-This is caused by CONFIG_DEBUG_LOCK_ALLOC, which adds fields to
-'struct attribute'.  In particular ignore_lockdep is never initialized.
+> Fixes: 97defe1e ("rhashtable: Per bucket locks & deferred expansion/shrin=
+king")
+> Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+> Signed-off-by: Thomas Graf <tgraf@suug.ch>
 
-If we memset to 0 before calling sysfs_attr_init() (which doesn't
-actually initialize the attribute!), this is fixed.
+Applied.
 
-Cheers,
-Rusty.
-
-Subject: param: fix uninitialized read with CONFIG_DEBUG_LOCK_ALLOC
-
-ignore_lockdep is uninitialized, and sysfs_attr_init() doesn't initialize
-it, so memset to 0.
-
-Reported-by: Huang Ying <ying.huang@intel.com>
-Cc: Eric W. Biederman <ebiederm@xmission.com>
-Signed-off-by: Rusty Russell <rusty@rustcorp.com.au>
-
-diff --git a/kernel/params.c b/kernel/params.c
-index bd65d136a470..728e05b167de 100644
---- a/kernel/params.c
-+++ b/kernel/params.c
-@@ -642,6 +642,7 @@ static __modinit int add_sysfs_param(struct module_kobj=
-ect *mk,
- 	mk->mp->grp.attrs =3D new_attrs;
- =
-
- 	/* Tack new one on the end. */
-+	memset(&mk->mp->attrs[mk->mp->num], 0, sizeof(mk->mp->attrs[0]));
- 	sysfs_attr_init(&mk->mp->attrs[mk->mp->num].mattr.attr);
- 	mk->mp->attrs[mk->mp->num].param =3D kp;
- 	mk->mp->attrs[mk->mp->num].mattr.show =3D param_attr_show;
-
---===============7258085667028174453==--
+--===============7225854393549019597==--
 
