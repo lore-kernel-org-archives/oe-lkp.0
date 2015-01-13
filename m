@@ -1,34 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============7225854393549019597=="
+Content-Type: multipart/mixed; boundary="===============5664446423836967580=="
 MIME-Version: 1.0
-From: David Miller <davem@davemloft.net>
+From: Ying Xue <ying.xue@windriver.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH net-next] rhashtable: Lower/upper bucket may map to same lock while shrinking
-Date: Tue, 13 Jan 2015 00:25:39 -0500
-Message-ID: <20150113.002539.865888654705925013.davem@davemloft.net>
-In-Reply-To: <20150112235821.GB16617@casper.infradead.org>
+Subject: Re: Fwd: [rhashtable] WARNING: CPU: 0 PID: 10 at kernel/locking/mutex.c:570 mutex_lock_nested()
+Date: Tue, 13 Jan 2015 15:50:22 +0800
+Message-ID: <54B4CE3E.8020009@windriver.com>
+In-Reply-To: <20150112124216.GA26570@casper.infradead.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7225854393549019597==
+--===============5664446423836967580==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: Thomas Graf <tgraf@suug.ch>
-Date: Mon, 12 Jan 2015 23:58:21 +0000
-
-> Each per bucket lock covers a configurable number of buckets. While
-> shrinking, two buckets in the old table contain entries for a single
-> bucket in the new table. We need to lock down both while linking.
-> Check if they are protected by different locks to avoid a recursive
-> lock.
+On 01/12/2015 08:42 PM, Thomas Graf wrote:
+> On 01/12/15 at 09:38am, Ying Xue wrote:
+>> Hi Thomas,
+>>
+>> I am really unable to see where is wrong leading to below warning
+>> complaints. Can you please help me check it?
 > =
 
-> Fixes: 97defe1e ("rhashtable: Per bucket locks & deferred expansion/shrin=
-king")
-> Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-> Signed-off-by: Thomas Graf <tgraf@suug.ch>
+> Not sure yet. It's not your patch that introduced the issue though.
+> It merely exposed the affected code path.
+>
+> Just wondering, did you test with CONFIG_DEBUG_MUTEXES enabled?
+> =
 
-Applied.
+> =
 
---===============7225854393549019597==--
+
+After I enable above option, I don't find similar complaints during my
+testing.
+
+Regards,
+Ying
+
+
+--===============5664446423836967580==--
 
