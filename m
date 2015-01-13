@@ -1,73 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============0370414254700388140=="
+Content-Type: multipart/mixed; boundary="===============7258085667028174453=="
 MIME-Version: 1.0
-From: Thomas Graf <tgraf@suug.ch>
+From: Rusty Russell <rusty@rustcorp.com.au>
 To: lkp@lists.01.org
-Subject: [PATCH net-next] rhashtable: Lower/upper bucket may map to same lock while shrinking
-Date: Mon, 12 Jan 2015 23:58:21 +0000
-Message-ID: <20150112235821.GB16617@casper.infradead.org>
-In-Reply-To: <20150112232217.GA5277@wfg-t540p.sh.intel.com>
+Subject: Re: [params] RIP: 0010:[<ffffffff811c1a04>] [<ffffffff811c1a04>] sysfs_add_file_mode_ns+0x64/0x1f0
+Date: Tue, 13 Jan 2015 13:38:11 +1030
+Message-ID: <871tmzz8bo.fsf@rustcorp.com.au>
+In-Reply-To: <1421030743.6201.154.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0370414254700388140==
+--===============7258085667028174453==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Each per bucket lock covers a configurable number of buckets. While
-shrinking, two buckets in the old table contain entries for a single
-bucket in the new table. We need to lock down both while linking.
-Check if they are protected by different locks to avoid a recursive
-lock.
+Huang Ying <ying.huang@intel.com> writes:
+> FYI, we noticed the below changes on
+>
+> commit 18eb74fa94161380c1acc9cf562cb835c4e54a25 ("params: cleanup sysfs a=
+llocation")
 
-Fixes: 97defe1e ("rhashtable: Per bucket locks & deferred expansion/shrinki=
-ng")
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Signed-off-by: Thomas Graf <tgraf@suug.ch>
----
- lib/rhashtable.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+Thanks!
 
-diff --git a/lib/rhashtable.c b/lib/rhashtable.c
-index 8023b55..45477f7 100644
---- a/lib/rhashtable.c
-+++ b/lib/rhashtable.c
-@@ -443,8 +443,16 @@ int rhashtable_shrink(struct rhashtable *ht)
- 		new_bucket_lock =3D bucket_lock(new_tbl, new_hash);
+This is caused by CONFIG_DEBUG_LOCK_ALLOC, which adds fields to
+'struct attribute'.  In particular ignore_lockdep is never initialized.
+
+If we memset to 0 before calling sysfs_attr_init() (which doesn't
+actually initialize the attribute!), this is fixed.
+
+Cheers,
+Rusty.
+
+Subject: param: fix uninitialized read with CONFIG_DEBUG_LOCK_ALLOC
+
+ignore_lockdep is uninitialized, and sysfs_attr_init() doesn't initialize
+it, so memset to 0.
+
+Reported-by: Huang Ying <ying.huang@intel.com>
+Cc: Eric W. Biederman <ebiederm@xmission.com>
+Signed-off-by: Rusty Russell <rusty@rustcorp.com.au>
+
+diff --git a/kernel/params.c b/kernel/params.c
+index bd65d136a470..728e05b167de 100644
+--- a/kernel/params.c
++++ b/kernel/params.c
+@@ -642,6 +642,7 @@ static __modinit int add_sysfs_param(struct module_kobj=
+ect *mk,
+ 	mk->mp->grp.attrs =3D new_attrs;
  =
 
- 		spin_lock_bh(old_bucket_lock1);
--		spin_lock_bh_nested(old_bucket_lock2, RHT_LOCK_NESTED);
--		spin_lock_bh_nested(new_bucket_lock, RHT_LOCK_NESTED2);
-+
-+		/* Depending on the lock per buckets mapping, the bucket in
-+		 * the lower and upper region may map to the same lock.
-+		 */
-+		if (old_bucket_lock1 !=3D old_bucket_lock2) {
-+			spin_lock_bh_nested(old_bucket_lock2, RHT_LOCK_NESTED);
-+			spin_lock_bh_nested(new_bucket_lock, RHT_LOCK_NESTED2);
-+		} else {
-+			spin_lock_bh_nested(new_bucket_lock, RHT_LOCK_NESTED);
-+		}
- =
+ 	/* Tack new one on the end. */
++	memset(&mk->mp->attrs[mk->mp->num], 0, sizeof(mk->mp->attrs[0]));
+ 	sysfs_attr_init(&mk->mp->attrs[mk->mp->num].mattr.attr);
+ 	mk->mp->attrs[mk->mp->num].param =3D kp;
+ 	mk->mp->attrs[mk->mp->num].mattr.show =3D param_attr_show;
 
- 		rcu_assign_pointer(*bucket_tail(new_tbl, new_hash),
- 				   tbl->buckets[new_hash]);
-@@ -452,7 +460,8 @@ int rhashtable_shrink(struct rhashtable *ht)
- 				   tbl->buckets[new_hash + new_tbl->size]);
- =
-
- 		spin_unlock_bh(new_bucket_lock);
--		spin_unlock_bh(old_bucket_lock2);
-+		if (old_bucket_lock1 !=3D old_bucket_lock2)
-+			spin_unlock_bh(old_bucket_lock2);
- 		spin_unlock_bh(old_bucket_lock1);
- 	}
- =
-
--- =
-
-1.9.3
-
-
---===============0370414254700388140==--
+--===============7258085667028174453==--
 
