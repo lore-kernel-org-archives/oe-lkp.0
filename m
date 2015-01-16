@@ -1,35 +1,110 @@
-Content-Type: multipart/mixed; boundary="===============8629599549483682216=="
+Content-Type: multipart/mixed; boundary="===============1591671840463695099=="
 MIME-Version: 1.0
-From: Thomas Graf <tgraf@suug.ch>
+From: Kees Cook <keescook@chromium.org>
 To: lkp@lists.01.org
-Subject: Re: Fwd: [rhashtable] WARNING: CPU: 0 PID: 10 at kernel/locking/mutex.c:570 mutex_lock_nested()
-Date: Tue, 13 Jan 2015 19:28:47 +0000
-Message-ID: <20150113192847.GP20387@casper.infradead.org>
-In-Reply-To: <CAHA+R7M1ZSCF+FwKVtZUbsJ05zesNg-WVTqH13=oFe5gM--3gw@mail.gmail.com>
+Subject: Re: [PATCH] drm/radeon: Try to init amdkfd only if 64 bit kernel
+Date: Thu, 15 Jan 2015 16:27:42 -0800
+Message-ID: <CAGXu5jJFn_H1RQmffqvm-4OSbk0MXb5P3Re--5JK13aK3sGRUw@mail.gmail.com>
+In-Reply-To: <87r3v96ebd.fsf@rustcorp.com.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8629599549483682216==
+--===============1591671840463695099==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 01/13/15 at 11:14am, Cong Wang wrote:
-> On Tue, Jan 13, 2015 at 12:41 AM, Thomas Graf <tgraf@suug.ch> wrote:
-> > I can't reproduce it in my KVM box either so far. It looks like a
-> > mutex_lock() on an uninitialized mutex or use after free but I can't
-> > find such a code path so far.
-> =
+On Sun, Jan 4, 2015 at 8:28 PM, Rusty Russell <rusty@rustcorp.com.au> wro=
+te:
+> Oded Gabbay <oded.gabbay@amd.com> writes:
+>> On 12/24/2014 01:01 AM, Rusty Russell wrote:
+>>> Oded Gabbay <oded.gabbay@amd.com> writes:
+>>>> I didn't say it doesn't always work.
+>>>> The actual thing that doesn't work is the define symbol_get and only i=
+n a
+>>>> specific case of 32bit kernel AND CONFIG_MODULES is unset AND
+>>>> CONFIG_RANDOMIZE_BASE is set.
+>>>> The define in that case is:
+>>>> #define symbol_get(x) ({ extern typeof(x) x __attribute__((weak)); &(x=
+); })
+>>>>
+>>>> Why it doesn't work (doesn't return NULL when symbol doesn't exists) ?
+>>>
+>>> Hmm, I'd guess CONFIG_RANDOMIZE_BASE is relocating NULL symbols...
+>>>
+>>> No, I can't reproduce this.  Please send your .config privately.
+>>>
+>>> Here's my test case:
+>>>
+>>> diff --git a/init/main.c b/init/main.c
+>>> index 61b993767db5..a3ee1ec97ec3 100644
+>>> --- a/init/main.c
+>>> +++ b/init/main.c
+>>> @@ -683,6 +683,12 @@ asmlinkage __visible void __init start_kernel(void)
+>>>
+>>>      ftrace_init();
+>>>
+>>> +    {
+>>> +            extern void nonexistent_fn(void);
+>>> +            printk("symbol_get(nonexistent_fn) =3D %p\n",
+>>> +                   symbol_get(nonexistent_fn));
+>>> +    }
+>>> +
+>>>      /* Do the rest non-__init'ed, we're now alive */
+>>>      rest_init();
+>>>   }
+>>>
+>>> Thanks,
+>>> Rusty.
+>>>
+>> Hi Rusty,
+>>
+>> Attached is the bad config file. (config-bad)
+>> I have narrowed the changes you need to do to the config file in order to
+>> reproduce this bug.
+>> The base assumption is a 32-bit kernel and without modules support. Rest=
+ of the
+>> config file is pretty standard, IMO.
+>> Then, its not enough to enable CONFIG_RANDOMIZE_BASE like I wrote in my =
+original
+>> post. You need also to unset CONFIG_HIBERNATION.
+>
+> Indeed, thanks; your config breaks as reported.  With CONFIG_HIBERNATION
+> the kernel offset is 0, so we don't see this.
+>
+> Kees, as far as I can tell you need another 0-terminated vmlinux.relocs
+> section for weak symbols.  These should not be relocated if already 0.
+>
+> Put this somewhere to test.  It fails for x86_64, too:
+>
+> diff --git a/init/main.c b/init/main.c
+> index 61b993767db5..c9e0195c792a 100644
+> --- a/init/main.c
+> +++ b/init/main.c
+> @@ -683,6 +683,12 @@ asmlinkage __visible void __init start_kernel(void)
+>
+>         ftrace_init();
+>
+> +       {
+> +               extern void __attribute__((weak)) nonexistent_fn(void);
+> +               printk("nonexistent_fn =3D %p\n", nonexistent_fn);
+> +               BUG_ON(nonexistent_fn !=3D NULL);
+> +       }
+> +
+>         /* Do the rest non-__init'ed, we're now alive */
+>         rest_init();
+>  }
 
-> Couldn't that be the delayed work is still running after rhashtable
-> is destroyed by its caller? I mean, cancel_delayed_work_sync()
-> should be called in rhashtable_destroy()?
-> =
+Hm, I can't reproduce this on v3.19-rc4. My nonexistent_fn comes back
+NULL regardless of CONFIG and kaslr on/off states I've tried. Could
+this be a (yet another) linker bug? What was the toolchain used? I
+built with gcc 4.8.2 and binutils 2.24.
 
-> Of course, it may be caller's responsibility to ensure that, I haven't
-> looked into it that much.
+-Kees
 
-Yes, we came to the very same conclusion in a different email thread
-and found the offending race condition.
+-- =
 
---===============8629599549483682216==--
+Kees Cook
+Chrome OS Security
+
+--===============1591671840463695099==--
 
