@@ -1,33 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============5391643181999038304=="
+Content-Type: multipart/mixed; boundary="===============1266512397515770988=="
 MIME-Version: 1.0
 From: gregkh@linuxfoundation.org
 To: lkp@lists.01.org
-Subject: FAILED: patch "[PATCH] tick/powerclamp: Remove tick_nohz_idle abuse" failed to apply to 3.10-stable tree
-Date: Tue, 20 Jan 2015 15:20:10 +0800
-Message-ID: <1421738410105248@kroah.com>
+Subject: Patch "tick/powerclamp: Remove tick_nohz_idle abuse" has been added to the 3.18-stable tree
+Date: Tue, 20 Jan 2015 15:23:50 +0800
+Message-ID: <142173863010819@kroah.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5391643181999038304==
+--===============1266512397515770988==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 
-The patch below does not apply to the 3.10-stable tree.
-If someone wants it applied there, or to any other stable or longterm
-tree, then please email the backport, including the original git commit
-id to <stable@vger.kernel.org>.
+This is a note to let you know that I've just added the patch titled
 
-thanks,
+    tick/powerclamp: Remove tick_nohz_idle abuse
 
-greg k-h
+to the 3.18-stable tree which can be found at:
+    http://www.kernel.org/git/?p=3Dlinux/kernel/git/stable/stable-queue.git=
+;a=3Dsummary
 
------------------- original commit in Linus's tree ------------------
+The filename of the patch is:
+     tick-powerclamp-remove-tick_nohz_idle-abuse.patch
+and it can be found in the queue-3.18 subdirectory.
+
+If you, or anyone else, feels it should not be added to the stable tree,
+please let <stable@vger.kernel.org> know about it.
+
 
 >From a5fd9733a30d18d7ac23f17080e7e07bb3205b69 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 18 Dec 2014 11:51:01 +0100
-Subject: [PATCH] tick/powerclamp: Remove tick_nohz_idle abuse
+Subject: tick/powerclamp: Remove tick_nohz_idle abuse
+
+From: Thomas Gleixner <tglx@linutronix.de>
+
+commit a5fd9733a30d18d7ac23f17080e7e07bb3205b69 upstream.
 
 commit 4dbd27711cd9 "tick: export nohz tick idle symbols for module
 use" was merged via the thermal tree without an explicit ack from the
@@ -61,13 +70,15 @@ Cc: Pan Jacob jun <jacob.jun.pan@intel.com>
 Cc: LKP <lkp@01.org>
 Cc: Peter Zijlstra <peterz@infradead.org>
 Cc: Zhang Rui <rui.zhang@intel.com>
-Cc: stable(a)vger.kernel.org
 Link: http://lkml.kernel.org/r/alpine.DEB.2.11.1412181110110.17382(a)nanos
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-diff --git a/drivers/thermal/intel_powerclamp.c b/drivers/thermal/intel_pow=
-erclamp.c
-index 95cb7fc20e17..6cb78497076a 100644
+---
+ drivers/thermal/intel_powerclamp.c |    2 --
+ kernel/time/tick-sched.c           |    2 --
+ 2 files changed, 4 deletions(-)
+
 --- a/drivers/thermal/intel_powerclamp.c
 +++ b/drivers/thermal/intel_powerclamp.c
 @@ -435,7 +435,6 @@ static int clamp_thread(void *arg)
@@ -86,8 +97,6 @@ index 95cb7fc20e17..6cb78497076a 100644
  		preempt_enable();
  	}
  	del_timer_sync(&wakeup_timer);
-diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-index 1f4356037a7d..ff3ec34702e8 100644
 --- a/kernel/time/tick-sched.c
 +++ b/kernel/time/tick-sched.c
 @@ -847,7 +847,6 @@ void tick_nohz_idle_enter(void)
@@ -112,5 +121,10 @@ index 1f4356037a7d..ff3ec34702e8 100644
  {
 
 
---===============5391643181999038304==--
+Patches currently in stable-queue which might be from tglx(a)linutronix.de =
+are
+
+queue-3.18/tick-powerclamp-remove-tick_nohz_idle-abuse.patch
+
+--===============1266512397515770988==--
 
