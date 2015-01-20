@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============1266512397515770988=="
+Content-Type: multipart/mixed; boundary="===============4798276616508400133=="
 MIME-Version: 1.0
 From: gregkh@linuxfoundation.org
 To: lkp@lists.01.org
-Subject: Patch "tick/powerclamp: Remove tick_nohz_idle abuse" has been added to the 3.18-stable tree
-Date: Tue, 20 Jan 2015 15:23:50 +0800
-Message-ID: <142173863010819@kroah.com>
+Subject: Patch "tick/powerclamp: Remove tick_nohz_idle abuse" has been added to the 3.14-stable tree
+Date: Tue, 20 Jan 2015 15:32:01 +0800
+Message-ID: <142173912115014@kroah.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1266512397515770988==
+--===============4798276616508400133==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -17,13 +17,13 @@ This is a note to let you know that I've just added the patch titled
 
     tick/powerclamp: Remove tick_nohz_idle abuse
 
-to the 3.18-stable tree which can be found at:
+to the 3.14-stable tree which can be found at:
     http://www.kernel.org/git/?p=3Dlinux/kernel/git/stable/stable-queue.git=
 ;a=3Dsummary
 
 The filename of the patch is:
      tick-powerclamp-remove-tick_nohz_idle-abuse.patch
-and it can be found in the queue-3.18 subdirectory.
+and it can be found in the queue-3.14 subdirectory.
 
 If you, or anyone else, feels it should not be added to the stable tree,
 please let <stable@vger.kernel.org> know about it.
@@ -99,7 +99,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	del_timer_sync(&wakeup_timer);
 --- a/kernel/time/tick-sched.c
 +++ b/kernel/time/tick-sched.c
-@@ -847,7 +847,6 @@ void tick_nohz_idle_enter(void)
+@@ -807,7 +807,6 @@ void tick_nohz_idle_enter(void)
  =
 
  	local_irq_enable();
@@ -109,7 +109,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
  /**
   * tick_nohz_irq_exit - update next tick event from interrupt exit
-@@ -974,7 +973,6 @@ void tick_nohz_idle_exit(void)
+@@ -934,7 +933,6 @@ void tick_nohz_idle_exit(void)
  =
 
  	local_irq_enable();
@@ -124,7 +124,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Patches currently in stable-queue which might be from tglx(a)linutronix.de =
 are
 
-queue-3.18/tick-powerclamp-remove-tick_nohz_idle-abuse.patch
+queue-3.14/tick-powerclamp-remove-tick_nohz_idle-abuse.patch
 
---===============1266512397515770988==--
+--===============4798276616508400133==--
 
