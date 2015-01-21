@@ -1,115 +1,43 @@
-Content-Type: multipart/mixed; boundary="===============4269274941169903594=="
+Content-Type: multipart/mixed; boundary="===============8942036203638496175=="
 MIME-Version: 1.0
-From: Jiri Slaby <jslaby@suse.cz>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: [PATCH 3.12 082/176] tick/powerclamp: Remove tick_nohz_idle abuse
-Date: Wed, 28 Jan 2015 15:28:32 +0100
-Message-ID: <1ff5b9fb934888276864a6cd98c98d0b07741f78.1422455352.git.jslaby@suse.cz>
-In-Reply-To: <ce4a451f616a1e7ab58cfeceea5e49c8b1c68c81.1422455352.git.jslaby@suse.cz>
+Subject: Re: [rcu] 00f5159aeb6: +55.3% will-it-scale.time.involuntary_context_switches
+Date: Wed, 21 Jan 2015 00:54:32 -0800
+Message-ID: <20150121085432.GD9719@linux.vnet.ibm.com>
+In-Reply-To: <1421827607.5772.19.camel@marge.simpson.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4269274941169903594==
+--===============8942036203638496175==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: Thomas Gleixner <tglx@linutronix.de>
+On Wed, Jan 21, 2015 at 09:06:47AM +0100, Mike Galbraith wrote:
+> On Tue, 2015-01-20 at 23:52 -0800, Paul E. McKenney wrote: =
 
-3.12-stable review patch.  If anyone has any objections, please let me know.
+> > On Wed, Jan 21, 2015 at 03:32:44PM +0800, Huang Ying wrote:
+> > > FYI, we noticed the below changes on
+> > > =
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git s=
+tall.2015.01.06a
+> > > commit 00f5159aeb68f08ce29597be86be87d6db0c1ba1 ("rcu: Run grace-peri=
+od kthreads at real-time priority")
+> > =
 
-commit a5fd9733a30d18d7ac23f17080e7e07bb3205b69 upstream.
+> > Glad this helps!
+> =
 
-commit 4dbd27711cd9 "tick: export nohz tick idle symbols for module
-use" was merged via the thermal tree without an explicit ack from the
-relevant maintainers.
+> The way I read it, it's hurting by increasing context switches... but if
+> you'll need a boot param to turn it on in the future, this is moot :)
 
-The exports are abused by the intel powerclamp driver which implements
-a fake idle state from a sched FIFO task. This causes all kinds of
-wreckage in the NOHZ core code which rightfully assumes that
-tick_nohz_idle_enter/exit() are only called from the idle task itself.
+Heh!  I guess I should read it more carefully.  Anyway, the commit does
+help in some heavy-load situations, but something more deft is clearly
+required if it is to be enabled more generally.
 
-Recent changes in the NOHZ core lead to a failure of the powerclamp
-driver and now people try to hack completely broken and backwards
-workarounds into the NOHZ core code. This is completely unacceptable
-and just papers over the real problem. There are way more subtle
-issues lurking around the corner.
-
-The real solution is to fix the powerclamp driver by rewriting it with
-a sane concept, but that's beyond the scope of this.
-
-So the only solution for now is to remove the calls into the core NOHZ
-code from the powerclamp trainwreck along with the exports.
-
-Fixes: d6d71ee4a14a "PM: Introduce Intel PowerClamp Driver"
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Preeti U Murthy <preeti@linux.vnet.ibm.com>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: Frederic Weisbecker <fweisbec@gmail.com>
-Cc: Fengguang Wu <fengguang.wu@intel.com>
-Cc: Frederic Weisbecker <frederic@kernel.org>
-Cc: Pan Jacob jun <jacob.jun.pan@intel.com>
-Cc: LKP <lkp@01.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Zhang Rui <rui.zhang@intel.com>
-Link: http://lkml.kernel.org/r/alpine.DEB.2.11.1412181110110.17382(a)nanos
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/thermal/intel_powerclamp.c | 2 --
- kernel/time/tick-sched.c           | 2 --
- 2 files changed, 4 deletions(-)
-
-diff --git a/drivers/thermal/intel_powerclamp.c b/drivers/thermal/intel_pow=
-erclamp.c
-index b40b37cd25e0..d54388a53637 100644
---- a/drivers/thermal/intel_powerclamp.c
-+++ b/drivers/thermal/intel_powerclamp.c
-@@ -426,7 +426,6 @@ static int clamp_thread(void *arg)
- 		 * allowed. thus jiffies are updated properly.
- 		 */
- 		preempt_disable();
--		tick_nohz_idle_enter();
- 		/* mwait until target jiffies is reached */
- 		while (time_before(jiffies, target_jiffies)) {
- 			unsigned long ecx =3D 1;
-@@ -444,7 +443,6 @@ static int clamp_thread(void *arg)
- 			start_critical_timings();
- 			atomic_inc(&idle_wakeup_counter);
- 		}
--		tick_nohz_idle_exit();
- 		preempt_enable_no_resched();
- 	}
- 	del_timer_sync(&wakeup_timer);
-diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-index 29b063b32ff0..67673ca12a19 100644
---- a/kernel/time/tick-sched.c
-+++ b/kernel/time/tick-sched.c
-@@ -806,7 +806,6 @@ void tick_nohz_idle_enter(void)
- =
-
- 	local_irq_enable();
- }
--EXPORT_SYMBOL_GPL(tick_nohz_idle_enter);
- =
-
- /**
-  * tick_nohz_irq_exit - update next tick event from interrupt exit
-@@ -934,7 +933,6 @@ void tick_nohz_idle_exit(void)
- =
-
- 	local_irq_enable();
- }
--EXPORT_SYMBOL_GPL(tick_nohz_idle_exit);
- =
-
- static int tick_nohz_reprogram(struct tick_sched *ts, ktime_t now)
- {
--- =
-
-2.2.2
+							Thanx, Paul
 
 
---===============4269274941169903594==--
+--===============8942036203638496175==--
 
