@@ -1,79 +1,122 @@
-Content-Type: multipart/mixed; boundary="===============8694668693494988409=="
+Content-Type: multipart/mixed; boundary="===============4081167618462030260=="
 MIME-Version: 1.0
-From: Jens Axboe <axboe@fb.com>
+From: Rusty Russell <rusty@rustcorp.com.au>
 To: lkp@lists.01.org
-Subject: Re: [block] 34b48db66e0: +3291.6% iostat.sde.wrqm/s
-Date: Thu, 22 Jan 2015 14:12:49 -0700
-Message-ID: <54C167D1.8080502@fb.com>
-In-Reply-To: <x497fwe8qwo.fsf@segfault.boston.devel.redhat.com>
+Subject: Re: [PATCH] drm/radeon: Try to init amdkfd only if 64 bit kernel
+Date: Fri, 23 Jan 2015 14:40:17 +1030
+Message-ID: <878uguuogm.fsf@rustcorp.com.au>
+In-Reply-To: <CAGXu5jJFn_H1RQmffqvm-4OSbk0MXb5P3Re--5JK13aK3sGRUw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8694668693494988409==
+--===============4081167618462030260==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 01/22/2015 02:08 PM, Jeff Moyer wrote:
-> Jens Axboe <axboe@fb.com> writes:
-> =
-
->> On 01/22/2015 01:49 PM, Jeff Moyer wrote:
->>> Jens Axboe <axboe@fb.com> writes:
->>>
->>>>> Agreed on all above, but are the actual benchmark numbers included
->>>>> somewhere in all this mess?  I'd like to see if the benchmark numbers
->>>>> improved first, before digging into the guts of which functions are
->>>>> called more or which stats changed.
+Kees Cook <keescook@chromium.org> writes:
+> On Sun, Jan 4, 2015 at 8:28 PM, Rusty Russell <rusty@rustcorp.com.au> w=
+rote:
+>> Oded Gabbay <oded.gabbay@amd.com> writes:
+>>> On 12/24/2014 01:01 AM, Rusty Russell wrote:
+>>>> Oded Gabbay <oded.gabbay@amd.com> writes:
+>>>>> I didn't say it doesn't always work.
+>>>>> The actual thing that doesn't work is the define symbol_get and only =
+in a
+>>>>> specific case of 32bit kernel AND CONFIG_MODULES is unset AND
+>>>>> CONFIG_RANDOMIZE_BASE is set.
+>>>>> The define in that case is:
+>>>>> #define symbol_get(x) ({ extern typeof(x) x __attribute__((weak)); &(=
+x); })
+>>>>>
+>>>>> Why it doesn't work (doesn't return NULL when symbol doesn't exists) ?
 >>>>
->>>> I deleted the original email, but the latter tables had drive throughp=
-ut
->>>> rates and it looked higher for the ones I checked on the newer kernel.
->>>> Which the above math would indicate as well, multiplying reqs-per-sec
->>>> and req-size.
+>>>> Hmm, I'd guess CONFIG_RANDOMIZE_BASE is relocating NULL symbols...
+>>>>
+>>>> No, I can't reproduce this.  Please send your .config privately.
+>>>>
+>>>> Here's my test case:
+>>>>
+>>>> diff --git a/init/main.c b/init/main.c
+>>>> index 61b993767db5..a3ee1ec97ec3 100644
+>>>> --- a/init/main.c
+>>>> +++ b/init/main.c
+>>>> @@ -683,6 +683,12 @@ asmlinkage __visible void __init start_kernel(voi=
+d)
+>>>>
+>>>>      ftrace_init();
+>>>>
+>>>> +    {
+>>>> +            extern void nonexistent_fn(void);
+>>>> +            printk("symbol_get(nonexistent_fn) =3D %p\n",
+>>>> +                   symbol_get(nonexistent_fn));
+>>>> +    }
+>>>> +
+>>>>      /* Do the rest non-__init'ed, we're now alive */
+>>>>      rest_init();
+>>>>   }
+>>>>
+>>>> Thanks,
+>>>> Rusty.
+>>>>
+>>> Hi Rusty,
 >>>
->>> Looking back at the original[1], I think I see the throughput numbers f=
-or
->>> iozone.  The part that confused me was that each table mixes different
->>> types of data.  I'd much prefer if different data were put in different
->>> tables, along with column headers that stated what was being reported
->>> and the units for the measurements.
->>>
->>> Anyway, I find the increased service time troubling, especially this
->>> one:
->>>
->>> testbox/testcase/testparams: ivb44/fsmark/performance-1x-1t-1HDD-xfs-4M=
--60G-NoSync
->>>
->>>        544 ?  0%   +1268.9%       7460 ?  0%  iostat.sda.w_await
->>>        544 ?  0%   +1268.5%       7457 ?  0%  iostat.sda.await
->>>
->>> I'll add this to my queue of things to look into.
+>>> Attached is the bad config file. (config-bad)
+>>> I have narrowed the changes you need to do to the config file in order =
+to
+>>> reproduce this bug.
+>>> The base assumption is a 32-bit kernel and without modules support. Res=
+t of the
+>>> config file is pretty standard, IMO.
+>>> Then, its not enough to enable CONFIG_RANDOMIZE_BASE like I wrote in my=
+ original
+>>> post. You need also to unset CONFIG_HIBERNATION.
 >>
->> From that same table:
+>> Indeed, thanks; your config breaks as reported.  With CONFIG_HIBERNATION
+>> the kernel offset is 0, so we don't see this.
 >>
->>       1009 =C2=B1  0%   +1255.7%      13682 =C2=B1  0%  iostat.sda.avgrq=
--sz
+>> Kees, as far as I can tell you need another 0-terminated vmlinux.relocs
+>> section for weak symbols.  These should not be relocated if already 0.
 >>
->> the average request size has gone up equally. This is clearly a streamed
->> oriented benchmark, if the IOs get that big.
-> =
+>> Put this somewhere to test.  It fails for x86_64, too:
+>>
+>> diff --git a/init/main.c b/init/main.c
+>> index 61b993767db5..c9e0195c792a 100644
+>> --- a/init/main.c
+>> +++ b/init/main.c
+>> @@ -683,6 +683,12 @@ asmlinkage __visible void __init start_kernel(void)
+>>
+>>         ftrace_init();
+>>
+>> +       {
+>> +               extern void __attribute__((weak)) nonexistent_fn(void);
+>> +               printk("nonexistent_fn =3D %p\n", nonexistent_fn);
+>> +               BUG_ON(nonexistent_fn !=3D NULL);
+>> +       }
+>> +
+>>         /* Do the rest non-__init'ed, we're now alive */
+>>         rest_init();
+>>  }
+>
+> Hm, I can't reproduce this on v3.19-rc4. My nonexistent_fn comes back
+> NULL regardless of CONFIG and kaslr on/off states I've tried. Could
+> this be a (yet another) linker bug? What was the toolchain used? I
+> built with gcc 4.8.2 and binutils 2.24.
 
-> Hmm, ok, I'll buy that.  However, I am surprised that the relationship
-> between i/o size and service time is 1:1 here...
+$ ld --version
+GNU ld (GNU Binutils for Ubuntu) 2.24.90.20141014
+...
+$ gcc --version
+gcc (Ubuntu 4.9.1-16ubuntu6) 4.9.1
 
-Should be pretty close to 1:1, given that the smaller requests are still
-sequential. And we're obviously doing a well enough job not to service
-them out of sequence.
+I tested with gcc 4.8.3 as well, same fail.
 
-My original worry on bumping max_sectors was that we'd introduce slower
-bubbles in the pipeline, for eg interleaved IO patterns where one does
-large streamed IO and the other small non sequential. So it'd be
-interesting to see a test for something like that.
+I'll send you the config I used separately.
 
--- =
-
-Jens Axboe
+Cheers,
+Rusty.
 
 
---===============8694668693494988409==--
+
+
+--===============4081167618462030260==--
 
