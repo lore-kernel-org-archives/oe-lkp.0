@@ -1,19 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============5729473655014957967=="
+Content-Type: multipart/mixed; boundary="===============7078332344211666902=="
 MIME-Version: 1.0
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: lkp@lists.01.org
-Subject: [PATCH 3.14 33/98] tick/powerclamp: Remove tick_nohz_idle abuse
-Date: Sun, 25 Jan 2015 10:06:51 -0800
-Message-ID: <20150125180714.308459776@linuxfoundation.org>
-In-Reply-To: <20150125180712.859646324@linuxfoundation.org>
+Subject: [PATCH 3.18 065/183] tick/powerclamp: Remove tick_nohz_idle abuse
+Date: Sun, 25 Jan 2015 10:06:27 -0800
+Message-ID: <20150125180812.998973556@linuxfoundation.org>
+In-Reply-To: <20150125180810.160428929@linuxfoundation.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5729473655014957967==
+--===============7078332344211666902==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-3.14-stable review patch.  If anyone has any objections, please let me know.
+3.18-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -82,7 +82,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	del_timer_sync(&wakeup_timer);
 --- a/kernel/time/tick-sched.c
 +++ b/kernel/time/tick-sched.c
-@@ -807,7 +807,6 @@ void tick_nohz_idle_enter(void)
+@@ -847,7 +847,6 @@ void tick_nohz_idle_enter(void)
  =
 
  	local_irq_enable();
@@ -92,7 +92,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
  /**
   * tick_nohz_irq_exit - update next tick event from interrupt exit
-@@ -934,7 +933,6 @@ void tick_nohz_idle_exit(void)
+@@ -974,7 +973,6 @@ void tick_nohz_idle_exit(void)
  =
 
  	local_irq_enable();
@@ -105,5 +105,5 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 
 
---===============5729473655014957967==--
+--===============7078332344211666902==--
 
