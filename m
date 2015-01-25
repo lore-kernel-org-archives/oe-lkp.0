@@ -1,69 +1,109 @@
-Content-Type: multipart/mixed; boundary="===============7561977199217366906=="
+Content-Type: multipart/mixed; boundary="===============5729473655014957967=="
 MIME-Version: 1.0
-From: Mark Rutland <mark.rutland@arm.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: lkp@lists.01.org
-Subject: Re: [perf] WARNING: CPU: 0 PID: 1457 at kernel/events/core.c:890 add_event_to_ctx()
-Date: Sun, 25 Jan 2015 15:56:33 +0000
-Message-ID: <20150125155633.GA22257@leverpostej>
-In-Reply-To: <20150125043428.GA6109@wfg-t540p.sh.intel.com>
+Subject: [PATCH 3.14 33/98] tick/powerclamp: Remove tick_nohz_idle abuse
+Date: Sun, 25 Jan 2015 10:06:51 -0800
+Message-ID: <20150125180714.308459776@linuxfoundation.org>
+In-Reply-To: <20150125180712.859646324@linuxfoundation.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7561977199217366906==
+--===============5729473655014957967==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 25, 2015 at 04:34:28AM +0000, Fengguang Wu wrote:
-> Greetings,
+3.14-stable review patch.  If anyone has any objections, please let me know.
 
-Hi Fengguang,
+------------------
 
-Thanks very much for the report.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
+commit a5fd9733a30d18d7ac23f17080e7e07bb3205b69 upstream.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/core
-> =
+commit 4dbd27711cd9 "tick: export nohz tick idle symbols for module
+use" was merged via the thermal tree without an explicit ack from the
+relevant maintainers.
 
-> commit d26bb7f73a2881f2412c340a27438b185f0cc3dc
-> Author:     Mark Rutland <mark.rutland@arm.com>
-> AuthorDate: Wed Jan 7 15:01:54 2015 +0000
-> Commit:     Peter Zijlstra <peterz@infradead.org>
-> CommitDate: Fri Jan 23 15:17:56 2015 +0100
-> =
+The exports are abused by the intel powerclamp driver which implements
+a fake idle state from a sched FIFO task. This causes all kinds of
+wreckage in the NOHZ core code which rightfully assumes that
+tick_nohz_idle_enter/exit() are only called from the idle task itself.
 
->     perf: decouple unthrottling and rotating
+Recent changes in the NOHZ core lead to a failure of the powerclamp
+driver and now people try to hack completely broken and backwards
+workarounds into the NOHZ core code. This is completely unacceptable
+and just papers over the real problem. There are way more subtle
+issues lurking around the corner.
 
-[...]
+The real solution is to fix the powerclamp driver by rewriting it with
+a sane concept, but that's beyond the scope of this.
 
-What seems to be happening is:
+So the only solution for now is to remove the calls into the core NOHZ
+code from the powerclamp trainwreck along with the exports.
 
-* An event is created in the context of task A on CPU0. As the task's hw
-  context is empty of events, we call perf_pmu_ctx_activate. This adds
-  the cpuctx of the relevant HW PMU to the active_ctx_list. Note that we
-  checked the task's ctx for emptiness, then added the PMU's hw context.
+Fixes: d6d71ee4a14a "PM: Introduce Intel PowerClamp Driver"
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Preeti U Murthy <preeti@linux.vnet.ibm.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: Fengguang Wu <fengguang.wu@intel.com>
+Cc: Frederic Weisbecker <frederic@kernel.org>
+Cc: Pan Jacob jun <jacob.jun.pan@intel.com>
+Cc: LKP <lkp@01.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Zhang Rui <rui.zhang@intel.com>
+Link: http://lkml.kernel.org/r/alpine.DEB.2.11.1412181110110.17382(a)nanos
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-* An event is created (as a result of a clone()) in the context of task
-  B on CPU0, and we do the same thing, finding the ctx empty of events
-  we add the HW PMU's cpuctx to the active_ctx_list. As it's already in
-  there, the WARN_ON(!list_empty(&cpuctx->active_ctx_list)) explodes.
+---
+ drivers/thermal/intel_powerclamp.c |    2 --
+ kernel/time/tick-sched.c           |    2 --
+ 2 files changed, 4 deletions(-)
 
-So I guess what we actually want to do is to turn the active_ctx list
-into a list of perf_event_contexts rather than perf_event_cpu_contexts,
-and add/remove from the list when a context is scheduled in/out (or
-updated empty<->nonempty). That way we remove chances for erroneous
-add/remove, and we don't need to treat task and CPU contexts separately
-in perf_event_task_tick.
+--- a/drivers/thermal/intel_powerclamp.c
++++ b/drivers/thermal/intel_powerclamp.c
+@@ -435,7 +435,6 @@ static int clamp_thread(void *arg)
+ 		 * allowed. thus jiffies are updated properly.
+ 		 */
+ 		preempt_disable();
+-		tick_nohz_idle_enter();
+ 		/* mwait until target jiffies is reached */
+ 		while (time_before(jiffies, target_jiffies)) {
+ 			unsigned long ecx =3D 1;
+@@ -451,7 +450,6 @@ static int clamp_thread(void *arg)
+ 			start_critical_timings();
+ 			atomic_inc(&idle_wakeup_counter);
+ 		}
+-		tick_nohz_idle_exit();
+ 		preempt_enable();
+ 	}
+ 	del_timer_sync(&wakeup_timer);
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -807,7 +807,6 @@ void tick_nohz_idle_enter(void)
+ =
 
-I managed to get the reproducer running on a box at home, so I'll spin a
-potential fix against that for a while, and send that out if I don't see
-explosions.
+ 	local_irq_enable();
+ }
+-EXPORT_SYMBOL_GPL(tick_nohz_idle_enter);
+ =
 
-Peter, I guess you'll drop this patch for now?
+ /**
+  * tick_nohz_irq_exit - update next tick event from interrupt exit
+@@ -934,7 +933,6 @@ void tick_nohz_idle_exit(void)
+ =
 
-Thanks,
-Mark.
+ 	local_irq_enable();
+ }
+-EXPORT_SYMBOL_GPL(tick_nohz_idle_exit);
+ =
 
---===============7561977199217366906==--
+ static int tick_nohz_reprogram(struct tick_sched *ts, ktime_t now)
+ {
+
+
+
+--===============5729473655014957967==--
 
