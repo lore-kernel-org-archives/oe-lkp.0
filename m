@@ -1,37 +1,43 @@
-Content-Type: multipart/mixed; boundary="===============5387203318250047131=="
+Content-Type: multipart/mixed; boundary="===============6296626842536075255=="
 MIME-Version: 1.0
-From: Mike Galbraith <umgwanakikbuti@gmail.com>
+From: Davidlohr Bueso <dave@stgolabs.net>
 To: lkp@lists.01.org
-Subject: Re: [rcu] 00f5159aeb6: +55.3% will-it-scale.time.involuntary_context_switches
-Date: Wed, 21 Jan 2015 09:06:47 +0100
-Message-ID: <1421827607.5772.19.camel@marge.simpson.net>
-In-Reply-To: <20150121075254.GC9719@linux.vnet.ibm.com>
+Subject: Re: [mm] c8c06efa8b5: -7.6% unixbench.score
+Date: Tue, 27 Jan 2015 12:43:45 -0800
+Message-ID: <1422391425.4604.7.camel@stgolabs.net>
+In-Reply-To: <1422344736.24875.47.camel@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5387203318250047131==
+--===============6296626842536075255==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2015-01-20 at 23:52 -0800, Paul E. McKenney wrote: =
-
-> On Wed, Jan 21, 2015 at 03:32:44PM +0800, Huang Ying wrote:
-> > FYI, we noticed the below changes on
-> > =
-
-> > git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git sta=
-ll.2015.01.06a
-> > commit 00f5159aeb68f08ce29597be86be87d6db0c1ba1 ("rcu: Run grace-period=
- kthreads at real-time priority")
+On Tue, 2015-01-27 at 15:45 +0800, Huang Ying wrote:
+> Hi, Davidlohr,
 > =
 
-> Glad this helps!
+> Any update on this?  The latest news I gotten is that you finally
+> reproduced this.
 
-The way I read it, it's hurting by increasing context switches... but if
-you'll need a boot param to turn it on in the future, this is moot :)
+The overall differences and cause of the issue is commit 37e9562453b
+(locking/rwsem: Allow conservative optimistic spinning when readers have
+lock). And since the performance issue occurs with writers-only, I'm
+fine with the degradation,  we need to learn to live it. Real use cases
+will use mutexes instead. Also, the mentioned commit fixes a much more
+important problem than pathologically calling exec(2).
 
--Mike
+Now, this doesn't mean we cannot do _anything_ about it. I sent a
+patcshet just a few days ago (sorry, I forgot to Cc you) that tries to
+minimalize (I've recovered ~75% of the regression) the writer penalties:
+https://lkml.org/lkml/2015/1/26/34
+
+So all in all we don't really care for writer-only workloads, but hey,
+while we're at it.
+
+Thanks,
+Davidlohr
 
 
---===============5387203318250047131==--
+--===============6296626842536075255==--
 
