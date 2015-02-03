@@ -1,341 +1,380 @@
-Content-Type: multipart/mixed; boundary="===============3915095252349435038=="
+Content-Type: multipart/mixed; boundary="===============3900567179973563101=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@intel.com>
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 To: lkp@lists.01.org
-Subject: [x86_64, entry] 103dd9885d1: +7.3% will-it-scale.per_process_ops
-Date: Tue, 03 Feb 2015 15:47:48 +0800
-Message-ID: <1422949668.13951.7.camel@intel.com>
+Subject: Re: [rcu] [ INFO: suspicious RCU usage. ]
+Date: Tue, 03 Feb 2015 11:01:42 +0100
+Message-ID: <1422957702.17540.1.camel@AMDC1943>
+In-Reply-To: <20150201025922.GA16820@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3915095252349435038==
+--===============3900567179973563101==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
+On sob, 2015-01-31 at 18:59 -0800, Fengguang Wu wrote:
+> Greetings,
+> =
 
-git://git.kernel.org/pub/scm/linux/kernel/git/luto/linux.git x86/entry
-commit 103dd9885d1e96be0c7493ce9a33af0732e35441 ("x86_64, entry: Use sysret=
- to return to userspace when possible")
+> 0day kernel testing robot got the below dmesg and the first bad commit is
+> =
+
+> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rever=
+t-c418b8035fac0cc7d242e5de126cec1006a34bed-dd2b39be8eee9d175c7842c30e405a5c=
+be50095a
+
+On next-20150203 I hit similar error on ARM/Exynos4412 (Trats2 board)
+while suspending to RAM:
+
+[   30.986262] PM: Syncing filesystems ... done.
+[   30.994661] PM: Preparing system for mem sleep
+[   31.002064] Freezing user space processes ... (elapsed 0.002 seconds) do=
+ne.
+[   31.008629] Freezing remaining freezable tasks ... (elapsed 0.001 second=
+s) done.
+[   31.016325] PM: Entering mem sleep
+[   31.016338] Suspending console(s) (use no_console_suspend to debug)
+[   31.051009] random: nonblocking pool is initialized
+[   31.085811] wake enabled for irq 102
+[   31.086964] wake enabled for irq 123
+[   31.086972] wake enabled for irq 124
+[   31.090409] PM: suspend of devices complete after 59.684 msecs
+[   31.090524] CAM_ISP_CORE_1.2V: No configuration
+[   31.090534] VMEM_VDDF_3.0V: No configuration
+[   31.090543] VCC_SUB_2.0V: No configuration
+[   31.090552] VCC_SUB_1.35V: No configuration
+[   31.090562] VMEM_1.2V_AP: No configuration
+[   31.090587] MOTOR_VCC_3.0V: No configuration
+[   31.090596] LCD_VCC_3.3V: No configuration
+[   31.090605] TSP_VDD_1.8V: No configuration
+[   31.090614] TSP_AVDD_3.3V: No configuration
+[   31.090623] VMEM_VDD_2.8V: No configuration
+[   31.090631] VTF_2.8V: No configuration
+[   31.090640] VDDQ_PRE_1.8V: No configuration
+[   31.090649] VT_CAM_1.8V: No configuration
+[   31.090658] CAM_ISP_SEN_IO_1.8V: No configuration
+[   31.090667] CAM_SENSOR_CORE_1.2V: No configuration
+[   31.090677] VHSIC_1.8V: No configuration
+[   31.090685] VHSIC_1.0V: No configuration
+[   31.090694] VABB2_1.95V: No configuration
+[   31.090703] NFC_AVDD_1.8V: No configuration
+[   31.090712] VUOTG_3.0V: No configuration
+[   31.090721] VABB1_1.95V: No configuration
+[   31.090730] VMIPI_1.8V: No configuration
+[   31.090739] CAM_ISP_MIPI_1.2V: No configuration
+[   31.090747] VMIPI_1.0V: No configuration
+[   31.090756] VPLL_1.0V_AP: No configuration
+[   31.090765] VMPLL_1.0V_AP: No configuration
+[   31.090773] VCC_1.8V_IO: No configuration
+[   31.090782] VCC_2.8V_AP: No configuration
+[   31.090791] VCC_1.8V_AP: No configuration
+[   31.090800] VM1M2_1.2V_AP: No configuration
+[   31.090809] VALIVE_1.0V_AP: No configuration
+[   31.100297] PM: late suspend of devices complete after 9.445 msecs
+[   31.108891] PM: noirq suspend of devices complete after 8.577 msecs
+[   31.109052] Disabling non-boot CPUs ...
+[   31.113921]
+[   31.113925] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[   31.113928] [ INFO: suspicious RCU usage. ]
+[   31.113935] 3.19.0-rc7-next-20150203 #1914 Not tainted
+[   31.113938] -------------------------------
+[   31.113943] kernel/sched/fair.c:4740 suspicious rcu_dereference_check() =
+usage!
+[   31.113946]
+[   31.113946] other info that might help us debug this:
+[   31.113946]
+[   31.113952]
+[   31.113952] RCU used illegally from offline CPU!
+[   31.113952] rcu_scheduler_active =3D 1, debug_locks =3D 0
+[   31.113957] 3 locks held by swapper/1/0:
+[   31.113988]  #0:  ((cpu_died).wait.lock){......}, at: [<c005a114>] compl=
+ete+0x14/0x44
+[   31.114012]  #1:  (&p->pi_lock){-.-.-.}, at: [<c004a790>] try_to_wake_up=
++0x28/0x300
+[   31.114035]  #2:  (rcu_read_lock){......}, at: [<c004f1b8>] select_task_=
+rq_fair+0x5c/0xa04
+[   31.114038]
+[   31.114038] stack backtrace:
+[   31.114046] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 3.19.0-rc7-next-20=
+150203 #1914
+[   31.114050] Hardware name: SAMSUNG EXYNOS (Flattened Device Tree)
+[   31.114076] [<c0014ce4>] (unwind_backtrace) from [<c0011c30>] (show_stac=
+k+0x10/0x14)
+[   31.114091] [<c0011c30>] (show_stack) from [<c04dc048>] (dump_stack+0x70=
+/0xbc)
+[   31.114105] [<c04dc048>] (dump_stack) from [<c004f83c>] (select_task_rq_=
+fair+0x6e0/0xa04)
+[   31.114118] [<c004f83c>] (select_task_rq_fair) from [<c004a83c>] (try_to=
+_wake_up+0xd4/0x300)
+[   31.114129] [<c004a83c>] (try_to_wake_up) from [<c00598a0>] (__wake_up_c=
+ommon+0x4c/0x80)
+[   31.114140] [<c00598a0>] (__wake_up_common) from [<c00598e8>] (__wake_up=
+_locked+0x14/0x1c)
+[   31.114150] [<c00598e8>] (__wake_up_locked) from [<c005a134>] (complete+=
+0x34/0x44)
+[   31.114167] [<c005a134>] (complete) from [<c04d6ca4>] (cpu_die+0x24/0x84)
+[   31.114179] [<c04d6ca4>] (cpu_die) from [<c005a508>] (cpu_startup_entry+=
+0x328/0x358)
+[   31.114189] [<c005a508>] (cpu_startup_entry) from [<40008784>] (0x400087=
+84)
+[   31.114226] CPU1: shutdown
+[   31.132479] CPU2: shutdown
+[   31.146815] CPU3: shutdown
+[   31.160767] Enabling non-boot CPUs ...
+[   31.175645] CPU1 is up
+[   31.191120] CPU2 is up
+[   31.206650] CPU3 is up
+[   31.206922] s3c-i2c 13860000.i2c: slave address 0x10
+[   31.206935] s3c-i2c 13860000.i2c: bus frequency set to 390 KHz
+[   31.206952] s3c-i2c 13890000.i2c: slave address 0x10
+[   31.206962] s3c-i2c 13890000.i2c: bus frequency set to 390 KHz
+[   31.206978] s3c-i2c 138d0000.i2c: slave address 0x10
+[   31.206987] s3c-i2c 138d0000.i2c: bus frequency set to 97 KHz
+[   31.209201] PM: noirq resume of devices complete after 2.539 msecs
+[   31.212202] PM: early resume of devices complete after 2.812 msecs
+[   31.229844] Failed to resume regulators from suspend (-22)
+[   31.230915] wake disabled for irq 123
+[   31.230923] wake disabled for irq 124
+[   31.232003] wake disabled for irq 102
+[   31.259950] max77686_rtc_tm_to_data: MAX77686 RTC cannot handle the year=
+ 1970.Assume it's 2000.
+[   31.298929] mmc_host mmc1: Bus speed (slot 0) =3D 50000000Hz (slot req 4=
+00000Hz, actual 396825HZ div =3D 63)
+[   31.526729] mmc_host mmc1: Bus speed (slot 0) =3D 50000000Hz (slot req 5=
+2000000Hz, actual 50000000HZ div =3D 0)
+[   31.526976] mmc_host mmc1: Bus speed (slot 0) =3D 100000000Hz (slot req =
+52000000Hz, actual 50000000HZ div =3D 1)
+[   31.527207] PM: resume of devices complete after 297.352 msecs
+[   31.985665] PM: Finishing wakeup.
+[   31.988959] Restarting tasks ... done.
+root(a)target:~#
+
+Best regards,
+Krzysztof
+
+> =
+
+> commit dd2b39be8eee9d175c7842c30e405a5cbe50095a
+> Author:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> AuthorDate: Wed Jan 28 14:42:09 2015 -0800
+> Commit:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> CommitDate: Fri Jan 30 12:59:22 2015 -0800
+> =
+
+>     rcu: Handle outgoing CPUs on exit from idle loop
+>     =
+
+>     This commit informs RCU of an outgoing CPU just before that CPU invok=
+es
+>     arch_cpu_idle_dead() during its last pass through the idle loop (via a
+>     new CPU_DYING_IDLE notifier value).  This change means that RCU need =
+not
+>     deal with outgoing CPUs passing through the scheduler after informing
+>     RCU that they are no longer online.  Note that removing the CPU from
+>     the rcu_node ->qsmaskinit bit masks is done at CPU_DYING_IDLE time,
+>     and orphaning callbacks is still done at CPU_DEAD time, the reason be=
+ing
+>     that at CPU_DEAD time we have another CPU that can adopt them.
+>     =
+
+>     Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> =
+
+> +-------------------------------------+------------+------------+--------=
+----+
+> |                                     | 8c50d7da91 | dd2b39be8e | d586642=
+522 |
+> +-------------------------------------+------------+------------+--------=
+----+
+> | boot_successes                      | 198        | 11         | 51     =
+    |
+> | boot_failures                       | 0          | 55         | 15     =
+    |
+> | INFO:suspicious_RCU_usage           | 0          | 55         | 15     =
+    |
+> | RCU_used_illegally_from_offline_CPU | 0          | 55         | 15     =
+    |
+> | backtrace:cpu_startup_entry         | 0          | 55         | 15     =
+    |
+> | BUG:kernel_test_hang                | 0          | 0          | 4      =
+    |
+> +-------------------------------------+------------+------------+--------=
+----+
+> =
+
+> [   15.244825] numa_remove_cpu cpu 0 node 0: mask now 1
+> [   15.246713] =
+
+> [   15.246917] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [   15.247424] [ INFO: suspicious RCU usage. ]
+> [   15.247964] 3.19.0-rc1-gdd2b39b #10 Not tainted
+> [   15.248531] -------------------------------
+> [   15.248586] include/trace/events/rcu.h:35 suspicious rcu_dereference_c=
+heck() usage!
+> [   15.248586] =
+
+> [   15.248586] other info that might help us debug this:
+> [   15.248586] =
+
+> [   15.248586] =
+
+> [   15.248586] RCU used illegally from offline CPU!
+> [   15.248586] rcu_scheduler_active =3D 1, debug_locks =3D 0
+> [   15.248586] no locks held by swapper/0/0.
+> [   15.248586] =
+
+> [   15.248586] stack backtrace:
+> [   15.248586] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 3.19.0-rc1-gdd2b=
+39b #10
+> [   15.248586]  0000000000000001 ffffffff81e03e08 ffffffff8171b89b 000000=
+0000000000
+> [   15.248586]  ffffffff81e0e580 ffffffff81e03e38 ffffffff810efec2 ffffff=
+ff81e4b140
+> [   15.248586]  ffffffff81c77ba0 0000000000000002 ffffffff81e11e98 ffffff=
+ff81e03e58
+> [   15.248586] Call Trace:
+> [   15.248586]  [<ffffffff8171b89b>] dump_stack+0x7f/0xa7
+> [   15.248586]  [<ffffffff810efec2>] lockdep_rcu_suspicious+0x107/0x110
+> [   15.248586]  [<ffffffff81111363>] trace_rcu_utilization+0x127/0x133
+> [   15.248586]  [<ffffffff8111291e>] rcu_cpu_notify+0x527/0x53b
+> [   15.248586]  [<ffffffff810e9722>] cpu_startup_entry+0x1dc/0x4ea
+> [   15.248586]  [<ffffffff8170eb5d>] rest_init+0x159/0x15f
+> [   15.248586]  [<ffffffff8237b2da>] start_kernel+0x565/0x572
+> [   15.248586]  [<ffffffff8237a120>] ? early_idt_handlers+0x120/0x120
+> [   15.248586]  [<ffffffff8237a4e4>] x86_64_start_reservations+0x41/0x43
+> [   15.248586]  [<ffffffff8237a623>] x86_64_start_kernel+0x13d/0x14c
+> [   15.265151] CPU 0 is now offline
+> [   15.265941] debug: unmapping init [mem 0xffffffff82365000-0xffffffff82=
+539fff]
+> [   15.266726] Write protecting the kernel read-only data: 14336k
+> =
+
+> git bisect start d58664252218cfefb19709d597ff0c5d93688203 26bc420b59a38e4=
+e6685a73345a0def461136dce --
+> git bisect  bad 19f7d9c2f948a4c5c7742adb16fe00920f35f302  # 13:29     23-=
+      6  Merge 'jtkirshe-net-next/i40e-queue' into devel-roam-smoke-2015013=
+11226
+> git bisect  bad 2c86978183cc365003e2d6949052a30865ef8b89  # 13:33     34-=
+     32  Merge 'wsa/i2c/for-next' into devel-roam-smoke-201501311226
+> git bisect good 1ffdd3662d27b1d4d59d51bbcc104b200be63d6a  # 13:37     66+=
+      0  Merge 'pci/pci/virtualization' into devel-roam-smoke-201501311226
+> git bisect  bad 0ce6ea6707a3d5ae5bfdbdc4d16ebc86cff77f5f  # 13:43     32-=
+     22  Merge 'rcu/rcu/next' into devel-roam-smoke-201501311226
+> git bisect good 53805a9f2fa76294af534fb7e9f96d43f1d820eb  # 13:52     66+=
+      0  Merge 'iio/testing' into devel-roam-smoke-201501311226
+> git bisect good 78e691f4ae2d5edea0199ca802bb505b9cdced88  # 14:01     66+=
+      0  Merge branches 'doc.2015.01.07a', 'fixes.2015.01.15a', 'preempt.20=
+15.01.06a', 'srcu.2015.01.06a', 'stall.2015.01.16a' and 'torture.2015.01.11=
+a' into HEAD
+> git bisect good 17366dc8dc49858ba931c4120d8de494e388d93e  # 14:05     66+=
+      0  documentation: Update rcutree.kthread_prio for grace-period kthrea=
+d use
+> git bisect good 569c1500e44189136c8a9f4b5e39f0055e422b0d  # 14:14     66+=
+      0  documentation: Update based on on-demand vmstat workers
+> git bisect good 14fefdb410cf48327c972ce91deb5e98edc8671f  # 14:18     66+=
+      0  rcu: Eliminate ->onoff_mutex from rcu_node structure
+> git bisect  bad dd2b39be8eee9d175c7842c30e405a5cbe50095a  # 14:29     11-=
+     55  rcu: Handle outgoing CPUs on exit from idle loop
+> git bisect good 8c50d7da9124a9f1e92e13996a0a148b2431390d  # 14:34     66+=
+      0  cpu: Make CPU-offline idle-loop transition point more precise
+> # first bad commit: [dd2b39be8eee9d175c7842c30e405a5cbe50095a] rcu: Handl=
+e outgoing CPUs on exit from idle loop
+> git bisect good 8c50d7da9124a9f1e92e13996a0a148b2431390d  # 14:37    198+=
+      0  cpu: Make CPU-offline idle-loop transition point more precise
+> # extra tests with DEBUG_INFO
+> git bisect good dd2b39be8eee9d175c7842c30e405a5cbe50095a  # 15:35    198+=
+    198  rcu: Handle outgoing CPUs on exit from idle loop
+> # extra tests on HEAD of linux-devel/devel-roam-smoke-201501311226
+> git bisect  bad d58664252218cfefb19709d597ff0c5d93688203  # 15:35      0-=
+     15  0day head guard for 'devel-roam-smoke-201501311226'
+> # extra tests on tree/branch rcu/rcu/next
+> git bisect  bad c418b8035fac0cc7d242e5de126cec1006a34bed  # 15:52     47-=
+     21  cpu: Stop newly offlined CPU from using RCU readers
+> # extra tests with first bad commit reverted
+> # extra tests on tree/branch linus/master
+> git bisect good 2141fd018156db0f29efb384f4d99ead23b48f18  # 16:04    198+=
+      0  Merge tag 'char-misc-3.19-rc7' of git://git.kernel.org/pub/scm/lin=
+ux/kernel/git/gregkh/char-misc
+> # extra tests on tree/branch next/master
+> git bisect good 827e3bdf1bb2401c1a1e5586eb3977d228d298b2  # 16:12    198+=
+      0  Add linux-next specific files for 20150130
+> =
+
+> =
+
+> This script may reproduce the error.
+> =
+
+> -------------------------------------------------------------------------=
+---
+> #!/bin/bash
+> =
+
+> kernel=3D$1
+> initrd=3Dquantal-core-x86_64.cgz
+> =
+
+> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/m=
+aster/initrd/$initrd
+> =
+
+> kvm=3D(
+> 	qemu-system-x86_64
+> 	-cpu kvm64
+> 	-enable-kvm
+> 	-kernel $kernel
+> 	-initrd $initrd
+> 	-m 320
+> 	-smp 2
+> 	-net nic,vlan=3D1,model=3De1000
+> 	-net user,vlan=3D1
+> 	-boot order=3Dnc
+> 	-no-reboot
+> 	-watchdog i6300esb
+> 	-rtc base=3Dlocaltime
+> 	-serial stdio
+> 	-display none
+> 	-monitor null =
+
+> )
+> =
+
+> append=3D(
+> 	hung_task_panic=3D1
+> 	earlyprintk=3DttyS0,115200
+> 	debug
+> 	apic=3Ddebug
+> 	sysrq_always_enabled
+> 	rcupdate.rcu_cpu_stall_timeout=3D100
+> 	panic=3D-1
+> 	softlockup_panic=3D1
+> 	nmi_watchdog=3Dpanic
+> 	oops=3Dpanic
+> 	load_ramdisk=3D2
+> 	prompt_ramdisk=3D0
+> 	console=3DttyS0,115200
+> 	console=3Dtty0
+> 	vga=3Dnormal
+> 	root=3D/dev/ram0
+> 	rw
+> 	drbd.minor_count=3D8
+> )
+> =
+
+> "${kvm[@]}" --append "${append[*]}"
+> -------------------------------------------------------------------------=
+---
+> =
+
+> Thanks,
+> Fengguang
+> _______________________________________________
+> LKP mailing list
+> LKP(a)linux.intel.com
 
 
-testbox/testcase/testparams: lkp-sb03/will-it-scale/open2
-
-261ebee6aee55a47  103dd9885d1e96be0c7493ce9a  =
-
-----------------  --------------------------  =
-
-         %stddev     %change         %stddev
-             \          |                \  =
-
-     35.96 =C2=B1  6%     -39.8%      21.66 =C2=B1  7%  will-it-scale.time.=
-user_time
-    237495 =C2=B1  1%      +5.2%     249861 =C2=B1  1%  will-it-scale.per_t=
-hread_ops
-    739981 =C2=B1  0%      +7.3%     793911 =C2=B1  0%  will-it-scale.per_p=
-rocess_ops
-       127 =C2=B1 20%     -66.9%         42 =C2=B1 30%  sched_debug.cfs_rq[=
-14]:/.load
-       127 =C2=B1 20%     -66.9%         42 =C2=B1 30%  sched_debug.cpu#14.=
-load
-        58 =C2=B1 21%     -39.3%         35 =C2=B1 43%  sched_debug.cfs_rq[=
-7]:/.load
-        58 =C2=B1 21%     -39.3%         35 =C2=B1 43%  sched_debug.cpu#7.l=
-oad
-      3442 =C2=B1 25%     -42.5%       1978 =C2=B1 20%  sched_debug.cpu#28.=
-sched_goidle
-      3591 =C2=B1 36%    +128.5%       8204 =C2=B1 17%  sched_debug.cpu#10.=
-ttwu_local
-      8241 =C2=B1 21%     -36.9%       5202 =C2=B1 19%  sched_debug.cpu#28.=
-nr_switches
-      5411 =C2=B1 18%     -39.0%       3301 =C2=B1 13%  sched_debug.cpu#14.=
-ttwu_local
-      8800 =C2=B1 15%     -27.8%       6356 =C2=B1 20%  sched_debug.cpu#9.t=
-twu_count
-        42 =C2=B1 22%     -33.3%         28 =C2=B1 47%  sched_debug.cfs_rq[=
-14]:/.runnable_load_avg
-        67 =C2=B1 46%     +87.1%        126 =C2=B1 31%  sched_debug.cpu#12.=
-load
-    573932 =C2=B1  1%     +59.5%     915353 =C2=B1  1%  slabinfo.kmalloc-25=
-6.active_objs
-      8970 =C2=B1  1%     +59.5%      14305 =C2=B1  1%  slabinfo.kmalloc-25=
-6.num_slabs
-      8970 =C2=B1  1%     +59.5%      14305 =C2=B1  1%  slabinfo.kmalloc-25=
-6.active_slabs
-    574152 =C2=B1  1%     +59.5%     915575 =C2=B1  1%  slabinfo.kmalloc-25=
-6.num_objs
-     35.96 =C2=B1  6%     -39.8%      21.66 =C2=B1  7%  time.user_time
-      1358 =C2=B1 24%     -31.9%        924 =C2=B1 34%  sched_debug.cpu#31.=
-ttwu_local
-      2487 =C2=B1 14%     -32.6%       1677 =C2=B1  9%  sched_debug.cpu#31.=
-sched_goidle
-     17643 =C2=B1  8%     -33.6%      11719 =C2=B1  5%  sched_debug.cpu#14.=
-nr_switches
-      8632 =C2=B1 11%     -34.9%       5617 =C2=B1 14%  sched_debug.cpu#14.=
-ttwu_count
-        29 =C2=B1 12%     +31.9%         38 =C2=B1 15%  sched_debug.cpu#12.=
-cpu_load[1]
-    115453 =C2=B1  3%     +48.3%     171178 =C2=B1  2%  numa-meminfo.node0.=
-SUnreclaim
-     28672 =C2=B1  2%     +49.2%      42775 =C2=B1  2%  numa-vmstat.node0.n=
-r_slab_unreclaimable
-      3313 =C2=B1 15%     +35.0%       4472 =C2=B1 13%  sched_debug.cpu#11.=
-curr->pid
-    132090 =C2=B1  3%     +42.8%     188646 =C2=B1  2%  numa-meminfo.node0.=
-Slab
-    200693 =C2=B1  1%     +42.8%     286535 =C2=B1  0%  meminfo.SUnreclaim
-     50431 =C2=B1  1%     +42.0%      71624 =C2=B1  1%  proc-vmstat.nr_slab=
-_unreclaimable
-        26 =C2=B1 12%     +29.8%         33 =C2=B1 12%  sched_debug.cpu#12.=
-cpu_load[4]
-     20434 =C2=B1  2%     +38.4%      28286 =C2=B1  2%  numa-vmstat.node1.n=
-r_slab_unreclaimable
-     82040 =C2=B1  2%     +36.9%     112273 =C2=B1  2%  numa-meminfo.node1.=
-SUnreclaim
-     14623 =C2=B1 26%     +55.6%      22751 =C2=B1 12%  sched_debug.cpu#10.=
-nr_switches
-    235487 =C2=B1  1%     +36.5%     321407 =C2=B1  0%  meminfo.Slab
-    842597 =C2=B1 20%     -30.2%     588471 =C2=B1 26%  sched_debug.cfs_rq[=
-27]:/.min_vruntime
-      6502 =C2=B1 25%     +54.2%      10028 =C2=B1 11%  sched_debug.cpu#10.=
-sched_goidle
-    100197 =C2=B1  2%     +29.4%     129675 =C2=B1  2%  numa-meminfo.node1.=
-Slab
-    237178 =C2=B1  1%     -23.2%     182260 =C2=B1  2%  softirqs.RCU
-      7310 =C2=B1  4%     -26.2%       5397 =C2=B1  6%  sched_debug.cpu#14.=
-sched_goidle
-      6148 =C2=B1 12%     -22.7%       4751 =C2=B1 10%  sched_debug.cpu#31.=
-nr_switches
-     44905 =C2=B1 20%     -28.5%      32101 =C2=B1 25%  sched_debug.cfs_rq[=
-27]:/.exec_clock
-        32 =C2=B1  6%     +38.3%         44 =C2=B1 19%  sched_debug.cpu#1.c=
-pu_load[0]
-       139 =C2=B1 15%     -25.4%        104 =C2=B1 18%  sched_debug.cfs_rq[=
-23]:/.tg_load_contrib
-      3454 =C2=B1 14%     -17.7%       2844 =C2=B1  6%  sched_debug.cpu#31.=
-curr->pid
-       438 =C2=B1  8%     -11.5%        388 =C2=B1  5%  sched_debug.cfs_rq[=
-31]:/.tg_runnable_contrib
-        30 =C2=B1  1%     +11.6%         33 =C2=B1  6%  sched_debug.cpu#23.=
-cpu_load[4]
-     20115 =C2=B1  7%     -11.3%      17841 =C2=B1  6%  sched_debug.cfs_rq[=
-31]:/.avg->runnable_avg_sum
-        35 =C2=B1 11%     -19.0%         28 =C2=B1  9%  sched_debug.cpu#21.=
-cpu_load[0]
-        32 =C2=B1  6%     +31.2%         42 =C2=B1 19%  sched_debug.cfs_rq[=
-1]:/.runnable_load_avg
-        32 =C2=B1 11%     +27.1%         41 =C2=B1 10%  sched_debug.cpu#9.c=
-pu_load[2]
-        30 =C2=B1  1%      +9.9%         33 =C2=B1  6%  sched_debug.cpu#23.=
-cpu_load[3]
-       575 =C2=B1  5%     +12.4%        647 =C2=B1  6%  sched_debug.cfs_rq[=
-23]:/.tg_runnable_contrib
-     26412 =C2=B1  5%     +12.5%      29710 =C2=B1  6%  sched_debug.cfs_rq[=
-23]:/.avg->runnable_avg_sum
-        29 =C2=B1 18%     +33.6%         38 =C2=B1 14%  sched_debug.cpu#12.=
-cpu_load[0]
-        32 =C2=B1  5%     +32.1%         43 =C2=B1 17%  sched_debug.cpu#1.c=
-pu_load[1]
-        33 =C2=B1  6%     +26.3%         42 =C2=B1 16%  sched_debug.cpu#1.c=
-pu_load[2]
-    424232 =C2=B1  2%     +13.7%     482375 =C2=B1  1%  numa-meminfo.node0.=
-MemUsed
-      3558 =C2=B1  6%     +14.5%       4076 =C2=B1  3%  sched_debug.cpu#15.=
-curr->pid
-      1567 =C2=B1  0%      -9.3%       1422 =C2=B1  1%  vmstat.system.cs
-
-testbox/testcase/testparams: lkp-sb03/will-it-scale/signal1
-
-261ebee6aee55a47  103dd9885d1e96be0c7493ce9a  =
-
-----------------  --------------------------  =
-
-       fail:runs  %reproduction    fail:runs
-           |             |             |    =
-
-     40.59 =C2=B1  3%     -33.0%      27.21 =C2=B1  3%  will-it-scale.time.=
-user_time
-      0.11 =C2=B1  0%     -10.5%       0.10 =C2=B1  0%  will-it-scale.scala=
-bility
-    297467 =C2=B1  0%     +10.2%     327822 =C2=B1  0%  will-it-scale.per_t=
-hread_ops
-    526508 =C2=B1  0%      +7.2%     564555 =C2=B1  0%  will-it-scale.per_p=
-rocess_ops
-      2527 =C2=B1 43%     -74.9%        633 =C2=B1 20%  sched_debug.cpu#24.=
-ttwu_local
-      3355 =C2=B1 33%     -66.8%       1113 =C2=B1 14%  sched_debug.cpu#24.=
-ttwu_count
-      6776 =C2=B1 38%     -61.6%       2601 =C2=B1 11%  sched_debug.cpu#24.=
-nr_switches
-        47 =C2=B1 44%     -59.6%         19 =C2=B1 12%  sched_debug.cfs_rq[=
-10]:/.load
-        48 =C2=B1 40%     -60.8%         19 =C2=B1 12%  sched_debug.cpu#10.=
-load
-       184 =C2=B1 33%     -63.1%         68 =C2=B1  5%  sched_debug.cfs_rq[=
-1]:/.blocked_load_avg
-        80 =C2=B1 36%     +97.8%        158 =C2=B1 34%  sched_debug.cfs_rq[=
-15]:/.blocked_load_avg
-        98 =C2=B1 30%     +77.7%        175 =C2=B1 31%  sched_debug.cfs_rq[=
-15]:/.tg_load_contrib
-       215 =C2=B1 28%     -54.3%         98 =C2=B1  3%  sched_debug.cfs_rq[=
-1]:/.tg_load_contrib
-       212 =C2=B1 32%     -60.7%         83 =C2=B1 39%  sched_debug.cfs_rq[=
-26]:/.blocked_load_avg
-       238 =C2=B1 34%     -56.0%        104 =C2=B1 35%  sched_debug.cfs_rq[=
-26]:/.tg_load_contrib
-      1175 =C2=B1 15%     +82.0%       2139 =C2=B1 36%  sched_debug.cpu#30.=
-sched_goidle
-     40.59 =C2=B1  3%     -33.0%      27.21 =C2=B1  3%  time.user_time
-       183 =C2=B1 23%     -32.1%        124 =C2=B1 27%  sched_debug.cfs_rq[=
-19]:/.tg_load_contrib
-      3095 =C2=B1 11%     +81.1%       5606 =C2=B1 43%  sched_debug.cpu#30.=
-nr_switches
-        14 =C2=B1  5%     +39.7%         20 =C2=B1 19%  sched_debug.cpu#31.=
-cpu_load[0]
-      1296 =C2=B1 11%     +28.2%       1661 =C2=B1 15%  sched_debug.cpu#5.t=
-twu_count
-        43 =C2=B1  9%     +21.5%         52 =C2=B1 10%  sched_debug.cpu#0.c=
-pu_load[0]
-     59711 =C2=B1  0%     -11.8%      52641 =C2=B1  7%  sched_debug.cfs_rq[=
-5]:/.exec_clock
-        29 =C2=B1  0%     +13.8%         33 =C2=B1  7%  sched_debug.cpu#21.=
-cpu_load[0]
-        29 =C2=B1  6%     -12.6%         26 =C2=B1  4%  sched_debug.cfs_rq[=
-5]:/.runnable_load_avg
-        30 =C2=B1  5%     -13.2%         26 =C2=B1  6%  sched_debug.cpu#5.l=
-oad
-        29 =C2=B1  1%     +12.0%         32 =C2=B1  6%  sched_debug.cpu#21.=
-cpu_load[2]
-        29 =C2=B1  0%     +14.7%         33 =C2=B1  6%  sched_debug.cpu#21.=
-cpu_load[1]
-        15 =C2=B1  2%     +24.6%         19 =C2=B1 18%  sched_debug.cpu#31.=
-cpu_load[1]
-        15 =C2=B1  2%     +19.7%         18 =C2=B1 15%  sched_debug.cpu#31.=
-cpu_load[2]
-        30 =C2=B1  5%     -12.4%         26 =C2=B1  6%  sched_debug.cfs_rq[=
-5]:/.load
-        29 =C2=B1  0%     +13.8%         33 =C2=B1  7%  sched_debug.cfs_rq[=
-21]:/.runnable_load_avg
-        29 =C2=B1  0%     +13.8%         33 =C2=B1  7%  sched_debug.cfs_rq[=
-21]:/.load
-        29 =C2=B1  0%     +13.8%         33 =C2=B1  7%  sched_debug.cpu#21.=
-load
-
-lkp-sb03: Sandy Bridge-EP
-Memory: 64G
-
-
-
-
-                          will-it-scale.time.user_time
-
-  45 ++--------------------------------------------------------------------=
--+
-     |                                                                     =
- |
-  40 ++                            .*..     .*..                  .*..     =
- |
-  35 *+.*..*..  .*..*      *..*..*.    *..*.    *..*..*..  ..*..*.    *..  =
-.*
-     |        *.    :      :                             *.              *.=
- |
-  30 ++              :    :                                                =
- |
-  25 ++              :    :                                                =
- |
-     O  O  O  O  O  O:  O :O  O  O  O  O  O  O  O  O     O   O             =
- |
-  20 ++               :   :                           O                    =
- |
-  15 ++               :  :                                                 =
- |
-     |                 : :                                                 =
- |
-  10 ++                : :                                                 =
- |
-   5 ++                : :                                                 =
- |
-     |                  :                                                  =
- |
-   0 ++-----------------*--------------------------------------------------=
--+
-
-
-        [*] bisect-good sample
-        [O] bisect-bad  sample
-
-To reproduce:
-
-        apt-get install ruby ruby-oj
-        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
-ts.git
-        cd lkp-tests
-        bin/setup-local job.yaml # the job file attached in this email
-        bin/run-local   job.yaml
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
-
-
-Thanks,
-Huang, Ying
-
-
-
-_______________________________________________
-LKP mailing list
-LKP(a)linux.intel.com
-
-
---===============3915095252349435038==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job.yaml"
-
-LS0tCnRlc3RjYXNlOiB3aWxsLWl0LXNjYWxlCmRlZmF1bHQtbW9uaXRvcnM6CiAgd2FpdDogcHJl
-LXRlc3QKICB1cHRpbWU6IAogIGlvc3RhdDogCiAgdm1zdGF0OiAKICBudW1hLW51bWFzdGF0OiAK
-ICBudW1hLXZtc3RhdDogCiAgbnVtYS1tZW1pbmZvOiAKICBwcm9jLXZtc3RhdDogCiAgcHJvYy1z
-dGF0OiAKICBtZW1pbmZvOiAKICBzbGFiaW5mbzogCiAgaW50ZXJydXB0czogCiAgbG9ja19zdGF0
-OiAKICBsYXRlbmN5X3N0YXRzOiAKICBzb2Z0aXJxczogCiAgYmRpX2Rldl9tYXBwaW5nOiAKICBk
-aXNrc3RhdHM6IAogIG5mc3N0YXQ6IAogIGNwdWlkbGU6IAogIGNwdWZyZXEtc3RhdHM6IAogIHR1
-cmJvc3RhdDogCiAgcG1ldGVyOiAKICBzY2hlZF9kZWJ1ZzoKICAgIGludGVydmFsOiAxMApkZWZh
-dWx0X3dhdGNoZG9nczoKICB3YXRjaC1vb206IAogIHdhdGNoZG9nOiAKY3B1ZnJlcV9nb3Zlcm5v
-cjogCmNvbW1pdDogNjlkNjY4ZjIzNTY2NzBhYjZkNTllMTdjOTExYTIyMmQ5NTQ2ZjUwYgptb2Rl
-bDogU2FuZHkgQnJpZGdlLUVQCm1lbW9yeTogNjRHCmhkZF9wYXJ0aXRpb25zOiAiL2Rldi9kaXNr
-L2J5LWlkL2F0YS1XRENfV0QxMEVBUlMtMDBZNUIxX1dELVdDQVY1RjA1OTQ5OS1wYXJ0MyIKc3dh
-cF9wYXJ0aXRpb25zOiAKcm9vdGZzX3BhcnRpdGlvbjogIi9kZXYvZGlzay9ieS1pZC9hdGEtV0RD
-X1dEMTBFQVJTLTAwWTVCMV9XRC1XQ0FWNUYwNTk0OTktcGFydDQiCnBlcmYtcHJvZmlsZToKICBm
-cmVxOiA4MDAKd2lsbC1pdC1zY2FsZToKICB0ZXN0OgogIC0gb3BlbjIKdGVzdGJveDogbGtwLXNi
-MDMKdGJveF9ncm91cDogbGtwLXNiMDMKa2NvbmZpZzogeDg2XzY0LXJoZWwKZW5xdWV1ZV90aW1l
-OiAyMDE1LTAxLTMxIDEyOjAyOjQ4LjIyMDMwODQwNCArMDg6MDAKaGVhZF9jb21taXQ6IDY5ZDY2
-OGYyMzU2NjcwYWI2ZDU5ZTE3YzkxMWEyMjJkOTU0NmY1MGIKYmFzZV9jb21taXQ6IDI2YmM0MjBi
-NTlhMzhlNGU2Njg1YTczMzQ1YTBkZWY0NjExMzZkY2UKYnJhbmNoOiBsaW51eC1kZXZlbC9kZXZl
-bC1ob3VybHktMjAxNTAxMzEyMgprZXJuZWw6ICIva2VybmVsL3g4Nl82NC1yaGVsLzY5ZDY2OGYy
-MzU2NjcwYWI2ZDU5ZTE3YzkxMWEyMjJkOTU0NmY1MGIvdm1saW51ei0zLjE5LjAtcmM2LWc2OWQ2
-NjhmIgp1c2VyOiBsa3AKcXVldWU6IGN5Y2xpYwpyb290ZnM6IGRlYmlhbi14ODZfNjQtMjAxNS0w
-MS0zMC5jZ3oKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L2xrcC1zYjAzL3dpbGwtaXQtc2NhbGUvb3Bl
-bjIvZGViaWFuLXg4Nl82NC0yMDE1LTAxLTMwLmNnei94ODZfNjQtcmhlbC82OWQ2NjhmMjM1NjY3
-MGFiNmQ1OWUxN2M5MTFhMjIyZDk1NDZmNTBiLzAiCmpvYl9maWxlOiAiL2xrcC9zY2hlZHVsZWQv
-bGtwLXNiMDMvY3ljbGljX3dpbGwtaXQtc2NhbGUtb3BlbjIteDg2XzY0LXJoZWwtSEVBRC02OWQ2
-NjhmMjM1NjY3MGFiNmQ1OWUxN2M5MTFhMjIyZDk1NDZmNTBiLTAueWFtbCIKZGVxdWV1ZV90aW1l
-OiAyMDE1LTAyLTAxIDAwOjI2OjEzLjIzMzg4MDI2OSArMDg6MDAKbnJfY3B1OiAiJChucHJvYyki
-CmpvYl9zdGF0ZTogZmluaXNoZWQKbG9hZGF2ZzogMjIuMTYgMTIuNDYgNS4wOCAxLzI5NiAxMTIx
-OQpzdGFydF90aW1lOiAnMTQyMjcyMTYxOScKZW5kX3RpbWU6ICcxNDIyNzIxOTI5Jwp2ZXJzaW9u
-OiAiL2xrcC9sa3AvLnNyYy0yMDE1MDEzMS0wNzQxMTUiCg==
-
---===============3915095252349435038==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-Li9ydW50ZXN0LnB5IG9wZW4yIDI1IGJvdGggMSA4IDE2IDI0IDMyCg==
-
---===============3915095252349435038==--
+--===============3900567179973563101==--
 
