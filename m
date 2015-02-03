@@ -1,156 +1,128 @@
-Content-Type: multipart/mixed; boundary="===============2609622750466791190=="
+Content-Type: multipart/mixed; boundary="===============5280002448834485061=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+From: Josh Boyer <jwboyer@fedoraproject.org>
 To: lkp@lists.01.org
-Subject: Re: [rcu] [ INFO: suspicious RCU usage. ]
-Date: Tue, 03 Feb 2015 08:27:04 -0800
-Message-ID: <20150203162704.GR19109@linux.vnet.ibm.com>
-In-Reply-To: <1422957702.17540.1.camel@AMDC1943>
+Subject: Re: [nfs] WARNING: CPU: 1 PID: 1392 at kernel/sched/core.c:7300 __might_sleep+0xbd/0xd0()
+Date: Tue, 03 Feb 2015 12:40:10 -0500
+Message-ID: <CA+5PVA44Xq2_J2JANvT7K50yipOv4NV595b2WSnJK77j8PpKDA@mail.gmail.com>
+In-Reply-To: <CAHQdGtTmm2u07h2V1vddBosogAjZ1qRfmfr+3Ej65pL79iaQAQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2609622750466791190==
+--===============5280002448834485061==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 03, 2015 at 11:01:42AM +0100, Krzysztof Kozlowski wrote:
-> On sob, 2015-01-31 at 18:59 -0800, Fengguang Wu wrote:
-> > Greetings,
-> > =
+On Mon, Feb 2, 2015 at 8:43 AM, Trond Myklebust
+<trond.myklebust@primarydata.com> wrote:
+> On Mon, Feb 2, 2015 at 2:33 AM, Christoph Hellwig <hch@lst.de> wrote:
+>>
+>> On Sat, Jan 31, 2015 at 07:19:17PM -0800, Fengguang Wu wrote:
+>> > Hi Christoph,
+>> >
+>> > FYI, this patch discloses an 100% reproducible boot warning.
+>> >
+>> > git://git.infradead.org/users/hch/pnfs.git flexfiles+pnfsd
+>> > commit 34c311faa8dcd323907c6075ab24b4d9e3c6dcb0 ("nfs: force version 4=
+.1")
+>>
+>> The branch is just test branch for some new pnfs patches.  But the fact
+>> that forcing the protocol version to 4.1 makes your boot fail still seems
+>> like an interesting observation.
+>>
+>> >
+>> > +------------------------------------------------------------------+--=
+----------+------------+
+>> > |                                                                  | 4=
+57be31a00 | 34c311faa8 |
+>> > +------------------------------------------------------------------+--=
+----------+------------+
+>> > | boot_successes                                                   | 2=
+0         | 10         |
+>> > | early-boot-hang                                                  | 1=
+          |            |
+>> > | boot_failures                                                    | 0=
+          | 12         |
+>> > | Kernel_panic-not_syncing:Out_of_memory_and_no_killable_processes | 0=
+          | 2          |
+>> > | backtrace:vfs_write                                              | 0=
+          | 2          |
+>> > | backtrace:SyS_write                                              | 0=
+          | 2          |
+>> > | backtrace:populate_rootfs                                        | 0=
+          | 2          |
+>> > | backtrace:kernel_init_freeable                                   | 0=
+          | 2          |
+>> > | WARNING:at_kernel/sched/core.c:#__might_sleep()                  | 0=
+          | 10         |
+>> > | backtrace:nfs41_callback_svc                                     | 0=
+          | 10         |
+>> > +------------------------------------------------------------------+--=
+----------+------------+
+>> >
+>> >
+>> > [   12.520894] Key type id_resolver registered
+>> > [   12.522364] Key type id_legacy registered
+>> > [   12.530530] ------------[ cut here ]------------
+>> > [   12.532061] WARNING: CPU: 1 PID: 1392 at kernel/sched/core.c:7300 _=
+_might_sleep+0xbd/0xd0()
+>> > [   12.534114] do not call blocking ops when !TASK_RUNNING; state=3D1 =
+set at [<ffffffff810b63af>] prepare_to_wait+0x2f/0x90
+>> > [   12.536264] Modules linked in: rpcsec_gss_krb5 auth_rpcgss nfsv4 dn=
+s_resolver sg sr_mod cdrom ata_generic pata_acpi parport_pc floppy parport =
+cirrus syscopyarea snd_pcm sysfillrect sysimgblt snd_timer ttm snd drm_kms_=
+helper ata_piix soundcore libata drm pcspkr i2c_piix4
+>> > [   12.542569] CPU: 1 PID: 1392 Comm: nfsv4.1-svc Not tainted 3.19.0-r=
+c5-wl-ga224126 #1
+>> > [   12.544509] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+>> > [   12.546252]  ffffffff81b7a3c0 ffff88007f627bd8 ffffffff818a735f 000=
+0000000003658
+>> > [   12.548252]  ffff88007f627c28 ffff88007f627c18 ffffffff810725ea fff=
+f88007f627bf8
+>> > [   12.550261]  ffffffff81b90e59 00000000000004d9 0000000000000000 000=
+0000000000001
+>> > [   12.552359] Call Trace:
+>> > [   12.553868]  [<ffffffff818a735f>] dump_stack+0x4c/0x65
+>> > [   12.555666]  [<ffffffff810725ea>] warn_slowpath_common+0x8a/0xc0
+>> > [   12.557512]  [<ffffffff81072666>] warn_slowpath_fmt+0x46/0x50
+>> > [   12.559338]  [<ffffffff810a0104>] ? try_to_wake_up+0x1f4/0x380
+>> > [   12.561154]  [<ffffffff810b63af>] ? prepare_to_wait+0x2f/0x90
+>> > [   12.562993]  [<ffffffff810b63af>] ? prepare_to_wait+0x2f/0x90
+>> > [   12.564793]  [<ffffffff810986fd>] __might_sleep+0xbd/0xd0
+>> > [   12.566553]  [<ffffffff811c81e7>] kmem_cache_alloc_trace+0x1d7/0x250
+>> > [   12.568383]  [<ffffffff81095b0e>] ? groups_alloc+0x3e/0x130
+>> > [   12.570159]  [<ffffffff81095b0e>] groups_alloc+0x3e/0x130
+>> > [   12.571878]  [<ffffffff818781be>] svcauth_unix_accept+0x16e/0x290
+>> > [   12.573677]  [<ffffffff81876f11>] svc_authenticate+0xe1/0xf0
+>> > [   12.575405]  [<ffffffff818738f4>] svc_process_common+0x224/0x680
+>> > [   12.577184]  [<ffffffff818740d4>] bc_svc_process+0x1c4/0x260
+>> > [   12.578904]  [<ffffffffa01c3b64>] nfs41_callback_svc+0x104/0x1b0 [n=
+fsv4]
+>> > [   12.580752]  [<ffffffff810b6790>] ? wait_woken+0xc0/0xc0
+>> > [   12.582441]  [<ffffffffa01c3a60>] ? nfs4_callback_svc+0x60/0x60 [nf=
+sv4]
+>> > [   12.584268]  [<ffffffff81091fcf>] kthread+0xef/0x110
+>> > [   12.585859]  [<ffffffff81091ee0>] ? kthread_create_on_node+0x180/0x=
+180
+>> > [   12.587572]  [<ffffffff818af9fc>] ret_from_fork+0x7c/0xb0
+>> > [   12.589175]  [<ffffffff81091ee0>] ? kthread_create_on_node+0x180/0x=
+180
+>> > [   12.590895] ---[ end trace 7b39108134f7677c ]---
+>> > RESULT_ROOT=3D/result/vm-vp-2G/boot/1/debian-x86_64-2015-01-13.cgz/x86=
+_64-rhel/a224126be542547c3d3040d2b4c145c0c024cc04/0
+>>
+> <snip away the looong .config>
+>
+> That warning should hopefully be fixed by the following commit by Jeff:
+>   http://git.linux-nfs.org/?p=3Dtrondmy/linux-nfs.git;a=3Dcommitdiff;h=3D=
+6ffa30d3f734d4f6b478081dfc09592021028f90
+>
+> I've already pulled it into my linux-next branch.
 
-> > 0day kernel testing robot got the below dmesg and the first bad commit =
-is
-> > =
+If that's marked for stable, why wouldn't it go to Linus to get into
+the final 3.19 release?
 
-> > git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rev=
-ert-c418b8035fac0cc7d242e5de126cec1006a34bed-dd2b39be8eee9d175c7842c30e405a=
-5cbe50095a
-> =
+josh
 
-> On next-20150203 I hit similar error on ARM/Exynos4412 (Trats2 board)
-> while suspending to RAM:
-
-Yep, you are not supposed to be using RCU on offline CPUs, and RCU recently
-got more picky about that.  This could cause failures in any environment
-where CPUs could get delayed by more than one jiffy, which includes pretty
-much all virtualized environements.
-
-> [   30.986262] PM: Syncing filesystems ... done.
-> [   30.994661] PM: Preparing system for mem sleep
-> [   31.002064] Freezing user space processes ... (elapsed 0.002 seconds) =
-done.
-> [   31.008629] Freezing remaining freezable tasks ... (elapsed 0.001 seco=
-nds) done.
-> [   31.016325] PM: Entering mem sleep
-> [   31.016338] Suspending console(s) (use no_console_suspend to debug)
-> [   31.051009] random: nonblocking pool is initialized
-> [   31.085811] wake enabled for irq 102
-> [   31.086964] wake enabled for irq 123
-> [   31.086972] wake enabled for irq 124
-> [   31.090409] PM: suspend of devices complete after 59.684 msecs
-> [   31.090524] CAM_ISP_CORE_1.2V: No configuration
-> [   31.090534] VMEM_VDDF_3.0V: No configuration
-> [   31.090543] VCC_SUB_2.0V: No configuration
-> [   31.090552] VCC_SUB_1.35V: No configuration
-> [   31.090562] VMEM_1.2V_AP: No configuration
-> [   31.090587] MOTOR_VCC_3.0V: No configuration
-> [   31.090596] LCD_VCC_3.3V: No configuration
-> [   31.090605] TSP_VDD_1.8V: No configuration
-> [   31.090614] TSP_AVDD_3.3V: No configuration
-> [   31.090623] VMEM_VDD_2.8V: No configuration
-> [   31.090631] VTF_2.8V: No configuration
-> [   31.090640] VDDQ_PRE_1.8V: No configuration
-> [   31.090649] VT_CAM_1.8V: No configuration
-> [   31.090658] CAM_ISP_SEN_IO_1.8V: No configuration
-> [   31.090667] CAM_SENSOR_CORE_1.2V: No configuration
-> [   31.090677] VHSIC_1.8V: No configuration
-> [   31.090685] VHSIC_1.0V: No configuration
-> [   31.090694] VABB2_1.95V: No configuration
-> [   31.090703] NFC_AVDD_1.8V: No configuration
-> [   31.090712] VUOTG_3.0V: No configuration
-> [   31.090721] VABB1_1.95V: No configuration
-> [   31.090730] VMIPI_1.8V: No configuration
-> [   31.090739] CAM_ISP_MIPI_1.2V: No configuration
-> [   31.090747] VMIPI_1.0V: No configuration
-> [   31.090756] VPLL_1.0V_AP: No configuration
-> [   31.090765] VMPLL_1.0V_AP: No configuration
-> [   31.090773] VCC_1.8V_IO: No configuration
-> [   31.090782] VCC_2.8V_AP: No configuration
-> [   31.090791] VCC_1.8V_AP: No configuration
-> [   31.090800] VM1M2_1.2V_AP: No configuration
-> [   31.090809] VALIVE_1.0V_AP: No configuration
-> [   31.100297] PM: late suspend of devices complete after 9.445 msecs
-> [   31.108891] PM: noirq suspend of devices complete after 8.577 msecs
-> [   31.109052] Disabling non-boot CPUs ...
-> [   31.113921]
-> [   31.113925] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [   31.113928] [ INFO: suspicious RCU usage. ]
-> [   31.113935] 3.19.0-rc7-next-20150203 #1914 Not tainted
-> [   31.113938] -------------------------------
-> [   31.113943] kernel/sched/fair.c:4740 suspicious rcu_dereference_check(=
-) usage!
-> [   31.113946]
-> [   31.113946] other info that might help us debug this:
-> [   31.113946]
-> [   31.113952]
-> [   31.113952] RCU used illegally from offline CPU!
-> [   31.113952] rcu_scheduler_active =3D 1, debug_locks =3D 0
-> [   31.113957] 3 locks held by swapper/1/0:
-> [   31.113988]  #0:  ((cpu_died).wait.lock){......}, at: [<c005a114>] com=
-plete+0x14/0x44
-> [   31.114012]  #1:  (&p->pi_lock){-.-.-.}, at: [<c004a790>] try_to_wake_=
-up+0x28/0x300
-> [   31.114035]  #2:  (rcu_read_lock){......}, at: [<c004f1b8>] select_tas=
-k_rq_fair+0x5c/0xa04
-> [   31.114038]
-> [   31.114038] stack backtrace:
-> [   31.114046] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 3.19.0-rc7-next-=
-20150203 #1914
-> [   31.114050] Hardware name: SAMSUNG EXYNOS (Flattened Device Tree)
-> [   31.114076] [<c0014ce4>] (unwind_backtrace) from [<c0011c30>] (show_st=
-ack+0x10/0x14)
-> [   31.114091] [<c0011c30>] (show_stack) from [<c04dc048>] (dump_stack+0x=
-70/0xbc)
-> [   31.114105] [<c04dc048>] (dump_stack) from [<c004f83c>] (select_task_r=
-q_fair+0x6e0/0xa04)
-> [   31.114118] [<c004f83c>] (select_task_rq_fair) from [<c004a83c>] (try_=
-to_wake_up+0xd4/0x300)
-> [   31.114129] [<c004a83c>] (try_to_wake_up) from [<c00598a0>] (__wake_up=
-_common+0x4c/0x80)
-> [   31.114140] [<c00598a0>] (__wake_up_common) from [<c00598e8>] (__wake_=
-up_locked+0x14/0x1c)
-> [   31.114150] [<c00598e8>] (__wake_up_locked) from [<c005a134>] (complet=
-e+0x34/0x44)
-> [   31.114167] [<c005a134>] (complete) from [<c04d6ca4>] (cpu_die+0x24/0x=
-84)
-> [   31.114179] [<c04d6ca4>] (cpu_die) from [<c005a508>] (cpu_startup_entr=
-y+0x328/0x358)
-
-And so you no longer get to invoke complete() from the CPU going offline
-out of the idle loop.
-
-How would you like to handle this?  One approach would be to make __cpu_die=
-()
-poll with appropriate duty cycle.  Or is there some ARM-specific approach
-that could work here?
-
-Another thing I could do would be to have an arch-specific Kconfig
-variable that made ARM responsible for informing RCU that the CPU
-was departing, which would allow a call to as follows to be placed
-immediately after the complete():
-
-rcu_cpu_notify(NULL, CPU_DYING_IDLE, (void *)(long)smp_processor_id());
-
-Note:  This absolutely requires that the rcu_cpu_notify() -always-
-be allowed to execute!!!  This will not work if there is -any- possibility
-of __cpu_die() powering off the outgoing CPU before the call to
-rcu_cpu_notify() returns.
-
-Thoughts?
-
-							Thanx, Paul
-
-
---===============2609622750466791190==--
+--===============5280002448834485061==--
 
