@@ -1,87 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============6309609302258606967=="
+Content-Type: multipart/mixed; boundary="===============6121443076513097934=="
 MIME-Version: 1.0
-From: NeilBrown <neilb@suse.de>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: __might_sleep() warnings on v3.19-rc6
-Date: Mon, 02 Feb 2015 15:58:43 +1100
-Message-ID: <20150202155843.5991a10c@notabene.brown>
-In-Reply-To: <20150202100338.4fa9eefa@notabene.brown>
+Subject: [NFSv4.1] 6ae373394c4: kernel boot crash
+Date: Fri, 06 Feb 2015 18:45:46 -0800
+Message-ID: <20150207024546.GA27323@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6309609302258606967==
+--===============6121443076513097934==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi Trond,
 
-(high-jacking the thread a bit... I don't have the patch that I want to rep=
-ly
-to still in my mail box:  the subject still matches...)
+We noticed the below kernel crash on
 
-I just got a might-sleep warning in my own testing.
-This was introduced by =
-
-
-commit e22b886a8a43b147e1994a9f970f678fc0df2033
-Author: Peter Zijlstra <peterz@infradead.org>
-Date:   Wed Sep 24 10:18:48 2014 +0200
-
-    sched/wait: Add might_sleep() checks
+git://git.linux-nfs.org/projects/trondmy/linux-nfs.git testing
+commit 6ae373394c4257bad562817aa60464ff7fe8f9c4 ("NFSv4.1: Ask for no deleg=
+ation on OPEN if using O_DIRECT")
 
 
-In particular:
+testbox/testcase/testparams: vm-vp-quantal-x86_64/boot/1
 
-@@ -318,6 +320,7 @@ do {                                                   =
-     =
+0e3b137fbf0f4ab9  6ae373394c4257bad562817aa6  =
 
-  */
- #define wait_event_cmd(wq, condition, cmd1, cmd2)                      \
- do {                                                                   \
-+       might_sleep();                                                  \
-        if (condition)                                                  \
-                break;                                                  \
-        __wait_event_cmd(wq, condition, cmd1, cmd2);                    \
+----------------  --------------------------  =
 
+       fail:runs  %reproduction    fail:runs
+           |             |             |    =
 
-Where I call this in raid5_quiesce(), 'cmd1' releases a lock and enables
-interrupts and  cmd2 takes the lock and disables interrupts.
+           :100          4%           2:46    dmesg.BUG:kernel_test_crashed
 
-So it is perfectly OK to sleep at the point where schedule is called, but n=
-ot
-at the point where wait_event_cmd is called.
+The last dmesg lines before the kernel crash are
 
-I can't use wait_event_lock_irq_cmd() as there are actually several spinloc=
-ks
-I need to manipulate.
-
-So I'm hoping that this part of the patch (at least) can be reverted.
-
-Otherwise I guess I'll need to use __wait_event_cmd().
+[    0.274266] NET: Registered protocol family 1
+[    0.275236] RPC: Registered named UNIX socket transport module.
+[    0.276123] RPC: Registered udp transport module.
+[    0.276860] RPC: Registered tcp transport module.
+[    0.277617] RPC: Registered tcp NFSv4.1 backchannel transport module
 
 Thanks,
-NeilBrown
+Fengguang
 
---===============6309609302258606967==
-Content-Type: application/pgp-signature
+--===============6121443076513097934==
+Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.sig"
+Content-Disposition: attachment; filename="job.yaml"
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIKCmlRSVZBd1VC
-Vk04RUF6bnNudDFXWW9HNUFRS1FYUS8vY0tieGRMRjBvanU1NGYrd0pwM0Jqb2NMd3hFVDl0RFMK
-aU1UNHZxTWlXVFhuclZJd3JtcGFKdWc0ZkU0bVhqWDRIQm5IQWhjUlhUdlNmTDVHQmg1Q25jYUpX
-TDdzL2c5VQpjcmU4NTZmVFFudGhjV1pWZFhKOXl4Rm43UDhvQXRQcjJVd0U4bkhOK2MxWWpOeTZo
-THUvMndaUUpHczRxOTJiCnFVWGlXMG1qaEtZTzU0dEdhcTRQZVRld3hVQnFnem9qWC9ZemdtYzFU
-NHg0c0lGMFlGWGcrU3ZPUUJ0K3ljejkKd3BJTk42QS9CSHI4ZlNwOWd5MW5LTnJwaXpOMGJuelpq
-bldxWEhtcDFQeGVWRm5ZM1NCQTZiSmlXRTJVUXozSgpPR3NmWkdJSHB4WXl3dmtXVWVsSXQvdVNC
-ZnN6WkNZRVFsNDludzkxMEVLY012b0kyc3FsbFJwZ25ZUWUyYVFCClFJS2trL1FqcnJlTFcwbVFH
-L25RWXQ0Si8rOGdMbzQyc2RwWG5WWVc5V3g2QWhhSmtDUEtDa0RRQ2pDbHZsT3IKbnQ2djQzZGNY
-UGdwRzBETXk1TTEvU1pCQklNMlBuci9GSFZlOUJocVk3ZkhGcndDVExzZ2hoSVhGVWd4QndqRApZ
-S0wyRUR4R2FSNThXV0JOUkg4cDZydnlYZlRsVUlHRjRmOFNFZ3hrRFh1UldwblF1TWtjdVM0MFRx
-bDdyOGdnCkJvdEQzaUp5RnU1YWNzQjFBQVdBMWdGZ2d3cFpFekdEM3p3Z2QwbnlrZHBEdVd2RXB1
-aXZLclE4bTBNOTQ5KzYKdkwzL2J0dHg2dXFGN2M4ZmJtVkZmSWFKUlBvSmQvS0F6WVd1Q0RoT3ZT
-NTNKQlJqcU9IdExCK0ZmdVJQUVFZawpQTXkyMGttc21DZz0KPW1yU0QKLS0tLS1FTkQgUEdQIFNJ
-R05BVFVSRS0tLS0tCg==
+LS0tCnRlc3RjYXNlOiBib290CmRlZmF1bHQtbW9uaXRvcnM6IApkZWZhdWx0X3dhdGNoZG9nczoK
+ICB3YXRjaC1vb206IAogIHdhdGNoZG9nOiAKY3B1ZnJlcV9nb3Zlcm5vcjogCm1vZGVsOiBxZW11
+LXN5c3RlbS14ODZfNjQgLWVuYWJsZS1rdm0KbnJfdm06IDY0Cm5yX2NwdTogMgptZW1vcnk6IDM2
+ME0Kcm9vdGZzOiBxdWFudGFsLWNvcmUteDg2XzY0LmNnegpib290LXNsYWJpbmZvOiAKYm9vdC1t
+ZW1pbmZvOiAKbWVtbWFwOiAKYm9vdC1tZW1vcnk6IApib290LXRpbWU6IAprZXJuZWwtc2l6ZTog
+CnNsZWVwOiAxCmJyYW5jaDogbmZzL2xpbnV4LW5leHQKY29tbWl0OiA2YWUzNzMzOTRjNDI1N2Jh
+ZDU2MjgxN2FhNjA0NjRmZjdmZThmOWM0CnJlcGVhdF90bzogMgp0ZXN0Ym94OiB2bS12cC1xdWFu
+dGFsLXg4Nl82NC0zCnRib3hfZ3JvdXA6IHZtLXZwLXF1YW50YWwteDg2XzY0Cmtjb25maWc6IHg4
+Nl82NC1yaGVsCmVucXVldWVfdGltZTogMjAxNS0wMi0wNSAxODo1NDo0Mi4zMjMzNjQ0MTcgKzA4
+OjAwCmtlcm5lbDogIi9rZXJuZWwveDg2XzY0LXJoZWwvNmFlMzczMzk0YzQyNTdiYWQ1NjI4MTdh
+YTYwNDY0ZmY3ZmU4ZjljNC92bWxpbnV6LTMuMTkuMC1yYzUtZzZhZTM3MzMiCnVzZXI6IGxrcApx
+dWV1ZTogcmFuZApyZXN1bHRfcm9vdDogIi9yZXN1bHQvdm0tdnAtcXVhbnRhbC14ODZfNjQvYm9v
+dC8xL3F1YW50YWwtY29yZS14ODZfNjQuY2d6L3g4Nl82NC1yaGVsLzZhZTM3MzM5NGM0MjU3YmFk
+NTYyODE3YWE2MDQ2NGZmN2ZlOGY5YzQvMCIKam9iX2ZpbGU6ICIvbGtwL3NjaGVkdWxlZC92bS12
+cC1xdWFudGFsLXg4Nl82NC0zL3JhbmRfYm9vdC0xLXF1YW50YWwtY29yZS14ODZfNjQuY2d6LXg4
+Nl82NC1yaGVsLTZhZTM3MzM5NGM0MjU3YmFkNTYyODE3YWE2MDQ2NGZmN2ZlOGY5YzQtMS55YW1s
+IgpkZXF1ZXVlX3RpbWU6IDIwMTUtMDItMDUgMTg6NTU6NDkuNjAyMzI0ODQxICswODowMApqb2Jf
+c3RhdGU6IGZpbmlzaGVkCg==
 
---===============6309609302258606967==--
+--===============6121443076513097934==--
 
