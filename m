@@ -1,174 +1,110 @@
-Content-Type: multipart/mixed; boundary="===============7004893290497445745=="
+Content-Type: multipart/mixed; boundary="===============0517311471489985659=="
 MIME-Version: 1.0
 From: Huang Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: [sched/fair] 638476007d1: +1.1% unixbench.score
-Date: Mon, 09 Feb 2015 11:27:35 +0800
-Message-ID: <1423452455.5968.47.camel@intel.com>
+Subject: [kernfs] 2427d387fd2: -1.8% boot-slabinfo.num_objs
+Date: Mon, 09 Feb 2015 12:23:44 +0800
+Message-ID: <1423455824.5968.51.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7004893290497445745==
+--===============0517311471489985659==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 FYI, we noticed the below changes on
 
-git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
-commit 638476007d13534b2ed4134bf0279ef44071140b ("sched/fair: Fix the deali=
-ng with decay_count in __synchronize_entity_decay()")
+git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+commit 2427d387fd24bc04a5c270161473eaca8239cd39 ("kernfs: convert node name=
+ allocation to kstrdup_const")
 
-It appears that your patch cause CPU usage increased a little, so that unix=
-bench score increased.
+Some slab memory can be saved with the patch :)
 
-testbox/testcase/testparams: nhm-white/unixbench/spawn
+testbox/testcase/testparams: lkp-t410/boot/performance-1
 
-7f1a169b88f513e3  638476007d13534b2ed4134bf0  =
+9f5b2beccb0ad113  2427d387fd24bc04a5c2701614  =
 
 ----------------  --------------------------  =
 
          %stddev     %change         %stddev
              \          |                \  =
 
-    268908 =C2=B1  0%      +4.6%     281320 =C2=B1  0%  unixbench.time.invo=
-luntary_context_switches
- 1.147e+08 =C2=B1  0%      +1.5%  1.164e+08 =C2=B1  0%  unixbench.time.mino=
-r_page_faults
-      3607 =C2=B1  0%      +1.1%       3648 =C2=B1  0%  unixbench.score
-       324 =C2=B1  0%      +1.2%        328 =C2=B1  0%  unixbench.time.perc=
-ent_of_cpu_this_job_got
-       633 =C2=B1  0%      +1.2%        641 =C2=B1  0%  unixbench.time.syst=
-em_time
-     54100 =C2=B1  3%     +51.0%      81705 =C2=B1 21%  sched_debug.cpu#4.t=
-twu_local
-     65678 =C2=B1  7%     +49.5%      98187 =C2=B1 16%  sched_debug.cpu#6.t=
-twu_local
-      5624 =C2=B1 31%     +52.1%       8553 =C2=B1 11%  sched_debug.cpu#6.c=
-urr->pid
-        58 =C2=B1 20%     +37.6%         80 =C2=B1  7%  sched_debug.cfs_rq[=
-3]:/.runnable_load_avg
-        61 =C2=B1 10%     +22.5%         74 =C2=B1 14%  sched_debug.cpu#2.c=
-pu_load[3]
-    218479 =C2=B1  5%     +15.4%     252190 =C2=B1  5%  sched_debug.cpu#6.t=
-twu_count
-       102 =C2=B1 17%     -19.3%         82 =C2=B1 10%  sched_debug.cpu#4.c=
-pu_load[2]
-    423974 =C2=B1  4%     +15.6%     490072 =C2=B1  5%  sched_debug.cpu#5.a=
-vg_idle
-        62 =C2=B1  4%     +16.9%         72 =C2=B1  9%  sched_debug.cpu#2.c=
-pu_load[4]
-    152298 =C2=B1  2%      +9.7%     167037 =C2=B1  3%  sched_debug.cfs_rq[=
-5]:/.min_vruntime
-    156795 =C2=B1  1%     +11.3%     174544 =C2=B1  1%  sched_debug.cfs_rq[=
-7]:/.min_vruntime
-    155535 =C2=B1  3%     +11.8%     173813 =C2=B1  2%  sched_debug.cfs_rq[=
-6]:/.min_vruntime
-      9231 =C2=B1  0%      +1.3%       9348 =C2=B1  0%  vmstat.system.in
+      1110 =C2=B1  2%      -8.5%       1016 =C2=B1  5%  boot-meminfo.PageTa=
+bles
+    144680 =C2=B1  0%      -2.1%     141631 =C2=B1  0%  boot-slabinfo.num_o=
+bjs
+    107666 =C2=B1  0%      -1.1%     106464 =C2=B1  0%  boot-meminfo.Slab
+     26953 =C2=B1  0%      -1.0%      26672 =C2=B1  0%  boot-slabinfo.num_p=
+ages
 
-nhm-white: Nehalem
-Memory: 6G
+testbox/testcase/testparams: lkp-a03/boot/performance-1
+
+9f5b2beccb0ad113  2427d387fd24bc04a5c2701614  =
+
+----------------  --------------------------  =
+
+       fail:runs  %reproduction    fail:runs
+           |             |             |    =
+
+        29 =C2=B1 28%     -60.2%         11 =C2=B1 49%  time.involuntary_co=
+ntext_switches
+       166 =C2=B1  1%      -2.4%        162 =C2=B1  1%  boot-time.idle
+    133976 =C2=B1  0%      -1.8%     131519 =C2=B1  0%  boot-slabinfo.num_o=
+bjs
+
+testbox/testcase/testparams: lkp-a04/boot/performance-1
+
+9f5b2beccb0ad113  2427d387fd24bc04a5c2701614  =
+
+----------------  --------------------------  =
+
+    133681 =C2=B1  0%      -1.8%     131309 =C2=B1  0%  boot-slabinfo.num_o=
+bjs
+
+lkp-t410: Westmere
+Memory: 2G
+
+lkp-a03: Atom
+Memory: 8G
+
+lkp-a04: Atom
+Memory: 8G
 
 
-                            unixbench.time.system_time
+                               boot-slabinfo.num_pages
 
-  643 ++---------------------------------------------------------------O---=
+  27100 ++----------------------------*--*-*------*------------------------=
 -+
-  642 ++                    O                                   O          =
- O
-      O O  O O  O O O  O O    O  O   O  O O  O   O  O O    O  O   O       O=
+        |                     .*..*.*         *.*                          =
  |
-  641 ++                           O           O         O           O     =
+  27000 ++                  .*                       *.                    =
  |
-  640 ++                                                                   =
+        | *.. .*     .*.*..*                           *     .*     .*.*..*=
+.*
+  26900 ++   *  +  .*                                   +  .*  +  .*       =
  |
-      |                                                                    =
+        |:       *.                                      *.     *.         =
  |
-  639 ++                                                                   =
+  26800 *+                                                                 =
  |
-  638 ++                                                                   =
+        |                                                                  =
  |
-  637 ++                                                                   =
+  26700 ++                               O        O  O O O      O          =
  |
-      |                                                                    =
+        |               O  O O O  O O O    O  O O           O O            =
  |
-  636 ++                                                                   =
+  26600 ++                                                                 =
  |
-  635 ++         .*                                                        =
+        | O    O                                                           =
  |
-      *.*.. .*..*  +         .*.. .*.*..  *                                =
+  26500 O+   O   O  O O                                                    =
  |
-  634 ++   *        *..*.*..*    *       +                                 =
+        |                                                                  =
  |
-  633 ++--------------------------------*----------------------------------=
--+
-
-
-                     unixbench.time.involuntary_context_switches
-
-  286000 ++----------------------------------------------------------------=
--+
-  284000 ++                                                 O              =
- |
-         |                                                    O    O       =
- |
-  282000 ++                                                          O O   =
- O
-  280000 O+O    O          O      O      O  O   O  O O    O     O         O=
- |
-         |    O      O O O           O O      O        O                   =
- |
-  278000 ++       O           O O                                          =
- |
-  276000 ++                                                                =
- |
-  274000 ++                                                                =
- |
-         |                                                                 =
- |
-  272000 ++                                                                =
- |
-  270000 ++  .*.*.              *.*..      .*                              =
- |
-         *.*.     *..*. .*     :     *.*.*.                                =
- |
-  268000 ++            *  +    :                                           =
- |
-  266000 ++----------------*--*--------------------------------------------=
+  26400 ++-----------------------------------------------------------------=
 -+
 
 
-                       kmsg.tsc:Fast_TSC_calibration_failed
-
-    1 ++-------------------------------------O--------O--------------------=
--+
-      |                                                                    =
- |
-      |                                                                    =
- |
-  0.8 ++                                                                   =
- |
-      |                                                                    =
- |
-      |                                                                    =
- |
-  0.6 ++                                                                   =
- |
-      |                                                                    =
- |
-  0.4 ++                                                                   =
- |
-      |                                                                    =
- |
-      |                                                                    =
- |
-  0.2 ++                                                                   =
- |
-      |                                                                    =
- |
-      |                                                                    =
- |
-    0 O+O--O-O--O-O-O--O-O--O-O--O-O-O--O-O----O-O--O----O-O--O-O-O--O-O--O=
--O
 
         [*] bisect-good sample
         [O] bisect-bad  sample
@@ -201,54 +137,34 @@ LKP mailing list
 LKP(a)linux.intel.com
 
 
---===============7004893290497445745==
+--===============0517311471489985659==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job.yaml"
 
-LS0tCnRlc3RjYXNlOiB1bml4YmVuY2gKZGVmYXVsdC1tb25pdG9yczoKICB3YWl0OiBwcmUtdGVz
-dAogIHVwdGltZTogCiAgaW9zdGF0OiAKICB2bXN0YXQ6IAogIG51bWEtbnVtYXN0YXQ6IAogIG51
-bWEtdm1zdGF0OiAKICBudW1hLW1lbWluZm86IAogIHByb2Mtdm1zdGF0OiAKICBwcm9jLXN0YXQ6
-IAogIG1lbWluZm86IAogIHNsYWJpbmZvOiAKICBpbnRlcnJ1cHRzOiAKICBsb2NrX3N0YXQ6IAog
-IGxhdGVuY3lfc3RhdHM6IAogIHNvZnRpcnFzOiAKICBiZGlfZGV2X21hcHBpbmc6IAogIGRpc2tz
-dGF0czogCiAgbmZzc3RhdDogCiAgY3B1aWRsZTogCiAgY3B1ZnJlcS1zdGF0czogCiAgdHVyYm9z
-dGF0OiAKICBwbWV0ZXI6IAogIHNjaGVkX2RlYnVnOgogICAgaW50ZXJ2YWw6IDEwCmRlZmF1bHRf
-d2F0Y2hkb2dzOgogIHdhdGNoLW9vbTogCiAgd2F0Y2hkb2c6IApjcHVmcmVxX2dvdmVybm9yOiAK
-Y29tbWl0OiBmODc2ZjBjZmY2ZDQ2MGYwM2NkOTM3MTA0MzE0ZjM2NmRmYTkyMjYxCm1vZGVsOiBO
-ZWhhbGVtCm1lbW9yeTogNkcKaGRkX3BhcnRpdGlvbnM6ICIvZGV2L2Rpc2svYnktaWQvYXRhLUhp
-dGFjaGlfSERUNzIxMDUwU0xBMzYwX1NUSDNEN01FMFlFTTVZLXBhcnQ1CiAgL2Rldi9kaXNrL2J5
-LWlkL2F0YS1IaXRhY2hpX0hEVDcyMTA1MFNMQTM2MF9TVEgzRDdNRTBZRU01WS1wYXJ0NiAvZGV2
-L2Rpc2svYnktaWQvYXRhLUhpdGFjaGlfSERUNzIxMDUwU0xBMzYwX1NUSDNEN01FMFlFTTVZLXBh
-cnQ3CiAgL2Rldi9kaXNrL2J5LWlkL2F0YS1IaXRhY2hpX0hEVDcyMTA1MFNMQTM2MF9TVEgzRDdN
-RTBZRU01WS1wYXJ0OCIKc3dhcF9wYXJ0aXRpb25zOiAKcm9vdGZzX3BhcnRpdGlvbjogIi9kZXYv
-ZGlzay9ieS1pZC9hdGEtSGl0YWNoaV9IRFQ3MjEwNTBTTEEzNjBfU1RIM0Q3TUUwWUVNNVktcGFy
-dDIiCm5ldGNvbnNvbGVfcG9ydDogNjY0Nwp1bml4YmVuY2g6CiAgdGVzdDogc3Bhd24KdGVzdGJv
-eDogbmhtLXdoaXRlCnRib3hfZ3JvdXA6IG5obS13aGl0ZQprY29uZmlnOiB4ODZfNjQtcmhlbApl
-bnF1ZXVlX3RpbWU6IDIwMTUtMDItMDcgMTA6MzM6NTguMDYyODI0MTMxICswODowMApoZWFkX2Nv
-bW1pdDogZjg3NmYwY2ZmNmQ0NjBmMDNjZDkzNzEwNDMxNGYzNjZkZmE5MjI2MQpiYXNlX2NvbW1p
-dDogZTM2ZjAxNGVkZmY3MGZjMDJiM2QzZDc5Y2VhZDFkNThmMjg5MzMyZQpicmFuY2g6IGxpbnV4
-LWRldmVsL2RldmVsLWhvdXJseS0yMDE1MDIwNTIyCmtlcm5lbDogIi9rZXJuZWwveDg2XzY0LXJo
-ZWwvZjg3NmYwY2ZmNmQ0NjBmMDNjZDkzNzEwNDMxNGYzNjZkZmE5MjI2MS92bWxpbnV6LTMuMTku
-MC1yYzctZ2Y4NzZmMGMiCnVzZXI6IGxrcApxdWV1ZTogY3ljbGljCnJvb3RmczogZGViaWFuLXg4
-Nl82NC0yMDE1LTAyLTA3LmNnegpyZXN1bHRfcm9vdDogIi9yZXN1bHQvbmhtLXdoaXRlL3VuaXhi
-ZW5jaC9zcGF3bi9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6L3g4Nl82NC1yaGVsL2Y4NzZm
-MGNmZjZkNDYwZjAzY2Q5MzcxMDQzMTRmMzY2ZGZhOTIyNjEvMCIKam9iX2ZpbGU6ICIvbGtwL3Nj
-aGVkdWxlZC9uaG0td2hpdGUvY3ljbGljX3VuaXhiZW5jaC1zcGF3bi14ODZfNjQtcmhlbC1IRUFE
-LWY4NzZmMGNmZjZkNDYwZjAzY2Q5MzcxMDQzMTRmMzY2ZGZhOTIyNjEtMC0yMDE1MDIwNy0yMDM0
-LWl1d3k0MC55YW1sIgpkZXF1ZXVlX3RpbWU6IDIwMTUtMDItMDcgMTc6MDI6NDkuMDQ1NjQ4MzAy
-ICswODowMApucl9jcHU6ICIkKG5wcm9jKSIKam9iX3N0YXRlOiBmaW5pc2hlZApsb2FkYXZnOiA0
-LjUyIDEuOTcgMC43NCAxLzE1MSAyNDIwNApzdGFydF90aW1lOiAnMTQyMzI5OTc5MycKZW5kX3Rp
-bWU6ICcxNDIzMjk5OTkxJwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE1MDIwNy0wMzAyMTIi
-Cg==
+LS0tCnRlc3RjYXNlOiBib290CmRlZmF1bHQtbW9uaXRvcnM6IApkZWZhdWx0X3dhdGNoZG9nczoK
+ICB3YXRjaC1vb206IAogIHdhdGNoZG9nOiAKY3B1ZnJlcV9nb3Zlcm5vcjogcGVyZm9ybWFuY2UK
+bW9kZWw6IFdlc3RtZXJlCm1lbW9yeTogMkcKaGRkX3BhcnRpdGlvbnM6ICIvZGV2L2Rpc2svYnkt
+aWQvYXRhLUZVSklUU1VfTUpBMjI1MEJIX0cyX0s5NUNUOUMyRzI5Vy1wYXJ0NiIKc3dhcF9wYXJ0
+aXRpb25zOiAKcm9vdGZzX3BhcnRpdGlvbjogIi9kZXYvZGlzay9ieS1pZC9hdGEtRlVKSVRTVV9N
+SkEyMjUwQkhfRzJfSzk1Q1Q5QzJHMjlXLXBhcnQ3Igpib290LXNsYWJpbmZvOiAKYm9vdC1tZW1p
+bmZvOiAKbWVtbWFwOiAKYm9vdC1tZW1vcnk6IApib290LXRpbWU6IAprZXJuZWwtc2l6ZTogCnNs
+ZWVwOiAxCmJyYW5jaDogbmV4dC9tYXN0ZXIKY29tbWl0OiBiNTBjYWRmZmQxNTU3MDhjYmQ4OTBk
+MGVlNmNjMzA5YzUxYWYwZjdkCnJlcGVhdF90bzogMQp0ZXN0Ym94OiBsa3AtdDQxMAp0Ym94X2dy
+b3VwOiBsa3AtdDQxMAprY29uZmlnOiB4ODZfNjQtbmZzcm9vdAplbnF1ZXVlX3RpbWU6IDIwMTUt
+MDItMDQgMTE6NTk6MDcuNjUyODQzNjkwICswODowMAprZXJuZWw6ICIva2VybmVsL3g4Nl82NC1u
+ZnNyb290L2I1MGNhZGZmZDE1NTcwOGNiZDg5MGQwZWU2Y2MzMDljNTFhZjBmN2Qvdm1saW51ei0z
+LjE5LjAtcmM3LW5leHQtMjAxNTAyMDMtZ2I1MGNhZGYiCnVzZXI6IGxrcApxdWV1ZTogYm9vdApy
+b290ZnM6IGRlYmlhbi14ODZfNjQtMjAxNS0wMi0wMi5jZ3oKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0
+L2xrcC10NDEwL2Jvb3QvcGVyZm9ybWFuY2UtMS9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDIuY2d6
+L3g4Nl82NC1uZnNyb290L2I1MGNhZGZmZDE1NTcwOGNiZDg5MGQwZWU2Y2MzMDljNTFhZjBmN2Qv
+MCIKam9iX2ZpbGU6ICIvbGtwL3NjaGVkdWxlZC9sa3AtdDQxMC9ib290X2Jvb3QtcGVyZm9ybWFu
+Y2UtMS14ODZfNjQtbmZzcm9vdC1iNTBjYWRmZmQxNTU3MDhjYmQ4OTBkMGVlNmNjMzA5YzUxYWYw
+ZjdkLTAueWFtbCIKZGVxdWV1ZV90aW1lOiAyMDE1LTAyLTA0IDEzOjEyOjA4LjU0MTEzODA1OCAr
+MDg6MDAKbnJfY3B1OiAiJChucHJvYykiCmpvYl9zdGF0ZTogZmluaXNoZWQKbG9hZGF2ZzogMS4w
+NyAwLjM0IDAuMTIgMS8xMjkgMzgzNQpzdGFydF90aW1lOiAnMTQyMzAyNjc3NicKZW5kX3RpbWU6
+ICcxNDIzMDI2Nzc3Jwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE1MDIwNC0xMjQ1NTEiCg==
 
---===============7004893290497445745==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-Li9SdW4gc3Bhd24K
-
---===============7004893290497445745==--
+--===============0517311471489985659==--
 
