@@ -1,39 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============3357428039469318885=="
+Content-Type: multipart/mixed; boundary="===============6473183027864919716=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
-Subject: Re: [sched/core] 9edfbfed3f5: +88.2% hackbench.time.involuntary_context_switches
-Date: Mon, 09 Feb 2015 10:27:35 +0100
-Message-ID: <20150209092735.GP5029@twins.programming.kicks-ass.net>
-In-Reply-To: <CAC=cRTN3VKmgM4BYUrN=rMfg8stiP-F_oWR+2LSPFR9m1Wmfqg@mail.gmail.com>
+Subject: Re: [nfs] mount.nfs: an incorrect mount option was specified
+Date: Mon, 09 Feb 2015 15:33:20 +0100
+Message-ID: <20150209143320.GA17820@lst.de>
+In-Reply-To: <1423470942.5968.72.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3357428039469318885==
+--===============6473183027864919716==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 09, 2015 at 04:47:07PM +0800, huang ying wrote:
-> There are no distinguishable difference between the parent and the child
-> for hackbench throughput number.
+On Mon, Feb 09, 2015 at 04:35:42PM +0800, Huang Ying wrote:
+> FYI, we noticed the below changes on
 > =
 
-> Usually you will not consider statistics such as involuntary context
-> switches?
+> git://git.infradead.org/users/hch/pnfs.git pnfs-testing
+> commit 418f5019f1a8cd6fc50db11303e5a9297522d814 ("nfs: force version 4.1")
+> =
 
-Only if there's a 'problem' with the primary performance metric (total
-runtime in case of hackbench).
+> Our test script uses the following command line:
+> =
 
-Once the primary metric shifts, you go look at what the cause of this
-change might be, at that point things like # context switches etc.. are
-interesting. As long as the primary performance metric is stable, meh.
+> $ mount.nfs -o v3,nolock <nfs service> <directory>
+> =
 
-As such; I would suggest _always_ reporting the primary metric for each
-benchmark, preferably on top and not hidden somewhere in the mass of
-numbers.
+> And found something as follow in the stderr after the commit
+> =
 
-I now had to very carefully waste a few minutes of my time reading those
-numbers to see if there was anything useful in; there wasn't.
+> mount.nfs: an incorrect mount option was specified
 
---===============3357428039469318885==--
+This is a testing branch not really intended for Linux, and this
+is a side effect.  CAn you drop this branch (just the branch, and not the
+repository) from the automated testing?
+
+--===============6473183027864919716==--
 
