@@ -1,109 +1,254 @@
-Content-Type: multipart/mixed; boundary="===============5824699558041254819=="
+Content-Type: multipart/mixed; boundary="===============7004893290497445745=="
 MIME-Version: 1.0
-From: NeilBrown <neilb@suse.de>
+From: Huang Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: __might_sleep() warnings on v3.19-rc6
-Date: Mon, 02 Feb 2015 17:09:37 +1100
-Message-ID: <20150202170937.4b5ffcb0@notabene.brown>
-In-Reply-To: <CA+55aFyR-ZK9Y2KkxbcTnMOcCc243ZKD6AKTuktpmyE0HCUcPw@mail.gmail.com>
+Subject: [sched/fair] 638476007d1: +1.1% unixbench.score
+Date: Mon, 09 Feb 2015 11:27:35 +0800
+Message-ID: <1423452455.5968.47.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5824699558041254819==
+--===============7004893290497445745==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, 1 Feb 2015 21:08:12 -0800 Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+FYI, we noticed the below changes on
 
-> On Sun, Feb 1, 2015 at 3:03 PM, NeilBrown <neilb@suse.de> wrote:
-> >
-> > I guess I could
-> >       __set_current_state(TASK_RUNNING);
-> > somewhere to defeat the warning, and add a comment explaining why.
-> >
-> > Would that be a good thing?
-> =
+git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+commit 638476007d13534b2ed4134bf0279ef44071140b ("sched/fair: Fix the deali=
+ng with decay_count in __synchronize_entity_decay()")
 
-> Use "sched_annotate_sleep()" instead, but yes, add a comment about why it=
-'s ok.
-> =
+It appears that your patch cause CPU usage increased a little, so that unix=
+bench score increased.
 
->                         Linus
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo(a)vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+testbox/testcase/testparams: nhm-white/unixbench/spawn
 
-OK - following patch is queued to appear in a pull request tomorrow  (I hop=
-e).
+7f1a169b88f513e3  638476007d13534b2ed4134bf0  =
+
+----------------  --------------------------  =
+
+         %stddev     %change         %stddev
+             \          |                \  =
+
+    268908 =C2=B1  0%      +4.6%     281320 =C2=B1  0%  unixbench.time.invo=
+luntary_context_switches
+ 1.147e+08 =C2=B1  0%      +1.5%  1.164e+08 =C2=B1  0%  unixbench.time.mino=
+r_page_faults
+      3607 =C2=B1  0%      +1.1%       3648 =C2=B1  0%  unixbench.score
+       324 =C2=B1  0%      +1.2%        328 =C2=B1  0%  unixbench.time.perc=
+ent_of_cpu_this_job_got
+       633 =C2=B1  0%      +1.2%        641 =C2=B1  0%  unixbench.time.syst=
+em_time
+     54100 =C2=B1  3%     +51.0%      81705 =C2=B1 21%  sched_debug.cpu#4.t=
+twu_local
+     65678 =C2=B1  7%     +49.5%      98187 =C2=B1 16%  sched_debug.cpu#6.t=
+twu_local
+      5624 =C2=B1 31%     +52.1%       8553 =C2=B1 11%  sched_debug.cpu#6.c=
+urr->pid
+        58 =C2=B1 20%     +37.6%         80 =C2=B1  7%  sched_debug.cfs_rq[=
+3]:/.runnable_load_avg
+        61 =C2=B1 10%     +22.5%         74 =C2=B1 14%  sched_debug.cpu#2.c=
+pu_load[3]
+    218479 =C2=B1  5%     +15.4%     252190 =C2=B1  5%  sched_debug.cpu#6.t=
+twu_count
+       102 =C2=B1 17%     -19.3%         82 =C2=B1 10%  sched_debug.cpu#4.c=
+pu_load[2]
+    423974 =C2=B1  4%     +15.6%     490072 =C2=B1  5%  sched_debug.cpu#5.a=
+vg_idle
+        62 =C2=B1  4%     +16.9%         72 =C2=B1  9%  sched_debug.cpu#2.c=
+pu_load[4]
+    152298 =C2=B1  2%      +9.7%     167037 =C2=B1  3%  sched_debug.cfs_rq[=
+5]:/.min_vruntime
+    156795 =C2=B1  1%     +11.3%     174544 =C2=B1  1%  sched_debug.cfs_rq[=
+7]:/.min_vruntime
+    155535 =C2=B1  3%     +11.8%     173813 =C2=B1  2%  sched_debug.cfs_rq[=
+6]:/.min_vruntime
+      9231 =C2=B1  0%      +1.3%       9348 =C2=B1  0%  vmstat.system.in
+
+nhm-white: Nehalem
+Memory: 6G
+
+
+                            unixbench.time.system_time
+
+  643 ++---------------------------------------------------------------O---=
+-+
+  642 ++                    O                                   O          =
+ O
+      O O  O O  O O O  O O    O  O   O  O O  O   O  O O    O  O   O       O=
+ |
+  641 ++                           O           O         O           O     =
+ |
+  640 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  639 ++                                                                   =
+ |
+  638 ++                                                                   =
+ |
+  637 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  636 ++                                                                   =
+ |
+  635 ++         .*                                                        =
+ |
+      *.*.. .*..*  +         .*.. .*.*..  *                                =
+ |
+  634 ++   *        *..*.*..*    *       +                                 =
+ |
+  633 ++--------------------------------*----------------------------------=
+-+
+
+
+                     unixbench.time.involuntary_context_switches
+
+  286000 ++----------------------------------------------------------------=
+-+
+  284000 ++                                                 O              =
+ |
+         |                                                    O    O       =
+ |
+  282000 ++                                                          O O   =
+ O
+  280000 O+O    O          O      O      O  O   O  O O    O     O         O=
+ |
+         |    O      O O O           O O      O        O                   =
+ |
+  278000 ++       O           O O                                          =
+ |
+  276000 ++                                                                =
+ |
+  274000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  272000 ++                                                                =
+ |
+  270000 ++  .*.*.              *.*..      .*                              =
+ |
+         *.*.     *..*. .*     :     *.*.*.                                =
+ |
+  268000 ++            *  +    :                                           =
+ |
+  266000 ++----------------*--*--------------------------------------------=
+-+
+
+
+                       kmsg.tsc:Fast_TSC_calibration_failed
+
+    1 ++-------------------------------------O--------O--------------------=
+-+
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  0.8 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  0.6 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  0.4 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  0.2 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+    0 O+O--O-O--O-O-O--O-O--O-O--O-O-O--O-O----O-O--O----O-O--O-O-O--O-O--O=
+-O
+
+        [*] bisect-good sample
+        [O] bisect-bad  sample
+
+To reproduce:
+
+        apt-get install ruby ruby-oj
+        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
+ts.git
+        cd lkp-tests
+        bin/setup-local job.yaml # the job file attached in this email
+        bin/run-local   job.yaml
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
+
 
 Thanks,
-NeilBrown
+Huang, Ying
 
-From: NeilBrown <neilb@suse.de>
-Date: Mon, 2 Feb 2015 17:08:03 +1100
-Subject: [PATCH] md/bitmap: fix a might_sleep() warning.
 
-commit 8eb23b9f35aae413140d3fda766a98092c21e9b0
-    sched: Debug nested sleeps
 
-causes false-positive warnings in RAID5 code.
+_______________________________________________
+LKP mailing list
+LKP(a)linux.intel.com
 
-This annotation removes them and adds a comment
-explaining why there is no real problem.
 
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Signed-off-by: NeilBrown <neilb@suse.de>
-
-diff --git a/drivers/md/bitmap.c b/drivers/md/bitmap.c
-index da3604e73e8a..1695ee5f3ffc 100644
---- a/drivers/md/bitmap.c
-+++ b/drivers/md/bitmap.c
-@@ -72,6 +72,19 @@ __acquires(bitmap->lock)
- 	/* this page has not been allocated yet */
- =
-
- 	spin_unlock_irq(&bitmap->lock);
-+	/* It is possible that this is being called inside a
-+	 * prepare_to_wait/finish_wait loop from raid5c:make_request().
-+	 * In general it is not permitted to sleep in that context as it
-+	 * can cause the loop to spin freely.
-+	 * That doesn't apply here as we can only reach this point
-+	 * once with any loop.
-+	 * When this function completes, either bp[page].map or
-+	 * bp[page].hijacked.  In either case, this function will
-+	 * abort before getting to this point again.  So there is
-+	 * no risk of a free-spin, and so it is safe to assert
-+	 * that sleeping here is allowed.
-+	 */
-+	sched_annotate_sleep();
- 	mappage =3D kzalloc(PAGE_SIZE, GFP_NOIO);
- 	spin_lock_irq(&bitmap->lock);
-=20
-
---===============5824699558041254819==
-Content-Type: application/pgp-signature
+--===============7004893290497445745==
+Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.sig"
+Content-Disposition: attachment; filename="job.yaml"
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIKCmlRSVZBd1VC
-Vk04VW9UbnNudDFXWW9HNUFRTGc4aEFBZ2RTV1htNnZMZUVJM3A0T2NJTlpJM2EvZ2tVS3RmR3AK
-eFVhNTRBVG5JU2Jybkh0N2Y3Tm5yV21MeWJUU25rUHZER3o3MkN1eXRia2hlZHBGcTdRNW5TTzA0
-UkNCM2ZQWAp1MVVMMnNVaGNkZFFlRkxZK3dGSEVQTFFsVFZjVExzYllLNG1lMFJTY0RyTGpabkhC
-bFFqNWNHdTVSZTJVaFhtClFydzRSeXZybEVKd0VBaC82RHBXalVCNHhNLzQ0RWJGVXpGVlp5alBu
-enlEUmtQcFBqK0d3Zk1VWkdtNjJ5b1EKVFFyL0dVZWtUMmh1UlhkMEN6angzNmpFclNSQXFKaDBh
-M093azZnVWZXZW9VQVJicUtLczZDc3lBRlVydE1KcApzZlVPN3hpNGhZT21MS0RSbTZ4VmIzKzNF
-VXZWMHFkdDlFdkdMUmU1OFZCdkZKYkV2OElYY1lKVVlhd2JsSXQrCjAxeFZUcEV0WjRtTngvSnBy
-bnBaMldreGw1ZEdyazVuSVR5eXVxdElEU0FiSi91NjVPTkF2bllCREk0eHRjMUIKNm8zS2RxM21V
-UXFoMGV1ZTRUTDloWkw3MWxRQ2RPSTl6R1NEUlZFMEQ4NEF1K2dXRHM1WFJYZ2pmRHU1Q1J5bApk
-ZzdRK0VNRlVXd2NkZ0xUdjFObnZuVlhWZXdxMERkMVFFMVhDNm9jVHBGeEhHU3ZYMWpWdG05ZDhK
-eUdjTTd2ClpVMm4xRVd1U1B4RkMzSU4vcmsydjJFVXdnN2o3cVBoK1o1Um1xM00zZ2kxS2R3TTRo
-S0lZUnVzc3ZTSDdWM0YKMkRsenluRmMxUzVoWTEvN1pMTUFSMEpUb2ZDWHVmSHRmV01ObWxFa01H
-c21CcEZIdU1IUzVwN0RzbFdWSG9iWQpTbmFtZmcwWnBPWT0KPXBWSVkKLS0tLS1FTkQgUEdQIFNJ
-R05BVFVSRS0tLS0tCg==
+LS0tCnRlc3RjYXNlOiB1bml4YmVuY2gKZGVmYXVsdC1tb25pdG9yczoKICB3YWl0OiBwcmUtdGVz
+dAogIHVwdGltZTogCiAgaW9zdGF0OiAKICB2bXN0YXQ6IAogIG51bWEtbnVtYXN0YXQ6IAogIG51
+bWEtdm1zdGF0OiAKICBudW1hLW1lbWluZm86IAogIHByb2Mtdm1zdGF0OiAKICBwcm9jLXN0YXQ6
+IAogIG1lbWluZm86IAogIHNsYWJpbmZvOiAKICBpbnRlcnJ1cHRzOiAKICBsb2NrX3N0YXQ6IAog
+IGxhdGVuY3lfc3RhdHM6IAogIHNvZnRpcnFzOiAKICBiZGlfZGV2X21hcHBpbmc6IAogIGRpc2tz
+dGF0czogCiAgbmZzc3RhdDogCiAgY3B1aWRsZTogCiAgY3B1ZnJlcS1zdGF0czogCiAgdHVyYm9z
+dGF0OiAKICBwbWV0ZXI6IAogIHNjaGVkX2RlYnVnOgogICAgaW50ZXJ2YWw6IDEwCmRlZmF1bHRf
+d2F0Y2hkb2dzOgogIHdhdGNoLW9vbTogCiAgd2F0Y2hkb2c6IApjcHVmcmVxX2dvdmVybm9yOiAK
+Y29tbWl0OiBmODc2ZjBjZmY2ZDQ2MGYwM2NkOTM3MTA0MzE0ZjM2NmRmYTkyMjYxCm1vZGVsOiBO
+ZWhhbGVtCm1lbW9yeTogNkcKaGRkX3BhcnRpdGlvbnM6ICIvZGV2L2Rpc2svYnktaWQvYXRhLUhp
+dGFjaGlfSERUNzIxMDUwU0xBMzYwX1NUSDNEN01FMFlFTTVZLXBhcnQ1CiAgL2Rldi9kaXNrL2J5
+LWlkL2F0YS1IaXRhY2hpX0hEVDcyMTA1MFNMQTM2MF9TVEgzRDdNRTBZRU01WS1wYXJ0NiAvZGV2
+L2Rpc2svYnktaWQvYXRhLUhpdGFjaGlfSERUNzIxMDUwU0xBMzYwX1NUSDNEN01FMFlFTTVZLXBh
+cnQ3CiAgL2Rldi9kaXNrL2J5LWlkL2F0YS1IaXRhY2hpX0hEVDcyMTA1MFNMQTM2MF9TVEgzRDdN
+RTBZRU01WS1wYXJ0OCIKc3dhcF9wYXJ0aXRpb25zOiAKcm9vdGZzX3BhcnRpdGlvbjogIi9kZXYv
+ZGlzay9ieS1pZC9hdGEtSGl0YWNoaV9IRFQ3MjEwNTBTTEEzNjBfU1RIM0Q3TUUwWUVNNVktcGFy
+dDIiCm5ldGNvbnNvbGVfcG9ydDogNjY0Nwp1bml4YmVuY2g6CiAgdGVzdDogc3Bhd24KdGVzdGJv
+eDogbmhtLXdoaXRlCnRib3hfZ3JvdXA6IG5obS13aGl0ZQprY29uZmlnOiB4ODZfNjQtcmhlbApl
+bnF1ZXVlX3RpbWU6IDIwMTUtMDItMDcgMTA6MzM6NTguMDYyODI0MTMxICswODowMApoZWFkX2Nv
+bW1pdDogZjg3NmYwY2ZmNmQ0NjBmMDNjZDkzNzEwNDMxNGYzNjZkZmE5MjI2MQpiYXNlX2NvbW1p
+dDogZTM2ZjAxNGVkZmY3MGZjMDJiM2QzZDc5Y2VhZDFkNThmMjg5MzMyZQpicmFuY2g6IGxpbnV4
+LWRldmVsL2RldmVsLWhvdXJseS0yMDE1MDIwNTIyCmtlcm5lbDogIi9rZXJuZWwveDg2XzY0LXJo
+ZWwvZjg3NmYwY2ZmNmQ0NjBmMDNjZDkzNzEwNDMxNGYzNjZkZmE5MjI2MS92bWxpbnV6LTMuMTku
+MC1yYzctZ2Y4NzZmMGMiCnVzZXI6IGxrcApxdWV1ZTogY3ljbGljCnJvb3RmczogZGViaWFuLXg4
+Nl82NC0yMDE1LTAyLTA3LmNnegpyZXN1bHRfcm9vdDogIi9yZXN1bHQvbmhtLXdoaXRlL3VuaXhi
+ZW5jaC9zcGF3bi9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6L3g4Nl82NC1yaGVsL2Y4NzZm
+MGNmZjZkNDYwZjAzY2Q5MzcxMDQzMTRmMzY2ZGZhOTIyNjEvMCIKam9iX2ZpbGU6ICIvbGtwL3Nj
+aGVkdWxlZC9uaG0td2hpdGUvY3ljbGljX3VuaXhiZW5jaC1zcGF3bi14ODZfNjQtcmhlbC1IRUFE
+LWY4NzZmMGNmZjZkNDYwZjAzY2Q5MzcxMDQzMTRmMzY2ZGZhOTIyNjEtMC0yMDE1MDIwNy0yMDM0
+LWl1d3k0MC55YW1sIgpkZXF1ZXVlX3RpbWU6IDIwMTUtMDItMDcgMTc6MDI6NDkuMDQ1NjQ4MzAy
+ICswODowMApucl9jcHU6ICIkKG5wcm9jKSIKam9iX3N0YXRlOiBmaW5pc2hlZApsb2FkYXZnOiA0
+LjUyIDEuOTcgMC43NCAxLzE1MSAyNDIwNApzdGFydF90aW1lOiAnMTQyMzI5OTc5MycKZW5kX3Rp
+bWU6ICcxNDIzMjk5OTkxJwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE1MDIwNy0wMzAyMTIi
+Cg==
 
---===============5824699558041254819==--
+--===============7004893290497445745==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.ksh"
+
+Li9SdW4gc3Bhd24K
+
+--===============7004893290497445745==--
 
