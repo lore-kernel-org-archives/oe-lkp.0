@@ -1,2106 +1,634 @@
-Content-Type: multipart/mixed; boundary="===============2050916496765387342=="
+Content-Type: multipart/mixed; boundary="===============8146305134386524334=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@intel.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: [mutex] 6aa15f5a2fe: -9.2% will-it-scale.per_process_ops
-Date: Fri, 13 Feb 2015 13:37:35 +0800
-Message-ID: <1423805855.5968.139.camel@intel.com>
+Subject: [akpm merge] BUG: non-zero nr_pmds on freeing mm: 2
+Date: Sat, 14 Feb 2015 09:26:59 +0800
+Message-ID: <20150214012659.GA4681@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2050916496765387342==
+--===============8146305134386524334==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
-
-git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git locking/core
-commit 6aa15f5a2febe058056180786bb39513ad5ae70d ("mutex: In mutex_spin_on_o=
-wner(), return true when owner changes")
-
-
-testbox/testcase/testparams: wsm/will-it-scale/performance-writeseek3
-
-afffc6c1805d98e0  6aa15f5a2febe058056180786b  =
-
-----------------  --------------------------  =
-
-         %stddev     %change         %stddev
-             \          |                \  =
-
-  27329774 =C2=B1  5%     -98.7%     350559 =C2=B1  4%  will-it-scale.time.=
-voluntary_context_switches
-      1401 =C2=B1  4%    +340.4%       6172 =C2=B1  9%  will-it-scale.time.=
-involuntary_context_switches
-       402 =C2=B1  7%    +157.9%       1036 =C2=B1  0%  will-it-scale.time.=
-system_time
-       141 =C2=B1  6%    +146.3%        347 =C2=B1  0%  will-it-scale.time.=
-percent_of_cpu_this_job_got
-     28.29 =C2=B1  4%     -25.7%      21.01 =C2=B1  1%  will-it-scale.time.=
-user_time
-    777773 =C2=B1  0%      -9.2%     706114 =C2=B1  7%  will-it-scale.per_p=
-rocess_ops
-   4995546 =C2=B1 11%     -99.4%      31990 =C2=B1 29%  sched_debug.cpu#11.=
-sched_count
-    332497 =C2=B1  9%     -87.9%      40257 =C2=B1  4%  softirqs.SCHED
-      0.96 =C2=B1 20%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.hrtimer_try_to_cancel.hrtimer_cancel.tick_nohz_restart.tick_nohz_idle_=
-exit.cpu_startup_entry
-      0.99 =C2=B1 14%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.hrtimer_cancel.tick_nohz_restart.tick_nohz_idle_exit.cpu_startup_entry=
-.start_secondary
-      1.40 =C2=B1  3%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.dequeue_entity.dequeue_task_fair.dequeue_task.deactivate_task.__schedu=
-le
-      1.36 =C2=B1 15%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.get_nohz_timer_target.__hrtimer_start_range_ns.hrtimer_start.tick_nohz=
-_stop_sched_tick.__tick_nohz_idle_enter
-      1.62 =C2=B1  4%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.pick_next_task_fair.__schedule.schedule_preempt_disabled.cpu_startup_e=
-ntry.start_secondary
-      1.69 =C2=B1  2%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.dequeue_task_fair.dequeue_task.deactivate_task.__schedule.schedule_pre=
-empt_disabled
-     15.54 =C2=B1 32%    +351.5%      70.18 =C2=B1  2%  perf-profile.cpu-cy=
-cles.mutex_optimistic_spin.__mutex_lock_slowpath.mutex_lock.generic_file_wr=
-ite_iter.new_sync_write
-      1.94 =C2=B1  3%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.dequeue_task.deactivate_task.__schedule.schedule_preempt_disabled.__mu=
-tex_lock_slowpath
-      1.96 =C2=B1  4%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.deactivate_task.__schedule.schedule_preempt_disabled.__mutex_lock_slow=
-path.mutex_lock
-      2.08 =C2=B1 11%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles._raw_spin_lock.try_to_wake_up.wake_up_process.__mutex_unlock_slowpath.=
-mutex_unlock
-     20.14 =C2=B1 10%     -82.3%       3.56 =C2=B1 34%  perf-profile.cpu-cy=
-cles.start_secondary
-     20.04 =C2=B1 10%     -82.2%       3.56 =C2=B1 34%  perf-profile.cpu-cy=
-cles.cpu_startup_entry.start_secondary
-      2.67 =C2=B1  8%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles._raw_spin_unlock_irqrestore.__hrtimer_start_range_ns.hrtimer_start_ran=
-ge_ns.tick_nohz_restart.tick_nohz_idle_exit
-   4495470 =C2=B1  7%     -99.4%      25868 =C2=B1 12%  sched_debug.cpu#9.n=
-r_switches
-   4496190 =C2=B1  7%     -99.4%      26052 =C2=B1 12%  sched_debug.cpu#9.s=
-ched_count
-  40599.18 =C2=B1 41%    -100.0%       0.00 =C2=B1  0%  sched_debug.cfs_rq[=
-6]:/.max_vruntime
-      3.30 =C2=B1  8%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.__hrtimer_start_range_ns.hrtimer_start_range_ns.tick_nohz_restart.tick=
-_nohz_idle_exit.cpu_startup_entry
-      3.33 =C2=B1  6%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.hrtimer_start_range_ns.tick_nohz_restart.tick_nohz_idle_exit.cpu_start=
-up_entry.start_secondary
-   2247155 =C2=B1  7%     -99.4%      12447 =C2=B1 14%  sched_debug.cpu#9.s=
-ched_goidle
-  40599.18 =C2=B1 41%    -100.0%       0.00 =C2=B1  0%  sched_debug.cfs_rq[=
-6]:/.MIN_vruntime
-      3.99 =C2=B1  6%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles.__schedule.schedule_preempt_disabled.__mutex_lock_slowpath.mutex_lock.=
-generic_file_write_iter
-   2448071 =C2=B1  2%     -99.4%      13482 =C2=B1  9%  sched_debug.cpu#6.t=
-twu_count
-   2554386 =C2=B1  2%     -99.5%      13020 =C2=B1  8%  sched_debug.cpu#6.s=
-ched_goidle
-   5111673 =C2=B1  2%     -99.5%      26787 =C2=B1  8%  sched_debug.cpu#6.s=
-ched_count
-   2527550 =C2=B1  6%     -99.5%      12538 =C2=B1 14%  sched_debug.cpu#9.t=
-twu_count
-   5109913 =C2=B1  2%     -99.5%      26531 =C2=B1  8%  sched_debug.cpu#6.n=
-r_switches
-     54085 =C2=B1 37%    +845.7%     511463 =C2=B1 40%  sched_debug.cfs_rq[=
-5]:/.min_vruntime
-      8424 =C2=B1 16%    +560.9%      55678 =C2=B1 42%  sched_debug.cfs_rq[=
-5]:/.exec_clock
-   1201871 =C2=B1 19%     -83.0%     204673 =C2=B1 49%  sched_debug.cpu#5.s=
-ched_count
-        10 =C2=B1 28%    +490.5%         62 =C2=B1 31%  sched_debug.cpu#5.c=
-pu_load[4]
-  93687275 =C2=B1 19%     -94.0%    5611171 =C2=B1 33%  cpuidle.C1-NHM.time
-    558262 =C2=B1 18%     -96.2%      21169 =C2=B1  6%  cpuidle.C1-NHM.usage
- 9.831e+08 =C2=B1 15%     -98.8%   11473350 =C2=B1 25%  cpuidle.C3-NHM.time
-   3976387 =C2=B1 13%     -99.3%      26803 =C2=B1  6%  cpuidle.C3-NHM.usage
-   1390481 =C2=B1  7%     -95.5%      63030 =C2=B1  4%  cpuidle.C6-NHM.usage
-      0.92 =C2=B1  8%    -100.0%       0.00 =C2=B1  0%  perf-profile.cpu-cy=
-cles._raw_spin_lock_irqsave.try_to_wake_up.wake_up_process.__mutex_unlock_s=
-lowpath.mutex_unlock
-   5406764 =C2=B1  9%     -99.3%      38661 =C2=B1 36%  sched_debug.cpu#8.n=
-r_switches
-  27329774 =C2=B1  5%     -98.7%     350559 =C2=B1  4%  time.voluntary_cont=
-ext_switches
-   2702648 =C2=B1  9%     -99.3%      18971 =C2=B1 37%  sched_debug.cpu#8.s=
-ched_goidle
-   5408351 =C2=B1  9%     -99.3%      38886 =C2=B1 36%  sched_debug.cpu#8.s=
-ched_count
-     23.91 =C2=B1 12%     -99.1%       0.22 =C2=B1 40%  turbostat.CPU%c3
-   1588237 =C2=B1  8%     -87.6%     197379 =C2=B1 28%  sched_debug.cpu#1.s=
-ched_goidle
-        12 =C2=B1 21%    +400.0%         61 =C2=B1 31%  sched_debug.cpu#5.c=
-pu_load[3]
-        14 =C2=B1 15%    +324.6%         60 =C2=B1 30%  sched_debug.cpu#5.c=
-pu_load[2]
-   2804909 =C2=B1  4%     -99.5%      15331 =C2=B1 33%  sched_debug.cpu#11.=
-ttwu_count
-   2496582 =C2=B1 11%     -99.4%      14895 =C2=B1 31%  sched_debug.cpu#11.=
-sched_goidle
-   2449189 =C2=B1  2%     -99.2%      19646 =C2=B1 34%  sched_debug.cpu#8.t=
-twu_count
-   2672337 =C2=B1  9%     -98.3%      44488 =C2=B1 29%  sched_debug.cpu#0.n=
-r_switches
-   4995012 =C2=B1 11%     -99.4%      31857 =C2=B1 29%  sched_debug.cpu#11.=
-nr_switches
-   1201660 =C2=B1 19%     -83.0%     204494 =C2=B1 49%  sched_debug.cpu#5.n=
-r_switches
-    955232 =C2=B1 15%     -85.7%     136563 =C2=B1 20%  sched_debug.cpu#4.t=
-twu_count
-    995565 =C2=B1 13%     -86.3%     136302 =C2=B1 19%  sched_debug.cpu#4.s=
-ched_goidle
-   1992443 =C2=B1 13%     -86.2%     274424 =C2=B1 19%  sched_debug.cpu#4.s=
-ched_count
-   2673257 =C2=B1  9%     -98.3%      44671 =C2=B1 29%  sched_debug.cpu#0.s=
-ched_count
-   1334237 =C2=B1  9%     -98.5%      20205 =C2=B1 32%  sched_debug.cpu#0.s=
-ched_goidle
-   1354162 =C2=B1  5%     -98.3%      22809 =C2=B1 28%  sched_debug.cpu#0.t=
-twu_count
-  26659.70 =C2=B1 14%    -100.0%       0.00 =C2=B1  0%  sched_debug.cfs_rq[=
-9]:/.MIN_vruntime
-   1992050 =C2=B1 13%     -86.2%     274292 =C2=B1 19%  sched_debug.cpu#4.n=
-r_switches
-     88563 =C2=B1 27%    +365.2%     411997 =C2=B1 25%  sched_debug.cfs_rq[=
-3]:/.min_vruntime
-  26659.70 =C2=B1 14%    -100.0%       0.00 =C2=B1  0%  sched_debug.cfs_rq[=
-9]:/.max_vruntime
-   1531974 =C2=B1 19%     -89.7%     157815 =C2=B1 23%  sched_debug.cpu#2.t=
-twu_count
-   1650173 =C2=B1 16%     -90.5%     157023 =C2=B1 24%  sched_debug.cpu#2.s=
-ched_goidle
-   2264230 =C2=B1  4%     -99.5%      12323 =C2=B1  7%  sched_debug.cpu#10.=
-ttwu_count
-   3177630 =C2=B1  8%     -87.5%     395822 =C2=B1 28%  sched_debug.cpu#1.n=
-r_switches
-   3302396 =C2=B1 16%     -90.4%     315490 =C2=B1 24%  sched_debug.cpu#2.s=
-ched_count
-   4365273 =C2=B1  5%     -99.4%      24251 =C2=B1  6%  sched_debug.cpu#10.=
-nr_switches
-   3301465 =C2=B1 16%     -90.4%     315323 =C2=B1 24%  sched_debug.cpu#2.n=
-r_switches
-   4366326 =C2=B1  5%     -99.4%      24433 =C2=B1  6%  sched_debug.cpu#10.=
-sched_count
-   2182166 =C2=B1  5%     -99.5%      11526 =C2=B1  7%  sched_debug.cpu#10.=
-sched_goidle
-   1462067 =C2=B1  3%     -86.5%     197145 =C2=B1 29%  sched_debug.cpu#1.t=
-twu_count
-   3178415 =C2=B1  8%     -87.5%     396013 =C2=B1 28%  sched_debug.cpu#1.s=
-ched_count
-    145590 =C2=B1 45%    +280.1%     553319 =C2=B1 14%  sched_debug.cfs_rq[=
-1]:/.min_vruntime
-      1.14 =C2=B1 19%     -78.9%       0.24 =C2=B1 34%  perf-profile.cpu-cy=
-cles.shmem_file_llseek.sys_lseek.system_call_fastpath
-     14.24 =C2=B1  4%     -82.6%       2.48 =C2=B1 43%  perf-profile.cpu-cy=
-cles.__mutex_unlock_slowpath.mutex_unlock.generic_file_write_iter.new_sync_=
-write.vfs_write
-     14.38 =C2=B1  4%     -82.2%       2.56 =C2=B1 41%  perf-profile.cpu-cy=
-cles.mutex_unlock.generic_file_write_iter.new_sync_write.vfs_write.sys_write
-     98519 =C2=B1 38%    +276.0%     370400 =C2=B1 40%  sched_debug.cfs_rq[=
-4]:/.min_vruntime
-        12 =C2=B1 23%    +324.5%         52 =C2=B1 23%  sched_debug.cpu#3.c=
-pu_load[4]
-       148 =C2=B1 13%    +291.3%        582 =C2=B1 28%  sched_debug.cfs_rq[=
-5]:/.tg_runnable_contrib
-      6860 =C2=B1 12%    +288.6%      26657 =C2=B1 28%  sched_debug.cfs_rq[=
-5]:/.avg->runnable_avg_sum
-      1401 =C2=B1  4%    +340.4%       6172 =C2=B1  9%  time.involuntary_co=
-ntext_switches
-    962541 =C2=B1 20%     -74.3%     247827 =C2=B1 22%  sched_debug.cpu#3.t=
-twu_count
-  27121946 =C2=B1 39%    +207.6%   83418729 =C2=B1 41%  cpuidle.POLL.time
-     13141 =C2=B1 10%    +248.4%      45786 =C2=B1 28%  sched_debug.cfs_rq[=
-3]:/.exec_clock
-    871810 =C2=B1 19%     -71.6%     247691 =C2=B1 22%  sched_debug.cpu#3.s=
-ched_goidle
-   1744545 =C2=B1 19%     -71.5%     497212 =C2=B1 22%  sched_debug.cpu#3.n=
-r_switches
-   1744810 =C2=B1 19%     -71.5%     497350 =C2=B1 22%  sched_debug.cpu#3.s=
-ched_count
-      8013 =C2=B1 48%    +177.9%      22273 =C2=B1 26%  sched_debug.cfs_rq[=
-4]:/.avg->runnable_avg_sum
-       175 =C2=B1 48%    +177.1%        485 =C2=B1 26%  sched_debug.cfs_rq[=
-4]:/.tg_runnable_contrib
-        19 =C2=B1 21%    +236.4%         64 =C2=B1 30%  sched_debug.cfs_rq[=
-5]:/.runnable_load_avg
-        18 =C2=B1 35%    +236.0%         63 =C2=B1 14%  sched_debug.cpu#1.c=
-pu_load[4]
-        18 =C2=B1 14%    +226.0%         59 =C2=B1 28%  sched_debug.cpu#5.c=
-pu_load[1]
-     20.76 =C2=B1 23%    +239.0%      70.38 =C2=B1  2%  perf-profile.cpu-cy=
-cles.__mutex_lock_slowpath.mutex_lock.generic_file_write_iter.new_sync_writ=
-e.vfs_write
-    152212 =C2=B1 36%    +234.5%     509104 =C2=B1  9%  sched_debug.cfs_rq[=
-2]:/.min_vruntime
-      7857 =C2=B1 13%    +193.3%      23042 =C2=B1 16%  sched_debug.cfs_rq[=
-3]:/.avg->runnable_avg_sum
-       171 =C2=B1 13%    +192.1%        501 =C2=B1 16%  sched_debug.cfs_rq[=
-3]:/.tg_runnable_contrib
-        14 =C2=B1 26%    +267.2%         53 =C2=B1 21%  sched_debug.cpu#3.c=
-pu_load[3]
-        18 =C2=B1 33%    +213.5%         58 =C2=B1  7%  sched_debug.cpu#2.c=
-pu_load[4]
-     23.57 =C2=B1 20%    +205.2%      71.91 =C2=B1  2%  perf-profile.cpu-cy=
-cles.mutex_lock.generic_file_write_iter.new_sync_write.vfs_write.sys_write
-        20 =C2=B1 30%    +214.8%         63 =C2=B1 14%  sched_debug.cpu#1.c=
-pu_load[3]
-      2.08 =C2=B1 12%     -66.5%       0.70 =C2=B1 11%  perf-profile.cpu-cy=
-cles.sys_lseek.system_call_fastpath
-      1.42 =C2=B1 15%     -73.2%       0.38 =C2=B1 22%  perf-profile.cpu-cy=
-cles.file_update_time.__generic_file_write_iter.generic_file_write_iter.new=
-_sync_write.vfs_write
-        18 =C2=B1 37%    +194.7%         55 =C2=B1 18%  sched_debug.cpu#3.c=
-pu_load[2]
-       740 =C2=B1 11%    +182.5%       2091 =C2=B1 17%  sched_debug.cpu#5.c=
-urr->pid
-     21881 =C2=B1 23%    +163.3%      57608 =C2=B1 16%  sched_debug.cfs_rq[=
-1]:/.exec_clock
-    246670 =C2=B1 26%    +164.8%     653087 =C2=B1  5%  sched_debug.cfs_rq[=
-8]:/.min_vruntime
-    114092 =C2=B1  5%     -67.0%      37644 =C2=B1  5%  softirqs.RCU
-        30 =C2=B1 30%    +125.6%         68 =C2=B1 15%  sched_debug.cpu#1.c=
-pu_load[0]
-        36 =C2=B1 44%    +132.7%         85 =C2=B1 19%  sched_debug.cfs_rq[=
-0]:/.runnable_load_avg
-        28 =C2=B1 16%    +163.7%         74 =C2=B1  5%  sched_debug.cpu#8.c=
-pu_load[4]
-       258 =C2=B1 22%    +139.6%        620 =C2=B1  9%  sched_debug.cfs_rq[=
-1]:/.tg_runnable_contrib
-     11830 =C2=B1 21%    +139.7%      28352 =C2=B1  9%  sched_debug.cfs_rq[=
-1]:/.avg->runnable_avg_sum
-        22 =C2=B1 27%    +185.6%         64 =C2=B1 13%  sched_debug.cpu#1.c=
-pu_load[2]
-    430107 =C2=B1 20%    +153.1%    1088393 =C2=B1  0%  softirqs.TIMER
-        21 =C2=B1 21%    +178.6%         58 =C2=B1  7%  sched_debug.cpu#2.c=
-pu_load[3]
-        24 =C2=B1 19%    +144.3%         59 =C2=B1 26%  sched_debug.cpu#5.c=
-pu_load[0]
-       818 =C2=B1 29%    +131.7%       1895 =C2=B1  6%  sched_debug.cpu#3.c=
-urr->pid
-     11124 =C2=B1 29%    +135.6%      26209 =C2=B1  5%  sched_debug.cfs_rq[=
-2]:/.avg->runnable_avg_sum
-        31 =C2=B1 13%    +141.9%         75 =C2=B1  5%  sched_debug.cpu#8.c=
-pu_load[3]
-       243 =C2=B1 29%    +134.7%        571 =C2=B1  5%  sched_debug.cfs_rq[=
-2]:/.tg_runnable_contrib
-        28 =C2=B1 20%    +142.6%         69 =C2=B1 13%  sched_debug.cpu#7.c=
-pu_load[4]
-       402 =C2=B1  7%    +157.9%       1036 =C2=B1  0%  time.system_time
-       834 =C2=B1 18%    +152.6%       2108 =C2=B1 14%  sched_debug.cpu#1.c=
-urr->pid
-      1.13 =C2=B1  8%     -59.6%       0.46 =C2=B1  3%  perf-profile.cpu-cy=
-cles.__sb_end_write.vfs_write.sys_write.system_call_fastpath
-        30 =C2=B1 17%    +130.1%         70 =C2=B1 14%  sched_debug.cpu#7.c=
-pu_load[3]
-    253168 =C2=B1 22%    +141.0%     610051 =C2=B1 10%  sched_debug.cfs_rq[=
-7]:/.min_vruntime
-        26 =C2=B1  9%    +147.7%         66 =C2=B1  2%  sched_debug.cfs_rq[=
-1]:/.runnable_load_avg
-       141 =C2=B1  6%    +146.3%        347 =C2=B1  0%  time.percent_of_cpu=
-_this_job_got
-        25 =C2=B1 24%    +154.4%         65 =C2=B1 14%  sched_debug.cpu#1.c=
-pu_load[1]
-     31986 =C2=B1 39%    +129.0%      73256 =C2=B1 16%  sched_debug.cfs_rq[=
-0]:/.exec_clock
-      1.19 =C2=B1 11%     -53.6%       0.55 =C2=B1  3%  perf-profile.cpu-cy=
-cles.__sb_start_write.vfs_write.sys_write.system_call_fastpath
-    215936 =C2=B1 21%    +135.4%     508378 =C2=B1 30%  sched_debug.cfs_rq[=
-10]:/.min_vruntime
-    233932 =C2=B1 23%    +100.7%     469477 =C2=B1 20%  sched_debug.cfs_rq[=
-9]:/.min_vruntime
-      0.93 =C2=B1 13%     -55.3%       0.41 =C2=B1  8%  perf-profile.cpu-cy=
-cles.__srcu_read_unlock.fsnotify.vfs_write.sys_write.system_call_fastpath
-      1.23 =C2=B1 16%     -57.2%       0.53 =C2=B1  6%  perf-profile.cpu-cy=
-cles.find_get_entry.find_lock_entry.shmem_getpage_gfp.shmem_write_begin.gen=
-eric_perform_write
-        32 =C2=B1 10%    +123.7%         73 =C2=B1 16%  sched_debug.cpu#7.c=
-pu_load[2]
-    187996 =C2=B1 37%    +213.3%     588915 =C2=B1 10%  sched_debug.cfs_rq[=
-0]:/.min_vruntime
-      1684 =C2=B1  8%     -59.5%        681 =C2=B1 19%  cpuidle.POLL.usage
-      1.50 =C2=B1 14%     -56.7%       0.65 =C2=B1  7%  perf-profile.cpu-cy=
-cles.unlock_page.shmem_write_end.generic_perform_write.__generic_file_write=
-_iter.generic_file_write_iter
-        35 =C2=B1  9%    +115.5%         76 =C2=B1  6%  sched_debug.cpu#8.c=
-pu_load[2]
-        30 =C2=B1 13%     +94.2%         58 =C2=B1 24%  sched_debug.cpu#10.=
-cpu_load[4]
-      3.56 =C2=B1  8%     -51.2%       1.74 =C2=B1 19%  perf-profile.cpu-cy=
-cles.shmem_write_end.generic_perform_write.__generic_file_write_iter.generi=
-c_file_write_iter.new_sync_write
-      7.42 =C2=B1  6%     -52.0%       3.56 =C2=B1  2%  perf-profile.cpu-cy=
-cles.copy_user_generic_string.generic_perform_write.__generic_file_write_it=
-er.generic_file_write_iter.new_sync_write
-      3508 =C2=B1 17%    +104.5%       7174 =C2=B1  0%  sched_debug.cfs_rq[=
-2]:/.tg->runnable_avg
-      3508 =C2=B1 17%    +104.5%       7175 =C2=B1  0%  sched_debug.cfs_rq[=
-3]:/.tg->runnable_avg
-      3513 =C2=B1 17%    +104.3%       7177 =C2=B1  0%  sched_debug.cfs_rq[=
-4]:/.tg->runnable_avg
-      3516 =C2=B1 17%    +104.2%       7179 =C2=B1  0%  sched_debug.cfs_rq[=
-5]:/.tg->runnable_avg
-      3517 =C2=B1 17%    +104.2%       7181 =C2=B1  0%  sched_debug.cfs_rq[=
-6]:/.tg->runnable_avg
-      3520 =C2=B1 17%    +104.1%       7183 =C2=B1  0%  sched_debug.cfs_rq[=
-7]:/.tg->runnable_avg
-      3522 =C2=B1 17%    +104.0%       7184 =C2=B1  0%  sched_debug.cfs_rq[=
-8]:/.tg->runnable_avg
-      3524 =C2=B1 17%    +103.9%       7185 =C2=B1  0%  sched_debug.cfs_rq[=
-9]:/.tg->runnable_avg
-      2.21 =C2=B1 11%     -55.5%       0.98 =C2=B1  7%  perf-profile.cpu-cy=
-cles.find_lock_entry.shmem_getpage_gfp.shmem_write_begin.generic_perform_wr=
-ite.__generic_file_write_iter
-      3528 =C2=B1 17%    +103.7%       7186 =C2=B1  0%  sched_debug.cfs_rq[=
-10]:/.tg->runnable_avg
-      3532 =C2=B1 17%    +103.5%       7188 =C2=B1  0%  sched_debug.cfs_rq[=
-11]:/.tg->runnable_avg
-      3509 =C2=B1 17%    +104.5%       7177 =C2=B1  0%  sched_debug.cfs_rq[=
-0]:/.tg->runnable_avg
-      3513 =C2=B1 17%    +104.2%       7173 =C2=B1  0%  sched_debug.cfs_rq[=
-1]:/.tg->runnable_avg
-      3.50 =C2=B1  6%     -52.9%       1.65 =C2=B1  8%  perf-profile.cpu-cy=
-cles.shmem_write_begin.generic_perform_write.__generic_file_write_iter.gene=
-ric_file_write_iter.new_sync_write
-      2.96 =C2=B1  9%     -54.3%       1.35 =C2=B1  5%  perf-profile.cpu-cy=
-cles.shmem_getpage_gfp.shmem_write_begin.generic_perform_write.__generic_fi=
-le_write_iter.generic_file_write_iter
-      1.33 =C2=B1 10%     -52.2%       0.64 =C2=B1  1%  perf-profile.cpu-cy=
-cles.system_call
-      2.91 =C2=B1  6%     -49.0%       1.48 =C2=B1 13%  perf-profile.cpu-cy=
-cles.fsnotify.vfs_write.sys_write.system_call_fastpath
-       968 =C2=B1 32%    +111.7%       2049 =C2=B1 11%  sched_debug.cpu#2.c=
-urr->pid
-     22881 =C2=B1 17%    +125.4%      51569 =C2=B1  9%  sched_debug.cfs_rq[=
-2]:/.exec_clock
-     20.55 =C2=B1  4%     -50.4%      10.20 =C2=B1  3%  perf-profile.cpu-cy=
-cles.__generic_file_write_iter.generic_file_write_iter.new_sync_write.vfs_w=
-rite.sys_write
-        25 =C2=B1 16%    +131.7%         58 =C2=B1  7%  sched_debug.cpu#2.c=
-pu_load[2]
-     12228 =C2=B1 24%    +149.6%      30527 =C2=B1  9%  sched_debug.cfs_rq[=
-0]:/.avg->runnable_avg_sum
-       267 =C2=B1 24%    +149.2%        666 =C2=B1  8%  sched_debug.cfs_rq[=
-0]:/.tg_runnable_contrib
-     36965 =C2=B1 14%     +90.9%      70555 =C2=B1  6%  sched_debug.cfs_rq[=
-8]:/.exec_clock
-       974 =C2=B1 17%    +118.5%       2129 =C2=B1  7%  sched_debug.cpu#0.c=
-urr->pid
-        33 =C2=B1 15%     +79.3%         60 =C2=B1 22%  sched_debug.cpu#10.=
-cpu_load[3]
-      1018 =C2=B1 10%     +86.4%       1898 =C2=B1 26%  sched_debug.cpu#10.=
-curr->pid
-       344 =C2=B1 20%     +92.7%        664 =C2=B1  9%  sched_debug.cfs_rq[=
-7]:/.tg_runnable_contrib
-     15780 =C2=B1 20%     +93.2%      30482 =C2=B1  9%  sched_debug.cfs_rq[=
-7]:/.avg->runnable_avg_sum
-      1.18 =C2=B1  6%     -50.1%       0.59 =C2=B1  6%  perf-profile.cpu-cy=
-cles.__srcu_read_lock.fsnotify.vfs_write.sys_write.system_call_fastpath
-      1.36 =C2=B1  8%     -50.6%       0.67 =C2=B1  3%  perf-profile.cpu-cy=
-cles.system_call_after_swapgs
-     17.36 =C2=B1  6%     -48.1%       9.00 =C2=B1  2%  perf-profile.cpu-cy=
-cles.generic_perform_write.__generic_file_write_iter.generic_file_write_ite=
-r.new_sync_write.vfs_write
-       348 =C2=B1 12%     +98.7%        691 =C2=B1  4%  sched_debug.cfs_rq[=
-8]:/.tg_runnable_contrib
-     15908 =C2=B1 12%     +99.2%      31685 =C2=B1  4%  sched_debug.cfs_rq[=
-8]:/.avg->runnable_avg_sum
-         2 =C2=B1 15%    +109.1%          5 =C2=B1  7%  vmstat.procs.r
-        57 =C2=B1 18%     +76.6%        102 =C2=B1 26%  sched_debug.cfs_rq[=
-0]:/.load
-        39 =C2=B1 19%     +61.1%         63 =C2=B1 20%  sched_debug.cpu#10.=
-cpu_load[2]
-       979 =C2=B1 12%     +93.5%       1894 =C2=B1 19%  sched_debug.cpu#4.c=
-urr->pid
-        36 =C2=B1 12%    +113.0%         77 =C2=B1 22%  sched_debug.cpu#7.c=
-pu_load[1]
-      2.58 =C2=B1  4%     -56.6%       1.12 =C2=B1 41%  perf-profile.cpu-cy=
-cles._raw_spin_lock.__mutex_unlock_slowpath.mutex_unlock.generic_file_write=
-_iter.new_sync_write
-        29 =C2=B1 20%     +89.9%         56 =C2=B1 19%  sched_debug.cpu#9.c=
-pu_load[4]
-       328 =C2=B1 16%     +66.5%        547 =C2=B1 15%  sched_debug.cfs_rq[=
-9]:/.tg_runnable_contrib
-        28 =C2=B1 21%     +67.5%         47 =C2=B1 43%  sched_debug.cpu#11.=
-cpu_load[3]
-     15011 =C2=B1 16%     +67.0%      25062 =C2=B1 15%  sched_debug.cfs_rq[=
-9]:/.avg->runnable_avg_sum
-      6.06 =C2=B1 27%     +64.2%       9.95 =C2=B1  3%  perf-profile.cpu-cy=
-cles.mutex_spin_on_owner.mutex_optimistic_spin.__mutex_lock_slowpath.mutex_=
-lock.generic_file_write_iter
-      1328 =C2=B1  8%     +72.3%       2288 =C2=B1 11%  sched_debug.cpu#6.c=
-urr->pid
-      3035 =C2=B1  6%     -43.1%       1727 =C2=B1  0%  uptime.idle
-        62 =C2=B1 19%     +64.1%        103 =C2=B1 26%  sched_debug.cpu#0.l=
-oad
-        27 =C2=B1 25%     +65.8%         46 =C2=B1 46%  sched_debug.cpu#11.=
-cpu_load[4]
-        30 =C2=B1 23%     +91.0%         58 =C2=B1  8%  sched_debug.cpu#2.c=
-pu_load[1]
-        33 =C2=B1 20%     +73.5%         57 =C2=B1 18%  sched_debug.cpu#9.c=
-pu_load[3]
-       335 =C2=B1  6%     +70.3%        570 =C2=B1 23%  sched_debug.cfs_rq[=
-10]:/.tg_runnable_contrib
-     15314 =C2=B1  6%     +70.7%      26147 =C2=B1 23%  sched_debug.cfs_rq[=
-10]:/.avg->runnable_avg_sum
-        43 =C2=B1 15%     +83.2%         79 =C2=B1  8%  sched_debug.cpu#8.c=
-pu_load[1]
-      1002 =C2=B1 29%     +96.0%       1964 =C2=B1 16%  sched_debug.cpu#9.c=
-urr->pid
-        37 =C2=B1 26%     +56.3%         59 =C2=B1 16%  sched_debug.cpu#9.c=
-pu_load[2]
-     38074 =C2=B1 11%     +70.5%      64907 =C2=B1 14%  sched_debug.cfs_rq[=
-7]:/.exec_clock
-     35574 =C2=B1 12%     +37.3%      48848 =C2=B1 26%  sched_debug.cfs_rq[=
-9]:/.exec_clock
-      1446 =C2=B1 22%     +53.7%       2223 =C2=B1 10%  sched_debug.cpu#7.c=
-urr->pid
-    303929 =C2=B1  8%     +49.3%     453870 =C2=B1 17%  sched_debug.cpu#9.a=
-vg_idle
-     39159 =C2=B1 16%     +64.5%      64413 =C2=B1 14%  sched_debug.cpu#3.n=
-r_load_updates
-    487643 =C2=B1 21%     +71.0%     834025 =C2=B1  5%  sched_debug.cfs_rq[=
-6]:/.min_vruntime
-        45 =C2=B1 30%     +90.2%         87 =C2=B1 30%  sched_debug.cpu#7.c=
-pu_load[0]
-        55 =C2=B1 18%     +65.3%         91 =C2=B1 26%  sched_debug.cpu#1.l=
-oad
-     59.50 =C2=B1  5%     +43.1%      85.14 =C2=B1  2%  perf-profile.cpu-cy=
-cles.generic_file_write_iter.new_sync_write.vfs_write.sys_write.system_call=
-_fastpath
-     24882 =C2=B1 19%     +51.9%      37790 =C2=B1  7%  sched_debug.cfs_rq[=
-6]:/.avg->runnable_avg_sum
-       543 =C2=B1 19%     +51.8%        824 =C2=B1  7%  sched_debug.cfs_rq[=
-6]:/.tg_runnable_contrib
-     63.20 =C2=B1  5%     +38.4%      87.45 =C2=B1  3%  perf-profile.cpu-cy=
-cles.new_sync_write.vfs_write.sys_write.system_call_fastpath
-      2.83 =C2=B1  3%     -31.4%       1.94 =C2=B1 14%  perf-profile.cpu-cy=
-cles.mutex_unlock.new_sync_write.vfs_write.sys_write.system_call_fastpath
-      2391 =C2=B1  3%     +43.0%       3419 =C2=B1  1%  proc-vmstat.pgactiv=
-ate
-      1330 =C2=B1 33%     +71.0%       2275 =C2=B1  4%  sched_debug.cpu#8.c=
-urr->pid
-     28.29 =C2=B1  4%     -25.7%      21.01 =C2=B1  1%  time.user_time
-     31.42 =C2=B1  7%     -24.9%      23.60 =C2=B1  3%  turbostat.CPU%c1
-     70.99 =C2=B1  4%     +28.4%      91.13 =C2=B1  2%  perf-profile.cpu-cy=
-cles.vfs_write.sys_write.system_call_fastpath
-     72.19 =C2=B1  3%     +27.1%      91.74 =C2=B1  2%  perf-profile.cpu-cy=
-cles.sys_write.system_call_fastpath
-     74.71 =C2=B1  3%     +24.0%      92.63 =C2=B1  2%  perf-profile.cpu-cy=
-cles.system_call_fastpath
-      2766 =C2=B1  1%     +26.2%       3491 =C2=B1  0%  proc-vmstat.nr_shmem
-     11068 =C2=B1  1%     +26.2%      13969 =C2=B1  0%  meminfo.Shmem
-        54 =C2=B1 17%     +40.1%         76 =C2=B1 13%  sched_debug.cfs_rq[=
-1]:/.load
-        55 =C2=B1 32%     +43.0%         79 =C2=B1 13%  sched_debug.cfs_rq[=
-8]:/.runnable_load_avg
-      2690 =C2=B1  5%     -10.1%       2417 =C2=B1  2%  slabinfo.kmalloc-25=
-6.active_objs
-        60 =C2=B1  1%     +10.4%         66 =C2=B1  2%  turbostat.CoreTmp
-      6214 =C2=B1  2%      -7.0%       5777 =C2=B1  5%  slabinfo.vm_area_st=
-ruct.num_objs
-     24089 =C2=B1  4%      +9.4%      26356 =C2=B1  0%  meminfo.Active(anon)
-      6024 =C2=B1  4%      +9.4%       6589 =C2=B1  0%  proc-vmstat.nr_acti=
-ve_anon
-     17.44 =C2=B1  1%      -9.4%      15.80 =C2=B1  2%  turbostat.CPU%c6
-   1064863 =C2=B1 12%     -13.3%     923694 =C2=B1  0%  cpuidle.C1E-NHM.usa=
-ge
-    378254 =C2=B1  4%     -97.0%      11409 =C2=B1  2%  vmstat.system.cs
-     27.23 =C2=B1 16%    +121.7%      60.38 =C2=B1  1%  turbostat.%Busy
-       959 =C2=B1 16%    +121.5%       2124 =C2=B1  1%  turbostat.Avg_MHz
-      7791 =C2=B1  4%     +33.8%      10421 =C2=B1  0%  vmstat.system.in
-
-wsm: Westmere
-Memory: 6G
-
-
-
-
-                                 time.system_time
-
-  1100 ++------------------------------------------------------------------=
--+
-       O  O O  O  O O  O  O O  O  O O  O  O O  O O  O  O O  O  O O  O  O O =
- O
-  1000 ++                                                                  =
- |
-   900 ++                                                                  =
- |
-       |                                                                   =
- |
-   800 ++                                                                  =
- |
-       |                                                                   =
- |
-   700 ++              *                                                   =
- |
-       |              + :                                                  =
- |
-   600 ++            +  :                                                  =
- |
-   500 ++           *    :                                                 =
- |
-       |      .*.. +     :         .*..                    .*              =
- |
-   400 *+.*.*.    *       *.*..*..*    *..*.*..*.*..    .*.                =
- |
-       |                                            *..*                   =
- |
-   300 ++------------------------------------------------------------------=
--+
-
-
-                         time.percent_of_cpu_this_job_got
-
-  350 O+-O-O--O--O-O--O--O--O-O--O--O-O--O--O-O--O--O-O--O--O--O-O--O--O-O-=
--O
-      |                                                                    =
- |
-      |                                                                    =
- |
-  300 ++                                                                   =
- |
-      |                                                                    =
- |
-      |                                                                    =
- |
-  250 ++              *                                                    =
- |
-      |              + :                                                   =
- |
-  200 ++            +  :                                                   =
- |
-      |            *    :                                                  =
- |
-      |           +     :                                                  =
- |
-  150 ++  .*..*..*       :   .*..  .*.  .*..               .*              =
- |
-      *..*               *..*    *.   *.    *.*..*..*.*..*.                =
- |
-      |                                                                    =
- |
-  100 ++-------------------------------------------------------------------=
--+
-
-
-                            time.voluntary_context_switches
-
-    3e+07 ++-----------------------------------------*---------------------=
--+
-          *..                              *..      +   *.*..              =
- |
-  2.5e+07 ++     .*.*..*.  .*.*..    .*. ..   *.*..*         *             =
- |
-          |  *.*.        *.      *.*.   *                                  =
- |
-          |                                                                =
- |
-    2e+07 ++                                                               =
- |
-          |                                                                =
- |
-  1.5e+07 ++                                                               =
- |
-          |                                                                =
- |
-    1e+07 ++                                                               =
- |
-          |                                                                =
- |
-          |                                                                =
- |
-    5e+06 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                                   softirqs.SCHED
-
-  450000 ++----------------------------------------------------------------=
--+
-         |            *                                                    =
- |
-  400000 ++          + +                            .*                     =
- |
-  350000 ++         +   *..                      .*.  +      *             =
- |
-         |   .*..*.*           .*..*.*..*..  *..*      *.. ..              =
- |
-  300000 *+.*              *..*             +             *                =
- |
-  250000 ++                                *                               =
- |
-         |                                                                 =
- |
-  200000 ++                                                                =
- |
-  150000 ++                                                                =
- |
-         |                                                                 =
- |
-  100000 ++                                                                =
- |
-   50000 ++                                                                =
- |
-         O  O O  O O  O O  O  O O  O O  O  O O  O O  O O  O  O O  O O  O O =
- O
-       0 ++----------------------------------------------------------------=
--+
-
-
-                                    softirqs.RCU
-
-  130000 ++----------------------------------------------------------------=
--+
-  120000 ++                          *..                     *             =
- |
-         | .*.  .*.*..         .*.. +   *..     *     .*.. ..              =
- |
-  110000 *+   *.           *..*    *       *   + +  .*    *                =
- |
-  100000 ++           *. ..                 + +   *.                       =
- |
-         |              *                    *                             =
- |
-   90000 ++                                                                =
- |
-   80000 ++                                                                =
- |
-   70000 ++                                                                =
- |
-         |                                                                 =
- |
-   60000 ++                                                                =
- |
-   50000 ++                                                                =
- |
-         |         O               O                                       =
- |
-   40000 O+ O O  O    O O  O  O O    O  O  O O    O  O O     O O  O O  O O =
- O
-   30000 ++-------------------------------------O---------O----------------=
--+
-
-
-                                cpuidle.C1-NHM.usage
-
-  900000 ++----------------------------------------------------------------=
--+
-         |                             .*       *.*                        =
- |
-  800000 ++           *.             *.  :     :   :                       =
- |
-  700000 ++          :  *..*..      :    :     :    :        *             =
- |
-         |           :              :     :   :     :       +              =
- |
-  600000 *+.*.*..   :         *.*..*      : .*       *     +               =
- |
-  500000 ++      *.*                       *          +  .*                =
- |
-         |                                             *.                  =
- |
-  400000 ++                                                                =
- |
-  300000 ++                                                                =
- |
-         |                                                                 =
- |
-  200000 ++                                                                =
- |
-  100000 ++                                                                =
- |
-         |                      O  O O  O                                  =
- |
-       0 O+-O-O--O-O--O-O--O--O------------O-O--O-O--O-O--O--O-O--O-O--O-O-=
--O
-
-
-                                 cpuidle.C6-NHM.usage
-
-  1.8e+06 ++---------------------------------------------------------------=
--+
-          |         *                 *.*..                                =
- |
-  1.6e+06 *+. .*.. + +       .*..    +     *..  *..*        .*             =
- |
-  1.4e+06 ++ *    *   +     *    *. +          +    +    .*.               =
- |
-          |            *. ..       *          *      *..*                  =
- |
-  1.2e+06 ++             *                                                 =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   800000 ++                                                               =
- |
-   600000 ++                                                               =
- |
-          |                                                                =
- |
-   400000 ++                                                               =
- |
-   200000 ++                                                               =
- |
-          |    O    O              O            O         O              O =
- |
-        0 O+-O----O----O-O--O-O--O----O-O--O--O----O-O--O----O-O--O-O--O---=
--O
-
-
-                          will-it-scale.time.system_time
-
-  1100 ++------------------------------------------------------------------=
--+
-       O  O O  O  O O  O  O O  O  O O  O  O O  O O  O  O O  O  O O  O  O O =
- O
-  1000 ++                                                                  =
- |
-   900 ++                                                                  =
- |
-       |                                                                   =
- |
-   800 ++                                                                  =
- |
-       |                                                                   =
- |
-   700 ++              *                                                   =
- |
-       |              + :                                                  =
- |
-   600 ++            +  :                                                  =
- |
-   500 ++           *    :                                                 =
- |
-       |      .*.. +     :         .*..                    .*              =
- |
-   400 *+.*.*.    *       *.*..*..*    *..*.*..*.*..    .*.                =
- |
-       |                                            *..*                   =
- |
-   300 ++------------------------------------------------------------------=
--+
-
-
-                  will-it-scale.time.percent_of_cpu_this_job_got
-
-  350 O+-O-O--O--O-O--O--O--O-O--O--O-O--O--O-O--O--O-O--O--O--O-O--O--O-O-=
--O
-      |                                                                    =
- |
-      |                                                                    =
- |
-  300 ++                                                                   =
- |
-      |                                                                    =
- |
-      |                                                                    =
- |
-  250 ++              *                                                    =
- |
-      |              + :                                                   =
- |
-  200 ++            +  :                                                   =
- |
-      |            *    :                                                  =
- |
-      |           +     :                                                  =
- |
-  150 ++  .*..*..*       :   .*..  .*.  .*..               .*              =
- |
-      *..*               *..*    *.   *.    *.*..*..*.*..*.                =
- |
-      |                                                                    =
- |
-  100 ++-------------------------------------------------------------------=
--+
-
-
-                     will-it-scale.time.voluntary_context_switches
-
-    3e+07 ++-----------------------------------------*---------------------=
--+
-          *..                              *..      +   *.*..              =
- |
-  2.5e+07 ++     .*.*..*.  .*.*..    .*. ..   *.*..*         *             =
- |
-          |  *.*.        *.      *.*.   *                                  =
- |
-          |                                                                =
- |
-    2e+07 ++                                                               =
- |
-          |                                                                =
- |
-  1.5e+07 ++                                                               =
- |
-          |                                                                =
- |
-    1e+07 ++                                                               =
- |
-          |                                                                =
- |
-          |                                                                =
- |
-    5e+06 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                                  vmstat.system.cs
-
-  450000 ++----------------------------------------------------------------=
--+
-         *..                                                               =
- |
-  400000 ++ *    *.*..        *.*.. .*..        *.    .*..*..*             =
- |
-  350000 ++  + ..           ..     *    *..   ..  *..*                     =
- |
-         |    *       *    *               *.*                             =
- |
-  300000 ++            + ..                                                =
- |
-  250000 ++             *                                                  =
- |
-         |                                                                 =
- |
-  200000 ++                                                                =
- |
-  150000 ++                                                                =
- |
-         |                                                                 =
- |
-  100000 ++                                                                =
- |
-   50000 ++                                                                =
- |
-         |                                                                 =
- |
-       0 O+-O-O--O-O--O-O--O--O-O--O-O--O--O-O--O-O--O-O--O--O-O--O-O--O-O-=
--O
-
-
-                             sched_debug.cpu#0.nr_switches
-
-  3.5e+06 ++-----------------------*---------------------------------------=
--+
-          |                      *  +                                      =
- |
-    3e+06 *+.      .*..     *. ..    +     *..           .*..              =
- |
-          |  *    *        +  *       *. ..    .*..     *                  =
- |
-  2.5e+06 ++  + ..     *. +             *     *    *. ..     *             =
- |
-          |    *         *                           *                     =
- |
-    2e+06 ++                                                               =
- |
-          |                                                                =
- |
-  1.5e+06 ++                                                               =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                             sched_debug.cpu#0.sched_count
-
-  3.5e+06 ++-----------------------*---------------------------------------=
--+
-          |                      *  +                                      =
- |
-    3e+06 *+.      .*..     *. ..    +     *..           .*..              =
- |
-          |  *    *        +  *       *. ..    .*..    .*                  =
- |
-  2.5e+06 ++  + ..     *. +             *     *    *.*.      *             =
- |
-          |    *         *                                                 =
- |
-    2e+06 ++                                                               =
- |
-          |                                                                =
- |
-  1.5e+06 ++                                                               =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                            sched_debug.cpu#0.sched_goidle
-
-  1.8e+06 ++---------------------------------------------------------------=
--+
-          |                      *.*..                                     =
- |
-  1.6e+06 *+.                   +          *..           .*..              =
- |
-  1.4e+06 ++ *    *.*..     *. +      *. ..    .*..     *                  =
- |
-          |   + ..     *   +  *         *     *       ..     *             =
- |
-  1.2e+06 ++   *        + +                        *.*                     =
- |
-    1e+06 ++             *                                                 =
- |
-          |                                                                =
- |
-   800000 ++                                                               =
- |
-   600000 ++                                                               =
- |
-          |                                                                =
- |
-   400000 ++                                                               =
- |
-   200000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                             sched_debug.cpu#0.ttwu_count
-
-  1.8e+06 ++-----------------------*---------------------------------------=
--+
-          |                       : +                                      =
- |
-  1.6e+06 ++                      :  +                                     =
- |
-  1.4e+06 *+.     *.        *.*..*    *    *..  *..    .*.*..*             =
- |
-          |  *   +  *..*   +           + ..    +    .*.                    =
- |
-  1.2e+06 ++  + +       + +             *     *    *                       =
- |
-    1e+06 ++   *         *                                                 =
- |
-          |                                                                =
- |
-   800000 ++                                                               =
- |
-   600000 ++                                                               =
- |
-          |                                                                =
- |
-   400000 ++                                                               =
- |
-   200000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                             sched_debug.cpu#1.nr_switches
-
-    4e+06 *+---------------------------------------------------------------=
--+
-          |:                                                               =
- |
-  3.5e+06 ++:                     .*..                 .*.                 =
- |
-    3e+06 ++:    .*.*..       *..*    *           .*.*.   *..              =
- |
-          |  *.*.            +         +     .*.*.           *             =
- |
-  2.5e+06 ++           *.  .*           *..*.                              =
- |
-          |              *.                                                =
- |
-    2e+06 ++                                                               =
- |
-          |                                                                =
- |
-  1.5e+06 ++                                                               =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   500000 ++ O    O    O                      O    O         O      O      =
- |
-          O    O    O    O  O O  O O  O O  O    O    O  O O    O  O    O O =
- O
-        0 ++---------------------------------------------------------------=
--+
-
-
-                             sched_debug.cpu#1.sched_count
-
-    4e+06 *+---------------------------------------------------------------=
--+
-          |:                                                               =
- |
-  3.5e+06 ++:                     .*..                 .*.                 =
- |
-    3e+06 ++:    .*.*..       *..*    *           .*.*.   *..              =
- |
-          |  *.*.            +         +     .*.*.           *             =
- |
-  2.5e+06 ++           *.  .*           *..*.                              =
- |
-          |              *.                                                =
- |
-    2e+06 ++                                                               =
- |
-          |                                                                =
- |
-  1.5e+06 ++                                                               =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   500000 ++ O    O    O                      O    O         O      O      =
- |
-          O    O    O    O  O O  O O  O O  O    O    O  O O    O  O    O O =
- O
-        0 ++---------------------------------------------------------------=
--+
-
-
-                            sched_debug.cpu#1.sched_goidle
-
-    2e+06 *+---------------------------------------------------------------=
--+
-  1.8e+06 ++                                                               =
- |
-          | :                     .*..                 .*.                 =
- |
-  1.6e+06 ++:    .*.*..       *..*    *           .*.*.   *..              =
- |
-  1.4e+06 ++ *.*.            +         +     .*.*.           *             =
- |
-          |            *.  .*           *..*.                              =
- |
-  1.2e+06 ++             *.                                                =
- |
-    1e+06 ++                                                               =
- |
-   800000 ++                                                               =
- |
-          |                                                                =
- |
-   600000 ++                                                               =
- |
-   400000 ++                                                               =
- |
-          |  O    O    O                      O    O         O      O      =
- |
-   200000 O+   O    O    O  O O  O O  O O  O    O    O  O O    O  O    O O =
- O
-        0 ++---------------------------------------------------------------=
--+
-
-
-                             sched_debug.cpu#1.ttwu_count
-
-  1.8e+06 ++---------------------------------------------------------------=
--+
-          *..                                                              =
- |
-  1.6e+06 ++      *.*..       *..*.*..*                .*.                 =
- |
-  1.4e+06 ++ *. ..           +         +  .*.. .*..*.*.   *..*             =
- |
-          |    *       *.  .*           *.    *                            =
- |
-  1.2e+06 ++             *.                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   800000 ++                                                               =
- |
-   600000 ++                                                               =
- |
-          |                                                                =
- |
-   400000 ++                                  O                            =
- |
-   200000 ++ O O  O    O    O         O            O         O      O    O =
- O
-          O         O    O    O  O O    O  O    O    O  O O    O  O    O   =
- |
-        0 ++---------------------------------------------------------------=
--+
-
-
-                             sched_debug.cpu#2.nr_switches
-
-  4.5e+06 ++---------------------------------------------------------------=
--+
-          |                                                  *             =
- |
-    4e+06 ++                                               ..              =
- |
-  3.5e+06 ++                                              *                =
- |
-          | .*     .*..*    *     .*.. .*..*.. .*..      +                 =
- |
-    3e+06 *+  :   *     :  + +  .*    *       *    *.  .*                  =
- |
-  2.5e+06 ++  : ..      : +   *.                     *.                    =
- |
-          |    *         *                                                 =
- |
-    2e+06 ++                                                               =
- |
-  1.5e+06 ++                                                               =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-   500000 ++   O    O    O    O       O              O         O           =
- |
-          O  O         O    O    O O    O  O    O  O    O O  O    O O  O O =
- O
-        0 ++------O---------------------------O----------------------------=
--+
-
-
-                             sched_debug.cpu#2.sched_count
-
-  4.5e+06 ++---------------------------------------------------------------=
--+
-          |                                                  *             =
- |
-    4e+06 ++                                               ..              =
- |
-  3.5e+06 ++                                              *                =
- |
-          | .*     .*..*    *     .*.. .*..*.. .*..      +                 =
- |
-    3e+06 *+  :   *     :  + +  .*    *       *    *.  .*                  =
- |
-  2.5e+06 ++  : ..      : +   *.                     *.                    =
- |
-          |    *         *                                                 =
- |
-    2e+06 ++                                                               =
- |
-  1.5e+06 ++                                                               =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-   500000 ++   O    O    O    O       O              O         O           =
- |
-          O  O         O    O    O O    O  O    O  O    O O  O    O O  O O =
- O
-        0 ++------O---------------------------O----------------------------=
--+
-
-
-                            sched_debug.cpu#2.sched_goidle
-
-  2.2e+06 ++---------------------------------------------------------------=
--+
-    2e+06 ++                                                 *             =
- |
-          |                                                ..              =
- |
-  1.8e+06 ++        *..                                  .*                =
- |
-  1.6e+06 ++.*     +   *    *     .*.. .*..*.. .*..     *                  =
- |
-  1.4e+06 *+  +  .*     :  + +  .*    *       *    *. ..                   =
- |
-  1.2e+06 ++   *.       : +   *.                     *                     =
- |
-          |              *                                                 =
- |
-    1e+06 ++                                                               =
- |
-   800000 ++                                                               =
- |
-   600000 ++                                                               =
- |
-   400000 ++                                                               =
- |
-          |    O    O    O    O       O              O         O           =
- |
-   200000 O+ O         O    O    O O    O  O  O O  O    O O  O    O O  O O =
- O
-        0 ++------O--------------------------------------------------------=
--+
-
-
-                             sched_debug.cpu#2.ttwu_count
-
-    2e+06 ++-------------------------------------------------*-------------=
--+
-  1.8e+06 ++                                                +              =
- |
-          |         *..                                    +               =
- |
-  1.6e+06 *+.      :   *    *.    .*..          *..      .*                =
- |
-  1.4e+06 ++ *     :    :  +  *..*    *.*..*.. +   *    *                  =
- |
-          |   +  .*     : +                   *     + ..                   =
- |
-  1.2e+06 ++   *.        *                           *                     =
- |
-    1e+06 ++                                                               =
- |
-   800000 ++                                                               =
- |
-          |                                                                =
- |
-   600000 ++                                                               =
- |
-   400000 ++                                                               =
- |
-          |    O    O    O    O       O              O         O           =
- |
-   200000 O+ O         O    O    O O    O  O  O O  O    O O  O    O O  O O =
- O
-        0 ++------O--------------------------------------------------------=
--+
-
-
-                            sched_debug.cpu#6.nr_switches
-
-  6e+06 ++--------*--------------------------------------------------------=
--+
-        | .*     : :                   *..                                 =
- |
-  5e+06 *+  :    : :           .*     +               .*..*.*              =
- |
-        |   :  .*   :        *.  :   *    *    *..*.*.                     =
- |
-        |    *.     :       +    : ..      :   :                           =
- |
-  4e+06 ++           : .*. +      *         : :                            =
- |
-        |            *.   *                 : :                            =
- |
-  3e+06 ++                                   *                             =
- |
-        |                                                                  =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O--O-O-=
--O
-
-
-                            sched_debug.cpu#6.sched_count
-
-  6e+06 ++--------*--------------------------------------------------------=
--+
-        | .*     : :                   *..                                 =
- |
-  5e+06 *+  :    : :           .*     +               .*..*.*              =
- |
-        |   :  .*   :        *.  :   *    *    *..*.*.                     =
- |
-        |    *.     :       +    : ..      :   :                           =
- |
-  4e+06 ++           : .*. +      *         : :                            =
- |
-        |            *.   *                 : :                            =
- |
-  3e+06 ++                                   *                             =
- |
-        |                                                                  =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O--O-O-=
--O
-
-
-                            sched_debug.cpu#6.sched_goidle
-
-    3e+06 ++--------*------------------------------------------------------=
--+
-          | .*     : :                  *..                                =
- |
-  2.5e+06 *+  :    : :          .*     +               .*.*..*             =
- |
-          |   :  .*   :       *.  :   *    *    *..*.*.                    =
- |
-          |    *.     :      :    : ..      :   :                          =
- |
-    2e+06 ++           :.*.. :     *         : :                           =
- |
-          |            *    *                : :                           =
- |
-  1.5e+06 ++                                  *                            =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                             sched_debug.cpu#6.ttwu_count
-
-    3e+06 ++---------------------------------------------------------------=
--+
-          |        .*         *..                                          =
- |
-  2.5e+06 *+.     *  :        :        .*..              .*..*             =
- |
-          |  *   +    :      :   *    *         *..*.*..*                  =
- |
-          |   + +     :      :    + ..     *    :                          =
- |
-    2e+06 ++   *       *.*.. :     *        +  :                           =
- |
-          |                 :                + :                           =
- |
-  1.5e+06 ++                *                 *                            =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                            sched_debug.cpu#7.nr_switches
-
-  6e+06 ++-----------------------------------------------------------------=
--+
-        |       *.*          *..    .*.                    .*              =
- |
-  5e+06 *+.*   +   :        :    .*.   *..     *.. .*..*..*                =
- |
-        |   + +     :       :   *         *    :  *                        =
- |
-        |    *      :      :               +  :                            =
- |
-  4e+06 ++           *..*. :                + :                            =
- |
-        |                 *                  *                             =
- |
-  3e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                              O   =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O----O-=
--O
-
-
-                            sched_debug.cpu#7.sched_count
-
-  6e+06 ++-----------------------------------------------------------------=
--+
-        |       *.*          *..    .*.                    .*              =
- |
-  5e+06 *+.*   +   :        :    .*.   *..     *.. .*..*..*                =
- |
-        |   + +     :       :   *         *    :  *                        =
- |
-        |    *      :      :               +  :                            =
- |
-  4e+06 ++           *..*. :                + :                            =
- |
-        |                 *                  *                             =
- |
-  3e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                              O   =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O----O-=
--O
-
-
-                            sched_debug.cpu#7.sched_goidle
-
-    3e+06 ++---------------------------------------------------------------=
--+
-          |       *.*         *..    .*.                    .*             =
- |
-  2.5e+06 *+.*   +   :        :   .*.   *..     *.. .*..*.*.               =
- |
-          |   + +     :      :   *         *    :  *                       =
- |
-          |    *      :      :              +  :                           =
- |
-    2e+06 ++           *.*..:                + :                           =
- |
-          |                 *                 *                            =
- |
-  1.5e+06 ++                                                               =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                            O   =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O----O-=
--O
-
-
-                             sched_debug.cpu#7.ttwu_count
-
-  3.5e+06 ++---------------------------------------------------------------=
--+
-          |                                                                =
- |
-    3e+06 ++.*                                                             =
- |
-          *.  :   *.*           .*.  .*.*..              .*..              =
- |
-  2.5e+06 ++  :  +   +        *.   *.      *    *..*.*..*    *             =
- |
-          |    :+     +      :              :   :                          =
- |
-    2e+06 ++   *       *.*.. :               : :                           =
- |
-          |                 *                : :                           =
- |
-  1.5e+06 ++                                  *                            =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                            sched_debug.cpu#8.nr_switches
-
-  7e+06 ++-----------------------------------------------------------------=
--+
-        |       *            *                                             =
- |
-  6e+06 ++     : :          : +                       .*..                 =
- |
-        *..    : :          :  +      .*..     *..  *.                     =
- |
-  5e+06 ++ *  :   *..      :    *.  .*         :   +      *.               =
- |
-        |   + :        .*. :      *.      *.. :   *         *              =
- |
-  4e+06 ++   *       *.   *                   :                            =
- |
-        |                                    *                             =
- |
-  3e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O--O-O-=
--O
-
-
-                            sched_debug.cpu#8.sched_count
-
-  7e+06 ++-----------------------------------------------------------------=
--+
-        |       *            *                                             =
- |
-  6e+06 ++     : :          : +                       .*..                 =
- |
-        *..    : :          :  +      .*..     *..  *.                     =
- |
-  5e+06 ++ *  :   *..      :    *.  .*         :   +      *.               =
- |
-        |   + :        .*. :      *.      *.. :   *         *              =
- |
-  4e+06 ++   *       *.   *                   :                            =
- |
-        |                                    *                             =
- |
-  3e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O--O-O-=
--O
-
-
-                            sched_debug.cpu#8.sched_goidle
-
-  3.5e+06 ++---------------------------------------------------------------=
--+
-          |       *           *                                            =
- |
-    3e+06 ++     : :          :+                       .*                  =
- |
-          *..    : :         :  +      .*..     *..  *.  +                 =
- |
-  2.5e+06 ++ *  :   *..      :   *.  .*         :   +     *..              =
- |
-          |   + :       .*..:      *.      *.. :   *         *             =
- |
-    2e+06 ++   *       *    *                  :                           =
- |
-          |                                   *                            =
- |
-  1.5e+06 ++                                                               =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                             sched_debug.cpu#8.ttwu_count
-
-    3e+06 ++---------------------------------------------------------------=
--+
-          *..                                                              =
- |
-  2.5e+06 ++      *.          *..*    *.               .*.                 =
- |
-          |  *   +  *..       :   + ..  *..*    *..*.*.   *..*             =
- |
-          |   + +       .*.. :     *        :   :                          =
- |
-    2e+06 ++   *       *     :               : :                           =
- |
-          |                 *                : :                           =
- |
-  1.5e+06 ++                                  *                            =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                             sched_debug.cpu#9.ttwu_count
-
-    3e+06 ++---------------------------------------------------------------=
--+
-          *..       *                                    .*..              =
- |
-  2.5e+06 ++ *     + :        *..      .*..     *    *..*                  =
- |
-          |   :   *  :        :      .*         :+  :        *             =
- |
-          |   : ..    :  *.. :   *.*.      *   :  + :                      =
- |
-    2e+06 ++   *      : :    :              :  :   *                       =
- |
-          |            ::   *                : :                           =
- |
-  1.5e+06 ++           *                     ::                            =
- |
-          |                                   *                            =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                           sched_debug.cpu#10.nr_switches
-
-  6e+06 ++-----------------------------------------------------------------=
--+
-        *                                                                  =
- |
-  5e+06 ++                     .*.  .*.*..     *..                         =
- |
-        | +      .*          *.   *.      *    :      .*.. .*              =
- |
-        |  *.*..*  :        :              :  :   *.*.    *                =
- |
-  4e+06 ++          :   *   :              :  :                            =
- |
-        |           : .. + :                : :                            =
- |
-  3e+06 ++           *    *                 ::                             =
- |
-        |                                    *                             =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O--O-O-=
--O
-
-
-                           sched_debug.cpu#10.sched_count
-
-  6e+06 ++-----------------------------------------------------------------=
--+
-        *                                                                  =
- |
-  5e+06 ++                     .*.  .*.*..     *..                         =
- |
-        | +      .*          *.   *.      *    :      .*.. .*              =
- |
-        |  *.*..*  :        :              :  :   *.*.    *                =
- |
-  4e+06 ++          :   *   :              :  :                            =
- |
-        |           : .. + :                : :                            =
- |
-  3e+06 ++           *    *                 ::                             =
- |
-        |                                    *                             =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O--O-O-=
--O
-
-
-                            sched_debug.cpu#10.sched_goidle
-
-    3e+06 ++---------------------------------------------------------------=
--+
-          *                                                                =
- |
-  2.5e+06 ++                    .*.  .*.*..     *..                        =
- |
-          | +      .*         *.   *.      *    :      .*.  .*             =
- |
-          |  *.*..*  :        :             :  :   *.*.   *.               =
- |
-    2e+06 ++          :  *.. :              :  :                           =
- |
-          |           : +    :               : :                           =
- |
-  1.5e+06 ++           *    *                ::                            =
- |
-          |                                   *                            =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                             sched_debug.cpu#10.ttwu_countTO: =
-
-CC: =
-
-CC: =
-
-CC: =
-
-
-
-
-    3e+06 ++-*-------------------------------------------------------------=
--+
-          *. :                                                             =
- |
-  2.5e+06 ++  :                 .*.        *                               =
- |
-          |   :               *.   *..*. .. :   *..*.  .*.*..*             =
- |
-          |    : .*.*    *    :         *   :   :    *.                    =
- |
-    2e+06 ++   *.    +  : +  :               : :                           =
- |
-          |           + :  + :               : :                           =
- |
-  1.5e+06 ++           *    *                 *                            =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                           sched_debug.cpu#11.nr_switches
-
-  7e+06 ++-----------------------------------------------------------------=
--+
-        |                                                                  =
- |
-  6e+06 *+.*                                              *                =
- |
-        |  :                 *..*.             *..       + +               =
- |
-  5e+06 ++  :    .*         :     *..*.*..*    :  *.    +   *              =
- |
-        |   :   *  +    *   :              :  :     *..*                   =
- |
-  4e+06 ++  :  +    + .. + :                : :                            =
- |
-        |    :+      *    *                 ::                             =
- |
-  3e+06 ++   *                               *                             =
- |
-        |                                                                  =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O--O-O-=
--O
-
-
-                           sched_debug.cpu#11.sched_count
-
-  7e+06 ++-----------------------------------------------------------------=
--+
-        |                                                                  =
- |
-  6e+06 *+.*                                              *                =
- |
-        |  :                 *..*.             *..       + +               =
- |
-  5e+06 ++  :    .*         :     *..*.*..*    :  *.    +   *              =
- |
-        |   :   *  +    *   :              :  :     *..*                   =
- |
-  4e+06 ++  :  +    + .. + :                : :                            =
- |
-        |    :+      *    *                 ::                             =
- |
-  3e+06 ++   *                               *                             =
- |
-        |                                                                  =
- |
-  2e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-  1e+06 ++                                                                 =
- |
-        |                                                                  =
- |
-      0 O+-O-O--O-O--O--O-O--O--O-O--O-O--O--O-O--O-O--O--O-O--O--O-O--O-O-=
--O
-
-
-                            sched_debug.cpu#11.sched_goidle
-
-  3.5e+06 ++---------------------------------------------------------------=
--+
-          |                                                                =
- |
-    3e+06 *+.*                                            *..              =
- |
-          |  :                *..*.             *..      :                 =
- |
-  2.5e+06 ++  :    .*         :    *..*.*..*    :  *.    :   *             =
- |
-          |   :   *  +   *.. :              :  :     *..*                  =
- |
-    2e+06 ++  :  +    + +    :               : :                           =
- |
-          |    :+      *    *                ::                            =
- |
-  1.5e+06 ++   *                              *                            =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-
-                             sched_debug.cpu#11.ttwu_count
-
-  3.5e+06 ++---------------------------------------------------------------=
--+
-          |        .*                                                      =
- |
-    3e+06 *+.     * :                                    .*..              =
- |
-          |      :   :        *..*.     *..     *.. .*..*    *             =
- |
-  2.5e+06 ++ *   :   :       :     *.. +   *    :  *                       =
- |
-          |   + :     :  *.. :        *     +  :                           =
- |
-    2e+06 ++   *      : :   *                + :                           =
- |
-          |            ::                     *                            =
- |
-  1.5e+06 ++           *                                                   =
- |
-          |                                                                =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   500000 ++                                                               =
- |
-          |                                                                =
- |
-        0 O+-O-O--O-O--O-O--O-O--O-O--O-O--O--O-O--O-O--O-O--O-O--O-O--O-O-=
--O
-
-        [*] bisect-good sample
-        [O] bisect-bad  sample
-
-To reproduce:
-
-        apt-get install ruby
-        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
-ts.git
-        cd lkp-tests
-        bin/setup-local job.yaml # the job file attached in this email
-        bin/run-local   job.yaml
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
-
+Hi Stephen,
+
+0day kernel testing robot got the below dmesg and the first bad commit is
+
+git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+
+commit 8fe7fba50596a8efb6e1ef15b1b4890f95eeffcd
+Merge: 2ef44b3 d07b956
+Author:     Stephen Rothwell <sfr@canb.auug.org.au>
+AuthorDate: Fri Feb 13 15:56:51 2015 +1100
+Commit:     Stephen Rothwell <sfr@canb.auug.org.au>
+CommitDate: Fri Feb 13 15:56:51 2015 +1100
+
+    Merge branch 'akpm-current/current'
+    =
+
+    Conflicts:
+    	arch/x86/include/asm/pgtable_64.h
+    	include/linux/memcontrol.h
+    	include/linux/mm.h
+    	include/linux/slab.h
+    	include/linux/swapops.h
+    	kernel/fork.c
+    	lib/Makefile
+    	mm/memcontrol.c
+    	mm/mprotect.c
+    	mm/slab.h
+    	mm/slab_common.c
+    	mm/swap.c
+    	scripts/module-common.lds
+
++------------------------------------+------------+------------+-----------=
+-+---------------+
+|                                    | 2ef44b3a9e | d07b956c65 | 8fe7fba505=
+ | next-20150213 |
++------------------------------------+------------+------------+-----------=
+-+---------------+
+| boot_successes                     | 60         | 60         | 0         =
+ | 0             |
+| boot_failures                      | 0          | 0          | 20        =
+ | 14            |
+| BUG:non-zero_nr_pmds_on_freeing_mm | 0          | 0          | 20        =
+ | 14            |
++------------------------------------+------------+------------+-----------=
+-+---------------+
+
+[    2.209695] debug: unmapping init [mem 0xffff88000ff75000-0xffff88000fff=
+ffff]
+[    2.210862] debug: unmapping init [mem 0xffff8800103d1000-0xffff8800103f=
+ffff]
+[    2.217056] random: init urandom read with 3 bits of entropy available
+[    2.219092] BUG: non-zero nr_pmds on freeing mm: 2
+[    2.221865] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.224047] BUG: non-zero nr_pmds on freeing mm: 2
+[    2.225538] hostname (100) used greatest stack depth: 14200 bytes left
+[    2.226392] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.227118] mount (97) used greatest stack depth: 14104 bytes left
+[    2.227811] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.228896] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.230337] BUG: non-zero nr_pmds on freeing mm: 2
+[    2.231197] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.233237] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.234339] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.235530] BUG: non-zero nr_pmds on freeing mm: 2
+[    2.237687] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.240279] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.241549] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.242726] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.243792] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.244839] BUG: non-zero nr_pmds on freeing mm: 2
+[    2.245741] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.246546] BUG: non-zero nr_pmds on freeing mm: 3
+/bin/sh: /proc/self/fd/9: No such file or directory
+[    2.249348] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.250126] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.251983] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.253333] BUG: non-zero nr_pmds on freeing mm: 2
+[    2.255435] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.256551] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.259066] BUG: non-zero nr_pmds on freeing mm: 3
+[    2.260070] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.260977] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.262336] BUG: non-zero nr_pmds on freeing mm: 2
+[    2.264123] sh (122) used greatest stack depth: 13992 bytes left
+[    2.264831] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.266065] BUG: non-zero nr_pmds on freeing mm: 2
+/bin/sh: /proc/self/fd/9: No such file or directory
+[    2.268783] BUG: non-zero nr_pmds on freeing mm: 4
+[    2.269971] BUG: non-zero nr_pmds on freeing mm: 2
+/bin/sh: /proc/self/fd/9: No such file or directory
+[    2.272452] BUG: non-zero nr_pmds on freeing mm: 4
+
+Elapsed time: 5
+qemu-system-x86_64 -cpu kvm64 -enable-kvm -kernel /kernel/x86_64-randconfig=
+-n0-02131024/8fe7fba50596a8efb6e1ef15b1b4890f95eeffcd/vmlinuz-3.19.0-g8fe7f=
+ba -append 'hung_task_panic=3D1 earlyprintk=3DttyS0,115200 rd.udev.log-prio=
+rity=3Derr systemd.log_target=3Djournal systemd.log_level=3Dwarning debug a=
+pic=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 panic=
+=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_ramdisk=
+=3D2 prompt_ramdisk=3D0 console=3DttyS0,115200 console=3Dtty0 vga=3Dnormal =
+ root=3D/dev/ram0 rw link=3D/kbuild-tests/run-queue/kvm/x86_64-randconfig-n=
+0-02131024/next:master:8fe7fba50596a8efb6e1ef15b1b4890f95eeffcd:bisect-linu=
+x-7/.vmlinuz-8fe7fba50596a8efb6e1ef15b1b4890f95eeffcd-20150213172638-7-clie=
+nt7 branch=3Dnext/master BOOT_IMAGE=3D/kernel/x86_64-randconfig-n0-02131024=
+/8fe7fba50596a8efb6e1ef15b1b4890f95eeffcd/vmlinuz-3.19.0-g8fe7fba drbd.mino=
+r_count=3D8'  -initrd /kernel-tests/initrd/quantal-core-x86_64.cgz -m 320 -=
+smp 2 -net nic,vlan=3D1,model=3De1000 -net user,vlan=3D1 -boot order=3Dnc -=
+no-reboot -watchdog i6300esb -rtc base=3Dlocaltime -pidfile /dev/shm/kboot/=
+pid-quantal-client7-5 -serial file:/dev/shm/kboot/serial-quantal-client7-5 =
+-daemonize -display none -monitor null =
+
+
+git bisect start b8acf73194186a5cba86812eb4ba17b897f0e13e bfa76d49576599a4b=
+9f9b7a71f23d73d6dcff735 --
+git bisect good 15763db134dd60504dbd93137e6654f06d639acf  # 15:04     20+  =
+    0  Merge branch 'for-3.20' of git://git.kernel.org/pub/scm/linux/kernel=
+/git/tj/cgroup
+git bisect good 6e822065fa5ce80b14e82948c86d91b1844a4092  # 16:13     20+  =
+    0  Merge remote-tracking branch 'char-misc/char-misc-next'
+git bisect good e4bd2bf79cef1c75552eab6a8623a7005335b361  # 16:35     20+  =
+    0  Merge remote-tracking branch 'clk/clk-next'
+git bisect good 806acae0b8ec190eacb14c5db56fa492353d8672  # 17:04     20+  =
+    0  Merge remote-tracking branch 'y2038/y2038'
+git bisect  bad 8fe7fba50596a8efb6e1ef15b1b4890f95eeffcd  # 17:29      0-  =
+   20  Merge branch 'akpm-current/current'
+git bisect good 2ef44b3a9ead3e81621386b9227f3c12da95a05d  # 18:07     20+  =
+    0  Merge remote-tracking branch 'access_once/linux-next'
+git bisect good 9ddc30fda3048a05dfb377422a560709bfd6b95a  # 18:28     20+  =
+    0  x86-add-pmd_-for-thp-fix
+git bisect good 78baabee9d8ed5eca4d6c3e11282f131aad503d5  # 18:58     20+  =
+    0  irq: use %*pb[l] to print bitmaps including cpumasks and nodemasks
+git bisect good df9fbe22ce6f7048ceb77c2ca72b27066ae75509  # 19:22     20+  =
+    0  fs-befs-linuxvfsc-remove-unnecessary-casting-fix
+git bisect good 3a1f139f4faaa9e30d7d72f5328410b430f3f74e  # 19:43     20+  =
+    0  scripts/gdb: add cache for type objects
+git bisect good 97dc3f62c8f37795cdee3001e86c346dd7f7a879  # 20:09     20+  =
+    0  scripts/gdb: add internal helper and convenience function for per-cp=
+u lookup
+git bisect good 135b2593df87b40d0eab61d7e3183106ef622bdf  # 20:26     20+  =
+    0  scripts/gdb: convert ModuleList to generator function
+git bisect good e0c48fa7b961ea3e420c60fcddd3100b3413546a  # 20:58     20+  =
+    0  ipc,sem: use current->state helpers
+git bisect good b4970b267279135de6984f101bde0ad7c49bb619  # 21:20     20+  =
+    0  samples-seccomp-improve-label-helper-fix
+git bisect good d07b956c650ad58a8ce00517515ebaf962e1f5c7  # 21:42     20+  =
+    0  scripts/gdb: Add infrastructure
+# first bad commit: [8fe7fba50596a8efb6e1ef15b1b4890f95eeffcd] Merge branch=
+ 'akpm-current/current'
+git bisect good 2ef44b3a9ead3e81621386b9227f3c12da95a05d  # 21:44     60+  =
+    0  Merge remote-tracking branch 'access_once/linux-next'
+git bisect good d07b956c650ad58a8ce00517515ebaf962e1f5c7  # 21:46     60+  =
+    0  scripts/gdb: Add infrastructure
+# extra tests on HEAD of next/master
+git bisect  bad b8acf73194186a5cba86812eb4ba17b897f0e13e  # 21:46      0-  =
+   14  Add linux-next specific files for 20150213
+# extra tests on tree/branch next/master
+git bisect  bad b8acf73194186a5cba86812eb4ba17b897f0e13e  # 21:46      0-  =
+   14  Add linux-next specific files for 20150213
+# extra tests on tree/branch linus/master
+# extra tests on tree/branch next/master
+git bisect  bad b8acf73194186a5cba86812eb4ba17b897f0e13e  # 22:02      0-  =
+   14  Add linux-next specific files for 20150213
+
+
+This script may reproduce the error.
+
+----------------------------------------------------------------------------
+#!/bin/bash
+
+kernel=3D$1
+initrd=3Dquantal-core-x86_64.cgz
+
+wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/mas=
+ter/initrd/$initrd
+
+kvm=3D(
+	qemu-system-x86_64
+	-cpu kvm64
+	-enable-kvm
+	-kernel $kernel
+	-initrd $initrd
+	-m 320
+	-smp 2
+	-net nic,vlan=3D1,model=3De1000
+	-net user,vlan=3D1
+	-boot order=3Dnc
+	-no-reboot
+	-watchdog i6300esb
+	-rtc base=3Dlocaltime
+	-serial stdio
+	-display none
+	-monitor null =
+
+)
+
+append=3D(
+	hung_task_panic=3D1
+	earlyprintk=3DttyS0,115200
+	rd.udev.log-priority=3Derr
+	systemd.log_target=3Djournal
+	systemd.log_level=3Dwarning
+	debug
+	apic=3Ddebug
+	sysrq_always_enabled
+	rcupdate.rcu_cpu_stall_timeout=3D100
+	panic=3D-1
+	softlockup_panic=3D1
+	nmi_watchdog=3Dpanic
+	oops=3Dpanic
+	load_ramdisk=3D2
+	prompt_ramdisk=3D0
+	console=3DttyS0,115200
+	console=3Dtty0
+	vga=3Dnormal
+	root=3D/dev/ram0
+	rw
+	drbd.minor_count=3D8
+)
+
+"${kvm[@]}" --append "${append[*]}"
+----------------------------------------------------------------------------
 
 Thanks,
 Fengguang
-
-
-
 
 _______________________________________________
 LKP mailing list
 LKP(a)linux.intel.com
 
-
---===============2050916496765387342==
+--===============8146305134386524334==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job.yaml"
+Content-Disposition: attachment; filename="3.19.0-g8fe7fba5"
 
-LS0tCnRlc3RjYXNlOiB3aWxsLWl0LXNjYWxlCmRlZmF1bHQtbW9uaXRvcnM6CiAgd2FpdDogcHJl
-LXRlc3QKICB1cHRpbWU6IAogIGlvc3RhdDogCiAgdm1zdGF0OiAKICBudW1hLW51bWFzdGF0OiAK
-ICBudW1hLXZtc3RhdDogCiAgbnVtYS1tZW1pbmZvOiAKICBwcm9jLXZtc3RhdDogCiAgcHJvYy1z
-dGF0OiAKICBtZW1pbmZvOiAKICBzbGFiaW5mbzogCiAgaW50ZXJydXB0czogCiAgbG9ja19zdGF0
-OiAKICBsYXRlbmN5X3N0YXRzOiAKICBzb2Z0aXJxczogCiAgYmRpX2Rldl9tYXBwaW5nOiAKICBk
-aXNrc3RhdHM6IAogIG5mc3N0YXQ6IAogIGNwdWlkbGU6IAogIGNwdWZyZXEtc3RhdHM6IAogIHR1
-cmJvc3RhdDogCiAgcG1ldGVyOiAKICBzY2hlZF9kZWJ1ZzoKICAgIGludGVydmFsOiAxMApkZWZh
-dWx0X3dhdGNoZG9nczoKICB3YXRjaC1vb206IAogIHdhdGNoZG9nOiAKY3B1ZnJlcV9nb3Zlcm5v
-cjogcGVyZm9ybWFuY2UKY29tbWl0OiA4NWQ4OGFjZGNhMzRlYmIzYzBmZTM1MjA1YWE5ZGJkNGU1
-YmE0NDQ1Cm1vZGVsOiBXZXN0bWVyZQptZW1vcnk6IDZHCm5yX2hkZF9wYXJ0aXRpb25zOiAxCmhk
-ZF9wYXJ0aXRpb25zOiAKc3dhcF9wYXJ0aXRpb25zOiAKcm9vdGZzX3BhcnRpdGlvbjogCm5ldGNv
-bnNvbGVfcG9ydDogNjY2NwpwZXJmLXByb2ZpbGU6CiAgZnJlcTogODAwCndpbGwtaXQtc2NhbGU6
-CiAgdGVzdDogd3JpdGVzZWVrMwp0ZXN0Ym94OiB3c20KdGJveF9ncm91cDogd3NtCmtjb25maWc6
-IHg4Nl82NC1yaGVsCmVucXVldWVfdGltZTogMjAxNS0wMi0xMiAwNzoyNTowOC45MzU5MjY1MDQg
-KzA4OjAwCmhlYWRfY29tbWl0OiA4NWQ4OGFjZGNhMzRlYmIzYzBmZTM1MjA1YWE5ZGJkNGU1YmE0
-NDQ1CmJhc2VfY29tbWl0OiBiZmE3NmQ0OTU3NjU5OWE0YjlmOWI3YTcxZjIzZDczZDZkY2ZmNzM1
-CmJyYW5jaDogbGludXgtZGV2ZWwvZGV2ZWwtaG91cmx5LTIwMTUwMjEyMDQKa2VybmVsOiAiL2tl
-cm5lbC94ODZfNjQtcmhlbC84NWQ4OGFjZGNhMzRlYmIzYzBmZTM1MjA1YWE5ZGJkNGU1YmE0NDQ1
-L3ZtbGludXotMy4xOS4wLXdsLWF0aC1nODVkODhhYyIKdXNlcjogbGtwCnF1ZXVlOiBjeWNsaWMK
-cm9vdGZzOiBkZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6CnJlc3VsdF9yb290OiAiL3Jlc3Vs
-dC93c20vd2lsbC1pdC1zY2FsZS9wZXJmb3JtYW5jZS13cml0ZXNlZWszL2RlYmlhbi14ODZfNjQt
-MjAxNS0wMi0wNy5jZ3oveDg2XzY0LXJoZWwvODVkODhhY2RjYTM0ZWJiM2MwZmUzNTIwNWFhOWRi
-ZDRlNWJhNDQ0NS8wIgpqb2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL3dzbS9jeWNsaWNfd2lsbC1p
-dC1zY2FsZS1wZXJmb3JtYW5jZS13cml0ZXNlZWszLXg4Nl82NC1yaGVsLUhFQUQtODVkODhhY2Rj
-YTM0ZWJiM2MwZmUzNTIwNWFhOWRiZDRlNWJhNDQ0NS0wLTIwMTUwMjEyLTMxNDQwLTE0dm9kdG8u
-eWFtbCIKZGVxdWV1ZV90aW1lOiAyMDE1LTAyLTEyIDE5OjU2OjIyLjc3Mjg4MjA5NSArMDg6MDAK
-bnJfY3B1OiAiJChucHJvYykiCmpvYl9zdGF0ZTogZmluaXNoZWQKbG9hZGF2ZzogOC40MSA0Ljkz
-IDIuMDMgMS8xNjEgNTY0OQpzdGFydF90aW1lOiAnMTQyMzc0MjIwNicKZW5kX3RpbWU6ICcxNDIz
-NzQyNTEwJwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE1MDIxMi0xODQwMjQiCg==
-
---===============2050916496765387342==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-Li9ydW50ZXN0LnB5IHdyaXRlc2VlazMgMzIgYm90aCAxIDYgOSAxMgo=
-
---===============2050916496765387342==--
+ZWFybHkgY29uc29sZSBpbiBzZXR1cCBjb2RlClsgICAgMC4wMDAwMDBdIEluaXRpYWxpemluZyBj
+Z3JvdXAgc3Vic3lzIGNwdQpbICAgIDAuMDAwMDAwXSBMaW51eCB2ZXJzaW9uIDMuMTkuMC1nOGZl
+N2ZiYSAoa2J1aWxkQGxrcC1uaG0xKSAoZ2NjIHZlcnNpb24gNC45LjEgKERlYmlhbiA0LjkuMS0x
+OSkgKSAjNSBGcmkgRmViIDEzIDE3OjIzOjA0IENTVCAyMDE1ClsgICAgMC4wMDAwMDBdIENvbW1h
+bmQgbGluZTogaHVuZ190YXNrX3BhbmljPTEgZWFybHlwcmludGs9dHR5UzAsMTE1MjAwIHJkLnVk
+ZXYubG9nLXByaW9yaXR5PWVyciBzeXN0ZW1kLmxvZ190YXJnZXQ9am91cm5hbCBzeXN0ZW1kLmxv
+Z19sZXZlbD13YXJuaW5nIGRlYnVnIGFwaWM9ZGVidWcgc3lzcnFfYWx3YXlzX2VuYWJsZWQgcmN1
+cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0PTEwMCBwYW5pYz0tMSBzb2Z0bG9ja3VwX3Bhbmlj
+PTEgbm1pX3dhdGNoZG9nPXBhbmljIG9vcHM9cGFuaWMgbG9hZF9yYW1kaXNrPTIgcHJvbXB0X3Jh
+bWRpc2s9MCBjb25zb2xlPXR0eVMwLDExNTIwMCBjb25zb2xlPXR0eTAgdmdhPW5vcm1hbCAgcm9v
+dD0vZGV2L3JhbTAgcncgbGluaz0va2J1aWxkLXRlc3RzL3J1bi1xdWV1ZS9rdm0veDg2XzY0LXJh
+bmRjb25maWctbjAtMDIxMzEwMjQvbmV4dDptYXN0ZXI6OGZlN2ZiYTUwNTk2YThlZmI2ZTFlZjE1
+YjFiNDg5MGY5NWVlZmZjZDpiaXNlY3QtbGludXgtNy8udm1saW51ei04ZmU3ZmJhNTA1OTZhOGVm
+YjZlMWVmMTViMWI0ODkwZjk1ZWVmZmNkLTIwMTUwMjEzMTcyNjM4LTctY2xpZW50NyBicmFuY2g9
+bmV4dC9tYXN0ZXIgQk9PVF9JTUFHRT0va2VybmVsL3g4Nl82NC1yYW5kY29uZmlnLW4wLTAyMTMx
+MDI0LzhmZTdmYmE1MDU5NmE4ZWZiNmUxZWYxNWIxYjQ4OTBmOTVlZWZmY2Qvdm1saW51ei0zLjE5
+LjAtZzhmZTdmYmEgZHJiZC5taW5vcl9jb3VudD04ClsgICAgMC4wMDAwMDBdIEtFUk5FTCBzdXBw
+b3J0ZWQgY3B1czoKWyAgICAwLjAwMDAwMF0gICBJbnRlbCBHZW51aW5lSW50ZWwKWyAgICAwLjAw
+MDAwMF0gICBBTUQgQXV0aGVudGljQU1EClsgICAgMC4wMDAwMDBdICAgQ2VudGF1ciBDZW50YXVy
+SGF1bHMKWyAgICAwLjAwMDAwMF0gZTgyMDogQklPUy1wcm92aWRlZCBwaHlzaWNhbCBSQU0gbWFw
+OgpbICAgIDAuMDAwMDAwXSBCSU9TLWU4MjA6IFttZW0gMHgwMDAwMDAwMDAwMDAwMDAwLTB4MDAw
+MDAwMDAwMDA5ZmJmZl0gdXNhYmxlClsgICAgMC4wMDAwMDBdIEJJT1MtZTgyMDogW21lbSAweDAw
+MDAwMDAwMDAwOWZjMDAtMHgwMDAwMDAwMDAwMDlmZmZmXSByZXNlcnZlZApbICAgIDAuMDAwMDAw
+XSBCSU9TLWU4MjA6IFttZW0gMHgwMDAwMDAwMDAwMGYwMDAwLTB4MDAwMDAwMDAwMDBmZmZmZl0g
+cmVzZXJ2ZWQKWyAgICAwLjAwMDAwMF0gQklPUy1lODIwOiBbbWVtIDB4MDAwMDAwMDAwMDEwMDAw
+MC0weDAwMDAwMDAwMTNmZGZmZmZdIHVzYWJsZQpbICAgIDAuMDAwMDAwXSBCSU9TLWU4MjA6IFtt
+ZW0gMHgwMDAwMDAwMDEzZmUwMDAwLTB4MDAwMDAwMDAxM2ZmZmZmZl0gcmVzZXJ2ZWQKWyAgICAw
+LjAwMDAwMF0gQklPUy1lODIwOiBbbWVtIDB4MDAwMDAwMDBmZWZmYzAwMC0weDAwMDAwMDAwZmVm
+ZmZmZmZdIHJlc2VydmVkClsgICAgMC4wMDAwMDBdIEJJT1MtZTgyMDogW21lbSAweDAwMDAwMDAw
+ZmZmYzAwMDAtMHgwMDAwMDAwMGZmZmZmZmZmXSByZXNlcnZlZApbICAgIDAuMDAwMDAwXSBOWCAo
+RXhlY3V0ZSBEaXNhYmxlKSBwcm90ZWN0aW9uOiBhY3RpdmUKWyAgICAwLjAwMDAwMF0gSHlwZXJ2
+aXNvciBkZXRlY3RlZDogS1ZNClsgICAgMC4wMDAwMDBdIGU4MjA6IHVwZGF0ZSBbbWVtIDB4MDAw
+MDAwMDAtMHgwMDAwMGZmZl0gdXNhYmxlID09PiByZXNlcnZlZApbICAgIDAuMDAwMDAwXSBlODIw
+OiByZW1vdmUgW21lbSAweDAwMGEwMDAwLTB4MDAwZmZmZmZdIHVzYWJsZQpbICAgIDAuMDAwMDAw
+XSBlODIwOiBsYXN0X3BmbiA9IDB4MTNmZTAgbWF4X2FyY2hfcGZuID0gMHg0MDAwMDAwMDAKWyAg
+ICAwLjAwMDAwMF0gTVRSUiBkZWZhdWx0IHR5cGU6IHdyaXRlLWJhY2sKWyAgICAwLjAwMDAwMF0g
+TVRSUiBmaXhlZCByYW5nZXMgZW5hYmxlZDoKWyAgICAwLjAwMDAwMF0gICAwMDAwMC05RkZGRiB3
+cml0ZS1iYWNrClsgICAgMC4wMDAwMDBdICAgQTAwMDAtQkZGRkYgdW5jYWNoYWJsZQpbICAgIDAu
+MDAwMDAwXSAgIEMwMDAwLUZGRkZGIHdyaXRlLXByb3RlY3QKWyAgICAwLjAwMDAwMF0gTVRSUiB2
+YXJpYWJsZSByYW5nZXMgZW5hYmxlZDoKWyAgICAwLjAwMDAwMF0gICAwIGJhc2UgMDA4MDAwMDAw
+MCBtYXNrIEZGODAwMDAwMDAgdW5jYWNoYWJsZQpbICAgIDAuMDAwMDAwXSAgIDEgZGlzYWJsZWQK
+WyAgICAwLjAwMDAwMF0gICAyIGRpc2FibGVkClsgICAgMC4wMDAwMDBdICAgMyBkaXNhYmxlZApb
+ICAgIDAuMDAwMDAwXSAgIDQgZGlzYWJsZWQKWyAgICAwLjAwMDAwMF0gICA1IGRpc2FibGVkClsg
+ICAgMC4wMDAwMDBdICAgNiBkaXNhYmxlZApbICAgIDAuMDAwMDAwXSAgIDcgZGlzYWJsZWQKWyAg
+ICAwLjAwMDAwMF0gU2NhbiBmb3IgU01QIGluIFttZW0gMHgwMDAwMDAwMC0weDAwMDAwM2ZmXQpb
+ICAgIDAuMDAwMDAwXSBTY2FuIGZvciBTTVAgaW4gW21lbSAweDAwMDlmYzAwLTB4MDAwOWZmZmZd
+ClsgICAgMC4wMDAwMDBdIFNjYW4gZm9yIFNNUCBpbiBbbWVtIDB4MDAwZjAwMDAtMHgwMDBmZmZm
+Zl0KWyAgICAwLjAwMDAwMF0gZm91bmQgU01QIE1QLXRhYmxlIGF0IFttZW0gMHgwMDBmMGViMC0w
+eDAwMGYwZWJmXSBtYXBwZWQgYXQgW2ZmZmY4ODAwMDAwZjBlYjBdClsgICAgMC4wMDAwMDBdICAg
+bXBjOiBmMGVjMC1mMGZhNApbICAgIDAuMDAwMDAwXSBCYXNlIG1lbW9yeSB0cmFtcG9saW5lIGF0
+IFtmZmZmODgwMDAwMDk5MDAwXSA5OTAwMCBzaXplIDI0NTc2ClsgICAgMC4wMDAwMDBdIGluaXRf
+bWVtb3J5X21hcHBpbmc6IFttZW0gMHgwMDAwMDAwMC0weDAwMGZmZmZmXQpbICAgIDAuMDAwMDAw
+XSAgW21lbSAweDAwMDAwMDAwLTB4MDAwZmZmZmZdIHBhZ2UgNGsKWyAgICAwLjAwMDAwMF0gQlJL
+IFsweDExNDRjMDAwLCAweDExNDRjZmZmXSBQR1RBQkxFClsgICAgMC4wMDAwMDBdIEJSSyBbMHgx
+MTQ0ZDAwMCwgMHgxMTQ0ZGZmZl0gUEdUQUJMRQpbICAgIDAuMDAwMDAwXSBCUksgWzB4MTE0NGUw
+MDAsIDB4MTE0NGVmZmZdIFBHVEFCTEUKWyAgICAwLjAwMDAwMF0gaW5pdF9tZW1vcnlfbWFwcGlu
+ZzogW21lbSAweDEyNjAwMDAwLTB4MTI3ZmZmZmZdClsgICAgMC4wMDAwMDBdICBbbWVtIDB4MTI2
+MDAwMDAtMHgxMjdmZmZmZl0gcGFnZSA0awpbICAgIDAuMDAwMDAwXSBCUksgWzB4MTE0NGYwMDAs
+IDB4MTE0NGZmZmZdIFBHVEFCTEUKWyAgICAwLjAwMDAwMF0gaW5pdF9tZW1vcnlfbWFwcGluZzog
+W21lbSAweDAwMTAwMDAwLTB4MTI1ZmZmZmZdClsgICAgMC4wMDAwMDBdICBbbWVtIDB4MDAxMDAw
+MDAtMHgxMjVmZmZmZl0gcGFnZSA0awpbICAgIDAuMDAwMDAwXSBpbml0X21lbW9yeV9tYXBwaW5n
+OiBbbWVtIDB4MTI4MDAwMDAtMHgxM2ZkZmZmZl0KWyAgICAwLjAwMDAwMF0gIFttZW0gMHgxMjgw
+MDAwMC0weDEzZmRmZmZmXSBwYWdlIDRrClsgICAgMC4wMDAwMDBdIEJSSyBbMHgxMTQ1MDAwMCwg
+MHgxMTQ1MGZmZl0gUEdUQUJMRQpbICAgIDAuMDAwMDAwXSBCUksgWzB4MTE0NTEwMDAsIDB4MTE0
+NTFmZmZdIFBHVEFCTEUKWyAgICAwLjAwMDAwMF0gUkFNRElTSzogW21lbSAweDEyOTI1MDAwLTB4
+MTNmZDdmZmZdClsgICAgMC4wMDAwMDBdIEFDUEk6IEVhcmx5IHRhYmxlIGNoZWNrc3VtIHZlcmlm
+aWNhdGlvbiBkaXNhYmxlZApbICAgIDAuMDAwMDAwXSBBQ1BJOiBSU0RQIDB4MDAwMDAwMDAwMDBG
+MEM5MCAwMDAwMTQgKHYwMCBCT0NIUyApClsgICAgMC4wMDAwMDBdIEFDUEk6IFJTRFQgMHgwMDAw
+MDAwMDEzRkUxOEJEIDAwMDAzNCAodjAxIEJPQ0hTICBCWFBDUlNEVCAwMDAwMDAwMSBCWFBDIDAw
+MDAwMDAxKQpbICAgIDAuMDAwMDAwXSBBQ1BJOiBGQUNQIDB4MDAwMDAwMDAxM0ZFMEIzNyAwMDAw
+NzQgKHYwMSBCT0NIUyAgQlhQQ0ZBQ1AgMDAwMDAwMDEgQlhQQyAwMDAwMDAwMSkKWyAgICAwLjAw
+MDAwMF0gQUNQSTogRFNEVCAweDAwMDAwMDAwMTNGRTAwNDAgMDAwQUY3ICh2MDEgQk9DSFMgIEJY
+UENEU0RUIDAwMDAwMDAxIEJYUEMgMDAwMDAwMDEpClsgICAgMC4wMDAwMDBdIEFDUEk6IEZBQ1Mg
+MHgwMDAwMDAwMDEzRkUwMDAwIDAwMDA0MApbICAgIDAuMDAwMDAwXSBBQ1BJOiBTU0RUIDB4MDAw
+MDAwMDAxM0ZFMEJBQiAwMDBDNUEgKHYwMSBCT0NIUyAgQlhQQ1NTRFQgMDAwMDAwMDEgQlhQQyAw
+MDAwMDAwMSkKWyAgICAwLjAwMDAwMF0gQUNQSTogQVBJQyAweDAwMDAwMDAwMTNGRTE4MDUgMDAw
+MDgwICh2MDEgQk9DSFMgIEJYUENBUElDIDAwMDAwMDAxIEJYUEMgMDAwMDAwMDEpClsgICAgMC4w
+MDAwMDBdIEFDUEk6IEhQRVQgMHgwMDAwMDAwMDEzRkUxODg1IDAwMDAzOCAodjAxIEJPQ0hTICBC
+WFBDSFBFVCAwMDAwMDAwMSBCWFBDIDAwMDAwMDAxKQpbICAgIDAuMDAwMDAwXSBBQ1BJOiBMb2Nh
+bCBBUElDIGFkZHJlc3MgMHhmZWUwMDAwMApbICAgIDAuMDAwMDAwXSBtYXBwZWQgQVBJQyB0byBm
+ZmZmZmZmZmZmNWZjMDAwICggICAgICAgIGZlZTAwMDAwKQpbICAgIDAuMDAwMDAwXSBrdm0tY2xv
+Y2s6IFVzaW5nIG1zcnMgNGI1NjRkMDEgYW5kIDRiNTY0ZDAwClsgICAgMC4wMDAwMDBdIGt2bS1j
+bG9jazogY3B1IDAsIG1zciAwOjEzZmRmMDAxLCBwcmltYXJ5IGNwdSBjbG9jawpbICAgIDAuMDAw
+MDAwXSBab25lIHJhbmdlczoKWyAgICAwLjAwMDAwMF0gICBETUEgICAgICBbbWVtIDB4MDAwMDAw
+MDAwMDAwMTAwMC0weDAwMDAwMDAwMDBmZmZmZmZdClsgICAgMC4wMDAwMDBdICAgRE1BMzIgICAg
+W21lbSAweDAwMDAwMDAwMDEwMDAwMDAtMHgwMDAwMDAwMDEzZmRmZmZmXQpbICAgIDAuMDAwMDAw
+XSAgIE5vcm1hbCAgIGVtcHR5ClsgICAgMC4wMDAwMDBdIE1vdmFibGUgem9uZSBzdGFydCBmb3Ig
+ZWFjaCBub2RlClsgICAgMC4wMDAwMDBdIEVhcmx5IG1lbW9yeSBub2RlIHJhbmdlcwpbICAgIDAu
+MDAwMDAwXSAgIG5vZGUgICAwOiBbbWVtIDB4MDAwMDAwMDAwMDAwMTAwMC0weDAwMDAwMDAwMDAw
+OWVmZmZdClsgICAgMC4wMDAwMDBdICAgbm9kZSAgIDA6IFttZW0gMHgwMDAwMDAwMDAwMTAwMDAw
+LTB4MDAwMDAwMDAxM2ZkZmZmZl0KWyAgICAwLjAwMDAwMF0gSW5pdG1lbSBzZXR1cCBub2RlIDAg
+W21lbSAweDAwMDAwMDAwMDAwMDEwMDAtMHgwMDAwMDAwMDEzZmRmZmZmXQpbICAgIDAuMDAwMDAw
+XSBPbiBub2RlIDAgdG90YWxwYWdlczogODE3OTAKWyAgICAwLjAwMDAwMF0gICBETUEgem9uZTog
+NjQgcGFnZXMgdXNlZCBmb3IgbWVtbWFwClsgICAgMC4wMDAwMDBdICAgRE1BIHpvbmU6IDIxIHBh
+Z2VzIHJlc2VydmVkClsgICAgMC4wMDAwMDBdICAgRE1BIHpvbmU6IDM5OTggcGFnZXMsIExJRk8g
+YmF0Y2g6MApbICAgIDAuMDAwMDAwXSAgIERNQTMyIHpvbmU6IDEyMTYgcGFnZXMgdXNlZCBmb3Ig
+bWVtbWFwClsgICAgMC4wMDAwMDBdICAgRE1BMzIgem9uZTogNzc3OTIgcGFnZXMsIExJRk8gYmF0
+Y2g6MTUKWyAgICAwLjAwMDAwMF0gQUNQSTogUE0tVGltZXIgSU8gUG9ydDogMHg2MDgKWyAgICAw
+LjAwMDAwMF0gQUNQSTogTG9jYWwgQVBJQyBhZGRyZXNzIDB4ZmVlMDAwMDAKWyAgICAwLjAwMDAw
+MF0gbWFwcGVkIEFQSUMgdG8gZmZmZmZmZmZmZjVmYzAwMCAoICAgICAgICBmZWUwMDAwMCkKWyAg
+ICAwLjAwMDAwMF0gQUNQSTogTEFQSUMgKGFjcGlfaWRbMHgwMF0gbGFwaWNfaWRbMHgwMF0gZW5h
+YmxlZCkKWyAgICAwLjAwMDAwMF0gQUNQSTogTEFQSUMgKGFjcGlfaWRbMHgwMV0gbGFwaWNfaWRb
+MHgwMV0gZW5hYmxlZCkKWyAgICAwLjAwMDAwMF0gQUNQSTogTlJfQ1BVUy9wb3NzaWJsZV9jcHVz
+IGxpbWl0IG9mIDEgcmVhY2hlZC4gIFByb2Nlc3NvciAxLzB4MSBpZ25vcmVkLgpbICAgIDAuMDAw
+MDAwXSBBQ1BJOiBMQVBJQ19OTUkgKGFjcGlfaWRbMHhmZl0gZGZsIGRmbCBsaW50WzB4MV0pClsg
+ICAgMC4wMDAwMDBdIEFDUEk6IElPQVBJQyAoaWRbMHgwMF0gYWRkcmVzc1sweGZlYzAwMDAwXSBn
+c2lfYmFzZVswXSkKWyAgICAwLjAwMDAwMF0gSU9BUElDWzBdOiBhcGljX2lkIDAsIHZlcnNpb24g
+MTcsIGFkZHJlc3MgMHhmZWMwMDAwMCwgR1NJIDAtMjMKWyAgICAwLjAwMDAwMF0gQUNQSTogSU5U
+X1NSQ19PVlIgKGJ1cyAwIGJ1c19pcnEgMCBnbG9iYWxfaXJxIDIgZGZsIGRmbCkKWyAgICAwLjAw
+MDAwMF0gSW50OiB0eXBlIDAsIHBvbCAwLCB0cmlnIDAsIGJ1cyAwMCwgSVJRIDAwLCBBUElDIElE
+IDAsIEFQSUMgSU5UIDAyClsgICAgMC4wMDAwMDBdIEFDUEk6IElOVF9TUkNfT1ZSIChidXMgMCBi
+dXNfaXJxIDUgZ2xvYmFsX2lycSA1IGhpZ2ggbGV2ZWwpClsgICAgMC4wMDAwMDBdIEludDogdHlw
+ZSAwLCBwb2wgMSwgdHJpZyAzLCBidXMgMDAsIElSUSAwNSwgQVBJQyBJRCAwLCBBUElDIElOVCAw
+NQpbICAgIDAuMDAwMDAwXSBBQ1BJOiBJTlRfU1JDX09WUiAoYnVzIDAgYnVzX2lycSA5IGdsb2Jh
+bF9pcnEgOSBoaWdoIGxldmVsKQpbICAgIDAuMDAwMDAwXSBJbnQ6IHR5cGUgMCwgcG9sIDEsIHRy
+aWcgMywgYnVzIDAwLCBJUlEgMDksIEFQSUMgSUQgMCwgQVBJQyBJTlQgMDkKWyAgICAwLjAwMDAw
+MF0gQUNQSTogSU5UX1NSQ19PVlIgKGJ1cyAwIGJ1c19pcnEgMTAgZ2xvYmFsX2lycSAxMCBoaWdo
+IGxldmVsKQpbICAgIDAuMDAwMDAwXSBJbnQ6IHR5cGUgMCwgcG9sIDEsIHRyaWcgMywgYnVzIDAw
+LCBJUlEgMGEsIEFQSUMgSUQgMCwgQVBJQyBJTlQgMGEKWyAgICAwLjAwMDAwMF0gQUNQSTogSU5U
+X1NSQ19PVlIgKGJ1cyAwIGJ1c19pcnEgMTEgZ2xvYmFsX2lycSAxMSBoaWdoIGxldmVsKQpbICAg
+IDAuMDAwMDAwXSBJbnQ6IHR5cGUgMCwgcG9sIDEsIHRyaWcgMywgYnVzIDAwLCBJUlEgMGIsIEFQ
+SUMgSUQgMCwgQVBJQyBJTlQgMGIKWyAgICAwLjAwMDAwMF0gQUNQSTogSVJRMCB1c2VkIGJ5IG92
+ZXJyaWRlLgpbICAgIDAuMDAwMDAwXSBJbnQ6IHR5cGUgMCwgcG9sIDAsIHRyaWcgMCwgYnVzIDAw
+LCBJUlEgMDEsIEFQSUMgSUQgMCwgQVBJQyBJTlQgMDEKWyAgICAwLjAwMDAwMF0gSW50OiB0eXBl
+IDAsIHBvbCAwLCB0cmlnIDAsIGJ1cyAwMCwgSVJRIDAzLCBBUElDIElEIDAsIEFQSUMgSU5UIDAz
+ClsgICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBwb2wgMCwgdHJpZyAwLCBidXMgMDAsIElSUSAw
+NCwgQVBJQyBJRCAwLCBBUElDIElOVCAwNApbICAgIDAuMDAwMDAwXSBBQ1BJOiBJUlE1IHVzZWQg
+Ynkgb3ZlcnJpZGUuClsgICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBwb2wgMCwgdHJpZyAwLCBi
+dXMgMDAsIElSUSAwNiwgQVBJQyBJRCAwLCBBUElDIElOVCAwNgpbICAgIDAuMDAwMDAwXSBJbnQ6
+IHR5cGUgMCwgcG9sIDAsIHRyaWcgMCwgYnVzIDAwLCBJUlEgMDcsIEFQSUMgSUQgMCwgQVBJQyBJ
+TlQgMDcKWyAgICAwLjAwMDAwMF0gSW50OiB0eXBlIDAsIHBvbCAwLCB0cmlnIDAsIGJ1cyAwMCwg
+SVJRIDA4LCBBUElDIElEIDAsIEFQSUMgSU5UIDA4ClsgICAgMC4wMDAwMDBdIEFDUEk6IElSUTkg
+dXNlZCBieSBvdmVycmlkZS4KWyAgICAwLjAwMDAwMF0gQUNQSTogSVJRMTAgdXNlZCBieSBvdmVy
+cmlkZS4KWyAgICAwLjAwMDAwMF0gQUNQSTogSVJRMTEgdXNlZCBieSBvdmVycmlkZS4KWyAgICAw
+LjAwMDAwMF0gSW50OiB0eXBlIDAsIHBvbCAwLCB0cmlnIDAsIGJ1cyAwMCwgSVJRIDBjLCBBUElD
+IElEIDAsIEFQSUMgSU5UIDBjClsgICAgMC4wMDAwMDBdIEludDogdHlwZSAwLCBwb2wgMCwgdHJp
+ZyAwLCBidXMgMDAsIElSUSAwZCwgQVBJQyBJRCAwLCBBUElDIElOVCAwZApbICAgIDAuMDAwMDAw
+XSBJbnQ6IHR5cGUgMCwgcG9sIDAsIHRyaWcgMCwgYnVzIDAwLCBJUlEgMGUsIEFQSUMgSUQgMCwg
+QVBJQyBJTlQgMGUKWyAgICAwLjAwMDAwMF0gSW50OiB0eXBlIDAsIHBvbCAwLCB0cmlnIDAsIGJ1
+cyAwMCwgSVJRIDBmLCBBUElDIElEIDAsIEFQSUMgSU5UIDBmClsgICAgMC4wMDAwMDBdIFVzaW5n
+IEFDUEkgKE1BRFQpIGZvciBTTVAgY29uZmlndXJhdGlvbiBpbmZvcm1hdGlvbgpbICAgIDAuMDAw
+MDAwXSBBQ1BJOiBIUEVUIGlkOiAweDgwODZhMjAxIGJhc2U6IDB4ZmVkMDAwMDAKWyAgICAwLjAw
+MDAwMF0gbWFwcGVkIElPQVBJQyB0byBmZmZmZmZmZmZmNWZiMDAwIChmZWMwMDAwMCkKWyAgICAw
+LjAwMDAwMF0gS1ZNIHNldHVwIGFzeW5jIFBGIGZvciBjcHUgMApbICAgIDAuMDAwMDAwXSBrdm0t
+c3RlYWx0aW1lOiBjcHUgMCwgbXNyIDEwNDMwMDQwClsgICAgMC4wMDAwMDBdIGU4MjA6IFttZW0g
+MHgxNDAwMDAwMC0weGZlZmZiZmZmXSBhdmFpbGFibGUgZm9yIFBDSSBkZXZpY2VzClsgICAgMC4w
+MDAwMDBdIEJvb3RpbmcgcGFyYXZpcnR1YWxpemVkIGtlcm5lbCBvbiBLVk0KWyAgICAwLjAwMDAw
+MF0gcGNwdS1hbGxvYzogczAgcjAgZDMyNzY4IHUzMjc2OCBhbGxvYz0xKjMyNzY4ClsgICAgMC4w
+MDAwMDBdIHBjcHUtYWxsb2M6IFswXSAwIApbICAgIDAuMDAwMDAwXSBCdWlsdCAxIHpvbmVsaXN0
+cyBpbiBab25lIG9yZGVyLCBtb2JpbGl0eSBncm91cGluZyBvbi4gIFRvdGFsIHBhZ2VzOiA4MDQ4
+OQpbICAgIDAuMDAwMDAwXSBLZXJuZWwgY29tbWFuZCBsaW5lOiBodW5nX3Rhc2tfcGFuaWM9MSBl
+YXJseXByaW50az10dHlTMCwxMTUyMDAgcmQudWRldi5sb2ctcHJpb3JpdHk9ZXJyIHN5c3RlbWQu
+bG9nX3RhcmdldD1qb3VybmFsIHN5c3RlbWQubG9nX2xldmVsPXdhcm5pbmcgZGVidWcgYXBpYz1k
+ZWJ1ZyBzeXNycV9hbHdheXNfZW5hYmxlZCByY3VwZGF0ZS5yY3VfY3B1X3N0YWxsX3RpbWVvdXQ9
+MTAwIHBhbmljPS0xIHNvZnRsb2NrdXBfcGFuaWM9MSBubWlfd2F0Y2hkb2c9cGFuaWMgb29wcz1w
+YW5pYyBsb2FkX3JhbWRpc2s9MiBwcm9tcHRfcmFtZGlzaz0wIGNvbnNvbGU9dHR5UzAsMTE1MjAw
+IGNvbnNvbGU9dHR5MCB2Z2E9bm9ybWFsICByb290PS9kZXYvcmFtMCBydyBsaW5rPS9rYnVpbGQt
+dGVzdHMvcnVuLXF1ZXVlL2t2bS94ODZfNjQtcmFuZGNvbmZpZy1uMC0wMjEzMTAyNC9uZXh0Om1h
+c3Rlcjo4ZmU3ZmJhNTA1OTZhOGVmYjZlMWVmMTViMWI0ODkwZjk1ZWVmZmNkOmJpc2VjdC1saW51
+eC03Ly52bWxpbnV6LThmZTdmYmE1MDU5NmE4ZWZiNmUxZWYxNWIxYjQ4OTBmOTVlZWZmY2QtMjAx
+NTAyMTMxNzI2MzgtNy1jbGllbnQ3IGJyYW5jaD1uZXh0L21hc3RlciBCT09UX0lNQUdFPS9rZXJu
+ZWwveDg2XzY0LXJhbmRjb25maWctbjAtMDIxMzEwMjQvOGZlN2ZiYTUwNTk2YThlZmI2ZTFlZjE1
+YjFiNDg5MGY5NWVlZmZjZC92bWxpbnV6LTMuMTkuMC1nOGZlN2ZiYSBkcmJkLm1pbm9yX2NvdW50
+PTgKWyAgICAwLjAwMDAwMF0gc3lzcnE6IHN5c3JxIGFsd2F5cyBlbmFibGVkLgpbICAgIDAuMDAw
+MDAwXSBQSUQgaGFzaCB0YWJsZSBlbnRyaWVzOiAyMDQ4IChvcmRlcjogMiwgMTYzODQgYnl0ZXMp
+ClsgICAgMC4wMDAwMDBdIERlbnRyeSBjYWNoZSBoYXNoIHRhYmxlIGVudHJpZXM6IDY1NTM2IChv
+cmRlcjogNywgNTI0Mjg4IGJ5dGVzKQpbICAgIDAuMDAwMDAwXSBJbm9kZS1jYWNoZSBoYXNoIHRh
+YmxlIGVudHJpZXM6IDMyNzY4IChvcmRlcjogNiwgMjYyMTQ0IGJ5dGVzKQpbICAgIDAuMDAwMDAw
+XSBNZW1vcnk6IDI2NjUyNEsvMzI3MTYwSyBhdmFpbGFibGUgKDc2MjhLIGtlcm5lbCBjb2RlLCAy
+ODc2SyByd2RhdGEsIDM5MDhLIHJvZGF0YSwgNzI0SyBpbml0LCAxMzA4MEsgYnNzLCA2MDYzNksg
+cmVzZXJ2ZWQsIDBLIGNtYS1yZXNlcnZlZCkKWyAgICAwLjAwMDAwMF0gU0xVQjogSFdhbGlnbj02
+NCwgT3JkZXI9MC0zLCBNaW5PYmplY3RzPTAsIENQVXM9MSwgTm9kZXM9MQpbICAgIDAuMDAwMDAw
+XSBOUl9JUlFTOjQzNTIgbnJfaXJxczoyNTYgMTYKWyAgICAwLjAwMDAwMF0gY29uc29sZSBbdHR5
+UzBdIGVuYWJsZWQKWyAgICAwLjAwMDAwMF0gTG9jayBkZXBlbmRlbmN5IHZhbGlkYXRvcjogQ29w
+eXJpZ2h0IChjKSAyMDA2IFJlZCBIYXQsIEluYy4sIEluZ28gTW9sbmFyClsgICAgMC4wMDAwMDBd
+IC4uLiBNQVhfTE9DS0RFUF9TVUJDTEFTU0VTOiAgOApbICAgIDAuMDAwMDAwXSAuLi4gTUFYX0xP
+Q0tfREVQVEg6ICAgICAgICAgIDQ4ClsgICAgMC4wMDAwMDBdIC4uLiBNQVhfTE9DS0RFUF9LRVlT
+OiAgICAgICAgODE5MQpbICAgIDAuMDAwMDAwXSAuLi4gQ0xBU1NIQVNIX1NJWkU6ICAgICAgICAg
+IDQwOTYKWyAgICAwLjAwMDAwMF0gLi4uIE1BWF9MT0NLREVQX0VOVFJJRVM6ICAgICAzMjc2OApb
+ICAgIDAuMDAwMDAwXSAuLi4gTUFYX0xPQ0tERVBfQ0hBSU5TOiAgICAgIDY1NTM2ClsgICAgMC4w
+MDAwMDBdIC4uLiBDSEFJTkhBU0hfU0laRTogICAgICAgICAgMzI3NjgKWyAgICAwLjAwMDAwMF0g
+IG1lbW9yeSB1c2VkIGJ5IGxvY2sgZGVwZW5kZW5jeSBpbmZvOiA4NjM5IGtCClsgICAgMC4wMDAw
+MDBdICBwZXIgdGFzay1zdHJ1Y3QgbWVtb3J5IGZvb3RwcmludDogMjY4OCBieXRlcwpbICAgIDAu
+MDAwMDAwXSBPREVCVUc6IHNlbGZ0ZXN0IHBhc3NlZApbICAgIDAuMDAwMDAwXSBocGV0IGNsb2Nr
+ZXZlbnQgcmVnaXN0ZXJlZApbICAgIDAuMDAwMDAwXSB0c2M6IERldGVjdGVkIDI5MjUuOTk4IE1I
+eiBwcm9jZXNzb3IKWyAgICAwLjAwODAwMF0gQ2FsaWJyYXRpbmcgZGVsYXkgbG9vcCAoc2tpcHBl
+ZCkgcHJlc2V0IHZhbHVlLi4gNTg1MS45OSBCb2dvTUlQUyAobHBqPTExNzAzOTkyKQpbICAgIDAu
+MDA4MDAwXSBwaWRfbWF4OiBkZWZhdWx0OiAzMjc2OCBtaW5pbXVtOiAzMDEKWyAgICAwLjAwODAw
+MF0gQUNQSTogQ29yZSByZXZpc2lvbiAyMDE1MDIwNApbICAgIDAuMDA5MTYwXSBBQ1BJOiBBbGwg
+QUNQSSBUYWJsZXMgc3VjY2Vzc2Z1bGx5IGFjcXVpcmVkClsgICAgMC4wMDk3MjNdIE1vdW50LWNh
+Y2hlIGhhc2ggdGFibGUgZW50cmllczogMTAyNCAob3JkZXI6IDEsIDgxOTIgYnl0ZXMpClsgICAg
+MC4wMTAzMDFdIE1vdW50cG9pbnQtY2FjaGUgaGFzaCB0YWJsZSBlbnRyaWVzOiAxMDI0IChvcmRl
+cjogMSwgODE5MiBieXRlcykKWyAgICAwLjAxMTA5MV0gSW5pdGlhbGl6aW5nIGNncm91cCBzdWJz
+eXMgZGV2aWNlcwpbICAgIDAuMDExNDk0XSBJbml0aWFsaXppbmcgY2dyb3VwIHN1YnN5cyBuZXRf
+Y2xzClsgICAgMC4wMTE4OTJdIEluaXRpYWxpemluZyBjZ3JvdXAgc3Vic3lzIG5ldF9wcmlvClsg
+ICAgMC4wMTIwMDhdIEluaXRpYWxpemluZyBjZ3JvdXAgc3Vic3lzIGRlYnVnClsgICAgMC4wMTI0
+NDZdIExhc3QgbGV2ZWwgaVRMQiBlbnRyaWVzOiA0S0IgMCwgMk1CIDAsIDRNQiAwClsgICAgMC4w
+MTI5MjJdIExhc3QgbGV2ZWwgZFRMQiBlbnRyaWVzOiA0S0IgMCwgMk1CIDAsIDRNQiAwLCAxR0Ig
+MApbICAgIDAuMDEzNDM5XSBDUFU6IEludGVsIENvbW1vbiBLVk0gcHJvY2Vzc29yIChmYW06IDBm
+LCBtb2RlbDogMDYsIHN0ZXBwaW5nOiAwMSkKWyAgICAwLjAxNjc4NV0gUGVyZm9ybWFuY2UgRXZl
+bnRzOiB1bnN1cHBvcnRlZCBOZXRidXJzdCBDUFUgbW9kZWwgNiBubyBQTVUgZHJpdmVyLCBzb2Z0
+d2FyZSBldmVudHMgb25seS4KWyAgICAwLjAxNzg3Ml0gR2V0dGluZyBWRVJTSU9OOiAxMDUwMDE0
+ClsgICAgMC4wMTgxOTddIEdldHRpbmcgVkVSU0lPTjogMTA1MDAxNApbICAgIDAuMDE4NTEzXSBH
+ZXR0aW5nIElEOiAwClsgICAgMC4wMTg3NTZdIEdldHRpbmcgSUQ6IGZmMDAwMDAwClsgICAgMC4w
+MTkwNDldIEdldHRpbmcgTFZUMDogODcwMApbICAgIDAuMDE5MzE5XSBHZXR0aW5nIExWVDE6IDg0
+MDAKWyAgICAwLjAxOTYzMF0gZW5hYmxlZCBFeHRJTlQgb24gQ1BVIzAKWyAgICAwLjAyMDU5Ml0g
+RU5BQkxJTkcgSU8tQVBJQyBJUlFzClsgICAgMC4wMjA5MDBdIGluaXQgSU9fQVBJQyBJUlFzClsg
+ICAgMC4wMjExNjZdICBhcGljIDAgcGluIDAgbm90IGNvbm5lY3RlZApbICAgIDAuMDIxNTA3XSBJ
+T0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTEgLT4gMHgzMSAtPiBJUlEgMSBNb2RlOjAg
+QWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuMDIyMjA2XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVu
+dHJ5ICgwLTIgLT4gMHgzMCAtPiBJUlEgMCBNb2RlOjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAu
+MDIyOTA2XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTIgLT4gMHgzMCAtPiBJUlEg
+MCBNb2RlOjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuMDIzNjAwXSBJT0FQSUNbMF06IFNldCBy
+b3V0aW5nIGVudHJ5ICgwLTMgLT4gMHgzMyAtPiBJUlEgMyBNb2RlOjAgQWN0aXZlOjAgRGVzdDox
+KQpbICAgIDAuMDI0MDM1XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTQgLT4gMHgz
+NCAtPiBJUlEgNCBNb2RlOjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuMDI0NzM3XSBJT0FQSUNb
+MF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTUgLT4gMHgzNSAtPiBJUlEgNSBNb2RlOjEgQWN0aXZl
+OjAgRGVzdDoxKQpbICAgIDAuMDI1NDM1XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgw
+LTYgLT4gMHgzNiAtPiBJUlEgNiBNb2RlOjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuMDI2MTI1
+XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTcgLT4gMHgzNyAtPiBJUlEgNyBNb2Rl
+OjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuMDI2ODIwXSBJT0FQSUNbMF06IFNldCByb3V0aW5n
+IGVudHJ5ICgwLTggLT4gMHgzOCAtPiBJUlEgOCBNb2RlOjAgQWN0aXZlOjAgRGVzdDoxKQpbICAg
+IDAuMDI4MDE4XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTkgLT4gMHgzOSAtPiBJ
+UlEgOSBNb2RlOjEgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuMDI4NzEwXSBJT0FQSUNbMF06IFNl
+dCByb3V0aW5nIGVudHJ5ICgwLTEwIC0+IDB4M2EgLT4gSVJRIDEwIE1vZGU6MSBBY3RpdmU6MCBE
+ZXN0OjEpClsgICAgMC4wMjk0MjRdIElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtMTEg
+LT4gMHgzYiAtPiBJUlEgMTEgTW9kZToxIEFjdGl2ZTowIERlc3Q6MSkKWyAgICAwLjAzMDEzMl0g
+SU9BUElDWzBdOiBTZXQgcm91dGluZyBlbnRyeSAoMC0xMiAtPiAweDNjIC0+IElSUSAxMiBNb2Rl
+OjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuMDMwODM3XSBJT0FQSUNbMF06IFNldCByb3V0aW5n
+IGVudHJ5ICgwLTEzIC0+IDB4M2QgLT4gSVJRIDEzIE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsg
+ICAgMC4wMzE1NDNdIElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50cnkgKDAtMTQgLT4gMHgzZSAt
+PiBJUlEgMTQgTW9kZTowIEFjdGl2ZTowIERlc3Q6MSkKWyAgICAwLjAzMjAxOV0gSU9BUElDWzBd
+OiBTZXQgcm91dGluZyBlbnRyeSAoMC0xNSAtPiAweDNmIC0+IElSUSAxNSBNb2RlOjAgQWN0aXZl
+OjAgRGVzdDoxKQpbICAgIDAuMDMyNzI2XSAgYXBpYyAwIHBpbiAxNiBub3QgY29ubmVjdGVkClsg
+ICAgMC4wMzMwNjVdICBhcGljIDAgcGluIDE3IG5vdCBjb25uZWN0ZWQKWyAgICAwLjAzMzQwM10g
+IGFwaWMgMCBwaW4gMTggbm90IGNvbm5lY3RlZApbICAgIDAuMDMzNzQ2XSAgYXBpYyAwIHBpbiAx
+OSBub3QgY29ubmVjdGVkClsgICAgMC4wMzQwODRdICBhcGljIDAgcGluIDIwIG5vdCBjb25uZWN0
+ZWQKWyAgICAwLjAzNDQyM10gIGFwaWMgMCBwaW4gMjEgbm90IGNvbm5lY3RlZApbICAgIDAuMDM0
+NzY2XSAgYXBpYyAwIHBpbiAyMiBub3QgY29ubmVjdGVkClsgICAgMC4wMzUxMDVdICBhcGljIDAg
+cGluIDIzIG5vdCBjb25uZWN0ZWQKWyAgICAwLjAzNTU4MF0gLi5USU1FUjogdmVjdG9yPTB4MzAg
+YXBpYzE9MCBwaW4xPTIgYXBpYzI9LTEgcGluMj0tMQpbICAgIDAuMDM2MDAzXSBVc2luZyBsb2Nh
+bCBBUElDIHRpbWVyIGludGVycnVwdHMuClsgICAgMC4wMzYwMDNdIGNhbGlicmF0aW5nIEFQSUMg
+dGltZXIgLi4uClsgICAgMC4wNDAwMDBdIC4uLiBsYXBpYyBkZWx0YSA9IDYyNTM4MDYKWyAgICAw
+LjA0MDAwMF0gLi4uIFBNLVRpbWVyIGRlbHRhID0gMzU4MTg3ClsgICAgMC4wNDAwMDBdIC4uLiBQ
+TS1UaW1lciByZXN1bHQgb2sKWyAgICAwLjA0MDAwMF0gLi4uLi4gZGVsdGEgNjI1MzgwNgpbICAg
+IDAuMDQwMDAwXSAuLi4uLiBtdWx0OiAyNjg1OTg5MjIKWyAgICAwLjA0MDAwMF0gLi4uLi4gY2Fs
+aWJyYXRpb24gcmVzdWx0OiA0MDAyNDM1ClsgICAgMC4wNDAwMDBdIC4uLi4uIENQVSBjbG9jayBz
+cGVlZCBpcyAyOTI4LjAxMzMgTUh6LgpbICAgIDAuMDQwMDAwXSAuLi4uLiBob3N0IGJ1cyBjbG9j
+ayBzcGVlZCBpcyAxMDAwLjI0MzUgTUh6LgpbICAgIDAuMDQwMDAwXSBOTUkgd2F0Y2hkb2c6IGRp
+c2FibGVkIChjcHUwKTogaGFyZHdhcmUgZXZlbnRzIG5vdCBlbmFibGVkClsgICAgMC4wNDAwMDBd
+IGRldnRtcGZzOiBpbml0aWFsaXplZApbICAgIDAuMDQwNzQ2XSBwcmFuZG9tOiBzZWVkIGJvdW5k
+YXJ5IHNlbGYgdGVzdCBwYXNzZWQKWyAgICAwLjA0MTgyOV0gcHJhbmRvbTogMTAwIHNlbGYgdGVz
+dHMgcGFzc2VkClsgICAgMC4wNDI0OTRdIHJlZ3VsYXRvci1kdW1teTogbm8gcGFyYW1ldGVycwpb
+ICAgIDAuMDQzMTkxXSBORVQ6IFJlZ2lzdGVyZWQgcHJvdG9jb2wgZmFtaWx5IDE2ClsgICAgMC4w
+NDQzNTNdIGNwdWlkbGU6IHVzaW5nIGdvdmVybm9yIGxhZGRlcgpbICAgIDAuMDQ0ODIxXSBjcHVp
+ZGxlOiB1c2luZyBnb3Zlcm5vciBtZW51ClsgICAgMC4wNDU3NDddIEFDUEk6IGJ1cyB0eXBlIFBD
+SSByZWdpc3RlcmVkClsgICAgMC4wNDYyNDFdIGRjYSBzZXJ2aWNlIHN0YXJ0ZWQsIHZlcnNpb24g
+MS4xMi4xClsgICAgMC4wNDY3OTJdIFBDSTogVXNpbmcgY29uZmlndXJhdGlvbiB0eXBlIDEgZm9y
+IGJhc2UgYWNjZXNzClsgICAgMC4wNTc5NzRdIEFDUEk6IEFkZGVkIF9PU0koTW9kdWxlIERldmlj
+ZSkKWyAgICAwLjA1ODQ0Nl0gQUNQSTogQWRkZWQgX09TSShQcm9jZXNzb3IgRGV2aWNlKQpbICAg
+IDAuMDU4OTU2XSBBQ1BJOiBBZGRlZCBfT1NJKDMuMCBfU0NQIEV4dGVuc2lvbnMpClsgICAgMC4w
+NTk0OThdIEFDUEk6IEFkZGVkIF9PU0koUHJvY2Vzc29yIEFnZ3JlZ2F0b3IgRGV2aWNlKQpbICAg
+IDAuMDYxNTY2XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTkgLT4gMHgzOSAtPiBJ
+UlEgOSBNb2RlOjEgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAuMDY1NDA3XSBBQ1BJOiBJbnRlcnBy
+ZXRlciBlbmFibGVkClsgICAgMC4wNjU4NDBdIEFDUEk6IChzdXBwb3J0cyBTMCBTNSkKWyAgICAw
+LjA2NjIyOF0gQUNQSTogVXNpbmcgSU9BUElDIGZvciBpbnRlcnJ1cHQgcm91dGluZwpbICAgIDAu
+MDY2ODA5XSBQQ0k6IFVzaW5nIGhvc3QgYnJpZGdlIHdpbmRvd3MgZnJvbSBBQ1BJOyBpZiBuZWNl
+c3NhcnksIHVzZSAicGNpPW5vY3JzIiBhbmQgcmVwb3J0IGEgYnVnClsgICAgMC4wNzU1NDJdIEFD
+UEk6IFBDSSBSb290IEJyaWRnZSBbUENJMF0gKGRvbWFpbiAwMDAwIFtidXMgMDAtZmZdKQpbICAg
+IDAuMDc2MDA4XSBhY3BpIFBOUDBBMDM6MDA6IF9PU0M6IE9TIHN1cHBvcnRzIFtTZWdtZW50cyBN
+U0ldClsgICAgMC4wNzY2NjhdIGFjcGkgUE5QMEEwMzowMDogX09TQyBmYWlsZWQgKEFFX05PVF9G
+T1VORCk7IGRpc2FibGluZyBBU1BNClsgICAgMC4wNzc2MjFdIFBDSSBob3N0IGJyaWRnZSB0byBi
+dXMgMDAwMDowMApbICAgIDAuMDc4MDk0XSBwY2lfYnVzIDAwMDA6MDA6IHJvb3QgYnVzIHJlc291
+cmNlIFtidXMgMDAtZmZdClsgICAgMC4wNzg3MDRdIHBjaV9idXMgMDAwMDowMDogcm9vdCBidXMg
+cmVzb3VyY2UgW2lvICAweDBjZjgtMHgwY2ZmXQpbICAgIDAuMDc5Mzg5XSBwY2lfYnVzIDAwMDA6
+MDA6IHJvb3QgYnVzIHJlc291cmNlIFtpbyAgMHgwMDAwLTB4MGNmNyB3aW5kb3ddClsgICAgMC4w
+ODAwMDNdIHBjaV9idXMgMDAwMDowMDogcm9vdCBidXMgcmVzb3VyY2UgW2lvICAweDBkMDAtMHhh
+ZGZmIHdpbmRvd10KWyAgICAwLjA4MDc1Ml0gcGNpX2J1cyAwMDAwOjAwOiByb290IGJ1cyByZXNv
+dXJjZSBbaW8gIDB4YWUwZi0weGFlZmYgd2luZG93XQpbICAgIDAuMDgxNTA5XSBwY2lfYnVzIDAw
+MDA6MDA6IHJvb3QgYnVzIHJlc291cmNlIFtpbyAgMHhhZjIwLTB4YWZkZiB3aW5kb3ddClsgICAg
+MC4wODIyNjNdIHBjaV9idXMgMDAwMDowMDogcm9vdCBidXMgcmVzb3VyY2UgW2lvICAweGFmZTQt
+MHhmZmZmIHdpbmRvd10KWyAgICAwLjA4MzAxMl0gcGNpX2J1cyAwMDAwOjAwOiByb290IGJ1cyBy
+ZXNvdXJjZSBbbWVtIDB4MDAwYTAwMDAtMHgwMDBiZmZmZiB3aW5kb3ddClsgICAgMC4wODQwMDNd
+IHBjaV9idXMgMDAwMDowMDogcm9vdCBidXMgcmVzb3VyY2UgW21lbSAweDE0MDAwMDAwLTB4ZmVi
+ZmZmZmYgd2luZG93XQpbICAgIDAuMDg0ODgxXSBwY2kgMDAwMDowMDowMC4wOiBbODA4NjoxMjM3
+XSB0eXBlIDAwIGNsYXNzIDB4MDYwMDAwClsgICAgMC4wODYwMjldIHBjaSAwMDAwOjAwOjAxLjA6
+IFs4MDg2OjcwMDBdIHR5cGUgMDAgY2xhc3MgMHgwNjAxMDAKWyAgICAwLjA4NzIzM10gcGNpIDAw
+MDA6MDA6MDEuMTogWzgwODY6NzAxMF0gdHlwZSAwMCBjbGFzcyAweDAxMDE4MApbICAgIDAuMDkw
+NDQxXSBwY2kgMDAwMDowMDowMS4xOiByZWcgMHgyMDogW2lvICAweGMwNDAtMHhjMDRmXQpbICAg
+IDAuMDkyMDI1XSBwY2kgMDAwMDowMDowMS4xOiBsZWdhY3kgSURFIHF1aXJrOiByZWcgMHgxMDog
+W2lvICAweDAxZjAtMHgwMWY3XQpbICAgIDAuMDkyODAwXSBwY2kgMDAwMDowMDowMS4xOiBsZWdh
+Y3kgSURFIHF1aXJrOiByZWcgMHgxNDogW2lvICAweDAzZjZdClsgICAgMC4wOTM1MDNdIHBjaSAw
+MDAwOjAwOjAxLjE6IGxlZ2FjeSBJREUgcXVpcms6IHJlZyAweDE4OiBbaW8gIDB4MDE3MC0weDAx
+NzddClsgICAgMC4wOTQyNjNdIHBjaSAwMDAwOjAwOjAxLjE6IGxlZ2FjeSBJREUgcXVpcms6IHJl
+ZyAweDFjOiBbaW8gIDB4MDM3Nl0KWyAgICAwLjA5NTIzOF0gcGNpIDAwMDA6MDA6MDEuMzogWzgw
+ODY6NzExM10gdHlwZSAwMCBjbGFzcyAweDA2ODAwMApbICAgIDAuMDk2MjA2XSBwY2kgMDAwMDow
+MDowMS4zOiBxdWlyazogW2lvICAweDA2MDAtMHgwNjNmXSBjbGFpbWVkIGJ5IFBJSVg0IEFDUEkK
+WyAgICAwLjA5Njk4NV0gcGNpIDAwMDA6MDA6MDEuMzogcXVpcms6IFtpbyAgMHgwNzAwLTB4MDcw
+Zl0gY2xhaW1lZCBieSBQSUlYNCBTTUIKWyAgICAwLjA5ODA5Ml0gcGNpIDAwMDA6MDA6MDIuMDog
+WzEwMTM6MDBiOF0gdHlwZSAwMCBjbGFzcyAweDAzMDAwMApbICAgIDAuMDk5NjcxXSBwY2kgMDAw
+MDowMDowMi4wOiByZWcgMHgxMDogW21lbSAweGZjMDAwMDAwLTB4ZmRmZmZmZmYgcHJlZl0KWyAg
+ICAwLjEwMDgzNV0gcGNpIDAwMDA6MDA6MDIuMDogcmVnIDB4MTQ6IFttZW0gMHhmZWJmMDAwMC0w
+eGZlYmYwZmZmXQpbICAgIDAuMTA1NjQ3XSBwY2kgMDAwMDowMDowMi4wOiByZWcgMHgzMDogW21l
+bSAweGZlYmUwMDAwLTB4ZmViZWZmZmYgcHJlZl0KWyAgICAwLjEwNjY4MF0gcGNpIDAwMDA6MDA6
+MDMuMDogWzgwODY6MTAwZV0gdHlwZSAwMCBjbGFzcyAweDAyMDAwMApbICAgIDAuMTA4MzkzXSBw
+Y2kgMDAwMDowMDowMy4wOiByZWcgMHgxMDogW21lbSAweGZlYmMwMDAwLTB4ZmViZGZmZmZdClsg
+ICAgMC4xMDk4MDddIHBjaSAwMDAwOjAwOjAzLjA6IHJlZyAweDE0OiBbaW8gIDB4YzAwMC0weGMw
+M2ZdClsgICAgMC4xMTQyMjhdIHBjaSAwMDAwOjAwOjAzLjA6IHJlZyAweDMwOiBbbWVtIDB4ZmVi
+ODAwMDAtMHhmZWJiZmZmZiBwcmVmXQpbICAgIDAuMTE1MjQxXSBwY2kgMDAwMDowMDowNC4wOiBb
+ODA4NjoyNWFiXSB0eXBlIDAwIGNsYXNzIDB4MDg4MDAwClsgICAgMC4xMTYyMThdIHBjaSAwMDAw
+OjAwOjA0LjA6IHJlZyAweDEwOiBbbWVtIDB4ZmViZjEwMDAtMHhmZWJmMTAwZl0KWyAgICAwLjEx
+OTY1NV0gcGNpX2J1cyAwMDAwOjAwOiBvbiBOVU1BIG5vZGUgMApbICAgIDAuMTIwNjYzXSBBQ1BJ
+OiBQQ0kgSW50ZXJydXB0IExpbmsgW0xOS0FdIChJUlFzIDUgKjEwIDExKQpbICAgIDAuMTIxNTE2
+XSBBQ1BJOiBQQ0kgSW50ZXJydXB0IExpbmsgW0xOS0JdIChJUlFzIDUgKjEwIDExKQpbICAgIDAu
+MTIyMzg0XSBBQ1BJOiBQQ0kgSW50ZXJydXB0IExpbmsgW0xOS0NdIChJUlFzIDUgMTAgKjExKQpb
+ICAgIDAuMTIzMjI0XSBBQ1BJOiBQQ0kgSW50ZXJydXB0IExpbmsgW0xOS0RdIChJUlFzIDUgMTAg
+KjExKQpbICAgIDAuMTI0MjQxXSBBQ1BJOiBQQ0kgSW50ZXJydXB0IExpbmsgW0xOS1NdIChJUlFz
+ICo5KQpbICAgIDAuMTI1NDAyXSBBQ1BJOiBFbmFibGVkIDE2IEdQRXMgaW4gYmxvY2sgMDAgdG8g
+MEYKWyAgICAwLjEyNjMxMl0gdmdhYXJiOiBzZXR0aW5nIGFzIGJvb3QgZGV2aWNlOiBQQ0k6MDAw
+MDowMDowMi4wClsgICAgMC4xMjY4OThdIHZnYWFyYjogZGV2aWNlIGFkZGVkOiBQQ0k6MDAwMDow
+MDowMi4wLGRlY29kZXM9aW8rbWVtLG93bnM9aW8rbWVtLGxvY2tzPW5vbmUKWyAgICAwLjEyNzc0
+Ml0gdmdhYXJiOiBsb2FkZWQKWyAgICAwLjEyODAwMl0gdmdhYXJiOiBicmlkZ2UgY29udHJvbCBw
+b3NzaWJsZSAwMDAwOjAwOjAyLjAKWyAgICAwLjEyODkxNl0gU0NTSSBzdWJzeXN0ZW0gaW5pdGlh
+bGl6ZWQKWyAgICAwLjEyOTQxM10gbGliYXRhIHZlcnNpb24gMy4wMCBsb2FkZWQuClsgICAgMC4x
+Mjk5MjFdIExpbnV4IHZpZGVvIGNhcHR1cmUgaW50ZXJmYWNlOiB2Mi4wMApbICAgIDAuMTMwNDgx
+XSBwcHNfY29yZTogTGludXhQUFMgQVBJIHZlci4gMSByZWdpc3RlcmVkClsgICAgMC4xMzA5OThd
+IHBwc19jb3JlOiBTb2Z0d2FyZSB2ZXIuIDUuMy42IC0gQ29weXJpZ2h0IDIwMDUtMjAwNyBSb2Rv
+bGZvIEdpb21ldHRpIDxnaW9tZXR0aUBsaW51eC5pdD4KWyAgICAwLjEzMjAxMl0gUFRQIGNsb2Nr
+IHN1cHBvcnQgcmVnaXN0ZXJlZApbICAgIDAuMTMyNTQxXSBQQ0k6IFVzaW5nIEFDUEkgZm9yIElS
+USByb3V0aW5nClsgICAgMC4xMzMwMDldIFBDSTogcGNpX2NhY2hlX2xpbmVfc2l6ZSBzZXQgdG8g
+NjQgYnl0ZXMKWyAgICAwLjEzMzY1MF0gZTgyMDogcmVzZXJ2ZSBSQU0gYnVmZmVyIFttZW0gMHgw
+MDA5ZmMwMC0weDAwMDlmZmZmXQpbICAgIDAuMTM0MzUyXSBlODIwOiByZXNlcnZlIFJBTSBidWZm
+ZXIgW21lbSAweDEzZmUwMDAwLTB4MTNmZmZmZmZdClsgICAgMC4xMzUyODNdIE5FVDogUmVnaXN0
+ZXJlZCBwcm90b2NvbCBmYW1pbHkgMjMKWyAgICAwLjEzNTc5MF0gTkVUOiBSZWdpc3RlcmVkIHBy
+b3RvY29sIGZhbWlseSA4ClsgICAgMC4xMzYwMDNdIE5FVDogUmVnaXN0ZXJlZCBwcm90b2NvbCBm
+YW1pbHkgMjAKWyAgICAwLjEzNjQ2OV0gbmZjOiBuZmNfaW5pdDogTkZDIENvcmUgdmVyIDAuMQpb
+ICAgIDAuMTM2OTY0XSBORVQ6IFJlZ2lzdGVyZWQgcHJvdG9jb2wgZmFtaWx5IDM5ClsgICAgMC4x
+Mzc4MzhdIEhQRVQ6IDMgdGltZXJzIGluIHRvdGFsLCAwIHRpbWVycyB3aWxsIGJlIHVzZWQgZm9y
+IHBlci1jcHUgdGltZXIKWyAgICAwLjEzODYyNF0gU3dpdGNoZWQgdG8gY2xvY2tzb3VyY2Uga3Zt
+LWNsb2NrClsgICAgMC4xMzkxODRdIEZTLUNhY2hlOiBMb2FkZWQKWyAgICAwLjEzOTUxOV0gcG5w
+OiBQblAgQUNQSSBpbml0ClsgICAgMC4xMzk1MTldIElPQVBJQ1swXTogU2V0IHJvdXRpbmcgZW50
+cnkgKDAtOCAtPiAweDM4IC0+IElSUSA4IE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4x
+Mzk1MTldIHBucCAwMDowMDogUGx1ZyBhbmQgUGxheSBBQ1BJIGRldmljZSwgSURzIFBOUDBiMDAg
+KGFjdGl2ZSkKWyAgICAwLjEzOTUxOV0gSU9BUElDWzBdOiBTZXQgcm91dGluZyBlbnRyeSAoMC0x
+IC0+IDB4MzEgLT4gSVJRIDEgTW9kZTowIEFjdGl2ZTowIERlc3Q6MSkKWyAgICAwLjEzOTgwMF0g
+cG5wIDAwOjAxOiBQbHVnIGFuZCBQbGF5IEFDUEkgZGV2aWNlLCBJRHMgUE5QMDMwMyAoYWN0aXZl
+KQpbICAgIDAuMTQwNTY1XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVudHJ5ICgwLTEyIC0+IDB4
+M2MgLT4gSVJRIDEyIE1vZGU6MCBBY3RpdmU6MCBEZXN0OjEpClsgICAgMC4xNDE0NjFdIHBucCAw
+MDowMjogUGx1ZyBhbmQgUGxheSBBQ1BJIGRldmljZSwgSURzIFBOUDBmMTMgKGFjdGl2ZSkKWyAg
+ICAwLjE0MjIzNl0gSU9BUElDWzBdOiBTZXQgcm91dGluZyBlbnRyeSAoMC02IC0+IDB4MzYgLT4g
+SVJRIDYgTW9kZTowIEFjdGl2ZTowIERlc3Q6MSkKWyAgICAwLjE0MzA3MV0gcG5wIDAwOjAzOiBb
+ZG1hIDJdClsgICAgMC4xNDM0NjBdIHBucCAwMDowMzogUGx1ZyBhbmQgUGxheSBBQ1BJIGRldmlj
+ZSwgSURzIFBOUDA3MDAgKGFjdGl2ZSkKWyAgICAwLjE0NDI1M10gSU9BUElDWzBdOiBTZXQgcm91
+dGluZyBlbnRyeSAoMC03IC0+IDB4MzcgLT4gSVJRIDcgTW9kZTowIEFjdGl2ZTowIERlc3Q6MSkK
+WyAgICAwLjE0NTE3N10gcG5wIDAwOjA0OiBQbHVnIGFuZCBQbGF5IEFDUEkgZGV2aWNlLCBJRHMg
+UE5QMDQwMCAoYWN0aXZlKQpbICAgIDAuMTQ1OTU2XSBJT0FQSUNbMF06IFNldCByb3V0aW5nIGVu
+dHJ5ICgwLTQgLT4gMHgzNCAtPiBJUlEgNCBNb2RlOjAgQWN0aXZlOjAgRGVzdDoxKQpbICAgIDAu
+MTQ2ODc5XSBwbnAgMDA6MDU6IFBsdWcgYW5kIFBsYXkgQUNQSSBkZXZpY2UsIElEcyBQTlAwNTAx
+IChhY3RpdmUpClsgICAgMC4xNDgwNDBdIHBucDogUG5QIEFDUEk6IGZvdW5kIDYgZGV2aWNlcwpb
+ICAgIDAuMTUzNjUzXSBwY2lfYnVzIDAwMDA6MDA6IHJlc291cmNlIDQgW2lvICAweDBjZjgtMHgw
+Y2ZmXQpbICAgIDAuMTU0Mjc0XSBwY2lfYnVzIDAwMDA6MDA6IHJlc291cmNlIDUgW2lvICAweDAw
+MDAtMHgwY2Y3IHdpbmRvd10KWyAgICAwLjE1NDk0NV0gcGNpX2J1cyAwMDAwOjAwOiByZXNvdXJj
+ZSA2IFtpbyAgMHgwZDAwLTB4YWRmZiB3aW5kb3ddClsgICAgMC4xNTU1OTZdIHBjaV9idXMgMDAw
+MDowMDogcmVzb3VyY2UgNyBbaW8gIDB4YWUwZi0weGFlZmYgd2luZG93XQpbICAgIDAuMTU2MzU4
+XSBwY2lfYnVzIDAwMDA6MDA6IHJlc291cmNlIDggW2lvICAweGFmMjAtMHhhZmRmIHdpbmRvd10K
+WyAgICAwLjE1NzMyMV0gcGNpX2J1cyAwMDAwOjAwOiByZXNvdXJjZSA5IFtpbyAgMHhhZmU0LTB4
+ZmZmZiB3aW5kb3ddClsgICAgMC4xNTgyODldIHBjaV9idXMgMDAwMDowMDogcmVzb3VyY2UgMTAg
+W21lbSAweDAwMGEwMDAwLTB4MDAwYmZmZmYgd2luZG93XQpbICAgIDAuMTU5MzY0XSBwY2lfYnVz
+IDAwMDA6MDA6IHJlc291cmNlIDExIFttZW0gMHgxNDAwMDAwMC0weGZlYmZmZmZmIHdpbmRvd10K
+WyAgICAwLjE2MDUyM10gTkVUOiBSZWdpc3RlcmVkIHByb3RvY29sIGZhbWlseSAyClsgICAgMC4x
+NjE0MDBdIFRDUCBlc3RhYmxpc2hlZCBoYXNoIHRhYmxlIGVudHJpZXM6IDQwOTYgKG9yZGVyOiAz
+LCAzMjc2OCBieXRlcykKWyAgICAwLjE2MjU5Nl0gVENQIGJpbmQgaGFzaCB0YWJsZSBlbnRyaWVz
+OiA0MDk2IChvcmRlcjogNiwgMzI3NjgwIGJ5dGVzKQpbICAgIDAuMTYzOTA1XSBUQ1A6IEhhc2gg
+dGFibGVzIGNvbmZpZ3VyZWQgKGVzdGFibGlzaGVkIDQwOTYgYmluZCA0MDk2KQpbICAgIDAuMTY0
+OTg1XSBUQ1A6IHJlbm8gcmVnaXN0ZXJlZApbICAgIDAuMTY1NTUzXSBVRFAgaGFzaCB0YWJsZSBl
+bnRyaWVzOiAyNTYgKG9yZGVyOiAzLCA0OTE1MiBieXRlcykKWyAgICAwLjE2NjU3Nl0gVURQLUxp
+dGUgaGFzaCB0YWJsZSBlbnRyaWVzOiAyNTYgKG9yZGVyOiAzLCA0OTE1MiBieXRlcykKWyAgICAw
+LjE2NzgwOV0gTkVUOiBSZWdpc3RlcmVkIHByb3RvY29sIGZhbWlseSAxClsgICAgMC4xNjg4NzRd
+IFJQQzogUmVnaXN0ZXJlZCBuYW1lZCBVTklYIHNvY2tldCB0cmFuc3BvcnQgbW9kdWxlLgpbICAg
+IDAuMTY5ODk0XSBSUEM6IFJlZ2lzdGVyZWQgdWRwIHRyYW5zcG9ydCBtb2R1bGUuClsgICAgMC4x
+NzA3MTldIFJQQzogUmVnaXN0ZXJlZCB0Y3AgdHJhbnNwb3J0IG1vZHVsZS4KWyAgICAwLjE3MTUz
+Nl0gUlBDOiBSZWdpc3RlcmVkIHRjcCBORlN2NC4xIGJhY2tjaGFubmVsIHRyYW5zcG9ydCBtb2R1
+bGU=
+--===============8146305134386524334==--
 
