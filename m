@@ -1,166 +1,452 @@
-Content-Type: multipart/mixed; boundary="===============6263314048483504573=="
+Content-Type: multipart/mixed; boundary="===============3001796718784771146=="
 MIME-Version: 1.0
 From: Huang Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: [SUNRPC] c4a7ca77494: +6.0% fsmark.time.involuntary_context_switches, no primary result change
-Date: Sun, 15 Feb 2015 15:57:09 +0800
-Message-ID: <1423987029.5538.16.camel@intel.com>
+Subject: [x86_64, entry] 2a23c6b8a9c: +3.5% aim9.creat-clo.ops_per_sec, -64.5% aim9.time.user_time
+Date: Sun, 15 Feb 2015 16:06:48 +0800
+Message-ID: <1423987608.5538.18.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6263314048483504573==
+--===============3001796718784771146==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 FYI, we noticed the below changes on
 
-commit c4a7ca774949960064dac11b326908f28407e8c3 ("SUNRPC: Allow waiting on =
-memory allocation")
+commit 2a23c6b8a9c42620182a2d2cfc7c16f6ff8c42b4 ("x86_64, entry: Use sysret=
+ to return to userspace when possible")
 
 
-testbox/testcase/testparams: nhm4/fsmark/performance-1x-32t-1HDD-f2fs-nfsv4=
--8K-400M-fsyncBeforeClose-16d-256fpd
+testbox/testcase/testparams: lkp-wsx02/aim9/performance-300s-creat-clo
 
-127b21b89f9d8ba0  c4a7ca774949960064dac11b32  =
+b926e6f61a26036e  2a23c6b8a9c42620182a2d2cfc  =
 
 ----------------  --------------------------  =
 
          %stddev     %change         %stddev
              \          |                \  =
 
-     52524 =C2=B1  0%      +6.0%      55672 =C2=B1  0%  fsmark.time.involun=
-tary_context_switches
-       436 =C2=B1 14%     +54.9%        676 =C2=B1 20%  sched_debug.cfs_rq[=
-0]:/.tg_load_contrib
-       433 =C2=B1 15%     +54.7%        670 =C2=B1 21%  sched_debug.cfs_rq[=
-0]:/.blocked_load_avg
-      8348 =C2=B1  7%     +27.0%      10602 =C2=B1  9%  sched_debug.cfs_rq[=
-0]:/.min_vruntime
-    190081 =C2=B1 13%     +32.7%     252269 =C2=B1 13%  sched_debug.cpu#0.s=
-ched_goidle
-    205783 =C2=B1 12%     +30.2%     267903 =C2=B1 13%  sched_debug.cpu#0.t=
-twu_local
-    464065 =C2=B1 11%     +26.6%     587524 =C2=B1 12%  sched_debug.cpu#0.n=
-r_switches
-    464278 =C2=B1 11%     +26.6%     587734 =C2=B1 12%  sched_debug.cpu#0.s=
-ched_count
-     15807 =C2=B1 11%     +19.6%      18910 =C2=B1 12%  sched_debug.cpu#4.n=
+     23.75 =C2=B1  1%     -64.5%       8.44 =C2=B1  1%  aim9.time.user_time
+       276 =C2=B1  0%      +5.5%        291 =C2=B1  0%  aim9.time.system_ti=
+me
+    533594 =C2=B1  1%      +3.5%     552311 =C2=B1  0%  aim9.creat-clo.ops_=
+per_sec
+         1 =C2=B1 47%    -100.0%          0 =C2=B1  0%  numa-numastat.node2=
+.other_node
+      6024 =C2=B1 40%     -72.3%       1668 =C2=B1 48%  sched_debug.cpu#10.=
+ttwu_count
+      6408 =C2=B1 45%     -71.8%       1806 =C2=B1 25%  sched_debug.cpu#70.=
+sched_goidle
+     12980 =C2=B1 44%     -70.5%       3833 =C2=B1 23%  sched_debug.cpu#70.=
+nr_switches
+      6420 =C2=B1 47%     -76.7%       1494 =C2=B1 36%  sched_debug.cpu#66.=
+ttwu_count
+      1328 =C2=B1 40%     -76.0%        319 =C2=B1 16%  sched_debug.cfs_rq[=
+18]:/.exec_clock
+      2329 =C2=B1 42%     -78.5%        501 =C2=B1 37%  sched_debug.cpu#10.=
+ttwu_local
+       815 =C2=B1 48%     -53.3%        380 =C2=B1 43%  sched_debug.cfs_rq[=
+30]:/.exec_clock
+      5427 =C2=B1 40%     -75.0%       1355 =C2=B1 28%  sched_debug.cpu#18.=
+ttwu_count
+       953 =C2=B1 45%     -62.8%        355 =C2=B1 26%  sched_debug.cfs_rq[=
+70]:/.exec_clock
+         1 =C2=B1 34%    +160.0%          3 =C2=B1 33%  sched_debug.cpu#56.=
+nr_uninterruptible
+        63 =C2=B1 37%     -62.4%         24 =C2=B1 23%  sched_debug.cfs_rq[=
+3]:/.blocked_load_avg
+      4838 =C2=B1 27%     -63.1%       1787 =C2=B1 31%  sched_debug.cpu#10.=
+sched_goidle
+      5901 =C2=B1 44%     -67.6%       1914 =C2=B1 25%  sched_debug.cpu#66.=
+sched_goidle
+      4884 =C2=B1 28%     -64.5%       1733 =C2=B1 26%  sched_debug.cpu#18.=
+sched_goidle
+     12006 =C2=B1 43%     -66.0%       4077 =C2=B1 23%  sched_debug.cpu#66.=
+nr_switches
+       770 =C2=B1 44%     -48.4%        397 =C2=B1 42%  sched_debug.cfs_rq[=
+6]:/.exec_clock
+      9861 =C2=B1 26%     -61.0%       3847 =C2=B1 30%  sched_debug.cpu#10.=
+nr_switches
+      9983 =C2=B1 28%     -62.7%       3723 =C2=B1 24%  sched_debug.cpu#18.=
+nr_switches
+     23.75 =C2=B1  1%     -64.5%       8.44 =C2=B1  1%  time.user_time
+        50 =C2=B1 45%    +143.1%        122 =C2=B1 19%  sched_debug.cfs_rq[=
+50]:/.blocked_load_avg
+        55 =C2=B1 46%    +126.1%        125 =C2=B1 19%  sched_debug.cfs_rq[=
+50]:/.tg_load_contrib
+      4591 =C2=B1 47%     -62.5%       1723 =C2=B1 13%  sched_debug.cpu#30.=
+sched_goidle
+      9347 =C2=B1 46%     -60.5%       3687 =C2=B1 12%  sched_debug.cpu#30.=
+nr_switches
+        70 =C2=B1 47%     +73.9%        121 =C2=B1 31%  sched_debug.cfs_rq[=
+45]:/.tg_load_contrib
+     12075 =C2=B1 23%     -36.3%       7687 =C2=B1  4%  sched_debug.cpu#70.=
+nr_load_updates
+      1757 =C2=B1 21%     -36.0%       1124 =C2=B1 27%  sched_debug.cfs_rq[=
+63]:/.min_vruntime
+     16039 =C2=B1 36%     -39.9%       9638 =C2=B1  3%  sched_debug.cpu#6.n=
 r_load_updates
-    300041 =C2=B1  8%     +20.3%     360969 =C2=B1 10%  sched_debug.cpu#0.t=
-twu_count
-      1863 =C2=B1  9%     +18.1%       2201 =C2=B1 10%  sched_debug.cfs_rq[=
-4]:/.exec_clock
+     56756 =C2=B1  4%     -35.5%      36623 =C2=B1  3%  softirqs.RCU
+     11883 =C2=B1 24%     -33.7%       7873 =C2=B1  4%  sched_debug.cpu#66.=
+nr_load_updates
+     15180 =C2=B1 31%     -38.8%       9297 =C2=B1  3%  sched_debug.cpu#14.=
+nr_load_updates
+      4133 =C2=B1 47%     -54.2%       1893 =C2=B1 31%  sched_debug.cpu#2.s=
+ched_goidle
+      8430 =C2=B1 46%     -49.4%       4265 =C2=B1 36%  sched_debug.cpu#2.n=
+r_switches
+     36424 =C2=B1  2%     +44.3%      52546 =C2=B1  3%  slabinfo.kmalloc-25=
+6.active_objs
+     36804 =C2=B1  2%     +43.8%      52915 =C2=B1  3%  slabinfo.kmalloc-25=
+6.num_objs
+      1149 =C2=B1  2%     +43.8%       1653 =C2=B1  3%  slabinfo.kmalloc-25=
+6.num_slabs
+      1149 =C2=B1  2%     +43.8%       1653 =C2=B1  3%  slabinfo.kmalloc-25=
+6.active_slabs
+     12722 =C2=B1  8%     -27.6%       9209 =C2=B1  2%  sched_debug.cpu#18.=
+nr_load_updates
+       750 =C2=B1 43%     +65.8%       1244 =C2=B1 16%  sched_debug.cpu#38.=
+nr_switches
+       758 =C2=B1 42%     +65.0%       1251 =C2=B1 15%  sched_debug.cpu#38.=
+sched_count
+       287 =C2=B1 40%     +70.1%        488 =C2=B1 21%  sched_debug.cpu#38.=
+sched_goidle
+     13470 =C2=B1 26%     -30.7%       9336 =C2=B1  6%  sched_debug.cpu#22.=
+nr_load_updates
+      0.00 =C2=B1 26%     +45.8%       0.00 =C2=B1 11%  sched_debug.rt_rq[2=
+0]:/.rt_time
+     11704 =C2=B1 16%     -24.1%       8881 =C2=B1  1%  sched_debug.cpu#30.=
+nr_load_updates
+       161 =C2=B1 47%     +60.4%        258 =C2=B1 10%  sched_debug.cpu#54.=
+ttwu_local
+       952 =C2=B1  1%     +11.9%       1065 =C2=B1  5%  slabinfo.Acpi-State=
+.num_slabs
+       952 =C2=B1  1%     +11.9%       1065 =C2=B1  5%  slabinfo.Acpi-State=
+.active_slabs
+     48596 =C2=B1  1%     +11.9%      54376 =C2=B1  5%  slabinfo.Acpi-State=
+.num_objs
+     48595 =C2=B1  1%     +11.6%      54246 =C2=B1  5%  slabinfo.Acpi-State=
+.active_objs
+    475081 =C2=B1  4%     -10.5%     425176 =C2=B1  3%  cpuidle.C6-NHM.usage
+       861 =C2=B1 10%     +18.9%       1024 =C2=B1  2%  numa-meminfo.node2.=
+PageTables
+      2694 =C2=B1  8%     +13.6%       3059 =C2=B1  8%  numa-vmstat.node3.n=
+r_slab_reclaimable
+     10779 =C2=B1  8%     +13.6%      12240 =C2=B1  8%  numa-meminfo.node3.=
+SReclaimable
+      4610 =C2=B1  3%      -6.6%       4305 =C2=B1  5%  sched_debug.cfs_rq[=
+64]:/.tg_load_avg
+      4627 =C2=B1  4%      -6.6%       4323 =C2=B1  4%  sched_debug.cfs_rq[=
+63]:/.tg_load_avg
+      4518 =C2=B1  3%      -6.1%       4241 =C2=B1  5%  sched_debug.cfs_rq[=
+70]:/.tg_load_avg
+      1677 =C2=B1  4%     -11.9%       1478 =C2=B1  2%  vmstat.system.cs
+      1509 =C2=B1  1%      +2.5%       1546 =C2=B1  1%  vmstat.system.in
 
-testbox/testcase/testparams: nhm4/fsmark/performance-1x-32t-1HDD-btrfs-nfsv=
-4-8K-400M-fsyncBeforeClose-16d-256fpd
+testbox/testcase/testparams: wsm/will-it-scale/performance-unlink2
 
-127b21b89f9d8ba0  c4a7ca774949960064dac11b32  =
+b926e6f61a26036e  2a23c6b8a9c42620182a2d2cfc  =
 
 ----------------  --------------------------  =
 
-       fail:runs  %reproduction    fail:runs
-           |             |             |    =
-
-     52184 =C2=B1  0%      +5.6%      55122 =C2=B1  0%  fsmark.time.involun=
-tary_context_switches
-       557 =C2=B1 19%     +21.5%        677 =C2=B1  9%  sched_debug.cfs_rq[=
-5]:/.blocked_load_avg
-       217 =C2=B1 19%     -42.9%        124 =C2=B1 21%  sched_debug.cfs_rq[=
-2]:/.load
-     45852 =C2=B1 14%     -39.4%      27773 =C2=B1 24%  sched_debug.cpu#7.t=
-twu_local
-       457 =C2=B1 18%     +50.1%        686 =C2=B1 20%  sched_debug.cfs_rq[=
-0]:/.tg_load_contrib
-       455 =C2=B1 18%     +46.7%        668 =C2=B1 19%  sched_debug.cfs_rq[=
-0]:/.blocked_load_avg
-     66605 =C2=B1 10%     -26.7%      48826 =C2=B1 14%  sched_debug.cpu#7.s=
-ched_goidle
-     78249 =C2=B1  9%     -22.5%      60678 =C2=B1 11%  sched_debug.cpu#7.t=
-twu_count
-    153506 =C2=B1  9%     -22.7%     118649 =C2=B1 12%  sched_debug.cpu#7.n=
-r_switches
-    153613 =C2=B1  9%     -22.7%     118755 =C2=B1 12%  sched_debug.cpu#7.s=
-ched_count
-     15806 =C2=B1  6%     +19.2%      18833 =C2=B1 18%  sched_debug.cpu#4.n=
+     36.57 =C2=B1  0%     -39.1%      22.28 =C2=B1  1%  will-it-scale.time.=
+user_time
+    192292 =C2=B1  1%      +3.1%     198236 =C2=B1  1%  will-it-scale.per_t=
+hread_ops
+       990 =C2=B1  0%      +1.4%       1004 =C2=B1  0%  will-it-scale.time.=
+system_time
+    205532 =C2=B1  0%      +2.0%     209720 =C2=B1  0%  will-it-scale.per_p=
+rocess_ops
+      0.48 =C2=B1  0%      -1.5%       0.47 =C2=B1  0%  will-it-scale.scala=
+bility
+     36.57 =C2=B1  0%     -39.1%      22.28 =C2=B1  1%  time.user_time
+       554 =C2=B1 37%     -36.0%        354 =C2=B1 43%  sched_debug.cfs_rq[=
+4]:/.tg_load_contrib
+    583050 =C2=B1 15%     -20.4%     463937 =C2=B1 21%  sched_debug.cfs_rq[=
+1]:/.min_vruntime
+     70523 =C2=B1 16%     -19.8%      56555 =C2=B1 20%  sched_debug.cfs_rq[=
+1]:/.exec_clock
+        63 =C2=B1 19%     +48.2%         93 =C2=B1  8%  sched_debug.cfs_rq[=
+5]:/.runnable_load_avg
+        80 =C2=B1 11%     -18.0%         66 =C2=B1 13%  sched_debug.cpu#1.c=
+pu_load[4]
+        55 =C2=B1  4%     +26.6%         70 =C2=B1 14%  sched_debug.cpu#3.c=
+pu_load[4]
+        82 =C2=B1 10%     -17.4%         67 =C2=B1 14%  sched_debug.cpu#1.c=
+pu_load[3]
+        60 =C2=B1  2%     +22.1%         73 =C2=B1  7%  sched_debug.cpu#3.c=
+pu_load[3]
+        83 =C2=B1 10%     -16.3%         69 =C2=B1 14%  sched_debug.cpu#1.c=
+pu_load[2]
+     90559 =C2=B1  8%     -17.7%      74537 =C2=B1 14%  sched_debug.cpu#1.n=
 r_load_updates
-      2171 =C2=B1  5%     +15.6%       2510 =C2=B1 13%  sched_debug.cfs_rq[=
-4]:/.exec_clock
-      9924 =C2=B1 11%     -27.0%       7244 =C2=B1 25%  sched_debug.cfs_rq[=
-3]:/.min_vruntime
-      3156 =C2=B1  4%     -13.4%       2734 =C2=B1  8%  sched_debug.cfs_rq[=
-7]:/.min_vruntime
-
-testbox/testcase/testparams: nhm4/fsmark/performance-1x-32t-1HDD-ext4-nfsv4=
--9B-400M-fsyncBeforeClose-16d-256fpd
-
-127b21b89f9d8ba0  c4a7ca774949960064dac11b32  =
-
-----------------  --------------------------  =
-
-    104802 =C2=B1  0%      +7.7%     112883 =C2=B1  0%  fsmark.time.involun=
-tary_context_switches
-    471755 =C2=B1  0%      -1.3%     465592 =C2=B1  0%  fsmark.time.volunta=
-ry_context_switches
-      1977 =C2=B1 36%     +90.8%       3771 =C2=B1  8%  sched_debug.cpu#4.c=
+        67 =C2=B1  2%     +18.3%         79 =C2=B1  8%  sched_debug.cpu#5.c=
+pu_load[4]
+      1.29 =C2=B1  7%      -6.8%       1.20 =C2=B1  7%  perf-profile.cpu-cy=
+cles.security_inode_init_security.shmem_mknod.shmem_create.vfs_create.do_la=
+st
+        65 =C2=B1  2%     +15.8%         75 =C2=B1  5%  sched_debug.cpu#3.c=
+pu_load[2]
+        68 =C2=B1 11%     +20.2%         81 =C2=B1  4%  sched_debug.cpu#7.c=
+pu_load[4]
+        71 =C2=B1  8%     +19.0%         84 =C2=B1  1%  sched_debug.cpu#7.c=
+pu_load[3]
+      2526 =C2=B1  5%      -7.0%       2349 =C2=B1  5%  sched_debug.cpu#8.c=
 urr->pid
-         2 =C2=B1 34%     +80.0%          4 =C2=B1 24%  sched_debug.cpu#6.c=
-pu_load[1]
-         4 =C2=B1 33%     +83.3%          8 =C2=B1 31%  sched_debug.cpu#6.c=
-pu_load[0]
-       193 =C2=B1 17%     +48.0%        286 =C2=B1 19%  sched_debug.cfs_rq[=
-2]:/.blocked_load_avg
-       196 =C2=B1 17%     +47.5%        290 =C2=B1 19%  sched_debug.cfs_rq[=
-2]:/.tg_load_contrib
-        96 =C2=B1 18%     +40.6%        135 =C2=B1 11%  sched_debug.cfs_rq[=
-7]:/.load
-        97 =C2=B1 18%     +38.5%        135 =C2=B1 11%  sched_debug.cpu#7.l=
-oad
-      2274 =C2=B1  7%     -16.5%       1898 =C2=B1  3%  proc-vmstat.pgalloc=
-_dma
-       319 =C2=B1  6%     -29.7%        224 =C2=B1 24%  sched_debug.cfs_rq[=
-1]:/.tg_load_contrib
-       314 =C2=B1  5%     -29.4%        222 =C2=B1 25%  sched_debug.cfs_rq[=
-1]:/.blocked_load_avg
-       621 =C2=B1 10%     +41.9%        881 =C2=B1 37%  sched_debug.cfs_rq[=
-4]:/.avg->runnable_avg_sum
+     25711 =C2=B1  6%     +10.6%      28438 =C2=B1  5%  sched_debug.cfs_rq[=
+5]:/.avg->runnable_avg_sum
+     29189 =C2=B1  9%     +12.3%      32783 =C2=B1  4%  sched_debug.cfs_rq[=
+7]:/.avg->runnable_avg_sum
+       636 =C2=B1 10%     +12.3%        714 =C2=B1  4%  sched_debug.cfs_rq[=
+7]:/.tg_runnable_contrib
+        75 =C2=B1  6%     +15.3%         86 =C2=B1  2%  sched_debug.cpu#7.c=
+pu_load[2]
 
-nhm4: Nehalem
-Memory: 4G
+lkp-wsx02: Westmere-EX
+Memory: 128G
+
+wsm: Westmere
+Memory: 6G
 
 
 
 
-                      fsmark.time.involuntary_context_switches
+                                 time.user_time
 
-  114000 ++----------------------------------------------------------------=
+  28 ++--------------------------------------------------------------------=
 -+
-  113000 O+    O     O  O  O  O  O  O  O   O  O  O  O  O  O  O     O     O =
+  26 ++                                         .*                         =
  |
-         |  O     O                                             O     O    =
- O
-  112000 ++                                                                =
+     |      *   *           *.                 *  :*.* .***.*  .***.       =
  |
-  111000 ++                                                                =
+  24 +*.** + *.* *.***.***.*  *  .***.**.*  .* :  *   *      **     **.* *.=
+**
+  22 *+   *                    **         **  *                         *  =
  |
-         |                                                                 =
+     |                                                                     =
  |
-  110000 ++                                                                =
+  20 ++                                                                    =
  |
-  109000 ++                                                                =
+  18 ++                                                                    =
  |
-  108000 ++                                                                =
+  16 ++                                                                    =
  |
-         |                                                                 =
+     |                                                                     =
  |
-  107000 ++                                                                =
+  14 ++                                                                    =
  |
-  106000 ++                                                                =
+  12 ++                                                                    =
  |
-         |                                                                 =
+     |                                                                     =
  |
-  105000 *+.*..*..*..*..*..*..*..*..*..*...*..*..*..*..*..*..*..*          =
+  10 ++   O OO OOO OOO OOO OO OOO OOO OO OO  OOO O                         =
  |
-  104000 ++----------------------------------------------------------------=
+   8 OO-OO---------------------------------O------OO-OO-OOO-O--------------=
+-+
+
+
+                               aim9.time.user_time
+
+  28 ++--------------------------------------------------------------------=
+-+
+  26 ++                                         .*                         =
+ |
+     |      *   *           *.                 *  :*.* .***.*  .***.       =
+ |
+  24 +*.** + *.* *.***.***.*  *  .***.**.*  .* :  *   *      **     **.* *.=
+**
+  22 *+   *                    **         **  *                         *  =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+  18 ++                                                                    =
+ |
+  16 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  14 ++                                                                    =
+ |
+  12 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++   O OO OOO OOO OOO OO OOO OOO OO OO  OOO O                         =
+ |
+   8 OO-OO---------------------------------O------OO-OO-OOO-O--------------=
+-+
+
+
+                               aim9.time.system_time
+
+  294 ++-------------------------------------------------------------------=
+-+
+  292 OO                                                   O               =
+ |
+      |  OOO OOO OOO OO OOO OOO OOO OOO OOO O     O OOO OO  O              =
+ |
+  290 ++                                     OO OO                         =
+ |
+  288 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  286 ++                                                                   =
+ |
+  284 ++                                                                   =
+ |
+  282 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  280 ++                                                                   =
+ |
+  278 *+   *                              *.  *                            =
+ |
+      |*.** +     **.**.** .*  .***.***.**  ** +      *.     *.*    **.***.=
+*|
+  276 ++     ***.*        *  **                 * *.**  **.**   :*.*       =
+ *
+  274 ++-----------------------------------------*--------------*----------=
+-+
+
+
+                          slabinfo.kmalloc-256.active_objs
+
+  60000 ++-----------------------------------------------------------------=
+-+
+        |                                                                  =
+ |
+  55000 ++       O                                        O                =
+ |
+        O   OO OO O  O        O  O O      O  O     OO OO   OO              =
+ |
+        |O O        O O OOO OO    O  O O O O   O  O                        =
+ |
+  50000 ++                      O     O       O  O      O                  =
+ |
+        |                                                                  =
+ |
+  45000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  40000 ++                                                                 =
+ |
+        |                                         *    * .* *.      *    *.=
+ |
+        |   **.*  *. *  ***.***.* **.  *.*   ***. :*   :*  :: * *.* :*. *  =
+**
+  35000 **.*    **  * :+         *   **   * +    *  *.*    *   *   *   *   =
+ |
+        |             *                    *                               =
+ |
+  30000 ++-----------------------------------------------------------------=
+-+
+
+
+                            slabinfo.kmalloc-256.num_objs
+
+  60000 ++-----------------------------------------------------------------=
+-+
+        |                                                                  =
+ |
+  55000 ++       O                        O               O                =
+ |
+        O   OO OO O  OO  O   OO  O O   O     O     OO OO   OO              =
+ |
+        |O O        O   O O O   O O  O   O O   O  O     O                  =
+ |
+  50000 ++                            O       O  O                         =
+ |
+        |                                                                  =
+ |
+  45000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  40000 ++                                                                 =
+ |
+        |                  .*  .*            **   **   * .* *.      *    *.=
+ |
+        *   **.*  *.** .***  **  ***.  *.*  +  *. : *.* *  :: ***.* :*.**  =
+**
+  35000 +*.*    **    *              **   **     *         *       *       =
+ |
+        |                                                                  =
+ |
+  30000 ++-----------------------------------------------------------------=
+-+
+
+
+                         slabinfo.kmalloc-256.active_slabs
+
+  1800 ++------------------------------------------------------------------=
+-+
+       |        O                         O              O                 =
+ |
+  1700 O+  OO OO  O O         O O  O        O      OOO O   O               =
+ |
+  1600 +O          O  OOO O O     O O  OO      O O          O              =
+ |
+       |  O                O   O      O    O O  O       O                  =
+ |
+  1500 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  1400 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  1300 ++                                                                  =
+ |
+  1200 ++                                        *.    *            *      =
+ |
+       |   *        *   *. **. *       *    **.* : *  + **. **.     :*.  *.=
+*|
+  1100 *+  :*.** .** + *  *   * *.** .* *.* :   :   **     *   ***.*   **  =
+ *
+       |*.*     *     *             *      *    *                          =
+ |
+  1000 ++------------------------------------------------------------------=
+-+
+
+
+                          slabinfo.kmalloc-256.num_slabs
+
+  1800 ++------------------------------------------------------------------=
+-+
+       |        O                         O              O                 =
+ |
+  1700 O+  OO OO  O O         O O  O        O      OOO O   O               =
+ |
+  1600 +O          O  OOO O O     O O  OO      O O          O              =
+ |
+       |  O                O   O      O    O O  O       O                  =
+ |
+  1500 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  1400 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  1300 ++                                                                  =
+ |
+  1200 ++                                        *.    *            *      =
+ |
+       |   *        *   *. **. *       *    **.* : *  + **. **.     :*.  *.=
+*|
+  1100 *+  :*.** .** + *  *   * *.** .* *.* :   :   **     *   ***.*   **  =
+ *
+       |*.*     *     *             *      *    *                          =
+ |
+  1000 ++------------------------------------------------------------------=
 -+
 
 
@@ -185,7 +471,7 @@ design or configuration may affect actual performance.
 
 
 Thanks,
-Fengguang
+Huang, Ying
 
 
 _______________________________________________
@@ -193,69 +479,41 @@ LKP mailing list
 LKP(a)linux.intel.com
 
 
---===============6263314048483504573==
+--===============3001796718784771146==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job.yaml"
 
-LS0tCnRlc3RjYXNlOiBmc21hcmsKZGVmYXVsdC1tb25pdG9yczoKICB3YWl0OiBwcmUtdGVzdAog
-IHVwdGltZTogCiAgaW9zdGF0OiAKICB2bXN0YXQ6IAogIG51bWEtbnVtYXN0YXQ6IAogIG51bWEt
-dm1zdGF0OiAKICBudW1hLW1lbWluZm86IAogIHByb2Mtdm1zdGF0OiAKICBwcm9jLXN0YXQ6IAog
-IG1lbWluZm86IAogIHNsYWJpbmZvOiAKICBpbnRlcnJ1cHRzOiAKICBsb2NrX3N0YXQ6IAogIGxh
-dGVuY3lfc3RhdHM6IAogIHNvZnRpcnFzOiAKICBiZGlfZGV2X21hcHBpbmc6IAogIGRpc2tzdGF0
-czogCiAgbmZzc3RhdDogCiAgY3B1aWRsZTogCiAgY3B1ZnJlcS1zdGF0czogCiAgdHVyYm9zdGF0
-OiAKICBwbWV0ZXI6IAogIHNjaGVkX2RlYnVnOgogICAgaW50ZXJ2YWw6IDEwCmRlZmF1bHRfd2F0
-Y2hkb2dzOgogIHdhdGNoLW9vbTogCiAgd2F0Y2hkb2c6IApjcHVmcmVxX2dvdmVybm9yOiBwZXJm
-b3JtYW5jZQpjb21taXQ6IDU3MjFmN2YwZjE0YjY4MmQyZTg2ZTlhNGFhOTAyNWFjYWY2OTM5OWQK
-bW9kZWw6IE5laGFsZW0KbnJfY3B1OiA4Cm1lbW9yeTogNEcKaGRkX3BhcnRpdGlvbnM6ICIvZGV2
-L2Rpc2svYnktaWQvYXRhLVdEQ19XRDEwMDNGQllaLTAxMEZCMF9XRC1XQ0FXMzY4MTIwNDEtcGFy
-dDEiCnN3YXBfcGFydGl0aW9uczogIi9kZXYvZGlzay9ieS1pZC9hdGEtV0RDX1dEMTAwM0ZCWVot
-MDEwRkIwX1dELVdDQVczNjgxMjA0MS1wYXJ0MiIKcm9vdGZzX3BhcnRpdGlvbjogIi9kZXYvZGlz
-ay9ieS1pZC9hdGEtV0RDX1dEMTAwM0ZCWVotMDEwRkIwX1dELVdDQVczNjgxMjA0MS1wYXJ0MyIK
-bmV0Y29uc29sZV9wb3J0OiA2NjQ5Cml0ZXJhdGlvbnM6IDF4Cm5yX3RocmVhZHM6IDMydApkaXNr
-OiAxSERECmZzOiBleHQ0CmZzMjogbmZzdjQKZnNtYXJrOgogIGZpbGVzaXplOiA5QgogIHRlc3Rf
-c2l6ZTogNDAwTQogIHN5bmNfbWV0aG9kOiBmc3luY0JlZm9yZUNsb3NlCiAgbnJfZGlyZWN0b3Jp
-ZXM6IDE2ZAogIG5yX2ZpbGVzX3Blcl9kaXJlY3Rvcnk6IDI1NmZwZAp0ZXN0Ym94OiBuaG00CnRi
-b3hfZ3JvdXA6IG5obTQKa2NvbmZpZzogeDg2XzY0LXJoZWwKZW5xdWV1ZV90aW1lOiAyMDE1LTAy
-LTEwIDIzOjU3OjM2LjY0NzEzNjM4OSArMDg6MDAKaGVhZF9jb21taXQ6IDU3MjFmN2YwZjE0YjY4
-MmQyZTg2ZTlhNGFhOTAyNWFjYWY2OTM5OWQKYmFzZV9jb21taXQ6IGJmYTc2ZDQ5NTc2NTk5YTRi
-OWY5YjdhNzFmMjNkNzNkNmRjZmY3MzUKYnJhbmNoOiBuZXh0L21hc3RlcgprZXJuZWw6ICIva2Vy
-bmVsL3g4Nl82NC1yaGVsLzU3MjFmN2YwZjE0YjY4MmQyZTg2ZTlhNGFhOTAyNWFjYWY2OTM5OWQv
-dm1saW51ei0zLjE5LjAtbmV4dC0yMDE1MDIxMS1nNTcyMWY3ZiIKdXNlcjogbGtwCnF1ZXVlOiBj
-eWNsaWMKcm9vdGZzOiBkZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6CnJlc3VsdF9yb290OiAi
-L3Jlc3VsdC9uaG00L2ZzbWFyay9wZXJmb3JtYW5jZS0xeC0zMnQtMUhERC1leHQ0LW5mc3Y0LTlC
-LTQwME0tZnN5bmNCZWZvcmVDbG9zZS0xNmQtMjU2ZnBkL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0w
-Ny5jZ3oveDg2XzY0LXJoZWwvNTcyMWY3ZjBmMTRiNjgyZDJlODZlOWE0YWE5MDI1YWNhZjY5Mzk5
-ZC8wIgpqb2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL25obTQvY3ljbGljX2ZzbWFyay1wZXJmb3Jt
-YW5jZS0xeC0zMnQtMUhERC1leHQ0LW5mc3Y0LTlCLTQwME0tZnN5bmNCZWZvcmVDbG9zZS0xNmQt
-MjU2ZnBkLXg4Nl82NC1yaGVsLUhFQUQtNTcyMWY3ZjBmMTRiNjgyZDJlODZlOWE0YWE5MDI1YWNh
-ZjY5Mzk5ZC0wLTIwMTUwMjEwLTEyMzQ1LTFvYm84cHMueWFtbCIKZGVxdWV1ZV90aW1lOiAyMDE1
-LTAyLTExIDE2OjUyOjE3LjY2Nzc1OTczMSArMDg6MDAKam9iX3N0YXRlOiBmaW5pc2hlZApsb2Fk
-YXZnOiAyOS4yMyAzOC4wNCAzMy42MyAxLzE1NSAyNzgxNwpzdGFydF90aW1lOiAnMTQyMzY0NDc2
-NicKZW5kX3RpbWU6ICcxNDIzNjQ2NDk5Jwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE1MDIx
-MS0xMTQ5MTMiCg==
+LS0tCnRlc3RjYXNlOiBhaW05CmRlZmF1bHQtbW9uaXRvcnM6CiAgd2FpdDogcHJlLXRlc3QKICB1
+cHRpbWU6IAogIGlvc3RhdDogCiAgdm1zdGF0OiAKICBudW1hLW51bWFzdGF0OiAKICBudW1hLXZt
+c3RhdDogCiAgbnVtYS1tZW1pbmZvOiAKICBwcm9jLXZtc3RhdDogCiAgcHJvYy1zdGF0OiAKICBt
+ZW1pbmZvOiAKICBzbGFiaW5mbzogCiAgaW50ZXJydXB0czogCiAgbG9ja19zdGF0OiAKICBsYXRl
+bmN5X3N0YXRzOiAKICBzb2Z0aXJxczogCiAgYmRpX2Rldl9tYXBwaW5nOiAKICBkaXNrc3RhdHM6
+IAogIG5mc3N0YXQ6IAogIGNwdWlkbGU6IAogIGNwdWZyZXEtc3RhdHM6IAogIHR1cmJvc3RhdDog
+CiAgcG1ldGVyOiAKICBzY2hlZF9kZWJ1ZzoKICAgIGludGVydmFsOiAxMApkZWZhdWx0X3dhdGNo
+ZG9nczoKICB3YXRjaC1vb206IAogIHdhdGNoZG9nOiAKY3B1ZnJlcV9nb3Zlcm5vcjogcGVyZm9y
+bWFuY2UKY29tbWl0OiBkNjQ1NTczNjBmMmY0YTQ3OGU5OWFlNjdlODNmZTVmNzlkZmVlMDM2Cm1v
+ZGVsOiBXZXN0bWVyZS1FWAptZW1vcnk6IDEyOEcKbnJfY3B1OiA4MApucl9oZGRfcGFydGl0aW9u
+czogMApoZGRfcGFydGl0aW9uczogCnN3YXBfcGFydGl0aW9uczogCnJvb3Rmc19wYXJ0aXRpb246
+IApyb290ZnM6IGRlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3oKYWltOToKICB0ZXN0dGltZTog
+MzAwcwogIHRlc3Q6IGNyZWF0LWNsbwp0ZXN0Ym94OiBsa3Atd3N4MDIKdGJveF9ncm91cDogbGtw
+LXdzeDAyCmtjb25maWc6IHg4Nl82NC1yaGVsCmVucXVldWVfdGltZTogMjAxNS0wMi0xMiAwNzox
+MTo0MC43MTk0MTMyNzQgKzA4OjAwCmhlYWRfY29tbWl0OiBkNjQ1NTczNjBmMmY0YTQ3OGU5OWFl
+NjdlODNmZTVmNzlkZmVlMDM2CmJhc2VfY29tbWl0OiBiZmE3NmQ0OTU3NjU5OWE0YjlmOWI3YTcx
+ZjIzZDczZDZkY2ZmNzM1CmJyYW5jaDogbGludXgtZGV2ZWwvZGV2ZWwtaG91cmx5LTIwMTUwMjEy
+MjEKa2VybmVsOiAiL2tlcm5lbC94ODZfNjQtcmhlbC9kNjQ1NTczNjBmMmY0YTQ3OGU5OWFlNjdl
+ODNmZTVmNzlkZmVlMDM2L3ZtbGludXotMy4xOS4wLXdsLWF0aC1nZDY0NTU3MyIKdXNlcjogbGtw
+CnF1ZXVlOiBjeWNsaWMKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L2xrcC13c3gwMi9haW05L3BlcmZv
+cm1hbmNlLTMwMHMtY3JlYXQtY2xvL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3oveDg2XzY0
+LXJoZWwvZDY0NTU3MzYwZjJmNGE0NzhlOTlhZTY3ZTgzZmU1Zjc5ZGZlZTAzNi8wIgpqb2JfZmls
+ZTogIi9sa3Avc2NoZWR1bGVkL2xrcC13c3gwMi9jeWNsaWNfYWltOS1wZXJmb3JtYW5jZS0zMDBz
+LWNyZWF0LWNsby1kZWJpYW4teDg2XzY0LmNnei14ODZfNjQtcmhlbC1IRUFELWQ2NDU1NzM2MGYy
+ZjRhNDc4ZTk5YWU2N2U4M2ZlNWY3OWRmZWUwMzYtMC0yMDE1MDIxMi04ODAzOS12aDlxMmMueWFt
+bCIKZGVxdWV1ZV90aW1lOiAyMDE1LTAyLTEzIDAyOjI4OjM5Ljk4MDgwNTUwNyArMDg6MDAKam9i
+X3N0YXRlOiBmaW5pc2hlZApsb2FkYXZnOiAwLjg4IDEuNTggMC45MiAxLzY0OSAxMTU5MApzdGFy
+dF90aW1lOiAnMTQyMzc2NTgwMCcKZW5kX3RpbWU6ICcxNDIzNzY2MTAwJwp2ZXJzaW9uOiAiL2xr
+cC9sa3AvLnNyYy0yMDE1MDIxMi0yMjAwMDAiCg==
 
---===============6263314048483504573==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-bWtmcyAtdCBleHQ0IC1xIC1GIC9kZXYvc2RhMQptb3VudCAtdCBleHQ0IC9kZXYvc2RhMSAvZnMv
-c2RhMQovZXRjL2luaXQuZC9ycGNiaW5kIHN0YXJ0Ci9ldGMvaW5pdC5kL25mcy1jb21tb24gc3Rh
-cnQKL2V0Yy9pbml0LmQvbmZzLWtlcm5lbC1zZXJ2ZXIgc3RhcnQKbW91bnQgLXQgbmZzIC1vIHZl
-cnM9NCBsb2NhbGhvc3Q6L2ZzL3NkYTEgL25mcy9zZGExCi4vZnNfbWFyayAtZCAvbmZzL3NkYTEv
-MSAtZCAvbmZzL3NkYTEvMiAtZCAvbmZzL3NkYTEvMyAtZCAvbmZzL3NkYTEvNCAtZCAvbmZzL3Nk
-YTEvNSAtZCAvbmZzL3NkYTEvNiAtZCAvbmZzL3NkYTEvNyAtZCAvbmZzL3NkYTEvOCAtZCAvbmZz
-L3NkYTEvOSAtZCAvbmZzL3NkYTEvMTAgLWQgL25mcy9zZGExLzExIC1kIC9uZnMvc2RhMS8xMiAt
-ZCAvbmZzL3NkYTEvMTMgLWQgL25mcy9zZGExLzE0IC1kIC9uZnMvc2RhMS8xNSAtZCAvbmZzL3Nk
-YTEvMTYgLWQgL25mcy9zZGExLzE3IC1kIC9uZnMvc2RhMS8xOCAtZCAvbmZzL3NkYTEvMTkgLWQg
-L25mcy9zZGExLzIwIC1kIC9uZnMvc2RhMS8yMSAtZCAvbmZzL3NkYTEvMjIgLWQgL25mcy9zZGEx
-LzIzIC1kIC9uZnMvc2RhMS8yNCAtZCAvbmZzL3NkYTEvMjUgLWQgL25mcy9zZGExLzI2IC1kIC9u
-ZnMvc2RhMS8yNyAtZCAvbmZzL3NkYTEvMjggLWQgL25mcy9zZGExLzI5IC1kIC9uZnMvc2RhMS8z
-MCAtZCAvbmZzL3NkYTEvMzEgLWQgL25mcy9zZGExLzMyIC1EIDE2IC1OIDI1NiAtbiAzMjAwIC1M
-IDEgLVMgMSAtcyA5Cg==
-
---===============6263314048483504573==--
+--===============3001796718784771146==--
 
