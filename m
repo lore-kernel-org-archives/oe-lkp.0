@@ -1,347 +1,166 @@
-Content-Type: multipart/mixed; boundary="===============7063326080447564826=="
+Content-Type: multipart/mixed; boundary="===============6263314048483504573=="
 MIME-Version: 1.0
 From: Huang Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: [vmstat] c3916839649: -63.9% will-it-scale.time.involuntary_context_switches, -17.6% will-it-scale.time.voluntary_context_switches, no primary result change
-Date: Sun, 15 Feb 2015 15:55:19 +0800
-Message-ID: <1423986919.5538.14.camel@intel.com>
+Subject: [SUNRPC] c4a7ca77494: +6.0% fsmark.time.involuntary_context_switches, no primary result change
+Date: Sun, 15 Feb 2015 15:57:09 +0800
+Message-ID: <1423987029.5538.16.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7063326080447564826==
+--===============6263314048483504573==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 FYI, we noticed the below changes on
 
-git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-commit c3916839649ddb3c0d541ce346360c4197898d52 ("vmstat: do not use deferr=
-able delayed work for vmstat_update")
+commit c4a7ca774949960064dac11b326908f28407e8c3 ("SUNRPC: Allow waiting on =
+memory allocation")
 
 
-testbox/testcase/testparams: wsm/will-it-scale/performance-malloc1
+testbox/testcase/testparams: nhm4/fsmark/performance-1x-32t-1HDD-f2fs-nfsv4=
+-8K-400M-fsyncBeforeClose-16d-256fpd
 
-516245a5b8e7c56e  c3916839649ddb3c0d541ce346  =
+127b21b89f9d8ba0  c4a7ca774949960064dac11b32  =
 
 ----------------  --------------------------  =
 
-      1213 =C2=B1  1%     -63.9%        438 =C2=B1  6%  will-it-scale.time.=
-involuntary_context_switches
-   2978260 =C2=B1  4%     -17.6%    2453255 =C2=B1  3%  will-it-scale.time.=
-voluntary_context_switches
-       242 =C2=B1  0%      +3.3%        250 =C2=B1  1%  will-it-scale.time.=
-system_time
-   1274586 =C2=B1  5%     -84.6%     196270 =C2=B1  2%  cpuidle.C6-NHM.usage
-    140438 =C2=B1 18%     -72.4%      38803 =C2=B1 14%  cpuidle.C1-NHM.usage
-     33943 =C2=B1  8%     -72.9%       9203 =C2=B1  5%  sched_debug.cfs_rq[=
-5]:/.exec_clock
-    114238 =C2=B1 19%     +72.3%     196836 =C2=B1 17%  sched_debug.cpu#4.t=
+         %stddev     %change         %stddev
+             \          |                \  =
+
+     52524 =C2=B1  0%      +6.0%      55672 =C2=B1  0%  fsmark.time.involun=
+tary_context_switches
+       436 =C2=B1 14%     +54.9%        676 =C2=B1 20%  sched_debug.cfs_rq[=
+0]:/.tg_load_contrib
+       433 =C2=B1 15%     +54.7%        670 =C2=B1 21%  sched_debug.cfs_rq[=
+0]:/.blocked_load_avg
+      8348 =C2=B1  7%     +27.0%      10602 =C2=B1  9%  sched_debug.cfs_rq[=
+0]:/.min_vruntime
+    190081 =C2=B1 13%     +32.7%     252269 =C2=B1 13%  sched_debug.cpu#0.s=
+ched_goidle
+    205783 =C2=B1 12%     +30.2%     267903 =C2=B1 13%  sched_debug.cpu#0.t=
 twu_local
-    308423 =C2=B1 12%     -68.9%      95778 =C2=B1  1%  sched_debug.cfs_rq[=
-5]:/.min_vruntime
-    146477 =C2=B1 10%     +48.7%     217860 =C2=B1 17%  sched_debug.cpu#4.t=
-twu_count
-     64938 =C2=B1 16%     -26.8%      47543 =C2=B1  4%  sched_debug.cpu#0.t=
-twu_count
-  14242451 =C2=B1 14%     -65.4%    4921778 =C2=B1 15%  cpuidle.C1-NHM.time
-        37 =C2=B1 14%     -52.7%         17 =C2=B1 31%  sched_debug.cpu#5.c=
-pu_load[4]
-      1213 =C2=B1  1%     -63.9%        438 =C2=B1  6%  time.involuntary_co=
-ntext_switches
-     61803 =C2=B1 13%     -25.4%      46093 =C2=B1  4%  sched_debug.cpu#0.s=
-ched_goidle
-        40 =C2=B1 13%     -52.8%         19 =C2=B1 33%  sched_debug.cpu#5.c=
-pu_load[3]
-        46 =C2=B1 17%     -52.2%         22 =C2=B1 39%  sched_debug.cpu#5.c=
-pu_load[2]
-        79 =C2=B1 10%     +59.3%        126 =C2=B1 32%  sched_debug.cpu#6.c=
-pu_load[4]
-        73 =C2=B1 10%     +54.9%        113 =C2=B1 33%  sched_debug.cpu#6.c=
-pu_load[3]
-     48956 =C2=B1  5%     -46.1%      26390 =C2=B1 12%  sched_debug.cpu#5.n=
+    464065 =C2=B1 11%     +26.6%     587524 =C2=B1 12%  sched_debug.cpu#0.n=
+r_switches
+    464278 =C2=B1 11%     +26.6%     587734 =C2=B1 12%  sched_debug.cpu#0.s=
+ched_count
+     15807 =C2=B1 11%     +19.6%      18910 =C2=B1 12%  sched_debug.cpu#4.n=
 r_load_updates
-        54 =C2=B1 26%     -50.0%         27 =C2=B1 48%  sched_debug.cpu#5.c=
+    300041 =C2=B1  8%     +20.3%     360969 =C2=B1 10%  sched_debug.cpu#0.t=
+twu_count
+      1863 =C2=B1  9%     +18.1%       2201 =C2=B1 10%  sched_debug.cfs_rq[=
+4]:/.exec_clock
+
+testbox/testcase/testparams: nhm4/fsmark/performance-1x-32t-1HDD-btrfs-nfsv=
+4-8K-400M-fsyncBeforeClose-16d-256fpd
+
+127b21b89f9d8ba0  c4a7ca774949960064dac11b32  =
+
+----------------  --------------------------  =
+
+       fail:runs  %reproduction    fail:runs
+           |             |             |    =
+
+     52184 =C2=B1  0%      +5.6%      55122 =C2=B1  0%  fsmark.time.involun=
+tary_context_switches
+       557 =C2=B1 19%     +21.5%        677 =C2=B1  9%  sched_debug.cfs_rq[=
+5]:/.blocked_load_avg
+       217 =C2=B1 19%     -42.9%        124 =C2=B1 21%  sched_debug.cfs_rq[=
+2]:/.load
+     45852 =C2=B1 14%     -39.4%      27773 =C2=B1 24%  sched_debug.cpu#7.t=
+twu_local
+       457 =C2=B1 18%     +50.1%        686 =C2=B1 20%  sched_debug.cfs_rq[=
+0]:/.tg_load_contrib
+       455 =C2=B1 18%     +46.7%        668 =C2=B1 19%  sched_debug.cfs_rq[=
+0]:/.blocked_load_avg
+     66605 =C2=B1 10%     -26.7%      48826 =C2=B1 14%  sched_debug.cpu#7.s=
+ched_goidle
+     78249 =C2=B1  9%     -22.5%      60678 =C2=B1 11%  sched_debug.cpu#7.t=
+twu_count
+    153506 =C2=B1  9%     -22.7%     118649 =C2=B1 12%  sched_debug.cpu#7.n=
+r_switches
+    153613 =C2=B1  9%     -22.7%     118755 =C2=B1 12%  sched_debug.cpu#7.s=
+ched_count
+     15806 =C2=B1  6%     +19.2%      18833 =C2=B1 18%  sched_debug.cpu#4.n=
+r_load_updates
+      2171 =C2=B1  5%     +15.6%       2510 =C2=B1 13%  sched_debug.cfs_rq[=
+4]:/.exec_clock
+      9924 =C2=B1 11%     -27.0%       7244 =C2=B1 25%  sched_debug.cfs_rq[=
+3]:/.min_vruntime
+      3156 =C2=B1  4%     -13.4%       2734 =C2=B1  8%  sched_debug.cfs_rq[=
+7]:/.min_vruntime
+
+testbox/testcase/testparams: nhm4/fsmark/performance-1x-32t-1HDD-ext4-nfsv4=
+-9B-400M-fsyncBeforeClose-16d-256fpd
+
+127b21b89f9d8ba0  c4a7ca774949960064dac11b32  =
+
+----------------  --------------------------  =
+
+    104802 =C2=B1  0%      +7.7%     112883 =C2=B1  0%  fsmark.time.involun=
+tary_context_switches
+    471755 =C2=B1  0%      -1.3%     465592 =C2=B1  0%  fsmark.time.volunta=
+ry_context_switches
+      1977 =C2=B1 36%     +90.8%       3771 =C2=B1  8%  sched_debug.cpu#4.c=
+urr->pid
+         2 =C2=B1 34%     +80.0%          4 =C2=B1 24%  sched_debug.cpu#6.c=
 pu_load[1]
-       327 =C2=B1 10%     -44.1%        182 =C2=B1  8%  sched_debug.cfs_rq[=
-5]:/.tg_runnable_contrib
-     15032 =C2=B1 10%     -43.9%       8426 =C2=B1  8%  sched_debug.cfs_rq[=
-5]:/.avg->runnable_avg_sum
-     32594 =C2=B1  9%     +78.4%      58157 =C2=B1  0%  sched_debug.cfs_rq[=
-11]:/.exec_clock
-    285793 =C2=B1 11%     +73.6%     496180 =C2=B1  3%  sched_debug.cfs_rq[=
-11]:/.min_vruntime
-        83 =C2=B1 15%     -30.4%         57 =C2=B1 11%  sched_debug.cpu#10.=
-load
-        29 =C2=B1 12%     +72.4%         50 =C2=B1  5%  sched_debug.cpu#11.=
-cpu_load[4]
-        31 =C2=B1  9%     +59.8%         50 =C2=B1  6%  sched_debug.cpu#11.=
-cpu_load[3]
-        48 =C2=B1 15%     +41.5%         69 =C2=B1 11%  sched_debug.cfs_rq[=
-9]:/.runnable_load_avg
-        68 =C2=B1 25%     +41.9%         96 =C2=B1 20%  sched_debug.cfs_rq[=
-9]:/.load
-        81 =C2=B1 17%     -26.5%         59 =C2=B1 12%  sched_debug.cfs_rq[=
-10]:/.load
-       521 =C2=B1  9%     +43.4%        748 =C2=B1  6%  cpuidle.POLL.usage
-     14974 =C2=B1 12%     +46.0%      21864 =C2=B1  1%  sched_debug.cfs_rq[=
-11]:/.avg->runnable_avg_sum
-       327 =C2=B1 12%     +45.8%        476 =C2=B1  1%  sched_debug.cfs_rq[=
-11]:/.tg_runnable_contrib
-     58930 =C2=B1  6%     +41.2%      83196 =C2=B1  1%  sched_debug.cpu#11.=
-nr_load_updates
-      5326 =C2=B1 13%     -18.5%       4343 =C2=B1  4%  meminfo.AnonHugePag=
-es
-    222147 =C2=B1  7%     +47.1%     326809 =C2=B1 30%  sched_debug.cfs_rq[=
-6]:/.spread0
-    149897 =C2=B1 12%     +44.3%     216276 =C2=B1 17%  sched_debug.cpu#4.s=
-ched_goidle
-    127451 =C2=B1 13%     -24.2%      96598 =C2=B1  4%  sched_debug.cpu#0.n=
-r_switches
-    127599 =C2=B1 13%     -24.2%      96740 =C2=B1  4%  sched_debug.cpu#0.s=
-ched_count
-        36 =C2=B1  8%     +42.1%         51 =C2=B1  8%  sched_debug.cpu#11.=
-cpu_load[2]
-    301690 =C2=B1 12%     +43.9%     434016 =C2=B1 17%  sched_debug.cpu#4.n=
-r_switches
-    301787 =C2=B1 12%     +43.8%     434096 =C2=B1 17%  sched_debug.cpu#4.s=
-ched_count
-    116070 =C2=B1  3%     -25.4%      86585 =C2=B1  9%  sched_debug.cpu#11.=
-ttwu_count
-   1824349 =C2=B1  4%     +29.4%    2361351 =C2=B1  4%  cpuidle.C3-NHM.usage
-     10615 =C2=B1 13%     -17.4%       8766 =C2=B1 13%  sched_debug.cfs_rq[=
-3]:/.avg->runnable_avg_sum
-       230 =C2=B1 13%     -17.4%        190 =C2=B1 13%  sched_debug.cfs_rq[=
-3]:/.tg_runnable_contrib
-        61 =C2=B1 14%     -19.4%         49 =C2=B1 12%  sched_debug.cfs_rq[=
-10]:/.runnable_load_avg
-     99092 =C2=B1 10%     -16.8%      82477 =C2=B1  0%  sched_debug.cpu#10.=
-sched_goidle
-      1175 =C2=B1 12%     +18.8%       1397 =C2=B1 11%  sched_debug.cpu#11.=
-curr->pid
-    199498 =C2=B1 10%     -16.9%     165794 =C2=B1  0%  sched_debug.cpu#10.=
-sched_count
-    199295 =C2=B1 10%     -16.9%     165611 =C2=B1  0%  sched_debug.cpu#10.=
-nr_switches
-    326090 =C2=B1 12%     -11.6%     288127 =C2=B1  9%  sched_debug.cfs_rq[=
-2]:/.min_vruntime
- 6.955e+08 =C2=B1  1%     +25.2%  8.707e+08 =C2=B1  1%  cpuidle.C3-NHM.time
-   2978260 =C2=B1  4%     -17.6%    2453255 =C2=B1  3%  time.voluntary_cont=
-ext_switches
-  1.06e+08 =C2=B1  3%     -21.3%   83401246 =C2=B1  8%  cpuidle.C1E-NHM.time
-    109454 =C2=B1  4%     -19.9%      87649 =C2=B1  8%  sched_debug.cpu#6.t=
-twu_count
-        48 =C2=B1  3%     +17.6%         56 =C2=B1 10%  sched_debug.cpu#9.c=
-pu_load[2]
-    139443 =C2=B1  5%     +15.4%     160850 =C2=B1  4%  proc-vmstat.thp_fau=
-lt_alloc
-    139441 =C2=B1  5%     +15.4%     160848 =C2=B1  4%  proc-vmstat.thp_spl=
-it
-    220724 =C2=B1  2%     -20.1%     176362 =C2=B1  9%  sched_debug.cpu#11.=
-nr_switches
-    220846 =C2=B1  2%     -20.1%     176481 =C2=B1  9%  sched_debug.cpu#11.=
-sched_count
-    109644 =C2=B1  2%     -20.0%      87693 =C2=B1  9%  sched_debug.cpu#11.=
-sched_goidle
-        46 =C2=B1  2%     +17.3%         54 =C2=B1  8%  sched_debug.cpu#9.c=
-pu_load[3]
-     79492 =C2=B1  1%     +12.9%      89782 =C2=B1  4%  softirqs.SCHED
-    100431 =C2=B1  8%     -17.2%      83150 =C2=B1  9%  sched_debug.cpu#9.t=
-twu_count
-    726690 =C2=B1  2%     +11.9%     813169 =C2=B1  5%  sched_debug.cpu#4.a=
-vg_idle
-     91979 =C2=B1  0%     +12.9%     103877 =C2=B1 12%  sched_debug.cfs_rq[=
-6]:/.exec_clock
-    201606 =C2=B1  5%     -11.7%     177929 =C2=B1  5%  sched_debug.cpu#6.n=
-r_switches
-    201773 =C2=B1  5%     -11.7%     178108 =C2=B1  5%  sched_debug.cpu#6.s=
-ched_count
-    100423 =C2=B1  5%     -11.8%      88575 =C2=B1  5%  sched_debug.cpu#6.s=
-ched_goidle
-     40821 =C2=B1  2%     +15.8%      47259 =C2=B1  5%  softirqs.RCU
-        44 =C2=B1  3%     +16.9%         52 =C2=B1  8%  sched_debug.cpu#9.c=
-pu_load[4]
-      9.56 =C2=B1  4%     -11.6%       8.45 =C2=B1  1%  time.user_time
-    306985 =C2=B1 12%     -12.0%     270022 =C2=B1  4%  sched_debug.cfs_rq[=
-1]:/.min_vruntime
- 1.544e+09 =C2=B1  1%     -10.0%  1.389e+09 =C2=B1  0%  cpuidle.C6-NHM.time
-    115366 =C2=B1  1%     +11.3%     128364 =C2=B1 10%  sched_debug.cpu#6.n=
-r_load_updates
-     22.81 =C2=B1  1%     +10.8%      25.26 =C2=B1  1%  turbostat.CPU%c3
-     25858 =C2=B1  3%     -13.3%      22427 =C2=B1  2%  vmstat.system.cs
+         4 =C2=B1 33%     +83.3%          8 =C2=B1 31%  sched_debug.cpu#6.c=
+pu_load[0]
+       193 =C2=B1 17%     +48.0%        286 =C2=B1 19%  sched_debug.cfs_rq[=
+2]:/.blocked_load_avg
+       196 =C2=B1 17%     +47.5%        290 =C2=B1 19%  sched_debug.cfs_rq[=
+2]:/.tg_load_contrib
+        96 =C2=B1 18%     +40.6%        135 =C2=B1 11%  sched_debug.cfs_rq[=
+7]:/.load
+        97 =C2=B1 18%     +38.5%        135 =C2=B1 11%  sched_debug.cpu#7.l=
+oad
+      2274 =C2=B1  7%     -16.5%       1898 =C2=B1  3%  proc-vmstat.pgalloc=
+_dma
+       319 =C2=B1  6%     -29.7%        224 =C2=B1 24%  sched_debug.cfs_rq[=
+1]:/.tg_load_contrib
+       314 =C2=B1  5%     -29.4%        222 =C2=B1 25%  sched_debug.cfs_rq[=
+1]:/.blocked_load_avg
+       621 =C2=B1 10%     +41.9%        881 =C2=B1 37%  sched_debug.cfs_rq[=
+4]:/.avg->runnable_avg_sum
 
-wsm: Westmere
-Memory: 6G
+nhm4: Nehalem
+Memory: 4G
 
 
 
 
-                         time.involuntary_context_switches
+                      fsmark.time.involuntary_context_switches
 
-  1300 ++------------------------------------------------------------------=
+  114000 ++----------------------------------------------------------------=
 -+
-  1200 *+*..      .*.                      .*.           .*.      .*.*.*..*=
-.*
-       |       .*.   *.*.*..*.*.*..   .*..*   *.*..*.*.*.   *.*..*         =
+  113000 O+    O     O  O  O  O  O  O  O   O  O  O  O  O  O  O     O     O =
  |
-  1100 ++   *.*                    *.*                                     =
+         |  O     O                                             O     O    =
+ O
+  112000 ++                                                                =
  |
-  1000 ++                                                                  =
+  111000 ++                                                                =
  |
-       |                                                                   =
+         |                                                                 =
  |
-   900 ++                                                                  =
+  110000 ++                                                                =
  |
-   800 ++                                                                  =
+  109000 ++                                                                =
  |
-   700 ++                                                                  =
+  108000 ++                                                                =
  |
-       |                                                                   =
+         |                                                                 =
  |
-   600 ++                                                                  =
+  107000 ++                                                                =
  |
-   500 ++   O   O                         O                                =
+  106000 ++                                                                =
  |
-       O      O    O O O    O   O    O O    O O O    O                     =
+         |                                                                 =
  |
-   400 ++O               O    O    O               O                       =
+  105000 *+.*..*..*..*..*..*..*..*..*..*...*..*..*..*..*..*..*..*          =
  |
-   300 ++------------------------------------------------------------------=
--+
-
-
-                                  cpuidle.C3-NHM.time
-
-  9.5e+08 ++---------------------------------------------------------------=
--+
-          |                                                                =
- |
-    9e+08 ++                             O                                 =
- |
-          O      O O O      O   O O        O   O      O                    =
- |
-          | O O        O O    O     O  O     O    O O                      =
- |
-  8.5e+08 ++                                                               =
- |
-          |                                                                =
- |
-    8e+08 ++                                                               =
- |
-          |                                                                =
- |
-  7.5e+08 ++                                                               =
- |
-          |                .*   *.*.    .*.           *.                   =
- |
-          |     .*.*   *.*.  + +    *..*   *.*.      +  *                  =
- |
-    7e+08 *+ .*.    + +       *                *..*.*    +  .*.*.*. .*..*. =
-.*
-          | *        *                                    *.       *      *=
- |
-  6.5e+08 ++---------------------------------------------------------------=
--+
-
-
-                                  cpuidle.C6-NHM.time
-
-   1.6e+09 ++--------------------------------------------------------------=
--+
-           |                   *.                          *.             *=
- |
-           |.*.*..  *.*.      :  *    .*       .*   *     :  *.*.         :=
-:|
-  1.55e+09 *+      +    *.    :   :  *  +    .*  + + +    :      *.*..*  : =
-:|
-           |      *       *. :    : +    *..*     *   *..*             + : =
- *
-           |                *      *                                    *  =
- |
-   1.5e+09 ++                                                              =
- |
-           |                                                               =
- |
-  1.45e+09 ++                                                              =
- |
-           |                                                               =
- |
-           | O                       O                                     =
- |
-   1.4e+09 ++           O                           O                      =
- |
-           O   O          O O  O O     O      O O O   O                    =
- |
-           |      O O O            O        O                              =
- |
-  1.35e+09 ++----------------------------O---------------------------------=
--+
-
-
-                                 cpuidle.C6-NHM.usage
-
-  1.4e+06 ++--------------------------------------------------------------*=
--+
-          *.*.       *.*                         .*                    .*  =
- *
-  1.2e+06 ++  *..*. +   +  .*.*. .*.  .*.     .*.  + .*.*.  .*.*. .*.*.    =
- |
-          |        *     *.     *   *.   *.*.*      *     *.     *         =
- |
-    1e+06 ++                                                               =
- |
-          |                                                                =
- |
-   800000 ++                                                               =
- |
-          |                                                                =
- |
-   600000 ++                                                               =
- |
-          |                                                                =
- |
-   400000 ++                                                               =
- |
-          |                                                                =
- |
-   200000 O+O O  O O O O O  O O O O O  O O O O O  O O O                    =
- |
-          |                                                                =
- |
-        0 ++---------------------------------------------------------------=
--+
-
-
-                  will-it-scale.time.involuntary_context_switches
-
-  1300 ++------------------------------------------------------------------=
--+
-  1200 *+*..      .*.                      .*.           .*.      .*.*.*..*=
-.*
-       |       .*.   *.*.*..*.*.*..   .*..*   *.*..*.*.*.   *.*..*         =
- |
-  1100 ++   *.*                    *.*                                     =
- |
-  1000 ++                                                                  =
- |
-       |                                                                   =
- |
-   900 ++                                                                  =
- |
-   800 ++                                                                  =
- |
-   700 ++                                                                  =
- |
-       |                                                                   =
- |
-   600 ++                                                                  =
- |
-   500 ++   O   O                         O                                =
- |
-       O      O    O O O    O   O    O O    O O O    O                     =
- |
-   400 ++O               O    O    O               O                       =
- |
-   300 ++------------------------------------------------------------------=
+  104000 ++----------------------------------------------------------------=
 -+
 
 
@@ -366,7 +185,7 @@ design or configuration may affect actual performance.
 
 
 Thanks,
-Huang, Ying
+Fengguang
 
 
 _______________________________________________
@@ -374,49 +193,69 @@ LKP mailing list
 LKP(a)linux.intel.com
 
 
---===============7063326080447564826==
+--===============6263314048483504573==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job.yaml"
 
-LS0tCnRlc3RjYXNlOiB3aWxsLWl0LXNjYWxlCmRlZmF1bHQtbW9uaXRvcnM6CiAgd2FpdDogcHJl
-LXRlc3QKICB1cHRpbWU6IAogIGlvc3RhdDogCiAgdm1zdGF0OiAKICBudW1hLW51bWFzdGF0OiAK
-ICBudW1hLXZtc3RhdDogCiAgbnVtYS1tZW1pbmZvOiAKICBwcm9jLXZtc3RhdDogCiAgcHJvYy1z
-dGF0OiAKICBtZW1pbmZvOiAKICBzbGFiaW5mbzogCiAgaW50ZXJydXB0czogCiAgbG9ja19zdGF0
-OiAKICBsYXRlbmN5X3N0YXRzOiAKICBzb2Z0aXJxczogCiAgYmRpX2Rldl9tYXBwaW5nOiAKICBk
-aXNrc3RhdHM6IAogIG5mc3N0YXQ6IAogIGNwdWlkbGU6IAogIGNwdWZyZXEtc3RhdHM6IAogIHR1
-cmJvc3RhdDogCiAgcG1ldGVyOiAKICBzY2hlZF9kZWJ1ZzoKICAgIGludGVydmFsOiAxMApkZWZh
-dWx0X3dhdGNoZG9nczoKICB3YXRjaC1vb206IAogIHdhdGNoZG9nOiAKY3B1ZnJlcV9nb3Zlcm5v
-cjogcGVyZm9ybWFuY2UKY29tbWl0OiA3NDk2YWQ2NzJkMGVkNzE3N2ZlZmVjOWM3MGVjZThhNzBi
-YmQyZGMxCm1vZGVsOiBXZXN0bWVyZQptZW1vcnk6IDZHCm5yX2hkZF9wYXJ0aXRpb25zOiAxCmhk
-ZF9wYXJ0aXRpb25zOiAKc3dhcF9wYXJ0aXRpb25zOiAKcm9vdGZzX3BhcnRpdGlvbjogCm5ldGNv
-bnNvbGVfcG9ydDogNjY2NwpwZXJmLXByb2ZpbGU6CiAgZnJlcTogODAwCndpbGwtaXQtc2NhbGU6
-CiAgdGVzdDogbWFsbG9jMQp0ZXN0Ym94OiB3c20KdGJveF9ncm91cDogd3NtCmtjb25maWc6IHg4
-Nl82NC1yaGVsCmVucXVldWVfdGltZTogMjAxNS0wMi0xMiAwNzoyNTowOC45MzU5MjY1MDQgKzA4
-OjAwCmhlYWRfY29tbWl0OiA3NDk2YWQ2NzJkMGVkNzE3N2ZlZmVjOWM3MGVjZThhNzBiYmQyZGMx
-CmJhc2VfY29tbWl0OiBiZmE3NmQ0OTU3NjU5OWE0YjlmOWI3YTcxZjIzZDczZDZkY2ZmNzM1CmJy
-YW5jaDogbmV4dC9tYXN0ZXIKa2VybmVsOiAiL2tlcm5lbC94ODZfNjQtcmhlbC83NDk2YWQ2NzJk
-MGVkNzE3N2ZlZmVjOWM3MGVjZThhNzBiYmQyZGMxL3ZtbGludXotMy4xOS4wLW5leHQtMjAxNTAy
-MTItZzc0OTZhZDYiCnVzZXI6IGxrcApxdWV1ZTogY3ljbGljCnJvb3RmczogZGViaWFuLXg4Nl82
-NC0yMDE1LTAyLTA3LmNnegpyZXN1bHRfcm9vdDogIi9yZXN1bHQvd3NtL3dpbGwtaXQtc2NhbGUv
-cGVyZm9ybWFuY2UtbWFsbG9jMS9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6L3g4Nl82NC1y
-aGVsLzc0OTZhZDY3MmQwZWQ3MTc3ZmVmZWM5YzcwZWNlOGE3MGJiZDJkYzEvMCIKam9iX2ZpbGU6
-ICIvbGtwL3NjaGVkdWxlZC93c20vY3ljbGljX3dpbGwtaXQtc2NhbGUtcGVyZm9ybWFuY2UtbWFs
-bG9jMS14ODZfNjQtcmhlbC1IRUFELTc0OTZhZDY3MmQwZWQ3MTc3ZmVmZWM5YzcwZWNlOGE3MGJi
-ZDJkYzEtMC0yMDE1MDIxMi0zMTQ0MC1peDlwYTEueWFtbCIKZGVxdWV1ZV90aW1lOiAyMDE1LTAy
-LTEyIDE2OjM1OjQ1Ljc3ODI2ODc3MSArMDg6MDAKbnJfY3B1OiAiJChucHJvYykiCmpvYl9zdGF0
-ZTogZmluaXNoZWQKbG9hZGF2ZzogOC4zNyA0LjkxIDIuMDIgMS8xNTggNTYyOQpzdGFydF90aW1l
-OiAnMTQyMzczMDE2OScKZW5kX3RpbWU6ICcxNDIzNzMwNDc0Jwp2ZXJzaW9uOiAiL2xrcC9sa3Av
-LnNyYy0yMDE1MDIxMi0xNjI0MDgiCg==
+LS0tCnRlc3RjYXNlOiBmc21hcmsKZGVmYXVsdC1tb25pdG9yczoKICB3YWl0OiBwcmUtdGVzdAog
+IHVwdGltZTogCiAgaW9zdGF0OiAKICB2bXN0YXQ6IAogIG51bWEtbnVtYXN0YXQ6IAogIG51bWEt
+dm1zdGF0OiAKICBudW1hLW1lbWluZm86IAogIHByb2Mtdm1zdGF0OiAKICBwcm9jLXN0YXQ6IAog
+IG1lbWluZm86IAogIHNsYWJpbmZvOiAKICBpbnRlcnJ1cHRzOiAKICBsb2NrX3N0YXQ6IAogIGxh
+dGVuY3lfc3RhdHM6IAogIHNvZnRpcnFzOiAKICBiZGlfZGV2X21hcHBpbmc6IAogIGRpc2tzdGF0
+czogCiAgbmZzc3RhdDogCiAgY3B1aWRsZTogCiAgY3B1ZnJlcS1zdGF0czogCiAgdHVyYm9zdGF0
+OiAKICBwbWV0ZXI6IAogIHNjaGVkX2RlYnVnOgogICAgaW50ZXJ2YWw6IDEwCmRlZmF1bHRfd2F0
+Y2hkb2dzOgogIHdhdGNoLW9vbTogCiAgd2F0Y2hkb2c6IApjcHVmcmVxX2dvdmVybm9yOiBwZXJm
+b3JtYW5jZQpjb21taXQ6IDU3MjFmN2YwZjE0YjY4MmQyZTg2ZTlhNGFhOTAyNWFjYWY2OTM5OWQK
+bW9kZWw6IE5laGFsZW0KbnJfY3B1OiA4Cm1lbW9yeTogNEcKaGRkX3BhcnRpdGlvbnM6ICIvZGV2
+L2Rpc2svYnktaWQvYXRhLVdEQ19XRDEwMDNGQllaLTAxMEZCMF9XRC1XQ0FXMzY4MTIwNDEtcGFy
+dDEiCnN3YXBfcGFydGl0aW9uczogIi9kZXYvZGlzay9ieS1pZC9hdGEtV0RDX1dEMTAwM0ZCWVot
+MDEwRkIwX1dELVdDQVczNjgxMjA0MS1wYXJ0MiIKcm9vdGZzX3BhcnRpdGlvbjogIi9kZXYvZGlz
+ay9ieS1pZC9hdGEtV0RDX1dEMTAwM0ZCWVotMDEwRkIwX1dELVdDQVczNjgxMjA0MS1wYXJ0MyIK
+bmV0Y29uc29sZV9wb3J0OiA2NjQ5Cml0ZXJhdGlvbnM6IDF4Cm5yX3RocmVhZHM6IDMydApkaXNr
+OiAxSERECmZzOiBleHQ0CmZzMjogbmZzdjQKZnNtYXJrOgogIGZpbGVzaXplOiA5QgogIHRlc3Rf
+c2l6ZTogNDAwTQogIHN5bmNfbWV0aG9kOiBmc3luY0JlZm9yZUNsb3NlCiAgbnJfZGlyZWN0b3Jp
+ZXM6IDE2ZAogIG5yX2ZpbGVzX3Blcl9kaXJlY3Rvcnk6IDI1NmZwZAp0ZXN0Ym94OiBuaG00CnRi
+b3hfZ3JvdXA6IG5obTQKa2NvbmZpZzogeDg2XzY0LXJoZWwKZW5xdWV1ZV90aW1lOiAyMDE1LTAy
+LTEwIDIzOjU3OjM2LjY0NzEzNjM4OSArMDg6MDAKaGVhZF9jb21taXQ6IDU3MjFmN2YwZjE0YjY4
+MmQyZTg2ZTlhNGFhOTAyNWFjYWY2OTM5OWQKYmFzZV9jb21taXQ6IGJmYTc2ZDQ5NTc2NTk5YTRi
+OWY5YjdhNzFmMjNkNzNkNmRjZmY3MzUKYnJhbmNoOiBuZXh0L21hc3RlcgprZXJuZWw6ICIva2Vy
+bmVsL3g4Nl82NC1yaGVsLzU3MjFmN2YwZjE0YjY4MmQyZTg2ZTlhNGFhOTAyNWFjYWY2OTM5OWQv
+dm1saW51ei0zLjE5LjAtbmV4dC0yMDE1MDIxMS1nNTcyMWY3ZiIKdXNlcjogbGtwCnF1ZXVlOiBj
+eWNsaWMKcm9vdGZzOiBkZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6CnJlc3VsdF9yb290OiAi
+L3Jlc3VsdC9uaG00L2ZzbWFyay9wZXJmb3JtYW5jZS0xeC0zMnQtMUhERC1leHQ0LW5mc3Y0LTlC
+LTQwME0tZnN5bmNCZWZvcmVDbG9zZS0xNmQtMjU2ZnBkL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0w
+Ny5jZ3oveDg2XzY0LXJoZWwvNTcyMWY3ZjBmMTRiNjgyZDJlODZlOWE0YWE5MDI1YWNhZjY5Mzk5
+ZC8wIgpqb2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL25obTQvY3ljbGljX2ZzbWFyay1wZXJmb3Jt
+YW5jZS0xeC0zMnQtMUhERC1leHQ0LW5mc3Y0LTlCLTQwME0tZnN5bmNCZWZvcmVDbG9zZS0xNmQt
+MjU2ZnBkLXg4Nl82NC1yaGVsLUhFQUQtNTcyMWY3ZjBmMTRiNjgyZDJlODZlOWE0YWE5MDI1YWNh
+ZjY5Mzk5ZC0wLTIwMTUwMjEwLTEyMzQ1LTFvYm84cHMueWFtbCIKZGVxdWV1ZV90aW1lOiAyMDE1
+LTAyLTExIDE2OjUyOjE3LjY2Nzc1OTczMSArMDg6MDAKam9iX3N0YXRlOiBmaW5pc2hlZApsb2Fk
+YXZnOiAyOS4yMyAzOC4wNCAzMy42MyAxLzE1NSAyNzgxNwpzdGFydF90aW1lOiAnMTQyMzY0NDc2
+NicKZW5kX3RpbWU6ICcxNDIzNjQ2NDk5Jwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE1MDIx
+MS0xMTQ5MTMiCg==
 
---===============7063326080447564826==
+--===============6263314048483504573==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="reproduce.ksh"
 
-Li9ydW50ZXN0LnB5IG1hbGxvYzEgMzIgYm90aCAxIDYgOSAxMgo=
+bWtmcyAtdCBleHQ0IC1xIC1GIC9kZXYvc2RhMQptb3VudCAtdCBleHQ0IC9kZXYvc2RhMSAvZnMv
+c2RhMQovZXRjL2luaXQuZC9ycGNiaW5kIHN0YXJ0Ci9ldGMvaW5pdC5kL25mcy1jb21tb24gc3Rh
+cnQKL2V0Yy9pbml0LmQvbmZzLWtlcm5lbC1zZXJ2ZXIgc3RhcnQKbW91bnQgLXQgbmZzIC1vIHZl
+cnM9NCBsb2NhbGhvc3Q6L2ZzL3NkYTEgL25mcy9zZGExCi4vZnNfbWFyayAtZCAvbmZzL3NkYTEv
+MSAtZCAvbmZzL3NkYTEvMiAtZCAvbmZzL3NkYTEvMyAtZCAvbmZzL3NkYTEvNCAtZCAvbmZzL3Nk
+YTEvNSAtZCAvbmZzL3NkYTEvNiAtZCAvbmZzL3NkYTEvNyAtZCAvbmZzL3NkYTEvOCAtZCAvbmZz
+L3NkYTEvOSAtZCAvbmZzL3NkYTEvMTAgLWQgL25mcy9zZGExLzExIC1kIC9uZnMvc2RhMS8xMiAt
+ZCAvbmZzL3NkYTEvMTMgLWQgL25mcy9zZGExLzE0IC1kIC9uZnMvc2RhMS8xNSAtZCAvbmZzL3Nk
+YTEvMTYgLWQgL25mcy9zZGExLzE3IC1kIC9uZnMvc2RhMS8xOCAtZCAvbmZzL3NkYTEvMTkgLWQg
+L25mcy9zZGExLzIwIC1kIC9uZnMvc2RhMS8yMSAtZCAvbmZzL3NkYTEvMjIgLWQgL25mcy9zZGEx
+LzIzIC1kIC9uZnMvc2RhMS8yNCAtZCAvbmZzL3NkYTEvMjUgLWQgL25mcy9zZGExLzI2IC1kIC9u
+ZnMvc2RhMS8yNyAtZCAvbmZzL3NkYTEvMjggLWQgL25mcy9zZGExLzI5IC1kIC9uZnMvc2RhMS8z
+MCAtZCAvbmZzL3NkYTEvMzEgLWQgL25mcy9zZGExLzMyIC1EIDE2IC1OIDI1NiAtbiAzMjAwIC1M
+IDEgLVMgMSAtcyA5Cg==
 
---===============7063326080447564826==--
+--===============6263314048483504573==--
 
