@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============4622854050818935971=="
+Content-Type: multipart/mixed; boundary="===============7408639422375081836=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [sched/deadline] kernel BUG at kernel/sched/deadline.c:805!
-Date: Mon, 16 Feb 2015 14:29:44 +0100
-Message-ID: <20150216132944.GC5029@twins.programming.kicks-ass.net>
+Date: Mon, 16 Feb 2015 21:37:35 +0800
+Message-ID: <20150216133735.GA4158@wfg-t540p.sh.intel.com>
 In-Reply-To: <20150216132557.GA3720@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4622854050818935971==
+--===============7408639422375081836==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -31,9 +31,14 @@ nfig-x1-02152111/1019a359d3dc4b64d0e1e5a5efcb725d5e83994d/vmlinuz-3.19.0-rc=
 > =
 
 > Sorry it looks the script does not reliably include the config.
-> Here it is.
 
-Awesome, thanks!
+It's the mailing system going wrong somewhere between the robot and me.
+The original email copy was good, however attachments get truncated/lost =
 
---===============4622854050818935971==--
+when reach me.
+
+Thanks,
+Fengguang
+
+--===============7408639422375081836==--
 
