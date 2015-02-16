@@ -1,35 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============5759142151896836002=="
+Content-Type: multipart/mixed; boundary="===============3169424997967974966=="
 MIME-Version: 1.0
 From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [sched/deadline] kernel BUG at kernel/sched/deadline.c:805!
-Date: Mon, 16 Feb 2015 15:44:12 +0100
-Message-ID: <20150216144412.GS24151@twins.programming.kicks-ass.net>
-In-Reply-To: <20150216130821.GB5029@twins.programming.kicks-ass.net>
+Subject: Re: [sched] BUG: kernel boot hang
+Date: Mon, 16 Feb 2015 16:07:33 +0100
+Message-ID: <20150216150733.GD5029@twins.programming.kicks-ass.net>
+In-Reply-To: <20150215131807.30c1808c@grimm.local.home>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5759142151896836002==
+--===============3169424997967974966==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 16, 2015 at 02:08:21PM +0100, Peter Zijlstra wrote:
-> On Mon, Feb 16, 2015 at 03:38:34PM +0300, Kirill Tkhai wrote:
-> > We shouldn't enqueue migrating tasks. Please, try this one instead ;)
+On Sun, Feb 15, 2015 at 01:18:07PM -0500, Steven Rostedt wrote:
+> On Sun, 15 Feb 2015 16:46:22 +0100
+> Frederic Weisbecker <fweisbec@gmail.com> wrote:
+> > diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> > index c017a5f..a6d4d6c 100644
+> > --- a/kernel/sched/core.c
+> > +++ b/kernel/sched/core.c
+> > @@ -2879,7 +2879,7 @@ void __sched schedule_preempt_disabled(void)
+> >  	preempt_disable();
+> >  }
+> >  =
+
+> > -static void preempt_schedule_common(void)
+> > +static void __sched notrace preempt_schedule_common(void)
+> >  {
+> >  	do {
+> >  		preempt_count_add(PREEMPT_ACTIVE);
 > =
 
-> Ha, we should amend that task-rq-lock loop for that. See below.
+> Ah, since I added better recursion protection code in function tracer
+> this didn't break that. But unfortunately, function graph tracer
+> doesn't have that protection.
 > =
 
-> I've not yet tested; going to try and reconstruct a .config that
-> triggers the oops.
+> If it traces between preempt_schedule() and where it sets
+> PREEMPT_ACTIVE, it can indeed go into an infinite recursion. Yeah,
+> preempt_schedule_common() should be notrace, at least until we change
+> function_graph to have that recursion protection.
+> =
 
-OK, I had to remove -enable-kvm from Wu's script, otherwise the test
-would not hit the CBS limit, and then I had to remove the panic on
-softlockup because well, qemu is so slow you're going to hit that :-)
+> Acked-by: Steven Rostedt <rostedt@goodmis.org>
 
-But the good news is that I could reproduce and this patch does indeed
-seem to solve it.
 
---===============5759142151896836002==--
+Can someone shoot me a proper patch with Changelog and such?
+
+--===============3169424997967974966==--
 
