@@ -1,125 +1,117 @@
-Content-Type: multipart/mixed; boundary="===============7454267810706340197=="
+Content-Type: multipart/mixed; boundary="===============5098519193452509892=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: [ipmi] d9b7e4f717a: +52.5% turbostat.%Busy
-Date: Wed, 11 Feb 2015 12:05:17 +0800
-Message-ID: <1423627517.8112.0.camel@intel.com>
+Subject: Re: [sched/deadline] kernel BUG at kernel/sched/deadline.c:805!
+Date: Mon, 16 Feb 2015 14:08:21 +0100
+Message-ID: <20150216130821.GB5029@twins.programming.kicks-ass.net>
+In-Reply-To: <1374601424090314@web4j.yandex.ru>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7454267810706340197==
+--===============5098519193452509892==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
+On Mon, Feb 16, 2015 at 03:38:34PM +0300, Kirill Tkhai wrote:
+> We shouldn't enqueue migrating tasks. Please, try this one instead ;)
 
-commit d9b7e4f717a167610a49ceb9e5969e80146c89a8 ("ipmi: Periodically check =
-to see if irqs and messages are set right")
+Ha, we should amend that task-rq-lock loop for that. See below.
 
-testbox/testcase/testparams: avoton3/idle/performance-10m
+I've not yet tested; going to try and reconstruct a .config that
+triggers the oops.
 
-6a11e5c67a397e9a  d9b7e4f717a167610a49ceb9e5  =
+---
+Subject: sched/dl: Prevent enqueue of a sleeping task in dl_task_timer()
+From: Kirill Tkhai <tkhai@yandex.ru>
+Date: Mon, 16 Feb 2015 15:38:34 +0300
 
-----------------  --------------------------  =
+A deadline task may be throttled and dequeued at the same time.
+This happens, when it becomes throttled in schedule(), which
+is called to go to sleep:
 
-         %stddev     %change         %stddev
-             \          |                \  =
+current->state =3D TASK_INTERRUPTIBLE;
+schedule()
+    deactivate_task()
+        dequeue_task_dl()
+            update_curr_dl()
+                start_dl_timer()
+            __dequeue_task_dl()
+    prev->on_rq =3D 0;
 
-      0.10 =C2=B1  0%     +52.5%       0.15 =C2=B1  2%  turbostat.%Busy
-         2 =C2=B1  0%     +50.0%          3 =C2=B1  0%  turbostat.Avg_MHz
+Later the timer fires, but the task is still dequeued:
 
-                                  turbostat.%Busy
+dl_task_timer()
+    enqueue_task_dl() /* queues on dl_rq; on_rq remains 0 */
 
-   0.2 ++----O-O-----------------------------------------------------------=
--+
-       |                                                                   =
- |
-  0.18 ++                                                                  =
- |
-       |                                                                   =
- |
-       |                                                                   =
- |
-  0.16 ++         O     O O  O  O       O  O  O O  O  O  O O          O    =
- |
-       O  O          O             O O                        O  O  O      =
- |
-  0.14 ++                                                                  =
- |
-       |                                                                   =
- |
-  0.12 ++    *.*                     *                                     =
- |
-       |   ..   +                   : +                                    =
- |
-       | .*      +                  :  +                                   =
- |
-   0.1 *+         *..  .*.*..  .*..*    *..*..*.*..*..*..*.*..*..*..*.*..*.=
-.*
-       |             *.      *.                                            =
- |
-  0.08 ++------------------------------------------------------------------=
--+
+Someone wakes it up:
 
+try_to_wake_up()
 
-	[*] bisect-good sample
-	[O] bisect-bad  sample
+    enqueue_dl_entity()
+        BUG_ON(on_dl_rq())
 
-To reproduce:
+Patch fixes this problem, it prevents queueing !on_rq tasks
+on dl_rq.
 
-	apt-get install ruby ruby-oj
-	git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tests.git
-	cd lkp-tests
-	bin/setup-local job.yaml # the job file attached in this email
-	bin/run-local   job.yaml
+Also teach the rq-lock loop about TASK_ON_RQ_MIGRATING as per
+cca26e8009d1 ("sched: Teach scheduler to understand
+TASK_ON_RQ_MIGRATING state").
 
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
+Fixes: 1019a359d3dc ("sched/deadline: Fix stale yield state")
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Juri Lelli <juri.lelli@arm.com>
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+Signed-off-by: Kirill Tkhai <ktkhai@parallels.com>
+[peterz: Wrote comment; fixed task-rq-lock loop]
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: http://lkml.kernel.org/r/1374601424090314(a)web4j.yandex.ru
+---
+ kernel/sched/deadline.c |   25 ++++++++++++++++++++++---
+ 1 file changed, 22 insertions(+), 3 deletions(-)
 
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -515,9 +515,8 @@ static enum hrtimer_restart dl_task_time
+ again:
+ 	rq =3D task_rq(p);
+ 	raw_spin_lock(&rq->lock);
+-
+-	if (rq !=3D task_rq(p)) {
+-		/* Task was moved, retrying. */
++	if (rq !=3D task_rq(p) || task_on_rq_migrating(p)) {
++		/* Task was move{d,ing}, retry */
+ 		raw_spin_unlock(&rq->lock);
+ 		goto again;
+ 	}
+@@ -541,6 +540,26 @@ static enum hrtimer_restart dl_task_time
+ =
 
+ 	sched_clock_tick();
+ 	update_rq_clock(rq);
++
++	/*
++	 * If the throttle happened during sched-out; like:
++	 *
++	 *   schedule()
++	 *     deactivate_task()
++	 *       dequeue_task_dl()
++	 *         update_curr_dl()
++	 *           start_dl_timer()
++	 *         __dequeue_task_dl()
++	 *     prev->on_rq =3D 0;
++	 *
++	 * We can be both throttled and !queued. Replenish the counter
++	 * but do not enqueue -- wait for our wakeup to do that.
++	 */
++	if (!task_on_rq_queued(p)) {
++		replenish_dl_entity(dl_se, dl_se);
++		goto unlock;
++	}
++
+ 	enqueue_task_dl(rq, p, ENQUEUE_REPLENISH);
+ 	if (dl_task(rq->curr))
+ 		check_preempt_curr_dl(rq, p, 0);
 
-_______________________________________________
-LKP mailing list
-LKP(a)linux.intel.com
-
-
---===============7454267810706340197==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job.yaml"
-
-LS0tCnRlc3RjYXNlOiBpZGxlCmRlZmF1bHQtbW9uaXRvcnM6CiAgbGF0ZW5jeV9zdGF0czogCiAg
-aW50ZXJydXB0czogCiAgc29mdGlycXM6IAogIGNwdWlkbGU6IAogIHR1cmJvc3RhdDogCiAgcG1l
-dGVyOiAKZGVmYXVsdF93YXRjaGRvZ3M6CiAgd2F0Y2gtb29tOiAKICB3YXRjaGRvZzogCmNwdWZy
-ZXFfZ292ZXJub3I6IHBlcmZvcm1hbmNlCmNvbW1pdDogZjg3NmYwY2ZmNmQ0NjBmMDNjZDkzNzEw
-NDMxNGYzNjZkZmE5MjI2MQptb2RlbDogQXZvdG9uCm1lbW9yeTogOEcKaGRkX3BhcnRpdGlvbnM6
-ICIvZGV2L2Rpc2svYnktaWQvYXRhLVNUOTI1MDYxME5TXzlYRTBCU1dILXBhcnQyIgpzd2FwX3Bh
-cnRpdGlvbnM6IApyb290ZnNfcGFydGl0aW9uOiAiL2Rldi9kaXNrL2J5LWlkL2F0YS1TVDkyNTA2
-MTBOU185WEUwQlNXSC1wYXJ0MSIKdXNlcjogd2ZnCnJvb3RmczogZGViaWFuLXg4Nl82NC0yMDE1
-LTAyLTA3LmNnegpwbWV0ZXJfc2VydmVyOiBsa3Atd2lsZGNhdApwbWV0ZXJfZGV2aWNlOiB5b2tv
-Z2F3YS13dDMxMApzdG9wX2RhZW1vbnM6IApzbGVlcDogMTBtCnRlc3Rib3g6IGF2b3RvbjMKdGJv
-eF9ncm91cDogYXZvdG9uMwprY29uZmlnOiB4ODZfNjQtcmhlbAplbnF1ZXVlX3RpbWU6IDIwMTUt
-MDItMDcgMTU6Mjc6MzEuMDg1OTMxMzQ3ICswODowMApoZWFkX2NvbW1pdDogZjg3NmYwY2ZmNmQ0
-NjBmMDNjZDkzNzEwNDMxNGYzNjZkZmE5MjI2MQpiYXNlX2NvbW1pdDogZTM2ZjAxNGVkZmY3MGZj
-MDJiM2QzZDc5Y2VhZDFkNThmMjg5MzMyZQpicmFuY2g6IGxpbnV4LWRldmVsL2RldmVsLWhvdXJs
-eS0yMDE1MDIwNTIyCmtlcm5lbDogIi9rZXJuZWwveDg2XzY0LXJoZWwvZjg3NmYwY2ZmNmQ0NjBm
-MDNjZDkzNzEwNDMxNGYzNjZkZmE5MjI2MS92bWxpbnV6LTMuMTkuMC1yYzctZ2Y4NzZmMGMiCnF1
-ZXVlOiBjeWNsaWMKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L2F2b3RvbjMvaWRsZS9wZXJmb3JtYW5j
-ZS0xMG0vZGViaWFuLXg4Nl82NC0yMDE1LTAyLTA3LmNnei94ODZfNjQtcmhlbC9mODc2ZjBjZmY2
-ZDQ2MGYwM2NkOTM3MTA0MzE0ZjM2NmRmYTkyMjYxLzAiCmpvYl9maWxlOiAiL2xrcC9zY2hlZHVs
-ZWQvYXZvdG9uMy9jeWNsaWNfaWRsZS1wZXJmb3JtYW5jZS0xMG0tZGViaWFuLXg4Nl82NC5jZ3ot
-eDg2XzY0LXJoZWwtSEVBRC1mODc2ZjBjZmY2ZDQ2MGYwM2NkOTM3MTA0MzE0ZjM2NmRmYTkyMjYx
-LTAtMjAxNTAyMDctOTU4OTMtMWkxbzJrbS55YW1sIgpkZXF1ZXVlX3RpbWU6IDIwMTUtMDItMDcg
-MTU6NDc6MzUuNTkwNDk3NTU5ICswODowMApucl9jcHU6ICIkKG5wcm9jKSIKam9iX3N0YXRlOiBm
-aW5pc2hlZApsb2FkYXZnOiAwLjAwIDAuMDQgMC4wNSAxLzkzIDY4MApzdGFydF90aW1lOiAnMTQy
-MzI5NTM3OCcKZW5kX3RpbWU6ICcxNDIzMjk1OTc4Jwp2ZXJzaW9uOiAiL2xrcC93ZmcvLnNyYy0y
-MDE1MDIwNy0xMjUxMzQiCg==
-
---===============7454267810706340197==--
+--===============5098519193452509892==--
 
