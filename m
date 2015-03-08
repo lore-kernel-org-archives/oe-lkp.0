@@ -1,143 +1,163 @@
-Content-Type: multipart/mixed; boundary="===============7424685507938389714=="
+Content-Type: multipart/mixed; boundary="===============8252989694168660412=="
 MIME-Version: 1.0
-From: Denys Vlasenko <vda.linux@googlemail.com>
+From: Andy Lutomirski <luto@amacapital.net>
 To: lkp@lists.01.org
 Subject: Re: [x86/asm/entry] BUG: unable to handle kernel paging request
-Date: Sun, 08 Mar 2015 20:13:28 +0100
-Message-ID: <CAK1hOcMrNb=RSqB92LzXRBRVZBkOdwggERSS3FLKak1EZi9gkA@mail.gmail.com>
-In-Reply-To: <CALCETrVvuQEu5Az4EFUr6Fhx00bFS3NCwN6MJ3gY00o4u2eWWg@mail.gmail.com>
+Date: Sun, 08 Mar 2015 12:41:29 -0700
+Message-ID: <CALCETrU3Ums8SnNQttoCYkdDi-T=HkhCQs-jvF21Nh6igJ3Mhw@mail.gmail.com>
+In-Reply-To: <CAK1hOcMrNb=RSqB92LzXRBRVZBkOdwggERSS3FLKak1EZi9gkA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7424685507938389714==
+--===============8252989694168660412==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Mar 7, 2015 at 1:33 AM, Andy Lutomirski <luto@amacapital.net> wro=
-te:
-> On Fri, Mar 6, 2015 at 3:30 PM, Fengguang Wu <fengguang.wu@intel.com> w=
+On Sun, Mar 8, 2015 at 12:13 PM, Denys Vlasenko
+<vda.linux@googlemail.com> wrote:
+> On Sat, Mar 7, 2015 at 1:33 AM, Andy Lutomirski <luto@amacapital.net> w=
 rote:
->> Greetings,
+>> On Fri, Mar 6, 2015 at 3:30 PM, Fengguang Wu <fengguang.wu@intel.com> =
+wrote:
+>>> Greetings,
+>>>
+>>> 0day kernel testing robot got the below dmesg and the first bad commit =
+is
+>>>
+>>> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/asm
+>>>
+>>> commit 75182b1632a89f12540baa1806a7c5c180db620c
+>>> Author:     Andy Lutomirski <luto@amacapital.net>
+>>> AuthorDate: Thu Mar 5 19:19:03 2015 -0800
+>>> Commit:     Ingo Molnar <mingo@kernel.org>
+>>> CommitDate: Fri Mar 6 08:32:57 2015 +0100
+>>>
+>>>     x86/asm/entry: Switch all C consumers of kernel_stack to this_cpu_s=
+p0()
 >>
->> 0day kernel testing robot got the below dmesg and the first bad commit is
+>> This problem only happens on 32-bit kernels, and the culprit is, sort of:
 >>
->> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/asm
+>> /*
+>>  * The below -8 is to reserve 8 bytes on top of the ring0 stack.
+>>  * This is necessary to guarantee that the entire "struct pt_regs"
+>>  * is accessible even if the CPU haven't stored the SS/ESP registers
+>>  * on the stack (interrupt gate does not save these registers
+>>  * when switching to the same priv ring).
+>>  * Therefore beware: accessing the ss/esp fields of the
+>>  * "struct pt_regs" is possible, but they may contain the
+>>  * completely wrong values.
+>>  */
+>> #define task_pt_regs(task)                                             \
+>> ({                                                                     \
+>>        struct pt_regs *__regs__;                                       \
+>>        __regs__ =3D (struct pt_regs *)(KSTK_TOP(task_stack_page(task))-8=
+); \
+>>        __regs__ - 1;                                                   \
+>> })
 >>
->> commit 75182b1632a89f12540baa1806a7c5c180db620c
->> Author:     Andy Lutomirski <luto@amacapital.net>
->> AuthorDate: Thu Mar 5 19:19:03 2015 -0800
->> Commit:     Ingo Molnar <mingo@kernel.org>
->> CommitDate: Fri Mar 6 08:32:57 2015 +0100
+>> I'm confused about multiple things:
 >>
->>     x86/asm/entry: Switch all C consumers of kernel_stack to this_cpu_sp=
-0()
+>> 1. I don't understand this comment.
 >
-> This problem only happens on 32-bit kernels, and the culprit is, sort of:
+> Comment says that in 32-bit x86, interrupts and exceptions
+> in ring 0 do not push SS,ESP - they only save EFLAGS,CS,EIP
+> in iret frame. (This happens because CPL doesn't
+> change, not beacuse ot is zero).
 >
-> /*
->  * The below -8 is to reserve 8 bytes on top of the ring0 stack.
->  * This is necessary to guarantee that the entire "struct pt_regs"
->  * is accessible even if the CPU haven't stored the SS/ESP registers
->  * on the stack (interrupt gate does not save these registers
->  * when switching to the same priv ring).
->  * Therefore beware: accessing the ss/esp fields of the
->  * "struct pt_regs" is possible, but they may contain the
->  * completely wrong values.
->  */
-> #define task_pt_regs(task)                                             \
-> ({                                                                     \
->        struct pt_regs *__regs__;                                       \
->        __regs__ =3D (struct pt_regs *)(KSTK_TOP(task_stack_page(task))-8)=
-; \
->        __regs__ - 1;                                                   \
-> })
+> IRET insn likewise does not restore SS,ESP if it detects
+> that RPL(stack_CS) =3D RPL(CS).
 >
-> I'm confused about multiple things:
+> This was changed for 64-bit more for two reasons:
+> (1) it's simpler, and
+> (2) it makes it possible for CPU to automatically align stack
+> to 16-byte boundary (you need to undo that on iretq,
+> therefore you need to always save old RSP).
 >
-> 1. I don't understand this comment.
-
-Comment says that in 32-bit x86, interrupts and exceptions
-in ring 0 do not push SS,ESP - they only save EFLAGS,CS,EIP
-in iret frame. (This happens because CPL doesn't
-change, not beacuse ot is zero).
-
-IRET insn likewise does not restore SS,ESP if it detects
-that RPL(stack_CS) =3D RPL(CS).
-
-This was changed for 64-bit more for two reasons:
-(1) it's simpler, and
-(2) it makes it possible for CPU to automatically align stack
-to 16-byte boundary (you need to undo that on iretq,
-therefore you need to always save old RSP).
-
->From AMD docs:
-
-"8.9.3 Interrupt Stack Frame
-In long mode, the return-program stack pointer (SS:RSP) is always
-pushed onto the interrupt-handler
-stack, regardless of whether or not a privilege change occurs.
-Although the SS register is not used in
-64-bit mode, SS is pushed to allow returns into compatibility mode.
-Pushing SS:RSP unconditionally
-presents operating systems with a consistent interrupt-stack-frame
-size for all interrupts, except for
-error codes. Interrupt service-routine entry points that handle
-interrupts generated by non-error-code
-interrupts can push an error code on the stack for consistency.
-In long mode, when a control transfer to an interrupt handler occurs,
-the processor performs the
-following:
-1. Aligns the new interrupt-stack frame by masking RSP with
-FFFF_FFFF_FFFF_FFF0h.
-..."
-
-> 2. copy_thread thinks that sp0 should be task_pt_regs + 1, which is 8
-> bytes below the top of the stack.  cpu_tss, formerly INIT_TSS, thinks
-> that sp0 should be the top of the stack.  This is inconsistent.  What
-> gives?
-
-I ran a small test: made "umask" syscall print where  pt_regs is,
-and where it's end is:
-
-SYSCALL_DEFINE1(umask, int, mask)
-{
-        struct pt_regs *regs =3D task_pt_regs(current);
-        unsigned long ptregs =3D (unsigned long)regs;
-
-        pr_err("[%d] current:%lx pt_regs:%lx pt_regs_end:%lx\n",
-                current->pid, (long)current, ptregs, ptregs + sizeof(*regs)=
-);
-        ....
-
-Result:
-
-/ # umask
-[    8.393450] [910] current:c777ce00 pt_regs:c7567fb4 pt_regs_end:c7567ff8
-[    8.396601] [910] current:c777ce00 pt_regs:c7567fb4 pt_regs_end:c7567ff8
-
-It seems to be true that 32-bit x86 always has two unused words
-beyond "struct pt_regs" on stack during syscalls.
-
-IOW: tss.sp0 is *not* set at the very end of the stack on 32-bit.
-
-> 3. vm86 does something terrible to sp0, which might mean that we can't
-> use sp0 to find the top of the stack in general on 32-bit kernels,
-> which is sad.  We might need a partial revert or to introduce a
-> per-cpu variable "real_sp0" on 32-bit.  Ugh.  Could someone who
-> understands vm86 mode better than me give me a hint?
+> From AMD docs:
 >
-> 4. Not directly related, but the 32-bit tss_struct contains this gem:
+> "8.9.3 Interrupt Stack Frame
+> In long mode, the return-program stack pointer (SS:RSP) is always
+> pushed onto the interrupt-handler
+> stack, regardless of whether or not a privilege change occurs.
+> Although the SS register is not used in
+> 64-bit mode, SS is pushed to allow returns into compatibility mode.
+> Pushing SS:RSP unconditionally
+> presents operating systems with a consistent interrupt-stack-frame
+> size for all interrupts, except for
+> error codes. Interrupt service-routine entry points that handle
+> interrupts generated by non-error-code
+> interrupts can push an error code on the stack for consistency.
+> In long mode, when a control transfer to an interrupt handler occurs,
+> the processor performs the
+> following:
+> 1. Aligns the new interrupt-stack frame by masking RSP with
+> FFFF_FFFF_FFFF_FFF0h.
+> ..."
 >
->     /*
->      * .. and then another 0x100 bytes for the emergency kernel stack:
->      */
->     unsigned long        stack[64];
+>> 2. copy_thread thinks that sp0 should be task_pt_regs + 1, which is 8
+>> bytes below the top of the stack.  cpu_tss, formerly INIT_TSS, thinks
+>> that sp0 should be the top of the stack.  This is inconsistent.  What
+>> gives?
 >
-> Last I checked, 0x100 !=3D 64.  Also, wow, this is kind of disgusting. :)
+> I ran a small test: made "umask" syscall print where  pt_regs is,
+> and where it's end is:
+>
+> SYSCALL_DEFINE1(umask, int, mask)
+> {
+>         struct pt_regs *regs =3D task_pt_regs(current);
+>         unsigned long ptregs =3D (unsigned long)regs;
+>
+>         pr_err("[%d] current:%lx pt_regs:%lx pt_regs_end:%lx\n",
+>                 current->pid, (long)current, ptregs, ptregs + sizeof(*reg=
+s));
+>         ....
+>
+> Result:
+>
+> / # umask
+> [    8.393450] [910] current:c777ce00 pt_regs:c7567fb4 pt_regs_end:c7567f=
+f8
+> [    8.396601] [910] current:c777ce00 pt_regs:c7567fb4 pt_regs_end:c7567f=
+f8
+>
+> It seems to be true that 32-bit x86 always has two unused words
+> beyond "struct pt_regs" on stack during syscalls.
+>
+> IOW: tss.sp0 is *not* set at the very end of the stack on 32-bit.
 
+So maybe the idea is that, if we end up using sp0 for an entry *from*
+ring 0, then the struct pt_regs won't dangle off the top of the stack.
+But this still doesn't make sense to me: if we enter from ring 0, then
+the CPU won't look at sp0 in the first place.
 
-Seems to be unused: I commented it out on "defconfig" build
-and got no build errors.
+Linus, if you're paying attention here, I suspect that you wrote this
+code.  Do you remember what the point is?
 
---===============7424685507938389714==--
+>
+>> 3. vm86 does something terrible to sp0, which might mean that we can't
+>> use sp0 to find the top of the stack in general on 32-bit kernels,
+>> which is sad.  We might need a partial revert or to introduce a
+>> per-cpu variable "real_sp0" on 32-bit.  Ugh.  Could someone who
+>> understands vm86 mode better than me give me a hint?
+>>
+>> 4. Not directly related, but the 32-bit tss_struct contains this gem:
+>>
+>>     /*
+>>      * .. and then another 0x100 bytes for the emergency kernel stack:
+>>      */
+>>     unsigned long        stack[64];
+>>
+>> Last I checked, 0x100 !=3D 64.  Also, wow, this is kind of disgusting. :)
+>
+>
+> Seems to be unused: I commented it out on "defconfig" build
+> and got no build errors.
+
+It's used.  On 32-bit, NMIs don't use task gates (I don't know why),
+so sysenter is set up to set rsp to point to that "stack".  If an NMI
+happens before we fix rsp, then we'll use this stack temporarily.
+
+--Andy
+
+--===============8252989694168660412==--
 
