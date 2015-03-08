@@ -1,58 +1,77 @@
-Content-Type: multipart/mixed; boundary="===============3151753248106285691=="
+Content-Type: multipart/mixed; boundary="===============0402961958388861477=="
 MIME-Version: 1.0
 From: Denys Vlasenko <vda.linux@googlemail.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/asm/entry] BUG: unable to handle kernel paging request
-Date: Sun, 08 Mar 2015 20:59:21 +0100
-Message-ID: <CAK1hOcN0NkW7w3-zSxgfdLn+0fXwR0FEPurp_WnUniLyAXHacQ@mail.gmail.com>
-In-Reply-To: <CALCETrU3Ums8SnNQttoCYkdDi-T=HkhCQs-jvF21Nh6igJ3Mhw@mail.gmail.com>
+Date: Sun, 08 Mar 2015 21:22:27 +0100
+Message-ID: <CAK1hOcO8vMt3zF=2giSH-s5-POyav9eEvJ0wJaK9iKq1KX2k8A@mail.gmail.com>
+In-Reply-To: <CAK1hOcOumZPo0nOqXNRn=PwcqevyMKhB=_r-5JOhMzZPe=E8-Q@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3151753248106285691==
+--===============0402961958388861477==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Mar 8, 2015 at 8:41 PM, Andy Lutomirski <luto@amacapital.net> wro=
-te:
->>> 4. Not directly related, but the 32-bit tss_struct contains this gem:
+On Sun, Mar 8, 2015 at 8:49 PM, Denys Vlasenko <vda.linux@googlemail.com>=
+ wrote:
+> On Sun, Mar 8, 2015 at 8:13 PM, Denys Vlasenko <vda.linux@googlemail.co=
+m> wrote:
+>>> /*
+>>>  * The below -8 is to reserve 8 bytes on top of the ring0 stack.
+>>>  * This is necessary to guarantee that the entire "struct pt_regs"
+>>>  * is accessible even if the CPU haven't stored the SS/ESP registers
+>>>  * on the stack (interrupt gate does not save these registers
+>>>  * when switching to the same priv ring).
+>>>  * Therefore beware: accessing the ss/esp fields of the
+>>>  * "struct pt_regs" is possible, but they may contain the
+>>>  * completely wrong values.
+>>>  */
+>>> #define task_pt_regs(task)                                             \
+>>> ({                                                                     \
+>>>        struct pt_regs *__regs__;                                       \
+>>>        __regs__ =3D (struct pt_regs *)(KSTK_TOP(task_stack_page(task))-=
+8); \
+>>>        __regs__ - 1;                                                   \
+>>> })
 >>>
->>>     /*
->>>      * .. and then another 0x100 bytes for the emergency kernel stack:
->>>      */
->>>     unsigned long        stack[64];
+>>> I'm confused about multiple things:
 >>>
->>> Last I checked, 0x100 !=3D 64.  Also, wow, this is kind of disgusting. =
-:)
+>>> 1. I don't understand this comment.
 >>
+>> Comment says that in 32-bit x86, interrupts and exceptions
+>> in ring 0 do not push SS,ESP - they only save EFLAGS,CS,EIP
+>> in iret frame. (This happens because CPL doesn't
+>> change, not beacuse ot is zero).
 >>
->> Seems to be unused: I commented it out on "defconfig" build
->> and got no build errors.
+>> IRET insn likewise does not restore SS,ESP if it detects
+>> that RPL(stack_CS) =3D RPL(CS).
 >
-> It's used.  On 32-bit, NMIs don't use task gates (I don't know why),
-> so sysenter is set up to set rsp to point to that "stack".
+> It seems that whoever wrote that code were afraid of this behavior
+> and they added this 8-byte area to ensure that pt_regs->sp
+> and pt_regs->ss always can be accessed.
+>
+> They were wrong.
+>
+> tss.sp0 will only be used on *inter-CPL* interrupts/exceptions,
+> and those *always* push SS,ESP.
+>
+> If interrupt/exception happens while we are in CPL0,
+> it will _not_ use tss.sp0 - it will not switch stacks
+> since it is already on CPL0-stack. Therefore,
+> the scenario where SS,ESP are "missing" and must not
+> be accessed via pt_regs->esp in fear of touching
+> not-present page is impossible.
+>
+> Let's just remove this "-8" thingy.
 
-Where is it set up that way? Aha. Here?
+I took your "broken on 32-bits" tree, without your latest fixes
+which added anothe per-cpu variable, removed -8
+and the resulting kernel boots.
 
-void enable_sep_cpu(void)
-{
-        int cpu =3D get_cpu();
-        struct tss_struct *tss =3D &per_cpu(cpu_tss, cpu);
-...
-        tss->x86_tss.ss1 =3D __KERNEL_CS;
-        tss->x86_tss.sp1 =3D sizeof(struct tss_struct) + (unsigned long) ts=
-s;
-        wrmsr(MSR_IA32_SYSENTER_CS, __KERNEL_CS, 0);
-        wrmsr(MSR_IA32_SYSENTER_ESP, tss->x86_tss.sp1, 0);
+(It's probably still broken versus vm86, didn't test that).
 
+This is just a FYI that the breakage was really caused by -8.
 
-Can this be written in a way so that the field we use here
-in fact gets referenced? I propose this:
-
-        tss->x86_tss.sp1 =3D (unsinged long) &tss->stack + sizeof(tss->stac=
-k);
-
-(And I would rename it "emergency_stack" or something).
-
---===============3151753248106285691==--
+--===============0402961958388861477==--
 
