@@ -1,42 +1,91 @@
-Content-Type: multipart/mixed; boundary="===============9173354847627087479=="
+Content-Type: multipart/mixed; boundary="===============7390412088738802750=="
 MIME-Version: 1.0
-From: Denys Vlasenko <vda.linux@googlemail.com>
+From: Takashi Iwai <tiwai@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [x86/asm/entry] BUG: unable to handle kernel paging request
-Date: Mon, 09 Mar 2015 13:04:54 +0100
-Message-ID: <CAK1hOcNU+8BtCN2TR6ZBh3KTTJtFKdoTe36UfVb91AYxEmeqTg@mail.gmail.com>
-In-Reply-To: <20150309114618.GA18686@gmail.com>
+Subject: Re: [ALSA/hda] kernel BUG at drivers/base/driver.c:152!
+Date: Mon, 09 Mar 2015 13:30:44 +0100
+Message-ID: <s5htwxu9wuj.wl-tiwai@suse.de>
+In-Reply-To: <20150307105844.GA24355@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9173354847627087479==
+--===============7390412088738802750==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 9, 2015 at 12:46 PM, Ingo Molnar <mingo@kernel.org> wrote:
->
-> * Andy Lutomirski <luto@amacapital.net> wrote:
->
->> >>      */
->> >>     unsigned long        stack[64];
->> >>
->> >> Last I checked, 0x100 !=3D 64.  Also, wow, this is kind of disgusting=
-. :)
->> >
->> >
->> > Seems to be unused: I commented it out on "defconfig" build
->> > and got no build errors.
->>
->> It's used.  On 32-bit, NMIs don't use task gates (I don't know why),
->
-> So task gates were a sexy hardware acceleration feature, eons ago, and
-> we used to rely on them a lot,
+At Sat, 7 Mar 2015 18:58:44 +0800,
+Fengguang Wu wrote:
+> =
 
-IIRC task gates weren't used in Linux at first, and now they are
-only used for double fault handler - because in many cases
-double fault is caused by stack problems, and task gate provides
-a way to have alternative stack even for exceptions happening
-in CPL0.
+> Greetings,
+> =
 
---===============9173354847627087479==--
+> 0day kernel testing robot got the below dmesg and the first bad commit is
+> =
+
+> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git topic/hda-r=
+egmap
+> =
+
+> commit 3103d80b8a89f1797e87d7265f9b389a0db4ccd8
+> Author:     Takashi Iwai <tiwai@suse.de>
+> AuthorDate: Tue Feb 17 21:46:37 2015 +0100
+> Commit:     Takashi Iwai <tiwai@suse.de>
+> CommitDate: Tue Mar 3 14:35:44 2015 +0100
+> =
+
+>     ALSA: hda - Make snd_hda_bus_type public
+>     =
+
+>     Define the common hd-audio driver and device types to bind over
+>     snd_hda_bus_type publicly.  This allows to implement other type of
+>     device and driver code over hd-audio bus.
+>     =
+
+>     Now both struct hda_codec and struct hda_codec_driver inherit these
+>     new struct hdac_device and struct hdac_driver, respectively.
+>     =
+
+>     Signed-off-by: Takashi Iwai <tiwai@suse.de>
+
+Fixed by the patch below now.  Thanks!
+
+
+Takashi
+
+-- 8< --
+From: Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH] ALSA: hda - Fix panic at booting with built-in HDA driver
+
+The split of hdaudio bus type caused a kernel panic at booting when
+the HD-audio driver is built into kernel, because of the insufficient
+init call order.
+
+This patch changes the module_init() to subsys_initcall() to assure
+the bus type registration done before any other driver registrations.
+
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ sound/hda/hda_bus_type.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/hda/hda_bus_type.c b/sound/hda/hda_bus_type.c
+index 996515c6a248..519914a12e8a 100644
+--- a/sound/hda/hda_bus_type.c
++++ b/sound/hda/hda_bus_type.c
+@@ -38,5 +38,5 @@ static void __exit hda_bus_exit(void)
+ 	bus_unregister(&snd_hda_bus_type);
+ }
+ =
+
+-module_init(hda_bus_init);
++subsys_initcall(hda_bus_init);
+ module_exit(hda_bus_exit);
+-- =
+
+2.3.2
+
+
+--===============7390412088738802750==--
 
