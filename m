@@ -1,41 +1,105 @@
-Content-Type: multipart/mixed; boundary="===============7992008296699354390=="
+Content-Type: multipart/mixed; boundary="===============1715205982753021217=="
 MIME-Version: 1.0
-From: Denys Vlasenko <vda.linux@googlemail.com>
+From: Murali Karicheri <m-karicheri2@ti.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/asm/entry] BUG: unable to handle kernel paging request
-Date: Mon, 09 Mar 2015 15:08:35 +0100
-Message-ID: <CAK1hOcNz=UyphNJSxDN+RRi10DsNO5CgZ6e5rMsFp2TV0YmPTQ@mail.gmail.com>
-In-Reply-To: <CALCETrVNJKU1AtAqSi5FNJZ2=stKTJa01H1MX2j_fJqr1JMeFw@mail.gmail.com>
+Subject: Re: [PCI] BUG: unable to handle kernel
+Date: Mon, 09 Mar 2015 10:17:47 -0400
+Message-ID: <54FDAB8B.3010404@ti.com>
+In-Reply-To: <54F9EAA8.30007@ti.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7992008296699354390==
+--===============1715205982753021217==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 9, 2015 at 3:00 PM, Andy Lutomirski <luto@amacapital.net> wro=
-te:
->> I'm preparing a patch which does this:
+On 03/06/2015 12:58 PM, Murali Karicheri wrote:
+> On 03/06/2015 11:55 AM, Guenter Roeck wrote:
+>> On Fri, Mar 06, 2015 at 10:48:59AM -0500, Murali Karicheri wrote:
+>> [ ... ]
 >>
->>         btl     $X86_EFLAGS_VM_BIT,PT_EFLAGS(%esp)
->>         jc      restore_nocheck         # VM set, not it
->>         testb   $3,PT_CS(%esp)
->>         jz      restore_nocheck         # CPL0, not it
->>         # Note: we access PT_OLDSS only when we know it exists.
->>         # If PT_CS is from CPL0, this can be not true.
->>         testb   $SEGMENT_TI_MASK,PT_OLDSS(%esp)
->>         jnz     ldt_ss                  # returning to user-space with L=
-DT SS
+>>> > From 098b4f5e4ab9407fbdbfcca3a91785c17e25cf03 Mon Sep 17 00:00:00 2001
+>>> From: Murali Karicheri<m-karicheri2@ti.com>
+>>> Date: Fri, 6 Mar 2015 10:23:08 -0500
+>>> Subject: [PATCH] pci: of : fix kernel crash
+>>>
+>>> This is a debug patch to root cause the kernel crash
+>>>
+>>> commit 0b2af171520e5d5e7d5b5f479b90a6a5014d9df6
+>>>
+>>> PCI: Update DMA configuration from DT
+>>>
+>>> Signed-off-by: Murali Karicheri<m-karicheri2@ti.com>
+>>> ---
+>>> drivers/of/of_pci.c | 8 ++++++++
+>>> drivers/pci/host-bridge.c | 5 +++++
+>>> 2 files changed, 13 insertions(+)
+>>>
+>>> diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+>>> index 86d3c38..5a59fb8 100644
+>>> --- a/drivers/of/of_pci.c
+>>> +++ b/drivers/of/of_pci.c
+>>> @@ -129,6 +129,14 @@ void of_pci_dma_configure(struct pci_dev *pci_dev)
+>>> struct device *dev =3D&pci_dev->dev;
+>>> struct device *bridge =3D pci_get_host_bridge_device(pci_dev);
+>>>
+>>> + if (!bridge || !bridge->parent) {
+>>> + if (!bridge)
+>>> + pr_err("PCI bridge not found\n");
+>>> + if (!bridge->parent)
+>>> + pr_err("PCI bridge parent not found\n");
 >>
->> All three checks can run in parallel on an OOO CPU.
->> Most of the time, none of branches will be taken.
+>> You'll see a crash here if bridge is NULL. Maybe add an else before
+>> the second
+>> if statement ? Also, dev_err might be a bit more useful and would be
+>> available.
+>>
+> Fixed and attached.
 >
-> Why do we need the VM check?  Isn't CS =3D=3D 0 in vm86 mode?
+> Murali
+>> Thanks,
+>> Guenter
+>>
+>>> + return;
+>>> + }
+>>> +
+>>> of_dma_configure(dev, bridge->parent->of_node);
+>>> pci_put_host_bridge_device(bridge);
+>>> }
+>>> diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+>>> index 3e5bbf9..ef2ab51 100644
+>>> --- a/drivers/pci/host-bridge.c
+>>> +++ b/drivers/pci/host-bridge.c
+>>> @@ -28,6 +28,11 @@ struct device *pci_get_host_bridge_device(struct
+>>> pci_dev *dev)
+>>> struct pci_bus *root_bus =3D find_pci_root_bus(dev->bus);
+>>> struct device *bridge =3D root_bus->bridge;
+>>>
+>>> + if (!bridge) {
+>>> + pr_err("PCI: bridge not found\n");
+>>> + return NULL;
+>>> + }
+>>> +
+>>> kobject_get(&bridge->kobj);
+>>> return bridge;
+>>> }
+>>> --
+>>> 1.7.9.5
+>>>
+>>
+>
+BJorn,
 
-IF VM is set, then we are in vm86 mode, not in 16-bit protected mode
-where ESPFIX thingy may be necessary. And also,
-%ss register in vm86 does nit have LDT bit, thus that check would
-not work properly anyway.
+Any chance of applying the attached debug patch to see if this fixes and =
 
---===============7992008296699354390==--
+provide some additional information on this BUG? Not sure who will pick =
+
+this one and apply.
+
+-- =
+
+Murali Karicheri
+Linux Kernel, Texas Instruments
+
+--===============1715205982753021217==--
 
