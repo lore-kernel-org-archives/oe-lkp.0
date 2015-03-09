@@ -1,91 +1,128 @@
-Content-Type: multipart/mixed; boundary="===============7390412088738802750=="
+Content-Type: multipart/mixed; boundary="===============3302209267340139033=="
 MIME-Version: 1.0
-From: Takashi Iwai <tiwai@suse.de>
+From: Denys Vlasenko <vda.linux@googlemail.com>
 To: lkp@lists.01.org
-Subject: Re: [ALSA/hda] kernel BUG at drivers/base/driver.c:152!
-Date: Mon, 09 Mar 2015 13:30:44 +0100
-Message-ID: <s5htwxu9wuj.wl-tiwai@suse.de>
-In-Reply-To: <20150307105844.GA24355@wfg-t540p.sh.intel.com>
+Subject: Re: [x86/asm/entry] BUG: unable to handle kernel paging request
+Date: Mon, 09 Mar 2015 13:55:33 +0100
+Message-ID: <CAK1hOcNGeOdF7hfQboWe+zME31L1BwA+1iObLpnY+aYfyDx0_g@mail.gmail.com>
+In-Reply-To: <CALCETrU3Ums8SnNQttoCYkdDi-T=HkhCQs-jvF21Nh6igJ3Mhw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7390412088738802750==
+--===============3302209267340139033==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-At Sat, 7 Mar 2015 18:58:44 +0800,
-Fengguang Wu wrote:
-> =
+On Sun, Mar 8, 2015 at 8:41 PM, Andy Lutomirski <luto@amacapital.net> wro=
+te:
+>> It seems to be true that 32-bit x86 always has two unused words
+>> beyond "struct pt_regs" on stack during syscalls.
+>>
+>> IOW: tss.sp0 is *not* set at the very end of the stack on 32-bit.
+>
+> So maybe the idea is that, if we end up using sp0 for an entry *from*
+> ring 0, then the struct pt_regs won't dangle off the top of the stack.
+> But this still doesn't make sense to me: if we enter from ring 0, then
+> the CPU won't look at sp0 in the first place.
+>
+> Linus, if you're paying attention here, I suspect that you wrote this
+> code.  Do you remember what the point is?
 
-> Greetings,
-> =
+It was added in 2005:
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
+commit 5df240826c90afdc7956f55a004ea6b702df9203
+Author: Stas Sergeev <stsp@aknet.ru>
+Date:   Sat Apr 16 15:24:01 2005 -0700
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git topic/hda-r=
-egmap
-> =
+    [PATCH] fix crash in entry.S restore_all
 
-> commit 3103d80b8a89f1797e87d7265f9b389a0db4ccd8
-> Author:     Takashi Iwai <tiwai@suse.de>
-> AuthorDate: Tue Feb 17 21:46:37 2015 +0100
-> Commit:     Takashi Iwai <tiwai@suse.de>
-> CommitDate: Tue Mar 3 14:35:44 2015 +0100
-> =
+    Fix the access-above-bottom-of-stack crash.
 
->     ALSA: hda - Make snd_hda_bus_type public
->     =
+    1. Allows to preserve the valueable optimization
 
->     Define the common hd-audio driver and device types to bind over
->     snd_hda_bus_type publicly.  This allows to implement other type of
->     device and driver code over hd-audio bus.
->     =
+    2. Works for NMIs
 
->     Now both struct hda_codec and struct hda_codec_driver inherit these
->     new struct hdac_device and struct hdac_driver, respectively.
->     =
+    3.  Doesn't care whether or not there are more of the like instances
+       where the stack is left empty.
 
->     Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    4. Seems to work for me without the crashes:)
 
-Fixed by the patch below now.  Thanks!
+    (akpm: this is still under discussion, although I _think_ it's OK.
+You might
+    want to hold off)
 
+    Signed-off-by: Stas Sergeev <stsp@aknet.ru>
+    Signed-off-by: Andrew Morton <akpm@osdl.org>
+    Signed-off-by: Linus Torvalds <torvalds@osdl.org>
 
-Takashi
+diff --git a/arch/i386/kernel/entry.S b/arch/i386/kernel/entry.S
+index 1e45ff2..3c73dc8 100644
+--- a/arch/i386/kernel/entry.S
++++ b/arch/i386/kernel/entry.S
+@@ -245,6 +245,9 @@ syscall_exit:
 
--- 8< --
-From: Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH] ALSA: hda - Fix panic at booting with built-in HDA driver
+ restore_all:
+     movl EFLAGS(%esp), %eax        # mix EFLAGS, SS and CS
++    # Warning: OLDSS(%esp) contains the wrong/random values if we
++    # are returning to the kernel.
++    # See comments in process.c:copy_thread() for details.
+     movb OLDSS(%esp), %ah
+     movb CS(%esp), %al
+     andl $(VM_MASK | (4 << 8) | 3), %eax
+diff --git a/arch/i386/kernel/process.c b/arch/i386/kernel/process.c
+index c36fedf..36145ef 100644
+--- a/arch/i386/kernel/process.c
++++ b/arch/i386/kernel/process.c
+@@ -405,7 +405,17 @@ int copy_thread(int nr, unsigned long
+clone_flags, unsigned long esp,
+     childregs->esp =3D esp;
 
-The split of hdaudio bus type caused a kernel panic at booting when
-the HD-audio driver is built into kernel, because of the insufficient
-init call order.
+     p->thread.esp =3D (unsigned long) childregs;
+-    p->thread.esp0 =3D (unsigned long) (childregs+1);
++    /*
++     * The below -8 is to reserve 8 bytes on top of the ring0 stack.
++     * This is necessary to guarantee that the entire "struct pt_regs"
++     * is accessable even if the CPU haven't stored the SS/ESP registers
++     * on the stack (interrupt gate does not save these registers
++     * when switching to the same priv ring).
++     * Therefore beware: accessing the xss/esp fields of the
++     * "struct pt_regs" is possible, but they may contain the
++     * completely wrong values.
++     */
++    p->thread.esp0 =3D (unsigned long) (childregs+1) - 8;
 
-This patch changes the module_init() to subsys_initcall() to assure
-the bus type registration done before any other driver registrations.
-
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
----
- sound/hda/hda_bus_type.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/sound/hda/hda_bus_type.c b/sound/hda/hda_bus_type.c
-index 996515c6a248..519914a12e8a 100644
---- a/sound/hda/hda_bus_type.c
-+++ b/sound/hda/hda_bus_type.c
-@@ -38,5 +38,5 @@ static void __exit hda_bus_exit(void)
- 	bus_unregister(&snd_hda_bus_type);
- }
- =
-
--module_init(hda_bus_init);
-+subsys_initcall(hda_bus_init);
- module_exit(hda_bus_exit);
--- =
-
-2.3.2
+     p->thread.eip =3D (unsigned long) ret_from_fork;
 
 
---===============7390412088738802750==--
+
+
+Apparently, code which uses this still exists, here
+(current git):
+
+restore_all:
+        TRACE_IRQS_IRET
+restore_all_notrace:
+#ifdef CONFIG_X86_ESPFIX32
+        movl PT_EFLAGS(%esp), %eax      # mix EFLAGS, SS and CS
+        # Warning: PT_OLDSS(%esp) contains the wrong/random values if we
+        # are returning to the kernel.
+        # See comments in process.c:copy_thread() for details.
+        movb PT_OLDSS(%esp), %ah
+        movb PT_CS(%esp), %al
+        andl $(X86_EFLAGS_VM | (SEGMENT_TI_MASK << 8) | SEGMENT_RPL_MASK), =
+%eax
+        cmpl $((SEGMENT_LDT << 8) | USER_RPL), %eax
+        CFI_REMEMBER_STATE
+        je ldt_ss                       # returning to user-space with LDT =
+SS
+#endif
+
+"restore_all_notrace" is used by nmi handler too.
+If nmi happened right after sysenter, the stack will indeed
+only have three words, SS,ESP,EFLAGS, PT_OLDSS(%esp)
+would refer to a word above them.
+
+This needs better comments...
+
+--===============3302209267340139033==--
 
