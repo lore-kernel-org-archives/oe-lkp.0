@@ -1,16 +1,18 @@
-Content-Type: multipart/mixed; boundary="===============8194763663386364646=="
+Content-Type: multipart/mixed; boundary="===============8153795267009867561=="
 MIME-Version: 1.0
 From: Huang Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
 Subject: [locking/rwsem] b3fd4f03ca0: -11.1% vm-scalability.throughput
-Date: Fri, 13 Mar 2015 13:36:00 +0800
-Message-ID: <1426224960.6711.228.camel@intel.com>
+Date: Fri, 13 Mar 2015 13:38:18 +0800
+Message-ID: <1426225098.6711.230.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8194763663386364646==
+--===============8153795267009867561==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+
+Sorry for duplicated email.  Forget to send to the patch author.
 
 FYI, we noticed the below changes on
 
@@ -1138,11 +1140,12 @@ Thanks,
 Ying Huang
 
 
+
 _______________________________________________
 LKP mailing list
 LKP(a)linux.intel.com
 
---===============8194763663386364646==
+--===============8153795267009867561==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -1179,7 +1182,7 @@ MjA6NTYuNzI4MDEzNDg3ICswODowMApqb2Jfc3RhdGU6IGZpbmlzaGVkCmxvYWRhdmc6IDc4LjY0
 IDc1LjUzIDM2LjI1IDEvOTUzIDE0MDc1CnN0YXJ0X3RpbWU6ICcxNDI1ODUzMzI3JwplbmRfdGlt
 ZTogJzE0MjU4NTM2NzUnCnZlcnNpb246ICIvbGtwL2xrcC8uc3JjLTIwMTUwMzA4LTE3NTc0NiIK
 
---===============8194763663386364646==
+--===============8153795267009867561==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -1349,5 +1352,5 @@ b2NzCi4vdXNlbWVtIC0tcnVudGltZSAzMDAgLW4gMTIwIC0tcmVhZG9ubHkgLS11bml0IDQwOTYw
 IDM2NjUwMzg3NTkyCnVtb3VudCAvdG1wL3ZtLXNjYWxhYmlsaXR5LXRtcAp1bW91bnQgL3RtcC92
 bS1zY2FsYWJpbGl0eQpybSAvdG1wL3ZtLXNjYWxhYmlsaXR5LmltZwo=
 
---===============8194763663386364646==--
+--===============8153795267009867561==--
 
