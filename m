@@ -1,247 +1,64 @@
-Content-Type: multipart/mixed; boundary="===============1319366481185819713=="
+Content-Type: multipart/mixed; boundary="===============6548488217052623819=="
 MIME-Version: 1.0
-From: Yuanahn Liu <yuanhan.liu@linux.intel.com>
+From: Michael S. Tsirkin <mst@redhat.com>
 To: lkp@lists.01.org
-Subject: performance changes on d4b4c2cd: 37.6% fsmark.files_per_sec, -15.9% fsmark.files_per_sec, and few more
-Date: Wed, 18 Mar 2015 13:03:19 +0800
-Message-ID: <20150318050319.GD30894@yliu-dev.sh.intel.com>
+Subject: Re: [pci] 38ada4d7c6b: general protection fault: 0000 [#1] SMP
+Date: Wed, 18 Mar 2015 08:21:07 +0100
+Message-ID: <20150318081204-mutt-send-email-mst@redhat.com>
+In-Reply-To: <1426553156.1126.11.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1319366481185819713==
+--===============6548488217052623819==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Tue, Mar 17, 2015 at 08:45:56AM +0800, Huang Ying wrote:
+> FYI, we noticed the below changes on
+> =
 
-FYI, we noticed performance changes on `fsmark.files_per_sec' by d4b4c2cdff=
-ab86f5c7594c44635286a6d277d5c6:
+> git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost-next
+> commit 38ada4d7c6b416b2c41e67b721ebcfeec89e4751 ("pci: disable msi/msix a=
+t probe time")
+> =
 
-    > commit d4b4c2cdffab86f5c7594c44635286a6d277d5c6
-    > Author:     shli(a)kernel.org <shli@kernel.org>
-    > AuthorDate: Mon Dec 15 12:57:03 2014 +1100
-    > Commit:     NeilBrown <neilb@suse.de>
-    > CommitDate: Wed Mar 4 13:40:17 2015 +1100
-    > =
+> =
 
-    >     RAID5: batch adjacent full stripe write
+> +------------------------------------------+------------+------------+
+> |                                          | 91435d5741 | 38ada4d7c6 |
+> +------------------------------------------+------------+------------+
+> | boot_successes                           | 30         | 0          |
+> | early-boot-hang                          | 1          |            |
+> | boot_failures                            | 0          | 29         |
+> | BUG:unable_to_handle_kernel              | 0          | 9          |
+> | Oops                                     | 0          | 9          |
+> | RIP:pci_bus_read_config_word             | 0          | 29         |
+> | Kernel_panic-not_syncing:Fatal_exception | 0          | 29         |
+> | backtrace:__pci_register_driver          | 0          | 29         |
+> | backtrace:piix_init                      | 0          | 9          |
+> | backtrace:kernel_init_freeable           | 0          | 29         |
+> | general_protection_fault                 | 0          | 20         |
+> | backtrace:virtio_pci_driver_init         | 0          | 20         |
+> +------------------------------------------+------------+------------+
 
-c1dfe87e41d9c2926fe92f803f02c733ddbccf0b     d4b4c2cdffab86f5c7594c44635286=
-a6d277d5c6
-----------------------------------------     ------------------------------=
-----------
-run time(m)     metric_value     =C2=B1stddev     run time(m)     metric_va=
-lue     =C2=B1stddev     change   testbox/benchmark/sub-testcase
---- ------  ----------------------------     --- ------  ------------------=
-----------     -------- ------------------------------
-4   15.3              33.525     =C2=B13.0%       6   11.1              46.=
-133     =C2=B15.0%          37.6% ivb44/fsmark/1x-1t-3HDD-RAID5-xfs-4M-120G=
--NoSync
-3   0.5              262.800     =C2=B11.5%       3   0.4              307.=
-367     =C2=B11.2%          17.0% ivb44/fsmark/1x-1t-4BRD_12G-RAID5-f2fs-4M=
--30G-NoSync
-3   0.5              289.900     =C2=B10.3%       3   0.4              323.=
-367     =C2=B12.4%          11.5% ivb44/fsmark/1x-64t-4BRD_12G-RAID5-f2fs-4=
-M-30G-NoSync
-3   0.5              325.667     =C2=B12.2%       3   0.5              358.=
-800     =C2=B11.8%          10.2% ivb44/fsmark/1x-64t-4BRD_12G-RAID5-ext4-4=
-M-30G-NoSync
-3   0.6              216.100     =C2=B10.4%       3   0.6              230.=
-100     =C2=B10.4%           6.5% ivb44/fsmark/1x-64t-4BRD_12G-RAID5-f2fs-4=
-M-30G-fsyncBeforeClose
-3   0.5              309.900     =C2=B10.3%       3   0.5              328.=
-500     =C2=B11.1%           6.0% ivb44/fsmark/1x-64t-4BRD_12G-RAID5-xfs-4M=
--30G-NoSync
+Thanks a lot for the report!
+This was a result of pushing a bad commit out, I have since
+found and fixed this.
+Just to clarify, you are testing all public heads?
+Or does head need to confirm to some naming scheme?
 
-3   13.8              37.000     =C2=B10.2%       3   16.5              31.=
-100     =C2=B10.3%         -15.9% ivb44/fsmark/1x-1t-3HDD-RAID5-f2fs-4M-120=
-G-NoSync
+Also, it seems you are testing in a KVM based VM, is that right?
+If so, including the kvm userspace (QEMU?) version and command line
+used could be benefitial in case people want to re-run the test.
 
-NOTE: here are some more info about those test parameters for you to
-      understand the testcase better:
+Thanks!
 
-      1x : where 'x' means iterations or loop, corresponding to the 'L' opt=
-ion of fsmark
-      64t: where 't' means thread
-      4M : means the single file size, corresponding to the '-s' option of =
-fsmark
-      120G, 30G: means the total test size
-
-      4BRD_12G: BRD is the ramdisk, where '4' means 4 ramdisk, and where '1=
-2G' means
-                the size of one ramdisk. So, it would be 48G in total. And =
-we made a
-                raid on those ramdisk.
-
-
-And FYI, here I listed more detailed changes for the maximal postive and ne=
-gtive changes.
-
-
-more detailed changes about ivb44/fsmark/1x-1t-3HDD-RAID5-xfs-4M-120G-NoSync
----------
-
-c1dfe87e41d9c292  d4b4c2cdffab86f5c7594c4463  =
-
-----------------  --------------------------  =
-
-         %stddev     %change         %stddev
-             \          |                \  =
-
-     33.53 =C2=B1  3%     +37.6%      46.13 =C2=B1  4%  fsmark.files_per_sec
-       916 =C2=B1  3%     -27.2%        667 =C2=B1  5%  fsmark.time.elapsed=
-_time.max
-       916 =C2=B1  3%     -27.2%        667 =C2=B1  5%  fsmark.time.elapsed=
-_time
-         7 =C2=B1  5%     +37.6%         10 =C2=B1  6%  fsmark.time.percent=
-_of_cpu_this_job_got
-     92097 =C2=B1  2%     -23.1%      70865 =C2=B1  4%  fsmark.time.volunta=
-ry_context_switches
-      0.04 =C2=B1 42%    +681.0%       0.27 =C2=B1 22%  turbostat.Pkg%pc3
-    716062 =C2=B1  3%     -82.7%     124210 =C2=B1 21%  cpuidle.C1-IVT.usage
- 6.883e+08 =C2=B1  2%     -86.8%   91146705 =C2=B1 34%  cpuidle.C1-IVT.time
-      0.04 =C2=B1 30%    +145.8%       0.10 =C2=B1 25%  turbostat.CPU%c3
-       404 =C2=B1 16%     -58.4%        168 =C2=B1 14%  cpuidle.POLL.usage
-       159 =C2=B1 47%    +179.5%        444 =C2=B1 23%  proc-vmstat.kswapd_=
-low_wmark_hit_quickly
-     11133 =C2=B1 23%    +100.3%      22298 =C2=B1 30%  cpuidle.C3-IVT.usage
-  10286681 =C2=B1 27%     +95.6%   20116924 =C2=B1 27%  cpuidle.C3-IVT.time
-      7.92 =C2=B1 16%     +77.4%      14.05 =C2=B1  6%  turbostat.Pkg%pc6
-      4.93 =C2=B1  3%     -38.6%       3.03 =C2=B1  2%  turbostat.CPU%c1
-       916 =C2=B1  3%     -27.2%        667 =C2=B1  5%  time.elapsed_time.m=
-ax
-       916 =C2=B1  3%     -27.2%        667 =C2=B1  5%  time.elapsed_time
-   2137390 =C2=B1  3%     -26.7%    1566752 =C2=B1  5%  proc-vmstat.pgfault
-         7 =C2=B1  5%     +37.6%         10 =C2=B1  6%  time.percent_of_cpu=
-_this_job_got
- 4.309e+10 =C2=B1  3%     -26.3%  3.176e+10 =C2=B1  5%  cpuidle.C6-IVT.time
-     49038 =C2=B1  2%     -23.9%      37334 =C2=B1  4%  uptime.idle
-      1047 =C2=B1  2%     -23.8%        797 =C2=B1  4%  uptime.boot
-     92097 =C2=B1  2%     -23.1%      70865 =C2=B1  4%  time.voluntary_cont=
-ext_switches
-   4005888 =C2=B1  0%     +13.3%    4537685 =C2=B1 11%  meminfo.DirectMap2M
-      3917 =C2=B1  2%     -16.3%       3278 =C2=B1  5%  proc-vmstat.pageout=
-run
-    213737 =C2=B1  1%     -13.9%     183969 =C2=B1  3%  softirqs.SCHED
-     46.86 =C2=B1  1%     +16.5%      54.59 =C2=B1  1%  turbostat.Pkg%pc2
-     32603 =C2=B1  3%     -11.7%      28781 =C2=B1  5%  numa-vmstat.node1.n=
-r_unevictable
-    130415 =C2=B1  3%     -11.7%     115127 =C2=B1  5%  numa-meminfo.node1.=
-Unevictable
-    256781 =C2=B1  2%      -8.8%     234146 =C2=B1  3%  softirqs.TASKLET
-    253606 =C2=B1  2%      -8.9%     231108 =C2=B1  3%  softirqs.BLOCK
-    119.10 =C2=B1  2%     -70.0%      35.78 =C2=B1 13%  iostat.sdc.rrqm/s
-    119.86 =C2=B1  1%     -70.3%      35.64 =C2=B1 12%  iostat.sdb.rrqm/s
-    117.13 =C2=B1  2%     -70.2%      34.96 =C2=B1 11%  iostat.sda.rrqm/s
-       504 =C2=B1  2%     -67.6%        163 =C2=B1 12%  iostat.sdc.rkB/s
-       507 =C2=B1  1%     -67.9%        163 =C2=B1 12%  iostat.sdb.rkB/s
-       496 =C2=B1  2%     -67.7%        160 =C2=B1 11%  iostat.sda.rkB/s
-     15392 =C2=B1  3%     +37.8%      21203 =C2=B1  5%  iostat.sdb.wrqm/s
-     15393 =C2=B1  3%     +37.7%      21203 =C2=B1  5%  iostat.sdc.wrqm/s
-     15392 =C2=B1  3%     +37.7%      21203 =C2=B1  5%  iostat.sda.wrqm/s
-    125236 =C2=B1  3%     +37.7%     172422 =C2=B1  4%  vmstat.io.bo
-    125181 =C2=B1  3%     +37.6%     172303 =C2=B1  4%  iostat.md0.wkB/s
-       552 =C2=B1  3%     +37.6%        760 =C2=B1  4%  iostat.md0.w/s
-     62611 =C2=B1  3%     +37.6%      86167 =C2=B1  4%  iostat.sdb.wkB/s
-     62613 =C2=B1  3%     +37.6%      86167 =C2=B1  4%  iostat.sdc.wkB/s
-     62613 =C2=B1  3%     +37.6%      86168 =C2=B1  4%  iostat.sda.wkB/s
-     40.24 =C2=B1  1%     -18.5%      32.81 =C2=B1  2%  turbostat.CorWatt
-       200 =C2=B1  0%     +22.2%        245 =C2=B1  2%  iostat.sdc.w/s
-      1020 =C2=B1  2%     +21.7%       1242 =C2=B1  2%  vmstat.system.in
-       200 =C2=B1  0%     +22.1%        245 =C2=B1  2%  iostat.sda.w/s
-       200 =C2=B1  0%     +22.2%        245 =C2=B1  2%  iostat.sdb.w/s
-     69.99 =C2=B1  0%     -12.4%      61.34 =C2=B1  2%  turbostat.PkgWatt
-      3943 =C2=B1  2%      -8.9%       3593 =C2=B1  1%  vmstat.system.cs
-      1.51 =C2=B1  1%      +6.1%       1.60 =C2=B1  2%  iostat.sdb.avgqu-sz
-      3.21 =C2=B1  0%      +5.4%       3.39 =C2=B1  1%  turbostat.RAMWatt
-    256182 =C2=B1  1%      -4.2%     245424 =C2=B1  1%  iostat.md0.avgqu-sz
+> _______________________________________________
+> LKP mailing list
+> LKP(a)linux.intel.com
+> =
 
 
 
-more detailed changes about ivb44/fsmark/1x-1t-3HDD-RAID5-f2fs-4M-120G-NoSy=
-nc
----------
-
-c1dfe87e41d9c292  d4b4c2cdffab86f5c7594c4463  =
-
-----------------  --------------------------  =
-
-         %stddev     %change         %stddev
-             \          |                \  =
-
-     37.00 =C2=B1  0%     -15.9%      31.10 =C2=B1  0%  fsmark.files_per_sec
-     63414 =C2=B1  4%     +57.6%      99945 =C2=B1  1%  fsmark.time.volunta=
-ry_context_switches
-       830 =C2=B1  0%     +18.8%        987 =C2=B1  0%  fsmark.time.elapsed=
-_time
-       830 =C2=B1  0%     +18.8%        987 =C2=B1  0%  fsmark.time.elapsed=
-_time.max
-         9 =C2=B1  0%     -14.8%          7 =C2=B1  6%  fsmark.time.percent=
-_of_cpu_this_job_got
-      1.48 =C2=B1 20%    +357.3%       6.75 =C2=B1  5%  turbostat.Pkg%pc6
-     63414 =C2=B1  4%     +57.6%      99945 =C2=B1  1%  time.voluntary_cont=
-ext_switches
-       109 =C2=B1 15%     -37.8%         68 =C2=B1 20%  time.involuntary_co=
-ntext_switches
-       338 =C2=B1 17%     +57.6%        533 =C2=B1  0%  cpuidle.POLL.usage
-      2691 =C2=B1  1%     -20.3%       2144 =C2=B1 12%  proc-vmstat.kswapd_=
-high_wmark_hit_quickly
-   1060792 =C2=B1  0%     +20.2%    1275544 =C2=B1  0%  cpuidle.C6-IVT.usage
- 3.876e+10 =C2=B1  0%     +19.3%  4.625e+10 =C2=B1  0%  cpuidle.C6-IVT.time
-       830 =C2=B1  0%     +18.8%        987 =C2=B1  0%  time.elapsed_time.m=
-ax
-       830 =C2=B1  0%     +18.8%        987 =C2=B1  0%  time.elapsed_time
-     39984 =C2=B1  0%     +18.6%      47434 =C2=B1  0%  uptime.idle
-       856 =C2=B1  0%     +18.4%       1014 =C2=B1  0%  uptime.boot
-     15874 =C2=B1 12%     +20.9%      19188 =C2=B1  6%  slabinfo.anon_vma.a=
-ctive_objs
-   1942445 =C2=B1  0%     +18.1%    2293524 =C2=B1  0%  proc-vmstat.pgfault
-     15977 =C2=B1 12%     +20.1%      19188 =C2=B1  6%  slabinfo.anon_vma.n=
-um_objs
-    110388 =C2=B1  9%     +13.0%     124724 =C2=B1  4%  meminfo.DirectMap4k
-      3107 =C2=B1  8%     -20.9%       2459 =C2=B1 15%  numa-meminfo.node0.=
-AnonHugePages
-     18408 =C2=B1 11%     +15.0%      21165 =C2=B1  3%  slabinfo.free_nid.a=
-ctive_objs
-     18880 =C2=B1 11%     +13.7%      21465 =C2=B1  4%  slabinfo.free_nid.n=
-um_objs
-   1125535 =C2=B1  0%     -11.5%     996605 =C2=B1  1%  cpuidle.C1-IVT.usage
-         9 =C2=B1  0%     -14.8%          7 =C2=B1  6%  time.percent_of_cpu=
-_this_job_got
-    198260 =C2=B1  1%     +11.7%     221366 =C2=B1  0%  softirqs.SCHED
-      6.09 =C2=B1  2%     -12.2%       5.34 =C2=B1  0%  turbostat.CPU%c1
-     14203 =C2=B1  2%     -13.1%      12346 =C2=B1  8%  slabinfo.kmalloc-25=
-6.num_objs
-     13763 =C2=B1  3%     -13.3%      11937 =C2=B1  9%  slabinfo.kmalloc-25=
-6.active_objs
-      1255 =C2=B1  6%     +10.1%       1383 =C2=B1  1%  slabinfo.RAW.num_ob=
-js
-      1255 =C2=B1  6%     +10.1%       1383 =C2=B1  1%  slabinfo.RAW.active=
-_objs
-     30.37 =C2=B1  3%     +30.5%      39.62 =C2=B1  0%  iostat.sdc.rrqm/s
-     31.23 =C2=B1  5%     +28.0%      39.98 =C2=B1  1%  iostat.sdb.rrqm/s
-     33.37 =C2=B1  3%     +19.0%      39.72 =C2=B1  2%  iostat.sda.rrqm/s
-       562 =C2=B1  0%     -15.9%        472 =C2=B1  0%  iostat.md0.w/s
-     17106 =C2=B1  0%     -15.9%      14382 =C2=B1  0%  iostat.sda.wrqm/s
-     17106 =C2=B1  0%     -15.9%      14382 =C2=B1  0%  iostat.sdc.wrqm/s
-     17106 =C2=B1  0%     -15.9%      14382 =C2=B1  0%  iostat.sdb.wrqm/s
-     69317 =C2=B1  0%     -15.9%      58284 =C2=B1  0%  iostat.sdc.wkB/s
-     69316 =C2=B1  0%     -15.9%      58284 =C2=B1  0%  iostat.sda.wkB/s
-     69317 =C2=B1  0%     -15.9%      58284 =C2=B1  0%  iostat.sdb.wkB/s
-    138603 =C2=B1  0%     -15.9%     116543 =C2=B1  0%  iostat.md0.wkB/s
-    138705 =C2=B1  0%     -15.9%     116633 =C2=B1  0%  vmstat.io.bo
-       213 =C2=B1  0%     -14.5%        182 =C2=B1  0%  iostat.sdb.w/s
-       213 =C2=B1  0%     -14.5%        182 =C2=B1  0%  iostat.sda.w/s
-       213 =C2=B1  0%     -14.6%        182 =C2=B1  0%  iostat.sdc.w/s
-      4731 =C2=B1  0%     -12.7%       4131 =C2=B1  0%  vmstat.system.cs
-      1133 =C2=B1  2%     -12.3%        993 =C2=B1  0%  vmstat.system.in
-      3.02 =C2=B1  3%      -8.6%       2.76 =C2=B1  3%  iostat.sdc.avgqu-sz
-      3.29 =C2=B1  2%      -9.4%       2.98 =C2=B1  3%  iostat.sdb.avgqu-sz
-        25 =C2=B1 19%     -21.3%         19 =C2=B1  2%  turbostat.Avg_MHz
-      3.10 =C2=B1  1%      -9.4%       2.81 =C2=B1  1%  iostat.sda.avgqu-sz
-     44.45 =C2=B1  1%      -5.6%      41.94 =C2=B1  2%  turbostat.CorWatt
-      0.75 =C2=B1 19%     -20.1%       0.60 =C2=B1  4%  turbostat.%Busy
-     74.92 =C2=B1  1%      -4.9%      71.23 =C2=B1  2%  turbostat.PkgWatt
-
---===============1319366481185819713==--
+--===============6548488217052623819==--
 
