@@ -1,52 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============2846480591546091602=="
+Content-Type: multipart/mixed; boundary="===============0387494353928264793=="
 MIME-Version: 1.0
-From: Marcelo <marcelo.leitner@gmail.com>
+From: Michal Hocko <mhocko@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [ipv4, ipv6] baf606d9c9b: INFO: possible circular locking dependency detected ]
-Date: Fri, 20 Mar 2015 09:57:21 -0300
-Message-ID: <860bbbf6de2d26aa32e09b44b19a1a66@propriete.com.br>
-In-Reply-To: <1426840632.5570.54.camel@intel.com>
+Subject: Re: [mm] cc87317726f: WARNING: CPU: 0 PID: 1atdrivers/iommu/io-pgtable-arm.c:413 __arm_lpae_unmap+0x341/0x380()
+Date: Fri, 20 Mar 2015 14:38:20 +0100
+Message-ID: <20150320133820.GB4821@dhcp22.suse.cz>
+In-Reply-To: <201503202234.HIA00180.MQVLSFFtHOOFJO@I-love.SAKURA.ne.jp>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2846480591546091602==
+--===============0387494353928264793==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 20 Mar 2015 16:37:12 +0800, Huang Ying <ying.huang@intel.com>
-wrote:
-> FYI, we noticed the below changes on
+On Fri 20-03-15 22:34:21, Tetsuo Handa wrote:
+> Huang Ying wrote:
+> > > > BTW: the test is run on 32 bit system.
+> > > =
+
+> > > That sounds like the cause of your problem. The system might be out of
+> > > address space available for the kernel (only 1GB if x86_32). You shou=
+ld
+> > > try running tests on 64 bit systems.
+> > =
+
+> > We run test on 32 bit and 64 bit systems.  Try to catch problems on both
+> > platforms.  I think we still need to support 32 bit systems?
 > =
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-> commit baf606d9c9b12517e47e0d1370e8aa9f7323f210 ("ipv4,ipv6: grab rtnl
-> before locking the socket")
-> =
+> Yes, testing on both platforms is good. But please read
+> http://lwn.net/Articles/627419/ , http://lwn.net/Articles/635354/ and
+> http://lwn.net/Articles/636017/ . Then please add __GFP_NORETRY to memory
+> allocations in btrfs code if it is appropriate.
 
-...
-> -> #0 (rtnl_mutex){+.+.+.}:
-> [   19.816665]        [<ffffffff810c1ea4>] __lock_acquire+0x13f0/0x1a86
-> [   19.816665]        [<ffffffff810c2c4d>] lock_acquire+0xb2/0x132
-> [   19.816665]        [<ffffffff81b8d97b>] mutex_lock_nested+0x6b/0x38d
-> [   19.816665]        [<ffffffff81a552b4>] rtnl_lock+0x17/0x19
-> [   19.816665]        [<ffffffff81afc5c6>] ipv6_sock_ac_drop+0x28/0xc4
-> [   19.816665]        [<ffffffff81b0fc30>]
-do_ipv6_setsockopt+0x95d/0xd98
-> [   19.816665]        [<ffffffff81b100bc>] ipv6_setsockopt+0x51/0x9c
-> [   19.816665]        [<ffffffff81b160af>] rawv6_setsockopt+0x7c/0x91
-> [   19.816665]        [<ffffffff81a345a0>]
-sock_common_setsockopt+0x14/0x16
-> [   19.816665]        [<ffffffff81a33ad0>] SyS_setsockopt+0x78/0x99
-> [   19.816665]        [<ffffffff81b91289>]
-system_call_fastpath+0x12/0x17
-> [   19.816665] =
+I guess you meant __GFP_NOFAIL?
 
-...
+-- =
 
-Missed this syscall, sorry. Will fix this.
+Michal Hocko
+SUSE Labs
 
-  Marcelo
-
-
---===============2846480591546091602==--
+--===============0387494353928264793==--
 
