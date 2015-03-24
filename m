@@ -1,92 +1,125 @@
-Content-Type: multipart/mixed; boundary="===============3714472749377976757=="
+Content-Type: multipart/mixed; boundary="===============4816080204474724464=="
 MIME-Version: 1.0
 From: Huang Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] 3484b2de949: -46.2% aim7.jobs-per-min
-Date: Mon, 23 Mar 2015 16:46:21 +0800
-Message-ID: <1427100381.17170.2.camel@intel.com>
-In-Reply-To: <20150305102609.GS3087@suse.de>
+Subject: Re: [x86/platform, acpi] 7486341a98f: genirq: Flags mismatch irq 8. 00000080 (mmc0) vs. 00000000 (rtc0)
+Date: Tue, 24 Mar 2015 08:53:25 +0800
+Message-ID: <1427158405.17170.3.camel@intel.com>
+In-Reply-To: <550FB034.8030403@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3714472749377976757==
+--===============4816080204474724464==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2015-03-05 at 10:26 +0000, Mel Gorman wrote:
-> On Thu, Mar 05, 2015 at 01:34:59PM +0800, Huang Ying wrote:
-> > Hi, Mel,
+On Mon, 2015-03-23 at 14:18 +0800, Li, Aubrey wrote:
+> On 2015/3/20 16:38, Huang Ying wrote:
+> > FYI, we noticed the below changes on
 > > =
 
-> > On Sat, 2015-02-28 at 15:30 +0800, Huang Ying wrote:
-> > > On Sat, 2015-02-28 at 01:46 +0000, Mel Gorman wrote:
-> > > > On Fri, Feb 27, 2015 at 03:21:36PM +0800, Huang Ying wrote:
-> > > > > FYI, we noticed the below changes on
-> > > > > =
-
-> > > > > git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git =
-master
-> > > > > commit 3484b2de9499df23c4604a513b36f96326ae81ad ("mm: rearrange z=
-one fields into read-only, page alloc, statistics and page reclaim lines")
-> > > > > =
-
-> > > > > The perf cpu-cycles for spinlock (zone->lock) increased a lot.  I=
- suspect there are some cache ping-pong or false sharing.
-> > > > > =
-
-> > > > =
-
-> > > > Are you sure about this result? I ran similar tests here and found =
-that
-> > > > there was a major regression introduced near there but it was commit
-> > > > 05b843012335 ("mm: memcontrol: use root_mem_cgroup res_counter") th=
-at
-> > > > cause the problem and it was later reverted.  On local tests on a 4=
--node
-> > > > machine, commit 3484b2de9499df23c4604a513b36f96326ae81ad was within=
- 1%
-> > > > of the previous commit and well within the noise.
-> > > =
-
-> > > After applying the below debug patch, the performance regression
-> > > restored.  So I think we can root cause this regression to be cache l=
-ine
-> > > alignment related issue?
-> > > =
-
-> > > If my understanding were correct, after the 3484b2de94, lock and low
-> > > address area free_area are in the same cache line, so that the cache
-> > > line of the lock and the low address area of free_area will be switch=
-ed
-> > > between MESI "E" and "S" state because it is written in one CPU (page
-> > > allocating with free_area) and frequently read (spinning on lock) in
-> > > another CPU.
+> > git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> > commit 7486341a98f26857f383aec88ffa10950087c3a1 ("x86/platform, acpi: B=
+ypass legacy PIC and PIT in ACPI hardware reduced mode")
 > > =
 
-> > What do you think about this?
 > > =
 
+> > +-----------------+------------+------------+
+> > |                 | 394838c960 | 7486341a98 |
+> > +-----------------+------------+------------+
+> > | boot_successes  | 10         | 10         |
+> > | early-boot-hang | 1          | 1          |
+> > +-----------------+------------+------------+
+> > =
+
+> > =
+
+> > [   28.682462] microcode: CPU3 sig=3D0x30673, pf=3D0x2, revision=3D0x31e
+> > [   28.692739] microcode: Microcode Update Driver: v2.00 <tigran@aiva=
+zian.fsnet.co.uk>, Peter Oruba
+> > [   28.739947] mmc0: Reset 0x1 never completed.
+> > [   28.745155] genirq: Flags mismatch irq 8. 00000080 (mmc0) vs. 000000=
+00 (rtc0)
 > =
 
-> My attention is occupied by the automatic NUMA regression at the moment
-> but I haven't forgotten this. Even with the high client count, I was not
-> able to reproduce this so it appears to depend on the number of CPUs
-> available to stress the allocator enough to bypass the per-cpu allocator
-> enough to contend heavily on the zone lock. I'm hoping to think of a
-> better alternative than adding more padding and increasing the cache
-> footprint of the allocator but so far I haven't thought of a good
-> alternative. Moving the lock to the end of the freelists would probably
-> address the problem but still increases the footprint for order-0
-> allocations by a cache line.
+> mmc driver requests IRQ 8?
+> From surface it looks like either a firmware issue or ACPI get the wrong
+> IRQ resource.
+> I failed to replicate this issue with the attached config file on my
+> side, which platform is the test running?
 
-Any update on this?  Do you have some better idea?  I guess this may be
-fixed via putting some fields that are only read during order-0
-allocation with the same cache line of lock, if there are any.
+Sorry for late.  The test was running on an ASUS T100TA.
 
 Best Regards,
 Huang, Ying
 
+> Thanks,
+> -Aubrey
+> > [   28.753151] CPU: 1 PID: 138 Comm: systemd-udevd Not tainted 4.0.0-rc=
+4-wl-03426-gdba586f #1
+> > [   28.753156]  ffff880076683480 ffff8800764ffa78 ffffffff818b2eb3 0000=
+000000000007
+> > [   28.753159]  ffff88006d006800 ffff8800764ffad8 ffffffff810d37af ffff=
+8800764ffad8
+> > [   28.753162]  0000000000000246 ffffffff810d394a ffff880053bdc400 0000=
+000000000000
+> > [   28.753163] Call Trace:
+> > [   28.753174]  [<ffffffff818b2eb3>] dump_stack+0x4c/0x65
+> > [   28.753180]  [<ffffffff810d37af>] __setup_irq+0x57f/0x5d0
+> > [   28.753183]  [<ffffffff810d394a>] ? request_threaded_irq+0xaa/0x1b0
+> > [   28.753191]  [<ffffffffa006ddc0>] ? sdhci_request+0x200/0x200 [sdhci]
+> > [   28.753194]  [<ffffffff810d3994>] request_threaded_irq+0xf4/0x1b0
+> > [   28.753199]  [<ffffffffa006b790>] sdhci_add_host+0x800/0xf90 [sdhci]
+> > [   28.753205]  [<ffffffffa00295a8>] sdhci_acpi_probe+0x348/0x440 [sdhc=
+i_acpi]
+> > [   28.753210]  [<ffffffff81558ab4>] platform_drv_probe+0x34/0xa0
+> > [   28.753215]  [<ffffffff815567f0>] driver_probe_device+0x90/0x3e0
+> > [   28.753218]  [<ffffffff81556c1b>] __driver_attach+0x9b/0xa0
+> > [   28.753221]  [<ffffffff81556b80>] ? __device_attach+0x40/0x40
+> > [   28.753231]  [<ffffffff815545cb>] bus_for_each_dev+0x6b/0xb0
+> > [   28.753234]  [<ffffffff8155626e>] driver_attach+0x1e/0x20
+> > [   28.753237]  [<ffffffff81555e30>] bus_add_driver+0x180/0x250
+> > [   28.753240]  [<ffffffffa002e000>] ? 0xffffffffa002e000
+> > [   28.753243]  [<ffffffff81557424>] driver_register+0x64/0xf0
+> > [   28.753246]  [<ffffffff815589fa>] __platform_driver_register+0x4a/0x=
+50
+> > [   28.753250]  [<ffffffffa002e017>] sdhci_acpi_driver_init+0x17/0x1000=
+ [sdhci_acpi]
+> > [   28.753254]  [<ffffffff81002130>] do_one_initcall+0xc0/0x1f0
+> > [   28.753259]  [<ffffffff811cb86c>] ? kmem_cache_alloc_trace+0x1cc/0x2=
+40
+> > [   28.753262]  [<ffffffff818afb3c>] ? do_init_module+0x28/0x1dd
+> > [   28.753266]  [<ffffffff818afb75>] do_init_module+0x61/0x1dd
+> > [   28.753270]  [<ffffffff810fe9af>] load_module+0x189f/0x1be0
+> > [   28.753274]  [<ffffffff810f9e50>] ? store_uevent+0x40/0x40
+> > [   28.753279]  [<ffffffff810fee96>] SyS_finit_module+0x86/0xb0
+> > [   28.753283]  [<ffffffff818bb109>] system_call_fastpath+0x12/0x17
+> > [   28.753700] mmc0: Failed to request IRQ 8: -16
+> > [   28.975382] IOAPIC[0]: Set routing entry (8-16 -> 0x32 -> IRQ 13 Mod=
+e:1 Active:1 Dest:15)
+> > [   28.975934] sdhci-acpi: probe of INT33BB:00 failed with error -16
+> > =
+
+> > =
+
+> > Thanks,
+> > Ying Huang
+> > =
+
+> > =
+
+> > =
+
+> > _______________________________________________
+> > LKP mailing list
+> > LKP(a)linux.intel.com
+> > =
+
+> =
 
 
---===============3714472749377976757==--
+
+
+--===============4816080204474724464==--
 
