@@ -1,118 +1,101 @@
-Content-Type: multipart/mixed; boundary="===============8528557556826665304=="
+Content-Type: multipart/mixed; boundary="===============1857439152228606043=="
 MIME-Version: 1.0
-From: Li, Aubrey <aubrey.li@linux.intel.com>
+From: Mel Gorman <mgorman@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [x86/platform, acpi] 7486341a98f: genirq: Flags mismatch irq 8. 00000080 (mmc0) vs. 00000000 (rtc0)
-Date: Mon, 30 Mar 2015 16:28:00 +0800
-Message-ID: <55190910.3010905@linux.intel.com>
-In-Reply-To: <5513F807.7070304@linux.intel.com>
+Subject: [PATCH] mm: Move zone lock to a different cache line than order-0 free page lists
+Date: Fri, 27 Mar 2015 09:54:13 +0000
+Message-ID: <20150327095413.GO4701@suse.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8528557556826665304==
+--===============1857439152228606043==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Ying,
+Huang Ying reported the following problem due to commit 3484b2de9499
+("mm: rearrange zone fields into read-only, page alloc, statistics and
+page reclaim lines") from the Intel performance tests
 
-can you please try this patch to see if the problem is gone on your side?
+    24b7e5819ad5cbef  3484b2de9499df23c4604a513b
+    ----------------  --------------------------
+             %stddev     %change         %stddev
+                 \          |                \
+        152288 \261  0%     -46.2%      81911 \261  0%  aim7.jobs-per-min
+           237 \261  0%     +85.6%        440 \261  0%  aim7.time.elapsed_t=
+ime
+           237 \261  0%     +85.6%        440 \261  0%  aim7.time.elapsed_t=
+ime.max
+         25026 \261  0%     +70.7%      42712 \261  0%  aim7.time.system_ti=
+me
+       2186645 \261  5%     +32.0%    2885949 \261  4%  aim7.time.voluntary=
+_context_switches
+       4576561 \261  1%     +24.9%    5715773 \261  0%  aim7.time.involunta=
+ry_context_switches
 
-Thanks,
--Aubrey
+The problem is specific to very large machines under stress. It was not
+reproducible with the machines I had used to justify the original patch
+because large numbers of CPUs are required. When pressure is high enough,
+the cache line is bouncing between CPUs trying to acquire the lock and
+the holder of the lock adjusting free lists. The intention was that the
+acquirer of the lock would automatically have the cache line holding the
+free lists but according to Huang, this is not a universal win.
 
+One possibility is to move the zone lock to its own cache line but it
+increases the size of the zone. This patch moves the lock to the other
+end of the free lists where they do not contend under high pressure. It
+does mean the page allocator paths now require more cache lines but Huang
+reports that it restores performance to previous levels on large machines
 
-On 2015/3/26 20:13, Li, Aubrey wrote:
-> On 2015/3/25 15:22, Huang Ying wrote:
->> [   28.745155] genirq: Flags mismatch irq 8. 00000080 (mmc0) vs. 0000000=
-0 (rtc0)
-> =
+             %stddev     %change         %stddev
+                 \          |                \
+         84568 \261  1%     +94.3%     164280 \261  1%  aim7.jobs-per-min
+       2881944 \261  2%     -35.1%    1870386 \261  8%  aim7.time.voluntary=
+_context_switches
+           681 \261  1%      -3.4%        658 \261  0%  aim7.time.user_time
+       5538139 \261  0%     -12.1%    4867884 \261  0%  aim7.time.involunta=
+ry_context_switches
+         44174 \261  1%     -46.0%      23848 \261  1%  aim7.time.system_ti=
+me
+           426 \261  1%     -48.4%        219 \261  1%  aim7.time.elapsed_t=
+ime
+           426 \261  1%     -48.4%        219 \261  1%  aim7.time.elapsed_t=
+ime.max
+           468 \261  1%     -43.1%        266 \261  2%  uptime.boot
 
-> okay, I replicated this on my side now.
-> =
+Reported-and-tested-by: Huang Ying <ying.huang@intel.com>
+Signed-off-by: Mel Gorman <mgorman@suse.de>
+---
+ include/linux/mmzone.h | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-> Firstly, I don't think the patch did anything wrong. However, the patch
-> exposes a few issues FWICT currently:
-> =
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index f279d9c158cd..2782df47101e 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -474,16 +474,15 @@ struct zone {
+ 	unsigned long		wait_table_bits;
+ =
 
-> - Should we enable RTC Alarm the kind of Fixed hardware event in
-> hardware-reduced ACPI mode? I found RTC required registers in ACPI PM
-> block are not valid(register address =3D 0)
-> =
+ 	ZONE_PADDING(_pad1_)
+-
+-	/* Write-intensive fields used from the page allocator */
+-	spinlock_t		lock;
+-
+ 	/* free areas of different sizes */
+ 	struct free_area	free_area[MAX_ORDER];
+ =
 
-> - I checked RTC device in ACPI table, there is no interrupt resource
-> under RTC(firmware bug?), So irq 8 should be a hardcoded number. The
-> question is, shouldn't we update bitmap of allocated_irqs here? Or we
-> assume irq0~15 is reserved? If we assume IRQ0~15 is reserved, then
-> requesting IRQ8 without updating bitmap of allocated_irqs is fine.
-> =
+ 	/* zone flags, see below */
+ 	unsigned long		flags;
+ =
 
-> - Because we don't update bitmap of allocated_irqs when RTC request
-> IRQ8, so when MMC driver allocate irq resource, it's possible it gets
-> irq8, so we saw "genirq: Flags mismatch irq 8. 00000080 (mmc0) vs.
-> 00000000 (rtc0)". So here is another question, when we dynamically
-> allocate irq from irq domain, shouldn't we start from IRQ16? Yes, if
-> allocated_irqs bitmap is updated, then it should be fine if we start
-> from IRQ1.
-> =
++	/* Write-intensive fields used from the page allocator */
++	spinlock_t		lock;
++
+ 	ZONE_PADDING(_pad2_)
+ =
 
-> What the patch does is, it changes the behavior of how we allocate irq
-> from irq domain. Previously we have legacy IRQs so we statically assign
-> IRQ numbers for IOAPICs to host legacy IRQs, and now we allocate every
-> IRQ dynamically.
-> =
+ 	/* Write-intensive fields used by page reclaim */
 
-> For me I think I can deliver a patch against RTC driver to update
-> allocated_irqs bitmap, also, we should free irq when we found RTC ACPI
-> registers are not valid.
-> =
-
-> Certainly I'm open to any suggestions.
-> =
-
-> Thanks,
-> -Aubrey
-> =
-
-
-
---===============8528557556826665304==
-Content-Type: text/x-patch
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="0001-x86-platform-acpi-Statically-assign-IRQ-numbers-in-A.patch"
-
-PkZyb20gNDY1MjRhY2U5NGVhZjY4Yzk3MTk3MjU0NzJhYjRlYTI4ZDA3OWE3YiBNb24gU2VwIDE3
-IDAwOjAwOjAwIDIwMDEKRnJvbTogQXVicmV5IExpIDxhdWJyZXkubGlAaW50ZWwuY29tPgpEYXRl
-OiBNb24sIDMwIE1hciAyMDE1IDEwOjUwOjA5IC0wNTAwClN1YmplY3Q6IFtQQVRDSF0geDg2L3Bs
-YXRmb3JtLCBhY3BpOiBTdGF0aWNhbGx5IGFzc2lnbiBJUlEgbnVtYmVycyBpbiBBQ1BJCiBoYXJk
-d2FyZSByZWR1Y2VkIG1vZGUKCldlIHNob3VsZCBiZSBhYmxlIHRvIGR5bmFtaWNhbGx5IGFzc2ln
-biBJUlEgbnVtYmVyIG9uIHRoZSBwbGF0Zm9ybSBpbiBBQ1BJCkhhcmR3YXJlLXJlZHVjZWQgbW9k
-ZSwgYnV0IG9uIHRoZSBCYXkgVHJhaWwtVChBU1VTLVQxMDApIHBsYXRmb3JtLCB0aGVyZSBpcwph
-IFJUQyBkZXZpY2Ugc3RpbGwgdXNpbmcgdGhlIGxlZ2FjeSBoYXJkY29kZWQgSVJROCwgd2hpY2gg
-Y291bGQgY2F1c2UgdGhlCmZvbGxvd2luZyBlcnJvcjoKCjc0ODYzNDFhOThmOiBnZW5pcnE6IEZs
-YWdzIG1pc21hdGNoIGlycSA4LiAwMDAwMDA4MCAobW1jMCkgdnMuIDAwMDAwMDAwIChydGMwKQoK
-U28gd2Ugd2FudCB0byBzdGF0aWNhbGx5IGFzc2lnbiBJUlEgbnVtYmVycyBpbiBBQ1BJIGhhcmR3
-YXJlIHJlZHVjZWQgbW9kZSB0bwpmaXggdGhpcyBlcnJvcgoKU2lnbmVkLW9mZi1ieTogTGkgQXVi
-cmV5IDxhdWJyZXkubGlAbGludXguaW50ZWwuY29tPgpDYzogQWxhbiBDb3ggPGFsYW5AbGludXgu
-aW50ZWwuY29tPgpDYzogTGVuIEJyb3duIDxsZW4uYnJvd25AaW50ZWwuY29tPgpDYzogUmFmYWVs
-IEouIFd5c29ja2kgPHJhZmFlbC5qLnd5c29ja2lAaW50ZWwuY29tPgpDYzogQXJqYW4gdmFuIGRl
-IFZlbiA8YXJqYW5AbGludXguaW50ZWwuY29tPgotLS0KIGFyY2gveDg2L2tlcm5lbC9hY3BpL2Jv
-b3QuYyB8IDggKysrKysrLS0KIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKyksIDIgZGVs
-ZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJjaC94ODYva2VybmVsL2FjcGkvYm9vdC5jIGIvYXJj
-aC94ODYva2VybmVsL2FjcGkvYm9vdC5jCmluZGV4IDgwM2I2ODQuLjRjZDA3NjEgMTAwNjQ0Ci0t
-LSBhL2FyY2gveDg2L2tlcm5lbC9hY3BpL2Jvb3QuYworKysgYi9hcmNoL3g4Ni9rZXJuZWwvYWNw
-aS9ib290LmMKQEAgLTQ2MCw4ICs0NjAsMTIgQEAgYWNwaV9wYXJzZV9pb2FwaWMoc3RydWN0IGFj
-cGlfc3VidGFibGVfaGVhZGVyICogaGVhZGVyLCBjb25zdCB1bnNpZ25lZCBsb25nIGVuZCkKIAog
-CWFjcGlfdGFibGVfcHJpbnRfbWFkdF9lbnRyeShoZWFkZXIpOwogCi0JLyogU3RhdGljYWxseSBh
-c3NpZ24gSVJRIG51bWJlcnMgZm9yIElPQVBJQ3MgaG9zdGluZyBsZWdhY3kgSVJRcyAqLwotCWlm
-IChpb2FwaWMtPmdsb2JhbF9pcnFfYmFzZSA8IG5yX2xlZ2FjeV9pcnFzKCkpCisJLyoKKwkgKiBT
-dGF0aWNhbGx5IGFzc2lnbiBJUlEgbnVtYmVycyBmb3IgSU9BUElDcyBob3N0aW5nIGxlZ2FjeSBJ
-UlFzLAorCSAqIE9yIGZvciB0aGUgcGxhdGZvcm0gaW4gSGFyZHdhcmUtcmVkdWNlZCBBQ1BJIG1v
-ZGVsCisJICovCisJaWYgKGlvYXBpYy0+Z2xvYmFsX2lycV9iYXNlIDwgbnJfbGVnYWN5X2lycXMo
-KSB8fAorCQlhY3BpX2dibF9yZWR1Y2VkX2hhcmR3YXJlKQogCQljZmcudHlwZSA9IElPQVBJQ19E
-T01BSU5fTEVHQUNZOwogCiAJbXBfcmVnaXN0ZXJfaW9hcGljKGlvYXBpYy0+aWQsIGlvYXBpYy0+
-YWRkcmVzcywgaW9hcGljLT5nbG9iYWxfaXJxX2Jhc2UsCi0tIAoxLjkuMQoK
-
---===============8528557556826665304==--
+--===============1857439152228606043==--
 
