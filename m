@@ -1,99 +1,96 @@
-Content-Type: multipart/mixed; boundary="===============7887375442821546900=="
+Content-Type: multipart/mixed; boundary="===============2601205659766418814=="
 MIME-Version: 1.0
-From: Li, Aubrey <aubrey.li@linux.intel.com>
+From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
 To: lkp@lists.01.org
-Subject: Re: [x86/platform, acpi] 7486341a98f: genirq: Flags mismatch irq 8. 00000080 (mmc0) vs. 00000000 (rtc0)
-Date: Mon, 30 Mar 2015 20:19:38 +0800
-Message-ID: <55193F5A.1030001@linux.intel.com>
-In-Reply-To: <55190B4E.7080708@linux.intel.com>
+Subject: Re: [x86/intel/quark] 8bbc2a135b6: WARNING: CPU: 0 PID: 1 at arch/x86/platform/intel-quark/imr.c:358 imr_add_range+0x2b4/0x370()
+Date: Mon, 30 Mar 2015 15:39:22 +0100
+Message-ID: <5519601A.9010504@nexus-software.ie>
+In-Reply-To: <5519060A.3080909@nexus-software.ie>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7887375442821546900==
+--===============2601205659766418814==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2015/3/30 16:37, Jiang Liu wrote:
-> On 2015/3/30 16:28, Li, Aubrey wrote:
->> Ying,
->>
->> can you please try this patch to see if the problem is gone on your side?
-> Hi Aubrey,
-> 	I would be better if we could change RTC driver instead.
+On 30/03/15 09:15, Bryan O'Donoghue wrote:
+>
+>> [    0.752570]  [<c1ab0845>] dump_stack+0x16/0x18
+>> [    0.752570]  [<c1ab0845>] dump_stack+0x16/0x18
+>> [    0.753420]  [<c103bb27>] warn_slowpath_common+0x87/0xc0
+>> [    0.753420]  [<c103bb27>] warn_slowpath_common+0x87/0xc0
+>> [    0.754429]  [<c1038674>] ? imr_add_range+0x2b4/0x370
+>> [    0.754429]  [<c1038674>] ? imr_add_range+0x2b4/0x370
+>> [    0.755384]  [<c1038674>] ? imr_add_range+0x2b4/0x370
+>> [    0.755384]  [<c1038674>] ? imr_add_range+0x2b4/0x370
+>> [    0.756335]  [<c103bbc3>] warn_slowpath_fmt+0x33/0x40
+>> [    0.756335]  [<c103bbc3>] warn_slowpath_fmt+0x33/0x40
+>> [    0.757293]  [<c1038674>] imr_add_range+0x2b4/0x370
+>> [    0.757293]  [<c1038674>] imr_add_range+0x2b4/0x370
+>> [    0.758219]  [<c103057c>] ? slow_virt_to_phys+0x2c/0x90
+>> [    0.758219]  [<c103057c>] ? slow_virt_to_phys+0x2c/0x90
+>> [    0.759200]  [<c103209a>] ? __phys_addr+0x3a/0x90
+>> [    0.759200]  [<c103209a>] ? __phys_addr+0x3a/0x90
+>> [    0.760090]  [<c106e4de>] ? debug_check_no_locks_freed+0x9e/0x160
+>> [    0.760090]  [<c106e4de>] ? debug_check_no_locks_freed+0x9e/0x160
+>> [    0.761361]  [<c103057c>] ? slow_virt_to_phys+0x2c/0x90
+>> [    0.761361]  [<c103057c>] ? slow_virt_to_phys+0x2c/0x90
+>> [    0.762419]  [<c1fb836a>] imr_self_test_init+0x40/0x1d9
+>> [    0.762419]  [<c1fb836a>] imr_self_test_init+0x40/0x1d9
+>> [    0.763439]  [<c1fb832a>] ? imr_self_test_result+0x4e/0x4e
+>> [    0.763439]  [<c1fb832a>] ? imr_self_test_result+0x4e/0x4e
+>> [    0.764477]  [<c1fa7d03>] do_one_initcall+0x180/0x193
+>> [    0.764477]  [<c1fa7d03>] do_one_initcall+0x180/0x193
+>> [    0.765443]  [<c10568bb>] ? parse_args+0x25b/0x530
+>> [    0.765443]  [<c10568bb>] ? parse_args+0x25b/0x530
+>> [    0.766350]  [<c1fa7dec>] kernel_init_freeable+0xd6/0x153
+>> [    0.766350]  [<c1fa7dec>] kernel_init_freeable+0xd6/0x153
+>> [    0.767370]  [<c1fa7dec>] ? kernel_init_freeable+0xd6/0x153
+>> [    0.767370]  [<c1fa7dec>] ? kernel_init_freeable+0xd6/0x153
+>> [    0.768426]  [<c1aab7a0>] kernel_init+0x10/0xe0
+>> [    0.768426]  [<c1aab7a0>] kernel_init+0x10/0xe0
+>> [    0.769296]  [<c1061445>] ? schedule_tail+0x25/0x70
+>> [    0.769296]  [<c1061445>] ? schedule_tail+0x25/0x70
+>> [    0.770424]  [<c1abe060>] ret_from_kernel_thread+0x20/0x30
+>> [    0.770424]  [<c1abe060>] ret_from_kernel_thread+0x20/0x30
+>> [    0.771456]  [<c1aab790>] ? rest_init+0xb0/0xb0
+>> [    0.771456]  [<c1aab790>] ? rest_init+0xb0/0xb0
+>> [    0.772362] ---[ end trace e098947396137dbd ]---
+>> [    0.772362] ---[ end trace e098947396137dbd ]---
+>
+> Well the self test fails like it should on hardware without IMR support :)
+>
+> Curious what the QEMU setup is like ?
+>
+> To get to the self test code we need to get past this
+>
+> static const struct x86_cpu_id imr_ids[] __initconst =3D {
+>          { X86_VENDOR_INTEL, 5, 9 },     /* Intel Quark SoC X1000. */
+>          {}
+> };
+> MODULE_DEVICE_TABLE(x86cpu, imr_ids);
+>
+> if (!x86_match_cpu(imr_ids) || !iosf_mbi_available())
+>      return -ENODEV;
+>
+> Looks to me like a version of QEMU that reports iosf_mbi available,
+> cpuid 5/9 but lacks full IMR support ?
+>
+> How do I replicate this setup ?
 
-Hey Gerry,
+Hi.
 
-IRQ8 for RTC is for history reason. If we dynamically assign IRQ to RTC,
-it might be a mess for legacy machine. If we still use IRQ8 for RTC but
-dynamically assign IRQ to other components, then there is a race IRQ8
-being used before RTC driver is loaded.
+Turns out uncle google is your friend...
 
-So, statically assigning IRQ is the best choice in my mind, this also
-matches the original IRQ assign policy.
+I've found the LKP tests you guys have, and I have built the latest =
 
-Thanks,
--Aubrey
+version of QEMU.
 
-> Thanks!
-> Gerry
->>
->> Thanks,
->> -Aubrey
->>
->>
->> On 2015/3/26 20:13, Li, Aubrey wrote:
->>> On 2015/3/25 15:22, Huang Ying wrote:
->>>> [   28.745155] genirq: Flags mismatch irq 8. 00000080 (mmc0) vs. 00000=
-000 (rtc0)
->>>
->>> okay, I replicated this on my side now.
->>>
->>> Firstly, I don't think the patch did anything wrong. However, the patch
->>> exposes a few issues FWICT currently:
->>>
->>> - Should we enable RTC Alarm the kind of Fixed hardware event in
->>> hardware-reduced ACPI mode? I found RTC required registers in ACPI PM
->>> block are not valid(register address =3D 0)
->>>
->>> - I checked RTC device in ACPI table, there is no interrupt resource
->>> under RTC(firmware bug?), So irq 8 should be a hardcoded number. The
->>> question is, shouldn't we update bitmap of allocated_irqs here? Or we
->>> assume irq0~15 is reserved? If we assume IRQ0~15 is reserved, then
->>> requesting IRQ8 without updating bitmap of allocated_irqs is fine.
->>>
->>> - Because we don't update bitmap of allocated_irqs when RTC request
->>> IRQ8, so when MMC driver allocate irq resource, it's possible it gets
->>> irq8, so we saw "genirq: Flags mismatch irq 8. 00000080 (mmc0) vs.
->>> 00000000 (rtc0)". So here is another question, when we dynamically
->>> allocate irq from irq domain, shouldn't we start from IRQ16? Yes, if
->>> allocated_irqs bitmap is updated, then it should be fine if we start
->>> from IRQ1.
->>>
->>> What the patch does is, it changes the behavior of how we allocate irq
->>> from irq domain. Previously we have legacy IRQs so we statically assign
->>> IRQ numbers for IOAPICs to host legacy IRQs, and now we allocate every
->>> IRQ dynamically.
->>>
->>> For me I think I can deliver a patch against RTC driver to update
->>> allocated_irqs bitmap, also, we should free irq when we found RTC ACPI
->>> registers are not valid.
->>>
->>> Certainly I'm open to any suggestions.
->>>
->>> Thanks,
->>> -Aubrey
->>>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo(a)vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> =
+If you could give me the QEMU command line - I can take a quick look ....
 
-> =
+Something like this ?
+http://www.serverphorums.com/read.php?12,1097143
 
 
-
---===============7887375442821546900==--
+--===============2601205659766418814==--
 
