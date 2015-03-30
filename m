@@ -1,82 +1,118 @@
-Content-Type: multipart/mixed; boundary="===============1813719920599783591=="
+Content-Type: multipart/mixed; boundary="===============8528557556826665304=="
 MIME-Version: 1.0
-From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+From: Li, Aubrey <aubrey.li@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/intel/quark] 8bbc2a135b6: WARNING: CPU: 0 PID: 1 at arch/x86/platform/intel-quark/imr.c:358 imr_add_range+0x2b4/0x370()
-Date: Mon, 30 Mar 2015 09:15:06 +0100
-Message-ID: <5519060A.3080909@nexus-software.ie>
-In-Reply-To: <1427696929.17170.82.camel@intel.com>
+Subject: Re: [x86/platform, acpi] 7486341a98f: genirq: Flags mismatch irq 8. 00000080 (mmc0) vs. 00000000 (rtc0)
+Date: Mon, 30 Mar 2015 16:28:00 +0800
+Message-ID: <55190910.3010905@linux.intel.com>
+In-Reply-To: <5513F807.7070304@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1813719920599783591==
+--===============8528557556826665304==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Ying,
 
-> [    0.752570]  [<c1ab0845>] dump_stack+0x16/0x18
-> [    0.752570]  [<c1ab0845>] dump_stack+0x16/0x18
-> [    0.753420]  [<c103bb27>] warn_slowpath_common+0x87/0xc0
-> [    0.753420]  [<c103bb27>] warn_slowpath_common+0x87/0xc0
-> [    0.754429]  [<c1038674>] ? imr_add_range+0x2b4/0x370
-> [    0.754429]  [<c1038674>] ? imr_add_range+0x2b4/0x370
-> [    0.755384]  [<c1038674>] ? imr_add_range+0x2b4/0x370
-> [    0.755384]  [<c1038674>] ? imr_add_range+0x2b4/0x370
-> [    0.756335]  [<c103bbc3>] warn_slowpath_fmt+0x33/0x40
-> [    0.756335]  [<c103bbc3>] warn_slowpath_fmt+0x33/0x40
-> [    0.757293]  [<c1038674>] imr_add_range+0x2b4/0x370
-> [    0.757293]  [<c1038674>] imr_add_range+0x2b4/0x370
-> [    0.758219]  [<c103057c>] ? slow_virt_to_phys+0x2c/0x90
-> [    0.758219]  [<c103057c>] ? slow_virt_to_phys+0x2c/0x90
-> [    0.759200]  [<c103209a>] ? __phys_addr+0x3a/0x90
-> [    0.759200]  [<c103209a>] ? __phys_addr+0x3a/0x90
-> [    0.760090]  [<c106e4de>] ? debug_check_no_locks_freed+0x9e/0x160
-> [    0.760090]  [<c106e4de>] ? debug_check_no_locks_freed+0x9e/0x160
-> [    0.761361]  [<c103057c>] ? slow_virt_to_phys+0x2c/0x90
-> [    0.761361]  [<c103057c>] ? slow_virt_to_phys+0x2c/0x90
-> [    0.762419]  [<c1fb836a>] imr_self_test_init+0x40/0x1d9
-> [    0.762419]  [<c1fb836a>] imr_self_test_init+0x40/0x1d9
-> [    0.763439]  [<c1fb832a>] ? imr_self_test_result+0x4e/0x4e
-> [    0.763439]  [<c1fb832a>] ? imr_self_test_result+0x4e/0x4e
-> [    0.764477]  [<c1fa7d03>] do_one_initcall+0x180/0x193
-> [    0.764477]  [<c1fa7d03>] do_one_initcall+0x180/0x193
-> [    0.765443]  [<c10568bb>] ? parse_args+0x25b/0x530
-> [    0.765443]  [<c10568bb>] ? parse_args+0x25b/0x530
-> [    0.766350]  [<c1fa7dec>] kernel_init_freeable+0xd6/0x153
-> [    0.766350]  [<c1fa7dec>] kernel_init_freeable+0xd6/0x153
-> [    0.767370]  [<c1fa7dec>] ? kernel_init_freeable+0xd6/0x153
-> [    0.767370]  [<c1fa7dec>] ? kernel_init_freeable+0xd6/0x153
-> [    0.768426]  [<c1aab7a0>] kernel_init+0x10/0xe0
-> [    0.768426]  [<c1aab7a0>] kernel_init+0x10/0xe0
-> [    0.769296]  [<c1061445>] ? schedule_tail+0x25/0x70
-> [    0.769296]  [<c1061445>] ? schedule_tail+0x25/0x70
-> [    0.770424]  [<c1abe060>] ret_from_kernel_thread+0x20/0x30
-> [    0.770424]  [<c1abe060>] ret_from_kernel_thread+0x20/0x30
-> [    0.771456]  [<c1aab790>] ? rest_init+0xb0/0xb0
-> [    0.771456]  [<c1aab790>] ? rest_init+0xb0/0xb0
-> [    0.772362] ---[ end trace e098947396137dbd ]---
-> [    0.772362] ---[ end trace e098947396137dbd ]---
+can you please try this patch to see if the problem is gone on your side?
 
-Well the self test fails like it should on hardware without IMR support :)
+Thanks,
+-Aubrey
 
-Curious what the QEMU setup is like ?
 
-To get to the self test code we need to get past this
+On 2015/3/26 20:13, Li, Aubrey wrote:
+> On 2015/3/25 15:22, Huang Ying wrote:
+>> [   28.745155] genirq: Flags mismatch irq 8. 00000080 (mmc0) vs. 0000000=
+0 (rtc0)
+> =
 
-static const struct x86_cpu_id imr_ids[] __initconst =3D {
-         { X86_VENDOR_INTEL, 5, 9 },     /* Intel Quark SoC X1000. */
-         {}
-};
-MODULE_DEVICE_TABLE(x86cpu, imr_ids);
+> okay, I replicated this on my side now.
+> =
 
-if (!x86_match_cpu(imr_ids) || !iosf_mbi_available())
-     return -ENODEV;
+> Firstly, I don't think the patch did anything wrong. However, the patch
+> exposes a few issues FWICT currently:
+> =
 
-Looks to me like a version of QEMU that reports iosf_mbi available, =
+> - Should we enable RTC Alarm the kind of Fixed hardware event in
+> hardware-reduced ACPI mode? I found RTC required registers in ACPI PM
+> block are not valid(register address =3D 0)
+> =
 
-cpuid 5/9 but lacks full IMR support ?
+> - I checked RTC device in ACPI table, there is no interrupt resource
+> under RTC(firmware bug?), So irq 8 should be a hardcoded number. The
+> question is, shouldn't we update bitmap of allocated_irqs here? Or we
+> assume irq0~15 is reserved? If we assume IRQ0~15 is reserved, then
+> requesting IRQ8 without updating bitmap of allocated_irqs is fine.
+> =
 
-How do I replicate this setup ?
+> - Because we don't update bitmap of allocated_irqs when RTC request
+> IRQ8, so when MMC driver allocate irq resource, it's possible it gets
+> irq8, so we saw "genirq: Flags mismatch irq 8. 00000080 (mmc0) vs.
+> 00000000 (rtc0)". So here is another question, when we dynamically
+> allocate irq from irq domain, shouldn't we start from IRQ16? Yes, if
+> allocated_irqs bitmap is updated, then it should be fine if we start
+> from IRQ1.
+> =
 
---===============1813719920599783591==--
+> What the patch does is, it changes the behavior of how we allocate irq
+> from irq domain. Previously we have legacy IRQs so we statically assign
+> IRQ numbers for IOAPICs to host legacy IRQs, and now we allocate every
+> IRQ dynamically.
+> =
+
+> For me I think I can deliver a patch against RTC driver to update
+> allocated_irqs bitmap, also, we should free irq when we found RTC ACPI
+> registers are not valid.
+> =
+
+> Certainly I'm open to any suggestions.
+> =
+
+> Thanks,
+> -Aubrey
+> =
+
+
+
+--===============8528557556826665304==
+Content-Type: text/x-patch
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="0001-x86-platform-acpi-Statically-assign-IRQ-numbers-in-A.patch"
+
+PkZyb20gNDY1MjRhY2U5NGVhZjY4Yzk3MTk3MjU0NzJhYjRlYTI4ZDA3OWE3YiBNb24gU2VwIDE3
+IDAwOjAwOjAwIDIwMDEKRnJvbTogQXVicmV5IExpIDxhdWJyZXkubGlAaW50ZWwuY29tPgpEYXRl
+OiBNb24sIDMwIE1hciAyMDE1IDEwOjUwOjA5IC0wNTAwClN1YmplY3Q6IFtQQVRDSF0geDg2L3Bs
+YXRmb3JtLCBhY3BpOiBTdGF0aWNhbGx5IGFzc2lnbiBJUlEgbnVtYmVycyBpbiBBQ1BJCiBoYXJk
+d2FyZSByZWR1Y2VkIG1vZGUKCldlIHNob3VsZCBiZSBhYmxlIHRvIGR5bmFtaWNhbGx5IGFzc2ln
+biBJUlEgbnVtYmVyIG9uIHRoZSBwbGF0Zm9ybSBpbiBBQ1BJCkhhcmR3YXJlLXJlZHVjZWQgbW9k
+ZSwgYnV0IG9uIHRoZSBCYXkgVHJhaWwtVChBU1VTLVQxMDApIHBsYXRmb3JtLCB0aGVyZSBpcwph
+IFJUQyBkZXZpY2Ugc3RpbGwgdXNpbmcgdGhlIGxlZ2FjeSBoYXJkY29kZWQgSVJROCwgd2hpY2gg
+Y291bGQgY2F1c2UgdGhlCmZvbGxvd2luZyBlcnJvcjoKCjc0ODYzNDFhOThmOiBnZW5pcnE6IEZs
+YWdzIG1pc21hdGNoIGlycSA4LiAwMDAwMDA4MCAobW1jMCkgdnMuIDAwMDAwMDAwIChydGMwKQoK
+U28gd2Ugd2FudCB0byBzdGF0aWNhbGx5IGFzc2lnbiBJUlEgbnVtYmVycyBpbiBBQ1BJIGhhcmR3
+YXJlIHJlZHVjZWQgbW9kZSB0bwpmaXggdGhpcyBlcnJvcgoKU2lnbmVkLW9mZi1ieTogTGkgQXVi
+cmV5IDxhdWJyZXkubGlAbGludXguaW50ZWwuY29tPgpDYzogQWxhbiBDb3ggPGFsYW5AbGludXgu
+aW50ZWwuY29tPgpDYzogTGVuIEJyb3duIDxsZW4uYnJvd25AaW50ZWwuY29tPgpDYzogUmFmYWVs
+IEouIFd5c29ja2kgPHJhZmFlbC5qLnd5c29ja2lAaW50ZWwuY29tPgpDYzogQXJqYW4gdmFuIGRl
+IFZlbiA8YXJqYW5AbGludXguaW50ZWwuY29tPgotLS0KIGFyY2gveDg2L2tlcm5lbC9hY3BpL2Jv
+b3QuYyB8IDggKysrKysrLS0KIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKyksIDIgZGVs
+ZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJjaC94ODYva2VybmVsL2FjcGkvYm9vdC5jIGIvYXJj
+aC94ODYva2VybmVsL2FjcGkvYm9vdC5jCmluZGV4IDgwM2I2ODQuLjRjZDA3NjEgMTAwNjQ0Ci0t
+LSBhL2FyY2gveDg2L2tlcm5lbC9hY3BpL2Jvb3QuYworKysgYi9hcmNoL3g4Ni9rZXJuZWwvYWNw
+aS9ib290LmMKQEAgLTQ2MCw4ICs0NjAsMTIgQEAgYWNwaV9wYXJzZV9pb2FwaWMoc3RydWN0IGFj
+cGlfc3VidGFibGVfaGVhZGVyICogaGVhZGVyLCBjb25zdCB1bnNpZ25lZCBsb25nIGVuZCkKIAog
+CWFjcGlfdGFibGVfcHJpbnRfbWFkdF9lbnRyeShoZWFkZXIpOwogCi0JLyogU3RhdGljYWxseSBh
+c3NpZ24gSVJRIG51bWJlcnMgZm9yIElPQVBJQ3MgaG9zdGluZyBsZWdhY3kgSVJRcyAqLwotCWlm
+IChpb2FwaWMtPmdsb2JhbF9pcnFfYmFzZSA8IG5yX2xlZ2FjeV9pcnFzKCkpCisJLyoKKwkgKiBT
+dGF0aWNhbGx5IGFzc2lnbiBJUlEgbnVtYmVycyBmb3IgSU9BUElDcyBob3N0aW5nIGxlZ2FjeSBJ
+UlFzLAorCSAqIE9yIGZvciB0aGUgcGxhdGZvcm0gaW4gSGFyZHdhcmUtcmVkdWNlZCBBQ1BJIG1v
+ZGVsCisJICovCisJaWYgKGlvYXBpYy0+Z2xvYmFsX2lycV9iYXNlIDwgbnJfbGVnYWN5X2lycXMo
+KSB8fAorCQlhY3BpX2dibF9yZWR1Y2VkX2hhcmR3YXJlKQogCQljZmcudHlwZSA9IElPQVBJQ19E
+T01BSU5fTEVHQUNZOwogCiAJbXBfcmVnaXN0ZXJfaW9hcGljKGlvYXBpYy0+aWQsIGlvYXBpYy0+
+YWRkcmVzcywgaW9hcGljLT5nbG9iYWxfaXJxX2Jhc2UsCi0tIAoxLjkuMQoK
+
+--===============8528557556826665304==--
 
