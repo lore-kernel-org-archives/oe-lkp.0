@@ -1,127 +1,132 @@
-Content-Type: multipart/mixed; boundary="===============7017810813528544067=="
+Content-Type: multipart/mixed; boundary="===============2620704979173845931=="
 MIME-Version: 1.0
-From: Andrey Ryabinin <a.ryabinin@samsung.com>
+From: Tomeu Vizoso <tomeu.vizoso@gmail.com>
 To: lkp@lists.01.org
-Subject: [PATCH] gcov: fix softlockups
-Date: Thu, 02 Apr 2015 13:49:30 +0300
-Message-ID: <1427971770-7456-1-git-send-email-a.ryabinin@samsung.com>
-In-Reply-To: <20150323012500.GA15155@wfg-t540p.sh.intel.com>
+Subject: Re: [cfg80211] eeca9fce1d7: BUG: kernel boot oversize
+Date: Thu, 02 Apr 2015 16:48:34 +0200
+Message-ID: <CAAObsKA-fzNSPrkyK7=DQ0wYzfLcvhNNgtf+oye52Rfba__rGw@mail.gmail.com>
+In-Reply-To: <CB3B3D4774441E42AA3EA0E1BA8230A04D07972A@HASMSX106.ger.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7017810813528544067==
+--===============2620704979173845931==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-gcov profiling if enabled with other heavy compile-time
-instrumentation like KASan could trigger following softlockups:
+On 24 March 2015 at 09:34, Peer, Ilan <ilan.peer@intel.com> wrote:
+> Hi,
+>
+> This mean u probably do not have crda installed, or it is not properly co=
+nfigured. These are debug prints so the simplest would be to disable CONFIG=
+_CFG80211_REG_DEBUG .. unless you are debugging wireless regulatory flows.
 
-[   72.460059] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [swapp=
-er/0:1]
-[   72.460068] Modules linked in:
-[   72.460068] irq event stamp: 22823276
-[   72.460068] hardirqs last  enabled at (22823275): [<ffffffff86e8d10d>] m=
-utex_lock_nested+0x7d9/0x930
-[   72.460068] hardirqs last disabled at (22823276): [<ffffffff86e9521d>] a=
-pic_timer_interrupt+0x6d/0x80
-[   72.460068] softirqs last  enabled at (22823172): [<ffffffff811ed969>] _=
-_do_softirq+0x4db/0x729
-[   72.460068] softirqs last disabled at (22823167): [<ffffffff811edfcf>] i=
-rq_exit+0x7d/0x15b
-[   72.460068] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W       3.19=
-.0-05245-gbb33326-dirty #3
-[   72.460068] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS =
-rel-1.7.5.1-0-g8936dbb-20141113_115728-nilsson.home.kraxel.org 04/01/2014
-[   72.460068] task: ffff88006cba8000 ti: ffff88006cbb0000 task.ti: ffff880=
-06cbb0000
-[   72.460068] RIP: 0010:[<ffffffff8146822a>]  [<ffffffff8146822a>] kasan_m=
-em_to_shadow+0x1e/0x1f
-[   72.460068] RSP: 0000:ffff88006cbb3cb0  EFLAGS: 00000207
-[   72.460068] RAX: fffffbfff1331380 RBX: ffffffff81468fc2 RCX: ffff88006d6=
-00006
-[   72.460068] RDX: dffffc0000000000 RSI: ffffffff89989bfa RDI: 1ffffffff13=
-31380
-[   72.460068] RBP: ffff88006cbb3cf8 R08: 00000000037178af R09: 00000000037=
-14ae1
-[   72.460068] R10: ffffed000c8d0b1f R11: 00000000000000cf R12: ffffffff8d8=
-c2ba0
-[   72.460068] R13: ffff88006d640780 R14: ffffffff81269ad5 R15: ffff88006cb=
-b3c58
-[   72.460068] FS:  0000000000000000(0000) GS:ffff88006d600000(0000) knlGS:=
-0000000000000000
-[   72.460068] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-[   72.460068] CR2: 0000000000000000 CR3: 000000000a229000 CR4: 00000000000=
-006f0
-[   72.460068] Stack:
-[   72.460068]  ffffffff81468a10 dffffc0000000000 ffffffff8abcfac0 ffff8800=
-6cbb3d28
-[   72.460068]  ffffffff81468fc2 ffff88006cbb3d38 ffffffff81468fc2 dffffc00=
-00000000
-[   72.460068]  ffffffff89989c05 ffff88006cbb3d28 ffffffff8212fea0 ffff8800=
-63049398
-[   72.460068] Call Trace:
-[   72.460068]  [<ffffffff81468a10>] ? __asan_load1+0x66/0xbb
-[   72.460068]  [<ffffffff81468fc2>] ? __asan_load8+0x6d/0x10c
-[   72.460068]  [<ffffffff81468fc2>] ? __asan_load8+0x6d/0x10c
-[   72.460068]  [<ffffffff8212fea0>] strcmp+0x28/0x70
-[   72.460068]  [<ffffffff813228af>] get_node_by_name+0x66/0x99
-[   72.460068]  [<ffffffff81323879>] gcov_event+0x4f/0x69e
-[   72.460068]  [<ffffffff86e90477>] ? mutex_unlock+0x15/0x1e
-[   72.460068]  [<ffffffff8ca18cb9>] ? gcov_persist_setup+0x77/0x77
-[   72.460068]  [<ffffffff8ca18cb9>] ? gcov_persist_setup+0x77/0x77
-[   72.460068]  [<ffffffff813227a6>] gcov_enable_events+0x54/0x7b
-[   72.460068]  [<ffffffff8ca18db1>] gcov_fs_init+0xf8/0x134
-[   72.460068]  [<ffffffff810022ca>] do_one_initcall+0x1b2/0x288
-[   72.460068]  [<ffffffff81468fc2>] ? __asan_load8+0x6d/0x10c
-[   72.460068]  [<ffffffff8c9c8f02>] kernel_init_freeable+0x467/0x580
-[   72.460068]  [<ffffffff86dd9a48>] ? rest_init+0x23b/0x23b
-[   72.460068]  [<ffffffff86dd9a5d>] kernel_init+0x15/0x18b
-[   72.460068]  [<ffffffff86e93f3c>] ret_from_fork+0x7c/0xb0
-[   72.460068]  [<ffffffff86dd9a48>] ? rest_init+0x23b/0x23b
-[   72.460068] Code: ff 48 ff 05 61 ec c2 0c 48 89 e5 5d c3 55 48 c1 ef 03 =
-48 ba 00 00 00 00 00 fc ff df 48 8d 04 17 48 ff 05 da f5 c2 0c 48 89 e5 5d =
-<c3> 55 48 ff 05 f5 fe c2 0c 48 89 e5 5d c3 55 48 ff 05 f0 fe c2
-[   72.460068] Kernel panic - not syncing: softlockup: hung tasks
+Are you sure? I see lots (one every ~3 seconds) of this after rebasing
+on latest linux-next and CONFIG_CFG80211_REG_DEBUG isn't enabled:
 
-Fix this by sticking cond_resched() in gcov_enable_events().
+[   19.382847] cfg80211: Calling CRDA to update world regulatory domain
 
-Signed-off-by: Andrey Ryabinin <a.ryabinin@samsung.com>
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
----
- kernel/gcov/base.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Reverting this patch brings back the old behavior.
 
-diff --git a/kernel/gcov/base.c b/kernel/gcov/base.c
-index b358a80..a744098 100644
---- a/kernel/gcov/base.c
-+++ b/kernel/gcov/base.c
-@@ -18,6 +18,7 @@
- #include <linux/init.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-+#include <linux/sched.h>
- #include "gcov.h"
- =
+> Regardless, I'll try to come up with a better solution to handle such cas=
+es.
 
- static int gcov_events_enabled;
-@@ -107,8 +108,10 @@ void gcov_enable_events(void)
- 	gcov_events_enabled =3D 1;
- =
+Thanks,
 
- 	/* Perform event callback for previously registered entries. */
--	while ((info =3D gcov_info_next(info)))
-+	while ((info =3D gcov_info_next(info))) {
- 		gcov_event(GCOV_ADD, info);
-+		cond_resched();
-+	}
- =
+Tomeu
 
- 	mutex_unlock(&gcov_lock);
- }
--- =
+> Thanks,
+>
+> Ilan.
+>
+>> -----Original Message-----
+>> From: Huang, Ying
+>> Sent: Tuesday, March 24, 2015 09:32
+>> To: Peer, Ilan
+>> Cc: Berg, Johannes; LKML; lkp(a)01.org
+>> Subject: [LKP] [cfg80211] eeca9fce1d7: BUG: kernel boot oversize
+>>
+>> FYI, we noticed the below changes on
+>>
+>> git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git ma=
+ster
+>> commit eeca9fce1d71a4955855ceb0c3b13c1eb9db27c1 ("cfg80211:
+>> Schedule timeout for all CRDA calls")
+>>
+>>
+>> +-------------------------+------------+------------+
+>> |                         | 0505075360 | eeca9fce1d |
+>> +-------------------------+------------+------------+
+>> | boot_successes          | 9          | 9          |
+>> | boot_failures           | 0          | 1          |
+>> | BUG:kernel_boot_crashed | 0          | 1          |
+>> +-------------------------+------------+------------+
+>>
+>> It appears too many like like below in dmesg after applying the patch in=
+ a
+>> virtual machine.
+>>
+>> [11223.232543] cfg80211: Kicking the queue [11223.233674] cfg80211:
+>> Calling CRDA to update world regulatory domain
+>>
+>> BUG: kernel boot oversize
+>> Elapsed time: 11150
+>> qemu-system-x86_64 -enable-kvm -cpu Haswell,+smep,+smap -kernel
+>> /kernel/x86_64-randconfig-n0-
+>> 03210642/ca2fd9633ed4fe8a5ad56efb2fcef061a19f2e90/vmlinuz-4.0.0-rc4-
+>> wl-ath-03682-gca2fd963 -append 'user=3Dlkp job=3D/lkp/scheduled/vm-kbuil=
+d-
+>> 1G-10/rand_boot-1-x86_64-randconfig-n0-03210642-
+>> ca2fd9633ed4fe8a5ad56efb2fcef061a19f2e90-0.yaml ARCH=3Dx86_64
+>> BOOT_IMAGE=3D/kernel/x86_64-randconfig-n0-
+>> 03210642/ca2fd9633ed4fe8a5ad56efb2fcef061a19f2e90/vmlinuz-4.0.0-rc4-
+>> wl-ath-03682-gca2fd963 kconfig=3Dx86_64-randconfig-n0-03210642
+>> commit=3Dca2fd9633ed4fe8a5ad56efb2fcef061a19f2e90 branch=3Dlinux-
+>> devel/devel-hourly-2015032023 root=3D/dev/ram0 max_uptime=3D3600
+>> RESULT_ROOT=3D/result/vm-kbuild-1G/boot/1/debian-x86_64-2015-02-
+>> 07.cgz/x86_64-randconfig-n0-
+>> 03210642/ca2fd9633ed4fe8a5ad56efb2fcef061a19f2e90/0 ip=3D::::vm-
+>> kbuild-1G-10::dhcp earlyprintk=3DttyS0,115200 rd.udev.log-priority=3Derr
+>> systemd.log_target=3Djournal systemd.log_level=3Dwarning debug apic=3Dde=
+bug
+>> sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 panic=3D-1
+>> softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_ramdisk=3D2
+>> prompt_ramdisk=3D0 console=3DttyS0,115200 console=3Dtty0 vga=3Dnormal rw=
+'  -
+>> initrd /fs/sdd1/initrd-vm-kbuild-1G-10 -m 1024 -smp 2 -net
+>> nic,vlan=3D1,model=3De1000 -net user,vlan=3D1 -boot order=3Dnc -no-reboo=
+t -
+>> watchdog i6300esb -rtc base=3Dlocaltime -device virtio-scsi-pci,id=3Dscs=
+i0 -drive
+>> file=3D/fs/sdd1/disk0-vm-kbuild-1G-
+>> 10,if=3Dnone,id=3Dhd0,media=3Ddisk,aio=3Dnative,cache=3Dnone -device scs=
+i-
+>> hd,bus=3Dscsi0.0,drive=3Dhd0,scsi-id=3D1,lun=3D0 -drive file=3D/fs/sdd1/=
+disk1-vm-
+>> kbuild-1G-10,if=3Dnone,id=3Dhd1,media=3Ddisk,aio=3Dnative,cache=3Dnone -=
+device scsi-
+>> hd,bus=3Dscsi0.0,drive=3Dhd1,scsi-id=3D1,lun=3D1 -drive file=3D/fs/sdd1/=
+disk2-vm-
+>> kbuild-1G-10,if=3Dnone,id=3Dhd2,media=3Ddisk,aio=3Dnative,cache=3Dnone -=
+device scsi-
+>> hd,bus=3Dscsi0.0,drive=3Dhd2,scsi-id=3D1,lun=3D2 -drive file=3D/fs/sdd1/=
+disk3-vm-
+>> kbuild-1G-10,if=3Dnone,id=3Dhd3,media=3Ddisk,aio=3Dnative,cache=3Dnone -=
+device scsi-
+>> hd,bus=3Dscsi0.0,drive=3Dhd3,scsi-id=3D1,lun=3D3 -drive file=3D/fs/sdd1/=
+disk4-vm-
+>> kbuild-1G-10,if=3Dnone,id=3Dhd4,media=3Ddisk,aio=3Dnative,cache=3Dnone -=
+device scsi-
+>> hd,bus=3Dscsi0.0,drive=3Dhd4,scsi-id=3D1,lun=3D4 -pidfile /dev/shm/kboot=
+/pid-vm-
+>> kbuild-1G-10 -serial file:/dev/shm/kboot/serial-vm-kbuild-1G-10 -daemoni=
+ze -
+>> display none -monitor null
+>>
+>>
+>>
+>> Thanks,
+>> Ying Huang
+>
 
-2.3.5
-
-
---===============7017810813528544067==--
+--===============2620704979173845931==--
 
