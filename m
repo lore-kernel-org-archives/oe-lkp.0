@@ -1,58 +1,73 @@
-Content-Type: multipart/mixed; boundary="===============2984013217042511048=="
+Content-Type: multipart/mixed; boundary="===============0032485238121826913=="
 MIME-Version: 1.0
-From: Thomas Graf <tgraf@suug.ch>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [rhashtable] [ INFO: suspicious RCU usage. ]
-Date: Thu, 02 Apr 2015 08:33:56 +0100
-Message-ID: <20150402073356.GC19425@casper.infradead.org>
-In-Reply-To: <20150402042950.GA5643@gondor.apana.org.au>
+Subject: Re: [timer] 17cdf560f27: +4.0% boot-meminfo.VmallocUsed
+Date: Thu, 02 Apr 2015 09:54:43 +0200
+Message-ID: <20150402075443.GR23123@twins.programming.kicks-ass.net>
+In-Reply-To: <1427936769.6726.2.camel@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2984013217042511048==
+--===============0032485238121826913==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 04/02/15 at 12:29pm, Herbert Xu wrote:
-> On Thu, Apr 02, 2015 at 12:11:35PM +0800, Fengguang Wu wrote:
-> > =
-
-> > Yes it is contained in next-20150401 which is bad:
-> > =
-
-> > # extra tests on tree/branch next/master
-> > git bisect  bad e954104e2b634b42811dad8d502cbf240f206df2  # 21:22      =
-0-     60  Add linux-next specific files for 20150401
-> > =
-
-> > The dmesg there is
-> > =
-
-> > [    1.149409] test_firmware: interface ready
-> > [    1.150293] Running resizable hashtable tests...
-> > [    1.151209]   Adding 2048 keys
-> > [    1.152069] ------------[ cut here ]------------
-> > [    1.152978] WARNING: CPU: 0 PID: 1 at lib/rhashtable.c:409 rhashtabl=
-e_insert_rehash+0x9d/0x1d0()
+On Thu, Apr 02, 2015 at 09:06:09AM +0800, Huang Ying wrote:
+> FYI, we noticed the below changes on
 > =
 
-> I see.  This is actually a completely different problem.
+> git://git.kernel.org/pub/scm/linux/kernel/git/vireshk/linux.git timer/all=
+oc_tvec_statically
+> commit 17cdf560f2727f687ab159707d0aa591f8a2f82d ("timer: Allocate per-cpu=
+ tvec_base's statically")
 > =
 
-> ---8<---
-> test_rhashtable: Remove bogus max_size setting
 > =
 
-> Now that resizing is completely automatic, we need to remove
-> the max_size setting or the test will fail.
+> testbox/testcase/testparams: lkp-sbx04/boot/performance-1
 > =
 
-> Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> c5e77f5216abdd1d  17cdf560f2727f687ab159707d  =
 
-Acked-by: Thomas Graf <tgraf@suug.ch>
+> ----------------  --------------------------  =
 
-Had the same fix queued up in an upcoming series ;-)
+>          %stddev     %change         %stddev
+>              \          |                \  =
 
---===============2984013217042511048==--
+>     410996 =C2=B1  0%      +4.0%     427412 =C2=B1  0%  boot-meminfo.Vmal=
+locUsed
+> =
+
+> testbox/testcase/testparams: wsm/boot/performance-1
+> =
+
+> c5e77f5216abdd1d  17cdf560f2727f687ab159707d  =
+
+> ----------------  --------------------------  =
+
+>      85712 =C2=B1  0%      +2.4%      87772 =C2=B1  0%  boot-meminfo.Vmal=
+locUsed
+> =
+
+> testbox/testcase/testparams: lkp-snb01/boot/performance-1
+> =
+
+> c5e77f5216abdd1d  17cdf560f2727f687ab159707d  =
+
+> ----------------  --------------------------  =
+
+>     447001 =C2=B1  0%      -1.0%     442558 =C2=B1  0%  boot-slabinfo.num=
+_objs
+>     125616 =C2=B1  5%     -13.5%     108720 =C2=B1  4%  boot-meminfo.Dire=
+ctMap4k
+>     347196 =C2=B1  0%      +4.7%     363612 =C2=B1  0%  boot-meminfo.Vmal=
+locUsed
+> =
+
+
+well, duh.. it changes a dynamic allocation into a static per-cpu one.
+What did you expect?
+
+--===============0032485238121826913==--
 
