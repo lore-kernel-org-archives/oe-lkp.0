@@ -1,206 +1,101 @@
-Content-Type: multipart/mixed; boundary="===============9117811705520962048=="
+Content-Type: multipart/mixed; boundary="===============0519822700711441387=="
 MIME-Version: 1.0
-From: Tejun Heo <tj@kernel.org>
+From: Daniel Baluta <daniel.baluta@intel.com>
 To: lkp@lists.01.org
-Subject: [PATCH] blkcg: always create the blkcg_gq for the root blkcg
-Date: Mon, 06 Apr 2015 15:27:29 -0400
-Message-ID: <20150406192729.GH10582@htj.duckdns.org>
-In-Reply-To: <20150402004836.GB12979@wfg-t540p.sh.intel.com>
+Subject: Re: [PATCH] lguest: explicitly setup /dev/lguest private_data
+Date: Tue, 07 Apr 2015 11:34:25 +0300
+Message-ID: <CAEnQRZDPLBxh6mgSrVVqd=-WNcyb6rcNL=i9KGdKnL4c5CQs0Q@mail.gmail.com>
+In-Reply-To: <1428394698-16938-1-git-send-email-tomvanbraeckel@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9117811705520962048==
+--===============0519822700711441387==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Currently, blkcg does a minor optimization where the root blkcg is
-created when the first blkcg policy is activated on a queue and
-destroyed on the deactivation of the last.  On systems where blkcg is
-configured but not used, this saves one blkcg_gq struct per queue.  On
-systems where blkcg is actually used, there's no difference.  The only
-case where this can lead to any meaninful, albeit still minute, save
-in memory consumption is when all blkcg policies are deactivated after
-being widely used in the system, which is a hihgly unlikely scenario.
+On Tue, Apr 7, 2015 at 11:18 AM, Tom Van Braeckel
+<tomvanbraeckel@gmail.com> wrote:
+> The private_data member of the /dev/lguest device file is used to hold
+> the current struct lguest and needs to be set to NULL to signify that
+> no initialization has taken place.
+>
+> We explicitly set it to NULL to be independent of whatever value the
+> misc subsystem initializes it to.
+>
+> Signed-off-by: Tom Van Braeckel <tomvanbraeckel@gmail.com>
+> ---
+> Backstory:
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> The misc subsystem used to initialize a file's private_data to point to
+> the misc device when a driver had registered a custom open file
+> operation and initialized it to NULL when a custom open file operation
+> had *not* been provided.
+>
+> This subtle quirk was confusing, to the point where kernel code
+> registered *empty* file open operations to have private_data point to
+> the misc device structure.
+>
+> And it lead to bugs, where the addition or removal of a custom open
+> file operation surprisingly changed the initial contents of a file's
+> private_data structure.
+>
+> The misc subsystem is currently underdoing changes to *always* set
+> private_data to point to the misc device instead of only doing this
+> when a custom open file operation has been registered.
+>
+> Intel's 0day kernel testing robot discovered that the lguest driver
+> depended on it implicitly being initialized to NULL, as Fengguang Wu
+> reported. Thanks a lot for all the hard work!
+>
+>  drivers/lguest/lguest_user.c | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/lguest/lguest_user.c b/drivers/lguest/lguest_user.c
+> index c4c6113..054bf70 100644
+> --- a/drivers/lguest/lguest_user.c
+> +++ b/drivers/lguest/lguest_user.c
+> @@ -98,6 +98,17 @@ static int trap(struct lg_cpu *cpu, const unsigned lon=
+g __user *input)
+>         return 0;
+>  }
+>
+> +/*
+> + * Set up the /dev/lguest file structure
+> + * The file's private_data will hold the "struct lguest" after
+> + * initialization and is used to check whether it is already initialized.
+> + */
+> +static int open(struct inode *inode, struct file *file)
+> +{
+> +       file->private_data =3D NULL;
+> +       return 0;
+> +}
+> +
+>  /*L:040
+>   * Once our Guest is initialized, the Launcher makes it run by reading
+>   * from /dev/lguest.
+> @@ -405,10 +416,11 @@ static int close(struct inode *inode, struct file *=
+file)
+>   *
+>   * We begin our understanding with the Host kernel interface which the L=
+auncher
+>   * uses: reading and writing a character device called /dev/lguest.  All=
+ the
+> - * work happens in the read(), write() and close() routines:
+> + * work happens in the open(), read(), write() and close() routines:
+>   */
+>  static const struct file_operations lguest_fops =3D {
+>         .owner   =3D THIS_MODULE,
+> +       .open    =3D open,
+>         .release =3D close,
+>         .write   =3D write,
+>         .read    =3D read,
 
-The conditional existence of root blkcg_gq has already created several
-bugs in blkcg and became an issue once again for the new per-cgroup
-wb_congested mechanism for cgroup writeback support leading to a NULL
-dereference when no blkcg policy is active.  This is really not worth
-bothering with.  This patch makes blkcg always allocate and link the
-root blkcg_gq and release it only on queue destruction.
+Hmm, isn't this already fixed?
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
----
-Hello,
+https://lkml.org/lkml/2015/3/23/319
 
-Urgh... the missing blkcg_gq again.  I think it's about time to remove
-that pointless optimization which doesn't really help anything.  This
-patch should solve the issue.  I'll include it in the series.
+thanks,
+Daniel.
 
-Thanks.
-
- block/blk-cgroup.c |   96 ++++++++++++++++++++++--------------------------=
------
- 1 file changed, 41 insertions(+), 55 deletions(-)
-
---- a/block/blk-cgroup.c
-+++ b/block/blk-cgroup.c
-@@ -235,13 +235,8 @@ static struct blkcg_gq *blkg_create(stru
- 	blkg->online =3D true;
- 	spin_unlock(&blkcg->lock);
- =
-
--	if (!ret) {
--		if (blkcg =3D=3D &blkcg_root) {
--			q->root_blkg =3D blkg;
--			q->root_rl.blkg =3D blkg;
--		}
-+	if (!ret)
- 		return blkg;
--	}
- =
-
- 	/* @blkg failed fully initialized, use the usual release path */
- 	blkg_put(blkg);
-@@ -340,15 +335,6 @@ static void blkg_destroy(struct blkcg_gq
- 		rcu_assign_pointer(blkcg->blkg_hint, NULL);
- =
-
- 	/*
--	 * If root blkg is destroyed.  Just clear the pointer since root_rl
--	 * does not take reference on root blkg.
--	 */
--	if (blkcg =3D=3D &blkcg_root) {
--		blkg->q->root_blkg =3D NULL;
--		blkg->q->root_rl.blkg =3D NULL;
--	}
--
--	/*
- 	 * Put the reference taken at the time of creation so that when all
- 	 * queues are gone, group can be destroyed.
- 	 */
-@@ -855,9 +841,45 @@ done:
-  */
- int blkcg_init_queue(struct request_queue *q)
- {
--	might_sleep();
-+	struct blkcg_gq *new_blkg, *blkg;
-+	bool preloaded;
-+	int ret;
-+
-+	new_blkg =3D blkg_alloc(&blkcg_root, q, GFP_KERNEL);
-+	if (!new_blkg)
-+		return -ENOMEM;
-+
-+	preloaded =3D !radix_tree_preload(GFP_KERNEL);
- =
-
--	return blk_throtl_init(q);
-+	/*
-+	 * Make sure the root blkg exists and count the existing blkgs.  As
-+	 * @q is bypassing at this point, blkg_lookup_create() can't be
-+	 * used.  Open code insertion.
-+	 */
-+	rcu_read_lock();
-+	spin_lock_irq(q->queue_lock);
-+	blkg =3D blkg_create(&blkcg_root, q, new_blkg);
-+	spin_unlock_irq(q->queue_lock);
-+	rcu_read_unlock();
-+
-+	if (preloaded)
-+		radix_tree_preload_end();
-+
-+	if (IS_ERR(blkg)) {
-+		kfree(new_blkg);
-+		return PTR_ERR(blkg);
-+	}
-+
-+	q->root_blkg =3D blkg;
-+	q->root_rl.blkg =3D blkg;
-+
-+	ret =3D blk_throtl_init(q);
-+	if (ret) {
-+		spin_lock_irq(q->queue_lock);
-+		blkg_destroy_all(q);
-+		spin_unlock_irq(q->queue_lock);
-+	}
-+	return ret;
- }
- =
-
- /**
-@@ -958,52 +980,20 @@ int blkcg_activate_policy(struct request
- 			  const struct blkcg_policy *pol)
- {
- 	LIST_HEAD(pds);
--	struct blkcg_gq *blkg, *new_blkg;
-+	struct blkcg_gq *blkg;
- 	struct blkg_policy_data *pd, *n;
- 	int cnt =3D 0, ret;
--	bool preloaded;
- =
-
- 	if (blkcg_policy_enabled(q, pol))
- 		return 0;
- =
-
--	/* preallocations for root blkg */
--	new_blkg =3D blkg_alloc(&blkcg_root, q, GFP_KERNEL);
--	if (!new_blkg)
--		return -ENOMEM;
--
-+	/* count and allocate policy_data for all existing blkgs */
- 	blk_queue_bypass_start(q);
--
--	preloaded =3D !radix_tree_preload(GFP_KERNEL);
--
--	/*
--	 * Make sure the root blkg exists and count the existing blkgs.  As
--	 * @q is bypassing at this point, blkg_lookup_create() can't be
--	 * used.  Open code it.
--	 */
- 	spin_lock_irq(q->queue_lock);
--
--	rcu_read_lock();
--	blkg =3D __blkg_lookup(&blkcg_root, q, false);
--	if (blkg)
--		blkg_free(new_blkg);
--	else
--		blkg =3D blkg_create(&blkcg_root, q, new_blkg);
--	rcu_read_unlock();
--
--	if (preloaded)
--		radix_tree_preload_end();
--
--	if (IS_ERR(blkg)) {
--		ret =3D PTR_ERR(blkg);
--		goto out_unlock;
--	}
--
- 	list_for_each_entry(blkg, &q->blkg_list, q_node)
- 		cnt++;
--
- 	spin_unlock_irq(q->queue_lock);
- =
-
--	/* allocate policy_data for all existing blkgs */
- 	while (cnt--) {
- 		pd =3D kzalloc_node(pol->pd_size, GFP_KERNEL, q->node);
- 		if (!pd) {
-@@ -1072,10 +1062,6 @@ void blkcg_deactivate_policy(struct requ
- =
-
- 	__clear_bit(pol->plid, q->blkcg_pols);
- =
-
--	/* if no policy is left, no need for blkgs - shoot them down */
--	if (bitmap_empty(q->blkcg_pols, BLKCG_MAX_POLS))
--		blkg_destroy_all(q);
--
- 	list_for_each_entry(blkg, &q->blkg_list, q_node) {
- 		/* grab blkcg lock too while removing @pd from @blkg */
- 		spin_lock(&blkg->blkcg->lock);
-
---===============9117811705520962048==--
+--===============0519822700711441387==--
 
