@@ -1,32 +1,28 @@
-Content-Type: multipart/mixed; boundary="===============2354944755071755757=="
+Content-Type: multipart/mixed; boundary="===============3437076163939997197=="
 MIME-Version: 1.0
 From: Yu, Fenghua <fenghua.yu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/xsave] WARNING: CPU: 0 PID: 1 at arch/x86/kernel/xsave.c:306 save_xstate_sig()
-Date: Sat, 09 May 2015 15:21:06 +0000
-Message-ID: <3E5A0FA7E9CA944F9D5414FEC6C712205C8D769D@ORSMSX106.amr.corp.intel.com>
-In-Reply-To: <20150509123108.GB22912@wfg-t540p.sh.intel.com>
+Subject: Re: [x86/xsaves] 4d90fc49c73: WARNING: CPU: 3 PID: 168 at arch/x86/kernel/xsave.c:306 save_xstate_sig+0x3a7/0x3d0()
+Date: Sat, 09 May 2015 15:23:17 +0000
+Message-ID: <3E5A0FA7E9CA944F9D5414FEC6C712205C8D76AB@ORSMSX106.amr.corp.intel.com>
+In-Reply-To: <20150509125807.GE22912@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2354944755071755757==
+--===============3437076163939997197==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-> From: Wu, Fengguang
-> Sent: Saturday, May 09, 2015 5:31 AM
-> To: Hansen, Dave
-> Just in case this information will help: this patch adds one more warning
-> message.
+
+> Here is another warning bisected to the same commit.
 > =
 
-> https://github.com/hansendc/linux.git github-mpx
-> =
-
-> commit 3701f7533ba43e0aec12bf2dffd49855499fa524
-> [    3.058044] WARNING: CPU: 0 PID: 1 at arch/x86/kernel/xsave.c:306
-> save_xstate_sig+0x329/0x340()
-> [    3.059684] mismatched xstate sizes
+> https://github.com/hansendc/linux.git github-mpx commit
+> 4d90fc49c73730c09d7afd515f9c4e08d30229bd ("x86/xsaves: Define and use
+> user_xstate_size for  xstate size in signal context")
+> [    6.210858] WARNING: CPU: 3 PID: 168 at arch/x86/kernel/xsave.c:306
+> save_xstate_sig+0x3a7/0x3d0()
+> [    6.210860] mismatched xstate sizes
 
 The issue has been fixed in https://lkml.org/lkml/2015/5/8/737
 
@@ -62,5 +58,5 @@ Thanks.
 -Fenghua
 
 
---===============2354944755071755757==--
+--===============3437076163939997197==--
 
