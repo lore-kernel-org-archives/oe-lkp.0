@@ -1,46 +1,66 @@
-Content-Type: multipart/mixed; boundary="===============0296320981006971095=="
+Content-Type: multipart/mixed; boundary="===============2354944755071755757=="
 MIME-Version: 1.0
-From: Chris Metcalf <cmetcalf@ezchip.com>
+From: Yu, Fenghua <fenghua.yu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [watchdog] 952c8813073: BUG: unable to handle kernel NULL pointer dereference at (null)
-Date: Sat, 09 May 2015 10:34:19 -0400
-Message-ID: <554E1AEB.3090707@ezchip.com>
-In-Reply-To: <20150509125054.GD22912@wfg-t540p.sh.intel.com>
+Subject: Re: [x86/xsave] WARNING: CPU: 0 PID: 1 at arch/x86/kernel/xsave.c:306 save_xstate_sig()
+Date: Sat, 09 May 2015 15:21:06 +0000
+Message-ID: <3E5A0FA7E9CA944F9D5414FEC6C712205C8D769D@ORSMSX106.amr.corp.intel.com>
+In-Reply-To: <20150509123108.GB22912@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0296320981006971095==
+--===============2354944755071755757==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 5/9/2015 8:50 AM, Fengguang Wu wrote:
-> Hi Chris,
->
-> FYI, we noticed the below changes on
->
-> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> commit 952c8813073ed240a610f8b44ecea9bdd60b62b4 ("watchdog: add watchdog_=
-cpumask sysctl to assist nohz")
->
->
-> [...]
-> [    0.079378] BUG: unable to handle kernel NULL pointer dereference at  =
-         (null)
+> From: Wu, Fengguang
+> Sent: Saturday, May 09, 2015 5:31 AM
+> To: Hansen, Dave
+> Just in case this information will help: this patch adds one more warning
+> message.
+> =
 
-This bug was fixed by John Hubbard here:
+> https://github.com/hansendc/linux.git github-mpx
+> =
 
-http://permalink.gmane.org/gmane.linux.kernel.next/35308
+> commit 3701f7533ba43e0aec12bf2dffd49855499fa524
+> [    3.058044] WARNING: CPU: 0 PID: 1 at arch/x86/kernel/xsave.c:306
+> save_xstate_sig+0x329/0x340()
+> [    3.059684] mismatched xstate sizes
 
-I ack'ed it on May 6 but I think it hasn't made it from Andrew's tree to li=
-nux-next yet.
+The issue has been fixed in https://lkml.org/lkml/2015/5/8/737
 
-Thanks!
+The patch in this git tree missed the following part when ported
+to this git tree.
 
--- =
+diff --git a/arch/x86/kernel/i387.c b/arch/x86/kernel/i387.c
+index 00918327..8a7b96b 100644
+--- a/arch/x86/kernel/i387.c
++++ b/arch/x86/kernel/i387.c
+@@ -166,6 +166,7 @@ static void init_thread_xstate(void)
+ 		setup_clear_cpu_cap(X86_FEATURE_XSAVE);
+ 		setup_clear_cpu_cap(X86_FEATURE_XSAVEOPT);
+ 		xstate_size =3D sizeof(struct i387_soft_struct);
++		user_xstate_size =3D xstate_size;
+ 		return;
+ 	}
+ =
 
-Chris Metcalf, EZChip Semiconductor
-http://www.ezchip.com
+@@ -173,6 +174,8 @@ static void init_thread_xstate(void)
+ 		xstate_size =3D sizeof(struct i387_fxsave_struct);
+ 	else
+ 		xstate_size =3D sizeof(struct i387_fsave_struct);
++
++	user_xstate_size =3D xstate_size;
+ }
+ =
+
+ /*
+
+Thanks.
+
+-Fenghua
 
 
---===============0296320981006971095==--
+--===============2354944755071755757==--
 
