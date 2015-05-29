@@ -1,53 +1,55 @@
-Content-Type: multipart/mixed; boundary="===============0862138501946367292=="
+Content-Type: multipart/mixed; boundary="===============8285225811381528897=="
 MIME-Version: 1.0
-From: riku.voipio@linaro.org
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: [PATCH 2/2] ebizzy: patch for modern toolchains
-Date: Fri, 29 May 2015 14:01:30 +0300
-Message-ID: <1432897290-7364-2-git-send-email-riku.voipio@linaro.org>
+Subject: Re: [PATCH 1/2] detect-system: add arm and arm64
+Date: Fri, 29 May 2015 19:28:22 +0800
+Message-ID: <20150529112822.GA23463@wfg-t540p.sh.intel.com>
+In-Reply-To: <1432897290-7364-1-git-send-email-riku.voipio@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0862138501946367292==
+--===============8285225811381528897==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: Riku Voipio <riku.voipio@linaro.org>
+Applied both patches, thank you!
 
-Gcc prefers -pthread over -lpthread. On some legacy-free systems
-like Aarch64, compile and link with -lpthread doesn't work.
+On Fri, May 29, 2015 at 02:01:29PM +0300, riku.voipio(a)linaro.org wrote:
+> From: Riku Voipio <riku.voipio@linaro.org>
+> =
 
-Signed-off-by: Riku Voipio <riku.voipio@linaro.org>
----
- pack/ebizzy.patch | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+> Add the architectures to allow running LKP on
+> arm based architectures. The actual information
+> doesn't seem to be used (no use on _system_arch
+> or systemArch found with grep), so alternative
+> could be the entire detection logic.
+> =
 
-diff --git a/pack/ebizzy.patch b/pack/ebizzy.patch
-index ef3477f..55c0c48 100644
---- a/pack/ebizzy.patch
-+++ b/pack/ebizzy.patch
-@@ -1,4 +1,15 @@
- # patch from Mel Gorman's MMTests
-+--- ebizzy-0.3/configure        2007-10-02 05:49:45.000000000 +0300
-++++ ebizzy-0.3-fix/configure    2015-05-29 12:43:41.973028023 +0300
-+@@ -16,7 +16,7 @@
-+        exit 1
-+ fi
-+ =
+> Signed-off-by: Riku Voipio <riku.voipio@linaro.org>
+> ---
+>  lib/detect-system.sh | 4 ++++
+>  1 file changed, 4 insertions(+)
+> =
 
-+-LIBS=3D"-lpthread"
-++LIBS=3D"-pthread"
-+ FLAGS=3D""
-+ =
+> diff --git a/lib/detect-system.sh b/lib/detect-system.sh
+> index 65de2ee..7460c15 100755
+> --- a/lib/detect-system.sh
+> +++ b/lib/detect-system.sh
+> @@ -25,6 +25,10 @@ parse_executable_arch()
+>  			_system_arch=3Dx86_64;;
+>  		*80[3456]86)
+>  			_system_arch=3Di386;;
+> +		*AArch64)
+> +			_system_arch=3Daarch64;;
+> +		*ARM)
+> +			_system_arch=3Darm;;
+>  		*)
+>  			_system_arch=3Dunknown
+>  			return 1;;
+> -- =
 
-+ case "$OS" in
- diff --git a/ebizzy.c b/ebizzy.c
- index 76c7492..3e7644f 100644
- --- a/ebizzy.c
--- =
+> 2.1.4
 
-2.1.4
-
-
---===============0862138501946367292==--
+--===============8285225811381528897==--
 
