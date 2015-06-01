@@ -1,48 +1,55 @@
-Content-Type: multipart/mixed; boundary="===============1209708979383492073=="
+Content-Type: multipart/mixed; boundary="===============5011520123364993657=="
 MIME-Version: 1.0
-From: riku.voipio@linaro.org
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: [PATCH 2/2] setup-local: treat ubuntu as debian
-Date: Mon, 01 Jun 2015 13:46:05 +0300
-Message-ID: <1433155565-24724-2-git-send-email-riku.voipio@linaro.org>
+Subject: Re: [PATCH 1/2] Disable turbostat monitoring if no MSR in cpu
+Date: Mon, 01 Jun 2015 19:22:36 +0800
+Message-ID: <20150601112236.GA9412@wfg-t540p.sh.intel.com>
+In-Reply-To: <1433155565-24724-1-git-send-email-riku.voipio@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1209708979383492073==
+--===============5011520123364993657==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: Riku Voipio <riku.voipio@linaro.org>
+Applied both patches, thank you!
 
-Most of the ubuntu packages come from debian anyways, so assuming
-universe is in the sources.list, you can treat ubuntu as debian.
+On Mon, Jun 01, 2015 at 01:46:04PM +0300, riku.voipio(a)linaro.org wrote:
+> From: Riku Voipio <riku.voipio@linaro.org>
+> =
 
-Signed-off-by: Riku Voipio <riku.voipio@linaro.org>
----
- bin/setup-local | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> turbostat depends on MSR, which is X86 specific.
+> Avoid building and running on other architectures,
+> by checking for the presence of MSR bit for cpuinfo.
+> A check against RAPL support would be even better,
+> but unfortunely there doesn't seem to be flag for
+> rapl in cpuinfo
+> =
 
-diff --git a/bin/setup-local b/bin/setup-local
-index 7783fcb..d1726b5 100755
---- a/bin/setup-local
-+++ b/bin/setup-local
-@@ -127,7 +127,7 @@ end
- =
+> Signed-off-by: Riku Voipio <riku.voipio@linaro.org>
+> ---
+>  monitors/turbostat | 3 +++
+>  1 file changed, 3 insertions(+)
+> =
 
- distroInfo =3D LKP::DistroInfo.instance
- =
+> diff --git a/monitors/turbostat b/monitors/turbostat
+> index b9d22c9..b3b4bf1 100755
+> --- a/monitors/turbostat
+> +++ b/monitors/turbostat
+> @@ -1,5 +1,8 @@
+>  #!/bin/sh
+>  =
 
--if distroInfo.systemNameL =3D=3D "debian"
-+if distroInfo.systemNameL =3D=3D "debian" or distroInfo.systemNameL =3D=3D=
- "ubuntu"
- 	distro =3D "debian"
- else
- 	puts "Not a Debian system, cannot install packages under #{LKP_SRC}/distr=
-o/debian"
--- =
+> +# skip if cpu doesn't have msr
+> +grep flags /proc/cpuinfo|grep -q ' msr ' || exit 0
+> +
+>  # skip unreliable machines
+>  [ "${HOSTNAME#*lkp-a0[1-9]}"	!=3D "$HOSTNAME" ] && exit 0
+>  [ "${HOSTNAME#*snb-drag}"	!=3D "$HOSTNAME" ] && exit 0
+> -- =
 
-2.1.4
+> 2.1.4
 
-
---===============1209708979383492073==--
+--===============5011520123364993657==--
 
