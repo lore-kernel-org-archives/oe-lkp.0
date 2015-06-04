@@ -1,81 +1,56 @@
-Content-Type: multipart/mixed; boundary="===============2160071205851194027=="
+Content-Type: multipart/mixed; boundary="===============6606775878738498762=="
 MIME-Version: 1.0
-From: Ming Lin <mlin@kernel.org>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [block] fbccf1df065: +276.3% boot-meminfo.KernelStack
-Date: Wed, 03 Jun 2015 23:56:32 -0700
-Message-ID: <1433400992.10431.3.camel@hasee>
-In-Reply-To: <CAC=cRTNMnyFJN=M7nyR65fwR8qFYYak_oJacoA_wpt7Lozdthw@mail.gmail.com>
+Subject: Re: [sched] WARNING: CPU: 0 PID: 10 at kernel/kthread.c:333 __kthread_bind_mask()
+Date: Thu, 04 Jun 2015 11:40:00 +0200
+Message-ID: <20150604094000.GE3644@twins.programming.kicks-ass.net>
+In-Reply-To: <20150604045450.GA30151@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2160071205851194027==
+--===============6606775878738498762==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2015-06-04 at 08:49 +0800, huang ying wrote:
-> Hi, Ming,
-> =
+On Thu, Jun 04, 2015 at 12:54:50PM +0800, Fengguang Wu wrote:
+> [    2.442390] ------------[ cut here ]------------
+> [    2.443944] WARNING: CPU: 0 PID: 10 at kernel/kthread.c:333 __kthread_=
+bind_mask+0x34/0x6e()
+> [    2.446978] Modules linked in:
+> [    2.448359] CPU: 0 PID: 10 Comm: khelper Not tainted 4.1.0-rc6-00314-g=
+6455666 #4
+> [    2.450990] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.7.5-20140531_083030-gandalf 04/01/2014
+> [    2.454132]  0000000000000009 ffff88000f643d68 ffffffff81a3df14 000000=
+0000000b02
+> [    2.470295]  0000000000000000 ffff88000f643da8 ffffffff810f308f 000000=
+000f643da8
+> [    2.503291]  ffffffff8110d116 ffff88000f55d580 ffff88000f5240c0 ffff88=
+000f4936e0
+> [    2.506510] Call Trace:
+> [    2.520770]  [<ffffffff81a3df14>] dump_stack+0x4c/0x65
+> [    2.522479]  [<ffffffff810f308f>] warn_slowpath_common+0xa1/0xbb
+> [    2.524334]  [<ffffffff8110d116>] ? __kthread_bind_mask+0x34/0x6e
+> [    2.526219]  [<ffffffff810f314c>] warn_slowpath_null+0x1a/0x1c
+> [    2.528069]  [<ffffffff8110d116>] __kthread_bind_mask+0x34/0x6e
+> [    2.529925]  [<ffffffff8110d381>] kthread_bind_mask+0x13/0x15
+> [    2.531738]  [<ffffffff8110679d>] worker_attach_to_pool+0x39/0x7c
+> [    2.546650]  [<ffffffff8110866b>] rescuer_thread+0x130/0x318
 
-> Here it is.
-> =
+Ah, I clearly missed that the rescuer_thread() also did
+worker_attach_to_pool() from a !virgin kthread.
 
-> qemu-system-x86_64 -enable-kvm -cpu Haswell,+smep,+smap
-> -kernel /pkg/linux/x86_64-lkp/gcc-4.9/fbccf1df06574add60bdb71103cc1662e47=
-7f02d/vmlinuz-4.1.0-rc4-00001-gfbccf1d -append 'root=3D/dev/ram0 user=3Dlkp=
- job=3D/lkp/scheduled/vm-kbuild-1G-15/bisect_boot-1-debian-x86_64-2015-02-0=
-7.cgz-x86_64-lkp-fbccf1df06574add60bdb71103cc1662e477f02d-1-20150529-44276-=
-1cpbx2s.yaml ARCH=3Dx86_64 kconfig=3Dx86_64-lkp branch=3Dlinux-devel/devel-=
-hourly-2015052515 commit=3Dfbccf1df06574add60bdb71103cc1662e477f02d BOOT_IM=
-AGE=3D/pkg/linux/x86_64-lkp/gcc-4.9/fbccf1df06574add60bdb71103cc1662e477f02=
-d/vmlinuz-4.1.0-rc4-00001-gfbccf1d max_uptime=3D600 RESULT_ROOT=3D/result/b=
-oot/1/vm-kbuild-1G/debian-x86_64-2015-02-07.cgz/x86_64-lkp/gcc-4.9/fbccf1df=
-06574add60bdb71103cc1662e477f02d/0 LKP_SERVER=3Dinn earlyprintk=3DttyS0,115=
-200 systemd.log_level=3Derr debug apic=3Ddebug sysrq_always_enabled rcupdat=
-e.rcu_cpu_stall_timeout=3D100 panic=3D-1 softlockup_panic=3D1 nmi_watchdog=
-=3Dpanic oops=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 console=3DttyS0,1=
-15200 console=3Dtty0 vga=3Dnormal rw ip=3D::::vm-kbuild-1G-15::dhcp'  -init=
-rd /fs/sda1/initrd-vm-kbuild-1G-15 -m 1024 -smp 2 -device e1000,netdev=3Dne=
-t0 -netdev user,id=3Dnet0 -boot order=3Dnc -no-reboot -watchdog i6300esb -r=
-tc base=3Dlocaltime -device virtio-scsi-pci,id=3Dscsi0 -drive file=3D/fs/sd=
-a1/disk0-vm-kbuild-1G-15,if=3Dnone,id=3Dhd0,media=3Ddisk,aio=3Dnative,cache=
-=3Dnone -device scsi-hd,bus=3Dscsi0.0,drive=3Dhd0,scsi-id=3D1,lun=3D0 -driv=
-e file=3D/fs/sda1/disk1-vm-kbuild-1G-15,if=3Dnone,id=3Dhd1,media=3Ddisk,aio=
-=3Dnative,cache=3Dnone -device scsi-hd,bus=3Dscsi0.0,drive=3Dhd1,scsi-id=3D=
-1,lun=3D1 -drive file=3D/fs/sda1/disk2-vm-kbuild-1G-15,if=3Dnone,id=3Dhd2,m=
-edia=3Ddisk,aio=3Dnative,cache=3Dnone -device scsi-hd,bus=3Dscsi0.0,drive=
-=3Dhd2,scsi-id=3D1,lun=3D2 -drive file=3D/fs/sda1/disk3-vm-kbuild-1G-15,if=
-=3Dnone,id=3Dhd3,media=3Ddisk,aio=3Dnative,cache=3Dnone -device scsi-hd,bus=
-=3Dscsi0.0,drive=3Dhd3,scsi-id=3D1,lun=3D3 -drive file=3D/fs/sda1/disk4-vm-=
-kbuild-1G-15,if=3Dnone,id=3Dhd4,media=3Ddisk,aio=3Dnative,cache=3Dnone -dev=
-ice scsi-hd,bus=3Dscsi0.0,drive=3Dhd4,scsi-id=3D1,lun=3D4 -pidfile /dev/shm=
-/kboot/pid-vm-kbuild-1G-15 -serial file:/dev/shm/kboot/serial-vm-kbuild-1G-=
-15 -daemonize -display none -monitor null
+Thanks
 
-Here is the fix.
-I'll merge it to patch "block: make generic_make_request handle
-arbitrarily sized bios".
+> [    2.548484]  [<ffffffff8110853b>] ? cancel_delayed_work_sync+0x15/0x15
+> [    2.550411]  [<ffffffff8110853b>] ? cancel_delayed_work_sync+0x15/0x15
+> [    2.552207]  [<ffffffff8110cd0f>] kthread+0xf8/0x100
+> [    2.553864]  [<ffffffff8110cc17>] ? kthread_create_on_node+0x184/0x184
+> [    2.555795]  [<ffffffff81a457c2>] ret_from_fork+0x42/0x70
+> [    2.557538]  [<ffffffff8110cc17>] ? kthread_create_on_node+0x184/0x184
+> [    2.572520] ---[ end trace 362b92c9255ab666 ]---
+> [    2.574163] ------------[ cut here ]------------
 
-Thanks Ying.
-> =
-
-diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
-index 2b8fd30..feaeb12 100644
---- a/block/blk-sysfs.c
-+++ b/block/blk-sysfs.c
-@@ -522,6 +522,8 @@ static void blk_release_queue(struct kobject *kobj)
- =
-
- 	blk_trace_shutdown(q);
- =
-
-+	bioset_free(q->bio_split);
-+
- 	ida_simple_remove(&blk_queue_ida, q->id);
- 	call_rcu(&q->rcu_head, blk_free_queue_rcu);
- }
-
-
-
---===============2160071205851194027==--
+--===============6606775878738498762==--
 
