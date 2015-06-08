@@ -1,79 +1,82 @@
-Content-Type: multipart/mixed; boundary="===============1623230906935030828=="
+Content-Type: multipart/mixed; boundary="===============5308161487840773571=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@intel.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/i915] 7f072451f2d: [drm:intel_cpu_fifo_underrun_irq_handler [i915]] *ERROR* CPU pipe B FIFO underrun
-Date: Tue, 16 Jun 2015 08:54:35 +0800
-Message-ID: <1434416075.18774.182.camel@intel.com>
-In-Reply-To: <557E9485.8030905@linux.intel.com>
+Subject: Re: [PATCH] job2sh: check only end of path
+Date: Mon, 08 Jun 2015 19:33:46 +0800
+Message-ID: <20150608113346.GA26369@wfg-t540p.sh.intel.com>
+In-Reply-To: <1433762617-21273-1-git-send-email-riku.voipio@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1623230906935030828==
+--===============5308161487840773571==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2015-06-15 at 11:01 +0200, Maarten Lankhorst wrote:
-> Hey,
+Looks good, applied, thank you Riku!
+
+On Mon, Jun 08, 2015 at 02:23:37PM +0300, riku.voipio(a)linaro.org wrote:
+> From: Riku Voipio <riku.voipio@linaro.org>
 > =
 
-> Op 15-06-15 om 08:58 schreef Huang Ying:
-> > FYI, we noticed the below changes on
-> >
-> > git://anongit.freedesktop.org/drm-intel drm-intel-next-queued
-> > commit 7f072451f2d3d53e4f6939440e15ab36afed2051 ("drm/i915: Implement i=
-ntel_crtc_control using atomic state, v4")
-> >
-> > Test Environment check: Succeeded.
-> > [0/2]  Running Test(s): 0
-> > [   87.315159] [drm:intel_cpu_fifo_underrun_irq_handler [i915]] *ERROR*=
- CPU pipe B FIFO underrun
-> > [   87.323386] [drm:intel_pch_fifo_underrun_irq_handler [i915]] *ERROR*=
- PCH transcoder B FIFO underrun
-> > [1/2] pass: 1 Running Test(s): 1
-> > [2/2] dmesg-warn: 1, pass: 1
-> > Thank you for running Piglit!
-> > Results have been written to /tmp/lkp/piglit-results-0/results.json
-> > igt/kms_flip/rcs-wf_vblank-vs-dpms.seconds: 129.532452335
-> > 2015-06-12 04:39:32 piglit summary console /tmp/lkp/piglit-results-0
-> > igt/kms_flip/rcs-wf_vblank-vs-dpms: pass
-> > igt/kms_flip/rcs-wf_vblank-vs-dpms-interruptible: dmesg-warn
-> > summary:
-> >        pass: 1
-> >        fail: 0
-> >       crash: 0
-> >        skip: 0
-> >     timeout: 0
-> >        warn: 0
-> >  dmesg-warn: 1
-> >  dmesg-fail: 0
-> >       total: 2
-> > all tests finished
-> >
-> >
-> > To reproduce:
-> >
-> > 	apt-get install ruby
-> > 	git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tests.=
-git
-> > 	cd lkp-tests
-> > 	bin/setup-local job.yaml # the job file attached in this email
-> > 	bin/run-local   job.yaml
-> >
-> Are there any tests that already have FIFO underruns, before this commit?
+> Under lava, tests are run at /lava-arndale04/tests/foo/.../ path,
+> which makes job2sh make wrapper. Check only last part of path
+> binary. The exception left is monitors/ , where some monitors are
+> under deeper path ( monitors/event/wakeup ).
+> =
 
-This test is the first test run on the machine, the command line for
-test is as follow:
+> Note this is the first time I touch ruby code so feel free to
+> fixup if there is some errors.
+> =
 
-$ piglit run igt -t igt/kms_flip/rcs-wf_vblank-vs-dpms /tmp/lkp/piglit-resu=
-lts-0
+> Signed-off-by: Riku Voipio <riku.voipio@linaro.org>
+> ---
+>  lib/job2sh.rb | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+> =
 
-But the test system may be via kexec.
+> diff --git a/lib/job2sh.rb b/lib/job2sh.rb
+> index 2927ab5..b1d6a90 100755
+> --- a/lib/job2sh.rb
+> +++ b/lib/job2sh.rb
+> @@ -92,25 +92,25 @@ def create_cmd(program, args)
+>  	program_path =3D $programs[program] || program
+>  =
 
-Best Regards,
-Huang, Ying
+>  	args =3D [] if program_path.index('/stats/')
+> -
+> -	wrapper =3D File.dirname(program_path) + '/wrapper'
+> +	program_dir =3D File.dirname(program_path)
+> +	wrapper =3D program_dir + '/wrapper'
+>  	if File.executable?(wrapper)
+>  		cmd =3D [ wrapper, program, *args ]
+>  	else
+>  		cmd =3D [ program_path, *args ]
+>  	end
+>  =
 
+> -	case program_path
+> -	when %r{/monitors/}
+> +	case program_dir
+> +	when %r{/monitors}
+>  		cmd =3D [ "run_monitor", *cmd ]
+>  		exec_line unless $script_lines[-1] =3D~ /run_monitor/
+> -	when %r{/setup/}
+> +	when %r{/setup$}
+>  		cmd =3D [ "run_setup", *cmd ]
+>  		exec_line
+> -	when %r{/daemon/}
+> +	when %r{/daemon$}
+>  		cmd =3D [ "start_daemon", *cmd ]
+>  		exec_line
+> -	when %r{/tests/}
+> +	when %r{/tests$}
+>  		cmd =3D [ "run_test", *cmd ]
+>  		exec_line
+>  		$stats_lines << "\t$LKP_SRC/stats/wrapper time #{program}.time"
+> -- =
 
+> 2.1.4
 
---===============1623230906935030828==--
+--===============5308161487840773571==--
 
