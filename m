@@ -1,46 +1,38 @@
-Content-Type: multipart/mixed; boundary="===============3216416289392149852=="
+Content-Type: multipart/mixed; boundary="===============7331834281094563133=="
 MIME-Version: 1.0
-From: Ingo Molnar <mingo@kernel.org>
+From: Borislav Petkov <bp@suse.de>
 To: lkp@lists.01.org
 Subject: Re: [x86/mm/pat, drivers/media/ivtv] WARNING: CPU: 0 PID: 1 at drivers/media/pci/ivtv/ivtvfb.c:1270 ivtvfb_init()
-Date: Mon, 22 Jun 2015 08:36:47 +0200
-Message-ID: <20150622063647.GA24434@gmail.com>
-In-Reply-To: <20150621204120.GA11833@pd.tnic>
+Date: Mon, 22 Jun 2015 09:06:41 +0200
+Message-ID: <20150622070641.GA19872@pd.tnic>
+In-Reply-To: <20150622010138.GQ11147@wotan.suse.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3216416289392149852==
+--===============7331834281094563133==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Mon, Jun 22, 2015 at 03:01:38AM +0200, Luis R. Rodriguez wrote:
+> We can certainly replace the WARN() with pr_warn(), I don't see
+> how its confusing though as its a run time real issue. Either
+> way whatever you recommend is fine by me.
 
-* Borislav Petkov <bp@suse.de> wrote:
+Yeah, it confused the 0day robot at least. :-)
 
-> On Sun, Jun 21, 2015 at 10:23:48PM +0200, Luis R. Rodriguez wrote:
+But maybe because it cannot really read. But I've experienced cases
+where people don't read too, see *a* splat and raise the alarm. So yeah,
+I think a simple pr_warn would be much better.
 
-> > Nope, well the driver requires huge amounts of work to work with PAT, t=
-hat =
+Thanks.
 
-> > work will likely never be done, so hence the warning. Its our compromis=
-e as =
+-- =
 
-> > only 2 drivers will live on Linux like this and they are both old and r=
-are.
-> =
+Regards/Gruss,
+    Boris.
 
-> Hmm, so wasn't the possibility discussed to fail loading instead and issu=
-e a =
+ECO tip #101: Trim your mails when you reply.
+--
 
-> single-line pr_warn() when PAT is enabled? Those big WARN() splats will o=
-nly =
-
-> confuse people...
-
-Absolutely - they are a regression.
-
-Thanks,
-
-	Ingo
-
---===============3216416289392149852==--
+--===============7331834281094563133==--
 
