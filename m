@@ -1,73 +1,39 @@
-Content-Type: multipart/mixed; boundary="===============2716161145552781533=="
+Content-Type: multipart/mixed; boundary="===============2981905810233528044=="
 MIME-Version: 1.0
-From: Huang Ying <ying.huang@intel.com>
+From: Steven Rostedt <rostedt@goodmis.org>
 To: lkp@lists.01.org
-Subject: Re: [iommu/vt] 571dbbd4d04: DMAR-IR: Failed to copy IR table for dmar1 from previous kernel
-Date: Thu, 02 Jul 2015 15:56:23 +0800
-Message-ID: <1435823783.17694.2.camel@intel.com>
-In-Reply-To: <20150702063925.GC16233@suse.de>
+Subject: Re: [trace] kernel BUG at kernel/sched/core.c:2881!
+Date: Thu, 02 Jul 2015 15:56:47 -0400
+Message-ID: <20150702155647.693ad4d6@gandalf.local.home>
+In-Reply-To: <20150630141803.GA28071@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2716161145552781533==
+--===============2981905810233528044==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2015-07-02 at 08:39 +0200, Joerg Roedel wrote:
-> On Thu, Jul 02, 2015 at 01:14:18PM +0800, Huang Ying wrote:
-> > FYI, we noticed the below changes on
-> > =
+On Tue, 30 Jun 2015 22:18:03 +0800
+Fengguang Wu <fengguang.wu@intel.com> wrote:
 
-> > git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git =
-
-> > master
-> > commit 571dbbd4d044e11c78bc077acb3ccef4c77b096e ("iommu/vt-d: Don't =
-
-> > disable IR when it was previously enabled")
-> > =
-
-> > The following new message in kernel log may make end user =
-
-> > confusing.
-> > =
-
-> > [    0.503764] DMAR-IR: IRQ remapping was enabled on dmar0 but we =
-
-> > are not in kdump mode
-> > [    0.512418] DMAR-IR: Failed to copy IR table for dmar0 from =
-
-> > previous kernel
-> > [    0.520501] DMAR-IR: IRQ remapping was enabled on dmar1 but we =
-
-> > are not in kdump mode
-> > [    0.529154] DMAR-IR: Failed to copy IR table for dmar1 from =
-
-> > previous kernel
-> > [    0.537077] DMAR-IR: Enabled IRQ remapping in x2apic mode
+> Hi Rostedt,
 > =
 
-> This is not a problem, the kernel detected that the IOMMU was already
-> enabled, but it is not booting into a kdump kernel so it is not =
-
-> trying
-> to copy over translation tables. The messages for this case are =
-
-> indeed a
-> bit misleading, it looks like the kernel tried to copy the =
-
-> translation
-> tables, but it didn't. I'll fix this.
+> FYI, this merge changes kernel crash to some more obvious kernel BUG
+> message. If it's still not helpful, I can try bisect the old crash
+> or split up the merge and bisect into them.
 > =
 
-> What were you doing to trigger this, it is quite uncommon to find the
-> IOMMU enabled on a normal kernel boot. Did you boot with kexec into a
-> new kernel?
+> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> =
 
-Yes.  We use kexec to boot the new kernel.
+> commit e382608254e06c8109f40044f5e693f2e04f3899
 
-Best Regards,
-Huang, Ying
+Hmm, I'm able to trigger this bug all the way back to 3.19 (I'll try
+further). Something about this config makes the branch tracer crash.
+
+-- Steve
 
 
---===============2716161145552781533==--
+--===============2981905810233528044==--
 
