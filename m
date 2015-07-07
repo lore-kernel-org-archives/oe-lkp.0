@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============7072112812332917390=="
+Content-Type: multipart/mixed; boundary="===============7134307179670264162=="
 MIME-Version: 1.0
 From: kernel test robot <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: [phy] kernel BUG at drivers/base/driver.c:153!
-Date: Wed, 08 Jul 2015 00:00:58 +0800
-Message-ID: <559bf7ba.nBERUMnMtp+lhMk6%fengguang.wu@intel.com>
+Date: Wed, 08 Jul 2015 01:02:45 +0800
+Message-ID: <559c0635./d2vMKAYuV88i4Ff%fengguang.wu@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7072112812332917390==
+--===============7134307179670264162==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -47,19 +47,19 @@ CommitDate: Wed May 13 12:07:01 2015 -0500
 ------------+
 | boot_successes                           | 63         | 0          | 0   =
             |
-| boot_failures                            | 0          | 22         | 13  =
+| boot_failures                            | 0          | 22         | 24  =
             |
-| kernel_BUG_at_drivers/base/driver.c      | 0          | 22         | 13  =
+| kernel_BUG_at_drivers/base/driver.c      | 0          | 22         | 24  =
             |
-| invalid_opcode                           | 0          | 22         | 13  =
+| invalid_opcode                           | 0          | 22         | 24  =
             |
-| RIP:driver_register                      | 0          | 22         | 13  =
+| RIP:driver_register                      | 0          | 22         | 24  =
             |
-| Kernel_panic-not_syncing:Fatal_exception | 0          | 22         | 13  =
+| Kernel_panic-not_syncing:Fatal_exception | 0          | 22         | 24  =
             |
-| backtrace:tusb1210_driver_init           | 0          | 22         | 13  =
+| backtrace:tusb1210_driver_init           | 0          | 22         | 24  =
             |
-| backtrace:kernel_init_freeable           | 0          | 22         | 13  =
+| backtrace:kernel_init_freeable           | 0          | 22         | 24  =
             |
 +------------------------------------------+------------+------------+-----=
 ------------+
@@ -179,59 +179,59 @@ cd cd c9 c9 12 12 02 02 01 01 5b 5b 41 41 5c 5c 5d 5d c3 c3 48 48 83 83 05 =
 [    3.369997] ---[ end trace b18edfc3ae113a85 ]---
 
 git bisect start fd6b4e109d049421a44fd8aefefd60b2b8125887 v4.1 --
-git bisect  bad 47ebed96ff4ff0d9c39d0fea74ade65dbf9cc41c  # 20:12      0-  =
-    2  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net
-git bisect good cc8a0a943948d1b1bc803b37486831af7b04dd38  # 21:15     21+  =
+git bisect  bad 47ebed96ff4ff0d9c39d0fea74ade65dbf9cc41c  # 00:44      0-  =
+   16  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net
+git bisect good cc8a0a943948d1b1bc803b37486831af7b04dd38  # 00:44     22+  =
     0  Merge tag 'upstream-4.2-rc1' of git://git.infradead.org/linux-ubifs
-git bisect  bad 93f0824caec09b67fc4f927c8bddd7fabd14a043  # 21:23      0-  =
-    7  Merge tag 'dma-buf-for-4.2' of git://git.kernel.org/pub/scm/linux/ke=
+git bisect  bad 93f0824caec09b67fc4f927c8bddd7fabd14a043  # 00:44      0-  =
+   22  Merge tag 'dma-buf-for-4.2' of git://git.kernel.org/pub/scm/linux/ke=
 rnel/git/sumits/dma-buf
-git bisect good c11d716218910c3aa2bac1bb641e6086ad649555  # 21:29     22+  =
+git bisect good c11d716218910c3aa2bac1bb641e6086ad649555  # 00:44     22+  =
     0  Merge tag 'armsoc-cleanup' of git://git.kernel.org/pub/scm/linux/ker=
 nel/git/arm/arm-soc
-git bisect good 099bfbfc7fbbe22356c02f0caf709ac32e1126ea  # 21:37     22+  =
-    0  Merge branch 'drm-next' of git://people.freedesktop.org/~airlied/lin=
+git bisect good 099bfbfc7fbbe22356c02f0caf709ac32e1126ea  # 00:47     22+  =
+    2  Merge branch 'drm-next' of git://people.freedesktop.org/~airlied/lin=
 ux
-git bisect good 8d7804a2f03dbd34940fcb426450c730adf29dae  # 21:42     22+  =
+git bisect good 8d7804a2f03dbd34940fcb426450c730adf29dae  # 00:47     22+  =
     0  Merge tag 'driver-core-4.2-rc1' of git://git.kernel.org/pub/scm/linu=
 x/kernel/git/gregkh/driver-core
-git bisect good 8c7febe83915332276cab49e89f6580bb963fb9a  # 21:50     22+  =
+git bisect good 8c7febe83915332276cab49e89f6580bb963fb9a  # 00:47     24+  =
     0  Merge tag 'tty-4.2-rc1' of git://git.kernel.org/pub/scm/linux/kernel=
 /git/gregkh/tty
-git bisect  bad 2a298679b41199ae742a77ce69766385dffe816f  # 21:56      0-  =
-    2  Merge tag 'usb-4.2-rc1' of git://git.kernel.org/pub/scm/linux/kernel=
+git bisect  bad 2a298679b41199ae742a77ce69766385dffe816f  # 00:47      0-  =
+   16  Merge tag 'usb-4.2-rc1' of git://git.kernel.org/pub/scm/linux/kernel=
 /git/gregkh/usb
-git bisect  bad 24fe86a617c550fb9bdc6c8bd7cf647d3955f8ba  # 22:01      0-  =
+git bisect  bad 24fe86a617c550fb9bdc6c8bd7cf647d3955f8ba  # 00:48      0-  =
    22  phy: sun4i-usb: Add a sunxi specific function for setting squelch-de=
 tect
-git bisect good d74c23d36e7829ca7517a82c725c493d16328a44  # 22:08     22+  =
+git bisect good d74c23d36e7829ca7517a82c725c493d16328a44  # 00:48     22+  =
     0  usb: gadget: s3c2410_udc: Remove static char buffer, use vsprintf ex=
 tension %pV
-git bisect  bad 591fa9dd3fee3de8c729febca395beb75c8ee819  # 22:18      0-  =
-   21  usb: musb: Add pre and post root port reset end callbacks
-git bisect good c5cc74e8c12be67ef7f09f77c2b9df6faf7904f0  # 22:25     20+  =
+git bisect  bad 591fa9dd3fee3de8c729febca395beb75c8ee819  # 00:48      0-  =
+   22  usb: musb: Add pre and post root port reset end callbacks
+git bisect good c5cc74e8c12be67ef7f09f77c2b9df6faf7904f0  # 00:48     22+  =
     0  usb: dwc3: soft reset to it's own function
-git bisect  bad 1c14905ef951fb968c8da90e4e64be02c309a2ae  # 22:33      0-  =
-   13  phy: add driver for TI TUSB1210 ULPI PHY
-git bisect good a89d977cc04c77d9aa45d426dbf8de9dd1326c77  # 22:44     21+  =
+git bisect  bad 1c14905ef951fb968c8da90e4e64be02c309a2ae  # 00:48      0-  =
+   22  phy: add driver for TI TUSB1210 ULPI PHY
+git bisect good a89d977cc04c77d9aa45d426dbf8de9dd1326c77  # 00:48     22+  =
     0  usb: dwc3: pci: add quirk for Baytrails
-git bisect good 723487a6ff50bb88c628a859aeac3fe721f0d1fa  # 22:49     22+  =
+git bisect good 723487a6ff50bb88c628a859aeac3fe721f0d1fa  # 00:48     63+  =
     0  phy: helpers for USB ULPI PHY registering
 # first bad commit: [1c14905ef951fb968c8da90e4e64be02c309a2ae] phy: add dri=
 ver for TI TUSB1210 ULPI PHY
-git bisect good 723487a6ff50bb88c628a859aeac3fe721f0d1fa  # 22:52     62+  =
+git bisect good 723487a6ff50bb88c628a859aeac3fe721f0d1fa  # 00:48     63+  =
     0  phy: helpers for USB ULPI PHY registering
 # extra tests with DEBUG_INFO
-git bisect  bad 1c14905ef951fb968c8da90e4e64be02c309a2ae  # 22:55      0-  =
-    3  phy: add driver for TI TUSB1210 ULPI PHY
+git bisect  bad 1c14905ef951fb968c8da90e4e64be02c309a2ae  # 00:48      0-  =
+   66  phy: add driver for TI TUSB1210 ULPI PHY
 # extra tests on HEAD of linux-devel/devel-hourly-2015070716
-git bisect  bad fd6b4e109d049421a44fd8aefefd60b2b8125887  # 22:55      0-  =
-   13  0day head guard for 'devel-hourly-2015070716'
+git bisect  bad fd6b4e109d049421a44fd8aefefd60b2b8125887  # 00:48      0-  =
+   24  0day head guard for 'devel-hourly-2015070716'
 # extra tests on tree/branch linus/master
 # extra tests on tree/branch linus/master
 # extra tests on tree/branch next/master
-git bisect  bad 8e551e96341aa57779ea93a87c857ae61a057f11  # 00:00      0-  =
-    1  Add linux-next specific files for 20150707
+git bisect  bad 8e551e96341aa57779ea93a87c857ae61a057f11  # 01:02      0-  =
+   19  Add linux-next specific files for 20150707
 
 
 This script may reproduce the error.
@@ -296,7 +296,7 @@ er
 https://lists.01.org/pipermail/lkp                          Intel Corporati=
 on
 
---===============7072112812332917390==
+--===============7134307179670264162==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -1376,7 +1376,7 @@ ZmlsZSAvZGV2L3NobS9rYm9vdC9waWQtcXVhbnRhbC12cC0xMiAtc2VyaWFsIGZpbGU6L2Rldi9z
 aG0va2Jvb3Qvc2VyaWFsLXF1YW50YWwtdnAtMTIgLWRhZW1vbml6ZSAtZGlzcGxheSBub25lIC1t
 b25pdG9yIG51bGwgCg==
 
---===============7072112812332917390==
+--===============7134307179670264162==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -2623,5 +2623,5 @@ U0lUSVZFPXkKIyBDT05GSUdfQVZFUkFHRSBpcyBub3Qgc2V0CkNPTkZJR19DTFpfVEFCPXkKIyBD
 T05GSUdfQ09SRElDIGlzIG5vdCBzZXQKIyBDT05GSUdfRERSIGlzIG5vdCBzZXQKQ09ORklHX01Q
 SUxJQj15CkNPTkZJR19PSURfUkVHSVNUUlk9eQpDT05GSUdfQVJDSF9IQVNfU0dfQ0hBSU49eQo=
 
---===============7072112812332917390==--
+--===============7134307179670264162==--
 
