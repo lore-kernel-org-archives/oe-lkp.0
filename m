@@ -1,144 +1,66 @@
-Content-Type: multipart/mixed; boundary="===============8662959343789384785=="
+Content-Type: multipart/mixed; boundary="===============2594989211943337798=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm: meminit] WARNING: CPU: 1 PID: 15 at kernel/locking/lockdep.c:3382 lock_release()
-Date: Wed, 08 Jul 2015 17:25:07 +0200
-Message-ID: <20150708152507.GG12596@twins.programming.kicks-ass.net>
-In-Reply-To: <20150708103213.GO6812@suse.de>
+Subject: Re: [phy] kernel BUG at drivers/base/driver.c:153!
+Date: Thu, 09 Jul 2015 11:12:08 +0300
+Message-ID: <20150709081208.GA30554@kuha.fi.intel.com>
+In-Reply-To: <559c0635./d2vMKAYuV88i4Ff%fengguang.wu@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8662959343789384785==
+--===============2594989211943337798==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 08, 2015 at 11:32:13AM +0100, Mel Gorman wrote:
-> From: Nicolai Stange <nicstange@gmail.com>
-> Subject: Re: [PATCH] mm/page_alloc: deferred meminit: replace rwsem with =
-completion
+On Wed, Jul 08, 2015 at 01:02:45AM +0800, kernel test robot wrote:
+> Greetings,
 > =
 
-> Commit 0e1cc95b4cc7
->   ("mm: meminit: finish initialisation of struct pages before basic setup=
-")
-> introduced a rwsem to signal completion of the initialization workers.
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
-> Lockdep complains about possible recursive locking:
->   =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   [ INFO: possible recursive locking detected ]
->   4.1.0-12802-g1dc51b8 #3 Not tainted
->   ---------------------------------------------
->   swapper/0/1 is trying to acquire lock:
->   (pgdat_init_rwsem){++++.+},
->     at: [<ffffffff8424c7fb>] page_alloc_init_late+0xc7/0xe6
+> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
 > =
 
->   but task is already holding lock:
->   (pgdat_init_rwsem){++++.+},
->     at: [<ffffffff8424c772>] page_alloc_init_late+0x3e/0xe6
+> commit 1c14905ef951fb968c8da90e4e64be02c309a2ae
+> Author:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> AuthorDate: Wed May 13 15:26:53 2015 +0300
+> Commit:     Felipe Balbi <balbi@ti.com>
+> CommitDate: Wed May 13 12:07:01 2015 -0500
 > =
 
-> Replace the rwsem by a completion together with an atomic
-> "outstanding work counter".
-> =
+>     phy: add driver for TI TUSB1210 ULPI PHY
+>     =
 
-> Signed-off-by: Nicolai Stange <nicstange@gmail.com>
-> Acked-by: Mel Gorman <mgorman@suse.de>
-> ---
->  mm/page_alloc.c | 34 +++++++++++++++++++++++++++-------
->  1 file changed, 27 insertions(+), 7 deletions(-)
-> =
+>     TUSB1210 ULPI PHY has vendor specific register for eye
+>     diagram tuning. On some platforms the system firmware has
+>     set optimized value to it. In order to not loose the
+>     optimized value, the driver stores it during probe and
+>     restores it every time the PHY is powered back on.
+>     =
 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 506eac8..3886e66 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -18,7 +18,9 @@
->  #include <linux/mm.h>
->  #include <linux/swap.h>
->  #include <linux/interrupt.h>
-> -#include <linux/rwsem.h>
-> +#include <linux/completion.h>
-> +#include <linux/atomic.h>
-> +#include <asm/barrier.h>
->  #include <linux/pagemap.h>
->  #include <linux/jiffies.h>
->  #include <linux/bootmem.h>
-> @@ -1062,7 +1064,20 @@ static void __init deferred_free_range(struct page=
- *page,
->  		__free_pages_boot_core(page, pfn, 0);
->  }
->  =
+>     Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+>     Acked-by: David Cohen <david.a.cohen@linux.intel.com>
+>     Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
+>     Signed-off-by: Felipe Balbi <balbi@ti.com>
 
-> -static __initdata DECLARE_RWSEM(pgdat_init_rwsem);
-> +/* counter and completion tracking outstanding deferred_init_memmap()
-> +   threads */
+This commit will fix the problem:
+https://git.kernel.org/cgit/linux/kernel/git/balbi/usb.git/commit/?h=3Dtest=
+ing/next&id=3D6c97f002f678d5047bdf8a9e248dc50656c38ae2
 
-Wrong comment style.
+I think we should consider it as a fix for this issue. Unfortunately
+Felipe is on vacation at the moment. Greg, could help with this?
 
-> +static atomic_t pgdat_init_n_undone __initdata;
-> +static __initdata DECLARE_COMPLETION(pgdat_init_all_done_comp);
-> +
-> +static inline void __init pgdat_init_report_one_done(void)
-> +{
-> +	/* Write barrier is paired with read barrier in
-> +	   page_alloc_init_late(). It makes all writes visible to
-> +	   readers seeing our decrement on pgdat_init_n_undone. */
-
-Wrong comment style.
-
-> +	smp_wmb();
-
-Pointless barrier, because
-
-> +	if (atomic_dec_and_test(&pgdat_init_n_undone))
-
-implies a full memory barrier, furthermore see below.
-
-> +		complete(&pgdat_init_all_done_comp);
-> +}
->  =
-
->  /* Initialise remaining memory on a node */
->  static int __init deferred_init_memmap(void *data)
+I will also be on vacation for the rest of the month and my access to
+internet will be fairly limited.
 
 
-> @@ -1187,14 +1203,18 @@ void __init page_alloc_init_late(void)
->  {
->  	int nid;
->  =
+Thanks,
 
-> +	/* There will be num_node_state(N_MEMORY) threads */
-> +	atomic_set(&pgdat_init_n_undone, num_node_state(N_MEMORY));
->  	for_each_node_state(nid, N_MEMORY) {
-> -		down_read(&pgdat_init_rwsem);
->  		kthread_run(deferred_init_memmap, NODE_DATA(nid), "pgdatinit%d", nid);
->  	}
->  =
+-- =
 
->  	/* Block until all are initialised */
-> -	down_write(&pgdat_init_rwsem);
-> -	up_write(&pgdat_init_rwsem);
-> +	wait_for_completion(&pgdat_init_all_done_comp);
-> +
-> +	/* Paired with write barrier in deferred_init_memmap(),
-> +	   ensures a consistent view of all its writes. */
+heikki
 
-Wrong comment style
-
-> +	smp_rmb();
-
-Wrong barrier, IF you want a barrier it should be before
-wait_for_completion, such that if you observe complete, you then must
-also observe whatever happened prior to the completion.
-
-But I would argue a completion had better imply that anyway.
-
->  }
->  #endif /* CONFIG_DEFERRED_STRUCT_PAGE_INIT */
-
---===============8662959343789384785==--
+--===============2594989211943337798==--
 
