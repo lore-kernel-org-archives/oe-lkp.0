@@ -1,172 +1,160 @@
-Content-Type: multipart/mixed; boundary="===============4660218738171697435=="
+Content-Type: multipart/mixed; boundary="===============7795282425387427791=="
 MIME-Version: 1.0
-From: Joe Perches <joe@perches.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [platform/chrome] ec2f33ab582:
-Date: Mon, 20 Jul 2015 00:36:14 -0700
-Message-ID: <1437377774.24289.33.camel@perches.com>
-In-Reply-To: <87380jb919.fsf@yhuang-dev.intel.com>
+Subject: Re: [mminit] [ INFO: possible recursive locking detected ]
+Date: Mon, 20 Jul 2015 22:01:11 +0800
+Message-ID: <20150720140111.GA4715@wfg-t540p.sh.intel.com>
+In-Reply-To: <20150714103108.GA6812@suse.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4660218738171697435==
+--===============7795282425387427791==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2015-07-20 at 15:08 +0800, kernel test robot wrote:
-> FYI, we noticed the below changes on
+Hi Mel,
+
+On Tue, Jul 14, 2015 at 11:31:08AM +0100, Mel Gorman wrote:
+> On Tue, Jul 14, 2015 at 08:09:10AM +0800, Fengguang Wu wrote:
+> > Greetings,
+> > =
+
+> > 0day kernel testing robot got the below dmesg and the first bad commit =
+is
+> > =
+
+> > git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> > =
+
 > =
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> commit ec2f33ab582bf6bb14ef3e1ce4ed5f1973edd9f6 ("platform/chrome: Add cr=
-os_ec_lpc driver for x86 devices")
+> Can you check if this patch addresses the problem please?
+
+It works!
+
+Tested-by: Fengguang Wu <fengguang.wu@intel.com>
+
+Thanks,
+Fengguang
+
+> ---8<---
+> mm, meminit: replace rwsem with completion
 > =
 
-> The following new stuff in kernel log may make end user confusing.
+> From: Nicolai Stange <nicstange@gmail.com>
 > =
 
-> [   17.712730] cros_ec_lpc: unsupported system.
+> Commit 0e1cc95b4cc7 ("mm: meminit: finish initialisation of struct pages
+> before basic setup") introduced a rwsem to signal completion of the
+> initialization workers.
+> =
 
-Likely this should just be removed or maybe emitted at KERN_DEBUG
+> Lockdep complains about possible recursive locking:
+>   =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>   [ INFO: possible recursive locking detected ]
+>   4.1.0-12802-g1dc51b8 #3 Not tainted
+>   ---------------------------------------------
+>   swapper/0/1 is trying to acquire lock:
+>   (pgdat_init_rwsem){++++.+},
+>     at: [<ffffffff8424c7fb>] page_alloc_init_late+0xc7/0xe6
+> =
 
-Maybe fix the other logging defects at the same.
+>   but task is already holding lock:
+>   (pgdat_init_rwsem){++++.+},
+>     at: [<ffffffff8424c772>] page_alloc_init_late+0x3e/0xe6
+> =
 
-o remove unnecessary logging of unsupported system
-o use pr_fmt
-o add missing format newline termination
-o fix responsed/response grammar
-o neaten logging message alignment
+> Replace the rwsem by a completion together with an atomic
+> "outstanding work counter".
+> =
 
----
- drivers/platform/chrome/cros_ec_lpc.c | 29
-++++++++++++-----------------
- 1 file changed, 12 insertions(+), 17 deletions(-)
+> [peterz(a)infradead.org: Barrier removal on the grounds of being pointles=
+s]
+> [mgorman(a)suse.de: Applied review feedback]
+> Signed-off-by: Nicolai Stange <nicstange@gmail.com>
+> Signed-off-by: Mel Gorman <mgorman@suse.de>
+> ---
+>  mm/page_alloc.c | 22 +++++++++++++++-------
+>  1 file changed, 15 insertions(+), 7 deletions(-)
+> =
 
-diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrom=
-e/cros_ec_lpc.c
-index bdd77ce..20c2189 100644
---- a/drivers/platform/chrome/cros_ec_lpc.c
-+++ b/drivers/platform/chrome/cros_ec_lpc.c
-@@ -21,6 +21,8 @@
-  * expensive.
-  */
- =
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 506eac8b38af..a69e78c396a0 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -18,7 +18,6 @@
+>  #include <linux/mm.h>
+>  #include <linux/swap.h>
+>  #include <linux/interrupt.h>
+> -#include <linux/rwsem.h>
+>  #include <linux/pagemap.h>
+>  #include <linux/jiffies.h>
+>  #include <linux/bootmem.h>
+> @@ -1062,7 +1061,15 @@ static void __init deferred_free_range(struct page=
+ *page,
+>  		__free_pages_boot_core(page, pfn, 0);
+>  }
+>  =
 
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
- #include <linux/dmi.h>
- #include <linux/delay.h>
- #include <linux/io.h>
-@@ -68,7 +70,7 @@ static int cros_ec_pkt_xfer_lpc(struct cros_ec_device *ec,
- 	outb(EC_COMMAND_PROTOCOL_3, EC_LPC_ADDR_HOST_CMD);
- =
+> -static __initdata DECLARE_RWSEM(pgdat_init_rwsem);
+> +/* Completion tracking for deferred_init_memmap() threads */
+> +static atomic_t pgdat_init_n_undone __initdata;
+> +static __initdata DECLARE_COMPLETION(pgdat_init_all_done_comp);
+> +
+> +static inline void __init pgdat_init_report_one_done(void)
+> +{
+> +	if (atomic_dec_and_test(&pgdat_init_n_undone))
+> +		complete(&pgdat_init_all_done_comp);
+> +}
+>  =
 
- 	if (ec_response_timed_out()) {
--		dev_warn(ec->dev, "EC responsed timed out\n");
-+		dev_warn(ec->dev, "EC response timed out\n");
- 		ret =3D -EIO;
- 		goto done;
- 	}
-@@ -89,8 +91,7 @@ static int cros_ec_pkt_xfer_lpc(struct cros_ec_device *ec,
- 	msg->result =3D response.result;
- =
+>  /* Initialise remaining memory on a node */
+>  static int __init deferred_init_memmap(void *data)
+> @@ -1079,7 +1086,7 @@ static int __init deferred_init_memmap(void *data)
+>  	const struct cpumask *cpumask =3D cpumask_of_node(pgdat->node_id);
+>  =
 
- 	if (response.data_len > msg->insize) {
--		dev_err(ec->dev,
--			"packet too long (%d bytes, expected %d)",
-+		dev_err(ec->dev, "packet too long (%d bytes, expected %d)\n",
- 			response.data_len, msg->insize);
- 		ret =3D -EMSGSIZE;
- 		goto done;
-@@ -104,8 +105,7 @@ static int cros_ec_pkt_xfer_lpc(struct cros_ec_device *=
-ec,
- 	}
- =
+>  	if (first_init_pfn =3D=3D ULONG_MAX) {
+> -		up_read(&pgdat_init_rwsem);
+> +		pgdat_init_report_one_done();
+>  		return 0;
+>  	}
+>  =
 
- 	if (sum) {
--		dev_err(ec->dev,
--			"bad packet checksum %02x\n",
-+		dev_err(ec->dev, "bad packet checksum %02x\n",
- 			response.checksum);
- 		ret =3D -EBADMSG;
- 		goto done;
-@@ -127,8 +127,7 @@ static int cros_ec_cmd_xfer_lpc(struct cros_ec_device *=
-ec,
- =
+> @@ -1179,7 +1186,8 @@ free_range:
+>  =
 
- 	if (msg->outsize > EC_PROTO2_MAX_PARAM_SIZE ||
- 	    msg->insize > EC_PROTO2_MAX_PARAM_SIZE) {
--		dev_err(ec->dev,
--			"invalid buffer sizes (out %d, in %d)\n",
-+		dev_err(ec->dev, "invalid buffer sizes (out %d, in %d)\n",
- 			msg->outsize, msg->insize);
- 		return -EINVAL;
- 	}
-@@ -159,7 +158,7 @@ static int cros_ec_cmd_xfer_lpc(struct cros_ec_device *=
-ec,
- 	outb(msg->command, EC_LPC_ADDR_HOST_CMD);
- =
+>  	pr_info("node %d initialised, %lu pages in %ums\n", nid, nr_pages,
+>  					jiffies_to_msecs(jiffies - start));
+> -	up_read(&pgdat_init_rwsem);
+> +
+> +	pgdat_init_report_one_done();
+>  	return 0;
+>  }
+>  =
 
- 	if (ec_response_timed_out()) {
--		dev_warn(ec->dev, "EC responsed timed out\n");
-+		dev_warn(ec->dev, "EC response timed out\n");
- 		ret =3D -EIO;
- 		goto done;
- 	}
-@@ -172,8 +171,7 @@ static int cros_ec_cmd_xfer_lpc(struct cros_ec_device *=
-ec,
- 		break;
- 	case EC_RES_IN_PROGRESS:
- 		ret =3D -EAGAIN;
--		dev_dbg(ec->dev, "command 0x%02x in progress\n",
--			msg->command);
-+		dev_dbg(ec->dev, "command 0x%02x in progress\n", msg->command);
- 		goto done;
- 	default:
- 		dev_dbg(ec->dev, "command 0x%02x returned %d\n",
-@@ -187,8 +185,7 @@ static int cros_ec_cmd_xfer_lpc(struct cros_ec_device *=
-ec,
- 	args.checksum =3D inb(EC_LPC_ADDR_HOST_ARGS + 3);
- =
+> @@ -1187,14 +1195,14 @@ void __init page_alloc_init_late(void)
+>  {
+>  	int nid;
+>  =
 
- 	if (args.data_size > msg->insize) {
--		dev_err(ec->dev,
--			"packet too long (%d bytes, expected %d)",
-+		dev_err(ec->dev, "packet too long (%d bytes, expected %d)\n",
- 			args.data_size, msg->insize);
- 		ret =3D -ENOSPC;
- 		goto done;
-@@ -356,22 +353,20 @@ static int __init cros_ec_lpc_init(void)
- {
- 	int ret;
- =
+> +	/* There will be num_node_state(N_MEMORY) threads */
+> +	atomic_set(&pgdat_init_n_undone, num_node_state(N_MEMORY));
+>  	for_each_node_state(nid, N_MEMORY) {
+> -		down_read(&pgdat_init_rwsem);
+>  		kthread_run(deferred_init_memmap, NODE_DATA(nid), "pgdatinit%d", nid);
+>  	}
+>  =
 
--	if (!dmi_check_system(cros_ec_lpc_dmi_table)) {
--		pr_err(DRV_NAME ": unsupported system.\n");
-+	if (!dmi_check_system(cros_ec_lpc_dmi_table))
- 		return -ENODEV;
--	}
- =
+>  	/* Block until all are initialised */
+> -	down_write(&pgdat_init_rwsem);
+> -	up_write(&pgdat_init_rwsem);
+> +	wait_for_completion(&pgdat_init_all_done_comp);
+>  }
+>  #endif /* CONFIG_DEFERRED_STRUCT_PAGE_INIT */
+> =20
 
- 	/* Register the driver */
- 	ret =3D platform_driver_register(&cros_ec_lpc_driver);
- 	if (ret) {
--		pr_err(DRV_NAME ": can't register driver: %d\n", ret);
-+		pr_err("can't register driver: %d\n", ret);
- 		return ret;
- 	}
- =
-
- 	/* Register the device, and it'll get hooked up automatically */
- 	ret =3D platform_device_register(&cros_ec_lpc_device);
- 	if (ret) {
--		pr_err(DRV_NAME ": can't register device: %d\n", ret);
-+		pr_err("can't register device: %d\n", ret);
- 		platform_driver_unregister(&cros_ec_lpc_driver);
- 		return ret;
- 	}
-
-
-
---===============4660218738171697435==--
+--===============7795282425387427791==--
 
