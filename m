@@ -1,59 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============3438843068212430899=="
+Content-Type: multipart/mixed; boundary="===============1296512713210436279=="
 MIME-Version: 1.0
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+From: Norbert Holze <norbert.holze@web.de>
 To: lkp@lists.01.org
-Subject: Re: [staging] 68905a14e49: kernel BUG at drivers/base/driver.c:153!
-Date: Sat, 08 Aug 2015 10:40:54 +0530
-Message-ID: <20150808051054.GA10491@sudip-pc>
-In-Reply-To: <20150807180113.GC10282@kroah.com>
+Subject: btusb regression / 0a12:0001 CSR
+Date: Sat, 08 Aug 2015 09:47:02 +0200
+Message-ID: <55C5B3F6.8070701@web.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3438843068212430899==
+--===============1296512713210436279==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 07, 2015 at 11:01:13AM -0700, Greg Kroah-Hartman wrote:
-> On Fri, Aug 07, 2015 at 12:45:53PM +0530, Sudip Mukherjee wrote:
-> > On Thu, Aug 06, 2015 at 07:28:12PM -0700, Greg Kroah-Hartman wrote:
-> > > =
+Hello mailing list,
 
-> > > =
+my bluetooth usb-stick worked fine with kernel up to 3.19. With 4.x
+there is no hci device found.
 
-> > > On Sat, Aug 01, 2015 at 01:12:05PM +0800, kernel test robot wrote:
-> > <snip>
-> > > > [   12.276231] RIP =
+lsusb
+Bus 004 Device 002: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth
+Dongle (HCI mode)
 
-> > > > [   12.276231] RIP  [<ffffffff81b68e78>] driver_register+0xa8/0xe0
-> > > >  [<ffffffff81b68e78>] driver_register+0xa8/0xe0
-> > > > [   12.276231]  RSP <ffff8800001a3e30>
-> > > > [   12.276231]  RSP <ffff8800001a3e30>
-> > > > [   12.403330] ---[ end trace 075c805d53b02836 ]---
-> > > > [   12.403330] ---[ end trace 075c805d53b02836 ]---
-> > > =
+hcitool dev
+Devices:
 
-> > > David, any ideas of what needs to be done to fix this?
-> > =
+sudo hciconfig
+hci0:	Type: BR/EDR  Bus: USB
+	BD Address: 00:15:83:15:A3:0B  ACL MTU: 672:4  SCO MTU: 48:1
+	DOWN
+	RX bytes:890 acl:0 sco:0 events:30 errors:0
+	TX bytes:126 acl:0 sco:0 commands:30 errors:0
 
-> > Hi Greg,
-> > I was having a quick look and it looks like visorchipset is not yet
-> > initialised and the bus is not yet registered. If you remember we had a
-> > loooong discussion in another thread "usb: ulpi: don't register drivers
-> > if bus doesn't exist", I sent a proposed patch also. For your reference:
-> > "http://www.spinics.net/lists/linux-usb/msg125368.html".
-> > I think this one is the perfect example of that case here.
-> =
+sudo hciconfig hci0 up
+Can't init device hci0: Operation not supported (95)
 
-> Great, then it needs to be fixed in the unisys driver code, like I said
-> should be done for busses to prevent this type of issue :)
-oops. then I have missed that mail. The last mail I have from you in
-that thread said "I have some time on Saturday (very long plane ride),
-where I'll take a look at this." , so I though that is still in your
-todo list. Then I need to fix parport also, as that can also have this
-same problem.
+rfkill list
+0: hci0: Bluetooth
+	Soft blocked: no
+	Hard blocked: no
+1: phy0: Wireless LAN
+	Soft blocked: no
+	Hard blocked: no
 
-regards
-sudip
 
---===============3438843068212430899==--
+Is this a regression. Or does it work in different way with 4.x?
+
+Regards,
+
+Norbert
+
+--===============1296512713210436279==--
 
