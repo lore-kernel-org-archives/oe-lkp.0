@@ -1,71 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============0985514278897715004=="
+Content-Type: multipart/mixed; boundary="===============8195740507461005401=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Andy Lutomirski <luto@amacapital.net>
 To: lkp@lists.01.org
-Subject: Re: btusb regression / 0a12:0001 CSR
-Date: Mon, 10 Aug 2015 23:07:12 +0800
-Message-ID: <20150810150712.GA7341@wfg-t540p.sh.intel.com>
-In-Reply-To: <55C5B3F6.8070701@web.de>
+Subject: Re: [x86/build] b2c51106c75: -18.1% will-it-scale.per_process_ops
+Date: Mon, 10 Aug 2015 13:39:39 -0700
+Message-ID: <CALCETrVhdWVHeLtL72xtOU0qnQM8kVEeAOnxVKKw1tLVeW5Gsg@mail.gmail.com>
+In-Reply-To: <20150805083858.GA21506@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0985514278897715004==
+--===============8195740507461005401==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-CC bluetooth mailing list.
+On Wed, Aug 5, 2015 at 1:38 AM, Ingo Molnar <mingo@kernel.org> wrote:
+>
+> * kernel test robot <ying.huang@intel.com> wrote:
+>
+>> FYI, we noticed the below changes on
+>>
+>> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/asm
+>> commit b2c51106c7581866c37ffc77c5d739f3d4b7cbc9 ("x86/build: Fix detecti=
+on of GCC -mpreferred-stack-boundary support")
+>
+> Does the performance regression go away reproducibly if you do:
+>
+>    git revert b2c51106c7581866c37ffc77c5d739f3d4b7cbc9
+>
+> ?
 
-On Sat, Aug 08, 2015 at 09:47:02AM +0200, Norbert Holze wrote:
-> Hello mailing list,
-> =
+FWIW, I spot-checked the generated code.  All I saw were the deletion
+of some dummy subtraction from rsp to align the stack for children,
+changes of stack frame offsets, and a couple instances in which
+instructions got reordered.
 
-> my bluetooth usb-stick worked fine with kernel up to 3.19. With 4.x
-> there is no hci device found.
-> =
+--Andy
 
-> lsusb
-> Bus 004 Device 002: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth
-> Dongle (HCI mode)
-> =
-
-> hcitool dev
-> Devices:
-> =
-
-> sudo hciconfig
-> hci0:	Type: BR/EDR  Bus: USB
-> 	BD Address: 00:15:83:15:A3:0B  ACL MTU: 672:4  SCO MTU: 48:1
-> 	DOWN
-> 	RX bytes:890 acl:0 sco:0 events:30 errors:0
-> 	TX bytes:126 acl:0 sco:0 commands:30 errors:0
-> =
-
-> sudo hciconfig hci0 up
-> Can't init device hci0: Operation not supported (95)
-> =
-
-> rfkill list
-> 0: hci0: Bluetooth
-> 	Soft blocked: no
-> 	Hard blocked: no
-> 1: phy0: Wireless LAN
-> 	Soft blocked: no
-> 	Hard blocked: no
-> =
-
-> =
-
-> Is this a regression. Or does it work in different way with 4.x?
-> =
-
-> Regards,
-> =
-
-> Norbert
-> _______________________________________________
-> LKP mailing list
-> LKP(a)lists.01.org
-> https://lists.01.org/mailman/listinfo/lkp
-
---===============0985514278897715004==--
+--===============8195740507461005401==--
 
