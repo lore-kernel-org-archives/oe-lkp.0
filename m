@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============6518652656414528389=="
+Content-Type: multipart/mixed; boundary="===============1462361058600360757=="
 MIME-Version: 1.0
 From: kernel test robot <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: [mm, page_alloc] 4b71218bcd: WARNING: CPU: 1 PID: 1 at lib/radix-tree.c:294 radix_tree_preload()
-Date: Tue, 25 Aug 2015 02:10:24 +0800
-Message-ID: <55db5e10.aYRlwkG8+Iov81PS%fengguang.wu@intel.com>
+Date: Tue, 25 Aug 2015 04:36:33 +0800
+Message-ID: <55db8051.qhXdZn8waDv/Z1U8%fengguang.wu@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6518652656414528389==
+--===============1462361058600360757==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -100,25 +100,25 @@ s.
 +---------------------------------------------------+------------+---------=
 ---+------------+
 |                                                   | c5df6972ff | 4b71218b=
-cd | 138a987380 |
+cd | 6d0d909dd3 |
 +---------------------------------------------------+------------+---------=
 ---+------------+
 | boot_successes                                    | 63         | 0       =
    | 0          |
 | boot_failures                                     | 0          | 12      =
-   | 27         |
+   | 25         |
 | WARNING:at_lib/radix-tree.c:#radix_tree_preload() | 0          | 12      =
-   | 27         |
+   | 25         |
 | backtrace:radix_tree_preload                      | 0          | 12      =
-   | 27         |
+   | 25         |
 | backtrace:blkcg_init_queue                        | 0          | 12      =
-   | 27         |
+   | 25         |
 | backtrace:brd_alloc                               | 0          | 12      =
-   | 27         |
+   | 25         |
 | backtrace:brd_init                                | 0          | 12      =
-   | 27         |
+   | 25         |
 | backtrace:kernel_init_freeable                    | 0          | 12      =
-   | 27         |
+   | 25         |
 | BUG:kernel_test_hang                              | 0          | 1       =
    |            |
 +---------------------------------------------------+------------+---------=
@@ -162,34 +162,39 @@ b71218 #12
 [    1.324666] ---[ end trace cfeb44e60599609f ]---
 [    1.327849] brd: module loaded
 
-git bisect start 138a987380729cb812b2d12b6b562c8ba35001b5 2c6625cd545bdd66a=
-cff14f3394865d43920a5c7 --
-git bisect good 8c7e6aa02f8e689a226b9687bf79eab71e84da9b  # 01:55     22+  =
-    0  mm, page_alloc: Only check cpusets when one exists that can be mem-c=
-ontrolled
-git bisect good c5df6972ff42875ecde7df596d0711ad506ff508  # 01:55     63+  =
+git bisect start 6d0d909dd31c017ee9b648080f1b9b57a0d972fc c13dcf9f2d6f5f06e=
+f1bf79ec456df614c5e058b --
+git bisect good 2a06644d22148d3537b35e8e222a7b8c8ee3d636  # 01:19     20+  =
+    2  Merge 'amirv/for-upstream' into devel-catchup-201508241919
+git bisect good 99b39f2666b428e5ff530c58e2481a30a2b7cc8f  # 01:22     19+  =
+    1  Merge 'm68k/master' into devel-catchup-201508241919
+git bisect good c5df6972ff42875ecde7df596d0711ad506ff508  # 01:23     25+  =
     0  mm, page_alloc: Use masks and shifts when converting GFP flags to mi=
 grate types
-git bisect  bad 4b71218bcdb96fcf93b28ad19d609ad35b52f465  # 01:55      0-  =
+git bisect  bad 138a987380729cb812b2d12b6b562c8ba35001b5  # 01:23      0-  =
+   15  mm, page_alloc: Delete the zonelist_cache
+git bisect  bad 0afe77f43871b8519d625c65ee202c1cd1812be3  # 01:40      0-  =
+   17  mm, page_alloc: Rename __GFP_WAIT to __GFP_RECLAIM
+git bisect  bad 4b71218bcdb96fcf93b28ad19d609ad35b52f465  # 01:40      0-  =
    12  mm, page_alloc: Distinguish between being unable to sleep, unwilling=
  to sleep and avoiding waking kswapd
 # first bad commit: [4b71218bcdb96fcf93b28ad19d609ad35b52f465] mm, page_all=
 oc: Distinguish between being unable to sleep, unwilling to sleep and avoid=
 ing waking kswapd
-git bisect good c5df6972ff42875ecde7df596d0711ad506ff508  # 01:55     63+  =
+git bisect good c5df6972ff42875ecde7df596d0711ad506ff508  # 01:48     63+  =
     0  mm, page_alloc: Use masks and shifts when converting GFP flags to mi=
 grate types
 # extra tests on HEAD of linux-devel/devel-catchup-201508241919
-git bisect  bad 839fdfa781897530a9d867611fa7a3cf854f4908  # 01:55      0-  =
+git bisect  bad 839fdfa781897530a9d867611fa7a3cf854f4908  # 01:48      0-  =
    34  0day head guard for 'devel-catchup-201508241919'
 # extra tests on tree/branch balancenuma/mm-pagealloc-watermarks-v3r10
-git bisect  bad ab0d9d536abe89508fd522ab9762c6002f508739  # 01:56      0-  =
+git bisect  bad ab0d9d536abe89508fd522ab9762c6002f508739  # 04:25      0-  =
     3  mm, page_alloc: Only enforce watermarks for order-0 allocations
 # extra tests on tree/branch linus/master
-git bisect good c13dcf9f2d6f5f06ef1bf79ec456df614c5e058b  # 02:02     66+  =
+git bisect good c13dcf9f2d6f5f06ef1bf79ec456df614c5e058b  # 04:35     66+  =
     4  Linux 4.2-rc8
 # extra tests on tree/branch linux-next/master
-git bisect good a074b68fbe33158db1300f1da53292d7ec1d11ef  # 02:10     63+  =
+git bisect good a074b68fbe33158db1300f1da53292d7ec1d11ef  # 04:36     65+  =
     0  Add linux-next specific files for 20150824
 
 
@@ -199,7 +204,7 @@ er
 https://lists.01.org/pipermail/lkp                          Intel Corporati=
 on
 
---===============6518652656414528389==
+--===============1462361058600360757==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -851,5 +856,5 @@ bGUuClsgICAgMC43OTk1NDddIFJQQzogUmVnaXN0ZXJlZCB1ZHAgdHJhbnNwb3J0IG1vZHVsZS4K
 WyAgICAwLjgwMDM5N10gUlBDOiBSZWdpc3RlcmVkIHRjcCB0cmFuc3BvcnQgbW9kdWxlLgpbICAg
 IDAuODAxMjI0XSBSUEM6IFJlZ2lzdGVyZWQgdGNwIE5GU3Y0LjEgYmFja2NoYW5uZWwgdHJhbnNw
 b3J0IG1vZHVsZQ==
---===============6518652656414528389==--
+--===============1462361058600360757==--
 
