@@ -1,36 +1,31 @@
-Content-Type: multipart/mixed; boundary="===============4208844210235121926=="
+Content-Type: multipart/mixed; boundary="===============3204278011995261615=="
 MIME-Version: 1.0
 From: Thomas Graf <tgraf@suug.ch>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 3/3] rhashtable-test: calculate max_entries value by default
-Date: Fri, 28 Aug 2015 13:11:53 +0200
-Message-ID: <20150828111153.GJ32206@pox.localdomain>
-In-Reply-To: <1440757685-14241-3-git-send-email-phil@nwl.cc>
+Subject: Re: [PATCH 2/3] rhashtable-test: retry insert operations in threads
+Date: Sat, 29 Aug 2015 00:43:03 +0200
+Message-ID: <20150828224303.GD32001@pox.localdomain>
+In-Reply-To: <20150828133437.GM20760@orbit.nwl.cc>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4208844210235121926==
+--===============3204278011995261615==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 08/28/15 at 12:28pm, Phil Sutter wrote:
-> A maximum table size of 64k entries is insufficient for the multiple
-> threads test even in default configuration (10 threads * 50000 objects =
-=3D
-> 500000 objects in total). Since we know how many objects will be
-> inserted, calculate the max size unless overridden by parameter.
+On 08/28/15 at 03:34pm, Phil Sutter wrote:
+> Quite ugly, IMHO: rhashtable_insert_fast() may return -ENOMEM as
+> non-permanent error, if allocation in GFP_ATOMIC failed. In this case,
+> allocation in GFP_KERNEL is retried by rht_deferred_worker(). Sadly,
+> there is no way to determine if that has already been tried and failed.
 > =
 
-> Note that specifying the exact number of objects upon table init won't
-> suffice as that value is being rounded down to the next power of two -
-> anticipate this by rounding up to the next power of two in beforehand.
-> =
+> The thread test triggers GFP_ATOMIC allocation failure quite easily, so
+> I can't really just ignore this issue. :)
 
-> Signed-off-by: Phil Sutter <phil@nwl.cc>
+Return EBUSY or ENOBUFS in the non-permanent case? It is definitely
+helpful if the API allows to differ between permanent and
+non-permanent errors.
 
-Acked-by: Thomas Graf <tgraf@suug.ch>
-
-Thanks for doing this work.
-
---===============4208844210235121926==--
+--===============3204278011995261615==--
 
