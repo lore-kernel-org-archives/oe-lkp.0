@@ -1,31 +1,37 @@
-Content-Type: multipart/mixed; boundary="===============3204278011995261615=="
+Content-Type: multipart/mixed; boundary="===============2658845073176251893=="
 MIME-Version: 1.0
-From: Thomas Graf <tgraf@suug.ch>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 To: lkp@lists.01.org
 Subject: Re: [PATCH 2/3] rhashtable-test: retry insert operations in threads
-Date: Sat, 29 Aug 2015 00:43:03 +0200
-Message-ID: <20150828224303.GD32001@pox.localdomain>
-In-Reply-To: <20150828133437.GM20760@orbit.nwl.cc>
+Date: Sun, 30 Aug 2015 15:47:17 +0800
+Message-ID: <20150830074717.GA25396@gondor.apana.org.au>
+In-Reply-To: <20150829090701.GN20760@orbit.nwl.cc>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3204278011995261615==
+--===============2658845073176251893==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 08/28/15 at 03:34pm, Phil Sutter wrote:
-> Quite ugly, IMHO: rhashtable_insert_fast() may return -ENOMEM as
-> non-permanent error, if allocation in GFP_ATOMIC failed. In this case,
-> allocation in GFP_KERNEL is retried by rht_deferred_worker(). Sadly,
-> there is no way to determine if that has already been tried and failed.
-> =
+Phil Sutter <phil@nwl.cc> wrote:
+>
+> Should we introduce a new field to struct rhashtable to track the
+> internal state? This might allow to clean up some rather obscure tests,
+> e.g. whether a table resize is in progress or not.
 
-> The thread test triggers GFP_ATOMIC allocation failure quite easily, so
-> I can't really just ignore this issue. :)
+Why would we want to do that? The deferred expansion is done
+on a best effort basis so its failure has nothing to do with
+the failure of a subsequent insertion.
 
-Return EBUSY or ENOBUFS in the non-permanent case? It is definitely
-helpful if the API allows to differ between permanent and
-non-permanent errors.
+The insertion must have tried its own last-ditch synchronous
+expansion and only fail if that fails.
 
---===============3204278011995261615==--
+Cheers,
+-- =
+
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+
+--===============2658845073176251893==--
 
