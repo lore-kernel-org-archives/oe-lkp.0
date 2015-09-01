@@ -1,61 +1,38 @@
-Content-Type: multipart/mixed; boundary="===============5996092561674473625=="
+Content-Type: multipart/mixed; boundary="===============0207648978149773776=="
 MIME-Version: 1.0
-From: Jiang Liu <jiang.liu@linux.intel.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 To: lkp@lists.01.org
-Subject: Re: [PCI, x86] 991de2e590: EIP is at _raw_spin_unlock_irqrestore
-Date: Tue, 01 Sep 2015 13:37:00 +0800
-Message-ID: <55E5397C.6030104@linux.intel.com>
-In-Reply-To: <55dc7248.iKNpNImVAd4pyJum%fengguang.wu@intel.com>
+Subject: Re: [PATCH 2/3] rhashtable-test: retry insert operations in threads
+Date: Tue, 01 Sep 2015 19:43:00 +0800
+Message-ID: <20150901114300.GB12691@gondor.apana.org.au>
+In-Reply-To: <20150831110012.GO20760@orbit.nwl.cc>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5996092561674473625==
+--===============0207648978149773776==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2015/8/25 21:48, kernel test robot wrote:
-> Greetings,
+On Mon, Aug 31, 2015 at 01:00:12PM +0200, Phil Sutter wrote:
 > =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+> The variable would be used to track if the worker has failed to allocate
+> memory in background.
 > =
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> =
+> Since the failing insertion will be retried, subsequent inserts are not
+> necessary unrelated.
 
-> commit 991de2e59090e55c65a7f59a049142e3c480f7bd
-> Author:     Jiang Liu <jiang.liu@linux.intel.com>
-> AuthorDate: Wed Jun 10 16:54:59 2015 +0800
-> Commit:     Bjorn Helgaas <bhelgaas@google.com>
-> CommitDate: Thu Jul 30 14:05:57 2015 -0500
-> =
+If an insertion fails it is never retried.  The only thing that is
+retried is the expansion of the table.  So I have no idea what
+you are talking about.
 
->     PCI, x86: Implement pcibios_alloc_irq() and pcibios_free_irq()
->     =
+Cheers,
+-- =
 
->     To support IOAPIC hotplug, we need to allocate PCI IRQ resources on d=
-emand
->     and free them when not used anymore.
->     =
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
->     Implement pcibios_alloc_irq() and pcibios_free_irq() to dynamically
->     allocate and free PCI IRQs.
->     =
-
->     Remove mp_should_keep_irq(), which is no longer used.
->     =
-
->     [bhelgaas: changelog]
->     Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
->     Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
->     Acked-by: Thomas Gleixner <tglx@linutronix.de>
-
-Hi Bjorn and Fengguang,
-	I have tracked down this regression, it's caused by a flaw
-in ACPI BIOS implementation, and I have a draft patch for it.
-I will send out the patch after v4.3-rc1 is out with more testings.
-Thanks!
-Gerry
-
---===============5996092561674473625==--
+--===============0207648978149773776==--
 
