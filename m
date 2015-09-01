@@ -1,38 +1,39 @@
-Content-Type: multipart/mixed; boundary="===============7969317289544281095=="
+Content-Type: multipart/mixed; boundary="===============2347929561882692497=="
 MIME-Version: 1.0
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Eric Dumazet <eric.dumazet@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH 2/3] rhashtable-test: retry insert operations in threads
-Date: Tue, 01 Sep 2015 21:00:57 +0800
-Message-ID: <20150901130057.GA13230@gondor.apana.org.au>
-In-Reply-To: <20150901124648.GA27550@orbit.nwl.cc>
+Date: Tue, 01 Sep 2015 06:40:48 -0700
+Message-ID: <1441114848.8932.172.camel@edumazet-glaptop2.roam.corp.google.com>
+In-Reply-To: <20150901130057.GA13230@gondor.apana.org.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7969317289544281095==
+--===============2347929561882692497==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 01, 2015 at 02:46:48PM +0200, Phil Sutter wrote:
->
-> This is not an inherent behaviour of the implementation but general
-> agreement. The insertion may fail non-permanently (returning -EBUSY),
-> users are expected to handle this by retrying the operation.
+On Tue, 2015-09-01 at 21:00 +0800, Herbert Xu wrote:
+> On Tue, Sep 01, 2015 at 02:46:48PM +0200, Phil Sutter wrote:
+> >
+> > This is not an inherent behaviour of the implementation but general
+> > agreement. The insertion may fail non-permanently (returning -EBUSY),
+> > users are expected to handle this by retrying the operation.
+> =
 
-Absolutely not.  The only reason for an insertion to fail is if we
-can't allocate enough memory.  Unless the user is also looping its
-kmalloc calls it definitely shouldn't be retrying the insert.
+> Absolutely not.  The only reason for an insertion to fail is if we
+> can't allocate enough memory.  Unless the user is also looping its
+> kmalloc calls it definitely shouldn't be retrying the insert.
+> =
 
-If an expansion fails it means either that the system is suffering
-a catastrophic memory shortage, or the user of rhashtable is doing
-something wrong.
+> If an expansion fails it means either that the system is suffering
+> a catastrophic memory shortage, or the user of rhashtable is doing
+> something wrong.
 
-Cheers,
--- =
 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+-EBUSY does not sound as a memory allocation error.
 
---===============7969317289544281095==--
+
+
+--===============2347929561882692497==--
 
