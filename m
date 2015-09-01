@@ -1,39 +1,35 @@
-Content-Type: multipart/mixed; boundary="===============2347929561882692497=="
+Content-Type: multipart/mixed; boundary="===============6900161870013175594=="
 MIME-Version: 1.0
-From: Eric Dumazet <eric.dumazet@gmail.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 To: lkp@lists.01.org
 Subject: Re: [PATCH 2/3] rhashtable-test: retry insert operations in threads
-Date: Tue, 01 Sep 2015 06:40:48 -0700
-Message-ID: <1441114848.8932.172.camel@edumazet-glaptop2.roam.corp.google.com>
-In-Reply-To: <20150901130057.GA13230@gondor.apana.org.au>
+Date: Tue, 01 Sep 2015 21:50:19 +0800
+Message-ID: <20150901135019.GA13629@gondor.apana.org.au>
+In-Reply-To: <20150901134310.GB27550@orbit.nwl.cc>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2347929561882692497==
+--===============6900161870013175594==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2015-09-01 at 21:00 +0800, Herbert Xu wrote:
-> On Tue, Sep 01, 2015 at 02:46:48PM +0200, Phil Sutter wrote:
-> >
-> > This is not an inherent behaviour of the implementation but general
-> > agreement. The insertion may fail non-permanently (returning -EBUSY),
-> > users are expected to handle this by retrying the operation.
-> =
+On Tue, Sep 01, 2015 at 03:43:11PM +0200, Phil Sutter wrote:
+>
+> Hmm. Since memory allocation is first tried with GFP_ATOMIC set and upon
+> failure retried in background, this seems like a situation which might
+> happen during normal use. If that already indicates a severe problem,
+> why retry in background at all?
 
-> Absolutely not.  The only reason for an insertion to fail is if we
-> can't allocate enough memory.  Unless the user is also looping its
-> kmalloc calls it definitely shouldn't be retrying the insert.
-> =
+It should be tried in the background first at 70% and only when
+that fails would we hit the 100% case and then we will try it
+with GFP_ATOMIC.  If that fails then the insertion will fail.
 
-> If an expansion fails it means either that the system is suffering
-> a catastrophic memory shortage, or the user of rhashtable is doing
-> something wrong.
+Cheers,
+-- =
 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
--EBUSY does not sound as a memory allocation error.
-
-
-
---===============2347929561882692497==--
+--===============6900161870013175594==--
 
