@@ -1,50 +1,117 @@
-Content-Type: multipart/mixed; boundary="===============1905072263188308329=="
+Content-Type: multipart/mixed; boundary="===============8471194418012295296=="
 MIME-Version: 1.0
-From: Thomas Graf <tgraf@suug.ch>
+From: xly <xiaoluoyuan@163.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 2/3] rhashtable-test: retry insert operations in threads
-Date: Wed, 02 Sep 2015 09:07:24 +0200
-Message-ID: <20150902070724.GD11564@pox.localdomain>
-In-Reply-To: <20150902020025.GA18184@gondor.apana.org.au>
+Subject: About lkp compare ERROR
+Date: Wed, 02 Sep 2015 21:17:47 +0800
+Message-ID: <4fc6863b.13e1.14f8e34c66c.Coremail.xiaoluoyuan@163.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1905072263188308329==
+--===============8471194418012295296==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 09/02/15 at 10:00am, Herbert Xu wrote:
-> On Tue, Sep 01, 2015 at 04:51:24PM +0200, Thomas Graf wrote:
-> >
-> > 1. The current in-kernel self-test
-> > 2. bind_netlink.c: https://github.com/tgraf/rhashtable
-> =
 
-> Thanks, I will try to reproduce this.
 
-The path in question is:
+Hello,
 
-int rhashtable_insert_rehash(struct rhashtable *ht)
-{
-	[...]
 
-        old_tbl =3D rht_dereference_rcu(ht->tbl, ht);
-        tbl =3D rhashtable_last_table(ht, old_tbl);
+When I run the command "lkp compare  RESULT_ROOT0  RESULT_ROOT1"=EF=BC=8C I=
+ get the following error message, How should I fix it ?
 
-        size =3D tbl->size;
 
-        if (rht_grow_above_75(ht, tbl))
-                size *=3D 2;
-        /* Do not schedule more than one rehash */
-        else if (old_tbl !=3D tbl)
-                return -EBUSY;
 
-The behaviour in question is the immediate rehash during
-insertion which we want to fail.
+/home/chy/lkp-tests/lib/stats.rb:177:in `matrix_cols': undefined method `si=
+ze' for 277651.44:Float (NoMethodError)
 
-Commits:
-        ccd57b1bd32460d27bbb9c599e795628a3c66983
-        a87b9ebf1709687ff213091d0fdb4254b1564803
+from /home/chy/lkp-tests/lib/stats.rb:598:in `samples_fill_missing_zeros'
 
---===============1905072263188308329==--
+from /home/chy/lkp-tests/sbin/compare:202:in `get_json_field'
+
+from /home/chy/lkp-tests/sbin/compare:219:in `add_stats'
+
+from /home/chy/lkp-tests/sbin/compare:780:in `block in <main>'
+
+from /home/chy/lkp-tests/sbin/compare:780:in `each'
+
+from /home/chy/lkp-tests/sbin/compare:780:in `<main>'
+
+
+
+Thanks !
+
+
+--===============8471194418012295296==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.html"
+
+PGRpdiBzdHlsZT0ibGluZS1oZWlnaHQ6MS43O2NvbG9yOiMwMDAwMDA7Zm9udC1zaXplOjE0cHg7
+Zm9udC1mYW1pbHk6YXJpYWwiPjxkaXYgc3R5bGU9ImxpbmUtaGVpZ2h0OjEuNztjb2xvcjojMDAw
+MDAwO2ZvbnQtc2l6ZToxNHB4O2ZvbnQtZmFtaWx5OmFyaWFsIj48ZGl2Pjxicj48L2Rpdj5IZWxs
+byw8L2Rpdj48ZGl2IHN0eWxlPSJsaW5lLWhlaWdodDoxLjc7Y29sb3I6IzAwMDAwMDtmb250LXNp
+emU6MTRweDtmb250LWZhbWlseTphcmlhbCI+PGJyPjwvZGl2PjxkaXYgc3R5bGU9ImxpbmUtaGVp
+Z2h0OjEuNztjb2xvcjojMDAwMDAwO2ZvbnQtc2l6ZToxNHB4O2ZvbnQtZmFtaWx5OmFyaWFsIj48
+Zm9udCBmYWNlPSJIZWx2ZXRpY2EsIE1pY3Jvc29mdCBZYWhlaSwgdmVyZGFuYSIgc3R5bGU9Imxp
+bmUtaGVpZ2h0OiAxLjc7Ij5XaGVuJm5ic3A7PHNwYW4gc3R5bGU9ImxpbmUtaGVpZ2h0OiAyMy4z
+MjQwMDEzMTIyNTU5cHg7Ij5JJm5ic3A7cnVuIHRoZSBjb21tYW5kJm5ic3A7PC9zcGFuPjwvZm9u
+dD48c3BhbiBzdHlsZT0ibGluZS1oZWlnaHQ6IDIzLjMyNDAwMTMxMjI1NTlweDsgZm9udC1mYW1p
+bHk6IEhlbHZldGljYSwgJ01pY3Jvc29mdCBZYWhlaScsIHZlcmRhbmE7Ij4ibGtwIGNvbXBhcmUg
+Jm5ic3A7UkVTVUxUX1JPT1QwICZuYnNwO1JFU1VMVF9ST09UMSKjrDwvc3Bhbj48Zm9udCBmYWNl
+PSJIZWx2ZXRpY2EsIE1pY3Jvc29mdCBZYWhlaSwgdmVyZGFuYSIgc3R5bGU9ImxpbmUtaGVpZ2h0
+OiAxLjc7Ij48c3BhbiBzdHlsZT0ibGluZS1oZWlnaHQ6IDIzLjMyNDAwMTMxMjI1NTlweDsiPiZu
+YnNwO0kgZ2V0IHRoZSZuYnNwO2ZvbGxvd2luZyZuYnNwOzwvc3Bhbj48L2ZvbnQ+PHNwYW4gc3R5
+bGU9ImxpbmUtaGVpZ2h0OiAyMy4zMjQwMDEzMTIyNTU5cHg7IGZvbnQtZmFtaWx5OiBIZWx2ZXRp
+Y2EsICdNaWNyb3NvZnQgWWFoZWknLCB2ZXJkYW5hOyI+ZXJyb3IgbWVzc2FnZSwmbmJzcDs8L3Nw
+YW4+PGZvbnQgZmFjZT0iSGVsdmV0aWNhLCBNaWNyb3NvZnQgWWFoZWksIHZlcmRhbmEiIHN0eWxl
+PSJsaW5lLWhlaWdodDogMS43OyI+PHNwYW4gc3R5bGU9ImxpbmUtaGVpZ2h0OiAyMy4zMjQwMDEz
+MTIyNTU5cHg7Ij5Ib3cgc2hvdWxkIEkgZml4IGl0ID88L3NwYW4+PC9mb250PjwvZGl2PjxkaXYg
+c3R5bGU9ImxpbmUtaGVpZ2h0OjEuNztjb2xvcjojMDAwMDAwO2ZvbnQtc2l6ZToxNHB4O2ZvbnQt
+ZmFtaWx5OmFyaWFsIj48Zm9udCBmYWNlPSJIZWx2ZXRpY2EsIE1pY3Jvc29mdCBZYWhlaSwgdmVy
+ZGFuYSIgc3R5bGU9ImxpbmUtaGVpZ2h0OiAxLjc7Ij48c3BhbiBzdHlsZT0ibGluZS1oZWlnaHQ6
+IDIzLjMyNDAwMTMxMjI1NTlweDsiPjxicj48L3NwYW4+PC9mb250PjwvZGl2PjxkaXYgc3R5bGU9
+ImxpbmUtaGVpZ2h0OjEuNztjb2xvcjojMDAwMDAwO2ZvbnQtc2l6ZToxNHB4O2ZvbnQtZmFtaWx5
+OmFyaWFsIj48cCBzdHlsZT0ibWFyZ2luOiAwcHg7IGxpbmUtaGVpZ2h0OiBub3JtYWw7IGZvbnQt
+ZmFtaWx5OiBNb25hY287IGNvbG9yOiByZ2IoMjQ1LCAyNDUsIDI0NSk7IGJhY2tncm91bmQtY29s
+b3I6IHJnYigwLCAwLCAwKTsiPi9ob21lL2NoeS9sa3AtdGVzdHMvbGliL3N0YXRzLnJiOjE3Nzpp
+biBgbWF0cml4X2NvbHMnOiB1bmRlZmluZWQgbWV0aG9kIGBzaXplJyBmb3IgMjc3NjUxLjQ0OkZs
+b2F0IChOb01ldGhvZEVycm9yKTwvcD4KPHAgc3R5bGU9Im1hcmdpbjogMHB4OyBsaW5lLWhlaWdo
+dDogbm9ybWFsOyBmb250LWZhbWlseTogTW9uYWNvOyBjb2xvcjogcmdiKDI0NSwgMjQ1LCAyNDUp
+OyBiYWNrZ3JvdW5kLWNvbG9yOiByZ2IoMCwgMCwgMCk7Ij48c3BhbiBjbGFzcz0iQXBwbGUtdGFi
+LXNwYW4iIHN0eWxlPSJ3aGl0ZS1zcGFjZTpwcmUiPgk8L3NwYW4+ZnJvbSAvaG9tZS9jaHkvbGtw
+LXRlc3RzL2xpYi9zdGF0cy5yYjo1OTg6aW4gYHNhbXBsZXNfZmlsbF9taXNzaW5nX3plcm9zJzwv
+cD4KPHAgc3R5bGU9Im1hcmdpbjogMHB4OyBsaW5lLWhlaWdodDogbm9ybWFsOyBmb250LWZhbWls
+eTogTW9uYWNvOyBjb2xvcjogcmdiKDI0NSwgMjQ1LCAyNDUpOyBiYWNrZ3JvdW5kLWNvbG9yOiBy
+Z2IoMCwgMCwgMCk7Ij48c3BhbiBjbGFzcz0iQXBwbGUtdGFiLXNwYW4iIHN0eWxlPSJ3aGl0ZS1z
+cGFjZTpwcmUiPgk8L3NwYW4+ZnJvbSAvaG9tZS9jaHkvbGtwLXRlc3RzL3NiaW4vY29tcGFyZToy
+MDI6aW4gYGdldF9qc29uX2ZpZWxkJzwvcD4KPHAgc3R5bGU9Im1hcmdpbjogMHB4OyBsaW5lLWhl
+aWdodDogbm9ybWFsOyBmb250LWZhbWlseTogTW9uYWNvOyBjb2xvcjogcmdiKDI0NSwgMjQ1LCAy
+NDUpOyBiYWNrZ3JvdW5kLWNvbG9yOiByZ2IoMCwgMCwgMCk7Ij48c3BhbiBjbGFzcz0iQXBwbGUt
+dGFiLXNwYW4iIHN0eWxlPSJ3aGl0ZS1zcGFjZTpwcmUiPgk8L3NwYW4+ZnJvbSAvaG9tZS9jaHkv
+bGtwLXRlc3RzL3NiaW4vY29tcGFyZToyMTk6aW4gYGFkZF9zdGF0cyc8L3A+CjxwIHN0eWxlPSJt
+YXJnaW46IDBweDsgbGluZS1oZWlnaHQ6IG5vcm1hbDsgZm9udC1mYW1pbHk6IE1vbmFjbzsgY29s
+b3I6IHJnYigyNDUsIDI0NSwgMjQ1KTsgYmFja2dyb3VuZC1jb2xvcjogcmdiKDAsIDAsIDApOyI+
+PHNwYW4gY2xhc3M9IkFwcGxlLXRhYi1zcGFuIiBzdHlsZT0id2hpdGUtc3BhY2U6cHJlIj4JPC9z
+cGFuPmZyb20gL2hvbWUvY2h5L2xrcC10ZXN0cy9zYmluL2NvbXBhcmU6NzgwOmluIGBibG9jayBp
+biAmbHQ7bWFpbiZndDsnPC9wPgo8cCBzdHlsZT0ibWFyZ2luOiAwcHg7IGxpbmUtaGVpZ2h0OiBu
+b3JtYWw7IGZvbnQtZmFtaWx5OiBNb25hY287IGNvbG9yOiByZ2IoMjQ1LCAyNDUsIDI0NSk7IGJh
+Y2tncm91bmQtY29sb3I6IHJnYigwLCAwLCAwKTsiPjxzcGFuIGNsYXNzPSJBcHBsZS10YWItc3Bh
+biIgc3R5bGU9IndoaXRlLXNwYWNlOnByZSI+CTwvc3Bhbj5mcm9tIC9ob21lL2NoeS9sa3AtdGVz
+dHMvc2Jpbi9jb21wYXJlOjc4MDppbiBgZWFjaCc8L3A+CjxwIHN0eWxlPSJtYXJnaW46IDBweDsg
+bGluZS1oZWlnaHQ6IG5vcm1hbDsgZm9udC1mYW1pbHk6IE1vbmFjbzsgY29sb3I6IHJnYigyNDUs
+IDI0NSwgMjQ1KTsgYmFja2dyb3VuZC1jb2xvcjogcmdiKDAsIDAsIDApOyI+PHNwYW4gY2xhc3M9
+IkFwcGxlLXRhYi1zcGFuIiBzdHlsZT0id2hpdGUtc3BhY2U6cHJlIj4JPC9zcGFuPmZyb20gL2hv
+bWUvY2h5L2xrcC10ZXN0cy9zYmluL2NvbXBhcmU6NzgwOmluIGAmbHQ7bWFpbiZndDsnPC9wPjwv
+ZGl2PjxkaXYgc3R5bGU9ImNvbG9yOiByZ2IoMCwgMCwgMCk7IGZvbnQtc2l6ZTogMTRweDsgZm9u
+dC1mYW1pbHk6IGFyaWFsOyI+PGRpdj48Zm9udCBmYWNlPSJIZWx2ZXRpY2EsIE1pY3Jvc29mdCBZ
+YWhlaSwgdmVyZGFuYSIgc3R5bGU9ImxpbmUtaGVpZ2h0OiAxLjc7Ij48c3BhbiBzdHlsZT0ibGlu
+ZS1oZWlnaHQ6IDIzLjMyNDAwMTMxMjI1NTlweDsiPjxicj48L3NwYW4+PC9mb250PjwvZGl2Pjxk
+aXY+PHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OiBhcmlhbCwgc2Fucy1zZXJpZjsgbGluZS1oZWln
+aHQ6IDI3cHg7Ij5UaGFua3MgITwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuIHN0eWxlPSJmb250LWZh
+bWlseTogYXJpYWwsIHNhbnMtc2VyaWY7IGxpbmUtaGVpZ2h0OiAyN3B4OyI+PGJyPjwvc3Bhbj48
+L2Rpdj48L2Rpdj48L2Rpdj48YnI+PGJyPjxzcGFuIHRpdGxlPSJuZXRlYXNlZm9vdGVyIj48cD4m
+bmJzcDs8L3A+PC9zcGFuPg==
+--===============8471194418012295296==--
 
