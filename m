@@ -1,16 +1,18 @@
-Content-Type: multipart/mixed; boundary="===============8026555239081970190=="
+Content-Type: multipart/mixed; boundary="===============6129572034494769567=="
 MIME-Version: 1.0
-From: kernel test robot <fengguang.wu@intel.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: [of/platform] 4f7c8127d9: WARNING: CPU: 0 PID: 1 at kernel/locking/mutex.c:526 __mutex_lock_slowpath()
-Date: Sat, 12 Sep 2015 02:07:10 +0800
-Message-ID: <55f3184e.zJx/XirFUbB1gjET%fengguang.wu@intel.com>
+Subject: [of/platform] WARNING: CPU: 0 PID: 1 at kernel/locking/mutex.c:526 __mutex_lock_slowpath()
+Date: Sat, 12 Sep 2015 05:33:08 +0800
+Message-ID: <20150911213308.GB12729@wfg-t540p.sh.intel.com>
+In-Reply-To: <20150911090123.GA23307@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8026555239081970190==
+--===============6129572034494769567==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+
 
 Greetings,
 
@@ -206,7 +208,7 @@ er
 https://lists.01.org/pipermail/lkp                          Intel Corporati=
 on
 
---===============8026555239081970190==
+--===============6129572034494769567==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -1184,7 +1186,7 @@ LXZtLXZwLXF1YW50YWwtaTM4Ni0xMiAtc2VyaWFsIGZpbGU6L2Rldi9zaG0va2Jvb3Qvc2VyaWFs
 LXZtLXZwLXF1YW50YWwtaTM4Ni0xMiAtZGFlbW9uaXplIC1kaXNwbGF5IG5vbmUgLW1vbml0b3Ig
 bnVsbCAK
 
---===============8026555239081970190==
+--===============6129572034494769567==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -2547,5 +2549,5 @@ Wl9UQUI9eQpDT05GSUdfQ09SRElDPW0KQ09ORklHX0REUj15CkNPTkZJR19NUElMSUI9eQpDT05G
 SUdfTElCRkRUPXkKIyBDT05GSUdfU0dfU1BMSVQgaXMgbm90IHNldApDT05GSUdfQVJDSF9IQVNf
 U0dfQ0hBSU49eQpDT05GSUdfQVJDSF9IQVNfTU1JT19GTFVTSD15Cg==
 
---===============8026555239081970190==--
+--===============6129572034494769567==--
 
