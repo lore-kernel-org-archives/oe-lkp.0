@@ -1,187 +1,79 @@
-Content-Type: multipart/mixed; boundary="===============6809048507783786525=="
+Content-Type: multipart/mixed; boundary="===============7825619227346662904=="
 MIME-Version: 1.0
-From: kernel test robot <ying.huang@intel.com>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: [drm/i915] e1f123257a:
-Date: Mon, 28 Sep 2015 14:38:18 +0800
-Message-ID: <871tdjjbfp.fsf@yhuang-dev.intel.com>
+Subject: Re: [rcu] kernel BUG at include/linux/pagemap.h:149!
+Date: Mon, 21 Sep 2015 13:43:27 -0700
+Message-ID: <20150921204327.GH4029@linux.vnet.ibm.com>
+In-Reply-To: <20150921193045.GA13674@lerouge>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6809048507783786525==
+--===============7825619227346662904==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed the below changes on
+On Mon, Sep 21, 2015 at 09:30:49PM +0200, Frederic Weisbecker wrote:
+> On Fri, Sep 11, 2015 at 10:19:47AM +0800, Boqun Feng wrote:
+> > Subject: [PATCH 01/27] rcu: Don't disable preemption for Tiny and Tree =
+RCU
+> >  readers
+> > =
 
-git://anongit.freedesktop.org/drm-intel for-linux-next
-commit e1f123257a1f7d3af36a31a0fb2d4c6f40039fed ("drm/i915: Expand error st=
-ate's address width to 64b")
+> > Because preempt_disable() maps to barrier() for non-debug builds,
+> > it forces the compiler to spill and reload registers.  Because Tree
+> > RCU and Tiny RCU now only appear in CONFIG_PREEMPT=3Dn builds, these
+> > barrier() instances generate needless extra code for each instance of
+> > rcu_read_lock() and rcu_read_unlock().  This extra code slows down Tree
+> > RCU and bloats Tiny RCU.
+> > =
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-tbox_group/testcase/rootfs/kconfig/compiler/group:
-  lkp-bdw02/piglit/debian-x86_64-2015-02-07.cgz/x86_64-rhel/gcc-4.9/igt-005
+> > This commit therefore removes the preempt_disable() and preempt_enable()
+> > from the non-preemptible implementations of __rcu_read_lock() and
+> > __rcu_read_unlock(), respectively.
+> > =
 
-commit:
-  69ab76fd3d497816992b22dd201d2327cb921c94
-    e1f123257a1f7d3af36a31a0fb2d4c6f40039fed
+> > For debug purposes, preempt_disable() and preempt_enable() are still
+> > kept if CONFIG_PREEMPT_COUNT=3Dy, which makes the detection of sleeping
+> > inside atomic sections still work in non-preemptible kernels.
+> > =
 
-69ab76fd3d497816 e1f123257a1f7d3af36a31a0fb
----------------- --------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :4           25%           1:4     last_state.piglit.exit_code.1=
-37
-           :4          100%           4:4     piglit.igt/drv_hangman/error-=
-state-capture-blt.fail
-           :4           25%           1:4     stderr.Killed
-          1:4          -25%            :4     kmsg.Unable_to_purge_GPU_memo=
-ry_due_lock_contention
-           :4           25%           1:4     kmsg.ttyS1-failed_to_request_=
-DMA
+> > Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> > Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> > ---
+> >  include/linux/rcupdate.h | 6 ++++--
+> >  include/linux/rcutiny.h  | 1 +
+> >  kernel/rcu/tree.c        | 9 +++++++++
+> >  3 files changed, 14 insertions(+), 2 deletions(-)
+> > =
 
-To reproduce:
+> > diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+> > index d63bb77..6c3cece 100644
+> > --- a/include/linux/rcupdate.h
+> > +++ b/include/linux/rcupdate.h
+> > @@ -297,12 +297,14 @@ void synchronize_rcu(void);
+> >  =
 
-        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
-ts.git
-        cd lkp-tests
-        bin/lkp install job.yaml  # job file is attached in this email
-        bin/lkp run     job.yaml
+> >  static inline void __rcu_read_lock(void)
+> >  {
+> > -	preempt_disable();
+> > +	if (IS_ENABLED(CONFIG_PREEMPT_COUNT))
+> > +		preempt_disable();
+> =
+
+> preempt_disable() is a no-op when !CONFIG_PREEMPT_COUNT, right?
+> Or rather it's a barrier(), which is anyway implied by rcu_read_lock().
+> =
+
+> So perhaps we can get rid of the IS_ENABLED() check?
+
+Actually, barrier() is not intended to be implied by rcu_read_lock().
+In a non-preemptible RCU implementation, it doesn't help anything
+to have the compiler flush its temporaries upon rcu_read_lock()
+and rcu_read_unlock().
+
+						Thanx, Paul
 
 
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
-
-
-Thanks,
-Ying Huang
-
---===============6809048507783786525==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job.yaml"
-
-LS0tCkxLUF9TRVJWRVI6IGlubgpMS1BfQ0dJX1BPUlQ6IDgwCkxLUF9DSUZTX1BPUlQ6IDEzOQp0
-ZXN0Y2FzZTogcGlnbGl0CmRlZmF1bHQtbW9uaXRvcnM6CiAgd2FpdDogYWN0aXZhdGUtbW9uaXRv
-cgogIGttc2c6IAogIHZtc3RhdDoKICAgIGludGVydmFsOiAxMApkZWZhdWx0LXdhdGNoZG9nczoK
-ICBvb20ta2lsbGVyOiAKICB3YXRjaGRvZzogCmNvbW1pdDogMDA5NGJmMDlkNjJkZDE2MTNiNTQ0
-ZmI3NjFkMTg0MGZiNzM1MmFiZgptb2RlbDogQnJvYWR3ZWxsIFVMVApucl9jcHU6IDQKbWVtb3J5
-OiA0Rwpyb290ZnNfcGFydGl0aW9uOiAiL2Rldi9kaXNrL2J5LWlkL2F0YS1JTlRFTF9TU0RTQzJN
-SDEyMEEyX0xORUwxMTI1MDBBQjEyMENHTi1wYXJ0MSIKc3NkX3BhcnRpdGlvbnM6ICIvZGV2L2Rp
-c2svYnktaWQvYXRhLUlOVEVMX1NTRFNDMk1IMTIwQTJfTE5FTDExMjUwMEFCMTIwQ0dOLXBhcnQy
-IgpjYXRlZ29yeTogZnVuY3Rpb25hbAp0aW1lb3V0OiAzMG0KcGlnbGl0OgogIGdyb3VwOiBpZ3Qt
-MDA1CnF1ZXVlOiBjeWNsaWMKdGVzdGJveDogbGtwLWJkdzAyCnRib3hfZ3JvdXA6IGxrcC1iZHcw
-MgprY29uZmlnOiB4ODZfNjQtcmhlbAplbnF1ZXVlX3RpbWU6IDIwMTUtMDktMTcgMDE6NDM6MDMu
-ODA5ODkxNDUwICswODowMAppZDogYWVhZDc2NTlkNzFlODNlYjhmYzQ4YWEwZTVhZmM0YmRjNTEw
-ZWNiNAp1c2VyOiBsa3AKY29tcGlsZXI6IGdjYy00LjkKaGVhZF9jb21taXQ6IDAwOTRiZjA5ZDYy
-ZGQxNjEzYjU0NGZiNzYxZDE4NDBmYjczNTJhYmYKYmFzZV9jb21taXQ6IDFmOTNlNGE5NmM5MTA5
-Mzc4MjA0YzE0N2IzZWVjMGQwZTgxMDBmZGUKYnJhbmNoOiBsaW51eC1kZXZlbC9kZXZlbC1ob3Vy
-bHktMjAxNTA5MjIyMwprZXJuZWw6ICIvcGtnL2xpbnV4L3g4Nl82NC1yaGVsL2djYy00LjkvMDA5
-NGJmMDlkNjJkZDE2MTNiNTQ0ZmI3NjFkMTg0MGZiNzM1MmFiZi92bWxpbnV6LTQuMy4wLXJjMi13
-bC0wMjQwNS1nMDA5NGJmMCIKcm9vdGZzOiBkZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6CnJl
-c3VsdF9yb290OiAiL3Jlc3VsdC9waWdsaXQvaWd0LTAwNS9sa3AtYmR3MDIvZGViaWFuLXg4Nl82
-NC0yMDE1LTAyLTA3LmNnei94ODZfNjQtcmhlbC9nY2MtNC45LzAwOTRiZjA5ZDYyZGQxNjEzYjU0
-NGZiNzYxZDE4NDBmYjczNTJhYmYvMCIKam9iX2ZpbGU6ICIvbGtwL3NjaGVkdWxlZC9sa3AtYmR3
-MDIvY3ljbGljX3BpZ2xpdC1pZ3QtMDA1LXg4Nl82NC1yaGVsLUNZQ0xJQ19IRUFELTAwOTRiZjA5
-ZDYyZGQxNjEzYjU0NGZiNzYxZDE4NDBmYjczNTJhYmYtMjAxNTA5MTctNjY1ODktMWRlaW0zMi0w
-LnlhbWwiCmRlcXVldWVfdGltZTogMjAxNS0wOS0yMyAwMTozNzo0Ni4zNzMyMTk4MDMgKzA4OjAw
-Cm1heF91cHRpbWU6IDE4MDAKaW5pdHJkOiAiL29zaW1hZ2UvZGViaWFuL2RlYmlhbi14ODZfNjQt
-MjAxNS0wMi0wNy5jZ3oiCmJvb3Rsb2FkZXJfYXBwZW5kOgotIHJvb3Q9L2Rldi9yYW0wCi0gdXNl
-cj1sa3AKLSBqb2I9L2xrcC9zY2hlZHVsZWQvbGtwLWJkdzAyL2N5Y2xpY19waWdsaXQtaWd0LTAw
-NS14ODZfNjQtcmhlbC1DWUNMSUNfSEVBRC0wMDk0YmYwOWQ2MmRkMTYxM2I1NDRmYjc2MWQxODQw
-ZmI3MzUyYWJmLTIwMTUwOTE3LTY2NTg5LTFkZWltMzItMC55YW1sCi0gQVJDSD14ODZfNjQKLSBr
-Y29uZmlnPXg4Nl82NC1yaGVsCi0gYnJhbmNoPWxpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE1
-MDkyMjIzCi0gY29tbWl0PTAwOTRiZjA5ZDYyZGQxNjEzYjU0NGZiNzYxZDE4NDBmYjczNTJhYmYK
-LSBCT09UX0lNQUdFPS9wa2cvbGludXgveDg2XzY0LXJoZWwvZ2NjLTQuOS8wMDk0YmYwOWQ2MmRk
-MTYxM2I1NDRmYjc2MWQxODQwZmI3MzUyYWJmL3ZtbGludXotNC4zLjAtcmMyLXdsLTAyNDA1LWcw
-MDk0YmYwCi0gbWF4X3VwdGltZT0xODAwCi0gUkVTVUxUX1JPT1Q9L3Jlc3VsdC9waWdsaXQvaWd0
-LTAwNS9sa3AtYmR3MDIvZGViaWFuLXg4Nl82NC0yMDE1LTAyLTA3LmNnei94ODZfNjQtcmhlbC9n
-Y2MtNC45LzAwOTRiZjA5ZDYyZGQxNjEzYjU0NGZiNzYxZDE4NDBmYjczNTJhYmYvMAotIExLUF9T
-RVJWRVI9aW5uCi0gfDItCgoKICBlYXJseXByaW50az10dHlTMCwxMTUyMDAgc3lzdGVtZC5sb2df
-bGV2ZWw9ZXJyCiAgZGVidWcgYXBpYz1kZWJ1ZyBzeXNycV9hbHdheXNfZW5hYmxlZCByY3VwZGF0
-ZS5yY3VfY3B1X3N0YWxsX3RpbWVvdXQ9MTAwCiAgcGFuaWM9LTEgc29mdGxvY2t1cF9wYW5pYz0x
-IG5taV93YXRjaGRvZz1wYW5pYyBvb3BzPXBhbmljIGxvYWRfcmFtZGlzaz0yIHByb21wdF9yYW1k
-aXNrPTAKICBjb25zb2xlPXR0eVMwLDExNTIwMCBjb25zb2xlPXR0eTAgdmdhPW5vcm1hbAoKICBy
-dwpsa3BfaW5pdHJkOiAiL2xrcC9sa3AvbGtwLXg4Nl82NC5jZ3oiCm1vZHVsZXNfaW5pdHJkOiAi
-L3BrZy9saW51eC94ODZfNjQtcmhlbC9nY2MtNC45LzAwOTRiZjA5ZDYyZGQxNjEzYjU0NGZiNzYx
-ZDE4NDBmYjczNTJhYmYvbW9kdWxlcy5jZ3oiCmJtX2luaXRyZDogIi9vc2ltYWdlL2RlcHMvZGVi
-aWFuLXg4Nl82NC0yMDE1LTAyLTA3LmNnei9sa3AuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4
-Nl82NC0yMDE1LTAyLTA3LmNnei9ydW4taXBjb25maWcuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFu
-LXg4Nl82NC0yMDE1LTAyLTA3LmNnei9waWdsaXQuY2d6LC9sa3AvYmVuY2htYXJrcy9waWdsaXQu
-Y2d6Igpqb2Jfc3RhdGU6IGZpbmlzaGVkCmxvYWRhdmc6IDEuNTAgMC41NiAwLjIxIDEvMTY2IDMx
-OTkKc3RhcnRfdGltZTogJzE0NDI5NDM1MDQnCmVuZF90aW1lOiAnMTQ0Mjk0MzY4MicKdmVyc2lv
-bjogIi9sa3AvbGtwLy5zcmMtMjAxNTA5MjItMTY0MDMwIgo=
-
---===============6809048507783786525==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-cGlnbGl0IHJ1biBpZ3QgLXQgaWd0L3ByaW1lX3NlbGZfaW1wb3J0L3dpdGhfZmRfZHVwIC90bXAv
-bGtwL3BpZ2xpdC1yZXN1bHRzLTAKcGlnbGl0IHN1bW1hcnkgY29uc29sZSAvdG1wL2xrcC9waWds
-aXQtcmVzdWx0cy0wCnBpZ2xpdCBydW4gaWd0IC10IGlndC9nZW1fcmVsb2NfdnNfZ3B1L25vcm1h
-bCAvdG1wL2xrcC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xpdCBzdW1tYXJ5IGNvbnNvbGUgL3RtcC9s
-a3AvcGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgcnVuIGlndCAtdCBpZ3QvZ2VtX3Jlc2V0X3N0YXRz
-L3BhcmFtcy1jdHgtcmVuZGVyIC90bXAvbGtwL3BpZ2xpdC1yZXN1bHRzLTAKcGlnbGl0IHN1bW1h
-cnkgY29uc29sZSAvdG1wL2xrcC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xpdCBydW4gaWd0IC10IGln
-dC9nZW1fcmVzZXRfc3RhdHMvcmVzZXQtY291bnQtdmVib3ggL3RtcC9sa3AvcGlnbGl0LXJlc3Vs
-dHMtMApwaWdsaXQgc3VtbWFyeSBjb25zb2xlIC90bXAvbGtwL3BpZ2xpdC1yZXN1bHRzLTAKcGln
-bGl0IHJ1biBpZ3QgLXQgaWd0L2dlbV9yZXNldF9zdGF0cy9jbG9zZS1wZW5kaW5nLWN0eC1ic2Qg
-L3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgc3VtbWFyeSBjb25zb2xlIC90bXAvbGtw
-L3BpZ2xpdC1yZXN1bHRzLTAKcGlnbGl0IHJ1biBpZ3QgLXQgaWd0L2dlbV9mZW5jZWRfZXhlY190
-aHJhc2gvbm8tc3BhcmUtZmVuY2VzLWJ1c3kgL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApwaWds
-aXQgc3VtbWFyeSBjb25zb2xlIC90bXAvbGtwL3BpZ2xpdC1yZXN1bHRzLTAKcGlnbGl0IHJ1biBp
-Z3QgLXQgaWd0L2dlbV9yZXNldF9zdGF0cy9jbG9zZS1wZW5kaW5nLWZvcmstdmVib3ggL3RtcC9s
-a3AvcGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgc3VtbWFyeSBjb25zb2xlIC90bXAvbGtwL3BpZ2xp
-dC1yZXN1bHRzLTAKcGlnbGl0IHJ1biBpZ3QgLXQgaWd0L3BtX2xwc3Avbm9uLWVkcCAvdG1wL2xr
-cC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xpdCBzdW1tYXJ5IGNvbnNvbGUgL3RtcC9sa3AvcGlnbGl0
-LXJlc3VsdHMtMApwaWdsaXQgcnVuIGlndCAtdCBpZ3QvZ2VtX3Jlc2V0X3N0YXRzL2Jhbi1jdHgt
-Ymx0IC90bXAvbGtwL3BpZ2xpdC1yZXN1bHRzLTAKcGlnbGl0IHN1bW1hcnkgY29uc29sZSAvdG1w
-L2xrcC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xpdCBydW4gaWd0IC10IGlndC9kcnZfaGFuZ21hbi9l
-cnJvci1zdGF0ZS1jYXB0dXJlLWJsdCAvdG1wL2xrcC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xpdCBz
-dW1tYXJ5IGNvbnNvbGUgL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgcnVuIGlndCAt
-dCBpZ3QvZ2VtX3N0b3JlZHdfYmF0Y2hlc19sb29wL25vcm1hbCAvdG1wL2xrcC9waWdsaXQtcmVz
-dWx0cy0wCnBpZ2xpdCBzdW1tYXJ5IGNvbnNvbGUgL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApw
-aWdsaXQgcnVuIGlndCAtdCBpZ3Qva21zX2ZsaXAvZHBtcy12cy12YmxhbmstcmFjZSAvdG1wL2xr
-cC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xpdCBzdW1tYXJ5IGNvbnNvbGUgL3RtcC9sa3AvcGlnbGl0
-LXJlc3VsdHMtMApwaWdsaXQgcnVuIGlndCAtdCBpZ3QvZ2VtX3BlcnNpc3RlbnRfcmVsb2NzL2Zv
-cmtlZC1pbnRlcnJ1cHRpYmxlLWZhdWx0aW5nLXJlbG9jIC90bXAvbGtwL3BpZ2xpdC1yZXN1bHRz
-LTAKcGlnbGl0IHN1bW1hcnkgY29uc29sZSAvdG1wL2xrcC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xp
-dCBydW4gaWd0IC10IGlndC9nZW1fc3RvcmVkd19sb29wX2JsdCAvdG1wL2xrcC9waWdsaXQtcmVz
-dWx0cy0wCnBpZ2xpdCBzdW1tYXJ5IGNvbnNvbGUgL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApw
-aWdsaXQgcnVuIGlndCAtdCBpZ3QvZ2VtX3Jlc2V0X3N0YXRzL2Jhbi1yZW5kZXIgL3RtcC9sa3Av
-cGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgc3VtbWFyeSBjb25zb2xlIC90bXAvbGtwL3BpZ2xpdC1y
-ZXN1bHRzLTAKcGlnbGl0IHJ1biBpZ3QgLXQgaWd0L2ttc19mbGlwL3Jjcy1mbGlwLXZzLWRwbXMt
-aW50ZXJydXB0aWJsZSAvdG1wL2xrcC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xpdCBzdW1tYXJ5IGNv
-bnNvbGUgL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgcnVuIGlndCAtdCBpZ3Qva21z
-X2ZsaXAvMngtcGxhaW4tZmxpcC10cy1jaGVjayAvdG1wL2xrcC9waWdsaXQtcmVzdWx0cy0wCnBp
-Z2xpdCBzdW1tYXJ5IGNvbnNvbGUgL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgcnVu
-IGlndCAtdCBpZ3QvZ2VtX3VzZXJwdHJfYmxpdHMvZm9ya2VkLXN5bmMtc3dhcHBpbmctbXVsdGlm
-ZC1ub3JtYWwgL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgc3VtbWFyeSBjb25zb2xl
-IC90bXAvbGtwL3BpZ2xpdC1yZXN1bHRzLTAKcGlnbGl0IHJ1biBpZ3QgLXQgaWd0L2ttc19mbGlw
-LzJ4LXZibGFuay12cy1zdXNwZW5kLWludGVycnVwdGlibGUgL3RtcC9sa3AvcGlnbGl0LXJlc3Vs
-dHMtMApwaWdsaXQgc3VtbWFyeSBjb25zb2xlIC90bXAvbGtwL3BpZ2xpdC1yZXN1bHRzLTAKcGln
-bGl0IHJ1biBpZ3QgLXQgaWd0L2dlbV90aWxlZF9ibGl0cy9pbnRlcnJ1cHRpYmxlIC90bXAvbGtw
-L3BpZ2xpdC1yZXN1bHRzLTAKcGlnbGl0IHN1bW1hcnkgY29uc29sZSAvdG1wL2xrcC9waWdsaXQt
-cmVzdWx0cy0wCnBpZ2xpdCBydW4gaWd0IC10IGlndC9rbXNfZmxpcC8yeC1yY3Mtd2ZfdmJsYW5r
-LXZzLW1vZGVzZXQtaW50ZXJydXB0aWJsZSAvdG1wL2xrcC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xp
-dCBzdW1tYXJ5IGNvbnNvbGUgL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgcnVuIGln
-dCAtdCBpZ3QvcHJpbWVfbnZfYXBpL252X2k5MTVfaW1wb3J0X3R3aWNlX2NoZWNrX2ZsaW5rX25h
-bWUgL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMtMApwaWdsaXQgc3VtbWFyeSBjb25zb2xlIC90bXAv
-bGtwL3BpZ2xpdC1yZXN1bHRzLTAKcGlnbGl0IHJ1biBpZ3QgLXQgaWd0L3ByaW1lX252X3Rlc3Qv
-bnZfd3JpdGVfaTkxNV9ndHRfbW1hcF9yZWFkIC90bXAvbGtwL3BpZ2xpdC1yZXN1bHRzLTAKcGln
-bGl0IHN1bW1hcnkgY29uc29sZSAvdG1wL2xrcC9waWdsaXQtcmVzdWx0cy0wCnBpZ2xpdCBydW4g
-aWd0IC10IGlndC9nZW1fcmVzZXRfc3RhdHMvY2xvc2UtcGVuZGluZy1ic2QgL3RtcC9sa3AvcGln
-bGl0LXJlc3VsdHMtMAo=
-
---===============6809048507783786525==--
+--===============7825619227346662904==--
 
