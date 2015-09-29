@@ -1,53 +1,56 @@
-Content-Type: multipart/mixed; boundary="===============2081157869647183713=="
+Content-Type: multipart/mixed; boundary="===============5966671091483902085=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@linux.intel.com>
+From: Jeff Layton <jeff.layton@primarydata.com>
 To: lkp@lists.01.org
-Subject: Re: [net] 192132b9a0: -17.5% netperf.Throughput_tps
-Date: Tue, 29 Sep 2015 16:45:41 +0800
-Message-ID: <87h9mdlikq.fsf@yhuang-dev.intel.com>
-In-Reply-To: <56036A05.8000805@cumulusnetworks.com>
+Subject: Re: [nfsd] 4aac1bf05b: -2.9% fsmark.files_per_sec
+Date: Tue, 29 Sep 2015 07:41:51 -0400
+Message-ID: <20150929074151.0fe32fc9@tlielax.poochiereds.net>
+In-Reply-To: <87h9mfhwcj.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2081157869647183713==
+--===============5966671091483902085==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-David Ahern <dsa@cumulusnetworks.com> writes:
+On Mon, 28 Sep 2015 14:49:32 +0800
+kernel test robot <ying.huang@intel.com> wrote:
 
-> On 9/23/15 6:37 PM, Huang Ying wrote:
->>>
->>> I take it you have CONFIG_NET_VRF enabled. correct?
->>>
->>> With it disabled I see no relevant change in performance between
->>> 8f58336d3f78 and 192132b9a034. Can you confirm?
->>
->> The kconfig file is attached with the mail.  It appears that
->> CONFIG_NET_VRF is disabled.
->>
->
-> Something is not adding up. I anticipate access to a multi-socket numa
-> system in the next few days. Until then a couple of questions:
->
-> 1. do you take patches to run your tests?
+> FYI, we noticed the below changes on
+> =
 
-No.  We checkout your commits and test them.  Without applying any other pa=
-tches.
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> tbox_group/testcase/rootfs/kconfig/compiler/cpufreq_governor/iterations/n=
+r_threads/disk/fs/fs2/filesize/test_size/sync_method/nr_directories/nr_file=
+s_per_directory:
+>   lkp-ne04/fsmark/debian-x86_64-2015-02-07.cgz/x86_64-rhel/gcc-4.9/perfor=
+mance/1x/32t/1HDD/xfs/nfsv4/5K/400M/fsyncBeforeClose/16d/256fpd
+> =
 
-> 2. do you have a wiki/web page with all of the tests run?
+> commit: =
 
-Sorry, we still have no this information now.
+>   cd2d35ff27c4fda9ba73b0aa84313e8e20ce4d2c
+>   4aac1bf05b053a201a4b392dd9a684fb2b7e6103
+> =
 
-> I'd like to
-> know what other networking tests have been run. Only this one was
-> flagged, so I presume it means other tests did not hit the
-> threshold. I would like to know what other tests are run.
 
-For the commit and its parent, we have only tested the benchmark in the
-report email.
+A question...
 
-Best Regards,
-Huang, Ying
+I think my tree should now contain a fix for this, but with a
+performance regression like this it's difficult to know for sure.
 
---===============2081157869647183713==--
+Is there some (automated) way to request that the KTR redo this test?
+If not, will I get a note saying "problem seems to now be fixed" or do
+I just take a lack of further emails from the KTR about this as a sign
+that it's resolved?
+
+Thanks!
+-- =
+
+Jeff Layton <jeff.layton@primarydata.com>
+
+--===============5966671091483902085==--
 
