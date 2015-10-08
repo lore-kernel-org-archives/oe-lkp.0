@@ -1,93 +1,94 @@
-Content-Type: multipart/mixed; boundary="===============2394255500386214899=="
+Content-Type: multipart/mixed; boundary="===============5690095180054540694=="
 MIME-Version: 1.0
-From: Jani Nikula <jani.nikula@intel.com>
+From: Al Stone <al.stone@linaro.org>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] drm/i915: disable CPU PWM also on LPT/SPT backlight disable
-Date: Thu, 08 Oct 2015 16:44:07 +0300
-Message-ID: <87oag979w8.fsf@intel.com>
-In-Reply-To: <87io6tie5w.fsf@intel.com>
+Subject: Re: [ACPI] 7494b07eba: Kernel panic - not syncing: Watchdog detected hard LOCKUP on cpu 0
+Date: Thu, 08 Oct 2015 10:36:40 -0600
+Message-ID: <56169B98.3070105@linaro.org>
+In-Reply-To: <56165701.90402@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2394255500386214899==
+--===============5690095180054540694==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-
-Huang, please try this patch.
-
-BR,
-Jani.
-
-
-On Tue, 29 Sep 2015, Jani Nikula <jani.nikula@intel.com> wrote:
-> Also adding Cc: intel-gfx, please include that in follow-ups.
->
-> Thanks,
-> Jani.
->
-> On Tue, 29 Sep 2015, Jani Nikula <jani.nikula@intel.com> wrote:
->> Although we don't support or enable CPU PWM with LPT/SPT based systems,
->> it may have been enabled prior to loading the driver. Disable the CPU
->> PWM on LPT/SPT backlight disable to avoid warnings on LCPLL disable.
+On 10/08/2015 05:44 AM, Hanjun Guo wrote:
+> On 10/08/2015 11:21 AM, kernel test robot wrote:
+>> FYI, we noticed the below changes on
 >>
->> The issue has been present on BDW since BDW enabling, but was recently
->> introduced on HSW with
+>> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mast=
+er
+>> commit 7494b07ebaae2117629024369365f7be7adc16c3 ("ACPI: add in a
+>> bad_madt_entry() function to eventually replace the macro")
 >>
->> commit 437b15b8017e0d946453c10794b0c5d4591cf180
->> Author: Jani Nikula <jani.nikula@intel.com>
->> Date:   Fri Sep 4 16:55:13 2015 +0300
->>
->>     drm/i915: use pch backlight override on hsw too
->>
->> Reference: http://mid.gmane.org/87y4frhwsn.fsf(a)yhuang-dev.intel.com
->> Reported-by: kernel test robot <ying.huang@intel.com>
->> Signed-off-by: Jani Nikula <jani.nikula@intel.com>
->> ---
->>  drivers/gpu/drm/i915/intel_panel.c | 14 ++++++++++++++
->>  1 file changed, 14 insertions(+)
->>
->> diff --git a/drivers/gpu/drm/i915/intel_panel.c b/drivers/gpu/drm/i915/i=
-ntel_panel.c
->> index dd71e7f139e3..c9c94d05f3dd 100644
->> --- a/drivers/gpu/drm/i915/intel_panel.c
->> +++ b/drivers/gpu/drm/i915/intel_panel.c
->> @@ -731,6 +731,20 @@ static void lpt_disable_backlight(struct intel_conn=
-ector *connector)
->>  =
+>> [    0.000000] ACPI: undefined MADT subtable type for FADT 4.0: 127 (len=
+gth 12)
+> =
 
->>  	intel_panel_actually_set_backlight(connector, 0);
->>  =
+> Seems that the MADT table contains reserved subtable type (0x7F),
+> so this is traded as a wrong type in our patch.
+> =
 
->> +	/*
->> +	 * Although we don't support or enable CPU PWM with LPT/SPT based
->> +	 * systems, it may have been enabled prior to loading the
->> +	 * driver. Disable to avoid warnings on LCPLL disable.
->> +	 *
->> +	 * This needs rework if we need to add support for CPU PWM on PCH split
->> +	 * platforms.
->> +	 */
->> +	tmp =3D I915_READ(BLC_PWM_CPU_CTL2);
->> +	if (tmp & BLM_PWM_ENABLE) {
->> +		DRM_DEBUG_KMS("cpu backlight was enabled, disabling\n");
->> +		I915_WRITE(BLC_PWM_CPU_CTL2, tmp & ~BLM_PWM_ENABLE);
->> +	}
->> +
->>  	tmp =3D I915_READ(BLC_PWM_PCH_CTL1);
->>  	I915_WRITE(BLC_PWM_PCH_CTL1, tmp & ~BLM_PCH_PWM_ENABLE);
->>  }
->> -- =
+>> [    0.000000] ACPI: Error parsing LAPIC address override entry
+> =
 
->> 2.1.4
->>
->
-> -- =
+> This was called by early_acpi_parse_madt_lapic_addr_ovr() in
+> arch/x86/kernel/acpi/boot.c, which is scanning MADT for the first
+> time when booting, so it will fail the boot process when finding
+> the reserved MADT subtable type.
+> =
 
-> Jani Nikula, Intel Open Source Technology Center
+>> [    0.000000] ACPI: Invalid BIOS MADT, disabling ACPI
+> =
+
+> As the spec said in Table 5-46 (ACPI 6.0):
+> =
+
+> 0x10-0x7F Reserved. OSPM skips structures of the reserved type.
+> =
+
+> Should we just ignore those reserved type when scanning the MADT
+> table? In the patch "ACPI: add in a bad_madt_entry() function to
+> eventually replace the macro", we just trade it as wrong, that's
+> why we failed to boot the system.
+> =
+
+> Thanks
+> Hanjun
+
+Arrgh.  This is why people get frustrated with ACPI.  The spec is
+saying that those sub-table types are reserved -- implying they can
+and probably will be used for something else in the future -- but
+then vendors are shipping firmware that uses those reserved values,
+and an OS *expects* them to be used, and there is *no* documentation
+of it other than a kernel workaround.
+
+So yet again, technically this MADT subtable *is* wrong, and someone
+should slap the vendor for doing this.  But, the practical side of
+this is that we now have to workaround what is now a known violation
+of the spec.
+
+The more ACPI allows this kind of nonsense, the less usable it will
+become.
+
+At a minimum, whoever is responsible for this firmware needs to make
+sure the spec reflects what they are doing.  In the meantime, the
+only option is what Hanjun suggests -- make this a warning and not a
+failure.  I'll prepare a patch and attach it to a reply here in a few
+minutes...
+
 
 -- =
 
-Jani Nikula, Intel Open Source Technology Center
+ciao,
+al
+-----------------------------------
+Al Stone
+Software Engineer
+Linaro Enterprise Group
+al.stone(a)linaro.org
+-----------------------------------
 
---===============2394255500386214899==--
+--===============5690095180054540694==--
 
