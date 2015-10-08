@@ -1,77 +1,36 @@
-Content-Type: multipart/mixed; boundary="===============2306063475754029697=="
+Content-Type: multipart/mixed; boundary="===============3451546092322121945=="
 MIME-Version: 1.0
-From: Eric Dumazet <edumazet@google.com>
+From: Geliang Tang <geliangtang@163.com>
 To: lkp@lists.01.org
-Subject: Re: [tcp] ca6fb06518: general protection fault: 0000 [#1] SMP
-Date: Thu, 08 Oct 2015 04:52:18 -0700
-Message-ID: <CANn89iKjNPT+osoyVpLKRMM1Lh=AJ4MMfojM2DmtKLQ9tw+vpA@mail.gmail.com>
-In-Reply-To: <87r3l5x6nd.fsf@yhuang-dev.intel.com>
+Subject: Re: [dm ioctl] e817ef9b89: kernel BUG at mm/slub.c:3517!
+Date: Thu, 08 Oct 2015 05:43:15 -0700
+Message-ID: <20151008124315.GB4279@ubuntu>
+In-Reply-To: <87a8ruxf7f.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2306063475754029697==
+--===============3451546092322121945==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 7, 2015 at 10:37 PM, kernel test robot
-<ying.huang@linux.intel.com> wrote:
+On Thu, Oct 08, 2015 at 10:32:36AM +0800, kernel test robot wrote:
 > FYI, we noticed the below changes on
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> commit ca6fb06518836ef9b65dc0aac02ff97704d52a05 ("tcp: attach SYNACK mess=
-ages to request sockets instead of listener")
->
->
-> +----------------------------------------------------------------+-------=
------+------------+
-> |                                                                | 1b33bc=
-3e9e | ca6fb06518 |
-> +----------------------------------------------------------------+-------=
------+------------+
-> | boot_successes                                                 | 36    =
-     | 11         |
-> | boot_failures                                                  | 0     =
-     | 47         |
-> | general_protection_fault:#[##]SMP                              | 0     =
-     | 17         |
-> | RIP:selinux_ip_postroute_compat                                | 0     =
-     | 47         |
-> | Kernel_panic-not_syncing:Fatal_exception_in_interrupt          | 0     =
-     | 42         |
-> | backtrace:__net_random_once_deferred                           | 0     =
-     | 3          |
-> | BUG:unable_to_handle_kernel                                    | 0     =
-     | 30         |
-> | Oops                                                           | 0     =
-     | 30         |
-> | backtrace:cpu_startup_entry                                    | 0     =
-     | 25         |
-> | backtrace:do_mount                                             | 0     =
-     | 17         |
-> | backtrace:SyS_mount                                            | 0     =
-     | 17         |
-> | backtrace:rpc_clone_client_set_auth                            | 0     =
-     | 9          |
-> | backtrace:nfs_init_server_rpcclient                            | 0     =
-     | 9          |
-> | backtrace:smpboot_thread_fn                                    | 0     =
-     | 3          |
-> | backtrace:nfs4_discover_server_trunking                        | 0     =
-     | 2          |
-> | backtrace:nfs4_init_client                                     | 0     =
-     | 2          |
-> | WARNING:at_arch/x86/kernel/smp.c:#native_smp_send_reschedule() | 0     =
-     | 1          |
-> | backtrace:security_inode_alloc                                 | 0     =
-     | 2          |
-> | backtrace:inode_init_always                                    | 0     =
-     | 2          |
-> +----------------------------------------------------------------+-------=
------+------------+
->
->
+> =
 
-Thanks for the report, I am cooking a fix.
+> https://git.kernel.org/pub/scm/linux/kernel/git/device-mapper/linux-dm.gi=
+t dm-4.4
+> commit e817ef9b89e5bbfdb2a67ca9896909f414b2af91 ("dm ioctl: use kvfree() =
+in free_params()")
+> =
 
---===============2306063475754029697==--
+
+Hi Ying Huang,
+
+Bugfix for this has been sended out.
+https://lkml.org/lkml/2015/10/8/342.
+
+Thanks.
+
+
+--===============3451546092322121945==--
 
