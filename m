@@ -1,95 +1,196 @@
-Content-Type: multipart/mixed; boundary="===============1919895171391122826=="
+Content-Type: multipart/mixed; boundary="===============4096501292677276610=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Dietmar Eggemann <dietmar.eggemann@arm.com>
 To: lkp@lists.01.org
-Subject: Re: [string] 5f6f0801f5: BUG: KASan: out of bounds access in strlcpy+0xc8/0x250 at addr ffff88011a666ee0
-Date: Mon, 12 Oct 2015 16:34:47 +0800
-Message-ID: <20151012083447.GA11437@wfg-t540p.sh.intel.com>
-In-Reply-To: <20151012081714.GB23595@gmail.com>
+Subject: Re: [sched/fair] 98d8fd8126: -20.8% hackbench.throughput
+Date: Mon, 12 Oct 2015 19:43:46 +0100
+Message-ID: <561BFF62.20503@arm.com>
+In-Reply-To: <87si64mv9a.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1919895171391122826==
+--===============4096501292677276610==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 12, 2015 at 10:17:14AM +0200, Ingo Molnar wrote:
+Hi Ying,
+
+On 24/09/15 03:00, kernel test robot wrote:
+> FYI, we noticed the below changes on
 > =
 
-> * Fengguang Wu <fengguang.wu@intel.com> wrote:
+> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+> commit 98d8fd8126676f7ba6e133e65b2ca4b17989d32c ("sched/fair: Initialize =
+task load and utilization before placing task on rq")
 > =
 
-> > On Mon, Oct 12, 2015 at 03:51:04PM +0800, Fengguang Wu wrote:
-> > > On Mon, Oct 12, 2015 at 09:33:55AM +0200, Ingo Molnar wrote:
-> > > > =
-
-> > > > * kernel test robot <ying.huang@linux.intel.com> wrote:
-> > > > =
-
-> > > > > FYI, we noticed the below changes on
-> > > > > =
-
-> > > > > git://internal_mailing_list_patch_tree Ingo-Molnar/string-Improve=
--the-generic-strlcpy-implementation
-> > > > > commit 5f6f0801f5fdfce4984c6a14f99dbfbb417acb66 ("string: Improve=
- the generic strlcpy() implementation")
-> > > > =
-
-> > > > Hm, there's no such commit ID anywhere I can see - did you rebase m=
-y tree perhaps?
-> > > =
-
-> > > Ingo, all applied patches will be uploaded to github from now on.
 > =
 
-> Thanks!
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> tbox_group/testcase/rootfs/kconfig/compiler/nr_threads/mode/ipc:
+>   lkp-ws02/hackbench/debian-x86_64-2015-02-07.cgz/x86_64-rhel/gcc-4.9/160=
+0%/process/pipe
 > =
 
-> You might want to move that to korg instead, because many people don't li=
-ke to =
+> commit: =
 
-> pull from github.
-
-That'd be good, however github would match its security level better
--- it's a robot doing git upload, so the ssh private key must be kept
-in a server where several team members can see it.
-
-> > > Here is the exact commit:
-> > > =
-
-> > > https://github.com/0day-ci/linux/commits/Ingo-Molnar/string-Improve-t=
-he-generic-strlcpy-implementation
-> > =
-
-> > Sorry that's already the rebased commit.. The old version was applied
-> > to 4.3-rc4 while the new one is applied to 4.3-rc5.
+>   231678b768da07d19ab5683a39eeb0c250631d02
+>   98d8fd8126676f7ba6e133e65b2ca4b17989d32c
 > =
 
-> So as long as you have the tested sha1 mentioned in the bug report, and t=
-hat sha1 =
+> 231678b768da07d1 98d8fd8126676f7ba6e133e65b =
 
-> can be pulled from somewhere on korg, I'm a happy camper: in this particu=
-lar case =
+> ---------------- -------------------------- =
 
-> it would have told me whether your testing tree had upstream fix 990486c8=
-af or =
+>          %stddev     %change         %stddev
+>              \          |                \  =
 
-> not.
+>     188818 =C2=B1  1%     -20.8%     149585 =C2=B1  1%  hackbench.through=
+put
+
+[...]
+
 > =
 
-> Rebasing and applying email patches for testing purposes is otherwise per=
-fectly =
+> lkp-ws02: Westmere-EP
+> Memory: 16G
+> =
 
-> OK, as long as the precise Git tree used for testing can be fetched.
+> =
 
-FYI I've just added timestamp to the branch name -- which helps make
-the reported URL consistent and immutable over time.
+> =
 
-You are nice and easy to work with, however it'll have to work well
-with lots of people in all kinds of situations. :)
+> =
 
-Thanks,
-Fengguang
+>                       hackbench.time.involuntary_context_switches
+> =
 
---===============1919895171391122826==--
+>     3e+08 ++------------------------O------------------------------------=
+---+
+>           O  O         O   O     O                                       =
+   |
+>   2.5e+08 ++     O                                                O  O   =
+O  O
+>           |         O                   O     O      O                   =
+   |
+>           |                   O                   O     O   O            =
+   |
+>     2e+08 ++                               O                             =
+   |
+>           |                                                    O         =
+   |
+>   1.5e+08 ++                                                             =
+   |
+>           |                                                              =
+   |
+>     1e+08 ++                                                             =
+   |
+>           |                                  .*...*..*..*...*..*         =
+   |
+>           *..*...*..*..*...*..  .*..  ..*..*.                            =
+   |
+>     5e+07 ++                  *.    *.                                   =
+   |
+>           |                                                              =
+   |
+>         0 ++-------------------------------------------------------------=
+---+
+> =
+
+>                                   vmstat.system.in
+> =
+
+>   300000 ++--------------------------------------------------------------=
+---+
+>          |                O     O   O                                    =
+   |
+>          O            O      O                                       O   =
+O  |
+>   250000 ++ O   O                                                 O      =
+   O
+>          |         O                                                     =
+   |
+>          |                             O      O  O   O  O  O             =
+   |
+>   200000 ++                                O                   O         =
+   |
+>          |                                                               =
+   |
+>   150000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>          |                                                               =
+   |
+>   100000 ++                                                              =
+   |
+>          |           .*...                   .*..*...*..*..*...*         =
+   |
+>          *..*...*..*.     *..  .*...  .*...*.                            =
+   |
+>    50000 ++------------------*------*------------------------------------=
+---+
+> =
+
+> 	[*] bisect-good sample
+> 	[O] bisect-bad  sample
+> =
+
+> To reproduce:
+> =
+
+>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-t=
+ests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+
+I try to recreate this on one of my Intel machines (Xeon CPU E5-2650 v2
+@ 2.60GHz) w/ 16 logical cpus. We haven't seen anything near a 20%
+performance degradation for hackbench when we were running our hackbench
+tests on 5/6 core arm machines as well as on a IVB-EP (2*10*2) Intel
+machine.
+
+So I cloned the repo:
+
+# git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg
+/lkp-tests.git lkp-tests
+
+and ran the hackbench example:
+
+root # lkp install $LKP_SRC/jobs/hackbench.yaml
+
+root # lkp split-job $LKP_SRC/jobs/hackbench.yaml
+
+root # lkp run ./hackbench-50%-threads-socket.yaml
+
+2015-10-12 19:27:20 /usr/bin/hackbench -g 8 --threads -l 60000
+Running in threaded mode with 8 groups using 40 file descriptors each
+(=3D=3D 320 tasks)
+Each sender will pass 60000 messages of 100 bytes
+...
+wait for background monitors: perf-profile uptime proc-vmstat proc-stat
+meminfo slabinfo interrupts softirqs diskstats cpuidle turbostat sched_debug
+
+root # lkp result hackbench
+
+/result/hackbench/50%-threads-socket-50/$MACHINE/ubuntu/defconfig/gcc-4.8/3=
+.16.0-50-generic/0/
+
+But I can't get any statistics out of it?
+
+root # lkp stat hackbench
+runs sum average stddev% case
+
+Thanks for your help in advance!
+
+-- Dietmar
+
+[...]
+
+
+--===============4096501292677276610==--
 
