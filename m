@@ -1,57 +1,95 @@
-Content-Type: multipart/mixed; boundary="===============5449817349268780749=="
+Content-Type: multipart/mixed; boundary="===============1919895171391122826=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [string] 5f6f0801f5: BUG: KASan: out of bounds access in strlcpy+0xc8/0x250 at addr ffff88011a666ee0
-Date: Mon, 12 Oct 2015 16:19:46 +0800
-Message-ID: <20151012081946.GA11277@wfg-t540p.sh.intel.com>
-In-Reply-To: <20151012075832.GA8083@wfg-t540p.sh.intel.com>
+Date: Mon, 12 Oct 2015 16:34:47 +0800
+Message-ID: <20151012083447.GA11437@wfg-t540p.sh.intel.com>
+In-Reply-To: <20151012081714.GB23595@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5449817349268780749==
+--===============1919895171391122826==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 12, 2015 at 03:58:32PM +0800, Fengguang Wu wrote:
-> On Mon, Oct 12, 2015 at 03:51:04PM +0800, Fengguang Wu wrote:
-> > On Mon, Oct 12, 2015 at 09:33:55AM +0200, Ingo Molnar wrote:
-> > > =
-
-> > > * kernel test robot <ying.huang@linux.intel.com> wrote:
-> > > =
-
-> > > > FYI, we noticed the below changes on
-> > > > =
-
-> > > > git://internal_mailing_list_patch_tree Ingo-Molnar/string-Improve-t=
-he-generic-strlcpy-implementation
-> > > > commit 5f6f0801f5fdfce4984c6a14f99dbfbb417acb66 ("string: Improve t=
-he generic strlcpy() implementation")
-> > > =
-
-> > > Hm, there's no such commit ID anywhere I can see - did you rebase my =
-tree perhaps?
-> > =
-
-> > Ingo, all applied patches will be uploaded to github from now on.
-> > =
-
-> > Here is the exact commit:
-> > =
-
-> > https://github.com/0day-ci/linux/commits/Ingo-Molnar/string-Improve-the=
--generic-strlcpy-implementation
+On Mon, Oct 12, 2015 at 10:17:14AM +0200, Ingo Molnar wrote:
 > =
 
-> Sorry that's already the rebased commit.. The old version was applied
-> to 4.3-rc4 while the new one is applied to 4.3-rc5.
+> * Fengguang Wu <fengguang.wu@intel.com> wrote:
+> =
 
-I'll append a time stamp to the branch name to avoid such confusions in fut=
-ure.
+> > On Mon, Oct 12, 2015 at 03:51:04PM +0800, Fengguang Wu wrote:
+> > > On Mon, Oct 12, 2015 at 09:33:55AM +0200, Ingo Molnar wrote:
+> > > > =
+
+> > > > * kernel test robot <ying.huang@linux.intel.com> wrote:
+> > > > =
+
+> > > > > FYI, we noticed the below changes on
+> > > > > =
+
+> > > > > git://internal_mailing_list_patch_tree Ingo-Molnar/string-Improve=
+-the-generic-strlcpy-implementation
+> > > > > commit 5f6f0801f5fdfce4984c6a14f99dbfbb417acb66 ("string: Improve=
+ the generic strlcpy() implementation")
+> > > > =
+
+> > > > Hm, there's no such commit ID anywhere I can see - did you rebase m=
+y tree perhaps?
+> > > =
+
+> > > Ingo, all applied patches will be uploaded to github from now on.
+> =
+
+> Thanks!
+> =
+
+> You might want to move that to korg instead, because many people don't li=
+ke to =
+
+> pull from github.
+
+That'd be good, however github would match its security level better
+-- it's a robot doing git upload, so the ssh private key must be kept
+in a server where several team members can see it.
+
+> > > Here is the exact commit:
+> > > =
+
+> > > https://github.com/0day-ci/linux/commits/Ingo-Molnar/string-Improve-t=
+he-generic-strlcpy-implementation
+> > =
+
+> > Sorry that's already the rebased commit.. The old version was applied
+> > to 4.3-rc4 while the new one is applied to 4.3-rc5.
+> =
+
+> So as long as you have the tested sha1 mentioned in the bug report, and t=
+hat sha1 =
+
+> can be pulled from somewhere on korg, I'm a happy camper: in this particu=
+lar case =
+
+> it would have told me whether your testing tree had upstream fix 990486c8=
+af or =
+
+> not.
+> =
+
+> Rebasing and applying email patches for testing purposes is otherwise per=
+fectly =
+
+> OK, as long as the precise Git tree used for testing can be fetched.
+
+FYI I've just added timestamp to the branch name -- which helps make
+the reported URL consistent and immutable over time.
+
+You are nice and easy to work with, however it'll have to work well
+with lots of people in all kinds of situations. :)
 
 Thanks,
 Fengguang
 
---===============5449817349268780749==--
+--===============1919895171391122826==--
 
