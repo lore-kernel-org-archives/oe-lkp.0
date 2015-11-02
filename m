@@ -1,26 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============6071223236002782593=="
+Content-Type: multipart/mixed; boundary="===============3316749781164262915=="
 MIME-Version: 1.0
-From: Dmitry Vyukov <dvyukov@google.com>
+From: Andrey Ryabinin <ryabinin.a.a@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [fs] df4c0e36f1: NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [swapper/0:1]
-Date: Mon, 02 Nov 2015 10:17:20 +0100
-Message-ID: <CACT4Y+ZeGw5+s=WqsTPs7ay4PDQDt33f7fVS2q6_KjP23gzFbQ@mail.gmail.com>
+Date: Mon, 02 Nov 2015 12:32:55 +0300
+Message-ID: <CAPAsAGwVYSgXm0Rgbtim-5iFxhWaakc1emXQALKwYLm36OoVsw@mail.gmail.com>
 In-Reply-To: <87611kakr3.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6071223236002782593==
+--===============3316749781164262915==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Ying,
-
-Does testing happen with CONFIG_KASAN=3Dy? If not, this is probably a
-flake caused by something else.
-
-
-On Mon, Nov 2, 2015 at 9:06 AM, kernel test robot
-<ying.huang@linux.intel.com> wrote:
+2015-11-02 11:06 GMT+03:00 kernel test robot <ying.huang@linux.intel.com>:
 > FYI, we noticed the below changes on
 >
 > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
@@ -31,6 +24,33 @@ poison dname after allocation to shut up kasan's reports")
 > The commit fixed a KASan bug, but introduced or revealed a soft lockup
 > issue as follow.
 >
+
+I think that this issue is caused by several factors.
+ 1. Non-preempt kernel + heavy debug options (CONFIG_PREEMPT=3Dn
+CONFIG_GCOV_PROFILE_ALL=3Dy CONFIG_KASAN=3Dy)
+ 2. I suspect that your host is overloaded, thus KVM guest runs too slow.
+
+And the major factor here is number 2.
+
+In your dmesg:
+[   67.891156] rbtree testing -> 570841 cycles
+[   88.609636] augmented rbtree testing
+[  116.546697] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s!
+[swapper/0:1]
+
+
+I've tried to reproduce this, and got this:
+[    0.693574] rbtree testing -> 15513 cycles
+570841/15513 =3D 36x times faster.
+
+[    1.159450] augmented rbtree testing -> 23675 cycles
+[    1.864996]
+It took less than a second, meanwhile in your case it didn't finish in
+22 seconds.
+
+This makes me think that your host is overloaded and the problem is on
+your side.
+
 >
 > [  116.546697] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [swa=
 pper/0:1]
@@ -128,5 +148,5 @@ ge: 0xffffffff80000000-0xffffffff9fffffff)
 > Thanks,
 > Ying Huang
 
---===============6071223236002782593==--
+--===============3316749781164262915==--
 
