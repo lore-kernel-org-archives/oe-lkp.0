@@ -1,39 +1,68 @@
-Content-Type: multipart/mixed; boundary="===============4375641296280634874=="
+Content-Type: multipart/mixed; boundary="===============4605083478625598061=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Joerg Roedel <jroedel@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [mm, page_alloc] 43993977ba: +88% OOM possibility
-Date: Mon, 02 Nov 2015 10:53:35 +0100
-Message-ID: <20151102095334.GE630@dhcp22.suse.cz>
-In-Reply-To: <87twp4232k.fsf@yhuang-dev.intel.com>
+Subject: [PATCH] iommu/vt-d: Fix return value check of parse_ioapics_under_ir()
+Date: Mon, 02 Nov 2015 20:00:14 +0900
+Message-ID: <20151102110014.GC2704@suse.de>
+In-Reply-To: <87h9l494nd.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4375641296280634874==
+--===============4605083478625598061==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 02-11-15 16:55:15, Huang, Ying wrote:
-> Michal Hocko <mhocko@kernel.org> writes:
-[...]
-> > It would be interesting to see all the page allocation failure warnings
-> > (if they are different). Maybe other callers have relied on GFP_ATOMIC
-> > and access to memory reserves. The above path is not this case though.
+On Mon, Nov 02, 2015 at 04:39:18PM +0800, kernel test robot wrote:
+> FYI, we noticed the below changes on
 > =
 
-> I take a look at all dmesgs, and found the backtrace for page allocation
-> failure is same for all.  Is it possible that this commit cause more
-> memory were allocated or kept in memory so that more OOM were triggered?
+> https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git x86/vt-d
+> commit a13c8f27e4d79420ae7bcb48123fa13851026428 ("iommu/vt-d: Adjust the =
+return value of the parse_ioapics_under_ir")
+> =
 
-I can imagine that some of the callers were not converted properly or
-missed and a lack of __GFP_KSWAPD_RECLAIM could indeed cause a later
-kswapd kick off. I am staring into the commit but nothing has jumped at
-me yet. Could you collect /proc/vmstat (snapshot every 1s) on both good
-and bad kernels. I expect the later would see a less scanning by kswapd.
+> We found the following new message in kernel log.
+> =
+
+> [    0.126325] DMAR-IR: Failed to enable irq remapping. You are vulnerabl=
+e to irq-injection attacks.
+
+Thanks for the report, I just queued the fix below.
+
+>From b61e5e80e3cd37f0183cdc04b03861a0467d9f52 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Mon, 2 Nov 2015 19:57:31 +0900
+Subject: [PATCH] iommu/vt-d: Fix return value check of parse_ioapics_under_=
+ir()
+
+The function returns 0 on success, so check for the right
+value.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/intel_irq_remapping.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_=
+remapping.c
+index f3a9bd1..1fae188 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -690,7 +690,7 @@ static int __init intel_prepare_irq_remapping(void)
+ 	if (!dmar_ir_support())
+ 		return -ENODEV;
+ =
+
+-	if (!parse_ioapics_under_ir()) {
++	if (parse_ioapics_under_ir()) {
+ 		pr_info("Not enabling interrupt remapping\n");
+ 		goto error;
+ 	}
 -- =
 
-Michal Hocko
-SUSE Labs
+1.8.4.5
 
---===============4375641296280634874==--
+
+--===============4605083478625598061==--
 
