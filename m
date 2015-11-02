@@ -1,67 +1,47 @@
-Content-Type: multipart/mixed; boundary="===============0124981752365317048=="
+Content-Type: multipart/mixed; boundary="===============0839309334739623988=="
 MIME-Version: 1.0
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Dave Hansen <dave.hansen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/context_tracking] db23da8b95: inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
-Date: Mon, 02 Nov 2015 13:19:20 +0100
-Message-ID: <563754C8.5060202@redhat.com>
-In-Reply-To: <20151102121154.GB8833@wfg-t540p.sh.intel.com>
+Subject: Re: [fs] df4c0e36f1: NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [swapper/0:1]
+Date: Mon, 02 Nov 2015 09:39:42 -0800
+Message-ID: <56379FDE.6010603@intel.com>
+In-Reply-To: <CAPAsAGwVYSgXm0Rgbtim-5iFxhWaakc1emXQALKwYLm36OoVsw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0124981752365317048==
+--===============0839309334739623988==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Fengguang,
-
-this patch is not ready, and is left for 4.5; see Andy's comment at
-http://permalink.gmane.org/gmane.linux.kernel/2072877.  Only the other
-two are.
-
-I'm sorry for the inconvenience.
-
-Thanks,
-
-Paolo
-
-On 02/11/2015 13:11, Fengguang Wu wrote:
-> Hi Paolo,
+On 11/02/2015 01:32 AM, Andrey Ryabinin wrote:
+> And the major factor here is number 2.
 > =
 
-> FYI, here is another bisect result.
+> In your dmesg:
+> [   67.891156] rbtree testing -> 570841 cycles
+> [   88.609636] augmented rbtree testing
+> [  116.546697] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s!
+> [swapper/0:1]
 > =
 
-> https://github.com/0day-ci/linux Paolo-Bonzini/context_tracking-remove-du=
-plicate-enabled-check/20151028-094317
 > =
 
-> commit db23da8b95ece9b57d4cfd63f5ee10502f1af0c8
-> Author:     Paolo Bonzini <pbonzini@redhat.com>
-> AuthorDate: Wed Oct 28 02:39:57 2015 +0100
-> Commit:     0day robot <fengguang.wu@intel.com>
-> CommitDate: Wed Oct 28 09:43:20 2015 +0800
+> I've tried to reproduce this, and got this:
+> [    0.693574] rbtree testing -> 15513 cycles
+> 570841/15513 =3D 36x times faster.
 > =
 
->     x86: context_tracking: avoid irq_save/irq_restore on kernel entry and=
- exit
->     =
+> [    1.159450] augmented rbtree testing -> 23675 cycles
+> [    1.864996]
+> It took less than a second, meanwhile in your case it didn't finish in
+> 22 seconds.
+> =
 
->     x86 always calls user_enter and user_exit with interrupt disabled.
->     Therefore, it is not necessary to check for exceptions, nor to
->     save/restore the IRQ state, when context tracking functions are
->     called by guest_enter and guest_exit.
->     =
+> This makes me think that your host is overloaded and the problem is on
+> your side.
 
->     Use the previously introduced __context_tracking_entry and
->     __context_tracking_exit.
->     =
+It's probably just a matter of putting some cond_resched()s in the test
+code.
 
->     Cc: Andy Lutomirski <luto@kernel.org>
->     Cc: Frederic Weisbecker <fweisbec@gmail.com>
->     Cc: Rik van Riel <riel@redhat.com>
->     Cc: Paul McKenney <paulmck@linux.vnet.ibm.com>
->     Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-
---===============0124981752365317048==--
+--===============0839309334739623988==--
 
