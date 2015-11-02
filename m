@@ -1,60 +1,84 @@
-Content-Type: multipart/mixed; boundary="===============7227877372951594758=="
+Content-Type: multipart/mixed; boundary="===============6726534406071272155=="
 MIME-Version: 1.0
-From: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [fs] df4c0e36f1: NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [swapper/0:1]
-Date: Tue, 03 Nov 2015 00:29:36 +0300
-Message-ID: <CAPAsAGxTv8dhaFF2KPJEq99THi874+kET1FNWoTUAh8FyYqD6A@mail.gmail.com>
-In-Reply-To: <5637C288.9070508@intel.com>
+Subject: Re: [x86/context_tracking] db23da8b95: inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
+Date: Mon, 02 Nov 2015 20:25:47 +0800
+Message-ID: <20151102122547.GA11302@wfg-t540p.sh.intel.com>
+In-Reply-To: <563754C8.5060202@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7227877372951594758==
+--===============6726534406071272155==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-2015-11-02 23:07 GMT+03:00 Dave Hansen <dave.hansen@intel.com>:
-> On 11/02/2015 11:34 AM, Andrey Ryabinin wrote:
->>>> >>
->>>> >> [    1.159450] augmented rbtree testing -> 23675 cycles
->>>> >> [    1.864996]
->>>> >> It took less than a second, meanwhile in your case it didn't finish=
- in
->>>> >> 22 seconds.
->>>> >>
->>>> >> This makes me think that your host is overloaded and the problem is=
- on
->>>> >> your side.
->>> >
->>> > It's probably just a matter of putting some cond_resched()s in the te=
-st
->>> > code.
->> Yes, but is it worthwhile? It's very likely that lockup will just
->> trigger in another place.
->
-> I'm guessing that the lockup here was because the tests were running for
-> too long.  If we cond_resched() in there often enough, the kernel won't
-> detect a softlockup at all.
+Hi Paolo,
 
-Sure, but why are these tests running so long?
-In my setup it takes less than a second to finish these tests.
-On the same kernel version and config of course. Although I might have more
-powerful hardware it doesn't explain such huge difference.
-So these tests are actually fast tests. I guess that  the host is
-overloaded and KVM guest runs
-so slow that even these simple tests start triggering softlockup.
+Never mind, it just takes 2 minutes for me. :)
 
-> It won't shift somewhere else.
+Thanks,
+Fengguang
 
-That's not what I mean. Sure, the cond_resched() in rbtree_test_init()
-will fix this particular softlockup.
-But if even such normally fast tests now are running too long, then a
-lot of other kernel code, which normally
-runs fast, likely becomes too slow on Ying's setup and will trigger
-another softlockup.
-rbtree_test_init() is just the first such place.
-In that case, sticking cond_resched()s across the whole kernel is not
-a solution.
+On Mon, Nov 02, 2015 at 01:19:20PM +0100, Paolo Bonzini wrote:
+> Hi Fengguang,
+> =
 
---===============7227877372951594758==--
+> this patch is not ready, and is left for 4.5; see Andy's comment at
+> http://permalink.gmane.org/gmane.linux.kernel/2072877.  Only the other
+> two are.
+> =
+
+> I'm sorry for the inconvenience.
+> =
+
+> Thanks,
+> =
+
+> Paolo
+> =
+
+> On 02/11/2015 13:11, Fengguang Wu wrote:
+> > Hi Paolo,
+> > =
+
+> > FYI, here is another bisect result.
+> > =
+
+> > https://github.com/0day-ci/linux Paolo-Bonzini/context_tracking-remove-=
+duplicate-enabled-check/20151028-094317
+> > =
+
+> > commit db23da8b95ece9b57d4cfd63f5ee10502f1af0c8
+> > Author:     Paolo Bonzini <pbonzini@redhat.com>
+> > AuthorDate: Wed Oct 28 02:39:57 2015 +0100
+> > Commit:     0day robot <fengguang.wu@intel.com>
+> > CommitDate: Wed Oct 28 09:43:20 2015 +0800
+> > =
+
+> >     x86: context_tracking: avoid irq_save/irq_restore on kernel entry a=
+nd exit
+> >     =
+
+> >     x86 always calls user_enter and user_exit with interrupt disabled.
+> >     Therefore, it is not necessary to check for exceptions, nor to
+> >     save/restore the IRQ state, when context tracking functions are
+> >     called by guest_enter and guest_exit.
+> >     =
+
+> >     Use the previously introduced __context_tracking_entry and
+> >     __context_tracking_exit.
+> >     =
+
+> >     Cc: Andy Lutomirski <luto@kernel.org>
+> >     Cc: Frederic Weisbecker <fweisbec@gmail.com>
+> >     Cc: Rik van Riel <riel@redhat.com>
+> >     Cc: Paul McKenney <paulmck@linux.vnet.ibm.com>
+> >     Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
+
+--===============6726534406071272155==--
 
