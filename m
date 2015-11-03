@@ -1,84 +1,86 @@
-Content-Type: multipart/mixed; boundary="===============6726534406071272155=="
+Content-Type: multipart/mixed; boundary="===============5494919115223826433=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [x86/context_tracking] db23da8b95: inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
-Date: Mon, 02 Nov 2015 20:25:47 +0800
-Message-ID: <20151102122547.GA11302@wfg-t540p.sh.intel.com>
-In-Reply-To: <563754C8.5060202@redhat.com>
+Subject: Re: [x86/setup] f5f3497cad: BUG: kernel boot crashed
+Date: Tue, 03 Nov 2015 09:07:34 +0100
+Message-ID: <20151103080734.GA20008@gmail.com>
+In-Reply-To: <20151102162551.GB2331@codeblueprint.co.uk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6726534406071272155==
+--===============5494919115223826433==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Paolo,
 
-Never mind, it just takes 2 minutes for me. :)
+* Matt Fleming <matt@codeblueprint.co.uk> wrote:
+
+> On Wed, 28 Oct, at 01:41:51PM, kernel test robot wrote:
+> > FYI, we noticed the below changes on
+> > =
+
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git mast=
+er
+> > commit f5f3497cad8c8416a74b9aaceb127908755d020a ("x86/setup: Extend low=
+ identity map to cover whole kernel range")
+> > =
+
+> > =
+
+> > +------------------------------------------------+------------+--------=
+----+
+> > |                                                | 8a53554e12 | f5f3497=
+cad |
+> > +------------------------------------------------+------------+--------=
+----+
+> > | boot_successes                                 | 19         | 10     =
+    |
+> > | boot_failures                                  | 2          | 9      =
+    |
+> > | IP-Config:Auto-configuration_of_network_failed | 2          | 2      =
+    |
+> > | BUG:kernel_boot_crashed                        | 0          | 7      =
+    |
+> > +------------------------------------------------+------------+--------=
+----+
+> > =
+
+> > =
+
+> > [    0.053410] smpboot: CPU0: GenuineIntel GenuineIntel QEMU Virtual CP=
+U version 2.4.0QEMU Virtual CPU version 2.4.0 (family: 0x6, model: 0x6 (fam=
+ily: 0x6, model: 0x6, stepping: 0x3)
+> > , stepping: 0x3)
+> > [    0.056666] Performance Events: =
+
+> > [    0.056666] Performance Events: no PMU driver, software events only.
+> > no PMU driver, software events only.
+> > [    0.060520] CPU 1 irqstacks, hard=3D8a832000 soft=3D8a834000
+> > [    0.060520] CPU 1 irqstacks, hard=3D8a832000 soft=3D8a834000
+> > [    0.061605] x86: Booting SMP configuration:
+> > [    0.061605] x86: Booting SMP configuration:
+> > [    0.062445] .... node  #0, CPUs:  =
+
+> > [    0.062445] .... node  #0, CPUs:         #1 #1
+> > Elapsed time: 10
+> > BUG: kernel boot crashed
+> =
+
+> Yikes! Yeah, I can reproduce this. It appears the STARTUP IPI code is
+> triggering this crash in wakeup_secondary_cpu_via_init().
+> =
+
+> I'll take a look unless anyone else has any bright ideas?
+
+Unfortunately this commit is now part of the v4.3 kernel, so we need a quic=
+k =
+
+solution or a quick revert.
 
 Thanks,
-Fengguang
 
-On Mon, Nov 02, 2015 at 01:19:20PM +0100, Paolo Bonzini wrote:
-> Hi Fengguang,
-> =
+	Ingo
 
-> this patch is not ready, and is left for 4.5; see Andy's comment at
-> http://permalink.gmane.org/gmane.linux.kernel/2072877.  Only the other
-> two are.
-> =
-
-> I'm sorry for the inconvenience.
-> =
-
-> Thanks,
-> =
-
-> Paolo
-> =
-
-> On 02/11/2015 13:11, Fengguang Wu wrote:
-> > Hi Paolo,
-> > =
-
-> > FYI, here is another bisect result.
-> > =
-
-> > https://github.com/0day-ci/linux Paolo-Bonzini/context_tracking-remove-=
-duplicate-enabled-check/20151028-094317
-> > =
-
-> > commit db23da8b95ece9b57d4cfd63f5ee10502f1af0c8
-> > Author:     Paolo Bonzini <pbonzini@redhat.com>
-> > AuthorDate: Wed Oct 28 02:39:57 2015 +0100
-> > Commit:     0day robot <fengguang.wu@intel.com>
-> > CommitDate: Wed Oct 28 09:43:20 2015 +0800
-> > =
-
-> >     x86: context_tracking: avoid irq_save/irq_restore on kernel entry a=
-nd exit
-> >     =
-
-> >     x86 always calls user_enter and user_exit with interrupt disabled.
-> >     Therefore, it is not necessary to check for exceptions, nor to
-> >     save/restore the IRQ state, when context tracking functions are
-> >     called by guest_enter and guest_exit.
-> >     =
-
-> >     Use the previously introduced __context_tracking_entry and
-> >     __context_tracking_exit.
-> >     =
-
-> >     Cc: Andy Lutomirski <luto@kernel.org>
-> >     Cc: Frederic Weisbecker <fweisbec@gmail.com>
-> >     Cc: Rik van Riel <riel@redhat.com>
-> >     Cc: Paul McKenney <paulmck@linux.vnet.ibm.com>
-> >     Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> _______________________________________________
-> LKP mailing list
-> LKP(a)lists.01.org
-> https://lists.01.org/mailman/listinfo/lkp
-
---===============6726534406071272155==--
+--===============5494919115223826433==--
 
