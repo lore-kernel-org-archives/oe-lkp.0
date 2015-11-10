@@ -1,47 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============3394839355813942536=="
+Content-Type: multipart/mixed; boundary="===============7572215852401199605=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@linux.intel.com>
+From: Wanpeng Li <wanpeng.li@hotmail.com>
 To: lkp@lists.01.org
-Subject: Re: [mm, page_alloc] d0164adc89: -100.0% fsmark.app_overhead
-Date: Fri, 27 Nov 2015 09:14:52 +0800
-Message-ID: <87oaegmeer.fsf@yhuang-dev.intel.com>
-In-Reply-To: <20151126132511.GG14880@techsingularity.net>
+Subject: Re: [KVM] 0c32e5dd82: stderr: KVM: entry failed, hardware error 0x80000021
+Date: Tue, 10 Nov 2015 13:22:04 +0800
+Message-ID: <BLU436-SMTP1470E0609C9AAB5FE767A3080140@phx.gbl>
+In-Reply-To: <87k2pqd3rz.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3394839355813942536==
+--===============7572215852401199605==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Mel,
-
-Mel Gorman <mgorman@techsingularity.net> writes:
-
-> On Thu, Nov 26, 2015 at 08:56:12AM +0800, kernel test robot wrote:
->> FYI, we noticed the below changes on
->> =
-
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->> commit d0164adc89f6bb374d304ffcc375c6d2652fe67d ("mm, page_alloc:
->> distinguish between being unable to sleep, unwilling to sleep and
->> avoiding waking kswapd")
->> =
-
->> Note: the testing machine is a virtual machine with only 1G memory.
->> =
-
+On 11/10/15 9:47 AM, kernel test robot wrote:
+> FYI, we noticed the below changes on
 >
-> I'm not actually seeing any problem here. Is this a positive report or
-> am I missing something obvious?
+> https://github.com/0day-ci/linux Wanpeng-Li/KVM-x86-Reset-RFLAGS-state-fo=
+llowing-processor-init-reset/20151103-194355
+> commit 0c32e5dd82fd0e63fd9e6aecf5a4bffbdf2ab207 ("KVM: x86: Reset RFLAGS =
+state following processor init/reset")
+>
+> The stderr of kvm-unit-tests is as follow for your commit.
 
-Sorry the email subject is generated automatically and I forget to
-change it to some meaningful stuff before sending out.  From the testing
-result, we found the commit make the OOM possibility increased from 0%
-to 100% on this machine with small memory.  I also added proc-vmstat
-information data too to help diagnose it.
+Thanks for the report, however, I don't think maintainer pick this patch =
 
-Best Regards,
-Huang, Ying
+in any tree currently, which tree you are testing against?
 
---===============3394839355813942536==--
+Regards,
+Wanpeng Li
+
+--===============7572215852401199605==--
 
