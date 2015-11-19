@@ -1,86 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============1157070241452170768=="
+Content-Type: multipart/mixed; boundary="===============7984445879595442870=="
 MIME-Version: 1.0
-From: Vlastimil Babka <vbabka@suse.cz>
+From: Andi Kleen <ak@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: hugepage compaction causes performance drop
-Date: Thu, 19 Nov 2015 14:29:10 +0100
-Message-ID: <564DCEA6.3000802@suse.cz>
-In-Reply-To: <20151119092920.GA11806@aaronlu.sh.intel.com>
+Subject: Re: [x86, perf] 7aba70e47c: BUG: unable to handle kernel paging request at 696d2f62
+Date: Thu, 19 Nov 2015 11:18:03 -0800
+Message-ID: <20151119191803.GB8802@tassilo.jf.intel.com>
+In-Reply-To: <20151118162742.GH3816@twins.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1157070241452170768==
+--===============7984445879595442870==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-+CC Andrea, David, Joonsoo
+On Wed, Nov 18, 2015 at 05:27:42PM +0100, Peter Zijlstra wrote:
+> On Wed, Nov 18, 2015 at 02:33:00PM +0800, kernel test robot wrote:
+> > FYI, we noticed the below changes on
+> > =
 
-On 11/19/2015 10:29 AM, Aaron Lu wrote:
-> Hi,
->
-> One vm related test case run by LKP on a Haswell EP with 128GiB memory
-> showed that compaction code would cause performance drop about 30%. To
-> illustrate the problem, I've simplified the test with a program called
-> usemem(see attached). The test goes like this:
-> 1 Boot up the server;
-> 2 modprobe scsi_debug(a module that could use memory as SCSI device),
->    dev_size set to 4/5 free memory, i.e. about 100GiB. Use it as swap.
-> 3 run the usemem test, which use mmap to map a MAP_PRIVATE | MAP_ANON
->    region with the size set to 3/4 of (remaining_free_memory + swap), and
->    then write to that region sequentially to trigger page fault and swap
->    out.
->
-> The above test runs with two configs regarding the below two sysfs files:
-> /sys/kernel/mm/transparent_hugepage/enabled
-> /sys/kernel/mm/transparent_hugepage/defrag
-> 1 transparent hugepage and defrag are both set to always, let's call it
->    always-always case;
-> 2 transparent hugepage is set to always while defrag is set to never,
->    let's call it always-never case.
->
-> The output from the always-always case is:
-> Setting up swapspace version 1, size =3D 104627196 KiB
-> no label, UUID=3Daafa53ae-af9e-46c9-acb9-8b3d4f57f610
-> cmdline: /lkp/aaron/src/bin/usemem 99994672128
-> 99994672128 transferred in 95 seconds, throughput: 1003 MB/s
->
-> And the output from the always-never case is:
-> etting up swapspace version 1, size =3D 104629244 KiB
-> no label, UUID=3D60563c82-d1c6-4d86-b9fa-b52f208097e9
-> cmdline: /lkp/aaron/src/bin/usemem 99995965440
-> 99995965440 transferred in 67 seconds, throughput: 1423 MB/s
+> > https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/c=
+ore
+> > commit 7aba70e47ca4e961acb5af96d5127e3fad651c7c ("x86, perf: Optimize s=
+tack walk user accesses")
+> =
 
-So yeah this is an example of workload that has no benefit from THP's, =
+> Of course, that commit no longer exists. I re-create the tree every time
+> I push it, this means that if you report something a few days later, its
+> highly likely its against non-existant commits :/
+> =
 
-but pays all the cost. Fixing that is non-trivial and I admit I haven't =
+> > [   21.984049] BUG: unable to handle kernel paging request at 696d2f62
+> > [   21.986759] IP: [<4110c023>] perf_prepare_sample+0xcc/0x51d
+> > [   21.987859] *pdpt =3D 0000000001a93001 *pde =3D 0000000000000000 =
 
-pushed my prior efforts there too much lately...
-But it's also possible there still are actual compaction bugs making the =
+> > [   21.988015] Oops: 0000 [#1] PREEMPT =
 
-issue worse.
+> > [   21.988015] Modules linked in:
+> > [   21.988015] CPU: 0 PID: 496 Comm: trinity-main Not tainted 4.3.0-011=
+47-g7aba70e #1
+> =
 
-> The vmstat and perf-profile are also attached, please let me know if you
-> need any more information, thanks.
+> That doesn't actually look like something the fingered patch touches.
+> And seeing how its trinity triggering it, I suspect bisection fail.
 
-Output from vmstat (the tool) isn't much useful here, a periodic "cat =
+Ok. I assume it's not caused by my patch.  Let me know if that is wrong.
 
-/proc/vmstat" would be much better.
-The perf profiles are somewhat weirdly sorted by children cost (?), but =
+I also pushed the patch before to my tree (which is 0day tested) and there
+was no such report (but of course trinity is somewhat random).
 
-I noticed a very high cost (46%) in pageblock_pfn_to_page(). This could =
+BTW if you're going to test trinity for perf it may be better to use
+Vince Weaver's version here
 
-be due to a very large but sparsely populated zone. Could you provide =
+https://github.com/deater/perf_event_tests
 
-/proc/zoneinfo?
-If the compaction scanners behave strangely due to a bug, enabling the =
+which has more coverage for perf than normal trinity.
 
-ftrace compaction tracepoints should help find the cause. That might =
+-Andi
 
-produce a very large output, but maybe it would be enough to see some =
+-- =
 
-parts of it (i.e. towards beginning, middle, end of the experiment).
+ak(a)linux.intel.com -- Speaking for myself only
 
-Vlastimil
-
---===============1157070241452170768==--
+--===============7984445879595442870==--
 
