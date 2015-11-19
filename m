@@ -1,50 +1,33 @@
-Content-Type: multipart/mixed; boundary="===============2997936835142453689=="
+Content-Type: multipart/mixed; boundary="===============5223686364333777918=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Al Viro <viro@ZenIV.linux.org.uk>
 To: lkp@lists.01.org
-Subject: Re: [x86, perf] 7aba70e47c: BUG: unable to handle kernel paging request at 696d2f62
-Date: Thu, 19 Nov 2015 12:14:43 +0100
-Message-ID: <20151119111443.GK3816@twins.programming.kicks-ass.net>
-In-Reply-To: <87mvuavn4t.fsf@yhuang-dev.intel.com>
+Subject: Re: [vfs] BUG: sleeping function called from invalid context at arch/x86/mm/fault.c:1191
+Date: Thu, 19 Nov 2015 11:39:47 +0000
+Message-ID: <20151119113947.GH22011@ZenIV.linux.org.uk>
+In-Reply-To: <20151119094214.GB18875@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2997936835142453689==
+--===============5223686364333777918==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 19, 2015 at 08:38:58AM +0800, Huang, Ying wrote:
-> Hi, Peter,
+On Thu, Nov 19, 2015 at 05:42:14PM +0800, Fengguang Wu wrote:
+> Hi Al,
 > =
 
-> Peter Zijlstra <peterz@infradead.org> writes:
-> =
+> Here is another bisect result.
 
-> > On Wed, Nov 18, 2015 at 02:33:00PM +0800, kernel test robot wrote:
-> >> FYI, we noticed the below changes on
-> >> =
+Umm...  Looks like bisect hazard - the chunk that should've gone into
+ebd0bb376 went into 31d49afa22 instead.  Namely, this
+-       struct pid_namespace *ns =3D dentry->d_sb->s_fs_info;
++       struct pid_namespace *ns =3D inode->i_sb->s_fs_info;
+in proc_self_get_link()...  And similar in proc_thread_self_get_link(),
+apparently.
 
-> >> https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/=
-core
-> >> commit 7aba70e47ca4e961acb5af96d5127e3fad651c7c ("x86, perf: Optimize =
-stack walk user accesses")
-> >
-> > Of course, that commit no longer exists. I re-create the tree every time
-> > I push it, this means that if you report something a few days later, its
-> > highly likely its against non-existant commits :/
-> =
+Fixed (by moving these chunks into the previous commit, the final tree is
+unchanged) and force-pushed...
 
-> I am sorry about this.  We will try our best to reach real 0day
-> reporting.
-
-Is there any way I can monitor the progress of a given tree through the
-whole 0-day testing farm? I know the various compile tests are complete
-because those send email. But after that it goes off into magic land
-without further feedback, unless something bad happens as per this
-report.
-
-It would be useful for me to know how far along a given tree is before I
-zap it.
-
---===============2997936835142453689==--
+--===============5223686364333777918==--
 
