@@ -1,52 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============0459201190759183182=="
+Content-Type: multipart/mixed; boundary="===============8383594979396977330=="
 MIME-Version: 1.0
-From: Joonsoo Kim <js1304@gmail.com>
+From: Jan Kara <jack@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: hugepage compaction causes performance drop
-Date: Mon, 23 Nov 2015 18:24:29 +0900
-Message-ID: <CAAmzW4M6oJukBLwucByK89071RukF4UEyt02A7ZjenpPr5rsdQ@mail.gmail.com>
-In-Reply-To: <5652CF40.6040400@intel.com>
+Subject: Re: [direct] e594571852: xfstests.generic.299.fail
+Date: Mon, 23 Nov 2015 12:20:26 +0100
+Message-ID: <20151123112026.GE23418@quack.suse.cz>
+In-Reply-To: <87si3x5day.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0459201190759183182==
+--===============8383594979396977330==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-2015-11-23 17:33 GMT+09:00 Aaron Lu <aaron.lu@intel.com>:
-> On 11/23/2015 04:16 PM, Joonsoo Kim wrote:
->> Numbers looks fine to me. I guess this performance degradation is
->> caused by COMPACT_CLUSTER_MAX change (from 32 to 256). THP allocation
->> is async so should be aborted quickly. But, after isolating 256
->> migratable pages, it can't be aborted and will finish 256 pages
->> migration (at least, current implementation).
+  Hello,
 
-Let me correct above comment. It can be aborted after some try.
+On Mon 23-11-15 16:29:25, kernel test robot wrote:
+> FYI, we noticed the below changes on
+> =
 
->> Aaron, please test again with setting COMPACT_CLUSTER_MAX to 32
->> (in swap.h)?
->
-> This is what I found in include/linux/swap.h:
->
-> #define SWAP_CLUSTER_MAX 32UL
-> #define COMPACT_CLUSTER_MAX SWAP_CLUSTER_MAX
->
-> Looks like it is already 32, or am I looking at the wrong place?
->
-> BTW, I'm using v4.3 for all these tests, and I just checked v4.4-rc2,
-> the above definition doesn't change.
+> git://internal_merge_and_test_tree revert-e594571852b03a5503ba48edd718462=
+e99bf238e-e594571852b03a5503ba48edd718462e99bf238e
+> commit e594571852b03a5503ba48edd718462e99bf238e ("direct-io: Fix negative=
+ return from dio read beyond eof")
 
-Sorry. I looked at linux-next tree and, there, it is 128.
-Please ignore my comment! :)
+Do you have the file:
 
->>
->> And, please attach always-always's vmstat numbers, too.
->
-> Sure, attached the vmstat tool output, taken every second.
+/lkp/benchmarks/xfstests/results//generic/299.full
 
-Oops... I'd like to see '1 sec interval cat /proc/vmstat' for always-never.
+produced by the failed test? Thanks!
 
-Thanks.
+									Honza
+-- =
 
---===============0459201190759183182==--
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
+
+--===============8383594979396977330==--
 
