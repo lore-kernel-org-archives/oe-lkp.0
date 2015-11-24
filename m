@@ -1,46 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============9112597556575353405=="
+Content-Type: multipart/mixed; boundary="===============5007900579380694052=="
 MIME-Version: 1.0
-From: David Miller <davem@davemloft.net>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v2 0/4] improve fault-tolerance of rhashtable runtime-test
-Date: Mon, 23 Nov 2015 12:38:21 -0500
-Message-ID: <20151123.123821.1971816203199981831.davem@davemloft.net>
-In-Reply-To: <1448039840-11367-1-git-send-email-phil@nwl.cc>
+Subject: Re: [direct] e594571852: xfstests.generic.299.fail
+Date: Tue, 24 Nov 2015 09:51:56 +0800
+Message-ID: <87lh9oyxj7.fsf@yhuang-dev.intel.com>
+In-Reply-To: <20151123112026.GE23418@quack.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9112597556575353405==
+--===============5007900579380694052==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: Phil Sutter <phil@nwl.cc>
-Date: Fri, 20 Nov 2015 18:17:16 +0100
+Jan Kara <jack@suse.cz> writes:
 
-> The following series aims to improve lib/test_rhashtable in different
-> situations:
-> =
+>   Hello,
+>
+> On Mon 23-11-15 16:29:25, kernel test robot wrote:
+>> FYI, we noticed the below changes on
+>> =
 
-> Patch 1 allows the kernel to reschedule so the test does not block too
->         long on slow systems.
-> Patch 2 fixes behaviour under pressure, retrying inserts in non-permanent
->         error case (-EBUSY).
-> Patch 3 auto-adjusts the upper table size limit according to the number
->         of threads (in concurrency test). In fact, the current default is
-> 	already too small.
-> Patch 4 makes it possible to retry inserts even in supposedly permanent
->         error case (-ENOMEM) to expose rhashtable's remaining problem of
-> 	-ENOMEM being not as permanent as it is expected to be.
-> =
+>> git://internal_merge_and_test_tree
+>> revert-e594571852b03a5503ba48edd718462e99bf238e-e594571852b03a5503ba48ed=
+d718462e99bf238e
+>> commit e594571852b03a5503ba48edd718462e99bf238e ("direct-io: Fix negativ=
+e return from dio read beyond eof")
+>
+> Do you have the file:
+>
+> /lkp/benchmarks/xfstests/results//generic/299.full
+>
+> produced by the failed test? Thanks!
 
-> Changes since v1:
-> - Introduce insert_retry() which is then used in single-threaded test as
->   well.
-> - Do not retry inserts by default if -ENOMEM was returned.
-> - Rename the retry counter to be a bit more verbose about what it
->   contains.
-> - Add patch 4 as a debugging aid.
+Sorry, we don't collect that data during regular regression test.  Is
+that needed all the time?  We will change our test scripts to collect
+that data.  But that need some time.
 
-Series applied, thanks Phil.
+Best Regards,
+Huang, Ying
 
---===============9112597556575353405==--
+--===============5007900579380694052==--
 
