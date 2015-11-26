@@ -1,63 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============7837506982890946810=="
+Content-Type: multipart/mixed; boundary="===============4980789726819612230=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Rik van Riel <riel@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: hugepage compaction causes performance drop
-Date: Thu, 26 Nov 2015 13:47:24 +0800
-Message-ID: <56569CEC.1050809@intel.com>
-In-Reply-To: <5655AD4A.4080001@suse.cz>
+Subject: Re: [mm, page_alloc] d0164adc89: -100.0% fsmark.app_overhead
+Date: Thu, 26 Nov 2015 10:03:01 -0500
+Message-ID: <56571F25.5030905@redhat.com>
+In-Reply-To: <20151126132511.GG14880@techsingularity.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7837506982890946810==
+--===============4980789726819612230==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 11/25/2015 08:44 PM, Vlastimil Babka wrote:
-> On 11/24/2015 09:29 AM, Joonsoo Kim wrote:
->> On Tue, Nov 24, 2015 at 03:27:43PM +0800, Aaron Lu wrote:
+On 11/26/2015 08:25 AM, Mel Gorman wrote:
+> On Thu, Nov 26, 2015 at 08:56:12AM +0800, kernel test robot wrote:
+>> FYI, we noticed the below changes on
 >>
->> Thanks.
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+>> commit d0164adc89f6bb374d304ffcc375c6d2652fe67d ("mm, page_alloc: distin=
+guish between being unable to sleep, unwilling to sleep and avoiding waking=
+ kswapd")
 >>
->> Okay. Output proves the theory. pagetypeinfo shows that there are
->> too many unmovable pageblocks. isolate_freepages() should skip these
->> so it's not easy to meet proper pageblock until need_resched(). Hence,
->> updating cached pfn doesn't happen. (You can see unchanged free_pfn
->> with 'grep compaction_begin tracepoint-output')
-> =
+>> Note: the testing machine is a virtual machine with only 1G memory.
+>>
+>
+> I'm not actually seeing any problem here. Is this a positive report or
+> am I missing something obvious?
 
-> Hm to me it seems that the scanners meet a lot, so they restart at zone
-> boundaries and that's fine. There's nothing to cache.
-> =
+I've gotten several reports that could be either
+positive or negative, but where I am not quite
+sure how to interpret the results.
 
->> But, I don't think that updating cached pfn is enough to solve your prob=
-lem.
->> More complex change would be needed, I guess.
-> =
+The tool seems to CC the maintainers of the code
+that was changed, so I am hoping they will pipe
+up when they see a problem.
 
-> One factor is probably that THP only use async compaction and those don't=
- result
-> in deferred compaction, which should help here. It also means that
-> pageblock_skip bits are not being reset except by kswapd...
-> =
+Of course, that doesn't help in this case :)
 
-> Oh and pageblock_pfn_to_page is done before checking the pageblock skip b=
-its, so
-> that's why it's prominent in the profiles. Although it was less prominent=
- (9% vs
-> 46% before) in the last data... was perf collected while tracing, thus
-> generating extra noise?
-
-The perf is always run during these test runs, it will start 25 seconds
-later after the test starts to give it some time to eat the remaining
-free memory so that when perf starts collection data, the swap out should
-already start. The perf data is collected for 10 seconds.
-
-I guess the test run under trace-cmd is slower before before, so the
-perf is collecting data at a different time window.
-
-Regards,
-Aaron
-
---===============7837506982890946810==--
+--===============4980789726819612230==--
 
