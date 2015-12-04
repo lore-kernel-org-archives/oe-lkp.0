@@ -1,43 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============3033554399260175827=="
+Content-Type: multipart/mixed; boundary="===============5787592628049919805=="
 MIME-Version: 1.0
-From: Andi Kleen <ak@linux.intel.com>
+From: David Miller <davem@davemloft.net>
 To: lkp@lists.01.org
-Subject: Re: [x86/mce] 81ffdcdd97: kmsg.CPU61:Package_temperature_above_threshold, cpu_clock_throttled(total_events=#)
-Date: Fri, 04 Dec 2015 10:25:55 -0800
-Message-ID: <20151204182555.GE18534@tassilo.jf.intel.com>
-In-Reply-To: <87vb8fqaag.fsf@yhuang-dev.intel.com>
+Subject: Re: rhashtable: Prevent spurious EBUSY errors on insertion
+Date: Fri, 04 Dec 2015 14:38:44 -0500
+Message-ID: <20151204.143844.1840501199234860407.davem@davemloft.net>
+In-Reply-To: <20151203124129.GA5505@gondor.apana.org.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3033554399260175827==
+--===============5787592628049919805==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-> commit 81ffdcdd97d94110627caa81c23d5d780083731d ("x86/mce: Fix thermal th=
-rottling reporting after kexec")
+From: Herbert Xu <herbert@gondor.apana.org.au>
+Date: Thu, 3 Dec 2015 20:41:29 +0800
+
+> Thomas and Phil observed that under stress rhashtable insertion
+> sometimes failed with EBUSY, even though this error should only
+> ever been seen when we're under attack and our hash chain length
+> has grown to an unacceptable level, even after a rehash.
 > =
 
-> This may be the intended behavior, just FYI.
-
-Yes, it's intended. Your system is overheating, and I assume 0day uses kexe=
-c.
-Previously you completely missed these messages because they were disabled
-after the first kexec. So now they are correctly reported.
-
--Andi
-
+> It turns out that the logic for detecting whether there is an
+> existing rehash is faulty.  In particular, when two threads both
+> try to grow the same table at the same time, one of them may see
+> the newly grown table and thus erroneously conclude that it had
+> been rehashed.  This is what leads to the EBUSY error.
 > =
 
-> [  228.096596] CPU47: Core temperature above threshold, cpu clock throttl=
-ed (total events =3D 1)
-> [  228.096597] CPU3: Core temperature above threshold, cpu clock throttle=
-d (total events =3D 1)
-> [  228.096599] CPU19: Package temperature above threshold, cpu clock thro=
-ttled (total events =3D 1)
-> [  228.096601] CPU9: Package temperature above threshold, cpu clock throt=
-tled (total events =3D 1)
-> [  228.096603] CPU53: Package temperature above threshold, cpu clock thro=
-ttled (total events =3D 1)
+> This patch fixes this by remembering the current last table we
+> used during insertion so that rhashtable_insert_rehash can detect
+> when another thread has also done a resize/rehash.  When this is
+> detected we will give up our resize/rehash and simply retry the
+> insertion with the new table.
+> =
 
---===============3033554399260175827==--
+> Reported-by: Thomas Graf <tgraf@suug.ch>
+> Reported-by: Phil Sutter <phil@nwl.cc>
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+
+Looks good, applied, thanks Herbert.
+
+--===============5787592628049919805==--
 
