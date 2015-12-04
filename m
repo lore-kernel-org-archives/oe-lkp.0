@@ -1,60 +1,43 @@
-Content-Type: multipart/mixed; boundary="===============6399584650219175245=="
+Content-Type: multipart/mixed; boundary="===============3033554399260175827=="
 MIME-Version: 1.0
-From: Eric Dumazet <eric.dumazet@gmail.com>
+From: Andi Kleen <ak@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: rhashtable: Use __vmalloc with GFP_ATOMIC for table allocation
-Date: Fri, 04 Dec 2015 09:45:20 -0800
-Message-ID: <1449251120.25029.31.camel@edumazet-glaptop2.roam.corp.google.com>
-In-Reply-To: <20151204170101.GB29598@orbit.nwl.cc>
+Subject: Re: [x86/mce] 81ffdcdd97: kmsg.CPU61:Package_temperature_above_threshold, cpu_clock_throttled(total_events=#)
+Date: Fri, 04 Dec 2015 10:25:55 -0800
+Message-ID: <20151204182555.GE18534@tassilo.jf.intel.com>
+In-Reply-To: <87vb8fqaag.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6399584650219175245==
+--===============3033554399260175827==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2015-12-04 at 18:01 +0100, Phil Sutter wrote:
-> On Fri, Dec 04, 2015 at 10:39:56PM +0800, Herbert Xu wrote:
-> > On Thu, Dec 03, 2015 at 08:08:39AM -0800, Eric Dumazet wrote:
-> > >
-> > > Anyway, __vmalloc() can be used with GFP_ATOMIC, have you tried this ?
-> > =
-
-> > OK I've tried it and I no longer get any ENOMEM errors!
+> commit 81ffdcdd97d94110627caa81c23d5d780083731d ("x86/mce: Fix thermal th=
+rottling reporting after kexec")
 > =
 
-> I can't confirm this, sadly. Using 50 threads, results seem to be stable
-> and good. But increasing the number of threads I can provoke ENOMEM
-> condition again. See attached log which shows a failing test run with
-> 100 threads.
+> This may be the intended behavior, just FYI.
+
+Yes, it's intended. Your system is overheating, and I assume 0day uses kexe=
+c.
+Previously you completely missed these messages because they were disabled
+after the first kexec. So now they are correctly reported.
+
+-Andi
+
 > =
 
-> I tried to extract logs of a test run with as few as possible failing
-> threads, but wasn't successful. It seems like the error amplifies
-> itself: While having stable success with less than 70 threads, going
-> beyond a margin I could not identify exactly, much more threads failed
-> than expected. For instance, the attached log shows 70 out of 100
-> threads failing, while for me every single test with 50 threads was
-> successful.
-> =
+> [  228.096596] CPU47: Core temperature above threshold, cpu clock throttl=
+ed (total events =3D 1)
+> [  228.096597] CPU3: Core temperature above threshold, cpu clock throttle=
+d (total events =3D 1)
+> [  228.096599] CPU19: Package temperature above threshold, cpu clock thro=
+ttled (total events =3D 1)
+> [  228.096601] CPU9: Package temperature above threshold, cpu clock throt=
+tled (total events =3D 1)
+> [  228.096603] CPU53: Package temperature above threshold, cpu clock thro=
+ttled (total events =3D 1)
 
-> HTH, Phil
-
-But this patch is about GFP_ATOMIC allocations, I doubt your test is
-using GFP_ATOMIC.
-
-Threads (process context) should use GFP_KERNEL allocations.
-
-BTW, if 100 threads are simultaneously trying to vmalloc(32 MB), this
-might not be very wise :(
-
-Only one should really do this, while others are waiting.
-
-If we really want parallelism (multiple cpus coordinating their effort),
-it should be done very differently.
-
-
-
-
---===============6399584650219175245==--
+--===============3033554399260175827==--
 
