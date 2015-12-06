@@ -1,39 +1,39 @@
-Content-Type: multipart/mixed; boundary="===============7051643864604533532=="
+Content-Type: multipart/mixed; boundary="===============4957640560616788406=="
 MIME-Version: 1.0
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: David Miller <davem@davemloft.net>
 To: lkp@lists.01.org
 Subject: Re: rhashtable: Use __vmalloc with GFP_ATOMIC for table allocation
-Date: Sat, 05 Dec 2015 15:06:03 +0800
-Message-ID: <20151205070603.GB23255@gondor.apana.org.au>
-In-Reply-To: <20151204181555.GC29598@orbit.nwl.cc>
+Date: Sat, 05 Dec 2015 22:48:29 -0500
+Message-ID: <20151205.224829.171477269244585844.davem@davemloft.net>
+In-Reply-To: <20151205070354.GA23255@gondor.apana.org.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7051643864604533532==
+--===============4957640560616788406==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 04, 2015 at 07:15:55PM +0100, Phil Sutter wrote:
->
-> > Only one should really do this, while others are waiting.
+From: Herbert Xu <herbert@gondor.apana.org.au>
+Date: Sat, 5 Dec 2015 15:03:54 +0800
+
+> Sorry Dave but you'll have to revert this because I've been able
+> to trigger the following crash with the patch:
 > =
 
-> Sure, that was my previous understanding of how this thing works.
+> Testing concurrent rhashtable access from 50 threads
+> ------------[ cut here ]------------
+> kernel BUG at ../mm/vmalloc.c:1337!
+> invalid opcode: 0000 [#1] PREEMPT SMP =
 
-Yes that's clearly how it should be.  Unfortunately while adding
-the locking to do this, I found out that you can't actually call
-__vmalloc with BH disabled so this is a no-go.
+> =
 
-Unless we can make __vmalloc work with BH disabled, I guess we'll
-have to go back to multi-level lookups unless someone has a better
-suggestion.
+> The reason is that because I was testing insertions with BH disabled,
+> and __vmalloc doesn't like that, even with GFP_ATOMIC.  As we
+> obviously want to continue to support rhashtable users inserting
+> entries with BH disabled, we'll have to look for an alternate
+> solution.
 
-Cheers,
--- =
+Ok, reverted, thanks for the heads up.
 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
-
---===============7051643864604533532==--
+--===============4957640560616788406==--
 
