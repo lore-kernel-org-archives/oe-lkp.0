@@ -1,43 +1,43 @@
-Content-Type: multipart/mixed; boundary="===============3026024559904350205=="
+Content-Type: multipart/mixed; boundary="===============7437487916685371616=="
 MIME-Version: 1.0
-From: Thomas Graf <tgraf@suug.ch>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: rhashtable: Use __vmalloc with GFP_ATOMIC for table allocation
-Date: Mon, 07 Dec 2015 16:35:24 +0100
-Message-ID: <20151207153524.GA22032@pox.localdomain>
-In-Reply-To: <20151205070603.GB23255@gondor.apana.org.au>
+Subject: Re: [mm, page_alloc] d0164adc89: -100.0% fsmark.app_overhead
+Date: Mon, 07 Dec 2015 17:18:21 +0100
+Message-ID: <20151207161820.GB20774@dhcp22.suse.cz>
+In-Reply-To: <87wpsvkmhs.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3026024559904350205==
+--===============7437487916685371616==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 12/05/15 at 03:06pm, Herbert Xu wrote:
-> On Fri, Dec 04, 2015 at 07:15:55PM +0100, Phil Sutter wrote:
-> >
-> > > Only one should really do this, while others are waiting.
-> > =
-
-> > Sure, that was my previous understanding of how this thing works.
+On Fri 04-12-15 09:53:35, Huang, Ying wrote:
+> Mel Gorman <mgorman@techsingularity.net> writes:
+[...]
+> > What is the result of the __GFP_HIGH patch to give it access to
+> > reserves?
 > =
 
-> Yes that's clearly how it should be.  Unfortunately while adding
-> the locking to do this, I found out that you can't actually call
-> __vmalloc with BH disabled so this is a no-go.
-> =
+> Applied Michal's patch on v4.4-rc3 and tested again, now there is no
+> page allocation failure.
 
-> Unless we can make __vmalloc work with BH disabled, I guess we'll
-> have to go back to multi-level lookups unless someone has a better
-> suggestion.
+I still think this is just a coincidence and __GFP_HIGH just
+papers over it (it still makes sense for other reasons though). It
+would be better imho to log all allocations which do not include
+___GFP_KSWAPD_RECLAIM. This might help us to pin point a caller which
+was previously waking kswapd up but it doesn't do so anymore.  There
+would have to be a very specific pattern to trigger this because most
+allocations would simply wake kswapd up. I am just wondering that
+any debugging would simply alter the timing and/or allocation pattern
+and we would see a different results so I am not sure this is worth
+spending a lot of time on.
 
-Thanks for fixing the race.
+-- =
 
-As for the remaining problem, I think we'll have to find a way to
-serve a hard pounding user if we want to convert TCP hashtables
-later on.
+Michal Hocko
+SUSE Labs
 
-Did you look into what __vmalloc prevents to work with BH disabled?
-
---===============3026024559904350205==--
+--===============7437487916685371616==--
 
