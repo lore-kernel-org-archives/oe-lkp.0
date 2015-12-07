@@ -1,43 +1,25 @@
-Content-Type: multipart/mixed; boundary="===============7437487916685371616=="
+Content-Type: multipart/mixed; boundary="===============0670515421920982035=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: David Miller <davem@davemloft.net>
 To: lkp@lists.01.org
-Subject: Re: [mm, page_alloc] d0164adc89: -100.0% fsmark.app_overhead
-Date: Mon, 07 Dec 2015 17:18:21 +0100
-Message-ID: <20151207161820.GB20774@dhcp22.suse.cz>
-In-Reply-To: <87wpsvkmhs.fsf@yhuang-dev.intel.com>
+Subject: Re: rhashtable: Use __vmalloc with GFP_ATOMIC for table allocation
+Date: Mon, 07 Dec 2015 14:29:53 -0500
+Message-ID: <20151207.142953.387889541116696974.davem@davemloft.net>
+In-Reply-To: <20151207153524.GA22032@pox.localdomain>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7437487916685371616==
+--===============0670515421920982035==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri 04-12-15 09:53:35, Huang, Ying wrote:
-> Mel Gorman <mgorman@techsingularity.net> writes:
-[...]
-> > What is the result of the __GFP_HIGH patch to give it access to
-> > reserves?
-> =
+From: Thomas Graf <tgraf@suug.ch>
+Date: Mon, 7 Dec 2015 16:35:24 +0100
 
-> Applied Michal's patch on v4.4-rc3 and tested again, now there is no
-> page allocation failure.
+> Did you look into what __vmalloc prevents to work with BH disabled?
 
-I still think this is just a coincidence and __GFP_HIGH just
-papers over it (it still makes sense for other reasons though). It
-would be better imho to log all allocations which do not include
-___GFP_KSWAPD_RECLAIM. This might help us to pin point a caller which
-was previously waking kswapd up but it doesn't do so anymore.  There
-would have to be a very specific pattern to trigger this because most
-allocations would simply wake kswapd up. I am just wondering that
-any debugging would simply alter the timing and/or allocation pattern
-and we would see a different results so I am not sure this is worth
-spending a lot of time on.
+You can't issue the cross-cpu TLB flushes from atomic contexts.
+It's the kernel page table updates that create the restriction.
 
--- =
-
-Michal Hocko
-SUSE Labs
-
---===============7437487916685371616==--
+--===============0670515421920982035==--
 
