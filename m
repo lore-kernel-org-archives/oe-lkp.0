@@ -1,119 +1,87 @@
-Content-Type: multipart/mixed; boundary="===============5481511728843033033=="
+Content-Type: multipart/mixed; boundary="===============7362037188442737947=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@alien8.de>
+From: Du, Changbin <changbin.du@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/irq] 4c24cee6b2: IP-Config: Auto-configuration of network failed
-Date: Mon, 14 Dec 2015 10:54:27 +0100
-Message-ID: <20151214095427.GA11638@pd.tnic>
-In-Reply-To: <87d1u9ikqd.fsf@yhuang-dev.intel.com>
+Subject: Re: [usb] 22bf2bb019: WARNING: CPU: 0 PID: 0 at include/linux/usb/gadget.h:405 composite_ep0_queue+0xad/0xd0()
+Date: Mon, 14 Dec 2015 10:13:14 +0000
+Message-ID: <0C18FE92A7765D4EB9EE5D38D86A563A01DF62B4@SHSMSX103.ccr.corp.intel.com>
+In-Reply-To: <87oadt4dhc.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5481511728843033033==
+--===============7362037188442737947==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Dec 14, 2015 at 02:54:02PM +0800, Huang, Ying wrote:
-> No, there are no other systems reporting the same issue. I will queue
-> more tests for make sure this is not a false positive.
+> FYI, we noticed the below changes on
+> =
 
-I can trigger this too with my guest here.
+> https://github.com/0day-ci/linux changbin-du-intel-com/usb-gadget-forbid-
+> queuing-request-to-a-disabled-ep/20151214-115939
+> commit 22bf2bb019c7f92cda32c46b95715b0b208052d0 ("usb: gadget: forbid
+> queuing request to a disabled ep")
+> =
 
-I have these two ontop of rc5:
+> =
 
-cc22b9b83f6a x86/irq: Enhance __assign_irq_vector() to rollback in case of =
-failure
-45dd79e03e1e x86/irq: Do not reuse struct apic_chip_data.old_domain as temp=
-orary buffer
-9f9499ae8e64 Linux 4.4-rc5
+> [    8.157994] dummy_hcd dummy_hcd.0: port status 0x00100503 has changes
+> [    8.209686] usb 1-1: new high-speed USB device number 2 using
+> dummy_hcd
+> [    8.211689] ------------[ cut here ]------------
+> [    8.212267] WARNING: CPU: 0 PID: 0 at include/linux/usb/gadget.h:405
+> composite_ep0_queue+0xad/0xd0()
+> [    8.213684] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.4.0-rc4-00001-
+> g22bf2bb #1
+> [    8.214580]  00000000 00000000 54407de4 4125cd9f 00000000 54407e14
+> 4109e21e 420f34b4
+> [    8.215626]  00000000 00000000 421bdc84 00000195 41761a1d 41761a1d
+> 4d810ea8 4d810ea8
+> [    8.216679]  ffffff94 54407e24 4109e2eb 00000009 00000000 54407e48
+> 41761a1d 00000001
+> [    8.217726] Call Trace:
+> [    8.218029]  [<4125cd9f>] dump_stack+0x48/0x69
+> [    8.218570]  [<4109e21e>] warn_slowpath_common+0x7e/0xb0
+> [    8.219204]  [<41761a1d>] ? composite_ep0_queue+0xad/0xd0
+> [    8.219972]  [<41761a1d>] ? composite_ep0_queue+0xad/0xd0
+> [    8.220741]  [<4109e2eb>] warn_slowpath_null+0x1b/0x20
+> [    8.221362]  [<41761a1d>] composite_ep0_queue+0xad/0xd0
+> [    8.222105]  [<41762055>] composite_setup+0x615/0x19e0
+> [    8.222723]  [<41769eba>] ? dummy_timer+0x4a/0xe30
+> [    8.223299]  [<4176a86d>] dummy_timer+0x9fd/0xe30
+> [    8.223872]  [<41769e70>] ? dummy_start+0x140/0x140
+> [    8.224461]  [<410f2cef>] call_timer_fn+0x6f/0xf0
+> [    8.225025]  [<410f2cb2>] ? call_timer_fn+0x32/0xf0
+> [    8.225612]  [<410f2eb1>] run_timer_softirq+0x141/0x1d0
+> [    8.226234]  [<41769e70>] ? dummy_start+0x140/0x140
+> [    8.226827]  [<410a0d8d>] __do_softirq+0xbd/0x1c0
+> [    8.227397]  [<410a0cd0>] ? _local_bh_enable+0x50/0x50
+> [    8.228013]  [<4104f376>] do_softirq_own_stack+0x26/0x40
+> [    8.228651]  <IRQ>  [<410a1085>] irq_exit+0x65/0x70
+> [    8.229258]  [<4107ea7e>] smp_trace_apic_timer_interrupt+0x5e/0x90
+> [    8.229993]  [<4107eab8>] smp_apic_timer_interrupt+0x8/0x10
+> [    8.230666]  [<41d78a5d>] apic_timer_interrupt+0x2d/0x34
+> [    8.231309]  [<410861f5>] ? native_safe_halt+0x5/0x10
+> [    8.231917]  [<41055198>] default_idle+0x8/0x10
+> [    8.232467]  [<41055919>] arch_cpu_idle+0x9/0x10
+> [    8.233016]  [<410d55d3>] default_idle_call+0x23/0x30
+> [    8.233627]  [<410d573c>] cpu_startup_entry+0x15c/0x240
+> [    8.234260]  [<41d6f31a>] rest_init+0xaa/0xb0
+> [    8.234782]  [<42327b05>] start_kernel+0x3df/0x3e4
+> [    8.235363]  [<423272c3>] i386_start_kernel+0x91/0x95
+> [    8.235971] ---[ end trace a9973fc5ac55cb31 ]---
+> [    8.236529] g_ether gadget: ep_queue --> -108
+> =
 
-and my guest stalls while booting.
+> =
 
-The new thing I see in dmesg is this:
+> Thanks,
+> Ying Huang
+Hmm, it because the ep0 'enabled' is not set. Ep0 is not enabled by usb_ep_=
+enable, but in UDC driver.
+It need a fix.
+This is an interesting robot testing tool. Thanks!
 
- ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=3D-1 pin2=3D-1
-+..MP-BIOS bug: 8254 timer not connected to IO-APIC
-+...trying to set up timer (IRQ0) through the 8259A ...
-+..... (found apic 0 pin 2) ...
-+....... failed.
-+...trying to set up timer as Virtual Wire IRQ...
-+..... failed.
-+...trying to set up timer as ExtINT IRQ...
-+..... works.
-+APIC calibration not consistent with PM-Timer: 111ms instead of 100ms
-+APIC delta adjusted to PM-Timer: 6248393 (6997337)
+Du, Changbin
 
-which leads to boot stalling and timeoutting when loading the hdd
-driver:
-
-...
-[    3.973447] console [netcon0] enabled
-[    3.976099] netconsole: network logging started
-[    3.979604] rtc_cmos 00:00: setting system clock to 2015-12-14 10:45:35 =
-UTC (1450089935)
-[    3.985348] PM: Checking hibernation image partition /dev/sdb1
-[    6.600706] usb 1-1: New USB device found, idVendor=3D0627, idProduct=3D=
-0001
-[    6.613651] usb 1-1: New USB device strings: Mfr=3D1, Product=3D3, Seria=
-lNumber=3D5
-[    6.636905] usb 1-1: Product: QEMU USB Tablet
-[    6.642248] usb 1-1: Manufacturer: QEMU
-[    6.647109] usb 1-1: SerialNumber: 42
-[    7.580995] ata2.00: qc timeout (cmd 0xa0)
-[    7.589300] ata2.00: TEST_UNIT_READY failed (err_mask=3D0x5)
-[    7.750715] ata2.01: NODEV after polling detection
-[    7.759605] ata2.00: configured for MWDMA2
-[    8.585691] input: QEMU QEMU USB Tablet as /devices/pci0000:00/0000:00:0=
-1.2/usb1/1-1/1-1:1.0/0003:0627:0001.0001/input/input1
-[    8.602467] hid-generic 0003:0627:0001.0001: input,hidraw0: USB HID v0.0=
-1 Pointer [QEMU QEMU USB Tablet] on usb-0000:00:01.2-1/input0
-[   12.760846] ata2.00: qc timeout (cmd 0xa0)
-[   12.786543] ata2.00: TEST_UNIT_READY failed (err_mask=3D0x5)
-[   12.796576] ata2.00: limiting speed to MWDMA2:PIO3
-[   12.958455] ata2.01: NODEV after polling detection
-[   12.969693] ata2.00: configured for MWDMA2
-[   17.972782] ata2.00: qc timeout (cmd 0xa0)
-[   17.978967] ata2.00: TEST_UNIT_READY failed (err_mask=3D0x5)
-[   17.983495] ata2.00: disabled
-[   17.986352] ata2: soft resetting link
-[   18.146586] ata2.01: NODEV after polling detection
-[   18.151413] ata2: EH complete
-[   32.745227] ata1: lost interrupt (Status 0x50)
-[   32.748470] ata1.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6 fr=
-ozen
-[   32.756586] ata1.00: failed command: READ DMA
-[   32.761251] ata1.00: cmd c8/00:08:00:00:00/00:00:00:00:00/e0 tag 0 dma 4=
-096 in
-[   32.761251]          res 40/00:00:00:00:00/00:00:00:00:00/00 Emask 0x4 (=
-timeout)
-[   32.773928] ata1.00: status: { DRDY }
-[   32.777028] ata1: soft resetting link
-[   32.934437] ata1.01: NODEV after polling detection
-[   32.946663] ata1.00: configured for MWDMA2
-[   32.949964] ata1.00: device reported invalid CHS sector 0
-[   32.953793] ata1: EH complete
-[   63.849089] ata1: lost interrupt (Status 0x50)
-[   63.857470] ata1.00: limiting speed to MWDMA1:PIO4
-[   63.860982] ata1.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6 fr=
-ozen
-[   63.865862] ata1.00: failed command: READ DMA
-[   63.883697] ata1.00: cmd c8/00:08:00:00:00/00:00:00:00:00/e0 tag 0 dma 4=
-096 in
-[   63.883697]          res 40/00:00:00:00:00/00:00:00:00:00/00 Emask 0x4 (=
-timeout)
-[   63.899573] ata1.00: status: { DRDY }
-[   63.902649] ata1: soft resetting link
-[   64.062580] ata1.01: NODEV after polling detection
-[   64.073800] ata1.00: configured for MWDMA1
-[   64.076813] ata1.00: device reported invalid CHS sector 0
-[   64.096188] ata1: EH complete
-
--- =
-
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
-
---===============5481511728843033033==--
+--===============7362037188442737947==--
 
