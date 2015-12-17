@@ -1,48 +1,36 @@
-Content-Type: multipart/mixed; boundary="===============4154010785570302477=="
+Content-Type: multipart/mixed; boundary="===============1258815450033287001=="
 MIME-Version: 1.0
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Du, Changbin <changbin.du@intel.com>
 To: lkp@lists.01.org
-Subject: Re: rhashtable: Prevent spurious EBUSY errors on insertion
-Date: Thu, 17 Dec 2015 16:48:09 +0800
-Message-ID: <20151217084809.GC9239@gondor.apana.org.au>
-In-Reply-To: <CADvbK_cA5qaooTOE4Z2bGYs+ys17ZajSMgKDVWgctSZWJ0vjpw@mail.gmail.com>
+Subject: Re: [PATCH v2] usb: gadget: forbid queuing request to a disabled ep
+Date: Thu, 17 Dec 2015 09:35:18 +0000
+Message-ID: <0C18FE92A7765D4EB9EE5D38D86A563A01DF8A53@SHSMSX103.ccr.corp.intel.com>
+In-Reply-To: <87h9jifi9x.fsf@saruman.tx.rr.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4154010785570302477==
+--===============1258815450033287001==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 17, 2015 at 04:46:00PM +0800, Xin Long wrote:
->
-> sorry for late test, but unfortunately, my case with rhashtalbe still
-> return EBUSY.
-> I added some debug code in rhashtable_insert_rehash(), and found:
-> *future_tbl is null*
+> >> 2.5.0
+> >
+> > With this patch, ep0 transfer breaks. it because the 'enabled' of ep0
+> > is not set. Ep0 is not enabled by usb_ep_enable, but in UDC driver. So
+> > there need another patch to set ep0's flag also.
 > =
 
-> fail:
->         /* Do not fail the insert if someone else did a rehash. */
->         if (likely(rcu_dereference_raw(tbl->future_tbl))) {
->                 printk("future_tbl is there\n");
->                 return 0;
->         } else {
->                 printk("future_tbl is null\n");
->         }
+> yeah, we don't like regressions :-) So the fix should come before
+> $subject to avoid a regression.
 > =
 
-> any idea why ?
+> --
+> balbi
+It is hard to determine if ep0 is enabled or not in gadget API layer. Becau=
+se
+it is controlled by udc driver, it may enable it at pullup, vbussession...
+But here, we can ignore for control-ep, considering it always enabled during
+usb session.
 
-That's presumably because you got a genuine double rehash.
-
-Until you post your code we can't really help you.
-
-Cheers,
--- =
-
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
-
---===============4154010785570302477==--
+--===============1258815450033287001==--
 
