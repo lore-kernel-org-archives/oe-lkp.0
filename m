@@ -1,40 +1,62 @@
-Content-Type: multipart/mixed; boundary="===============6961807863367672293=="
+Content-Type: multipart/mixed; boundary="===============0055030347005741793=="
 MIME-Version: 1.0
-From: Du, Changbin <changbin.du@intel.com>
+From: changbin.du@intel.com
 To: lkp@lists.01.org
-Subject: Re: [PATCH v3] usb: gadget: forbid queuing request to a disabled ep
-Date: Fri, 18 Dec 2015 07:34:32 +0000
-Message-ID: <0C18FE92A7765D4EB9EE5D38D86A563A01DF9007@SHSMSX103.ccr.corp.intel.com>
+Subject: [PATCH v4] usb: gadget: forbid queuing request to a disabled ep
+Date: Fri, 18 Dec 2015 15:36:40 +0800
+Message-ID: <1450424200-12748-1-git-send-email-changbin.du@intel.com>
 In-Reply-To: <87bn9pdrkq.fsf@saruman.tx.rr.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6961807863367672293==
+--===============0055030347005741793==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-> >
-> > diff --git a/include/linux/usb/gadget.h b/include/linux/usb/gadget.h
-> > index 3d583a1..0c5d9ea 100644
-> > --- a/include/linux/usb/gadget.h
-> > +++ b/include/linux/usb/gadget.h
-> > @@ -402,6 +402,9 @@ static inline void usb_ep_free_request(struct
-> usb_ep *ep,
-> >  static inline int usb_ep_queue(struct usb_ep *ep,
-> >  			       struct usb_request *req, gfp_t gfp_flags)
-> >  {
-> > +	if (WARN_ON_ONCE(!ep->enabled && !ep->address))
-> =
+From: "Du, Changbin" <changbin.du@intel.com>
 
-> this will only trigger for a disabled ep0. Are you testing any of your
-> patches at all ?
-> =
+Queue a request to disabled ep  doesn't make sense, and induce caller
+make mistakes.
 
-> --
-> balbi
-Oops, I sent a wrong patch. I will send right patch again as v4, very sorry=
- for this.
-The right patch has been verified on 3.14 by back-porting related 1 patch.
+Here is a example for the android mtp gadget function driver. A mem
+corruption can happen on below senario.
+1) On disconnect, mtp driver disable its EPs,
+2) During send_file_work and receive_file_work, mtp queues a request
+   to ep. (The mtp driver need improve its synchronization logic!)
+3) mtp_function_unbind is invoked and all mtp requests are freed.
+4) when udc process the request queued on step 2, will cause kernel
+   NULL pointer dereference exception.
 
---===============6961807863367672293==--
+Signed-off-by: Du, Changbin <changbin.du@intel.com>
+---
+change from v3: fix v3's error.
+change from v2: igonre ep0 as it always enabled during usb session.
+change from v1: add WARN_ON_ONCE message.
+
+---
+ include/linux/usb/gadget.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/linux/usb/gadget.h b/include/linux/usb/gadget.h
+index 3d583a1..fc78687 100644
+--- a/include/linux/usb/gadget.h
++++ b/include/linux/usb/gadget.h
+@@ -402,6 +402,9 @@ static inline void usb_ep_free_request(struct usb_ep *e=
+p,
+ static inline int usb_ep_queue(struct usb_ep *ep,
+ 			       struct usb_request *req, gfp_t gfp_flags)
+ {
++	if (WARN_ON_ONCE(!ep->enabled && ep->address))
++		return -ESHUTDOWN;
++
+ 	return ep->ops->queue(ep, req, gfp_flags);
+ }
+ =
+
+-- =
+
+2.5.0
+
+
+--===============0055030347005741793==--
 
