@@ -1,48 +1,33 @@
-Content-Type: multipart/mixed; boundary="===============4525962295680537048=="
+Content-Type: multipart/mixed; boundary="===============4175953134152416702=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 To: lkp@lists.01.org
-Subject: Re: [rcu] 52b265325b: WARNING: CPU: 0 PID: 1 at fs/sysfs/group.c:61 internal_create_group+0x252/0x300()
-Date: Thu, 10 Dec 2015 12:16:49 -0800
-Message-ID: <20151210201649.GI28602@linux.vnet.ibm.com>
-In-Reply-To: <20151209053339.GB9011@x>
+Subject: Re: rhashtable: Prevent spurious EBUSY errors on insertion
+Date: Fri, 18 Dec 2015 10:26:54 +0800
+Message-ID: <20151218022654.GA18495@gondor.apana.org.au>
+In-Reply-To: <CADvbK_e_H91UAatLSOEAvPFxZZTNNs5ZFR5TieXBdWt65z4Qzg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4525962295680537048==
+--===============4175953134152416702==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 08, 2015 at 09:33:40PM -0800, Josh Triplett wrote:
-> On Tue, Dec 08, 2015 at 09:18:16PM -0800, Paul E. McKenney wrote:
-> > On Wed, Dec 09, 2015 at 11:23:05AM +0800, kernel test robot wrote:
-> > > FYI, we noticed the below changes on
-> > > =
+On Fri, Dec 18, 2015 at 12:07:08AM +0800, Xin Long wrote:
+>
+> I'm just wondering, why do not we handle the genuine double rehash
+> issue inside rhashtable? i mean it's just a temporary error that a
+> simple retry may fix it.
 
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git=
- rcu/dev
-> > > commit 52b265325b7a7438cbcdd735fecdd9d7e255eb83 ("rcu: Remove TINY_RC=
-U bloat from pointless boot parameters")
-> > > =
+Because a double rehash means that someone has cracked your hash
+function and there is no point in trying anymore.
 
-> > > =
+Cheers,
+-- =
 
-> > > +----------------+------------+------------+
-> > > |                | dc15c60e39 | 52b265325b |
-> > > +----------------+------------+------------+
-> > > | boot_successes | 4          | 0          |
-> > > +----------------+------------+------------+
-> > =
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
-> > Should be fixed in commit 79cfea027387.
-> =
-
-> What did you change in that version?
-
-I moved the "endif" so that the NULL terminating the array remained.  ;-)
-
-							Thanx, Paul
-
-
---===============4525962295680537048==--
+--===============4175953134152416702==--
 
