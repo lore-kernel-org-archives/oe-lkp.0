@@ -1,75 +1,99 @@
-Content-Type: multipart/mixed; boundary="===============6319820733353704418=="
+Content-Type: multipart/mixed; boundary="===============7174383358973618784=="
 MIME-Version: 1.0
-From: David Miller <davem@davemloft.net>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH v2] rhashtable: Kill harmless RCU warning in rhashtable_walk_init
-Date: Fri, 18 Dec 2015 23:42:59 -0500
-Message-ID: <20151218.234259.445944618583370177.davem@davemloft.net>
-In-Reply-To: <20151219024528.GA27814@gondor.apana.org.au>
+Date: Sat, 19 Dec 2015 12:47:59 +0800
+Message-ID: <20151219044759.GA15236@wfg-t540p.sh.intel.com>
+In-Reply-To: <20151218.234259.445944618583370177.davem@davemloft.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6319820733353704418==
+--===============7174383358973618784==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
-Date: Sat, 19 Dec 2015 10:45:28 +0800
-
-> On Fri, Dec 18, 2015 at 04:27:31PM -0500, David Miller wrote:
->> From: Herbert Xu <herbert@gondor.apana.org.au>
->> Date: Fri, 18 Dec 2015 21:14:08 +0800
->> =
-
->> > On Fri, Dec 18, 2015 at 04:54:14AM -0800, Eric Dumazet wrote:
->> >>
->> >> You can avoid the comment by using the self documented and lockdep
->> >> enabled primitive
->> >> =
-
->> >> iter->walker->tbl =3D rcu_dereference_protected(ht->tbl,
->> >> 					      lockdep_is_held(&ht->lock));
->> > =
-
->> > That is just gross.  I think a comment is much better in this case.
->> =
-
->> Herbert, this macro was created exactly to handle this situation,
->> and this is what we do everywhere else in the tree.
+On Fri, Dec 18, 2015 at 11:42:59PM -0500, David Miller wrote:
+> From: Herbert Xu <herbert@gondor.apana.org.au>
+> Date: Sat, 19 Dec 2015 10:45:28 +0800
 > =
 
-> OK.
+> > On Fri, Dec 18, 2015 at 04:27:31PM -0500, David Miller wrote:
+> >> From: Herbert Xu <herbert@gondor.apana.org.au>
+> >> Date: Fri, 18 Dec 2015 21:14:08 +0800
+> >> =
+
+> >> > On Fri, Dec 18, 2015 at 04:54:14AM -0800, Eric Dumazet wrote:
+> >> >>
+> >> >> You can avoid the comment by using the self documented and lockdep
+> >> >> enabled primitive
+> >> >> =
+
+> >> >> iter->walker->tbl =3D rcu_dereference_protected(ht->tbl,
+> >> >> 					      lockdep_is_held(&ht->lock));
+> >> > =
+
+> >> > That is just gross.  I think a comment is much better in this case.
+> >> =
+
+> >> Herbert, this macro was created exactly to handle this situation,
+> >> and this is what we do everywhere else in the tree.
+> > =
+
+> > OK.
+> > =
+
+> > ---8<---
+> > The commit f9f51b8070be3e829100614a7372b219723b864f ("rhashtable:
+> > Fix walker list corruption") causes a suspicious RCU usage warning
+> > because we no longer hold ht->mutex when we dereference ht->tbl.
+> > =
+
+> > However, this is a false positive because we now hold ht->lock
+> > which also guarantees that ht->tbl won't disppear from under us.
+> > =
+
+> > This patch kills the warning by using rcu_dereference_protected.
+> > =
+
+> > Reported-by: kernel test robot <ying.huang@linux.intel.com>
+> > Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 > =
 
-> ---8<---
-> The commit f9f51b8070be3e829100614a7372b219723b864f ("rhashtable:
-> Fix walker list corruption") causes a suspicious RCU usage warning
-> because we no longer hold ht->mutex when we dereference ht->tbl.
+> The correct commti SHA1 is c6ff5268293ef98e48a99597e765ffc417e39fa5.
 > =
 
-> However, this is a false positive because we now hold ht->lock
-> which also guarantees that ht->tbl won't disppear from under us.
+> Or at least, when I run:
 > =
 
-> This patch kills the warning by using rcu_dereference_protected.
+> 	git show f9f51b8070be3e829100614a7372b219723b864f
 > =
 
-> Reported-by: kernel test robot <ying.huang@linux.intel.com>
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> I get:
+> =
 
-The correct commti SHA1 is c6ff5268293ef98e48a99597e765ffc417e39fa5.
+> 	fatal: bad object f9f51b8070be3e829100614a7372b219723b864f
+> =
 
-Or at least, when I run:
+> :-)
 
-	git show f9f51b8070be3e829100614a7372b219723b864f
+Oops, that commit comes from 0day robot :-)
 
-I get:
+> https://github.com/0day-ci/linux Herbert-Xu/rhashtable-Fix-walker-list-co=
+rruption/20151216-164833
+> commit f9f51b8070be3e829100614a7372b219723b864f ("rhashtable: Fix walker =
+list corruption")
 
-	fatal: bad object f9f51b8070be3e829100614a7372b219723b864f
+        commit f9f51b8070be3e829100614a7372b219723b864f
+        Author:     Herbert Xu <herbert@gondor.apana.org.au>
+        AuthorDate: Wed Dec 16 16:45:54 2015 +0800
+        Commit:     0day robot <fengguang.wu@intel.com>
+        CommitDate: Wed Dec 16 16:48:36 2015 +0800
 
-:-)
+            rhashtable: Fix walker list corruption
 
-I fixed this up and applied this, thanks!
+Thanks,
+Fengguang
 
---===============6319820733353704418==--
+--===============7174383358973618784==--
 
