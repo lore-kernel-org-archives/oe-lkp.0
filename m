@@ -1,39 +1,76 @@
-Content-Type: multipart/mixed; boundary="===============3333625806859405911=="
+Content-Type: multipart/mixed; boundary="===============0812814615470100588=="
 MIME-Version: 1.0
-From: David Miller <davem@davemloft.net>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 To: lkp@lists.01.org
-Subject: Re: rhashtable: Kill harmless RCU warning in rhashtable_walk_init
-Date: Fri, 18 Dec 2015 16:27:31 -0500
-Message-ID: <20151218.162731.305092674804556753.davem@davemloft.net>
-In-Reply-To: <20151218131408.GA21756@gondor.apana.org.au>
+Subject: [PATCH v2] rhashtable: Kill harmless RCU warning in rhashtable_walk_init
+Date: Sat, 19 Dec 2015 10:45:28 +0800
+Message-ID: <20151219024528.GA27814@gondor.apana.org.au>
+In-Reply-To: <20151218.162731.305092674804556753.davem@davemloft.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3333625806859405911==
+--===============0812814615470100588==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
-Date: Fri, 18 Dec 2015 21:14:08 +0800
-
-> On Fri, Dec 18, 2015 at 04:54:14AM -0800, Eric Dumazet wrote:
->>
->> You can avoid the comment by using the self documented and lockdep
->> enabled primitive
->> =
-
->> iter->walker->tbl =3D rcu_dereference_protected(ht->tbl,
->> 					      lockdep_is_held(&ht->lock));
+On Fri, Dec 18, 2015 at 04:27:31PM -0500, David Miller wrote:
+> From: Herbert Xu <herbert@gondor.apana.org.au>
+> Date: Fri, 18 Dec 2015 21:14:08 +0800
 > =
 
-> That is just gross.  I think a comment is much better in this case.
+> > On Fri, Dec 18, 2015 at 04:54:14AM -0800, Eric Dumazet wrote:
+> >>
+> >> You can avoid the comment by using the self documented and lockdep
+> >> enabled primitive
+> >> =
 
-Herbert, this macro was created exactly to handle this situation,
-and this is what we do everywhere else in the tree.
+> >> iter->walker->tbl =3D rcu_dereference_protected(ht->tbl,
+> >> 					      lockdep_is_held(&ht->lock));
+> > =
 
-Please use it.
+> > That is just gross.  I think a comment is much better in this case.
+> =
 
-Thanks.
+> Herbert, this macro was created exactly to handle this situation,
+> and this is what we do everywhere else in the tree.
 
---===============3333625806859405911==--
+OK.
+
+---8<---
+The commit f9f51b8070be3e829100614a7372b219723b864f ("rhashtable:
+Fix walker list corruption") causes a suspicious RCU usage warning
+because we no longer hold ht->mutex when we dereference ht->tbl.
+
+However, this is a false positive because we now hold ht->lock
+which also guarantees that ht->tbl won't disppear from under us.
+
+This patch kills the warning by using rcu_dereference_protected.
+
+Reported-by: kernel test robot <ying.huang@linux.intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+
+diff --git a/lib/rhashtable.c b/lib/rhashtable.c
+index eb9240c..51282f5 100644
+--- a/lib/rhashtable.c
++++ b/lib/rhashtable.c
+@@ -519,7 +519,8 @@ int rhashtable_walk_init(struct rhashtable *ht, struct =
+rhashtable_iter *iter)
+ 		return -ENOMEM;
+ =
+
+ 	spin_lock(&ht->lock);
+-	iter->walker->tbl =3D rht_dereference(ht->tbl, ht);
++	iter->walker->tbl =3D
++		rcu_dereference_protected(ht->tbl, lockdep_is_held(&ht->lock));
+ 	list_add(&iter->walker->list, &iter->walker->tbl->walkers);
+ 	spin_unlock(&ht->lock);
+ =
+
+-- =
+
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+
+--===============0812814615470100588==--
 
