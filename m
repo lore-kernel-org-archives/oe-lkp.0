@@ -1,53 +1,36 @@
-Content-Type: multipart/mixed; boundary="===============3398823440217797000=="
+Content-Type: multipart/mixed; boundary="===============6933746218722086963=="
 MIME-Version: 1.0
-From: Eric Dumazet <edumazet@google.com>
+From: Yinghai Lu <yinghai@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [net] ceb5d58b21: -69.2% fsmark.files_per_sec
-Date: Thu, 24 Dec 2015 05:17:08 -0800
-Message-ID: <CANn89iJxF_qJwk0AmFVd57oexPzeB596KRL0r1HehP23JQM-dw@mail.gmail.com>
-In-Reply-To: <87si2sbdky.fsf@yhuang-dev.intel.com>
+Subject: Re: [resources] 09b7f22ba7: BUG: sleeping function called from invalid context at mm/slub.c:1287
+Date: Thu, 24 Dec 2015 11:39:30 -0800
+Message-ID: <CAE9FiQWVxxuDWPEaaC-jvfxGmCjd4rg=AbfSkue=0uhq=TpRsQ@mail.gmail.com>
+In-Reply-To: <871tadk62y.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3398823440217797000==
+--===============6933746218722086963==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 23, 2015 at 9:49 PM, kernel test robot
+On Tue, Dec 22, 2015 at 10:54 PM, kernel test robot
 <ying.huang@linux.intel.com> wrote:
 > FYI, we noticed the below changes on
 >
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> commit ceb5d58b217098a657f3850b7a2640f995032e62 ("net: fix sock_wake_asyn=
-c() rcu protection")
->
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_thre=
-ads/rootfs/sync_method/tbox_group/test_size/testcase:
->   gcc-4.9/performance/1BRD_48G/4M/nfsv4/xfs/1x/x86_64-rhel/64t/debian-x86=
-_64-2015-02-07.cgz/NoSync/lkp-hsx04/40G/fsmark
->
-> commit:
->   9cd3e072b0be17446e37d7414eac8a3499e0601e
->   ceb5d58b217098a657f3850b7a2640f995032e62
->
-> 9cd3e072b0be1744 ceb5d58b217098a657f3850b7a
-> ---------------- --------------------------
->          %stddev     %change         %stddev
+> https://git.kernel.org/pub/scm/linux/kernel/git/yinghai/linux-yinghai.git=
+ for-pci-v4.5-next
+> commit 09b7f22ba7bc2c45f7b2b1588c17d5264dc571f4 ("resources: Make allocat=
+e_resource() return best fit resource")
 
-> Thanks,
-> Ying Huang
+Hi Huang Ying,
 
-Hi Ying. I have no idea what these confusing numbers mean.
+I replaced that two commits (that one and one before) with new one.
 
-Is your benchmark running faster (good thing) or slower (sorry, but we
-fixed a bug)
+Please check that branch again.
 
-Thanks.
+Thanks
 
---===============3398823440217797000==--
+Yinghai
+
+--===============6933746218722086963==--
 
