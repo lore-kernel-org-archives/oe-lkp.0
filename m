@@ -1,33 +1,185 @@
-Content-Type: multipart/mixed; boundary="===============7031074902862929913=="
+Content-Type: multipart/mixed; boundary="===============6798358757923625993=="
 MIME-Version: 1.0
-From: Darren Hart <dvhart@infradead.org>
+From: kernel test robot <ying.huang@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [futex] 14f4ccc8db: kernel BUG at kernel/futex.c:744!
-Date: Mon, 28 Dec 2015 13:36:32 -0800
-Message-ID: <20151228213632.GA5047@malice.jf.intel.com>
-In-Reply-To: <5677bb68.1uxM6+2ef2ZbWcfy%fengguang.wu@intel.com>
+Subject: [f2fs] 1abff93d01: 75.0% xfstests.time.exit_status
+Date: Mon, 28 Dec 2015 09:50:41 +0800
+Message-ID: <87wprz2vf2.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7031074902862929913==
+--===============6798358757923625993==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Dec 21, 2015 at 04:42:16PM +0800, kernel test robot wrote:
-> Greetings,
-> =
+FYI, we noticed the below changes on
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+commit 1abff93d01eddaab7ccdcf15f8cda4d91cbbcd9a ("f2fs: support fs shutdown=
+")
 
-> git://git.infradead.org/users/dvhart/linux-platform-drivers-x86.git futex
 
-Glad this got caught (my CI caught it too). This won't be going up as is.
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+compiler/disk/fs/kconfig/rootfs/tbox_group/test/testcase:
+  gcc-4.9/4HDD/f2fs/x86_64-rhel/debian-x86_64-2015-02-07.cgz/vm-kbuild-4G/g=
+eneric-quick/xfstests
 
--- =
+commit: =
 
-Darren Hart
-Intel Open Source Technology Center
+  8fbc418f99caf65a53f3921ac2a32a0a0af7aba2
+  1abff93d01eddaab7ccdcf15f8cda4d91cbbcd9a
 
---===============7031074902862929913==--
+8fbc418f99caf65a 1abff93d01eddaab7ccdcf15f8 =
+
+---------------- -------------------------- =
+
+       fail:runs  %reproduction    fail:runs
+           |             |             |    =
+
+           :18          94%          17:18    xfstests.generic.052.fail
+           :18          94%          17:18    xfstests.generic.054.fail
+           :18          94%          17:18    xfstests.generic.055.fail
+           :18          94%          17:18    xfstests.generic.055.inconsis=
+tent_fs
+
+
+vm-kbuild-4G: qemu-system-x86_64 -enable-kvm -cpu qemu64,+ssse3
+Memory: 4G
+
+
+To reproduce:
+
+        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
+ts.git
+        cd lkp-tests
+        bin/lkp install job.yaml  # job file is attached in this email
+        bin/lkp run     job.yaml
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
+
+
+Thanks,
+Ying Huang
+
+--===============6798358757923625993==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="job.yaml"
+
+LS0tCkxLUF9TRVJWRVI6IGlubgpMS1BfQ0dJX1BPUlQ6IDgwCkxLUF9DSUZTX1BPUlQ6IDEzOQp0
+ZXN0Y2FzZTogeGZzdGVzdHMKZGVmYXVsdC1tb25pdG9yczoKICB3YWl0OiBhY3RpdmF0ZS1tb25p
+dG9yCiAga21zZzogCiAgdm1zdGF0OgogICAgaW50ZXJ2YWw6IDEwCmRlZmF1bHQtd2F0Y2hkb2dz
+OgogIG9vbS1raWxsZXI6IAogIHdhdGNoZG9nOiAKY3B1ZnJlcV9nb3Zlcm5vcjogCm1vZGVsOiBx
+ZW11LXN5c3RlbS14ODZfNjQgLWVuYWJsZS1rdm0gLWNwdSBxZW11NjQsK3Nzc2UzCm5yX3ZtOiA2
+Cm5yX2NwdTogNAptZW1vcnk6IDRHCnJvb3RmczogZGViaWFuLXg4Nl82NC0yMDE1LTAyLTA3LmNn
+egpoZGRfcGFydGl0aW9uczogIi9kZXYvdmRhIC9kZXYvdmRiIC9kZXYvdmRjIC9kZXYvdmRkIC9k
+ZXYvdmRlIC9kZXYvdmRmIgpzd2FwX3BhcnRpdGlvbnM6ICIvZGV2L3ZkZyIKc3NoX2Jhc2VfcG9y
+dDogMjMwMzIKY2F0ZWdvcnk6IGZ1bmN0aW9uYWwKZGlzazogNEhERApmczogZjJmcwp4ZnN0ZXN0
+czoKICB0ZXN0OiBnZW5lcmljLXF1aWNrCmJyYW5jaDogc2NzaS9taXNjCmNvbW1pdDogMWFiZmY5
+M2QwMWVkZGFhYjdjY2RjZjE1ZjhjZGE0ZDkxY2JiY2Q5YQpxdWV1ZTogYmlzZWN0CnRlc3Rib3g6
+IHZtLWtidWlsZC00Ry0yCnRib3hfZ3JvdXA6IHZtLWtidWlsZC00RwprY29uZmlnOiB4ODZfNjQt
+cmhlbAplbnF1ZXVlX3RpbWU6IDIwMTUtMTItMjMgMDc6MzQ6NDUuNDI0NjMwMjk3ICswODowMApp
+ZDogZjE2NDdiYzNjMmNiNmY1N2YzODUzY2JmM2UxMTZkMDA2Mjg1YjJjNAp1c2VyOiBsa3AKY29t
+cGlsZXI6IGdjYy00LjkKaGVhZF9jb21taXQ6IGRhN2M4YWZkY2Q3OTc0MjA5NWM0NjE2NTA5MDg3
+Y2JjZGViYzM4NmYKYmFzZV9jb21taXQ6IDljOWQxOGU3YTY4MGYzZWNlZWI4OTFlMjQ3MDllZGE4
+MTdlZjczOGUKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L3hmc3Rlc3RzLzRIREQtZjJmcy1nZW5lcmlj
+LXF1aWNrL3ZtLWtidWlsZC00Ry9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6L3g4Nl82NC1y
+aGVsL2djYy00LjkvMWFiZmY5M2QwMWVkZGFhYjdjY2RjZjE1ZjhjZGE0ZDkxY2JiY2Q5YS8xIgpq
+b2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL3ZtLWtidWlsZC00Ry0yL2Jpc2VjdF94ZnN0ZXN0cy00
+SERELWYyZnMtZ2VuZXJpYy1xdWljay1kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6LXg4Nl82
+NC1yaGVsLTFhYmZmOTNkMDFlZGRhYWI3Y2NkY2YxNWY4Y2RhNGQ5MWNiYmNkOWEtMjAxNTEyMjMt
+MjIwMjItM3EwbjcyLTEueWFtbCIKbWF4X3VwdGltZTogMzYwMAppbml0cmQ6ICIvb3NpbWFnZS9k
+ZWJpYW4vZGViaWFuLXg4Nl82NC0yMDE1LTAyLTA3LmNneiIKYm9vdGxvYWRlcl9hcHBlbmQ6Ci0g
+cm9vdD0vZGV2L3JhbTAKLSB1c2VyPWxrcAotIGpvYj0vbGtwL3NjaGVkdWxlZC92bS1rYnVpbGQt
+NEctMi9iaXNlY3RfeGZzdGVzdHMtNEhERC1mMmZzLWdlbmVyaWMtcXVpY2stZGViaWFuLXg4Nl82
+NC0yMDE1LTAyLTA3LmNnei14ODZfNjQtcmhlbC0xYWJmZjkzZDAxZWRkYWFiN2NjZGNmMTVmOGNk
+YTRkOTFjYmJjZDlhLTIwMTUxMjIzLTIyMDIyLTNxMG43Mi0xLnlhbWwKLSBBUkNIPXg4Nl82NAot
+IGtjb25maWc9eDg2XzY0LXJoZWwKLSBicmFuY2g9c2NzaS9taXNjCi0gY29tbWl0PTFhYmZmOTNk
+MDFlZGRhYWI3Y2NkY2YxNWY4Y2RhNGQ5MWNiYmNkOWEKLSBCT09UX0lNQUdFPS9wa2cvbGludXgv
+eDg2XzY0LXJoZWwvZ2NjLTQuOS8xYWJmZjkzZDAxZWRkYWFiN2NjZGNmMTVmOGNkYTRkOTFjYmJj
+ZDlhL3ZtbGludXotNC4wLjAtcmMyLTAwMDIwLWcxYWJmZjkzCi0gbWF4X3VwdGltZT0zNjAwCi0g
+UkVTVUxUX1JPT1Q9L3Jlc3VsdC94ZnN0ZXN0cy80SERELWYyZnMtZ2VuZXJpYy1xdWljay92bS1r
+YnVpbGQtNEcvZGViaWFuLXg4Nl82NC0yMDE1LTAyLTA3LmNnei94ODZfNjQtcmhlbC9nY2MtNC45
+LzFhYmZmOTNkMDFlZGRhYWI3Y2NkY2YxNWY4Y2RhNGQ5MWNiYmNkOWEvMQotIExLUF9TRVJWRVI9
+aW5uCi0gfDItCgoKICBlYXJseXByaW50az10dHlTMCwxMTUyMDAgc3lzdGVtZC5sb2dfbGV2ZWw9
+ZXJyCiAgZGVidWcgYXBpYz1kZWJ1ZyBzeXNycV9hbHdheXNfZW5hYmxlZCByY3VwZGF0ZS5yY3Vf
+Y3B1X3N0YWxsX3RpbWVvdXQ9MTAwCiAgcGFuaWM9LTEgc29mdGxvY2t1cF9wYW5pYz0xIG5taV93
+YXRjaGRvZz1wYW5pYyBvb3BzPXBhbmljIGxvYWRfcmFtZGlzaz0yIHByb21wdF9yYW1kaXNrPTAK
+ICBjb25zb2xlPXR0eVMwLDExNTIwMCBjb25zb2xlPXR0eTAgdmdhPW5vcm1hbAoKICBydwpsa3Bf
+aW5pdHJkOiAiL2xrcC9sa3AvbGtwLXg4Nl82NC5jZ3oiCm1vZHVsZXNfaW5pdHJkOiAiL3BrZy9s
+aW51eC94ODZfNjQtcmhlbC9nY2MtNC45LzFhYmZmOTNkMDFlZGRhYWI3Y2NkY2YxNWY4Y2RhNGQ5
+MWNiYmNkOWEvbW9kdWxlcy5jZ3oiCmJtX2luaXRyZDogIi9vc2ltYWdlL2RlcHMvZGViaWFuLXg4
+Nl82NC0yMDE1LTAyLTA3LmNnei9sa3AuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0y
+MDE1LTAyLTA3LmNnei9ydW4taXBjb25maWcuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82
+NC0yMDE1LTAyLTA3LmNnei9mcy5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTUt
+MDItMDcuY2d6L3hmc3Rlc3RzLmNneiwvbGtwL2JlbmNobWFya3MveGZzdGVzdHMuY2d6IgprZXJu
+ZWw6ICIvcGtnL2xpbnV4L3g4Nl82NC1yaGVsL2djYy00LjkvMWFiZmY5M2QwMWVkZGFhYjdjY2Rj
+ZjE1ZjhjZGE0ZDkxY2JiY2Q5YS92bWxpbnV6LTQuMC4wLXJjMi0wMDAyMC1nMWFiZmY5MyIKZGVx
+dWV1ZV90aW1lOiAyMDE1LTEyLTIzIDA3OjU3OjIyLjYxNzEwMjgxMyArMDg6MDAKam9iX3N0YXRl
+OiBmaW5pc2hlZApsb2FkYXZnOiAwLjc1IDEuMDQgMC45MiAxLzEwNyAyODQ3MwpzdGFydF90aW1l
+OiAnMTQ1MDgyODY5NScKZW5kX3RpbWU6ICcxNDUwODMwMTA1Jwp2ZXJzaW9uOiAiL2xrcC9sa3Av
+LnNyYy0yMDE1MTIyMi0xNzUwMzUiCg==
+
+--===============6798358757923625993==
+Content-Type: application/x-sh
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.sh"
+
+MjAxNS0xMi0yMyAwNzo1ODowNCBta2ZzIC10IGYyZnMgL2Rldi92ZGEKMjAxNS0xMi0yMyAwNzo1
+ODowNCBta2ZzIC10IGYyZnMgL2Rldi92ZGQKMjAxNS0xMi0yMyAwNzo1ODowNCBta2ZzIC10IGYy
+ZnMgL2Rldi92ZGIKMjAxNS0xMi0yMyAwNzo1ODowNCBta2ZzIC10IGYyZnMgL2Rldi92ZGMKMjAx
+NS0xMi0yMyAwNzo1ODoxMCBtb3VudCAtdCBmMmZzIC9kZXYvdmRhIC9mcy92ZGEKMjAxNS0xMi0y
+MyAwNzo1ODoxMCBtb3VudCAtdCBmMmZzIC9kZXYvdmRiIC9mcy92ZGIKMjAxNS0xMi0yMyAwNzo1
+ODoxMCBtb3VudCAtdCBmMmZzIC9kZXYvdmRjIC9mcy92ZGMKMjAxNS0xMi0yMyAwNzo1ODoxMSBt
+b3VudCAtdCBmMmZzIC9kZXYvdmRkIC9mcy92ZGQKMjAxNS0xMi0yMyAwNzo1ODoxMiBleHBvcnQg
+VEVTVF9ESVI9L2ZzL3ZkYQoyMDE1LTEyLTIzIDA3OjU4OjEyIGV4cG9ydCBURVNUX0RFVj0vZGV2
+L3ZkYQoyMDE1LTEyLTIzIDA3OjU4OjEyIGV4cG9ydCBGU1RZUD1mMmZzCjIwMTUtMTItMjMgMDc6
+NTg6MTIgZXhwb3J0IFNDUkFUQ0hfTU5UPS9mcy9zY3JhdGNoCjIwMTUtMTItMjMgMDc6NTg6MTIg
+bWtkaXIgL2ZzL3NjcmF0Y2ggLXAKMjAxNS0xMi0yMyAwNzo1ODoxMiBleHBvcnQgU0NSQVRDSF9E
+RVY9L2Rldi92ZGQKMjAxNS0xMi0yMyAwNzo1ODoxMiAuL2NoZWNrIGdlbmVyaWMvMDAxIGdlbmVy
+aWMvMDAyIGdlbmVyaWMvMDAzIGdlbmVyaWMvMDA0IGdlbmVyaWMvMDA1IGdlbmVyaWMvMDA2IGdl
+bmVyaWMvMDA3IGdlbmVyaWMvMDA4IGdlbmVyaWMvMDA5IGdlbmVyaWMvMDExIGdlbmVyaWMvMDEy
+IGdlbmVyaWMvMDE0IGdlbmVyaWMvMDE1IGdlbmVyaWMvMDE1IGdlbmVyaWMvMDE2IGdlbmVyaWMv
+MDE4IGdlbmVyaWMvMDIwIGdlbmVyaWMvMDIxIGdlbmVyaWMvMDIyIGdlbmVyaWMvMDIzIGdlbmVy
+aWMvMDI0IGdlbmVyaWMvMDI1IGdlbmVyaWMvMDI2IGdlbmVyaWMvMDI4IGdlbmVyaWMvMDI5IGdl
+bmVyaWMvMDMwIGdlbmVyaWMvMDMxIGdlbmVyaWMvMDMyIGdlbmVyaWMvMDMzIGdlbmVyaWMvMDM0
+IGdlbmVyaWMvMDM1IGdlbmVyaWMvMDM2IGdlbmVyaWMvMDM3IGdlbmVyaWMvMDM5IGdlbmVyaWMv
+MDQwIGdlbmVyaWMvMDQxIGdlbmVyaWMvMDQyIGdlbmVyaWMvMDQzIGdlbmVyaWMvMDQ0IGdlbmVy
+aWMvMDQ1IGdlbmVyaWMvMDQ2IGdlbmVyaWMvMDQ3IGdlbmVyaWMvMDQ4IGdlbmVyaWMvMDQ5IGdl
+bmVyaWMvMDUwIGdlbmVyaWMvMDUxIGdlbmVyaWMvMDUyIGdlbmVyaWMvMDUyIGdlbmVyaWMvMDUz
+IGdlbmVyaWMvMDU0IGdlbmVyaWMvMDU0IGdlbmVyaWMvMDU1IGdlbmVyaWMvMDU1IGdlbmVyaWMv
+MDU2IGdlbmVyaWMvMDU3IGdlbmVyaWMvMDU4IGdlbmVyaWMvMDU5IGdlbmVyaWMvMDYwIGdlbmVy
+aWMvMDYxIGdlbmVyaWMvMDYyIGdlbmVyaWMvMDY0IGdlbmVyaWMvMDY1IGdlbmVyaWMvMDY2IGdl
+bmVyaWMvMDY3IGdlbmVyaWMvMDY5IGdlbmVyaWMvMDcxIGdlbmVyaWMvMDcyIGdlbmVyaWMvMDcz
+IGdlbmVyaWMvMDc3IGdlbmVyaWMvMDc4IGdlbmVyaWMvMDc5IGdlbmVyaWMvMDgwIGdlbmVyaWMv
+MDgyIGdlbmVyaWMvMDg0IGdlbmVyaWMvMDg1IGdlbmVyaWMvMDg2IGdlbmVyaWMvMDg3IGdlbmVy
+aWMvMDg4IGdlbmVyaWMvMDg5IGdlbmVyaWMvMDkwIGdlbmVyaWMvMDkxIGdlbmVyaWMvMDkyIGdl
+bmVyaWMvMDk2IGdlbmVyaWMvMDk4IGdlbmVyaWMvMTAwIGdlbmVyaWMvMTAxIGdlbmVyaWMvMTAy
+IGdlbmVyaWMvMTAzIGdlbmVyaWMvMTA0IGdlbmVyaWMvMTA1IGdlbmVyaWMvMTA2IGdlbmVyaWMv
+MTA3IGdlbmVyaWMvMTA5IGdlbmVyaWMvMTIwIGdlbmVyaWMvMTIzIGdlbmVyaWMvMTI0IGdlbmVy
+aWMvMTI2IGdlbmVyaWMvMTI5IGdlbmVyaWMvMTMwIGdlbmVyaWMvMTMxIGdlbmVyaWMvMTM1IGdl
+bmVyaWMvMTQxIGdlbmVyaWMvMTY5IGdlbmVyaWMvMTg0IGdlbmVyaWMvMTkzIGdlbmVyaWMvMTk4
+IGdlbmVyaWMvMjA0IGdlbmVyaWMvMjA3IGdlbmVyaWMvMjEwIGdlbmVyaWMvMjExIGdlbmVyaWMv
+MjEyIGdlbmVyaWMvMjEzIGdlbmVyaWMvMjE0IGdlbmVyaWMvMjE1IGdlbmVyaWMvMjE5IGdlbmVy
+aWMvMjIxIGdlbmVyaWMvMjI4IGdlbmVyaWMvMjM0IGdlbmVyaWMvMjM1IGdlbmVyaWMvMjM2IGdl
+bmVyaWMvMjM3IGdlbmVyaWMvMjM5IGdlbmVyaWMvMjQwIGdlbmVyaWMvMjQ1IGdlbmVyaWMvMjQ2
+IGdlbmVyaWMvMjQ3IGdlbmVyaWMvMjQ4IGdlbmVyaWMvMjQ5IGdlbmVyaWMvMjU1IGdlbmVyaWMv
+MjU3IGdlbmVyaWMvMjU4IGdlbmVyaWMvMjc3IGdlbmVyaWMvMjgwIGdlbmVyaWMvMjg1IGdlbmVy
+aWMvMjg2IGdlbmVyaWMvMjk0IGdlbmVyaWMvMzAwIGdlbmVyaWMvMzA2IGdlbmVyaWMvMzA3IGdl
+bmVyaWMvMzA4IGdlbmVyaWMvMzA5IGdlbmVyaWMvMzEyIGdlbmVyaWMvMzEzIGdlbmVyaWMvMzE0
+IGdlbmVyaWMvMzE1IGdlbmVyaWMvMzE2IGdlbmVyaWMvMzE3IGdlbmVyaWMvMzE4IGdlbmVyaWMv
+MzE5IGdlbmVyaWMvMzIwIGdlbmVyaWMvMzIxIGdlbmVyaWMvMzIyIGdlbmVyaWMvMzI1Cg==
+
+--===============6798358757923625993==--
 
