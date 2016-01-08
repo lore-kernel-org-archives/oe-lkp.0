@@ -1,71 +1,117 @@
-Content-Type: multipart/mixed; boundary="===============5001183803091037584=="
+Content-Type: multipart/mixed; boundary="===============2146036896588750714=="
 MIME-Version: 1.0
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Heiko Carstens <heiko.carstens@de.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [mm, vmstat] 373ccbe592: BUG: unable to handle kernel
-Date: Fri, 08 Jan 2016 19:32:52 +0900
-Message-ID: <201601081932.GCE21843.HFQOtOSLFJFOVM@I-love.SAKURA.ne.jp>
-In-Reply-To: <87r3hsg4io.fsf@yhuang-dev.intel.com>
+Subject: Re: [mm/vmstat] 6cdb18ad98: -8.5% will-it-scale.per_thread_ops
+Date: Fri, 08 Jan 2016 12:13:23 +0100
+Message-ID: <20160108111323.GA3927@osiris>
+In-Reply-To: <87mvsgfxtd.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5001183803091037584==
+--===============2146036896588750714==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Ying Huang wrote:
-> FYI, we noticed the below changes on
+On Fri, Jan 08, 2016 at 01:24:30PM +0800, Huang, Ying wrote:
+> Heiko Carstens <heiko.carstens@de.ibm.com> writes:
 > =
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> commit 373ccbe5927034b55bdc80b0f8b54d6e13fe8d12 ("mm, vmstat: allow WQ co=
-ncurrency to discover memory reclaim doesn't make any progress")
+> > On Wed, Jan 06, 2016 at 11:20:55AM +0800, kernel test robot wrote:
+> >> FYI, we noticed the below changes on
+> >> =
+
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git mas=
+ter
+> >> commit 6cdb18ad98a49f7e9b95d538a0614cde827404b8 ("mm/vmstat: fix overf=
+low in mod_zone_page_state()")
+> >> =
+
+> >> =
+
+> >> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >> compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase:
+> >>   gcc-4.9/performance/x86_64-rhel/debian-x86_64-2015-02-07.cgz/ivb42/p=
+read1/will-it-scale
+> >> =
+
+> >> commit: =
+
+> >>   cc28d6d80f6ab494b10f0e2ec949eacd610f66e3
+> >>   6cdb18ad98a49f7e9b95d538a0614cde827404b8
+> >> =
+
+> >> cc28d6d80f6ab494 6cdb18ad98a49f7e9b95d538a0 =
+
+> >> ---------------- -------------------------- =
+
+> >>          %stddev     %change         %stddev
+> >>              \          |                \  =
+
+> >>    2733943   0%      -8.5%    2502129   0%  will-it-scale.per_thread_o=
+ps
+> >>       3410   0%      -2.0%       3343   0%  will-it-scale.time.system_=
+time
+> >>     340.08   0%     +19.7%     406.99   0%  will-it-scale.time.user_ti=
+me
+> >>   69882822   2%     -24.3%   52926191   5%  cpuidle.C1-IVT.time
+> >>     340.08   0%     +19.7%     406.99   0%  time.user_time
+> >>     491.25   6%     -17.7%     404.25   7%  numa-vmstat.node0.nr_alloc=
+_batch
+> >>       2799  20%     -36.6%       1776   0%  numa-vmstat.node0.nr_mapped
+> >>     630.00 140%    +244.4%       2169   1%  numa-vmstat.node1.nr_inact=
+ive_anon
+> >
+> > Hmm... this is odd. I did review all callers of mod_zone_page_state() a=
+nd
+> > couldn't find anything obvious that would go wrong after the int -> long
+> > change.
+> >
+> > I also tried the "pread1_threads" test case from
+> > https://github.com/antonblanchard/will-it-scale.git
+> >
+> > However the results seem to vary a lot after a reboot(!), at least on s=
+390.
+> >
+> > So I'm not sure if this is really a regression.
 > =
 
+> The test is quite stable for my side.  We run the test case 7 times for
+> your commit and its parent.  The standard variation is very low.
 > =
 
-> +------------------------------------------+------------+------------+
-> |                                          | 475a2f905d | 373ccbe592 |
-> +------------------------------------------+------------+------------+
-> | boot_successes                           | 303        | 265        |
-> | boot_failures                            | 0          | 39         |
-> | BUG:unable_to_handle_kernel              | 0          | 39         |
-> | Oops                                     | 0          | 39         |
-> | EIP_is_at__queue_work                    | 0          | 39         |
-> | Kernel_panic-not_syncing:Fatal_exception | 0          | 39         |
-> | backtrace:vmstat_shepherd                | 0          | 39         |
-> +------------------------------------------+------------+------------+
+> you commit:
 > =
 
-Thank you. I think that start_shepherd_timer() started shepherd item
-and vmstat_shepherd() is called before vmstat_wq =3D alloc_workqueue() is
-called. We are sometimes too late to allocate vmstat_wq workqueue.
-Please try below one.
+> [2493136, 2510964, 2508784, 2495632, 2506735, 2503016, 2510121]
+> =
 
-----------
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 4ebc17d..6478929 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -1545,12 +1545,12 @@ static struct notifier_block vmstat_notifier =3D
- static int __init setup_vmstat(void)
- {
- #ifdef CONFIG_SMP
-+	vmstat_wq =3D alloc_workqueue("vmstat", WQ_FREEZABLE|WQ_MEM_RECLAIM, 0);
- 	cpu_notifier_register_begin();
- 	__register_cpu_notifier(&vmstat_notifier);
- =
+> parent commit:
+> =
 
- 	start_shepherd_timer();
- 	cpu_notifier_register_done();
--	vmstat_wq =3D alloc_workqueue("vmstat", WQ_FREEZABLE|WQ_MEM_RECLAIM, 0);
- #endif
- #ifdef CONFIG_PROC_FS
- 	proc_create("buddyinfo", S_IRUGO, NULL, &fragmentation_file_operations);
-----------
+> [2735669, 2719566, 2739052, 2741485, 2735152, 2739356, 2739125]
+> =
 
-We need to backport this fix to stable since this commit already went to 3.=
-2.75.
+> The test result is stable for bisection too.  The below figure show the
+> results of good commits and bad commits.  The distance between is quite
+> big.  And the variation is quite small.
 
---===============5001183803091037584==--
+Ok, so it seems to be quite stable on your machine across reboots.
+
+I have to admit I still cannot make much sense of this. Is the "pread1"
+testcase the only one that performs worse, or are there more?
+
+Also could you please provide the output of /proc/zoneinfo and the output
+of "perf top" of the good/bad cases? Maybe that might help to figure out
+what is happening.
+
+> FYI, I test your patch on x86 platform.  I have no s390 system.
+
+Sure, I wouldn't expect that.
+
+
+--===============2146036896588750714==--
 
