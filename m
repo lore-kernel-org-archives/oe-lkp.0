@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============3537075008228437405=="
+Content-Type: multipart/mixed; boundary="===============6573372964468807122=="
 MIME-Version: 1.0
 From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 To: lkp@lists.01.org
 Subject: Re: [PATCH] vmstat: allocate vmstat_wq before it is used
-Date: Sat, 09 Jan 2016 15:53:56 +0900
-Message-ID: <201601091553.JJC73408.MLFVFJSOOtQHOF@I-love.SAKURA.ne.jp>
+Date: Sat, 09 Jan 2016 16:07:19 +0900
+Message-ID: <201601091607.DFB64048.MSFVFOOtLHJFQO@I-love.SAKURA.ne.jp>
 In-Reply-To: <CA+55aFySZnN0B1rO4iOnFBfAHStzBZS1v8dans1wTn1Uv6Qmtw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3537075008228437405==
+--===============6573372964468807122==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -100,5 +100,5 @@ never reproduces this bug. Thus, I think it is OK to sneak it into 4.4.
 
 Yes, please.
 
---===============3537075008228437405==--
+--===============6573372964468807122==--
 
