@@ -1,117 +1,26 @@
-Content-Type: multipart/mixed; boundary="===============2146036896588750714=="
+Content-Type: multipart/mixed; boundary="===============2000702611419254799=="
 MIME-Version: 1.0
-From: Heiko Carstens <heiko.carstens@de.ibm.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [mm/vmstat] 6cdb18ad98: -8.5% will-it-scale.per_thread_ops
-Date: Fri, 08 Jan 2016 12:13:23 +0100
-Message-ID: <20160108111323.GA3927@osiris>
-In-Reply-To: <87mvsgfxtd.fsf@yhuang-dev.intel.com>
+Subject: Re: [PATCH] vmstat: allocate vmstat_wq before it is used
+Date: Fri, 08 Jan 2016 16:13:56 -0800
+Message-ID: <CA+55aFxGty1okA9wwsGH7vjr89T6ZTOTjHHp+1OH8dZkj=3JwA@mail.gmail.com>
+In-Reply-To: <1452248309-17930-1-git-send-email-mhocko@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2146036896588750714==
+--===============2000702611419254799==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jan 08, 2016 at 01:24:30PM +0800, Huang, Ying wrote:
-> Heiko Carstens <heiko.carstens@de.ibm.com> writes:
-> =
+On Fri, Jan 8, 2016 at 2:18 AM, Michal Hocko <mhocko@kernel.org> wrote:
+>
+> I am not marking this for stable because I hope we can sneak it into 4.4.
+> The patch is trivial and obvious.
 
-> > On Wed, Jan 06, 2016 at 11:20:55AM +0800, kernel test robot wrote:
-> >> FYI, we noticed the below changes on
-> >> =
+Was there confirmation this fixed the issue? Just verifying..
 
-> >> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git mas=
-ter
-> >> commit 6cdb18ad98a49f7e9b95d538a0614cde827404b8 ("mm/vmstat: fix overf=
-low in mod_zone_page_state()")
-> >> =
+               Linus
 
-> >> =
-
-> >> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >> compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase:
-> >>   gcc-4.9/performance/x86_64-rhel/debian-x86_64-2015-02-07.cgz/ivb42/p=
-read1/will-it-scale
-> >> =
-
-> >> commit: =
-
-> >>   cc28d6d80f6ab494b10f0e2ec949eacd610f66e3
-> >>   6cdb18ad98a49f7e9b95d538a0614cde827404b8
-> >> =
-
-> >> cc28d6d80f6ab494 6cdb18ad98a49f7e9b95d538a0 =
-
-> >> ---------------- -------------------------- =
-
-> >>          %stddev     %change         %stddev
-> >>              \          |                \  =
-
-> >>    2733943   0%      -8.5%    2502129   0%  will-it-scale.per_thread_o=
-ps
-> >>       3410   0%      -2.0%       3343   0%  will-it-scale.time.system_=
-time
-> >>     340.08   0%     +19.7%     406.99   0%  will-it-scale.time.user_ti=
-me
-> >>   69882822   2%     -24.3%   52926191   5%  cpuidle.C1-IVT.time
-> >>     340.08   0%     +19.7%     406.99   0%  time.user_time
-> >>     491.25   6%     -17.7%     404.25   7%  numa-vmstat.node0.nr_alloc=
-_batch
-> >>       2799  20%     -36.6%       1776   0%  numa-vmstat.node0.nr_mapped
-> >>     630.00 140%    +244.4%       2169   1%  numa-vmstat.node1.nr_inact=
-ive_anon
-> >
-> > Hmm... this is odd. I did review all callers of mod_zone_page_state() a=
-nd
-> > couldn't find anything obvious that would go wrong after the int -> long
-> > change.
-> >
-> > I also tried the "pread1_threads" test case from
-> > https://github.com/antonblanchard/will-it-scale.git
-> >
-> > However the results seem to vary a lot after a reboot(!), at least on s=
-390.
-> >
-> > So I'm not sure if this is really a regression.
-> =
-
-> The test is quite stable for my side.  We run the test case 7 times for
-> your commit and its parent.  The standard variation is very low.
-> =
-
-> you commit:
-> =
-
-> [2493136, 2510964, 2508784, 2495632, 2506735, 2503016, 2510121]
-> =
-
-> parent commit:
-> =
-
-> [2735669, 2719566, 2739052, 2741485, 2735152, 2739356, 2739125]
-> =
-
-> The test result is stable for bisection too.  The below figure show the
-> results of good commits and bad commits.  The distance between is quite
-> big.  And the variation is quite small.
-
-Ok, so it seems to be quite stable on your machine across reboots.
-
-I have to admit I still cannot make much sense of this. Is the "pread1"
-testcase the only one that performs worse, or are there more?
-
-Also could you please provide the output of /proc/zoneinfo and the output
-of "perf top" of the good/bad cases? Maybe that might help to figure out
-what is happening.
-
-> FYI, I test your patch on x86 platform.  I have no s390 system.
-
-Sure, I wouldn't expect that.
-
-
---===============2146036896588750714==--
+--===============2000702611419254799==--
 
