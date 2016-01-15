@@ -1,39 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============4794573186691370422=="
+Content-Type: multipart/mixed; boundary="===============6217593603751595029=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@linux.intel.com>
+From: Grygorii Strashko <grygorii.strashko@ti.com>
 To: lkp@lists.01.org
-Subject: Re: [SUNRPC] e1e5693191: +71.4% fsmark.files_per_sec
-Date: Fri, 15 Jan 2016 09:35:03 +0800
-Message-ID: <8737tziq0o.fsf@yhuang-dev.intel.com>
-In-Reply-To: <CANn89i+7wN17Sz2JS_Z9ArC0C0TXpPa8mLM7X1j0=W3HwJhvjg@mail.gmail.com>
+Subject: [PATCH] input: serio: drop warnings in case of EPROBE_DEFER from serio_find_driver()
+Date: Fri, 15 Jan 2016 20:01:15 +0200
+Message-ID: <1452880875-4148-1-git-send-email-grygorii.strashko@ti.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4794573186691370422==
+--===============6217593603751595029==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Eric Dumazet <edumazet@google.com> writes:
+Now serio_find_driver() will print warnings in case device_attach()
+returns -EPROBE_DEFER. Those warnings are obsolete, in genral, because:
+- DD core can report the same if required
+- since commit 013c074f8642 ("PM / sleep: prohibit devices probing
+during suspend/hibernation") the devices probing is prohibited during
+System suspend and deferred device will be carefully reprobed once
+Resume is finished.
 
-> On Wed, Jan 13, 2016 at 7:05 PM, kernel test robot
-> <ying.huang@linux.intel.com> wrote:
->> FYI, we noticed the below changes on
->>
->> git://internal_merge_and_test_tree
->> revert-e1e56931915cc3fafb4e17d4e1073e24c0a304ce-e1e56931915cc3fafb4e17d4=
-e1073e24c0a304ce
->> commit e1e56931915cc3fafb4e17d4e1073e24c0a304ce ("SUNRPC: Fixup socket w=
-ait for memory")
->>
->
-> Sure, this fixes the regression noticed in your other mail
-> (ceb5d58b21: -69.2% fsmark.files_per_sec_)
+Hence, drop warnings in case of EPROBE_DEFER from serio_find_driver().
 
-Great!
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+ drivers/input/serio/serio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best Regards,
-Huang, Ying
+diff --git a/drivers/input/serio/serio.c b/drivers/input/serio/serio.c
+index 8f82897..1ca7f55 100644
+--- a/drivers/input/serio/serio.c
++++ b/drivers/input/serio/serio.c
+@@ -134,7 +134,7 @@ static void serio_find_driver(struct serio *serio)
+ 	int error;
+ =
+
+ 	error =3D device_attach(&serio->dev);
+-	if (error < 0)
++	if (error < 0 && error !=3D -EPROBE_DEFER)
+ 		dev_warn(&serio->dev,
+ 			 "device_attach() failed for %s (%s), error: %d\n",
+ 			 serio->phys, serio->name, error);
+-- =
+
+2.7.0
 
 
---===============4794573186691370422==--
+--===============6217593603751595029==--
 
