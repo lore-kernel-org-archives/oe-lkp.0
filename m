@@ -1,1279 +1,4833 @@
-Content-Type: multipart/mixed; boundary="===============7592656470753606606=="
+Content-Type: multipart/mixed; boundary="===============6623582538503665468=="
 MIME-Version: 1.0
 From: kernel test robot <ying.huang@linux.intel.com>
 To: lkp@lists.01.org
-Subject: [kallsyms] 06862f34f6: BUG: unable to handle kernel NULL pointer dereference at (null)
-Date: Fri, 22 Jan 2016 10:20:25 +0800
-Message-ID: <877fj2jqxi.fsf@yhuang-dev.intel.com>
+Subject: [locking/mutexes] cb4bbc457b: -40.0% unixbench.score
+Date: Fri, 22 Jan 2016 10:27:55 +0800
+Message-ID: <874me6jql0.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7592656470753606606==
+--===============6623582538503665468==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 FYI, we noticed the below changes on
 
-https://git.linaro.org/people/ard.biesheuvel/linux-arm kallsyms-text-relati=
-ve
-commit 06862f34f614bb6ff6a9fc9c4b0d849e2ee2018d ("kallsyms: add support for=
- relative offsets in kallsyms address table")
+https://github.com/0day-ci/linux Ding-Tianhong/locking-mutexes-don-t-spin-o=
+n-owner-when-wait-list-is-not-NULL/20160121-173317
+commit cb4bbc457bfed6194ffab1b10c7be73b3f16ca2d ("locking/mutexes: don't sp=
+in on owner when wait list is not NULL.")
 
 
-+-----------------------------------------------------------+------------+-=
------------+
-|                                                           | 30f05309bd | =
-06862f34f6 |
-+-----------------------------------------------------------+------------+-=
------------+
-| boot_successes                                            | 0          | =
-0          |
-| boot_failures                                             | 6          | =
-8          |
-| Kernel_panic-not_syncing:Attempted_to_kill_init!exitcode=3D | 4          =
-|            |
-| BUG:kernel_test_oversize                                  | 2          | =
-           |
-| BUG:unable_to_handle_kernel                               | 0          | =
-8          |
-+-----------------------------------------------------------+------------+-=
------------+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+compiler/cpufreq_governor/kconfig/nr_task/rootfs/tbox_group/test/testcase:
+  gcc-4.9/performance/x86_64-rhel/100%/debian-x86_64-2015-02-07.cgz/lkp-ivb=
+-d01/fstime/unixbench
+
+commit: =
+
+  f249f40fd783437189a2ac2aea88fe4f1dd2ab37
+  cb4bbc457bfed6194ffab1b10c7be73b3f16ca2d
+
+f249f40fd7834371 cb4bbc457bfed6194ffab1b10c =
+
+---------------- -------------------------- =
+
+         %stddev     %change         %stddev
+             \          |                \  =
+
+      6088 =C2=B1  0%     -40.0%       3653 =C2=B1  1%  unixbench.score
+      9363 =C2=B1 10%     -59.7%       3773 =C2=B1 75%  unixbench.time.invo=
+luntary_context_switches
+    558.75 =C2=B1  0%     -67.6%     181.25 =C2=B1  1%  unixbench.time.perc=
+ent_of_cpu_this_job_got
+    795.37 =C2=B1  0%     -68.5%     250.73 =C2=B1  1%  unixbench.time.syst=
+em_time
+    440962 =C2=B1  8%   +9552.3%   42563214 =C2=B1  2%  unixbench.time.volu=
+ntary_context_switches
+    505.14 =C2=B1  1%    +117.3%       1097 =C2=B1  0%  uptime.idle
+     21682 =C2=B1  5%     +53.0%      33173 =C2=B1  4%  softirqs.RCU
+     19435 =C2=B1  5%    +350.6%      87578 =C2=B1  1%  softirqs.SCHED
+    420271 =C2=B1  0%     -70.0%     125973 =C2=B1  1%  softirqs.TIMER
+      3.75 =C2=B1 11%     -73.3%       1.00 =C2=B1  0%  vmstat.procs.r
+      7011 =C2=B1  8%   +8194.5%     581586 =C2=B1  1%  vmstat.system.cs
+      5674 =C2=B1  0%     +24.1%       7044 =C2=B1  8%  vmstat.system.in
+     18847 =C2=B1137%     -82.2%       3349 =C2=B1147%  latency_stats.avg.w=
+ait_on_page_bit.__filemap_fdatawait_range.filemap_fdatawait_keep_errors.syn=
+c_inodes_sb.sync_inodes_one_sb.iterate_supers.sys_sync.entry_SYSCALL_64_fas=
+tpath
+     20617 =C2=B1  8%  +50440.7%   10420359 =C2=B1  6%  latency_stats.hits.=
+generic_file_write_iter.__vfs_write.vfs_write.SyS_write.entry_SYSCALL_64_fa=
+stpath
+    420571 =C2=B1140%     -84.9%      63576 =C2=B1164%  latency_stats.max.w=
+ait_on_page_bit.__filemap_fdatawait_range.filemap_fdatawait_keep_errors.syn=
+c_inodes_sb.sync_inodes_one_sb.iterate_supers.sys_sync.entry_SYSCALL_64_fas=
+tpath
+   4406135 =C2=B1  4%  +11665.3%  5.184e+08 =C2=B1  0%  latency_stats.sum.g=
+eneric_file_write_iter.__vfs_write.vfs_write.SyS_write.entry_SYSCALL_64_fas=
+tpath
+    430234 =C2=B1138%     -82.8%      73849 =C2=B1146%  latency_stats.sum.w=
+ait_on_page_bit.__filemap_fdatawait_range.filemap_fdatawait_keep_errors.syn=
+c_inodes_sb.sync_inodes_one_sb.iterate_supers.sys_sync.entry_SYSCALL_64_fas=
+tpath
+      9363 =C2=B1 10%     -59.7%       3773 =C2=B1 75%  time.involuntary_co=
+ntext_switches
+    558.75 =C2=B1  0%     -67.6%     181.25 =C2=B1  1%  time.percent_of_cpu=
+_this_job_got
+    795.37 =C2=B1  0%     -68.5%     250.73 =C2=B1  1%  time.system_time
+     12.81 =C2=B1  1%     -13.8%      11.04 =C2=B1  2%  time.user_time
+    440962 =C2=B1  8%   +9552.3%   42563214 =C2=B1  2%  time.voluntary_cont=
+ext_switches
+     69.85 =C2=B1  0%     -65.3%      24.25 =C2=B1  1%  turbostat.%Busy
+      2578 =C2=B1  0%     -65.3%     896.00 =C2=B1  1%  turbostat.Avg_MHz
+      1.08 =C2=B1 27%   +4194.0%      46.59 =C2=B1  0%  turbostat.CPU%c1
+      0.15 =C2=B1 63%    +313.6%       0.61 =C2=B1 26%  turbostat.CPU%c3
+     29.14 =C2=B1  0%     -25.1%      21.81 =C2=B1  0%  turbostat.CorWatt
+     70.00 =C2=B1  3%      -7.5%      64.75 =C2=B1  2%  turbostat.PkgTmp
+     35.02 =C2=B1  0%     -21.0%      27.66 =C2=B1  0%  turbostat.PkgWatt
+   3977771 =C2=B1 42%   +4729.4%  1.921e+08 =C2=B1  7%  cpuidle.C1-IVB.time
+     27974 =C2=B1  4%  +23907.8%    6716112 =C2=B1 10%  cpuidle.C1-IVB.usage
+   1647001 =C2=B1 22%  +15982.9%  2.649e+08 =C2=B1  0%  cpuidle.C1E-IVB.time
+      4743 =C2=B1  7%  +1.2e+05%    5603747 =C2=B1  7%  cpuidle.C1E-IVB.usa=
+ge
+   1647557 =C2=B1 50%   +1186.1%   21188962 =C2=B1 31%  cpuidle.C3-IVB.time
+      3255 =C2=B1 10%   +5794.9%     191907 =C2=B1 24%  cpuidle.C3-IVB.usage
+ 3.437e+08 =C2=B1  1%     +16.3%  3.998e+08 =C2=B1  2%  cpuidle.C6-IVB.time
+     15488 =C2=B1  4%   +1524.2%     251555 =C2=B1 18%  cpuidle.C6-IVB.usage
+   2645730 =C2=B1 26%    +151.8%    6662843 =C2=B1 29%  cpuidle.POLL.time
+    152570 =C2=B1 12%    +195.7%     451112 =C2=B1 20%  cpuidle.POLL.usage
+     38345 =C2=B1  1%     -58.7%      15844 =C2=B1  3%  sched_debug.cfs_rq:=
+/.exec_clock.0
+     37626 =C2=B1  0%     -61.9%      14342 =C2=B1  1%  sched_debug.cfs_rq:=
+/.exec_clock.1
+     37864 =C2=B1  1%     -61.7%      14486 =C2=B1  2%  sched_debug.cfs_rq:=
+/.exec_clock.2
+     38132 =C2=B1  1%     -62.1%      14438 =C2=B1  1%  sched_debug.cfs_rq:=
+/.exec_clock.3
+     37376 =C2=B1  0%     -72.4%      10318 =C2=B1  4%  sched_debug.cfs_rq:=
+/.exec_clock.4
+     37402 =C2=B1  0%     -69.9%      11244 =C2=B1  1%  sched_debug.cfs_rq:=
+/.exec_clock.5
+     37433 =C2=B1  0%     -70.4%      11089 =C2=B1  3%  sched_debug.cfs_rq:=
+/.exec_clock.6
+     37407 =C2=B1  0%     -69.8%      11282 =C2=B1  1%  sched_debug.cfs_rq:=
+/.exec_clock.7
+     37698 =C2=B1  0%     -65.8%      12880 =C2=B1  1%  sched_debug.cfs_rq:=
+/.exec_clock.avg
+     38910 =C2=B1  0%     -59.1%      15902 =C2=B1  2%  sched_debug.cfs_rq:=
+/.exec_clock.max
+     37349 =C2=B1  0%     -72.4%      10297 =C2=B1  4%  sched_debug.cfs_rq:=
+/.exec_clock.min
+    500.91 =C2=B1 17%    +310.6%       2056 =C2=B1  2%  sched_debug.cfs_rq:=
+/.exec_clock.stddev
+     65.59 =C2=B1  7%     +28.8%      84.51 =C2=B1  9%  sched_debug.cfs_rq:=
+/.load.stddev
+    128.00 =C2=B1 25%     -55.5%      57.00 =C2=B1 45%  sched_debug.cfs_rq:=
+/.load_avg.0
+     92.75 =C2=B1 54%     +57.1%     145.75 =C2=B1 27%  sched_debug.cfs_rq:=
+/.load_avg.3
+    199.25 =C2=B1 27%     -71.3%      57.25 =C2=B1 50%  sched_debug.cfs_rq:=
+/.load_avg.4
+    146.50 =C2=B1 83%     -95.1%       7.25 =C2=B1 38%  sched_debug.cfs_rq:=
+/.load_avg.6
+    119.26 =C2=B1 14%     -33.4%      79.48 =C2=B1  7%  sched_debug.cfs_rq:=
+/.load_avg.avg
+    263.33 =C2=B1 22%     -30.1%     184.08 =C2=B1  7%  sched_debug.cfs_rq:=
+/.load_avg.max
+     44.67 =C2=B1  6%     -87.5%       5.58 =C2=B1 46%  sched_debug.cfs_rq:=
+/.load_avg.min
+    303665 =C2=B1  0%     -75.2%      75238 =C2=B1  1%  sched_debug.cfs_rq:=
+/.min_vruntime.0
+    302562 =C2=B1  0%     -75.8%      73288 =C2=B1  2%  sched_debug.cfs_rq:=
+/.min_vruntime.1
+    302728 =C2=B1  0%     -75.8%      73154 =C2=B1  2%  sched_debug.cfs_rq:=
+/.min_vruntime.2
+    303591 =C2=B1  0%     -75.8%      73426 =C2=B1  1%  sched_debug.cfs_rq:=
+/.min_vruntime.3
+    301962 =C2=B1  0%     -81.6%      55478 =C2=B1  5%  sched_debug.cfs_rq:=
+/.min_vruntime.4
+    302458 =C2=B1  0%     -80.5%      59083 =C2=B1  1%  sched_debug.cfs_rq:=
+/.min_vruntime.5
+    302281 =C2=B1  0%     -80.7%      58358 =C2=B1  3%  sched_debug.cfs_rq:=
+/.min_vruntime.6
+    302717 =C2=B1  0%     -80.4%      59383 =C2=B1  1%  sched_debug.cfs_rq:=
+/.min_vruntime.7
+    302745 =C2=B1  0%     -78.2%      65926 =C2=B1  2%  sched_debug.cfs_rq:=
+/.min_vruntime.avg
+    304288 =C2=B1  0%     -75.2%      75418 =C2=B1  2%  sched_debug.cfs_rq:=
+/.min_vruntime.max
+    301709 =C2=B1  0%     -81.7%      55237 =C2=B1  5%  sched_debug.cfs_rq:=
+/.min_vruntime.min
+    795.06 =C2=B1 12%    +921.0%       8117 =C2=B1  2%  sched_debug.cfs_rq:=
+/.min_vruntime.stddev
+      0.44 =C2=B1 10%     -33.3%       0.29 =C2=B1 10%  sched_debug.cfs_rq:=
+/.nr_running.avg
+     42.00 =C2=B1  5%     -93.5%       2.75 =C2=B1 30%  sched_debug.cfs_rq:=
+/.runnable_load_avg.2
+     44.75 =C2=B1  6%     -89.9%       4.50 =C2=B1 72%  sched_debug.cfs_rq:=
+/.runnable_load_avg.3
+     41.25 =C2=B1  4%     -92.7%       3.00 =C2=B1 62%  sched_debug.cfs_rq:=
+/.runnable_load_avg.5
+     43.50 =C2=B1  6%     -96.0%       1.75 =C2=B1 74%  sched_debug.cfs_rq:=
+/.runnable_load_avg.6
+     33.50 =C2=B1 48%     -96.3%       1.25 =C2=B1 87%  sched_debug.cfs_rq:=
+/.runnable_load_avg.7
+     38.30 =C2=B1  8%     -91.1%       3.41 =C2=B1 12%  sched_debug.cfs_rq:=
+/.runnable_load_avg.avg
+     51.25 =C2=B1  2%     -78.2%      11.17 =C2=B1 19%  sched_debug.cfs_rq:=
+/.runnable_load_avg.max
+     13.90 =C2=B1 39%     -74.1%       3.60 =C2=B1 16%  sched_debug.cfs_rq:=
+/.runnable_load_avg.stddev
+     -1707 =C2=B1-24%   +1057.5%     -19760 =C2=B1 -8%  sched_debug.cfs_rq:=
+/.spread0.4
+     -1211 =C2=B1-89%   +1233.8%     -16156 =C2=B1 -6%  sched_debug.cfs_rq:=
+/.spread0.5
+     -1388 =C2=B1-66%   +1116.1%     -16881 =C2=B1 -8%  sched_debug.cfs_rq:=
+/.spread0.6
+   -953.45 =C2=B1-133%   +1563.1%     -15856 =C2=B1 -6%  sched_debug.cfs_rq=
+:/.spread0.7
+   -922.60 =C2=B1-87%    +909.4%      -9312 =C2=B1 -3%  sched_debug.cfs_rq:=
+/.spread0.avg
+     -1960 =C2=B1-39%    +920.5%     -20002 =C2=B1 -7%  sched_debug.cfs_rq:=
+/.spread0.min
+    795.42 =C2=B1 12%    +920.6%       8117 =C2=B1  2%  sched_debug.cfs_rq:=
+/.spread0.stddev
+    461.50 =C2=B1  2%     -55.2%     206.75 =C2=B1  6%  sched_debug.cfs_rq:=
+/.util_avg.0
+    450.25 =C2=B1  6%     -34.0%     297.25 =C2=B1  2%  sched_debug.cfs_rq:=
+/.util_avg.1
+    497.25 =C2=B1  8%     -42.1%     287.75 =C2=B1 19%  sched_debug.cfs_rq:=
+/.util_avg.2
+    471.75 =C2=B1 13%     -30.1%     329.75 =C2=B1 15%  sched_debug.cfs_rq:=
+/.util_avg.3
+    491.75 =C2=B1 11%     -70.3%     146.00 =C2=B1 42%  sched_debug.cfs_rq:=
+/.util_avg.4
+    414.00 =C2=B1  4%     -49.3%     209.75 =C2=B1 44%  sched_debug.cfs_rq:=
+/.util_avg.5
+    490.25 =C2=B1 28%     -66.7%     163.25 =C2=B1 28%  sched_debug.cfs_rq:=
+/.util_avg.6
+    463.25 =C2=B1  9%     -49.2%     235.25 =C2=B1 18%  sched_debug.cfs_rq:=
+/.util_avg.7
+    467.84 =C2=B1  3%     -49.8%     234.84 =C2=B1  2%  sched_debug.cfs_rq:=
+/.util_avg.avg
+    594.42 =C2=B1 14%     -32.6%     400.50 =C2=B1  8%  sched_debug.cfs_rq:=
+/.util_avg.max
+    383.00 =C2=B1  3%     -71.7%     108.33 =C2=B1 22%  sched_debug.cfs_rq:=
+/.util_avg.min
+    429518 =C2=B1 15%     +37.1%     588985 =C2=B1 12%  sched_debug.cpu.avg=
+_idle.5
+     23.41 =C2=B1114%     -90.7%       2.17 =C2=B1 56%  sched_debug.cpu.clo=
+ck.stddev
+     23.41 =C2=B1114%     -90.7%       2.17 =C2=B1 56%  sched_debug.cpu.clo=
+ck_task.stddev
+     40.75 =C2=B1  6%     -87.7%       5.00 =C2=B1 92%  sched_debug.cpu.cpu=
+_load[0].2
+     44.00 =C2=B1  6%     -94.3%       2.50 =C2=B1173%  sched_debug.cpu.cpu=
+_load[0].3
+     32.50 =C2=B1 49%     -91.5%       2.75 =C2=B1 78%  sched_debug.cpu.cpu=
+_load[0].4
+     40.25 =C2=B1  5%     -93.8%       2.50 =C2=B1 91%  sched_debug.cpu.cpu=
+_load[0].5
+     43.50 =C2=B1  8%     -93.9%       2.67 =C2=B1 63%  sched_debug.cpu.cpu=
+_load[0].6
+     35.03 =C2=B1  6%     -92.0%       2.80 =C2=B1 33%  sched_debug.cpu.cpu=
+_load[0].avg
+     51.58 =C2=B1  2%     -75.9%      12.42 =C2=B1 33%  sched_debug.cpu.cpu=
+_load[0].max
+     18.26 =C2=B1 10%     -76.1%       4.37 =C2=B1 30%  sched_debug.cpu.cpu=
+_load[0].stddev
+     32.50 =C2=B1 32%     -97.7%       0.75 =C2=B1 57%  sched_debug.cpu.cpu=
+_load[1].0
+     36.25 =C2=B1 24%     -91.0%       3.25 =C2=B1 50%  sched_debug.cpu.cpu=
+_load[1].1
+     40.75 =C2=B1  5%     -90.8%       3.75 =C2=B1 98%  sched_debug.cpu.cpu=
+_load[1].2
+     43.00 =C2=B1  4%     -95.3%       2.00 =C2=B1173%  sched_debug.cpu.cpu=
+_load[1].3
+     37.00 =C2=B1 22%     -95.3%       1.75 =C2=B1 62%  sched_debug.cpu.cpu=
+_load[1].4
+     40.50 =C2=B1  3%     -95.7%       1.75 =C2=B1 74%  sched_debug.cpu.cpu=
+_load[1].5
+     42.75 =C2=B1  7%     -95.3%       2.00 =C2=B1108%  sched_debug.cpu.cpu=
+_load[1].6
+     28.50 =C2=B1 53%     -98.2%       0.50 =C2=B1173%  sched_debug.cpu.cpu=
+_load[1].7
+     38.00 =C2=B1  2%     -94.2%       2.19 =C2=B1 28%  sched_debug.cpu.cpu=
+_load[1].avg
+     49.17 =C2=B1  1%     -81.5%       9.08 =C2=B1 39%  sched_debug.cpu.cpu=
+_load[1].max
+     16.08 =C2=B1 39%    -100.0%       0.00 =C2=B1 -1%  sched_debug.cpu.cpu=
+_load[1].min
+     11.03 =C2=B1 15%     -72.3%       3.05 =C2=B1 36%  sched_debug.cpu.cpu=
+_load[1].stddev
+     37.50 =C2=B1 13%     -98.0%       0.75 =C2=B1 57%  sched_debug.cpu.cpu=
+_load[2].0
+     39.00 =C2=B1 12%     -92.9%       2.75 =C2=B1 39%  sched_debug.cpu.cpu=
+_load[2].1
+     40.75 =C2=B1  5%     -92.6%       3.00 =C2=B1 97%  sched_debug.cpu.cpu=
+_load[2].2
+     42.25 =C2=B1  3%     -96.4%       1.50 =C2=B1173%  sched_debug.cpu.cpu=
+_load[2].3
+     39.25 =C2=B1  9%     -96.8%       1.25 =C2=B1 66%  sched_debug.cpu.cpu=
+_load[2].4
+     40.50 =C2=B1  3%     -96.3%       1.50 =C2=B1 57%  sched_debug.cpu.cpu=
+_load[2].5
+     42.50 =C2=B1  6%     -97.1%       1.25 =C2=B1131%  sched_debug.cpu.cpu=
+_load[2].6
+     33.50 =C2=B1 30%     -97.8%       0.75 =C2=B1110%  sched_debug.cpu.cpu=
+_load[2].7
+     39.82 =C2=B1  1%     -95.3%       1.86 =C2=B1 26%  sched_debug.cpu.cpu=
+_load[2].avg
+     48.00 =C2=B1  2%     -85.1%       7.17 =C2=B1 41%  sched_debug.cpu.cpu=
+_load[2].max
+     26.50 =C2=B1 21%    -100.0%       0.00 =C2=B1 -1%  sched_debug.cpu.cpu=
+_load[2].min
+      6.77 =C2=B1 20%     -64.8%       2.38 =C2=B1 38%  sched_debug.cpu.cpu=
+_load[2].stddev
+     40.00 =C2=B1  7%     -96.9%       1.25 =C2=B1 34%  sched_debug.cpu.cpu=
+_load[3].0
+     40.50 =C2=B1  7%     -93.8%       2.50 =C2=B1 34%  sched_debug.cpu.cpu=
+_load[3].1
+     40.25 =C2=B1  2%     -95.0%       2.00 =C2=B1122%  sched_debug.cpu.cpu=
+_load[3].2
+     42.25 =C2=B1  2%     -97.0%       1.25 =C2=B1131%  sched_debug.cpu.cpu=
+_load[3].3
+     40.25 =C2=B1  5%     -97.5%       1.00 =C2=B1 70%  sched_debug.cpu.cpu=
+_load[3].4
+     40.00 =C2=B1  3%     -98.1%       0.75 =C2=B1110%  sched_debug.cpu.cpu=
+_load[3].5
+     42.25 =C2=B1  5%     -96.8%       1.33 =C2=B1141%  sched_debug.cpu.cpu=
+_load[3].6
+     36.75 =C2=B1 18%     -98.0%       0.75 =C2=B1110%  sched_debug.cpu.cpu=
+_load[3].7
+     40.66 =C2=B1  1%     -96.0%       1.65 =C2=B1 25%  sched_debug.cpu.cpu=
+_load[3].avg
+     47.25 =C2=B1  2%     -85.9%       6.67 =C2=B1 34%  sched_debug.cpu.cpu=
+_load[3].max
+     32.58 =C2=B1 10%    -100.0%       0.00 =C2=B1 -1%  sched_debug.cpu.cpu=
+_load[3].min
+      4.44 =C2=B1 20%     -51.2%       2.17 =C2=B1 32%  sched_debug.cpu.cpu=
+_load[3].stddev
+     42.25 =C2=B1  5%     -97.6%       1.00 =C2=B1 70%  sched_debug.cpu.cpu=
+_load[4].0
+     40.50 =C2=B1  4%     -93.8%       2.50 =C2=B1 34%  sched_debug.cpu.cpu=
+_load[4].1
+     40.25 =C2=B1  2%     -96.3%       1.50 =C2=B1110%  sched_debug.cpu.cpu=
+_load[4].2
+     42.25 =C2=B1  2%     -97.0%       1.25 =C2=B1131%  sched_debug.cpu.cpu=
+_load[4].3
+     40.75 =C2=B1  4%     -96.3%       1.50 =C2=B1 74%  sched_debug.cpu.cpu=
+_load[4].4
+     39.50 =C2=B1  2%     -98.7%       0.50 =C2=B1173%  sched_debug.cpu.cpu=
+_load[4].5
+     42.00 =C2=B1  4%     -96.0%       1.67 =C2=B1141%  sched_debug.cpu.cpu=
+_load[4].6
+     39.50 =C2=B1 11%     -98.1%       0.75 =C2=B1110%  sched_debug.cpu.cpu=
+_load[4].7
+     41.25 =C2=B1  0%     -96.1%       1.60 =C2=B1 17%  sched_debug.cpu.cpu=
+_load[4].avg
+     47.17 =C2=B1  3%     -86.4%       6.42 =C2=B1 26%  sched_debug.cpu.cpu=
+_load[4].max
+     35.92 =C2=B1  6%    -100.0%       0.00 =C2=B1 -1%  sched_debug.cpu.cpu=
+_load[4].min
+      3.44 =C2=B1 23%     -37.0%       2.17 =C2=B1 22%  sched_debug.cpu.cpu=
+_load[4].stddev
+      1059 =C2=B1 28%     -64.3%     378.00 =C2=B1 71%  sched_debug.cpu.cur=
+r->pid.2
+    857.25 =C2=B1 26%     -25.6%     638.00 =C2=B1 13%  sched_debug.cpu.cur=
+r->pid.5
+    757.75 =C2=B1 10%     -44.7%     419.35 =C2=B1 25%  sched_debug.cpu.cur=
+r->pid.avg
+     38227 =C2=B1  0%     -14.3%      32746 =C2=B1  4%  sched_debug.cpu.nr_=
+load_updates.4
+     38089 =C2=B1  0%     -13.4%      32980 =C2=B1  0%  sched_debug.cpu.nr_=
+load_updates.5
+     38315 =C2=B1  0%     -15.5%      32362 =C2=B1  2%  sched_debug.cpu.nr_=
+load_updates.6
+     38187 =C2=B1  0%     -11.4%      33843 =C2=B1  5%  sched_debug.cpu.nr_=
+load_updates.7
+     38058 =C2=B1  0%     -16.8%      31648 =C2=B1  2%  sched_debug.cpu.nr_=
+load_updates.min
+      2260 =C2=B1 12%    +104.4%       4619 =C2=B1  8%  sched_debug.cpu.nr_=
+load_updates.stddev
+      0.46 =C2=B1 11%     -27.3%       0.33 =C2=B1 23%  sched_debug.cpu.nr_=
+running.avg
+     60237 =C2=B1 11%   +7594.3%    4634892 =C2=B1 11%  sched_debug.cpu.nr_=
+switches.0
+     55226 =C2=B1 12%   +8157.3%    4560209 =C2=B1  5%  sched_debug.cpu.nr_=
+switches.1
+     55047 =C2=B1 14%   +7797.4%    4347263 =C2=B1  3%  sched_debug.cpu.nr_=
+switches.2
+     57289 =C2=B1 14%   +7469.6%    4336552 =C2=B1  7%  sched_debug.cpu.nr_=
+switches.3
+     43239 =C2=B1 13%   +7701.1%    3373163 =C2=B1  8%  sched_debug.cpu.nr_=
+switches.4
+     44998 =C2=B1  7%   +7390.4%    3370525 =C2=B1  5%  sched_debug.cpu.nr_=
+switches.5
+     44707 =C2=B1 19%   +7785.8%    3525502 =C2=B1  2%  sched_debug.cpu.nr_=
+switches.6
+     42020 =C2=B1 12%   +7500.9%    3193917 =C2=B1  7%  sched_debug.cpu.nr_=
+switches.7
+     50345 =C2=B1 11%   +7681.7%    3917753 =C2=B1  2%  sched_debug.cpu.nr_=
+switches.avg
+     64527 =C2=B1  8%   +7405.8%    4843308 =C2=B1  7%  sched_debug.cpu.nr_=
+switches.max
+     40279 =C2=B1 11%   +7577.4%    3092415 =C2=B1  6%  sched_debug.cpu.nr_=
+switches.min
+      8478 =C2=B1 11%   +7117.2%     611929 =C2=B1 25%  sched_debug.cpu.nr_=
+switches.stddev
+      0.05 =C2=B1 34%    +320.0%       0.22 =C2=B1 24%  sched_debug.cpu.nr_=
+uninterruptible.avg
+     95009 =C2=B1  7%   +4814.6%    4669278 =C2=B1 11%  sched_debug.cpu.sch=
+ed_count.0
+     55259 =C2=B1 12%   +8152.5%    4560280 =C2=B1  5%  sched_debug.cpu.sch=
+ed_count.1
+     55076 =C2=B1 14%   +7793.3%    4347342 =C2=B1  3%  sched_debug.cpu.sch=
+ed_count.2
+     57315 =C2=B1 14%   +7466.2%    4336636 =C2=B1  7%  sched_debug.cpu.sch=
+ed_count.3
+     43271 =C2=B1 13%   +7695.6%    3373239 =C2=B1  8%  sched_debug.cpu.sch=
+ed_count.4
+     45025 =C2=B1  7%   +7386.0%    3370599 =C2=B1  5%  sched_debug.cpu.sch=
+ed_count.5
+     44736 =C2=B1 19%   +7780.8%    3525576 =C2=B1  2%  sched_debug.cpu.sch=
+ed_count.6
+     42050 =C2=B1 12%   +7495.7%    3194026 =C2=B1  7%  sched_debug.cpu.sch=
+ed_count.7
+     54718 =C2=B1 10%   +7067.8%    3922122 =C2=B1  2%  sched_debug.cpu.sch=
+ed_count.avg
+     95009 =C2=B1  7%   +5021.3%    4865699 =C2=B1  7%  sched_debug.cpu.sch=
+ed_count.max
+     40308 =C2=B1 11%   +7572.0%    3092488 =C2=B1  6%  sched_debug.cpu.sch=
+ed_count.min
+     17263 =C2=B1  4%   +3482.1%     618390 =C2=B1 25%  sched_debug.cpu.sch=
+ed_count.stddev
+     28215 =C2=B1 11%   +8107.6%    2315778 =C2=B1 11%  sched_debug.cpu.sch=
+ed_goidle.0
+     25818 =C2=B1 10%   +8729.5%    2279654 =C2=B1  5%  sched_debug.cpu.sch=
+ed_goidle.1
+     26437 =C2=B1 16%   +8118.1%    2172611 =C2=B1  3%  sched_debug.cpu.sch=
+ed_goidle.2
+     25648 =C2=B1 11%   +8348.5%    2166947 =C2=B1  7%  sched_debug.cpu.sch=
+ed_goidle.3
+     20962 =C2=B1 13%   +7940.0%    1685351 =C2=B1  8%  sched_debug.cpu.sch=
+ed_goidle.4
+     21369 =C2=B1  8%   +7784.9%    1684972 =C2=B1  5%  sched_debug.cpu.sch=
+ed_goidle.5
+     21662 =C2=B1 20%   +8035.7%    1762354 =C2=B1  2%  sched_debug.cpu.sch=
+ed_goidle.6
+     20316 =C2=B1 12%   +7752.8%    1595435 =C2=B1  7%  sched_debug.cpu.sch=
+ed_goidle.7
+     23804 =C2=B1 11%   +8125.0%    1957888 =C2=B1  2%  sched_debug.cpu.sch=
+ed_goidle.avg
+     30125 =C2=B1  8%   +7935.5%    2420701 =C2=B1  7%  sched_debug.cpu.sch=
+ed_goidle.max
+     19379 =C2=B1 11%   +7877.2%    1545896 =C2=B1  6%  sched_debug.cpu.sch=
+ed_goidle.min
+      3658 =C2=B1 18%   +8263.0%     305987 =C2=B1 25%  sched_debug.cpu.sch=
+ed_goidle.stddev
+     30798 =C2=B1  9%   +7479.9%    2334453 =C2=B1  5%  sched_debug.cpu.ttw=
+u_count.0
+     28062 =C2=B1  8%   +8128.7%    2309129 =C2=B1  3%  sched_debug.cpu.ttw=
+u_count.1
+     25856 =C2=B1 17%   +8831.7%    2309423 =C2=B1  1%  sched_debug.cpu.ttw=
+u_count.2
+     24822 =C2=B1 18%   +9337.9%    2342745 =C2=B1  4%  sched_debug.cpu.ttw=
+u_count.3
+     21728 =C2=B1 16%   +5352.6%    1184732 =C2=B1  2%  sched_debug.cpu.ttw=
+u_count.4
+     24081 =C2=B1 18%   +7105.7%    1735222 =C2=B1 11%  sched_debug.cpu.ttw=
+u_count.5
+     24395 =C2=B1  7%   +6596.3%    1633561 =C2=B1  3%  sched_debug.cpu.ttw=
+u_count.6
+     21052 =C2=B1 17%   +8550.8%    1821237 =C2=B1  9%  sched_debug.cpu.ttw=
+u_count.7
+     25099 =C2=B1 11%   +7704.1%    1958813 =C2=B1  2%  sched_debug.cpu.ttw=
+u_count.avg
+     31674 =C2=B1  9%   +7601.4%    2439385 =C2=B1  2%  sched_debug.cpu.ttw=
+u_count.max
+     19256 =C2=B1 14%   +6050.5%    1184359 =C2=B1  3%  sched_debug.cpu.ttw=
+u_count.min
+      4109 =C2=B1 16%  +10090.0%     418801 =C2=B1  9%  sched_debug.cpu.ttw=
+u_count.stddev
+      7112 =C2=B1  5%     -26.5%       5226 =C2=B1 37%  sched_debug.cpu.ttw=
+u_local.0
+      1112 =C2=B1 17%     -43.9%     624.50 =C2=B1 14%  sched_debug.cpu.ttw=
+u_local.6
+    869.42 =C2=B1  7%     -38.4%     535.83 =C2=B1  1%  sched_debug.cpu.ttw=
+u_local.min
+
+
+lkp-ivb-d01: Ivy Bridge
+Memory: 16G
+
+vm-kbuild-yocto-x86_64: qemu-system-x86_64 -enable-kvm -cpu SandyBridge
+Memory: 320M
 
 
 
-[    0.568228] Last level iTLB entries: 4KB 0, 2MB 0, 4MB 0
-[    0.568971] Last level dTLB entries: 4KB 0, 2MB 0, 4MB 0, 1GB 0
-[    0.569835] CPU: Intel Xeon E312xx (Sandy Bridge) (family: 0x6, model: 0=
-x2a, stepping: 0x1)
-[    0.598441] BUG: unable to handle kernel NULL pointer dereference at    =
-       (null)
-[    0.599646] IP:
-[    0.599884] BUG: unable to handle kernel NULL pointer dereference at    =
-       (null)
-[    0.610184] IP:
-Elapsed time: 10
-qemu-system-x86_64 -enable-kvm -cpu SandyBridge -kernel /pkg/linux/x86_64-r=
-andconfig-s4-01220217/gcc-5/06862f34f614bb6ff6a9fc9c4b0d849e2ee2018d/vmlinu=
-z-4.4.0-10063-g06862f34 -append 'root=3D/dev/ram0 user=3Dlkp job=3D/lkp/sch=
-eduled/vm-kbuild-yocto-x86_64-62/bisect_boot-1-yocto-minimal-x86_64.cgz-x86=
-_64-randconfig-s4-01220217-06862f34f614bb6ff6a9fc9c4b0d849e2ee2018d-2016012=
-2-39812-uowsx2-0.yaml ARCH=3Dx86_64 kconfig=3Dx86_64-randconfig-s4-01220217=
- branch=3Dlinux-devel/devel-spot-201601220143 commit=3D06862f34f614bb6ff6a9=
-fc9c4b0d849e2ee2018d BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-s4-01220217/=
-gcc-5/06862f34f614bb6ff6a9fc9c4b0d849e2ee2018d/vmlinuz-4.4.0-10063-g06862f3=
-4 max_uptime=3D600 RESULT_ROOT=3D/result/boot/1/vm-kbuild-yocto-x86_64/yoct=
-o-minimal-x86_64.cgz/x86_64-randconfig-s4-01220217/gcc-5/06862f34f614bb6ff6=
-a9fc9c4b0d849e2ee2018d/0 LKP_SERVER=3Dinn earlyprintk=3DttyS0,115200 system=
-d.log_level=3Derr debug apic=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_=
-stall_timeout=3D100 panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oo=
-ps=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 console=3DttyS0,115200 conso=
-le=3Dtty0 vga=3Dnormal rw ip=3D::::vm-kbuild-yocto-x86_64-62::dhcp drbd.min=
-or_count=3D8'  -initrd /fs/sdg1/initrd-vm-kbuild-yocto-x86_64-62 -m 320 -sm=
-p 1 -device e1000,netdev=3Dnet0 -netdev user,id=3Dnet0 -boot order=3Dnc -no=
--reboot -watchdog i6300esb -rtc base=3Dlocaltime -drive file=3D/fs/sdg1/dis=
-k0-vm-kbuild-yocto-x86_64-62,media=3Ddisk,if=3Dvirtio -pidfile /dev/shm/kbo=
-ot/pid-vm-kbuild-yocto-x86_64-62 -serial file:/dev/shm/kboot/serial-vm-kbui=
-ld-yocto-x86_64-62 -daemonize -display none -monitor null =
+                                    uptime.idle
+
+  1200 ++------------------------------------------------------------------=
+-+
+       OO OO O   O OOO OO    OOO O                                         =
+ |
+  1100 ++     O O         OO      O OO OO OOO                              =
+ |
+  1000 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   900 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   800 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   700 ++                                                                  =
+ |
+   600 ++                                                             *    =
+ |
+       |                                                              :+   =
+ |
+   500 **.**.**.**.***.**.**.***.**.**.**.***.**.**.***.**.**.**.***.*  **.=
+**
+       |                                                                   =
+ |
+   400 ++------------------------------------------------------------------=
+-+
 
 
 
 
+  1.2e+07 ++---------------------------------------------------------------=
+-+
+          |                           OO   OO                              =
+ |
+    1e+07 ++                        O     O                                =
+ |
+          |                             O     O                            =
+ |
+          |         OO                                                     =
+ |
+    8e+06 ++                O                                              =
+ |
+          |      OO          O                                             =
+ |
+    6e+06 O+  O       O        O   O                                       =
+ |
+          |O O          O  O    OO                                         =
+ |
+    4e+06 ++    O        O                                                 =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+    2e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+
+
+  6e+08 ++-----------------------------------------------------------------=
+-+
+        OO OO O      OO OO   O OO O                                        =
+ |
+  5e+08 ++     O OOO      O O      OO OO OOO O                             =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  4e+08 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  3e+08 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  2e+08 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  1e+08 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                                   softirqs.TIMER
+
+  450000 ++----------------------------------------------------------------=
+-+
+         **.**.***.**.***.**.***.**.***.**.***.***.**.***.**.***.**.***.**.=
+**
+  400000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  350000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  300000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 O+ OO OOO OO O   OO OO                                            =
+ |
+         |O            OO      O OO OOO OO OOO                             =
+ |
+  100000 ++----------------------------------------------------------------=
+-+
+
+
+                                   softirqs.SCHED
+
+  100000 ++------O---------O-O---------------------------------------------=
+-+
+         OO OO OO  OO OOO O   O                                            =
+ |
+   90000 ++                    O OO OOO OO OOO                             =
+ |
+   80000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   70000 ++                                                                =
+ |
+   60000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   50000 ++                                                                =
+ |
+   40000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   30000 ++                                                                =
+ |
+   20000 +*.* .** .**.*  .*    *.* .** .**. **. **. *.* *. *.*  .**. **.  .=
+**
+         *   *   *     **  *.**   *   *    *   *   *   *  *   **    *   ** =
+ |
+   10000 ++----------------------------------------------------------------=
+-+
+
+
+                                  cpuidle.C1-IVB.time
+
+  2.5e+08 ++---------------------------------------------------------------=
+-+
+          |                                                                =
+ |
+          |                           O    O                               =
+ |
+    2e+08 ++                        O  O  O O                              =
+ |
+          |                                                                =
+ |
+          |                             O     O                            =
+ |
+  1.5e+08 ++         O                                                     =
+ |
+          |         O                                                      =
+ |
+    1e+08 OO OO  OO            OOO O                                       =
+ |
+          |     O     O O                                                  =
+ |
+          |              O OOO                                             =
+ |
+    5e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                                cpuidle.C1-IVB.usage
+
+  8e+06 ++-----------------------------------------------------------------=
+-+
+        |                           O     O                                =
+ |
+  7e+06 ++                         O  O  O O                               =
+ |
+  6e+06 ++                                                                 =
+ |
+        |                              O     O                             =
+ |
+  5e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  4e+06 ++                                                                 =
+ |
+        |          O                                                       =
+ |
+  3e+06 ++        O                                                        =
+ |
+  2e+06 O+     O O                                                         =
+ |
+        |O OO O      OO  OO OO OO O                                        =
+ |
+  1e+06 ++              O                                                  =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                                 cpuidle.C1E-IVB.time
+
+  3.5e+08 ++---------------------------------------------------------------=
+-+
+          |                 O                                              =
+ |
+    3e+08 ++      O          O                                             =
+ |
+          |      O  OO         O    O OOO OOO O                            =
+ |
+  2.5e+08 OO OO       O O  O    OO O                                       =
+ |
+          |              O                                                 =
+ |
+    2e+08 ++    O                                                          =
+ |
+          |                                                                =
+ |
+  1.5e+08 ++                                                               =
+ |
+          |                                                                =
+ |
+    1e+08 ++                                                               =
+ |
+          |                                                                =
+ |
+    5e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                                cpuidle.C1E-IVB.usage
+
+  7e+06 ++-----------------------------------------------------------------=
+-+
+        |                                                                  =
+ |
+  6e+06 ++                          O O   OO                               =
+ |
+        |                          O     O                                 =
+ |
+  5e+06 ++                             O     O                             =
+ |
+        |                 O                                                =
+ |
+  4e+06 ++       OOO        O                                              =
+ |
+        |      O                                                           =
+ |
+  3e+06 ++                   O                                             =
+ |
+        OO OO        OO  O     OO O                                        =
+ |
+  2e+06 ++    O         O                                                  =
+ |
+        |                                                                  =
+ |
+  1e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                                 turbostat.Avg_MHz
+
+  2800 ++------------------------------------------------------------------=
+-+
+  2600 ++      .*          *.        *.           *.     *.**.**. **.    *.=
+ |
+       **.**.**  *.***.**.*  ***.**.*  **.***.**.*  ***.*        *   * .*  =
+**
+  2400 ++                                                             *    =
+ |
+  2200 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  2000 ++                                                                  =
+ |
+  1800 ++                                                                  =
+ |
+  1600 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  1400 ++                                                                  =
+ |
+  1200 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  1000 ++       OO O              O OO OO OOO                              =
+ |
+   800 OO-OO-OO-----OO-OO-OO-OOO-O-----------------------------------------=
+-+
+
+
+                                 turbostat._Busy
+
+  75 ++--------------------------------------------------------------------=
+-+
+  70 **.**.**.**.**.**.**.**.**.**.**.**.***.**.**.**. *.**.**.**.**.*  **.=
+**
+     |                                                *               :+   =
+ |
+  65 ++                                                               *    =
+ |
+  60 ++                                                                    =
+ |
+  55 ++                                                                    =
+ |
+  50 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  45 ++                                                                    =
+ |
+  40 ++                                                                    =
+ |
+  35 ++                                                                    =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  25 OO OO OO OO OO OO OO OO OO OO OO OO OOO                               =
+ |
+  20 ++--------------------------------------------------------------------=
+-+
+
+
+                                turbostat.CPU_c1
+
+  50 ++--------------------------------------------------------------------=
+-+
+  45 OO OO  O OO OO OO OO OO OO OO OO OO OOO                               =
+ |
+     |     O                                                               =
+ |
+  40 ++                                                                    =
+ |
+  35 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+  25 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  15 ++                                                                    =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+   5 ++                                                                    =
+ |
+   0 **-**-**-**-**-**-**-**-**-**-**-**-***-**-**-**-**-**-**-**-**-**-**-=
+**
+
+
+                                turbostat.PkgWatt
+
+  36 ++-------------------*------------------------------**-*--------------=
+-+
+  35 **.**.**.**.**.**.**  *.**.**.**.**.***.**.**.**   +    *.**.**.*   *.=
+**
+     |                                               + *             :  *  =
+ |
+  34 ++                                               *               ::   =
+ |
+  33 ++                                                               ::   =
+ |
+     |                                                                *    =
+ |
+  32 ++                                                                    =
+ |
+  31 ++                                                                    =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  29 ++                                                                    =
+ |
+  28 ++        O O  O               O     O                                =
+ |
+     OO OO OO O   O  O OO O  OO OO O  OO O O                               =
+ |
+  27 ++                    O                                               =
+ |
+  26 ++--------------------------------------------------------------------=
+-+
+
+
+                                turbostat.CorWatt
+
+  31 ++--------------------------------------------------------------------=
+-+
+  30 ++                                                  *                 =
+ |
+     **.**.**.**.**.**.**.**.**.**.**.**.***.**.**.**.  + *.**.**.**.*   *.=
+**
+  29 ++                                               **             :  *  =
+ |
+  28 ++                                                               ::   =
+ |
+  27 ++                                                               ::   =
+ |
+  26 ++                                                               *    =
+ |
+     |                                                                     =
+ |
+  25 ++                                                                    =
+ |
+  24 ++                                                                    =
+ |
+  23 ++                                                                    =
+ |
+  22 ++        O O                  O     O                                =
+ |
+     OO OO OO O   O OO OO O  OO OO O  OO O O                               =
+ |
+  21 ++                    O                                               =
+ |
+  20 ++--------------------------------------------------------------------=
+-+
+
+
+                                  unixbench.score
+
+  6500 ++------------------------------------------------------------------=
+-+
+       **.           *. *.* .**          .**          *. *. *.  .***.**.  .=
+**
+  6000 ++ **.**.**.**  *   *   *.**.**.**   *.**.**.**  *  *  **        ** =
+ |
+  5500 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  5000 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  4500 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  4000 ++                                                                  =
+ |
+  3500 ++                         O OO OO OOO                              =
+ |
+       |         O O                                                       =
+ |
+  3000 O+ OO  O O   OO    OO OOO O                                         =
+ |
+       |O    O         OO                                                  =
+ |
+  2500 ++------------------------------------------------------------------=
+-+
+
+
+                            unixbench.time.system_time
+
+  800 **-**-**-**-**-**-***-**-**-**-**-***-**-**-**-**-**-***-**-**-**-**-=
+**
+      |                                                                    =
+ |
+  700 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  600 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  500 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  400 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  300 ++                                                                   =
+ |
+      OO OO OO OO OO O  OOO OO OO OO OO OOO O                              =
+ |
+  200 ++--------------O----------------------------------------------------=
+-+
+
+
+                    unixbench.time.percent_of_cpu_this_job_got
+
+  600 ++-------------------------------------------------------------------=
+-+
+      **.**.**.**.**.**.***.**.**.**.**.***.**.**.**.* .**.***.**.**.*  **.=
+**
+  550 ++                                              *               :+   =
+ |
+  500 ++                                                              *    =
+ |
+      |                                                                    =
+ |
+  450 ++                                                                   =
+ |
+  400 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  350 ++                                                                   =
+ |
+  300 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  250 ++                                                                   =
+ |
+  200 ++                                                                   =
+ |
+      |      O OO O      OO       OO OO OOO O                              =
+ |
+  150 OO-OO-O------O-OO-O---OO-OO------------------------------------------=
+-+
+
+
+                      unixbench.time.voluntary_context_switches
+
+  6e+07 ++----O---------O--------------------------------------------------=
+-+
+        OO OO        OO  OO O                                              =
+ |
+  5e+07 ++     O O             OO O                                        =
+ |
+        |         OO         O                                             =
+ |
+        |                          OO OO OOO O                             =
+ |
+  4e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  3e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  2e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  1e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                                 time.system_time
+
+  800 **-**-**-**-**-**-***-**-**-**-**-***-**-**-**-**-**-***-**-**-**-**-=
+**
+      |                                                                    =
+ |
+  700 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  600 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  500 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  400 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  300 ++                                                                   =
+ |
+      OO OO OO OO OO O  OOO OO OO OO OO OOO O                              =
+ |
+  200 ++--------------O----------------------------------------------------=
+-+
+
+
+                         time.percent_of_cpu_this_job_got
+
+  600 ++-------------------------------------------------------------------=
+-+
+      **.**.**.**.**.**.***.**.**.**.**.***.**.**.**.* .**.***.**.**.*  **.=
+**
+  550 ++                                              *               :+   =
+ |
+  500 ++                                                              *    =
+ |
+      |                                                                    =
+ |
+  450 ++                                                                   =
+ |
+  400 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  350 ++                                                                   =
+ |
+  300 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  250 ++                                                                   =
+ |
+  200 ++                                                                   =
+ |
+      |      O OO O      OO       OO OO OOO O                              =
+ |
+  150 OO-OO-O------O-OO-O---OO-OO------------------------------------------=
+-+
+
+
+                           time.voluntary_context_switches
+
+  6e+07 ++----O---------O--------------------------------------------------=
+-+
+        OO OO        OO  OO O                                              =
+ |
+  5e+07 ++     O O             OO O                                        =
+ |
+        |         OO         O                                             =
+ |
+        |                          OO OO OOO O                             =
+ |
+  4e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  3e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  2e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  1e+07 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                                  vmstat.procs.r
+
+    4 **----**-**-**-**-**--**----**-**-***----**-**-*--**-***-**-**-*--**-=
+*+
+      |:    :            :  ::    :       :    :     :  :            :  :  =
+:|
+  3.5 ++:  :             : :  :  :         :  :      : :             : :   =
+:|
+      | :  :              ::  :  :         :  :       ::              ::   =
+ |
+      |  ::               :    ::           ::        :               :    =
+ |
+    3 ++ **               *    **           **        *               *    =
+ *
+      |                                                                    =
+ |
+  2.5 ++                                                                   =
+ |
+      |                                                                    =
+ |
+    2 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+  1.5 ++                                                                   =
+ |
+      |                                                                    =
+ |
+    1 OO-OO-OO-OO-OO-OO-OOO-OO-OO-OO-OO-OOO-O------------------------------=
+-+
+
+
+                                  vmstat.system.cs
+
+  900000 ++----------------------------------------------------------------=
+-+
+         |     O                                                           =
+ |
+  800000 OO OO        OOO OO                                               =
+ |
+  700000 ++     OO           O O  O                                        =
+ |
+         |         OO         O  O                                         =
+ |
+  600000 ++                         OOO OO OOO                             =
+ |
+  500000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  400000 ++                                                                =
+ |
+  300000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+  100000 ++                                                                =
+ |
+         |                                                                 =
+ |
+       0 **-**-***-**-***-**-***-**-***-**-***-***-**-***-**-***-**-***-**-=
+**
+
+
+                          sched_debug.cpu.cpu_load_2_.0
+
+  70 ++--------------------------------------------------------------------=
+-+
+     |  *                     *            *                               =
+ |
+  60 ++ :                     ::           ::                              =
+ |
+     * : :                 *  ::        .* ::                              =
+ |
+  50 ++: *.     .*         :  : *      * : : *      *.             *       =
+ |
+     | :   **.**  :     *.* ::   *.**.*  ::   *.**.*  *    .* .*   :+      =
+ *
+  40 ++:          *.**.*    ::            :            *.**  *  *.*  **  *.=
+ |
+     |:                      :            :                            + : =
+*|
+  30 +*                      *            *                             *  =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |   O O            O       O                                          =
+ |
+   0 OO-O---O-OO-OO-OO-O--OO-OO--O-OO-OO-OOO-------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_3_.0
+
+  70 ++-*---------------------*------------*-------------------------------=
+-+
+     |  :                     ::           ::                              =
+ |
+  60 ++: :                    ::           ::                              =
+ |
+     * : :                 *  : :       .* : :                             =
+ |
+  50 ++: *.     .*         :::  *      * ::  *      *.      *      *       =
+ |
+     |::   **.**  :     *.* ::   *.**.*   :   *.**.*  *    + :.*   :+      =
+ *
+  40 ++           *.**.*     :            :            *.**  *  *.*  **. *.=
+*|
+     |*                      *            *                             *  =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |O  O O            O       O                                          =
+ |
+   0 O+-O---O-OO-OO-OO-O--OO-OO--O-OO-OO-OOO-------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_4_.0
+
+  80 ++-*---------------------*------------*-------------------------------=
+-+
+     |  :                     :            :                               =
+ |
+  70 ++::                     ::           ::                              =
+ |
+  60 ++: :                    ::           ::                              =
+ |
+     * : :                 * : :        .*: :               *              =
+ |
+  50 ++: :      .*         :::  :      * ::  :      *.     : :             =
+ |
+     |:  *.**.**  :     *.* ::  **.**.*   :  **.**.*  *    : *.**. *.      =
+ *
+  40 +*           *.**.*     *            *            *.**       *  **.**.=
+*|
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |   O O  O  O              O                                          =
+ |
+   0 OO-O---O--O--O-OO-OO-OO-OO--O-OO-OO-OOO-------------------------------=
+-+
+
+
+                             sched_debug.cpu.ttwu_count.0
+
+    4e+06 ++---------------------------------------------------------------=
+-+
+          |                                                                =
+ |
+  3.5e+06 ++             O                                                 =
+ |
+    3e+06 ++  O O                                                          =
+ |
+          |  O   O          OO                                             =
+ |
+  2.5e+06 OO      O     O  O          O    O                               =
+ |
+          |         OOO        O O  O  OO O O O                            =
+ |
+    2e+06 ++                    O  O                                       =
+ |
+          |                                                                =
+ |
+  1.5e+06 ++                                                               =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cfs_rq:_.exec_clock.0
+
+  40000 **-*---*-***-**-***--*-**---*-**-***-*---*-***--*-***-**--*-***-*--=
+-+
+        |   *.*             *     **          *.*      *         *       *.=
+**
+  35000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++        OO  O                                                    =
+ |
+        O  O  OO     O         OO O                                        =
+ |
+        |O  O    O       OO OO      O OO  OO O                             =
+ |
+  15000 ++              O          O     O                                 =
+ |
+        |                                                                  =
+ |
+  10000 ++-----------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.min_vruntime.0
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.* *.**.***.**.***.**.=
+**
+         |                                             *                   =
+ |
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+  100000 O+        OO OO       O O                                         =
+ |
+         |O OO OOO      O OO OO   O OOO OO OOO                             =
+ |
+   50000 ++----------------------------------------------------------------=
+-+
+
+
+                             sched_debug.cpu.nr_switches.1
+
+  1.6e+07 ++---------------------------------------------------------------=
+-+
+          |              O                                                 =
+ |
+  1.4e+07 ++                                                               =
+ |
+  1.2e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+    1e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+    8e+06 ++               O     O                                         =
+ |
+          |O      O O   O   O                                              =
+ |
+    6e+06 ++    O              O                                           =
+ |
+    4e+06 O+ OO              O      O OOO OOO O                            =
+ |
+          |      O   OO         O  O                                       =
+ |
+    2e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cpu.cpu_load_4_.1
+
+  70 ++--------------------------------------------------------------------=
+-+
+     |     *                     *            *                            =
+ |
+  60 ++    :                     :            :                            =
+ |
+     |    ::   *                 ::   *       ::   *                       =
+ |
+  50 ++   : :  :+               : :  + :     : :  + :                      =
+ |
+     **. *  :.*  **. *.    *.* .*  :*  *.** .*  :*  *   .*    .*    .**. *.=
+ |
+  40 ++ *   *       *  *  *   *    *       *    *    + * :  **  *.**    *  =
+**
+     |                 : :                            *   ::               =
+ |
+  30 ++                 ::                                ::               =
+ |
+     |                  *                                 *                =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |  OO  O                      O     O                                 =
+ |
+   0 OO----O--OO-OO-OO-OO-OO-OO-OO--O-OO--OO-------------------------------=
+-+
+
+
+                             sched_debug.cpu.sched_count.1
+
+  1.6e+07 ++---------------------------------------------------------------=
+-+
+          |              O                                                 =
+ |
+  1.4e+07 ++                                                               =
+ |
+  1.2e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+    1e+07 ++                                                               =
+ |
+          |                                                                =
+ |
+    8e+06 ++               O     O                                         =
+ |
+          |O      O O   O   O                                              =
+ |
+    6e+06 ++    O              O                                           =
+ |
+    4e+06 O+ OO              O      O OOO OOO O                            =
+ |
+          |      O   OO         O  O                                       =
+ |
+    2e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                           sched_debug.cpu.sched_goidle.1
+
+  8e+06 ++-----------------------------------------------------------------=
+-+
+        |               O                                                  =
+ |
+  7e+06 ++                                                                 =
+ |
+  6e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  5e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  4e+06 ++               O      O                                          =
+ |
+        |O       OO   O   O                                                =
+ |
+  3e+06 ++    O              O                                             =
+ |
+  2e+06 O+ OO               O      OO OO OOO O                             =
+ |
+        |      O   O O         O  O                                        =
+ |
+  1e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                             sched_debug.cpu.ttwu_count.1
+
+    4e+06 ++----O----------------------------------------------------------=
+-+
+          O  O                                                             =
+ |
+  3.5e+06 +O          O    OOO                                             =
+ |
+    3e+06 ++  O  OO     O       OO O                                       =
+ |
+          |         O    O     O                                           =
+ |
+  2.5e+06 ++         O                                                     =
+ |
+          |                         O OOO OOO O                            =
+ |
+    2e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  1.5e+06 ++                                                               =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cfs_rq:_.exec_clock.1
+
+  40000 ++-----------------------------------------------------------------=
+-+
+        **.**.**.***.**.***.**.**.***.**.***.**.**.***. *.***.**.**.***.**.=
+**
+  35000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |        O      OO   O                                             =
+ |
+  15000 OO OO O   OO  O   O O  OO OOO OO OOO O                             =
+ |
+        |      O     O                                                     =
+ |
+  10000 ++-----------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.min_vruntime.1
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.* *.**.***.**.***.**.=
+**
+         |                                             *                   =
+ |
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         OO OO OOO OO OOO OO OOO OO OOO OO OOO                             =
+ |
+   50000 ++----------------------------------------------------------------=
+-+
+
+
+                            sched_debug.cpu.nr_switches.2
+
+  9e+06 ++-----------------------------------------------------------------=
+-+
+        |                                                                  =
+ |
+  8e+06 ++ O                                                               =
+ |
+  7e+06 ++                O                                                =
+ |
+        |      O                                                           =
+ |
+  6e+06 ++              O                                                  =
+ |
+  5e+06 O+               O  O                                              =
+ |
+        |     O  O   OO        O    O OO  OO O                             =
+ |
+  4e+06 ++        OO               O     O                                 =
+ |
+  3e+06 ++  O                O    O                                        =
+ |
+        |O                      O                                          =
+ |
+  2e+06 ++                                                                 =
+ |
+  1e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                          sched_debug.cpu.cpu_load_3_.2
+
+  70 ++--------------------------------------------------------------------=
+-+
+     |                                                                     =
+ |
+  60 ++                                                      *             =
+ |
+     |                                                       ::            =
+ |
+  50 **                    *.*          .**                 : :            =
+ |
+     | +    *.  .* .**. *.*   :    *   *   :    *   *. *. *.*  : .*        =
+ |
+  40 ++ *   : **  *    *      *.  + *.*    *.  + *.*  *  *     **  *.**.**.=
+**
+     |   *.*                    **           **                            =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |                 O  OO O  O   O     O                                =
+ |
+   0 OO-OO-OO-OO-OO-OO--O-----O--O-O--OO-O-O-------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_4_.2
+
+  60 ++------------------------------------------------------*-------------=
+-+
+     |                                                       ::            =
+ |
+  50 ++                                                     : :            =
+ |
+     **.                   *.*          .**               *.*  : .*        =
+ |
+     |  *   *.**.**.**.**.*   *.  .**.**   *.  .**.**. *.*     **  *.**.*  =
+ |
+  40 ++  *.*                    **           **       *                  *.=
+**
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |                 O   O    O   O     O                                =
+ |
+   0 OO-OO-OO-OO-OO-OO--O-O--OO--O-O--OO-O-O-------------------------------=
+-+
+
+
+                            sched_debug.cpu.sched_count.2
+
+  9e+06 ++-----------------------------------------------------------------=
+-+
+        |                                                                  =
+ |
+  8e+06 ++ O                                                               =
+ |
+  7e+06 ++                O                                                =
+ |
+        |      O                                                           =
+ |
+  6e+06 ++              O                                                  =
+ |
+  5e+06 O+               O  O                                              =
+ |
+        |     O  O   OO        O    O OO  OO O                             =
+ |
+  4e+06 ++        OO               O     O                                 =
+ |
+  3e+06 ++  O                O    O                                        =
+ |
+        |O                      O                                          =
+ |
+  2e+06 ++                                                                 =
+ |
+  1e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                            sched_debug.cpu.sched_goidle.2
+
+  4.5e+06 ++---------------------------------------------------------------=
+-+
+          |                                                                =
+ |
+    4e+06 ++ O                                                             =
+ |
+  3.5e+06 ++                O                                              =
+ |
+          |      O                                                         =
+ |
+    3e+06 ++             O                                                 =
+ |
+  2.5e+06 O+               O O                                             =
+ |
+          |     O O   O O       O     OOO  OO O                            =
+ |
+    2e+06 ++        OO              O     O                                =
+ |
+  1.5e+06 ++  O                O   O                                       =
+ |
+          |O                     O                                         =
+ |
+    1e+06 ++                                                               =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                             sched_debug.cpu.ttwu_count.2
+
+    4e+06 ++----O--------O-------------------------------------------------=
+-+
+          |O  O       O    O     O                                         =
+ |
+  3.5e+06 ++            O   O   O  O                                       =
+ |
+    3e+06 O+      O O        O O                                           =
+ |
+          |  O   O   O                                                     =
+ |
+  2.5e+06 ++                                                               =
+ |
+          |                         O OOO OOO O                            =
+ |
+    2e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+  1.5e+06 ++                                                               =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cfs_rq:_.exec_clock.2
+
+  40000 ++--*---------------*-----*-----------*----------------------------=
+*+
+        **.*  **.***.**.***  *.**  **.**.***.*  **.***. *.***.**.**.***.** =
+ *
+  35000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  15000 OO OO OO OOO O  OOO O  OO OOO OO OOO O                             =
+ |
+        |             O      O                                             =
+ |
+  10000 ++-----------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.min_vruntime.2
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.* *.**.***.**.***.**.=
+**
+         |                                             *                   =
+ |
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         OO OO OOO OO OOO OO OOO OO OOO OO OOO                             =
+ |
+   50000 ++----------------------------------------------------------------=
+-+
+
+
+                            sched_debug.cpu.nr_switches.3
+
+  9e+06 ++-----------------------------------------------------------------=
+-+
+        |   O O                                                            =
+ |
+  8e+06 ++                                                                 =
+ |
+  7e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  6e+06 ++                                                                 =
+ |
+  5e+06 ++                        O                                        =
+ |
+        |O           O      O       O OO  OO O                             =
+ |
+  4e+06 O+ O   O OO     O O  O O   O     O                                 =
+ |
+  3e+06 ++         O  O  O      O                                          =
+ |
+        |                                                                  =
+ |
+  2e+06 ++                                                                 =
+ |
+  1e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                          sched_debug.cpu.cpu_load_0_.3
+
+  60 ++--------------------------------------------------------------------=
+-+
+     |                                                                     =
+ |
+  50 ++  *                      *            *                             =
+ |
+     |   :+         *          + :          + :              *.          *.=
+ *
+     **.*  **.**.* + :.**.**.**  *.**.**.***  *.**.**. *.**  : * .*   *.*  =
+*|
+  40 ++           *  *                                *   :  :  *  *.*     =
+ |
+     |                                                    :  :             =
+ |
+  30 ++                                                    : :             =
+ |
+     |                                                     : :             =
+ |
+  20 ++                                                    ::              =
+ |
+     |                                                     ::              =
+ |
+     |  O                                                   :              =
+ |
+  10 ++     O          O      O       O    O                :              =
+ |
+     OO    O        O                                       *              =
+ |
+   0 ++--O----OO-OO--O--O-OO-O--OO-OO--O-OO--------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_1_.3
+
+  50 ++--------------------------------------------------------------------=
+-+
+  45 ++  *.     .*      *.     .*      *.   .*      *                    * =
+ *
+     **.*  **.**  :.*   : **.**  *.**.*  ***  *.**.* +  .**  *.*      *. :+=
+ |
+  40 ++           * :  *                              **  :  :  *  *.*  *  =
+*|
+  35 ++              ::                                    : :   + :       =
+ |
+     |               ::                                    : :    *        =
+ |
+  30 ++              *                                     ::              =
+ |
+  25 ++                                                     :              =
+ |
+  20 ++                                                     *              =
+ |
+     |                                                                     =
+ |
+  15 ++                                                                    =
+ |
+  10 ++                                                                    =
+ |
+     |  O                     O       O    O                               =
+ |
+   5 OO    OO  O    O  O  O     O                                          =
+ |
+   0 ++--O----O--OO--O--O--O-O---O-OO--O-OO--------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_2_.3
+
+  50 ++--------------------------------------------------------------------=
+-+
+  45 ++  *. *.  .*      *.     .* .*   *.   .* .*   *                      =
+ |
+     **.*  *  **  :.*   : **.**  *  *.*  ***  *  *.* +  .**  *.*      *. *.=
+ *
+  40 ++           * :  *                              **   : :  *. *.*  *  =
+*|
+  35 ++              :+                                    ::     *        =
+ |
+     |               *                                      *              =
+ |
+  30 ++                                                                    =
+ |
+  25 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  15 ++                                                                    =
+ |
+  10 ++                                                                    =
+ |
+     |  O                             O    O                               =
+ |
+   5 OO    OO OO    O  O  O   O O                                          =
+ |
+   0 ++--O-------OO--O--O--O-O---O-OO--O-OO--------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_3_.3
+
+  50 ++-----*----------------------*------------*--------------------------=
+-+
+     |   *. :+  .*             .* + :  *.   .* + :  *         .*           =
+ |
+     **.*  *  **  :.*   *.**.**  *  *.*  ***  *  *.* +  .**  *  :     *.**.=
+ *
+  40 ++           *  :.*                              **   + :  *.**.*     =
+*|
+     |               *                                      *              =
+ |
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |  O                                                                  =
+ |
+     |O  O OO OO    O  O  O   O O     O    O                               =
+ |
+   0 O+----------OO--O--O--O-O---O-OO--O-OO--------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_4_.3
+
+  60 ++--------------------------------------------------------------------=
+-+
+     |                                                                     =
+ |
+  50 ++     *                      *            *                          =
+ |
+     |      :+  .*                + :  *.      + :  *         .*           =
+ |
+     **.**.*  **  :.* .**.**.**.**  *.*  ***.**  *.* + *.**. *  *.*   *.**.=
+**
+  40 ++           *  *                                *     *      *.*     =
+ |
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |                                                                     =
+ |
+  10 ++ O                                                                  =
+ |
+     |     O  O     O         O O     O    O                               =
+ |
+   0 OO--O--O--O-OO--O-OO-OO-O---O-OO--O-OO--------------------------------=
+-+
+
+
+                            sched_debug.cpu.sched_count.3
+
+  9e+06 ++-----------------------------------------------------------------=
+-+
+        |   O O                                                            =
+ |
+  8e+06 ++                                                                 =
+ |
+  7e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  6e+06 ++                                                                 =
+ |
+  5e+06 ++                        O                                        =
+ |
+        |O           O      O       O OO  OO O                             =
+ |
+  4e+06 O+ O   O OO     O O  O O   O     O                                 =
+ |
+  3e+06 ++         O  O  O      O                                          =
+ |
+        |                                                                  =
+ |
+  2e+06 ++                                                                 =
+ |
+  1e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                            sched_debug.cpu.sched_goidle.3
+
+  4.5e+06 ++---------------------------------------------------------------=
+-+
+          |   O O                                                          =
+ |
+    4e+06 ++                                                               =
+ |
+  3.5e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    3e+06 ++                                                               =
+ |
+  2.5e+06 ++                       O                                       =
+ |
+          |O          O      O        OOO  OO O                            =
+ |
+    2e+06 O+ O   OO O    O  O  OO   O     O                                =
+ |
+  1.5e+06 ++         O  O  O     O                                         =
+ |
+          |                                                                =
+ |
+    1e+06 ++                                                               =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                             sched_debug.cpu.ttwu_count.3
+
+  4.5e+06 ++---------------------------------------------------------------=
+-+
+          |O                                                               =
+ |
+    4e+06 O+    O     O    O                                               =
+ |
+  3.5e+06 ++ O           O                                                 =
+ |
+          |      OO     O   OO   O                                         =
+ |
+    3e+06 ++  O      O          O  O                                       =
+ |
+  2.5e+06 ++        O          O    O     O                                =
+ |
+          |                           OOO  OO O                            =
+ |
+    2e+06 ++                                                               =
+ |
+  1.5e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    1e+06 ++                                                               =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cfs_rq:_.exec_clock.3
+
+  40000 ++-------------------------------------------------------*---------=
+-+
+        **.**.**.***.**.***.**.**.***.**.***.**.**.***. *.***.**  *.***.**.=
+**
+  35000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |     O                                                            =
+ |
+  15000 OO OO  O OOO O  OO  O     OOO OO OOO O                             =
+ |
+        |             O   O  O OO                                          =
+ |
+  10000 ++-----------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.min_vruntime.3
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.* *.**.***.**.***.**.=
+**
+         |                                             *                   =
+ |
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         OO OO OOO OO OOO OO OOO OO OOO OO OOO                             =
+ |
+   50000 ++----------------------------------------------------------------=
+-+
+
+
+                             sched_debug.cpu.nr_switches.4
+
+    4e+06 ++---------------------------------------------------------------=
+-+
+          |                           O    O                               =
+ |
+  3.5e+06 ++                           O    O                              =
+ |
+    3e+06 ++                        O   O O   O                            =
+ |
+          |                                                                =
+ |
+  2.5e+06 ++          O                                                    =
+ |
+          |O      O            O                                           =
+ |
+    2e+06 O+  O  O       O OO   OO O                                       =
+ |
+          |  O       O  O    O                                             =
+ |
+  1.5e+06 ++        O                                                      =
+ |
+    1e+06 ++    O                                                          =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cpu.cpu_load_2_.4
+
+  60 ++--------------------------------------------------------------------=
+-+
+     |                                                                     =
+ |
+  50 ++     *                      *            *                          =
+ |
+     |      :+            *       + :          + :                         =
+ |
+     |*.**.*  * .**.**   + :.**.**  *. *. **.**  *. *  *    **  *     *  *.=
+*|
+  40 *+        *      : *  *          *  *         * + :+  +  : :: *.* + : =
+ *
+     |                : :                             *  **   :: : :    *  =
+ |
+  30 ++                *                                       *  *        =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |  O            O                                                     =
+ |
+   0 OO--O-OO-OO-OO-O--OO-OO-OO-OO-OO-OO-OOO-------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_3_.4
+
+  70 ++--------------------------------------------------------------------=
+-+
+     |                                                                     =
+ |
+  60 ++                   *                                                =
+ |
+     |                    :                                                =
+ |
+  50 ++     *            : :      .*           .*                          =
+ |
+     | .* .* +  .**. *   : :  *. *  :  *.  *. *  :  *      .**            .=
+*|
+  40 **  *    **    * + *  *.*  *   *.*  **  *   *.* + *. *   + *. *.**. * =
+ *
+     |                 *                              *  *     *  *     *  =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+   0 OO-OO-OO-OO-OO-OO-OO-OO-OO-OO-OO-OO-OOO-------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_4_.4
+
+  80 ++--------------------------------------------------------------------=
+-+
+     |                    *                                                =
+ |
+  70 ++                   :                                                =
+ |
+  60 ++                  ::                                                =
+ |
+     |                   : :                                               =
+ |
+  50 ++     *            : :       *            *                          =
+ |
+     | .*   :+ *.**. *  :  :  *.  + :.**.  *.  + :.**.    *.**.           .=
+*|
+  40 **  *.*  *     * + *  *.*  **  *    **  **  *    **.*     **.**.**.** =
+ *
+     |                 *                                                   =
+ |
+  30 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     O                             O     O                                 =
+ |
+   0 +O-OO-OO-OO-OO-OO-OO-OO-OO-OO--O-OO--OO-------------------------------=
+-+
+
+
+                             sched_debug.cpu.sched_count.4
+
+    4e+06 ++---------------------------------------------------------------=
+-+
+          |                           O    O                               =
+ |
+  3.5e+06 ++                           O    O                              =
+ |
+    3e+06 ++                        O   O O   O                            =
+ |
+          |                                                                =
+ |
+  2.5e+06 ++          O                                                    =
+ |
+          |O      O            O                                           =
+ |
+    2e+06 O+  O  O       O OO   OO O                                       =
+ |
+          |  O       O  O    O                                             =
+ |
+  1.5e+06 ++        O                                                      =
+ |
+    1e+06 ++    O                                                          =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                            sched_debug.cpu.sched_goidle.4
+
+    2e+06 ++---------------------------------------------------------------=
+-+
+  1.8e+06 ++                          O    O                               =
+ |
+          |                            O    O                              =
+ |
+  1.6e+06 ++                        O   O O   O                            =
+ |
+  1.4e+06 ++                                                               =
+ |
+          |           O                                                    =
+ |
+  1.2e+06 +O      O            O                                           =
+ |
+    1e+06 O+  O  O       O OO   OO O                                       =
+ |
+   800000 ++ O       O  O    O                                             =
+ |
+          |         O                                                      =
+ |
+   600000 ++    O                                                          =
+ |
+   400000 ++                                                               =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                             sched_debug.cpu.ttwu_count.4
+
+    2e+06 ++---------------------------------------------------------------=
+-+
+  1.8e+06 ++             O                                                 =
+ |
+          |   O                                                            =
+ |
+  1.6e+06 ++                                                               =
+ |
+  1.4e+06 ++ O              O                                              =
+ |
+          O      OO                    O    O                              =
+ |
+  1.2e+06 +O    O   OOO O  O O      O O O OO  O                            =
+ |
+    1e+06 ++                   O                                           =
+ |
+   800000 ++                    OO O                                       =
+ |
+          |                                                                =
+ |
+   600000 ++                                                               =
+ |
+   400000 ++                                                               =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cfs_rq:_.exec_clock.4
+
+  40000 ++-----------------------------------------------------------------=
+-+
+        **.**.**.***.**.***.**.**.***.**.***.**.**.***. *.***.**.**.***.**.=
+**
+  35000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  15000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  10000 ++                         OO OO OOO O                             =
+ |
+        OO OO OO OOO OO OOO OO OO O                                        =
+ |
+   5000 ++-----------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.min_vruntime.4
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.***.**.***.**.***.**.=
+**
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   50000 OO OO  OO OO OOO OO OOO OO OOO OO OOO                             =
+ |
+         |     O                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                             sched_debug.cpu.nr_switches.5
+
+    5e+06 ++----------------O----------------------------------------------=
+-+
+  4.5e+06 ++                                                               =
+ |
+          |   O                                                            =
+ |
+    4e+06 ++                                                               =
+ |
+  3.5e+06 ++                        O O O OO  O                            =
+ |
+          |          O                 O    O                              =
+ |
+    3e+06 ++     O       O     O                                           =
+ |
+  2.5e+06 O+ O    O        O O  O  O                                       =
+ |
+    2e+06 +O          O O        O                                         =
+ |
+          |     O   O                                                      =
+ |
+  1.5e+06 ++                                                               =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cpu.cpu_load_3_.5
+
+  60 ++-------*---------------------*------------*-------------------------=
+-+
+     |  *    +:               *     :      *     :                         =
+ |
+  50 +++:   * :               ::   * :     ::   * :                        =
+ |
+     **  :  : :            *.* :  :  :  .** :  :  :     .*                 =
+ |
+     |   *.:   : *    .**.*     * :  : *     * :  : *.**  *.**.**.*   *.*  =
+ |
+  40 ++    *   : :*.**           *   : :      *   : :             :   :  *.=
+**
+     |         ::                     ::           ::              : :     =
+ |
+  30 ++        ::                     :            :               :.*     =
+ |
+     |         *                      *            *               *       =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |                          O                                          =
+ |
+   0 OO-OO-OO-OO-OO-OO-OO-OO-OO--O-OO-OO-OOO-------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_4_.5
+
+  70 ++-------*---------------------*------------*-------------------------=
+-+
+     |        :                     :            :                         =
+ |
+  60 *+      ::            *        ::   *       ::                        =
+ |
+     |  *    ::            :: *    : :  +: *    : :                        =
+ |
+  50 +++:   *  : *        : : ::   * : *  :::   * : *.  .*                 =
+ |
+     |*  :  :  : ::      .*  * :  +  : :  * :  +  : : **  :  *. *.         =
+ |
+  40 ++  *.*   :: *.**.**       **    ::     **    ::     *.*  *  *   *.**.=
+**
+     |         ::                     :            :               *.*     =
+ |
+  30 ++        *                      *            *                       =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     O        O                 O                                          =
+ |
+   0 +O-OO-OO--O-OO-OO-OO-OO-OO--O-OO-OO-OOO-------------------------------=
+-+
+
+
+                             sched_debug.cpu.sched_count.5
+
+    5e+06 ++----------------O----------------------------------------------=
+-+
+  4.5e+06 ++                                                               =
+ |
+          |   O                                                            =
+ |
+    4e+06 ++                                                               =
+ |
+  3.5e+06 ++                        O O O OO  O                            =
+ |
+          |          O                 O    O                              =
+ |
+    3e+06 ++     O       O     O                                           =
+ |
+  2.5e+06 O+ O    O        O O  O  O                                       =
+ |
+    2e+06 +O          O O        O                                         =
+ |
+          |     O   O                                                      =
+ |
+  1.5e+06 ++                                                               =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                            sched_debug.cpu.sched_goidle.5
+
+  2.5e+06 ++----------------O----------------------------------------------=
+-+
+          |                                                                =
+ |
+          |   O                                                            =
+ |
+    2e+06 ++                                                               =
+ |
+          |                         O O O OO  O                            =
+ |
+          |          O                 O    O                              =
+ |
+  1.5e+06 ++     O       O     O                                           =
+ |
+          O       O        O O  O  O                                       =
+ |
+    1e+06 +O O        O O        O                                         =
+ |
+          |     O   O                                                      =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                             sched_debug.cpu.ttwu_count.5
+
+  2.5e+06 ++---------------------------------------------------------------=
+-+
+          |                                                                =
+ |
+          |  O   O           O                                             =
+ |
+    2e+06 ++          O     O   O  O    O     O                            =
+ |
+          OO  O   O  O  O  O        O     O                                =
+ |
+          |                    O       O    O                              =
+ |
+  1.5e+06 ++    O   O            O    O    O                               =
+ |
+          |              O                                                 =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cfs_rq:_.exec_clock.5
+
+  40000 ++-----------------------------------------------------------------=
+-+
+        **.**.**.***.**.***.**.**.***.**.***.**.**.***. *.***.**.**.***.**.=
+**
+  35000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  15000 ++                                                                 =
+ |
+        |                             OO   O O                             =
+ |
+  10000 ++ OO  O OOO      O OO O  OOO    OO                                =
+ |
+        OO    O      OO OO      O                                          =
+ |
+   5000 ++-----------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.min_vruntime.5
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.***.**.***.**.***.**.=
+**
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   50000 OO OO OOO OO OOO OO OOO OO OOO OO OOO                             =
+ |
+         |                                                                 =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                             sched_debug.cpu.nr_switches.6
+
+  5.5e+06 ++---------------------------------------------------------------=
+-+
+    5e+06 +O                 O                                             =
+ |
+          |                                                                =
+ |
+  4.5e+06 ++                                                               =
+ |
+    4e+06 O+                                                               =
+ |
+  3.5e+06 ++      O        O        O OOO OOO O                            =
+ |
+    3e+06 ++ O   O                                                         =
+ |
+          |           O OO  O                                              =
+ |
+  2.5e+06 ++  O O   OO         O O O                                       =
+ |
+    2e+06 ++                    O                                          =
+ |
+  1.5e+06 ++                                                               =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cpu.cpu_load_2_.6
+
+  60 ++--------------------------------------------------------------------=
+-+
+     |   *.*   *                **   .*      **   .*                       =
+ |
+  50 ++  : :  * +              + :  *  :    + :  *  :                      =
+ |
+     | .*  :  :  *            *   : :  *.  *   : :  *              *   .*  =
+ |
+     **    : :    :  *.* .**.*    : :    **    : :   + *    **.*  * + *  *.=
+*|
+  40 ++     ::    *. :  *         : :          : :    * +  +    :+   *     =
+ *
+     |      ::      *             ::           ::        **     *          =
+ |
+  30 ++     :                      :            :                          =
+ |
+     |      *                      *            *                          =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |        O     OO              O     O                                =
+ |
+   0 OO-OO-OO--O-OO----OO-OO-OO-OO-O--OO-O-O-------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_3_.6
+
+  70 ++--------------------------------------------------------------------=
+-+
+     |   *                      *            *                             =
+ |
+  60 ++  :+                     ::           ::                            =
+ |
+     |   : *   *.              : *   .*     : *   .*                       =
+ |
+  50 ++ :  :  *  *             :  : *  *    :  : *  *                      =
+ |
+     |*.*   :+    :      .* .**   : :   + **   : :   +           .**.  .*  =
+ |
+  40 *+     *     *. *.**  *       *     *      *     **.  .**.**    **  *.=
+**
+     |              *                                    **                =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |        O              O      O     O                                =
+ |
+   0 OO-OO-OO--O-OO-OO-OO-OO--O-OO-O--OO-O---------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_4_.6
+
+  80 ++--------------------------------------------------------------------=
+-+
+     |   *                      *            *                             =
+ |
+  70 ++  ::                     :            :                             =
+ |
+  60 ++  ::                    : :          : :                            =
+ |
+     |  :  *   *               : *.   *     : *.   *                       =
+ |
+  50 +*.:   *. :+            *:    * + :  *:    * + :                      =
+ |
+     |: *     *  *       .* + *     *  *. :*     *  *.      *    .**.  .*  =
+ |
+  40 *+           *.**.**  *             *            **.* + *.**    **  *.=
+**
+     |                                                    *                =
+ |
+  30 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |                       O      O     O                                =
+ |
+   0 OO-OO-OO-OO-OO-OO-OO-OO--O-OO-O--OO-O---------------------------------=
+-+
+
+
+                             sched_debug.cpu.sched_count.6
+
+  5.5e+06 ++---------------------------------------------------------------=
+-+
+    5e+06 +O                 O                                             =
+ |
+          |                                                                =
+ |
+  4.5e+06 ++                                                               =
+ |
+    4e+06 O+                                                               =
+ |
+  3.5e+06 ++      O        O        O OOO OOO O                            =
+ |
+    3e+06 ++ O   O                                                         =
+ |
+          |           O OO  O                                              =
+ |
+  2.5e+06 ++  O O   OO         O O O                                       =
+ |
+    2e+06 ++                    O                                          =
+ |
+  1.5e+06 ++                                                               =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                            sched_debug.cpu.sched_goidle.6
+
+    3e+06 ++---------------------------------------------------------------=
+-+
+          |                                                                =
+ |
+  2.5e+06 +O                 O                                             =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+    2e+06 O+                        O     O                                =
+ |
+          |       O        O          OOO  OO O                            =
+ |
+  1.5e+06 ++ O   O    O O   O                                              =
+ |
+          |   O O        O     O O O                                       =
+ |
+    1e+06 ++        OO          O                                          =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                             sched_debug.cpu.ttwu_count.6
+
+  2.5e+06 ++---------------------------------------------------------------=
+-+
+          |              O O                                               =
+ |
+          |O      O   O O   O                                              =
+ |
+    2e+06 ++  O              O O   O                                       =
+ |
+          O      O  OO           O  O     O                                =
+ |
+          |  O  O               O     OOO  OO O                            =
+ |
+  1.5e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cfs_rq:_.exec_clock.6
+
+  40000 ++----*--------------------*------------*--------------------------=
+-+
+        **.**  *.***.**.***.**.**.* *.**.***.**  *.***. *.***.**.**.***.**.=
+**
+  35000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  15000 ++                                                                 =
+ |
+        |                          O  O  O O                               =
+ |
+  10000 +O OO  O OOO OO OOO OO  O O O  O  O  O                             =
+ |
+        O     O                O                                           =
+ |
+   5000 ++-----------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.min_vruntime.6
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.***.**.***.**.***.**.=
+**
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   50000 OO OO OOO OO OOO OO OOO OO OOO OO OOO                             =
+ |
+         |                                                                 =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                             sched_debug.cpu.nr_switches.7
+
+    4e+06 ++---------------------------------------------------------------=
+-+
+          |      O                                                         =
+ |
+  3.5e+06 ++                        O O   OO                               =
+ |
+    3e+06 ++                 O         O    O                              =
+ |
+          |       O         O           O     O                            =
+ |
+  2.5e+06 ++                   O                                           =
+ |
+          |   O       O  O      O                                          =
+ |
+    2e+06 O+         O  O        O O                                       =
+ |
+          |O O  O   O      O                                               =
+ |
+  1.5e+06 ++                                                               =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cpu.cpu_load_3_.7
+
+  50 ++-----*-*--------------------**-----------**-------------------------=
+-+
+     **.**. :  :          **.**.* +  +  .***.* +  +                        =
+ |
+     |     *   *.**. *.* +       *    **      *    **  *.**.**.*     **.   =
+ *
+  40 ++             *   *                            + :        *.*  :  *  =
+ |
+     |                                                *           : :   :  =
+*|
+     |                                                             ::    ::=
+ |
+  30 ++                                                            :     ::=
+ |
+     |                                                             *     * =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |           O     OO    O        O    O                               =
+ |
+   0 OO-OO-OO-OO--O-OO----OO--O-OO-OO--O-OO--------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_4_.7
+
+  50 ++--*--*-*-----------------*--**--------*--**-------------------------=
+-+
+     **.* : :  :         .**.** : :  +  .*** : :  +    *.            *     =
+ *
+     |    ::   *.**. *.**        ::   **      ::   **. : **.**.**.   :*.   =
+ |
+  40 ++    *        *            *            *       *           * :   *  =
+*|
+     |                                                            : :    :+=
+ |
+     |                                                             :     * =
+ |
+  30 ++                                                            *       =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |            O    O            O     O                                =
+ |
+   0 OO-OO-OO-OO-O--OO--O-OO-OO-OO-O--OO-O-O-------------------------------=
+-+
+
+
+                             sched_debug.cpu.sched_count.7
+
+    4e+06 ++---------------------------------------------------------------=
+-+
+          |      O                                                         =
+ |
+  3.5e+06 ++                        O O   OO                               =
+ |
+    3e+06 ++                 O         O    O                              =
+ |
+          |       O         O           O     O                            =
+ |
+  2.5e+06 ++                   O                                           =
+ |
+          |   O       O  O      O                                          =
+ |
+    2e+06 O+         O  O        O O                                       =
+ |
+          |O O  O   O      O                                               =
+ |
+  1.5e+06 ++                                                               =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                            sched_debug.cpu.sched_goidle.7
+
+    2e+06 ++---------------------------------------------------------------=
+-+
+  1.8e+06 ++     O                                                         =
+ |
+          |                         O O   OO                               =
+ |
+  1.6e+06 ++                 O         O    O                              =
+ |
+  1.4e+06 ++      O         O           O     O                            =
+ |
+          |                    O                                           =
+ |
+  1.2e+06 ++  O       O  O      O                                          =
+ |
+    1e+06 O+         O  O        O O                                       =
+ |
+   800000 +O O  O   O      O                                               =
+ |
+          |                                                                =
+ |
+   600000 ++                                                               =
+ |
+   400000 ++                                                               =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                             sched_debug.cpu.ttwu_count.7
+
+  2.5e+06 ++---------------------------------------------------------------=
+-+
+          O       O                                                        =
+ |
+          |O     O           O                                             =
+ |
+    2e+06 ++ O  O   O O OO  O   O     O O  O  O                            =
+ |
+          |                O     O                                         =
+ |
+          |   O      O         O   OO  O  O O                              =
+ |
+  1.5e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                          sched_debug.cfs_rq:_.exec_clock.7
+
+  40000 ++-----------------------------------------------------------------=
+-+
+        **.**.**.***.**.***.**.**.***.**.***.**.**.***. *.***.**.**.***.**.=
+**
+  35000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  15000 ++                                                                 =
+ |
+        |                           O O   OO                               =
+ |
+  10000 O+     O OOO OO   O OO OO  O   O O   O                             =
+ |
+        |O OO O         OO        O                                        =
+ |
+   5000 ++-----------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.min_vruntime.7
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.***.**.***.**.***.**.=
+**
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   50000 OO OO OOO OO OOO OO OOO OO OOO OO OOO                             =
+ |
+         |                                                                 =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                            sched_debug.cpu.nr_switches.min
+
+  3.5e+06 ++--------------------------O----O-------------------------------=
+-+
+          |                                                                =
+ |
+    3e+06 ++                        O  O  O O                              =
+ |
+          |                             O     O                            =
+ |
+  2.5e+06 ++      O                                                        =
+ |
+          |                    O                                           =
+ |
+    2e+06 O+     O    O     O   OO O                                       =
+ |
+          |O  O      O   O O O                                             =
+ |
+  1.5e+06 ++ O      O   O                                                  =
+ |
+          |     O                                                          =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                           sched_debug.cpu.nr_switches.avg
+
+  6e+06 ++-----------------------------------------------------------------=
+-+
+        |     O                                                            =
+ |
+  5e+06 OO OO        O  OOO                                                =
+ |
+        |      O O    O     O  OO O                                        =
+ |
+        |         OO         O                                             =
+ |
+  4e+06 ++                         OO OO OOO O                             =
+ |
+        |                                                                  =
+ |
+  3e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  2e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  1e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                         sched_debug.cpu.nr_load_updates.min
+
+  40000 ++-----------------------------------------------------------------=
+-+
+        |                                                                  =
+ |
+  38000 **.**.**.***.**.***.**.**.***.**.***.**.**.***. *.***.**.**.***.**.=
+**
+  36000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+  34000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  32000 ++                         OO O  OOO                               =
+ |
+        |                              O     O                             =
+ |
+  30000 ++  O    O O                                                       =
+ |
+  28000 ++     O  O       O                                                =
+ |
+        OO O         O   O                                                 =
+ |
+  26000 ++            O     OO O  O                                        =
+ |
+        |               O       O                                          =
+ |
+  24000 ++----O------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cpu.nr_load_updates.avg
+
+  41000 ++-----------------------------------------------------------------=
+-+
+        |                                                                  =
+ |
+  40000 **.**.**.***.*   **.**.**.***.**.***.**.**.***  *.* *.**.**.***. *.=
+**
+        |             *.*                             : :  *            *  =
+ |
+  39000 ++                                            ::                   =
+ |
+        |                                              *                   =
+ |
+  38000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  37000 ++       O                 OO O  OOO                               =
+ |
+        |      O  OO                   O     O                             =
+ |
+  36000 ++                O O  O                                           =
+ |
+        |  OO        OO  O        O                                        =
+ |
+  35000 OO              O       O                                          =
+ |
+        |     O              O                                             =
+ |
+  34000 ++-----------------------------------------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_0_.max
+
+  120 ++-------*---------------------*------------*------------------------=
+-+
+      |        :                     :            :                        =
+ |
+  100 ++      ::                    ::           ::                        =
+ |
+      |       : :                   : :          : :                       =
+ |
+      |      :  :                  :  :         :  :                       =
+ |
+   80 *+ *   *  *.          *  *   *  *. *  *   *  *.                      =
+ |
+      |:+ :.*     *        : :+ :.*     * :+ :.*     *                     =
+ |
+   60 +*  *        :       : *  *         *  *       :  *                  =
+ |
+      |            *. *.***                           :+ *.***.**.**.**.**.=
+**
+   40 ++             *                                *                    =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+   20 ++ O  O         O O    O       OO   O O                              =
+ |
+      OO  O  O OO OO O   OO    OO OO    OO                                 =
+ |
+    0 ++--------------------O----------------------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_0_.avg
+
+  60 ++--------------------------------------------------------------------=
+-+
+     |        *                     *            *                         =
+ |
+  50 ++      : :                    :+           :+                        =
+ |
+     *       : *.*         *.      :  **.*      :  **                      =
+ |
+     |*.*   *     *.**.**.*  **.   *      **.   *    : *.    *.**          =
+ |
+  40 ++  *. :                   * +          * +     : : * .*    + *.**. * =
+ *
+     |     *                     *            *       *   *       *     * +=
+ |
+  30 ++                                                                    =
+*|
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |O O  O   O O   O OO O  OO    OO O  OOO                               =
+ |
+   0 O+--O--O-O---O-O------O----OO-----O-----------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_1_.max
+
+  90 ++--------------------------------------------------------------------=
+-+
+     |        *                     *            *           *             =
+ |
+  80 ++      +:                     ::           ::          :             =
+ |
+  70 ++ *   *  :              *    * :     *    * :          ::            =
+ |
+     * +:   :  *.          *. ::  +   * .* ::  +   *         ::            =
+ |
+  60 +*  :.*     *         : * : *     *  * : *     *       : :            =
+ |
+  50 ++  *        :      .*     *            *       + *.**.:  : .**.  .* .=
+**
+     |            *.**.**                             *     *  **    **  * =
+ |
+  40 ++                                                                    =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+  10 ++ O                    O      O O   OO                               =
+ |
+     OO  O OO OO OO OO OO O   O OO O   O O                                 =
+ |
+   0 ++--------------------O-----------------------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_1_.avg
+
+  50 ++-------*---------------------*------------*-------------------------=
+-+
+  45 *+.*    + *.*         *. *.    : **.* *.    : **        *             =
+ |
+     |*  *. *     *.*    .*  *  * .*      *  * .*    : *.    :+            =
+ |
+  40 ++    *         *.**        *            *      : : * .*  **. *.**.*  =
+ *
+  35 ++                                               *   *       *      *.=
+*|
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+  25 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  15 ++                                                                    =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+   5 OO O  O  O  O   O O  O  OO     O O   OO                               =
+ |
+   0 ++--O--O--O--O-O---O--O----OO-O---O-O---------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_2_.max
+
+  80 ++--------------------------------------------------------------------=
+-+
+     |  *                     *            *                 *             =
+ |
+  70 ++::                     ::           ::                :             =
+ |
+  60 *+: :  *.**.         **.: :  .**.* .*: :  .**.*         ::            =
+ |
+     |*  *.*     *       :   *  **     *  *  **     *       : :            =
+ |
+  50 ++           :      :                           + *.*  :  : .**.  .*  =
+ *
+     |            *.**.**                             *   *.*  **    **  *.=
+*|
+  40 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++ O                           O     O                                =
+ |
+     OO  O OO OO OO OO OO OO OO OO O  OO O O                               =
+ |
+   0 ++--------------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_2_.avg
+
+  50 ++--------------------------------------------------------------------=
+-+
+  45 *+.*   *.* .*        **. *.  .**. *.* *.  .**. *        *             =
+ |
+     |*  *.*   *  *.     +   *  **    *   *  **    * + *.*  * +       *.   =
+ |
+  40 ++             **.**                             *   :+   **.**.*  **.=
+**
+  35 ++                                                   *                =
+ |
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+  25 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  15 ++                                                                    =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+   5 +O O  O  O  O   O O  O  OO O   O O   OO                               =
+ |
+   0 O+--O--O--O--O-O---O--O-----O-O---O-O---------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_3_.max
+
+  80 ++--------------------------------------------------------------------=
+-+
+     |  *                 *   *            *                               =
+ |
+  70 ++ ::                ::  :+           :+                              =
+ |
+  60 *+: *.**.**.        : *  : **.**.* .* : **.**.*         *             =
+ |
+     |::         *       :  +:         *  :         *        ::            =
+ |
+  50 +*           :     :    *            *          + *.* .* :    *.      =
+ |
+     |            *.**.**                             *   *    **.*  **.**.=
+**
+  40 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  10 ++ O                       O   O     O                                =
+ |
+     OO  O OO OO OO OO OO OO OO  O O  OO O O                               =
+ |
+   0 ++--------------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_3_.avg
+
+  50 ++-*---------------------*------------*-------------------------------=
+-+
+  45 *++ *.**.* .*        **. : **.**. *.* : **.**. *        *.            =
+ |
+     |*        *  *. *.  +   *        *   *        * + *.* .*  **.*   *.*  =
+ *
+  40 ++             *  **                             *   *        *.*   *.=
+*|
+  35 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+  25 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  15 ++                                                                    =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+   5 ++ O                       O   O     O                                =
+ |
+   0 OO--O-OO-OO-OO-OO-OO-OO-OO--O-O--OO-O-O-------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_4_.max
+
+  90 ++--------------------------------------------------------------------=
+-+
+     |  *                 *   *.           *.                              =
+ |
+  80 ++ :*.   *           :   : *   *      : *   *                         =
+ |
+  70 ++:   * +:          : :  :  *. ::     :  *. ::                        =
+ |
+     * :    *  :         : *.:     * :  .*:     * :                        =
+ |
+  60 +*        *.*       :   *        **  *        **      .**             =
+ |
+  50 ++           :     :                            + *.**   +  .**.     .=
+**
+     |            *.**.**                             *        **    **.** =
+ |
+  40 ++                                                                    =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  20 ++                                                                    =
+ |
+  10 ++                                                                    =
+ |
+     O  OO OO OO O  OO OO OO OO OO OO OO OOO                               =
+ |
+   0 +O-----------O--------------------------------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_4_.avg
+
+  50 ++-*---------------------*------------*-------------------------------=
+-+
+  45 **  *.**.**.*        **.*  **.**.**.**  **.**.**        *.            =
+ |
+     |            *.**.* +                           + *.* .*  **.*   *.* .=
+**
+  40 ++                 *                             *   *        *.*   * =
+ |
+  35 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+  25 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  15 ++                                                                    =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+   5 O+ OO                      O   O     O                                =
+ |
+   0 +O----OO-OO-OO-OO-OO-OO-OO--O-O--OO-O-O-------------------------------=
+-+
+
+
+                            sched_debug.cpu.sched_count.min
+
+  3.5e+06 ++--------------------------O----O-------------------------------=
+-+
+          |                                                                =
+ |
+    3e+06 ++                        O  O  O O                              =
+ |
+          |                             O     O                            =
+ |
+  2.5e+06 ++      O                                                        =
+ |
+          |                    O                                           =
+ |
+    2e+06 O+     O    O     O   OO O                                       =
+ |
+          |O  O      O   O O O                                             =
+ |
+  1.5e+06 ++ O      O   O                                                  =
+ |
+          |     O                                                          =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                           sched_debug.cpu.sched_count.avg
+
+  6e+06 ++-----------------------------------------------------------------=
+-+
+        |     O                                                            =
+ |
+  5e+06 OO OO        O  OOO O                                              =
+ |
+        |      O O    O        OO O                                        =
+ |
+        |         OO         O                                             =
+ |
+  4e+06 ++                         OO OO OOO O                             =
+ |
+        |                                                                  =
+ |
+  3e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  2e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  1e+06 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 **-**-**-***-**-***-**-**-***-**-***-**-**-***-**-***-**-**-***-**-=
+**
+
+
+                           sched_debug.cpu.sched_goidle.min
+
+  1.8e+06 ++---------------------------------------------------------------=
+-+
+          |                           O    O                               =
+ |
+  1.6e+06 ++                        O  O  O O                              =
+ |
+  1.4e+06 ++                            O     O                            =
+ |
+          |                                                                =
+ |
+  1.2e+06 ++      O                                                        =
+ |
+    1e+06 O+     O    O     O  O O O                                       =
+ |
+          |O  O      O   O O O  O                                          =
+ |
+   800000 ++ O          O                                                  =
+ |
+   600000 ++    O   O                                                      =
+ |
+          |                                                                =
+ |
+   400000 ++                                                               =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                           sched_debug.cpu.sched_goidle.avg
+
+    3e+06 ++---------------------------------------------------------------=
+-+
+          |     O                                                          =
+ |
+  2.5e+06 OO OO       O  O OO                                              =
+ |
+          |      OO     O    O  OO O                                       =
+ |
+          |         OO         O                                           =
+ |
+    2e+06 ++                        O OOO OOO O                            =
+ |
+          |                                                                =
+ |
+  1.5e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                            sched_debug.cpu.ttwu_count.max
+
+  4.5e+06 ++---------------------------------------------------------------=
+-+
+          |O    O                                                          =
+ |
+    4e+06 O+          O  O O                                               =
+ |
+  3.5e+06 ++ OO             O   OO O                                       =
+ |
+          |      OO     O    O O                                           =
+ |
+    3e+06 ++        OO                                                     =
+ |
+  2.5e+06 ++                        O O   OO                               =
+ |
+          |                            OO   O O                            =
+ |
+    2e+06 ++                                                               =
+ |
+  1.5e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    1e+06 ++                                                               =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                            sched_debug.cpu.ttwu_count.min
+
+  1.6e+06 ++--O------------------------------------------------------------=
+-+
+          |                 O                                              =
+ |
+  1.4e+06 ++ O   OO                                                        =
+ |
+          OO             O             O    O                              =
+ |
+  1.2e+06 ++    O   OO  O  O O      O O O OO  O                            =
+ |
+    1e+06 ++          O        O                                           =
+ |
+          |                     OO O                                       =
+ |
+   800000 ++                                                               =
+ |
+          |                                                                =
+ |
+   600000 ++                                                               =
+ |
+   400000 ++                                                               =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                            sched_debug.cpu.ttwu_count.avg
+
+    3e+06 ++---------------------------------------------------------------=
+-+
+          |     O                                                          =
+ |
+  2.5e+06 OO OO       O  O OO                                              =
+ |
+          |      OO     O    O  OO O                                       =
+ |
+          |         OO         O                                           =
+ |
+    2e+06 ++                        O OOO OOO O                            =
+ |
+          |                                                                =
+ |
+  1.5e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+    1e+06 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+   500000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                           sched_debug.cpu.ttwu_count.stddev
+
+  1.2e+06 ++---------------------------------------------------------------=
+-+
+          |     O                                                          =
+ |
+    1e+06 ++                                                               =
+ |
+          OO             O O                                               =
+ |
+          |  O        O         OO O                                       =
+ |
+   800000 ++  O         O                                                  =
+ |
+          |                 OO O                                           =
+ |
+   600000 ++     OO OO                                                     =
+ |
+          |                           O    O                               =
+ |
+   400000 ++                        O  O  O O                              =
+ |
+          |                             O     O                            =
+ |
+          |                                                                =
+ |
+   200000 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 **-**-***-***-**-***-***-**-***-***-**-***-***-**-***-***-**-***-=
+**
+
+
+                         sched_debug.cfs_rq:_.exec_clock.max
+
+  40000 **-**--*-***-**-***-**-**-*-*-**-***-**--*-***--*-***-**-**-***----=
+-+
+        |     *                    *            *      *                **.=
+**
+        |                                                                  =
+ |
+  35000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  20000 ++        OO  O                                                    =
+ |
+        O  O  OO     O         OO O                                        =
+ |
+        |O  O    O      OOO OO      O OO  OO O                             =
+ |
+  15000 ++-------------------------O-----O---------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.exec_clock.min
+
+  40000 ++-----------------------------------------------------------------=
+-+
+        **.**.**.***.**.***.**.**.***.**.***.**.**.***. *.***.**.**.***.**.=
+**
+  35000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  15000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  10000 ++                         OO OO OOO O                             =
+ |
+        OO OO OO OOO OO OOO OO OO O                                        =
+ |
+   5000 ++-----------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.exec_clock.avg
+
+  40000 ++-----------------------------------------------------------------=
+-+
+        **.**.**.***.**.***.**.**.***.**.***.**.**.***. *.***.**.**.***.**.=
+**
+  35000 ++                                             *                   =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  25000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+        |                                                                  =
+ |
+  15000 ++                                                                 =
+ |
+        OO OO OO OOO OO OOO OO OO OOO OO OOO O                             =
+ |
+  10000 ++-----------------------------------------------------------------=
+-+
+
+
+                        sched_debug.cfs_rq:_.min_vruntime.max
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.* *.**.***.**.***.**.=
+**
+         |                                             *                   =
+ |
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+  100000 O+        OO OO       O O                                         =
+ |
+         |O OO OOO      O OO OO   O OOO OO OOO                             =
+ |
+   50000 ++----------------------------------------------------------------=
+-+
+
+
+                        sched_debug.cfs_rq:_.min_vruntime.min
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.***.**.***.**.***.**.=
+**
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         |                                                                 =
+ |
+   50000 OO OO  OO OO OOO OO OOO OO OOO OO OOO                             =
+ |
+         |     O                                                           =
+ |
+       0 ++----------------------------------------------------------------=
+-+
+
+
+                        sched_debug.cfs_rq:_.min_vruntime.avg
+
+  350000 ++----------------------------------------------------------------=
+-+
+         |                                                                 =
+ |
+  300000 **.**.***.**.***.**.***.**.***.**.***.***.**.* *.**.***.**.***.**.=
+**
+         |                                             *                   =
+ |
+         |                                                                 =
+ |
+  250000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  200000 ++                                                                =
+ |
+         |                                                                 =
+ |
+  150000 ++                                                                =
+ |
+         |                                                                 =
+ |
+         |                                                                 =
+ |
+  100000 ++                                                                =
+ |
+         |       O OO      O O      OOO OO OOO                             =
+ |
+   50000 OO-OO-OO-----OOO-O---OO-OO----------------------------------------=
+-+
+
+
+                      sched_debug.cfs_rq:_.min_vruntime.stddev
+
+  18000 ++-----------------------------------------------------------------=
+-+
+        |     O    O                                                       =
+ |
+  16000 O+        O  O          O                                          =
+ |
+  14000 ++ OO         O OO     O  O                                        =
+ |
+        |        O        O O                                              =
+ |
+  12000 +O     O             O                                             =
+ |
+  10000 ++                                                                 =
+ |
+        |                              O     O                             =
+ |
+   8000 ++                         OO O  OOO                               =
+ |
+   6000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   4000 ++                                                                 =
+ |
+   2000 ++                                                                 =
+ |
+        **.**.**.** .**.***.**.**.***.**. **.**.**.** .**.***. *.**.***.**.=
+**
+      0 ++---------*---------------------*-----------*--------*------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.spread0.stddev
+
+  18000 ++-----------------------------------------------------------------=
+-+
+        |     O    O                                                       =
+ |
+  16000 O+        O  O          O                                          =
+ |
+  14000 ++ OO         O OO     O  O                                        =
+ |
+        |        O        O O                                              =
+ |
+  12000 +O     O             O                                             =
+ |
+  10000 ++                                                                 =
+ |
+        |                              O     O                             =
+ |
+   8000 ++                         OO O  OOO                               =
+ |
+   6000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+   4000 ++                                                                 =
+ |
+   2000 ++                                                                 =
+ |
+        **.**.**.** .**.***.**.**.***.**. **.**.**.** .**.***. *.**.***.**.=
+**
+      0 ++---------*---------------------*-----------*--------*------------=
+-+
+
+
+                    sched_debug.cfs_rq:_.runnable_load_avg.max
+
+  100 ++-----*---------------------*------------*--------------------------=
+-+
+   90 ++     :    *                :    *       :    *                     =
+ |
+      |      ::  ::                ::  : :      ::  ::                     =
+ |
+   80 *+ *  : :  ::         *  *  : :  : *  *  : :  ::                     =
+ |
+   70 +++ *.:  :*  :        ::+ *.:  :*   :+ *.:  :*  :                    =
+ |
+      |*    *  *   :       : *    *  *    *    *  *   :                    =
+ |
+   60 ++           :       :                          :.*        .*        =
+ |
+   50 ++           *. *.***                           *  *.***.**  *.**.**.=
+**
+   40 ++             *                                                     =
+ |
+      |                                                                    =
+ |
+   30 ++                                                                   =
+ |
+   20 ++ O                                                                 =
+ |
+      |     O   O       O    O  O O  OO O O O                              =
+ |
+   10 OO  O  O O  OO OO  OO O  O   O     O                                 =
+ |
+    0 ++-------------------------------------------------------------------=
+-+
+
+
+                   sched_debug.cfs_rq:_.runnable_load_avg.avg
+
+  55 ++--------------------------------------------------------------------=
+-+
+  50 ++         .*                     *.           *                      =
+ |
+     *  *   *  * :         *  *.   *  *  * *.   *  * +                     =
+ |
+  45 +++ *  :: :  :.**.   * + : * :: :    :: * :: :   * .* .**.**     *  *.=
+ |
+  40 +*   +: ::   *    * +   *   :: ::    *   :: ::    *  *      +    :+ : =
+**
+  35 ++    *  *         *        *  *         *  *                *  :  *  =
+ |
+  30 ++                                                            *.*     =
+ |
+     |                                                                     =
+ |
+  25 ++                                                                    =
+ |
+  20 ++                                                                    =
+ |
+  15 ++                                                                    =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+   5 OO OO OO OO OO OO OO OO OO OO OO OO OOO                               =
+ |
+   0 ++--------------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.util_avg.min
+
+  450 ++-------------------------------------------------------------------=
+-+
+      |               *                                .**           *     =
+ *
+  400 **.*   *.*  **  :+  *.**.*   *.*  ***.*   *.*  **   :         : :.* .=
+*|
+  350 ++  *.*   :+  +:  **      *.*   :+     *.*   :+     : **.**.* : *  * =
+ |
+      |         *    *                *            *       *       *       =
+ |
+  300 ++                                                                   =
+ |
+  250 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  200 ++       O                                                           =
+ |
+  150 ++                             O    O                                =
+ |
+      OO  O     O O  O       O O                                           =
+ |
+  100 ++ O  O         O  OO O   O OO  O OO  O                              =
+ |
+   50 ++     O     O                                                       =
+ |
+      |                 O                                                  =
+ |
+    0 ++-------------------------------------------------------------------=
+-+
+
+
+                         sched_debug.cfs_rq:_.util_avg.avg
+
+  550 ++-------------------------------------------------------------------=
+-+
+      |                                                     *              =
+ |
+  500 ++              *.  *                              *. :*            .=
+*|
+  450 +*.**.**.*   *.*  ** + *.**.**.*    *.**.**.*    .*  *  + *.**.**. * =
+ *
+      *         *.*         *         *.**         *.**        *        *  =
+ |
+  400 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  350 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  300 ++                                                                   =
+ |
+  250 O+  O                     O                                          =
+ |
+      |O O   O OO O  OO O O  O O  OO OO OOO O                              =
+ |
+  200 ++    O      O     O                                                 =
+ |
+      |                                                                    =
+ |
+  150 ++--------------------O----------------------------------------------=
+-+
+
+
+                          sched_debug.cpu.cpu_load_2_.7
+
+  50 ++-----*----------------------*------------*--------------------------=
+-+
+     |*.    : **.*        * .*    + *.**. *    + *.**  *.            *     =
+ |
+     *  **.*      *.  .* + *  *.**       * *.**      : : **.**.**.   :*.   =
+ *
+  40 ++             **  *                            : :          * :   *  =
+ |
+     |                                                :           : :   :  =
+:|
+     |                                                *            :    :  =
+*|
+  30 ++                                                            *     : =
+:|
+     |                                                                   ::=
+ |
+  20 ++                                                                  ::=
+ |
+     |                                                                   * =
+ |
+     |                                                                     =
+ |
+  10 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |O    O     O     OO  O O        O    O                               =
+ |
+   0 O+-OO--O-OO--O-OO----O---O-OO-OO--O-OO--------------------------------=
+-+
+
+
+                         sched_debug.cpu.cpu_load_4_.min
+
+  42 ++--------------------------------------------------------------------=
+-+
+     |        *  *                  *  *.        *  *        *  *          =
+ |
+  40 **.  .*  :  :*       **.*   *  :  : **   *  :  :: *.    :+ :+    *.   =
+ |
+  38 ++ ** : ::  : + *.   :   *.* : :  :   *.* : :  :: : *  *  *  *   : *  =
+ |
+     |      ::: :   *  *  :       :: : :       :: : : :  :  :     :   : :  =
+ *
+  36 ++     * : :      :  :        * : :        * : : *  :  :     :  :   : =
+*|
+  34 ++        ::      : :           ::           ::     : :      :  :   :+=
+ |
+     |         ::      : :           ::           ::     : :      :  *   * =
+ |
+  32 ++        :       : :            :            :      ::       : :     =
+ |
+  30 ++        :        ::            :            :      ::       ::      =
+ |
+     |         *        ::            *            *      ::       ::      =
+ |
+  28 ++                 ::                                :        ::      =
+ |
+  26 ++                 :                                 :        :       =
+ |
+     |                  :                                 *        *       =
+ |
+  24 ++-----------------*--------------------------------------------------=
+-+
+
+	[*] bisect-good sample
+	[O] bisect-bad  sample
+
+To reproduce:
+
+        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
+ts.git
+        cd lkp-tests
+        bin/lkp install job.yaml  # job file is attached in this email
+        bin/lkp run     job.yaml
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
 
 
 Thanks,
 Ying Huang
 
---===============7592656470753606606==
+--===============6623582538503665468==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="config-4.4.0-10063-g06862f34"
+Content-Disposition: attachment; filename="job.yaml"
 
-IwojIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZpbGU7IERPIE5PVCBFRElULgojIExpbnV4L3g4
-Nl82NCA0LjQuMCBLZXJuZWwgQ29uZmlndXJhdGlvbgojCkNPTkZJR182NEJJVD15CkNPTkZJR19Y
-ODZfNjQ9eQpDT05GSUdfWDg2PXkKQ09ORklHX0lOU1RSVUNUSU9OX0RFQ09ERVI9eQpDT05GSUdf
-UEVSRl9FVkVOVFNfSU5URUxfVU5DT1JFPXkKQ09ORklHX09VVFBVVF9GT1JNQVQ9ImVsZjY0LXg4
-Ni02NCIKQ09ORklHX0FSQ0hfREVGQ09ORklHPSJhcmNoL3g4Ni9jb25maWdzL3g4Nl82NF9kZWZj
-b25maWciCkNPTkZJR19MT0NLREVQX1NVUFBPUlQ9eQpDT05GSUdfU1RBQ0tUUkFDRV9TVVBQT1JU
-PXkKQ09ORklHX01NVT15CkNPTkZJR19BUkNIX01NQVBfUk5EX0JJVFNfTUlOPTI4CkNPTkZJR19B
-UkNIX01NQVBfUk5EX0JJVFNfTUFYPTMyCkNPTkZJR19BUkNIX01NQVBfUk5EX0NPTVBBVF9CSVRT
-X01JTj04CkNPTkZJR19BUkNIX01NQVBfUk5EX0NPTVBBVF9CSVRTX01BWD0xNgpDT05GSUdfTkVF
-RF9ETUFfTUFQX1NUQVRFPXkKQ09ORklHX05FRURfU0dfRE1BX0xFTkdUSD15CkNPTkZJR19HRU5F
-UklDX0JVRz15CkNPTkZJR19HRU5FUklDX0JVR19SRUxBVElWRV9QT0lOVEVSUz15CkNPTkZJR19H
-RU5FUklDX0hXRUlHSFQ9eQpDT05GSUdfUldTRU1fWENIR0FERF9BTEdPUklUSE09eQpDT05GSUdf
-R0VORVJJQ19DQUxJQlJBVEVfREVMQVk9eQpDT05GSUdfQVJDSF9IQVNfQ1BVX1JFTEFYPXkKQ09O
-RklHX0FSQ0hfSEFTX0NBQ0hFX0xJTkVfU0laRT15CkNPTkZJR19IQVZFX1NFVFVQX1BFUl9DUFVf
-QVJFQT15CkNPTkZJR19ORUVEX1BFUl9DUFVfRU1CRURfRklSU1RfQ0hVTks9eQpDT05GSUdfTkVF
-RF9QRVJfQ1BVX1BBR0VfRklSU1RfQ0hVTks9eQpDT05GSUdfQVJDSF9ISUJFUk5BVElPTl9QT1NT
-SUJMRT15CkNPTkZJR19BUkNIX1NVU1BFTkRfUE9TU0lCTEU9eQpDT05GSUdfQVJDSF9XQU5UX0hV
-R0VfUE1EX1NIQVJFPXkKQ09ORklHX0FSQ0hfV0FOVF9HRU5FUkFMX0hVR0VUTEI9eQpDT05GSUdf
-Wk9ORV9ETUEzMj15CkNPTkZJR19BVURJVF9BUkNIPXkKQ09ORklHX0FSQ0hfU1VQUE9SVFNfT1BU
-SU1JWkVEX0lOTElOSU5HPXkKQ09ORklHX0FSQ0hfU1VQUE9SVFNfREVCVUdfUEFHRUFMTE9DPXkK
-Q09ORklHX0FSQ0hfSFdFSUdIVF9DRkxBR1M9Ii1mY2FsbC1zYXZlZC1yZGkgLWZjYWxsLXNhdmVk
-LXJzaSAtZmNhbGwtc2F2ZWQtcmR4IC1mY2FsbC1zYXZlZC1yY3ggLWZjYWxsLXNhdmVkLXI4IC1m
-Y2FsbC1zYXZlZC1yOSAtZmNhbGwtc2F2ZWQtcjEwIC1mY2FsbC1zYXZlZC1yMTEiCkNPTkZJR19B
-UkNIX1NVUFBPUlRTX1VQUk9CRVM9eQpDT05GSUdfRklYX0VBUkxZQ09OX01FTT15CkNPTkZJR19Q
-R1RBQkxFX0xFVkVMUz00CkNPTkZJR19ERUZDT05GSUdfTElTVD0iL2xpYi9tb2R1bGVzLyRVTkFN
-RV9SRUxFQVNFLy5jb25maWciCkNPTkZJR19DT05TVFJVQ1RPUlM9eQpDT05GSUdfSVJRX1dPUks9
-eQpDT05GSUdfQlVJTERUSU1FX0VYVEFCTEVfU09SVD15CgojCiMgR2VuZXJhbCBzZXR1cAojCkNP
-TkZJR19CUk9LRU5fT05fU01QPXkKQ09ORklHX0lOSVRfRU5WX0FSR19MSU1JVD0zMgpDT05GSUdf
-Q1JPU1NfQ09NUElMRT0iIgojIENPTkZJR19DT01QSUxFX1RFU1QgaXMgbm90IHNldApDT05GSUdf
-TE9DQUxWRVJTSU9OPSIiCkNPTkZJR19MT0NBTFZFUlNJT05fQVVUTz15CkNPTkZJR19IQVZFX0tF
-Uk5FTF9HWklQPXkKQ09ORklHX0hBVkVfS0VSTkVMX0JaSVAyPXkKQ09ORklHX0hBVkVfS0VSTkVM
-X0xaTUE9eQpDT05GSUdfSEFWRV9LRVJORUxfWFo9eQpDT05GSUdfSEFWRV9LRVJORUxfTFpPPXkK
-Q09ORklHX0hBVkVfS0VSTkVMX0xaND15CiMgQ09ORklHX0tFUk5FTF9HWklQIGlzIG5vdCBzZXQK
-IyBDT05GSUdfS0VSTkVMX0JaSVAyIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VSTkVMX0xaTUEgaXMg
-bm90IHNldApDT05GSUdfS0VSTkVMX1haPXkKIyBDT05GSUdfS0VSTkVMX0xaTyBpcyBub3Qgc2V0
-CiMgQ09ORklHX0tFUk5FTF9MWjQgaXMgbm90IHNldApDT05GSUdfREVGQVVMVF9IT1NUTkFNRT0i
-KG5vbmUpIgojIENPTkZJR19TWVNWSVBDIGlzIG5vdCBzZXQKIyBDT05GSUdfUE9TSVhfTVFVRVVF
-IGlzIG5vdCBzZXQKQ09ORklHX0NST1NTX01FTU9SWV9BVFRBQ0g9eQpDT05GSUdfRkhBTkRMRT15
-CkNPTkZJR19VU0VMSUI9eQojIENPTkZJR19BVURJVCBpcyBub3Qgc2V0CkNPTkZJR19IQVZFX0FS
-Q0hfQVVESVRTWVNDQUxMPXkKCiMKIyBJUlEgc3Vic3lzdGVtCiMKQ09ORklHX0dFTkVSSUNfSVJR
-X1BST0JFPXkKQ09ORklHX0dFTkVSSUNfSVJRX1NIT1c9eQpDT05GSUdfSVJRX0RPTUFJTj15CkNP
-TkZJR19JUlFfRE9NQUlOX0hJRVJBUkNIWT15CiMgQ09ORklHX0lSUV9ET01BSU5fREVCVUcgaXMg
-bm90IHNldApDT05GSUdfSVJRX0ZPUkNFRF9USFJFQURJTkc9eQpDT05GSUdfU1BBUlNFX0lSUT15
-CkNPTkZJR19DTE9DS1NPVVJDRV9XQVRDSERPRz15CkNPTkZJR19BUkNIX0NMT0NLU09VUkNFX0RB
-VEE9eQpDT05GSUdfQ0xPQ0tTT1VSQ0VfVkFMSURBVEVfTEFTVF9DWUNMRT15CkNPTkZJR19HRU5F
-UklDX1RJTUVfVlNZU0NBTEw9eQpDT05GSUdfR0VORVJJQ19DTE9DS0VWRU5UUz15CkNPTkZJR19H
-RU5FUklDX0NMT0NLRVZFTlRTX0JST0FEQ0FTVD15CkNPTkZJR19HRU5FUklDX0NMT0NLRVZFTlRT
-X01JTl9BREpVU1Q9eQpDT05GSUdfR0VORVJJQ19DTU9TX1VQREFURT15CgojCiMgVGltZXJzIHN1
-YnN5c3RlbQojCkNPTkZJR19IWl9QRVJJT0RJQz15CiMgQ09ORklHX05PX0haX0lETEUgaXMgbm90
-IHNldApDT05GSUdfTk9fSFo9eQojIENPTkZJR19ISUdIX1JFU19USU1FUlMgaXMgbm90IHNldAoK
-IwojIENQVS9UYXNrIHRpbWUgYW5kIHN0YXRzIGFjY291bnRpbmcKIwpDT05GSUdfVElDS19DUFVf
-QUNDT1VOVElORz15CiMgQ09ORklHX1ZJUlRfQ1BVX0FDQ09VTlRJTkdfR0VOIGlzIG5vdCBzZXQK
-IyBDT05GSUdfSVJRX1RJTUVfQUNDT1VOVElORyBpcyBub3Qgc2V0CiMgQ09ORklHX0JTRF9QUk9D
-RVNTX0FDQ1QgaXMgbm90IHNldAojIENPTkZJR19UQVNLU1RBVFMgaXMgbm90IHNldAoKIwojIFJD
-VSBTdWJzeXN0ZW0KIwpDT05GSUdfUFJFRU1QVF9SQ1U9eQpDT05GSUdfUkNVX0VYUEVSVD15CkNP
-TkZJR19TUkNVPXkKIyBDT05GSUdfVEFTS1NfUkNVIGlzIG5vdCBzZXQKQ09ORklHX1JDVV9TVEFM
-TF9DT01NT049eQpDT05GSUdfUkNVX0ZBTk9VVD02NApDT05GSUdfUkNVX0ZBTk9VVF9MRUFGPTE2
-CiMgQ09ORklHX1RSRUVfUkNVX1RSQUNFIGlzIG5vdCBzZXQKIyBDT05GSUdfUkNVX0JPT1NUIGlz
-IG5vdCBzZXQKQ09ORklHX1JDVV9LVEhSRUFEX1BSSU89MAojIENPTkZJR19SQ1VfTk9DQl9DUFUg
-aXMgbm90IHNldAojIENPTkZJR19SQ1VfRVhQRURJVEVfQk9PVCBpcyBub3Qgc2V0CkNPTkZJR19C
-VUlMRF9CSU4yQz15CkNPTkZJR19JS0NPTkZJRz15CiMgQ09ORklHX0lLQ09ORklHX1BST0MgaXMg
-bm90IHNldApDT05GSUdfTE9HX0JVRl9TSElGVD0xNwpDT05GSUdfSEFWRV9VTlNUQUJMRV9TQ0hF
-RF9DTE9DSz15CkNPTkZJR19BUkNIX1NVUFBPUlRTX05VTUFfQkFMQU5DSU5HPXkKQ09ORklHX0FS
-Q0hfU1VQUE9SVFNfSU5UMTI4PXkKQ09ORklHX0NHUk9VUFM9eQpDT05GSUdfUEFHRV9DT1VOVEVS
-PXkKIyBDT05GSUdfTUVNQ0cgaXMgbm90IHNldApDT05GSUdfQ0dST1VQX1NDSEVEPXkKQ09ORklH
-X0ZBSVJfR1JPVVBfU0NIRUQ9eQpDT05GSUdfQ0ZTX0JBTkRXSURUSD15CkNPTkZJR19SVF9HUk9V
-UF9TQ0hFRD15CiMgQ09ORklHX0NHUk9VUF9QSURTIGlzIG5vdCBzZXQKQ09ORklHX0NHUk9VUF9G
-UkVFWkVSPXkKQ09ORklHX0NHUk9VUF9IVUdFVExCPXkKQ09ORklHX0NQVVNFVFM9eQpDT05GSUdf
-UFJPQ19QSURfQ1BVU0VUPXkKIyBDT05GSUdfQ0dST1VQX0RFVklDRSBpcyBub3Qgc2V0CiMgQ09O
-RklHX0NHUk9VUF9DUFVBQ0NUIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0dST1VQX1BFUkYgaXMgbm90
-IHNldApDT05GSUdfQ0dST1VQX0RFQlVHPXkKQ09ORklHX0NIRUNLUE9JTlRfUkVTVE9SRT15CkNP
-TkZJR19OQU1FU1BBQ0VTPXkKIyBDT05GSUdfVVRTX05TIGlzIG5vdCBzZXQKQ09ORklHX1VTRVJf
-TlM9eQpDT05GSUdfUElEX05TPXkKQ09ORklHX05FVF9OUz15CkNPTkZJR19TQ0hFRF9BVVRPR1JP
-VVA9eQojIENPTkZJR19TWVNGU19ERVBSRUNBVEVEIGlzIG5vdCBzZXQKIyBDT05GSUdfUkVMQVkg
-aXMgbm90IHNldApDT05GSUdfQkxLX0RFVl9JTklUUkQ9eQpDT05GSUdfSU5JVFJBTUZTX1NPVVJD
-RT0iIgpDT05GSUdfUkRfR1pJUD15CkNPTkZJR19SRF9CWklQMj15CkNPTkZJR19SRF9MWk1BPXkK
-Q09ORklHX1JEX1haPXkKQ09ORklHX1JEX0xaTz15CkNPTkZJR19SRF9MWjQ9eQpDT05GSUdfQ0Nf
-T1BUSU1JWkVfRk9SX1NJWkU9eQpDT05GSUdfU1lTQ1RMPXkKQ09ORklHX0FOT05fSU5PREVTPXkK
-Q09ORklHX0hBVkVfVUlEMTY9eQpDT05GSUdfU1lTQ1RMX0VYQ0VQVElPTl9UUkFDRT15CkNPTkZJ
-R19IQVZFX1BDU1BLUl9QTEFURk9STT15CkNPTkZJR19CUEY9eQpDT05GSUdfRVhQRVJUPXkKQ09O
-RklHX1VJRDE2PXkKQ09ORklHX01VTFRJVVNFUj15CiMgQ09ORklHX1NHRVRNQVNLX1NZU0NBTEwg
-aXMgbm90IHNldAojIENPTkZJR19TWVNGU19TWVNDQUxMIGlzIG5vdCBzZXQKQ09ORklHX1NZU0NU
-TF9TWVNDQUxMPXkKQ09ORklHX0tBTExTWU1TPXkKQ09ORklHX0tBTExTWU1TX0FMTD15CkNPTkZJ
-R19LQUxMU1lNU19CQVNFX1JFTEFUSVZFPXkKQ09ORklHX1BSSU5USz15CkNPTkZJR19CVUc9eQpD
-T05GSUdfUENTUEtSX1BMQVRGT1JNPXkKIyBDT05GSUdfQkFTRV9GVUxMIGlzIG5vdCBzZXQKQ09O
-RklHX0ZVVEVYPXkKQ09ORklHX0VQT0xMPXkKQ09ORklHX1NJR05BTEZEPXkKQ09ORklHX1RJTUVS
-RkQ9eQpDT05GSUdfRVZFTlRGRD15CkNPTkZJR19CUEZfU1lTQ0FMTD15CiMgQ09ORklHX1NITUVN
-IGlzIG5vdCBzZXQKIyBDT05GSUdfQUlPIGlzIG5vdCBzZXQKIyBDT05GSUdfQURWSVNFX1NZU0NB
-TExTIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNFUkZBVUxURkQgaXMgbm90IHNldApDT05GSUdfUENJ
-X1FVSVJLUz15CiMgQ09ORklHX01FTUJBUlJJRVIgaXMgbm90IHNldAojIENPTkZJR19FTUJFRERF
-RCBpcyBub3Qgc2V0CkNPTkZJR19IQVZFX1BFUkZfRVZFTlRTPXkKCiMKIyBLZXJuZWwgUGVyZm9y
-bWFuY2UgRXZlbnRzIEFuZCBDb3VudGVycwojCkNPTkZJR19QRVJGX0VWRU5UUz15CiMgQ09ORklH
-X0RFQlVHX1BFUkZfVVNFX1ZNQUxMT0MgaXMgbm90IHNldApDT05GSUdfVk1fRVZFTlRfQ09VTlRF
-UlM9eQojIENPTkZJR19TTFVCX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX0NPTVBBVF9CUks9eQoj
-IENPTkZJR19TTEFCIGlzIG5vdCBzZXQKQ09ORklHX1NMVUI9eQojIENPTkZJR19TTE9CIGlzIG5v
-dCBzZXQKIyBDT05GSUdfU1lTVEVNX0RBVEFfVkVSSUZJQ0FUSU9OIGlzIG5vdCBzZXQKIyBDT05G
-SUdfUFJPRklMSU5HIGlzIG5vdCBzZXQKQ09ORklHX0tFWEVDX0NPUkU9eQpDT05GSUdfSEFWRV9P
-UFJPRklMRT15CkNPTkZJR19PUFJPRklMRV9OTUlfVElNRVI9eQpDT05GSUdfSlVNUF9MQUJFTD15
-CkNPTkZJR19TVEFUSUNfS0VZU19TRUxGVEVTVD15CiMgQ09ORklHX1VQUk9CRVMgaXMgbm90IHNl
-dAojIENPTkZJR19IQVZFXzY0QklUX0FMSUdORURfQUNDRVNTIGlzIG5vdCBzZXQKQ09ORklHX0hB
-VkVfRUZGSUNJRU5UX1VOQUxJR05FRF9BQ0NFU1M9eQpDT05GSUdfQVJDSF9VU0VfQlVJTFRJTl9C
-U1dBUD15CkNPTkZJR19IQVZFX0lPUkVNQVBfUFJPVD15CkNPTkZJR19IQVZFX0tQUk9CRVM9eQpD
-T05GSUdfSEFWRV9LUkVUUFJPQkVTPXkKQ09ORklHX0hBVkVfT1BUUFJPQkVTPXkKQ09ORklHX0hB
-VkVfS1BST0JFU19PTl9GVFJBQ0U9eQpDT05GSUdfSEFWRV9BUkNIX1RSQUNFSE9PSz15CkNPTkZJ
-R19IQVZFX0RNQV9BVFRSUz15CkNPTkZJR19IQVZFX0RNQV9DT05USUdVT1VTPXkKQ09ORklHX0dF
-TkVSSUNfU01QX0lETEVfVEhSRUFEPXkKQ09ORklHX0FSQ0hfV0FOVFNfRFlOQU1JQ19UQVNLX1NU
-UlVDVD15CkNPTkZJR19IQVZFX1JFR1NfQU5EX1NUQUNLX0FDQ0VTU19BUEk9eQpDT05GSUdfSEFW
-RV9ETUFfQVBJX0RFQlVHPXkKQ09ORklHX0hBVkVfSFdfQlJFQUtQT0lOVD15CkNPTkZJR19IQVZF
-X01JWEVEX0JSRUFLUE9JTlRTX1JFR1M9eQpDT05GSUdfSEFWRV9VU0VSX1JFVFVSTl9OT1RJRklF
-Uj15CkNPTkZJR19IQVZFX1BFUkZfRVZFTlRTX05NST15CkNPTkZJR19IQVZFX1BFUkZfUkVHUz15
-CkNPTkZJR19IQVZFX1BFUkZfVVNFUl9TVEFDS19EVU1QPXkKQ09ORklHX0hBVkVfQVJDSF9KVU1Q
-X0xBQkVMPXkKQ09ORklHX0FSQ0hfSEFWRV9OTUlfU0FGRV9DTVBYQ0hHPXkKQ09ORklHX0hBVkVf
-QUxJR05FRF9TVFJVQ1RfUEFHRT15CkNPTkZJR19IQVZFX0NNUFhDSEdfTE9DQUw9eQpDT05GSUdf
-SEFWRV9DTVBYQ0hHX0RPVUJMRT15CkNPTkZJR19BUkNIX1dBTlRfQ09NUEFUX0lQQ19QQVJTRV9W
-RVJTSU9OPXkKQ09ORklHX0FSQ0hfV0FOVF9PTERfQ09NUEFUX0lQQz15CkNPTkZJR19IQVZFX0FS
-Q0hfU0VDQ09NUF9GSUxURVI9eQpDT05GSUdfU0VDQ09NUF9GSUxURVI9eQpDT05GSUdfSEFWRV9D
-Q19TVEFDS1BST1RFQ1RPUj15CkNPTkZJR19DQ19TVEFDS1BST1RFQ1RPUj15CiMgQ09ORklHX0ND
-X1NUQUNLUFJPVEVDVE9SX05PTkUgaXMgbm90IHNldApDT05GSUdfQ0NfU1RBQ0tQUk9URUNUT1Jf
-UkVHVUxBUj15CiMgQ09ORklHX0NDX1NUQUNLUFJPVEVDVE9SX1NUUk9ORyBpcyBub3Qgc2V0CkNP
-TkZJR19IQVZFX0NPTlRFWFRfVFJBQ0tJTkc9eQpDT05GSUdfSEFWRV9WSVJUX0NQVV9BQ0NPVU5U
-SU5HX0dFTj15CkNPTkZJR19IQVZFX0lSUV9USU1FX0FDQ09VTlRJTkc9eQpDT05GSUdfSEFWRV9B
-UkNIX1RSQU5TUEFSRU5UX0hVR0VQQUdFPXkKQ09ORklHX0hBVkVfQVJDSF9IVUdFX1ZNQVA9eQpD
-T05GSUdfSEFWRV9BUkNIX1NPRlRfRElSVFk9eQpDT05GSUdfTU9EVUxFU19VU0VfRUxGX1JFTEE9
-eQpDT05GSUdfSEFWRV9JUlFfRVhJVF9PTl9JUlFfU1RBQ0s9eQpDT05GSUdfQVJDSF9IQVNfRUxG
-X1JBTkRPTUlaRT15CkNPTkZJR19IQVZFX0FSQ0hfTU1BUF9STkRfQklUUz15CkNPTkZJR19BUkNI
-X01NQVBfUk5EX0JJVFM9MjgKQ09ORklHX0hBVkVfQVJDSF9NTUFQX1JORF9DT01QQVRfQklUUz15
-CkNPTkZJR19BUkNIX01NQVBfUk5EX0NPTVBBVF9CSVRTPTgKQ09ORklHX0hBVkVfQ09QWV9USFJF
-QURfVExTPXkKQ09ORklHX09MRF9TSUdTVVNQRU5EMz15CkNPTkZJR19DT01QQVRfT0xEX1NJR0FD
-VElPTj15CgojCiMgR0NPVi1iYXNlZCBrZXJuZWwgcHJvZmlsaW5nCiMKQ09ORklHX0dDT1ZfS0VS
-TkVMPXkKQ09ORklHX0FSQ0hfSEFTX0dDT1ZfUFJPRklMRV9BTEw9eQojIENPTkZJR19HQ09WX1BS
-T0ZJTEVfQUxMIGlzIG5vdCBzZXQKIyBDT05GSUdfR0NPVl9GT1JNQVRfQVVUT0RFVEVDVCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0dDT1ZfRk9STUFUXzNfNCBpcyBub3Qgc2V0CkNPTkZJR19HQ09WX0ZP
-Uk1BVF80Xzc9eQojIENPTkZJR19IQVZFX0dFTkVSSUNfRE1BX0NPSEVSRU5UIGlzIG5vdCBzZXQK
-Q09ORklHX1JUX01VVEVYRVM9eQpDT05GSUdfQkFTRV9TTUFMTD0xCiMgQ09ORklHX01PRFVMRVMg
-aXMgbm90IHNldApDT05GSUdfTU9EVUxFU19UUkVFX0xPT0tVUD15CiMgQ09ORklHX0JMT0NLIGlz
-IG5vdCBzZXQKQ09ORklHX0FTTjE9eQpDT05GSUdfVU5JTkxJTkVfU1BJTl9VTkxPQ0s9eQpDT05G
-SUdfQVJDSF9TVVBQT1JUU19BVE9NSUNfUk1XPXkKQ09ORklHX0FSQ0hfVVNFX1FVRVVFRF9TUElO
-TE9DS1M9eQpDT05GSUdfQVJDSF9VU0VfUVVFVUVEX1JXTE9DS1M9eQpDT05GSUdfRlJFRVpFUj15
-CgojCiMgUHJvY2Vzc29yIHR5cGUgYW5kIGZlYXR1cmVzCiMKQ09ORklHX1pPTkVfRE1BPXkKIyBD
-T05GSUdfU01QIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9GRUFUVVJFX05BTUVTPXkKQ09ORklHX1g4
-Nl9GQVNUX0ZFQVRVUkVfVEVTVFM9eQpDT05GSUdfWDg2X1gyQVBJQz15CiMgQ09ORklHX1g4Nl9N
-UFBBUlNFIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9FWFRFTkRFRF9QTEFURk9STT15CiMgQ09ORklH
-X1g4Nl9HT0xERklTSCBpcyBub3Qgc2V0CiMgQ09ORklHX1g4Nl9JTlRFTF9MUFNTIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfWDg2X0FNRF9QTEFURk9STV9ERVZJQ0UgaXMgbm90IHNldApDT05GSUdfSU9T
-Rl9NQkk9eQojIENPTkZJR19JT1NGX01CSV9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19YODZfU1VQ
-UE9SVFNfTUVNT1JZX0ZBSUxVUkU9eQojIENPTkZJR19TQ0hFRF9PTUlUX0ZSQU1FX1BPSU5URVIg
-aXMgbm90IHNldApDT05GSUdfSFlQRVJWSVNPUl9HVUVTVD15CkNPTkZJR19QQVJBVklSVD15CiMg
-Q09ORklHX1BBUkFWSVJUX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX1hFTj15CkNPTkZJR19YRU5f
-RE9NMD15CkNPTkZJR19YRU5fUFZIVk09eQpDT05GSUdfWEVOXzUxMkdCPXkKQ09ORklHX1hFTl9T
-QVZFX1JFU1RPUkU9eQpDT05GSUdfWEVOX0RFQlVHX0ZTPXkKIyBDT05GSUdfWEVOX1BWSCBpcyBu
-b3Qgc2V0CkNPTkZJR19LVk1fR1VFU1Q9eQojIENPTkZJR19LVk1fREVCVUdfRlMgaXMgbm90IHNl
-dApDT05GSUdfUEFSQVZJUlRfVElNRV9BQ0NPVU5USU5HPXkKQ09ORklHX1BBUkFWSVJUX0NMT0NL
-PXkKQ09ORklHX05PX0JPT1RNRU09eQojIENPTkZJR19NSzggaXMgbm90IHNldAojIENPTkZJR19N
-UFNDIGlzIG5vdCBzZXQKIyBDT05GSUdfTUNPUkUyIGlzIG5vdCBzZXQKIyBDT05GSUdfTUFUT00g
-aXMgbm90IHNldApDT05GSUdfR0VORVJJQ19DUFU9eQpDT05GSUdfWDg2X0lOVEVSTk9ERV9DQUNI
-RV9TSElGVD02CkNPTkZJR19YODZfTDFfQ0FDSEVfU0hJRlQ9NgpDT05GSUdfWDg2X1RTQz15CkNP
-TkZJR19YODZfQ01QWENIRzY0PXkKQ09ORklHX1g4Nl9DTU9WPXkKQ09ORklHX1g4Nl9NSU5JTVVN
-X0NQVV9GQU1JTFk9NjQKQ09ORklHX1g4Nl9ERUJVR0NUTE1TUj15CiMgQ09ORklHX1BST0NFU1NP
-Ul9TRUxFQ1QgaXMgbm90IHNldApDT05GSUdfQ1BVX1NVUF9JTlRFTD15CkNPTkZJR19DUFVfU1VQ
-X0FNRD15CkNPTkZJR19DUFVfU1VQX0NFTlRBVVI9eQpDT05GSUdfSFBFVF9USU1FUj15CkNPTkZJ
-R19ETUk9eQojIENPTkZJR19HQVJUX0lPTU1VIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0FMR0FSWV9J
-T01NVSBpcyBub3Qgc2V0CkNPTkZJR19TV0lPVExCPXkKQ09ORklHX0lPTU1VX0hFTFBFUj15CkNP
-TkZJR19OUl9DUFVTPTEKIyBDT05GSUdfUFJFRU1QVF9OT05FIGlzIG5vdCBzZXQKIyBDT05GSUdf
-UFJFRU1QVF9WT0xVTlRBUlkgaXMgbm90IHNldApDT05GSUdfUFJFRU1QVD15CkNPTkZJR19QUkVF
-TVBUX0NPVU5UPXkKQ09ORklHX1VQX0xBVEVfSU5JVD15CkNPTkZJR19YODZfTE9DQUxfQVBJQz15
-CkNPTkZJR19YODZfSU9fQVBJQz15CiMgQ09ORklHX1g4Nl9SRVJPVVRFX0ZPUl9CUk9LRU5fQk9P
-VF9JUlFTIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9NQ0U9eQpDT05GSUdfWDg2X01DRV9JTlRFTD15
-CiMgQ09ORklHX1g4Nl9NQ0VfQU1EIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9NQ0VfVEhSRVNIT0xE
-PXkKQ09ORklHX1g4Nl9NQ0VfSU5KRUNUPXkKQ09ORklHX1g4Nl9USEVSTUFMX1ZFQ1RPUj15CiMg
-Q09ORklHX1ZNODYgaXMgbm90IHNldAojIENPTkZJR19YODZfMTZCSVQgaXMgbm90IHNldApDT05G
-SUdfWDg2X1ZTWVNDQUxMX0VNVUxBVElPTj15CiMgQ09ORklHX0k4SyBpcyBub3Qgc2V0CkNPTkZJ
-R19NSUNST0NPREU9eQpDT05GSUdfTUlDUk9DT0RFX0lOVEVMPXkKIyBDT05GSUdfTUlDUk9DT0RF
-X0FNRCBpcyBub3Qgc2V0CkNPTkZJR19NSUNST0NPREVfT0xEX0lOVEVSRkFDRT15CiMgQ09ORklH
-X1g4Nl9NU1IgaXMgbm90IHNldApDT05GSUdfWDg2X0NQVUlEPXkKQ09ORklHX0FSQ0hfUEhZU19B
-RERSX1RfNjRCSVQ9eQpDT05GSUdfQVJDSF9ETUFfQUREUl9UXzY0QklUPXkKQ09ORklHX1g4Nl9E
-SVJFQ1RfR0JQQUdFUz15CkNPTkZJR19BUkNIX1NQQVJTRU1FTV9FTkFCTEU9eQpDT05GSUdfQVJD
-SF9TUEFSU0VNRU1fREVGQVVMVD15CkNPTkZJR19BUkNIX1NFTEVDVF9NRU1PUllfTU9ERUw9eQpD
-T05GSUdfQVJDSF9QUk9DX0tDT1JFX1RFWFQ9eQpDT05GSUdfSUxMRUdBTF9QT0lOVEVSX1ZBTFVF
-PTB4ZGVhZDAwMDAwMDAwMDAwMApDT05GSUdfU0VMRUNUX01FTU9SWV9NT0RFTD15CkNPTkZJR19T
-UEFSU0VNRU1fTUFOVUFMPXkKQ09ORklHX1NQQVJTRU1FTT15CkNPTkZJR19IQVZFX01FTU9SWV9Q
-UkVTRU5UPXkKQ09ORklHX1NQQVJTRU1FTV9FWFRSRU1FPXkKQ09ORklHX1NQQVJTRU1FTV9WTUVN
-TUFQX0VOQUJMRT15CkNPTkZJR19TUEFSU0VNRU1fQUxMT0NfTUVNX01BUF9UT0dFVEhFUj15CkNP
-TkZJR19TUEFSU0VNRU1fVk1FTU1BUD15CkNPTkZJR19IQVZFX01FTUJMT0NLPXkKQ09ORklHX0hB
-VkVfTUVNQkxPQ0tfTk9ERV9NQVA9eQpDT05GSUdfQVJDSF9ESVNDQVJEX01FTUJMT0NLPXkKQ09O
-RklHX01FTU9SWV9JU09MQVRJT049eQojIENPTkZJR19IQVZFX0JPT1RNRU1fSU5GT19OT0RFIGlz
-IG5vdCBzZXQKIyBDT05GSUdfTUVNT1JZX0hPVFBMVUcgaXMgbm90IHNldApDT05GSUdfU1BMSVRf
-UFRMT0NLX0NQVVM9NApDT05GSUdfQVJDSF9FTkFCTEVfU1BMSVRfUE1EX1BUTE9DSz15CkNPTkZJ
-R19DT01QQUNUSU9OPXkKQ09ORklHX01JR1JBVElPTj15CkNPTkZJR19BUkNIX0VOQUJMRV9IVUdF
-UEFHRV9NSUdSQVRJT049eQpDT05GSUdfUEhZU19BRERSX1RfNjRCSVQ9eQpDT05GSUdfWk9ORV9E
-TUFfRkxBRz0xCkNPTkZJR19WSVJUX1RPX0JVUz15CkNPTkZJR19NTVVfTk9USUZJRVI9eQojIENP
-TkZJR19LU00gaXMgbm90IHNldApDT05GSUdfREVGQVVMVF9NTUFQX01JTl9BRERSPTQwOTYKQ09O
-RklHX0FSQ0hfU1VQUE9SVFNfTUVNT1JZX0ZBSUxVUkU9eQpDT05GSUdfTUVNT1JZX0ZBSUxVUkU9
-eQpDT05GSUdfSFdQT0lTT05fSU5KRUNUPXkKQ09ORklHX1RSQU5TUEFSRU5UX0hVR0VQQUdFPXkK
-Q09ORklHX1RSQU5TUEFSRU5UX0hVR0VQQUdFX0FMV0FZUz15CiMgQ09ORklHX1RSQU5TUEFSRU5U
-X0hVR0VQQUdFX01BRFZJU0UgaXMgbm90IHNldApDT05GSUdfTkVFRF9QRVJfQ1BVX0tNPXkKQ09O
-RklHX0NMRUFOQ0FDSEU9eQojIENPTkZJR19DTUEgaXMgbm90IHNldApDT05GSUdfTUVNX1NPRlRf
-RElSVFk9eQojIENPTkZJR19aUE9PTCBpcyBub3Qgc2V0CkNPTkZJR19aQlVEPXkKIyBDT05GSUdf
-WlNNQUxMT0MgaXMgbm90IHNldApDT05GSUdfR0VORVJJQ19FQVJMWV9JT1JFTUFQPXkKQ09ORklH
-X0FSQ0hfU1VQUE9SVFNfREVGRVJSRURfU1RSVUNUX1BBR0VfSU5JVD15CkNPTkZJR19JRExFX1BB
-R0VfVFJBQ0tJTkc9eQpDT05GSUdfWDg2X0NIRUNLX0JJT1NfQ09SUlVQVElPTj15CkNPTkZJR19Y
-ODZfQk9PVFBBUkFNX01FTU9SWV9DT1JSVVBUSU9OX0NIRUNLPXkKQ09ORklHX1g4Nl9SRVNFUlZF
-X0xPVz02NAojIENPTkZJR19NVFJSIGlzIG5vdCBzZXQKIyBDT05GSUdfQVJDSF9SQU5ET00gaXMg
-bm90IHNldAojIENPTkZJR19YODZfU01BUCBpcyBub3Qgc2V0CkNPTkZJR19YODZfSU5URUxfTVBY
-PXkKIyBDT05GSUdfRUZJIGlzIG5vdCBzZXQKQ09ORklHX1NFQ0NPTVA9eQpDT05GSUdfSFpfMTAw
-PXkKIyBDT05GSUdfSFpfMjUwIGlzIG5vdCBzZXQKIyBDT05GSUdfSFpfMzAwIGlzIG5vdCBzZXQK
-IyBDT05GSUdfSFpfMTAwMCBpcyBub3Qgc2V0CkNPTkZJR19IWj0xMDAKIyBDT05GSUdfU0NIRURf
-SFJUSUNLIGlzIG5vdCBzZXQKQ09ORklHX0tFWEVDPXkKIyBDT05GSUdfS0VYRUNfRklMRSBpcyBu
-b3Qgc2V0CkNPTkZJR19DUkFTSF9EVU1QPXkKQ09ORklHX1BIWVNJQ0FMX1NUQVJUPTB4MTAwMDAw
-MApDT05GSUdfUkVMT0NBVEFCTEU9eQojIENPTkZJR19SQU5ET01JWkVfQkFTRSBpcyBub3Qgc2V0
-CkNPTkZJR19QSFlTSUNBTF9BTElHTj0weDIwMDAwMAojIENPTkZJR19DT01QQVRfVkRTTyBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0xFR0FDWV9WU1lTQ0FMTF9OQVRJVkUgaXMgbm90IHNldAojIENPTkZJ
-R19MRUdBQ1lfVlNZU0NBTExfRU1VTEFURSBpcyBub3Qgc2V0CkNPTkZJR19MRUdBQ1lfVlNZU0NB
-TExfTk9ORT15CiMgQ09ORklHX0NNRExJTkVfQk9PTCBpcyBub3Qgc2V0CkNPTkZJR19NT0RJRllf
-TERUX1NZU0NBTEw9eQpDT05GSUdfSEFWRV9MSVZFUEFUQ0g9eQpDT05GSUdfQVJDSF9FTkFCTEVf
-TUVNT1JZX0hPVFBMVUc9eQoKIwojIFBvd2VyIG1hbmFnZW1lbnQgYW5kIEFDUEkgb3B0aW9ucwoj
-CkNPTkZJR19TVVNQRU5EPXkKQ09ORklHX1NVU1BFTkRfRlJFRVpFUj15CiMgQ09ORklHX1NVU1BF
-TkRfU0tJUF9TWU5DIGlzIG5vdCBzZXQKQ09ORklHX0hJQkVSTkFURV9DQUxMQkFDS1M9eQpDT05G
-SUdfUE1fU0xFRVA9eQojIENPTkZJR19QTV9BVVRPU0xFRVAgaXMgbm90IHNldAojIENPTkZJR19Q
-TV9XQUtFTE9DS1MgaXMgbm90IHNldApDT05GSUdfUE09eQpDT05GSUdfUE1fREVCVUc9eQojIENP
-TkZJR19QTV9BRFZBTkNFRF9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19QTV9TTEVFUF9ERUJVRz15
-CkNPTkZJR19QTV9UUkFDRT15CkNPTkZJR19QTV9UUkFDRV9SVEM9eQpDT05GSUdfV1FfUE9XRVJf
-RUZGSUNJRU5UX0RFRkFVTFQ9eQpDT05GSUdfQUNQST15CkNPTkZJR19BQ1BJX0xFR0FDWV9UQUJM
-RVNfTE9PS1VQPXkKQ09ORklHX0FSQ0hfTUlHSFRfSEFWRV9BQ1BJX1BEQz15CkNPTkZJR19BQ1BJ
-X1NZU1RFTV9QT1dFUl9TVEFURVNfU1VQUE9SVD15CiMgQ09ORklHX0FDUElfREVCVUdHRVIgaXMg
-bm90IHNldApDT05GSUdfQUNQSV9TTEVFUD15CiMgQ09ORklHX0FDUElfUFJPQ0ZTX1BPV0VSIGlz
-IG5vdCBzZXQKQ09ORklHX0FDUElfUkVWX09WRVJSSURFX1BPU1NJQkxFPXkKIyBDT05GSUdfQUNQ
-SV9FQ19ERUJVR0ZTIGlzIG5vdCBzZXQKQ09ORklHX0FDUElfQUM9eQpDT05GSUdfQUNQSV9CQVRU
-RVJZPXkKQ09ORklHX0FDUElfQlVUVE9OPXkKQ09ORklHX0FDUElfRkFOPXkKIyBDT05GSUdfQUNQ
-SV9ET0NLIGlzIG5vdCBzZXQKQ09ORklHX0FDUElfQ1BVX0ZSRVFfUFNTPXkKQ09ORklHX0FDUElf
-UFJPQ0VTU09SX0lETEU9eQpDT05GSUdfQUNQSV9QUk9DRVNTT1I9eQojIENPTkZJR19BQ1BJX0lQ
-TUkgaXMgbm90IHNldAojIENPTkZJR19BQ1BJX1BST0NFU1NPUl9BR0dSRUdBVE9SIGlzIG5vdCBz
-ZXQKQ09ORklHX0FDUElfVEhFUk1BTD15CiMgQ09ORklHX0FDUElfQ1VTVE9NX0RTRFQgaXMgbm90
-IHNldAojIENPTkZJR19BQ1BJX0lOSVRSRF9UQUJMRV9PVkVSUklERSBpcyBub3Qgc2V0CiMgQ09O
-RklHX0FDUElfREVCVUcgaXMgbm90IHNldAojIENPTkZJR19BQ1BJX1BDSV9TTE9UIGlzIG5vdCBz
-ZXQKQ09ORklHX1g4Nl9QTV9USU1FUj15CiMgQ09ORklHX0FDUElfQ09OVEFJTkVSIGlzIG5vdCBz
-ZXQKQ09ORklHX0FDUElfSE9UUExVR19JT0FQSUM9eQojIENPTkZJR19BQ1BJX1NCUyBpcyBub3Qg
-c2V0CiMgQ09ORklHX0FDUElfSEVEIGlzIG5vdCBzZXQKIyBDT05GSUdfQUNQSV9DVVNUT01fTUVU
-SE9EIGlzIG5vdCBzZXQKIyBDT05GSUdfQUNQSV9SRURVQ0VEX0hBUkRXQVJFX09OTFkgaXMgbm90
-IHNldApDT05GSUdfSEFWRV9BQ1BJX0FQRUk9eQpDT05GSUdfSEFWRV9BQ1BJX0FQRUlfTk1JPXkK
-IyBDT05GSUdfQUNQSV9BUEVJIGlzIG5vdCBzZXQKIyBDT05GSUdfQUNQSV9FWFRMT0cgaXMgbm90
-IHNldAojIENPTkZJR19QTUlDX09QUkVHSU9OIGlzIG5vdCBzZXQKQ09ORklHX1NGST15CgojCiMg
-Q1BVIEZyZXF1ZW5jeSBzY2FsaW5nCiMKQ09ORklHX0NQVV9GUkVRPXkKIyBDT05GSUdfQ1BVX0ZS
-RVFfU1RBVCBpcyBub3Qgc2V0CiMgQ09ORklHX0NQVV9GUkVRX0RFRkFVTFRfR09WX1BFUkZPUk1B
-TkNFIGlzIG5vdCBzZXQKQ09ORklHX0NQVV9GUkVRX0RFRkFVTFRfR09WX1BPV0VSU0FWRT15CiMg
-Q09ORklHX0NQVV9GUkVRX0RFRkFVTFRfR09WX1VTRVJTUEFDRSBpcyBub3Qgc2V0CiMgQ09ORklH
-X0NQVV9GUkVRX0RFRkFVTFRfR09WX09OREVNQU5EIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1BVX0ZS
-RVFfREVGQVVMVF9HT1ZfQ09OU0VSVkFUSVZFIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1BVX0ZSRVFf
-R09WX1BFUkZPUk1BTkNFIGlzIG5vdCBzZXQKQ09ORklHX0NQVV9GUkVRX0dPVl9QT1dFUlNBVkU9
-eQpDT05GSUdfQ1BVX0ZSRVFfR09WX1VTRVJTUEFDRT15CiMgQ09ORklHX0NQVV9GUkVRX0dPVl9P
-TkRFTUFORCBpcyBub3Qgc2V0CiMgQ09ORklHX0NQVV9GUkVRX0dPVl9DT05TRVJWQVRJVkUgaXMg
-bm90IHNldAoKIwojIENQVSBmcmVxdWVuY3kgc2NhbGluZyBkcml2ZXJzCiMKIyBDT05GSUdfWDg2
-X0lOVEVMX1BTVEFURSBpcyBub3Qgc2V0CiMgQ09ORklHX1g4Nl9QQ0NfQ1BVRlJFUSBpcyBub3Qg
-c2V0CiMgQ09ORklHX1g4Nl9BQ1BJX0NQVUZSRVEgaXMgbm90IHNldAojIENPTkZJR19YODZfU1BF
-RURTVEVQX0NFTlRSSU5PIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9QNF9DTE9DS01PRD15CgojCiMg
-c2hhcmVkIG9wdGlvbnMKIwpDT05GSUdfWDg2X1NQRUVEU1RFUF9MSUI9eQoKIwojIENQVSBJZGxl
-CiMKQ09ORklHX0NQVV9JRExFPXkKQ09ORklHX0NQVV9JRExFX0dPVl9MQURERVI9eQpDT05GSUdf
-Q1BVX0lETEVfR09WX01FTlU9eQojIENPTkZJR19BUkNIX05FRURTX0NQVV9JRExFX0NPVVBMRUQg
-aXMgbm90IHNldApDT05GSUdfSU5URUxfSURMRT15CgojCiMgTWVtb3J5IHBvd2VyIHNhdmluZ3MK
-IwpDT05GSUdfSTczMDBfSURMRV9JT0FUX0NIQU5ORUw9eQpDT05GSUdfSTczMDBfSURMRT15Cgoj
-CiMgQnVzIG9wdGlvbnMgKFBDSSBldGMuKQojCkNPTkZJR19QQ0k9eQpDT05GSUdfUENJX0RJUkVD
-VD15CiMgQ09ORklHX1BDSV9NTUNPTkZJRyBpcyBub3Qgc2V0CkNPTkZJR19QQ0lfWEVOPXkKQ09O
-RklHX1BDSV9ET01BSU5TPXkKIyBDT05GSUdfUENJX0NOQjIwTEVfUVVJUksgaXMgbm90IHNldAoj
-IENPTkZJR19QQ0lFUE9SVEJVUyBpcyBub3Qgc2V0CkNPTkZJR19QQ0lfQlVTX0FERFJfVF82NEJJ
-VD15CiMgQ09ORklHX1BDSV9NU0kgaXMgbm90IHNldAojIENPTkZJR19QQ0lfREVCVUcgaXMgbm90
-IHNldAojIENPTkZJR19QQ0lfUkVBTExPQ19FTkFCTEVfQVVUTyBpcyBub3Qgc2V0CiMgQ09ORklH
-X1BDSV9TVFVCIGlzIG5vdCBzZXQKQ09ORklHX1hFTl9QQ0lERVZfRlJPTlRFTkQ9eQpDT05GSUdf
-SFRfSVJRPXkKIyBDT05GSUdfUENJX0lPViBpcyBub3Qgc2V0CiMgQ09ORklHX1BDSV9QUkkgaXMg
-bm90IHNldAojIENPTkZJR19QQ0lfUEFTSUQgaXMgbm90IHNldApDT05GSUdfUENJX0xBQkVMPXkK
-CiMKIyBQQ0kgaG9zdCBjb250cm9sbGVyIGRyaXZlcnMKIwojIENPTkZJR19JU0FfRE1BX0FQSSBp
-cyBub3Qgc2V0CkNPTkZJR19BTURfTkI9eQpDT05GSUdfUENDQVJEPXkKIyBDT05GSUdfUENNQ0lB
-IGlzIG5vdCBzZXQKQ09ORklHX0NBUkRCVVM9eQoKIwojIFBDLWNhcmQgYnJpZGdlcwojCiMgQ09O
-RklHX1lFTlRBIGlzIG5vdCBzZXQKIyBDT05GSUdfSE9UUExVR19QQ0kgaXMgbm90IHNldAojIENP
-TkZJR19SQVBJRElPIGlzIG5vdCBzZXQKIyBDT05GSUdfWDg2X1NZU0ZCIGlzIG5vdCBzZXQKCiMK
-IyBFeGVjdXRhYmxlIGZpbGUgZm9ybWF0cyAvIEVtdWxhdGlvbnMKIwpDT05GSUdfQklORk1UX0VM
-Rj15CkNPTkZJR19DT01QQVRfQklORk1UX0VMRj15CkNPTkZJR19CSU5GTVRfU0NSSVBUPXkKIyBD
-T05GSUdfSEFWRV9BT1VUIGlzIG5vdCBzZXQKQ09ORklHX0JJTkZNVF9NSVNDPXkKIyBDT05GSUdf
-Q09SRURVTVAgaXMgbm90IHNldApDT05GSUdfSUEzMl9FTVVMQVRJT049eQojIENPTkZJR19JQTMy
-X0FPVVQgaXMgbm90IHNldAojIENPTkZJR19YODZfWDMyIGlzIG5vdCBzZXQKQ09ORklHX0NPTVBB
-VD15CkNPTkZJR19DT01QQVRfRk9SX1U2NF9BTElHTk1FTlQ9eQpDT05GSUdfWDg2X0RFVl9ETUFf
-T1BTPXkKQ09ORklHX1BNQ19BVE9NPXkKQ09ORklHX05FVD15CgojCiMgTmV0d29ya2luZyBvcHRp
-b25zCiMKIyBDT05GSUdfUEFDS0VUIGlzIG5vdCBzZXQKQ09ORklHX1VOSVg9eQojIENPTkZJR19V
-TklYX0RJQUcgaXMgbm90IHNldAojIENPTkZJR19ORVRfS0VZIGlzIG5vdCBzZXQKIyBDT05GSUdf
-SU5FVCBpcyBub3Qgc2V0CiMgQ09ORklHX05FVFdPUktfU0VDTUFSSyBpcyBub3Qgc2V0CiMgQ09O
-RklHX05FVF9QVFBfQ0xBU1NJRlkgaXMgbm90IHNldAojIENPTkZJR19ORVRXT1JLX1BIWV9USU1F
-U1RBTVBJTkcgaXMgbm90IHNldAojIENPTkZJR19ORVRGSUxURVIgaXMgbm90IHNldAojIENPTkZJ
-R19BVE0gaXMgbm90IHNldAojIENPTkZJR19CUklER0UgaXMgbm90IHNldAojIENPTkZJR19WTEFO
-XzgwMjFRIGlzIG5vdCBzZXQKIyBDT05GSUdfREVDTkVUIGlzIG5vdCBzZXQKIyBDT05GSUdfTExD
-MiBpcyBub3Qgc2V0CiMgQ09ORklHX0lQWCBpcyBub3Qgc2V0CiMgQ09ORklHX0FUQUxLIGlzIG5v
-dCBzZXQKIyBDT05GSUdfWDI1IGlzIG5vdCBzZXQKIyBDT05GSUdfTEFQQiBpcyBub3Qgc2V0CiMg
-Q09ORklHX1BIT05FVCBpcyBub3Qgc2V0CiMgQ09ORklHX0lFRUU4MDIxNTQgaXMgbm90IHNldAoj
-IENPTkZJR19ORVRfU0NIRUQgaXMgbm90IHNldAojIENPTkZJR19EQ0IgaXMgbm90IHNldAojIENP
-TkZJR19CQVRNQU5fQURWIGlzIG5vdCBzZXQKIyBDT05GSUdfVlNPQ0tFVFMgaXMgbm90IHNldAoj
-IENPTkZJR19ORVRMSU5LX01NQVAgaXMgbm90IHNldAojIENPTkZJR19ORVRMSU5LX0RJQUcgaXMg
-bm90IHNldAojIENPTkZJR19NUExTIGlzIG5vdCBzZXQKIyBDT05GSUdfSFNSIGlzIG5vdCBzZXQK
-IyBDT05GSUdfU09DS19DR1JPVVBfREFUQSBpcyBub3Qgc2V0CiMgQ09ORklHX0NHUk9VUF9ORVRf
-UFJJTyBpcyBub3Qgc2V0CiMgQ09ORklHX0NHUk9VUF9ORVRfQ0xBU1NJRCBpcyBub3Qgc2V0CkNP
-TkZJR19ORVRfUlhfQlVTWV9QT0xMPXkKQ09ORklHX0JRTD15CgojCiMgTmV0d29yayB0ZXN0aW5n
-CiMKIyBDT05GSUdfSEFNUkFESU8gaXMgbm90IHNldAojIENPTkZJR19DQU4gaXMgbm90IHNldAoj
-IENPTkZJR19JUkRBIGlzIG5vdCBzZXQKIyBDT05GSUdfQlQgaXMgbm90IHNldApDT05GSUdfV0lS
-RUxFU1M9eQojIENPTkZJR19DRkc4MDIxMSBpcyBub3Qgc2V0CiMgQ09ORklHX0xJQjgwMjExIGlz
-IG5vdCBzZXQKCiMKIyBDRkc4MDIxMSBuZWVkcyB0byBiZSBlbmFibGVkIGZvciBNQUM4MDIxMQoj
-CkNPTkZJR19NQUM4MDIxMV9TVEFfSEFTSF9NQVhfU0laRT0wCiMgQ09ORklHX1dJTUFYIGlzIG5v
-dCBzZXQKIyBDT05GSUdfUkZLSUxMIGlzIG5vdCBzZXQKIyBDT05GSUdfUkZLSUxMX1JFR1VMQVRP
-UiBpcyBub3Qgc2V0CiMgQ09ORklHX05FVF85UCBpcyBub3Qgc2V0CiMgQ09ORklHX0NBSUYgaXMg
-bm90IHNldAojIENPTkZJR19ORkMgaXMgbm90IHNldAojIENPTkZJR19MV1RVTk5FTCBpcyBub3Qg
-c2V0CkNPTkZJR19IQVZFX0JQRl9KSVQ9eQoKIwojIERldmljZSBEcml2ZXJzCiMKCiMKIyBHZW5l
-cmljIERyaXZlciBPcHRpb25zCiMKIyBDT05GSUdfVUVWRU5UX0hFTFBFUiBpcyBub3Qgc2V0CkNP
-TkZJR19ERVZUTVBGUz15CiMgQ09ORklHX0RFVlRNUEZTX01PVU5UIGlzIG5vdCBzZXQKQ09ORklH
-X1NUQU5EQUxPTkU9eQpDT05GSUdfUFJFVkVOVF9GSVJNV0FSRV9CVUlMRD15CkNPTkZJR19GV19M
-T0FERVI9eQojIENPTkZJR19GSVJNV0FSRV9JTl9LRVJORUwgaXMgbm90IHNldApDT05GSUdfRVhU
-UkFfRklSTVdBUkU9IiIKQ09ORklHX0ZXX0xPQURFUl9VU0VSX0hFTFBFUj15CiMgQ09ORklHX0ZX
-X0xPQURFUl9VU0VSX0hFTFBFUl9GQUxMQkFDSyBpcyBub3Qgc2V0CkNPTkZJR19BTExPV19ERVZf
-Q09SRURVTVA9eQojIENPTkZJR19ERUJVR19EUklWRVIgaXMgbm90IHNldAojIENPTkZJR19ERUJV
-R19ERVZSRVMgaXMgbm90IHNldApDT05GSUdfU1lTX0hZUEVSVklTT1I9eQojIENPTkZJR19HRU5F
-UklDX0NQVV9ERVZJQ0VTIGlzIG5vdCBzZXQKQ09ORklHX0dFTkVSSUNfQ1BVX0FVVE9QUk9CRT15
-CkNPTkZJR19SRUdNQVA9eQpDT05GSUdfUkVHTUFQX1NQST15CkNPTkZJR19SRUdNQVBfU1BNST15
-CkNPTkZJR19SRUdNQVBfTU1JTz15CkNPTkZJR19SRUdNQVBfSVJRPXkKIyBDT05GSUdfRE1BX1NI
-QVJFRF9CVUZGRVIgaXMgbm90IHNldAoKIwojIEJ1cyBkZXZpY2VzCiMKIyBDT05GSUdfQ09OTkVD
-VE9SIGlzIG5vdCBzZXQKQ09ORklHX01URD15CkNPTkZJR19NVERfUkVEQk9PVF9QQVJUUz15CkNP
-TkZJR19NVERfUkVEQk9PVF9ESVJFQ1RPUllfQkxPQ0s9LTEKQ09ORklHX01URF9SRURCT09UX1BB
-UlRTX1VOQUxMT0NBVEVEPXkKIyBDT05GSUdfTVREX1JFREJPT1RfUEFSVFNfUkVBRE9OTFkgaXMg
-bm90IHNldAojIENPTkZJR19NVERfQ01ETElORV9QQVJUUyBpcyBub3Qgc2V0CkNPTkZJR19NVERf
-T0ZfUEFSVFM9eQpDT05GSUdfTVREX0FSN19QQVJUUz15CgojCiMgVXNlciBNb2R1bGVzIEFuZCBU
-cmFuc2xhdGlvbiBMYXllcnMKIwojIENPTkZJR19NVERfT09QUyBpcyBub3Qgc2V0CiMgQ09ORklH
-X01URF9QQVJUSVRJT05FRF9NQVNURVIgaXMgbm90IHNldAoKIwojIFJBTS9ST00vRmxhc2ggY2hp
-cCBkcml2ZXJzCiMKQ09ORklHX01URF9DRkk9eQpDT05GSUdfTVREX0pFREVDUFJPQkU9eQpDT05G
-SUdfTVREX0dFTl9QUk9CRT15CkNPTkZJR19NVERfQ0ZJX0FEVl9PUFRJT05TPXkKQ09ORklHX01U
-RF9DRklfTk9TV0FQPXkKIyBDT05GSUdfTVREX0NGSV9CRV9CWVRFX1NXQVAgaXMgbm90IHNldAoj
-IENPTkZJR19NVERfQ0ZJX0xFX0JZVEVfU1dBUCBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9DRklf
-R0VPTUVUUlkgaXMgbm90IHNldApDT05GSUdfTVREX01BUF9CQU5LX1dJRFRIXzE9eQpDT05GSUdf
-TVREX01BUF9CQU5LX1dJRFRIXzI9eQpDT05GSUdfTVREX01BUF9CQU5LX1dJRFRIXzQ9eQojIENP
-TkZJR19NVERfTUFQX0JBTktfV0lEVEhfOCBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9NQVBfQkFO
-S19XSURUSF8xNiBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9NQVBfQkFOS19XSURUSF8zMiBpcyBu
-b3Qgc2V0CkNPTkZJR19NVERfQ0ZJX0kxPXkKQ09ORklHX01URF9DRklfSTI9eQojIENPTkZJR19N
-VERfQ0ZJX0k0IGlzIG5vdCBzZXQKIyBDT05GSUdfTVREX0NGSV9JOCBpcyBub3Qgc2V0CiMgQ09O
-RklHX01URF9PVFAgaXMgbm90IHNldAojIENPTkZJR19NVERfQ0ZJX0lOVEVMRVhUIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfTVREX0NGSV9BTURTVEQgaXMgbm90IHNldApDT05GSUdfTVREX0NGSV9TVEFB
-PXkKQ09ORklHX01URF9DRklfVVRJTD15CkNPTkZJR19NVERfUkFNPXkKQ09ORklHX01URF9ST009
-eQojIENPTkZJR19NVERfQUJTRU5UIGlzIG5vdCBzZXQKCiMKIyBNYXBwaW5nIGRyaXZlcnMgZm9y
-IGNoaXAgYWNjZXNzCiMKQ09ORklHX01URF9DT01QTEVYX01BUFBJTkdTPXkKIyBDT05GSUdfTVRE
-X1BIWVNNQVAgaXMgbm90IHNldApDT05GSUdfTVREX1BIWVNNQVBfT0Y9eQpDT05GSUdfTVREX0FN
-RDc2WFJPTT15CkNPTkZJR19NVERfSUNIWFJPTT15CiMgQ09ORklHX01URF9FU0IyUk9NIGlzIG5v
-dCBzZXQKIyBDT05GSUdfTVREX0NLODA0WFJPTSBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9TQ0Iy
-X0ZMQVNIIGlzIG5vdCBzZXQKIyBDT05GSUdfTVREX05FVHRlbCBpcyBub3Qgc2V0CkNPTkZJR19N
-VERfTDQ0MEdYPXkKIyBDT05GSUdfTVREX1BDSSBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9JTlRF
-TF9WUl9OT1IgaXMgbm90IHNldApDT05GSUdfTVREX1BMQVRSQU09eQpDT05GSUdfTVREX0xBVENI
-X0FERFI9eQoKIwojIFNlbGYtY29udGFpbmVkIE1URCBkZXZpY2UgZHJpdmVycwojCiMgQ09ORklH
-X01URF9QTUM1NTEgaXMgbm90IHNldAojIENPTkZJR19NVERfREFUQUZMQVNIIGlzIG5vdCBzZXQK
-Q09ORklHX01URF9NMjVQODA9eQpDT05GSUdfTVREX1NTVDI1TD15CkNPTkZJR19NVERfU0xSQU09
-eQojIENPTkZJR19NVERfUEhSQU0gaXMgbm90IHNldAojIENPTkZJR19NVERfTVREUkFNIGlzIG5v
-dCBzZXQKCiMKIyBEaXNrLU9uLUNoaXAgRGV2aWNlIERyaXZlcnMKIwpDT05GSUdfTVREX0RPQ0cz
-PXkKQ09ORklHX0JDSF9DT05TVF9NPTE0CkNPTkZJR19CQ0hfQ09OU1RfVD00CkNPTkZJR19NVERf
-TkFORF9FQ0M9eQpDT05GSUdfTVREX05BTkRfRUNDX1NNQz15CkNPTkZJR19NVERfTkFORD15CkNP
-TkZJR19NVERfTkFORF9CQ0g9eQpDT05GSUdfTVREX05BTkRfRUNDX0JDSD15CiMgQ09ORklHX01U
-RF9TTV9DT01NT04gaXMgbm90IHNldAojIENPTkZJR19NVERfTkFORF9ERU5BTElfUENJIGlzIG5v
-dCBzZXQKIyBDT05GSUdfTVREX05BTkRfT01BUF9CQ0hfQlVJTEQgaXMgbm90IHNldApDT05GSUdf
-TVREX05BTkRfSURTPXkKIyBDT05GSUdfTVREX05BTkRfUklDT0ggaXMgbm90IHNldAojIENPTkZJ
-R19NVERfTkFORF9ESVNLT05DSElQIGlzIG5vdCBzZXQKIyBDT05GSUdfTVREX05BTkRfRE9DRzQg
-aXMgbm90IHNldAojIENPTkZJR19NVERfTkFORF9DQUZFIGlzIG5vdCBzZXQKIyBDT05GSUdfTVRE
-X05BTkRfTkFORFNJTSBpcyBub3Qgc2V0CkNPTkZJR19NVERfTkFORF9QTEFURk9STT15CkNPTkZJ
-R19NVERfTkFORF9ISVNJNTA0PXkKIyBDT05GSUdfTVREX09ORU5BTkQgaXMgbm90IHNldAoKIwoj
-IExQRERSICYgTFBERFIyIFBDTSBtZW1vcnkgZHJpdmVycwojCiMgQ09ORklHX01URF9MUEREUiBp
-cyBub3Qgc2V0CkNPTkZJR19NVERfU1BJX05PUj15CiMgQ09ORklHX01URF9NVDgxeHhfTk9SIGlz
-IG5vdCBzZXQKIyBDT05GSUdfTVREX1NQSV9OT1JfVVNFXzRLX1NFQ1RPUlMgaXMgbm90IHNldApD
-T05GSUdfTVREX1VCST15CkNPTkZJR19NVERfVUJJX1dMX1RIUkVTSE9MRD00MDk2CkNPTkZJR19N
-VERfVUJJX0JFQl9MSU1JVD0yMApDT05GSUdfTVREX1VCSV9GQVNUTUFQPXkKQ09ORklHX01URF9V
-QklfR0xVRUJJPXkKQ09ORklHX09GPXkKIyBDT05GSUdfT0ZfVU5JVFRFU1QgaXMgbm90IHNldApD
-T05GSUdfT0ZfRFlOQU1JQz15CkNPTkZJR19PRl9BRERSRVNTPXkKQ09ORklHX09GX0FERFJFU1Nf
-UENJPXkKQ09ORklHX09GX0lSUT15CkNPTkZJR19PRl9QQ0k9eQpDT05GSUdfT0ZfUENJX0lSUT15
-CkNPTkZJR19PRl9NVEQ9eQpDT05GSUdfT0ZfUkVTT0xWRT15CkNPTkZJR19PRl9PVkVSTEFZPXkK
-Q09ORklHX0FSQ0hfTUlHSFRfSEFWRV9QQ19QQVJQT1JUPXkKQ09ORklHX1BBUlBPUlQ9eQpDT05G
-SUdfUEFSUE9SVF9QQz15CiMgQ09ORklHX1BBUlBPUlRfU0VSSUFMIGlzIG5vdCBzZXQKQ09ORklH
-X1BBUlBPUlRfUENfRklGTz15CkNPTkZJR19QQVJQT1JUX1BDX1NVUEVSSU89eQojIENPTkZJR19Q
-QVJQT1JUX0dTQyBpcyBub3Qgc2V0CkNPTkZJR19QQVJQT1JUX0FYODg3OTY9eQojIENPTkZJR19Q
-QVJQT1JUXzEyODQgaXMgbm90IHNldApDT05GSUdfUEFSUE9SVF9OT1RfUEM9eQpDT05GSUdfUE5Q
-PXkKQ09ORklHX1BOUF9ERUJVR19NRVNTQUdFUz15CgojCiMgUHJvdG9jb2xzCiMKQ09ORklHX1BO
-UEFDUEk9eQoKIwojIE1pc2MgZGV2aWNlcwojCiMgQ09ORklHX1NFTlNPUlNfTElTM0xWMDJEIGlz
-IG5vdCBzZXQKQ09ORklHX0FENTI1WF9EUE9UPXkKQ09ORklHX0FENTI1WF9EUE9UX1NQST15CkNP
-TkZJR19EVU1NWV9JUlE9eQojIENPTkZJR19JQk1fQVNNIGlzIG5vdCBzZXQKIyBDT05GSUdfUEhB
-TlRPTSBpcyBub3Qgc2V0CiMgQ09ORklHX1NHSV9JT0M0IGlzIG5vdCBzZXQKIyBDT05GSUdfVElG
-TV9DT1JFIGlzIG5vdCBzZXQKQ09ORklHX0VOQ0xPU1VSRV9TRVJWSUNFUz15CiMgQ09ORklHX0hQ
-X0lMTyBpcyBub3Qgc2V0CkNPTkZJR19USV9EQUM3NTEyPXkKQ09ORklHX0JNUDA4NT15CkNPTkZJ
-R19CTVAwODVfU1BJPXkKQ09ORklHX0xBVFRJQ0VfRUNQM19DT05GSUc9eQojIENPTkZJR19TUkFN
-IGlzIG5vdCBzZXQKQ09ORklHX0MyUE9SVD15CiMgQ09ORklHX0MyUE9SVF9EVVJBTUFSXzIxNTAg
-aXMgbm90IHNldAoKIwojIEVFUFJPTSBzdXBwb3J0CiMKQ09ORklHX0VFUFJPTV9BVDI1PXkKQ09O
-RklHX0VFUFJPTV85M0NYNj15CkNPTkZJR19FRVBST01fOTNYWDQ2PXkKIyBDT05GSUdfQ0I3MTBf
-Q09SRSBpcyBub3Qgc2V0CgojCiMgVGV4YXMgSW5zdHJ1bWVudHMgc2hhcmVkIHRyYW5zcG9ydCBs
-aW5lIGRpc2NpcGxpbmUKIwoKIwojIEFsdGVyYSBGUEdBIGZpcm13YXJlIGRvd25sb2FkIG1vZHVs
-ZQojCiMgQ09ORklHX0lOVEVMX01FSSBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX01FSV9NRSBp
-cyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX01FSV9UWEUgaXMgbm90IHNldAojIENPTkZJR19WTVdB
-UkVfVk1DSSBpcyBub3Qgc2V0CgojCiMgSW50ZWwgTUlDIEJ1cyBEcml2ZXIKIwojIENPTkZJR19J
-TlRFTF9NSUNfQlVTIGlzIG5vdCBzZXQKCiMKIyBTQ0lGIEJ1cyBEcml2ZXIKIwojIENPTkZJR19T
-Q0lGX0JVUyBpcyBub3Qgc2V0CgojCiMgSW50ZWwgTUlDIEhvc3QgRHJpdmVyCiMKCiMKIyBJbnRl
-bCBNSUMgQ2FyZCBEcml2ZXIKIwoKIwojIFNDSUYgRHJpdmVyCiMKCiMKIyBJbnRlbCBNSUMgQ29w
-cm9jZXNzb3IgU3RhdGUgTWFuYWdlbWVudCAoQ09TTSkgRHJpdmVycwojCiMgQ09ORklHX0dFTldR
-RSBpcyBub3Qgc2V0CkNPTkZJR19FQ0hPPXkKIyBDT05GSUdfQ1hMX0JBU0UgaXMgbm90IHNldAoj
-IENPTkZJR19DWExfS0VSTkVMX0FQSSBpcyBub3Qgc2V0CiMgQ09ORklHX0NYTF9FRUggaXMgbm90
-IHNldApDT05GSUdfSEFWRV9JREU9eQoKIwojIFNDU0kgZGV2aWNlIHN1cHBvcnQKIwpDT05GSUdf
-U0NTSV9NT0Q9eQojIENPTkZJR19TQ1NJX0RNQSBpcyBub3Qgc2V0CiMgQ09ORklHX1NDU0lfTkVU
-TElOSyBpcyBub3Qgc2V0CiMgQ09ORklHX0ZVU0lPTiBpcyBub3Qgc2V0CgojCiMgSUVFRSAxMzk0
-IChGaXJlV2lyZSkgc3VwcG9ydAojCiMgQ09ORklHX0ZJUkVXSVJFIGlzIG5vdCBzZXQKIyBDT05G
-SUdfRklSRVdJUkVfTk9TWSBpcyBub3Qgc2V0CiMgQ09ORklHX01BQ0lOVE9TSF9EUklWRVJTIGlz
-IG5vdCBzZXQKIyBDT05GSUdfTkVUREVWSUNFUyBpcyBub3Qgc2V0CiMgQ09ORklHX1ZIT1NUX05F
-VCBpcyBub3Qgc2V0CiMgQ09ORklHX1ZIT1NUX0NST1NTX0VORElBTl9MRUdBQ1kgaXMgbm90IHNl
-dAoKIwojIElucHV0IGRldmljZSBzdXBwb3J0CiMKQ09ORklHX0lOUFVUPXkKQ09ORklHX0lOUFVU
-X0ZGX01FTUxFU1M9eQpDT05GSUdfSU5QVVRfUE9MTERFVj15CkNPTkZJR19JTlBVVF9TUEFSU0VL
-TUFQPXkKIyBDT05GSUdfSU5QVVRfTUFUUklYS01BUCBpcyBub3Qgc2V0CgojCiMgVXNlcmxhbmQg
-aW50ZXJmYWNlcwojCkNPTkZJR19JTlBVVF9NT1VTRURFVj15CiMgQ09ORklHX0lOUFVUX01PVVNF
-REVWX1BTQVVYIGlzIG5vdCBzZXQKQ09ORklHX0lOUFVUX01PVVNFREVWX1NDUkVFTl9YPTEwMjQK
-Q09ORklHX0lOUFVUX01PVVNFREVWX1NDUkVFTl9ZPTc2OAojIENPTkZJR19JTlBVVF9KT1lERVYg
-aXMgbm90IHNldApDT05GSUdfSU5QVVRfRVZERVY9eQpDT05GSUdfSU5QVVRfRVZCVUc9eQoKIwoj
-IElucHV0IERldmljZSBEcml2ZXJzCiMKQ09ORklHX0lOUFVUX0tFWUJPQVJEPXkKQ09ORklHX0tF
-WUJPQVJEX0FUS0JEPXkKIyBDT05GSUdfS0VZQk9BUkRfTEtLQkQgaXMgbm90IHNldAojIENPTkZJ
-R19LRVlCT0FSRF9ORVdUT04gaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9PUEVOQ09SRVMg
-aXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9TVE9XQVdBWSBpcyBub3Qgc2V0CiMgQ09ORklH
-X0tFWUJPQVJEX1NVTktCRCBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX09NQVA0IGlzIG5v
-dCBzZXQKIyBDT05GSUdfS0VZQk9BUkRfWFRLQkQgaXMgbm90IHNldAojIENPTkZJR19JTlBVVF9N
-T1VTRSBpcyBub3Qgc2V0CiMgQ09ORklHX0lOUFVUX0pPWVNUSUNLIGlzIG5vdCBzZXQKQ09ORklH
-X0lOUFVUX1RBQkxFVD15CkNPTkZJR19UQUJMRVRfVVNCX0FDRUNBRD15CiMgQ09ORklHX1RBQkxF
-VF9VU0JfQUlQVEVLIGlzIG5vdCBzZXQKIyBDT05GSUdfVEFCTEVUX1VTQl9HVENPIGlzIG5vdCBz
-ZXQKQ09ORklHX1RBQkxFVF9VU0JfSEFOV0FORz15CkNPTkZJR19UQUJMRVRfVVNCX0tCVEFCPXkK
-Q09ORklHX1RBQkxFVF9TRVJJQUxfV0FDT000PXkKQ09ORklHX0lOUFVUX1RPVUNIU0NSRUVOPXkK
-Q09ORklHX1RPVUNIU0NSRUVOX1BST1BFUlRJRVM9eQojIENPTkZJR19UT1VDSFNDUkVFTl9BRFM3
-ODQ2IGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fQUQ3ODc3IGlzIG5vdCBzZXQKQ09O
-RklHX1RPVUNIU0NSRUVOX0FENzg3OT15CkNPTkZJR19UT1VDSFNDUkVFTl9BRDc4NzlfU1BJPXkK
-IyBDT05GSUdfVE9VQ0hTQ1JFRU5fQ1lUVFNQX0NPUkUgaXMgbm90IHNldAojIENPTkZJR19UT1VD
-SFNDUkVFTl9DWVRUU1A0X0NPUkUgaXMgbm90IHNldApDT05GSUdfVE9VQ0hTQ1JFRU5fRFlOQVBS
-Tz15CkNPTkZJR19UT1VDSFNDUkVFTl9IQU1QU0hJUkU9eQojIENPTkZJR19UT1VDSFNDUkVFTl9F
-R0FMQVhfU0VSSUFMIGlzIG5vdCBzZXQKQ09ORklHX1RPVUNIU0NSRUVOX0ZVSklUU1U9eQpDT05G
-SUdfVE9VQ0hTQ1JFRU5fR1VOWkU9eQpDT05GSUdfVE9VQ0hTQ1JFRU5fRUxPPXkKQ09ORklHX1RP
-VUNIU0NSRUVOX1dBQ09NX1c4MDAxPXkKQ09ORklHX1RPVUNIU0NSRUVOX01UT1VDSD15CkNPTkZJ
-R19UT1VDSFNDUkVFTl9JTkVYSU89eQojIENPTkZJR19UT1VDSFNDUkVFTl9NSzcxMiBpcyBub3Qg
-c2V0CkNPTkZJR19UT1VDSFNDUkVFTl9QRU5NT1VOVD15CkNPTkZJR19UT1VDSFNDUkVFTl9UT1VD
-SFJJR0hUPXkKQ09ORklHX1RPVUNIU0NSRUVOX1RPVUNIV0lOPXkKQ09ORklHX1RPVUNIU0NSRUVO
-X1RJX0FNMzM1WF9UU0M9eQojIENPTkZJR19UT1VDSFNDUkVFTl9XTTgzMVggaXMgbm90IHNldApD
-T05GSUdfVE9VQ0hTQ1JFRU5fVVNCX0NPTVBPU0lURT15CkNPTkZJR19UT1VDSFNDUkVFTl9NQzEz
-NzgzPXkKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fVVNCX0VHQUxBWCBpcyBub3Qgc2V0CkNPTkZJR19U
-T1VDSFNDUkVFTl9VU0JfUEFOSklUPXkKQ09ORklHX1RPVUNIU0NSRUVOX1VTQl8zTT15CiMgQ09O
-RklHX1RPVUNIU0NSRUVOX1VTQl9JVE0gaXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9V
-U0JfRVRVUkJPIGlzIG5vdCBzZXQKQ09ORklHX1RPVUNIU0NSRUVOX1VTQl9HVU5aRT15CkNPTkZJ
-R19UT1VDSFNDUkVFTl9VU0JfRE1DX1RTQzEwPXkKQ09ORklHX1RPVUNIU0NSRUVOX1VTQl9JUlRP
-VUNIPXkKQ09ORklHX1RPVUNIU0NSRUVOX1VTQl9JREVBTFRFSz15CkNPTkZJR19UT1VDSFNDUkVF
-Tl9VU0JfR0VORVJBTF9UT1VDSD15CkNPTkZJR19UT1VDSFNDUkVFTl9VU0JfR09UT1A9eQojIENP
-TkZJR19UT1VDSFNDUkVFTl9VU0JfSkFTVEVDIGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JF
-RU5fVVNCX0VMTyBpcyBub3Qgc2V0CkNPTkZJR19UT1VDSFNDUkVFTl9VU0JfRTJJPXkKQ09ORklH
-X1RPVUNIU0NSRUVOX1VTQl9aWVRST05JQz15CkNPTkZJR19UT1VDSFNDUkVFTl9VU0JfRVRUX1RD
-NDVVU0I9eQojIENPTkZJR19UT1VDSFNDUkVFTl9VU0JfTkVYSU8gaXMgbm90IHNldApDT05GSUdf
-VE9VQ0hTQ1JFRU5fVVNCX0VBU1lUT1VDSD15CkNPTkZJR19UT1VDSFNDUkVFTl9UT1VDSElUMjEz
-PXkKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fVFM0ODAwIGlzIG5vdCBzZXQKQ09ORklHX1RPVUNIU0NS
-RUVOX1RTQ19TRVJJTz15CkNPTkZJR19UT1VDSFNDUkVFTl9UU0MyMDBYX0NPUkU9eQpDT05GSUdf
-VE9VQ0hTQ1JFRU5fVFNDMjAwNT15CiMgQ09ORklHX1RPVUNIU0NSRUVOX1BDQVAgaXMgbm90IHNl
-dAojIENPTkZJR19JTlBVVF9NSVNDIGlzIG5vdCBzZXQKCiMKIyBIYXJkd2FyZSBJL08gcG9ydHMK
-IwpDT05GSUdfU0VSSU89eQpDT05GSUdfQVJDSF9NSUdIVF9IQVZFX1BDX1NFUklPPXkKQ09ORklH
-X1NFUklPX0k4MDQyPXkKIyBDT05GSUdfU0VSSU9fU0VSUE9SVCBpcyBub3Qgc2V0CkNPTkZJR19T
-RVJJT19DVDgyQzcxMD15CkNPTkZJR19TRVJJT19QQVJLQkQ9eQojIENPTkZJR19TRVJJT19QQ0lQ
-UzIgaXMgbm90IHNldApDT05GSUdfU0VSSU9fTElCUFMyPXkKQ09ORklHX1NFUklPX1JBVz15CkNP
-TkZJR19TRVJJT19BTFRFUkFfUFMyPXkKQ09ORklHX1NFUklPX1BTMk1VTFQ9eQpDT05GSUdfU0VS
-SU9fQVJDX1BTMj15CiMgQ09ORklHX1NFUklPX0FQQlBTMiBpcyBub3Qgc2V0CkNPTkZJR19VU0VS
-SU89eQpDT05GSUdfR0FNRVBPUlQ9eQpDT05GSUdfR0FNRVBPUlRfTlM1NTg9eQpDT05GSUdfR0FN
-RVBPUlRfTDQ9eQojIENPTkZJR19HQU1FUE9SVF9FTVUxMEsxIGlzIG5vdCBzZXQKIyBDT05GSUdf
-R0FNRVBPUlRfRk04MDEgaXMgbm90IHNldAoKIwojIENoYXJhY3RlciBkZXZpY2VzCiMKQ09ORklH
-X1RUWT15CiMgQ09ORklHX1ZUIGlzIG5vdCBzZXQKIyBDT05GSUdfVU5JWDk4X1BUWVMgaXMgbm90
-IHNldAojIENPTkZJR19MRUdBQ1lfUFRZUyBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfTk9OU1RB
-TkRBUkQ9eQojIENPTkZJR19ST0NLRVRQT1JUIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1lDTEFERVMg
-aXMgbm90IHNldAojIENPTkZJR19NT1hBX0lOVEVMTElPIGlzIG5vdCBzZXQKIyBDT05GSUdfTU9Y
-QV9TTUFSVElPIGlzIG5vdCBzZXQKIyBDT05GSUdfU1lOQ0xJTktNUCBpcyBub3Qgc2V0CiMgQ09O
-RklHX1NZTkNMSU5LX0dUIGlzIG5vdCBzZXQKIyBDT05GSUdfTk9aT01JIGlzIG5vdCBzZXQKIyBD
-T05GSUdfSVNJIGlzIG5vdCBzZXQKQ09ORklHX05fSERMQz15CiMgQ09ORklHX05fR1NNIGlzIG5v
-dCBzZXQKQ09ORklHX1RSQUNFX1JPVVRFUj15CkNPTkZJR19UUkFDRV9TSU5LPXkKQ09ORklHX0RF
-Vk1FTT15CiMgQ09ORklHX0RFVktNRU0gaXMgbm90IHNldAoKIwojIFNlcmlhbCBkcml2ZXJzCiMK
-Q09ORklHX1NFUklBTF9FQVJMWUNPTj15CkNPTkZJR19TRVJJQUxfODI1MD15CiMgQ09ORklHX1NF
-UklBTF84MjUwX0RFUFJFQ0FURURfT1BUSU9OUyBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfODI1
-MF9QTlA9eQpDT05GSUdfU0VSSUFMXzgyNTBfQ09OU09MRT15CiMgQ09ORklHX1NFUklBTF84MjUw
-X0RNQSBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfODI1MF9QQ0k9eQpDT05GSUdfU0VSSUFMXzgy
-NTBfTlJfVUFSVFM9NApDT05GSUdfU0VSSUFMXzgyNTBfUlVOVElNRV9VQVJUUz00CkNPTkZJR19T
-RVJJQUxfODI1MF9FWFRFTkRFRD15CiMgQ09ORklHX1NFUklBTF84MjUwX01BTllfUE9SVFMgaXMg
-bm90IHNldApDT05GSUdfU0VSSUFMXzgyNTBfU0hBUkVfSVJRPXkKIyBDT05GSUdfU0VSSUFMXzgy
-NTBfREVURUNUX0lSUSBpcyBub3Qgc2V0CiMgQ09ORklHX1NFUklBTF84MjUwX1JTQSBpcyBub3Qg
-c2V0CiMgQ09ORklHX1NFUklBTF84MjUwX0ZTTCBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfODI1
-MF9EVz15CkNPTkZJR19TRVJJQUxfODI1MF9SVDI4OFg9eQojIENPTkZJR19TRVJJQUxfODI1MF9G
-SU5URUsgaXMgbm90IHNldAojIENPTkZJR19TRVJJQUxfODI1MF9NSUQgaXMgbm90IHNldAojIENP
-TkZJR19TRVJJQUxfT0ZfUExBVEZPUk0gaXMgbm90IHNldAoKIwojIE5vbi04MjUwIHNlcmlhbCBw
-b3J0IHN1cHBvcnQKIwojIENPTkZJR19TRVJJQUxfTUFYMzEwMCBpcyBub3Qgc2V0CkNPTkZJR19T
-RVJJQUxfTUFYMzEwWD15CiMgQ09ORklHX1NFUklBTF9VQVJUTElURSBpcyBub3Qgc2V0CkNPTkZJ
-R19TRVJJQUxfQ09SRT15CkNPTkZJR19TRVJJQUxfQ09SRV9DT05TT0xFPXkKIyBDT05GSUdfU0VS
-SUFMX0pTTSBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfU0NDTlhQPXkKIyBDT05GSUdfU0VSSUFM
-X1NDQ05YUF9DT05TT0xFIGlzIG5vdCBzZXQKQ09ORklHX1NFUklBTF9TQzE2SVM3WFg9eQojIENP
-TkZJR19TRVJJQUxfU0MxNklTN1hYX1NQSSBpcyBub3Qgc2V0CiMgQ09ORklHX1NFUklBTF9BTFRF
-UkFfSlRBR1VBUlQgaXMgbm90IHNldApDT05GSUdfU0VSSUFMX0FMVEVSQV9VQVJUPXkKQ09ORklH
-X1NFUklBTF9BTFRFUkFfVUFSVF9NQVhQT1JUUz00CkNPTkZJR19TRVJJQUxfQUxURVJBX1VBUlRf
-QkFVRFJBVEU9MTE1MjAwCiMgQ09ORklHX1NFUklBTF9BTFRFUkFfVUFSVF9DT05TT0xFIGlzIG5v
-dCBzZXQKQ09ORklHX1NFUklBTF9YSUxJTlhfUFNfVUFSVD15CkNPTkZJR19TRVJJQUxfWElMSU5Y
-X1BTX1VBUlRfQ09OU09MRT15CkNPTkZJR19TRVJJQUxfQVJDPXkKIyBDT05GSUdfU0VSSUFMX0FS
-Q19DT05TT0xFIGlzIG5vdCBzZXQKQ09ORklHX1NFUklBTF9BUkNfTlJfUE9SVFM9MQojIENPTkZJ
-R19TRVJJQUxfUlAyIGlzIG5vdCBzZXQKQ09ORklHX1NFUklBTF9GU0xfTFBVQVJUPXkKQ09ORklH
-X1NFUklBTF9GU0xfTFBVQVJUX0NPTlNPTEU9eQpDT05GSUdfU0VSSUFMX0NPTkVYQU5UX0RJR0lD
-T0xPUj15CiMgQ09ORklHX1NFUklBTF9DT05FWEFOVF9ESUdJQ09MT1JfQ09OU09MRSBpcyBub3Qg
-c2V0CkNPTkZJR19UVFlfUFJJTlRLPXkKQ09ORklHX1BSSU5URVI9eQojIENPTkZJR19MUF9DT05T
-T0xFIGlzIG5vdCBzZXQKQ09ORklHX1BQREVWPXkKQ09ORklHX0hWQ19EUklWRVI9eQpDT05GSUdf
-SFZDX0lSUT15CkNPTkZJR19IVkNfWEVOPXkKQ09ORklHX0hWQ19YRU5fRlJPTlRFTkQ9eQpDT05G
-SUdfVklSVElPX0NPTlNPTEU9eQpDT05GSUdfSVBNSV9IQU5ETEVSPXkKQ09ORklHX0lQTUlfUEFO
-SUNfRVZFTlQ9eQojIENPTkZJR19JUE1JX1BBTklDX1NUUklORyBpcyBub3Qgc2V0CkNPTkZJR19J
-UE1JX0RFVklDRV9JTlRFUkZBQ0U9eQpDT05GSUdfSVBNSV9TST15CiMgQ09ORklHX0lQTUlfU0lf
-UFJPQkVfREVGQVVMVFMgaXMgbm90IHNldAojIENPTkZJR19JUE1JX1NTSUYgaXMgbm90IHNldAoj
-IENPTkZJR19JUE1JX1dBVENIRE9HIGlzIG5vdCBzZXQKQ09ORklHX0lQTUlfUE9XRVJPRkY9eQpD
-T05GSUdfSFdfUkFORE9NPXkKQ09ORklHX0hXX1JBTkRPTV9USU1FUklPTUVNPXkKQ09ORklHX0hX
-X1JBTkRPTV9JTlRFTD15CkNPTkZJR19IV19SQU5ET01fQU1EPXkKQ09ORklHX0hXX1JBTkRPTV9W
-SUE9eQojIENPTkZJR19IV19SQU5ET01fVklSVElPIGlzIG5vdCBzZXQKQ09ORklHX0hXX1JBTkRP
-TV9UUE09eQojIENPTkZJR19OVlJBTSBpcyBub3Qgc2V0CkNPTkZJR19SMzk2ND15CiMgQ09ORklH
-X0FQUExJQ09NIGlzIG5vdCBzZXQKIyBDT05GSUdfTVdBVkUgaXMgbm90IHNldAojIENPTkZJR19I
-UEVUIGlzIG5vdCBzZXQKQ09ORklHX0hBTkdDSEVDS19USU1FUj15CkNPTkZJR19UQ0dfVFBNPXkK
-Q09ORklHX1RDR19USVM9eQojIENPTkZJR19UQ0dfTlNDIGlzIG5vdCBzZXQKIyBDT05GSUdfVENH
-X0FUTUVMIGlzIG5vdCBzZXQKIyBDT05GSUdfVENHX0lORklORU9OIGlzIG5vdCBzZXQKQ09ORklH
-X1RDR19YRU49eQojIENPTkZJR19UQ0dfQ1JCIGlzIG5vdCBzZXQKIyBDT05GSUdfVEVMQ0xPQ0sg
-aXMgbm90IHNldApDT05GSUdfREVWUE9SVD15CiMgQ09ORklHX1hJTExZQlVTIGlzIG5vdCBzZXQK
-CiMKIyBJMkMgc3VwcG9ydAojCiMgQ09ORklHX0kyQyBpcyBub3Qgc2V0CkNPTkZJR19TUEk9eQpD
-T05GSUdfU1BJX0RFQlVHPXkKQ09ORklHX1NQSV9NQVNURVI9eQoKIwojIFNQSSBNYXN0ZXIgQ29u
-dHJvbGxlciBEcml2ZXJzCiMKQ09ORklHX1NQSV9BTFRFUkE9eQpDT05GSUdfU1BJX0JJVEJBTkc9
-eQojIENPTkZJR19TUElfQlVUVEVSRkxZIGlzIG5vdCBzZXQKQ09ORklHX1NQSV9DQURFTkNFPXkK
-IyBDT05GSUdfU1BJX0xNNzBfTExQIGlzIG5vdCBzZXQKIyBDT05GSUdfU1BJX0ZTTF9TUEkgaXMg
-bm90IHNldAojIENPTkZJR19TUElfUFhBMlhYIGlzIG5vdCBzZXQKIyBDT05GSUdfU1BJX1BYQTJY
-WF9QQ0kgaXMgbm90IHNldApDT05GSUdfU1BJX1hJTElOWD15CiMgQ09ORklHX1NQSV9aWU5RTVBf
-R1FTUEkgaXMgbm90IHNldApDT05GSUdfU1BJX0RFU0lHTldBUkU9eQojIENPTkZJR19TUElfRFdf
-UENJIGlzIG5vdCBzZXQKIyBDT05GSUdfU1BJX0RXX01NSU8gaXMgbm90IHNldAoKIwojIFNQSSBQ
-cm90b2NvbCBNYXN0ZXJzCiMKQ09ORklHX1NQSV9TUElERVY9eQojIENPTkZJR19TUElfVExFNjJY
-MCBpcyBub3Qgc2V0CkNPTkZJR19TUE1JPXkKQ09ORklHX0hTST15CkNPTkZJR19IU0lfQk9BUkRJ
-TkZPPXkKCiMKIyBIU0kgY29udHJvbGxlcnMKIwoKIwojIEhTSSBjbGllbnRzCiMKIyBDT05GSUdf
-SFNJX0NIQVIgaXMgbm90IHNldAoKIwojIFBQUyBzdXBwb3J0CiMKIyBDT05GSUdfUFBTIGlzIG5v
-dCBzZXQKCiMKIyBQUFMgZ2VuZXJhdG9ycyBzdXBwb3J0CiMKCiMKIyBQVFAgY2xvY2sgc3VwcG9y
-dAojCiMgQ09ORklHX1BUUF8xNTg4X0NMT0NLIGlzIG5vdCBzZXQKCiMKIyBFbmFibGUgUEhZTElC
-IGFuZCBORVRXT1JLX1BIWV9USU1FU1RBTVBJTkcgdG8gc2VlIHRoZSBhZGRpdGlvbmFsIGNsb2Nr
-cy4KIwpDT05GSUdfQVJDSF9XQU5UX09QVElPTkFMX0dQSU9MSUI9eQojIENPTkZJR19HUElPTElC
-IGlzIG5vdCBzZXQKQ09ORklHX1cxPXkKCiMKIyAxLXdpcmUgQnVzIE1hc3RlcnMKIwojIENPTkZJ
-R19XMV9NQVNURVJfTUFUUk9YIGlzIG5vdCBzZXQKIyBDT05GSUdfVzFfTUFTVEVSX0RTMjQ5MCBp
-cyBub3Qgc2V0CkNPTkZJR19XMV9NQVNURVJfRFMxV009eQoKIwojIDEtd2lyZSBTbGF2ZXMKIwoj
-IENPTkZJR19XMV9TTEFWRV9USEVSTSBpcyBub3Qgc2V0CiMgQ09ORklHX1cxX1NMQVZFX1NNRU0g
-aXMgbm90IHNldApDT05GSUdfVzFfU0xBVkVfRFMyNDA4PXkKIyBDT05GSUdfVzFfU0xBVkVfRFMy
-NDA4X1JFQURCQUNLIGlzIG5vdCBzZXQKQ09ORklHX1cxX1NMQVZFX0RTMjQxMz15CiMgQ09ORklH
-X1cxX1NMQVZFX0RTMjQwNiBpcyBub3Qgc2V0CkNPTkZJR19XMV9TTEFWRV9EUzI0MjM9eQpDT05G
-SUdfVzFfU0xBVkVfRFMyNDMxPXkKQ09ORklHX1cxX1NMQVZFX0RTMjQzMz15CiMgQ09ORklHX1cx
-X1NMQVZFX0RTMjQzM19DUkMgaXMgbm90IHNldApDT05GSUdfVzFfU0xBVkVfRFMyNzYwPXkKQ09O
-RklHX1cxX1NMQVZFX0RTMjc4MD15CkNPTkZJR19XMV9TTEFWRV9EUzI3ODE9eQojIENPTkZJR19X
-MV9TTEFWRV9EUzI4RTA0IGlzIG5vdCBzZXQKIyBDT05GSUdfVzFfU0xBVkVfQlEyNzAwMCBpcyBu
-b3Qgc2V0CkNPTkZJR19QT1dFUl9TVVBQTFk9eQpDT05GSUdfUE9XRVJfU1VQUExZX0RFQlVHPXkK
-Q09ORklHX1BEQV9QT1dFUj15CiMgQ09ORklHX0dFTkVSSUNfQURDX0JBVFRFUlkgaXMgbm90IHNl
-dApDT05GSUdfV004MzFYX0JBQ0tVUD15CkNPTkZJR19XTTgzMVhfUE9XRVI9eQpDT05GSUdfVEVT
-VF9QT1dFUj15CkNPTkZJR19CQVRURVJZX0RTMjc2MD15CkNPTkZJR19CQVRURVJZX0RTMjc4MD15
-CiMgQ09ORklHX0JBVFRFUllfRFMyNzgxIGlzIG5vdCBzZXQKQ09ORklHX0JBVFRFUllfQlEyN1hY
-WD15CkNPTkZJR19DSEFSR0VSX0lTUDE3MDQ9eQpDT05GSUdfQ0hBUkdFUl9NQVg4OTAzPXkKQ09O
-RklHX0NIQVJHRVJfTUFOQUdFUj15CiMgQ09ORklHX1BPV0VSX1JFU0VUIGlzIG5vdCBzZXQKQ09O
-RklHX1BPV0VSX0FWUz15CiMgQ09ORklHX0hXTU9OIGlzIG5vdCBzZXQKQ09ORklHX1RIRVJNQUw9
-eQpDT05GSUdfVEhFUk1BTF9PRj15CkNPTkZJR19USEVSTUFMX1dSSVRBQkxFX1RSSVBTPXkKQ09O
-RklHX1RIRVJNQUxfREVGQVVMVF9HT1ZfU1RFUF9XSVNFPXkKIyBDT05GSUdfVEhFUk1BTF9ERUZB
-VUxUX0dPVl9GQUlSX1NIQVJFIGlzIG5vdCBzZXQKIyBDT05GSUdfVEhFUk1BTF9ERUZBVUxUX0dP
-Vl9VU0VSX1NQQUNFIGlzIG5vdCBzZXQKIyBDT05GSUdfVEhFUk1BTF9ERUZBVUxUX0dPVl9QT1dF
-Ul9BTExPQ0FUT1IgaXMgbm90IHNldAojIENPTkZJR19USEVSTUFMX0dPVl9GQUlSX1NIQVJFIGlz
-IG5vdCBzZXQKQ09ORklHX1RIRVJNQUxfR09WX1NURVBfV0lTRT15CiMgQ09ORklHX1RIRVJNQUxf
-R09WX0JBTkdfQkFORyBpcyBub3Qgc2V0CkNPTkZJR19USEVSTUFMX0dPVl9VU0VSX1NQQUNFPXkK
-IyBDT05GSUdfVEhFUk1BTF9HT1ZfUE9XRVJfQUxMT0NBVE9SIGlzIG5vdCBzZXQKIyBDT05GSUdf
-Q1BVX1RIRVJNQUwgaXMgbm90IHNldAojIENPTkZJR19USEVSTUFMX0VNVUxBVElPTiBpcyBub3Qg
-c2V0CiMgQ09ORklHX0lOVEVMX1BPV0VSQ0xBTVAgaXMgbm90IHNldApDT05GSUdfWDg2X1BLR19U
-RU1QX1RIRVJNQUw9eQojIENPTkZJR19JTlRFTF9TT0NfRFRTX1RIRVJNQUwgaXMgbm90IHNldAoj
-IENPTkZJR19JTlQzNDBYX1RIRVJNQUwgaXMgbm90IHNldAojIENPTkZJR19JTlRFTF9QQ0hfVEhF
-Uk1BTCBpcyBub3Qgc2V0CiMgQ09ORklHX1FDT01fU1BNSV9URU1QX0FMQVJNIGlzIG5vdCBzZXQK
-Q09ORklHX1dBVENIRE9HPXkKQ09ORklHX1dBVENIRE9HX0NPUkU9eQpDT05GSUdfV0FUQ0hET0df
-Tk9XQVlPVVQ9eQojIENPTkZJR19XQVRDSERPR19TWVNGUyBpcyBub3Qgc2V0CgojCiMgV2F0Y2hk
-b2cgRGV2aWNlIERyaXZlcnMKIwojIENPTkZJR19TT0ZUX1dBVENIRE9HIGlzIG5vdCBzZXQKIyBD
-T05GSUdfV004MzFYX1dBVENIRE9HIGlzIG5vdCBzZXQKQ09ORklHX1hJTElOWF9XQVRDSERPRz15
-CiMgQ09ORklHX0NBREVOQ0VfV0FUQ0hET0cgaXMgbm90IHNldApDT05GSUdfRFdfV0FUQ0hET0c9
-eQojIENPTkZJR19UUzQ4MDBfV0FUQ0hET0cgaXMgbm90IHNldAojIENPTkZJR19NQVg2M1hYX1dB
-VENIRE9HIGlzIG5vdCBzZXQKQ09ORklHX0FDUVVJUkVfV0RUPXkKIyBDT05GSUdfQURWQU5URUNI
-X1dEVCBpcyBub3Qgc2V0CiMgQ09ORklHX0FMSU0xNTM1X1dEVCBpcyBub3Qgc2V0CiMgQ09ORklH
-X0FMSU03MTAxX1dEVCBpcyBub3Qgc2V0CiMgQ09ORklHX0Y3MTgwOEVfV0RUIGlzIG5vdCBzZXQK
-IyBDT05GSUdfU1A1MTAwX1RDTyBpcyBub3Qgc2V0CkNPTkZJR19TQkNfRklUUEMyX1dBVENIRE9H
-PXkKIyBDT05GSUdfRVVST1RFQ0hfV0RUIGlzIG5vdCBzZXQKIyBDT05GSUdfSUI3MDBfV0RUIGlz
-IG5vdCBzZXQKQ09ORklHX0lCTUFTUj15CiMgQ09ORklHX1dBRkVSX1dEVCBpcyBub3Qgc2V0CiMg
-Q09ORklHX0k2MzAwRVNCX1dEVCBpcyBub3Qgc2V0CiMgQ09ORklHX0lFNlhYX1dEVCBpcyBub3Qg
-c2V0CiMgQ09ORklHX0lUQ09fV0RUIGlzIG5vdCBzZXQKQ09ORklHX0lUODcxMkZfV0RUPXkKQ09O
-RklHX0lUODdfV0RUPXkKIyBDT05GSUdfSFBfV0FUQ0hET0cgaXMgbm90IHNldApDT05GSUdfS0VN
-UExEX1dEVD15CkNPTkZJR19TQzEyMDBfV0RUPXkKQ09ORklHX1BDODc0MTNfV0RUPXkKIyBDT05G
-SUdfTlZfVENPIGlzIG5vdCBzZXQKQ09ORklHXzYwWFhfV0RUPXkKQ09ORklHX0NQVTVfV0RUPXkK
-Q09ORklHX1NNU0NfU0NIMzExWF9XRFQ9eQpDT05GSUdfU01TQzM3Qjc4N19XRFQ9eQojIENPTkZJ
-R19WSUFfV0RUIGlzIG5vdCBzZXQKQ09ORklHX1c4MzYyN0hGX1dEVD15CkNPTkZJR19XODM4NzdG
-X1dEVD15CkNPTkZJR19XODM5NzdGX1dEVD15CkNPTkZJR19NQUNIWl9XRFQ9eQpDT05GSUdfU0JD
-X0VQWF9DM19XQVRDSERPRz15CkNPTkZJR19CQ003MDM4X1dEVD15CkNPTkZJR19YRU5fV0RUPXkK
-CiMKIyBQQ0ktYmFzZWQgV2F0Y2hkb2cgQ2FyZHMKIwojIENPTkZJR19QQ0lQQ1dBVENIRE9HIGlz
-IG5vdCBzZXQKIyBDT05GSUdfV0RUUENJIGlzIG5vdCBzZXQKCiMKIyBVU0ItYmFzZWQgV2F0Y2hk
-b2cgQ2FyZHMKIwpDT05GSUdfVVNCUENXQVRDSERPRz15CkNPTkZJR19TU0JfUE9TU0lCTEU9eQoK
-IwojIFNvbmljcyBTaWxpY29uIEJhY2twbGFuZQojCkNPTkZJR19TU0I9eQpDT05GSUdfU1NCX1NQ
-Uk9NPXkKQ09ORklHX1NTQl9QQ0lIT1NUX1BPU1NJQkxFPXkKQ09ORklHX1NTQl9QQ0lIT1NUPXkK
-IyBDT05GSUdfU1NCX0I0M19QQ0lfQlJJREdFIGlzIG5vdCBzZXQKQ09ORklHX1NTQl9TSUxFTlQ9
-eQpDT05GSUdfU1NCX0RSSVZFUl9QQ0lDT1JFX1BPU1NJQkxFPXkKIyBDT05GSUdfU1NCX0RSSVZF
-Ul9QQ0lDT1JFIGlzIG5vdCBzZXQKQ09ORklHX0JDTUFfUE9TU0lCTEU9eQoKIwojIEJyb2FkY29t
-IHNwZWNpZmljIEFNQkEKIwpDT05GSUdfQkNNQT15CkNPTkZJR19CQ01BX0hPU1RfUENJX1BPU1NJ
-QkxFPXkKQ09ORklHX0JDTUFfSE9TVF9QQ0k9eQojIENPTkZJR19CQ01BX0hPU1RfU09DIGlzIG5v
-dCBzZXQKQ09ORklHX0JDTUFfRFJJVkVSX1BDST15CkNPTkZJR19CQ01BX0RSSVZFUl9HTUFDX0NN
-Tj15CkNPTkZJR19CQ01BX0RFQlVHPXkKCiMKIyBNdWx0aWZ1bmN0aW9uIGRldmljZSBkcml2ZXJz
-CiMKQ09ORklHX01GRF9DT1JFPXkKQ09ORklHX01GRF9BVE1FTF9GTEVYQ09NPXkKQ09ORklHX01G
-RF9BVE1FTF9ITENEQz15CiMgQ09ORklHX01GRF9DUk9TX0VDIGlzIG5vdCBzZXQKIyBDT05GSUdf
-TUZEX0RBOTA1Ml9TUEkgaXMgbm90IHNldAojIENPTkZJR19NRkRfRExOMiBpcyBub3Qgc2V0CkNP
-TkZJR19NRkRfTUMxM1hYWD15CkNPTkZJR19NRkRfTUMxM1hYWF9TUEk9eQpDT05GSUdfTUZEX0hJ
-NjQyMV9QTUlDPXkKIyBDT05GSUdfSFRDX1BBU0lDMyBpcyBub3Qgc2V0CiMgQ09ORklHX0xQQ19J
-Q0ggaXMgbm90IHNldAojIENPTkZJR19MUENfU0NIIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX0lO
-VEVMX0xQU1NfQUNQSSBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9JTlRFTF9MUFNTX1BDSSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX01GRF9KQU5aX0NNT0RJTyBpcyBub3Qgc2V0CkNPTkZJR19NRkRfS0VN
-UExEPXkKIyBDT05GSUdfTUZEX01UNjM5NyBpcyBub3Qgc2V0CkNPTkZJR19FWlhfUENBUD15CkNP
-TkZJR19NRkRfVklQRVJCT0FSRD15CiMgQ09ORklHX01GRF9SREMzMjFYIGlzIG5vdCBzZXQKIyBD
-T05GSUdfTUZEX1JUU1hfUENJIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX1JUU1hfVVNCIGlzIG5v
-dCBzZXQKQ09ORklHX01GRF9TTTUwMT15CiMgQ09ORklHX0FCWDUwMF9DT1JFIGlzIG5vdCBzZXQK
-IyBDT05GSUdfTUZEX1NUTVBFIGlzIG5vdCBzZXQKQ09ORklHX01GRF9TWVNDT049eQpDT05GSUdf
-TUZEX1RJX0FNMzM1WF9UU0NBREM9eQojIENPTkZJR19NRkRfVE1JTyBpcyBub3Qgc2V0CiMgQ09O
-RklHX01GRF9WWDg1NSBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9BUklaT05BX1NQSSBpcyBub3Qg
-c2V0CkNPTkZJR19NRkRfV004MzFYPXkKQ09ORklHX01GRF9XTTgzMVhfU1BJPXkKQ09ORklHX1JF
-R1VMQVRPUj15CiMgQ09ORklHX1JFR1VMQVRPUl9ERUJVRyBpcyBub3Qgc2V0CiMgQ09ORklHX1JF
-R1VMQVRPUl9GSVhFRF9WT0xUQUdFIGlzIG5vdCBzZXQKQ09ORklHX1JFR1VMQVRPUl9WSVJUVUFM
-X0NPTlNVTUVSPXkKIyBDT05GSUdfUkVHVUxBVE9SX1VTRVJTUEFDRV9DT05TVU1FUiBpcyBub3Qg
-c2V0CkNPTkZJR19SRUdVTEFUT1JfQU5BVE9QPXkKQ09ORklHX1JFR1VMQVRPUl9ISTY0MjE9eQpD
-T05GSUdfUkVHVUxBVE9SX01DMTNYWFhfQ09SRT15CiMgQ09ORklHX1JFR1VMQVRPUl9NQzEzNzgz
-IGlzIG5vdCBzZXQKQ09ORklHX1JFR1VMQVRPUl9NQzEzODkyPXkKIyBDT05GSUdfUkVHVUxBVE9S
-X1BDQVAgaXMgbm90IHNldApDT05GSUdfUkVHVUxBVE9SX1FDT01fU1BNST15CiMgQ09ORklHX1JF
-R1VMQVRPUl9UUFM2NTI0WCBpcyBub3Qgc2V0CkNPTkZJR19SRUdVTEFUT1JfV004MzFYPXkKIyBD
-T05GSUdfTUVESUFfU1VQUE9SVCBpcyBub3Qgc2V0CgojCiMgR3JhcGhpY3Mgc3VwcG9ydAojCiMg
-Q09ORklHX0FHUCBpcyBub3Qgc2V0CkNPTkZJR19WR0FfQVJCPXkKQ09ORklHX1ZHQV9BUkJfTUFY
-X0dQVVM9MTYKIyBDT05GSUdfVkdBX1NXSVRDSEVST08gaXMgbm90IHNldAojIENPTkZJR19EUk0g
-aXMgbm90IHNldAoKIwojIEZyYW1lIGJ1ZmZlciBEZXZpY2VzCiMKIyBDT05GSUdfRkIgaXMgbm90
-IHNldAojIENPTkZJR19CQUNLTElHSFRfTENEX1NVUFBPUlQgaXMgbm90IHNldAojIENPTkZJR19W
-R0FTVEFURSBpcyBub3Qgc2V0CkNPTkZJR19TT1VORD15CkNPTkZJR19TT1VORF9PU1NfQ09SRT15
-CkNPTkZJR19TT1VORF9PU1NfQ09SRV9QUkVDTEFJTT15CiMgQ09ORklHX1NORCBpcyBub3Qgc2V0
-CkNPTkZJR19TT1VORF9QUklNRT15CgojCiMgSElEIHN1cHBvcnQKIwpDT05GSUdfSElEPXkKQ09O
-RklHX0hJRF9CQVRURVJZX1NUUkVOR1RIPXkKQ09ORklHX0hJRFJBVz15CiMgQ09ORklHX1VISUQg
-aXMgbm90IHNldAojIENPTkZJR19ISURfR0VORVJJQyBpcyBub3Qgc2V0CgojCiMgU3BlY2lhbCBI
-SUQgZHJpdmVycwojCkNPTkZJR19ISURfQTRURUNIPXkKQ09ORklHX0hJRF9BQ1JVWD15CkNPTkZJ
-R19ISURfQUNSVVhfRkY9eQpDT05GSUdfSElEX0FQUExFPXkKQ09ORklHX0hJRF9BUFBMRUlSPXkK
-IyBDT05GSUdfSElEX0FVUkVBTCBpcyBub3Qgc2V0CkNPTkZJR19ISURfQkVMS0lOPXkKIyBDT05G
-SUdfSElEX0JFVE9QX0ZGIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9DSEVSUlk9eQpDT05GSUdfSElE
-X0NISUNPTlk9eQpDT05GSUdfSElEX0NZUFJFU1M9eQpDT05GSUdfSElEX0RSQUdPTlJJU0U9eQpD
-T05GSUdfRFJBR09OUklTRV9GRj15CiMgQ09ORklHX0hJRF9FTVNfRkYgaXMgbm90IHNldAojIENP
-TkZJR19ISURfRUxFQ09NIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0VMTyBpcyBub3Qgc2V0CiMg
-Q09ORklHX0hJRF9FWktFWSBpcyBub3Qgc2V0CkNPTkZJR19ISURfR0VNQklSRD15CiMgQ09ORklH
-X0hJRF9HRlJNIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9IT0xURUs9eQpDT05GSUdfSE9MVEVLX0ZG
-PXkKQ09ORklHX0hJRF9LRVlUT1VDSD15CkNPTkZJR19ISURfS1lFPXkKQ09ORklHX0hJRF9VQ0xP
-R0lDPXkKIyBDT05GSUdfSElEX1dBTFRPUCBpcyBub3Qgc2V0CkNPTkZJR19ISURfR1lSQVRJT049
-eQojIENPTkZJR19ISURfSUNBREUgaXMgbm90IHNldAojIENPTkZJR19ISURfVFdJTkhBTiBpcyBu
-b3Qgc2V0CkNPTkZJR19ISURfS0VOU0lOR1RPTj15CiMgQ09ORklHX0hJRF9MQ1BPV0VSIGlzIG5v
-dCBzZXQKIyBDT05GSUdfSElEX0xFTk9WTyBpcyBub3Qgc2V0CkNPTkZJR19ISURfTE9HSVRFQ0g9
-eQojIENPTkZJR19ISURfTE9HSVRFQ0hfREogaXMgbm90IHNldAojIENPTkZJR19ISURfTE9HSVRF
-Q0hfSElEUFAgaXMgbm90IHNldApDT05GSUdfTE9HSVRFQ0hfRkY9eQpDT05GSUdfTE9HSVJVTUJM
-RVBBRDJfRkY9eQpDT05GSUdfTE9HSUc5NDBfRkY9eQpDT05GSUdfTE9HSVdIRUVMU19GRj15CkNP
-TkZJR19ISURfTUFHSUNNT1VTRT15CiMgQ09ORklHX0hJRF9NSUNST1NPRlQgaXMgbm90IHNldApD
-T05GSUdfSElEX01PTlRFUkVZPXkKQ09ORklHX0hJRF9NVUxUSVRPVUNIPXkKQ09ORklHX0hJRF9O
-VFJJRz15CiMgQ09ORklHX0hJRF9PUlRFSyBpcyBub3Qgc2V0CkNPTkZJR19ISURfUEFOVEhFUkxP
-UkQ9eQojIENPTkZJR19QQU5USEVSTE9SRF9GRiBpcyBub3Qgc2V0CkNPTkZJR19ISURfUEVOTU9V
-TlQ9eQpDT05GSUdfSElEX1BFVEFMWU5YPXkKQ09ORklHX0hJRF9QSUNPTENEPXkKQ09ORklHX0hJ
-RF9QTEFOVFJPTklDUz15CiMgQ09ORklHX0hJRF9QUklNQVggaXMgbm90IHNldApDT05GSUdfSElE
-X1JPQ0NBVD15CkNPTkZJR19ISURfU0FJVEVLPXkKIyBDT05GSUdfSElEX1NBTVNVTkcgaXMgbm90
-IHNldApDT05GSUdfSElEX1NQRUVETElOSz15CiMgQ09ORklHX0hJRF9TVEVFTFNFUklFUyBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0hJRF9TVU5QTFVTIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9STUk9eQoj
-IENPTkZJR19ISURfR1JFRU5BU0lBIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9TTUFSVEpPWVBMVVM9
-eQpDT05GSUdfU01BUlRKT1lQTFVTX0ZGPXkKQ09ORklHX0hJRF9USVZPPXkKQ09ORklHX0hJRF9U
-T1BTRUVEPXkKQ09ORklHX0hJRF9USFJVU1RNQVNURVI9eQojIENPTkZJR19USFJVU1RNQVNURVJf
-RkYgaXMgbm90IHNldAojIENPTkZJR19ISURfV0FDT00gaXMgbm90IHNldAojIENPTkZJR19ISURf
-WElOTU8gaXMgbm90IHNldApDT05GSUdfSElEX1pFUk9QTFVTPXkKQ09ORklHX1pFUk9QTFVTX0ZG
-PXkKQ09ORklHX0hJRF9aWURBQ1JPTj15CkNPTkZJR19ISURfU0VOU09SX0hVQj15CkNPTkZJR19I
-SURfU0VOU09SX0NVU1RPTV9TRU5TT1I9eQoKIwojIFVTQiBISUQgc3VwcG9ydAojCkNPTkZJR19V
-U0JfSElEPXkKIyBDT05GSUdfSElEX1BJRCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfSElEREVWPXkK
-Q09ORklHX1VTQl9PSENJX0xJVFRMRV9FTkRJQU49eQpDT05GSUdfVVNCX1NVUFBPUlQ9eQpDT05G
-SUdfVVNCX0NPTU1PTj15CkNPTkZJR19VU0JfQVJDSF9IQVNfSENEPXkKQ09ORklHX1VTQj15CiMg
-Q09ORklHX1VTQl9BTk5PVU5DRV9ORVdfREVWSUNFUyBpcyBub3Qgc2V0CgojCiMgTWlzY2VsbGFu
-ZW91cyBVU0Igb3B0aW9ucwojCiMgQ09ORklHX1VTQl9ERUZBVUxUX1BFUlNJU1QgaXMgbm90IHNl
-dApDT05GSUdfVVNCX0RZTkFNSUNfTUlOT1JTPXkKQ09ORklHX1VTQl9PVEc9eQojIENPTkZJR19V
-U0JfT1RHX1dISVRFTElTVCBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9PVEdfQkxBQ0tMSVNUX0hV
-QiBpcyBub3Qgc2V0CkNPTkZJR19VU0JfT1RHX0ZTTT15CkNPTkZJR19VU0JfVUxQSV9CVVM9eQpD
-T05GSUdfVVNCX01PTj15CkNPTkZJR19VU0JfV1VTQl9DQkFGPXkKQ09ORklHX1VTQl9XVVNCX0NC
-QUZfREVCVUc9eQoKIwojIFVTQiBIb3N0IENvbnRyb2xsZXIgRHJpdmVycwojCkNPTkZJR19VU0Jf
-QzY3WDAwX0hDRD15CkNPTkZJR19VU0JfWEhDSV9IQ0Q9eQpDT05GSUdfVVNCX1hIQ0lfUENJPXkK
-Q09ORklHX1VTQl9YSENJX1BMQVRGT1JNPXkKQ09ORklHX1VTQl9FSENJX0hDRD15CkNPTkZJR19V
-U0JfRUhDSV9ST09UX0hVQl9UVD15CkNPTkZJR19VU0JfRUhDSV9UVF9ORVdTQ0hFRD15CkNPTkZJ
-R19VU0JfRUhDSV9QQ0k9eQpDT05GSUdfVVNCX0VIQ0lfSENEX1BMQVRGT1JNPXkKQ09ORklHX1VT
-Ql9PWFUyMTBIUF9IQ0Q9eQpDT05GSUdfVVNCX0lTUDExNlhfSENEPXkKQ09ORklHX1VTQl9JU1Ax
-MzYyX0hDRD15CkNPTkZJR19VU0JfRk9URzIxMF9IQ0Q9eQpDT05GSUdfVVNCX01BWDM0MjFfSENE
-PXkKIyBDT05GSUdfVVNCX09IQ0lfSENEIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX1VIQ0lfSENE
-IGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX1UxMzJfSENEIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9T
-TDgxMV9IQ0Q9eQojIENPTkZJR19VU0JfU0w4MTFfSENEX0lTTyBpcyBub3Qgc2V0CkNPTkZJR19V
-U0JfUjhBNjY1OTdfSENEPXkKQ09ORklHX1VTQl9IQ0RfQkNNQT15CiMgQ09ORklHX1VTQl9IQ0Rf
-U1NCIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0hDRF9URVNUX01PREUgaXMgbm90IHNldAoKIwoj
-IFVTQiBEZXZpY2UgQ2xhc3MgZHJpdmVycwojCiMgQ09ORklHX1VTQl9BQ00gaXMgbm90IHNldAoj
-IENPTkZJR19VU0JfUFJJTlRFUiBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9XRE0gaXMgbm90IHNl
-dApDT05GSUdfVVNCX1RNQz15CgojCiMgTk9URTogVVNCX1NUT1JBR0UgZGVwZW5kcyBvbiBTQ1NJ
-IGJ1dCBCTEtfREVWX1NEIG1heQojCgojCiMgYWxzbyBiZSBuZWVkZWQ7IHNlZSBVU0JfU1RPUkFH
-RSBIZWxwIGZvciBtb3JlIGluZm8KIwoKIwojIFVTQiBJbWFnaW5nIGRldmljZXMKIwpDT05GSUdf
-VVNCX01EQzgwMD15CiMgQ09ORklHX1VTQklQX0NPUkUgaXMgbm90IHNldApDT05GSUdfVVNCX01V
-U0JfSERSQz15CkNPTkZJR19VU0JfTVVTQl9IT1NUPXkKIyBDT05GSUdfVVNCX01VU0JfR0FER0VU
-IGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX01VU0JfRFVBTF9ST0xFIGlzIG5vdCBzZXQKCiMKIyBQ
-bGF0Zm9ybSBHbHVlIExheWVyCiMKCiMKIyBNVVNCIERNQSBtb2RlCiMKQ09ORklHX01VU0JfUElP
-X09OTFk9eQpDT05GSUdfVVNCX0RXQzM9eQpDT05GSUdfVVNCX0RXQzNfVUxQST15CiMgQ09ORklH
-X1VTQl9EV0MzX0hPU1QgaXMgbm90IHNldAojIENPTkZJR19VU0JfRFdDM19HQURHRVQgaXMgbm90
-IHNldApDT05GSUdfVVNCX0RXQzNfRFVBTF9ST0xFPXkKCiMKIyBQbGF0Zm9ybSBHbHVlIERyaXZl
-ciBTdXBwb3J0CiMKQ09ORklHX1VTQl9EV0MzX1BDST15CkNPTkZJR19VU0JfRFdDMj15CiMgQ09O
-RklHX1VTQl9EV0MyX0hPU1QgaXMgbm90IHNldAoKIwojIEdhZGdldC9EdWFsLXJvbGUgbW9kZSBy
-ZXF1aXJlcyBVU0IgR2FkZ2V0IHN1cHBvcnQgdG8gYmUgZW5hYmxlZAojCiMgQ09ORklHX1VTQl9E
-V0MyX1BFUklQSEVSQUwgaXMgbm90IHNldApDT05GSUdfVVNCX0RXQzJfRFVBTF9ST0xFPXkKIyBD
-T05GSUdfVVNCX0RXQzJfUENJIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9EV0MyX0RFQlVHPXkKQ09O
-RklHX1VTQl9EV0MyX1ZFUkJPU0U9eQpDT05GSUdfVVNCX0RXQzJfVFJBQ0tfTUlTU0VEX1NPRlM9
-eQpDT05GSUdfVVNCX0RXQzJfREVCVUdfUEVSSU9ESUM9eQpDT05GSUdfVVNCX0NISVBJREVBPXkK
-Q09ORklHX1VTQl9DSElQSURFQV9PRj15CkNPTkZJR19VU0JfQ0hJUElERUFfUENJPXkKIyBDT05G
-SUdfVVNCX0NISVBJREVBX1VEQyBpcyBub3Qgc2V0CkNPTkZJR19VU0JfQ0hJUElERUFfSE9TVD15
-CkNPTkZJR19VU0JfSVNQMTc2MD15CkNPTkZJR19VU0JfSVNQMTc2MF9IQ0Q9eQpDT05GSUdfVVNC
-X0lTUDE3NjBfSE9TVF9ST0xFPXkKIyBDT05GSUdfVVNCX0lTUDE3NjBfR0FER0VUX1JPTEUgaXMg
-bm90IHNldAojIENPTkZJR19VU0JfSVNQMTc2MF9EVUFMX1JPTEUgaXMgbm90IHNldAoKIwojIFVT
-QiBwb3J0IGRyaXZlcnMKIwpDT05GSUdfVVNCX1VTUzcyMD15CiMgQ09ORklHX1VTQl9TRVJJQUwg
-aXMgbm90IHNldAoKIwojIFVTQiBNaXNjZWxsYW5lb3VzIGRyaXZlcnMKIwojIENPTkZJR19VU0Jf
-RU1JNjIgaXMgbm90IHNldApDT05GSUdfVVNCX0VNSTI2PXkKQ09ORklHX1VTQl9BRFVUVVg9eQpD
-T05GSUdfVVNCX1NFVlNFRz15CiMgQ09ORklHX1VTQl9SSU81MDAgaXMgbm90IHNldApDT05GSUdf
-VVNCX0xFR09UT1dFUj15CiMgQ09ORklHX1VTQl9MQ0QgaXMgbm90IHNldAojIENPTkZJR19VU0Jf
-TEVEIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9DWVBSRVNTX0NZN0M2Mz15CkNPTkZJR19VU0JfQ1lU
-SEVSTT15CiMgQ09ORklHX1VTQl9JRE1PVVNFIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9GVERJX0VM
-QU49eQojIENPTkZJR19VU0JfQVBQTEVESVNQTEFZIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX1NJ
-U1VTQlZHQSBpcyBub3Qgc2V0CkNPTkZJR19VU0JfTEQ9eQpDT05GSUdfVVNCX1RSQU5DRVZJQlJB
-VE9SPXkKQ09ORklHX1VTQl9JT1dBUlJJT1I9eQpDT05GSUdfVVNCX1RFU1Q9eQojIENPTkZJR19V
-U0JfRUhTRVRfVEVTVF9GSVhUVVJFIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9JU0lHSFRGVz15CkNP
-TkZJR19VU0JfWVVSRVg9eQojIENPTkZJR19VU0JfRVpVU0JfRlgyIGlzIG5vdCBzZXQKQ09ORklH
-X1VTQl9MSU5LX0xBWUVSX1RFU1Q9eQpDT05GSUdfVVNCX0NIQU9TS0VZPXkKCiMKIyBVU0IgUGh5
-c2ljYWwgTGF5ZXIgZHJpdmVycwojCkNPTkZJR19VU0JfUEhZPXkKQ09ORklHX05PUF9VU0JfWENF
-SVY9eQpDT05GSUdfVVNCX0dBREdFVD15CiMgQ09ORklHX1VTQl9HQURHRVRfREVCVUcgaXMgbm90
-IHNldApDT05GSUdfVVNCX0dBREdFVF9ERUJVR19GSUxFUz15CiMgQ09ORklHX1VTQl9HQURHRVRf
-REVCVUdfRlMgaXMgbm90IHNldApDT05GSUdfVVNCX0dBREdFVF9WQlVTX0RSQVc9MgpDT05GSUdf
-VVNCX0dBREdFVF9TVE9SQUdFX05VTV9CVUZGRVJTPTIKCiMKIyBVU0IgUGVyaXBoZXJhbCBDb250
-cm9sbGVyCiMKQ09ORklHX1VTQl9GT1RHMjEwX1VEQz15CiMgQ09ORklHX1VTQl9HUl9VREMgaXMg
-bm90IHNldApDT05GSUdfVVNCX1I4QTY2NTk3PXkKQ09ORklHX1VTQl9QWEEyN1g9eQojIENPTkZJ
-R19VU0JfTVZfVURDIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX01WX1UzRCBpcyBub3Qgc2V0CkNP
-TkZJR19VU0JfTTY2NTkyPXkKQ09ORklHX1VTQl9CRENfVURDPXkKCiMKIyBQbGF0Zm9ybSBTdXBw
-b3J0CiMKQ09ORklHX1VTQl9CRENfUENJPXkKIyBDT05GSUdfVVNCX0FNRDU1MzZVREMgaXMgbm90
-IHNldApDT05GSUdfVVNCX05FVDIyNzI9eQojIENPTkZJR19VU0JfTkVUMjI3Ml9ETUEgaXMgbm90
-IHNldAojIENPTkZJR19VU0JfTkVUMjI4MCBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9HT0tVIGlz
-IG5vdCBzZXQKIyBDT05GSUdfVVNCX0VHMjBUIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9HQURHRVRf
-WElMSU5YPXkKIyBDT05GSUdfVVNCX0RVTU1ZX0hDRCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfTElC
-Q09NUE9TSVRFPXkKQ09ORklHX1VTQl9GX0FDTT15CkNPTkZJR19VU0JfVV9TRVJJQUw9eQpDT05G
-SUdfVVNCX0ZfRlM9eQpDT05GSUdfVVNCX0NPTkZJR0ZTPXkKIyBDT05GSUdfVVNCX0NPTkZJR0ZT
-X1NFUklBTCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfQ09ORklHRlNfQUNNPXkKIyBDT05GSUdfVVNC
-X0NPTkZJR0ZTX09CRVggaXMgbm90IHNldAojIENPTkZJR19VU0JfQ09ORklHRlNfTkNNIGlzIG5v
-dCBzZXQKIyBDT05GSUdfVVNCX0NPTkZJR0ZTX0VDTSBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9D
-T05GSUdGU19FQ01fU1VCU0VUIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0NPTkZJR0ZTX1JORElT
-IGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0NPTkZJR0ZTX0VFTSBpcyBub3Qgc2V0CiMgQ09ORklH
-X1VTQl9DT05GSUdGU19GX0xCX1NTIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9DT05GSUdGU19GX0ZT
-PXkKIyBDT05GSUdfVVNCX0NPTkZJR0ZTX0ZfSElEIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0NP
-TkZJR0ZTX0ZfUFJJTlRFUiBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9aRVJPIGlzIG5vdCBzZXQK
-IyBDT05GSUdfVVNCX0VUSCBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9HX05DTSBpcyBub3Qgc2V0
-CiMgQ09ORklHX1VTQl9HQURHRVRGUyBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9GVU5DVElPTkZT
-IGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dfU0VSSUFMIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNC
-X0dfUFJJTlRFUiBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9DRENfQ09NUE9TSVRFIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfVVNCX0dfSElEIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dfREJHUCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1VXQiBpcyBub3Qgc2V0CiMgQ09ORklHX01NQyBpcyBub3Qgc2V0CkNP
-TkZJR19NRU1TVElDSz15CiMgQ09ORklHX01FTVNUSUNLX0RFQlVHIGlzIG5vdCBzZXQKCiMKIyBN
-ZW1vcnlTdGljayBkcml2ZXJzCiMKIyBDT05GSUdfTUVNU1RJQ0tfVU5TQUZFX1JFU1VNRSBpcyBu
-b3Qgc2V0CgojCiMgTWVtb3J5U3RpY2sgSG9zdCBDb250cm9sbGVyIERyaXZlcnMKIwojIENPTkZJ
-R19NRU1TVElDS19USUZNX01TIGlzIG5vdCBzZXQKIyBDT05GSUdfTUVNU1RJQ0tfSk1JQ1JPTl8z
-OFggaXMgbm90IHNldAojIENPTkZJR19NRU1TVElDS19SNTkyIGlzIG5vdCBzZXQKIyBDT05GSUdf
-TkVXX0xFRFMgaXMgbm90IHNldAojIENPTkZJR19BQ0NFU1NJQklMSVRZIGlzIG5vdCBzZXQKQ09O
-RklHX0VEQUNfQVRPTUlDX1NDUlVCPXkKQ09ORklHX0VEQUNfU1VQUE9SVD15CkNPTkZJR19FREFD
-PXkKIyBDT05GSUdfRURBQ19MRUdBQ1lfU1lTRlMgaXMgbm90IHNldAojIENPTkZJR19FREFDX0RF
-QlVHIGlzIG5vdCBzZXQKIyBDT05GSUdfRURBQ19NTV9FREFDIGlzIG5vdCBzZXQKQ09ORklHX1JU
-Q19MSUI9eQojIENPTkZJR19SVENfQ0xBU1MgaXMgbm90IHNldApDT05GSUdfRE1BREVWSUNFUz15
-CiMgQ09ORklHX0RNQURFVklDRVNfREVCVUcgaXMgbm90IHNldAoKIwojIERNQSBEZXZpY2VzCiMK
-Q09ORklHX0RNQV9FTkdJTkU9eQpDT05GSUdfRE1BX1ZJUlRVQUxfQ0hBTk5FTFM9eQpDT05GSUdf
-RE1BX0FDUEk9eQpDT05GSUdfRE1BX09GPXkKQ09ORklHX0ZTTF9FRE1BPXkKIyBDT05GSUdfSU5U
-RUxfSURNQTY0IGlzIG5vdCBzZXQKIyBDT05GSUdfSU5URUxfSU9BVERNQSBpcyBub3Qgc2V0CkNP
-TkZJR19EV19ETUFDX0NPUkU9eQpDT05GSUdfRFdfRE1BQz15CiMgQ09ORklHX0RXX0RNQUNfUENJ
-IGlzIG5vdCBzZXQKCiMKIyBETUEgQ2xpZW50cwojCkNPTkZJR19BU1lOQ19UWF9ETUE9eQpDT05G
-SUdfRE1BVEVTVD15CkNPTkZJR19BVVhESVNQTEFZPXkKQ09ORklHX0tTMDEwOD15CkNPTkZJR19L
-UzAxMDhfUE9SVD0weDM3OApDT05GSUdfS1MwMTA4X0RFTEFZPTIKQ09ORklHX1VJTz15CiMgQ09O
-RklHX1VJT19DSUYgaXMgbm90IHNldApDT05GSUdfVUlPX1BEUlZfR0VOSVJRPXkKQ09ORklHX1VJ
-T19ETUVNX0dFTklSUT15CiMgQ09ORklHX1VJT19BRUMgaXMgbm90IHNldAojIENPTkZJR19VSU9f
-U0VSQ09TMyBpcyBub3Qgc2V0CiMgQ09ORklHX1VJT19QQ0lfR0VORVJJQyBpcyBub3Qgc2V0CiMg
-Q09ORklHX1VJT19ORVRYIGlzIG5vdCBzZXQKIyBDT05GSUdfVUlPX1BSVVNTIGlzIG5vdCBzZXQK
-IyBDT05GSUdfVUlPX01GNjI0IGlzIG5vdCBzZXQKQ09ORklHX1ZJUlRfRFJJVkVSUz15CkNPTkZJ
-R19WSVJUSU89eQoKIwojIFZpcnRpbyBkcml2ZXJzCiMKIyBDT05GSUdfVklSVElPX1BDSSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1ZJUlRJT19CQUxMT09OIGlzIG5vdCBzZXQKIyBDT05GSUdfVklSVElP
-X0lOUFVUIGlzIG5vdCBzZXQKQ09ORklHX1ZJUlRJT19NTUlPPXkKQ09ORklHX1ZJUlRJT19NTUlP
-X0NNRExJTkVfREVWSUNFUz15CgojCiMgTWljcm9zb2Z0IEh5cGVyLVYgZ3Vlc3Qgc3VwcG9ydAoj
-CiMgQ09ORklHX0hZUEVSViBpcyBub3Qgc2V0CgojCiMgWGVuIGRyaXZlciBzdXBwb3J0CiMKQ09O
-RklHX1hFTl9CQUxMT09OPXkKQ09ORklHX1hFTl9TQ1JVQl9QQUdFUz15CiMgQ09ORklHX1hFTl9E
-RVZfRVZUQ0hOIGlzIG5vdCBzZXQKQ09ORklHX1hFTl9CQUNLRU5EPXkKIyBDT05GSUdfWEVORlMg
-aXMgbm90IHNldApDT05GSUdfWEVOX1NZU19IWVBFUlZJU09SPXkKQ09ORklHX1hFTl9YRU5CVVNf
-RlJPTlRFTkQ9eQpDT05GSUdfWEVOX0dOVERFVj15CiMgQ09ORklHX1hFTl9HUkFOVF9ERVZfQUxM
-T0MgaXMgbm90IHNldApDT05GSUdfU1dJT1RMQl9YRU49eQpDT05GSUdfWEVOX1RNRU09eQpDT05G
-SUdfWEVOX1BDSURFVl9CQUNLRU5EPXkKQ09ORklHX1hFTl9QUklWQ01EPXkKQ09ORklHX1hFTl9B
-Q1BJX1BST0NFU1NPUj15CiMgQ09ORklHX1hFTl9NQ0VfTE9HIGlzIG5vdCBzZXQKQ09ORklHX1hF
-Tl9IQVZFX1BWTU1VPXkKQ09ORklHX1hFTl9BVVRPX1hMQVRFPXkKQ09ORklHX1hFTl9BQ1BJPXkK
-Q09ORklHX1hFTl9IQVZFX1ZQTVU9eQojIENPTkZJR19TVEFHSU5HIGlzIG5vdCBzZXQKIyBDT05G
-SUdfWDg2X1BMQVRGT1JNX0RFVklDRVMgaXMgbm90IHNldApDT05GSUdfQ0hST01FX1BMQVRGT1JN
-Uz15CkNPTkZJR19DSFJPTUVPU19QU1RPUkU9eQoKIwojIEhhcmR3YXJlIFNwaW5sb2NrIGRyaXZl
-cnMKIwoKIwojIENsb2NrIFNvdXJjZSBkcml2ZXJzCiMKQ09ORklHX0NMS0VWVF9JODI1Mz15CkNP
-TkZJR19JODI1M19MT0NLPXkKQ09ORklHX0NMS0JMRF9JODI1Mz15CiMgQ09ORklHX0FUTUVMX1BJ
-VCBpcyBub3Qgc2V0CiMgQ09ORklHX1NIX1RJTUVSX0NNVCBpcyBub3Qgc2V0CiMgQ09ORklHX1NI
-X1RJTUVSX01UVTIgaXMgbm90IHNldAojIENPTkZJR19TSF9USU1FUl9UTVUgaXMgbm90IHNldAoj
-IENPTkZJR19FTV9USU1FUl9TVEkgaXMgbm90IHNldApDT05GSUdfTUFJTEJPWD15CiMgQ09ORklH
-X1BDQyBpcyBub3Qgc2V0CkNPTkZJR19BTFRFUkFfTUJPWD15CiMgQ09ORklHX01BSUxCT1hfVEVT
-VCBpcyBub3Qgc2V0CkNPTkZJR19JT01NVV9TVVBQT1JUPXkKCiMKIyBHZW5lcmljIElPTU1VIFBh
-Z2V0YWJsZSBTdXBwb3J0CiMKIyBDT05GSUdfQU1EX0lPTU1VIGlzIG5vdCBzZXQKCiMKIyBSZW1v
-dGVwcm9jIGRyaXZlcnMKIwpDT05GSUdfUkVNT1RFUFJPQz15CkNPTkZJR19TVEVfTU9ERU1fUlBS
-T0M9eQoKIwojIFJwbXNnIGRyaXZlcnMKIwoKIwojIFNPQyAoU3lzdGVtIE9uIENoaXApIHNwZWNp
-ZmljIERyaXZlcnMKIwojIENPTkZJR19TVU5YSV9TUkFNIGlzIG5vdCBzZXQKIyBDT05GSUdfU09D
-X1RJIGlzIG5vdCBzZXQKQ09ORklHX1BNX0RFVkZSRVE9eQoKIwojIERFVkZSRVEgR292ZXJub3Jz
-CiMKQ09ORklHX0RFVkZSRVFfR09WX1NJTVBMRV9PTkRFTUFORD15CkNPTkZJR19ERVZGUkVRX0dP
-Vl9QRVJGT1JNQU5DRT15CiMgQ09ORklHX0RFVkZSRVFfR09WX1BPV0VSU0FWRSBpcyBub3Qgc2V0
-CiMgQ09ORklHX0RFVkZSRVFfR09WX1VTRVJTUEFDRSBpcyBub3Qgc2V0CgojCiMgREVWRlJFUSBE
-cml2ZXJzCiMKQ09ORklHX1BNX0RFVkZSRVFfRVZFTlQ9eQpDT05GSUdfRVhUQ09OPXkKCiMKIyBF
-eHRjb24gRGV2aWNlIERyaXZlcnMKIwojIENPTkZJR19FWFRDT05fQURDX0pBQ0sgaXMgbm90IHNl
-dAojIENPTkZJR19NRU1PUlkgaXMgbm90IHNldApDT05GSUdfSUlPPXkKQ09ORklHX0lJT19CVUZG
-RVI9eQpDT05GSUdfSUlPX0JVRkZFUl9DQj15CkNPTkZJR19JSU9fS0ZJRk9fQlVGPXkKQ09ORklH
-X0lJT19UUklHR0VSRURfQlVGRkVSPXkKIyBDT05GSUdfSUlPX0NPTkZJR0ZTIGlzIG5vdCBzZXQK
-Q09ORklHX0lJT19UUklHR0VSPXkKQ09ORklHX0lJT19DT05TVU1FUlNfUEVSX1RSSUdHRVI9Mgoj
-IENPTkZJR19JSU9fU1dfVFJJR0dFUiBpcyBub3Qgc2V0CgojCiMgQWNjZWxlcm9tZXRlcnMKIwoj
-IENPTkZJR19CTUMxNTBfQUNDRUwgaXMgbm90IHNldAojIENPTkZJR19ISURfU0VOU09SX0FDQ0VM
-XzNEIGlzIG5vdCBzZXQKQ09ORklHX0lJT19TVF9BQ0NFTF8zQVhJUz15CkNPTkZJR19JSU9fU1Rf
-QUNDRUxfU1BJXzNBWElTPXkKQ09ORklHX0tYU0Q5PXkKIyBDT05GSUdfTU1BNzQ1NV9TUEkgaXMg
-bm90IHNldAoKIwojIEFuYWxvZyB0byBkaWdpdGFsIGNvbnZlcnRlcnMKIwpDT05GSUdfQUQ3MjY2
-PXkKQ09ORklHX0FENzI5OD15CkNPTkZJR19BRDc0NzY9eQojIENPTkZJR19BRDc3OTEgaXMgbm90
-IHNldAojIENPTkZJR19BRDc3OTMgaXMgbm90IHNldApDT05GSUdfQUQ3ODg3PXkKQ09ORklHX0FE
-NzkyMz15CiMgQ09ORklHX0hJODQzNSBpcyBub3Qgc2V0CkNPTkZJR19NQVgxMDI3PXkKIyBDT05G
-SUdfTUNQMzIwWCBpcyBub3Qgc2V0CkNPTkZJR19RQ09NX1NQTUlfSUFEQz15CkNPTkZJR19RQ09N
-X1NQTUlfVkFEQz15CkNPTkZJR19USV9BREMxMjhTMDUyPXkKIyBDT05GSUdfVElfQURTODY4OCBp
-cyBub3Qgc2V0CkNPTkZJR19USV9BTTMzNVhfQURDPXkKQ09ORklHX1ZGNjEwX0FEQz15CkNPTkZJ
-R19WSVBFUkJPQVJEX0FEQz15CgojCiMgQW1wbGlmaWVycwojCkNPTkZJR19BRDgzNjY9eQoKIwoj
-IENoZW1pY2FsIFNlbnNvcnMKIwoKIwojIEhpZCBTZW5zb3IgSUlPIENvbW1vbgojCkNPTkZJR19I
-SURfU0VOU09SX0lJT19DT01NT049eQpDT05GSUdfSElEX1NFTlNPUl9JSU9fVFJJR0dFUj15Cgoj
-CiMgU1NQIFNlbnNvciBDb21tb24KIwojIENPTkZJR19JSU9fU1NQX1NFTlNPUkhVQiBpcyBub3Qg
-c2V0CkNPTkZJR19JSU9fU1RfU0VOU09SU19TUEk9eQpDT05GSUdfSUlPX1NUX1NFTlNPUlNfQ09S
-RT15CgojCiMgRGlnaXRhbCB0byBhbmFsb2cgY29udmVydGVycwojCkNPTkZJR19BRDUwNjQ9eQoj
-IENPTkZJR19BRDUzNjAgaXMgbm90IHNldApDT05GSUdfQUQ1MzgwPXkKIyBDT05GSUdfQUQ1NDIx
-IGlzIG5vdCBzZXQKQ09ORklHX0FENTQ0Nj15CiMgQ09ORklHX0FENTQ0OSBpcyBub3Qgc2V0CkNP
-TkZJR19BRDU1MDQ9eQpDT05GSUdfQUQ1NjI0Ul9TUEk9eQpDT05GSUdfQUQ1Njg2PXkKIyBDT05G
-SUdfQUQ1NzU1IGlzIG5vdCBzZXQKIyBDT05GSUdfQUQ1NzY0IGlzIG5vdCBzZXQKIyBDT05GSUdf
-QUQ1NzkxIGlzIG5vdCBzZXQKQ09ORklHX0FENzMwMz15CkNPTkZJR19NQ1A0OTIyPXkKCiMKIyBJ
-SU8gZHVtbXkgZHJpdmVyCiMKIyBDT05GSUdfSUlPX1NJTVBMRV9EVU1NWSBpcyBub3Qgc2V0Cgoj
-CiMgRnJlcXVlbmN5IFN5bnRoZXNpemVycyBERFMvUExMCiMKCiMKIyBDbG9jayBHZW5lcmF0b3Iv
-RGlzdHJpYnV0aW9uCiMKIyBDT05GSUdfQUQ5NTIzIGlzIG5vdCBzZXQKCiMKIyBQaGFzZS1Mb2Nr
-ZWQgTG9vcCAoUExMKSBmcmVxdWVuY3kgc3ludGhlc2l6ZXJzCiMKQ09ORklHX0FERjQzNTA9eQoK
-IwojIERpZ2l0YWwgZ3lyb3Njb3BlIHNlbnNvcnMKIwpDT05GSUdfQURJUzE2MDgwPXkKQ09ORklH
-X0FESVMxNjEzMD15CiMgQ09ORklHX0FESVMxNjEzNiBpcyBub3Qgc2V0CkNPTkZJR19BRElTMTYy
-NjA9eQojIENPTkZJR19BRFhSUzQ1MCBpcyBub3Qgc2V0CkNPTkZJR19CTUcxNjA9eQpDT05GSUdf
-Qk1HMTYwX1NQST15CkNPTkZJR19ISURfU0VOU09SX0dZUk9fM0Q9eQpDT05GSUdfSUlPX1NUX0dZ
-Uk9fM0FYSVM9eQpDT05GSUdfSUlPX1NUX0dZUk9fU1BJXzNBWElTPXkKCiMKIyBIZWFsdGggc2Vu
-c29ycwojCgojCiMgSHVtaWRpdHkgc2Vuc29ycwojCgojCiMgSW5lcnRpYWwgbWVhc3VyZW1lbnQg
-dW5pdHMKIwojIENPTkZJR19BRElTMTY0MDAgaXMgbm90IHNldApDT05GSUdfQURJUzE2NDgwPXkK
-Q09ORklHX0lJT19BRElTX0xJQj15CkNPTkZJR19JSU9fQURJU19MSUJfQlVGRkVSPXkKCiMKIyBM
-aWdodCBzZW5zb3JzCiMKIyBDT05GSUdfQUNQSV9BTFMgaXMgbm90IHNldApDT05GSUdfSElEX1NF
-TlNPUl9BTFM9eQpDT05GSUdfSElEX1NFTlNPUl9QUk9YPXkKCiMKIyBNYWduZXRvbWV0ZXIgc2Vu
-c29ycwojCkNPTkZJR19ISURfU0VOU09SX01BR05FVE9NRVRFUl8zRD15CkNPTkZJR19JSU9fU1Rf
-TUFHTl8zQVhJUz15CkNPTkZJR19JSU9fU1RfTUFHTl9TUElfM0FYSVM9eQoKIwojIEluY2xpbm9t
-ZXRlciBzZW5zb3JzCiMKIyBDT05GSUdfSElEX1NFTlNPUl9JTkNMSU5PTUVURVJfM0QgaXMgbm90
-IHNldApDT05GSUdfSElEX1NFTlNPUl9ERVZJQ0VfUk9UQVRJT049eQoKIwojIFRyaWdnZXJzIC0g
-c3RhbmRhbG9uZQojCiMgQ09ORklHX0lJT19JTlRFUlJVUFRfVFJJR0dFUiBpcyBub3Qgc2V0CkNP
-TkZJR19JSU9fU1lTRlNfVFJJR0dFUj15CgojCiMgRGlnaXRhbCBwb3RlbnRpb21ldGVycwojCgoj
-CiMgUHJlc3N1cmUgc2Vuc29ycwojCkNPTkZJR19ISURfU0VOU09SX1BSRVNTPXkKQ09ORklHX01T
-NTYxMT15CkNPTkZJR19NUzU2MTFfU1BJPXkKQ09ORklHX0lJT19TVF9QUkVTUz15CkNPTkZJR19J
-SU9fU1RfUFJFU1NfU1BJPXkKCiMKIyBMaWdodG5pbmcgc2Vuc29ycwojCkNPTkZJR19BUzM5MzU9
-eQoKIwojIFByb3hpbWl0eSBzZW5zb3JzCiMKCiMKIyBUZW1wZXJhdHVyZSBzZW5zb3JzCiMKIyBD
-T05GSUdfTlRCIGlzIG5vdCBzZXQKIyBDT05GSUdfVk1FX0JVUyBpcyBub3Qgc2V0CiMgQ09ORklH
-X1BXTSBpcyBub3Qgc2V0CkNPTkZJR19JUlFDSElQPXkKQ09ORklHX0FSTV9HSUNfTUFYX05SPTEK
-IyBDT05GSUdfVFM0ODAwX0lSUSBpcyBub3Qgc2V0CkNPTkZJR19JUEFDS19CVVM9eQojIENPTkZJ
-R19CT0FSRF9UUENJMjAwIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFMX0lQT0NUQUwgaXMgbm90
-IHNldApDT05GSUdfUkVTRVRfQ09OVFJPTExFUj15CkNPTkZJR19GTUM9eQpDT05GSUdfRk1DX0ZB
-S0VERVY9eQpDT05GSUdfRk1DX1RSSVZJQUw9eQpDT05GSUdfRk1DX1dSSVRFX0VFUFJPTT15CkNP
-TkZJR19GTUNfQ0hBUkRFVj15CgojCiMgUEhZIFN1YnN5c3RlbQojCkNPTkZJR19HRU5FUklDX1BI
-WT15CkNPTkZJR19QSFlfUFhBXzI4Tk1fSFNJQz15CiMgQ09ORklHX1BIWV9QWEFfMjhOTV9VU0Iy
-IGlzIG5vdCBzZXQKQ09ORklHX0JDTV9LT05BX1VTQjJfUEhZPXkKIyBDT05GSUdfUEhZX0hJNjIy
-MF9VU0IgaXMgbm90IHNldApDT05GSUdfUEhZX1NBTVNVTkdfVVNCMj15CiMgQ09ORklHX1BIWV9F
-WFlOT1M0MjEwX1VTQjIgaXMgbm90IHNldAojIENPTkZJR19QSFlfRVhZTk9TNFgxMl9VU0IyIGlz
-IG5vdCBzZXQKIyBDT05GSUdfUEhZX0VYWU5PUzUyNTBfVVNCMiBpcyBub3Qgc2V0CkNPTkZJR19Q
-SFlfVFVTQjEyMTA9eQojIENPTkZJR19QT1dFUkNBUCBpcyBub3Qgc2V0CiMgQ09ORklHX01DQiBp
-cyBub3Qgc2V0CgojCiMgUGVyZm9ybWFuY2UgbW9uaXRvciBzdXBwb3J0CiMKQ09ORklHX1JBUz15
-CiMgQ09ORklHX1RIVU5ERVJCT0xUIGlzIG5vdCBzZXQKCiMKIyBBbmRyb2lkCiMKQ09ORklHX0FO
-RFJPSUQ9eQojIENPTkZJR19BTkRST0lEX0JJTkRFUl9JUEMgaXMgbm90IHNldApDT05GSUdfTlZN
-RU09eQpDT05GSUdfU1RNPXkKQ09ORklHX1NUTV9EVU1NWT15CkNPTkZJR19TVE1fU09VUkNFX0NP
-TlNPTEU9eQpDT05GSUdfSU5URUxfVEg9eQojIENPTkZJR19JTlRFTF9USF9QQ0kgaXMgbm90IHNl
-dApDT05GSUdfSU5URUxfVEhfR1RIPXkKQ09ORklHX0lOVEVMX1RIX1NUSD15CkNPTkZJR19JTlRF
-TF9USF9NU1U9eQpDT05GSUdfSU5URUxfVEhfUFRJPXkKIyBDT05GSUdfSU5URUxfVEhfREVCVUcg
-aXMgbm90IHNldAoKIwojIEZQR0EgQ29uZmlndXJhdGlvbiBTdXBwb3J0CiMKIyBDT05GSUdfRlBH
-QSBpcyBub3Qgc2V0CgojCiMgRmlybXdhcmUgRHJpdmVycwojCkNPTkZJR19FREQ9eQojIENPTkZJ
-R19FRERfT0ZGIGlzIG5vdCBzZXQKIyBDT05GSUdfRklSTVdBUkVfTUVNTUFQIGlzIG5vdCBzZXQK
-Q09ORklHX0RFTExfUkJVPXkKQ09ORklHX0RDREJBUz15CkNPTkZJR19ETUlJRD15CiMgQ09ORklH
-X0RNSV9TWVNGUyBpcyBub3Qgc2V0CkNPTkZJR19ETUlfU0NBTl9NQUNISU5FX05PTl9FRklfRkFM
-TEJBQ0s9eQojIENPTkZJR19JU0NTSV9JQkZUX0ZJTkQgaXMgbm90IHNldAojIENPTkZJR19HT09H
-TEVfRklSTVdBUkUgaXMgbm90IHNldAoKIwojIEZpbGUgc3lzdGVtcwojCkNPTkZJR19EQ0FDSEVf
-V09SRF9BQ0NFU1M9eQojIENPTkZJR19GU19QT1NJWF9BQ0wgaXMgbm90IHNldApDT05GSUdfRVhQ
-T1JURlM9eQpDT05GSUdfRklMRV9MT0NLSU5HPXkKQ09ORklHX01BTkRBVE9SWV9GSUxFX0xPQ0tJ
-Tkc9eQpDT05GSUdfRlNOT1RJRlk9eQpDT05GSUdfRE5PVElGWT15CkNPTkZJR19JTk9USUZZX1VT
-RVI9eQojIENPTkZJR19GQU5PVElGWSBpcyBub3Qgc2V0CkNPTkZJR19RVU9UQT15CiMgQ09ORklH
-X1FVT1RBX05FVExJTktfSU5URVJGQUNFIGlzIG5vdCBzZXQKIyBDT05GSUdfUFJJTlRfUVVPVEFf
-V0FSTklORyBpcyBub3Qgc2V0CkNPTkZJR19RVU9UQV9ERUJVRz15CiMgQ09ORklHX1FGTVRfVjEg
-aXMgbm90IHNldAojIENPTkZJR19RRk1UX1YyIGlzIG5vdCBzZXQKQ09ORklHX1FVT1RBQ1RMPXkK
-Q09ORklHX1FVT1RBQ1RMX0NPTVBBVD15CkNPTkZJR19BVVRPRlM0X0ZTPXkKIyBDT05GSUdfRlVT
-RV9GUyBpcyBub3Qgc2V0CkNPTkZJR19PVkVSTEFZX0ZTPXkKCiMKIyBDYWNoZXMKIwpDT05GSUdf
-RlNDQUNIRT15CkNPTkZJR19GU0NBQ0hFX1NUQVRTPXkKIyBDT05GSUdfRlNDQUNIRV9ISVNUT0dS
-QU0gaXMgbm90IHNldApDT05GSUdfRlNDQUNIRV9ERUJVRz15CiMgQ09ORklHX0ZTQ0FDSEVfT0JK
-RUNUX0xJU1QgaXMgbm90IHNldAoKIwojIFBzZXVkbyBmaWxlc3lzdGVtcwojCkNPTkZJR19QUk9D
-X0ZTPXkKQ09ORklHX1BST0NfS0NPUkU9eQpDT05GSUdfUFJPQ19WTUNPUkU9eQpDT05GSUdfUFJP
-Q19TWVNDVEw9eQpDT05GSUdfUFJPQ19QQUdFX01PTklUT1I9eQpDT05GSUdfUFJPQ19DSElMRFJF
-Tj15CkNPTkZJR19LRVJORlM9eQpDT05GSUdfU1lTRlM9eQpDT05GSUdfSFVHRVRMQkZTPXkKQ09O
-RklHX0hVR0VUTEJfUEFHRT15CkNPTkZJR19DT05GSUdGU19GUz15CiMgQ09ORklHX01JU0NfRklM
-RVNZU1RFTVMgaXMgbm90IHNldApDT05GSUdfTkVUV09SS19GSUxFU1lTVEVNUz15CkNPTkZJR19O
-TFM9eQpDT05GSUdfTkxTX0RFRkFVTFQ9Imlzbzg4NTktMSIKIyBDT05GSUdfTkxTX0NPREVQQUdF
-XzQzNyBpcyBub3Qgc2V0CkNPTkZJR19OTFNfQ09ERVBBR0VfNzM3PXkKQ09ORklHX05MU19DT0RF
-UEFHRV83NzU9eQpDT05GSUdfTkxTX0NPREVQQUdFXzg1MD15CkNPTkZJR19OTFNfQ09ERVBBR0Vf
-ODUyPXkKQ09ORklHX05MU19DT0RFUEFHRV84NTU9eQojIENPTkZJR19OTFNfQ09ERVBBR0VfODU3
-IGlzIG5vdCBzZXQKQ09ORklHX05MU19DT0RFUEFHRV84NjA9eQpDT05GSUdfTkxTX0NPREVQQUdF
-Xzg2MT15CiMgQ09ORklHX05MU19DT0RFUEFHRV84NjIgaXMgbm90IHNldApDT05GSUdfTkxTX0NP
-REVQQUdFXzg2Mz15CkNPTkZJR19OTFNfQ09ERVBBR0VfODY0PXkKQ09ORklHX05MU19DT0RFUEFH
-RV84NjU9eQpDT05GSUdfTkxTX0NPREVQQUdFXzg2Nj15CiMgQ09ORklHX05MU19DT0RFUEFHRV84
-NjkgaXMgbm90IHNldApDT05GSUdfTkxTX0NPREVQQUdFXzkzNj15CkNPTkZJR19OTFNfQ09ERVBB
-R0VfOTUwPXkKIyBDT05GSUdfTkxTX0NPREVQQUdFXzkzMiBpcyBub3Qgc2V0CkNPTkZJR19OTFNf
-Q09ERVBBR0VfOTQ5PXkKIyBDT05GSUdfTkxTX0NPREVQQUdFXzg3NCBpcyBub3Qgc2V0CiMgQ09O
-RklHX05MU19JU084ODU5XzggaXMgbm90IHNldAojIENPTkZJR19OTFNfQ09ERVBBR0VfMTI1MCBp
-cyBub3Qgc2V0CkNPTkZJR19OTFNfQ09ERVBBR0VfMTI1MT15CkNPTkZJR19OTFNfQVNDSUk9eQpD
-T05GSUdfTkxTX0lTTzg4NTlfMT15CkNPTkZJR19OTFNfSVNPODg1OV8yPXkKQ09ORklHX05MU19J
-U084ODU5XzM9eQpDT05GSUdfTkxTX0lTTzg4NTlfND15CiMgQ09ORklHX05MU19JU084ODU5XzUg
-aXMgbm90IHNldApDT05GSUdfTkxTX0lTTzg4NTlfNj15CiMgQ09ORklHX05MU19JU084ODU5Xzcg
-aXMgbm90IHNldApDT05GSUdfTkxTX0lTTzg4NTlfOT15CkNPTkZJR19OTFNfSVNPODg1OV8xMz15
-CiMgQ09ORklHX05MU19JU084ODU5XzE0IGlzIG5vdCBzZXQKQ09ORklHX05MU19JU084ODU5XzE1
-PXkKQ09ORklHX05MU19LT0k4X1I9eQpDT05GSUdfTkxTX0tPSThfVT15CkNPTkZJR19OTFNfTUFD
-X1JPTUFOPXkKQ09ORklHX05MU19NQUNfQ0VMVElDPXkKIyBDT05GSUdfTkxTX01BQ19DRU5URVVS
-TyBpcyBub3Qgc2V0CiMgQ09ORklHX05MU19NQUNfQ1JPQVRJQU4gaXMgbm90IHNldAojIENPTkZJ
-R19OTFNfTUFDX0NZUklMTElDIGlzIG5vdCBzZXQKIyBDT05GSUdfTkxTX01BQ19HQUVMSUMgaXMg
-bm90IHNldApDT05GSUdfTkxTX01BQ19HUkVFSz15CkNPTkZJR19OTFNfTUFDX0lDRUxBTkQ9eQoj
-IENPTkZJR19OTFNfTUFDX0lOVUlUIGlzIG5vdCBzZXQKIyBDT05GSUdfTkxTX01BQ19ST01BTklB
-TiBpcyBub3Qgc2V0CkNPTkZJR19OTFNfTUFDX1RVUktJU0g9eQpDT05GSUdfTkxTX1VURjg9eQoK
-IwojIEtlcm5lbCBoYWNraW5nCiMKQ09ORklHX1RSQUNFX0lSUUZMQUdTX1NVUFBPUlQ9eQoKIwoj
-IHByaW50ayBhbmQgZG1lc2cgb3B0aW9ucwojCkNPTkZJR19QUklOVEtfVElNRT15CkNPTkZJR19N
-RVNTQUdFX0xPR0xFVkVMX0RFRkFVTFQ9NAojIENPTkZJR19CT09UX1BSSU5US19ERUxBWSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0RZTkFNSUNfREVCVUcgaXMgbm90IHNldAoKIwojIENvbXBpbGUtdGlt
-ZSBjaGVja3MgYW5kIGNvbXBpbGVyIG9wdGlvbnMKIwojIENPTkZJR19ERUJVR19JTkZPIGlzIG5v
-dCBzZXQKIyBDT05GSUdfRU5BQkxFX1dBUk5fREVQUkVDQVRFRCBpcyBub3Qgc2V0CkNPTkZJR19F
-TkFCTEVfTVVTVF9DSEVDSz15CkNPTkZJR19GUkFNRV9XQVJOPTIwNDgKQ09ORklHX1NUUklQX0FT
-TV9TWU1TPXkKQ09ORklHX1JFQURBQkxFX0FTTT15CiMgQ09ORklHX1VOVVNFRF9TWU1CT0xTIGlz
-IG5vdCBzZXQKIyBDT05GSUdfUEFHRV9PV05FUiBpcyBub3Qgc2V0CkNPTkZJR19ERUJVR19GUz15
-CkNPTkZJR19IRUFERVJTX0NIRUNLPXkKIyBDT05GSUdfREVCVUdfU0VDVElPTl9NSVNNQVRDSCBp
-cyBub3Qgc2V0CiMgQ09ORklHX1NFQ1RJT05fTUlTTUFUQ0hfV0FSTl9PTkxZIGlzIG5vdCBzZXQK
-Q09ORklHX0FSQ0hfV0FOVF9GUkFNRV9QT0lOVEVSUz15CkNPTkZJR19GUkFNRV9QT0lOVEVSPXkK
-Q09ORklHX0RFQlVHX0ZPUkNFX1dFQUtfUEVSX0NQVT15CkNPTkZJR19NQUdJQ19TWVNSUT15CkNP
-TkZJR19NQUdJQ19TWVNSUV9ERUZBVUxUX0VOQUJMRT0weDEKQ09ORklHX0RFQlVHX0tFUk5FTD15
-CgojCiMgTWVtb3J5IERlYnVnZ2luZwojCkNPTkZJR19QQUdFX0VYVEVOU0lPTj15CiMgQ09ORklH
-X0RFQlVHX1BBR0VBTExPQyBpcyBub3Qgc2V0CkNPTkZJR19ERUJVR19PQkpFQ1RTPXkKQ09ORklH
-X0RFQlVHX09CSkVDVFNfU0VMRlRFU1Q9eQojIENPTkZJR19ERUJVR19PQkpFQ1RTX0ZSRUUgaXMg
-bm90IHNldAojIENPTkZJR19ERUJVR19PQkpFQ1RTX1RJTUVSUyBpcyBub3Qgc2V0CiMgQ09ORklH
-X0RFQlVHX09CSkVDVFNfV09SSyBpcyBub3Qgc2V0CkNPTkZJR19ERUJVR19PQkpFQ1RTX1JDVV9I
-RUFEPXkKQ09ORklHX0RFQlVHX09CSkVDVFNfUEVSQ1BVX0NPVU5URVI9eQpDT05GSUdfREVCVUdf
-T0JKRUNUU19FTkFCTEVfREVGQVVMVD0xCkNPTkZJR19TTFVCX1NUQVRTPXkKQ09ORklHX0hBVkVf
-REVCVUdfS01FTUxFQUs9eQojIENPTkZJR19ERUJVR19LTUVNTEVBSyBpcyBub3Qgc2V0CkNPTkZJ
-R19ERUJVR19TVEFDS19VU0FHRT15CiMgQ09ORklHX0RFQlVHX1ZNIGlzIG5vdCBzZXQKQ09ORklH
-X0RFQlVHX1ZJUlRVQUw9eQpDT05GSUdfREVCVUdfTUVNT1JZX0lOSVQ9eQpDT05GSUdfSEFWRV9E
-RUJVR19TVEFDS09WRVJGTE9XPXkKQ09ORklHX0RFQlVHX1NUQUNLT1ZFUkZMT1c9eQpDT05GSUdf
-SEFWRV9BUkNIX0tNRU1DSEVDSz15CkNPTkZJR19IQVZFX0FSQ0hfS0FTQU49eQojIENPTkZJR19E
-RUJVR19TSElSUSBpcyBub3Qgc2V0CgojCiMgRGVidWcgTG9ja3VwcyBhbmQgSGFuZ3MKIwpDT05G
-SUdfTE9DS1VQX0RFVEVDVE9SPXkKQ09ORklHX0hBUkRMT0NLVVBfREVURUNUT1I9eQpDT05GSUdf
-Qk9PVFBBUkFNX0hBUkRMT0NLVVBfUEFOSUM9eQpDT05GSUdfQk9PVFBBUkFNX0hBUkRMT0NLVVBf
-UEFOSUNfVkFMVUU9MQpDT05GSUdfQk9PVFBBUkFNX1NPRlRMT0NLVVBfUEFOSUM9eQpDT05GSUdf
-Qk9PVFBBUkFNX1NPRlRMT0NLVVBfUEFOSUNfVkFMVUU9MQojIENPTkZJR19ERVRFQ1RfSFVOR19U
-QVNLIGlzIG5vdCBzZXQKIyBDT05GSUdfV1FfV0FUQ0hET0cgaXMgbm90IHNldApDT05GSUdfUEFO
-SUNfT05fT09QUz15CkNPTkZJR19QQU5JQ19PTl9PT1BTX1ZBTFVFPTEKQ09ORklHX1BBTklDX1RJ
-TUVPVVQ9MAojIENPTkZJR19TQ0hFRF9ERUJVRyBpcyBub3Qgc2V0CiMgQ09ORklHX1NDSEVEX0lO
-Rk8gaXMgbm90IHNldAojIENPTkZJR19TQ0hFRFNUQVRTIGlzIG5vdCBzZXQKQ09ORklHX1NDSEVE
-X1NUQUNLX0VORF9DSEVDSz15CkNPTkZJR19ERUJVR19USU1FS0VFUElORz15CkNPTkZJR19USU1F
-Ul9TVEFUUz15CiMgQ09ORklHX0RFQlVHX1BSRUVNUFQgaXMgbm90IHNldAoKIwojIExvY2sgRGVi
-dWdnaW5nIChzcGlubG9ja3MsIG11dGV4ZXMsIGV0Yy4uLikKIwojIENPTkZJR19ERUJVR19SVF9N
-VVRFWEVTIGlzIG5vdCBzZXQKQ09ORklHX0RFQlVHX1NQSU5MT0NLPXkKQ09ORklHX0RFQlVHX01V
-VEVYRVM9eQpDT05GSUdfREVCVUdfV1dfTVVURVhfU0xPV1BBVEg9eQpDT05GSUdfREVCVUdfTE9D
-S19BTExPQz15CkNPTkZJR19QUk9WRV9MT0NLSU5HPXkKQ09ORklHX0xPQ0tERVA9eQojIENPTkZJ
-R19MT0NLX1NUQVQgaXMgbm90IHNldAojIENPTkZJR19ERUJVR19MT0NLREVQIGlzIG5vdCBzZXQK
-Q09ORklHX0RFQlVHX0FUT01JQ19TTEVFUD15CiMgQ09ORklHX0RFQlVHX0xPQ0tJTkdfQVBJX1NF
-TEZURVNUUyBpcyBub3Qgc2V0CiMgQ09ORklHX0xPQ0tfVE9SVFVSRV9URVNUIGlzIG5vdCBzZXQK
-Q09ORklHX1RSQUNFX0lSUUZMQUdTPXkKQ09ORklHX1NUQUNLVFJBQ0U9eQojIENPTkZJR19ERUJV
-R19LT0JKRUNUIGlzIG5vdCBzZXQKQ09ORklHX0RFQlVHX0JVR1ZFUkJPU0U9eQpDT05GSUdfREVC
-VUdfTElTVD15CiMgQ09ORklHX0RFQlVHX1BJX0xJU1QgaXMgbm90IHNldApDT05GSUdfREVCVUdf
-U0c9eQojIENPTkZJR19ERUJVR19OT1RJRklFUlMgaXMgbm90IHNldAojIENPTkZJR19ERUJVR19D
-UkVERU5USUFMUyBpcyBub3Qgc2V0CgojCiMgUkNVIERlYnVnZ2luZwojCkNPTkZJR19QUk9WRV9S
-Q1U9eQpDT05GSUdfUFJPVkVfUkNVX1JFUEVBVEVETFk9eQojIENPTkZJR19TUEFSU0VfUkNVX1BP
-SU5URVIgaXMgbm90IHNldAojIENPTkZJR19UT1JUVVJFX1RFU1QgaXMgbm90IHNldAojIENPTkZJ
-R19SQ1VfVE9SVFVSRV9URVNUIGlzIG5vdCBzZXQKQ09ORklHX1JDVV9DUFVfU1RBTExfVElNRU9V
-VD0yMQojIENPTkZJR19SQ1VfVFJBQ0UgaXMgbm90IHNldAojIENPTkZJR19SQ1VfRVFTX0RFQlVH
-IGlzIG5vdCBzZXQKIyBDT05GSUdfTk9USUZJRVJfRVJST1JfSU5KRUNUSU9OIGlzIG5vdCBzZXQK
-Q09ORklHX0ZBVUxUX0lOSkVDVElPTj15CkNPTkZJR19GQUlMU0xBQj15CiMgQ09ORklHX0ZBSUxf
-UEFHRV9BTExPQyBpcyBub3Qgc2V0CiMgQ09ORklHX0ZBSUxfRlVURVggaXMgbm90IHNldAojIENP
-TkZJR19GQVVMVF9JTkpFQ1RJT05fREVCVUdfRlMgaXMgbm90IHNldAojIENPTkZJR19MQVRFTkNZ
-VE9QIGlzIG5vdCBzZXQKQ09ORklHX0FSQ0hfSEFTX0RFQlVHX1NUUklDVF9VU0VSX0NPUFlfQ0hF
-Q0tTPXkKIyBDT05GSUdfREVCVUdfU1RSSUNUX1VTRVJfQ09QWV9DSEVDS1MgaXMgbm90IHNldApD
-T05GSUdfVVNFUl9TVEFDS1RSQUNFX1NVUFBPUlQ9eQpDT05GSUdfSEFWRV9GVU5DVElPTl9UUkFD
-RVI9eQpDT05GSUdfSEFWRV9GVU5DVElPTl9HUkFQSF9UUkFDRVI9eQpDT05GSUdfSEFWRV9GVU5D
-VElPTl9HUkFQSF9GUF9URVNUPXkKQ09ORklHX0hBVkVfRFlOQU1JQ19GVFJBQ0U9eQpDT05GSUdf
-SEFWRV9EWU5BTUlDX0ZUUkFDRV9XSVRIX1JFR1M9eQpDT05GSUdfSEFWRV9GVFJBQ0VfTUNPVU5U
-X1JFQ09SRD15CkNPTkZJR19IQVZFX1NZU0NBTExfVFJBQ0VQT0lOVFM9eQpDT05GSUdfSEFWRV9G
-RU5UUlk9eQpDT05GSUdfSEFWRV9DX1JFQ09SRE1DT1VOVD15CkNPTkZJR19UUkFDSU5HX1NVUFBP
-UlQ9eQojIENPTkZJR19GVFJBQ0UgaXMgbm90IHNldAoKIwojIFJ1bnRpbWUgVGVzdGluZwojCiMg
-Q09ORklHX1RFU1RfTElTVF9TT1JUIGlzIG5vdCBzZXQKIyBDT05GSUdfQkFDS1RSQUNFX1NFTEZf
-VEVTVCBpcyBub3Qgc2V0CiMgQ09ORklHX1JCVFJFRV9URVNUIGlzIG5vdCBzZXQKIyBDT05GSUdf
-QVRPTUlDNjRfU0VMRlRFU1QgaXMgbm90IHNldAojIENPTkZJR19URVNUX0hFWERVTVAgaXMgbm90
-IHNldApDT05GSUdfVEVTVF9TVFJJTkdfSEVMUEVSUz15CkNPTkZJR19URVNUX0tTVFJUT1g9eQpD
-T05GSUdfVEVTVF9QUklOVEY9eQpDT05GSUdfVEVTVF9SSEFTSFRBQkxFPXkKIyBDT05GSUdfUFJP
-VklERV9PSENJMTM5NF9ETUFfSU5JVCBpcyBub3Qgc2V0CkNPTkZJR19CVUlMRF9ET0NTUkM9eQoj
-IENPTkZJR19ETUFfQVBJX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX1RFU1RfRklSTVdBUkU9eQpD
-T05GSUdfVEVTVF9VREVMQVk9eQpDT05GSUdfTUVNVEVTVD15CiMgQ09ORklHX1NBTVBMRVMgaXMg
-bm90IHNldApDT05GSUdfSEFWRV9BUkNIX0tHREI9eQojIENPTkZJR19LR0RCIGlzIG5vdCBzZXQK
-Q09ORklHX0FSQ0hfSEFTX0RFVk1FTV9JU19BTExPV0VEPXkKIyBDT05GSUdfU1RSSUNUX0RFVk1F
-TSBpcyBub3Qgc2V0CkNPTkZJR19YODZfVkVSQk9TRV9CT09UVVA9eQojIENPTkZJR19FQVJMWV9Q
-UklOVEsgaXMgbm90IHNldAojIENPTkZJR19YODZfUFREVU1QX0NPUkUgaXMgbm90IHNldAojIENP
-TkZJR19YODZfUFREVU1QIGlzIG5vdCBzZXQKIyBDT05GSUdfREVCVUdfUk9EQVRBIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfRE9VQkxFRkFVTFQgaXMgbm90IHNldAojIENPTkZJR19ERUJVR19UTEJGTFVT
-SCBpcyBub3Qgc2V0CkNPTkZJR19JT01NVV9TVFJFU1M9eQpDT05GSUdfSEFWRV9NTUlPVFJBQ0Vf
-U1VQUE9SVD15CkNPTkZJR19JT19ERUxBWV9UWVBFXzBYODA9MApDT05GSUdfSU9fREVMQVlfVFlQ
-RV8wWEVEPTEKQ09ORklHX0lPX0RFTEFZX1RZUEVfVURFTEFZPTIKQ09ORklHX0lPX0RFTEFZX1RZ
-UEVfTk9ORT0zCiMgQ09ORklHX0lPX0RFTEFZXzBYODAgaXMgbm90IHNldAojIENPTkZJR19JT19E
-RUxBWV8wWEVEIGlzIG5vdCBzZXQKIyBDT05GSUdfSU9fREVMQVlfVURFTEFZIGlzIG5vdCBzZXQK
-Q09ORklHX0lPX0RFTEFZX05PTkU9eQpDT05GSUdfREVGQVVMVF9JT19ERUxBWV9UWVBFPTMKQ09O
-RklHX0RFQlVHX0JPT1RfUEFSQU1TPXkKIyBDT05GSUdfQ1BBX0RFQlVHIGlzIG5vdCBzZXQKQ09O
-RklHX09QVElNSVpFX0lOTElOSU5HPXkKQ09ORklHX0RFQlVHX0VOVFJZPXkKQ09ORklHX0RFQlVH
-X05NSV9TRUxGVEVTVD15CkNPTkZJR19YODZfREVCVUdfU1RBVElDX0NQVV9IQVM9eQpDT05GSUdf
-WDg2X0RFQlVHX0ZQVT15CkNPTkZJR19QVU5JVF9BVE9NX0RFQlVHPXkKCiMKIyBTZWN1cml0eSBv
-cHRpb25zCiMKIyBDT05GSUdfS0VZUyBpcyBub3Qgc2V0CiMgQ09ORklHX1NFQ1VSSVRZX0RNRVNH
-X1JFU1RSSUNUIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VDVVJJVFkgaXMgbm90IHNldApDT05GSUdf
-U0VDVVJJVFlGUz15CkNPTkZJR19ERUZBVUxUX1NFQ1VSSVRZX0RBQz15CkNPTkZJR19ERUZBVUxU
-X1NFQ1VSSVRZPSIiCkNPTkZJR19DUllQVE89eQoKIwojIENyeXB0byBjb3JlIG9yIGhlbHBlcgoj
-CkNPTkZJR19DUllQVE9fQUxHQVBJPXkKQ09ORklHX0NSWVBUT19BTEdBUEkyPXkKQ09ORklHX0NS
-WVBUT19BRUFEPXkKQ09ORklHX0NSWVBUT19BRUFEMj15CkNPTkZJR19DUllQVE9fQkxLQ0lQSEVS
-PXkKQ09ORklHX0NSWVBUT19CTEtDSVBIRVIyPXkKQ09ORklHX0NSWVBUT19IQVNIPXkKQ09ORklH
-X0NSWVBUT19IQVNIMj15CkNPTkZJR19DUllQVE9fUk5HPXkKQ09ORklHX0NSWVBUT19STkcyPXkK
-Q09ORklHX0NSWVBUT19STkdfREVGQVVMVD15CkNPTkZJR19DUllQVE9fUENPTVAyPXkKQ09ORklH
-X0NSWVBUT19BS0NJUEhFUjI9eQpDT05GSUdfQ1JZUFRPX0FLQ0lQSEVSPXkKQ09ORklHX0NSWVBU
-T19SU0E9eQpDT05GSUdfQ1JZUFRPX01BTkFHRVI9eQpDT05GSUdfQ1JZUFRPX01BTkFHRVIyPXkK
-IyBDT05GSUdfQ1JZUFRPX1VTRVIgaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX01BTkFHRVJfRElT
-QUJMRV9URVNUUz15CkNPTkZJR19DUllQVE9fR0YxMjhNVUw9eQpDT05GSUdfQ1JZUFRPX05VTEw9
-eQpDT05GSUdfQ1JZUFRPX05VTEwyPXkKQ09ORklHX0NSWVBUT19XT1JLUVVFVUU9eQpDT05GSUdf
-Q1JZUFRPX0NSWVBURD15CkNPTkZJR19DUllQVE9fTUNSWVBURD15CkNPTkZJR19DUllQVE9fQVVU
-SEVOQz15CkNPTkZJR19DUllQVE9fQUJMS19IRUxQRVI9eQpDT05GSUdfQ1JZUFRPX0dMVUVfSEVM
-UEVSX1g4Nj15CgojCiMgQXV0aGVudGljYXRlZCBFbmNyeXB0aW9uIHdpdGggQXNzb2NpYXRlZCBE
-YXRhCiMKQ09ORklHX0NSWVBUT19DQ009eQpDT05GSUdfQ1JZUFRPX0dDTT15CkNPTkZJR19DUllQ
-VE9fQ0hBQ0hBMjBQT0xZMTMwNT15CkNPTkZJR19DUllQVE9fU0VRSVY9eQpDT05GSUdfQ1JZUFRP
-X0VDSEFJTklWPXkKCiMKIyBCbG9jayBtb2RlcwojCiMgQ09ORklHX0NSWVBUT19DQkMgaXMgbm90
-IHNldApDT05GSUdfQ1JZUFRPX0NUUj15CkNPTkZJR19DUllQVE9fQ1RTPXkKIyBDT05GSUdfQ1JZ
-UFRPX0VDQiBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9fTFJXPXkKQ09ORklHX0NSWVBUT19QQ0JD
-PXkKQ09ORklHX0NSWVBUT19YVFM9eQpDT05GSUdfQ1JZUFRPX0tFWVdSQVA9eQoKIwojIEhhc2gg
-bW9kZXMKIwpDT05GSUdfQ1JZUFRPX0NNQUM9eQpDT05GSUdfQ1JZUFRPX0hNQUM9eQpDT05GSUdf
-Q1JZUFRPX1hDQkM9eQpDT05GSUdfQ1JZUFRPX1ZNQUM9eQoKIwojIERpZ2VzdAojCkNPTkZJR19D
-UllQVE9fQ1JDMzJDPXkKQ09ORklHX0NSWVBUT19DUkMzMkNfSU5URUw9eQojIENPTkZJR19DUllQ
-VE9fQ1JDMzIgaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX0NSQzMyX1BDTE1VTD15CkNPTkZJR19D
-UllQVE9fQ1JDVDEwRElGPXkKIyBDT05GSUdfQ1JZUFRPX0NSQ1QxMERJRl9QQ0xNVUwgaXMgbm90
-IHNldApDT05GSUdfQ1JZUFRPX0dIQVNIPXkKQ09ORklHX0NSWVBUT19QT0xZMTMwNT15CiMgQ09O
-RklHX0NSWVBUT19QT0xZMTMwNV9YODZfNjQgaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX01END15
-CkNPTkZJR19DUllQVE9fTUQ1PXkKQ09ORklHX0NSWVBUT19NSUNIQUVMX01JQz15CiMgQ09ORklH
-X0NSWVBUT19STUQxMjggaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX1JNRDE2MD15CkNPTkZJR19D
-UllQVE9fUk1EMjU2PXkKQ09ORklHX0NSWVBUT19STUQzMjA9eQpDT05GSUdfQ1JZUFRPX1NIQTE9
-eQpDT05GSUdfQ1JZUFRPX1NIQTFfU1NTRTM9eQpDT05GSUdfQ1JZUFRPX1NIQTI1Nl9TU1NFMz15
-CiMgQ09ORklHX0NSWVBUT19TSEE1MTJfU1NTRTMgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9f
-U0hBMV9NQiBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9fU0hBMjU2PXkKQ09ORklHX0NSWVBUT19T
-SEE1MTI9eQpDT05GSUdfQ1JZUFRPX1RHUjE5Mj15CiMgQ09ORklHX0NSWVBUT19XUDUxMiBpcyBu
-b3Qgc2V0CkNPTkZJR19DUllQVE9fR0hBU0hfQ0xNVUxfTklfSU5URUw9eQoKIwojIENpcGhlcnMK
-IwpDT05GSUdfQ1JZUFRPX0FFUz15CiMgQ09ORklHX0NSWVBUT19BRVNfWDg2XzY0IGlzIG5vdCBz
-ZXQKIyBDT05GSUdfQ1JZUFRPX0FFU19OSV9JTlRFTCBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9f
-QU5VQklTPXkKQ09ORklHX0NSWVBUT19BUkM0PXkKQ09ORklHX0NSWVBUT19CTE9XRklTSD15CkNP
-TkZJR19DUllQVE9fQkxPV0ZJU0hfQ09NTU9OPXkKIyBDT05GSUdfQ1JZUFRPX0JMT1dGSVNIX1g4
-Nl82NCBpcyBub3Qgc2V0CiMgQ09ORklHX0NSWVBUT19DQU1FTExJQSBpcyBub3Qgc2V0CkNPTkZJ
-R19DUllQVE9fQ0FNRUxMSUFfWDg2XzY0PXkKQ09ORklHX0NSWVBUT19DQU1FTExJQV9BRVNOSV9B
-VlhfWDg2XzY0PXkKIyBDT05GSUdfQ1JZUFRPX0NBTUVMTElBX0FFU05JX0FWWDJfWDg2XzY0IGlz
-IG5vdCBzZXQKQ09ORklHX0NSWVBUT19DQVNUX0NPTU1PTj15CkNPTkZJR19DUllQVE9fQ0FTVDU9
-eQpDT05GSUdfQ1JZUFRPX0NBU1Q1X0FWWF9YODZfNjQ9eQpDT05GSUdfQ1JZUFRPX0NBU1Q2PXkK
-IyBDT05GSUdfQ1JZUFRPX0NBU1Q2X0FWWF9YODZfNjQgaXMgbm90IHNldAojIENPTkZJR19DUllQ
-VE9fREVTIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX0RFUzNfRURFX1g4Nl82NCBpcyBub3Qg
-c2V0CkNPTkZJR19DUllQVE9fRkNSWVBUPXkKQ09ORklHX0NSWVBUT19LSEFaQUQ9eQojIENPTkZJ
-R19DUllQVE9fU0FMU0EyMCBpcyBub3Qgc2V0CiMgQ09ORklHX0NSWVBUT19TQUxTQTIwX1g4Nl82
-NCBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9fQ0hBQ0hBMjA9eQpDT05GSUdfQ1JZUFRPX0NIQUNI
-QTIwX1g4Nl82ND15CkNPTkZJR19DUllQVE9fU0VFRD15CkNPTkZJR19DUllQVE9fU0VSUEVOVD15
-CkNPTkZJR19DUllQVE9fU0VSUEVOVF9TU0UyX1g4Nl82ND15CkNPTkZJR19DUllQVE9fU0VSUEVO
-VF9BVlhfWDg2XzY0PXkKQ09ORklHX0NSWVBUT19TRVJQRU5UX0FWWDJfWDg2XzY0PXkKQ09ORklH
-X0NSWVBUT19URUE9eQojIENPTkZJR19DUllQVE9fVFdPRklTSCBpcyBub3Qgc2V0CkNPTkZJR19D
-UllQVE9fVFdPRklTSF9DT01NT049eQpDT05GSUdfQ1JZUFRPX1RXT0ZJU0hfWDg2XzY0PXkKQ09O
-RklHX0NSWVBUT19UV09GSVNIX1g4Nl82NF8zV0FZPXkKQ09ORklHX0NSWVBUT19UV09GSVNIX0FW
-WF9YODZfNjQ9eQoKIwojIENvbXByZXNzaW9uCiMKIyBDT05GSUdfQ1JZUFRPX0RFRkxBVEUgaXMg
-bm90IHNldAojIENPTkZJR19DUllQVE9fWkxJQiBpcyBub3Qgc2V0CiMgQ09ORklHX0NSWVBUT19M
-Wk8gaXMgbm90IHNldApDT05GSUdfQ1JZUFRPXzg0Mj15CkNPTkZJR19DUllQVE9fTFo0PXkKIyBD
-T05GSUdfQ1JZUFRPX0xaNEhDIGlzIG5vdCBzZXQKCiMKIyBSYW5kb20gTnVtYmVyIEdlbmVyYXRp
-b24KIwojIENPTkZJR19DUllQVE9fQU5TSV9DUFJORyBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9f
-RFJCR19NRU5VPXkKQ09ORklHX0NSWVBUT19EUkJHX0hNQUM9eQojIENPTkZJR19DUllQVE9fRFJC
-R19IQVNIIGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19EUkJHX0NUUj15CkNPTkZJR19DUllQVE9f
-RFJCRz15CkNPTkZJR19DUllQVE9fSklUVEVSRU5UUk9QWT15CiMgQ09ORklHX0NSWVBUT19VU0VS
-X0FQSV9IQVNIIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX1VTRVJfQVBJX1NLQ0lQSEVSIGlz
-IG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX1VTRVJfQVBJX1JORyBpcyBub3Qgc2V0CiMgQ09ORklH
-X0NSWVBUT19VU0VSX0FQSV9BRUFEIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX0hXIGlzIG5v
-dCBzZXQKCiMKIyBDZXJ0aWZpY2F0ZXMgZm9yIHNpZ25hdHVyZSBjaGVja2luZwojCkNPTkZJR19I
-QVZFX0tWTT15CkNPTkZJR19WSVJUVUFMSVpBVElPTj15CiMgQ09ORklHX0JJTkFSWV9QUklOVEYg
-aXMgbm90IHNldAoKIwojIExpYnJhcnkgcm91dGluZXMKIwpDT05GSUdfQklUUkVWRVJTRT15CiMg
-Q09ORklHX0hBVkVfQVJDSF9CSVRSRVZFUlNFIGlzIG5vdCBzZXQKQ09ORklHX1JBVElPTkFMPXkK
-Q09ORklHX0dFTkVSSUNfU1RSTkNQWV9GUk9NX1VTRVI9eQpDT05GSUdfR0VORVJJQ19TVFJOTEVO
-X1VTRVI9eQpDT05GSUdfR0VORVJJQ19ORVRfVVRJTFM9eQpDT05GSUdfR0VORVJJQ19GSU5EX0ZJ
-UlNUX0JJVD15CkNPTkZJR19HRU5FUklDX1BDSV9JT01BUD15CkNPTkZJR19HRU5FUklDX0lPTUFQ
-PXkKQ09ORklHX0dFTkVSSUNfSU89eQpDT05GSUdfQVJDSF9VU0VfQ01QWENIR19MT0NLUkVGPXkK
-Q09ORklHX0FSQ0hfSEFTX0ZBU1RfTVVMVElQTElFUj15CiMgQ09ORklHX0NSQ19DQ0lUVCBpcyBu
-b3Qgc2V0CkNPTkZJR19DUkMxNj15CkNPTkZJR19DUkNfVDEwRElGPXkKQ09ORklHX0NSQ19JVFVf
-VD15CkNPTkZJR19DUkMzMj15CkNPTkZJR19DUkMzMl9TRUxGVEVTVD15CiMgQ09ORklHX0NSQzMy
-X1NMSUNFQlk4IGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JDMzJfU0xJQ0VCWTQgaXMgbm90IHNldAoj
-IENPTkZJR19DUkMzMl9TQVJXQVRFIGlzIG5vdCBzZXQKQ09ORklHX0NSQzMyX0JJVD15CkNPTkZJ
-R19DUkM3PXkKIyBDT05GSUdfTElCQ1JDMzJDIGlzIG5vdCBzZXQKQ09ORklHX0NSQzg9eQojIENP
-TkZJR19BVURJVF9BUkNIX0NPTVBBVF9HRU5FUklDIGlzIG5vdCBzZXQKQ09ORklHX1JBTkRPTTMy
-X1NFTEZURVNUPXkKQ09ORklHXzg0Ml9DT01QUkVTUz15CkNPTkZJR184NDJfREVDT01QUkVTUz15
-CkNPTkZJR19aTElCX0lORkxBVEU9eQpDT05GSUdfTFpPX0NPTVBSRVNTPXkKQ09ORklHX0xaT19E
-RUNPTVBSRVNTPXkKQ09ORklHX0xaNF9DT01QUkVTUz15CkNPTkZJR19MWjRfREVDT01QUkVTUz15
-CkNPTkZJR19YWl9ERUM9eQpDT05GSUdfWFpfREVDX1g4Nj15CkNPTkZJR19YWl9ERUNfUE9XRVJQ
-Qz15CkNPTkZJR19YWl9ERUNfSUE2ND15CkNPTkZJR19YWl9ERUNfQVJNPXkKQ09ORklHX1haX0RF
-Q19BUk1USFVNQj15CkNPTkZJR19YWl9ERUNfU1BBUkM9eQpDT05GSUdfWFpfREVDX0JDSj15CiMg
-Q09ORklHX1haX0RFQ19URVNUIGlzIG5vdCBzZXQKQ09ORklHX0RFQ09NUFJFU1NfR1pJUD15CkNP
-TkZJR19ERUNPTVBSRVNTX0JaSVAyPXkKQ09ORklHX0RFQ09NUFJFU1NfTFpNQT15CkNPTkZJR19E
-RUNPTVBSRVNTX1haPXkKQ09ORklHX0RFQ09NUFJFU1NfTFpPPXkKQ09ORklHX0RFQ09NUFJFU1Nf
-TFo0PXkKQ09ORklHX0dFTkVSSUNfQUxMT0NBVE9SPXkKQ09ORklHX0JDSD15CkNPTkZJR19CQ0hf
-Q09OU1RfUEFSQU1TPXkKQ09ORklHX0hBU19JT01FTT15CkNPTkZJR19IQVNfSU9QT1JUX01BUD15
-CkNPTkZJR19IQVNfRE1BPXkKQ09ORklHX0RRTD15CkNPTkZJR19OTEFUVFI9eQpDT05GSUdfQVJD
-SF9IQVNfQVRPTUlDNjRfREVDX0lGX1BPU0lUSVZFPXkKQ09ORklHX0NMWl9UQUI9eQpDT05GSUdf
-Q09SRElDPXkKQ09ORklHX0REUj15CkNPTkZJR19NUElMSUI9eQojIENPTkZJR19TR19TUExJVCBp
-cyBub3Qgc2V0CkNPTkZJR19BUkNIX0hBU19TR19DSEFJTj15CkNPTkZJR19BUkNIX0hBU19QTUVN
-X0FQST15CkNPTkZJR19BUkNIX0hBU19NTUlPX0ZMVVNIPXkK
+LS0tCkxLUF9TRVJWRVI6IGlubgpMS1BfQ0dJX1BPUlQ6IDgwCkxLUF9DSUZTX1BPUlQ6IDEzOQp0
+ZXN0Y2FzZTogdW5peGJlbmNoCmRlZmF1bHQtbW9uaXRvcnM6CiAgd2FpdDogYWN0aXZhdGUtbW9u
+aXRvcgogIGttc2c6IAogIHVwdGltZTogCiAgaW9zdGF0OiAKICB2bXN0YXQ6IAogIG51bWEtbnVt
+YXN0YXQ6IAogIG51bWEtdm1zdGF0OiAKICBudW1hLW1lbWluZm86IAogIHByb2Mtdm1zdGF0OiAK
+ICBwcm9jLXN0YXQ6CiAgICBpbnRlcnZhbDogMTAKICBtZW1pbmZvOiAKICBzbGFiaW5mbzogCiAg
+aW50ZXJydXB0czogCiAgbG9ja19zdGF0OiAKICBsYXRlbmN5X3N0YXRzOiAKICBzb2Z0aXJxczog
+CiAgYmRpX2Rldl9tYXBwaW5nOiAKICBkaXNrc3RhdHM6IAogIG5mc3N0YXQ6IAogIGNwdWlkbGU6
+IAogIGNwdWZyZXEtc3RhdHM6IAogIHR1cmJvc3RhdDogCiAgcG1ldGVyOiAKICBzY2hlZF9kZWJ1
+ZzoKICAgIGludGVydmFsOiA2MApjcHVmcmVxX2dvdmVybm9yOiBwZXJmb3JtYW5jZQpkZWZhdWx0
+LXdhdGNoZG9nczoKICBvb20ta2lsbGVyOiAKICB3YXRjaGRvZzogCmNvbW1pdDogY2I0YmJjNDU3
+YmZlZDYxOTRmZmFiMWIxMGM3YmU3M2IzZjE2Y2EyZAptb2RlbDogSXZ5IEJyaWRnZQpucl9jcHU6
+IDgKbWVtb3J5OiAxNkcKbnJfaGRkX3BhcnRpdGlvbnM6IDAKaGRkX3BhcnRpdGlvbnM6IApuZXRj
+b25zb2xlX3BvcnQ6IDY2NzIKY2F0ZWdvcnk6IGJlbmNobWFyawpucl90YXNrOiAxMDAlCnVuaXhi
+ZW5jaDoKICB0ZXN0OiBmc3RpbWUKcXVldWU6IGJpc2VjdAp0ZXN0Ym94OiBsa3AtaXZiLWQwMQp0
+Ym94X2dyb3VwOiBsa3AtaXZiLWQwMQprY29uZmlnOiB4ODZfNjQtcmhlbAplbnF1ZXVlX3RpbWU6
+IDIwMTYtMDEtMjIgMDE6MDg6MTEuNjI0MzA2MDYzICswODowMAppZDogMzZmMjU2MjAxMjY0NTZk
+ZmU4MzQ0NzgxZWViYmJhZGYyOGZkYTFkYQp1c2VyOiBsa3AKY29tcGlsZXI6IGdjYy00LjkKaGVh
+ZF9jb21taXQ6IDU4NGRkMWMwZDljZDQ0NGExYTcyNzQ0ZDU5MGQ5NDNjMmQyMzRmZDMKYmFzZV9j
+b21taXQ6IGFmZDJmZjliN2UxYjM2NzE3MmYxOGJhN2Y2OTNkZmI2MmJkY2IyZGMKYnJhbmNoOiBs
+aW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxNjAxMjExOApyb290ZnM6IGRlYmlhbi14ODZfNjQt
+MjAxNS0wMi0wNy5jZ3oKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L3VuaXhiZW5jaC9wZXJmb3JtYW5j
+ZS0xMDAlLWZzdGltZS9sa3AtaXZiLWQwMS9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6L3g4
+Nl82NC1yaGVsL2djYy00LjkvY2I0YmJjNDU3YmZlZDYxOTRmZmFiMWIxMGM3YmU3M2IzZjE2Y2Ey
+ZC8wIgpqb2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL2xrcC1pdmItZDAxL2Jpc2VjdF91bml4YmVu
+Y2gtcGVyZm9ybWFuY2UtMTAwJS1mc3RpbWUtZGViaWFuLXg4Nl82NC0yMDE1LTAyLTA3LmNnei14
+ODZfNjQtcmhlbC1jYjRiYmM0NTdiZmVkNjE5NGZmYWIxYjEwYzdiZTczYjNmMTZjYTJkLTIwMTYw
+MTIyLTM5NTk1LTFxcmsxaDQtMC55YW1sIgptYXhfdXB0aW1lOiA5MzkuMDYwMDAwMDAwMDAwMQpp
+bml0cmQ6ICIvb3NpbWFnZS9kZWJpYW4vZGViaWFuLXg4Nl82NC0yMDE1LTAyLTA3LmNneiIKYm9v
+dGxvYWRlcl9hcHBlbmQ6Ci0gcm9vdD0vZGV2L3JhbTAKLSB1c2VyPWxrcAotIGpvYj0vbGtwL3Nj
+aGVkdWxlZC9sa3AtaXZiLWQwMS9iaXNlY3RfdW5peGJlbmNoLXBlcmZvcm1hbmNlLTEwMCUtZnN0
+aW1lLWRlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3oteDg2XzY0LXJoZWwtY2I0YmJjNDU3YmZl
+ZDYxOTRmZmFiMWIxMGM3YmU3M2IzZjE2Y2EyZC0yMDE2MDEyMi0zOTU5NS0xcXJrMWg0LTAueWFt
+bAotIEFSQ0g9eDg2XzY0Ci0ga2NvbmZpZz14ODZfNjQtcmhlbAotIGJyYW5jaD1saW51eC1kZXZl
+bC9kZXZlbC1ob3VybHktMjAxNjAxMjExOAotIGNvbW1pdD1jYjRiYmM0NTdiZmVkNjE5NGZmYWIx
+YjEwYzdiZTczYjNmMTZjYTJkCi0gQk9PVF9JTUFHRT0vcGtnL2xpbnV4L3g4Nl82NC1yaGVsL2dj
+Yy00LjkvY2I0YmJjNDU3YmZlZDYxOTRmZmFiMWIxMGM3YmU3M2IzZjE2Y2EyZC92bWxpbnV6LTQu
+NC4wLTA1ODg5LWdjYjRiYmM0Ci0gbWF4X3VwdGltZT05MzkKLSBSRVNVTFRfUk9PVD0vcmVzdWx0
+L3VuaXhiZW5jaC9wZXJmb3JtYW5jZS0xMDAlLWZzdGltZS9sa3AtaXZiLWQwMS9kZWJpYW4teDg2
+XzY0LTIwMTUtMDItMDcuY2d6L3g4Nl82NC1yaGVsL2djYy00LjkvY2I0YmJjNDU3YmZlZDYxOTRm
+ZmFiMWIxMGM3YmU3M2IzZjE2Y2EyZC8wCi0gTEtQX1NFUlZFUj1pbm4KLSB8Mi0KCgogIGVhcmx5
+cHJpbnRrPXR0eVMwLDExNTIwMCBzeXN0ZW1kLmxvZ19sZXZlbD1lcnIKICBkZWJ1ZyBhcGljPWRl
+YnVnIHN5c3JxX2Fsd2F5c19lbmFibGVkIHJjdXBkYXRlLnJjdV9jcHVfc3RhbGxfdGltZW91dD0x
+MDAKICBwYW5pYz0tMSBzb2Z0bG9ja3VwX3BhbmljPTEgbm1pX3dhdGNoZG9nPXBhbmljIG9vcHM9
+cGFuaWMgbG9hZF9yYW1kaXNrPTIgcHJvbXB0X3JhbWRpc2s9MAogIGNvbnNvbGU9dHR5UzAsMTE1
+MjAwIGNvbnNvbGU9dHR5MCB2Z2E9bm9ybWFsCgogIHJ3CmxrcF9pbml0cmQ6ICIvbGtwL2xrcC9s
+a3AteDg2XzY0LmNneiIKbW9kdWxlc19pbml0cmQ6ICIvcGtnL2xpbnV4L3g4Nl82NC1yaGVsL2dj
+Yy00LjkvY2I0YmJjNDU3YmZlZDYxOTRmZmFiMWIxMGM3YmU3M2IzZjE2Y2EyZC9tb2R1bGVzLmNn
+eiIKYm1faW5pdHJkOiAiL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6
+L2xrcC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6L3J1bi1p
+cGNvbmZpZy5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6L3R1
+cmJvc3RhdC5jZ3osL2xrcC9iZW5jaG1hcmtzL3R1cmJvc3RhdC5jZ3osL2xrcC9iZW5jaG1hcmtz
+L3VuaXhiZW5jaC5jZ3oiCmxpbnV4X2hlYWRlcnNfaW5pdHJkOiAiL3BrZy9saW51eC94ODZfNjQt
+cmhlbC9nY2MtNC45L2NiNGJiYzQ1N2JmZWQ2MTk0ZmZhYjFiMTBjN2JlNzNiM2YxNmNhMmQvbGlu
+dXgtaGVhZGVycy5jZ3oiCnJlcGVhdF90bzogMgprZXJuZWw6ICIvcGtnL2xpbnV4L3g4Nl82NC1y
+aGVsL2djYy00LjkvY2I0YmJjNDU3YmZlZDYxOTRmZmFiMWIxMGM3YmU3M2IzZjE2Y2EyZC92bWxp
+bnV6LTQuNC4wLTA1ODg5LWdjYjRiYmM0IgpkZXF1ZXVlX3RpbWU6IDIwMTYtMDEtMjIgMDE6MTM6
+MzcuMjQ1NjkzNDQ3ICswODowMApqb2Jfc3RhdGU6IGZpbmlzaGVkCmxvYWRhdmc6IDUuNDUgMi4y
+MyAwLjg0IDEvMTY0IDI4NTEKc3RhcnRfdGltZTogJzE0NTMzOTY0NDUnCmVuZF90aW1lOiAnMTQ1
+MzM5NjU4OScKdmVyc2lvbjogIi9sa3AvbGtwLy5zcmMtMjAxNjAxMjEtMTgwMjA2Igo=
 
---===============7592656470753606606==
-Content-Type: application/x-xz
+--===============6623582538503665468==
+Content-Type: application/x-sh
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="dmesg.xz"
+Content-Disposition: attachment; filename="reproduce.sh"
 
-/Td6WFoAAATm1rRGAgAhARYAAAB0L+Wj4DKIDWRdADKYSqt8kKSEWvAZo7Ydv/tz/AJuxJZ5vBF3
-0b/zsUFOhv9TudZULcPnnyAaraV0UdmWBL/0Qq2x8RyxDtkd8eBXYM/v+f+9TXEDedlNNfjZwBNr
-CwCws8PecrEV+wom1EwZf4X8g1+oqI5czUIgyIO39dejljAvWSaqvpiRbYgJxT1NK4eZBFhFDfEn
-St3S26KLwkRNZL1IB/QzG7+flGL4GFmTcVMb4MBWG+snScYteUXJSny7i48SU1rFFyxb+gLtOL/0
-pSFMqju83PhT+UKSZG4irwM2x9TFGYIMqqczCOTHFhuCgrvps1zOneHh6eqKm+2v6ccow3JvBm0w
-eY8FIA+ynsGEcYGEJ7/DA0b91/EVhldpqFBPa7Ai6HXpw2MBXfTTaZDiZL+MYam852y0oJUyIwI5
-NmiEmsOujdMiYqAXbFVDh1AJIEuosKKZg2rVN/kUsKqFQLMztKGaZSWNnzi4IxClYAQZRnYAm+x+
-UZeDzA3P6Mb97rrNGHRnuGJIlHqfmTiIQR46YOIP5c8o1bpB3+oti81hJljQFcAL5vcRqzvToZQb
-gp0ifVJwbqVjlWrc8MLUV7NaQXD++Dk7nx3srQo8frIkPdCYfLXHfdW1IPa6R+AMM17lUFmqPiuB
-VvunRCE9+nWDJMNNlQQuulnMq/UUqIuUXWdOifjO4NC4eD9hJ3ZwoJfxkgFfRWEp3nrZURHAAyOD
-QlEFPwdB1jfA6CAa3nPQqQ+s/+bDYkY6Q+YrgyVuZRFxgExKJ1WAyl3Uu8GjqnJycq4RPfnSR75C
-PWmB9NH4PL4zsV1Vez8kuYpZrxkHXGqFAw3+aHZsC6TeIYICLdVomcDUNuycflZ091YVzPa+IDri
-ZtzXmKBT9aZkc+js5zOl+eiBCcy5NiHfu6MRpE5fxd8dUMZgEeZpxIPHclHimL1I6cASoh/9NoaR
-VM0tavVWb+ADwBOASXu1CRoGZoZzPSPmuMK1CQRHWgaT87dNkN2y7/0h+Np5iAUtCv/GYXnK7Nqt
-cszeAnJw/memIfpyMNFAJyexOxjJvaTQCb2YkeliyvmXBqEflH6f95Eo79wu1fX4yd8vgbZGQw/q
-v0KRePd4Ii76Aa6BrrfmRpW+Dtjd7J5aDNNgrxa8e9KBMxh/z4e82LR76TZb9MsyZw1tMHDydzx0
-ACdPZ9nFFemTo/8b7iRMpzjZgnnVyTisxqMX2bMHjIdlCVUYdBbNHE2SkPhpa7lihiOxQSp/WTgw
-K9hdklSEMJPpwxImxMqGzLpFgXGZucdHnYwivA3zpOvpEWa/HPVnBPrn2biC6iNWUTF/iKzuzrZU
-sKlGVg2zufw147PJ/4f7RghKPXDbMnGD2UkLGI8PqQvz2TfN+K3yHCAiOHeM23+3h1hzXpQdr+Pp
-A6GCCACCS3geo9ceh2Qk8H2QXak9E25yKTFs4+O2yGVflkL4eaalwetbZfpYxj2eJo7uu9kKR5k/
-K8j7aSmKsBslPjtbY9Mm4kDnYkToQUDTWJu6n2AY5CwpUVO+uHsFD4dcRGnZVE5eHTs/JcvplSSD
-pInTUDsBzyZC7fr7GMasKICo5y2bfn9cv3oDtvVVO5SPAQL40NVsAqVrUXQwinbUIQgheZN6bQm6
-hWg22SC/JDHqrg+m0MkRjG0cK/mNcTAMMz3ONr/kzZa/+qf2++HQ1LKAkEu+rPzjNgxMROZkQCy2
-en4SSgYvxdWaydatt0IZguzCA6oZKHW2b4aSanVj7dTcww/uuDF39sLJ15LunzuVzczKxOVfEVQC
-aQPFE7OwihZN/uEKjNKpAbfpHjIBJr8Zg4sy3y/KeCcPfNpBFN4k+jjl+PQFffdAihkpvrVASGki
-e4UDY9UQfzI1BlgmLZFnHLhNunFm/LdXJAZR8iBI5h80YJpWajv8vPNvva7J3czN5oMcDz1kF8hw
-Vsi5nzzanD/L3vmzyFir+t+fBWnuMTCb+oXkSWLa+qed80zLZjbuAEWgqPosOsAZsLnp79+AoKYm
-sdk4J1p/RDXCuV/+n9RO1wCWSij2xAqox0JtiGomPeEd0sgKPOvbfkMyeJt/8kDCtF+jH6l5yw7P
-Epks016aP4wzpgaQ9H+YnukDQDdKjIVBduOPARvJ+KzYt3meDLjNJdPTXaA3As1xCQKAlBLMGqjH
-GJTgC7O2VMZkFlLMA0MbLpOjH0+hIpZ/aA5oHnYAuDhnX12WZ7bQ4xgKOEG+azl2UBhEZ4oRRmfI
-8cffUbWcJM1HdvZiASgmsJwpBlYyUHP450ZG8u0WaSS39f48FwgPb/UG/q3o3IXYZ4ckguWJHE35
-ocLXdabXcY1aQOsCbUzEqnrHT8Zl6ON8RqHtGeq0Veo3V2YBn6qr3eds2p6cuUtJsSx7H3SJXjTO
-PkZfyBai5xdugMqkp8L0LFAdozC3caPwY4aK/WZDk9zwEmbH3gQxUI3d7auYN5HOqbe/j1wyoSpu
-o6EJ2iiF3jSd+tnJ7y33Z1vKe5kZIHPrw5cyFDjBqfLitiYkSZ4k++6JHOiFidKrIBzanFbLndFp
-TGw2V7AIXDNBdamixZ9f/Ib5jIzzQj6IMZp7xNux0p7oNir6IONBp7pWZyHv+VV1QiZcII/ISD4S
-EPdLZedleYteAl0nxP0Ohs5U/D41nV0bibdy5+f69gTuhuM/LDfJ11m8qmtEWSfk/dSgYdTDyuK5
-3EEtSazdBvCjq3U4eHGLO7nvaxea/N41rdFgMVqN5W/0XzaIE2fH7PK0UprWjTQ2nRU6NU/nJNC9
-2nGdhCMhxD0/p08b+adQKFB6QWUGlBC8DNgvLGG0nrxej9xr5AosS0llFBEl5jmrM18715YCZwRx
-u6Hmz1JSCNPZEvVl3QwBnrGVfmNmrcdYwPfM3q4N7txnrQSFWuaxtzqYvvNS0RR5w1RSGWQlMW+p
-VMc2h8J8I9h03HON1SwUIi3fdEJUaFdy6zP1XMI40SyqrMQ/XngKxJ498l0YGUixs91DrZRY8yt3
-MghhIXSxItU/JnDacc00wAm7gjJF8ozzbTCPYzPHO22k/qy1N29G55wsSriMeGa/f8NIf2jQ22w4
-rv4v36q4nVLRZrBqr3/OSYeoBkmbTO+zHq20vSJNEg0d8F8p+CoND2ijnZo9Lag1RkqZpUOPcplG
-G9QLFxXVzAs5wG8+ccIuVALv8NGQrbX2zm/ChpIH71RgkrP+IzWsaA5jOmmle70qhOF/SSTtuuUl
-QMB3twnVIsw0ejkTrjcWc9JqEARME05g0iBbB+3fl0C1PrF/kSt2vFT4bwzuCQdkLSmNMd61oVwe
-hFGSlLFbD5DPxeqC2hfHo/8l/kGtARbaz45N+xDZLx8vsdTxGWBaocVdCdGDIEvGa8YLJt1/LmJW
-hXJb0+3oR/U8G1FDpCEkCEuKWxHk5+GZWGcya1mm6bd1vWQucaEFwtOqXZNFoJSxmjYuH85Uvc1V
-U9+G8bK0qgw6WjCJtvXxkk30WkpCqWi2nXfr3VjXkHGyBmTfqaa8VqYGllbqlk/IB2KRiiFiqntK
-okeeHsJj6PXxZtSyiVu6pPKQeDvsnaGtR40Pf+NMrjUbuWJ/V7EaDdhYrEbdIZtDJd80XFLmrsGo
-9Jsk9Mi7sAK9Gf81vZLRF690XohBJqDfTGxCAfBM7r6fEMve+VsyyD4VlWwO4gNSWEvq96GgcT5L
-nvxvDMeEfqBFHMg8W+iySj5wi03vY7nsi1fdim5KdI8+vzOtA95yV7Sw/UGZLTV3KBZbgqmbwVNo
-efHMjFPzv0+FBedOK7g+1ZQuyMVJLtNYSxIVUKSy9ova6PNi45p/VClK72BC4iclFKGAvSF+FY7b
-NW4k9ZLHn2mYDUf6TXU5gat+LGjokoNdEEzLlbkaXZC10qZqrIUMUF4DebKsGcCGMKYQDCEx6lO8
-hWejIWIQK3rNHnXnqetIv8PSmjeBmZQZls8jzRqkZrQFTwF2x4aIPMh3Q0kP6ZWuFQSX6HVS/0DK
-6+kyLp7EPNkHuT32jaSycoO2PxOG3QOCRZYVmZolVLySXPj4ZUdiyKjanrL6ZvccQ4KIFa4NJdhr
-GiaALVwu6BcGU6WZU2wd3evRfPhBKp1Kv0mvUatpOfChP0usuxyFbe3ngEuNJSHrSAg+H0g/LcGh
-INn1AqwL/Ml6VrymNu/G3Yd7qjTzGiEtwi+HXnYh3VxDGmT1IbUzsFyPc0Y2BHCLVF+vPb/mwpaP
-uQiT7Jpyah0qYX3dtU47yRRz9HVd370Bdqr7cvKhsiRcTyJJRV83d/hg/FNzU/aiPdreRn72vPJI
-ntR/t/MvpBO5sCrBYY+rcPbLhPFJsAj5RqAudFf51GJyqrGxNuq8A4CU9J5OBD1Ypw18Yfxvqzuf
-MViQh1QIClM+bHUKyUrucNO9Pl6/cb2q8rbk6sErw6SR2mKprvArKMZk+VQ0i2tZwIXq6O3L9nqT
-t4L2buqhFxOTPlQpOwhk1plytADfqZjVVYZE8GbgWigBis0CQuip9TpcIw2UJuYEbr8gb4WIQuV7
-THRZvrETJu36ughMF6cJnsCHS47vUIXmA/sk6TIFIB545GUqWnOAAE8J1IGR9zy6AAGAG4llAADs
-lpgUscRn+wIAAAAABFla
---===============7592656470753606606==--
+MjAxNi0wMS0yMiAwMToxNDowNCBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1MC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yMiAwMToxNDowNCBl
+Y2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MS9jcHVmcmVxL3Nj
+YWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yMiAwMToxNDowNCBlY2hvIHBlcmZvcm1hbmNlID4gL3N5
+cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1Mi9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0w
+MS0yMiAwMToxNDowNCBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
+Y3B1My9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yMiAwMToxNDowNCBlY2hvIHBl
+cmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1NC9jcHVmcmVxL3NjYWxpbmdf
+Z292ZXJub3IKMjAxNi0wMS0yMiAwMToxNDowNCBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
+Y2VzL3N5c3RlbS9jcHUvY3B1NS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yMiAw
+MToxNDowNCBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1Ni9j
+cHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yMiAwMToxNDowNCBlY2hvIHBlcmZvcm1h
+bmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1Ny9jcHVmcmVxL3NjYWxpbmdfZ292ZXJu
+b3IKMjAxNi0wMS0yMiAwMToxNDowNSAuL1J1biBmc3RpbWUgLWMgOAo=
+
+--===============6623582538503665468==--
 
