@@ -1,55 +1,62 @@
-Content-Type: multipart/mixed; boundary="===============1227713633657061086=="
+Content-Type: multipart/mixed; boundary="===============4616636874954821011=="
 MIME-Version: 1.0
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [spi] 2baed30cb3: BUG: scheduling while atomic: systemd-udevd/134/0x00000002
-Date: Sat, 23 Jan 2016 12:09:47 +0530
-Message-ID: <20160123063947.GA26921@sudip-pc>
-In-Reply-To: <20160121060652.GA5697@sudip-pc>
+Subject: Re: [locking/mutexes] cb4bbc457b: -40.0% unixbench.score
+Date: Mon, 25 Jan 2016 09:23:59 +0800
+Message-ID: <87io2iih8w.fsf@yhuang-dev.intel.com>
+In-Reply-To: <20160122024801.GA23224@linux-uzut.site>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1227713633657061086==
+--===============4616636874954821011==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Huang, Ying,
-On Thu, Jan 21, 2016 at 11:36:52AM +0530, Sudip Mukherjee wrote:
-> On Thu, Jan 21, 2016 at 01:47:10PM +0800, Huang, Ying wrote:
-> > Sudip Mukherjee <sudipm.mukherjee@gmail.com> writes:
-> > =
+Davidlohr Bueso <dave@stgolabs.net> writes:
 
-> > > On Wed, Jan 20, 2016 at 01:00:40PM +0800, Huang, Ying wrote:
-> > >> Sudip Mukherjee <sudipm.mukherjee@gmail.com> writes:
-> > >> =
+> On Fri, 22 Jan 2016, kernel test robot wrote:
+>
+>>FYI, we noticed the below changes on
+>>
+>>https://github.com/0day-ci/linux
+>> Ding-Tianhong/locking-mutexes-don-t-spin-on-owner-when-wait-list-is-not-=
+NULL/20160121-173317
+>>commit cb4bbc457bfed6194ffab1b10c7be73b3f16ca2d ("locking/mutexes: don't =
+spin on owner when wait list is not NULL.")
+>
+> I'm not sure why this would even be reported, as this patch has not been =
+accepted
+> or acked or nothin', by anyone.
 
-> > >> > On Wed, Jan 20, 2016 at 08:44:37AM +0800, kernel test robot wrote:
-> <snip>
-> > >
-> > > I am not able to reproduce this. Tested just with the kernel and
-> > > yocto-minimal-i386.cgz filesystem and it booted properly.
-> > >
-> > > I guess I need atleast your job file to reproduce this.
-> > =
+Sorry for bothering.  The purpose is FYI as in the original report
+email.  We test patches posted to LKML, if we found some changes related
+to the patch, we will send out a report.  Hope the reviewer could
+take that as information for his/her review if the report isn't totally
+nonsense.
 
-> > This is a boot test so I did not attached the job file.  But the test
-> > result may depends on specific root file system.  For example, the
-> > process when BUG report is always systemd-udevd.  Maybe you need a
-> > systemd based root file system.
-> =
+> In this particular case that raw performance drop
+> is because spinning is pretty much disabled by Ding's change. Totally exp=
+ected for
+> the kind of workload unixbench triggers.
 
-> So silly of me. Since you said 2baed30cb3, so i kept looking at that
-> patch.
-> Can you please test again after reverting:
-> ebd43516d387 ("Staging: panel: usleep_range is preferred over udelay")
-> =
+The report is just raw performance data, it still need people to explain
+it.  Thanks a lot for your explanation.
 
-> If it solves the problem then I will submit a formal patch.
+> All this does is hurt lkml-searchability.
 
-Did you get a chance to test it?
+Sorry, I don't understand this.  You could still search the original
+patch.  Could you explain a little?
 
-regards
-sudip
+Best Regards,
+Huang, Ying
 
---===============1227713633657061086==--
+> Thanks,
+> Davidlohr
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
+
+--===============4616636874954821011==--
 
