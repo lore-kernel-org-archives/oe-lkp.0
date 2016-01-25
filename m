@@ -1,49 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============4786683494052809823=="
+Content-Type: multipart/mixed; boundary="===============8627813136978608627=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [locking/mutexes] cb4bbc457b: -40.0% unixbench.score
-Date: Sun, 24 Jan 2016 22:05:11 -0800
-Message-ID: <20160125060511.GE4503@linux.vnet.ibm.com>
-In-Reply-To: <87io2iih8w.fsf@yhuang-dev.intel.com>
+Subject: Re: [base] 9ea71534ad: kmsg.Diva:No_ISA, ISAPNP_or_PCI_card_found
+Date: Mon, 25 Jan 2016 07:06:20 -0500
+Message-ID: <56A60FBC.7050107@gmail.com>
+In-Reply-To: <87r3h6bdhy.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4786683494052809823==
+--===============8627813136978608627==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 25, 2016 at 09:23:59AM +0800, Huang, Ying wrote:
-> Davidlohr Bueso <dave@stgolabs.net> writes:
+On 01/24/2016 09:26 PM, kernel test robot wrote:
+> FYI, we noticed the below changes on
 > =
 
-> > On Fri, 22 Jan 2016, kernel test robot wrote:
-> >
-> >>FYI, we noticed the below changes on
-> >>
-> >>https://github.com/0day-ci/linux
-> >> Ding-Tianhong/locking-mutexes-don-t-spin-on-owner-when-wait-list-is-no=
-t-NULL/20160121-173317
-> >>commit cb4bbc457bfed6194ffab1b10c7be73b3f16ca2d ("locking/mutexes: don'=
-t spin on owner when wait list is not NULL.")
-> >
-> > I'm not sure why this would even be reported, as this patch has not bee=
-n accepted
-> > or acked or nothin', by anyone.
+> https://github.com/0day-ci/linux William-Breathitt-Gray/base-isa-Remove-X=
+86_32-dependency/20160123-003152
+> commit 9ea71534addd0753b37b884b5d8a5fa54bfd95ea ("base: isa: Remove X86_3=
+2 dependency")
 > =
 
-> Sorry for bothering.  The purpose is FYI as in the original report
-> email.  We test patches posted to LKML, if we found some changes related
-> to the patch, we will send out a report.  Hope the reviewer could
-> take that as information for his/her review if the report isn't totally
-> nonsense.
+> With your commit, there are new message as follow in kernel log.
+> =
 
-For me, the 0day reports on LKML postings have been quite helpful.  They
-give the submitter immediate feedback on a number of issues, thus reducing
-the number of rounds of review.
+> [    5.405484] Diva: No ISA, ISAPNP or PCI card found
+> [    5.405484] Diva: No ISA, ISAPNP or PCI card found
+> =
 
-								Thanx, Paul
+> =
 
+> Thanks,
+> Ying Huang
 
---===============4786683494052809823==--
+This commit introduces a new dependency for CONFIG_ISA: CONFIG_ISA_BUS.  =
+
+Without CONFIG_ISA_BUS set, CONFIG_ISA cannot be set -- and as a result =
+
+CONFIG_ISAPNP cannot be set.
+
+Since the config file used left CONFIG_ISA_BUS unset, ISA and ISAPNP     =
+
+support was left out of the kernel, thus resulting in the new Diva       =
+
+warnings.
+
+William Breathitt Gray
+
+--===============8627813136978608627==--
 
