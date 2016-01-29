@@ -1,269 +1,567 @@
-Content-Type: multipart/mixed; boundary="===============0314132832125626124=="
+Content-Type: multipart/mixed; boundary="===============6943516079689187584=="
 MIME-Version: 1.0
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+From: kernel test robot <ying.huang@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [slab] a1fd55538c: WARNING: CPU: 0 PID: 0 at kernel/locking/lockdep.c:2601 trace_hardirqs_on_caller()
-Date: Thu, 28 Jan 2016 18:47:49 +0100
-Message-ID: <20160128184749.7bdee246@redhat.com>
-In-Reply-To: <56aa2b47.MwdlkrzZ08oDKqh8%fengguang.wu@intel.com>
+Subject: [locks] 7f3697e24d: +35.1% will-it-scale.per_thread_ops
+Date: Fri, 29 Jan 2016 09:32:19 +0800
+Message-ID: <87powlp3vg.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0314132832125626124==
+--===============6943516079689187584==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+FYI, we noticed the below changes on
 
-Hi,
-
-I cannot reproduce below problem... have enabled all kind of debugging
-and also lockdep.
-
-Can I get a version of the .config file used?
-
---Jesper
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+commit 7f3697e24dc3820b10f445a4a7d914fc356012d1 ("locks: fix unlock when fc=
+ntl_setlk races with a close")
 
 
-On Thu, 28 Jan 2016 22:52:55 +0800 kernel test robot <fengguang.wu@intel.=
-com> wrote:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase:
+  gcc-4.9/performance/x86_64-rhel/debian-x86_64-2015-02-07.cgz/lkp-snb01/lo=
+ck1/will-it-scale
 
-> Greetings,
-> =
+commit: =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
+  9189922675ecca0fab38931d86b676e9d79602dc
+  7f3697e24dc3820b10f445a4a7d914fc356012d1
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> =
+9189922675ecca0f 7f3697e24dc3820b10f445a4a7 =
 
-> commit a1fd55538cae9f411059c9b067a3d48c41aa876b
-> Author:     Jesper Dangaard Brouer <brouer@redhat.com>
-> AuthorDate: Thu Jan 28 09:47:16 2016 +1100
-> Commit:     Stephen Rothwell <sfr@canb.auug.org.au>
-> CommitDate: Thu Jan 28 09:47:16 2016 +1100
-> =
+---------------- -------------------------- =
 
->     slab: use slab_pre_alloc_hook in SLAB allocator shared with SLUB
->     =
+         %stddev     %change         %stddev
+             \          |                \  =
 
->     Deduplicate code in SLAB allocator functions slab_alloc() and
->     slab_alloc_node() by using the slab_pre_alloc_hook() call, which is n=
-ow
->     shared between SLUB and SLAB.
->     =
+   2376432 =C2=B1  0%      +2.1%    2427484 =C2=B1  0%  will-it-scale.per_p=
+rocess_ops
+    807889 =C2=B1  0%     +35.1%    1091496 =C2=B1  4%  will-it-scale.per_t=
+hread_ops
+     22.08 =C2=B1  2%     +89.1%      41.75 =C2=B1  5%  will-it-scale.time.=
+user_time
+   1238371 =C2=B1 14%    +100.4%    2481345 =C2=B1 39%  cpuidle.C1E-SNB.time
+      3098 =C2=B1 57%     -66.6%       1035 =C2=B1171%  numa-numastat.node1=
+.other_node
+    379.25 =C2=B1  8%     -21.4%     298.00 =C2=B1 12%  numa-vmstat.node0.n=
+r_alloc_batch
+     22.08 =C2=B1  2%     +89.1%      41.75 =C2=B1  5%  time.user_time
+      1795 =C2=B1  4%      +7.5%       1930 =C2=B1  2%  vmstat.system.cs
+      0.54 =C2=B1  5%    +136.9%       1.28 =C2=B1 10%  perf-profile.cycles=
+.___might_sleep.__might_sleep.kmem_cache_alloc.locks_alloc_lock.__posix_loc=
+k_file
+      1.65 =C2=B1 57%    +245.2%       5.70 =C2=B1 29%  perf-profile.cycles=
+.__fdget_raw.sys_fcntl.entry_SYSCALL_64_fastpath
+      1.58 =C2=B1 59%    +248.3%       5.50 =C2=B1 31%  perf-profile.cycles=
+.__fget.__fget_light.__fdget_raw.sys_fcntl.entry_SYSCALL_64_fastpath
+      1.62 =C2=B1 58%    +246.3%       5.63 =C2=B1 30%  perf-profile.cycles=
+.__fget_light.__fdget_raw.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.00 =C2=B1 -1%      +Inf%       5.88 =C2=B1 11%  perf-profile.cycles=
+.__memset.locks_alloc_lock.__posix_lock_file.vfs_lock_file.do_lock_file_wait
+      2.50 =C2=B1  2%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
+.__memset.locks_alloc_lock.__posix_lock_file.vfs_lock_file.fcntl_setlk
+      1.29 =C2=B1  4%    +138.8%       3.09 =C2=B1 11%  perf-profile.cycles=
+.__memset.locks_alloc_lock.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.47 =C2=B1  9%    +144.4%       1.16 =C2=B1 11%  perf-profile.cycles=
+.__might_fault.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.37 =C2=B1 12%    +140.3%       0.90 =C2=B1  9%  perf-profile.cycles=
+.__might_sleep.__might_fault.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.86 =C2=B1  6%    +137.7%       2.05 =C2=B1 10%  perf-profile.cycles=
+.__might_sleep.kmem_cache_alloc.locks_alloc_lock.__posix_lock_file.vfs_lock=
+_file
+      0.61 =C2=B1 14%     +56.8%       0.95 =C2=B1 14%  perf-profile.cycles=
+.__might_sleep.kmem_cache_alloc.locks_alloc_lock.fcntl_setlk.sys_fcntl
+      0.00 =C2=B1 -1%      +Inf%      39.84 =C2=B1 12%  perf-profile.cycles=
+.__posix_lock_file.vfs_lock_file.do_lock_file_wait.fcntl_setlk.sys_fcntl
+     16.44 =C2=B1  3%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
+.__posix_lock_file.vfs_lock_file.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fas=
+tpath
+      0.00 =C2=B1 -1%      +Inf%       1.77 =C2=B1 11%  perf-profile.cycles=
+._raw_spin_lock.__posix_lock_file.vfs_lock_file.do_lock_file_wait.fcntl_set=
+lk
+     59.34 =C2=B1  1%     -72.4%      16.36 =C2=B1 33%  perf-profile.cycles=
+._raw_spin_lock.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.46 =C2=B1 11%    +144.9%       1.13 =C2=B1 19%  perf-profile.cycles=
+.avc_has_perm.inode_has_perm.file_has_perm.selinux_file_fcntl.security_file=
+_fcntl
+      0.87 =C2=B1  6%    +103.2%       1.77 =C2=B1 12%  perf-profile.cycles=
+.avc_has_perm.inode_has_perm.file_has_perm.selinux_file_lock.security_file_=
+lock
+      0.81 =C2=B1  4%    +135.7%       1.90 =C2=B1 10%  perf-profile.cycles=
+.copy_user_generic_string.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.00 =C2=B1 -1%      +Inf%      41.86 =C2=B1 12%  perf-profile.cycles=
+.do_lock_file_wait.part.29.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.88 =C2=B1  6%    +127.8%       2.00 =C2=B1  9%  perf-profile.cycles=
+.entry_SYSCALL_64
+      0.86 =C2=B1  4%    +122.6%       1.92 =C2=B1 12%  perf-profile.cycles=
+.entry_SYSCALL_64_after_swapgs
+     84.98 =C2=B1  0%      -9.1%      77.20 =C2=B1  2%  perf-profile.cycles=
+.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.76 =C2=B1 10%    +142.1%       1.84 =C2=B1 14%  perf-profile.cycles=
+.file_has_perm.selinux_file_fcntl.security_file_fcntl.sys_fcntl.entry_SYSCA=
+LL_64_fastpath
+      1.35 =C2=B1  4%    +106.3%       2.78 =C2=B1 11%  perf-profile.cycles=
+.file_has_perm.selinux_file_lock.security_file_lock.fcntl_setlk.sys_fcntl
+      0.00 =C2=B1 -1%      +Inf%       0.89 =C2=B1 12%  perf-profile.cycles=
+.flock_to_posix_lock.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      6.90 =C2=B1  4%     -48.6%       3.55 =C2=B1 27%  perf-profile.cycles=
+.fput.entry_SYSCALL_64_fastpath
+      0.51 =C2=B1 10%    +140.5%       1.23 =C2=B1 16%  perf-profile.cycles=
+.inode_has_perm.isra.31.file_has_perm.selinux_file_fcntl.security_file_fcnt=
+l.sys_fcntl
+      0.98 =C2=B1  4%     +97.7%       1.93 =C2=B1 11%  perf-profile.cycles=
+.inode_has_perm.isra.31.file_has_perm.selinux_file_lock.security_file_lock.=
+fcntl_setlk
+      0.00 =C2=B1 -1%      +Inf%       6.56 =C2=B1 10%  perf-profile.cycles=
+.kmem_cache_alloc.locks_alloc_lock.__posix_lock_file.vfs_lock_file.do_lock_=
+file_wait
+      2.75 =C2=B1  4%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
+.kmem_cache_alloc.locks_alloc_lock.__posix_lock_file.vfs_lock_file.fcntl_se=
+tlk
+      1.53 =C2=B1  7%    +119.7%       3.37 =C2=B1 13%  perf-profile.cycles=
+.kmem_cache_alloc.locks_alloc_lock.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_f=
+astpath
+      0.00 =C2=B1 -1%      +Inf%       1.79 =C2=B1 11%  perf-profile.cycles=
+.kmem_cache_free.locks_free_lock.__posix_lock_file.vfs_lock_file.do_lock_fi=
+le_wait
+      0.46 =C2=B1 14%    +257.0%       1.66 =C2=B1 11%  perf-profile.cycles=
+.kmem_cache_free.locks_free_lock.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fas=
+tpath
+      0.40 =C2=B1  7%    +158.6%       1.05 =C2=B1 17%  perf-profile.cycles=
+.kmem_cache_free.locks_free_lock.locks_dispose_list.__posix_lock_file.vfs_l=
+ock_file
+      0.00 =C2=B1 -1%      +Inf%       0.96 =C2=B1 10%  perf-profile.cycles=
+.lg_local_lock.locks_insert_lock_ctx.__posix_lock_file.vfs_lock_file.do_loc=
+k_file_wait
+      0.00 =C2=B1 -1%      +Inf%      14.69 =C2=B1 10%  perf-profile.cycles=
+.locks_alloc_lock.__posix_lock_file.vfs_lock_file.do_lock_file_wait.fcntl_s=
+etlk
+      6.38 =C2=B1  3%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
+.locks_alloc_lock.__posix_lock_file.vfs_lock_file.fcntl_setlk.sys_fcntl
+      3.28 =C2=B1  6%    +127.1%       7.45 =C2=B1 12%  perf-profile.cycles=
+.locks_alloc_lock.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.00 =C2=B1 -1%      +Inf%       9.75 =C2=B1 13%  perf-profile.cycles=
+.locks_delete_lock_ctx.__posix_lock_file.vfs_lock_file.do_lock_file_wait.fc=
+ntl_setlk
+      3.61 =C2=B1  1%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
+.locks_delete_lock_ctx.__posix_lock_file.vfs_lock_file.fcntl_setlk.sys_fcntl
+      0.00 =C2=B1 -1%      +Inf%       1.84 =C2=B1 11%  perf-profile.cycles=
+.locks_dispose_list.__posix_lock_file.vfs_lock_file.do_lock_file_wait.fcntl=
+_setlk
+      0.00 =C2=B1 -1%      +Inf%       2.42 =C2=B1 10%  perf-profile.cycles=
+.locks_free_lock.__posix_lock_file.vfs_lock_file.do_lock_file_wait.fcntl_se=
+tlk
+      1.00 =C2=B1  3%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
+.locks_free_lock.__posix_lock_file.vfs_lock_file.fcntl_setlk.sys_fcntl
+      0.63 =C2=B1 11%    +224.1%       2.05 =C2=B1 10%  perf-profile.cycles=
+.locks_free_lock.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.00 =C2=B1 -1%      +Inf%       1.22 =C2=B1 14%  perf-profile.cycles=
+.locks_free_lock.locks_dispose_list.__posix_lock_file.vfs_lock_file.do_lock=
+_file_wait
+      0.00 =C2=B1 -1%      +Inf%       6.17 =C2=B1 15%  perf-profile.cycles=
+.locks_insert_lock_ctx.__posix_lock_file.vfs_lock_file.do_lock_file_wait.fc=
+ntl_setlk
+      2.31 =C2=B1  6%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
+.locks_insert_lock_ctx.__posix_lock_file.vfs_lock_file.fcntl_setlk.sys_fcntl
+      0.00 =C2=B1 -1%      +Inf%       8.96 =C2=B1 13%  perf-profile.cycles=
+.locks_unlink_lock_ctx.locks_delete_lock_ctx.__posix_lock_file.vfs_lock_fil=
+e.do_lock_file_wait
+      3.27 =C2=B1  1%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
+.locks_unlink_lock_ctx.locks_delete_lock_ctx.__posix_lock_file.vfs_lock_fil=
+e.fcntl_setlk
+     53.88 =C2=B1  1%     -79.7%      10.92 =C2=B1 46%  perf-profile.cycles=
+.native_queued_spin_lock_slowpath._raw_spin_lock.fcntl_setlk.sys_fcntl.entr=
+y_SYSCALL_64_fastpath
+      2.75 =C2=B1  0%    +183.3%       7.79 =C2=B1 13%  perf-profile.cycles=
+.put_pid.locks_unlink_lock_ctx.locks_delete_lock_ctx.__posix_lock_file.vfs_=
+lock_file
+      1.11 =C2=B1  9%    +137.2%       2.63 =C2=B1 14%  perf-profile.cycles=
+.security_file_fcntl.sys_fcntl.entry_SYSCALL_64_fastpath
+      1.69 =C2=B1  4%    +118.2%       3.69 =C2=B1 11%  perf-profile.cycles=
+.security_file_lock.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+      0.91 =C2=B1  9%    +139.0%       2.17 =C2=B1 14%  perf-profile.cycles=
+.selinux_file_fcntl.security_file_fcntl.sys_fcntl.entry_SYSCALL_64_fastpath
+      1.39 =C2=B1  4%    +114.6%       2.97 =C2=B1 10%  perf-profile.cycles=
+.selinux_file_lock.security_file_lock.fcntl_setlk.sys_fcntl.entry_SYSCALL_6=
+4_fastpath
+      0.00 =C2=B1 -1%      +Inf%      41.12 =C2=B1 12%  perf-profile.cycles=
+.vfs_lock_file.do_lock_file_wait.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fas=
+tpath
+     17.04 =C2=B1  3%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
+.vfs_lock_file.fcntl_setlk.sys_fcntl.entry_SYSCALL_64_fastpath
+     34.75 =C2=B1148%    +132.4%      80.75 =C2=B1 82%  sched_debug.cfs_rq:=
+/.load.8
+     15.00 =C2=B1  9%    +198.3%      44.75 =C2=B1 72%  sched_debug.cfs_rq:=
+/.load_avg.21
+     25.00 =C2=B1 29%    +574.0%     168.50 =C2=B1 78%  sched_debug.cfs_rq:=
+/.load_avg.9
+     38.47 =C2=B1  5%     +29.1%      49.65 =C2=B1 26%  sched_debug.cfs_rq:=
+/.load_avg.avg
+     63.17 =C2=B1 10%     +44.3%      91.16 =C2=B1 36%  sched_debug.cfs_rq:=
+/.load_avg.stddev
+    893865 =C2=B1 12%     -12.5%     782455 =C2=B1  0%  sched_debug.cfs_rq:=
+/.min_vruntime.25
+     18.25 =C2=B1 26%     +52.1%      27.75 =C2=B1 25%  sched_debug.cfs_rq:=
+/.runnable_load_avg.9
+    -57635 =C2=B1-68%    -196.4%      55548 =C2=B1130%  sched_debug.cfs_rq:=
+/.spread0.1
+   -802264 =C2=B1-25%     -29.5%    -565458 =C2=B1-49%  sched_debug.cfs_rq:=
+/.spread0.8
+   -804662 =C2=B1-25%     -29.4%    -567811 =C2=B1-48%  sched_debug.cfs_rq:=
+/.spread0.min
+      1233 =C2=B1  5%     +30.9%       1614 =C2=B1 28%  sched_debug.cfs_rq:=
+/.tg_load_avg.0
+      1233 =C2=B1  5%     +30.9%       1614 =C2=B1 28%  sched_debug.cfs_rq:=
+/.tg_load_avg.1
+      1228 =C2=B1  5%     +30.3%       1601 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.10
+      1228 =C2=B1  5%     +30.4%       1601 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.11
+      1228 =C2=B1  5%     +30.3%       1601 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.12
+      1229 =C2=B1  5%     +30.0%       1598 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.13
+      1228 =C2=B1  5%     +30.1%       1598 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.14
+      1229 =C2=B1  5%     +30.0%       1598 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.15
+      1226 =C2=B1  5%     +30.3%       1598 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.16
+      1226 =C2=B1  5%     +30.2%       1597 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.17
+      1227 =C2=B1  5%     +30.1%       1595 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.18
+      1227 =C2=B1  5%     +29.4%       1588 =C2=B1 26%  sched_debug.cfs_rq:=
+/.tg_load_avg.19
+      1233 =C2=B1  5%     +30.4%       1609 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.2
+      1222 =C2=B1  5%     +29.9%       1587 =C2=B1 26%  sched_debug.cfs_rq:=
+/.tg_load_avg.20
+      1223 =C2=B1  5%     +24.2%       1519 =C2=B1 20%  sched_debug.cfs_rq:=
+/.tg_load_avg.21
+      1223 =C2=B1  5%     +23.8%       1515 =C2=B1 20%  sched_debug.cfs_rq:=
+/.tg_load_avg.22
+      1223 =C2=B1  5%     +23.9%       1515 =C2=B1 20%  sched_debug.cfs_rq:=
+/.tg_load_avg.23
+      1223 =C2=B1  5%     +23.9%       1515 =C2=B1 20%  sched_debug.cfs_rq:=
+/.tg_load_avg.24
+      1223 =C2=B1  5%     +23.5%       1511 =C2=B1 19%  sched_debug.cfs_rq:=
+/.tg_load_avg.25
+      1224 =C2=B1  5%     +23.5%       1512 =C2=B1 19%  sched_debug.cfs_rq:=
+/.tg_load_avg.26
+      1223 =C2=B1  5%     +23.1%       1506 =C2=B1 19%  sched_debug.cfs_rq:=
+/.tg_load_avg.27
+      1223 =C2=B1  5%     +22.5%       1499 =C2=B1 19%  sched_debug.cfs_rq:=
+/.tg_load_avg.28
+      1224 =C2=B1  5%     +22.5%       1499 =C2=B1 19%  sched_debug.cfs_rq:=
+/.tg_load_avg.29
+      1233 =C2=B1  5%     +30.3%       1607 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.3
+      1223 =C2=B1  5%     +22.2%       1495 =C2=B1 18%  sched_debug.cfs_rq:=
+/.tg_load_avg.30
+      1224 =C2=B1  5%     +22.0%       1493 =C2=B1 19%  sched_debug.cfs_rq:=
+/.tg_load_avg.31
+      1234 =C2=B1  5%     +30.0%       1604 =C2=B1 28%  sched_debug.cfs_rq:=
+/.tg_load_avg.4
+      1233 =C2=B1  5%     +30.0%       1604 =C2=B1 28%  sched_debug.cfs_rq:=
+/.tg_load_avg.5
+      1231 =C2=B1  5%     +30.3%       1604 =C2=B1 28%  sched_debug.cfs_rq:=
+/.tg_load_avg.6
+      1233 =C2=B1  5%     +30.0%       1603 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.7
+      1231 =C2=B1  5%     +30.1%       1601 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.8
+      1228 =C2=B1  5%     +30.3%       1601 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.9
+      1228 =C2=B1  5%     +27.8%       1569 =C2=B1 24%  sched_debug.cfs_rq:=
+/.tg_load_avg.avg
+      1246 =C2=B1  5%     +30.7%       1628 =C2=B1 27%  sched_debug.cfs_rq:=
+/.tg_load_avg.max
+      1212 =C2=B1  5%     +22.2%       1481 =C2=B1 19%  sched_debug.cfs_rq:=
+/.tg_load_avg.min
+     15.00 =C2=B1  9%    +198.3%      44.75 =C2=B1 72%  sched_debug.cfs_rq:=
+/.tg_load_avg_contrib.21
+     25.00 =C2=B1 29%    +574.0%     168.50 =C2=B1 78%  sched_debug.cfs_rq:=
+/.tg_load_avg_contrib.9
+     38.53 =C2=B1  5%     +29.0%      49.71 =C2=B1 26%  sched_debug.cfs_rq:=
+/.tg_load_avg_contrib.avg
+     63.34 =C2=B1 10%     +44.1%      91.30 =C2=B1 36%  sched_debug.cfs_rq:=
+/.tg_load_avg_contrib.stddev
+    532.25 =C2=B1  2%      +8.5%     577.50 =C2=B1  6%  sched_debug.cfs_rq:=
+/.util_avg.15
+    210.75 =C2=B1 14%     -14.4%     180.50 =C2=B1  4%  sched_debug.cfs_rq:=
+/.util_avg.29
+    450.00 =C2=B1 22%     +50.7%     678.00 =C2=B1 18%  sched_debug.cfs_rq:=
+/.util_avg.9
+    955572 =C2=B1  4%     -10.2%     857813 =C2=B1  5%  sched_debug.cpu.avg=
+_idle.6
+     23.99 =C2=B1 60%     -76.2%       5.71 =C2=B1 24%  sched_debug.cpu.clo=
+ck.stddev
+     23.99 =C2=B1 60%     -76.2%       5.71 =C2=B1 24%  sched_debug.cpu.clo=
+ck_task.stddev
+      2840 =C2=B1 37%     -47.4%       1492 =C2=B1 65%  sched_debug.cpu.cur=
+r->pid.25
+     34.75 =C2=B1148%    +132.4%      80.75 =C2=B1 82%  sched_debug.cpu.loa=
+d.8
+     61776 =C2=B1  7%      -7.1%      57380 =C2=B1  0%  sched_debug.cpu.nr_=
+load_updates.25
+      6543 =C2=B1  2%     +20.4%       7879 =C2=B1  9%  sched_debug.cpu.nr_=
+switches.0
+      5256 =C2=B1 23%    +177.1%      14566 =C2=B1 52%  sched_debug.cpu.nr_=
+switches.27
+      7915 =C2=B1  3%      +8.7%       8605 =C2=B1  3%  sched_debug.cpu.nr_=
+switches.avg
+     -0.25 =C2=B1-519%   +1900.0%      -5.00 =C2=B1-24%  sched_debug.cpu.nr=
+_uninterruptible.12
+      2.00 =C2=B1 93%    -125.0%      -0.50 =C2=B1-300%  sched_debug.cpu.nr=
+_uninterruptible.24
+     17468 =C2=B1 14%    +194.3%      51413 =C2=B1 75%  sched_debug.cpu.sch=
+ed_count.15
+      2112 =C2=B1  2%     +20.8%       2552 =C2=B1 11%  sched_debug.cpu.sch=
+ed_goidle.0
+      2103 =C2=B1 34%    +219.0%       6709 =C2=B1 55%  sched_debug.cpu.sch=
+ed_goidle.27
+      3159 =C2=B1  3%      +8.2%       3418 =C2=B1  4%  sched_debug.cpu.sch=
+ed_goidle.avg
+      1323 =C2=B1 64%     -72.7%     361.50 =C2=B1 15%  sched_debug.cpu.ttw=
+u_count.23
+      3264 =C2=B1 12%     +94.4%       6347 =C2=B1 41%  sched_debug.cpu.ttw=
+u_count.27
+      3860 =C2=B1  3%      +9.0%       4208 =C2=B1  3%  sched_debug.cpu.ttw=
+u_count.avg
+      2358 =C2=B1  3%     +28.7%       3035 =C2=B1  9%  sched_debug.cpu.ttw=
+u_local.0
+      1110 =C2=B1 22%     +54.6%       1716 =C2=B1 28%  sched_debug.cpu.ttw=
+u_local.27
+      1814 =C2=B1  8%     +16.1%       2106 =C2=B1  5%  sched_debug.cpu.ttw=
+u_local.stddev
 
->     Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->     Cc: Christoph Lameter <cl@linux.com>
->     Cc: Pekka Enberg <penberg@kernel.org>
->     Cc: David Rientjes <rientjes@google.com>
->     Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
->     Cc: Vladimir Davydov <vdavydov@virtuozzo.com>
->     Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-> =
 
-> +-----------------------------------------------------------------+------=
-------+------------+---------------+
-> |                                                                 | 074b6=
-f53c3 | a1fd55538c | next-20160128 |
-> +-----------------------------------------------------------------+------=
-------+------------+---------------+
-> | boot_successes                                                  | 40   =
-      | 0          | 0             |
-> | boot_failures                                                   | 52   =
-      | 26         | 19            |
-> | Kernel_panic-not_syncing:Attempted_to_kill_init!exitcode=3D       | 52 =
-        | 26         | 14            |
-> | WARNING:at_kernel/locking/lockdep.c:#trace_hardirqs_on_caller() | 0    =
-      | 26         | 19            |
-> | backtrace:pcpu_mem_zalloc                                       | 0    =
-      | 26         | 19            |
-> | backtrace:percpu_init_late                                      | 0    =
-      | 26         | 19            |
-> | IP-Config:Auto-configuration_of_network_failed                  | 0    =
-      | 0          | 2             |
-> +-----------------------------------------------------------------+------=
-------+------------+---------------+
-> =
+lkp-snb01: Sandy Bridge-EP
+Memory: 32G
 
-> [    0.000000] Inode-cache hash table entries: 16384 (order: 5, 131072 by=
-tes)
-> [    0.000000] Memory: 194224K/261624K available (10816K kernel code, 506=
-0K rwdata, 6628K rodata, 988K init, 33076K bss, 67400K reserved, 0K cma-res=
-erved)
-> [    0.000000] ------------[ cut here ]------------
-> [    0.000000] WARNING: CPU: 0 PID: 0 at kernel/locking/lockdep.c:2601 tr=
-ace_hardirqs_on_caller+0x341/0x380()
-> [    0.000000] DEBUG_LOCKS_WARN_ON(unlikely(early_boot_irqs_disabled))
-> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 4.5.0-rc1-00069-ga=
-1fd555 #1
-> [    0.000000]  ffffffff82403dd8 ffffffff82403d90 ffffffff813b937d ffffff=
-ff82403dc8
-> [    0.000000]  ffffffff810eb4d3 ffffffff812617cc 0000000000000001 ffff88=
-000fcc50a8
-> [    0.000000]  ffff8800000984c0 00000000024000c0 ffffffff82403e28 ffffff=
-ff810eb5c7
-> [    0.000000] Call Trace:
-> [    0.000000]  [<ffffffff813b937d>] dump_stack+0x27/0x3a
-> [    0.000000]  [<ffffffff810eb4d3>] warn_slowpath_common+0xa3/0x100
-> [    0.000000]  [<ffffffff812617cc>] ? cache_alloc_refill+0x7ac/0x910
-> [    0.000000]  [<ffffffff810eb5c7>] warn_slowpath_fmt+0x57/0x70
-> [    0.000000]  [<ffffffff81143e61>] trace_hardirqs_on_caller+0x341/0x380
-> [    0.000000]  [<ffffffff81143ebd>] trace_hardirqs_on+0x1d/0x30
-> [    0.000000]  [<ffffffff812617cc>] cache_alloc_refill+0x7ac/0x910
-> [    0.000000]  [<ffffffff8121df6a>] ? pcpu_mem_zalloc+0x5a/0xc0
-> [    0.000000]  [<ffffffff81261fce>] __kmalloc+0x24e/0x440
-> [    0.000000]  [<ffffffff8121df6a>] pcpu_mem_zalloc+0x5a/0xc0
-> [    0.000000]  [<ffffffff829213aa>] percpu_init_late+0x4d/0xbb
-> [    0.000000]  [<ffffffff828f41c9>] start_kernel+0x30b/0x6e1
-> [    0.000000]  [<ffffffff828f3120>] ? early_idt_handler_array+0x120/0x120
-> [    0.000000]  [<ffffffff828f332f>] x86_64_start_reservations+0x46/0x4f
-> [    0.000000]  [<ffffffff828f34d4>] x86_64_start_kernel+0x19c/0x1b2
-> [    0.000000] ---[ end trace cb88537fdc8fa200 ]---
-> [    0.000000] Running RCU self tests
-> =
+                             will-it-scale.per_thread_ops
 
-> git bisect start 888c8375131656144c1605071eab2eb6ac49abc3 92e963f50fc7404=
-1b5e9e744c330dca48e04f08d --
-> git bisect good f664e02a71d85691fc33f116bae3eb7f0debd194  # 17:19     17+=
-     13  Merge remote-tracking branch 'kbuild/for-next'
-> git bisect good c7173552fb5efc15dd092d3a90b5d6ad0f3d9421  # 17:35     17+=
-      2  Merge remote-tracking branch 'audit/next'
-> git bisect good bd605d2e3cc724606fa7c0fd3d5d90276f07e979  # 17:47     17+=
-      2  Merge remote-tracking branch 'extcon/extcon-next'
-> git bisect good 108776431802ced1ca8ba38a9765ef81c48513de  # 18:06     17+=
-      5  Merge remote-tracking branch 'llvmlinux/for-next'
-> git bisect good 56f1389517d2470a8abdb661c97d6ef640ca8cf3  # 18:30     17+=
-      3  Merge remote-tracking branch 'coresight/next'
-> git bisect  bad 3cb196d8ee7f94b78c3d609bb91f5b175b3841d8  # 19:17      0-=
-      8  Merge branch 'akpm-current/current'
-> git bisect good 49d5623e2407b26b532ca24f49d778b5b6fedb22  # 19:48     22+=
-      0  Merge remote-tracking branch 'rtc/rtc-next'
-> git bisect  bad 8ccfb34d7450299714a9a590a764934397a818c6  # 20:06      0-=
-     22  mm: filemap: avoid unnecessary calls to lock_page when waiting for=
- IO to complete during a read
-> git bisect good d9dc8f2de4f863bef9a303b2cbae0bbd1c9dfceb  # 20:32     22+=
-     22  ocfs2: add feature document for online file check
-> git bisect  bad ebea6ceb9754b02bcab987af96c64782c665aa91  # 20:56      0-=
-     18  mm/slab: remove object status buffer for DEBUG_SLAB_LEAK
-> git bisect  bad 24d88722c03b13ef63b3b631f81454a63ac26cc4  # 21:06      0-=
-     22  mm: kmemcheck skip object if slab allocation failed
-> git bisect good 1fc2d06fe0cfca10e571e2e444a4a37693495502  # 21:26     22+=
-     22  ocfs2/dlm: move lock to the tail of grant queue while doing in-pla=
-ce convert
-> git bisect good 3355ee84b3d96c7c30923d0bba228b0b7aa380d2  # 21:33     21+=
-      8  slub: cleanup code for kmem cgroup support to kmem_cache_free_bulk
-> git bisect good 074b6f53c320a81e975c0b5dd79daa5e78a711ba  # 21:39     22+=
-     24  mm: fault-inject take over bootstrap kmem_cache check
-> git bisect  bad a1fd55538cae9f411059c9b067a3d48c41aa876b  # 21:49      0-=
-     26  slab: use slab_pre_alloc_hook in SLAB allocator shared with SLUB
-> # first bad commit: [a1fd55538cae9f411059c9b067a3d48c41aa876b] slab: use =
-slab_pre_alloc_hook in SLAB allocator shared with SLUB
-> git bisect good 074b6f53c320a81e975c0b5dd79daa5e78a711ba  # 21:53     66+=
-     52  mm: fault-inject take over bootstrap kmem_cache check
-> # extra tests with DEBUG_INFO
-> git bisect  bad a1fd55538cae9f411059c9b067a3d48c41aa876b  # 22:00      0-=
-     36  slab: use slab_pre_alloc_hook in SLAB allocator shared with SLUB
-> # extra tests on HEAD of linux-next/master
-> git bisect  bad 888c8375131656144c1605071eab2eb6ac49abc3  # 22:00      0-=
-     19  Add linux-next specific files for 20160128
-> # extra tests on tree/branch linux-next/master
-> git bisect  bad 888c8375131656144c1605071eab2eb6ac49abc3  # 22:00      0-=
-     19  Add linux-next specific files for 20160128
-> # extra tests with first bad commit reverted
-> git bisect good fea4cd9180f321dd12ec9a7932a9bfb32bfaf4c4  # 22:32     66+=
-     30  Revert "slab: use slab_pre_alloc_hook in SLAB allocator shared wit=
-h SLUB"
-> # extra tests on tree/branch linus/master
-> git bisect good 03c21cb775a313f1ff19be59c5d02df3e3526471  # 22:52     65+=
-     67  Merge tag 'for_linus' of git://git.kernel.org/pub/scm/linux/kernel=
-/git/mst/vhost
-> # extra tests on tree/branch linux-next/master
-> git bisect  bad 888c8375131656144c1605071eab2eb6ac49abc3  # 22:52      0-=
-     19  Add linux-next specific files for 20160128
-> =
-
-> =
-
-> This script may reproduce the error.
-> =
-
-> -------------------------------------------------------------------------=
----
-> #!/bin/bash
-> =
-
-> kernel=3D$1
-> initrd=3Dyocto-minimal-x86_64.cgz
-> =
-
-> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/m=
-aster/initrd/$initrd
-> =
-
-> kvm=3D(
-> 	qemu-system-x86_64
-> 	-enable-kvm
-> 	-cpu Haswell,+smep,+smap
-> 	-kernel $kernel
-> 	-initrd $initrd
-> 	-m 256
-> 	-smp 1
-> 	-device e1000,netdev=3Dnet0
-> 	-netdev user,id=3Dnet0
-> 	-boot order=3Dnc
-> 	-no-reboot
-> 	-watchdog i6300esb
-> 	-rtc base=3Dlocaltime
-> 	-serial stdio
-> 	-display none
-> 	-monitor null =
-
-> )
-> =
-
-> append=3D(
-> 	hung_task_panic=3D1
-> 	earlyprintk=3DttyS0,115200
-> 	systemd.log_level=3Derr
-> 	debug
-> 	apic=3Ddebug
-> 	sysrq_always_enabled
-> 	rcupdate.rcu_cpu_stall_timeout=3D100
-> 	panic=3D-1
-> 	softlockup_panic=3D1
-> 	nmi_watchdog=3Dpanic
-> 	oops=3Dpanic
-> 	load_ramdisk=3D2
-> 	prompt_ramdisk=3D0
-> 	console=3DttyS0,115200
-> 	console=3Dtty0
-> 	vga=3Dnormal
-> 	root=3D/dev/ram0
-> 	rw
-> 	drbd.minor_count=3D8
-> )
-> =
-
-> "${kvm[@]}" --append "${append[*]}"
-> -------------------------------------------------------------------------=
----
-> =
-
-> ---
-> 0-DAY kernel test infrastructure                Open Source Technology Ce=
-nter
-> https://lists.01.org/pipermail/lkp                          Intel Corpora=
-tion
+   1.2e+06 ++--------------------------------------------------------------=
+-+
+           |                                  O                            =
+ |
+  1.15e+06 O+O O   O O   O   O   O   O                                     =
+ |
+   1.1e+06 ++                                                              =
+ |
+           |     O             O   O   O O OO                              =
+ |
+  1.05e+06 ++          O   O                                               =
+ |
+     1e+06 ++                                                              =
+ |
+           |                                                               =
+ |
+    950000 ++                                                              =
+ |
+    900000 ++                                                              =
+ |
+           |                                                               =
+ |
+    850000 ++                                                              =
+ |
+    800000 *+*.*.*.*.*.*.*.*.*.*.*.*. .*.*. *.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*=
+.*
+           |                         *     *                               =
+ |
+    750000 ++--------------------------------------------------------------=
+-+
 
 
+                          will-it-scale.time.user_time
 
--- =
+  50 ++--------------------------------------------------------------------=
+-+
+     |                                                                     =
+ |
+  45 ++         O   O   O    O   O          O                              =
+ |
+     O O O    O                                                            =
+ |
+     |     O          O        O   O O                                     =
+ |
+  40 ++           O        O           O  O                                =
+ |
+     |                                                                     =
+ |
+  35 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+     |            *                                                        =
+ |
+  25 ++          + +                                                       =
+ |
+     *.*.*.*..*.*   *.*.*..*.*.*.*.*.*.*..*.*.*.*.*.*.*..*.*.*.*.*.*..*.*.*=
+.*
+  20 ++--------------------------------------------------------------------=
+-+
 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  Author of http://www.iptv-analyzer.org
-  LinkedIn: http://www.linkedin.com/in/brouer
 
---===============0314132832125626124==--
+	[*] bisect-good sample
+	[O] bisect-bad  sample
+
+To reproduce:
+
+        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
+ts.git
+        cd lkp-tests
+        bin/lkp install job.yaml  # job file is attached in this email
+        bin/lkp run     job.yaml
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
+
+
+Thanks,
+Ying Huang
+
+--===============6943516079689187584==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="job.yaml"
+
+LS0tCkxLUF9TRVJWRVI6IGlubgpMS1BfQ0dJX1BPUlQ6IDgwCkxLUF9DSUZTX1BPUlQ6IDEzOQp0
+ZXN0Y2FzZTogd2lsbC1pdC1zY2FsZQpkZWZhdWx0LW1vbml0b3JzOgogIHdhaXQ6IGFjdGl2YXRl
+LW1vbml0b3IKICBrbXNnOiAKICB1cHRpbWU6IAogIGlvc3RhdDogCiAgdm1zdGF0OiAKICBudW1h
+LW51bWFzdGF0OiAKICBudW1hLXZtc3RhdDogCiAgbnVtYS1tZW1pbmZvOiAKICBwcm9jLXZtc3Rh
+dDogCiAgcHJvYy1zdGF0OgogICAgaW50ZXJ2YWw6IDEwCiAgbWVtaW5mbzogCiAgc2xhYmluZm86
+IAogIGludGVycnVwdHM6IAogIGxvY2tfc3RhdDogCiAgbGF0ZW5jeV9zdGF0czogCiAgc29mdGly
+cXM6IAogIGJkaV9kZXZfbWFwcGluZzogCiAgZGlza3N0YXRzOiAKICBuZnNzdGF0OiAKICBjcHVp
+ZGxlOiAKICBjcHVmcmVxLXN0YXRzOiAKICB0dXJib3N0YXQ6IAogIHBtZXRlcjogCiAgc2NoZWRf
+ZGVidWc6CiAgICBpbnRlcnZhbDogNjAKY3B1ZnJlcV9nb3Zlcm5vcjogcGVyZm9ybWFuY2UKZGVm
+YXVsdC13YXRjaGRvZ3M6CiAgb29tLWtpbGxlcjogCiAgd2F0Y2hkb2c6IApjb21taXQ6IDdmMzY5
+N2UyNGRjMzgyMGIxMGY0NDVhNGE3ZDkxNGZjMzU2MDEyZDEKbW9kZWw6IFNhbmR5IEJyaWRnZS1F
+UAptZW1vcnk6IDMyRwpoZGRfcGFydGl0aW9uczogIi9kZXYvc2RhMiIKc3dhcF9wYXJ0aXRpb25z
+OiAKY2F0ZWdvcnk6IGJlbmNobWFyawpwZXJmLXByb2ZpbGU6CiAgZnJlcTogODAwCndpbGwtaXQt
+c2NhbGU6CiAgdGVzdDogbG9jazEKcXVldWU6IGJpc2VjdAp0ZXN0Ym94OiBsa3Atc25iMDEKdGJv
+eF9ncm91cDogbGtwLXNuYjAxCmtjb25maWc6IHg4Nl82NC1yaGVsCmVucXVldWVfdGltZTogMjAx
+Ni0wMS0yOCAxNDo1MDoyMS42OTkxNzg5NjUgKzA4OjAwCmlkOiBjM2VkNzI5MzhkMzgzYTIxMWVm
+ZmNlN2ZhY2M5NzhjMmNjMjQ3YWE4CnVzZXI6IGxrcApjb21waWxlcjogZ2NjLTQuOQpoZWFkX2Nv
+bW1pdDogOTJlOTYzZjUwZmM3NDA0MWI1ZTllNzQ0YzMzMGRjYTQ4ZTA0ZjA4ZApiYXNlX2NvbW1p
+dDogNTM0OGMxZTllMGRjMmI2MmE0ODRjNGI3NGE4ZDFkNTlhYTk2MjBhNApicmFuY2g6IGxpbnVz
+L21hc3Rlcgpyb290ZnM6IGRlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3oKcmVzdWx0X3Jvb3Q6
+ICIvcmVzdWx0L3dpbGwtaXQtc2NhbGUvcGVyZm9ybWFuY2UtbG9jazEvbGtwLXNuYjAxL2RlYmlh
+bi14ODZfNjQtMjAxNS0wMi0wNy5jZ3oveDg2XzY0LXJoZWwvZ2NjLTQuOS83ZjM2OTdlMjRkYzM4
+MjBiMTBmNDQ1YTRhN2Q5MTRmYzM1NjAxMmQxLzAiCmpvYl9maWxlOiAiL2xrcC9zY2hlZHVsZWQv
+bGtwLXNuYjAxL2Jpc2VjdF93aWxsLWl0LXNjYWxlLXBlcmZvcm1hbmNlLWxvY2sxLWRlYmlhbi14
+ODZfNjQtMjAxNS0wMi0wNy5jZ3oteDg2XzY0LXJoZWwtN2YzNjk3ZTI0ZGMzODIwYjEwZjQ0NWE0
+YTdkOTE0ZmMzNTYwMTJkMS0yMDE2MDEyOC03NTkxMS0xMWhkYXB5LTAueWFtbCIKbnJfY3B1OiAi
+JChucHJvYykiCm1heF91cHRpbWU6IDE1MDAKaW5pdHJkOiAiL29zaW1hZ2UvZGViaWFuL2RlYmlh
+bi14ODZfNjQtMjAxNS0wMi0wNy5jZ3oiCmJvb3Rsb2FkZXJfYXBwZW5kOgotIHJvb3Q9L2Rldi9y
+YW0wCi0gdXNlcj1sa3AKLSBqb2I9L2xrcC9zY2hlZHVsZWQvbGtwLXNuYjAxL2Jpc2VjdF93aWxs
+LWl0LXNjYWxlLXBlcmZvcm1hbmNlLWxvY2sxLWRlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3ot
+eDg2XzY0LXJoZWwtN2YzNjk3ZTI0ZGMzODIwYjEwZjQ0NWE0YTdkOTE0ZmMzNTYwMTJkMS0yMDE2
+MDEyOC03NTkxMS0xMWhkYXB5LTAueWFtbAotIEFSQ0g9eDg2XzY0Ci0ga2NvbmZpZz14ODZfNjQt
+cmhlbAotIGJyYW5jaD1saW51cy9tYXN0ZXIKLSBjb21taXQ9N2YzNjk3ZTI0ZGMzODIwYjEwZjQ0
+NWE0YTdkOTE0ZmMzNTYwMTJkMQotIEJPT1RfSU1BR0U9L3BrZy9saW51eC94ODZfNjQtcmhlbC9n
+Y2MtNC45LzdmMzY5N2UyNGRjMzgyMGIxMGY0NDVhNGE3ZDkxNGZjMzU2MDEyZDEvdm1saW51ei00
+LjQuMC1yYzEtMDAwMDUtZzdmMzY5N2UKLSBtYXhfdXB0aW1lPTE1MDAKLSBSRVNVTFRfUk9PVD0v
+cmVzdWx0L3dpbGwtaXQtc2NhbGUvcGVyZm9ybWFuY2UtbG9jazEvbGtwLXNuYjAxL2RlYmlhbi14
+ODZfNjQtMjAxNS0wMi0wNy5jZ3oveDg2XzY0LXJoZWwvZ2NjLTQuOS83ZjM2OTdlMjRkYzM4MjBi
+MTBmNDQ1YTRhN2Q5MTRmYzM1NjAxMmQxLzAKLSBMS1BfU0VSVkVSPWlubgotIHwyLQoKCiAgZWFy
+bHlwcmludGs9dHR5UzAsMTE1MjAwIHN5c3RlbWQubG9nX2xldmVsPWVycgogIGRlYnVnIGFwaWM9
+ZGVidWcgc3lzcnFfYWx3YXlzX2VuYWJsZWQgcmN1cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0
+PTEwMAogIHBhbmljPS0xIHNvZnRsb2NrdXBfcGFuaWM9MSBubWlfd2F0Y2hkb2c9cGFuaWMgb29w
+cz1wYW5pYyBsb2FkX3JhbWRpc2s9MiBwcm9tcHRfcmFtZGlzaz0wCiAgY29uc29sZT10dHlTMCwx
+MTUyMDAgY29uc29sZT10dHkwIHZnYT1ub3JtYWwKCiAgcncKbGtwX2luaXRyZDogIi9sa3AvbGtw
+L2xrcC14ODZfNjQuY2d6Igptb2R1bGVzX2luaXRyZDogIi9wa2cvbGludXgveDg2XzY0LXJoZWwv
+Z2NjLTQuOS83ZjM2OTdlMjRkYzM4MjBiMTBmNDQ1YTRhN2Q5MTRmYzM1NjAxMmQxL21vZHVsZXMu
+Y2d6IgpibV9pbml0cmQ6ICIvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5j
+Z3ovbGtwLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3ovcnVu
+LWlwY29uZmlnLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3ov
+dHVyYm9zdGF0LmNneiwvbGtwL2JlbmNobWFya3MvdHVyYm9zdGF0LmNneiwvbGtwL2JlbmNobWFy
+a3Mvd2lsbC1pdC1zY2FsZS5jZ3oiCmxpbnV4X2hlYWRlcnNfaW5pdHJkOiAiL3BrZy9saW51eC94
+ODZfNjQtcmhlbC9nY2MtNC45LzdmMzY5N2UyNGRjMzgyMGIxMGY0NDVhNGE3ZDkxNGZjMzU2MDEy
+ZDEvbGludXgtaGVhZGVycy5jZ3oiCnJlcGVhdF90bzogMgprZXJuZWw6ICIvcGtnL2xpbnV4L3g4
+Nl82NC1yaGVsL2djYy00LjkvN2YzNjk3ZTI0ZGMzODIwYjEwZjQ0NWE0YTdkOTE0ZmMzNTYwMTJk
+MS92bWxpbnV6LTQuNC4wLXJjMS0wMDAwNS1nN2YzNjk3ZSIKZGVxdWV1ZV90aW1lOiAyMDE2LTAx
+LTI4IDE1OjExOjU2LjkxMDg5NjYxOSArMDg6MDAKam9iX3N0YXRlOiBmaW5pc2hlZApsb2FkYXZn
+OiAyNy44OCAxMi41OCA0LjkzIDIvMzY4IDkwOTMKc3RhcnRfdGltZTogJzE0NTM5NjUxNTgnCmVu
+ZF90aW1lOiAnMTQ1Mzk2NTQ2OCcKdmVyc2lvbjogIi9sa3AvbGtwLy5zcmMtMjAxNjAxMjctMjIz
+ODUzIgo=
+
+--===============6943516079689187584==
+Content-Type: application/x-sh
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.sh"
+
+MjAxNi0wMS0yOCAxNToxMjozNyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
+bS9jcHUvY3B1MC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yOCAxNToxMjozNyBl
+Y2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MS9jcHVmcmVxL3Nj
+YWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yOCAxNToxMjozNyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5
+cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MTAvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIwMTYt
+MDEtMjggMTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1
+L2NwdTExL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgoyMDE2LTAxLTI4IDE1OjEyOjM3IGVjaG8g
+cGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxMi9jcHVmcmVxL3NjYWxp
+bmdfZ292ZXJub3IKMjAxNi0wMS0yOCAxNToxMjozNyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9k
+ZXZpY2VzL3N5c3RlbS9jcHUvY3B1MTMvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEt
+MjggMTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2Nw
+dTE0L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgoyMDE2LTAxLTI4IDE1OjEyOjM3IGVjaG8gcGVy
+Zm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxNS9jcHVmcmVxL3NjYWxpbmdf
+Z292ZXJub3IKMjAxNi0wMS0yOCAxNToxMjozNyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
+Y2VzL3N5c3RlbS9jcHUvY3B1MTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjgg
+MTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTE3
+L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgoyMDE2LTAxLTI4IDE1OjEyOjM3IGVjaG8gcGVyZm9y
+bWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxOC9jcHVmcmVxL3NjYWxpbmdfZ292
+ZXJub3IKMjAxNi0wMS0yOCAxNToxMjozNyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2Vz
+L3N5c3RlbS9jcHUvY3B1MTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjggMTU6
+MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTIvY3B1
+ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjggMTU6MTI6MzcgZWNobyBwZXJmb3JtYW5j
+ZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTIwL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5v
+cgoyMDE2LTAxLTI4IDE1OjEyOjM3IGVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lz
+dGVtL2NwdS9jcHUyMS9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yOCAxNToxMjoz
+NyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjIvY3B1ZnJl
+cS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjggMTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+
+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTIzL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgoy
+MDE2LTAxLTI4IDE1OjEyOjM3IGVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVt
+L2NwdS9jcHUyNC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yOCAxNToxMjozNyBl
+Y2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjUvY3B1ZnJlcS9z
+Y2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjggMTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9z
+eXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTI2L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgoyMDE2
+LTAxLTI4IDE1OjEyOjM3IGVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2Nw
+dS9jcHUyNy9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wMS0yOCAxNToxMjozNyBlY2hv
+IHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MjgvY3B1ZnJlcS9zY2Fs
+aW5nX2dvdmVybm9yCjIwMTYtMDEtMjggMTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMv
+ZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTI5L2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgoyMDE2LTAx
+LTI4IDE1OjEyOjM3IGVjaG8gcGVyZm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9j
+cHUzL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgoyMDE2LTAxLTI4IDE1OjEyOjM3IGVjaG8gcGVy
+Zm9ybWFuY2UgPiAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUzMC9jcHVmcmVxL3NjYWxpbmdf
+Z292ZXJub3IKMjAxNi0wMS0yOCAxNToxMjozNyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZp
+Y2VzL3N5c3RlbS9jcHUvY3B1MzEvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjgg
+MTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTQv
+Y3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjggMTU6MTI6MzcgZWNobyBwZXJmb3Jt
+YW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTUvY3B1ZnJlcS9zY2FsaW5nX2dvdmVy
+bm9yCjIwMTYtMDEtMjggMTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9z
+eXN0ZW0vY3B1L2NwdTYvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjggMTU6MTI6
+MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTcvY3B1ZnJl
+cS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjggMTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+
+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTgvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIw
+MTYtMDEtMjggMTU6MTI6MzcgZWNobyBwZXJmb3JtYW5jZSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0v
+Y3B1L2NwdTkvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCjIwMTYtMDEtMjggMTU6MTI6MzggLi9y
+dW50ZXN0LnB5IGxvY2sxIDI1IGJvdGggMSA4IDE2IDI0IDMyCg==
+
+--===============6943516079689187584==--
 
