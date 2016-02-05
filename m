@@ -1,70 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============2366047414561206632=="
+Content-Type: multipart/mixed; boundary="===============3625822724224726854=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] 63c6a211b0: BUG: sleeping function called from invalid context at mm/memory.c:1207
-Date: Fri, 05 Feb 2016 09:51:06 +0800
-Message-ID: <8760y3aprp.fsf@yhuang-dev.intel.com>
-In-Reply-To: <20160204132958.f8571de90d56749336c9af05@linux-foundation.org>
+Subject: Re: Adding Xen to the kbuild bot?
+Date: Fri, 05 Feb 2016 11:11:16 +0800
+Message-ID: <20160205031116.GB30154@wfg-t540p.sh.intel.com>
+In-Reply-To: <CALCETrUh1jq7Di0gTO0R3wN51x=vmd5wU4ODmE0kXK13MhQDnA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2366047414561206632==
+--===============3625822724224726854==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Andrew Morton <akpm@linux-foundation.org> writes:
+Hi Andy,
 
-> On Thu, 04 Feb 2016 08:46:03 +0800 kernel test robot <ying.huang@linux.=
-intel.com> wrote:
->
->> FYI, we noticed the below changes on
->> =
+CC more people on Xen testing -- in case OSStest already (or plans to)
+cover such test case.
 
->> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mast=
-er
->> commit 63c6a211b0eb5b1c86ffdd9d89639fb7f1b70fca ("mm: workingset: per-cg=
-roup cache thrash detection")
->> =
+On Tue, Feb 02, 2016 at 07:31:30PM -0800, Andy Lutomirski wrote:
+> Hi all-
+> =
 
->> =
+> Would it make sense to add some basic Xen PV testing to the kbuild bot?
 
->> [    8.134495]   No soundcards found.
->> [    8.137598] debug: unmapping init [mem 0xffffffff81cdc000-0xffffffff8=
-1d99fff]
->> [    8.137598] debug: unmapping init [mem 0xffffffff81cdc000-0xffffffff8=
-1d99fff]
->> [    8.155388] BUG: sleeping function called from invalid context at mm/=
-memory.c:1207
->> [    8.155388] BUG: sleeping function called from invalid context at mm/=
-memory.c:1207
->> [    8.158212] in_atomic(): 0, irqs_disabled(): 0, pid: 79, name: mount
->> [    8.158212] in_atomic(): 0, irqs_disabled(): 0, pid: 79, name: mount
->> [    8.160436] 1 lock held by mount/79:
->> [    8.160436] 1 lock held by mount/79:
->> [    8.161488]  #0: =
+Do you mean to run basic Xen testing on the various kernel trees that
+0day robot covers? That is, to catch kernel regressions when running
+under Xen.
 
->> [ 8.161488] #0: ( (rcu_read_lockrcu_read_lock){......}){......}, at:
->> , at: [<ffffffff810e4cc9>] rcu_lock_acquire+0x0/0x20
->> [<ffffffff810e4cc9>] rcu_lock_acquire+0x0/0x20
->> [    8.164136] Preemption disabled at:
->> [    8.164136] Preemption disabled at:[<ffffffff8106a358>] vprintk_defau=
-lt+0x18/0x1a
->> [<ffffffff8106a358>] vprintk_default+0x18/0x1a
->
-> I'm not sure why this is pointing at vprintk_default...
->
-> mm-workingset-per-cgroup-cache-thrash-detection.patch does have a bug
-> which could cause this.  It's fixed by
-> mm-workingset-per-cgroup-cache-thrash-detection-fix.patch.  Was the
-> -fix patch applied during this testing?
+If the intention is to catch Xen regressions, the OSStest
+infrastructure may be a better option:
 
-The original test is for linux-next tree of 2016-02-03, which hasn't the
-fix patch.  The fix patch is merged by linux-next 2016-02-04.  I queued
-the same test for the fix patch and there is no such bug as above.
+        git://xenbits.xen.org/osstest.git
 
-Best Regards,
-Huang, Ying
+> qemu can boot Xen like this:
+> =
 
---===============2366047414561206632==--
+> qemu-system-x86_64 -kernel path/to/xen-4.5.2 -initrd 'path/to/bzImage
+> kernelarg otherkernelarg=3Dvalue" -append 'xenarg other_xen_arg'
+> =
+
+> This should work with any kernel image for x86 or x86_64 with CONFIG_XEN=
+=3Dy.
+
+Got it. If you have simple working test scripts to illustrate test
+details, it'd be a great help for integrating into OSStest or 0day.
+
+> Linux has never been been able to do virtio under Xen, which will
+> screw up your scripts, but I'm cautiously optimistic that virtio will
+> work as expected on a Xen guest starting with Linux 4.6.  If you want
+> to play around, it should work in this tree:
+> =
+
+> https://git.kernel.org/cgit/linux/kernel/git/luto/linux.git/log/?h=3Dvirt=
+io_dma
+> =
+
+> I'm hoping to get that queued up for real in the next couple of days.
+
+Thanks,
+Fengguang
+
+--===============3625822724224726854==--
 
