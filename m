@@ -1,51 +1,97 @@
-Content-Type: multipart/mixed; boundary="===============1536725728366449294=="
+Content-Type: multipart/mixed; boundary="===============0716487987222139399=="
 MIME-Version: 1.0
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 To: lkp@lists.01.org
-Subject: Re: [ppdev] 138e9d20e6: kernel BUG at drivers/base/driver.c:153!
-Date: Sun, 14 Feb 2016 22:00:01 +0530
-Message-ID: <20160214163001.GA19855@sudip-laptop>
-In-Reply-To: <878u2nollw.fsf@yhuang-dev.intel.com>
+Subject: Re: [gpio] 3c702e9987: kmsg.user_verbs:couldn't_register_device_number
+Date: Sun, 14 Feb 2016 18:42:11 +0100
+Message-ID: <CACRpkdYo4xAU0VDTopmg3r=yo9fzqeBHii0v2kvkmARPL349Og@mail.gmail.com>
+In-Reply-To: <20160214080643.GA31304@qwerty.qwertyembedded>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1536725728366449294==
+--===============0716487987222139399==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Feb 14, 2016 at 02:24:27PM +0800, kernel test robot wrote:
-> FYI, we noticed the below changes on
-> =
+Greg, heads-up on this... you'd know if this happened
+before.
 
-> https://github.com/0day-ci/linux Sudip-Mukherjee/ppdev-space-prohibited-b=
-etween-function-name-and-parenthesis/20160212-210833
-> commit 138e9d20e69c0d682f584ee1ef0151338eef7499 ("ppdev: use new parport =
-device model")
+On Sun, Feb 14, 2016 at 9:06 AM, Michael Welling <mwelling@ieee.org> wrot=
+e:
+> On Sun, Feb 14, 2016 at 02:59:06PM +0800, kernel test robot wrote:
+>> FYI, we noticed the below changes on
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git ch=
+ardev
+>> commit 3c702e9987e261042a07e43460a8148be254412e ("gpio: add a userspace =
+chardev ABI for GPIOs")
+>>
+>>
+>> [    1.951191] user_verbs: couldn't register device number
+>
+> Looks like user_verbs is using a static device node setup.
+>
+> enum {
+>         IB_UVERBS_MAJOR       =3D 231,
+>         IB_UVERBS_BASE_MINOR  =3D 192,
+>         IB_UVERBS_MAX_DEVICES =3D 32
+> };
+>
+> #define IB_UVERBS_BASE_DEV      MKDEV(IB_UVERBS_MAJOR, IB_UVERBS_BASE_MIN=
+OR)
 
-I am not able to reproduce this as I donot have all your scripts/files.
-Can you please check if the below patch solves this in your setup.
+That's annoying...
+I notice that infiniband is using register_chrdev_region() at
+module_init() time, counting on device major 231 to be free.
 
+> Something tells me that a new GPIO chardev is taking this spot.
 
-diff --git a/drivers/parport/share.c b/drivers/parport/share.c
-index 3308427..176b2b6 100644
---- a/drivers/parport/share.c
-+++ b/drivers/parport/share.c
-@@ -273,6 +273,9 @@ int __parport_register_driver(struct parport_driver *dr=
-v, struct module *owner,
- 		/* using device model */
- 		int ret;
- =
+Yes. Please post the contents of /proc/devices on this system.
 
-+		if (!parport_bus_type.p)
-+			return -EAGAIN;
-+
- 		/* initialize common driver fields */
- 		drv->driver.name =3D drv->name;
- 		drv->driver.bus =3D &parport_bus_type;
+If you look in fs/char_dev.c this happens in
+__register_chrdev_region() you can see that dynamic
+character major numbers are assigned from 254 and
+downwards in this way:
 
---
-regards
-sudip
+#define CHRDEV_MAJOR_HASH_SIZE       255
+(...)
+} *chrdevs[CHRDEV_MAJOR_HASH_SIZE];
 
---===============1536725728366449294==--
+        /* temporary */
+        if (major =3D=3D 0) {
+                for (i =3D ARRAY_SIZE(chrdevs)-1; i > 0; i--) {
+                        if (chrdevs[i] =3D=3D NULL)
+                                break;
+                }
+
+                if (i =3D=3D 0) {
+                        ret =3D -EBUSY;
+                        goto out;
+                }
+                major =3D i;
+        }
+
+Whereas fixed device numbers are assigned sparsely
+from low to high.
+
+I suspect what happens is that in your system there are
+already so many dynamically assigned character devices that
+they go down and already collide with 232 and 233, you just
+didn't notice until this make it hit 231 which incidentally
+was in use.
+
+So I would be very intersted in what misc stuff you have filling
+out 232 thru 255, already knocking out other assigned
+numbers...
+
+I guess I *could* try to grab a static assignment in the low
+range, say recycle character device 8, which is the first
+unallocated from the bottom, but I'm afraid the device
+core maintainers have worked to get devices to go more
+dynamic and would be very unhappy about this.
+
+Yours,
+Linus Walleij
+
+--===============0716487987222139399==--
 
