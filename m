@@ -1,79 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============8015320352472580858=="
+Content-Type: multipart/mixed; boundary="===============1531823112329661457=="
 MIME-Version: 1.0
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [ppdev] e7223f1860: kernel BUG at drivers/base/driver.c:153!
-Date: Mon, 15 Feb 2016 17:20:01 +0530
-Message-ID: <20160215115001.GA22934@sudip-pc>
-In-Reply-To: <56c18a5d.4mR6FT1TNJ7yeYPN%fengguang.wu@intel.com>
+Subject: Re: [printk] af097cab1b: EIP is at vprintk_emit+0xab2/0xb5c
+Date: Mon, 15 Feb 2016 22:20:34 +0900
+Message-ID: <20160215132034.GA447@swordfish>
+In-Reply-To: <87vb5qd9yu.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8015320352472580858==
+--===============1531823112329661457==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 15, 2016 at 04:20:45PM +0800, kernel test robot wrote:
-> Greetings,
+On (02/15/16 09:43), kernel test robot wrote:
+> FYI, we noticed the below changes on
 > =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
-
-> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git char=
--misc-testing
-> =
-
-> commit e7223f18603374d235d8bb0398532323e5f318b9
-> Author:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-> AuthorDate: Fri Feb 12 18:33:45 2016 +0530
-> Commit:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CommitDate: Sun Feb 14 17:43:50 2016 -0800
-> =
-
->     ppdev: use new parport device model
->     =
-
->     Modify ppdev driver to use the new parallel port device model.
->     =
-
->     Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
->     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-Can you please send the .config file so that i can reproduce in my local
-system and test?
-
-Ying Huang also sent a similar report after posting the patches. I tried
-his .config and your scripts to reproduce this but was not able to.
-
-Anyway, this error is not related to this patch, this patch has just
-uncovered this error in parport. And will only happen if ppdev tries to
-register with parport before parport bus is registered.
-Can you please check if the below patch solves the problem:
+> https://github.com/0day-ci/linux Sergey-Senozhatsky/printk-move-can_use_c=
+onsole-out-of-console_trylock_for_printk/20160213-024210
+> commit af097cab1b878d5be746be8bcaa9a79986716c41 ("printk: set may_schedul=
+e for some of console_trylock callers")
 
 
-diff --git a/drivers/parport/share.c b/drivers/parport/share.c
-index 3308427..176b2b6 100644
---- a/drivers/parport/share.c
-+++ b/drivers/parport/share.c
-@@ -273,6 +273,9 @@ int __parport_register_driver(struct parport_driver *dr=
-v, struct module *owner,
- 		/* using device model */
- 		int ret;
+Hello,
+thanks for reporting,
+
+any chance you can test the patch below?
+
+---
+
+ kernel/printk/printk.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 9917f69..7268a40 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2208,7 +2208,7 @@ void console_unlock(void)
+ 	static u64 seen_seq;
+ 	unsigned long flags;
+ 	bool wake_klogd =3D false;
+-	bool do_cond_resched, retry;
++	bool do_cond_resched, retry =3D false;
  =
 
-+		if (!parport_bus_type.p)
-+			return -EAGAIN;
-+
- 		/* initialize common driver fields */
- 		drv->driver.name =3D drv->name;
- 		drv->driver.bus =3D &parport_bus_type;
+ 	if (console_suspended) {
+ 		up_console_sem();
+@@ -2241,7 +2241,8 @@ again:
+ 	}
+ =
+
+ 	/* flush buffered message fragment immediately to console */
+-	console_cont_flush(text, sizeof(text));
++	if (!retry)
++		console_cont_flush(text, sizeof(text));
+ =
+
+ 	for (;;) {
+ 		struct printk_log *msg;
 
 
---
-regards
-sudip
-
-
---===============8015320352472580858==--
+--===============1531823112329661457==--
 
