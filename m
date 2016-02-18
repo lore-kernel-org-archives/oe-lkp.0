@@ -1,90 +1,76 @@
-Content-Type: multipart/mixed; boundary="===============0296984548098994909=="
+Content-Type: multipart/mixed; boundary="===============7421060838878889226=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@amacapital.net>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
-Subject: Re: Adding Xen to the kbuild bot?
-Date: Wed, 17 Feb 2016 12:46:49 -0800
-Message-ID: <CALCETrUA-mueravS9YvV8dGy2MP38xitD_2eVyRqDXrT0ixPhw@mail.gmail.com>
-In-Reply-To: <20160206011742.GA13627@wfg-t540p.sh.intel.com>
+Subject: Re: [direct] 187372a3b9: WARNING: CPU: 2 PID: 3999 at fs/ext4/inode.c:3315 ext4_direct_IO+0x56d/0x5b0()
+Date: Thu, 18 Feb 2016 11:39:29 +1100
+Message-ID: <20160218003929.GT14668@dastard>
+In-Reply-To: <87lh6l8p71.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0296984548098994909==
+--===============7421060838878889226==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 5, 2016 at 5:17 PM, Fengguang Wu <fengguang.wu@intel.com> wro=
-te:
-> On Fri, Feb 05, 2016 at 12:10:56PM -0800, Andy Lutomirski wrote:
->> On Feb 4, 2016 7:11 PM, "Fengguang Wu" <fengguang.wu@intel.com> wrote:
->> >
->> > Hi Andy,
->> >
->> > CC more people on Xen testing -- in case OSStest already (or plans to)
->> > cover such test case.
->> >
->> > On Tue, Feb 02, 2016 at 07:31:30PM -0800, Andy Lutomirski wrote:
->> > > Hi all-
->> > >
->> > > Would it make sense to add some basic Xen PV testing to the kbuild b=
-ot?
->> >
->> > Do you mean to run basic Xen testing on the various kernel trees that
->> > 0day robot covers? That is, to catch kernel regressions when running
->> > under Xen.
->> >
->>
->> Yes, exactly.  I've personally broken Linux as a Xen guest at least twic=
-e.
->>
->> > If the intention is to catch Xen regressions, the OSStest
->> > infrastructure may be a better option:
->> >
->> >         git://xenbits.xen.org/osstest.git
->>
->> No, I think that 0day should pick one Xen version and stick with it
->> for a while rather than trying to track the latest version.
->
-> OK, got it. So it's suitable to run in 0day.
->
->> > > qemu can boot Xen like this:
->> > >
->> > > qemu-system-x86_64 -kernel path/to/xen-4.5.2 -initrd 'path/to/bzImage
->> > > kernelarg otherkernelarg=3Dvalue" -append 'xenarg other_xen_arg'
->> > >
->> > > This should work with any kernel image for x86 or x86_64 with CONFIG=
-_XEN=3Dy.
->> >
->> > Got it. If you have simple working test scripts to illustrate test
->> > details, it'd be a great help for integrating into OSStest or 0day.
->>
->> I have a script that will boot to a command prompt, but I don't know
->> if that's the right way to do it.  I'm not really sure how 0day works
->> under the hood, but treating Xen as a different configuration or arch
->> instead of treating it as a different test case might make more sense.
->
-> We can check the script first, then determine the most suitable way to
-> integrate it into 0day. My guess is, it might be suitable to run as a
-> new kind of VM host, like this
->
-> https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/tree/hosts=
-/vm-kbuild-1G
->
-> model: qemu-system-x86_64 -enable-kvm -cpu Haswell,+smep,+smap
-> nr_vm: 12
-> nr_cpu: 2
-> memory: 1G
-> disk_type: virtio-scsi
-> rootfs: debian-x86_64.cgz
-> hdd_partitions: /dev/sda /dev/sdb /dev/sdc /dev/sdd
-> swap_partitions: /dev/sde
+On Tue, Feb 16, 2016 at 08:38:10AM +0800, kernel test robot wrote:
+> FYI, we noticed the below changes on
+> =
 
-This makes sense to me, but I think it would need an extension to the
-configuration language.
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> commit 187372a3b9faff68ed61c291d0135e6739e0dbdf ("direct-io: always call =
+->end_io if non-NULL")
+> =
 
-The guest virtio code should be in the next -next release.
+> =
 
---Andy
+> run fstests generic/299 at 2016-02-16 06:10:03
+> EXT4-fs (sda8): mounted filesystem with ordered data mode. Opts: acl,user=
+_xattr
+> ------------[ cut here ]------------
+> WARNING: CPU: 2 PID: 3999 at fs/ext4/inode.c:3315 ext4_direct_IO+0x56d/0x=
+5b0()
+.....
+>  [<ffffffff81422e52>] dump_stack+0x4b/0x69
+>  [<ffffffff8107a476>] warn_slowpath_common+0x86/0xc0
+>  [<ffffffff8107a56a>] warn_slowpath_null+0x1a/0x20
+>  [<ffffffff81282a2d>] ext4_direct_IO+0x56d/0x5b0
+>  [<ffffffff811719ea>] generic_file_direct_write+0xaa/0x170
+>  [<ffffffff81171b70>] __generic_file_write_iter+0xc0/0x1f0
+>  [<ffffffff8127d201>] ext4_file_write_iter+0x141/0x430
+>  [<ffffffff81242436>] aio_run_iocb+0x226/0x290
+>  [<ffffffff8124353d>] do_io_submit+0x29d/0x530
+>  [<ffffffff812437e0>] SyS_io_submit+0x10/0x20
+>  [<ffffffff818e012e>] entry_SYSCALL_64_fastpath+0x12/0x71
 
---===============0296984548098994909==--
+3309                 /*
+3310                  * When no IO was submitted ext4_end_io_dio() was not
+3311                  * called so we have to put iocb's reference.
+3312                  */
+3313                 if (ret <=3D 0 && ret !=3D -EIOCBQUEUED && iocb->priva=
+te) {
+3314                         WARN_ON(iocb->private !=3D io_end);
+3315  >>>>>>>>               WARN_ON(io_end->flag & EXT4_IO_END_UNWRITTEN);
+3316                         ext4_put_io_end(io_end);
+3317                         iocb->private =3D NULL;
+3318                 }
+
+Pre-existing ext4 issue. It assumes that unwritten extent conversion
+occurs even on IO submission error. i.e. when we avoid the stale
+data exposure bug that the bisect-blamed commit fixed, ext4 warns
+that it failed to expose stale data....
+
+I'd just remove that warning, but I have no idea how that impacts on
+the rest of ext4's end IO handling. Christoph, Ted, the ball is in
+your court for this one.
+
+Cheers,
+
+Dave.
+-- =
+
+Dave Chinner
+david(a)fromorbit.com
+
+--===============7421060838878889226==--
 
