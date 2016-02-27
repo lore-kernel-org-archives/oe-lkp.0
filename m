@@ -1,72 +1,75 @@
-Content-Type: multipart/mixed; boundary="===============3960346770676289236=="
+Content-Type: multipart/mixed; boundary="===============0935886257048134209=="
 MIME-Version: 1.0
-From: Ingo Molnar <mingo@kernel.org>
+From: Borislav Petkov <bp@alien8.de>
 To: lkp@lists.01.org
 Subject: Re: [x86/fpu] 58122bf1d8: WARNING: CPU: 0 PID: 1 at arch/x86/include/asm/fpu/internal.h:529 fpu__restore+0x28f/0x9ab()
-Date: Sat, 27 Feb 2016 13:02:11 +0100
-Message-ID: <20160227120211.GA25164@gmail.com>
-In-Reply-To: <20160226074940.GA28911@pd.tnic>
+Date: Sat, 27 Feb 2016 14:13:37 +0100
+Message-ID: <20160227131337.GB5261@pd.tnic>
+In-Reply-To: <20160227120211.GA25164@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3960346770676289236==
+--===============0935886257048134209==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-
-* Borislav Petkov <bp@alien8.de> wrote:
-
-> From: Borislav Petkov <bp@suse.de>
-> Date: Mon, 15 Feb 2016 19:50:33 +0100
-> Subject: [PATCH] x86/FPU: Fix double FPU regs activation
+On Sat, Feb 27, 2016 at 01:02:11PM +0100, Ingo Molnar wrote:
+> So I'm wondering, why did this commit:
 > =
 
-> sys_sigreturn() calls fpu__restore_sig() with interrupts enabled. When
-> restoring a 32-bit signal frame. And it can happen that we get preempted
-> right after setting ->fpstate_active in a task's FPU.
+>   58122bf1d856 x86/fpu: Default eagerfpu=3Don on all CPUs
 > =
 
-> After we get preempted, we switch between tasks merrily and eventually
-> are about to switch to that task above whose ->fpstate_active we
-> set. We enter __switch_to() and do switch_fpu_prepare(). Our task gets
-> ->fpregs_active set, we find ourselves back on the call stack below and
-> especially in __fpu__restore_sig() which sets ->fpregs_active again.
-> =
 
-> Leading to that whoops below.
-> =
+Hmm, so looking at switch_fpu_prepare():
 
-> So let's enlarge the preemption-off region so that we set
-> ->fpstate_active with preemption disabled and thus not trigger
-> fpu.preload:
-> =
+        /*
+         * If the task has used the math, pre-load the FPU on xsave process=
+ors
+         * or if the past 5 consecutive context-switches used math.
+         */
+        fpu.preload =3D static_cpu_has(X86_FEATURE_FPU) &&
+                      new_fpu->fpstate_active &&
+                      (use_eager_fpu() || new_fpu->counter > 5);
+		       ^^^^^^^^^^^^^^
 
->   switch_fpu_prepare
-> =
+and later:
 
->   ...
-> =
+        if (old_fpu->fpregs_active) {
 
->         fpu.preload =3D static_cpu_has(X86_FEATURE_FPU) &&
->                       new_fpu->fpstate_active &&
-> 		      ^^^^^^^^^^^^^^^^^^^^^^
-> =
+		...
 
-> prematurely.
+                /* Don't change CR0.TS if we just switch! */
+                if (fpu.preload) {
+			...
+                        __fpregs_activate(new_fpu);
 
-So I'm wondering, why did this commit:
 
-  58122bf1d856 x86/fpu: Default eagerfpu=3Don on all CPUs
+so I can see a possible link between 58122bf1d856 and what we're seeing.
 
-trigger the warning, while it never triggered on CPUs that were already =
+But as I've told you offlist, I couldn't confirm that this commit was
+the culprit due to my simulated reproducer. So I'm thinking the 0day
+guys have a more reliable one.
 
-eagerfpu=3Don for years?
+> trigger the warning, while it never triggered on CPUs that were already =
 
-There must be something we are still missing I think.
+> eagerfpu=3Don for years?
 
-Thanks,
+That I can't explain... yet.
 
-	Ingo
+FWIW, the one time splat I saw, happened on an IVB machine on 32-bit
+which has always been eagerfpu=3Don.
 
---===============3960346770676289236==--
+> There must be something we are still missing I think.
+
+Yeah.
+
+-- =
+
+Regards/Gruss,
+    Boris.
+
+ECO tip #101: Trim your mails when you reply.
+
+--===============0935886257048134209==--
 
