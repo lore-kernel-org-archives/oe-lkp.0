@@ -1,46 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============4219987168687400485=="
+Content-Type: multipart/mixed; boundary="===============7723229037038569164=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Davidlohr Bueso <dave@stgolabs.net>
 To: lkp@lists.01.org
-Subject: Re: [xfs] fbcc025613: -5.6% fsmark.files_per_sec
-Date: Mon, 22 Feb 2016 09:54:09 +0100
-Message-ID: <20160222085409.GA19493@lst.de>
-In-Reply-To: <20160219064932.GX14668@dastard>
+Subject: Re: [futex] 65d8fc777f: +25.6% will-it-scale.per_process_ops
+Date: Mon, 29 Feb 2016 09:37:47 -0800
+Message-ID: <20160229173747.GA17288@linux-uzut.site>
+In-Reply-To: <20160229093708.GA21037@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4219987168687400485==
+--===============7723229037038569164==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 19, 2016 at 05:49:32PM +1100, Dave Chinner wrote:
-> That doesn't really seem right. The writeback should be done as a
-> single ioend, with a single completion, with a single setsize
-> transaction, adn then all the pages are marked clean sequentially.
-> The above behaviour implies we are ending up doing something like:
-> =
+On Mon, 29 Feb 2016, Ingo Molnar wrote:
 
-> fsync proc		io completion
-> wait on page 0
-> 			end page 0 writeback
-> 			wake up page 0
-> wait on page 1
-> 			end page 1 writeback
-> 			wake up page 1
-> wait on page 2
-> 			end page 2 writeback
-> 			wake up page 2
-> =
+>
+>* kernel test robot <ying.huang@linux.intel.com> wrote:
+>
+>> FYI, we noticed the below changes on
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mast=
+er
+>> commit 65d8fc777f6dcfee12785c057a6b57f679641c90 ("futex: Remove requirem=
+ent for
+>> lock_page() in get_futex_key()")
+>
+>I have asked for this before, but let me try again: could you _PLEASE_ mak=
+e these
+>emails more readable?
+>
+>For example what are the 'below changes'? Changes in the profile output? P=
+rofiles
+>always change from run to run, so that alone is not informative.
+>
+>Also, there are a lot of changes - which ones prompted the email to be gen=
+erated?
+>
+>All in one, this email is hard to parse, because it just dumps a lot of
+>information with very little explanatory structure for someone not versed =
+in their
+>format. Please try to create an easy to parse 'story' that leads the reader
+>towards what you want these emails to tell - not just a raw dump of seemin=
+gly
+>unconnected pieces of data ...
+>=C3=A2=C2=86=C2=93
+>Thanks,
+>
+>	Ingo
+>
+>>
+>>
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase:
+>>   gcc-4.9/performance/x86_64-rhel/debian-x86_64-2015-02-07.cgz/lkp-sbx04=
+/futex1/will-it-scale
 
-> Though in slightly larger batches than a single page (10 wakeups a
-> file, so batches of around 100 pages per wakeup?). i.e. the fsync
-> IO wait appears to be racing with IO completion marking pages as
-> done. I simply cannot see how the above change would cause that, as
-> it was simply a change in the IO submission code that doesn't affect
-> overall size or shape of the IOs being submitted.
+If I'm reading this correctly, it is similar to what I measured wrt ~lockle=
+less get_futex_key()
+stuff using the perf runs, with similar performance improvement numbers (pe=
+r process/thread ops).
+The futex1 test will just pound on FUTEX_WAKE without anyone actually block=
+ed on a futex, so it
+mainly measures the key/hashing part of the operation.
 
-Could this be the lack of blk plugs, which will cause us to complete
-too early?
+Thanks,
+Davidlohr
 
---===============4219987168687400485==--
+--===============7723229037038569164==--
 
