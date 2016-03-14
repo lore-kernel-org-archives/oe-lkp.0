@@ -1,86 +1,626 @@
-Content-Type: multipart/mixed; boundary="===============4174882933611899097=="
+Content-Type: multipart/mixed; boundary="===============6216185578532605808=="
 MIME-Version: 1.0
-From: Takashi Iwai <tiwai@suse.de>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [ALSA] ca53fbf3a6: WARNING: CPU: 0 PID: 151 at sound/hda/hdac_i915.c:129 pin2port+0x2a/0x40 [snd_hda_core]()
-Date: Mon, 14 Mar 2016 14:02:51 +0100
-Message-ID: <s5hfuvt43gk.wl-tiwai@suse.de>
-In-Reply-To: <96A12704CE18D347B625EE2D4A099D1904681A1B@SHSMSX103.ccr.corp.intel.com>
+Subject: Re: [drm/i915] 0bbca274a3: 3.6% piglit.time.elapsed_time
+Date: Mon, 14 Mar 2016 15:37:51 +0200
+Message-ID: <20160314133751.GM4329@intel.com>
+In-Reply-To: <20160314021437.GA32210@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4174882933611899097==
+--===============6216185578532605808==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 14 Mar 2016 13:02:39 +0100,
-Yang, Libin wrote:
+On Mon, Mar 14, 2016 at 10:14:37AM +0800, kernel test robot wrote:
+> FYI, we noticed that piglit.time.elapsed_time 3.6% regression on
 > =
 
-> Hi Takashi,
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> commit 0bbca274a31c2366414d8d3f95e03d1c4674d93f ("drm/i915: Actually retr=
+y with bit-banging after GMBUS timeout")
+
+Increase in system time is somewhat expected, since we'll do more
+bit banging now. Any chance of comparison against bffce907d640^
+aka. 0aeb904888f5 ("drm/i915: simplify gmbus xfer error checks") ?
+I would hope that the result would be more or less the same as with
+0bbca274a31c ("drm/i915: Actually retry with bit-banging after GMBUS timeou=
+t")
+
 > =
 
-> > -----Original Message-----
-> > From: Takashi Iwai [mailto:tiwai(a)suse.de]
-> > Sent: Monday, March 14, 2016 3:23 PM
-> > To: kernel test robot
-> > Cc: lkp(a)01.org; LKML; Wu, Fengguang; Yang, Libin; Lin, Mengdong
-> > Subject: Re: [lkp] [ALSA] ca53fbf3a6: WARNING: CPU: 0 PID: 151 at
-> > sound/hda/hdac_i915.c:129 pin2port+0x2a/0x40 [snd_hda_core]()
-> > =
-
-> > On Mon, 14 Mar 2016 01:50:45 +0100,
-> > kernel test robot wrote:
-> > >
-> > > FYI, we noticed the below changes on
-> > >
-> > > https://github.com/0day-ci/linux Takashi-Iwai/ALSA-hda-Add-a-sanity-
-> > check-of-pin-port-mapping-on-i915-HDMI-DP/20160310-225740
-> > > commit ca53fbf3a609b6831222078af9ddbecbf76fddce ("ALSA: hda -
-> > Add a sanity check of pin / port mapping on i915 HDMI/DP")
-> > >
-> > >
-> > > [   14.546058] snd_hda_intel 0000:00:1b.0: bound 0000:00:02.0 (ops
-> > i915_audio_component_bind_ops [i915])
-> > > [   14.549740] fbcon: inteldrmfb (fb0) is primary device
-> > > [   14.553691] ------------[ cut here ]------------
-> > > [   14.553707] WARNING: CPU: 0 PID: 151 at
-> > sound/hda/hdac_i915.c:129 pin2port+0x2a/0x40 [snd_hda_core]()
-> > =
-
-> > Does your tree contain the commit
-> >   2f791908a70e95768596f5bb9e6de4f441d7bf13
-> >       drm/i915: Fix bogus dig_port_map[] assignment for pre-HSW
-> > ?
-> > =
-
-> > The commit above should cover it even for HSW.
-> > =
-
-> > If it's already included, then it's really a bug, and the warning is
-> > exactly for catching such a bug.  The HD-audio driver expects that the
-> > valid audio ports are only from port B to port D while i915 driver
-> > assigns a different one.  I suspect that the current assumption is too
-> > naive and broken for SKL and later in this regard.
-> > =
-
-> > Libin, Mengdong, could you check whether the audio port mapping rule
-> > is still valid?  At least, a wrong port-A mapping could be reproduced
-> > even on a HSW laptop with DP-MST dock when I boot without eDP
-> > (e.g. video=3DeDP-1:d option).
 > =
 
-> We checked with HW before, and the mapping should be right.
-> What's the problem now? I will check with our HW and gfx team.
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> compiler/group/kconfig/rootfs/tbox_group/testcase:
+>   gcc-4.9/igt-039/x86_64-rhel/debian-x86_64-2015-02-07.cgz/snb-black/pigl=
+it
+> =
 
-One problem I've heard is that port-A is reported from i915 ELD
-notifier.  This happens when you disable eDP and use DP-MST on a HSW
-machine.  Then port A DDI is also used for the DP-MST, and when it's
-plugged, it passes port=3D0 to the notifier.
+> commit: =
+
+>   2f791908a70e95768596f5bb9e6de4f441d7bf13
+>   0bbca274a31c2366414d8d3f95e03d1c4674d93f
+> =
+
+> 2f791908a70e9576 0bbca274a31c2366414d8d3f95 =
+
+> ---------------- -------------------------- =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>     188.79 =C2=B1  0%      +3.6%     195.58 =C2=B1  0%  piglit.time.elaps=
+ed_time
+>     188.79 =C2=B1  0%      +3.6%     195.58 =C2=B1  0%  piglit.time.elaps=
+ed_time.max
+>       5.00 =C2=B1  0%     +60.0%       8.00 =C2=B1  0%  piglit.time.perce=
+nt_of_cpu_this_job_got
+>       7.86 =C2=B1  0%     +83.5%      14.42 =C2=B1  0%  piglit.time.syste=
+m_time
+>       5.00 =C2=B1  0%     +60.0%       8.00 =C2=B1  0%  time.percent_of_c=
+pu_this_job_got
+>       7.86 =C2=B1  0%     +83.5%      14.42 =C2=B1  0%  time.system_time
+> =
+
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> compiler/group/kconfig/rootfs/tbox_group/testcase:
+>   gcc-4.9/igt-036/x86_64-rhel/debian-x86_64-2015-02-07.cgz/lkp-u410/piglit
+> =
+
+> commit: =
+
+>   2f791908a70e95768596f5bb9e6de4f441d7bf13
+>   0bbca274a31c2366414d8d3f95e03d1c4674d93f
+> =
+
+> 2f791908a70e9576 0bbca274a31c2366414d8d3f95 =
+
+> ---------------- -------------------------- =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>     141.15 =C2=B1  0%      +6.9%     150.94 =C2=B1  0%  piglit.time.elaps=
+ed_time
+>     141.15 =C2=B1  0%      +6.9%     150.94 =C2=B1  0%  piglit.time.elaps=
+ed_time.max
+>      10.00 =C2=B1  0%     +60.0%      16.00 =C2=B1  0%  piglit.time.perce=
+nt_of_cpu_this_job_got
+>      10.61 =C2=B1  0%     +88.8%      20.04 =C2=B1  0%  piglit.time.syste=
+m_time
+>      10.00 =C2=B1  0%     +60.0%      16.00 =C2=B1  0%  time.percent_of_c=
+pu_this_job_got
+>      10.61 =C2=B1  0%     +88.8%      20.04 =C2=B1  0%  time.system_time
+> =
+
+> =
+
+> snb-black: Sandy Bridge
+> Memory: 8G
+> =
+
+> lkp-u410: Ivy Bridge
+> Memory: 4G
+> =
+
+> =
+
+> =
+
+>                              piglit.time.system_time
+> =
+
+>   21 ++------------------------------------------------------------------=
+---+
+>   20 O+ O  O  O  O  O  O  O  O  O  O  O  O O  O  O  O  O  O  O  O  O  O  =
+   |
+>      |                                                                   =
+   |
+>   19 ++                                                                  =
+   |
+>   18 ++                                                                  =
+   |
+>   17 ++                                                                  =
+   |
+>   16 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   15 ++                                                                  =
+   |
+>   14 ++                                                                  =
+   |
+>   13 ++                                                                  =
+   |
+>   12 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   11 *+.*..*..*..*..*..*..*..*..*..*..*..*.*..*..*..*..*..*..*..*..*..*..=
+*..*
+>   10 ++------------------------------------------------------------------=
+---+
+> =
+
+> =
+
+>                      piglit.time.percent_of_cpu_this_job_got
+> =
+
+>   16 O+-O--O--O--O--O--O--O--O--O--O--O--O-O--O--O--O--O--O--O--O--O--O--=
+---+
+>      |                                                                   =
+   |
+>   15 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>      |                                                                   =
+   |
+>   14 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   13 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   12 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>      |                                                                   =
+   |
+>   11 *+.                  *..         *..           *..                  =
+   |
+>      |                  ..          ..            ..                     =
+   |
+>   10 ++-*--*--*--*--*--*-----*--*--*-----*-*--*--*-----*--*--*--*--*--*--=
+*--*
+> =
+
+> =
+
+>                              piglit.time.elapsed_time
+> =
+
+>   152 ++-----------------------------------------------------------------=
+---+
+>       |  O  O  O  O  O  O O  O  O  O  O  O  O  O  O  O  O  O O  O  O  O  =
+   |
+>   150 O+                                                                 =
+   |
+>       |                                                                  =
+   |
+>       |                                                                  =
+   |
+>   148 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>   146 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>   144 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>       |                                                                  =
+   |
+>   142 ++                 .*..                                            =
+   |
+>       *..     .*..*..*..*    *..*..*..*..     .*..*..*..    .*..*..*..*..=
+*..*
+>   140 ++-*--*----------------------------*--*-----------*--*-------------=
+---+
+> =
+
+> =
+
+>                            piglit.time.elapsed_time.max
+> =
+
+>   152 ++-----------------------------------------------------------------=
+---+
+>       |  O  O  O  O  O  O O  O  O  O  O  O  O  O  O  O  O  O O  O  O  O  =
+   |
+>   150 O+                                                                 =
+   |
+>       |                                                                  =
+   |
+>       |                                                                  =
+   |
+>   148 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>   146 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>   144 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>       |                                                                  =
+   |
+>   142 ++                 .*..                                            =
+   |
+>       *..     .*..*..*..*    *..*..*..*..     .*..*..*..    .*..*..*..*..=
+*..*
+>   140 ++-*--*----------------------------*--*-----------*--*-------------=
+---+
+> =
+
+> =
+
+>                                 time.system_time
+> =
+
+>   21 ++------------------------------------------------------------------=
+---+
+>   20 O+ O  O  O  O  O  O  O  O  O  O  O  O O  O  O  O  O  O  O  O  O  O  =
+   |
+>      |                                                                   =
+   |
+>   19 ++                                                                  =
+   |
+>   18 ++                                                                  =
+   |
+>   17 ++                                                                  =
+   |
+>   16 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   15 ++                                                                  =
+   |
+>   14 ++                                                                  =
+   |
+>   13 ++                                                                  =
+   |
+>   12 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   11 *+.*..*..*..*..*..*..*..*..*..*..*..*.*..*..*..*..*..*..*..*..*..*..=
+*..*
+>   10 ++------------------------------------------------------------------=
+---+
+> =
+
+> =
+
+>                         time.percent_of_cpu_this_job_got
+> =
+
+>   16 O+-O--O--O--O--O--O--O--O--O--O--O--O-O--O--O--O--O--O--O--O--O--O--=
+---+
+>      |                                                                   =
+   |
+>   15 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>      |                                                                   =
+   |
+>   14 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   13 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   12 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>      |                                                                   =
+   |
+>   11 *+.                  *..         *..           *..                  =
+   |
+>      |                  ..          ..            ..                     =
+   |
+>   10 ++-*--*--*--*--*--*-----*--*--*-----*-*--*--*-----*--*--*--*--*--*--=
+*--*
+> =
+
+> =
+
+>  =
+
+> =
+
+>                              piglit.time.system_time
+> =
+
+>   15 ++------------------------------------------------------------------=
+---+
+>      O  O  O  O O  O  O  O  O  O O  O  O  O  O  O O  O  O  O  O  O O  O  =
+O  |
+>   14 ++                                                                  =
+   |
+>   13 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   12 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   11 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   10 ++                                                                  =
+   |
+>    9 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>    8 ++        .*..*..     .*..             .*..*.           .*..*.*..*..=
+  .*
+>      *..*..*..*       *..*.    *.*..*..*..*.      *..*..*..*.            =
+*. |
+>    7 ++------------------------------------------------------------------=
+---+
+> =
+
+> =
+
+>                              piglit.time.elapsed_time
+> =
+
+>   450 ++-----------------------------------------------------------------=
+---+
+>       |                                                                  =
+   |
+>   400 ++                                     O                           =
+   |
+>       |                                                                  =
+   |
+>       |                                                                  =
+   |
+>   350 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>   300 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>   250 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>       |                                                                  =
+   |
+>   200 O+.O..O.O..O..O..O..O.O..O..O..O..O.O..*..O..O..O.O..O..O..O..O.O..=
+O..*
+>       |                                                                  =
+   |
+>   150 ++-----------------------------------------------------------------=
+---+
+> =
+
+> =
+
+>                            piglit.time.elapsed_time.max
+> =
+
+>   450 ++-----------------------------------------------------------------=
+---+
+>       |                                                                  =
+   |
+>   400 ++                                     O                           =
+   |
+>       |                                                                  =
+   |
+>       |                                                                  =
+   |
+>   350 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>   300 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>   250 ++                                                                 =
+   |
+>       |                                                                  =
+   |
+>       |                                                                  =
+   |
+>   200 O+.O..O.O..O..O..O..O.O..O..O..O..O.O..*..O..O..O.O..O..O..O..O.O..=
+O..*
+>       |                                                                  =
+   |
+>   150 ++-----------------------------------------------------------------=
+---+
+> =
+
+> =
+
+>                                 time.system_time
+> =
+
+>   15 ++------------------------------------------------------------------=
+---+
+>      O  O  O  O O  O  O  O  O  O O  O  O  O  O  O O  O  O  O  O  O O  O  =
+O  |
+>   14 ++                                                                  =
+   |
+>   13 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   12 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   11 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>   10 ++                                                                  =
+   |
+>    9 ++                                                                  =
+   |
+>      |                                                                   =
+   |
+>    8 ++        .*..*..     .*..             .*..*.           .*..*.*..*..=
+  .*
+>      *..*..*..*       *..*.    *.*..*..*..*.      *..*..*..*.            =
+*. |
+>    7 ++------------------------------------------------------------------=
+---+
+> =
+
+> 	[*] bisect-good sample
+> 	[O] bisect-bad  sample
+> =
+
+> To reproduce:
+> =
+
+>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-t=
+ests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+> =
+
+> =
+
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are prov=
+ided
+> for informational purposes only. Any difference in system hardware or sof=
+tware
+> design or configuration may affect actual performance.
+> =
+
+> =
+
+> Thanks,
+> Xiaolong Ye
+
+> ---
+> LKP_SERVER: inn
+> LKP_CGI_PORT: 80
+> LKP_CIFS_PORT: 139
+> testcase: piglit
+> default-monitors:
+>   wait: activate-monitor
+>   kmsg: =
+
+>   heartbeat:
+>     interval: 10
+> default-watchdogs:
+>   oom-killer: =
+
+>   watchdog: =
+
+> commit: 0bbca274a31c2366414d8d3f95e03d1c4674d93f
+> model: Ivy Bridge
+> nr_cpu: 4
+> memory: 4G
+> nr_hdd_partitions: 0
+> hdd_partitions: =
+
+> netconsole_port: 6674
+> category: functional
+> timeout: 30m
+> piglit:
+>   group: igt-036
+> queue: bisect
+> testbox: lkp-u410
+> tbox_group: lkp-u410
+> kconfig: x86_64-rhel
+> enqueue_time: 2016-03-12 08:10:38.141424169 +08:00
+> compiler: gcc-4.9
+> rootfs: debian-x86_64-2015-02-07.cgz
+> id: 7ebc10fb2ac0e90fb2e346efbdcda69faf9f4c18
+> user: lkp
+> head_commit: 884dcd36fc68f78a12db2ae041eaeadb230b460b
+> base_commit: f6cede5b49e822ebc41a099fe41ab4989f64e2cb
+> branch: linux-devel/devel-hourly-2016031201
+> result_root: "/result/piglit/igt-036/lkp-u410/debian-x86_64-2015-02-07.cg=
+z/x86_64-rhel/gcc-4.9/0bbca274a31c2366414d8d3f95e03d1c4674d93f/0"
+> job_file: "/lkp/scheduled/lkp-u410/bisect_piglit-igt-036-debian-x86_64-20=
+15-02-07.cgz-x86_64-rhel-0bbca274a31c2366414d8d3f95e03d1c4674d93f-20160312-=
+31710-1ckf79s-0.yaml"
+> max_uptime: 1800
+> initrd: "/osimage/debian/debian-x86_64-2015-02-07.cgz"
+> bootloader_append:
+> - root=3D/dev/ram0
+> - user=3Dlkp
+> - job=3D/lkp/scheduled/lkp-u410/bisect_piglit-igt-036-debian-x86_64-2015-=
+02-07.cgz-x86_64-rhel-0bbca274a31c2366414d8d3f95e03d1c4674d93f-20160312-317=
+10-1ckf79s-0.yaml
+> - ARCH=3Dx86_64
+> - kconfig=3Dx86_64-rhel
+> - branch=3Dlinux-devel/devel-hourly-2016031201
+> - commit=3D0bbca274a31c2366414d8d3f95e03d1c4674d93f
+> - BOOT_IMAGE=3D/pkg/linux/x86_64-rhel/gcc-4.9/0bbca274a31c2366414d8d3f95e=
+03d1c4674d93f/vmlinuz-4.5.0-rc7-00002-g0bbca27
+> - max_uptime=3D1800
+> - RESULT_ROOT=3D/result/piglit/igt-036/lkp-u410/debian-x86_64-2015-02-07.=
+cgz/x86_64-rhel/gcc-4.9/0bbca274a31c2366414d8d3f95e03d1c4674d93f/0
+> - LKP_SERVER=3Dinn
+> - |2-
+> =
+
+> =
+
+>   earlyprintk=3DttyS0,115200 systemd.log_level=3Derr
+>   debug apic=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=
+=3D100
+>   panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_=
+ramdisk=3D2 prompt_ramdisk=3D0
+>   console=3DttyS0,115200 console=3Dtty0 vga=3Dnormal
+> =
+
+>   rw
+> lkp_initrd: "/lkp/lkp/lkp-x86_64.cgz"
+> modules_initrd: "/pkg/linux/x86_64-rhel/gcc-4.9/0bbca274a31c2366414d8d3f9=
+5e03d1c4674d93f/modules.cgz"
+> bm_initrd: "/osimage/deps/debian-x86_64-2015-02-07.cgz/lkp.cgz,/osimage/d=
+eps/debian-x86_64-2015-02-07.cgz/run-ipconfig.cgz,/osimage/deps/debian-x86_=
+64-2015-02-07.cgz/piglit.cgz,/lkp/benchmarks/piglit.cgz"
+> linux_headers_initrd: "/pkg/linux/x86_64-rhel/gcc-4.9/0bbca274a31c2366414=
+d8d3f95e03d1c4674d93f/linux-headers.cgz"
+> repeat_to: 2
+> kernel: "/pkg/linux/x86_64-rhel/gcc-4.9/0bbca274a31c2366414d8d3f95e03d1c4=
+674d93f/vmlinuz-4.5.0-rc7-00002-g0bbca27"
+> dequeue_time: 2016-03-12 08:14:04.556438362 +08:00
+> job_state: finished
+> loadavg: 0.81 0.38 0.15 1/116 693
+> start_time: '1457741713'
+> end_time: '1457741864'
+> version: "/lkp/lkp/.src-20160311-183612"
+
+> 2016-03-12 08:15:13 piglit run igt -t igt/kms_cursor_crc/cursor-64-slidin=
+g /tmp/lkp/piglit-results
+> 2016-03-12 08:17:43 piglit summary console /tmp/lkp/piglit-results/result=
+s.json
 
 
+-- =
 
-Takashi
+Ville Syrj=C3=A4l=C3=A4
+Intel OTC
 
---===============4174882933611899097==--
+--===============6216185578532605808==--
 
