@@ -1,188 +1,87 @@
-Content-Type: multipart/mixed; boundary="===============9193753555082741771=="
+Content-Type: multipart/mixed; boundary="===============2255786507827027543=="
 MIME-Version: 1.0
-From: Alex Shi <alex.shi@linaro.org>
+From: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/tlb] ff9b625d26: stderr.Run:"Process_Creation":Fork_failed_at_iteration in unixbench test
-Date: Thu, 17 Mar 2016 17:07:47 +0800
-Message-ID: <56EA73E3.3050606@linaro.org>
-In-Reply-To: <20160317060037.GD1670@yexl-desktop>
+Subject: Re: [drm/i915] 396e33ae20: [drm:intel_set_cpu_fifo_underrun_reporting [i915]] *ERROR* uncleared fifo underrun on pipe B
+Date: Thu, 17 Mar 2016 12:27:53 +0100
+Message-ID: <56EA94B9.8040401@linux.intel.com>
+In-Reply-To: <CAJ75kXZyC4PkX+4Y4H4vfPbuj=oj9NHLA_RC9aMB_p6ak0DRuQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9193753555082741771==
+--===============2255786507827027543==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Thanks for testing!
+Op 17-03-16 om 11:49 schreef William Dauchy:
+> On Mon, Jan 11, 2016 at 2:35 AM, kernel test robot
+> <ying.huang@linux.intel.com> wrote:
+>> FYI, we noticed the below changes on
+>>
+>> git://anongit.freedesktop.org/drm-intel drm-intel-next-queued
+>> commit 396e33ae204f52abebec9e578f44c749305500f4 ("drm/i915: Add two-stag=
+e ILK-style watermark programming (v10)")
+>>
+>>
+>> +--------------------------------------------------+------------+-------=
+-----+
+>> |                                                  | 2dfb0b816d | 396e33=
+ae20 |
+>> +--------------------------------------------------+------------+-------=
+-----+
+>> | boot_successes                                   | 8          | 19    =
+     |
+>> | boot_failures                                    | 0          | 4     =
+     |
+>> | drm:intel_set_cpu_fifo_underrun_reporting[i915]] | 0          | 4     =
+     |
+>> | drm:intel_cpu_fifo_underrun_irq_handler[i915]]   | 0          | 4     =
+     |
+>> | drm:intel_set_pch_fifo_underrun_reporting[i915]] | 0          | 4     =
+     |
+>> | drm:intel_pch_fifo_underrun_irq_handler[i915]]   | 0          | 4     =
+     |
+>> +--------------------------------------------------+------------+-------=
+-----+
+>>
+>>
+>>
+>> [   36.077826] NFS: Registering the id_resolver key type
+>> [   36.078178] Key type id_resolver registered
+>> [   36.078444] Key type id_legacy registered
+>> [   60.884026] [drm:intel_set_cpu_fifo_underrun_reporting [i915]] *ERROR=
+* uncleared fifo underrun on pipe B
+>> [   60.884659] [drm:intel_cpu_fifo_underrun_irq_handler [i915]] *ERROR* =
+CPU pipe B FIFO underrun
+>> [   60.885221] [drm:intel_set_pch_fifo_underrun_reporting [i915]] *ERROR=
+* uncleared pch fifo underrun on pch transcoder B
+>> [   60.885887] [drm:intel_pch_fifo_underrun_irq_handler [i915]] *ERROR* =
+PCH transcoder B FIFO underrun
+>> [   61.180651] random: nonblocking pool is initialized
+>> [   81.430503] [drm:intel_set_cpu_fifo_underrun_reporting [i915]] *ERROR=
+* uncleared fifo underrun on pipe C
+>> [   81.431193] [drm:intel_cpu_fifo_underrun_irq_handler [i915]] *ERROR* =
+CPU pipe C FIFO underrun
+>> [   81.431782] [drm:intel_set_pch_fifo_underrun_reporting [i915]] *ERROR=
+* uncleared pch fifo underrun on pch transcoder C
+>> [   81.432474] [drm:intel_pch_fifo_underrun_irq_handler [i915]] *ERROR* =
+PCH transcoder C FIFO underrun
+>>
+>>
+>> To reproduce:
+>>
+>>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-=
+tests.git
+>>         cd lkp-tests
+>>         bin/lkp install job.yaml  # job file is attached in this email
+>>         bin/lkp run     job.yaml
+> I am still triggering these errors on v4.4.6
+> Does anybody knows if there is a fix in queue? What can I do to help
+> debug this issue?
+>
+Does it happen with latest -nightly?
 
-I am glad to know this tree is still in monitor. :)
+~Maarten
 
-Thanks
-Alex
-
-On 03/17/2016 02:00 PM, kernel test robot wrote:
-> FYI, we noticed stderr.Run:"Process_Creation":Fork_failed_at_iteration in=
- unixbench test on
-> =
-
-> https://github.com/alexshi/power-scheduling.git x86-tlb
-> commit ff9b625d26ba7750745d235dc6f1792fb36fea48 ("x86/tlb: just do tlb fl=
-ush on one of siblings of SMT")
-> =
-
-> 2016-03-17 06:04:39 ./Run spawn -c 1
-> =
-
->    #    #  #    #  #  #    #          #####   ######  #    #   ####   #  =
-  #
->    #    #  ##   #  #   #  #           #    #  #       ##   #  #    #  #  =
-  #
->    #    #  # #  #  #    ##            #####   #####   # #  #  #       ###=
-###
->    #    #  #  # #  #    ##            #    #  #       #  # #  #       #  =
-  #
->    #    #  #   ##  #   #  #           #    #  #       #   ##  #    #  #  =
-  #
->     ####   #    #  #  #    #          #####   ######  #    #   ####   #  =
-  #
-> =
-
->    Version 5.1.3                      Based on the Byte Magazine Unix Ben=
-chmark
-> =
-
->    Multi-CPU version                  Version 5 revisions by Ian Smith,
->                                       Sunnyvale, CA, USA
->    January 13, 2011                   johantheghost at yahoo period com
-> =
-
-> =
-
-> 1 x Process Creation  1
-> =
-
-> =
-
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/nr_task/rootfs/tbox_group/test/testcase:
->   gcc-4.9/performance/x86_64-rhel/1/debian-x86_64-2015-02-07.cgz/lkp-ivb-=
-d02/spawn/unixbench
-> =
-
-> commit: =
-
->   v4.5
->   ff9b625d26ba7750745d235dc6f1792fb36fea48
-> =
-
->             v4.5 ff9b625d26ba7750745d235dc6 =
-
-> ---------------- -------------------------- =
-
->        fail:runs  %reproduction    fail:runs
->            |             |             |    =
-
->            :4          100%           4:4     last_state.failed
->            :4          100%           4:4     last_state.is_incomplete_run
->            :4          100%           4:4     last_state.unixbench.exit_c=
-ode.1
->            :4          100%           4:4     stderr.********************=
-**************************
->            :4           50%           2:4     stderr.Reason:Success;abort=
-ing
->            :4          100%           4:4     stderr.Run:"Process_Creatio=
-n":Fork_failed_at_iteration
->            :4           50%           2:4     stderr.Segmentation_fault;a=
-borting
-> =
-
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/nr_task/rootfs/tbox_group/test/testcase:
->   gcc-4.9/performance/x86_64-rhel/1/debian-x86_64-2015-02-07.cgz/lkp-ivb-=
-d04/spawn/unixbench
-> =
-
-> commit: =
-
->   v4.5
->   ff9b625d26ba7750745d235dc6f1792fb36fea48
-> =
-
->             v4.5 ff9b625d26ba7750745d235dc6 =
-
-> ---------------- -------------------------- =
-
->        fail:runs  %reproduction    fail:runs
->            |             |             |    =
-
->            :8          100%           8:8     last_state.failed
->            :8          100%           8:8     last_state.is_incomplete_run
->            :8          100%           8:8     last_state.unixbench.exit_c=
-ode.1
->            :8          100%           8:8     stderr.********************=
-**************************
->            :8           12%           1:8     stderr.Aborted;aborting
->            :8           62%           5:8     stderr.Reason:Success;abort=
-ing
->            :8           75%           6:8     stderr.Run:"Process_Creatio=
-n":Fork_failed_at_iteration
->            :8           12%           1:8     stderr.Run:"Process_Creatio=
-n":Segmentation_fault;aborting
->            :8           12%           1:8     stderr.Run:"Process_Creatio=
-n":spawn:../nptl/sysdeps/unix/sysv/linux/x86_64/../fork.c:#:__libc_fork:Ass=
-ertion`({__typeof(({struct_pthread*__self;asm("mov%%fs:%c1,%#":"=3Dr"(__sel=
-f):"i"(__builtin_offsetof(struct_pthread,header.self)));__self;})->tid)__va=
-lue;if(sizeof(__value)=3D=3D#)asm_volatile("movb%%fs:%P2,%b0":"=3Dq"(__valu=
-e):"#"(#),"i"(__builtin_offsetof(struct_pthread,tid)));else_if(sizeof(__val=
-ue)=3D=3D#)asm_volatile("movl%%fs:%P1,%#":"=3Dr"(__value):"i"(__builtin_off=
-setof(struct_pthread,tid)));else{if(sizeof(__value)!=3D#)abort();asm_volati=
-le("movq%%fs:%P1,%q0":"=3Dr"(__value):"i"(__builtin_offsetof(struct_pthread=
-,tid)));}__value;})=3D=3Dppid'failed
->            :8           12%           1:8     stderr.Segmentation_fault;a=
-borting
-> =
-
-> lkp-ivb-d02: Ivy Bridge
-> Memory: 8G
-> =
-
-> lkp-ivb-d04: Ivy Bridge
-> Memory: 4G
-> =
-
-> =
-
-> To reproduce:
-> =
-
->         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-t=
-ests.git
->         cd lkp-tests
->         bin/lkp install job.yaml  # job file is attached in this email
->         bin/lkp run     job.yaml
-> =
-
-> =
-
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
-> =
-
-> =
-
-> Thanks,
-> Xiaolong Ye
->=20
-
---===============9193753555082741771==--
+--===============2255786507827027543==--
 
