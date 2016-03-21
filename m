@@ -1,138 +1,120 @@
-Content-Type: multipart/mixed; boundary="===============7028171780135679907=="
+Content-Type: multipart/mixed; boundary="===============3793812765738702858=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [futex] 65d8fc777f: +25.6% will-it-scale.per_process_ops
-Date: Mon, 21 Mar 2016 16:42:47 +0800
-Message-ID: <8737rkgr20.fsf@yhuang-dev.intel.com>
-In-Reply-To: <alpine.DEB.2.11.1603210841260.3978@nanos>
+Subject: Re: [rcutorture] 5b3e3964db: torture_init_begin: refusing rcu init: spin_lock running
+Date: Mon, 21 Mar 2016 07:59:05 -0700
+Message-ID: <20160321145905.GO4287@linux.vnet.ibm.com>
+In-Reply-To: <20160321064507.GD32569@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7028171780135679907==
+--===============3793812765738702858==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Thomas Gleixner <tglx@linutronix.de> writes:
+On Mon, Mar 21, 2016 at 02:45:07PM +0800, kernel test robot wrote:
+> FYI, we noticed the below changes on
+> =
 
-> On Mon, 21 Mar 2016, Huang, Ying wrote:
->> >  FYI, we noticed 25.6% performance improvement due to commit
->> >
->> >    65d8fc777f6d "futex: Remove requirement for lock_page() in get_fute=
-x_key()"
->> >
->> >  in the will-it-scale.per_process_ops test.
->> >
->> >  will-it-scale.per_process_ops tests the futex operations for process =
-shared
->> >  futexes (Or whatever that test really does).
->> =
+> https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu=
+/dev
+> commit 5b3e3964dba5f5a3210ca931d523c1e1f3119b31 ("rcutorture: Add RCU gra=
+ce-period performance tests")
+> =
 
->> There is a futex sub test case for will-it-scale test suite.  But I got =
-your
->> point, we need some description for the test case.  If email is not too
->> limited for the full description, we will put it in some web site and
->> include short description and link to the full description in email.
->
-> Ok. Just make sure the short description gives enough information for the
-> casual reader.
->  =
+> As below, the log "torture_init_begin: refusing rcu init: spin_lock runni=
+ng" showed with your commit.
 
->> >  The commit has no significant impact on any other test in the test su=
-ite.
->> =
+This is the expected result if you try to run two torture tests at the
+same time.  You only get one of locktorture, rcutorture, or rcuperf
+at any given time.
 
->> Sorry, we have no enough machine power to test all test cases for each
->> bisect result.  So we will have no such information until we find a way
->> to do that.
->
-> Well, then I really have to ask how I should interpret the data here:
->
->    5076304 =C2=B1  0%     +25.6%    6374220 =C2=B1  0%  will-it-scale.per=
-_process_ops
->
->    ^^^ That's the reason why you sent the mail in the first place
->
->    1194117 =C2=B1  0%     +14.4%    1366153 =C2=B1  1%  will-it-scale.per=
-_thread_ops
->       0.58 =C2=B1  0%      -2.0%       0.57 =C2=B1  0%  will-it-scale.sca=
-lability
->       6820 =C2=B1  0%     -19.6%       5483 =C2=B1 15%  meminfo.AnonHugeP=
-ages
->       2652 =C2=B1  5%     -10.4%       2375 =C2=B1  2%  vmstat.system.cs
->       2848 =C2=B1 32%    +141.2%       6870 =C2=B1 65%  numa-meminfo.node=
-1.Active(anon)
->       2832 =C2=B1 31%     +57.6%       4465 =C2=B1 27%  numa-meminfo.node=
-1.AnonPages
->      15018 =C2=B1 12%     -23.3%      11515 =C2=B1 15%  numa-meminfo.node=
-2.AnonPages
->       1214 =C2=B1 14%     -22.8%     936.75 =C2=B1 20%  numa-meminfo.node=
-3.PageTables
->     712.25 =C2=B1 32%    +141.2%       1718 =C2=B1 65%  numa-vmstat.node1=
-.nr_active_anon
->     708.25 =C2=B1 31%     +57.7%       1116 =C2=B1 27%  numa-vmstat.node1=
-.nr_anon_pages
->
-> How is this related and what should I do about this information? =
+							Thanx, Paul
 
+> [    3.310757] spin_lock-torture:--- Start of test [debug]: nwriters_stre=
+ss=3D4 nreaders_stress=3D0 stat_interval=3D60 verbose=3D1 shuffle_interval=
+=3D3 stutter=3D5 shutdown_secs=3D0 onoff_interval=3D0 onoff_holdoff=3D0
+> [    3.310757] spin_lock-torture:--- Start of test [debug]: nwriters_stre=
+ss=3D4 nreaders_stress=3D0 stat_interval=3D60 verbose=3D1 shuffle_interval=
+=3D3 stutter=3D5 shutdown_secs=3D0 onoff_interval=3D0 onoff_holdoff=3D0
+> [    3.318722] spin_lock-torture: Creating torture_shuffle task
+> [    3.318722] spin_lock-torture: Creating torture_shuffle task
+> [    3.350213] spin_lock-torture: Creating torture_stutter task
+> [    3.350213] spin_lock-torture: Creating torture_stutter task
+> [    3.353000] spin_lock-torture: torture_shuffle task started
+> [    3.353000] spin_lock-torture: torture_shuffle task started
+> [    3.355562] spin_lock-torture: Creating lock_torture_writer task
+> [    3.355562] spin_lock-torture: Creating lock_torture_writer task
+> [    3.358373] spin_lock-torture: torture_stutter task started
+> [    3.358373] spin_lock-torture: torture_stutter task started
+> [    3.361060] spin_lock-torture: lock_torture_writer task started
+> [    3.361060] spin_lock-torture: lock_torture_writer task started
+> [    3.370011] spin_lock-torture: Creating lock_torture_writer task
+> [    3.370011] spin_lock-torture: Creating lock_torture_writer task
+> [    3.372856] spin_lock-torture: Creating lock_torture_writer task
+> [    3.372856] spin_lock-torture: Creating lock_torture_writer task
+> [    3.375817] spin_lock-torture: lock_torture_writer task started
+> [    3.375817] spin_lock-torture: lock_torture_writer task started
+> [    3.378697] spin_lock-torture: Creating lock_torture_writer task
+> [    3.378697] spin_lock-torture: Creating lock_torture_writer task
+> [    3.380049] spin_lock-torture: lock_torture_writer task started
+> [    3.380049] spin_lock-torture: lock_torture_writer task started
+> [    3.410169] spin_lock-torture: Creating lock_torture_stats task
+> [    3.410169] spin_lock-torture: Creating lock_torture_stats task
+> [    3.413129] spin_lock-torture: lock_torture_writer task started
+> [    3.413129] spin_lock-torture: lock_torture_writer task started
+> [    3.420137] torture_init_begin: refusing rcu init: spin_lock running
+> [    3.420137] torture_init_begin: refusing rcu init: spin_lock running
+> =
 
-For each will-it-scale sub test case, it will be run in both process
-mode and thread mode, and task number will change from 1 to CPU number.
-will-it-scale.per_thread_ops shows thread mode main result.
-will-it-scale.scalability is calculated to measure how per_process_ops
-and per_thread_ops scaled along with the task number.  These are default
-behavior of will-it-scale test suite.
+> [    3.430064] spin_lock-torture: lock_torture_stats task started
+> [    3.430064] spin_lock-torture: lock_torture_stats task started
+> [    3.441101] futex hash table entries: 16 (order: -1, 2048 bytes)
+> [    3.441101] futex hash table entries: 16 (order: -1, 2048 bytes)
+> [    3.443791] audit: initializing netlink subsys (disabled)
+> [    3.443791] audit: initializing netlink subsys (disabled)
+> [    3.446329] audit: type=3D2000 audit(1458435960.381:1): initialized
+> [    3.446329] audit: type=3D2000 audit(1458435960.381:1): initialized
+> [    3.470185] zbud: loaded
+> [    3.470185] zbud: loaded
+> =
 
-Others are monitors output.  That is, other information collected during
-test.  For example, meminfo is a monitor to sampling /proc/meminfo
-contents,  AnonHugePages is a line in it.  meminfo.AnonHugePages is for
-the average value of AnonHugePages line of /proc/meminfo.  Similarly
-vmstat.system.cs is the average value of cs column of system column
-group of /usr/bin/vmstat.
+> =
 
-We hope these information are helpful for root causing the regression.
+> FYI, raw QEMU command line is:
+> =
 
->  If it's important then I have to admit, that I fail to understand why.
->
->  If it's not important then I have to ask why is this included.
->
->> > So that allows me to reproduce that test more or less with no effort. =
-And
->> > that's the really important part.
->> =
+> 	qemu-system-x86_64 -enable-kvm -cpu Nehalem -kernel /pkg/linux/x86_64-ra=
+ndconfig-i0-201612/gcc-5/5b3e3964dba5f5a3210ca931d523c1e1f3119b31/vmlinuz-4=
+.5.0-rc1-00035-g5b3e396 -append 'root=3D/dev/ram0 user=3Dlkp job=3D/lkp/sch=
+eduled/vm-intel12-yocto-x86_64-6/bisect_boot-1-yocto-minimal-x86_64.cgz-x86=
+_64-randconfig-i0-201612-5b3e3964dba5f5a3210ca931d523c1e1f3119b31-20160320-=
+8459-1gazcic-1.yaml ARCH=3Dx86_64 kconfig=3Dx86_64-randconfig-i0-201612 bra=
+nch=3Dlinux-devel/devel-spot-201603200631 commit=3D5b3e3964dba5f5a3210ca931=
+d523c1e1f3119b31 BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-i0-201612/gcc-5/=
+5b3e3964dba5f5a3210ca931d523c1e1f3119b31/vmlinuz-4.5.0-rc1-00035-g5b3e396 m=
+ax_uptime=3D600 RESULT_ROOT=3D/result/boot/1/vm-intel12-yocto-x86_64/yocto-=
+minimal-x86_64.cgz/x86_64-randconfig-i0-201612/gcc-5/5b3e3964dba5f5a3210ca9=
+31d523c1e1f3119b31/0 LKP_SERVER=3Dinn earlyprintk=3DttyS0,115200 systemd.lo=
+g_level=3Derr debug apic=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stal=
+l_timeout=3D100 panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=
+=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 console=3DttyS0,115200 console=
+=3Dtty0 vga=3Dnormal rw ip=3D::::vm-intel12-yocto-x86_64-6::dhcp drbd.minor=
+_count=3D8'  -initrd /fs/KVM/initrd-vm-intel12-yocto-x86_64-6 -m 320 -smp 2=
+ -device e1000,netdev=3Dnet0 -netdev user,id=3Dnet0 -boot order=3Dnc -no-re=
+boot -watchdog i6300esb -rtc base=3Dlocaltime -drive file=3D/fs/KVM/disk0-v=
+m-intel12-yocto-x86_64-6,media=3Ddisk,if=3Dvirtio -drive file=3D/fs/KVM/dis=
+k1-vm-intel12-yocto-x86_64-6,media=3Ddisk,if=3Dvirtio -pidfile /dev/shm/kbo=
+ot/pid-vm-intel12-yocto-x86_64-6 -serial file:/dev/shm/kboot/serial-vm-inte=
+l12-yocto-x86_64-6 -daemonize -display none -monitor null =
 
->> For reproducing, now we use lkp-tests tool, which includes scripts to
->> build the test case, run the test, collect various information, compare
->> the test result, with the job file attached with the report email.  That
->> is not the easiest way, we will continuously improve it.
->
-> I know and lkp-tests is a pain to work with. So please look into a way to
-> extract the relevant binaries, so it's simple for developers to reproduce.
-
-OK.  We will try to improve on this side.  But it is not an easy task
-for us to provided easy to use simple binaries.  Do you think something
-like Docker image is easy to use?
-
->> > You can provide nice charts and full comparison tables for all tests o=
-n a web
->> > site for those who are interested in large stats and pretty charts.
->> >
->> > Full results: http://wherever.you.store/your/results/test-nr/results
->> =
-
->> Before we have a website for detailed information, we will still put
->> some details into report email.
->
-> Ok, but please make them understandable for mere mortals.
-
-Sure.
-
-Best Regards,
-Huang, Ying
+> =
 
 > Thanks,
->
-> 	tglx
+> Xiaolong Ye.
 
---===============7028171780135679907==--
+
+
+--===============3793812765738702858==--
 
