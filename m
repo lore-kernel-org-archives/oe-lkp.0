@@ -1,249 +1,210 @@
-Content-Type: multipart/mixed; boundary="===============8501052923802446031=="
+Content-Type: multipart/mixed; boundary="===============3122031331289078938=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [futex] 65d8fc777f: +25.6% will-it-scale.per_process_ops
-Date: Mon, 21 Mar 2016 10:53:03 +0800
-Message-ID: <87io0gh78w.fsf@yhuang-dev.intel.com>
-In-Reply-To: <alpine.DEB.2.11.1603180849150.3978@nanos>
+Subject: Re: [x86/tlb] ff9b625d26: stderr.Run:"Process_Creation":Fork_failed_at_iteration in unixbench test
+Date: Mon, 21 Mar 2016 12:43:58 +0800
+Message-ID: <20160321044358.GA30910@yexl-desktop>
+In-Reply-To: <56EC1068.6020405@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8501052923802446031==
+--===============3122031331289078938==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Thomas,
+On Fri, Mar 18, 2016 at 10:27:52PM +0800, Alex Shi wrote:
+>
+>Hi Xiaolong,
+>
+>I tried this benchmark on my native haswell box, but it works. and get
+>unstable/better performance value.
+>This patch may be has some problem when it run in guest OS.
+>Did you run the case on a guest OS or a native OS?
 
-Thanks a lot for your valuable input!
+Hi, Alex
 
-Thomas Gleixner <tglx@linutronix.de> writes:
+The unixbench is launched on a native OS.
+>
+>Any other benchmark did you test on any other machine? If so, what's the
+>result you get?
 
-> On Fri, 18 Mar 2016, Huang, Ying wrote:
->> Usually we will put most important change we think in the subject of the
->> mail, for this email, it is,
+So far, we have just found issues with unixbench on two Ivy Bridge
+machine.
+
+Thanks,
+Xiaolong.
+>
+>Regards
+>Alex
+>
+>On 03/17/2016 02:00 PM, kernel test robot wrote:
+>> FYI, we noticed stderr.Run:"Process_Creation":Fork_failed_at_iteration i=
+n unixbench test on
 >> =
 
->> +25.6% will-it-scale.per_process_ops
->
-> That is confusing on it's own, because the reader does not know at all wh=
-ether
-> this is an improvement or a regression.
->
-> So something like this might be useful:
->
-> Subject: subsystem: 12digitsha1: 25% performance improvement
->
-> or in some other case
->
-> Subject: subsystem: 12digitsha1: 25% performance regression
->
-> So in the latter case I will look into that mail immediately. The improve=
-ment
-> one can wait until I have cared about urgent stuff.
->
-> In the subject line it is pretty much irrelevant which foo-bla-ops test h=
-as
-> produced that result. It really does not matter. If it's a regression, it=
-'s
-> urgent. If it's an improvement it's informal and it can wait to be read.
->
-> So in that case it would be:
->
-> futex: 65d8fc777f6d: 25% performance improvement
->
-> You can grab the subsystem prefix from the commit.
-
-We will include regression/improvement information in subject at least.
-
->> and, we try to put most important changes at the top of the comparison
->> result below.  That is the will-it-scale.xxx below.
+>> https://github.com/alexshi/power-scheduling.git x86-tlb
+>> commit ff9b625d26ba7750745d235dc6f1792fb36fea48 ("x86/tlb: just do tlb f=
+lush on one of siblings of SMT")
 >> =
 
->> We are thinking about how to improve this.  You input is valuable for
->> us.  We are thinking change the "below changes" line to something like
->> below.
+>> 2016-03-17 06:04:39 ./Run spawn -c 1
 >> =
 
->> FYI, we noticed the +25.6% will-it-scale.per_process_ops improvement on
->> ...
+>>    #    #  #    #  #  #    #          #####   ######  #    #   ####   # =
+   #
+>>    #    #  ##   #  #   #  #           #    #  #       ##   #  #    #  # =
+   #
+>>    #    #  # #  #  #    ##            #####   #####   # #  #  #       ##=
+####
+>>    #    #  #  # #  #    ##            #    #  #       #  # #  #       # =
+   #
+>>    #    #  #   ##  #   #  #           #    #  #       #   ##  #    #  # =
+   #
+>>     ####   #    #  #  #    #          #####   ######  #    #   ####   # =
+   #
 >> =
 
->> Does this looks better?
->
-> A bit, but it still does not tell me much. It's completely non obvious wh=
-at
-> 'will-it-scale.per_process_ops' means.
+>>    Version 5.1.3                      Based on the Byte Magazine Unix Be=
+nchmark
+>> =
 
-will-it-scale is a test suite, per_process_ops is one of its results.
-That is the convention used in original report.
+>>    Multi-CPU version                  Version 5 revisions by Ian Smith,
+>>                                       Sunnyvale, CA, USA
+>>    January 13, 2011                   johantheghost at yahoo period com
+>> =
 
-> Let me give you an example how a useful
-> and easy to understand summary of the change could look like:
->
->
->  FYI, we noticed 25.6% performance improvement due to commit
->
->    65d8fc777f6d "futex: Remove requirement for lock_page() in get_futex_k=
-ey()"
->
->  in the will-it-scale.per_process_ops test.
->
->  will-it-scale.per_process_ops tests the futex operations for process sha=
-red
->  futexes (Or whatever that test really does).
+>> =
 
-There is a futex sub test case for will-it-scale test suite.  But I got your
-point, we need some description for the test case.  If email is not too
-limited for the full description, we will put it in some web site and
-include short description and link to the full description in email.
+>> 1 x Process Creation  1
+>> =
 
->  The commit has no significant impact on any other test in the test suite.
+>> =
 
-Sorry, we have no enough machine power to test all test cases for each
-bisect result.  So we will have no such information until we find a way
-to do that.
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> compiler/cpufreq_governor/kconfig/nr_task/rootfs/tbox_group/test/testcas=
+e:
+>>   gcc-4.9/performance/x86_64-rhel/1/debian-x86_64-2015-02-07.cgz/lkp-ivb=
+-d02/spawn/unixbench
+>> =
 
-> So those few lines tell precisely what this is about. It's something I al=
-ready
-> expected, so I really can skip the rest of the mail unless I'm interested=
- in
-> reproducing the result.
+>> commit: =
 
-We will put important information at first of the email.  And details
-later.  Better to have clear mark.  So people can get important
-information and ignore the details if they don't want.
+>>   v4.5
+>>   ff9b625d26ba7750745d235dc6f1792fb36fea48
+>> =
 
-> Now lets look at a performance regression.
->
-> Subject: futex: 65d8fc777f6d: 25% performance regression
->
->  FYI, we noticed a 25.2% performance regression due to commit
->
->  65d8fc777f6d "futex: Remove requirement for lock_page() in get_futex_key=
-()"
->
->  in the will-it-scale.per_process_ops test.
->
->  will-it-scale.per_process_ops tests the futex operations for process sha=
-red
->  futexes (Or whatever that test really does).
->
->  The commit has no significant impact on any other test in the test suite.
->
-> In that case I will certainly be interested how to reproduce that test. S=
-o I
-> need the following information:
->
-> Machine description: Intel IvyBridge 2 sockets, 32 cores, 64G RAM
-> Config file: http://wherever.you.store/your/results/test-nr/config
+>>             v4.5 ff9b625d26ba7750745d235dc6 =
 
-We have some information about this before.  But not organized good
-enough, will improve it.
+>> ---------------- -------------------------- =
 
-> Test: http://wherever.you.store/your/tests/will-it-scale.per_process_ops.=
-tar.bz2
->
-> That tarball should contain:
->
->      README
->      test_script.sh
->      test_binary
->
-> README should tell:
->
->    will-it-scale.per_process_ops
->
->    Short explanation of the test
->
->    Preliminaries: =
+>>        fail:runs  %reproduction    fail:runs
+>>            |             |             |    =
 
->    	- perf
-> 	- whatever
->
-> So that allows me to reproduce that test more or less with no effort. And
-> that's the really important part.
+>>            :4          100%           4:4     last_state.failed
+>>            :4          100%           4:4     last_state.is_incomplete_r=
+un
+>>            :4          100%           4:4     last_state.unixbench.exit_=
+code.1
+>>            :4          100%           4:4     stderr.*******************=
+***************************
+>>            :4           50%           2:4     stderr.Reason:Success;abor=
+ting
+>>            :4          100%           4:4     stderr.Run:"Process_Creati=
+on":Fork_failed_at_iteration
+>>            :4           50%           2:4     stderr.Segmentation_fault;=
+aborting
+>> =
 
-For reproducing, now we use lkp-tests tool, which includes scripts to
-build the test case, run the test, collect various information, compare
-the test result, with the job file attached with the report email.  That
-is not the easiest way, we will continuously improve it.
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> compiler/cpufreq_governor/kconfig/nr_task/rootfs/tbox_group/test/testcas=
+e:
+>>   gcc-4.9/performance/x86_64-rhel/1/debian-x86_64-2015-02-07.cgz/lkp-ivb=
+-d04/spawn/unixbench
+>> =
 
-> You can provide nice charts and full comparison tables for all tests on a=
- web
-> site for those who are interested in large stats and pretty charts.
->
-> Full results: http://wherever.you.store/your/results/test-nr/results
+>> commit: =
 
-Before we have a website for detailed information, we will still put
-some details into report email.
+>>   v4.5
+>>   ff9b625d26ba7750745d235dc6f1792fb36fea48
+>> =
 
-> So now lets look at a scenario where that commit results in a performance
-> improvement on will-it-scale.per_process_ops and a regression on
-> will-it-scale.per_task.
->
-> Subject: futex: 65d8fc777f6d: 25% performance regression
->
->  FYI, we noticed a 25.2% performance regression due to commit
->
->  65d8fc777f6d "futex: Remove requirement for lock_page() in get_futex_key=
-()"
->
->  in the will-it-scale.per_task test.
->
->  will-it-scale.per_tasks tests the futex operations for process private
->  futexes (Or whatever that test really does).
->
->  The commit has significant impact on the following tests in the test sui=
-te:
->  =
+>>             v4.5 ff9b625d26ba7750745d235dc6 =
 
-> 	will-it-scale.per_process_ops: 25% improvement
->
-> The 25% improvement is really not interesting. What's interesting is the
-> regression. That's what people need to look at. You still can provide the
-> information about all the tests including the 25% improvement data on =
+>> ---------------- -------------------------- =
 
->
-> Full results: http://wherever.you.store/your/results/test-nr/results
->
-> Now, if you have commits which have mixed impact on various tests, then i=
-t's
-> important to point out the most relevant issue clearly in the
-> summary. I.e. you need to filter the tests for the maximum
-> regression/improvement and use that as the main information. You still can
-> provide the information about the impact on other tests in a very condens=
-ed
-> form.
->
->  The commit has significant impact on the following tests in the test sui=
-te:
->
->      test1: 	0.5% Regression
->      test2:	2.0% Improvement
->      ....
->      testN:	0.2% Regression
->
-> That's useful information, but it might be completely irrelevant if the
-> primary impact is, e.g. a 10% Regression. Then it's nice to know, that it=
- gave
-> a 2% improvement on test2, but that's about it. The important information=
- is
-> the 10% regression, which needs to be addressed urgently.
+>>        fail:runs  %reproduction    fail:runs
+>>            |             |             |    =
 
-Yes.  We will separate summary and details.  And put most important
-information at the front of of the summary.
+>>            :8          100%           8:8     last_state.failed
+>>            :8          100%           8:8     last_state.is_incomplete_r=
+un
+>>            :8          100%           8:8     last_state.unixbench.exit_=
+code.1
+>>            :8          100%           8:8     stderr.*******************=
+***************************
+>>            :8           12%           1:8     stderr.Aborted;aborting
+>>            :8           62%           5:8     stderr.Reason:Success;abor=
+ting
+>>            :8           75%           6:8     stderr.Run:"Process_Creati=
+on":Fork_failed_at_iteration
+>>            :8           12%           1:8     stderr.Run:"Process_Creati=
+on":Segmentation_fault;aborting
+>>            :8           12%           1:8     stderr.Run:"Process_Creati=
+on":spawn:../nptl/sysdeps/unix/sysv/linux/x86_64/../fork.c:#:__libc_fork:As=
+sertion`({__typeof(({struct_pthread*__self;asm("mov%%fs:%c1,%#":"=3Dr"(__se=
+lf):"i"(__builtin_offsetof(struct_pthread,header.self)));__self;})->tid)__v=
+alue;if(sizeof(__value)=3D=3D#)asm_volatile("movb%%fs:%P2,%b0":"=3Dq"(__val=
+ue):"#"(#),"i"(__builtin_offsetof(struct_pthread,tid)));else_if(sizeof(__va=
+lue)=3D=3D#)asm_volatile("movl%%fs:%P1,%#":"=3Dr"(__value):"i"(__builtin_of=
+fsetof(struct_pthread,tid)));else{if(sizeof(__value)!=3D#)abort();asm_volat=
+ile("movq%%fs:%P1,%q0":"=3Dr"(__value):"i"(__builtin_offsetof(struct_pthrea=
+d,tid)));}__value;})=3D=3Dppid'failed
+>>            :8           12%           1:8     stderr.Segmentation_fault;=
+aborting
+>> =
 
-> Hope that helps.
+>> lkp-ivb-d02: Ivy Bridge
+>> Memory: 8G
+>> =
 
-That really help us a lot!  Thanks a lot!
+>> lkp-ivb-d04: Ivy Bridge
+>> Memory: 4G
+>> =
 
-Best Regards,
-Huang, Ying
+>> =
 
-> Thanks,
->
-> 	tglx
+>> To reproduce:
+>> =
 
---===============8501052923802446031==--
+>>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-=
+tests.git
+>>         cd lkp-tests
+>>         bin/lkp install job.yaml  # job file is attached in this email
+>>         bin/lkp run     job.yaml
+>> =
+
+>> =
+
+>> Disclaimer:
+>> Results have been estimated based on internal Intel analysis and are pro=
+vided
+>> for informational purposes only. Any difference in system hardware or so=
+ftware
+>> design or configuration may affect actual performance.
+>> =
+
+>> =
+
+>> Thanks,
+>> Xiaolong Ye
+>>=20
+
+--===============3122031331289078938==--
 
