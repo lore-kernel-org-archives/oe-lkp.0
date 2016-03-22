@@ -1,120 +1,262 @@
-Content-Type: multipart/mixed; boundary="===============3793812765738702858=="
+Content-Type: multipart/mixed; boundary="===============4305508669373239236=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+From: kernel test robot <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [rcutorture] 5b3e3964db: torture_init_begin: refusing rcu init: spin_lock running
-Date: Mon, 21 Mar 2016 07:59:05 -0700
-Message-ID: <20160321145905.GO4287@linux.vnet.ibm.com>
-In-Reply-To: <20160321064507.GD32569@yexl-desktop>
+Subject: [drm/i915] 97f9010af0: No primary result change, -36.2% piglit.time.percent_of_cpu_this_job_got
+Date: Tue, 22 Mar 2016 10:50:43 +0800
+Message-ID: <20160322025043.GA19091@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3793812765738702858==
+--===============4305508669373239236==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 21, 2016 at 02:45:07PM +0800, kernel test robot wrote:
-> FYI, we noticed the below changes on
-> =
+FYI, we noticed that piglit.time.percent_of_cpu_this_job_got -36.2% change =
+with your commit.
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu=
-/dev
-> commit 5b3e3964dba5f5a3210ca931d523c1e1f3119b31 ("rcutorture: Add RCU gra=
-ce-period performance tests")
-> =
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+commit 97f9010af05c15e0b7e6b4ef6ff8cb0ebb7e7715 ("drm/i915: mdelay(10) cons=
+idered harmful")
 
-> As below, the log "torture_init_begin: refusing rcu init: spin_lock runni=
-ng" showed with your commit.
 
-This is the expected result if you try to run two torture tests at the
-same time.  You only get one of locktorture, rcutorture, or rcuperf
-at any given time.
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+compiler/group/kconfig/rootfs/tbox_group/testcase:
+  gcc-4.9/igt-037/x86_64-rhel/debian-x86_64-2015-02-07.cgz/snb-drag/piglit
 
-							Thanx, Paul
+commit: =
 
-> [    3.310757] spin_lock-torture:--- Start of test [debug]: nwriters_stre=
-ss=3D4 nreaders_stress=3D0 stat_interval=3D60 verbose=3D1 shuffle_interval=
-=3D3 stutter=3D5 shutdown_secs=3D0 onoff_interval=3D0 onoff_holdoff=3D0
-> [    3.310757] spin_lock-torture:--- Start of test [debug]: nwriters_stre=
-ss=3D4 nreaders_stress=3D0 stat_interval=3D60 verbose=3D1 shuffle_interval=
-=3D3 stutter=3D5 shutdown_secs=3D0 onoff_interval=3D0 onoff_holdoff=3D0
-> [    3.318722] spin_lock-torture: Creating torture_shuffle task
-> [    3.318722] spin_lock-torture: Creating torture_shuffle task
-> [    3.350213] spin_lock-torture: Creating torture_stutter task
-> [    3.350213] spin_lock-torture: Creating torture_stutter task
-> [    3.353000] spin_lock-torture: torture_shuffle task started
-> [    3.353000] spin_lock-torture: torture_shuffle task started
-> [    3.355562] spin_lock-torture: Creating lock_torture_writer task
-> [    3.355562] spin_lock-torture: Creating lock_torture_writer task
-> [    3.358373] spin_lock-torture: torture_stutter task started
-> [    3.358373] spin_lock-torture: torture_stutter task started
-> [    3.361060] spin_lock-torture: lock_torture_writer task started
-> [    3.361060] spin_lock-torture: lock_torture_writer task started
-> [    3.370011] spin_lock-torture: Creating lock_torture_writer task
-> [    3.370011] spin_lock-torture: Creating lock_torture_writer task
-> [    3.372856] spin_lock-torture: Creating lock_torture_writer task
-> [    3.372856] spin_lock-torture: Creating lock_torture_writer task
-> [    3.375817] spin_lock-torture: lock_torture_writer task started
-> [    3.375817] spin_lock-torture: lock_torture_writer task started
-> [    3.378697] spin_lock-torture: Creating lock_torture_writer task
-> [    3.378697] spin_lock-torture: Creating lock_torture_writer task
-> [    3.380049] spin_lock-torture: lock_torture_writer task started
-> [    3.380049] spin_lock-torture: lock_torture_writer task started
-> [    3.410169] spin_lock-torture: Creating lock_torture_stats task
-> [    3.410169] spin_lock-torture: Creating lock_torture_stats task
-> [    3.413129] spin_lock-torture: lock_torture_writer task started
-> [    3.413129] spin_lock-torture: lock_torture_writer task started
-> [    3.420137] torture_init_begin: refusing rcu init: spin_lock running
-> [    3.420137] torture_init_begin: refusing rcu init: spin_lock running
-> =
+  57a2af6bbc7a4f1b145cc216c34476402836f0b8
+  97f9010af05c15e0b7e6b4ef6ff8cb0ebb7e7715
 
-> [    3.430064] spin_lock-torture: lock_torture_stats task started
-> [    3.430064] spin_lock-torture: lock_torture_stats task started
-> [    3.441101] futex hash table entries: 16 (order: -1, 2048 bytes)
-> [    3.441101] futex hash table entries: 16 (order: -1, 2048 bytes)
-> [    3.443791] audit: initializing netlink subsys (disabled)
-> [    3.443791] audit: initializing netlink subsys (disabled)
-> [    3.446329] audit: type=3D2000 audit(1458435960.381:1): initialized
-> [    3.446329] audit: type=3D2000 audit(1458435960.381:1): initialized
-> [    3.470185] zbud: loaded
-> [    3.470185] zbud: loaded
-> =
+57a2af6bbc7a4f1b 97f9010af05c15e0b7e6b4ef6f =
 
-> =
+---------------- -------------------------- =
 
-> FYI, raw QEMU command line is:
-> =
+       fail:runs  %reproduction    fail:runs
+         %stddev     %change         %stddev
+             \          |                \  =
 
-> 	qemu-system-x86_64 -enable-kvm -cpu Nehalem -kernel /pkg/linux/x86_64-ra=
-ndconfig-i0-201612/gcc-5/5b3e3964dba5f5a3210ca931d523c1e1f3119b31/vmlinuz-4=
-.5.0-rc1-00035-g5b3e396 -append 'root=3D/dev/ram0 user=3Dlkp job=3D/lkp/sch=
-eduled/vm-intel12-yocto-x86_64-6/bisect_boot-1-yocto-minimal-x86_64.cgz-x86=
-_64-randconfig-i0-201612-5b3e3964dba5f5a3210ca931d523c1e1f3119b31-20160320-=
-8459-1gazcic-1.yaml ARCH=3Dx86_64 kconfig=3Dx86_64-randconfig-i0-201612 bra=
-nch=3Dlinux-devel/devel-spot-201603200631 commit=3D5b3e3964dba5f5a3210ca931=
-d523c1e1f3119b31 BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-i0-201612/gcc-5/=
-5b3e3964dba5f5a3210ca931d523c1e1f3119b31/vmlinuz-4.5.0-rc1-00035-g5b3e396 m=
-ax_uptime=3D600 RESULT_ROOT=3D/result/boot/1/vm-intel12-yocto-x86_64/yocto-=
-minimal-x86_64.cgz/x86_64-randconfig-i0-201612/gcc-5/5b3e3964dba5f5a3210ca9=
-31d523c1e1f3119b31/0 LKP_SERVER=3Dinn earlyprintk=3DttyS0,115200 systemd.lo=
-g_level=3Derr debug apic=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stal=
-l_timeout=3D100 panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=
-=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 console=3DttyS0,115200 console=
-=3Dtty0 vga=3Dnormal rw ip=3D::::vm-intel12-yocto-x86_64-6::dhcp drbd.minor=
-_count=3D8'  -initrd /fs/KVM/initrd-vm-intel12-yocto-x86_64-6 -m 320 -smp 2=
- -device e1000,netdev=3Dnet0 -netdev user,id=3Dnet0 -boot order=3Dnc -no-re=
-boot -watchdog i6300esb -rtc base=3Dlocaltime -drive file=3D/fs/KVM/disk0-v=
-m-intel12-yocto-x86_64-6,media=3Ddisk,if=3Dvirtio -drive file=3D/fs/KVM/dis=
-k1-vm-intel12-yocto-x86_64-6,media=3Ddisk,if=3Dvirtio -pidfile /dev/shm/kbo=
-ot/pid-vm-intel12-yocto-x86_64-6 -serial file:/dev/shm/kboot/serial-vm-inte=
-l12-yocto-x86_64-6 -daemonize -display none -monitor null =
+     69.00 =C2=B1  0%     -36.2%      44.00 =C2=B1  0%  piglit.time.percent=
+_of_cpu_this_job_got
+     44.77 =C2=B1  0%     -36.0%      28.66 =C2=B1  0%  piglit.time.system_=
+time
+     38337 =C2=B1  0%      +4.1%      39904 =C2=B1  0%  piglit.time.volunta=
+ry_context_switches
+     69.00 =C2=B1  0%     -36.2%      44.00 =C2=B1  0%  time.percent_of_cpu=
+_this_job_got
+     44.77 =C2=B1  0%     -36.0%      28.66 =C2=B1  0%  time.system_time
 
-> =
 
-> Thanks,
-> Xiaolong Ye.
+snb-drag: Sandy Bridge
+Memory: 6G
 
 
 
---===============3793812765738702858==--
+                             piglit.time.system_time
+
+  46 ++--------------------------------------------------------------------=
+-+
+     *..*..*..*..*..*..*..*..*..*..*..*..*.*..*..*..*..*..*..*..*..*..*    =
+ |
+  44 ++                                                                    =
+ |
+  42 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  40 ++                                                                    =
+ |
+  38 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  36 ++                                                                    =
+ |
+  34 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  32 ++                                                                    =
+ |
+  30 ++                                                                    =
+ |
+     O  O  O  O  O  O  O  O  O  O  O  O  O O  O  O  O  O  O  O  O  O  O  O =
+ O
+  28 ++--------------------------------------------------------------------=
+-+
+
+
+                     piglit.time.percent_of_cpu_this_job_got
+
+  70 *+----*--*--*--*--*--*--*--*--*--*--*-*--*--*--*--*--*--*--*--*--*----=
+-+
+     |   ..                                                                =
+ |
+  65 ++ *                                                                  =
+ |
+  60 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  55 ++                                                                    =
+ |
+  50 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  45 ++                                                            O  O  O =
+ O
+  40 ++                                                                    =
+ |
+     |                                O  O O  O  O  O  O  O  O  O          =
+ |
+  35 ++                                                                    =
+ |
+  30 ++                                                                    =
+ |
+     |                                                                     =
+ |
+  25 O+-O--O--O--O--O--O--O--O--O--O---------------------------------------=
+-+
+
+
+                       piglit.time.voluntary_context_switches
+
+  46000 ++-----------------------------------------------------------------=
+-+
+        O  O  O  O O  O  O  O  O  O O                                      =
+ |
+  45000 ++                                                                 =
+ |
+  44000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  43000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  42000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  41000 ++                             O  O  O  O  O O  O  O  O  O         =
+ |
+  40000 ++                                                                 =
+ |
+        |                                                           O O  O =
+ O
+  39000 ++                                                                 =
+ |
+        *..*..*..*.*..*..*..*..*..*.*..*..*..*..*..*.*..*..*..*..*..*.*    =
+ |
+  38000 ++-----------------------------------------------------------------=
+-+
+
+
+	[*] bisect-good sample
+	[O] bisect-bad  sample
+
+To reproduce:
+
+        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
+ts.git
+        cd lkp-tests
+        bin/lkp install job.yaml  # job file is attached in this email
+        bin/lkp run     job.yaml
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provid=
+ed
+for informational purposes only. Any difference in system hardware or softw=
+are
+design or configuration may affect actual performance.
+
+
+Thanks,
+Xiaolong Ye
+
+--===============4305508669373239236==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="job.yaml"
+
+LS0tCkxLUF9TRVJWRVI6IGlubgpMS1BfQ0dJX1BPUlQ6IDgwCkxLUF9DSUZTX1BPUlQ6IDEzOQp0
+ZXN0Y2FzZTogcGlnbGl0CmRlZmF1bHQtbW9uaXRvcnM6CiAgd2FpdDogYWN0aXZhdGUtbW9uaXRv
+cgogIGttc2c6IAogIGhlYXJ0YmVhdDoKICAgIGludGVydmFsOiAxMApkZWZhdWx0LXdhdGNoZG9n
+czoKICBvb20ta2lsbGVyOiAKICB3YXRjaGRvZzogCmNvbW1pdDogOTdmOTAxMGFmMDVjMTVlMGI3
+ZTZiNGVmNmZmOGNiMGViYjdlNzcxNQptb2RlbDogU2FuZHkgQnJpZGdlCm1lbW9yeTogNkcKaGRk
+X3BhcnRpdGlvbnM6ICIvZGV2L2Rpc2svYnktaWQvYXRhLVdEQ19XRDIwRVpSWC0wMEQ4UEIwX1dE
+LVdDQzRNNlhBU0FLVi1wYXJ0NSAvZGV2L2Rpc2svYnktaWQvYXRhLVdEQ19XRDIwRVpSWC0wMEQ4
+UEIwX1dELVdDQzRNNlhBU0FLVi1wYXJ0NgogIC9kZXYvZGlzay9ieS1pZC9hdGEtV0RDX1dEMjBF
+WlJYLTAwRDhQQjBfV0QtV0NDNE02WEFTQUtWLXBhcnQ3IC9kZXYvZGlzay9ieS1pZC9hdGEtV0RD
+X1dEMjBFWlJYLTAwRDhQQjBfV0QtV0NDNE02WEFTQUtWLXBhcnQ4CiAgL2Rldi9kaXNrL2J5LWlk
+L2F0YS1XRENfV0QyMEVaUlgtMDBEOFBCMF9XRC1XQ0M0TTZYQVNBS1YtcGFydDkgL2Rldi9kaXNr
+L2J5LWlkL2F0YS1XRENfV0QyMEVaUlgtMDBEOFBCMF9XRC1XQ0M0TTZYQVNBS1YtcGFydDEwIgpz
+d2FwX3BhcnRpdGlvbnM6IApyb290ZnNfcGFydGl0aW9uOiAiL2Rldi9kaXNrL2J5LWlkL2F0YS1X
+RENfV0QyMEVaUlgtMDBEOFBCMF9XRC1XQ0M0TTZYQVNBS1YtcGFydDIiCm5ldGNvbnNvbGVfcG9y
+dDogNjY0OApjYXRlZ29yeTogZnVuY3Rpb25hbAp0aW1lb3V0OiAzMG0KcGlnbGl0OgogIGdyb3Vw
+OiBpZ3QtMDM3CnF1ZXVlOiBiaXNlY3QKdGVzdGJveDogc25iLWRyYWcKdGJveF9ncm91cDogc25i
+LWRyYWcKa2NvbmZpZzogeDg2XzY0LXJoZWwKZW5xdWV1ZV90aW1lOiAyMDE2LTAzLTIwIDA0OjM5
+OjA1LjkyOTgxNzUwMCArMDg6MDAKY29tcGlsZXI6IGdjYy00LjkKcm9vdGZzOiBkZWJpYW4teDg2
+XzY0LTIwMTUtMDItMDcuY2d6CmlkOiAwNWE1NGQyZGEyOTQyNDRmMGQyZTAxZjQ3ZWE1ZjkxZDYz
+MTAwMzNlCnVzZXI6IGxrcApoZWFkX2NvbW1pdDogZWIxMjhhNjdhMWEzZGQ5MTkyZjk1YzM4ODY5
+MGVlYzcxNzNiMTM3ZApiYXNlX2NvbW1pdDogYjU2MmU0NGY1MDdlODYzYzY3OTI5NDZlNGUxYjE0
+NDlmYmJhYzg1ZApicmFuY2g6IGxpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE2MDMxODIzCnJl
+c3VsdF9yb290OiAiL3Jlc3VsdC9waWdsaXQvaWd0LTAzNy9zbmItZHJhZy9kZWJpYW4teDg2XzY0
+LTIwMTUtMDItMDcuY2d6L3g4Nl82NC1yaGVsL2djYy00LjkvOTdmOTAxMGFmMDVjMTVlMGI3ZTZi
+NGVmNmZmOGNiMGViYjdlNzcxNS8xIgpqb2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL3NuYi1kcmFn
+L2Jpc2VjdF9waWdsaXQtaWd0LTAzNy1kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6LXg4Nl82
+NC1yaGVsLTk3ZjkwMTBhZjA1YzE1ZTBiN2U2YjRlZjZmZjhjYjBlYmI3ZTc3MTUtMjAxNjAzMjAt
+NzEyNDUtMWlyZWx1NC0xLnlhbWwiCm5yX2NwdTogIiQobnByb2MpIgptYXhfdXB0aW1lOiAxODAw
+CmluaXRyZDogIi9vc2ltYWdlL2RlYmlhbi9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6Igpi
+b290bG9hZGVyX2FwcGVuZDoKLSByb290PS9kZXYvcmFtMAotIHVzZXI9bGtwCi0gam9iPS9sa3Av
+c2NoZWR1bGVkL3NuYi1kcmFnL2Jpc2VjdF9waWdsaXQtaWd0LTAzNy1kZWJpYW4teDg2XzY0LTIw
+MTUtMDItMDcuY2d6LXg4Nl82NC1yaGVsLTk3ZjkwMTBhZjA1YzE1ZTBiN2U2YjRlZjZmZjhjYjBl
+YmI3ZTc3MTUtMjAxNjAzMjAtNzEyNDUtMWlyZWx1NC0xLnlhbWwKLSBBUkNIPXg4Nl82NAotIGtj
+b25maWc9eDg2XzY0LXJoZWwKLSBicmFuY2g9bGludXgtZGV2ZWwvZGV2ZWwtaG91cmx5LTIwMTYw
+MzE4MjMKLSBjb21taXQ9OTdmOTAxMGFmMDVjMTVlMGI3ZTZiNGVmNmZmOGNiMGViYjdlNzcxNQot
+IEJPT1RfSU1BR0U9L3BrZy9saW51eC94ODZfNjQtcmhlbC9nY2MtNC45Lzk3ZjkwMTBhZjA1YzE1
+ZTBiN2U2YjRlZjZmZjhjYjBlYmI3ZTc3MTUvdm1saW51ei00LjQuMC1yYzYtMDAwMDktZzk3Zjkw
+MTAKLSBtYXhfdXB0aW1lPTE4MDAKLSBSRVNVTFRfUk9PVD0vcmVzdWx0L3BpZ2xpdC9pZ3QtMDM3
+L3NuYi1kcmFnL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3oveDg2XzY0LXJoZWwvZ2NjLTQu
+OS85N2Y5MDEwYWYwNWMxNWUwYjdlNmI0ZWY2ZmY4Y2IwZWJiN2U3NzE1LzEKLSBMS1BfU0VSVkVS
+PWlubgotIHwyLQoKCiAgZWFybHlwcmludGs9dHR5UzAsMTE1MjAwIHN5c3RlbWQubG9nX2xldmVs
+PWVycgogIGRlYnVnIGFwaWM9ZGVidWcgc3lzcnFfYWx3YXlzX2VuYWJsZWQgcmN1cGRhdGUucmN1
+X2NwdV9zdGFsbF90aW1lb3V0PTEwMAogIHBhbmljPS0xIHNvZnRsb2NrdXBfcGFuaWM9MSBubWlf
+d2F0Y2hkb2c9cGFuaWMgb29wcz1wYW5pYyBsb2FkX3JhbWRpc2s9MiBwcm9tcHRfcmFtZGlzaz0w
+CiAgY29uc29sZT10dHlTMCwxMTUyMDAgY29uc29sZT10dHkwIHZnYT1ub3JtYWwKCiAgcncKbGtw
+X2luaXRyZDogIi9sa3AvbGtwL2xrcC14ODZfNjQuY2d6Igptb2R1bGVzX2luaXRyZDogIi9wa2cv
+bGludXgveDg2XzY0LXJoZWwvZ2NjLTQuOS85N2Y5MDEwYWYwNWMxNWUwYjdlNmI0ZWY2ZmY4Y2Iw
+ZWJiN2U3NzE1L21vZHVsZXMuY2d6IgpibV9pbml0cmQ6ICIvb3NpbWFnZS9kZXBzL2RlYmlhbi14
+ODZfNjQtMjAxNS0wMi0wNy5jZ3ovbGtwLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQt
+MjAxNS0wMi0wNy5jZ3ovcnVuLWlwY29uZmlnLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZf
+NjQtMjAxNS0wMi0wNy5jZ3ovcGlnbGl0LmNneiwvbGtwL2JlbmNobWFya3MvcGlnbGl0LmNneiIK
+bGludXhfaGVhZGVyc19pbml0cmQ6ICIvcGtnL2xpbnV4L3g4Nl82NC1yaGVsL2djYy00LjkvOTdm
+OTAxMGFmMDVjMTVlMGI3ZTZiNGVmNmZmOGNiMGViYjdlNzcxNS9saW51eC1oZWFkZXJzLmNneiIK
+cmVwZWF0X3RvOiAyCmtlcm5lbDogIi9wa2cvbGludXgveDg2XzY0LXJoZWwvZ2NjLTQuOS85N2Y5
+MDEwYWYwNWMxNWUwYjdlNmI0ZWY2ZmY4Y2IwZWJiN2U3NzE1L3ZtbGludXotNC40LjAtcmM2LTAw
+MDA5LWc5N2Y5MDEwIgpkZXF1ZXVlX3RpbWU6IDIwMTYtMDMtMjAgMDQ6NTc6MzQuNTQxODM0MTM1
+ICswODowMApqb2Jfc3RhdGU6IGZpbmlzaGVkCmxvYWRhdmc6IDAuNzUgMC4zNCAwLjEzIDEvMTI2
+IDY2MwpzdGFydF90aW1lOiAnMTQ1ODQyMTEwMScKZW5kX3RpbWU6ICcxNDU4NDIxMTY5Jwp2ZXJz
+aW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE2MDMxOC0xNTUwMTIiCg==
+
+--===============4305508669373239236==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.ksh"
+
+MjAxNi0wMy0yMCAwNDo1NjoyMiBwaWdsaXQgcnVuIGlndCAtdCBpZ3Qva21zX2N1cnNvcl9jcmMv
+Y3Vyc29yLTEyOC1vZmZzY3JlZW4gL3RtcC9sa3AvcGlnbGl0LXJlc3VsdHMKMjAxNi0wMy0yMCAw
+NDo1NzozMCBwaWdsaXQgc3VtbWFyeSBjb25zb2xlIC90bXAvbGtwL3BpZ2xpdC1yZXN1bHRzL3Jl
+c3VsdHMuanNvbgo=
+
+--===============4305508669373239236==--
 
