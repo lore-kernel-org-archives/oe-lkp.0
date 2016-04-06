@@ -1,32 +1,115 @@
-Content-Type: multipart/mixed; boundary="===============2727183218089217645=="
+Content-Type: multipart/mixed; boundary="===============5097405458757451269=="
 MIME-Version: 1.0
-From: Shawn Guo <shawnguo@kernel.org>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [scatterlist] c38ecfb12e: kernel BUG at crypto/scatterwalk.c:37!
-Date: Wed, 13 Apr 2016 10:38:50 +0800
-Message-ID: <20160413023850.GF28903@tiger>
-In-Reply-To: <20160413014202.GA659@yexl-desktop>
+Subject: Re: [x86, ACPI, cpu] f962c29c2f: BUG: unable to handle kernel paging request at 0000000000001b00
+Date: Wed, 06 Apr 2016 17:21:06 +0200
+Message-ID: <57052962.4030507@intel.com>
+In-Reply-To: <87pou38t30.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2727183218089217645==
+--===============5097405458757451269==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 13, 2016 at 09:42:02AM +0800, kernel test robot wrote:
+On 4/6/2016 2:43 AM, kernel test robot wrote:
 > FYI, we noticed the below changes on
-> =
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux=
+-next
+> commit f962c29c2f5d80be28bd76e2c3fadf1ce97ccd76 ("x86, ACPI, cpu-hotplug:=
+ Set persistent cpuid <-> nodeid mapping when booting")
+>
 
-> https://github.com/0day-ci/linux Shawn-Guo/scatterlist-use-sg_dma_len-in-=
-sg_set_page/20160411-105225
-> commit c38ecfb12e9a4c0c17d0879090741d6ce2a200de ("scatterlist: use sg_dma=
-_len() in sg_set_page()")
+Thanks for the report.
 
-Yes, the patch is wrong, and has been discarded.  The patch should
-really be tagged with RFC from the beginning.  Thanks for reporting
-anyway.
+I've dropped the patch series that commit is part of from the linux-next =
 
-Shawn
+branch of linux-pm.git because of this problem.
 
---===============2727183218089217645==--
+
+> +------------------------------------------+------------+------------+
+> |                                          | 40d4d2e6c5 | f962c29c2f |
+> +------------------------------------------+------------+------------+
+> | boot_successes                           | 12         | 4          |
+> | boot_failures                            | 0          | 8          |
+> | BUG:unable_to_handle_kernel              | 0          | 8          |
+> | Oops                                     | 0          | 8          |
+> | RIP:__alloc_pages_nodemask               | 0          | 8          |
+> | Kernel_panic-not_syncing:Fatal_exception | 0          | 8          |
+> | backtrace:pcpu_balance_workfn            | 0          | 8          |
+> +------------------------------------------+------------+------------+
+>
+>
+>
+> [   10.413471] RAPL PMU: hw unit of domain pp0-core 2^-16 Joules
+> [   10.419886] RAPL PMU: hw unit of domain package 2^-16 Joules
+> [   10.426206] RAPL PMU: hw unit of domain dram 2^-16 Joules
+> [   10.433905] BUG: unable to handle kernel paging request at 00000000000=
+01b00
+> [   10.441699] IP: [<ffffffff8117e350>] __alloc_pages_nodemask+0x210/0xc10
+> [   10.449097] PGD 0
+> [   10.451350] Oops: 0000 [#1] SMP
+> [   10.454972] Modules linked in:
+> [   10.458390] CPU: 12 PID: 407 Comm: kworker/12:1 Not tainted 4.6.0-rc1-=
+00007-gf962c29 #1
+> [   10.467326] Hardware name: Intel Corporation S2600WP/S2600WP, BIOS SE5=
+C600.86B.02.02.0002.122320131210 12/23/2013
+> [   10.478776] Workqueue: events pcpu_balance_workfn
+> [   10.484035] task: ffff88100d858000 ti: ffff88100d860000 task.ti: ffff8=
+8100d860000
+> [   10.492381] RIP: 0010:[<ffffffff8117e350>]  [<ffffffff8117e350>] __all=
+oc_pages_nodemask+0x210/0xc10
+> [   10.502491] RSP: 0000:ffff88100d863c28  EFLAGS: 00010286
+> [   10.508419] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 000000000=
+0000004
+> [   10.516383] RDX: 0000000080000000 RSI: 0000000000000d06 RDI: ffffffff8=
+1c9d430
+> [   10.524348] RBP: ffff88100d863d40 R08: 0000000000000000 R09: 000000000=
+0000000
+> [   10.532312] R10: ffffffff81ca1e87 R11: ffffc90000076000 R12: 000000000=
+0000003
+> [   10.540278] R13: 0000000000001b00 R14: 0000000000000000 R15: ffff88100=
+d43e480
+> [   10.548243] FS:  0000000000000000(0000) GS:ffff881013400000(0000) knlG=
+S:0000000000000000
+> [   10.557275] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   10.563687] CR2: 0000000000001b00 CR3: 000000103ee06000 CR4: 000000000=
+01406e0
+> [   10.571652] Stack:
+> [   10.573894]  ffffc90000090fff ffffc90000091000 ffff881013002008 000000=
+0000000001
+> [   10.582196]  8000000000000163 00000000ffffffff 00000000024082c2 000000=
+0000400000
+> [   10.590492]  000000000000001e ffff880ffe57c0c0 ffff88100d863c88 ffffff=
+ff811b7766
+> [   10.598794] Call Trace:
+> [   10.601527]  [<ffffffff811b7766>] ? map_vm_area+0x36/0x50
+> [   10.607553]  [<ffffffff81198ade>] pcpu_populate_chunk+0xae/0x340
+> [   10.614257]  [<ffffffff8119a118>] pcpu_balance_workfn+0x578/0x5b0
+> [   10.621060]  [<ffffffff81094be5>] process_one_work+0x155/0x440
+> [   10.627562]  [<ffffffff8109582e>] worker_thread+0x4e/0x4c0
+> [   10.633687]  [<ffffffff818f1b9b>] ? __schedule+0x34b/0x8b0
+> [   10.639809]  [<ffffffff810957e0>] ? rescuer_thread+0x350/0x350
+> [   10.646319]  [<ffffffff810957e0>] ? rescuer_thread+0x350/0x350
+> [   10.652831]  [<ffffffff8109ade4>] kthread+0xd4/0xf0
+> [   10.658276]  [<ffffffff818f6742>] ret_from_fork+0x22/0x40
+> [   10.664302]  [<ffffffff8109ad10>] ? kthread_park+0x60/0x60
+> [   10.670423] Code: d0 49 8b 04 24 48 85 c0 75 e0 65 ff 0d 22 f0 e8 7e e=
+b 8b 31 d2 be 06 0d 00 00 48 c7 c7 30 d4 c9 81 e8 35 2c f2 ff e8 50 40 77 0=
+0 <49> 83 7d 00 00 0f 85 7c fe ff ff 31 c0 e9 6d ff ff ff 0f 1f 44
+> [   10.692137] RIP  [<ffffffff8117e350>] __alloc_pages_nodemask+0x210/0xc=
+10
+> [   10.699627]  RSP <ffff88100d863c28>
+> [   10.703518] CR2: 0000000000001b00
+> [   10.707220] ---[ end trace bc83ef9ded88f808 ]---
+> [   10.712373] Kernel panic - not syncing: Fatal exception
+>
+>
+> Thanks,
+> Kernel Test Robot
+
+
+--===============5097405458757451269==--
 
