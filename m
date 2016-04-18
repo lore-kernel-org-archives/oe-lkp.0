@@ -1,39 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============5755798944936952796=="
+Content-Type: multipart/mixed; boundary="===============6555507027402826307=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Al Viro <viro@ZenIV.linux.org.uk>
 To: lkp@lists.01.org
-Subject: Re: [mm, oom] faad2185f4: vm-scalability.throughput -11.8% regression
-Date: Wed, 27 Apr 2016 10:37:34 +0200
-Message-ID: <20160427083733.GE2179@dhcp22.suse.cz>
-In-Reply-To: <87fuu7iht0.fsf@yhuang-dev.intel.com>
+Subject: Re: [parallel lookups machinery, part 2] 96352435af: kernel BUG at mm/slab.c:2599!
+Date: Mon, 18 Apr 2016 12:07:31 +0100
+Message-ID: <20160418110731.GB25498@ZenIV.linux.org.uk>
+In-Reply-To: <878u0bqtjk.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5755798944936952796==
+--===============6555507027402826307==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed 27-04-16 16:20:43, Huang, Ying wrote:
-> Michal Hocko <mhocko@kernel.org> writes:
+On Mon, Apr 18, 2016 at 03:12:47PM +0800, Huang, Ying wrote:
+
+> That is, there is same issue for T1, but no such issue for T2.
 > =
 
-> > On Wed 27-04-16 11:15:56, kernel test robot wrote:
-> >> FYI, we noticed vm-scalability.throughput -11.8% regression with the f=
-ollowing commit:
-> >
-> > Could you be more specific what the test does please?
+> > How reproducible it is and how certain you are that it's not there on
+> > the parent commit?
 > =
 
-> The sub-testcase of vm-scalability is swap-w-rand.  An RAM emulated pmem
-> device is used as a swap device, and a test program will allocate/write
-> anonymous memory randomly to exercise page allocation, reclaiming, and
-> swapping in code path.
+> The result is quite stable for tens tests for parents and the first bad
+> commit.
 
-Can I download the test with the setup to play with this?
--- =
+Nuts...  Try vfs.git#T3, please - the only way this could cause memory
+corruption, AFAICS, is some really weird caller of d_add() or d_splice_alia=
+s(),
+passing it a dentry with bogus ->d_parent...
 
-Michal Hocko
-SUSE Labs
-
---===============5755798944936952796==--
+--===============6555507027402826307==--
 
