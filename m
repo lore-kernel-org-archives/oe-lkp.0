@@ -1,26 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============5108252667407324695=="
+Content-Type: multipart/mixed; boundary="===============4817871962863428600=="
 MIME-Version: 1.0
-From: Al Viro <viro@ZenIV.linux.org.uk>
+From: Luis R. Rodriguez <mcgrof@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [parallel lookups machinery, part 2] 96352435af: kernel BUG at mm/slab.c:2599!
-Date: Mon, 18 Apr 2016 03:15:04 +0100
-Message-ID: <20160418021504.GA25498@ZenIV.linux.org.uk>
-In-Reply-To: <87mvorvfbu.fsf@yhuang-dev.intel.com>
+Subject: Re: [test] 265bbb5704: BUG: unable to handle kernel paging request at e8e04dec
+Date: Tue, 19 Apr 2016 11:21:20 +0100
+Message-ID: <CAB=NE6VYQbzGknpybk4Feh2c257cbKqK2UE-jPWAq=EkHmOcZA@mail.gmail.com>
+In-Reply-To: <20160419102015.GC8836@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5108252667407324695==
+--===============4817871962863428600==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 18, 2016 at 10:08:37AM +0800, Huang, Ying wrote:
+On Tue, Apr 19, 2016 at 11:20 AM, Philip Li <philip.li@intel.com> wrote:
+> On Tue, Apr 19, 2016 at 10:10:31AM +0100, Luis R. Rodriguez wrote:
+>> On Tue, Apr 19, 2016 at 9:59 AM, Fengguang Wu <fengguang.wu@intel.com>=
+ wrote:
+>> That's amazing! Thanks but I need only two trees:
+>>
+>>   * linux.git
+>>   * linux-next.git
+> ok, i have added your linux.git to notification list.
 
-> Could you provide a debug branch in your tree for that?
+Oh linux.git was not there already? I thought I saw some older build
+notifications for it.
 
-Done - vfs.git#T1 and vfs.git#T2 resp.
+>> Oh OK then I did the right thing to notify you folks, thanks!
+> yes, actually we have server closed this weekend due to lab upgrading, wh=
+ich may impact build for last few days.
 
-How reproducible it is and how certain you are that it's not there on
-the parent commit?
+Ah, thanks! Perhaps a maintenance notifications might help so we know
+about these things? Perhaps a new 0-day-announce  so we don't filter
+these out and read them.
 
---===============5108252667407324695==--
+  Luis
+
+--===============4817871962863428600==--
 
