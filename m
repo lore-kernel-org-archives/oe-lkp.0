@@ -1,34 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============6555507027402826307=="
+Content-Type: multipart/mixed; boundary="===============4311516001062128883=="
 MIME-Version: 1.0
-From: Al Viro <viro@ZenIV.linux.org.uk>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [parallel lookups machinery, part 2] 96352435af: kernel BUG at mm/slab.c:2599!
-Date: Mon, 18 Apr 2016 12:07:31 +0100
-Message-ID: <20160418110731.GB25498@ZenIV.linux.org.uk>
-In-Reply-To: <878u0bqtjk.fsf@yhuang-dev.intel.com>
+Subject: Re: [mm, oom] faad2185f4: vm-scalability.throughput -11.8% regression
+Date: Wed, 27 Apr 2016 16:44:31 +0800
+Message-ID: <87bn4vigpc.fsf@yhuang-dev.intel.com>
+In-Reply-To: <20160427083733.GE2179@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6555507027402826307==
+--===============4311516001062128883==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 18, 2016 at 03:12:47PM +0800, Huang, Ying wrote:
+Michal Hocko <mhocko@kernel.org> writes:
 
-> That is, there is same issue for T1, but no such issue for T2.
-> =
+> On Wed 27-04-16 16:20:43, Huang, Ying wrote:
+>> Michal Hocko <mhocko@kernel.org> writes:
+>> =
 
-> > How reproducible it is and how certain you are that it's not there on
-> > the parent commit?
-> =
+>> > On Wed 27-04-16 11:15:56, kernel test robot wrote:
+>> >> FYI, we noticed vm-scalability.throughput -11.8% regression with the =
+following commit:
+>> >
+>> > Could you be more specific what the test does please?
+>> =
 
-> The result is quite stable for tens tests for parents and the first bad
-> commit.
+>> The sub-testcase of vm-scalability is swap-w-rand.  An RAM emulated pmem
+>> device is used as a swap device, and a test program will allocate/write
+>> anonymous memory randomly to exercise page allocation, reclaiming, and
+>> swapping in code path.
+>
+> Can I download the test with the setup to play with this?
 
-Nuts...  Try vfs.git#T3, please - the only way this could cause memory
-corruption, AFAICS, is some really weird caller of d_add() or d_splice_alia=
-s(),
-passing it a dentry with bogus ->d_parent...
+There are reproduce steps in the original report email.
 
---===============6555507027402826307==--
+To reproduce:
+
+        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
+ts.git
+        cd lkp-tests
+        bin/lkp install job.yaml  # job file is attached in this email
+        bin/lkp run     job.yaml
+
+
+The job.yaml and kconfig file are attached in the original report email.
+
+Best Regards,
+Huang, Ying
+
+--===============4311516001062128883==--
 
