@@ -1,103 +1,141 @@
-Content-Type: multipart/mixed; boundary="===============2999514647921069612=="
+Content-Type: multipart/mixed; boundary="===============7597837381703123242=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [mm, oom] faad2185f4: vm-scalability.throughput -11.8% regression
-Date: Thu, 28 Apr 2016 13:17:08 +0800
-Message-ID: <20160428051659.GA10843@aaronlu.sh.intel.com>
-In-Reply-To: <20160427091718.GG2179@dhcp22.suse.cz>
+Date: Thu, 28 Apr 2016 10:57:02 +0200
+Message-ID: <20160428085702.GB31489@dhcp22.suse.cz>
+In-Reply-To: <20160428051659.GA10843@aaronlu.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2999514647921069612==
+--===============7597837381703123242==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 27, 2016 at 11:17:19AM +0200, Michal Hocko wrote:
-> On Wed 27-04-16 16:44:31, Huang, Ying wrote:
-> > Michal Hocko <mhocko@kernel.org> writes:
+On Thu 28-04-16 13:17:08, Aaron Lu wrote:
+> On Wed, Apr 27, 2016 at 11:17:19AM +0200, Michal Hocko wrote:
+> > On Wed 27-04-16 16:44:31, Huang, Ying wrote:
+> > > Michal Hocko <mhocko@kernel.org> writes:
+> > > =
+
+> > > > On Wed 27-04-16 16:20:43, Huang, Ying wrote:
+> > > >> Michal Hocko <mhocko@kernel.org> writes:
+> > > >> =
+
+> > > >> > On Wed 27-04-16 11:15:56, kernel test robot wrote:
+> > > >> >> FYI, we noticed vm-scalability.throughput -11.8% regression wit=
+h the following commit:
+> > > >> >
+> > > >> > Could you be more specific what the test does please?
+> > > >> =
+
+> > > >> The sub-testcase of vm-scalability is swap-w-rand.  An RAM emulate=
+d pmem
+> > > >> device is used as a swap device, and a test program will allocate/=
+write
+> > > >> anonymous memory randomly to exercise page allocation, reclaiming,=
+ and
+> > > >> swapping in code path.
+> > > >
+> > > > Can I download the test with the setup to play with this?
+> > > =
+
+> > > There are reproduce steps in the original report email.
+> > > =
+
+> > > To reproduce:
+> > > =
+
+> > >         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/l=
+kp-tests.git
+> > >         cd lkp-tests
+> > >         bin/lkp install job.yaml  # job file is attached in this email
+> > >         bin/lkp run     job.yaml
+> > > =
+
+> > > =
+
+> > > The job.yaml and kconfig file are attached in the original report ema=
+il.
 > > =
 
-> > > On Wed 27-04-16 16:20:43, Huang, Ying wrote:
-> > >> Michal Hocko <mhocko@kernel.org> writes:
-> > >> =
-
-> > >> > On Wed 27-04-16 11:15:56, kernel test robot wrote:
-> > >> >> FYI, we noticed vm-scalability.throughput -11.8% regression with =
-the following commit:
-> > >> >
-> > >> > Could you be more specific what the test does please?
-> > >> =
-
-> > >> The sub-testcase of vm-scalability is swap-w-rand.  An RAM emulated =
-pmem
-> > >> device is used as a swap device, and a test program will allocate/wr=
-ite
-> > >> anonymous memory randomly to exercise page allocation, reclaiming, a=
-nd
-> > >> swapping in code path.
-> > >
-> > > Can I download the test with the setup to play with this?
-> > =
-
-> > There are reproduce steps in the original report email.
-> > =
-
-> > To reproduce:
-> > =
-
-> >         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp=
--tests.git
-> >         cd lkp-tests
-> >         bin/lkp install job.yaml  # job file is attached in this email
-> >         bin/lkp run     job.yaml
-> > =
-
-> > =
-
-> > The job.yaml and kconfig file are attached in the original report email.
+> > Thanks for the instructions. My bad I have overlooked that in the
+> > initial email. I have checked the configuration file and it seems rather
+> > hardcoded for a particular HW. It expects a machine with 128G and
+> > reserves 96G!4G which might lead to different amount of memory in the
+> > end depending on the particular memory layout.
 > =
 
-> Thanks for the instructions. My bad I have overlooked that in the
-> initial email. I have checked the configuration file and it seems rather
-> hardcoded for a particular HW. It expects a machine with 128G and
-> reserves 96G!4G which might lead to different amount of memory in the
-> end depending on the particular memory layout.
-
-Indeed, the job file needs manual change.
-The attached job file is the one we used on the test machine.
-
+> Indeed, the job file needs manual change.
+> The attached job file is the one we used on the test machine.
 > =
 
-> Before I go and try to recreate a similar setup, how stable are the
-> results from this test. Random access pattern sounds like rather
-> volatile to be consider for a throughput test. Or is there any other
-> side effect I am missing and something fails which didn't use to
-> previously.
+> > =
 
-I have the same doubt too, but the results look really stable(only for
-commit 0da9597ac9c0, see below for more explanation).
-We did 8 runs for this report and the standard deviation(represented by
-the %stddev shown in the original report) is used to show exactly this.
+> > Before I go and try to recreate a similar setup, how stable are the
+> > results from this test. Random access pattern sounds like rather
+> > volatile to be consider for a throughput test. Or is there any other
+> > side effect I am missing and something fails which didn't use to
+> > previously.
+> =
 
-I just checked the results again and found that the 8 runs for your
-commit faad2185f482 all OOMed, only 1 of them is able to finish the test
-before the OOM occur and got a throughput value of 38653.
+> I have the same doubt too, but the results look really stable(only for
+> commit 0da9597ac9c0, see below for more explanation).
 
-The source code for this test is here:
-https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/tree/us=
-emem.c
-And it's started as:
-./usemem --runtime 300 -n 16 --random 6368538624
-which means to fork 16 processes, each dealing with 6GiB around data. By
-dealing here, I mean the process each will mmap an anonymous region of
-6GiB size and then write data to that area at random place, thus will
-trigger swapouts and swapins after the memory is used up(since the
-system has 128GiB memory and 96GiB is used by the pmem driver as swap
-space, the memory will be used up after a little while).
+I cannot seem to find this sha1. Where does it come from? linux-next?
 
-So I guess the question here is, after the OOM rework, is the OOM
-expected for such a case? If so, then we can ignore this report.
+> We did 8 runs for this report and the standard deviation(represented by
+> the %stddev shown in the original report) is used to show exactly this.
+> =
 
---===============2999514647921069612==--
+> I just checked the results again and found that the 8 runs for your
+> commit faad2185f482 all OOMed, only 1 of them is able to finish the test
+> before the OOM occur and got a throughput value of 38653.
+
+If you are talking about "mm, oom: rework oom detection" then this
+wouldn't be that surprising. There are follow up patches which fortify
+the oom detection. Does the same happen with the whole series applied?
+
+Also does the test ever OOM before the oom rework?
+ =
+
+> The source code for this test is here:
+> https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/tree/=
+usemem.c
+
+thanks for the pointer
+
+> And it's started as:
+> ./usemem --runtime 300 -n 16 --random 6368538624
+> which means to fork 16 processes, each dealing with 6GiB around data. By
+> dealing here, I mean the process each will mmap an anonymous region of
+> 6GiB size and then write data to that area at random place, thus will
+> trigger swapouts and swapins after the memory is used up(since the
+> system has 128GiB memory and 96GiB is used by the pmem driver as swap
+> space, the memory will be used up after a little while).
+
+OK, so we have 96G for consumers with 32G RAM and 96G of swap space,
+right?  That would suggest they should fit in although the swapout could
+be large (2/3 of the faulted memory) and the random pattern can cause
+some trashing. Does the system bahave the same way with the stream anon
+load? Anyway I think we should be able to handle such load, although it
+is quite untypical from my experience because it can be pain with a slow
+swap but ramdisk swap should be as fast as it can get so the swap in/out
+should be basically noop. =
+
+
+> So I guess the question here is, after the OOM rework, is the OOM
+> expected for such a case? If so, then we can ignore this report.
+
+Could you post the OOM reports please? I will try to emulate a similar
+load here as well.
+
+Thanks!
+-- =
+
+Michal Hocko
+SUSE Labs
+
+--===============7597837381703123242==--
 
