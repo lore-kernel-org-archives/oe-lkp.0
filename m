@@ -1,141 +1,136 @@
-Content-Type: multipart/mixed; boundary="===============7597837381703123242=="
+Content-Type: multipart/mixed; boundary="===============3793493492742084311=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Dmitry Vyukov <dvyukov@google.com>
 To: lkp@lists.01.org
-Subject: Re: [mm, oom] faad2185f4: vm-scalability.throughput -11.8% regression
-Date: Thu, 28 Apr 2016 10:57:02 +0200
-Message-ID: <20160428085702.GB31489@dhcp22.suse.cz>
-In-Reply-To: <20160428051659.GA10843@aaronlu.sh.intel.com>
+Subject: Re: Extending the 0-day system with syzkaller?
+Date: Thu, 28 Apr 2016 13:14:47 +0200
+Message-ID: <CACT4Y+azAV1c2SnxMqaNXPtxeg4D+ooOiK_adh6PVtBdHj4=8w@mail.gmail.com>
+In-Reply-To: <20160428014119.GB28943@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7597837381703123242==
+--===============3793493492742084311==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu 28-04-16 13:17:08, Aaron Lu wrote:
-> On Wed, Apr 27, 2016 at 11:17:19AM +0200, Michal Hocko wrote:
-> > On Wed 27-04-16 16:44:31, Huang, Ying wrote:
-> > > Michal Hocko <mhocko@kernel.org> writes:
-> > > =
+On Thu, Apr 28, 2016 at 3:41 AM, Philip Li <philip.li@intel.com> wrote:
+> On Wed, Apr 27, 2016 at 11:03:42AM -0700, Kostya Serebryany wrote:
+>> Ping...
+>> (I know that the recent news at Intel might be quite distracting for some
+>> you...)
+> hi all, this is Philip from 0day team, sorry for late reply. We are glad =
+to add
+> syzkaller test suite to 0day, and we will do detail plan of it within thi=
+s quarter
+> and share with by end of June including what the first step can be and an=
+y support
+> if needed.
+>
+> Is this time frame ok? because right now, all resources are booked, and
+> formal action may need start next quarter.
 
-> > > > On Wed 27-04-16 16:20:43, Huang, Ying wrote:
-> > > >> Michal Hocko <mhocko@kernel.org> writes:
-> > > >> =
+Hi Philip,
 
-> > > >> > On Wed 27-04-16 11:15:56, kernel test robot wrote:
-> > > >> >> FYI, we noticed vm-scalability.throughput -11.8% regression wit=
-h the following commit:
-> > > >> >
-> > > >> > Could you be more specific what the test does please?
-> > > >> =
+The time frame is OK
 
-> > > >> The sub-testcase of vm-scalability is swap-w-rand.  An RAM emulate=
-d pmem
-> > > >> device is used as a swap device, and a test program will allocate/=
-write
-> > > >> anonymous memory randomly to exercise page allocation, reclaiming,=
- and
-> > > >> swapping in code path.
-> > > >
-> > > > Can I download the test with the setup to play with this?
-> > > =
+> One quick question is i recall an early discussion is that this enabling =
+requires new gcc,
+> is this still be true?
 
-> > > There are reproduce steps in the original report email.
-> > > =
-
-> > > To reproduce:
-> > > =
-
-> > >         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/l=
-kp-tests.git
-> > >         cd lkp-tests
-> > >         bin/lkp install job.yaml  # job file is attached in this email
-> > >         bin/lkp run     job.yaml
-> > > =
-
-> > > =
-
-> > > The job.yaml and kconfig file are attached in the original report ema=
-il.
-> > =
-
-> > Thanks for the instructions. My bad I have overlooked that in the
-> > initial email. I have checked the configuration file and it seems rather
-> > hardcoded for a particular HW. It expects a machine with 128G and
-> > reserves 96G!4G which might lead to different amount of memory in the
-> > end depending on the particular memory layout.
-> =
-
-> Indeed, the job file needs manual change.
-> The attached job file is the one we used on the test machine.
-> =
-
-> > =
-
-> > Before I go and try to recreate a similar setup, how stable are the
-> > results from this test. Random access pattern sounds like rather
-> > volatile to be consider for a throughput test. Or is there any other
-> > side effect I am missing and something fails which didn't use to
-> > previously.
-> =
-
-> I have the same doubt too, but the results look really stable(only for
-> commit 0da9597ac9c0, see below for more explanation).
-
-I cannot seem to find this sha1. Where does it come from? linux-next?
-
-> We did 8 runs for this report and the standard deviation(represented by
-> the %stddev shown in the original report) is used to show exactly this.
-> =
-
-> I just checked the results again and found that the 8 runs for your
-> commit faad2185f482 all OOMed, only 1 of them is able to finish the test
-> before the OOM occur and got a throughput value of 38653.
-
-If you are talking about "mm, oom: rework oom detection" then this
-wouldn't be that surprising. There are follow up patches which fortify
-the oom detection. Does the same happen with the whole series applied?
-
-Also does the test ever OOM before the oom rework?
- =
-
-> The source code for this test is here:
-> https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/tree/=
-usemem.c
-
-thanks for the pointer
-
-> And it's started as:
-> ./usemem --runtime 300 -n 16 --random 6368538624
-> which means to fork 16 processes, each dealing with 6GiB around data. By
-> dealing here, I mean the process each will mmap an anonymous region of
-> 6GiB size and then write data to that area at random place, thus will
-> trigger swapouts and swapins after the memory is used up(since the
-> system has 128GiB memory and 96GiB is used by the pmem driver as swap
-> space, the memory will be used up after a little while).
-
-OK, so we have 96G for consumers with 32G RAM and 96G of swap space,
-right?  That would suggest they should fit in although the swapout could
-be large (2/3 of the faulted memory) and the random pattern can cause
-some trashing. Does the system bahave the same way with the stream anon
-load? Anyway I think we should be able to handle such load, although it
-is quite untypical from my experience because it can be pain with a slow
-swap but ramdisk swap should be as fast as it can get so the swap in/out
-should be basically noop. =
+Syzkaller requires compiler support. I use new gcc. However, there are
+currently patches in flight that add support for gcc plugins to kernel
+build system. As far as I understand, with the plugin support no
+messing with gcc is required (KCOV instrumentation plugin will also be
+in kernel tree).
 
 
-> So I guess the question here is, after the OOM rework, is the OOM
-> expected for such a case? If so, then we can ignore this report.
 
-Could you post the OOM reports please? I will try to emulate a similar
-load here as well.
+>> On Fri, Apr 15, 2016 at 1:05 PM, Hart, Darren <darren.hart@intel.com> =
+wrote:
+>>
+>> > Hi Fengguang,
+>> >
+>> > I met with Kostya at Intel Tech Days and he had some compelling argume=
+nts
+>> > for including some of these tests.
+>> >
+>> > Dave H: I took a quick look at Kasan, which appears to require an exis=
+ting
+>> > config option (CONFIG_KASAN) for dynamic memory access checking using
+>> > shadow memory. Is this something you would like to see added to 0-day?=
+ Do
+>> > we have anything today which provides comparable coverage?
+>> >
+>> > Combining Kasan and other existing kernel integrity checking, the
+>> > syzkaller fuzz tester is showing promising results and the reports com=
+e in
+>> > the form of kernel oops and similar things which we already check for =
+in
+>> > 0-day.
+>> >
+>> > For the others on Cc, do you have additional context for or against
+>> > including syzkaller and kasan in 0day?
+>> >
+>> > Fengguang, what are your thoughts on including these in 0-day?
+>> >
+>> > Thanks,
+>> >
+>> > --
+>> > Darren Hart
+>> > Intel Open Source Technology Center
+>> >
+>> > On 4/12/16, 10:24 PM, "Kostya Serebryany" <kcc@google.com<mailto:
+>> > kcc(a)google.com>> wrote:
+>> >
+>> > CC-ing more people after today's conversation at the Intel Tech Days.
+>> >
+>> > We'd like to add kasan and syzkaller [1,2,3,4] to the 0-day kbuild sys=
+tem.
+>> > We believe this has a large potential to find old bugs and prevent
+>> > regressions in the Kernel.
+>> > How do we achieve this?
+>> >
+>> > Thanks,
+>> >
+>> > --kcc
+>> >
+>> > [1] https://github.com/google/syzkaller
+>> > [2] https://github.com/google/syzkaller/wiki/Found-Bugs
+>> > [3] https://lwn.net/Articles/677764/
+>> > [4] https://www.kernel.org/doc/Documentation/kasan.txt
+>> >
+>> >
+>> > On Tue, Dec 15, 2015 at 3:49 AM, David Drysdale <drysdale@google.com
+>> > <mailto:drysdale@google.com>> wrote:
+>> > Hi Fengguang / LKP-folk,
+>> >
+>> > Quick question -- how easy is it to add extra builds/tests/checks to
+>> > your marvellous 0-day kbuild system?
+>> >
+>> > The reason I ask is that I've recently been exploring syzkaller [1],
+>> > which is a system call fuzzer written by some of my colleagues here at
+>> > Google (cc'ed).  Although it's fairly new, it has uncovered a bunch of
+>> > kernel bugs already [2] so I wondered if it might be a good candidate
+>> > for inclusion in the 0-day checks at some point.
+>> >
+>> > (As an aside, I'm in the process of writing an article about syzkaller
+>> > for LWN, which might also expose it to more folk.)
+>> >
+>> > What do you think?
+>> >
+>> > Thanks,
+>> > David
+>> >
+>> > [1] https://github.com/google/syzkaller
+>> > [2] https://github.com/google/syzkaller/wiki/Found-Bugs
+>> >
+>> >
+>
+>> _______________________________________________
+>> LKP mailing list
+>> LKP(a)lists.01.org
+>> https://lists.01.org/mailman/listinfo/lkp
+>
 
-Thanks!
--- =
-
-Michal Hocko
-SUSE Labs
-
---===============7597837381703123242==--
+--===============3793493492742084311==--
 
