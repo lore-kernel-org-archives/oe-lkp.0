@@ -1,76 +1,106 @@
-Content-Type: multipart/mixed; boundary="===============6933989541880876927=="
+Content-Type: multipart/mixed; boundary="===============7479674465191610911=="
 MIME-Version: 1.0
-From: Rafael J. Wysocki <rafael@kernel.org>
+From: Rafael J. Wysocki <rjw@rjwysocki.net>
 To: lkp@lists.01.org
-Subject: Re: [sched/fair] 41e0d37f7a: divide error: 0000 [#1] SMP
-Date: Wed, 04 May 2016 13:56:35 +0200
-Message-ID: <CAJZ5v0hR-N+kUtv5nqWJ7oTE3dtnw5kQux9Y2tgXRk11fZg4ZQ@mail.gmail.com>
-In-Reply-To: <CANRm+CyYLDuWpK_jcvUsJoRM_NJ_MR495a2ELvdaz8LqXbq+sA@mail.gmail.com>
+Subject: [PATCH] intel_pstate: Fix intel_pstate_get()
+Date: Wed, 04 May 2016 14:01:10 +0200
+Message-ID: <54177738.QIcPrzf0Y7@vostro.rjw.lan>
+In-Reply-To: <20160503083231.GG3430@twins.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6933989541880876927==
+--===============7479674465191610911==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 4, 2016 at 1:51 PM, Wanpeng Li <kernellwp@gmail.com> wrote:
-> 2016-05-04 19:44 GMT+08:00 Rafael J. Wysocki <rafael@kernel.org>:
->> On Wed, May 4, 2016 at 2:58 AM, Wanpeng Li <kernellwp@gmail.com> wrote:
->>> 2016-05-03 20:15 GMT+08:00 Rafael J. Wysocki <rafael@kernel.org>:
->>>> On Tue, May 3, 2016 at 10:32 AM, Peter Zijlstra <peterz@infradead.or=
-g> wrote:
->>>>> On Tue, May 03, 2016 at 09:10:51AM +0800, kernel test robot wrote:
->>>>>> FYI, we noticed the following commit:
->>>>>>
->>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/co=
-re
->>>>>> commit 41e0d37f7ac81297c07ba311e4ad39465b8c8295 ("sched/fair: Do not=
- call cpufreq hook unless util changed")
->>>>>
->>
->> [cut]
->>
->>>>>
->>>>> That's intel_pstate.c:get_avg_frequency(), which assumes mperf !=3D 0=
-. It
->>>>> being 0 seems to suggest intel_pstate_sample() hasn't been called yet=
- or
->>>>> so.
->>>>
->>>> Well, what's the tree based on?
->>>>
->>>> The mainline does this:
->>>>
->>>> bool sample_taken =3D intel_pstate_sample(cpu, time);
->>>>
->>>> if (sample_taken && !hwp_active)
->>>>         intel_pstate_adjust_busy_pstate(cpu);
->>>>
->>>> and (the mainline version of) intel_pstate_sample() returns false when
->>>> it is called for the first time after setting the update_util hook.
->>>
->>> The callsites in scheduler will set time to rq_clock(rq) when trigger
->>> sample, so when time 0 will be used even if it is set just before
->>> setting the update_util hook?
->>
->> I'm not sure what you mean.
->>
->> time=3D0 is special as it will cause intel_pstate_sample() to return
->> false on the next invocation.
->
-> Sample is driven by cpufreq_update_util() which uses rq_clock(rq) as
-> time parameter, so there is no opportunity to pass time 0 to
-> intel_pstate_sample().
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Right.
+After commit 8fa520af5081 "intel_pstate: Remove freq calculation from
+intel_pstate_calc_busy()" intel_pstate_get() calls get_avg_frequency()
+to compute the average frequency, which is problematic for two reasons.
 
-So I should have said that had time=3D0 been passed to
-intel_pstate_sample(), it would have caused it to return false on the
-next invocation. :-)
+First, intel_pstate_get() may be invoked before the driver reads the
+CPU feedback registers for the first time and if that happens,
+get_avg_frequency() will attempt to divide by zero.
 
-The way it works is that sample.time is 0 initially, so
-intel_pstate_sample() returns false first time it is called and the
-second invocation gets all of the deltas as needed.
+Second, the get_avg_frequency() call in intel_pstate_get() is racy
+with respect to intel_pstate_sample() and it may end up returning
+completely meaningless values for this reason.
 
---===============6933989541880876927==--
+Moreover, after commit 7349ec0470b6 "intel_pstate: Move
+intel_pstate_calc_busy() into get_target_pstate_use_performance()"
+sample.core_pct_busy is never computed on Atom, but it is used in
+intel_pstate_adjust_busy_pstate() in that case too.
+
+To address those problems notice that if sample.core_pct_busy
+was used in the average frequency computation carried out by
+get_avg_frequency(), both the divide by zero problem and the
+race with respect to intel_pstate_sample() would be avoided.
+
+Accordingly, move the invocation of intel_pstate_calc_busy() from
+get_target_pstate_use_performance() to intel_pstate_update_util(),
+which also will take care of the uninitialized sample.core_pct_busy
+on Atom, and modify get_avg_frequency() to use sample.core_pct_busy
+as per the above.
+
+Reported-by: kernel test robot <ying.huang@linux.intel.com>
+Link: http://marc.info/?l=3Dlinux-kernel&m=3D146226437623173&w=3D4
+Fixes: 8fa520af5081 "intel_pstate: Remove freq calculation from intel_pstat=
+e_calc_busy()"
+Fixes: 7349ec0470b6 "intel_pstate: Move intel_pstate_calc_busy() into get_t=
+arget_pstate_use_performance()"
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+ drivers/cpufreq/intel_pstate.c |   14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+Index: linux-pm/drivers/cpufreq/intel_pstate.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-pm.orig/drivers/cpufreq/intel_pstate.c
++++ linux-pm/drivers/cpufreq/intel_pstate.c
+@@ -928,8 +928,9 @@ static inline bool intel_pstate_sample(s
+ =
+
+ static inline int32_t get_avg_frequency(struct cpudata *cpu)
+ {
+-	return div64_u64(cpu->pstate.max_pstate_physical * cpu->sample.aperf *
+-		cpu->pstate.scaling, cpu->sample.mperf);
++	return fp_toint(mul_fp(cpu->sample.core_pct_busy,
++			       int_tofp(cpu->pstate.max_pstate_physical *
++						cpu->pstate.scaling / 100)));
+ }
+ =
+
+ static inline int32_t get_target_pstate_use_cpu_load(struct cpudata *cpu)
+@@ -972,8 +973,6 @@ static inline int32_t get_target_pstate_
+ 	int32_t core_busy, max_pstate, current_pstate, sample_ratio;
+ 	u64 duration_ns;
+ =
+
+-	intel_pstate_calc_busy(cpu);
+-
+ 	/*
+ 	 * core_busy is the ratio of actual performance to max
+ 	 * max_pstate is the max non turbo pstate available
+@@ -1056,8 +1055,11 @@ static void intel_pstate_update_util(str
+ 	if ((s64)delta_ns >=3D pid_params.sample_rate_ns) {
+ 		bool sample_taken =3D intel_pstate_sample(cpu, time);
+ =
+
+-		if (sample_taken && !hwp_active)
+-			intel_pstate_adjust_busy_pstate(cpu);
++		if (sample_taken) {
++			intel_pstate_calc_busy(cpu);
++			if (!hwp_active)
++				intel_pstate_adjust_busy_pstate(cpu);
++		}
+ 	}
+ }
+ =
+
+
+
+--===============7479674465191610911==--
 
