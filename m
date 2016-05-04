@@ -1,65 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============6723666385170059917=="
+Content-Type: multipart/mixed; boundary="===============9023181250460741516=="
 MIME-Version: 1.0
 From: Rafael J. Wysocki <rafael@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [sched/fair] 41e0d37f7a: divide error: 0000 [#1] SMP
-Date: Wed, 04 May 2016 13:41:25 +0200
-Message-ID: <CAJZ5v0jX9L=xSJoTyMD3FVMKrigKFzL8L=BzaYgALiSOjxVLmQ@mail.gmail.com>
-In-Reply-To: <CANRm+CxWSLEuNakrmVogfDtx08H8w9OKd70z5n1MkuRto7jHuw@mail.gmail.com>
+Date: Wed, 04 May 2016 13:44:18 +0200
+Message-ID: <CAJZ5v0ickLcEZwWwjb89+97a_P+QWbM_+q5CUehRTbsMJbaGzw@mail.gmail.com>
+In-Reply-To: <CANRm+Czc1mYz8BZGgZs4geSvY6=TqxH537mqZNeonutcmBnZvw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6723666385170059917==
+--===============9023181250460741516==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 4, 2016 at 2:53 AM, Wanpeng Li <kernellwp@gmail.com> wrote:
-> 2016-05-03 21:33 GMT+08:00 Rafael J. Wysocki <rafael@kernel.org>:
->> On Tue, May 3, 2016 at 11:25 AM, Wanpeng Li <kernellwp@gmail.com> wrot=
-e:
->>> 2016-05-03 17:19 GMT+08:00 Wanpeng Li <kernellwp@gmail.com>:
->>>> 2016-05-03 16:32 GMT+08:00 Peter Zijlstra <peterz@infradead.org>:
->>>>> On Tue, May 03, 2016 at 09:10:51AM +0800, kernel test robot wrote:
+On Wed, May 4, 2016 at 2:58 AM, Wanpeng Li <kernellwp@gmail.com> wrote:
+> 2016-05-03 20:15 GMT+08:00 Rafael J. Wysocki <rafael@kernel.org>:
+>> On Tue, May 3, 2016 at 10:32 AM, Peter Zijlstra <peterz@infradead.org>=
+ wrote:
+>>> On Tue, May 03, 2016 at 09:10:51AM +0800, kernel test robot wrote:
+>>>> FYI, we noticed the following commit:
+>>>>
+>>>> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+>>>> commit 41e0d37f7ac81297c07ba311e4ad39465b8c8295 ("sched/fair: Do not c=
+all cpufreq hook unless util changed")
+>>>
 
 [cut]
 
->>>> ----snip----
->>>>
->>>> diff --git a/drivers/cpufreq/intel_pstate.c b/drivers/cpufreq/intel_ps=
-tate.c
->>>> index 8b5a415..57b3843 100644
->>>> --- a/drivers/cpufreq/intel_pstate.c
->>>> +++ b/drivers/cpufreq/intel_pstate.c
->>>> @@ -1241,6 +1241,7 @@ static int intel_pstate_init_cpu(unsigned int cp=
-unum)
->>>>         intel_pstate_get_cpu_pstates(cpu);
->>>>
->>>>         intel_pstate_busy_pid_reset(cpu);
->>>> +       intel_pstate_sample(cpu);
 >>>
->>> intel_pstate_sample(cpu, 0);
->>>
->>>>
->>>>         cpu->update_util.func =3D intel_pstate_update_util;
+>>> That's intel_pstate.c:get_avg_frequency(), which assumes mperf !=3D 0. =
+It
+>>> being 0 seems to suggest intel_pstate_sample() hasn't been called yet or
+>>> so.
 >>
->> That would avoid the divide by 0, but the value returned by
->> intel_pstate_get() would still be bogus.
+>> Well, what's the tree based on?
+>>
+>> The mainline does this:
+>>
+>> bool sample_taken =3D intel_pstate_sample(cpu, time);
+>>
+>> if (sample_taken && !hwp_active)
+>>         intel_pstate_adjust_busy_pstate(cpu);
+>>
+>> and (the mainline version of) intel_pstate_sample() returns false when
+>> it is called for the first time after setting the update_util hook.
 >
-> If your bogus means that some data is stale and could you explain more?
+> The callsites in scheduler will set time to rq_clock(rq) when trigger
+> sample, so when time 0 will be used even if it is set just before
+> setting the update_util hook?
 
-get_avg_frequency() expects sample.aperf to be a delta between two
-different values of the APERF register obtained at two different
-instants of time, and analogously for sample.mperf, because that's
-when the formula used by it is guaranteed to be valid.  This means
-that it generally is not sufficient to read those registers just once
-to get a meaningful result, they need to be read at least twice for
-that (with some time between the reads to let the counters grow
-sufficiently).
+I'm not sure what you mean.
 
-With your modification sample.aperf and sample.mperf would simply
-contain the values of APERF and MPERF, respectively, at the the
-intel_pstate_sample(cpu, 0) invocation time, so using them in the
-computation would not be guaranteed to lead to a meaningful result.
+time=3D0 is special as it will cause intel_pstate_sample() to return
+false on the next invocation.
 
---===============6723666385170059917==--
+--===============9023181250460741516==--
 
