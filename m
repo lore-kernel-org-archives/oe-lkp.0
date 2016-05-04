@@ -1,358 +1,320 @@
-Content-Type: multipart/mixed; boundary="===============2282756665777480727=="
+Content-Type: multipart/mixed; boundary="===============0248986273296500808=="
 MIME-Version: 1.0
-From: kernel test robot <xiaolong.ye@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 To: lkp@lists.01.org
-Subject: [mm, vmscan] 6963dd6128: vm-scalability.throughput -3.3% regression
-Date: Wed, 04 May 2016 10:51:47 +0800
-Message-ID: <20160504025147.GB3752@yexl-desktop>
+Subject: Re: [net] 5413d1babe: INFO: SOFTIRQ-safe -> SOFTIRQ-unsafe lock order detected ]
+Date: Tue, 03 May 2016 20:11:29 -0700
+Message-ID: <CANn89iLfXKir_8+dX2DhCnm4uE2OLasi+HFp3-AF_mm2YLfS_Q@mail.gmail.com>
+In-Reply-To: <20160504024754.GA3752@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2282756665777480727==
+--===============0248986273296500808==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-FYI, we noticed vm-scalability.throughput -3.3% regression with the followi=
-ng commit:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/mel/linux mm-vmscan-node-lr=
-u-v5r9
-commit 6963dd61283e853c4e17eb6c120fc595f3644638 ("mm, vmscan: Begin reclaim=
-ing pages on a per-node basis")
-
-on test machine: lkp-sb02:  threads Sandy Bridge-EP with 4G memory
-
-
+On Tue, May 3, 2016 at 7:47 PM, kernel test robot <xiaolong.ye@intel.com>=
+ wrote:
+>
+> FYI, we noticed the following commit:
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> commit 5413d1babe8f10de13d72496c12b862eef8ba613 ("net: do not block BH wh=
+ile processing socket backlog")
+>
+> on test machine: vm-lkp-wsx03-1G: 1 threads qemu-system-x86_64 -enable-kv=
+m -cpu host with 1G memory
+>
+> caused below changes:
+>
+>
+> [   35.296699] mount.nfs (3510) used greatest stack depth: 11536 bytes le=
+ft
+> [   42.600792]
+> [   42.601632] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-compiler/cpufreq_governor/kconfig/rootfs/runtime/tbox_group/test/testcase:
-  gcc-4.9/performance/x86_64-rhel/debian-x86_64-2015-02-07.cgz/300s/lkp-sb0=
-2/lru-file-readonce/vm-scalability
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [   42.603227] [ INFO: SOFTIRQ-safe -> SOFTIRQ-unsafe lock order detected=
+ ]
+> [   42.606492] 4.6.0-rc5-01190-g5413d1b #1 Not tainted
+> [   42.607747] ------------------------------------------------------
+> [   42.609227] wget/3661 [HC0[0]:SC0[2]:HE1:SE0] is trying to acquire:
+> [   42.610880]  (&(&tcp_hashinfo.bhash[i].lock)->rlock){+.+...}, at: [<ff=
+ffffff81bb184c>] __inet_twsk_hashdance+0x52/0x11d
+> [   42.613890]
+> [   42.613890] and this task is already holding:
+> [   42.615802]  (slock-AF_INET){+.-...}, at: [<ffffffff81bb7ca1>] tcp_clo=
+se+0x134/0x3ba
+> [   42.618697] which would create a new lock dependency:
+> [   42.620137]  (slock-AF_INET){+.-...} -> (&(&tcp_hashinfo.bhash[i].lock=
+)->rlock){+.+...}
+> [   42.623119]
+> [   42.623119] but this new dependency connects a SOFTIRQ-irq-safe lock:
+> [   42.625296]  (slock-AF_INET){+.-...}
+> ... which became SOFTIRQ-irq-safe at:
+> [   42.627562]   [<ffffffff810e9da5>] __lock_acquire+0x970/0x192a
+> [   42.629139]   [<ffffffff810eb59d>] lock_acquire+0x188/0x223
+> [   42.630562]   [<ffffffff81cb4064>] _raw_spin_lock+0x34/0x6a
+> [   42.632030]   [<ffffffff81bd3a82>] udp_queue_rcv_skb+0x204/0x4e8
+> [   42.633558]   [<ffffffff81bd45d8>] __udp4_lib_rcv+0x872/0x9ce
+> [   42.634980]   [<ffffffff81bd4aa9>] udp_rcv+0x1a/0x1c
+> [   42.636301]   [<ffffffff81ba7ccd>] ip_local_deliver_finish+0x1aa/0x329
+> [   42.637836]   [<ffffffff81ba853a>] ip_local_deliver+0xb8/0xbf
+> [   42.639277]   [<ffffffff81ba82e2>] ip_rcv_finish+0x496/0x4ca
+> [   42.640702]   [<ffffffff81ba8818>] ip_rcv+0x2d7/0x333
+> [   42.642039]   [<ffffffff81b4674f>] __netif_receive_skb_core+0x6a9/0x811
+> [   42.643647]   [<ffffffff81b46eba>] __netif_receive_skb+0x1d/0x5f
+> [   42.645141]   [<ffffffff81b46fc2>] netif_receive_skb_internal+0xc6/0x1=
+87
+> [   42.646697]   [<ffffffff81b48203>] napi_gro_receive+0x15c/0x224
+> [   42.648221]   [<ffffffff8192ce2d>] e1000_clean_rx_irq+0x374/0x3f5
+> [   42.649722]   [<ffffffff8192c0ab>] e1000_clean+0x521/0x6b5
+> [   42.651121]   [<ffffffff81b4866d>] net_rx_action+0x12f/0x422
+> [   42.652545]   [<ffffffff81cb7997>] __do_softirq+0x207/0x4d0
+> [   42.654067]   [<ffffffff810a4948>] run_ksoftirqd+0x25/0x62
+> [   42.655477]   [<ffffffff810c1bce>] smpboot_thread_fn+0x1cc/0x1e3
+> [   42.656953]   [<ffffffff810be641>] kthread+0xfb/0x103
+> [   42.658296]   [<ffffffff81cb4ef2>] ret_from_fork+0x22/0x50
+> [   42.659725]
+> [   42.659725] to a SOFTIRQ-irq-unsafe lock:
+> [   42.661558]  (&(&tcp_hashinfo.bhash[i].lock)->rlock){+.+...}
+> ... which became SOFTIRQ-irq-unsafe at:
+> [   42.664127] ...  [<ffffffff810e9e17>] __lock_acquire+0x9e2/0x192a
+> [   42.665706]   [<ffffffff810eb59d>] lock_acquire+0x188/0x223
+> [   42.667116]   [<ffffffff81cb4064>] _raw_spin_lock+0x34/0x6a
+> [   42.668668]   [<ffffffff81bb184c>] __inet_twsk_hashdance+0x52/0x11d
+> [   42.670170]   [<ffffffff81bc9fca>] tcp_time_wait+0x1da/0x210
+> [   42.671770]   [<ffffffff81bbdba0>] tcp_fin+0x70/0x370
+> [   42.673109]   [<ffffffff81bbe187>] tcp_data_queue+0x2e7/0xab9
+> [   42.674552]   [<ffffffff81bbfd97>] tcp_rcv_state_process+0xae1/0xc22
+> [   42.676071]   [<ffffffff81bc6780>] tcp_v4_do_rcv+0x106/0x14f
+> [   42.677501]   [<ffffffff81b313b1>] release_sock+0xd2/0x1bb
+> [   42.678915]   [<ffffffff81bb7c88>] tcp_close+0x11b/0x3ba
+> [   42.680287]   [<ffffffff81bdcb5e>] inet_release+0x52/0x59
+> [   42.681761]   [<ffffffff81b2b672>] sock_release+0x1f/0x78
+> [   42.683215]   [<ffffffff81b2b6dd>] sock_close+0x12/0x16
+> [   42.684679]   [<ffffffff811ee737>] __fput+0x10d/0x1c6
+> [   42.686024]   [<ffffffff811ee826>] ____fput+0xe/0x10
+> [   42.687342]   [<ffffffff810bd199>] task_work_run+0x67/0x90
+> [   42.688760]   [<ffffffff810a2571>] do_exit+0x556/0xb30
+> [   42.690108]   [<ffffffff810a3de1>] do_group_exit+0x4a/0xb5
+> [   42.691505]   [<ffffffff810a3e60>] __wake_up_parent+0x0/0x28
+> [   42.692926]   [<ffffffff81cb4cbc>] entry_SYSCALL_64_fastpath+0x1f/0xbd
+> [   42.694459]
+> [   42.694459] other info that might help us debug this:
+> [   42.694459]
+> [   42.697180]  Possible interrupt unsafe locking scenario:
+> [   42.697180]
+> [   42.699260]        CPU0                    CPU1
+> [   42.700448]        ----                    ----
+> [   42.701627]   lock(&(&tcp_hashinfo.bhash[i].lock)->rlock);
+> [   42.703104]                                local_irq_disable();
+> [   42.704490]                                lock(slock-AF_INET);
+> [   42.706017]                                lock(&(&tcp_hashinfo.bhash[=
+i].lock)->rlock);
+> [   42.708427]   <Interrupt>
+> [   42.709351]     lock(slock-AF_INET);
+> [   42.710586]
+> [   42.710586]  *** DEADLOCK ***
+> [   42.710586]
+> [   42.712967] 1 lock held by wget/3661:
+> [   42.714042]  #0:  (slock-AF_INET){+.-...}, at: [<ffffffff81bb7ca1>] tc=
+p_close+0x134/0x3ba
+> [   42.716659]
+> the dependencies between SOFTIRQ-irq-safe lock and the holding lock:
+> [   42.718884] -> (slock-AF_INET){+.-...} ops: 163 {
+> [   42.720519]    HARDIRQ-ON-W at:
+> [   42.721609]                     [<ffffffff810e9df5>] __lock_acquire+0x=
+9c0/0x192a
+> [   42.723853]                     [<ffffffff810eb59d>] lock_acquire+0x18=
+8/0x223
+> [   42.725475]                     [<ffffffff81cb41a8>] _raw_spin_lock_bh=
++0x3c/0x72
+> [   42.727632]                     [<ffffffff81b30e0e>] lock_sock_nested+=
+0x3b/0x9a
+> [   42.729803]                     [<ffffffff81b33330>] sock_setsockopt+0=
+x21e/0x8f9
+> [   42.731979]                     [<ffffffff81b2e515>] SyS_setsockopt+0x=
+63/0x9e
+> [   42.733607]                     [<ffffffff81cb4cbc>] entry_SYSCALL_64_=
+fastpath+0x1f/0xbd
+> [   42.735936]    IN-SOFTIRQ-W at:
+> [   42.737020]                     [<ffffffff810e9da5>] __lock_acquire+0x=
+970/0x192a
+> [   42.739196]                     [<ffffffff810eb59d>] lock_acquire+0x18=
+8/0x223
+> [   42.740869]                     [<ffffffff81cb4064>] _raw_spin_lock+0x=
+34/0x6a
+> [   42.742503]                     [<ffffffff81bd3a82>] udp_queue_rcv_skb=
++0x204/0x4e8
+> [   42.744687]                     [<ffffffff81bd45d8>] __udp4_lib_rcv+0x=
+872/0x9ce
+> [   42.746838]                     [<ffffffff81bd4aa9>] udp_rcv+0x1a/0x1c
+> [   42.748380]                     [<ffffffff81ba7ccd>] ip_local_deliver_=
+finish+0x1aa/0x329
+> [   42.750655]                     [<ffffffff81ba853a>] ip_local_deliver+=
+0xb8/0xbf
+> [   42.752827]                     [<ffffffff81ba82e2>] ip_rcv_finish+0x4=
+96/0x4ca
+> [   42.754986]                     [<ffffffff81ba8818>] ip_rcv+0x2d7/0x333
+> [   42.756547]                     [<ffffffff81b4674f>] __netif_receive_s=
+kb_core+0x6a9/0x811
+> [   42.758830]                     [<ffffffff81b46eba>] __netif_receive_s=
+kb+0x1d/0x5f
+> [   42.760997]                     [<ffffffff81b46fc2>] netif_receive_skb=
+_internal+0xc6/0x187
+> [   42.763252]                     [<ffffffff81b48203>] napi_gro_receive+=
+0x15c/0x224
+> [   42.765407]                     [<ffffffff8192ce2d>] e1000_clean_rx_ir=
+q+0x374/0x3f5
+> [   42.767657]                     [<ffffffff8192c0ab>] e1000_clean+0x521=
+/0x6b5
+> [   42.769266]                     [<ffffffff81b4866d>] net_rx_action+0x1=
+2f/0x422
+> [   42.771401]                     [<ffffffff81cb7997>] __do_softirq+0x20=
+7/0x4d0
+> [   42.773017]                     [<ffffffff810a4948>] run_ksoftirqd+0x2=
+5/0x62
+> [   42.774619]                     [<ffffffff810c1bce>] smpboot_thread_fn=
++0x1cc/0x1e3
+> [   42.776855]                     [<ffffffff810be641>] kthread+0xfb/0x103
+> [   42.778408]                     [<ffffffff81cb4ef2>] ret_from_fork+0x2=
+2/0x50
+> [   42.780013]    INITIAL USE at:
+> [   42.781094]                    [<ffffffff810e9e5d>] __lock_acquire+0xa=
+28/0x192a
+> [   42.783228]                    [<ffffffff810eb59d>] lock_acquire+0x188=
+/0x223
+> [   42.784825]                    [<ffffffff81cb41a8>] _raw_spin_lock_bh+=
+0x3c/0x72
+> [   42.786948]                    [<ffffffff81b30e0e>] lock_sock_nested+0=
+x3b/0x9a
+> [   42.789093]                    [<ffffffff81b33330>] sock_setsockopt+0x=
+21e/0x8f9
+> [   42.791251]                    [<ffffffff81b2e515>] SyS_setsockopt+0x6=
+3/0x9e
+> [   42.792853]                    [<ffffffff81cb4cbc>] entry_SYSCALL_64_f=
+astpath+0x1f/0xbd
+> [   42.795088]  }
+> [   42.795898]  ... key      at: [<ffffffff83855d90>] af_family_slock_key=
+s+0x10/0x160
+> [   42.798089]  ... acquired at:
+> [   42.799074]    [<ffffffff810e88b5>] check_irq_usage+0x55/0xaa
+> [   42.800522]    [<ffffffff810ea742>] __lock_acquire+0x130d/0x192a
+> [   42.801982]    [<ffffffff810eb59d>] lock_acquire+0x188/0x223
+> [   42.803414]    [<ffffffff81cb4064>] _raw_spin_lock+0x34/0x6a
+> [   42.804826]    [<ffffffff81bb184c>] __inet_twsk_hashdance+0x52/0x11d
+> [   42.806340]    [<ffffffff81bc9fca>] tcp_time_wait+0x1da/0x210
+> [   42.807780]    [<ffffffff81bb7db2>] tcp_close+0x245/0x3ba
+> [   42.809185]    [<ffffffff81bdcb5e>] inet_release+0x52/0x59
+> [   42.810584]    [<ffffffff81b2b672>] sock_release+0x1f/0x78
+> [   42.811987]    [<ffffffff81b2b6dd>] sock_close+0x12/0x16
+> [   42.813362]    [<ffffffff811ee737>] __fput+0x10d/0x1c6
+> [   42.814790]    [<ffffffff811ee826>] ____fput+0xe/0x10
+> [   42.816198]    [<ffffffff810bd199>] task_work_run+0x67/0x90
+> [   42.817611]    [<ffffffff810a2571>] do_exit+0x556/0xb30
+> [   42.818973]    [<ffffffff810a3de1>] do_group_exit+0x4a/0xb5
+> [   42.820380]    [<ffffffff810a3e60>] __wake_up_parent+0x0/0x28
+> [   42.821797]    [<ffffffff81cb4cbc>] entry_SYSCALL_64_fastpath+0x1f/0xbd
+> [   42.823327]
+> [   42.824105]
+> the dependencies between the lock to be acquired and SOFTIRQ-irq-unsafe l=
+ock:
+> [   42.839607] -> (&(&tcp_hashinfo.bhash[i].lock)->rlock){+.+...} ops: 19=
+ {
+> [   42.841688]    HARDIRQ-ON-W at:
+> [   42.842789]                     [<ffffffff810e9df5>] __lock_acquire+0x=
+9c0/0x192a
+> [   42.844954]                     [<ffffffff810eb59d>] lock_acquire+0x18=
+8/0x223
+> [   42.846581]                     [<ffffffff81cb41a8>] _raw_spin_lock_bh=
++0x3c/0x72
+> [   42.848754]                     [<ffffffff81bb21b9>] inet_csk_get_port=
++0x78/0x435
+> [   42.850925]                     [<ffffffff81bdcd6d>] inet_bind+0x148/0=
+x1c6
+> [   42.852524]                     [<ffffffff81b2ddd5>] SyS_bind+0x6a/0x97
+> [   42.854078]                     [<ffffffff81cb4cbc>] entry_SYSCALL_64_=
+fastpath+0x1f/0xbd
+> [   42.856336]    SOFTIRQ-ON-W at:
+> [   42.857425]                     [<ffffffff810e9e17>] __lock_acquire+0x=
+9e2/0x192a
+> [   42.859623]                     [<ffffffff810eb59d>] lock_acquire+0x18=
+8/0x223
+> [   42.861257]                     [<ffffffff81cb4064>] _raw_spin_lock+0x=
+34/0x6a
+> [   42.862881]                     [<ffffffff81bb184c>] __inet_twsk_hashd=
+ance+0x52/0x11d
+> [   42.865114]                     [<ffffffff81bc9fca>] tcp_time_wait+0x1=
+da/0x210
+> [   42.867351]                     [<ffffffff81bbdba0>] tcp_fin+0x70/0x370
+> [   42.869032]                     [<ffffffff81bbe187>] tcp_data_queue+0x=
+2e7/0xab9
+> [   42.871183]                     [<ffffffff81bbfd97>] tcp_rcv_state_pro=
+cess+0xae1/0xc22
+> [   42.873565]                     [<ffffffff81bc6780>] tcp_v4_do_rcv+0x1=
+06/0x14f
+> [   42.875801]                     [<ffffffff81b313b1>] release_sock+0xd2=
+/0x1bb
+> [   42.877408]                     [<ffffffff81bb7c88>] tcp_close+0x11b/0=
+x3ba
+> [   42.878999]                     [<ffffffff81bdcb5e>] inet_release+0x52=
+/0x59
+> [   42.880606]                     [<ffffffff81b2b672>] sock_release+0x1f=
+/0x78
+> [   42.882205]                     [<ffffffff81b2b6dd>] sock_close+0x12/0=
+x16
+> [   42.883876]                     [<ffffffff811ee737>] __fput+0x10d/0x1c6
+> [   42.885520]                     [<ffffffff811ee826>] ____fput+0xe/0x10
+> [   42.887060]                     [<ffffffff810bd199>] task_work_run+0x6=
+7/0x90
+> [   42.889781]                     [<ffffffff810a2571>] do_exit+0x556/0xb=
+30
+> [   42.891522]                     [<ffffffff810a3de1>] do_group_exit+0x4=
+a/0xb5
+> [   42.893122]                     [<ffffffff810a3e60>] __wake_up_parent+=
+0x0/0x28
+> [   42.895331]                     [<ffffffff81cb4cbc>] entry_SYSCALL_64_=
+fastpath+0x1f/0xbd
+> [   42.897630]    INITIAL USE at:
+> [   42.898709]                    [<ffffffff810e9e5d>] __lock_acquire+0xa=
+28/0x192a
+> [   42.900929]                    [<ffffffff810eb59d>] lock_acquire+0x188=
+/0x223
+> [   42.902664]                    [<ffffffff81cb41a8>] _raw_spin_lock_bh+=
+0x3c/0x72
+> [   42.904895]                    [<ffffffff81bb21b9>] inet_csk_get_port+=
+0x78/0x435
+> [   42.907129]                    [<ffffffff81bdcd6d>] inet_bind+0x148/0x=
+1c6
+> [   42.908721]                    [<ffffffff81b2ddd5>] SyS_bind+0x6a/0x97
+> [   42.910250]                    [<ffffffff81cb4cbc>] entry_SYSCALL_64_f=
+astpath+0x1f/0xbd
+> [   42.912481]  }
+> [   42.913278]  ... key      at: [<ffffffff8386e0e8>] __key.62185+0x0/0x8
+> [   42.914811]  ... acquired at:
+> [   42.915781]    [<ffffffff810e88b5>] check_irq_usage+0x55/0xaa
+> [   42.917204]    [<ffffffff810ea742>] __lock_acquire+0x130d/0x192a
+> [   42.918684]    [<ffffffff810eb59d>] lock_acquire+0x188/0x223
+> [   42.920100]    [<ffffffff81cb4064>] _raw_spin_lock+0x34/0x6a
+> [   42.921529]    [<ffffffff81bb184c>] __inet_twsk_hashdance+0x52/0x11d
+> [   42.923031]    [<ffffffff81bc9fca>] tcp_time_wait+0x1da/0x210
+> [   42.924463]    [<ffffffff81bb7db2>] tcp_close+0x245/0x3ba
+> [   42.925839]    [<ffffffff81bdcb5e>] inet_release+0x52/0x59
+> [   42.927229]    [<ffffffff81b2b672>] sock_release+0x1f/0x78
+> [   42.928642]    [<ffffffff81b2b6dd>] sock_close+0x12/0x16
+> [   42.930009]    [<ffffffff811ee737>] __fput+0x10d/0x1c6
+> [   42.931477]    [<ffffffff811ee826>] ____fput+0xe/0x10
+>
+>
 
-commit: =
+Hi
 
-  4365c69d07757b4f26cb23d4213be619269642b8
-  6963dd61283e853c4e17eb6c120fc595f3644638
+It looks the patch I sent earlier would fix this ?
 
-4365c69d07757b4f 6963dd61283e853c4e17eb6c12 =
+https://patchwork.ozlabs.org/patch/618199/
 
----------------- -------------------------- =
+Thanks !
 
-         %stddev     %change         %stddev
-             \          |                \  =
-
-   6128518 =C2=B1  0%      -3.3%    5924537 =C2=B1  0%  vm-scalability.thro=
-ughput
-    205895 =C2=B1  3%    +634.7%    1512732 =C2=B1  1%  vm-scalability.time=
-.involuntary_context_switches
-    314.00 =C2=B1  0%      -2.4%     306.50 =C2=B1  0%  vm-scalability.time=
-.percent_of_cpu_this_job_got
-    916.83 =C2=B1  0%      -2.4%     895.21 =C2=B1  0%  vm-scalability.time=
-.system_time
-    106053 =C2=B1  6%     +29.9%     137776 =C2=B1  1%  softirqs.RCU
-    205895 =C2=B1  3%    +634.7%    1512732 =C2=B1  1%  time.involuntary_co=
-ntext_switches
-      3572 =C2=B1 23%    +290.8%      13963 =C2=B1  1%  vmstat.system.cs
-     10102 =C2=B1 59%     +90.7%      19268 =C2=B1  6%  cpuidle.C1E-SNB.usa=
-ge
-     18650 =C2=B1150%     -92.7%       1361 =C2=B1  6%  cpuidle.C6-SNB.usage
-      2364 =C2=B1  3%     +40.6%       3322 =C2=B1  1%  meminfo.Active(anon)
-     71205 =C2=B1  7%     -14.4%      60965 =C2=B1  3%  meminfo.DirectMap4k
-     36.17 =C2=B1 29%     +18.0%      42.68 =C2=B1  0%  turbostat.CorWatt
-     40.26 =C2=B1 26%     +16.4%      46.88 =C2=B1  0%  turbostat.PkgWatt
-     39566 =C2=B1  0%     -10.8%      35289 =C2=B1  0%  slabinfo.dentry.act=
-ive_objs
-      1852 =C2=B1  2%     -66.0%     629.50 =C2=B1 28%  slabinfo.proc_inode=
-_cache.active_objs
-      1908 =C2=B1  4%     -61.1%     743.25 =C2=B1 27%  slabinfo.proc_inode=
-_cache.num_objs
-    366.53 =C2=B1  8%     -18.0%     300.58 =C2=B1 10%  sched_debug.cfs_rq:=
-/.load.stddev
-     10247 =C2=B1 33%     +54.8%      15858 =C2=B1 13%  sched_debug.cfs_rq:=
-/.min_vruntime.stddev
-     -8727 =C2=B1-83%    +251.1%     -30642 =C2=B1-35%  sched_debug.cfs_rq:=
-/.spread0.min
-     10247 =C2=B1 33%     +54.8%      15859 =C2=B1 13%  sched_debug.cfs_rq:=
-/.spread0.stddev
-    442302 =C2=B1 30%     -51.6%     214062 =C2=B1 17%  sched_debug.cpu.avg=
-_idle.avg
-    611019 =C2=B1 17%     -36.6%     387365 =C2=B1 23%  sched_debug.cpu.avg=
-_idle.max
-    337551 =C2=B1 39%     -66.5%     113210 =C2=B1  8%  sched_debug.cpu.avg=
-_idle.min
-      0.60 =C2=B1  6%     -19.2%       0.48 =C2=B1  5%  sched_debug.cpu.nr_=
-running.stddev
-    191526 =C2=B1 27%    +175.2%     527070 =C2=B1  0%  sched_debug.cpu.nr_=
-switches.avg
-    208823 =C2=B1 25%    +167.9%     559430 =C2=B1  3%  sched_debug.cpu.nr_=
-switches.max
-    173499 =C2=B1 28%    +186.7%     497478 =C2=B1  0%  sched_debug.cpu.nr_=
-switches.min
-     13313 =C2=B1 30%     +79.3%      23868 =C2=B1 35%  sched_debug.cpu.nr_=
-switches.stddev
-    265997 =C2=B1  9%    +107.6%     552287 =C2=B1  1%  proc-vmstat.allocst=
-all
-    759089 =C2=B1 36%     -93.1%      52705 =C2=B1173%  proc-vmstat.compact=
-_free_scanned
-     11241 =C2=B1 67%     -99.9%       8.25 =C2=B1173%  proc-vmstat.compact=
-_isolated
-      6959 =C2=B1 56%     -99.9%       8.25 =C2=B1173%  proc-vmstat.compact=
-_migrate_scanned
-    128.25 =C2=B1 44%    +385.8%     623.00 =C2=B1  5%  proc-vmstat.kswapd_=
-high_wmark_hit_quickly
-    604.25 =C2=B1  7%     +35.9%     821.00 =C2=B1  0%  proc-vmstat.nr_allo=
-c_batch
- 3.475e+08 =C2=B1  0%     -83.4%   57704068 =C2=B1  6%  proc-vmstat.pgalloc=
-_dma32
- 1.127e+08 =C2=B1  1%    +243.5%   3.87e+08 =C2=B1  1%  proc-vmstat.pgalloc=
-_normal
-      5549 =C2=B1 68%    -100.0%       0.25 =C2=B1173%  proc-vmstat.pgmigra=
-te_success
-
-  52969115 =C2=B1  9%     -99.6%     224089 =C2=B1  2%  proc-vmstat.pgscan_=
-direct
-  4.06e+08 =C2=B1  1%      +9.2%  4.434e+08 =C2=B1  0%  proc-vmstat.pgscan_=
-kswapd
-  52906329 =C2=B1  9%     -99.6%     224088 =C2=B1  2%  proc-vmstat.pgsteal=
-_direct
- 4.059e+08 =C2=B1  1%      +9.2%  4.433e+08 =C2=B1  0%  proc-vmstat.pgsteal=
-_kswapd
-     10.60 =C2=B1  2%     +19.9%      12.71 =C2=B1  6%  perf-profile.cycles=
-.__alloc_pages_nodemask.alloc_pages_current.__page_cache_alloc.__do_page_ca=
-che_readahead.ondemand_readahead
-      5.55 =C2=B1  6%     +50.9%       8.37 =C2=B1 10%  perf-profile.cycles=
-.__alloc_pages_slowpath.constprop.102.__alloc_pages_nodemask.alloc_pages_cu=
-rrent.__page_cache_alloc.__do_page_cache_readahead
-      0.00 =C2=B1 -1%      +Inf%       4.30 =C2=B1  1%  perf-profile.cycles=
-.__list_del_entry.isolate_lru_pages.shrink_inactive_list.shrink_zone_memcg.=
-shrink_node
-      3.87 =C2=B1  2%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.__list_del_entry.isolate_lru_pages.shrink_inactive_list.shrink_zone_memcg.=
-shrink_zone
-      1.12 =C2=B1 12%     -33.2%       0.75 =C2=B1  4%  perf-profile.cycles=
-.__list_del_entry.list_del.__rmqueue.get_page_from_freelist.__alloc_pages_n=
-odemask
-     11.18 =C2=B1  1%     +18.1%      13.20 =C2=B1  6%  perf-profile.cycles=
-.__page_cache_alloc.__do_page_cache_readahead.ondemand_readahead.page_cache=
-_async_readahead.generic_file_read_iter
-      1.04 =C2=B1  1%     -15.6%       0.88 =C2=B1  3%  perf-profile.cycles=
-.__radix_tree_create.__add_to_page_cache_locked.add_to_page_cache_lru.mpage=
-_readpages.xfs_vm_readpages
-      0.00 =C2=B1 -1%      +Inf%       5.00 =C2=B1  0%  perf-profile.cycles=
-.__remove_mapping.shrink_page_list.shrink_inactive_list.shrink_zone_memcg.s=
-hrink_node
-      5.88 =C2=B1  1%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.__remove_mapping.shrink_page_list.shrink_inactive_list.shrink_zone_memcg.s=
-hrink_zone
-      1.61 =C2=B1 10%     -25.0%       1.21 =C2=B1  4%  perf-profile.cycles=
-.__rmqueue.get_page_from_freelist.__alloc_pages_nodemask.alloc_pages_curren=
-t.__page_cache_alloc
-      0.00 =C2=B1 -1%      +Inf%       2.66 =C2=B1 18%  perf-profile.cycles=
-._raw_spin_lock.list_lru_count_one.super_cache_count.shrink_slab.shrink_node
-      1.19 =C2=B1  3%     -27.2%       0.86 =C2=B1  2%  perf-profile.cycles=
-._raw_spin_lock_irqsave.__remove_mapping.shrink_page_list.shrink_inactive_l=
-ist.shrink_zone_memcg
-     11.00 =C2=B1  1%     +18.4%      13.03 =C2=B1  6%  perf-profile.cycles=
-.alloc_pages_current.__page_cache_alloc.__do_page_cache_readahead.ondemand_=
-readahead.page_cache_async_readahead
-      2.84 =C2=B1  6%    +103.6%       5.78 =C2=B1 17%  perf-profile.cycles=
-.do_try_to_free_pages.try_to_free_pages.__alloc_pages_slowpath.__alloc_page=
-s_nodemask.alloc_pages_current
-      0.00 =C2=B1 -1%      +Inf%       7.12 =C2=B1  2%  perf-profile.cycles=
-.free_hot_cold_page_list.shrink_page_list.shrink_inactive_list.shrink_zone_=
-memcg.shrink_node
-      6.66 =C2=B1  0%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.free_hot_cold_page_list.shrink_page_list.shrink_inactive_list.shrink_zone_=
-memcg.shrink_zone
-      5.23 =C2=B1  1%     +10.7%       5.79 =C2=B1  1%  perf-profile.cycles=
-.free_pcppages_bulk.free_hot_cold_page.free_hot_cold_page_list.shrink_page_=
-list.shrink_inactive_list
-      4.39 =C2=B1  5%     -16.0%       3.68 =C2=B1  2%  perf-profile.cycles=
-.get_page_from_freelist.__alloc_pages_nodemask.alloc_pages_current.__page_c=
-ache_alloc.__do_page_cache_readahead
-      1.68 =C2=B1  7%     +12.5%       1.89 =C2=B1  5%  perf-profile.cycles=
-.get_page_from_freelist.__alloc_pages_slowpath.__alloc_pages_nodemask.alloc=
-_pages_current.__page_cache_alloc
-      0.00 =C2=B1 -1%      +Inf%       5.64 =C2=B1  1%  perf-profile.cycles=
-.isolate_lru_pages.isra.52.shrink_inactive_list.shrink_zone_memcg.shrink_no=
-de.kswapd
-      4.95 =C2=B1  1%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.isolate_lru_pages.isra.52.shrink_inactive_list.shrink_zone_memcg.shrink_zo=
-ne.kswapd
-      1.17 =C2=B1 12%     -29.2%       0.83 =C2=B1  4%  perf-profile.cycles=
-.list_del.__rmqueue.get_page_from_freelist.__alloc_pages_nodemask.alloc_pag=
-es_current
-      0.00 =C2=B1 -1%      +Inf%       3.07 =C2=B1 19%  perf-profile.cycles=
-.list_lru_count_one.super_cache_count.shrink_slab.shrink_node.do_try_to_fre=
-e_pages
-      0.00 =C2=B1 -1%      +Inf%      21.54 =C2=B1  1%  perf-profile.cycles=
-.shrink_inactive_list.shrink_zone_memcg.shrink_node.kswapd.kthread
-      2.48 =C2=B1  6%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.shrink_inactive_list.shrink_zone_memcg.shrink_zone.do_try_to_free_pages.tr=
-y_to_free_pages
-     19.70 =C2=B1  0%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.shrink_inactive_list.shrink_zone_memcg.shrink_zone.kswapd.kthread
-      0.00 =C2=B1 -1%      +Inf%       5.30 =C2=B1 17%  perf-profile.cycles=
-.shrink_node.do_try_to_free_pages.try_to_free_pages.__alloc_pages_slowpath.=
-__alloc_pages_nodemask
-      0.00 =C2=B1 -1%      +Inf%      22.54 =C2=B1  1%  perf-profile.cycles=
-.shrink_node.kswapd.kthread.ret_from_fork
-      0.00 =C2=B1 -1%      +Inf%      15.28 =C2=B1  1%  perf-profile.cycles=
-.shrink_page_list.shrink_inactive_list.shrink_zone_memcg.shrink_node.kswapd
-      1.79 =C2=B1  6%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.shrink_page_list.shrink_inactive_list.shrink_zone_memcg.shrink_zone.do_try=
-_to_free_pages
-     14.18 =C2=B1  0%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.shrink_page_list.shrink_inactive_list.shrink_zone_memcg.shrink_zone.kswapd
-      0.00 =C2=B1 -1%      +Inf%       4.77 =C2=B1 17%  perf-profile.cycles=
-.shrink_slab.shrink_node.do_try_to_free_pages.try_to_free_pages.__alloc_pag=
-es_slowpath
-      2.82 =C2=B1  6%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.shrink_zone.do_try_to_free_pages.try_to_free_pages.__alloc_pages_slowpath.=
-__alloc_pages_nodemask
-     20.79 =C2=B1  0%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.shrink_zone.kswapd.kthread.ret_from_fork
-      0.00 =C2=B1 -1%      +Inf%      21.68 =C2=B1  1%  perf-profile.cycles=
-.shrink_zone_memcg.shrink_node.kswapd.kthread.ret_from_fork
-      2.58 =C2=B1  6%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.shrink_zone_memcg.shrink_zone.do_try_to_free_pages.try_to_free_pages.__all=
-oc_pages_slowpath
-     19.84 =C2=B1  0%    -100.0%       0.00 =C2=B1 -1%  perf-profile.cycles=
-.shrink_zone_memcg.shrink_zone.kswapd.kthread.ret_from_fork
-      0.00 =C2=B1 -1%      +Inf%       3.46 =C2=B1 18%  perf-profile.cycles=
-.super_cache_count.shrink_slab.shrink_node.do_try_to_free_pages.try_to_free=
-_pages
-      2.85 =C2=B1  6%    +103.7%       5.80 =C2=B1 17%  perf-profile.cycles=
-.try_to_free_pages.__alloc_pages_slowpath.__alloc_pages_nodemask.alloc_page=
-s_current.__page_cache_alloc
-      1.61 =C2=B1  1%     -21.4%       1.27 =C2=B1  1%  perf-profile.cycles=
-.unlock_page.do_mpage_readpage.mpage_readpages.xfs_vm_readpages.__do_page_c=
-ache_readahead
-
-
-To reproduce:
-
-        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
-ts.git
-        cd lkp-tests
-        bin/lkp install job.yaml  # job file is attached in this email
-        bin/lkp run     job.yaml
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
-
-
-Thanks,
-Xiaolong
-
---===============2282756665777480727==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job.yaml"
-
-LS0tCkxLUF9TRVJWRVI6IGlubgpMS1BfQ0dJX1BPUlQ6IDgwCkxLUF9DSUZTX1BPUlQ6IDEzOQp0
-ZXN0Y2FzZTogdm0tc2NhbGFiaWxpdHkKZGVmYXVsdC1tb25pdG9yczoKICB3YWl0OiBhY3RpdmF0
-ZS1tb25pdG9yCiAga21zZzogCiAgdXB0aW1lOiAKICBpb3N0YXQ6IAogIGhlYXJ0YmVhdDogCiAg
-dm1zdGF0OiAKICBudW1hLW51bWFzdGF0OiAKICBudW1hLXZtc3RhdDogCiAgbnVtYS1tZW1pbmZv
-OiAKICBwcm9jLXZtc3RhdDogCiAgcHJvYy1zdGF0OgogICAgaW50ZXJ2YWw6IDEwCiAgbWVtaW5m
-bzogCiAgc2xhYmluZm86IAogIGludGVycnVwdHM6IAogIGxvY2tfc3RhdDogCiAgbGF0ZW5jeV9z
-dGF0czogCiAgc29mdGlycXM6IAogIGJkaV9kZXZfbWFwcGluZzogCiAgZGlza3N0YXRzOiAKICBu
-ZnNzdGF0OiAKICBjcHVpZGxlOiAKICBjcHVmcmVxLXN0YXRzOiAKICB0dXJib3N0YXQ6IAogIHBt
-ZXRlcjogCiAgc2NoZWRfZGVidWc6CiAgICBpbnRlcnZhbDogNjAKY3B1ZnJlcV9nb3Zlcm5vcjog
-cGVyZm9ybWFuY2UKZGVmYXVsdC13YXRjaGRvZ3M6CiAgb29tLWtpbGxlcjogCiAgd2F0Y2hkb2c6
-IApjb21taXQ6IDY5NjNkZDYxMjgzZTg1M2M0ZTE3ZWI2YzEyMGZjNTk1ZjM2NDQ2MzgKbW9kZWw6
-IFNhbmR5IEJyaWRnZS1FUAptZW1vcnk6IDRHCmhkZF9wYXJ0aXRpb25zOiAiL2Rldi9kaXNrL2J5
-LWlkL2F0YS1IRFQ3MjI1MTZETEEzODBfVkRTRDFEVENFS1lBRUotcGFydDIiCnN3YXBfcGFydGl0
-aW9uczogCnJvb3Rmc19wYXJ0aXRpb246ICIvZGV2L2Rpc2svYnktaWQvYXRhLUhEVDcyMjUxNkRM
-QTM4MF9WRFNEMURUQ0VLWUFFSi1wYXJ0MSIKY2F0ZWdvcnk6IGJlbmNobWFyawpwZXJmLXByb2Zp
-bGU6IApydW50aW1lOiAzMDBzCnNpemU6IAp2bS1zY2FsYWJpbGl0eToKICB0ZXN0OiBscnUtZmls
-ZS1yZWFkb25jZQpxdWV1ZTogYmlzZWN0CnRlc3Rib3g6IGxrcC1zYjAyCnRib3hfZ3JvdXA6IGxr
-cC1zYjAyCmtjb25maWc6IHg4Nl82NC1yaGVsCmVucXVldWVfdGltZTogMjAxNi0wNC0zMCAxNzoy
-MTo0Mi43NzgzODg4NzIgKzA4OjAwCmNvbXBpbGVyOiBnY2MtNC45CnJvb3RmczogZGViaWFuLXg4
-Nl82NC0yMDE1LTAyLTA3LmNnegppZDogNzI0ZTFjMjA5ZGI1MDA2NjIxODhhMzYwODg0ZGYxMTYw
-YjE0NWI2Mgp1c2VyOiBsa3AKaGVhZF9jb21taXQ6IDc2NmMwYjgxYzdmZWFhN2I2YjBlZDUyMGVl
-YTcxYWMxYmNhMmI4OWUKYmFzZV9jb21taXQ6IDAyZGEyZDcyMTc0YzYxOTg4ZWI0NDU2YjUzZjQw
-NWUzZWJkZWJjZTQKYnJhbmNoOiBsaW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxNjA0MjUxNgpy
-ZXN1bHRfcm9vdDogIi9yZXN1bHQvdm0tc2NhbGFiaWxpdHkvcGVyZm9ybWFuY2UtMzAwcy1scnUt
-ZmlsZS1yZWFkb25jZS9sa3Atc2IwMi9kZWJpYW4teDg2XzY0LTIwMTUtMDItMDcuY2d6L3g4Nl82
-NC1yaGVsL2djYy00LjkvNjk2M2RkNjEyODNlODUzYzRlMTdlYjZjMTIwZmM1OTVmMzY0NDYzOC8w
-Igpqb2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL2xrcC1zYjAyL2Jpc2VjdF92bS1zY2FsYWJpbGl0
-eS1wZXJmb3JtYW5jZS0zMDBzLWxydS1maWxlLXJlYWRvbmNlLWRlYmlhbi14ODZfNjQtMjAxNS0w
-Mi0wNy5jZ3oteDg2XzY0LXJoZWwtNjk2M2RkNjEyODNlODUzYzRlMTdlYjZjMTIwZmM1OTVmMzY0
-NDYzOC0yMDE2MDQzMC0xMDA4Ni0xdm9pMXg4LTAueWFtbCIKbnJfY3B1OiAiJChucHJvYykiCm1h
-eF91cHRpbWU6IDE1MDAKaW5pdHJkOiAiL29zaW1hZ2UvZGViaWFuL2RlYmlhbi14ODZfNjQtMjAx
-NS0wMi0wNy5jZ3oiCmJvb3Rsb2FkZXJfYXBwZW5kOgotIHJvb3Q9L2Rldi9yYW0wCi0gdXNlcj1s
-a3AKLSBqb2I9L2xrcC9zY2hlZHVsZWQvbGtwLXNiMDIvYmlzZWN0X3ZtLXNjYWxhYmlsaXR5LXBl
-cmZvcm1hbmNlLTMwMHMtbHJ1LWZpbGUtcmVhZG9uY2UtZGViaWFuLXg4Nl82NC0yMDE1LTAyLTA3
-LmNnei14ODZfNjQtcmhlbC02OTYzZGQ2MTI4M2U4NTNjNGUxN2ViNmMxMjBmYzU5NWYzNjQ0NjM4
-LTIwMTYwNDMwLTEwMDg2LTF2b2kxeDgtMC55YW1sCi0gQVJDSD14ODZfNjQKLSBrY29uZmlnPXg4
-Nl82NC1yaGVsCi0gYnJhbmNoPWxpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE2MDQyNTE2Ci0g
-Y29tbWl0PTY5NjNkZDYxMjgzZTg1M2M0ZTE3ZWI2YzEyMGZjNTk1ZjM2NDQ2MzgKLSBCT09UX0lN
-QUdFPS9wa2cvbGludXgveDg2XzY0LXJoZWwvZ2NjLTQuOS82OTYzZGQ2MTI4M2U4NTNjNGUxN2Vi
-NmMxMjBmYzU5NWYzNjQ0NjM4L3ZtbGludXotNC42LjAtcmMzLTAwMDMyLWc2OTYzZGQ2Ci0gbWF4
-X3VwdGltZT0xNTAwCi0gUkVTVUxUX1JPT1Q9L3Jlc3VsdC92bS1zY2FsYWJpbGl0eS9wZXJmb3Jt
-YW5jZS0zMDBzLWxydS1maWxlLXJlYWRvbmNlL2xrcC1zYjAyL2RlYmlhbi14ODZfNjQtMjAxNS0w
-Mi0wNy5jZ3oveDg2XzY0LXJoZWwvZ2NjLTQuOS82OTYzZGQ2MTI4M2U4NTNjNGUxN2ViNmMxMjBm
-YzU5NWYzNjQ0NjM4LzAKLSBMS1BfU0VSVkVSPWlubgotIHwyLQoKCiAgZWFybHlwcmludGs9dHR5
-UzAsMTE1MjAwIHN5c3RlbWQubG9nX2xldmVsPWVycgogIGRlYnVnIGFwaWM9ZGVidWcgc3lzcnFf
-YWx3YXlzX2VuYWJsZWQgcmN1cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0PTEwMAogIHBhbmlj
-PS0xIHNvZnRsb2NrdXBfcGFuaWM9MSBubWlfd2F0Y2hkb2c9cGFuaWMgb29wcz1wYW5pYyBsb2Fk
-X3JhbWRpc2s9MiBwcm9tcHRfcmFtZGlzaz0wCiAgY29uc29sZT10dHlTMCwxMTUyMDAgY29uc29s
-ZT10dHkwIHZnYT1ub3JtYWwKCiAgcncKbGtwX2luaXRyZDogIi9sa3AvbGtwL2xrcC14ODZfNjQu
-Y2d6Igptb2R1bGVzX2luaXRyZDogIi9wa2cvbGludXgveDg2XzY0LXJoZWwvZ2NjLTQuOS82OTYz
-ZGQ2MTI4M2U4NTNjNGUxN2ViNmMxMjBmYzU5NWYzNjQ0NjM4L21vZHVsZXMuY2d6IgpibV9pbml0
-cmQ6ICIvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3ovbGtwLmNneiwv
-b3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3ovcnVuLWlwY29uZmlnLmNn
-eiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNS0wMi0wNy5jZ3ovdHVyYm9zdGF0LmNn
-eiwvbGtwL2JlbmNobWFya3MvdHVyYm9zdGF0LmNneiwvbGtwL2JlbmNobWFya3Mvdm0tc2NhbGFi
-aWxpdHkuY2d6IgpsaW51eF9oZWFkZXJzX2luaXRyZDogIi9wa2cvbGludXgveDg2XzY0LXJoZWwv
-Z2NjLTQuOS82OTYzZGQ2MTI4M2U4NTNjNGUxN2ViNmMxMjBmYzU5NWYzNjQ0NjM4L2xpbnV4LWhl
-YWRlcnMuY2d6IgpyZXBlYXRfdG86IDIKa2VybmVsOiAiL3BrZy9saW51eC94ODZfNjQtcmhlbC9n
-Y2MtNC45LzY5NjNkZDYxMjgzZTg1M2M0ZTE3ZWI2YzEyMGZjNTk1ZjM2NDQ2Mzgvdm1saW51ei00
-LjYuMC1yYzMtMDAwMzItZzY5NjNkZDYiCmRlcXVldWVfdGltZTogMjAxNi0wNC0zMCAxODoxMzoy
-OC4yMjc1NDY1MzcgKzA4OjAwCmpvYl9zdGF0ZTogZmluaXNoZWQKbG9hZGF2ZzogNC42OSAzLjIz
-IDEuNDMgMS8xMjcgNDY2OApzdGFydF90aW1lOiAnMTQ2MjAxMTIzOCcKZW5kX3RpbWU6ICcxNDYy
-MDExNTM5Jwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE2MDQyOS0yMzU2NTkiCg==
-
---===============2282756665777480727==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-MjAxNi0wNC0zMCAxODoxMzo1NyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3Rl
-bS9jcHUvY3B1MC9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wNC0zMCAxODoxMzo1NyBl
-Y2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1MS9jcHVmcmVxL3Nj
-YWxpbmdfZ292ZXJub3IKMjAxNi0wNC0zMCAxODoxMzo1NyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5
-cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1Mi9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0w
-NC0zMCAxODoxMzo1NyBlY2hvIHBlcmZvcm1hbmNlID4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUv
-Y3B1My9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKMjAxNi0wNC0zMCAxODoxMzo1OCBtb3VudCAt
-dCB0bXBmcyAtbyBzaXplPTEwMCUgdm0tc2NhbGFiaWxpdHktdG1wIC90bXAvdm0tc2NhbGFiaWxp
-dHktdG1wCjIwMTYtMDQtMzAgMTg6MTM6NTggdHJ1bmNhdGUgLXMgNDA1MzgzOTg3MiAvdG1wL3Zt
-LXNjYWxhYmlsaXR5LXRtcC92bS1zY2FsYWJpbGl0eS5pbWcKMjAxNi0wNC0zMCAxODoxMzo1OCBt
-a2ZzLnhmcyAtcSAvdG1wL3ZtLXNjYWxhYmlsaXR5LXRtcC92bS1zY2FsYWJpbGl0eS5pbWcKMjAx
-Ni0wNC0zMCAxODoxMzo1OCBtb3VudCAtbyBsb29wIC90bXAvdm0tc2NhbGFiaWxpdHktdG1wL3Zt
-LXNjYWxhYmlsaXR5LmltZyAvdG1wL3ZtLXNjYWxhYmlsaXR5LXRtcC92bS1zY2FsYWJpbGl0eQoy
-MDE2LTA0LTMwIDE4OjEzOjU4IC4vY2FzZS1scnUtZmlsZS1yZWFkb25jZQoyMDE2LTA0LTMwIDE4
-OjEzOjU4IHRydW5jYXRlIC90bXAvdm0tc2NhbGFiaWxpdHktdG1wL3ZtLXNjYWxhYmlsaXR5L3Nw
-YXJzZS1scnUtZmlsZS1yZWFkb25jZS0xIC1zIDEwOTk1MTE2Mjc3NzYKMjAxNi0wNC0zMCAxODox
-Mzo1OCB0cnVuY2F0ZSAvdG1wL3ZtLXNjYWxhYmlsaXR5LXRtcC92bS1zY2FsYWJpbGl0eS9zcGFy
-c2UtbHJ1LWZpbGUtcmVhZG9uY2UtMiAtcyAxMDk5NTExNjI3Nzc2CjIwMTYtMDQtMzAgMTg6MTM6
-NTggdHJ1bmNhdGUgL3RtcC92bS1zY2FsYWJpbGl0eS10bXAvdm0tc2NhbGFiaWxpdHkvc3BhcnNl
-LWxydS1maWxlLXJlYWRvbmNlLTMgLXMgMTA5OTUxMTYyNzc3NgoyMDE2LTA0LTMwIDE4OjEzOjU4
-IHRydW5jYXRlIC90bXAvdm0tc2NhbGFiaWxpdHktdG1wL3ZtLXNjYWxhYmlsaXR5L3NwYXJzZS1s
-cnUtZmlsZS1yZWFkb25jZS00IC1zIDEwOTk1MTE2Mjc3NzYKMjAxNi0wNC0zMCAxODoxODo1OSB1
-bW91bnQgL3RtcC92bS1zY2FsYWJpbGl0eS10bXAvdm0tc2NhbGFiaWxpdHkKMjAxNi0wNC0zMCAx
-ODoxODo1OSBybSAvdG1wL3ZtLXNjYWxhYmlsaXR5LXRtcC92bS1zY2FsYWJpbGl0eS5pbWcKMjAx
-Ni0wNC0zMCAxODoxODo1OSB1bW91bnQgL3RtcC92bS1zY2FsYWJpbGl0eS10bXAK
-
---===============2282756665777480727==--
+--===============0248986273296500808==--
 
