@@ -1,188 +1,168 @@
-Content-Type: multipart/mixed; boundary="===============4576131469436845878=="
+Content-Type: multipart/mixed; boundary="===============7228524158757315958=="
 MIME-Version: 1.0
-From: Kirill A. Shutemov <kirill@shutemov.name>
+From: Rafael J. Wysocki <rjw@rjwysocki.net>
 To: lkp@lists.01.org
-Subject: Re: [mm, thp] 409ca714ac: INFO: possible circular locking dependency detected
-Date: Thu, 05 May 2016 13:18:43 +0300
-Message-ID: <20160505101843.GA13240@node.shutemov.name>
-In-Reply-To: <20160505013245.GB10429@yexl-desktop>
+Subject: Re: [sched/fair] 41e0d37f7a: divide error: 0000 [#1] SMP
+Date: Thu, 05 May 2016 15:46:19 +0200
+Message-ID: <2986116.vKjD9YH9EZ@vostro.rjw.lan>
+In-Reply-To: <CANRm+CyaMDJBK1gxoJo+v7CXuhcN=x-mhgfgCVFm-bahXPUKKA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4576131469436845878==
+--===============7228524158757315958==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 05, 2016 at 09:32:45AM +0800, kernel test robot wrote:
-> FYI, we noticed the following commit:
-> =
-
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> commit 409ca714ac58768342cd39ca79c16f51e1825b3e ("mm, thp: avoid unnecess=
-ary swapin in khugepaged")
-> =
-
-> on test machine: vm-kbuild-1G: 2 threads qemu-system-x86_64 -enable-kvm -=
-cpu Haswell,+smep,+smap with 1G memory
-> =
-
-> caused below changes:
-> =
-
-<trying to dedup strings, it's really annoying>
-
-> =
-
-> [   21.116124] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [   21.116124] [ INFO: possible circular locking dependency detected ]
-> [   21.116127] 4.6.0-rc5-00302-g409ca71 #1 Not tainted
-> [   21.116127] -------------------------------------------------------
-> [   21.116128] udevadm/221 is trying to acquire lock:
-> [   21.116138]  (&mm->mmap_sem){++++++}, at: [<ffffffff81262543>] __might=
-_fault+0x83/0x150
-> [   21.116138] =
-
-> [   21.116138] but task is already holding lock:
-> [   21.116144]  (s_active#12){++++.+}, at: [<ffffffff813315ee>] kernfs_fo=
-p_write+0x8e/0x250
-> [   21.116144] =
-
-> [   21.116144] which lock already depends on the new lock.
-> [   21.116144] =
-
-> [   21.116145] the existing dependency chain (in reverse order) is:
-> [   21.116148] =
-
-> [   21.116148] -> #2 (s_active#12){++++.+}:
-> [   21.116152]        [<ffffffff8117da2c>] lock_acquire+0xac/0x180
-> [   21.116155]        [<ffffffff8132f50a>] __kernfs_remove+0x2da/0x410
-> [   21.116158]        [<ffffffff81330630>] kernfs_remove_by_name_ns+0x40/=
+On Thursday, May 05, 2016 01:05:41 PM Wanpeng Li wrote:
+> 2016-05-03 23:10 GMT+08:00 Rafael J. Wysocki <rjw@rjwysocki.net>:
+> > On Tuesday, May 03, 2016 03:53:12 PM Rafael J. Wysocki wrote:
+> >> On Tuesday, May 03, 2016 03:22:24 PM Rafael J. Wysocki wrote:
+> >> > On Tue, May 3, 2016 at 2:58 PM, Rafael J. Wysocki <rafael@kernel.o=
+rg> wrote:
+> >> > > On Tue, May 3, 2016 at 2:54 PM, Rafael J. Wysocki <rafael@kernel=
+.org> wrote:
+> >> > >> On Tue, May 3, 2016 at 2:15 PM, Rafael J. Wysocki <rafael@kerne=
+l.org> wrote:
+> >> > >>> On Tue, May 3, 2016 at 10:32 AM, Peter Zijlstra <peterz@infrad=
+ead.org> wrote:
+> >> > >>>> On Tue, May 03, 2016 at 09:10:51AM +0800, kernel test robot wro=
+te:
+> >> > >>>>> FYI, we noticed the following commit:
+> >> > >>>>>
+> >> > >>>>> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sc=
+hed/core
+> >> > >>>>> commit 41e0d37f7ac81297c07ba311e4ad39465b8c8295 ("sched/fair: =
+Do not call cpufreq hook unless util changed")
+> >> > >>>>
+> >> > >>>>
+> >> > >>>>> [   14.860950] Freeing unused kernel memory: 260K (ffff88103ed=
+bf000 - ffff88103ee00000)
+> >> > >>>>> [   14.873013] systemd[1]: RTC configured in localtime, applyi=
+ng delta of 480 minutes to system time.
+> >> > >>>>> [   14.884474] random: systemd urandom read with 5 bits of ent=
+ropy available
+> >> > >>>>> [   14.903975] divide error: 0000 [#1] SMP
+> >> > >>>>> [   14.908375] Modules linked in:
+> >> > >>>>> [   14.911793] CPU: 39 PID: 1 Comm: systemd Not tainted 4.6.0-=
+rc4-00016-g41e0d37 #1
+> >> > >>>>> [   14.920051] Hardware name: Intel Corporation S2600WP/S2600W=
+P, BIOS SE5C600.86B.02.02.0002.122320131210 12/23/2013
+> >> > >>>>> [   14.931509] task: ffff8810101d8000 ti: ffff88081ab20000 tas=
+k.ti: ffff88081ab20000
+> >> > >>>>> [   14.939862] RIP: 0010:[<ffffffff8176ad32>]  [<ffffffff8176a=
+d32>] intel_pstate_get+0x32/0x40
+> >> > >>>>> [   14.949202] RSP: 0018:ffff88081ab23d70  EFLAGS: 00010006
+> >> > >>>>> [   14.955129] RAX: 0000000000000000 RBX: 0000000000000024 RCX=
+: ffff8808091e0300
+> >> > >>>>> [   14.963094] RDX: 0000000000000000 RSI: 0000000000000100 RDI=
+: 0000000000000024
+> >> > >>>>> [   14.971057] RBP: ffff88081ab23d88 R08: 0000000000001000 R09=
+: 00000000096a1000
+> >> > >>>>> [   14.979022] R10: 0000000000ffff10 R11: 000000000000000f R12=
+: 0000000000000202
+> >> > >>>>> [   14.986984] R13: ffff88101390a040 R14: ffff88100e48e180 R15=
+: ffff88101390a040
+> >> > >>>>> [   14.994950] FS:  00007f66fe117880(0000) GS:ffff8810139c0000=
+(0000) knlGS:0000000000000000
+> >> > >>>>> [   15.003982] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800500=
+33
+> >> > >>>>> [   15.010393] CR2: 000055f78b760098 CR3: 000000103d759000 CR4=
+: 00000000001406e0
+> >> > >>>>> [   15.018359] Stack:
+> >> > >>>>> [   15.020602]  ffffffff81764dad 0000000000000024 ffff88100e48=
+e180 ffff88081ab23dc8
+> >> > >>>>> [   15.028899]  ffffffff81040267 ffff88101390a0ac 000000000000=
+0340 ffff88081ab23f20
+> >> > >>>>> [   15.037197]  ffff88103cd7c400 ffff88100e48e180 ffff88101390=
+a040 ffff88081ab23e30
+> >> > >>>>> [   15.045493] Call Trace:
+> >> > >>>>> [   15.048223]  [<ffffffff81764dad>] ? cpufreq_quick_get+0x3d/=
 0x90
-> [   21.116160]        [<ffffffff813339fb>] sysfs_remove_file_ns+0x2b/0x70
-> [   21.116164]        [<ffffffff81ba8a16>] device_del+0x166/0x320
-> [   21.116166]        [<ffffffff81ba943c>] device_destroy+0x3c/0x50
-> [   21.116170]        [<ffffffff8105aa61>] cpuid_class_cpu_callback+0x51/=
-0x70
-> [   21.116173]        [<ffffffff81131ce9>] notifier_call_chain+0x59/0x190
-> [   21.116177]        [<ffffffff81132749>] __raw_notifier_call_chain+0x9/=
-0x10
-> [   21.116180]        [<ffffffff810fe6b0>] __cpu_notify+0x40/0x90
-> [   21.116182]        [<ffffffff810fe890>] cpu_notify_nofail+0x10/0x30
-> [   21.116185]        [<ffffffff810fe8d7>] notify_dead+0x27/0x1e0
-> [   21.116187]        [<ffffffff810fe273>] cpuhp_down_callbacks+0x93/0x190
-> [   21.116192]        [<ffffffff82096062>] _cpu_down+0xc2/0x1e0
-> [   21.116194]        [<ffffffff810ff727>] do_cpu_down+0x37/0x50
-> [   21.116197]        [<ffffffff8110003b>] cpu_down+0xb/0x10
-> [   21.116201]        [<ffffffff81038e4d>] _debug_hotplug_cpu+0x7d/0xd0
-> [   21.116205]        [<ffffffff8435d6bb>] debug_hotplug_cpu+0xd/0x11
-> [   21.116208]        [<ffffffff84352426>] do_one_initcall+0x138/0x1cf
-> [   21.116211]        [<ffffffff8435270a>] kernel_init_freeable+0x24d/0x2=
-de
-> [   21.116214]        [<ffffffff8209533a>] kernel_init+0xa/0x120
-> [   21.116217]        [<ffffffff820a7972>] ret_from_fork+0x22/0x50
-> [   21.116221] =
+> >> > >>>>> [   15.054832]  [<ffffffff81040267>] show_cpuinfo+0x3c7/0x410
+> >> > >>>>> [   15.060956]  [<ffffffff8121f5c4>] seq_read+0x2c4/0x3a0
+> >> > >>>>> [   15.066685]  [<ffffffff81266ea8>] proc_reg_read+0x48/0x70
+> >> > >>>>> [   15.072713]  [<ffffffff811f9d58>] __vfs_read+0x28/0xd0
+> >> > >>>>> [   15.078451]  [<ffffffff813bab63>] ? security_file_permissio=
+n+0xa3/0xc0
+> >> > >>>>> [   15.085737]  [<ffffffff811faa97>] ? rw_verify_area+0x57/0xd0
+> >> > >>>>> [   15.092054]  [<ffffffff811fab96>] vfs_read+0x86/0x130
+> >> > >>>>> [   15.097691]  [<ffffffff811fbf96>] SyS_read+0x46/0xa0
+> >> > >>>>> [   15.103234]  [<ffffffff818f71b2>] entry_SYSCALL_64_fastpath=
++0x1a/0xa4
+> >> > >>>>> [   15.110421] Code: 05 dc 1b c3 00 89 ff 55 48 89 e5 48 8b 0c=
+ f8 48 85 c9 74 1f 48 63 51 1c 48 63 41 20 5d 48 0f af c2 31 d2 48 0f af 81=
+ 88 00 00 00 <48> f7 b1 90 00 00 00 c3 31 c0 5d c3 66 90 0f 1f 44 00 00 8b =
+77
+> >> > >>>>> [   15.132161] RIP  [<ffffffff8176ad32>] intel_pstate_get+0x32=
+/0x40
+> >> > >>>>> [   15.138875]  RSP <ffff88081ab23d70>
+> >> > >>>>> [   15.142770] ---[ end trace e5d5a8bedf5502e1 ]---
+> >> > >>>>> [   15.149323] Kernel panic - not syncing: Fatal exception
+> >> > >>>>>
+> >> > >>>>
+> >> > >>>> That's intel_pstate.c:get_avg_frequency(), which assumes mperf =
+!=3D 0. It
+> >> > >>>> being 0 seems to suggest intel_pstate_sample() hasn't been call=
+ed yet or
+> >> > >>>> so.
+> >> > >>>
+> >> > >>> Well, what's the tree based on?
+> >> > >>>
+> >> > >>> The mainline does this:
+> >> > >>>
+> >> > >>> bool sample_taken =3D intel_pstate_sample(cpu, time);
+> >> > >>>
+> >> > >>> if (sample_taken && !hwp_active)
+> >> > >>>         intel_pstate_adjust_busy_pstate(cpu);
+> >> > >>>
+> >> > >>> and (the mainline version of) intel_pstate_sample() returns fals=
+e when
+> >> > >>> it is called for the first time after setting the update_util ho=
+ok.
+> >> > >>
+> >> > >> If that helps, I can expose my pm-cpufreq-fixes branch to pull fr=
+om.
+> >> > >> It contains all cpufreq material that went into the Linus' tree to
+> >> > >> date and is based on 4.5-rc3.
+> >> > >
+> >> > > In fact, it is exposed already:
+> >> > >
+> >> > > git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
+> >> > > pm-cpufreq-fixes
+> >> > >
+> >> > > and the top-most commit is 1becf03545a0859ceaaf9e8c2d9861882a71cb01
+> >> > > (cpufreq: intel_pstate: Fix processing for turbo activation ratio).
+> >> >
+> >> > Ah, that will fail as well.
+> >> >
+> >> > The problem is that intel_pstate_get() can be called before we take
+> >> > the first sample.
+> >> >
+> >> > I need to think about how to fix that.
+> >>
+> >> Maybe something like the below (untested, but builds).
+> >>
+> >> It will make intel_pstate_get() return 0 until avg_frequency gets popu=
+lated
+> >> which is actually OK.
+> >
+> > The previous one would break the HWP case, so below is a new one (still
+> > untested).
+> =
 
-> [   21.116221] -> #1 (cpu_hotplug.lock#2){+.+.+.}:
-> [   21.116223]        [<ffffffff8117da2c>] lock_acquire+0xac/0x180
-> [   21.116226]        [<ffffffff820a20d1>] mutex_lock_nested+0x71/0x4c0
-> [   21.116228]        [<ffffffff810ff526>] get_online_cpus+0x66/0x80
-> [   21.116232]        [<ffffffff81246fb3>] sum_vm_event+0x23/0x1b0
-> [   21.116236]        [<ffffffff81293768>] collapse_huge_page+0x118/0x10b0
-> [   21.116238]        [<ffffffff81294c5d>] khugepaged+0x55d/0xe80
-> [   21.116240]        [<ffffffff81130304>] kthread+0x134/0x1a0
-> [   21.116242]        [<ffffffff820a7972>] ret_from_fork+0x22/0x50
-> [   21.116244] =
+> I can reproduce the bug and your patch fix it.
+> =
 
-> [   21.116244] -> #0 (&mm->mmap_sem){++++++}:
-> [   21.116246]        [<ffffffff8117bf61>] __lock_acquire+0x2861/0x31f0
-> [   21.116248]        [<ffffffff8117da2c>] lock_acquire+0xac/0x180
-> [   21.116251]        [<ffffffff8126257e>] __might_fault+0xbe/0x150
-> [   21.116253]        [<ffffffff8133160f>] kernfs_fop_write+0xaf/0x250
-> [   21.116256]        [<ffffffff812a8933>] __vfs_write+0x43/0x1a0
-> [   21.116258]        [<ffffffff812a8d3a>] vfs_write+0xda/0x240
-> [   21.116260]        [<ffffffff812a8f84>] SyS_write+0x44/0xa0
-> [   21.116263]        [<ffffffff820a773c>] entry_SYSCALL_64_fastpath+0x1f=
-/0xbd
-> [   21.116264] =
+> Tested-by: Wanpeng Li <wanpeng.li@hotmail.com>
 
-> [   21.116264] other info that might help us debug this:
-> [   21.116264] =
+Thanks!
 
-> [   21.116268] Chain exists of:
-> [   21.116268]   &mm->mmap_sem --> cpu_hotplug.lock#2 --> s_active#12
-> [   21.116268] =
+Please also try this one:
 
-> [   21.116268]  Possible unsafe locking scenario:
-> [   21.116268] =
+https://patchwork.kernel.org/patch/9012861/
 
-> [   21.116269]        CPU0                    CPU1
-> [   21.116269]        ----                    ----
-> [   21.116270]   lock(s_active#12);
-> [   21.116271]                                lock(cpu_hotplug.lock#2);
-> [   21.116272]                                lock(s_active#12);
-> [   21.116273]   lock(&mm->mmap_sem);
-> [   21.116274] =
+which is the final fix for this bug.
 
-> [   21.116274]  *** DEADLOCK ***
-> [   21.116274] =
 
-> [   21.116274]  *** DEADLOCK ***
-> [   21.116274] =
-
-> [   21.116274] 3 locks held by udevadm/221:
-> [   21.116278]  #0:  (sb_writers#3){.+.+.+}, at: [<ffffffff812ad64d>] __s=
-b_start_write+0x6d/0x120
-> [   21.116280]  #1:  (&of->mutex){+.+.+.}, at: [<ffffffff813315e6>] kernf=
-s_fop_write+0x86/0x250
-> [   21.116282]  #2:  (s_active#12){++++.+}, at: [<ffffffff813315ee>] kern=
-fs_fop_write+0x8e/0x250
-> [   21.116283] =
-
-> [   21.116283] stack backtrace:
-> [   21.116283] =
-
-> [   21.116283] stack backtrace:
-> [   21.116284] CPU: 1 PID: 221 Comm: udevadm Not tainted 4.6.0-rc5-00302-=
-g409ca71 #1
-> [   21.116287]  ffff88003f698000 ffff88003f077bf0 ffffffff81444ef3 000000=
-0000000011
-> [   21.116288]  ffffffff84bdd8f0 ffffffff84bf2630 ffff88003f077c40 ffffff=
-ff81173e91
-> [   21.116290]  0000000000000000 ffffffff84fbdbc0 00ff88003f077c40 ffff88=
-003f698bb8
-> [   21.116290] Call Trace:
-> [   21.116293]  [<ffffffff81444ef3>] dump_stack+0x86/0xd3
-> [   21.116294]  [<ffffffff81173e91>] print_circular_bug+0x221/0x360
-> [   21.116296]  [<ffffffff8117bf61>] __lock_acquire+0x2861/0x31f0
-> [   21.116297]  [<ffffffff8117da2c>] lock_acquire+0xac/0x180
-> [   21.116299]  [<ffffffff81262543>] ? __might_fault+0x83/0x150
-> [   21.116300]  [<ffffffff8126257e>] __might_fault+0xbe/0x150
-> [   21.116302]  [<ffffffff81262543>] ? __might_fault+0x83/0x150
-> [   21.116303]  [<ffffffff8133160f>] kernfs_fop_write+0xaf/0x250
-> [   21.116304]  [<ffffffff812a8933>] __vfs_write+0x43/0x1a0
-> [   21.116306]  [<ffffffff8116fe0d>] ? update_fast_ctr+0x1d/0x80
-> [   21.116308]  [<ffffffff8116ffe7>] ? percpu_down_read+0x57/0xa0
-> [   21.116310]  [<ffffffff812ad64d>] ? __sb_start_write+0x6d/0x120
-> [   21.116311]  [<ffffffff812ad64d>] ? __sb_start_write+0x6d/0x120
-> [   21.116312]  [<ffffffff812a8d3a>] vfs_write+0xda/0x240
-> [   21.116314]  [<ffffffff812a8f84>] SyS_write+0x44/0xa0
-> [   21.116315]  [<ffffffff820a773c>] entry_SYSCALL_64_fastpath+0x1f/0xbd
-
-If I read this correctly (I'm not sure about this), we shouldn't call
-sum_vm_event() under mmap_sem.
-
-BTW, we do need mmap_sem for swapin, but there's no need for exclusive
-one. It can be too expensive to do I/O with down_write(mmap_sem).
-
-Ebru, could look how to move sum_vm_event() outside mmap_sem and probably
-have down_read(mmap_sem) during swapin? I don't have time for this right
-now.
-
--- =
-
- Kirill A. Shutemov
-
---===============4576131469436845878==--
+--===============7228524158757315958==--
 
