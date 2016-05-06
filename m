@@ -1,43 +1,47 @@
-Content-Type: multipart/mixed; boundary="===============4993893845478304389=="
+Content-Type: multipart/mixed; boundary="===============3308488908291164334=="
 MIME-Version: 1.0
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Rafael J. Wysocki <rjw@rjwysocki.net>
 To: lkp@lists.01.org
-Subject: Re: [string_helpers] 726ecfc321: test_string_helpers: Test 'test_string_get_size_one' failed!
-Date: Fri, 06 May 2016 10:30:14 +0200
-Message-ID: <874mabr3l5.fsf@vitty.brq.redhat.com>
-In-Reply-To: <20160506012646.GA4272@yexl-desktop>
+Subject: Re: [sched/fair] 41e0d37f7a: divide error: 0000 [#1] SMP
+Date: Fri, 06 May 2016 14:29:35 +0200
+Message-ID: <3547943.XdEfRmCVLV@vostro.rjw.lan>
+In-Reply-To: <CANRm+Cw9mFGBttgWUHrbZ_n3NvGswh6T-Ws9g31HDxCEf5--Cg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4993893845478304389==
+--===============3308488908291164334==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-kernel test robot <xiaolong.ye@intel.com> writes:
+On Friday, May 06, 2016 03:06:44 PM Wanpeng Li wrote:
+> 2016-05-05 21:46 GMT+08:00 Rafael J. Wysocki <rjw@rjwysocki.net>:
+> > On Thursday, May 05, 2016 01:05:41 PM Wanpeng Li wrote:
+> >> 2016-05-03 23:10 GMT+08:00 Rafael J. Wysocki <rjw@rjwysocki.net>:
+> >> > On Tuesday, May 03, 2016 03:53:12 PM Rafael J. Wysocki wrote:
 
-> FYI, we noticed the following commit:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git l=
-inux-4.4.y
-> commit 726ecfc321994ec6ab044c1e3e5886408de991ac ("string_helpers: fix pre=
-cision loss for some inputs")
->
+[cut]
 
-The following commit:
+> >>
+> >> I can reproduce the bug and your patch fix it.
+> >>
+> >> Tested-by: Wanpeng Li <wanpeng.li@hotmail.com>
+> >
+> > Thanks!
+> >
+> > Please also try this one:
+> >
+> > https://patchwork.kernel.org/patch/9012861/
+> >
+> > which is the final fix for this bug.
+> =
 
-commit 72676bb53f33fd0ef3a1484fc1ecfd306dc6ff40
-Author: Vitaly Kuznetsov <vkuznets@redhat.com>
-Date:   Tue Feb 2 16:57:18 2016 -0800
+> The warning disappear.
+> =
 
-    lib/test-string_helpers.c: fix and improve string_get_size() tests
-    =
+> Tested-by: Wanpeng Li <wanpeng.li@hotmail.com>
+
+Thank you!
 
 
-should probably be backported to 4.4 as well.
-
--- =
-
-  Vitaly
-
---===============4993893845478304389==--
+--===============3308488908291164334==--
 
