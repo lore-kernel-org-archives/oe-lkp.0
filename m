@@ -1,213 +1,116 @@
-Content-Type: multipart/mixed; boundary="===============1591046964680707625=="
+Content-Type: multipart/mixed; boundary="===============1721107724802415983=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [rcutorture] 8704baab9b: WARNING: CPU: 0 PID: 30 at kernel/rcu/rcuperf.c:363 rcu_perf_writer
-Date: Tue, 24 May 2016 11:06:52 -0700
-Message-ID: <20160524180652.GJ4148@linux.vnet.ibm.com>
-In-Reply-To: <20160523043517.GA21433@insomnia>
+Subject: Re: [net] 9317bb6982: INFO: task cat-kmsg:893 blocked for more than 300 seconds.
+Date: Fri, 13 May 2016 11:01:54 +0800
+Message-ID: <877feyk6e5.fsf@yhuang-dev.intel.com>
+In-Reply-To: <87h9e5nxum.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1591046964680707625==
+--===============1721107724802415983==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 23, 2016 at 12:35:35PM +0800, Boqun Feng wrote:
-> On Sun, May 22, 2016 at 08:28:06AM -0700, Paul E. McKenney wrote:
-> > On Sun, May 22, 2016 at 02:26:49PM +0800, Boqun Feng wrote:
-> > > Hi Paul,
-> > > =
+"Huang, Ying" <ying.huang@intel.com> writes:
 
-> > > On Sat, May 21, 2016 at 10:24:22PM -0700, Paul E. McKenney wrote:
-> > > > On Sun, May 22, 2016 at 10:36:00AM +0800, kernel test robot wrote:
-> > > > > Greetings,
-> > > > > =
+> Eric Dumazet <edumazet@google.com> writes:
+>> On Mon, May 9, 2016 at 6:26 PM, Huang, Ying <ying.huang@linux.intel.co=
+m> wrote:
+>>> Hi, Eric,
+>>>
+>>> kernel test robot <ying.huang@linux.intel.com> writes:
+>>>> FYI, we noticed the following commit:
+>>>>
+>>>> git://internal_merge_and_test_tree devel-catchup-201604281529
+>>>> commit 9317bb69824ec8d078b0b786b6971aedb0af3d4f ("net: SOCKWQ_ASYNC_NO=
+SPACE optimizations")
+>>>>
+>>>> on test machine: vm-kbuild-2G: 2 threads qemu-system-x86_64 -enable-kv=
+m -cpu Haswell,+smep,+smap with 2G memory
+>>>>
+>>>> caused below changes:
+>>>>
+>>>>
+>>>> +--------------------------------------------------+------------+-----=
+-------+
+>>>> |                                                  | 210732d16d | 9317=
+bb6982 |
+>>>> +--------------------------------------------------+------------+-----=
+-------+
+>>>> | boot_successes                                   | 40         | 13  =
+       |
+>>>> | boot_failures                                    | 0          | 27  =
+       |
+>>>> | INFO:task_blocked_for_more_than#seconds          | 0          | 27  =
+       |
+>>>> | RIP:native_safe_halt                             | 0          | 20  =
+       |
+>>>> | RIP:native_write_msr_safe                        | 0          | 27  =
+       |
+>>>> | Kernel_panic-not_syncing:hung_task:blocked_tasks | 0          | 27  =
+       |
+>>>> | backtrace:__close_fd                             | 0          | 27  =
+       |
+>>>> | backtrace:SyS_close                              | 0          | 27  =
+       |
+>>>> | backtrace:cpu_startup_entry                      | 0          | 19  =
+       |
+>>>> | backtrace:watchdog                               | 0          | 27  =
+       |
+>>>> | RIP:__lock_acquire                               | 0          | 2   =
+       |
+>>>> | backtrace:rpc_async_schedule                     | 0          | 2   =
+       |
+>>>> | backtrace:lock_acquire                           | 0          | 1   =
+       |
+>>>> | RIP:delay_tsc                                    | 0          | 1   =
+       |
+>>>> | backtrace:SYSC_epoll_wait                        | 0          | 1   =
+       |
+>>>> | backtrace:SyS_epoll_wait                         | 0          | 1   =
+       |
+>>>> | RIP:pvclock_clocksource_read                     | 0          | 1   =
+       |
+>>>> | RIP:xs_reclassify_socket                         | 0          | 1   =
+       |
+>>>> | backtrace:xs_tcp_setup_socket                    | 0          | 2   =
+       |
+>>>> | RIP:insert_work                                  | 0          | 1   =
+       |
+>>>> +--------------------------------------------------+------------+-----=
+-------+
+>>>
+>>> We recently found this patch cause NFS hang in 0day/LKP test system.
+>>> The NFS export can be mounted, but after a while all read/write to NFS
+>>> mount blocked.  This influenced the 0day/LKP testing.  Could you help us
+>>> to fix this?
+>>>
+>>> Best Regards,
+>>> Huang, Ying
+>>
+>>
+>> I need to officially submit this patch :
+>> http://www.spinics.net/lists/netdev/msg375777.html
+>
+> Thanks a lot!  The patch fixed our NFS hang.
+>
+> Tested-by: Huang, Ying <ying.huang@intel.com>
+>
+> Is it possible to put the fixing patch near (preferably next) the patch
+> trigger regression?  Otherwise a bigger range of patches will not be
+> bisectable.
 
-> > > > > 0day kernel testing robot got the below dmesg and the first bad c=
-ommit is
-> > > > > =
+Hi, Eric,
 
-> > > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
-t master
-> > > > > =
+Is it possible for this to be fixed in linux-next ASAP?  This has
+blocked us (0day functionality and performance test) from testing
+linux-next and many other git trees for near 1 week.  Because NFS is
+used in our test infrastructure to save test result data.
 
-> > > > > commit 8704baab9bc848b58c129fed6b591bb84ec02f41
-> > > > > Author:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> > > > > AuthorDate: Thu Dec 31 18:33:22 2015 -0800
-> > > > > Commit:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> > > > > CommitDate: Thu Mar 31 13:37:38 2016 -0700
-> > > > > =
+Best Regards,
+Huang, Ying
 
-> > > > >     rcutorture: Add RCU grace-period performance tests
-> > > > >     =
-
-> > > > >     This commit adds a new rcuperf module that carries out simple=
- performance
-> > > > >     tests of RCU grace periods.
-> > > > >     =
-
-> > > > >     Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> > > > =
-
-> > > > ???
-> > > > =
-
-> > > > This commit adds a default-n performance-test module.  I don't beli=
-eve
-> > > =
-
-> > > I think the robot was using a !SMP && CONFIG_TORTURE_TEST=3Dy &&
-> > > CONFIG_RCU_PERF_TEST=3Dy configuration ;-)
-> > > =
-
-> > > > that this would result in boot failures.  False bisection?
-> > > > =
-
-> > > =
-
-> > > The code triggering the warning is:
-> > > =
-
-> > > 	WARN_ON(rcu_gp_is_normal() && gp_exp);
-> > > =
-
-> > > , so rcu_gp_is_normal() is true because we are using TINY RCU, moreov=
-er
-> > > the default value of gp_exp for *rcuperf* is also true (whereas the o=
-ne
-> > > for rcutorture is false). That's why the warnning was triggered.
-> > > =
-
-> > > It happened in the boot progress because rcu_perf_writer threads were
-> > > created and ran via module init function rcu_perf_init().
-> > > =
-
-> > > Maybe we'd better change the defaut value of gp_exp for rcuperf?
-> > =
-
-> > Or make the default depend on CONFIG_TINY_RCU.  Or downgrade the
-> > WARN_ON() to soething that results in torture-test failure but does
-> > not cause 0day to complain.  Or...
-> > =
-
-> =
-
-> So I think a better is we
-> =
-
-> 1.	set the default value to false (to align with rcutorture)
-> =
-
-> and
-> =
-
-> 2.	downgrade the WARN_ON() to torture-test failures, because those
-> 	are not kernel bugs.
-> =
-
-> Here is a patch for further discussion:
-
-This patch looks good to me, given a little editing of the commit log.
-(See below for error string suggestion.)
-
-Other thoughts?
-
-							Thanx, Paul
-
-> ------------------------->8
-> Subject: [PATCH] rcuperf: Don't treat gp_exp mis-setting as a kernel warn=
-ing
-> =
-
-> 0day found a boot warning triggered in rcu_perf_writer() on !SMP kernel:
-> =
-
-> 	WARN_ON(rcu_gp_is_normal() && gp_exp);
-> =
-
-> , which turned out to be caused by the default value of gp_exp.
-> =
-
-> However, the reason of the warning is only mis-setting, which should be
-> handled inside rcuperf module rather than treated as a kernel warning.
-> =
-
-> Therefore this patch moves the WARN_ON from rcu_perf_writer() and
-> handles those checkings in rcu_perf_init(), which could also save the
-> checkings for each writer.
-> =
-
-> Moreover, this patch changes the default value of gp_exp to 1) align
-> with rcutorture tests and 2) make the default setting work for all RCU
-> implementations by default.
-> =
-
-> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-> Fixes: http://lkml.kernel.org/r/57411b10.mFvG0+AgcrMXGtcj%fengguang.wu(a)=
-intel.com
-> ---
->  kernel/rcu/rcuperf.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
-> =
-
-> diff --git a/kernel/rcu/rcuperf.c b/kernel/rcu/rcuperf.c
-> index 3cee0d8393ed..1dc2bd1de4b6 100644
-> --- a/kernel/rcu/rcuperf.c
-> +++ b/kernel/rcu/rcuperf.c
-> @@ -58,7 +58,7 @@ MODULE_AUTHOR("Paul E. McKenney <paulmck@linux.vnet.i=
-bm.com>");
->  #define VERBOSE_PERFOUT_ERRSTRING(s) \
->  	do { if (verbose) pr_alert("%s" PERF_FLAG "!!! %s\n", perf_type, s); } =
-while (0)
-> =
-
-> -torture_param(bool, gp_exp, true, "Use expedited GP wait primitives");
-> +torture_param(bool, gp_exp, false, "Use expedited GP wait primitives");
->  torture_param(int, holdoff, 10, "Holdoff time before test start (s)");
->  torture_param(int, nreaders, -1, "Number of RCU reader threads");
->  torture_param(int, nwriters, -1, "Number of RCU updater threads");
-> @@ -363,8 +363,6 @@ rcu_perf_writer(void *arg)
->  	u64 *wdpp =3D writer_durations[me];
-> =
-
->  	VERBOSE_PERFOUT_STRING("rcu_perf_writer task started");
-> -	WARN_ON(rcu_gp_is_expedited() && !rcu_gp_is_normal() && !gp_exp);
-> -	WARN_ON(rcu_gp_is_normal() && gp_exp);
->  	WARN_ON(!wdpp);
->  	set_cpus_allowed_ptr(current, cpumask_of(me % nr_cpu_ids));
->  	sp.sched_priority =3D 1;
-> @@ -631,6 +629,16 @@ rcu_perf_init(void)
->  		firsterr =3D -ENOMEM;
->  		goto unwind;
->  	}
-> +	if (rcu_gp_is_expedited() && !rcu_gp_is_normal() && !gp_exp) {
-> +		VERBOSE_PERFOUT_ERRSTRING("try to measure normal grace periods when al=
-l the grace periods are expedited");
-
-"All grace periods expedited, no normal ones to measure!"
-
-> +		firsterr =3D -EINVAL;
-> +		goto unwind;
-> +	}
-> +	if (rcu_gp_is_normal() && gp_exp) {
-> +		VERBOSE_PERFOUT_ERRSTRING("try to measure expedited grace periods when=
- all the expedited ones fall back to the normal ones");
-
-"All grace periods normal, no expedited ones to measure!"
-
-> +		firsterr =3D -EINVAL;
-> +		goto unwind;
-> +	}
->  	for (i =3D 0; i < nrealwriters; i++) {
->  		writer_durations[i] =3D
->  			kcalloc(MAX_MEAS, sizeof(*writer_durations[i]),
-> -- =
-
-> 2.8.2
-> =
-
-
-
---===============1591046964680707625==--
+--===============1721107724802415983==--
 
