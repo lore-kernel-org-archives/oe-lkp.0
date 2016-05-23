@@ -1,180 +1,298 @@
-Content-Type: multipart/mixed; boundary="===============0204382522213437775=="
+Content-Type: multipart/mixed; boundary="===============0139365419845951333=="
 MIME-Version: 1.0
-From: Boqun Feng <boqun.feng@gmail.com>
+From: Michal Marek <mmarek@suse.com>
 To: lkp@lists.01.org
-Subject: Re: [rcutorture] 8704baab9b: WARNING: CPU: 0 PID: 30 at kernel/rcu/rcuperf.c:363 rcu_perf_writer
-Date: Mon, 23 May 2016 12:35:35 +0800
-Message-ID: <20160523043517.GA21433@insomnia>
-In-Reply-To: <20160522152806.GK3528@linux.vnet.ibm.com>
+Subject: Re: 867853145c: BUG: unable to handle kernel NULL pointer dereference at (null)
+Date: Mon, 23 May 2016 10:10:55 +0200
+Message-ID: <5742BB0F.3010002@suse.com>
+In-Reply-To: <573f8733.ksLR4voDAPkeXAYG%fengguang.wu@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0204382522213437775==
+--===============0139365419845951333==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, May 22, 2016 at 08:28:06AM -0700, Paul E. McKenney wrote:
-> On Sun, May 22, 2016 at 02:26:49PM +0800, Boqun Feng wrote:
-> > Hi Paul,
-> > =
-
-> > On Sat, May 21, 2016 at 10:24:22PM -0700, Paul E. McKenney wrote:
-> > > On Sun, May 22, 2016 at 10:36:00AM +0800, kernel test robot wrote:
-> > > > Greetings,
-> > > > =
-
-> > > > 0day kernel testing robot got the below dmesg and the first bad com=
-mit is
-> > > > =
-
-> > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git =
-master
-> > > > =
-
-> > > > commit 8704baab9bc848b58c129fed6b591bb84ec02f41
-> > > > Author:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> > > > AuthorDate: Thu Dec 31 18:33:22 2015 -0800
-> > > > Commit:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> > > > CommitDate: Thu Mar 31 13:37:38 2016 -0700
-> > > > =
-
-> > > >     rcutorture: Add RCU grace-period performance tests
-> > > >     =
-
-> > > >     This commit adds a new rcuperf module that carries out simple p=
-erformance
-> > > >     tests of RCU grace periods.
-> > > >     =
-
-> > > >     Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> > > =
-
-> > > ???
-> > > =
-
-> > > This commit adds a default-n performance-test module.  I don't believe
-> > =
-
-> > I think the robot was using a !SMP && CONFIG_TORTURE_TEST=3Dy &&
-> > CONFIG_RCU_PERF_TEST=3Dy configuration ;-)
-> > =
-
-> > > that this would result in boot failures.  False bisection?
-> > > =
-
-> > =
-
-> > The code triggering the warning is:
-> > =
-
-> > 	WARN_ON(rcu_gp_is_normal() && gp_exp);
-> > =
-
-> > , so rcu_gp_is_normal() is true because we are using TINY RCU, moreover
-> > the default value of gp_exp for *rcuperf* is also true (whereas the one
-> > for rcutorture is false). That's why the warnning was triggered.
-> > =
-
-> > It happened in the boot progress because rcu_perf_writer threads were
-> > created and ran via module init function rcu_perf_init().
-> > =
-
-> > Maybe we'd better change the defaut value of gp_exp for rcuperf?
+On 2016-05-20 23:52, kernel test robot wrote:
+> Greetings,
 > =
 
-> Or make the default depend on CONFIG_TINY_RCU.  Or downgrade the
-> WARN_ON() to soething that results in torture-test failure but does
-> not cause 0day to complain.  Or...
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> =
 
-So I think a better is we
+> commit 867853145cea25491054ef067ff8af8946f37e2d
+> Merge: 4bf284b 2441e78
+> Author:     Michal Marek <mmarek@suse.com>
+> AuthorDate: Tue Apr 26 13:20:18 2016 +0200
+> Commit:     Michal Marek <mmarek@suse.com>
+> CommitDate: Tue Apr 26 13:20:18 2016 +0200
+> =
 
-1.	set the default value to false (to align with rcutorture)
+>     Merge branch 'kbuild/kbuild' into kbuild/for-next
 
-and
+Adding Nicolas to CC, because this is the merge commit of the
+CONFIG_TRIM_UNUSED_KSYMS series.
 
-2.	downgrade the WARN_ON() to torture-test failures, because those
-	are not kernel bugs.
 
-Here is a patch for further discussion:
+> =
 
-------------------------->8
-Subject: [PATCH] rcuperf: Don't treat gp_exp mis-setting as a kernel warning
+> +------------------------------------------+------------+------------+---=
+---------+------------+
+> |                                          | 4bf284b277 | 2441e78b19 | 86=
+7853145c | f490734437 |
+> +------------------------------------------+------------+------------+---=
+---------+------------+
+> | boot_successes                           | 63         | 63         | 0 =
+         | 0          |
+> | boot_failures                            | 0          | 0          | 22=
+         | 13         |
+> | BUG:unable_to_handle_kernel              | 0          | 0          | 22=
+         | 13         |
+> | Oops                                     | 0          | 0          | 22=
+         | 13         |
+> | RIP:strcpy                               | 0          | 0          | 22=
+         | 13         |
+> | Kernel_panic-not_syncing:Fatal_exception | 0          | 0          | 22=
+         | 13         |
+> | backtrace:of_unittest                    | 0          | 0          | 22=
+         | 13         |
+> | backtrace:kernel_init_freeable           | 0          | 0          | 22=
+         | 13         |
+> +------------------------------------------+------------+------------+---=
+---------+------------+
+> =
 
-0day found a boot warning triggered in rcu_perf_writer() on !SMP kernel:
+> [   24.609622] hd: no drives specified - use hd=3Dcyl,head,sectors on ker=
+nel command line
+> [   24.611486] BIOS EDD facility v0.16 2004-Jun-25, 0 devices found
+> [   24.612525] EDD information not available.
+> [   24.614384] BUG: unable to handle kernel NULL pointer dereference at  =
+         (null)
+> [   24.615776] IP: [<ffffffff817f158b>] strcpy+0xb/0x50
+> [   24.616700] PGD 0 =
 
-	WARN_ON(rcu_gp_is_normal() && gp_exp);
+> [   24.617128] Oops: 0000 [#1] PREEMPT =
 
-, which turned out to be caused by the default value of gp_exp.
+> [   24.617819] CPU: 0 PID: 1 Comm: swapper Not tainted 4.6.0-qxl-06423-gb=
+ac2892 #2
+> [   24.619079] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S Debian-1.8.2-1 04/01/2014
+> [   24.620591] task: ffff8800002bc000 ti: ffff880000330000 task.ti: ffff8=
+80000330000
+> [   24.621943] RIP: 0010:[<ffffffff817f158b>]  [<ffffffff817f158b>] strcp=
+y+0xb/0x50
+> [   24.623264] RSP: 0000:ffff8800003339d8  EFLAGS: 00010297
+> [   24.624181] RAX: ffff88000c4600a8 RBX: ffff88000c4600a8 RCX: 000000000=
+0000000
+> [   24.625395] RDX: 000000000000a2a1 RSI: 0000000000000000 RDI: ffff88000=
+c4600a8
+> [   24.626623] RBP: ffff880000333d80 R08: 0000000000000001 R09: ffff88000=
+c460000
+> [   24.627847] R10: 0000000000000001 R11: 0000000000000000 R12: ffffffff8=
+2aa7620
+> [   24.629062] R13: ffff88000c4600a8 R14: ffff880000333e08 R15: ffff88000=
+c4600aa
+> [   24.630281] FS:  0000000000000000(0000) GS:ffffffff8264a000(0000) knlG=
+S:0000000000000000
+> [   24.631651] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   24.632635] CR2: 0000000000000000 CR3: 000000000260c000 CR4: 000000000=
+00006f0
+> [   24.633856] Stack:
+> [   24.634218]  ffff880000333d80 ffffffff81d5722a 0000000000011c48 ffff88=
+0000333e08
+> [   24.635584]  000000010fcc5390 0000000000000000 ffffffff824d0a08 ffff88=
+000c1d9e98
+> [   24.636954]  0000000000000001 0000000000011b20 ffff88000c460000 ffff88=
+000c460000
+> [   24.638323] Call Trace:
+> [   24.638764]  [<ffffffff81d5722a>] ? unflatten_dt_nodes+0x8da/0xb90
+> [   24.639836]  [<ffffffff811fe396>] ? ftrace_likely_update+0x56/0x2b0
+> [   24.640932]  [<ffffffff81250a04>] ? get_page_from_freelist+0x4f4/0x15b0
+> [   24.642068]  [<ffffffff811fe396>] ? ftrace_likely_update+0x56/0x2b0
+> [   24.643190]  [<ffffffff811fe396>] ? ftrace_likely_update+0x56/0x2b0
+> [   24.644310]  [<ffffffff811fe396>] ? ftrace_likely_update+0x56/0x2b0
+> [   24.645405]  [<ffffffff811fe396>] ? ftrace_likely_update+0x56/0x2b0
+> [   24.646525]  [<ffffffff812517fb>] ? get_page_from_freelist+0x12eb/0x15=
+b0
+> [   24.647679]  [<ffffffff811fe300>] ? disable_branch_tracing+0x50/0x70
+> [   24.648776]  [<ffffffff811fe396>] ? ftrace_likely_update+0x56/0x2b0
+> [   24.649864]  [<ffffffff81251e33>] ? __alloc_pages_nodemask+0x373/0x15c0
+> [   24.651059]  [<ffffffff8181e3a3>] ? check_preemption_disabled+0x53/0x1=
+90
+> [   24.652208]  [<ffffffff8114d571>] ? __lock_acquire+0x261/0xf20
+> [   24.653311]  [<ffffffff811fe396>] ? ftrace_likely_update+0x56/0x2b0
+> [   24.654445]  [<ffffffff81d56817>] ? kernel_tree_alloc+0x27/0x40
+> [   24.655469]  [<ffffffff812b6ed5>] ? __kmalloc+0x145/0x460
+> [   24.656433]  [<ffffffff81d575b9>] __unflatten_device_tree+0xd9/0x160
+> [   24.657583]  [<ffffffff81d57a8f>] of_fdt_unflatten_tree+0x4f/0x80
+> [   24.658764]  [<ffffffff82be25ac>] of_unittest+0xd1/0x259b
+> [   24.659769]  [<ffffffff82be24db>] ? of_unittest_platform_populate+0x58=
+7/0x587
+> [   24.661029]  [<ffffffff82b559dc>] do_one_initcall+0x1b1/0x302
+> [   24.662060]  [<ffffffff82b55d30>] kernel_init_freeable+0x203/0x32d
+> [   24.663164]  [<ffffffff81ea2c90>] kernel_init+0x20/0x240
+> [   24.664106]  [<ffffffff81eb02cf>] ret_from_fork+0x1f/0x40
+> [   24.665048]  [<ffffffff81ea2c70>] ? rest_init+0x130/0x130
+> [   24.665987] Code: 17 02 01 8d 52 20 0f b6 d2 39 d0 74 b0 29 d0 48 83 0=
+5 39 79 17 02 01 5d c3 0f 1f 80 00 00 00 00 48 8b 15 41 79 17 02 55 48 89 f=
+8 <0f> b6 0e 48 89 e5 49 89 d0 49 f7 d8 4c 01 c6 49 01 f8 84 c9 88 =
 
-However, the reason of the warning is only mis-setting, which should be
-handled inside rcuperf module rather than treated as a kernel warning.
+> [   24.670987] RIP  [<ffffffff817f158b>] strcpy+0xb/0x50
+> [   24.671893]  RSP <ffff8800003339d8>
+> [   24.672500] CR2: 0000000000000000
+> [   24.673093] ---[ end trace ac4a8162da5e779d ]---
+> [   24.673893] Kernel panic - not syncing: Fatal exception
+> =
 
-Therefore this patch moves the WARN_ON from rcu_perf_writer() and
-handles those checkings in rcu_perf_init(), which could also save the
-checkings for each writer.
+> git bisect start f490734437e838c49921e7a8ec1a887d36b0cb14 2dcd0af568b0cf5=
+83645c8a317dd12e344b1c72a --
+> git bisect  bad 4e3ac701d37537f47cf4e8c051634fd6ae0ea524  # 03:36      0-=
+      4  Merge 'linux-review/Bin-Liu/musb-fixes-for-v4-7-rc1/20160509-21581=
+9' into devel-hourly-2016051702
+> git bisect  bad da756d10374b4339984e25c053526bab5279a05c  # 03:44      0-=
+      5  Merge 'linux-review/Stephen-Boyd/msm_serial-cleanups/20160512-0907=
+00' into devel-hourly-2016051702
+> git bisect good 8965cdd2b81e431c78fa9ad7f15f14e4485cc39c  # 03:56     18+=
+      0  Merge 'kees/seccomp/tests' into devel-hourly-2016051702
+> git bisect  bad 453eba1192c10d54bc4f1db55ef32233c495e8fa  # 04:01      0-=
+      1  Merge 'linux-review/Peter-Rosin/ASoC-MAX9860-new-driver/20160513-1=
+53018' into devel-hourly-2016051702
+> git bisect  bad 543fae0bdb5f86713751e26164004db86e0056d3  # 04:06      0-=
+      7  Merge 'kees/seccomp/report' into devel-hourly-2016051702
+> git bisect good 77095d88c3a76ca12237b7301e06c76689848d2f  # 04:15     21+=
+      4  Merge 'kees/kbuild/no-android' into devel-hourly-2016051702
+> git bisect good 84c6298d7612e34a64de0e98b6b8d06fe026615b  # 04:26     22+=
+      0  Merge 'linux-review/Alexey-Brodkin/arc-axs103_smp-Fix-CPU-frequenc=
+y-to-100MHz-for-dual-core/20160516-180145' into devel-hourly-2016051702
+> git bisect  bad 4c61a3729f14604d1e20bcd8c3ad991b6f13096f  # 04:31      0-=
+      8  Merge 'omap/for-next' into devel-hourly-2016051702
+> git bisect  bad bac28921a3bc1ad30ca816288e11db0437ecf297  # 04:35      0-=
+      1  Merge 'linux-review/Vineet-Gupta/scripts-bloat-o-meter-print-perce=
+nt-change/20160513-152445' into devel-hourly-2016051702
+> git bisect  bad 867853145cea25491054ef067ff8af8946f37e2d  # 04:41      0-=
+      3  Merge branch 'kbuild/kbuild' into kbuild/for-next
+> git bisect good fe69b420d39d307cfe2cba875dc1dbf668877198  # 04:48     21+=
+      0  kbuild: mark help target as PHONY
+> git bisect good ba79d401f1aee52186ff09607e9405cfb805307d  # 04:56     20+=
+      0  kbuild: fix call to adjust_autoksyms.sh when output directory spec=
+ified
+> git bisect good 27c3bffd230abd0a598586aed0fe0ba7b61e0e2e  # 05:04     21+=
+      0  kbuild/mkspec: support 'update-bootloader'-based systems
+> git bisect good 4bf284b27780335e827a1e39262ff664db6e548c  # 05:12     21+=
+      0  Merge branch 'kbuild/misc' into kbuild/for-next
+> git bisect good 2441e78b19192cd9ea1ce93027a5732a2117f026  # 05:19     22+=
+      0  kbuild: better abstract vmlinux sequential prerequisites
 
-Moreover, this patch changes the default value of gp_exp to 1) align
-with rcutorture tests and 2) make the default setting work for all RCU
-implementations by default.
+This is strange, because the diff between the good kbuild/kbuild branch
+and the bad kbuild/for-next branch is just a few coccinelle patches and
+a fix for make rpm:
+$ git --no-pager diff --stat 2441e78b1919 867853145cea
+ scripts/coccinelle/api/setup_timer.cocci       |   4 +-
+ scripts/coccinelle/misc/compare_const_fl.cocci | 171
+-------------------------
+ scripts/package/mkspec                         |   5 +
+ 3 files changed, 7 insertions(+), 173 deletions(-)
 
-Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-Fixes: http://lkml.kernel.org/r/57411b10.mFvG0+AgcrMXGtcj%fengguang.wu(a)in=
-tel.com
+Michal
+
+
+> # first bad commit: [867853145cea25491054ef067ff8af8946f37e2d] Merge bran=
+ch 'kbuild/kbuild' into kbuild/for-next
+> git bisect good 4bf284b27780335e827a1e39262ff664db6e548c  # 05:22     61+=
+      0  Merge branch 'kbuild/misc' into kbuild/for-next
+> git bisect good 2441e78b19192cd9ea1ce93027a5732a2117f026  # 05:26     61+=
+      0  kbuild: better abstract vmlinux sequential prerequisites
+> # extra tests with DEBUG_INFO
+> git bisect good 867853145cea25491054ef067ff8af8946f37e2d  # 05:36     66+=
+      0  Merge branch 'kbuild/kbuild' into kbuild/for-next
+> # extra tests on HEAD of linux-devel/devel-hourly-2016051702
+> git bisect  bad f490734437e838c49921e7a8ec1a887d36b0cb14  # 05:36      0-=
+     13  0day head guard for 'devel-hourly-2016051702'
+> # extra tests on tree/branch linux-next/master
+> # extra tests on tree/branch linus/master
+> git bisect good 6eb59af580dcffc6f6982ac8ef6d27a1a5f26b27  # 05:47     63+=
+      0  Merge tag 'mfd-for-linus-4.7' of git://git.kernel.org/pub/scm/linu=
+x/kernel/git/lee/mfd
+> # extra tests on tree/branch linux-next/master
+> =
+
+> =
+
+> This script may reproduce the error.
+> =
+
+> -------------------------------------------------------------------------=
 ---
- kernel/rcu/rcuperf.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+> #!/bin/bash
+> =
 
-diff --git a/kernel/rcu/rcuperf.c b/kernel/rcu/rcuperf.c
-index 3cee0d8393ed..1dc2bd1de4b6 100644
---- a/kernel/rcu/rcuperf.c
-+++ b/kernel/rcu/rcuperf.c
-@@ -58,7 +58,7 @@ MODULE_AUTHOR("Paul E. McKenney <paulmck@linux.vnet.ibm=
-.com>");
- #define VERBOSE_PERFOUT_ERRSTRING(s) \
- 	do { if (verbose) pr_alert("%s" PERF_FLAG "!!! %s\n", perf_type, s); } wh=
-ile (0)
- =
+> kernel=3D$1
+> initrd=3Dyocto-minimal-x86_64.cgz
+> =
 
--torture_param(bool, gp_exp, true, "Use expedited GP wait primitives");
-+torture_param(bool, gp_exp, false, "Use expedited GP wait primitives");
- torture_param(int, holdoff, 10, "Holdoff time before test start (s)");
- torture_param(int, nreaders, -1, "Number of RCU reader threads");
- torture_param(int, nwriters, -1, "Number of RCU updater threads");
-@@ -363,8 +363,6 @@ rcu_perf_writer(void *arg)
- 	u64 *wdpp =3D writer_durations[me];
- =
+> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/m=
+aster/initrd/$initrd
+> =
 
- 	VERBOSE_PERFOUT_STRING("rcu_perf_writer task started");
--	WARN_ON(rcu_gp_is_expedited() && !rcu_gp_is_normal() && !gp_exp);
--	WARN_ON(rcu_gp_is_normal() && gp_exp);
- 	WARN_ON(!wdpp);
- 	set_cpus_allowed_ptr(current, cpumask_of(me % nr_cpu_ids));
- 	sp.sched_priority =3D 1;
-@@ -631,6 +629,16 @@ rcu_perf_init(void)
- 		firsterr =3D -ENOMEM;
- 		goto unwind;
- 	}
-+	if (rcu_gp_is_expedited() && !rcu_gp_is_normal() && !gp_exp) {
-+		VERBOSE_PERFOUT_ERRSTRING("try to measure normal grace periods when all =
-the grace periods are expedited");
-+		firsterr =3D -EINVAL;
-+		goto unwind;
-+	}
-+	if (rcu_gp_is_normal() && gp_exp) {
-+		VERBOSE_PERFOUT_ERRSTRING("try to measure expedited grace periods when a=
-ll the expedited ones fall back to the normal ones");
-+		firsterr =3D -EINVAL;
-+		goto unwind;
-+	}
- 	for (i =3D 0; i < nrealwriters; i++) {
- 		writer_durations[i] =3D
- 			kcalloc(MAX_MEAS, sizeof(*writer_durations[i]),
--- =
+> kvm=3D(
+> 	qemu-system-x86_64
+> 	-enable-kvm
+> 	-kernel $kernel
+> 	-initrd $initrd
+> 	-m 256
+> 	-smp 1
+> 	-device e1000,netdev=3Dnet0
+> 	-netdev user,id=3Dnet0
+> 	-boot order=3Dnc
+> 	-no-reboot
+> 	-watchdog i6300esb
+> 	-rtc base=3Dlocaltime
+> 	-serial stdio
+> 	-display none
+> 	-monitor null =
 
-2.8.2
+> )
+> =
+
+> append=3D(
+> 	hung_task_panic=3D1
+> 	earlyprintk=3DttyS0,115200
+> 	systemd.log_level=3Derr
+> 	debug
+> 	apic=3Ddebug
+> 	sysrq_always_enabled
+> 	rcupdate.rcu_cpu_stall_timeout=3D100
+> 	panic=3D-1
+> 	softlockup_panic=3D1
+> 	nmi_watchdog=3Dpanic
+> 	oops=3Dpanic
+> 	load_ramdisk=3D2
+> 	prompt_ramdisk=3D0
+> 	console=3DttyS0,115200
+> 	console=3Dtty0
+> 	vga=3Dnormal
+> 	root=3D/dev/ram0
+> 	rw
+> 	drbd.minor_count=3D8
+> )
+> =
+
+> "${kvm[@]}" --append "${append[*]}"
+> -------------------------------------------------------------------------=
+---
+> =
+
+> ---
+> 0-DAY kernel test infrastructure                Open Source Technology Ce=
+nter
+> https://lists.01.org/pipermail/lkp                          Intel Corpora=
+tion
+> =
 
 
---===============0204382522213437775==--
+
+--===============0139365419845951333==--
 
