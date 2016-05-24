@@ -1,47 +1,213 @@
-Content-Type: multipart/mixed; boundary="===============3772254825536976444=="
+Content-Type: multipart/mixed; boundary="===============1591046964680707625=="
 MIME-Version: 1.0
-From: Luck, Tony <tony.luck@intel.com>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [EDAC, sb_edac] 2c1ea4c700: kmsg.EDAC_sbridge:Failed_to_register_device_with_error
-Date: Tue, 24 May 2016 17:12:56 +0000
-Message-ID: <3908561D78D1C84285E8C5FCA982C28F3A0D6070@ORSMSX114.amr.corp.intel.com>
-In-Reply-To: <20160524061736.GB2519@yexl-desktop>
+Subject: Re: [rcutorture] 8704baab9b: WARNING: CPU: 0 PID: 30 at kernel/rcu/rcuperf.c:363 rcu_perf_writer
+Date: Tue, 24 May 2016 11:06:52 -0700
+Message-ID: <20160524180652.GJ4148@linux.vnet.ibm.com>
+In-Reply-To: <20160523043517.GA21433@insomnia>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3772254825536976444==
+--===============1591046964680707625==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-> [   55.677523] EDAC sbridge: ECC is disabled. Aborting
+On Mon, May 23, 2016 at 12:35:35PM +0800, Boqun Feng wrote:
+> On Sun, May 22, 2016 at 08:28:06AM -0700, Paul E. McKenney wrote:
+> > On Sun, May 22, 2016 at 02:26:49PM +0800, Boqun Feng wrote:
+> > > Hi Paul,
+> > > =
 
-Works on my HSW-EX. Maybe it depends on memory configuration or some BIOS s=
-ettings?
+> > > On Sat, May 21, 2016 at 10:24:22PM -0700, Paul E. McKenney wrote:
+> > > > On Sun, May 22, 2016 at 10:36:00AM +0800, kernel test robot wrote:
+> > > > > Greetings,
+> > > > > =
 
-The EDAC driver is looking at the MCMTR register to determine whether ECC i=
-s enabled (and this
-change in the code shouldn't really affect that).
+> > > > > 0day kernel testing robot got the below dmesg and the first bad c=
+ommit is
+> > > > > =
 
-What does:
+> > > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
+t master
+> > > > > =
 
-# setpci -d 8086:2fa8 0x7c.L
+> > > > > commit 8704baab9bc848b58c129fed6b591bb84ec02f41
+> > > > > Author:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> > > > > AuthorDate: Thu Dec 31 18:33:22 2015 -0800
+> > > > > Commit:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> > > > > CommitDate: Thu Mar 31 13:37:38 2016 -0700
+> > > > > =
 
-say? It should print a hex number for each socket. The 0x4 bit is the ECC e=
-nable bit. On my machine it
-says:
+> > > > >     rcutorture: Add RCU grace-period performance tests
+> > > > >     =
 
-00017d0d
+> > > > >     This commit adds a new rcuperf module that carries out simple=
+ performance
+> > > > >     tests of RCU grace periods.
+> > > > >     =
 
-for all four sockets ... so ECC is enabled every place we look.
+> > > > >     Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> > > > =
 
-The kmsg file is a bit confusing too.  There are 32 "ECC is disabled" messa=
-ges.  16 seem to be a repeat
-(is this a serial log ... so we get all the messages up to some point, then=
- see a re-run when the main
-console is enabled?).  But it looks like the driver was attempted to be loa=
-ded multiple times.
+> > > > ???
+> > > > =
 
--Tony
+> > > > This commit adds a default-n performance-test module.  I don't beli=
+eve
+> > > =
 
---===============3772254825536976444==--
+> > > I think the robot was using a !SMP && CONFIG_TORTURE_TEST=3Dy &&
+> > > CONFIG_RCU_PERF_TEST=3Dy configuration ;-)
+> > > =
+
+> > > > that this would result in boot failures.  False bisection?
+> > > > =
+
+> > > =
+
+> > > The code triggering the warning is:
+> > > =
+
+> > > 	WARN_ON(rcu_gp_is_normal() && gp_exp);
+> > > =
+
+> > > , so rcu_gp_is_normal() is true because we are using TINY RCU, moreov=
+er
+> > > the default value of gp_exp for *rcuperf* is also true (whereas the o=
+ne
+> > > for rcutorture is false). That's why the warnning was triggered.
+> > > =
+
+> > > It happened in the boot progress because rcu_perf_writer threads were
+> > > created and ran via module init function rcu_perf_init().
+> > > =
+
+> > > Maybe we'd better change the defaut value of gp_exp for rcuperf?
+> > =
+
+> > Or make the default depend on CONFIG_TINY_RCU.  Or downgrade the
+> > WARN_ON() to soething that results in torture-test failure but does
+> > not cause 0day to complain.  Or...
+> > =
+
+> =
+
+> So I think a better is we
+> =
+
+> 1.	set the default value to false (to align with rcutorture)
+> =
+
+> and
+> =
+
+> 2.	downgrade the WARN_ON() to torture-test failures, because those
+> 	are not kernel bugs.
+> =
+
+> Here is a patch for further discussion:
+
+This patch looks good to me, given a little editing of the commit log.
+(See below for error string suggestion.)
+
+Other thoughts?
+
+							Thanx, Paul
+
+> ------------------------->8
+> Subject: [PATCH] rcuperf: Don't treat gp_exp mis-setting as a kernel warn=
+ing
+> =
+
+> 0day found a boot warning triggered in rcu_perf_writer() on !SMP kernel:
+> =
+
+> 	WARN_ON(rcu_gp_is_normal() && gp_exp);
+> =
+
+> , which turned out to be caused by the default value of gp_exp.
+> =
+
+> However, the reason of the warning is only mis-setting, which should be
+> handled inside rcuperf module rather than treated as a kernel warning.
+> =
+
+> Therefore this patch moves the WARN_ON from rcu_perf_writer() and
+> handles those checkings in rcu_perf_init(), which could also save the
+> checkings for each writer.
+> =
+
+> Moreover, this patch changes the default value of gp_exp to 1) align
+> with rcutorture tests and 2) make the default setting work for all RCU
+> implementations by default.
+> =
+
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> Fixes: http://lkml.kernel.org/r/57411b10.mFvG0+AgcrMXGtcj%fengguang.wu(a)=
+intel.com
+> ---
+>  kernel/rcu/rcuperf.c | 14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
+> =
+
+> diff --git a/kernel/rcu/rcuperf.c b/kernel/rcu/rcuperf.c
+> index 3cee0d8393ed..1dc2bd1de4b6 100644
+> --- a/kernel/rcu/rcuperf.c
+> +++ b/kernel/rcu/rcuperf.c
+> @@ -58,7 +58,7 @@ MODULE_AUTHOR("Paul E. McKenney <paulmck@linux.vnet.i=
+bm.com>");
+>  #define VERBOSE_PERFOUT_ERRSTRING(s) \
+>  	do { if (verbose) pr_alert("%s" PERF_FLAG "!!! %s\n", perf_type, s); } =
+while (0)
+> =
+
+> -torture_param(bool, gp_exp, true, "Use expedited GP wait primitives");
+> +torture_param(bool, gp_exp, false, "Use expedited GP wait primitives");
+>  torture_param(int, holdoff, 10, "Holdoff time before test start (s)");
+>  torture_param(int, nreaders, -1, "Number of RCU reader threads");
+>  torture_param(int, nwriters, -1, "Number of RCU updater threads");
+> @@ -363,8 +363,6 @@ rcu_perf_writer(void *arg)
+>  	u64 *wdpp =3D writer_durations[me];
+> =
+
+>  	VERBOSE_PERFOUT_STRING("rcu_perf_writer task started");
+> -	WARN_ON(rcu_gp_is_expedited() && !rcu_gp_is_normal() && !gp_exp);
+> -	WARN_ON(rcu_gp_is_normal() && gp_exp);
+>  	WARN_ON(!wdpp);
+>  	set_cpus_allowed_ptr(current, cpumask_of(me % nr_cpu_ids));
+>  	sp.sched_priority =3D 1;
+> @@ -631,6 +629,16 @@ rcu_perf_init(void)
+>  		firsterr =3D -ENOMEM;
+>  		goto unwind;
+>  	}
+> +	if (rcu_gp_is_expedited() && !rcu_gp_is_normal() && !gp_exp) {
+> +		VERBOSE_PERFOUT_ERRSTRING("try to measure normal grace periods when al=
+l the grace periods are expedited");
+
+"All grace periods expedited, no normal ones to measure!"
+
+> +		firsterr =3D -EINVAL;
+> +		goto unwind;
+> +	}
+> +	if (rcu_gp_is_normal() && gp_exp) {
+> +		VERBOSE_PERFOUT_ERRSTRING("try to measure expedited grace periods when=
+ all the expedited ones fall back to the normal ones");
+
+"All grace periods normal, no expedited ones to measure!"
+
+> +		firsterr =3D -EINVAL;
+> +		goto unwind;
+> +	}
+>  	for (i =3D 0; i < nrealwriters; i++) {
+>  		writer_durations[i] =3D
+>  			kcalloc(MAX_MEAS, sizeof(*writer_durations[i]),
+> -- =
+
+> 2.8.2
+> =
+
+
+
+--===============1591046964680707625==--
 
