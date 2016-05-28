@@ -1,49 +1,129 @@
-Content-Type: multipart/mixed; boundary="===============2870908914414845653=="
+Content-Type: multipart/mixed; boundary="===============2538070520116181433=="
 MIME-Version: 1.0
 From: Wolfram Sang <wsa@the-dreams.de>
 To: lkp@lists.01.org
-Subject: Re: [i2c: dev] d6760b14d4: BUG: KASAN: slab-out-of-bounds in of_device_uevent at addr ffff8800091b4c49
-Date: Sat, 28 May 2016 09:32:17 +0200
-Message-ID: <20160528073217.GB1714@katana>
-In-Reply-To: <20160528072433.GA1844@wfg-t540p.sh.intel.com>
+Subject: [PATCH] Revert "i2c: dev: switch from register_chrdev to cdev API"
+Date: Sat, 28 May 2016 11:07:47 +0200
+Message-ID: <1464426467-1824-1-git-send-email-wsa@the-dreams.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2870908914414845653==
+--===============2538070520116181433==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+This reverts commit d6760b14d4a1243f918d983bba1e35c5a5cd5a6d. When
+hitting Linus' tree, buildbots ran additional checks and found boot
+problems. Although Dan Carpenter provided an obvious fix already, I
+still could not reproduce one problem manually (at least not on a
+Saturday morning). So we'll try again later after some more
+investigation.
 
-> There will be simple boot tests quickly after the compile tests.
-> However boot tests typically need more time to be detected, bisected
-> and especially manual checked. We are yet to automate more boot error
-> reports.
+Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+---
+ drivers/i2c/i2c-dev.c | 19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
 
-Thanks for the heads up. Could there be success mails for boot tests,
-too?
+diff --git a/drivers/i2c/i2c-dev.c b/drivers/i2c/i2c-dev.c
+index 89593dcb79f032..bc3cc7faf5af46 100644
+--- a/drivers/i2c/i2c-dev.c
++++ b/drivers/i2c/i2c-dev.c
+@@ -22,7 +22,6 @@
+ =
+
+ /* The I2C_RDWR ioctl code is written by Kolja Waschk <waschk@telos.de> =
+*/
+ =
+
+-#include <linux/cdev.h>
+ #include <linux/device.h>
+ #include <linux/fs.h>
+ #include <linux/i2c-dev.h>
+@@ -48,10 +47,9 @@ struct i2c_dev {
+ 	struct list_head list;
+ 	struct i2c_adapter *adap;
+ 	struct device *dev;
+-	struct cdev cdev;
+ };
+ =
+
+-#define I2C_MINORS	MINORMASK
++#define I2C_MINORS	256
+ static LIST_HEAD(i2c_dev_list);
+ static DEFINE_SPINLOCK(i2c_dev_list_lock);
+ =
+
+@@ -554,12 +552,6 @@ static int i2cdev_attach_adapter(struct device *dev, v=
+oid *dummy)
+ 	if (IS_ERR(i2c_dev))
+ 		return PTR_ERR(i2c_dev);
+ =
+
+-	cdev_init(&i2c_dev->cdev, &i2cdev_fops);
+-	i2c_dev->cdev.owner =3D THIS_MODULE;
+-	res =3D cdev_add(&i2c_dev->cdev, MKDEV(I2C_MAJOR, adap->nr), 1);
+-	if (res)
+-		goto error_cdev;
+-
+ 	/* register this i2c device with the driver core */
+ 	i2c_dev->dev =3D device_create(i2c_dev_class, &adap->dev,
+ 				     MKDEV(I2C_MAJOR, adap->nr), NULL,
+@@ -573,8 +565,6 @@ static int i2cdev_attach_adapter(struct device *dev, vo=
+id *dummy)
+ 		 adap->name, adap->nr);
+ 	return 0;
+ error:
+-	cdev_del(&i2c_dev->cdev);
+-error_cdev:
+ 	put_i2c_dev(i2c_dev);
+ 	return res;
+ }
+@@ -594,7 +584,6 @@ static int i2cdev_detach_adapter(struct device *dev, vo=
+id *dummy)
+ =
+
+ 	put_i2c_dev(i2c_dev);
+ 	device_destroy(i2c_dev_class, MKDEV(I2C_MAJOR, adap->nr));
+-	cdev_del(&i2c_dev->cdev);
+ =
+
+ 	pr_debug("i2c-dev: adapter [%s] unregistered\n", adap->name);
+ 	return 0;
+@@ -631,7 +620,7 @@ static int __init i2c_dev_init(void)
+ =
+
+ 	printk(KERN_INFO "i2c /dev entries driver\n");
+ =
+
+-	res =3D register_chrdev_region(MKDEV(I2C_MAJOR, 0), I2C_MINORS, "i2c");
++	res =3D register_chrdev(I2C_MAJOR, "i2c", &i2cdev_fops);
+ 	if (res)
+ 		goto out;
+ =
+
+@@ -655,7 +644,7 @@ static int __init i2c_dev_init(void)
+ out_unreg_class:
+ 	class_destroy(i2c_dev_class);
+ out_unreg_chrdev:
+-	unregister_chrdev_region(MKDEV(I2C_MAJOR, 0), I2C_MINORS);
++	unregister_chrdev(I2C_MAJOR, "i2c");
+ out:
+ 	printk(KERN_ERR "%s: Driver Initialisation failed\n", __FILE__);
+ 	return res;
+@@ -666,7 +655,7 @@ static void __exit i2c_dev_exit(void)
+ 	bus_unregister_notifier(&i2c_bus_type, &i2cdev_notifier);
+ 	i2c_for_each_dev(NULL, i2cdev_detach_adapter);
+ 	class_destroy(i2c_dev_class);
+-	unregister_chrdev_region(MKDEV(I2C_MAJOR, 0), I2C_MINORS);
++	unregister_chrdev(I2C_MAJOR, "i2c");
+ }
+ =
+
+ MODULE_AUTHOR("Frodo Looijaard <frodol@dds.nl> and "
+-- =
+
+2.8.1
 
 
---===============2870908914414845653==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
-
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEKCmlRSWNCQUVC
-QWdBR0JRSlhTVW1BQUFvSkVCUU41TXdVb0NtMmNRc1AvMUJhUG83ZFk0RGczYldENE9YeEsyaUYK
-b24vNHd4ZDZUYnZsTzBmNzc5cFZWWlpmWHhoYmtmTUU1N3dPMnVVemcvdGZiUkhDOVUyOVc0QWF6
-bVVOUTg5MApEYTBJRWV5cWQ5eTRBQ0V4Y0l2RHQ2UFNLQlI4U0xWTWU2WEdPYndEVDVjU3NYMHVI
-cktMb2ZUWjRNUEtVVC9pCmYxWGVSbTZvUWdNOHdtUjF6VDd0Yy9ERHAxSHJ2QnN6dlJKK2EwZE5I
-MFgvR3RtVjJkNzRxdUlFeE15cjFYdi8KNUFMWFQrUEg4VFBlcEJKb3FqQVYxYS9sd2kzKzZuYnBp
-ZXphSzlDNUc3N1dvSWp1N1NHcnNUQXB0Z3FMZDhOSQoyQzdlRDEvaTNyUDhtaDZMNytRVEFJd3Rn
-ZGx5ZnppK28rOHdOU3ZTSTJKSXB2SlJ1dlhNSmFUdnA3MGFERmx4CnhNUExsNzBPamM0MjBRcFlw
-NUxqb1Nwdm5PY0MvMExIV1VnWEJPeWh1R2xTNnByWlR0ZXUrc00zcFZHbTg0K1cKbFFqWE1qSGwv
-YXhDRnNwR0hqRzVyZzIwdGNVQjZiR1k4aXpCYlRQcE9sYkNYM3RyMSsxdDlXY091dmQrajNpVwo3
-SFFaSnFVdUo0MHlPYm80eERhd3BMekFHcnpZUHVOYk9VZk1iOUJoaGF2akQvSTI5UWpqMUZmUGxT
-VElWVUJKCmZ4K0Nmalhhb2srRTBxZ2QyK3d0b2VzVE1WUUorYnluU3FYR05QQUppbE9rdFlDYURo
-YitDTG1vemtIUTJBSzIKa3kyUkhHTld3alJuTFlmQ2gzZWgxNnVGUFlqVkQ5ZU9uNFZPdStsZE1y
-ZDhTTC9JRVBYSnBKZmQwSnJielNDVgp1RHovdGJuTUxQOS91anJEMGpxRAo9YzMyUwotLS0tLUVO
-RCBQR1AgU0lHTkFUVVJFLS0tLS0K
-
---===============2870908914414845653==--
+--===============2538070520116181433==--
 
