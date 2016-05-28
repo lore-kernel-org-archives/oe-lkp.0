@@ -1,59 +1,55 @@
-Content-Type: multipart/mixed; boundary="===============2230236812896947155=="
+Content-Type: multipart/mixed; boundary="===============1132945157854162471=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Wolfram Sang <wsa@the-dreams.de>
 To: lkp@lists.01.org
-Subject: Re: [i2c: dev] d6760b14d4: BUG: KASAN: slab-out-of-bounds in of_device_uevent at addr ffff8800091b4c49
-Date: Sat, 28 May 2016 18:14:08 +0800
-Message-ID: <20160528101408.GA4346@wfg-t540p.sh.intel.com>
-In-Reply-To: <20160528073217.GB1714@katana>
+Subject: Re: [PATCH] Revert "i2c: dev: switch from register_chrdev to cdev API"
+Date: Sat, 28 May 2016 18:04:58 +0200
+Message-ID: <20160528160458.GA1614@katana>
+In-Reply-To: <20160528091559.GR11011@mwanda>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2230236812896947155==
+--===============1132945157854162471==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, May 28, 2016 at 09:32:17AM +0200, Wolfram Sang wrote:
-> =
 
-> > There will be simple boot tests quickly after the compile tests.
-> > However boot tests typically need more time to be detected, bisected
-> > and especially manual checked. We are yet to automate more boot error
-> > reports.
-> =
+> These kinds of use after frees don't always cause a runtime problem.  I
+> found it using static analysis, but I bet you could detect it if you
+> enabled kasan.  The other option is to enable PAGE_POISONING?
 
-> Thanks for the heads up. Could there be success mails for boot tests,
-> too?
+Thanks, PAGE_POISONING did trigger the issue. So, I now picked up your
+patch instead of the revert because I could verify the problem and the
+proper solution. Thanks again.
 
-That may be too noisy to be useful. Boot errors may not be well
-reproducible, may take different forms, and the base trees are
-typically not clean -- even mainline tree has regular errors, for
-example, here are the runtime error ids in kernel v4.6 with kconfig
-x86_64-rhel:
+What I still wonder: Which analysis reported the problem to you? I
+always run sparse, smatch, cppcheck, and coccicheck on the patches when
+applying and no-one reported the issue.
 
-boot_successes: 1470
-boot_failures: 154
-BUG:sleeping_function_called_from_invalid_context_at_kernel/irq/manage.c: 1=
-02
-WARNING:at_drivers/gpu/drm/i915/intel_display.c:#intel_modeset_init[i915]: 4
-drm:fw_domains_get[i915]]: 57
-drm:__gen6_gt_wait_for_thread_c0[i915]]: 57
-BUG:kernel_test_crashed: 4
-invoked_oom-killer:gfp_mask=3D0x: 22
-Mem-Info: 22
-Kernel_panic-not_syncing:Out_of_memory_and_no_killable_processes: 18
-invalid_opcode:#[##]SMP: 3
-RIP:ftrace_stub: 16
-Kernel_panic-not_syncing:Fatal_exception: 16
-BUG:unable_to_handle_kernel: 13
-Oops: 13
-Out_of_memory:Kill_process: 4
+   Wolfram
 
-However if you are still interested, we can try composing auto runtime
-test report emails.
 
-Thanks,
-Fengguang
+--===============1132945157854162471==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
 
---===============2230236812896947155==--
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEKCmlRSWNCQUVC
+QWdBR0JRSlhTY0dwQUFvSkVCUU41TXdVb0NtMk9uMFAvQWtBREdCbUcvMnVXa1Z2WStmUGFnNGkK
+TGM5c2kwY0J4SkZOME91Y3JKL1FBYkVQR1U3elg4czhqUi9wZVBXQ0JnOTc2SWRKM21MajJDN1Qr
+UlFYWEVHTwpwU3hrSlMwRUdtak5aQy9lNmhVT3hubmcrS1pDMEhNN3ZDK281UWkxSlZiUzhDbEpN
+OGJaRXZ0dlNIVklmR2VhCkhaRzcxM0NkaFFmaUQ2dFJ5RGpTOWp4L29BcysweVo2ei80MHE5WXp2
+RVA2bEtkWWoxRVpRNHNyUlM5WXFlMkMKU0FpM2kyOXE0OHBTMWdCQ20rTktUWHlsWHJvekNQQWJv
+dVdGN3lkeHBnaVo0VWxTcUVnbW5BaEFCRzhkQW1rVgo2YVJ2dDRxWEwrcEtBbVNuZWcrcktBMVlF
+dVpTL2Rad1kvdnI2U0wvSGNsdTduc3hkMFBkWnhEbFBPU1FXcTZpCmt0WTYyVHZHc005ZVhwdWFD
+WDM1eFlJalNXNW80UTBhM3VqN054dkhMaU1CSzdOcTM3aFA2K1hISDN3VkVEZGYKTEpPNmZQdnJD
+cUdWVThOVTRSdTdtNGJlRExoSXQ2ME9Bai8yTU1QeGZlMWVRQVZXUUZlek1lWGdsRHVSM2c2RApT
+eE1pd3VqKzByYXlvY1RQL3IyM21wUkFVUnVpUkRSRHVXeEZ2T0hYTlBwQXprenVvNXltaU0ra1Ns
+enVjZVQ2CkIvQUYrbXU4aStIMzRaQ1l1NExGMDdneGNPaFRjOXlrQ3h2TWhTTjc1S3ZZWjBSTDRV
+TFJTTXdpY0xPa3VWMGsKRUlCVDNqVnB0TkhLaHFHdG9tOHRwamNDK21BZEN5cWNTam54a2ZzTXYz
+Y0xwV1dPQmRGQXZjM0RmbkZ5NjY3MApEVkc1S2RldTNyeDE5MnVLZGt3Mwo9RExRZAotLS0tLUVO
+RCBQR1AgU0lHTkFUVVJFLS0tLS0K
+
+--===============1132945157854162471==--
 
