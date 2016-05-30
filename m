@@ -1,66 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============2380354605580507456=="
+Content-Type: multipart/mixed; boundary="===============7759902834049588590=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 To: lkp@lists.01.org
-Subject: Re: [Revert "ppdev] 1701f68040: genirq: Flags mismatch irq 4. 00000000 (serial) vs. 00000080 (goldfish_pdev_bus)
-Date: Mon, 30 May 2016 03:23:29 +0800
-Message-ID: <20160529192329.GA29119@wfg-t540p.sh.intel.com>
-In-Reply-To: <CA+55aFyvxUJV+uSKVbfhf_BFmDoBwth=HXqC+oZ-V0j7A2xACA@mail.gmail.com>
+Subject: Re: [PATCH] Revert "i2c: dev: switch from register_chrdev to cdev API"
+Date: Mon, 30 May 2016 10:05:47 +0300
+Message-ID: <20160530070547.GA18199@mwanda>
+In-Reply-To: <20160528160458.GA1614@katana>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2380354605580507456==
+--===============7759902834049588590==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, May 29, 2016 at 09:25:28AM -0700, Linus Torvalds wrote:
-> On Sun, May 29, 2016 at 8:28 AM, kernel test robot
-> <fengguang.wu@intel.com> wrote:
-> >
-> > 0day kernel testing robot got the below dmesg and the first bad commit =
-is
+On Sat, May 28, 2016 at 06:04:58PM +0200, Wolfram Sang wrote:
 > =
 
-> This bisection seems unlikely.
+> > These kinds of use after frees don't always cause a runtime problem.  I
+> > found it using static analysis, but I bet you could detect it if you
+> > enabled kasan.  The other option is to enable PAGE_POISONING?
 > =
 
-> I *think* what is going on is that the previous kernels ended up with
-> boot failures:
+> Thanks, PAGE_POISONING did trigger the issue. So, I now picked up your
+> patch instead of the revert because I could verify the problem and the
+> proper solution. Thanks again.
 > =
 
-> > +------------------------------------------------------------+---------=
----+------------+-------------+
-> > |                                                            | 3b3b3bd9=
-77 | 1701f68040 | v4.6_052910 |
-> > +------------------------------------------------------------+---------=
----+------------+-------------+
-> > | kernel_BUG_at_drivers/base/driver.c                        | 92      =
-   |            |             |
-> =
+> What I still wonder: Which analysis reported the problem to you? I
+> always run sparse, smatch, cppcheck, and coccicheck on the patches when
+> applying and no-one reported the issue.
 
-> and then when that went away (thanks to the commit you bisected to),
-> the "genirq: Flags mismatch" warning showed up because it now got past
-> that original bug.
+It's a Smatch warning but you have to build the cross function db to
+detect this.  It takes a while (a few hours) but the command is simple
+enough.
 
-That's right. It's a bug fix that discloses a less serious warning.
+	./smatch_scripts/build_kernel_data.sh
 
-> I'm not sure what the fix to the 0day bisection should be. Maybe add
-> some test that the last "good" kernel actually booted?
+regards,
+dan carpenter
 
-Yes, we do have tests on whether the parent boots fine or has more
-serious boot errors, however they are wrongly bypassed when we
-recently try to add a new test to report out errors which look
-relevant to the code change.
 
-I'll fix it up, sorry for the noise!
-
-Boot tests are pretty noisy and often a commit and its parent commit
-both have error/warnings. A better long term solution would be to
-compare their time stamps to get the clue whether it's a bug fix that
-makes the kernel live longer to produce another warning.
-
-Thanks,
-Fengguang
-
---===============2380354605580507456==--
+--===============7759902834049588590==--
 
