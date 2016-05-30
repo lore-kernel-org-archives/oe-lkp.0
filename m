@@ -1,44 +1,144 @@
-Content-Type: multipart/mixed; boundary="===============7759902834049588590=="
+Content-Type: multipart/mixed; boundary="===============7695974186876642889=="
 MIME-Version: 1.0
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Dmitry Vyukov <dvyukov@google.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] Revert "i2c: dev: switch from register_chrdev to cdev API"
-Date: Mon, 30 May 2016 10:05:47 +0300
-Message-ID: <20160530070547.GA18199@mwanda>
-In-Reply-To: <20160528160458.GA1614@katana>
+Subject: Re: [mm] 55834c5909: boot-slabinfo.num_objs +31.9% increasement
+Date: Mon, 30 May 2016 09:53:25 +0200
+Message-ID: <CACT4Y+ZF_ES+qfZDS-dvQfoLfKd-Ca1aJobs4a=8LMONwTcSeQ@mail.gmail.com>
+In-Reply-To: <20160530021758.GG1689@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7759902834049588590==
+--===============7695974186876642889==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, May 28, 2016 at 06:04:58PM +0200, Wolfram Sang wrote:
-> =
+On Mon, May 30, 2016 at 4:17 AM, kernel test robot
+<xiaolong.ye@intel.com> wrote:
+>
+> FYI, we noticed boot-slabinfo.num_objs +31.9% increasement due to commit:
+>
+> commit 55834c59098d0c5a97b0f3247e55832b67facdcf ("mm: kasan: initial memo=
+ry quarantine implementation")
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+>
+> in testcase: boot
+> on test machine: vm-lkp-wsx03-2G: 2 threads qemu-system-x86_64 -enable-kv=
+m -cpu host with 2G memory
+> with following parameters: sleep=3D1
+>
+>
+> Details are as below:
+> -------------------------------------------------------------------------=
+------------------------->
+>
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> compiler/kconfig/rootfs/sleep/tbox_group/testcase:
+>   gcc-6/x86_64-randconfig-s4-05280557/debian-x86_64-2015-02-07.cgz/1/vm-l=
+kp-wsx03-2G/boot
+>
+> commit:
+>   b8f1a75d61d8405a753380c6fb17ba84a5603cd4
+>   55834c59098d0c5a97b0f3247e55832b67facdcf
+>
+> b8f1a75d61d8405a 55834c59098d0c5a97b0f3247e
+> ---------------- --------------------------
+>          %stddev     %change         %stddev
+>              \          |                \
+>     165450 =C2=B1  0%     +31.9%     218176 =C2=B1  1%  boot-slabinfo.num=
+_objs
+>      19095 =C2=B1  5%    +104.3%      39013 =C2=B1  3%  boot-slabinfo.num=
+_pages
+>     107.27 =C2=B1  2%     +14.1%     122.43 =C2=B1 13%  boot-time.boot
+>      97.13 =C2=B1  1%      +4.3%     101.31 =C2=B1  1%  boot-time.idle
+>    1105076 =C2=B1  0%      -7.2%    1025056 =C2=B1  0%  boot-meminfo.MemF=
+ree
+>      36269 =C2=B1 12%    +215.7%     114517 =C2=B1  5%  boot-meminfo.SUnr=
+eclaim
+>      76469 =C2=B1  5%    +104.5%     156343 =C2=B1  4%  boot-meminfo.Slab
+>
+>
+>
+>                                boot-slabinfo.num_objs
+>
+>   230000 ++--------------------------------------------------------------=
+---+
+>          |            O                 O                                =
+   |
+>   220000 ++O O    O OO OO     O O OO OO                                  =
+   |
+>          OO O OOOO O     OOOOOOO O  O OO O                               =
+   |
+>   210000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   200000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   190000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   180000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   170000 ++                                                              =
+   |
+>          ****************************************************************=
+****
+>   160000 ++--------------------------------------------------------------=
+---+
+>
+>
+>                                boot-slabinfo.num_pages
+>
+>   45000 ++-------------O-------------------------------------------------=
+---+
+>         | O  O      OO O O O O  OOO                                      =
+   |
+>   40000 +O   OOO OO                OO O  O                               =
+   |
+>         O  OO      O  O O O O  OO    O  O                                =
+   |
+>         |       O             O        O                                 =
+   |
+>   35000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>   30000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>   25000 ++                                                               =
+   |
+>         |                                                                =
+   |
+>         |                                                         *    * =
+   *
+>   20000 +* *  *  ** * *  *   * *  *   ** **** ** * *  *   * *  *  :: * **=
+* *|
+>         * * ** **  * * ** *** * ** ***  * *  *  * * ** *** * ** ** ** *  =
+ * |
+>   15000 ++---------------------------------------------------------------=
+---+
+>
+>
+>         [*] bisect-good sample
+>         [O] bisect-bad  sample
 
-> > These kinds of use after frees don't always cause a runtime problem.  I
-> > found it using static analysis, but I bet you could detect it if you
-> > enabled kasan.  The other option is to enable PAGE_POISONING?
-> =
 
-> Thanks, PAGE_POISONING did trigger the issue. So, I now picked up your
-> patch instead of the revert because I could verify the problem and the
-> proper solution. Thanks again.
-> =
+Hi Xiaolong,
 
-> What I still wonder: Which analysis reported the problem to you? I
-> always run sparse, smatch, cppcheck, and coccicheck on the patches when
-> applying and no-one reported the issue.
+It is with CONFIG_KASAN=3Dy? If yes, then increased memory usage is expecte=
+d.
 
-It's a Smatch warning but you have to build the cross function db to
-detect this.  It takes a while (a few hours) but the command is simple
-enough.
-
-	./smatch_scripts/build_kernel_data.sh
-
-regards,
-dan carpenter
-
-
---===============7759902834049588590==--
+--===============7695974186876642889==--
 
