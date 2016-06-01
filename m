@@ -1,105 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============4755407207907869612=="
+Content-Type: multipart/mixed; boundary="===============8317016906873173303=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [sched/fair] 53d3bc773e: hackbench.throughput -32.9% regression
-Date: Wed, 01 Jun 2016 16:53:28 +0800
-Message-ID: <87inxtjnnb.fsf@yhuang-dev.intel.com>
-In-Reply-To: <20160601084035.GL3190@twins.programming.kicks-ass.net>
+Subject: Re: [oom_reaper] df1e2f5663: EIP: [<81e30134>] mmput_async+0x9/0x6b SS:ESP 0068:819a5e78
+Date: Wed, 01 Jun 2016 10:55:49 +0200
+Message-ID: <20160601085549.GI26601@dhcp22.suse.cz>
+In-Reply-To: <20160601183748.6f72ca9c@canb.auug.org.au>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4755407207907869612==
+--===============8317016906873173303==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Peter Zijlstra <peterz@infradead.org> writes:
+On Wed 01-06-16 18:37:48, Stephen Rothwell wrote:
+> Hi Michal,
+> =
 
-> On Wed, Jun 01, 2016 at 01:00:10PM +0800, Huang, Ying wrote:
->> Hi, Peter,
->> =
+> On Wed, 1 Jun 2016 10:24:58 +0200 Michal Hocko <mhocko@kernel.org> wrot=
+e:
+> >
+> > $ git describe next/master
+> > next-20160601
+> > $ git show df1e2f56632ddf17186f7036a3bd809d3aed8fd8:mm/oom_kill.c
+> > fatal: Path 'mm/oom_kill.c' exists on disk, but not in 'df1e2f56632ddf1=
+7186f7036a3bd809d3aed8fd8'
+> =
 
->> Peter Zijlstra <peterz@infradead.org> writes:
->> =
+> That's weird:
 
->> > On Tue, May 31, 2016 at 04:34:36PM +0800, Huang, Ying wrote:
->> >> Hi, Ingo,
->> >> =
+$ git show df1e2f56632ddf17186f7036a3bd809d3aed8fd8
+fatal: bad object df1e2f56632ddf17186f7036a3bd809d3aed8fd8
 
->> >> Part of the regression has been recovered in v4.7-rc1 from -32.9% to
->> >> -9.8%.  But there is still some regression.  Is it possible for fully
->> >> restore it?
->> >
->> > after much searching on how you guys run hackbench... I figured
->> > something like:
->> >
->> >   perf bench sched messaging -g 20 --thread -l 60000
->> =
+But a collegue of mine has it and
+$ git describe --contains df1e2f56632ddf17186f7036a3bd809d3aed8fd8
+next-20160527~2^2~53
 
->> There is a reproduce file attached in the original report email, its
->> contents is something like below:
->> =
+But my tree doesn't seem to have this tag
+$ git show next-20160527
+fatal: ambiguous argument 'next-20160527': unknown revision or path not in =
+the working tree.
 
->> 2016-05-15 08:57:02 echo performance > /sys/devices/system/cpu/cpu0/cpuf=
-req/scaling_governor
->
-> <snip stupid large output>
->
->> 2016-05-15 09:06:24 /usr/bin/hackbench -g 24 --threads -l 60000
->> =
+So it seemed to be in linux-next but it is not in next-20160601. It is
+in the Linus tree as e2fe14564d33 ("oom_reaper: close race with exiting
+task") reachable from next-20160527.
+-- =
 
->> Hope that will help you for reproduce.
->
-> It did not, because I didn't have the exact same machine and its not
-> apparent how I should modify -- if at all -- the arguments to be
-> representative when ran on my machine.
->
->> > on my IVB-EP (2*10*2) is similar to your IVT thing.
->> >
->> > And running something like:
->> >
->> >   for i in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor ; do =
-echo performance > $i ; done
->> >   perf stat --null --repeat 10 -- perf bench sched messaging -g 20 --t=
-hread -l 60000 | grep "seconds time elapsed"
->> >
->> > gets me:
->> >
->> > v4.6:
->> >
->> >       36.786914089 seconds time elapsed ( +-  0.49% )
->> >       37.054017355 seconds time elapsed ( +-  1.05% )
->> >
->> >
->> > origin/master (v4.7-rc1-ish):
->> >
->> >       34.757435264 seconds time elapsed ( +-  3.34% )
->> >       35.396252515 seconds time elapsed ( +-  3.38% )
->> >
->> >
->> > Which doesn't show a regression between v4.6 and HEAD; in fact it shows
->> > an improvement.
->> =
+Michal Hocko
+SUSE Labs
 
->> Yes.  For hackbench test, linus/master (v4.7-rc1+) is better than v4.6,
->> but it is worse than v4.6-rc7.  Details is as below.
->
-> That kernel was broken.. what your point?
-
-You mean the commit is a functionality fix?  I found the
-hackbench.throughput for the test is
-
-v4.5: 1.4e+5
-v4.6-rc1~v4.6-rc7: 1.9e+5
-v4.6: 1.3e+5
-v4.7-rc1: 1.7e+5
-
-So some commit in v4.6-rc1 introduce some issue but improve the score
-for the test, which is fixed in v4.6, and some improvement merged by
-v4.7-rc1?
-
-Best Regards,
-Huang, Ying
-
---===============4755407207907869612==--
+--===============8317016906873173303==--
 
