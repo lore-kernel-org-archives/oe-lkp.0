@@ -1,38 +1,29 @@
-Content-Type: multipart/mixed; boundary="===============3790473751426146285=="
+Content-Type: multipart/mixed; boundary="===============1126041293098297506=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Mike Galbraith <umgwanakikbuti@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [sched/fair] 53d3bc773e: hackbench.throughput -32.9% regression
-Date: Thu, 02 Jun 2016 08:28:14 +0800
-Message-ID: <87pos0igdd.fsf@yhuang-dev.intel.com>
-In-Reply-To: <1464774513.4023.78.camel@gmail.com>
+Date: Thu, 02 Jun 2016 02:44:38 +0200
+Message-ID: <1464828278.3161.12.camel@gmail.com>
+In-Reply-To: <87pos0igdd.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3790473751426146285==
+--===============1126041293098297506==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Mike Galbraith <umgwanakikbuti@gmail.com> writes:
+On Thu, 2016-06-02 at 08:28 +0800, Huang, Ying wrote:
 
-> On Wed, 2016-06-01 at 16:53 +0800, Huang, Ying wrote:
->
->> You mean the commit is a functionality fix?
->
-> Yup.
->
-> These kind of things can be a bit annoying.  The fix to not subtract
-> load that we never added in the first place also pushed hackbench
-> around a bit.  Do anything at all with load_avg, you're gonna push
-> this/that benchmark around a bit, and folks who watch numbers closely
-> can end up chasing meaningless deltas.
+> If this report annoyed you, I am sorry about that.  We just want to be
+> helpful via providing some information.  Now I know hackbench is
+> sensitive to load_avg changes, thanks a lot for the information.
 
-If this report annoyed you, I am sorry about that.  We just want to be
-helpful via providing some information.  Now I know hackbench is
-sensitive to load_avg changes, thanks a lot for the information.
+No no, I meant the other way around ;-)  If you're one of the folks
+_doing_ performance monitoring, it can be a tad annoying to finding
+that the effort you invested was all for naught.
 
-Best Regards,
-Huang, Ying
+	-Mike
 
---===============3790473751426146285==--
+--===============1126041293098297506==--
 
