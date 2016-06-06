@@ -1,94 +1,127 @@
-Content-Type: multipart/mixed; boundary="===============2525993050357283243=="
+Content-Type: multipart/mixed; boundary="===============2736860483094170790=="
 MIME-Version: 1.0
-From: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+From: Dmitry Vyukov <dvyukov@google.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] 5c0a85fad9: unixbench.score -6.3% regression
-Date: Mon, 06 Jun 2016 12:51:36 +0300
-Message-ID: <20160606095136.GA79951@black.fi.intel.com>
-In-Reply-To: <20160606022724.GA26227@yexl-desktop>
+Subject: Re: Extending the 0-day system with syzkaller?
+Date: Mon, 06 Jun 2016 19:11:02 +0200
+Message-ID: <CACT4Y+bh3yvNh_Ln15wD=6JeTNW8-eiBy7KPykpqKS2wq04d6A@mail.gmail.com>
+In-Reply-To: <CACT4Y+aOmzqkzOGCj_X+Gjko512H8tvqQ53+AhTqO+8X8DVxhA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2525993050357283243==
+--===============2736860483094170790==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 06, 2016 at 10:27:24AM +0800, kernel test robot wrote:
-> =
+Hi Fengguang,
 
-> FYI, we noticed a -6.3% regression of unixbench.score due to commit:
-> =
+Any updates on this? How do you see the way forward?
 
-> commit 5c0a85fad949212b3e059692deecdeed74ae7ec7 ("mm: make faultaround pr=
-oduce old ptes")
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> =
 
-> in testcase: unixbench
-> on test machine: lituya: 16 threads Haswell High-end Desktop (i7-5960X 3.=
-0G) with 16G memory
-> with following parameters: cpufreq_governor=3Dperformance/nr_task=3D1/tes=
-t=3Dshell8
-> =
 
-> =
 
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
-> =
+On Fri, May 6, 2016 at 10:08 AM, Dmitry Vyukov <dvyukov@google.com> wrote:
+> On Thu, May 5, 2016 at 4:48 PM, Fengguang Wu <fengguang.wu@intel.com> w=
+rote:
+>> Hi Dmitry,
+>>
+>> On Tue, May 03, 2016 at 10:00:04AM +0200, Dmitry Vyukov wrote:
+>>> On Tue, May 3, 2016 at 6:01 AM, Fengguang Wu <fengguang.wu@intel.com>=
+ wrote:
+>>> >> One quick question is i recall an early discussion is that this enab=
+ling requires new gcc,
+>>> >> is this still be true?
+>>> >
+>>> > I see Debian just upgraded its gcc packages to 6.1, which makes it
+>>> > more convenient for us to integrate with syzkaller.
+>>> >
+>>> > Since syzkaller is more about a client-server system than a hands on
+>>> > tool like trinity, it may need non-trivial modifications to 0-day and
+>>> > possibly syzkaller to achieve the integration. For example, syzkaller
+>>> > and 0-day each has its own way to run QEMU, which should be resolved
+>>> > somehow.
+>>> >
+>>> > Another question is, the 0-day model relies heavily on bisecting to
+>>> > cover the large number of kernel trees. If a bug cannot be easily
+>>> > reproduced and bisected, we don't know to whom it should be reported
+>>> > to. Trinity offers an option "-sN: use N as random seed." to help
+>>> > reproduce bugs it found. I wonder if syzkaller has similar mechanism
+>>> > to help with reproducing bugs it found?
+>>>
+>>>
+>>> Hi Fengguang,
+>>>
+>>> Yes, syzkaller setup is more elaborate, but architecture is pretty
+>>> modular so I believe we can resolve these issues.
+>>
+>> Yes syzkaller looks very interesting. I'll try it out in more details
+>> and try enabling it in 0day.
+>>
+>>> What does your infrastructure do? I guess it winds up qemu instances,
+>>> copies necessary binaries and then runs some command? How does it
+>>> monitor for crashes? By parsing console output? How do you control
+>>> duration of testing? By instructing trinity to do fixed number of
+>>> iterations, or by killing qemu?
+>>
+>> Basically each 0day boot server runs a number of QEMU instances
+>> with various locally cached QEMU images. Trinity binaries are built
+>> into these images. A boot script in the images will run trinity in
+>> background, sleep for some time and then kill trinity. If tests run
+>> smoothly, the scripts inside the QEMU image will be able to shutdown
+>> VM in time. Otherwise if things get stuck inside VM, the host side
+>> script which started the QEMU VM and monitors its serial output may
+>> decide to kill the QEMU process when either timeout or find kernel
+>> panic patterns.
+>
+>
+> On second thought, what do you think about running syzkaller as is?
+> Syzkaller does roughly the same thing. Syzkaller is configurable with
+> kernel, image, qemu-binary, etc. I can provide any missing
+> functionality for automation (e.g. run for an hour and exit). That
+> would be the simplest option.
+>
+> If it does not work for you for some reason, we would need a way to
+> copy files to/from a VM with scp. Then we could copy the corpus.zip
+> into a VM, start fuzzing for some time, then it will finish and save
+> an updated corpus.zip, then we copy out the corpus to host for
+> subsequent runs.
+>
+>
+>>> Syzkaller already has a number of simpler tools. For example,
+>>> syz-stress works more or less like trinity -- you can copy it onto
+>>> test machine and instruct to run random programs. I can cook another
+>>> tool that will fit into your setup.
+>>
+>> OK, we may sort details out in private emails. Preferably the resulted
+>> system should get the most out of what syzkaller offers and excels.
+>>
+>>> One inherent complication, though,
+>>> is that syzkaller is stateful, it needs to accumulate corpus of
+>>> interesting programs (based on code coverage) to work more
+>>> efficiently. So we will need some way to save corpus from qemu
+>>> instances externally and then pass the corpus to new qemu instances.
+>>> But on the other hand, that was proven to be super efficient in
+>>> finding regressions -- namely, in 15 minutes it can test almost
+>>> everything that it discovered previously.
+>>
+>> That looks very impressive!
+>>
+>>> Re reproducers: syzkaller can do even better than trinity. Syzkaller
+>>> logs all executed programs to stdout (in default mode, or it can also
+>>> log to local files or kernel console). If you have the log with
+>>> programs that were executed before the crash, then it's possible (1)
+>>> to re-execute the log on other kernels, or (2) extract the guilty
+>>> program from the log, minimize it and convert to an executable C
+>>> program to present to developers
+>>> (https://github.com/google/syzkaller/wiki/Crash-reproducer-programs).
+>>> Based on my experience (2) is real game changer, developers much more
+>>> willing to fix bugs when they have a small reproducer.
+>>
+>> Cannot agree any more -- it looks the right way to go.
+>> Hope we can make it run in 0day soon!
+>>
+>> Thanks,
+>> Fengguang
 
-> =
-
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/nr_task/rootfs/tbox_group/test/testcase:
->   gcc-4.9/performance/x86_64-rhel/1/debian-x86_64-2015-02-07.cgz/lituya/s=
-hell8/unixbench
-> =
-
-> commit: =
-
->   4b50bcc7eda4d3cc9e3f2a0aa60e590fedf728c5
->   5c0a85fad949212b3e059692deecdeed74ae7ec7
-> =
-
-> 4b50bcc7eda4d3cc 5c0a85fad949212b3e059692de =
-
-> ---------------- -------------------------- =
-
->        fail:runs  %reproduction    fail:runs
->            |             |             |    =
-
->           3:4          -75%            :4     kmsg.DHCP/BOOTP:Reply_not_f=
-or_us,op[#]xid[#]
->          %stddev     %change         %stddev
->              \          |                \  =
-
->      14321 =C2=B1  0%      -6.3%      13425 =C2=B1  0%  unixbench.score
->    1996897 =C2=B1  0%      -6.1%    1874635 =C2=B1  0%  unixbench.time.in=
-voluntary_context_switches
->  1.721e+08 =C2=B1  0%      -6.2%  1.613e+08 =C2=B1  0%  unixbench.time.mi=
-nor_page_faults
->     758.65 =C2=B1  0%      -3.0%     735.86 =C2=B1  0%  unixbench.time.sy=
-stem_time
->     387.66 =C2=B1  0%      +5.4%     408.49 =C2=B1  0%  unixbench.time.us=
-er_time
->    5950278 =C2=B1  0%      -6.2%    5583456 =C2=B1  0%  unixbench.time.vo=
-luntary_context_switches
-
-That's weird.
-
-I don't understand why the change would reduce number or minor faults.
-It should stay the same on x86-64. Rise of user_time is puzzling too.
-
-Hm. Is reproducible? Across reboot?
-
--- =
-
- Kirill A. Shutemov
-
---===============2525993050357283243==--
+--===============2736860483094170790==--
 
