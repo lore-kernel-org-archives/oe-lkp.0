@@ -1,146 +1,147 @@
-Content-Type: multipart/mixed; boundary="===============2762166373714136517=="
+Content-Type: multipart/mixed; boundary="===============4313192995927440848=="
 MIME-Version: 1.0
-From: Kirill A. Shutemov <kirill@shutemov.name>
+From: Rik van Riel <riel@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [mm] 5c0a85fad9: unixbench.score -6.3% regression
-Date: Tue, 14 Jun 2016 17:34:17 +0300
-Message-ID: <20160614143417.GC3571@node.shutemov.name>
-In-Reply-To: <20160614085728.GA2430@bbox>
+Date: Tue, 14 Jun 2016 12:07:29 -0400
+Message-ID: <1465920449.2756.12.camel@redhat.com>
+In-Reply-To: <20160614082613.GA1066@node.shutemov.name>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2762166373714136517==
+--===============4313192995927440848==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 14, 2016 at 05:57:28PM +0900, Minchan Kim wrote:
-> On Wed, Jun 08, 2016 at 11:58:11AM +0300, Kirill A. Shutemov wrote:
-> > On Wed, Jun 08, 2016 at 04:41:37PM +0800, Huang, Ying wrote:
-> > > "Huang, Ying" <ying.huang@intel.com> writes:
-> > > =
-
-> > > > "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com> writes:
-> > > >
-> > > >> On Mon, Jun 06, 2016 at 10:27:24AM +0800, kernel test robot wrote:
-> > > >>> =
-
-> > > >>> FYI, we noticed a -6.3% regression of unixbench.score due to comm=
-it:
-> > > >>> =
-
-> > > >>> commit 5c0a85fad949212b3e059692deecdeed74ae7ec7 ("mm: make faulta=
-round produce old ptes")
-> > > >>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
-t master
-> > > >>> =
-
-> > > >>> in testcase: unixbench
-> > > >>> on test machine: lituya: 16 threads Haswell High-end Desktop (i7-=
-5960X 3.0G) with 16G memory
-> > > >>> with following parameters: cpufreq_governor=3Dperformance/nr_task=
-=3D1/test=3Dshell8
-> > > >>> =
-
-> > > >>> =
-
-> > > >>> Details are as below:
-> > > >>> -----------------------------------------------------------------=
---------------------------------->
-> > > >>> =
-
-> > > >>> =
-
-> > > >>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > >>> compiler/cpufreq_governor/kconfig/nr_task/rootfs/tbox_group/test/=
-testcase:
-> > > >>>   gcc-4.9/performance/x86_64-rhel/1/debian-x86_64-2015-02-07.cgz/=
-lituya/shell8/unixbench
-> > > >>> =
-
-> > > >>> commit: =
-
-> > > >>>   4b50bcc7eda4d3cc9e3f2a0aa60e590fedf728c5
-> > > >>>   5c0a85fad949212b3e059692deecdeed74ae7ec7
-> > > >>> =
-
-> > > >>> 4b50bcc7eda4d3cc 5c0a85fad949212b3e059692de =
-
-> > > >>> ---------------- -------------------------- =
-
-> > > >>>        fail:runs  %reproduction    fail:runs
-> > > >>>            |             |             |    =
-
-> > > >>>           3:4          -75%            :4     kmsg.DHCP/BOOTP:Rep=
-ly_not_for_us,op[#]xid[#]
-> > > >>>          %stddev     %change         %stddev
-> > > >>>              \          |                \  =
-
-> > > >>>      14321 .  0%      -6.3%      13425 .  0%  unixbench.score
-> > > >>>    1996897 .  0%      -6.1%    1874635 .  0%  unixbench.time.invo=
-luntary_context_switches
-> > > >>>  1.721e+08 .  0%      -6.2%  1.613e+08 .  0%  unixbench.time.mino=
-r_page_faults
-> > > >>>     758.65 .  0%      -3.0%     735.86 .  0%  unixbench.time.syst=
-em_time
-> > > >>>     387.66 .  0%      +5.4%     408.49 .  0%  unixbench.time.user=
-_time
-> > > >>>    5950278 .  0%      -6.2%    5583456 .  0%  unixbench.time.volu=
-ntary_context_switches
-> > > >>
-> > > >> That's weird.
-> > > >>
-> > > >> I don't understand why the change would reduce number or minor fau=
-lts.
-> > > >> It should stay the same on x86-64. Rise of user_time is puzzling t=
-oo.
-> > > >
-> > > > unixbench runs in fixed time mode.  That is, the total time to run
-> > > > unixbench is fixed, but the work done varies.  So the minor_page_fa=
-ults
-> > > > change may reflect only the work done.
-> > > >
-> > > >> Hm. Is reproducible? Across reboot?
-> > > >
-> > > =
-
-> > > And FYI, there is no swap setup for test, all root file system includ=
-ing
-> > > benchmark files are in tmpfs, so no real page reclaim will be
-> > > triggered.  But it appears that active file cache reduced after the
-> > > commit.
-> > > =
-
-> > >     111331 =C2=B1  1%     -13.3%      96503 =C2=B1  0%  meminfo.Active
-> > >      27603 =C2=B1  1%     -43.9%      15486 =C2=B1  0%  meminfo.Activ=
-e(file)
-> > > =
-
-> > > I think this is the expected behavior of the commit?
+On Tue, 2016-06-14 at 11:26 +0300, Kirill A. Shutemov wrote:
+> On Mon, Jun 13, 2016 at 11:11:05PM -0700, Linus Torvalds wrote:
 > > =
 
-> > Yes, it's expected.
+> > On Mon, Jun 13, 2016 at 5:52 AM, Kirill A. Shutemov
+> > <kirill.shutemov@linux.intel.com> wrote:
+> > > =
+
+> > > On Sat, Jun 11, 2016 at 06:02:57PM -0700, Linus Torvalds wrote:
+> > > > =
+
+> > > > =
+
+> > > > I've timed it at over a thousand cycles on at least some CPU's,
+> > > > but
+> > > > that's still peanuts compared to a real page fault. It
+> > > > shouldn't be
+> > > > *that* noticeable, ie no way it's a 6% regression on its own.
+> > > Looks like setting accessed bit is the problem.
+> > Ok. I've definitely seen it as an issue, but never to the point of
+> > several percent on a real benchmark that wasn't explicitly testing
+> > that cost.
 > > =
 
-> > After the change faularound would produce old pte. It means there's more
-> > chance for these pages to be on inactive lru, unless somebody actually
-> > touch them and flip accessed bit.
+> > I reported the excessive dirty/accessed bit cost to Intel back in
+> > the
+> > P4 days, but it's apparently not been high enough for anybody to
+> > care.
+> > =
+
+> > > =
+
+> > > We spend 36% more time in page walk only, about 1% of total
+> > > userspace time.
+> > > Combining this with page walk footprint on caches, I guess we can
+> > > get to
+> > > this 3.5% score difference I see.
+> > > =
+
+> > > I'm not sure if there's anything we can do to solve the issue
+> > > without
+> > > screwing relacim logic again. :(
+> > I think we should say "screw the reclaim logic" for now, and revert
+> > commit 5c0a85fad949 for now.
+> Okay. I'll prepare the patch.
 > =
 
-> Hmm, tmpfs pages should be in anonymous LRU list and VM shouldn't scan
-> anonymous LRU list on swapless system so I really wonder why active file
-> LRU is shrunk.
+> > =
 
-Hm. Good point. I don't why we have anything on file lru if there's no
-filesystems except tmpfs.
+> > Considering how much trouble the accessed bit is on some other
+> > architectures too, I wonder if we should strive to simply not care
+> > about it, and always leaving it set. And then rely entirely on just
+> > unmapping the pages and making the "we took a page fault after
+> > unmapping" be the real activity tester.
+> > =
 
-Ying, how do you get stuff to the tmpfs?
+> > So get rid of the "if the page is young, mark it old but leave it
+> > in
+> > the page tables" logic entirely. When we unmap a page, it will
+> > always
+> > either be in the swap cache or the page cache anyway, so faulting
+> > it
+> > in again should be just a minor fault with no actual IO happening.
+> > =
+
+> > That might be less of an impact in the end - yes, the unmap and
+> > re-fault is much more expensive, but it presumably happens to much
+> > fewer pages.
+> > =
+
+> > What do you think?
+> Well, we cannot do this for anonymous memory. No swap -- no swap
+> cache, if
+> I read code correctly.
+> =
+
+> I guess it's doable for file mappings. Although I would expect
+> regressions
+> in other benchmarks. IIUC, it would require page unmapping to
+> propogate
+> page to active list, which is suboptimal.
+> =
+
+> And implications for page_idle is not clear to me.
+> =
+
+> Rik, Mel, any comments?
+
+We can clear the accessed/young bit when anon pages are moved
+from the active to the inactive list.
+
+Reclaim does not care about the young bit on active anon pages
+at all. For anon pages it uses a two hand clock algorithm, with
+only pages on the inactive list being cared about.
+
+For file pages, I believe we do look at the young bit on mapped
+pages when they reach the end of the inactive list. Again, we
+only care about the young bit on inactive pages.
+
+One option may be to count on actively used file pages actually
+being on the active list, and always set the young bit on ptes
+when the page is already active.
+
+Then we can let reclaim do its thing with the smaller number of
+pages that are on the inactive list, while doing the faster thing
+for pages that are on the active list.
+
+Does that make sense?
 
 -- =
 
- Kirill A. Shutemov
+All Rights Reversed.
 
---===============2762166373714136517==--
+
+--===============4313192995927440848==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIKCmlRRWNCQUFC
+Q0FBR0JRSlhZQ3ZCQUFvSkVNNTUzcEtFeE42RDk0MElBTHdueDRpckZRd2d0UU54UXMxN0l4amUK
+cXJra2E1ZWo0RVhWRzVBMFBtTk82OE5ORGhxVE9la2hpT3gweUd0Rjg5eGtYS0ZoVUxtbDhHa1BN
+ZldlZ2I3VgpCcXlIeXlTNHUwbVcvU0FnZFhEbitUVjZuTGpjQXAxTDkzSzRhNVNwZWZja1lYekZs
+ZmJYT2RwUCsxZnZOQTRJCmlOaWRxdEx3WVR3NmJLMTM4bDNhOWhtQmYxNWdOV05RZmUwT283UXQ2
+SFR2Y2c5RWI5YlVvYUYweDVKYUl3djgKRlNwNGF5VU9aSWdMa3RzbVpJZGRMUlNLVXZrVzQ0bmRC
+N09CNVZkTDUwaDIrTzM4Z0E3Q0N6NnFSajQ1T05CRgovVXhCNlZsVkUyeVdBNGI0RmZmbmdXd0Jr
+WmRvMlFGUzloZ01NN2JERTRYazRVWTBCaGtCQ1hyYUhFTmI5bms9Cj1SQWs4Ci0tLS0tRU5EIFBH
+UCBTSUdOQVRVUkUtLS0tLQo=
+
+--===============4313192995927440848==--
 
