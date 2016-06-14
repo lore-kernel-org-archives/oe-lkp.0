@@ -1,365 +1,144 @@
-Content-Type: multipart/mixed; boundary="===============0622189109980133297=="
+Content-Type: multipart/mixed; boundary="===============6652500130892760930=="
 MIME-Version: 1.0
-From: kernel test robot <fengguang.wu@intel.com>
+From: kernel test robot <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: [x86/uaccess] 6ce52d535e: BUG: uaccess fault at 0xffff880010d88000 with KERNEL_DS
-Date: Tue, 14 Jun 2016 11:34:29 +0800
-Message-ID: <575f7b45.+RmKk1G/mKYUSQzU%fengguang.wu@intel.com>
+Subject: [x86/uaccess] 6ce52d535e: BUG: uaccess fault at 0xffff880013588000 with KERNEL_DS
+Date: Tue, 14 Jun 2016 12:11:17 +0800
+Message-ID: <575f83e5./b2ujpeirfFbq1QJ%xiaolong.ye@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0622189109980133297==
+--===============6652500130892760930==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Greetings,
 
-0day kernel testing robot got the below dmesg and the first bad commit is
+
+FYI, we noticed the following commit:
 
 https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git x86/uaccess
+commit 6ce52d535e1adcfb44ffd9e5503081805d33aa87 ("x86/uaccess: OOPS or warn=
+ on a fault with KERNEL_DS and !pagefault_disabled()")
 
-commit 6ce52d535e1adcfb44ffd9e5503081805d33aa87
-Author:     Andrew Lutomirski <luto@kernel.org>
-AuthorDate: Tue May 24 15:48:44 2016 -0700
-Commit:     Kees Cook <keescook@chromium.org>
-CommitDate: Mon Jun 13 13:30:53 2016 -0700
 
-    x86/uaccess: OOPS or warn on a fault with KERNEL_DS and !pagefault_disa=
-bled()
-    =
+on test machine: vm-kbuild-yocto-x86_64: 1 threads qemu-system-x86_64 -enab=
+le-kvm -cpu SandyBridge with 320M memory
 
-    If someone calls set_fs(KERNEL_DS), then they are responsible for
-    making sure that whatever addresses are accessed are safe.  If they
-    get it wrong on a kernel address, OOPS.  If they get it wrong on a user
-    address, warn.
-    =
+caused below changes:
 
-    This will make it harder to exploit bugs in which user code controls
-    a pointer accessed with KERNEL_DS: an attacker will OOPS if they
-    access an unmapped page, and they'll therefore need luck or a kASLR
-    bypass in addition.
-    =
 
-    To keep probe_kernel_read(), probe_kernel_write(), and
-    probe_kernel_address() working, skip this check if
-    pagefault_disabled().
-    =
++------------------------------------------+------------+------------+
+|                                          | 0390fec2cd | 6ce52d535e |
++------------------------------------------+------------+------------+
+| boot_successes                           | 63         | 0          |
+| boot_failures                            | 0          | 48         |
+| BUG:uaccess_fault_at#with_KERNEL_DS      | 0          | 48         |
+| BUG:unable_to_handle_kernel              | 0          | 48         |
+| Oops                                     | 0          | 48         |
+| RIP:copy_mount_options                   | 0          | 48         |
+| Kernel_panic-not_syncing:Fatal_exception | 0          | 48         |
+| backtrace:SyS_mount                      | 0          | 48         |
+| backtrace:devtmpfsd                      | 0          | 48         |
++------------------------------------------+------------+------------+
 
-    Signed-off-by: Andy Lutomirski <luto@kernel.org>
 
-+------------------------------------------+------------+------------+-----=
--------+
-|                                          | 0390fec2cd | 6ce52d535e | 900b=
-f5ce72 |
-+------------------------------------------+------------+------------+-----=
--------+
-| boot_successes                           | 63         | 0          | 0   =
-       |
-| boot_failures                            | 0          | 48         | 21  =
-       |
-| BUG:uaccess_fault_at#with_KERNEL_DS      | 0          | 48         | 21  =
-       |
-| BUG:unable_to_handle_kernel              | 0          | 48         | 21  =
-       |
-| Oops                                     | 0          | 48         | 21  =
-       |
-| RIP:copy_mount_options                   | 0          | 48         | 21  =
-       |
-| Kernel_panic-not_syncing:Fatal_exception | 0          | 48         | 21  =
-       |
-| backtrace:SyS_mount                      | 0          | 48         | 21  =
-       |
-| backtrace:devtmpfsd                      | 0          | 48         | 21  =
-       |
-+------------------------------------------+------------+------------+-----=
--------+
 
-[    0.673494] ..... calibration result: 3999913
-[    0.673982] ..... CPU clock speed is 2693.1491 MHz.
-[    0.674518] ..... host bus clock speed is 999.3913 MHz.
-[    0.675362] BUG: uaccess fault at 0xffff880010d88000 with KERNEL_DS
-[    0.676050] BUG: unable to handle kernel paging request at ffff880010d88=
+[    0.521415]  apic 0 pin 23 not connected
+[    0.522223] ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=3D-1 pin2=3D=
+-1
+[    0.523489] TSC deadline timer enabled
+[    0.524471] BUG: uaccess fault at 0xffff880013588000 with KERNEL_DS
+[    0.525442] BUG: unable to handle kernel paging request at ffff880013588=
 000
-[    0.676929] IP: [<ffffffff811b1448>] copy_mount_options+0xde/0x18b
-[    0.677766] PGD 42d3067 PUD 42d4067 PMD 1137a067 PTE 8000000010d88060
-[    0.678841] Oops: 0000 [#1] DEBUG_PAGEALLOC
-[    0.679318] CPU: 0 PID: 9 Comm: kdevtmpfs Not tainted 4.7.0-rc3-00007-g6=
+[    0.526588] IP: [<ffffffff811b1448>] copy_mount_options+0xde/0x18b
+[    0.527571] PGD 42d3067 PUD 42d4067 PMD 13966067 PTE 8000000013588060
+[    0.528658] Oops: 0000 [#1] DEBUG_PAGEALLOC
+[    0.529304] CPU: 0 PID: 9 Comm: kdevtmpfs Not tainted 4.7.0-rc3-00007-g6=
 ce52d5 #2
-[    0.680103] task: ffff880010d80000 ti: ffff880010d84000 task.ti: ffff880=
-010d84000
-[    0.680919] task.addr_limit: 0xffffffffffffffff
-[    0.681416] RIP: 0010:[<ffffffff811b1448>]  [<ffffffff811b1448>] copy_mo=
+[    0.530482] task: ffff880013580000 ti: ffff880013584000 task.ti: ffff880=
+013584000
+[    0.531635] task.addr_limit: 0xffffffffffffffff
+[    0.532331] RIP: 0010:[<ffffffff811b1448>]  [<ffffffff811b1448>] copy_mo=
 unt_options+0xde/0x18b
-[    0.682308] RSP: 0000:ffff880010d87d70  EFLAGS: 00010246
-[    0.682877] RAX: 0000000000000000 RBX: 0000000000001000 RCX: ffff880010d=
+[    0.533683] RSP: 0000:ffff880013587d70  EFLAGS: 00010246
+[    0.534506] RAX: 0000000000000000 RBX: 0000000000001000 RCX: ffff8800135=
 87a50
-[    0.683661] RDX: ffff880010d80000 RSI: 8000000010d73163 RDI: 00000000000=
+[    0.535596] RDX: ffff880013580000 RSI: 8000000013573163 RDI: 00000000000=
 00282
-[    0.684459] RBP: ffff880010d87da0 R08: 0000000000001000 R09: 00000000000=
+[    0.536687] RBP: ffff880013587da0 R08: 0000000000001000 R09: 00000000000=
 00000
-[    0.685262] R10: ffff880010d87b20 R11: 000000000000066c R12: 00000000000=
+[    0.537778] R10: ffff880013587b20 R11: 000000000000066d R12: 00000000000=
 00e06
-[    0.686017] R13: ffff880010d73000 R14: ffff880010d87e06 R15: ffff880010d=
+[    0.538871] R13: ffff880013573000 R14: ffff880013587e06 R15: ffff8800135=
 88000
-[    0.686799] FS:  0000000000000000(0000) GS:ffffffff82223000(0000) knlGS:=
+[    0.539965] FS:  0000000000000000(0000) GS:ffffffff82223000(0000) knlGS:=
 0000000000000000
-[    0.687687] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    0.688304] CR2: ffff880010d88000 CR3: 000000000220d000 CR4: 00000000000=
-006b0
-[    0.688979] Stack:
-[    0.689218]  ffff880010d731fa ffffffff81f7e280 ffff880010d4f7f0 ffff8800=
-10d4f918
-[    0.690086]  ffff880010d87e06 0000000000008000 ffff880010d87dd8 ffffffff=
+[    0.541217] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.542101] CR2: ffff880013588000 CR3: 000000000220d000 CR4: 00000000000=
+406b0
+[    0.543189] Stack:
+[    0.543518]  ffff8800135731fa ffffffff81f7e280 ffff88001354f7f0 ffff8800=
+1354f918
+[    0.544735]  ffff880013587e06 0000000000008000 ffff880013587dd8 ffffffff=
 811b24cb
-[    0.690955]  ffff880010d1bee4 ffff880010d1bdb0 ffff880010d1bee4 ffffffff=
+[    0.545955]  ffff88001351bee4 ffff88001351bdb0 ffff88001351bee4 ffffffff=
 815c512d
-[    0.691829] Call Trace:
-[    0.692110]  [<ffffffff811b24cb>] SyS_mount+0x70/0xd5
-[    0.692680]  [<ffffffff815c512d>] ? handle_create+0x237/0x237
-[    0.693313]  [<ffffffff815c5192>] devtmpfsd+0x65/0x1d2
-[    0.693878]  [<ffffffff81b61451>] ? __schedule+0x541/0x615
-[    0.694494]  [<ffffffff815c512d>] ? handle_create+0x237/0x237
-[    0.695131]  [<ffffffff810ce680>] kthread+0xdd/0xec
-[    0.695672]  [<ffffffff81014a13>] ? sched_clock+0x9/0xb
-[    0.696256]  [<ffffffff810d3600>] ? finish_task_switch+0xf4/0x18b
-[    0.696925]  [<ffffffff81b65b8f>] ret_from_fork+0x1f/0x40
-[    0.697528]  [<ffffffff810ce5a3>] ? init_completion+0x2d/0x2d
-[    0.698136] Code: ff ff 72 0a e8 02 bd f6 ff 4d 39 e7 73 0a e8 f8 bc f6 =
+[    0.547170] Call Trace:
+[    0.547570]  [<ffffffff811b24cb>] SyS_mount+0x70/0xd5
+[    0.548358]  [<ffffffff815c512d>] ? handle_create+0x237/0x237
+[    0.549238]  [<ffffffff815c5192>] devtmpfsd+0x65/0x1d2
+[    0.550041]  [<ffffffff81b61451>] ? __schedule+0x541/0x615
+[    0.550911]  [<ffffffff815c512d>] ? handle_create+0x237/0x237
+[    0.551802]  [<ffffffff810ce680>] kthread+0xdd/0xec
+[    0.552565]  [<ffffffff81014a13>] ? sched_clock+0x9/0xb
+[    0.553380]  [<ffffffff810d3600>] ? finish_task_switch+0xf4/0x18b
+[    0.554319]  [<ffffffff81b65b8f>] ret_from_fork+0x1f/0x40
+[    0.555151]  [<ffffffff810ce5a3>] ? init_completion+0x2d/0x2d
+[    0.556034] Code: ff ff 72 0a e8 02 bd f6 ff 4d 39 e7 73 0a e8 f8 bc f6 =
 ff 49 89 dc eb 5b 4c 89 6d d0 49 89 dc eb 3a e8 e5 bc f6 ff 66 66 90 31 c0 =
 <45> 8a 3f 66 66 90 85 c0 74 12 e8 d1 bc f6 ff 48 8b 7d d0 44 89 =
 
-[    0.701103] RIP  [<ffffffff811b1448>] copy_mount_options+0xde/0x18b
-[    0.701808]  RSP <ffff880010d87d70>
-[    0.702200] CR2: ffff880010d88000
-[    0.702577] ---[ end trace 956b05d5d88712cd ]---
-[    0.703087] Kernel panic - not syncing: Fatal exception
-
-git bisect start 900bf5ce72779f2c214a11ae92c98c25d8f552fa 5edb56491d4812c42=
-175980759da53388e5d86f5 --
-git bisect  bad 98d47fa03585a7711f22a96aa58b2b6b810966d8  # 08:10      0-  =
-   23  Merge 'linux-review/Cyrille-Pitchen/mtd-spi-nor-add-driver-for-Atmel=
--QSPI-controller/20160613-232844' into devel-spot-201606140509
-git bisect  bad 9aae6c7ee5821fa7d2add46538bdbabde2742018  # 08:18      0-  =
-   24  Merge 't-kristo-pm/4.7-rc1-hwmod-clks' into devel-spot-201606140509
-git bisect  bad 8494ea2c303f463ab46f2814841afa724527b5ca  # 08:32      0-  =
-   24  Merge 'kees/lkdtm/tip' into devel-spot-201606140509
-git bisect  bad c68e7d756669e9df5713e74178c992ddaee63f8b  # 08:51      0-  =
-   22  Merge 'kees/sysctl/writes_strict' into devel-spot-201606140509
-git bisect good 4f479f74fac8eb689316cb060c61187487e4bbb6  # 09:05     22+  =
-    0  Merge 'linux-review/Tejun-Heo/percpu-fixes-for-v4-7-rc3/20160614-050=
-128' into devel-spot-201606140509
-git bisect good 1bcbfedb65920c7a01272652374f0c000c3da604  # 09:19     22+  =
-    2  Merge 'linux-review/Arnd-Bergmann/lustre-hide-call-to-Posix-ACL-in-i=
-fdef/20160614-044454' into devel-spot-201606140509
-git bisect good 547c116dd928ce9cd83f3e8daf75290130374ec8  # 09:34     22+  =
-    1  Merge 'linux-review/Arnd-Bergmann/clocksource-nps-fix-nps_timer_init=
--return-value/20160614-044325' into devel-spot-201606140509
-git bisect  bad dc8b9cb37ebbba72aa824840e9b4266f0bebf8be  # 09:39      0-  =
-   22  Merge 'kees/x86/uaccess' into devel-spot-201606140509
-git bisect good 646eaeee64acf38566bbce4e812cf66f798b813c  # 09:47     22+  =
-    1  x86/dumpstack: If addr_limit is non-default, display it
-git bisect good 0390fec2cd5dce3f813f5752fe51538aaa94ce14  # 10:01     22+  =
-    0  x86/uaccess: Don't fix up USER_DS uaccess faults to kernel addresses
-git bisect  bad 6ce52d535e1adcfb44ffd9e5503081805d33aa87  # 10:06      0-  =
-    4  x86/uaccess: OOPS or warn on a fault with KERNEL_DS and !pagefault_d=
-isabled()
-# first bad commit: [6ce52d535e1adcfb44ffd9e5503081805d33aa87] x86/uaccess:=
- OOPS or warn on a fault with KERNEL_DS and !pagefault_disabled()
-git bisect good 0390fec2cd5dce3f813f5752fe51538aaa94ce14  # 10:08     63+  =
-    0  x86/uaccess: Don't fix up USER_DS uaccess faults to kernel addresses
-# extra tests with CONFIG_DEBUG_INFO_REDUCED
-git bisect  bad 6ce52d535e1adcfb44ffd9e5503081805d33aa87  # 10:19      0-  =
-   66  x86/uaccess: OOPS or warn on a fault with KERNEL_DS and !pagefault_d=
-isabled()
-# extra tests on HEAD of linux-devel/devel-spot-201606140509
-git bisect  bad 900bf5ce72779f2c214a11ae92c98c25d8f552fa  # 10:19      0-  =
-   21  0day head guard for 'devel-spot-201606140509'
-# extra tests on tree/branch kees/x86/uaccess
-git bisect  bad 6ce52d535e1adcfb44ffd9e5503081805d33aa87  # 10:20      0-  =
-   26  x86/uaccess: OOPS or warn on a fault with KERNEL_DS and !pagefault_d=
-isabled()
-# extra tests with first bad commit reverted
-git bisect good fa0d9a487704c781a00726f6405f35103977c3f4  # 10:30     66+  =
-    0  Revert "x86/uaccess: OOPS or warn on a fault with KERNEL_DS and !pag=
-efault_disabled()"
-# extra tests on tree/branch linus/master
-git bisect good 5edb56491d4812c42175980759da53388e5d86f5  # 10:33     66+  =
-   19  Linux 4.7-rc3
-# extra tests on tree/branch linux-next/master
-git bisect good 8f6027f7e808ed7c1fd8c8d37fc7a5076c683c4f  # 11:34     60+  =
-    0  Add linux-next specific files for 20160609
+[    0.560326] RIP  [<ffffffff811b1448>] copy_mount_options+0xde/0x18b
+[    0.561325]  RSP <ffff880013587d70>
+[    0.561871] CR2: ffff880013588000
+[    0.562401] ---[ end trace 3c4cbff2ef96e4e2 ]---
+[    0.563111] Kernel panic - not syncing: Fatal exception
 
 
-This script may reproduce the error.
+FYI, raw QEMU command line is:
 
-----------------------------------------------------------------------------
-#!/bin/bash
+	qemu-system-x86_64 -enable-kvm -cpu SandyBridge -kernel /pkg/linux/x86_64-=
+randconfig-s1-06140547/gcc-6/6ce52d535e1adcfb44ffd9e5503081805d33aa87/vmlin=
+uz-4.7.0-rc3-00007-g6ce52d5 -append 'root=3D/dev/ram0 user=3Dlkp job=3D/lkp=
+/scheduled/vm-kbuild-yocto-x86_64-39/rand_boot-1-yocto-minimal-x86_64.cgz-x=
+86_64-randconfig-s1-06140547-6ce52d535e1adcfb44ffd9e5503081805d33aa87-20160=
+614-75208-1fm6u3i-0.yaml~ ARCH=3Dx86_64 kconfig=3Dx86_64-randconfig-s1-0614=
+0547 branch=3Dlinux-devel/devel-spot-201606140509 commit=3D6ce52d535e1adcfb=
+44ffd9e5503081805d33aa87 BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-s1-06140=
+547/gcc-6/6ce52d535e1adcfb44ffd9e5503081805d33aa87/vmlinuz-4.7.0-rc3-00007-=
+g6ce52d5 max_uptime=3D600 RESULT_ROOT=3D/result/boot/1/vm-kbuild-yocto-x86_=
+64/yocto-minimal-x86_64.cgz/x86_64-randconfig-s1-06140547/gcc-6/6ce52d535e1=
+adcfb44ffd9e5503081805d33aa87/0 LKP_SERVER=3Dinn earlyprintk=3DttyS0,115200=
+ systemd.log_level=3Derr debug apic=3Ddebug sysrq_always_enabled rcupdate.r=
+cu_cpu_stall_timeout=3D100 panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dp=
+anic oops=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 console=3DttyS0,11520=
+0 console=3Dtty0 vga=3Dnormal rw ip=3D::::vm-kbuild-yocto-x86_64-39::dhcp d=
+rbd.minor_count=3D8'  -initrd /fs/sdh1/initrd-vm-kbuild-yocto-x86_64-39 -m =
+320 -smp 1 -device e1000,netdev=3Dnet0 -netdev user,id=3Dnet0 -boot order=
+=3Dnc -no-reboot -watchdog i6300esb -rtc base=3Dlocaltime -drive file=3D/fs=
+/sdh1/disk0-vm-kbuild-yocto-x86_64-39,media=3Ddisk,if=3Dvirtio -pidfile /de=
+v/shm/kboot/pid-vm-kbuild-yocto-x86_64-39 -serial file:/dev/shm/kboot/seria=
+l-vm-kbuild-yocto-x86_64-39 -daemonize -display none -monitor null =
 
-kernel=3D$1
 
-kvm=3D(
-	qemu-system-x86_64
-	-enable-kvm
-	-cpu kvm64
-	-kernel $kernel
-	-m 300
-	-smp 2
-	-device e1000,netdev=3Dnet0
-	-netdev user,id=3Dnet0
-	-boot order=3Dnc
-	-no-reboot
-	-watchdog i6300esb
-	-rtc base=3Dlocaltime
-	-serial stdio
-	-display none
-	-monitor null =
 
-)
 
-append=3D(
-	hung_task_panic=3D1
-	earlyprintk=3DttyS0,115200
-	systemd.log_level=3Derr
-	debug
-	apic=3Ddebug
-	sysrq_always_enabled
-	rcupdate.rcu_cpu_stall_timeout=3D100
-	panic=3D-1
-	softlockup_panic=3D1
-	nmi_watchdog=3Dpanic
-	oops=3Dpanic
-	load_ramdisk=3D2
-	prompt_ramdisk=3D0
-	console=3DttyS0,115200
-	console=3Dtty0
-	vga=3Dnormal
-	root=3D/dev/ram0
-	rw
-	drbd.minor_count=3D8
-)
 
-"${kvm[@]}" --append "${append[*]}"
-----------------------------------------------------------------------------
 
----
-0-DAY kernel test infrastructure                Open Source Technology Cent=
-er
-https://lists.01.org/pipermail/lkp                          Intel Corporati=
-on
+Thanks,
+Kernel Test Robot
 
---===============0622189109980133297==
-Content-Type: application/gzip
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="2.gz"
-
-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
-tGAAAA==
---===============0622189109980133297==
+--===============6652500130892760930==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -1811,5 +1590,105 @@ UV9QT0xMPXkKIyBDT05GSUdfU0dfU1BMSVQgaXMgbm90IHNldAojIENPTkZJR19TR19QT09MIGlz
 IG5vdCBzZXQKQ09ORklHX0FSQ0hfSEFTX1NHX0NIQUlOPXkKQ09ORklHX0FSQ0hfSEFTX1BNRU1f
 QVBJPXkKQ09ORklHX0FSQ0hfSEFTX01NSU9fRkxVU0g9eQo=
 
---===============0622189109980133297==--
+--===============6652500130892760930==
+Content-Type: application/octet-stream
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="dmesg.xz"
+
+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
+--===============6652500130892760930==--
 
