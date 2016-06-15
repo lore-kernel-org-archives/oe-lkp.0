@@ -1,42 +1,45 @@
-Content-Type: multipart/mixed; boundary="===============3120269312372109264=="
+Content-Type: multipart/mixed; boundary="===============6888687839630324107=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@alien8.de>
+From: Andy Lutomirski <luto@amacapital.net>
 To: lkp@lists.01.org
 Subject: Re: [x86] 5ac0c41bf3: WARNING: CPU: 0 PID: 0 at arch/x86/mm/extable.c:50 ex_handler_rdmsr_unsafe
-Date: Wed, 15 Jun 2016 20:07:22 +0200
-Message-ID: <20160615180722.GG30309@pd.tnic>
-In-Reply-To: <CALCETrVcw+t+w0T6FmXffY3Y=XHUpA0JUgzzPOyKybHXyOPa+Q@mail.gmail.com>
+Date: Wed, 15 Jun 2016 11:12:37 -0700
+Message-ID: <CALCETrUoV9AbpTaQa_TmnEncogsMRmVvpyX0pBp6gxy8252JUw@mail.gmail.com>
+In-Reply-To: <20160615180722.GG30309@pd.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3120269312372109264==
+--===============6888687839630324107==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 15, 2016 at 10:55:34AM -0700, Andy Lutomirski wrote:
-> Isn't it this one?
+On Wed, Jun 15, 2016 at 11:07 AM, Borislav Petkov <bp@alien8.de> wrote:
+> On Wed, Jun 15, 2016 at 10:55:34AM -0700, Andy Lutomirski wrote:
+>> Isn't it this one?
+>
+> Yes, it is.
+>
+>> I'm not.  If %pF points at some silly helper, we still want the frames b=
+elow it.
+>
+> Why silly helper? It points to the rIP where the *MSR instruction is.
+> Can't get more precise than that.
 
-Yes, it is.
+A hypothetical helper.
 
-> I'm not.  If %pF points at some silly helper, we still want the frames be=
-low it.
+void do_thing(unsigned long msr)
+{
+  rdmsr(...);
+}
 
-Why silly helper? It points to the rIP where the *MSR instruction is.
-Can't get more precise than that.
+void actual_problem(void)
+{
+  do_thing(0xbaadc0de);
+}
 
-And yes, %pF is better:
+I want to see actual_problem in the log.
 
-[    0.030879] unchecked MSR access error: RDMSR from 0x1b0 at rIP: 0xfffff=
-fff81026d9f (init_intel_energy_perf.part.3+0xf/0xd0)
+--Andy
 
-Ok, I'll send a patch.
-
--- =
-
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
-
---===============3120269312372109264==--
+--===============6888687839630324107==--
 
