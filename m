@@ -1,77 +1,96 @@
-Content-Type: multipart/mixed; boundary="===============0313303263420439271=="
+Content-Type: multipart/mixed; boundary="===============1405336997877703828=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@amacapital.net>
+From: Borislav Petkov <bp@alien8.de>
 To: lkp@lists.01.org
 Subject: Re: [x86] 5ac0c41bf3: WARNING: CPU: 0 PID: 0 at arch/x86/mm/extable.c:50 ex_handler_rdmsr_unsafe
-Date: Wed, 15 Jun 2016 10:23:39 -0700
-Message-ID: <CALCETrVSwjcjZG1HWnwrs1j3iLTpUgEdt3xsQQ=PG8XDWRgobw@mail.gmail.com>
-In-Reply-To: <20160615142532.GE32588@pd.tnic>
+Date: Wed, 15 Jun 2016 19:50:52 +0200
+Message-ID: <20160615175052.GE30309@pd.tnic>
+In-Reply-To: <CALCETrVSwjcjZG1HWnwrs1j3iLTpUgEdt3xsQQ=PG8XDWRgobw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0313303263420439271==
+--===============1405336997877703828==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Jun 15, 2016 7:25 AM, "Borislav Petkov" <bp@alien8.de> wrote:
->
-> On Wed, Jun 15, 2016 at 08:25:57PM +0800, kernel test robot wrote:
-> > [    0.556833] Mountpoint-cache hash table entries: 1024 (order: 0, 409=
-6 bytes)
-> > [    0.559888] ------------[ cut here ]------------
-> > [    0.559888] ------------[ cut here ]------------
-> > [    0.561405] WARNING: CPU: 0 PID: 0 at arch/x86/mm/extable.c:50 ex_ha=
-ndler_rdmsr_unsafe+0x44/0x70
-> > [    0.561405] WARNING: CPU: 0 PID: 0 at arch/x86/mm/extable.c:50 ex_ha=
-ndler_rdmsr_unsafe+0x44/0x70
-> > [    0.567649] unchecked MSR access error: RDMSR from 0x1b0
-> > [    0.567649] unchecked MSR access error: RDMSR from 0x1b0
->
-> Btw, Andy, this error message is completely useless - I
-> wanna know *where* the RDMSR in the code is, not point me at
-> ex_handler_rdmsr_unsafe().
+On Wed, Jun 15, 2016 at 10:23:39AM -0700, Andy Lutomirski wrote:
+> Did the "Call Trace" not show up?
 
-Did the "Call Trace" not show up?
+It did, but it is bollocks too:
 
->
-> IOW, I wanna convert the current thing into this:
->
-> [    0.028003] unchecked MSR access error: RDMSR from 0x1b0 at rIP: 0xfff=
-fffff81026d9f
-> [    0.030343] ENERGY_PERF_BIAS: Set to 'normal', was 'performance'
-> [    0.032003] ENERGY_PERF_BIAS: View and update with x86_energy_perf_pol=
-icy(8)
-> [    0.036003] unchecked MSR access error: WRMSR to 0x1b0 (tried to write=
- 0x0000000000000006) at rIP: 0xffffffff81026de1
->
-> i.e.,
->
-> ---
-> diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
-> index 4bb53b89f3c5..2028a5ad3433 100644
-> --- a/arch/x86/mm/extable.c
-> +++ b/arch/x86/mm/extable.c
-> @@ -46,8 +46,8 @@ EXPORT_SYMBOL(ex_handler_ext);
->  bool ex_handler_rdmsr_unsafe(const struct exception_table_entry *fixup,
->                              struct pt_regs *regs, int trapnr)
->  {
-> -       WARN_ONCE(1, "unchecked MSR access error: RDMSR from 0x%x\n",
-> -                 (unsigned int)regs->cx);
-> +       pr_warn_once("unchecked MSR access error: RDMSR from 0x%x at rIP:=
- 0x%lx\n",
-> +                    (unsigned int)regs->cx, regs->ip);
+[    0.020003] ------------[ cut here ]------------
+[    0.024009] WARNING: CPU: 0 PID: 0 at arch/x86/mm/extable.c:50 ex_handle=
+r_rdmsr_unsafe+0x6f/0x80
+[    0.026455] unchecked MSR access error: RDMSR from 0x1b0 at rIP: 0xfffff=
+fff81026d9f
+[    0.028008] Modules linked in:
+[    0.032008] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.7.0-rc3+ #26
+[    0.035185] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS =
+1.7.5-20140531_083030-gandalf 04/01/2014
+[    0.036000]  0000000000000000 ffffffff81c03d20 ffffffff81298b65 ffffffff=
+81c03d70
+[    0.036000]  0000000000000000 ffffffff81c03d60 ffffffff81050fdb 00000032=
+00000001
+[    0.036000]  ffffffff81c03e38 ffffffff816691a0 0000000000000000 ffffffff=
+81d662e0
+[    0.036000] Call Trace:
+[    0.036000]  [<ffffffff81298b65>] dump_stack+0x67/0x92
+[    0.036000]  [<ffffffff81050fdb>] __warn+0xcb/0xf0
+[    0.036000]  [<ffffffff8105104f>] warn_slowpath_fmt+0x4f/0x60
+[    0.036000]  [<ffffffff81026d9f>] ? init_intel_energy_perf.part.3+0xf/0x=
+d0
+[    0.036000]  [<ffffffff810448ef>] ex_handler_rdmsr_unsafe+0x6f/0x80
+[    0.036000]  [<ffffffff810449c9>] fixup_exception+0x39/0x50
+[    0.036000]  [<ffffffff8101658f>] do_general_protection+0x7f/0x150
+[    0.036000]  [<ffffffff816649bf>] general_protection+0x1f/0x30
+[    0.036000]  [<ffffffff81026d9f>] ? init_intel_energy_perf.part.3+0xf/0x=
+d0
+[    0.036000]  [<ffffffff8102731f>] init_intel+0xdf/0x2b0
+[    0.036000]  [<ffffffff8102597d>] identify_cpu+0x2ed/0x4f0
+[    0.036000]  [<ffffffff81cdc1b8>] identify_boot_cpu+0x10/0x7a
+[    0.036000]  [<ffffffff81cdc256>] check_bugs+0x9/0x2d
+[    0.036000]  [<ffffffff81cd1ece>] start_kernel+0x3bd/0x3d9
+[    0.036000]  [<ffffffff81cd1294>] x86_64_start_reservations+0x2f/0x31
+[    0.036000]  [<ffffffff81cd13fe>] x86_64_start_kernel+0x168/0x176
+[    0.036007] ---[ end trace df7f3cc4a52dae6d ]---
 
-I have no fundamental issue adding ip to this, but let's keep it
-WARN_ONCE (so we notice loudly and so we get the call trace) and use
-%pF or whatever it's called instead of %lx.
+> I have no fundamental issue adding ip to this, but let's keep it
+> WARN_ONCE (so we notice loudly and so we get the call trace)
 
-Also, I want to add a variant of WARN that takes pt_regs as parameters
-at some point.  You'd get much better output.  Even without that, Josh
-Poimboeuf and I (mainly Josh) have some work slowly afoot that will
-greatly improve call trace quality when crossing an exception
-boundary.
+Bah, I'm sceptical about that.
 
---Andy
+> and use %pF or whatever it's called instead of %lx.
 
---===============0313303263420439271==--
+Ok.
+
+> Also, I want to add a variant of WARN that takes pt_regs as parameters
+> at some point.  You'd get much better output.  Even without that, Josh
+> Poimboeuf and I (mainly Josh) have some work slowly afoot that will
+> greatly improve call trace quality when crossing an exception
+> boundary.
+
+Yes, because that call trace is almost worthless to me as the function
+which actually causes it - init_intel_energy_perf - is not even on the
+current stack frame.
+
+And we don't really need the whole trace - we just need to be able to
+say:
+
+unchecked MSR access error: RDMSR from 0x1b0 at rIP: 0xffffffff81026d9f (in=
+it_intel_energy_perf.part.3)
+
+and that function name in there could probably be looked up with
+kallsyms by doing something like "get me the function name containing
+this rIP".
+
+ (I haven't even looked whether that's doable but it should be).
+
+-- =
+
+Regards/Gruss,
+    Boris.
+
+ECO tip #101: Trim your mails when you reply.
+
+--===============1405336997877703828==--
 
