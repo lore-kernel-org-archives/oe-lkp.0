@@ -1,57 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============1108557973698072920=="
+Content-Type: multipart/mixed; boundary="===============0669119953934710134=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@amacapital.net>
+From: Oleg Nesterov <oleg@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: kthread_stop insanity (Re: [[DEBUG] force] 2642458962: BUG: unable to handle kernel paging request at ffffc90000997f18)
-Date: Mon, 27 Jun 2016 08:44:09 -0700
-Message-ID: <CALCETrX0po3cEaOFByNsTLf-f_j=VxhzOLPfxOA3oP=NLVTGBg@mail.gmail.com>
-In-Reply-To: <20160627145443.GA17145@redhat.com>
+Date: Mon, 27 Jun 2016 19:00:10 +0200
+Message-ID: <20160627170010.GA21628@redhat.com>
+In-Reply-To: <CALCETrX0po3cEaOFByNsTLf-f_j=VxhzOLPfxOA3oP=NLVTGBg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1108557973698072920==
+--===============0669119953934710134==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 27, 2016 at 7:54 AM, Oleg Nesterov <oleg@redhat.com> wrote:
-> On 06/26, Andy Lutomirski wrote:
->>
->> kthread_stop is *sick*.
->>
->>     struct kthread self;
->>
->> ...
->>
->>     current->vfork_done =3D &self.exited;
->>
->> ...
->>
->>     do_exit(ret);
->>
->> And then some other thread goes and waits for the completion, which is
->> *on the stack*, which, in any sane world (e.g. with my series
->> applied), is long gone by then.
+On 06/27, Andy Lutomirski wrote:
 >
-> Yes, I forgot this when we discussed the problems with ti->flags/etc...
+> On Mon, Jun 27, 2016 at 7:54 AM, Oleg Nesterov <oleg@redhat.com> wrote:
+> >
+> >> Is there seriously no way to directly wait for a struct task_struct to
+> >> exit?  Could we, say, kmalloc the completion (or maybe even the whole
+> >> struct kthread) and (ick!) hang it off ->vfork_done?
+> >
+> > Sure we can... And yes, I think we need to alloc the whole struct kthre=
+ad.
+> > Just another (unfortunate) complication, the current code is simple.
+> >
+> > And probably kthread/kthread_stop should switch to task_work_exit().
 >
->> But this is broken even without any changes: since when is gcc
->> guaranteed to preserve the stack contents when a function ends with a
->> sibling call, let alone with a __noreturn call?
->
-> I don't know if gcc can actually drop the stack frame in this case,
-> but even if it can this looks fixeable.
->
->> Is there seriously no way to directly wait for a struct task_struct to
->> exit?  Could we, say, kmalloc the completion (or maybe even the whole
->> struct kthread) and (ick!) hang it off ->vfork_done?
->
-> Sure we can... And yes, I think we need to alloc the whole struct kthread.
-> Just another (unfortunate) complication, the current code is simple.
->
-> And probably kthread/kthread_stop should switch to task_work_exit().
+> Want to send a patch?  I could do it, but you understand this code
+> much better than I do.
 
-Want to send a patch?  I could do it, but you understand this code
-much better than I do.
+Well, I'll try to do this tomorrow unless you do it.
 
---===============1108557973698072920==--
+The problem is not the wait_for_completion(vfork_done) in kthread_stop(),
+we can avoid this immediately if we change it to use task_work_add().
+
+The problem is to_live_kthread(). And damn, it seems to me that in the
+long term we can simpy kill "struct kthread" altogether. All we need is
+kthread_data() and this is just a pointer. flags,cpu,parked should go
+into smp_hotplug_thread.
+
+But this needs changes, so meanwhile we will have to kmalloc() it and
+free in free_task().
+
+Or perhaps you can simply move "struct kthread" into task_struct as as
+temporary/ugly but trivial fix, then we can think more.
+
+Oleg.
+
+
+--===============0669119953934710134==--
 
