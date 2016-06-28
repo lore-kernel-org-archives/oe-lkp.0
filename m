@@ -1,35 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============4758734268666501879=="
+Content-Type: multipart/mixed; boundary="===============0576004223521400378=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: kthread_stop insanity (Re: [[DEBUG] force] 2642458962: BUG: unable to handle kernel paging request at ffffc90000997f18)
-Date: Tue, 28 Jun 2016 14:35:15 -0700
-Message-ID: <CA+55aFx1Df57M+vZL=_RTOtUYB7SK-A7Wt29mj0S=YTK6H+bSQ@mail.gmail.com>
-In-Reply-To: <CALCETrU90SiCttWhghVfwjp_kii=eB1UuKLQ0_M76JxDjpQNzA@mail.gmail.com>
+Date: Tue, 28 Jun 2016 14:40:53 -0700
+Message-ID: <CA+55aFwiVYfFfTjN5j-C6cwA1z3hkCaq7A+hqaW4dG4Yon4Saw@mail.gmail.com>
+In-Reply-To: <CA+55aFx1Df57M+vZL=_RTOtUYB7SK-A7Wt29mj0S=YTK6H+bSQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4758734268666501879==
+--===============0576004223521400378==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 28, 2016 at 2:21 PM, Andy Lutomirski <luto@amacapital.net> wr=
-ote:
+On Tue, Jun 28, 2016 at 2:35 PM, Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+> On Tue, Jun 28, 2016 at 2:21 PM, Andy Lutomirski <luto@amacapital.net> =
+wrote:
 >
->  Or are you
-> suggesting that we actually make a list somewhere of stacks that are
-> nominally unused but are still around for RCU's benefit and then
-> scavenge from that lest when we need a new stack?
+>> If so, that seems considerably more complicated than just adding a refer=
+ence count.
+>
+> Fair enough.
 
-Yes. We'd have to make our own list (rather than just use the RCU list
-itself where everything goes), but..
+Ahh, and if you put the reference count just in the task_struct (next
+to the ->stack pointer), then I guess that's particularly trivial.
 
-> If so, that seems considerably more complicated than just adding a refere=
-nce count.
+Then try_get_task_stack(tsk) becomes
 
-Fair enough.
+     void *try_get_task_stack(struct task_struct *tsk)
+     {
+          void *stack =3D tsk->stack;
+          if (!atomic_inc_not_zero(&tsk->stackref))
+               stack =3D NULL;
+          return stack;
+     }
 
-             Linus
+ok, color me convinced.
 
---===============4758734268666501879==--
+               Linus
+
+--===============0576004223521400378==--
 
