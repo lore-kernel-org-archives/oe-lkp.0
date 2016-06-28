@@ -1,34 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============8046469490657769878=="
+Content-Type: multipart/mixed; boundary="===============0124044892362584071=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: kthread_stop insanity (Re: [[DEBUG] force] 2642458962: BUG: unable to handle kernel paging request at ffffc90000997f18)
-Date: Tue, 28 Jun 2016 14:14:33 -0700
-Message-ID: <CA+55aFxzdFxUUCSDgt_5cPdL1NxS9GDtHOkPkwOui6PTuqEj+g@mail.gmail.com>
-In-Reply-To: <CALCETrXdazkZznTX88EZLVGB-ZFUVEwGMxiGXvN7pPw0WGKoFQ@mail.gmail.com>
+Date: Tue, 28 Jun 2016 14:18:21 -0700
+Message-ID: <CA+55aFw2v=fy-1JN2uYSt1O-ef=Apg9K_VhNZG_Oi2wv2Do5rA@mail.gmail.com>
+In-Reply-To: <CA+55aFxzdFxUUCSDgt_5cPdL1NxS9GDtHOkPkwOui6PTuqEj+g@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8046469490657769878==
+--===============0124044892362584071==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 28, 2016 at 1:54 PM, Andy Lutomirski <luto@amacapital.net> wr=
-ote:
+On Tue, Jun 28, 2016 at 2:14 PM, Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> But I might need to that anyway for procfs to read the the stack,
-> right?  Do you see another way to handle that case?
+> I think the other way to handle the kernel stack reading would be to
+> simply make the stack freeing be RCU-delayed, and use the RCU list
+> itself as the stack cache.
 
-I think the other way to handle the kernel stack reading would be to
-simply make the stack freeing be RCU-delayed, and use the RCU list
-itself as the stack cache.
+That said, if you end up having to have a stack reference count for
+other reasons anyway, then I guess that creating a
+try_get_task_stack()/put_task_stack() model is fine.
 
-That way reading the stack is ok in a RCU context, although you might
-end up reading a stack that has been re-used.
+The RCU thing would only work for pure readers that can handle stale
+data (which would be the stack trace thing). It wouldn't work for the
+kthread to_live_kthread() case.
 
-Would that work for people?
+                       Linus
 
-                Linus
-
---===============8046469490657769878==--
+--===============0124044892362584071==--
 
