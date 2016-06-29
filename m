@@ -1,37 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============3518939543089182014=="
+Content-Type: multipart/mixed; boundary="===============0265748109262158803=="
 MIME-Version: 1.0
 From: Andy Lutomirski <luto@amacapital.net>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] kthread: to_live_kthread() needs try_get_task_stack()
-Date: Wed, 29 Jun 2016 16:01:19 -0700
-Message-ID: <CALCETrWpe5owxR6YupfUQAsTXpVYr6bL3F9jWDxm5Juth-B-UQ@mail.gmail.com>
-In-Reply-To: <20160629180357.GA7178@redhat.com>
+Subject: Re: kthread_stop insanity (Re: [[DEBUG] force] 2642458962: BUG: unable to handle kernel paging request at ffffc90000997f18)
+Date: Wed, 29 Jun 2016 16:33:26 -0700
+Message-ID: <CALCETrU2ZjK9Nvtd+dPwRDvV_g3Z3s2eOiJCHEd7D7vXuVEV7Q@mail.gmail.com>
+In-Reply-To: <20160628185853.GA3998@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3518939543089182014==
+--===============0265748109262158803==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 29, 2016 at 11:03 AM, Oleg Nesterov <oleg@redhat.com> wrote:
-> On 06/29, Andy Lutomirski wrote:
+On Tue, Jun 28, 2016 at 11:58 AM, Oleg Nesterov <oleg@redhat.com> wrote:
+> On 06/27, Oleg Nesterov wrote:
 >>
->> I pushed that change to my tree (seems to work well enough to boot
->> without warnings as long as I don't unmount XFS, but not particularly
->> well tested).  Want to refresh your patch on top?
+>> On 06/27, Andy Lutomirski wrote:
+>> >
+>> > Want to send a patch?  I could do it, but you understand this code
+>> > much better than I do.
+>>
+>> Well, I'll try to do this tomorrow unless you do it.
 >
-> Please see the trivial fix below. Compile tested, but looks obvious.
-
-I stuck it in my tree in the right place.  Thanks!
-
+> I have cloned luto/linux.git to see if kthread_stop() can pin ->stack
+> somehow, but it seems this is not possible, finish_task_switch() does
+> free_thread_stack() unconditionally.
 >
-> Btw, why free_thread_stack() calls vfree() with irqs disabled? Doesn't
-> look good and perhaps even wrong; at least vmap_debug_free_range() does
-> flush_tlb_kernel_range() and smp_call_function() can deadlock?
+> Then how (say) proc_pid_stack() can work? If it hits the task which is
+> alreay dead we are (probably) fine, valid_stack_ptr() should fail iiuc.
+>
 
-Whoops, that's a bug.  Fixed now.
+I changed save_stack_trace_tsk() to use try_get_task_stack().  I think
+that's sufficient to fix this.
 
 --Andy
 
---===============3518939543089182014==--
+--===============0265748109262158803==--
 
