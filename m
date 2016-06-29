@@ -1,97 +1,264 @@
-Content-Type: multipart/mixed; boundary="===============7584601904302020375=="
+Content-Type: multipart/mixed; boundary="===============4346321085022832918=="
 MIME-Version: 1.0
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Yinghai Lu <yinghai@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [LTP] [lkp] [signal] 98ea270c46: ltp.float_exp_log.fail
-Date: Wed, 29 Jun 2016 21:11:40 +0200
-Message-ID: <alpine.DEB.2.11.1606292110520.3707@nanos>
-In-Reply-To: <alpine.DEB.2.11.1606292100510.3707@nanos>
+Subject: Re: [x86/KASLR] ed9f007ee6: -- System halted
+Date: Wed, 29 Jun 2016 13:08:55 -0700
+Message-ID: <CAE9FiQVMq+fBDyZpghSndmYu6dF0Am4h9nWn1_fJjwOR5VKHug@mail.gmail.com>
+In-Reply-To: <CAE9FiQV50UhjJDH89C_T7f2vxFDm7Hpjn78ZKtnfeygQcsf23w@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7584601904302020375==
+--===============4346321085022832918==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Tue, Jun 28, 2016 at 12:49 PM, Yinghai Lu <yinghai@kernel.org> wrote:
+> On Mon, Jun 27, 2016 at 10:43 PM, Ye Xiaolong <xiaolong.ye@intel.com> w=
+rote:
+>> On Mon, Jun 27, 2016 at 11:59:37AM -0700, Yinghai Lu wrote:
+>>>output is:
+>>>
+>>>early console in setup code
+>>>early console in extract_kernel
+>>>input_data: 0x0000000008fbb276
+>>>input_len: 0x00000000018c6e00
+>>>output: 0x0000000001000000
+>>>output_len: 0x0000000009867c98
+>>>kernel_total_size: 0x0000000008769000
+>>>booted via startup_32()
+>>>Physical KASLR using RDTSC...
+>>>Virtual KASLR using RDTSC...
+>>>
+>>>Decompressing Linux...
+>>>
+>>>XZ-compressed data is corrupt
+>>>
+>>> -- System halted
+>>>
+>>>Can you apply attached debug patch and send out dmesg?
+>>
+>> There are 4 patches you attached, do you mean to apply them all based on
+>> commit ed9f007ee6? I tried and seemed they can't apply clearly on it.
+>
 
+Please check attached updated debug patches.
 
-On Wed, 29 Jun 2016, Thomas Gleixner wrote:
+You should apply them after ed9f007ee6 in following sequence
 
-> On Tue, 28 Jun 2016, Cyril Hrubis wrote:
-> > Looking at the test it creates a separate thread to handle signals which
-> > sleeps in sigwait() which is implemented in glibc via the sigtimedwait
-> > syscall with NULL timeout.
-> > =
+revert_79063a7.patch
+early_console_more_2_2x.patch
+early_console_more_2_2x_add_0.patch
+early_console_more_2_2x_add_1.patch
 
-> > Looking at the patch the ktime_t timeout is initialized to 0 instead of
-> > MAX_SCHEDULE_TIMEOUT now so I guess that the call with NULL timeout does
-> > poll instead of sleeping in kernel waiting for signals to arrive. That
-> > should be fixed.
-> =
+Thanks
 
-> You're right. I misread the code...
-> =
+Yinghai
 
+--===============4346321085022832918==
+Content-Type: text/x-patch
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="revert_79063a7.patch"
 
-Fix below. I pushed it also out to the WIP.timers branch
+LS0tCiBhcmNoL3g4Ni9ib290L2NvbXByZXNzZWQvbWlzYy5jICAgICAgfCAgIDI0IC0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLQogYXJjaC94ODYvYm9vdC9jb21wcmVzc2VkL21pc2MuaCAgICAgIHwg
+ICAxMCAtLS0tLS0tLS0tCiBhcmNoL3g4Ni9ib290L2NvbXByZXNzZWQvcGFnZXRhYmxlLmMgfCAg
+ICAyIC0tCiAzIGZpbGVzIGNoYW5nZWQsIDM2IGRlbGV0aW9ucygtKQoKSW5kZXg6IGxpbnV4LTIu
+Ni9hcmNoL3g4Ni9ib290L2NvbXByZXNzZWQvbWlzYy5jCj09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGxpbnV4LTIu
+Ni5vcmlnL2FyY2gveDg2L2Jvb3QvY29tcHJlc3NlZC9taXNjLmMKKysrIGxpbnV4LTIuNi9hcmNo
+L3g4Ni9ib290L2NvbXByZXNzZWQvbWlzYy5jCkBAIC0xNTIsMjMgKzE1Miw2IEBAIHZvaWQgX19w
+dXRzdHIoY29uc3QgY2hhciAqcykKIAlvdXRiKDB4ZmYgJiAocG9zID4+IDEpLCB2aWRwb3J0KzEp
+OwogfQogCi12b2lkIF9fcHV0aGV4KHVuc2lnbmVkIGxvbmcgdmFsdWUpCi17Ci0JY2hhciBhbHBo
+YVsyXSA9ICIwIjsKLQlpbnQgYml0czsKLQotCWZvciAoYml0cyA9IHNpemVvZih2YWx1ZSkgKiA4
+IC0gNDsgYml0cyA+PSAwOyBiaXRzIC09IDQpIHsKLQkJdW5zaWduZWQgbG9uZyBkaWdpdCA9ICh2
+YWx1ZSA+PiBiaXRzKSAmIDB4ZjsKLQotCQlpZiAoZGlnaXQgPCAweEEpCi0JCQlhbHBoYVswXSA9
+ICcwJyArIGRpZ2l0OwotCQllbHNlCi0JCQlhbHBoYVswXSA9ICdhJyArIChkaWdpdCAtIDB4QSk7
+Ci0KLQkJX19wdXRzdHIoYWxwaGEpOwotCX0KLX0KLQogI2lmIENPTkZJR19YODZfTkVFRF9SRUxP
+Q1MKIHN0YXRpYyB2b2lkIGhhbmRsZV9yZWxvY2F0aW9ucyh2b2lkICpvdXRwdXQsIHVuc2lnbmVk
+IGxvbmcgb3V0cHV0X2xlbiwKIAkJCSAgICAgICB1bnNpZ25lZCBsb25nIHZpcnRfYWRkcikKQEAg
+LTM2NSwxMyArMzQ4LDYgQEAgYXNtbGlua2FnZSBfX3Zpc2libGUgdm9pZCAqZXh0cmFjdF9rZXJu
+ZQogCWZyZWVfbWVtX3B0ciAgICAgPSBoZWFwOwkvKiBIZWFwICovCiAJZnJlZV9tZW1fZW5kX3B0
+ciA9IGhlYXAgKyBCT09UX0hFQVBfU0laRTsKIAotCS8qIFJlcG9ydCBpbml0aWFsIGtlcm5lbCBw
+b3NpdGlvbiBkZXRhaWxzLiAqLwotCWRlYnVnX3B1dGFkZHIoaW5wdXRfZGF0YSk7Ci0JZGVidWdf
+cHV0YWRkcihpbnB1dF9sZW4pOwotCWRlYnVnX3B1dGFkZHIob3V0cHV0KTsKLQlkZWJ1Z19wdXRh
+ZGRyKG91dHB1dF9sZW4pOwotCWRlYnVnX3B1dGFkZHIoa2VybmVsX3RvdGFsX3NpemUpOwotCiAJ
+LyoKIAkgKiBUaGUgbWVtb3J5IGhvbGUgbmVlZGVkIGZvciB0aGUga2VybmVsIGlzIHRoZSBsYXJn
+ZXIgb2YgZWl0aGVyCiAJICogdGhlIGVudGlyZSBkZWNvbXByZXNzZWQga2VybmVsIHBsdXMgcmVs
+b2NhdGlvbiB0YWJsZSwgb3IgdGhlCkluZGV4OiBsaW51eC0yLjYvYXJjaC94ODYvYm9vdC9jb21w
+cmVzc2VkL21pc2MuaAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBsaW51eC0yLjYub3JpZy9hcmNoL3g4Ni9ib290
+L2NvbXByZXNzZWQvbWlzYy5oCisrKyBsaW51eC0yLjYvYXJjaC94ODYvYm9vdC9jb21wcmVzc2Vk
+L21pc2MuaApAQCAtMzQsMjcgKzM0LDE3IEBAIGV4dGVybiBtZW1wdHIgZnJlZV9tZW1fcHRyOwog
+ZXh0ZXJuIG1lbXB0ciBmcmVlX21lbV9lbmRfcHRyOwogZXh0ZXJuIHN0cnVjdCBib290X3BhcmFt
+cyAqYm9vdF9wYXJhbXM7CiB2b2lkIF9fcHV0c3RyKGNvbnN0IGNoYXIgKnMpOwotdm9pZCBfX3B1
+dGhleCh1bnNpZ25lZCBsb25nIHZhbHVlKTsKICNkZWZpbmUgZXJyb3JfcHV0c3RyKF9feCkgIF9f
+cHV0c3RyKF9feCkKICNkZWZpbmUgZXJyb3JfcHV0aGV4KF9feCkgIF9fcHV0aGV4KF9feCkKIAog
+I2lmZGVmIENPTkZJR19YODZfVkVSQk9TRV9CT09UVVAKIAogI2RlZmluZSBkZWJ1Z19wdXRzdHIo
+X194KSAgX19wdXRzdHIoX194KQotI2RlZmluZSBkZWJ1Z19wdXRoZXgoX194KSAgX19wdXRoZXgo
+X194KQotI2RlZmluZSBkZWJ1Z19wdXRhZGRyKF9feCkgeyBcCi0JCWRlYnVnX3B1dHN0cigjX194
+ICI6IDB4Iik7IFwKLQkJZGVidWdfcHV0aGV4KCh1bnNpZ25lZCBsb25nKShfX3gpKTsgXAotCQlk
+ZWJ1Z19wdXRzdHIoIlxuIik7IFwKLQl9CiAKICNlbHNlCiAKIHN0YXRpYyBpbmxpbmUgdm9pZCBk
+ZWJ1Z19wdXRzdHIoY29uc3QgY2hhciAqcykKIHsgfQotc3RhdGljIGlubGluZSB2b2lkIGRlYnVn
+X3B1dGhleChjb25zdCBjaGFyICpzKQoteyB9Ci0jZGVmaW5lIGRlYnVnX3B1dGFkZHIoeCkgLyog
+Ki8KIAogI2VuZGlmCiAKSW5kZXg6IGxpbnV4LTIuNi9hcmNoL3g4Ni9ib290L2NvbXByZXNzZWQv
+cGFnZXRhYmxlLmMKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PQotLS0gbGludXgtMi42Lm9yaWcvYXJjaC94ODYvYm9vdC9j
+b21wcmVzc2VkL3BhZ2V0YWJsZS5jCisrKyBsaW51eC0yLjYvYXJjaC94ODYvYm9vdC9jb21wcmVz
+c2VkL3BhZ2V0YWJsZS5jCkBAIC00NSw4ICs0NSw2IEBAIHN0YXRpYyB2b2lkICphbGxvY19wZ3Rf
+cGFnZSh2b2lkICpjb250ZXgKIAkvKiBWYWxpZGF0ZSB0aGVyZSBpcyBzcGFjZSBhdmFpbGFibGUg
+Zm9yIGEgbmV3IHBhZ2UuICovCiAJaWYgKHBhZ2VzLT5wZ3RfYnVmX29mZnNldCA+PSBwYWdlcy0+
+cGd0X2J1Zl9zaXplKSB7CiAJCWRlYnVnX3B1dHN0cigib3V0IG9mIHBndF9idWYgaW4gIiBfX0ZJ
+TEVfXyAiIT9cbiIpOwotCQlkZWJ1Z19wdXRhZGRyKHBhZ2VzLT5wZ3RfYnVmX29mZnNldCk7Ci0J
+CWRlYnVnX3B1dGFkZHIocGFnZXMtPnBndF9idWZfc2l6ZSk7CiAJCXJldHVybiBOVUxMOwogCX0K
+IAo=
 
-Thanks,
+--===============4346321085022832918==
+Content-Type: text/x-patch
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="early_console_more_2_2x.patch"
 
-	tglx
+U3ViamVjdDogW1BBVENIXSB4ODYsIGJvb3Q6IEFkZCBwcmludGYgc3VwcG9ydCBmb3IgZWFybHkg
+Y29uc29sZSBpbiBjb21wcmVzc2VkL21pc2MuYwoKUmV1c2UgcHJpbnRmLmMgaW4geDg2IHNldHVw
+IGNvZGUuCgpMYXRlciBkZWNvbXByZXNzZXIgY29kZSBjb3VsZCBwcmludCBvdXQgbW9yZSBpbmZv
+IGZvciBkZWJ1ZyBpbmZvLgoKU2lnbmVkLW9mZi1ieTogWWluZ2hhaSBMdSA8eWluZ2hhaUBrZXJu
+ZWwub3JnPgoKLS0tCiBhcmNoL3g4Ni9ib290L2NvbXByZXNzZWQvTWFrZWZpbGUgICAgfCAgICAx
+ICsKIGFyY2gveDg2L2Jvb3QvY29tcHJlc3NlZC9taXNjLmggICAgICB8ICAgIDcgKysrKysrKwog
+YXJjaC94ODYvYm9vdC9jb21wcmVzc2VkL3BhZ2V0YWJsZS5jIHwgICAgNCArKysrCiBhcmNoL3g4
+Ni9ib290L2NvbXByZXNzZWQvcHJpbnRmLmMgICAgfCAgICA1ICsrKysrCiA0IGZpbGVzIGNoYW5n
+ZWQsIDE3IGluc2VydGlvbnMoKykKCkluZGV4OiBsaW51eC0yLjYvYXJjaC94ODYvYm9vdC9jb21w
+cmVzc2VkL01ha2VmaWxlCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGxpbnV4LTIuNi5vcmlnL2FyY2gveDg2L2Jv
+b3QvY29tcHJlc3NlZC9NYWtlZmlsZQorKysgbGludXgtMi42L2FyY2gveDg2L2Jvb3QvY29tcHJl
+c3NlZC9NYWtlZmlsZQpAQCAtNzMsNiArNzMsNyBAQCB2bWxpbnV4LW9ianMteSA6PSAkKG9iaikv
+dm1saW51eC5sZHMgJChvCiAJJChvYmopL3N0cmluZy5vICQob2JqKS9jbWRsaW5lLm8gJChvYmop
+L2Vycm9yLm8gXAogCSQob2JqKS9waWdneS5vICQob2JqKS9jcHVmbGFncy5vCiAKK3ZtbGludXgt
+b2Jqcy0kKENPTkZJR19YODZfVkVSQk9TRV9CT09UVVApICs9ICQob2JqKS9wcmludGYubwogdm1s
+aW51eC1vYmpzLSQoQ09ORklHX0VBUkxZX1BSSU5USykgKz0gJChvYmopL2Vhcmx5X3NlcmlhbF9j
+b25zb2xlLm8KIHZtbGludXgtb2Jqcy0kKENPTkZJR19SQU5ET01JWkVfQkFTRSkgKz0gJChvYmop
+L2thc2xyLm8KIGlmZGVmIENPTkZJR19YODZfNjQKSW5kZXg6IGxpbnV4LTIuNi9hcmNoL3g4Ni9i
+b290L2NvbXByZXNzZWQvcHJpbnRmLmMKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQotLS0gL2Rldi9udWxsCisrKyBsaW51
+eC0yLjYvYXJjaC94ODYvYm9vdC9jb21wcmVzc2VkL3ByaW50Zi5jCkBAIC0wLDAgKzEsNSBAQAor
+I2luY2x1ZGUgIm1pc2MuaCIKKworI2RlZmluZSBwdXRzKF9feCkgIF9fcHV0c3RyKF9feCkKKwor
+I2luY2x1ZGUgIi4uL3ByaW50Zi5jIgpJbmRleDogbGludXgtMi42L2FyY2gveDg2L2Jvb3QvY29t
+cHJlc3NlZC9taXNjLmgKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PQotLS0gbGludXgtMi42Lm9yaWcvYXJjaC94ODYvYm9v
+dC9jb21wcmVzc2VkL21pc2MuaAorKysgbGludXgtMi42L2FyY2gveDg2L2Jvb3QvY29tcHJlc3Nl
+ZC9taXNjLmgKQEAgLTM3LDE0ICszNywyMSBAQCB2b2lkIF9fcHV0c3RyKGNvbnN0IGNoYXIgKnMp
+OwogI2RlZmluZSBlcnJvcl9wdXRzdHIoX194KSAgX19wdXRzdHIoX194KQogI2RlZmluZSBlcnJv
+cl9wdXRoZXgoX194KSAgX19wdXRoZXgoX194KQogCisvKiBwcmludGYuYyAqLworaW50IHNwcmlu
+dGYoY2hhciAqYnVmLCBjb25zdCBjaGFyICpmbXQsIC4uLik7CitpbnQgcHJpbnRmKGNvbnN0IGNo
+YXIgKmZtdCwgLi4uKTsKKwogI2lmZGVmIENPTkZJR19YODZfVkVSQk9TRV9CT09UVVAKIAogI2Rl
+ZmluZSBkZWJ1Z19wdXRzdHIoX194KSAgX19wdXRzdHIoX194KQorI2RlZmluZSBkZWJ1Z19wcmlu
+dGYgcHJpbnRmCiAKICNlbHNlCiAKIHN0YXRpYyBpbmxpbmUgdm9pZCBkZWJ1Z19wdXRzdHIoY29u
+c3QgY2hhciAqcykKIHsgfQorc3RhdGljIGlubGluZSBpbnQgZGVidWdfcHJpbnRmKGNvbnN0IGNo
+YXIgKmZtdCwgLi4uKQoreyB9CiAKICNlbmRpZgogCg==
 
-8<-------
+--===============4346321085022832918==
+Content-Type: text/x-patch
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="early_console_more_2_2x_add_0.patch"
 
-commit 503d9c9ac9f98f403da0acbc9ba6e42185b952e2
-Author: Thomas Gleixner <tglx@linutronix.de>
-Date:   Wed Jun 29 21:03:58 2016 +0200
+U3ViamVjdDogW1BBVENIXSB4ODYsIGJvb3Q6IEFkZCBwcmludCBvdXQgZm9yIGlucHV0L291dHB1
+dCBpbmZvIGVhcmx5IGNvbnNvbGUgaW4gY29tcHJlc3NlZC9taXNjLmMKClVzZSBwcmludGYgdG8g
+cHJpbnQgb3V0IGRlY29tcHJlc3Nfa2VybmVsIGlucHV0IGFuZCBvdXRwdXQgaW5mby4KClNpZ25l
+ZC1vZmYtYnk6IFlpbmdoYWkgTHUgPHlpbmdoYWlAa2VybmVsLm9yZz4KCi0tLQogYXJjaC94ODYv
+Ym9vdC9jb21wcmVzc2VkL21pc2MuYyB8ICAgNDUgKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKystLQogMSBmaWxlIGNoYW5nZWQsIDQzIGluc2VydGlvbnMoKyksIDIgZGVsZXRp
+b25zKC0pCgpJbmRleDogbGludXgtMi42L2FyY2gveDg2L2Jvb3QvY29tcHJlc3NlZC9taXNjLmMK
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PQotLS0gbGludXgtMi42Lm9yaWcvYXJjaC94ODYvYm9vdC9jb21wcmVzc2VkL21p
+c2MuYworKysgbGludXgtMi42L2FyY2gveDg2L2Jvb3QvY29tcHJlc3NlZC9taXNjLmMKQEAgLTMy
+Miw2ICszMjIsOSBAQCBhc21saW5rYWdlIF9fdmlzaWJsZSB2b2lkICpleHRyYWN0X2tlcm5lCiB7
+CiAJY29uc3QgdW5zaWduZWQgbG9uZyBrZXJuZWxfdG90YWxfc2l6ZSA9IFZPX19lbmQgLSBWT19f
+dGV4dDsKIAl1bnNpZ25lZCBsb25nIHZpcnRfYWRkciA9ICh1bnNpZ25lZCBsb25nKW91dHB1dDsK
+Kwl1bnNpZ25lZCBjaGFyICpvdXRwdXRfb3JpZyA9IG91dHB1dDsKKwl1bnNpZ25lZCBsb25nIG91
+dHB1dF9ydW5fc2l6ZSA9IG1heChvdXRwdXRfbGVuLCBrZXJuZWxfdG90YWxfc2l6ZSk7CisJdW5z
+aWduZWQgbG9uZyBpbml0X3NpemU7CiAKIAkvKiBSZXRhaW4geDg2IGJvb3QgcGFyYW1ldGVycyBw
+b2ludGVyIHBhc3NlZCBmcm9tIHN0YXJ0dXBfMzIvNjQuICovCiAJYm9vdF9wYXJhbXMgPSBybW9k
+ZTsKQEAgLTM0OCw2ICszNTEsMzcgQEAgYXNtbGlua2FnZSBfX3Zpc2libGUgdm9pZCAqZXh0cmFj
+dF9rZXJuZQogCWZyZWVfbWVtX3B0ciAgICAgPSBoZWFwOwkvKiBIZWFwICovCiAJZnJlZV9tZW1f
+ZW5kX3B0ciA9IGhlYXAgKyBCT09UX0hFQVBfU0laRTsKIAorCWluaXRfc2l6ZSA9IGJvb3RfcGFy
+YW1zLT5oZHIuaW5pdF9zaXplOworCWRlYnVnX3B1dHN0cigiZGVjb21wcmVzc19rZXJuZWw6XG4i
+KTsKKwlkZWJ1Z19wcmludGYoIiAgICAgICBpbnB1dDogWzB4JTAxMGx4LTB4JTAxMGx4XVxuIiwK
+KwkJICh1bnNpZ25lZCBsb25nKWlucHV0X2RhdGEsCisJCSAodW5zaWduZWQgbG9uZylpbnB1dF9k
+YXRhICsgaW5wdXRfbGVuIC0gMSk7CisJZGVidWdfcHJpbnRmKCIgICAgICBvdXRwdXQ6IFsweCUw
+MTBseC0weCUwMTBseF0gMHglMDhseDogb3V0cHV0X2xlblxuIiwKKwkJICh1bnNpZ25lZCBsb25n
+KW91dHB1dCwKKwkJICh1bnNpZ25lZCBsb25nKW91dHB1dCArIG91dHB1dF9sZW4gLSAxLAorCQkg
+KHVuc2lnbmVkIGxvbmcpb3V0cHV0X2xlbik7CisJZGVidWdfcHJpbnRmKCIgICAgICAgICAgICAg
+IFsweCUwMTBseC0weCUwMTBseF0gMHglMDhseDogcnVuX3NpemVcbiIsCisJCSAodW5zaWduZWQg
+bG9uZylvdXRwdXQsCisJCSAodW5zaWduZWQgbG9uZylvdXRwdXQgKyBrZXJuZWxfdG90YWxfc2l6
+ZSAtIDEsCisJCSAodW5zaWduZWQgbG9uZylrZXJuZWxfdG90YWxfc2l6ZSk7CisJZGVidWdfcHJp
+bnRmKCIgICAgICAgICAgICAgIFsweCUwMTBseC0weCUwMTBseF0gMHglMDhseDogb3V0cHV0X3J1
+bl9zaXplXG4iLAorCQkgKHVuc2lnbmVkIGxvbmcpb3V0cHV0LAorCQkgKHVuc2lnbmVkIGxvbmcp
+b3V0cHV0ICsgb3V0cHV0X3J1bl9zaXplIC0gMSwKKwkJICh1bnNpZ25lZCBsb25nKW91dHB1dF9y
+dW5fc2l6ZSk7CisJZGVidWdfcHJpbnRmKCIgICAgICAgICAgICAgIFsweCUwMTBseC0weCUwMTBs
+eF0gMHglMDhseDogaW5pdF9zaXplXG4iLAorCQkgKHVuc2lnbmVkIGxvbmcpb3V0cHV0LAorCQkg
+KHVuc2lnbmVkIGxvbmcpb3V0cHV0ICsgaW5pdF9zaXplIC0gMSwKKwkJICh1bnNpZ25lZCBsb25n
+KWluaXRfc2l6ZSk7CisJZGVidWdfcHJpbnRmKCJaTyB0ZXh0L2RhdGE6IFsweCUwMTBseC0weCUw
+MTBseF1cbiIsCisJCSAodW5zaWduZWQgbG9uZylpbnB1dF9kYXRhICsgaW5wdXRfbGVuLAorCQkg
+KHVuc2lnbmVkIGxvbmcpb3V0cHV0ICsgaW5pdF9zaXplIC0gMSk7CisJZGVidWdfcHJpbnRmKCIg
+ICAgIFpPIGhlYXA6IFsweCUwMTBseC0weCUwMTBseF1cbiIsCisJCSAodW5zaWduZWQgbG9uZylo
+ZWFwLAorCQkgKHVuc2lnbmVkIGxvbmcpaGVhcCArIEJPT1RfSEVBUF9TSVpFIC0gMSk7CisJZGVi
+dWdfcHJpbnRmKCIgIFZPIGJzcy9icms6IFsweCUwMTBseC0weCUwMTBseF1cbiIsCisJCSAodW5z
+aWduZWQgbG9uZylvdXRwdXQgKyAoVk9fX19ic3Nfc3RhcnQgLSBWT19fdGV4dCksCisJCSAodW5z
+aWduZWQgbG9uZylvdXRwdXQgKyBrZXJuZWxfdG90YWxfc2l6ZSAtIDEpOworCiAJLyoKIAkgKiBU
+aGUgbWVtb3J5IGhvbGUgbmVlZGVkIGZvciB0aGUga2VybmVsIGlzIHRoZSBsYXJnZXIgb2YgZWl0
+aGVyCiAJICogdGhlIGVudGlyZSBkZWNvbXByZXNzZWQga2VybmVsIHBsdXMgcmVsb2NhdGlvbiB0
+YWJsZSwgb3IgdGhlCkBAIC0zNTUsOCArMzg5LDE1IEBAIGFzbWxpbmthZ2UgX192aXNpYmxlIHZv
+aWQgKmV4dHJhY3Rfa2VybmUKIAkgKi8KIAljaG9vc2VfcmFuZG9tX2xvY2F0aW9uKCh1bnNpZ25l
+ZCBsb25nKWlucHV0X2RhdGEsIGlucHV0X2xlbiwKIAkJCQkodW5zaWduZWQgbG9uZyAqKSZvdXRw
+dXQsCi0JCQkJbWF4KG91dHB1dF9sZW4sIGtlcm5lbF90b3RhbF9zaXplKSwKLQkJCQkmdmlydF9h
+ZGRyKTsKKwkJCQlvdXRwdXRfcnVuX3NpemUsICZ2aXJ0X2FkZHIpOworCisJaWYgKG91dHB1dCAh
+PSBvdXRwdXRfb3JpZykKKwkJZGVidWdfcHJpbnRmKCIgIG5ldyBvdXRwdXQ6IFsweCUwMTBseC0w
+eCUwMTBseF0gMHglMDhseDogb3V0cHV0X3J1bl9zaXplXG4iLAorCQkJICh1bnNpZ25lZCBsb25n
+KW91dHB1dCwKKwkJCSAodW5zaWduZWQgbG9uZylvdXRwdXQgKyBvdXRwdXRfcnVuX3NpemUgLSAx
+LAorCQkJIG91dHB1dF9ydW5fc2l6ZSk7CisJaWYgKCh1bnNpZ25lZCBsb25nKW91dHB1dCAhPSB2
+aXJ0X2FkZHIpCisJCWRlYnVnX3ByaW50ZigiICAgdmlydF9hZGRyOiAweCUwMTBseFxuIiwgdmly
+dF9hZGRyKTsKIAogCS8qIFZhbGlkYXRlIG1lbW9yeSBsb2NhdGlvbiBjaG9pY2VzLiAqLwogCWlm
+ICgodW5zaWduZWQgbG9uZylvdXRwdXQgJiAoTUlOX0tFUk5FTF9BTElHTiAtIDEpKQo=
 
-    signal: Handle the case where no timeout is handed in
-    =
+--===============4346321085022832918==
+Content-Type: text/x-patch
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="early_console_more_2_2x_add_1.patch"
 
-    Needs to be folded back.
-    =
+U3ViamVjdDogW1BBVENIXSB4ODYsIGJvb3Q6IEFkZCBtb3JlIGRlYnVnIHByaW50b3V0IGluIGNv
+bXByZXNzZWQvbWlzYy5jCgp3aXRoIHN1cHBvcnQgdGhhdCB1c2UgcHJpbnRmLmMgaW4geDg2IHNl
+dHVwIGNvZGUuCnByaW50IG91dCBtb3JlIGluZm8gZm9yIGRlYnVnIGluZm8uCgpTaWduZWQtb2Zm
+LWJ5OiBZaW5naGFpIEx1IDx5aW5naGFpQGtlcm5lbC5vcmc+CgoKLS0tCiBhcmNoL3g4Ni9ib290
+L2NvbXByZXNzZWQvbWlzYy5jIHwgICAxMiArKysrKysrKysrKy0KIDEgZmlsZSBjaGFuZ2VkLCAx
+MSBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCgpJbmRleDogbGludXgtMi42L2FyY2gveDg2
+L2Jvb3QvY29tcHJlc3NlZC9taXNjLmMKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQotLS0gbGludXgtMi42Lm9yaWcvYXJj
+aC94ODYvYm9vdC9jb21wcmVzc2VkL21pc2MuYworKysgbGludXgtMi42L2FyY2gveDg2L2Jvb3Qv
+Y29tcHJlc3NlZC9taXNjLmMKQEAgLTI2OSw3ICsyNjksNyBAQCBzdGF0aWMgdm9pZCBwYXJzZV9l
+bGYodm9pZCAqb3V0cHV0KQogCQlyZXR1cm47CiAJfQogCi0JZGVidWdfcHV0c3RyKCJQYXJzaW5n
+IEVMRi4uLiAiKTsKKwlkZWJ1Z19wdXRzdHIoIlBhcnNpbmcgRUxGLi4uXG4iKTsKIAogCXBoZHJz
+ID0gbWFsbG9jKHNpemVvZigqcGhkcnMpICogZWhkci5lX3BobnVtKTsKIAlpZiAoIXBoZHJzKQpA
+QCAtMjg5LDYgKzI4OSwxMSBAQCBzdGF0aWMgdm9pZCBwYXJzZV9lbGYodm9pZCAqb3V0cHV0KQog
+CQkJZGVzdCA9ICh2b2lkICopKHBoZHItPnBfcGFkZHIpOwogI2VuZGlmCiAJCQltZW1tb3ZlKGRl
+c3QsIG91dHB1dCArIHBoZHItPnBfb2Zmc2V0LCBwaGRyLT5wX2ZpbGVzeik7CisJCQlkZWJ1Z19w
+cmludGYoIiAgIHBhcnNlX2VsZjogWzB4JTAxMGx4LTB4JTAxMGx4XSA8PT09IFsweCUwMTBseC0w
+eCUwMTBseF1cbiIsCisJCQkJKHVuc2lnbmVkIGxvbmcpZGVzdCwKKwkJCQkodW5zaWduZWQgbG9u
+ZylkZXN0ICsgcGhkci0+cF9maWxlc3ogLSAxLAorCQkJCSh1bnNpZ25lZCBsb25nKW91dHB1dCAr
+IHBoZHItPnBfb2Zmc2V0LAorCQkJCSh1bnNpZ25lZCBsb25nKW91dHB1dCArIHBoZHItPnBfb2Zm
+c2V0ICsgcGhkci0+cF9maWxlc3ogLSAxKTsKIAkJCWJyZWFrOwogCQlkZWZhdWx0OiAvKiBJZ25v
+cmUgb3RoZXIgUFRfKiAqLyBicmVhazsKIAkJfQpAQCAtNDE4LDYgKzQyMywxMSBAQCBhc21saW5r
+YWdlIF9fdmlzaWJsZSB2b2lkICpleHRyYWN0X2tlcm5lCiAJCWVycm9yKCJEZXN0aW5hdGlvbiB2
+aXJ0dWFsIGFkZHJlc3MgY2hhbmdlZCB3aGVuIG5vdCByZWxvY2F0YWJsZSIpOwogI2VuZGlmCiAK
+KwlkZWJ1Z19wcmludGYoIiAgZGVjb21wcmVzczogWzB4JTAxMGx4LTB4JTAxMGx4XSA8PT09IFsw
+eCUwMTBseC0weCUwMTBseF1cbiIsCisJCSh1bnNpZ25lZCBsb25nKW91dHB1dCwKKwkJKHVuc2ln
+bmVkIGxvbmcpb3V0cHV0ICsgb3V0cHV0X2xlbiAtIDEsCisJCSh1bnNpZ25lZCBsb25nKWlucHV0
+X2RhdGEsCisJCSh1bnNpZ25lZCBsb25nKWlucHV0X2RhdGEgKyBpbnB1dF9sZW4gLSAxKTsKIAlk
+ZWJ1Z19wdXRzdHIoIlxuRGVjb21wcmVzc2luZyBMaW51eC4uLiAiKTsKIAlfX2RlY29tcHJlc3Mo
+aW5wdXRfZGF0YSwgaW5wdXRfbGVuLCBOVUxMLCBOVUxMLCBvdXRwdXQsIG91dHB1dF9sZW4sCiAJ
+CQlOVUxMLCBlcnJvcik7Cg==
 
-    Fixes: 98ea270c46b4: "signal: Use hrtimer for sigtimedwait"
-    Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-
-diff --git a/kernel/signal.c b/kernel/signal.c
-index 50fdf540d035..af21afc00d08 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -2753,8 +2753,8 @@ int copy_siginfo_to_user(siginfo_t __user *to, const =
-siginfo_t *from)
- int do_sigtimedwait(const sigset_t *which, siginfo_t *info,
- 		    const struct timespec *ts)
- {
-+	ktime_t *to =3D NULL, timeout =3D { .tv64 =3D KTIME_MAX };
- 	struct task_struct *tsk =3D current;
--	ktime_t timeout =3D { .tv64 =3D 0 };
- 	sigset_t mask =3D *which;
- 	int sig, ret =3D 0;
- =
-
-@@ -2762,6 +2762,7 @@ int do_sigtimedwait(const sigset_t *which, siginfo_t =
-*info,
- 		if (!timespec_valid(ts))
- 			return -EINVAL;
- 		timeout =3D timespec_to_ktime(*ts);
-+		to =3D &timeout;
- 	}
- =
-
- 	/*
-@@ -2785,8 +2786,7 @@ int do_sigtimedwait(const sigset_t *which, siginfo_t =
-*info,
- 		spin_unlock_irq(&tsk->sighand->siglock);
- =
-
- 		__set_current_state(TASK_INTERRUPTIBLE);
--		ret =3D freezable_schedule_hrtimeout_range(&timeout,
--							 tsk->timer_slack_ns,
-+		ret =3D freezable_schedule_hrtimeout_range(to, tsk->timer_slack_ns,
- 							 HRTIMER_MODE_REL);
- 		spin_lock_irq(&tsk->sighand->siglock);
- 		__set_task_blocked(tsk, &tsk->real_blocked);
-
---===============7584601904302020375==--
+--===============4346321085022832918==--
 
