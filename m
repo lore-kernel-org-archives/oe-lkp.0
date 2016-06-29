@@ -1,54 +1,97 @@
-Content-Type: multipart/mixed; boundary="===============8622117800003166614=="
+Content-Type: multipart/mixed; boundary="===============2333854835801058409=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@amacapital.net>
+From: Oleg Nesterov <oleg@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: kthread_stop insanity (Re: [[DEBUG] force] 2642458962: BUG: unable to handle kernel paging request at ffffc90000997f18)
-Date: Wed, 29 Jun 2016 08:34:01 -0700
-Message-ID: <CALCETrUng61Fe2+RSp5r6fsOkcUKDqnf-u39TUrgO76pHMqFsA@mail.gmail.com>
-In-Reply-To: <20160628225929.GB8591@redhat.com>
+Subject: [PATCH] kthread: to_live_kthread() needs try_get_task_stack()
+Date: Wed, 29 Jun 2016 20:03:58 +0200
+Message-ID: <20160629180357.GA7178@redhat.com>
+In-Reply-To: <CALCETrUng61Fe2+RSp5r6fsOkcUKDqnf-u39TUrgO76pHMqFsA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8622117800003166614==
+--===============2333854835801058409==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 28, 2016 at 3:59 PM, Oleg Nesterov <oleg@redhat.com> wrote:
-> On 06/28, Andy Lutomirski wrote:
->>
->> On Tue, Jun 28, 2016 at 1:12 PM, Oleg Nesterov <oleg@redhat.com> wrote:
->> >
->> > So please forget unless you see another reason for this change.
->> >
->>
->> But I might need to that anyway for procfs to read the the stack,
->> right?  Do you see another way to handle that case?
+On 06/29, Andy Lutomirski wrote:
 >
-> Well, we could use probe_kernel_text() and recheck tsk->stack !=3D NULL
-> after this.
->
-> But,
->
->> I'm thinking of adding:
->>
->> void *try_get_task_stack(struct task_struct *tsk);
->> void put_task_stack(struct task_struct *tsk);
->
-> Yes, agreed, this looks better.
->
-> Oleg.
->
+> I pushed that change to my tree (seems to work well enough to boot
+> without warnings as long as I don't unmount XFS, but not particularly
+> well tested).  Want to refresh your patch on top?
 
-I pushed that change to my tree (seems to work well enough to boot
-without warnings as long as I don't unmount XFS, but not particularly
-well tested).  Want to refresh your patch on top?
+Please see the trivial fix below. Compile tested, but looks obvious.
 
-I'll probably have to split the patch to introduce no-op
-try_get_task_stack / put_task_stack first so I can avoid breaking
-bisection, but the interface shouldn't change unless something's wrong
-with it.
+Btw, why free_thread_stack() calls vfree() with irqs disabled? Doesn't
+look good and perhaps even wrong; at least vmap_debug_free_range() does
+flush_tlb_kernel_range() and smp_call_function() can deadlock?
 
---Andy
+---------------------------------------------------------------------------=
+----
+Subject: [PATCH] kthread: to_live_kthread() needs try_get_task_stack()
 
---===============8622117800003166614==--
+get_task_struct(tsk) no longer pins tsk->stack so all users of
+to_live_kthread() should do try_get_task_stack/put_task_stack to protect
+"struct kthread" which lives on kthread's stack.
+
+TODO: Kill to_live_kthread(), perhaps we can even kill "struct kthread" too,
+and rework kthread_stop(), it can use task_work_add() to sync with the exit=
+ing
+kernel thread.
+
+Signed-off-by: Oleg Nesterov <oleg@redhat.com>
+---
+ kernel/kthread.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/kthread.c b/kernel/kthread.c
+index 9ff173d..4ab4c37 100644
+--- a/kernel/kthread.c
++++ b/kernel/kthread.c
+@@ -64,7 +64,7 @@ static inline struct kthread *to_kthread(struct task_stru=
+ct *k)
+ static struct kthread *to_live_kthread(struct task_struct *k)
+ {
+ 	struct completion *vfork =3D ACCESS_ONCE(k->vfork_done);
+-	if (likely(vfork))
++	if (likely(vfork) && try_get_task_stack(k))
+ 		return __to_kthread(vfork);
+ 	return NULL;
+ }
+@@ -425,8 +425,10 @@ void kthread_unpark(struct task_struct *k)
+ {
+ 	struct kthread *kthread =3D to_live_kthread(k);
+ =
+
+-	if (kthread)
++	if (kthread) {
+ 		__kthread_unpark(k, kthread);
++		put_task_stack(k);
++	}
+ }
+ EXPORT_SYMBOL_GPL(kthread_unpark);
+ =
+
+@@ -455,6 +457,7 @@ int kthread_park(struct task_struct *k)
+ 				wait_for_completion(&kthread->parked);
+ 			}
+ 		}
++		put_task_stack(k);
+ 		ret =3D 0;
+ 	}
+ 	return ret;
+@@ -490,6 +493,7 @@ int kthread_stop(struct task_struct *k)
+ 		__kthread_unpark(k, kthread);
+ 		wake_up_process(k);
+ 		wait_for_completion(&kthread->exited);
++		put_task_stack(k);
+ 	}
+ 	ret =3D k->exit_code;
+ 	put_task_struct(k);
+-- =
+
+2.5.0
+
+
+
+--===============2333854835801058409==--
 
