@@ -1,59 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============3403241567024050520=="
+Content-Type: multipart/mixed; boundary="===============1149205797496574081=="
 MIME-Version: 1.0
-From: Baoquan He <bhe@redhat.com>
+From: Mark Brown <broonie@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [x86/KASLR] ed9f007ee6: -- System halted
-Date: Fri, 01 Jul 2016 15:50:32 +0800
-Message-ID: <20160701075032.GC10467@x1.redhat.com>
-In-Reply-To: <57712812.r6MdDSquaCRYkMnh%xiaolong.ye@intel.com>
+Subject: Re: [ASoC] 91c1832579: BUG: unable to handle kernel NULL pointer dereference
+Date: Fri, 01 Jul 2016 11:50:22 +0200
+Message-ID: <20160701095022.GI6247@sirena.org.uk>
+In-Reply-To: <20160630125516.GB8304@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3403241567024050520==
+--===============1149205797496574081==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Xiaolong,
+On Thu, Jun 30, 2016 at 08:55:16PM +0800, Ye Xiaolong wrote:
+> On Thu, Jun 30, 2016 at 01:26:45PM +0100, Mark Brown wrote:
 
-Could you please apply below patch and see if it works for you?
+> >Please if you're sending mails like this send them to the patch authors
+> >as well.
 
->From 46c2a9ecd11f61d952253e005bbd7dcbffa652fb Mon Sep 17 00:00:00 2001
-From: Baoquan He <bhe@redhat.com>
-Date: Fri, 1 Jul 2016 15:34:40 +0800
-Subject: [PATCH] x86/KASLR: Fix code bug of finding earliest overlap
+> Sorry, isn't Vedang Patel the patch author?
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
----
- arch/x86/boot/compressed/kaslr.c | 2 ++
- 1 file changed, 2 insertions(+)
+Oh, so he is - but you have missed the mailing lists off which was what
+made it look like this was some Intel person working on the bot.
 
-diff --git a/arch/x86/boot/compressed/kaslr.c b/arch/x86/boot/compressed/ka=
-slr.c
-index 304c5c3..8e1fdf7 100644
---- a/arch/x86/boot/compressed/kaslr.c
-+++ b/arch/x86/boot/compressed/kaslr.c
-@@ -285,6 +285,7 @@ static bool mem_avoid_overlap(struct mem_vector *img,
- 		if (mem_overlaps(img, &mem_avoid[i]) &&
- 		    mem_avoid[i].start < earliest) {
- 			*overlap =3D mem_avoid[i];
-+			earliest =3D overlap->start;
- 			is_overlapping =3D true;
- 		}
- 	}
-@@ -299,6 +300,7 @@ static bool mem_avoid_overlap(struct mem_vector *img,
- =
+--===============1149205797496574081==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
 
- 		if (mem_overlaps(img, &avoid) && (avoid.start < earliest)) {
- 			*overlap =3D avoid;
-+			earliest =3D overlap->start;
- 			is_overlapping =3D true;
- 		}
- =
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIKCmlRRWNCQUVC
+Q0FBR0JRSlhkanpkQUFvSkVDVFdpM0pkVklmUWdtNEgvMTBVbi84b2NrQkRWYWhGNzZ5eWdZQ0kK
+VDFYRmxkNTVDZ2VVemFSbS82Qll5VlR4RCtsakR6NTI4eXQ1UGR1a2ZqSk5GZmhQNGVXd2docUJq
+amNVR2Q2NAp1bFNFdkVweFUxSjdnRmZRSnd6VHVERnNVRlJ6aHpxeFcxOGVwaWtwU0ZRYnk0RTJT
+YkVZaFdmY2dUM1pQakpNCkFOSVpoTTgxUHcyQjFnQmNlSVZxcUcrZ25QMWxjb3A4bmpYY3BUK0tk
+RTRsVWtJV0M4L0RGZ0Q2Z2VrSnhYRFIKMjk0R2tnY2lLRFhRa2lDaFd5Mm9OVzZMTkp6QjMrYThh
+YUxsb1YwQllvdFBTYjFBei8vWUZ6MzFTN05NVngzVwpnckRSck9wSkRNd241ZzlHaUZMMDJOcEk1
+UUFsUkt0My9QNVBuN2JsZisyN0wyQkJmZVlYemNieUltOE5nNDQ9Cj1meHVyCi0tLS0tRU5EIFBH
+UCBTSUdOQVRVUkUtLS0tLQo=
 
--- =
-
-2.5.5
-
-
---===============3403241567024050520==--
+--===============1149205797496574081==--
 
