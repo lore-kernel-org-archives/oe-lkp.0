@@ -1,44 +1,111 @@
-Content-Type: multipart/mixed; boundary="===============1149205797496574081=="
+Content-Type: multipart/mixed; boundary="===============1533284246805578995=="
 MIME-Version: 1.0
-From: Mark Brown <broonie@kernel.org>
+From: Baoquan He <bhe@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [ASoC] 91c1832579: BUG: unable to handle kernel NULL pointer dereference
-Date: Fri, 01 Jul 2016 11:50:22 +0200
-Message-ID: <20160701095022.GI6247@sirena.org.uk>
-In-Reply-To: <20160630125516.GB8304@yexl-desktop>
+Subject: Re: [x86/KASLR] ed9f007ee6: -- System halted
+Date: Fri, 01 Jul 2016 12:46:52 +0800
+Message-ID: <20160701044652.GA10467@x1.redhat.com>
+In-Reply-To: <20160701040618.GA3372@x1.redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1149205797496574081==
+--===============1533284246805578995==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 30, 2016 at 08:55:16PM +0800, Ye Xiaolong wrote:
-> On Thu, Jun 30, 2016 at 01:26:45PM +0100, Mark Brown wrote:
+On 07/01/16 at 12:06pm, Baoquan He wrote:
+> On 06/30/16 at 05:24pm, Yinghai Lu wrote:
+> > On Wed, Jun 29, 2016 at 11:58 PM, Ye Xiaolong <xiaolong.ye@intel.com>=
+ wrote:
+> > > On Wed, Jun 29, 2016 at 09:49:12PM -0700, Yinghai Lu wrote:
+> > >>On Wed, Jun 29, 2016 at 1:29 PM, Huang, Ying <ying.huang@intel.com>=
+ wrote:
+> > >>> If you could provide a git branch for that, that will be easier for=
+ us
+> > >>> to test and more accurate for you to get the right patch to be test=
+ed.
+> > >>>
+> > >>
+> > >>Please check
+> > >>
+> > >>git://git.kernel.org/pub/scm/linux/kernel/git/yinghai/linux-yinghai.g=
+it
+> > >>for-x86-v4.8-kaslr-debug
+> > >
+> > > Hi, yinghai
+> > >
+> > > Attached is the dmesg for the kernel which is built based on your
+> > > for-x86-v4.8-kaslr-debug branch.
+> > =
 
-> >Please if you're sending mails like this send them to the patch authors
-> >as well.
+> > Thanks for capturing the boot log.
+> > =
 
-> Sorry, isn't Vedang Patel the patch author?
+> > early console in setup code
+> > early console in extract_kernel
+> > decompress_kernel:
+> >        input: [0x0008fba276-0x000a8818ed]
+> >       output: [0x0001000000-0x000a867c97] 0x09867c98: output_len
+> >               [0x0001000000-0x0009768fff] 0x08769000: run_size
+> >               [0x0001000000-0x000a867c97] 0x09867c98: output_run_size
+> >               [0x0001000000-0x000a8affff] 0x098b0000: init_size
+> > ZO text/data: [0x000a8818ee-0x000a8affff]
+> >      ZO heap: [0x000a888400-0x000a8983ff]
+> >   VO bss/brk: [0x0009674000-0x0009768fff]
+> > booted via startup_32()
+> > Physical KASLR using RDTSC...
+> > Virtual KASLR using RDTSC...
+> >   new output: [0x0006600000-0x000fe67c97] 0x09867c98: output_run_size
+> >    virt_addr:  0x0024000000
+> >   decompress: [0x0006600000-0x000fe67c97] <=3D=3D=3D [0x0008fba276-0x00=
+0a8818ed]
+> > =
 
-Oh, so he is - but you have missed the mailing lists off which was what
-made it look like this was some Intel person working on the bot.
+> > Decompressing Linux...
+> > =
 
---===============1149205797496574081==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
+> > XZ-compressed data is corrupt
+> > =
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjIKCmlRRWNCQUVC
-Q0FBR0JRSlhkanpkQUFvSkVDVFdpM0pkVklmUWdtNEgvMTBVbi84b2NrQkRWYWhGNzZ5eWdZQ0kK
-VDFYRmxkNTVDZ2VVemFSbS82Qll5VlR4RCtsakR6NTI4eXQ1UGR1a2ZqSk5GZmhQNGVXd2docUJq
-amNVR2Q2NAp1bFNFdkVweFUxSjdnRmZRSnd6VHVERnNVRlJ6aHpxeFcxOGVwaWtwU0ZRYnk0RTJT
-YkVZaFdmY2dUM1pQakpNCkFOSVpoTTgxUHcyQjFnQmNlSVZxcUcrZ25QMWxjb3A4bmpYY3BUK0tk
-RTRsVWtJV0M4L0RGZ0Q2Z2VrSnhYRFIKMjk0R2tnY2lLRFhRa2lDaFd5Mm9OVzZMTkp6QjMrYThh
-YUxsb1YwQllvdFBTYjFBei8vWUZ6MzFTN05NVngzVwpnckRSck9wSkRNd241ZzlHaUZMMDJOcEk1
-UUFsUkt0My9QNVBuN2JsZisyN0wyQkJmZVlYemNieUltOE5nNDQ9Cj1meHVyCi0tLS0tRU5EIFBH
-UCBTSUdOQVRVUkUtLS0tLQo=
+> >  -- System halted
+> > =
 
---===============1149205797496574081==--
+> > Hi Kees/Baoquan,
+> > =
+
+> > Looks like
+> > =
+
+> > commit ed9f007ee68478f6a50ec9971ade25a0129a5c0e
+> > Author: Kees Cook <keescook@chromium.org>
+> > Date:   Wed May 25 15:45:33 2016 -0700
+> > =
+
+> >     x86/KASLR: Extend kernel image physical address randomization to ad=
+dresses l
+> > arger than 4G
+> =
+
+> I know why it happened, making patch. will reply soon.
+
+Sorry, I didn't get it, continue checking.
+
+> =
+
+> > =
+
+> > =
+
+> > cause choose_random_location() return new output buffer
+> > new output: [0x0006600000-0x000fe67c97] 0x09867c98: output_run_size
+> > =
+
+> > that is overlapped with input data.
+> >        input: [0x0008fba276-0x000a8818ed]
+> >               ....-0x000a8affff] 0x098b0000: init_size
+> > =
+
+> > and input already is in mem_avoid.
+
+--===============1533284246805578995==--
 
