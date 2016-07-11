@@ -1,66 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============7857927502549846294=="
+Content-Type: multipart/mixed; boundary="===============0296512282026456976=="
 MIME-Version: 1.0
-From: Ingo Molnar <mingo@kernel.org>
+From: Vegard Nossum <vegard.nossum@oracle.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] x86: fix rdmsr MSR_PLATFORM_INFO unsafe warning in kvm guest
-Date: Mon, 11 Jul 2016 09:38:37 +0200
-Message-ID: <20160711073837.GA25250@gmail.com>
-In-Reply-To: <CANRm+CzKhfyUFGDUJcVYryv3=ORPQ4AG4jbY2eP7NvkLK=Wg2g@mail.gmail.com>
+Subject: Re: [ext4] 5405511e1a: ltp.acl_test01.fail]
+Date: Mon, 11 Jul 2016 13:26:47 +0200
+Message-ID: <57838277.3050700@oracle.com>
+In-Reply-To: <20160711031553.GP26097@thunk.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7857927502549846294==
+--===============0296512282026456976==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On 07/11/2016 05:15 AM, Theodore Ts'o wrote:
+> On Mon, Jul 11, 2016 at 09:59:54AM +0800, kernel test robot wrote:
+>>
+>> FYI, we noticed the following commit:
+>>
+>> https://github.com/0day-ci/linux Vegard-Nossum/ext4-validate-number-of-c=
+lusters-in-group/20160708-041426
+>> commit 5405511e1a984ab644fa9e29a0d3d958b835ab75 ("ext4: validate number =
+of meta clusters in group")
+[...]
+>
+> Vegard, I'm guessing you didn't have a chance to test your patch
+> before you sent it to the list?
 
-* Wanpeng Li <kernellwp@gmail.com> wrote:
+I test all my patches against the failing test-case and a few other images.
 
-> Hi Ingo, Thomas,
-> 2016-06-22 9:28 GMT+08:00 Wanpeng Li <kernellwp@gmail.com>:
-> > From: Wanpeng Li <wanpeng.li@hotmail.com>
-> >
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 0 PID: 0 at arch/x86/mm/extable.c:50 ex_handler_rdmsr_uns=
-afe+0x6a/0x70
-> > unchecked MSR access error: RDMSR from 0xce
-> > Modules linked in:
-> > CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.7.0-rc3+ #1
-> > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Bochs 01/01=
-/2011
-> >  0000000000000000 ffffffff81c03ce0 ffffffff813b3eae ffffffff81c03d30
-> >  0000000000000000 ffffffff81c03d20 ffffffff81067181 0000003200000001
-> >  ffffffff81c03df8 ffffffff8179676c 0000000000000000 ffffffff81fcd2c0
-> > Call Trace:
-> >  dump_stack+0x67/0x99
-> >  __warn+0xd1/0xf0
-> >  warn_slowpath_fmt+0x4f/0x60
-> >  ex_handler_rdmsr_unsafe+0x6a/0x70
-> >  fixup_exception+0x39/0x50
-> >  do_general_protection+0x93/0x1b0
-> >  general_protection+0x22/0x30
-> >  ? cpu_khz_from_msr+0xd8/0x1c0
-> >  native_calibrate_cpu+0x30/0x5b0
-> >  tsc_init+0x2b/0x297
-> >  x86_late_time_init+0xf/0x11
-> >  start_kernel+0x398/0x451
-> >  ? set_init_arg+0x55/0x55
-> >  x86_64_start_reservations+0x2f/0x31
-> >  x86_64_start_kernel+0xea/0xed
-> >
-> > After commit (fc141535ad8 : "x86 tsc_msr: Extend to include Intel Core
-> > Architecture"), rdmsr MSR_PLATFORM_INFO is used to get maximum non-turbo
-> =
+This patch specifically I think was sent with an [RFC] tag which I
+intended to signal that I'm *not* sure of the fix.
 
-> I just saw commit (fc273eeef314c : "x86 tsc_msr: Extend to include
-> Intel Core Architecture") was merged in tip tree, then this patch is
-> needed to fix that commit. The bug is reported by LKP several weeks
-> ago, and kvm maintainer Paolo has already replied "This looks good" to
-> this patch.
+That said, I could do a better job of running more conventional fs tests
+on my patches, so I'll incorporate xfstests into my workflow.
 
-Applied, thanks!
+> 		bit_max =3D ext4_num_clusters_in_group(sb, i);
+> 		if ((bit_max >> 3) >=3D sb->s_blocksize) {
+> 			ext4_msg(sb, KERN_WARNING, "clusters in "
+> 	  			  "group %u exceeds block size", i);
+> 			goto failed_mount;
+> 		}
+>
+>
+> This is the test which is failing, but it will fail by default on
+> pretty much all ext4 file systems, since by default there will be
+> 32768 blocks (clusters) per group, with a 4k block size (and 32768 >>
+> 3 =3D=3D 4096).  And in the test that failed, this was a 1k block size
+> with 8192 blocks per blocks (and 8192 >> 3 =3D=3D 1024).
 
-	Ingo
+Ugh, brain-o on my part. It should say > rather than >=3D, agreed?
 
---===============7857927502549846294==--
+> Anyway, as I mentioned before, I'd much rather do very specific sanity
+> checking on superblock fields, instead of sanity checking calculated
+> values such as ext4_num_clusters_in_group().
+>
+> Perhaps the easist thing to do is to run e2fsck -n on those file
+> systems that are causing problems?
+
+The function (ext4_init_block_bitmap()) has even more problems than the
+ones I reported to the list so far; ext4_block_bitmap(),
+ext4_inode_bitmap(), and ext4_inode_table() may _also_ point outside the
+buffer and cause random corruptions.
+
+I'll try to come up with a new (and better tested) patch.
+
+Thanks,
+
+
+Vegard
+
+--===============0296512282026456976==--
 
