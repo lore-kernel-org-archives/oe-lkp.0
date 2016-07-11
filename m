@@ -1,79 +1,66 @@
-Content-Type: multipart/mixed; boundary="===============4357885114787632878=="
+Content-Type: multipart/mixed; boundary="===============7857927502549846294=="
 MIME-Version: 1.0
-From: Antoine, Peter <peter.antoine@intel.com>
+From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [drm/i915/huc] 0a9a963e36: [drm:intel_uc_fw_fetch [i915]] *ERROR* Failed to fetch GuC firmware from i915/skl_huc_ver01_07_1398.bin (error -2)
-Date: Mon, 11 Jul 2016 07:17:01 +0000
-Message-ID: <C182EC90AE29B54BB712270726FAFA75145B43BB@IRSMSX102.ger.corp.intel.com>
-In-Reply-To: <20160711013931.GH26840@yexl-desktop>
+Subject: Re: [PATCH] x86: fix rdmsr MSR_PLATFORM_INFO unsafe warning in kvm guest
+Date: Mon, 11 Jul 2016 09:38:37 +0200
+Message-ID: <20160711073837.GA25250@gmail.com>
+In-Reply-To: <CANRm+CzKhfyUFGDUJcVYryv3=ORPQ4AG4jbY2eP7NvkLK=Wg2g@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4357885114787632878==
+--===============7857927502549846294==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Do you have the firmware package for the SKL huc?
 
-Peter
------Original Message-----
-From: lkp-request(a)eclists.intel.com [mailto:lkp-request(a)eclists.intel.c=
-om] On Behalf Of Ye, Xiaolong
-Sent: Monday, July 11, 2016 2:40 AM
-To: Antoine, Peter <peter.antoine@intel.com>
-Cc: Wu, Fengguang <fengguang.wu@intel.com>; Alex Dai <yu.dai@intel.com>=
-; LKML <linux-kernel@vger.kernel.org>; lkp(a)01.org
-Subject: [lkp] [drm/i915/huc] 0a9a963e36: [drm:intel_uc_fw_fetch [i915]] *E=
-RROR* Failed to fetch GuC firmware from i915/skl_huc_ver01_07_1398.bin (err=
-or -2)
+* Wanpeng Li <kernellwp@gmail.com> wrote:
 
+> Hi Ingo, Thomas,
+> 2016-06-22 9:28 GMT+08:00 Wanpeng Li <kernellwp@gmail.com>:
+> > From: Wanpeng Li <wanpeng.li@hotmail.com>
+> >
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 0 PID: 0 at arch/x86/mm/extable.c:50 ex_handler_rdmsr_uns=
+afe+0x6a/0x70
+> > unchecked MSR access error: RDMSR from 0xce
+> > Modules linked in:
+> > CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.7.0-rc3+ #1
+> > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Bochs 01/01=
+/2011
+> >  0000000000000000 ffffffff81c03ce0 ffffffff813b3eae ffffffff81c03d30
+> >  0000000000000000 ffffffff81c03d20 ffffffff81067181 0000003200000001
+> >  ffffffff81c03df8 ffffffff8179676c 0000000000000000 ffffffff81fcd2c0
+> > Call Trace:
+> >  dump_stack+0x67/0x99
+> >  __warn+0xd1/0xf0
+> >  warn_slowpath_fmt+0x4f/0x60
+> >  ex_handler_rdmsr_unsafe+0x6a/0x70
+> >  fixup_exception+0x39/0x50
+> >  do_general_protection+0x93/0x1b0
+> >  general_protection+0x22/0x30
+> >  ? cpu_khz_from_msr+0xd8/0x1c0
+> >  native_calibrate_cpu+0x30/0x5b0
+> >  tsc_init+0x2b/0x297
+> >  x86_late_time_init+0xf/0x11
+> >  start_kernel+0x398/0x451
+> >  ? set_init_arg+0x55/0x55
+> >  x86_64_start_reservations+0x2f/0x31
+> >  x86_64_start_kernel+0xea/0xed
+> >
+> > After commit (fc141535ad8 : "x86 tsc_msr: Extend to include Intel Core
+> > Architecture"), rdmsr MSR_PLATFORM_INFO is used to get maximum non-turbo
+> =
 
-FYI, we noticed the following commit:
+> I just saw commit (fc273eeef314c : "x86 tsc_msr: Extend to include
+> Intel Core Architecture") was merged in tip tree, then this patch is
+> needed to fix that commit. The bug is reported by LKP several weeks
+> ago, and kvm maintainer Paolo has already replied "This looks good" to
+> this patch.
 
-https://github.com/0day-ci/linux Peter-Antoine/drm-i915-guc-Make-the-GuC-fw=
--loading-helper-functions-general/20160706-223108
-commit 0a9a963e364435950699fee4b8e76cd9b01889f4 ("drm/i915/huc: Add HuC fw =
-loading support")
+Applied, thanks!
 
-in testcase: xsave-test
-with following parameters: =
+	Ingo
 
-
-on test machine: 8 threads Skylake with 8G memory
-
-caused below changes:
-
-
-
-[  204.239941] i915 0000:00:02.0: Failed to load DMC firmware [https://01.o=
-rg/linuxgraphics/intel-linux-graphics-firmwares], disabling runtime power m=
-anagement.
-[  204.240249] vgaarb: device changed decodes: PCI:0000:00:02.0,olddecodes=
-=3Dio+mem,decodes=3Dio+mem:owns=3Dio+mem
-[  204.240749] i915 0000:00:02.0: Direct firmware load for i915/skl_huc_ver=
-01_07_1398.bin failed with error -2 [  204.240775] [drm:intel_uc_fw_fetch [=
-i915]] *ERROR* Failed to fetch GuC firmware from i915/skl_huc_ver01_07_1398=
-.bin (error -2) [  204.240780] i915 0000:00:02.0: Direct firmware load for =
-i915/skl_guc_ver6_1.bin failed with error -2 [  204.240797] [drm:intel_uc_f=
-w_fetch [i915]] *ERROR* Failed to fetch GuC firmware from i915/skl_guc_ver6=
-_1.bin (error -2) [  204.263705] [drm] GuC firmware load failed: -5 [  204.=
-263705] [drm] Falling back from GuC submission to execlist mode [  204.2865=
-39] ACPI: Video Device [GFX0] (multi-head: yes  rom: no  post: no)
-
-
-
-To reproduce:
-
-        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
-ts.git
-        cd lkp-tests
-        bin/lkp install job.yaml  # job file is attached in this email
-        bin/lkp run     job.yaml
-
-
-
-Thanks,
-Xiaolong
-
---===============4357885114787632878==--
+--===============7857927502549846294==--
 
