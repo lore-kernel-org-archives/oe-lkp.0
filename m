@@ -1,334 +1,166 @@
-Content-Type: multipart/mixed; boundary="===============8347967348856349744=="
+Content-Type: multipart/mixed; boundary="===============6131067358026418176=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Ding, ChiX <chix.ding@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [ACPI / APEI] a3e2acc5e3: kmsg.BERT:Can't_request_iomem_region<#-#>
-Date: Tue, 12 Jul 2016 13:48:43 +0800
-Message-ID: <20160712054843.GA8962@yexl-desktop>
-In-Reply-To: <E9EB2E0F-5635-4550-9761-FD3910828E3C@intel.com>
+Subject: Re: [drm/i915/vlv] ff6eee6113: WARNING: CPU: 0 PID: 194 at drivers/gpu/drm/i915/intel_uncore.c:803 __unclaimed_reg_debug+0x6d/0x80 [i915]
+Date: Tue, 12 Jul 2016 16:34:36 +0000
+Message-ID: <FBBD98403E9C0B4AA00BFB8657163F851A4821A0@IRSMSX108.ger.corp.intel.com>
+In-Reply-To: <20160712021159.GA5148@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8347967348856349744==
+--===============6131067358026418176==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 12, 2016 at 09:21:26AM +0800, Luck, Tony wrote:
->Get BIOS version with:
->
-># dmidecode   -t  0
+Hi there
+I have been assigned to aother project and no longer work on this anymore.
 
-Thanks, here is the machine info:
+Thanks,
+Chi
 
-# dmidecode   -t  0
-# dmidecode 2.12
-SMBIOS 2.7 present.
-
-Handle 0x0000, DMI type 0, 24 bytes
-BIOS Information
-	Vendor: American Megatrends Inc.
-	Version: BWDEXT.86B.000.012.D127
-	Release Date: 10/08/2012
-	Address: 0xF0000
-	Runtime Size: 64 kB
-	ROM Size: 8192 kB
-	Characteristics:
-		PCI is supported
-		BIOS is upgradeable
-		BIOS shadowing is allowed
-		Boot from CD is supported
-		Selectable boot is supported
-		BIOS ROM is socketed
-		EDD is supported
-		5.25"/1.2 MB floppy services are supported (int 13h)
-		3.5"/720 kB floppy services are supported (int 13h)
-		3.5"/2.88 MB floppy services are supported (int 13h)
-		Print screen service is supported (int 5h)
-		Serial services are supported (int 14h)
-		Printer services are supported (int 17h)
-		ACPI is supported
-		USB legacy is supported
-		BIOS boot specification is supported
-		Targeted content distribution is supported
-		UEFI is supported
-	BIOS Revision: 4.6
-
-# acpidump > acpi_data
-# acpixtract -a acpi_data =
+-----Original Message-----
+From: lkp-request(a)eclists.intel.com [mailto:lkp-request(a)eclists.intel.c=
+om] On Behalf Of Ye, Xiaolong
+Sent: Tuesday, July 12, 2016 4:12 AM
+To: Maarten Lankhorst
+Cc: Wu, Fengguang; Ding, ChiX; LKML; lkp(a)01.org
+Subject: [lkp] [drm/i915/vlv] ff6eee6113: WARNING: CPU: 0 PID: 194 at drive=
+rs/gpu/drm/i915/intel_uncore.c:803 __unclaimed_reg_debug+0x6d/0x80 [i915]
 
 
-Intel ACPI Component Architecture
-ACPI Binary Table Extraction Utility version 20150204-64 [Mar  2 2015]
-Copyright (c) 2000 - 2015 Intel Corporation
+FYI, we noticed the following commit:
 
-Acpi table [APIC] - 114 bytes written to apic.dat
-Acpi table [BERT] - 48 bytes written to bert.dat
-Acpi table [DSDT] - 18110 bytes written to dsdt.dat
-Acpi table [EINJ] - 304 bytes written to einj.dat
-Acpi table [FACP] - 244 bytes written to facp.dat
-Acpi table [ERST] - 528 bytes written to erst.dat
-Acpi table [HEST] - 168 bytes written to hest.dat
-Acpi table [HPET] - 56 bytes written to hpet.dat
-Acpi table [MCFG] - 60 bytes written to mcfg.dat
-Acpi table [SPCR] - 80 bytes written to spcr.dat
-Acpi table [FACS] - 64 bytes written to facs1.dat
-Acpi table [FACS] - 64 bytes written to facs2.dat
-Acpi table [SSDT] - 1657 bytes written to ssdt1.dat
-Acpi table [SSDT] - 562 bytes written to ssdt2.dat
-Acpi table [SSDT] - 527 bytes written to ssdt3.dat
-Acpi table [SSDT] - 701 bytes written to ssdt4.dat
-Acpi table [SSDT] - 1707 bytes written to ssdt5.dat
-Acpi table [SSDT] - 351 bytes written to ssdt6.dat
-Acpi table [SSDT] - 141 bytes written to ssdt7.dat
+https://github.com/0day-ci/linux Chi-Ding/drm-i915-Remove-unused-parameters=
+-from-intel_plane_wm_parameters/20160623-210225
+commit ff6eee61132377c1fcf44fec29ecc7560a2a9df0 ("drm/i915/vlv: Add interme=
+diate field in intel_crtc_wm_state and handlers for two-level watermark")
+
+in testcase: autotest
+with following parameters: test=3Dcyclictest
+
+on test machine: 2 threads Minnowboard Max with 2G memory
+
+caused below changes:
 
 
-processor	: 0
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 54
-model name	: Intel(R) Atom(TM) CPU S1240   @ 1.60GHz
-stepping	: 9
-microcode	: 0x107
-cpu MHz		: 1600.000
-cache size	: 512 KB
-physical id	: 0
-siblings	: 4
-core id		: 0
-cpu cores	: 2
-apicid		: 0
-initial apicid	: 0
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 10
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat =
-pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constan=
-t_tsc arch_perfmon pebs bts rep_good nopl nonstop_tsc aperfmperf eagerfpu p=
-ni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm movbe lahf_lm tpr=
-_shadow vnmi flexpriority dtherm arat
-bugs		:
-bogomips	: 3200.33
-clflush size	: 64
-cache_alignment	: 64
-address sizes	: 36 bits physical, 48 bits virtual
-power management:
+<4>[   44.549007] ------------[ cut here ]------------
+<4>[   44.549234] WARNING: CPU: 0 PID: 194 at drivers/gpu/drm/i915/intel_un=
+core.c:803 __unclaimed_reg_debug+0x6d/0x80 [i915]
+<4>[   44.549241] Unclaimed register detected after reading register 0x1f00=
+30
+<4>[   44.549313] Modules linked in: sd_mod coretemp kvm_intel kvm irqbypas=
+s crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel i915 aesni=
+_intel snd_hda_intel lrw gf128mul glue_helper ablk_helper cryptd video snd_=
+hda_codec drm_kms_helper syscopyarea snd_hda_core s
+ysfillrect pcspkr usb_storage snd_hwdep sysimgblt fb_sys_fops snd_pcm snd_t=
+imer snd shpchp soundcore drm
+<4>[   44.549323] CPU: 0 PID: 194 Comm: kworker/u2:2 Not tainted 4.7.0-rc2-=
+00666-gff6eee6 #1
+<4>[   44.549340] Workqueue: events_unbound async_run_entry_fn
+<4>[   44.549354]  0000000000000000 ffff8800774f35b8 ffffffff81432c4a ffff8=
+800774f3608
+<4>[   44.549364]  0000000000000000 ffff8800774f35f8 ffffffff8107d681 00000=
+323a01f4c2b
+<4>[   44.549374]  00000000001f0030 0000000000000000 0000000000000001 ffff8=
+80077a30000
+<4>[   44.549376] Call Trace:
+<4>[   44.549392]  [<ffffffff81432c4a>] dump_stack+0x63/0x89
+<4>[   44.549401]  [<ffffffff8107d681>] __warn+0xd1/0xf0
+<4>[   44.549410]  [<ffffffff8107d6ef>] warn_slowpath_fmt+0x4f/0x60
+<4>[   44.549423]  [<ffffffff810b3996>] ? update_curr+0x66/0x180
+<4>[   44.549433]  [<ffffffff810b3996>] ? update_curr+0x66/0x180
+<4>[   44.549634]  [<ffffffffa01f4c7d>] __unclaimed_reg_debug+0x6d/0x80 [i9=
+15]
+<4>[   44.549830]  [<ffffffffa01f5e24>] vlv_read32+0x284/0x2c0 [i915]
+<4>[   44.550010]  [<ffffffffa01aad44>] vlv_pipe_set_fifo_size+0xa4/0x2b0 [=
+i915]
+<4>[   44.550190]  [<ffffffffa01b0ac4>] vlv_update_wm+0x614/0x6e0 [i915]
+<4>[   44.550201]  [<ffffffff810b53a5>] ? put_prev_entity+0x35/0x840
+<4>[   44.550213]  [<ffffffff8102c74b>] ? __switch_to+0x29b/0x5b0
+<4>[   44.550395]  [<ffffffffa01b0cbd>] vlv_initial_watermarks+0x8d/0xa0 [i=
+915]
+<4>[   44.550594]  [<ffffffffa021c30a>] intel_pre_plane_update+0x11a/0x1b0 =
+[i915]
+<4>[   44.550795]  [<ffffffffa021cb3b>] intel_atomic_commit_tail+0x2cb/0x11=
+10 [i915]
+<4>[   44.550806]  [<ffffffff810c2022>] ? complete_all+0x42/0x50
+<4>[   44.550818]  [<ffffffff810a38f9>] ? __might_sleep+0x49/0x80
+<4>[   44.551018]  [<ffffffffa021dd24>] intel_atomic_commit+0x3a4/0x530 [i9=
+15]
+<4>[   44.551117]  [<ffffffffa001f800>] ? drm_atomic_check_only+0xd0/0x640 =
+[drm]
+<4>[   44.551207]  [<ffffffffa0020277>] ? drm_atomic_add_affected_connector=
+s+0x27/0xf0 [drm]
+<4>[   44.551297]  [<ffffffffa001fda7>] drm_atomic_commit+0x37/0x60 [drm]
+<4>[   44.551345]  [<ffffffffa013924c>] restore_fbdev_mode+0x14c/0x270 [drm=
+_kms_helper]
+<4>[   44.551389]  [<ffffffffa013abf3>] drm_fb_helper_restore_fbdev_mode_un=
+locked+0x33/0x80 [drm_kms_helper]
+<4>[   44.551432]  [<ffffffffa013ac6d>] drm_fb_helper_set_par+0x2d/0x50 [dr=
+m_kms_helper]
+<4>[   44.551475]  [<ffffffffa013ab78>] drm_fb_helper_hotplug_event+0xa8/0x=
+f0 [drm_kms_helper]
+<4>[   44.551518]  [<ffffffffa013ac16>] drm_fb_helper_restore_fbdev_mode_un=
+locked+0x56/0x80 [drm_kms_helper]
+<4>[   44.551561]  [<ffffffffa013ac6d>] drm_fb_helper_set_par+0x2d/0x50 [dr=
+m_kms_helper]
+<4>[   44.551766]  [<ffffffffa0236afa>] intel_fbdev_set_par+0x1a/0x60 [i915]
+<4>[   44.551778]  [<ffffffff814a6413>] fbcon_init+0x533/0x5a0
+<4>[   44.551790]  [<ffffffff8153e84a>] visual_init+0xca/0x130
+<4>[   44.551800]  [<ffffffff81540cc7>] do_bind_con_driver+0x167/0x3a0
+<4>[   44.551812]  [<ffffffff8154122f>] do_take_over_console+0x12f/0x1a0
+<4>[   44.551822]  [<ffffffff814a16e7>] do_fbcon_takeover+0x57/0xb0
+<4>[   44.551831]  [<ffffffff814a6e8d>] fbcon_event_notify+0x64d/0x750
+<4>[   44.551844]  [<ffffffff8109ddda>] notifier_call_chain+0x4a/0x70
+<4>[   44.551855]  [<ffffffff8109e127>] __blocking_notifier_call_chain+0x47=
+/0x60
+<4>[   44.551866]  [<ffffffff8109e156>] blocking_notifier_call_chain+0x16/0=
+x20
+<4>[   44.551876]  [<ffffffff814ac6db>] fb_notifier_call_chain+0x1b/0x20
+<4>[   44.551887]  [<ffffffff814ae8bb>] register_framebuffer+0x24b/0x330
+<4>[   44.551932]  [<ffffffffa013aec8>] drm_fb_helper_initial_config+0x238/=
+0x3c0 [drm_kms_helper]
+<4>[   44.552130]  [<ffffffffa0237d68>] intel_fbdev_initial_config+0x18/0x3=
+0 [i915]
+<4>[   44.552140]  [<ffffffff8109f87a>] async_run_entry_fn+0x4a/0x140
+<4>[   44.552149]  [<ffffffff810969b8>] process_one_work+0x158/0x460
+<4>[   44.552158]  [<ffffffff8109761e>] worker_thread+0x4e/0x4c0
+<4>[   44.552167]  [<ffffffff810975d0>] ? rescuer_thread+0x350/0x350
+<4>[   44.552175]  [<ffffffff810975d0>] ? rescuer_thread+0x350/0x350
+<4>[   44.552185]  [<ffffffff8109cbc4>] kthread+0xd4/0xf0
+<4>[   44.552199]  [<ffffffff819177ff>] ret_from_fork+0x1f/0x40
+<4>[   44.552209]  [<ffffffff8109caf0>] ? kthread_park+0x60/0x60
+<4>[   44.552216] ---[ end trace 1395d82281f53585 ]---
 
-processor	: 1
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 54
-model name	: Intel(R) Atom(TM) CPU S1240   @ 1.60GHz
-stepping	: 9
-microcode	: 0x107
-cpu MHz		: 1600.000
-cache size	: 512 KB
-physical id	: 0
-siblings	: 4
-core id		: 0
-cpu cores	: 2
-apicid		: 1
-initial apicid	: 1
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 10
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat =
-pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constan=
-t_tsc arch_perfmon pebs bts rep_good nopl nonstop_tsc aperfmperf eagerfpu p=
-ni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm movbe lahf_lm tpr=
-_shadow vnmi flexpriority dtherm arat
-bugs		:
-bogomips	: 3200.01
-clflush size	: 64
-cache_alignment	: 64
-address sizes	: 36 bits physical, 48 bits virtual
-power management:
 
-processor	: 2
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 54
-model name	: Intel(R) Atom(TM) CPU S1240   @ 1.60GHz
-stepping	: 9
-microcode	: 0x107
-cpu MHz		: 1600.000
-cache size	: 512 KB
-physical id	: 0
-siblings	: 4
-core id		: 1
-cpu cores	: 2
-apicid		: 2
-initial apicid	: 2
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 10
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat =
-pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constan=
-t_tsc arch_perfmon pebs bts rep_good nopl nonstop_tsc aperfmperf eagerfpu p=
-ni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm movbe lahf_lm tpr=
-_shadow vnmi flexpriority dtherm arat
-bugs		:
-bogomips	: 3200.07
-clflush size	: 64
-cache_alignment	: 64
-address sizes	: 36 bits physical, 48 bits virtual
-power management:
 
-processor	: 3
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 54
-model name	: Intel(R) Atom(TM) CPU S1240   @ 1.60GHz
-stepping	: 9
-microcode	: 0x107
-cpu MHz		: 1600.000
-cache size	: 512 KB
-physical id	: 0
-siblings	: 4
-core id		: 1
-cpu cores	: 2
-apicid		: 3
-initial apicid	: 3
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 10
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat =
-pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constan=
-t_tsc arch_perfmon pebs bts rep_good nopl nonstop_tsc aperfmperf eagerfpu p=
-ni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm movbe lahf_lm tpr=
-_shadow vnmi flexpriority dtherm arat
-bugs		:
-bogomips	: 3200.03
-clflush size	: 64
-cache_alignment	: 64
-address sizes	: 36 bits physical, 48 bits virtual
-power management:
+To reproduce:
 
-MemTotal:        8164976 kB
-MemFree:         7537728 kB
-MemAvailable:    7958208 kB
-Buffers:               0 kB
-Cached:           503900 kB
-SwapCached:            0 kB
-Active:           124392 kB
-Inactive:         402504 kB
-Active(anon):      23308 kB
-Inactive(anon):    16616 kB
-Active(file):     101084 kB
-Inactive(file):   385888 kB
-Unevictable:           0 kB
-Mlocked:               0 kB
-SwapTotal:             0 kB
-SwapFree:              0 kB
-Dirty:                 0 kB
-Writeback:             0 kB
-AnonPages:         23032 kB
-Mapped:            17212 kB
-Shmem:             16928 kB
-Slab:              50812 kB
-SReclaimable:      32796 kB
-SUnreclaim:        18016 kB
-KernelStack:        3472 kB
-PageTables:         4216 kB
-NFS_Unstable:          0 kB
-Bounce:                0 kB
-WritebackTmp:          0 kB
-CommitLimit:     4082488 kB
-Committed_AS:      82560 kB
-VmallocTotal:   34359738367 kB
-VmallocUsed:           0 kB
-VmallocChunk:          0 kB
-HardwareCorrupted:     0 kB
-AnonHugePages:      4096 kB
-HugePages_Total:       0
-HugePages_Free:        0
-HugePages_Rsvd:        0
-HugePages_Surp:        0
-Hugepagesize:       2048 kB
-DirectMap4k:       63668 kB
-DirectMap2M:     8316928 kB
->
->Sent from my iPhone
->
->> On Jul 11, 2016, at 17:54, Ye, Xiaolong <xiaolong.ye@intel.com> wrote:
->> =
+        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
+ts.git
+        cd lkp-tests
+        bin/lkp install job.yaml  # job file is attached in this email
+        bin/lkp run     job.yaml
 
->>> On Sun, Jul 10, 2016 at 08:28:37PM -0700, Tony Luck wrote:
->>> I'm very surprised that there was a BERT table on an Atom machine. More=
- details about the machine please. Also BIOS version.
->> =
 
->> Hi, ying
->> =
 
->> Could you tell me what's BERT table? and how to check the BIOS version?
->> =
+Thanks,
+Xiaolong
+--------------------------------------------------------------
+Intel Research and Development Ireland Limited
+Registered in Ireland
+Registered Office: Collinstown Industrial Park, Leixlip, County Kildare
+Registered Number: 308263
 
->> Thanks,
->> Xiaolong
->> =
 
->>> =
+This e-mail and any attachments may contain confidential material for the s=
+ole
+use of the intended recipient(s). Any review or distribution by others is
+strictly prohibited. If you are not the intended recipient, please contact =
+the
+sender and delete all copies.
 
->>> Sent from my iPhone
->>> =
 
->>>> On Jul 10, 2016, at 18:43, kernel test robot <xiaolong.ye@intel.com>=
- wrote:
->>>> =
-
->>>> =
-
->>>> FYI, we noticed the following commit:
->>>> =
-
->>>> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git ma=
-ster
->>>> commit a3e2acc5e37b22b6808a0b8e46887c3577de9c9e ("ACPI / APEI: Add Boo=
-t Error Record Table (BERT) support")
->>>> =
-
->>>> in testcase: locktorture
->>>> with following parameters: runtime=3D300s
->>>> =
-
->>>> on test machine: Atom with 8G memory
->>>> =
-
->>>> caused below changes:
->>>> =
-
->>>> =
-
->>>> [   12.317148] BERT: Can't request iomem region <00000000bfccfc18-0000=
-0000bfccfc2b>.
->>>> =
-
->>>> =
-
->>>> =
-
->>>> To reproduce:
->>>> =
-
->>>>       git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-=
-tests.git
->>>>       cd lkp-tests
->>>>       bin/lkp install job.yaml  # job file is attached in this email
->>>>       bin/lkp run     job.yaml
->>>> =
-
->>>> =
-
->>>> =
-
->>>> Thanks,
->>>> Xiaolong
->>>> <config-4.7.0-rc4-00003-ga3e2acc>
->>>> <kmsg.xz>
->>>> <job.yaml>
-
---===============8347967348856349744==--
+--===============6131067358026418176==--
 
