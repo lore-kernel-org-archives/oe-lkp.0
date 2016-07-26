@@ -1,40 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============6170374644836844812=="
+Content-Type: multipart/mixed; boundary="===============6827808142835494641=="
 MIME-Version: 1.0
-From: Dave Jones <davej@codemonkey.org.uk>
+From: Alison Schofield <amsfield22@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: More information please. Re: [fs] 54cc07a761: BUG: kernel test crashed
-Date: Tue, 26 Jul 2016 17:18:59 -0400
-Message-ID: <20160726211859.GB9577@codemonkey.org.uk>
-In-Reply-To: <87wpk8p49p.fsf@x220.int.ebiederm.org>
+Subject: drivers/iio & kbuild test robot
+Date: Tue, 26 Jul 2016 15:49:19 -0700
+Message-ID: <20160726224911.GA16097@d830.WORKGROUP>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6170374644836844812==
+--===============6827808142835494641==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 26, 2016 at 02:50:58PM -0500, Eric W. Biederman wrote:
+Hi Fengguang,
 
- > > Yes that's the right directions to follow. We'll make the reports more
- > > understandable and the test/bisects more reliable.
- > =
+I recently submitted a patch that adds Kconfig options required
+to build a few drivers in IIO.  The kbuild robot did not find
+these. =
 
- > Thanks.  Does trinity have a random seed it can export/import to rerun
- > the same tests?  I ask because there was a failure these tests caught
- > that if the right kernel options was enabled was 100% reliable and it
- > blamed a commit 10 patches down from the indicated commit.
 
-It does log the random seed on startup, and can replay it with the -s option
+You can see the patch here:
+http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?h=3Dfixes=
+-togreg-post-rc1&id=3D9b1425b1698cca01887ad154b631b59666882fb5
 
-There is some variance if you were to do two runs with the same seed back
-to back, because on startup, it walks /proc & /sys, and they'd see differen=
-t things
-so for eg "read() from fd 100" might mean something entirely different.
+I'd like to get a general understanding of the build testing the robot
+provides the iio subsystem, and then specifically see if these types of test
+cases can be added.
 
-But as the testbot runs a pretty minimal userspace, only runs trinity once,
-and really early in boot, this point might not matter.
+I'm up for digging into this if you'll point me in the right direction.
 
-	Dave
+First off, I hope this is the correct email list - lkp(a)list.01.org
+I didn't want to get lost in all the robo messages in kbuild-all.
 
---===============6170374644836844812==--
+Thanks,
+alisons
+
+
+--===============6827808142835494641==--
 
