@@ -1,46 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============7324582358254456423=="
+Content-Type: multipart/mixed; boundary="===============6170374644836844812=="
 MIME-Version: 1.0
 From: Dave Jones <davej@codemonkey.org.uk>
 To: lkp@lists.01.org
 Subject: Re: More information please. Re: [fs] 54cc07a761: BUG: kernel test crashed
-Date: Tue, 26 Jul 2016 17:15:16 -0400
-Message-ID: <20160726211516.GA9577@codemonkey.org.uk>
-In-Reply-To: <20160726151344.GB8811@wfg-t540p.sh.intel.com>
+Date: Tue, 26 Jul 2016 17:18:59 -0400
+Message-ID: <20160726211859.GB9577@codemonkey.org.uk>
+In-Reply-To: <87wpk8p49p.fsf@x220.int.ebiederm.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7324582358254456423==
+--===============6170374644836844812==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 26, 2016 at 11:13:44PM +0800, Fengguang Wu wrote:
- =
+On Tue, Jul 26, 2016 at 02:50:58PM -0500, Eric W. Biederman wrote:
 
- > >> The "BUG: kernel test crashed" means the VM reboots by itself while
- > >> the trinity test is running. If the error message is "BUG: kernel boot
- > >> crashed" it'd mean VM abnormally reboots before any test is launched.
- > >
- > >Is it possible to include a url pointing to a page of documentation
- > >holding this information in your emails or alternatively a url pointing
- > >to some source code.  Just so other people don't have to ask you this
- > >question.
+ > > Yes that's the right directions to follow. We'll make the reports more
+ > > understandable and the test/bisects more reliable.
  > =
 
- > Yes that's the right directions to follow. We'll make the reports more
- > understandable and the test/bisects more reliable.
- > =
+ > Thanks.  Does trinity have a random seed it can export/import to rerun
+ > the same tests?  I ask because there was a failure these tests caught
+ > that if the right kernel options was enabled was 100% reliable and it
+ > blamed a commit 10 patches down from the indicated commit.
 
- > In particular, I suspect this false report might be related to QEMU
- > watchdog. The wild guess is, if trinity touches the watchdog device by
- > accident, it may result in the VM reset w/o any symptom.
- =
+It does log the random seed on startup, and can replay it with the -s option
 
-See ignore_files() in pathnames.c
-Adding an entry to the blacklist there is easy enough to prove/disprove thi=
-s.
+There is some variance if you were to do two runs with the same seed back
+to back, because on startup, it walks /proc & /sys, and they'd see differen=
+t things
+so for eg "read() from fd 100" might mean something entirely different.
+
+But as the testbot runs a pretty minimal userspace, only runs trinity once,
+and really early in boot, this point might not matter.
 
 	Dave
 
-
---===============7324582358254456423==--
+--===============6170374644836844812==--
 
