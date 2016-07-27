@@ -1,94 +1,114 @@
-Content-Type: multipart/mixed; boundary="===============0945195115105201425=="
+Content-Type: multipart/mixed; boundary="===============4931865808292740241=="
 MIME-Version: 1.0
-From: Alison Schofield <amsfield22@gmail.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: Re: drivers/iio & kbuild test robot
-Date: Tue, 26 Jul 2016 16:54:05 -0700
-Message-ID: <20160726235358.GA30527@d830.WORKGROUP>
-In-Reply-To: <20160726233503.GA15811@wfg-t540p.sh.intel.com>
+Date: Wed, 27 Jul 2016 08:27:07 +0800
+Message-ID: <20160727002707.GC15811@wfg-t540p.sh.intel.com>
+In-Reply-To: <20160726235358.GA30527@d830.WORKGROUP>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0945195115105201425==
+--===============4931865808292740241==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 27, 2016 at 07:35:03AM +0800, Fengguang Wu wrote:
-> Hi Alison,
-> =
-
-> On Tue, Jul 26, 2016 at 03:49:19PM -0700, Alison Schofield wrote:
-> >Hi Fengguang,
-> >
-> >I recently submitted a patch that adds Kconfig options required
-> >to build a few drivers in IIO.  The kbuild robot did not find
-> >these.
-> >
-> >You can see the patch here:
-> >http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?h=3Dfi=
-xes-togreg-post-rc1&id=3D9b1425b1698cca01887ad154b631b59666882fb5
-> =
-
-> What're the error messages look like? That'll help me root cause why
-> they are missed.
-> =
-
-
-Error message because Kconfig select IIO_TRIGGERED_BUFFER is missing:
-
-  CC [M]  drivers/iio/humidity/am2315.o
-drivers/iio/humidity/am2315.c: In function =E2=80=98am2315_trigger_handler=
+On Tue, Jul 26, 2016 at 04:54:05PM -0700, Alison Schofield wrote:
+>On Wed, Jul 27, 2016 at 07:35:03AM +0800, Fengguang Wu wrote:
+>> Hi Alison,
+>>
+>> On Tue, Jul 26, 2016 at 03:49:19PM -0700, Alison Schofield wrote:
+>> >Hi Fengguang,
+>> >
+>> >I recently submitted a patch that adds Kconfig options required
+>> >to build a few drivers in IIO.  The kbuild robot did not find
+>> >these.
+>> >
+>> >You can see the patch here:
+>> >http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?h=3Df=
+ixes-togreg-post-rc1&id=3D9b1425b1698cca01887ad154b631b59666882fb5
+>>
+>> What're the error messages look like? That'll help me root cause why
+>> they are missed.
+>>
+>
+>Error message because Kconfig select IIO_TRIGGERED_BUFFER is missing:
+>
+>  CC [M]  drivers/iio/humidity/am2315.o
+>drivers/iio/humidity/am2315.c: In function =E2=80=98am2315_trigger_handler=
 =E2=80=99:
-drivers/iio/humidity/am2315.c:186:2: error: implicit declaration of
-function =E2=80=98iio_push_to_buffers_with_timestamp=E2=80=99
-[-Werror=3Dimplicit-function-declaration]
-  iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-  ^
-cc1: some warnings being treated as errors
-scripts/Makefile.build:295: recipe for target
-'drivers/iio/humidity/am2315.o' failed
-make[2]: *** [drivers/iio/humidity/am2315.o] Error 1
-scripts/Makefile.build:440: recipe for target 'drivers/iio/humidity'
-failed
-make[1]: *** [drivers/iio/humidity] Error 2
-Makefile:1622: recipe for target 'drivers/iio/' failed
-make: *** [drivers/iio/] Error 2
+>drivers/iio/humidity/am2315.c:186:2: error: implicit declaration of
+>function =E2=80=98iio_push_to_buffers_with_timestamp=E2=80=99
+>[-Werror=3Dimplicit-function-declaration]
+>  iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+>  ^
 
+It looks the robot does not catch that error, I cannot find
+"iio_push_to_buffers_with_timestamp" in the logs.
 
-> >I'd like to get a general understanding of the build testing the robot
-> >provides the iio subsystem, and then specifically see if these types of =
-test
-> >cases can be added.
-> =
+Looking closer at the log files, I find they mostly fail at early
+"make prepare" stage.
 
-> In general for build tests, 100% coverage is our goal. If any error
-> is missed, it'd be appreciated to inform us and get the gap closed.
-> =
+: /*
+:  *  lkp-hsx03-rand iio/fixes-togreg-post-rc1 [67/67] 9b1425b1698c (29 min=
+utes ago)  2016-07-24 22:05
+:  */
+: git checkout -q 9b1425b1698cca01887ad154b631b59666882fb5
+: [6 days ago, Alison Schofield] iio: add Kconfig selects needed for trigge=
+red buffer compiles
+:  drivers/iio/accel/Kconfig       | 5 ++++-
+:  drivers/iio/humidity/Kconfig    | 2 ++
+:  drivers/iio/light/Kconfig       | 2 ++
+:  drivers/iio/temperature/Kconfig | 2 ++
+: 2016-07-24 22:05:43 i386-randconfig-s1-201630: make prepare failed
+: 2016-07-24 22:05:48 i386-randconfig-s0-201630: make prepare failed
+: E: relocs_common.c:(.text.startup+0x0): multiple definition of `main'
 
-> - build error/warnings in all kind of kconfigs
-> - sparse/coccinelle/smatch static checks
-> - testing patches posted to mailing lists
-> =
+That may be a new regression introduced when we enable
+multiple-compiler support recently, I'll try to fix it.
 
-> You may also opt-in to email notifications triggered by git push, so
-> that you are aware whether the robot is making good progress for each
-> pushed branch.
-> =
+Thanks,
+Fengguang
 
-> >I'm up for digging into this if you'll point me in the right direction.
-> >
-> >First off, I hope this is the correct email list - lkp(a)list.01.org
-> >I didn't want to get lost in all the robo messages in kbuild-all.
-> =
+>cc1: some warnings being treated as errors
+>scripts/Makefile.build:295: recipe for target
+>'drivers/iio/humidity/am2315.o' failed
+>make[2]: *** [drivers/iio/humidity/am2315.o] Error 1
+>scripts/Makefile.build:440: recipe for target 'drivers/iio/humidity'
+>failed
+>make[1]: *** [drivers/iio/humidity] Error 2
+>Makefile:1622: recipe for target 'drivers/iio/' failed
+>make: *** [drivers/iio/] Error 2
+>
+>
+>> >I'd like to get a general understanding of the build testing the robot
+>> >provides the iio subsystem, and then specifically see if these types of=
+ test
+>> >cases can be added.
+>>
+>> In general for build tests, 100% coverage is our goal. If any error
+>> is missed, it'd be appreciated to inform us and get the gap closed.
+>>
+>> - build error/warnings in all kind of kconfigs
+>> - sparse/coccinelle/smatch static checks
+>> - testing patches posted to mailing lists
+>>
+>> You may also opt-in to email notifications triggered by git push, so
+>> that you are aware whether the robot is making good progress for each
+>> pushed branch.
+>>
+>> >I'm up for digging into this if you'll point me in the right direction.
+>> >
+>> >First off, I hope this is the correct email list - lkp(a)list.01.org
+>> >I didn't want to get lost in all the robo messages in kbuild-all.
+>>
+>> Yeah actually either account will reach us. Yet another one is
+>> lkp(a)intel.com which has internal forward rules to all 0day team
+>> members. Since I do content based filtering, emails not look like
+>> automated reports will be directed to my main mail box.
+>>
+>> Thanks,
+>> Fengguang
 
-> Yeah actually either account will reach us. Yet another one is
-> lkp(a)intel.com which has internal forward rules to all 0day team
-> members. Since I do content based filtering, emails not look like
-> automated reports will be directed to my main mail box.
-> =
-
-> Thanks,
-> Fengguang
-
---===============0945195115105201425==--
+--===============4931865808292740241==--
 
