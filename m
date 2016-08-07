@@ -1,114 +1,106 @@
-Content-Type: multipart/mixed; boundary="===============6789513643685640778=="
+Content-Type: multipart/mixed; boundary="===============8896424528259944928=="
 MIME-Version: 1.0
 From: Paolo Valente <paolo.valente@linaro.org>
 To: lkp@lists.01.org
-Subject: [PATCH 03/22] block, cfq: remove deep seek queues logic
-Date: Sun, 07 Aug 2016 20:12:03 +0200
-Message-ID: <1470593542-11109-3-git-send-email-paolo.valente@linaro.org>
+Subject: [PATCH 04/22] block, cfq: remove SSD-related logic
+Date: Sun, 07 Aug 2016 20:12:04 +0200
+Message-ID: <1470593542-11109-4-git-send-email-paolo.valente@linaro.org>
 In-Reply-To: <1470593542-11109-1-git-send-email-paolo.valente@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6789513643685640778==
+--===============8896424528259944928==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 From: Arianna Avanzini <avanzini.arianna@gmail.com>
 
-CFQ implements a heuristic to identify seeky queues experiencing large
-queue depths (>=3D 4), and let them idle despite their seekiness.  This
-mechanism has no match in BFQ, where idling decisions are taken
-according to a unified global strategy. In this strategy, all actions
-are aimed at boosting the throughput, except for when
-throughput-boosting actions would jeopardize throughput-distribution
-and latency guarantees. Full details in the commits turning CFQ into
-BFQ.
+CFQ disables idling for SSD devices to achieve a higher throughput. As
+for seeky queues (see the previous commit), BFQ makes idling decisions
+for SSD devices in a more complex way, according to a unified strategy
+for boosting the throughput while at the same preserving strong
+throughput-distribution and latency guarantees. This commit then
+removes the CFQ mechanism.
 
 Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
 Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
 ---
- block/cfq-iosched.c | 20 +++-----------------
- 1 file changed, 3 insertions(+), 17 deletions(-)
+ block/cfq-iosched.c | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
 
 diff --git a/block/cfq-iosched.c b/block/cfq-iosched.c
-index 668f649..f5eafc4 100644
+index f5eafc4..9184d30 100644
 --- a/block/cfq-iosched.c
 +++ b/block/cfq-iosched.c
-@@ -411,7 +411,6 @@ enum cfqq_state_flags {
- 	CFQ_CFQQ_FLAG_prio_changed,	/* task priority has changed */
- 	CFQ_CFQQ_FLAG_slice_new,	/* no requests dispatched in slice */
- 	CFQ_CFQQ_FLAG_sync,		/* synchronous queue */
--	CFQ_CFQQ_FLAG_deep,		/* sync cfqq experienced large depth */
- 	CFQ_CFQQ_FLAG_wait_busy,	/* Waiting for next request */
- };
+@@ -51,7 +51,6 @@ static const int cfq_hist_divisor =3D 4;
  =
 
-@@ -438,7 +437,6 @@ CFQ_CFQQ_FNS(idle_window);
- CFQ_CFQQ_FNS(prio_changed);
- CFQ_CFQQ_FNS(slice_new);
- CFQ_CFQQ_FNS(sync);
--CFQ_CFQQ_FNS(deep);
- CFQ_CFQQ_FNS(wait_busy);
- #undef CFQ_CFQQ_FNS
+ #define CFQQ_SEEK_THR		(sector_t)(8 * 100)
+ #define CFQQ_CLOSE_THR		(sector_t)(8 * 1024)
+-#define CFQQ_SECT_THR_NONROT	(sector_t)(2 * 32)
+ #define CFQQ_SEEKY(cfqq)	(hweight32(cfqq->seek_history) > 32/8)
  =
 
-@@ -3060,15 +3058,12 @@ static struct cfq_queue *cfq_select_queue(struct cf=
-q_data *cfqd)
- 	}
+ #define RQ_CIC(rq)		icq_to_cic((rq)->elv.icq)
+@@ -2714,8 +2713,7 @@ static bool cfq_should_idle(struct cfq_data *cfqd, st=
+ruct cfq_queue *cfqq)
+ 		return false;
+ =
+
+ 	/* We do for queues that were marked with idle window flag. */
+-	if (cfq_cfqq_idle_window(cfqq) &&
+-	   !(blk_queue_nonrot(cfqd->queue) && cfqd->hw_tag))
++	if (cfq_cfqq_idle_window(cfqq))
+ 		return true;
  =
 
  	/*
--	 * This is a deep seek queue, but the device is much faster than
--	 * the queue can deliver, don't idle
-+	 * The device is much faster than the queue can deliver: don't idle
- 	 **/
- 	if (CFQQ_SEEKY(cfqq) && cfq_cfqq_idle_window(cfqq) &&
- 	    (cfq_cfqq_slice_new(cfqq) ||
--	    (cfqq->slice_end - now > now - cfqq->slice_start))) {
--		cfq_clear_cfqq_deep(cfqq);
-+	     (cfqq->slice_end - now > now - cfqq->slice_start)))
- 		cfq_clear_cfqq_idle_window(cfqq);
--	}
+@@ -2737,14 +2735,6 @@ static void cfq_arm_slice_timer(struct cfq_data *cfq=
+d)
+ 	u64 sl, group_idle =3D 0;
+ 	u64 now =3D ktime_get_ns();
  =
 
- 	if (cfqq->dispatched && cfq_should_idle(cfqd, cfqq)) {
- 		cfqq =3D NULL;
-@@ -3649,14 +3644,10 @@ cfq_update_idle_window(struct cfq_data *cfqd, struc=
-t cfq_queue *cfqq,
- =
-
- 	enable_idle =3D old_idle =3D cfq_cfqq_idle_window(cfqq);
- =
-
--	if (cfqq->queued[0] + cfqq->queued[1] >=3D 4)
--		cfq_mark_cfqq_deep(cfqq);
+-	/*
+-	 * SSD device without seek penalty, disable idling. But only do so
+-	 * for devices that support queuing, otherwise we still have a problem
+-	 * with sync vs async workloads.
+-	 */
+-	if (blk_queue_nonrot(cfqd->queue) && cfqd->hw_tag)
+-		return;
 -
- 	if (cfqq->next_rq && (cfqq->next_rq->cmd_flags & REQ_NOIDLE))
- 		enable_idle =3D 0;
- 	else if (!atomic_read(&cic->icq.ioc->active_ref) ||
--		 !cfqd->cfq_slice_idle ||
--		 (!cfq_cfqq_deep(cfqq) && CFQQ_SEEKY(cfqq)))
-+		 !cfqd->cfq_slice_idle || CFQQ_SEEKY(cfqq))
- 		enable_idle =3D 0;
- 	else if (sample_valid(cic->ttime.ttime_samples)) {
- 		if (cic->ttime.ttime_mean > cfqd->cfq_slice_idle)
-@@ -4185,11 +4176,6 @@ static enum hrtimer_restart cfq_idle_slice_timer(str=
-uct hrtimer *timer)
- 		 */
- 		if (!RB_EMPTY_ROOT(&cfqq->sort_list))
- 			goto out_kick;
--
--		/*
--		 * Queue depth flag is reset only when the idle didn't succeed
--		 */
--		cfq_clear_cfqq_deep(cfqq);
+ 	WARN_ON(!RB_EMPTY_ROOT(&cfqq->sort_list));
+ 	WARN_ON(cfq_cfqq_slice_new(cfqq));
+ =
+
+@@ -3611,7 +3601,6 @@ cfq_update_io_seektime(struct cfq_data *cfqd, struct =
+cfq_queue *cfqq,
+ 		       struct request *rq)
+ {
+ 	sector_t sdist =3D 0;
+-	sector_t n_sec =3D blk_rq_sectors(rq);
+ 	if (cfqq->last_request_pos) {
+ 		if (cfqq->last_request_pos < blk_rq_pos(rq))
+ 			sdist =3D blk_rq_pos(rq) - cfqq->last_request_pos;
+@@ -3620,10 +3609,7 @@ cfq_update_io_seektime(struct cfq_data *cfqd, struct=
+ cfq_queue *cfqq,
  	}
- expire:
- 	cfq_slice_expired(cfqd, timed_out);
+ =
+
+ 	cfqq->seek_history <<=3D 1;
+-	if (blk_queue_nonrot(cfqd->queue))
+-		cfqq->seek_history |=3D (n_sec < CFQQ_SECT_THR_NONROT);
+-	else
+-		cfqq->seek_history |=3D (sdist > CFQQ_SEEK_THR);
++	cfqq->seek_history |=3D (sdist > CFQQ_SEEK_THR);
+ }
+ =
+
+ /*
 -- =
 
 1.9.1
 
 
---===============6789513643685640778==--
+--===============8896424528259944928==--
 
