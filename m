@@ -1,464 +1,116 @@
-Content-Type: multipart/mixed; boundary="===============3986898021656053277=="
+Content-Type: multipart/mixed; boundary="===============3035773691927378635=="
 MIME-Version: 1.0
 From: Paolo Valente <paolo.valente@linaro.org>
 To: lkp@lists.01.org
-Subject: [PATCH 19/22] block, bfq: reduce idling only in symmetric scenarios
-Date: Sun, 07 Aug 2016 20:12:19 +0200
-Message-ID: <1470593542-11109-19-git-send-email-paolo.valente@linaro.org>
+Subject: [PATCH 21/22] block, bfq: boost the throughput with random I/O on NCQ-capable HDDs
+Date: Sun, 07 Aug 2016 20:12:21 +0200
+Message-ID: <1470593542-11109-21-git-send-email-paolo.valente@linaro.org>
 In-Reply-To: <1470593542-11109-1-git-send-email-paolo.valente@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3986898021656053277==
+--===============3035773691927378635==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-From: Arianna Avanzini <avanzini.arianna@gmail.com>
+This patch is basically the counterpart, for NCQ-capable rotational
+devices, of the previous patch. Exactly as the previous patch does on
+flash-based devices and for any workload, this patch disables device
+idling on rotational devices, but only for random I/O. More precisely,
+idling is disabled only for constantly-seeky queues. In fact, only
+with these queues disabling idling boosts the throughput on
+NCQ-capable rotational devices.
 
-A seeky queue (i..e, a queue containing random requests) is assigned a
-very small device-idling slice, for throughput issues. Unfortunately,
-given the process associated with a seeky queue, this behavior causes
-the following problem: if the process, say P, performs sync I/O and
-has a higher weight than some other processes doing I/O and associated
-with non-seeky queues, then BFQ may fail to guarantee to P its
-reserved share of the throughtput. The reason is that idling is key
-for providing service guarantees to processes doing sync I/O [1].
+To not break service guarantees, idling is disabled for NCQ-enabled
+rotational devices and constantly-seeky queues only when the same
+symmetry conditions considered in the previous patches, plus an
+additional one, hold. The additional condition is related to the fact
+that this patch disables idling only for constantly-seeky queues. In
+this respect, should idling be disabled for a constantly-seeky queue
+while some other non-constantly-seeky queue has pending requests, the
+latter queue would get more requests served, after being set as in
+service, than the former. This differentiated treatment would cause a
+deviation with respect to the desired throughput distribution (i.e.,
+with respect to the throughput distribution corresponding to the
+weights assigned to processes and groups of processes). For this
+reason, the additional condition for disabling idling for a
+constantly-seeky queue is that all queues with pending or in-flight
+requests are constantly seeky.
 
-This commit addresses this issue by allowing the device-idling slice
-to be reduced for a seeky queue only if the scenario happens to be
-symmetric, i.e., if all the queues are to receive the same share of
-the throughput.
-
-[1] P. Valente, A. Avanzini, "Evolution of the BFQ Storage I/O
-    Scheduler", Proceedings of the First Workshop on Mobile System
-    Technologies (MST-2015), May 2015.
-    http://algogroup.unimore.it/people/paolo/disk_sched/mst-2015.pdf
-
-Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
-Signed-off-by: Riccardo Pizzetti <riccardo.pizzetti@gmail.com>
-Signed-off-by: Samuele Zecchini <samuele.zecchini92@gmail.com>
 Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
+Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
 ---
- block/cfq-iosched.c | 254 ++++++++++++++++++++++++++++++++++++++++++++++++=
-++--
- 1 file changed, 248 insertions(+), 6 deletions(-)
+ block/cfq-iosched.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
 diff --git a/block/cfq-iosched.c b/block/cfq-iosched.c
-index f2bcd6e..87aaa2f 100644
+index 504eee7..c93b686 100644
 --- a/block/cfq-iosched.c
 +++ b/block/cfq-iosched.c
-@@ -152,6 +152,20 @@ struct bfq_sched_data {
- };
- =
-
- /**
-+ * struct bfq_weight_counter - counter of the number of all active entities
-+ *                             with a given weight.
-+ */
-+struct bfq_weight_counter {
-+	unsigned int weight; /* weight of the entities this counter refers to */
-+	unsigned int num_active; /* nr of active entities with this weight */
-+	/*
-+	 * Weights tree member (see bfq_data's @queue_weights_tree and
-+	 * @group_weights_tree)
-+	 */
-+	struct rb_node weights_node;
-+};
-+
-+/**
-  * struct bfq_entity - schedulable entity.
+@@ -38,7 +38,9 @@
+  * Even better for latency, BFQ explicitly privileges the I/O of two
+  * classes of time-sensitive applications: interactive and soft
+  * real-time. This feature enables BFQ to provide applications in
+- * these classes with a very low latency.
++ * these classes with a very low latency. Finally, BFQ also features
++ * additional heuristics for preserving both a low latency and a high
++ * throughput on NCQ-capable, rotational or flash-based devices.
   *
-  * A bfq_entity is used to represent either a bfq_queue (leaf node in the
-@@ -180,6 +194,8 @@ struct bfq_sched_data {
-  */
- struct bfq_entity {
- 	struct rb_node rb_node; /* service_tree member */
-+	/* pointer to the weight counter associated with this entity */
-+	struct bfq_weight_counter *weight_counter;
+  * With respect to the version of BFQ presented in [1], and in the
+  * papers cited therein, this implementation adds a hierarchical
+@@ -5663,20 +5665,15 @@ static bool bfq_bfqq_may_idle(struct bfq_queue *bfq=
+q)
+ 	 * The next variable takes into account the cases where idling
+ 	 * boosts the throughput.
+ 	 *
+-	 * The value of the variable is computed considering that
+-	 * idling is usually beneficial for the throughput if:
++	 * The value of the variable is computed considering, first, that
++	 * idling is virtually always beneficial for the throughput if:
+ 	 * (a) the device is not NCQ-capable, or
+ 	 * (b) regardless of the presence of NCQ, the device is rotational
+-	 *     and the request pattern for bfqq is I/O-bound (possible
+-	 *     throughput losses caused by granting idling to seeky queues
+-	 *     are mitigated by the fact that, in all scenarios where
+-	 *     boosting throughput is the best thing to do, i.e., in all
+-	 *     symmetric scenarios, only a minimal idle time is allowed to
+-	 *     seeky queues).
++	 *     and the request pattern for bfqq is I/O-bound and sequential.
+ 	 *
+ 	 * Secondly, and in contrast to the above item (b), idling an
+ 	 * NCQ-capable flash-based device would not boost the
+-	 * throughput even with intense I/O; rather it would lower
++	 * throughput even with sequential I/O; rather it would lower
+ 	 * the throughput in proportion to how fast the device
+ 	 * is. Accordingly, the next variable is true if any of the
+ 	 * above conditions (a) and (b) is true, and, in particular,
+@@ -5684,7 +5681,8 @@ static bool bfq_bfqq_may_idle(struct bfq_queue *bfqq)
+ 	 * device.
+ 	 */
+ 	idling_boosts_thr =3D !bfqd->hw_tag ||
+-		(!blk_queue_nonrot(bfqd->queue) && bfq_bfqq_IO_bound(bfqq));
++		(!blk_queue_nonrot(bfqd->queue) && bfq_bfqq_IO_bound(bfqq) &&
++		 bfq_bfqq_idle_window(bfqq));
  =
 
  	/*
- 	 * flag, true if the entity is on a tree (either the active or
-@@ -402,6 +418,25 @@ struct bfq_data {
- 	struct bfq_group *root_group;
+ 	 * The value of the next variable,
+@@ -7521,7 +7519,7 @@ static int __init bfq_init(void)
+ 	if (ret)
+ 		goto err_pol_unreg;
  =
 
- 	/*
-+	 * rbtree of weight counters of @bfq_queues, sorted by
-+	 * weight. Used to keep track of whether all @bfq_queues have
-+	 * the same weight. The tree contains one counter for each
-+	 * distinct weight associated to some active and not
-+	 * weight-raised @bfq_queue (see the comments to the functions
-+	 * bfq_weights_tree_[add|remove] for further details).
-+	 */
-+	struct rb_root queue_weights_tree;
-+	/*
-+	 * rbtree of non-queue @bfq_entity weight counters, sorted by
-+	 * weight. Used to keep track of whether all @bfq_groups have
-+	 * the same weight. The tree contains one counter for each
-+	 * distinct weight associated to some active @bfq_group (see
-+	 * the comments to the functions bfq_weights_tree_[add|remove]
-+	 * for further details).
-+	 */
-+	struct rb_root group_weights_tree;
-+
-+	/*
- 	 * Number of bfq_queues containing requests (including the
- 	 * queue in service, even if it is idling).
- 	 */
-@@ -699,6 +734,11 @@ struct bfq_group_data {
-  *             to avoid too many special cases during group creation/
-  *             migration.
-  * @stats: stats for this bfqg.
-+ * @active_entities: number of active entities belonging to the group;
-+ *                   unused for the root group. Used to know whether there
-+ *                   are groups with more than one active @bfq_entity
-+ *                   (see the comments to the function
-+ *                   bfq_bfqq_may_idle()).
-  * @rq_pos_tree: rbtree sorted by next_request position, used when
-  *               determining if two or more queues have interleaving
-  *               requests (see bfq_find_close_cooperator()).
-@@ -726,6 +766,8 @@ struct bfq_group {
+-	pr_info("BFQ I/O-scheduler: v6");
++	pr_info("BFQ I/O-scheduler: v7r3");
  =
 
- 	struct bfq_entity *my_entity;
+ 	return 0;
  =
 
-+	int active_entities;
-+
- 	struct rb_root rq_pos_tree;
- =
-
- 	struct bfqg_stats stats;
-@@ -1231,6 +1273,15 @@ up:
- 	goto up;
- }
- =
-
-+static void bfq_weights_tree_add(struct bfq_data *bfqd,
-+				 struct bfq_entity *entity,
-+				 struct rb_root *root);
-+
-+static void bfq_weights_tree_remove(struct bfq_data *bfqd,
-+				    struct bfq_entity *entity,
-+				    struct rb_root *root);
-+
-+
- /**
-  * bfq_active_insert - insert an entity in the active tree of its
-  *                     group/device.
-@@ -1269,6 +1320,13 @@ static void bfq_active_insert(struct bfq_service_tre=
-e *st,
- #endif
- 	if (bfqq)
- 		list_add(&bfqq->bfqq_list, &bfqq->bfqd->active_list);
-+#ifdef CONFIG_CFQ_GROUP_IOSCHED
-+	else /* bfq_group */
-+		bfq_weights_tree_add(bfqd, entity, &bfqd->group_weights_tree);
-+
-+	if (bfqg !=3D bfqd->root_group)
-+		bfqg->active_entities++;
-+#endif
- }
- =
-
- /**
-@@ -1364,6 +1422,14 @@ static void bfq_active_extract(struct bfq_service_tr=
-ee *st,
- #endif
- 	if (bfqq)
- 		list_del(&bfqq->bfqq_list);
-+#ifdef CONFIG_CFQ_GROUP_IOSCHED
-+	else /* bfq_group */
-+		bfq_weights_tree_remove(bfqd, entity,
-+					&bfqd->group_weights_tree);
-+
-+	if (bfqg !=3D bfqd->root_group)
-+		bfqg->active_entities--;
-+#endif
- }
- =
-
- /**
-@@ -1461,6 +1527,7 @@ __bfq_entity_update_weight_prio(struct bfq_service_tr=
-ee *old_st,
- 		struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
- 		unsigned int prev_weight, new_weight;
- 		struct bfq_data *bfqd =3D NULL;
-+		struct rb_root *root;
- #ifdef CONFIG_CFQ_GROUP_IOSCHED
- 		struct bfq_sched_data *sd;
- 		struct bfq_group *bfqg;
-@@ -1510,7 +1577,26 @@ __bfq_entity_update_weight_prio(struct bfq_service_t=
-ree *old_st,
- 		prev_weight =3D entity->weight;
- 		new_weight =3D entity->orig_weight *
- 			     (bfqq ? bfqq->wr_coeff : 1);
-+		/*
-+		 * If the weight of the entity changes, remove the entity
-+		 * from its old weight counter (if there is a counter
-+		 * associated with the entity), and add it to the counter
-+		 * associated with its new weight.
-+		 */
-+		if (prev_weight !=3D new_weight) {
-+			root =3D bfqq ? &bfqd->queue_weights_tree :
-+				      &bfqd->group_weights_tree;
-+			bfq_weights_tree_remove(bfqd, entity, root);
-+		}
- 		entity->weight =3D new_weight;
-+		/*
-+		 * Add the entity to its weights tree only if it is
-+		 * not associated with a weight-raised queue.
-+		 */
-+		if (prev_weight !=3D new_weight &&
-+		    (bfqq ? bfqq->wr_coeff =3D=3D 1 : 1))
-+			/* If we get here, root has been initialized. */
-+			bfq_weights_tree_add(bfqd, entity, root);
- =
-
- 		new_st->wsum +=3D entity->weight;
- =
-
-@@ -2057,6 +2143,10 @@ static void bfq_del_bfqq_busy(struct bfq_data *bfqd,=
- struct bfq_queue *bfqq,
- =
-
- 	bfqd->busy_queues--;
- =
-
-+	if (!bfqq->dispatched)
-+		bfq_weights_tree_remove(bfqd, &bfqq->entity,
-+					&bfqd->queue_weights_tree);
-+
- 	if (bfqq->wr_coeff > 1)
- 		bfqd->wr_busy_queues--;
- =
-
-@@ -2077,6 +2167,11 @@ static void bfq_add_bfqq_busy(struct bfq_data *bfqd,=
- struct bfq_queue *bfqq)
- 	bfq_mark_bfqq_busy(bfqq);
- 	bfqd->busy_queues++;
- =
-
-+	if (!bfqq->dispatched)
-+		if (bfqq->wr_coeff =3D=3D 1)
-+			bfq_weights_tree_add(bfqd, &bfqq->entity,
-+					     &bfqd->queue_weights_tree);
-+
- 	if (bfqq->wr_coeff > 1)
- 		bfqd->wr_busy_queues++;
- }
-@@ -2507,6 +2602,7 @@ static void bfq_pd_init(struct blkg_policy_data *pd)
- 				   * in bfq_init_queue()
- 				   */
- 	bfqg->bfqd =3D bfqd;
-+	bfqg->active_entities =3D 0;
- 	bfqg->rq_pos_tree =3D RB_ROOT;
- }
- =
-
-@@ -3418,6 +3514,142 @@ static void bfq_pos_tree_add_move(struct bfq_data *=
-bfqd, struct bfq_queue *bfqq)
- 		bfqq->pos_root =3D NULL;
- }
- =
-
-+/*
-+ * Tell whether there are active queues or groups with differentiated weig=
-hts.
-+ */
-+static bool bfq_differentiated_weights(struct bfq_data *bfqd)
-+{
-+	/*
-+	 * For weights to differ, at least one of the trees must contain
-+	 * at least two nodes.
-+	 */
-+	return (!RB_EMPTY_ROOT(&bfqd->queue_weights_tree) &&
-+		(bfqd->queue_weights_tree.rb_node->rb_left ||
-+		 bfqd->queue_weights_tree.rb_node->rb_right)
-+#ifdef CONFIG_CFQ_GROUP_IOSCHED
-+	       ) ||
-+	       (!RB_EMPTY_ROOT(&bfqd->group_weights_tree) &&
-+		(bfqd->group_weights_tree.rb_node->rb_left ||
-+		 bfqd->group_weights_tree.rb_node->rb_right)
-+#endif
-+	       );
-+}
-+
-+/*
-+ * The following function returns true if every queue must receive the
-+ * same share of the throughput (this condition is used when deciding
-+ * whether idling may be disabled, see the comments in the function
-+ * bfq_bfqq_may_idle()).
-+ *
-+ * Such a scenario occurs when:
-+ * 1) all active queues have the same weight,
-+ * 2) all active groups at the same level in the groups tree have the same
-+ *    weight,
-+ * 3) all active groups at the same level in the groups tree have the same
-+ *    number of children.
-+ *
-+ * Unfortunately, keeping the necessary state for evaluating exactly the
-+ * above symmetry conditions would be quite complex and time-consuming.
-+ * Therefore this function evaluates, instead, the following stronger
-+ * sub-conditions, for which it is much easier to maintain the needed
-+ * state:
-+ * 1) all active queues have the same weight,
-+ * 2) all active groups have the same weight,
-+ * 3) all active groups have at most one active child each.
-+ * In particular, the last two conditions are always true if hierarchical
-+ * support and the cgroups interface are not enabled, thus no state needs
-+ * to be maintained in this case.
-+ */
-+static bool bfq_symmetric_scenario(struct bfq_data *bfqd)
-+{
-+	return !bfq_differentiated_weights(bfqd);
-+}
-+
-+/*
-+ * If the weight-counter tree passed as input contains no counter for
-+ * the weight of the input entity, then add that counter; otherwise just
-+ * increment the existing counter.
-+ *
-+ * Note that weight-counter trees contain few nodes in mostly symmetric
-+ * scenarios. For example, if all queues have the same weight, then the
-+ * weight-counter tree for the queues may contain at most one node.
-+ * This holds even if low_latency is on, because weight-raised queues
-+ * are not inserted in the tree.
-+ * In most scenarios, the rate at which nodes are created/destroyed
-+ * should be low too.
-+ */
-+static void bfq_weights_tree_add(struct bfq_data *bfqd,
-+				 struct bfq_entity *entity,
-+				 struct rb_root *root)
-+{
-+	struct rb_node **new =3D &(root->rb_node), *parent =3D NULL;
-+
-+	/*
-+	 * Do not insert if the entity is already associated with a
-+	 * counter, which happens if:
-+	 *   1) the entity is associated with a queue,
-+	 *   2) a request arrival has caused the queue to become both
-+	 *      non-weight-raised, and hence change its weight, and
-+	 *      backlogged; in this respect, each of the two events
-+	 *      causes an invocation of this function,
-+	 *   3) this is the invocation of this function caused by the
-+	 *      second event. This second invocation is actually useless,
-+	 *      and we handle this fact by exiting immediately. More
-+	 *      efficient or clearer solutions might possibly be adopted.
-+	 */
-+	if (entity->weight_counter)
-+		return;
-+
-+	while (*new) {
-+		struct bfq_weight_counter *__counter =3D container_of(*new,
-+						struct bfq_weight_counter,
-+						weights_node);
-+		parent =3D *new;
-+
-+		if (entity->weight =3D=3D __counter->weight) {
-+			entity->weight_counter =3D __counter;
-+			goto inc_counter;
-+		}
-+		if (entity->weight < __counter->weight)
-+			new =3D &((*new)->rb_left);
-+		else
-+			new =3D &((*new)->rb_right);
-+	}
-+
-+	entity->weight_counter =3D kzalloc(sizeof(struct bfq_weight_counter),
-+					 GFP_ATOMIC);
-+	entity->weight_counter->weight =3D entity->weight;
-+	rb_link_node(&entity->weight_counter->weights_node, parent, new);
-+	rb_insert_color(&entity->weight_counter->weights_node, root);
-+
-+inc_counter:
-+	entity->weight_counter->num_active++;
-+}
-+
-+/*
-+ * Decrement the weight counter associated with the entity, and, if the
-+ * counter reaches 0, remove the counter from the tree.
-+ * See the comments to the function bfq_weights_tree_add() for considerati=
-ons
-+ * about overhead.
-+ */
-+static void bfq_weights_tree_remove(struct bfq_data *bfqd,
-+				    struct bfq_entity *entity,
-+				    struct rb_root *root)
-+{
-+	if (!entity->weight_counter)
-+		return;
-+
-+	entity->weight_counter->num_active--;
-+	if (entity->weight_counter->num_active > 0)
-+		goto reset_entity_pointer;
-+
-+	rb_erase(&entity->weight_counter->weights_node, root);
-+	kfree(entity->weight_counter);
-+
-+reset_entity_pointer:
-+	entity->weight_counter =3D NULL;
-+}
-+
- static struct request *bfq_find_next_rq(struct bfq_data *bfqd,
- 					struct bfq_queue *bfqq,
- 					struct request *last)
-@@ -4711,13 +4943,17 @@ static void bfq_arm_slice_timer(struct bfq_data *bf=
-qd)
- 	 */
- 	sl =3D bfqd->bfq_slice_idle;
- 	/*
--	 * Unless the queue is being weight-raised, grant only minimum
--	 * idle time if the queue is seeky. A long idling is preserved
--	 * for a weight-raised queue, because it is needed for
--	 * guaranteeing to the queue its reserved share of the
--	 * throughput.
-+	 * Unless the queue is being weight-raised or the scenario is
-+	 * asymmetric, grant only minimum idle time if the queue
-+	 * is seeky. A long idling is preserved for a weight-raised
-+	 * queue, or, more in general, in an asymmetric scenario,
-+	 * because a long idling is needed for guaranteeing to a queue
-+	 * its reserved share of the throughput (in particular, it is
-+	 * needed if the queue has a higher weight than some other
-+	 * queue).
- 	 */
--	if (BFQQ_SEEKY(bfqq) && bfqq->wr_coeff =3D=3D 1)
-+	if (BFQQ_SEEKY(bfqq) && bfqq->wr_coeff =3D=3D 1 &&
-+	    bfq_symmetric_scenario(bfqd))
- 		sl =3D min_t(u64, sl, BFQ_MIN_TT);
- =
-
- 	bfqd->last_idling_start =3D ktime_get();
-@@ -6359,6 +6595,9 @@ static void bfq_completed_request(struct request_queu=
-e *q, struct request *rq)
- 		 * mechanism).
- 		 */
- 		bfqq->budget_timeout =3D jiffies;
-+
-+		bfq_weights_tree_remove(bfqd, &bfqq->entity,
-+					&bfqd->queue_weights_tree);
- 	}
- =
-
- 	RQ_BIC(rq)->ttime.last_end_request =3D ktime_get_ns();
-@@ -6761,6 +7000,9 @@ static int bfq_init_queue(struct request_queue *q, st=
-ruct elevator_type *e)
- 		     HRTIMER_MODE_REL);
- 	bfqd->idle_slice_timer.function =3D bfq_idle_slice_timer;
- =
-
-+	bfqd->queue_weights_tree =3D RB_ROOT;
-+	bfqd->group_weights_tree =3D RB_ROOT;
-+
- 	INIT_WORK(&bfqd->unplug_work, bfq_kick_queue);
- =
-
- 	INIT_LIST_HEAD(&bfqd->active_list);
 -- =
 
 1.9.1
 
 
---===============3986898021656053277==--
+--===============3035773691927378635==--
 
