@@ -1,169 +1,298 @@
-Content-Type: multipart/mixed; boundary="===============1066611176454461802=="
+Content-Type: multipart/mixed; boundary="===============8413023435756582359=="
 MIME-Version: 1.0
 From: Paolo Valente <paolo.valente@linaro.org>
 To: lkp@lists.01.org
-Subject: [PATCH 06/22] block, cfq: get rid of queue preemption
-Date: Sun, 07 Aug 2016 20:12:06 +0200
-Message-ID: <1470593542-11109-6-git-send-email-paolo.valente@linaro.org>
+Subject: [PATCH 07/22] block, cfq: get rid of workload type
+Date: Sun, 07 Aug 2016 20:12:07 +0200
+Message-ID: <1470593542-11109-7-git-send-email-paolo.valente@linaro.org>
 In-Reply-To: <1470593542-11109-1-git-send-email-paolo.valente@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1066611176454461802==
+--===============8413023435756582359==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 From: Arianna Avanzini <avanzini.arianna@gmail.com>
 
-CFQ implements a request-triggered queue preemption, based on the
-priority class of the queues, and aimed at reducing latencies. There
-is no such preemption in BFQ, where a low latency is guaranteed only
-by the overall request-scheduling policy.
+CFQ selects the queue to serve also according to the type of workload
+it is part of. This kind of heuristic has no match in BFQ, where a
+high throughput, and, at the same time, provable service guarantees
+are provided through a unified overall scheduling policy.
 
 Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
 Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
 ---
- block/cfq-iosched.c | 99 +------------------------------------------------=
+ block/cfq-iosched.c | 131 +++++++++++-------------------------------------=
 ----
- 1 file changed, 1 insertion(+), 98 deletions(-)
+ 1 file changed, 26 insertions(+), 105 deletions(-)
 
 diff --git a/block/cfq-iosched.c b/block/cfq-iosched.c
-index 655b2c5..33605f4 100644
+index 33605f4..2df1def 100644
 --- a/block/cfq-iosched.c
 +++ b/block/cfq-iosched.c
-@@ -1087,8 +1087,7 @@ static inline void cfq_slice_expired(struct cfq_data =
-*cfqd, bool timed_out)
+@@ -155,15 +155,6 @@ enum wl_class_t {
+ 	CFQ_PRIO_NR,
+ };
+ =
+
+-/*
+- * Second index in the service_trees.
+- */
+-enum wl_type_t {
+-	ASYNC_WORKLOAD =3D 0,
+-	SYNC_NOIDLE_WORKLOAD =3D 1,
+-	SYNC_WORKLOAD =3D 2
+-};
+-
+ struct cfq_io_cq {
+ 	struct io_cq		icq;		/* must be the first member */
+ 	struct cfq_queue	*cfqq[2];
+@@ -179,20 +170,16 @@ struct cfq_data {
+ =
+
+ 	/*
+ 	 * rr lists of queues with requests. We maintain service trees for
+-	 * RT and BE classes. These trees are subdivided in subclasses
+-	 * of SYNC, SYNC_NOIDLE and ASYNC based on workload type. For IDLE
+-	 * class there is no subclassification and all the cfq queues go on
+-	 * a single tree service_tree_idle.
++	 * RT and BE classes.
+ 	 * Counts are embedded in the cfq_rb_root
+ 	 */
+-	struct cfq_rb_root service_trees[2][3];
++	struct cfq_rb_root service_trees[2];
+ 	struct cfq_rb_root service_tree_idle;
+ =
+
+ 	/*
+ 	 * The priority currently being served
+ 	 */
+ 	enum wl_class_t serving_wl_class;
+-	enum wl_type_t serving_wl_type;
+ 	u64 workload_expires;
+ =
+
+ 	unsigned int busy_queues;
+@@ -292,9 +279,8 @@ CFQ_CFQQ_FNS(wait_busy);
+ #undef CFQ_CFQQ_FNS
+ =
+
+ #define cfq_log_cfqq(cfqd, cfqq, fmt, args...)	\
+-	blk_add_trace_msg((cfqd)->queue, "cfq%d%c%c " fmt, (cfqq)->pid,	\
++	blk_add_trace_msg((cfqd)->queue, "cfq%d%c " fmt, (cfqq)->pid,	\
+ 			cfq_cfqq_sync((cfqq)) ? 'S' : 'A',		\
+-			cfqq_type((cfqq)) =3D=3D SYNC_NOIDLE_WORKLOAD ? 'N' : ' ',\
+ 				##args)
+ =
+
+ #define cfq_log(cfqd, fmt, args...)	\
+@@ -303,12 +289,12 @@ CFQ_CFQQ_FNS(wait_busy);
+ /* Traverses through cfq service trees */
+ #define for_each_st(cfqd, i, j, st) \
+ 	for (i =3D 0; i <=3D IDLE_WORKLOAD; i++) \
+-		for (j =3D 0, st =3D i < IDLE_WORKLOAD ? &cfqd->service_trees[i][j]\
++		for (j =3D 0, st =3D i < IDLE_WORKLOAD ? &cfqd->service_trees[i]\
+ 			: &cfqd->service_tree_idle; \
+-			(i < IDLE_WORKLOAD && j <=3D SYNC_WORKLOAD) || \
+-			(i =3D=3D IDLE_WORKLOAD && j =3D=3D 0); \
+-			j++, st =3D i < IDLE_WORKLOAD ? \
+-			&cfqd->service_trees[i][j] : NULL) \
++			(i < IDLE_WORKLOAD) || \
++			(i =3D=3D IDLE_WORKLOAD); \
++			st =3D i < IDLE_WORKLOAD ? \
++			&cfqd->service_trees[i] : NULL) \
+ =
+
+ static inline bool cfq_io_thinktime_big(struct cfq_data *cfqd,
+ 	struct cfq_ttime *ttime)
+@@ -329,33 +315,6 @@ static inline enum wl_class_t cfqq_class(struct cfq_qu=
+eue *cfqq)
+ 	return BE_WORKLOAD;
  }
  =
 
- /*
-- * Get next queue for service. Unless we have a queue preemption,
-- * we'll simply select the first cfqq in the service tree.
-+ * Get next queue for service.
+-
+-static enum wl_type_t cfqq_type(struct cfq_queue *cfqq)
+-{
+-	if (!cfq_cfqq_sync(cfqq))
+-		return ASYNC_WORKLOAD;
+-	if (!cfq_cfqq_idle_window(cfqq))
+-		return SYNC_NOIDLE_WORKLOAD;
+-	return SYNC_WORKLOAD;
+-}
+-
+-static inline int cfq_busy_queues_wl(enum wl_class_t wl_class,
+-					struct cfq_data *cfqd)
+-{
+-	if (wl_class =3D=3D IDLE_WORKLOAD)
+-		return cfqd->service_tree_idle.count;
+-
+-	return cfqd->service_trees[wl_class][ASYNC_WORKLOAD].count +
+-		cfqd->service_trees[wl_class][SYNC_NOIDLE_WORKLOAD].count +
+-		cfqd->service_trees[wl_class][SYNC_WORKLOAD].count;
+-}
+-
+-static inline int cfq_busy_async_queues(struct cfq_data *cfqd)
+-{
+-	return cfqd->service_trees[RT_WORKLOAD][ASYNC_WORKLOAD].count +
+-		cfqd->service_trees[BE_WORKLOAD][ASYNC_WORKLOAD].count;
+-}
+-
+ static void cfq_dispatch_insert(struct request_queue *, struct request *);
+ static struct cfq_queue *cfq_get_queue(struct cfq_data *cfqd, bool is_sync,
+ 				       struct cfq_io_cq *cic, struct bio *bio);
+@@ -689,7 +648,7 @@ static void cfq_service_tree_add(struct cfq_data *cfqd,=
+ struct cfq_queue *cfqq,
+ 	int new_cfqq =3D 1;
+ 	u64 now =3D ktime_get_ns();
+ =
+
+-	st =3D &cfqd->service_trees[cfqq_class(cfqq)][cfqq_type(cfqq)];
++	st =3D &cfqd->service_trees[cfqq_class(cfqq)];
+ 	if (cfq_class_idle(cfqq)) {
+ 		rb_key =3D CFQ_IDLE_DELAY;
+ 		parent =3D rb_last(&st->rb);
+@@ -1017,8 +976,8 @@ static void __cfq_set_active_queue(struct cfq_data *cf=
+qd,
+ 				   struct cfq_queue *cfqq)
+ {
+ 	if (cfqq) {
+-		cfq_log_cfqq(cfqd, cfqq, "set_active wl_class:%d wl_type:%d",
+-				cfqd->serving_wl_class, cfqd->serving_wl_type);
++		cfq_log_cfqq(cfqd, cfqq, "set_active wl_class:%d",
++				cfqd->serving_wl_class);
+ 		cfqq->slice_start =3D 0;
+ 		cfqq->dispatch_start =3D ktime_get_ns();
+ 		cfqq->allocated_slice =3D 0;
+@@ -1091,9 +1050,7 @@ static inline void cfq_slice_expired(struct cfq_data =
+*cfqd, bool timed_out)
   */
  static struct cfq_queue *cfq_get_next_queue(struct cfq_data *cfqd)
  {
-@@ -1953,93 +1952,6 @@ cfq_update_idle_window(struct cfq_data *cfqd, struct=
- cfq_queue *cfqq,
+-	struct cfq_rb_root *st =3D
+-		&cfqd->service_trees[cfqd->serving_wl_class]
+-				    [cfqd->serving_wl_type];
++	struct cfq_rb_root *st =3D &cfqd->service_trees[cfqd->serving_wl_class];
+ =
+
+ 	if (!cfqd->rq_queued)
+ 		return NULL;
+@@ -1221,6 +1178,15 @@ static void cfq_arm_slice_timer(struct cfq_data *cfq=
+d)
+ 	cfq_log_cfqq(cfqd, cfqq, "arm_idle: %llu", sl);
  }
  =
 
++static inline int cfq_busy_queues_wl(enum wl_class_t wl_class,
++				     struct cfq_data *cfqd)
++{
++	if (wl_class =3D=3D IDLE_WORKLOAD)
++		return cfqd->service_tree_idle.count;
++
++	return cfqd->service_trees[wl_class].count;
++}
++
  /*
-- * Check if new_cfqq should preempt the currently active queue. Return 0 f=
-or
-- * no or if we aren't sure, a 1 will cause a preempt.
-- */
--static bool
--cfq_should_preempt(struct cfq_data *cfqd, struct cfq_queue *new_cfqq,
--		   struct request *rq)
--{
--	struct cfq_queue *cfqq;
--
--	cfqq =3D cfqd->active_queue;
--	if (!cfqq)
--		return false;
--
--	if (cfq_class_idle(new_cfqq))
--		return false;
--
--	if (cfq_class_idle(cfqq))
--		return true;
--
--	/*
--	 * Don't allow a non-RT request to preempt an ongoing RT cfqq timeslice.
--	 */
--	if (cfq_class_rt(cfqq) && !cfq_class_rt(new_cfqq))
--		return false;
--
--	/*
--	 * if the new request is sync, but the currently running queue is
--	 * not, let the sync request have priority.
--	 */
--	if (rq_is_sync(rq) && !cfq_cfqq_sync(cfqq))
--		return true;
--
--	if (cfq_slice_used(cfqq))
--		return true;
--
--	/*
--	 * Allow an RT request to pre-empt an ongoing non-RT cfqq timeslice.
--	 */
--	if (cfq_class_rt(new_cfqq) && !cfq_class_rt(cfqq))
--		return true;
--
--	WARN_ON_ONCE(cfqq->ioprio_class !=3D new_cfqq->ioprio_class);
--	/* Allow preemption only if we are idling on sync-noidle tree */
--	if (cfqd->serving_wl_type =3D=3D SYNC_NOIDLE_WORKLOAD &&
--	    cfqq_type(new_cfqq) =3D=3D SYNC_NOIDLE_WORKLOAD &&
--	    RB_EMPTY_ROOT(&cfqq->sort_list))
--		return true;
--
--	/*
--	 * So both queues are sync. Let the new request get disk time if
--	 * it's a metadata request and the current queue is doing regular IO.
--	 */
--	if ((rq->cmd_flags & REQ_PRIO) && !cfqq->prio_pending)
--		return true;
--
--	/* An idle queue should not be idle now for some reason */
--	if (RB_EMPTY_ROOT(&cfqq->sort_list) && !cfq_should_idle(cfqd, cfqq))
--		return true;
--
--	if (!cfqd->active_cic || !cfq_cfqq_wait_request(cfqq))
--		return false;
--
--	return false;
--}
--
--/*
-- * cfqq preempts the active queue. if we allowed preempt with no slice lef=
-t,
-- * let it have half of its nominal slice.
-- */
--static void cfq_preempt_queue(struct cfq_data *cfqd, struct cfq_queue *cfq=
-q)
--{
--	cfq_log_cfqq(cfqd, cfqq, "preempt");
--	cfq_slice_expired(cfqd, 1);
--
--	/*
--	 * Put the new queue at the front of the of the current list,
--	 * so we know that it will be selected next.
--	 */
--	BUG_ON(!cfq_cfqq_on_rr(cfqq));
--
--	cfq_service_tree_add(cfqd, cfqq, 1);
--
--	cfqq->slice_end =3D 0;
--	cfq_mark_cfqq_slice_new(cfqq);
--}
--
--/*
-  * Called when a new fs request (rq) is added (to cfqq). Check if there's
-  * something we should do about it
+  * Move request from internal lists to the request queue dispatch list.
   */
-@@ -2079,15 +1991,6 @@ cfq_rq_enqueued(struct cfq_data *cfqd, struct cfq_qu=
-eue *cfqq,
- 			} else
- 				cfq_mark_cfqq_must_dispatch(cfqq);
- 		}
--	} else if (cfq_should_preempt(cfqd, cfqq, rq)) {
--		/*
--		 * not the active queue - expire current slice if it is
--		 * idle and has expired it's mean thinktime or this new queue
--		 * has some old slice time left and is of higher priority or
--		 * this new queue is RT and the current one is BE
--		 */
--		cfq_preempt_queue(cfqd, cfqq);
--		__blk_run_queue(cfqd->queue);
- 	}
+@@ -1273,29 +1239,6 @@ cfq_prio_to_maxrq(struct cfq_data *cfqd, struct cfq_=
+queue *cfqq)
+ 	return 2 * base_rq * (IOPRIO_BE_NR - cfqq->ioprio);
  }
  =
 
+-static enum wl_type_t cfq_choose_wl_type(struct cfq_data *cfqd,
+-			enum wl_class_t wl_class)
+-{
+-	struct cfq_queue *queue;
+-	int i;
+-	bool key_valid =3D false;
+-	u64 lowest_key =3D 0;
+-	enum wl_type_t cur_best =3D SYNC_NOIDLE_WORKLOAD;
+-
+-	for (i =3D 0; i <=3D SYNC_WORKLOAD; ++i) {
+-		/* select the one with lowest rb_key */
+-		queue =3D cfq_rb_first(&cfqd->service_trees[wl_class][i]);
+-		if (queue &&
+-		    (!key_valid || queue->rb_key < lowest_key)) {
+-			lowest_key =3D queue->rb_key;
+-			cur_best =3D i;
+-			key_valid =3D true;
+-		}
+-	}
+-
+-	return cur_best;
+-}
+-
+ static void
+ choose_wl_class_and_type(struct cfq_data *cfqd)
+ {
+@@ -1319,13 +1262,7 @@ choose_wl_class_and_type(struct cfq_data *cfqd)
+ 	if (original_class !=3D cfqd->serving_wl_class)
+ 		goto new_workload;
+ =
+
+-	/*
+-	 * For RT and BE, we have to choose also the type
+-	 * (SYNC, SYNC_NOIDLE, ASYNC), and to compute a workload
+-	 * expiration time
+-	 */
+-	st =3D &cfqd->service_trees[cfqd->serving_wl_class]
+-				 [cfqd->serving_wl_type];
++	st =3D &cfqd->service_trees[cfqd->serving_wl_class];
+ 	count =3D st->count;
+ =
+
+ 	/*
+@@ -1335,26 +1272,11 @@ choose_wl_class_and_type(struct cfq_data *cfqd)
+ 		return;
+ =
+
+ new_workload:
+-	/* otherwise select new workload type */
+-	cfqd->serving_wl_type =3D cfq_choose_wl_type(cfqd,
+-					cfqd->serving_wl_class);
+-	st =3D &cfqd->service_trees[cfqd->serving_wl_class]
+-				 [cfqd->serving_wl_type];
++	st =3D &cfqd->service_trees[cfqd->serving_wl_class];
+ 	count =3D st->count;
+ =
+
+-	if (cfqd->serving_wl_type =3D=3D ASYNC_WORKLOAD) {
+-		slice =3D cfqd->cfq_target_latency *
+-			cfq_busy_async_queues(cfqd);
+-		slice =3D div_u64(slice, cfqd->busy_queues);
+-
+-		/* async workload slice is scaled down according to
+-		 * the sync/async slice ratio. */
+-		slice =3D div64_u64(slice*cfqd->cfq_slice[0], cfqd->cfq_slice[1]);
+-	} else
+-		/* sync workload slice is 2 * cfq_slice_idle */
+-		slice =3D 2 * cfqd->cfq_slice_idle;
+-
+-	slice =3D max_t(u64, slice, CFQ_MIN_TT);
++	/* sync workload slice is at least 2 * cfq_slice_idle */
++	slice =3D max_t(u64, 2 * cfqd->cfq_slice_idle, CFQ_MIN_TT);
+ 	cfq_log(cfqd, "workload slice:%llu", slice);
+ 	cfqd->workload_expires =3D now + slice;
+ }
+@@ -2102,8 +2024,7 @@ static void cfq_completed_request(struct request_queu=
+e *q, struct request *rq)
+ 		if (cfq_cfqq_on_rr(cfqq))
+ 			st =3D cfqq->service_tree;
+ 		else
+-			st =3D &cfqd->service_trees[cfqq_class(cfqq)]
+-						 [cfqq_type(cfqq)];
++			st =3D &cfqd->service_trees[cfqq_class(cfqq)];
+ =
+
+ 		st->ttime.last_end_request =3D now;
+ 		/*
 -- =
 
 1.9.1
 
 
---===============1066611176454461802==--
+--===============8413023435756582359==--
 
