@@ -1,320 +1,336 @@
-Content-Type: multipart/mixed; boundary="===============3445782807973694595=="
+Content-Type: multipart/mixed; boundary="===============2900967877050902061=="
 MIME-Version: 1.0
 From: Paolo Valente <paolo.valente@linaro.org>
 To: lkp@lists.01.org
-Subject: [PATCH 12/22] block, bfq: modify the peak-rate estimator
-Date: Sun, 07 Aug 2016 20:12:12 +0200
-Message-ID: <1470593542-11109-12-git-send-email-paolo.valente@linaro.org>
+Subject: [PATCH 13/22] block, bfq: add more fairness to boost throughput and reduce latency
+Date: Sun, 07 Aug 2016 20:12:13 +0200
+Message-ID: <1470593542-11109-13-git-send-email-paolo.valente@linaro.org>
 In-Reply-To: <1470593542-11109-1-git-send-email-paolo.valente@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3445782807973694595==
+--===============2900967877050902061==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Unless the maximum budget B_max that BFQ can assign to a queue is set
-explicitly by the user, BFQ automatically updates B_max. In
-particular, BFQ dynamically sets B_max to the number of sectors that
-can be read, at the current estimated peak rate, during the maximum
-time, T_max, allowed before a budget timeout occurs. In formulas, if
-we denote as R_est the estimated peak rate, then B_max =3D T_max =E2=88=97
-R_est. Hence, the higher R_est is with respect to the actual device
-peak rate, the higher the probability that processes incur budget
-timeouts unjustly is. Besides, a too high value of B_max unnecessarily
-increases the deviation from an ideal, smooth service.
+We have found four sources of throughput loss and higher
+latencies. First, write requests tend to starve read requests,
+basically because, on one side, writes are slower than reads, whereas,
+on the other side, storage devices confuse schedulers by deceptively
+signaling the completion of write requests immediately after receiving
+them. This patch addresses this issue by just throttling writes. In
+particular, after a write request is dispatched for a queue, the
+budget of the queue is decremented by the number of sectors to write,
+multiplied by an (over)charge coefficient.
 
-To filter out spikes, the estimated peak rate is updated only on the
-expiration of queues that have been served for a long-enough time.  As
-a first step, the estimator computes the device rate, R_meas, during
-the service of the queue. After that, if R_est < R_meas, then R_est is
-set to R_meas.
+The current value of this coefficient, as well as the values of the
+constants used in the following other changes, is the result of
+our tuning with different devices.
 
-Unfortunately, our experiments highlighted the following two
-problems. First, because of ZBR, depending on the locality of the
-workload, the estimator may easily converge to a value that is
-appropriate only for part of a disk. Second, R_est may jump (and
-remain forever equal) to a much higher value than the actual device
-peak rate, in case of hits in the drive cache, which may let sectors
-be transferred in practice@bus rate.
+The second source of problems is that some applications generate
+really few and small, yet very far, random requests at the beginning
+of a new I/O-bound phase. This causes the average seek distance,
+computed using a low-pass filter, to remain high for a non-negligible
+amount of time, even if then the application issues only sequential
+requests. Hence, for a while, the queue associated with the
+application is unavoidably detected as seeky (i.e., containing random
+requests). The device-idling timeout is then set to a very low value
+for the queue. This often caused a loss of throughput on rotational
+devices, as well as an increased latency. In contrast, this patch
+allows the device-idling timeout for a seeky queue to be set to a very
+low value only if the associated process has either already consumed
+at least a minimum fraction (1/8) of the maximum budget B_max, or
+already proved to generate random requests systematically. In
+particular, in the latter case the queue is flagged as "constantly
+seeky".
 
-To try to converge to the actual average peak rate over the disk
-surface (in case of rotational devices), and to smooth the spikes
-caused by the drive cache, this patch changes the estimator as
-follows. In the description of the changes, we refer to a queue
-containing random requests as 'seeky', according to the terminology
-used in the code, and inherited from CFQ.
+Finally, the following additional BFQ mechanism causes throughput loss
+and increased latencies in two further situations. When the in-service
+queue is expired, BFQ also controls whether the queue has been "too
+slow", i.e., has consumed its last-assigned budget at such a low rate
+that it would have been impossible to consume all of it within the
+maximum time slice T_max (Subsec. 3.5 in [1]). In this case, the queue
+is always (over)charged the whole budget, to reduce its utilization of
+the device, exactly as it happens with seeky queues. The description
+of both the two situations in which this behavior causes problems and
+the solutions provided by this patch follows.
 
-- First, now R_est may be updated also in case the just-expired queue,
-  despite not being detected as seeky, has not been however able to
-  consume all of its budget within the maximum time slice T_max. In
-  fact, this is an indication that B_max is too large. Since B_max =3D
-  T_max =E2=88=97 R_est, R_est is then probably too large, and should be
-  reduced.
+1. If too little time has elapsed since a process started doing
+sequential I/O, then the positive effect on the throughput of its
+sequential accesses may not have yet prevailed on the throughput loss
+caused by the fact that a random access had to be performed to get to
+the first sector requested by the process. For this reason, if a slow
+queue is expired after receiving very little service (at most 1/8 of
+the maximum budget), now it is not charged a full budget.
 
-- Second, to filter the spikes in R_meas, a discrete low-pass filter
-  is now used to update R_est instead of just keeping the highest rate
-  sampled. The rationale is that the average peak rate of a disk over
-  its surface is a relatively stable quantity, hence a low-pass filter
-  should converge more or less quickly to the right value.
+2. Because of ZBR, a queue may be deemed as slow when its associated
+process is performing I/O on the slowest zones of a disk. However,
+unless the process is truly too slow, not reducing the disk
+utilization of the queue is more profitable in terms of disk
+throughput than the opposite. For this reason now a queue is never
+charged the whole budget if it has consumed at least a significant
+part of it (2/3).
 
-With the current values of the constants used in the filter, the
-latter seems to effectively smooth fluctuations and allow the
-estimator to converge to the actual peak rate with all the devices we
-tested.
+[1] P. Valente and M. Andreolini, "Improving Application
+    Responsiveness with the BFQ Disk I/O Scheduler", Proceedings of
+    the 5th Annual International Systems and Storage Conference
+    (SYSTOR '12), June 2012.
+    Slightly extended version:
+    http://algogroup.unimore.it/people/paolo/disk_sched/bfq-v1-suite-
+							results.pdf
 
 Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
 Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
 
-Improve the peak-rate estimator
+Remove constantly_seeky flag
 
-Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
+Improve use of async_charge_factor
 ---
- block/cfq-iosched.c | 131 ++++++++++++++++++++++++++++++++++++------------=
+ block/cfq-iosched.c | 152 +++++++++++++++++++++++++++++++++---------------=
 ----
- 1 file changed, 92 insertions(+), 39 deletions(-)
+ 1 file changed, 96 insertions(+), 56 deletions(-)
 
 diff --git a/block/cfq-iosched.c b/block/cfq-iosched.c
-index 544a7e6..d1c4f55 100644
+index d1c4f55..a4ceb36 100644
 --- a/block/cfq-iosched.c
 +++ b/block/cfq-iosched.c
-@@ -3873,48 +3873,83 @@ static void __bfq_bfqq_recalc_budget(struct bfq_dat=
-a *bfqd,
- 			bfqq->entity.budget);
+@@ -678,6 +678,13 @@ static const int bfq_stats_min_budgets =3D 194;
+ /* Default maximum budget values, in sectors and number of requests. */
+ static const int bfq_default_max_budget =3D 16 * 1024;
+ =
+
++/*
++ * Async to sync throughput distribution is controlled as follows:
++ * when an async request is served, the entity is charged the number
++ * of sectors of the request, multiplied by the factor below
++ */
++static const int bfq_async_charge_factor =3D 10;
++
+ /* Default timeout values, in jiffies, approximating CFQ defaults. */
+ static const int bfq_timeout =3D HZ / 8;
+ =
+
+@@ -1350,22 +1357,52 @@ static void bfq_bfqq_served(struct bfq_queue *bfqq,=
+ int served)
  }
  =
 
--static unsigned long bfq_calc_max_budget(u64 peak_rate, u64 timeout)
-+static unsigned long bfq_calc_max_budget(struct bfq_data *bfqd)
+ /**
+- * bfq_bfqq_charge_full_budget - set the service to the entity budget.
++ * bfq_bfqq_charge_time - charge an amount of service equivalent to the le=
+ngth
++ *			  of the time interval during which bfqq has been in
++ *			  service.
++ * @bfqd: the device
+  * @bfqq: the queue that needs a service update.
++ * @time_ms: the amount of time during which the queue has received service
+  *
+- * When it's not possible to be fair in the service domain, because
+- * a queue is not consuming its budget fast enough (the meaning of
+- * fast depends on the timeout parameter), we charge it a full
+- * budget.  In this way we should obtain a sort of time-domain
+- * fairness among all the seeky/slow queues.
++ * If a queue does not consume its budget fast enough, then providing
++ * the queue with service fairness may impair throughput, more or less
++ * severely. For this reason, queues that consume their budget slowly
++ * are provided with time fairness instead of service fairness. This
++ * goal is achieved through the BFQ scheduling engine, even if such an
++ * engine works in the service, and not in the time domain. The trick
++ * is charging these queues with an inflated amount of service, equal
++ * to the amount of service that they would have received during their
++ * service slot if they had been fast, i.e., if their requests had
++ * been dispatched at a rate equal to the estimated peak rate.
++ *
++ * It is worth noting that time fairness can cause important
++ * distortions in terms of bandwidth distribution, on devices with
++ * internal queueing. The reason is that I/O requests dispatched
++ * during the service slot of a queue may be served after that service
++ * slot is finished, and may have a total processing time loosely
++ * correlated with the duration of the service slot. This is
++ * especially true for short service slots.
+  */
+-static void bfq_bfqq_charge_full_budget(struct bfq_queue *bfqq)
++static void bfq_bfqq_charge_time(struct bfq_data *bfqd, struct bfq_queue *=
+bfqq,
++				 unsigned long time_ms)
  {
--	unsigned long max_budget;
+ 	struct bfq_entity *entity =3D &bfqq->entity;
++	int tot_serv_to_charge =3D entity->service;
++	unsigned int timeout_ms =3D jiffies_to_msecs(bfq_timeout);
++
++	if (time_ms > 0 && time_ms < timeout_ms)
++		tot_serv_to_charge =3D
++			(bfqd->bfq_max_budget * time_ms) / timeout_ms;
+ =
+
+-	bfq_log_bfqq(bfqq->bfqd, bfqq, "charge_full_budget");
++	if (tot_serv_to_charge < entity->service)
++		tot_serv_to_charge =3D entity->service;
+ =
+
+-	bfq_bfqq_served(bfqq, entity->budget - entity->service);
++	/* Increase budget to avoid inconsistencies */
++	if (tot_serv_to_charge > entity->budget)
++		entity->budget =3D tot_serv_to_charge;
++
++	bfq_bfqq_served(bfqq,
++			max_t(int, 0, tot_serv_to_charge - entity->service));
+ }
+ =
+
+ /**
+@@ -3106,10 +3143,14 @@ static struct request *bfq_find_next_rq(struct bfq_=
+data *bfqd,
+ 	return bfq_choose_req(bfqd, next, prev, blk_rq_pos(last));
+ }
+ =
+
++/* see the definition of bfq_async_charge_factor for details */
+ static unsigned long bfq_serv_to_charge(struct request *rq,
+ 					struct bfq_queue *bfqq)
+ {
+-	return blk_rq_sectors(rq);
++	if (bfq_bfqq_sync(bfqq))
++		return blk_rq_sectors(rq);
++
++	return blk_rq_sectors(rq) * bfq_async_charge_factor;
+ }
+ =
+
+ /**
+@@ -3918,7 +3959,6 @@ static bool bfq_update_peak_rate(struct bfq_data *bfq=
+d, struct bfq_queue *bfqq,
+ 				 bool compensate, enum bfqq_expiration reason,
+ 				 unsigned long *delta_ms)
+ {
+-	u64 expected;
+ 	u64 bw, bwdiv10, delta_usecs, delta_ms_tmp;
+ 	ktime_t delta_ktime;
+ 	int update =3D 0;
+@@ -4003,28 +4043,19 @@ static bool bfq_update_peak_rate(struct bfq_data *b=
+fqd, struct bfq_queue *bfqq,
+ 			bfq_log(bfqd, "new max_budget =3D %d",
+ 				bfqd->bfq_max_budget);
+ 		}
++		/*
++		 * Caveat: processes doing IO in the slower disk zones
++		 * tend to be slow(er) even if not seeky. In this
++		 * respect, the estimated peak rate is likely to be an
++		 * average over the disk surface. Accordingly, to not
++		 * be too harsh with unlucky processes, a process is
++		 * deemed slow only if its bw has been lower than half
++		 * of the estimated peak rate.
++		 */
++		slow =3D bw < bfqd->peak_rate / 2;
+ 	}
+ =
+
+-	/*
+-	 * A process is considered ``slow'' (i.e., seeky, so that we
+-	 * cannot treat it fairly in the service domain, as it would
+-	 * slow down too much the other processes) if, when a slice
+-	 * ends for whatever reason, it has received service at a
+-	 * rate that would not be high enough to complete the budget
+-	 * before the budget timeout expiration.
+-	 */
+-	expected =3D bw * 1000 * jiffies_to_msecs(bfqd->bfq_timeout)
+-		>> BFQ_RATE_SHIFT;
 -
- 	/*
- 	 * The max_budget calculated when autotuning is equal to the
- 	 * amount of sectors transferred in timeout at the
- 	 * estimated peak rate.
- 	 */
--	max_budget =3D (unsigned long)(peak_rate * 1000 *
--				     timeout >> BFQ_RATE_SHIFT);
--
--	return max_budget;
-+	return bfqd->peak_rate * 1000 * jiffies_to_msecs(bfqd->bfq_timeout) >>
-+		BFQ_RATE_SHIFT;
+-	/*
+-	 * Caveat: processes doing IO in the slower disk zones will
+-	 * tend to be slow(er) even if not seeky. And the estimated
+-	 * peak rate will actually be an average over the disk
+-	 * surface. Hence, to not be too harsh with unlucky processes,
+-	 * we keep a budget/3 margin of safety before declaring a
+-	 * process slow.
+-	 */
+-	return expected > (4 * bfqq->entity.budget) / 3;
++	return slow;
  }
  =
 
  /*
-- * In addition to updating the peak rate, checks whether the process
-- * is "slow", and returns 1 if so. This slow flag is used, in addition
-- * to the budget timeout, to reduce the amount of service provided to
-- * seeky processes, and hence reduce their chances to lower the
-- * throughput. See the code for more details.
-+ * Update the read peak rate (quantity used for auto-tuning) as a
-+ * function of the rate at which bfqq has been served, and check
-+ * whether the process associated with bfqq is "slow". Return true if
-+ * the process is slow. The slow flag is used, in addition to the
-+ * budget timeout, to reduce the amount of service provided to seeky
-+ * processes, and hence reduce their chances to lower the
-+ * throughput. More details in the body of the function.
-+ *
-+ * An important observation is in order: with devices with internal
-+ * queues, it is hard if ever possible to know when and for how long
-+ * an I/O request is processed by the device (apart from the trivial
-+ * I/O pattern where a new request is dispatched only after the
-+ * previous one has been completed). This makes it hard to evaluate
-+ * the real rate at which the I/O requests of each bfq_queue are
-+ * served.  In fact, for an I/O scheduler like BFQ, serving a
-+ * bfq_queue means just dispatching its requests during its service
-+ * slot, i.e., until the budget of the queue is exhausted, or the
-+ * queue remains idle, or, finally, a timeout fires. But, during the
-+ * service slot of a bfq_queue, the device may be still processing
-+ * requests of bfq_queues served in previous service slots. On the
-+ * opposite end, the requests of the in-service bfq_queue may be
-+ * completed after the service slot of the queue finishes. Anyway,
-+ * unless more sophisticated solutions are used (where possible), the
-+ * sum of the sizes of the requests dispatched during the service slot
-+ * of a bfq_queue is probably the only approximation available for
-+ * the service received by the bfq_queue during its service slot. And,
-+ * as written above, this sum is the quantity used in this function to
-+ * evaluate the peak rate.
+@@ -4043,28 +4074,24 @@ static unsigned long bfq_smallest_from_now(void)
+  * @compensate: if true, compensate for the time spent idling.
+  * @reason: the reason causing the expiration.
+  *
++ * If the process associated with bfqq does slow I/O (e.g., because it
++ * issues random requests), we charge bfqq with the time it has been
++ * in service instead of the service it has received (see
++ * bfq_bfqq_charge_time for details on how this goal is achieved). As
++ * a consequence, bfqq will typically get higher timestamps upon
++ * reactivation, and hence it will be rescheduled as if it had
++ * received more service than what it has actually received. In the
++ * end, bfqq receives less service in proportion to how slowly its
++ * associated process consumes its budgets (and hence how seriously it
++ * tends to lower the throughput). In addition, this time-charging
++ * strategy guarantees time fairness among slow processes. In
++ * contrast, if the process associated with bfqq is not slow, we
++ * charge bfqq exactly with the service it has received.
+  *
+- * If the process associated with the queue is slow (i.e., seeky), or
+- * in case of budget timeout, or, finally, if it is async, we
+- * artificially charge it an entire budget (independently of the
+- * actual service it received). As a consequence, the queue will get
+- * higher timestamps than the correct ones upon reactivation, and
+- * hence it will be rescheduled as if it had received more service
+- * than what it actually received. In the end, this class of processes
+- * will receive less service in proportion to how slowly they consume
+- * their budgets (and hence how seriously they tend to lower the
+- * throughput).
+- *
+- * In contrast, when a queue expires because it has been idling for
+- * too much or because it exhausted its budget, we do not touch the
+- * amount of service it has received. Hence when the queue will be
+- * reactivated and its timestamps updated, the latter will be in sync
+- * with the actual service received by the queue until expiration.
+- *
+- * Charging a full budget to the first type of queues and the exact
+- * service to the others has the effect of using the WF2Q+ policy to
+- * schedule the former on a timeslice basis, without violating the
+- * service domain guarantees of the latter.
++ * Charging time to the first type of queues and the exact service to
++ * the other has the effect of using the WF2Q+ policy to schedule the
++ * former on a timeslice basis, without violating service domain
++ * guarantees among the latter.
   */
- static bool bfq_update_peak_rate(struct bfq_data *bfqd, struct bfq_queue *=
-bfqq,
--				 bool compensate)
-+				 bool compensate, enum bfqq_expiration reason,
-+				 unsigned long *delta_ms)
- {
--	u64 bw, usecs, expected, timeout;
--	ktime_t delta;
-+	u64 expected;
-+	u64 bw, bwdiv10, delta_usecs, delta_ms_tmp;
-+	ktime_t delta_ktime;
- 	int update =3D 0;
-+	bool slow =3D BFQQ_SEEKY(bfqq); /* if delta too short, use seekyness */
- =
-
--	if (!bfq_bfqq_sync(bfqq) || bfq_bfqq_budget_new(bfqq))
-+	if (!bfq_bfqq_sync(bfqq))
- 		return false;
- =
-
- 	if (compensate)
--		delta =3D bfqd->last_idling_start;
-+		delta_ktime =3D bfqd->last_idling_start;
- 	else
--		delta =3D ktime_get();
--	delta =3D ktime_sub(delta, bfqd->last_budget_start);
--	usecs =3D ktime_to_us(delta);
-+		delta_ktime =3D ktime_get();
-+	delta_ktime =3D ktime_sub(delta_ktime, bfqd->last_budget_start);
-+	delta_usecs =3D ktime_to_us(delta_ktime);
- =
-
- 	/* Don't trust short/unrealistic values. */
--	if (usecs < 100 || usecs >=3D LONG_MAX)
--		return false;
-+	if (delta_usecs < 1000 || delta_usecs >=3D LONG_MAX) {
-+		if (blk_queue_nonrot(bfqd->queue))
-+			*delta_ms =3D BFQ_MIN_TT; /*
-+						 * provide same worst-case
-+						 * guarantees as idling for
-+						 * seeky
-+						 */
-+		else /* Charge at least one seek */
-+			*delta_ms =3D jiffies_to_msecs(bfq_slice_idle);
-+		return slow;
-+	}
-+
-+	delta_ms_tmp =3D delta_usecs;
-+	do_div(delta_ms_tmp, 1000);
-+	*delta_ms =3D delta_ms_tmp;
+ static void bfq_bfqq_expire(struct bfq_data *bfqd,
+ 			    struct bfq_queue *bfqq,
+@@ -4082,11 +4109,24 @@ static void bfq_bfqq_expire(struct bfq_data *bfqd,
+ 	slow =3D bfq_update_peak_rate(bfqd, bfqq, compensate, reason, &delta);
  =
 
  	/*
- 	 * Calculate the bandwidth for the last slice.  We use a 64 bit
-@@ -3923,19 +3958,38 @@ static bool bfq_update_peak_rate(struct bfq_data *b=
-fqd, struct bfq_queue *bfqq,
- 	 * and to avoid overflows.
+-	 * As above explained, 'punish' slow (i.e., seeky), timed-out
+-	 * and async queues, to favor sequential sync workloads.
++	 * As above explained, charge slow (typically seeky) and
++	 * timed-out queues with the time and not the service
++	 * received, to favor sequential workloads.
++	 *
++	 * Processes doing I/O in the slower disk zones will tend to
++	 * be slow(er) even if not seeky. Therefore, since the
++	 * estimated peak rate is actually an average over the disk
++	 * surface, these processes may timeout just for bad luck. To
++	 * avoid punishing them, do not charge time to processes that
++	 * succeeded in consuming at least 2/3 of their budget. This
++	 * allows BFQ to preserve enough elasticity to still perform
++	 * bandwidth, and not time, distribution with little unlucky
++	 * or quasi-sequential processes.
  	 */
- 	bw =3D (u64)bfqq->entity.service << BFQ_RATE_SHIFT;
--	do_div(bw, (unsigned long)usecs);
--
--	timeout =3D jiffies_to_msecs(bfqd->bfq_timeout);
-+	do_div(bw, (unsigned long)delta_usecs);
- =
-
- 	/*
- 	 * Use only long (> 20ms) intervals to filter out spikes for
- 	 * the peak rate estimation.
- 	 */
--	if (usecs > 20000) {
--		if (bw > bfqd->peak_rate) {
--			bfqd->peak_rate =3D bw;
-+	if (delta_usecs > 20000) {
-+		bool fully_sequential =3D bfqq->seek_history =3D=3D 0;
-+		bool consumed_large_budget =3D
-+			reason =3D=3D BFQ_BFQQ_BUDGET_EXHAUSTED &&
-+			bfqq->entity.budget >=3D bfqd->bfq_max_budget * 2 / 3;
-+		bool served_for_long_time =3D
-+			reason =3D=3D BFQ_BFQQ_BUDGET_TIMEOUT ||
-+			consumed_large_budget;
-+
-+		if (bw > bfqd->peak_rate ||
-+		    (bfq_bfqq_sync(bfqq) && fully_sequential &&
-+		     served_for_long_time)) {
-+			/*
-+			 * To smooth oscillations use a low-pass filter with
-+			 * alpha=3D9/10, i.e.,
-+			 * new_rate =3D (9/10) * old_rate + (1/10) * bw
-+			 */
-+			bwdiv10 =3D bw;
-+			do_div(bwdiv10, 10);
-+			if (bwdiv10 =3D=3D 0)
-+				return false; /* bw too low to be used */
-+			bfqd->peak_rate *=3D 9;
-+			do_div(bfqd->peak_rate, 10);
-+			bfqd->peak_rate +=3D bwdiv10;
- 			update =3D 1;
--			bfq_log(bfqd, "new peak_rate=3D%llu", bw);
-+			bfq_log(bfqd, "new peak_rate=3D%llu", bfqd->peak_rate);
- 		}
- =
-
- 		update |=3D bfqd->peak_rate_samples =3D=3D BFQ_PEAK_RATE_SAMPLES - 1;
-@@ -3945,10 +3999,8 @@ static bool bfq_update_peak_rate(struct bfq_data *bf=
-qd, struct bfq_queue *bfqq,
- =
-
- 		if (bfqd->peak_rate_samples =3D=3D BFQ_PEAK_RATE_SAMPLES &&
- 		    update && bfqd->bfq_user_max_budget =3D=3D 0) {
--			bfqd->bfq_max_budget =3D
--				bfq_calc_max_budget(bfqd->peak_rate,
--						    timeout);
--			bfq_log(bfqd, "new max_budget=3D%d",
-+			bfqd->bfq_max_budget =3D bfq_calc_max_budget(bfqd);
-+			bfq_log(bfqd, "new max_budget =3D %d",
- 				bfqd->bfq_max_budget);
- 		}
- 	}
-@@ -3961,7 +4013,8 @@ static bool bfq_update_peak_rate(struct bfq_data *bfq=
-d, struct bfq_queue *bfqq,
- 	 * rate that would not be high enough to complete the budget
- 	 * before the budget timeout expiration.
- 	 */
--	expected =3D bw * 1000 * timeout >> BFQ_RATE_SHIFT;
-+	expected =3D bw * 1000 * jiffies_to_msecs(bfqd->bfq_timeout)
-+		>> BFQ_RATE_SHIFT;
- =
-
- 	/*
- 	 * Caveat: processes doing IO in the slower disk zones will
-@@ -4019,12 +4072,14 @@ static void bfq_bfqq_expire(struct bfq_data *bfqd,
- 			    enum bfqq_expiration reason)
- {
- 	bool slow;
-+	unsigned long delta =3D 0;
-+	struct bfq_entity *entity =3D &bfqq->entity;
- =
-
- 	/*
- 	 * Update device peak rate for autotuning and check whether the
- 	 * process is slow (see bfq_update_peak_rate).
- 	 */
--	slow =3D bfq_update_peak_rate(bfqd, bfqq, compensate);
-+	slow =3D bfq_update_peak_rate(bfqd, bfqq, compensate, reason, &delta);
- =
-
- 	/*
- 	 * As above explained, 'punish' slow (i.e., seeky), timed-out
-@@ -4034,7 +4089,7 @@ static void bfq_bfqq_expire(struct bfq_data *bfqd,
- 		bfq_bfqq_charge_full_budget(bfqq);
+-	if (slow || reason =3D=3D BFQ_BFQQ_BUDGET_TIMEOUT)
+-		bfq_bfqq_charge_full_budget(bfqq);
++	if (slow ||
++	    (reason =3D=3D BFQ_BFQQ_BUDGET_TIMEOUT &&
++	     bfq_bfqq_budget_left(bfqq) >=3D  entity->budget / 3))
++		bfq_bfqq_charge_time(bfqd, bfqq, delta);
  =
 
  	if (reason =3D=3D BFQ_BFQQ_TOO_IDLE &&
--	    bfqq->entity.service <=3D 2 * bfqq->entity.budget / 10)
-+	    entity->service <=3D 2 * entity->budget / 10)
- 		bfq_clear_bfqq_IO_bound(bfqq);
- =
-
- 	bfq_log_bfqq(bfqd, bfqq,
-@@ -5321,10 +5376,8 @@ static ssize_t bfq_weights_store(struct elevator_que=
-ue *e,
- =
-
- static unsigned long bfq_estimated_max_budget(struct bfq_data *bfqd)
- {
--	u64 timeout =3D jiffies_to_msecs(bfqd->bfq_timeout);
--
- 	if (bfqd->peak_rate_samples >=3D BFQ_PEAK_RATE_SAMPLES)
--		return bfq_calc_max_budget(bfqd->peak_rate, timeout);
-+		return bfq_calc_max_budget(bfqd);
- 	else
- 		return bfq_default_max_budget;
- }
+ 	    entity->service <=3D 2 * entity->budget / 10)
 -- =
 
 1.9.1
 
 
---===============3445782807973694595==--
+--===============2900967877050902061==--
 
