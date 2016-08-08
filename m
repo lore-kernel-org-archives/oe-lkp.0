@@ -1,81 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============8355266593067174830=="
+Content-Type: multipart/mixed; boundary="===============5907605639272076873=="
 MIME-Version: 1.0
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Chris Mason <clm@fb.com>
 To: lkp@lists.01.org
-Subject: [PATCH 4.6 85/96] cpu/hotplug: Keep enough storage space if SMP=n to avoid array out of bounds scribble
-Date: Mon, 08 Aug 2016 21:11:48 +0200
-Message-ID: <20160808180247.635413096@linuxfoundation.org>
-In-Reply-To: <20160808180243.898163389@linuxfoundation.org>
+Subject: Re: [dm flakey] 99f3c90d0d: WARNING: CPU: 20 PID: 1027 at fs/btrfs/extent-tree.c:2973 btrfs_run_delayed_refs+0x2c5/0x2f0 [btrfs]
+Date: Mon, 08 Aug 2016 17:02:13 -0400
+Message-ID: <652374b9-1457-0409-b5eb-b253efb7d5fd@fb.com>
+In-Reply-To: <CA+55aFzFFKaTMfDUmrV5QvLq0PsmmNrRYqVOLLujyQq7oa4Nkg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8355266593067174830==
+--===============5907605639272076873==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-4.6-stable review patch.  If anyone has any objections, please let me know.
-
-------------------
-
-From: Thomas Gleixner <tglx@linutronix.de>
-
-commit a7c734140aa36413944eef0f8c660e0e2256357d upstream.
-
-Xiaolong Ye reported lock debug warnings triggered by the following commit:
-
-  8de4a0066106 ("perf/x86: Convert the core to the hotplug state machine")
-
-The bug is the following: the cpuhp_bp_states[] array is cut short when
-CONFIG_SMP=3Dn, but the dynamically registered callbacks are stored neverth=
-eless
-and happily scribble outside of the array bounds...
-
-We need to store them in case that the state is unregistered so we can invo=
-ke
-the teardown function. That's independent of CONFIG_SMP. Make sure the array
-is large enough.
-
-Reported-by: kernel test robot <xiaolong.ye@intel.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Adam Borowski <kilobyte@angband.pl>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Anna-Maria Gleixner <anna-maria@linutronix.de>
-Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-Cc: Borislav Petkov <bp@suse.de>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Kan Liang <kan.liang@intel.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Vince Weaver <vincent.weaver@maine.edu>
-Cc: lkp(a)01.org
-Cc: tipbuild(a)zytor.com
-Fixes: cff7d378d3fd "cpu/hotplug: Convert to a state machine for the contro=
-l processor"
-Link: http://lkml.kernel.org/r/alpine.DEB.2.11.1607122144560.4083(a)nanos
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
----
- kernel/cpu.c |    2 ++
- 1 file changed, 2 insertions(+)
-
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -1218,6 +1218,8 @@ static struct cpuhp_step cpuhp_bp_states
- 		.teardown		=3D takedown_cpu,
- 		.cant_stop		=3D true,
- 	},
-+#else
-+	[CPUHP_BRINGUP_CPU] =3D { },
- #endif
- };
- =
 
 
+On 08/08/2016 02:27 PM, Linus Torvalds wrote:
+> This report should probably have gone to the btrfs people, although it
+> doesn't really look like a bug.
+>
+> It looks like it's just dm-flakey now returning more errors, and
+> causing btrfs to complain more.
+>
+> Which seems entirely expected.
+>
+> Maybe the robot just was testing a error case that didn't actually
+> happen before.
 
+Yeah, this warning in btrfs is much too verbose.  I've been meaning to =
 
---===============8355266593067174830==--
+toss it under a debugging conditional because it makes common hardware =
+
+problems look like software problems.  It also spams dmesg during xfstests.
+
+Thanks, I've been meaning to fix it up.
+
+-chris
+
+--===============5907605639272076873==--
 
