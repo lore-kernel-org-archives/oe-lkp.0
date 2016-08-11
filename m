@@ -1,63 +1,48 @@
-Content-Type: multipart/mixed; boundary="===============0657848364987373047=="
+Content-Type: multipart/mixed; boundary="===============3993109120930258363=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Thu, 11 Aug 2016 22:00:18 +0200
-Message-ID: <20160811200018.GA28271@lst.de>
-In-Reply-To: <CA+55aFzdnCDcf8nVtMTX7XiEoZVUqFahVA7kdns5aGKBWFqn3Q@mail.gmail.com>
+Date: Thu, 11 Aug 2016 13:35:00 -0700
+Message-ID: <CA+55aFwPqsxBquvAdgvEgE+stgvMi4ecw26zP7Q1Xi3N6fCRwQ@mail.gmail.com>
+In-Reply-To: <20160811200018.GA28271@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0657848364987373047==
+--===============3993109120930258363==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 11, 2016 at 12:51:31PM -0700, Linus Torvalds wrote:
-> Ok. It does seem to also reset the active file page counts back, so
-> that part did seem to be related, but yeah, from a performance
-> standpoint that was clearly not a major issue.
-> =
+On Thu, Aug 11, 2016 at 1:00 PM, Christoph Hellwig <hch@lst.de> wrote:
+>
+> I can't really think of any reason why the pagefaul_disable() would
+> s=D1=96gnificantly change performance.
 
-> Let's hope Dave can figure out something based on his numbers, because
-> I'm out of ideas. Or maybe it's the pagefault-atomic thing that
-> Christoph was looking at.
+No, you're right, we prefault the page anyway.
 
-I can't really think of any reason why the pagefaul_disable() would
-s=D1=96gnificantly change performance.  Anyway, the patch for the is below
-(on top of the previous mark_page_accessed() one), so feel free to
-re-run the test with it.  It would also be nice to see the profiles
-with the two patches applied.
+And quite frankly, looking at it, I think the pagefault_disable/enable
+is actually *correct*.
 
-commit 43106eea246074acc4bb7d12fdb91f58002f52ed
-Author: Christoph Hellwig <hch@lst.de>
-Date:   Thu Aug 11 10:41:40 2016 -0700
+The thing is, iov_iter_copy_from_user_atomic() doesn't itself enforce
+non-blocking user accesses, it depends on the caller blocking page
+faults.
 
-    fs: remove superflous pagefault_disable from iomap_write_actor
-    =
+And the reason we want to block page faults is to make sure we don't
+deadlock on the page we just locked for writing.
 
-    No idea where this really came from, generic_perform_write only briefly
-    did a pagefaul_disable when trying a different prefault scheme.
-    =
+So looking at it, I think the pagefault_disable/enable is actually
+needed, and it may in fact be a bug that mm/filemap.c doesn't do that.
 
-    Signed-off-by: Christoph Hellwig <hch@lst.de>
+However, see commit 00a3d660cbac ("Revert "fs: do not prefault
+sys_write() user buffer pages"") about why mm/filemap.c doesn't do the
+pagefault_disable().
 
-diff --git a/fs/iomap.c b/fs/iomap.c
-index f39c318..74712e2 100644
---- a/fs/iomap.c
-+++ b/fs/iomap.c
-@@ -194,9 +194,7 @@ again:
- 		if (mapping_writably_mapped(inode->i_mapping))
- 			flush_dcache_page(page);
- =
+But depending on the prefaulting actually guaranteeing that we don't
+deadlock sounds like a nasty race in theory (ie somebody does mmap
+tricks in another thread in between the pre-faulting and the final
+copying).
 
--		pagefault_disable();
- 		copied =3D iov_iter_copy_from_user_atomic(page, i, offset, bytes);
--		pagefault_enable();
- =
+                   Linus
 
- 		flush_dcache_page(page);
-=20
-
---===============0657848364987373047==--
+--===============3993109120930258363==--
 
