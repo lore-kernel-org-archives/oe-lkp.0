@@ -1,52 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============2626098269897836862=="
+Content-Type: multipart/mixed; boundary="===============4028506730601447271=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Thu, 11 Aug 2016 17:57:21 +0200
-Message-ID: <20160811155721.GA23015@lst.de>
-In-Reply-To: <CA+55aFy=xeEKgfHWisfxsZNqrgMJxvKvhrWrPmdpMxu0pnOXig@mail.gmail.com>
+Date: Thu, 11 Aug 2016 09:55:33 -0700
+Message-ID: <CA+55aFyVqdk0p6pmEx_gOs_AiH0TJ23ZEUDZHc9kiFbqEk8UOw@mail.gmail.com>
+In-Reply-To: <20160811155721.GA23015@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2626098269897836862==
+--===============4028506730601447271==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 10, 2016 at 06:00:24PM -0700, Linus Torvalds wrote:
-> The biggest difference is that we have "mark_page_accessed()" show up
-> after, and not before. There was also a lot of LRU noise in the
-> non-profile data. I wonder if that is the reason here: the old model
-> of using generic_perform_write/block_page_mkwrite didn't mark the
-> pages accessed, and now with iomap_file_buffered_write() they get
-> marked as active and that screws up the LRU list, and makes us not
-> flush out the dirty pages well (because they are seen as active and
-> not good for writeback), and then you get bad memory use.
+On Thu, Aug 11, 2016 at 8:57 AM, Christoph Hellwig <hch@lst.de> wrote:
+>
+> The one liner below (not tested yet) to simply remove it should fix that
+> up.  I also noticed we have a spurious pagefault_disable/enable, I
+> need to dig into the history of that first, though.
 
-And that's actually a "bug" in the new code - mostly because I failed
-to pick up changes to the core code happening after we 'forked' it,
-in this case commit 2457ae ("mm: non-atomically mark page accessed during p=
-age
-cache allocation where possible").
+Hopefully the pagefault_disable/enable doesn't matter for this case.
 
-The one liner below (not tested yet) to simply remove it should fix that
-up.  I also noticed we have a spurious pagefault_disable/enable, I
-need to dig into the history of that first, though.
+Can we get this one-liner tested with the kernel robot for comparison?
+I really think a messed-up LRU list could cause bad IO patterns, and
+end up keeping dirty pages around that should be streaming out to disk
+and re-used, so causing memory pressure etc for no good reason.
 
-diff --git a/fs/iomap.c b/fs/iomap.c
-index 48141b8..f39c318 100644
---- a/fs/iomap.c
-+++ b/fs/iomap.c
-@@ -199,7 +199,6 @@ again:
- 		pagefault_enable();
- =
+I think the mapping->tree_lock issue that Dave sees is interesting
+too, but the kswapd activity (and the extra locking it causes) could
+also be a symptom of the same thing - memory pressure due to just
+putting pages in the active file that simply shouldn't be there.
 
- 		flush_dcache_page(page);
--		mark_page_accessed(page);
- =
+So the trivial oneliner _might_ just explain things. It would be
+really nice if the regression turns out to be due to something so
+easily fixed.
 
- 		status =3D iomap_write_end(inode, pos, bytes, copied, page);
- 		if (unlikely(status < 0))
+                Linus
 
---===============2626098269897836862==--
+--===============4028506730601447271==--
 
