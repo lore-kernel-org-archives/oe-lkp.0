@@ -1,24 +1,37 @@
-Content-Type: multipart/mixed; boundary="===============3979296714299365003=="
+Content-Type: multipart/mixed; boundary="===============5724623152592629364=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Al Viro <viro@ZenIV.linux.org.uk>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Fri, 12 Aug 2016 00:08:54 +0200
-Message-ID: <20160811220854.GA30146@lst.de>
-In-Reply-To: <CA+55aFx=mbAd0hEnji-TWZH_NReLLk+SbJHK1s+=r1_USV0KXw@mail.gmail.com>
+Date: Thu, 11 Aug 2016 23:16:35 +0100
+Message-ID: <20160811221634.GU2356@ZenIV.linux.org.uk>
+In-Reply-To: <CA+55aFwPqsxBquvAdgvEgE+stgvMi4ecw26zP7Q1Xi3N6fCRwQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3979296714299365003==
+--===============5724623152592629364==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-I'll need to dig into what AIM7 actually does in this benchmark, which
-isn't too easy as I'm on a business trip currently, but from the list
-below it looks like it keeps overwriting and overwriting a file that's
-already been allocated.  This is a pretty stupid workload, but fortunately
-it should also be able to be optimized by skipping the actual block
-lookup, which is what the old buffer.c code happens to do.
+On Thu, Aug 11, 2016 at 01:35:00PM -0700, Linus Torvalds wrote:
 
---===============3979296714299365003==--
+> The thing is, iov_iter_copy_from_user_atomic() doesn't itself enforce
+> non-blocking user accesses, it depends on the caller blocking page
+> faults.
+
+Huh?  The very first thing it does is
+        char *kaddr =3D kmap_atomic(page), *p =3D kaddr + offset;
+
+If _that_ does not disable pagefaults, we are very deep in shit.  AFAICS,
+all instances of that sucker do disable those, including the non-highmem
+default (it's
+static inline void *kmap_atomic(struct page *page)
+{
+        preempt_disable();
+        pagefault_disable();
+        return page_address(page);
+}
+)
+
+--===============5724623152592629364==--
 
