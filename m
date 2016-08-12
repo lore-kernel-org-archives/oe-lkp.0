@@ -1,67 +1,56 @@
-Content-Type: multipart/mixed; boundary="===============4995178171928607085=="
+Content-Type: multipart/mixed; boundary="===============7930673076280760423=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Sun, 14 Aug 2016 19:53:40 -0700
-Message-ID: <CA+55aFxbLsD_btd0qXpuxTqAB5OQF1O+v7-OMgj8ftBE4Qd7WA@mail.gmail.com>
-In-Reply-To: <20160815022808.GX19025@dastard>
+Date: Fri, 12 Aug 2016 11:26:01 +1000
+Message-ID: <20160812012601.GO19025@dastard>
+In-Reply-To: <20160811011612.GT16044@dastard>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4995178171928607085==
+--===============7930673076280760423==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Aug 14, 2016 at 7:28 PM, Dave Chinner <david@fromorbit.com> wrote:
->>
->> Maybe your symbol table came from a old kernel, and functions moved
->> around enough that the profile attributions ended up bogus.
->
-> No, I don't think so. I don't install symbol tables on my test VMs,
-> I let /proc/kallsyms do that work for me. From an strace of 'perf
-> top -U -g":
+On Thu, Aug 11, 2016 at 11:16:12AM +1000, Dave Chinner wrote:
+> On Wed, Aug 10, 2016 at 05:33:20PM -0700, Huang, Ying wrote:
+> We need to know what is happening that is different - there's a good
+> chance the mapping trace events will tell us. Huang, can you get
+> a raw event trace from the test?
+> =
 
-Ok. But something is definitely wrong with your profile.
+> I need to see these events:
+> =
 
-What does it say if you annotate that _raw_spin_unlock_irqrestore() functio=
-n?
+> 	xfs_file*
+> 	xfs_iomap*
+> 	xfs_get_block*
+> =
 
-I guarantee you that no, it's not spending 41% of time in
-spin_unlock_irqrestore. That just isn't a valid profile. There's
-something seriously wrong somewhere.
 
-The fact that you then get the same profile when you turn _off_
-CONFIG_DEBUG_SPINLOCK only proves there is something going on that is
-pure garbage.
+lkp-folks, can I please get these traces run and sent to me? I don't
+have the time or patience to try to get aim7 running on my machines
+- the build is full of hard-coded paths and libraries that aren't
+provided by modern distros (e.g. it requires a static libaio.a!) and
+it fails at the configure stage complaining that:
 
-I suspect that what you did was to edit the .config file, remove
-DEBUG_SPINLOCK, and then do "make oldconfig" again.
+configure: error: C compiler cannot create executables
 
-And it got turned on again, because you have one of the lock debugging
-options on that force spinlock debuggin on again:
+Which is a complete load of BS.
 
- - DEBUG_WW_MUTEX_SLOWPATH
- - DEBUG_LOCK_ALLOC
- - PROVE_LOCKING
+Hence I can't make progress until I have some way of understanding
+what the IO pattern is that is generating the profile being
+measured. So far I'm unable to do that with any of the tools I been
+trying, hence I need the traces to work out what I'm missing...
 
-all of which would make any profiles entirely pointless.
+Cheers,
 
-[ Light goes on ]
+Dave.
+-- =
 
-Oh, no, I can see another possibility: you're not doing proper CPU
-profiles, you're doing some timer-irq profile, and the reason you get
-41% on spin_unlock_irq_restore() is that that is where the interrupts
-are enabled again.
+Dave Chinner
+david(a)fromorbit.com
 
-Timer-interrupt based profiles are not useful either.
-
-Make sure you actually use "perf record -e cycles:pp" or something
-that uses PEBS to get real profiles using CPU performance counters.
-
-Because right now the profile data is worthless.
-
-            Linus
-
---===============4995178171928607085==--
+--===============7930673076280760423==--
 
