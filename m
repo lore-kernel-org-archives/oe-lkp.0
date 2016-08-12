@@ -1,39 +1,30 @@
-Content-Type: multipart/mixed; boundary="===============7513629495877341061=="
+Content-Type: multipart/mixed; boundary="===============8694291245082560742=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Mon, 15 Aug 2016 16:01:00 -0700
-Message-ID: <CA+55aFyy1Q95mk48rnoDAPs00s5OL+OOuqJBBwRy-M43H=jDYw@mail.gmail.com>
-In-Reply-To: <20160815222211.GA19025@dastard>
+Date: Fri, 12 Aug 2016 04:52:18 +0200
+Message-ID: <20160812025218.GB975@lst.de>
+In-Reply-To: <20160812022329.GP19025@dastard>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7513629495877341061==
+--===============8694291245082560742==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 15, 2016 at 3:22 PM, Dave Chinner <david@fromorbit.com> wrote:
->
-> Right, but that does not make the profile data useless,
+On Fri, Aug 12, 2016 at 12:23:29PM +1000, Dave Chinner wrote:
+> Christoph, maybe there's something we can do to only trigger
+> speculative prealloc growth checks if the new file size crosses the end of
+> the currently allocated block at the EOF. That would chop out a fair
+> chunk of the xfs_bmapi_read calls being done in this workload. I'm
+> not sure how much effort we should spend optimising this slow path,
+> though....
 
-Yes it does. Because it basically hides everything that happens inside
-the lock, which is what causes the contention in the first place.
+I can look at that, but indeed optimizing this patch seems a bit
+stupid.  The other thing we could do is to optimize xfs_bmapi_read - even
+if it shouldn't be called this often it seems like it should waste a whole
+lot less CPU cycles.
 
-So stop making inane and stupid arguments, Dave.
-
-Your profiles are shit. Deal with it, or accept that nobody is ever
-going to bother working on them because your profiles don't give
-useful information.
-
-I see that you actually fixed your profiles, but quite frankly, the
-amount of pure unadulterated crap you posted in this email is worth
-reacting negatively to.
-
-You generally make so much sense that it's shocking to see you then
-make these crazy excuses for your completely broken profiles.
-
-                 Linus
-
---===============7513629495877341061==--
+--===============8694291245082560742==--
 
