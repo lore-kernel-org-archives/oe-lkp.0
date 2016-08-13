@@ -1,83 +1,63 @@
-Content-Type: multipart/mixed; boundary="===============8744587585719221229=="
+Content-Type: multipart/mixed; boundary="===============2698902654143963095=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Sun, 14 Aug 2016 06:51:28 +0800
-Message-ID: <20160813225128.GA6416@wfg-t540p.sh.intel.com>
-In-Reply-To: <20160813221507.GA1368@lst.de>
+Date: Sun, 14 Aug 2016 09:32:17 +1000
+Message-ID: <20160813233217.GT19025@dastard>
+In-Reply-To: <20160813003054.GA3101@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8744587585719221229==
+--===============2698902654143963095==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Christoph,
+On Sat, Aug 13, 2016 at 02:30:54AM +0200, Christoph Hellwig wrote:
+> On Fri, Aug 12, 2016 at 08:02:08PM +1000, Dave Chinner wrote:
+> > Which says "no change". Oh well, back to the drawing board...
+> =
 
-On Sun, Aug 14, 2016 at 12:15:08AM +0200, Christoph Hellwig wrote:
->Hi Fengguang,
->
->feel free to try this git tree:
->
->   git://git.infradead.org/users/hch/vfs.git iomap-fixes
+> I don't see how it would change thing much - for all relevant calculations
+> we convert to block units first anyway.
 
-I just queued some test jobs for it.
+THere was definitely an off-by-one in the code, which meant for
+1-byte writes it never triggered speculative prealloc, so it was
+doing the past-EOF real block check for every write. With it also
+passing less than a block size, when the > XFS_ISIZE check passed
+3 out of every 4 want_preallocate checks were landing on an already
+allocated block, too, so it was doing 3x as many lookups as needed.
+for 1k writes on a 4k block size filesystem. Amongst other things...
 
-% queue -q vip -t ivb44 -b hch-vfs/iomap-fixes aim7-fs-1brd.yaml fs=3Dxfs -=
-r3 -k fe9c2c81ed073878768785a985295cbacc349e42 -k ca2edab2e1d8f30dda874b7f7=
-17c2d4664991e9b -k 99091700659f4df965e138b38b4fa26a29b7eade
+> But the whole xfs_iomap_write_delay is a giant mess anyway.  For a usual
+> call we do at least four lookups in the extent btree, which seems rather
+> costly.  Especially given that the low-level xfs_bmap_search_extents
+> interface would give us all required information in one single call.
 
-That job file can be found here:
+I noticed, though I was looking for a smaller, targetted fix rather
+than rewriting the whole thing. Don't get me wrong, I think it needs
+a rewrite to be efficient for the iomap infrastructure, just didn't
+want to do that as a regression fix if a 1-liner might be
+sufficient...
 
-        https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/tree=
-/jobs/aim7-fs-1brd.yaml
+> Below is a patch I hacked up this morning to do just that.  It passes
+> xfstests, but I've not done any real benchmarking with it.  If the
+> reduced lookup overhead in it doesn't help enough we'll need to some
+> sort of look aside cache for the information, but I hope that we
+> can avoid that.  And yes, it's a rather large patch - but the old
+> path was so entangled that I couldn't come up with something lighter.
 
-It specifies a matrix of the below atom tests:
+I'll run some tests on it. If it does so;ve the regression, I'm
+going to hold it back until we get a decent amount of review and
+test coverage on it, though...
 
-        wfg /c/lkp-tests% split-job jobs/aim7-fs-1brd.yaml -s 'fs: xfs'
+Cheers,
 
-        jobs/aim7-fs-1brd.yaml =3D> ./aim7-fs-1brd-1BRD_48G-xfs-disk_src-30=
-00-performance.yaml
-        jobs/aim7-fs-1brd.yaml =3D> ./aim7-fs-1brd-1BRD_48G-xfs-disk_rr-300=
-0-performance.yaml
-        jobs/aim7-fs-1brd.yaml =3D> ./aim7-fs-1brd-1BRD_48G-xfs-disk_rw-300=
-0-performance.yaml
-        jobs/aim7-fs-1brd.yaml =3D> ./aim7-fs-1brd-1BRD_48G-xfs-disk_cp-300=
-0-performance.yaml
-        jobs/aim7-fs-1brd.yaml =3D> ./aim7-fs-1brd-1BRD_48G-xfs-disk_wrt-30=
-00-performance.yaml
-        jobs/aim7-fs-1brd.yaml =3D> ./aim7-fs-1brd-1BRD_48G-xfs-sync_disk_r=
-w-600-performance.yaml
-        jobs/aim7-fs-1brd.yaml =3D> ./aim7-fs-1brd-1BRD_48G-xfs-creat-clo-1=
-500-performance.yaml
-        jobs/aim7-fs-1brd.yaml =3D> ./aim7-fs-1brd-1BRD_48G-xfs-disk_rd-900=
-0-performance.yaml
+Dave.
+-- =
 
-If you see other suitable tests for this patch, feel free to drop me a
-hint.  I'v queued these jobs to the other machines to make them run in
-parallel.
+Dave Chinner
+david(a)fromorbit.com
 
-% queue -q vip -t ivb43 -b hch-vfs/iomap-fixes fsmark-stress-journal-1hdd.y=
-aml fsmark-stress-journal-1brd.yaml fs=3Dxfs -r3 -k fe9c2c81ed073878768785a=
-985295cbacc349e42 -k ca2edab2e1d8f30dda874b7f717c2d4664991e9b -k 9909170065=
-9f4df965e138b38b4fa26a29b7eade
-
-% queue -q vip -t ivb44 -b hch-vfs/iomap-fixes fsmark-generic-1brd.yaml dd-=
-write-1hdd.yaml  fsmark-generic-1hdd.yaml  fs=3Dxfs -r3 -k fe9c2c81ed073878=
-768785a985295cbacc349e42 -k ca2edab2e1d8f30dda874b7f717c2d4664991e9b -k 990=
-91700659f4df965e138b38b4fa26a29b7eade
-
-% queue -q vip -t lkp-hsx02 -b hch-vfs/iomap-fixes fsmark-generic-brd-raid.=
-yaml fs=3Dxfs -r3 -k fe9c2c81ed073878768785a985[0/1710]349e42 -k ca2edab2e1=
-d8f30dda874b7f717c2d4664991e9b -k 99091700659f4df965e138b38b4fa26a29b7eade
-
-% queue -q vip -t lkp-hsw-ep4 -b hch-vfs/iomap-fixes fsmark-1ssd-nvme-small=
-.yaml fs=3Dxfs -r3 -k fe9c2c81ed073878768785a985295cbacc349e42 -k ca2edab2e=
-1d8f30dda874b7f717c2d4664991e9b -k 99091700659f4df965e138b38b4fa26a29b7eade
-
-Thanks,
-Fengguang
-
---===============8744587585719221229==--
+--===============2698902654143963095==--
 
