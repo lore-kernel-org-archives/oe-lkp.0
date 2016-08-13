@@ -1,63 +1,168 @@
-Content-Type: multipart/mixed; boundary="===============2698902654143963095=="
+Content-Type: multipart/mixed; boundary="===============7671946717693020323=="
 MIME-Version: 1.0
-From: Dave Chinner <david@fromorbit.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Sun, 14 Aug 2016 09:32:17 +1000
-Message-ID: <20160813233217.GT19025@dastard>
-In-Reply-To: <20160813003054.GA3101@lst.de>
+Date: Sun, 14 Aug 2016 07:58:22 +0800
+Message-ID: <20160813235822.GA12010@wfg-t540p.sh.intel.com>
+In-Reply-To: <CA+55aFwYcjXn7kpLFWQ=jF0sSrhEfZhqNsjR+6O89OOH9qRNOw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2698902654143963095==
+--===============7671946717693020323==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Aug 13, 2016 at 02:30:54AM +0200, Christoph Hellwig wrote:
-> On Fri, Aug 12, 2016 at 08:02:08PM +1000, Dave Chinner wrote:
-> > Which says "no change". Oh well, back to the drawing board...
-> =
+Hi Linus,
 
-> I don't see how it would change thing much - for all relevant calculations
-> we convert to block units first anyway.
+On Fri, Aug 12, 2016 at 11:03:33AM -0700, Linus Torvalds wrote:
+>On Thu, Aug 11, 2016 at 8:56 PM, Dave Chinner <david@fromorbit.com> wrot=
+e:
+>> On Thu, Aug 11, 2016 at 07:27:52PM -0700, Linus Torvalds wrote:
+>>>
+>>> I don't recall having ever seen the mapping tree_lock as a contention
+>>> point before, but it's not like I've tried that load either. So it
+>>> might be a regression (going back long, I suspect), or just an unusual
+>>> load that nobody has traditionally tested much.
+>>>
+>>> Single-threaded big file write one page at a time, was it?
+>>
+>> Yup. On a 4 node NUMA system.
+>
+>Ok, I can't see any real contention on my single-node workstation
+>(running ext4 too, so there may be filesystem differences), but I
+>guess that shouldn't surprise me. The cacheline bouncing just isn't
+>expensive enough when it all stays on-die.
+>
+>I can see the tree_lock in my profiles (just not very high), and at
+>least for ext4 the main caller ssems to be
+>__set_page_dirty_nobuffers().
+>
+>And yes, looking at that, the biggest cost by _far_ inside the
+>spinlock seems to be the accounting.
+>
+>Which doesn't even have to be inside the mapping lock, as far as I can
+>tell, and as far as comments go.
+>
+>So a stupid patch to just move the dirty page accounting to outside
+>the spinlock might help a lot.
+>
+>Does this attached patch help your contention numbers?
+>
+>Adding a few people who get blamed for account_page_dirtied() and
+>inode_attach_wb() just to make sure that nobody expected the
+>mapping_lock spinlock to be held when calling account_page_dirtied().
+>
+>I realize that this has nothing to do with the AIM7 regression (the
+>spinlock just isn't high enough in that profile), but your contention
+>numbers just aren't right, and updating accounting statistics inside a
+>critical spinlock when not needed is just wrong.
 
-THere was definitely an off-by-one in the code, which meant for
-1-byte writes it never triggered speculative prealloc, so it was
-doing the past-EOF real block check for every write. With it also
-passing less than a block size, when the > XFS_ISIZE check passed
-3 out of every 4 want_preallocate checks were landing on an already
-allocated block, too, so it was doing 3x as many lookups as needed.
-for 1k writes on a 4k block size filesystem. Amongst other things...
+I'm testing this patch on top of 9909170065 ("Merge tag 'nfs-for-4.8-2'
+of git://git.linux-nfs.org/projects/trondmy/linux-nfs").
 
-> But the whole xfs_iomap_write_delay is a giant mess anyway.  For a usual
-> call we do at least four lookups in the extent btree, which seems rather
-> costly.  Especially given that the low-level xfs_bmap_search_extents
-> interface would give us all required information in one single call.
+The BRD (Ram backed block device, drivers/block/brd.c) tests enables
+pretty fast IO. And the fsmark-generic-brd-raid.yaml on lkp-hsx02 will
+simulate 8 RAID disks on a 4-node NUMA machine.
 
-I noticed, though I was looking for a smaller, targetted fix rather
-than rewriting the whole thing. Don't get me wrong, I think it needs
-a rewrite to be efficient for the iomap infrastructure, just didn't
-want to do that as a regression fix if a 1-liner might be
-sufficient...
+queue -q vip -t ivb44 -b wfg/account_page_dirtied-linus aim7-fs-1brd.yaml  =
+-R3 -k 1b5f2eb4a752e1fa7102f37545f92e64fabd0cf8 -k 99091700659f4df965e138b3=
+8b4fa26a29b7eade
 
-> Below is a patch I hacked up this morning to do just that.  It passes
-> xfstests, but I've not done any real benchmarking with it.  If the
-> reduced lookup overhead in it doesn't help enough we'll need to some
-> sort of look aside cache for the information, but I hope that we
-> can avoid that.  And yes, it's a rather large patch - but the old
-> path was so entangled that I couldn't come up with something lighter.
+queue -q vip -t ivb43 -b wfg/account_page_dirtied-linus fsmark-stress-journ=
+al-1hdd.yaml fsmark-stress-journal-1brd.yaml  -R3 -k 1b5f2eb4a752e1fa7102f3=
+7545f92e64fabd0cf8 -k 99091700659f4df965e138b38b4fa26a29b7eade
 
-I'll run some tests on it. If it does so;ve the regression, I'm
-going to hold it back until we get a decent amount of review and
-test coverage on it, though...
+queue -q vip -t ivb44 -b wfg/account_page_dirtied-linus fsmark-generic-1brd=
+.yaml dd-write-1hdd.yaml  fsmark-generic-1hdd.yaml   -R3 -k 1b5f2eb4a752e1f=
+a7102f37545f92e64fabd0cf8 -k 99091700659f4df965e138b38b4fa26a29b7eade
 
-Cheers,
+queue -q vip -t lkp-hsx02 -b wfg/account_page_dirtied-linus fsmark-generic-=
+brd-raid.yaml  -R3 -k 1b5f2eb4a752e1fa7102f37545f92e64fabd0cf8 -k 990917006=
+59f4df965e138b38b4fa26a29b7eade
 
-Dave.
--- =
+queue -q vip -t lkp-hsw-ep4 -b wfg/account_page_dirtied-linus fsmark-1ssd-n=
+vme-small.yaml  -R3 -k 1b5f2eb4a752e1fa7102f37545f92e64fabd0cf8 -k 99091700=
+659f4df965e138b38b4fa26a29b7eade
 
-Dave Chinner
-david(a)fromorbit.com
+queue -q vip -t lkp-hsw-ep4 -b wfg/account_page_dirtied-linus fsmark-1ssd-n=
+vme-small.yaml  -R3 -k 1b5f2eb4a752e1fa7102f37545f92e64fabd0cf8 -k 99091700=
+659f4df965e138b38b4fa26a29b7eade
 
---===============2698902654143963095==--
+Thanks,
+Fengguang
+
+> fs/buffer.c         | 5 ++++-
+> fs/xfs/xfs_aops.c   | 5 ++++-
+> mm/page-writeback.c | 2 +-
+> 3 files changed, 9 insertions(+), 3 deletions(-)
+>
+>diff --git a/fs/buffer.c b/fs/buffer.c
+>index 9c8eb9b6db6a..f79a9d241589 100644
+>--- a/fs/buffer.c
+>+++ b/fs/buffer.c
+>@@ -628,15 +628,18 @@ static void __set_page_dirty(struct page *page, stru=
+ct address_space *mapping,
+> 			     int warn)
+> {
+> 	unsigned long flags;
+>+	bool account =3D false;
+>
+> 	spin_lock_irqsave(&mapping->tree_lock, flags);
+> 	if (page->mapping) {	/* Race with truncate? */
+> 		WARN_ON_ONCE(warn && !PageUptodate(page));
+>-		account_page_dirtied(page, mapping);
+> 		radix_tree_tag_set(&mapping->page_tree,
+> 				page_index(page), PAGECACHE_TAG_DIRTY);
+>+		account =3D true;
+> 	}
+> 	spin_unlock_irqrestore(&mapping->tree_lock, flags);
+>+	if (account)
+>+		account_page_dirtied(page, mapping);
+> }
+>
+> /*
+>diff --git a/fs/xfs/xfs_aops.c b/fs/xfs/xfs_aops.c
+>index 7575cfc3ad15..59169c36765e 100644
+>--- a/fs/xfs/xfs_aops.c
+>+++ b/fs/xfs/xfs_aops.c
+>@@ -1490,15 +1490,18 @@ xfs_vm_set_page_dirty(
+> 	if (newly_dirty) {
+> 		/* sigh - __set_page_dirty() is static, so copy it here, too */
+> 		unsigned long flags;
+>+		bool account =3D false;
+>
+> 		spin_lock_irqsave(&mapping->tree_lock, flags);
+> 		if (page->mapping) {	/* Race with truncate? */
+> 			WARN_ON_ONCE(!PageUptodate(page));
+>-			account_page_dirtied(page, mapping);
+> 			radix_tree_tag_set(&mapping->page_tree,
+> 					page_index(page), PAGECACHE_TAG_DIRTY);
+>+			account =3D true;
+> 		}
+> 		spin_unlock_irqrestore(&mapping->tree_lock, flags);
+>+		if (account)
+>+			account_page_dirtied(page, mapping);
+> 	}
+> 	unlock_page_memcg(page);
+> 	if (newly_dirty)
+>diff --git a/mm/page-writeback.c b/mm/page-writeback.c
+>index f4cd7d8005c9..9a6a6b99acfe 100644
+>--- a/mm/page-writeback.c
+>+++ b/mm/page-writeback.c
+>@@ -2517,10 +2517,10 @@ int __set_page_dirty_nobuffers(struct page *page)
+> 		spin_lock_irqsave(&mapping->tree_lock, flags);
+> 		BUG_ON(page_mapping(page) !=3D mapping);
+> 		WARN_ON_ONCE(!PagePrivate(page) && !PageUptodate(page));
+>-		account_page_dirtied(page, mapping);
+> 		radix_tree_tag_set(&mapping->page_tree, page_index(page),
+> 				   PAGECACHE_TAG_DIRTY);
+> 		spin_unlock_irqrestore(&mapping->tree_lock, flags);
+>+		account_page_dirtied(page, mapping);
+> 		unlock_page_memcg(page);
+>
+> 		if (mapping->host) {
+
+
+--===============7671946717693020323==--
 
