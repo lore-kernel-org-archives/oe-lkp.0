@@ -1,563 +1,585 @@
-Content-Type: multipart/mixed; boundary="===============7307919308318558772=="
+Content-Type: multipart/mixed; boundary="===============6902191689497597934=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Mon, 15 Aug 2016 22:14:55 +0800
-Message-ID: <20160815141455.GA22903@wfg-t540p.sh.intel.com>
-In-Reply-To: <20160814161724.GA20274@lst.de>
+Subject: Re: [usb] ad05399d68: BUG: unable to handle kernel NULL pointer dereference at 0000000000000012
+Date: Mon, 15 Aug 2016 22:49:55 +0800
+Message-ID: <20160815144955.GA19665@yexl-desktop>
+In-Reply-To: <HE1PR04MB14503E90B2937B9F913EA3258B120@HE1PR04MB1450.eurprd04.prod.outlook.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7307919308318558772==
+--===============6902191689497597934==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Christoph,
+On 08/15, Peter Chen wrote:
+> =
 
-On Sun, Aug 14, 2016 at 06:17:24PM +0200, Christoph Hellwig wrote:
->Snipping the long contest:
+>>
+>>
+>>FYI, we noticed the following commit:
+>>
+>>https://git.kernel.org/pub/scm/linux/kernel/git/balbi/usb.git testing/nex=
+t commit
+>>ad05399d68b6ae1649cdcfc82ce3ffea1a7c5104 ("usb: udc: core: fix error hand=
+ling")
+>>
 >
->I think there are three observations here:
+>Hi Xiaolong,
 >
-> (1) removing the mark_page_accessed (which is the only significant
->     change in the parent commit)  hurts the
->     aim7/1BRD_48G-xfs-disk_rr-3000-performance/ivb44 test.
->     I'd still rather stick to the filemap version and let the
->     VM people sort it out.  How do the numbers for this test
->     look for XFS vs say ext4 and btrfs?
-> (2) lots of additional spinlock contention in the new case.  A quick
->     check shows that I fat-fingered my rewrite so that we do
->     the xfs_inode_set_eofblocks_tag call now for the pure lookup
->     case, and pretty much all new cycles come from that.
-> (3) Boy, are those xfs_inode_set_eofblocks_tag calls expensive, and
->     we're already doing way to many even without my little bug above.
->
->So I've force pushed a new version of the iomap-fixes branch with
->(2) fixed, and also a little patch to xfs_inode_set_eofblocks_tag a
->lot less expensive slotted in before that.  Would be good to see
->the numbers with that.
+>You reported it one month ago, and said it is a false report. see below.
+>Would you please double confirm it?
 
-The aim7 1BRD tests finished and there are ups and downs, with overall
-performance remain flat.
+Hi, peter
 
-99091700659f4df9  74a242ad94d13436a1644c0b45  bf4dc6e4ecc2a3d042029319bc  t=
-estcase/testparams/testbox
-----------------  --------------------------  --------------------------  -=
---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \  =
+Last time I reported stat "WARNING: CPU: 0 PID: 1 at
+lib/list_debug.c:36" and it showed both in this commit and its parent,
+this time, the observed change stat is "BUG: unable to handle kernel NULL
+pointer dereference at 0000000000000012" and it doesn't show in parent
+commit, however, the parent commit's dmesg would show kernel panic log
+as:
 
-    159926                      157324                      158574        G=
-EO-MEAN aim7.jobs-per-min
-     70897               5%      74137               4%      73775        a=
-im7/1BRD_48G-xfs-creat-clo-1500-performance/ivb44
-    485217 =C2=B1  3%                492431                      477533    =
-    aim7/1BRD_48G-xfs-disk_rd-9000-performance/ivb44
-    360451             -19%     292980             -17%     299377        a=
-im7/1BRD_48G-xfs-disk_rr-3000-performance/ivb44
-    338114                      338410               5%     354078        a=
-im7/1BRD_48G-xfs-disk_rw-3000-performance/ivb44
-     60130 =C2=B1  5%         4%      62438               5%      62923    =
-    aim7/1BRD_48G-xfs-disk_src-3000-performance/ivb44
-    403144                      397790                      410648        a=
-im7/1BRD_48G-xfs-disk_wrt-3000-performance/ivb44
-     26327                       26534                       26128        a=
-im7/1BRD_48G-xfs-sync_disk_rw-600-performance/ivb44
+[   10.338487] Kernel panic - not syncing: Attempted to kill init! exitcode=
+=3D0x0000000b
+[   10.338487] =
 
-The new commit bf4dc6e ("xfs: rewrite and optimize the delalloc write
-path") improves the aim7/1BRD_48G-xfs-disk_rw-3000-performance/ivb44
-case by 5%. Here are the detailed numbers:
+[   10.339911] CPU: 0 PID: 1 Comm: init Not tainted 4.8.0-rc1-00020-g0937a4=
+d #1
+[   10.341177] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS =
+Debian-1.8.2-1 04/01/2014
+[   10.342798]  0000000000000000 ffff88001e53bc28 ffffffff8168cf8a ffff8800=
+1e534000
+[   10.345177]  ffffffff8256ef20 ffff88001e53bcb8 ffff88001e50ca50 ffff8800=
+1e53bca8
+[   10.346739]  ffffffff8114e062 ffff880000000010 ffff88001e53bcb8 ffff8800=
+1e53bc50
+[   10.347970] Call Trace:
+[   10.348690]  [<ffffffff8168cf8a>] dump_stack+0x83/0xb9
+[   10.351592]  [<ffffffff8114e062>] panic+0xf3/0x2a9
+[   10.352386]  [<ffffffff81090e01>] do_exit+0x601/0xde0
+[   10.352879]  [<ffffffff8109a283>] ? __sigqueue_free+0x43/0x50
+[   10.353511]  [<ffffffff8109a5f7>] ? __dequeue_signal+0x1f7/0x210
+[   10.354483]  [<ffffffff810916e2>] do_group_exit+0xa2/0x100
+[   10.355324]  [<ffffffff8109e06e>] get_signal+0x68e/0x740
+[   10.356155]  [<ffffffff81009233>] do_signal+0x23/0x670
+[   10.356983]  [<ffffffff810e0000>] ? do_syslog+0x2c0/0x6a0
+[   10.357832]  [<ffffffff810305e3>] ? bad_area_nosemaphore+0x33/0x40
+[   10.358825]  [<ffffffff81030cf7>] ? __do_page_fault+0x407/0x4d0
+[   10.359738]  [<ffffffff810020c9>] exit_to_usermode_loop+0x69/0xc0
+[   10.360680]  [<ffffffff8100241d>] prepare_exit_to_usermode+0x3d/0x70
+[   10.361725]  [<ffffffff82025a27>] retint_user+0x8/0x10
+[   10.362650] Kernel Offset: disabled
 
-aim7/1BRD_48G-xfs-disk_rw-3000-performance/ivb44
-
-74a242ad94d13436  bf4dc6e4ecc2a3d042029319bc
-----------------  --------------------------
-         %stddev     %change         %stddev
-             \          |                \
-    338410               5%     354078        aim7.jobs-per-min
-    404390               8%     435117        aim7.time.voluntary_context_s=
-witches
-      2502              -4%       2396        aim7.time.maximum_resident_se=
-t_size
-     15018              -9%      13701        aim7.time.involuntary_context=
-_switches
-       900             -11%        801        aim7.time.system_time
-     17432              11%      19365        vmstat.system.cs
-     47736 =C2=B1 19%       -24%      36087        interrupts.CAL:Function_=
-call_interrupts
-   2129646              31%    2790638        proc-vmstat.pgalloc_dma32
-    379503              13%     429384        numa-meminfo.node0.Dirty
-     15018              -9%      13701        time.involuntary_context_swit=
-ches
-       900             -11%        801        time.system_time
-      1560              10%       1716        slabinfo.mnt_cache.active_objs
-      1560              10%       1716        slabinfo.mnt_cache.num_objs
-     61.53               -4      57.45 =C2=B1  4%  perf-profile.cycles-pp.i=
-ntel_idle.cpuidle_enter_state.cpuidle_enter.call_cpuidle.cpu_startup_entry
-     61.63               -4      57.55 =C2=B1  4%  perf-profile.func.cycles=
--pp.intel_idle
-   1007188 =C2=B1 16%       156%    2577911 =C2=B1  6%  numa-numastat.node0=
-.numa_miss
-   9662857 =C2=B1  4%       -13%    8420159 =C2=B1  3%  numa-numastat.node0=
-.numa_foreign
-   1008220 =C2=B1 16%       155%    2570630 =C2=B1  6%  numa-numastat.node1=
-.numa_foreign
-   9664033 =C2=B1  4%       -13%    8413184 =C2=B1  3%  numa-numastat.node1=
-.numa_miss
-  26519887 =C2=B1  3%        18%   31322674        cpuidle.C1-IVT.time
-    122238              16%     142383        cpuidle.C1-IVT.usage
-     46548              11%      51645        cpuidle.C1E-IVT.usage
-  17253419              13%   19567582        cpuidle.C3-IVT.time
-     86847              13%      98333        cpuidle.C3-IVT.usage
-    482033 =C2=B1 12%       108%    1000665 =C2=B1  8%  numa-vmstat.node0.n=
-uma_miss
-     94689              14%     107744        numa-vmstat.node0.nr_zone_wri=
-te_pending
-     94677              14%     107718        numa-vmstat.node0.nr_dirty
-   3156643 =C2=B1  3%       -20%    2527460 =C2=B1  3%  numa-vmstat.node0.n=
-uma_foreign
-    429288 =C2=B1 12%       129%     983053 =C2=B1  8%  numa-vmstat.node1.n=
-uma_foreign
-   3104193 =C2=B1  3%       -19%    2510128        numa-vmstat.node1.numa_m=
-iss
-      6.43 =C2=B1  5%        51%       9.70 =C2=B1 11%  turbostat.Pkg%pc2
-      0.30              28%       0.38        turbostat.CPU%c3
-      9.71                        9.92        turbostat.RAMWatt
-       158                         154        turbostat.PkgWatt
-       125              -3%        121        turbostat.CorWatt
-      1141              -6%       1078        turbostat.Avg_MHz
-     38.70              -6%      36.48        turbostat.%Busy
-      5.03 =C2=B1 11%       -51%       2.46 =C2=B1 40%  turbostat.Pkg%pc6
-      8.33 =C2=B1 48%        88%      15.67 =C2=B1 36%  sched_debug.cfs_rq:=
-/.runnable_load_avg.max
-      1947 =C2=B1  3%       -12%       1710 =C2=B1  7%  sched_debug.cfs_rq:=
-/.spread0.stddev
-      1936 =C2=B1  3%       -12%       1698 =C2=B1  8%  sched_debug.cfs_rq:=
-/.min_vruntime.stddev
-      2170 =C2=B1 10%       -14%       1863 =C2=B1  6%  sched_debug.cfs_rq:=
-/.load_avg.max
-    220926 =C2=B1 18%        37%     303192 =C2=B1  5%  sched_debug.cpu.avg=
-_idle.stddev
-      0.06 =C2=B1 13%       357%       0.28 =C2=B1 23%  sched_debug.rt_rq:/=
-.rt_time.avg
-      0.37 =C2=B1 10%       240%       1.25 =C2=B1 15%  sched_debug.rt_rq:/=
-.rt_time.stddev
-      2.54 =C2=B1 10%       160%       6.59 =C2=B1 10%  sched_debug.rt_rq:/=
-.rt_time.max
-      0.32 =C2=B1 19%        29%       0.42 =C2=B1 10%  perf-stat.dTLB-load=
--miss-rate
-    964727               7%    1028830        perf-stat.context-switches
-    176406               4%     184289        perf-stat.cpu-migrations
-      0.29               4%       0.30        perf-stat.branch-miss-rate
- 1.634e+09                   1.673e+09        perf-stat.node-store-misses
-     23.60                       23.99        perf-stat.node-store-miss-rate
-     40.01                       40.57        perf-stat.cache-miss-rate
-      0.95              -8%       0.87        perf-stat.ipc
- 3.203e+12              -9%  2.928e+12        perf-stat.cpu-cycles
- 1.506e+09             -11%  1.345e+09        perf-stat.branch-misses
-     50.64 =C2=B1 13%       -14%      43.45 =C2=B1  4%  perf-stat.iTLB-load=
--miss-rate
- 5.285e+11             -14%  4.523e+11        perf-stat.branch-instructions
- 3.042e+12             -16%  2.551e+12        perf-stat.instructions
- 7.996e+11             -18%  6.584e+11        perf-stat.dTLB-loads
- 5.569e+11 =C2=B1  4%       -18%  4.578e+11        perf-stat.dTLB-stores
-
-
-Here are the detailed numbers for the slowed down case:
-
-aim7/1BRD_48G-xfs-disk_rr-3000-performance/ivb44
-
-99091700659f4df9  bf4dc6e4ecc2a3d042029319bc
-----------------  --------------------------
-         %stddev      change         %stddev
-             \          |                \
-    360451             -17%     299377        aim7.jobs-per-min
-     12806             481%      74447        aim7.time.involuntary_context=
-_switches
-       755              44%       1086        aim7.time.system_time
-     50.17              20%      60.36        aim7.time.elapsed_time
-     50.17              20%      60.36        aim7.time.elapsed_time.max
-    438148                      446012        aim7.time.voluntary_context_s=
-witches
-     37798 =C2=B1 16%       780%     332583 =C2=B1  8%  interrupts.CAL:Func=
-tion_call_interrupts
-     78.82 =C2=B1  5%        18%      93.35 =C2=B1  5%  uptime.boot
-      2847 =C2=B1  7%        11%       3160 =C2=B1  7%  uptime.idle
-    147490 =C2=B1  8%        34%     197261 =C2=B1  3%  softirqs.RCU
-    648159              29%     839283        softirqs.TIMER
-    160830              10%     177144        softirqs.SCHED
-   3845352 =C2=B1  4%        91%    7349133        numa-numastat.node0.numa=
-_miss
-   4686838 =C2=B1  5%        67%    7835640        numa-numastat.node0.numa=
-_foreign
-   3848455 =C2=B1  4%        91%    7352436        numa-numastat.node1.numa=
-_foreign
-   4689920 =C2=B1  5%        67%    7838734        numa-numastat.node1.numa=
-_miss
-     50.17              20%      60.36        time.elapsed_time.max
-     12806             481%      74447        time.involuntary_context_swit=
-ches
-       755              44%       1086        time.system_time
-     50.17              20%      60.36        time.elapsed_time
-      1563              18%       1846        time.percent_of_cpu_this_job_=
-got
-     11699 =C2=B1 19%      3738%     449048        vmstat.io.bo
-  18836969             -16%   15789996        vmstat.memory.free
-        16              19%         19        vmstat.procs.r
-     19377             459%     108364        vmstat.system.cs
-     48255              11%      53537        vmstat.system.in
-   2357299              25%    2951384        meminfo.Inactive(file)
-   2366381              25%    2960468        meminfo.Inactive
-   1575292              -9%    1429971        meminfo.Cached
-  19342499             -17%   16100340        meminfo.MemFree
-   1057904             -20%     842987        meminfo.Dirty
-      1057              21%       1284        turbostat.Avg_MHz
-     35.78              21%      43.24        turbostat.%Busy
-      9.95              15%      11.47        turbostat.RAMWatt
-        74 =C2=B1  5%        10%         81        turbostat.CoreTmp
-        74 =C2=B1  4%        10%         81        turbostat.PkgTmp
-       118               8%        128        turbostat.CorWatt
-       151               7%        162        turbostat.PkgWatt
-     29.06             -23%      22.39        turbostat.CPU%c6
-       487 =C2=B1 89%      3e+04      26448 =C2=B1 57%  latency_stats.max.d=
-own.xfs_buf_lock._xfs_buf_find.xfs_buf_get_map.xfs_buf_read_map.xfs_trans_r=
-ead_buf_map.xfs_read_agf.xfs_alloc_read_agf.xfs_alloc_fix_freelist.xfs_free=
-_extent_fix_freelist.xfs_free_extent.xfs_trans_free_extent
-      1823 =C2=B1 82%      2e+06    1913796 =C2=B1 38%  latency_stats.sum.d=
-own.xfs_buf_lock._xfs_buf_find.xfs_buf_get_map.xfs_buf_read_map.xfs_trans_r=
-ead_buf_map.xfs_read_agf.xfs_alloc_read_agf.xfs_alloc_fix_freelist.xfs_free=
-_extent_fix_freelist.xfs_free_extent.xfs_trans_free_extent
-    208475 =C2=B1 43%      1e+06    1409494 =C2=B1  5%  latency_stats.sum.w=
-ait_on_page_bit.truncate_inode_pages_range.truncate_inode_pages_final.evict=
-.iput.dentry_unlink_inode.__dentry_kill.dput.__fput.____fput.task_work_run.=
-exit_to_usermode_loop
-      6884 =C2=B1 73%      8e+04      90790 =C2=B1  9%  latency_stats.sum.c=
-all_rwsem_down_read_failed.xfs_log_commit_cil.__xfs_trans_commit.xfs_trans_=
-commit.xfs_vn_update_time.file_update_time.xfs_file_aio_write_checks.xfs_fi=
-le_buffered_aio_write.xfs_file_write_iter.__vfs_write.vfs_write.SyS_write
-      1598 =C2=B1 20%      3e+04      35015 =C2=B1 27%  latency_stats.sum.c=
-all_rwsem_down_read_failed.xfs_log_commit_cil.__xfs_trans_commit.__xfs_tran=
-s_roll.xfs_trans_roll.xfs_itruncate_extents.xfs_free_eofblocks.xfs_release.=
-xfs_file_release.__fput.____fput.task_work_run
-      2006 =C2=B1 25%      3e+04      31143 =C2=B1 35%  latency_stats.sum.c=
-all_rwsem_down_read_failed.xfs_log_commit_cil.__xfs_trans_commit.__xfs_tran=
-s_roll.xfs_trans_roll.xfs_itruncate_extents.xfs_inactive_truncate.xfs_inact=
-ive.xfs_fs_destroy_inode.destroy_inode.evict.iput
-        29 =C2=B1101%      1e+04      10214 =C2=B1 29%  latency_stats.sum.c=
-all_rwsem_down_read_failed.xfs_log_commit_cil.__xfs_trans_commit.__xfs_tran=
-s_roll.xfs_trans_roll.xfs_defer_trans_roll.xfs_defer_finish.xfs_itruncate_e=
-xtents.xfs_inactive_truncate.xfs_inactive.xfs_fs_destroy_inode.destroy_inode
-      1206 =C2=B1 51%      9e+03       9919 =C2=B1 25%  latency_stats.sum.c=
-all_rwsem_down_read_failed.xfs_log_commit_cil.__xfs_trans_commit.xfs_trans_=
-commit.xfs_vn_update_time.touch_atime.generic_file_read_iter.xfs_file_buffe=
-red_aio_read.xfs_file_read_iter.__vfs_read.vfs_read.SyS_read
-  29869205 =C2=B1  4%       -10%   26804569        cpuidle.C1-IVT.time
-   5737726              39%    7952214        cpuidle.C1E-IVT.time
-     51141              17%      59958        cpuidle.C1E-IVT.usage
-  18377551              37%   25176426        cpuidle.C3-IVT.time
-     96067              17%     112045        cpuidle.C3-IVT.usage
-   1806811              12%    2024041        cpuidle.C6-IVT.usage
-   1104420 =C2=B1 36%       204%    3361085 =C2=B1 27%  cpuidle.POLL.time
-       281 =C2=B1 10%        20%        338        cpuidle.POLL.usage
-      5.61 =C2=B1 11%       -0.5       5.12 =C2=B1 18%  perf-profile.cycles=
--pp.irq_exit.smp_apic_timer_interrupt.apic_timer_interrupt.cpuidle_enter.ca=
-ll_cpuidle
-      5.85 =C2=B1  6%       -0.8       5.06 =C2=B1 15%  perf-profile.cycles=
--pp.hrtimer_interrupt.local_apic_timer_interrupt.smp_apic_timer_interrupt.a=
-pic_timer_interrupt.cpuidle_enter
-      6.32 =C2=B1  6%       -0.9       5.42 =C2=B1 15%  perf-profile.cycles=
--pp.local_apic_timer_interrupt.smp_apic_timer_interrupt.apic_timer_interrup=
-t.cpuidle_enter.call_cpuidle
-     15.77 =C2=B1  8%         -2      13.83 =C2=B1 17%  perf-profile.cycles=
--pp.smp_apic_timer_interrupt.apic_timer_interrupt.cpuidle_enter.call_cpuidl=
-e.cpu_startup_entry
-     16.04 =C2=B1  8%         -2      14.01 =C2=B1 15%  perf-profile.cycles=
--pp.apic_timer_interrupt.cpuidle_enter.call_cpuidle.cpu_startup_entry.start=
-_secondary
-     60.25 =C2=B1  4%         -7      53.03 =C2=B1  7%  perf-profile.cycles=
--pp.intel_idle.cpuidle_enter_state.cpuidle_enter.call_cpuidle.cpu_startup_e=
-ntry
-     60.41 =C2=B1  4%         -7      53.12 =C2=B1  7%  perf-profile.func.c=
-ycles-pp.intel_idle
-   1174104              22%    1436859        numa-meminfo.node0.Inactive
-   1167471              22%    1428271        numa-meminfo.node0.Inactive(f=
-ile)
-    770811              -9%     698147        numa-meminfo.node0.FilePages
-  20707294             -12%   18281509 =C2=B1  6%  numa-meminfo.node0.Active
-  20613745             -12%   18180987 =C2=B1  6%  numa-meminfo.node0.Activ=
-e(file)
-   9676639             -17%    8003627        numa-meminfo.node0.MemFree
-    509906             -22%     396192        numa-meminfo.node0.Dirty
-   1189539              28%    1524697        numa-meminfo.node1.Inactive(f=
-ile)
-   1191989              28%    1525194        numa-meminfo.node1.Inactive
-    804508             -10%     727067        numa-meminfo.node1.FilePages
-   9654540             -16%    8077810        numa-meminfo.node1.MemFree
-    547956             -19%     441933        numa-meminfo.node1.Dirty
-       396 =C2=B1 12%       485%       2320 =C2=B1 37%  slabinfo.bio-1.num_=
-objs
-       396 =C2=B1 12%       481%       2303 =C2=B1 37%  slabinfo.bio-1.acti=
-ve_objs
-        73             140%        176 =C2=B1 14%  slabinfo.kmalloc-128.act=
-ive_slabs
-        73             140%        176 =C2=B1 14%  slabinfo.kmalloc-128.num=
-_slabs
-      4734              94%       9171 =C2=B1 11%  slabinfo.kmalloc-128.num=
-_objs
-      4734              88%       8917 =C2=B1 13%  slabinfo.kmalloc-128.act=
-ive_objs
-     16238             -10%      14552 =C2=B1  3%  slabinfo.kmalloc-256.act=
-ive_objs
-     17189             -13%      15033 =C2=B1  3%  slabinfo.kmalloc-256.num=
-_objs
-     20651              96%      40387 =C2=B1 17%  slabinfo.radix_tree_node=
-.active_objs
-       398              91%        761 =C2=B1 17%  slabinfo.radix_tree_node=
-.active_slabs
-       398              91%        761 =C2=B1 17%  slabinfo.radix_tree_node=
-.num_slabs
-     22313              91%      42650 =C2=B1 17%  slabinfo.radix_tree_node=
-.num_objs
-        32             638%        236 =C2=B1 28%  slabinfo.xfs_efd_item.ac=
-tive_slabs
-        32             638%        236 =C2=B1 28%  slabinfo.xfs_efd_item.nu=
-m_slabs
-      1295             281%       4934 =C2=B1 23%  slabinfo.xfs_efd_item.nu=
-m_objs
-      1295             280%       4923 =C2=B1 23%  slabinfo.xfs_efd_item.ac=
-tive_objs
-      1661              81%       3000 =C2=B1 42%  slabinfo.xfs_log_ticket.=
-num_objs
-      1661              78%       2952 =C2=B1 42%  slabinfo.xfs_log_ticket.=
-active_objs
-      2617              49%       3905 =C2=B1 30%  slabinfo.xfs_trans.num_o=
-bjs
-      2617              48%       3870 =C2=B1 31%  slabinfo.xfs_trans.activ=
-e_objs
-   1015933             567%    6779099        perf-stat.context-switches
- 4.864e+08             126%  1.101e+09        perf-stat.node-load-misses
- 1.179e+09             103%  2.399e+09        perf-stat.node-loads
-      0.06 =C2=B1 34%        92%       0.12 =C2=B1 11%  perf-stat.dTLB-stor=
-e-miss-rate
- 2.985e+08 =C2=B1 32%        86%  5.542e+08 =C2=B1 11%  perf-stat.dTLB-stor=
-e-misses
- 2.551e+09 =C2=B1 15%        81%  4.625e+09 =C2=B1 13%  perf-stat.dTLB-load=
--misses
-      0.39 =C2=B1 14%        66%       0.65 =C2=B1 13%  perf-stat.dTLB-load=
--miss-rate
-  1.26e+09              60%  2.019e+09        perf-stat.node-store-misses
-  46072661 =C2=B1 27%        49%   68472915        perf-stat.iTLB-loads
- 2.738e+12 =C2=B1  4%        43%  3.916e+12        perf-stat.cpu-cycles
-     21.48              32%      28.35        perf-stat.node-store-miss-rate
- 1.612e+10 =C2=B1  3%        28%  2.066e+10        perf-stat.cache-referenc=
-es
- 1.669e+09 =C2=B1  3%        24%  2.063e+09        perf-stat.branch-misses
- 6.816e+09 =C2=B1  3%        20%  8.179e+09        perf-stat.cache-misses
-    177699              18%     209145        perf-stat.cpu-migrations
-      0.39              13%       0.44        perf-stat.branch-miss-rate
- 4.606e+09              11%  5.102e+09        perf-stat.node-stores
- 4.329e+11 =C2=B1  4%         9%  4.727e+11        perf-stat.branch-instruc=
-tions
- 6.458e+11               9%  7.046e+11        perf-stat.dTLB-loads
-     29.19               8%      31.45        perf-stat.node-load-miss-rate
-    286173               8%     308115        perf-stat.page-faults
-    286191               8%     308109        perf-stat.minor-faults
-  45084934               4%   47073719        perf-stat.iTLB-load-misses
-     42.28              -6%      39.58        perf-stat.cache-miss-rate
-     50.62 =C2=B1 16%       -19%      40.75        perf-stat.iTLB-load-miss=
--rate
-      0.89             -28%       0.64        perf-stat.ipc
-         2 =C2=B1 36%     4e+07%     970191        proc-vmstat.pgrotated
-       150 =C2=B1 21%     1e+07%   15356485 =C2=B1  3%  proc-vmstat.nr_vmsc=
-an_immediate_reclaim
-     76823 =C2=B1 35%     56899%   43788651        proc-vmstat.pgscan_direct
-    153407 =C2=B1 19%      4483%    7031431        proc-vmstat.nr_written
-    619699 =C2=B1 19%      4441%   28139689        proc-vmstat.pgpgout
-   5342421            1061%   62050709        proc-vmstat.pgactivate
-        47 =C2=B1 25%       354%        217        proc-vmstat.nr_pages_sca=
-nned
-   8542963 =C2=B1  3%        78%   15182914        proc-vmstat.numa_miss
-   8542963 =C2=B1  3%        78%   15182715        proc-vmstat.numa_foreign
-   2820568              31%    3699073        proc-vmstat.pgalloc_dma32
-    589234              25%     738160        proc-vmstat.nr_zone_inactive_=
-file
-    589240              25%     738155        proc-vmstat.nr_inactive_file
-  61347830              13%   69522958        proc-vmstat.pgfree
-    393711              -9%     356981        proc-vmstat.nr_file_pages
-   4831749             -17%    4020131        proc-vmstat.nr_free_pages
-  61252784             -18%   50183773        proc-vmstat.pgrefill
-  61245420             -18%   50176301        proc-vmstat.pgdeactivate
-    264397             -20%     210222        proc-vmstat.nr_zone_write_pen=
-ding
-    264367             -20%     210188        proc-vmstat.nr_dirty
-  60420248             -39%   36646178        proc-vmstat.pgscan_kswapd
-  60373976             -44%   33735064        proc-vmstat.pgsteal_kswapd
-      1753             -98%         43 =C2=B1 18%  proc-vmstat.pageoutrun
-      1095             -98%         25 =C2=B1 17%  proc-vmstat.kswapd_low_w=
-mark_hit_quickly
-       656 =C2=B1  3%       -98%         15 =C2=B1 24%  proc-vmstat.kswapd_=
-high_wmark_hit_quickly
-         0                     1136221        numa-vmstat.node0.workingset_=
-refault
-         0                     1136221        numa-vmstat.node0.workingset_=
-activate
-        23 =C2=B1 45%     1e+07%    2756907        numa-vmstat.node0.nr_vms=
-can_immediate_reclaim
-     37618 =C2=B1 24%      3234%    1254165        numa-vmstat.node0.nr_wri=
-tten
-   1346538 =C2=B1  4%       104%    2748439        numa-vmstat.node0.numa_m=
-iss
-   1577620 =C2=B1  5%        80%    2842882        numa-vmstat.node0.numa_f=
-oreign
-    291242              23%     357407        numa-vmstat.node0.nr_inactive=
-_file
-    291237              23%     357390        numa-vmstat.node0.nr_zone_ina=
-ctive_file
-  13961935              12%   15577331        numa-vmstat.node0.numa_local
-  13961938              12%   15577332        numa-vmstat.node0.numa_hit
-     39831              10%      43768        numa-vmstat.node0.nr_unevicta=
-ble
-     39831              10%      43768        numa-vmstat.node0.nr_zone_une=
-victable
-    193467             -10%     174639        numa-vmstat.node0.nr_file_pag=
-es
-   5147212             -12%    4542321 =C2=B1  6%  numa-vmstat.node0.nr_act=
-ive_file
-   5147237             -12%    4542325 =C2=B1  6%  numa-vmstat.node0.nr_zon=
-e_active_file
-   2426129             -17%    2008637        numa-vmstat.node0.nr_free_pag=
-es
-    128285             -23%      99206        numa-vmstat.node0.nr_zone_wri=
-te_pending
-    128259             -23%      99183        numa-vmstat.node0.nr_dirty
-         0                     1190594        numa-vmstat.node1.workingset_=
-refault
-         0                     1190594        numa-vmstat.node1.workingset_=
-activate
-        21 =C2=B1 36%     1e+07%    3120425 =C2=B1  4%  numa-vmstat.node1.n=
-r_vmscan_immediate_reclaim
-     38541 =C2=B1 26%      3336%    1324185        numa-vmstat.node1.nr_wri=
-tten
-   1316819 =C2=B1  4%       105%    2699075        numa-vmstat.node1.numa_f=
-oreign
-   1547929 =C2=B1  4%        80%    2793491        numa-vmstat.node1.numa_m=
-iss
-    296714              28%     381124        numa-vmstat.node1.nr_zone_ina=
-ctive_file
-    296714              28%     381123        numa-vmstat.node1.nr_inactive=
-_file
-  14311131              10%   15750908        numa-vmstat.node1.numa_hit
-  14311130              10%   15750905        numa-vmstat.node1.numa_local
-    201164             -10%     181742        numa-vmstat.node1.nr_file_pag=
-es
-   2422825             -16%    2027750        numa-vmstat.node1.nr_free_pag=
-es
-    137069             -19%     110501        numa-vmstat.node1.nr_zone_wri=
-te_pending
-    137069             -19%     110497        numa-vmstat.node1.nr_dirty
-       737 =C2=B1 29%     27349%     202387        sched_debug.cfs_rq:/.min=
-_vruntime.min
-      3637 =C2=B1 20%      7919%     291675        sched_debug.cfs_rq:/.min=
-_vruntime.avg
-     11.00 =C2=B1 44%      4892%     549.17 =C2=B1  9%  sched_debug.cfs_rq:=
-/.runnable_load_avg.max
-      2.12 =C2=B1 36%      4853%     105.12 =C2=B1  5%  sched_debug.cfs_rq:=
-/.runnable_load_avg.stddev
-      1885 =C2=B1  6%      4189%      80870        sched_debug.cfs_rq:/.min=
-_vruntime.stddev
-      1896 =C2=B1  6%      4166%      80895        sched_debug.cfs_rq:/.spr=
-ead0.stddev
-     10774 =C2=B1 13%      4113%     453925        sched_debug.cfs_rq:/.min=
-_vruntime.max
-      1.02 =C2=B1 19%      2630%      27.72 =C2=B1  7%  sched_debug.cfs_rq:=
-/.runnable_load_avg.avg
-     63060 =C2=B1 45%       776%     552157        sched_debug.cfs_rq:/.loa=
-d.max
-     14442 =C2=B1 21%       590%      99615 =C2=B1 14%  sched_debug.cfs_rq:=
-/.load.stddev
-      8397 =C2=B1  9%       309%      34370 =C2=B1 12%  sched_debug.cfs_rq:=
-/.load.avg
-     46.02 =C2=B1 24%       176%     126.96 =C2=B1  6%  sched_debug.cfs_rq:=
-/.util_avg.stddev
-       817              19%        974 =C2=B1  3%  sched_debug.cfs_rq:/.uti=
-l_avg.max
-       721             -17%        600 =C2=B1  3%  sched_debug.cfs_rq:/.uti=
-l_avg.avg
-       595 =C2=B1 11%       -38%        371 =C2=B1  7%  sched_debug.cfs_rq:=
-/.util_avg.min
-      1484 =C2=B1 20%       -47%        792 =C2=B1  5%  sched_debug.cfs_rq:=
-/.load_avg.min
-      1798 =C2=B1  4%       -50%        903 =C2=B1  5%  sched_debug.cfs_rq:=
-/.load_avg.avg
-       322 =C2=B1  8%      7726%      25239 =C2=B1  8%  sched_debug.cpu.nr_=
-switches.min
-       969            7238%      71158        sched_debug.cpu.nr_switches.a=
-vg
-      2.23 =C2=B1 40%      4650%     106.14 =C2=B1  4%  sched_debug.cpu.cpu=
-_load[0].stddev
-       943 =C2=B1  4%      3475%      33730 =C2=B1  3%  sched_debug.cpu.nr_=
-switches.stddev
-      0.87 =C2=B1 25%      3057%      27.46 =C2=B1  7%  sched_debug.cpu.cpu=
-_load[0].avg
-      5.43 =C2=B1 13%      2232%     126.61        sched_debug.cpu.nr_unint=
-erruptible.stddev
-      6131 =C2=B1  3%      2028%     130453        sched_debug.cpu.nr_switc=
-hes.max
-      1.58 =C2=B1 29%      1852%      30.90 =C2=B1  4%  sched_debug.cpu.cpu=
-_load[4].avg
-      2.00 =C2=B1 49%      1422%      30.44 =C2=B1  5%  sched_debug.cpu.cpu=
-_load[3].avg
-     63060 =C2=B1 45%      1053%     726920 =C2=B1 32%  sched_debug.cpu.loa=
-d.max
-     21.25 =C2=B1 44%       777%     186.33 =C2=B1  7%  sched_debug.cpu.nr_=
-uninterruptible.max
-     14419 =C2=B1 21%       731%     119865 =C2=B1 31%  sched_debug.cpu.loa=
-d.stddev
-      3586             381%      17262        sched_debug.cpu.nr_load_updat=
-es.min
-      8286 =C2=B1  8%       364%      38414 =C2=B1 17%  sched_debug.cpu.loa=
-d.avg
-      5444             303%      21956        sched_debug.cpu.nr_load_updat=
-es.avg
-      1156             231%       3827        sched_debug.cpu.nr_load_updat=
-es.stddev
-      8603 =C2=B1  4%       222%      27662        sched_debug.cpu.nr_load_=
-updates.max
-      1410             165%       3735        sched_debug.cpu.curr->pid.max
-     28742 =C2=B1 15%       120%      63101 =C2=B1  7%  sched_debug.cpu.clo=
-ck.min
-     28742 =C2=B1 15%       120%      63101 =C2=B1  7%  sched_debug.cpu.clo=
-ck_task.min
-     28748 =C2=B1 15%       120%      63107 =C2=B1  7%  sched_debug.cpu.clo=
-ck.avg
-     28748 =C2=B1 15%       120%      63107 =C2=B1  7%  sched_debug.cpu.clo=
-ck_task.avg
-     28751 =C2=B1 15%       120%      63113 =C2=B1  7%  sched_debug.cpu.clo=
-ck.max
-     28751 =C2=B1 15%       120%      63113 =C2=B1  7%  sched_debug.cpu.clo=
-ck_task.max
-       442 =C2=B1 11%        93%        854 =C2=B1 15%  sched_debug.cpu.cur=
-r->pid.avg
-       618 =C2=B1  3%        72%       1065 =C2=B1  4%  sched_debug.cpu.cur=
-r->pid.stddev
-      1.88 =C2=B1 11%        50%       2.83 =C2=B1  8%  sched_debug.cpu.clo=
-ck.stddev
-      1.88 =C2=B1 11%        50%       2.83 =C2=B1  8%  sched_debug.cpu.clo=
-ck_task.stddev
-      5.22 =C2=B1  9%       -55%       2.34 =C2=B1 23%  sched_debug.rt_rq:/=
-.rt_time.max
-      0.85             -55%       0.38 =C2=B1 28%  sched_debug.rt_rq:/.rt_t=
-ime.stddev
-      0.17             -56%       0.07 =C2=B1 33%  sched_debug.rt_rq:/.rt_t=
-ime.avg
-     27633 =C2=B1 16%       124%      61980 =C2=B1  8%  sched_debug.ktime
-     28745 =C2=B1 15%       120%      63102 =C2=B1  7%  sched_debug.sched_c=
-lk
-     28745 =C2=B1 15%       120%      63102 =C2=B1  7%  sched_debug.cpu_clk
+The whole parent dmesg is attached.
 
 Thanks,
-Fengguang
+Xiaolong
 
---===============7307919308318558772==--
+>
+>On Wed, Jul 13, 2016 at 01:55:26AM +0000, Peter Chen wrote:
+>> =
+
+>>
+>>>-----Original Message-----
+>>>From: lkp-request(a)eclists.intel.com =
+
+>>>[mailto:lkp-request(a)eclists.intel.com] On Behalf Of kernel test robot
+>>>Sent: Wednesday, July 13, 2016 9:28 AM
+>>>To: Peter Chen <peter.chen@nxp.com>
+>>>Cc: 0day robot <fengguang.wu@intel.com>; LKML =
+
+>>><linux-kernel@vger.kernel.org>; lkp(a)01.org
+>>>Subject: [lkp] [usb] 9696ef14de: WARNING: CPU: 0 PID: 1 at =
+
+>>>lib/list_debug.c:36
+>>>__list_add+0x104/0x188
+>>>
+>>>
+>>>FYI, we noticed the following commit:
+>>>
+>>>https://github.com/0day-ci/linux Peter-Chen/usb-udc-core-fix-error-
+>>>handling/20160711-100832
+>>>commit 9696ef14ded07fb0847f8e1cdda6d98a89ecd4f2 ("usb: udc: core: fix =
+
+>>>error
+>>>handling")
+>>>
+>>
+>>Thanks,  but I really can't find the relationship between my patch and du=
+mp.
+>>Can you reproduce it after running again or without my patch?
+>>
+>
+>Sorry, it's a false report, the error dump also showed in parent commit, p=
+lease ignore the report and sorry for the noise.
+>
+>Thanks,
+>Xiaolong
+>
+>
+>
+>
+>Peter
+>
+>>in testcase: boot
+>>
+>>on test machine: 1 threads qemu-system-x86_64 -enable-kvm -cpu SandyBridge
+>>with 512M memory
+>>
+>>caused below changes:
+>>
+>>
+>>+-----------------------------------------------------------+------------=
++------------+
+>>|                                                           | 0937a4d787
+>>| | ad05399d68 |
+>>+-----------------------------------------------------------+------------=
++------------+
+>>| boot_successes                                            | 0          =
+| 0          |
+>>| boot_failures                                             | 12         =
+| 12         |
+>>| WARNING:at_lib/list_debug.c:#__list_del_entry             | 2          =
+| 12         |
+>>| BUG:kernel_test_hang                                      | 2          =
+|            |
+>>| backtrace:kernel_restart                                  | 2          =
+|            |
+>>| backtrace:SyS_reboot                                      | 2          =
+|            |
+>>| BUG:kernel_oversize_in_test_stage                         | 4          =
+|            |
+>>| Kernel_panic-not_syncing:Attempted_to_kill_init!exitcode=3D | 6        =
+  |            |
+>>| BUG:unable_to_handle_kernel                               | 0          =
+| 11         |
+>>| Oops                                                      | 0          =
+| 11         |
+>>| RIP:sysfs_kf_write                                        | 0          =
+| 11         |
+>>| Kernel_panic-not_syncing:Fatal_exception                  | 0          =
+| 11         |
+>>| backtrace:serio_handle_event                              | 0          =
+| 12         |
+>>| backtrace:vfs_write                                       | 0          =
+| 11         |
+>>| backtrace:SyS_write                                       | 0          =
+| 11         |
+>>+-----------------------------------------------------------+------------=
++------------+
+>>
+>>
+>>[   12.161205] BUG: unable to handle kernel NULL pointer dereference at
+>>0000000000000012
+>>[   12.162485] IP: [<ffffffff81245ecf>] sysfs_kf_write+0x4f/0x70
+>>[   12.163414] PGD 1a380067 PUD 1a357067 PMD 0
+>>[   12.164242] Oops: 0000 [#1] PREEMPT SMP
+>>[   12.164952] CPU: 0 PID: 240 Comm: udevadm Tainted: G        W       4.=
+8.0-rc1-
+>>00021-gad05399 #1
+>>[   12.166477] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+>>Debian-1.8.2-1 04/01/2014
+>>[   12.167885] task: ffff88001a3701c0 task.stack: ffff88001a374000
+>>[   12.168789] RIP: 0010:[<ffffffff81245ecf>]  [<ffffffff81245ecf>]
+>>sysfs_kf_write+0x4f/0x70
+>>[   12.170082] RSP: 0018:ffff88001a377dc0  EFLAGS: 00010297
+>>[   12.171001] RAX: ffff88001aad9260 RBX: 0000000000000000 RCX:
+>>0000000000000003
+>>[   12.172252] RDX: ffff88001a253020 RSI: ffffffff82888fa0 RDI: ffff88001=
+aada1f8
+>>[   12.186536] RBP: ffff88001a377de8 R08: 0000000000000000 R09:
+>>0000000000000000
+>>[   12.187769] R10: 0000000055aab65f R11: 0000000000000001 R12:
+>>0000000000000003
+>>[   12.189058] R13: ffff88001a393000 R14: 000000000000000a R15:
+>>ffff88001a253020
+>>[   12.190274] FS:  00007f1f13d8f700(0000) GS:ffff88001f400000(0000)
+>>knlGS:0000000000000000
+>>[   12.191514] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>[   12.192393] CR2: 0000000000000012 CR3: 000000001a341000 CR4:
+>>00000000000406b0
+>>[   12.193518] Stack:
+>>[   12.193884]  ffff88001a253020 ffff88001a393000 0000000000000003
+>>ffffffff81245e80
+>>[   12.195278]  ffff88001a393018 ffff88001a377e28 ffffffff81244e44
+>>ffff88001a377f20
+>>[   12.196679]  ffff88001dc6fc40 ffffffff81244cf0 ffff88001a377f20
+>>0000000000000003
+>>[   12.197896] Call Trace:
+>>[   12.198289]  [<ffffffff81245e80>] ? sysfs_file_ops+0x90/0x90
+>>[   12.199162]  [<ffffffff81244e44>] kernfs_fop_write+0x154/0x200
+>>[   12.211238]  [<ffffffff81244cf0>] ? kernfs_vma_page_mkwrite+0xb0/0xb0
+>>[   12.212330]  [<ffffffff811ae953>] __vfs_write+0x43/0x1b0
+>>[   12.213150]  [<ffffffff811b369a>] ? __sb_start_write+0xba/0x110
+>>[   12.214175]  [<ffffffff810d4612>] ? percpu_down_read+0x52/0x90
+>>[   12.215219]  [<ffffffff811b369a>] ? __sb_start_write+0xba/0x110
+>>[   12.216256]  [<ffffffff811aecd6>] vfs_write+0x106/0x1f0
+>>[   12.217146]  [<ffffffff811aeed3>] SyS_write+0x53/0xc0
+>>[   12.217930]  [<ffffffff820250b6>] entry_SYSCALL_64_fastpath+0x1e/0xad
+>>[   12.218907] Code: ff ff 4d 85 e4 74 2d 49 89 c6 e8 0d 25 ee ff 49 8b 4=
+5 00 4c 89
+>>e1 4c 89 fa 48 8b b0 80 00 00 00 48 8b 40 28 48 8b b8 80 00 00 00 <41> ff=
+ 56 08 48
+>>89 c3 eb 00 e8 e3 24 ee ff 48 89 d8 5b 41 5c 41
+>>[   12.223712] RIP  [<ffffffff81245ecf>] sysfs_kf_write+0x4f/0x70
+>>[   12.224633]  RSP <ffff88001a377dc0>
+>>[   12.225172] CR2: 0000000000000012
+>>[   12.366338] ---[ end trace b696b5aff8dfca8d ]---
+>>[   12.367092] Kernel panic - not syncing: Fatal exception
+>>[   12.367920] Kernel Offset: disabled
+>>
+>>
+>>FYI, raw QEMU command line is:
+>>
+>>	qemu-system-x86_64 -enable-kvm -cpu SandyBridge -kernel
+>>/pkg/linux/x86_64-randconfig-n0-08110915/gcc-
+>>6/ad05399d68b6ae1649cdcfc82ce3ffea1a7c5104/vmlinuz-4.8.0-rc1-00021-
+>>gad05399 -append 'ip=3D::::vm-kbuild-yocto-x86_64-3::dhcp root=3D/dev/ram=
+0 user=3Dlkp
+>>job=3D/lkp/scheduled/vm-kbuild-yocto-x86_64-3/boot-1-yocto-minimal-x86_64=
+.cgz-
+>>ad05399d68b6ae1649cdcfc82ce3ffea1a7c5104-20160812-122343-ax2dev-0.yaml
+>>ARCH=3Dx86_64 kconfig=3Dx86_64-randconfig-n0-08110915 branch=3Dlinux-deve=
+l/devel-
+>>hourly-2016081104 commit=3Dad05399d68b6ae1649cdcfc82ce3ffea1a7c5104
+>>BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-n0-08110915/gcc-
+>>6/ad05399d68b6ae1649cdcfc82ce3ffea1a7c5104/vmlinuz-4.8.0-rc1-00021-
+>>gad05399 max_uptime=3D600 RESULT_ROOT=3D/result/boot/1/vm-kbuild-yocto-
+>>x86_64/yocto-minimal-x86_64.cgz/x86_64-randconfig-n0-08110915/gcc-
+>>6/ad05399d68b6ae1649cdcfc82ce3ffea1a7c5104/0 LKP_SERVER=3Dinn debug
+>>apic=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 pa=
+nic=3D-1
+>>softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_ramdisk=3D2
+>>prompt_ramdisk=3D0 systemd.log_level=3Derr ignore_loglevel earlyprintk=3D=
+ttyS0,115200
+>>console=3DttyS0,115200 console=3Dtty0 vga=3Dnormal rw drbd.minor_count=3D=
+8'  -initrd
+>>/fs/sdg1/initrd-vm-kbuild-yocto-x86_64-3 -m 512 -smp 1 -device e1000,netd=
+ev=3Dnet0
+>>-netdev user,id=3Dnet0 -boot order=3Dnc -no-reboot -watchdog i6300esb -wa=
+tchdog-
+>>action debug -rtc base=3Dlocaltime -drive file=3D/fs/sdg1/disk0-vm-kbuild=
+-yocto-x86_64-
+>>3,media=3Ddisk,if=3Dvirtio -pidfile /dev/shm/kboot/pid-vm-kbuild-yocto-x8=
+6_64-3 -serial
+>>file:/dev/shm/kboot/serial-vm-kbuild-yocto-x86_64-3 -daemonize -display n=
+one -
+>>monitor null
+>>
+>>
+>>
+>>
+>>
+>>Thanks,
+>>Xiaolong
+
+--===============6902191689497597934==
+Content-Type: application/octet-stream
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="parent-dmesg.xz"
+
+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
+--===============6902191689497597934==--
 
