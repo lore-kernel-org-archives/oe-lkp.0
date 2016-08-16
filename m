@@ -1,85 +1,70 @@
-Content-Type: multipart/mixed; boundary="===============2176673602735332569=="
+Content-Type: multipart/mixed; boundary="===============0710504734441102897=="
 MIME-Version: 1.0
 From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Tue, 16 Aug 2016 10:08:02 +1000
-Message-ID: <20160816000802.GE16044@dastard>
-In-Reply-To: <87twemndzw.fsf@yhuang-mobile.sh.intel.com>
+Date: Tue, 16 Aug 2016 10:17:21 +1000
+Message-ID: <20160816001721.GC19025@dastard>
+In-Reply-To: <CA+55aFyy1Q95mk48rnoDAPs00s5OL+OOuqJBBwRy-M43H=jDYw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2176673602735332569==
+--===============0710504734441102897==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 15, 2016 at 10:22:43AM -0700, Huang, Ying wrote:
-> Hi, Chinner,
-> =
-
-> Dave Chinner <david@fromorbit.com> writes:
-> =
-
-> > On Wed, Aug 10, 2016 at 06:00:24PM -0700, Linus Torvalds wrote:
-> >> On Wed, Aug 10, 2016 at 5:33 PM, Huang, Ying <ying.huang@intel.com> =
-wrote:
-> >> >
-> >> > Here it is,
-> >> =
-
-> >> Thanks.
-> >> =
-
-> >> Appended is a munged "after" list, with the "before" values in
-> >> parenthesis. It actually looks fairly similar.
-> >> =
-
-> >> The biggest difference is that we have "mark_page_accessed()" show up
-> >> after, and not before. There was also a lot of LRU noise in the
-> >> non-profile data. I wonder if that is the reason here: the old model
-> >> of using generic_perform_write/block_page_mkwrite didn't mark the
-> >> pages accessed, and now with iomap_file_buffered_write() they get
-> >> marked as active and that screws up the LRU list, and makes us not
-> >> flush out the dirty pages well (because they are seen as active and
-> >> not good for writeback), and then you get bad memory use.
-> >> =
-
-> >> I'm not seeing anything that looks like locking-related.
+On Mon, Aug 15, 2016 at 04:01:00PM -0700, Linus Torvalds wrote:
+> On Mon, Aug 15, 2016 at 3:22 PM, Dave Chinner <david@fromorbit.com> wro=
+te:
 > >
-> > Not in that profile. I've been doing some local testing inside a
-> > 4-node fake-numa 16p/16GB RAM VM to see what I can find.
+> > Right, but that does not make the profile data useless,
 > =
 
-> You run the test in a virtual machine, I think that is why your perf
-> data looks strange (high value of _raw_spin_unlock_irqrestore).
+> Yes it does. Because it basically hides everything that happens inside
+> the lock, which is what causes the contention in the first place.
+
+Read the code, Linus?
+
+> So stop making inane and stupid arguments, Dave.
+
+We know what happens inside the lock, and we know exactly how much
+it is supposed to cost. And it isn't anywhere near as much as the
+profiles indicate the function that contains the lock is costing.
+
+Occam's Razor leads to only one conclusion, like it or not....
+
+> Your profiles are shit. Deal with it, or accept that nobody is ever
+> going to bother working on them because your profiles don't give
+> useful information.
 > =
 
-> To setup KVM to use perf, you may refer to,
-> =
+> I see that you actually fixed your profiles, but quite frankly, the
+> amount of pure unadulterated crap you posted in this email is worth
+> reacting negatively to.
 
-> https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/=
-html/Virtualization_Tuning_and_Optimization_Guide/sect-Virtualization_Tunin=
-g_Optimization_Guide-Monitoring_Tools-vPMU.html
-> https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/=
-html/Virtualization_Administration_Guide/sect-perf-mon.html
-> =
+I'm happy to be told that I'm wrong *when I'm wrong*, but you always
+say "read the code to understand a problem" rather than depending on
+potentially unreliable tools and debug information that is gathered.
 
-> I haven't tested them.  You may Google to find more information.  Or the
-> perf/kvm people can give you more information.
+Yet when I do that using partial profile information, your reaction
+is to tell me I am "full of shit" because my information isn't 100%
+reliable? Really, Linus?
 
-Thanks, "-cpu host" on the qemu command line works. I hate magic,
-undocumented(*) features that are necessary to make basic stuff work. =
+> You generally make so much sense that it's shocking to see you then
+> make these crazy excuses for your completely broken profiles.
 
+Except they *aren't broken*. They are simply *less accurate* than
+they could be. That does not invalidate the profile nor does it mean
+that the insight it gives us into the functioning of the code is
+wrong.
 
--Dave.
+Cheers,
 
-(*) yeah, try working this capability even exists out from the
-qemu/kvm man page.
-
+Dave.
 -- =
 
 Dave Chinner
 david(a)fromorbit.com
 
---===============2176673602735332569==--
+--===============0710504734441102897==--
 
