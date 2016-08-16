@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============2330923375142882954=="
+Content-Type: multipart/mixed; boundary="===============3273956374945751790=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Mon, 15 Aug 2016 16:48:36 -0700
-Message-ID: <CA+55aFwp-Aeu-6j2MfMgEDoUwq+1vThL4nBdMj-p5TqDMA5RrA@mail.gmail.com>
+Date: Mon, 15 Aug 2016 17:15:47 -0700
+Message-ID: <CA+55aFznUMMtRbhE40gXke2XAV2EqKUYBfFsfLoJ5TRw7UeZ-Q@mail.gmail.com>
 In-Reply-To: <CA+55aFzOAorMxCsv3uyyyhS8c5xteVnZVEm+bGyBjkjWVT5Zag@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2330923375142882954==
+--===============3273956374945751790==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -16,78 +16,48 @@ Content-Transfer-Encoding: quoted-printable
 On Mon, Aug 15, 2016 at 4:20 PM, Linus Torvalds
 <torvalds@linux-foundation.org> wrote:
 >
-> None of this code is all that new, which is annoying. This must have
-> gone on forever,
+> But I'll try to see what happens
+> on my profile, even if I can't recreate the contention itself, just
+> trying to see what happens inside of that region.
 
-... ooh.
+Yeah, since I run my machines on encrypted disks, my profile shows 60%
+kthread, but that's just because 55% is crypto.
 
-Wait, I take that back.
+I only have 5% in kswapd. And the spinlock doesn't even show up for me
+(but "__delete_from_page_cache()" does, which doesn't look
+unreasonable).
 
-We actually have some very recent changes that I didn't even think
-about that went into this very merge window.
+And while the biggest reason the spinlock doesn't show up is likely
+simply my single-node "everything is on one die", I still think the
+lower kswapd CPU use might be partly due to the node-vs-zone thing.
 
-In particular, I wonder if it's all (or at least partly) due to the
-new per-node LRU lists.
+For me, with just one node, the new
 
-So in shrink_page_list(), when kswapd is encountering a page that is
-under page writeback due to page reclaim, it does:
+            test_bit(PGDAT_WRITEBACK, &pgdat->flags)) {
 
-                        if (current_is_kswapd() &&
-                            PageReclaim(page) &&
-                            test_bit(PGDAT_WRITEBACK, &pgdat->flags)) {
-                                nr_immediate++;
-                                goto keep_locked;
+ends up being very similar to what we used to have before, ie
 
-which basically ignores that page and puts it back on the LRU list.
+            test_bit(ZONE_WRITEBACK, &zone->flags)) {
 
-But that "is this node under writeback" is new - it now does that per
-node, and it *used* to do it per zone (so it _used_ to test "is this
-zone under writeback").
+but on a multi-node machine it would be rather different.
 
-All the mapping pages used to be in the same zone, so I think it
-effectively single-threaded the kswapd reclaim for one mapping under
-reclaim writeback. But in your cases, you have multiple nodes...
+So I might never see contention anyway.
 
-Ok, that's a lot of hand-wavy new-age crystal healing thinking.
+The basic logic in shrink_swap_list() goes back to commit 283aba9f9e0
+("mm: vmscan: block kswapd if it is encountering pages under
+writeback") but it has been messed around with a lot (and something
+else existed there before - we've always had some "throttle kswapd so
+that it doesn't use insane amounts of CPU time").
 
-Really, I haven't looked at it more than "this is one thing that has
-changed recently, I wonder if it changes the patterns and could
-explain much higher spin_lock contention on the mapping->tree_lock".
+DaveC - does the spinlock contention go away if you just go back to
+4.7? If so, I think it's the new zone thing. But it would be good to
+verify - maybe it's something entirely different and it goes back much
+further.
 
-I'm adding Mel Gorman and his band of miscreants to the cc, so that
-they can tell me that I'm full of shit, and completely missed on what
-that zone->node change actually ends up meaning.
+Mel - I may be barking up entirely the wrong tree, but it would be
+good if you could take a look just in case this is actually it.
 
-Mel? The issue is that Dave Chinner is seeing some nasty spinlock
-contention on "mapping->tree_lock":
+                  Linus
 
->   31.18%  [kernel]  [k] __pv_queued_spin_lock_slowpath
-
-and one of the main paths is this:
-
->    - 30.29% kswapd
->       - 30.23% shrink_node
->          - 30.07% shrink_node_memcg.isra.75
->             - 30.15% shrink_inactive_list
->                - 29.49% shrink_page_list
->                   - 22.79% __remove_mapping
->                      - 22.27% _raw_spin_lock_irqsave
->                           __pv_queued_spin_lock_slowpath
-
-so there's something ridiculously bad going on with a fairly simple benchma=
-rk.
-
-Dave's benchmark is literally just a "write a new 48GB file in
-single-page chunks on a 4-node machine". Nothing odd - not rewriting
-files, not seeking around, no nothing.
-
-You can probably recreate it with a silly
-
-  dd bs=3D4096 count=3D$((12*1024*1024)) if=3D/dev/zero of=3Dbigfile
-
-although Dave actually had something rather fancier, I think.
-
-             Linus
-
---===============2330923375142882954==--
+--===============3273956374945751790==--
 
