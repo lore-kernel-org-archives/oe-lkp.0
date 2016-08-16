@@ -1,116 +1,127 @@
-Content-Type: multipart/mixed; boundary="===============5534627286725578420=="
+Content-Type: multipart/mixed; boundary="===============4144218313591792688=="
 MIME-Version: 1.0
 From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Tue, 16 Aug 2016 10:38:26 +1000
-Message-ID: <20160816003826.GG16044@dastard>
-In-Reply-To: <CA+55aFznUMMtRbhE40gXke2XAV2EqKUYBfFsfLoJ5TRw7UeZ-Q@mail.gmail.com>
+Date: Tue, 16 Aug 2016 10:19:42 +1000
+Message-ID: <20160816001942.GF16044@dastard>
+In-Reply-To: <CA+55aFzOAorMxCsv3uyyyhS8c5xteVnZVEm+bGyBjkjWVT5Zag@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5534627286725578420==
+--===============4144218313591792688==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 15, 2016 at 05:15:47PM -0700, Linus Torvalds wrote:
-> DaveC - does the spinlock contention go away if you just go back to
-> 4.7? If so, I think it's the new zone thing. But it would be good to
-> verify - maybe it's something entirely different and it goes back much
-> further.
+On Mon, Aug 15, 2016 at 04:20:55PM -0700, Linus Torvalds wrote:
+> On Mon, Aug 15, 2016 at 3:42 PM, Dave Chinner <david@fromorbit.com> wro=
+te:
+> >
+> >   31.18%  [kernel]  [k] __pv_queued_spin_lock_slowpath
+> >    9.90%  [kernel]  [k] copy_user_generic_string
+> >    3.65%  [kernel]  [k] __raw_callee_save___pv_queued_spin_unlock
+> >    2.62%  [kernel]  [k] __block_commit_write.isra.29
+> >    2.26%  [kernel]  [k] _raw_spin_lock_irqsave
+> >    1.72%  [kernel]  [k] _raw_spin_lock
+> =
 
-Same in 4.7 (flat profile numbers climbed higher after this
-snapshot was taken, as can be seen by the callgraph numbers):
+> Ok, this is more like it.
+> =
 
-  29.47%  [kernel]  [k] __pv_queued_spin_lock_slowpath
-  11.59%  [kernel]  [k] copy_user_generic_string
-   3.13%  [kernel]  [k] __raw_callee_save___pv_queued_spin_unlock
-   2.87%  [kernel]  [k] __block_commit_write.isra.29
-   2.02%  [kernel]  [k] _raw_spin_lock_irqsave
-   1.77%  [kernel]  [k] get_page_from_freelist
-   1.36%  [kernel]  [k] __wake_up_bit     =
+> I'd still like to see it on raw hardware, just to see if we may have a
+> bug in the PV code. Because that code has been buggy before. I
+> *thought* we fixed it, but ...
+> =
 
-   1.31%  [kernel]  [k] __radix_tree_lookup
-   1.22%  [kernel]  [k] radix_tree_tag_set
-   1.16%  [kernel]  [k] clear_page_dirty_for_io
-   1.14%  [kernel]  [k] __remove_mapping
-   1.14%  [kernel]  [k] _raw_spin_lock
-   1.00%  [kernel]  [k] zone_dirty_ok
-   0.95%  [kernel]  [k] radix_tree_tag_clear
-   0.90%  [kernel]  [k] generic_write_end
-   0.89%  [kernel]  [k] __delete_from_page_cache
-   0.87%  [kernel]  [k] unlock_page
-   0.86%  [kernel]  [k] cancel_dirty_page
-   0.81%  [kernel]  [k] up_write
-   0.80%  [kernel]  [k] ___might_sleep
-   0.77%  [kernel]  [k] _raw_spin_unlock_irqrestore
-   0.75%  [kernel]  [k] generic_perform_write
-   0.72%  [kernel]  [k] xfs_do_writepage  =
+> In fact, you don't even need to do it outside of virtualization, but
+> with paravirt disabled (so that it runs the native non-pv locking in
+> the virtual machine).
+> =
 
-   0.69%  [kernel]  [k] down_write        =
+> >    36.60%     0.00%  [kernel]            [k] kswapd
+> >    - 30.29% kswapd
+> >       - 30.23% shrink_node
+> >          - 30.07% shrink_node_memcg.isra.75
+> >             - 30.15% shrink_inactive_list
+> >                - 29.49% shrink_page_list
+> >                   - 22.79% __remove_mapping
+> >                      - 22.27% _raw_spin_lock_irqsave
+> >                           __pv_queued_spin_lock_slowpath
+> =
 
-   0.63%  [kernel]  [k] shrink_page_list  =
+> How I dislike the way perf shows the call graph data... Just last week
+> I was talking to Arnaldo about how to better visualize the cost of
+> spinlocks, because the normal way "perf" shows costs is so nasty.
 
-   0.63%  [kernel]  [k] __xfs_get_blocks  =
+Do not change it - it's the way call graph profiles have been
+presented for the past 20 years. I hate it when long standing
+conventions are changed because one person doesn't like them and
+everyone else has to relearn skills the haven't had to think about
+for years....
 
-   0.61%  [kernel]  [k] __test_set_page_writeback
-   0.59%  [kernel]  [k] free_hot_cold_page
-   0.57%  [kernel]  [k] write_cache_pages
-   0.56%  [kernel]  [k] __radix_tree_create
-   0.55%  [kernel]  [k] __list_add
-   0.53%  [kernel]  [k] page_mapping
-   0.53%  [kernel]  [k] drop_buffers
-   0.51%  [kernel]  [k] xfs_vm_releasepage
-   0.51%  [kernel]  [k] free_pcppages_bulk
-   0.50%  [kernel]  [k] __list_del_entry  =
+> What happens is that you see that 36% of CPU time is attributed to
+> kswapd, and then you can drill down and see where that 36% comes from.
+> So far so good, and that's what perf does fairly well.
+> =
 
+> But then when you find the spinlock, you actually want to go the other
+> way, and instead ask it to show "who were the callers to this routine
+> and what were the percentages", so that you can then see whether (for
+> example) it's just that __remove_mapping() use that contends with
+> itself, or whether it's contending with the page additions or
+> whatever..
 
+Um, perf already does that:
 
-   38.07%    38.07%  [kernel]            [k] __pv_queued_spin_lock_slowpath
-   - 25.52% ret_from_fork
+-   31.55%    31.55%  [kernel]            [k] __pv_queued_spin_lock_slowpath
+   - 19.83% ret_from_fork
       - kthread
-         - 24.36% kswapd
-              shrink_zone
-              shrink_zone_memcg.isra.73
+         - 18.55% kswapd
+              shrink_node
+              shrink_node_memcg.isra.75
               shrink_inactive_list
-         - 3.21% worker_thread
+           1.76% worker_thread
               process_one_work
-              wb_workfn
+              wb_workfn =
+
               wb_writeback
               __writeback_inodes_wb
-              writeback_sb_inodes
+              writeback_sb_inodes         =
+
               __writeback_single_inode
               do_writepages
               xfs_vm_writepages
               write_cache_pages
-   - 10.06% __libc_pwrite
-        entry_SYSCALL_64_fastpath
-        sys_pwrite64
-        vfs_write
-        __vfs_write
-        xfs_file_write_iter
-        xfs_file_buffered_aio_write
-      - generic_perform_write
-         - 5.51% xfs_vm_write_begin
-            - 4.94% grab_cache_page_write_begin
-                 pagecache_get_page
-              0.57% __block_write_begin
-                 create_page_buffers
-                 create_empty_buffers
-                 _raw_spin_lock
-                 __pv_queued_spin_lock_slowpath
-         - 4.88% xfs_vm_write_end
-              generic_write_end
-              block_write_end
-              __block_commit_write.isra.29
-              mark_buffer_dirty
-              __set_page_dirty
+              xfs_do_writepage
+   + 5.95% __libc_pwrite
 
--Dave.
+I have that right here because *it's a view of the profile I've
+already looked at*. I didn't post it because, well, it's shorter to
+simply say "contention is from in kswapd".
+
+> So what I'd like to see (and this is where it becomes *so* much more
+> useful to be able to recreate it myself so that I can play with the
+> perf data several different ways) is to see what the profile looks
+> like in that spinlocked region.
+
+Boot your machine with "fake_numa=3D4", and play till you heart is
+content. That's all I do with my test VMs to make them exercise NUMA
+paths.
+
+> None of this code is all that new, which is annoying. This must have
+> gone on forever,
+
+Yes, it has been. Just worse than I've notice before, probably
+because of all the stuff put under the tree lock in the past couple
+of years.
+
+Cheers,
+
+Dave.
 -- =
 
 Dave Chinner
 david(a)fromorbit.com
 
---===============5534627286725578420==--
+--===============4144218313591792688==--
 
