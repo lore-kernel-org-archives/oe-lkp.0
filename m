@@ -1,63 +1,85 @@
-Content-Type: multipart/mixed; boundary="===============3273956374945751790=="
+Content-Type: multipart/mixed; boundary="===============2176673602735332569=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Mon, 15 Aug 2016 17:15:47 -0700
-Message-ID: <CA+55aFznUMMtRbhE40gXke2XAV2EqKUYBfFsfLoJ5TRw7UeZ-Q@mail.gmail.com>
-In-Reply-To: <CA+55aFzOAorMxCsv3uyyyhS8c5xteVnZVEm+bGyBjkjWVT5Zag@mail.gmail.com>
+Date: Tue, 16 Aug 2016 10:08:02 +1000
+Message-ID: <20160816000802.GE16044@dastard>
+In-Reply-To: <87twemndzw.fsf@yhuang-mobile.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3273956374945751790==
+--===============2176673602735332569==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 15, 2016 at 4:20 PM, Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> But I'll try to see what happens
-> on my profile, even if I can't recreate the contention itself, just
-> trying to see what happens inside of that region.
+On Mon, Aug 15, 2016 at 10:22:43AM -0700, Huang, Ying wrote:
+> Hi, Chinner,
+> =
 
-Yeah, since I run my machines on encrypted disks, my profile shows 60%
-kthread, but that's just because 55% is crypto.
+> Dave Chinner <david@fromorbit.com> writes:
+> =
 
-I only have 5% in kswapd. And the spinlock doesn't even show up for me
-(but "__delete_from_page_cache()" does, which doesn't look
-unreasonable).
+> > On Wed, Aug 10, 2016 at 06:00:24PM -0700, Linus Torvalds wrote:
+> >> On Wed, Aug 10, 2016 at 5:33 PM, Huang, Ying <ying.huang@intel.com> =
+wrote:
+> >> >
+> >> > Here it is,
+> >> =
 
-And while the biggest reason the spinlock doesn't show up is likely
-simply my single-node "everything is on one die", I still think the
-lower kswapd CPU use might be partly due to the node-vs-zone thing.
+> >> Thanks.
+> >> =
 
-For me, with just one node, the new
+> >> Appended is a munged "after" list, with the "before" values in
+> >> parenthesis. It actually looks fairly similar.
+> >> =
 
-            test_bit(PGDAT_WRITEBACK, &pgdat->flags)) {
+> >> The biggest difference is that we have "mark_page_accessed()" show up
+> >> after, and not before. There was also a lot of LRU noise in the
+> >> non-profile data. I wonder if that is the reason here: the old model
+> >> of using generic_perform_write/block_page_mkwrite didn't mark the
+> >> pages accessed, and now with iomap_file_buffered_write() they get
+> >> marked as active and that screws up the LRU list, and makes us not
+> >> flush out the dirty pages well (because they are seen as active and
+> >> not good for writeback), and then you get bad memory use.
+> >> =
 
-ends up being very similar to what we used to have before, ie
+> >> I'm not seeing anything that looks like locking-related.
+> >
+> > Not in that profile. I've been doing some local testing inside a
+> > 4-node fake-numa 16p/16GB RAM VM to see what I can find.
+> =
 
-            test_bit(ZONE_WRITEBACK, &zone->flags)) {
+> You run the test in a virtual machine, I think that is why your perf
+> data looks strange (high value of _raw_spin_unlock_irqrestore).
+> =
 
-but on a multi-node machine it would be rather different.
+> To setup KVM to use perf, you may refer to,
+> =
 
-So I might never see contention anyway.
+> https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/=
+html/Virtualization_Tuning_and_Optimization_Guide/sect-Virtualization_Tunin=
+g_Optimization_Guide-Monitoring_Tools-vPMU.html
+> https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/=
+html/Virtualization_Administration_Guide/sect-perf-mon.html
+> =
 
-The basic logic in shrink_swap_list() goes back to commit 283aba9f9e0
-("mm: vmscan: block kswapd if it is encountering pages under
-writeback") but it has been messed around with a lot (and something
-else existed there before - we've always had some "throttle kswapd so
-that it doesn't use insane amounts of CPU time").
+> I haven't tested them.  You may Google to find more information.  Or the
+> perf/kvm people can give you more information.
 
-DaveC - does the spinlock contention go away if you just go back to
-4.7? If so, I think it's the new zone thing. But it would be good to
-verify - maybe it's something entirely different and it goes back much
-further.
+Thanks, "-cpu host" on the qemu command line works. I hate magic,
+undocumented(*) features that are necessary to make basic stuff work. =
 
-Mel - I may be barking up entirely the wrong tree, but it would be
-good if you could take a look just in case this is actually it.
 
-                  Linus
+-Dave.
 
---===============3273956374945751790==--
+(*) yeah, try working this capability even exists out from the
+qemu/kvm man page.
+
+-- =
+
+Dave Chinner
+david(a)fromorbit.com
+
+--===============2176673602735332569==--
 
