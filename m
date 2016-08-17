@@ -1,34 +1,60 @@
-Content-Type: multipart/mixed; boundary="===============4019807165781876444=="
+Content-Type: multipart/mixed; boundary="===============2128688049672507961=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Xin Long <lucien.xin@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/hweight] 65ea11ec6a: will-it-scale.per_process_ops 9.3% improvement
-Date: Wed, 17 Aug 2016 08:48:00 +0200
-Message-ID: <20160817064800.GN30192@twins.programming.kicks-ass.net>
-In-Reply-To: <796A2A72-06B7-4B3D-AA38-DF558FC75857@zytor.com>
+Subject: Re: [sctp] a6c2f79287: netperf.Throughput_Mbps -37.2% regression
+Date: Wed, 17 Aug 2016 15:35:25 +0800
+Message-ID: <CADvbK_dKLU07+tW4f2XpCWgQME8mnjg8EObcfmH4i8s8Aume4w@mail.gmail.com>
+In-Reply-To: <20160817063719.GA5463@aaronlu.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4019807165781876444==
+--===============2128688049672507961==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 16, 2016 at 04:09:19PM -0700, H. Peter Anvin wrote:
-> On August 16, 2016 10:16:35 AM PDT, Borislav Petkov <bp@suse.de> wrote:
-> >On Tue, Aug 16, 2016 at 09:59:00AM -0700, H. Peter Anvin wrote:
-> >> Dang...
-> >
-> >Isn't 9.3% improvement a good thing(tm) ?
-> =
+>  include/net/sctp/structs.h | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
+> index d8e464aacb20..932f2780d3a4 100644
+> --- a/include/net/sctp/structs.h
+> +++ b/include/net/sctp/structs.h
+> @@ -602,6 +602,9 @@ struct sctp_chunk {
+>         /* This needs to be recoverable for SCTP_SEND_FAILED events. */
+>         struct sctp_sndrcvinfo sinfo;
+>
+> +       unsigned long prsctp_param;
+> +       int sent_count;
+> +
+>         /* Which association does this belong to?  */
+>         struct sctp_association *asoc;
+>
+> --
+> 2.5.5
+>
+> Then the performance dropped to the same as the bisected commit
+> a6c2f792873a:
+> $ cat 4.7.0-rc6-01198-g98dd2532b14e/0/netperf.json
+> {
+>   "netperf.Throughput_Mbps": [
+>    754.494375
+>   ]
+> }
+>
+> I think this agrees with the perf data in that the newly added function
+> doesn't show up in the perf-profile but still, the performance drops.
+> So the only possible reason is the newly added fields to the sctp_chunk
+> structure.
+>
+> Is this expected?
+interesting , you didn't include the modification of the functions
+parts, right ?
+you mean only this two line:
+> +       unsigned long prsctp_param;
+> +       int sent_count;ca;
 
-> Yes, it's huge.  The only explanation I could imagine is that scrambling =
-%rdi caused the scheduler to do completely the wrong thing.
+caused the performance issue ?
 
-Not entirely surprising. We have plenty bitmasks and if hweight is
-corrupting the source data instead of computing the weight then we end
-up having two bits of wrong information.
-
-After that, all we can do is more wrong of course...
-
---===============4019807165781876444==--
+--===============2128688049672507961==--
 
