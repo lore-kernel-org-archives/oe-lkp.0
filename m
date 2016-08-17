@@ -1,132 +1,67 @@
-Content-Type: multipart/mixed; boundary="===============6168736805018125633=="
+Content-Type: multipart/mixed; boundary="===============8647549234728365110=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Xin Long <lucien.xin@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [sctp] a6c2f79287: netperf.Throughput_Mbps -37.2% regression
-Date: Wed, 17 Aug 2016 13:04:29 +0800
-Message-ID: <47965feb-3a4d-4e07-a9ed-86a3d58fb911@intel.com>
-In-Reply-To: <CADvbK_feA94rUXH9QgCT7Yei0QBg5=4Mz9g2TKwX9B5P5kMMug@mail.gmail.com>
+Date: Wed, 17 Aug 2016 13:34:37 +0800
+Message-ID: <CADvbK_cfoegUKHEtPgyowjE3ctb3X8878cV4JJyvkjSaeBu6ug@mail.gmail.com>
+In-Reply-To: <47965feb-3a4d-4e07-a9ed-86a3d58fb911@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6168736805018125633==
+--===============8647549234728365110==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 08/16/2016 05:56 PM, Xin Long wrote:
->>>>
->>>> I'm testing on Linus' master, can we all use that please?
->>>>
->>>
->>> [git] git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>>
->>> [mechine]
->>> Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz
->>> mem 62G (66000220K)
->>>
->>> [system]
->>> # cat /etc/redhat-release
->>> Red Hat Enterprise Linux Server release 7.3 Beta (Maipo)
->>>
->>> [commit 3684b03]
->>> [root(a)hp-dl380pg8-11 lxin]# uname -r
->>> 4.8.0-rc2.3684b03
->>> [root(a)hp-dl380pg8-11 lxin]# cat test.sh
->>> killall -0 netserver || netserver -4 &
->>> netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K -H 127.0.0.1
->>
->> I just realized the test we are doing is not exactly the same.
->> As the original report says:
->>         ip: ipv4
->>         runtime: 300s
->>         nr_threads: 200%
->>         cluster: cs-localhost
->>         send_size: 10K
->>         test: SCTP_STREAM_MANY
->>         cpufreq_governor: performance
->>
->> Note the nr_threads: 200%, which means to start 2 times of CPU number
->> processes of netperf.
->>
->> In our IVB i3(2 cores, 2 threads per core) case, 8 netperf processes
->> are started concurrently:
-> OK, understand.
-> =
+>
+> For commit a6c2f79287 ("sctp: implement prsctp TTL policy"), no matter
+> the value of net.sctp.prsctp_enable, the throughput is almost the same:
+>
+> net.sctp.prsctp_enable =3D 0
+> {
+>   "netperf.Throughput_Mbps": [
+>     2353.3112499999997
+>   ]
+> }
+>
+> net.sctp.prsctp_enable =3D 1
+> {
+>   "netperf.Throughput_Mbps": [
+>     2371.5862500000003
+>   ]
+> }
+>
+> For its immediate parent:
+> commit 826d253d57 ("sctp: add SCTP_PR_ASSOC_STATUS on sctp sockopt")
+> No matter the value of net.sctp.prsctp_enable, the throughput is again
+> almost the same:
+>
+> net.sctp.prsctp_enable =3D 0
+> {
+>   "netperf.Throughput_Mbps": [
+>     3838.8300000000004
+>   ]
+> }
+>
+> net.sctp.prsctp_enable =3D 1
+> {
+>   "netperf.Throughput_Mbps": [
+>     3751.4600000000005
+>   ]
+> }
+>
+> Does this result give any hint?
+OK, if you disable prsctp_enable, commit a6c2f79287 really only adds
+two if (), which definitely can't affect performance.
 
->>
->> 2016-07-27 03:48:09 netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10=
-K -H 127.0.0.1 &
->> 2016-07-27 03:48:09 netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10=
-K -H 127.0.0.1 &
->> 2016-07-27 03:48:09 netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10=
-K -H 127.0.0.1 &
->> 2016-07-27 03:48:09 netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10=
-K -H 127.0.0.1 &
->> 2016-07-27 03:48:09 netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10=
-K -H 127.0.0.1 &
->> 2016-07-27 03:48:09 netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10=
-K -H 127.0.0.1 &
->> 2016-07-27 03:48:09 netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10=
-K -H 127.0.0.1 &
->> 2016-07-27 03:48:09 netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10=
-K -H 127.0.0.1 &
->>
->> The throughput is the average of those runs.
->>
->> And I think we should be doing test on:
->> commit a6c2f79287 ("sctp: implement prsctp TTL policy") (the bisected on=
-e)
->> and
->> commit 826d253d57 ("sctp: add SCTP_PR_ASSOC_STATUS on sctp sockopt") (it=
-s immediate parent)
->> instead of Linus' master HEAD to avoid other factors.
->>
-> OK, I will do tests as your suggestion now,  but need to rebuild again :D
-> =
+if it's really an issue, pls help to reverse the codes from commit a6c2f792=
+87
+little by little, rebuild kernel and try.  you will find which line
+exactly caused
+the performance issue.  it seems the only way to locate the issue, yet it's
+only reproducable in your env.
 
-> can you disable pr_enable with "sysctl -w net.sctp.prsctp_enable=3D0",
-> then try again?
+Thanks.
 
-For commit a6c2f79287 ("sctp: implement prsctp TTL policy"), no matter
-the value of net.sctp.prsctp_enable, the throughput is almost the same:
-
-net.sctp.prsctp_enable =3D 0
-{
-  "netperf.Throughput_Mbps": [
-    2353.3112499999997
-  ]
-}
-
-net.sctp.prsctp_enable =3D 1
-{
-  "netperf.Throughput_Mbps": [
-    2371.5862500000003
-  ]
-}
-
-For its immediate parent:
-commit 826d253d57 ("sctp: add SCTP_PR_ASSOC_STATUS on sctp sockopt")
-No matter the value of net.sctp.prsctp_enable, the throughput is again
-almost the same:
-
-net.sctp.prsctp_enable =3D 0
-{
-  "netperf.Throughput_Mbps": [
-    3838.8300000000004
-  ]
-}
-
-net.sctp.prsctp_enable =3D 1
-{
-  "netperf.Throughput_Mbps": [
-    3751.4600000000005
-  ]
-}
-
-Does this result give any hint?
-
-Thanks,
-Aaron
-
---===============6168736805018125633==--
+--===============8647549234728365110==--
 
