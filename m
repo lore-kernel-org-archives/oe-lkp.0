@@ -1,74 +1,29 @@
-Content-Type: multipart/mixed; boundary="===============8436431371481169028=="
+Content-Type: multipart/mixed; boundary="===============7142377584173987264=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Xin Long <lucien.xin@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [sctp] a6c2f79287: netperf.Throughput_Mbps -37.2% regression
-Date: Wed, 17 Aug 2016 15:53:57 +0800
-Message-ID: <20160817075357.GA2558@aaronlu.sh.intel.com>
+Date: Wed, 17 Aug 2016 16:02:45 +0800
+Message-ID: <CADvbK_eErG-XPsDZJxjspqfC6dnF7AGSZaWNNzkZajw9SucMAA@mail.gmail.com>
 In-Reply-To: <375f06dd-8439-bba3-8b45-781e1e48dc9c@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8436431371481169028==
+--===============7142377584173987264==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 17, 2016 at 03:42:34PM +0800, Aaron Lu wrote:
-> On 08/17/2016 03:35 PM, Xin Long wrote:
-> >>  include/net/sctp/structs.h | 3 +++
-> >>  1 file changed, 3 insertions(+)
-> >>
-> >> diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-> >> index d8e464aacb20..932f2780d3a4 100644
-> >> --- a/include/net/sctp/structs.h
-> >> +++ b/include/net/sctp/structs.h
-> >> @@ -602,6 +602,9 @@ struct sctp_chunk {
-> >>         /* This needs to be recoverable for SCTP_SEND_FAILED events. */
-> >>         struct sctp_sndrcvinfo sinfo;
-> >>
-> >> +       unsigned long prsctp_param;
-> >> +       int sent_count;
-> >> +
-> >>         /* Which association does this belong to?  */
-> >>         struct sctp_association *asoc;
-> >>
-> >> --
-> >> 2.5.5
-> >>
-> >> Then the performance dropped to the same as the bisected commit
-> >> a6c2f792873a:
-> >> $ cat 4.7.0-rc6-01198-g98dd2532b14e/0/netperf.json
-> >> {
-> >>   "netperf.Throughput_Mbps": [
-> >>    754.494375
-> >>   ]
-> >> }
-> >>
-> >> I think this agrees with the perf data in that the newly added function
-> >> doesn't show up in the perf-profile but still, the performance drops.
-> >> So the only possible reason is the newly added fields to the sctp_chunk
-> >> structure.
-> >>
-> >> Is this expected?
-> > interesting , you didn't include the modification of the functions
-> > parts, right ?
-> =
-
-> Yes.
-> =
-
-> > you mean only this two line:
-> >> +       unsigned long prsctp_param;
-> >> +       int sent_count;ca;
-> > =
-
-> > caused the performance issue ?
->  =
-
+>> you mean only this two line:
+>>> +       unsigned long prsctp_param;
+>>> +       int sent_count;ca;
+>>
+>> caused the performance issue ?
+>
 > Right.
+OK, can you remove this line from your patch
++       int sent_count;
 
-Note the test is done on my own Sandybridge desktop, I'll queue a job to
-run on the Ivybridge test box now.
+then test again, thanks.
 
---===============8436431371481169028==--
+--===============7142377584173987264==--
 
