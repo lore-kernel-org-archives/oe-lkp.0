@@ -1,51 +1,67 @@
-Content-Type: multipart/mixed; boundary="===============3545612179453930503=="
+Content-Type: multipart/mixed; boundary="===============1755534442110006369=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@suse.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [x86/hweight] 65ea11ec6a: will-it-scale.per_process_ops 9.3% improvement
-Date: Thu, 18 Aug 2016 06:11:39 +0200
-Message-ID: <20160818041139.GA22101@nazgul.tnic>
-In-Reply-To: <877fbespek.fsf@yhuang-mobile.sh.intel.com>
+Subject: Re: [x86/uaccess] 5b710f34e1: kernel BUG at mm/usercopy.c:75!
+Date: Wed, 17 Aug 2016 09:14:51 -0700
+Message-ID: <CA+55aFw2Hxyavo5unZuu8YkNbsSwC1G5dSsrWYpNSq3kFnRWHg@mail.gmail.com>
+In-Reply-To: <57b455f0.PBbMwoqYXi+gB2ZE%xiaolong.ye@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3545612179453930503==
+--===============1755534442110006369==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 17, 2016 at 08:54:11PM -0700, Huang, Ying wrote:
-> flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mc=
-a cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx=
- pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopolo=
-gy nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx =
-smx est tm2 ssse3 cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic
-> popcnt tsc_deadline_timer aes xsave avx lahf_lm tpr_shadow vnmi flexprior=
-ity ept vpid xsaveopt dtherm ida arat pln pts
-  ^^^^^^
+On Wed, Aug 17, 2016 at 5:17 AM, kernel test robot
+<xiaolong.ye@intel.com> wrote:
+>
+> [  177.875629] usercopy: kernel memory overwrite attempt detected to 8002=
+8f40 (<spans multiple pages>) (512 bytes)
 
-There it is.
+Ugh. This is a bug in the memory access hardening code.
 
-So if there's no bug, alternatives should replace all "call
-__sw_hweightXX" calls with POPCNT. So you shouldn't be even calling
-these functions and hitting that path.
+I think it's this:
 
-Can you boot the kernel with "debug-alternative" and put that dmesg
-somewhere along with vmlinux for me to stare at? Privately is fine too.
+                        err =3D __copy_from_user(&fpu->state.xsave,
+                                               buf_fx, state_size);
 
-I'd like to make sure the alternatives application actually happens.
+where it's copying the xsave area into the kernel buffer. That fpu
+buffer is part of the thread structure:
 
-Thanks.
+                struct fpu *fpu =3D &tsk->thread.fpu;
 
--- =
+and the thread struct allocation is two pages at 80028000:
 
-Regards/Gruss,
-    Boris.
+> [  178.037761] task: 80028000 ti: 8002a000 task.ti: 8002a000
 
-ECO tip #101: Trim your mails when you reply.
+So yes, it "crosses" the page from 80028000 to 80029000, but the task
+allocation is fine, at 80028000-8002a000.
 
-SUSE Linux GmbH, GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton, =
-HRB 21284 (AG N=C3=BCrnberg)
---
+The check_heap_object() code is simply buggy. It does seem to try to
+handle this, by handling compound pages:
 
---===============3545612179453930503==--
+        /* Allow if start and end are inside the same compound page. */
+        endpage =3D virt_to_head_page(end);
+        if (likely(endpage =3D=3D page))
+                return NULL;
+
+but compound pages are about the mapping of hugepages, not about
+simple multi-order allocations like the task structure (or slab
+entries).
+
+In other words, it looks like the memory hardening is simply broken
+for any case that doesn't use kmalloc(), but instead just allocates
+non-order-0 pages directly. Which is certainly _rare_, but not unheard
+of.
+
+I'm not sure how to fix it.The low-level page allocator does *not*
+mark orders anywhere.
+
+I suspect we should just get rid of the page-crosser checking, because
+it's unsolvable.
+
+                  Linus
+
+--===============1755534442110006369==--
 
