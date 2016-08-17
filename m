@@ -1,88 +1,92 @@
-Content-Type: multipart/mixed; boundary="===============2951749001615103074=="
+Content-Type: multipart/mixed; boundary="===============0816580809578422832=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Xin Long <lucien.xin@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Fri, 19 Aug 2016 11:49:46 +0100
-Message-ID: <20160819104946.GL8119@techsingularity.net>
-In-Reply-To: <CA+55aFzqmNRWyczFHDCgjv2w6ZyD_AUJL1O1ZRmDs+DHT2=2cQ@mail.gmail.com>
+Subject: Re: [sctp] a6c2f79287: netperf.Throughput_Mbps -37.2% regression
+Date: Thu, 18 Aug 2016 02:06:50 +0800
+Message-ID: <CADvbK_fGg=QUxaKAZYei+4DLYW4QDzVaGWTC5GEP2+t42AjmSQ@mail.gmail.com>
+In-Reply-To: <80bbef60-34ed-0bf1-f1c5-8285b713c2f7@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2951749001615103074==
+--===============0816580809578422832==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 18, 2016 at 03:25:40PM -0700, Linus Torvalds wrote:
-> >> In fact, looking at the __page_cache_alloc(), we already have that
-> >> "spread pages out" logic. I'm assuming Dave doesn't actually have that
-> >> bit set (I don't think it's the default), but I'm also envisioning
-> >> that maybe we could extend on that notion, and try to spread out
-> >> allocations in general, but keep page allocations from one particular
-> >> mapping within one node.
-> >
-> > CONFIG_CPUSETS=3Dy
-> >
-> > But I don't have any cpusets configured (unless systemd is doing
-> > something wacky under the covers) so the page spread bit should not
-> > be set.
-> =
+>
+> It doesn't seem memory is an issue.
+>
+> The whole dump is about the same.
+> The MemFree and MemAvailable doesn't change much.
+>
+Hi, Aaron
 
-> Yeah, but even when it's not set we just do a generic alloc_pages(),
-> which is just going to fill up all nodes. Not perhaps quite as "spread
-> out", but there's obviously no attempt to try to be node-aware either.
-> =
+1)
+I talked with Marcelo about this one.
+He said it might be related with cacheline.  the  new field distroyed
+the prior cacheline. So on top of commit 826d253d57b1, pls only add
++       unsigned long prsctp_param;
+
+to the end of struct sctp_chunk, then try.
 
 
-There is a slight difference. Reads should fill the nodes in turn but
-dirty pages (__GFP_WRITE) get distributed to balance the number of dirty
-pages on each node to avoid hitting dirty balance limits prematurely.
+2)
+if 1) still doesn't work, I may think about to drop prsctp_param in
+sctp_chunk, and reuse msg->expire_at. as for sent_count, I will
+put it to the mem hole of sctp_chunk.
 
-Yesterday I tried a patch that avoids distributing to remote nodes close
-to the high watermark to avoid waking remote kswapd instances. It added a
-lot of overhead to the fast path (3%) which hurts every writer but did not
-reduce contention enough on the special case of writing a single large file.
+So pls also try the attachment patch,  on top of commit a6c2f792873a
 
-As an aside, the dirty distribution check itself is very expensive so I
-prototyped something that does the expensive calculations on a vmstat
-update. Not sure if it'll work but it's a side issue.
+Thanks.
 
-> So _if_ we come up with some reasonable way to say "let's keep the
-> pages of this mapping together", we could try to do it in that
-> numa-aware __page_cache_alloc().
-> =
+--===============0816580809578422832==
+Content-Type: text/x-patch
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="expire_at-reuse.patch"
 
-> It *could* be as simple/stupid as just saying "let's allocate the page
-> cache for new pages from the current node" - and if the process that
-> dirties pages just stays around on one single node, that might already
-> be sufficient.
-> =
+ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbmV0L3NjdHAvc3RydWN0cy5oIGIvaW5jbHVkZS9uZXQvc2N0
+cC9zdHJ1Y3RzLmgKaW5kZXggNmJjZGE3MS4uMDA4Y2I3NiAxMDA2NDQKLS0tIGEvaW5jbHVkZS9u
+ZXQvc2N0cC9zdHJ1Y3RzLmgKKysrIGIvaW5jbHVkZS9uZXQvc2N0cC9zdHJ1Y3RzLmgKQEAgLTUy
+NCw3ICs1MjQsMTEgQEAgc3RydWN0IHNjdHBfZGF0YW1zZyB7CiAJc3RydWN0IGxpc3RfaGVhZCBj
+aHVua3M7CiAJLyogUmVmZXJlbmNlIGNvdW50aW5nLiAqLwogCWF0b21pY190IHJlZmNudDsKLQkv
+KiBXaGVuIGlzIHRoaXMgbWVzc2FnZSBubyBsb25nZXIgaW50ZXJlc3RpbmcgdG8gdGhlIHBlZXI/
+ICovCisJLyogUmUtdXNlIHRoaXMgZmllbGQgdG8gcmVjb3JkIHBhcmFtIGZvciBwcnNjdHAgcG9s
+aWNpZXMsCisJICogZm9yIFRUTCBwb2xpY3ksIGl0IGlzIHRoZSB0aW1lX3RvX2Ryb3Agb2YgdGhp
+cyBjaHVuaywKKwkgKiBmb3IgUlRYIHBvbGljeSwgaXQgaXMgdGhlIG1heF9zZW50X2NvdW50IG9m
+IHRoaXMgY2h1bmssCisJICogZm9yIFBSSU8gcG9saWN5LCBpdCBpcyB0aGUgcHJpb3JpdHkgb2Yg
+dGhpcyBjaHVuay4KKwkgKi8KIAl1bnNpZ25lZCBsb25nIGV4cGlyZXNfYXQ7CiAJLyogRGlkIHRo
+ZSBtZXNzZW5nZSBmYWlsIHRvIHNlbmQ/ICovCiAJaW50IHNlbmRfZXJyb3I7CkBAIC01NTMsNiAr
+NTU3LDkgQEAgc3RydWN0IHNjdHBfY2h1bmsgewogCiAJYXRvbWljX3QgcmVmY250OwogCisJLyog
+SG93IG1hbnkgdGltZXMgdGhpcyBjaHVuayBoYXZlIGJlZW4gc2VudCwgZm9yIHByc2N0cCBSVFgg
+cG9saWN5ICovCisJaW50IHNlbnRfY291bnQ7CisKIAkvKiBUaGlzIGlzIG91ciBsaW5rIHRvIHRo
+ZSBwZXItdHJhbnNwb3J0IHRyYW5zbWl0dGVkIGxpc3QuICAqLwogCXN0cnVjdCBsaXN0X2hlYWQg
+dHJhbnNtaXR0ZWRfbGlzdDsKIApAQCAtNjAyLDE2ICs2MDksNiBAQCBzdHJ1Y3Qgc2N0cF9jaHVu
+ayB7CiAJLyogVGhpcyBuZWVkcyB0byBiZSByZWNvdmVyYWJsZSBmb3IgU0NUUF9TRU5EX0ZBSUxF
+RCBldmVudHMuICovCiAJc3RydWN0IHNjdHBfc25kcmN2aW5mbyBzaW5mbzsKIAotCS8qIFdlIHVz
+ZSB0aGlzIGZpZWxkIHRvIHJlY29yZCBwYXJhbSBmb3IgcHJzY3RwIHBvbGljaWVzLAotCSAqIGZv
+ciBUVEwgcG9saWN5LCBpdCBpcyB0aGUgdGltZV90b19kcm9wIG9mIHRoaXMgY2h1bmssCi0JICog
+Zm9yIFJUWCBwb2xpY3ksIGl0IGlzIHRoZSBtYXhfc2VudF9jb3VudCBvZiB0aGlzIGNodW5rLAot
+CSAqIGZvciBQUklPIHBvbGljeSwgaXQgaXMgdGhlIHByaW9yaXR5IG9mIHRoaXMgY2h1bmsuCi0J
+ICovCi0JdW5zaWduZWQgbG9uZyBwcnNjdHBfcGFyYW07Ci0KLQkvKiBIb3cgbWFueSB0aW1lcyB0
+aGlzIGNodW5rIGhhdmUgYmVlbiBzZW50LCBmb3IgcHJzY3RwIFJUWCBwb2xpY3kgKi8KLQlpbnQg
+c2VudF9jb3VudDsKLQogCS8qIFdoaWNoIGFzc29jaWF0aW9uIGRvZXMgdGhpcyBiZWxvbmcgdG8/
+ICAqLwogCXN0cnVjdCBzY3RwX2Fzc29jaWF0aW9uICphc29jOwogCmRpZmYgLS1naXQgYS9uZXQv
+c2N0cC9jaHVuay5jIGIvbmV0L3NjdHAvY2h1bmsuYwppbmRleCAyNjk4ZDEyLi4wYzUzZDY0IDEw
+MDY0NAotLS0gYS9uZXQvc2N0cC9jaHVuay5jCisrKyBiL25ldC9zY3RwL2NodW5rLmMKQEAgLTM0
+OSw3ICszNDksNyBAQCBpbnQgc2N0cF9jaHVua19hYmFuZG9uZWQoc3RydWN0IHNjdHBfY2h1bmsg
+KmNodW5rKQogCX0KIAogCWlmIChTQ1RQX1BSX1RUTF9FTkFCTEVEKGNodW5rLT5zaW5mby5zaW5m
+b19mbGFncykgJiYKLQkgICAgdGltZV9hZnRlcihqaWZmaWVzLCBjaHVuay0+cHJzY3RwX3BhcmFt
+KSkgeworCSAgICB0aW1lX2FmdGVyKGppZmZpZXMsIGNodW5rLT5tc2ctPmV4cGlyZXNfYXQpKSB7
+CiAJCWlmIChjaHVuay0+c2VudF9jb3VudCkKIAkJCWNodW5rLT5hc29jLT5hYmFuZG9uZWRfc2Vu
+dFtTQ1RQX1BSX0lOREVYKFRUTCldKys7CiAJCWVsc2UKZGlmZiAtLWdpdCBhL25ldC9zY3RwL3Nt
+X21ha2VfY2h1bmsuYyBiL25ldC9zY3RwL3NtX21ha2VfY2h1bmsuYwppbmRleCAyYzQzMWVlLi5j
+NzExMGE5IDEwMDY0NAotLS0gYS9uZXQvc2N0cC9zbV9tYWtlX2NodW5rLmMKKysrIGIvbmV0L3Nj
+dHAvc21fbWFrZV9jaHVuay5jCkBAIC03MTgsNyArNzE4LDcgQEAgc3RhdGljIHZvaWQgc2N0cF9z
+ZXRfcHJzY3RwX3BvbGljeShzdHJ1Y3Qgc2N0cF9jaHVuayAqY2h1bmssCiAJCXJldHVybjsKIAog
+CWlmIChTQ1RQX1BSX1RUTF9FTkFCTEVEKHNpbmZvLT5zaW5mb19mbGFncykpCi0JCWNodW5rLT5w
+cnNjdHBfcGFyYW0gPQorCQljaHVuay0+bXNnLT5leHBpcmVzX2F0ID0KIAkJCWppZmZpZXMgKyBt
+c2Vjc190b19qaWZmaWVzKHNpbmZvLT5zaW5mb190aW1ldG9saXZlKTsKIH0KIAo=
 
-> So just for testing purposes, you could try changing that
-> =
-
->         return alloc_pages(gfp, 0);
-> =
-
-> in __page_cache_alloc() into something like
-> =
-
->         return alloc_pages_node(cpu_to_node(raw_smp_processor_id())), gfp=
-, 0);
-> =
-
-> or something.
-> =
-
-
-The test would be interesting but I believe that keeping heavy writers
-on one node will force them to stall early on dirty balancing even if
-there is plenty of free memory on other nodes.
-
--- =
-
-Mel Gorman
-SUSE Labs
-
---===============2951749001615103074==--
+--===============0816580809578422832==--
 
