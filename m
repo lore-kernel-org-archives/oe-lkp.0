@@ -1,131 +1,128 @@
-Content-Type: multipart/mixed; boundary="===============5262710913413812442=="
+Content-Type: multipart/mixed; boundary="===============8092532299527763616=="
 MIME-Version: 1.0
-From: Xin Long <lucien.xin@gmail.com>
+From: Mel Gorman <mgorman@techsingularity.net>
 To: lkp@lists.01.org
-Subject: Re: [sctp] a6c2f79287: netperf.Throughput_Mbps -37.2% regression
-Date: Thu, 18 Aug 2016 20:45:42 +0800
-Message-ID: <CADvbK_cF3Mphd5CDqGVHcbbZ-L8Xz=vRPzdKTzE4A_p-ZBiDVA@mail.gmail.com>
-In-Reply-To: <20160818032156.GA5250@aaronlu.sh.intel.com>
+Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
+Date: Thu, 18 Aug 2016 14:24:14 +0100
+Message-ID: <20160818132414.GK8119@techsingularity.net>
+In-Reply-To: <20160818071111.GD22388@dastard>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5262710913413812442==
+--===============8092532299527763616==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
->> Hi, Aaron
->>
->> 1)
->> I talked with Marcelo about this one.
->> He said it might be related with cacheline.  the  new field distroyed
->> the prior cacheline. So on top of commit 826d253d57b1, pls only add
->> +       unsigned long prsctp_param;
->>
->> to the end of struct sctp_chunk, then try.
->
-> This doesn't work.
->
+On Thu, Aug 18, 2016 at 05:11:11PM +1000, Dave Chinner wrote:
+> On Thu, Aug 18, 2016 at 01:45:17AM +0100, Mel Gorman wrote:
+> > On Wed, Aug 17, 2016 at 04:49:07PM +0100, Mel Gorman wrote:
+> > > > Yes, we could try to batch the locking like DaveC already suggested
+> > > > (ie we could move the locking to the caller, and then make
+> > > > shrink_page_list() just try to keep the lock held for a few pages if
+> > > > the mapping doesn't change), and that might result in fewer crazy
+> > > > cacheline ping-pongs overall. But that feels like exactly the wrong
+> > > > kind of workaround.
+> > > > =
 
-If it's because of cache lines changed, I'm not sure this, either.
-Maybe 2) is a good way to fix it.
+> > > =
 
-Thanks Aaron.
+> > > Even if such batching was implemented, it would be very specific to t=
+he
+> > > case of a single large file filling LRUs on multiple nodes.
+> > > =
 
->> 2)
->> if 1) still doesn't work, I may think about to drop prsctp_param in
->> sctp_chunk, and reuse msg->expire_at. as for sent_count, I will
->> put it to the mem hole of sctp_chunk.
->>
->> So pls also try the attachment patch,  on top of commit a6c2f792873a
->
-> Good news, this brings the performance back on my Sandybridge desktop :)
-> I have queued jobs to the Ivybridge test box but I guess the result is
-> the same, but will let you know if it isn't.
->
-> It looks like the size of the structure plays a role here, but not clear
-> to me what happened underneath. Do you know why?
->
-> Thanks,
-> Aaron
->
->>
->> Thanks.
->
->> diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
->> index 6bcda71..008cb76 100644
->> --- a/include/net/sctp/structs.h
->> +++ b/include/net/sctp/structs.h
->> @@ -524,7 +524,11 @@ struct sctp_datamsg {
->>       struct list_head chunks;
->>       /* Reference counting. */
->>       atomic_t refcnt;
->> -     /* When is this message no longer interesting to the peer? */
->> +     /* Re-use this field to record param for prsctp policies,
->> +      * for TTL policy, it is the time_to_drop of this chunk,
->> +      * for RTX policy, it is the max_sent_count of this chunk,
->> +      * for PRIO policy, it is the priority of this chunk.
->> +      */
->>       unsigned long expires_at;
->>       /* Did the messenge fail to send? */
->>       int send_error;
->> @@ -553,6 +557,9 @@ struct sctp_chunk {
->>
->>       atomic_t refcnt;
->>
->> +     /* How many times this chunk have been sent, for prsctp RTX policy=
- */
->> +     int sent_count;
->> +
->>       /* This is our link to the per-transport transmitted list.  */
->>       struct list_head transmitted_list;
->>
->> @@ -602,16 +609,6 @@ struct sctp_chunk {
->>       /* This needs to be recoverable for SCTP_SEND_FAILED events. */
->>       struct sctp_sndrcvinfo sinfo;
->>
->> -     /* We use this field to record param for prsctp policies,
->> -      * for TTL policy, it is the time_to_drop of this chunk,
->> -      * for RTX policy, it is the max_sent_count of this chunk,
->> -      * for PRIO policy, it is the priority of this chunk.
->> -      */
->> -     unsigned long prsctp_param;
->> -
->> -     /* How many times this chunk have been sent, for prsctp RTX policy=
- */
->> -     int sent_count;
->> -
->>       /* Which association does this belong to?  */
->>       struct sctp_association *asoc;
->>
->> diff --git a/net/sctp/chunk.c b/net/sctp/chunk.c
->> index 2698d12..0c53d64 100644
->> --- a/net/sctp/chunk.c
->> +++ b/net/sctp/chunk.c
->> @@ -349,7 +349,7 @@ int sctp_chunk_abandoned(struct sctp_chunk *chunk)
->>       }
->>
->>       if (SCTP_PR_TTL_ENABLED(chunk->sinfo.sinfo_flags) &&
->> -         time_after(jiffies, chunk->prsctp_param)) {
->> +         time_after(jiffies, chunk->msg->expires_at)) {
->>               if (chunk->sent_count)
->>                       chunk->asoc->abandoned_sent[SCTP_PR_INDEX(TTL)]++;
->>               else
->> diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
->> index 2c431ee..c7110a9 100644
->> --- a/net/sctp/sm_make_chunk.c
->> +++ b/net/sctp/sm_make_chunk.c
->> @@ -718,7 +718,7 @@ static void sctp_set_prsctp_policy(struct sctp_chunk=
- *chunk,
->>               return;
->>
->>       if (SCTP_PR_TTL_ENABLED(sinfo->sinfo_flags))
->> -             chunk->prsctp_param =3D
->> +             chunk->msg->expires_at =3D
->>                       jiffies + msecs_to_jiffies(sinfo->sinfo_timetolive=
-);
->>  }
->>
->
+> > =
 
---===============5262710913413812442==--
+> > The latest Jason Bourne movie was sufficiently bad that I spent time
+> > thinking how the tree_lock could be batched during reclaim. It's not
+> > straight-forward but this prototype did not blow up on UMA and may be
+> > worth considering if Dave can test either approach has a positive impac=
+t.
+> =
+
+> SO, I just did a couple of tests. I'll call the two patches "sleepy"
+> for the contention backoff patch and "bourney" for the Jason Bourne
+> inspired batching patch. This is an average of 3 runs, overwriting
+> a 47GB file on a machine with 16GB RAM:
+> =
+
+> 		IO throughput	wall time __pv_queued_spin_lock_slowpath
+> vanilla		470MB/s		1m42s		25-30%
+> sleepy		295MB/s		2m43s		<1%
+> bourney		425MB/s		1m53s		25-30%
+> =
+
+
+Thanks. I updated the tests today and reran them trying to reproduce what
+you saw but I'm simply not seeing it on bare metal with a spinning disk.
+
+xfsio Throughput
+                          4.8.0-rc2             4.8.0-rc2             4.8.0=
+-rc2
+                            vanilla                sleepy               bou=
+rney
+Min      tput    147.4450 (  0.00%)    147.2580 (  0.13%)    147.3900 (  0.=
+04%)
+Hmean    tput    147.5853 (  0.00%)    147.5101 (  0.05%)    147.6121 ( -0.=
+02%)
+Stddev   tput      0.1041 (  0.00%)      0.1785 (-71.47%)      0.2036 (-95.=
+63%)
+CoeffVar tput      0.0705 (  0.00%)      0.1210 (-71.56%)      0.1379 (-95.=
+59%)
+Max      tput    147.6940 (  0.00%)    147.6420 (  0.04%)    147.8820 ( -0.=
+13%)
+
+I'm currently setting up a KVM instance that may fare better. Due to
+quirks of where machines are, I have to setup the KVM instance on real
+NUMA hardware but maybe that'll make the problem even more obvious.
+
+> The overall CPU usage of sleepy was much lower than the others, but
+> it was also much slower. Too much sleeping and not enough reclaim
+> work being done, I think.
+> =
+
+
+Looks like it. On my initial test, there was barely any sleeping.
+
+> As for bourney, it's not immediately clear as to why it's nearly as
+> bad as the movie. At worst I would have expected it to have not
+> noticable impact, but maybe we are delaying freeing of pages too
+> long and so stalling allocation of new pages? It also doesn't do
+> much to reduce contention, especially considering the reduction in
+> throughput.
+> =
+
+> On a hunch that the batch list isn't all one mapping, I sorted it.
+> Patch is below if you're curious.
+> =
+
+
+The fact that sorting makes such a difference makes me think that it's
+the wrong direction. It's far too specific to this test case and does
+nothing to throttle a reclaimer. It's also fairly complex and I expected
+that normal users of remove_mapping such as truncation would take a hit.
+
+The hit of bouncing the lock around just hurts too much.
+
+> FWIW, I just remembered about /proc/sys/vm/zone_reclaim_mode.
+> =
+
+
+That is a terrifying "fix" for this problem. It just happens to work
+because there is no spillover to other nodes so only one kswapd instance
+is potentially active.
+
+> Anyway, I've burnt enough erase cycles on this SSD for today....
+> =
+
+
+I'll continue looking at getting KVM up and running and then consider
+other possibilities for throttling.
+
+-- =
+
+Mel Gorman
+SUSE Labs
+
+--===============8092532299527763616==--
 
