@@ -1,39 +1,63 @@
-Content-Type: multipart/mixed; boundary="===============3489246957089142549=="
+Content-Type: multipart/mixed; boundary="===============2856075189001973554=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Wed, 17 Aug 2016 18:42:54 +0200
-Message-ID: <20160817164254.GE20703@dhcp22.suse.cz>
-In-Reply-To: <20160817154825.GC20719@dhcp22.suse.cz>
+Date: Thu, 18 Aug 2016 10:55:01 -0700
+Message-ID: <CA+55aFyEQhjm9CU0yhk0WBAArB9soOA0JfWzjricnOqG9GB41g@mail.gmail.com>
+In-Reply-To: <20160818132414.GK8119@techsingularity.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3489246957089142549==
+--===============2856075189001973554==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed 17-08-16 17:48:25, Michal Hocko wrote:
-[...]
-> I will try to catch up with the rest of the email thread but from a
-> quick glance it just feels like we are doing more more work under the
-> lock.
+On Thu, Aug 18, 2016 at 6:24 AM, Mel Gorman <mgorman@techsingularity.net>=
+ wrote:
+> On Thu, Aug 18, 2016 at 05:11:11PM +1000, Dave Chinner wrote:
+>> FWIW, I just remembered about /proc/sys/vm/zone_reclaim_mode.
+>>
+>
+> That is a terrifying "fix" for this problem. It just happens to work
+> because there is no spillover to other nodes so only one kswapd instance
+> is potentially active.
 
-Hmm, so it doesn't seem to be more work in __remove_mapping as pointed
-out in http://lkml.kernel.org/r/20160816220250.GI16044(a)dastard
+Well, it may be a terrifying fix, but it does bring up an intriguing
+notion: maybe what we should think about is to make the actual page
+cache allocations be more "node-sticky" for a particular mapping? Not
+some hard node binding, but if we were to make a single mapping *tend*
+to allocate pages primarily within the same node, that would have the
+kind of secondary afvantage that it would avoid the cross-node mapping
+locking.
 
-As Mel already pointed out the LRU will be basically single mapping for
-this workload so any subtle change in timing might make a difference.
-I was looking through 4.6..4.7 and one thing that has changed is the
-inactive vs. active LRU size ratio. See 59dc76b0d4df ("mm: vmscan:
-reduce size of inactive file list"). The machine has quite a lot of
-memory and so the LRUs will be large as well so I guess this could have
-change the timing somehow, but it feels like a wild guess so I would be
-careful to blame this commit...
--- =
+Think of it as a gentler "guiding" fix to the spinlock contention
+issue than a hard hammer.
 
-Michal Hocko
-SUSE Labs
+And trying to (at least initially) keep the allocations of one
+particular file to one particular node sounds like it could have other
+locality advantages too.
 
---===============3489246957089142549==--
+In fact, looking at the __page_cache_alloc(), we already have that
+"spread pages out" logic. I'm assuming Dave doesn't actually have that
+bit set (I don't think it's the default), but I'm also envisioning
+that maybe we could extend on that notion, and try to spread out
+allocations in general, but keep page allocations from one particular
+mapping within one node.
+
+The fact that zone_reclaim_mode really improves on Dave's numbers
+*that* dramatically does seem to imply that there is something to be
+said for this.
+
+We do *not* want to limit the whole page cache to a particular node -
+that sounds very unreasonable in general. But limiting any particular
+file mapping (by default - I'm sure there are things like databases
+that just want their one DB file to take over all of memory) to a
+single node sounds much less unreasonable.
+
+What do you guys think? Worth exploring?
+
+                    Linus
+
+--===============2856075189001973554==--
 
