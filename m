@@ -1,126 +1,142 @@
-Content-Type: multipart/mixed; boundary="===============6305227136371194260=="
+Content-Type: multipart/mixed; boundary="===============7834810494655771011=="
 MIME-Version: 1.0
-From: Dave Chinner <david@fromorbit.com>
+From: Aaron Lu <aaron.lu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Thu, 18 Aug 2016 12:44:28 +1000
-Message-ID: <20160818024427.GC22388@dastard>
-In-Reply-To: <20160817154907.GI8119@techsingularity.net>
+Subject: Re: [sctp] a6c2f79287: netperf.Throughput_Mbps -37.2% regression
+Date: Thu, 18 Aug 2016 11:21:56 +0800
+Message-ID: <20160818032156.GA5250@aaronlu.sh.intel.com>
+In-Reply-To: <CADvbK_fGg=QUxaKAZYei+4DLYW4QDzVaGWTC5GEP2+t42AjmSQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6305227136371194260==
+--===============7834810494655771011==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 17, 2016 at 04:49:07PM +0100, Mel Gorman wrote:
-> On Tue, Aug 16, 2016 at 10:47:36AM -0700, Linus Torvalds wrote:
-> > I've always preferred to see direct reclaim as the primary model for
-> > reclaim, partly in order to throttle the actual "bad" process, but
-> > also because "kswapd uses lots of CPU time" is such a nasty thing to
-> > even begin guessing about.
-> > =
+On Thu, Aug 18, 2016 at 02:06:50AM +0800, Xin Long wrote:
+> >
+> > It doesn't seem memory is an issue.
+> >
+> > The whole dump is about the same.
+> > The MemFree and MemAvailable doesn't change much.
+> >
+> Hi, Aaron
+> =
+
+> 1)
+> I talked with Marcelo about this one.
+> He said it might be related with cacheline.  the  new field distroyed
+> the prior cacheline. So on top of commit 826d253d57b1, pls only add
+> +       unsigned long prsctp_param;
+> =
+
+> to the end of struct sctp_chunk, then try.
+
+This doesn't work.
+ =
+
+> 2)
+> if 1) still doesn't work, I may think about to drop prsctp_param in
+> sctp_chunk, and reuse msg->expire_at. as for sent_count, I will
+> put it to the mem hole of sctp_chunk.
+> =
+
+> So pls also try the attachment patch,  on top of commit a6c2f792873a
+
+Good news, this brings the performance back on my Sandybridge desktop :)
+I have queued jobs to the Ivybridge test box but I guess the result is
+the same, but will let you know if it isn't.
+
+It looks like the size of the structure plays a role here, but not clear
+to me what happened underneath. Do you know why?
+
+Thanks,
+Aaron
 
 > =
 
-> While I agree that bugs with high CPU usage from kswapd are a pain,
-> I'm reluctant to move towards direct reclaim being the primary mode. The
-> stalls can be severe and there is no guarantee that the process punished
-> is the process responsible. I'm basing this assumption on observations
-> of severe performance regressions when I accidentally broke kswapd during
-> the development of node-lru.
-> =
+> Thanks.
 
-> > So I have to admit to liking that "make kswapd sleep a bit if it's
-> > just looping" logic that got removed in that commit.
-> > =
+> diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
+> index 6bcda71..008cb76 100644
+> --- a/include/net/sctp/structs.h
+> +++ b/include/net/sctp/structs.h
+> @@ -524,7 +524,11 @@ struct sctp_datamsg {
+>  	struct list_head chunks;
+>  	/* Reference counting. */
+>  	atomic_t refcnt;
+> -	/* When is this message no longer interesting to the peer? */
+> +	/* Re-use this field to record param for prsctp policies,
+> +	 * for TTL policy, it is the time_to_drop of this chunk,
+> +	 * for RTX policy, it is the max_sent_count of this chunk,
+> +	 * for PRIO policy, it is the priority of this chunk.
+> +	 */
+>  	unsigned long expires_at;
+>  	/* Did the messenge fail to send? */
+>  	int send_error;
+> @@ -553,6 +557,9 @@ struct sctp_chunk {
+>  =
 
-> =
+>  	atomic_t refcnt;
+>  =
 
-> It's primarily the direct reclaimer that is affected by that patch.
-> =
+> +	/* How many times this chunk have been sent, for prsctp RTX policy */
+> +	int sent_count;
+> +
+>  	/* This is our link to the per-transport transmitted list.  */
+>  	struct list_head transmitted_list;
+>  =
 
-> > And looking at DaveC's numbers, it really feels like it's not even
-> > what we do inside the locked region that is the problem. Sure,
-> > __delete_from_page_cache() (which is most of it) is at 1.86% of CPU
-> > time (when including all the things it calls), but that still isn't
-> > all that much. Especially when compared to just:
-> > =
+> @@ -602,16 +609,6 @@ struct sctp_chunk {
+>  	/* This needs to be recoverable for SCTP_SEND_FAILED events. */
+>  	struct sctp_sndrcvinfo sinfo;
+>  =
 
-> >    0.78%  [kernel]  [k] _raw_spin_unlock_irqrestore
-> > =
+> -	/* We use this field to record param for prsctp policies,
+> -	 * for TTL policy, it is the time_to_drop of this chunk,
+> -	 * for RTX policy, it is the max_sent_count of this chunk,
+> -	 * for PRIO policy, it is the priority of this chunk.
+> -	 */
+> -	unsigned long prsctp_param;
+> -
+> -	/* How many times this chunk have been sent, for prsctp RTX policy */
+> -	int sent_count;
+> -
+>  	/* Which association does this belong to?  */
+>  	struct sctp_association *asoc;
+>  =
 
-> =
+> diff --git a/net/sctp/chunk.c b/net/sctp/chunk.c
+> index 2698d12..0c53d64 100644
+> --- a/net/sctp/chunk.c
+> +++ b/net/sctp/chunk.c
+> @@ -349,7 +349,7 @@ int sctp_chunk_abandoned(struct sctp_chunk *chunk)
+>  	}
+>  =
 
-> The profile is shocking for such a basic workload. I automated what Dave
-> described with xfs_io except that the file size is 2*RAM. The filesystem
-> is sized to be roughly the same size as the file to minimise variances
-> due to block layout. A call-graph profile collected on bare metal UMA with
-> numa=3Dfake=3D4 and paravirt spinlocks showed
-> =
+>  	if (SCTP_PR_TTL_ENABLED(chunk->sinfo.sinfo_flags) &&
+> -	    time_after(jiffies, chunk->prsctp_param)) {
+> +	    time_after(jiffies, chunk->msg->expires_at)) {
+>  		if (chunk->sent_count)
+>  			chunk->asoc->abandoned_sent[SCTP_PR_INDEX(TTL)]++;
+>  		else
+> diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+> index 2c431ee..c7110a9 100644
+> --- a/net/sctp/sm_make_chunk.c
+> +++ b/net/sctp/sm_make_chunk.c
+> @@ -718,7 +718,7 @@ static void sctp_set_prsctp_policy(struct sctp_chunk =
+*chunk,
+>  		return;
+>  =
 
->      1.40%     0.16%  kswapd1          [kernel.vmlinux]            [k] _r=
-aw_spin_lock_irqsave
->      1.36%     0.16%  kswapd2          [kernel.vmlinux]            [k] _r=
-aw_spin_lock_irqsave
->      1.21%     0.12%  kswapd0          [kernel.vmlinux]            [k] _r=
-aw_spin_lock_irqsave
->      1.12%     0.13%  kswapd3          [kernel.vmlinux]            [k] _r=
-aw_spin_lock_irqsave
->      0.81%     0.45%  xfs_io           [kernel.vmlinux]            [k] _r=
-aw_spin_lock_irqsave
-> =
+>  	if (SCTP_PR_TTL_ENABLED(sinfo->sinfo_flags))
+> -		chunk->prsctp_param =3D
+> +		chunk->msg->expires_at =3D
+>  			jiffies + msecs_to_jiffies(sinfo->sinfo_timetolive);
+>  }
+>  =
 
-> Those contention figures are not great but they are not terrible either. =
-The
-> vmstats told me there was no direct reclaim activity so either my theory
-> is wrong or this machine is not reproducing the same problem Dave is seei=
-ng.
 
-No, that's roughly the same un-normalised CPU percentage I am seeing
-in spinlock contention. i.e. take way the idle CPU in the profile
-(probably upwards of 80% if it's a 16p machine), and instead look at
-that figure as a percentage of total CPU used by the workload. Then
-you'll that it's 30-40% of the total CPU consumed by the workload.
 
-> I have partial results from a 2-socket and 4-socket machine. 2-socket spe=
-nds
-> roughtly 1.8% in _raw_spin_lock_irqsave and 4-socket spends roughtly 3%,
-> both with no direct reclaim. Clearly the problem gets worse the more NUMA
-> nodes there are but not to the same extent Dave reports.
-> =
-
-> I believe potential reasons why I do not see the same problem as Dave are;
-> =
-
-> 1. Different memory sizes changing timing
-> 2. Dave has fast storage and I'm using a spinning disk
-
-This particular is using an abused 3 year old SATA SSD that still
-runs at 500MB/s on sequential writes. This is "cheap desktop"
-capability these days and is nowhere near what I'd call "fast".
-
-> 3. Lock contention problems are magnified inside KVM
-> =
-
-> I think 3 is a good possibility if contended locks result in expensive
-> exiting and reentery of the guest. I have a vague recollection that a
-> spinning vcpu exits the guest but I did not confirm that.
-
-I don't think anything like that has been implemented in the pv
-spinlocks yet. They just spin right now - it's the same lock
-implementation as the host. Also, Context switch rates measured on
-the host are not significantly higher than what is measured in the
-guest, so there doesn't appear to be any extra scheduling on the
-host side occurring.
-
-Cheers,
-
-Dave.
--- =
-
-Dave Chinner
-david(a)fromorbit.com
-
---===============6305227136371194260==--
+--===============7834810494655771011==--
 
