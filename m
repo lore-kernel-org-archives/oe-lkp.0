@@ -1,46 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============4524766300145191143=="
+Content-Type: multipart/mixed; boundary="===============3342054054972907480=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [sctp] a6c2f79287: netperf.Throughput_Mbps -37.2% regression
-Date: Fri, 19 Aug 2016 15:24:20 +0800
-Message-ID: <20160819072420.GA1167@aaronlu.sh.intel.com>
-In-Reply-To: <ad074d65-52bd-7b6f-f0c3-b94abf288c9a@gmail.com>
+Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
+Date: Fri, 19 Aug 2016 11:00:17 +0200
+Message-ID: <20160819090017.GF32619@dhcp22.suse.cz>
+In-Reply-To: <CA+55aFzqmNRWyczFHDCgjv2w6ZyD_AUJL1O1ZRmDs+DHT2=2cQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4524766300145191143==
+--===============3342054054972907480==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 19, 2016 at 04:19:39AM -0300, Marcelo Ricardo Leitner wrote:
-> Hi,
+On Thu 18-08-16 15:25:40, Linus Torvalds wrote:
+[...]
+> So just for testing purposes, you could try changing that
 > =
 
-> Em 19-08-2016 02:29, Aaron Lu escreveu:
-> ...
-> > It doesn't look insane and sctp_wait_for_sndbuf may actually have
-> > something to do with a larger sctp_chunk I suppose?
-> > =
-
-> > The same perf record doesn't capture any sample for the good commit,
-> > which suggests the nerperf process doesn't sleep in sctp_wait_for_sndbu=
-f.
+>         return alloc_pages(gfp, 0);
 > =
 
-> Ahhh yes! It does, and then it would mean your txbuf is too small for the
-> chunk sizes you're using (sctp tests option -m).
+> in __page_cache_alloc() into something like
 > =
 
-> What's your netperf cmdline again please?
+>         return alloc_pages_node(cpu_to_node(raw_smp_processor_id())), gfp=
+, 0);
 
-netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K -H 127.0.0.1
+That would break mempolicies AFAICS. Anyway, I might be missing
+something (the mempolicy kod has a strange sense for aesthetic) but the
+normal case without any explicit mempolicy should use default_policy
+which is MPOL_PREFERRED and MPOL_F_LOCAL which means numa_node_id() so
+the local node. So the above two should do the same thing unless I have
+missing something.
+-- =
 
-Is the 10K used here a problem? If so, can you suggest a proper value
-for our netperf performance test? Thanks.
+Michal Hocko
+SUSE Labs
 
-Regards,
-Aaron
-
---===============4524766300145191143==--
+--===============3342054054972907480==--
 
