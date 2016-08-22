@@ -1,57 +1,119 @@
-Content-Type: multipart/mixed; boundary="===============4931672653097924217=="
+Content-Type: multipart/mixed; boundary="===============7086856269564667686=="
 MIME-Version: 1.0
-From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sctp] a6c2f79287: netperf.Throughput_Mbps -37.2% regression
-Date: Mon, 22 Aug 2016 18:44:06 -0300
-Message-ID: <9ddf610d-c819-14ec-42b0-0ee61c0de173@gmail.com>
-In-Reply-To: <20160819072420.GA1167@aaronlu.sh.intel.com>
+Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
+Date: Mon, 22 Aug 2016 15:09:44 -0700
+Message-ID: <87a8g4ihg7.fsf@yhuang-mobile.sh.intel.com>
+In-Reply-To: <87vaz1n5ay.fsf@yhuang-mobile.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4931672653097924217==
+--===============7086856269564667686==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Em 19-08-2016 04:24, Aaron Lu escreveu:
-> On Fri, Aug 19, 2016 at 04:19:39AM -0300, Marcelo Ricardo Leitner wrote:
->> Hi,
->>
->> Em 19-08-2016 02:29, Aaron Lu escreveu:
->> ...
->>> It doesn't look insane and sctp_wait_for_sndbuf may actually have
->>> something to do with a larger sctp_chunk I suppose?
->>>
->>> The same perf record doesn't capture any sample for the good commit,
->>> which suggests the nerperf process doesn't sleep in sctp_wait_for_sndbu=
-f.
->>
->> Ahhh yes! It does, and then it would mean your txbuf is too small for the
->> chunk sizes you're using (sctp tests option -m).
->>
->> What's your netperf cmdline again please?
+Hi, Christoph,
+
+"Huang, Ying" <ying.huang@intel.com> writes:
+
+> Christoph Hellwig <hch@lst.de> writes:
 >
-> netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K -H 127.0.0.1
+>> Snipping the long contest:
+>>
+>> I think there are three observations here:
+>>
+>>  (1) removing the mark_page_accessed (which is the only significant
+>>      change in the parent commit)  hurts the
+>>      aim7/1BRD_48G-xfs-disk_rr-3000-performance/ivb44 test.
+>>      I'd still rather stick to the filemap version and let the
+>>      VM people sort it out.  How do the numbers for this test
+>>      look for XFS vs say ext4 and btrfs?
+>>  (2) lots of additional spinlock contention in the new case.  A quick
+>>      check shows that I fat-fingered my rewrite so that we do
+>>      the xfs_inode_set_eofblocks_tag call now for the pure lookup
+>>      case, and pretty much all new cycles come from that.
+>>  (3) Boy, are those xfs_inode_set_eofblocks_tag calls expensive, and
+>>      we're already doing way to many even without my little bug above.
+>>
+>> So I've force pushed a new version of the iomap-fixes branch with
+>> (2) fixed, and also a little patch to xfs_inode_set_eofblocks_tag a
+>> lot less expensive slotted in before that.  Would be good to see
+>> the numbers with that.
 >
-> Is the 10K used here a problem? If so, can you suggest a proper value
-> for our netperf performance test? Thanks.
+> For the original reported regression, the test result is as follow,
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> compiler/cpufreq_governor/debug-setup/disk/fs/kconfig/load/rootfs/tbox_gr=
+oup/test/testcase:
+>   gcc-6/performance/profile/1BRD_48G/xfs/x86_64-rhel/3000/debian-x86_64-2=
+015-02-07.cgz/ivb44/disk_wrt/aim7
+>
+> commit: =
 
-We're still working on this. Xin could reproduce it on an i3 too, but =
+>   f0c6bcba74ac51cb77aadb33ad35cb2dc1ad1506 (parent of first bad commit)
+>   68a9f5e7007c1afa2cf6830b690a90d0187c0684 (first bad commit)
+>   99091700659f4df965e138b38b4fa26a29b7eade (base of your fixes branch)
+>   bf4dc6e4ecc2a3d042029319bc8cd4204c185610 (head of your fixes branch)
+>
+> f0c6bcba74ac51cb 68a9f5e7007c1afa2cf6830b69 99091700659f4df965e138b38b bf=
+4dc6e4ecc2a3d042029319bc =
 
-I'm afraid this commit just unmasked an issue in there. You're =
+> ---------------- -------------------------- -------------------------- --=
+------------------------ =
 
-overloading the CPU by too much when spawning 8 parallel netperf's on a =
+>          %stddev     %change         %stddev     %change         %stddev =
+    %change         %stddev
+>              \          |                \          |                \   =
+       |                \  =
 
-4-core system, seems that commit a6c2f79287 was that last rock that made =
+>     484435 =C2=B1  0%     -13.3%     420004 =C2=B1  0%     -17.0%     402=
+250 =C2=B1  0%     -15.6%     408998 =C2=B1  0%  aim7.jobs-per-min
 
-it slip into a precipice. sctp's cwnd and rwnd management are not as =
+It appears the original reported regression hasn't bee resolved by your
+commit.  Could you take a look at the test results and the perf data?
 
-good as tcp's and now it seems you're triggering a corner case.
+Best Regards,
+Huang, Ying
 
-I hope to have more soon.
+>
+> And the perf data is as follow,
+>
+>   "perf-profile.func.cycles-pp.intel_idle": 20.25,
+>   "perf-profile.func.cycles-pp.memset_erms": 11.72,
+>   "perf-profile.func.cycles-pp.copy_user_enhanced_fast_string": 8.37,
+>   "perf-profile.func.cycles-pp.__block_commit_write.isra.21": 3.49,
+>   "perf-profile.func.cycles-pp.block_write_end": 1.77,
+>   "perf-profile.func.cycles-pp.native_queued_spin_lock_slowpath": 1.63,
+>   "perf-profile.func.cycles-pp.unlock_page": 1.58,
+>   "perf-profile.func.cycles-pp.___might_sleep": 1.56,
+>   "perf-profile.func.cycles-pp.__block_write_begin_int": 1.33,
+>   "perf-profile.func.cycles-pp.iov_iter_copy_from_user_atomic": 1.23,
+>   "perf-profile.func.cycles-pp.up_write": 1.21,
+>   "perf-profile.func.cycles-pp.__mark_inode_dirty": 1.18,
+>   "perf-profile.func.cycles-pp.down_write": 1.06,
+>   "perf-profile.func.cycles-pp.mark_buffer_dirty": 0.94,
+>   "perf-profile.func.cycles-pp.generic_write_end": 0.92,
+>   "perf-profile.func.cycles-pp.__radix_tree_lookup": 0.91,
+>   "perf-profile.func.cycles-pp._raw_spin_lock": 0.81,
+>   "perf-profile.func.cycles-pp.entry_SYSCALL_64_fastpath": 0.79,
+>   "perf-profile.func.cycles-pp.__might_sleep": 0.79,
+>   "perf-profile.func.cycles-pp.xfs_file_iomap_begin_delay.isra.9": 0.7,
+>   "perf-profile.func.cycles-pp.__list_del_entry": 0.7,
+>   "perf-profile.func.cycles-pp.vfs_write": 0.69,
+>   "perf-profile.func.cycles-pp.drop_buffers": 0.68,
+>   "perf-profile.func.cycles-pp.xfs_file_write_iter": 0.67,
+>   "perf-profile.func.cycles-pp.rwsem_spin_on_owner": 0.67,
+>
+> Best Regards,
+> Huang, Ying
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
 
-Regards,
-Marcelo
-
---===============4931672653097924217==--
+--===============7086856269564667686==--
 
