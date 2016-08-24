@@ -1,116 +1,195 @@
-Content-Type: multipart/mixed; boundary="===============5781585921286060380=="
+Content-Type: multipart/mixed; boundary="===============9101743070899858651=="
 MIME-Version: 1.0
-From: Sandeep Kumar <sandeepdas.cse@gmail.com>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: CONFIG_NO_HZ_FULL=y Kernel config performance issue
-Date: Wed, 24 Aug 2016 14:42:27 +0530
-Message-ID: <CAPtPDjZkVZguLydt1q3PAKGT3igTFj-3e06uH6MYca=re7_49A@mail.gmail.com>
+Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
+Date: Wed, 24 Aug 2016 08:40:37 -0700
+Message-ID: <87wpj6dvka.fsf@yhuang-mobile.sh.intel.com>
+In-Reply-To: <20160818004517.GJ8119@techsingularity.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5781585921286060380==
+--===============9101743070899858651==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Team,
+Hi, Mel,
 
-We've been carrying out some experiments on our kernel configuration to
-improve our performance. We came across following configuration parameters:
+Mel Gorman <mgorman@techsingularity.net> writes:
 
-*CONFIG_NO_HZ_FULL*: Omit scheduling-clock ticks on CPUs that are either
-idle or that have only one runnable task. Unless you are running realtime
-applications or certain types of HPC workloads, you will normally not want
-this option.
+> On Wed, Aug 17, 2016 at 04:49:07PM +0100, Mel Gorman wrote:
+>> > Yes, we could try to batch the locking like DaveC already suggested
+>> > (ie we could move the locking to the caller, and then make
+>> > shrink_page_list() just try to keep the lock held for a few pages if
+>> > the mapping doesn't change), and that might result in fewer crazy
+>> > cacheline ping-pongs overall. But that feels like exactly the wrong
+>> > kind of workaround.
+>> > =
 
-*CONFIG_NO_HZ_IDLE*: Omit scheduling-clock ticks on idle CPUs
-(CONFIG_NO_HZ_IDLE=3Dy or CONFIG_NO_HZ=3Dy for older kernels). This is the =
-most
-common approach, and should be the default
+>> =
 
-According to the description given in our kernel make menuconfig the
-parameter "CONFIG_NO_HZ_FULL" was supposed to improve our performance since
-we are running single task per CPU i.e. binding threads to physical core
-id. Ironically it degraded our performance to double amount. By default
-configuration is set to "CONFIG_NO_HZ_IDLE". Our entire program is running
-in user space basically its carrying out following task:
+>> Even if such batching was implemented, it would be very specific to the
+>> case of a single large file filling LRUs on multiple nodes.
+>> =
 
-1. Read data from SHM.
-2. Carry out some operations in user space
-3. Send data over TCP socket using kernel bypass mode.
+>
+> The latest Jason Bourne movie was sufficiently bad that I spent time
+> thinking how the tree_lock could be batched during reclaim. It's not
+> straight-forward but this prototype did not blow up on UMA and may be
+> worth considering if Dave can test either approach has a positive impact.
+>
+> diff --git a/mm/vmscan.c b/mm/vmscan.c
+> index 374d95d04178..926110219cd9 100644
+> --- a/mm/vmscan.c
+> +++ b/mm/vmscan.c
+> @@ -621,19 +621,39 @@ static pageout_t pageout(struct page *page, struct =
+address_space *mapping,
+>  	return PAGE_CLEAN;
+>  }
 
-System CPU used by this thread is negligible following are the stats for
-context switches taking place:
-voluntary_ctxt_switches:        15
-nonvoluntary_ctxt_switches:     1196
+We found this patch helps much for swap out performance, where there are
+usually only one mapping for all swap pages.  In our 16 processes
+sequential swap write test case for a ramdisk on a Xeon E5 v3 machine,
+the swap out throughput improved 40.4%, from ~0.97GB/s to ~1.36GB/s.
+What's your plan for this patch?  If it can be merged soon, that will be
+great!
 
-The non voluntary context switch is due to vm.stat collection which is
-happening per second basis. We are referring following kernel
-documentation.
-https://www.kernel.org/doc/Documentation/timers/NO_HZ.txt
+I found some issues in the original patch to work with swap cache.  Below
+is my fixes to make it work for swap cache.
 
-We've also offloaded our RCU callbacks using kernel command line parameter
-"rcu_nocbs=3D<CPU-ID>".
+Best Regards,
+Huang, Ying
 
-Is there anything else which we are missing to get this parameter setup
-properly? Our application is latency sensitive and we were hoping that
-after reducing ticks the latency of the application will improve.
+-------------------------------------------------------------------->
 
-Any input is highly appreciated. Let me know if more details are required.
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index ac5fbff..dcaf295 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -623,22 +623,28 @@ static pageout_t pageout(struct page *page, struct ad=
+dress_space *mapping,
+ =
 
-Regards,
-Sandeep
+ static void finalise_remove_mapping(struct list_head *swapcache,
+ 				    struct list_head *filecache,
++				    struct list_head *free_pages,
+ 				    void (*freepage)(struct page *))
+ {
+ 	struct page *page;
+ =
 
---===============5781585921286060380==
-Content-Type: text/html
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.html"
+ 	while (!list_empty(swapcache)) {
+-		swp_entry_t swap =3D { .val =3D page_private(page) };
++		swp_entry_t swap;
+ 		page =3D lru_to_page(swapcache);
+ 		list_del(&page->lru);
++		swap.val =3D page_private(page);
+ 		swapcache_free(swap);
+ 		set_page_private(page, 0);
++		if (free_pages)
++			list_add(&page->lru, free_pages);
+ 	}
+ =
 
-PGRpdiBkaXI9Imx0ciI+PGRpdj48ZGl2PkhpIFRlYW0sPGJyPjxicj48L2Rpdj48ZGl2PldlJiMz
-OTt2ZSBiZWVuIGNhcnJ5aW5nIG91dCBzb21lIGV4cGVyaW1lbnRzIG9uIG91ciBrZXJuZWwgY29u
-ZmlndXJhdGlvbiB0byBpbXByb3ZlIG91ciBwZXJmb3JtYW5jZS4gV2UgY2FtZSBhY3Jvc3MgZm9s
-bG93aW5nIGNvbmZpZ3VyYXRpb24gcGFyYW1ldGVyczo8YnI+PHNwYW4gc3R5bGU9ImZvbnQtZmFt
-aWx5OmFyaWFsLGhlbHZldGljYSxzYW5zLXNlcmlmIj48Yj48YnI+Q09ORklHX05PX0haX0ZVTEw8
-L2I+OiBPbWl0IHNjaGVkdWxpbmctY2xvY2sgdGlja3Mgb24gQ1BVcyB0aGF0IGFyZSBlaXRoZXIg
-aWRsZSBvciB0aGF0IGhhdmUgb25seSBvbmUgcnVubmFibGUgdGFzay4gIFVubGVzcyB5b3U8L3Nw
-YW4+PHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OmFyaWFsLGhlbHZldGljYSxzYW5zLXNlcmlmIj4g
-YXJlIHJ1bm5pbmcgcmVhbHRpbWUgYXBwbGljYXRpb25zIG9yIGNlcnRhaW4gdHlwZXMgb2YgSFBD
-IHdvcmtsb2FkcywgeW91IHdpbGwgbm9ybWFsbHkgbm90IHdhbnQgdGhpcyBvcHRpb24uPGJyPjxi
-cj48L3NwYW4+PHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OmFyaWFsLGhlbHZldGljYSxzYW5zLXNl
-cmlmIj48L3NwYW4+PGI+Q09ORklHX05PX0haX0lETEU8L2I+OgogT21pdCBzY2hlZHVsaW5nLWNs
-b2NrIHRpY2tzIG9uIGlkbGUgQ1BVcyAoQ09ORklHX05PX0haX0lETEU9eSBvcgkKQ09ORklHX05P
-X0haPXkgZm9yIG9sZGVyIGtlcm5lbHMpLiAgVGhpcyBpcyB0aGUgbW9zdCBjb21tb24gYXBwcm9h
-Y2gsIAphbmQgc2hvdWxkIGJlIHRoZSBkZWZhdWx0PGJyPjwvZGl2PjxkaXY+PGJyPjwvZGl2Pjxk
-aXY+QWNjb3JkaW5nIHRvIHRoZSBkZXNjcmlwdGlvbiBnaXZlbiBpbiBvdXIga2VybmVsIG1ha2Ug
-bWVudWNvbmZpZyB0aGUgcGFyYW1ldGVyICZxdW90O0NPTkZJR19OT19IWl9GVUxMJnF1b3Q7IHdh
-cyBzdXBwb3NlZCB0byBpbXByb3ZlIG91ciBwZXJmb3JtYW5jZSBzaW5jZSB3ZSBhcmUgcnVubmlu
-ZyBzaW5nbGUgdGFzayBwZXIgQ1BVIGkuZS4gYmluZGluZyB0aHJlYWRzIHRvIHBoeXNpY2FsIGNv
-cmUgaWQuIElyb25pY2FsbHkgaXQgZGVncmFkZWQgb3VyIHBlcmZvcm1hbmNlIHRvIGRvdWJsZSBh
-bW91bnQuIEJ5IGRlZmF1bHQgY29uZmlndXJhdGlvbiBpcyBzZXQgdG8gJnF1b3Q7Q09ORklHX05P
-X0haX0lETEUmcXVvdDsuIE91ciBlbnRpcmUgcHJvZ3JhbSBpcyBydW5uaW5nIGluIHVzZXIgc3Bh
-Y2UgYmFzaWNhbGx5IGl0cyBjYXJyeWluZyBvdXQgZm9sbG93aW5nIHRhc2s6PGJyPjxicj48L2Rp
-dj48ZGl2PjEuIFJlYWQgZGF0YSBmcm9tIFNITS48YnI+PC9kaXY+PGRpdj4yLiBDYXJyeSBvdXQg
-c29tZSBvcGVyYXRpb25zIGluIHVzZXIgc3BhY2U8YnI+PC9kaXY+PGRpdj4zLiBTZW5kIGRhdGEg
-b3ZlciBUQ1Agc29ja2V0IHVzaW5nIGtlcm5lbCBieXBhc3MgbW9kZS7CoCA8YnI+PGJyPjwvZGl2
-PjxkaXY+U3lzdGVtIENQVSB1c2VkIGJ5IHRoaXMgdGhyZWFkIGlzIG5lZ2xpZ2libGUgZm9sbG93
-aW5nIGFyZSB0aGUgc3RhdHMgZm9yIGNvbnRleHQgc3dpdGNoZXMgdGFraW5nIHBsYWNlOjxicj52
-b2x1bnRhcnlfY3R4dF9zd2l0Y2hlczrCoMKgwqDCoMKgwqDCoCAxNTxicj5ub252b2x1bnRhcnlf
-Y3R4dF9zd2l0Y2hlczrCoMKgwqDCoCAxMTk2IDxicj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2
-PlRoZSBub24gdm9sdW50YXJ5IGNvbnRleHQgc3dpdGNoIGlzIGR1ZSB0byB2bS5zdGF0IGNvbGxl
-Y3Rpb24gd2hpY2ggaXMgaGFwcGVuaW5nIHBlciBzZWNvbmQgYmFzaXMuIFdlIGFyZSByZWZlcnJp
-bmcgZm9sbG93aW5nIGtlcm5lbCBkb2N1bWVudGF0aW9uLiA8YnI+PGEgaHJlZj0iaHR0cHM6Ly93
-d3cua2VybmVsLm9yZy9kb2MvRG9jdW1lbnRhdGlvbi90aW1lcnMvTk9fSFoudHh0Ij5odHRwczov
-L3d3dy5rZXJuZWwub3JnL2RvYy9Eb2N1bWVudGF0aW9uL3RpbWVycy9OT19IWi50eHQ8L2E+IDxi
-cj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2PldlJiMzOTt2ZSBhbHNvIG9mZmxvYWRlZCBvdXIg
-UkNVIGNhbGxiYWNrcyB1c2luZyBrZXJuZWwgY29tbWFuZCBsaW5lIHBhcmFtZXRlciAmcXVvdDty
-Y3Vfbm9jYnM9Jmx0O0NQVS1JRCZndDsmcXVvdDsuIDxicj48YnI+PC9kaXY+PGRpdj5JcyB0aGVy
-ZSBhbnl0aGluZyBlbHNlIHdoaWNoIHdlIGFyZSBtaXNzaW5nIHRvIGdldCB0aGlzIHBhcmFtZXRl
-ciBzZXR1cCBwcm9wZXJseT8gT3VyIGFwcGxpY2F0aW9uIGlzIGxhdGVuY3kgc2Vuc2l0aXZlIGFu
-ZCB3ZSB3ZXJlIGhvcGluZyB0aGF0IGFmdGVyIHJlZHVjaW5nIHRpY2tzIHRoZSBsYXRlbmN5IG9m
-IHRoZSBhcHBsaWNhdGlvbiB3aWxsIGltcHJvdmUuIDxicj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48
-ZGl2PkFueSBpbnB1dCBpcyBoaWdobHkgYXBwcmVjaWF0ZWQuIExldCBtZSBrbm93IGlmIG1vcmUg
-ZGV0YWlscyBhcmUgcmVxdWlyZWQuIDxicj48L2Rpdj48ZGl2Pjxicj48L2Rpdj5SZWdhcmRzLDxi
-cj48L2Rpdj5TYW5kZWVwPGJyPjwvZGl2Pgo=
+ 	while (!list_empty(filecache)) {
+-		page =3D lru_to_page(swapcache);
++		page =3D lru_to_page(filecache);
+ 		list_del(&page->lru);
+ 		freepage(page);
++		if (free_pages)
++			list_add(&page->lru, free_pages);
+ 	}
+ }
+ =
 
---===============5781585921286060380==--
+@@ -649,7 +655,8 @@ static void finalise_remove_mapping(struct list_head *s=
+wapcache,
+ static int __remove_mapping_page(struct address_space *mapping,
+ 				 struct page *page, bool reclaimed,
+ 				 struct list_head *swapcache,
+-				 struct list_head *filecache)
++				 struct list_head *filecache,
++				 struct list_head *free_pages)
+ {
+ 	BUG_ON(!PageLocked(page));
+ 	BUG_ON(mapping !=3D page_mapping(page));
+@@ -722,6 +729,8 @@ static int __remove_mapping_page(struct address_space *=
+mapping,
+ 		__delete_from_page_cache(page, shadow);
+ 		if (freepage)
+ 			list_add(&page->lru, filecache);
++		else if (free_pages)
++			list_add(&page->lru, free_pages);
+ 	}
+ =
+
+ 	return 1;
+@@ -747,7 +756,7 @@ int remove_mapping(struct address_space *mapping, struc=
+t page *page)
+ 	spin_lock_irqsave(&mapping->tree_lock, flags);
+ 	freepage =3D mapping->a_ops->freepage;
+ =
+
+-	if (__remove_mapping_page(mapping, page, false, &swapcache, &filecache)) {
++	if (__remove_mapping_page(mapping, page, false, &swapcache, &filecache, N=
+ULL)) {
+ 		/*
+ 		 * Unfreezing the refcount with 1 rather than 2 effectively
+ 		 * drops the pagecache ref for us without requiring another
+@@ -757,7 +766,7 @@ int remove_mapping(struct address_space *mapping, struc=
+t page *page)
+ 		ret =3D 1;
+ 	}
+ 	spin_unlock_irqrestore(&mapping->tree_lock, flags);
+-	finalise_remove_mapping(&swapcache, &filecache, freepage);
++	finalise_remove_mapping(&swapcache, &filecache, NULL, freepage);
+ 	return ret;
+ }
+ =
+
+@@ -776,29 +785,28 @@ static void remove_mapping_list(struct list_head *map=
+ping_list,
+ 		page =3D lru_to_page(mapping_list);
+ 		list_del(&page->lru);
+ =
+
+-		if (!mapping || page->mapping !=3D mapping) {
++		if (!mapping || page_mapping(page) !=3D mapping) {
+ 			if (mapping) {
+ 				spin_unlock_irqrestore(&mapping->tree_lock, flags);
+-				finalise_remove_mapping(&swapcache, &filecache, freepage);
++				finalise_remove_mapping(&swapcache, &filecache, free_pages, freepage);
+ 			}
+ =
+
+-			mapping =3D page->mapping;
++			mapping =3D page_mapping(page);
+ 			spin_lock_irqsave(&mapping->tree_lock, flags);
+ 			freepage =3D mapping->a_ops->freepage;
+ 		}
+ =
+
+-		if (!__remove_mapping_page(mapping, page, true, &swapcache, &filecache))=
+ {
++		if (!__remove_mapping_page(mapping, page, true, &swapcache,
++					   &filecache, free_pages)) {
+ 			unlock_page(page);
+ 			list_add(&page->lru, ret_pages);
+-		} else {
++		} else
+ 			__ClearPageLocked(page);
+-			list_add(&page->lru, free_pages);
+-		}
+ 	}
+ =
+
+ 	if (mapping) {
+ 		spin_unlock_irqrestore(&mapping->tree_lock, flags);
+-		finalise_remove_mapping(&swapcache, &filecache, freepage);
++		finalise_remove_mapping(&swapcache, &filecache, free_pages, freepage);
+ 	}
+ }
+=20
+
+--===============9101743070899858651==--
 
