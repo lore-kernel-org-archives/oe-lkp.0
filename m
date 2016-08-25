@@ -1,128 +1,89 @@
-Content-Type: multipart/mixed; boundary="===============3137908167091463612=="
+Content-Type: multipart/mixed; boundary="===============1222003085666023819=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@suse.de>
+From: Mel Gorman <mgorman@techsingularity.net>
 To: lkp@lists.01.org
-Subject: Re: [x86/hweight] 65ea11ec6a: will-it-scale.per_process_ops 9.3% improvement
-Date: Thu, 25 Aug 2016 11:22:14 +0200
-Message-ID: <20160825092214.GA4643@nazgul.tnic>
-In-Reply-To: <20160818041139.GA22101@nazgul.tnic>
+Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
+Date: Thu, 25 Aug 2016 10:37:28 +0100
+Message-ID: <20160825093728.GT8119@techsingularity.net>
+In-Reply-To: <87wpj6dvka.fsf@yhuang-mobile.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3137908167091463612==
+--===============1222003085666023819==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 18, 2016 at 06:11:39AM +0200, Borislav Petkov wrote:
-> So if there's no bug, alternatives should replace all "call
-> __sw_hweightXX" calls with POPCNT. So you shouldn't be even calling
-> these functions and hitting that path.
+On Wed, Aug 24, 2016 at 08:40:37AM -0700, Huang, Ying wrote:
+> Mel Gorman <mgorman@techsingularity.net> writes:
 > =
 
-> Can you boot the kernel with "debug-alternative" and put that dmesg
-> somewhere along with vmlinux for me to stare at? Privately is fine too.
+> > On Wed, Aug 17, 2016 at 04:49:07PM +0100, Mel Gorman wrote:
+> >> > Yes, we could try to batch the locking like DaveC already suggested
+> >> > (ie we could move the locking to the caller, and then make
+> >> > shrink_page_list() just try to keep the lock held for a few pages if
+> >> > the mapping doesn't change), and that might result in fewer crazy
+> >> > cacheline ping-pongs overall. But that feels like exactly the wrong
+> >> > kind of workaround.
+> >> > =
+
+> >> =
+
+> >> Even if such batching was implemented, it would be very specific to the
+> >> case of a single large file filling LRUs on multiple nodes.
+> >> =
+
+> >
+> > The latest Jason Bourne movie was sufficiently bad that I spent time
+> > thinking how the tree_lock could be batched during reclaim. It's not
+> > straight-forward but this prototype did not blow up on UMA and may be
+> > worth considering if Dave can test either approach has a positive impac=
+t.
+> >
+> > diff --git a/mm/vmscan.c b/mm/vmscan.c
+> > index 374d95d04178..926110219cd9 100644
+> > --- a/mm/vmscan.c
+> > +++ b/mm/vmscan.c
+> > @@ -621,19 +621,39 @@ static pageout_t pageout(struct page *page, struc=
+t address_space *mapping,
+> >  	return PAGE_CLEAN;
+> >  }
 > =
 
-> I'd like to make sure the alternatives application actually happens.
+> We found this patch helps much for swap out performance, where there are
+> usually only one mapping for all swap pages. =
 
-Ok, Huang sent me the files I asked for privately (Thanks!). And I still ca=
-n't
-see how that commit can even influence anything as the code doesn't get
-executed after alternatives:
 
-ffffffff81007f35:       e8 36 66 47 00          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff81007f35: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+Yeah, I expected it would be an unconditional win on swapping. I just
+did not concentrate on it very much as it was not the problem at hand.
 
-ffffffff81008021:       e8 4a 65 47 00          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff81008021: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+> In our 16 processes
+> sequential swap write test case for a ramdisk on a Xeon E5 v3 machine,
+> the swap out throughput improved 40.4%, from ~0.97GB/s to ~1.36GB/s.
 
-ffffffff8100bd63:       e8 08 28 47 00          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff8100bd63: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+Ok, so main benefit would be for ultra-fast storage. I doubt it's noticable
+on slow disks.
 
-ffffffff81171a05:       e8 66 cb 30 00          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff81171a05: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+> What's your plan for this patch?  If it can be merged soon, that will be
+> great!
+> =
 
-ffffffff81171a66:       e8 05 cb 30 00          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff81171a66: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
 
-ffffffff8145c3e5:       e8 86 21 02 00          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff8145c3e5: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+Until this mail, no plan. I'm still waiting to hear if Dave's test case
+has improved with the latest prototype for reducing contention.
 
-ffffffff8145c40c:       e8 5f 21 02 00          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff8145c40c: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+> I found some issues in the original patch to work with swap cache.  Below
+> is my fixes to make it work for swap cache.
+> =
 
-ffffffff8174768d:       e8 de 6e d3 ff          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff8174768d: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
 
-ffffffff817c43da:       e8 91 a1 cb ff          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff817c43da: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
-
-ffffffff817f4e6a:       e8 01 97 c8 ff          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff817f4e6a: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
-
-ffffffff81ffae4b:       e8 20 37 48 ff          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff81ffae4b: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
-
-ffffffff82011bd1:       e8 9a c9 46 ff          callq  ffffffff8147e570 <__=
-sw_hweight64>
-ffffffff82011bd1: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
-
-__sw_hweight64 is at 0xffffffff8147e570 and all those locations which
-call 0xffffffff8147e570 get replaced with POPCNT (final_insn in dmesg).
-
-Also, I did this to a guest kernel:
-
----
-diff --git a/arch/x86/lib/hweight.S b/arch/x86/lib/hweight.S
-index 8a602a1e404a..7f18f59eadd5 100644
---- a/arch/x86/lib/hweight.S
-+++ b/arch/x86/lib/hweight.S
-@@ -34,6 +34,7 @@ ENTRY(__sw_hweight32)
- ENDPROC(__sw_hweight32)
- =
-
- ENTRY(__sw_hweight64)
-+	call dump_stack
- #ifdef CONFIG_X86_64
- 	pushq   %rdi
- 	pushq   %rdx
----
-
-and got 23 invocations before alternatives get applied:
-
-$ grep dump_stack ~/kvm/test-x86_64-1235.log | uniq -c
-     23 [<ffffffff81336955>] dump_stack+0x67/0x92
-
-just to make sure that __sw_hweight64 *actually* *really* gets replaced.
-
-Then I ran the job.yaml thing as suggested in the initial mail and no
-more __sw_hweight64 calls.
-
-So either I'm still missing something or that's the wrong commit or ...
-
-/me haz no idea :-\
+Thanks for the fix. I'm going offline today for a few days but I added a
+todo item to finish this patch at some point. I won't be rushing it but
+it'll get done eventually.
 
 -- =
 
-Regards/Gruss,
-    Boris.
+Mel Gorman
+SUSE Labs
 
-ECO tip #101: Trim your mails when you reply.
-
-SUSE Linux GmbH, GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton, =
-HRB 21284 (AG N=C3=BCrnberg)
---
-
---===============3137908167091463612==--
+--===============1222003085666023819==--
 
