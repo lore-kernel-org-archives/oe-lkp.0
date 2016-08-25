@@ -1,195 +1,128 @@
-Content-Type: multipart/mixed; boundary="===============9101743070899858651=="
+Content-Type: multipart/mixed; boundary="===============3137908167091463612=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Borislav Petkov <bp@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [xfs] 68a9f5e700: aim7.jobs-per-min -13.6% regression
-Date: Wed, 24 Aug 2016 08:40:37 -0700
-Message-ID: <87wpj6dvka.fsf@yhuang-mobile.sh.intel.com>
-In-Reply-To: <20160818004517.GJ8119@techsingularity.net>
+Subject: Re: [x86/hweight] 65ea11ec6a: will-it-scale.per_process_ops 9.3% improvement
+Date: Thu, 25 Aug 2016 11:22:14 +0200
+Message-ID: <20160825092214.GA4643@nazgul.tnic>
+In-Reply-To: <20160818041139.GA22101@nazgul.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9101743070899858651==
+--===============3137908167091463612==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Mel,
+On Thu, Aug 18, 2016 at 06:11:39AM +0200, Borislav Petkov wrote:
+> So if there's no bug, alternatives should replace all "call
+> __sw_hweightXX" calls with POPCNT. So you shouldn't be even calling
+> these functions and hitting that path.
+> =
 
-Mel Gorman <mgorman@techsingularity.net> writes:
+> Can you boot the kernel with "debug-alternative" and put that dmesg
+> somewhere along with vmlinux for me to stare at? Privately is fine too.
+> =
 
-> On Wed, Aug 17, 2016 at 04:49:07PM +0100, Mel Gorman wrote:
->> > Yes, we could try to batch the locking like DaveC already suggested
->> > (ie we could move the locking to the caller, and then make
->> > shrink_page_list() just try to keep the lock held for a few pages if
->> > the mapping doesn't change), and that might result in fewer crazy
->> > cacheline ping-pongs overall. But that feels like exactly the wrong
->> > kind of workaround.
->> > =
+> I'd like to make sure the alternatives application actually happens.
 
->> =
+Ok, Huang sent me the files I asked for privately (Thanks!). And I still ca=
+n't
+see how that commit can even influence anything as the code doesn't get
+executed after alternatives:
 
->> Even if such batching was implemented, it would be very specific to the
->> case of a single large file filling LRUs on multiple nodes.
->> =
+ffffffff81007f35:       e8 36 66 47 00          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff81007f35: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
 
->
-> The latest Jason Bourne movie was sufficiently bad that I spent time
-> thinking how the tree_lock could be batched during reclaim. It's not
-> straight-forward but this prototype did not blow up on UMA and may be
-> worth considering if Dave can test either approach has a positive impact.
->
-> diff --git a/mm/vmscan.c b/mm/vmscan.c
-> index 374d95d04178..926110219cd9 100644
-> --- a/mm/vmscan.c
-> +++ b/mm/vmscan.c
-> @@ -621,19 +621,39 @@ static pageout_t pageout(struct page *page, struct =
-address_space *mapping,
->  	return PAGE_CLEAN;
->  }
+ffffffff81008021:       e8 4a 65 47 00          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff81008021: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
 
-We found this patch helps much for swap out performance, where there are
-usually only one mapping for all swap pages.  In our 16 processes
-sequential swap write test case for a ramdisk on a Xeon E5 v3 machine,
-the swap out throughput improved 40.4%, from ~0.97GB/s to ~1.36GB/s.
-What's your plan for this patch?  If it can be merged soon, that will be
-great!
+ffffffff8100bd63:       e8 08 28 47 00          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff8100bd63: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
 
-I found some issues in the original patch to work with swap cache.  Below
-is my fixes to make it work for swap cache.
+ffffffff81171a05:       e8 66 cb 30 00          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff81171a05: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
 
-Best Regards,
-Huang, Ying
+ffffffff81171a66:       e8 05 cb 30 00          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff81171a66: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
 
--------------------------------------------------------------------->
+ffffffff8145c3e5:       e8 86 21 02 00          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff8145c3e5: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index ac5fbff..dcaf295 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -623,22 +623,28 @@ static pageout_t pageout(struct page *page, struct ad=
-dress_space *mapping,
+ffffffff8145c40c:       e8 5f 21 02 00          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff8145c40c: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+
+ffffffff8174768d:       e8 de 6e d3 ff          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff8174768d: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+
+ffffffff817c43da:       e8 91 a1 cb ff          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff817c43da: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+
+ffffffff817f4e6a:       e8 01 97 c8 ff          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff817f4e6a: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+
+ffffffff81ffae4b:       e8 20 37 48 ff          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff81ffae4b: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+
+ffffffff82011bd1:       e8 9a c9 46 ff          callq  ffffffff8147e570 <__=
+sw_hweight64>
+ffffffff82011bd1: final_insn: f3 48 0f b8 c7 (popcnt %rdi,%rax)
+
+__sw_hweight64 is at 0xffffffff8147e570 and all those locations which
+call 0xffffffff8147e570 get replaced with POPCNT (final_insn in dmesg).
+
+Also, I did this to a guest kernel:
+
+---
+diff --git a/arch/x86/lib/hweight.S b/arch/x86/lib/hweight.S
+index 8a602a1e404a..7f18f59eadd5 100644
+--- a/arch/x86/lib/hweight.S
++++ b/arch/x86/lib/hweight.S
+@@ -34,6 +34,7 @@ ENTRY(__sw_hweight32)
+ ENDPROC(__sw_hweight32)
  =
 
- static void finalise_remove_mapping(struct list_head *swapcache,
- 				    struct list_head *filecache,
-+				    struct list_head *free_pages,
- 				    void (*freepage)(struct page *))
- {
- 	struct page *page;
- =
+ ENTRY(__sw_hweight64)
++	call dump_stack
+ #ifdef CONFIG_X86_64
+ 	pushq   %rdi
+ 	pushq   %rdx
+---
 
- 	while (!list_empty(swapcache)) {
--		swp_entry_t swap =3D { .val =3D page_private(page) };
-+		swp_entry_t swap;
- 		page =3D lru_to_page(swapcache);
- 		list_del(&page->lru);
-+		swap.val =3D page_private(page);
- 		swapcache_free(swap);
- 		set_page_private(page, 0);
-+		if (free_pages)
-+			list_add(&page->lru, free_pages);
- 	}
- =
+and got 23 invocations before alternatives get applied:
 
- 	while (!list_empty(filecache)) {
--		page =3D lru_to_page(swapcache);
-+		page =3D lru_to_page(filecache);
- 		list_del(&page->lru);
- 		freepage(page);
-+		if (free_pages)
-+			list_add(&page->lru, free_pages);
- 	}
- }
- =
+$ grep dump_stack ~/kvm/test-x86_64-1235.log | uniq -c
+     23 [<ffffffff81336955>] dump_stack+0x67/0x92
 
-@@ -649,7 +655,8 @@ static void finalise_remove_mapping(struct list_head *s=
-wapcache,
- static int __remove_mapping_page(struct address_space *mapping,
- 				 struct page *page, bool reclaimed,
- 				 struct list_head *swapcache,
--				 struct list_head *filecache)
-+				 struct list_head *filecache,
-+				 struct list_head *free_pages)
- {
- 	BUG_ON(!PageLocked(page));
- 	BUG_ON(mapping !=3D page_mapping(page));
-@@ -722,6 +729,8 @@ static int __remove_mapping_page(struct address_space *=
-mapping,
- 		__delete_from_page_cache(page, shadow);
- 		if (freepage)
- 			list_add(&page->lru, filecache);
-+		else if (free_pages)
-+			list_add(&page->lru, free_pages);
- 	}
- =
+just to make sure that __sw_hweight64 *actually* *really* gets replaced.
 
- 	return 1;
-@@ -747,7 +756,7 @@ int remove_mapping(struct address_space *mapping, struc=
-t page *page)
- 	spin_lock_irqsave(&mapping->tree_lock, flags);
- 	freepage =3D mapping->a_ops->freepage;
- =
+Then I ran the job.yaml thing as suggested in the initial mail and no
+more __sw_hweight64 calls.
 
--	if (__remove_mapping_page(mapping, page, false, &swapcache, &filecache)) {
-+	if (__remove_mapping_page(mapping, page, false, &swapcache, &filecache, N=
-ULL)) {
- 		/*
- 		 * Unfreezing the refcount with 1 rather than 2 effectively
- 		 * drops the pagecache ref for us without requiring another
-@@ -757,7 +766,7 @@ int remove_mapping(struct address_space *mapping, struc=
-t page *page)
- 		ret =3D 1;
- 	}
- 	spin_unlock_irqrestore(&mapping->tree_lock, flags);
--	finalise_remove_mapping(&swapcache, &filecache, freepage);
-+	finalise_remove_mapping(&swapcache, &filecache, NULL, freepage);
- 	return ret;
- }
- =
+So either I'm still missing something or that's the wrong commit or ...
 
-@@ -776,29 +785,28 @@ static void remove_mapping_list(struct list_head *map=
-ping_list,
- 		page =3D lru_to_page(mapping_list);
- 		list_del(&page->lru);
- =
+/me haz no idea :-\
 
--		if (!mapping || page->mapping !=3D mapping) {
-+		if (!mapping || page_mapping(page) !=3D mapping) {
- 			if (mapping) {
- 				spin_unlock_irqrestore(&mapping->tree_lock, flags);
--				finalise_remove_mapping(&swapcache, &filecache, freepage);
-+				finalise_remove_mapping(&swapcache, &filecache, free_pages, freepage);
- 			}
- =
+-- =
 
--			mapping =3D page->mapping;
-+			mapping =3D page_mapping(page);
- 			spin_lock_irqsave(&mapping->tree_lock, flags);
- 			freepage =3D mapping->a_ops->freepage;
- 		}
- =
+Regards/Gruss,
+    Boris.
 
--		if (!__remove_mapping_page(mapping, page, true, &swapcache, &filecache))=
- {
-+		if (!__remove_mapping_page(mapping, page, true, &swapcache,
-+					   &filecache, free_pages)) {
- 			unlock_page(page);
- 			list_add(&page->lru, ret_pages);
--		} else {
-+		} else
- 			__ClearPageLocked(page);
--			list_add(&page->lru, free_pages);
--		}
- 	}
- =
+ECO tip #101: Trim your mails when you reply.
 
- 	if (mapping) {
- 		spin_unlock_irqrestore(&mapping->tree_lock, flags);
--		finalise_remove_mapping(&swapcache, &filecache, freepage);
-+		finalise_remove_mapping(&swapcache, &filecache, free_pages, freepage);
- 	}
- }
-=20
+SUSE Linux GmbH, GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton, =
+HRB 21284 (AG N=C3=BCrnberg)
+--
 
---===============9101743070899858651==--
+--===============3137908167091463612==--
 
