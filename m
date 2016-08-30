@@ -1,61 +1,87 @@
-Content-Type: multipart/mixed; boundary="===============4824448418009662295=="
+Content-Type: multipart/mixed; boundary="===============6905388361285399768=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm, page_alloc] e6cbd7f2ef: pixz.throughput -5.1% regression
-Date: Tue, 30 Aug 2016 11:06:33 +0100
-Message-ID: <20160830100633.GU8119@techsingularity.net>
-In-Reply-To: <05540bdb-5b31-c75f-887f-64f60ce2580e@leemhuis.info>
+Subject: Re: [f2fs] ec795418c4: fsmark.files_per_sec -36.3% regression
+Date: Tue, 30 Aug 2016 09:44:18 -0700
+Message-ID: <87pooqnr4t.fsf@yhuang-mobile.sh.intel.com>
+In-Reply-To: <20160830023048.GA2088@jaegeuk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4824448418009662295==
+--===============6905388361285399768==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Aug 28, 2016 at 11:51:20AM +0200, Thorsten Leemhuis wrote:
-> Lo! On 08.08.2016 10:29, kernel test robot wrote:
-> > =
+Jaegeuk Kim <jaegeuk@kernel.org> writes:
 
-> > FYI, we noticed a -5.1% regression of pixz.throughput due to commit:
-> > =
+> Hello,
+>
+> On Sat, Aug 27, 2016 at 10:13:34AM +0800, Fengguang Wu wrote:
+>> Hi Jaegeuk,
+>> =
 
-> > commit e6cbd7f2efb433d717af72aa8510a9db6f7a7e05 ("mm, page_alloc: remov=
-e fair zone allocation policy")
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git mast=
-er
-> > =
+>> > > >> > - [lkp] [f2fs] b93f771286: aim7.jobs-per-min -81.2% regression
+>> > > >> >
+>> > > >> > The disk is 4 12G ram disk, and setup RAID0 on them via mdadm. =
+ The
+>> > > >> > steps for aim7 is,
+>> > > >> >
+>> > > >> > cat > workfile <<EOF
+>> > > >> > FILESIZE: 1M
+>> > > >> > POOLSIZE: 10M
+>> > > >> > 10 sync_disk_rw
+>> > > >> > EOF
+>> > > >> >
+>> > > >> > (
+>> > > >> >     echo $HOSTNAME
+>> > > >> >     echo sync_disk_rw
+>> > > >> >
+>> > > >> >     echo 1
+>> > > >> >     echo 600
+>> > > >> >     echo 2
+>> > > >> >     echo 600
+>> > > >> >     echo 1
+>> > > >> > ) | ./multitask -t &
+>> > > >>
+>> > > >> Any update on these 2 regressions?  Is the information is enough =
+for you
+>> > > >> to reproduce?
+>> > > >
+>> > > > Sorry, I've had no time to dig this due to business travel now.
+>> > > > I'll check that when back to US.
+>> > > =
 
-> > in testcase: pixz
-> > on test machine: 48 threads Ivytown Ivy Bridge-EP with 64G memory
-> > with following parameters:
-> > =
+>> > > Any update?
+>> > =
 
-> > 	nr_threads: 100%
-> > 	cpufreq_governor: performance
-> =
+>> > Sorry, how can I get multitask binary?
+>> =
 
-> Mel, this report made it to the regression list for 4.8, but it seems
-> nothing happened after the initial report. Was it discussed (and maybe
-> even fixed?) elsewhere? Or was it deemed not important enough? Should I
-> drop it for the regression list?
-> =
+>> It's part of aim7, which can be downloaded here:
+>> =
 
+>> http://nchc.dl.sourceforge.net/project/aimbench/aim-suite7/Initial%20rel=
+ease/s7110.tar.Z
+>
+> Thank you for the codes.
+>
+> I've run this workload on the latest f2fs and compared performance having
+> without the reported patch. (1TB nvme SSD, 16 cores, 16GB DRAM)
+> Interestingly, I could find slight performance improvement rather than
+> regression. :(
+> Not sure how to reproduce this.
 
-Drop it for the moment.
+I think the difference lies on disk used.  The ramdisk is used in the
+original test, but it appears that your memory is too small to setup the
+RAM disk for test.  So it may be impossible for you to reproduce the
+test unless you can find more memory :)
 
-My expectation is that it's a relatively minor hazard. The removal of the
-fair zone allocation policy is a shorter path which benefits a number
-of workloads but also potentially changes the color of pages used in
-microbenchmarks which can have a cache effect.  It's on my TODO list to
-reproduce this exactly as LKP does but my own preliminary experiments using
-pbzip (yes, it's different) on 4 machines showed gains on all 4 machines
-so something relatively subtle is going on or it's machine specific.
+But we can help you to root cause the issue.  What additional data do
+you want?  perf-profile data before and after the patch?
 
--- =
+Best Regards,
+Huang, Ying
 
-Mel Gorman
-SUSE Labs
-
---===============4824448418009662295==--
+--===============6905388361285399768==--
 
