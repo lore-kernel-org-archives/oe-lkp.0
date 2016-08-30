@@ -1,79 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============0838817574690110969=="
+Content-Type: multipart/mixed; boundary="===============4824448418009662295=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Mel Gorman <mgorman@techsingularity.net>
 To: lkp@lists.01.org
-Subject: Re: [x86/uaccess] 5b710f34e1: kernel BUG at mm/usercopy.c:75!
-Date: Wed, 17 Aug 2016 14:45:43 -0700
-Message-ID: <CAGXu5jKb9hShNqBaR3cGaOn-r-3SAHB2aEbgCZsKxNOyYjZzvw@mail.gmail.com>
-In-Reply-To: <1471469820.32433.74.camel@redhat.com>
+Subject: Re: [mm, page_alloc] e6cbd7f2ef: pixz.throughput -5.1% regression
+Date: Tue, 30 Aug 2016 11:06:33 +0100
+Message-ID: <20160830100633.GU8119@techsingularity.net>
+In-Reply-To: <05540bdb-5b31-c75f-887f-64f60ce2580e@leemhuis.info>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0838817574690110969==
+--===============4824448418009662295==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 17, 2016 at 2:37 PM, Rik van Riel <riel@redhat.com> wrote:
-> On Wed, 2016-08-17 at 09:14 -0700, Linus Torvalds wrote:
->
->> but compound pages are about the mapping of hugepages, not about
->> simple multi-order allocations like the task structure (or slab
->> entries).
->>
->> In other words, it looks like the memory hardening is simply broken
->> for any case that doesn't use kmalloc(), but instead just allocates
->> non-order-0 pages directly. Which is certainly _rare_, but not
->> unheard
->> of.
->>
->> I'm not sure how to fix it.The low-level page allocator does *not*
->> mark orders anywhere.
->>
->> I suspect we should just get rid of the page-crosser checking,
->> because
->> it's unsolvable.
->
-> I glossed over the fact that prep_new_page only marks
-> the page as a compound page if __GFP_COMP is set, which
-> it is not for some higher order allocations, including
-> GFP masks passed straight through by the SLOB allocator.
->
-> This particular allocation is through kmalloc, but the
-> kernel in question has CONFIG_SLOB=3Dy, and usercopy has
-> no code in mm/slob.c
+On Sun, Aug 28, 2016 at 11:51:20AM +0200, Thorsten Leemhuis wrote:
+> Lo! On 08.08.2016 10:29, kernel test robot wrote:
+> > =
 
-But PageSlab(page) should trip, returning __check_heap_object, which
-for SLOB should just return NULL, skipping all the rest of the
-checks...
+> > FYI, we noticed a -5.1% regression of pixz.throughput due to commit:
+> > =
 
--Kees
+> > commit e6cbd7f2efb433d717af72aa8510a9db6f7a7e05 ("mm, page_alloc: remov=
+e fair zone allocation policy")
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git mast=
+er
+> > =
 
->
-> I can think of two possibilities:
-> - mark every higher order allocation so it can be
->   recognized later on (this might break allocators
->   that free part of a higher order allocation, I
->   do not know whether they exist)
-> - drop this part of the usercopy code, and no longer
->   check that a range is part of an object that was
->   allocated all at once, or spans multiple memory
->   allocations - this may be ok, given that most
->   heap overflows are likely to be kmalloc/slab objects,
->   anyway
->
-> kind regards,
->
-> Rik
-> --
->
-> All Rights Reversed.
+> > in testcase: pixz
+> > on test machine: 48 threads Ivytown Ivy Bridge-EP with 64G memory
+> > with following parameters:
+> > =
+
+> > 	nr_threads: 100%
+> > 	cpufreq_governor: performance
+> =
+
+> Mel, this report made it to the regression list for 4.8, but it seems
+> nothing happened after the initial report. Was it discussed (and maybe
+> even fixed?) elsewhere? Or was it deemed not important enough? Should I
+> drop it for the regression list?
+> =
 
 
+Drop it for the moment.
+
+My expectation is that it's a relatively minor hazard. The removal of the
+fair zone allocation policy is a shorter path which benefits a number
+of workloads but also potentially changes the color of pages used in
+microbenchmarks which can have a cache effect.  It's on my TODO list to
+reproduce this exactly as LKP does but my own preliminary experiments using
+pbzip (yes, it's different) on 4 machines showed gains on all 4 machines
+so something relatively subtle is going on or it's machine specific.
 
 -- =
 
-Kees Cook
-Nexus Security
+Mel Gorman
+SUSE Labs
 
---===============0838817574690110969==--
+--===============4824448418009662295==--
 
