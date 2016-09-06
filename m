@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============1058841169101194603=="
+Content-Type: multipart/mixed; boundary="===============0046253171705713314=="
 MIME-Version: 1.0
 From: kernel test robot <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: [ima] 476b17b7d1: BUG: spinlock bad magic on CPU#0, swapper/0/1
 Date: Wed, 07 Sep 2016 02:03:04 +0800
-Message-ID: <57cf04d8.vTk1IgJvjBWzpiCG%xiaolong.ye@intel.com>
+Message-ID: <57cf04d8.qmlKnHQjgoblnc1G%xiaolong.ye@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1058841169101194603==
+--===============0046253171705713314==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -103,7 +103,7 @@ da0 ffffffff
 Thanks,
 Kernel Test Robot
 
---===============1058841169101194603==
+--===============0046253171705713314==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -1506,7 +1506,7 @@ Qj15CiMgQ09ORklHX1NHX1NQTElUIGlzIG5vdCBzZXQKIyBDT05GSUdfU0dfUE9PTCBpcyBub3Qg
 c2V0CkNPTkZJR19BUkNIX0hBU19TR19DSEFJTj15CkNPTkZJR19BUkNIX0hBU19NTUlPX0ZMVVNI
 PXkK
 
---===============1058841169101194603==
+--===============0046253171705713314==
 Content-Type: application/octet-stream
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -1735,5 +1735,5 @@ r4dSmkXTcppn7VWwj0RH4VLxc8mmTYtZmj1J5IMAeQ1jUuhwCo3filIUE8mG8o2eYCxMH8W4Y6vX
 OatBOt4/0NSF1dDIz9qkLLNOgudGiG8PhkISHoIZ1xRLBUpvIdGVA/Ha1vCn/n7wATWbwgPI4l3H
 gafSenxgATWRjw2IzfLKF6/mU8GT+wr22D0+d6lgFiaHw3sJj1nGQCu0QIjuAbAazIifzN1KguLj
 HAeeGxmneiPQp9FIXR5cDgAAEVfPvb8qmMMAAfxiwZsDACOkbVaxxGf7AgAAAAAEWVo=
---===============1058841169101194603==--
+--===============0046253171705713314==--
 
