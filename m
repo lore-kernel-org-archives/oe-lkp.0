@@ -1,45 +1,79 @@
-Content-Type: multipart/mixed; boundary="===============4623887077866211682=="
+Content-Type: multipart/mixed; boundary="===============6547067592788395180=="
 MIME-Version: 1.0
-From: Oleg Nesterov <oleg@redhat.com>
+From: Kees Cook <keescook@chromium.org>
 To: lkp@lists.01.org
-Subject: Re: [sched/wait] 02ae2b22bd: WARNING: CPU: 0 PID: 958 at kernel/sched/core.c:7610 __might_sleep+0x6e/0x90
-Date: Thu, 08 Sep 2016 14:03:00 +0200
-Message-ID: <20160908120300.GA11135@redhat.com>
-In-Reply-To: <57d0ed74./RdHPAg3uO0deEfh%xiaolong.ye@intel.com>
+Subject: Re: [list] 8052ce2d97: WARNING: CPU: 0 PID: 1 at lib/list_debug.c:60 __list_del_entry+0x4d/0x71
+Date: Thu, 08 Sep 2016 08:52:33 -0700
+Message-ID: <CAGXu5jLU6z5O7coEfu7ZA_xMguvT0n28iendhGyybUULSSkNAg@mail.gmail.com>
+In-Reply-To: <20160908092712.GI3663@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4623887077866211682==
+--===============6547067592788395180==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 09/08, kernel test robot wrote:
+On Thu, Sep 8, 2016 at 2:27 AM, Paul E. McKenney
+<paulmck@linux.vnet.ibm.com> wrote:
+> On Wed, Sep 07, 2016 at 10:25:58AM -0700, Kees Cook wrote:
+>> On Wed, Sep 7, 2016 at 12:31 AM, Paul E. McKenney
+>> <paulmck@linux.vnet.ibm.com> wrote:
+>> > On Tue, Sep 06, 2016 at 11:49:04AM -0400, Kees Cook wrote:
+>> >> On Sun, Sep 4, 2016 at 5:48 AM, Paul E. McKenney
+>> >> <paulmck@linux.vnet.ibm.com> wrote:
+>> >> > On Sun, Sep 04, 2016 at 08:35:40AM +0800, kernel test robot wrote:
+>> >> >>
+>> >> >> FYI, we noticed the following commit:
+>> >> >>
+>> >> >> https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.=
+git dev.2016.08.19a
+>> >> >> commit 8052ce2d9771ab5a818307f3abbaf33bba82a631 ("list: Split list=
+_add() debug checking into separate function")
+>> >> >>
+>> >> >> in testcase: boot
+>> >> >>
+>> >> >> on test machine: qemu-system-i386 -enable-kvm -m 360M
+>> >> >>
+>> >> >> caused below changes:
+>> >> >
+>> >> > Hello, Kees,
+>> >> >
+>> >> > Looks like your change might have actually found a bug.  ;-)
+>> >> >
+>> >> > How would you like to handle this?
+>> >>
+>> >> We should fix the bug! :)
+>> >
+>> > But of course...
+>> >
+>> > The question is whether I am considered to be fully responsible for
+>> > chasing down any bugs that arise.  It is looking like I am, in which
+>> > case I must defer this patch to the 4.10 merge window.  Things are a
+>> > bit crazy now due to prior overcommitments...
+>>
+>> I'm going to double-check the code, but the changes I made shouldn't
+>> have changed any of the logical checks under CONFIG_DEBUG_LIST... just
+>> the manifestation of WARN vs BUG. So, since both this and the BPF RCU
+>> bug have appeared, something has changed... I will go digging...
 >
-> FYI, we noticed the following commit:
+> So maybe the boot failures are a result of the WARN->BUG transition?
 >
-> https://github.com/0day-ci/linux Oleg-Nesterov/sched-wait-fix-and-then-ki=
-ll-abort_exclusive_wait/20160907-145024
-> commit 02ae2b22bd2a42c4e4054563b139a541ba67a43e ("sched/wait: avoid abort=
-_exclusive_wait() in ___wait_event()")
+>> >> >> [  152.698509] ------------[ cut here ]------------
+>> >> >> [  152.709786] WARNING: CPU: 0 PID: 1 at lib/list_debug.c:60 __lis=
+t_del_entry+0x4d/0x71
+>> >> >> [  152.722785] list_del corruption. next->prev should be cc0230d4,=
+ but was 6b6b6b6b
+>> >>
+>> >> That's the poison value, so this is a remove-after-remove bug?
 
-Thanks!
+Unfortunately, the 0-day backtrace shows WARN :(
 
+-Kees
 
-> [   30.775242] kill 958 cat /proc/kmsg
-> [   30.775242] wait for background monitors: 959 962 oom-killer nfs-hang
-> [   32.078512] ------------[ cut here ]------------
-> [   32.080657] WARNING: CPU: 0 PID: 958 at kernel/sched/core.c:7610 __mig=
-ht_sleep+0x6e/0x90
-> [   32.084787] do not call blocking ops when !TASK_RUNNING; state=3D1 set=
- at [<ffffffff81107e0d>] prepare_to_wait_event+0xad/0x120
+-- =
 
-Because I am stupid. With my change prepare_to_wait_event() does
-set_current_state(state) even on failure.
+Kees Cook
+Nexus Security
 
-Thanks a lot, I'll send V2.
-
-Oleg.
-
-
---===============4623887077866211682==--
+--===============6547067592788395180==--
 
