@@ -1,79 +1,79 @@
-Content-Type: multipart/mixed; boundary="===============6547067592788395180=="
+Content-Type: multipart/mixed; boundary="===============5008807266677291787=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Jens Axboe <axboe@fb.com>
 To: lkp@lists.01.org
-Subject: Re: [list] 8052ce2d97: WARNING: CPU: 0 PID: 1 at lib/list_debug.c:60 __list_del_entry+0x4d/0x71
-Date: Thu, 08 Sep 2016 08:52:33 -0700
-Message-ID: <CAGXu5jLU6z5O7coEfu7ZA_xMguvT0n28iendhGyybUULSSkNAg@mail.gmail.com>
-In-Reply-To: <20160908092712.GI3663@linux.vnet.ibm.com>
+Subject: Re: [writeback] 8bc4ad9498: INFO: suspicious RCU usage. ]
+Date: Thu, 08 Sep 2016 09:52:46 -0600
+Message-ID: <4cace953-b5b9-4840-f3f2-b21bd4f30095@fb.com>
+In-Reply-To: <20160908020404.GA12960@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6547067592788395180==
+--===============5008807266677291787==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 8, 2016 at 2:27 AM, Paul E. McKenney
-<paulmck@linux.vnet.ibm.com> wrote:
-> On Wed, Sep 07, 2016 at 10:25:58AM -0700, Kees Cook wrote:
->> On Wed, Sep 7, 2016 at 12:31 AM, Paul E. McKenney
->> <paulmck@linux.vnet.ibm.com> wrote:
->> > On Tue, Sep 06, 2016 at 11:49:04AM -0400, Kees Cook wrote:
->> >> On Sun, Sep 4, 2016 at 5:48 AM, Paul E. McKenney
->> >> <paulmck@linux.vnet.ibm.com> wrote:
->> >> > On Sun, Sep 04, 2016 at 08:35:40AM +0800, kernel test robot wrote:
->> >> >>
->> >> >> FYI, we noticed the following commit:
->> >> >>
->> >> >> https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.=
-git dev.2016.08.19a
->> >> >> commit 8052ce2d9771ab5a818307f3abbaf33bba82a631 ("list: Split list=
-_add() debug checking into separate function")
->> >> >>
->> >> >> in testcase: boot
->> >> >>
->> >> >> on test machine: qemu-system-i386 -enable-kvm -m 360M
->> >> >>
->> >> >> caused below changes:
->> >> >
->> >> > Hello, Kees,
->> >> >
->> >> > Looks like your change might have actually found a bug.  ;-)
->> >> >
->> >> > How would you like to handle this?
->> >>
->> >> We should fix the bug! :)
->> >
->> > But of course...
->> >
->> > The question is whether I am considered to be fully responsible for
->> > chasing down any bugs that arise.  It is looking like I am, in which
->> > case I must defer this patch to the 4.10 merge window.  Things are a
->> > bit crazy now due to prior overcommitments...
+On 09/07/2016 08:04 PM, Ye Xiaolong wrote:
+> On 09/08, Fengguang Wu wrote:
+>> Hi Jens and Tejun,
 >>
->> I'm going to double-check the code, but the changes I made shouldn't
->> have changed any of the logical checks under CONFIG_DEBUG_LIST... just
->> the manifestation of WARN vs BUG. So, since both this and the BPF RCU
->> bug have appeared, something has changed... I will go digging...
+>>> The command line was in the original email:
+>>>
+>>> $ qemu-system-x86_64 -enable-kvm -cpu Westmere -m 512M
+>>>
+>>> And agree, in general it'd be nice if there was a link to the image as
+>>> well, so that folks can reproduce.
+>>
+>> Yes we have a reproduce script internally, however need to polish it
+>> up and make it general usable by kernel developers.
+>>
+>> CC Philip. It'd be helpful to give more priority to the "lkp qemu"
+>> reproduce command.
+>>
+>> For the warning here, it does not depend on any initrd, I just
+>> confirmed this simple script can reproduce the problem.
 >
-> So maybe the boot failures are a result of the WARN->BUG transition?
->
->> >> >> [  152.698509] ------------[ cut here ]------------
->> >> >> [  152.709786] WARNING: CPU: 0 PID: 1 at lib/list_debug.c:60 __lis=
-t_del_entry+0x4d/0x71
->> >> >> [  152.722785] list_del corruption. next->prev should be cc0230d4,=
- but was 6b6b6b6b
->> >>
->> >> That's the poison value, so this is a remove-after-remove bug?
+> Yes, just confirmed that v4.8-rc5 doesn't have this warning, while kernel
+> for the updated commit (fa0e2cb1af765691fabd329f03cad563a0eebf18) on bran=
+ch
+> wb-buf-throttle could reproduce it.
 
-Unfortunately, the 0-day backtrace shows WARN :(
+Anyone willing to try the below patch?
 
--Kees
+diff --git a/block/cfq-iosched.c b/block/cfq-iosched.c
+index ef61bda76317..a7bb2e6bcaef 100644
+--- a/block/cfq-iosched.c
++++ b/block/cfq-iosched.c
+@@ -3764,9 +3764,11 @@ static void check_blkcg_changed(struct cfq_io_cq =
+
+*cic, struct bio *bio)
+  	struct cfq_data *cfqd =3D cic_to_cfqd(cic);
+  	struct cfq_queue *cfqq;
+  	uint64_t serial_nr;
++	bool nonroot_cg;
+
+  	rcu_read_lock();
+  	serial_nr =3D bio_blkcg(bio)->css.serial_nr;
++	nonroot_cg =3D bio_blkcg(bio) !=3D &blkcg_root;
+  	rcu_read_unlock();
+
+  	/*
+@@ -3781,7 +3783,7 @@ static void check_blkcg_changed(struct cfq_io_cq =
+
+*cic, struct bio *bio)
+  	 * do proper throttling of writes. Turn off wbt for that
+  	 * case.
+  	 */
+-	if (bio_blkcg(bio) !=3D &blkcg_root) {
++	if (nonroot_cg) {
+  		struct request_queue *q =3D cfqd->queue;
+
+  		if (q->rq_wb)
 
 -- =
 
-Kees Cook
-Nexus Security
+Jens Axboe
 
---===============6547067592788395180==--
+
+--===============5008807266677291787==--
 
