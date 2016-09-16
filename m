@@ -1,40 +1,36 @@
-Content-Type: multipart/mixed; boundary="===============5358168112093135553=="
+Content-Type: multipart/mixed; boundary="===============4152133399798738384=="
 MIME-Version: 1.0
-From: Florian Westphal <fw@strlen.de>
+From: Jarod Wilson <jarod@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [netfilter-core] [lkp] [netfilter] 68263ddb47: WARNING: CPU: 0 PID: 1225 at net/netfilter/nf_conntrack_seqadj.c:232 nf_ct_seq_offset+0x7a/0x9a
-Date: Fri, 16 Sep 2016 19:18:27 +0200
-Message-ID: <20160916171827.GE5204@breakpoint.cc>
-In-Reply-To: <CA+6hz4o_Jub=zUcnXjy=oXS_5uZkxxw2Jv7p2FvdMqHV0pg+hw@mail.gmail.com>
+Subject: Tree build request
+Date: Fri, 16 Sep 2016 15:05:45 -0400
+Message-ID: <20160916190545.GE31517@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5358168112093135553==
+--===============4152133399798738384==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Gao Feng <fgao@ikuai8.com> wrote:
-> > [   23.465616] ------------[ cut here ]------------
-> > [   23.466477] WARNING: CPU: 0 PID: 1225 at net/netfilter/nf_conntrack_=
-seqadj.c:232
-> > nf_ct_seq_offset+0x7a/0x9a
-> > [   23.468458] Missing nfct_seqadj_ext_add() setup call
-> >
-> =
+Hello,
 
-> It should be that nf_ct_add_synproxy failed and the seqadj extentision is
-> not added.
+I'd like to get a tree full of test patches I'm submitting to netdev built
+across more arches than I have directly available, and it was suggested
+that I send a request here. Work-in-progress patches are available here
+(including one that fixes a problem reported by your infra w/the initial
+patches I sent to netdev).
 
-Note that nfct_synproxy_ext_add always returns NULL if
-CONFIG_NETFILTER_SYNPROXY=3Dn
+Tree location:
 
-The warning should also be removed.
+https://github.com/jarodwilson/linux-muck
 
-> When nf_ct_add_synproxy fails, the init_conntrack fails too and return
-> ERR_PTR(-ENOMEM). In this case, the packet should be dropped directly, and
-> should not be processed by the latter codes.
+Thanks much, please let me know if any additional information is required.
 
-This means the commit breaks conntrack if SYNPROXY=3Dn
+-- =
 
---===============5358168112093135553==--
+Jarod Wilson
+jarod(a)redhat.com
+
+
+--===============4152133399798738384==--
 
