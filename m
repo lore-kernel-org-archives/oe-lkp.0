@@ -1,38 +1,62 @@
-Content-Type: multipart/mixed; boundary="===============6456067604383751968=="
+Content-Type: multipart/mixed; boundary="===============8438935032142601633=="
 MIME-Version: 1.0
-From: Tejun Heo <tj@kernel.org>
+From: Florian Westphal <fw@strlen.de>
 To: lkp@lists.01.org
-Subject: Re: [writeback] 8bc4ad9498: INFO: suspicious RCU usage. ]
-Date: Fri, 02 Sep 2016 14:00:51 -0400
-Message-ID: <20160902180051.GB18760@htj.duckdns.org>
-In-Reply-To: <20160902170056.GN16261@linux.vnet.ibm.com>
+Subject: Re: [netfilter-core] [lkp] [netfilter] 68263ddb47: WARNING: CPU: 0 PID: 1225 at net/netfilter/nf_conntrack_seqadj.c:232 nf_ct_seq_offset+0x7a/0x9a
+Date: Sat, 17 Sep 2016 12:40:21 +0200
+Message-ID: <20160917104021.GF5204@breakpoint.cc>
+In-Reply-To: <CA+6hz4rLzt+u8P+4rOrc3brp4kNK6DrCk546G-jGvcVPVcDmrg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6456067604383751968==
+--===============8438935032142601633==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hello, Paul.
+Gao Feng <fgao@ikuai8.com> wrote:
 
-On Fri, Sep 02, 2016 at 10:00:56AM -0700, Paul E. McKenney wrote:
-> Note that lockdep believes that the rcu_read_lock() has also been
-> dropped, otherwise it would have listed it.
+[ drop netdev & coreteam from cc list ]
 
-There isn't any actual code between rcu_read_lock() and the following
-rcu deref.  That's the first thing which happens.  It looked
-mysterious to me so I was wondering whether you knew any brekages on
-rcu lockdep side.  Unfortunately, that doesn't seem to be the case.
+> On Sat, Sep 17, 2016 at 1:18 AM, Florian Westphal <fw@strlen.de> wrote:
+> =
 
-> At this point, I have to suggest "git bisect"...
+> > Gao Feng <fgao@ikuai8.com> wrote:
+> > > > [   23.465616] ------------[ cut here ]------------
+> > > > [   23.466477] WARNING: CPU: 0 PID: 1225 at net/netfilter/nf_conntr=
+ack_
+> > seqadj.c:232
+> > > > nf_ct_seq_offset+0x7a/0x9a
+> > > > [   23.468458] Missing nfct_seqadj_ext_add() setup call
+> > > >
+> > >
+> > > It should be that nf_ct_add_synproxy failed and the seqadj extentisio=
+n is
+> > > not added.
+> >
+> > Note that nfct_synproxy_ext_add always returns NULL if
+> > CONFIG_NETFILTER_SYNPROXY=3Dn
+> >
+> > The warning should also be removed.
+> =
 
-I'll try to reproduce it and see wth is going on.
+> =
 
-Thanks!
+> When CONFIG_NETFILTER_SYNPROXY=3DNULL, it will not reach
+> nfct_synproxy_ext_add, because nfct_synproxy also returns the NULL.
 
--- =
+Right.  Apologies, I did not realize this report is about an old
+revision of the patch that was never applied to the tree.
 
-tejun
+So I think we can just ignore this report.
 
---===============6456067604383751968==--
+[ its this patch:
+  https://patchwork.ozlabs.org/patch/665102/ ]
+
+> I am not clear why the commit breaks conntrack when if SYNPROXY=3Dn based=
+ on
+> my response above.
+
+Its fine, forget about it.
+
+--===============8438935032142601633==--
 
