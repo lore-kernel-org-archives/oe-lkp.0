@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============4830630815292462561=="
+Content-Type: multipart/mixed; boundary="===============6704494347072977366=="
 MIME-Version: 1.0
 From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [staging] d4f56b47a8: divide error: 0000 [#1] PREEMPT SMP KASAN
-Date: Fri, 30 Sep 2016 10:52:17 +0800
-Message-ID: <20160930025217.GB21314@yexl-desktop>
+Date: Fri, 30 Sep 2016 14:14:47 +0800
+Message-ID: <20160930061447.GA28248@yexl-desktop>
 In-Reply-To: <CAOh2x==k3zUoReCmmTNwpgVuKrthtpxVWgyw7BjKZwm5DO=W5w@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4830630815292462561==
+--===============6704494347072977366==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -129,10 +129,12 @@ b5 27 fe 89 d8 eb 53 e8 cb 55 23 ff 31 d2 89 c6 48 b8 00 80 c6 a4 7e 8d 03 =
 >
 >https://marc.info/?l=3Dlinux-kernel&m=3D147490908100954
 
-Sure, I'll verify it and provide the result later.
+This error is gone with this fix.
+
+Tested-by: Xiaolong Ye <xiaolong.ye@intel.com>
 
 Thanks,
 Xiaolong
 
---===============4830630815292462561==--
+--===============6704494347072977366==--
 
