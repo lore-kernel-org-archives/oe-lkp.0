@@ -1,40 +1,35 @@
-Content-Type: multipart/mixed; boundary="===============5183296151607069508=="
+Content-Type: multipart/mixed; boundary="===============4278636925304111502=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [staging] d4f56b47a8: divide error: 0000 [#1] PREEMPT SMP KASAN
-Date: Fri, 30 Sep 2016 18:18:00 +0800
-Message-ID: <20160930101800.oqwogwzeoumaf7dq@wfg-t540p.sh.intel.com>
-In-Reply-To: <20160930095143.GA30029@kroah.com>
+Subject: Re: [sched/core] 4fa5cd5245: BUG: sleeping function called from invalid context at kernel/locking/mutex.c:97
+Date: Fri, 30 Sep 2016 12:35:49 +0200
+Message-ID: <20160930103549.GH5016@twins.programming.kicks-ass.net>
+In-Reply-To: <20160930015102.GB20189@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5183296151607069508==
+--===============4278636925304111502==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
->> >> [   16.819509] RIP  [<ffffffff82f67e97>] gb_timesync_init+0x35/0x78
->> >> [   16.820094]  RSP <ffff88001a147e58>
->> >> [   16.820548] ---[ end trace c73ba0f929e81492 ]---
->> >> [   16.821001] Kernel panic - not syncing: Fatal exception
->> >
->> >Can you please confirm if below patch fixes it for you ?
->> >
->> >https://marc.info/?l=3Dlinux-kernel&m=3D147490908100954
->>
->> This error is gone with this fix.
->>
->> Tested-by: Xiaolong Ye <xiaolong.ye@intel.com>
->
->Wonderful, thanks for letting us know.  It's been in linux-next since
->Tuesday of this week.   Perhaps your testing could see if patches
->further along in the specific branch you hit solve the problem you are
->having before you need to report the issue?
+On Fri, Sep 30, 2016 at 09:51:02AM +0800, kernel test robot wrote:
+> =
 
-Yes, good idea! It could be made more smart like that.
+> FYI, we noticed the following commit:
+> =
 
-Thanks,
-Fengguang
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> commit 4fa5cd5245b627db88c9ca08ae442373b02596b4 ("sched/core: Do not use =
+smp_processor_id() with preempt enabled in smpboot_thread_fn()")
+> =
 
---===============5183296151607069508==--
+
+So its perfectly ok to use smp_processor_id() in preemptible context,
+assuming the task is pinned to one cpu.
+
+smpboot threads are per definition per-cpu threads, those are bound to a
+specific CPU and affinity cannot be changed by userspace.
+
+--===============4278636925304111502==--
 
