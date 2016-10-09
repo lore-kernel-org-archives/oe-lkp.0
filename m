@@ -1,72 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============5907024089911636448=="
+Content-Type: multipart/mixed; boundary="===============6138532812646800562=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: David Carrillo-Cisneros <davidcc@google.com>
 To: lkp@lists.01.org
-Subject: Re: [sctp] a6c2f79287: netperf.Throughput_Mbps -37.2% regression
-Date: Sun, 09 Oct 2016 15:41:42 +0800
-Message-ID: <20161009074142.GA9546@aaronlu.sh.intel.com>
-In-Reply-To: <CADvbK_f7ihdJJvxmmBNA7_1fV2=eyxEqCQztm7LKz+vp8rSHig@mail.gmail.com>
+Subject: Re: [perf/core] 412929295f: WARNING: CPU: 2 PID: 600 at kernel/events/core.c:3530 perf_event_read+0x17d/0x190
+Date: Sun, 09 Oct 2016 07:58:59 +0000
+Message-ID: <CALcN6mi_FN563ZUJohVu9E13wsnySaMNJdvEa4QoyD1DvxbKAQ@mail.gmail.com>
+In-Reply-To: <20161009070929.GD5609@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5907024089911636448==
+--===============6138532812646800562==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 03, 2016 at 10:32:04AM +0800, Xin Long wrote:
-> On Fri, Sep 30, 2016 at 3:05 PM, Aaron Lu <aaron.lu@intel.com> wrote:
-> > On 08/23/2016 05:44 AM, Marcelo Ricardo Leitner wrote:
-> >> Em 19-08-2016 04:24, Aaron Lu escreveu:
-> >>> On Fri, Aug 19, 2016 at 04:19:39AM -0300, Marcelo Ricardo Leitner wro=
-te:
-> >>>> Hi,
-> >>>>
-> >>>> Em 19-08-2016 02:29, Aaron Lu escreveu:
-> >>>> ...
-> >>>>> It doesn't look insane and sctp_wait_for_sndbuf may actually have
-> >>>>> something to do with a larger sctp_chunk I suppose?
-> >>>>>
-> >>>>> The same perf record doesn't capture any sample for the good commit,
-> >>>>> which suggests the nerperf process doesn't sleep in sctp_wait_for_s=
-ndbuf.
-> >>>>
-> >>>> Ahhh yes! It does, and then it would mean your txbuf is too small fo=
-r the
-> >>>> chunk sizes you're using (sctp tests option -m).
-> >>>>
-> >>>> What's your netperf cmdline again please?
-> >>>
-> >>> netperf -4 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K -H 127.0.0.1
-> >>>
-> >>> Is the 10K used here a problem? If so, can you suggest a proper value
-> >>> for our netperf performance test? Thanks.
-> >>
-> >> We're still working on this. Xin could reproduce it on an i3 too, but
-> >> I'm afraid this commit just unmasked an issue in there. You're
-> >> overloading the CPU by too much when spawning 8 parallel netperf's on a
-> >> 4-core system, seems that commit a6c2f79287 was that last rock that ma=
-de
-> >> it slip into a precipice. sctp's cwnd and rwnd management are not as
-> >> good as tcp's and now it seems you're triggering a corner case.
-> >>
-> >> I hope to have more soon.
-> >
-> > I wonder if there is any update on this issue?
-> >
-> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> =
+>
+>
+> FYI, we noticed the following commit:
+>
+>
+> https://github.com/0day-ci/linux
+> David-Carrillo-Cisneros/remove-unnecessary-IPI-reading-uncore-events/2016=
+0818-045857
+>
+> commit 412929295ff670aa6890e346e2fc05f58d93cd96 ("perf/core: check return
+> value of perf_event_read IPI")
+>
+> Hi Xiaolong,
 
-> be4947b sctp: change to check peer prsctp_capable when using prsctp polic=
-es
-> 0605483 sctp: remove prsctp_param from sctp_chunk
-> 73dca12 sctp: move sent_count to the memory hole in sctp_chunk
-> =
+The problem was discussed following the submission:
+https://lkml.org/lkml/2016/8/21/58
 
-> These three commit can avoid this issue by recovering sctp_chunk size.
+and it was decided to revert the WARN_ON and purposely ignore the error in
+smp_call_function_single:
+http://git.kernel.org/cgit/linux/kernel/git/tip/tip.git/commit/?id=3D587631=
+48758057ffc447bf990321d3ea86d199a0
 
-Thanks for the update, I just confirmed the throughput is back on my
-desktop.
+David
 
+--===============6138532812646800562==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.html"
 
---===============5907024089911636448==--
+PGRpdiBkaXI9Imx0ciI+PGRpdiBjbGFzcz0iZ21haWxfcXVvdGUiPjxibG9ja3F1b3RlIGNsYXNz
+PSJnbWFpbF9xdW90ZSIgc3R5bGU9Im1hcmdpbjowIDAgMCAuOGV4O2JvcmRlci1sZWZ0OjFweCAj
+Y2NjIHNvbGlkO3BhZGRpbmctbGVmdDoxZXgiPjxicj5GWUksIHdlIG5vdGljZWQgdGhlIGZvbGxv
+d2luZyBjb21taXQ6PGJyIGNsYXNzPSJnbWFpbF9tc2ciPjxicj48YnI+PGEgaHJlZj0iaHR0cHM6
+Ly9naXRodWIuY29tLzBkYXktY2kvbGludXgiIHJlbD0ibm9yZWZlcnJlciIgY2xhc3M9ImdtYWls
+X21zZyIgdGFyZ2V0PSJfYmxhbmsiPmh0dHBzOi8vZ2l0aHViLmNvbS8wZGF5LWNpL2xpbnV4PC9h
+PiBEYXZpZC1DYXJyaWxsby1DaXNuZXJvcy9yZW1vdmUtdW5uZWNlc3NhcnktSVBJLXJlYWRpbmct
+dW5jb3JlLWV2ZW50cy8yMDE2MDgxOC0wNDU4NTc8YnIgY2xhc3M9ImdtYWlsX21zZyI+PGJyPmNv
+bW1pdCA0MTI5MjkyOTVmZjY3MGFhNjg5MGUzNDZlMmZjMDVmNThkOTNjZDk2ICgmcXVvdDtwZXJm
+L2NvcmU6IGNoZWNrIHJldHVybiB2YWx1ZSBvZiBwZXJmX2V2ZW50X3JlYWQgSVBJJnF1b3Q7KTxi
+ciBjbGFzcz0iZ21haWxfbXNnIj48YnI+PC9ibG9ja3F1b3RlPjxkaXY+SGkgWGlhb2xvbmcsPC9k
+aXY+PGRpdj48YnI+PC9kaXY+PGRpdj5UaGUgcHJvYmxlbSB3YXMgZGlzY3Vzc2VkIGZvbGxvd2lu
+ZyB0aGUgc3VibWlzc2lvbjo8L2Rpdj48ZGl2PjxhIGhyZWY9Imh0dHBzOi8vbGttbC5vcmcvbGtt
+bC8yMDE2LzgvMjEvNTgiPmh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE2LzgvMjEvNTg8L2E+PGJy
+PjwvZGl2PjxkaXY+PGJyPjwvZGl2PmFuZCBpdCB3YXMgZGVjaWRlZCB0byByZXZlcnQgdGhlIFdB
+Uk5fT04gYW5kIHB1cnBvc2VseSBpZ25vcmUgdGhlIGVycm9yIGluIHNtcF9jYWxsX2Z1bmN0aW9u
+X3NpbmdsZTrCoDxiciBjbGFzcz0iaW5ib3gtaW5ib3gtQXBwbGUtaW50ZXJjaGFuZ2UtbmV3bGlu
+ZSI+PGEgaHJlZj0iaHR0cDovL2dpdC5rZXJuZWwub3JnL2NnaXQvbGludXgva2VybmVsL2dpdC90
+aXAvdGlwLmdpdC9jb21taXQvP2lkPTU4NzYzMTQ4NzU4MDU3ZmZjNDQ3YmY5OTAzMjFkM2VhODZk
+MTk5YTAiPmh0dHA6Ly9naXQua2VybmVsLm9yZy9jZ2l0L2xpbnV4L2tlcm5lbC9naXQvdGlwL3Rp
+cC5naXQvY29tbWl0Lz9pZD01ODc2MzE0ODc1ODA1N2ZmYzQ0N2JmOTkwMzIxZDNlYTg2ZDE5OWEw
+PC9hPjxicj48YnI+RGF2aWQ8YnI+PGRpdiBjbGFzcz0iZ21haWxfcXVvdGUiPjxiciBjbGFzcz0i
+aW5ib3gtaW5ib3gtQXBwbGUtaW50ZXJjaGFuZ2UtbmV3bGluZSI+PC9kaXY+PGRpdj7CoDwvZGl2
+PjwvZGl2PjwvZGl2Pgo=
+
+--===============6138532812646800562==--
 
