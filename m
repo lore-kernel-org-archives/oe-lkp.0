@@ -1,83 +1,97 @@
-Content-Type: multipart/mixed; boundary="===============6778425888176809920=="
+Content-Type: multipart/mixed; boundary="===============0325016831733996868=="
 MIME-Version: 1.0
-From: Dou Liyang <douly.fnst@cn.fujitsu.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: bug-report: can't install jobs in Archlinux
-Date: Fri, 14 Oct 2016 11:52:28 +0800
-Message-ID: <d009e5d5-25da-ade3-a1e7-77100c5cfbfa@cn.fujitsu.com>
+Subject: Re: [x86] 811565123a: BUG: kernel hang in early-boot stage, last printk: Probing EDD (edd=off to disable)... ok
+Date: Fri, 14 Oct 2016 12:56:00 +0800
+Message-ID: <20161014045600.GA9378@yexl-desktop>
+In-Reply-To: <20161014005305.GB13114@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6778425888176809920==
+--===============0325016831733996868==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-This patch is just for reporting a bug.
+On 10/14, Ye Xiaolong wrote:
+>On 10/13, Andi Kleen wrote:
+>>Andi Kleen <andi@firstfloor.org> writes:
+>>
+>>Any comments on this?
+>>
+>>I still cannot reproduce the failure unfortunately.
+>>
+>
+>Btw, you can try below commands to reproduce the error on your local
+>host, they will download the necessary images and run QEMU:
+>
+>       git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
+ts.git
+>       cd lkp-tests
+>       bin/lkp qemu -k KERNEL job-script  # job-script is attached in the =
+original report email
 
-In README.md, most test cases should install/run well in
+Results show this hang may be related to gcc version, with gcc version
+4.8.4 (Ubuntu 4.8.4-2ubuntu1~14.04.3), kernel could boot without early
+hang, but if kernel was built with gcc version 6.2.0 20160901 (Debian
+6.2.0-3), it will stuck in the early stage:
 
-- Debian sid
-- Ubuntu 14.04
-- Archlinux
-
-So I choice the Archlinux, but it can't install well.
-
-------------------------------------------------
-
-Env: 4.7.6-1-ARCH Linux in QEmu
-[root(a)douly lkp-tests]# uname -a
-Linux douly 4.7.6-1-ARCH #1 SMP PREEMPT Fri Sep 30 19:28:42 CEST 2016
-x86_64 GNU/Linux
-
-Process:
-Doing the steps in README.md file to install packages for a job
+early console in setup code
+Probing EDD (edd=3Doff to disable)... ok
 
 
-Situation:
+gdb output as below:
 
-Command:
+$ gdb -ex "target remote localhost:1234" vmlinux =
 
-[root(a)douly lkp-tests]# export LKP_SRC=3D$PWD
-[root(a)douly lkp-tests]# export PATH=3D$PATH:$LKP_SRC/bin
-[root(a)douly lkp-tests]# lkp install $LKP_SRC/jobs/hackbench.yaml
+GNU gdb (Ubuntu 7.7.1-0ubuntu5~14.04.2) 7.7.1
+Copyright (C) 2014 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.htm=
+l>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+<http://www.gnu.org/software/gdb/documentation/>.
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from vmlinux...done.
+Remote debugging using localhost:1234
+0x048a34d9 in ?? ()
+(gdb) bt
+#0  0x048a34d9 in ?? ()
+#1  0x00000000 in ?? ()
+(gdb) =
 
-Log:
 
-Use: /home/douly/bug_test/lkp-tests/distro/installer/archlinux install =
-
-bc gawk time kmod gzip make automake gcc base-devel libtool patch git =
-
-openssl ca-certificates rsync cpio wget libklibc-dev linux-libc-dev =
-
-linux-libc-dev:i386 glibc libc6-dev:i386
-[sudo] password for douly:
-error: target not found: libc6-dev:i386
-error: target not found: linux-libc-dev:i386
-error: target not found: libklibc-dev
-error: target not found: linux-libc-dev
-warning: kmod-23-1 is up to date -- reinstalling
-warning: gawk-4.1.4-1 is up to date -- reinstalling
-warning: openssl-1.0.2.j-1 is up to date -- reinstalling
-warning: gzip-1.8-2 is up to date -- reinstalling
-warning: ca-certificates-20160507-1 is up to date -- reinstalling
-warning: glibc-2.24-2 is up to date -- reinstalling
-warning: git-2.10.0-1 is up to date -- reinstalling
-Cannot install some packages in =
-
-/home/douly/bug_test/lkp-tests/distro/depends/lkp
-
--------------------------------------------------------------
-
-Lastly:
-For your advice, I delete these packages in "distro/depends/lkp-dev", It =
-
-can be installed.
 
 Thanks,
+Xiaolong
+>
+>Thanks,
+>Xiaolong
+>>
+>>> Could you do two tests for me:
+>>>
+>>> - Enable CONFIG_MICROCODE_INTEL and see if it boots then
+>>>
+>>> - Add CONFIG_DEBUG_INFO to the config.
+>>> Add -s to the qemu command line and boot again. Then when it hangs =
 
-	Dou.
+>>> connect gdb to see where it hangs
+>>>
+>>> gdb -ex "target remote localhost:1234" vmlinux
+>>> bt
+>>>
+>>> <show output>
+>_______________________________________________
+>LKP mailing list
+>LKP(a)lists.01.org
+>https://lists.01.org/mailman/listinfo/lkp
 
-
-
---===============6778425888176809920==--
+--===============0325016831733996868==--
 
