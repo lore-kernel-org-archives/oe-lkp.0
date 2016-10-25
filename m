@@ -1,200 +1,253 @@
-Content-Type: multipart/mixed; boundary="===============6955096756280959479=="
+Content-Type: multipart/mixed; boundary="===============2741173353711349074=="
 MIME-Version: 1.0
 From: Paolo Valente <paolo.valente@linaro.org>
 To: lkp@lists.01.org
-Subject: [PATCH 09/14] block, bfq: reduce latency during request-pool saturation
-Date: Tue, 25 Oct 2016 10:48:35 +0200
-Message-ID: <20161025084840.30260-10-paolo.valente@linaro.org>
+Subject: [PATCH 12/14] block, bfq: boost the throughput on NCQ-capable flash-based devices
+Date: Tue, 25 Oct 2016 10:48:38 +0200
+Message-ID: <20161025084840.30260-13-paolo.valente@linaro.org>
 In-Reply-To: <20161025084840.30260-1-paolo.valente@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6955096756280959479==
+--===============2741173353711349074==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-This patch introduces an heuristic that reduces latency when the
-I/O-request pool is saturated. This goal is achieved by disabling
-device idling, for non-weight-raised queues, when there are weight-
-raised queues with pending or in-flight requests. In fact, as
-explained in more detail in the comment on the function
-bfq_bfqq_may_idle(), this reduces the rate at which processes
-associated with non-weight-raised queues grab requests from the pool,
-thereby increasing the probability that processes associated with
-weight-raised queues get a request immediately (or at least soon) when
-they need one. Along the same line, if there are weight-raised queues,
-then this patch halves the service rate of async (write) requests for
-non-weight-raised queues.
+This patch boosts the throughput on NCQ-capable flash-based devices,
+while still preserving latency guarantees for interactive and soft
+real-time applications. The throughput is boosted by just not idling
+the device when the in-service queue remains empty, even if the queue
+is sync and has a non-null idle window. This helps to keep the drive's
+internal queue full, which is necessary to achieve maximum
+performance. This solution to boost the throughput is a port of
+commits a68bbdd and f7d7b7a for CFQ.
+
+As already highlighted in a previous patch, allowing the device to
+prefetch and internally reorder requests trivially causes loss of
+control on the request service order, and hence on service guarantees.
+Fortunately, as discussed in detail in the comments on the function
+bfq_bfqq_may_idle(), if every process has to receive the same
+fraction of the throughput, then the service order enforced by the
+internal scheduler of a flash-based device is relatively close to that
+enforced by BFQ. In particular, it is close enough to let service
+guarantees be substantially preserved.
+
+Things change in an asymmetric scenario, i.e., if not every process
+has to receive the same fraction of the throughput. In this case, to
+guarantee the desired throughput distribution, the device must be
+prevented from prefetching requests. This is exactly what this patch
+does in asymmetric scenarios.
 
 Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
 Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
 ---
- block/bfq-iosched.c | 66 +++++++++++++++++++++++++++++++++++++++++++++++++=
-+---
- 1 file changed, 63 insertions(+), 3 deletions(-)
+ block/bfq-iosched.c | 154 ++++++++++++++++++++++++++++++++++++------------=
+----
+ 1 file changed, 106 insertions(+), 48 deletions(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 3b11772..46d6df3 100644
+index 9011a84..798699dd 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
-@@ -378,6 +378,8 @@ struct bfq_data {
- 	 * queue in service, even if it is idling).
+@@ -5905,15 +5905,25 @@ static bool bfq_bfqq_may_idle(struct bfq_queue *bfq=
+q)
+ 	 * The value of the variable is computed considering that
+ 	 * idling is usually beneficial for the throughput if:
+ 	 * (a) the device is not NCQ-capable, or
+-	 * (b) regardless of the presence of NCQ, the request pattern
+-	 *     for bfqq is I/O-bound (possible throughput losses
+-	 *     caused by granting idling to seeky queues are mitigated
+-	 *     by the fact that, in all scenarios where boosting
+-	 *     throughput is the best thing to do, i.e., in all
+-	 *     symmetric scenarios, only a minimal idle time is
+-	 *     allowed to seeky queues).
++	 * (b) regardless of the presence of NCQ, the device is rotational
++	 *     and the request pattern for bfqq is I/O-bound (possible
++	 *     throughput losses caused by granting idling to seeky queues
++	 *     are mitigated by the fact that, in all scenarios where
++	 *     boosting throughput is the best thing to do, i.e., in all
++	 *     symmetric scenarios, only a minimal idle time is allowed to
++	 *     seeky queues).
++	 *
++	 * Secondly, and in contrast to the above item (b), idling an
++	 * NCQ-capable flash-based device would not boost the
++	 * throughput even with intense I/O; rather it would lower
++	 * the throughput in proportion to how fast the device
++	 * is. Accordingly, the next variable is true if any of the
++	 * above conditions (a) and (b) is true, and, in particular,
++	 * happens to be false if bfqd is an NCQ-capable flash-based
++	 * device.
  	 */
- 	int busy_queues;
-+	/* number of weight-raised busy @bfq_queues */
-+	int wr_busy_queues;
- 	/* number of queued requests */
- 	int queued;
- 	/* number of requests dispatched and waiting for completion */
-@@ -2019,6 +2021,9 @@ static void bfq_del_bfqq_busy(struct bfq_data *bfqd, =
-struct bfq_queue *bfqq,
- =
-
- 	bfqd->busy_queues--;
- =
-
-+	if (bfqq->wr_coeff > 1)
-+		bfqd->wr_busy_queues--;
-+
- 	bfqg_stats_update_dequeue(bfqq_group(bfqq));
- =
-
- 	bfq_deactivate_bfqq(bfqd, bfqq, requeue);
-@@ -2035,6 +2040,9 @@ static void bfq_add_bfqq_busy(struct bfq_data *bfqd, =
-struct bfq_queue *bfqq)
- =
-
- 	bfq_mark_bfqq_busy(bfqq);
- 	bfqd->busy_queues++;
-+
-+	if (bfqq->wr_coeff > 1)
-+		bfqd->wr_busy_queues++;
- }
- =
-
- #if defined(CONFIG_BFQ_GROUP_IOSCHED) && defined(CONFIG_DEBUG_BLK_CGROUP)
-@@ -3335,7 +3343,16 @@ static unsigned long bfq_serv_to_charge(struct reque=
-st *rq,
- 	if (bfq_bfqq_sync(bfqq) || bfqq->wr_coeff > 1)
- 		return blk_rq_sectors(rq);
- =
-
--	return blk_rq_sectors(rq) * bfq_async_charge_factor;
-+	/*
-+	 * If there are no weight-raised queues, then amplify service
-+	 * by just the async charge factor; otherwise amplify service
-+	 * by twice the async charge factor, to further reduce latency
-+	 * for weight-raised queues.
-+	 */
-+	if (bfqq->bfqd->wr_busy_queues =3D=3D 0)
-+		return blk_rq_sectors(rq) * bfq_async_charge_factor;
-+
-+	return blk_rq_sectors(rq) * 2 * bfq_async_charge_factor;
- }
- =
-
- /**
-@@ -3791,6 +3808,7 @@ static void bfq_add_request(struct request *rq)
- 			bfqq->wr_coeff =3D bfqd->bfq_wr_coeff;
- 			bfqq->wr_cur_max_time =3D bfq_wr_duration(bfqd);
- =
-
-+			bfqd->wr_busy_queues++;
- 			bfqq->entity.prio_changed =3D 1;
- 		}
- 		if (prev !=3D bfqq->next_rq)
-@@ -4003,6 +4021,8 @@ static void bfq_merged_requests(struct request_queue =
-*q, struct request *rq,
- /* Must be called with bfqq !=3D NULL */
- static void bfq_bfqq_end_wr(struct bfq_queue *bfqq)
- {
-+	if (bfq_bfqq_busy(bfqq))
-+		bfqq->bfqd->wr_busy_queues--;
- 	bfqq->wr_coeff =3D 1;
- 	bfqq->wr_cur_max_time =3D 0;
- 	bfqq->last_wr_start_finish =3D jiffies;
-@@ -5049,7 +5069,8 @@ static bool bfq_may_expire_for_budg_timeout(struct bf=
-q_queue *bfqq)
- static bool bfq_bfqq_may_idle(struct bfq_queue *bfqq)
- {
- 	struct bfq_data *bfqd =3D bfqq->bfqd;
--	bool idling_boosts_thr, asymmetric_scenario;
-+	bool idling_boosts_thr, idling_boosts_thr_without_issues,
-+		asymmetric_scenario;
- =
-
- 	if (bfqd->strict_guarantees)
- 		return true;
-@@ -5072,6 +5093,44 @@ static bool bfq_bfqq_may_idle(struct bfq_queue *bfqq)
- 	idling_boosts_thr =3D !bfqd->hw_tag || bfq_bfqq_IO_bound(bfqq);
+-	idling_boosts_thr =3D !bfqd->hw_tag || bfq_bfqq_IO_bound(bfqq);
++	idling_boosts_thr =3D !bfqd->hw_tag ||
++		(!blk_queue_nonrot(bfqd->queue) && bfq_bfqq_IO_bound(bfqq));
  =
 
  	/*
-+	 * The value of the next variable,
-+	 * idling_boosts_thr_without_issues, is equal to that of
-+	 * idling_boosts_thr, unless a special case holds. In this
-+	 * special case, described below, idling may cause problems to
-+	 * weight-raised queues.
-+	 *
-+	 * When the request pool is saturated (e.g., in the presence
-+	 * of write hogs), if the processes associated with
-+	 * non-weight-raised queues ask for requests at a lower rate,
-+	 * then processes associated with weight-raised queues have a
-+	 * higher probability to get a request from the pool
-+	 * immediately (or at least soon) when they need one. Thus
-+	 * they have a higher probability to actually get a fraction
-+	 * of the device throughput proportional to their high
-+	 * weight. This is especially true with NCQ-capable drives,
-+	 * which enqueue several requests in advance, and further
-+	 * reorder internally-queued requests.
-+	 *
-+	 * For this reason, we force to false the value of
-+	 * idling_boosts_thr_without_issues if there are weight-raised
-+	 * busy queues. In this case, and if bfqq is not weight-raised,
-+	 * this guarantees that the device is not idled for bfqq (if,
-+	 * instead, bfqq is weight-raised, then idling will be
-+	 * guaranteed by another variable, see below). Combined with
-+	 * the timestamping rules of BFQ (see [1] for details), this
-+	 * behavior causes bfqq, and hence any sync non-weight-raised
-+	 * queue, to get a lower number of requests served, and thus
-+	 * to ask for a lower number of requests from the request
-+	 * pool, before the busy weight-raised queues get served
-+	 * again. This often mitigates starvation problems in the
-+	 * presence of heavy write workloads and NCQ, thereby
-+	 * guaranteeing a higher application and system responsiveness
-+	 * in these hostile scenarios.
-+	 */
-+	idling_boosts_thr_without_issues =3D idling_boosts_thr &&
-+		bfqd->wr_busy_queues =3D=3D 0;
-+
-+	/*
- 	 * There is then a case where idling must be performed not for
- 	 * throughput concerns, but to preserve service guarantees. To
- 	 * introduce it, we can note that allowing the drive to
-@@ -5145,7 +5204,7 @@ static bool bfq_bfqq_may_idle(struct bfq_queue *bfqq)
- 	 *    is necessary to preserve service guarantees.
- 	 */
- 	return bfq_bfqq_sync(bfqq) &&
--		(idling_boosts_thr || asymmetric_scenario);
-+		(idling_boosts_thr_without_issues || asymmetric_scenario);
- }
- =
-
- /*
-@@ -6315,6 +6374,7 @@ static int bfq_init_queue(struct request_queue *q, st=
-ruct elevator_type *e)
- 					      * high-definition compressed
- 					      * video.
- 					      */
-+	bfqd->wr_busy_queues =3D 0;
+ 	 * The value of the next variable,
+@@ -5954,14 +5964,16 @@ static bool bfq_bfqq_may_idle(struct bfq_queue *bfq=
+q)
+ 		bfqd->wr_busy_queues =3D=3D 0;
  =
 
  	/*
- 	 * Begin by assuming, optimistically, that the device is a
+-	 * There is then a case where idling must be performed not for
+-	 * throughput concerns, but to preserve service guarantees. To
+-	 * introduce it, we can note that allowing the drive to
+-	 * enqueue more than one request at a time, and hence
++	 * There is then a case where idling must be performed not
++	 * for throughput concerns, but to preserve service
++	 * guarantees.
++	 *
++	 * To introduce this case, we can note that allowing the drive
++	 * to enqueue more than one request at a time, and hence
+ 	 * delegating de facto final scheduling decisions to the
+-	 * drive's internal scheduler, causes loss of control on the
++	 * drive's internal scheduler, entails loss of control on the
+ 	 * actual request service order. In particular, the critical
+-	 * situation is when requests from different processes happens
++	 * situation is when requests from different processes happen
+ 	 * to be present, at the same time, in the internal queue(s)
+ 	 * of the drive. In such a situation, the drive, by deciding
+ 	 * the service order of the internally-queued requests, does
+@@ -5972,51 +5984,97 @@ static bool bfq_bfqq_may_idle(struct bfq_queue *bfq=
+q)
+ 	 * the service distribution enforced by the drive's internal
+ 	 * scheduler is likely to coincide with the desired
+ 	 * device-throughput distribution only in a completely
+-	 * symmetric scenario where: (i) each of these processes must
+-	 * get the same throughput as the others; (ii) all these
+-	 * processes have the same I/O pattern (either sequential or
+-	 * random).  In fact, in such a scenario, the drive will tend
+-	 * to treat the requests of each of these processes in about
+-	 * the same way as the requests of the others, and thus to
+-	 * provide each of these processes with about the same
+-	 * throughput (which is exactly the desired throughput
+-	 * distribution). In contrast, in any asymmetric scenario,
+-	 * device idling is certainly needed to guarantee that bfqq
+-	 * receives its assigned fraction of the device throughput
+-	 * (see [1] for details).
++	 * symmetric scenario where:
++	 * (i)  each of these processes must get the same throughput as
++	 *      the others;
++	 * (ii) all these processes have the same I/O pattern
++		(either sequential or random).
++	 * In fact, in such a scenario, the drive will tend to treat
++	 * the requests of each of these processes in about the same
++	 * way as the requests of the others, and thus to provide
++	 * each of these processes with about the same throughput
++	 * (which is exactly the desired throughput distribution). In
++	 * contrast, in any asymmetric scenario, device idling is
++	 * certainly needed to guarantee that bfqq receives its
++	 * assigned fraction of the device throughput (see [1] for
++	 * details).
++	 *
++	 * We address this issue by controlling, actually, only the
++	 * symmetry sub-condition (i), i.e., provided that
++	 * sub-condition (i) holds, idling is not performed,
++	 * regardless of whether sub-condition (ii) holds. In other
++	 * words, only if sub-condition (i) holds, then idling is
++	 * allowed, and the device tends to be prevented from queueing
++	 * many requests, possibly of several processes. The reason
++	 * for not controlling also sub-condition (ii) is that we
++	 * exploit preemption to preserve guarantees in case of
++	 * symmetric scenarios, even if (ii) does not hold, as
++	 * explained in the next two paragraphs.
++	 *
++	 * Even if a queue, say Q, is expired when it remains idle, Q
++	 * can still preempt the new in-service queue if the next
++	 * request of Q arrives soon (see the comments on
++	 * bfq_bfqq_update_budg_for_activation). If all queues and
++	 * groups have the same weight, this form of preemption,
++	 * combined with the hole-recovery heuristic described in the
++	 * comments on function bfq_bfqq_update_budg_for_activation,
++	 * are enough to preserve a correct bandwidth distribution in
++	 * the mid term, even without idling. In fact, even if not
++	 * idling allows the internal queues of the device to contain
++	 * many requests, and thus to reorder requests, we can rather
++	 * safely assume that the internal scheduler still preserves a
++	 * minimum of mid-term fairness. The motivation for using
++	 * preemption instead of idling is that, by not idling,
++	 * service guarantees are preserved without minimally
++	 * sacrificing throughput. In other words, both a high
++	 * throughput and its desired distribution are obtained.
++	 *
++	 * More precisely, this preemption-based, idleless approach
++	 * provides fairness in terms of IOPS, and not sectors per
++	 * second. This can be seen with a simple example. Suppose
++	 * that there are two queues with the same weight, but that
++	 * the first queue receives requests of 8 sectors, while the
++	 * second queue receives requests of 1024 sectors. In
++	 * addition, suppose that each of the two queues contains at
++	 * most one request at a time, which implies that each queue
++	 * always remains idle after it is served. Finally, after
++	 * remaining idle, each queue receives very quickly a new
++	 * request. It follows that the two queues are served
++	 * alternatively, preempting each other if needed. This
++	 * implies that, although both queues have the same weight,
++	 * the queue with large requests receives a service that is
++	 * 1024/8 times as high as the service received by the other
++	 * queue.
+ 	 *
+-	 * As for sub-condition (i), actually we check only whether
+-	 * bfqq is being weight-raised. In fact, if bfqq is not being
+-	 * weight-raised, we have that:
+-	 * - if the process associated with bfqq is not I/O-bound, then
+-	 *   it is not either latency- or throughput-critical; therefore
+-	 *   idling is not needed for bfqq;
+-	 * - if the process asociated with bfqq is I/O-bound, then
+-	 *   idling is already granted with bfqq (see the comments on
+-	 *   idling_boosts_thr).
++	 * On the other hand, device idling is performed, and thus
++	 * pure sector-domain guarantees are provided, for the
++	 * following queues, which are likely to need stronger
++	 * throughput guarantees: weight-raised queues, and queues
++	 * with a higher weight than other queues. When such queues
++	 * are active, sub-condition (i) is false, which triggers
++	 * device idling.
+ 	 *
+-	 * We do not check sub-condition (ii) at all, i.e., the next
+-	 * variable is true if and only if bfqq is being
+-	 * weight-raised. We do not need to control sub-condition (ii)
+-	 * for the following reason:
+-	 * - if bfqq is being weight-raised, then idling is already
+-	 *   guaranteed to bfqq by sub-condition (i);
+-	 * - if bfqq is not being weight-raised, then idling is
+-	 *   already guaranteed to bfqq (only) if it matters, i.e., if
+-	 *   bfqq is associated to a currently I/O-bound process (see
+-	 *   the above comment on sub-condition (i)).
++	 * According to the above considerations, the next variable is
++	 * true (only) if sub-condition (i) holds. To compute the
++	 * value of this variable, we not only use the return value of
++	 * the function bfq_symmetric_scenario(), but also check
++	 * whether bfqq is being weight-raised, because
++	 * bfq_symmetric_scenario() does not take into account also
++	 * weight-raised queues (see comments on
++	 * bfq_weights_tree_add()).
+ 	 *
+ 	 * As a side note, it is worth considering that the above
+ 	 * device-idling countermeasures may however fail in the
+ 	 * following unlucky scenario: if idling is (correctly)
+-	 * disabled in a time period during which the symmetry
+-	 * sub-condition holds, and hence the device is allowed to
++	 * disabled in a time period during which all symmetry
++	 * sub-conditions hold, and hence the device is allowed to
+ 	 * enqueue many requests, but at some later point in time some
+ 	 * sub-condition stops to hold, then it may become impossible
+ 	 * to let requests be served in the desired order until all
+ 	 * the requests already queued in the device have been served.
+ 	 */
+-	asymmetric_scenario =3D bfqq->wr_coeff > 1;
++	asymmetric_scenario =3D bfqq->wr_coeff > 1 ||
++		!bfq_symmetric_scenario(bfqd);
+ =
+
+ 	/*
+ 	 * We have now all the components we need to compute the return
 -- =
 
 2.10.0
 
 
---===============6955096756280959479==--
+--===============2741173353711349074==--
 
