@@ -1,3079 +1,4855 @@
-Content-Type: multipart/mixed; boundary="===============5363104788474469175=="
+Content-Type: multipart/mixed; boundary="===============2765309001304952426=="
 MIME-Version: 1.0
-From: kernel test robot <xiaolong.ye@intel.com>
+From: Paolo Valente <paolo.valente@linaro.org>
 To: lkp@lists.01.org
-Subject: [perf powerpc] 18d1796d0b: [No primary change]
-Date: Tue, 25 Oct 2016 14:40:13 +0800
-Message-ID: <20161025064013.GB2726@yexl-desktop>
-In-Reply-To: <20161006123301.GA13093@krava>
+Subject: [PATCH 01/14] block, bfq: introduce the BFQ-v0 I/O scheduler as an extra scheduler
+Date: Tue, 25 Oct 2016 10:48:27 +0200
+Message-ID: <20161025084840.30260-2-paolo.valente@linaro.org>
+In-Reply-To: <20161025084840.30260-1-paolo.valente@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5363104788474469175==
+--===============2765309001304952426==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-[will-it-scale] perf-stat.branch-miss-rate +7.4% regression =
+We tag as v0 the version of BFQ containing only BFQ's engine plus
+hierarchical support. BFQ's engine is introduced by this commit, while
+hierarchical support is added by next commit. We use the v0 tag to
+distinguish this minimal version of BFQ from the versions containing
+also the features and the improvements added by next commits. BFQ-v0
+coincides with the version of BFQ submitted a few years ago [1], apart
+from the introduction of preemption, described below.
 
-Reply-To: kernel test robot <xiaolong.ye@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+BFQ is a proportional-share I/O scheduler, whose general structure,
+plus a lot of code, are borrowed from CFQ.
+
+- Each process doing I/O on a device is associated with a weight and a
+  (bfq_)queue.
+
+- BFQ grants exclusive access to the device, for a while, to one queue
+  (process) at a time, and implements this service model by
+  associating every queue with a budget, measured in number of
+  sectors.
+
+  - After a queue is granted access to the device, the budget of the
+    queue is decremented, on each request dispatch, by the size of the
+    request.
+
+  - The in-service queue is expired, i.e., its service is suspended,
+    only if one of the following events occurs: 1) the queue finishes
+    its budget, 2) the queue empties, 3) a "budget timeout" fires.
+
+    - The budget timeout prevents processes doing random I/O from
+      holding the device for too long and dramatically reducing
+      throughput.
+
+    - Actually, as in CFQ, a queue associated with a process issuing
+      sync requests may not be expired immediately when it empties. In
+      contrast, BFQ may idle the device for a short time interval,
+      giving the process the chance to go on being served if it issues
+      a new request in time. Device idling typically boosts the
+      throughput on rotational devices, if processes do synchronous
+      and sequential I/O. In addition, under BFQ, device idling is
+      also instrumental in guaranteeing the desired throughput
+      fraction to processes issuing sync requests (see [2] for
+      details).
+
+      - With respect to idling for service guarantees, if several
+        processes are competing for the device at the same time, but
+        all processes (and groups, after the following commit) have
+        the same weight, then BFQ guarantees the expected throughput
+        distribution without ever idling the device. Throughput is
+        thus as high as possible in this common scenario.
+
+  - Queues are scheduled according to a variant of WF2Q+, named
+    B-WF2Q+, and implemented using an augmented rb-tree to preserve an
+    O(log N) overall complexity.  See [2] for more details. B-WF2Q+ is
+    also ready for hierarchical scheduling. However, for a cleaner
+    logical breakdown, the code that enables and completes
+    hierarchical support is provided in the next commit, which focuses
+    exactly on this feature.
+
+  - B-WF2Q+ guarantees a tight deviation with respect to an ideal,
+    perfectly fair, and smooth service. In particular, B-WF2Q+
+    guarantees that each queue receives a fraction of the device
+    throughput proportional to its weight, even if the throughput
+    fluctuates, and regardless of: the device parameters, the current
+    workload and the budgets assigned to the queue.
+
+  - The last, budget-independence, property (although probably
+    counterintuitive in the first place) is definitely beneficial, for
+    the following reasons:
+
+    - First, with any proportional-share scheduler, the maximum
+      deviation with respect to an ideal service is proportional to
+      the maximum budget (slice) assigned to queues. As a consequence,
+      BFQ can keep this deviation tight not only because of the
+      accurate service of B-WF2Q+, but also because BFQ *does not*
+      need to assign a larger budget to a queue to let the queue
+      receive a higher fraction of the device throughput.
+
+    - Second, BFQ is free to choose, for every process (queue), the
+      budget that best fits the needs of the process, or best
+      leverages the I/O pattern of the process. In particular, BFQ
+      updates queue budgets with a simple feedback-loop algorithm that
+      allows a high throughput to be achieved, while still providing
+      tight latency guarantees to time-sensitive applications. When
+      the in-service queue expires, this algorithm computes the next
+      budget of the queue so as to:
+
+      - Let large budgets be eventually assigned to the queues
+        associated with I/O-bound applications performing sequential
+        I/O: in fact, the longer these applications are served once
+        got access to the device, the higher the throughput is.
+
+      - Let small budgets be eventually assigned to the queues
+        associated with time-sensitive applications (which typically
+        perform sporadic and short I/O), because, the smaller the
+        budget assigned to a queue waiting for service is, the sooner
+        B-WF2Q+ will serve that queue (Subsec 3.3 in [2]).
+
+- Weights can be assigned to processes only indirectly, through I/O
+  priorities, and according to the relation:
+  weight =3D 10 * (IOPRIO_BE_NR - ioprio).
+  The next patch provides, instead, a cgroups interface through which
+  weights can be assigned explicitly.
+
+- If several processes are competing for the device at the same time,
+  but all processes and groups have the same weight, then BFQ
+  guarantees the expected throughput distribution without ever idling
+  the device. It uses preemption instead. Throughput is then much
+  higher in this common scenario.
+
+- ioprio classes are served in strict priority order, i.e.,
+  lower-priority queues are not served as long as there are
+  higher-priority queues.  Among queues in the same class, the
+  bandwidth is distributed in proportion to the weight of each
+  queue. A very thin extra bandwidth is however guaranteed to the Idle
+  class, to prevent it from starving.
+
+- If the strict_guarantees parameter is set (default: unset), then BFQ
+     - always performs idling when the in-service queue becomes empty;
+     - forces the device to serve one I/O request at a time, by
+       dispatching a new request only if there is no outstanding
+       request.
+  In the presence of differentiated weights or I/O-request sizes,
+  both the above conditions are needed to guarantee that every
+  queue receives its allotted share of the bandwidth (see
+  Documentation/block/bfq-iosched.txt for more details). Setting
+  strict_guarantees may evidently affect throughput.
+
+[1] https://lkml.org/lkml/2008/4/1/234
+    https://lkml.org/lkml/2008/11/11/148
+
+[2] P. Valente and M. Andreolini, "Improving Application
+    Responsiveness with the BFQ Disk I/O Scheduler", Proceedings of
+    the 5th Annual International Systems and Storage Conference
+    (SYSTOR '12), June 2012.
+    Slightly extended version:
+    http://algogroup.unimore.it/people/paolo/disk_sched/bfq-v1-suite-
+							results.pdf
+
+Signed-off-by: Fabio Checconi <fchecconi@gmail.com>
+Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
+Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
+---
+ Documentation/block/00-INDEX        |    2 +
+ Documentation/block/bfq-iosched.txt |  516 +++++
+ block/Kconfig.iosched               |   19 +
+ block/Makefile                      |    1 +
+ block/bfq-iosched.c                 | 4045 +++++++++++++++++++++++++++++++=
+++++
+ 5 files changed, 4583 insertions(+)
+ create mode 100644 Documentation/block/bfq-iosched.txt
+ create mode 100644 block/bfq-iosched.c
+
+diff --git a/Documentation/block/00-INDEX b/Documentation/block/00-INDEX
+index e55103a..8d55b4b 100644
+--- a/Documentation/block/00-INDEX
++++ b/Documentation/block/00-INDEX
+@@ -1,5 +1,7 @@
+ 00-INDEX
+ 	- This file
++bfq-iosched.txt
++	- BFQ IO scheduler and its tunables
+ biodoc.txt
+ 	- Notes on the Generic Block Layer Rewrite in Linux 2.5
+ biovecs.txt
+diff --git a/Documentation/block/bfq-iosched.txt b/Documentation/block/bfq-=
+iosched.txt
+new file mode 100644
+index 0000000..5ba67af
+--- /dev/null
++++ b/Documentation/block/bfq-iosched.txt
+@@ -0,0 +1,516 @@
++BFQ (Budget Fair Queueing)
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
++
++BFQ is a proportional-share I/O scheduler, with some extra
++low-latency capabilities. In addition to cgroups support (blkio or io
++controllers), BFQ's main features are:
++- BFQ guarantees a high system and application responsiveness, and a
++  low latency for time-sensitive applications, such as audio or video
++  players;
++- BFQ distributes bandwidth, and not just time, among processes or
++  groups (switching back to time distribution when needed to keep
++  throughput high).
++
++On average CPUs, the current version of BFQ can handle devices
++performing at most ~30K IOPS; at most ~50 KIOPS on faster CPUs. As a
++reference, 30-50 KIOPS correspond to very high bandwidths with
++sequential I/O (e.g., 8-12 GB/s if I/O requests are 256 KB large), and
++to 120-200 MB/s with 4KB random I/O.
++
++The table of contents follow. Impatients can just jump to Section 3.
++
++CONTENTS
++
++1. When may BFQ be useful?
++ 1-1 Personal systems
++ 1-2 Server systems
++2. How does BFQ work?
++3. What are BFQ's tunable?
++4. BFQ group scheduling
++ 4-1 Service guarantees provided
++ 4-2 Interface
++
++1. When may BFQ be useful?
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
++
++BFQ provides the following benefits on personal and server systems.
++
++1-1 Personal systems
++--------------------
++
++Low latency for interactive applications
++
++Regardless of the actual background workload, BFQ guarantees that, for
++interactive tasks, the storage device is virtually as responsive as if
++it was idle. For example, even if one or more of the following
++background workloads are being executed:
++- one or more large files are being read, written or copied,
++- a tree of source files is being compiled,
++- one or more virtual machines are performing I/O,
++- a software update is in progress,
++- indexing daemons are scanning filesystems and updating their
++  databases,
++starting an application or loading a file from within an application
++takes about the same time as if the storage device was idle. As a
++comparison, with CFQ, NOOP or DEADLINE, and in the same conditions,
++applications experience high latencies, or even become unresponsive
++until the background workload terminates (also on SSDs).
++
++Low latency for soft real-time applications
++
++Also soft real-time applications, such as audio and video
++players/streamers, enjoy a low latency and a low drop rate, regardless
++of the background I/O workload. As a consequence, these applications
++do not suffer from almost any glitch due to the background workload.
++
++Higher speed for code-development tasks
++
++If some additional workload happens to be executed in parallel, then
++BFQ executes the I/O-related components of typical code-development
++tasks (compilation, checkout, merge, ...) much more quickly than CFQ,
++NOOP or DEADLINE.
++
++High throughput
++
++On hard disks, BFQ achieves up to 30% higher throughput than CFQ, and
++up to 150% higher throughput than DEADLINE and NOOP, with all the
++sequential workloads considered in our tests. With random workloads,
++and with all the workloads on flash-based devices, BFQ achieves,
++instead, about the same throughput as the other schedulers.
++
++Strong fairness, bandwidth and delay guarantees
++
++BFQ distributes the device throughput, and not just the device time,
++among I/O-bound applications in proportion their weights, with any
++workload and regardless of the device parameters. From these bandwidth
++guarantees, it is possible to compute tight per-I/O-request delay
++guarantees by a simple formula. If not configured for strict service
++guarantees, BFQ switches to time-based resource sharing (only) for
++applications that would otherwise cause a throughput loss.
++
++1-2 Server systems
++------------------
++
++Most benefits for server systems follow from the same service
++properties as above. In particular, regardless of whether additional,
++possibly heavy workloads are being served, BFQ guarantees:
++
++. audio and video-streaming with zero or very low jitter and drop
++  rate;
++
++. fast retrieval of WEB pages and embedded objects;
++
++. real-time recording of data in live-dumping applications (e.g.,
++  packet logging);
++
++. responsiveness in local and remote access to a server.
++
++
++2. How does BFQ work?
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++
++BFQ is a proportional-share I/O scheduler, whose general structure,
++plus a lot of code, are borrowed from CFQ.
++
++- Each process doing I/O on a device is associated with a weight and a
++  (bfq_)queue.
++
++- BFQ grants exclusive access to the device, for a while, to one queue
++  (process) at a time, and implements this service model by
++  associating every queue with a budget, measured in number of
++  sectors.
++
++  - After a queue is granted access to the device, the budget of the
++    queue is decremented, on each request dispatch, by the size of the
++    request.
++
++  - The in-service queue is expired, i.e., its service is suspended,
++    only if one of the following events occurs: 1) the queue finishes
++    its budget, 2) the queue empties, 3) a "budget timeout" fires.
++
++    - The budget timeout prevents processes doing random I/O from
++      holding the device for too long and dramatically reducing
++      throughput.
++
++    - Actually, as in CFQ, a queue associated with a process issuing
++      sync requests may not be expired immediately when it empties. In
++      contrast, BFQ may idle the device for a short time interval,
++      giving the process the chance to go on being served if it issues
++      a new request in time. Device idling typically boosts the
++      throughput on rotational devices, if processes do synchronous
++      and sequential I/O. In addition, under BFQ, device idling is
++      also instrumental in guaranteeing the desired throughput
++      fraction to processes issuing sync requests (see the description
++      of the slice_idle tunable in this document, or [1, 2], for more
++      details).
++
++      - With respect to idling for service guarantees, if several
++	processes are competing for the device at the same time, but
++	all processes (and groups, after the following commit) have
++	the same weight, then BFQ guarantees the expected throughput
++	distribution without ever idling the device. Throughput is
++	thus as high as possible in this common scenario.
++
++  - If low-latency mode is enabled (default configuration), BFQ
++    executes some special heuristics to detect interactive and soft
++    real-time applications (e.g., video or audio players/streamers),
++    and to reduce their latency. The most important action taken to
++    achieve this goal is to give to the queues associated with these
++    applications more than their fair share of the device
++    throughput. For brevity, we call just "weight-raising" the whole
++    sets of actions taken by BFQ to privilege these queues. In
++    particular, BFQ provides a milder form of weight-raising for
++    interactive applications, and a stronger form for soft real-time
++    applications.
++
++  - BFQ automatically deactivates idling for queues born in a burst of
++    queue creations. In fact, these queues are usually associated with
++    the processes of applications and services that benefit mostly
++    from a high throughput. Examples are systemd during boot, or git
++    grep.
++
++  - As CFQ, BFQ merges queues performing interleaved I/O, i.e.,
++    performing random I/O that becomes mostly sequential if
++    merged. Differently from CFQ, BFQ achieves this goal with a more
++    reactive mechanism, called Early Queue Merge (EQM). EQM is so
++    responsive in detecting interleaved I/O (cooperating processes),
++    that it enables BFQ to achieve a high throughput, by queue
++    merging, even for queues for which CFQ needs a different
++    mechanism, preemption, to get a high throughput. As such EQM is a
++    unified mechanism to achieve a high throughput with interleaved
++    I/O.
++
++  - Queues are scheduled according to a variant of WF2Q+, named
++    B-WF2Q+, and implemented using an augmented rb-tree to preserve an
++    O(log N) overall complexity.  See [2] for more details. B-WF2Q+ is
++    also ready for hierarchical scheduling. However, for a cleaner
++    logical breakdown, the code that enables and completes
++    hierarchical support is provided in the next commit, which focuses
++    exactly on this feature.
++
++  - B-WF2Q+ guarantees a tight deviation with respect to an ideal,
++    perfectly fair, and smooth service. In particular, B-WF2Q+
++    guarantees that each queue receives a fraction of the device
++    throughput proportional to its weight, even if the throughput
++    fluctuates, and regardless of: the device parameters, the current
++    workload and the budgets assigned to the queue.
++
++  - The last, budget-independence, property (although probably
++    counterintuitive in the first place) is definitely beneficial, for
++    the following reasons:
++
++    - First, with any proportional-share scheduler, the maximum
++      deviation with respect to an ideal service is proportional to
++      the maximum budget (slice) assigned to queues. As a consequence,
++      BFQ can keep this deviation tight not only because of the
++      accurate service of B-WF2Q+, but also because BFQ *does not*
++      need to assign a larger budget to a queue to let the queue
++      receive a higher fraction of the device throughput.
++
++    - Second, BFQ is free to choose, for every process (queue), the
++      budget that best fits the needs of the process, or best
++      leverages the I/O pattern of the process. In particular, BFQ
++      updates queue budgets with a simple feedback-loop algorithm that
++      allows a high throughput to be achieved, while still providing
++      tight latency guarantees to time-sensitive applications. When
++      the in-service queue expires, this algorithm computes the next
++      budget of the queue so as to:
++
++      - Let large budgets be eventually assigned to the queues
++	associated with I/O-bound applications performing sequential
++	I/O: in fact, the longer these applications are served once
++	got access to the device, the higher the throughput is.
++
++      - Let small budgets be eventually assigned to the queues
++	associated with time-sensitive applications (which typically
++	perform sporadic and short I/O), because, the smaller the
++	budget assigned to a queue waiting for service is, the sooner
++	B-WF2Q+ will serve that queue (Subsec 3.3 in [2]).
++
++- If several processes are competing for the device at the same time,
++  but all processes and groups have the same weight, then BFQ
++  guarantees the expected throughput distribution without ever idling
++  the device. It uses preemption instead. Throughput is then much
++  higher in this common scenario.
++
++- ioprio classes are served in strict priority order, i.e.,
++  lower-priority queues are not served as long as there are
++  higher-priority queues.  Among queues in the same class, the
++  bandwidth is distributed in proportion to the weight of each
++  queue. A very thin extra bandwidth is however guaranteed to
++  the Idle class, to prevent it from starving.
++
++
++3. What are BFQ's tunable?
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
++
++The tunables back_seek-max, back_seek_penalty, fifo_expire_async and
++fifo_expire_sync below are the same as in CFQ. Their description is
++just copied from that for CFQ. Some considerations in the description
++of slice_idle are copied from CFQ too.
++
++per-process ioprio and weight
++-----------------------------
++
++Unless the cgroups interface is used, weights can be assigned to
++processes only indirectly, through I/O priorities, and according to
++the relation: weight =3D (IOPRIO_BE_NR - ioprio) * 10.
++
++slice_idle
++----------
++
++This parameter specifies how long BFQ should idle for next I/O
++request, when certain sync BFQ queues become empty. By default
++slice_idle is a non-zero value. Idling has a double purpose: boosting
++throughput and making sure that the desired throughput distribution is
++respected (see the description of how BFQ works, and, if needed, the
++papers referred there).
++
++As for throughput, idling can be very helpful on highly seeky media
++like single spindle SATA/SAS disks where we can cut down on overall
++number of seeks and see improved throughput.
++
++Setting slice_idle to 0 will remove all the idling on queues and one
++should see an overall improved throughput on faster storage devices
++like multiple SATA/SAS disks in hardware RAID configuration.
++
++So depending on storage and workload, it might be useful to set
++slice_idle=3D0.  In general for SATA/SAS disks and software RAID of
++SATA/SAS disks keeping slice_idle enabled should be useful. For any
++configurations where there are multiple spindles behind single LUN
++(Host based hardware RAID controller or for storage arrays), setting
++slice_idle=3D0 might end up in better throughput and acceptable
++latencies.
++
++Idling is however necessary to have service guarantees enforced in
++case of differentiated weights or differentiated I/O-request lengths.
++To see why, suppose that a given BFQ queue A must get several I/O
++requests served for each request served for another queue B. Idling
++ensures that, if A makes a new I/O request slightly after becoming
++empty, then no request of B is dispatched in the middle, and thus A
++does not lose the possibility to get more than one request dispatched
++before the next request of B is dispatched. Note that idling
++guarantees the desired differentiated treatment of queues only in
++terms of I/O-request dispatches. To guarantee that the actual service
++order then corresponds to the dispatch order, the strict_guarantees
++tunable must be set too.
++
++There is an important flipside for idling: apart from the above cases
++where it is beneficial also for throughput, idling can severely impact
++throughput. One important case is random workload. Because of this
++issue, BFQ tends to avoid idling as much as possible, when it is not
++beneficial also for throughput. As a consequence of this behavior, and
++of further issues described for the strict_guarantees tunable,
++short-term service guarantees may be occasionally violated. And, in
++some cases, these guarantees may be more important than guaranteeing
++maximum throughput. For example, in video playing/streaming, a very
++low drop rate may be more important than maximum throughput. In these
++cases, consider setting the strict_guarantees parameter.
++
++strict_guarantees
++-----------------
++
++If this parameter is set (default: unset), then BFQ
++
++- always performs idling when the in-service queue becomes empty;
++
++- forces the device to serve one I/O request at a time, by dispatching a
++  new request only if there is no outstanding request.
++
++In the presence of differentiated weights or I/O-request sizes, both
++the above conditions are needed to guarantee that every BFQ queue
++receives its allotted share of the bandwidth. The first condition is
++needed for the reasons explained in the description of the slice_idle
++tunable.  The second condition is needed because all modern storage
++devices reorder internally-queued requests, which may trivially break
++the service guarantees enforced by the I/O scheduler.
++
++Setting strict_guarantees may evidently affect throughput.
++
++back_seek_max
++-------------
++
++This specifies, given in Kbytes, the maximum "distance" for backward seeki=
+ng.
++The distance is the amount of space from the current head location to the
++sectors that are backward in terms of distance.
++
++This parameter allows the scheduler to anticipate requests in the "backwar=
+d"
++direction and consider them as being the "next" if they are within this
++distance from the current head location.
++
++back_seek_penalty
++-----------------
++
++This parameter is used to compute the cost of backward seeking. If the
++backward distance of request is just 1/back_seek_penalty from a "front"
++request, then the seeking cost of two requests is considered equivalent.
++
++So scheduler will not bias toward one or the other request (otherwise sche=
+duler
++will bias toward front request). Default value of back_seek_penalty is 2.
++
++fifo_expire_async
++-----------------
++
++This parameter is used to set the timeout of asynchronous requests. Default
++value of this is 248ms.
++
++fifo_expire_sync
++----------------
++
++This parameter is used to set the timeout of synchronous requests. Default
++value of this is 124ms. In case to favor synchronous requests over asynchr=
+onous
++one, this value should be decreased relative to fifo_expire_async.
++
++low_latency
++-----------
++
++This parameter is used to enable/disable BFQ's low latency mode. By
++default, low latency mode is enabled. If enabled, interactive and soft
++real-time applications are privileged and experience a lower latency,
++as explained in more detail in the description of how BFQ works.
++
++timeout_sync
++------------
++
++Maximum amount of device time that can be given to a task (queue) once
++it has been selected for service. On devices with costly seeks,
++increasing this time usually increases maximum throughput. On the
++opposite end, increasing this time coarsens the granularity of the
++short-term bandwidth and latency guarantees, especially if the
++following parameter is set to zero.
++
++max_budget
++----------
++
++Maximum amount of service, measured in sectors, that can be provided
++to a BFQ queue once it is set in service (of course within the limits
++of the above timeout). According to what said in the description of
++the algorithm, larger values increase the throughput in proportion to
++the percentage of sequential I/O requests issued. The price of larger
++values is that they coarsen the granularity of short-term bandwidth
++and latency guarantees.
++
++The default value is 0, which enables auto-tuning: BFQ sets max_budget
++to the maximum number of sectors that can be served during
++timeout_sync, according to the estimated peak rate.
++
++weights
++-------
++
++Read-only parameter, used to show the weights of the currently active
++BFQ queues.
++
++
++wr_ tunables
++------------
++
++BFQ exports a few parameters to control/tune the behavior of
++low-latency heuristics.
++
++wr_coeff
++
++Factor by which the weight of a weight-raised queue is multiplied. If
++the queue is deemed soft real-time, then the weight is further
++multiplied by an additional, constant factor.
++
++wr_max_time
++
++Maximum duration of a weight-raising period for an interactive task
++(ms). If set to zero (default value), then this value is computed
++automatically, as a function of the peak rate of the device. In any
++case, when the value of this parameter is read, it always reports the
++current duration, regardless of whether it has been set manually or
++computed automatically.
++
++wr_max_softrt_rate
++
++Maximum service rate below which a queue is deemed to be associated
++with a soft real-time application, and is then weight-raised
++accordingly (sectors/sec).
++
++wr_min_idle_time
++
++Minimum idle period after which interactive weight-raising may be
++reactivated for a queue (in ms).
++
++wr_rt_max_time
++
++Maximum weight-raising duration for soft real-time queues (in ms). The
++start time from which this duration is considered is automatically
++moved forward if the queue is detected to be still soft real-time
++before the current soft real-time weight-raising period finishes.
++
++wr_min_inter_arr_async
++
++Minimum period between I/O request arrivals after which weight-raising
++may be reactivated for an already busy async queue (in ms).
++
++
++4. Group scheduling with BFQ
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
++
++BFQ supports both cgroup-v1 and cgroup-v2 io controllers, namely blkio
++and io. In particular, BFQ supports weight-based proportional
++share.
++
++4-1 Service guarantees provided
++-------------------------------
++
++With BFQ, proportional share means true proportional share of the
++device bandwidth, according to group weights. For example, a group
++with weight 200 gets twice the bandwidth, and not just twice the time,
++of a group with weight 100.
++
++BFQ supports hierarchies (group trees) of any depth. Bandwidth is
++distributed among groups and processes in the expected way: for each
++group, the children of the group share the whole bandwidth of the
++group in proportion to their weights. In particular, this implies
++that, for each leaf group, every process of the group receives the
++same share of the whole group bandwidth, unless the ioprio of the
++process is modified.
++
++The resource-sharing guarantee for a group may partially or totally
++switch from bandwidth to time, if providing bandwidth guarantees to
++the group lowers the throughput too much. This switch occurs on a
++per-process basis: if a process of a leaf group causes throughput loss
++if served in such a way to receive its share of the bandwidth, then
++BFQ switches back to just time-based proportional share for that
++process.
++
++4-2 Interface
++-------------
++
++To get proportional sharing of bandwidth with BFQ for a given device,
++BFQ must of course be the active scheduler for that device.
++
++Within each group directory, the names of the files associated with
++BFQ-specific cgroup parameters and stats begin with the "bfq."
++prefix. So, with cgroups-v1 or cgroups-v2, the full prefix for
++BFQ-specific files is "blkio.bfq." or "io.bfq." For example, the group
++parameter to set the weight of a group with BFQ is blkio.bfq.weight
++or io.bfq.weight.
++
++Parameters to set
++-----------------
++
++For each group, there is only the following parameter to set.
++
++weight (namely blkio.bfq.weight or io.bfq-weight): the weight of the
++group inside its parent. Available values: 1..10000 (default 100). The
++linear mapping between ioprio and weights, described at the beginning
++of the tunable section, is still valid, but all weights higher than
++IOPRIO_BE_NR*10 are mapped to ioprio 0.
++
++
++[1] P. Valente, A. Avanzini, "Evolution of the BFQ Storage I/O
++    Scheduler", Proceedings of the First Workshop on Mobile System
++    Technologies (MST-2015), May 2015.
++    http://algogroup.unimore.it/people/paolo/disk_sched/mst-2015.pdf
++
++[2] P. Valente and M. Andreolini, "Improving Application
++    Responsiveness with the BFQ Disk I/O Scheduler", Proceedings of
++    the 5th Annual International Systems and Storage Conference
++    (SYSTOR '12), June 2012.
++    Slightly extended version:
++    http://algogroup.unimore.it/people/paolo/disk_sched/bfq-v1-suite-
++							results.pdf
+diff --git a/block/Kconfig.iosched b/block/Kconfig.iosched
+index 421bef9..48434bc 100644
+--- a/block/Kconfig.iosched
++++ b/block/Kconfig.iosched
+@@ -39,6 +39,14 @@ config CFQ_GROUP_IOSCHED
+ 	---help---
+ 	  Enable group IO scheduling in CFQ.
+ =
+
++config IOSCHED_BFQ
++	tristate "BFQ I/O scheduler"
++	default n
++	---help---
++	  The BFQ I/O scheduler distributes bandwidth among all
++	  processes according to their weights, regardless of the
++	  device parameters and with any workload.
++
+ choice
+ 	prompt "Default I/O scheduler"
+ 	default DEFAULT_CFQ
+@@ -52,6 +60,16 @@ choice
+ 	config DEFAULT_CFQ
+ 		bool "CFQ" if IOSCHED_CFQ=3Dy
+ =
+
++	config DEFAULT_BFQ
++		bool "BFQ" if IOSCHED_BFQ=3Dy
++		help
++		  Selects BFQ as the default I/O scheduler which will be
++		  used by default for all block devices.
++		  The BFQ I/O scheduler aims at distributing the bandwidth
++		  as desired, independently of the disk parameters and with
++		  any workload. It also tries to guarantee low latency to
++		  interactive and soft real-time applications.
++
+ 	config DEFAULT_NOOP
+ 		bool "No-op"
+ =
+
+@@ -61,6 +79,7 @@ config DEFAULT_IOSCHED
+ 	string
+ 	default "deadline" if DEFAULT_DEADLINE
+ 	default "cfq" if DEFAULT_CFQ
++	default "bfq" if DEFAULT_BFQ
+ 	default "noop" if DEFAULT_NOOP
+ =
+
+ endmenu
+diff --git a/block/Makefile b/block/Makefile
+index 36acdd7..736e91a 100644
+--- a/block/Makefile
++++ b/block/Makefile
+@@ -18,6 +18,7 @@ obj-$(CONFIG_BLK_DEV_THROTTLING)	+=3D blk-throttle.o
+ obj-$(CONFIG_IOSCHED_NOOP)	+=3D noop-iosched.o
+ obj-$(CONFIG_IOSCHED_DEADLINE)	+=3D deadline-iosched.o
+ obj-$(CONFIG_IOSCHED_CFQ)	+=3D cfq-iosched.o
++obj-$(CONFIG_IOSCHED_BFQ)	+=3D bfq-iosched.o
+ =
+
+ obj-$(CONFIG_BLOCK_COMPAT)	+=3D compat_ioctl.o
+ obj-$(CONFIG_BLK_CMDLINE_PARSER)	+=3D cmdline-parser.o
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+new file mode 100644
+index 0000000..643aeef
+--- /dev/null
++++ b/block/bfq-iosched.c
+@@ -0,0 +1,4045 @@
++/*
++ * Budget Fair Queueing (BFQ) I/O scheduler.
++ *
++ * Based on ideas and code from CFQ:
++ * Copyright (C) 2003 Jens Axboe <axboe@kernel.dk>
++ *
++ * Copyright (C) 2008 Fabio Checconi <fabio@gandalf.sssup.it>
++ *		      Paolo Valente <paolo.valente@unimore.it>
++ *
++ * Copyright (C) 2010 Paolo Valente <paolo.valente@unimore.it>
++ *                    Arianna Avanzini <avanzini@google.com>
++ *
++ * Copyright (C) 2016 Paolo Valente <paolo.valente@linaro.org>
++ *
++ * Licensed under GPL-2.
++ *
++ * BFQ [1] is a proportional-share storage-I/O scheduling algorithm
++ * based, as CFQ, on a slice-by-slice service scheme. Yet, differently
++ * from CFQ, BFQ does not assign a time slice to each process doing
++ * I/O. Instead, BFQ assigns a budget, measured in number of sectors:
++ * once selected for service, a process is granted access to the
++ * device until it exhausts its assigned budget. This change from the
++ * time to the service domain enables BFQ to distribute the device
++ * throughput among processes as desired, without any distortion due
++ * to throughput fluctuations, or to device internal queueing.
++ *
++ * More precisely, BFQ associates an I/O-request queue with each process
++ * doing I/O, and uses an accurate internal scheduler, called B-WF2Q+,
++ * to schedule queues according to process budgets. Each process/queue
++ * is also assigned a user-configurable weight, and B-WF2Q+ guarantees
++ * that each queue receives a fraction of the throughput proportional
++ * to its weight. In addition, B-WF2Q+ enables BFQ to schedule queues
++ * in such a way to boost the throughput and at the same time
++ * guarantee a low latency to non-I/O bound processes (the latter
++ * often belong to time-sensitive applications).
++ *
++ * B-WF2Q+ is based on WF2Q+, which is described in [2], while the
++ * augmented tree used here to implement B-WF2Q+ with O(log N)
++ * complexity derives from the one introduced with EEVDF in [3].
++ *
++ * [1] P. Valente, A. Avanzini, "Evolution of the BFQ Storage I/O
++ *     Scheduler", Proceedings of the First Workshop on Mobile System
++ *     Technologies (MST-2015), May 2015.
++ *
++ * http://algogroup.unimore.it/people/paolo/disk_sched/mst-2015.pdf
++ *
++ * [2] Jon C.R. Bennett and H. Zhang, "Hierarchical Packet Fair Queueing
++ *     Algorithms", IEEE/ACM Transactions on Networking, 5(5):675-689,
++ *     Oct 1997.
++ *
++ * http://www.cs.cmu.edu/~hzhang/papers/TON-97-Oct.ps.gz
++ *
++ * [3] I. Stoica and H. Abdel-Wahab, "Earliest Eligible Virtual Deadline
++ *     First: A Flexible and Accurate Mechanism for Proportional Share
++ *     Resource Allocation", technical report.
++ *
++ * http://www.cs.berkeley.edu/~istoica/papers/eevdf-tr-95.pdf
++ */
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/blkdev.h>
++#include <linux/elevator.h>
++#include <linux/ktime.h>
++#include <linux/rbtree.h>
++#include <linux/ioprio.h>
++#include "blk.h"
++#include <linux/blktrace_api.h>
++#include <linux/hrtimer.h>
++#include <linux/ioprio.h>
++#include <linux/blk-cgroup.h>
++
++#define BFQ_IOPRIO_CLASSES	3
++#define BFQ_CL_IDLE_TIMEOUT	(HZ/5)
++
++#define BFQ_MIN_WEIGHT			1
++#define BFQ_MAX_WEIGHT			1000
++#define BFQ_WEIGHT_CONVERSION_COEFF	10
++
++#define BFQ_DEFAULT_QUEUE_IOPRIO	4
++
++#define BFQ_DEFAULT_GRP_WEIGHT	10
++#define BFQ_DEFAULT_GRP_IOPRIO	0
++#define BFQ_DEFAULT_GRP_CLASS	IOPRIO_CLASS_BE
++
++struct bfq_entity;
++
++/**
++ * struct bfq_service_tree - per ioprio_class service tree.
++ *
++ * Each service tree represents a B-WF2Q+ scheduler on its own.  Each
++ * ioprio_class has its own independent scheduler, and so its own
++ * bfq_service_tree.  All the fields are protected by the queue lock
++ * of the containing bfqd.
++ */
++struct bfq_service_tree {
++	/* tree for active entities (i.e., those backlogged) */
++	struct rb_root active;
++	/* tree for idle entities (i.e., not backlogged, with V <=3D F_i)*/
++	struct rb_root idle;
++
++	struct bfq_entity *first_idle;	/* idle entity with minimum F_i */
++	struct bfq_entity *last_idle;	/* idle entity with maximum F_i */
++
++	u64 vtime; /* scheduler virtual time */
++	/* scheduler weight sum; active and idle entities contribute to it */
++	unsigned long wsum;
++};
++
++/**
++ * struct bfq_sched_data - multi-class scheduler.
++ *
++ * bfq_sched_data is the basic scheduler queue.  It supports three
++ * ioprio_classes, and can be used either as a toplevel queue or as
++ * an intermediate queue on a hierarchical setup.
++ * @next_in_service points to the active entity of the sched_data
++ * service trees that will be scheduled next.
++ *
++ * The supported ioprio_classes are the same as in CFQ, in descending
++ * priority order, IOPRIO_CLASS_RT, IOPRIO_CLASS_BE, IOPRIO_CLASS_IDLE.
++ * Requests from higher priority queues are served before all the
++ * requests from lower priority queues; among requests of the same
++ * queue requests are served according to B-WF2Q+.
++ * All the fields are protected by the queue lock of the containing bfqd.
++ */
++struct bfq_sched_data {
++	struct bfq_entity *in_service_entity;  /* entity in service */
++	/* head-of-the-line entity in the scheduler */
++	struct bfq_entity *next_in_service;
++	/* array of service trees, one per ioprio_class */
++	struct bfq_service_tree service_tree[BFQ_IOPRIO_CLASSES];
++};
++
++/**
++ * struct bfq_entity - schedulable entity.
++ *
++ * A bfq_entity is used to represent a bfq_queue (leaf node in the upper
++ * level scheduler). Each entity belongs to the sched_data of the parent
++ * group hierarchy. Non-leaf entities have also their own sched_data,
++ * stored in @my_sched_data.
++ *
++ * Each entity stores independently its priority values; this would
++ * allow different weights on different devices, but this
++ * functionality is not exported to userspace by now.  Priorities and
++ * weights are updated lazily, first storing the new values into the
++ * new_* fields, then setting the @prio_changed flag.  As soon as
++ * there is a transition in the entity state that allows the priority
++ * update to take place the effective and the requested priority
++ * values are synchronized.
++ *
++ * The weight value is calculated from the ioprio to export the same
++ * interface as CFQ.  When dealing with  ``well-behaved'' queues (i.e.,
++ * queues that do not spend too much time to consume their budget
++ * and have true sequential behavior, and when there are no external
++ * factors breaking anticipation) the relative weights at each level
++ * of the hierarchy should be guaranteed.  All the fields are
++ * protected by the queue lock of the containing bfqd.
++ */
++struct bfq_entity {
++	struct rb_node rb_node; /* service_tree member */
++
++	/*
++	 * flag, true if the entity is on a tree (either the active or
++	 * the idle one of its service_tree).
++	 */
++	int on_st;
++
++	u64 finish; /* B-WF2Q+ finish timestamp (aka F_i) */
++	u64 start;  /* B-WF2Q+ start timestamp (aka S_i) */
++
++	/* tree the entity is enqueued into; %NULL if not on a tree */
++	struct rb_root *tree;
++
++	/*
++	 * minimum start time of the (active) subtree rooted at this
++	 * entity; used for O(log N) lookups into active trees
++	 */
++	u64 min_start;
++
++	/* amount of service received during the last service slot */
++	int service;
++
++	/* budget, used also to calculate F_i: F_i =3D S_i + @budget / @weight */
++	int budget;
++
++	unsigned short weight;	/* weight of the queue */
++	unsigned short new_weight; /* next weight if a change is in progress */
++
++	/* original weight, used to implement weight boosting */
++	unsigned short orig_weight;
++
++	/* parent entity, for hierarchical scheduling */
++	struct bfq_entity *parent;
++
++	/*
++	 * For non-leaf nodes in the hierarchy, the associated
++	 * scheduler queue, %NULL on leaf nodes.
++	 */
++	struct bfq_sched_data *my_sched_data;
++	/* the scheduler queue this entity belongs to */
++	struct bfq_sched_data *sched_data;
++
++	/* flag, set to request a weight, ioprio or ioprio_class change  */
++	int prio_changed;
++};
++
++/**
++ * struct bfq_queue - leaf schedulable entity.
++ *
++ * A bfq_queue is a leaf request queue; it can be associated with an
++ * io_context or more, if it is async.
++ */
++struct bfq_queue {
++	/* reference counter */
++	int ref;
++	/* parent bfq_data */
++	struct bfq_data *bfqd;
++
++	/* current ioprio and ioprio class */
++	unsigned short ioprio, ioprio_class;
++	/* next ioprio and ioprio class if a change is in progress */
++	unsigned short new_ioprio, new_ioprio_class;
++
++	/* sorted list of pending requests */
++	struct rb_root sort_list;
++	/* if fifo isn't expired, next request to serve */
++	struct request *next_rq;
++	/* number of sync and async requests queued */
++	int queued[2];
++	/* number of sync and async requests currently allocated */
++	int allocated[2];
++	/* number of pending metadata requests */
++	int meta_pending;
++	/* fifo list of requests in sort_list */
++	struct list_head fifo;
++
++	/* entity representing this queue in the scheduler */
++	struct bfq_entity entity;
++
++	/* maximum budget allowed from the feedback mechanism */
++	int max_budget;
++	/* budget expiration (in jiffies) */
++	unsigned long budget_timeout;
++
++	/* number of requests on the dispatch list or inside driver */
++	int dispatched;
++
++	unsigned int flags; /* status flags.*/
++
++	/* node for active/idle bfqq list inside parent bfqd */
++	struct list_head bfqq_list;
++
++	/* bit vector: a 1 for each seeky requests in history */
++	u32 seek_history;
++	/* position of the last request enqueued */
++	sector_t last_request_pos;
++
++	/* Number of consecutive pairs of request completion and
++	 * arrival, such that the queue becomes idle after the
++	 * completion, but the next request arrives within an idle
++	 * time slice; used only if the queue's IO_bound flag has been
++	 * cleared.
++	 */
++	unsigned int requests_within_timer;
++
++	/* pid of the process owning the queue, used for logging purposes */
++	pid_t pid;
++};
++
++/**
++ * struct bfq_ttime - per process thinktime stats.
++ */
++struct bfq_ttime {
++	u64 last_end_request; /* completion time of last request */
++
++	u64 ttime_total; /* total process thinktime */
++	unsigned long ttime_samples; /* number of thinktime samples */
++	u64 ttime_mean; /* average process thinktime */
++
++};
++
++/**
++ * struct bfq_io_cq - per (request_queue, io_context) structure.
++ */
++struct bfq_io_cq {
++	/* associated io_cq structure */
++	struct io_cq icq; /* must be the first member */
++	/* array of two process queues, the sync and the async */
++	struct bfq_queue *bfqq[2];
++	/* associated @bfq_ttime struct */
++	struct bfq_ttime ttime;
++	/* per (request_queue, blkcg) ioprio */
++	int ioprio;
++};
++
++enum bfq_device_speed {
++	BFQ_BFQD_FAST,
++	BFQ_BFQD_SLOW,
++};
++
++/**
++ * struct bfq_data - per-device data structure.
++ *
++ * All the fields are protected by the @queue lock.
++ */
++struct bfq_data {
++	/* request queue for the device */
++	struct request_queue *queue;
++
++	/* root @bfq_sched_data for the device */
++	struct bfq_sched_data sched_data;
++
++	/*
++	 * Number of bfq_queues containing requests (including the
++	 * queue in service, even if it is idling).
++	 */
++	int busy_queues;
++	/* number of queued requests */
++	int queued;
++	/* number of requests dispatched and waiting for completion */
++	int rq_in_driver;
++
++	/*
++	 * Maximum number of requests in driver in the last
++	 * @hw_tag_samples completed requests.
++	 */
++	int max_rq_in_driver;
++	/* number of samples used to calculate hw_tag */
++	int hw_tag_samples;
++	/* flag set to one if the driver is showing a queueing behavior */
++	int hw_tag;
++
++	/* number of budgets assigned */
++	int budgets_assigned;
++
++	/*
++	 * Timer set when idling (waiting) for the next request from
++	 * the queue in service.
++	 */
++	struct hrtimer idle_slice_timer;
++	/* delayed work to restart dispatching on the request queue */
++	struct work_struct unplug_work;
++
++	/* bfq_queue in service */
++	struct bfq_queue *in_service_queue;
++	/* bfq_io_cq (bic) associated with the @in_service_queue */
++	struct bfq_io_cq *in_service_bic;
++
++	/* on-disk position of the last served request */
++	sector_t last_position;
++
++	/* beginning of the last budget */
++	ktime_t last_budget_start;
++	/* beginning of the last idle slice */
++	ktime_t last_idling_start;
++	/* number of samples used to calculate @peak_rate */
++	int peak_rate_samples;
++	/* peak transfer rate observed for a budget */
++	u64 peak_rate;
++	/* maximum budget allotted to a bfq_queue before rescheduling */
++	int bfq_max_budget;
++
++	/* list of all the bfq_queues active on the device */
++	struct list_head active_list;
++	/* list of all the bfq_queues idle on the device */
++	struct list_head idle_list;
++
++	/*
++	 * Timeout for async/sync requests; when it fires, requests
++	 * are served in fifo order.
++	 */
++	u64 bfq_fifo_expire[2];
++	/* weight of backward seeks wrt forward ones */
++	unsigned int bfq_back_penalty;
++	/* maximum allowed backward seek */
++	unsigned int bfq_back_max;
++	/* maximum idling time */
++	u32 bfq_slice_idle;
++	/* last time CLASS_IDLE was served */
++	u64 bfq_class_idle_last_service;
++
++	/* user-configured max budget value (0 for auto-tuning) */
++	int bfq_user_max_budget;
++	/*
++	 * Timeout for bfq_queues to consume their budget; used to
++	 * prevent seeky queues from imposing long latencies to
++	 * sequential or quasi-sequential ones (this also implies that
++	 * seeky queues cannot receive guarantees in the service
++	 * domain; after a timeout they are charged for the time they
++	 * have been in service, to preserve fairness among them, but
++	 * without service-domain guarantees).
++	 */
++	unsigned int bfq_timeout;
++
++	/*
++	 * Number of consecutive requests that must be issued within
++	 * the idle time slice to set again idling to a queue which
++	 * was marked as non-I/O-bound (see the definition of the
++	 * IO_bound flag for further details).
++	 */
++	unsigned int bfq_requests_within_timer;
++
++	/*
++	 * Force device idling whenever needed to provide accurate
++	 * service guarantees, without caring about throughput
++	 * issues. CAVEAT: this may even increase latencies, in case
++	 * of useless idling for processes that did stop doing I/O.
++	 */
++	bool strict_guarantees;
++
++	/* fallback dummy bfqq for extreme OOM conditions */
++	struct bfq_queue oom_bfqq;
++};
++
++enum bfqq_state_flags {
++	BFQ_BFQQ_FLAG_busy =3D 0,		/* has requests or is in service */
++	BFQ_BFQQ_FLAG_wait_request,	/* waiting for a request */
++	BFQ_BFQQ_FLAG_non_blocking_wait_rq, /*
++					     * waiting for a request
++					     * without idling the device
++					     */
++	BFQ_BFQQ_FLAG_must_alloc,	/* must be allowed rq alloc */
++	BFQ_BFQQ_FLAG_fifo_expire,	/* FIFO checked in this slice */
++	BFQ_BFQQ_FLAG_idle_window,	/* slice idling enabled */
++	BFQ_BFQQ_FLAG_sync,		/* synchronous queue */
++	BFQ_BFQQ_FLAG_budget_new,	/* no completion with this budget */
++	BFQ_BFQQ_FLAG_IO_bound,		/*
++					 * bfqq has timed-out at least once
++					 * having consumed@most 2/10 of
++					 * its budget
++					 */
++};
++
++#define BFQ_BFQQ_FNS(name)						\
++static void bfq_mark_bfqq_##name(struct bfq_queue *bfqq)		\
++{									\
++	(bfqq)->flags |=3D (1 << BFQ_BFQQ_FLAG_##name);			\
++}									\
++static void bfq_clear_bfqq_##name(struct bfq_queue *bfqq)		\
++{									\
++	(bfqq)->flags &=3D ~(1 << BFQ_BFQQ_FLAG_##name);			\
++}									\
++static int bfq_bfqq_##name(const struct bfq_queue *bfqq)		\
++{									\
++	return ((bfqq)->flags & (1 << BFQ_BFQQ_FLAG_##name)) !=3D 0;	\
++}
++
++BFQ_BFQQ_FNS(busy);
++BFQ_BFQQ_FNS(wait_request);
++BFQ_BFQQ_FNS(non_blocking_wait_rq);
++BFQ_BFQQ_FNS(must_alloc);
++BFQ_BFQQ_FNS(fifo_expire);
++BFQ_BFQQ_FNS(idle_window);
++BFQ_BFQQ_FNS(sync);
++BFQ_BFQQ_FNS(budget_new);
++BFQ_BFQQ_FNS(IO_bound);
++#undef BFQ_BFQQ_FNS
++
++/* Logging facilities. */
++#define bfq_log_bfqq(bfqd, bfqq, fmt, args...) \
++	blk_add_trace_msg((bfqd)->queue, "bfq%d " fmt, (bfqq)->pid, ##args)
++
++#define bfq_log(bfqd, fmt, args...) \
++	blk_add_trace_msg((bfqd)->queue, "bfq " fmt, ##args)
++
++/* Expiration reasons. */
++enum bfqq_expiration {
++	BFQ_BFQQ_TOO_IDLE =3D 0,		/*
++					 * queue has been idling for
++					 * too long
++					 */
++	BFQ_BFQQ_BUDGET_TIMEOUT,	/* budget took too long to be used */
++	BFQ_BFQQ_BUDGET_EXHAUSTED,	/* budget consumed */
++	BFQ_BFQQ_NO_MORE_REQUESTS,	/* the queue has no more requests */
++	BFQ_BFQQ_PREEMPTED		/* preemption in progress */
++};
++
++static struct bfq_queue *bfq_entity_to_bfqq(struct bfq_entity *entity);
++
++static struct bfq_service_tree *
++bfq_entity_service_tree(struct bfq_entity *entity)
++{
++	struct bfq_sched_data *sched_data =3D entity->sched_data;
++	struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++	unsigned int idx =3D bfqq ? bfqq->ioprio_class - 1 :
++				  BFQ_DEFAULT_GRP_CLASS - 1;
++
++	return sched_data->service_tree + idx;
++}
++
++static struct bfq_queue *bic_to_bfqq(struct bfq_io_cq *bic, bool is_sync)
++{
++	return bic->bfqq[is_sync];
++}
++
++static void bic_set_bfqq(struct bfq_io_cq *bic, struct bfq_queue *bfqq,
++			 bool is_sync)
++{
++	bic->bfqq[is_sync] =3D bfqq;
++}
++
++static struct bfq_data *bic_to_bfqd(struct bfq_io_cq *bic)
++{
++	return bic->icq.q->elevator->elevator_data;
++}
++
++static void bfq_check_ioprio_change(struct bfq_io_cq *bic, struct bio *bio=
+);
++static void bfq_put_queue(struct bfq_queue *bfqq);
++static void bfq_dispatch_insert(struct request_queue *q, struct request *r=
+q);
++static struct bfq_queue *bfq_get_queue(struct bfq_data *bfqd,
++				       struct bio *bio, bool is_sync,
++				       struct bfq_io_cq *bic);
++static void bfq_exit_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq);
++
++/*
++ * Array of async queues for all the processes, one queue
++ * per ioprio value per ioprio_class.
++ */
++struct bfq_queue *async_bfqq[2][IOPRIO_BE_NR];
++/* Async queue for the idle class (ioprio is ignored) */
++struct bfq_queue *async_idle_bfqq;
++
++/* Expiration time of sync (0) and async (1) requests, in ns. */
++static const u64 bfq_fifo_expire[2] =3D { NSEC_PER_SEC / 4, NSEC_PER_SEC /=
+ 8 };
++
++/* Maximum backwards seek, in KiB. */
++static const int bfq_back_max =3D 16 * 1024;
++
++/* Penalty of a backwards seek, in number of sectors. */
++static const int bfq_back_penalty =3D 2;
++
++/* Idling period duration, in ns. */
++static u64 bfq_slice_idle =3D NSEC_PER_SEC / 125;
++
++/* Minimum number of assigned budgets for which stats are safe to compute.=
+ */
++static const int bfq_stats_min_budgets =3D 194;
++
++/* Default maximum budget values, in sectors and number of requests. */
++static const int bfq_default_max_budget =3D 16 * 1024;
++
++/* Default timeout values, in jiffies, approximating CFQ defaults. */
++static const int bfq_timeout =3D HZ / 8;
++
++struct kmem_cache *bfq_pool;
++
++/* Below this threshold (in ms), we consider thinktime immediate. */
++#define BFQ_MIN_TT		(2 * NSEC_PER_MSEC)
++
++/* hw_tag detection: parallel requests threshold and min samples needed. */
++#define BFQ_HW_QUEUE_THRESHOLD	4
++#define BFQ_HW_QUEUE_SAMPLES	32
++
++#define BFQQ_SEEK_THR		(sector_t)(8 * 100)
++#define BFQQ_SEEKY(bfqq)	(hweight32(bfqq->seek_history) > 32/8)
++
++/* Budget feedback step. */
++#define BFQ_BUDGET_STEP         128
++
++/* Min samples used for peak rate estimation (for autotuning). */
++#define BFQ_PEAK_RATE_SAMPLES	32
++
++/* Shift used for peak rate fixed precision calculations. */
++#define BFQ_RATE_SHIFT		16
++
++#define BFQ_SERVICE_TREE_INIT	((struct bfq_service_tree)		\
++				{ RB_ROOT, RB_ROOT, NULL, NULL, 0, 0 })
++
++#define RQ_BIC(rq)		((struct bfq_io_cq *) (rq)->elv.priv[0])
++#define RQ_BFQQ(rq)		((rq)->elv.priv[1])
++
++static void bfq_schedule_dispatch(struct bfq_data *bfqd);
++
++/**
++ * icq_to_bic - convert iocontext queue structure to bfq_io_cq.
++ * @icq: the iocontext queue.
++ */
++static struct bfq_io_cq *icq_to_bic(struct io_cq *icq)
++{
++	/* bic->icq is the first member, %NULL will convert to %NULL */
++	return container_of(icq, struct bfq_io_cq, icq);
++}
++
++/**
++ * bfq_bic_lookup - search into @ioc a bic associated to @bfqd.
++ * @bfqd: the lookup key.
++ * @ioc: the io_context of the process doing I/O.
++ *
++ * Queue lock must be held.
++ */
++static struct bfq_io_cq *bfq_bic_lookup(struct bfq_data *bfqd,
++					struct io_context *ioc)
++{
++	if (ioc)
++		return icq_to_bic(ioc_lookup_icq(ioc, bfqd->queue));
++	return NULL;
++}
++
++#define for_each_entity(entity)	\
++	for (; entity ; entity =3D NULL)
++
++#define for_each_entity_safe(entity, parent) \
++	for (parent =3D NULL; entity ; entity =3D parent)
++
++static int bfq_update_next_in_service(struct bfq_sched_data *sd)
++{
++	return 0;
++}
++
++static void bfq_check_next_in_service(struct bfq_sched_data *sd,
++				      struct bfq_entity *entity)
++{
++}
++
++static void bfq_update_budget(struct bfq_entity *next_in_service)
++{
++}
++
++/*
++ * Shift for timestamp calculations.  This actually limits the maximum
++ * service allowed in one timestamp delta (small shift values increase it),
++ * the maximum total weight that can be used for the queues in the system
++ * (big shift values increase it), and the period of virtual time
++ * wraparounds.
++ */
++#define WFQ_SERVICE_SHIFT	22
++
++/**
++ * bfq_gt - compare two timestamps.
++ * @a: first ts.
++ * @b: second ts.
++ *
++ * Return @a > @b, dealing with wrapping correctly.
++ */
++static int bfq_gt(u64 a, u64 b)
++{
++	return (s64)(a - b) > 0;
++}
++
++static struct bfq_queue *bfq_entity_to_bfqq(struct bfq_entity *entity)
++{
++	struct bfq_queue *bfqq =3D NULL;
++
++	if (!entity->my_sched_data)
++		bfqq =3D container_of(entity, struct bfq_queue, entity);
++
++	return bfqq;
++}
++
++
++/**
++ * bfq_delta - map service into the virtual time domain.
++ * @service: amount of service.
++ * @weight: scale factor (weight of an entity or weight sum).
++ */
++static u64 bfq_delta(unsigned long service, unsigned long weight)
++{
++	u64 d =3D (u64)service << WFQ_SERVICE_SHIFT;
++
++	do_div(d, weight);
++	return d;
++}
++
++/**
++ * bfq_calc_finish - assign the finish time to an entity.
++ * @entity: the entity to act upon.
++ * @service: the service to be charged to the entity.
++ */
++static void bfq_calc_finish(struct bfq_entity *entity, unsigned long servi=
+ce)
++{
++	struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++
++	entity->finish =3D entity->start +
++		bfq_delta(service, entity->weight);
++
++	if (bfqq) {
++		bfq_log_bfqq(bfqq->bfqd, bfqq,
++			"calc_finish: serv %lu, w %d",
++			service, entity->weight);
++		bfq_log_bfqq(bfqq->bfqd, bfqq,
++			"calc_finish: start %llu, finish %llu, delta %llu",
++			entity->start, entity->finish,
++			bfq_delta(service, entity->weight));
++	}
++}
++
++/**
++ * bfq_entity_of - get an entity from a node.
++ * @node: the node field of the entity.
++ *
++ * Convert a node pointer to the relative entity.  This is used only
++ * to simplify the logic of some functions and not as the generic
++ * conversion mechanism because, e.g., in the tree walking functions,
++ * the check for a %NULL value would be redundant.
++ */
++static struct bfq_entity *bfq_entity_of(struct rb_node *node)
++{
++	struct bfq_entity *entity =3D NULL;
++
++	if (node)
++		entity =3D rb_entry(node, struct bfq_entity, rb_node);
++
++	return entity;
++}
++
++/**
++ * bfq_extract - remove an entity from a tree.
++ * @root: the tree root.
++ * @entity: the entity to remove.
++ */
++static void bfq_extract(struct rb_root *root, struct bfq_entity *entity)
++{
++	entity->tree =3D NULL;
++	rb_erase(&entity->rb_node, root);
++}
++
++/**
++ * bfq_idle_extract - extract an entity from the idle tree.
++ * @st: the service tree of the owning @entity.
++ * @entity: the entity being removed.
++ */
++static void bfq_idle_extract(struct bfq_service_tree *st,
++			     struct bfq_entity *entity)
++{
++	struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++	struct rb_node *next;
++
++	if (entity =3D=3D st->first_idle) {
++		next =3D rb_next(&entity->rb_node);
++		st->first_idle =3D bfq_entity_of(next);
++	}
++
++	if (entity =3D=3D st->last_idle) {
++		next =3D rb_prev(&entity->rb_node);
++		st->last_idle =3D bfq_entity_of(next);
++	}
++
++	bfq_extract(&st->idle, entity);
++
++	if (bfqq)
++		list_del(&bfqq->bfqq_list);
++}
++
++/**
++ * bfq_insert - generic tree insertion.
++ * @root: tree root.
++ * @entity: entity to insert.
++ *
++ * This is used for the idle and the active tree, since they are both
++ * ordered by finish time.
++ */
++static void bfq_insert(struct rb_root *root, struct bfq_entity *entity)
++{
++	struct bfq_entity *entry;
++	struct rb_node **node =3D &root->rb_node;
++	struct rb_node *parent =3D NULL;
++
++	while (*node) {
++		parent =3D *node;
++		entry =3D rb_entry(parent, struct bfq_entity, rb_node);
++
++		if (bfq_gt(entry->finish, entity->finish))
++			node =3D &parent->rb_left;
++		else
++			node =3D &parent->rb_right;
++	}
++
++	rb_link_node(&entity->rb_node, parent, node);
++	rb_insert_color(&entity->rb_node, root);
++
++	entity->tree =3D root;
++}
++
++/**
++ * bfq_update_min - update the min_start field of a entity.
++ * @entity: the entity to update.
++ * @node: one of its children.
++ *
++ * This function is called when @entity may store an invalid value for
++ * min_start due to updates to the active tree.  The function  assumes
++ * that the subtree rooted at @node (which may be its left or its right
++ * child) has a valid min_start value.
++ */
++static void bfq_update_min(struct bfq_entity *entity, struct rb_node *node)
++{
++	struct bfq_entity *child;
++
++	if (node) {
++		child =3D rb_entry(node, struct bfq_entity, rb_node);
++		if (bfq_gt(entity->min_start, child->min_start))
++			entity->min_start =3D child->min_start;
++	}
++}
++
++/**
++ * bfq_update_active_node - recalculate min_start.
++ * @node: the node to update.
++ *
++ * @node may have changed position or one of its children may have moved,
++ * this function updates its min_start value.  The left and right subtrees
++ * are assumed to hold a correct min_start value.
++ */
++static void bfq_update_active_node(struct rb_node *node)
++{
++	struct bfq_entity *entity =3D rb_entry(node, struct bfq_entity, rb_node);
++
++	entity->min_start =3D entity->start;
++	bfq_update_min(entity, node->rb_right);
++	bfq_update_min(entity, node->rb_left);
++}
++
++/**
++ * bfq_update_active_tree - update min_start for the whole active tree.
++ * @node: the starting node.
++ *
++ * @node must be the deepest modified node after an update.  This function
++ * updates its min_start using the values held by its children, assuming
++ * that they did not change, and then updates all the nodes that may have
++ * changed in the path to the root.  The only nodes that may have changed
++ * are the ones in the path or their siblings.
++ */
++static void bfq_update_active_tree(struct rb_node *node)
++{
++	struct rb_node *parent;
++
++up:
++	bfq_update_active_node(node);
++
++	parent =3D rb_parent(node);
++	if (!parent)
++		return;
++
++	if (node =3D=3D parent->rb_left && parent->rb_right)
++		bfq_update_active_node(parent->rb_right);
++	else if (parent->rb_left)
++		bfq_update_active_node(parent->rb_left);
++
++	node =3D parent;
++	goto up;
++}
++
++/**
++ * bfq_active_insert - insert an entity in the active tree of its
++ *                     group/device.
++ * @st: the service tree of the entity.
++ * @entity: the entity being inserted.
++ *
++ * The active tree is ordered by finish time, but an extra key is kept
++ * per each node, containing the minimum value for the start times of
++ * its children (and the node itself), so it's possible to search for
++ * the eligible node with the lowest finish time in logarithmic time.
++ */
++static void bfq_active_insert(struct bfq_service_tree *st,
++			      struct bfq_entity *entity)
++{
++	struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++	struct rb_node *node =3D &entity->rb_node;
++
++	bfq_insert(&st->active, entity);
++
++	if (node->rb_left)
++		node =3D node->rb_left;
++	else if (node->rb_right)
++		node =3D node->rb_right;
++
++	bfq_update_active_tree(node);
++
++	if (bfqq)
++		list_add(&bfqq->bfqq_list, &bfqq->bfqd->active_list);
++}
++
++/**
++ * bfq_ioprio_to_weight - calc a weight from an ioprio.
++ * @ioprio: the ioprio value to convert.
++ */
++static unsigned short bfq_ioprio_to_weight(int ioprio)
++{
++	return (IOPRIO_BE_NR - ioprio) * BFQ_WEIGHT_CONVERSION_COEFF;
++}
++
++/**
++ * bfq_weight_to_ioprio - calc an ioprio from a weight.
++ * @weight: the weight value to convert.
++ *
++ * To preserve as much as possible the old only-ioprio user interface,
++ * 0 is used as an escape ioprio value for weights (numerically) equal or
++ * larger than IOPRIO_BE_NR * BFQ_WEIGHT_CONVERSION_COEFF.
++ */
++static unsigned short bfq_weight_to_ioprio(int weight)
++{
++	return IOPRIO_BE_NR * BFQ_WEIGHT_CONVERSION_COEFF - weight < 0 ?
++		0 : IOPRIO_BE_NR * BFQ_WEIGHT_CONVERSION_COEFF - weight;
++}
++
++static void bfq_get_entity(struct bfq_entity *entity)
++{
++	struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++
++	if (bfqq) {
++		bfqq->ref++;
++		bfq_log_bfqq(bfqq->bfqd, bfqq, "get_entity: %p %d",
++			     bfqq, bfqq->ref);
++	}
++}
++
++/**
++ * bfq_find_deepest - find the deepest node that an extraction can modify.
++ * @node: the node being removed.
++ *
++ * Do the first step of an extraction in an rb tree, looking for the
++ * node that will replace @node, and returning the deepest node that
++ * the following modifications to the tree can touch.  If @node is the
++ * last node in the tree return %NULL.
++ */
++static struct rb_node *bfq_find_deepest(struct rb_node *node)
++{
++	struct rb_node *deepest;
++
++	if (!node->rb_right && !node->rb_left)
++		deepest =3D rb_parent(node);
++	else if (!node->rb_right)
++		deepest =3D node->rb_left;
++	else if (!node->rb_left)
++		deepest =3D node->rb_right;
++	else {
++		deepest =3D rb_next(node);
++		if (deepest->rb_right)
++			deepest =3D deepest->rb_right;
++		else if (rb_parent(deepest) !=3D node)
++			deepest =3D rb_parent(deepest);
++	}
++
++	return deepest;
++}
++
++/**
++ * bfq_active_extract - remove an entity from the active tree.
++ * @st: the service_tree containing the tree.
++ * @entity: the entity being removed.
++ */
++static void bfq_active_extract(struct bfq_service_tree *st,
++			       struct bfq_entity *entity)
++{
++	struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++	struct rb_node *node;
++
++	node =3D bfq_find_deepest(&entity->rb_node);
++	bfq_extract(&st->active, entity);
++
++	if (node)
++		bfq_update_active_tree(node);
++
++	if (bfqq)
++		list_del(&bfqq->bfqq_list);
++}
++
++/**
++ * bfq_idle_insert - insert an entity into the idle tree.
++ * @st: the service tree containing the tree.
++ * @entity: the entity to insert.
++ */
++static void bfq_idle_insert(struct bfq_service_tree *st,
++			    struct bfq_entity *entity)
++{
++	struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++	struct bfq_entity *first_idle =3D st->first_idle;
++	struct bfq_entity *last_idle =3D st->last_idle;
++
++	if (!first_idle || bfq_gt(first_idle->finish, entity->finish))
++		st->first_idle =3D entity;
++	if (!last_idle || bfq_gt(entity->finish, last_idle->finish))
++		st->last_idle =3D entity;
++
++	bfq_insert(&st->idle, entity);
++
++	if (bfqq)
++		list_add(&bfqq->bfqq_list, &bfqq->bfqd->idle_list);
++}
++
++/**
++ * bfq_forget_entity - remove an entity from the wfq trees.
++ * @st: the service tree.
++ * @entity: the entity being removed.
++ *
++ * Update the device status and forget everything about @entity, putting
++ * the device reference to it, if it is a queue.  Entities belonging to
++ * groups are not refcounted.
++ */
++static void bfq_forget_entity(struct bfq_service_tree *st,
++			      struct bfq_entity *entity)
++{
++	struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++	struct bfq_sched_data *sd;
++
++	entity->on_st =3D 0;
++	st->wsum -=3D entity->weight;
++	if (bfqq) {
++		sd =3D entity->sched_data;
++		bfq_log_bfqq(bfqq->bfqd, bfqq, "forget_entity: %p %d",
++			     bfqq, bfqq->ref);
++		bfq_put_queue(bfqq);
++	}
++}
++
++/**
++ * bfq_put_idle_entity - release the idle tree ref of an entity.
++ * @st: service tree for the entity.
++ * @entity: the entity being released.
++ */
++static void bfq_put_idle_entity(struct bfq_service_tree *st,
++				struct bfq_entity *entity)
++{
++	bfq_idle_extract(st, entity);
++	bfq_forget_entity(st, entity);
++}
++
++/**
++ * bfq_forget_idle - update the idle tree if necessary.
++ * @st: the service tree to act upon.
++ *
++ * To preserve the global O(log N) complexity we only remove one entry her=
+e;
++ * as the idle tree will not grow indefinitely this can be done safely.
++ */
++static void bfq_forget_idle(struct bfq_service_tree *st)
++{
++	struct bfq_entity *first_idle =3D st->first_idle;
++	struct bfq_entity *last_idle =3D st->last_idle;
++
++	if (RB_EMPTY_ROOT(&st->active) && last_idle &&
++	    !bfq_gt(last_idle->finish, st->vtime)) {
++		/*
++		 * Forget the whole idle tree, increasing the vtime past
++		 * the last finish time of idle entities.
++		 */
++		st->vtime =3D last_idle->finish;
++	}
++
++	if (first_idle && !bfq_gt(first_idle->finish, st->vtime))
++		bfq_put_idle_entity(st, first_idle);
++}
++
++static struct bfq_service_tree *
++__bfq_entity_update_weight_prio(struct bfq_service_tree *old_st,
++			 struct bfq_entity *entity)
++{
++	struct bfq_service_tree *new_st =3D old_st;
++
++	if (entity->prio_changed) {
++		struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++		unsigned short prev_weight, new_weight;
++		struct bfq_data *bfqd =3D NULL;
++
++		if (bfqq)
++			bfqd =3D bfqq->bfqd;
++
++		old_st->wsum -=3D entity->weight;
++
++		if (entity->new_weight !=3D entity->orig_weight) {
++			if (entity->new_weight < BFQ_MIN_WEIGHT ||
++			    entity->new_weight > BFQ_MAX_WEIGHT) {
++				pr_crit("update_weight_prio: new_weight %d\n",
++					entity->new_weight);
++				if (entity->new_weight < BFQ_MIN_WEIGHT)
++					entity->new_weight =3D BFQ_MIN_WEIGHT;
++				else
++					entity->new_weight =3D BFQ_MAX_WEIGHT;
++			}
++			entity->orig_weight =3D entity->new_weight;
++			if (bfqq)
++				bfqq->ioprio =3D
++				  bfq_weight_to_ioprio(entity->orig_weight);
++		}
++
++		if (bfqq)
++			bfqq->ioprio_class =3D bfqq->new_ioprio_class;
++		entity->prio_changed =3D 0;
++
++		/*
++		 * NOTE: here we may be changing the weight too early,
++		 * this will cause unfairness.  The correct approach
++		 * would have required additional complexity to defer
++		 * weight changes to the proper time instants (i.e.,
++		 * when entity->finish <=3D old_st->vtime).
++		 */
++		new_st =3D bfq_entity_service_tree(entity);
++
++		prev_weight =3D entity->weight;
++		new_weight =3D entity->orig_weight;
++		entity->weight =3D new_weight;
++
++		new_st->wsum +=3D entity->weight;
++
++		if (new_st !=3D old_st)
++			entity->start =3D new_st->vtime;
++	}
++
++	return new_st;
++}
++
++/**
++ * bfq_bfqq_served - update the scheduler status after selection for
++ *                   service.
++ * @bfqq: the queue being served.
++ * @served: bytes to transfer.
++ *
++ * NOTE: this can be optimized, as the timestamps of upper level entities
++ * are synchronized every time a new bfqq is selected for service.  By now,
++ * we keep it to better check consistency.
++ */
++static void bfq_bfqq_served(struct bfq_queue *bfqq, int served)
++{
++	struct bfq_entity *entity =3D &bfqq->entity;
++	struct bfq_service_tree *st;
++
++	for_each_entity(entity) {
++		st =3D bfq_entity_service_tree(entity);
++
++		entity->service +=3D served;
++
++		st->vtime +=3D bfq_delta(served, st->wsum);
++		bfq_forget_idle(st);
++	}
++	bfq_log_bfqq(bfqq->bfqd, bfqq, "bfqq_served %d secs", served);
++}
++
++/**
++ * bfq_bfqq_charge_full_budget - set the service to the entity budget.
++ * @bfqq: the queue that needs a service update.
++ *
++ * When it's not possible to be fair in the service domain, because
++ * a queue is not consuming its budget fast enough (the meaning of
++ * fast depends on the timeout parameter), we charge it a full
++ * budget.  In this way we should obtain a sort of time-domain
++ * fairness among all the seeky/slow queues.
++ */
++static void bfq_bfqq_charge_full_budget(struct bfq_queue *bfqq)
++{
++	struct bfq_entity *entity =3D &bfqq->entity;
++
++	bfq_log_bfqq(bfqq->bfqd, bfqq, "charge_full_budget");
++
++	bfq_bfqq_served(bfqq, entity->budget - entity->service);
++}
++
++/**
++ * __bfq_activate_entity - activate an entity.
++ * @entity: the entity being activated.
++ * @non_blocking_wait_rq: true if this entity was waiting for a request
++ *
++ * Called whenever an entity is activated, i.e., it is not active and one
++ * of its children receives a new request, or has to be reactivated due to
++ * budget exhaustion.  It uses the current budget of the entity (and the
++ * service received if @entity is active) of the queue to calculate its
++ * timestamps.
++ */
++static void __bfq_activate_entity(struct bfq_entity *entity,
++				  bool non_blocking_wait_rq)
++{
++	struct bfq_sched_data *sd =3D entity->sched_data;
++	struct bfq_service_tree *st =3D bfq_entity_service_tree(entity);
++	bool backshifted =3D false;
++
++	if (entity =3D=3D sd->in_service_entity) {
++		/*
++		 * If we are requeueing the current entity we have
++		 * to take care of not charging to it service it has
++		 * not received.
++		 */
++		bfq_calc_finish(entity, entity->service);
++		entity->start =3D entity->finish;
++		sd->in_service_entity =3D NULL;
++	} else if (entity->tree =3D=3D &st->active) {
++		/*
++		 * Requeueing an entity due to a change of some
++		 * next_in_service entity below it.  We reuse the
++		 * old start time.
++		 */
++		bfq_active_extract(st, entity);
++	} else {
++		unsigned long long min_vstart;
++
++		/* See comments on bfq_fqq_update_budg_for_activation */
++		if (non_blocking_wait_rq && bfq_gt(st->vtime, entity->finish)) {
++			backshifted =3D true;
++			min_vstart =3D entity->finish;
++		} else
++			min_vstart =3D st->vtime;
++
++		if (entity->tree =3D=3D &st->idle) {
++			/*
++			 * Must be on the idle tree, bfq_idle_extract() will
++			 * check for that.
++			 */
++			bfq_idle_extract(st, entity);
++			entity->start =3D bfq_gt(min_vstart, entity->finish) ?
++				min_vstart : entity->finish;
++		} else {
++			/*
++			 * The finish time of the entity may be invalid, and
++			 * it is in the past for sure, otherwise the queue
++			 * would have been on the idle tree.
++			 */
++			entity->start =3D min_vstart;
++			st->wsum +=3D entity->weight;
++			bfq_get_entity(entity);
++
++			entity->on_st =3D 1;
++		}
++	}
++
++	st =3D __bfq_entity_update_weight_prio(st, entity);
++	bfq_calc_finish(entity, entity->budget);
++
++	/*
++	 * If some queues enjoy backshifting for a while, then their
++	 * (virtual) finish timestamps may happen to become lower and
++	 * lower than the system virtual time.	In particular, if
++	 * these queues often happen to be idle for short time
++	 * periods, and during such time periods other queues with
++	 * higher timestamps happen to be busy, then the backshifted
++	 * timestamps of the former queues can become much lower than
++	 * the system virtual time. In fact, to serve the queues with
++	 * higher timestamps while the ones with lower timestamps are
++	 * idle, the system virtual time may be pushed-up to much
++	 * higher values than the finish timestamps of the idle
++	 * queues. As a consequence, the finish timestamps of all new
++	 * or newly activated queues may end up being much larger than
++	 * those of lucky queues with backshifted timestamps. The
++	 * latter queues may then monopolize the device for a lot of
++	 * time. This would simply break service guarantees.
++	 *
++	 * To reduce this problem, push up a little bit the
++	 * backshifted timestamps of the queue associated with this
++	 * entity (only a queue can happen to have the backshifted
++	 * flag set): just enough to let the finish timestamp of the
++	 * queue be equal to the current value of the system virtual
++	 * time. This may introduce a little unfairness among queues
++	 * with backshifted timestamps, but it does not break
++	 * worst-case fairness guarantees.
++	 */
++	if (backshifted && bfq_gt(st->vtime, entity->finish)) {
++		unsigned long delta =3D st->vtime - entity->finish;
++
++		entity->start +=3D delta;
++		entity->finish +=3D delta;
++	}
++
++	bfq_active_insert(st, entity);
++}
++
++/**
++ * bfq_activate_entity - activate an entity and its ancestors if necessary.
++ * @entity: the entity to activate.
++ * @non_blocking_wait_rq: true if this entity was waiting for a request
++ *
++ * Activate @entity and all the entities on the path from it to the root.
++ */
++static void bfq_activate_entity(struct bfq_entity *entity,
++				bool non_blocking_wait_rq)
++{
++	struct bfq_sched_data *sd;
++
++	for_each_entity(entity) {
++		__bfq_activate_entity(entity, non_blocking_wait_rq);
++
++		sd =3D entity->sched_data;
++		if (!bfq_update_next_in_service(sd))
++			/*
++			 * No need to propagate the activation to the
++			 * upper entities, as they will be updated when
++			 * the in-service entity is rescheduled.
++			 */
++			break;
++	}
++}
++
++/**
++ * __bfq_deactivate_entity - deactivate an entity from its service tree.
++ * @entity: the entity to deactivate.
++ * @requeue: if false, the entity will not be put into the idle tree.
++ *
++ * Deactivate an entity, independently from its previous state.  If the
++ * entity was not on a service tree just return, otherwise if it is on
++ * any scheduler tree, extract it from that tree, and if necessary
++ * and if the caller did not specify @requeue, put it on the idle tree.
++ *
++ * Return %1 if the caller should update the entity hierarchy, i.e.,
++ * if the entity was in service or if it was the next_in_service for
++ * its sched_data; return %0 otherwise.
++ */
++static int __bfq_deactivate_entity(struct bfq_entity *entity, int requeue)
++{
++	struct bfq_sched_data *sd =3D entity->sched_data;
++	struct bfq_service_tree *st =3D bfq_entity_service_tree(entity);
++	int was_in_service =3D entity =3D=3D sd->in_service_entity;
++	int ret =3D 0;
++
++	if (!entity->on_st)
++		return 0;
++
++	if (was_in_service) {
++		bfq_calc_finish(entity, entity->service);
++		sd->in_service_entity =3D NULL;
++	} else if (entity->tree =3D=3D &st->active)
++		bfq_active_extract(st, entity);
++	else if (entity->tree =3D=3D &st->idle)
++		bfq_idle_extract(st, entity);
++
++	if (was_in_service || sd->next_in_service =3D=3D entity)
++		ret =3D bfq_update_next_in_service(sd);
++
++	if (!requeue || !bfq_gt(entity->finish, st->vtime))
++		bfq_forget_entity(st, entity);
++	else
++		bfq_idle_insert(st, entity);
++
++	return ret;
++}
++
++/**
++ * bfq_deactivate_entity - deactivate an entity.
++ * @entity: the entity to deactivate.
++ * @requeue: true if the entity can be put on the idle tree
++ */
++static void bfq_deactivate_entity(struct bfq_entity *entity, int requeue)
++{
++	struct bfq_sched_data *sd;
++	struct bfq_entity *parent;
++
++	for_each_entity_safe(entity, parent) {
++		sd =3D entity->sched_data;
++
++		if (!__bfq_deactivate_entity(entity, requeue))
++			/*
++			 * The parent entity is still backlogged, and
++			 * we don't need to update it as it is still
++			 * in service.
++			 */
++			break;
++
++		if (sd->next_in_service)
++			/*
++			 * The parent entity is still backlogged and
++			 * the budgets on the path towards the root
++			 * need to be updated.
++			 */
++			goto update;
++
++		/*
++		 * If we get here, then the parent is no more backlogged and
++		 * we want to propagate the deactivation upwards.
++		 */
++		requeue =3D 1;
++	}
++
++	return;
++
++update:
++	entity =3D parent;
++	for_each_entity(entity) {
++		__bfq_activate_entity(entity, false);
++
++		sd =3D entity->sched_data;
++		if (!bfq_update_next_in_service(sd))
++			break;
++	}
++}
++
++/**
++ * bfq_update_vtime - update vtime if necessary.
++ * @st: the service tree to act upon.
++ *
++ * If necessary update the service tree vtime to have at least one
++ * eligible entity, skipping to its start time.  Assumes that the
++ * active tree of the device is not empty.
++ *
++ * NOTE: this hierarchical implementation updates vtimes quite often,
++ * we may end up with reactivated processes getting timestamps after a
++ * vtime skip done because we needed a ->first_active entity on some
++ * intermediate node.
++ */
++static void bfq_update_vtime(struct bfq_service_tree *st)
++{
++	struct bfq_entity *entry;
++	struct rb_node *node =3D st->active.rb_node;
++
++	entry =3D rb_entry(node, struct bfq_entity, rb_node);
++	if (bfq_gt(entry->min_start, st->vtime)) {
++		st->vtime =3D entry->min_start;
++		bfq_forget_idle(st);
++	}
++}
++
++/**
++ * bfq_first_active_entity - find the eligible entity with
++ *                           the smallest finish time
++ * @st: the service tree to select from.
++ *
++ * This function searches the first schedulable entity, starting from the
++ * root of the tree and going on the left every time on this side there is
++ * a subtree with at least one eligible (start >=3D vtime) entity. The pat=
+h on
++ * the right is followed only if a) the left subtree contains no eligible
++ * entities and b) no eligible entity has been found yet.
++ */
++static struct bfq_entity *bfq_first_active_entity(struct bfq_service_tree =
+*st)
++{
++	struct bfq_entity *entry, *first =3D NULL;
++	struct rb_node *node =3D st->active.rb_node;
++
++	while (node) {
++		entry =3D rb_entry(node, struct bfq_entity, rb_node);
++left:
++		if (!bfq_gt(entry->start, st->vtime))
++			first =3D entry;
++
++		if (node->rb_left) {
++			entry =3D rb_entry(node->rb_left,
++					 struct bfq_entity, rb_node);
++			if (!bfq_gt(entry->min_start, st->vtime)) {
++				node =3D node->rb_left;
++				goto left;
++			}
++		}
++		if (first)
++			break;
++		node =3D node->rb_right;
++	}
++
++	return first;
++}
++
++/**
++ * __bfq_lookup_next_entity - return the first eligible entity in @st.
++ * @st: the service tree.
++ *
++ * Update the virtual time in @st and return the first eligible entity
++ * it contains.
++ */
++static struct bfq_entity *__bfq_lookup_next_entity(struct bfq_service_tree=
+ *st,
++						   bool force)
++{
++	struct bfq_entity *entity, *new_next_in_service =3D NULL;
++
++	if (RB_EMPTY_ROOT(&st->active))
++		return NULL;
++
++	bfq_update_vtime(st);
++	entity =3D bfq_first_active_entity(st);
++
++	/*
++	 * If the chosen entity does not match with the sched_data's
++	 * next_in_service and we are forcedly serving the IDLE priority
++	 * class tree, bubble up budget update.
++	 */
++	if (unlikely(force && entity !=3D entity->sched_data->next_in_service)) {
++		new_next_in_service =3D entity;
++		for_each_entity(new_next_in_service)
++			bfq_update_budget(new_next_in_service);
++	}
++
++	return entity;
++}
++
++/**
++ * bfq_lookup_next_entity - return the first eligible entity in @sd.
++ * @sd: the sched_data.
++ * @extract: if true the returned entity will be also extracted from @sd.
++ *
++ * NOTE: since we cache the next_in_service entity at each level of the
++ * hierarchy, the complexity of the lookup can be decreased with
++ * absolutely no effort just returning the cached next_in_service value;
++ * we prefer to do full lookups to test the consistency of the data
++ * structures.
++ */
++static struct bfq_entity *bfq_lookup_next_entity(struct bfq_sched_data *sd,
++						 int extract,
++						 struct bfq_data *bfqd)
++{
++	struct bfq_service_tree *st =3D sd->service_tree;
++	struct bfq_entity *entity;
++	int i =3D 0;
++
++	/*
++	 * Choose from idle class, if needed to guarantee a minimum
++	 * bandwidth to this class. This should also mitigate
++	 * priority-inversion problems in case a low priority task is
++	 * holding file system resources.
++	 */
++	if (bfqd &&
++	    jiffies - bfqd->bfq_class_idle_last_service >
++	    BFQ_CL_IDLE_TIMEOUT) {
++		entity =3D __bfq_lookup_next_entity(st + BFQ_IOPRIO_CLASSES - 1,
++						  true);
++		if (entity) {
++			i =3D BFQ_IOPRIO_CLASSES - 1;
++			bfqd->bfq_class_idle_last_service =3D jiffies;
++			sd->next_in_service =3D entity;
++		}
++	}
++	for (; i < BFQ_IOPRIO_CLASSES; i++) {
++		entity =3D __bfq_lookup_next_entity(st + i, false);
++		if (entity) {
++			if (extract) {
++				bfq_check_next_in_service(sd, entity);
++				bfq_active_extract(st + i, entity);
++				sd->in_service_entity =3D entity;
++				sd->next_in_service =3D NULL;
++			}
++			break;
++		}
++	}
++
++	return entity;
++}
++
++static bool next_queue_may_preempt(struct bfq_data *bfqd)
++{
++	struct bfq_sched_data *sd =3D &bfqd->sched_data;
++
++	return sd->next_in_service !=3D sd->in_service_entity;
++}
++
++
++/*
++ * Get next queue for service.
++ */
++static struct bfq_queue *bfq_get_next_queue(struct bfq_data *bfqd)
++{
++	struct bfq_entity *entity =3D NULL;
++	struct bfq_sched_data *sd;
++	struct bfq_queue *bfqq;
++
++	if (bfqd->busy_queues =3D=3D 0)
++		return NULL;
++
++	sd =3D &bfqd->sched_data;
++	for (; sd ; sd =3D entity->my_sched_data) {
++		entity =3D bfq_lookup_next_entity(sd, 1, bfqd);
++		entity->service =3D 0;
++	}
++
++	bfqq =3D bfq_entity_to_bfqq(entity);
++
++	return bfqq;
++}
++
++static void __bfq_bfqd_reset_in_service(struct bfq_data *bfqd)
++{
++	if (bfqd->in_service_bic) {
++		put_io_context(bfqd->in_service_bic->icq.ioc);
++		bfqd->in_service_bic =3D NULL;
++	}
++
++	bfq_clear_bfqq_wait_request(bfqd->in_service_queue);
++	hrtimer_try_to_cancel(&bfqd->idle_slice_timer);
++	bfqd->in_service_queue =3D NULL;
++}
++
++static void bfq_deactivate_bfqq(struct bfq_data *bfqd, struct bfq_queue *b=
+fqq,
++				int requeue)
++{
++	struct bfq_entity *entity =3D &bfqq->entity;
++
++	bfq_deactivate_entity(entity, requeue);
++}
++
++static void bfq_activate_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfq=
+q)
++{
++	struct bfq_entity *entity =3D &bfqq->entity;
++
++	bfq_activate_entity(entity, bfq_bfqq_non_blocking_wait_rq(bfqq));
++	bfq_clear_bfqq_non_blocking_wait_rq(bfqq);
++}
++
++/*
++ * Called when the bfqq no longer has requests pending, remove it from
++ * the service tree.
++ */
++static void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfq=
+q,
++			      int requeue)
++{
++	bfq_log_bfqq(bfqd, bfqq, "del from busy");
++
++	bfq_clear_bfqq_busy(bfqq);
++
++	bfqd->busy_queues--;
++
++	bfq_deactivate_bfqq(bfqd, bfqq, requeue);
++}
++
++/*
++ * Called when an inactive queue receives a new request.
++ */
++static void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfq=
+q)
++{
++	bfq_log_bfqq(bfqd, bfqq, "add to busy");
++
++	bfq_activate_bfqq(bfqd, bfqq);
++
++	bfq_mark_bfqq_busy(bfqq);
++	bfqd->busy_queues++;
++}
++
++static void bfq_init_entity(struct bfq_entity *entity)
++{
++	struct bfq_queue *bfqq =3D bfq_entity_to_bfqq(entity);
++
++	entity->weight =3D entity->new_weight;
++	entity->orig_weight =3D entity->new_weight;
++
++	bfqq->ioprio =3D bfqq->new_ioprio;
++	bfqq->ioprio_class =3D bfqq->new_ioprio_class;
++
++	entity->sched_data =3D &bfqq->bfqd->sched_data;
++}
++
++#define bfq_class_idle(bfqq)	((bfqq)->ioprio_class =3D=3D IOPRIO_CLASS_IDL=
+E)
++#define bfq_class_rt(bfqq)	((bfqq)->ioprio_class =3D=3D IOPRIO_CLASS_RT)
++
++#define bfq_sample_valid(samples)	((samples) > 80)
++
++/*
++ * We regard a request as SYNC, if either it's a read or has the SYNC bit
++ * set (in which case it could also be a direct WRITE).
++ */
++static bool bfq_bio_sync(struct bio *bio)
++{
++	return bio_data_dir(bio) =3D=3D READ || (bio->bi_opf & REQ_SYNC);
++}
++
++/*
++ * Scheduler run of queue, if there are requests pending and no one in the
++ * driver that will restart queueing.
++ */
++static void bfq_schedule_dispatch(struct bfq_data *bfqd)
++{
++	if (bfqd->queued !=3D 0) {
++		bfq_log(bfqd, "schedule dispatch");
++		kblockd_schedule_work(&bfqd->unplug_work);
++	}
++}
++
++/*
++ * Lifted from AS - choose which of rq1 and rq2 that is best served now.
++ * We choose the request that is closesr to the head right now.  Distance
++ * behind the head is penalized and only allowed to a certain extent.
++ */
++static struct request *bfq_choose_req(struct bfq_data *bfqd,
++				      struct request *rq1,
++				      struct request *rq2,
++				      sector_t last)
++{
++	sector_t s1, s2, d1 =3D 0, d2 =3D 0;
++	unsigned long back_max;
++#define BFQ_RQ1_WRAP	0x01 /* request 1 wraps */
++#define BFQ_RQ2_WRAP	0x02 /* request 2 wraps */
++	unsigned int wrap =3D 0; /* bit mask: requests behind the disk head? */
++
++	if (!rq1 || rq1 =3D=3D rq2)
++		return rq2;
++	if (!rq2)
++		return rq1;
++
++	if (rq_is_sync(rq1) && !rq_is_sync(rq2))
++		return rq1;
++	else if (rq_is_sync(rq2) && !rq_is_sync(rq1))
++		return rq2;
++	if ((rq1->cmd_flags & REQ_META) && !(rq2->cmd_flags & REQ_META))
++		return rq1;
++	else if ((rq2->cmd_flags & REQ_META) && !(rq1->cmd_flags & REQ_META))
++		return rq2;
++
++	s1 =3D blk_rq_pos(rq1);
++	s2 =3D blk_rq_pos(rq2);
++
++	/*
++	 * By definition, 1KiB is 2 sectors.
++	 */
++	back_max =3D bfqd->bfq_back_max * 2;
++
++	/*
++	 * Strict one way elevator _except_ in the case where we allow
++	 * short backward seeks which are biased as twice the cost of a
++	 * similar forward seek.
++	 */
++	if (s1 >=3D last)
++		d1 =3D s1 - last;
++	else if (s1 + back_max >=3D last)
++		d1 =3D (last - s1) * bfqd->bfq_back_penalty;
++	else
++		wrap |=3D BFQ_RQ1_WRAP;
++
++	if (s2 >=3D last)
++		d2 =3D s2 - last;
++	else if (s2 + back_max >=3D last)
++		d2 =3D (last - s2) * bfqd->bfq_back_penalty;
++	else
++		wrap |=3D BFQ_RQ2_WRAP;
++
++	/* Found required data */
++
++	/*
++	 * By doing switch() on the bit mask "wrap" we avoid having to
++	 * check two variables for all permutations: --> faster!
++	 */
++	switch (wrap) {
++	case 0: /* common case for CFQ: rq1 and rq2 not wrapped */
++		if (d1 < d2)
++			return rq1;
++		else if (d2 < d1)
++			return rq2;
++
++		if (s1 >=3D s2)
++			return rq1;
++		else
++			return rq2;
++
++	case BFQ_RQ2_WRAP:
++		return rq1;
++	case BFQ_RQ1_WRAP:
++		return rq2;
++	case (BFQ_RQ1_WRAP|BFQ_RQ2_WRAP): /* both rqs wrapped */
++	default:
++		/*
++		 * Since both rqs are wrapped,
++		 * start with the one that's further behind head
++		 * (--> only *one* back seek required),
++		 * since back seek takes more time than forward.
++		 */
++		if (s1 <=3D s2)
++			return rq1;
++		else
++			return rq2;
++	}
++}
++
++static struct request *bfq_find_next_rq(struct bfq_data *bfqd,
++					struct bfq_queue *bfqq,
++					struct request *last)
++{
++	struct rb_node *rbnext =3D rb_next(&last->rb_node);
++	struct rb_node *rbprev =3D rb_prev(&last->rb_node);
++	struct request *next =3D NULL, *prev =3D NULL;
++
++	if (rbprev)
++		prev =3D rb_entry_rq(rbprev);
++
++	if (rbnext)
++		next =3D rb_entry_rq(rbnext);
++	else {
++		rbnext =3D rb_first(&bfqq->sort_list);
++		if (rbnext && rbnext !=3D &last->rb_node)
++			next =3D rb_entry_rq(rbnext);
++	}
++
++	return bfq_choose_req(bfqd, next, prev, blk_rq_pos(last));
++}
++
++static unsigned long bfq_serv_to_charge(struct request *rq,
++					struct bfq_queue *bfqq)
++{
++	return blk_rq_sectors(rq);
++}
++
++/**
++ * bfq_updated_next_req - update the queue after a new next_rq selection.
++ * @bfqd: the device data the queue belongs to.
++ * @bfqq: the queue to update.
++ *
++ * If the first request of a queue changes we make sure that the queue
++ * has enough budget to serve at least its first request (if the
++ * request has grown).  We do this because if the queue has not enough
++ * budget for its first request, it has to go through two dispatch
++ * rounds to actually get it dispatched.
++ */
++static void bfq_updated_next_req(struct bfq_data *bfqd,
++				 struct bfq_queue *bfqq)
++{
++	struct bfq_entity *entity =3D &bfqq->entity;
++	struct request *next_rq =3D bfqq->next_rq;
++	unsigned long new_budget;
++
++	if (!next_rq)
++		return;
++
++	if (bfqq =3D=3D bfqd->in_service_queue)
++		/*
++		 * In order not to break guarantees, budgets cannot be
++		 * changed after an entity has been selected.
++		 */
++		return;
++
++	new_budget =3D max_t(unsigned long, bfqq->max_budget,
++			   bfq_serv_to_charge(next_rq, bfqq));
++	if (entity->budget !=3D new_budget) {
++		entity->budget =3D new_budget;
++		bfq_log_bfqq(bfqd, bfqq, "updated next rq: new budget %lu",
++					 new_budget);
++		bfq_activate_bfqq(bfqd, bfqq);
++	}
++}
++
++static int bfq_bfqq_budget_left(struct bfq_queue *bfqq)
++{
++	struct bfq_entity *entity =3D &bfqq->entity;
++
++	return entity->budget - entity->service;
++}
++
++/*
++ * If enough samples have been computed, return the current max budget
++ * stored in bfqd, which is dynamically updated according to the
++ * estimated disk peak rate; otherwise return the default max budget
++ */
++static int bfq_max_budget(struct bfq_data *bfqd)
++{
++	if (bfqd->budgets_assigned < bfq_stats_min_budgets)
++		return bfq_default_max_budget;
++	else
++		return bfqd->bfq_max_budget;
++}
++
++/*
++ * Return min budget, which is a fraction of the current or default
++ * max budget (trying with 1/32)
++ */
++static int bfq_min_budget(struct bfq_data *bfqd)
++{
++	if (bfqd->budgets_assigned < bfq_stats_min_budgets)
++		return bfq_default_max_budget / 32;
++	else
++		return bfqd->bfq_max_budget / 32;
++}
++
++static void bfq_bfqq_expire(struct bfq_data *bfqd,
++			    struct bfq_queue *bfqq,
++			    bool compensate,
++			    enum bfqq_expiration reason);
++
++/*
++ * The next function, invoked after the input queue bfqq switches from
++ * idle to busy, updates the budget of bfqq. The function also tells
++ * whether the in-service queue should be expired, by returning
++ * true. The purpose of expiring the in-service queue is to give bfqq
++ * the chance to possibly preempt the in-service queue, and the reason
++ * for preempting the in-service queue is to achieve the following
++ * goal: guarantee to bfqq its reserved bandwidth even if bfqq has
++ * expired because it has remained idle.
++ *
++ * In particular, bfqq may have expired for one of the following two
++ * reasons:
++ *
++ * - BFQ_BFQQ_NO_MORE_REQUESTS bfqq did not enjoy any device idling
++ *   and did not make it to issue a new request before its last
++ *   request was served;
++ *
++ * - BFQ_BFQQ_TOO_IDLE bfqq did enjoy device idling, but did not issue
++ *   a new request before the expiration of the idling-time.
++ *
++ * Even if bfqq has expired for one of the above reasons, the process
++ * associated with the queue may be however issuing requests greedily,
++ * and thus be sensitive to the bandwidth it receives (bfqq may have
++ * remained idle for other reasons: CPU high load, bfqq not enjoying
++ * idling, I/O throttling somewhere in the path from the process to
++ * the I/O scheduler, ...). But if, after every expiration for one of
++ * the above two reasons, bfqq has to wait for the service of at least
++ * one full budget of another queue before being served again, then
++ * bfqq is likely to get a much lower bandwidth or resource time than
++ * its reserved ones. To address this issue, two countermeasures need
++ * to be taken.
++ *
++ * First, the budget and the timestamps of bfqq need to be updated in
++ * a special way on bfqq reactivation: they need to be updated as if
++ * bfqq did not remain idle and did not expire. In fact, if they are
++ * computed as if bfqq expired and remained idle until reactivation,
++ * then the process associated with bfqq is treated as if, instead of
++ * being greedy, it stopped issuing requests when bfqq remained idle,
++ * and restarts issuing requests only on this reactivation. In other
++ * words, the scheduler does not help the process recover the "service
++ * hole" between bfqq expiration and reactivation. As a consequence,
++ * the process receives a lower bandwidth than its reserved one. In
++ * contrast, to recover this hole, the budget must be updated as if
++ * bfqq was not expired at all before this reactivation, i.e., it must
++ * be set to the value of the remaining budget when bfqq was
++ * expired. Along the same line, timestamps need to be assigned the
++ * value they had the last time bfqq was selected for service, i.e.,
++ * before last expiration. Thus timestamps need to be back-shifted
++ * with respect to their normal computation (see [1] for more details
++ * on this tricky aspect).
++ *
++ * Secondly, to allow the process to recover the hole, the in-service
++ * queue must be expired too, to give bfqq the chance to preempt it
++ * immediately. In fact, if bfqq has to wait for a full budget of the
++ * in-service queue to be completed, then it may become impossible to
++ * let the process recover the hole, even if the back-shifted
++ * timestamps of bfqq are lower than those of the in-service queue. If
++ * this happens for most or all of the holes, then the process may not
++ * receive its reserved bandwidth. In this respect, it is worth noting
++ * that, being the service of outstanding requests unpreemptible, a
++ * little fraction of the holes may however be unrecoverable, thereby
++ * causing a little loss of bandwidth.
++ *
++ * The last important point is detecting whether bfqq does need this
++ * bandwidth recovery. In this respect, the next function deems the
++ * process associated with bfqq greedy, and thus allows it to recover
++ * the hole, if: 1) the process is waiting for the arrival of a new
++ * request (which implies that bfqq expired for one of the above two
++ * reasons), and 2) such a request has arrived soon. The first
++ * condition is controlled through the flag non_blocking_wait_rq,
++ * while the second through the flag arrived_in_time. If both
++ * conditions hold, then the function computes the budget in the
++ * above-described special way, and signals that the in-service queue
++ * should be expired. Timestamp back-shifting is done later in
++ * __bfq_activate_entity.
++ */
++static bool bfq_bfqq_update_budg_for_activation(struct bfq_data *bfqd,
++						struct bfq_queue *bfqq,
++						bool arrived_in_time)
++{
++	struct bfq_entity *entity =3D &bfqq->entity;
++
++	if (bfq_bfqq_non_blocking_wait_rq(bfqq) && arrived_in_time) {
++		/*
++		 * We do not clear the flag non_blocking_wait_rq here, as
++		 * the latter is used in bfq_activate_bfqq to signal
++		 * that timestamps need to be back-shifted (and is
++		 * cleared right after).
++		 */
++
++		/*
++		 * In next assignment we rely on that either
++		 * entity->service or entity->budget are not updated
++		 * on expiration if bfqq is empty (see
++		 * __bfq_bfqq_recalc_budget). Thus both quantities
++		 * remain unchanged after such an expiration, and the
++		 * following statement therefore assigns to
++		 * entity->budget the remaining budget on such an
++		 * expiration. For clarity, entity->service is not
++		 * updated on expiration in any case, and, in normal
++		 * operation, is reset only when bfqq is selected for
++		 * service (see bfq_get_next_queue).
++		 */
++		entity->budget =3D min_t(unsigned long,
++				       bfq_bfqq_budget_left(bfqq),
++				       bfqq->max_budget);
++
++		return true;
++	}
++
++	entity->budget =3D max_t(unsigned long, bfqq->max_budget,
++			       bfq_serv_to_charge(bfqq->next_rq, bfqq));
++	bfq_clear_bfqq_non_blocking_wait_rq(bfqq);
++	return false;
++}
++
++static void bfq_bfqq_handle_idle_busy_switch(struct bfq_data *bfqd,
++					     struct bfq_queue *bfqq,
++					     struct request *rq)
++{
++	bool bfqq_wants_to_preempt,
++		/*
++		 * See the comments on
++		 * bfq_bfqq_update_budg_for_activation for
++		 * details on the usage of the next variable.
++		 */
++		arrived_in_time =3D ktime_get_ns() <=3D
++			RQ_BIC(rq)->ttime.last_end_request +
++			bfqd->bfq_slice_idle * 3ULL;
++
++	/*
++	 * Update budget and check whether bfqq may want to preempt
++	 * the in-service queue.
++	 */
++	bfqq_wants_to_preempt =3D
++		bfq_bfqq_update_budg_for_activation(bfqd, bfqq,
++						    arrived_in_time);
++
++	if (!bfq_bfqq_IO_bound(bfqq)) {
++		if (arrived_in_time) {
++			bfqq->requests_within_timer++;
++			if (bfqq->requests_within_timer >=3D
++			    bfqd->bfq_requests_within_timer)
++				bfq_mark_bfqq_IO_bound(bfqq);
++		} else
++			bfqq->requests_within_timer =3D 0;
++	}
++
++	bfq_add_bfqq_busy(bfqd, bfqq);
++
++	/*
++	 * Expire in-service queue only if preemption may be needed
++	 * for guarantees. In this respect, the function
++	 * next_queue_may_preempt just checks a simple, necessary
++	 * condition, and not a sufficient condition based on
++	 * timestamps. In fact, for the latter condition to be
++	 * evaluated, timestamps would need first to be updated, and
++	 * this operation is quite costly (see the comments on the
++	 * function bfq_bfqq_update_budg_for_activation).
++	 */
++	if (bfqd->in_service_queue && bfqq_wants_to_preempt &&
++	    next_queue_may_preempt(bfqd))
++		bfq_bfqq_expire(bfqd, bfqd->in_service_queue,
++				false, BFQ_BFQQ_PREEMPTED);
++}
++
++static void bfq_add_request(struct request *rq)
++{
++	struct bfq_queue *bfqq =3D RQ_BFQQ(rq);
++	struct bfq_data *bfqd =3D bfqq->bfqd;
++	struct request *next_rq, *prev;
++
++	bfq_log_bfqq(bfqd, bfqq, "add_request %d", rq_is_sync(rq));
++	bfqq->queued[rq_is_sync(rq)]++;
++	bfqd->queued++;
++
++	elv_rb_add(&bfqq->sort_list, rq);
++
++	/*
++	 * Check if this request is a better next-serve candidate.
++	 */
++	prev =3D bfqq->next_rq;
++	next_rq =3D bfq_choose_req(bfqd, bfqq->next_rq, rq, bfqd->last_position);
++	bfqq->next_rq =3D next_rq;
++
++	if (!bfq_bfqq_busy(bfqq)) /* switching to busy ... */
++		bfq_bfqq_handle_idle_busy_switch(bfqd, bfqq, rq);
++	else if (prev !=3D bfqq->next_rq)
++		bfq_updated_next_req(bfqd, bfqq);
++}
++
++static struct request *bfq_find_rq_fmerge(struct bfq_data *bfqd,
++					  struct bio *bio)
++{
++	struct task_struct *tsk =3D current;
++	struct bfq_io_cq *bic;
++	struct bfq_queue *bfqq;
++
++	bic =3D bfq_bic_lookup(bfqd, tsk->io_context);
++	if (!bic)
++		return NULL;
++
++	bfqq =3D bic_to_bfqq(bic, bfq_bio_sync(bio));
++	if (bfqq)
++		return elv_rb_find(&bfqq->sort_list, bio_end_sector(bio));
++
++	return NULL;
++}
++
++static void bfq_activate_request(struct request_queue *q, struct request *=
+rq)
++{
++	struct bfq_data *bfqd =3D q->elevator->elevator_data;
++
++	bfqd->rq_in_driver++;
++	bfqd->last_position =3D blk_rq_pos(rq) + blk_rq_sectors(rq);
++	bfq_log(bfqd, "activate_request: new bfqd->last_position %llu",
++		(unsigned long long)bfqd->last_position);
++}
++
++static void bfq_deactivate_request(struct request_queue *q, struct request=
+ *rq)
++{
++	struct bfq_data *bfqd =3D q->elevator->elevator_data;
++
++	bfqd->rq_in_driver--;
++}
++
++static void bfq_remove_request(struct request *rq)
++{
++	struct bfq_queue *bfqq =3D RQ_BFQQ(rq);
++	struct bfq_data *bfqd =3D bfqq->bfqd;
++	const int sync =3D rq_is_sync(rq);
++
++	if (bfqq->next_rq =3D=3D rq) {
++		bfqq->next_rq =3D bfq_find_next_rq(bfqd, bfqq, rq);
++		bfq_updated_next_req(bfqd, bfqq);
++	}
++
++	if (rq->queuelist.prev !=3D &rq->queuelist)
++		list_del_init(&rq->queuelist);
++	bfqq->queued[sync]--;
++	bfqd->queued--;
++	elv_rb_del(&bfqq->sort_list, rq);
++
++	if (RB_EMPTY_ROOT(&bfqq->sort_list)) {
++		if (bfq_bfqq_busy(bfqq) && bfqq !=3D bfqd->in_service_queue) {
++			bfq_del_bfqq_busy(bfqd, bfqq, 1);
++
++			/* bfqq emptied. In normal operation, when
++			 * bfqq is empty, bfqq->entity.service and
++			 * bfqq->entity.budget must contain,
++			 * respectively, the service received and the
++			 * budget used last time bfqq emptied. These
++			 * facts do not hold in this case, as at least
++			 * this last removal occurred while bfqq is
++			 * not in service. To avoid inconsistencies,
++			 * reset both bfqq->entity.service and
++			 * bfqq->entity.budget.
++			 */
++			bfqq->entity.budget =3D bfqq->entity.service =3D 0;
++		}
++	}
++
++	if (rq->cmd_flags & REQ_META)
++		bfqq->meta_pending--;
++}
++
++static int bfq_merge(struct request_queue *q, struct request **req,
++		     struct bio *bio)
++{
++	struct bfq_data *bfqd =3D q->elevator->elevator_data;
++	struct request *__rq;
++
++	__rq =3D bfq_find_rq_fmerge(bfqd, bio);
++	if (__rq && elv_bio_merge_ok(__rq, bio)) {
++		*req =3D __rq;
++		return ELEVATOR_FRONT_MERGE;
++	}
++
++	return ELEVATOR_NO_MERGE;
++}
++
++static void bfq_merged_request(struct request_queue *q, struct request *re=
+q,
++			       int type)
++{
++	if (type =3D=3D ELEVATOR_FRONT_MERGE &&
++	    rb_prev(&req->rb_node) &&
++	    blk_rq_pos(req) <
++	    blk_rq_pos(container_of(rb_prev(&req->rb_node),
++				    struct request, rb_node))) {
++		struct bfq_queue *bfqq =3D RQ_BFQQ(req);
++		struct bfq_data *bfqd =3D bfqq->bfqd;
++		struct request *prev, *next_rq;
++
++		/* Reposition request in its sort_list */
++		elv_rb_del(&bfqq->sort_list, req);
++		elv_rb_add(&bfqq->sort_list, req);
++		/* Choose next request to be served for bfqq */
++		prev =3D bfqq->next_rq;
++		next_rq =3D bfq_choose_req(bfqd, bfqq->next_rq, req,
++					 bfqd->last_position);
++		bfqq->next_rq =3D next_rq;
++		/*
++		 * If next_rq changes, update the queue's budget to fit
++		 * the new request.
++		 */
++		if (prev !=3D bfqq->next_rq)
++			bfq_updated_next_req(bfqd, bfqq);
++	}
++}
++
++static void bfq_merged_requests(struct request_queue *q, struct request *r=
+q,
++				struct request *next)
++{
++	struct bfq_queue *bfqq =3D RQ_BFQQ(rq), *next_bfqq =3D RQ_BFQQ(next);
++
++	/*
++	 * If next and rq belong to the same bfq_queue and next is older
++	 * than rq, then reposition rq in the fifo (by substituting next
++	 * with rq). Otherwise, if next and rq belong to different
++	 * bfq_queues, never reposition rq: in fact, we would have to
++	 * reposition it with respect to next's position in its own fifo,
++	 * which would most certainly be too expensive with respect to
++	 * the benefits.
++	 */
++	if (bfqq =3D=3D next_bfqq &&
++	    !list_empty(&rq->queuelist) && !list_empty(&next->queuelist) &&
++	    next->fifo_time < rq->fifo_time) {
++		list_del_init(&rq->queuelist);
++		list_replace_init(&next->queuelist, &rq->queuelist);
++		rq->fifo_time =3D next->fifo_time;
++	}
++
++	if (bfqq->next_rq =3D=3D next)
++		bfqq->next_rq =3D rq;
++
++	bfq_remove_request(next);
++}
++
++static int bfq_allow_bio_merge(struct request_queue *q, struct request *rq,
++			       struct bio *bio)
++{
++	struct bfq_data *bfqd =3D q->elevator->elevator_data;
++	struct bfq_io_cq *bic;
++	struct bfq_queue *bfqq;
++
++	/*
++	 * Disallow merge of a sync bio into an async request.
++	 */
++	if (bfq_bio_sync(bio) && !rq_is_sync(rq))
++		return false;
++
++	/*
++	 * Lookup the bfqq that this bio will be queued with. Allow
++	 * merge only if rq is queued there.
++	 * Queue lock is held here.
++	 */
++	bic =3D bfq_bic_lookup(bfqd, current->io_context);
++	if (!bic)
++		return false;
++
++	bfqq =3D bic_to_bfqq(bic, bfq_bio_sync(bio));
++
++	return bfqq =3D=3D RQ_BFQQ(rq);
++}
++
++static int bfq_allow_rq_merge(struct request_queue *q, struct request *rq,
++			      struct request *next)
++{
++	return RQ_BFQQ(rq) =3D=3D RQ_BFQQ(next);
++}
++
++static void __bfq_set_in_service_queue(struct bfq_data *bfqd,
++				       struct bfq_queue *bfqq)
++{
++	if (bfqq) {
++		bfq_mark_bfqq_must_alloc(bfqq);
++		bfq_mark_bfqq_budget_new(bfqq);
++		bfq_clear_bfqq_fifo_expire(bfqq);
++
++		bfqd->budgets_assigned =3D (bfqd->budgets_assigned*7 + 256) / 8;
++
++		bfq_log_bfqq(bfqd, bfqq,
++			     "set_in_service_queue, cur-budget =3D %d",
++			     bfqq->entity.budget);
++	}
++
++	bfqd->in_service_queue =3D bfqq;
++}
++
++/*
++ * Get and set a new queue for service.
++ */
++static struct bfq_queue *bfq_set_in_service_queue(struct bfq_data *bfqd)
++{
++	struct bfq_queue *bfqq =3D bfq_get_next_queue(bfqd);
++
++	__bfq_set_in_service_queue(bfqd, bfqq);
++	return bfqq;
++}
++
++/*
++ * bfq_default_budget - return the default budget for @bfqq on @bfqd.
++ * @bfqd: the device descriptor.
++ * @bfqq: the queue to consider.
++ *
++ * We use 3/4 of the @bfqd maximum budget as the default value
++ * for the max_budget field of the queues.  This lets the feedback
++ * mechanism to start from some middle ground, then the behavior
++ * of the process will drive the heuristics towards high values, if
++ * it behaves as a greedy sequential reader, or towards small values
++ * if it shows a more intermittent behavior.
++ */
++static unsigned long bfq_default_budget(struct bfq_data *bfqd,
++					struct bfq_queue *bfqq)
++{
++	unsigned long budget;
++
++	/*
++	 * When we need an estimate of the peak rate we need to avoid
++	 * to give budgets that are too short due to previous measurements.
++	 * So, in the first 10 assignments use a ``safe'' budget value.
++	 */
++	if (bfqd->budgets_assigned < 194 && bfqd->bfq_user_max_budget =3D=3D 0)
++		budget =3D bfq_default_max_budget;
++	else
++		budget =3D bfqd->bfq_max_budget;
++
++	return budget - budget / 4;
++}
++
++static void bfq_arm_slice_timer(struct bfq_data *bfqd)
++{
++	struct bfq_queue *bfqq =3D bfqd->in_service_queue;
++	struct bfq_io_cq *bic;
++	u32 sl;
++
++	/* Processes have exited, don't wait. */
++	bic =3D bfqd->in_service_bic;
++	if (!bic || atomic_read(&bic->icq.ioc->active_ref) =3D=3D 0)
++		return;
++
++	bfq_mark_bfqq_wait_request(bfqq);
++
++	/*
++	 * We don't want to idle for seeks, but we do want to allow
++	 * fair distribution of slice time for a process doing back-to-back
++	 * seeks. So allow a little bit of time for him to submit a new rq.
++	 */
++	sl =3D bfqd->bfq_slice_idle;
++	/*
++	 * Grant only minimum idle time if the queue is seeky.
++	 */
++	if (BFQQ_SEEKY(bfqq))
++		sl =3D min_t(u64, sl, BFQ_MIN_TT);
++
++	bfqd->last_idling_start =3D ktime_get();
++	hrtimer_start(&bfqd->idle_slice_timer, ns_to_ktime(sl),
++		      HRTIMER_MODE_REL);
++}
++
++/*
++ * Set the maximum time for the in-service queue to consume its
++ * budget. This prevents seeky processes from lowering the disk
++ * throughput (always guaranteed with a time slice scheme as in CFQ).
++ */
++static void bfq_set_budget_timeout(struct bfq_data *bfqd)
++{
++	struct bfq_queue *bfqq =3D bfqd->in_service_queue;
++	unsigned int timeout_coeff =3D bfqq->entity.weight /
++				     bfqq->entity.orig_weight;
++
++	bfqd->last_budget_start =3D ktime_get();
++
++	bfq_clear_bfqq_budget_new(bfqq);
++	bfqq->budget_timeout =3D jiffies +
++		bfqd->bfq_timeout * timeout_coeff;
++
++	bfq_log_bfqq(bfqd, bfqq, "set budget_timeout %u",
++		jiffies_to_msecs(bfqd->bfq_timeout * timeout_coeff));
++}
++
++/*
++ * Move request from internal lists to the dispatch list of the request qu=
+eue.
++ */
++static void bfq_dispatch_insert(struct request_queue *q, struct request *r=
+q)
++{
++	struct bfq_queue *bfqq =3D RQ_BFQQ(rq);
++
++	/*
++	 * For consistency, the next instruction should have been executed
++	 * after removing the request from the queue and dispatching it.
++	 * We execute instead this instruction before bfq_remove_request()
++	 * (and hence introduce a temporary inconsistency), for efficiency.
++	 * In fact, in a forced_dispatch, this prevents two counters related
++	 * to bfqq->dispatched to risk to be uselessly decremented if bfqq
++	 * is not in service, and then to be incremented again after
++	 * incrementing bfqq->dispatched.
++	 */
++	bfqq->dispatched++;
++
++	bfq_remove_request(rq);
++	elv_dispatch_sort(q, rq);
++}
++
++/*
++ * Return expired entry, or NULL to just start from scratch in rbtree.
++ */
++static struct request *bfq_check_fifo(struct bfq_queue *bfqq)
++{
++	struct request *rq =3D NULL;
++
++	if (bfq_bfqq_fifo_expire(bfqq))
++		return NULL;
++
++	bfq_mark_bfqq_fifo_expire(bfqq);
++
++	if (list_empty(&bfqq->fifo))
++		return NULL;
++
++	rq =3D rq_entry_fifo(bfqq->fifo.next);
++
++	if (ktime_get_ns() < rq->fifo_time)
++		return NULL;
++
++	return rq;
++}
++
++static void __bfq_bfqq_expire(struct bfq_data *bfqd, struct bfq_queue *bfq=
+q)
++{
++	__bfq_bfqd_reset_in_service(bfqd);
++
++	if (RB_EMPTY_ROOT(&bfqq->sort_list))
++		bfq_del_bfqq_busy(bfqd, bfqq, 1);
++	else
++		bfq_activate_bfqq(bfqd, bfqq);
++}
++
++/**
++ * __bfq_bfqq_recalc_budget - try to adapt the budget to the @bfqq behavio=
+r.
++ * @bfqd: device data.
++ * @bfqq: queue to update.
++ * @reason: reason for expiration.
++ *
++ * Handle the feedback on @bfqq budget at queue expiration.
++ * See the body for detailed comments.
++ */
++static void __bfq_bfqq_recalc_budget(struct bfq_data *bfqd,
++				     struct bfq_queue *bfqq,
++				     enum bfqq_expiration reason)
++{
++	struct request *next_rq;
++	int budget, min_budget;
++
++	budget =3D bfqq->max_budget;
++	min_budget =3D bfq_min_budget(bfqd);
++
++	bfq_log_bfqq(bfqd, bfqq, "recalc_budg: last budg %d, budg left %d",
++		bfqq->entity.budget, bfq_bfqq_budget_left(bfqq));
++	bfq_log_bfqq(bfqd, bfqq, "recalc_budg: last max_budg %d, min budg %d",
++		budget, bfq_min_budget(bfqd));
++	bfq_log_bfqq(bfqd, bfqq, "recalc_budg: sync %d, seeky %d",
++		bfq_bfqq_sync(bfqq), BFQQ_SEEKY(bfqd->in_service_queue));
++
++	if (bfq_bfqq_sync(bfqq)) {
++		switch (reason) {
++		/*
++		 * Caveat: in all the following cases we trade latency
++		 * for throughput.
++		 */
++		case BFQ_BFQQ_TOO_IDLE:
++			if (budget > min_budget + BFQ_BUDGET_STEP)
++				budget -=3D BFQ_BUDGET_STEP;
++			else
++				budget =3D min_budget;
++			break;
++		case BFQ_BFQQ_BUDGET_TIMEOUT:
++			budget =3D bfq_default_budget(bfqd, bfqq);
++			break;
++		case BFQ_BFQQ_BUDGET_EXHAUSTED:
++			/*
++			 * The process still has backlog, and did not
++			 * let either the budget timeout or the disk
++			 * idling timeout expire. Hence it is not
++			 * seeky, has a short thinktime and may be
++			 * happy with a higher budget too. So
++			 * definitely increase the budget of this good
++			 * candidate to boost the disk throughput.
++			 */
++			budget =3D min(budget + 8 * BFQ_BUDGET_STEP,
++				     bfqd->bfq_max_budget);
++			break;
++		case BFQ_BFQQ_NO_MORE_REQUESTS:
++			/*
++			 * For queues that expire for this reason, it
++			 * is particularly important to keep the
++			 * budget close to the actual service they
++			 * need. Doing so reduces the timestamp
++			 * misalignment problem described in the
++			 * comments in the body of
++			 * __bfq_activate_entity. In fact, suppose
++			 * that a queue systematically expires for
++			 * BFQ_BFQQ_NO_MORE_REQUESTS and presents a
++			 * new request in time to enjoy timestamp
++			 * back-shifting. The larger the budget of the
++			 * queue is with respect to the service the
++			 * queue actually requests in each service
++			 * slot, the more times the queue can be
++			 * reactivated with the same virtual finish
++			 * time. It follows that, even if this finish
++			 * time is pushed to the system virtual time
++			 * to reduce the consequent timestamp
++			 * misalignment, the queue unjustly enjoys for
++			 * many re-activations a lower finish time
++			 * than all newly activated queues.
++			 *
++			 * The service needed by bfqq is measured
++			 * quite precisely by bfqq->entity.service.
++			 * Since bfqq does not enjoy device idling,
++			 * bfqq->entity.service is equal to the number
++			 * of sectors that the process associated with
++			 * bfqq requested to read/write before waiting
++			 * for request completions, or blocking for
++			 * other reasons.
++			 */
++			budget =3D max_t(int, bfqq->entity.service, min_budget);
++			break;
++		default:
++			return;
++		}
++	} else
++		/*
++		 * Async queues get always the maximum possible
++		 * budget, as for them we do not care about latency
++		 * (in addition, their ability to dispatch is limited
++		 * by the charging factor).
++		 */
++		budget =3D bfqd->bfq_max_budget;
++
++	bfqq->max_budget =3D budget;
++
++	if (bfqd->budgets_assigned >=3D bfq_stats_min_budgets &&
++	    !bfqd->bfq_user_max_budget)
++		bfqq->max_budget =3D min(bfqq->max_budget, bfqd->bfq_max_budget);
++
++	/*
++	 * If there is still backlog, then assign a new budget, making
++	 * sure that it is large enough for the next request.  Since
++	 * the finish time of bfqq must be kept in sync with the
++	 * budget, be sure to call __bfq_bfqq_expire() *after* this
++	 * update.
++	 *
++	 * If there is no backlog, then no need to update the budget;
++	 * it will be updated on the arrival of a new request.
++	 */
++	next_rq =3D bfqq->next_rq;
++	if (next_rq)
++		bfqq->entity.budget =3D max_t(unsigned long, bfqq->max_budget,
++					    bfq_serv_to_charge(next_rq, bfqq));
++
++	bfq_log_bfqq(bfqd, bfqq, "head sect: %u, new budget %d",
++			next_rq ? blk_rq_sectors(next_rq) : 0,
++			bfqq->entity.budget);
++}
++
++static unsigned long bfq_calc_max_budget(u64 peak_rate, u64 timeout)
++{
++	unsigned long max_budget;
++
++	/*
++	 * The max_budget calculated when autotuning is equal to the
++	 * amount of sectors transferred in timeout at the
++	 * estimated peak rate.
++	 */
++	max_budget =3D (unsigned long)(peak_rate * 1000 *
++				     timeout >> BFQ_RATE_SHIFT);
++
++	return max_budget;
++}
++
++/*
++ * In addition to updating the peak rate, checks whether the process
++ * is "slow", and returns 1 if so. This slow flag is used, in addition
++ * to the budget timeout, to reduce the amount of service provided to
++ * seeky processes, and hence reduce their chances to lower the
++ * throughput. See the code for more details.
++ */
++static bool bfq_update_peak_rate(struct bfq_data *bfqd, struct bfq_queue *=
+bfqq,
++				 bool compensate)
++{
++	u64 bw, usecs, expected, timeout;
++	ktime_t delta;
++	int update =3D 0;
++
++	if (!bfq_bfqq_sync(bfqq) || bfq_bfqq_budget_new(bfqq))
++		return false;
++
++	if (compensate)
++		delta =3D bfqd->last_idling_start;
++	else
++		delta =3D ktime_get();
++	delta =3D ktime_sub(delta, bfqd->last_budget_start);
++	usecs =3D ktime_to_us(delta);
++
++	/* Don't trust short/unrealistic values. */
++	if (usecs < 100 || usecs >=3D LONG_MAX)
++		return false;
++
++	/*
++	 * Calculate the bandwidth for the last slice.  We use a 64 bit
++	 * value to store the peak rate, in sectors per usec in fixed
++	 * point math.  We do so to have enough precision in the estimate
++	 * and to avoid overflows.
++	 */
++	bw =3D (u64)bfqq->entity.service << BFQ_RATE_SHIFT;
++	do_div(bw, (unsigned long)usecs);
++
++	timeout =3D jiffies_to_msecs(bfqd->bfq_timeout);
++
++	/*
++	 * Use only long (> 20ms) intervals to filter out spikes for
++	 * the peak rate estimation.
++	 */
++	if (usecs > 20000) {
++		if (bw > bfqd->peak_rate) {
++			bfqd->peak_rate =3D bw;
++			update =3D 1;
++			bfq_log(bfqd, "new peak_rate=3D%llu", bw);
++		}
++
++		update |=3D bfqd->peak_rate_samples =3D=3D BFQ_PEAK_RATE_SAMPLES - 1;
++
++		if (bfqd->peak_rate_samples < BFQ_PEAK_RATE_SAMPLES)
++			bfqd->peak_rate_samples++;
++
++		if (bfqd->peak_rate_samples =3D=3D BFQ_PEAK_RATE_SAMPLES &&
++		    update && bfqd->bfq_user_max_budget =3D=3D 0) {
++			bfqd->bfq_max_budget =3D
++				bfq_calc_max_budget(bfqd->peak_rate,
++						    timeout);
++			bfq_log(bfqd, "new max_budget=3D%d",
++				bfqd->bfq_max_budget);
++		}
++	}
++
++	/*
++	 * A process is considered ``slow'' (i.e., seeky, so that we
++	 * cannot treat it fairly in the service domain, as it would
++	 * slow down too much the other processes) if, when a slice
++	 * ends for whatever reason, it has received service at a
++	 * rate that would not be high enough to complete the budget
++	 * before the budget timeout expiration.
++	 */
++	expected =3D bw * 1000 * timeout >> BFQ_RATE_SHIFT;
++
++	/*
++	 * Caveat: processes doing IO in the slower disk zones will
++	 * tend to be slow(er) even if not seeky. And the estimated
++	 * peak rate will actually be an average over the disk
++	 * surface. Hence, to not be too harsh with unlucky processes,
++	 * we keep a budget/3 margin of safety before declaring a
++	 * process slow.
++	 */
++	return expected > (4 * bfqq->entity.budget) / 3;
++}
++
++/*
++ * Return the farthest past time instant according to jiffies
++ * macros.
++ */
++static unsigned long bfq_smallest_from_now(void)
++{
++	return jiffies - MAX_JIFFY_OFFSET;
++}
++
++/**
++ * bfq_bfqq_expire - expire a queue.
++ * @bfqd: device owning the queue.
++ * @bfqq: the queue to expire.
++ * @compensate: if true, compensate for the time spent idling.
++ * @reason: the reason causing the expiration.
++ *
++ *
++ * If the process associated with the queue is slow (i.e., seeky), or
++ * in case of budget timeout, or, finally, if it is async, we
++ * artificially charge it an entire budget (independently of the
++ * actual service it received). As a consequence, the queue will get
++ * higher timestamps than the correct ones upon reactivation, and
++ * hence it will be rescheduled as if it had received more service
++ * than what it actually received. In the end, this class of processes
++ * will receive less service in proportion to how slowly they consume
++ * their budgets (and hence how seriously they tend to lower the
++ * throughput).
++ *
++ * In contrast, when a queue expires because it has been idling for
++ * too much or because it exhausted its budget, we do not touch the
++ * amount of service it has received. Hence when the queue will be
++ * reactivated and its timestamps updated, the latter will be in sync
++ * with the actual service received by the queue until expiration.
++ *
++ * Charging a full budget to the first type of queues and the exact
++ * service to the others has the effect of using the WF2Q+ policy to
++ * schedule the former on a timeslice basis, without violating the
++ * service domain guarantees of the latter.
++ */
++static void bfq_bfqq_expire(struct bfq_data *bfqd,
++			    struct bfq_queue *bfqq,
++			    bool compensate,
++			    enum bfqq_expiration reason)
++{
++	bool slow;
++
++	/*
++	 * Update device peak rate for autotuning and check whether the
++	 * process is slow (see bfq_update_peak_rate).
++	 */
++	slow =3D bfq_update_peak_rate(bfqd, bfqq, compensate);
++
++	/*
++	 * As above explained, 'punish' slow (i.e., seeky), timed-out
++	 * and async queues, to favor sequential sync workloads.
++	 */
++	if (slow || reason =3D=3D BFQ_BFQQ_BUDGET_TIMEOUT)
++		bfq_bfqq_charge_full_budget(bfqq);
++
++	if (reason =3D=3D BFQ_BFQQ_TOO_IDLE &&
++	    bfqq->entity.service <=3D 2 * bfqq->entity.budget / 10)
++		bfq_clear_bfqq_IO_bound(bfqq);
++
++	bfq_log_bfqq(bfqd, bfqq,
++		"expire (%d, slow %d, num_disp %d, idle_win %d)", reason,
++		slow, bfqq->dispatched, bfq_bfqq_idle_window(bfqq));
++
++	/*
++	 * Increase, decrease or leave budget unchanged according to
++	 * reason.
++	 */
++	__bfq_bfqq_recalc_budget(bfqd, bfqq, reason);
++	__bfq_bfqq_expire(bfqd, bfqq);
++
++	if (!bfq_bfqq_busy(bfqq) &&
++	    reason !=3D BFQ_BFQQ_BUDGET_TIMEOUT &&
++	    reason !=3D BFQ_BFQQ_BUDGET_EXHAUSTED)
++		bfq_mark_bfqq_non_blocking_wait_rq(bfqq);
++}
++
++/*
++ * Budget timeout is not implemented through a dedicated timer, but
++ * just checked on request arrivals and completions, as well as on
++ * idle timer expirations.
++ */
++static bool bfq_bfqq_budget_timeout(struct bfq_queue *bfqq)
++{
++	if (bfq_bfqq_budget_new(bfqq) ||
++	    time_before(jiffies, bfqq->budget_timeout))
++		return false;
++	return true;
++}
++
++/*
++ * If we expire a queue that is actively waiting (i.e., with the
++ * device idled) for the arrival of a new request, then we may incur
++ * the timestamp misalignment problem described in the body of the
++ * function __bfq_activate_entity. Hence we return true only if this
++ * condition does not hold, or if the queue is slow enough to deserve
++ * only to be kicked off for preserving a high throughput.
++ */
++static bool bfq_may_expire_for_budg_timeout(struct bfq_queue *bfqq)
++{
++	bfq_log_bfqq(bfqq->bfqd, bfqq,
++		"may_budget_timeout: wait_request %d left %d timeout %d",
++		bfq_bfqq_wait_request(bfqq),
++			bfq_bfqq_budget_left(bfqq) >=3D  bfqq->entity.budget / 3,
++		bfq_bfqq_budget_timeout(bfqq));
++
++	return (!bfq_bfqq_wait_request(bfqq) ||
++		bfq_bfqq_budget_left(bfqq) >=3D  bfqq->entity.budget / 3)
++		&&
++		bfq_bfqq_budget_timeout(bfqq);
++}
++
++/*
++ * For a queue that becomes empty, device idling is allowed only if
++ * this function returns true for the queue. And this function returns
++ * true only if idling is beneficial for throughput.
++ */
++static bool bfq_bfqq_may_idle(struct bfq_queue *bfqq)
++{
++	struct bfq_data *bfqd =3D bfqq->bfqd;
++	bool idling_boosts_thr;
++
++	if (bfqd->strict_guarantees)
++		return true;
++
++	/*
++	 * The value of the next variable is computed considering that
++	 * idling is usually beneficial for the throughput if:
++	 * (a) the device is not NCQ-capable, or
++	 * (b) regardless of the presence of NCQ, the request pattern
++	 *     for bfqq is I/O-bound (possible throughput losses
++	 *     caused by granting idling to seeky queues are mitigated
++	 *     by the fact that, in all scenarios where boosting
++	 *     throughput is the best thing to do, i.e., in all
++	 *     symmetric scenarios, only a minimal idle time is
++	 *     allowed to seeky queues).
++	 */
++	idling_boosts_thr =3D !bfqd->hw_tag || bfq_bfqq_IO_bound(bfqq);
++
++	/*
++	 * We have now the components we need to compute the return
++	 * value of the function, which is true only if both the
++	 * following conditions hold:
++	 * 1) bfqq is sync, because idling make sense only for sync queues;
++	 * 2) idling boosts the throughput.
++	 */
++	return bfq_bfqq_sync(bfqq) && idling_boosts_thr;
++}
++
++/*
++ * If the in-service queue is empty but the function bfq_bfqq_may_idle
++ * returns true, then:
++ * 1) the queue must remain in service and cannot be expired, and
++ * 2) the device must be idled to wait for the possible arrival of a new
++ *    request for the queue.
++ * See the comments on the function bfq_bfqq_may_idle for the reasons
++ * why performing device idling is the best choice to boost the throughput
++ * and preserve service guarantees when bfq_bfqq_may_idle itself
++ * returns true.
++ */
++static bool bfq_bfqq_must_idle(struct bfq_queue *bfqq)
++{
++	struct bfq_data *bfqd =3D bfqq->bfqd;
++
++	return RB_EMPTY_ROOT(&bfqq->sort_list) && bfqd->bfq_slice_idle !=3D 0 &&
++	       bfq_bfqq_may_idle(bfqq);
++}
++
++/*
++ * Select a queue for service.  If we have a current queue in service,
++ * check whether to continue servicing it, or retrieve and set a new one.
++ */
++static struct bfq_queue *bfq_select_queue(struct bfq_data *bfqd)
++{
++	struct bfq_queue *bfqq;
++	struct request *next_rq;
++	enum bfqq_expiration reason =3D BFQ_BFQQ_BUDGET_TIMEOUT;
++
++	bfqq =3D bfqd->in_service_queue;
++	if (!bfqq)
++		goto new_queue;
++
++	bfq_log_bfqq(bfqd, bfqq, "select_queue: already in-service queue");
++
++	if (bfq_may_expire_for_budg_timeout(bfqq) &&
++	    !hrtimer_active(&bfqd->idle_slice_timer) &&
++	    !bfq_bfqq_must_idle(bfqq))
++		goto expire;
++
++	next_rq =3D bfqq->next_rq;
++	/*
++	 * If bfqq has requests queued and it has enough budget left to
++	 * serve them, keep the queue, otherwise expire it.
++	 */
++	if (next_rq) {
++		if (bfq_serv_to_charge(next_rq, bfqq) >
++			bfq_bfqq_budget_left(bfqq)) {
++			reason =3D BFQ_BFQQ_BUDGET_EXHAUSTED;
++			goto expire;
++		} else {
++			/*
++			 * The idle timer may be pending because we may
++			 * not disable disk idling even when a new request
++			 * arrives.
++			 */
++			if (bfq_bfqq_wait_request(bfqq)) {
++				/*
++				 * If we get here: 1) at least a new request
++				 * has arrived but we have not disabled the
++				 * timer because the request was too small,
++				 * 2) then the block layer has unplugged
++				 * the device, causing the dispatch to be
++				 * invoked.
++				 *
++				 * Since the device is unplugged, now the
++				 * requests are probably large enough to
++				 * provide a reasonable throughput.
++				 * So we disable idling.
++				 */
++				bfq_clear_bfqq_wait_request(bfqq);
++				hrtimer_try_to_cancel(&bfqd->idle_slice_timer);
++			}
++			goto keep_queue;
++		}
++	}
++
++	/*
++	 * No requests pending. However, if the in-service queue is idling
++	 * for a new request, or has requests waiting for a completion and
++	 * may idle after their completion, then keep it anyway.
++	 */
++	if (hrtimer_active(&bfqd->idle_slice_timer) ||
++	    (bfqq->dispatched !=3D 0 && bfq_bfqq_may_idle(bfqq))) {
++		bfqq =3D NULL;
++		goto keep_queue;
++	}
++
++	reason =3D BFQ_BFQQ_NO_MORE_REQUESTS;
++expire:
++	bfq_bfqq_expire(bfqd, bfqq, false, reason);
++new_queue:
++	bfqq =3D bfq_set_in_service_queue(bfqd);
++	bfq_log(bfqd, "select_queue: new queue %d returned",
++		bfqq ? bfqq->pid : 0);
++keep_queue:
++	return bfqq;
++}
++
++/*
++ * Dispatch one request from bfqq, moving it to the request queue
++ * dispatch list.
++ */
++static int bfq_dispatch_request(struct bfq_data *bfqd,
++				struct bfq_queue *bfqq)
++{
++	int dispatched =3D 0;
++	struct request *rq;
++	unsigned long service_to_charge;
++
++	/* Follow expired path, else get first next available. */
++	rq =3D bfq_check_fifo(bfqq);
++	if (!rq)
++		rq =3D bfqq->next_rq;
++	service_to_charge =3D bfq_serv_to_charge(rq, bfqq);
++
++	if (service_to_charge > bfq_bfqq_budget_left(bfqq)) {
++		/*
++		 * This may happen if the next rq is chosen in fifo order
++		 * instead of sector order. The budget is properly
++		 * dimensioned to be always sufficient to serve the next
++		 * request only if it is chosen in sector order. The reason
++		 * is that it would be quite inefficient and little useful
++		 * to always make sure that the budget is large enough to
++		 * serve even the possible next rq in fifo order.
++		 * In fact, requests are seldom served in fifo order.
++		 *
++		 * Expire the queue for budget exhaustion, and make sure
++		 * that the next act_budget is enough to serve the next
++		 * request, even if it comes from the fifo expired path.
++		 */
++		bfqq->next_rq =3D rq;
++		/*
++		 * Since this dispatch is failed, make sure that
++		 * a new one will be performed
++		 */
++		if (!bfqd->rq_in_driver)
++			bfq_schedule_dispatch(bfqd);
++		goto expire;
++	}
++
++	/* Finally, insert request into driver dispatch list. */
++	bfq_bfqq_served(bfqq, service_to_charge);
++	bfq_dispatch_insert(bfqd->queue, rq);
++
++	bfq_log_bfqq(bfqd, bfqq,
++			"dispatched %u sec req (%llu), budg left %d",
++			blk_rq_sectors(rq),
++			(unsigned long long)blk_rq_pos(rq),
++			bfq_bfqq_budget_left(bfqq));
++
++	dispatched++;
++
++	if (!bfqd->in_service_bic) {
++		atomic_long_inc(&RQ_BIC(rq)->icq.ioc->refcount);
++		bfqd->in_service_bic =3D RQ_BIC(rq);
++	}
++
++	if (bfqd->busy_queues > 1 && bfq_class_idle(bfqq))
++		goto expire;
++
++	return dispatched;
++
++expire:
++	bfq_bfqq_expire(bfqd, bfqq, false, BFQ_BFQQ_BUDGET_EXHAUSTED);
++	return dispatched;
++}
++
++static int __bfq_forced_dispatch_bfqq(struct bfq_queue *bfqq)
++{
++	int dispatched =3D 0;
++
++	while (bfqq->next_rq) {
++		bfq_dispatch_insert(bfqq->bfqd->queue, bfqq->next_rq);
++		dispatched++;
++	}
++
++	return dispatched;
++}
++
++/*
++ * Drain our current requests.
++ * Used for barriers and when switching io schedulers on-the-fly.
++ */
++static int bfq_forced_dispatch(struct bfq_data *bfqd)
++{
++	struct bfq_queue *bfqq, *n;
++	struct bfq_service_tree *st;
++	int dispatched =3D 0;
++
++	bfqq =3D bfqd->in_service_queue;
++	if (bfqq)
++		__bfq_bfqq_expire(bfqd, bfqq);
++
++	/*
++	 * Loop through classes, and be careful to leave the scheduler
++	 * in a consistent state, as feedback mechanisms and vtime
++	 * updates cannot be disabled during the process.
++	 */
++	list_for_each_entry_safe(bfqq, n, &bfqd->active_list, bfqq_list) {
++		st =3D bfq_entity_service_tree(&bfqq->entity);
++
++		dispatched +=3D __bfq_forced_dispatch_bfqq(bfqq);
++
++		bfqq->max_budget =3D bfq_max_budget(bfqd);
++
++		bfq_forget_idle(st);
++	}
++
++	return dispatched;
++}
++
++static int bfq_dispatch_requests(struct request_queue *q, int force)
++{
++	struct bfq_data *bfqd =3D q->elevator->elevator_data;
++	struct bfq_queue *bfqq;
++
++	bfq_log(bfqd, "dispatch requests: %d busy queues", bfqd->busy_queues);
++
++	if (bfqd->busy_queues =3D=3D 0)
++		return 0;
++
++	if (unlikely(force))
++		return bfq_forced_dispatch(bfqd);
++
++	/*
++	 * Force device to serve one request at a time if
++	 * strict_guarantees is true. Forcing this service scheme is
++	 * currently the ONLY way to guarantee that the request
++	 * service order enforced by the scheduler is respected by a
++	 * queueing device. Otherwise the device is free even to make
++	 * some unlucky request wait for as long as the device
++	 * wishes.
++	 *
++	 * Of course, serving one request at at time may cause loss of
++	 * throughput.
++	 */
++	if (bfqd->strict_guarantees && bfqd->rq_in_driver > 0)
++		return 0;
++
++	bfqq =3D bfq_select_queue(bfqd);
++	if (!bfqq)
++		return 0;
++
++	if (!bfq_dispatch_request(bfqd, bfqq))
++		return 0;
++
++	bfq_log_bfqq(bfqd, bfqq, "dispatched %s request",
++			bfq_bfqq_sync(bfqq) ? "sync" : "async");
++
++	return 1;
++}
++
++/*
++ * Task holds one reference to the queue, dropped when task exits.  Each rq
++ * in-flight on this queue also holds a reference, dropped when rq is free=
+d.
++ *
++ * Queue lock must be held here.
++ */
++static void bfq_put_queue(struct bfq_queue *bfqq)
++{
++	bfqq->ref--;
++	if (bfqq->ref)
++		return;
++
++	kmem_cache_free(bfq_pool, bfqq);
++}
++
++static void bfq_exit_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq)
++{
++	if (bfqq =3D=3D bfqd->in_service_queue) {
++		__bfq_bfqq_expire(bfqd, bfqq);
++		bfq_schedule_dispatch(bfqd);
++	}
++
++	bfq_log_bfqq(bfqd, bfqq, "exit_bfqq: %p, %d", bfqq, bfqq->ref);
++
++	bfq_put_queue(bfqq);
++}
++
++static void bfq_init_icq(struct io_cq *icq)
++{
++	icq_to_bic(icq)->ttime.last_end_request =3D ktime_get_ns() - (1ULL<<32);
++}
++
++static void bfq_exit_icq(struct io_cq *icq)
++{
++	struct bfq_io_cq *bic =3D icq_to_bic(icq);
++	struct bfq_data *bfqd =3D bic_to_bfqd(bic);
++
++	if (bic_to_bfqq(bic, false)) {
++		bfq_exit_bfqq(bfqd, bic_to_bfqq(bic, false));
++		bic_set_bfqq(bic, NULL, false);
++	}
++
++	if (bic_to_bfqq(bic, true)) {
++		bfq_exit_bfqq(bfqd, bic->bfqq[BLK_RW_SYNC]);
++		bic->bfqq[BLK_RW_SYNC] =3D NULL;
++	}
++}
++
++/*
++ * Update the entity prio values; note that the new values will not
++ * be used until the next (re)activation.
++ */
++static void
++bfq_set_next_ioprio_data(struct bfq_queue *bfqq, struct bfq_io_cq *bic)
++{
++	struct task_struct *tsk =3D current;
++	int ioprio_class;
++
++	ioprio_class =3D IOPRIO_PRIO_CLASS(bic->ioprio);
++	switch (ioprio_class) {
++	default:
++		dev_err(bfqq->bfqd->queue->backing_dev_info.dev,
++			"bfq: bad prio class %d\n", ioprio_class);
++	case IOPRIO_CLASS_NONE:
++		/*
++		 * No prio set, inherit CPU scheduling settings.
++		 */
++		bfqq->new_ioprio =3D task_nice_ioprio(tsk);
++		bfqq->new_ioprio_class =3D task_nice_ioclass(tsk);
++		break;
++	case IOPRIO_CLASS_RT:
++		bfqq->new_ioprio =3D IOPRIO_PRIO_DATA(bic->ioprio);
++		bfqq->new_ioprio_class =3D IOPRIO_CLASS_RT;
++		break;
++	case IOPRIO_CLASS_BE:
++		bfqq->new_ioprio =3D IOPRIO_PRIO_DATA(bic->ioprio);
++		bfqq->new_ioprio_class =3D IOPRIO_CLASS_BE;
++		break;
++	case IOPRIO_CLASS_IDLE:
++		bfqq->new_ioprio_class =3D IOPRIO_CLASS_IDLE;
++		bfqq->new_ioprio =3D 7;
++		bfq_clear_bfqq_idle_window(bfqq);
++		break;
++	}
++
++	if (bfqq->new_ioprio >=3D IOPRIO_BE_NR) {
++		pr_crit("bfq_set_next_ioprio_data: new_ioprio %d\n",
++			bfqq->new_ioprio);
++		bfqq->new_ioprio =3D IOPRIO_BE_NR;
++	}
++
++	bfqq->entity.new_weight =3D bfq_ioprio_to_weight(bfqq->new_ioprio);
++	bfqq->entity.prio_changed =3D 1;
++}
++
++static void bfq_check_ioprio_change(struct bfq_io_cq *bic, struct bio *bio)
++{
++	struct bfq_data *bfqd =3D bic_to_bfqd(bic);
++	struct bfq_queue *bfqq;
++	int ioprio =3D bic->icq.ioc->ioprio;
++
++	/*
++	 * This condition may trigger on a newly created bic, be sure to
++	 * drop the lock before returning.
++	 */
++	if (unlikely(!bfqd) || likely(bic->ioprio =3D=3D ioprio))
++		return;
++
++	bic->ioprio =3D ioprio;
++
++	bfqq =3D bic_to_bfqq(bic, false);
++	if (bfqq) {
++		bfq_put_queue(bfqq);
++		bfqq =3D bfq_get_queue(bfqd, bio, BLK_RW_ASYNC, bic);
++		bic_set_bfqq(bic, bfqq, false);
++	}
++
++	bfqq =3D bic_to_bfqq(bic, true);
++	if (bfqq)
++		bfq_set_next_ioprio_data(bfqq, bic);
++}
++
++static void bfq_init_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq,
++			  struct bfq_io_cq *bic, pid_t pid, int is_sync)
++{
++	RB_CLEAR_NODE(&bfqq->entity.rb_node);
++	INIT_LIST_HEAD(&bfqq->fifo);
++
++	bfqq->ref =3D 0;
++	bfqq->bfqd =3D bfqd;
++
++	if (bic)
++		bfq_set_next_ioprio_data(bfqq, bic);
++
++	if (is_sync) {
++		if (!bfq_class_idle(bfqq))
++			bfq_mark_bfqq_idle_window(bfqq);
++		bfq_mark_bfqq_sync(bfqq);
++	} else
++		bfq_clear_bfqq_sync(bfqq);
++	bfq_mark_bfqq_IO_bound(bfqq);
++
++	bfqq->pid =3D pid;
++
++	/* Tentative initial value to trade off between thr and lat */
++	bfqq->max_budget =3D bfq_default_budget(bfqd, bfqq);
++	bfqq->budget_timeout =3D bfq_smallest_from_now();
++	bfqq->pid =3D pid;
++
++	/* first request is almost certainly seeky */
++	bfqq->seek_history =3D 1;
++}
++
++static struct bfq_queue **bfq_async_queue_prio(struct bfq_data *bfqd,
++					       int ioprio_class, int ioprio)
++{
++	switch (ioprio_class) {
++	case IOPRIO_CLASS_RT:
++		return &async_bfqq[0][ioprio];
++	case IOPRIO_CLASS_NONE:
++		ioprio =3D IOPRIO_NORM;
++		/* fall through */
++	case IOPRIO_CLASS_BE:
++		return &async_bfqq[1][ioprio];
++	case IOPRIO_CLASS_IDLE:
++		return &async_idle_bfqq;
++	default:
++		return NULL;
++	}
++}
++
++static struct bfq_queue *bfq_get_queue(struct bfq_data *bfqd,
++				       struct bio *bio, bool is_sync,
++				       struct bfq_io_cq *bic)
++{
++	const int ioprio =3D IOPRIO_PRIO_DATA(bic->ioprio);
++	const int ioprio_class =3D IOPRIO_PRIO_CLASS(bic->ioprio);
++	struct bfq_queue **async_bfqq =3D NULL;
++	struct bfq_queue *bfqq;
++
++	rcu_read_lock();
++
++	if (!is_sync) {
++		async_bfqq =3D bfq_async_queue_prio(bfqd, ioprio_class,
++						  ioprio);
++		bfqq =3D *async_bfqq;
++		if (bfqq)
++			goto out;
++	}
++
++	bfqq =3D kmem_cache_alloc_node(bfq_pool, GFP_NOWAIT | __GFP_ZERO,
++				     bfqd->queue->node);
++
++	if (bfqq) {
++		bfq_init_bfqq(bfqd, bfqq, bic, current->pid,
++			      is_sync);
++		bfq_init_entity(&bfqq->entity);
++		bfq_log_bfqq(bfqd, bfqq, "allocated");
++	} else {
++		bfqq =3D &bfqd->oom_bfqq;
++		bfq_log_bfqq(bfqd, bfqq, "using oom bfqq");
++		goto out;
++	}
++
++	/*
++	 * Pin the queue now that it's allocated, scheduler exit will
++	 * prune it.
++	 */
++	if (async_bfqq) {
++		bfqq->ref++;
++		bfq_log_bfqq(bfqd, bfqq,
++			     "get_queue, bfqq not in async: %p, %d",
++			     bfqq, bfqq->ref);
++		*async_bfqq =3D bfqq;
++	}
++
++out:
++	bfqq->ref++;
++	bfq_log_bfqq(bfqd, bfqq, "get_queue, at end: %p, %d", bfqq, bfqq->ref);
++	rcu_read_unlock();
++	return bfqq;
++}
++
++static void bfq_update_io_thinktime(struct bfq_data *bfqd,
++				    struct bfq_io_cq *bic)
++{
++	struct bfq_ttime *ttime =3D &bic->ttime;
++	u64 elapsed =3D ktime_get_ns() - bic->ttime.last_end_request;
++
++	elapsed =3D min_t(u64, elapsed, 2ULL * bfqd->bfq_slice_idle);
++
++	ttime->ttime_samples =3D (7*bic->ttime.ttime_samples + 256) / 8;
++	ttime->ttime_total =3D div_u64(7*ttime->ttime_total + 256*elapsed,  8);
++	ttime->ttime_mean =3D div64_ul(ttime->ttime_total + 128,
++				     ttime->ttime_samples);
++}
++
++static void
++bfq_update_io_seektime(struct bfq_data *bfqd, struct bfq_queue *bfqq,
++		       struct request *rq)
++{
++	sector_t sdist =3D 0;
++
++	if (bfqq->last_request_pos) {
++		if (bfqq->last_request_pos < blk_rq_pos(rq))
++			sdist =3D blk_rq_pos(rq) - bfqq->last_request_pos;
++		else
++			sdist =3D bfqq->last_request_pos - blk_rq_pos(rq);
++	}
++
++	bfqq->seek_history <<=3D 1;
++	bfqq->seek_history |=3D (sdist > BFQQ_SEEK_THR);
++}
++
++/*
++ * Disable idle window if the process thinks too long or seeks so much that
++ * it doesn't matter.
++ */
++static void bfq_update_idle_window(struct bfq_data *bfqd,
++				   struct bfq_queue *bfqq,
++				   struct bfq_io_cq *bic)
++{
++	int enable_idle;
++
++	/* Don't idle for async or idle io prio class. */
++	if (!bfq_bfqq_sync(bfqq) || bfq_class_idle(bfqq))
++		return;
++
++	enable_idle =3D bfq_bfqq_idle_window(bfqq);
++
++	if (atomic_read(&bic->icq.ioc->active_ref) =3D=3D 0 ||
++	    bfqd->bfq_slice_idle =3D=3D 0 ||
++		(bfqd->hw_tag && BFQQ_SEEKY(bfqq)))
++		enable_idle =3D 0;
++	else if (bfq_sample_valid(bic->ttime.ttime_samples)) {
++		if (bic->ttime.ttime_mean > bfqd->bfq_slice_idle)
++			enable_idle =3D 0;
++		else
++			enable_idle =3D 1;
++	}
++	bfq_log_bfqq(bfqd, bfqq, "update_idle_window: enable_idle %d",
++		enable_idle);
++
++	if (enable_idle)
++		bfq_mark_bfqq_idle_window(bfqq);
++	else
++		bfq_clear_bfqq_idle_window(bfqq);
++}
++
++/*
++ * Called when a new fs request (rq) is added to bfqq.  Check if there's
++ * something we should do about it.
++ */
++static void bfq_rq_enqueued(struct bfq_data *bfqd, struct bfq_queue *bfqq,
++			    struct request *rq)
++{
++	struct bfq_io_cq *bic =3D RQ_BIC(rq);
++
++	if (rq->cmd_flags & REQ_META)
++		bfqq->meta_pending++;
++
++	bfq_update_io_thinktime(bfqd, bic);
++	bfq_update_io_seektime(bfqd, bfqq, rq);
++	if (bfqq->entity.service > bfq_max_budget(bfqd) / 8 ||
++	    !BFQQ_SEEKY(bfqq))
++		bfq_update_idle_window(bfqd, bfqq, bic);
++
++	bfq_log_bfqq(bfqd, bfqq,
++		     "rq_enqueued: idle_window=3D%d (seeky %d)",
++		     bfq_bfqq_idle_window(bfqq), BFQQ_SEEKY(bfqq));
++
++	bfqq->last_request_pos =3D blk_rq_pos(rq) + blk_rq_sectors(rq);
++
++	if (bfqq =3D=3D bfqd->in_service_queue && bfq_bfqq_wait_request(bfqq)) {
++		bool small_req =3D bfqq->queued[rq_is_sync(rq)] =3D=3D 1 &&
++				 blk_rq_sectors(rq) < 32;
++		bool budget_timeout =3D bfq_bfqq_budget_timeout(bfqq);
++
++		/*
++		 * There is just this request queued: if the request
++		 * is small and the queue is not to be expired, then
++		 * just exit.
++		 *
++		 * In this way, if the device is being idled to wait
++		 * for a new request from the in-service queue, we
++		 * avoid unplugging the device and committing the
++		 * device to serve just a small request. On the
++		 * contrary, we wait for the block layer to decide
++		 * when to unplug the device: hopefully, new requests
++		 * will be merged to this one quickly, then the device
++		 * will be unplugged and larger requests will be
++		 * dispatched.
++		 */
++		if (small_req && !budget_timeout)
++			return;
++
++		/*
++		 * A large enough request arrived, or the queue is to
++		 * be expired: in both cases disk idling is to be
++		 * stopped, so clear wait_request flag and reset
++		 * timer.
++		 */
++		bfq_clear_bfqq_wait_request(bfqq);
++		hrtimer_try_to_cancel(&bfqd->idle_slice_timer);
++
++		/*
++		 * The queue is not empty, because a new request just
++		 * arrived. Hence we can safely expire the queue, in
++		 * case of budget timeout, without risking that the
++		 * timestamps of the queue are not updated correctly.
++		 * See [1] for more details.
++		 */
++		if (budget_timeout)
++			bfq_bfqq_expire(bfqd, bfqq, false,
++					BFQ_BFQQ_BUDGET_TIMEOUT);
++
++		/*
++		 * Let the request rip immediately, or let a new queue be
++		 * selected if bfqq has just been expired.
++		 */
++		__blk_run_queue(bfqd->queue);
++	}
++}
++
++static void bfq_insert_request(struct request_queue *q, struct request *rq)
++{
++	struct bfq_data *bfqd =3D q->elevator->elevator_data;
++	struct bfq_queue *bfqq =3D RQ_BFQQ(rq);
++
++	assert_spin_locked(bfqd->queue->queue_lock);
++
++	bfq_add_request(rq);
++
++	rq->fifo_time =3D ktime_get_ns() + bfqd->bfq_fifo_expire[rq_is_sync(rq)];
++	list_add_tail(&rq->queuelist, &bfqq->fifo);
++
++	bfq_rq_enqueued(bfqd, bfqq, rq);
++}
++
++static void bfq_update_hw_tag(struct bfq_data *bfqd)
++{
++	bfqd->max_rq_in_driver =3D max_t(int, bfqd->max_rq_in_driver,
++				       bfqd->rq_in_driver);
++
++	if (bfqd->hw_tag =3D=3D 1)
++		return;
++
++	/*
++	 * This sample is valid if the number of outstanding requests
++	 * is large enough to allow a queueing behavior.  Note that the
++	 * sum is not exact, as it's not taking into account deactivated
++	 * requests.
++	 */
++	if (bfqd->rq_in_driver + bfqd->queued < BFQ_HW_QUEUE_THRESHOLD)
++		return;
++
++	if (bfqd->hw_tag_samples++ < BFQ_HW_QUEUE_SAMPLES)
++		return;
++
++	bfqd->hw_tag =3D bfqd->max_rq_in_driver > BFQ_HW_QUEUE_THRESHOLD;
++	bfqd->max_rq_in_driver =3D 0;
++	bfqd->hw_tag_samples =3D 0;
++}
++
++static void bfq_completed_request(struct request_queue *q, struct request =
+*rq)
++{
++	struct bfq_queue *bfqq =3D RQ_BFQQ(rq);
++	struct bfq_data *bfqd =3D bfqq->bfqd;
++
++	bfq_update_hw_tag(bfqd);
++
++	bfqd->rq_in_driver--;
++	bfqq->dispatched--;
++
++	RQ_BIC(rq)->ttime.last_end_request =3D ktime_get_ns();
++
++	/*
++	 * If this is the in-service queue, check if it needs to be expired,
++	 * or if we want to idle in case it has no pending requests.
++	 */
++	if (bfqd->in_service_queue =3D=3D bfqq) {
++		if (bfq_bfqq_budget_new(bfqq))
++			bfq_set_budget_timeout(bfqd);
++
++		if (bfq_bfqq_must_idle(bfqq)) {
++			bfq_arm_slice_timer(bfqd);
++			goto out;
++		} else if (bfq_may_expire_for_budg_timeout(bfqq))
++			bfq_bfqq_expire(bfqd, bfqq, false,
++					BFQ_BFQQ_BUDGET_TIMEOUT);
++		else if (RB_EMPTY_ROOT(&bfqq->sort_list) &&
++			 (bfqq->dispatched =3D=3D 0 ||
++			  !bfq_bfqq_may_idle(bfqq)))
++			bfq_bfqq_expire(bfqd, bfqq, false,
++					BFQ_BFQQ_NO_MORE_REQUESTS);
++	}
++
++	if (!bfqd->rq_in_driver)
++		bfq_schedule_dispatch(bfqd);
++
++out:
++	return;
++}
++
++static int __bfq_may_queue(struct bfq_queue *bfqq)
++{
++	if (bfq_bfqq_wait_request(bfqq) && bfq_bfqq_must_alloc(bfqq)) {
++		bfq_clear_bfqq_must_alloc(bfqq);
++		return ELV_MQUEUE_MUST;
++	}
++
++	return ELV_MQUEUE_MAY;
++}
++
++static int bfq_may_queue(struct request_queue *q, int op, int op_flags)
++{
++	struct bfq_data *bfqd =3D q->elevator->elevator_data;
++	struct task_struct *tsk =3D current;
++	struct bfq_io_cq *bic;
++	struct bfq_queue *bfqq;
++
++	/*
++	 * Don't force setup of a queue from here, as a call to may_queue
++	 * does not necessarily imply that a request actually will be
++	 * queued. So just lookup a possibly existing queue, or return
++	 * 'may queue' if that fails.
++	 */
++	bic =3D bfq_bic_lookup(bfqd, tsk->io_context);
++	if (!bic)
++		return ELV_MQUEUE_MAY;
++
++	bfqq =3D bic_to_bfqq(bic, rw_is_sync(op, op_flags));
++	if (bfqq)
++		return __bfq_may_queue(bfqq);
++
++	return ELV_MQUEUE_MAY;
++}
++
++/*
++ * Queue lock held here.
++ */
++static void bfq_put_request(struct request *rq)
++{
++	struct bfq_queue *bfqq =3D RQ_BFQQ(rq);
++
++	if (bfqq) {
++		const int rw =3D rq_data_dir(rq);
++
++		bfqq->allocated[rw]--;
++
++		rq->elv.priv[0] =3D NULL;
++		rq->elv.priv[1] =3D NULL;
++
++		bfq_log_bfqq(bfqq->bfqd, bfqq, "put_request %p, %d",
++			     bfqq, bfqq->ref);
++		bfq_put_queue(bfqq);
++	}
++}
++
++/*
++ * Allocate bfq data structures associated with this request.
++ */
++static int bfq_set_request(struct request_queue *q, struct request *rq,
++			   struct bio *bio, gfp_t gfp_mask)
++{
++	struct bfq_data *bfqd =3D q->elevator->elevator_data;
++	struct bfq_io_cq *bic =3D icq_to_bic(rq->elv.icq);
++	const int rw =3D rq_data_dir(rq);
++	const int is_sync =3D rq_is_sync(rq);
++	struct bfq_queue *bfqq;
++	unsigned long flags;
++
++	spin_lock_irqsave(q->queue_lock, flags);
++
++	bfq_check_ioprio_change(bic, bio);
++
++	if (!bic)
++		goto queue_fail;
++
++	bfqq =3D bic_to_bfqq(bic, is_sync);
++	if (!bfqq || bfqq =3D=3D &bfqd->oom_bfqq) {
++		if (bfqq)
++			bfq_put_queue(bfqq);
++		bfqq =3D bfq_get_queue(bfqd, bio, is_sync, bic);
++		bic_set_bfqq(bic, bfqq, is_sync);
++	}
++
++	bfqq->allocated[rw]++;
++	bfqq->ref++;
++	bfq_log_bfqq(bfqd, bfqq, "set_request: bfqq %p, %d", bfqq, bfqq->ref);
++
++	rq->elv.priv[0] =3D bic;
++	rq->elv.priv[1] =3D bfqq;
++
++	spin_unlock_irqrestore(q->queue_lock, flags);
++
++	return 0;
++
++queue_fail:
++	bfq_schedule_dispatch(bfqd);
++	spin_unlock_irqrestore(q->queue_lock, flags);
++
++	return 1;
++}
++
++static void bfq_kick_queue(struct work_struct *work)
++{
++	struct bfq_data *bfqd =3D
++		container_of(work, struct bfq_data, unplug_work);
++	struct request_queue *q =3D bfqd->queue;
++
++	spin_lock_irq(q->queue_lock);
++	__blk_run_queue(q);
++	spin_unlock_irq(q->queue_lock);
++}
++
++/*
++ * Handler of the expiration of the timer running if the in-service queue
++ * is idling inside its time slice.
++ */
++static enum hrtimer_restart bfq_idle_slice_timer(struct hrtimer *timer)
++{
++	struct bfq_data *bfqd =3D container_of(timer, struct bfq_data,
++					     idle_slice_timer);
++	struct bfq_queue *bfqq;
++	unsigned long flags;
++	enum bfqq_expiration reason;
++
++	spin_lock_irqsave(bfqd->queue->queue_lock, flags);
++
++	bfqq =3D bfqd->in_service_queue;
++	/*
++	 * Theoretical race here: the in-service queue can be NULL or
++	 * different from the queue that was idling if the timer handler
++	 * spins on the queue_lock and a new request arrives for the
++	 * current queue and there is a full dispatch cycle that changes
++	 * the in-service queue.  This can hardly happen, but in the worst
++	 * case we just expire a queue too early.
++	 */
++	if (bfqq) {
++		bfq_log_bfqq(bfqd, bfqq, "slice_timer expired");
++		bfq_clear_bfqq_wait_request(bfqq);
++
++		if (bfq_bfqq_budget_timeout(bfqq))
++			/*
++			 * Also here the queue can be safely expired
++			 * for budget timeout without wasting
++			 * guarantees
++			 */
++			reason =3D BFQ_BFQQ_BUDGET_TIMEOUT;
++		else if (bfqq->queued[0] =3D=3D 0 && bfqq->queued[1] =3D=3D 0)
++			/*
++			 * The queue may not be empty upon timer expiration,
++			 * because we may not disable the timer when the
++			 * first request of the in-service queue arrives
++			 * during disk idling.
++			 */
++			reason =3D BFQ_BFQQ_TOO_IDLE;
++		else
++			goto schedule_dispatch;
++
++		bfq_bfqq_expire(bfqd, bfqq, true, reason);
++	}
++
++schedule_dispatch:
++	bfq_schedule_dispatch(bfqd);
++
++	spin_unlock_irqrestore(bfqd->queue->queue_lock, flags);
++	return HRTIMER_NORESTART;
++}
++
++static void bfq_shutdown_timer_wq(struct bfq_data *bfqd)
++{
++	hrtimer_cancel(&bfqd->idle_slice_timer);
++	cancel_work_sync(&bfqd->unplug_work);
++}
++
++static void __bfq_put_async_bfqq(struct bfq_data *bfqd,
++					struct bfq_queue **bfqq_ptr)
++{
++	struct bfq_queue *bfqq =3D *bfqq_ptr;
++
++	bfq_log(bfqd, "put_async_bfqq: %p", bfqq);
++	if (bfqq) {
++		bfq_log_bfqq(bfqd, bfqq, "put_async_bfqq: putting %p, %d",
++			     bfqq, bfqq->ref);
++		bfq_put_queue(bfqq);
++		*bfqq_ptr =3D NULL;
++	}
++}
++
++/*
++ * Release the extra reference of the async queues as the device
++ * goes away.
++ */
++static void bfq_put_async_queues(struct bfq_data *bfqd)
++{
++	int i, j;
++
++	for (i =3D 0; i < 2; i++)
++		for (j =3D 0; j < IOPRIO_BE_NR; j++)
++			__bfq_put_async_bfqq(bfqd, &async_bfqq[i][j]);
++
++	__bfq_put_async_bfqq(bfqd, &async_idle_bfqq);
++}
++
++static void bfq_exit_queue(struct elevator_queue *e)
++{
++	struct bfq_data *bfqd =3D e->elevator_data;
++	struct request_queue *q =3D bfqd->queue;
++	struct bfq_queue *bfqq, *n;
++
++	bfq_shutdown_timer_wq(bfqd);
++
++	spin_lock_irq(q->queue_lock);
++
++	list_for_each_entry_safe(bfqq, n, &bfqd->idle_list, bfqq_list)
++		bfq_deactivate_bfqq(bfqd, bfqq, 0);
++
++	bfq_put_async_queues(bfqd);
++	spin_unlock_irq(q->queue_lock);
++
++	bfq_shutdown_timer_wq(bfqd);
++
++	kfree(bfqd);
++}
++
++static int bfq_init_queue(struct request_queue *q, struct elevator_type *e)
++{
++	struct bfq_data *bfqd;
++	struct elevator_queue *eq;
++	int i;
++
++	eq =3D elevator_alloc(q, e);
++	if (!eq)
++		return -ENOMEM;
++
++	bfqd =3D kzalloc_node(sizeof(*bfqd), GFP_KERNEL, q->node);
++	if (!bfqd) {
++		kobject_put(&eq->kobj);
++		return -ENOMEM;
++	}
++	eq->elevator_data =3D bfqd;
++
++	/*
++	 * Our fallback bfqq if bfq_find_alloc_queue() runs into OOM issues.
++	 * Grab a permanent reference to it, so that the normal code flow
++	 * will not attempt to free it.
++	 */
++	bfq_init_bfqq(bfqd, &bfqd->oom_bfqq, NULL, 1, 0);
++	bfqd->oom_bfqq.ref++;
++	bfqd->oom_bfqq.new_ioprio =3D BFQ_DEFAULT_QUEUE_IOPRIO;
++	bfqd->oom_bfqq.new_ioprio_class =3D IOPRIO_CLASS_BE;
++	bfqd->oom_bfqq.entity.new_weight =3D
++		bfq_ioprio_to_weight(bfqd->oom_bfqq.new_ioprio);
++	/*
++	 * Trigger weight initialization, according to ioprio, at the
++	 * oom_bfqq's first activation. The oom_bfqq's ioprio and ioprio
++	 * class won't be changed any more.
++	 */
++	bfqd->oom_bfqq.entity.prio_changed =3D 1;
++
++	bfqd->queue =3D q;
++
++	spin_lock_irq(q->queue_lock);
++	q->elevator =3D eq;
++	spin_unlock_irq(q->queue_lock);
++
++	for (i =3D 0; i < BFQ_IOPRIO_CLASSES; i++)
++		bfqd->sched_data.service_tree[i] =3D BFQ_SERVICE_TREE_INIT;
++
++	hrtimer_init(&bfqd->idle_slice_timer, CLOCK_MONOTONIC,
++		     HRTIMER_MODE_REL);
++	bfqd->idle_slice_timer.function =3D bfq_idle_slice_timer;
++
++	INIT_WORK(&bfqd->unplug_work, bfq_kick_queue);
++
++	INIT_LIST_HEAD(&bfqd->active_list);
++	INIT_LIST_HEAD(&bfqd->idle_list);
++
++	bfqd->hw_tag =3D -1;
++
++	bfqd->bfq_max_budget =3D bfq_default_max_budget;
++
++	bfqd->bfq_fifo_expire[0] =3D bfq_fifo_expire[0];
++	bfqd->bfq_fifo_expire[1] =3D bfq_fifo_expire[1];
++	bfqd->bfq_back_max =3D bfq_back_max;
++	bfqd->bfq_back_penalty =3D bfq_back_penalty;
++	bfqd->bfq_slice_idle =3D bfq_slice_idle;
++	bfqd->bfq_class_idle_last_service =3D 0;
++	bfqd->bfq_timeout =3D bfq_timeout;
++
++	bfqd->bfq_requests_within_timer =3D 120;
++
++	return 0;
++}
++
++static void bfq_slab_kill(void)
++{
++	kmem_cache_destroy(bfq_pool);
++}
++
++static int __init bfq_slab_setup(void)
++{
++	bfq_pool =3D KMEM_CACHE(bfq_queue, 0);
++	if (!bfq_pool)
++		return -ENOMEM;
++	return 0;
++}
++
++static ssize_t bfq_var_show(unsigned int var, char *page)
++{
++	return sprintf(page, "%u\n", var);
++}
++
++static ssize_t bfq_var_store(unsigned long *var, const char *page,
++			     size_t count)
++{
++	unsigned long new_val;
++	int ret =3D kstrtoul(page, 10, &new_val);
++
++	if (ret =3D=3D 0)
++		*var =3D new_val;
++
++	return count;
++}
++
++static ssize_t bfq_weights_show(struct elevator_queue *e, char *page)
++{
++	struct bfq_queue *bfqq;
++	struct bfq_data *bfqd =3D e->elevator_data;
++	ssize_t num_char =3D 0;
++
++	num_char +=3D sprintf(page + num_char, "Tot reqs queued %d\n\n",
++			    bfqd->queued);
++
++	spin_lock_irq(bfqd->queue->queue_lock);
++
++	num_char +=3D sprintf(page + num_char, "Active:\n");
++	list_for_each_entry(bfqq, &bfqd->active_list, bfqq_list) {
++		num_char +=3D sprintf(page + num_char,
++				    "pid%d: weight %hu, nr_queued %d %d\n",
++				    bfqq->pid,
++				    bfqq->entity.weight,
++				    bfqq->queued[0],
++				    bfqq->queued[1]);
++	}
++
++	num_char +=3D sprintf(page + num_char, "Idle:\n");
++	list_for_each_entry(bfqq, &bfqd->idle_list, bfqq_list) {
++		num_char +=3D sprintf(page + num_char,
++				    "pid%d: weight %hu\n",
++				    bfqq->pid,
++				    bfqq->entity.weight);
++	}
++
++	spin_unlock_irq(bfqd->queue->queue_lock);
++
++	return num_char;
++}
++
++#define SHOW_FUNCTION(__FUNC, __VAR, __CONV)				\
++static ssize_t __FUNC(struct elevator_queue *e, char *page)		\
++{									\
++	struct bfq_data *bfqd =3D e->elevator_data;			\
++	u64 __data =3D __VAR;						\
++	if (__CONV =3D=3D 1)						\
++		__data =3D jiffies_to_msecs(__data);			\
++	else if (__CONV =3D=3D 2)						\
++		__data =3D div_u64(__data, NSEC_PER_MSEC);		\
++	return bfq_var_show(__data, (page));				\
++}
++SHOW_FUNCTION(bfq_fifo_expire_sync_show, bfqd->bfq_fifo_expire[1], 2);
++SHOW_FUNCTION(bfq_fifo_expire_async_show, bfqd->bfq_fifo_expire[0], 2);
++SHOW_FUNCTION(bfq_back_seek_max_show, bfqd->bfq_back_max, 0);
++SHOW_FUNCTION(bfq_back_seek_penalty_show, bfqd->bfq_back_penalty, 0);
++SHOW_FUNCTION(bfq_slice_idle_show, bfqd->bfq_slice_idle, 2);
++SHOW_FUNCTION(bfq_max_budget_show, bfqd->bfq_user_max_budget, 0);
++SHOW_FUNCTION(bfq_timeout_sync_show, bfqd->bfq_timeout, 1);
++SHOW_FUNCTION(bfq_strict_guarantees_show, bfqd->strict_guarantees, 0);
++#undef SHOW_FUNCTION
++
++#define USEC_SHOW_FUNCTION(__FUNC, __VAR)				\
++static ssize_t __FUNC(struct elevator_queue *e, char *page)		\
++{									\
++	struct bfq_data *bfqd =3D e->elevator_data;			\
++	u64 __data =3D __VAR;						\
++	__data =3D div_u64(__data, NSEC_PER_USEC);			\
++	return bfq_var_show(__data, (page));				\
++}
++USEC_SHOW_FUNCTION(bfq_slice_idle_us_show, bfqd->bfq_slice_idle);
++#undef USEC_SHOW_FUNCTION
++
++#define STORE_FUNCTION(__FUNC, __PTR, MIN, MAX, __CONV)			\
++static ssize_t								\
++__FUNC(struct elevator_queue *e, const char *page, size_t count)	\
++{									\
++	struct bfq_data *bfqd =3D e->elevator_data;			\
++	unsigned long uninitialized_var(__data);			\
++	int ret =3D bfq_var_store(&__data, (page), count);		\
++	if (__data < (MIN))						\
++		__data =3D (MIN);						\
++	else if (__data > (MAX))					\
++		__data =3D (MAX);						\
++	if (__CONV =3D=3D 1)						\
++		*(__PTR) =3D msecs_to_jiffies(__data);			\
++	else if (__CONV =3D=3D 2)						\
++		*(__PTR) =3D (u64)__data * NSEC_PER_MSEC;			\
++	else								\
++		*(__PTR) =3D __data;					\
++	return ret;							\
++}
++STORE_FUNCTION(bfq_fifo_expire_sync_store, &bfqd->bfq_fifo_expire[1], 1,
++		INT_MAX, 2);
++STORE_FUNCTION(bfq_fifo_expire_async_store, &bfqd->bfq_fifo_expire[0], 1,
++		INT_MAX, 2);
++STORE_FUNCTION(bfq_back_seek_max_store, &bfqd->bfq_back_max, 0, INT_MAX, 0=
+);
++STORE_FUNCTION(bfq_back_seek_penalty_store, &bfqd->bfq_back_penalty, 1,
++		INT_MAX, 0);
++STORE_FUNCTION(bfq_slice_idle_store, &bfqd->bfq_slice_idle, 0, INT_MAX, 2);
++#undef STORE_FUNCTION
++
++#define USEC_STORE_FUNCTION(__FUNC, __PTR, MIN, MAX)			\
++static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t c=
+ount)\
++{									\
++	struct bfq_data *bfqd =3D e->elevator_data;			\
++	unsigned long __data;						\
++	int ret =3D bfq_var_store(&__data, (page), count);		\
++	if (__data < (MIN))						\
++		__data =3D (MIN);						\
++	else if (__data > (MAX))					\
++		__data =3D (MAX);						\
++	*(__PTR) =3D (u64)__data * NSEC_PER_USEC;				\
++	return ret;							\
++}
++USEC_STORE_FUNCTION(bfq_slice_idle_us_store, &bfqd->bfq_slice_idle, 0,
++		    UINT_MAX);
++#undef USEC_STORE_FUNCTION
++
++/* do nothing for the moment */
++static ssize_t bfq_weights_store(struct elevator_queue *e,
++				    const char *page, size_t count)
++{
++	return count;
++}
++
++static unsigned long bfq_estimated_max_budget(struct bfq_data *bfqd)
++{
++	u64 timeout =3D jiffies_to_msecs(bfqd->bfq_timeout);
++
++	if (bfqd->peak_rate_samples >=3D BFQ_PEAK_RATE_SAMPLES)
++		return bfq_calc_max_budget(bfqd->peak_rate, timeout);
++	else
++		return bfq_default_max_budget;
++}
++
++static ssize_t bfq_max_budget_store(struct elevator_queue *e,
++				    const char *page, size_t count)
++{
++	struct bfq_data *bfqd =3D e->elevator_data;
++	unsigned long uninitialized_var(__data);
++	int ret =3D bfq_var_store(&__data, (page), count);
++
++	if (__data =3D=3D 0)
++		bfqd->bfq_max_budget =3D bfq_estimated_max_budget(bfqd);
++	else {
++		if (__data > INT_MAX)
++			__data =3D INT_MAX;
++		bfqd->bfq_max_budget =3D __data;
++	}
++
++	bfqd->bfq_user_max_budget =3D __data;
++
++	return ret;
++}
++
++/*
++ * Leaving this name to preserve name compatibility with cfq
++ * parameters, but this timeout is used for both sync and async.
++ */
++static ssize_t bfq_timeout_sync_store(struct elevator_queue *e,
++				      const char *page, size_t count)
++{
++	struct bfq_data *bfqd =3D e->elevator_data;
++	unsigned long uninitialized_var(__data);
++	int ret =3D bfq_var_store(&__data, (page), count);
++
++	if (__data < 1)
++		__data =3D 1;
++	else if (__data > INT_MAX)
++		__data =3D INT_MAX;
++
++	bfqd->bfq_timeout =3D msecs_to_jiffies(__data);
++	if (bfqd->bfq_user_max_budget =3D=3D 0)
++		bfqd->bfq_max_budget =3D bfq_estimated_max_budget(bfqd);
++
++	return ret;
++}
++
++static ssize_t bfq_strict_guarantees_store(struct elevator_queue *e,
++				     const char *page, size_t count)
++{
++	struct bfq_data *bfqd =3D e->elevator_data;
++	unsigned long uninitialized_var(__data);
++	int ret =3D bfq_var_store(&__data, (page), count);
++
++	if (__data > 1)
++		__data =3D 1;
++	if (!bfqd->strict_guarantees && __data =3D=3D 1
++	    && bfqd->bfq_slice_idle < 8 * NSEC_PER_MSEC)
++		bfqd->bfq_slice_idle =3D 8 * NSEC_PER_MSEC;
++
++	bfqd->strict_guarantees =3D __data;
++
++	return ret;
++}
++
++#define BFQ_ATTR(name) \
++	__ATTR(name, S_IRUGO|S_IWUSR, bfq_##name##_show, bfq_##name##_store)
++
++static struct elv_fs_entry bfq_attrs[] =3D {
++	BFQ_ATTR(fifo_expire_sync),
++	BFQ_ATTR(fifo_expire_async),
++	BFQ_ATTR(back_seek_max),
++	BFQ_ATTR(back_seek_penalty),
++	BFQ_ATTR(slice_idle),
++	BFQ_ATTR(slice_idle_us),
++	BFQ_ATTR(max_budget),
++	BFQ_ATTR(timeout_sync),
++	BFQ_ATTR(strict_guarantees),
++	BFQ_ATTR(weights),
++	__ATTR_NULL
++};
++
++static struct elevator_type iosched_bfq =3D {
++	.ops =3D {
++		.elevator_merge_fn =3D		bfq_merge,
++		.elevator_merged_fn =3D		bfq_merged_request,
++		.elevator_merge_req_fn =3D	bfq_merged_requests,
++		.elevator_allow_bio_merge_fn =3D	bfq_allow_bio_merge,
++		.elevator_allow_rq_merge_fn =3D	bfq_allow_rq_merge,
++		.elevator_dispatch_fn =3D		bfq_dispatch_requests,
++		.elevator_add_req_fn =3D		bfq_insert_request,
++		.elevator_activate_req_fn =3D	bfq_activate_request,
++		.elevator_deactivate_req_fn =3D	bfq_deactivate_request,
++		.elevator_completed_req_fn =3D	bfq_completed_request,
++		.elevator_former_req_fn =3D	elv_rb_former_request,
++		.elevator_latter_req_fn =3D	elv_rb_latter_request,
++		.elevator_init_icq_fn =3D		bfq_init_icq,
++		.elevator_exit_icq_fn =3D		bfq_exit_icq,
++		.elevator_set_req_fn =3D		bfq_set_request,
++		.elevator_put_req_fn =3D		bfq_put_request,
++		.elevator_may_queue_fn =3D	bfq_may_queue,
++		.elevator_init_fn =3D		bfq_init_queue,
++		.elevator_exit_fn =3D		bfq_exit_queue,
++	},
++	.icq_size =3D		sizeof(struct bfq_io_cq),
++	.icq_align =3D		__alignof__(struct bfq_io_cq),
++	.elevator_attrs =3D	bfq_attrs,
++	.elevator_name =3D	"bfq",
++	.elevator_owner =3D	THIS_MODULE,
++};
++
++static int __init bfq_init(void)
++{
++	int ret;
++	char msg[50] =3D "BFQ I/O-scheduler: v0";
++
++	ret =3D -ENOMEM;
++	if (bfq_slab_setup())
++		goto err_pol_unreg;
++
++	ret =3D elv_register(&iosched_bfq);
++	if (ret)
++		goto err_pol_unreg;
++
++#ifdef CONFIG_BFQ_GROUP_IOSCHED
++	strcat(msg, " (with cgroups support)");
++#endif
++	pr_info("%s", msg);
++
++	return 0;
++
++err_pol_unreg:
++	return ret;
++}
++
++static void __exit bfq_exit(void)
++{
++	elv_unregister(&iosched_bfq);
++	bfq_slab_kill();
++}
++
++module_init(bfq_init);
++module_exit(bfq_exit);
++
++MODULE_AUTHOR("Arianna Avanzini, Fabio Checconi, Paolo Valente");
++MODULE_LICENSE("GPL");
+-- =
+
+2.10.0
 
 
-FYI, we noticed a +7.4% regression of perf-stat.branch-miss-rate due to com=
-mit:
-
-commit 18d1796d0b45762ec6f58c5ed2ad3f7510ffbaa9 ("perf powerpc: Don't call =
-perf_event_disable from atomic context")
-https://github.com/0day-ci/linux Jiri-Olsa/perf-powerpc-Don-t-call-perf_eve=
-nt_disable-from-atomic-context/20161006-203500
-
-in testcase: will-it-scale
-on test machine: 32 threads Intel(R) Xeon(R) CPU E5-2680 0 @ 2.70GHz with 6=
-4G memory
-with following parameters:
-
-	test: poll2
-	cpufreq_governor: performance
-
-Will It Scale takes a testcase and runs it from 1 through to n parallel cop=
-ies to see if the testcase will scale. It builds both a process and threads=
- based test in order to see any differences between the two.
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provid=
-ed
-for informational purposes only. Any difference in system hardware or softw=
-are
-design or configuration may affect actual performance.
-
-Details are as below:
----------------------------------------------------------------------------=
------------------------>
-
-
-To reproduce:
-
-        git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-tes=
-ts.git
-        cd lkp-tests
-        bin/lkp install job.yaml  # job file is attached in this email
-        bin/lkp run     job.yaml
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase:
-  gcc-6/performance/x86_64-rhel-7.2/debian-x86_64-2016-08-31.cgz/lkp-sb03/p=
-oll2/will-it-scale
-
-commit: =
-
-  41aad2a6d4 (" perf/core improvements and fixes:")
-  18d1796d0b ("perf powerpc: Don't call perf_event_disable from atomic cont=
-ext")
-
-41aad2a6d4fcdda8 18d1796d0b45762ec6f58c5ed2 =
-
----------------- -------------------------- =
-
-       fail:runs  %reproduction    fail:runs
-           |             |             |    =
-
-         %stddev     %change         %stddev
-             \          |                \  =
-
-      0.19 =C2=B1  0%      +7.4%       0.21 =C2=B1  0%  perf-stat.branch-mi=
-ss-rate%
- 9.591e+09 =C2=B1  1%      +9.1%  1.047e+10 =C2=B1  0%  perf-stat.branch-mi=
-sses
- 1.962e+09 =C2=B1  0%      +2.3%  2.008e+09 =C2=B1  1%  perf-stat.cache-ref=
-erences
-     51.18 =C2=B1  2%      +5.6%      54.06 =C2=B1  1%  perf-stat.iTLB-load=
--miss-rate%
-  46430577 =C2=B1  5%      -6.9%   43241506 =C2=B1  2%  perf-stat.iTLB-loads
-      9.90 =C2=B1  4%      +9.3%      10.82 =C2=B1  4%  turbostat.Pkg%pc2
-     62066 =C2=B1 24%     +34.7%      83582 =C2=B1 11%  numa-meminfo.node1.=
-Active
-     49531 =C2=B1 30%     +42.9%      70778 =C2=B1 13%  numa-meminfo.node1.=
-Active(anon)
-     27883 =C2=B1100%    -100.0%       0.00 =C2=B1 -1%  latency_stats.avg.p=
-roc_cgroup_show.proc_single_show.seq_read.__vfs_read.vfs_read.SyS_read.do_s=
-yscall_64.return_from_SYSCALL_64
-     27883 =C2=B1100%    -100.0%       0.00 =C2=B1 -1%  latency_stats.max.p=
-roc_cgroup_show.proc_single_show.seq_read.__vfs_read.vfs_read.SyS_read.do_s=
-yscall_64.return_from_SYSCALL_64
-     32685 =C2=B1 38%     +88.5%      61603 =C2=B1147%  latency_stats.sum.c=
-all_rwsem_down_write_failed.path_openat.do_filp_open.do_sys_open.SyS_open.e=
-ntry_SYSCALL_64_fastpath
-     27883 =C2=B1100%    -100.0%       0.00 =C2=B1 -1%  latency_stats.sum.p=
-roc_cgroup_show.proc_single_show.seq_read.__vfs_read.vfs_read.SyS_read.do_s=
-yscall_64.return_from_SYSCALL_64
-     92795 =C2=B1  4%      -8.6%      84853 =C2=B1  6%  numa-vmstat.node0.n=
-uma_hit
-     92782 =C2=B1  4%      -8.5%      84851 =C2=B1  6%  numa-vmstat.node0.n=
-uma_local
-     12381 =C2=B1 30%     +42.9%      17694 =C2=B1 13%  numa-vmstat.node1.n=
-r_active_anon
-     12381 =C2=B1 30%     +42.9%      17694 =C2=B1 13%  numa-vmstat.node1.n=
-r_zone_active_anon
-     21.80 =C2=B1 59%     -69.8%       6.58 =C2=B1 83%  sched_debug.cpu.clo=
-ck.stddev
-     21.80 =C2=B1 59%     -69.8%       6.58 =C2=B1 83%  sched_debug.cpu.clo=
-ck_task.stddev
-      0.00 =C2=B1 23%     -34.3%       0.00 =C2=B1 20%  sched_debug.cpu.nex=
-t_balance.stddev
-     35829 =C2=B1  9%     -18.4%      29221 =C2=B1  6%  sched_debug.cpu.nr_=
-switches.max
-      8361 =C2=B1  6%     -13.4%       7243 =C2=B1  7%  sched_debug.cpu.nr_=
-switches.stddev
-      8.43 =C2=B1 11%     -25.2%       6.30 =C2=B1 12%  sched_debug.cpu.nr_=
-uninterruptible.stddev
-     18057 =C2=B1  6%     -14.3%      15482 =C2=B1  8%  sched_debug.cpu.sch=
-ed_count.stddev
-
-
-
-                             perf-stat.branch-miss-rate_
-
-   0.22 ++-----------------------------------------------------------------=
--+
-        |            O                                                     =
- |
-  0.215 ++      O OO                                                       =
- |
-        O  O O                                                             =
- |
-        | O   O                                                            =
- |
-   0.21 ++                                                                 =
- |
-        |               O      O                                           =
- |
-  0.205 ++             O  OO O  O O                                        =
- |
-        |                                                                  =
- |
-    0.2 ++                                                                 =
- |
-        |                                                                  =
- |
-        |                                                                  =
- |
-  0.195 ++         *.*. *. *.*.*   .* .**.   *.**.   *.*.*                 =
- |
-        *.**.**.*.*    *  *     *.*  *    *.*     *.*     *.**.*. *.*.**. *=
-.*
-   0.19 ++-------------------------------------------------------*-------*-=
--+
-
-	[*] bisect-good sample
-	[O] bisect-bad  sample
-
-
-
-
-Thanks,
-Xiaolong
-
---===============5363104788474469175==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="config-4.8.0-rc7-00165-g18d1796"
-
-IwojIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZpbGU7IERPIE5PVCBFRElULgojIExpbnV4L3g4
-Nl82NCA0LjguMC1yYzcgS2VybmVsIENvbmZpZ3VyYXRpb24KIwpDT05GSUdfNjRCSVQ9eQpDT05G
-SUdfWDg2XzY0PXkKQ09ORklHX1g4Nj15CkNPTkZJR19JTlNUUlVDVElPTl9ERUNPREVSPXkKQ09O
-RklHX09VVFBVVF9GT1JNQVQ9ImVsZjY0LXg4Ni02NCIKQ09ORklHX0FSQ0hfREVGQ09ORklHPSJh
-cmNoL3g4Ni9jb25maWdzL3g4Nl82NF9kZWZjb25maWciCkNPTkZJR19MT0NLREVQX1NVUFBPUlQ9
-eQpDT05GSUdfU1RBQ0tUUkFDRV9TVVBQT1JUPXkKQ09ORklHX01NVT15CkNPTkZJR19BUkNIX01N
-QVBfUk5EX0JJVFNfTUlOPTI4CkNPTkZJR19BUkNIX01NQVBfUk5EX0JJVFNfTUFYPTMyCkNPTkZJ
-R19BUkNIX01NQVBfUk5EX0NPTVBBVF9CSVRTX01JTj04CkNPTkZJR19BUkNIX01NQVBfUk5EX0NP
-TVBBVF9CSVRTX01BWD0xNgpDT05GSUdfTkVFRF9ETUFfTUFQX1NUQVRFPXkKQ09ORklHX05FRURf
-U0dfRE1BX0xFTkdUSD15CkNPTkZJR19HRU5FUklDX0lTQV9ETUE9eQpDT05GSUdfR0VORVJJQ19C
-VUc9eQpDT05GSUdfR0VORVJJQ19CVUdfUkVMQVRJVkVfUE9JTlRFUlM9eQpDT05GSUdfR0VORVJJ
-Q19IV0VJR0hUPXkKQ09ORklHX0FSQ0hfTUFZX0hBVkVfUENfRkRDPXkKQ09ORklHX1JXU0VNX1hD
-SEdBRERfQUxHT1JJVEhNPXkKQ09ORklHX0dFTkVSSUNfQ0FMSUJSQVRFX0RFTEFZPXkKQ09ORklH
-X0FSQ0hfSEFTX0NQVV9SRUxBWD15CkNPTkZJR19BUkNIX0hBU19DQUNIRV9MSU5FX1NJWkU9eQpD
-T05GSUdfSEFWRV9TRVRVUF9QRVJfQ1BVX0FSRUE9eQpDT05GSUdfTkVFRF9QRVJfQ1BVX0VNQkVE
-X0ZJUlNUX0NIVU5LPXkKQ09ORklHX05FRURfUEVSX0NQVV9QQUdFX0ZJUlNUX0NIVU5LPXkKQ09O
-RklHX0FSQ0hfSElCRVJOQVRJT05fUE9TU0lCTEU9eQpDT05GSUdfQVJDSF9TVVNQRU5EX1BPU1NJ
-QkxFPXkKQ09ORklHX0FSQ0hfV0FOVF9IVUdFX1BNRF9TSEFSRT15CkNPTkZJR19BUkNIX1dBTlRf
-R0VORVJBTF9IVUdFVExCPXkKQ09ORklHX1pPTkVfRE1BMzI9eQpDT05GSUdfQVVESVRfQVJDSD15
-CkNPTkZJR19BUkNIX1NVUFBPUlRTX09QVElNSVpFRF9JTkxJTklORz15CkNPTkZJR19BUkNIX1NV
-UFBPUlRTX0RFQlVHX1BBR0VBTExPQz15CkNPTkZJR19IQVZFX0lOVEVMX1RYVD15CkNPTkZJR19Y
-ODZfNjRfU01QPXkKQ09ORklHX0FSQ0hfU1VQUE9SVFNfVVBST0JFUz15CkNPTkZJR19GSVhfRUFS
-TFlDT05fTUVNPXkKQ09ORklHX0RFQlVHX1JPREFUQT15CkNPTkZJR19QR1RBQkxFX0xFVkVMUz00
-CkNPTkZJR19ERUZDT05GSUdfTElTVD0iL2xpYi9tb2R1bGVzLyRVTkFNRV9SRUxFQVNFLy5jb25m
-aWciCkNPTkZJR19JUlFfV09SSz15CkNPTkZJR19CVUlMRFRJTUVfRVhUQUJMRV9TT1JUPXkKCiMK
-IyBHZW5lcmFsIHNldHVwCiMKQ09ORklHX0lOSVRfRU5WX0FSR19MSU1JVD0zMgpDT05GSUdfQ1JP
-U1NfQ09NUElMRT0iIgojIENPTkZJR19DT01QSUxFX1RFU1QgaXMgbm90IHNldApDT05GSUdfTE9D
-QUxWRVJTSU9OPSIiCkNPTkZJR19MT0NBTFZFUlNJT05fQVVUTz15CkNPTkZJR19IQVZFX0tFUk5F
-TF9HWklQPXkKQ09ORklHX0hBVkVfS0VSTkVMX0JaSVAyPXkKQ09ORklHX0hBVkVfS0VSTkVMX0xa
-TUE9eQpDT05GSUdfSEFWRV9LRVJORUxfWFo9eQpDT05GSUdfSEFWRV9LRVJORUxfTFpPPXkKQ09O
-RklHX0hBVkVfS0VSTkVMX0xaND15CkNPTkZJR19LRVJORUxfR1pJUD15CiMgQ09ORklHX0tFUk5F
-TF9CWklQMiBpcyBub3Qgc2V0CiMgQ09ORklHX0tFUk5FTF9MWk1BIGlzIG5vdCBzZXQKIyBDT05G
-SUdfS0VSTkVMX1haIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VSTkVMX0xaTyBpcyBub3Qgc2V0CiMg
-Q09ORklHX0tFUk5FTF9MWjQgaXMgbm90IHNldApDT05GSUdfREVGQVVMVF9IT1NUTkFNRT0iKG5v
-bmUpIgpDT05GSUdfU1dBUD15CkNPTkZJR19TWVNWSVBDPXkKQ09ORklHX1NZU1ZJUENfU1lTQ1RM
-PXkKQ09ORklHX1BPU0lYX01RVUVVRT15CkNPTkZJR19QT1NJWF9NUVVFVUVfU1lTQ1RMPXkKQ09O
-RklHX0NST1NTX01FTU9SWV9BVFRBQ0g9eQpDT05GSUdfRkhBTkRMRT15CkNPTkZJR19VU0VMSUI9
-eQpDT05GSUdfQVVESVQ9eQpDT05GSUdfSEFWRV9BUkNIX0FVRElUU1lTQ0FMTD15CkNPTkZJR19B
-VURJVFNZU0NBTEw9eQpDT05GSUdfQVVESVRfV0FUQ0g9eQpDT05GSUdfQVVESVRfVFJFRT15Cgoj
-CiMgSVJRIHN1YnN5c3RlbQojCkNPTkZJR19HRU5FUklDX0lSUV9QUk9CRT15CkNPTkZJR19HRU5F
-UklDX0lSUV9TSE9XPXkKQ09ORklHX0dFTkVSSUNfUEVORElOR19JUlE9eQpDT05GSUdfSVJRX0RP
-TUFJTj15CkNPTkZJR19JUlFfRE9NQUlOX0hJRVJBUkNIWT15CkNPTkZJR19HRU5FUklDX01TSV9J
-UlE9eQpDT05GSUdfR0VORVJJQ19NU0lfSVJRX0RPTUFJTj15CiMgQ09ORklHX0lSUV9ET01BSU5f
-REVCVUcgaXMgbm90IHNldApDT05GSUdfSVJRX0ZPUkNFRF9USFJFQURJTkc9eQpDT05GSUdfU1BB
-UlNFX0lSUT15CkNPTkZJR19DTE9DS1NPVVJDRV9XQVRDSERPRz15CkNPTkZJR19BUkNIX0NMT0NL
-U09VUkNFX0RBVEE9eQpDT05GSUdfQ0xPQ0tTT1VSQ0VfVkFMSURBVEVfTEFTVF9DWUNMRT15CkNP
-TkZJR19HRU5FUklDX1RJTUVfVlNZU0NBTEw9eQpDT05GSUdfR0VORVJJQ19DTE9DS0VWRU5UUz15
-CkNPTkZJR19HRU5FUklDX0NMT0NLRVZFTlRTX0JST0FEQ0FTVD15CkNPTkZJR19HRU5FUklDX0NM
-T0NLRVZFTlRTX01JTl9BREpVU1Q9eQpDT05GSUdfR0VORVJJQ19DTU9TX1VQREFURT15CgojCiMg
-VGltZXJzIHN1YnN5c3RlbQojCkNPTkZJR19USUNLX09ORVNIT1Q9eQpDT05GSUdfTk9fSFpfQ09N
-TU9OPXkKIyBDT05GSUdfSFpfUEVSSU9ESUMgaXMgbm90IHNldAojIENPTkZJR19OT19IWl9JRExF
-IGlzIG5vdCBzZXQKQ09ORklHX05PX0haX0ZVTEw9eQojIENPTkZJR19OT19IWl9GVUxMX0FMTCBp
-cyBub3Qgc2V0CiMgQ09ORklHX05PX0haX0ZVTExfU1lTSURMRSBpcyBub3Qgc2V0CkNPTkZJR19O
-T19IWj15CkNPTkZJR19ISUdIX1JFU19USU1FUlM9eQoKIwojIENQVS9UYXNrIHRpbWUgYW5kIHN0
-YXRzIGFjY291bnRpbmcKIwpDT05GSUdfVklSVF9DUFVfQUNDT1VOVElORz15CkNPTkZJR19WSVJU
-X0NQVV9BQ0NPVU5USU5HX0dFTj15CiMgQ09ORklHX0lSUV9USU1FX0FDQ09VTlRJTkcgaXMgbm90
-IHNldApDT05GSUdfQlNEX1BST0NFU1NfQUNDVD15CkNPTkZJR19CU0RfUFJPQ0VTU19BQ0NUX1Yz
-PXkKQ09ORklHX1RBU0tTVEFUUz15CkNPTkZJR19UQVNLX0RFTEFZX0FDQ1Q9eQpDT05GSUdfVEFT
-S19YQUNDVD15CkNPTkZJR19UQVNLX0lPX0FDQ09VTlRJTkc9eQoKIwojIFJDVSBTdWJzeXN0ZW0K
-IwpDT05GSUdfVFJFRV9SQ1U9eQojIENPTkZJR19SQ1VfRVhQRVJUIGlzIG5vdCBzZXQKQ09ORklH
-X1NSQ1U9eQpDT05GSUdfVEFTS1NfUkNVPXkKQ09ORklHX1JDVV9TVEFMTF9DT01NT049eQpDT05G
-SUdfQ09OVEVYVF9UUkFDS0lORz15CiMgQ09ORklHX0NPTlRFWFRfVFJBQ0tJTkdfRk9SQ0UgaXMg
-bm90IHNldAojIENPTkZJR19UUkVFX1JDVV9UUkFDRSBpcyBub3Qgc2V0CkNPTkZJR19SQ1VfTk9D
-Ql9DUFU9eQojIENPTkZJR19SQ1VfTk9DQl9DUFVfTk9ORSBpcyBub3Qgc2V0CiMgQ09ORklHX1JD
-VV9OT0NCX0NQVV9aRVJPIGlzIG5vdCBzZXQKQ09ORklHX1JDVV9OT0NCX0NQVV9BTEw9eQojIENP
-TkZJR19SQ1VfRVhQRURJVEVfQk9PVCBpcyBub3Qgc2V0CkNPTkZJR19CVUlMRF9CSU4yQz15CkNP
-TkZJR19JS0NPTkZJRz15CkNPTkZJR19JS0NPTkZJR19QUk9DPXkKQ09ORklHX0xPR19CVUZfU0hJ
-RlQ9MTkKQ09ORklHX0xPR19DUFVfTUFYX0JVRl9TSElGVD0xMgpDT05GSUdfTk1JX0xPR19CVUZf
-U0hJRlQ9MTMKQ09ORklHX0hBVkVfVU5TVEFCTEVfU0NIRURfQ0xPQ0s9eQpDT05GSUdfQVJDSF9T
-VVBQT1JUU19OVU1BX0JBTEFOQ0lORz15CkNPTkZJR19BUkNIX1dBTlRfQkFUQ0hFRF9VTk1BUF9U
-TEJfRkxVU0g9eQpDT05GSUdfQVJDSF9TVVBQT1JUU19JTlQxMjg9eQpDT05GSUdfTlVNQV9CQUxB
-TkNJTkc9eQpDT05GSUdfTlVNQV9CQUxBTkNJTkdfREVGQVVMVF9FTkFCTEVEPXkKQ09ORklHX0NH
-Uk9VUFM9eQpDT05GSUdfUEFHRV9DT1VOVEVSPXkKQ09ORklHX01FTUNHPXkKQ09ORklHX01FTUNH
-X1NXQVA9eQpDT05GSUdfTUVNQ0dfU1dBUF9FTkFCTEVEPXkKQ09ORklHX0JMS19DR1JPVVA9eQoj
-IENPTkZJR19ERUJVR19CTEtfQ0dST1VQIGlzIG5vdCBzZXQKQ09ORklHX0NHUk9VUF9XUklURUJB
-Q0s9eQpDT05GSUdfQ0dST1VQX1NDSEVEPXkKQ09ORklHX0ZBSVJfR1JPVVBfU0NIRUQ9eQpDT05G
-SUdfQ0ZTX0JBTkRXSURUSD15CkNPTkZJR19SVF9HUk9VUF9TQ0hFRD15CiMgQ09ORklHX0NHUk9V
-UF9QSURTIGlzIG5vdCBzZXQKQ09ORklHX0NHUk9VUF9GUkVFWkVSPXkKQ09ORklHX0NHUk9VUF9I
-VUdFVExCPXkKQ09ORklHX0NQVVNFVFM9eQpDT05GSUdfUFJPQ19QSURfQ1BVU0VUPXkKQ09ORklH
-X0NHUk9VUF9ERVZJQ0U9eQojIENPTkZJR19DR1JPVVBfQ1BVQUNDVCBpcyBub3Qgc2V0CkNPTkZJ
-R19DR1JPVVBfUEVSRj15CiMgQ09ORklHX0NHUk9VUF9ERUJVRyBpcyBub3Qgc2V0CiMgQ09ORklH
-X0NIRUNLUE9JTlRfUkVTVE9SRSBpcyBub3Qgc2V0CkNPTkZJR19OQU1FU1BBQ0VTPXkKQ09ORklH
-X1VUU19OUz15CkNPTkZJR19JUENfTlM9eQpDT05GSUdfVVNFUl9OUz15CkNPTkZJR19QSURfTlM9
-eQpDT05GSUdfTkVUX05TPXkKQ09ORklHX1NDSEVEX0FVVE9HUk9VUD15CiMgQ09ORklHX1NZU0ZT
-X0RFUFJFQ0FURUQgaXMgbm90IHNldApDT05GSUdfUkVMQVk9eQpDT05GSUdfQkxLX0RFVl9JTklU
-UkQ9eQpDT05GSUdfSU5JVFJBTUZTX1NPVVJDRT0iIgpDT05GSUdfUkRfR1pJUD15CkNPTkZJR19S
-RF9CWklQMj15CkNPTkZJR19SRF9MWk1BPXkKQ09ORklHX1JEX1haPXkKQ09ORklHX1JEX0xaTz15
-CkNPTkZJR19SRF9MWjQ9eQpDT05GSUdfQ0NfT1BUSU1JWkVfRk9SX1BFUkZPUk1BTkNFPXkKIyBD
-T05GSUdfQ0NfT1BUSU1JWkVfRk9SX1NJWkUgaXMgbm90IHNldApDT05GSUdfU1lTQ1RMPXkKQ09O
-RklHX0FOT05fSU5PREVTPXkKQ09ORklHX0hBVkVfVUlEMTY9eQpDT05GSUdfU1lTQ1RMX0VYQ0VQ
-VElPTl9UUkFDRT15CkNPTkZJR19IQVZFX1BDU1BLUl9QTEFURk9STT15CkNPTkZJR19CUEY9eQoj
-IENPTkZJR19FWFBFUlQgaXMgbm90IHNldApDT05GSUdfVUlEMTY9eQpDT05GSUdfTVVMVElVU0VS
-PXkKQ09ORklHX1NHRVRNQVNLX1NZU0NBTEw9eQpDT05GSUdfU1lTRlNfU1lTQ0FMTD15CiMgQ09O
-RklHX1NZU0NUTF9TWVNDQUxMIGlzIG5vdCBzZXQKQ09ORklHX0tBTExTWU1TPXkKQ09ORklHX0tB
-TExTWU1TX0FMTD15CkNPTkZJR19LQUxMU1lNU19BQlNPTFVURV9QRVJDUFU9eQpDT05GSUdfS0FM
-TFNZTVNfQkFTRV9SRUxBVElWRT15CkNPTkZJR19QUklOVEs9eQpDT05GSUdfUFJJTlRLX05NST15
-CkNPTkZJR19CVUc9eQpDT05GSUdfRUxGX0NPUkU9eQpDT05GSUdfUENTUEtSX1BMQVRGT1JNPXkK
-Q09ORklHX0JBU0VfRlVMTD15CkNPTkZJR19GVVRFWD15CkNPTkZJR19FUE9MTD15CkNPTkZJR19T
-SUdOQUxGRD15CkNPTkZJR19USU1FUkZEPXkKQ09ORklHX0VWRU5URkQ9eQojIENPTkZJR19CUEZf
-U1lTQ0FMTCBpcyBub3Qgc2V0CkNPTkZJR19TSE1FTT15CkNPTkZJR19BSU89eQpDT05GSUdfQURW
-SVNFX1NZU0NBTExTPXkKIyBDT05GSUdfVVNFUkZBVUxURkQgaXMgbm90IHNldApDT05GSUdfUENJ
-X1FVSVJLUz15CkNPTkZJR19NRU1CQVJSSUVSPXkKIyBDT05GSUdfRU1CRURERUQgaXMgbm90IHNl
-dApDT05GSUdfSEFWRV9QRVJGX0VWRU5UUz15CgojCiMgS2VybmVsIFBlcmZvcm1hbmNlIEV2ZW50
-cyBBbmQgQ291bnRlcnMKIwpDT05GSUdfUEVSRl9FVkVOVFM9eQojIENPTkZJR19ERUJVR19QRVJG
-X1VTRV9WTUFMTE9DIGlzIG5vdCBzZXQKQ09ORklHX1ZNX0VWRU5UX0NPVU5URVJTPXkKQ09ORklH
-X1NMVUJfREVCVUc9eQojIENPTkZJR19DT01QQVRfQlJLIGlzIG5vdCBzZXQKIyBDT05GSUdfU0xB
-QiBpcyBub3Qgc2V0CkNPTkZJR19TTFVCPXkKIyBDT05GSUdfU0xBQl9GUkVFTElTVF9SQU5ET00g
-aXMgbm90IHNldApDT05GSUdfU0xVQl9DUFVfUEFSVElBTD15CiMgQ09ORklHX1NZU1RFTV9EQVRB
-X1ZFUklGSUNBVElPTiBpcyBub3Qgc2V0CkNPTkZJR19QUk9GSUxJTkc9eQpDT05GSUdfVFJBQ0VQ
-T0lOVFM9eQpDT05GSUdfS0VYRUNfQ09SRT15CkNPTkZJR19PUFJPRklMRT1tCkNPTkZJR19PUFJP
-RklMRV9FVkVOVF9NVUxUSVBMRVg9eQpDT05GSUdfSEFWRV9PUFJPRklMRT15CkNPTkZJR19PUFJP
-RklMRV9OTUlfVElNRVI9eQpDT05GSUdfS1BST0JFUz15CkNPTkZJR19KVU1QX0xBQkVMPXkKIyBD
-T05GSUdfU1RBVElDX0tFWVNfU0VMRlRFU1QgaXMgbm90IHNldApDT05GSUdfT1BUUFJPQkVTPXkK
-Q09ORklHX0tQUk9CRVNfT05fRlRSQUNFPXkKQ09ORklHX1VQUk9CRVM9eQojIENPTkZJR19IQVZF
-XzY0QklUX0FMSUdORURfQUNDRVNTIGlzIG5vdCBzZXQKQ09ORklHX0hBVkVfRUZGSUNJRU5UX1VO
-QUxJR05FRF9BQ0NFU1M9eQpDT05GSUdfQVJDSF9VU0VfQlVJTFRJTl9CU1dBUD15CkNPTkZJR19L
-UkVUUFJPQkVTPXkKQ09ORklHX1VTRVJfUkVUVVJOX05PVElGSUVSPXkKQ09ORklHX0hBVkVfSU9S
-RU1BUF9QUk9UPXkKQ09ORklHX0hBVkVfS1BST0JFUz15CkNPTkZJR19IQVZFX0tSRVRQUk9CRVM9
-eQpDT05GSUdfSEFWRV9PUFRQUk9CRVM9eQpDT05GSUdfSEFWRV9LUFJPQkVTX09OX0ZUUkFDRT15
-CkNPTkZJR19IQVZFX05NST15CkNPTkZJR19IQVZFX0FSQ0hfVFJBQ0VIT09LPXkKQ09ORklHX0hB
-VkVfRE1BX0NPTlRJR1VPVVM9eQpDT05GSUdfR0VORVJJQ19TTVBfSURMRV9USFJFQUQ9eQpDT05G
-SUdfQVJDSF9XQU5UU19EWU5BTUlDX1RBU0tfU1RSVUNUPXkKQ09ORklHX0hBVkVfUkVHU19BTkRf
-U1RBQ0tfQUNDRVNTX0FQST15CkNPTkZJR19IQVZFX0NMSz15CkNPTkZJR19IQVZFX0RNQV9BUElf
-REVCVUc9eQpDT05GSUdfSEFWRV9IV19CUkVBS1BPSU5UPXkKQ09ORklHX0hBVkVfTUlYRURfQlJF
-QUtQT0lOVFNfUkVHUz15CkNPTkZJR19IQVZFX1VTRVJfUkVUVVJOX05PVElGSUVSPXkKQ09ORklH
-X0hBVkVfUEVSRl9FVkVOVFNfTk1JPXkKQ09ORklHX0hBVkVfUEVSRl9SRUdTPXkKQ09ORklHX0hB
-VkVfUEVSRl9VU0VSX1NUQUNLX0RVTVA9eQpDT05GSUdfSEFWRV9BUkNIX0pVTVBfTEFCRUw9eQpD
-T05GSUdfQVJDSF9IQVZFX05NSV9TQUZFX0NNUFhDSEc9eQpDT05GSUdfSEFWRV9BTElHTkVEX1NU
-UlVDVF9QQUdFPXkKQ09ORklHX0hBVkVfQ01QWENIR19MT0NBTD15CkNPTkZJR19IQVZFX0NNUFhD
-SEdfRE9VQkxFPXkKQ09ORklHX0FSQ0hfV0FOVF9DT01QQVRfSVBDX1BBUlNFX1ZFUlNJT049eQpD
-T05GSUdfQVJDSF9XQU5UX09MRF9DT01QQVRfSVBDPXkKQ09ORklHX0hBVkVfQVJDSF9TRUNDT01Q
-X0ZJTFRFUj15CkNPTkZJR19TRUNDT01QX0ZJTFRFUj15CkNPTkZJR19IQVZFX0dDQ19QTFVHSU5T
-PXkKIyBDT05GSUdfR0NDX1BMVUdJTlMgaXMgbm90IHNldApDT05GSUdfSEFWRV9DQ19TVEFDS1BS
-T1RFQ1RPUj15CiMgQ09ORklHX0NDX1NUQUNLUFJPVEVDVE9SIGlzIG5vdCBzZXQKQ09ORklHX0ND
-X1NUQUNLUFJPVEVDVE9SX05PTkU9eQojIENPTkZJR19DQ19TVEFDS1BST1RFQ1RPUl9SRUdVTEFS
-IGlzIG5vdCBzZXQKIyBDT05GSUdfQ0NfU1RBQ0tQUk9URUNUT1JfU1RST05HIGlzIG5vdCBzZXQK
-Q09ORklHX0hBVkVfQVJDSF9XSVRISU5fU1RBQ0tfRlJBTUVTPXkKQ09ORklHX0hBVkVfQ09OVEVY
-VF9UUkFDS0lORz15CkNPTkZJR19IQVZFX1ZJUlRfQ1BVX0FDQ09VTlRJTkdfR0VOPXkKQ09ORklH
-X0hBVkVfSVJRX1RJTUVfQUNDT1VOVElORz15CkNPTkZJR19IQVZFX0FSQ0hfVFJBTlNQQVJFTlRf
-SFVHRVBBR0U9eQpDT05GSUdfSEFWRV9BUkNIX0hVR0VfVk1BUD15CkNPTkZJR19IQVZFX0FSQ0hf
-U09GVF9ESVJUWT15CkNPTkZJR19NT0RVTEVTX1VTRV9FTEZfUkVMQT15CkNPTkZJR19IQVZFX0lS
-UV9FWElUX09OX0lSUV9TVEFDSz15CkNPTkZJR19BUkNIX0hBU19FTEZfUkFORE9NSVpFPXkKQ09O
-RklHX0hBVkVfQVJDSF9NTUFQX1JORF9CSVRTPXkKQ09ORklHX0hBVkVfRVhJVF9USFJFQUQ9eQpD
-T05GSUdfQVJDSF9NTUFQX1JORF9CSVRTPTI4CkNPTkZJR19IQVZFX0FSQ0hfTU1BUF9STkRfQ09N
-UEFUX0JJVFM9eQpDT05GSUdfQVJDSF9NTUFQX1JORF9DT01QQVRfQklUUz04CkNPTkZJR19IQVZF
-X0NPUFlfVEhSRUFEX1RMUz15CkNPTkZJR19IQVZFX1NUQUNLX1ZBTElEQVRJT049eQojIENPTkZJ
-R19IQVZFX0FSQ0hfSEFTSCBpcyBub3Qgc2V0CiMgQ09ORklHX0lTQV9CVVNfQVBJIGlzIG5vdCBz
-ZXQKQ09ORklHX09MRF9TSUdTVVNQRU5EMz15CkNPTkZJR19DT01QQVRfT0xEX1NJR0FDVElPTj15
-CiMgQ09ORklHX0NQVV9OT19FRkZJQ0lFTlRfRkZTIGlzIG5vdCBzZXQKCiMKIyBHQ09WLWJhc2Vk
-IGtlcm5lbCBwcm9maWxpbmcKIwojIENPTkZJR19HQ09WX0tFUk5FTCBpcyBub3Qgc2V0CkNPTkZJ
-R19BUkNIX0hBU19HQ09WX1BST0ZJTEVfQUxMPXkKIyBDT05GSUdfSEFWRV9HRU5FUklDX0RNQV9D
-T0hFUkVOVCBpcyBub3Qgc2V0CkNPTkZJR19TTEFCSU5GTz15CkNPTkZJR19SVF9NVVRFWEVTPXkK
-Q09ORklHX0JBU0VfU01BTEw9MApDT05GSUdfTU9EVUxFUz15CkNPTkZJR19NT0RVTEVfRk9SQ0Vf
-TE9BRD15CkNPTkZJR19NT0RVTEVfVU5MT0FEPXkKIyBDT05GSUdfTU9EVUxFX0ZPUkNFX1VOTE9B
-RCBpcyBub3Qgc2V0CkNPTkZJR19NT0RWRVJTSU9OUz15CkNPTkZJR19NT0RVTEVfU1JDVkVSU0lP
-Tl9BTEw9eQojIENPTkZJR19NT0RVTEVfU0lHIGlzIG5vdCBzZXQKIyBDT05GSUdfTU9EVUxFX0NP
-TVBSRVNTIGlzIG5vdCBzZXQKIyBDT05GSUdfVFJJTV9VTlVTRURfS1NZTVMgaXMgbm90IHNldApD
-T05GSUdfTU9EVUxFU19UUkVFX0xPT0tVUD15CkNPTkZJR19CTE9DSz15CkNPTkZJR19CTEtfREVW
-X0JTRz15CkNPTkZJR19CTEtfREVWX0JTR0xJQj15CkNPTkZJR19CTEtfREVWX0lOVEVHUklUWT15
-CkNPTkZJR19CTEtfREVWX1RIUk9UVExJTkc9eQojIENPTkZJR19CTEtfQ01ETElORV9QQVJTRVIg
-aXMgbm90IHNldAoKIwojIFBhcnRpdGlvbiBUeXBlcwojCkNPTkZJR19QQVJUSVRJT05fQURWQU5D
-RUQ9eQojIENPTkZJR19BQ09STl9QQVJUSVRJT04gaXMgbm90IHNldAojIENPTkZJR19BSVhfUEFS
-VElUSU9OIGlzIG5vdCBzZXQKQ09ORklHX09TRl9QQVJUSVRJT049eQpDT05GSUdfQU1JR0FfUEFS
-VElUSU9OPXkKIyBDT05GSUdfQVRBUklfUEFSVElUSU9OIGlzIG5vdCBzZXQKQ09ORklHX01BQ19Q
-QVJUSVRJT049eQpDT05GSUdfTVNET1NfUEFSVElUSU9OPXkKQ09ORklHX0JTRF9ESVNLTEFCRUw9
-eQpDT05GSUdfTUlOSVhfU1VCUEFSVElUSU9OPXkKQ09ORklHX1NPTEFSSVNfWDg2X1BBUlRJVElP
-Tj15CkNPTkZJR19VTklYV0FSRV9ESVNLTEFCRUw9eQojIENPTkZJR19MRE1fUEFSVElUSU9OIGlz
-IG5vdCBzZXQKQ09ORklHX1NHSV9QQVJUSVRJT049eQojIENPTkZJR19VTFRSSVhfUEFSVElUSU9O
-IGlzIG5vdCBzZXQKQ09ORklHX1NVTl9QQVJUSVRJT049eQpDT05GSUdfS0FSTUFfUEFSVElUSU9O
-PXkKQ09ORklHX0VGSV9QQVJUSVRJT049eQojIENPTkZJR19TWVNWNjhfUEFSVElUSU9OIGlzIG5v
-dCBzZXQKIyBDT05GSUdfQ01ETElORV9QQVJUSVRJT04gaXMgbm90IHNldApDT05GSUdfQkxPQ0tf
-Q09NUEFUPXkKCiMKIyBJTyBTY2hlZHVsZXJzCiMKQ09ORklHX0lPU0NIRURfTk9PUD15CkNPTkZJ
-R19JT1NDSEVEX0RFQURMSU5FPXkKQ09ORklHX0lPU0NIRURfQ0ZRPXkKQ09ORklHX0NGUV9HUk9V
-UF9JT1NDSEVEPXkKQ09ORklHX0RFRkFVTFRfREVBRExJTkU9eQojIENPTkZJR19ERUZBVUxUX0NG
-USBpcyBub3Qgc2V0CiMgQ09ORklHX0RFRkFVTFRfTk9PUCBpcyBub3Qgc2V0CkNPTkZJR19ERUZB
-VUxUX0lPU0NIRUQ9ImRlYWRsaW5lIgpDT05GSUdfUFJFRU1QVF9OT1RJRklFUlM9eQpDT05GSUdf
-UEFEQVRBPXkKQ09ORklHX0FTTjE9eQpDT05GSUdfSU5MSU5FX1NQSU5fVU5MT0NLX0lSUT15CkNP
-TkZJR19JTkxJTkVfUkVBRF9VTkxPQ0s9eQpDT05GSUdfSU5MSU5FX1JFQURfVU5MT0NLX0lSUT15
-CkNPTkZJR19JTkxJTkVfV1JJVEVfVU5MT0NLPXkKQ09ORklHX0lOTElORV9XUklURV9VTkxPQ0tf
-SVJRPXkKQ09ORklHX0FSQ0hfU1VQUE9SVFNfQVRPTUlDX1JNVz15CkNPTkZJR19NVVRFWF9TUElO
-X09OX09XTkVSPXkKQ09ORklHX1JXU0VNX1NQSU5fT05fT1dORVI9eQpDT05GSUdfTE9DS19TUElO
-X09OX09XTkVSPXkKQ09ORklHX0FSQ0hfVVNFX1FVRVVFRF9TUElOTE9DS1M9eQpDT05GSUdfUVVF
-VUVEX1NQSU5MT0NLUz15CkNPTkZJR19BUkNIX1VTRV9RVUVVRURfUldMT0NLUz15CkNPTkZJR19R
-VUVVRURfUldMT0NLUz15CkNPTkZJR19GUkVFWkVSPXkKCiMKIyBQcm9jZXNzb3IgdHlwZSBhbmQg
-ZmVhdHVyZXMKIwpDT05GSUdfWk9ORV9ETUE9eQpDT05GSUdfU01QPXkKQ09ORklHX1g4Nl9GRUFU
-VVJFX05BTUVTPXkKQ09ORklHX1g4Nl9GQVNUX0ZFQVRVUkVfVEVTVFM9eQpDT05GSUdfWDg2X1gy
-QVBJQz15CkNPTkZJR19YODZfTVBQQVJTRT15CiMgQ09ORklHX0dPTERGSVNIIGlzIG5vdCBzZXQK
-Q09ORklHX1g4Nl9FWFRFTkRFRF9QTEFURk9STT15CiMgQ09ORklHX1g4Nl9OVU1BQ0hJUCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1g4Nl9WU01QIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9VVj15CiMgQ09O
-RklHX1g4Nl9HT0xERklTSCBpcyBub3Qgc2V0CiMgQ09ORklHX1g4Nl9JTlRFTF9NSUQgaXMgbm90
-IHNldApDT05GSUdfWDg2X0lOVEVMX0xQU1M9eQojIENPTkZJR19YODZfQU1EX1BMQVRGT1JNX0RF
-VklDRSBpcyBub3Qgc2V0CkNPTkZJR19JT1NGX01CST15CiMgQ09ORklHX0lPU0ZfTUJJX0RFQlVH
-IGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9TVVBQT1JUU19NRU1PUllfRkFJTFVSRT15CiMgQ09ORklH
-X1NDSEVEX09NSVRfRlJBTUVfUE9JTlRFUiBpcyBub3Qgc2V0CkNPTkZJR19IWVBFUlZJU09SX0dV
-RVNUPXkKQ09ORklHX1BBUkFWSVJUPXkKIyBDT05GSUdfUEFSQVZJUlRfREVCVUcgaXMgbm90IHNl
-dApDT05GSUdfUEFSQVZJUlRfU1BJTkxPQ0tTPXkKIyBDT05GSUdfUVVFVUVEX0xPQ0tfU1RBVCBp
-cyBub3Qgc2V0CkNPTkZJR19YRU49eQpDT05GSUdfWEVOX0RPTTA9eQpDT05GSUdfWEVOX1BWSFZN
-PXkKQ09ORklHX1hFTl81MTJHQj15CkNPTkZJR19YRU5fU0FWRV9SRVNUT1JFPXkKIyBDT05GSUdf
-WEVOX0RFQlVHX0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfWEVOX1BWSCBpcyBub3Qgc2V0CkNPTkZJ
-R19LVk1fR1VFU1Q9eQojIENPTkZJR19LVk1fREVCVUdfRlMgaXMgbm90IHNldApDT05GSUdfUEFS
-QVZJUlRfVElNRV9BQ0NPVU5USU5HPXkKQ09ORklHX1BBUkFWSVJUX0NMT0NLPXkKQ09ORklHX05P
-X0JPT1RNRU09eQojIENPTkZJR19NSzggaXMgbm90IHNldAojIENPTkZJR19NUFNDIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfTUNPUkUyIGlzIG5vdCBzZXQKIyBDT05GSUdfTUFUT00gaXMgbm90IHNldApD
-T05GSUdfR0VORVJJQ19DUFU9eQpDT05GSUdfWDg2X0lOVEVSTk9ERV9DQUNIRV9TSElGVD02CkNP
-TkZJR19YODZfTDFfQ0FDSEVfU0hJRlQ9NgpDT05GSUdfWDg2X1RTQz15CkNPTkZJR19YODZfQ01Q
-WENIRzY0PXkKQ09ORklHX1g4Nl9DTU9WPXkKQ09ORklHX1g4Nl9NSU5JTVVNX0NQVV9GQU1JTFk9
-NjQKQ09ORklHX1g4Nl9ERUJVR0NUTE1TUj15CkNPTkZJR19DUFVfU1VQX0lOVEVMPXkKQ09ORklH
-X0NQVV9TVVBfQU1EPXkKQ09ORklHX0NQVV9TVVBfQ0VOVEFVUj15CkNPTkZJR19IUEVUX1RJTUVS
-PXkKQ09ORklHX0hQRVRfRU1VTEFURV9SVEM9eQpDT05GSUdfRE1JPXkKQ09ORklHX0dBUlRfSU9N
-TVU9eQojIENPTkZJR19DQUxHQVJZX0lPTU1VIGlzIG5vdCBzZXQKQ09ORklHX1NXSU9UTEI9eQpD
-T05GSUdfSU9NTVVfSEVMUEVSPXkKQ09ORklHX01BWFNNUD15CkNPTkZJR19OUl9DUFVTPTgxOTIK
-Q09ORklHX1NDSEVEX1NNVD15CkNPTkZJR19TQ0hFRF9NQz15CiMgQ09ORklHX1BSRUVNUFRfTk9O
-RSBpcyBub3Qgc2V0CkNPTkZJR19QUkVFTVBUX1ZPTFVOVEFSWT15CiMgQ09ORklHX1BSRUVNUFQg
-aXMgbm90IHNldApDT05GSUdfUFJFRU1QVF9DT1VOVD15CkNPTkZJR19YODZfTE9DQUxfQVBJQz15
-CkNPTkZJR19YODZfSU9fQVBJQz15CkNPTkZJR19YODZfUkVST1VURV9GT1JfQlJPS0VOX0JPT1Rf
-SVJRUz15CkNPTkZJR19YODZfTUNFPXkKQ09ORklHX1g4Nl9NQ0VfSU5URUw9eQpDT05GSUdfWDg2
-X01DRV9BTUQ9eQpDT05GSUdfWDg2X01DRV9USFJFU0hPTEQ9eQpDT05GSUdfWDg2X01DRV9JTkpF
-Q1Q9bQpDT05GSUdfWDg2X1RIRVJNQUxfVkVDVE9SPXkKCiMKIyBQZXJmb3JtYW5jZSBtb25pdG9y
-aW5nCiMKQ09ORklHX1BFUkZfRVZFTlRTX0lOVEVMX1VOQ09SRT15CkNPTkZJR19QRVJGX0VWRU5U
-U19JTlRFTF9SQVBMPXkKQ09ORklHX1BFUkZfRVZFTlRTX0lOVEVMX0NTVEFURT15CiMgQ09ORklH
-X1BFUkZfRVZFTlRTX0FNRF9QT1dFUiBpcyBub3Qgc2V0CiMgQ09ORklHX1ZNODYgaXMgbm90IHNl
-dApDT05GSUdfWDg2XzE2QklUPXkKQ09ORklHX1g4Nl9FU1BGSVg2ND15CkNPTkZJR19YODZfVlNZ
-U0NBTExfRU1VTEFUSU9OPXkKQ09ORklHX0k4Sz1tCkNPTkZJR19NSUNST0NPREU9eQpDT05GSUdf
-TUlDUk9DT0RFX0lOVEVMPXkKQ09ORklHX01JQ1JPQ09ERV9BTUQ9eQpDT05GSUdfTUlDUk9DT0RF
-X09MRF9JTlRFUkZBQ0U9eQpDT05GSUdfWDg2X01TUj15CkNPTkZJR19YODZfQ1BVSUQ9eQpDT05G
-SUdfQVJDSF9QSFlTX0FERFJfVF82NEJJVD15CkNPTkZJR19BUkNIX0RNQV9BRERSX1RfNjRCSVQ9
-eQpDT05GSUdfWDg2X0RJUkVDVF9HQlBBR0VTPXkKQ09ORklHX05VTUE9eQpDT05GSUdfQU1EX05V
-TUE9eQpDT05GSUdfWDg2XzY0X0FDUElfTlVNQT15CkNPTkZJR19OT0RFU19TUEFOX09USEVSX05P
-REVTPXkKIyBDT05GSUdfTlVNQV9FTVUgaXMgbm90IHNldApDT05GSUdfTk9ERVNfU0hJRlQ9MTAK
-Q09ORklHX0FSQ0hfU1BBUlNFTUVNX0VOQUJMRT15CkNPTkZJR19BUkNIX1NQQVJTRU1FTV9ERUZB
-VUxUPXkKQ09ORklHX0FSQ0hfU0VMRUNUX01FTU9SWV9NT0RFTD15CkNPTkZJR19BUkNIX01FTU9S
-WV9QUk9CRT15CkNPTkZJR19BUkNIX1BST0NfS0NPUkVfVEVYVD15CkNPTkZJR19JTExFR0FMX1BP
-SU5URVJfVkFMVUU9MHhkZWFkMDAwMDAwMDAwMDAwCkNPTkZJR19TRUxFQ1RfTUVNT1JZX01PREVM
-PXkKQ09ORklHX1NQQVJTRU1FTV9NQU5VQUw9eQpDT05GSUdfU1BBUlNFTUVNPXkKQ09ORklHX05F
-RURfTVVMVElQTEVfTk9ERVM9eQpDT05GSUdfSEFWRV9NRU1PUllfUFJFU0VOVD15CkNPTkZJR19T
-UEFSU0VNRU1fRVhUUkVNRT15CkNPTkZJR19TUEFSU0VNRU1fVk1FTU1BUF9FTkFCTEU9eQpDT05G
-SUdfU1BBUlNFTUVNX0FMTE9DX01FTV9NQVBfVE9HRVRIRVI9eQpDT05GSUdfU1BBUlNFTUVNX1ZN
-RU1NQVA9eQpDT05GSUdfSEFWRV9NRU1CTE9DSz15CkNPTkZJR19IQVZFX01FTUJMT0NLX05PREVf
-TUFQPXkKQ09ORklHX0FSQ0hfRElTQ0FSRF9NRU1CTE9DSz15CkNPTkZJR19NRU1PUllfSVNPTEFU
-SU9OPXkKQ09ORklHX01PVkFCTEVfTk9ERT15CkNPTkZJR19IQVZFX0JPT1RNRU1fSU5GT19OT0RF
-PXkKQ09ORklHX01FTU9SWV9IT1RQTFVHPXkKQ09ORklHX01FTU9SWV9IT1RQTFVHX1NQQVJTRT15
-CiMgQ09ORklHX01FTU9SWV9IT1RQTFVHX0RFRkFVTFRfT05MSU5FIGlzIG5vdCBzZXQKQ09ORklH
-X01FTU9SWV9IT1RSRU1PVkU9eQpDT05GSUdfU1BMSVRfUFRMT0NLX0NQVVM9NApDT05GSUdfQVJD
-SF9FTkFCTEVfU1BMSVRfUE1EX1BUTE9DSz15CkNPTkZJR19NRU1PUllfQkFMTE9PTj15CkNPTkZJ
-R19CQUxMT09OX0NPTVBBQ1RJT049eQpDT05GSUdfQ09NUEFDVElPTj15CkNPTkZJR19NSUdSQVRJ
-T049eQpDT05GSUdfQVJDSF9FTkFCTEVfSFVHRVBBR0VfTUlHUkFUSU9OPXkKQ09ORklHX1BIWVNf
-QUREUl9UXzY0QklUPXkKQ09ORklHX0JPVU5DRT15CkNPTkZJR19WSVJUX1RPX0JVUz15CkNPTkZJ
-R19NTVVfTk9USUZJRVI9eQpDT05GSUdfS1NNPXkKQ09ORklHX0RFRkFVTFRfTU1BUF9NSU5fQURE
-Uj00MDk2CkNPTkZJR19BUkNIX1NVUFBPUlRTX01FTU9SWV9GQUlMVVJFPXkKQ09ORklHX01FTU9S
-WV9GQUlMVVJFPXkKQ09ORklHX0hXUE9JU09OX0lOSkVDVD1tCkNPTkZJR19UUkFOU1BBUkVOVF9I
-VUdFUEFHRT15CkNPTkZJR19UUkFOU1BBUkVOVF9IVUdFUEFHRV9BTFdBWVM9eQojIENPTkZJR19U
-UkFOU1BBUkVOVF9IVUdFUEFHRV9NQURWSVNFIGlzIG5vdCBzZXQKQ09ORklHX1RSQU5TUEFSRU5U
-X0hVR0VfUEFHRUNBQ0hFPXkKQ09ORklHX0NMRUFOQ0FDSEU9eQpDT05GSUdfRlJPTlRTV0FQPXkK
-Q09ORklHX0NNQT15CiMgQ09ORklHX0NNQV9ERUJVRyBpcyBub3Qgc2V0CiMgQ09ORklHX0NNQV9E
-RUJVR0ZTIGlzIG5vdCBzZXQKQ09ORklHX0NNQV9BUkVBUz03CkNPTkZJR19aU1dBUD15CkNPTkZJ
-R19aUE9PTD15CkNPTkZJR19aQlVEPXkKIyBDT05GSUdfWjNGT0xEIGlzIG5vdCBzZXQKQ09ORklH
-X1pTTUFMTE9DPXkKIyBDT05GSUdfUEdUQUJMRV9NQVBQSU5HIGlzIG5vdCBzZXQKIyBDT05GSUdf
-WlNNQUxMT0NfU1RBVCBpcyBub3Qgc2V0CkNPTkZJR19HRU5FUklDX0VBUkxZX0lPUkVNQVA9eQpD
-T05GSUdfQVJDSF9TVVBQT1JUU19ERUZFUlJFRF9TVFJVQ1RfUEFHRV9JTklUPXkKIyBDT05GSUdf
-REVGRVJSRURfU1RSVUNUX1BBR0VfSU5JVCBpcyBub3Qgc2V0CiMgQ09ORklHX0lETEVfUEFHRV9U
-UkFDS0lORyBpcyBub3Qgc2V0CkNPTkZJR19aT05FX0RFVklDRT15CkNPTkZJR19GUkFNRV9WRUNU
-T1I9eQpDT05GSUdfQVJDSF9VU0VTX0hJR0hfVk1BX0ZMQUdTPXkKQ09ORklHX0FSQ0hfSEFTX1BL
-RVlTPXkKQ09ORklHX1g4Nl9QTUVNX0xFR0FDWV9ERVZJQ0U9eQpDT05GSUdfWDg2X1BNRU1fTEVH
-QUNZPW0KQ09ORklHX1g4Nl9DSEVDS19CSU9TX0NPUlJVUFRJT049eQojIENPTkZJR19YODZfQk9P
-VFBBUkFNX01FTU9SWV9DT1JSVVBUSU9OX0NIRUNLIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9SRVNF
-UlZFX0xPVz02NApDT05GSUdfTVRSUj15CkNPTkZJR19NVFJSX1NBTklUSVpFUj15CkNPTkZJR19N
-VFJSX1NBTklUSVpFUl9FTkFCTEVfREVGQVVMVD0wCkNPTkZJR19NVFJSX1NBTklUSVpFUl9TUEFS
-RV9SRUdfTlJfREVGQVVMVD0xCkNPTkZJR19YODZfUEFUPXkKQ09ORklHX0FSQ0hfVVNFU19QR19V
-TkNBQ0hFRD15CkNPTkZJR19BUkNIX1JBTkRPTT15CkNPTkZJR19YODZfU01BUD15CiMgQ09ORklH
-X1g4Nl9JTlRFTF9NUFggaXMgbm90IHNldApDT05GSUdfWDg2X0lOVEVMX01FTU9SWV9QUk9URUNU
-SU9OX0tFWVM9eQpDT05GSUdfRUZJPXkKQ09ORklHX0VGSV9TVFVCPXkKIyBDT05GSUdfRUZJX01J
-WEVEIGlzIG5vdCBzZXQKQ09ORklHX1NFQ0NPTVA9eQojIENPTkZJR19IWl8xMDAgaXMgbm90IHNl
-dAojIENPTkZJR19IWl8yNTAgaXMgbm90IHNldAojIENPTkZJR19IWl8zMDAgaXMgbm90IHNldApD
-T05GSUdfSFpfMTAwMD15CkNPTkZJR19IWj0xMDAwCkNPTkZJR19TQ0hFRF9IUlRJQ0s9eQpDT05G
-SUdfS0VYRUM9eQojIENPTkZJR19LRVhFQ19GSUxFIGlzIG5vdCBzZXQKQ09ORklHX0NSQVNIX0RV
-TVA9eQpDT05GSUdfS0VYRUNfSlVNUD15CkNPTkZJR19QSFlTSUNBTF9TVEFSVD0weDEwMDAwMDAK
-Q09ORklHX1JFTE9DQVRBQkxFPXkKIyBDT05GSUdfUkFORE9NSVpFX0JBU0UgaXMgbm90IHNldApD
-T05GSUdfUEhZU0lDQUxfQUxJR049MHgxMDAwMDAwCkNPTkZJR19IT1RQTFVHX0NQVT15CiMgQ09O
-RklHX0JPT1RQQVJBTV9IT1RQTFVHX0NQVTAgaXMgbm90IHNldAojIENPTkZJR19ERUJVR19IT1RQ
-TFVHX0NQVTAgaXMgbm90IHNldAojIENPTkZJR19DT01QQVRfVkRTTyBpcyBub3Qgc2V0CiMgQ09O
-RklHX0xFR0FDWV9WU1lTQ0FMTF9OQVRJVkUgaXMgbm90IHNldApDT05GSUdfTEVHQUNZX1ZTWVND
-QUxMX0VNVUxBVEU9eQojIENPTkZJR19MRUdBQ1lfVlNZU0NBTExfTk9ORSBpcyBub3Qgc2V0CiMg
-Q09ORklHX0NNRExJTkVfQk9PTCBpcyBub3Qgc2V0CkNPTkZJR19NT0RJRllfTERUX1NZU0NBTEw9
-eQpDT05GSUdfSEFWRV9MSVZFUEFUQ0g9eQojIENPTkZJR19MSVZFUEFUQ0ggaXMgbm90IHNldApD
-T05GSUdfQVJDSF9FTkFCTEVfTUVNT1JZX0hPVFBMVUc9eQpDT05GSUdfQVJDSF9FTkFCTEVfTUVN
-T1JZX0hPVFJFTU9WRT15CkNPTkZJR19VU0VfUEVSQ1BVX05VTUFfTk9ERV9JRD15CgojCiMgUG93
-ZXIgbWFuYWdlbWVudCBhbmQgQUNQSSBvcHRpb25zCiMKQ09ORklHX0FSQ0hfSElCRVJOQVRJT05f
-SEVBREVSPXkKQ09ORklHX1NVU1BFTkQ9eQpDT05GSUdfU1VTUEVORF9GUkVFWkVSPXkKQ09ORklH
-X0hJQkVSTkFURV9DQUxMQkFDS1M9eQpDT05GSUdfSElCRVJOQVRJT049eQpDT05GSUdfUE1fU1RE
-X1BBUlRJVElPTj0iIgpDT05GSUdfUE1fU0xFRVA9eQpDT05GSUdfUE1fU0xFRVBfU01QPXkKIyBD
-T05GSUdfUE1fQVVUT1NMRUVQIGlzIG5vdCBzZXQKIyBDT05GSUdfUE1fV0FLRUxPQ0tTIGlzIG5v
-dCBzZXQKQ09ORklHX1BNPXkKQ09ORklHX1BNX0RFQlVHPXkKQ09ORklHX1BNX0FEVkFOQ0VEX0RF
-QlVHPXkKQ09ORklHX1BNX1RFU1RfU1VTUEVORD15CkNPTkZJR19QTV9TTEVFUF9ERUJVRz15CiMg
-Q09ORklHX0RQTV9XQVRDSERPRyBpcyBub3Qgc2V0CiMgQ09ORklHX1BNX1RSQUNFX1JUQyBpcyBu
-b3Qgc2V0CkNPTkZJR19QTV9DTEs9eQojIENPTkZJR19XUV9QT1dFUl9FRkZJQ0lFTlRfREVGQVVM
-VCBpcyBub3Qgc2V0CkNPTkZJR19BQ1BJPXkKQ09ORklHX0FDUElfTEVHQUNZX1RBQkxFU19MT09L
-VVA9eQpDT05GSUdfQVJDSF9NSUdIVF9IQVZFX0FDUElfUERDPXkKQ09ORklHX0FDUElfU1lTVEVN
-X1BPV0VSX1NUQVRFU19TVVBQT1JUPXkKIyBDT05GSUdfQUNQSV9ERUJVR0dFUiBpcyBub3Qgc2V0
-CkNPTkZJR19BQ1BJX1NMRUVQPXkKIyBDT05GSUdfQUNQSV9QUk9DRlNfUE9XRVIgaXMgbm90IHNl
-dApDT05GSUdfQUNQSV9SRVZfT1ZFUlJJREVfUE9TU0lCTEU9eQpDT05GSUdfQUNQSV9FQ19ERUJV
-R0ZTPW0KQ09ORklHX0FDUElfQUM9eQpDT05GSUdfQUNQSV9CQVRURVJZPXkKQ09ORklHX0FDUElf
-QlVUVE9OPXkKQ09ORklHX0FDUElfVklERU89bQpDT05GSUdfQUNQSV9GQU49eQpDT05GSUdfQUNQ
-SV9ET0NLPXkKQ09ORklHX0FDUElfQ1BVX0ZSRVFfUFNTPXkKQ09ORklHX0FDUElfUFJPQ0VTU09S
-X0NTVEFURT15CkNPTkZJR19BQ1BJX1BST0NFU1NPUl9JRExFPXkKQ09ORklHX0FDUElfUFJPQ0VT
-U09SPXkKQ09ORklHX0FDUElfSVBNST1tCkNPTkZJR19BQ1BJX0hPVFBMVUdfQ1BVPXkKQ09ORklH
-X0FDUElfUFJPQ0VTU09SX0FHR1JFR0FUT1I9bQpDT05GSUdfQUNQSV9USEVSTUFMPXkKQ09ORklH
-X0FDUElfTlVNQT15CiMgQ09ORklHX0FDUElfQ1VTVE9NX0RTRFQgaXMgbm90IHNldApDT05GSUdf
-QVJDSF9IQVNfQUNQSV9UQUJMRV9VUEdSQURFPXkKQ09ORklHX0FDUElfVEFCTEVfVVBHUkFERT15
-CkNPTkZJR19BQ1BJX0RFQlVHPXkKQ09ORklHX0FDUElfUENJX1NMT1Q9eQpDT05GSUdfWDg2X1BN
-X1RJTUVSPXkKQ09ORklHX0FDUElfQ09OVEFJTkVSPXkKQ09ORklHX0FDUElfSE9UUExVR19NRU1P
-Ulk9eQpDT05GSUdfQUNQSV9IT1RQTFVHX0lPQVBJQz15CkNPTkZJR19BQ1BJX1NCUz1tCkNPTkZJ
-R19BQ1BJX0hFRD15CkNPTkZJR19BQ1BJX0NVU1RPTV9NRVRIT0Q9bQpDT05GSUdfQUNQSV9CR1JU
-PXkKIyBDT05GSUdfQUNQSV9SRURVQ0VEX0hBUkRXQVJFX09OTFkgaXMgbm90IHNldApDT05GSUdf
-QUNQSV9ORklUPW0KIyBDT05GSUdfQUNQSV9ORklUX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX0hB
-VkVfQUNQSV9BUEVJPXkKQ09ORklHX0hBVkVfQUNQSV9BUEVJX05NST15CkNPTkZJR19BQ1BJX0FQ
-RUk9eQpDT05GSUdfQUNQSV9BUEVJX0dIRVM9eQpDT05GSUdfQUNQSV9BUEVJX1BDSUVBRVI9eQpD
-T05GSUdfQUNQSV9BUEVJX01FTU9SWV9GQUlMVVJFPXkKQ09ORklHX0FDUElfQVBFSV9FSU5KPW0K
-IyBDT05GSUdfQUNQSV9BUEVJX0VSU1RfREVCVUcgaXMgbm90IHNldAojIENPTkZJR19EUFRGX1BP
-V0VSIGlzIG5vdCBzZXQKIyBDT05GSUdfQUNQSV9FWFRMT0cgaXMgbm90IHNldAojIENPTkZJR19Q
-TUlDX09QUkVHSU9OIGlzIG5vdCBzZXQKIyBDT05GSUdfQUNQSV9DT05GSUdGUyBpcyBub3Qgc2V0
-CkNPTkZJR19TRkk9eQoKIwojIENQVSBGcmVxdWVuY3kgc2NhbGluZwojCkNPTkZJR19DUFVfRlJF
-UT15CkNPTkZJR19DUFVfRlJFUV9HT1ZfQVRUUl9TRVQ9eQpDT05GSUdfQ1BVX0ZSRVFfR09WX0NP
-TU1PTj15CiMgQ09ORklHX0NQVV9GUkVRX1NUQVQgaXMgbm90IHNldAojIENPTkZJR19DUFVfRlJF
-UV9ERUZBVUxUX0dPVl9QRVJGT1JNQU5DRSBpcyBub3Qgc2V0CiMgQ09ORklHX0NQVV9GUkVRX0RF
-RkFVTFRfR09WX1BPV0VSU0FWRSBpcyBub3Qgc2V0CiMgQ09ORklHX0NQVV9GUkVRX0RFRkFVTFRf
-R09WX1VTRVJTUEFDRSBpcyBub3Qgc2V0CkNPTkZJR19DUFVfRlJFUV9ERUZBVUxUX0dPVl9PTkRF
-TUFORD15CiMgQ09ORklHX0NQVV9GUkVRX0RFRkFVTFRfR09WX0NPTlNFUlZBVElWRSBpcyBub3Qg
-c2V0CiMgQ09ORklHX0NQVV9GUkVRX0RFRkFVTFRfR09WX1NDSEVEVVRJTCBpcyBub3Qgc2V0CkNP
-TkZJR19DUFVfRlJFUV9HT1ZfUEVSRk9STUFOQ0U9eQpDT05GSUdfQ1BVX0ZSRVFfR09WX1BPV0VS
-U0FWRT15CkNPTkZJR19DUFVfRlJFUV9HT1ZfVVNFUlNQQUNFPXkKQ09ORklHX0NQVV9GUkVRX0dP
-Vl9PTkRFTUFORD15CkNPTkZJR19DUFVfRlJFUV9HT1ZfQ09OU0VSVkFUSVZFPXkKIyBDT05GSUdf
-Q1BVX0ZSRVFfR09WX1NDSEVEVVRJTCBpcyBub3Qgc2V0CgojCiMgQ1BVIGZyZXF1ZW5jeSBzY2Fs
-aW5nIGRyaXZlcnMKIwpDT05GSUdfWDg2X0lOVEVMX1BTVEFURT15CkNPTkZJR19YODZfUENDX0NQ
-VUZSRVE9bQpDT05GSUdfWDg2X0FDUElfQ1BVRlJFUT1tCkNPTkZJR19YODZfQUNQSV9DUFVGUkVR
-X0NQQj15CkNPTkZJR19YODZfUE9XRVJOT1dfSzg9bQpDT05GSUdfWDg2X0FNRF9GUkVRX1NFTlNJ
-VElWSVRZPW0KIyBDT05GSUdfWDg2X1NQRUVEU1RFUF9DRU5UUklOTyBpcyBub3Qgc2V0CkNPTkZJ
-R19YODZfUDRfQ0xPQ0tNT0Q9bQoKIwojIHNoYXJlZCBvcHRpb25zCiMKQ09ORklHX1g4Nl9TUEVF
-RFNURVBfTElCPW0KCiMKIyBDUFUgSWRsZQojCkNPTkZJR19DUFVfSURMRT15CiMgQ09ORklHX0NQ
-VV9JRExFX0dPVl9MQURERVIgaXMgbm90IHNldApDT05GSUdfQ1BVX0lETEVfR09WX01FTlU9eQoj
-IENPTkZJR19BUkNIX05FRURTX0NQVV9JRExFX0NPVVBMRUQgaXMgbm90IHNldApDT05GSUdfSU5U
-RUxfSURMRT15CgojCiMgTWVtb3J5IHBvd2VyIHNhdmluZ3MKIwpDT05GSUdfSTczMDBfSURMRV9J
-T0FUX0NIQU5ORUw9eQpDT05GSUdfSTczMDBfSURMRT1tCgojCiMgQnVzIG9wdGlvbnMgKFBDSSBl
-dGMuKQojCkNPTkZJR19QQ0k9eQpDT05GSUdfUENJX0RJUkVDVD15CkNPTkZJR19QQ0lfTU1DT05G
-SUc9eQpDT05GSUdfUENJX1hFTj15CkNPTkZJR19QQ0lfRE9NQUlOUz15CkNPTkZJR19QQ0lFUE9S
-VEJVUz15CkNPTkZJR19IT1RQTFVHX1BDSV9QQ0lFPXkKQ09ORklHX1BDSUVBRVI9eQpDT05GSUdf
-UENJRV9FQ1JDPXkKQ09ORklHX1BDSUVBRVJfSU5KRUNUPW0KQ09ORklHX1BDSUVBU1BNPXkKIyBD
-T05GSUdfUENJRUFTUE1fREVCVUcgaXMgbm90IHNldApDT05GSUdfUENJRUFTUE1fREVGQVVMVD15
-CiMgQ09ORklHX1BDSUVBU1BNX1BPV0VSU0FWRSBpcyBub3Qgc2V0CiMgQ09ORklHX1BDSUVBU1BN
-X1BFUkZPUk1BTkNFIGlzIG5vdCBzZXQKQ09ORklHX1BDSUVfUE1FPXkKIyBDT05GSUdfUENJRV9E
-UEMgaXMgbm90IHNldApDT05GSUdfUENJX0JVU19BRERSX1RfNjRCSVQ9eQpDT05GSUdfUENJX01T
-ST15CkNPTkZJR19QQ0lfTVNJX0lSUV9ET01BSU49eQojIENPTkZJR19QQ0lfREVCVUcgaXMgbm90
-IHNldAojIENPTkZJR19QQ0lfUkVBTExPQ19FTkFCTEVfQVVUTyBpcyBub3Qgc2V0CkNPTkZJR19Q
-Q0lfU1RVQj15CiMgQ09ORklHX1hFTl9QQ0lERVZfRlJPTlRFTkQgaXMgbm90IHNldApDT05GSUdf
-SFRfSVJRPXkKQ09ORklHX1BDSV9BVFM9eQpDT05GSUdfUENJX0lPVj15CkNPTkZJR19QQ0lfUFJJ
-PXkKQ09ORklHX1BDSV9QQVNJRD15CkNPTkZJR19QQ0lfTEFCRUw9eQojIENPTkZJR19QQ0lfSFlQ
-RVJWIGlzIG5vdCBzZXQKQ09ORklHX0hPVFBMVUdfUENJPXkKQ09ORklHX0hPVFBMVUdfUENJX0FD
-UEk9eQpDT05GSUdfSE9UUExVR19QQ0lfQUNQSV9JQk09bQojIENPTkZJR19IT1RQTFVHX1BDSV9D
-UENJIGlzIG5vdCBzZXQKQ09ORklHX0hPVFBMVUdfUENJX1NIUEM9bQoKIwojIFBDSSBob3N0IGNv
-bnRyb2xsZXIgZHJpdmVycwojCiMgQ09ORklHX1BDSUVfRFdfUExBVCBpcyBub3Qgc2V0CkNPTkZJ
-R19JU0FfRE1BX0FQST15CkNPTkZJR19BTURfTkI9eQpDT05GSUdfUENDQVJEPXkKIyBDT05GSUdf
-UENNQ0lBIGlzIG5vdCBzZXQKQ09ORklHX0NBUkRCVVM9eQoKIwojIFBDLWNhcmQgYnJpZGdlcwoj
-CkNPTkZJR19ZRU5UQT1tCkNPTkZJR19ZRU5UQV9PMj15CkNPTkZJR19ZRU5UQV9SSUNPSD15CkNP
-TkZJR19ZRU5UQV9UST15CkNPTkZJR19ZRU5UQV9FTkVfVFVORT15CkNPTkZJR19ZRU5UQV9UT1NI
-SUJBPXkKIyBDT05GSUdfUkFQSURJTyBpcyBub3Qgc2V0CiMgQ09ORklHX1g4Nl9TWVNGQiBpcyBu
-b3Qgc2V0CgojCiMgRXhlY3V0YWJsZSBmaWxlIGZvcm1hdHMgLyBFbXVsYXRpb25zCiMKQ09ORklH
-X0JJTkZNVF9FTEY9eQpDT05GSUdfQ09NUEFUX0JJTkZNVF9FTEY9eQpDT05GSUdfRUxGQ09SRT15
-CkNPTkZJR19DT1JFX0RVTVBfREVGQVVMVF9FTEZfSEVBREVSUz15CkNPTkZJR19CSU5GTVRfU0NS
-SVBUPXkKIyBDT05GSUdfSEFWRV9BT1VUIGlzIG5vdCBzZXQKQ09ORklHX0JJTkZNVF9NSVNDPW0K
-Q09ORklHX0NPUkVEVU1QPXkKQ09ORklHX0lBMzJfRU1VTEFUSU9OPXkKIyBDT05GSUdfSUEzMl9B
-T1VUIGlzIG5vdCBzZXQKIyBDT05GSUdfWDg2X1gzMiBpcyBub3Qgc2V0CkNPTkZJR19DT01QQVQ9
-eQpDT05GSUdfQ09NUEFUX0ZPUl9VNjRfQUxJR05NRU5UPXkKQ09ORklHX1NZU1ZJUENfQ09NUEFU
-PXkKQ09ORklHX0tFWVNfQ09NUEFUPXkKQ09ORklHX1g4Nl9ERVZfRE1BX09QUz15CkNPTkZJR19Q
-TUNfQVRPTT15CiMgQ09ORklHX1ZNRCBpcyBub3Qgc2V0CkNPTkZJR19ORVQ9eQpDT05GSUdfQ09N
-UEFUX05FVExJTktfTUVTU0FHRVM9eQpDT05GSUdfTkVUX0lOR1JFU1M9eQpDT05GSUdfTkVUX0VH
-UkVTUz15CgojCiMgTmV0d29ya2luZyBvcHRpb25zCiMKQ09ORklHX1BBQ0tFVD15CkNPTkZJR19Q
-QUNLRVRfRElBRz1tCkNPTkZJR19VTklYPXkKQ09ORklHX1VOSVhfRElBRz1tCkNPTkZJR19YRlJN
-PXkKQ09ORklHX1hGUk1fQUxHTz15CkNPTkZJR19YRlJNX1VTRVI9eQpDT05GSUdfWEZSTV9TVUJf
-UE9MSUNZPXkKQ09ORklHX1hGUk1fTUlHUkFURT15CkNPTkZJR19YRlJNX1NUQVRJU1RJQ1M9eQpD
-T05GSUdfWEZSTV9JUENPTVA9bQpDT05GSUdfTkVUX0tFWT1tCkNPTkZJR19ORVRfS0VZX01JR1JB
-VEU9eQpDT05GSUdfSU5FVD15CkNPTkZJR19JUF9NVUxUSUNBU1Q9eQpDT05GSUdfSVBfQURWQU5D
-RURfUk9VVEVSPXkKQ09ORklHX0lQX0ZJQl9UUklFX1NUQVRTPXkKQ09ORklHX0lQX01VTFRJUExF
-X1RBQkxFUz15CkNPTkZJR19JUF9ST1VURV9NVUxUSVBBVEg9eQpDT05GSUdfSVBfUk9VVEVfVkVS
-Qk9TRT15CkNPTkZJR19JUF9ST1VURV9DTEFTU0lEPXkKQ09ORklHX0lQX1BOUD15CkNPTkZJR19J
-UF9QTlBfREhDUD15CiMgQ09ORklHX0lQX1BOUF9CT09UUCBpcyBub3Qgc2V0CiMgQ09ORklHX0lQ
-X1BOUF9SQVJQIGlzIG5vdCBzZXQKQ09ORklHX05FVF9JUElQPW0KQ09ORklHX05FVF9JUEdSRV9E
-RU1VWD1tCkNPTkZJR19ORVRfSVBfVFVOTkVMPW0KQ09ORklHX05FVF9JUEdSRT1tCkNPTkZJR19O
-RVRfSVBHUkVfQlJPQURDQVNUPXkKQ09ORklHX0lQX01ST1VURT15CkNPTkZJR19JUF9NUk9VVEVf
-TVVMVElQTEVfVEFCTEVTPXkKQ09ORklHX0lQX1BJTVNNX1YxPXkKQ09ORklHX0lQX1BJTVNNX1Yy
-PXkKQ09ORklHX1NZTl9DT09LSUVTPXkKQ09ORklHX05FVF9JUFZUST1tCkNPTkZJR19ORVRfVURQ
-X1RVTk5FTD1tCiMgQ09ORklHX05FVF9GT1UgaXMgbm90IHNldAojIENPTkZJR19ORVRfRk9VX0lQ
-X1RVTk5FTFMgaXMgbm90IHNldApDT05GSUdfSU5FVF9BSD1tCkNPTkZJR19JTkVUX0VTUD1tCkNP
-TkZJR19JTkVUX0lQQ09NUD1tCkNPTkZJR19JTkVUX1hGUk1fVFVOTkVMPW0KQ09ORklHX0lORVRf
-VFVOTkVMPW0KQ09ORklHX0lORVRfWEZSTV9NT0RFX1RSQU5TUE9SVD1tCkNPTkZJR19JTkVUX1hG
-Uk1fTU9ERV9UVU5ORUw9bQpDT05GSUdfSU5FVF9YRlJNX01PREVfQkVFVD1tCkNPTkZJR19JTkVU
-X0RJQUc9bQpDT05GSUdfSU5FVF9UQ1BfRElBRz1tCkNPTkZJR19JTkVUX1VEUF9ESUFHPW0KIyBD
-T05GSUdfSU5FVF9ESUFHX0RFU1RST1kgaXMgbm90IHNldApDT05GSUdfVENQX0NPTkdfQURWQU5D
-RUQ9eQpDT05GSUdfVENQX0NPTkdfQklDPW0KQ09ORklHX1RDUF9DT05HX0NVQklDPXkKQ09ORklH
-X1RDUF9DT05HX1dFU1RXT09EPW0KQ09ORklHX1RDUF9DT05HX0hUQ1A9bQpDT05GSUdfVENQX0NP
-TkdfSFNUQ1A9bQpDT05GSUdfVENQX0NPTkdfSFlCTEE9bQpDT05GSUdfVENQX0NPTkdfVkVHQVM9
-bQojIENPTkZJR19UQ1BfQ09OR19OViBpcyBub3Qgc2V0CkNPTkZJR19UQ1BfQ09OR19TQ0FMQUJM
-RT1tCkNPTkZJR19UQ1BfQ09OR19MUD1tCkNPTkZJR19UQ1BfQ09OR19WRU5PPW0KQ09ORklHX1RD
-UF9DT05HX1lFQUg9bQpDT05GSUdfVENQX0NPTkdfSUxMSU5PSVM9bQojIENPTkZJR19UQ1BfQ09O
-R19EQ1RDUCBpcyBub3Qgc2V0CiMgQ09ORklHX1RDUF9DT05HX0NERyBpcyBub3Qgc2V0CkNPTkZJ
-R19ERUZBVUxUX0NVQklDPXkKIyBDT05GSUdfREVGQVVMVF9SRU5PIGlzIG5vdCBzZXQKQ09ORklH
-X0RFRkFVTFRfVENQX0NPTkc9ImN1YmljIgpDT05GSUdfVENQX01ENVNJRz15CkNPTkZJR19JUFY2
-PXkKQ09ORklHX0lQVjZfUk9VVEVSX1BSRUY9eQpDT05GSUdfSVBWNl9ST1VURV9JTkZPPXkKQ09O
-RklHX0lQVjZfT1BUSU1JU1RJQ19EQUQ9eQpDT05GSUdfSU5FVDZfQUg9bQpDT05GSUdfSU5FVDZf
-RVNQPW0KQ09ORklHX0lORVQ2X0lQQ09NUD1tCkNPTkZJR19JUFY2X01JUDY9bQojIENPTkZJR19J
-UFY2X0lMQSBpcyBub3Qgc2V0CkNPTkZJR19JTkVUNl9YRlJNX1RVTk5FTD1tCkNPTkZJR19JTkVU
-Nl9UVU5ORUw9bQpDT05GSUdfSU5FVDZfWEZSTV9NT0RFX1RSQU5TUE9SVD1tCkNPTkZJR19JTkVU
-Nl9YRlJNX01PREVfVFVOTkVMPW0KQ09ORklHX0lORVQ2X1hGUk1fTU9ERV9CRUVUPW0KQ09ORklH
-X0lORVQ2X1hGUk1fTU9ERV9ST1VURU9QVElNSVpBVElPTj1tCiMgQ09ORklHX0lQVjZfVlRJIGlz
-IG5vdCBzZXQKQ09ORklHX0lQVjZfU0lUPW0KQ09ORklHX0lQVjZfU0lUXzZSRD15CkNPTkZJR19J
-UFY2X05ESVNDX05PREVUWVBFPXkKQ09ORklHX0lQVjZfVFVOTkVMPW0KIyBDT05GSUdfSVBWNl9H
-UkUgaXMgbm90IHNldAojIENPTkZJR19JUFY2X0ZPVSBpcyBub3Qgc2V0CiMgQ09ORklHX0lQVjZf
-Rk9VX1RVTk5FTCBpcyBub3Qgc2V0CkNPTkZJR19JUFY2X01VTFRJUExFX1RBQkxFUz15CiMgQ09O
-RklHX0lQVjZfU1VCVFJFRVMgaXMgbm90IHNldApDT05GSUdfSVBWNl9NUk9VVEU9eQpDT05GSUdf
-SVBWNl9NUk9VVEVfTVVMVElQTEVfVEFCTEVTPXkKQ09ORklHX0lQVjZfUElNU01fVjI9eQpDT05G
-SUdfTkVUTEFCRUw9eQpDT05GSUdfTkVUV09SS19TRUNNQVJLPXkKQ09ORklHX05FVF9QVFBfQ0xB
-U1NJRlk9eQpDT05GSUdfTkVUV09SS19QSFlfVElNRVNUQU1QSU5HPXkKQ09ORklHX05FVEZJTFRF
-Uj15CiMgQ09ORklHX05FVEZJTFRFUl9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19ORVRGSUxURVJf
-QURWQU5DRUQ9eQpDT05GSUdfQlJJREdFX05FVEZJTFRFUj1tCgojCiMgQ29yZSBOZXRmaWx0ZXIg
-Q29uZmlndXJhdGlvbgojCkNPTkZJR19ORVRGSUxURVJfSU5HUkVTUz15CkNPTkZJR19ORVRGSUxU
-RVJfTkVUTElOSz1tCkNPTkZJR19ORVRGSUxURVJfTkVUTElOS19BQ0NUPW0KQ09ORklHX05FVEZJ
-TFRFUl9ORVRMSU5LX1FVRVVFPW0KQ09ORklHX05FVEZJTFRFUl9ORVRMSU5LX0xPRz1tCkNPTkZJ
-R19ORl9DT05OVFJBQ0s9bQpDT05GSUdfTkZfTE9HX0NPTU1PTj1tCkNPTkZJR19ORl9DT05OVFJB
-Q0tfTUFSSz15CkNPTkZJR19ORl9DT05OVFJBQ0tfU0VDTUFSSz15CkNPTkZJR19ORl9DT05OVFJB
-Q0tfWk9ORVM9eQpDT05GSUdfTkZfQ09OTlRSQUNLX1BST0NGUz15CkNPTkZJR19ORl9DT05OVFJB
-Q0tfRVZFTlRTPXkKIyBDT05GSUdfTkZfQ09OTlRSQUNLX1RJTUVPVVQgaXMgbm90IHNldApDT05G
-SUdfTkZfQ09OTlRSQUNLX1RJTUVTVEFNUD15CkNPTkZJR19ORl9DT05OVFJBQ0tfTEFCRUxTPXkK
-Q09ORklHX05GX0NUX1BST1RPX0RDQ1A9bQpDT05GSUdfTkZfQ1RfUFJPVE9fR1JFPW0KQ09ORklH
-X05GX0NUX1BST1RPX1NDVFA9bQpDT05GSUdfTkZfQ1RfUFJPVE9fVURQTElURT1tCkNPTkZJR19O
-Rl9DT05OVFJBQ0tfQU1BTkRBPW0KQ09ORklHX05GX0NPTk5UUkFDS19GVFA9bQpDT05GSUdfTkZf
-Q09OTlRSQUNLX0gzMjM9bQpDT05GSUdfTkZfQ09OTlRSQUNLX0lSQz1tCkNPTkZJR19ORl9DT05O
-VFJBQ0tfQlJPQURDQVNUPW0KQ09ORklHX05GX0NPTk5UUkFDS19ORVRCSU9TX05TPW0KQ09ORklH
-X05GX0NPTk5UUkFDS19TTk1QPW0KQ09ORklHX05GX0NPTk5UUkFDS19QUFRQPW0KQ09ORklHX05G
-X0NPTk5UUkFDS19TQU5FPW0KQ09ORklHX05GX0NPTk5UUkFDS19TSVA9bQpDT05GSUdfTkZfQ09O
-TlRSQUNLX1RGVFA9bQpDT05GSUdfTkZfQ1RfTkVUTElOSz1tCiMgQ09ORklHX05GX0NUX05FVExJ
-TktfVElNRU9VVCBpcyBub3Qgc2V0CiMgQ09ORklHX05FVEZJTFRFUl9ORVRMSU5LX0dMVUVfQ1Qg
-aXMgbm90IHNldApDT05GSUdfTkZfTkFUPW0KQ09ORklHX05GX05BVF9ORUVERUQ9eQpDT05GSUdf
-TkZfTkFUX1BST1RPX0RDQ1A9bQpDT05GSUdfTkZfTkFUX1BST1RPX1VEUExJVEU9bQpDT05GSUdf
-TkZfTkFUX1BST1RPX1NDVFA9bQpDT05GSUdfTkZfTkFUX0FNQU5EQT1tCkNPTkZJR19ORl9OQVRf
-RlRQPW0KQ09ORklHX05GX05BVF9JUkM9bQpDT05GSUdfTkZfTkFUX1NJUD1tCkNPTkZJR19ORl9O
-QVRfVEZUUD1tCkNPTkZJR19ORl9OQVRfUkVESVJFQ1Q9bQpDT05GSUdfTkVURklMVEVSX1NZTlBS
-T1hZPW0KQ09ORklHX05GX1RBQkxFUz1tCiMgQ09ORklHX05GX1RBQkxFU19JTkVUIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfTkZfVEFCTEVTX05FVERFViBpcyBub3Qgc2V0CkNPTkZJR19ORlRfRVhUSERS
-PW0KQ09ORklHX05GVF9NRVRBPW0KQ09ORklHX05GVF9DVD1tCkNPTkZJR19ORlRfUkJUUkVFPW0K
-Q09ORklHX05GVF9IQVNIPW0KQ09ORklHX05GVF9DT1VOVEVSPW0KQ09ORklHX05GVF9MT0c9bQpD
-T05GSUdfTkZUX0xJTUlUPW0KIyBDT05GSUdfTkZUX01BU1EgaXMgbm90IHNldAojIENPTkZJR19O
-RlRfUkVESVIgaXMgbm90IHNldApDT05GSUdfTkZUX05BVD1tCiMgQ09ORklHX05GVF9RVUVVRSBp
-cyBub3Qgc2V0CiMgQ09ORklHX05GVF9SRUpFQ1QgaXMgbm90IHNldApDT05GSUdfTkZUX0NPTVBB
-VD1tCkNPTkZJR19ORVRGSUxURVJfWFRBQkxFUz15CgojCiMgWHRhYmxlcyBjb21iaW5lZCBtb2R1
-bGVzCiMKQ09ORklHX05FVEZJTFRFUl9YVF9NQVJLPW0KQ09ORklHX05FVEZJTFRFUl9YVF9DT05O
-TUFSSz1tCkNPTkZJR19ORVRGSUxURVJfWFRfU0VUPW0KCiMKIyBYdGFibGVzIHRhcmdldHMKIwpD
-T05GSUdfTkVURklMVEVSX1hUX1RBUkdFVF9BVURJVD1tCkNPTkZJR19ORVRGSUxURVJfWFRfVEFS
-R0VUX0NIRUNLU1VNPW0KQ09ORklHX05FVEZJTFRFUl9YVF9UQVJHRVRfQ0xBU1NJRlk9bQpDT05G
-SUdfTkVURklMVEVSX1hUX1RBUkdFVF9DT05OTUFSSz1tCkNPTkZJR19ORVRGSUxURVJfWFRfVEFS
-R0VUX0NPTk5TRUNNQVJLPW0KQ09ORklHX05FVEZJTFRFUl9YVF9UQVJHRVRfQ1Q9bQpDT05GSUdf
-TkVURklMVEVSX1hUX1RBUkdFVF9EU0NQPW0KQ09ORklHX05FVEZJTFRFUl9YVF9UQVJHRVRfSEw9
-bQpDT05GSUdfTkVURklMVEVSX1hUX1RBUkdFVF9ITUFSSz1tCkNPTkZJR19ORVRGSUxURVJfWFRf
-VEFSR0VUX0lETEVUSU1FUj1tCkNPTkZJR19ORVRGSUxURVJfWFRfVEFSR0VUX0xFRD1tCkNPTkZJ
-R19ORVRGSUxURVJfWFRfVEFSR0VUX0xPRz1tCkNPTkZJR19ORVRGSUxURVJfWFRfVEFSR0VUX01B
-Uks9bQpDT05GSUdfTkVURklMVEVSX1hUX05BVD1tCkNPTkZJR19ORVRGSUxURVJfWFRfVEFSR0VU
-X05FVE1BUD1tCkNPTkZJR19ORVRGSUxURVJfWFRfVEFSR0VUX05GTE9HPW0KQ09ORklHX05FVEZJ
-TFRFUl9YVF9UQVJHRVRfTkZRVUVVRT1tCkNPTkZJR19ORVRGSUxURVJfWFRfVEFSR0VUX05PVFJB
-Q0s9bQpDT05GSUdfTkVURklMVEVSX1hUX1RBUkdFVF9SQVRFRVNUPW0KQ09ORklHX05FVEZJTFRF
-Ul9YVF9UQVJHRVRfUkVESVJFQ1Q9bQpDT05GSUdfTkVURklMVEVSX1hUX1RBUkdFVF9URUU9bQpD
-T05GSUdfTkVURklMVEVSX1hUX1RBUkdFVF9UUFJPWFk9bQpDT05GSUdfTkVURklMVEVSX1hUX1RB
-UkdFVF9UUkFDRT1tCkNPTkZJR19ORVRGSUxURVJfWFRfVEFSR0VUX1NFQ01BUks9bQpDT05GSUdf
-TkVURklMVEVSX1hUX1RBUkdFVF9UQ1BNU1M9bQpDT05GSUdfTkVURklMVEVSX1hUX1RBUkdFVF9U
-Q1BPUFRTVFJJUD1tCgojCiMgWHRhYmxlcyBtYXRjaGVzCiMKQ09ORklHX05FVEZJTFRFUl9YVF9N
-QVRDSF9BRERSVFlQRT1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hfQlBGPW0KIyBDT05GSUdf
-TkVURklMVEVSX1hUX01BVENIX0NHUk9VUCBpcyBub3Qgc2V0CkNPTkZJR19ORVRGSUxURVJfWFRf
-TUFUQ0hfQ0xVU1RFUj1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hfQ09NTUVOVD1tCkNPTkZJ
-R19ORVRGSUxURVJfWFRfTUFUQ0hfQ09OTkJZVEVTPW0KQ09ORklHX05FVEZJTFRFUl9YVF9NQVRD
-SF9DT05OTEFCRUw9bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENIX0NPTk5MSU1JVD1tCkNPTkZJ
-R19ORVRGSUxURVJfWFRfTUFUQ0hfQ09OTk1BUks9bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENI
-X0NPTk5UUkFDSz1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hfQ1BVPW0KQ09ORklHX05FVEZJ
-TFRFUl9YVF9NQVRDSF9EQ0NQPW0KQ09ORklHX05FVEZJTFRFUl9YVF9NQVRDSF9ERVZHUk9VUD1t
-CkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hfRFNDUD1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFU
-Q0hfRUNOPW0KQ09ORklHX05FVEZJTFRFUl9YVF9NQVRDSF9FU1A9bQpDT05GSUdfTkVURklMVEVS
-X1hUX01BVENIX0hBU0hMSU1JVD1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hfSEVMUEVSPW0K
-Q09ORklHX05FVEZJTFRFUl9YVF9NQVRDSF9ITD1tCiMgQ09ORklHX05FVEZJTFRFUl9YVF9NQVRD
-SF9JUENPTVAgaXMgbm90IHNldApDT05GSUdfTkVURklMVEVSX1hUX01BVENIX0lQUkFOR0U9bQpD
-T05GSUdfTkVURklMVEVSX1hUX01BVENIX0lQVlM9bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENI
-X0wyVFA9bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENIX0xFTkdUSD1tCkNPTkZJR19ORVRGSUxU
-RVJfWFRfTUFUQ0hfTElNSVQ9bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENIX01BQz1tCkNPTkZJ
-R19ORVRGSUxURVJfWFRfTUFUQ0hfTUFSSz1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hfTVVM
-VElQT1JUPW0KQ09ORklHX05FVEZJTFRFUl9YVF9NQVRDSF9ORkFDQ1Q9bQpDT05GSUdfTkVURklM
-VEVSX1hUX01BVENIX09TRj1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hfT1dORVI9bQpDT05G
-SUdfTkVURklMVEVSX1hUX01BVENIX1BPTElDWT1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hf
-UEhZU0RFVj1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hfUEtUVFlQRT1tCkNPTkZJR19ORVRG
-SUxURVJfWFRfTUFUQ0hfUVVPVEE9bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENIX1JBVEVFU1Q9
-bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENIX1JFQUxNPW0KQ09ORklHX05FVEZJTFRFUl9YVF9N
-QVRDSF9SRUNFTlQ9bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENIX1NDVFA9bQpDT05GSUdfTkVU
-RklMVEVSX1hUX01BVENIX1NPQ0tFVD1tCkNPTkZJR19ORVRGSUxURVJfWFRfTUFUQ0hfU1RBVEU9
-bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENIX1NUQVRJU1RJQz1tCkNPTkZJR19ORVRGSUxURVJf
-WFRfTUFUQ0hfU1RSSU5HPW0KQ09ORklHX05FVEZJTFRFUl9YVF9NQVRDSF9UQ1BNU1M9bQpDT05G
-SUdfTkVURklMVEVSX1hUX01BVENIX1RJTUU9bQpDT05GSUdfTkVURklMVEVSX1hUX01BVENIX1Uz
-Mj1tCkNPTkZJR19JUF9TRVQ9bQpDT05GSUdfSVBfU0VUX01BWD0yNTYKQ09ORklHX0lQX1NFVF9C
-SVRNQVBfSVA9bQpDT05GSUdfSVBfU0VUX0JJVE1BUF9JUE1BQz1tCkNPTkZJR19JUF9TRVRfQklU
-TUFQX1BPUlQ9bQpDT05GSUdfSVBfU0VUX0hBU0hfSVA9bQojIENPTkZJR19JUF9TRVRfSEFTSF9J
-UE1BUksgaXMgbm90IHNldApDT05GSUdfSVBfU0VUX0hBU0hfSVBQT1JUPW0KQ09ORklHX0lQX1NF
-VF9IQVNIX0lQUE9SVElQPW0KQ09ORklHX0lQX1NFVF9IQVNIX0lQUE9SVE5FVD1tCiMgQ09ORklH
-X0lQX1NFVF9IQVNIX01BQyBpcyBub3Qgc2V0CiMgQ09ORklHX0lQX1NFVF9IQVNIX05FVFBPUlRO
-RVQgaXMgbm90IHNldApDT05GSUdfSVBfU0VUX0hBU0hfTkVUPW0KIyBDT05GSUdfSVBfU0VUX0hB
-U0hfTkVUTkVUIGlzIG5vdCBzZXQKQ09ORklHX0lQX1NFVF9IQVNIX05FVFBPUlQ9bQpDT05GSUdf
-SVBfU0VUX0hBU0hfTkVUSUZBQ0U9bQpDT05GSUdfSVBfU0VUX0xJU1RfU0VUPW0KQ09ORklHX0lQ
-X1ZTPW0KQ09ORklHX0lQX1ZTX0lQVjY9eQojIENPTkZJR19JUF9WU19ERUJVRyBpcyBub3Qgc2V0
-CkNPTkZJR19JUF9WU19UQUJfQklUUz0xMgoKIwojIElQVlMgdHJhbnNwb3J0IHByb3RvY29sIGxv
-YWQgYmFsYW5jaW5nIHN1cHBvcnQKIwpDT05GSUdfSVBfVlNfUFJPVE9fVENQPXkKQ09ORklHX0lQ
-X1ZTX1BST1RPX1VEUD15CkNPTkZJR19JUF9WU19QUk9UT19BSF9FU1A9eQpDT05GSUdfSVBfVlNf
-UFJPVE9fRVNQPXkKQ09ORklHX0lQX1ZTX1BST1RPX0FIPXkKQ09ORklHX0lQX1ZTX1BST1RPX1ND
-VFA9eQoKIwojIElQVlMgc2NoZWR1bGVyCiMKQ09ORklHX0lQX1ZTX1JSPW0KQ09ORklHX0lQX1ZT
-X1dSUj1tCkNPTkZJR19JUF9WU19MQz1tCkNPTkZJR19JUF9WU19XTEM9bQojIENPTkZJR19JUF9W
-U19GTyBpcyBub3Qgc2V0CiMgQ09ORklHX0lQX1ZTX09WRiBpcyBub3Qgc2V0CkNPTkZJR19JUF9W
-U19MQkxDPW0KQ09ORklHX0lQX1ZTX0xCTENSPW0KQ09ORklHX0lQX1ZTX0RIPW0KQ09ORklHX0lQ
-X1ZTX1NIPW0KQ09ORklHX0lQX1ZTX1NFRD1tCkNPTkZJR19JUF9WU19OUT1tCgojCiMgSVBWUyBT
-SCBzY2hlZHVsZXIKIwpDT05GSUdfSVBfVlNfU0hfVEFCX0JJVFM9OAoKIwojIElQVlMgYXBwbGlj
-YXRpb24gaGVscGVyCiMKQ09ORklHX0lQX1ZTX0ZUUD1tCkNPTkZJR19JUF9WU19ORkNUPXkKQ09O
-RklHX0lQX1ZTX1BFX1NJUD1tCgojCiMgSVA6IE5ldGZpbHRlciBDb25maWd1cmF0aW9uCiMKQ09O
-RklHX05GX0RFRlJBR19JUFY0PW0KQ09ORklHX05GX0NPTk5UUkFDS19JUFY0PW0KIyBDT05GSUdf
-TkZfQ09OTlRSQUNLX1BST0NfQ09NUEFUIGlzIG5vdCBzZXQKQ09ORklHX05GX1RBQkxFU19JUFY0
-PW0KQ09ORklHX05GVF9DSEFJTl9ST1VURV9JUFY0PW0KIyBDT05GSUdfTkZUX1JFSkVDVF9JUFY0
-IGlzIG5vdCBzZXQKIyBDT05GSUdfTkZUX0RVUF9JUFY0IGlzIG5vdCBzZXQKIyBDT05GSUdfTkZf
-VEFCTEVTX0FSUCBpcyBub3Qgc2V0CkNPTkZJR19ORl9EVVBfSVBWND1tCiMgQ09ORklHX05GX0xP
-R19BUlAgaXMgbm90IHNldApDT05GSUdfTkZfTE9HX0lQVjQ9bQpDT05GSUdfTkZfUkVKRUNUX0lQ
-VjQ9bQpDT05GSUdfTkZfTkFUX0lQVjQ9bQpDT05GSUdfTkZUX0NIQUlOX05BVF9JUFY0PW0KQ09O
-RklHX05GX05BVF9NQVNRVUVSQURFX0lQVjQ9bQpDT05GSUdfTkZfTkFUX1NOTVBfQkFTSUM9bQpD
-T05GSUdfTkZfTkFUX1BST1RPX0dSRT1tCkNPTkZJR19ORl9OQVRfUFBUUD1tCkNPTkZJR19ORl9O
-QVRfSDMyMz1tCkNPTkZJR19JUF9ORl9JUFRBQkxFUz1tCkNPTkZJR19JUF9ORl9NQVRDSF9BSD1t
-CkNPTkZJR19JUF9ORl9NQVRDSF9FQ049bQpDT05GSUdfSVBfTkZfTUFUQ0hfUlBGSUxURVI9bQpD
-T05GSUdfSVBfTkZfTUFUQ0hfVFRMPW0KQ09ORklHX0lQX05GX0ZJTFRFUj1tCkNPTkZJR19JUF9O
-Rl9UQVJHRVRfUkVKRUNUPW0KQ09ORklHX0lQX05GX1RBUkdFVF9TWU5QUk9YWT1tCkNPTkZJR19J
-UF9ORl9OQVQ9bQpDT05GSUdfSVBfTkZfVEFSR0VUX01BU1FVRVJBREU9bQpDT05GSUdfSVBfTkZf
-VEFSR0VUX05FVE1BUD1tCkNPTkZJR19JUF9ORl9UQVJHRVRfUkVESVJFQ1Q9bQpDT05GSUdfSVBf
-TkZfTUFOR0xFPW0KQ09ORklHX0lQX05GX1RBUkdFVF9DTFVTVEVSSVA9bQpDT05GSUdfSVBfTkZf
-VEFSR0VUX0VDTj1tCkNPTkZJR19JUF9ORl9UQVJHRVRfVFRMPW0KQ09ORklHX0lQX05GX1JBVz1t
-CkNPTkZJR19JUF9ORl9TRUNVUklUWT1tCkNPTkZJR19JUF9ORl9BUlBUQUJMRVM9bQpDT05GSUdf
-SVBfTkZfQVJQRklMVEVSPW0KQ09ORklHX0lQX05GX0FSUF9NQU5HTEU9bQoKIwojIElQdjY6IE5l
-dGZpbHRlciBDb25maWd1cmF0aW9uCiMKQ09ORklHX05GX0RFRlJBR19JUFY2PW0KQ09ORklHX05G
-X0NPTk5UUkFDS19JUFY2PW0KQ09ORklHX05GX1RBQkxFU19JUFY2PW0KQ09ORklHX05GVF9DSEFJ
-Tl9ST1VURV9JUFY2PW0KIyBDT05GSUdfTkZUX1JFSkVDVF9JUFY2IGlzIG5vdCBzZXQKIyBDT05G
-SUdfTkZUX0RVUF9JUFY2IGlzIG5vdCBzZXQKQ09ORklHX05GX0RVUF9JUFY2PW0KQ09ORklHX05G
-X1JFSkVDVF9JUFY2PW0KQ09ORklHX05GX0xPR19JUFY2PW0KQ09ORklHX05GX05BVF9JUFY2PW0K
-Q09ORklHX05GVF9DSEFJTl9OQVRfSVBWNj1tCiMgQ09ORklHX05GX05BVF9NQVNRVUVSQURFX0lQ
-VjYgaXMgbm90IHNldApDT05GSUdfSVA2X05GX0lQVEFCTEVTPW0KQ09ORklHX0lQNl9ORl9NQVRD
-SF9BSD1tCkNPTkZJR19JUDZfTkZfTUFUQ0hfRVVJNjQ9bQpDT05GSUdfSVA2X05GX01BVENIX0ZS
-QUc9bQpDT05GSUdfSVA2X05GX01BVENIX09QVFM9bQpDT05GSUdfSVA2X05GX01BVENIX0hMPW0K
-Q09ORklHX0lQNl9ORl9NQVRDSF9JUFY2SEVBREVSPW0KQ09ORklHX0lQNl9ORl9NQVRDSF9NSD1t
-CkNPTkZJR19JUDZfTkZfTUFUQ0hfUlBGSUxURVI9bQpDT05GSUdfSVA2X05GX01BVENIX1JUPW0K
-Q09ORklHX0lQNl9ORl9UQVJHRVRfSEw9bQpDT05GSUdfSVA2X05GX0ZJTFRFUj1tCkNPTkZJR19J
-UDZfTkZfVEFSR0VUX1JFSkVDVD1tCkNPTkZJR19JUDZfTkZfVEFSR0VUX1NZTlBST1hZPW0KQ09O
-RklHX0lQNl9ORl9NQU5HTEU9bQpDT05GSUdfSVA2X05GX1JBVz1tCkNPTkZJR19JUDZfTkZfU0VD
-VVJJVFk9bQojIENPTkZJR19JUDZfTkZfTkFUIGlzIG5vdCBzZXQKQ09ORklHX05GX1RBQkxFU19C
-UklER0U9bQojIENPTkZJR19ORlRfQlJJREdFX01FVEEgaXMgbm90IHNldAojIENPTkZJR19ORl9M
-T0dfQlJJREdFIGlzIG5vdCBzZXQKQ09ORklHX0JSSURHRV9ORl9FQlRBQkxFUz1tCkNPTkZJR19C
-UklER0VfRUJUX0JST1VURT1tCkNPTkZJR19CUklER0VfRUJUX1RfRklMVEVSPW0KQ09ORklHX0JS
-SURHRV9FQlRfVF9OQVQ9bQpDT05GSUdfQlJJREdFX0VCVF84MDJfMz1tCkNPTkZJR19CUklER0Vf
-RUJUX0FNT05HPW0KQ09ORklHX0JSSURHRV9FQlRfQVJQPW0KQ09ORklHX0JSSURHRV9FQlRfSVA9
-bQpDT05GSUdfQlJJREdFX0VCVF9JUDY9bQpDT05GSUdfQlJJREdFX0VCVF9MSU1JVD1tCkNPTkZJ
-R19CUklER0VfRUJUX01BUks9bQpDT05GSUdfQlJJREdFX0VCVF9QS1RUWVBFPW0KQ09ORklHX0JS
-SURHRV9FQlRfU1RQPW0KQ09ORklHX0JSSURHRV9FQlRfVkxBTj1tCkNPTkZJR19CUklER0VfRUJU
-X0FSUFJFUExZPW0KQ09ORklHX0JSSURHRV9FQlRfRE5BVD1tCkNPTkZJR19CUklER0VfRUJUX01B
-UktfVD1tCkNPTkZJR19CUklER0VfRUJUX1JFRElSRUNUPW0KQ09ORklHX0JSSURHRV9FQlRfU05B
-VD1tCkNPTkZJR19CUklER0VfRUJUX0xPRz1tCkNPTkZJR19CUklER0VfRUJUX05GTE9HPW0KQ09O
-RklHX0lQX0RDQ1A9bQpDT05GSUdfSU5FVF9EQ0NQX0RJQUc9bQoKIwojIERDQ1AgQ0NJRHMgQ29u
-ZmlndXJhdGlvbgojCiMgQ09ORklHX0lQX0RDQ1BfQ0NJRDJfREVCVUcgaXMgbm90IHNldApDT05G
-SUdfSVBfRENDUF9DQ0lEMz15CiMgQ09ORklHX0lQX0RDQ1BfQ0NJRDNfREVCVUcgaXMgbm90IHNl
-dApDT05GSUdfSVBfRENDUF9URlJDX0xJQj15CgojCiMgRENDUCBLZXJuZWwgSGFja2luZwojCiMg
-Q09ORklHX0lQX0RDQ1BfREVCVUcgaXMgbm90IHNldAojIENPTkZJR19ORVRfRENDUFBST0JFIGlz
-IG5vdCBzZXQKQ09ORklHX0lQX1NDVFA9bQpDT05GSUdfTkVUX1NDVFBQUk9CRT1tCiMgQ09ORklH
-X1NDVFBfREJHX09CSkNOVCBpcyBub3Qgc2V0CiMgQ09ORklHX1NDVFBfREVGQVVMVF9DT09LSUVf
-SE1BQ19NRDUgaXMgbm90IHNldApDT05GSUdfU0NUUF9ERUZBVUxUX0NPT0tJRV9ITUFDX1NIQTE9
-eQojIENPTkZJR19TQ1RQX0RFRkFVTFRfQ09PS0lFX0hNQUNfTk9ORSBpcyBub3Qgc2V0CkNPTkZJ
-R19TQ1RQX0NPT0tJRV9ITUFDX01ENT15CkNPTkZJR19TQ1RQX0NPT0tJRV9ITUFDX1NIQTE9eQpD
-T05GSUdfSU5FVF9TQ1RQX0RJQUc9bQojIENPTkZJR19SRFMgaXMgbm90IHNldApDT05GSUdfVElQ
-Qz1tCkNPTkZJR19USVBDX01FRElBX1VEUD15CkNPTkZJR19BVE09bQpDT05GSUdfQVRNX0NMSVA9
-bQojIENPTkZJR19BVE1fQ0xJUF9OT19JQ01QIGlzIG5vdCBzZXQKQ09ORklHX0FUTV9MQU5FPW0K
-IyBDT05GSUdfQVRNX01QT0EgaXMgbm90IHNldApDT05GSUdfQVRNX0JSMjY4ND1tCiMgQ09ORklH
-X0FUTV9CUjI2ODRfSVBGSUxURVIgaXMgbm90IHNldApDT05GSUdfTDJUUD1tCkNPTkZJR19MMlRQ
-X0RFQlVHRlM9bQpDT05GSUdfTDJUUF9WMz15CkNPTkZJR19MMlRQX0lQPW0KQ09ORklHX0wyVFBf
-RVRIPW0KQ09ORklHX1NUUD1tCkNPTkZJR19HQVJQPW0KQ09ORklHX01SUD1tCkNPTkZJR19CUklE
-R0U9bQpDT05GSUdfQlJJREdFX0lHTVBfU05PT1BJTkc9eQpDT05GSUdfQlJJREdFX1ZMQU5fRklM
-VEVSSU5HPXkKQ09ORklHX0hBVkVfTkVUX0RTQT15CkNPTkZJR19WTEFOXzgwMjFRPW0KQ09ORklH
-X1ZMQU5fODAyMVFfR1ZSUD15CkNPTkZJR19WTEFOXzgwMjFRX01WUlA9eQojIENPTkZJR19ERUNO
-RVQgaXMgbm90IHNldApDT05GSUdfTExDPW0KIyBDT05GSUdfTExDMiBpcyBub3Qgc2V0CiMgQ09O
-RklHX0lQWCBpcyBub3Qgc2V0CiMgQ09ORklHX0FUQUxLIGlzIG5vdCBzZXQKIyBDT05GSUdfWDI1
-IGlzIG5vdCBzZXQKIyBDT05GSUdfTEFQQiBpcyBub3Qgc2V0CiMgQ09ORklHX1BIT05FVCBpcyBu
-b3Qgc2V0CiMgQ09ORklHXzZMT1dQQU4gaXMgbm90IHNldApDT05GSUdfSUVFRTgwMjE1ND1tCiMg
-Q09ORklHX0lFRUU4MDIxNTRfTkw4MDIxNTRfRVhQRVJJTUVOVEFMIGlzIG5vdCBzZXQKQ09ORklH
-X0lFRUU4MDIxNTRfU09DS0VUPW0KQ09ORklHX01BQzgwMjE1ND1tCkNPTkZJR19ORVRfU0NIRUQ9
-eQoKIwojIFF1ZXVlaW5nL1NjaGVkdWxpbmcKIwpDT05GSUdfTkVUX1NDSF9DQlE9bQpDT05GSUdf
-TkVUX1NDSF9IVEI9bQpDT05GSUdfTkVUX1NDSF9IRlNDPW0KQ09ORklHX05FVF9TQ0hfQVRNPW0K
-Q09ORklHX05FVF9TQ0hfUFJJTz1tCkNPTkZJR19ORVRfU0NIX01VTFRJUT1tCkNPTkZJR19ORVRf
-U0NIX1JFRD1tCkNPTkZJR19ORVRfU0NIX1NGQj1tCkNPTkZJR19ORVRfU0NIX1NGUT1tCkNPTkZJ
-R19ORVRfU0NIX1RFUUw9bQpDT05GSUdfTkVUX1NDSF9UQkY9bQpDT05GSUdfTkVUX1NDSF9HUkVE
-PW0KQ09ORklHX05FVF9TQ0hfRFNNQVJLPW0KQ09ORklHX05FVF9TQ0hfTkVURU09bQpDT05GSUdf
-TkVUX1NDSF9EUlI9bQpDT05GSUdfTkVUX1NDSF9NUVBSSU89bQpDT05GSUdfTkVUX1NDSF9DSE9L
-RT1tCkNPTkZJR19ORVRfU0NIX1FGUT1tCkNPTkZJR19ORVRfU0NIX0NPREVMPW0KQ09ORklHX05F
-VF9TQ0hfRlFfQ09ERUw9bQojIENPTkZJR19ORVRfU0NIX0ZRIGlzIG5vdCBzZXQKIyBDT05GSUdf
-TkVUX1NDSF9ISEYgaXMgbm90IHNldAojIENPTkZJR19ORVRfU0NIX1BJRSBpcyBub3Qgc2V0CkNP
-TkZJR19ORVRfU0NIX0lOR1JFU1M9bQpDT05GSUdfTkVUX1NDSF9QTFVHPW0KCiMKIyBDbGFzc2lm
-aWNhdGlvbgojCkNPTkZJR19ORVRfQ0xTPXkKQ09ORklHX05FVF9DTFNfQkFTSUM9bQpDT05GSUdf
-TkVUX0NMU19UQ0lOREVYPW0KQ09ORklHX05FVF9DTFNfUk9VVEU0PW0KQ09ORklHX05FVF9DTFNf
-Rlc9bQpDT05GSUdfTkVUX0NMU19VMzI9bQpDT05GSUdfQ0xTX1UzMl9QRVJGPXkKQ09ORklHX0NM
-U19VMzJfTUFSSz15CkNPTkZJR19ORVRfQ0xTX1JTVlA9bQpDT05GSUdfTkVUX0NMU19SU1ZQNj1t
-CkNPTkZJR19ORVRfQ0xTX0ZMT1c9bQpDT05GSUdfTkVUX0NMU19DR1JPVVA9eQojIENPTkZJR19O
-RVRfQ0xTX0JQRiBpcyBub3Qgc2V0CiMgQ09ORklHX05FVF9DTFNfRkxPV0VSIGlzIG5vdCBzZXQK
-IyBDT05GSUdfTkVUX0NMU19NQVRDSEFMTCBpcyBub3Qgc2V0CkNPTkZJR19ORVRfRU1BVENIPXkK
-Q09ORklHX05FVF9FTUFUQ0hfU1RBQ0s9MzIKQ09ORklHX05FVF9FTUFUQ0hfQ01QPW0KQ09ORklH
-X05FVF9FTUFUQ0hfTkJZVEU9bQpDT05GSUdfTkVUX0VNQVRDSF9VMzI9bQpDT05GSUdfTkVUX0VN
-QVRDSF9NRVRBPW0KQ09ORklHX05FVF9FTUFUQ0hfVEVYVD1tCkNPTkZJR19ORVRfRU1BVENIX0lQ
-U0VUPW0KQ09ORklHX05FVF9DTFNfQUNUPXkKQ09ORklHX05FVF9BQ1RfUE9MSUNFPW0KQ09ORklH
-X05FVF9BQ1RfR0FDVD1tCkNPTkZJR19HQUNUX1BST0I9eQpDT05GSUdfTkVUX0FDVF9NSVJSRUQ9
-bQpDT05GSUdfTkVUX0FDVF9JUFQ9bQpDT05GSUdfTkVUX0FDVF9OQVQ9bQpDT05GSUdfTkVUX0FD
-VF9QRURJVD1tCkNPTkZJR19ORVRfQUNUX1NJTVA9bQpDT05GSUdfTkVUX0FDVF9TS0JFRElUPW0K
-Q09ORklHX05FVF9BQ1RfQ1NVTT1tCiMgQ09ORklHX05FVF9BQ1RfVkxBTiBpcyBub3Qgc2V0CiMg
-Q09ORklHX05FVF9BQ1RfQlBGIGlzIG5vdCBzZXQKIyBDT05GSUdfTkVUX0FDVF9DT05OTUFSSyBp
-cyBub3Qgc2V0CiMgQ09ORklHX05FVF9BQ1RfSUZFIGlzIG5vdCBzZXQKQ09ORklHX05FVF9DTFNf
-SU5EPXkKQ09ORklHX05FVF9TQ0hfRklGTz15CkNPTkZJR19EQ0I9eQpDT05GSUdfRE5TX1JFU09M
-VkVSPW0KIyBDT05GSUdfQkFUTUFOX0FEViBpcyBub3Qgc2V0CkNPTkZJR19PUEVOVlNXSVRDSD1t
-CkNPTkZJR19PUEVOVlNXSVRDSF9HUkU9bQpDT05GSUdfT1BFTlZTV0lUQ0hfVlhMQU49bQpDT05G
-SUdfVlNPQ0tFVFM9bQpDT05GSUdfVk1XQVJFX1ZNQ0lfVlNPQ0tFVFM9bQojIENPTkZJR19WSVJU
-SU9fVlNPQ0tFVFMgaXMgbm90IHNldApDT05GSUdfTkVUTElOS19ESUFHPW0KQ09ORklHX01QTFM9
-eQpDT05GSUdfTkVUX01QTFNfR1NPPW0KIyBDT05GSUdfTVBMU19ST1VUSU5HIGlzIG5vdCBzZXQK
-IyBDT05GSUdfSFNSIGlzIG5vdCBzZXQKIyBDT05GSUdfTkVUX1NXSVRDSERFViBpcyBub3Qgc2V0
-CiMgQ09ORklHX05FVF9MM19NQVNURVJfREVWIGlzIG5vdCBzZXQKIyBDT05GSUdfTkVUX05DU0kg
-aXMgbm90IHNldApDT05GSUdfUlBTPXkKQ09ORklHX1JGU19BQ0NFTD15CkNPTkZJR19YUFM9eQpD
-T05GSUdfU09DS19DR1JPVVBfREFUQT15CiMgQ09ORklHX0NHUk9VUF9ORVRfUFJJTyBpcyBub3Qg
-c2V0CkNPTkZJR19DR1JPVVBfTkVUX0NMQVNTSUQ9eQpDT05GSUdfTkVUX1JYX0JVU1lfUE9MTD15
-CkNPTkZJR19CUUw9eQpDT05GSUdfQlBGX0pJVD15CkNPTkZJR19ORVRfRkxPV19MSU1JVD15Cgoj
-CiMgTmV0d29yayB0ZXN0aW5nCiMKQ09ORklHX05FVF9QS1RHRU49bQojIENPTkZJR19ORVRfVENQ
-UFJPQkUgaXMgbm90IHNldApDT05GSUdfTkVUX0RST1BfTU9OSVRPUj15CiMgQ09ORklHX0hBTVJB
-RElPIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0FOIGlzIG5vdCBzZXQKIyBDT05GSUdfSVJEQSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0JUIGlzIG5vdCBzZXQKIyBDT05GSUdfQUZfUlhSUEMgaXMgbm90IHNl
-dAojIENPTkZJR19BRl9LQ00gaXMgbm90IHNldApDT05GSUdfRklCX1JVTEVTPXkKQ09ORklHX1dJ
-UkVMRVNTPXkKQ09ORklHX1dJUkVMRVNTX0VYVD15CkNPTkZJR19XRVhUX0NPUkU9eQpDT05GSUdf
-V0VYVF9QUk9DPXkKQ09ORklHX1dFWFRfUFJJVj15CkNPTkZJR19DRkc4MDIxMT1tCiMgQ09ORklH
-X05MODAyMTFfVEVTVE1PREUgaXMgbm90IHNldAojIENPTkZJR19DRkc4MDIxMV9ERVZFTE9QRVJf
-V0FSTklOR1MgaXMgbm90IHNldApDT05GSUdfQ0ZHODAyMTFfREVGQVVMVF9QUz15CiMgQ09ORklH
-X0NGRzgwMjExX0RFQlVHRlMgaXMgbm90IHNldAojIENPTkZJR19DRkc4MDIxMV9JTlRFUk5BTF9S
-RUdEQiBpcyBub3Qgc2V0CkNPTkZJR19DRkc4MDIxMV9DUkRBX1NVUFBPUlQ9eQpDT05GSUdfQ0ZH
-ODAyMTFfV0VYVD15CkNPTkZJR19MSUI4MDIxMT1tCiMgQ09ORklHX0xJQjgwMjExX0RFQlVHIGlz
-IG5vdCBzZXQKQ09ORklHX01BQzgwMjExPW0KQ09ORklHX01BQzgwMjExX0hBU19SQz15CkNPTkZJ
-R19NQUM4MDIxMV9SQ19NSU5TVFJFTD15CkNPTkZJR19NQUM4MDIxMV9SQ19NSU5TVFJFTF9IVD15
-CiMgQ09ORklHX01BQzgwMjExX1JDX01JTlNUUkVMX1ZIVCBpcyBub3Qgc2V0CkNPTkZJR19NQUM4
-MDIxMV9SQ19ERUZBVUxUX01JTlNUUkVMPXkKQ09ORklHX01BQzgwMjExX1JDX0RFRkFVTFQ9Im1p
-bnN0cmVsX2h0IgpDT05GSUdfTUFDODAyMTFfTUVTSD15CkNPTkZJR19NQUM4MDIxMV9MRURTPXkK
-IyBDT05GSUdfTUFDODAyMTFfREVCVUdGUyBpcyBub3Qgc2V0CiMgQ09ORklHX01BQzgwMjExX01F
-U1NBR0VfVFJBQ0lORyBpcyBub3Qgc2V0CiMgQ09ORklHX01BQzgwMjExX0RFQlVHX01FTlUgaXMg
-bm90IHNldApDT05GSUdfTUFDODAyMTFfU1RBX0hBU0hfTUFYX1NJWkU9MAojIENPTkZJR19XSU1B
-WCBpcyBub3Qgc2V0CkNPTkZJR19SRktJTEw9bQpDT05GSUdfUkZLSUxMX0xFRFM9eQpDT05GSUdf
-UkZLSUxMX0lOUFVUPXkKIyBDT05GSUdfUkZLSUxMX0dQSU8gaXMgbm90IHNldApDT05GSUdfTkVU
-XzlQPXkKQ09ORklHX05FVF85UF9WSVJUSU89eQojIENPTkZJR19ORVRfOVBfREVCVUcgaXMgbm90
-IHNldAojIENPTkZJR19DQUlGIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0VQSF9MSUIgaXMgbm90IHNl
-dAojIENPTkZJR19ORkMgaXMgbm90IHNldAojIENPTkZJR19MV1RVTk5FTCBpcyBub3Qgc2V0CkNP
-TkZJR19EU1RfQ0FDSEU9eQojIENPTkZJR19ORVRfREVWTElOSyBpcyBub3Qgc2V0CkNPTkZJR19N
-QVlfVVNFX0RFVkxJTks9eQpDT05GSUdfSEFWRV9FQlBGX0pJVD15CgojCiMgRGV2aWNlIERyaXZl
-cnMKIwoKIwojIEdlbmVyaWMgRHJpdmVyIE9wdGlvbnMKIwpDT05GSUdfVUVWRU5UX0hFTFBFUj15
-CkNPTkZJR19VRVZFTlRfSEVMUEVSX1BBVEg9IiIKQ09ORklHX0RFVlRNUEZTPXkKQ09ORklHX0RF
-VlRNUEZTX01PVU5UPXkKQ09ORklHX1NUQU5EQUxPTkU9eQpDT05GSUdfUFJFVkVOVF9GSVJNV0FS
-RV9CVUlMRD15CkNPTkZJR19GV19MT0FERVI9eQojIENPTkZJR19GSVJNV0FSRV9JTl9LRVJORUwg
-aXMgbm90IHNldApDT05GSUdfRVhUUkFfRklSTVdBUkU9IiIKQ09ORklHX0ZXX0xPQURFUl9VU0VS
-X0hFTFBFUj15CiMgQ09ORklHX0ZXX0xPQURFUl9VU0VSX0hFTFBFUl9GQUxMQkFDSyBpcyBub3Qg
-c2V0CkNPTkZJR19BTExPV19ERVZfQ09SRURVTVA9eQojIENPTkZJR19ERUJVR19EUklWRVIgaXMg
-bm90IHNldAojIENPTkZJR19ERUJVR19ERVZSRVMgaXMgbm90IHNldApDT05GSUdfU1lTX0hZUEVS
-VklTT1I9eQojIENPTkZJR19HRU5FUklDX0NQVV9ERVZJQ0VTIGlzIG5vdCBzZXQKQ09ORklHX0dF
-TkVSSUNfQ1BVX0FVVE9QUk9CRT15CkNPTkZJR19SRUdNQVA9eQpDT05GSUdfUkVHTUFQX0kyQz15
-CkNPTkZJR19SRUdNQVBfU1BJPXkKQ09ORklHX0RNQV9TSEFSRURfQlVGRkVSPXkKIyBDT05GSUdf
-RkVOQ0VfVFJBQ0UgaXMgbm90IHNldApDT05GSUdfRE1BX0NNQT15CgojCiMgRGVmYXVsdCBjb250
-aWd1b3VzIG1lbW9yeSBhcmVhIHNpemU6CiMKQ09ORklHX0NNQV9TSVpFX01CWVRFUz0yMDAKQ09O
-RklHX0NNQV9TSVpFX1NFTF9NQllURVM9eQojIENPTkZJR19DTUFfU0laRV9TRUxfUEVSQ0VOVEFH
-RSBpcyBub3Qgc2V0CiMgQ09ORklHX0NNQV9TSVpFX1NFTF9NSU4gaXMgbm90IHNldAojIENPTkZJ
-R19DTUFfU0laRV9TRUxfTUFYIGlzIG5vdCBzZXQKQ09ORklHX0NNQV9BTElHTk1FTlQ9OAoKIwoj
-IEJ1cyBkZXZpY2VzCiMKQ09ORklHX0NPTk5FQ1RPUj15CkNPTkZJR19QUk9DX0VWRU5UUz15CkNP
-TkZJR19NVEQ9bQojIENPTkZJR19NVERfVEVTVFMgaXMgbm90IHNldAojIENPTkZJR19NVERfUkVE
-Qk9PVF9QQVJUUyBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9DTURMSU5FX1BBUlRTIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfTVREX0FSN19QQVJUUyBpcyBub3Qgc2V0CgojCiMgVXNlciBNb2R1bGVzIEFu
-ZCBUcmFuc2xhdGlvbiBMYXllcnMKIwpDT05GSUdfTVREX0JMS0RFVlM9bQpDT05GSUdfTVREX0JM
-T0NLPW0KIyBDT05GSUdfTVREX0JMT0NLX1JPIGlzIG5vdCBzZXQKIyBDT05GSUdfRlRMIGlzIG5v
-dCBzZXQKIyBDT05GSUdfTkZUTCBpcyBub3Qgc2V0CiMgQ09ORklHX0lORlRMIGlzIG5vdCBzZXQK
-IyBDT05GSUdfUkZEX0ZUTCBpcyBub3Qgc2V0CiMgQ09ORklHX1NTRkRDIGlzIG5vdCBzZXQKIyBD
-T05GSUdfU01fRlRMIGlzIG5vdCBzZXQKIyBDT05GSUdfTVREX09PUFMgaXMgbm90IHNldAojIENP
-TkZJR19NVERfU1dBUCBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9QQVJUSVRJT05FRF9NQVNURVIg
-aXMgbm90IHNldAoKIwojIFJBTS9ST00vRmxhc2ggY2hpcCBkcml2ZXJzCiMKIyBDT05GSUdfTVRE
-X0NGSSBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9KRURFQ1BST0JFIGlzIG5vdCBzZXQKQ09ORklH
-X01URF9NQVBfQkFOS19XSURUSF8xPXkKQ09ORklHX01URF9NQVBfQkFOS19XSURUSF8yPXkKQ09O
-RklHX01URF9NQVBfQkFOS19XSURUSF80PXkKIyBDT05GSUdfTVREX01BUF9CQU5LX1dJRFRIXzgg
-aXMgbm90IHNldAojIENPTkZJR19NVERfTUFQX0JBTktfV0lEVEhfMTYgaXMgbm90IHNldAojIENP
-TkZJR19NVERfTUFQX0JBTktfV0lEVEhfMzIgaXMgbm90IHNldApDT05GSUdfTVREX0NGSV9JMT15
-CkNPTkZJR19NVERfQ0ZJX0kyPXkKIyBDT05GSUdfTVREX0NGSV9JNCBpcyBub3Qgc2V0CiMgQ09O
-RklHX01URF9DRklfSTggaXMgbm90IHNldAojIENPTkZJR19NVERfUkFNIGlzIG5vdCBzZXQKIyBD
-T05GSUdfTVREX1JPTSBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9BQlNFTlQgaXMgbm90IHNldAoK
-IwojIE1hcHBpbmcgZHJpdmVycyBmb3IgY2hpcCBhY2Nlc3MKIwojIENPTkZJR19NVERfQ09NUExF
-WF9NQVBQSU5HUyBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9JTlRFTF9WUl9OT1IgaXMgbm90IHNl
-dAojIENPTkZJR19NVERfUExBVFJBTSBpcyBub3Qgc2V0CgojCiMgU2VsZi1jb250YWluZWQgTVRE
-IGRldmljZSBkcml2ZXJzCiMKIyBDT05GSUdfTVREX1BNQzU1MSBpcyBub3Qgc2V0CiMgQ09ORklH
-X01URF9EQVRBRkxBU0ggaXMgbm90IHNldAojIENPTkZJR19NVERfU1NUMjVMIGlzIG5vdCBzZXQK
-IyBDT05GSUdfTVREX1NMUkFNIGlzIG5vdCBzZXQKIyBDT05GSUdfTVREX1BIUkFNIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfTVREX01URFJBTSBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9CTE9DSzJNVEQg
-aXMgbm90IHNldAoKIwojIERpc2stT24tQ2hpcCBEZXZpY2UgRHJpdmVycwojCiMgQ09ORklHX01U
-RF9ET0NHMyBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9OQU5EIGlzIG5vdCBzZXQKIyBDT05GSUdf
-TVREX09ORU5BTkQgaXMgbm90IHNldAoKIwojIExQRERSICYgTFBERFIyIFBDTSBtZW1vcnkgZHJp
-dmVycwojCiMgQ09ORklHX01URF9MUEREUiBpcyBub3Qgc2V0CiMgQ09ORklHX01URF9TUElfTk9S
-IGlzIG5vdCBzZXQKQ09ORklHX01URF9VQkk9bQpDT05GSUdfTVREX1VCSV9XTF9USFJFU0hPTEQ9
-NDA5NgpDT05GSUdfTVREX1VCSV9CRUJfTElNSVQ9MjAKIyBDT05GSUdfTVREX1VCSV9GQVNUTUFQ
-IGlzIG5vdCBzZXQKIyBDT05GSUdfTVREX1VCSV9HTFVFQkkgaXMgbm90IHNldAojIENPTkZJR19N
-VERfVUJJX0JMT0NLIGlzIG5vdCBzZXQKIyBDT05GSUdfT0YgaXMgbm90IHNldApDT05GSUdfQVJD
-SF9NSUdIVF9IQVZFX1BDX1BBUlBPUlQ9eQpDT05GSUdfUEFSUE9SVD1tCkNPTkZJR19QQVJQT1JU
-X1BDPW0KQ09ORklHX1BBUlBPUlRfU0VSSUFMPW0KIyBDT05GSUdfUEFSUE9SVF9QQ19GSUZPIGlz
-IG5vdCBzZXQKIyBDT05GSUdfUEFSUE9SVF9QQ19TVVBFUklPIGlzIG5vdCBzZXQKIyBDT05GSUdf
-UEFSUE9SVF9HU0MgaXMgbm90IHNldAojIENPTkZJR19QQVJQT1JUX0FYODg3OTYgaXMgbm90IHNl
-dApDT05GSUdfUEFSUE9SVF8xMjg0PXkKQ09ORklHX1BBUlBPUlRfTk9UX1BDPXkKQ09ORklHX1BO
-UD15CiMgQ09ORklHX1BOUF9ERUJVR19NRVNTQUdFUyBpcyBub3Qgc2V0CgojCiMgUHJvdG9jb2xz
-CiMKQ09ORklHX1BOUEFDUEk9eQpDT05GSUdfQkxLX0RFVj15CkNPTkZJR19CTEtfREVWX05VTExf
-QkxLPW0KQ09ORklHX0JMS19ERVZfRkQ9bQojIENPTkZJR19QQVJJREUgaXMgbm90IHNldApDT05G
-SUdfQkxLX0RFVl9QQ0lFU1NEX01USVAzMlhYPW0KIyBDT05GSUdfWlJBTSBpcyBub3Qgc2V0CiMg
-Q09ORklHX0JMS19DUFFfQ0lTU19EQSBpcyBub3Qgc2V0CiMgQ09ORklHX0JMS19ERVZfREFDOTYw
-IGlzIG5vdCBzZXQKIyBDT05GSUdfQkxLX0RFVl9VTUVNIGlzIG5vdCBzZXQKIyBDT05GSUdfQkxL
-X0RFVl9DT1dfQ09NTU9OIGlzIG5vdCBzZXQKQ09ORklHX0JMS19ERVZfTE9PUD1tCkNPTkZJR19C
-TEtfREVWX0xPT1BfTUlOX0NPVU5UPTAKIyBDT05GSUdfQkxLX0RFVl9DUllQVE9MT09QIGlzIG5v
-dCBzZXQKIyBDT05GSUdfQkxLX0RFVl9EUkJEIGlzIG5vdCBzZXQKIyBDT05GSUdfQkxLX0RFVl9O
-QkQgaXMgbm90IHNldAojIENPTkZJR19CTEtfREVWX1NLRCBpcyBub3Qgc2V0CkNPTkZJR19CTEtf
-REVWX09TRD1tCkNPTkZJR19CTEtfREVWX1NYOD1tCkNPTkZJR19CTEtfREVWX1JBTT1tCkNPTkZJ
-R19CTEtfREVWX1JBTV9DT1VOVD0xNgpDT05GSUdfQkxLX0RFVl9SQU1fU0laRT0xNjM4NAojIENP
-TkZJR19CTEtfREVWX1JBTV9EQVggaXMgbm90IHNldApDT05GSUdfQ0RST01fUEtUQ0RWRD1tCkNP
-TkZJR19DRFJPTV9QS1RDRFZEX0JVRkZFUlM9OAojIENPTkZJR19DRFJPTV9QS1RDRFZEX1dDQUNI
-RSBpcyBub3Qgc2V0CkNPTkZJR19BVEFfT1ZFUl9FVEg9bQpDT05GSUdfWEVOX0JMS0RFVl9GUk9O
-VEVORD1tCiMgQ09ORklHX1hFTl9CTEtERVZfQkFDS0VORCBpcyBub3Qgc2V0CkNPTkZJR19WSVJU
-SU9fQkxLPXkKIyBDT05GSUdfQkxLX0RFVl9IRCBpcyBub3Qgc2V0CiMgQ09ORklHX0JMS19ERVZf
-UkJEIGlzIG5vdCBzZXQKQ09ORklHX0JMS19ERVZfUlNYWD1tCkNPTkZJR19OVk1FX0NPUkU9bQpD
-T05GSUdfQkxLX0RFVl9OVk1FPW0KIyBDT05GSUdfQkxLX0RFVl9OVk1FX1NDU0kgaXMgbm90IHNl
-dAojIENPTkZJR19OVk1FX1RBUkdFVCBpcyBub3Qgc2V0CgojCiMgTWlzYyBkZXZpY2VzCiMKQ09O
-RklHX1NFTlNPUlNfTElTM0xWMDJEPW0KIyBDT05GSUdfQUQ1MjVYX0RQT1QgaXMgbm90IHNldAoj
-IENPTkZJR19EVU1NWV9JUlEgaXMgbm90IHNldAojIENPTkZJR19JQk1fQVNNIGlzIG5vdCBzZXQK
-IyBDT05GSUdfUEhBTlRPTSBpcyBub3Qgc2V0CkNPTkZJR19TR0lfSU9DND1tCkNPTkZJR19USUZN
-X0NPUkU9bQpDT05GSUdfVElGTV83WFgxPW0KIyBDT05GSUdfSUNTOTMyUzQwMSBpcyBub3Qgc2V0
-CkNPTkZJR19FTkNMT1NVUkVfU0VSVklDRVM9bQpDT05GSUdfU0dJX1hQPW0KQ09ORklHX0hQX0lM
-Tz1tCkNPTkZJR19TR0lfR1JVPW0KIyBDT05GSUdfU0dJX0dSVV9ERUJVRyBpcyBub3Qgc2V0CkNP
-TkZJR19BUERTOTgwMkFMUz1tCkNPTkZJR19JU0wyOTAwMz1tCkNPTkZJR19JU0wyOTAyMD1tCkNP
-TkZJR19TRU5TT1JTX1RTTDI1NTA9bQpDT05GSUdfU0VOU09SU19CSDE3NzA9bQpDT05GSUdfU0VO
-U09SU19BUERTOTkwWD1tCiMgQ09ORklHX0hNQzYzNTIgaXMgbm90IHNldAojIENPTkZJR19EUzE2
-ODIgaXMgbm90IHNldAojIENPTkZJR19USV9EQUM3NTEyIGlzIG5vdCBzZXQKQ09ORklHX1ZNV0FS
-RV9CQUxMT09OPW0KIyBDT05GSUdfQk1QMDg1X0kyQyBpcyBub3Qgc2V0CiMgQ09ORklHX0JNUDA4
-NV9TUEkgaXMgbm90IHNldAojIENPTkZJR19VU0JfU1dJVENIX0ZTQTk0ODAgaXMgbm90IHNldAoj
-IENPTkZJR19MQVRUSUNFX0VDUDNfQ09ORklHIGlzIG5vdCBzZXQKIyBDT05GSUdfU1JBTSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1BBTkVMIGlzIG5vdCBzZXQKIyBDT05GSUdfQzJQT1JUIGlzIG5vdCBz
-ZXQKCiMKIyBFRVBST00gc3VwcG9ydAojCkNPTkZJR19FRVBST01fQVQyND1tCiMgQ09ORklHX0VF
-UFJPTV9BVDI1IGlzIG5vdCBzZXQKQ09ORklHX0VFUFJPTV9MRUdBQ1k9bQpDT05GSUdfRUVQUk9N
-X01BWDY4NzU9bQpDT05GSUdfRUVQUk9NXzkzQ1g2PW0KIyBDT05GSUdfRUVQUk9NXzkzWFg0NiBp
-cyBub3Qgc2V0CkNPTkZJR19DQjcxMF9DT1JFPW0KIyBDT05GSUdfQ0I3MTBfREVCVUcgaXMgbm90
-IHNldApDT05GSUdfQ0I3MTBfREVCVUdfQVNTVU1QVElPTlM9eQoKIwojIFRleGFzIEluc3RydW1l
-bnRzIHNoYXJlZCB0cmFuc3BvcnQgbGluZSBkaXNjaXBsaW5lCiMKIyBDT05GSUdfVElfU1QgaXMg
-bm90IHNldApDT05GSUdfU0VOU09SU19MSVMzX0kyQz1tCgojCiMgQWx0ZXJhIEZQR0EgZmlybXdh
-cmUgZG93bmxvYWQgbW9kdWxlCiMKQ09ORklHX0FMVEVSQV9TVEFQTD1tCkNPTkZJR19JTlRFTF9N
-RUk9eQpDT05GSUdfSU5URUxfTUVJX01FPXkKIyBDT05GSUdfSU5URUxfTUVJX1RYRSBpcyBub3Qg
-c2V0CkNPTkZJR19WTVdBUkVfVk1DST1tCgojCiMgSW50ZWwgTUlDIEJ1cyBEcml2ZXIKIwojIENP
-TkZJR19JTlRFTF9NSUNfQlVTIGlzIG5vdCBzZXQKCiMKIyBTQ0lGIEJ1cyBEcml2ZXIKIwojIENP
-TkZJR19TQ0lGX0JVUyBpcyBub3Qgc2V0CgojCiMgVk9QIEJ1cyBEcml2ZXIKIwojIENPTkZJR19W
-T1BfQlVTIGlzIG5vdCBzZXQKCiMKIyBJbnRlbCBNSUMgSG9zdCBEcml2ZXIKIwoKIwojIEludGVs
-IE1JQyBDYXJkIERyaXZlcgojCgojCiMgU0NJRiBEcml2ZXIKIwoKIwojIEludGVsIE1JQyBDb3By
-b2Nlc3NvciBTdGF0ZSBNYW5hZ2VtZW50IChDT1NNKSBEcml2ZXJzCiMKCiMKIyBWT1AgRHJpdmVy
-CiMKIyBDT05GSUdfR0VOV1FFIGlzIG5vdCBzZXQKIyBDT05GSUdfRUNITyBpcyBub3Qgc2V0CiMg
-Q09ORklHX0NYTF9CQVNFIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1hMX0FGVV9EUklWRVJfT1BTIGlz
-IG5vdCBzZXQKQ09ORklHX0hBVkVfSURFPXkKIyBDT05GSUdfSURFIGlzIG5vdCBzZXQKCiMKIyBT
-Q1NJIGRldmljZSBzdXBwb3J0CiMKQ09ORklHX1NDU0lfTU9EPXkKQ09ORklHX1JBSURfQVRUUlM9
-bQpDT05GSUdfU0NTST15CkNPTkZJR19TQ1NJX0RNQT15CkNPTkZJR19TQ1NJX05FVExJTks9eQoj
-IENPTkZJR19TQ1NJX01RX0RFRkFVTFQgaXMgbm90IHNldApDT05GSUdfU0NTSV9QUk9DX0ZTPXkK
-CiMKIyBTQ1NJIHN1cHBvcnQgdHlwZSAoZGlzaywgdGFwZSwgQ0QtUk9NKQojCkNPTkZJR19CTEtf
-REVWX1NEPW0KQ09ORklHX0NIUl9ERVZfU1Q9bQpDT05GSUdfQ0hSX0RFVl9PU1NUPW0KQ09ORklH
-X0JMS19ERVZfU1I9bQpDT05GSUdfQkxLX0RFVl9TUl9WRU5ET1I9eQpDT05GSUdfQ0hSX0RFVl9T
-Rz1tCkNPTkZJR19DSFJfREVWX1NDSD1tCkNPTkZJR19TQ1NJX0VOQ0xPU1VSRT1tCkNPTkZJR19T
-Q1NJX0NPTlNUQU5UUz15CkNPTkZJR19TQ1NJX0xPR0dJTkc9eQpDT05GSUdfU0NTSV9TQ0FOX0FT
-WU5DPXkKCiMKIyBTQ1NJIFRyYW5zcG9ydHMKIwpDT05GSUdfU0NTSV9TUElfQVRUUlM9bQpDT05G
-SUdfU0NTSV9GQ19BVFRSUz1tCkNPTkZJR19TQ1NJX0lTQ1NJX0FUVFJTPW0KQ09ORklHX1NDU0lf
-U0FTX0FUVFJTPW0KQ09ORklHX1NDU0lfU0FTX0xJQlNBUz1tCkNPTkZJR19TQ1NJX1NBU19BVEE9
-eQpDT05GSUdfU0NTSV9TQVNfSE9TVF9TTVA9eQpDT05GSUdfU0NTSV9TUlBfQVRUUlM9bQpDT05G
-SUdfU0NTSV9MT1dMRVZFTD15CkNPTkZJR19JU0NTSV9UQ1A9bQpDT05GSUdfSVNDU0lfQk9PVF9T
-WVNGUz1tCkNPTkZJR19TQ1NJX0NYR0IzX0lTQ1NJPW0KQ09ORklHX1NDU0lfQ1hHQjRfSVNDU0k9
-bQpDT05GSUdfU0NTSV9CTlgyX0lTQ1NJPW0KQ09ORklHX1NDU0lfQk5YMlhfRkNPRT1tCkNPTkZJ
-R19CRTJJU0NTST1tCiMgQ09ORklHX0JMS19ERVZfM1dfWFhYWF9SQUlEIGlzIG5vdCBzZXQKQ09O
-RklHX1NDU0lfSFBTQT1tCkNPTkZJR19TQ1NJXzNXXzlYWFg9bQpDT05GSUdfU0NTSV8zV19TQVM9
-bQojIENPTkZJR19TQ1NJX0FDQVJEIGlzIG5vdCBzZXQKQ09ORklHX1NDU0lfQUFDUkFJRD1tCiMg
-Q09ORklHX1NDU0lfQUlDN1hYWCBpcyBub3Qgc2V0CkNPTkZJR19TQ1NJX0FJQzc5WFg9bQpDT05G
-SUdfQUlDNzlYWF9DTURTX1BFUl9ERVZJQ0U9NApDT05GSUdfQUlDNzlYWF9SRVNFVF9ERUxBWV9N
-Uz0xNTAwMAojIENPTkZJR19BSUM3OVhYX0RFQlVHX0VOQUJMRSBpcyBub3Qgc2V0CkNPTkZJR19B
-SUM3OVhYX0RFQlVHX01BU0s9MAojIENPTkZJR19BSUM3OVhYX1JFR19QUkVUVFlfUFJJTlQgaXMg
-bm90IHNldAojIENPTkZJR19TQ1NJX0FJQzk0WFggaXMgbm90IHNldApDT05GSUdfU0NTSV9NVlNB
-Uz1tCiMgQ09ORklHX1NDU0lfTVZTQVNfREVCVUcgaXMgbm90IHNldApDT05GSUdfU0NTSV9NVlNB
-U19UQVNLTEVUPXkKQ09ORklHX1NDU0lfTVZVTUk9bQojIENPTkZJR19TQ1NJX0RQVF9JMk8gaXMg
-bm90IHNldAojIENPTkZJR19TQ1NJX0FEVkFOU1lTIGlzIG5vdCBzZXQKQ09ORklHX1NDU0lfQVJD
-TVNSPW0KIyBDT05GSUdfU0NTSV9FU0FTMlIgaXMgbm90IHNldAojIENPTkZJR19NRUdBUkFJRF9O
-RVdHRU4gaXMgbm90IHNldAojIENPTkZJR19NRUdBUkFJRF9MRUdBQ1kgaXMgbm90IHNldApDT05G
-SUdfTUVHQVJBSURfU0FTPW0KQ09ORklHX1NDU0lfTVBUM1NBUz1tCkNPTkZJR19TQ1NJX01QVDJT
-QVNfTUFYX1NHRT0xMjgKQ09ORklHX1NDU0lfTVBUM1NBU19NQVhfU0dFPTEyOApDT05GSUdfU0NT
-SV9NUFQyU0FTPW0KQ09ORklHX1NDU0lfVUZTSENEPW0KQ09ORklHX1NDU0lfVUZTSENEX1BDST1t
-CiMgQ09ORklHX1NDU0lfVUZTX0RXQ19UQ19QQ0kgaXMgbm90IHNldAojIENPTkZJR19TQ1NJX1VG
-U0hDRF9QTEFURk9STSBpcyBub3Qgc2V0CkNPTkZJR19TQ1NJX0hQVElPUD1tCiMgQ09ORklHX1ND
-U0lfQlVTTE9HSUMgaXMgbm90IHNldApDT05GSUdfVk1XQVJFX1BWU0NTST1tCiMgQ09ORklHX1hF
-Tl9TQ1NJX0ZST05URU5EIGlzIG5vdCBzZXQKQ09ORklHX0hZUEVSVl9TVE9SQUdFPW0KQ09ORklH
-X0xJQkZDPW0KQ09ORklHX0xJQkZDT0U9bQpDT05GSUdfRkNPRT1tCkNPTkZJR19GQ09FX0ZOSUM9
-bQojIENPTkZJR19TQ1NJX1NOSUMgaXMgbm90IHNldAojIENPTkZJR19TQ1NJX0RNWDMxOTFEIGlz
-IG5vdCBzZXQKIyBDT05GSUdfU0NTSV9FQVRBIGlzIG5vdCBzZXQKIyBDT05GSUdfU0NTSV9GVVRV
-UkVfRE9NQUlOIGlzIG5vdCBzZXQKIyBDT05GSUdfU0NTSV9HRFRIIGlzIG5vdCBzZXQKQ09ORklH
-X1NDU0lfSVNDST1tCiMgQ09ORklHX1NDU0lfSVBTIGlzIG5vdCBzZXQKQ09ORklHX1NDU0lfSU5J
-VElPPW0KIyBDT05GSUdfU0NTSV9JTklBMTAwIGlzIG5vdCBzZXQKIyBDT05GSUdfU0NTSV9QUEEg
-aXMgbm90IHNldAojIENPTkZJR19TQ1NJX0lNTSBpcyBub3Qgc2V0CkNPTkZJR19TQ1NJX1NURVg9
-bQojIENPTkZJR19TQ1NJX1NZTTUzQzhYWF8yIGlzIG5vdCBzZXQKQ09ORklHX1NDU0lfSVBSPW0K
-Q09ORklHX1NDU0lfSVBSX1RSQUNFPXkKQ09ORklHX1NDU0lfSVBSX0RVTVA9eQojIENPTkZJR19T
-Q1NJX1FMT0dJQ18xMjgwIGlzIG5vdCBzZXQKQ09ORklHX1NDU0lfUUxBX0ZDPW0KIyBDT05GSUdf
-VENNX1FMQTJYWFggaXMgbm90IHNldApDT05GSUdfU0NTSV9RTEFfSVNDU0k9bQojIENPTkZJR19T
-Q1NJX0xQRkMgaXMgbm90IHNldAojIENPTkZJR19TQ1NJX0RDMzk1eCBpcyBub3Qgc2V0CiMgQ09O
-RklHX1NDU0lfQU01M0M5NzQgaXMgbm90IHNldAojIENPTkZJR19TQ1NJX1dENzE5WCBpcyBub3Qg
-c2V0CkNPTkZJR19TQ1NJX0RFQlVHPW0KQ09ORklHX1NDU0lfUE1DUkFJRD1tCkNPTkZJR19TQ1NJ
-X1BNODAwMT1tCiMgQ09ORklHX1NDU0lfQkZBX0ZDIGlzIG5vdCBzZXQKQ09ORklHX1NDU0lfVklS
-VElPPW0KQ09ORklHX1NDU0lfQ0hFTFNJT19GQ09FPW0KQ09ORklHX1NDU0lfREg9eQpDT05GSUdf
-U0NTSV9ESF9SREFDPXkKQ09ORklHX1NDU0lfREhfSFBfU1c9eQpDT05GSUdfU0NTSV9ESF9FTUM9
-eQpDT05GSUdfU0NTSV9ESF9BTFVBPXkKQ09ORklHX1NDU0lfT1NEX0lOSVRJQVRPUj1tCkNPTkZJ
-R19TQ1NJX09TRF9VTEQ9bQpDT05GSUdfU0NTSV9PU0RfRFBSSU5UX1NFTlNFPTEKIyBDT05GSUdf
-U0NTSV9PU0RfREVCVUcgaXMgbm90IHNldApDT05GSUdfQVRBPW0KIyBDT05GSUdfQVRBX05PTlNU
-QU5EQVJEIGlzIG5vdCBzZXQKQ09ORklHX0FUQV9WRVJCT1NFX0VSUk9SPXkKQ09ORklHX0FUQV9B
-Q1BJPXkKIyBDT05GSUdfU0FUQV9aUE9ERCBpcyBub3Qgc2V0CkNPTkZJR19TQVRBX1BNUD15Cgoj
-CiMgQ29udHJvbGxlcnMgd2l0aCBub24tU0ZGIG5hdGl2ZSBpbnRlcmZhY2UKIwpDT05GSUdfU0FU
-QV9BSENJPW0KQ09ORklHX1NBVEFfQUhDSV9QTEFURk9STT1tCiMgQ09ORklHX1NBVEFfSU5JQzE2
-MlggaXMgbm90IHNldApDT05GSUdfU0FUQV9BQ0FSRF9BSENJPW0KQ09ORklHX1NBVEFfU0lMMjQ9
-bQpDT05GSUdfQVRBX1NGRj15CgojCiMgU0ZGIGNvbnRyb2xsZXJzIHdpdGggY3VzdG9tIERNQSBp
-bnRlcmZhY2UKIwpDT05GSUdfUERDX0FETUE9bQpDT05GSUdfU0FUQV9RU1RPUj1tCkNPTkZJR19T
-QVRBX1NYND1tCkNPTkZJR19BVEFfQk1ETUE9eQoKIwojIFNBVEEgU0ZGIGNvbnRyb2xsZXJzIHdp
-dGggQk1ETUEKIwpDT05GSUdfQVRBX1BJSVg9bQojIENPTkZJR19TQVRBX0RXQyBpcyBub3Qgc2V0
-CkNPTkZJR19TQVRBX01WPW0KQ09ORklHX1NBVEFfTlY9bQpDT05GSUdfU0FUQV9QUk9NSVNFPW0K
-Q09ORklHX1NBVEFfU0lMPW0KQ09ORklHX1NBVEFfU0lTPW0KQ09ORklHX1NBVEFfU1ZXPW0KQ09O
-RklHX1NBVEFfVUxJPW0KQ09ORklHX1NBVEFfVklBPW0KQ09ORklHX1NBVEFfVklURVNTRT1tCgoj
-CiMgUEFUQSBTRkYgY29udHJvbGxlcnMgd2l0aCBCTURNQQojCkNPTkZJR19QQVRBX0FMST1tCkNP
-TkZJR19QQVRBX0FNRD1tCkNPTkZJR19QQVRBX0FSVE9QPW0KQ09ORklHX1BBVEFfQVRJSVhQPW0K
-Q09ORklHX1BBVEFfQVRQODY3WD1tCkNPTkZJR19QQVRBX0NNRDY0WD1tCiMgQ09ORklHX1BBVEFf
-Q1lQUkVTUyBpcyBub3Qgc2V0CiMgQ09ORklHX1BBVEFfRUZBUiBpcyBub3Qgc2V0CkNPTkZJR19Q
-QVRBX0hQVDM2Nj1tCkNPTkZJR19QQVRBX0hQVDM3WD1tCkNPTkZJR19QQVRBX0hQVDNYMk49bQpD
-T05GSUdfUEFUQV9IUFQzWDM9bQojIENPTkZJR19QQVRBX0hQVDNYM19ETUEgaXMgbm90IHNldApD
-T05GSUdfUEFUQV9JVDgyMTM9bQpDT05GSUdfUEFUQV9JVDgyMVg9bQpDT05GSUdfUEFUQV9KTUlD
-Uk9OPW0KQ09ORklHX1BBVEFfTUFSVkVMTD1tCkNPTkZJR19QQVRBX05FVENFTEw9bQpDT05GSUdf
-UEFUQV9OSU5KQTMyPW0KIyBDT05GSUdfUEFUQV9OUzg3NDE1IGlzIG5vdCBzZXQKQ09ORklHX1BB
-VEFfT0xEUElJWD1tCiMgQ09ORklHX1BBVEFfT1BUSURNQSBpcyBub3Qgc2V0CkNPTkZJR19QQVRB
-X1BEQzIwMjdYPW0KQ09ORklHX1BBVEFfUERDX09MRD1tCiMgQ09ORklHX1BBVEFfUkFESVNZUyBp
-cyBub3Qgc2V0CkNPTkZJR19QQVRBX1JEQz1tCkNPTkZJR19QQVRBX1NDSD1tCkNPTkZJR19QQVRB
-X1NFUlZFUldPUktTPW0KQ09ORklHX1BBVEFfU0lMNjgwPW0KQ09ORklHX1BBVEFfU0lTPW0KQ09O
-RklHX1BBVEFfVE9TSElCQT1tCiMgQ09ORklHX1BBVEFfVFJJRkxFWCBpcyBub3Qgc2V0CkNPTkZJ
-R19QQVRBX1ZJQT1tCiMgQ09ORklHX1BBVEFfV0lOQk9ORCBpcyBub3Qgc2V0CgojCiMgUElPLW9u
-bHkgU0ZGIGNvbnRyb2xsZXJzCiMKIyBDT05GSUdfUEFUQV9DTUQ2NDBfUENJIGlzIG5vdCBzZXQK
-IyBDT05GSUdfUEFUQV9NUElJWCBpcyBub3Qgc2V0CiMgQ09ORklHX1BBVEFfTlM4NzQxMCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1BBVEFfT1BUSSBpcyBub3Qgc2V0CiMgQ09ORklHX1BBVEFfUloxMDAw
-IGlzIG5vdCBzZXQKCiMKIyBHZW5lcmljIGZhbGxiYWNrIC8gbGVnYWN5IGRyaXZlcnMKIwpDT05G
-SUdfUEFUQV9BQ1BJPW0KQ09ORklHX0FUQV9HRU5FUklDPW0KIyBDT05GSUdfUEFUQV9MRUdBQ1kg
-aXMgbm90IHNldApDT05GSUdfTUQ9eQpDT05GSUdfQkxLX0RFVl9NRD15CkNPTkZJR19NRF9BVVRP
-REVURUNUPXkKQ09ORklHX01EX0xJTkVBUj1tCkNPTkZJR19NRF9SQUlEMD1tCkNPTkZJR19NRF9S
-QUlEMT1tCkNPTkZJR19NRF9SQUlEMTA9bQpDT05GSUdfTURfUkFJRDQ1Nj1tCkNPTkZJR19NRF9N
-VUxUSVBBVEg9bQpDT05GSUdfTURfRkFVTFRZPW0KIyBDT05GSUdfTURfQ0xVU1RFUiBpcyBub3Qg
-c2V0CiMgQ09ORklHX0JDQUNIRSBpcyBub3Qgc2V0CkNPTkZJR19CTEtfREVWX0RNX0JVSUxUSU49
-eQpDT05GSUdfQkxLX0RFVl9ETT1tCiMgQ09ORklHX0RNX01RX0RFRkFVTFQgaXMgbm90IHNldApD
-T05GSUdfRE1fREVCVUc9eQpDT05GSUdfRE1fQlVGSU89bQojIENPTkZJR19ETV9ERUJVR19CTE9D
-S19TVEFDS19UUkFDSU5HIGlzIG5vdCBzZXQKQ09ORklHX0RNX0JJT19QUklTT049bQpDT05GSUdf
-RE1fUEVSU0lTVEVOVF9EQVRBPW0KQ09ORklHX0RNX0NSWVBUPW0KQ09ORklHX0RNX1NOQVBTSE9U
-PW0KQ09ORklHX0RNX1RISU5fUFJPVklTSU9OSU5HPW0KQ09ORklHX0RNX0NBQ0hFPW0KQ09ORklH
-X0RNX0NBQ0hFX1NNUT1tCkNPTkZJR19ETV9DQUNIRV9DTEVBTkVSPW0KIyBDT05GSUdfRE1fRVJB
-IGlzIG5vdCBzZXQKQ09ORklHX0RNX01JUlJPUj1tCkNPTkZJR19ETV9MT0dfVVNFUlNQQUNFPW0K
-Q09ORklHX0RNX1JBSUQ9bQpDT05GSUdfRE1fWkVSTz1tCkNPTkZJR19ETV9NVUxUSVBBVEg9bQpD
-T05GSUdfRE1fTVVMVElQQVRIX1FMPW0KQ09ORklHX0RNX01VTFRJUEFUSF9TVD1tCkNPTkZJR19E
-TV9ERUxBWT1tCkNPTkZJR19ETV9VRVZFTlQ9eQpDT05GSUdfRE1fRkxBS0VZPW0KQ09ORklHX0RN
-X1ZFUklUWT1tCiMgQ09ORklHX0RNX1ZFUklUWV9GRUMgaXMgbm90IHNldApDT05GSUdfRE1fU1dJ
-VENIPW0KIyBDT05GSUdfRE1fTE9HX1dSSVRFUyBpcyBub3Qgc2V0CkNPTkZJR19UQVJHRVRfQ09S
-RT1tCkNPTkZJR19UQ01fSUJMT0NLPW0KQ09ORklHX1RDTV9GSUxFSU89bQpDT05GSUdfVENNX1BT
-Q1NJPW0KIyBDT05GSUdfVENNX1VTRVIyIGlzIG5vdCBzZXQKQ09ORklHX0xPT1BCQUNLX1RBUkdF
-VD1tCkNPTkZJR19UQ01fRkM9bQpDT05GSUdfSVNDU0lfVEFSR0VUPW0KIyBDT05GSUdfSVNDU0lf
-VEFSR0VUX0NYR0I0IGlzIG5vdCBzZXQKIyBDT05GSUdfU0JQX1RBUkdFVCBpcyBub3Qgc2V0CkNP
-TkZJR19GVVNJT049eQpDT05GSUdfRlVTSU9OX1NQST1tCiMgQ09ORklHX0ZVU0lPTl9GQyBpcyBu
-b3Qgc2V0CkNPTkZJR19GVVNJT05fU0FTPW0KQ09ORklHX0ZVU0lPTl9NQVhfU0dFPTEyOApDT05G
-SUdfRlVTSU9OX0NUTD1tCkNPTkZJR19GVVNJT05fTE9HR0lORz15CgojCiMgSUVFRSAxMzk0IChG
-aXJlV2lyZSkgc3VwcG9ydAojCkNPTkZJR19GSVJFV0lSRT1tCkNPTkZJR19GSVJFV0lSRV9PSENJ
-PW0KQ09ORklHX0ZJUkVXSVJFX1NCUDI9bQpDT05GSUdfRklSRVdJUkVfTkVUPW0KIyBDT05GSUdf
-RklSRVdJUkVfTk9TWSBpcyBub3Qgc2V0CkNPTkZJR19NQUNJTlRPU0hfRFJJVkVSUz15CkNPTkZJ
-R19NQUNfRU1VTU9VU0VCVE49eQpDT05GSUdfTkVUREVWSUNFUz15CkNPTkZJR19NSUk9eQpDT05G
-SUdfTkVUX0NPUkU9eQpDT05GSUdfQk9ORElORz1tCkNPTkZJR19EVU1NWT1tCiMgQ09ORklHX0VR
-VUFMSVpFUiBpcyBub3Qgc2V0CkNPTkZJR19ORVRfRkM9eQpDT05GSUdfSUZCPW0KQ09ORklHX05F
-VF9URUFNPW0KQ09ORklHX05FVF9URUFNX01PREVfQlJPQURDQVNUPW0KQ09ORklHX05FVF9URUFN
-X01PREVfUk9VTkRST0JJTj1tCkNPTkZJR19ORVRfVEVBTV9NT0RFX1JBTkRPTT1tCkNPTkZJR19O
-RVRfVEVBTV9NT0RFX0FDVElWRUJBQ0tVUD1tCkNPTkZJR19ORVRfVEVBTV9NT0RFX0xPQURCQUxB
-TkNFPW0KQ09ORklHX01BQ1ZMQU49bQpDT05GSUdfTUFDVlRBUD1tCiMgQ09ORklHX0lQVkxBTiBp
-cyBub3Qgc2V0CkNPTkZJR19WWExBTj1tCiMgQ09ORklHX0dFTkVWRSBpcyBub3Qgc2V0CiMgQ09O
-RklHX0dUUCBpcyBub3Qgc2V0CiMgQ09ORklHX01BQ1NFQyBpcyBub3Qgc2V0CkNPTkZJR19ORVRD
-T05TT0xFPW0KQ09ORklHX05FVENPTlNPTEVfRFlOQU1JQz15CkNPTkZJR19ORVRQT0xMPXkKQ09O
-RklHX05FVF9QT0xMX0NPTlRST0xMRVI9eQpDT05GSUdfVFVOPW0KIyBDT05GSUdfVFVOX1ZORVRf
-Q1JPU1NfTEUgaXMgbm90IHNldApDT05GSUdfVkVUSD1tCkNPTkZJR19WSVJUSU9fTkVUPXkKQ09O
-RklHX05MTU9OPW0KIyBDT05GSUdfQVJDTkVUIGlzIG5vdCBzZXQKIyBDT05GSUdfQVRNX0RSSVZF
-UlMgaXMgbm90IHNldAoKIwojIENBSUYgdHJhbnNwb3J0IGRyaXZlcnMKIwoKIwojIERpc3RyaWJ1
-dGVkIFN3aXRjaCBBcmNoaXRlY3R1cmUgZHJpdmVycwojCkNPTkZJR19FVEhFUk5FVD15CkNPTkZJ
-R19NRElPPXkKIyBDT05GSUdfTkVUX1ZFTkRPUl8zQ09NIGlzIG5vdCBzZXQKIyBDT05GSUdfTkVU
-X1ZFTkRPUl9BREFQVEVDIGlzIG5vdCBzZXQKQ09ORklHX05FVF9WRU5ET1JfQUdFUkU9eQojIENP
-TkZJR19FVDEzMVggaXMgbm90IHNldAojIENPTkZJR19ORVRfVkVORE9SX0FMVEVPTiBpcyBub3Qg
-c2V0CiMgQ09ORklHX0FMVEVSQV9UU0UgaXMgbm90IHNldAojIENPTkZJR19ORVRfVkVORE9SX0FN
-RCBpcyBub3Qgc2V0CkNPTkZJR19ORVRfVkVORE9SX0FSQz15CkNPTkZJR19ORVRfVkVORE9SX0FU
-SEVST1M9eQpDT05GSUdfQVRMMj1tCkNPTkZJR19BVEwxPW0KQ09ORklHX0FUTDFFPW0KQ09ORklH
-X0FUTDFDPW0KQ09ORklHX0FMWD1tCiMgQ09ORklHX05FVF9WRU5ET1JfQVVST1JBIGlzIG5vdCBz
-ZXQKQ09ORklHX05FVF9DQURFTkNFPXkKIyBDT05GSUdfTUFDQiBpcyBub3Qgc2V0CkNPTkZJR19O
-RVRfVkVORE9SX0JST0FEQ09NPXkKQ09ORklHX0I0ND1tCkNPTkZJR19CNDRfUENJX0FVVE9TRUxF
-Q1Q9eQpDT05GSUdfQjQ0X1BDSUNPUkVfQVVUT1NFTEVDVD15CkNPTkZJR19CNDRfUENJPXkKIyBD
-T05GSUdfQkNNR0VORVQgaXMgbm90IHNldApDT05GSUdfQk5YMj1tCkNPTkZJR19DTklDPW0KQ09O
-RklHX1RJR09OMz15CiMgQ09ORklHX0JOWDJYIGlzIG5vdCBzZXQKIyBDT05GSUdfQk5YVCBpcyBu
-b3Qgc2V0CkNPTkZJR19ORVRfVkVORE9SX0JST0NBREU9eQpDT05GSUdfQk5BPW0KQ09ORklHX05F
-VF9WRU5ET1JfQ0FWSVVNPXkKIyBDT05GSUdfVEhVTkRFUl9OSUNfUEYgaXMgbm90IHNldAojIENP
-TkZJR19USFVOREVSX05JQ19WRiBpcyBub3Qgc2V0CiMgQ09ORklHX1RIVU5ERVJfTklDX0JHWCBp
-cyBub3Qgc2V0CiMgQ09ORklHX0xJUVVJRElPIGlzIG5vdCBzZXQKQ09ORklHX05FVF9WRU5ET1Jf
-Q0hFTFNJTz15CiMgQ09ORklHX0NIRUxTSU9fVDEgaXMgbm90IHNldApDT05GSUdfQ0hFTFNJT19U
-Mz1tCkNPTkZJR19DSEVMU0lPX1Q0PW0KIyBDT05GSUdfQ0hFTFNJT19UNF9EQ0IgaXMgbm90IHNl
-dApDT05GSUdfQ0hFTFNJT19UNFZGPW0KQ09ORklHX0NIRUxTSU9fTElCPW0KQ09ORklHX05FVF9W
-RU5ET1JfQ0lTQ089eQpDT05GSUdfRU5JQz1tCiMgQ09ORklHX0NYX0VDQVQgaXMgbm90IHNldApD
-T05GSUdfRE5FVD1tCkNPTkZJR19ORVRfVkVORE9SX0RFQz15CkNPTkZJR19ORVRfVFVMSVA9eQpD
-T05GSUdfREUyMTA0WD1tCkNPTkZJR19ERTIxMDRYX0RTTD0wCkNPTkZJR19UVUxJUD15CiMgQ09O
-RklHX1RVTElQX01XSSBpcyBub3Qgc2V0CkNPTkZJR19UVUxJUF9NTUlPPXkKIyBDT05GSUdfVFVM
-SVBfTkFQSSBpcyBub3Qgc2V0CkNPTkZJR19ERTRYNT1tCkNPTkZJR19XSU5CT05EXzg0MD1tCkNP
-TkZJR19ETTkxMDI9bQpDT05GSUdfVUxJNTI2WD1tCkNPTkZJR19QQ01DSUFfWElSQ09NPW0KIyBD
-T05GSUdfTkVUX1ZFTkRPUl9ETElOSyBpcyBub3Qgc2V0CkNPTkZJR19ORVRfVkVORE9SX0VNVUxF
-WD15CkNPTkZJR19CRTJORVQ9bQpDT05GSUdfQkUyTkVUX0hXTU9OPXkKQ09ORklHX05FVF9WRU5E
-T1JfRVpDSElQPXkKIyBDT05GSUdfTkVUX1ZFTkRPUl9FWEFSIGlzIG5vdCBzZXQKIyBDT05GSUdf
-TkVUX1ZFTkRPUl9IUCBpcyBub3Qgc2V0CkNPTkZJR19ORVRfVkVORE9SX0lOVEVMPXkKIyBDT05G
-SUdfRTEwMCBpcyBub3Qgc2V0CkNPTkZJR19FMTAwMD15CkNPTkZJR19FMTAwMEU9eQpDT05GSUdf
-RTEwMDBFX0hXVFM9eQpDT05GSUdfSUdCPXkKQ09ORklHX0lHQl9IV01PTj15CkNPTkZJR19JR0JW
-Rj1tCkNPTkZJR19JWEdCPW0KQ09ORklHX0lYR0JFPXkKQ09ORklHX0lYR0JFX0hXTU9OPXkKQ09O
-RklHX0lYR0JFX0RDQj15CkNPTkZJR19JWEdCRVZGPW0KQ09ORklHX0k0MEU9bQojIENPTkZJR19J
-NDBFX0RDQiBpcyBub3Qgc2V0CiMgQ09ORklHX0k0MEVfRkNPRSBpcyBub3Qgc2V0CiMgQ09ORklH
-X0k0MEVWRiBpcyBub3Qgc2V0CiMgQ09ORklHX0ZNMTBLIGlzIG5vdCBzZXQKIyBDT05GSUdfTkVU
-X1ZFTkRPUl9JODI1WFggaXMgbm90IHNldApDT05GSUdfSk1FPW0KQ09ORklHX05FVF9WRU5ET1Jf
-TUFSVkVMTD15CkNPTkZJR19NVk1ESU89bQojIENPTkZJR19NVk5FVEFfQk0gaXMgbm90IHNldApD
-T05GSUdfU0tHRT1tCkNPTkZJR19TS0dFX0RFQlVHPXkKQ09ORklHX1NLR0VfR0VORVNJUz15CkNP
-TkZJR19TS1kyPW0KQ09ORklHX1NLWTJfREVCVUc9eQpDT05GSUdfTkVUX1ZFTkRPUl9NRUxMQU5P
-WD15CkNPTkZJR19NTFg0X0VOPW0KQ09ORklHX01MWDRfRU5fRENCPXkKQ09ORklHX01MWDRfQ09S
-RT1tCkNPTkZJR19NTFg0X0RFQlVHPXkKIyBDT05GSUdfTUxYNV9DT1JFIGlzIG5vdCBzZXQKIyBD
-T05GSUdfTUxYU1dfQ09SRSBpcyBub3Qgc2V0CiMgQ09ORklHX05FVF9WRU5ET1JfTUlDUkVMIGlz
-IG5vdCBzZXQKQ09ORklHX05FVF9WRU5ET1JfTUlDUk9DSElQPXkKIyBDT05GSUdfRU5DMjhKNjAg
-aXMgbm90IHNldAojIENPTkZJR19FTkNYMjRKNjAwIGlzIG5vdCBzZXQKQ09ORklHX05FVF9WRU5E
-T1JfTVlSST15CkNPTkZJR19NWVJJMTBHRT1tCiMgQ09ORklHX0ZFQUxOWCBpcyBub3Qgc2V0CiMg
-Q09ORklHX05FVF9WRU5ET1JfTkFUU0VNSSBpcyBub3Qgc2V0CkNPTkZJR19ORVRfVkVORE9SX05F
-VFJPTk9NRT15CiMgQ09ORklHX05GUF9ORVRWRiBpcyBub3Qgc2V0CiMgQ09ORklHX05FVF9WRU5E
-T1JfTlZJRElBIGlzIG5vdCBzZXQKQ09ORklHX05FVF9WRU5ET1JfT0tJPXkKQ09ORklHX0VUSE9D
-PW0KQ09ORklHX05FVF9QQUNLRVRfRU5HSU5FPXkKIyBDT05GSUdfSEFNQUNISSBpcyBub3Qgc2V0
-CkNPTkZJR19ZRUxMT1dGSU49bQpDT05GSUdfTkVUX1ZFTkRPUl9RTE9HSUM9eQpDT05GSUdfUUxB
-M1hYWD1tCkNPTkZJR19RTENOSUM9bQpDT05GSUdfUUxDTklDX1NSSU9WPXkKQ09ORklHX1FMQ05J
-Q19EQ0I9eQpDT05GSUdfUUxDTklDX0hXTU9OPXkKQ09ORklHX1FMR0U9bQpDT05GSUdfTkVUWEVO
-X05JQz1tCiMgQ09ORklHX1FFRCBpcyBub3Qgc2V0CkNPTkZJR19ORVRfVkVORE9SX1FVQUxDT01N
-PXkKQ09ORklHX05FVF9WRU5ET1JfUkVBTFRFSz15CiMgQ09ORklHX0FUUCBpcyBub3Qgc2V0CkNP
-TkZJR184MTM5Q1A9eQpDT05GSUdfODEzOVRPTz15CkNPTkZJR184MTM5VE9PX1BJTz15CiMgQ09O
-RklHXzgxMzlUT09fVFVORV9UV0lTVEVSIGlzIG5vdCBzZXQKQ09ORklHXzgxMzlUT09fODEyOT15
-CiMgQ09ORklHXzgxMzlfT0xEX1JYX1JFU0VUIGlzIG5vdCBzZXQKQ09ORklHX1I4MTY5PXkKQ09O
-RklHX05FVF9WRU5ET1JfUkVORVNBUz15CiMgQ09ORklHX05FVF9WRU5ET1JfUkRDIGlzIG5vdCBz
-ZXQKQ09ORklHX05FVF9WRU5ET1JfUk9DS0VSPXkKQ09ORklHX05FVF9WRU5ET1JfU0FNU1VORz15
-CiMgQ09ORklHX1NYR0JFX0VUSCBpcyBub3Qgc2V0CiMgQ09ORklHX05FVF9WRU5ET1JfU0VFUSBp
-cyBub3Qgc2V0CiMgQ09ORklHX05FVF9WRU5ET1JfU0lMQU4gaXMgbm90IHNldAojIENPTkZJR19O
-RVRfVkVORE9SX1NJUyBpcyBub3Qgc2V0CkNPTkZJR19TRkM9bQpDT05GSUdfU0ZDX01URD15CkNP
-TkZJR19TRkNfTUNESV9NT049eQpDT05GSUdfU0ZDX1NSSU9WPXkKQ09ORklHX1NGQ19NQ0RJX0xP
-R0dJTkc9eQpDT05GSUdfTkVUX1ZFTkRPUl9TTVNDPXkKQ09ORklHX0VQSUMxMDA9bQojIENPTkZJ
-R19TTVNDOTExWCBpcyBub3Qgc2V0CkNPTkZJR19TTVNDOTQyMD1tCiMgQ09ORklHX05FVF9WRU5E
-T1JfU1RNSUNSTyBpcyBub3Qgc2V0CiMgQ09ORklHX05FVF9WRU5ET1JfU1VOIGlzIG5vdCBzZXQK
-Q09ORklHX05FVF9WRU5ET1JfU1lOT1BTWVM9eQojIENPTkZJR19ORVRfVkVORE9SX1RFSFVUSSBp
-cyBub3Qgc2V0CiMgQ09ORklHX05FVF9WRU5ET1JfVEkgaXMgbm90IHNldAojIENPTkZJR19ORVRf
-VkVORE9SX1ZJQSBpcyBub3Qgc2V0CiMgQ09ORklHX05FVF9WRU5ET1JfV0laTkVUIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfRkRESSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJUFBJIGlzIG5vdCBzZXQKIyBD
-T05GSUdfTkVUX1NCMTAwMCBpcyBub3Qgc2V0CkNPTkZJR19QSFlMSUI9eQpDT05GSUdfU1dQSFk9
-eQoKIwojIE1JSSBQSFkgZGV2aWNlIGRyaXZlcnMKIwojIENPTkZJR19BUVVBTlRJQV9QSFkgaXMg
-bm90IHNldApDT05GSUdfQVQ4MDNYX1BIWT1tCkNPTkZJR19BTURfUEhZPW0KQ09ORklHX01BUlZF
-TExfUEhZPW0KQ09ORklHX0RBVklDT01fUEhZPW0KQ09ORklHX1FTRU1JX1BIWT1tCkNPTkZJR19M
-WFRfUEhZPW0KQ09ORklHX0NJQ0FEQV9QSFk9bQpDT05GSUdfVklURVNTRV9QSFk9bQojIENPTkZJ
-R19URVJBTkVUSUNTX1BIWSBpcyBub3Qgc2V0CkNPTkZJR19TTVNDX1BIWT1tCkNPTkZJR19CQ01f
-TkVUX1BIWUxJQj1tCkNPTkZJR19CUk9BRENPTV9QSFk9bQojIENPTkZJR19CQ003WFhYX1BIWSBp
-cyBub3Qgc2V0CkNPTkZJR19CQ004N1hYX1BIWT1tCkNPTkZJR19JQ1BMVVNfUEhZPW0KQ09ORklH
-X1JFQUxURUtfUEhZPW0KQ09ORklHX05BVElPTkFMX1BIWT1tCkNPTkZJR19TVEUxMFhQPW0KQ09O
-RklHX0xTSV9FVDEwMTFDX1BIWT1tCkNPTkZJR19NSUNSRUxfUEhZPW0KIyBDT05GSUdfRFA4Mzg0
-OF9QSFkgaXMgbm90IHNldAojIENPTkZJR19EUDgzODY3X1BIWSBpcyBub3Qgc2V0CiMgQ09ORklH
-X01JQ1JPQ0hJUF9QSFkgaXMgbm90IHNldApDT05GSUdfRklYRURfUEhZPXkKQ09ORklHX01ESU9f
-QklUQkFORz1tCiMgQ09ORklHX01ESU9fR1BJTyBpcyBub3Qgc2V0CiMgQ09ORklHX01ESU9fT0NU
-RU9OIGlzIG5vdCBzZXQKIyBDT05GSUdfTURJT19USFVOREVSIGlzIG5vdCBzZXQKIyBDT05GSUdf
-TURJT19CQ01fVU5JTUFDIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5URUxfWFdBWV9QSFkgaXMgbm90
-IHNldAojIENPTkZJR19NSUNSRUxfS1M4OTk1TUEgaXMgbm90IHNldAojIENPTkZJR19QTElQIGlz
-IG5vdCBzZXQKQ09ORklHX1BQUD1tCkNPTkZJR19QUFBfQlNEQ09NUD1tCkNPTkZJR19QUFBfREVG
-TEFURT1tCkNPTkZJR19QUFBfRklMVEVSPXkKQ09ORklHX1BQUF9NUFBFPW0KQ09ORklHX1BQUF9N
-VUxUSUxJTks9eQpDT05GSUdfUFBQT0FUTT1tCkNPTkZJR19QUFBPRT1tCkNPTkZJR19QUFRQPW0K
-Q09ORklHX1BQUE9MMlRQPW0KQ09ORklHX1BQUF9BU1lOQz1tCkNPTkZJR19QUFBfU1lOQ19UVFk9
-bQpDT05GSUdfU0xJUD1tCkNPTkZJR19TTEhDPW0KQ09ORklHX1NMSVBfQ09NUFJFU1NFRD15CkNP
-TkZJR19TTElQX1NNQVJUPXkKIyBDT05GSUdfU0xJUF9NT0RFX1NMSVA2IGlzIG5vdCBzZXQKQ09O
-RklHX1VTQl9ORVRfRFJJVkVSUz15CkNPTkZJR19VU0JfQ0FUQz15CkNPTkZJR19VU0JfS0FXRVRI
-PXkKQ09ORklHX1VTQl9QRUdBU1VTPXkKQ09ORklHX1VTQl9SVEw4MTUwPXkKQ09ORklHX1VTQl9S
-VEw4MTUyPW0KIyBDT05GSUdfVVNCX0xBTjc4WFggaXMgbm90IHNldApDT05GSUdfVVNCX1VTQk5F
-VD15CkNPTkZJR19VU0JfTkVUX0FYODgxN1g9eQpDT05GSUdfVVNCX05FVF9BWDg4MTc5XzE3OEE9
-bQpDT05GSUdfVVNCX05FVF9DRENFVEhFUj15CkNPTkZJR19VU0JfTkVUX0NEQ19FRU09eQpDT05G
-SUdfVVNCX05FVF9DRENfTkNNPW0KIyBDT05GSUdfVVNCX05FVF9IVUFXRUlfQ0RDX05DTSBpcyBu
-b3Qgc2V0CkNPTkZJR19VU0JfTkVUX0NEQ19NQklNPW0KQ09ORklHX1VTQl9ORVRfRE05NjAxPXkK
-IyBDT05GSUdfVVNCX05FVF9TUjk3MDAgaXMgbm90IHNldAojIENPTkZJR19VU0JfTkVUX1NSOTgw
-MCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfTkVUX1NNU0M3NVhYPXkKQ09ORklHX1VTQl9ORVRfU01T
-Qzk1WFg9eQpDT05GSUdfVVNCX05FVF9HTDYyMEE9eQpDT05GSUdfVVNCX05FVF9ORVQxMDgwPXkK
-Q09ORklHX1VTQl9ORVRfUExVU0I9eQpDT05GSUdfVVNCX05FVF9NQ1M3ODMwPXkKQ09ORklHX1VT
-Ql9ORVRfUk5ESVNfSE9TVD15CkNPTkZJR19VU0JfTkVUX0NEQ19TVUJTRVRfRU5BQkxFPXkKQ09O
-RklHX1VTQl9ORVRfQ0RDX1NVQlNFVD15CkNPTkZJR19VU0JfQUxJX001NjMyPXkKQ09ORklHX1VT
-Ql9BTjI3MjA9eQpDT05GSUdfVVNCX0JFTEtJTj15CkNPTkZJR19VU0JfQVJNTElOVVg9eQpDT05G
-SUdfVVNCX0VQU09OMjg4OD15CkNPTkZJR19VU0JfS0MyMTkwPXkKQ09ORklHX1VTQl9ORVRfWkFV
-UlVTPXkKQ09ORklHX1VTQl9ORVRfQ1g4MjMxMF9FVEg9bQpDT05GSUdfVVNCX05FVF9LQUxNSUE9
-bQpDT05GSUdfVVNCX05FVF9RTUlfV1dBTj1tCkNPTkZJR19VU0JfSFNPPW0KQ09ORklHX1VTQl9O
-RVRfSU5UNTFYMT15CkNPTkZJR19VU0JfSVBIRVRIPXkKQ09ORklHX1VTQl9TSUVSUkFfTkVUPXkK
-Q09ORklHX1VTQl9WTDYwMD1tCiMgQ09ORklHX1VTQl9ORVRfQ0g5MjAwIGlzIG5vdCBzZXQKQ09O
-RklHX1dMQU49eQpDT05GSUdfV0xBTl9WRU5ET1JfQURNVEVLPXkKIyBDT05GSUdfQURNODIxMSBp
-cyBub3Qgc2V0CkNPTkZJR19XTEFOX1ZFTkRPUl9BVEg9eQojIENPTkZJR19BVEhfREVCVUcgaXMg
-bm90IHNldAojIENPTkZJR19BVEg1SyBpcyBub3Qgc2V0CiMgQ09ORklHX0FUSDVLX1BDSSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0FUSDlLIGlzIG5vdCBzZXQKIyBDT05GSUdfQVRIOUtfSFRDIGlzIG5v
-dCBzZXQKIyBDT05GSUdfQ0FSTDkxNzAgaXMgbm90IHNldAojIENPTkZJR19BVEg2S0wgaXMgbm90
-IHNldAojIENPTkZJR19BUjU1MjMgaXMgbm90IHNldAojIENPTkZJR19XSUw2MjEwIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfQVRIMTBLIGlzIG5vdCBzZXQKIyBDT05GSUdfV0NOMzZYWCBpcyBub3Qgc2V0
-CkNPTkZJR19XTEFOX1ZFTkRPUl9BVE1FTD15CiMgQ09ORklHX0FUTUVMIGlzIG5vdCBzZXQKIyBD
-T05GSUdfQVQ3NkM1MFhfVVNCIGlzIG5vdCBzZXQKQ09ORklHX1dMQU5fVkVORE9SX0JST0FEQ09N
-PXkKIyBDT05GSUdfQjQzIGlzIG5vdCBzZXQKIyBDT05GSUdfQjQzTEVHQUNZIGlzIG5vdCBzZXQK
-IyBDT05GSUdfQlJDTVNNQUMgaXMgbm90IHNldAojIENPTkZJR19CUkNNRk1BQyBpcyBub3Qgc2V0
-CkNPTkZJR19XTEFOX1ZFTkRPUl9DSVNDTz15CiMgQ09ORklHX0FJUk8gaXMgbm90IHNldApDT05G
-SUdfV0xBTl9WRU5ET1JfSU5URUw9eQojIENPTkZJR19JUFcyMTAwIGlzIG5vdCBzZXQKIyBDT05G
-SUdfSVBXMjIwMCBpcyBub3Qgc2V0CiMgQ09ORklHX0lXTDQ5NjUgaXMgbm90IHNldAojIENPTkZJ
-R19JV0wzOTQ1IGlzIG5vdCBzZXQKIyBDT05GSUdfSVdMV0lGSSBpcyBub3Qgc2V0CkNPTkZJR19X
-TEFOX1ZFTkRPUl9JTlRFUlNJTD15CiMgQ09ORklHX0hPU1RBUCBpcyBub3Qgc2V0CiMgQ09ORklH
-X0hFUk1FUyBpcyBub3Qgc2V0CiMgQ09ORklHX1A1NF9DT01NT04gaXMgbm90IHNldAojIENPTkZJ
-R19QUklTTTU0IGlzIG5vdCBzZXQKQ09ORklHX1dMQU5fVkVORE9SX01BUlZFTEw9eQojIENPTkZJ
-R19MSUJFUlRBUyBpcyBub3Qgc2V0CiMgQ09ORklHX0xJQkVSVEFTX1RISU5GSVJNIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfTVdJRklFWCBpcyBub3Qgc2V0CiMgQ09ORklHX01XTDhLIGlzIG5vdCBzZXQK
-Q09ORklHX1dMQU5fVkVORE9SX01FRElBVEVLPXkKIyBDT05GSUdfTVQ3NjAxVSBpcyBub3Qgc2V0
-CkNPTkZJR19XTEFOX1ZFTkRPUl9SQUxJTks9eQojIENPTkZJR19SVDJYMDAgaXMgbm90IHNldApD
-T05GSUdfV0xBTl9WRU5ET1JfUkVBTFRFSz15CiMgQ09ORklHX1JUTDgxODAgaXMgbm90IHNldAoj
-IENPTkZJR19SVEw4MTg3IGlzIG5vdCBzZXQKQ09ORklHX1JUTF9DQVJEUz1tCiMgQ09ORklHX1JU
-TDgxOTJDRSBpcyBub3Qgc2V0CiMgQ09ORklHX1JUTDgxOTJTRSBpcyBub3Qgc2V0CiMgQ09ORklH
-X1JUTDgxOTJERSBpcyBub3Qgc2V0CiMgQ09ORklHX1JUTDg3MjNBRSBpcyBub3Qgc2V0CiMgQ09O
-RklHX1JUTDg3MjNCRSBpcyBub3Qgc2V0CiMgQ09ORklHX1JUTDgxODhFRSBpcyBub3Qgc2V0CiMg
-Q09ORklHX1JUTDgxOTJFRSBpcyBub3Qgc2V0CiMgQ09ORklHX1JUTDg4MjFBRSBpcyBub3Qgc2V0
-CiMgQ09ORklHX1JUTDgxOTJDVSBpcyBub3Qgc2V0CiMgQ09ORklHX1JUTDhYWFhVIGlzIG5vdCBz
-ZXQKQ09ORklHX1dMQU5fVkVORE9SX1JTST15CiMgQ09ORklHX1JTSV85MVggaXMgbm90IHNldApD
-T05GSUdfV0xBTl9WRU5ET1JfU1Q9eQojIENPTkZJR19DVzEyMDAgaXMgbm90IHNldApDT05GSUdf
-V0xBTl9WRU5ET1JfVEk9eQojIENPTkZJR19XTDEyNTEgaXMgbm90IHNldAojIENPTkZJR19XTDEy
-WFggaXMgbm90IHNldAojIENPTkZJR19XTDE4WFggaXMgbm90IHNldAojIENPTkZJR19XTENPUkUg
-aXMgbm90IHNldApDT05GSUdfV0xBTl9WRU5ET1JfWllEQVM9eQojIENPTkZJR19VU0JfWkQxMjAx
-IGlzIG5vdCBzZXQKIyBDT05GSUdfWkQxMjExUlcgaXMgbm90IHNldApDT05GSUdfTUFDODAyMTFf
-SFdTSU09bQojIENPTkZJR19VU0JfTkVUX1JORElTX1dMQU4gaXMgbm90IHNldAoKIwojIEVuYWJs
-ZSBXaU1BWCAoTmV0d29ya2luZyBvcHRpb25zKSB0byBzZWUgdGhlIFdpTUFYIGRyaXZlcnMKIwpD
-T05GSUdfV0FOPXkKIyBDT05GSUdfTEFOTUVESUEgaXMgbm90IHNldApDT05GSUdfSERMQz1tCkNP
-TkZJR19IRExDX1JBVz1tCiMgQ09ORklHX0hETENfUkFXX0VUSCBpcyBub3Qgc2V0CkNPTkZJR19I
-RExDX0NJU0NPPW0KQ09ORklHX0hETENfRlI9bQpDT05GSUdfSERMQ19QUFA9bQoKIwojIFguMjUv
-TEFQQiBzdXBwb3J0IGlzIGRpc2FibGVkCiMKIyBDT05GSUdfUENJMjAwU1lOIGlzIG5vdCBzZXQK
-IyBDT05GSUdfV0FOWEwgaXMgbm90IHNldAojIENPTkZJR19QQzMwMFRPTyBpcyBub3Qgc2V0CiMg
-Q09ORklHX0ZBUlNZTkMgaXMgbm90IHNldAojIENPTkZJR19EU0NDNCBpcyBub3Qgc2V0CkNPTkZJ
-R19ETENJPW0KQ09ORklHX0RMQ0lfTUFYPTgKIyBDT05GSUdfU0JOSSBpcyBub3Qgc2V0CkNPTkZJ
-R19JRUVFODAyMTU0X0RSSVZFUlM9bQpDT05GSUdfSUVFRTgwMjE1NF9GQUtFTEI9bQojIENPTkZJ
-R19JRUVFODAyMTU0X0FUODZSRjIzMCBpcyBub3Qgc2V0CiMgQ09ORklHX0lFRUU4MDIxNTRfTVJG
-MjRKNDAgaXMgbm90IHNldAojIENPTkZJR19JRUVFODAyMTU0X0NDMjUyMCBpcyBub3Qgc2V0CiMg
-Q09ORklHX0lFRUU4MDIxNTRfQVRVU0IgaXMgbm90IHNldAojIENPTkZJR19JRUVFODAyMTU0X0FE
-RjcyNDIgaXMgbm90IHNldApDT05GSUdfWEVOX05FVERFVl9GUk9OVEVORD1tCiMgQ09ORklHX1hF
-Tl9ORVRERVZfQkFDS0VORCBpcyBub3Qgc2V0CkNPTkZJR19WTVhORVQzPW0KIyBDT05GSUdfRlVK
-SVRTVV9FUyBpcyBub3Qgc2V0CkNPTkZJR19IWVBFUlZfTkVUPW0KQ09ORklHX0lTRE49eQpDT05G
-SUdfSVNETl9JNEw9bQpDT05GSUdfSVNETl9QUFA9eQpDT05GSUdfSVNETl9QUFBfVko9eQpDT05G
-SUdfSVNETl9NUFA9eQpDT05GSUdfSVBQUF9GSUxURVI9eQojIENPTkZJR19JU0ROX1BQUF9CU0RD
-T01QIGlzIG5vdCBzZXQKQ09ORklHX0lTRE5fQVVESU89eQpDT05GSUdfSVNETl9UVFlfRkFYPXkK
-CiMKIyBJU0ROIGZlYXR1cmUgc3VibW9kdWxlcwojCkNPTkZJR19JU0ROX0RJVkVSU0lPTj1tCgoj
-CiMgSVNETjRMaW51eCBoYXJkd2FyZSBkcml2ZXJzCiMKCiMKIyBQYXNzaXZlIGNhcmRzCiMKIyBD
-T05GSUdfSVNETl9EUlZfSElTQVggaXMgbm90IHNldApDT05GSUdfSVNETl9DQVBJPW0KIyBDT05G
-SUdfQ0FQSV9UUkFDRSBpcyBub3Qgc2V0CkNPTkZJR19JU0ROX0NBUElfQ0FQSTIwPW0KQ09ORklH
-X0lTRE5fQ0FQSV9NSURETEVXQVJFPXkKQ09ORklHX0lTRE5fQ0FQSV9DQVBJRFJWPW0KIyBDT05G
-SUdfSVNETl9DQVBJX0NBUElEUlZfVkVSQk9TRSBpcyBub3Qgc2V0CgojCiMgQ0FQSSBoYXJkd2Fy
-ZSBkcml2ZXJzCiMKQ09ORklHX0NBUElfQVZNPXkKQ09ORklHX0lTRE5fRFJWX0FWTUIxX0IxUENJ
-PW0KQ09ORklHX0lTRE5fRFJWX0FWTUIxX0IxUENJVjQ9eQpDT05GSUdfSVNETl9EUlZfQVZNQjFf
-VDFQQ0k9bQpDT05GSUdfSVNETl9EUlZfQVZNQjFfQzQ9bQojIENPTkZJR19DQVBJX0VJQ09OIGlz
-IG5vdCBzZXQKQ09ORklHX0lTRE5fRFJWX0dJR0FTRVQ9bQpDT05GSUdfR0lHQVNFVF9DQVBJPXkK
-IyBDT05GSUdfR0lHQVNFVF9JNEwgaXMgbm90IHNldAojIENPTkZJR19HSUdBU0VUX0RVTU1ZTEwg
-aXMgbm90IHNldApDT05GSUdfR0lHQVNFVF9CQVNFPW0KQ09ORklHX0dJR0FTRVRfTTEwNT1tCkNP
-TkZJR19HSUdBU0VUX00xMDE9bQojIENPTkZJR19HSUdBU0VUX0RFQlVHIGlzIG5vdCBzZXQKQ09O
-RklHX0hZU0ROPW0KQ09ORklHX0hZU0ROX0NBUEk9eQpDT05GSUdfTUlTRE49bQpDT05GSUdfTUlT
-RE5fRFNQPW0KQ09ORklHX01JU0ROX0wxT0lQPW0KCiMKIyBtSVNETiBoYXJkd2FyZSBkcml2ZXJz
-CiMKQ09ORklHX01JU0ROX0hGQ1BDST1tCkNPTkZJR19NSVNETl9IRkNNVUxUST1tCkNPTkZJR19N
-SVNETl9IRkNVU0I9bQpDT05GSUdfTUlTRE5fQVZNRlJJVFo9bQpDT05GSUdfTUlTRE5fU1BFRURG
-QVg9bQpDT05GSUdfTUlTRE5fSU5GSU5FT049bQpDT05GSUdfTUlTRE5fVzY2OTI9bQpDT05GSUdf
-TUlTRE5fTkVUSkVUPW0KQ09ORklHX01JU0ROX0lQQUM9bQpDT05GSUdfTUlTRE5fSVNBUj1tCkNP
-TkZJR19JU0ROX0hETEM9bQojIENPTkZJR19OVk0gaXMgbm90IHNldAoKIwojIElucHV0IGRldmlj
-ZSBzdXBwb3J0CiMKQ09ORklHX0lOUFVUPXkKQ09ORklHX0lOUFVUX0xFRFM9eQpDT05GSUdfSU5Q
-VVRfRkZfTUVNTEVTUz1tCkNPTkZJR19JTlBVVF9QT0xMREVWPW0KQ09ORklHX0lOUFVUX1NQQVJT
-RUtNQVA9bQojIENPTkZJR19JTlBVVF9NQVRSSVhLTUFQIGlzIG5vdCBzZXQKCiMKIyBVc2VybGFu
-ZCBpbnRlcmZhY2VzCiMKQ09ORklHX0lOUFVUX01PVVNFREVWPXkKIyBDT05GSUdfSU5QVVRfTU9V
-U0VERVZfUFNBVVggaXMgbm90IHNldApDT05GSUdfSU5QVVRfTU9VU0VERVZfU0NSRUVOX1g9MTAy
-NApDT05GSUdfSU5QVVRfTU9VU0VERVZfU0NSRUVOX1k9NzY4CiMgQ09ORklHX0lOUFVUX0pPWURF
-ViBpcyBub3Qgc2V0CkNPTkZJR19JTlBVVF9FVkRFVj15CiMgQ09ORklHX0lOUFVUX0VWQlVHIGlz
-IG5vdCBzZXQKCiMKIyBJbnB1dCBEZXZpY2UgRHJpdmVycwojCkNPTkZJR19JTlBVVF9LRVlCT0FS
-RD15CiMgQ09ORklHX0tFWUJPQVJEX0FEUDU1ODggaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FS
-RF9BRFA1NTg5IGlzIG5vdCBzZXQKQ09ORklHX0tFWUJPQVJEX0FUS0JEPXkKIyBDT05GSUdfS0VZ
-Qk9BUkRfUVQxMDcwIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VZQk9BUkRfUVQyMTYwIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfS0VZQk9BUkRfTEtLQkQgaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9H
-UElPIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VZQk9BUkRfR1BJT19QT0xMRUQgaXMgbm90IHNldAoj
-IENPTkZJR19LRVlCT0FSRF9UQ0E2NDE2IGlzIG5vdCBzZXQKIyBDT05GSUdfS0VZQk9BUkRfVENB
-ODQxOCBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX01BVFJJWCBpcyBub3Qgc2V0CiMgQ09O
-RklHX0tFWUJPQVJEX0xNODMyMyBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX0xNODMzMyBp
-cyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX01BWDczNTkgaXMgbm90IHNldAojIENPTkZJR19L
-RVlCT0FSRF9NQ1MgaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9NUFIxMjEgaXMgbm90IHNl
-dAojIENPTkZJR19LRVlCT0FSRF9ORVdUT04gaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9P
-UEVOQ09SRVMgaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9TQU1TVU5HIGlzIG5vdCBzZXQK
-IyBDT05GSUdfS0VZQk9BUkRfU1RPV0FXQVkgaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9T
-VU5LQkQgaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9YVEtCRCBpcyBub3Qgc2V0CkNPTkZJ
-R19JTlBVVF9NT1VTRT15CkNPTkZJR19NT1VTRV9QUzI9eQpDT05GSUdfTU9VU0VfUFMyX0FMUFM9
-eQpDT05GSUdfTU9VU0VfUFMyX0JZRD15CkNPTkZJR19NT1VTRV9QUzJfTE9HSVBTMlBQPXkKQ09O
-RklHX01PVVNFX1BTMl9TWU5BUFRJQ1M9eQpDT05GSUdfTU9VU0VfUFMyX0NZUFJFU1M9eQpDT05G
-SUdfTU9VU0VfUFMyX0xJRkVCT09LPXkKQ09ORklHX01PVVNFX1BTMl9UUkFDS1BPSU5UPXkKQ09O
-RklHX01PVVNFX1BTMl9FTEFOVEVDSD15CkNPTkZJR19NT1VTRV9QUzJfU0VOVEVMSUM9eQojIENP
-TkZJR19NT1VTRV9QUzJfVE9VQ0hLSVQgaXMgbm90IHNldApDT05GSUdfTU9VU0VfUFMyX0ZPQ0FM
-VEVDSD15CiMgQ09ORklHX01PVVNFX1BTMl9WTU1PVVNFIGlzIG5vdCBzZXQKQ09ORklHX01PVVNF
-X1NFUklBTD1tCkNPTkZJR19NT1VTRV9BUFBMRVRPVUNIPW0KQ09ORklHX01PVVNFX0JDTTU5NzQ9
-bQpDT05GSUdfTU9VU0VfQ1lBUEE9bQojIENPTkZJR19NT1VTRV9FTEFOX0kyQyBpcyBub3Qgc2V0
-CkNPTkZJR19NT1VTRV9WU1hYWEFBPW0KIyBDT05GSUdfTU9VU0VfR1BJTyBpcyBub3Qgc2V0CkNP
-TkZJR19NT1VTRV9TWU5BUFRJQ1NfSTJDPW0KQ09ORklHX01PVVNFX1NZTkFQVElDU19VU0I9bQoj
-IENPTkZJR19JTlBVVF9KT1lTVElDSyBpcyBub3Qgc2V0CkNPTkZJR19JTlBVVF9UQUJMRVQ9eQpD
-T05GSUdfVEFCTEVUX1VTQl9BQ0VDQUQ9bQpDT05GSUdfVEFCTEVUX1VTQl9BSVBURUs9bQpDT05G
-SUdfVEFCTEVUX1VTQl9HVENPPW0KIyBDT05GSUdfVEFCTEVUX1VTQl9IQU5XQU5HIGlzIG5vdCBz
-ZXQKQ09ORklHX1RBQkxFVF9VU0JfS0JUQUI9bQojIENPTkZJR19UQUJMRVRfVVNCX1BFR0FTVVMg
-aXMgbm90IHNldAojIENPTkZJR19UQUJMRVRfU0VSSUFMX1dBQ09NNCBpcyBub3Qgc2V0CkNPTkZJ
-R19JTlBVVF9UT1VDSFNDUkVFTj15CkNPTkZJR19UT1VDSFNDUkVFTl9QUk9QRVJUSUVTPXkKIyBD
-T05GSUdfVE9VQ0hTQ1JFRU5fQURTNzg0NiBpcyBub3Qgc2V0CiMgQ09ORklHX1RPVUNIU0NSRUVO
-X0FENzg3NyBpcyBub3Qgc2V0CiMgQ09ORklHX1RPVUNIU0NSRUVOX0FENzg3OSBpcyBub3Qgc2V0
-CiMgQ09ORklHX1RPVUNIU0NSRUVOX0FUTUVMX01YVCBpcyBub3Qgc2V0CiMgQ09ORklHX1RPVUNI
-U0NSRUVOX0FVT19QSVhDSVIgaXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9CVTIxMDEz
-IGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fQ1k4Q1RNRzExMCBpcyBub3Qgc2V0CiMg
-Q09ORklHX1RPVUNIU0NSRUVOX0NZVFRTUF9DT1JFIGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hT
-Q1JFRU5fQ1lUVFNQNF9DT1JFIGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fRFlOQVBS
-TyBpcyBub3Qgc2V0CiMgQ09ORklHX1RPVUNIU0NSRUVOX0hBTVBTSElSRSBpcyBub3Qgc2V0CiMg
-Q09ORklHX1RPVUNIU0NSRUVOX0VFVEkgaXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9F
-R0FMQVhfU0VSSUFMIGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fRlQ2MjM2IGlzIG5v
-dCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fRlVKSVRTVSBpcyBub3Qgc2V0CiMgQ09ORklHX1RP
-VUNIU0NSRUVOX0dPT0RJWCBpcyBub3Qgc2V0CiMgQ09ORklHX1RPVUNIU0NSRUVOX0lMSTIxMFgg
-aXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9HVU5aRSBpcyBub3Qgc2V0CiMgQ09ORklH
-X1RPVUNIU0NSRUVOX0VMQU4gaXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9FTE8gaXMg
-bm90IHNldApDT05GSUdfVE9VQ0hTQ1JFRU5fV0FDT01fVzgwMDE9bQpDT05GSUdfVE9VQ0hTQ1JF
-RU5fV0FDT01fSTJDPW0KIyBDT05GSUdfVE9VQ0hTQ1JFRU5fTUFYMTE4MDEgaXMgbm90IHNldAoj
-IENPTkZJR19UT1VDSFNDUkVFTl9NQ1M1MDAwIGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JF
-RU5fTU1TMTE0IGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fTUVMRkFTX01JUDQgaXMg
-bm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9NVE9VQ0ggaXMgbm90IHNldAojIENPTkZJR19U
-T1VDSFNDUkVFTl9JTkVYSU8gaXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9NSzcxMiBp
-cyBub3Qgc2V0CiMgQ09ORklHX1RPVUNIU0NSRUVOX1BFTk1PVU5UIGlzIG5vdCBzZXQKIyBDT05G
-SUdfVE9VQ0hTQ1JFRU5fRURUX0ZUNVgwNiBpcyBub3Qgc2V0CiMgQ09ORklHX1RPVUNIU0NSRUVO
-X1RPVUNIUklHSFQgaXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9UT1VDSFdJTiBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1RPVUNIU0NSRUVOX1BJWENJUiBpcyBub3Qgc2V0CiMgQ09ORklHX1RP
-VUNIU0NSRUVOX1dEVDg3WFhfSTJDIGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fV005
-N1hYIGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fVVNCX0NPTVBPU0lURSBpcyBub3Qg
-c2V0CiMgQ09ORklHX1RPVUNIU0NSRUVOX1RPVUNISVQyMTMgaXMgbm90IHNldAojIENPTkZJR19U
-T1VDSFNDUkVFTl9UU0NfU0VSSU8gaXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9UU0My
-MDA0IGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fVFNDMjAwNSBpcyBub3Qgc2V0CiMg
-Q09ORklHX1RPVUNIU0NSRUVOX1RTQzIwMDcgaXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVF
-Tl9STV9UUyBpcyBub3Qgc2V0CiMgQ09ORklHX1RPVUNIU0NSRUVOX1NJTEVBRCBpcyBub3Qgc2V0
-CiMgQ09ORklHX1RPVUNIU0NSRUVOX1NJU19JMkMgaXMgbm90IHNldAojIENPTkZJR19UT1VDSFND
-UkVFTl9TVDEyMzIgaXMgbm90IHNldAojIENPTkZJR19UT1VDSFNDUkVFTl9TVVI0MCBpcyBub3Qg
-c2V0CiMgQ09ORklHX1RPVUNIU0NSRUVOX1NVUkZBQ0UzX1NQSSBpcyBub3Qgc2V0CiMgQ09ORklH
-X1RPVUNIU0NSRUVOX1NYODY1NCBpcyBub3Qgc2V0CiMgQ09ORklHX1RPVUNIU0NSRUVOX1RQUzY1
-MDdYIGlzIG5vdCBzZXQKIyBDT05GSUdfVE9VQ0hTQ1JFRU5fWkZPUkNFIGlzIG5vdCBzZXQKIyBD
-T05GSUdfVE9VQ0hTQ1JFRU5fUk9ITV9CVTIxMDIzIGlzIG5vdCBzZXQKQ09ORklHX0lOUFVUX01J
-U0M9eQojIENPTkZJR19JTlBVVF9BRDcxNFggaXMgbm90IHNldAojIENPTkZJR19JTlBVVF9CTUEx
-NTAgaXMgbm90IHNldAojIENPTkZJR19JTlBVVF9FM1gwX0JVVFRPTiBpcyBub3Qgc2V0CkNPTkZJ
-R19JTlBVVF9QQ1NQS1I9bQojIENPTkZJR19JTlBVVF9NTUE4NDUwIGlzIG5vdCBzZXQKIyBDT05G
-SUdfSU5QVVRfTVBVMzA1MCBpcyBub3Qgc2V0CkNPTkZJR19JTlBVVF9BUEFORUw9bQojIENPTkZJ
-R19JTlBVVF9HUDJBIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5QVVRfR1BJT19CRUVQRVIgaXMgbm90
-IHNldAojIENPTkZJR19JTlBVVF9HUElPX1RJTFRfUE9MTEVEIGlzIG5vdCBzZXQKQ09ORklHX0lO
-UFVUX0FUTEFTX0JUTlM9bQpDT05GSUdfSU5QVVRfQVRJX1JFTU9URTI9bQpDT05GSUdfSU5QVVRf
-S0VZU1BBTl9SRU1PVEU9bQojIENPTkZJR19JTlBVVF9LWFRKOSBpcyBub3Qgc2V0CkNPTkZJR19J
-TlBVVF9QT1dFUk1BVEU9bQpDT05GSUdfSU5QVVRfWUVBTElOSz1tCkNPTkZJR19JTlBVVF9DTTEw
-OT1tCkNPTkZJR19JTlBVVF9VSU5QVVQ9bQojIENPTkZJR19JTlBVVF9QQ0Y4NTc0IGlzIG5vdCBz
-ZXQKIyBDT05GSUdfSU5QVVRfUFdNX0JFRVBFUiBpcyBub3Qgc2V0CiMgQ09ORklHX0lOUFVUX0dQ
-SU9fUk9UQVJZX0VOQ09ERVIgaXMgbm90IHNldAojIENPTkZJR19JTlBVVF9BRFhMMzRYIGlzIG5v
-dCBzZXQKIyBDT05GSUdfSU5QVVRfSU1TX1BDVSBpcyBub3Qgc2V0CiMgQ09ORklHX0lOUFVUX0NN
-QTMwMDAgaXMgbm90IHNldApDT05GSUdfSU5QVVRfWEVOX0tCRERFVl9GUk9OVEVORD1tCiMgQ09O
-RklHX0lOUFVUX0lERUFQQURfU0xJREVCQVIgaXMgbm90IHNldAojIENPTkZJR19JTlBVVF9EUlYy
-NjBYX0hBUFRJQ1MgaXMgbm90IHNldAojIENPTkZJR19JTlBVVF9EUlYyNjY1X0hBUFRJQ1MgaXMg
-bm90IHNldAojIENPTkZJR19JTlBVVF9EUlYyNjY3X0hBUFRJQ1MgaXMgbm90IHNldAojIENPTkZJ
-R19STUk0X0NPUkUgaXMgbm90IHNldAoKIwojIEhhcmR3YXJlIEkvTyBwb3J0cwojCkNPTkZJR19T
-RVJJTz15CkNPTkZJR19BUkNIX01JR0hUX0hBVkVfUENfU0VSSU89eQpDT05GSUdfU0VSSU9fSTgw
-NDI9eQpDT05GSUdfU0VSSU9fU0VSUE9SVD15CiMgQ09ORklHX1NFUklPX0NUODJDNzEwIGlzIG5v
-dCBzZXQKIyBDT05GSUdfU0VSSU9fUEFSS0JEIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSU9fUENJ
-UFMyIGlzIG5vdCBzZXQKQ09ORklHX1NFUklPX0xJQlBTMj15CkNPTkZJR19TRVJJT19SQVc9bQpD
-T05GSUdfU0VSSU9fQUxURVJBX1BTMj1tCiMgQ09ORklHX1NFUklPX1BTMk1VTFQgaXMgbm90IHNl
-dApDT05GSUdfU0VSSU9fQVJDX1BTMj1tCkNPTkZJR19IWVBFUlZfS0VZQk9BUkQ9bQojIENPTkZJ
-R19VU0VSSU8gaXMgbm90IHNldAojIENPTkZJR19HQU1FUE9SVCBpcyBub3Qgc2V0CgojCiMgQ2hh
-cmFjdGVyIGRldmljZXMKIwpDT05GSUdfVFRZPXkKQ09ORklHX1ZUPXkKQ09ORklHX0NPTlNPTEVf
-VFJBTlNMQVRJT05TPXkKQ09ORklHX1ZUX0NPTlNPTEU9eQpDT05GSUdfVlRfQ09OU09MRV9TTEVF
-UD15CkNPTkZJR19IV19DT05TT0xFPXkKQ09ORklHX1ZUX0hXX0NPTlNPTEVfQklORElORz15CkNP
-TkZJR19VTklYOThfUFRZUz15CiMgQ09ORklHX0xFR0FDWV9QVFlTIGlzIG5vdCBzZXQKQ09ORklH
-X1NFUklBTF9OT05TVEFOREFSRD15CiMgQ09ORklHX1JPQ0tFVFBPUlQgaXMgbm90IHNldApDT05G
-SUdfQ1lDTEFERVM9bQojIENPTkZJR19DWVpfSU5UUiBpcyBub3Qgc2V0CkNPTkZJR19NT1hBX0lO
-VEVMTElPPW0KQ09ORklHX01PWEFfU01BUlRJTz1tCkNPTkZJR19TWU5DTElOSz1tCkNPTkZJR19T
-WU5DTElOS01QPW0KQ09ORklHX1NZTkNMSU5LX0dUPW0KQ09ORklHX05PWk9NST1tCiMgQ09ORklH
-X0lTSSBpcyBub3Qgc2V0CkNPTkZJR19OX0hETEM9bQpDT05GSUdfTl9HU009bQojIENPTkZJR19U
-UkFDRV9TSU5LIGlzIG5vdCBzZXQKQ09ORklHX0RFVk1FTT15CiMgQ09ORklHX0RFVktNRU0gaXMg
-bm90IHNldAoKIwojIFNlcmlhbCBkcml2ZXJzCiMKQ09ORklHX1NFUklBTF9FQVJMWUNPTj15CkNP
-TkZJR19TRVJJQUxfODI1MD15CiMgQ09ORklHX1NFUklBTF84MjUwX0RFUFJFQ0FURURfT1BUSU9O
-UyBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfODI1MF9QTlA9eQojIENPTkZJR19TRVJJQUxfODI1
-MF9GSU5URUsgaXMgbm90IHNldApDT05GSUdfU0VSSUFMXzgyNTBfQ09OU09MRT15CkNPTkZJR19T
-RVJJQUxfODI1MF9ETUE9eQpDT05GSUdfU0VSSUFMXzgyNTBfUENJPXkKQ09ORklHX1NFUklBTF84
-MjUwX05SX1VBUlRTPTMyCkNPTkZJR19TRVJJQUxfODI1MF9SVU5USU1FX1VBUlRTPTQKQ09ORklH
-X1NFUklBTF84MjUwX0VYVEVOREVEPXkKQ09ORklHX1NFUklBTF84MjUwX01BTllfUE9SVFM9eQpD
-T05GSUdfU0VSSUFMXzgyNTBfU0hBUkVfSVJRPXkKIyBDT05GSUdfU0VSSUFMXzgyNTBfREVURUNU
-X0lSUSBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfODI1MF9SU0E9eQojIENPTkZJR19TRVJJQUxf
-ODI1MF9GU0wgaXMgbm90IHNldApDT05GSUdfU0VSSUFMXzgyNTBfRFc9eQojIENPTkZJR19TRVJJ
-QUxfODI1MF9SVDI4OFggaXMgbm90IHNldApDT05GSUdfU0VSSUFMXzgyNTBfTUlEPXkKIyBDT05G
-SUdfU0VSSUFMXzgyNTBfTU9YQSBpcyBub3Qgc2V0CgojCiMgTm9uLTgyNTAgc2VyaWFsIHBvcnQg
-c3VwcG9ydAojCiMgQ09ORklHX1NFUklBTF9NQVgzMTAwIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VS
-SUFMX01BWDMxMFggaXMgbm90IHNldAojIENPTkZJR19TRVJJQUxfVUFSVExJVEUgaXMgbm90IHNl
-dApDT05GSUdfU0VSSUFMX0NPUkU9eQpDT05GSUdfU0VSSUFMX0NPUkVfQ09OU09MRT15CkNPTkZJ
-R19TRVJJQUxfSlNNPW0KIyBDT05GSUdfU0VSSUFMX1NDQ05YUCBpcyBub3Qgc2V0CiMgQ09ORklH
-X1NFUklBTF9TQzE2SVM3WFggaXMgbm90IHNldAojIENPTkZJR19TRVJJQUxfQUxURVJBX0pUQUdV
-QVJUIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFMX0FMVEVSQV9VQVJUIGlzIG5vdCBzZXQKIyBD
-T05GSUdfU0VSSUFMX0lGWDZYNjAgaXMgbm90IHNldApDT05GSUdfU0VSSUFMX0FSQz1tCkNPTkZJ
-R19TRVJJQUxfQVJDX05SX1BPUlRTPTEKIyBDT05GSUdfU0VSSUFMX1JQMiBpcyBub3Qgc2V0CiMg
-Q09ORklHX1NFUklBTF9GU0xfTFBVQVJUIGlzIG5vdCBzZXQKQ09ORklHX1BSSU5URVI9bQojIENP
-TkZJR19MUF9DT05TT0xFIGlzIG5vdCBzZXQKQ09ORklHX1BQREVWPW0KQ09ORklHX0hWQ19EUklW
-RVI9eQpDT05GSUdfSFZDX0lSUT15CkNPTkZJR19IVkNfWEVOPXkKQ09ORklHX0hWQ19YRU5fRlJP
-TlRFTkQ9eQpDT05GSUdfVklSVElPX0NPTlNPTEU9eQpDT05GSUdfSVBNSV9IQU5ETEVSPW0KIyBD
-T05GSUdfSVBNSV9QQU5JQ19FVkVOVCBpcyBub3Qgc2V0CkNPTkZJR19JUE1JX0RFVklDRV9JTlRF
-UkZBQ0U9bQpDT05GSUdfSVBNSV9TST1tCiMgQ09ORklHX0lQTUlfU1NJRiBpcyBub3Qgc2V0CkNP
-TkZJR19JUE1JX1dBVENIRE9HPW0KQ09ORklHX0lQTUlfUE9XRVJPRkY9bQpDT05GSUdfSFdfUkFO
-RE9NPXkKQ09ORklHX0hXX1JBTkRPTV9USU1FUklPTUVNPW0KQ09ORklHX0hXX1JBTkRPTV9JTlRF
-TD1tCkNPTkZJR19IV19SQU5ET01fQU1EPW0KQ09ORklHX0hXX1JBTkRPTV9WSUE9bQpDT05GSUdf
-SFdfUkFORE9NX1ZJUlRJTz15CkNPTkZJR19IV19SQU5ET01fVFBNPW0KQ09ORklHX05WUkFNPXkK
-IyBDT05GSUdfUjM5NjQgaXMgbm90IHNldAojIENPTkZJR19BUFBMSUNPTSBpcyBub3Qgc2V0CiMg
-Q09ORklHX01XQVZFIGlzIG5vdCBzZXQKQ09ORklHX1JBV19EUklWRVI9eQpDT05GSUdfTUFYX1JB
-V19ERVZTPTgxOTIKQ09ORklHX0hQRVQ9eQpDT05GSUdfSFBFVF9NTUFQPXkKIyBDT05GSUdfSFBF
-VF9NTUFQX0RFRkFVTFQgaXMgbm90IHNldApDT05GSUdfSEFOR0NIRUNLX1RJTUVSPW0KQ09ORklH
-X1VWX01NVElNRVI9bQpDT05GSUdfVENHX1RQTT15CkNPTkZJR19UQ0dfVElTX0NPUkU9eQpDT05G
-SUdfVENHX1RJUz15CiMgQ09ORklHX1RDR19USVNfU1BJIGlzIG5vdCBzZXQKIyBDT05GSUdfVENH
-X1RJU19JMkNfQVRNRUwgaXMgbm90IHNldAojIENPTkZJR19UQ0dfVElTX0kyQ19JTkZJTkVPTiBp
-cyBub3Qgc2V0CiMgQ09ORklHX1RDR19USVNfSTJDX05VVk9UT04gaXMgbm90IHNldApDT05GSUdf
-VENHX05TQz1tCkNPTkZJR19UQ0dfQVRNRUw9bQpDT05GSUdfVENHX0lORklORU9OPW0KIyBDT05G
-SUdfVENHX1hFTiBpcyBub3Qgc2V0CiMgQ09ORklHX1RDR19DUkIgaXMgbm90IHNldAojIENPTkZJ
-R19UQ0dfVlRQTV9QUk9YWSBpcyBub3Qgc2V0CiMgQ09ORklHX1RDR19USVNfU1QzM1pQMjRfSTJD
-IGlzIG5vdCBzZXQKIyBDT05GSUdfVENHX1RJU19TVDMzWlAyNF9TUEkgaXMgbm90IHNldApDT05G
-SUdfVEVMQ0xPQ0s9bQpDT05GSUdfREVWUE9SVD15CiMgQ09ORklHX1hJTExZQlVTIGlzIG5vdCBz
-ZXQKCiMKIyBJMkMgc3VwcG9ydAojCkNPTkZJR19JMkM9eQpDT05GSUdfQUNQSV9JMkNfT1BSRUdJ
-T049eQpDT05GSUdfSTJDX0JPQVJESU5GTz15CkNPTkZJR19JMkNfQ09NUEFUPXkKQ09ORklHX0ky
-Q19DSEFSREVWPW0KQ09ORklHX0kyQ19NVVg9bQoKIwojIE11bHRpcGxleGVyIEkyQyBDaGlwIHN1
-cHBvcnQKIwojIENPTkZJR19JMkNfTVVYX0dQSU8gaXMgbm90IHNldAojIENPTkZJR19JMkNfTVVY
-X1BDQTk1NDEgaXMgbm90IHNldAojIENPTkZJR19JMkNfTVVYX1BDQTk1NHggaXMgbm90IHNldAoj
-IENPTkZJR19JMkNfTVVYX1BJTkNUUkwgaXMgbm90IHNldAojIENPTkZJR19JMkNfTVVYX1JFRyBp
-cyBub3Qgc2V0CkNPTkZJR19JMkNfSEVMUEVSX0FVVE89eQpDT05GSUdfSTJDX1NNQlVTPXkKQ09O
-RklHX0kyQ19BTEdPQklUPXkKQ09ORklHX0kyQ19BTEdPUENBPW0KCiMKIyBJMkMgSGFyZHdhcmUg
-QnVzIHN1cHBvcnQKIwoKIwojIFBDIFNNQnVzIGhvc3QgY29udHJvbGxlciBkcml2ZXJzCiMKIyBD
-T05GSUdfSTJDX0FMSTE1MzUgaXMgbm90IHNldAojIENPTkZJR19JMkNfQUxJMTU2MyBpcyBub3Qg
-c2V0CiMgQ09ORklHX0kyQ19BTEkxNVgzIGlzIG5vdCBzZXQKQ09ORklHX0kyQ19BTUQ3NTY9bQpD
-T05GSUdfSTJDX0FNRDc1Nl9TNDg4Mj1tCkNPTkZJR19JMkNfQU1EODExMT1tCkNPTkZJR19JMkNf
-STgwMT15CkNPTkZJR19JMkNfSVNDSD1tCkNPTkZJR19JMkNfSVNNVD1tCkNPTkZJR19JMkNfUElJ
-WDQ9bQpDT05GSUdfSTJDX05GT1JDRTI9bQpDT05GSUdfSTJDX05GT1JDRTJfUzQ5ODU9bQojIENP
-TkZJR19JMkNfU0lTNTU5NSBpcyBub3Qgc2V0CiMgQ09ORklHX0kyQ19TSVM2MzAgaXMgbm90IHNl
-dApDT05GSUdfSTJDX1NJUzk2WD1tCkNPTkZJR19JMkNfVklBPW0KQ09ORklHX0kyQ19WSUFQUk89
-bQoKIwojIEFDUEkgZHJpdmVycwojCkNPTkZJR19JMkNfU0NNST1tCgojCiMgSTJDIHN5c3RlbSBi
-dXMgZHJpdmVycyAobW9zdGx5IGVtYmVkZGVkIC8gc3lzdGVtLW9uLWNoaXApCiMKIyBDT05GSUdf
-STJDX0NCVVNfR1BJTyBpcyBub3Qgc2V0CkNPTkZJR19JMkNfREVTSUdOV0FSRV9DT1JFPW0KQ09O
-RklHX0kyQ19ERVNJR05XQVJFX1BMQVRGT1JNPW0KQ09ORklHX0kyQ19ERVNJR05XQVJFX1BDST1t
-CiMgQ09ORklHX0kyQ19ERVNJR05XQVJFX0JBWVRSQUlMIGlzIG5vdCBzZXQKIyBDT05GSUdfSTJD
-X0VNRVYyIGlzIG5vdCBzZXQKIyBDT05GSUdfSTJDX0dQSU8gaXMgbm90IHNldAojIENPTkZJR19J
-MkNfT0NPUkVTIGlzIG5vdCBzZXQKQ09ORklHX0kyQ19QQ0FfUExBVEZPUk09bQojIENPTkZJR19J
-MkNfUFhBX1BDSSBpcyBub3Qgc2V0CkNPTkZJR19JMkNfU0lNVEVDPW0KIyBDT05GSUdfSTJDX1hJ
-TElOWCBpcyBub3Qgc2V0CgojCiMgRXh0ZXJuYWwgSTJDL1NNQnVzIGFkYXB0ZXIgZHJpdmVycwoj
-CkNPTkZJR19JMkNfRElPTEFOX1UyQz1tCkNPTkZJR19JMkNfUEFSUE9SVD1tCkNPTkZJR19JMkNf
-UEFSUE9SVF9MSUdIVD1tCiMgQ09ORklHX0kyQ19ST0JPVEZVWlpfT1NJRiBpcyBub3Qgc2V0CiMg
-Q09ORklHX0kyQ19UQU9TX0VWTSBpcyBub3Qgc2V0CkNPTkZJR19JMkNfVElOWV9VU0I9bQpDT05G
-SUdfSTJDX1ZJUEVSQk9BUkQ9bQoKIwojIE90aGVyIEkyQy9TTUJ1cyBidXMgZHJpdmVycwojCkNP
-TkZJR19JMkNfU1RVQj1tCiMgQ09ORklHX0kyQ19TTEFWRSBpcyBub3Qgc2V0CiMgQ09ORklHX0ky
-Q19ERUJVR19DT1JFIGlzIG5vdCBzZXQKIyBDT05GSUdfSTJDX0RFQlVHX0FMR08gaXMgbm90IHNl
-dAojIENPTkZJR19JMkNfREVCVUdfQlVTIGlzIG5vdCBzZXQKQ09ORklHX1NQST15CiMgQ09ORklH
-X1NQSV9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19TUElfTUFTVEVSPXkKCiMKIyBTUEkgTWFzdGVy
-IENvbnRyb2xsZXIgRHJpdmVycwojCiMgQ09ORklHX1NQSV9BTFRFUkEgaXMgbm90IHNldAojIENP
-TkZJR19TUElfQVhJX1NQSV9FTkdJTkUgaXMgbm90IHNldAojIENPTkZJR19TUElfQklUQkFORyBp
-cyBub3Qgc2V0CiMgQ09ORklHX1NQSV9CVVRURVJGTFkgaXMgbm90IHNldAojIENPTkZJR19TUElf
-Q0FERU5DRSBpcyBub3Qgc2V0CkNPTkZJR19TUElfREVTSUdOV0FSRT1tCiMgQ09ORklHX1NQSV9E
-V19QQ0kgaXMgbm90IHNldAojIENPTkZJR19TUElfRFdfTU1JTyBpcyBub3Qgc2V0CiMgQ09ORklH
-X1NQSV9HUElPIGlzIG5vdCBzZXQKIyBDT05GSUdfU1BJX0xNNzBfTExQIGlzIG5vdCBzZXQKIyBD
-T05GSUdfU1BJX09DX1RJTlkgaXMgbm90IHNldApDT05GSUdfU1BJX1BYQTJYWD1tCkNPTkZJR19T
-UElfUFhBMlhYX1BDST1tCiMgQ09ORklHX1NQSV9ST0NLQ0hJUCBpcyBub3Qgc2V0CiMgQ09ORklH
-X1NQSV9TQzE4SVM2MDIgaXMgbm90IHNldAojIENPTkZJR19TUElfWENPTU0gaXMgbm90IHNldAoj
-IENPTkZJR19TUElfWElMSU5YIGlzIG5vdCBzZXQKIyBDT05GSUdfU1BJX1pZTlFNUF9HUVNQSSBp
-cyBub3Qgc2V0CgojCiMgU1BJIFByb3RvY29sIE1hc3RlcnMKIwojIENPTkZJR19TUElfU1BJREVW
-IGlzIG5vdCBzZXQKIyBDT05GSUdfU1BJX0xPT1BCQUNLX1RFU1QgaXMgbm90IHNldAojIENPTkZJ
-R19TUElfVExFNjJYMCBpcyBub3Qgc2V0CiMgQ09ORklHX1NQTUkgaXMgbm90IHNldAojIENPTkZJ
-R19IU0kgaXMgbm90IHNldAoKIwojIFBQUyBzdXBwb3J0CiMKQ09ORklHX1BQUz15CiMgQ09ORklH
-X1BQU19ERUJVRyBpcyBub3Qgc2V0CgojCiMgUFBTIGNsaWVudHMgc3VwcG9ydAojCiMgQ09ORklH
-X1BQU19DTElFTlRfS1RJTUVSIGlzIG5vdCBzZXQKQ09ORklHX1BQU19DTElFTlRfTERJU0M9bQpD
-T05GSUdfUFBTX0NMSUVOVF9QQVJQT1JUPW0KQ09ORklHX1BQU19DTElFTlRfR1BJTz1tCgojCiMg
-UFBTIGdlbmVyYXRvcnMgc3VwcG9ydAojCgojCiMgUFRQIGNsb2NrIHN1cHBvcnQKIwpDT05GSUdf
-UFRQXzE1ODhfQ0xPQ0s9eQpDT05GSUdfRFA4MzY0MF9QSFk9bQpDT05GSUdfUElOQ1RSTD15Cgoj
-CiMgUGluIGNvbnRyb2xsZXJzCiMKQ09ORklHX1BJTk1VWD15CkNPTkZJR19QSU5DT05GPXkKQ09O
-RklHX0dFTkVSSUNfUElOQ09ORj15CiMgQ09ORklHX0RFQlVHX1BJTkNUUkwgaXMgbm90IHNldAoj
-IENPTkZJR19QSU5DVFJMX0FNRCBpcyBub3Qgc2V0CkNPTkZJR19QSU5DVFJMX0JBWVRSQUlMPXkK
-IyBDT05GSUdfUElOQ1RSTF9DSEVSUllWSUVXIGlzIG5vdCBzZXQKIyBDT05GSUdfUElOQ1RSTF9C
-Uk9YVE9OIGlzIG5vdCBzZXQKIyBDT05GSUdfUElOQ1RSTF9TVU5SSVNFUE9JTlQgaXMgbm90IHNl
-dApDT05GSUdfR1BJT0xJQj15CkNPTkZJR19HUElPX0RFVlJFUz15CkNPTkZJR19HUElPX0FDUEk9
-eQpDT05GSUdfR1BJT0xJQl9JUlFDSElQPXkKIyBDT05GSUdfREVCVUdfR1BJTyBpcyBub3Qgc2V0
-CkNPTkZJR19HUElPX1NZU0ZTPXkKCiMKIyBNZW1vcnkgbWFwcGVkIEdQSU8gZHJpdmVycwojCiMg
-Q09ORklHX0dQSU9fQU1EUFQgaXMgbm90IHNldAojIENPTkZJR19HUElPX0RXQVBCIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfR1BJT19HRU5FUklDX1BMQVRGT1JNIGlzIG5vdCBzZXQKIyBDT05GSUdfR1BJ
-T19JQ0ggaXMgbm90IHNldApDT05GSUdfR1BJT19MWU5YUE9JTlQ9bQojIENPTkZJR19HUElPX1ZY
-ODU1IGlzIG5vdCBzZXQKIyBDT05GSUdfR1BJT19aWCBpcyBub3Qgc2V0CgojCiMgUG9ydC1tYXBw
-ZWQgSS9PIEdQSU8gZHJpdmVycwojCiMgQ09ORklHX0dQSU9fRjcxODhYIGlzIG5vdCBzZXQKIyBD
-T05GSUdfR1BJT19JVDg3IGlzIG5vdCBzZXQKIyBDT05GSUdfR1BJT19TQ0ggaXMgbm90IHNldAoj
-IENPTkZJR19HUElPX1NDSDMxMVggaXMgbm90IHNldAoKIwojIEkyQyBHUElPIGV4cGFuZGVycwoj
-CiMgQ09ORklHX0dQSU9fQURQNTU4OCBpcyBub3Qgc2V0CiMgQ09ORklHX0dQSU9fTUFYNzMwMCBp
-cyBub3Qgc2V0CiMgQ09ORklHX0dQSU9fTUFYNzMyWCBpcyBub3Qgc2V0CiMgQ09ORklHX0dQSU9f
-UENBOTUzWCBpcyBub3Qgc2V0CiMgQ09ORklHX0dQSU9fUENGODU3WCBpcyBub3Qgc2V0CiMgQ09O
-RklHX0dQSU9fU1gxNTBYIGlzIG5vdCBzZXQKIyBDT05GSUdfR1BJT19UUElDMjgxMCBpcyBub3Qg
-c2V0CgojCiMgTUZEIEdQSU8gZXhwYW5kZXJzCiMKCiMKIyBQQ0kgR1BJTyBleHBhbmRlcnMKIwoj
-IENPTkZJR19HUElPX0FNRDgxMTEgaXMgbm90IHNldAojIENPTkZJR19HUElPX01MX0lPSCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0dQSU9fUkRDMzIxWCBpcyBub3Qgc2V0CgojCiMgU1BJIEdQSU8gZXhw
-YW5kZXJzCiMKIyBDT05GSUdfR1BJT19NQVg3MzAxIGlzIG5vdCBzZXQKIyBDT05GSUdfR1BJT19N
-QzMzODgwIGlzIG5vdCBzZXQKIyBDT05GSUdfR1BJT19QSVNPU1IgaXMgbm90IHNldAoKIwojIFNQ
-SSBvciBJMkMgR1BJTyBleHBhbmRlcnMKIwoKIwojIFVTQiBHUElPIGV4cGFuZGVycwojCiMgQ09O
-RklHX0dQSU9fVklQRVJCT0FSRCBpcyBub3Qgc2V0CiMgQ09ORklHX1cxIGlzIG5vdCBzZXQKQ09O
-RklHX1BPV0VSX1NVUFBMWT15CiMgQ09ORklHX1BPV0VSX1NVUFBMWV9ERUJVRyBpcyBub3Qgc2V0
-CiMgQ09ORklHX1BEQV9QT1dFUiBpcyBub3Qgc2V0CiMgQ09ORklHX1RFU1RfUE9XRVIgaXMgbm90
-IHNldAojIENPTkZJR19CQVRURVJZX0RTMjc4MCBpcyBub3Qgc2V0CiMgQ09ORklHX0JBVFRFUllf
-RFMyNzgxIGlzIG5vdCBzZXQKIyBDT05GSUdfQkFUVEVSWV9EUzI3ODIgaXMgbm90IHNldAojIENP
-TkZJR19CQVRURVJZX1NCUyBpcyBub3Qgc2V0CiMgQ09ORklHX0JBVFRFUllfQlEyN1hYWCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0JBVFRFUllfTUFYMTcwNDAgaXMgbm90IHNldAojIENPTkZJR19CQVRU
-RVJZX01BWDE3MDQyIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0hBUkdFUl9JU1AxNzA0IGlzIG5vdCBz
-ZXQKIyBDT05GSUdfQ0hBUkdFUl9NQVg4OTAzIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0hBUkdFUl9M
-UDg3MjcgaXMgbm90IHNldAojIENPTkZJR19DSEFSR0VSX0dQSU8gaXMgbm90IHNldAojIENPTkZJ
-R19DSEFSR0VSX0JRMjQxNVggaXMgbm90IHNldAojIENPTkZJR19DSEFSR0VSX0JRMjQxOTAgaXMg
-bm90IHNldAojIENPTkZJR19DSEFSR0VSX0JRMjQyNTcgaXMgbm90IHNldAojIENPTkZJR19DSEFS
-R0VSX0JRMjQ3MzUgaXMgbm90IHNldAojIENPTkZJR19DSEFSR0VSX0JRMjU4OTAgaXMgbm90IHNl
-dApDT05GSUdfQ0hBUkdFUl9TTUIzNDc9bQojIENPTkZJR19CQVRURVJZX0dBVUdFX0xUQzI5NDEg
-aXMgbm90IHNldAojIENPTkZJR19DSEFSR0VSX1JUOTQ1NSBpcyBub3Qgc2V0CkNPTkZJR19QT1dF
-Ul9SRVNFVD15CiMgQ09ORklHX1BPV0VSX1JFU0VUX1JFU1RBUlQgaXMgbm90IHNldAojIENPTkZJ
-R19QT1dFUl9BVlMgaXMgbm90IHNldApDT05GSUdfSFdNT049eQpDT05GSUdfSFdNT05fVklEPW0K
-IyBDT05GSUdfSFdNT05fREVCVUdfQ0hJUCBpcyBub3Qgc2V0CgojCiMgTmF0aXZlIGRyaXZlcnMK
-IwpDT05GSUdfU0VOU09SU19BQklUVUdVUlU9bQpDT05GSUdfU0VOU09SU19BQklUVUdVUlUzPW0K
-IyBDT05GSUdfU0VOU09SU19BRDczMTQgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19BRDc0MTQ9
-bQpDT05GSUdfU0VOU09SU19BRDc0MTg9bQpDT05GSUdfU0VOU09SU19BRE0xMDIxPW0KQ09ORklH
-X1NFTlNPUlNfQURNMTAyNT1tCkNPTkZJR19TRU5TT1JTX0FETTEwMjY9bQpDT05GSUdfU0VOU09S
-U19BRE0xMDI5PW0KQ09ORklHX1NFTlNPUlNfQURNMTAzMT1tCkNPTkZJR19TRU5TT1JTX0FETTky
-NDA9bQpDT05GSUdfU0VOU09SU19BRFQ3WDEwPW0KIyBDT05GSUdfU0VOU09SU19BRFQ3MzEwIGlz
-IG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfQURUNzQxMD1tCkNPTkZJR19TRU5TT1JTX0FEVDc0MTE9
-bQpDT05GSUdfU0VOU09SU19BRFQ3NDYyPW0KQ09ORklHX1NFTlNPUlNfQURUNzQ3MD1tCkNPTkZJ
-R19TRU5TT1JTX0FEVDc0NzU9bQpDT05GSUdfU0VOU09SU19BU0M3NjIxPW0KQ09ORklHX1NFTlNP
-UlNfSzhURU1QPW0KQ09ORklHX1NFTlNPUlNfSzEwVEVNUD1tCkNPTkZJR19TRU5TT1JTX0ZBTTE1
-SF9QT1dFUj1tCkNPTkZJR19TRU5TT1JTX0FQUExFU01DPW0KQ09ORklHX1NFTlNPUlNfQVNCMTAw
-PW0KQ09ORklHX1NFTlNPUlNfQVRYUDE9bQpDT05GSUdfU0VOU09SU19EUzYyMD1tCkNPTkZJR19T
-RU5TT1JTX0RTMTYyMT1tCkNPTkZJR19TRU5TT1JTX0RFTExfU01NPW0KQ09ORklHX1NFTlNPUlNf
-STVLX0FNQj1tCkNPTkZJR19TRU5TT1JTX0Y3MTgwNUY9bQpDT05GSUdfU0VOU09SU19GNzE4ODJG
-Rz1tCkNPTkZJR19TRU5TT1JTX0Y3NTM3NVM9bQpDT05GSUdfU0VOU09SU19GU0NITUQ9bQojIENP
-TkZJR19TRU5TT1JTX0ZUU1RFVVRBVEVTIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfR0w1MThT
-TT1tCkNPTkZJR19TRU5TT1JTX0dMNTIwU009bQpDT05GSUdfU0VOU09SU19HNzYwQT1tCiMgQ09O
-RklHX1NFTlNPUlNfRzc2MiBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfR1BJT19GQU4gaXMg
-bm90IHNldAojIENPTkZJR19TRU5TT1JTX0hJSDYxMzAgaXMgbm90IHNldApDT05GSUdfU0VOU09S
-U19JQk1BRU09bQpDT05GSUdfU0VOU09SU19JQk1QRVg9bQojIENPTkZJR19TRU5TT1JTX0k1NTAw
-IGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfQ09SRVRFTVA9bQpDT05GSUdfU0VOU09SU19JVDg3
-PW0KIyBDT05GSUdfU0VOU09SU19KQzQyIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19QT1dS
-MTIyMCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0xJTkVBR0U9bQojIENPTkZJR19TRU5TT1JT
-X0xUQzI5NDUgaXMgbm90IHNldAojIENPTkZJR19TRU5TT1JTX0xUQzI5OTAgaXMgbm90IHNldApD
-T05GSUdfU0VOU09SU19MVEM0MTUxPW0KQ09ORklHX1NFTlNPUlNfTFRDNDIxNT1tCiMgQ09ORklH
-X1NFTlNPUlNfTFRDNDIyMiBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0xUQzQyNDU9bQojIENP
-TkZJR19TRU5TT1JTX0xUQzQyNjAgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19MVEM0MjYxPW0K
-IyBDT05GSUdfU0VOU09SU19NQVgxMTExIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfTUFYMTYw
-NjU9bQpDT05GSUdfU0VOU09SU19NQVgxNjE5PW0KQ09ORklHX1NFTlNPUlNfTUFYMTY2OD1tCkNP
-TkZJR19TRU5TT1JTX01BWDE5Nz1tCiMgQ09ORklHX1NFTlNPUlNfTUFYMzE3MjIgaXMgbm90IHNl
-dApDT05GSUdfU0VOU09SU19NQVg2NjM5PW0KQ09ORklHX1NFTlNPUlNfTUFYNjY0Mj1tCkNPTkZJ
-R19TRU5TT1JTX01BWDY2NTA9bQpDT05GSUdfU0VOU09SU19NQVg2Njk3PW0KIyBDT05GSUdfU0VO
-U09SU19NQVgzMTc5MCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX01DUDMwMjE9bQojIENPTkZJ
-R19TRU5TT1JTX0FEQ1hYIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfTE02Mz1tCiMgQ09ORklH
-X1NFTlNPUlNfTE03MCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0xNNzM9bQpDT05GSUdfU0VO
-U09SU19MTTc1PW0KQ09ORklHX1NFTlNPUlNfTE03Nz1tCkNPTkZJR19TRU5TT1JTX0xNNzg9bQpD
-T05GSUdfU0VOU09SU19MTTgwPW0KQ09ORklHX1NFTlNPUlNfTE04Mz1tCkNPTkZJR19TRU5TT1JT
-X0xNODU9bQpDT05GSUdfU0VOU09SU19MTTg3PW0KQ09ORklHX1NFTlNPUlNfTE05MD1tCkNPTkZJ
-R19TRU5TT1JTX0xNOTI9bQpDT05GSUdfU0VOU09SU19MTTkzPW0KQ09ORklHX1NFTlNPUlNfTE05
-NTIzND1tCkNPTkZJR19TRU5TT1JTX0xNOTUyNDE9bQpDT05GSUdfU0VOU09SU19MTTk1MjQ1PW0K
-Q09ORklHX1NFTlNPUlNfUEM4NzM2MD1tCkNPTkZJR19TRU5TT1JTX1BDODc0Mjc9bQpDT05GSUdf
-U0VOU09SU19OVENfVEhFUk1JU1RPUj1tCiMgQ09ORklHX1NFTlNPUlNfTkNUNjY4MyBpcyBub3Qg
-c2V0CkNPTkZJR19TRU5TT1JTX05DVDY3NzU9bQojIENPTkZJR19TRU5TT1JTX05DVDc4MDIgaXMg
-bm90IHNldAojIENPTkZJR19TRU5TT1JTX05DVDc5MDQgaXMgbm90IHNldApDT05GSUdfU0VOU09S
-U19QQ0Y4NTkxPW0KQ09ORklHX1BNQlVTPW0KQ09ORklHX1NFTlNPUlNfUE1CVVM9bQpDT05GSUdf
-U0VOU09SU19BRE0xMjc1PW0KQ09ORklHX1NFTlNPUlNfTE0yNTA2Nj1tCkNPTkZJR19TRU5TT1JT
-X0xUQzI5Nzg9bQojIENPTkZJR19TRU5TT1JTX0xUQzM4MTUgaXMgbm90IHNldApDT05GSUdfU0VO
-U09SU19NQVgxNjA2ND1tCiMgQ09ORklHX1NFTlNPUlNfTUFYMjA3NTEgaXMgbm90IHNldApDT05G
-SUdfU0VOU09SU19NQVgzNDQ0MD1tCkNPTkZJR19TRU5TT1JTX01BWDg2ODg9bQojIENPTkZJR19T
-RU5TT1JTX1RQUzQwNDIyIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfVUNEOTAwMD1tCkNPTkZJ
-R19TRU5TT1JTX1VDRDkyMDA9bQpDT05GSUdfU0VOU09SU19aTDYxMDA9bQojIENPTkZJR19TRU5T
-T1JTX1NIVDE1IGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfU0hUMjE9bQojIENPTkZJR19TRU5T
-T1JTX1NIVDN4IGlzIG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19TSFRDMSBpcyBub3Qgc2V0CkNP
-TkZJR19TRU5TT1JTX1NJUzU1OTU9bQpDT05GSUdfU0VOU09SU19ETUUxNzM3PW0KQ09ORklHX1NF
-TlNPUlNfRU1DMTQwMz1tCiMgQ09ORklHX1NFTlNPUlNfRU1DMjEwMyBpcyBub3Qgc2V0CkNPTkZJ
-R19TRU5TT1JTX0VNQzZXMjAxPW0KQ09ORklHX1NFTlNPUlNfU01TQzQ3TTE9bQpDT05GSUdfU0VO
-U09SU19TTVNDNDdNMTkyPW0KQ09ORklHX1NFTlNPUlNfU01TQzQ3QjM5Nz1tCkNPTkZJR19TRU5T
-T1JTX1NDSDU2WFhfQ09NTU9OPW0KQ09ORklHX1NFTlNPUlNfU0NINTYyNz1tCkNPTkZJR19TRU5T
-T1JTX1NDSDU2MzY9bQojIENPTkZJR19TRU5TT1JTX1NNTTY2NSBpcyBub3Qgc2V0CiMgQ09ORklH
-X1NFTlNPUlNfQURDMTI4RDgxOCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0FEUzEwMTU9bQpD
-T05GSUdfU0VOU09SU19BRFM3ODI4PW0KIyBDT05GSUdfU0VOU09SU19BRFM3ODcxIGlzIG5vdCBz
-ZXQKQ09ORklHX1NFTlNPUlNfQU1DNjgyMT1tCkNPTkZJR19TRU5TT1JTX0lOQTIwOT1tCkNPTkZJ
-R19TRU5TT1JTX0lOQTJYWD1tCiMgQ09ORklHX1NFTlNPUlNfSU5BMzIyMSBpcyBub3Qgc2V0CiMg
-Q09ORklHX1NFTlNPUlNfVEM3NCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX1RITUM1MD1tCkNP
-TkZJR19TRU5TT1JTX1RNUDEwMj1tCiMgQ09ORklHX1NFTlNPUlNfVE1QMTAzIGlzIG5vdCBzZXQK
-Q09ORklHX1NFTlNPUlNfVE1QNDAxPW0KQ09ORklHX1NFTlNPUlNfVE1QNDIxPW0KQ09ORklHX1NF
-TlNPUlNfVklBX0NQVVRFTVA9bQpDT05GSUdfU0VOU09SU19WSUE2ODZBPW0KQ09ORklHX1NFTlNP
-UlNfVlQxMjExPW0KQ09ORklHX1NFTlNPUlNfVlQ4MjMxPW0KQ09ORklHX1NFTlNPUlNfVzgzNzgx
-RD1tCkNPTkZJR19TRU5TT1JTX1c4Mzc5MUQ9bQpDT05GSUdfU0VOU09SU19XODM3OTJEPW0KQ09O
-RklHX1NFTlNPUlNfVzgzNzkzPW0KQ09ORklHX1NFTlNPUlNfVzgzNzk1PW0KIyBDT05GSUdfU0VO
-U09SU19XODM3OTVfRkFOQ1RSTCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX1c4M0w3ODVUUz1t
-CkNPTkZJR19TRU5TT1JTX1c4M0w3ODZORz1tCkNPTkZJR19TRU5TT1JTX1c4MzYyN0hGPW0KQ09O
-RklHX1NFTlNPUlNfVzgzNjI3RUhGPW0KCiMKIyBBQ1BJIGRyaXZlcnMKIwpDT05GSUdfU0VOU09S
-U19BQ1BJX1BPV0VSPW0KQ09ORklHX1NFTlNPUlNfQVRLMDExMD1tCkNPTkZJR19USEVSTUFMPXkK
-Q09ORklHX1RIRVJNQUxfSFdNT049eQpDT05GSUdfVEhFUk1BTF9XUklUQUJMRV9UUklQUz15CkNP
-TkZJR19USEVSTUFMX0RFRkFVTFRfR09WX1NURVBfV0lTRT15CiMgQ09ORklHX1RIRVJNQUxfREVG
-QVVMVF9HT1ZfRkFJUl9TSEFSRSBpcyBub3Qgc2V0CiMgQ09ORklHX1RIRVJNQUxfREVGQVVMVF9H
-T1ZfVVNFUl9TUEFDRSBpcyBub3Qgc2V0CiMgQ09ORklHX1RIRVJNQUxfREVGQVVMVF9HT1ZfUE9X
-RVJfQUxMT0NBVE9SIGlzIG5vdCBzZXQKQ09ORklHX1RIRVJNQUxfR09WX0ZBSVJfU0hBUkU9eQpD
-T05GSUdfVEhFUk1BTF9HT1ZfU1RFUF9XSVNFPXkKQ09ORklHX1RIRVJNQUxfR09WX0JBTkdfQkFO
-Rz15CkNPTkZJR19USEVSTUFMX0dPVl9VU0VSX1NQQUNFPXkKIyBDT05GSUdfVEhFUk1BTF9HT1Zf
-UE9XRVJfQUxMT0NBVE9SIGlzIG5vdCBzZXQKIyBDT05GSUdfVEhFUk1BTF9FTVVMQVRJT04gaXMg
-bm90IHNldApDT05GSUdfSU5URUxfUE9XRVJDTEFNUD1tCkNPTkZJR19YODZfUEtHX1RFTVBfVEhF
-Uk1BTD1tCiMgQ09ORklHX0lOVEVMX1NPQ19EVFNfVEhFUk1BTCBpcyBub3Qgc2V0CgojCiMgQUNQ
-SSBJTlQzNDBYIHRoZXJtYWwgZHJpdmVycwojCiMgQ09ORklHX0lOVDM0MFhfVEhFUk1BTCBpcyBu
-b3Qgc2V0CkNPTkZJR19JTlRFTF9QQ0hfVEhFUk1BTD1tCkNPTkZJR19XQVRDSERPRz15CkNPTkZJ
-R19XQVRDSERPR19DT1JFPXkKIyBDT05GSUdfV0FUQ0hET0dfTk9XQVlPVVQgaXMgbm90IHNldAoj
-IENPTkZJR19XQVRDSERPR19TWVNGUyBpcyBub3Qgc2V0CgojCiMgV2F0Y2hkb2cgRGV2aWNlIERy
-aXZlcnMKIwpDT05GSUdfU09GVF9XQVRDSERPRz1tCiMgQ09ORklHX1hJTElOWF9XQVRDSERPRyBp
-cyBub3Qgc2V0CiMgQ09ORklHX1pJSVJBVkVfV0FUQ0hET0cgaXMgbm90IHNldAojIENPTkZJR19D
-QURFTkNFX1dBVENIRE9HIGlzIG5vdCBzZXQKIyBDT05GSUdfRFdfV0FUQ0hET0cgaXMgbm90IHNl
-dAojIENPTkZJR19NQVg2M1hYX1dBVENIRE9HIGlzIG5vdCBzZXQKIyBDT05GSUdfQUNRVUlSRV9X
-RFQgaXMgbm90IHNldAojIENPTkZJR19BRFZBTlRFQ0hfV0RUIGlzIG5vdCBzZXQKQ09ORklHX0FM
-SU0xNTM1X1dEVD1tCkNPTkZJR19BTElNNzEwMV9XRFQ9bQpDT05GSUdfRjcxODA4RV9XRFQ9bQpD
-T05GSUdfU1A1MTAwX1RDTz1tCkNPTkZJR19TQkNfRklUUEMyX1dBVENIRE9HPW0KIyBDT05GSUdf
-RVVST1RFQ0hfV0RUIGlzIG5vdCBzZXQKQ09ORklHX0lCNzAwX1dEVD1tCkNPTkZJR19JQk1BU1I9
-bQojIENPTkZJR19XQUZFUl9XRFQgaXMgbm90IHNldApDT05GSUdfSTYzMDBFU0JfV0RUPXkKQ09O
-RklHX0lFNlhYX1dEVD1tCkNPTkZJR19JVENPX1dEVD15CkNPTkZJR19JVENPX1ZFTkRPUl9TVVBQ
-T1JUPXkKQ09ORklHX0lUODcxMkZfV0RUPW0KQ09ORklHX0lUODdfV0RUPW0KQ09ORklHX0hQX1dB
-VENIRE9HPW0KQ09ORklHX0hQV0RUX05NSV9ERUNPRElORz15CiMgQ09ORklHX1NDMTIwMF9XRFQg
-aXMgbm90IHNldAojIENPTkZJR19QQzg3NDEzX1dEVCBpcyBub3Qgc2V0CkNPTkZJR19OVl9UQ089
-bQojIENPTkZJR182MFhYX1dEVCBpcyBub3Qgc2V0CiMgQ09ORklHX0NQVTVfV0RUIGlzIG5vdCBz
-ZXQKQ09ORklHX1NNU0NfU0NIMzExWF9XRFQ9bQojIENPTkZJR19TTVNDMzdCNzg3X1dEVCBpcyBu
-b3Qgc2V0CkNPTkZJR19WSUFfV0RUPW0KQ09ORklHX1c4MzYyN0hGX1dEVD1tCkNPTkZJR19XODM4
-NzdGX1dEVD1tCkNPTkZJR19XODM5NzdGX1dEVD1tCkNPTkZJR19NQUNIWl9XRFQ9bQojIENPTkZJ
-R19TQkNfRVBYX0MzX1dBVENIRE9HIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5URUxfTUVJX1dEVCBp
-cyBub3Qgc2V0CiMgQ09ORklHX05JOTAzWF9XRFQgaXMgbm90IHNldAojIENPTkZJR19NRU5fQTIx
-X1dEVCBpcyBub3Qgc2V0CkNPTkZJR19YRU5fV0RUPW0KCiMKIyBQQ0ktYmFzZWQgV2F0Y2hkb2cg
-Q2FyZHMKIwpDT05GSUdfUENJUENXQVRDSERPRz1tCkNPTkZJR19XRFRQQ0k9bQoKIwojIFVTQi1i
-YXNlZCBXYXRjaGRvZyBDYXJkcwojCkNPTkZJR19VU0JQQ1dBVENIRE9HPW0KQ09ORklHX1NTQl9Q
-T1NTSUJMRT15CgojCiMgU29uaWNzIFNpbGljb24gQmFja3BsYW5lCiMKQ09ORklHX1NTQj1tCkNP
-TkZJR19TU0JfU1BST009eQpDT05GSUdfU1NCX1BDSUhPU1RfUE9TU0lCTEU9eQpDT05GSUdfU1NC
-X1BDSUhPU1Q9eQojIENPTkZJR19TU0JfQjQzX1BDSV9CUklER0UgaXMgbm90IHNldApDT05GSUdf
-U1NCX1NESU9IT1NUX1BPU1NJQkxFPXkKQ09ORklHX1NTQl9TRElPSE9TVD15CiMgQ09ORklHX1NT
-Ql9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19TU0JfRFJJVkVSX1BDSUNPUkVfUE9TU0lCTEU9eQpD
-T05GSUdfU1NCX0RSSVZFUl9QQ0lDT1JFPXkKIyBDT05GSUdfU1NCX0RSSVZFUl9HUElPIGlzIG5v
-dCBzZXQKQ09ORklHX0JDTUFfUE9TU0lCTEU9eQoKIwojIEJyb2FkY29tIHNwZWNpZmljIEFNQkEK
-IwpDT05GSUdfQkNNQT1tCkNPTkZJR19CQ01BX0hPU1RfUENJX1BPU1NJQkxFPXkKQ09ORklHX0JD
-TUFfSE9TVF9QQ0k9eQojIENPTkZJR19CQ01BX0hPU1RfU09DIGlzIG5vdCBzZXQKQ09ORklHX0JD
-TUFfRFJJVkVSX1BDST15CkNPTkZJR19CQ01BX0RSSVZFUl9HTUFDX0NNTj15CiMgQ09ORklHX0JD
-TUFfRFJJVkVSX0dQSU8gaXMgbm90IHNldAojIENPTkZJR19CQ01BX0RFQlVHIGlzIG5vdCBzZXQK
-CiMKIyBNdWx0aWZ1bmN0aW9uIGRldmljZSBkcml2ZXJzCiMKQ09ORklHX01GRF9DT1JFPXkKIyBD
-T05GSUdfTUZEX0FTMzcxMSBpcyBub3Qgc2V0CiMgQ09ORklHX1BNSUNfQURQNTUyMCBpcyBub3Qg
-c2V0CiMgQ09ORklHX01GRF9BQVQyODcwX0NPUkUgaXMgbm90IHNldAojIENPTkZJR19NRkRfQkNN
-NTkwWFggaXMgbm90IHNldAojIENPTkZJR19NRkRfQVhQMjBYX0kyQyBpcyBub3Qgc2V0CiMgQ09O
-RklHX01GRF9DUk9TX0VDIGlzIG5vdCBzZXQKIyBDT05GSUdfUE1JQ19EQTkwM1ggaXMgbm90IHNl
-dAojIENPTkZJR19NRkRfREE5MDUyX1NQSSBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9EQTkwNTJf
-STJDIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX0RBOTA1NSBpcyBub3Qgc2V0CiMgQ09ORklHX01G
-RF9EQTkwNjIgaXMgbm90IHNldAojIENPTkZJR19NRkRfREE5MDYzIGlzIG5vdCBzZXQKIyBDT05G
-SUdfTUZEX0RBOTE1MCBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9ETE4yIGlzIG5vdCBzZXQKIyBD
-T05GSUdfTUZEX01DMTNYWFhfU1BJIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX01DMTNYWFhfSTJD
-IGlzIG5vdCBzZXQKIyBDT05GSUdfSFRDX1BBU0lDMyBpcyBub3Qgc2V0CiMgQ09ORklHX0hUQ19J
-MkNQTEQgaXMgbm90IHNldAojIENPTkZJR19NRkRfSU5URUxfUVVBUktfSTJDX0dQSU8gaXMgbm90
-IHNldApDT05GSUdfTFBDX0lDSD15CkNPTkZJR19MUENfU0NIPW0KIyBDT05GSUdfSU5URUxfU09D
-X1BNSUMgaXMgbm90IHNldAojIENPTkZJR19NRkRfSU5URUxfTFBTU19BQ1BJIGlzIG5vdCBzZXQK
-IyBDT05GSUdfTUZEX0lOVEVMX0xQU1NfUENJIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX0pBTlpf
-Q01PRElPIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX0tFTVBMRCBpcyBub3Qgc2V0CiMgQ09ORklH
-X01GRF84OFBNODAwIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEXzg4UE04MDUgaXMgbm90IHNldAoj
-IENPTkZJR19NRkRfODhQTTg2MFggaXMgbm90IHNldAojIENPTkZJR19NRkRfTUFYMTQ1NzcgaXMg
-bm90IHNldAojIENPTkZJR19NRkRfTUFYNzc2OTMgaXMgbm90IHNldAojIENPTkZJR19NRkRfTUFY
-Nzc4NDMgaXMgbm90IHNldAojIENPTkZJR19NRkRfTUFYODkwNyBpcyBub3Qgc2V0CiMgQ09ORklH
-X01GRF9NQVg4OTI1IGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX01BWDg5OTcgaXMgbm90IHNldAoj
-IENPTkZJR19NRkRfTUFYODk5OCBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9NVDYzOTcgaXMgbm90
-IHNldAojIENPTkZJR19NRkRfTUVORjIxQk1DIGlzIG5vdCBzZXQKIyBDT05GSUdfRVpYX1BDQVAg
-aXMgbm90IHNldApDT05GSUdfTUZEX1ZJUEVSQk9BUkQ9bQojIENPTkZJR19NRkRfUkVUVSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX01GRF9QQ0Y1MDYzMyBpcyBub3Qgc2V0CiMgQ09ORklHX1VDQjE0MDBf
-Q09SRSBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9SREMzMjFYIGlzIG5vdCBzZXQKQ09ORklHX01G
-RF9SVFNYX1BDST1tCiMgQ09ORklHX01GRF9SVDUwMzMgaXMgbm90IHNldAojIENPTkZJR19NRkRf
-UlRTWF9VU0IgaXMgbm90IHNldAojIENPTkZJR19NRkRfUkM1VDU4MyBpcyBub3Qgc2V0CiMgQ09O
-RklHX01GRF9TRUNfQ09SRSBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9TSTQ3NlhfQ09SRSBpcyBu
-b3Qgc2V0CkNPTkZJR19NRkRfU001MDE9bQojIENPTkZJR19NRkRfU001MDFfR1BJTyBpcyBub3Qg
-c2V0CiMgQ09ORklHX01GRF9TS1k4MTQ1MiBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9TTVNDIGlz
-IG5vdCBzZXQKIyBDT05GSUdfQUJYNTAwX0NPUkUgaXMgbm90IHNldAojIENPTkZJR19NRkRfU1lT
-Q09OIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX1RJX0FNMzM1WF9UU0NBREMgaXMgbm90IHNldAoj
-IENPTkZJR19NRkRfTFAzOTQzIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX0xQODc4OCBpcyBub3Qg
-c2V0CiMgQ09ORklHX01GRF9QQUxNQVMgaXMgbm90IHNldAojIENPTkZJR19UUFM2MTA1WCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1RQUzY1MDEwIGlzIG5vdCBzZXQKIyBDT05GSUdfVFBTNjUwN1ggaXMg
-bm90IHNldAojIENPTkZJR19NRkRfVFBTNjUwODYgaXMgbm90IHNldAojIENPTkZJR19NRkRfVFBT
-NjUwOTAgaXMgbm90IHNldAojIENPTkZJR19NRkRfVFBTNjUyMTcgaXMgbm90IHNldAojIENPTkZJ
-R19NRkRfVFBTNjUyMTggaXMgbm90IHNldAojIENPTkZJR19NRkRfVFBTNjU4NlggaXMgbm90IHNl
-dAojIENPTkZJR19NRkRfVFBTNjU5MTAgaXMgbm90IHNldAojIENPTkZJR19NRkRfVFBTNjU5MTJf
-STJDIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX1RQUzY1OTEyX1NQSSBpcyBub3Qgc2V0CiMgQ09O
-RklHX01GRF9UUFM4MDAzMSBpcyBub3Qgc2V0CiMgQ09ORklHX1RXTDQwMzBfQ09SRSBpcyBub3Qg
-c2V0CiMgQ09ORklHX1RXTDYwNDBfQ09SRSBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9XTDEyNzNf
-Q09SRSBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9MTTM1MzMgaXMgbm90IHNldAojIENPTkZJR19N
-RkRfVE1JTyBpcyBub3Qgc2V0CkNPTkZJR19NRkRfVlg4NTU9bQojIENPTkZJR19NRkRfQVJJWk9O
-QV9JMkMgaXMgbm90IHNldAojIENPTkZJR19NRkRfQVJJWk9OQV9TUEkgaXMgbm90IHNldAojIENP
-TkZJR19NRkRfV004NDAwIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX1dNODMxWF9JMkMgaXMgbm90
-IHNldAojIENPTkZJR19NRkRfV004MzFYX1NQSSBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9XTTgz
-NTBfSTJDIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX1dNODk5NCBpcyBub3Qgc2V0CiMgQ09ORklH
-X1JFR1VMQVRPUiBpcyBub3Qgc2V0CkNPTkZJR19NRURJQV9TVVBQT1JUPW0KCiMKIyBNdWx0aW1l
-ZGlhIGNvcmUgc3VwcG9ydAojCkNPTkZJR19NRURJQV9DQU1FUkFfU1VQUE9SVD15CkNPTkZJR19N
-RURJQV9BTkFMT0dfVFZfU1VQUE9SVD15CkNPTkZJR19NRURJQV9ESUdJVEFMX1RWX1NVUFBPUlQ9
-eQpDT05GSUdfTUVESUFfUkFESU9fU1VQUE9SVD15CiMgQ09ORklHX01FRElBX1NEUl9TVVBQT1JU
-IGlzIG5vdCBzZXQKQ09ORklHX01FRElBX1JDX1NVUFBPUlQ9eQojIENPTkZJR19NRURJQV9DT05U
-Uk9MTEVSIGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX0RFVj1tCkNPTkZJR19WSURFT19WNEwyPW0K
-IyBDT05GSUdfVklERU9fQURWX0RFQlVHIGlzIG5vdCBzZXQKIyBDT05GSUdfVklERU9fRklYRURf
-TUlOT1JfUkFOR0VTIGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX1RVTkVSPW0KQ09ORklHX1ZJREVP
-QlVGX0dFTj1tCkNPTkZJR19WSURFT0JVRl9ETUFfU0c9bQpDT05GSUdfVklERU9CVUZfVk1BTExP
-Qz1tCkNPTkZJR19WSURFT0JVRl9EVkI9bQpDT05GSUdfVklERU9CVUYyX0NPUkU9bQpDT05GSUdf
-VklERU9CVUYyX01FTU9QUz1tCkNPTkZJR19WSURFT0JVRjJfVk1BTExPQz1tCkNPTkZJR19WSURF
-T0JVRjJfRE1BX1NHPW0KQ09ORklHX1ZJREVPQlVGMl9EVkI9bQpDT05GSUdfRFZCX0NPUkU9bQpD
-T05GSUdfRFZCX05FVD15CkNPTkZJR19UVFBDSV9FRVBST009bQpDT05GSUdfRFZCX01BWF9BREFQ
-VEVSUz04CkNPTkZJR19EVkJfRFlOQU1JQ19NSU5PUlM9eQoKIwojIE1lZGlhIGRyaXZlcnMKIwpD
-T05GSUdfUkNfQ09SRT1tCkNPTkZJR19SQ19NQVA9bQpDT05GSUdfUkNfREVDT0RFUlM9eQpDT05G
-SUdfTElSQz1tCkNPTkZJR19JUl9MSVJDX0NPREVDPW0KQ09ORklHX0lSX05FQ19ERUNPREVSPW0K
-Q09ORklHX0lSX1JDNV9ERUNPREVSPW0KQ09ORklHX0lSX1JDNl9ERUNPREVSPW0KQ09ORklHX0lS
-X0pWQ19ERUNPREVSPW0KQ09ORklHX0lSX1NPTllfREVDT0RFUj1tCkNPTkZJR19JUl9TQU5ZT19E
-RUNPREVSPW0KQ09ORklHX0lSX1NIQVJQX0RFQ09ERVI9bQpDT05GSUdfSVJfTUNFX0tCRF9ERUNP
-REVSPW0KQ09ORklHX0lSX1hNUF9ERUNPREVSPW0KQ09ORklHX1JDX0RFVklDRVM9eQpDT05GSUdf
-UkNfQVRJX1JFTU9URT1tCkNPTkZJR19JUl9FTkU9bQojIENPTkZJR19JUl9ISVg1SEQyIGlzIG5v
-dCBzZXQKQ09ORklHX0lSX0lNT049bQpDT05GSUdfSVJfTUNFVVNCPW0KQ09ORklHX0lSX0lURV9D
-SVI9bQpDT05GSUdfSVJfRklOVEVLPW0KQ09ORklHX0lSX05VVk9UT049bQpDT05GSUdfSVJfUkVE
-UkFUMz1tCkNPTkZJR19JUl9TVFJFQU1aQVA9bQpDT05GSUdfSVJfV0lOQk9ORF9DSVI9bQojIENP
-TkZJR19JUl9JR09SUExVR1VTQiBpcyBub3Qgc2V0CkNPTkZJR19JUl9JR1VBTkE9bQpDT05GSUdf
-SVJfVFRVU0JJUj1tCiMgQ09ORklHX1JDX0xPT1BCQUNLIGlzIG5vdCBzZXQKQ09ORklHX0lSX0dQ
-SU9fQ0lSPW0KQ09ORklHX01FRElBX1VTQl9TVVBQT1JUPXkKCiMKIyBXZWJjYW0gZGV2aWNlcwoj
-CkNPTkZJR19VU0JfVklERU9fQ0xBU1M9bQpDT05GSUdfVVNCX1ZJREVPX0NMQVNTX0lOUFVUX0VW
-REVWPXkKQ09ORklHX1VTQl9HU1BDQT1tCkNPTkZJR19VU0JfTTU2MDI9bQpDT05GSUdfVVNCX1NU
-VjA2WFg9bQpDT05GSUdfVVNCX0dMODYwPW0KQ09ORklHX1VTQl9HU1BDQV9CRU5RPW0KQ09ORklH
-X1VTQl9HU1BDQV9DT05FWD1tCkNPTkZJR19VU0JfR1NQQ0FfQ1BJQTE9bQojIENPTkZJR19VU0Jf
-R1NQQ0FfRFRDUzAzMyBpcyBub3Qgc2V0CkNPTkZJR19VU0JfR1NQQ0FfRVRPTVM9bQpDT05GSUdf
-VVNCX0dTUENBX0ZJTkVQSVg9bQpDT05GSUdfVVNCX0dTUENBX0pFSUxJTko9bQpDT05GSUdfVVNC
-X0dTUENBX0pMMjAwNUJDRD1tCiMgQ09ORklHX1VTQl9HU1BDQV9LSU5FQ1QgaXMgbm90IHNldApD
-T05GSUdfVVNCX0dTUENBX0tPTklDQT1tCkNPTkZJR19VU0JfR1NQQ0FfTUFSUz1tCkNPTkZJR19V
-U0JfR1NQQ0FfTVI5NzMxMEE9bQpDT05GSUdfVVNCX0dTUENBX05XODBYPW0KQ09ORklHX1VTQl9H
-U1BDQV9PVjUxOT1tCkNPTkZJR19VU0JfR1NQQ0FfT1Y1MzQ9bQpDT05GSUdfVVNCX0dTUENBX09W
-NTM0Xzk9bQpDT05GSUdfVVNCX0dTUENBX1BBQzIwNz1tCkNPTkZJR19VU0JfR1NQQ0FfUEFDNzMw
-Mj1tCkNPTkZJR19VU0JfR1NQQ0FfUEFDNzMxMT1tCkNPTkZJR19VU0JfR1NQQ0FfU0U0MDE9bQpD
-T05GSUdfVVNCX0dTUENBX1NOOUMyMDI4PW0KQ09ORklHX1VTQl9HU1BDQV9TTjlDMjBYPW0KQ09O
-RklHX1VTQl9HU1BDQV9TT05JWEI9bQpDT05GSUdfVVNCX0dTUENBX1NPTklYSj1tCkNPTkZJR19V
-U0JfR1NQQ0FfU1BDQTUwMD1tCkNPTkZJR19VU0JfR1NQQ0FfU1BDQTUwMT1tCkNPTkZJR19VU0Jf
-R1NQQ0FfU1BDQTUwNT1tCkNPTkZJR19VU0JfR1NQQ0FfU1BDQTUwNj1tCkNPTkZJR19VU0JfR1NQ
-Q0FfU1BDQTUwOD1tCkNPTkZJR19VU0JfR1NQQ0FfU1BDQTU2MT1tCkNPTkZJR19VU0JfR1NQQ0Ff
-U1BDQTE1Mjg9bQpDT05GSUdfVVNCX0dTUENBX1NROTA1PW0KQ09ORklHX1VTQl9HU1BDQV9TUTkw
-NUM9bQpDT05GSUdfVVNCX0dTUENBX1NROTMwWD1tCkNPTkZJR19VU0JfR1NQQ0FfU1RLMDE0PW0K
-IyBDT05GSUdfVVNCX0dTUENBX1NUSzExMzUgaXMgbm90IHNldApDT05GSUdfVVNCX0dTUENBX1NU
-VjA2ODA9bQpDT05GSUdfVVNCX0dTUENBX1NVTlBMVVM9bQpDT05GSUdfVVNCX0dTUENBX1Q2MTM9
-bQpDT05GSUdfVVNCX0dTUENBX1RPUFJPPW0KIyBDT05GSUdfVVNCX0dTUENBX1RPVVBURUsgaXMg
-bm90IHNldApDT05GSUdfVVNCX0dTUENBX1RWODUzMj1tCkNPTkZJR19VU0JfR1NQQ0FfVkMwMzJY
-PW0KQ09ORklHX1VTQl9HU1BDQV9WSUNBTT1tCkNPTkZJR19VU0JfR1NQQ0FfWElSTElOS19DSVQ9
-bQpDT05GSUdfVVNCX0dTUENBX1pDM1hYPW0KQ09ORklHX1VTQl9QV0M9bQojIENPTkZJR19VU0Jf
-UFdDX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9QV0NfSU5QVVRfRVZERVY9eQojIENPTkZJ
-R19WSURFT19DUElBMiBpcyBub3Qgc2V0CkNPTkZJR19VU0JfWlIzNjRYWD1tCkNPTkZJR19VU0Jf
-U1RLV0VCQ0FNPW0KQ09ORklHX1VTQl9TMjI1NT1tCiMgQ09ORklHX1ZJREVPX1VTQlRWIGlzIG5v
-dCBzZXQKCiMKIyBBbmFsb2cgVFYgVVNCIGRldmljZXMKIwpDT05GSUdfVklERU9fUFZSVVNCMj1t
-CkNPTkZJR19WSURFT19QVlJVU0IyX1NZU0ZTPXkKQ09ORklHX1ZJREVPX1BWUlVTQjJfRFZCPXkK
-IyBDT05GSUdfVklERU9fUFZSVVNCMl9ERUJVR0lGQyBpcyBub3Qgc2V0CkNPTkZJR19WSURFT19I
-RFBWUj1tCkNPTkZJR19WSURFT19VU0JWSVNJT049bQojIENPTkZJR19WSURFT19TVEsxMTYwX0NP
-TU1PTiBpcyBub3Qgc2V0CiMgQ09ORklHX1ZJREVPX0dPNzAwNyBpcyBub3Qgc2V0CgojCiMgQW5h
-bG9nL2RpZ2l0YWwgVFYgVVNCIGRldmljZXMKIwpDT05GSUdfVklERU9fQVUwODI4PW0KQ09ORklH
-X1ZJREVPX0FVMDgyOF9WNEwyPXkKIyBDT05GSUdfVklERU9fQVUwODI4X1JDIGlzIG5vdCBzZXQK
-Q09ORklHX1ZJREVPX0NYMjMxWFg9bQpDT05GSUdfVklERU9fQ1gyMzFYWF9SQz15CkNPTkZJR19W
-SURFT19DWDIzMVhYX0FMU0E9bQpDT05GSUdfVklERU9fQ1gyMzFYWF9EVkI9bQpDT05GSUdfVklE
-RU9fVE02MDAwPW0KQ09ORklHX1ZJREVPX1RNNjAwMF9BTFNBPW0KQ09ORklHX1ZJREVPX1RNNjAw
-MF9EVkI9bQoKIwojIERpZ2l0YWwgVFYgVVNCIGRldmljZXMKIwpDT05GSUdfRFZCX1VTQj1tCiMg
-Q09ORklHX0RWQl9VU0JfREVCVUcgaXMgbm90IHNldApDT05GSUdfRFZCX1VTQl9BODAwPW0KQ09O
-RklHX0RWQl9VU0JfRElCVVNCX01CPW0KIyBDT05GSUdfRFZCX1VTQl9ESUJVU0JfTUJfRkFVTFRZ
-IGlzIG5vdCBzZXQKQ09ORklHX0RWQl9VU0JfRElCVVNCX01DPW0KQ09ORklHX0RWQl9VU0JfRElC
-MDcwMD1tCkNPTkZJR19EVkJfVVNCX1VNVF8wMTA9bQpDT05GSUdfRFZCX1VTQl9DWFVTQj1tCkNP
-TkZJR19EVkJfVVNCX005MjBYPW0KQ09ORklHX0RWQl9VU0JfRElHSVRWPW0KQ09ORklHX0RWQl9V
-U0JfVlA3MDQ1PW0KQ09ORklHX0RWQl9VU0JfVlA3MDJYPW0KQ09ORklHX0RWQl9VU0JfR1A4UFNL
-PW0KQ09ORklHX0RWQl9VU0JfTk9WQV9UX1VTQjI9bQpDT05GSUdfRFZCX1VTQl9UVFVTQjI9bQpD
-T05GSUdfRFZCX1VTQl9EVFQyMDBVPW0KQ09ORklHX0RWQl9VU0JfT1BFUkExPW0KQ09ORklHX0RW
-Ql9VU0JfQUY5MDA1PW0KQ09ORklHX0RWQl9VU0JfQUY5MDA1X1JFTU9URT1tCkNPTkZJR19EVkJf
-VVNCX1BDVFY0NTJFPW0KQ09ORklHX0RWQl9VU0JfRFcyMTAyPW0KQ09ORklHX0RWQl9VU0JfQ0lO
-RVJHWV9UMj1tCkNPTkZJR19EVkJfVVNCX0RUVjUxMDA9bQpDT05GSUdfRFZCX1VTQl9GUklJTz1t
-CkNPTkZJR19EVkJfVVNCX0FaNjAyNz1tCkNPTkZJR19EVkJfVVNCX1RFQ0hOSVNBVF9VU0IyPW0K
-Q09ORklHX0RWQl9VU0JfVjI9bQpDT05GSUdfRFZCX1VTQl9BRjkwMTU9bQpDT05GSUdfRFZCX1VT
-Ql9BRjkwMzU9bQpDT05GSUdfRFZCX1VTQl9BTllTRUU9bQpDT05GSUdfRFZCX1VTQl9BVTY2MTA9
-bQpDT05GSUdfRFZCX1VTQl9BWjYwMDc9bQpDT05GSUdfRFZCX1VTQl9DRTYyMzA9bQpDT05GSUdf
-RFZCX1VTQl9FQzE2OD1tCkNPTkZJR19EVkJfVVNCX0dMODYxPW0KQ09ORklHX0RWQl9VU0JfTE1F
-MjUxMD1tCkNPTkZJR19EVkJfVVNCX01YTDExMVNGPW0KQ09ORklHX0RWQl9VU0JfUlRMMjhYWFU9
-bQojIENPTkZJR19EVkJfVVNCX0RWQlNLWSBpcyBub3Qgc2V0CkNPTkZJR19EVkJfVFRVU0JfQlVE
-R0VUPW0KQ09ORklHX0RWQl9UVFVTQl9ERUM9bQpDT05GSUdfU01TX1VTQl9EUlY9bQpDT05GSUdf
-RFZCX0IyQzJfRkxFWENPUF9VU0I9bQojIENPTkZJR19EVkJfQjJDMl9GTEVYQ09QX1VTQl9ERUJV
-RyBpcyBub3Qgc2V0CiMgQ09ORklHX0RWQl9BUzEwMiBpcyBub3Qgc2V0CgojCiMgV2ViY2FtLCBU
-ViAoYW5hbG9nL2RpZ2l0YWwpIFVTQiBkZXZpY2VzCiMKQ09ORklHX1ZJREVPX0VNMjhYWD1tCiMg
-Q09ORklHX1ZJREVPX0VNMjhYWF9WNEwyIGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX0VNMjhYWF9B
-TFNBPW0KQ09ORklHX1ZJREVPX0VNMjhYWF9EVkI9bQpDT05GSUdfVklERU9fRU0yOFhYX1JDPW0K
-Q09ORklHX01FRElBX1BDSV9TVVBQT1JUPXkKCiMKIyBNZWRpYSBjYXB0dXJlIHN1cHBvcnQKIwoj
-IENPTkZJR19WSURFT19NRVlFIGlzIG5vdCBzZXQKIyBDT05GSUdfVklERU9fU09MTzZYMTAgaXMg
-bm90IHNldAojIENPTkZJR19WSURFT19UVzY4IGlzIG5vdCBzZXQKIyBDT05GSUdfVklERU9fVFc2
-ODZYIGlzIG5vdCBzZXQKIyBDT05GSUdfVklERU9fWk9SQU4gaXMgbm90IHNldAoKIwojIE1lZGlh
-IGNhcHR1cmUvYW5hbG9nIFRWIHN1cHBvcnQKIwpDT05GSUdfVklERU9fSVZUVj1tCiMgQ09ORklH
-X1ZJREVPX0lWVFZfQUxTQSBpcyBub3Qgc2V0CkNPTkZJR19WSURFT19GQl9JVlRWPW0KIyBDT05G
-SUdfVklERU9fSEVYSVVNX0dFTUlOSSBpcyBub3Qgc2V0CiMgQ09ORklHX1ZJREVPX0hFWElVTV9P
-UklPTiBpcyBub3Qgc2V0CiMgQ09ORklHX1ZJREVPX01YQiBpcyBub3Qgc2V0CiMgQ09ORklHX1ZJ
-REVPX0RUMzE1NSBpcyBub3Qgc2V0CgojCiMgTWVkaWEgY2FwdHVyZS9hbmFsb2cvaHlicmlkIFRW
-IHN1cHBvcnQKIwpDT05GSUdfVklERU9fQ1gxOD1tCkNPTkZJR19WSURFT19DWDE4X0FMU0E9bQpD
-T05GSUdfVklERU9fQ1gyMzg4NT1tCkNPTkZJR19NRURJQV9BTFRFUkFfQ0k9bQojIENPTkZJR19W
-SURFT19DWDI1ODIxIGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX0NYODg9bQpDT05GSUdfVklERU9f
-Q1g4OF9BTFNBPW0KQ09ORklHX1ZJREVPX0NYODhfQkxBQ0tCSVJEPW0KQ09ORklHX1ZJREVPX0NY
-ODhfRFZCPW0KQ09ORklHX1ZJREVPX0NYODhfRU5BQkxFX1ZQMzA1ND15CkNPTkZJR19WSURFT19D
-WDg4X1ZQMzA1ND1tCkNPTkZJR19WSURFT19DWDg4X01QRUc9bQpDT05GSUdfVklERU9fQlQ4NDg9
-bQpDT05GSUdfRFZCX0JUOFhYPW0KQ09ORklHX1ZJREVPX1NBQTcxMzQ9bQpDT05GSUdfVklERU9f
-U0FBNzEzNF9BTFNBPW0KQ09ORklHX1ZJREVPX1NBQTcxMzRfUkM9eQpDT05GSUdfVklERU9fU0FB
-NzEzNF9EVkI9bQpDT05GSUdfVklERU9fU0FBNzE2ND1tCgojCiMgTWVkaWEgZGlnaXRhbCBUViBQ
-Q0kgQWRhcHRlcnMKIwpDT05GSUdfRFZCX0FWNzExMF9JUj15CkNPTkZJR19EVkJfQVY3MTEwPW0K
-Q09ORklHX0RWQl9BVjcxMTBfT1NEPXkKQ09ORklHX0RWQl9CVURHRVRfQ09SRT1tCkNPTkZJR19E
-VkJfQlVER0VUPW0KQ09ORklHX0RWQl9CVURHRVRfQ0k9bQpDT05GSUdfRFZCX0JVREdFVF9BVj1t
-CkNPTkZJR19EVkJfQlVER0VUX1BBVENIPW0KQ09ORklHX0RWQl9CMkMyX0ZMRVhDT1BfUENJPW0K
-IyBDT05GSUdfRFZCX0IyQzJfRkxFWENPUF9QQ0lfREVCVUcgaXMgbm90IHNldApDT05GSUdfRFZC
-X1BMVVRPMj1tCkNPTkZJR19EVkJfRE0xMTA1PW0KQ09ORklHX0RWQl9QVDE9bQojIENPTkZJR19E
-VkJfUFQzIGlzIG5vdCBzZXQKQ09ORklHX01BTlRJU19DT1JFPW0KQ09ORklHX0RWQl9NQU5USVM9
-bQpDT05GSUdfRFZCX0hPUFBFUj1tCkNPTkZJR19EVkJfTkdFTkU9bQpDT05GSUdfRFZCX0REQlJJ
-REdFPW0KIyBDT05GSUdfRFZCX1NNSVBDSUUgaXMgbm90IHNldAojIENPTkZJR19EVkJfTkVUVVBf
-VU5JRFZCIGlzIG5vdCBzZXQKIyBDT05GSUdfVjRMX1BMQVRGT1JNX0RSSVZFUlMgaXMgbm90IHNl
-dAojIENPTkZJR19WNExfTUVNMk1FTV9EUklWRVJTIGlzIG5vdCBzZXQKIyBDT05GSUdfVjRMX1RF
-U1RfRFJJVkVSUyBpcyBub3Qgc2V0CiMgQ09ORklHX0RWQl9QTEFURk9STV9EUklWRVJTIGlzIG5v
-dCBzZXQKCiMKIyBTdXBwb3J0ZWQgTU1DL1NESU8gYWRhcHRlcnMKIwpDT05GSUdfU01TX1NESU9f
-RFJWPW0KQ09ORklHX1JBRElPX0FEQVBURVJTPXkKQ09ORklHX1JBRElPX1RFQTU3NVg9bQojIENP
-TkZJR19SQURJT19TSTQ3MFggaXMgbm90IHNldAojIENPTkZJR19SQURJT19TSTQ3MTMgaXMgbm90
-IHNldAojIENPTkZJR19VU0JfTVI4MDAgaXMgbm90IHNldAojIENPTkZJR19VU0JfRFNCUiBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1JBRElPX01BWElSQURJTyBpcyBub3Qgc2V0CiMgQ09ORklHX1JBRElP
-X1NIQVJLIGlzIG5vdCBzZXQKIyBDT05GSUdfUkFESU9fU0hBUksyIGlzIG5vdCBzZXQKIyBDT05G
-SUdfVVNCX0tFRU5FIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX1JBUkVNT05PIGlzIG5vdCBzZXQK
-IyBDT05GSUdfVVNCX01BOTAxIGlzIG5vdCBzZXQKIyBDT05GSUdfUkFESU9fVEVBNTc2NCBpcyBu
-b3Qgc2V0CiMgQ09ORklHX1JBRElPX1NBQTc3MDZIIGlzIG5vdCBzZXQKIyBDT05GSUdfUkFESU9f
-VEVGNjg2MiBpcyBub3Qgc2V0CiMgQ09ORklHX1JBRElPX1dMMTI3MyBpcyBub3Qgc2V0CgojCiMg
-VGV4YXMgSW5zdHJ1bWVudHMgV0wxMjh4IEZNIGRyaXZlciAoU1QgYmFzZWQpCiMKCiMKIyBTdXBw
-b3J0ZWQgRmlyZVdpcmUgKElFRUUgMTM5NCkgQWRhcHRlcnMKIwpDT05GSUdfRFZCX0ZJUkVEVFY9
-bQpDT05GSUdfRFZCX0ZJUkVEVFZfSU5QVVQ9eQpDT05GSUdfTUVESUFfQ09NTU9OX09QVElPTlM9
-eQoKIwojIGNvbW1vbiBkcml2ZXIgb3B0aW9ucwojCkNPTkZJR19WSURFT19DWDIzNDFYPW0KQ09O
-RklHX1ZJREVPX1RWRUVQUk9NPW0KQ09ORklHX0NZUFJFU1NfRklSTVdBUkU9bQpDT05GSUdfRFZC
-X0IyQzJfRkxFWENPUD1tCkNPTkZJR19WSURFT19TQUE3MTQ2PW0KQ09ORklHX1ZJREVPX1NBQTcx
-NDZfVlY9bQpDT05GSUdfU01TX1NJQU5PX01EVFY9bQpDT05GSUdfU01TX1NJQU5PX1JDPXkKIyBD
-T05GSUdfU01TX1NJQU5PX0RFQlVHRlMgaXMgbm90IHNldAoKIwojIE1lZGlhIGFuY2lsbGFyeSBk
-cml2ZXJzICh0dW5lcnMsIHNlbnNvcnMsIGkyYywgZnJvbnRlbmRzKQojCkNPTkZJR19NRURJQV9T
-VUJEUlZfQVVUT1NFTEVDVD15CkNPTkZJR19NRURJQV9BVFRBQ0g9eQpDT05GSUdfVklERU9fSVJf
-STJDPW0KCiMKIyBBdWRpbyBkZWNvZGVycywgcHJvY2Vzc29ycyBhbmQgbWl4ZXJzCiMKQ09ORklH
-X1ZJREVPX1RWQVVESU89bQpDT05GSUdfVklERU9fVERBNzQzMj1tCkNPTkZJR19WSURFT19NU1Az
-NDAwPW0KQ09ORklHX1ZJREVPX0NTMzMwOD1tCkNPTkZJR19WSURFT19DUzUzNDU9bQpDT05GSUdf
-VklERU9fQ1M1M0wzMkE9bQpDT05GSUdfVklERU9fV004Nzc1PW0KQ09ORklHX1ZJREVPX1dNODcz
-OT1tCkNPTkZJR19WSURFT19WUDI3U01QWD1tCgojCiMgUkRTIGRlY29kZXJzCiMKQ09ORklHX1ZJ
-REVPX1NBQTY1ODg9bQoKIwojIFZpZGVvIGRlY29kZXJzCiMKQ09ORklHX1ZJREVPX1NBQTcxMVg9
-bQoKIwojIFZpZGVvIGFuZCBhdWRpbyBkZWNvZGVycwojCkNPTkZJR19WSURFT19TQUE3MTdYPW0K
-Q09ORklHX1ZJREVPX0NYMjU4NDA9bQoKIwojIFZpZGVvIGVuY29kZXJzCiMKQ09ORklHX1ZJREVP
-X1NBQTcxMjc9bQoKIwojIENhbWVyYSBzZW5zb3IgZGV2aWNlcwojCgojCiMgRmxhc2ggZGV2aWNl
-cwojCgojCiMgVmlkZW8gaW1wcm92ZW1lbnQgY2hpcHMKIwpDT05GSUdfVklERU9fVVBENjQwMzFB
-PW0KQ09ORklHX1ZJREVPX1VQRDY0MDgzPW0KCiMKIyBBdWRpby9WaWRlbyBjb21wcmVzc2lvbiBj
-aGlwcwojCkNPTkZJR19WSURFT19TQUE2NzUySFM9bQoKIwojIE1pc2NlbGxhbmVvdXMgaGVscGVy
-IGNoaXBzCiMKQ09ORklHX1ZJREVPX001Mjc5MD1tCgojCiMgU2Vuc29ycyB1c2VkIG9uIHNvY19j
-YW1lcmEgZHJpdmVyCiMKQ09ORklHX01FRElBX1RVTkVSPW0KQ09ORklHX01FRElBX1RVTkVSX1NJ
-TVBMRT1tCkNPTkZJR19NRURJQV9UVU5FUl9UREE4MjkwPW0KQ09ORklHX01FRElBX1RVTkVSX1RE
-QTgyN1g9bQpDT05GSUdfTUVESUFfVFVORVJfVERBMTgyNzE9bQpDT05GSUdfTUVESUFfVFVORVJf
-VERBOTg4Nz1tCkNPTkZJR19NRURJQV9UVU5FUl9URUE1NzYxPW0KQ09ORklHX01FRElBX1RVTkVS
-X1RFQTU3Njc9bQpDT05GSUdfTUVESUFfVFVORVJfTVQyMFhYPW0KQ09ORklHX01FRElBX1RVTkVS
-X01UMjA2MD1tCkNPTkZJR19NRURJQV9UVU5FUl9NVDIwNjM9bQpDT05GSUdfTUVESUFfVFVORVJf
-TVQyMjY2PW0KQ09ORklHX01FRElBX1RVTkVSX01UMjEzMT1tCkNPTkZJR19NRURJQV9UVU5FUl9R
-VDEwMTA9bQpDT05GSUdfTUVESUFfVFVORVJfWEMyMDI4PW0KQ09ORklHX01FRElBX1RVTkVSX1hD
-NTAwMD1tCkNPTkZJR19NRURJQV9UVU5FUl9YQzQwMDA9bQpDT05GSUdfTUVESUFfVFVORVJfTVhM
-NTAwNVM9bQpDT05GSUdfTUVESUFfVFVORVJfTVhMNTAwN1Q9bQpDT05GSUdfTUVESUFfVFVORVJf
-TUM0NFM4MDM9bQpDT05GSUdfTUVESUFfVFVORVJfTUFYMjE2NT1tCkNPTkZJR19NRURJQV9UVU5F
-Ul9UREExODIxOD1tCkNPTkZJR19NRURJQV9UVU5FUl9GQzAwMTE9bQpDT05GSUdfTUVESUFfVFVO
-RVJfRkMwMDEyPW0KQ09ORklHX01FRElBX1RVTkVSX0ZDMDAxMz1tCkNPTkZJR19NRURJQV9UVU5F
-Ul9UREExODIxMj1tCkNPTkZJR19NRURJQV9UVU5FUl9FNDAwMD1tCkNPTkZJR19NRURJQV9UVU5F
-Ul9GQzI1ODA9bQpDT05GSUdfTUVESUFfVFVORVJfTTg4UlM2MDAwVD1tCkNPTkZJR19NRURJQV9U
-VU5FUl9UVUE5MDAxPW0KQ09ORklHX01FRElBX1RVTkVSX1NJMjE1Nz1tCkNPTkZJR19NRURJQV9U
-VU5FUl9JVDkxM1g9bQpDT05GSUdfTUVESUFfVFVORVJfUjgyMFQ9bQpDT05GSUdfTUVESUFfVFVO
-RVJfUU0xRDFDMDA0Mj1tCgojCiMgTXVsdGlzdGFuZGFyZCAoc2F0ZWxsaXRlKSBmcm9udGVuZHMK
-IwpDT05GSUdfRFZCX1NUQjA4OTk9bQpDT05GSUdfRFZCX1NUQjYxMDA9bQpDT05GSUdfRFZCX1NU
-VjA5MHg9bQpDT05GSUdfRFZCX1NUVjYxMTB4PW0KQ09ORklHX0RWQl9NODhEUzMxMDM9bQoKIwoj
-IE11bHRpc3RhbmRhcmQgKGNhYmxlICsgdGVycmVzdHJpYWwpIGZyb250ZW5kcwojCkNPTkZJR19E
-VkJfRFJYSz1tCkNPTkZJR19EVkJfVERBMTgyNzFDMkREPW0KQ09ORklHX0RWQl9TSTIxNjU9bQpD
-T05GSUdfRFZCX01OODg0NzI9bQpDT05GSUdfRFZCX01OODg0NzM9bQoKIwojIERWQi1TIChzYXRl
-bGxpdGUpIGZyb250ZW5kcwojCkNPTkZJR19EVkJfQ1gyNDExMD1tCkNPTkZJR19EVkJfQ1gyNDEy
-Mz1tCkNPTkZJR19EVkJfTVQzMTI9bQpDT05GSUdfRFZCX1pMMTAwMzY9bQpDT05GSUdfRFZCX1pM
-MTAwMzk9bQpDT05GSUdfRFZCX1M1SDE0MjA9bQpDT05GSUdfRFZCX1NUVjAyODg9bQpDT05GSUdf
-RFZCX1NUQjYwMDA9bQpDT05GSUdfRFZCX1NUVjAyOTk9bQpDT05GSUdfRFZCX1NUVjYxMTA9bQpD
-T05GSUdfRFZCX1NUVjA5MDA9bQpDT05GSUdfRFZCX1REQTgwODM9bQpDT05GSUdfRFZCX1REQTEw
-MDg2PW0KQ09ORklHX0RWQl9UREE4MjYxPW0KQ09ORklHX0RWQl9WRVMxWDkzPW0KQ09ORklHX0RW
-Ql9UVU5FUl9JVEQxMDAwPW0KQ09ORklHX0RWQl9UVU5FUl9DWDI0MTEzPW0KQ09ORklHX0RWQl9U
-REE4MjZYPW0KQ09ORklHX0RWQl9UVUE2MTAwPW0KQ09ORklHX0RWQl9DWDI0MTE2PW0KQ09ORklH
-X0RWQl9DWDI0MTE3PW0KQ09ORklHX0RWQl9DWDI0MTIwPW0KQ09ORklHX0RWQl9TSTIxWFg9bQpD
-T05GSUdfRFZCX1RTMjAyMD1tCkNPTkZJR19EVkJfRFMzMDAwPW0KQ09ORklHX0RWQl9NQjg2QTE2
-PW0KQ09ORklHX0RWQl9UREExMDA3MT1tCgojCiMgRFZCLVQgKHRlcnJlc3RyaWFsKSBmcm9udGVu
-ZHMKIwpDT05GSUdfRFZCX1NQODg3MD1tCkNPTkZJR19EVkJfU1A4ODdYPW0KQ09ORklHX0RWQl9D
-WDIyNzAwPW0KQ09ORklHX0RWQl9DWDIyNzAyPW0KQ09ORklHX0RWQl9EUlhEPW0KQ09ORklHX0RW
-Ql9MNjQ3ODE9bQpDT05GSUdfRFZCX1REQTEwMDRYPW0KQ09ORklHX0RWQl9OWFQ2MDAwPW0KQ09O
-RklHX0RWQl9NVDM1Mj1tCkNPTkZJR19EVkJfWkwxMDM1Mz1tCkNPTkZJR19EVkJfRElCMzAwME1C
-PW0KQ09ORklHX0RWQl9ESUIzMDAwTUM9bQpDT05GSUdfRFZCX0RJQjcwMDBNPW0KQ09ORklHX0RW
-Ql9ESUI3MDAwUD1tCkNPTkZJR19EVkJfVERBMTAwNDg9bQpDT05GSUdfRFZCX0FGOTAxMz1tCkNP
-TkZJR19EVkJfRUMxMDA9bQpDT05GSUdfRFZCX1NUVjAzNjc9bQpDT05GSUdfRFZCX0NYRDI4MjBS
-PW0KQ09ORklHX0RWQl9SVEwyODMwPW0KQ09ORklHX0RWQl9SVEwyODMyPW0KQ09ORklHX0RWQl9T
-STIxNjg9bQojIENPTkZJR19EVkJfQVMxMDJfRkUgaXMgbm90IHNldAoKIwojIERWQi1DIChjYWJs
-ZSkgZnJvbnRlbmRzCiMKQ09ORklHX0RWQl9WRVMxODIwPW0KQ09ORklHX0RWQl9UREExMDAyMT1t
-CkNPTkZJR19EVkJfVERBMTAwMjM9bQpDT05GSUdfRFZCX1NUVjAyOTc9bQoKIwojIEFUU0MgKE5v
-cnRoIEFtZXJpY2FuL0tvcmVhbiBUZXJyZXN0cmlhbC9DYWJsZSBEVFYpIGZyb250ZW5kcwojCkNP
-TkZJR19EVkJfTlhUMjAwWD1tCkNPTkZJR19EVkJfT1I1MTIxMT1tCkNPTkZJR19EVkJfT1I1MTEz
-Mj1tCkNPTkZJR19EVkJfQkNNMzUxMD1tCkNPTkZJR19EVkJfTEdEVDMzMFg9bQpDT05GSUdfRFZC
-X0xHRFQzMzA1PW0KQ09ORklHX0RWQl9MR0RUMzMwNkE9bQpDT05GSUdfRFZCX0xHMjE2MD1tCkNP
-TkZJR19EVkJfUzVIMTQwOT1tCkNPTkZJR19EVkJfQVU4NTIyPW0KQ09ORklHX0RWQl9BVTg1MjJf
-RFRWPW0KQ09ORklHX0RWQl9BVTg1MjJfVjRMPW0KQ09ORklHX0RWQl9TNUgxNDExPW0KCiMKIyBJ
-U0RCLVQgKHRlcnJlc3RyaWFsKSBmcm9udGVuZHMKIwpDT05GSUdfRFZCX1M5MjE9bQpDT05GSUdf
-RFZCX0RJQjgwMDA9bQpDT05GSUdfRFZCX01CODZBMjBTPW0KCiMKIyBJU0RCLVMgKHNhdGVsbGl0
-ZSkgJiBJU0RCLVQgKHRlcnJlc3RyaWFsKSBmcm9udGVuZHMKIwpDT05GSUdfRFZCX1RDOTA1MjI9
-bQoKIwojIERpZ2l0YWwgdGVycmVzdHJpYWwgb25seSB0dW5lcnMvUExMCiMKQ09ORklHX0RWQl9Q
-TEw9bQpDT05GSUdfRFZCX1RVTkVSX0RJQjAwNzA9bQpDT05GSUdfRFZCX1RVTkVSX0RJQjAwOTA9
-bQoKIwojIFNFQyBjb250cm9sIGRldmljZXMgZm9yIERWQi1TCiMKQ09ORklHX0RWQl9EUlgzOVhZ
-Sj1tCkNPTkZJR19EVkJfTE5CUDIxPW0KQ09ORklHX0RWQl9MTkJQMjI9bQpDT05GSUdfRFZCX0lT
-TDY0MDU9bQpDT05GSUdfRFZCX0lTTDY0MjE9bQpDT05GSUdfRFZCX0lTTDY0MjM9bQpDT05GSUdf
-RFZCX0E4MjkzPW0KQ09ORklHX0RWQl9MR1M4R1hYPW0KQ09ORklHX0RWQl9BVEJNODgzMD1tCkNP
-TkZJR19EVkJfVERBNjY1eD1tCkNPTkZJR19EVkJfSVgyNTA1Vj1tCkNPTkZJR19EVkJfTTg4UlMy
-MDAwPW0KQ09ORklHX0RWQl9BRjkwMzM9bQoKIwojIFRvb2xzIHRvIGRldmVsb3AgbmV3IGZyb250
-ZW5kcwojCiMgQ09ORklHX0RWQl9EVU1NWV9GRSBpcyBub3Qgc2V0CgojCiMgR3JhcGhpY3Mgc3Vw
-cG9ydAojCkNPTkZJR19BR1A9eQpDT05GSUdfQUdQX0FNRDY0PXkKQ09ORklHX0FHUF9JTlRFTD15
-CkNPTkZJR19BR1BfU0lTPXkKQ09ORklHX0FHUF9WSUE9eQpDT05GSUdfSU5URUxfR1RUPXkKQ09O
-RklHX1ZHQV9BUkI9eQpDT05GSUdfVkdBX0FSQl9NQVhfR1BVUz02NApDT05GSUdfVkdBX1NXSVRD
-SEVST089eQpDT05GSUdfRFJNPW0KQ09ORklHX0RSTV9NSVBJX0RTST15CiMgQ09ORklHX0RSTV9E
-UF9BVVhfQ0hBUkRFViBpcyBub3Qgc2V0CkNPTkZJR19EUk1fS01TX0hFTFBFUj1tCkNPTkZJR19E
-Uk1fS01TX0ZCX0hFTFBFUj15CkNPTkZJR19EUk1fRkJERVZfRU1VTEFUSU9OPXkKQ09ORklHX0RS
-TV9MT0FEX0VESURfRklSTVdBUkU9eQpDT05GSUdfRFJNX1RUTT1tCgojCiMgSTJDIGVuY29kZXIg
-b3IgaGVscGVyIGNoaXBzCiMKQ09ORklHX0RSTV9JMkNfQ0g3MDA2PW0KQ09ORklHX0RSTV9JMkNf
-U0lMMTY0PW0KQ09ORklHX0RSTV9JMkNfTlhQX1REQTk5OFg9bQojIENPTkZJR19EUk1fVERGWCBp
-cyBub3Qgc2V0CiMgQ09ORklHX0RSTV9SMTI4IGlzIG5vdCBzZXQKIyBDT05GSUdfRFJNX1JBREVP
-TiBpcyBub3Qgc2V0CiMgQ09ORklHX0RSTV9BTURHUFUgaXMgbm90IHNldAoKIwojIEFDUCAoQXVk
-aW8gQ29Qcm9jZXNzb3IpIENvbmZpZ3VyYXRpb24KIwojIENPTkZJR19EUk1fTk9VVkVBVSBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0RSTV9JODEwIGlzIG5vdCBzZXQKQ09ORklHX0RSTV9JOTE1PW0KIyBD
-T05GSUdfRFJNX0k5MTVfUFJFTElNSU5BUllfSFdfU1VQUE9SVCBpcyBub3Qgc2V0CkNPTkZJR19E
-Uk1fSTkxNV9VU0VSUFRSPXkKIyBDT05GSUdfRFJNX0k5MTVfR1ZUIGlzIG5vdCBzZXQKIyBDT05G
-SUdfRFJNX01HQSBpcyBub3Qgc2V0CiMgQ09ORklHX0RSTV9TSVMgaXMgbm90IHNldAojIENPTkZJ
-R19EUk1fVklBIGlzIG5vdCBzZXQKIyBDT05GSUdfRFJNX1NBVkFHRSBpcyBub3Qgc2V0CiMgQ09O
-RklHX0RSTV9WR0VNIGlzIG5vdCBzZXQKQ09ORklHX0RSTV9WTVdHRlg9bQpDT05GSUdfRFJNX1ZN
-V0dGWF9GQkNPTj15CkNPTkZJR19EUk1fR01BNTAwPW0KQ09ORklHX0RSTV9HTUE2MDA9eQpDT05G
-SUdfRFJNX0dNQTM2MDA9eQpDT05GSUdfRFJNX1VETD1tCkNPTkZJR19EUk1fQVNUPW0KQ09ORklH
-X0RSTV9NR0FHMjAwPW0KQ09ORklHX0RSTV9DSVJSVVNfUUVNVT1tCkNPTkZJR19EUk1fUVhMPW0K
-IyBDT05GSUdfRFJNX0JPQ0hTIGlzIG5vdCBzZXQKIyBDT05GSUdfRFJNX1ZJUlRJT19HUFUgaXMg
-bm90IHNldApDT05GSUdfRFJNX1BBTkVMPXkKCiMKIyBEaXNwbGF5IFBhbmVscwojCkNPTkZJR19E
-Uk1fQlJJREdFPXkKCiMKIyBEaXNwbGF5IEludGVyZmFjZSBCcmlkZ2VzCiMKIyBDT05GSUdfRFJN
-X0FOQUxPR0lYX0FOWDc4WFggaXMgbm90IHNldAoKIwojIEZyYW1lIGJ1ZmZlciBEZXZpY2VzCiMK
-Q09ORklHX0ZCPXkKIyBDT05GSUdfRklSTVdBUkVfRURJRCBpcyBub3Qgc2V0CkNPTkZJR19GQl9D
-TURMSU5FPXkKQ09ORklHX0ZCX05PVElGWT15CiMgQ09ORklHX0ZCX0REQyBpcyBub3Qgc2V0CkNP
-TkZJR19GQl9CT09UX1ZFU0FfU1VQUE9SVD15CkNPTkZJR19GQl9DRkJfRklMTFJFQ1Q9eQpDT05G
-SUdfRkJfQ0ZCX0NPUFlBUkVBPXkKQ09ORklHX0ZCX0NGQl9JTUFHRUJMSVQ9eQojIENPTkZJR19G
-Ql9DRkJfUkVWX1BJWEVMU19JTl9CWVRFIGlzIG5vdCBzZXQKQ09ORklHX0ZCX1NZU19GSUxMUkVD
-VD1tCkNPTkZJR19GQl9TWVNfQ09QWUFSRUE9bQpDT05GSUdfRkJfU1lTX0lNQUdFQkxJVD1tCiMg
-Q09ORklHX0ZCX0ZPUkVJR05fRU5ESUFOIGlzIG5vdCBzZXQKQ09ORklHX0ZCX1NZU19GT1BTPW0K
-Q09ORklHX0ZCX0RFRkVSUkVEX0lPPXkKIyBDT05GSUdfRkJfU1ZHQUxJQiBpcyBub3Qgc2V0CiMg
-Q09ORklHX0ZCX01BQ01PREVTIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfQkFDS0xJR0hUIGlzIG5v
-dCBzZXQKIyBDT05GSUdfRkJfTU9ERV9IRUxQRVJTIGlzIG5vdCBzZXQKQ09ORklHX0ZCX1RJTEVC
-TElUVElORz15CgojCiMgRnJhbWUgYnVmZmVyIGhhcmR3YXJlIGRyaXZlcnMKIwojIENPTkZJR19G
-Ql9DSVJSVVMgaXMgbm90IHNldAojIENPTkZJR19GQl9QTTIgaXMgbm90IHNldAojIENPTkZJR19G
-Ql9DWUJFUjIwMDAgaXMgbm90IHNldAojIENPTkZJR19GQl9BUkMgaXMgbm90IHNldAojIENPTkZJ
-R19GQl9BU0lMSUFOVCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX0lNU1RUIGlzIG5vdCBzZXQKIyBD
-T05GSUdfRkJfVkdBMTYgaXMgbm90IHNldAojIENPTkZJR19GQl9VVkVTQSBpcyBub3Qgc2V0CkNP
-TkZJR19GQl9WRVNBPXkKQ09ORklHX0ZCX0VGST15CiMgQ09ORklHX0ZCX040MTEgaXMgbm90IHNl
-dAojIENPTkZJR19GQl9IR0EgaXMgbm90IHNldAojIENPTkZJR19GQl9PUEVOQ09SRVMgaXMgbm90
-IHNldAojIENPTkZJR19GQl9TMUQxM1hYWCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX05WSURJQSBp
-cyBub3Qgc2V0CiMgQ09ORklHX0ZCX1JJVkEgaXMgbm90IHNldAojIENPTkZJR19GQl9JNzQwIGlz
-IG5vdCBzZXQKIyBDT05GSUdfRkJfTEU4MDU3OCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX01BVFJP
-WCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1JBREVPTiBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX0FU
-WTEyOCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX0FUWSBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1Mz
-IGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfU0FWQUdFIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfU0lT
-IGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfVklBIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfTkVPTUFH
-SUMgaXMgbm90IHNldAojIENPTkZJR19GQl9LWVJPIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfM0RG
-WCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1ZPT0RPTzEgaXMgbm90IHNldAojIENPTkZJR19GQl9W
-VDg2MjMgaXMgbm90IHNldAojIENPTkZJR19GQl9UUklERU5UIGlzIG5vdCBzZXQKIyBDT05GSUdf
-RkJfQVJLIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfUE0zIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJf
-Q0FSTUlORSBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1NNNTAxIGlzIG5vdCBzZXQKIyBDT05GSUdf
-RkJfU01TQ1VGWCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1VETCBpcyBub3Qgc2V0CiMgQ09ORklH
-X0ZCX0lCTV9HWFQ0NTAwIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfVklSVFVBTCBpcyBub3Qgc2V0
-CiMgQ09ORklHX1hFTl9GQkRFVl9GUk9OVEVORCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX01FVFJP
-Tk9NRSBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX01CODYyWFggaXMgbm90IHNldAojIENPTkZJR19G
-Ql9CUk9BRFNIRUVUIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfQVVPX0sxOTBYIGlzIG5vdCBzZXQK
-Q09ORklHX0ZCX0hZUEVSVj1tCiMgQ09ORklHX0ZCX1NJTVBMRSBpcyBub3Qgc2V0CiMgQ09ORklH
-X0ZCX1NNNzEyIGlzIG5vdCBzZXQKQ09ORklHX0JBQ0tMSUdIVF9MQ0RfU1VQUE9SVD15CkNPTkZJ
-R19MQ0RfQ0xBU1NfREVWSUNFPW0KIyBDT05GSUdfTENEX0w0RjAwMjQyVDAzIGlzIG5vdCBzZXQK
-IyBDT05GSUdfTENEX0xNUzI4M0dGMDUgaXMgbm90IHNldAojIENPTkZJR19MQ0RfTFRWMzUwUVYg
-aXMgbm90IHNldAojIENPTkZJR19MQ0RfSUxJOTIyWCBpcyBub3Qgc2V0CiMgQ09ORklHX0xDRF9J
-TEk5MzIwIGlzIG5vdCBzZXQKIyBDT05GSUdfTENEX1RETzI0TSBpcyBub3Qgc2V0CiMgQ09ORklH
-X0xDRF9WR0cyNDMyQTQgaXMgbm90IHNldApDT05GSUdfTENEX1BMQVRGT1JNPW0KIyBDT05GSUdf
-TENEX1M2RTYzTTAgaXMgbm90IHNldAojIENPTkZJR19MQ0RfTEQ5MDQwIGlzIG5vdCBzZXQKIyBD
-T05GSUdfTENEX0FNUzM2OUZHMDYgaXMgbm90IHNldAojIENPTkZJR19MQ0RfTE1TNTAxS0YwMyBp
-cyBub3Qgc2V0CiMgQ09ORklHX0xDRF9IWDgzNTcgaXMgbm90IHNldApDT05GSUdfQkFDS0xJR0hU
-X0NMQVNTX0RFVklDRT15CiMgQ09ORklHX0JBQ0tMSUdIVF9HRU5FUklDIGlzIG5vdCBzZXQKIyBD
-T05GSUdfQkFDS0xJR0hUX1BXTSBpcyBub3Qgc2V0CkNPTkZJR19CQUNLTElHSFRfQVBQTEU9bQoj
-IENPTkZJR19CQUNLTElHSFRfUE04OTQxX1dMRUQgaXMgbm90IHNldAojIENPTkZJR19CQUNLTElH
-SFRfU0FIQVJBIGlzIG5vdCBzZXQKIyBDT05GSUdfQkFDS0xJR0hUX0FEUDg4NjAgaXMgbm90IHNl
-dAojIENPTkZJR19CQUNLTElHSFRfQURQODg3MCBpcyBub3Qgc2V0CiMgQ09ORklHX0JBQ0tMSUdI
-VF9MTTM2MzBBIGlzIG5vdCBzZXQKIyBDT05GSUdfQkFDS0xJR0hUX0xNMzYzOSBpcyBub3Qgc2V0
-CiMgQ09ORklHX0JBQ0tMSUdIVF9MUDg1NVggaXMgbm90IHNldAojIENPTkZJR19CQUNLTElHSFRf
-R1BJTyBpcyBub3Qgc2V0CiMgQ09ORklHX0JBQ0tMSUdIVF9MVjUyMDdMUCBpcyBub3Qgc2V0CiMg
-Q09ORklHX0JBQ0tMSUdIVF9CRDYxMDcgaXMgbm90IHNldAojIENPTkZJR19WR0FTVEFURSBpcyBu
-b3Qgc2V0CkNPTkZJR19IRE1JPXkKCiMKIyBDb25zb2xlIGRpc3BsYXkgZHJpdmVyIHN1cHBvcnQK
-IwpDT05GSUdfVkdBX0NPTlNPTEU9eQpDT05GSUdfVkdBQ09OX1NPRlRfU0NST0xMQkFDSz15CkNP
-TkZJR19WR0FDT05fU09GVF9TQ1JPTExCQUNLX1NJWkU9NjQKQ09ORklHX0RVTU1ZX0NPTlNPTEU9
-eQpDT05GSUdfRFVNTVlfQ09OU09MRV9DT0xVTU5TPTgwCkNPTkZJR19EVU1NWV9DT05TT0xFX1JP
-V1M9MjUKQ09ORklHX0ZSQU1FQlVGRkVSX0NPTlNPTEU9eQpDT05GSUdfRlJBTUVCVUZGRVJfQ09O
-U09MRV9ERVRFQ1RfUFJJTUFSWT15CkNPTkZJR19GUkFNRUJVRkZFUl9DT05TT0xFX1JPVEFUSU9O
-PXkKQ09ORklHX0xPR089eQojIENPTkZJR19MT0dPX0xJTlVYX01PTk8gaXMgbm90IHNldAojIENP
-TkZJR19MT0dPX0xJTlVYX1ZHQTE2IGlzIG5vdCBzZXQKQ09ORklHX0xPR09fTElOVVhfQ0xVVDIy
-ND15CkNPTkZJR19TT1VORD1tCkNPTkZJR19TT1VORF9PU1NfQ09SRT15CkNPTkZJR19TT1VORF9P
-U1NfQ09SRV9QUkVDTEFJTT15CkNPTkZJR19TTkQ9bQpDT05GSUdfU05EX1RJTUVSPW0KQ09ORklH
-X1NORF9QQ009bQpDT05GSUdfU05EX0hXREVQPW0KQ09ORklHX1NORF9SQVdNSURJPW0KQ09ORklH
-X1NORF9KQUNLPXkKQ09ORklHX1NORF9KQUNLX0lOUFVUX0RFVj15CkNPTkZJR19TTkRfU0VRVUVO
-Q0VSPW0KQ09ORklHX1NORF9TRVFfRFVNTVk9bQpDT05GSUdfU05EX09TU0VNVUw9eQojIENPTkZJ
-R19TTkRfTUlYRVJfT1NTIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1BDTV9PU1MgaXMgbm90IHNl
-dApDT05GSUdfU05EX1BDTV9USU1FUj15CkNPTkZJR19TTkRfU0VRVUVOQ0VSX09TUz15CkNPTkZJ
-R19TTkRfSFJUSU1FUj1tCkNPTkZJR19TTkRfU0VRX0hSVElNRVJfREVGQVVMVD15CkNPTkZJR19T
-TkRfRFlOQU1JQ19NSU5PUlM9eQpDT05GSUdfU05EX01BWF9DQVJEUz0zMgojIENPTkZJR19TTkRf
-U1VQUE9SVF9PTERfQVBJIGlzIG5vdCBzZXQKQ09ORklHX1NORF9QUk9DX0ZTPXkKQ09ORklHX1NO
-RF9WRVJCT1NFX1BST0NGUz15CiMgQ09ORklHX1NORF9WRVJCT1NFX1BSSU5USyBpcyBub3Qgc2V0
-CiMgQ09ORklHX1NORF9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19TTkRfVk1BU1RFUj15CkNPTkZJ
-R19TTkRfRE1BX1NHQlVGPXkKQ09ORklHX1NORF9SQVdNSURJX1NFUT1tCkNPTkZJR19TTkRfT1BM
-M19MSUJfU0VRPW0KIyBDT05GSUdfU05EX09QTDRfTElCX1NFUSBpcyBub3Qgc2V0CiMgQ09ORklH
-X1NORF9TQkFXRV9TRVEgaXMgbm90IHNldApDT05GSUdfU05EX0VNVTEwSzFfU0VRPW0KQ09ORklH
-X1NORF9NUFU0MDFfVUFSVD1tCkNPTkZJR19TTkRfT1BMM19MSUI9bQpDT05GSUdfU05EX1ZYX0xJ
-Qj1tCkNPTkZJR19TTkRfQUM5N19DT0RFQz1tCkNPTkZJR19TTkRfRFJJVkVSUz15CkNPTkZJR19T
-TkRfUENTUD1tCkNPTkZJR19TTkRfRFVNTVk9bQpDT05GSUdfU05EX0FMT09QPW0KQ09ORklHX1NO
-RF9WSVJNSURJPW0KQ09ORklHX1NORF9NVFBBVj1tCiMgQ09ORklHX1NORF9NVFM2NCBpcyBub3Qg
-c2V0CiMgQ09ORklHX1NORF9TRVJJQUxfVTE2NTUwIGlzIG5vdCBzZXQKQ09ORklHX1NORF9NUFU0
-MDE9bQojIENPTkZJR19TTkRfUE9SVE1BTjJYNCBpcyBub3Qgc2V0CkNPTkZJR19TTkRfQUM5N19Q
-T1dFUl9TQVZFPXkKQ09ORklHX1NORF9BQzk3X1BPV0VSX1NBVkVfREVGQVVMVD01CkNPTkZJR19T
-TkRfUENJPXkKQ09ORklHX1NORF9BRDE4ODk9bQojIENPTkZJR19TTkRfQUxTMzAwIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfU05EX0FMUzQwMDAgaXMgbm90IHNldApDT05GSUdfU05EX0FMSTU0NTE9bQpD
-T05GSUdfU05EX0FTSUhQST1tCkNPTkZJR19TTkRfQVRJSVhQPW0KQ09ORklHX1NORF9BVElJWFBf
-TU9ERU09bQpDT05GSUdfU05EX0FVODgxMD1tCkNPTkZJR19TTkRfQVU4ODIwPW0KQ09ORklHX1NO
-RF9BVTg4MzA9bQojIENPTkZJR19TTkRfQVcyIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX0FaVDMz
-MjggaXMgbm90IHNldApDT05GSUdfU05EX0JUODdYPW0KIyBDT05GSUdfU05EX0JUODdYX09WRVJD
-TE9DSyBpcyBub3Qgc2V0CkNPTkZJR19TTkRfQ0EwMTA2PW0KQ09ORklHX1NORF9DTUlQQ0k9bQpD
-T05GSUdfU05EX09YWUdFTl9MSUI9bQpDT05GSUdfU05EX09YWUdFTj1tCiMgQ09ORklHX1NORF9D
-UzQyODEgaXMgbm90IHNldApDT05GSUdfU05EX0NTNDZYWD1tCkNPTkZJR19TTkRfQ1M0NlhYX05F
-V19EU1A9eQpDT05GSUdfU05EX0NUWEZJPW0KQ09ORklHX1NORF9EQVJMQTIwPW0KQ09ORklHX1NO
-RF9HSU5BMjA9bQpDT05GSUdfU05EX0xBWUxBMjA9bQpDT05GSUdfU05EX0RBUkxBMjQ9bQpDT05G
-SUdfU05EX0dJTkEyND1tCkNPTkZJR19TTkRfTEFZTEEyND1tCkNPTkZJR19TTkRfTU9OQT1tCkNP
-TkZJR19TTkRfTUlBPW0KQ09ORklHX1NORF9FQ0hPM0c9bQpDT05GSUdfU05EX0lORElHTz1tCkNP
-TkZJR19TTkRfSU5ESUdPSU89bQpDT05GSUdfU05EX0lORElHT0RKPW0KQ09ORklHX1NORF9JTkRJ
-R09JT1g9bQpDT05GSUdfU05EX0lORElHT0RKWD1tCkNPTkZJR19TTkRfRU1VMTBLMT1tCkNPTkZJ
-R19TTkRfRU1VMTBLMVg9bQpDT05GSUdfU05EX0VOUzEzNzA9bQpDT05GSUdfU05EX0VOUzEzNzE9
-bQojIENPTkZJR19TTkRfRVMxOTM4IGlzIG5vdCBzZXQKQ09ORklHX1NORF9FUzE5Njg9bQpDT05G
-SUdfU05EX0VTMTk2OF9JTlBVVD15CkNPTkZJR19TTkRfRVMxOTY4X1JBRElPPXkKIyBDT05GSUdf
-U05EX0ZNODAxIGlzIG5vdCBzZXQKQ09ORklHX1NORF9IRFNQPW0KQ09ORklHX1NORF9IRFNQTT1t
-CkNPTkZJR19TTkRfSUNFMTcxMj1tCkNPTkZJR19TTkRfSUNFMTcyND1tCkNPTkZJR19TTkRfSU5U
-RUw4WDA9bQpDT05GSUdfU05EX0lOVEVMOFgwTT1tCkNPTkZJR19TTkRfS09SRzEyMTI9bQpDT05G
-SUdfU05EX0xPTEE9bQpDT05GSUdfU05EX0xYNjQ2NEVTPW0KQ09ORklHX1NORF9NQUVTVFJPMz1t
-CkNPTkZJR19TTkRfTUFFU1RSTzNfSU5QVVQ9eQpDT05GSUdfU05EX01JWEFSVD1tCiMgQ09ORklH
-X1NORF9OTTI1NiBpcyBub3Qgc2V0CkNPTkZJR19TTkRfUENYSFI9bQojIENPTkZJR19TTkRfUklQ
-VElERSBpcyBub3Qgc2V0CkNPTkZJR19TTkRfUk1FMzI9bQpDT05GSUdfU05EX1JNRTk2PW0KQ09O
-RklHX1NORF9STUU5NjUyPW0KIyBDT05GSUdfU05EX1NPTklDVklCRVMgaXMgbm90IHNldApDT05G
-SUdfU05EX1RSSURFTlQ9bQpDT05GSUdfU05EX1ZJQTgyWFg9bQpDT05GSUdfU05EX1ZJQTgyWFhf
-TU9ERU09bQpDT05GSUdfU05EX1ZJUlRVT1NPPW0KQ09ORklHX1NORF9WWDIyMj1tCiMgQ09ORklH
-X1NORF9ZTUZQQ0kgaXMgbm90IHNldAoKIwojIEhELUF1ZGlvCiMKQ09ORklHX1NORF9IREE9bQpD
-T05GSUdfU05EX0hEQV9JTlRFTD1tCkNPTkZJR19TTkRfSERBX0hXREVQPXkKIyBDT05GSUdfU05E
-X0hEQV9SRUNPTkZJRyBpcyBub3Qgc2V0CkNPTkZJR19TTkRfSERBX0lOUFVUX0JFRVA9eQpDT05G
-SUdfU05EX0hEQV9JTlBVVF9CRUVQX01PREU9MAojIENPTkZJR19TTkRfSERBX1BBVENIX0xPQURF
-UiBpcyBub3Qgc2V0CkNPTkZJR19TTkRfSERBX0NPREVDX1JFQUxURUs9bQpDT05GSUdfU05EX0hE
-QV9DT0RFQ19BTkFMT0c9bQpDT05GSUdfU05EX0hEQV9DT0RFQ19TSUdNQVRFTD1tCkNPTkZJR19T
-TkRfSERBX0NPREVDX1ZJQT1tCkNPTkZJR19TTkRfSERBX0NPREVDX0hETUk9bQpDT05GSUdfU05E
-X0hEQV9DT0RFQ19DSVJSVVM9bQpDT05GSUdfU05EX0hEQV9DT0RFQ19DT05FWEFOVD1tCkNPTkZJ
-R19TTkRfSERBX0NPREVDX0NBMDExMD1tCkNPTkZJR19TTkRfSERBX0NPREVDX0NBMDEzMj1tCkNP
-TkZJR19TTkRfSERBX0NPREVDX0NBMDEzMl9EU1A9eQpDT05GSUdfU05EX0hEQV9DT0RFQ19DTUVE
-SUE9bQpDT05GSUdfU05EX0hEQV9DT0RFQ19TSTMwNTQ9bQpDT05GSUdfU05EX0hEQV9HRU5FUklD
-PW0KQ09ORklHX1NORF9IREFfUE9XRVJfU0FWRV9ERUZBVUxUPTAKQ09ORklHX1NORF9IREFfQ09S
-RT1tCkNPTkZJR19TTkRfSERBX0RTUF9MT0FERVI9eQpDT05GSUdfU05EX0hEQV9JOTE1PXkKQ09O
-RklHX1NORF9IREFfUFJFQUxMT0NfU0laRT01MTIKQ09ORklHX1NORF9TUEk9eQpDT05GSUdfU05E
-X1VTQj15CkNPTkZJR19TTkRfVVNCX0FVRElPPW0KQ09ORklHX1NORF9VU0JfVUExMDE9bQpDT05G
-SUdfU05EX1VTQl9VU1gyWT1tCkNPTkZJR19TTkRfVVNCX0NBSUFRPW0KQ09ORklHX1NORF9VU0Jf
-Q0FJQVFfSU5QVVQ9eQpDT05GSUdfU05EX1VTQl9VUzEyMkw9bQpDT05GSUdfU05EX1VTQl82RklS
-RT1tCiMgQ09ORklHX1NORF9VU0JfSElGQUNFIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX0JDRDIw
-MDAgaXMgbm90IHNldAojIENPTkZJR19TTkRfVVNCX1BPRCBpcyBub3Qgc2V0CiMgQ09ORklHX1NO
-RF9VU0JfUE9ESEQgaXMgbm90IHNldAojIENPTkZJR19TTkRfVVNCX1RPTkVQT1JUIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfU05EX1VTQl9WQVJJQVggaXMgbm90IHNldApDT05GSUdfU05EX0ZJUkVXSVJF
-PXkKQ09ORklHX1NORF9GSVJFV0lSRV9MSUI9bQojIENPTkZJR19TTkRfRElDRSBpcyBub3Qgc2V0
-CiMgQ09ORklHX1NORF9PWEZXIGlzIG5vdCBzZXQKQ09ORklHX1NORF9JU0lHSFQ9bQojIENPTkZJ
-R19TTkRfRklSRVdPUktTIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX0JFQk9CIGlzIG5vdCBzZXQK
-IyBDT05GSUdfU05EX0ZJUkVXSVJFX0RJR0kwMFggaXMgbm90IHNldAojIENPTkZJR19TTkRfRklS
-RVdJUkVfVEFTQ0FNIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1NPQyBpcyBub3Qgc2V0CiMgQ09O
-RklHX1NPVU5EX1BSSU1FIGlzIG5vdCBzZXQKQ09ORklHX0FDOTdfQlVTPW0KCiMKIyBISUQgc3Vw
-cG9ydAojCkNPTkZJR19ISUQ9eQpDT05GSUdfSElEX0JBVFRFUllfU1RSRU5HVEg9eQpDT05GSUdf
-SElEUkFXPXkKQ09ORklHX1VISUQ9bQpDT05GSUdfSElEX0dFTkVSSUM9eQoKIwojIFNwZWNpYWwg
-SElEIGRyaXZlcnMKIwpDT05GSUdfSElEX0E0VEVDSD15CkNPTkZJR19ISURfQUNSVVg9bQojIENP
-TkZJR19ISURfQUNSVVhfRkYgaXMgbm90IHNldApDT05GSUdfSElEX0FQUExFPXkKQ09ORklHX0hJ
-RF9BUFBMRUlSPW0KIyBDT05GSUdfSElEX0FTVVMgaXMgbm90IHNldApDT05GSUdfSElEX0FVUkVB
-TD1tCkNPTkZJR19ISURfQkVMS0lOPXkKIyBDT05GSUdfSElEX0JFVE9QX0ZGIGlzIG5vdCBzZXQK
-Q09ORklHX0hJRF9DSEVSUlk9eQpDT05GSUdfSElEX0NISUNPTlk9eQojIENPTkZJR19ISURfQ09S
-U0FJUiBpcyBub3Qgc2V0CkNPTkZJR19ISURfUFJPRElLRVlTPW0KIyBDT05GSUdfSElEX0NNRURJ
-QSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9DUDIxMTIgaXMgbm90IHNldApDT05GSUdfSElEX0NZ
-UFJFU1M9eQpDT05GSUdfSElEX0RSQUdPTlJJU0U9bQojIENPTkZJR19EUkFHT05SSVNFX0ZGIGlz
-IG5vdCBzZXQKIyBDT05GSUdfSElEX0VNU19GRiBpcyBub3Qgc2V0CkNPTkZJR19ISURfRUxFQ09N
-PW0KIyBDT05GSUdfSElEX0VMTyBpcyBub3Qgc2V0CkNPTkZJR19ISURfRVpLRVk9eQojIENPTkZJ
-R19ISURfR0VNQklSRCBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9HRlJNIGlzIG5vdCBzZXQKQ09O
-RklHX0hJRF9IT0xURUs9bQojIENPTkZJR19IT0xURUtfRkYgaXMgbm90IHNldAojIENPTkZJR19I
-SURfR1Q2ODNSIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9LRVlUT1VDSD1tCkNPTkZJR19ISURfS1lF
-PW0KQ09ORklHX0hJRF9VQ0xPR0lDPW0KQ09ORklHX0hJRF9XQUxUT1A9bQpDT05GSUdfSElEX0dZ
-UkFUSU9OPW0KQ09ORklHX0hJRF9JQ0FERT1tCkNPTkZJR19ISURfVFdJTkhBTj1tCkNPTkZJR19I
-SURfS0VOU0lOR1RPTj15CkNPTkZJR19ISURfTENQT1dFUj1tCkNPTkZJR19ISURfTEVEPW0KIyBD
-T05GSUdfSElEX0xFTk9WTyBpcyBub3Qgc2V0CkNPTkZJR19ISURfTE9HSVRFQ0g9eQpDT05GSUdf
-SElEX0xPR0lURUNIX0RKPW0KQ09ORklHX0hJRF9MT0dJVEVDSF9ISURQUD1tCiMgQ09ORklHX0xP
-R0lURUNIX0ZGIGlzIG5vdCBzZXQKIyBDT05GSUdfTE9HSVJVTUJMRVBBRDJfRkYgaXMgbm90IHNl
-dAojIENPTkZJR19MT0dJRzk0MF9GRiBpcyBub3Qgc2V0CiMgQ09ORklHX0xPR0lXSEVFTFNfRkYg
-aXMgbm90IHNldApDT05GSUdfSElEX01BR0lDTU9VU0U9eQpDT05GSUdfSElEX01JQ1JPU09GVD15
-CkNPTkZJR19ISURfTU9OVEVSRVk9eQpDT05GSUdfSElEX01VTFRJVE9VQ0g9bQpDT05GSUdfSElE
-X05UUklHPXkKQ09ORklHX0hJRF9PUlRFSz1tCkNPTkZJR19ISURfUEFOVEhFUkxPUkQ9bQojIENP
-TkZJR19QQU5USEVSTE9SRF9GRiBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9QRU5NT1VOVCBpcyBu
-b3Qgc2V0CkNPTkZJR19ISURfUEVUQUxZTlg9bQpDT05GSUdfSElEX1BJQ09MQ0Q9bQpDT05GSUdf
-SElEX1BJQ09MQ0RfRkI9eQpDT05GSUdfSElEX1BJQ09MQ0RfQkFDS0xJR0hUPXkKQ09ORklHX0hJ
-RF9QSUNPTENEX0xDRD15CkNPTkZJR19ISURfUElDT0xDRF9MRURTPXkKQ09ORklHX0hJRF9QSUNP
-TENEX0NJUj15CkNPTkZJR19ISURfUExBTlRST05JQ1M9eQpDT05GSUdfSElEX1BSSU1BWD1tCkNP
-TkZJR19ISURfUk9DQ0FUPW0KQ09ORklHX0hJRF9TQUlURUs9bQpDT05GSUdfSElEX1NBTVNVTkc9
-bQpDT05GSUdfSElEX1NPTlk9bQojIENPTkZJR19TT05ZX0ZGIGlzIG5vdCBzZXQKQ09ORklHX0hJ
-RF9TUEVFRExJTks9bQpDT05GSUdfSElEX1NURUVMU0VSSUVTPW0KQ09ORklHX0hJRF9TVU5QTFVT
-PW0KIyBDT05GSUdfSElEX1JNSSBpcyBub3Qgc2V0CkNPTkZJR19ISURfR1JFRU5BU0lBPW0KIyBD
-T05GSUdfR1JFRU5BU0lBX0ZGIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9IWVBFUlZfTU9VU0U9bQpD
-T05GSUdfSElEX1NNQVJUSk9ZUExVUz1tCiMgQ09ORklHX1NNQVJUSk9ZUExVU19GRiBpcyBub3Qg
-c2V0CkNPTkZJR19ISURfVElWTz1tCkNPTkZJR19ISURfVE9QU0VFRD1tCkNPTkZJR19ISURfVEhJ
-TkdNPW0KQ09ORklHX0hJRF9USFJVU1RNQVNURVI9bQojIENPTkZJR19USFJVU1RNQVNURVJfRkYg
-aXMgbm90IHNldApDT05GSUdfSElEX1dBQ09NPW0KQ09ORklHX0hJRF9XSUlNT1RFPW0KIyBDT05G
-SUdfSElEX1hJTk1PIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9aRVJPUExVUz1tCiMgQ09ORklHX1pF
-Uk9QTFVTX0ZGIGlzIG5vdCBzZXQKQ09ORklHX0hJRF9aWURBQ1JPTj1tCiMgQ09ORklHX0hJRF9T
-RU5TT1JfSFVCIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0FMUFMgaXMgbm90IHNldAoKIwojIFVT
-QiBISUQgc3VwcG9ydAojCkNPTkZJR19VU0JfSElEPXkKQ09ORklHX0hJRF9QSUQ9eQpDT05GSUdf
-VVNCX0hJRERFVj15CgojCiMgSTJDIEhJRCBzdXBwb3J0CiMKQ09ORklHX0kyQ19ISUQ9bQpDT05G
-SUdfVVNCX09IQ0lfTElUVExFX0VORElBTj15CkNPTkZJR19VU0JfU1VQUE9SVD15CkNPTkZJR19V
-U0JfQ09NTU9OPXkKQ09ORklHX1VTQl9BUkNIX0hBU19IQ0Q9eQpDT05GSUdfVVNCPXkKQ09ORklH
-X1VTQl9BTk5PVU5DRV9ORVdfREVWSUNFUz15CgojCiMgTWlzY2VsbGFuZW91cyBVU0Igb3B0aW9u
-cwojCkNPTkZJR19VU0JfREVGQVVMVF9QRVJTSVNUPXkKIyBDT05GSUdfVVNCX0RZTkFNSUNfTUlO
-T1JTIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX09URyBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9P
-VEdfV0hJVEVMSVNUIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX1VMUElfQlVTIGlzIG5vdCBzZXQK
-Q09ORklHX1VTQl9NT049eQpDT05GSUdfVVNCX1dVU0I9bQpDT05GSUdfVVNCX1dVU0JfQ0JBRj1t
-CiMgQ09ORklHX1VTQl9XVVNCX0NCQUZfREVCVUcgaXMgbm90IHNldAoKIwojIFVTQiBIb3N0IENv
-bnRyb2xsZXIgRHJpdmVycwojCiMgQ09ORklHX1VTQl9DNjdYMDBfSENEIGlzIG5vdCBzZXQKQ09O
-RklHX1VTQl9YSENJX0hDRD15CkNPTkZJR19VU0JfWEhDSV9QQ0k9eQpDT05GSUdfVVNCX1hIQ0lf
-UExBVEZPUk09eQpDT05GSUdfVVNCX0VIQ0lfSENEPXkKQ09ORklHX1VTQl9FSENJX1JPT1RfSFVC
-X1RUPXkKQ09ORklHX1VTQl9FSENJX1RUX05FV1NDSEVEPXkKQ09ORklHX1VTQl9FSENJX1BDST15
-CiMgQ09ORklHX1VTQl9FSENJX0hDRF9QTEFURk9STSBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9P
-WFUyMTBIUF9IQ0QgaXMgbm90IHNldAojIENPTkZJR19VU0JfSVNQMTE2WF9IQ0QgaXMgbm90IHNl
-dAojIENPTkZJR19VU0JfSVNQMTM2Ml9IQ0QgaXMgbm90IHNldAojIENPTkZJR19VU0JfRk9URzIx
-MF9IQ0QgaXMgbm90IHNldAojIENPTkZJR19VU0JfTUFYMzQyMV9IQ0QgaXMgbm90IHNldApDT05G
-SUdfVVNCX09IQ0lfSENEPXkKQ09ORklHX1VTQl9PSENJX0hDRF9QQ0k9eQojIENPTkZJR19VU0Jf
-T0hDSV9IQ0RfUExBVEZPUk0gaXMgbm90IHNldApDT05GSUdfVVNCX1VIQ0lfSENEPXkKIyBDT05G
-SUdfVVNCX1UxMzJfSENEIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX1NMODExX0hDRCBpcyBub3Qg
-c2V0CiMgQ09ORklHX1VTQl9SOEE2NjU5N19IQ0QgaXMgbm90IHNldAojIENPTkZJR19VU0JfV0hD
-SV9IQ0QgaXMgbm90IHNldApDT05GSUdfVVNCX0hXQV9IQ0Q9bQojIENPTkZJR19VU0JfSENEX0JD
-TUEgaXMgbm90IHNldAojIENPTkZJR19VU0JfSENEX1NTQiBpcyBub3Qgc2V0CiMgQ09ORklHX1VT
-Ql9IQ0RfVEVTVF9NT0RFIGlzIG5vdCBzZXQKCiMKIyBVU0IgRGV2aWNlIENsYXNzIGRyaXZlcnMK
-IwpDT05GSUdfVVNCX0FDTT1tCkNPTkZJR19VU0JfUFJJTlRFUj1tCkNPTkZJR19VU0JfV0RNPW0K
-Q09ORklHX1VTQl9UTUM9bQoKIwojIE5PVEU6IFVTQl9TVE9SQUdFIGRlcGVuZHMgb24gU0NTSSBi
-dXQgQkxLX0RFVl9TRCBtYXkKIwoKIwojIGFsc28gYmUgbmVlZGVkOyBzZWUgVVNCX1NUT1JBR0Ug
-SGVscCBmb3IgbW9yZSBpbmZvCiMKQ09ORklHX1VTQl9TVE9SQUdFPW0KIyBDT05GSUdfVVNCX1NU
-T1JBR0VfREVCVUcgaXMgbm90IHNldApDT05GSUdfVVNCX1NUT1JBR0VfUkVBTFRFSz1tCkNPTkZJ
-R19SRUFMVEVLX0FVVE9QTT15CkNPTkZJR19VU0JfU1RPUkFHRV9EQVRBRkFCPW0KQ09ORklHX1VT
-Ql9TVE9SQUdFX0ZSRUVDT009bQpDT05GSUdfVVNCX1NUT1JBR0VfSVNEMjAwPW0KQ09ORklHX1VT
-Ql9TVE9SQUdFX1VTQkFUPW0KQ09ORklHX1VTQl9TVE9SQUdFX1NERFIwOT1tCkNPTkZJR19VU0Jf
-U1RPUkFHRV9TRERSNTU9bQpDT05GSUdfVVNCX1NUT1JBR0VfSlVNUFNIT1Q9bQpDT05GSUdfVVNC
-X1NUT1JBR0VfQUxBVURBPW0KQ09ORklHX1VTQl9TVE9SQUdFX09ORVRPVUNIPW0KQ09ORklHX1VT
-Ql9TVE9SQUdFX0tBUk1BPW0KQ09ORklHX1VTQl9TVE9SQUdFX0NZUFJFU1NfQVRBQ0I9bQpDT05G
-SUdfVVNCX1NUT1JBR0VfRU5FX1VCNjI1MD1tCiMgQ09ORklHX1VTQl9VQVMgaXMgbm90IHNldAoK
-IwojIFVTQiBJbWFnaW5nIGRldmljZXMKIwpDT05GSUdfVVNCX01EQzgwMD1tCkNPTkZJR19VU0Jf
-TUlDUk9URUs9bQojIENPTkZJR19VU0JJUF9DT1JFIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX01V
-U0JfSERSQyBpcyBub3Qgc2V0CkNPTkZJR19VU0JfRFdDMz15CiMgQ09ORklHX1VTQl9EV0MzX0hP
-U1QgaXMgbm90IHNldApDT05GSUdfVVNCX0RXQzNfR0FER0VUPXkKIyBDT05GSUdfVVNCX0RXQzNf
-RFVBTF9ST0xFIGlzIG5vdCBzZXQKCiMKIyBQbGF0Zm9ybSBHbHVlIERyaXZlciBTdXBwb3J0CiMK
-Q09ORklHX1VTQl9EV0MzX1BDST15CiMgQ09ORklHX1VTQl9EV0MyIGlzIG5vdCBzZXQKIyBDT05G
-SUdfVVNCX0NISVBJREVBIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0lTUDE3NjAgaXMgbm90IHNl
-dAoKIwojIFVTQiBwb3J0IGRyaXZlcnMKIwpDT05GSUdfVVNCX1VTUzcyMD1tCkNPTkZJR19VU0Jf
-U0VSSUFMPXkKQ09ORklHX1VTQl9TRVJJQUxfQ09OU09MRT15CkNPTkZJR19VU0JfU0VSSUFMX0dF
-TkVSSUM9eQojIENPTkZJR19VU0JfU0VSSUFMX1NJTVBMRSBpcyBub3Qgc2V0CkNPTkZJR19VU0Jf
-U0VSSUFMX0FJUkNBQkxFPW0KQ09ORklHX1VTQl9TRVJJQUxfQVJLMzExNj1tCkNPTkZJR19VU0Jf
-U0VSSUFMX0JFTEtJTj1tCkNPTkZJR19VU0JfU0VSSUFMX0NIMzQxPW0KQ09ORklHX1VTQl9TRVJJ
-QUxfV0hJVEVIRUFUPW0KQ09ORklHX1VTQl9TRVJJQUxfRElHSV9BQ0NFTEVQT1JUPW0KQ09ORklH
-X1VTQl9TRVJJQUxfQ1AyMTBYPW0KQ09ORklHX1VTQl9TRVJJQUxfQ1lQUkVTU19NOD1tCkNPTkZJ
-R19VU0JfU0VSSUFMX0VNUEVHPW0KQ09ORklHX1VTQl9TRVJJQUxfRlRESV9TSU89bQpDT05GSUdf
-VVNCX1NFUklBTF9WSVNPUj1tCkNPTkZJR19VU0JfU0VSSUFMX0lQQVE9bQpDT05GSUdfVVNCX1NF
-UklBTF9JUj1tCkNPTkZJR19VU0JfU0VSSUFMX0VER0VQT1JUPW0KQ09ORklHX1VTQl9TRVJJQUxf
-RURHRVBPUlRfVEk9bQojIENPTkZJR19VU0JfU0VSSUFMX0Y4MTIzMiBpcyBub3Qgc2V0CkNPTkZJ
-R19VU0JfU0VSSUFMX0dBUk1JTj1tCkNPTkZJR19VU0JfU0VSSUFMX0lQVz1tCkNPTkZJR19VU0Jf
-U0VSSUFMX0lVVT1tCkNPTkZJR19VU0JfU0VSSUFMX0tFWVNQQU5fUERBPW0KQ09ORklHX1VTQl9T
-RVJJQUxfS0VZU1BBTj1tCkNPTkZJR19VU0JfU0VSSUFMX0tMU0k9bQpDT05GSUdfVVNCX1NFUklB
-TF9LT0JJTF9TQ1Q9bQpDT05GSUdfVVNCX1NFUklBTF9NQ1RfVTIzMj1tCiMgQ09ORklHX1VTQl9T
-RVJJQUxfTUVUUk8gaXMgbm90IHNldApDT05GSUdfVVNCX1NFUklBTF9NT1M3NzIwPW0KQ09ORklH
-X1VTQl9TRVJJQUxfTU9TNzcxNV9QQVJQT1JUPXkKQ09ORklHX1VTQl9TRVJJQUxfTU9TNzg0MD1t
-CiMgQ09ORklHX1VTQl9TRVJJQUxfTVhVUE9SVCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfU0VSSUFM
-X05BVk1BTj1tCkNPTkZJR19VU0JfU0VSSUFMX1BMMjMwMz1tCkNPTkZJR19VU0JfU0VSSUFMX09U
-STY4NTg9bQpDT05GSUdfVVNCX1NFUklBTF9RQ0FVWD1tCkNPTkZJR19VU0JfU0VSSUFMX1FVQUxD
-T01NPW0KQ09ORklHX1VTQl9TRVJJQUxfU1BDUDhYNT1tCkNPTkZJR19VU0JfU0VSSUFMX1NBRkU9
-bQpDT05GSUdfVVNCX1NFUklBTF9TQUZFX1BBRERFRD15CkNPTkZJR19VU0JfU0VSSUFMX1NJRVJS
-QVdJUkVMRVNTPW0KQ09ORklHX1VTQl9TRVJJQUxfU1lNQk9MPW0KQ09ORklHX1VTQl9TRVJJQUxf
-VEk9bQpDT05GSUdfVVNCX1NFUklBTF9DWUJFUkpBQ0s9bQpDT05GSUdfVVNCX1NFUklBTF9YSVJD
-T009bQpDT05GSUdfVVNCX1NFUklBTF9XV0FOPW0KQ09ORklHX1VTQl9TRVJJQUxfT1BUSU9OPW0K
-Q09ORklHX1VTQl9TRVJJQUxfT01OSU5FVD1tCkNPTkZJR19VU0JfU0VSSUFMX09QVElDT049bQpD
-T05GSUdfVVNCX1NFUklBTF9YU0VOU19NVD1tCiMgQ09ORklHX1VTQl9TRVJJQUxfV0lTSEJPTkUg
-aXMgbm90IHNldApDT05GSUdfVVNCX1NFUklBTF9TU1UxMDA9bQpDT05GSUdfVVNCX1NFUklBTF9R
-VDI9bQpDT05GSUdfVVNCX1NFUklBTF9ERUJVRz1tCgojCiMgVVNCIE1pc2NlbGxhbmVvdXMgZHJp
-dmVycwojCkNPTkZJR19VU0JfRU1JNjI9bQpDT05GSUdfVVNCX0VNSTI2PW0KQ09ORklHX1VTQl9B
-RFVUVVg9bQpDT05GSUdfVVNCX1NFVlNFRz1tCiMgQ09ORklHX1VTQl9SSU81MDAgaXMgbm90IHNl
-dApDT05GSUdfVVNCX0xFR09UT1dFUj1tCkNPTkZJR19VU0JfTENEPW0KIyBDT05GSUdfVVNCX0NZ
-UFJFU1NfQ1k3QzYzIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0NZVEhFUk0gaXMgbm90IHNldApD
-T05GSUdfVVNCX0lETU9VU0U9bQpDT05GSUdfVVNCX0ZURElfRUxBTj1tCkNPTkZJR19VU0JfQVBQ
-TEVESVNQTEFZPW0KQ09ORklHX1VTQl9TSVNVU0JWR0E9bQpDT05GSUdfVVNCX1NJU1VTQlZHQV9D
-T049eQpDT05GSUdfVVNCX0xEPW0KIyBDT05GSUdfVVNCX1RSQU5DRVZJQlJBVE9SIGlzIG5vdCBz
-ZXQKQ09ORklHX1VTQl9JT1dBUlJJT1I9bQojIENPTkZJR19VU0JfVEVTVCBpcyBub3Qgc2V0CiMg
-Q09ORklHX1VTQl9FSFNFVF9URVNUX0ZJWFRVUkUgaXMgbm90IHNldApDT05GSUdfVVNCX0lTSUdI
-VEZXPW0KIyBDT05GSUdfVVNCX1lVUkVYIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9FWlVTQl9GWDI9
-bQpDT05GSUdfVVNCX0hTSUNfVVNCMzUwMz1tCiMgQ09ORklHX1VTQl9MSU5LX0xBWUVSX1RFU1Qg
-aXMgbm90IHNldAojIENPTkZJR19VU0JfQ0hBT1NLRVkgaXMgbm90IHNldAojIENPTkZJR19VQ1NJ
-IGlzIG5vdCBzZXQKQ09ORklHX1VTQl9BVE09bQpDT05GSUdfVVNCX1NQRUVEVE9VQ0g9bQpDT05G
-SUdfVVNCX0NYQUNSVT1tCkNPTkZJR19VU0JfVUVBR0xFQVRNPW0KQ09ORklHX1VTQl9YVVNCQVRN
-PW0KCiMKIyBVU0IgUGh5c2ljYWwgTGF5ZXIgZHJpdmVycwojCkNPTkZJR19VU0JfUEhZPXkKQ09O
-RklHX05PUF9VU0JfWENFSVY9eQojIENPTkZJR19VU0JfR1BJT19WQlVTIGlzIG5vdCBzZXQKIyBD
-T05GSUdfVVNCX0lTUDEzMDEgaXMgbm90IHNldApDT05GSUdfVVNCX0dBREdFVD15CiMgQ09ORklH
-X1VTQl9HQURHRVRfREVCVUcgaXMgbm90IHNldAojIENPTkZJR19VU0JfR0FER0VUX0RFQlVHX0ZJ
-TEVTIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dBREdFVF9ERUJVR19GUyBpcyBub3Qgc2V0CkNP
-TkZJR19VU0JfR0FER0VUX1ZCVVNfRFJBVz0yCkNPTkZJR19VU0JfR0FER0VUX1NUT1JBR0VfTlVN
-X0JVRkZFUlM9MgoKIwojIFVTQiBQZXJpcGhlcmFsIENvbnRyb2xsZXIKIwojIENPTkZJR19VU0Jf
-Rk9URzIxMF9VREMgaXMgbm90IHNldAojIENPTkZJR19VU0JfR1JfVURDIGlzIG5vdCBzZXQKIyBD
-T05GSUdfVVNCX1I4QTY2NTk3IGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX1BYQTI3WCBpcyBub3Qg
-c2V0CiMgQ09ORklHX1VTQl9NVl9VREMgaXMgbm90IHNldAojIENPTkZJR19VU0JfTVZfVTNEIGlz
-IG5vdCBzZXQKIyBDT05GSUdfVVNCX002NjU5MiBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9CRENf
-VURDIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0FNRDU1MzZVREMgaXMgbm90IHNldAojIENPTkZJ
-R19VU0JfTkVUMjI3MiBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9ORVQyMjgwIGlzIG5vdCBzZXQK
-IyBDT05GSUdfVVNCX0dPS1UgaXMgbm90IHNldAojIENPTkZJR19VU0JfRUcyMFQgaXMgbm90IHNl
-dAojIENPTkZJR19VU0JfRFVNTVlfSENEIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9MSUJDT01QT1NJ
-VEU9bQpDT05GSUdfVVNCX0ZfTUFTU19TVE9SQUdFPW0KIyBDT05GSUdfVVNCX0NPTkZJR0ZTIGlz
-IG5vdCBzZXQKIyBDT05GSUdfVVNCX1pFUk8gaXMgbm90IHNldAojIENPTkZJR19VU0JfQVVESU8g
-aXMgbm90IHNldAojIENPTkZJR19VU0JfRVRIIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dfTkNN
-IGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dBREdFVEZTIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNC
-X0ZVTkNUSU9ORlMgaXMgbm90IHNldApDT05GSUdfVVNCX01BU1NfU1RPUkFHRT1tCiMgQ09ORklH
-X1VTQl9HQURHRVRfVEFSR0VUIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dfU0VSSUFMIGlzIG5v
-dCBzZXQKIyBDT05GSUdfVVNCX01JRElfR0FER0VUIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0df
-UFJJTlRFUiBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9DRENfQ09NUE9TSVRFIGlzIG5vdCBzZXQK
-IyBDT05GSUdfVVNCX0dfQUNNX01TIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dfTVVMVEkgaXMg
-bm90IHNldAojIENPTkZJR19VU0JfR19ISUQgaXMgbm90IHNldAojIENPTkZJR19VU0JfR19EQkdQ
-IGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dfV0VCQ0FNIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNC
-X0xFRF9UUklHIGlzIG5vdCBzZXQKQ09ORklHX1VXQj1tCkNPTkZJR19VV0JfSFdBPW0KQ09ORklH
-X1VXQl9XSENJPW0KQ09ORklHX1VXQl9JMTQ4MFU9bQpDT05GSUdfTU1DPW0KIyBDT05GSUdfTU1D
-X0RFQlVHIGlzIG5vdCBzZXQKCiMKIyBNTUMvU0QvU0RJTyBDYXJkIERyaXZlcnMKIwpDT05GSUdf
-TU1DX0JMT0NLPW0KQ09ORklHX01NQ19CTE9DS19NSU5PUlM9OApDT05GSUdfTU1DX0JMT0NLX0JP
-VU5DRT15CkNPTkZJR19TRElPX1VBUlQ9bQojIENPTkZJR19NTUNfVEVTVCBpcyBub3Qgc2V0Cgoj
-CiMgTU1DL1NEL1NESU8gSG9zdCBDb250cm9sbGVyIERyaXZlcnMKIwpDT05GSUdfTU1DX1NESENJ
-PW0KQ09ORklHX01NQ19TREhDSV9QQ0k9bQpDT05GSUdfTU1DX1JJQ09IX01NQz15CkNPTkZJR19N
-TUNfU0RIQ0lfQUNQST1tCkNPTkZJR19NTUNfU0RIQ0lfUExURk09bQojIENPTkZJR19NTUNfV0JT
-RCBpcyBub3Qgc2V0CkNPTkZJR19NTUNfVElGTV9TRD1tCiMgQ09ORklHX01NQ19TUEkgaXMgbm90
-IHNldApDT05GSUdfTU1DX0NCNzEwPW0KQ09ORklHX01NQ19WSUFfU0RNTUM9bQpDT05GSUdfTU1D
-X1ZVQjMwMD1tCkNPTkZJR19NTUNfVVNIQz1tCiMgQ09ORklHX01NQ19VU0RISTZST0wwIGlzIG5v
-dCBzZXQKQ09ORklHX01NQ19SRUFMVEVLX1BDST1tCiMgQ09ORklHX01NQ19UT1NISUJBX1BDSSBp
-cyBub3Qgc2V0CiMgQ09ORklHX01NQ19NVEsgaXMgbm90IHNldApDT05GSUdfTUVNU1RJQ0s9bQoj
-IENPTkZJR19NRU1TVElDS19ERUJVRyBpcyBub3Qgc2V0CgojCiMgTWVtb3J5U3RpY2sgZHJpdmVy
-cwojCiMgQ09ORklHX01FTVNUSUNLX1VOU0FGRV9SRVNVTUUgaXMgbm90IHNldApDT05GSUdfTVNQ
-Uk9fQkxPQ0s9bQojIENPTkZJR19NU19CTE9DSyBpcyBub3Qgc2V0CgojCiMgTWVtb3J5U3RpY2sg
-SG9zdCBDb250cm9sbGVyIERyaXZlcnMKIwpDT05GSUdfTUVNU1RJQ0tfVElGTV9NUz1tCkNPTkZJ
-R19NRU1TVElDS19KTUlDUk9OXzM4WD1tCkNPTkZJR19NRU1TVElDS19SNTkyPW0KQ09ORklHX01F
-TVNUSUNLX1JFQUxURUtfUENJPW0KQ09ORklHX05FV19MRURTPXkKQ09ORklHX0xFRFNfQ0xBU1M9
-eQojIENPTkZJR19MRURTX0NMQVNTX0ZMQVNIIGlzIG5vdCBzZXQKCiMKIyBMRUQgZHJpdmVycwoj
-CkNPTkZJR19MRURTX0xNMzUzMD1tCiMgQ09ORklHX0xFRFNfTE0zNjQyIGlzIG5vdCBzZXQKIyBD
-T05GSUdfTEVEU19QQ0E5NTMyIGlzIG5vdCBzZXQKIyBDT05GSUdfTEVEU19HUElPIGlzIG5vdCBz
-ZXQKQ09ORklHX0xFRFNfTFAzOTQ0PW0KIyBDT05GSUdfTEVEU19MUDM5NTIgaXMgbm90IHNldApD
-T05GSUdfTEVEU19MUDU1WFhfQ09NTU9OPW0KQ09ORklHX0xFRFNfTFA1NTIxPW0KQ09ORklHX0xF
-RFNfTFA1NTIzPW0KQ09ORklHX0xFRFNfTFA1NTYyPW0KIyBDT05GSUdfTEVEU19MUDg1MDEgaXMg
-bm90IHNldAojIENPTkZJR19MRURTX0xQODg2MCBpcyBub3Qgc2V0CkNPTkZJR19MRURTX0NMRVZP
-X01BSUw9bQojIENPTkZJR19MRURTX1BDQTk1NVggaXMgbm90IHNldAojIENPTkZJR19MRURTX1BD
-QTk2M1ggaXMgbm90IHNldAojIENPTkZJR19MRURTX0RBQzEyNFMwODUgaXMgbm90IHNldAojIENP
-TkZJR19MRURTX1BXTSBpcyBub3Qgc2V0CiMgQ09ORklHX0xFRFNfQkQyODAyIGlzIG5vdCBzZXQK
-Q09ORklHX0xFRFNfSU5URUxfU1M0MjAwPW0KIyBDT05GSUdfTEVEU19MVDM1OTMgaXMgbm90IHNl
-dAojIENPTkZJR19MRURTX1RDQTY1MDcgaXMgbm90IHNldAojIENPTkZJR19MRURTX1RMQzU5MVhY
-IGlzIG5vdCBzZXQKIyBDT05GSUdfTEVEU19MTTM1NXggaXMgbm90IHNldAoKIwojIExFRCBkcml2
-ZXIgZm9yIGJsaW5rKDEpIFVTQiBSR0IgTEVEIGlzIHVuZGVyIFNwZWNpYWwgSElEIGRyaXZlcnMg
-KEhJRF9USElOR00pCiMKQ09ORklHX0xFRFNfQkxJTktNPW0KCiMKIyBMRUQgVHJpZ2dlcnMKIwpD
-T05GSUdfTEVEU19UUklHR0VSUz15CkNPTkZJR19MRURTX1RSSUdHRVJfVElNRVI9bQpDT05GSUdf
-TEVEU19UUklHR0VSX09ORVNIT1Q9bQojIENPTkZJR19MRURTX1RSSUdHRVJfRElTSyBpcyBub3Qg
-c2V0CiMgQ09ORklHX0xFRFNfVFJJR0dFUl9NVEQgaXMgbm90IHNldApDT05GSUdfTEVEU19UUklH
-R0VSX0hFQVJUQkVBVD1tCkNPTkZJR19MRURTX1RSSUdHRVJfQkFDS0xJR0hUPW0KIyBDT05GSUdf
-TEVEU19UUklHR0VSX0NQVSBpcyBub3Qgc2V0CiMgQ09ORklHX0xFRFNfVFJJR0dFUl9HUElPIGlz
-IG5vdCBzZXQKQ09ORklHX0xFRFNfVFJJR0dFUl9ERUZBVUxUX09OPW0KCiMKIyBpcHRhYmxlcyB0
-cmlnZ2VyIGlzIHVuZGVyIE5ldGZpbHRlciBjb25maWcgKExFRCB0YXJnZXQpCiMKQ09ORklHX0xF
-RFNfVFJJR0dFUl9UUkFOU0lFTlQ9bQpDT05GSUdfTEVEU19UUklHR0VSX0NBTUVSQT1tCiMgQ09O
-RklHX0xFRFNfVFJJR0dFUl9QQU5JQyBpcyBub3Qgc2V0CiMgQ09ORklHX0FDQ0VTU0lCSUxJVFkg
-aXMgbm90IHNldAojIENPTkZJR19JTkZJTklCQU5EIGlzIG5vdCBzZXQKQ09ORklHX0VEQUNfQVRP
-TUlDX1NDUlVCPXkKQ09ORklHX0VEQUNfU1VQUE9SVD15CkNPTkZJR19FREFDPXkKQ09ORklHX0VE
-QUNfTEVHQUNZX1NZU0ZTPXkKIyBDT05GSUdfRURBQ19ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19F
-REFDX0RFQ09ERV9NQ0U9bQpDT05GSUdfRURBQ19NTV9FREFDPW0KQ09ORklHX0VEQUNfQU1ENjQ9
-bQojIENPTkZJR19FREFDX0FNRDY0X0VSUk9SX0lOSkVDVElPTiBpcyBub3Qgc2V0CkNPTkZJR19F
-REFDX0U3NTJYPW0KQ09ORklHX0VEQUNfSTgyOTc1WD1tCkNPTkZJR19FREFDX0kzMDAwPW0KQ09O
-RklHX0VEQUNfSTMyMDA9bQojIENPTkZJR19FREFDX0lFMzEyMDAgaXMgbm90IHNldApDT05GSUdf
-RURBQ19YMzg9bQpDT05GSUdfRURBQ19JNTQwMD1tCkNPTkZJR19FREFDX0k3Q09SRT1tCkNPTkZJ
-R19FREFDX0k1MDAwPW0KQ09ORklHX0VEQUNfSTUxMDA9bQpDT05GSUdfRURBQ19JNzMwMD1tCkNP
-TkZJR19FREFDX1NCUklER0U9bQojIENPTkZJR19FREFDX1NLWCBpcyBub3Qgc2V0CkNPTkZJR19S
-VENfTElCPXkKQ09ORklHX1JUQ19NQzE0NjgxOF9MSUI9eQpDT05GSUdfUlRDX0NMQVNTPXkKQ09O
-RklHX1JUQ19IQ1RPU1lTPXkKQ09ORklHX1JUQ19IQ1RPU1lTX0RFVklDRT0icnRjMCIKIyBDT05G
-SUdfUlRDX1NZU1RPSEMgaXMgbm90IHNldAojIENPTkZJR19SVENfREVCVUcgaXMgbm90IHNldAoK
-IwojIFJUQyBpbnRlcmZhY2VzCiMKQ09ORklHX1JUQ19JTlRGX1NZU0ZTPXkKQ09ORklHX1JUQ19J
-TlRGX1BST0M9eQpDT05GSUdfUlRDX0lOVEZfREVWPXkKIyBDT05GSUdfUlRDX0lOVEZfREVWX1VJ
-RV9FTVVMIGlzIG5vdCBzZXQKIyBDT05GSUdfUlRDX0RSVl9URVNUIGlzIG5vdCBzZXQKCiMKIyBJ
-MkMgUlRDIGRyaXZlcnMKIwojIENPTkZJR19SVENfRFJWX0FCQjVaRVMzIGlzIG5vdCBzZXQKIyBD
-T05GSUdfUlRDX0RSVl9BQlg4MFggaXMgbm90IHNldApDT05GSUdfUlRDX0RSVl9EUzEzMDc9bQpD
-T05GSUdfUlRDX0RSVl9EUzEzMDdfSFdNT049eQpDT05GSUdfUlRDX0RSVl9EUzEzNzQ9bQojIENP
-TkZJR19SVENfRFJWX0RTMTM3NF9XRFQgaXMgbm90IHNldApDT05GSUdfUlRDX0RSVl9EUzE2NzI9
-bQpDT05GSUdfUlRDX0RSVl9NQVg2OTAwPW0KQ09ORklHX1JUQ19EUlZfUlM1QzM3Mj1tCkNPTkZJ
-R19SVENfRFJWX0lTTDEyMDg9bQpDT05GSUdfUlRDX0RSVl9JU0wxMjAyMj1tCiMgQ09ORklHX1JU
-Q19EUlZfSVNMMTIwNTcgaXMgbm90IHNldApDT05GSUdfUlRDX0RSVl9YMTIwNT1tCkNPTkZJR19S
-VENfRFJWX1BDRjg1MjM9bQojIENPTkZJR19SVENfRFJWX1BDRjg1MDYzIGlzIG5vdCBzZXQKQ09O
-RklHX1JUQ19EUlZfUENGODU2Mz1tCkNPTkZJR19SVENfRFJWX1BDRjg1ODM9bQpDT05GSUdfUlRD
-X0RSVl9NNDFUODA9bQpDT05GSUdfUlRDX0RSVl9NNDFUODBfV0RUPXkKQ09ORklHX1JUQ19EUlZf
-QlEzMks9bQojIENPTkZJR19SVENfRFJWX1MzNTM5MEEgaXMgbm90IHNldApDT05GSUdfUlRDX0RS
-Vl9GTTMxMzA9bQojIENPTkZJR19SVENfRFJWX1JYODAxMCBpcyBub3Qgc2V0CkNPTkZJR19SVENf
-RFJWX1JYODU4MT1tCkNPTkZJR19SVENfRFJWX1JYODAyNT1tCkNPTkZJR19SVENfRFJWX0VNMzAy
-Nz1tCiMgQ09ORklHX1JUQ19EUlZfUlY4ODAzIGlzIG5vdCBzZXQKCiMKIyBTUEkgUlRDIGRyaXZl
-cnMKIwojIENPTkZJR19SVENfRFJWX000MVQ5MyBpcyBub3Qgc2V0CiMgQ09ORklHX1JUQ19EUlZf
-TTQxVDk0IGlzIG5vdCBzZXQKIyBDT05GSUdfUlRDX0RSVl9EUzEzMDIgaXMgbm90IHNldAojIENP
-TkZJR19SVENfRFJWX0RTMTMwNSBpcyBub3Qgc2V0CiMgQ09ORklHX1JUQ19EUlZfRFMxMzQzIGlz
-IG5vdCBzZXQKIyBDT05GSUdfUlRDX0RSVl9EUzEzNDcgaXMgbm90IHNldAojIENPTkZJR19SVENf
-RFJWX0RTMTM5MCBpcyBub3Qgc2V0CiMgQ09ORklHX1JUQ19EUlZfTUFYNjkxNiBpcyBub3Qgc2V0
-CiMgQ09ORklHX1JUQ19EUlZfUjk3MDEgaXMgbm90IHNldAojIENPTkZJR19SVENfRFJWX1JYNDU4
-MSBpcyBub3Qgc2V0CiMgQ09ORklHX1JUQ19EUlZfUlg2MTEwIGlzIG5vdCBzZXQKIyBDT05GSUdf
-UlRDX0RSVl9SUzVDMzQ4IGlzIG5vdCBzZXQKIyBDT05GSUdfUlRDX0RSVl9NQVg2OTAyIGlzIG5v
-dCBzZXQKIyBDT05GSUdfUlRDX0RSVl9QQ0YyMTIzIGlzIG5vdCBzZXQKIyBDT05GSUdfUlRDX0RS
-Vl9NQ1A3OTUgaXMgbm90IHNldApDT05GSUdfUlRDX0kyQ19BTkRfU1BJPXkKCiMKIyBTUEkgYW5k
-IEkyQyBSVEMgZHJpdmVycwojCkNPTkZJR19SVENfRFJWX0RTMzIzMj1tCiMgQ09ORklHX1JUQ19E
-UlZfUENGMjEyNyBpcyBub3Qgc2V0CkNPTkZJR19SVENfRFJWX1JWMzAyOUMyPW0KQ09ORklHX1JU
-Q19EUlZfUlYzMDI5X0hXTU9OPXkKCiMKIyBQbGF0Zm9ybSBSVEMgZHJpdmVycwojCkNPTkZJR19S
-VENfRFJWX0NNT1M9eQpDT05GSUdfUlRDX0RSVl9EUzEyODY9bQpDT05GSUdfUlRDX0RSVl9EUzE1
-MTE9bQpDT05GSUdfUlRDX0RSVl9EUzE1NTM9bQojIENPTkZJR19SVENfRFJWX0RTMTY4NV9GQU1J
-TFkgaXMgbm90IHNldApDT05GSUdfUlRDX0RSVl9EUzE3NDI9bQpDT05GSUdfUlRDX0RSVl9EUzI0
-MDQ9bQpDT05GSUdfUlRDX0RSVl9TVEsxN1RBOD1tCiMgQ09ORklHX1JUQ19EUlZfTTQ4VDg2IGlz
-IG5vdCBzZXQKQ09ORklHX1JUQ19EUlZfTTQ4VDM1PW0KQ09ORklHX1JUQ19EUlZfTTQ4VDU5PW0K
-Q09ORklHX1JUQ19EUlZfTVNNNjI0Mj1tCkNPTkZJR19SVENfRFJWX0JRNDgwMj1tCkNPTkZJR19S
-VENfRFJWX1JQNUMwMT1tCkNPTkZJR19SVENfRFJWX1YzMDIwPW0KCiMKIyBvbi1DUFUgUlRDIGRy
-aXZlcnMKIwoKIwojIEhJRCBTZW5zb3IgUlRDIGRyaXZlcnMKIwojIENPTkZJR19SVENfRFJWX0hJ
-RF9TRU5TT1JfVElNRSBpcyBub3Qgc2V0CkNPTkZJR19ETUFERVZJQ0VTPXkKIyBDT05GSUdfRE1B
-REVWSUNFU19ERUJVRyBpcyBub3Qgc2V0CgojCiMgRE1BIERldmljZXMKIwpDT05GSUdfRE1BX0VO
-R0lORT15CkNPTkZJR19ETUFfVklSVFVBTF9DSEFOTkVMUz15CkNPTkZJR19ETUFfQUNQST15CiMg
-Q09ORklHX0lOVEVMX0lETUE2NCBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX0lPQVRETUEgaXMg
-bm90IHNldAojIENPTkZJR19RQ09NX0hJRE1BX01HTVQgaXMgbm90IHNldAojIENPTkZJR19RQ09N
-X0hJRE1BIGlzIG5vdCBzZXQKQ09ORklHX0RXX0RNQUNfQ09SRT1tCkNPTkZJR19EV19ETUFDPW0K
-Q09ORklHX0RXX0RNQUNfUENJPW0KQ09ORklHX0hTVV9ETUE9eQoKIwojIERNQSBDbGllbnRzCiMK
-Q09ORklHX0FTWU5DX1RYX0RNQT15CkNPTkZJR19ETUFURVNUPW0KCiMKIyBETUFCVUYgb3B0aW9u
-cwojCiMgQ09ORklHX1NZTkNfRklMRSBpcyBub3Qgc2V0CkNPTkZJR19BVVhESVNQTEFZPXkKQ09O
-RklHX0tTMDEwOD1tCkNPTkZJR19LUzAxMDhfUE9SVD0weDM3OApDT05GSUdfS1MwMTA4X0RFTEFZ
-PTIKQ09ORklHX0NGQUcxMjg2NEI9bQpDT05GSUdfQ0ZBRzEyODY0Ql9SQVRFPTIwCkNPTkZJR19V
-SU89bQpDT05GSUdfVUlPX0NJRj1tCkNPTkZJR19VSU9fUERSVl9HRU5JUlE9bQojIENPTkZJR19V
-SU9fRE1FTV9HRU5JUlEgaXMgbm90IHNldApDT05GSUdfVUlPX0FFQz1tCkNPTkZJR19VSU9fU0VS
-Q09TMz1tCkNPTkZJR19VSU9fUENJX0dFTkVSSUM9bQojIENPTkZJR19VSU9fTkVUWCBpcyBub3Qg
-c2V0CiMgQ09ORklHX1VJT19QUlVTUyBpcyBub3Qgc2V0CiMgQ09ORklHX1VJT19NRjYyNCBpcyBu
-b3Qgc2V0CkNPTkZJR19WRklPX0lPTU1VX1RZUEUxPW0KQ09ORklHX1ZGSU9fVklSUUZEPW0KQ09O
-RklHX1ZGSU89bQojIENPTkZJR19WRklPX05PSU9NTVUgaXMgbm90IHNldApDT05GSUdfVkZJT19Q
-Q0k9bQojIENPTkZJR19WRklPX1BDSV9WR0EgaXMgbm90IHNldApDT05GSUdfVkZJT19QQ0lfTU1B
-UD15CkNPTkZJR19WRklPX1BDSV9JTlRYPXkKQ09ORklHX1ZGSU9fUENJX0lHRD15CkNPTkZJR19J
-UlFfQllQQVNTX01BTkFHRVI9bQojIENPTkZJR19WSVJUX0RSSVZFUlMgaXMgbm90IHNldApDT05G
-SUdfVklSVElPPXkKCiMKIyBWaXJ0aW8gZHJpdmVycwojCkNPTkZJR19WSVJUSU9fUENJPXkKQ09O
-RklHX1ZJUlRJT19QQ0lfTEVHQUNZPXkKQ09ORklHX1ZJUlRJT19CQUxMT09OPXkKIyBDT05GSUdf
-VklSVElPX0lOUFVUIGlzIG5vdCBzZXQKIyBDT05GSUdfVklSVElPX01NSU8gaXMgbm90IHNldAoK
-IwojIE1pY3Jvc29mdCBIeXBlci1WIGd1ZXN0IHN1cHBvcnQKIwpDT05GSUdfSFlQRVJWPW0KQ09O
-RklHX0hZUEVSVl9VVElMUz1tCkNPTkZJR19IWVBFUlZfQkFMTE9PTj1tCgojCiMgWGVuIGRyaXZl
-ciBzdXBwb3J0CiMKQ09ORklHX1hFTl9CQUxMT09OPXkKIyBDT05GSUdfWEVOX1NFTEZCQUxMT09O
-SU5HIGlzIG5vdCBzZXQKIyBDT05GSUdfWEVOX0JBTExPT05fTUVNT1JZX0hPVFBMVUcgaXMgbm90
-IHNldApDT05GSUdfWEVOX1NDUlVCX1BBR0VTPXkKQ09ORklHX1hFTl9ERVZfRVZUQ0hOPW0KQ09O
-RklHX1hFTl9CQUNLRU5EPXkKQ09ORklHX1hFTkZTPW0KQ09ORklHX1hFTl9DT01QQVRfWEVORlM9
-eQpDT05GSUdfWEVOX1NZU19IWVBFUlZJU09SPXkKQ09ORklHX1hFTl9YRU5CVVNfRlJPTlRFTkQ9
-eQojIENPTkZJR19YRU5fR05UREVWIGlzIG5vdCBzZXQKIyBDT05GSUdfWEVOX0dSQU5UX0RFVl9B
-TExPQyBpcyBub3Qgc2V0CkNPTkZJR19TV0lPVExCX1hFTj15CkNPTkZJR19YRU5fVE1FTT1tCkNP
-TkZJR19YRU5fUENJREVWX0JBQ0tFTkQ9bQojIENPTkZJR19YRU5fU0NTSV9CQUNLRU5EIGlzIG5v
-dCBzZXQKQ09ORklHX1hFTl9QUklWQ01EPW0KQ09ORklHX1hFTl9BQ1BJX1BST0NFU1NPUj1tCiMg
-Q09ORklHX1hFTl9NQ0VfTE9HIGlzIG5vdCBzZXQKQ09ORklHX1hFTl9IQVZFX1BWTU1VPXkKQ09O
-RklHX1hFTl9FRkk9eQpDT05GSUdfWEVOX0FVVE9fWExBVEU9eQpDT05GSUdfWEVOX0FDUEk9eQpD
-T05GSUdfWEVOX1NZTVM9eQpDT05GSUdfWEVOX0hBVkVfVlBNVT15CkNPTkZJR19TVEFHSU5HPXkK
-IyBDT05GSUdfU0xJQ09TUyBpcyBub3Qgc2V0CiMgQ09ORklHX1BSSVNNMl9VU0IgaXMgbm90IHNl
-dAojIENPTkZJR19DT01FREkgaXMgbm90IHNldAojIENPTkZJR19SVEw4MTkyVSBpcyBub3Qgc2V0
-CkNPTkZJR19SVExMSUI9bQpDT05GSUdfUlRMTElCX0NSWVBUT19DQ01QPW0KQ09ORklHX1JUTExJ
-Ql9DUllQVE9fVEtJUD1tCkNPTkZJR19SVExMSUJfQ1JZUFRPX1dFUD1tCkNPTkZJR19SVEw4MTky
-RT1tCkNPTkZJR19SODcxMlU9bQojIENPTkZJR19SODE4OEVVIGlzIG5vdCBzZXQKIyBDT05GSUdf
-Ujg3MjNBVSBpcyBub3Qgc2V0CiMgQ09ORklHX1JUUzUyMDggaXMgbm90IHNldAojIENPTkZJR19W
-VDY2NTUgaXMgbm90IHNldAojIENPTkZJR19WVDY2NTYgaXMgbm90IHNldAojIENPTkZJR19GQl9T
-TTc1MCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1hHSSBpcyBub3Qgc2V0CgojCiMgU3BlYWt1cCBj
-b25zb2xlIHNwZWVjaAojCiMgQ09ORklHX1NQRUFLVVAgaXMgbm90IHNldAojIENPTkZJR19TVEFH
-SU5HX01FRElBIGlzIG5vdCBzZXQKCiMKIyBBbmRyb2lkCiMKIyBDT05GSUdfTFRFX0dETTcyNFgg
-aXMgbm90IHNldApDT05GSUdfRklSRVdJUkVfU0VSSUFMPW0KQ09ORklHX0ZXVFRZX01BWF9UT1RB
-TF9QT1JUUz02NApDT05GSUdfRldUVFlfTUFYX0NBUkRfUE9SVFM9MzIKIyBDT05GSUdfTE5FVCBp
-cyBub3Qgc2V0CiMgQ09ORklHX0RHTkMgaXMgbm90IHNldAojIENPTkZJR19HU19GUEdBQk9PVCBp
-cyBub3Qgc2V0CiMgQ09ORklHX0NSWVBUT19TS0VJTiBpcyBub3Qgc2V0CiMgQ09ORklHX1VOSVNZ
-U1NQQVIgaXMgbm90IHNldAojIENPTkZJR19GQl9URlQgaXMgbm90IHNldAojIENPTkZJR19XSUxD
-MTAwMF9TRElPIGlzIG5vdCBzZXQKIyBDT05GSUdfV0lMQzEwMDBfU1BJIGlzIG5vdCBzZXQKIyBD
-T05GSUdfTU9TVCBpcyBub3Qgc2V0CgojCiMgT2xkIElTRE40TGludXggKGRlcHJlY2F0ZWQpCiMK
-IyBDT05GSUdfS1M3MDEwIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9QTEFURk9STV9ERVZJQ0VTPXkK
-Q09ORklHX0FDRVJfV01JPW0KQ09ORklHX0FDRVJIREY9bQojIENPTkZJR19BTElFTldBUkVfV01J
-IGlzIG5vdCBzZXQKQ09ORklHX0FTVVNfTEFQVE9QPW0KIyBDT05GSUdfREVMTF9TTUJJT1MgaXMg
-bm90IHNldApDT05GSUdfREVMTF9XTUlfQUlPPW0KIyBDT05GSUdfREVMTF9TTU84ODAwIGlzIG5v
-dCBzZXQKIyBDT05GSUdfREVMTF9SQlROIGlzIG5vdCBzZXQKQ09ORklHX0ZVSklUU1VfTEFQVE9Q
-PW0KIyBDT05GSUdfRlVKSVRTVV9MQVBUT1BfREVCVUcgaXMgbm90IHNldApDT05GSUdfRlVKSVRT
-VV9UQUJMRVQ9bQpDT05GSUdfQU1JTE9fUkZLSUxMPW0KQ09ORklHX0hQX0FDQ0VMPW0KIyBDT05G
-SUdfSFBfV0lSRUxFU1MgaXMgbm90IHNldApDT05GSUdfSFBfV01JPW0KQ09ORklHX01TSV9MQVBU
-T1A9bQpDT05GSUdfUEFOQVNPTklDX0xBUFRPUD1tCkNPTkZJR19DT01QQUxfTEFQVE9QPW0KQ09O
-RklHX1NPTllfTEFQVE9QPW0KQ09ORklHX1NPTllQSV9DT01QQVQ9eQpDT05GSUdfSURFQVBBRF9M
-QVBUT1A9bQpDT05GSUdfVEhJTktQQURfQUNQST1tCkNPTkZJR19USElOS1BBRF9BQ1BJX0FMU0Ff
-U1VQUE9SVD15CiMgQ09ORklHX1RISU5LUEFEX0FDUElfREVCVUdGQUNJTElUSUVTIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfVEhJTktQQURfQUNQSV9ERUJVRyBpcyBub3Qgc2V0CiMgQ09ORklHX1RISU5L
-UEFEX0FDUElfVU5TQUZFX0xFRFMgaXMgbm90IHNldApDT05GSUdfVEhJTktQQURfQUNQSV9WSURF
-Tz15CkNPTkZJR19USElOS1BBRF9BQ1BJX0hPVEtFWV9QT0xMPXkKQ09ORklHX1NFTlNPUlNfSERB
-UFM9bQojIENPTkZJR19JTlRFTF9NRU5MT1cgaXMgbm90IHNldApDT05GSUdfRUVFUENfTEFQVE9Q
-PW0KQ09ORklHX0FTVVNfV01JPW0KQ09ORklHX0FTVVNfTkJfV01JPW0KQ09ORklHX0VFRVBDX1dN
-ST1tCiMgQ09ORklHX0FTVVNfV0lSRUxFU1MgaXMgbm90IHNldApDT05GSUdfQUNQSV9XTUk9bQpD
-T05GSUdfTVNJX1dNST1tCkNPTkZJR19UT1BTVEFSX0xBUFRPUD1tCkNPTkZJR19UT1NISUJBX0JU
-X1JGS0lMTD1tCiMgQ09ORklHX1RPU0hJQkFfSEFQUyBpcyBub3Qgc2V0CiMgQ09ORklHX1RPU0hJ
-QkFfV01JIGlzIG5vdCBzZXQKQ09ORklHX0FDUElfQ01QQz1tCiMgQ09ORklHX0lOVEVMX0hJRF9F
-VkVOVCBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX1ZCVE4gaXMgbm90IHNldApDT05GSUdfSU5U
-RUxfSVBTPW0KIyBDT05GSUdfSU5URUxfUE1DX0NPUkUgaXMgbm90IHNldAojIENPTkZJR19JQk1f
-UlRMIGlzIG5vdCBzZXQKQ09ORklHX1NBTVNVTkdfTEFQVE9QPW0KQ09ORklHX01YTV9XTUk9bQpD
-T05GSUdfSU5URUxfT0FLVFJBSUw9bQpDT05GSUdfU0FNU1VOR19RMTA9bQpDT05GSUdfQVBQTEVf
-R01VWD1tCiMgQ09ORklHX0lOVEVMX1JTVCBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX1NNQVJU
-Q09OTkVDVCBpcyBub3Qgc2V0CkNPTkZJR19QVlBBTklDPXkKIyBDT05GSUdfSU5URUxfUE1DX0lQ
-QyBpcyBub3Qgc2V0CiMgQ09ORklHX1NVUkZBQ0VfUFJPM19CVVRUT04gaXMgbm90IHNldAojIENP
-TkZJR19JTlRFTF9QVU5JVF9JUEMgaXMgbm90IHNldAojIENPTkZJR19DSFJPTUVfUExBVEZPUk1T
-IGlzIG5vdCBzZXQKQ09ORklHX0NMS0RFVl9MT09LVVA9eQpDT05GSUdfSEFWRV9DTEtfUFJFUEFS
-RT15CkNPTkZJR19DT01NT05fQ0xLPXkKCiMKIyBDb21tb24gQ2xvY2sgRnJhbWV3b3JrCiMKIyBD
-T05GSUdfQ09NTU9OX0NMS19TSTUzNTEgaXMgbm90IHNldAojIENPTkZJR19DT01NT05fQ0xLX0NE
-Q0U3MDYgaXMgbm90IHNldAojIENPTkZJR19DT01NT05fQ0xLX0NTMjAwMF9DUCBpcyBub3Qgc2V0
-CiMgQ09ORklHX0NPTU1PTl9DTEtfTlhQIGlzIG5vdCBzZXQKIyBDT05GSUdfQ09NTU9OX0NMS19Q
-V00gaXMgbm90IHNldAojIENPTkZJR19DT01NT05fQ0xLX1BYQSBpcyBub3Qgc2V0CiMgQ09ORklH
-X0NPTU1PTl9DTEtfUElDMzIgaXMgbm90IHNldAojIENPTkZJR19TVU5YSV9DQ1UgaXMgbm90IHNl
-dAoKIwojIEhhcmR3YXJlIFNwaW5sb2NrIGRyaXZlcnMKIwoKIwojIENsb2NrIFNvdXJjZSBkcml2
-ZXJzCiMKQ09ORklHX0NMS0VWVF9JODI1Mz15CkNPTkZJR19JODI1M19MT0NLPXkKQ09ORklHX0NM
-S0JMRF9JODI1Mz15CiMgQ09ORklHX0FUTUVMX1BJVCBpcyBub3Qgc2V0CiMgQ09ORklHX1NIX1RJ
-TUVSX0NNVCBpcyBub3Qgc2V0CiMgQ09ORklHX1NIX1RJTUVSX01UVTIgaXMgbm90IHNldAojIENP
-TkZJR19TSF9USU1FUl9UTVUgaXMgbm90IHNldAojIENPTkZJR19FTV9USU1FUl9TVEkgaXMgbm90
-IHNldAojIENPTkZJR19NQUlMQk9YIGlzIG5vdCBzZXQKQ09ORklHX0lPTU1VX0FQST15CkNPTkZJ
-R19JT01NVV9TVVBQT1JUPXkKCiMKIyBHZW5lcmljIElPTU1VIFBhZ2V0YWJsZSBTdXBwb3J0CiMK
-Q09ORklHX0lPTU1VX0lPVkE9eQpDT05GSUdfQU1EX0lPTU1VPXkKQ09ORklHX0FNRF9JT01NVV9W
-Mj1tCkNPTkZJR19ETUFSX1RBQkxFPXkKQ09ORklHX0lOVEVMX0lPTU1VPXkKIyBDT05GSUdfSU5U
-RUxfSU9NTVVfU1ZNIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5URUxfSU9NTVVfREVGQVVMVF9PTiBp
-cyBub3Qgc2V0CkNPTkZJR19JTlRFTF9JT01NVV9GTE9QUFlfV0E9eQpDT05GSUdfSVJRX1JFTUFQ
-PXkKCiMKIyBSZW1vdGVwcm9jIGRyaXZlcnMKIwojIENPTkZJR19TVEVfTU9ERU1fUlBST0MgaXMg
-bm90IHNldAoKIwojIFJwbXNnIGRyaXZlcnMKIwoKIwojIFNPQyAoU3lzdGVtIE9uIENoaXApIHNw
-ZWNpZmljIERyaXZlcnMKIwoKIwojIEJyb2FkY29tIFNvQyBkcml2ZXJzCiMKIyBDT05GSUdfU1VO
-WElfU1JBTSBpcyBub3Qgc2V0CiMgQ09ORklHX1NPQ19USSBpcyBub3Qgc2V0CkNPTkZJR19QTV9E
-RVZGUkVRPXkKCiMKIyBERVZGUkVRIEdvdmVybm9ycwojCkNPTkZJR19ERVZGUkVRX0dPVl9TSU1Q
-TEVfT05ERU1BTkQ9bQojIENPTkZJR19ERVZGUkVRX0dPVl9QRVJGT1JNQU5DRSBpcyBub3Qgc2V0
-CiMgQ09ORklHX0RFVkZSRVFfR09WX1BPV0VSU0FWRSBpcyBub3Qgc2V0CiMgQ09ORklHX0RFVkZS
-RVFfR09WX1VTRVJTUEFDRSBpcyBub3Qgc2V0CiMgQ09ORklHX0RFVkZSRVFfR09WX1BBU1NJVkUg
-aXMgbm90IHNldAoKIwojIERFVkZSRVEgRHJpdmVycwojCiMgQ09ORklHX1BNX0RFVkZSRVFfRVZF
-TlQgaXMgbm90IHNldAojIENPTkZJR19FWFRDT04gaXMgbm90IHNldAojIENPTkZJR19NRU1PUlkg
-aXMgbm90IHNldAojIENPTkZJR19JSU8gaXMgbm90IHNldApDT05GSUdfTlRCPW0KIyBDT05GSUdf
-TlRCX0FNRCBpcyBub3Qgc2V0CiMgQ09ORklHX05UQl9JTlRFTCBpcyBub3Qgc2V0CiMgQ09ORklH
-X05UQl9QSU5HUE9ORyBpcyBub3Qgc2V0CiMgQ09ORklHX05UQl9UT09MIGlzIG5vdCBzZXQKIyBD
-T05GSUdfTlRCX1BFUkYgaXMgbm90IHNldAojIENPTkZJR19OVEJfVFJBTlNQT1JUIGlzIG5vdCBz
-ZXQKIyBDT05GSUdfVk1FX0JVUyBpcyBub3Qgc2V0CkNPTkZJR19QV009eQpDT05GSUdfUFdNX1NZ
-U0ZTPXkKIyBDT05GSUdfUFdNX0xQU1NfUENJIGlzIG5vdCBzZXQKIyBDT05GSUdfUFdNX0xQU1Nf
-UExBVEZPUk0gaXMgbm90IHNldAojIENPTkZJR19QV01fUENBOTY4NSBpcyBub3Qgc2V0CkNPTkZJ
-R19BUk1fR0lDX01BWF9OUj0xCiMgQ09ORklHX0lQQUNLX0JVUyBpcyBub3Qgc2V0CiMgQ09ORklH
-X1JFU0VUX0NPTlRST0xMRVIgaXMgbm90IHNldAojIENPTkZJR19GTUMgaXMgbm90IHNldAoKIwoj
-IFBIWSBTdWJzeXN0ZW0KIwpDT05GSUdfR0VORVJJQ19QSFk9eQojIENPTkZJR19QSFlfUFhBXzI4
-Tk1fSFNJQyBpcyBub3Qgc2V0CiMgQ09ORklHX1BIWV9QWEFfMjhOTV9VU0IyIGlzIG5vdCBzZXQK
-IyBDT05GSUdfQkNNX0tPTkFfVVNCMl9QSFkgaXMgbm90IHNldApDT05GSUdfUE9XRVJDQVA9eQpD
-T05GSUdfSU5URUxfUkFQTD1tCiMgQ09ORklHX01DQiBpcyBub3Qgc2V0CgojCiMgUGVyZm9ybWFu
-Y2UgbW9uaXRvciBzdXBwb3J0CiMKQ09ORklHX1JBUz15CiMgQ09ORklHX01DRV9BTURfSU5KIGlz
-IG5vdCBzZXQKIyBDT05GSUdfVEhVTkRFUkJPTFQgaXMgbm90IHNldAoKIwojIEFuZHJvaWQKIwoj
-IENPTkZJR19BTkRST0lEIGlzIG5vdCBzZXQKQ09ORklHX0xJQk5WRElNTT1tCkNPTkZJR19CTEtf
-REVWX1BNRU09bQpDT05GSUdfTkRfQkxLPW0KQ09ORklHX05EX0NMQUlNPXkKQ09ORklHX05EX0JU
-VD1tCkNPTkZJR19CVFQ9eQpDT05GSUdfTkRfUEZOPW0KQ09ORklHX05WRElNTV9QRk49eQpDT05G
-SUdfTlZESU1NX0RBWD15CkNPTkZJR19ERVZfREFYPW0KQ09ORklHX0RFVl9EQVhfUE1FTT1tCkNP
-TkZJR19OVk1FTT1tCiMgQ09ORklHX1NUTSBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX1RIIGlz
-IG5vdCBzZXQKCiMKIyBGUEdBIENvbmZpZ3VyYXRpb24gU3VwcG9ydAojCiMgQ09ORklHX0ZQR0Eg
-aXMgbm90IHNldAoKIwojIEZpcm13YXJlIERyaXZlcnMKIwpDT05GSUdfRUREPW0KIyBDT05GSUdf
-RUREX09GRiBpcyBub3Qgc2V0CkNPTkZJR19GSVJNV0FSRV9NRU1NQVA9eQpDT05GSUdfREVMTF9S
-QlU9bQpDT05GSUdfRENEQkFTPW0KQ09ORklHX0RNSUlEPXkKQ09ORklHX0RNSV9TWVNGUz15CkNP
-TkZJR19ETUlfU0NBTl9NQUNISU5FX05PTl9FRklfRkFMTEJBQ0s9eQpDT05GSUdfSVNDU0lfSUJG
-VF9GSU5EPXkKQ09ORklHX0lTQ1NJX0lCRlQ9bQojIENPTkZJR19GV19DRkdfU1lTRlMgaXMgbm90
-IHNldAojIENPTkZJR19HT09HTEVfRklSTVdBUkUgaXMgbm90IHNldAoKIwojIEVGSSAoRXh0ZW5z
-aWJsZSBGaXJtd2FyZSBJbnRlcmZhY2UpIFN1cHBvcnQKIwpDT05GSUdfRUZJX1ZBUlM9eQpDT05G
-SUdfRUZJX0VTUlQ9eQpDT05GSUdfRUZJX1ZBUlNfUFNUT1JFPXkKQ09ORklHX0VGSV9WQVJTX1BT
-VE9SRV9ERUZBVUxUX0RJU0FCTEU9eQpDT05GSUdfRUZJX1JVTlRJTUVfTUFQPXkKIyBDT05GSUdf
-RUZJX0ZBS0VfTUVNTUFQIGlzIG5vdCBzZXQKQ09ORklHX0VGSV9SVU5USU1FX1dSQVBQRVJTPXkK
-IyBDT05GSUdfRUZJX0JPT1RMT0FERVJfQ09OVFJPTCBpcyBub3Qgc2V0CiMgQ09ORklHX0VGSV9D
-QVBTVUxFX0xPQURFUiBpcyBub3Qgc2V0CkNPTkZJR19VRUZJX0NQRVI9eQoKIwojIEZpbGUgc3lz
-dGVtcwojCkNPTkZJR19EQ0FDSEVfV09SRF9BQ0NFU1M9eQpDT05GSUdfRlNfSU9NQVA9eQojIENP
-TkZJR19FWFQyX0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfRVhUM19GUyBpcyBub3Qgc2V0CkNPTkZJ
-R19FWFQ0X0ZTPXkKQ09ORklHX0VYVDRfVVNFX0ZPUl9FWFQyPXkKQ09ORklHX0VYVDRfRlNfUE9T
-SVhfQUNMPXkKQ09ORklHX0VYVDRfRlNfU0VDVVJJVFk9eQojIENPTkZJR19FWFQ0X0VOQ1JZUFRJ
-T04gaXMgbm90IHNldAojIENPTkZJR19FWFQ0X0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX0pCRDI9
-eQojIENPTkZJR19KQkQyX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX0ZTX01CQ0FDSEU9eQojIENP
-TkZJR19SRUlTRVJGU19GUyBpcyBub3Qgc2V0CiMgQ09ORklHX0pGU19GUyBpcyBub3Qgc2V0CkNP
-TkZJR19YRlNfRlM9eQpDT05GSUdfWEZTX1FVT1RBPXkKQ09ORklHX1hGU19QT1NJWF9BQ0w9eQoj
-IENPTkZJR19YRlNfUlQgaXMgbm90IHNldAojIENPTkZJR19YRlNfV0FSTiBpcyBub3Qgc2V0CiMg
-Q09ORklHX1hGU19ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19HRlMyX0ZTPW0KQ09ORklHX0dGUzJf
-RlNfTE9DS0lOR19ETE09eQojIENPTkZJR19PQ0ZTMl9GUyBpcyBub3Qgc2V0CkNPTkZJR19CVFJG
-U19GUz1tCkNPTkZJR19CVFJGU19GU19QT1NJWF9BQ0w9eQojIENPTkZJR19CVFJGU19GU19DSEVD
-S19JTlRFR1JJVFkgaXMgbm90IHNldAojIENPTkZJR19CVFJGU19GU19SVU5fU0FOSVRZX1RFU1RT
-IGlzIG5vdCBzZXQKIyBDT05GSUdfQlRSRlNfREVCVUcgaXMgbm90IHNldAojIENPTkZJR19CVFJG
-U19BU1NFUlQgaXMgbm90IHNldAojIENPTkZJR19OSUxGUzJfRlMgaXMgbm90IHNldApDT05GSUdf
-RjJGU19GUz1tCkNPTkZJR19GMkZTX1NUQVRfRlM9eQpDT05GSUdfRjJGU19GU19YQVRUUj15CkNP
-TkZJR19GMkZTX0ZTX1BPU0lYX0FDTD15CiMgQ09ORklHX0YyRlNfRlNfU0VDVVJJVFkgaXMgbm90
-IHNldAojIENPTkZJR19GMkZTX0NIRUNLX0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfRjJGU19GU19F
-TkNSWVBUSU9OIGlzIG5vdCBzZXQKIyBDT05GSUdfRjJGU19JT19UUkFDRSBpcyBub3Qgc2V0CiMg
-Q09ORklHX0YyRlNfRkFVTFRfSU5KRUNUSU9OIGlzIG5vdCBzZXQKQ09ORklHX0ZTX0RBWD15CkNP
-TkZJR19GU19QT1NJWF9BQ0w9eQpDT05GSUdfRVhQT1JURlM9eQojIENPTkZJR19FWFBPUlRGU19C
-TE9DS19PUFMgaXMgbm90IHNldApDT05GSUdfRklMRV9MT0NLSU5HPXkKQ09ORklHX01BTkRBVE9S
-WV9GSUxFX0xPQ0tJTkc9eQojIENPTkZJR19GU19FTkNSWVBUSU9OIGlzIG5vdCBzZXQKQ09ORklH
-X0ZTTk9USUZZPXkKQ09ORklHX0ROT1RJRlk9eQpDT05GSUdfSU5PVElGWV9VU0VSPXkKQ09ORklH
-X0ZBTk9USUZZPXkKQ09ORklHX0ZBTk9USUZZX0FDQ0VTU19QRVJNSVNTSU9OUz15CkNPTkZJR19R
-VU9UQT15CkNPTkZJR19RVU9UQV9ORVRMSU5LX0lOVEVSRkFDRT15CkNPTkZJR19QUklOVF9RVU9U
-QV9XQVJOSU5HPXkKIyBDT05GSUdfUVVPVEFfREVCVUcgaXMgbm90IHNldApDT05GSUdfUVVPVEFf
-VFJFRT15CiMgQ09ORklHX1FGTVRfVjEgaXMgbm90IHNldApDT05GSUdfUUZNVF9WMj15CkNPTkZJ
-R19RVU9UQUNUTD15CkNPTkZJR19RVU9UQUNUTF9DT01QQVQ9eQpDT05GSUdfQVVUT0ZTNF9GUz15
-CkNPTkZJR19GVVNFX0ZTPW0KQ09ORklHX0NVU0U9bQpDT05GSUdfT1ZFUkxBWV9GUz1tCgojCiMg
-Q2FjaGVzCiMKQ09ORklHX0ZTQ0FDSEU9bQpDT05GSUdfRlNDQUNIRV9TVEFUUz15CiMgQ09ORklH
-X0ZTQ0FDSEVfSElTVE9HUkFNIGlzIG5vdCBzZXQKIyBDT05GSUdfRlNDQUNIRV9ERUJVRyBpcyBu
-b3Qgc2V0CiMgQ09ORklHX0ZTQ0FDSEVfT0JKRUNUX0xJU1QgaXMgbm90IHNldApDT05GSUdfQ0FD
-SEVGSUxFUz1tCiMgQ09ORklHX0NBQ0hFRklMRVNfREVCVUcgaXMgbm90IHNldAojIENPTkZJR19D
-QUNIRUZJTEVTX0hJU1RPR1JBTSBpcyBub3Qgc2V0CgojCiMgQ0QtUk9NL0RWRCBGaWxlc3lzdGVt
-cwojCkNPTkZJR19JU085NjYwX0ZTPW0KQ09ORklHX0pPTElFVD15CkNPTkZJR19aSVNPRlM9eQpD
-T05GSUdfVURGX0ZTPW0KQ09ORklHX1VERl9OTFM9eQoKIwojIERPUy9GQVQvTlQgRmlsZXN5c3Rl
-bXMKIwpDT05GSUdfRkFUX0ZTPW0KQ09ORklHX01TRE9TX0ZTPW0KQ09ORklHX1ZGQVRfRlM9bQpD
-T05GSUdfRkFUX0RFRkFVTFRfQ09ERVBBR0U9NDM3CkNPTkZJR19GQVRfREVGQVVMVF9JT0NIQVJT
-RVQ9ImFzY2lpIgojIENPTkZJR19GQVRfREVGQVVMVF9VVEY4IGlzIG5vdCBzZXQKIyBDT05GSUdf
-TlRGU19GUyBpcyBub3Qgc2V0CgojCiMgUHNldWRvIGZpbGVzeXN0ZW1zCiMKQ09ORklHX1BST0Nf
-RlM9eQpDT05GSUdfUFJPQ19LQ09SRT15CkNPTkZJR19QUk9DX1ZNQ09SRT15CkNPTkZJR19QUk9D
-X1NZU0NUTD15CkNPTkZJR19QUk9DX1BBR0VfTU9OSVRPUj15CiMgQ09ORklHX1BST0NfQ0hJTERS
-RU4gaXMgbm90IHNldApDT05GSUdfS0VSTkZTPXkKQ09ORklHX1NZU0ZTPXkKQ09ORklHX1RNUEZT
-PXkKQ09ORklHX1RNUEZTX1BPU0lYX0FDTD15CkNPTkZJR19UTVBGU19YQVRUUj15CkNPTkZJR19I
-VUdFVExCRlM9eQpDT05GSUdfSFVHRVRMQl9QQUdFPXkKQ09ORklHX0NPTkZJR0ZTX0ZTPXkKQ09O
-RklHX0VGSVZBUl9GUz15CkNPTkZJR19NSVNDX0ZJTEVTWVNURU1TPXkKIyBDT05GSUdfT1JBTkdF
-RlNfRlMgaXMgbm90IHNldAojIENPTkZJR19BREZTX0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfQUZG
-U19GUyBpcyBub3Qgc2V0CiMgQ09ORklHX0VDUllQVF9GUyBpcyBub3Qgc2V0CiMgQ09ORklHX0hG
-U19GUyBpcyBub3Qgc2V0CiMgQ09ORklHX0hGU1BMVVNfRlMgaXMgbm90IHNldAojIENPTkZJR19C
-RUZTX0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfQkZTX0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfRUZT
-X0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfSkZGUzJfRlMgaXMgbm90IHNldAojIENPTkZJR19VQklG
-U19GUyBpcyBub3Qgc2V0CiMgQ09ORklHX0xPR0ZTIGlzIG5vdCBzZXQKQ09ORklHX0NSQU1GUz1t
-CkNPTkZJR19TUVVBU0hGUz1tCkNPTkZJR19TUVVBU0hGU19GSUxFX0NBQ0hFPXkKIyBDT05GSUdf
-U1FVQVNIRlNfRklMRV9ESVJFQ1QgaXMgbm90IHNldApDT05GSUdfU1FVQVNIRlNfREVDT01QX1NJ
-TkdMRT15CiMgQ09ORklHX1NRVUFTSEZTX0RFQ09NUF9NVUxUSSBpcyBub3Qgc2V0CiMgQ09ORklH
-X1NRVUFTSEZTX0RFQ09NUF9NVUxUSV9QRVJDUFUgaXMgbm90IHNldApDT05GSUdfU1FVQVNIRlNf
-WEFUVFI9eQpDT05GSUdfU1FVQVNIRlNfWkxJQj15CiMgQ09ORklHX1NRVUFTSEZTX0xaNCBpcyBu
-b3Qgc2V0CkNPTkZJR19TUVVBU0hGU19MWk89eQpDT05GSUdfU1FVQVNIRlNfWFo9eQojIENPTkZJ
-R19TUVVBU0hGU180S19ERVZCTEtfU0laRSBpcyBub3Qgc2V0CiMgQ09ORklHX1NRVUFTSEZTX0VN
-QkVEREVEIGlzIG5vdCBzZXQKQ09ORklHX1NRVUFTSEZTX0ZSQUdNRU5UX0NBQ0hFX1NJWkU9Mwoj
-IENPTkZJR19WWEZTX0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfTUlOSVhfRlMgaXMgbm90IHNldAoj
-IENPTkZJR19PTUZTX0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfSFBGU19GUyBpcyBub3Qgc2V0CiMg
-Q09ORklHX1FOWDRGU19GUyBpcyBub3Qgc2V0CiMgQ09ORklHX1FOWDZGU19GUyBpcyBub3Qgc2V0
-CiMgQ09ORklHX1JPTUZTX0ZTIGlzIG5vdCBzZXQKQ09ORklHX1BTVE9SRT15CkNPTkZJR19QU1RP
-UkVfWkxJQl9DT01QUkVTUz15CiMgQ09ORklHX1BTVE9SRV9MWk9fQ09NUFJFU1MgaXMgbm90IHNl
-dAojIENPTkZJR19QU1RPUkVfTFo0X0NPTVBSRVNTIGlzIG5vdCBzZXQKIyBDT05GSUdfUFNUT1JF
-X0NPTlNPTEUgaXMgbm90IHNldAojIENPTkZJR19QU1RPUkVfUE1TRyBpcyBub3Qgc2V0CiMgQ09O
-RklHX1BTVE9SRV9GVFJBQ0UgaXMgbm90IHNldApDT05GSUdfUFNUT1JFX1JBTT1tCiMgQ09ORklH
-X1NZU1ZfRlMgaXMgbm90IHNldAojIENPTkZJR19VRlNfRlMgaXMgbm90IHNldAojIENPTkZJR19F
-WE9GU19GUyBpcyBub3Qgc2V0CkNPTkZJR19PUkU9bQpDT05GSUdfTkVUV09SS19GSUxFU1lTVEVN
-Uz15CkNPTkZJR19ORlNfRlM9eQojIENPTkZJR19ORlNfVjIgaXMgbm90IHNldApDT05GSUdfTkZT
-X1YzPXkKQ09ORklHX05GU19WM19BQ0w9eQpDT05GSUdfTkZTX1Y0PW0KIyBDT05GSUdfTkZTX1NX
-QVAgaXMgbm90IHNldApDT05GSUdfTkZTX1Y0XzE9eQpDT05GSUdfTkZTX1Y0XzI9eQpDT05GSUdf
-UE5GU19GSUxFX0xBWU9VVD1tCkNPTkZJR19QTkZTX0JMT0NLPW0KQ09ORklHX1BORlNfT0JKTEFZ
-T1VUPW0KQ09ORklHX1BORlNfRkxFWEZJTEVfTEFZT1VUPW0KQ09ORklHX05GU19WNF8xX0lNUExF
-TUVOVEFUSU9OX0lEX0RPTUFJTj0ia2VybmVsLm9yZyIKIyBDT05GSUdfTkZTX1Y0XzFfTUlHUkFU
-SU9OIGlzIG5vdCBzZXQKQ09ORklHX05GU19WNF9TRUNVUklUWV9MQUJFTD15CkNPTkZJR19ST09U
-X05GUz15CiMgQ09ORklHX05GU19VU0VfTEVHQUNZX0ROUyBpcyBub3Qgc2V0CkNPTkZJR19ORlNf
-VVNFX0tFUk5FTF9ETlM9eQpDT05GSUdfTkZTX0RFQlVHPXkKQ09ORklHX05GU0Q9bQpDT05GSUdf
-TkZTRF9WMl9BQ0w9eQpDT05GSUdfTkZTRF9WMz15CkNPTkZJR19ORlNEX1YzX0FDTD15CkNPTkZJ
-R19ORlNEX1Y0PXkKIyBDT05GSUdfTkZTRF9CTE9DS0xBWU9VVCBpcyBub3Qgc2V0CiMgQ09ORklH
-X05GU0RfU0NTSUxBWU9VVCBpcyBub3Qgc2V0CiMgQ09ORklHX05GU0RfRkxFWEZJTEVMQVlPVVQg
-aXMgbm90IHNldApDT05GSUdfTkZTRF9WNF9TRUNVUklUWV9MQUJFTD15CiMgQ09ORklHX05GU0Rf
-RkFVTFRfSU5KRUNUSU9OIGlzIG5vdCBzZXQKQ09ORklHX0dSQUNFX1BFUklPRD15CkNPTkZJR19M
-T0NLRD15CkNPTkZJR19MT0NLRF9WND15CkNPTkZJR19ORlNfQUNMX1NVUFBPUlQ9eQpDT05GSUdf
-TkZTX0NPTU1PTj15CkNPTkZJR19TVU5SUEM9eQpDT05GSUdfU1VOUlBDX0dTUz1tCkNPTkZJR19T
-VU5SUENfQkFDS0NIQU5ORUw9eQpDT05GSUdfUlBDU0VDX0dTU19LUkI1PW0KQ09ORklHX1NVTlJQ
-Q19ERUJVRz15CiMgQ09ORklHX0NFUEhfRlMgaXMgbm90IHNldApDT05GSUdfQ0lGUz1tCkNPTkZJ
-R19DSUZTX1NUQVRTPXkKIyBDT05GSUdfQ0lGU19TVEFUUzIgaXMgbm90IHNldApDT05GSUdfQ0lG
-U19XRUFLX1BXX0hBU0g9eQpDT05GSUdfQ0lGU19VUENBTEw9eQpDT05GSUdfQ0lGU19YQVRUUj15
-CkNPTkZJR19DSUZTX1BPU0lYPXkKQ09ORklHX0NJRlNfQUNMPXkKQ09ORklHX0NJRlNfREVCVUc9
-eQojIENPTkZJR19DSUZTX0RFQlVHMiBpcyBub3Qgc2V0CkNPTkZJR19DSUZTX0RGU19VUENBTEw9
-eQpDT05GSUdfQ0lGU19TTUIyPXkKIyBDT05GSUdfQ0lGU19TTUIzMTEgaXMgbm90IHNldAojIENP
-TkZJR19DSUZTX0ZTQ0FDSEUgaXMgbm90IHNldAojIENPTkZJR19OQ1BfRlMgaXMgbm90IHNldAoj
-IENPTkZJR19DT0RBX0ZTIGlzIG5vdCBzZXQKIyBDT05GSUdfQUZTX0ZTIGlzIG5vdCBzZXQKQ09O
-RklHXzlQX0ZTPXkKQ09ORklHXzlQX0ZTX1BPU0lYX0FDTD15CiMgQ09ORklHXzlQX0ZTX1NFQ1VS
-SVRZIGlzIG5vdCBzZXQKQ09ORklHX05MUz15CkNPTkZJR19OTFNfREVGQVVMVD0idXRmOCIKQ09O
-RklHX05MU19DT0RFUEFHRV80Mzc9eQpDT05GSUdfTkxTX0NPREVQQUdFXzczNz1tCkNPTkZJR19O
-TFNfQ09ERVBBR0VfNzc1PW0KQ09ORklHX05MU19DT0RFUEFHRV84NTA9bQpDT05GSUdfTkxTX0NP
-REVQQUdFXzg1Mj1tCkNPTkZJR19OTFNfQ09ERVBBR0VfODU1PW0KQ09ORklHX05MU19DT0RFUEFH
-RV84NTc9bQpDT05GSUdfTkxTX0NPREVQQUdFXzg2MD1tCkNPTkZJR19OTFNfQ09ERVBBR0VfODYx
-PW0KQ09ORklHX05MU19DT0RFUEFHRV84NjI9bQpDT05GSUdfTkxTX0NPREVQQUdFXzg2Mz1tCkNP
-TkZJR19OTFNfQ09ERVBBR0VfODY0PW0KQ09ORklHX05MU19DT0RFUEFHRV84NjU9bQpDT05GSUdf
-TkxTX0NPREVQQUdFXzg2Nj1tCkNPTkZJR19OTFNfQ09ERVBBR0VfODY5PW0KQ09ORklHX05MU19D
-T0RFUEFHRV85MzY9bQpDT05GSUdfTkxTX0NPREVQQUdFXzk1MD1tCkNPTkZJR19OTFNfQ09ERVBB
-R0VfOTMyPW0KQ09ORklHX05MU19DT0RFUEFHRV85NDk9bQpDT05GSUdfTkxTX0NPREVQQUdFXzg3
-ND1tCkNPTkZJR19OTFNfSVNPODg1OV84PW0KQ09ORklHX05MU19DT0RFUEFHRV8xMjUwPW0KQ09O
-RklHX05MU19DT0RFUEFHRV8xMjUxPW0KQ09ORklHX05MU19BU0NJST15CkNPTkZJR19OTFNfSVNP
-ODg1OV8xPW0KQ09ORklHX05MU19JU084ODU5XzI9bQpDT05GSUdfTkxTX0lTTzg4NTlfMz1tCkNP
-TkZJR19OTFNfSVNPODg1OV80PW0KQ09ORklHX05MU19JU084ODU5XzU9bQpDT05GSUdfTkxTX0lT
-Tzg4NTlfNj1tCkNPTkZJR19OTFNfSVNPODg1OV83PW0KQ09ORklHX05MU19JU084ODU5Xzk9bQpD
-T05GSUdfTkxTX0lTTzg4NTlfMTM9bQpDT05GSUdfTkxTX0lTTzg4NTlfMTQ9bQpDT05GSUdfTkxT
-X0lTTzg4NTlfMTU9bQpDT05GSUdfTkxTX0tPSThfUj1tCkNPTkZJR19OTFNfS09JOF9VPW0KQ09O
-RklHX05MU19NQUNfUk9NQU49bQpDT05GSUdfTkxTX01BQ19DRUxUSUM9bQpDT05GSUdfTkxTX01B
-Q19DRU5URVVSTz1tCkNPTkZJR19OTFNfTUFDX0NST0FUSUFOPW0KQ09ORklHX05MU19NQUNfQ1lS
-SUxMSUM9bQpDT05GSUdfTkxTX01BQ19HQUVMSUM9bQpDT05GSUdfTkxTX01BQ19HUkVFSz1tCkNP
-TkZJR19OTFNfTUFDX0lDRUxBTkQ9bQpDT05GSUdfTkxTX01BQ19JTlVJVD1tCkNPTkZJR19OTFNf
-TUFDX1JPTUFOSUFOPW0KQ09ORklHX05MU19NQUNfVFVSS0lTSD1tCkNPTkZJR19OTFNfVVRGOD1t
-CkNPTkZJR19ETE09bQpDT05GSUdfRExNX0RFQlVHPXkKCiMKIyBLZXJuZWwgaGFja2luZwojCkNP
-TkZJR19UUkFDRV9JUlFGTEFHU19TVVBQT1JUPXkKCiMKIyBwcmludGsgYW5kIGRtZXNnIG9wdGlv
-bnMKIwpDT05GSUdfUFJJTlRLX1RJTUU9eQpDT05GSUdfTUVTU0FHRV9MT0dMRVZFTF9ERUZBVUxU
-PTQKQ09ORklHX0JPT1RfUFJJTlRLX0RFTEFZPXkKQ09ORklHX0RZTkFNSUNfREVCVUc9eQoKIwoj
-IENvbXBpbGUtdGltZSBjaGVja3MgYW5kIGNvbXBpbGVyIG9wdGlvbnMKIwojIENPTkZJR19ERUJV
-R19JTkZPIGlzIG5vdCBzZXQKIyBDT05GSUdfRU5BQkxFX1dBUk5fREVQUkVDQVRFRCBpcyBub3Qg
-c2V0CkNPTkZJR19FTkFCTEVfTVVTVF9DSEVDSz15CkNPTkZJR19GUkFNRV9XQVJOPTIwNDgKQ09O
-RklHX1NUUklQX0FTTV9TWU1TPXkKIyBDT05GSUdfUkVBREFCTEVfQVNNIGlzIG5vdCBzZXQKIyBD
-T05GSUdfVU5VU0VEX1NZTUJPTFMgaXMgbm90IHNldAojIENPTkZJR19QQUdFX09XTkVSIGlzIG5v
-dCBzZXQKQ09ORklHX0RFQlVHX0ZTPXkKQ09ORklHX0hFQURFUlNfQ0hFQ0s9eQpDT05GSUdfREVC
-VUdfU0VDVElPTl9NSVNNQVRDSD15CkNPTkZJR19TRUNUSU9OX01JU01BVENIX1dBUk5fT05MWT15
-CkNPTkZJR19BUkNIX1dBTlRfRlJBTUVfUE9JTlRFUlM9eQpDT05GSUdfRlJBTUVfUE9JTlRFUj15
-CiMgQ09ORklHX1NUQUNLX1ZBTElEQVRJT04gaXMgbm90IHNldAojIENPTkZJR19ERUJVR19GT1JD
-RV9XRUFLX1BFUl9DUFUgaXMgbm90IHNldApDT05GSUdfTUFHSUNfU1lTUlE9eQpDT05GSUdfTUFH
-SUNfU1lTUlFfREVGQVVMVF9FTkFCTEU9MHgxCkNPTkZJR19ERUJVR19LRVJORUw9eQoKIwojIE1l
-bW9yeSBEZWJ1Z2dpbmcKIwojIENPTkZJR19QQUdFX0VYVEVOU0lPTiBpcyBub3Qgc2V0CiMgQ09O
-RklHX0RFQlVHX1BBR0VBTExPQyBpcyBub3Qgc2V0CiMgQ09ORklHX1BBR0VfUE9JU09OSU5HIGlz
-IG5vdCBzZXQKIyBDT05GSUdfREVCVUdfUEFHRV9SRUYgaXMgbm90IHNldAojIENPTkZJR19ERUJV
-R19PQkpFQ1RTIGlzIG5vdCBzZXQKIyBDT05GSUdfU0xVQl9ERUJVR19PTiBpcyBub3Qgc2V0CiMg
-Q09ORklHX1NMVUJfU1RBVFMgaXMgbm90IHNldApDT05GSUdfSEFWRV9ERUJVR19LTUVNTEVBSz15
-CiMgQ09ORklHX0RFQlVHX0tNRU1MRUFLIGlzIG5vdCBzZXQKIyBDT05GSUdfREVCVUdfU1RBQ0tf
-VVNBR0UgaXMgbm90IHNldAojIENPTkZJR19ERUJVR19WTSBpcyBub3Qgc2V0CiMgQ09ORklHX0RF
-QlVHX1ZJUlRVQUwgaXMgbm90IHNldApDT05GSUdfREVCVUdfTUVNT1JZX0lOSVQ9eQpDT05GSUdf
-TUVNT1JZX05PVElGSUVSX0VSUk9SX0lOSkVDVD1tCiMgQ09ORklHX0RFQlVHX1BFUl9DUFVfTUFQ
-UyBpcyBub3Qgc2V0CkNPTkZJR19IQVZFX0RFQlVHX1NUQUNLT1ZFUkZMT1c9eQpDT05GSUdfREVC
-VUdfU1RBQ0tPVkVSRkxPVz15CkNPTkZJR19IQVZFX0FSQ0hfS01FTUNIRUNLPXkKQ09ORklHX0hB
-VkVfQVJDSF9LQVNBTj15CiMgQ09ORklHX0tBU0FOIGlzIG5vdCBzZXQKQ09ORklHX0FSQ0hfSEFT
-X0tDT1Y9eQojIENPTkZJR19LQ09WIGlzIG5vdCBzZXQKQ09ORklHX0RFQlVHX1NISVJRPXkKCiMK
-IyBEZWJ1ZyBMb2NrdXBzIGFuZCBIYW5ncwojCkNPTkZJR19MT0NLVVBfREVURUNUT1I9eQpDT05G
-SUdfSEFSRExPQ0tVUF9ERVRFQ1RPUj15CkNPTkZJR19CT09UUEFSQU1fSEFSRExPQ0tVUF9QQU5J
-Qz15CkNPTkZJR19CT09UUEFSQU1fSEFSRExPQ0tVUF9QQU5JQ19WQUxVRT0xCiMgQ09ORklHX0JP
-T1RQQVJBTV9TT0ZUTE9DS1VQX1BBTklDIGlzIG5vdCBzZXQKQ09ORklHX0JPT1RQQVJBTV9TT0ZU
-TE9DS1VQX1BBTklDX1ZBTFVFPTAKIyBDT05GSUdfREVURUNUX0hVTkdfVEFTSyBpcyBub3Qgc2V0
-CiMgQ09ORklHX1dRX1dBVENIRE9HIGlzIG5vdCBzZXQKQ09ORklHX1BBTklDX09OX09PUFM9eQpD
-T05GSUdfUEFOSUNfT05fT09QU19WQUxVRT0xCkNPTkZJR19QQU5JQ19USU1FT1VUPTAKQ09ORklH
-X1NDSEVEX0RFQlVHPXkKQ09ORklHX1NDSEVEX0lORk89eQpDT05GSUdfU0NIRURTVEFUUz15CiMg
-Q09ORklHX1NDSEVEX1NUQUNLX0VORF9DSEVDSyBpcyBub3Qgc2V0CiMgQ09ORklHX0RFQlVHX1RJ
-TUVLRUVQSU5HIGlzIG5vdCBzZXQKQ09ORklHX1RJTUVSX1NUQVRTPXkKCiMKIyBMb2NrIERlYnVn
-Z2luZyAoc3BpbmxvY2tzLCBtdXRleGVzLCBldGMuLi4pCiMKIyBDT05GSUdfREVCVUdfUlRfTVVU
-RVhFUyBpcyBub3Qgc2V0CiMgQ09ORklHX0RFQlVHX1NQSU5MT0NLIGlzIG5vdCBzZXQKIyBDT05G
-SUdfREVCVUdfTVVURVhFUyBpcyBub3Qgc2V0CiMgQ09ORklHX0RFQlVHX1dXX01VVEVYX1NMT1dQ
-QVRIIGlzIG5vdCBzZXQKIyBDT05GSUdfREVCVUdfTE9DS19BTExPQyBpcyBub3Qgc2V0CiMgQ09O
-RklHX1BST1ZFX0xPQ0tJTkcgaXMgbm90IHNldAojIENPTkZJR19MT0NLX1NUQVQgaXMgbm90IHNl
-dApDT05GSUdfREVCVUdfQVRPTUlDX1NMRUVQPXkKIyBDT05GSUdfREVCVUdfTE9DS0lOR19BUElf
-U0VMRlRFU1RTIGlzIG5vdCBzZXQKQ09ORklHX0xPQ0tfVE9SVFVSRV9URVNUPW0KQ09ORklHX1NU
-QUNLVFJBQ0U9eQojIENPTkZJR19ERUJVR19LT0JKRUNUIGlzIG5vdCBzZXQKQ09ORklHX0RFQlVH
-X0JVR1ZFUkJPU0U9eQpDT05GSUdfREVCVUdfTElTVD15CiMgQ09ORklHX0RFQlVHX1BJX0xJU1Qg
-aXMgbm90IHNldAojIENPTkZJR19ERUJVR19TRyBpcyBub3Qgc2V0CiMgQ09ORklHX0RFQlVHX05P
-VElGSUVSUyBpcyBub3Qgc2V0CiMgQ09ORklHX0RFQlVHX0NSRURFTlRJQUxTIGlzIG5vdCBzZXQK
-CiMKIyBSQ1UgRGVidWdnaW5nCiMKIyBDT05GSUdfUFJPVkVfUkNVIGlzIG5vdCBzZXQKQ09ORklH
-X1NQQVJTRV9SQ1VfUE9JTlRFUj15CkNPTkZJR19UT1JUVVJFX1RFU1Q9bQojIENPTkZJR19SQ1Vf
-UEVSRl9URVNUIGlzIG5vdCBzZXQKQ09ORklHX1JDVV9UT1JUVVJFX1RFU1Q9bQojIENPTkZJR19S
-Q1VfVE9SVFVSRV9URVNUX1NMT1dfUFJFSU5JVCBpcyBub3Qgc2V0CiMgQ09ORklHX1JDVV9UT1JU
-VVJFX1RFU1RfU0xPV19JTklUIGlzIG5vdCBzZXQKIyBDT05GSUdfUkNVX1RPUlRVUkVfVEVTVF9T
-TE9XX0NMRUFOVVAgaXMgbm90IHNldApDT05GSUdfUkNVX0NQVV9TVEFMTF9USU1FT1VUPTYwCiMg
-Q09ORklHX1JDVV9UUkFDRSBpcyBub3Qgc2V0CiMgQ09ORklHX1JDVV9FUVNfREVCVUcgaXMgbm90
-IHNldAojIENPTkZJR19ERUJVR19XUV9GT1JDRV9SUl9DUFUgaXMgbm90IHNldAojIENPTkZJR19E
-RUJVR19CTE9DS19FWFRfREVWVCBpcyBub3Qgc2V0CiMgQ09ORklHX0NQVV9IT1RQTFVHX1NUQVRF
-X0NPTlRST0wgaXMgbm90IHNldApDT05GSUdfTk9USUZJRVJfRVJST1JfSU5KRUNUSU9OPW0KIyBD
-T05GSUdfQ1BVX05PVElGSUVSX0VSUk9SX0lOSkVDVCBpcyBub3Qgc2V0CkNPTkZJR19QTV9OT1RJ
-RklFUl9FUlJPUl9JTkpFQ1Q9bQojIENPTkZJR19ORVRERVZfTk9USUZJRVJfRVJST1JfSU5KRUNU
-IGlzIG5vdCBzZXQKIyBDT05GSUdfRkFVTFRfSU5KRUNUSU9OIGlzIG5vdCBzZXQKQ09ORklHX0xB
-VEVOQ1lUT1A9eQpDT05GSUdfVVNFUl9TVEFDS1RSQUNFX1NVUFBPUlQ9eQpDT05GSUdfTk9QX1RS
-QUNFUj15CkNPTkZJR19IQVZFX0ZVTkNUSU9OX1RSQUNFUj15CkNPTkZJR19IQVZFX0ZVTkNUSU9O
-X0dSQVBIX1RSQUNFUj15CkNPTkZJR19IQVZFX0ZVTkNUSU9OX0dSQVBIX0ZQX1RFU1Q9eQpDT05G
-SUdfSEFWRV9EWU5BTUlDX0ZUUkFDRT15CkNPTkZJR19IQVZFX0RZTkFNSUNfRlRSQUNFX1dJVEhf
-UkVHUz15CkNPTkZJR19IQVZFX0ZUUkFDRV9NQ09VTlRfUkVDT1JEPXkKQ09ORklHX0hBVkVfU1lT
-Q0FMTF9UUkFDRVBPSU5UUz15CkNPTkZJR19IQVZFX0ZFTlRSWT15CkNPTkZJR19IQVZFX0NfUkVD
-T1JETUNPVU5UPXkKQ09ORklHX1RSQUNFUl9NQVhfVFJBQ0U9eQpDT05GSUdfVFJBQ0VfQ0xPQ0s9
-eQpDT05GSUdfUklOR19CVUZGRVI9eQpDT05GSUdfRVZFTlRfVFJBQ0lORz15CkNPTkZJR19DT05U
-RVhUX1NXSVRDSF9UUkFDRVI9eQpDT05GSUdfUklOR19CVUZGRVJfQUxMT1dfU1dBUD15CkNPTkZJ
-R19UUkFDSU5HPXkKQ09ORklHX0dFTkVSSUNfVFJBQ0VSPXkKQ09ORklHX1RSQUNJTkdfU1VQUE9S
-VD15CkNPTkZJR19GVFJBQ0U9eQpDT05GSUdfRlVOQ1RJT05fVFJBQ0VSPXkKQ09ORklHX0ZVTkNU
-SU9OX0dSQVBIX1RSQUNFUj15CiMgQ09ORklHX0lSUVNPRkZfVFJBQ0VSIGlzIG5vdCBzZXQKQ09O
-RklHX1NDSEVEX1RSQUNFUj15CkNPTkZJR19GVFJBQ0VfU1lTQ0FMTFM9eQpDT05GSUdfVFJBQ0VS
-X1NOQVBTSE9UPXkKIyBDT05GSUdfVFJBQ0VSX1NOQVBTSE9UX1BFUl9DUFVfU1dBUCBpcyBub3Qg
-c2V0CkNPTkZJR19CUkFOQ0hfUFJPRklMRV9OT05FPXkKIyBDT05GSUdfUFJPRklMRV9BTk5PVEFU
-RURfQlJBTkNIRVMgaXMgbm90IHNldAojIENPTkZJR19QUk9GSUxFX0FMTF9CUkFOQ0hFUyBpcyBu
-b3Qgc2V0CkNPTkZJR19TVEFDS19UUkFDRVI9eQpDT05GSUdfQkxLX0RFVl9JT19UUkFDRT15CkNP
-TkZJR19LUFJPQkVfRVZFTlQ9eQpDT05GSUdfVVBST0JFX0VWRU5UPXkKQ09ORklHX1BST0JFX0VW
-RU5UUz15CkNPTkZJR19EWU5BTUlDX0ZUUkFDRT15CkNPTkZJR19EWU5BTUlDX0ZUUkFDRV9XSVRI
-X1JFR1M9eQpDT05GSUdfRlVOQ1RJT05fUFJPRklMRVI9eQpDT05GSUdfRlRSQUNFX01DT1VOVF9S
-RUNPUkQ9eQojIENPTkZJR19GVFJBQ0VfU1RBUlRVUF9URVNUIGlzIG5vdCBzZXQKIyBDT05GSUdf
-TU1JT1RSQUNFIGlzIG5vdCBzZXQKIyBDT05GSUdfSElTVF9UUklHR0VSUyBpcyBub3Qgc2V0CiMg
-Q09ORklHX1RSQUNFUE9JTlRfQkVOQ0hNQVJLIGlzIG5vdCBzZXQKQ09ORklHX1JJTkdfQlVGRkVS
-X0JFTkNITUFSSz1tCiMgQ09ORklHX1JJTkdfQlVGRkVSX1NUQVJUVVBfVEVTVCBpcyBub3Qgc2V0
-CiMgQ09ORklHX1RSQUNFX0VOVU1fTUFQX0ZJTEUgaXMgbm90IHNldApDT05GSUdfVFJBQ0lOR19F
-VkVOVFNfR1BJTz15CgojCiMgUnVudGltZSBUZXN0aW5nCiMKQ09ORklHX0xLRFRNPW0KIyBDT05G
-SUdfVEVTVF9MSVNUX1NPUlQgaXMgbm90IHNldAojIENPTkZJR19LUFJPQkVTX1NBTklUWV9URVNU
-IGlzIG5vdCBzZXQKIyBDT05GSUdfQkFDS1RSQUNFX1NFTEZfVEVTVCBpcyBub3Qgc2V0CkNPTkZJ
-R19SQlRSRUVfVEVTVD1tCkNPTkZJR19JTlRFUlZBTF9UUkVFX1RFU1Q9bQpDT05GSUdfUEVSQ1BV
-X1RFU1Q9bQpDT05GSUdfQVRPTUlDNjRfU0VMRlRFU1Q9eQpDT05GSUdfQVNZTkNfUkFJRDZfVEVT
-VD1tCiMgQ09ORklHX1RFU1RfSEVYRFVNUCBpcyBub3Qgc2V0CiMgQ09ORklHX1RFU1RfU1RSSU5H
-X0hFTFBFUlMgaXMgbm90IHNldApDT05GSUdfVEVTVF9LU1RSVE9YPW0KIyBDT05GSUdfVEVTVF9Q
-UklOVEYgaXMgbm90IHNldAojIENPTkZJR19URVNUX0JJVE1BUCBpcyBub3Qgc2V0CiMgQ09ORklH
-X1RFU1RfVVVJRCBpcyBub3Qgc2V0CiMgQ09ORklHX1RFU1RfUkhBU0hUQUJMRSBpcyBub3Qgc2V0
-CiMgQ09ORklHX1RFU1RfSEFTSCBpcyBub3Qgc2V0CkNPTkZJR19QUk9WSURFX09IQ0kxMzk0X0RN
-QV9JTklUPXkKQ09ORklHX0JVSUxEX0RPQ1NSQz15CiMgQ09ORklHX0RNQV9BUElfREVCVUcgaXMg
-bm90IHNldApDT05GSUdfVEVTVF9MS009bQpDT05GSUdfVEVTVF9VU0VSX0NPUFk9bQpDT05GSUdf
-VEVTVF9CUEY9bQpDT05GSUdfVEVTVF9GSVJNV0FSRT1tCkNPTkZJR19URVNUX1VERUxBWT1tCiMg
-Q09ORklHX01FTVRFU1QgaXMgbm90IHNldAojIENPTkZJR19URVNUX1NUQVRJQ19LRVlTIGlzIG5v
-dCBzZXQKIyBDT05GSUdfU0FNUExFUyBpcyBub3Qgc2V0CkNPTkZJR19IQVZFX0FSQ0hfS0dEQj15
-CiMgQ09ORklHX0tHREIgaXMgbm90IHNldApDT05GSUdfQVJDSF9IQVNfVUJTQU5fU0FOSVRJWkVf
-QUxMPXkKIyBDT05GSUdfVUJTQU4gaXMgbm90IHNldApDT05GSUdfQVJDSF9IQVNfREVWTUVNX0lT
-X0FMTE9XRUQ9eQpDT05GSUdfU1RSSUNUX0RFVk1FTT15CiMgQ09ORklHX0lPX1NUUklDVF9ERVZN
-RU0gaXMgbm90IHNldApDT05GSUdfWDg2X1ZFUkJPU0VfQk9PVFVQPXkKQ09ORklHX0VBUkxZX1BS
-SU5USz15CkNPTkZJR19FQVJMWV9QUklOVEtfREJHUD15CiMgQ09ORklHX0VBUkxZX1BSSU5US19F
-RkkgaXMgbm90IHNldAojIENPTkZJR19YODZfUFREVU1QX0NPUkUgaXMgbm90IHNldAojIENPTkZJ
-R19YODZfUFREVU1QIGlzIG5vdCBzZXQKIyBDT05GSUdfRUZJX1BHVF9EVU1QIGlzIG5vdCBzZXQK
-Q09ORklHX0RFQlVHX1JPREFUQV9URVNUPXkKIyBDT05GSUdfREVCVUdfV1ggaXMgbm90IHNldApD
-T05GSUdfREVCVUdfU0VUX01PRFVMRV9ST05YPXkKQ09ORklHX0RFQlVHX05YX1RFU1Q9bQpDT05G
-SUdfRE9VQkxFRkFVTFQ9eQojIENPTkZJR19ERUJVR19UTEJGTFVTSCBpcyBub3Qgc2V0CiMgQ09O
-RklHX0lPTU1VX0RFQlVHIGlzIG5vdCBzZXQKIyBDT05GSUdfSU9NTVVfU1RSRVNTIGlzIG5vdCBz
-ZXQKQ09ORklHX0hBVkVfTU1JT1RSQUNFX1NVUFBPUlQ9eQpDT05GSUdfWDg2X0RFQ09ERVJfU0VM
-RlRFU1Q9eQpDT05GSUdfSU9fREVMQVlfVFlQRV8wWDgwPTAKQ09ORklHX0lPX0RFTEFZX1RZUEVf
-MFhFRD0xCkNPTkZJR19JT19ERUxBWV9UWVBFX1VERUxBWT0yCkNPTkZJR19JT19ERUxBWV9UWVBF
-X05PTkU9MwpDT05GSUdfSU9fREVMQVlfMFg4MD15CiMgQ09ORklHX0lPX0RFTEFZXzBYRUQgaXMg
-bm90IHNldAojIENPTkZJR19JT19ERUxBWV9VREVMQVkgaXMgbm90IHNldAojIENPTkZJR19JT19E
-RUxBWV9OT05FIGlzIG5vdCBzZXQKQ09ORklHX0RFRkFVTFRfSU9fREVMQVlfVFlQRT0wCkNPTkZJ
-R19ERUJVR19CT09UX1BBUkFNUz15CiMgQ09ORklHX0NQQV9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJ
-R19PUFRJTUlaRV9JTkxJTklORz15CiMgQ09ORklHX0RFQlVHX0VOVFJZIGlzIG5vdCBzZXQKIyBD
-T05GSUdfREVCVUdfTk1JX1NFTEZURVNUIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9ERUJVR19GUFU9
-eQojIENPTkZJR19QVU5JVF9BVE9NX0RFQlVHIGlzIG5vdCBzZXQKCiMKIyBTZWN1cml0eSBvcHRp
-b25zCiMKQ09ORklHX0tFWVM9eQpDT05GSUdfUEVSU0lTVEVOVF9LRVlSSU5HUz15CkNPTkZJR19C
-SUdfS0VZUz15CkNPTkZJR19UUlVTVEVEX0tFWVM9eQpDT05GSUdfRU5DUllQVEVEX0tFWVM9eQoj
-IENPTkZJR19LRVlfREhfT1BFUkFUSU9OUyBpcyBub3Qgc2V0CiMgQ09ORklHX1NFQ1VSSVRZX0RN
-RVNHX1JFU1RSSUNUIGlzIG5vdCBzZXQKQ09ORklHX1NFQ1VSSVRZPXkKQ09ORklHX1NFQ1VSSVRZ
-RlM9eQpDT05GSUdfU0VDVVJJVFlfTkVUV09SSz15CkNPTkZJR19TRUNVUklUWV9ORVRXT1JLX1hG
-Uk09eQojIENPTkZJR19TRUNVUklUWV9QQVRIIGlzIG5vdCBzZXQKQ09ORklHX0lOVEVMX1RYVD15
-CkNPTkZJR19MU01fTU1BUF9NSU5fQUREUj02NTUzNQpDT05GSUdfSEFWRV9IQVJERU5FRF9VU0VS
-Q09QWV9BTExPQ0FUT1I9eQpDT05GSUdfSEFWRV9BUkNIX0hBUkRFTkVEX1VTRVJDT1BZPXkKIyBD
-T05GSUdfSEFSREVORURfVVNFUkNPUFkgaXMgbm90IHNldApDT05GSUdfU0VDVVJJVFlfU0VMSU5V
-WD15CkNPTkZJR19TRUNVUklUWV9TRUxJTlVYX0JPT1RQQVJBTT15CkNPTkZJR19TRUNVUklUWV9T
-RUxJTlVYX0JPT1RQQVJBTV9WQUxVRT0xCkNPTkZJR19TRUNVUklUWV9TRUxJTlVYX0RJU0FCTEU9
-eQpDT05GSUdfU0VDVVJJVFlfU0VMSU5VWF9ERVZFTE9QPXkKQ09ORklHX1NFQ1VSSVRZX1NFTElO
-VVhfQVZDX1NUQVRTPXkKQ09ORklHX1NFQ1VSSVRZX1NFTElOVVhfQ0hFQ0tSRVFQUk9UX1ZBTFVF
-PTEKIyBDT05GSUdfU0VDVVJJVFlfU0VMSU5VWF9QT0xJQ1lEQl9WRVJTSU9OX01BWCBpcyBub3Qg
-c2V0CiMgQ09ORklHX1NFQ1VSSVRZX1NNQUNLIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VDVVJJVFlf
-VE9NT1lPIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VDVVJJVFlfQVBQQVJNT1IgaXMgbm90IHNldAoj
-IENPTkZJR19TRUNVUklUWV9MT0FEUElOIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VDVVJJVFlfWUFN
-QSBpcyBub3Qgc2V0CkNPTkZJR19JTlRFR1JJVFk9eQpDT05GSUdfSU5URUdSSVRZX1NJR05BVFVS
-RT15CkNPTkZJR19JTlRFR1JJVFlfQVNZTU1FVFJJQ19LRVlTPXkKQ09ORklHX0lOVEVHUklUWV9U
-UlVTVEVEX0tFWVJJTkc9eQpDT05GSUdfSU5URUdSSVRZX0FVRElUPXkKQ09ORklHX0lNQT15CkNP
-TkZJR19JTUFfTUVBU1VSRV9QQ1JfSURYPTEwCkNPTkZJR19JTUFfTFNNX1JVTEVTPXkKIyBDT05G
-SUdfSU1BX1RFTVBMQVRFIGlzIG5vdCBzZXQKQ09ORklHX0lNQV9OR19URU1QTEFURT15CiMgQ09O
-RklHX0lNQV9TSUdfVEVNUExBVEUgaXMgbm90IHNldApDT05GSUdfSU1BX0RFRkFVTFRfVEVNUExB
-VEU9ImltYS1uZyIKQ09ORklHX0lNQV9ERUZBVUxUX0hBU0hfU0hBMT15CiMgQ09ORklHX0lNQV9E
-RUZBVUxUX0hBU0hfU0hBMjU2IGlzIG5vdCBzZXQKIyBDT05GSUdfSU1BX0RFRkFVTFRfSEFTSF9T
-SEE1MTIgaXMgbm90IHNldAojIENPTkZJR19JTUFfREVGQVVMVF9IQVNIX1dQNTEyIGlzIG5vdCBz
-ZXQKQ09ORklHX0lNQV9ERUZBVUxUX0hBU0g9InNoYTEiCiMgQ09ORklHX0lNQV9XUklURV9QT0xJ
-Q1kgaXMgbm90IHNldAojIENPTkZJR19JTUFfUkVBRF9QT0xJQ1kgaXMgbm90IHNldApDT05GSUdf
-SU1BX0FQUFJBSVNFPXkKQ09ORklHX0lNQV9UUlVTVEVEX0tFWVJJTkc9eQojIENPTkZJR19JTUFf
-QkxBQ0tMSVNUX0tFWVJJTkcgaXMgbm90IHNldAojIENPTkZJR19JTUFfTE9BRF9YNTA5IGlzIG5v
-dCBzZXQKQ09ORklHX0VWTT15CkNPTkZJR19FVk1fQVRUUl9GU1VVSUQ9eQojIENPTkZJR19FVk1f
-TE9BRF9YNTA5IGlzIG5vdCBzZXQKQ09ORklHX0RFRkFVTFRfU0VDVVJJVFlfU0VMSU5VWD15CiMg
-Q09ORklHX0RFRkFVTFRfU0VDVVJJVFlfREFDIGlzIG5vdCBzZXQKQ09ORklHX0RFRkFVTFRfU0VD
-VVJJVFk9InNlbGludXgiCkNPTkZJR19YT1JfQkxPQ0tTPW0KQ09ORklHX0FTWU5DX0NPUkU9bQpD
-T05GSUdfQVNZTkNfTUVNQ1BZPW0KQ09ORklHX0FTWU5DX1hPUj1tCkNPTkZJR19BU1lOQ19QUT1t
-CkNPTkZJR19BU1lOQ19SQUlENl9SRUNPVj1tCkNPTkZJR19DUllQVE89eQoKIwojIENyeXB0byBj
-b3JlIG9yIGhlbHBlcgojCkNPTkZJR19DUllQVE9fQUxHQVBJPXkKQ09ORklHX0NSWVBUT19BTEdB
-UEkyPXkKQ09ORklHX0NSWVBUT19BRUFEPXkKQ09ORklHX0NSWVBUT19BRUFEMj15CkNPTkZJR19D
-UllQVE9fQkxLQ0lQSEVSPXkKQ09ORklHX0NSWVBUT19CTEtDSVBIRVIyPXkKQ09ORklHX0NSWVBU
-T19IQVNIPXkKQ09ORklHX0NSWVBUT19IQVNIMj15CkNPTkZJR19DUllQVE9fUk5HPXkKQ09ORklH
-X0NSWVBUT19STkcyPXkKQ09ORklHX0NSWVBUT19STkdfREVGQVVMVD15CkNPTkZJR19DUllQVE9f
-QUtDSVBIRVIyPXkKQ09ORklHX0NSWVBUT19BS0NJUEhFUj15CkNPTkZJR19DUllQVE9fS1BQMj15
-CkNPTkZJR19DUllQVE9fUlNBPXkKIyBDT05GSUdfQ1JZUFRPX0RIIGlzIG5vdCBzZXQKIyBDT05G
-SUdfQ1JZUFRPX0VDREggaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX01BTkFHRVI9eQpDT05GSUdf
-Q1JZUFRPX01BTkFHRVIyPXkKQ09ORklHX0NSWVBUT19VU0VSPW0KQ09ORklHX0NSWVBUT19NQU5B
-R0VSX0RJU0FCTEVfVEVTVFM9eQpDT05GSUdfQ1JZUFRPX0dGMTI4TVVMPW0KQ09ORklHX0NSWVBU
-T19OVUxMPXkKQ09ORklHX0NSWVBUT19OVUxMMj15CkNPTkZJR19DUllQVE9fUENSWVBUPW0KQ09O
-RklHX0NSWVBUT19XT1JLUVVFVUU9eQpDT05GSUdfQ1JZUFRPX0NSWVBURD1tCiMgQ09ORklHX0NS
-WVBUT19NQ1JZUFREIGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19BVVRIRU5DPW0KQ09ORklHX0NS
-WVBUT19URVNUPW0KQ09ORklHX0NSWVBUT19BQkxLX0hFTFBFUj1tCkNPTkZJR19DUllQVE9fR0xV
-RV9IRUxQRVJfWDg2PW0KCiMKIyBBdXRoZW50aWNhdGVkIEVuY3J5cHRpb24gd2l0aCBBc3NvY2lh
-dGVkIERhdGEKIwpDT05GSUdfQ1JZUFRPX0NDTT1tCkNPTkZJR19DUllQVE9fR0NNPW0KIyBDT05G
-SUdfQ1JZUFRPX0NIQUNIQTIwUE9MWTEzMDUgaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX1NFUUlW
-PXkKQ09ORklHX0NSWVBUT19FQ0hBSU5JVj1tCgojCiMgQmxvY2sgbW9kZXMKIwpDT05GSUdfQ1JZ
-UFRPX0NCQz15CkNPTkZJR19DUllQVE9fQ1RSPXkKQ09ORklHX0NSWVBUT19DVFM9bQpDT05GSUdf
-Q1JZUFRPX0VDQj15CkNPTkZJR19DUllQVE9fTFJXPW0KQ09ORklHX0NSWVBUT19QQ0JDPW0KQ09O
-RklHX0NSWVBUT19YVFM9bQojIENPTkZJR19DUllQVE9fS0VZV1JBUCBpcyBub3Qgc2V0CgojCiMg
-SGFzaCBtb2RlcwojCkNPTkZJR19DUllQVE9fQ01BQz1tCkNPTkZJR19DUllQVE9fSE1BQz15CkNP
-TkZJR19DUllQVE9fWENCQz1tCkNPTkZJR19DUllQVE9fVk1BQz1tCgojCiMgRGlnZXN0CiMKQ09O
-RklHX0NSWVBUT19DUkMzMkM9eQpDT05GSUdfQ1JZUFRPX0NSQzMyQ19JTlRFTD1tCkNPTkZJR19D
-UllQVE9fQ1JDMzI9bQpDT05GSUdfQ1JZUFRPX0NSQzMyX1BDTE1VTD1tCkNPTkZJR19DUllQVE9f
-Q1JDVDEwRElGPXkKQ09ORklHX0NSWVBUT19DUkNUMTBESUZfUENMTVVMPW0KQ09ORklHX0NSWVBU
-T19HSEFTSD1tCiMgQ09ORklHX0NSWVBUT19QT0xZMTMwNSBpcyBub3Qgc2V0CiMgQ09ORklHX0NS
-WVBUT19QT0xZMTMwNV9YODZfNjQgaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX01END1tCkNPTkZJ
-R19DUllQVE9fTUQ1PXkKQ09ORklHX0NSWVBUT19NSUNIQUVMX01JQz1tCkNPTkZJR19DUllQVE9f
-Uk1EMTI4PW0KQ09ORklHX0NSWVBUT19STUQxNjA9bQpDT05GSUdfQ1JZUFRPX1JNRDI1Nj1tCkNP
-TkZJR19DUllQVE9fUk1EMzIwPW0KQ09ORklHX0NSWVBUT19TSEExPXkKQ09ORklHX0NSWVBUT19T
-SEExX1NTU0UzPW0KQ09ORklHX0NSWVBUT19TSEEyNTZfU1NTRTM9bQpDT05GSUdfQ1JZUFRPX1NI
-QTUxMl9TU1NFMz1tCiMgQ09ORklHX0NSWVBUT19TSEExX01CIGlzIG5vdCBzZXQKIyBDT05GSUdf
-Q1JZUFRPX1NIQTI1Nl9NQiBpcyBub3Qgc2V0CiMgQ09ORklHX0NSWVBUT19TSEE1MTJfTUIgaXMg
-bm90IHNldApDT05GSUdfQ1JZUFRPX1NIQTI1Nj15CkNPTkZJR19DUllQVE9fU0hBNTEyPW0KIyBD
-T05GSUdfQ1JZUFRPX1NIQTMgaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX1RHUjE5Mj1tCkNPTkZJ
-R19DUllQVE9fV1A1MTI9bQpDT05GSUdfQ1JZUFRPX0dIQVNIX0NMTVVMX05JX0lOVEVMPW0KCiMK
-IyBDaXBoZXJzCiMKQ09ORklHX0NSWVBUT19BRVM9eQpDT05GSUdfQ1JZUFRPX0FFU19YODZfNjQ9
-eQpDT05GSUdfQ1JZUFRPX0FFU19OSV9JTlRFTD1tCkNPTkZJR19DUllQVE9fQU5VQklTPW0KQ09O
-RklHX0NSWVBUT19BUkM0PW0KQ09ORklHX0NSWVBUT19CTE9XRklTSD1tCkNPTkZJR19DUllQVE9f
-QkxPV0ZJU0hfQ09NTU9OPW0KQ09ORklHX0NSWVBUT19CTE9XRklTSF9YODZfNjQ9bQpDT05GSUdf
-Q1JZUFRPX0NBTUVMTElBPW0KQ09ORklHX0NSWVBUT19DQU1FTExJQV9YODZfNjQ9bQpDT05GSUdf
-Q1JZUFRPX0NBTUVMTElBX0FFU05JX0FWWF9YODZfNjQ9bQpDT05GSUdfQ1JZUFRPX0NBTUVMTElB
-X0FFU05JX0FWWDJfWDg2XzY0PW0KQ09ORklHX0NSWVBUT19DQVNUX0NPTU1PTj1tCkNPTkZJR19D
-UllQVE9fQ0FTVDU9bQpDT05GSUdfQ1JZUFRPX0NBU1Q1X0FWWF9YODZfNjQ9bQpDT05GSUdfQ1JZ
-UFRPX0NBU1Q2PW0KQ09ORklHX0NSWVBUT19DQVNUNl9BVlhfWDg2XzY0PW0KQ09ORklHX0NSWVBU
-T19ERVM9bQojIENPTkZJR19DUllQVE9fREVTM19FREVfWDg2XzY0IGlzIG5vdCBzZXQKQ09ORklH
-X0NSWVBUT19GQ1JZUFQ9bQpDT05GSUdfQ1JZUFRPX0tIQVpBRD1tCkNPTkZJR19DUllQVE9fU0FM
-U0EyMD1tCkNPTkZJR19DUllQVE9fU0FMU0EyMF9YODZfNjQ9bQojIENPTkZJR19DUllQVE9fQ0hB
-Q0hBMjAgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9fQ0hBQ0hBMjBfWDg2XzY0IGlzIG5vdCBz
-ZXQKQ09ORklHX0NSWVBUT19TRUVEPW0KQ09ORklHX0NSWVBUT19TRVJQRU5UPW0KQ09ORklHX0NS
-WVBUT19TRVJQRU5UX1NTRTJfWDg2XzY0PW0KQ09ORklHX0NSWVBUT19TRVJQRU5UX0FWWF9YODZf
-NjQ9bQpDT05GSUdfQ1JZUFRPX1NFUlBFTlRfQVZYMl9YODZfNjQ9bQpDT05GSUdfQ1JZUFRPX1RF
-QT1tCkNPTkZJR19DUllQVE9fVFdPRklTSD1tCkNPTkZJR19DUllQVE9fVFdPRklTSF9DT01NT049
-bQpDT05GSUdfQ1JZUFRPX1RXT0ZJU0hfWDg2XzY0PW0KQ09ORklHX0NSWVBUT19UV09GSVNIX1g4
-Nl82NF8zV0FZPW0KQ09ORklHX0NSWVBUT19UV09GSVNIX0FWWF9YODZfNjQ9bQoKIwojIENvbXBy
-ZXNzaW9uCiMKQ09ORklHX0NSWVBUT19ERUZMQVRFPW0KQ09ORklHX0NSWVBUT19MWk89eQojIENP
-TkZJR19DUllQVE9fODQyIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX0xaNCBpcyBub3Qgc2V0
-CiMgQ09ORklHX0NSWVBUT19MWjRIQyBpcyBub3Qgc2V0CgojCiMgUmFuZG9tIE51bWJlciBHZW5l
-cmF0aW9uCiMKQ09ORklHX0NSWVBUT19BTlNJX0NQUk5HPW0KQ09ORklHX0NSWVBUT19EUkJHX01F
-TlU9eQpDT05GSUdfQ1JZUFRPX0RSQkdfSE1BQz15CiMgQ09ORklHX0NSWVBUT19EUkJHX0hBU0gg
-aXMgbm90IHNldAojIENPTkZJR19DUllQVE9fRFJCR19DVFIgaXMgbm90IHNldApDT05GSUdfQ1JZ
-UFRPX0RSQkc9eQpDT05GSUdfQ1JZUFRPX0pJVFRFUkVOVFJPUFk9eQpDT05GSUdfQ1JZUFRPX1VT
-RVJfQVBJPXkKQ09ORklHX0NSWVBUT19VU0VSX0FQSV9IQVNIPXkKQ09ORklHX0NSWVBUT19VU0VS
-X0FQSV9TS0NJUEhFUj15CiMgQ09ORklHX0NSWVBUT19VU0VSX0FQSV9STkcgaXMgbm90IHNldAoj
-IENPTkZJR19DUllQVE9fVVNFUl9BUElfQUVBRCBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9fSEFT
-SF9JTkZPPXkKQ09ORklHX0NSWVBUT19IVz15CkNPTkZJR19DUllQVE9fREVWX1BBRExPQ0s9bQpD
-T05GSUdfQ1JZUFRPX0RFVl9QQURMT0NLX0FFUz1tCkNPTkZJR19DUllQVE9fREVWX1BBRExPQ0tf
-U0hBPW0KIyBDT05GSUdfQ1JZUFRPX0RFVl9DQ1AgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9f
-REVWX1FBVF9ESDg5NXhDQyBpcyBub3Qgc2V0CiMgQ09ORklHX0NSWVBUT19ERVZfUUFUX0MzWFhY
-IGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX0RFVl9RQVRfQzYyWCBpcyBub3Qgc2V0CiMgQ09O
-RklHX0NSWVBUT19ERVZfUUFUX0RIODk1eENDVkYgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9f
-REVWX1FBVF9DM1hYWFZGIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX0RFVl9RQVRfQzYyWFZG
-IGlzIG5vdCBzZXQKQ09ORklHX0FTWU1NRVRSSUNfS0VZX1RZUEU9eQpDT05GSUdfQVNZTU1FVFJJ
-Q19QVUJMSUNfS0VZX1NVQlRZUEU9eQpDT05GSUdfWDUwOV9DRVJUSUZJQ0FURV9QQVJTRVI9eQoj
-IENPTkZJR19QS0NTN19NRVNTQUdFX1BBUlNFUiBpcyBub3Qgc2V0CgojCiMgQ2VydGlmaWNhdGVz
-IGZvciBzaWduYXR1cmUgY2hlY2tpbmcKIwpDT05GSUdfU1lTVEVNX1RSVVNURURfS0VZUklORz15
-CkNPTkZJR19TWVNURU1fVFJVU1RFRF9LRVlTPSIiCiMgQ09ORklHX1NZU1RFTV9FWFRSQV9DRVJU
-SUZJQ0FURSBpcyBub3Qgc2V0CiMgQ09ORklHX1NFQ09OREFSWV9UUlVTVEVEX0tFWVJJTkcgaXMg
-bm90IHNldApDT05GSUdfSEFWRV9LVk09eQpDT05GSUdfSEFWRV9LVk1fSVJRQ0hJUD15CkNPTkZJ
-R19IQVZFX0tWTV9JUlFGRD15CkNPTkZJR19IQVZFX0tWTV9JUlFfUk9VVElORz15CkNPTkZJR19I
-QVZFX0tWTV9FVkVOVEZEPXkKQ09ORklHX0tWTV9NTUlPPXkKQ09ORklHX0tWTV9BU1lOQ19QRj15
-CkNPTkZJR19IQVZFX0tWTV9NU0k9eQpDT05GSUdfSEFWRV9LVk1fQ1BVX1JFTEFYX0lOVEVSQ0VQ
-VD15CkNPTkZJR19LVk1fVkZJTz15CkNPTkZJR19LVk1fR0VORVJJQ19ESVJUWUxPR19SRUFEX1BS
-T1RFQ1Q9eQpDT05GSUdfS1ZNX0NPTVBBVD15CkNPTkZJR19IQVZFX0tWTV9JUlFfQllQQVNTPXkK
-Q09ORklHX1ZJUlRVQUxJWkFUSU9OPXkKQ09ORklHX0tWTT1tCkNPTkZJR19LVk1fSU5URUw9bQpD
-T05GSUdfS1ZNX0FNRD1tCkNPTkZJR19LVk1fTU1VX0FVRElUPXkKIyBDT05GSUdfS1ZNX0RFVklD
-RV9BU1NJR05NRU5UIGlzIG5vdCBzZXQKQ09ORklHX1ZIT1NUX05FVD1tCiMgQ09ORklHX1ZIT1NU
-X1NDU0kgaXMgbm90IHNldAojIENPTkZJR19WSE9TVF9WU09DSyBpcyBub3Qgc2V0CkNPTkZJR19W
-SE9TVD1tCiMgQ09ORklHX1ZIT1NUX0NST1NTX0VORElBTl9MRUdBQ1kgaXMgbm90IHNldApDT05G
-SUdfQklOQVJZX1BSSU5URj15CgojCiMgTGlicmFyeSByb3V0aW5lcwojCkNPTkZJR19SQUlENl9Q
-UT1tCkNPTkZJR19CSVRSRVZFUlNFPXkKIyBDT05GSUdfSEFWRV9BUkNIX0JJVFJFVkVSU0UgaXMg
-bm90IHNldApDT05GSUdfUkFUSU9OQUw9eQpDT05GSUdfR0VORVJJQ19TVFJOQ1BZX0ZST01fVVNF
-Uj15CkNPTkZJR19HRU5FUklDX1NUUk5MRU5fVVNFUj15CkNPTkZJR19HRU5FUklDX05FVF9VVElM
-Uz15CkNPTkZJR19HRU5FUklDX0ZJTkRfRklSU1RfQklUPXkKQ09ORklHX0dFTkVSSUNfUENJX0lP
-TUFQPXkKQ09ORklHX0dFTkVSSUNfSU9NQVA9eQpDT05GSUdfR0VORVJJQ19JTz15CkNPTkZJR19B
-UkNIX1VTRV9DTVBYQ0hHX0xPQ0tSRUY9eQpDT05GSUdfQVJDSF9IQVNfRkFTVF9NVUxUSVBMSUVS
-PXkKQ09ORklHX0NSQ19DQ0lUVD15CkNPTkZJR19DUkMxNj15CkNPTkZJR19DUkNfVDEwRElGPXkK
-Q09ORklHX0NSQ19JVFVfVD1tCkNPTkZJR19DUkMzMj15CiMgQ09ORklHX0NSQzMyX1NFTEZURVNU
-IGlzIG5vdCBzZXQKQ09ORklHX0NSQzMyX1NMSUNFQlk4PXkKIyBDT05GSUdfQ1JDMzJfU0xJQ0VC
-WTQgaXMgbm90IHNldAojIENPTkZJR19DUkMzMl9TQVJXQVRFIGlzIG5vdCBzZXQKIyBDT05GSUdf
-Q1JDMzJfQklUIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JDNyBpcyBub3Qgc2V0CkNPTkZJR19MSUJD
-UkMzMkM9eQpDT05GSUdfQ1JDOD1tCiMgQ09ORklHX0FVRElUX0FSQ0hfQ09NUEFUX0dFTkVSSUMg
-aXMgbm90IHNldAojIENPTkZJR19SQU5ET00zMl9TRUxGVEVTVCBpcyBub3Qgc2V0CkNPTkZJR19a
-TElCX0lORkxBVEU9eQpDT05GSUdfWkxJQl9ERUZMQVRFPXkKQ09ORklHX0xaT19DT01QUkVTUz15
-CkNPTkZJR19MWk9fREVDT01QUkVTUz15CkNPTkZJR19MWjRfREVDT01QUkVTUz15CkNPTkZJR19Y
-Wl9ERUM9eQpDT05GSUdfWFpfREVDX1g4Nj15CkNPTkZJR19YWl9ERUNfUE9XRVJQQz15CkNPTkZJ
-R19YWl9ERUNfSUE2ND15CkNPTkZJR19YWl9ERUNfQVJNPXkKQ09ORklHX1haX0RFQ19BUk1USFVN
-Qj15CkNPTkZJR19YWl9ERUNfU1BBUkM9eQpDT05GSUdfWFpfREVDX0JDSj15CiMgQ09ORklHX1ha
-X0RFQ19URVNUIGlzIG5vdCBzZXQKQ09ORklHX0RFQ09NUFJFU1NfR1pJUD15CkNPTkZJR19ERUNP
-TVBSRVNTX0JaSVAyPXkKQ09ORklHX0RFQ09NUFJFU1NfTFpNQT15CkNPTkZJR19ERUNPTVBSRVNT
-X1haPXkKQ09ORklHX0RFQ09NUFJFU1NfTFpPPXkKQ09ORklHX0RFQ09NUFJFU1NfTFo0PXkKQ09O
-RklHX0dFTkVSSUNfQUxMT0NBVE9SPXkKQ09ORklHX1JFRURfU09MT01PTj1tCkNPTkZJR19SRUVE
-X1NPTE9NT05fRU5DOD15CkNPTkZJR19SRUVEX1NPTE9NT05fREVDOD15CkNPTkZJR19URVhUU0VB
-UkNIPXkKQ09ORklHX1RFWFRTRUFSQ0hfS01QPW0KQ09ORklHX1RFWFRTRUFSQ0hfQk09bQpDT05G
-SUdfVEVYVFNFQVJDSF9GU009bQpDT05GSUdfSU5URVJWQUxfVFJFRT15CkNPTkZJR19SQURJWF9U
-UkVFX01VTFRJT1JERVI9eQpDT05GSUdfQVNTT0NJQVRJVkVfQVJSQVk9eQpDT05GSUdfSEFTX0lP
-TUVNPXkKQ09ORklHX0hBU19JT1BPUlRfTUFQPXkKQ09ORklHX0hBU19ETUE9eQpDT05GSUdfQ0hF
-Q0tfU0lHTkFUVVJFPXkKQ09ORklHX0NQVU1BU0tfT0ZGU1RBQ0s9eQpDT05GSUdfQ1BVX1JNQVA9
-eQpDT05GSUdfRFFMPXkKQ09ORklHX0dMT0I9eQojIENPTkZJR19HTE9CX1NFTEZURVNUIGlzIG5v
-dCBzZXQKQ09ORklHX05MQVRUUj15CkNPTkZJR19BUkNIX0hBU19BVE9NSUM2NF9ERUNfSUZfUE9T
-SVRJVkU9eQpDT05GSUdfQ0xaX1RBQj15CkNPTkZJR19DT1JESUM9bQojIENPTkZJR19ERFIgaXMg
-bm90IHNldApDT05GSUdfSVJRX1BPTEw9eQpDT05GSUdfTVBJTElCPXkKQ09ORklHX1NJR05BVFVS
-RT15CkNPTkZJR19PSURfUkVHSVNUUlk9eQpDT05GSUdfVUNTMl9TVFJJTkc9eQpDT05GSUdfRk9O
-VF9TVVBQT1JUPXkKIyBDT05GSUdfRk9OVFMgaXMgbm90IHNldApDT05GSUdfRk9OVF84eDg9eQpD
-T05GSUdfRk9OVF84eDE2PXkKIyBDT05GSUdfU0dfU1BMSVQgaXMgbm90IHNldApDT05GSUdfU0df
-UE9PTD15CkNPTkZJR19BUkNIX0hBU19TR19DSEFJTj15CkNPTkZJR19BUkNIX0hBU19QTUVNX0FQ
-ST15CkNPTkZJR19BUkNIX0hBU19NTUlPX0ZMVVNIPXkK
-
---===============5363104788474469175==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job-script.ksh"
-
-IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0nd2lsbC1pdC1zY2Fs
-ZScKCWV4cG9ydCB0ZXN0Y2FzZT0nd2lsbC1pdC1zY2FsZScKCWV4cG9ydCBjYXRlZ29yeT0nYmVu
-Y2htYXJrJwoJZXhwb3J0IGpvYl9vcmlnaW49Jy9sa3AvbGtwL3NyYy9hbGxvdC9jeWNsaWM6bGlu
-dXgtZGV2ZWw6ZGV2ZWwtaG91cmx5L2xrcC1zYjAzL3dpbGwtaXQtc2NhbGUueWFtbCcKCWV4cG9y
-dCBxdWV1ZT0nYmlzZWN0JwoJZXhwb3J0IHRlc3Rib3g9J2xrcC1zYjAzJwoJZXhwb3J0IHRib3hf
-Z3JvdXA9J2xrcC1zYjAzJwoJZXhwb3J0IHN1Ym1pdF9pZD0nNTgwOTUzZmQwYjlhOTNmMjNlNTI4
-NmEzJwoJZXhwb3J0IGpvYl9maWxlPScvbGtwL3NjaGVkdWxlZC9sa3Atc2IwMy93aWxsLWl0LXNj
-YWxlLXBvbGwyLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3otMThkMTc5
-NmQwYjQ1NzYyZWM2ZjU4YzVlZDJhZDNmNzUxMGZmYmFhOS0yMDE2MTAyMS0xMjc1NTAtMWl4NDhu
-ci0wLnlhbWwnCglleHBvcnQgaWQ9J2IyYTFiNGIxYWZhYzk4MjNkOGU3M2NmYzQ4MTAzZjdiYmE1
-ZGZmYWMnCglleHBvcnQgbW9kZWw9J1NhbmR5IEJyaWRnZS1FUCcKCWV4cG9ydCBucl9ub2RlPTIK
-CWV4cG9ydCBucl9jcHU9MzIKCWV4cG9ydCBtZW1vcnk9JzY0RycKCWV4cG9ydCBoZGRfcGFydGl0
-aW9ucz0nL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0QxMEVBUlMtMDBZNUIxX1dELVdDQVY1RjA1
-OTQ5OS1wYXJ0MycKCWV4cG9ydCBzd2FwX3BhcnRpdGlvbnM9CglleHBvcnQgcm9vdGZzX3BhcnRp
-dGlvbj0nL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0QxMEVBUlMtMDBZNUIxX1dELVdDQVY1RjA1
-OTQ5OS1wYXJ0NCcKCWV4cG9ydCBicmFuZD0nSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjY4MCAw
-IEAgMi43MEdIeicKCWV4cG9ydCBjb21taXQ9JzE4ZDE3OTZkMGI0NTc2MmVjNmY1OGM1ZWQyYWQz
-Zjc1MTBmZmJhYTknCglleHBvcnQga2NvbmZpZz0neDg2XzY0LXJoZWwtNy4yJwoJZXhwb3J0IGNv
-bXBpbGVyPSdnY2MtNicKCWV4cG9ydCByb290ZnM9J2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5j
-Z3onCglleHBvcnQgZW5xdWV1ZV90aW1lPScyMDE2LTEwLTIxIDA3OjMyOjEzICswODAwJwoJZXhw
-b3J0IF9pZD0nNTgwOTUzZmQwYjlhOTNmMjNlNTI4NmEzJwoJZXhwb3J0IHVzZXI9J2xrcCcKCWV4
-cG9ydCBoZWFkX2NvbW1pdD0nZDIyNDFhMWFmZjRkN2ZhNDg2ZWM5Yzg4MTY0YjI5NjNjNDk3MmI2
-YicKCWV4cG9ydCBiYXNlX2NvbW1pdD0nMTAwMTM1NGNhMzQxNzlmM2RiOTI0ZWI2NjY3MjQ0MmEx
-NzMxNDdkYycKCWV4cG9ydCBicmFuY2g9J2xpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE2MTAx
-OTE1JwoJZXhwb3J0IHJlc3VsdF9yb290PScvcmVzdWx0L3dpbGwtaXQtc2NhbGUvcG9sbDItcGVy
-Zm9ybWFuY2UvbGtwLXNiMDMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhl
-bC03LjIvZ2NjLTYvMThkMTc5NmQwYjQ1NzYyZWM2ZjU4YzVlZDJhZDNmNzUxMGZmYmFhOS8wJwoJ
-ZXhwb3J0IExLUF9TRVJWRVI9J2lubicKCWV4cG9ydCBtYXhfdXB0aW1lPTE1MDAKCWV4cG9ydCBp
-bml0cmQ9Jy9vc2ltYWdlL2RlYmlhbi9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6JwoJZXhw
-b3J0IGJvb3Rsb2FkZXJfYXBwZW5kPSdyb290PS9kZXYvcmFtMAp1c2VyPWxrcApqb2I9L2xrcC9z
-Y2hlZHVsZWQvbGtwLXNiMDMvd2lsbC1pdC1zY2FsZS1wb2xsMi1wZXJmb3JtYW5jZS1kZWJpYW4t
-eDg2XzY0LTIwMTYtMDgtMzEuY2d6LTE4ZDE3OTZkMGI0NTc2MmVjNmY1OGM1ZWQyYWQzZjc1MTBm
-ZmJhYTktMjAxNjEwMjEtMTI3NTUwLTFpeDQ4bnItMC55YW1sCkFSQ0g9eDg2XzY0Cmtjb25maWc9
-eDg2XzY0LXJoZWwtNy4yCmJyYW5jaD1saW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxNjEwMTkx
-NQpjb21taXQ9MThkMTc5NmQwYjQ1NzYyZWM2ZjU4YzVlZDJhZDNmNzUxMGZmYmFhOQpCT09UX0lN
-QUdFPS9wa2cvbGludXgveDg2XzY0LXJoZWwtNy4yL2djYy02LzE4ZDE3OTZkMGI0NTc2MmVjNmY1
-OGM1ZWQyYWQzZjc1MTBmZmJhYTkvdm1saW51ei00LjguMC1yYzctMDAxNjUtZzE4ZDE3OTYKbWF4
-X3VwdGltZT0xNTAwClJFU1VMVF9ST09UPS9yZXN1bHQvd2lsbC1pdC1zY2FsZS9wb2xsMi1wZXJm
-b3JtYW5jZS9sa3Atc2IwMy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3g4Nl82NC1yaGVs
-LTcuMi9nY2MtNi8xOGQxNzk2ZDBiNDU3NjJlYzZmNThjNWVkMmFkM2Y3NTEwZmZiYWE5LzAKTEtQ
-X1NFUlZFUj1pbm4KZGVidWcKYXBpYz1kZWJ1ZwpzeXNycV9hbHdheXNfZW5hYmxlZApyY3VwZGF0
-ZS5yY3VfY3B1X3N0YWxsX3RpbWVvdXQ9MTAwCm5ldC5pZm5hbWVzPTAKcHJpbnRrLmRldmttc2c9
-b24KcGFuaWM9LTEKc29mdGxvY2t1cF9wYW5pYz0xCm5taV93YXRjaGRvZz1wYW5pYwpvb3BzPXBh
-bmljCmxvYWRfcmFtZGlzaz0yCnByb21wdF9yYW1kaXNrPTAKc3lzdGVtZC5sb2dfbGV2ZWw9ZXJy
-Cmlnbm9yZV9sb2dsZXZlbAplYXJseXByaW50az10dHlTMCwxMTUyMDAKY29uc29sZT10dHlTMCwx
-MTUyMDAKY29uc29sZT10dHkwCnZnYT1ub3JtYWwKcncnCglleHBvcnQgbGtwX2luaXRyZD0nL2xr
-cC9sa3AvbGtwLXg4Nl82NC5jZ3onCglleHBvcnQgbW9kdWxlc19pbml0cmQ9Jy9wa2cvbGludXgv
-eDg2XzY0LXJoZWwtNy4yL2djYy02LzE4ZDE3OTZkMGI0NTc2MmVjNmY1OGM1ZWQyYWQzZjc1MTBm
-ZmJhYTkvbW9kdWxlcy5jZ3onCglleHBvcnQgYm1faW5pdHJkPScvb3NpbWFnZS9kZXBzL2RlYmlh
-bi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovbGtwXzIwMTYtMDktMDIuY2d6LC9vc2ltYWdlL2RlcHMv
-ZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9yc3luYy1yb290ZnNfMjAxNi0wOS0wMi5jZ3os
-L29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3J1bi1pcGNvbmZpZ18y
-MDE2LTA5LTAyLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ov
-d2lsbC1pdC1zY2FsZV8yMDE2LTA5LTAyLmNneiwvb3NpbWFnZS9wa2cvZGViaWFuLXg4Nl82NC0y
-MDE2LTA4LTMxLmNnei93aWxsLWl0LXNjYWxlLXg4Nl82NF8yMDE2LTA5LTAyLmNneiwvb3NpbWFn
-ZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovaW9zdGF0XzIwMTYtMDktMDIuY2d6
-LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei90dXJib3N0YXRfMjAx
-Ni0wOS0wMi5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovdHVy
-Ym9zdGF0LXg4Nl82NF8yMDE2LTA5LTAyLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQt
-MjAxNi0wOC0zMS5jZ3ovcGVyZl8yMDE2LTA5LTAyLmNneiwvb3NpbWFnZS9wa2cvZGViaWFuLXg4
-Nl82NC0yMDE2LTA4LTMxLmNnei9wZXJmLXg4Nl82NC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
-eDg2XzY0LTIwMTYtMDgtMzEuY2d6L2h3XzIwMTYtMDktMDIuY2d6JwoJZXhwb3J0IHNpdGU9J2lu
-bicKCWV4cG9ydCBMS1BfQ0dJX1BPUlQ9ODAKCWV4cG9ydCBMS1BfQ0lGU19QT1JUPTEzOQoJZXhw
-b3J0IHJlcGVhdF90bz0yCglleHBvcnQga2VybmVsPScvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcu
-Mi9nY2MtNi8xOGQxNzk2ZDBiNDU3NjJlYzZmNThjNWVkMmFkM2Y3NTEwZmZiYWE5L3ZtbGludXot
-NC44LjAtcmM3LTAwMTY1LWcxOGQxNzk2JwoJZXhwb3J0IGRlcXVldWVfdGltZT0nMjAxNi0xMC0y
-MSAwNzozNzoxOCArMDgwMCcKCWV4cG9ydCBqb2JfaW5pdHJkPScvbGtwL3NjaGVkdWxlZC9sa3At
-c2IwMy93aWxsLWl0LXNjYWxlLXBvbGwyLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxNi0w
-OC0zMS5jZ3otMThkMTc5NmQwYjQ1NzYyZWM2ZjU4YzVlZDJhZDNmNzUxMGZmYmFhOS0yMDE2MTAy
-MS0xMjc1NTAtMWl4NDhuci0wLmNneicKCglbIC1uICIkTEtQX1NSQyIgXSB8fAoJZXhwb3J0IExL
-UF9TUkM9L2xrcC8ke3VzZXI6LWxrcH0vc3JjCn0KCnJ1bl9qb2IoKQp7CgllY2hvICQkID4gJFRN
-UC9ydW4tam9iLnBpZAoKCS4gJExLUF9TUkMvbGliL2h0dHAuc2gKCS4gJExLUF9TUkMvbGliL2pv
-Yi5zaAoJLiAkTEtQX1NSQy9saWIvZW52LnNoCgoJZXhwb3J0X3RvcF9lbnYKCglydW5fc2V0dXAg
-JExLUF9TUkMvc2V0dXAvY3B1ZnJlcV9nb3Zlcm5vciAncGVyZm9ybWFuY2UnCgoJcnVuX21vbml0
-b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBrbXNnCglydW5fbW9uaXRvciAkTEtQX1NSQy9t
-b25pdG9ycy93cmFwcGVyIGlvc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3Jh
-cHBlciBoZWFydGJlYXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgdm1z
-dGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIG51bWEtbnVtYXN0YXQK
-CXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbnVtYS12bXN0YXQKCXJ1bl9t
-b25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbnVtYS1tZW1pbmZvCglydW5fbW9uaXRv
-ciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHByb2Mtdm1zdGF0CglydW5fbW9uaXRvciAkTEtQ
-X1NSQy9tb25pdG9ycy93cmFwcGVyIHByb2Mtc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9u
-aXRvcnMvd3JhcHBlciBtZW1pbmZvCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFw
-cGVyIHNsYWJpbmZvCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGludGVy
-cnVwdHMKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbG9ja19zdGF0Cgly
-dW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGxhdGVuY3lfc3RhdHMKCXJ1bl9t
-b25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgc29mdGlycXMKCXJ1bl9tb25pdG9yICRM
-S1BfU1JDL21vbml0b3JzL29uZS1zaG90L3dyYXBwZXIgYmRpX2Rldl9tYXBwaW5nCglydW5fbW9u
-aXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGRpc2tzdGF0cwoJcnVuX21vbml0b3IgJExL
-UF9TUkMvbW9uaXRvcnMvd3JhcHBlciBuZnNzdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25p
-dG9ycy93cmFwcGVyIGNwdWlkbGUKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBw
-ZXIgY3B1ZnJlcS1zdGF0cwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciB0
-dXJib3N0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgc2NoZWRfZGVi
-dWcKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgcGVyZi1zdGF0CglydW5f
-bW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy9uby1zdGRvdXQvd3JhcHBlciBwZXJmLXByb2ZpbGUK
-CXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgb29tLWtpbGxlcgoJcnVuX21v
-bml0b3IgJExLUF9TUkMvbW9uaXRvcnMvcGxhaW4vd2F0Y2hkb2cKCXJ1bl9tb25pdG9yICRMS1Bf
-U1JDL21vbml0b3JzL3dyYXBwZXIgbmZzLWhhbmcKCglydW5fdGVzdCB0ZXN0PSdwb2xsMicgJExL
-UF9TUkMvdGVzdHMvd3JhcHBlciB3aWxsLWl0LXNjYWxlCn0KCmV4dHJhY3Rfc3RhdHMoKQp7Cgkk
-TEtQX1NSQy9zdGF0cy93cmFwcGVyIHdpbGwtaXQtc2NhbGUKCSRMS1BfU1JDL3N0YXRzL3dyYXBw
-ZXIga21zZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBpb3N0YXQKCSRMS1BfU1JDL3N0YXRzL3dy
-YXBwZXIgdm1zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG51bWEtbnVtYXN0YXQKCSRMS1Bf
-U1JDL3N0YXRzL3dyYXBwZXIgbnVtYS12bXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbnVt
-YS1tZW1pbmZvCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHByb2Mtdm1zdGF0CgkkTEtQX1NSQy9z
-dGF0cy93cmFwcGVyIG1lbWluZm8KCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc2xhYmluZm8KCSRM
-S1BfU1JDL3N0YXRzL3dyYXBwZXIgaW50ZXJydXB0cwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBs
-b2NrX3N0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbGF0ZW5jeV9zdGF0cwoJJExLUF9TUkMv
-c3RhdHMvd3JhcHBlciBzb2Z0aXJxcwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBkaXNrc3RhdHMK
-CSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbmZzc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBj
-cHVpZGxlCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHR1cmJvc3RhdAoJJExLUF9TUkMvc3RhdHMv
-d3JhcHBlciBzY2hlZF9kZWJ1ZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBwZXJmLXN0YXQKCSRM
-S1BfU1JDL3N0YXRzL3dyYXBwZXIgcGVyZi1wcm9maWxlCgoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
-ciB0aW1lIHdpbGwtaXQtc2NhbGUudGltZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciB0aW1lCgkk
-TEtQX1NSQy9zdGF0cy93cmFwcGVyIGRtZXNnCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGttc2cK
-CSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc3RkZXJyCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGxh
-c3Rfc3RhdGUKfQoKIiRAIgo=
-
---===============5363104788474469175==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job.yaml"
-
-LS0tCgojISBqb2JzL3dpbGwtaXQtc2NhbGUueWFtbApzdWl0ZTogd2lsbC1pdC1zY2FsZQp0ZXN0
-Y2FzZTogd2lsbC1pdC1zY2FsZQpjYXRlZ29yeTogYmVuY2htYXJrCndpbGwtaXQtc2NhbGU6CiAg
-dGVzdDogcG9sbDIKam9iX29yaWdpbjogIi9sa3AvbGtwL3NyYy9hbGxvdC9jeWNsaWM6bGludXgt
-ZGV2ZWw6ZGV2ZWwtaG91cmx5L2xrcC1zYjAzL3dpbGwtaXQtc2NhbGUueWFtbCIKCiMhIHF1ZXVl
-IG9wdGlvbnMKcXVldWU6IGJpc2VjdAp0ZXN0Ym94OiBsa3Atc2IwMwp0Ym94X2dyb3VwOiBsa3At
-c2IwMwpzdWJtaXRfaWQ6IDU4MDk1M2ZkMGI5YTkzZjIzZTUyODZhMwpqb2JfZmlsZTogIi9sa3Av
-c2NoZWR1bGVkL2xrcC1zYjAzL3dpbGwtaXQtc2NhbGUtcG9sbDItcGVyZm9ybWFuY2UtZGViaWFu
-LXg4Nl82NC0yMDE2LTA4LTMxLmNnei0xOGQxNzk2ZDBiNDU3NjJlYzZmNThjNWVkMmFkM2Y3NTEw
-ZmZiYWE5LTIwMTYxMDIxLTEyNzU1MC0xaXg0OG5yLTAueWFtbCIKaWQ6IGIyYTFiNGIxYWZhYzk4
-MjNkOGU3M2NmYzQ4MTAzZjdiYmE1ZGZmYWMKCiMhIGhvc3RzL2xrcC1zYjAzCm1vZGVsOiBTYW5k
-eSBCcmlkZ2UtRVAKbnJfbm9kZTogMgpucl9jcHU6IDMyCm1lbW9yeTogNjRHCmhkZF9wYXJ0aXRp
-b25zOiAiL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0QxMEVBUlMtMDBZNUIxX1dELVdDQVY1RjA1
-OTQ5OS1wYXJ0MyIKc3dhcF9wYXJ0aXRpb25zOiAKcm9vdGZzX3BhcnRpdGlvbjogIi9kZXYvZGlz
-ay9ieS1pZC9hdGEtV0RDX1dEMTBFQVJTLTAwWTVCMV9XRC1XQ0FWNUYwNTk0OTktcGFydDQiCmJy
-YW5kOiBJbnRlbChSKSBYZW9uKFIpIENQVSBFNS0yNjgwIDAgQCAyLjcwR0h6CgojISBpbmNsdWRl
-L2NhdGVnb3J5L2JlbmNobWFyawprbXNnOiAKaW9zdGF0OiAKaGVhcnRiZWF0OiAKdm1zdGF0OiAK
-bnVtYS1udW1hc3RhdDogCm51bWEtdm1zdGF0OiAKbnVtYS1tZW1pbmZvOiAKcHJvYy12bXN0YXQ6
-IApwcm9jLXN0YXQ6IAptZW1pbmZvOiAKc2xhYmluZm86IAppbnRlcnJ1cHRzOiAKbG9ja19zdGF0
-OiAKbGF0ZW5jeV9zdGF0czogCnNvZnRpcnFzOiAKYmRpX2Rldl9tYXBwaW5nOiAKZGlza3N0YXRz
-OiAKbmZzc3RhdDogCmNwdWlkbGU6IApjcHVmcmVxLXN0YXRzOiAKdHVyYm9zdGF0OiAKc2NoZWRf
-ZGVidWc6IApwZXJmLXN0YXQ6IApwZXJmLXByb2ZpbGU6IAoKIyEgaW5jbHVkZS9jYXRlZ29yeS9B
-TEwKY3B1ZnJlcV9nb3Zlcm5vcjogcGVyZm9ybWFuY2UKCiMhIGluY2x1ZGUvcXVldWUvY3ljbGlj
-CmNvbW1pdDogMThkMTc5NmQwYjQ1NzYyZWM2ZjU4YzVlZDJhZDNmNzUxMGZmYmFhOQoKIyEgZGVm
-YXVsdCBwYXJhbXMKa2NvbmZpZzogeDg2XzY0LXJoZWwtNy4yCmNvbXBpbGVyOiBnY2MtNgpyb290
-ZnM6IGRlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3oKZW5xdWV1ZV90aW1lOiAyMDE2LTEwLTIx
-IDA3OjMyOjEzLjk2NzAzNjA0MCArMDg6MDAKX2lkOiA1ODA5NTNmZDBiOWE5M2YyM2U1Mjg2YTMK
-CiMhIHNjaGVkdWxlIG9wdGlvbnMKdXNlcjogbGtwCmhlYWRfY29tbWl0OiBkMjI0MWExYWZmNGQ3
-ZmE0ODZlYzljODgxNjRiMjk2M2M0OTcyYjZiCmJhc2VfY29tbWl0OiAxMDAxMzU0Y2EzNDE3OWYz
-ZGI5MjRlYjY2NjcyNDQyYTE3MzE0N2RjCmJyYW5jaDogbGludXgtZGV2ZWwvZGV2ZWwtaG91cmx5
-LTIwMTYxMDE5MTUKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L3dpbGwtaXQtc2NhbGUvcG9sbDItcGVy
-Zm9ybWFuY2UvbGtwLXNiMDMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhl
-bC03LjIvZ2NjLTYvMThkMTc5NmQwYjQ1NzYyZWM2ZjU4YzVlZDJhZDNmNzUxMGZmYmFhOS8wIgpM
-S1BfU0VSVkVSOiBpbm4KbWF4X3VwdGltZTogMTUwMAppbml0cmQ6ICIvb3NpbWFnZS9kZWJpYW4v
-ZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNneiIKYm9vdGxvYWRlcl9hcHBlbmQ6Ci0gcm9vdD0v
-ZGV2L3JhbTAKLSB1c2VyPWxrcAotIGpvYj0vbGtwL3NjaGVkdWxlZC9sa3Atc2IwMy93aWxsLWl0
-LXNjYWxlLXBvbGwyLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3otMThk
-MTc5NmQwYjQ1NzYyZWM2ZjU4YzVlZDJhZDNmNzUxMGZmYmFhOS0yMDE2MTAyMS0xMjc1NTAtMWl4
-NDhuci0wLnlhbWwKLSBBUkNIPXg4Nl82NAotIGtjb25maWc9eDg2XzY0LXJoZWwtNy4yCi0gYnJh
-bmNoPWxpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE2MTAxOTE1Ci0gY29tbWl0PTE4ZDE3OTZk
-MGI0NTc2MmVjNmY1OGM1ZWQyYWQzZjc1MTBmZmJhYTkKLSBCT09UX0lNQUdFPS9wa2cvbGludXgv
-eDg2XzY0LXJoZWwtNy4yL2djYy02LzE4ZDE3OTZkMGI0NTc2MmVjNmY1OGM1ZWQyYWQzZjc1MTBm
-ZmJhYTkvdm1saW51ei00LjguMC1yYzctMDAxNjUtZzE4ZDE3OTYKLSBtYXhfdXB0aW1lPTE1MDAK
-LSBSRVNVTFRfUk9PVD0vcmVzdWx0L3dpbGwtaXQtc2NhbGUvcG9sbDItcGVyZm9ybWFuY2UvbGtw
-LXNiMDMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhlbC03LjIvZ2NjLTYv
-MThkMTc5NmQwYjQ1NzYyZWM2ZjU4YzVlZDJhZDNmNzUxMGZmYmFhOS8wCi0gTEtQX1NFUlZFUj1p
-bm4KLSBkZWJ1ZwotIGFwaWM9ZGVidWcKLSBzeXNycV9hbHdheXNfZW5hYmxlZAotIHJjdXBkYXRl
-LnJjdV9jcHVfc3RhbGxfdGltZW91dD0xMDAKLSBuZXQuaWZuYW1lcz0wCi0gcHJpbnRrLmRldmtt
-c2c9b24KLSBwYW5pYz0tMQotIHNvZnRsb2NrdXBfcGFuaWM9MQotIG5taV93YXRjaGRvZz1wYW5p
-YwotIG9vcHM9cGFuaWMKLSBsb2FkX3JhbWRpc2s9MgotIHByb21wdF9yYW1kaXNrPTAKLSBzeXN0
-ZW1kLmxvZ19sZXZlbD1lcnIKLSBpZ25vcmVfbG9nbGV2ZWwKLSBlYXJseXByaW50az10dHlTMCwx
-MTUyMDAKLSBjb25zb2xlPXR0eVMwLDExNTIwMAotIGNvbnNvbGU9dHR5MAotIHZnYT1ub3JtYWwK
-LSBydwpsa3BfaW5pdHJkOiAiL2xrcC9sa3AvbGtwLXg4Nl82NC5jZ3oiCm1vZHVsZXNfaW5pdHJk
-OiAiL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTYvMThkMTc5NmQwYjQ1NzYyZWM2ZjU4
-YzVlZDJhZDNmNzUxMGZmYmFhOS9tb2R1bGVzLmNneiIKYm1faW5pdHJkOiAiL29zaW1hZ2UvZGVw
-cy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L2xrcF8yMDE2LTA5LTAyLmNneiwvb3NpbWFn
-ZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovcnN5bmMtcm9vdGZzXzIwMTYtMDkt
-MDIuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9ydW4taXBj
-b25maWdfMjAxNi0wOS0wMi5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgt
-MzEuY2d6L3dpbGwtaXQtc2NhbGVfMjAxNi0wOS0wMi5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14
-ODZfNjQtMjAxNi0wOC0zMS5jZ3ovd2lsbC1pdC1zY2FsZS14ODZfNjRfMjAxNi0wOS0wMi5jZ3os
-L29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L2lvc3RhdF8yMDE2LTA5
-LTAyLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovdHVyYm9z
-dGF0XzIwMTYtMDktMDIuY2d6LC9vc2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEu
-Y2d6L3R1cmJvc3RhdC14ODZfNjRfMjAxNi0wOS0wMi5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
-eDg2XzY0LTIwMTYtMDgtMzEuY2d6L3BlcmZfMjAxNi0wOS0wMi5jZ3osL29zaW1hZ2UvcGtnL2Rl
-Ymlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovcGVyZi14ODZfNjQuY2d6LC9vc2ltYWdlL2RlcHMv
-ZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9od18yMDE2LTA5LTAyLmNneiIKc2l0ZTogaW5u
-CgojISBpbmNsdWRlL3NpdGUvaW5uCkxLUF9DR0lfUE9SVDogODAKTEtQX0NJRlNfUE9SVDogMTM5
-Cm9vbS1raWxsZXI6IAp3YXRjaGRvZzogCm5mcy1oYW5nOiAKCiMhIHJ1bnRpbWUgc3RhdHVzCnJl
-cGVhdF90bzogMgoKIyEgdXNlciBvdmVycmlkZXMKa2VybmVsOiAiL3BrZy9saW51eC94ODZfNjQt
-cmhlbC03LjIvZ2NjLTYvMThkMTc5NmQwYjQ1NzYyZWM2ZjU4YzVlZDJhZDNmNzUxMGZmYmFhOS92
-bWxpbnV6LTQuOC4wLXJjNy0wMDE2NS1nMThkMTc5NiIKZGVxdWV1ZV90aW1lOiAyMDE2LTEwLTIx
-IDA3OjM3OjE4LjA5NzUyOTQ1MCArMDg6MDAKam9iX3N0YXRlOiBmaW5pc2hlZApsb2FkYXZnOiAn
-MjMuMzYnCg==
-
---===============5363104788474469175==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="reproduce.ksh"
-
-CmZvciBmaWxlIGluIC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdSovY3B1ZnJlcS9zY2FsaW5n
-X2dvdmVybm9yCmRvCgllY2hvIHBlcmZvcm1hbmNlID4gJGZpbGUKZG9uZQoKLi9ydW50ZXN0LnB5
-IHBvbGwyIDI1IGJvdGggMSA4IDE2IDI0IDMyCg==
-
---===============5363104788474469175==--
+--===============2765309001304952426==--
 
