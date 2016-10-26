@@ -1,56 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============6361384926756183033=="
+Content-Type: multipart/mixed; boundary="===============3994155725133632859=="
 MIME-Version: 1.0
-From: Jiri Olsa <jolsa@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: [PATCHv3] perf powerpc: Don't call perf_event_disable from atomic context
-Date: Wed, 26 Oct 2016 11:48:24 +0200
-Message-ID: <20161026094824.GA21397@krava>
-In-Reply-To: <87mvhroo8c.fsf@yhuang-dev.intel.com>
+Subject: Re: [PATCHv3] perf powerpc: Don't call perf_event_disable from atomic context
+Date: Wed, 26 Oct 2016 17:12:49 +0200
+Message-ID: <20161026151249.GC3117@twins.programming.kicks-ass.net>
+In-Reply-To: <20161026094824.GA21397@krava>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6361384926756183033==
+--===============3994155725133632859==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 26, 2016 at 10:09:23AM +0800, Huang, Ying wrote:
+On Wed, Oct 26, 2016 at 11:48:24AM +0200, Jiri Olsa wrote:
 
-SNIP
+> diff --git a/kernel/events/core.c b/kernel/events/core.c
+> index c6e47e97b33f..04477983945e 100644
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -1960,6 +1960,13 @@ void perf_event_disable(struct perf_event *event)
+>  }
+>  EXPORT_SYMBOL_GPL(perf_event_disable);
+>  =
 
-> > ARGH... so what is the normal metric for this test and did that change?
-> > And why can't I still find that? These reports suck!
-> =
+> +void perf_event_disable_inatomic(struct perf_event *event, int kill)
+> +{
+> +	event->pending_kill    =3D kill;
+> +	event->pending_disable =3D 1;
+> +	irq_work_queue(&event->pending);
+> +}
+> +
+>  static void perf_set_shadow_time(struct perf_event *event,
+>  				 struct perf_event_context *ctx,
+>  				 u64 tstamp)
+> @@ -7074,9 +7081,7 @@ static int __perf_event_overflow(struct perf_event =
+*event,
+>  	event->pending_kill =3D POLL_IN;
+>  	if (events && atomic_dec_and_test(&event->event_limit)) {
+>  		ret =3D 1;
+> -		event->pending_kill =3D POLL_HUP;
+> -		event->pending_disable =3D 1;
+> -		irq_work_queue(&event->pending);
+> +		perf_event_disable_inatomic(event, POLL_HUP);
+>  	}
 
-> There is observable changes between the benchmark (will-it-scale)
-> scores.  That is said in the subject of the mail: "[No primary
-> change]".  But apparently, that is not clear.  We will improve that to
-> make it more clear.
-> =
+So the pending_kill stuff is independent of the disable here. No need to
+combine the two. I've change the patch as per the below.
 
-> > The result doesn't make sense, my gcc inlines the function call, the
-> > emitted code is very similar to the old code, with exception of one
-> > extra symbol.
-> >
-> > Are you sure this isn't simple run to run variation?
-> =
+That is, pending_kill is part of pending_wakeup, not of pending_disable.
+Here we simply use both, its just that on disable we need a different
+kind of wakeup (HANGUP instead of IN).
 
-> The reported change is perf-stat.branch-miss-rate%, which is changed
-> from 0.19% to 0.21%.  That is too small.  So, please ignore this
-> report.  We will be more careful in the future.
-> =
-
-
-hi,
-thanks for clarification
-
-attaching v3 patch with complete changelog,
-I tested and seems to work fine
-
-thanks,
-jirka
-
+See how after ->overflow_handler() we send a wakeup if there's a
+registered signal.
 
 ---
+Subject: perf powerpc: Don't call perf_event_disable from atomic context
+From: Jiri Olsa <jolsa@redhat.com>
+Date: Wed, 26 Oct 2016 11:48:24 +0200
+
 The trinity syscall fuzzer triggered following WARN on powerpc:
   WARNING: CPU: 9 PID: 2998 at arch/powerpc/kernel/hw_breakpoint.c:278
   ...
@@ -112,57 +121,51 @@ we unschedule the event and make sure it's not scheduled back.
 But we can't call perf_event_disable from atomic context, instead
 we need to use event's pending_disable irq_work way to disable it.
 
-Adding new function for that:
-  perf_event_disable_inatomic(event, kill)
-
+Cc: Michael Neuling <mikey@neuling.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: "Huang Ying" <ying.huang@intel.com>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 Reported-by: Jan Stancek <jstancek@redhat.com>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: http://lkml.kernel.org/r/20161026094824.GA21397(a)krava
 ---
- arch/powerpc/kernel/hw_breakpoint.c |  2 +-
- include/linux/perf_event.h          |  1 +
- kernel/events/core.c                | 11 ++++++++---
- 3 files changed, 10 insertions(+), 4 deletions(-)
+ arch/powerpc/kernel/hw_breakpoint.c |    2 +-
+ include/linux/perf_event.h          |    1 +
+ kernel/events/core.c                |   10 ++++++++--
+ 3 files changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/kernel/hw_breakpoint.c b/arch/powerpc/kernel/hw_b=
-reakpoint.c
-index 9781c69eae57..58024eecbd9e 100644
 --- a/arch/powerpc/kernel/hw_breakpoint.c
 +++ b/arch/powerpc/kernel/hw_breakpoint.c
-@@ -275,7 +275,7 @@ int hw_breakpoint_handler(struct die_args *args)
+@@ -275,7 +275,7 @@ int hw_breakpoint_handler(struct die_arg
  	if (!stepped) {
  		WARN(1, "Unable to handle hardware breakpoint. Breakpoint at "
  			"0x%lx will be disabled.", info->address);
 -		perf_event_disable(bp);
-+		perf_event_disable_inatomic(bp, 0);
++		perf_event_disable_inatomic(bp);
  		goto out;
  	}
  	/*
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 060d0ede88df..055bc837bfc1 100644
 --- a/include/linux/perf_event.h
 +++ b/include/linux/perf_event.h
-@@ -1257,6 +1257,7 @@ extern u64 perf_swevent_set_period(struct perf_event =
-*event);
+@@ -1257,6 +1257,7 @@ extern u64 perf_swevent_set_period(struc
  extern void perf_event_enable(struct perf_event *event);
  extern void perf_event_disable(struct perf_event *event);
  extern void perf_event_disable_local(struct perf_event *event);
-+extern void perf_event_disable_inatomic(struct perf_event *event, int kill=
-);
++extern void perf_event_disable_inatomic(struct perf_event *event);
  extern void perf_event_task_tick(void);
  #else /* !CONFIG_PERF_EVENTS: */
  static inline void *
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index c6e47e97b33f..04477983945e 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
-@@ -1960,6 +1960,13 @@ void perf_event_disable(struct perf_event *event)
+@@ -1960,6 +1960,12 @@ void perf_event_disable(struct perf_even
  }
  EXPORT_SYMBOL_GPL(perf_event_disable);
  =
 
-+void perf_event_disable_inatomic(struct perf_event *event, int kill)
++void perf_event_disable_inatomic(struct perf_event *event)
 +{
-+	event->pending_kill    =3D kill;
 +	event->pending_disable =3D 1;
 +	irq_work_queue(&event->pending);
 +}
@@ -170,23 +173,18 @@ index c6e47e97b33f..04477983945e 100644
  static void perf_set_shadow_time(struct perf_event *event,
  				 struct perf_event_context *ctx,
  				 u64 tstamp)
-@@ -7074,9 +7081,7 @@ static int __perf_event_overflow(struct perf_event *e=
-vent,
- 	event->pending_kill =3D POLL_IN;
+@@ -7075,8 +7081,8 @@ static int __perf_event_overflow(struct
  	if (events && atomic_dec_and_test(&event->event_limit)) {
  		ret =3D 1;
--		event->pending_kill =3D POLL_HUP;
+ 		event->pending_kill =3D POLL_HUP;
 -		event->pending_disable =3D 1;
 -		irq_work_queue(&event->pending);
-+		perf_event_disable_inatomic(event, POLL_HUP);
++
++		perf_event_disable_inatomic(event);
  	}
  =
 
  	READ_ONCE(event->overflow_handler)(event, data, regs);
--- =
 
-2.7.4
-
-
---===============6361384926756183033==--
+--===============3994155725133632859==--
 
