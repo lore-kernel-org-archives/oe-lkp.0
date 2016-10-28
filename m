@@ -1,32 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============1008834843749988430=="
+Content-Type: multipart/mixed; boundary="===============8159554347658863232=="
 MIME-Version: 1.0
-From: edubezval@gmail.com
+From: Philip Li <philip.li@intel.com>
 To: lkp@lists.01.org
-Subject: Adding Thermal SoC tree into 0-Day testing
-Date: Thu, 27 Oct 2016 22:29:23 -0700
-Message-ID: <CAC-25o_nmgN32pOhW9v4v_Nan0aJsjC1bWN1XNDjm-XMDdFAog@mail.gmail.com>
+Subject: Re: Adding Thermal SoC tree into 0-Day testing
+Date: Fri, 28 Oct 2016 16:29:48 +0800
+Message-ID: <20161028082948.GB29231@intel.com>
+In-Reply-To: <CAC-25o_nmgN32pOhW9v4v_Nan0aJsjC1bWN1XNDjm-XMDdFAog@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1008834843749988430==
+--===============8159554347658863232==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hello 0-Day team,
+On Thu, Oct 27, 2016 at 10:29:23PM -0700, edubezval(a)gmail.com wrote:
+> Hello 0-Day team,
+> =
 
-I would like to ask you if you could add my tree to your testing service:
+> I would like to ask you if you could add my tree to your testing service:
+> =
 
-tree: https://git.kernel.org/cgit/linux/kernel/git/evalenti/linux-soc-therm=
-al.git/
-branches: linus, next, for-kernelci
+> tree: https://git.kernel.org/cgit/linux/kernel/git/evalenti/linux-soc-the=
+rmal.git/
+> branches: linus, next, for-kernelci
+> =
 
-Would you also send reports on changes in the branches?
+> Would you also send reports on changes in the branches?
 
-BR,
+sure, np, to confirm, currently we have below repo monitored, and this one =
+is a different one, right?
 
--- =
+https://git.kernel.org/pub/scm/linux/kernel/git/evalenti/linux-soc-thermal.=
+git
 
-Eduardo Bezerra Valentin
+> =
 
---===============1008834843749988430==--
+> BR,
+> =
+
+> -- =
+
+> Eduardo Bezerra Valentin
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
+
+--===============8159554347658863232==--
 
