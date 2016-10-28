@@ -1,106 +1,56 @@
-Content-Type: multipart/mixed; boundary="===============6081669623774025254=="
+Content-Type: multipart/mixed; boundary="===============7224621151699711122=="
 MIME-Version: 1.0
-From: edubezval@gmail.com
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: Adding Thermal SoC tree into 0-Day testing
-Date: Fri, 28 Oct 2016 08:19:22 -0700
-Message-ID: <CAC-25o8_1br7DqOicViQH6s5hDpScy=6mVcf-1HYMbwBzyge1Q@mail.gmail.com>
-In-Reply-To: <20161028144325.GA15479@intel.com>
+Subject: Re: [NFSv4] 931437ee2c: BUG: sleeping function called from invalid context at mm/slab.h:393
+Date: Fri, 28 Oct 2016 23:08:14 +0200
+Message-ID: <20161028210813.6uqeblto2lymdf3b@linutronix.de>
+In-Reply-To: <20161025065239.GC3341@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6081669623774025254==
+--===============7224621151699711122==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hey Philip,
+On 2016-10-25 14:52:39 [+0800], kernel test robot wrote:
+> =
 
-On Fri, Oct 28, 2016 at 7:43 AM, Philip Li <philip.li@intel.com> wrote:
-> On Fri, Oct 28, 2016 at 07:26:50AM -0700, edubezval(a)gmail.com wrote:
->> Philip,
->>
->> On Fri, Oct 28, 2016 at 1:29 AM, Philip Li <philip.li@intel.com> wrote:
->> > On Thu, Oct 27, 2016 at 10:29:23PM -0700, edubezval(a)gmail.com wrote:
->> >> Hello 0-Day team,
->> >>
->> >> I would like to ask you if you could add my tree to your testing serv=
-ice:
->> >>
->> >> tree: https://git.kernel.org/cgit/linux/kernel/git/evalenti/linux-soc=
--thermal.git/
->> >> branches: linus, next, for-kernelci
->> >>
->> >> Would you also send reports on changes in the branches?
->> >
->> > sure, np, to confirm, currently we have below repo monitored, and this=
- one is a different one, right?
->> >
->> > https://git.kernel.org/pub/scm/linux/kernel/git/evalenti/linux-soc-the=
-rmal.git
->> >
->>
->> Cool, I am still getting familiar with 0-Day. I did not realize you
->> guys monitor per repo, not per branch. Great!
-> thanks, and do you still need us to add the new repo https://git.kernel.o=
-rg/cgit/linux/kernel/git/evalenti/linux-soc-thermal.git/?
->
+> FYI, we noticed the following commit:
+> =
 
+> https://github.com/0day-ci/linux Sebastian-Andrzej-Siewior/NFSv4-replace-=
+seqcount_t-with-a-seqlock_t/20161022-013104
+> commit 931437ee2c100a50c36771c947ce3674f8160592 ("NFSv4: replace seqcount=
+_t with a seqlock_t")
+> =
 
-I missed your question. Even though they are different URL, they will
-redirect to same repo. So, I believe I am good.
+> in testcase: ebizzy
+> with following parameters:
+> =
 
->>
->> I have a couple of questions.
->>
->> How do I access build reports and test reports? Is the mailing list
->> the right place, or do you also have a place with your past / current
->> results?
-> Currently you will receive report when there's any regression detected. I=
- will later add build success notification to you as well.
-> The place to check is https://lists.01.org/pipermail/kbuild-all/, and htt=
-ps://lists.01.org/pipermail/lkp/ for all reports.
->
->>
->> I saw that you do a simple read of thermal zone temperatures, and
->> cooling devices actions, which is great for me. If I want to extend
->> thermal tests, how do I do it?
->>
->> And finally, which archs and devices do you test?
-> For thermal related questions, let me consult more members and back to yo=
-u later.
+> 	nr_threads: 200%
+> 	iterations: 100x
+> 	duration: 10s
+> =
 
-OK Great. No rush here.
+> =
 
-It would be nice to know which board/devices you have in the farm for
-boot/testing.
+> ebizzy is designed to generate a workload resembling common web applicati=
+on server workloads.
+> =
 
-BR,
+> =
 
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu kvm64,+ssse3 -m 1G
 
->
->>
->> BR,
->>
->> >>
->> >> BR,
->> >>
->> >> --
->> >> Eduardo Bezerra Valentin
->> >> _______________________________________________
->> >> LKP mailing list
->> >> LKP(a)lists.01.org
->> >> https://lists.01.org/mailman/listinfo/lkp
->>
->>
->>
->> --
->> Eduardo Bezerra Valentin
+It can't get it triggered. In fact I never get even close to the code
+path. I tried NFS as rootfs and this test of yours. And I tried
+"xfstests-dev -nfs" with no luck.
+So you have NFS as your rootfs. Anything special on the server side? It
+seems to be a basic NFSv4 export.
 
+Sebastian
 
-
--- =
-
-Eduardo Bezerra Valentin
-
---===============6081669623774025254==--
+--===============7224621151699711122==--
 
