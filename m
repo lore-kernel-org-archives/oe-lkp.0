@@ -1,56 +1,128 @@
-Content-Type: multipart/mixed; boundary="===============7224621151699711122=="
+Content-Type: multipart/mixed; boundary="===============0642768419523625226=="
 MIME-Version: 1.0
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [NFSv4] 931437ee2c: BUG: sleeping function called from invalid context at mm/slab.h:393
-Date: Fri, 28 Oct 2016 23:08:14 +0200
-Message-ID: <20161028210813.6uqeblto2lymdf3b@linutronix.de>
-In-Reply-To: <20161025065239.GC3341@yexl-desktop>
+Subject: Re: [f2fs] ec795418c4: fsmark.files_per_sec -36.3% regression
+Date: Mon, 31 Oct 2016 11:14:57 +0800
+Message-ID: <87bmy15hvy.fsf@yhuang-dev.intel.com>
+In-Reply-To: <20160927014138.GB35593@jaegeuk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7224621151699711122==
+--===============0642768419523625226==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2016-10-25 14:52:39 [+0800], kernel test robot wrote:
-> =
+Hi, Kim,
 
-> FYI, we noticed the following commit:
-> =
+Jaegeuk Kim <jaegeuk@kernel.org> writes:
 
-> https://github.com/0day-ci/linux Sebastian-Andrzej-Siewior/NFSv4-replace-=
-seqcount_t-with-a-seqlock_t/20161022-013104
-> commit 931437ee2c100a50c36771c947ce3674f8160592 ("NFSv4: replace seqcount=
-_t with a seqlock_t")
-> =
+> On Tue, Sep 27, 2016 at 08:50:02AM +0800, Huang, Ying wrote:
+>> Jaegeuk Kim <jaegeuk@kernel.org> writes:
+>> =
 
-> in testcase: ebizzy
-> with following parameters:
-> =
+>> > On Mon, Sep 26, 2016 at 02:26:06PM +0800, Huang, Ying wrote:
+>> >> Hi, Jaegeuk,
+>> >> =
 
-> 	nr_threads: 200%
-> 	iterations: 100x
-> 	duration: 10s
-> =
+>> >> "Huang, Ying" <ying.huang@intel.com> writes:
+>> >> =
 
-> =
+>> >> > Jaegeuk Kim <jaegeuk@kernel.org> writes:
+>> >> >
+>> >> >> Hello,
+>> >> >>
+>> >> >> On Sat, Aug 27, 2016 at 10:13:34AM +0800, Fengguang Wu wrote:
+>> >> >>> Hi Jaegeuk,
+>> >> >>> =
 
-> ebizzy is designed to generate a workload resembling common web applicati=
-on server workloads.
-> =
+>> >> >>> > > >> > - [lkp] [f2fs] b93f771286: aim7.jobs-per-min -81.2% regr=
+ession
+>> >> >>> > > >> >
+>> >> >>> > > >> > The disk is 4 12G ram disk, and setup RAID0 on them via =
+mdadm.  The
+>> >> >>> > > >> > steps for aim7 is,
+>> >> >>> > > >> >
+>> >> >>> > > >> > cat > workfile <<EOF
+>> >> >>> > > >> > FILESIZE: 1M
+>> >> >>> > > >> > POOLSIZE: 10M
+>> >> >>> > > >> > 10 sync_disk_rw
+>> >> >>> > > >> > EOF
+>> >> >>> > > >> >
+>> >> >>> > > >> > (
+>> >> >>> > > >> >     echo $HOSTNAME
+>> >> >>> > > >> >     echo sync_disk_rw
+>> >> >>> > > >> >
+>> >> >>> > > >> >     echo 1
+>> >> >>> > > >> >     echo 600
+>> >> >>> > > >> >     echo 2
+>> >> >>> > > >> >     echo 600
+>> >> >>> > > >> >     echo 1
+>> >> >>> > > >> > ) | ./multitask -t &
+>> >> >>> > > >>
+>> >> >>> > > >> Any update on these 2 regressions?  Is the information is =
+enough for you
+>> >> >>> > > >> to reproduce?
+>> >> >>> > > >
+>> >> >>> > > > Sorry, I've had no time to dig this due to business travel =
+now.
+>> >> >>> > > > I'll check that when back to US.
+>> >> >>> > > =
 
-> =
+>> >> >>> > > Any update?
+>> >> >>> > =
 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu kvm64,+ssse3 -m 1G
+>> >> >>> > Sorry, how can I get multitask binary?
+>> >> >>> =
 
-It can't get it triggered. In fact I never get even close to the code
-path. I tried NFS as rootfs and this test of yours. And I tried
-"xfstests-dev -nfs" with no luck.
-So you have NFS as your rootfs. Anything special on the server side? It
-seems to be a basic NFSv4 export.
+>> >> >>> It's part of aim7, which can be downloaded here:
+>> >> >>> =
 
-Sebastian
+>> >> >>> http://nchc.dl.sourceforge.net/project/aimbench/aim-suite7/Initia=
+l%20release/s7110.tar.Z
+>> >> >>
+>> >> >> Thank you for the codes.
+>> >> >>
+>> >> >> I've run this workload on the latest f2fs and compared performance=
+ having
+>> >> >> without the reported patch. (1TB nvme SSD, 16 cores, 16GB DRAM)
+>> >> >> Interestingly, I could find slight performance improvement rather =
+than
+>> >> >> regression. :(
+>> >> >> Not sure how to reproduce this.
+>> >> >
+>> >> > I think the difference lies on disk used.  The ramdisk is used in t=
+he
+>> >> > original test, but it appears that your memory is too small to setu=
+p the
+>> >> > RAM disk for test.  So it may be impossible for you to reproduce the
+>> >> > test unless you can find more memory :)
+>> >> >
+>> >> > But we can help you to root cause the issue.  What additional data =
+do
+>> >> > you want?  perf-profile data before and after the patch?
+>> >> =
 
---===============7224621151699711122==--
+>> >> Any update to this regression?
+>> >
+>> > Sorry, no. But meanwhile, I've purchased more DRAMs. :)
+>> > Now I'm with 128GB DRAM. I can configure 64GB as pmem.
+>> > Is it worth to try the test again?
+>> =
+
+>> I think you are the decision maker for this.  You can judge whether the
+>> test is reasonable.  And we can adjust our test accordingly.
+>> =
+
+>> BTW: For this test, we use brd ram disk and raid to test.
+>
+> Okay, let me try this again.
+
+Any update on this?
+
+Best Regards,
+Huang, Ying
+
+
+--===============0642768419523625226==--
 
