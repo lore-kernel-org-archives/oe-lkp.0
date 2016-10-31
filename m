@@ -1,128 +1,79 @@
-Content-Type: multipart/mixed; boundary="===============0642768419523625226=="
+Content-Type: multipart/mixed; boundary="===============1372911061403378787=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Philip Li <philip.li@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [f2fs] ec795418c4: fsmark.files_per_sec -36.3% regression
-Date: Mon, 31 Oct 2016 11:14:57 +0800
-Message-ID: <87bmy15hvy.fsf@yhuang-dev.intel.com>
-In-Reply-To: <20160927014138.GB35593@jaegeuk>
+Subject: Re: Adding Thermal SoC tree into 0-Day testing
+Date: Mon, 31 Oct 2016 13:01:57 +0800
+Message-ID: <20161031050157.GA12163@intel.com>
+In-Reply-To: <CAC-25o8_1br7DqOicViQH6s5hDpScy=6mVcf-1HYMbwBzyge1Q@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0642768419523625226==
+--===============1372911061403378787==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Kim,
+On Fri, Oct 28, 2016 at 08:19:22AM -0700, edubezval(a)gmail.com wrote:
+> Hey Philip,
+> =
 
-Jaegeuk Kim <jaegeuk@kernel.org> writes:
+> On Fri, Oct 28, 2016 at 7:43 AM, Philip Li <philip.li@intel.com> wrote:
+> >> I saw that you do a simple read of thermal zone temperatures, and
+> >> cooling devices actions, which is great for me. If I want to extend
+> >> thermal tests, how do I do it?
+below are some info for initial steps
+- check https://01.org/lkp/get--involved, to clone lkp-tests repo from http=
+s://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/
+- doc at lkp-tests/doc/lkp-howto.md has basic information regarding how to =
+write/update tests, then can submit patch to lkp mail list
 
-> On Tue, Sep 27, 2016 at 08:50:02AM +0800, Huang, Ying wrote:
->> Jaegeuk Kim <jaegeuk@kernel.org> writes:
->> =
+> >>
+> >> And finally, which archs and devices do you test?
+> > For thermal related questions, let me consult more members and back to =
+you later.
+> =
 
->> > On Mon, Sep 26, 2016 at 02:26:06PM +0800, Huang, Ying wrote:
->> >> Hi, Jaegeuk,
->> >> =
+> OK Great. No rush here.
+> =
 
->> >> "Huang, Ying" <ying.huang@intel.com> writes:
->> >> =
+> It would be nice to know which board/devices you have in the farm for
+> boot/testing.
+We currently run testing on x86 desktops/2P and 4P servers.
 
->> >> > Jaegeuk Kim <jaegeuk@kernel.org> writes:
->> >> >
->> >> >> Hello,
->> >> >>
->> >> >> On Sat, Aug 27, 2016 at 10:13:34AM +0800, Fengguang Wu wrote:
->> >> >>> Hi Jaegeuk,
->> >> >>> =
+> =
 
->> >> >>> > > >> > - [lkp] [f2fs] b93f771286: aim7.jobs-per-min -81.2% regr=
-ession
->> >> >>> > > >> >
->> >> >>> > > >> > The disk is 4 12G ram disk, and setup RAID0 on them via =
-mdadm.  The
->> >> >>> > > >> > steps for aim7 is,
->> >> >>> > > >> >
->> >> >>> > > >> > cat > workfile <<EOF
->> >> >>> > > >> > FILESIZE: 1M
->> >> >>> > > >> > POOLSIZE: 10M
->> >> >>> > > >> > 10 sync_disk_rw
->> >> >>> > > >> > EOF
->> >> >>> > > >> >
->> >> >>> > > >> > (
->> >> >>> > > >> >     echo $HOSTNAME
->> >> >>> > > >> >     echo sync_disk_rw
->> >> >>> > > >> >
->> >> >>> > > >> >     echo 1
->> >> >>> > > >> >     echo 600
->> >> >>> > > >> >     echo 2
->> >> >>> > > >> >     echo 600
->> >> >>> > > >> >     echo 1
->> >> >>> > > >> > ) | ./multitask -t &
->> >> >>> > > >>
->> >> >>> > > >> Any update on these 2 regressions?  Is the information is =
-enough for you
->> >> >>> > > >> to reproduce?
->> >> >>> > > >
->> >> >>> > > > Sorry, I've had no time to dig this due to business travel =
-now.
->> >> >>> > > > I'll check that when back to US.
->> >> >>> > > =
+> BR,
+> =
 
->> >> >>> > > Any update?
->> >> >>> > =
+> =
 
->> >> >>> > Sorry, how can I get multitask binary?
->> >> >>> =
+> >
+> >>
+> >> BR,
+> >>
+> >> >>
+> >> >> BR,
+> >> >>
+> >> >> --
+> >> >> Eduardo Bezerra Valentin
+> >> >> _______________________________________________
+> >> >> LKP mailing list
+> >> >> LKP(a)lists.01.org
+> >> >> https://lists.01.org/mailman/listinfo/lkp
+> >>
+> >>
+> >>
+> >> --
+> >> Eduardo Bezerra Valentin
+> =
 
->> >> >>> It's part of aim7, which can be downloaded here:
->> >> >>> =
+> =
 
->> >> >>> http://nchc.dl.sourceforge.net/project/aimbench/aim-suite7/Initia=
-l%20release/s7110.tar.Z
->> >> >>
->> >> >> Thank you for the codes.
->> >> >>
->> >> >> I've run this workload on the latest f2fs and compared performance=
- having
->> >> >> without the reported patch. (1TB nvme SSD, 16 cores, 16GB DRAM)
->> >> >> Interestingly, I could find slight performance improvement rather =
-than
->> >> >> regression. :(
->> >> >> Not sure how to reproduce this.
->> >> >
->> >> > I think the difference lies on disk used.  The ramdisk is used in t=
-he
->> >> > original test, but it appears that your memory is too small to setu=
-p the
->> >> > RAM disk for test.  So it may be impossible for you to reproduce the
->> >> > test unless you can find more memory :)
->> >> >
->> >> > But we can help you to root cause the issue.  What additional data =
-do
->> >> > you want?  perf-profile data before and after the patch?
->> >> =
+> =
 
->> >> Any update to this regression?
->> >
->> > Sorry, no. But meanwhile, I've purchased more DRAMs. :)
->> > Now I'm with 128GB DRAM. I can configure 64GB as pmem.
->> > Is it worth to try the test again?
->> =
+> -- =
 
->> I think you are the decision maker for this.  You can judge whether the
->> test is reasonable.  And we can adjust our test accordingly.
->> =
+> Eduardo Bezerra Valentin
 
->> BTW: For this test, we use brd ram disk and raid to test.
->
-> Okay, let me try this again.
-
-Any update on this?
-
-Best Regards,
-Huang, Ying
-
-
---===============0642768419523625226==--
+--===============1372911061403378787==--
 
