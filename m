@@ -1,138 +1,51 @@
-Content-Type: multipart/mixed; boundary="===============4549519726537859206=="
+Content-Type: multipart/mixed; boundary="===============5429216924045072755=="
 MIME-Version: 1.0
-From: Jaegeuk Kim <jaegeuk@kernel.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: [f2fs] ec795418c4: fsmark.files_per_sec -36.3% regression
-Date: Mon, 31 Oct 2016 10:42:09 -0700
-Message-ID: <20161031174209.GA12400@jaegeuk>
-In-Reply-To: <87bmy15hvy.fsf@yhuang-dev.intel.com>
+Subject: Re: [x86/platform/UV] 71854cb812: will-it-scale.per_thread_ops -2.3% regression
+Date: Mon, 31 Oct 2016 12:19:16 -0600
+Message-ID: <alpine.DEB.2.20.1610311216520.10522@nanos>
+In-Reply-To: <20161031054101.b27mjyr46b3r2tbp@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4549519726537859206==
+--===============5429216924045072755==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 31, 2016 at 11:14:57AM +0800, Huang, Ying wrote:
-> Hi, Kim,
+On Mon, 31 Oct 2016, Fengguang Wu wrote:
+> On Fri, Oct 28, 2016 at 12:37:45AM +0200, Thomas Gleixner wrote:
+> > I have no explanation for this either, but you really should try to fig=
+ure
+> > out what's going on here.
 > =
 
-> Jaegeuk Kim <jaegeuk@kernel.org> writes:
+> Xiaolong, how about doing a small debug patch (a WARN_ONCE() line may
+> be enough) to verify whether the code path is executed?
 > =
 
-> > On Tue, Sep 27, 2016 at 08:50:02AM +0800, Huang, Ying wrote:
-> >> Jaegeuk Kim <jaegeuk@kernel.org> writes:
-> >> =
-
-> >> > On Mon, Sep 26, 2016 at 02:26:06PM +0800, Huang, Ying wrote:
-> >> >> Hi, Jaegeuk,
-> >> >> =
-
-> >> >> "Huang, Ying" <ying.huang@intel.com> writes:
-> >> >> =
-
-> >> >> > Jaegeuk Kim <jaegeuk@kernel.org> writes:
-> >> >> >
-> >> >> >> Hello,
-> >> >> >>
-> >> >> >> On Sat, Aug 27, 2016 at 10:13:34AM +0800, Fengguang Wu wrote:
-> >> >> >>> Hi Jaegeuk,
-> >> >> >>> =
-
-> >> >> >>> > > >> > - [lkp] [f2fs] b93f771286: aim7.jobs-per-min -81.2% re=
-gression
-> >> >> >>> > > >> >
-> >> >> >>> > > >> > The disk is 4 12G ram disk, and setup RAID0 on them vi=
-a mdadm.  The
-> >> >> >>> > > >> > steps for aim7 is,
-> >> >> >>> > > >> >
-> >> >> >>> > > >> > cat > workfile <<EOF
-> >> >> >>> > > >> > FILESIZE: 1M
-> >> >> >>> > > >> > POOLSIZE: 10M
-> >> >> >>> > > >> > 10 sync_disk_rw
-> >> >> >>> > > >> > EOF
-> >> >> >>> > > >> >
-> >> >> >>> > > >> > (
-> >> >> >>> > > >> >     echo $HOSTNAME
-> >> >> >>> > > >> >     echo sync_disk_rw
-> >> >> >>> > > >> >
-> >> >> >>> > > >> >     echo 1
-> >> >> >>> > > >> >     echo 600
-> >> >> >>> > > >> >     echo 2
-> >> >> >>> > > >> >     echo 600
-> >> >> >>> > > >> >     echo 1
-> >> >> >>> > > >> > ) | ./multitask -t &
-> >> >> >>> > > >>
-> >> >> >>> > > >> Any update on these 2 regressions?  Is the information i=
-s enough for you
-> >> >> >>> > > >> to reproduce?
-> >> >> >>> > > >
-> >> >> >>> > > > Sorry, I've had no time to dig this due to business trave=
-l now.
-> >> >> >>> > > > I'll check that when back to US.
-> >> >> >>> > > =
-
-> >> >> >>> > > Any update?
-> >> >> >>> > =
-
-> >> >> >>> > Sorry, how can I get multitask binary?
-> >> >> >>> =
-
-> >> >> >>> It's part of aim7, which can be downloaded here:
-> >> >> >>> =
-
-> >> >> >>> http://nchc.dl.sourceforge.net/project/aimbench/aim-suite7/Init=
-ial%20release/s7110.tar.Z
-> >> >> >>
-> >> >> >> Thank you for the codes.
-> >> >> >>
-> >> >> >> I've run this workload on the latest f2fs and compared performan=
-ce having
-> >> >> >> without the reported patch. (1TB nvme SSD, 16 cores, 16GB DRAM)
-> >> >> >> Interestingly, I could find slight performance improvement rathe=
-r than
-> >> >> >> regression. :(
-> >> >> >> Not sure how to reproduce this.
-> >> >> >
-> >> >> > I think the difference lies on disk used.  The ramdisk is used in=
- the
-> >> >> > original test, but it appears that your memory is too small to se=
-tup the
-> >> >> > RAM disk for test.  So it may be impossible for you to reproduce =
-the
-> >> >> > test unless you can find more memory :)
-> >> >> >
-> >> >> > But we can help you to root cause the issue.  What additional dat=
-a do
-> >> >> > you want?  perf-profile data before and after the patch?
-> >> >> =
-
-> >> >> Any update to this regression?
-> >> >
-> >> > Sorry, no. But meanwhile, I've purchased more DRAMs. :)
-> >> > Now I'm with 128GB DRAM. I can configure 64GB as pmem.
-> >> > Is it worth to try the test again?
-> >> =
-
-> >> I think you are the decision maker for this.  You can judge whether the
-> >> test is reasonable.  And we can adjust our test accordingly.
-> >> =
-
-> >> BTW: For this test, we use brd ram disk and raid to test.
-> >
-> > Okay, let me try this again.
+> It'd also help to compare vmlinux according to Thomas' reasoning:
 > =
 
-> Any update on this?
+> > The only difference between plain rc1 and rc + this patch is the result=
+ing
+> > text size and therefor some other unrelated stuff moving to different
+> > places in memory which has some yet to figure out side effects.
 
-Still in my to-do list. Let you know, if I can get some info.
+So one other thing you might try is using rc3 as a base line and then
+revert the patch in question on top of rc3 and see whether that weird
+behaviour persists.
+ =
+
+> > From bisect POV, the below graphs show the user_time and system_time
+> are clearly and consistently different before/after commit 71854cb812.
+> So this commit must impacted something.
+
+I agree. I just have no idea what happens.
 
 Thanks,
 
-> =
+	tglx
 
-> Best Regards,
-> Huang, Ying
-
---===============4549519726537859206==--
+--===============5429216924045072755==--
 
