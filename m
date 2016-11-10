@@ -1,77 +1,149 @@
-Content-Type: multipart/mixed; boundary="===============1515222914885531714=="
+Content-Type: multipart/mixed; boundary="===============2837831394753109725=="
 MIME-Version: 1.0
 From: Borislav Petkov <bp@alien8.de>
 To: lkp@lists.01.org
-Subject: Re: [x86/MCE] 81aa021b8c: WARNING: CPU: 0 PID: 0 at arch/x86/kernel/cpu/mcheck/mce.c:716 machine_check_poll+0x66/0x21c
-Date: Thu, 10 Nov 2016 13:46:34 +0100
-Message-ID: <20161110124633.3fv4mc4kxvdxmnzj@pd.tnic>
-In-Reply-To: <582469b2.PLOtWbwTF/l9zaTD%xiaolong.ye@intel.com>
+Subject: [PATCH -v1.1] x86/MCE: Correct TSC timestamping of error records
+Date: Thu, 10 Nov 2016 14:10:53 +0100
+Message-ID: <20161110131053.kybsijfs5venpjnf@pd.tnic>
+In-Reply-To: <20161110124633.3fv4mc4kxvdxmnzj@pd.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1515222914885531714==
+--===============2837831394753109725==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 10, 2016 at 08:36:02PM +0800, kernel test robot wrote:
-> FYI, we noticed the following commit:
-> =
+Thomas,
 
-> https://github.com/0day-ci/linux Borislav-Petkov/x86-MCE-Correct-TSC-time=
-stamping-of-error-records/20161110-021431
-> commit 81aa021b8c6f464b68c6e6df93e64ffe2c2adda6 ("x86/MCE: Remove MCP_TIM=
-ESTAMP")
-> =
+here's the fixed version:
 
-> in testcase: boot
-> =
+---
+From: Borislav Petkov <bp@suse.de>
 
-> on test machine: qemu-system-x86_64 -enable-kvm -m 320M
-> =
+We did have logic in the MCE code which would TSC-timestamp an error
+record only when it is exact - i.e., when it wasn't detected by polling.
+This isn't the case anymore. So let's fix that:
 
-> caused below changes:
-> =
+We have a valid TSC timestamp in the error record only when it has been
+a precise detection, i.e., either in the #MC handler or in one of the
+interrupt handlers (thresholding, deferred, ...).
 
-> =
+All other error records still have mce.time which contains the wall
+time in order to be able to place the error record in time at least
+approximately.
 
-> +-----------------------------------------------------------------+------=
-------+------------+
-> |                                                                 | b2eca=
-63145 | 81aa021b8c |
-> +-----------------------------------------------------------------+------=
-------+------------+
-> | boot_successes                                                  | 16   =
-      | 0          |
-> | boot_failures                                                   | 0    =
-      | 10         |
-> | WARNING:at_arch/x86/kernel/cpu/mcheck/mce.c:#machine_check_poll | 0    =
-      | 10         |
-> +-----------------------------------------------------------------+------=
-------+------------+
-> =
+Also, this fixes another bug where machine_check_poll() would clear
+mce.tsc unconditionally even if we requested precise MCP_TIMESTAMP
+logging.
 
-> =
+The proper fix would be to generate timestamp only when it has been
+requested and not always. But that would require a more thorough code
+audit of all mce_gather_info/mce_setup() users. Add a FIXME for now.
 
-> =
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/kernel/cpu/mcheck/mce.c       | 16 ++++++++++------
+ arch/x86/kernel/cpu/mcheck/mce_intel.c |  4 ++--
+ 2 files changed, 12 insertions(+), 8 deletions(-)
 
-> [    0.238462] Mountpoint-cache hash table entries: 1024 (order: 1, 8192 =
-bytes)
-> [    0.240536] mce: CPU supports 10 MCE banks
-> [    0.241403] ------------[ cut here ]------------
-> [    0.242334] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/cpu/mcheck/mce.c=
-:716 machine_check_poll+0x66/0x21c
-> [    0.244554] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.9.0-rc4-00300-=
-g81aa021 #64
-> [    0.246089] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S Debian-1.8.2-1 04/01/2014
-> [    0.247857] Call Trace:
-> [    0.248341]  dump_stack+0x61/0x7e
-> [    0.249018]  __warn+0xb3/0xce
-> [    0.249594]  warn_slowpath_null+0x18/0x1a
+diff --git a/arch/x86/kernel/cpu/mcheck/mce.c b/arch/x86/kernel/cpu/mcheck/=
+mce.c
+index 4ca00474804b..aab96f8d52b0 100644
+--- a/arch/x86/kernel/cpu/mcheck/mce.c
++++ b/arch/x86/kernel/cpu/mcheck/mce.c
+@@ -706,6 +706,15 @@ bool machine_check_poll(enum mcp_flags flags, mce_bank=
+s_t *b)
+ =
 
-Thanks guys, this actually helps!
+ 	mce_gather_info(&m, NULL);
+ =
 
-I'll remove the WARN_ON_ONCE as it confirms a theory we had.
++	/*
++	 * m.tsc was set in mce_setup(). Clear it if not requested.
++	 *
++	 * FIXME: Propagate @flags to mce_gather_info/mce_setup() to avoid
++	 *	  that dance.
++	 */
++	if (!(flags & MCP_TIMESTAMP))
++		m.tsc =3D 0;
++
+ 	for (i =3D 0; i < mca_cfg.banks; i++) {
+ 		if (!mce_banks[i].ctl || !test_bit(i, *b))
+ 			continue;
+@@ -713,14 +722,12 @@ bool machine_check_poll(enum mcp_flags flags, mce_ban=
+ks_t *b)
+ 		m.misc =3D 0;
+ 		m.addr =3D 0;
+ 		m.bank =3D i;
+-		m.tsc =3D 0;
+ =
+
+ 		barrier();
+ 		m.status =3D mce_rdmsrl(msr_ops.status(i));
+ 		if (!(m.status & MCI_STATUS_VAL))
+ 			continue;
+ =
+
+-
+ 		/*
+ 		 * Uncorrected or signalled events are handled by the exception
+ 		 * handler when it is enabled, so don't process those here.
+@@ -735,9 +742,6 @@ bool machine_check_poll(enum mcp_flags flags, mce_banks=
+_t *b)
+ =
+
+ 		mce_read_aux(&m, i);
+ =
+
+-		if (!(flags & MCP_TIMESTAMP))
+-			m.tsc =3D 0;
+-
+ 		severity =3D mce_severity(&m, mca_cfg.tolerant, NULL, false);
+ =
+
+ 		if (severity =3D=3D MCE_DEFERRED_SEVERITY && memory_error(&m))
+@@ -1394,7 +1398,7 @@ static void mce_timer_fn(unsigned long data)
+ 	iv =3D __this_cpu_read(mce_next_interval);
+ =
+
+ 	if (mce_available(this_cpu_ptr(&cpu_info))) {
+-		machine_check_poll(MCP_TIMESTAMP, this_cpu_ptr(&mce_poll_banks));
++		machine_check_poll(0, this_cpu_ptr(&mce_poll_banks));
+ =
+
+ 		if (mce_intel_cmci_poll()) {
+ 			iv =3D mce_adjust_timer(iv);
+diff --git a/arch/x86/kernel/cpu/mcheck/mce_intel.c b/arch/x86/kernel/cpu/m=
+check/mce_intel.c
+index 1defb8ea882c..be0b2fad47c5 100644
+--- a/arch/x86/kernel/cpu/mcheck/mce_intel.c
++++ b/arch/x86/kernel/cpu/mcheck/mce_intel.c
+@@ -130,7 +130,7 @@ bool mce_intel_cmci_poll(void)
+ 	 * Reset the counter if we've logged an error in the last poll
+ 	 * during the storm.
+ 	 */
+-	if (machine_check_poll(MCP_TIMESTAMP, this_cpu_ptr(&mce_banks_owned)))
++	if (machine_check_poll(0, this_cpu_ptr(&mce_banks_owned)))
+ 		this_cpu_write(cmci_backoff_cnt, INITIAL_CHECK_INTERVAL);
+ 	else
+ 		this_cpu_dec(cmci_backoff_cnt);
+@@ -342,7 +342,7 @@ void cmci_recheck(void)
+ 		return;
+ =
+
+ 	local_irq_save(flags);
+-	machine_check_poll(MCP_TIMESTAMP, this_cpu_ptr(&mce_banks_owned));
++	machine_check_poll(0, this_cpu_ptr(&mce_banks_owned));
+ 	local_irq_restore(flags);
+ }
+ =
+
+-- =
+
+2.10.0
+
 
 -- =
 
@@ -80,5 +152,5 @@ Regards/Gruss,
 
 Good mailing practices for 400: avoid top-posting and trim the reply.
 
---===============1515222914885531714==--
+--===============2837831394753109725==--
 
