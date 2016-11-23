@@ -1,41 +1,96 @@
-Content-Type: multipart/mixed; boundary="===============0640279681867094096=="
+Content-Type: multipart/mixed; boundary="===============5464232589430836708=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Borislav Petkov <bp@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [block] ef295ecf09: [No primary change] iostat.sda.avgqu-sz +4.4% increase
-Date: Wed, 23 Nov 2016 17:06:45 +0800
-Message-ID: <20161123090645.trr75otmrnhqklrl@wfg-t540p.sh.intel.com>
-In-Reply-To: <20161123083913.GC16966@lst.de>
+Subject: Re: [x86/cpufeature] c109bf9599: PANIC:double_fault
+Date: Wed, 23 Nov 2016 12:28:31 +0100
+Message-ID: <20161123112831.4lxxaovo5664l3rn@pd.tnic>
+In-Reply-To: <20161123023220.GD14790@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0640279681867094096==
+--===============5464232589430836708==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Christoph,
+On Wed, Nov 23, 2016 at 10:32:20AM +0800, kernel test robot wrote:
+> =
 
-On Wed, Nov 23, 2016 at 09:39:14AM +0100, Christoph Hellwig wrote:
->On Wed, Nov 23, 2016 at 10:30:26AM +0800, kernel test robot wrote:
->>
->> Greeting,
->>
->> There is no primary kpi change in this test, below is the data collected=
- through multiple monitors running background just for your information.
->
->Do you have any explanation of what this mail actually means?  I have
->a hard time understanding it.
+> FYI, we noticed the following commit:
+> =
 
-This is not a bug report, but serve as feedback about
-"here is a behavior change associated with this patch".
+> commit c109bf95992b391bb40bc37c5d309d13fead99b5 ("x86/cpufeature: Remove =
+cpu_has_pge")
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> =
 
-We find commit ef295ecf09 ("block: better op and flags encoding")
-reliably increases iostat's "avgqu-sz" by 4.4% in the fileio test.
-During the test we run iostat in the background to monitor IO stats.
-There is no throughput/latency etc. critical changes found.
+> in testcase: trinity
+> with following parameters:
+> =
 
-Thanks,
-Fengguang
+> 	runtime: 300s
+> =
 
---===============0640279681867094096==--
+> test-description: Trinity is a linux system call fuzz tester.
+> test-url: http://codemonkey.org.uk/projects/trinity/
+> =
+
+> =
+
+> on test machine: qemu-system-i386 -enable-kvm -smp 2 -m 320M
+
+So this is a 32-bit guest...
+
+> [   91.997312] Bluetooth: HCI socket layer initialized
+> [   91.997946] Bluetooth: L2CAP socket layer initialized
+> [   91.998639] Bluetooth: SCO socket layer initialized
+> [   92.054441] PANIC: double fault, gdt at c1b7d000 [255 bytes]
+> [   92.055035] double fault, tss at c1b8e340
+> [   92.055435] eip =3D c130f80c, esp =3D ccc4f000
+> [   92.055787] eax =3D 00000000, ebx =3D f4dc084c, ecx =3D c130f80c, edx =
+=3D e9b81098
+> [   92.056379] esi =3D 00000062, edi =3D 00000000
+
+... and the #DF happens pretty early.
+
+> To reproduce:
+> =
+
+>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-t=
+ests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+
+I did that on a 64-bit baremetal here and it is merrily chugging away:
+
+...
+[main] 14063949 iterations. [F:10780453 S:3215408 HI:7759]
+[main] 14074277 iterations. [F:10788365 S:3217790 HI:7759]
+[main] 14085253 iterations. [F:10796772 S:3220298 HI:7759 STALLED:1]
+[main] 14096969 iterations. [F:10805625 S:3223120 HI:7759 STALLED:1]
+...
+[main] 15124052 iterations. [F:11593223 S:3457551 HI:7759]
+[main] 15134289 iterations. [F:11601090 S:3459865 HI:7759]
+[main] 15145212 iterations. [F:11609527 S:3462295 HI:7759]
+[main] 15155354 iterations. [F:11617260 S:3464656 HI:7759]
+...
+
+no sign of any double faults.
+
+So can you upload that vm image somewhere and tell me exactly how to run
+it here so that I can try to reproduce it locally.
+
+Thanks.
+
+-- =
+
+Regards/Gruss,
+    Boris.
+
+SUSE Linux GmbH, GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton, =
+HRB 21284 (AG N=C3=BCrnberg)
+--=20
+
+--===============5464232589430836708==--
 
