@@ -1,100 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============1736901251547944458=="
+Content-Type: multipart/mixed; boundary="===============6706023520786881601=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86, paravirt] fd6f48529f: aim7.jobs-per-min -26.1% regression
-Date: Thu, 01 Dec 2016 07:17:58 +0800
-Message-ID: <20161130231758.GB18574@yexl-desktop>
-In-Reply-To: <20161201070406.GI3092@twins.programming.kicks-ass.net>
+Subject: Re: [net] 34fad54c25: kernel BUG at include/linux/skbuff.h:1935!
+Date: Wed, 23 Nov 2016 16:36:39 +0800
+Message-ID: <20161123083639.h6wuxh33jejpk4ln@wfg-t540p.sh.intel.com>
+In-Reply-To: <CA+55aFx9q2xi1oi2j5QcYhMV490oj9CQ4N_OEXzC-3b6GeUQug@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1736901251547944458==
+--===============6706023520786881601==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 12/01, Peter Zijlstra wrote:
->On Thu, Dec 01, 2016 at 02:07:29AM +0800, kernel test robot wrote:
->> =
-
->> Greeting,
->> =
-
->> FYI, we noticed a -26.1% regression of aim7.jobs-per-min due to commit:
->> =
-
->> =
-
->> commit: fd6f48529f4067c6bfbead88d3d7d117d51150f6 ("x86,paravirt: Optimiz=
-e native pv_lock_ops.vcpu_is_preempted")
->> https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git locking=
-/core
->> =
-
+On Tue, Nov 22, 2016 at 11:07:16PM -0800, Linus Torvalds wrote:
+>On Tue, Nov 22, 2016 at 10:44 PM, Fengguang Wu <fengguang.wu@intel.com> =
+wrote:
+>>
+>> On Tue, Nov 22, 2016 at 02:04:42PM -0800, Linus Torvalds wrote:
+>>
+>>> I also noticed that the kernel test robot had screwed up the
+>>> participants list for some reason, and had
+>>>
+>>>  "Acked-by: Alexander Duyck <alexander.h.duyck@intel.com>, David S.
+>>> Miller" <davem@davemloft.net>
+>>>
+>>> as one of the participants. So there's some odd commit parsing issue
+>>> there somewhere. But Alexander seems to have seen this report despite
+>>> that, it just never went anywhere that I can tell.
+>>
+>>
+>> Yeah the robot will CC all "Acked-by" people in the bug reports.
+>>
+>> Shall we limit it to the below TO/CC list?
 >
->> =
-
->> 8ba24710fb279053  fd6f48529f4067c6bfbead88d3  =
-
+>No. We do want to keep the Acked-by's on the cc.
 >
->So that really is against its parent..
+>But you missed the real problem.
 >
->Does something like so fix it?
+>It *didn't* cc the acked-by. Look closer. What happened was that it cc'd t=
+his:
+>
+> "Acked-by: Alexander Duyck <alexander.h.duyck@intel.com>, David S. Mill=
+er"
+>
+> <davem@davemloft.net>
+>
+>ie there is only _one_ email address (that of davem(a)davemloft.net),
+>and the whole "Acked-by: Alexander Duyck <...>" part is quoted as the
+>_name_ of that email address.
+>
+>At least that's what the headers look like for me in the original report:
+>
+>   From: kernel test robot <xiaolong.ye@intel.com>
+>   To: Eric Dumazet <edumazet@google.com>
+>   Cc: lkp(a)01.org, Linus Torvalds <torvalds@linux-foundation.org>,
+>LKML <linux-kernel@vger.kernel.org>, Alexei Starovoitov
+><ast@kernel.org>, Willem de Bruijn <willemb@google.com>, "Acked-by:
+>Alexander Duyck <alexander.h.duyck@intel.com>, David S. Miller"
+><davem@davemloft.net>
+>
+>Notice the quoting of that last "name".
 
-I'll queue the test job for below patch and provide the result later.
+Ah thanks! Xiaolong just root caused the parse error and will fix it.
+
+Interestingly we didn't see that problem -- the CC list looks correct
+in our emails -- perhaps Intel's email system auto fixed up the header.
 
 Thanks,
-Xiaolong
->
->--- a/arch/x86/kernel/paravirt_patch_32.c
->+++ b/arch/x86/kernel/paravirt_patch_32.c
->@@ -56,15 +56,19 @@ unsigned native_patch(u8 type, u16 clobb
-> 				end   =3D end_pv_lock_ops_queued_spin_unlock;
-> 				goto patch_site;
-> 			}
->+			goto patch_default;
->+
-> 		case PARAVIRT_PATCH(pv_lock_ops.vcpu_is_preempted):
-> 			if (pv_is_native_vcpu_is_preempted()) {
-> 				start =3D start_pv_lock_ops_vcpu_is_preempted;
-> 				end   =3D end_pv_lock_ops_vcpu_is_preempted;
-> 				goto patch_site;
-> 			}
->+			goto patch_default;
-> #endif
-> =
+Fengguang
 
-> 	default:
->+patch_default:
-> 		ret =3D paravirt_patch_default(type, clobbers, ibuf, addr, len);
-> 		break;
-> =
-
->--- a/arch/x86/kernel/paravirt_patch_64.c
->+++ b/arch/x86/kernel/paravirt_patch_64.c
->@@ -68,15 +68,19 @@ unsigned native_patch(u8 type, u16 clobb
-> 				end   =3D end_pv_lock_ops_queued_spin_unlock;
-> 				goto patch_site;
-> 			}
->+			goto patch_default;
->+
-> 		case PARAVIRT_PATCH(pv_lock_ops.vcpu_is_preempted):
-> 			if (pv_is_native_vcpu_is_preempted()) {
-> 				start =3D start_pv_lock_ops_vcpu_is_preempted;
-> 				end   =3D end_pv_lock_ops_vcpu_is_preempted;
-> 				goto patch_site;
-> 			}
->+			goto patch_default;
-> #endif
-> =
-
-> 	default:
->+patch_default:
-> 		ret =3D paravirt_patch_default(type, clobbers, ibuf, addr, len);
-> 		break;
-> =
-
->
-
---===============1736901251547944458==--
+--===============6706023520786881601==--
 
