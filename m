@@ -1,98 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============6270089319279016522=="
+Content-Type: multipart/mixed; boundary="===============0640279681867094096=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [net] 34fad54c25: kernel BUG at include/linux/skbuff.h:1935!
-Date: Wed, 23 Nov 2016 16:55:28 +0800
-Message-ID: <20161123085528.GB5438@yexl-desktop>
-In-Reply-To: <CA+55aFx9q2xi1oi2j5QcYhMV490oj9CQ4N_OEXzC-3b6GeUQug@mail.gmail.com>
+Subject: Re: [block] ef295ecf09: [No primary change] iostat.sda.avgqu-sz +4.4% increase
+Date: Wed, 23 Nov 2016 17:06:45 +0800
+Message-ID: <20161123090645.trr75otmrnhqklrl@wfg-t540p.sh.intel.com>
+In-Reply-To: <20161123083913.GC16966@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6270089319279016522==
+--===============0640279681867094096==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 11/22, Linus Torvalds wrote:
->On Tue, Nov 22, 2016 at 10:44 PM, Fengguang Wu <fengguang.wu@intel.com> =
-wrote:
+Hi Christoph,
+
+On Wed, Nov 23, 2016 at 09:39:14AM +0100, Christoph Hellwig wrote:
+>On Wed, Nov 23, 2016 at 10:30:26AM +0800, kernel test robot wrote:
 >>
->> On Tue, Nov 22, 2016 at 02:04:42PM -0800, Linus Torvalds wrote:
+>> Greeting,
 >>
->>> I also noticed that the kernel test robot had screwed up the
->>> participants list for some reason, and had
->>>
->>>  "Acked-by: Alexander Duyck <alexander.h.duyck@intel.com>, David S.
->>> Miller" <davem@davemloft.net>
->>>
->>> as one of the participants. So there's some odd commit parsing issue
->>> there somewhere. But Alexander seems to have seen this report despite
->>> that, it just never went anywhere that I can tell.
->>
->>
->> Yeah the robot will CC all "Acked-by" people in the bug reports.
->>
->> Shall we limit it to the below TO/CC list?
+>> There is no primary kpi change in this test, below is the data collected=
+ through multiple monitors running background just for your information.
 >
->No. We do want to keep the Acked-by's on the cc.
->
->But you missed the real problem.
->
->It *didn't* cc the acked-by. Look closer. What happened was that it cc'd t=
-his:
->
-> "Acked-by: Alexander Duyck <alexander.h.duyck@intel.com>, David S. Mill=
-er"
->
-> <davem@davemloft.net>
->
+>Do you have any explanation of what this mail actually means?  I have
+>a hard time understanding it.
 
-Seems that the robot failed to parse the commit log correctly due to
-the "Reported-by: xxx" line missed '>' in the end, the robot got fooled
-by it and generated wrong result, we'll try to improve it to handle this
-kind of case.
+This is not a bug report, but serve as feedback about
+"here is a behavior change associated with this patch".
 
-    net: __skb_flow_dissect() must cap its return value
-    =
-
-    After Tom patch, thoff field could point past the end of the buffer,
-    this could fool some callers.
-    =
-
-    If an skb was provided, skb->len should be the upper limit.
-    If not, hlen is supposed to be the upper limit.
-    =
-
-    Fixes: a6e544b0a88b ("flow_dissector: Jump to exit code in __skb_flow_d=
-issect")
-    Signed-off-by: Eric Dumazet <edumazet@google.com>
-    Reported-by: Yibin Yang <yibyang(a)cisco.com
-    Acked-by: Alexander Duyck <alexander.h.duyck@intel.com>
-    Acked-by: Willem de Bruijn <willemb@google.com>
-    Acked-by: Alexei Starovoitov <ast@kernel.org>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
+We find commit ef295ecf09 ("block: better op and flags encoding")
+reliably increases iostat's "avgqu-sz" by 4.4% in the fileio test.
+During the test we run iostat in the background to monitor IO stats.
+There is no throughput/latency etc. critical changes found.
 
 Thanks,
-Xiaolong
+Fengguang
 
->ie there is only _one_ email address (that of davem(a)davemloft.net),
->and the whole "Acked-by: Alexander Duyck <...>" part is quoted as the
->_name_ of that email address.
->
->At least that's what the headers look like for me in the original report:
->
->   From: kernel test robot <xiaolong.ye@intel.com>
->   To: Eric Dumazet <edumazet@google.com>
->   Cc: lkp(a)01.org, Linus Torvalds <torvalds@linux-foundation.org>,
->LKML <linux-kernel@vger.kernel.org>, Alexei Starovoitov
-><ast@kernel.org>, Willem de Bruijn <willemb@google.com>, "Acked-by:
->Alexander Duyck <alexander.h.duyck@intel.com>, David S. Miller"
-><davem@davemloft.net>
->
->Notice the quoting of that last "name".
->
->              Linus
-
---===============6270089319279016522==--
+--===============0640279681867094096==--
 
