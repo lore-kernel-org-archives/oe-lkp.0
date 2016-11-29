@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============3489033725880146516=="
+Content-Type: multipart/mixed; boundary="===============2529796354109609766=="
 MIME-Version: 1.0
 From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [mm] e7c1db75fe: BUG:sleeping_function_called_from_invalid_context_at_mm/page_alloc.c
-Date: Wed, 30 Nov 2016 02:26:26 +0800
-Message-ID: <20161129182626.GA16489@yexl-desktop>
+Date: Wed, 30 Nov 2016 05:39:50 +0800
+Message-ID: <20161129213950.GD16489@yexl-desktop>
 In-Reply-To: <20161129191448.GD3924@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3489033725880146516==
+--===============2529796354109609766==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -44,14 +44,31 @@ er/0
 >> I am observing similar BUG/backtrace even on ARM64 platform.
 >
 >Does the (untested) patch below help?
+>
+>							Thanx, Paul
 
-I've queued test jobs for this patch, will let you know once I get the
-result.
+Hi, Paul
+
+I applied your patch on top of 2d66ccc "mm:
+Prevent__alloc_pages_nodemask() RCU CPU stall warnings"(e7c1db7 turns to
+2d66ccc in rcu/next branch now), here is the comparison of 6 times
+testing, seems the BUG persists.
+
+b70fa84d2eeef5f6be25633a2b is the commit id of commit "rcu: Allow
+boot-time useof cond_resched_rcu_qs()" =
+
+
+testcase/path_params/tbox_group/run: boot/1/vm-vp-1G
+
+2d66cccd73436ac9  b70fa84d2eeef5f6be25633a2b  =
+
+----------------  --------------------------  =
+
+          6:6            0%           6:6     dmesg.BUG:sleeping_function_c=
+alled_from_invalid_context_at_mm/page_alloc.c
 
 Thanks,
 Xiaolong
->
->							Thanx, Paul
 >
 >------------------------------------------------------------------------
 >
@@ -88,5 +105,5 @@ into
 
 >
 
---===============3489033725880146516==--
+--===============2529796354109609766==--
 
