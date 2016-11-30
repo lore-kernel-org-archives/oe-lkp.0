@@ -1,192 +1,345 @@
-Content-Type: multipart/mixed; boundary="===============0631998204131858172=="
+Content-Type: multipart/mixed; boundary="===============2414021621907311948=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Sudeep Holla <sudeep.holla@arm.com>
 To: lkp@lists.01.org
-Subject: Re: [net] 34fad54c25: kernel BUG at include/linux/skbuff.h:1935!
-Date: Wed, 23 Nov 2016 14:44:21 +0800
-Message-ID: <20161123064421.cewko2msg7mdawco@wfg-t540p.sh.intel.com>
-In-Reply-To: <CA+55aFxV7Bq583QOdYauuo2jY9EkAmgnceBukrN27ArjzFszYg@mail.gmail.com>
+Subject: Re: [mm] e7c1db75fe: BUG:sleeping_function_called_from_invalid_context_at_mm/page_alloc.c
+Date: Wed, 30 Nov 2016 12:28:01 +0000
+Message-ID: <20161130122801.GA455@e107155-lin>
+In-Reply-To: <20161130074014.GN3924@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0631998204131858172==
+--===============2414021621907311948==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Linus,
+On 30/11/16 07:40, Paul E. McKenney wrote:
+> On Wed, Nov 30, 2016 at 08:16:02AM +0100, Michal Hocko wrote:
+>> On Tue 29-11-16 11:14:48, Paul E. McKenney wrote:
+>>> On Tue, Nov 29, 2016 at 05:21:19PM +0000, Sudeep Holla wrote:
+>>>> On Sun, Nov 27, 2016 at 6:16 PM, kernel test robot
+>>>> <xiaolong.ye@intel.com> wrote:
+>>>>>
+>>>>> FYI, we noticed the following commit:
+>>>>>
+>>>>> commit e7c1db75fed821a961ce1ca2b602b08e75de0cd8 ("mm: Prevent __alloc=
+_pages_nodemask() RCU CPU stall warnings")
+>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git=
+ rcu/next
+>>>>>
+>>>>> in testcase: boot
+>>>>>
+>>>>> on test machine: qemu-system-x86_64 -enable-kvm -cpu Nehalem -smp 2 -=
+m 1G
+>>>>>
+>>>>> caused below changes:
+>>>>>
+>>>> [...]
+>>>>
+>>>>> [    8.953192] BUG: sleeping function called from invalid context at =
+mm/page_alloc.c:3746
+>>>>> [    8.956353] in_atomic(): 1, irqs_disabled(): 1, pid: 0, name: swap=
+per/0
+>>>>
+>>>> I am observing similar BUG/backtrace even on ARM64 platform.
+>>>
+>>> Does the (untested) patch below help?
 
-On Tue, Nov 22, 2016 at 02:04:42PM -0800, Linus Torvalds wrote:
-[snip]
-
->I also noticed that the kernel test robot had screwed up the
->participants list for some reason, and had
->
->  "Acked-by: Alexander Duyck <alexander.h.duyck@intel.com>, David S.
->Miller" <davem@davemloft.net>
->
->as one of the participants. So there's some odd commit parsing issue
->there somewhere. But Alexander seems to have seen this report despite
->that, it just never went anywhere that I can tell.
-
-Yeah the robot will CC all "Acked-by" people in the bug reports.
-
-Shall we limit it to the below TO/CC list?
-
-        TO: author
-        CC: committer (maintainer)
-        CC: all Signed-off-by
-        CC: all Reviewed-by
-        CC: mailing lists, if the bug is found in a maintainer/well known t=
-ree
+Yes it didn't work for me either. Adding the log from my setup(in case
+it's useful)
 
 Regards,
-Fengguang
+Sudeep
 
->On Tue, Nov 15, 2016 at 1:20 PM, kernel test robot
-><xiaolong.ye@intel.com> wrote:
->>
->> FYI, we noticed the following commit:
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->> commit 34fad54c2537f7c99d07375e50cb30aa3c23bd83 ("net: __skb_flow_dissec=
-t() must cap its return value")
->>
->> in testcase: pbzip2
->> with following parameters:
->>
->>         nr_threads: 25%
->>         blocksize: 900K
->>         cpufreq_governor: performance
->>
->>
->>
->> on test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ =
-2.70GHz with 64G memory
->>
->> caused below changes:
->>
->>
->> +------------------------------------------------------------------+----=
---------+------------+
->> |                                                                  | 797=
-74d6bfa | 34fad54c25 |
->> +------------------------------------------------------------------+----=
---------+------------+
->> | boot_successes                                                   | 0  =
-        | 2          |
->> | boot_failures                                                    | 2  =
-        | 20         |
->> | invoked_oom-killer:gfp_mask=3D0x                                   | 2=
-          | 2          |
->> | Mem-Info                                                         | 2  =
-        | 2          |
->> | Kernel_panic-not_syncing:Out_of_memory_and_no_killable_processes | 2  =
-        | 2          |
->> | kernel_BUG_at_include/linux/skbuff.h                             | 0  =
-        | 16         |
->> | invalid_opcode:#[##]SMP                                          | 0  =
-        | 16         |
->> | RIP:eth_type_trans                                               | 0  =
-        | 16         |
->> | Kernel_panic-not_syncing:Fatal_exception_in_interrupt            | 0  =
-        | 15         |
->> | calltrace:hub_event                                              | 0  =
-        | 1          |
->> | WARNING:at_fs/sysfs/dir.c:#sysfs_warn_dup                        | 0  =
-        | 2          |
->> | calltrace:parport_pc_init                                        | 0  =
-        | 2          |
->> | calltrace:SyS_finit_module                                       | 0  =
-        | 2          |
->> | WARNING:at_lib/kobject.c:#kobject_add_internal                   | 0  =
-        | 2          |
->> +------------------------------------------------------------------+----=
---------+------------+
->>
->>
->>
->> [   19.375251] IPv6: ADDRCONF(NETDEV_UP): eth1: link is not ready
->> [   19.388892] Sending DHCP requests .
->> [   19.388892] ------------[ cut here ]------------
->> [   19.388894] kernel BUG at include/linux/skbuff.h:1935!
->> [   19.388895] invalid opcode: 0000 [#1] SMP
->> [   19.388896] Modules linked in:
->> [   19.388897] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.9.0-rc3-00320=
--g34fad54 #1
->> [   19.388898] Hardware name: Intel Corporation S2600WP/S2600WP, BIOS SE=
-5C600.86B.02.02.0002.122320131210 12/23/2013
->> [   19.388899] task: ffffffff81e0e4c0 task.stack: ffffffff81e00000
->> [   19.388904] RIP: 0010:[<ffffffff81837c48>]  [<ffffffff81837c48>] eth_=
-type_trans+0xe8/0x140
->> [   19.388904] RSP: 0000:ffff88081e803db8  EFLAGS: 00010297
->> [   19.388905] RAX: 0000000000000152 RBX: ffff88080221f200 RCX: 00000000=
-00001073
->> [   19.388905] RDX: ffff8808013afdc0 RSI: ffff880801114000 RDI: ffff8808=
-19407c00
->> [   19.388906] RBP: ffff88081e803e20 R08: ffff880801114000 R09: 00000000=
-00000800
->> [   19.388907] R10: ffff8808013afec0 R11: ffffea003fd5a880 R12: ffff8808=
-19407c00
->> [   19.388907] R13: ffff881033408000 R14: ffffc9000843e000 R15: 00000000=
-00000158
->> [   19.388908] FS:  0000000000000000(0000) GS:ffff88081e800000(0000) knl=
-GS:0000000000000000
->> [   19.388909] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [   19.388910] CR2: ffff88103ffff000 CR3: 0000000001e07000 CR4: 00000000=
-001406f0
->> [   19.388910] Stack:
->> [   19.388912]  ffffffff816905a7 ffffea003fd5a880 ffffea0000000008 ffff8=
-8080221f050
->> [   19.388913]  ffff88080221f000 0000004000000160 ffffea003fd5a880 00000=
-00000000000
->> [   19.388915]  0000000000000040 0000000000000000 ffff88080221f050 ffff8=
-8100d216000
->> [   19.388915] Call Trace:
->> [   19.388919]  <IRQ>
->> [   19.388919]  [<ffffffff816905a7>] ? igb_clean_rx_irq+0x6a7/0x7d0
->> [   19.388921]  [<ffffffff81690a52>] igb_poll+0x382/0x700
->> [   19.388922]  [<ffffffff81690a67>] ? igb_poll+0x397/0x700
->> [   19.388925]  [<ffffffff8180f2d7>] net_rx_action+0x217/0x360
->> [   19.388928]  [<ffffffff81957fb4>] __do_softirq+0x104/0x2ab
->> [   19.388931]  [<ffffffff81086961>] irq_exit+0xf1/0x100
->> [   19.388932]  [<ffffffff81957cf4>] do_IRQ+0x54/0xd0
->> [   19.388935]  [<ffffffff81955b8c>] common_interrupt+0x8c/0x8c
->> [   19.388938]  <EOI>
->> [   19.388938]  [<ffffffff817c1d12>] ? cpuidle_enter_state+0x122/0x2e0
->> [   19.388939]  [<ffffffff817c1f07>] cpuidle_enter+0x17/0x20
->> [   19.388942]  [<ffffffff810c64c3>] call_cpuidle+0x23/0x40
->> [   19.388944]  [<ffffffff810c66f4>] cpu_startup_entry+0x114/0x200
->> [   19.388946]  [<ffffffff81947675>] rest_init+0x85/0x90
->> [   19.388950]  [<ffffffff81ffbf5c>] start_kernel+0x407/0x414
->> [   19.388952]  [<ffffffff81ffb120>] ? early_idt_handler_array+0x120/0x1=
-20
->> [   19.388953]  [<ffffffff81ffb2d6>] x86_64_start_reservations+0x2a/0x2c
->> [   19.388955]  [<ffffffff81ffb415>] x86_64_start_kernel+0x13d/0x14c
->> [   19.388968] Code: 00 04 00 00 c9 c3 48 33 86 70 03 00 00 48 c1 e0 10 =
-48 85 c0 0f b6 87 90 00 00 00 75 28 83 e0 f8 83 c8 01 88 87 90 00 00 00 eb =
-82 <0f> 0b 0f b6 87 90 00 00 00 83 e0 f8 83 c8 03 88 87 90 00 00 00
->> [   19.388970] RIP  [<ffffffff81837c48>] eth_type_trans+0xe8/0x140
->> [   19.388970]  RSP <ffff88081e803db8>
->> [   19.388996] ---[ end trace 107996155a43a15c ]---
->> [   19.393422] Kernel panic - not syncing: Fatal exception in interrupt
->>
->>
->> To reproduce:
->>
->>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-=
-tests.git
->>         cd lkp-tests
->>         bin/lkp install job.yaml  # job file is attached in this email
->>         bin/lkp run     job.yaml
->>
->>
->>
->> Thanks,
->> Kernel Test Robot
->_______________________________________________
->LKP mailing list
->LKP(a)lists.01.org
->https://lists.01.org/mailman/listinfo/lkp
 
---===============0631998204131858172==--
+--->8
+
+BUG: sleeping function called from invalid context at mm/page_alloc.c:3775
+in_atomic(): 1, irqs_disabled(): 128, pid: 1, name: swapper/0
+1 lock held by swapper/0/1:
+ #0:   (&sig->cred_guard_mutex ){+.+.+.}, at:   prepare_bprm_creds+0x2c/0x70
+irq event stamp: 508063
+hardirqs last  enabled at (508062):  __netdev_alloc_skb+0x11c/0x160
+hardirqs last disabled at (508063):  __slab_alloc.isra.22.constprop.26+0x30=
+/0x90
+softirqs last  enabled at (508052):  xprt_end_transmit+0x4c/0x60
+softirqs last disabled at (508053):  do_softirq.part.4+0x7c/0x98
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.9.0-rc7-next-20161130-00010-ga0=
+f9af725c5d #218
+Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development P=
+latform, BIOS EDK II Nov 29 2016
+Call trace:
+ dump_backtrace+0x0/0x260
+ show_stack+0x24/0x30
+ dump_stack+0xac/0xe8
+ ___might_sleep+0x14c/0x1f8
+ __alloc_pages_nodemask+0x414/0xef0
+ new_slab+0xa4/0x558
+ ___slab_alloc.constprop.27+0x2f8/0x378
+ __slab_alloc.isra.22.constprop.26+0x4c/0x90
+ kmem_cache_alloc+0x388/0x430
+ __build_skb+0x34/0xc0
+ __netdev_alloc_skb+0xf0/0x160
+ smsc911x_poll+0x9c/0x280
+ net_rx_action+0x200/0x510
+ __do_softirq+0x12c/0x6fc
+ do_softirq.part.4+0x7c/0x98
+ __local_bh_enable_ip+0x110/0x138
+ _raw_spin_unlock_bh+0x40/0x50
+ xprt_end_transmit+0x4c/0x60
+ call_transmit_status+0x58/0x100
+ call_transmit+0x178/0x1e8
+ __rpc_execute+0xa0/0x680
+ rpc_execute+0xb4/0x298
+ rpc_run_task+0x11c/0x168
+ nfs4_call_sync_sequence+0x6c/0x98
+ _nfs4_proc_access+0xe8/0x170
+ nfs4_proc_access+0x88/0x2a0
+ nfs_do_access+0x458/0x778
+ nfs_permission+0x2c8/0x2f8
+ __inode_permission+0xa0/0x100
+ inode_permission+0x2c/0x70
+ link_path_walk+0x98/0x518
+ path_openat+0x74/0x340
+ do_filp_open+0x70/0xf8
+ do_open_execat+0x70/0x1a0
+ do_execveat_common.isra.14+0x288/0x998
+ do_execve+0x44/0x58
+ run_init_process+0x38/0x48
+ try_to_run_init_process+0x20/0x58
+ kernel_init+0xb4/0x108
+ ret_from_fork+0x10/0x30
+BUG: sleeping function called from invalid context at mm/page_alloc.c:3775
+in_atomic(): 1, irqs_disabled(): 128, pid: 98, name: kworker/0:1
+3 locks held by kworker/0:1/98:
+ #0: ("rpciod" ){.+.+..} , at: process_one_work+0x198/0x818
+ #1: ((&task->u.tk_work)){+.+...}, at: process_one_work+0x198/0x818
+ #2: (&(&clnt->cl_lock)->rlock){+.+...}, at: rpc_task_release_client+0x38/0=
+xb0
+irq event stamp: 31359
+hardirqs last  enabled at (31358):  _raw_spin_unlock_irqrestore+0x84/0x90
+hardirqs last disabled at (31359):  __netdev_alloc_skb+0xa8/0x160
+softirqs last  enabled at (31252):  rpc_wake_up_first_on_wq+0x84/0x200
+softirqs last disabled at (31255):  irq_exit+0xe8/0x148
+CPU: 0 PID: 98 Comm: kworker/0:1 Tainted: G        W       4.9.0-rc7-next-2=
+0161130-00010-ga0f9af725c5d #218
+Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development P=
+latform, BIOS EDK II Nov 29 2016
+Workqueue: rpciod rpc_async_schedule
+Call trace:
+ dump_backtrace+0x0/0x260
+ show_stack+0x24/0x30
+ dump_stack+0xac/0xe8
+ ___might_sleep+0x14c/0x1f8
+ __alloc_pages_nodemask+0x414/0xef0
+ __alloc_page_frag+0xa8/0x158
+ __netdev_alloc_skb+0xcc/0x160
+ smsc911x_poll+0x9c/0x280
+ net_rx_action+0x200/0x510
+ __do_softirq+0x12c/0x6fc
+ irq_exit+0xe8/0x148
+ __handle_domain_irq+0x6c/0xc0
+ gic_handle_irq+0x5c/0xb0
+BUG: sleeping function called from invalid context at mm/page_alloc.c:3775
+in_atomic(): 1, irqs_disabled(): 128, pid: 1326, name: kworker/0:1H
+4 locks held by kworker/0:1H/1326:
+ #0: ("xprtiod"){.+.+.+}, at: process_one_work+0x198/0x818
+ #1: ((&transport->recv_worker)){+.+...}, at: process_one_work+0x198/0x818
+ #2: (&new->recv_mutex){+.+...}, at: xs_tcp_data_receive_workfn+0x4c/0x2f8
+ #3:  (sk_lock-AF_INET-RPC){+.+...}, at: xs_tcp_data_receive_workfn+0x74/0x=
+2f8
+irq event stamp: 41851
+hardirqs last  enabled at (41850):  _raw_spin_unlock_irqrestore+0x84/0x90
+hardirqs last disabled at (41851):  __netdev_alloc_skb+0xa8/0x160
+softirqs last  enabled at (41836):  xs_tcp_data_recv+0x580/0x960
+softirqs last disabled at (41843):  irq_exit+0xe8/0x148
+CPU: 0 PID: 1326 Comm: kworker/0:1H Tainted: G        W       4.9.0-rc7-nex=
+t-20161130-00010-ga0f9af725c5d #218
+Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development P=
+latform, BIOS EDK II Nov 29 2016
+Workqueue: xprtiod xs_tcp_data_receive_workfn
+Call trace:
+ dump_backtrace+0x0/0x260
+ show_stack+0x24/0x30
+ dump_stack+0xac/0xe8
+ ___might_sleep+0x14c/0x1f8
+ __alloc_pages_nodemask+0x414/0xef0
+ __alloc_page_frag+0xa8/0x158
+ __netdev_alloc_skb+0xcc/0x160
+ smsc911x_poll+0x9c/0x280
+ net_rx_action+0x200/0x510
+ __do_softirq+0x12c/0x6fc
+ irq_exit+0xe8/0x148
+ __handle_domain_irq+0x6c/0xc0
+ gic_handle_irq+0x5c/0xb0
+Exception stack(0xffff800974d4b9e0 to 0xffff800974d4bb10)
+b9e0: ffff800974c59600 000000000001fc5a 0000800976db6000 fffffffffffffe50
+ba00: 0000000000000004 0000000000000040 0000800976db6000 ffff000009353c38
+ba20: 0000000000000001 00010643c0000000 c000000000100400 0010080000012144
+ba40: 00012145c0000000 c000000000101000 0010180000010646 0000000000000000
+ba60: 0000000000000000 0000000000000000 0000000000000000 ffff7e0025d34600
+ba80: 00000000009f4d18 0000000000000040 0000000000000003 0000000000000000
+baa0: ffff7e0025d34800 0000000000000001 000000000018bce1 ffff800974c0c830
+bac0: 0000000000000000 ffff800974d4bb10 ffff00000821b9bc ffff800974d4bb10
+bae0: ffff00000821b9c0 0000000060000045 0000000000000040 0000000000000000
+bb00: ffffffffffffffff ffff00000821b9bc
+ el1_irq+0xb8/0x130
+ __free_pages_ok+0x1d0/0x4b0
+ __free_page_frag+0x78/0x88
+ skb_free_head+0x3c/0x48
+ skb_release_data+0xd0/0xf8
+ skb_release_all+0x30/0x40
+ __kfree_skb+0x20/0x38
+ tcp_read_sock+0x118/0x1d8
+ xs_tcp_data_receive_workfn+0x84/0x2f8
+ process_one_work+0x248/0x818
+ worker_thread+0x54/0x438
+ kthread+0xe0/0xf8
+ ret_from_fork+0x10/0x30
+BUG: sleeping function called from invalid context at mm/page_alloc.c:3775
+in_atomic(): 1, irqs_disabled(): 128, pid: 6, name: ksoftirqd/0
+no locks held by ksoftirqd/0/6.
+irq event stamp: 76667
+hardirqs last  enabled at (76666):   _raw_spin_unlock_irqrestore+0x84/0x90
+hardirqs last disabled at (76667):   __netdev_alloc_skb+0xa8/0x160
+softirqs last  enabled at (76506):   __do_softirq+0x5f4/0x6fc
+softirqs last disabled at (76511):   run_ksoftirqd+0x40/0xb0
+CPU: 0 PID: 6 Comm: ksoftirqd/0 Tainted: G        W       4.9.0-rc7-next-20=
+161130-00010-ga0f9af725c5d #218
+Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development P=
+latform, BIOS EDK II Nov 29 2016
+Call trace:
+ dump_backtrace+0x0/0x260
+ show_stack+0x24/0x30
+ dump_stack+0xac/0xe8
+ ___might_sleep+0x14c/0x1f8
+ __alloc_pages_nodemask+0x414/0xef0
+ __alloc_page_frag+0xa8/0x158
+ __netdev_alloc_skb+0xcc/0x160
+ smsc911x_poll+0x9c/0x280
+ net_rx_action+0x200/0x510
+ __do_softirq+0x12c/0x6fc
+ run_ksoftirqd+0x40/0xb0
+ smpboot_thread_fn+0x1d4/0x308
+ kthread+0xe0/0xf8
+ ret_from_fork+0x10/0x30
+BUG: sleeping function called from invalid context at mm/page_alloc.c:3775
+in_atomic(): 1, irqs_disabled(): 128, pid: 6, name: ksoftirqd/0
+no locks held by ksoftirqd/0/6.
+irq event stamp: 121831
+hardirqs last  enabled at (121830):   _raw_spin_unlock_irqrestore+0x84/0x90
+hardirqs last disabled at (121831):   __netdev_alloc_skb+0xa8/0x160
+softirqs last  enabled at (121742):   __do_softirq+0x5f4/0x6fc
+softirqs last disabled at (121747):   run_ksoftirqd+0x40/0xb0
+CPU: 0 PID: 6 Comm: ksoftirqd/0 Tainted: G        W       4.9.0-rc7-next-20=
+161130-00010-ga0f9af725c5d #218
+Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development P=
+latform, BIOS EDK II Nov 29 2016
+Call trace:
+ dump_backtrace+0x0/0x260
+ show_stack+0x24/0x30
+ dump_stack+0xac/0xe8
+ ___might_sleep+0x14c/0x1f8
+ __alloc_pages_nodemask+0x414/0xef0
+ __alloc_page_frag+0xa8/0x158
+ __netdev_alloc_skb+0xcc/0x160
+ smsc911x_poll+0x9c/0x280
+ net_rx_action+0x200/0x510
+ __do_softirq+0x12c/0x6fc
+ run_ksoftirqd+0x40/0xb0
+ smpboot_thread_fn+0x1d4/0x308
+ kthread+0xe0/0xf8
+ ret_from_fork+0x10/0x30
+NET: Registered protocol family 10
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+suspicious RCU usage. ]
+4.9.0-rc7-next-20161130-00010-ga0f9af725c5d #218 Tainted: G        W
+-------------------------------
+kernel/sched/core.c:7747 Illegal context switch in RCU-bh read-side critica=
+l section!
+
+other info that might help us debug this:
+
+rcu_scheduler_active =3D 1, debug_locks =3D 1
+3 locks held by systemd/1:
+ #0: (rtnl_mutex ){+.+.+.}, at: rtnl_lock+0x20/0x28
+ #1: (rcu_read_lock_bh){......}, at: ipv6_add_addr+0x70/0x548 [ipv6]
+ #2: (addrconf_hash_lock){+.....}, at: ipv6_add_addr+0x194/0x548 [ipv6]
+
+stack backtrace:
+CPU: 3 PID: 1 Comm: systemd Tainted: G        W       4.9.0-rc7-next-201611=
+30-00010-ga0f9af725c5d #218
+Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development P=
+latform, BIOS EDK II Nov 29 2016
+Call trace:
+ dump_backtrace+0x0/0x260
+ show_stack+0x24/0x30
+ dump_stack+0xac/0xe8
+ lockdep_rcu_suspicious+0xcc/0x110
+ ___might_sleep+0x1e0/0x1f8
+ __alloc_pages_nodemask+0x414/0xef0
+ new_slab+0xa4/0x558
+ ___slab_alloc.constprop.27+0x2f8/0x378
+ __slab_alloc.isra.22.constprop.26+0x4c/0x90
+ kmem_cache_alloc+0x388/0x430
+ dst_alloc+0x5c/0xb0
+ __ip6_dst_alloc+0x3c/0xa0 [ipv6]
+ ip6_dst_alloc+0x38/0x108 [ipv6]
+ addrconf_dst_alloc+0x4c/0x130 [ipv6]
+ ipv6_add_addr+0x274/0x548 [ipv6]
+ add_addr+0x4c/0xd8 [ipv6]
+ addrconf_notify+0x5c4/0xa98 [ipv6]
+ register_netdevice_notifier+0x1e0/0x1e8
+ addrconf_init+0xb8/0x270 [ipv6]
+ inet6_init+0x180/0x330 [ipv6]
+ do_one_initcall+0x44/0x138
+ do_init_module+0x64/0x1d0
+ load_module+0x1230/0x1560
+ SyS_finit_module+0x120/0x130
+ el0_svc_naked+0x24/0x28
+BUG: sleeping function called from invalid context at mm/page_alloc.c:3775
+in_atomic(): 1, irqs_disabled(): 128, pid: 1, name: systemd
+3 locks held by systemd/1:
+ #0:   (rtnl_mutex){+.+.+.} , at:   rtnl_lock+0x20/0x28
+ #1:   (rcu_read_lock_bh){......}, at:   ipv6_add_addr+0x70/0x548 [ipv6]
+ #2:   (addrconf_hash_lock){+.....}, at: ipv6_add_addr+0x194/0x548 [ipv6]
+irq event stamp: 619543
+hardirqs last  enabled at (619541):   __local_bh_enable_ip+0x88/0x138
+hardirqs last disabled at (619543):   __slab_alloc.isra.22.constprop.26+0x3=
+0/0x90
+softirqs last  enabled at (619540):   ipv6_mc_up+0x4c/0x58 [ipv6]
+softirqs last disabled at (619542):   ipv6_add_addr+0x70/0x548 [ipv6]
+CPU: 3 PID: 1 Comm: systemd Tainted: G        W       4.9.0-rc7-next-201611=
+30-00010-ga0f9af725c5d #218
+Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development P=
+latform, BIOS EDK II Nov 29 2016
+Call trace:
+ dump_backtrace+0x0/0x260
+ show_stack+0x24/0x30
+ dump_stack+0xac/0xe8
+ ___might_sleep+0x14c/0x1f8
+ __alloc_pages_nodemask+0x414/0xef0
+ new_slab+0xa4/0x558
+ ___slab_alloc.constprop.27+0x2f8/0x378
+ __slab_alloc.isra.22.constprop.26+0x4c/0x90
+ kmem_cache_alloc+0x388/0x430
+ dst_alloc+0x5c/0xb0
+ __ip6_dst_alloc+0x3c/0xa0 [ipv6]
+ ip6_dst_alloc+0x38/0x108 [ipv6]
+ addrconf_dst_alloc+0x4c/0x130 [ipv6]
+ ipv6_add_addr+0x274/0x548 [ipv6]
+ add_addr+0x4c/0xd8 [ipv6]
+ addrconf_notify+0x5c4/0xa98 [ipv6]
+ register_netdevice_notifier+0x1e0/0x1e8
+ addrconf_init+0xb8/0x270 [ipv6]
+ inet6_init+0x180/0x330 [ipv6]
+ do_one_initcall+0x44/0x138
+ do_init_module+0x64/0x1d0
+ load_module+0x1230/0x1560
+ SyS_finit_module+0x120/0x130
+ el0_svc_naked+0x24/0x28
+
+--===============2414021621907311948==--
 
