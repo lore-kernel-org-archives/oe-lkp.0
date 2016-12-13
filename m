@@ -1,99 +1,121 @@
-Content-Type: multipart/mixed; boundary="===============1684382330198984554=="
+Content-Type: multipart/mixed; boundary="===============8045498277480935207=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Jan Kara <jack@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] mm-add-vfree_atomic-fix
-Date: Tue, 13 Dec 2016 11:12:54 +0100
-Message-ID: <20161213101254.GC10498@dhcp22.suse.cz>
-In-Reply-To: <1481553981-3856-1-git-send-email-aryabinin@virtuozzo.com>
+Subject: Re: [ext4] e2ae766c1b: BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/rwsem.c
+Date: Tue, 13 Dec 2016 12:42:08 +0100
+Message-ID: <20161213114208.GF15362@quack2.suse.cz>
+In-Reply-To: <87mvg08voo.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1684382330198984554==
+--===============8045498277480935207==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-[CC Andy]
-
-I've noticed the same
-http://lkml.kernel.org/r/20161209142820.GA4334(a)dhcp22.suse.cz
-and also concluded same as you
-
-On Mon 12-12-16 17:46:21, Andrey Ryabinin wrote:
-> DEBUG_PREEMPT complains about using this_cpu_ptr() in preemptible:
-> 	BUG: using smp_processor_id() in preemptible [00000000] code: iperf-300s=
--cs-l/277
-> 	caller is debug_smp_processor_id+0x17/0x19
-> 	CPU: 1 PID: 277 Comm: iperf-300s-cs-l Not tainted 4.9.0-rc8-00140-gcc639=
-db #2
-> 	 ffffc900003f3cf0 ffffffff8123ae6f 0000000000000001 ffffffff818181da
-> 	 ffffc900003f3d20 ffffffff81252f41 0000000000012de0 00000000fffffdff
-> 	 ffff880009328f40 ffff88000592c400 ffffc900003f3d30 ffffffff81252f6a
-> 	Call Trace:
-> 	 [<ffffffff8123ae6f>] dump_stack+0x9a/0xd0
-> 	 [<ffffffff81252f41>] check_preemption_disabled+0xdd/0xef
-> 	 [<ffffffff81252f6a>] debug_smp_processor_id+0x17/0x19
-> 	 [<ffffffff811796df>] __vfree_deferred+0x16/0x4c
-> 	 [<ffffffff8117b584>] vfree_atomic+0x22/0x24
-> 	 [<ffffffff81094f5d>] free_thread_stack+0xc2/0x106
-> 	 [<ffffffff810951be>] put_task_stack+0x4c/0x62
-> 	 [<ffffffff81095f81>] copy_process+0x7e0/0x16e8
-> 	 [<ffffffff8109702d>] _do_fork+0xbb/0x2d3
-> 	 [<ffffffff810465e8>] ? __do_page_fault+0x2e1/0x384
-> 	 [<ffffffff8112633f>] ? trace_hardirqs_off_caller+0x12/0x24
-> 	 [<ffffffff810972cb>] SyS_clone+0x19/0x1b
-> 	 [<ffffffff81003800>] do_syscall_64+0x143/0x173
-> 	 [<ffffffff81507289>] entry_SYSCALL64_slow_path+0x25/0x25
+On Tue 13-12-16 09:27:51, Huang, Ying wrote:
+> Jan Kara <jack@suse.cz> writes:
 > =
 
-> Use raw_cpu_ptr() instead of this_cpu_ptr() to hide this warning.
-> It's fine because llist_add() implementation is lock-less, so it works ev=
-en
-> if we adding to the list of some other cpu. schedule_work() is also preem=
-pt-safe.
+> > On Mon 12-12-16 18:13:21, kernel test robot wrote:
+> >> FYI, we noticed the following commit:
+> >> =
+
+> >> commit: e2ae766c1b030271b5099b25674e2131d1d1e8c1 ("ext4: convert DAX f=
+aults to iomap infrastructure")
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git dev
+> >> =
+
+> >> in testcase: nvml
+> >> with following parameters:
+> >> =
+
+> >> 	group: vmem
+> >> 	test: pmem
+> >> 	nr_pmem: 1
+> >> 	fs: ext4
+> >> 	mount_option: dax
+> >> =
+
+> >> =
+
+> >> =
+
+> >> on test machine: 64 threads Intel(R) Xeon(R) CPU E5-4650 0 @ 2.70GHz w=
+ith 64G memory
+> >> =
+
+> >> caused below changes:
+> >> =
+
+> >> =
+
+> >> +------------------------------------------------+------------+-------=
+-----+
+> >> |                                                | 96f8ba3dd6 | e2ae76=
+6c1b |
+> >> +------------------------------------------------+------------+-------=
+-----+
+> >> | boot_successes                                 | 2          | 2     =
+     |
+> >> | boot_failures                                  | 2          | 2     =
+     |
+> >> | BUG:kernel_hang_in_test_stage                  | 2          |       =
+     |
+> >> | WARNING:at_fs/sysfs/dir.c:#sysfs_warn_dup      | 0          | 2     =
+     |
+> >> | calltrace:parport_pc_init                      | 0          | 2     =
+     |
+> >> | calltrace:SyS_finit_module                     | 0          | 2     =
+     |
+> >> | WARNING:at_lib/kobject.c:#kobject_add_internal | 0          | 2     =
+     |
+> >> +------------------------------------------------+------------+-------=
+-----+
+> >> =
+
+> >> =
+
+> >> =
+
+> >> user  :notice: [  325.592182] vmem_aligned_alloc/TEST1: SETUP (check/p=
+mem/debug)
+> >> =
+
+> >> user  :notice: [  325.603973] vmem_aligned_alloc/TEST1: START: vmem_al=
+igned_alloc
+> >> kern  :err   : [  325.608906] BUG: sleeping function called from inval=
+id context at kernel/locking/rwsem.c:51
+> >> kern  :err   : [  325.608908] in_atomic(): 1, irqs_disabled(): 0, pid:=
+ 24813, name: vmem_aligned_al
+> >> kern  :warn  : [  325.608914] CPU: 44 PID: 24813 Comm: vmem_aligned_al=
+ Tainted: G           O    4.9.0-rc4-00045-ge2ae766 #1
+> >> kern  :warn  : [  325.608916] Hardware name: Intel Corporation LH Pass=
+/S4600LH...., BIOS SE5C600.86B.99.02.1047.032320122259 03/23/2012
+> >> kern  :warn  : [  325.608922]  ffffc9002c1f7be0
+> >> kern  :warn  : [  325.608923]  ffffffff81466af9
+> >> kern  :warn  : [  325.608924]  ffff880fea2425c0
+> >
+> > I think this is actually a bug introduced by Ross' PMD support. Attached
+> > patch should fix it. Ross, can you check it please?
 > =
 
-> Reported-by: kernel test robot <ying.huang@linux.intel.com>
-> Signed-off-by: Andrey Ryabinin <aryabinin@virtuozzo.com>
-
-Acked-by: Michal Hocko <mhocko@suse.com>
-
-> ---
->  mm/vmalloc.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+> Hi, Jan
 > =
 
-> diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-> index 43f0608..d8813963 100644
-> --- a/mm/vmalloc.c
-> +++ b/mm/vmalloc.c
-> @@ -1498,7 +1498,14 @@ static void __vunmap(const void *addr, int dealloc=
-ate_pages)
->  =
+> Could you provide a git tree commit for me to test it?  If you want it
+> to be tested by 0day.
 
->  static inline void __vfree_deferred(const void *addr)
->  {
-> -	struct vfree_deferred *p =3D this_cpu_ptr(&vfree_deferred);
-> +	/*
-> +	 * Use raw_cpu_ptr() because this can be called from preemptible
-> +	 * context. Preemption is absolutely fine here, because llist_add()
-> +	 * implementation is lockless, so it works even if we adding to list
-> +	 * of the other cpu.
-> +	 * schedule_work() should be fine with this too.
-> +	 */
-> +	struct vfree_deferred *p =3D raw_cpu_ptr(&vfree_deferred);
->  =
+Thanks for the offer! I've pushed out the latest version of my DAX patches
+including the above fix to
 
->  	if (llist_add((struct llist_node *)addr, &p->list))
->  		schedule_work(&p->wq);
-> -- =
+git://git.kernel.org/pub/scm/linux/kernel/git/jack/linux-fs.git dax
 
-> 2.7.3
-
+								Honza
 -- =
 
-Michal Hocko
-SUSE Labs
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
 
---===============1684382330198984554==--
+--===============8045498277480935207==--
 
