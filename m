@@ -1,85 +1,156 @@
-Content-Type: multipart/mixed; boundary="===============8110319802597081359=="
+Content-Type: multipart/mixed; boundary="===============1084281491268051632=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@amacapital.net>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] mm-add-vfree_atomic-fix
-Date: Tue, 13 Dec 2016 19:02:23 -0800
-Message-ID: <CALCETrUYdA5Ahr7AwC_uA2vpLasYZeFR2OWWfcv-0AF4CPYceQ@mail.gmail.com>
-In-Reply-To: <3eb4bfa4-ff94-bb5f-095a-3d17d68bf411@virtuozzo.com>
+Subject: Re: [ext4] e2ae766c1b: BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/rwsem.c
+Date: Wed, 14 Dec 2016 11:11:09 +0800
+Message-ID: <87lgvjfbn6.fsf@yhuang-dev.intel.com>
+In-Reply-To: <20161213114208.GF15362@quack2.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8110319802597081359==
+--===============1084281491268051632==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 13, 2016 at 11:21 AM, Andrey Ryabinin
-<aryabinin@virtuozzo.com> wrote:
-> On 12/13/2016 09:15 PM, Andy Lutomirski wrote:
->
->
->>>>
->>>> But not quite acked by me.  What happened to the vfree code that
->>>> causes vfree_deferred to be called in a preemptable context?  That
->>>> sounds like a bug.
->>>
->>> Not sure I understand but the above stack points to a preemptible
->>> context (copy_process). My stack was different and it looks preemptible=
- as well.
->>> free_thread_stack calls vfree_atomic unconditionally. So I am not sure
->>> why do you think this is a bug?
->>>
->>>> (This code doesn't exist in Linus' tree.  What tree does this apply to=
-.)
->>>
->>> Anyway, now that I am looking at Andrew's tree I can see [1] which
->>> doesn't have this_cpu_ptr. So I am not sure where this this_cpu_ptr came
->>> from. Maybe the previous version of the patch which has shown up in the
->>> linux-next and Andrew has picked up [2] in the meantime. /me confused
->>>
->>> [1] http://www.ozlabs.org/~akpm/mmotm/broken-out/mm-add-vfree_atomic.pa=
-tch
->>> [2] http://lkml.kernel.org/r/1481553981-3856-1-git-send-email-aryabinin=
-(a)virtuozzo.com
->>
->> The underlying issue seems to be that we have this shiny new function
->> vfree_atomic() which doesn't work in *non-atomic* context and that we
->
-> It does work non-atomic context. It's fixed now.
->
->> have "kernel/fork: use vfree_atomic() to free thread stack" that calls
->> vfree_atomic() from non-atomic context.
->
-> From both context actually. Usually task stack is freed from atomic conte=
-xt:
->         http://lkml.kernel.org/r/20161019111541.GQ29358(a)nuc-i3427.alpor=
-thouse.com
->         http://lkml.kernel.org/r/CALCETrVqjejgpQVUdem8RK3uxdEgfOZy4cOJqJQ=
-jCLtBDnJfyQ(a)mail.gmail.com
->
-> On rare occasions it can be freed from non-atomic context, e.g. error pat=
-h in copy_process().
->
->> I'm not sure what the motivation of the latter patch was, but ISTM we
->> should revert it.  TBH I'm not quite sure what the purpose of
->> splitting vfree() and vfree_atomic() was, but I'm not seeing any
->> reason that the common case of freeing stacks from non-atomic context
->> should defer the free instead of just doing it right away.
->>
->> Andrey, Johannes, why should task stack freeing use vfree_atomic() in
->> the first place?
->
-> Because vfree() now can sleep and task stack freeing usually done in atom=
-ic context.
->
->
+Jan Kara <jack@suse.cz> writes:
 
-Fair enough.
+> On Tue 13-12-16 09:27:51, Huang, Ying wrote:
+>> Jan Kara <jack@suse.cz> writes:
+>> =
 
--- =
+>> > On Mon 12-12-16 18:13:21, kernel test robot wrote:
+>> >> FYI, we noticed the following commit:
+>> >> =
 
-Andy Lutomirski
-AMA Capital Management, LLC
+>> >> commit: e2ae766c1b030271b5099b25674e2131d1d1e8c1 ("ext4: convert DAX =
+faults to iomap infrastructure")
+>> >> https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git dev
+>> >> =
 
---===============8110319802597081359==--
+>> >> in testcase: nvml
+>> >> with following parameters:
+>> >> =
+
+>> >> 	group: vmem
+>> >> 	test: pmem
+>> >> 	nr_pmem: 1
+>> >> 	fs: ext4
+>> >> 	mount_option: dax
+>> >> =
+
+>> >> =
+
+>> >> =
+
+>> >> on test machine: 64 threads Intel(R) Xeon(R) CPU E5-4650 0 @ 2.70GHz =
+with 64G memory
+>> >> =
+
+>> >> caused below changes:
+>> >> =
+
+>> >> =
+
+>> >> +------------------------------------------------+------------+------=
+------+
+>> >> |                                                | 96f8ba3dd6 | e2ae7=
+66c1b |
+>> >> +------------------------------------------------+------------+------=
+------+
+>> >> | boot_successes                                 | 2          | 2    =
+      |
+>> >> | boot_failures                                  | 2          | 2    =
+      |
+>> >> | BUG:kernel_hang_in_test_stage                  | 2          |      =
+      |
+>> >> | WARNING:at_fs/sysfs/dir.c:#sysfs_warn_dup      | 0          | 2    =
+      |
+>> >> | calltrace:parport_pc_init                      | 0          | 2    =
+      |
+>> >> | calltrace:SyS_finit_module                     | 0          | 2    =
+      |
+>> >> | WARNING:at_lib/kobject.c:#kobject_add_internal | 0          | 2    =
+      |
+>> >> +------------------------------------------------+------------+------=
+------+
+>> >> =
+
+>> >> =
+
+>> >> =
+
+>> >> user  :notice: [  325.592182] vmem_aligned_alloc/TEST1: SETUP (check/=
+pmem/debug)
+>> >> =
+
+>> >> user  :notice: [  325.603973] vmem_aligned_alloc/TEST1: START: vmem_a=
+ligned_alloc
+>> >> kern  :err   : [  325.608906] BUG: sleeping function called from inva=
+lid context at kernel/locking/rwsem.c:51
+>> >> kern  :err   : [  325.608908] in_atomic(): 1, irqs_disabled(): 0, pid=
+: 24813, name: vmem_aligned_al
+>> >> kern  :warn  : [  325.608914] CPU: 44 PID: 24813 Comm: vmem_aligned_a=
+l Tainted: G           O    4.9.0-rc4-00045-ge2ae766 #1
+>> >> kern  :warn  : [  325.608916] Hardware name: Intel Corporation LH Pas=
+s/S4600LH...., BIOS SE5C600.86B.99.02.1047.032320122259 03/23/2012
+>> >> kern  :warn  : [  325.608922]  ffffc9002c1f7be0
+>> >> kern  :warn  : [  325.608923]  ffffffff81466af9
+>> >> kern  :warn  : [  325.608924]  ffff880fea2425c0
+>> >
+>> > I think this is actually a bug introduced by Ross' PMD support. Attach=
+ed
+>> > patch should fix it. Ross, can you check it please?
+>> =
+
+>> Hi, Jan
+>> =
+
+>> Could you provide a git tree commit for me to test it?  If you want it
+>> to be tested by 0day.
+>
+> Thanks for the offer! I've pushed out the latest version of my DAX patches
+> including the above fix to
+>
+> git://git.kernel.org/pub/scm/linux/kernel/git/jack/linux-fs.git dax
+
+The test result of the head and its parent is as follow,
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+compiler/fs/group/kconfig/mount_option/nr_pmem/rootfs/tbox_group/test/testc=
+ase:
+  gcc-6/ext4/vmem/x86_64-rhel-7.2/dax/1/debian-x86_64-2016-08-31.cgz/lkp-sb=
+x04/pmem/nvml
+
+commit: =
+
+  c6207e9b753f466bc2e41455dc7611869d439d4e
+  4393b9bdd5043e550f1bcaf7f4e9c413d0088425
+
+c6207e9b753f466b 4393b9bdd5043e550f1bcaf7f4 =
+
+---------------- -------------------------- =
+
+       fail:runs  %reproduction    fail:runs
+           |             |             |    =
+
+          3:3         -100%            :3     dmesg.BUG:sleeping_function_c=
+alled_from_invalid_context_at_kernel/locking/rwsem.c
+          3:3         -100%            :3     kmsg.in_atomic():#,irqs_disab=
+led():#,pid:#,name:vmem_aligned_al
+          3:3         -100%            :3     kmsg.in_atomic():#,irqs_disab=
+led():#,pid:#,name:vmem_multiple_p
+
+The bug has been fixed.  Feel free to add,
+
+Tested-by: "Huang, Ying" <ying.huang@intel.com>
+
+Best Regards,
+Huang, Ying
+
+
+--===============1084281491268051632==--
 
