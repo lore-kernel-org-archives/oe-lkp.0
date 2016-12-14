@@ -1,170 +1,173 @@
-Content-Type: multipart/mixed; boundary="===============6618803967779739395=="
+Content-Type: multipart/mixed; boundary="===============7484078706031801840=="
 MIME-Version: 1.0
-From: Vincent Guittot <vincent.guittot@linaro.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-developer] [sched/fair] 4e5160766f: +149% ftq.noise.50% regression
-Date: Mon, 12 Dec 2016 14:25:04 +0100
-Message-ID: <CAKfTPtA_Wti+Nu5f3wajqJTg35jBwZAn=mD=DUK91Y9GSqH6AQ@mail.gmail.com>
-In-Reply-To: <87zik1ya5g.fsf@yhuang-dev.intel.com>
+Subject: Re: [sched/core] 3640269b04: WARNING: CPU: 0 PID: 0 at kernel/sched/sched.h:804 rq_clock_task
+Date: Wed, 14 Dec 2016 18:52:12 +0800
+Message-ID: <20161214105212.clcjhtg6aztrcsiz@wfg-t540p.sh.intel.com>
+In-Reply-To: <20161214083544.GN3124@twins.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6618803967779739395==
+--===============7484078706031801840==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Ying,
+On Wed, Dec 14, 2016 at 09:35:44AM +0100, Peter Zijlstra wrote:
+>On Wed, Dec 14, 2016 at 10:06:48AM +0800, kernel test robot wrote:
+>> Greetings,
+>>
+>> 0day kernel testing robot got the below dmesg and the first bad commit is
+>>
+>> git://internal_merge_and_test_tree devel-catchup-201612130113
+>>
+>> commit 3640269b04db583c0033678c9114f3406a0f489b
+>> Author:     Matt Fleming <matt@codeblueprint.co.uk>
+>> AuthorDate: Wed Sep 21 14:38:13 2016 +0100
+>> Commit:     Peter Zijlstra <peterz@infradead.org>
+>> CommitDate: Mon Dec 12 16:42:09 2016 +0100
+>>
+>>     sched/core: Add debug code to catch missing update_rq_clock()
+>>
+>
+>> [    0.031009] Last level dTLB entries: 4KB 0, 2MB 0, 4MB 0, 1GB 0
+>> [    0.033107] Freeing SMP alternatives memory: 12K (ffffffff81b7b000 - =
+ffffffff81b7e000)
+>> [    0.035721] ------------[ cut here ]------------
+>> [    0.036000] WARNING: CPU: 0 PID: 0 at kernel/sched/sched.h:804 rq_clo=
+ck_task+0x51/0x70
+>> [    0.036000] rq->clock_update_flags < RQCF_ACT_SKIP
+>> [    0.036000] Modules linked in:
+>> [    0.036000] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.9.0-rc8-00183=
+-g3640269 #1
+>> [    0.036000]  ffffffff81a03cc0 ffffffff8122375f ffffffff81a0f580 fffff=
+fff81a03d28
+>> [    0.036000]  0000000000000000 ffffffff81098591 ffffffff81a03d00 fffff=
+fff8106a63f
+>> [    0.036000]  0000000981a03d98 ffffffff81793092 ffff88001e6146c0 00000=
+00000000000
+>> [    0.036000] Call Trace:
+>> [    0.036000]  [<ffffffff8122375f>] dump_stack+0xb0/0x101
+>> [    0.036000]  [<ffffffff81098591>] ? rq_clock_task+0x51/0x70
+>> [    0.036000]  [<ffffffff8106a63f>] __warn+0x107/0x127
+>> [    0.036000]  [<ffffffff8106a6c4>] warn_slowpath_fmt+0x65/0x6e
+>> [    0.036000]  [<ffffffff81098591>] rq_clock_task+0x51/0x70
+>> [    0.036000]  [<ffffffff81098e3c>] update_load_avg+0x4c/0x263
+>> [    0.036000]  [<ffffffff8109908c>] attach_entity_cfs_rq+0x39/0x92
+>> [    0.036000]  [<ffffffff8109908c>] ? attach_entity_cfs_rq+0x39/0x92
+>> [    0.036000]  [<ffffffff81099efd>] post_init_entity_util_avg+0xa9/0xac
+>> [    0.036000]  [<ffffffff810935a3>] wake_up_new_task+0x59/0xc3
+>> [    0.036000]  [<ffffffff81069ab8>] _do_fork+0x1bc/0x283
+>> [    0.036000]  [<ffffffff8123add0>] ? find_next_bit+0x45/0x51
+>> [    0.036000]  [<ffffffff814cef26>] ? rest_init+0x16d/0x16d
+>> [    0.036000]  [<ffffffff81069bb3>] kernel_thread+0x34/0x3b
+>> [    0.036000]  [<ffffffff81aaec89>] ? trap_init+0x20e/0x20e
+>> [    0.036000]  [<ffffffff814ceddb>] rest_init+0x22/0x16d
+>> [    0.036000]  [<ffffffff81aaec89>] ? trap_init+0x20e/0x20e
+>> [    0.036000]  [<ffffffff81aac10f>] start_kernel+0x4dc/0x4e9
+>> [    0.036000]  [<ffffffff81aab120>] ? early_idt_handler_array+0x120/0x1=
+20
+>> [    0.036000]  [<ffffffff81aab416>] x86_64_start_reservations+0x2a/0x2c
+>> [    0.036000]  [<ffffffff81aab4fe>] x86_64_start_kernel+0xe6/0xf3
+>> [    0.036000] ---[ end trace 0000000000000000 ]---
+>> [    0.037197] smpboot: APIC(0) Converting physical 0 to logical package=
+ 0
+>>
+>> git bisect start e84cc2b92f0301361c20d97210099d4ac7731196 69973b830859bc=
+6529a7a0468ba0d80ee5117826 --
+>> git bisect  bad f50e71f8660649cc8ec74d0a35273ff627929a08  # 23:13     11=
+-      5  Merge 'linux-review/Madalin-Bucur/powerpc-fsl-dts-add-QMan-and-BM=
+an-portal-nodes-on-t1023rdb/20161207-034042' into devel-hourly-2016121315
+>> git bisect  bad 1d169e013b8e9d7fa3e3af5af6e52145a8de114a  # 23:30     10=
+-      4  Merge 'miklos-vfs/misc' into devel-hourly-2016121315
+>> git bisect good 068926f19428d7a4e9281fc4b8ec9d8a0856e26d  # 00:10    132=
++     29  Merge 'linux-review/Grygorii-Strashko/usb-dwc3-omap-fix-race-of-p=
+m-runtime-with-irq-handler-in-probe/20161213-053605' into devel-hourly-2016=
+121315
+>> git bisect  bad 43d1a53eec3973cdabbd54215aff4aa5a70ad1b2  # 00:22      4=
+-      3  Merge 'pinchartl-media/omapdrm/devel' into devel-hourly-2016121315
+>> git bisect  bad 85f539d220e9fb2c9c0b6f542527b6e4f3f0fe71  # 00:32      6=
+-      2  Merge 'hwmon/watchdog-next' into devel-hourly-2016121315
+>> git bisect good 2c22794aa932c328633337d1720bbc873d36d26f  # 01:24    131=
++     17  Merge 'ipmi/for-next' into devel-hourly-2016121315
+>> git bisect  bad f185bb4654ea9a94553b07ac1fa76a277750c278  # 01:44      9=
+-      1  Merge 'linux-review/Himanshu-Madhani/qla2xxx-Feature-updaes-for-d=
+river/20161213-064500' into devel-hourly-2016121315
+>> git bisect  bad 1e09f27041eb80acbde6571e8896115174343d72  # 02:08      2=
+-      2  Merge 'peterz-queue/sched/debug' into devel-hourly-2016121315
+>
+>So as per that entry it appears you got the commit from my tree.
 
-On 12 December 2016 at 06:43, kernel test robot
-<ying.huang@linux.intel.com> wrote:
-> Greeting,
->
-> FYI, we noticed a 149% regression of ftq.noise.50% due to commit:
->
->
-> commit: 4e5160766fcc9f41bbd38bac11f92dce993644aa ("sched/fair: Propagate =
-asynchrous detach")
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
->
-> in testcase: ftq
-> on test machine: 8 threads Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz with 8=
-G memory
-> with following parameters:
->
->         nr_task: 100%
->         samples: 6000ss
->         test: cache
->         freq: 20
->         cpufreq_governor: powersave
+Yes.
 
-Why using powersave ? Are you testing  every governors ?
-
+>That tree also contains the below commit, right after the one you
+>fingered. And the above stacktrace looks very much like the one here,
+>no?
 >
-> test-description: The FTQ benchmarks measure hardware and software interf=
-erence or 'noise' on a node from the applications perspective.
-> test-url: https://github.com/rminnich/ftq
+>commit 73bc83482218caf16d09407e1547299dfc862613
+>Author: Peter Zijlstra <peterz@infradead.org>
+>Date:   Mon Oct 3 16:20:59 2016 +0200
+>
+>    sched: Add missing update_rq_clock() in post_init_entity_util_avg().
 
-It's a bit difficult to understand exactly what is measured and what
-is ftq.noise.50% because this result is not part of the bench which
-seems to only record a log of data in a file and ftq.noise.50% seems
-to be lkp specific
+It looks that commit still has the warning, however with a different
+call trace:
 
-I have tried to reproduce the lkp test on a debian jessie then a
-ubuntu server 16.10 but lkp doesn't seems to install cleanly as there
-are some errors:
-
-sudo bin/lkp run     job.yaml
-IPMI BMC is not supported on this machine, skip bmc-watchdog setup!
-2016-12-12 13:58:39 ./ftq_cache -f 20 -n 6000 -t 8 -a 524288
-Start 5088418680237 end 5438443372098 elapsed 350024691861
-cyclestart 14236344834332 cycleend 15214154208877 elapsed 977809374545
-Avg Cycles(ticks) per ns. is 2.793544; nspercycle is 0.357968
-Pre-computed ticks per ns: 2.793541
-Sample frequency is 20.000000
-ticks per ns 2.79354
-chown: utilisateur incorrect: =C2=ABlkp.lkp=C2=BB
-chown: utilisateur incorrect: =C2=ABlkp.lkp=C2=BB
-wait for background monitors: 9405 9407 oom-killer nfs-hang
-curl: (6) Could not resolve host: ftq.time
+Here is the dmesg:
 
 
->
-> In addition to that, the commit also has significant impact on the follow=
-ing tests:
->
-> +------------------+-----------------------------------------------------=
----------------------------+
-> | testcase: change | unixbench: unixbench.score 2.7% improvement         =
-                           |
-> | test machine     | 4 threads Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz wi=
-th 4G memory               |
-> | test parameters  | cpufreq_governor=3Dperformance                      =
-                             |
-> |                  | nr_task=3D100%                                      =
-                             |
-> |                  | runtime=3D300s                                      =
-                             |
-> |                  | test=3Dexecl                                        =
-                             |
-> +------------------+-----------------------------------------------------=
----------------------------+
->
->
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
->
->
-> To reproduce:
->
->         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-t=
-ests.git
->         cd lkp-tests
->         bin/lkp install job.yaml  # job file is attached in this email
->         bin/lkp run     job.yaml
->
-> testcase/path_params/tbox_group/run: ftq/100%-6000ss-cache-20-powersave/l=
-kp-hsw-d01
->
-> 09a43ace1f986b00  4e5160766fcc9f41bbd38bac11
-> ----------------  --------------------------
->          %stddev      change         %stddev
->              \          |                \
->        305 =C2=B1 30%       260%       1100 =C2=B1 14%  ftq.noise.75%
->       1386 =C2=B1 19%       149%       3457 =C2=B1  7%  ftq.noise.50%
->       2148 =C2=B1 11%        98%       4257 =C2=B1  4%  ftq.noise.25%
->    3963589                     3898578        ftq.time.involuntary_contex=
-t_switches
->
->
->
->                                    ftq.noise.50_
->
->   4000 ++------------O---------------------------------------------------=
----+
->        |                                                           O     =
- O |
->   3500 ++     O             O                        O    O O O          =
-   O
->        | O  O      O   O      O O  O O O    O O    O   O         O       =
-   |
->        O        O                         O                          O O =
-   |
->   3000 ++                                       O                        =
-   |
->        |                 O                                               =
-   |
->   2500 ++                                                                =
-   |
->        |                                                                 =
-   |
->   2000 ++                                                                =
-   |
->        |    *                  .*                                        =
-   |
->        |   + :     *   *      *  +                                       =
-   |
->   1500 ++ +  :    + + + +    :    + .*                                   =
-   |
->        |.*    *. +   *   *.. :     *  +                                  =
-   |
->   1000 *+-------*-----------*----------*---------------------------------=
----+
->
->         [*] bisect-good sample
->         [O] bisect-bad  sample
->
->
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
->
->
-> Thanks,
-> Ying Huang
+[    0.356906] TSC deadline timer enabled
+[    0.357541] smpboot: CPU0: GenuineIntel Intel Core Processor (Haswell) (=
+family: 0x6, model: 0x3c, stepping: 0x1)
+[    0.359332] Performance Events: no PMU driver, software events only.
+[    0.589465] ------------[ cut here ]------------
+[    0.590588] WARNING: CPU: 0 PID: 1 at kernel/sched/sched.h:804 rq_clock_=
+task+0x51/0x70
+[    0.592998] rq->clock_update_flags < RQCF_ACT_SKIP
+[    0.594107] Modules linked in:
+[    0.594912] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.9.0-rc8-00184-g7=
+3bc834 #1
+[    0.596614]  ffff88001e943b70 ffffffff81223767 ffffffff1e93c040 ffff8800=
+1e943bd8
+[    0.598568]  0000000000000000 ffffffff81098599 ffff88001e943bb0 ffffffff=
+8106a63f
+[    0.600513]  000000091e943c48 ffffffff81793103 ffff88001fa146c0 00000000=
+00000000
+[    0.602456] Call Trace:
+[    0.603089]  [<ffffffff81223767>] dump_stack+0xb0/0x101
+[    0.604301]  [<ffffffff81098599>] ? rq_clock_task+0x51/0x70
+[    0.605613]  [<ffffffff8106a63f>] __warn+0x107/0x127
+[    0.606922]  [<ffffffff8106a6c4>] warn_slowpath_fmt+0x65/0x6e
+[    0.608275]  [<ffffffff81098599>] rq_clock_task+0x51/0x70
+[    0.609562]  [<ffffffff81098e44>] update_load_avg+0x4c/0x263
+[    0.610994]  [<ffffffff810992f5>] switched_from_fair+0x5b/0x143
+[    0.612425]  [<ffffffff810992f5>] ? switched_from_fair+0x5b/0x143
+[    0.613897]  [<ffffffff8109022e>] check_class_changed+0x24/0x55
+[    0.615273]  [<ffffffff81094122>] __sched_setscheduler+0x5f0/0x680
+[    0.616784]  [<ffffffff814d5000>] ? _raw_spin_unlock_bh+0x3/0x33
+[    0.618237]  [<ffffffff81094212>] _sched_setscheduler+0x60/0x62
+[    0.619605]  [<ffffffff810942bb>] sched_setscheduler_nocheck+0xb/0xd
+[    0.621181]  [<ffffffff81094309>] sched_set_stop_task+0x4c/0x7f
+[    0.622580]  [<ffffffff810e90be>] cpu_stop_create+0x2b/0x2d
+[    0.624015]  [<ffffffff8108ee2a>] __smpboot_create_thread+0xf0/0x103
+[    0.625608]  [<ffffffff8108f0dc>] smpboot_register_percpu_thread_cpumask=
++0x7c/0xfa
+[    0.627482]  [<ffffffff81ac7334>] cpu_stop_init+0x88/0xb4
+[    0.628828]  [<ffffffff81ac72ac>] ? ikconfig_init+0x56/0x56
+[    0.630156]  [<ffffffff810004b1>] do_one_initcall+0xa5/0x17e
+[    0.631513]  [<ffffffff81013ec3>] ? print_cpu_info+0xc0/0xc5
+[    0.632919]  [<ffffffff810155f5>] ? set_mtrr_aps_delayed_init+0x40/0x43
+[    0.634491]  [<ffffffff81aac198>] kernel_init_freeable+0x7c/0x208
+[    0.635994]  [<ffffffff814cef26>] ? rest_init+0x16d/0x16d
+[    0.637269]  [<ffffffff814cef35>] kernel_init+0xf/0x153
+[    0.638526]  [<ffffffff814cef26>] ? rest_init+0x16d/0x16d
+[    0.639884]  [<ffffffff814d582a>] ret_from_fork+0x2a/0x40
+[    0.641163] ---[ end trace 0000000000000000 ]---
+[    0.398389] x86: Booted up 1 node, 1 CPUs
+[    0.399084] smpboot: Total of 1 processors activated (5387.01 BogoMIPS)
 
---===============6618803967779739395==--
+Regards,
+Fengguang
+
+--===============7484078706031801840==--
 
