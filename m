@@ -1,208 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============8843384685876250334=="
+Content-Type: multipart/mixed; boundary="===============0224436329139338420=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Gabriel Krisman Bertazi <krisman@collabora.co.uk>
 To: lkp@lists.01.org
-Subject: Re: [lkp-developer] [sched/fair] 4e5160766f: +149% ftq.noise.50% regression
-Date: Wed, 04 Jan 2017 11:08:43 +0800
-Message-ID: <87a8b7o72c.fsf@yhuang-dev.intel.com>
-In-Reply-To: <20170103113759.GA30094@linaro.org>
+Subject: Re: [lkp-developer] [drm] 75f6dfe3e6: BUG:unable_to_handle_kernel
+Date: Wed, 04 Jan 2017 01:41:39 -0200
+Message-ID: <87a8b7fq4s.fsf@dilma.collabora.co.uk>
+In-Reply-To: <20170104004504.GA721@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8843384685876250334==
+--===============0224436329139338420==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Vincent Guittot <vincent.guittot@linaro.org> writes:
+kernel test robot <xiaolong.ye@intel.com> writes:
 
-> Hi Dietmar and Ying,
 >
-> Le Tuesday 03 Jan 2017  11:38:39 (+0100), Dietmar Eggemann a crit :
->> Hi Vincent and Ying,
->> =
-
->> On 01/02/2017 04:42 PM, Vincent Guittot wrote:
->> >Hi Ying,
->> >
->> >On 28 December 2016 at 09:17, Huang, Ying <ying.huang@intel.com> wrot=
-e:
->> >>Vincent Guittot <vincent.guittot@linaro.org> writes:
->> >>
->> >>>Le Tuesday 13 Dec 2016 . 09:47:30 (+0800), Huang, Ying a .crit :
->> >>>>Hi, Vincent,
->> >>>>
->> >>>>Vincent Guittot <vincent.guittot@linaro.org> writes:
->> =
-
->> [...]
->>
+> on test machine: qemu-system-x86_64 -enable-kvm -m 320M
 >
-> [snip]
+> caused below changes:
 >
->> >>
->> >>The test result is as follow,
->> >>
->> >>=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> >>compiler/cpufreq_governor/freq/kconfig/nr_task/rootfs/samples/tbox_gro=
-up/test/testcase:
->> >>  gcc-6/powersave/20/x86_64-rhel-7.2/100%/debian-x86_64-2016-08-31.cgz=
-/6000ss/lkp-hsw-d01/cache/ftq
->> >>
->> >>commit:
->> >>  4e5160766fcc9f41bbd38bac11f92dce993644aa: first bad commit
->> >>  09a43ace1f986b003c118fdf6ddf1fd685692d49: parent of first bad commit
->> >>  0613870ea53a7a279d8d37f2a3ce40aafc155fc8: debug commit with above pa=
-tch
->> >>
->> >>4e5160766fcc9f41 09a43ace1f986b003c118fdf6d 0613870ea53a7a279d8d37f2a3
->> >>---------------- -------------------------- --------------------------
->> >>         %stddev     %change         %stddev     %change         %stdd=
-ev
->> >>             \          |                \          |                \
->> >>     61670 228%     -96.5%       2148  11%     -94.7%       3281  58% =
- ftq.noise.25%
->> >>      3463  10%     -60.0%       1386  19%     -26.3%       2552  58% =
- ftq.noise.50%
->> >>      1116  23%     -72.6%     305.99  30%     -35.8%     716.15  64% =
- ftq.noise.75%
->> >>   3843815   3%      +3.1%    3963589   1%     -49.6%    1938221 100% =
- ftq.time.involuntary_context_switches
->> >>      5.33  30%     +21.4%       6.46  14%     -71.7%       1.50 108% =
- time.system_time
->> >>
->> >>
->> >>It appears that the system_time and involuntary_context_switches reduc=
-ed
->> >>much after applied the debug patch, which is good from noise point of
->> >>view.  ftq.noise.50% reduced compared with the first bad commit, but
->> >>have not restored to that of the parent of the first bad commit.
->> >
->> >Thanks for testing. I will try to improve it a bit but not sure that I
->> >can reduce more.
->> =
 
->> Is this a desktop system where this regression comes from autogroups (1
->> level taskgroups) or a server system with systemd (2 level taskgroups)?
->> =
+> [    1.608985] mwave: mwavedd::mwave_init: Error: Failed to initialize
+> [    1.609295] Hangcheck: starting hangcheck timer 0.9.1 (tick is 180 sec=
+onds, margin is 60 seconds).
+> [    1.609913] [drm] radeon kernel modesetting enabled.
+> [    1.610407] BUG: unable to handle kernel NULL pointer dereference at 0=
+000002c
+> [    1.610833] IP: [<8143c0ba>] drm_dev_register+0xe9/0x173
+> [    1.611131] *pdpt =3D 0000000000000000 *pde =3D f000ff53f000ff53 =
 
->> Since the PELT rewrite (v4.2) I have ~60 autogroups per cpu
->> (&rq->leaf_cfs_rq_list) on my Ubuntu desktop system permanently (Intel
->> i7-4750HQ) whereas in v4.1 there were 0 - 10.
->> =
+> [    1.611427]
 
->> $ for i in `seq 0 7`; do cat /proc/sched_debug | grep
->> "cfs_rq\[$i\]:/autogroup-" | wc -l; done
->> 58
->> 61
->> 63
->> 65
->> 60
->> 59
->> 62
->> 56
->> =
+I believe this is already fixed by 6098909cf2d0 ("drm: Avoid NULL
+dereference of drm_device.dev").  But right now the tip of the
+drm-intel-nightly already includes that patch, so I'm not sure if the
+test included it, I think not.
 
->> Couldn't we still remove these autogroups by if (!cfs_rq->nr_running &&
->> !se->avg.load_avg && !se->avg.util_avg) in update_blocked_averages()?
->> =
+I gave it a try with the jobfile just to be sure on top of
+drm-misc-next, and I couldn't reproduce the error anymore after applying
+Chris' patch (but I could reproduce the Oops when trying only with my
+patch).
 
->> Vincent, like we discussed in September last year, the proper fix would
->> probably be a cfs-rq->nr_attached which IMHO is not doable w/o being an
->> atomic because of migrate_task_rq_fair()->remove_entity_load_avg() not
->> holding the rq lock.
->
-> I remember the discussion and even if I agree that a large number of task=
-group
-> increases the number of loop in update_blocked_averages() and as a result=
- the
-> time spent in the update, I don't think that this is the root cause of
-> this regression because the patch "sched/fair: Propagate asynchrous detac=
-h"
-> doesn't add more loops to update_blocked_averages but it adds more thing =
-to do
-> per loop.
->
-> Then, I think I'm still too conservative in the condition for calling =
+Also, sorry for the noise and lesson learned about virtual devices :(
 
-> update_load_avg(cfs_rq->tg->se[cpu], 0). This call has been added to
-> propagate gcfs_rq->propagate_avg flag to parent so we don't need to call =
-it =
+-- =
 
-> even if load_avg is not null but only when propagate_avg flag is set. The
-> patch below should improve thing compare to the previous version because
-> it will call update_load_avg(cfs_rq->tg->se[cpu], 0) only if an asynchrou=
-nous
-> detach happened (propagate_avg is set).
->
-> Ying, could you test the patch below instead of the previous one ?
->
-> ---
->  kernel/sched/fair.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 6559d19..a4f5c35 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -6915,6 +6915,7 @@ static void update_blocked_averages(int cpu)
->  {
->  	struct rq *rq =3D cpu_rq(cpu);
->  	struct cfs_rq *cfs_rq;
-> +	struct sched_entity *se;
->  	unsigned long flags;
->  =
+Gabriel Krisman Bertazi
 
->  	raw_spin_lock_irqsave(&rq->lock, flags);
-> @@ -6932,9 +6933,10 @@ static void update_blocked_averages(int cpu)
->  		if (update_cfs_rq_load_avg(cfs_rq_clock_task(cfs_rq), cfs_rq, true))
->  			update_tg_load_avg(cfs_rq, 0);
->  =
-
-> -		/* Propagate pending load changes to the parent */
-> -		if (cfs_rq->tg->se[cpu])
-> -			update_load_avg(cfs_rq->tg->se[cpu], 0);
-> +		/* Propagate pending load changes to the parent if any */
-> +		se =3D cfs_rq->tg->se[cpu];
-> +		if (se && cfs_rq->propagate_avg)
-> +			update_load_avg(se, 0);
->  	}
->  	raw_spin_unlock_irqrestore(&rq->lock, flags);
->  }
-
-Here is the test result,
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-compiler/cpufreq_governor/freq/kconfig/nr_task/rootfs/samples/tbox_group/te=
-st/testcase:
-  gcc-6/powersave/20/x86_64-rhel-7.2/100%/debian-x86_64-2016-08-31.cgz/6000=
-ss/lkp-hsw-d01/cache/ftq
-
-commit: =
-
-  4e5160766fcc9f41bbd38bac11f92dce993644aa: first bad commit
-  09a43ace1f986b003c118fdf6ddf1fd685692d49: parent of first bad commit
-  b524060933c546fd2410c5a09360ba23a0fef846: with fix patch above
-
-4e5160766fcc9f41 09a43ace1f986b003c118fdf6d b524060933c546fd2410c5a093 =
-
----------------- -------------------------- -------------------------- =
-
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \  =
-
-      3463 =C2=B1 10%     -61.4%       1335 =C2=B1 17%      -3.0%       335=
-9 =C2=B1  2%  ftq.noise.50%
-      1116 =C2=B1 23%     -73.7%     293.90 =C2=B1 30%     -23.8%     850.6=
-9 =C2=B1 17%  ftq.noise.75%
-
-Best Regards,
-Huang, Ying
-
---===============8843384685876250334==--
+--===============0224436329139338420==--
 
