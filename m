@@ -1,115 +1,149 @@
-Content-Type: multipart/mixed; boundary="===============7646289235906362826=="
+Content-Type: multipart/mixed; boundary="===============7170070123972614606=="
 MIME-Version: 1.0
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+From: Wu, Chenggang <chenggang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-developer] [page_pool] 50a8fe7622: kernel_BUG_at_mm/slub.c
-Date: Fri, 06 Jan 2017 08:27:51 +0100
-Message-ID: <20170106082751.3dae47e3@redhat.com>
-In-Reply-To: <20170106050827.GC690@yexl-desktop>
+Subject: The result of testing install jobs on CentOS
+Date: Fri, 06 Jan 2017 09:24:53 +0000
+Message-ID: <83D223E0AC87EC438993D009A817895BF628D7@SHSMSX101.ccr.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7646289235906362826==
+--===============7170070123972614606==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+After testing the installation, 94 jobs failed to install among all the 169=
+ jobs. The others installed successfully. Among the failed jobs, some may c=
+aused by the internet connection, and I'll check those problems. Also among=
+ the succeed jobs, there might be some jobs that didn't show error clearly =
+so that I can't find out that the result is accually succeeded or failed.
+Should I send you the list of the result?
 
-On Fri, 6 Jan 2017 13:08:27 +0800 kernel test robot <xiaolong.ye@intel.co=
-m> wrote:
+For the makepkg part, I succeeded in installing hackbench job with PKGBUILD=
+ file on Ubuntu. The result may be also success on CentOS and I'll test it =
+later. There are some problems:
 
-> FYI, we noticed the following commit:
-> =
+1.      If we use the official Archlinux source of PKGBUILD file, the downl=
+oad speed might be very slow. I haven't find out a way to change the mirror=
+ source for now.
 
-> commit: 50a8fe7622e6c45af778d91f83c11491f0afaaf3 ("page_pool: basic imple=
-mentation of page_pool")
-> url: https://github.com/0day-ci/linux/commits/Jesper-Dangaard-Brouer/page=
-_pool-proof-of-concept-early-code/20161221-014200
-> base: git://git.cmpxchg.org/linux-mmotm.git master
-> =
+2.      Download and compile every dependency might cost too much time
 
-> in testcase: trinity
-> with following parameters:
-> =
+3.      Should we use the official PKGBUILD file for every dependencies, wh=
+ich may cost a lot of time to download and compile? Or we can get some pack=
+ages from apt/yum, however it is hard to find out what packages are exists =
+on apt and yum.
+Also, I can't figure out how to use JIRA. Should I comment the result to th=
+e subjects on JIRA?
 
-> 	runtime: 300s
-> =
+Best Regards,
+Wu Chenggang
 
-> test-description: Trinity is a linux system call fuzz tester.
-> test-url: http://codemonkey.org.uk/projects/trinity/
-> =
+--===============7170070123972614606==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.html"
 
-> =
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+CjxoZWFkPgo8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVR5cGUiIGNv
+bnRlbnQ9InRleHQvaHRtbDsgY2hhcnNldD11cy1hc2NpaSI+CjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPgo8c3R5bGU+
+PCEtLQovKiBGb250IERlZmluaXRpb25zICovCkBmb250LWZhY2UKCXtmb250LWZhbWlseTpTaW1T
+dW47CglwYW5vc2UtMToyIDEgNiAwIDMgMSAxIDEgMSAxO30KQGZvbnQtZmFjZQoJe2ZvbnQtZmFt
+aWx5OiJDYW1icmlhIE1hdGgiOwoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9CkBmb250
+LWZhY2UKCXtmb250LWZhbWlseTpDYWxpYnJpOwoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAy
+IDQ7fQpAZm9udC1mYWNlCgl7Zm9udC1mYW1pbHk6IlxAU2ltU3VuIjsKCXBhbm9zZS0xOjIgMSA2
+IDAgMyAxIDEgMSAxIDE7fQovKiBTdHlsZSBEZWZpbml0aW9ucyAqLwpwLk1zb05vcm1hbCwgbGku
+TXNvTm9ybWFsLCBkaXYuTXNvTm9ybWFsCgl7bWFyZ2luOjBpbjsKCW1hcmdpbi1ib3R0b206LjAw
+MDFwdDsKCWZvbnQtc2l6ZToxMS4wcHQ7Cglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJp
+Zjt9CmE6bGluaywgc3Bhbi5Nc29IeXBlcmxpbmsKCXttc28tc3R5bGUtcHJpb3JpdHk6OTk7Cglj
+b2xvcjojMDU2M0MxOwoJdGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZTt9CmE6dmlzaXRlZCwgc3Bh
+bi5Nc29IeXBlcmxpbmtGb2xsb3dlZAoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsKCWNvbG9yOiM5
+NTRGNzI7Cgl0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30KcC5Nc29MaXN0UGFyYWdyYXBoLCBs
+aS5Nc29MaXN0UGFyYWdyYXBoLCBkaXYuTXNvTGlzdFBhcmFncmFwaAoJe21zby1zdHlsZS1wcmlv
+cml0eTozNDsKCW1hcmdpbi10b3A6MGluOwoJbWFyZ2luLXJpZ2h0OjBpbjsKCW1hcmdpbi1ib3R0
+b206MGluOwoJbWFyZ2luLWxlZnQ6LjVpbjsKCW1hcmdpbi1ib3R0b206LjAwMDFwdDsKCWZvbnQt
+c2l6ZToxMS4wcHQ7Cglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjt9CnNwYW4uRW1h
+aWxTdHlsZTE3Cgl7bXNvLXN0eWxlLXR5cGU6cGVyc29uYWwtY29tcG9zZTsKCWZvbnQtZmFtaWx5
+OiJDYWxpYnJpIixzYW5zLXNlcmlmOwoJY29sb3I6d2luZG93dGV4dDt9Ci5Nc29DaHBEZWZhdWx0
+Cgl7bXNvLXN0eWxlLXR5cGU6ZXhwb3J0LW9ubHk7Cglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fu
+cy1zZXJpZjt9CkBwYWdlIFdvcmRTZWN0aW9uMQoJe3NpemU6OC41aW4gMTEuMGluOwoJbWFyZ2lu
+OjEuMGluIDEuMGluIDEuMGluIDEuMGluO30KZGl2LldvcmRTZWN0aW9uMQoJe3BhZ2U6V29yZFNl
+Y3Rpb24xO30KLyogTGlzdCBEZWZpbml0aW9ucyAqLwpAbGlzdCBsMAoJe21zby1saXN0LWlkOjIw
+NjE0MzgyNzA7Cgltc28tbGlzdC10eXBlOmh5YnJpZDsKCW1zby1saXN0LXRlbXBsYXRlLWlkczo3
+NDM3MDQwODIgNjc2OTg3MDMgNjc2OTg3MTMgNjc2OTg3MTUgNjc2OTg3MDMgNjc2OTg3MTMgNjc2
+OTg3MTUgNjc2OTg3MDMgNjc2OTg3MTMgNjc2OTg3MTU7fQpAbGlzdCBsMDpsZXZlbDEKCXttc28t
+bGV2ZWwtdGFiLXN0b3A6bm9uZTsKCW1zby1sZXZlbC1udW1iZXItcG9zaXRpb246bGVmdDsKCXRl
+eHQtaW5kZW50Oi0uMjVpbjt9CkBsaXN0IGwwOmxldmVsMgoJe21zby1sZXZlbC1udW1iZXItZm9y
+bWF0OmFscGhhLWxvd2VyOwoJbXNvLWxldmVsLXRhYi1zdG9wOm5vbmU7Cgltc28tbGV2ZWwtbnVt
+YmVyLXBvc2l0aW9uOmxlZnQ7Cgl0ZXh0LWluZGVudDotLjI1aW47fQpAbGlzdCBsMDpsZXZlbDMK
+CXttc28tbGV2ZWwtbnVtYmVyLWZvcm1hdDpyb21hbi1sb3dlcjsKCW1zby1sZXZlbC10YWItc3Rv
+cDpub25lOwoJbXNvLWxldmVsLW51bWJlci1wb3NpdGlvbjpyaWdodDsKCXRleHQtaW5kZW50Oi05
+LjBwdDt9CkBsaXN0IGwwOmxldmVsNAoJe21zby1sZXZlbC10YWItc3RvcDpub25lOwoJbXNvLWxl
+dmVsLW51bWJlci1wb3NpdGlvbjpsZWZ0OwoJdGV4dC1pbmRlbnQ6LS4yNWluO30KQGxpc3QgbDA6
+bGV2ZWw1Cgl7bXNvLWxldmVsLW51bWJlci1mb3JtYXQ6YWxwaGEtbG93ZXI7Cgltc28tbGV2ZWwt
+dGFiLXN0b3A6bm9uZTsKCW1zby1sZXZlbC1udW1iZXItcG9zaXRpb246bGVmdDsKCXRleHQtaW5k
+ZW50Oi0uMjVpbjt9CkBsaXN0IGwwOmxldmVsNgoJe21zby1sZXZlbC1udW1iZXItZm9ybWF0OnJv
+bWFuLWxvd2VyOwoJbXNvLWxldmVsLXRhYi1zdG9wOm5vbmU7Cgltc28tbGV2ZWwtbnVtYmVyLXBv
+c2l0aW9uOnJpZ2h0OwoJdGV4dC1pbmRlbnQ6LTkuMHB0O30KQGxpc3QgbDA6bGV2ZWw3Cgl7bXNv
+LWxldmVsLXRhYi1zdG9wOm5vbmU7Cgltc28tbGV2ZWwtbnVtYmVyLXBvc2l0aW9uOmxlZnQ7Cgl0
+ZXh0LWluZGVudDotLjI1aW47fQpAbGlzdCBsMDpsZXZlbDgKCXttc28tbGV2ZWwtbnVtYmVyLWZv
+cm1hdDphbHBoYS1sb3dlcjsKCW1zby1sZXZlbC10YWItc3RvcDpub25lOwoJbXNvLWxldmVsLW51
+bWJlci1wb3NpdGlvbjpsZWZ0OwoJdGV4dC1pbmRlbnQ6LS4yNWluO30KQGxpc3QgbDA6bGV2ZWw5
+Cgl7bXNvLWxldmVsLW51bWJlci1mb3JtYXQ6cm9tYW4tbG93ZXI7Cgltc28tbGV2ZWwtdGFiLXN0
+b3A6bm9uZTsKCW1zby1sZXZlbC1udW1iZXItcG9zaXRpb246cmlnaHQ7Cgl0ZXh0LWluZGVudDot
+OS4wcHQ7fQpvbAoJe21hcmdpbi1ib3R0b206MGluO30KdWwKCXttYXJnaW4tYm90dG9tOjBpbjt9
+Ci0tPjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+CjxvOnNoYXBlZGVmYXVsdHMgdjpl
+eHQ9ImVkaXQiIHNwaWRtYXg9IjEwMjYiIC8+CjwveG1sPjwhW2VuZGlmXS0tPjwhLS1baWYgZ3Rl
+IG1zbyA5XT48eG1sPgo8bzpzaGFwZWxheW91dCB2OmV4dD0iZWRpdCI+CjxvOmlkbWFwIHY6ZXh0
+PSJlZGl0IiBkYXRhPSIxIiAvPgo8L286c2hhcGVsYXlvdXQ+PC94bWw+PCFbZW5kaWZdLS0+Cjwv
+aGVhZD4KPGJvZHkgbGFuZz0iRU4tVVMiIGxpbms9IiMwNTYzQzEiIHZsaW5rPSIjOTU0RjcyIj4K
+PGRpdiBjbGFzcz0iV29yZFNlY3Rpb24xIj4KPHAgY2xhc3M9Ik1zb05vcm1hbCI+QWZ0ZXIgdGVz
+dGluZyB0aGUgaW5zdGFsbGF0aW9uLCA5NCBqb2JzIGZhaWxlZCB0byBpbnN0YWxsIGFtb25nIGFs
+bCB0aGUgMTY5IGpvYnMuIFRoZSBvdGhlcnMgaW5zdGFsbGVkIHN1Y2Nlc3NmdWxseS4gQW1vbmcg
+dGhlIGZhaWxlZCBqb2JzLCBzb21lIG1heSBjYXVzZWQgYnkgdGhlIGludGVybmV0IGNvbm5lY3Rp
+b24sIGFuZCBJJiM4MjE3O2xsIGNoZWNrIHRob3NlIHByb2JsZW1zLiBBbHNvIGFtb25nIHRoZSBz
+dWNjZWVkCiBqb2JzLCB0aGVyZSBtaWdodCBiZSBzb21lIGpvYnMgdGhhdCBkaWRuJiM4MjE3O3Qg
+c2hvdyBlcnJvciBjbGVhcmx5IHNvIHRoYXQgSSBjYW4mIzgyMTc7dCBmaW5kIG91dCB0aGF0IHRo
+ZSByZXN1bHQgaXMgYWNjdWFsbHkgc3VjY2VlZGVkIG9yIGZhaWxlZC48bzpwPjwvbzpwPjwvcD4K
+PHAgY2xhc3M9Ik1zb05vcm1hbCI+U2hvdWxkIEkgc2VuZCB5b3UgdGhlIGxpc3Qgb2YgdGhlIHJl
+c3VsdD88bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286
+cD48L3A+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPkZvciB0aGUgbWFrZXBrZyBwYXJ0LCBJIHN1Y2Nl
+ZWRlZCBpbiBpbnN0YWxsaW5nIGhhY2tiZW5jaCBqb2Igd2l0aCBQS0dCVUlMRCBmaWxlIG9uIFVi
+dW50dS4gVGhlIHJlc3VsdCBtYXkgYmUgYWxzbyBzdWNjZXNzIG9uIENlbnRPUyBhbmQgSSYjODIx
+NztsbCB0ZXN0IGl0IGxhdGVyLiBUaGVyZSBhcmUgc29tZSBwcm9ibGVtczo8bzpwPjwvbzpwPjwv
+cD4KPHAgY2xhc3M9Ik1zb0xpc3RQYXJhZ3JhcGgiIHN0eWxlPSJ0ZXh0LWluZGVudDotLjI1aW47
+bXNvLWxpc3Q6bDAgbGV2ZWwxIGxmbzEiPjwhW2lmICFzdXBwb3J0TGlzdHNdPjxzcGFuIHN0eWxl
+PSJtc28tbGlzdDpJZ25vcmUiPjEuPHNwYW4gc3R5bGU9ImZvbnQ6Ny4wcHQgJnF1b3Q7VGltZXMg
+TmV3IFJvbWFuJnF1b3Q7Ij4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsKPC9zcGFuPjwv
+c3Bhbj48IVtlbmRpZl0+SWYgd2UgdXNlIHRoZSBvZmZpY2lhbCBBcmNobGludXggc291cmNlIG9m
+IFBLR0JVSUxEIGZpbGUsIHRoZSBkb3dubG9hZCBzcGVlZCBtaWdodCBiZSB2ZXJ5IHNsb3cuIEkg
+aGF2ZW4mIzgyMTc7dCBmaW5kIG91dCBhIHdheSB0byBjaGFuZ2UgdGhlIG1pcnJvciBzb3VyY2Ug
+Zm9yIG5vdy48bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb0xpc3RQYXJhZ3JhcGgiIHN0eWxl
+PSJ0ZXh0LWluZGVudDotLjI1aW47bXNvLWxpc3Q6bDAgbGV2ZWwxIGxmbzEiPjwhW2lmICFzdXBw
+b3J0TGlzdHNdPjxzcGFuIHN0eWxlPSJtc28tbGlzdDpJZ25vcmUiPjIuPHNwYW4gc3R5bGU9ImZv
+bnQ6Ny4wcHQgJnF1b3Q7VGltZXMgTmV3IFJvbWFuJnF1b3Q7Ij4mbmJzcDsmbmJzcDsmbmJzcDsm
+bmJzcDsmbmJzcDsKPC9zcGFuPjwvc3Bhbj48IVtlbmRpZl0+RG93bmxvYWQgYW5kIGNvbXBpbGUg
+ZXZlcnkgZGVwZW5kZW5jeSBtaWdodCBjb3N0IHRvbyBtdWNoIHRpbWU8bzpwPjwvbzpwPjwvcD4K
+PHAgY2xhc3M9Ik1zb0xpc3RQYXJhZ3JhcGgiIHN0eWxlPSJ0ZXh0LWluZGVudDotLjI1aW47bXNv
+LWxpc3Q6bDAgbGV2ZWwxIGxmbzEiPjwhW2lmICFzdXBwb3J0TGlzdHNdPjxzcGFuIHN0eWxlPSJt
+c28tbGlzdDpJZ25vcmUiPjMuPHNwYW4gc3R5bGU9ImZvbnQ6Ny4wcHQgJnF1b3Q7VGltZXMgTmV3
+IFJvbWFuJnF1b3Q7Ij4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsKPC9zcGFuPjwvc3Bh
+bj48IVtlbmRpZl0+U2hvdWxkIHdlIHVzZSB0aGUgb2ZmaWNpYWwgUEtHQlVJTEQgZmlsZSBmb3Ig
+ZXZlcnkgZGVwZW5kZW5jaWVzLCB3aGljaCBtYXkgY29zdCBhIGxvdCBvZiB0aW1lIHRvIGRvd25s
+b2FkIGFuZCBjb21waWxlPyBPciB3ZSBjYW4gZ2V0IHNvbWUgcGFja2FnZXMgZnJvbSBhcHQveXVt
+LCBob3dldmVyIGl0IGlzIGhhcmQgdG8gZmluZCBvdXQgd2hhdCBwYWNrYWdlcyBhcmUgZXhpc3Rz
+IG9uIGFwdCBhbmQgeXVtLjxvOnA+PC9vOnA+PC9wPgo8cCBjbGFzcz0iTXNvTGlzdFBhcmFncmFw
+aCI+PG86cD48L286cD48L3A+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPkFsc28sIEkgY2FuJiM4MjE3
+O3QgZmlndXJlIG91dCBob3cgdG8gdXNlIEpJUkEuIFNob3VsZCBJIGNvbW1lbnQgdGhlIHJlc3Vs
+dCB0byB0aGUgc3ViamVjdHMgb24gSklSQT88bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb05v
+cm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPkJlc3QgUmVn
+YXJkcyw8bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb05vcm1hbCI+V3UgQ2hlbmdnYW5nPG86
+cD48L286cD48L3A+CjwvZGl2Pgo8L2JvZHk+CjwvaHRtbD4K
 
-> on test machine: qemu-system-i386 -enable-kvm -smp 2 -m 320M
-
-This is because this RFC patch does not support 32-bit, as I'm using a
-page flag that is only avail on 64-bit, see[1].
-
-I though this kind of page-flags violation would be caught compile-time?
-
-[1] https://github.com/0day-ci/linux/commit/50a8fe7622e6c45af778d91f83c1149=
-1f0afaaf3#diff-c684e72d6c55b89ae592b66e9ce818ee
- =
-
-> caused below changes:
-> =
-
-> =
-
-> +------------------------------------------+------------+------------+
-> |                                          | 03fc8354e2 | 50a8fe7622 |
-> +------------------------------------------+------------+------------+
-> | boot_successes                           | 6          | 0          |
-> | boot_failures                            | 0          | 4          |
-> | kernel_BUG_at_mm/slub.c                  | 0          | 4          |
-> | invalid_opcode:#[##]SMP_DEBUG_PAGEALLOC  | 0          | 4          |
-> | Kernel_panic-not_syncing:Fatal_exception | 0          | 4          |
-> +------------------------------------------+------------+------------+
-> =
-
-> =
-
-> =
-
-> [    0.000000]       .text : 0xc1000000 - 0xc188d0b7   (8756 kB)
-> [    0.000000] Checking if this processor honours the WP bit even in supe=
-rvisor mode...Ok.
-> [    0.000000] ------------[ cut here ]------------
-> [    0.000000] kernel BUG at mm/slub.c:349!
-> [    0.000000] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC
-> [    0.000000] Modules linked in:
-> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 4.9.0-mm1-00096-g5=
-0a8fe7 #1
-> [    0.000000] task: c1d4ea80 task.stack: c1d46000
-> [    0.000000] EIP: get_partial_node+0x148/0x330
-> [    0.000000] EFLAGS: 00210046 CPU: 0
-> [    0.000000] EAX: 00200082 EBX: d2d38000 ECX: 00000000 EDX: d2400010
-> [    0.000000] ESI: c1e3ef80 EDI: d2400000 EBP: c1d47e50 ESP: c1d47dc0
-> [    0.000000]  DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
-> [    0.000000] CR0: 80050033 CR2: ffbff000 CR3: 01e76000 CR4: 000006b0
-> [    0.000000] Call Trace:
-> [    0.000000]  ? add_lock_to_list+0x7e/0xa7
-> [    0.000000]  ? __lock_acquire+0x103a/0x1326
-> [    0.000000]  ___slab_alloc+0x238/0x378
-> =
-
-> =
-
-> To reproduce:
-> =
-
->         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-t=
-ests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script  # job-script is attached in=
- this email
-
--- =
-
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
---===============7646289235906362826==--
+--===============7170070123972614606==--
 
