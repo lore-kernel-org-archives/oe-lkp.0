@@ -1,199 +1,154 @@
-Content-Type: multipart/mixed; boundary="===============9069868520299215441=="
+Content-Type: multipart/mixed; boundary="===============0871270591211446425=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Matthew Wilcox <mawilcox@microsoft.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-developer] [ACPICA] 174cc7187e: kmsg.ACPI_Error:Mutex[ACPI_MTX_Tables]already_acquired_by_this_thread[#](#/utmutex-#)
-Date: Mon, 16 Jan 2017 09:57:27 +0800
-Message-ID: <20170116015727.GH690@yexl-desktop>
-In-Reply-To: <1AE640813FDE7649BE1B193DEA596E886CE2ABF9@SHSMSX101.ccr.corp.intel.com>
+Subject: Re: [idr] 956f224033: BUG:unable_to_handle_kernel
+Date: Mon, 09 Jan 2017 20:02:12 +0000
+Message-ID: <BY2PR21MB003642919389EAF203E0CC9CCB640@BY2PR21MB0036.namprd21.prod.outlook.com>
+In-Reply-To: <20170109155724.GA61857@inn.lkp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9069868520299215441==
+--===============0871270591211446425==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 01/12, Zheng, Lv wrote:
->Hi, Xiaolong
->
->> From: Ye, Xiaolong
->> Subject: Re: [lkp-developer] [ACPICA] 174cc7187e:
->> kmsg.ACPI_Error:Mutex[ACPI_MTX_Tables]already_acquired_by_this_thread[#]=
-(#/utmutex-#)
->> =
+Thank you!  Bug diagnosed, test-case written, test-case reproduces bug, bug=
+ fixed, test-case now passes, new branch available: idr-2017-01-09
 
->> On 01/12, Zheng, Lv wrote:
->> >Hi, Xiaolong
->> >
->> >My internal tree on bee:
->> >ssh://bee.sh.intel.com/git/zetalog/linux-acpica.git
->> >Can it be added to phoronix?
->
->The commit in question has nothing to do with MTX_TABLE mutex inside of AC=
-PICA.
->And the error quite looks like an old issue we've fixed in 4.9-rcs.
->
->> =
+> -----Original Message-----
+> From: kernel test robot [mailto:xiaolong.ye(a)intel.com]
+> Sent: Monday, January 9, 2017 10:57 AM
+> To: Matthew Wilcox <mawilcox@microsoft.com>
+> Cc: lkp(a)01.orgTh
+> Subject: [idr] 956f224033: BUG:unable_to_handle_kernel
+> =
 
->> Just noticed you tree has been added to lkp monitor list before:
->> =
+> =
 
->> $ cat repo/linux-intel/internal-acpica
->> url: git://bee.sh.intel.com/git/zetalog/linux-acpica.git
->> belongs_to: ACPI
->
->And the commit is rebased in one of the branches on this internal test tre=
-e.
->Can you boot a latest kernel to see if the error message is still there?
->
+> FYI, we noticed the following commit:
+> =
 
-Sorry for the late.
+> commit: 956f224033ece0ca81949580e2c95fc132025229 ("idr: Return the
+> deleted entry from idr_remove")
+> git://git.infradead.org/users/willy/linux-dax.git idr-2017-01-03
+> =
 
-Seems this error persists in dmesg/kmsg of v4.10-rc1, here is the comparison
+> in testcase: hwsim
+> with following parameters:
+> =
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-compiler/cpufreq_governor/kconfig/need_x/rootfs/tbox_group/test/testcase:
-  gcc-6/performance/x86_64-rhel-7.2/true/debian-full-x86_64/lkp-ne02/jxrend=
-ermark-1.2.0/phoronix-test-suite
+> 	group: hwsim-00
+> =
 
-commit: =
+> =
 
-  5a6e7ec3bfef2ea518061d8d5d77367952770efb (parent commit of 174cc71)
-  174cc7187e6f088942c8e74daa7baff7b44b33c9
-  v4.10-rc1
+> =
 
-5a6e7ec3bfef2ea5 174cc7187e6f088942c8e74daa                  v4.10-rc1 =
+> on test machine: 8 threads Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz with =
+8G
+> memory
+> =
 
----------------- -------------------------- -------------------------- =
+> caused below changes:
+> =
 
-       fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
-           |             |             |             |             |    =
+> =
 
-          1:18          -6%            :18           0%           1:12    l=
-ast_state.is_incomplete_run
-           :18           0%            :18          61%          11:12    d=
-mesg.ACPI_Error:Mutex[#]is_not_acquired,cannot_release(#/utmutex-#)
-           :18           0%            :18          61%          11:12    d=
-mesg.ACPI_Error:Mutex[ACPI_MTX_Tables]already_acquired_by_this_thread[#](#/=
-utmutex-#)
-           :18         100%          18:18           6%           1:12    k=
-msg.ACPI_Error:Mutex[#]is_not_acquired,cannot_release(#/utmutex-#)
-           :18         100%          18:18           6%           1:12    k=
-msg.ACPI_Error:Mutex[ACPI_MTX_Tables]already_acquired_by_this_thread[#](#/u=
-tmutex-#)
-          3:18          -6%           2:18         -17%            :12    k=
-msg.DHCP/BOOTP:Reply_not_for_us_on_eth#,op[#]xid[#]
-           :18           0%            :18          61%          11:12    k=
-msg.ipmi_si_ipmi_si.#:Interface_detection_failed
+> +-------------------------------------------------------+------------+---=
+---------+
+> |                                                       | 4b91753c5c | 95=
+6f224033 |
+> +-------------------------------------------------------+------------+---=
+---------+
+> | boot_successes                                        | 12         | 2 =
+         |
+> | boot_failures                                         | 0          | 8 =
+         |
+> | BUG:unable_to_handle_kernel                           | 0          | 8 =
+         |
+> | Oops                                                  | 0          | 8 =
+         |
+> | Kernel_panic-not_syncing:Fatal_exception_in_interrupt | 0          | 8 =
+         |
+> +-------------------------------------------------------+------------+---=
+---------+
+> =
 
+> =
 
-Thanks,
-Xiaolong
+> =
 
->Thanks
->Lv
->
->> =
+> [  151.800365] ieee80211 phy0:   ERP_SLOT: 1
+> [  151.800371] ieee80211 phy0: mac80211_hwsim_config (freq=3D2412(2412 -
+> 0)/ht20 idle=3D0 ps=3D0 smps=3Doff)
+> [  151.800380] wlan0: associated
+> [  151.813580] BUG: unable to handle kernel paging request at ffffffff8bf=
+aedf1
+> [  151.813590] IP: node_tag_get+0xc/0x30
+> [  151.813591] PGD 21ee0c067
+> [  151.813592] PUD 21ee0d063
+> [  151.813593] PMD 0
+> [  151.813594]
+> [  151.813596] Oops: 0000 [#1] SMP
+> [  151.813598] Modules linked in: ghash_generic gf128mul gcm ccm arc4
+> mac80211_hwsim mac80211 cfg80211 rfkill rpcsec_gss_krb5 auth_rpcgss nfsv4
+> dns_resolver netconsole sd_mod sg snd_hda_codec_hdmi intel_rapl
+> x86_pkg_temp_thermal intel_powerclamp coretemp snd_hda_codec_realtek
+> ppdev snd_hda_codec_generic kvm_intel kvm irqbypass crct10dif_pclmul
+> crc32_pclmul crc32c_intel ghash_clmulni_intel pcbc firewire_ohci ahci
+> firewire_core crc_itu_t snd_hda_intel snd_hda_codec i915 snd_hda_core
+> snd_hwdep snd_pcm video libahci snd_timer aesni_intel drm_kms_helper
+> crypto_simd syscopyarea glue_helper snd sysfillrect sysimgblt cryptd seri=
+o_raw
+> pcspkr fb_sys_fops libata shpchp soundcore parport_pc parport drm
+> nuvoton_cir rc_core ip_tables
+> [  151.813644] CPU: 5 PID: 581 Comm: hostapd Not tainted 4.10.0-rc2-00032-
+> g956f224 #1
+> [  151.813645] Hardware name:                  /DH67GD, BIOS
+> BLH6710H.86A.0132.2011.1007.1505 10/07/2011
+> [  151.813647] task: ffff88021b954b80 task.stack: ffffc9000174c000
+> [  151.813651] RIP: 0010:node_tag_get+0xc/0x30
+> [  151.813652] RSP: 0018:ffff88021fb43e10 EFLAGS: 00010082
+> [  151.813654] RAX: ffffffff81822389 RBX: 0000000000000000 RCX:
+> ffff88021fb43e28
+> [  151.813656] RDX: 0000000053c64359 RSI: ffffffff81822361 RDI:
+> ffff88021b26d4f8
+> [  151.813657] RBP: ffff88021fb43e10 R08: ffff880210105696 R09:
+> ffff88021fb43e28
+> [  151.813659] R10: 0000000000000040 R11: ffff88021b26c740 R12:
+> ffff88021b26d4f8
+> [  151.813661] R13: 0000000000000000 R14: ffff8801c0369c00 R15:
+> 0000000000000000
+> [  151.813663] FS:  00007f9f348b2b40(0000) GS:ffff88021fb40000(0000)
+> knlGS:0000000000000000
+> [  151.813665] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  151.813666] CR2: ffffffff8bfaedf1 CR3: 000000021c1e4000 CR4:
+> 00000000000406e0
+> [  151.813668] Call Trace:
+> [  151.813670]  <IRQ>
+> [  151.813674]  radix_tree_delete_item+0x75/0x90
+> [  151.813679]  ? skb_free_head+0x21/0x30
+> =
 
->> =
+> =
 
->> >
->> >Thanks
->> >Lv
->> >
->> >> -----Original Message-----
->> >> From: Ye, Xiaolong
->> >> Sent: Thursday, January 12, 2017 2:00 PM
->> >> To: Zheng, Lv <lv.zheng@intel.com>
->> >> Cc: Wysocki, Rafael J <rafael.j.wysocki@intel.com>; Moore, Robert <=
-robert.moore@intel.com>; LKML
->> >> <linux-kernel@vger.kernel.org>; Linus Torvalds <torvalds@linux-fo=
-undation.org>; lkp(a)01.org
->> >> Subject: Re: [lkp-developer] [ACPICA] 174cc7187e:
->> >> kmsg.ACPI_Error:Mutex[ACPI_MTX_Tables]already_acquired_by_this_thread=
-[#](#/utmutex-#)
->> >>
->> >> Hi, Lv
->> >>
->> >> On 01/12, Zheng, Lv wrote:
->> >> >Hi, Xiaolong
->> >> >
->> >> >I noticed the tested version in your the test dmesg: Linux version 4=
-.9.0-rc5
->> >> >While the commit bisected should be in v4.10-rc1.
->> >> >Does that mean your test tree doesn't contain some basic lock fixes?
->> >>
->> >> The reported kernel version is Linux version 4.9.0-rc5-00017-g174cc71=
- which means
->> >> commit 174cc7187e is the head commit to be built.
->> >>
->> >> Thanks,
->> >> Xiaolong
->> >>
->> >> >
->> >> >Thanks and best regards
->> >> >Lv
->> >> >
->> >> >> From: lkp-developer-request(a)eclists.intel.com [mailto:lkp-develo=
-per-request(a)eclists.intel.com]
->> On
->> >> >> Behalf Of Ye, Xiaolong
->> >> >> Subject: [lkp-developer] [ACPICA] 174cc7187e:
->> >> >> kmsg.ACPI_Error:Mutex[ACPI_MTX_Tables]already_acquired_by_this_thr=
-ead[#](#/utmutex-#)
->> >> >>
->> >> >>
->> >> >> FYI, we noticed the following commit:
->> >> >>
->> >> >> commit: 174cc7187e6f088942c8e74daa7baff7b44b33c9 ("ACPICA: Tables:=
- Back port
->> >> acpi_get_table_with_size()
->> >> >> and early_acpi_os_unmap_memory() from Linux kernel")
->> >> >> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git=
- master
->> >> >>
->> >> >> in testcase: phoronix-test-suite
->> >> >> with following parameters:
->> >> >>
->> >> >> 	need_x: true
->> >> >> 	test: jxrendermark-1.2.0
->> >> >> 	cpufreq_governor: performance
->> >> >>
->> >> >> test-description: The Phoronix Test Suite is the most comprehensiv=
-e testing and benchmarking
->> >> platform
->> >> >> available that provides an extensible framework for which new test=
-s can be easily added.
->> >> >> test-url: http://www.phoronix-test-suite.com/
->> >> >>
->> >> >>
->> >> >> on test machine: 16 threads Nehalem-EP with 16G memory
->> >> >>
->> >> >> caused below changes:
->> >> >>
->> >> >>
->> >> >> [    2.043693] ACPI Error: Mutex [ACPI_MTX_Tables] already acquire=
-d by this thread [497483776]
->> >> >> (20160930/utmutex-254)
->> >> >> [    2.054084] ACPI Error: Mutex [0x2] is not acquired, cannot rel=
-ease (20160930/utmutex-326)
->> >> >>
->> >> >> To reproduce:
->> >> >>
->> >> >>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wf=
-g/lkp-tests.git
->> >> >>         cd lkp-tests
->> >> >>         bin/lkp install job.yaml  # job file is attached in this e=
-mail
->> >> >>         bin/lkp run     job.yaml
->> >> >>
->> >> >>
->> >> >>
->> >> >> Thanks,
->> >> >> Xiaolong
+> To reproduce:
+> =
 
---===============9069868520299215441==--
+>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-t=
+ests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+> =
+
+> =
+
+> =
+
+> Thanks,
+> Kernel Test Robot
+
+--===============0871270591211446425==--
 
