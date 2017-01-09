@@ -1,42 +1,101 @@
-Content-Type: multipart/mixed; boundary="===============2504363505917311889=="
+Content-Type: multipart/mixed; boundary="===============2050750025676643614=="
 MIME-Version: 1.0
 From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 4/4] .gitignore: add bin/event/wakeup
-Date: Mon, 09 Jan 2017 15:40:55 +0800
-Message-ID: <20170109074055.GT690@yexl-desktop>
-In-Reply-To: <20170106190652.31544-5-mcgrof@kernel.org>
+Subject: Re: [PATCH 0/4] lkp: add initial opensuse support
+Date: Mon, 09 Jan 2017 15:49:14 +0800
+Message-ID: <20170109074914.GU690@yexl-desktop>
+In-Reply-To: <20170106190652.31544-1-mcgrof@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2504363505917311889==
+--===============2050750025676643614==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Ye Xiaolong <xiaolong.ye@intel.com>
+Hi, Luis
+
+On 01/06, Luis R. Rodriguez wrote:
+>I received a failed test results notice from 0-day LKP test suite
+>using trinity, however it was pretty hard to get reproduce given
+>the LKP did not have OpenSUSE support to start off with, but the
+>second issue I've stubmled upon is beyond me -- running either:
+>
+>./bin/lkp qemu -k ~mcgrof/linux-next/arch/x86/boot/bzImage job-script
+>
+>or
+>
+>lkp qemu jobs/trinity.yaml =
+
+>
+>ends up creating calling a few subroutines or files which are
+>clearly not present, then tries to create a cpio archive but
+>clearly there are a few files which LKP tree expects you to have
+>and are not present such as lkp and lkp/scheduled.
+>
+>This is a run on OpenSUSE, first we install the dependencies for
+>trinity.yaml deps:
+>
+> # lkp install jobs/trinity.yaml =
+
+>
+>Then we try to run it:
+>
+> # lkp qemu jobs/trinity.yaml =
+
+
+Actually we don't use yaml file for lkp qemu, you could try "lkp run jobs/t=
+rinity.yaml"
+instead.
 
 Thanks,
 Xiaolong
 
-On 01/06, Luis R. Rodriguez wrote:
->Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
->---
-> .gitignore | 1 +
-> 1 file changed, 1 insertion(+)
+>jobs/trinity.yaml: line 1: suite:: command not found
+>jobs/trinity.yaml: line 2: testcase:: command not found
+>jobs/trinity.yaml: line 4: runtime:: command not found
+>jobs/trinity.yaml: line 6: kmsg:: command not found
+>jobs/trinity.yaml: line 7: rootfs:: command not found
+>jobs/trinity.yaml: line 9: trinity:: command not found
+>make: Entering directory '/home/mcgrof/devel/lkp-tests/bin/event'
+>klcc    -c -o wakeup.o wakeup.c
+>klcc  -static -o wakeup wakeup.o
+>rm -f wakeup.o
+>strip wakeup
+>make: Leaving directory '/home/mcgrof/devel/lkp-tests/bin/event'
+>cpio: lkp: Cannot stat: No such file or directory
+>cpio: lkp/scheduled: Cannot stat: No such file or directory
+>cpio: blank line ignored
+>cpio: File /dev/mqueue/=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD shrunk by 20 b=
+ytes, padding with zeros
 >
->diff --git a/.gitignore b/.gitignore
->index 56c20bff3d8f..d08002fb70fa 100644
->--- a/.gitignore
->+++ b/.gitignore
->@@ -2,3 +2,4 @@ update
-> deploy
-> Gemfile
-> Gemfile.lock
->+bin/event/wakeup
+>This never complets, it just sits there.
+>
+>Either way these patches help start to add OpenSUSE support.
+>
+>Luis R. Rodriguez (4):
+>  lib/install.sh: fix shell adapt_packages()
+>  distro: add initial opensuse support
+>  lib/install.*: make package dependency list uniq
+>  .gitignore: add bin/event/wakeup
+>
+> .gitignore                  |  1 +
+> README.md                   | 22 ++++++++++++++++++++++
+> distro/adaptation/archlinux |  2 +-
+> distro/adaptation/fedora    |  2 +-
+> distro/adaptation/opensuse  | 14 ++++++++++++++
+> distro/depends/lkp-dev      |  4 ++++
+> distro/installer/opensuse   |  3 +++
+> lib/install.rb              |  2 +-
+> lib/install.sh              | 14 +++++++++++---
+> 9 files changed, 58 insertions(+), 6 deletions(-)
+> create mode 100644 distro/adaptation/opensuse
+> create mode 100755 distro/installer/opensuse
+>
 >-- =
 
 >2.11.0
 >
 
---===============2504363505917311889==--
+--===============2050750025676643614==--
 
