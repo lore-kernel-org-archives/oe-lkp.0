@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============4136724221046804576=="
+Content-Type: multipart/mixed; boundary="===============2504363505917311889=="
 MIME-Version: 1.0
 From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 3/4] lib/install.*: make package dependency list uniq
-Date: Mon, 09 Jan 2017 15:40:30 +0800
-Message-ID: <20170109074030.GS690@yexl-desktop>
-In-Reply-To: <20170106190652.31544-4-mcgrof@kernel.org>
+Subject: Re: [PATCH 4/4] .gitignore: add bin/event/wakeup
+Date: Mon, 09 Jan 2017 15:40:55 +0800
+Message-ID: <20170109074055.GT690@yexl-desktop>
+In-Reply-To: <20170106190652.31544-5-mcgrof@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4136724221046804576==
+--===============2504363505917311889==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -19,47 +19,24 @@ Thanks,
 Xiaolong
 
 On 01/06, Luis R. Rodriguez wrote:
->This provides a small optimization to reduce the list of
->package dependencies we give back to the distribution installer
->by making the list uniq. Since bash is rather stupid we need to
->first sort the list prior to passing it to sort.
->
 >Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 >---
-> lib/install.rb | 2 +-
-> lib/install.sh | 2 +-
-> 2 files changed, 2 insertions(+), 2 deletions(-)
+> .gitignore | 1 +
+> 1 file changed, 1 insertion(+)
 >
->diff --git a/lib/install.rb b/lib/install.rb
->index 63b11ad1a5b2..8f40e3e902bc 100755
->--- a/lib/install.rb
->+++ b/lib/install.rb
->@@ -31,5 +31,5 @@ def get_dependency_packages(distro, script)
-> =
-
-> 	packages =3D adapt_packages(distro, generic_packages)
-> =
-
->-	return packages.flatten.compact
->+	return packages.flatten.compact.uniq
-> end
->diff --git a/lib/install.sh b/lib/install.sh
->index 0b090f8b82bf..cb9a8d0ea530 100755
->--- a/lib/install.sh
->+++ b/lib/install.sh
->@@ -61,5 +61,5 @@ get_dependency_packages()
-> =
-
-> 	local generic_packages=3D"$(sed 's/#.*//' "$base_file")"
-> =
-
->-	adapt_packages
->+	adapt_packages | sort | uniq
-> }
+>diff --git a/.gitignore b/.gitignore
+>index 56c20bff3d8f..d08002fb70fa 100644
+>--- a/.gitignore
+>+++ b/.gitignore
+>@@ -2,3 +2,4 @@ update
+> deploy
+> Gemfile
+> Gemfile.lock
+>+bin/event/wakeup
 >-- =
 
 >2.11.0
 >
 
---===============4136724221046804576==--
+--===============2504363505917311889==--
 
