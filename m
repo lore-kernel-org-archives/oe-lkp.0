@@ -1,107 +1,47 @@
-Content-Type: multipart/mixed; boundary="===============1513384106484680463=="
+Content-Type: multipart/mixed; boundary="===============5428750345674751599=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Philip Li <philip.li@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-developer] [ACPICA] 174cc7187e: kmsg.ACPI_Error:Mutex[ACPI_MTX_Tables]already_acquired_by_this_thread[#](#/utmutex-#)
-Date: Thu, 12 Jan 2017 14:00:24 +0800
-Message-ID: <20170112060024.GC19308@yexl-desktop>
-In-Reply-To: <1AE640813FDE7649BE1B193DEA596E886CE2AB9B@SHSMSX101.ccr.corp.intel.com>
+Subject: Re: [block] 7647d99c22: BUG: KASAN: global-out-of-bounds in ide_cd_queue_pc at addr ffffffff853d51e0
+Date: Thu, 12 Jan 2017 17:33:41 +0800
+Message-ID: <20170112093341.GA21982@intel.com>
+In-Reply-To: <20170110090537.fbqkry6oflki6w6u@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1513384106484680463==
+--===============5428750345674751599==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Lv
+On Tue, Jan 10, 2017 at 05:05:37PM +0800, Fengguang Wu wrote:
+> Hi Christoph,
+> =
 
-On 01/12, Zheng, Lv wrote:
->Hi, Xiaolong
->
->I noticed the tested version in your the test dmesg: Linux version 4.9.0-r=
-c5
->While the commit bisected should be in v4.10-rc1.
->Does that mean your test tree doesn't contain some basic lock fixes?
+> On Tue, Jan 10, 2017 at 09:46:55AM +0100, Christoph Hellwig wrote:
+> >>[   82.521845] BUG: KASAN: global-out-of-bounds in ide_cd_queue_pc+0xcd=
+/0x2fb at addr ffffffff853d51e0
+> >
+> >Just curious:  how hard would be to resolve these function-relative addr=
+esses
+> >to a source line (ala gdb, l *(ide_cd_queue_pc+0xcd)) automaticaly as
+> >part of the lkp run?
+> =
 
-The reported kernel version is Linux version 4.9.0-rc5-00017-g174cc71 which=
- means
-commit 174cc7187e is the head commit to be built.
+> It should be relatively easy and worth trying.
+> =
 
-Thanks,
-Xiaolong
+> Our normal kernel builds do not save vmlinux and their kconfigs are
+> not guaranteed to have the debug symbols built-in. However it'd be
+> convenient to build one extra kernel image with the above debug info
+> for the first-bad-commit before reporting regression out. CC Philip
+> for managing it as a TODO feature.
+sure, we will handle this in next planning cycle q2 to provide the feature =
+support.
 
->
->Thanks and best regards
->Lv
->
->> From: lkp-developer-request(a)eclists.intel.com [mailto:lkp-developer-re=
-quest(a)eclists.intel.com] On
->> Behalf Of Ye, Xiaolong
->> Subject: [lkp-developer] [ACPICA] 174cc7187e:
->> kmsg.ACPI_Error:Mutex[ACPI_MTX_Tables]already_acquired_by_this_thread[#]=
-(#/utmutex-#)
->> =
+> =
 
->> =
+> Regards,
+> Fengguang
 
->> FYI, we noticed the following commit:
->> =
-
->> commit: 174cc7187e6f088942c8e74daa7baff7b44b33c9 ("ACPICA: Tables: Back =
-port acpi_get_table_with_size()
->> and early_acpi_os_unmap_memory() from Linux kernel")
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->> =
-
->> in testcase: phoronix-test-suite
->> with following parameters:
->> =
-
->> 	need_x: true
->> 	test: jxrendermark-1.2.0
->> 	cpufreq_governor: performance
->> =
-
->> test-description: The Phoronix Test Suite is the most comprehensive test=
-ing and benchmarking platform
->> available that provides an extensible framework for which new tests can =
-be easily added.
->> test-url: http://www.phoronix-test-suite.com/
->> =
-
->> =
-
->> on test machine: 16 threads Nehalem-EP with 16G memory
->> =
-
->> caused below changes:
->> =
-
->> =
-
->> [    2.043693] ACPI Error: Mutex [ACPI_MTX_Tables] already acquired by t=
-his thread [497483776]
->> (20160930/utmutex-254)
->> [    2.054084] ACPI Error: Mutex [0x2] is not acquired, cannot release (=
-20160930/utmutex-326)
->> =
-
->> To reproduce:
->> =
-
->>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-=
-tests.git
->>         cd lkp-tests
->>         bin/lkp install job.yaml  # job file is attached in this email
->>         bin/lkp run     job.yaml
->> =
-
->> =
-
->> =
-
->> Thanks,
->> Xiaolong
-
---===============1513384106484680463==--
+--===============5428750345674751599==--
 
