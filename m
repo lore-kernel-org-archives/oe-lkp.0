@@ -1,91 +1,55 @@
-Content-Type: multipart/mixed; boundary="===============1477176365757884271=="
+Content-Type: multipart/mixed; boundary="===============5148906211364511704=="
 MIME-Version: 1.0
 From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] e5a305ac4a: WARNING:at_lib/list_debug.c:#__list_del_entry_valid
-Date: Thu, 19 Jan 2017 08:40:25 +0800
-Message-ID: <20170119004025.GA20827@yexl-desktop>
-In-Reply-To: <20170118130902.90f3dcb2431b4b95f3044244@linux-foundation.org>
+Date: Thu, 19 Jan 2017 08:41:23 +0800
+Message-ID: <20170119004123.GB20827@yexl-desktop>
+In-Reply-To: <BY2PR21MB003657B5CEF213783D091C8CCB7F0@BY2PR21MB0036.namprd21.prod.outlook.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1477176365757884271==
+--===============5148906211364511704==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 01/18, Andrew Morton wrote:
->On Wed, 18 Jan 2017 09:23:04 +0800 kernel test robot <xiaolong.ye@intel.=
-com> wrote:
->
->> =
-
+On 01/18, Matthew Wilcox wrote:
+>From: lkp-robot-request(a)eclists.intel.com [mailto:lkp-robot-request(a)ec=
+lists.intel.com] On Behalf Of kernel test robot
 >> FYI, we noticed the following commit:
 >> =
 
->> commit: e5a305ac4a5233e039586c97f4ea643a4c7dc484 ("Reimplement IDR and I=
-DA using the radix tree")
->> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mast=
-er
->> =
-
->> in testcase: trinity
->> with following parameters:
->> =
-
->> 	runtime: 300s
->> =
-
->> test-description: Trinity is a linux system call fuzz tester.
->> test-url: http://codemonkey.org.uk/projects/trinity/
->> =
-
->> =
-
->> on test machine: qemu-system-i386 -enable-kvm -m 256M
->> =
-
->> ...
->> =
-
->> [    2.963488] input: AT Translated Set 2 keyboard as /devices/platform/=
-i8042/serio0/input/input1
->> [    2.964998] evbug: Connected device: input1 (AT Translated Set 2 keyb=
-oard at isa0060/serio0/input0)
->> [    2.966202] ------------[ cut here ]------------
->> [    2.966844] WARNING: CPU: 0 PID: 14 at lib/list_debug.c:55 __list_del=
-_entry_valid+0x43/0xb0
->> [    2.968198] list_del corruption. next->prev should be bc904168, but w=
-as b215df80
->> [    2.969171] CPU: 0 PID: 14 Comm: kworker/0:1 Not tainted 4.10.0-rc2-0=
-2114-ge5a305a #1
->> [    2.970209] Workqueue: events_long serio_handle_event
->> [    2.970893] Call Trace:
->> [    2.971217]  dump_stack+0x16/0x19
->> [    2.971677]  __warn+0xa5/0xc0
->> [    2.972074]  warn_slowpath_fmt+0x28/0x30
+>> commit: e5a305ac4a5233e039586c97f4ea643a4c7dc484 ("Reimplement IDR
+>> and IDA using the radix tree")
+>> https://na01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fgit.k=
+ernel
+>> .org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Fnext%2Flinux-
+>> next.git&data=3D02%7C01%7Cmawilcox%40microsoft.com%7C3b615320ff5c48f
+>> efde708d43f40a5f9%7C72f988bf86f141af91ab2d7cd011db47%7C1%7C0%7C6
+>> 36202994282292096&sdata=3DvMGk%2FAoZeMkABynnuEIiKM07li%2FzdZlSMM
+>> NmwNIGQ1s%3D&reserved=3D0 master
 >
->Thanks.
+>1. I'm not entirely convinced that this is a reasonable commit to test.  D=
+ue to the way Andrew has merged a fix for this commit in a second commit, i=
+t's expected to be buggy.  Although I don't think it could cause this speci=
+fic failure pattern.  Testing commit ffc87d11841ec68a44c57735ff4fada521ab5a=
+27 would make more sense.
 >
->That isn't a very good backtrace.  Is that really the entire output?
+>2. Ignoring the mangling that outlook has done to that URL, it's pointing =
+somewhere not very useful for a web browser to access: http://git.kernel.or=
+g/pub/scm/linux/kernel/git/next/linux-next.git/
+>
+>Pointing to https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.g=
+it/ would make more sense
 
-Hmm, it is a fragment of the entire backtrace, the whole output can be foun=
-d in
-attached dmesg.xz, we'll try to paste the whole backtrace next time.
+Thanks for the suggestion, we'll improve it.
 
 Thanks,
 Xiaolong
 >
->> =
-
->> To reproduce:
->> =
-
->>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-=
-tests.git
->>         cd lkp-tests
->>         bin/lkp qemu -k <bzImage> job-script  # job-script is attached i=
-n this email
+>3. Thank you for reminding me that I need to send Andrew a complete replac=
+ement for that patch.
 >
 
---===============1477176365757884271==--
+--===============5148906211364511704==--
 
