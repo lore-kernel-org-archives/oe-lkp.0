@@ -1,35 +1,37 @@
-Content-Type: multipart/mixed; boundary="===============2222651204984106110=="
+Content-Type: multipart/mixed; boundary="===============7075315324929927084=="
 MIME-Version: 1.0
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Mel Gorman <mgorman@techsingularity.net>
 To: lkp@lists.01.org
-Subject: Re: [virtio_pci] 563d3bbe44: WARNING: CPU: 0 PID: 1 at kernel/irq/manage.c:1478 __free_irq
-Date: Wed, 25 Jan 2017 16:24:32 +0200
-Message-ID: <20170125162357-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20170125113210.GA19330@lst.de>
+Subject: Re: [lkp-robot] [mm, page_alloc] 538463ac2c: kernel_BUG_at_mm/page_alloc.c
+Date: Wed, 25 Jan 2017 14:56:37 +0000
+Message-ID: <20170125145637.shbrz7nsc7mqt22e@techsingularity.net>
+In-Reply-To: <20170125011040.GK17561@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2222651204984106110==
+--===============7075315324929927084==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 25, 2017 at 12:32:10PM +0100, Christoph Hellwig wrote:
-> Hi Michael,
+On Wed, Jan 25, 2017 at 09:10:40AM +0800, kernel test robot wrote:
 > =
 
-> I've reproduced the issue, and it's pretty simple:  the test config
-> has MSI support disabled, so we always fail the attempt at using MSI-X
-> vectors.  And the cleanup in the code was a mess that didn't get
-> any better with my patches.
+> FYI, we noticed the following commit:
 > =
 
-> I'll fix all that up and will resend soon.
+> commit: 538463ac2c80ed4fd046af8ed55daa06a59d1a68 ("mm, page_alloc: Split =
+buffered_rmqueue")
+> https://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-pageallo=
+c-noirq-percpu-v2r5
+> =
 
-Thanks!
+
+A fix for this is already merged to mmotm. Thanks.
 
 -- =
 
-MST
+Mel Gorman
+SUSE Labs
 
---===============2222651204984106110==--
+--===============7075315324929927084==--
 
