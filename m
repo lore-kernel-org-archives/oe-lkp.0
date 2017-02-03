@@ -1,13 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============7373920002437434349=="
+Content-Type: multipart/mixed; boundary="===============6373023943089651104=="
 MIME-Version: 1.0
 From: kernel test robot <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: [lkp-robot] [mm, vmscan] fe23914ddd: fsmark.files_per_sec -11.1% regression
-Date: Fri, 03 Feb 2017 09:46:09 +0800
-Message-ID: <20170203014609.GP17561@yexl-desktop>
+Subject: [lkp-robot] [x86, dax, pmem] 2e12109d1c: fio.write_bw_MBps -75% regression
+Date: Fri, 03 Feb 2017 09:52:59 +0800
+Message-ID: <20170203015259.GQ17561@yexl-desktop>
+In-Reply-To: <148488422955.37913.7723740119156814265.stgit@dwillia2-desk3.amr.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7373920002437434349==
+--===============6373023943089651104==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -15,31 +16,35 @@ Content-Transfer-Encoding: quoted-printable
 
 Greeting,
 
-FYI, we noticed a -11.1% regression of fsmark.files_per_sec due to commit:
+FYI, we noticed a -75% regression of fio.write_bw_MBps due to commit:
 
 
-commit: fe23914dddb126a29ac4929415eb318f60d97cac ("mm, vmscan: consider eli=
-gible zones in get_scan_count")
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+commit: 2e12109d1c32c810088820478d21b5b7cd87a805 ("x86, dax, pmem: introduc=
+e 'copy_from_iter' dax operation")
+url: https://github.com/0day-ci/linux/commits/Dan-Williams/dax-pmem-move-cp=
+u-cache-maintenance-to-libnvdimm/20170121-031649
 
-in testcase: fsmark
-on test machine: 48 threads Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz with =
-64G memory
+
+in testcase: fio-basic
+on test machine: 56 threads Intel(R) Xeon(R) CPU E5-2695 v3 @ 2.30GHz with =
+256G memory
 with following parameters:
 
-	iterations: 1
-	nr_threads: 64
-	disk: 3HDD
-	md: RAID5
-	fs: btrfs
-	filesize: 4M
-	test_size: 130G
-	sync_method: NoSync
+	disk: 2pmem
+	fs: xfs
+	mount_option: dax
+	runtime: 200s
+	nr_task: 50%
+	time_based: tb
+	rw: randwrite
+	bs: 2M
+	ioengine: sync
+	test_size: 200G
 	cpufreq_governor: performance
 
-test-description: The fsmark is a file system benchmark to test synchronous=
- write workloads, for example, mail servers workload.
-test-url: https://sourceforge.net/projects/fsmark/
+test-description: Fio is a tool that will spawn a number of threads or proc=
+esses doing a particular type of I/O action as specified by the user.
+test-url: https://github.com/axboe/fio
 
 
 Details are as below:
@@ -55,293 +60,670 @@ ts.git
         bin/lkp install job.yaml  # job file is attached in this email
         bin/lkp run     job.yaml
 
-testcase/path_params/tbox_group/run: fsmark/1-64-3HDD-RAID5-btrfs-4M-130G-N=
-oSync-performance/ivb44
+testcase/path_params/tbox_group/run: fio-basic/2pmem-xfs-dax-200s-50%-tb-ra=
+ndwrite-2M-sync-200G-performance/lkp-hsw-ep6
 
-13b4e0592df44c15  fe23914dddb126a29ac4929415  =
+c42a4508649e40af  2e12109d1c32c810088820478d  =
 
 ----------------  --------------------------  =
 
-     57.60             -11%      51.20        fsmark.files_per_sec
-       608              10%        670        fsmark.time.elapsed_time
-       608              10%        670        fsmark.time.elapsed_time.max
-       141               5%        149        fsmark.time.system_time
-    613586                      628565        fsmark.time.voluntary_context=
-_switches
-     14682 =C2=B1  7%       -25%      11031 =C2=B1  5%  fsmark.time.involun=
-tary_context_switches
-    301042              29%     389835 =C2=B1  5%  interrupts.CAL:Function_=
-call_interrupts
-    207732              -9%     188203        vmstat.io.bo
-      6654                        6541        vmstat.system.cs
-      5.08              -4%       4.88        turbostat.RAMWatt
-        92              -5%         88        turbostat.Avg_MHz
-      3.23 =C2=B1  4%        -8%       2.97        turbostat.%Busy
-    155081 =C2=B1 12%     -1e+05      19550 =C2=B1 76%  latency_stats.sum.b=
-trfs_tree_lock.[btrfs].btrfs_search_slot.[btrfs].btrfs_insert_empty_items.[=
-btrfs].btrfs_new_inode.[btrfs].btrfs_create.[btrfs].path_openat.do_filp_ope=
-n.do_sys_open.SyS_open.entry_SYSCALL_64_fastpath
-   1454653 =C2=B1  3%     -1e+06     209533 =C2=B1 47%  latency_stats.sum.b=
-trfs_tree_lock.[btrfs].btrfs_lock_root_node.[btrfs].btrfs_search_slot.[btrf=
-s].btrfs_insert_empty_items.[btrfs].insert_with_overflow.[btrfs].btrfs_inse=
-rt_dir_item.[btrfs].btrfs_add_link.[btrfs].btrfs_create.[btrfs].path_openat=
-.do_filp_open.do_sys_open.SyS_open
- 3.351e+08 =C2=B1  6%     -3e+08   71080683 =C2=B1 24%  latency_stats.sum.w=
-ait_current_trans.[btrfs].start_transaction.[btrfs].btrfs_start_transaction=
-.[btrfs].btrfs_create.[btrfs].path_openat.do_filp_open.do_sys_open.SyS_open=
-.entry_SYSCALL_64_fastpath
-     17.26 =C2=B1 12%        31%      22.53 =C2=B1 15%  perf-stat.node-stor=
-e-miss-rate%
- 2.856e+11 =C2=B1  5%        14%  3.267e+11 =C2=B1  4%  perf-stat.dTLB-loads
- 1.815e+09 =C2=B1 11%        14%  2.071e+09 =C2=B1  6%  perf-stat.node-load=
+         %stddev      change         %stddev
+             \          |                \  =
+
+     68769 =C2=B1  3%       -75%      17370        fio.write_bw_MBps
+     34384 =C2=B1  3%       -75%       8685        fio.write_iops
+      0.70 =C2=B1 20%     14149%      99.39        fio.latency_4ms%
+       745 =C2=B1  4%       327%       3182        fio.write_clat_mean_us
+      1580 =C2=B1 14%       137%       3752 =C2=B1  5%  fio.write_clat_99%_=
+us
+      1405 =C2=B1 17%       136%       3320 =C2=B1  3%  fio.write_clat_90%_=
+us
+      1456 =C2=B1 16%       133%       3392        fio.write_clat_95%_us
+       435 =C2=B1 27%       -60%        175 =C2=B1 21%  fio.write_clat_stdd=
+ev
+      0.01            -100%       0.00        fio.latency_250us%
+     21.31 =C2=B1 36%      -100%       0.00        fio.latency_2ms%
+      5122               8%       5530        fio.time.system_time
+    487.59 =C2=B1 12%       -84%      79.88 =C2=B1 10%  fio.time.user_time
+     59604                       60810        vmstat.system.in
+      2351             -25%       1758        vmstat.system.cs
+      1191              19%       1413        turbostat.Avg_MHz
+       199               4%        206        turbostat.PkgWatt
+     51.36                       50.78        turbostat.%Busy
+       205             -42%        118        turbostat.RAMWatt
+      0.00 =C2=B1 23%       224%       0.01 =C2=B1  4%  perf-stat.dTLB-load=
+-miss-rate%
+      0.09              66%       0.15        perf-stat.branch-miss-rate%
+ 1.431e+13 =C2=B1  3%        13%  1.617e+13        perf-stat.cpu-cycles
+ 2.893e+08             -19%  2.356e+08        perf-stat.branch-misses
+    468564             -26%     346074        perf-stat.context-switches
+ 2.444e+08 =C2=B1  6%       -39%  1.503e+08        perf-stat.iTLB-loads
+  1.26e+08 =C2=B1 27%       -42%   72844209 =C2=B1 17%  perf-stat.node-load=
 -misses
-   1156825              10%    1268375        perf-stat.minor-faults
-   1156846              10%    1268396        perf-stat.page-faults
-   4058202               8%    4395013        perf-stat.context-switches
- 2.071e+08 =C2=B1  6%         8%  2.228e+08        perf-stat.iTLB-loads
-     32.23 =C2=B1  3%         7%      34.55        perf-stat.node-load-miss=
--rate%
- 2.322e+08               5%  2.441e+08        perf-stat.iTLB-load-misses
-      0.44                        0.43        perf-stat.ipc
- 1.925e+10 =C2=B1  3%        -7%  1.783e+10 =C2=B1  5%  perf-stat.cache-ref=
-erences
- 1.702e+09 =C2=B1  9%        -9%  1.542e+09 =C2=B1  6%  perf-stat.branch-mi=
-sses
-     49.17             -11%      43.60 =C2=B1  3%  perf-stat.cache-miss-rat=
-e%
- 4.582e+09             -15%  3.904e+09        perf-stat.node-stores
- 9.459e+09             -18%  7.764e+09 =C2=B1  3%  perf-stat.cache-misses
-    207580              -9%     188098        iostat.md0.wkB/s
-     12.24 =C2=B1  5%        42%      17.38 =C2=B1 10%  iostat.sda.rrqm/s
-    103790              -9%      94071        iostat.sda.wkB/s
-     25722             -10%      23255        iostat.sda.wrqm/s
-       931             -16%        783        iostat.sda.avgrq-sz
-    120.88             -42%      69.92 =C2=B1  3%  iostat.sda.r_await
-     26.14             -55%      11.88 =C2=B1  3%  iostat.sda.avgqu-sz
-    117.72             -56%      52.03 =C2=B1  3%  iostat.sda.await
-    117.47             -56%      51.76 =C2=B1  3%  iostat.sda.w_await
-     15.66 =C2=B1  5%        37%      21.39 =C2=B1  8%  iostat.sdb.rrqm/s
-    103763              -9%      94048        iostat.sdb.wkB/s
-     25717             -10%      23249        iostat.sdb.wrqm/s
-       930             -16%        783        iostat.sdb.avgrq-sz
-    120.42             -39%      73.21 =C2=B1  4%  iostat.sdb.r_await
-     27.19             -54%      12.38 =C2=B1  3%  iostat.sdb.avgqu-sz
-    122.32             -56%      54.23 =C2=B1  3%  iostat.sdb.await
-    122.10             -56%      53.98 =C2=B1  3%  iostat.sdb.w_await
-     11.84 =C2=B1  4%        41%      16.68 =C2=B1  7%  iostat.sdc.rrqm/s
-       228              18%        270        iostat.sdc.w/s
-    103791              -9%      94074        iostat.sdc.wkB/s
-     25721             -10%      23246        iostat.sdc.wrqm/s
-       904             -21%        710        iostat.sdc.avgrq-sz
-    117.37             -40%      70.17 =C2=B1  3%  iostat.sdc.r_await
-     26.85             -53%      12.71        iostat.sdc.avgqu-sz
-    118.03             -56%      52.24 =C2=B1  3%  iostat.sdc.await
-    117.83             -56%      52.02 =C2=B1  3%  iostat.sdc.w_await
+ 3.148e+11             -51%  1.546e+11        perf-stat.branch-instructions
+  40098660 =C2=B1 22%       -56%   17714563 =C2=B1 10%  perf-stat.node-stor=
+e-misses
+    326873 =C2=B1 34%       -62%     122748        perf-stat.instructions-p=
+er-iTLB-miss
+ 1.741e+12             -67%    5.7e+11 =C2=B1  7%  perf-stat.dTLB-stores
+ 1.776e+12 =C2=B1 11%       -68%  5.699e+11 =C2=B1 12%  perf-stat.dTLB-loads
+ 5.629e+12             -69%  1.725e+12        perf-stat.instructions
+      0.39 =C2=B1  3%       -73%       0.11        perf-stat.ipc
+ 1.385e+11 =C2=B1  3%       -75%  3.438e+10        perf-stat.cache-referenc=
+es
 
 
 
-                                 perf-stat.page-faults
+                               perf-stat.instructions
 
-   1.3e+06 ++--------------------------------------------------------------=
+  7e+12 ++-----------------------------------------------------------------=
 -+
-           |                                                               =
+        |     *.                                *.        *.               =
  |
-  1.28e+06 O+O  O   OO   O  O        O  O                                  =
+  6e+12 ++*  :  *. .*   *. .*.*.*. .*.*.*   *  :  *   *  :  *          .*. =
  |
-  1.26e+06 ++ O   O             OO    O   O                                =
- |
-           |           O  O   O    O                                       =
- |
-  1.24e+06 ++                                                              =
- |
-           |                                                               =
- |
-  1.22e+06 ++                                                              =
- |
-           |                                                               =
- |
-   1.2e+06 ++                                                              =
- |
-  1.18e+06 ++                                                              =
- |
-           |                                                               =
- |
-  1.16e+06 ++    .*.      *.          *.*.    .*.*     *. .*.         .*. *=
-.|
-           *.**.*   **. .*  *.*.**.*.*    *.**    *.*.*  *   **.*.**.*   * =
- *
-  1.14e+06 ++----------*---------------------------------------------------=
--+
-
-
-                                perf-stat.minor-faults
-
-   1.3e+06 ++--------------------------------------------------------------=
--+
-           |                                                               =
- |
-  1.28e+06 O+O  O   OO   O  O        O  O                                  =
- |
-  1.26e+06 ++ O   O             OO    O   O                                =
- |
-           |           O  O   O    O                                       =
- |
-  1.24e+06 ++                                                              =
- |
-           |                                                               =
- |
-  1.22e+06 ++                                                              =
- |
-           |                                                               =
- |
-   1.2e+06 ++                                                              =
- |
-  1.18e+06 ++                                                              =
- |
-           |                                                               =
- |
-  1.16e+06 ++    .*.      *.          *.*.    .*.*     *. .*.         .*. *=
-.|
-           *.**.*   **. .*  *.*.**.*.*    *.**    *.*.*  *   **.*.**.*   * =
- *
-  1.14e+06 ++----------*---------------------------------------------------=
--+
-
-
-                             fsmark.time.elapsed_time
-
-  680 ++-------------------------------------------------------------------=
--+
-      | O   O    O                O    O                                   =
- |
-  670 O+  O  O O   O O OO O O O    O O                                     =
- |
-  660 ++                        O                                          =
- |
-      |                                                                    =
- |
-  650 ++                                                                   =
- |
-      |                                                                    =
- |
-  640 ++                                                                   =
- |
-      |                                                                    =
- |
-  630 ++                                                                   =
- |
-  620 ++                                                                   =
- |
-      |                                                                    =
- |
-  610 ++ .*. *.                .*. *.*.       .*         .**.*.       *. .*=
-.|
-      *.*   *  *.*.*.*.**.*.*.*   *    *.*.*.*  *.*.*.*.*      *.*.*.*  *  =
- *
-  600 ++-------------------------------------------------------------------=
--+
-
-
-                           fsmark.time.elapsed_time.max
-
-  680 ++-------------------------------------------------------------------=
--+
-      | O   O    O                O    O                                   =
- |
-  670 O+  O  O O   O O OO O O O    O O                                     =
- |
-  660 ++                        O                                          =
- |
-      |                                                                    =
- |
-  650 ++                                                                   =
- |
-      |                                                                    =
- |
-  640 ++                                                                   =
- |
-      |                                                                    =
- |
-  630 ++                                                                   =
- |
-  620 ++                                                                   =
- |
-      |                                                                    =
- |
-  610 ++ .*. *.                .*. *.*.       .*         .**.*.       *. .*=
-.|
-      *.*   *  *.*.*.*.**.*.*.*   *    *.*.*.*  *.*.*.*.*      *.*.*.*  *  =
- *
-  600 ++-------------------------------------------------------------------=
--+
-
-
-                              fsmark.files_per_sec
-
-  58 ++--------------------------------------------------------------------=
--+
-     *.*.*.**.*.*.*.*.*.*.**.*.*.*.*. .*.**.*. .*.*.*.**.*.*.*.*.*.*.**.*.*=
+        |: + :    *  : :  *       *      : : + :   : : + :   :  *.   .*   *=
 .*
-  57 ++                              *        *                            =
+  5e+12 ++  *        : :                 : :  *    : :  *    : :  *.*      =
  |
-     |                                                                     =
+        *             *                   *         *         ::           =
  |
-  56 ++                                                                    =
+  4e+12 ++                                                    *            =
  |
-     |                                                                     =
+        |                                                                  =
  |
-  55 ++                                                                    =
+  3e+12 ++                                                                 =
  |
-     |                                                                     =
+        |                                                                  =
  |
-  54 ++                                                                    =
+  2e+12 ++                                                                 =
  |
-     |                                                                     =
+        O O O O O O O O   O O O O O O O O O O O O O O O O O O              =
  |
-  53 ++                                                                    =
+  1e+12 ++                                                                 =
  |
-     |                                                                     =
+        |                                                                  =
  |
-  52 ++                                                                    =
- |
-     |                                                                     =
- |
-  51 O+O-O-OO-O-O-O-O-O-O-OO-O-O-O-O-O-O-----------------------------------=
+      0 ++--------------O--------------------------------------------------=
 -+
 
 
-                                    vmstat.io.bo
+                              perf-stat.cache-references
 
-  210000 ++------------------------------*--------*------------------------=
+  1.8e+11 ++---------------------------------------------------------------=
 -+
-         *.*.**. .*.**.*.*.**.*.*. *.   +  **.*. + *.*.*.**.*.*.**.*.*. *.*=
+          |     *.                               *.        *               =
+ |
+  1.6e+11 ++   +  *   *       .*.*.   .*.*      +  *      + *              =
+ |
+  1.4e+11 ++*.*    + + :  * .*     *.*    :  *.*    :  *.*   :  *.     .*.*=
 .*
-         |      *                 *  *.*        *                      *   =
+          |+        *  : : *              : +       : +      : :  *.*.*    =
  |
-  205000 ++                                                                =
+  1.2e+11 *+            ::                 *         *        ::           =
+ |
+    1e+11 ++            *                                     *            =
+ |
+          |                                                                =
+ |
+    8e+10 ++                                                               =
+ |
+    6e+10 ++                                                               =
+ |
+          |                                                                =
+ |
+    4e+10 O+    O     O O  O O       O O O   O O O O   O O OO              =
+ |
+    2e+10 ++O O   O O          O O O       O         O                     =
+ |
+          |                                                                =
+ |
+        0 ++--------------O------------------------------------------------=
+-+
+
+
+                             perf-stat.branch-instructions
+
+    4e+11 ++---------------------------------------------------------------=
+-+
+          |     *.                               *.        *               =
+ |
+  3.5e+11 ++   :  *   *   *  *. .*. .*.*.       :  *      : *              =
+ |
+    3e+11 ++*. :   + + : : :+  *   *     *   *. :   :  *. :  :  *.   .*.*.*=
+.*
+          |+  *     *  : : *              + +  *    : +  *   : :  *.*      =
+ |
+  2.5e+11 *+            *                  *         *        ::           =
+ |
+          |                                                   *            =
+ |
+    2e+11 ++                                                               =
+ |
+          |                                            O                   =
+ |
+  1.5e+11 O+O O O O O O O  O O O O O O O O O O O O O O   O OO              =
+ |
+    1e+11 ++                                                               =
+ |
+          |                                                                =
+ |
+    5e+10 ++                                                               =
+ |
+          |                                                                =
+ |
+        0 ++--------------O------------------------------------------------=
+-+
+
+
+                                 perf-stat.dTLB-loads
+
+  3.5e+12 ++---------------------------------------------------------------=
+-+
+          |                                                                =
+ |
+    3e+12 ++                             *                                 =
+ |
+          |                             ::                                 =
+ |
+  2.5e+12 ++              *             : :                                =
+ |
+          | *   *.   .*   :*.*. .*.*. .*  :  *   *.    *   *    *.*        =
+ |
+    2e+12 ++ + +  *.*  : :     *     *     :+ + +  *. + + + *  :   + .*.   =
+ |
+          *   *        : :                 *   *     *   *   + :    *   *.*=
+.|
+  1.5e+12 ++            *                                     *            =
+ *
+          |                                                                =
+ |
+    1e+12 ++                                                               =
+ |
+          |                                            O                   =
+ |
+    5e+11 O+O O O O O O O  O O O O O O O O O O O O O O   O OO              =
+ |
+          |                                                                =
+ |
+        0 ++--------------O------------------------------------------------=
+-+
+
+
+                                 perf-stat.dTLB-stores
+
+  2.5e+12 ++---------------------------------------------------------------=
+-+
+          |                             .*                                 =
+ |
+          |     *.                    .* :       *.        *               =
+ |
+    2e+12 ++   :  *. .*   * .*.*.*.*.*    :     :  *      : *              =
+ |
+          | *. :    *  :  :*              :  *. :   :  *. :  :  *.   .*. .*=
+.*
+          |+  *        : :                 :+  *    : +  *   : :  *.*   *  =
+ |
+  1.5e+12 *+            ::                 *         *        ::           =
+ |
+          |             *                                     *            =
+ |
+    1e+12 ++                                                               =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+    5e+11 O+O O O O O O O  O O O O O O O O O O O O O O O O OO              =
+ |
+          |                                                                =
+ |
+          |                                                                =
+ |
+        0 ++--------------O------------------------------------------------=
+-+
+
+
+                             perf-stat.context-switches
+
+  500000 ++------------*------------------------------------------*---*----=
+-+
+  450000 *+       .*. + + .*.     .*.*.   .*       .*.       .*. +  *   *.*=
+.*
+         | *.*.*.*   *   *   *.*.*     *.*  *.*.*.*   *.*.*.*   *          =
+ |
+  400000 ++                                                                =
+ |
+  350000 O+O O O O O O O   O O O O O O O O OO O O O O O O O O              =
  |
          |                                                                 =
  |
-         |                                                                 =
+  300000 ++                                                                =
+ |
+  250000 ++                                                                =
  |
   200000 ++                                                                =
  |
          |                                                                 =
  |
-  195000 ++                                                                =
+  150000 ++                                                                =
+ |
+  100000 ++                                                                =
  |
          |                                                                 =
  |
-         |                                                                 =
+   50000 ++                                                                =
  |
-  190000 ++                   O   O                                        =
- |
-         O   OO O O  O O O OO   O  O O O                                   =
- |
-         | O        O                    O                                 =
- |
-  185000 ++----------------------------------------------------------------=
+       0 ++--------------O-------------------------------------------------=
 -+
+
+
+                                   perf-stat.ipc
+
+  0.45 ++--------------*-------*-------------------------------------------=
+-+
+       | *   *.*.      :+ .*.*  + .*. .*    *   *.*   *   *.*   *      .*. =
+ |
+   0.4 ++ + +    *.*  :  *       *   *  +  : + +   : : + +   :  :+   .*   *=
+.*
+  0.35 ++  *        + :                  + :  *    : :  *    : :  *.*      =
+ |
+       *             *                    *         *         ::           =
+ |
+   0.3 ++                                                     *            =
+ |
+  0.25 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   0.2 ++                                                                  =
+ |
+  0.15 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   0.1 O+O O O O O O O   O O O O O O O O  O O O O O O O O O O              =
+ |
+  0.05 ++                                                                  =
+ |
+       |                                                                   =
+ |
+     0 ++--------------O---------------------------------------------------=
+-+
+
+
+                                  fio.write_bw_MBps
+
+  80000 ++-----------------------------------------------------------------=
+-+
+        | *   *.*.      *. .*.*.*. .*.*.*   *   *.*   *   *.*              =
+ *
+  70000 ++ + +    *.*   : *       *      : : + +   : : + +   :  *.   .*.*. =
++|
+  60000 ++  *        : :                 : :  *    : :  *    : :  *.*     *=
+ |
+        *            : :                  *         *         ::           =
+ |
+  50000 ++            *                                       *            =
+ |
+        |                                                                  =
+ |
+  40000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  30000 ++                                                                 =
+ |
+  20000 ++                                                                 =
+ |
+        O O O O O O O O   O O O O O O O O O O O O O O O O O O              =
+ |
+  10000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 ++--------------O--------------------------------------------------=
+-+
+
+
+                                   fio.write_iops
+
+  40000 ++-----------------------------------------------------------------=
+-+
+        | *   *.*.      *. .*.*.*. .*.*.*   *   *.*   *   *.*              =
+ *
+  35000 ++ + +    *.*   : *       *      : : + +   : : + +   :  *.   .*.*. =
++|
+  30000 ++  *        : :                 : :  *    : :  *    : :  *.*     *=
+ |
+        *            : :                  *         *         ::           =
+ |
+  25000 ++            *                                       *            =
+ |
+        |                                                                  =
+ |
+  20000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+  15000 ++                                                                 =
+ |
+  10000 ++                                                                 =
+ |
+        O O O O O O O O   O O O O O O O O O O O O O O O O O O              =
+ |
+   5000 ++                                                                 =
+ |
+        |                                                                  =
+ |
+      0 ++--------------O--------------------------------------------------=
+-+
+
+
+                              fio.write_clat_mean_us
+
+  4000 ++------------------------------------------------------------------=
+-+
+       |                                            O                      =
+ |
+  3500 O+O O O O O         O O O O O   O  O O   O O                        =
+ |
+  3000 ++          O O   O           O        O       O O O O              =
+ |
+       |                                                                   =
+ |
+  2500 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  2000 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  1500 ++                                                                  =
+ |
+  1000 ++                                                     *            =
+ |
+       *. .*.   .*.*.*. .*.     .*.      .*. .*.   .*. .*.   + + .*.*.*. .*=
+.*
+   500 ++*   *.*       *   *.*.*   *.*.*.   *   *.*   *   *.*   *       *  =
+ |
+       |                                                                   =
+ |
+     0 ++--------------O---------------------------------------------------=
+-+
+
+
+                               fio.write_clat_90__us
+
+  4000 ++------------------------------------------------------------------=
+-+
+       | O   O O O           O O O        O         O                      =
+ |
+  3500 O+  O       O O   O O       O O O    O O O O       O O              =
+ |
+  3000 ++                                             O O                  =
+ |
+       |                                                                   =
+ |
+  2500 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  2000 ++                                                                  =
+ |
+       *        .*. .*                   .*        .*        .*.    *.    *=
+.|
+  1500 ++ .*.*.*   *  + .*. .*. .*. .*.*.  + .*.*.*  + .*.*.*   *. +  *  : =
+ *
+  1000 ++*             *   *   *   *        *         *           *    + : =
+ |
+       |                                                                *  =
+ |
+   500 ++                                                                  =
+ |
+       |                                                                   =
+ |
+     0 ++--------------O---------------------------------------------------=
+-+
+
+
+                               fio.write_clat_95__us
+
+  4500 ++------------------------------------------------------------------=
+-+
+       |                                            O                      =
+ |
+  4000 ++O       O                                                         =
+ |
+  3500 O+  O O O   O O   O O O O O O O O  O O O O O       O O              =
+ |
+       |                                              O O                  =
+ |
+  3000 ++                                                                  =
+ |
+  2500 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  2000 *+           .*                    *         *         *            =
+ |
+  1500 ++ .*.   .*.*  + .*. .*. .*. .*. .. + .*.   + + .*.   + +   .*.*   *=
+.*
+       | *   *.*       *   *   *   *   *    *   *.*   *   *.*   *.*    + + =
+ |
+  1000 ++                                                               *  =
+ |
+   500 ++                                                                  =
+ |
+       |                                                                   =
+ |
+     0 ++--------------O---------------------------------------------------=
+-+
+
+
+                                 fio.latency_4ms_
+
+  100 O+--O-------O-O----O-O---O---O-O-O---O-O-O-O---O-O-O--O--------------=
+-+
+   90 ++O   O O O            O   O       O         O                       =
+ |
+      |                                                                    =
+ |
+   80 ++                                                                   =
+ |
+   70 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   60 ++                                                                   =
+ |
+   50 ++                                                                   =
+ |
+   40 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   30 ++                                                                   =
+ |
+   20 ++                                                                   =
+ |
+      |                                                                    =
+ |
+   10 ++                                                                   =
+ |
+    0 *+*-*-*-*-*-*-*-O--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*=
+-*
+
+
+                                 turbostat.Avg_MHz
+
+  1600 ++------------------------------------------------------------------=
+-+
+       |                                                                   =
+ |
+  1400 O+O O O O O O O   O O O O O O O O  O O O O O O O O O O              =
+ |
+  1200 ++ .*.*.*. .*.   .*.*.*. .*.*.*.*..   .*.*.*.   .*.*.*. .*.         =
+.*
+       *.*       *   *.*       *          *.*       *.*       *   *.*.*.*.*=
+ |
+  1000 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   800 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   600 ++                                                                  =
+ |
+   400 ++                                                                  =
+ |
+       |                                                                   =
+ |
+   200 ++                                                                  =
+ |
+       |                                                                   =
+ |
+     0 ++--------------O---------------------------------------------------=
+-+
+
+
+                                 turbostat.RAMWatt
+
+  250 ++-------------------------------------------------------------------=
+-+
+      |                                                                    =
+ |
+      |.*. .*.*. .*   *.. .*.*.*.*.*.*.*. .*. .*.*. .*. .*..*. .*.     .*. =
+.*
+  200 *+  *     *  + +   *               *   *     *   *      *   *.*.*   *=
+ |
+      |             *                                                      =
+ |
+      |                                                                    =
+ |
+  150 ++                                                                   =
+ |
+      O O O O O O O O    O O O O O O O O O O O O O O O O O  O              =
+ |
+  100 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+   50 ++                                                                   =
+ |
+      |                                                                    =
+ |
+      |                                                                    =
+ |
+    0 ++--------------O----------------------------------------------------=
+-+
+
+
+                                fio.time.user_time
+
+  800 ++-------------------------------------------------------------------=
+-+
+      |                                                         *.         =
+ |
+  700 ++                       *                                : *        =
+ |
+  600 ++                       ::                              :   :       =
+ |
+      |                       : : .*                           :   :    *  =
+ |
+  500 ++*.   .*.*.         *. :  *  + .*   *.   .*   *.    .*  :    :  + + =
+ |
+      |+  *.*     *.*.*.. +  *       *  + +  *.*  + +  *.*.  +:     *.*   *=
+.*
+  400 *+                 *               *         *          *            =
+ |
+      |                                                                    =
+ |
+  300 ++                                                                   =
+ |
+  200 ++                                                                   =
+ |
+      |                                                                    =
+ |
+  100 ++                               O       O         O                 =
+ |
+      O O O O O O O O    O O O O O O O   O O O   O O O O    O              =
+ |
+    0 ++--------------O----------------------------------------------------=
+-+
+
+
+                               fio.time.system_time
+
+  6000 ++------------------------------------------------------------------=
+-+
+       O O O O O O O O   O O O O O O O O  O O O O O O O O O O              =
+ |
+  5000 *+*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*..*.*.*.*.*.*.*.*.*.*.*.   .*.*.*.*=
+.*
+       |                                                        *.*        =
+ |
+       |                                                                   =
+ |
+  4000 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  3000 ++                                                                  =
+ |
+       |                                                                   =
+ |
+  2000 ++                                                                  =
+ |
+       |                                                                   =
+ |
+       |                                                                   =
+ |
+  1000 ++                                                                  =
+ |
+       |                                                                   =
+ |
+     0 ++--------------O---------------------------------------------------=
+-+
+
+
+                                fio.latency_250us_
+
+  0.6 ++-------------------------------------------------------------------=
+-+
+      |                                                       *            =
+ |
+  0.5 ++                                                      :            =
+ |
+      |   *                                  *         *      :            =
+ |
+      |   :                                  :         :      :            =
+ |
+  0.4 ++  :                                  :         :     : :           =
+ |
+      |  : :      *                         : :       : :    : :           =
+ |
+  0.3 ++ : :      :                         : :       : :    : :           =
+ |
+      |  : :      ::                        : :       : :    : :           =
+ |
+  0.2 ++ : :     : :                        : :       : :    : :           =
+ |
+      |  : :     : :                        : :       : :    : :           =
+ |
+      |  : :     : :                        : :       : :   :   :          =
+ |
+  0.1 ++:   :    :  :                      :   :     :   :  :   :          =
+ |
+      | :   :   :   :                      :   :     :   :  :   :          =
+ |
+    0 *+*---*-*-*---*-*--*-*-*-*-*-*-*-*-*-*---*-*-*-*---*--*---*-*-*-*-*-*=
+-*
 
 	[*] bisect-good sample
 	[O] bisect-bad  sample
@@ -358,11 +740,11 @@ design or configuration may affect actual performance.
 Thanks,
 Xiaolong
 
---===============7373920002437434349==
+--===============6373023943089651104==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="config-4.10.0-rc4-00364-gfe23914"
+Content-Disposition: attachment; filename="config-4.10.0-rc4-00111-g2e12109"
 
 IwojIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZpbGU7IERPIE5PVCBFRElULgojIExpbnV4L3g4
 Nl82NCA0LjEwLjAtcmM0IEtlcm5lbCBDb25maWd1cmF0aW9uCiMKQ09ORklHXzY0QklUPXkKQ09O
@@ -3095,264 +3477,246 @@ SVQgaXMgbm90IHNldApDT05GSUdfU0dfUE9PTD15CkNPTkZJR19BUkNIX0hBU19TR19DSEFJTj15
 CkNPTkZJR19BUkNIX0hBU19QTUVNX0FQST15CkNPTkZJR19BUkNIX0hBU19NTUlPX0ZMVVNIPXkK
 Q09ORklHX1NCSVRNQVA9eQo=
 
---===============7373920002437434349==
+--===============6373023943089651104==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job-script.ksh"
 
-IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0nZnNtYXJrJwoJZXhw
-b3J0IHRlc3RjYXNlPSdmc21hcmsnCglleHBvcnQgY2F0ZWdvcnk9J2JlbmNobWFyaycKCWV4cG9y
-dCBpdGVyYXRpb25zPTEKCWV4cG9ydCBucl90aHJlYWRzPTY0CglleHBvcnQgam9iX29yaWdpbj0n
-L2xrcC9sa3AvLnNyYy0yMDE3MDEyNC0xNzM3NDQvYWxsb3QvY3ljbGljOmxpbnV4LW5leHQ6bWFz
-dGVyL2l2YjQ0L2ZzbWFyay0zaGRkLXJhaWQueWFtbCcKCWV4cG9ydCBxdWV1ZT0nYmlzZWN0JwoJ
-ZXhwb3J0IHRlc3Rib3g9J2l2YjQ0JwoJZXhwb3J0IHRib3hfZ3JvdXA9J2l2YjQ0JwoJZXhwb3J0
-IHN1Ym1pdF9pZD0nNTg5MGJjM2MwYjlhOTM0OTRmZTk2OWY3JwoJZXhwb3J0IGpvYl9maWxlPScv
-bGtwL3NjaGVkdWxlZC9pdmI0NC9mc21hcmstMS02NC0zSERELVJBSUQ1LWJ0cmZzLTRNLTEzMEct
-Tm9TeW5jLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3otZmUyMzkxNGRk
-ZGIxMjZhMjlhYzQ5Mjk0MTVlYjMxOGY2MGQ5N2NhYy0yMDE3MDIwMS04NDMwMy12MTU4bW0tMC55
-YW1sJwoJZXhwb3J0IGlkPSc0ODRjNzg1NjcxNzExNjBlYzgwNWJlM2ZjYTZjZDZhNDQ2M2IzODc0
-JwoJZXhwb3J0IG1vZGVsPSdJdnl0b3duIEl2eSBCcmlkZ2UtRVAnCglleHBvcnQgbnJfY3B1PTQ4
-CglleHBvcnQgbWVtb3J5PSc2NEcnCglleHBvcnQgbnJfaGRkX3BhcnRpdGlvbnM9MwoJZXhwb3J0
-IGhkZF9wYXJ0aXRpb25zPScvZGV2L2Rpc2svYnktaWQvYXRhLVdEQ19XRDEwMDNGQllaLTAxMEZC
-MF9XRC1XQ0FXMzYqLXBhcnQxJwoJZXhwb3J0IHN3YXBfcGFydGl0aW9ucz0nL2Rldi9kaXNrL2J5
-LWlkL2F0YS1XRENfV0QxMDAzRkJZWi0wMTBGQjBfV0QtV0NBVzM2Nzk1NzUzLXBhcnQyJwoJZXhw
-b3J0IHJvb3Rmc19wYXJ0aXRpb249Jy9kZXYvZGlzay9ieS1pZC9hdGEtV0RDX1dEMTAwM0ZCWVot
-MDEwRkIwX1dELVdDQVczNjc5NTc1My1wYXJ0MycKCWV4cG9ydCBuZXRjb25zb2xlX3BvcnQ9NjY0
-NAoJZXhwb3J0IGJyYW5kPSdJbnRlbChSKSBYZW9uKFIpIENQVSBFNS0yNjk3IHYyIEAgMi43MEdI
-eicKCWV4cG9ydCBuZWVkX2tjb25maWc9J0NPTkZJR19CTEtfREVWX1NECkNPTkZJR19TQ1NJCkNP
-TkZJR19CTE9DSz15CkNPTkZJR19TQVRBX0FIQ0kKQ09ORklHX1NBVEFfQUhDSV9QTEFURk9STQpD
-T05GSUdfQVRBCkNPTkZJR19QQ0k9eQpDT05GSUdfTURfUkFJRDQ1NgpDT05GSUdfQlRSRlNfRlMK
-Q09ORklHX0JUUkZTX0ZTJwoJZXhwb3J0IGNvbW1pdD0nZmUyMzkxNGRkZGIxMjZhMjlhYzQ5Mjk0
-MTVlYjMxOGY2MGQ5N2NhYycKCWV4cG9ydCBrY29uZmlnPSd4ODZfNjQtcmhlbC03LjInCglleHBv
-cnQgY29tcGlsZXI9J2djYy02JwoJZXhwb3J0IHJvb3Rmcz0nZGViaWFuLXg4Nl82NC0yMDE2LTA4
-LTMxLmNneicKCWV4cG9ydCBlbnF1ZXVlX3RpbWU9JzIwMTctMDItMDEgMDA6MzM6MDEgKzA4MDAn
-CglleHBvcnQgX2lkPSc1ODkwYmMzYzBiOWE5MzQ5NGZlOTY5ZjcnCglleHBvcnQgdXNlcj0nbGtw
-JwoJZXhwb3J0IGhlYWRfY29tbWl0PSc3NjYwNzRlNzgxODhhYWM3ZmZiYzFiNTE4OTNhNjU2Njhm
-MzE1YzU0JwoJZXhwb3J0IGJhc2VfY29tbWl0PSc3YTMwOGJiMzAxNmY1N2U1YmUxMWE2NzdkMTVi
-ODIxNTM2NDE5ZDM2JwoJZXhwb3J0IGJyYW5jaD0nbGludXgtbmV4dC9tYXN0ZXInCglleHBvcnQg
-cmVzdWx0X3Jvb3Q9Jy9yZXN1bHQvZnNtYXJrLzEtNjQtM0hERC1SQUlENS1idHJmcy00TS0xMzBH
-LU5vU3luYy1wZXJmb3JtYW5jZS9pdmI0NC9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3g4
-Nl82NC1yaGVsLTcuMi9nY2MtNi9mZTIzOTE0ZGRkYjEyNmEyOWFjNDkyOTQxNWViMzE4ZjYwZDk3
-Y2FjLzAnCglleHBvcnQgTEtQX1NFUlZFUj0naW5uJwoJZXhwb3J0IG1heF91cHRpbWU9MTkwMC41
-NgoJZXhwb3J0IGluaXRyZD0nL29zaW1hZ2UvZGViaWFuL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0z
-MS5jZ3onCglleHBvcnQgYm9vdGxvYWRlcl9hcHBlbmQ9J3Jvb3Q9L2Rldi9yYW0wCnVzZXI9bGtw
-CmpvYj0vbGtwL3NjaGVkdWxlZC9pdmI0NC9mc21hcmstMS02NC0zSERELVJBSUQ1LWJ0cmZzLTRN
-LTEzMEctTm9TeW5jLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3otZmUy
-MzkxNGRkZGIxMjZhMjlhYzQ5Mjk0MTVlYjMxOGY2MGQ5N2NhYy0yMDE3MDIwMS04NDMwMy12MTU4
-bW0tMC55YW1sCkFSQ0g9eDg2XzY0Cmtjb25maWc9eDg2XzY0LXJoZWwtNy4yCmJyYW5jaD1saW51
-eC1uZXh0L21hc3Rlcgpjb21taXQ9ZmUyMzkxNGRkZGIxMjZhMjlhYzQ5Mjk0MTVlYjMxOGY2MGQ5
-N2NhYwpCT09UX0lNQUdFPS9wa2cvbGludXgveDg2XzY0LXJoZWwtNy4yL2djYy02L2ZlMjM5MTRk
-ZGRiMTI2YTI5YWM0OTI5NDE1ZWIzMThmNjBkOTdjYWMvdm1saW51ei00LjEwLjAtcmM0LTAwMzY0
-LWdmZTIzOTE0Cm1heF91cHRpbWU9MTkwMApSRVNVTFRfUk9PVD0vcmVzdWx0L2ZzbWFyay8xLTY0
-LTNIREQtUkFJRDUtYnRyZnMtNE0tMTMwRy1Ob1N5bmMtcGVyZm9ybWFuY2UvaXZiNDQvZGViaWFu
-LXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhlbC03LjIvZ2NjLTYvZmUyMzkxNGRkZGIx
-MjZhMjlhYzQ5Mjk0MTVlYjMxOGY2MGQ5N2NhYy8wCkxLUF9TRVJWRVI9aW5uCmRlYnVnCmFwaWM9
-ZGVidWcKc3lzcnFfYWx3YXlzX2VuYWJsZWQKcmN1cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0
-PTEwMApuZXQuaWZuYW1lcz0wCnByaW50ay5kZXZrbXNnPW9uCnBhbmljPS0xCnNvZnRsb2NrdXBf
-cGFuaWM9MQpubWlfd2F0Y2hkb2c9cGFuaWMKb29wcz1wYW5pYwpsb2FkX3JhbWRpc2s9Mgpwcm9t
-cHRfcmFtZGlzaz0wCnN5c3RlbWQubG9nX2xldmVsPWVycgppZ25vcmVfbG9nbGV2ZWwKZWFybHlw
-cmludGs9dHR5UzAsMTE1MjAwCmNvbnNvbGU9dHR5UzAsMTE1MjAwCmNvbnNvbGU9dHR5MAp2Z2E9
-bm9ybWFsCnJ3JwoJZXhwb3J0IGxrcF9pbml0cmQ9Jy9sa3AvbGtwL2xrcC14ODZfNjQuY2d6JwoJ
-ZXhwb3J0IG1vZHVsZXNfaW5pdHJkPScvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNi9m
-ZTIzOTE0ZGRkYjEyNmEyOWFjNDkyOTQxNWViMzE4ZjYwZDk3Y2FjL21vZHVsZXMuY2d6JwoJZXhw
-b3J0IGJtX2luaXRyZD0nL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6
-L2xrcF8yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0z
-MS5jZ3ovcnN5bmMtcm9vdGZzXzIwMTYtMTEtMTUuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4
-Nl82NC0yMDE2LTA4LTMxLmNnei9ydW4taXBjb25maWdfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2Uv
-ZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L21kXzIwMTYtMTEtMTUuY2d6LC9vc2lt
-YWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9mc18yMDE2LTExLTE1LmNneiwv
-b3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovZnNtYXJrXzIwMTYtMTEt
-MTUuY2d6LC9vc2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L2ZzbWFyay14
-ODZfNjRfMjAxNi0xMS0xNi5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgt
-MzEuY2d6L2lvc3RhdF8yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQt
-MjAxNi0wOC0zMS5jZ3ovdHVyYm9zdGF0XzIwMTYtMTEtMTUuY2d6LC9vc2ltYWdlL3BrZy9kZWJp
-YW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3R1cmJvc3RhdC14ODZfNjRfMjAxNi0wOS0wMi5jZ3os
-L29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3BlcmZfMjAxNi0xMS0x
-Ni5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovcGVyZi14ODZf
-NjRfMjAxNi0xMS0xNi5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEu
-Y2d6L2h3XzIwMTYtMTEtMTUuY2d6JwoJZXhwb3J0IHNpdGU9J2lubicKCWV4cG9ydCBMS1BfQ0dJ
-X1BPUlQ9ODAKCWV4cG9ydCBMS1BfQ0lGU19QT1JUPTEzOQoJZXhwb3J0IHJlcGVhdF90bz0yCgll
-eHBvcnQga2VybmVsPScvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNi9mZTIzOTE0ZGRk
-YjEyNmEyOWFjNDkyOTQxNWViMzE4ZjYwZDk3Y2FjL3ZtbGludXotNC4xMC4wLXJjNC0wMDM2NC1n
-ZmUyMzkxNCcKCWV4cG9ydCBkZXF1ZXVlX3RpbWU9JzIwMTctMDItMDEgMDA6NDA6MDUgKzA4MDAn
-CglleHBvcnQgam9iX2luaXRyZD0nL2xrcC9zY2hlZHVsZWQvaXZiNDQvZnNtYXJrLTEtNjQtM0hE
-RC1SQUlENS1idHJmcy00TS0xMzBHLU5vU3luYy1wZXJmb3JtYW5jZS1kZWJpYW4teDg2XzY0LTIw
-MTYtMDgtMzEuY2d6LWZlMjM5MTRkZGRiMTI2YTI5YWM0OTI5NDE1ZWIzMThmNjBkOTdjYWMtMjAx
-NzAyMDEtODQzMDMtdjE1OG1tLTAuY2d6JwoKCVsgLW4gIiRMS1BfU1JDIiBdIHx8CglleHBvcnQg
-TEtQX1NSQz0vbGtwLyR7dXNlcjotbGtwfS9zcmMKfQoKcnVuX2pvYigpCnsKCWVjaG8gJCQgPiAk
-VE1QL3J1bi1qb2IucGlkCgoJLiAkTEtQX1NSQy9saWIvaHR0cC5zaAoJLiAkTEtQX1NSQy9saWIv
-am9iLnNoCgkuICRMS1BfU1JDL2xpYi9lbnYuc2gKCglleHBvcnRfdG9wX2VudgoKCXJ1bl9zZXR1
-cCBucl9oZGQ9MyAkTEtQX1NSQy9zZXR1cC9kaXNrCgoJcnVuX3NldHVwIHJhaWRfbGV2ZWw9J3Jh
-aWQ1JyAkTEtQX1NSQy9zZXR1cC9tZAoKCXJ1bl9zZXR1cCBmcz0nYnRyZnMnICRMS1BfU1JDL3Nl
-dHVwL2ZzCgoJcnVuX3NldHVwICRMS1BfU1JDL3NldHVwL2NwdWZyZXFfZ292ZXJub3IgJ3BlcmZv
-cm1hbmNlJwoKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIga21zZwoJcnVu
-X21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBpb3N0YXQKCXJ1bl9tb25pdG9yICRM
-S1BfU1JDL21vbml0b3JzL3dyYXBwZXIgaGVhcnRiZWF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9t
-b25pdG9ycy93cmFwcGVyIHZtc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3Jh
-cHBlciBudW1hLW51bWFzdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVy
-IG51bWEtdm1zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIG51bWEt
-bWVtaW5mbwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBwcm9jLXZtc3Rh
-dAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBwcm9jLXN0YXQKCXJ1bl9t
-b25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbWVtaW5mbwoJcnVuX21vbml0b3IgJExL
-UF9TUkMvbW9uaXRvcnMvd3JhcHBlciBzbGFiaW5mbwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9u
-aXRvcnMvd3JhcHBlciBpbnRlcnJ1cHRzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93
-cmFwcGVyIGxvY2tfc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBs
-YXRlbmN5X3N0YXRzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHNvZnRp
-cnFzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy9vbmUtc2hvdC93cmFwcGVyIGJkaV9k
-ZXZfbWFwcGluZwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBkaXNrc3Rh
-dHMKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbmZzc3RhdAoJcnVuX21v
-bml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBjcHVpZGxlCglydW5fbW9uaXRvciAkTEtQ
-X1NSQy9tb25pdG9ycy93cmFwcGVyIGNwdWZyZXEtc3RhdHMKCXJ1bl9tb25pdG9yICRMS1BfU1JD
-L21vbml0b3JzL3dyYXBwZXIgdHVyYm9zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9y
-cy93cmFwcGVyIHNjaGVkX2RlYnVnCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFw
-cGVyIHBlcmYtc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvbm8tc3Rkb3V0L3dy
-YXBwZXIgcGVyZi1wcm9maWxlCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVy
-IG9vbS1raWxsZXIKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3BsYWluL3dhdGNoZG9n
-CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIG5mcy1oYW5nCgoJcnVuX3Rl
-c3QgZmlsZXNpemU9JzRNJyB0ZXN0X3NpemU9JzEzMEcnIHN5bmNfbWV0aG9kPSdOb1N5bmMnICRM
-S1BfU1JDL3Rlc3RzL3dyYXBwZXIgZnNtYXJrCn0KCmV4dHJhY3Rfc3RhdHMoKQp7CgkkTEtQX1NS
-Qy9zdGF0cy93cmFwcGVyIGZzbWFyawoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBrbXNnCgkkTEtQ
-X1NSQy9zdGF0cy93cmFwcGVyIGlvc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciB2bXN0YXQK
-CSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbnVtYS1udW1hc3RhdAoJJExLUF9TUkMvc3RhdHMvd3Jh
-cHBlciBudW1hLXZtc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBudW1hLW1lbWluZm8KCSRM
-S1BfU1JDL3N0YXRzL3dyYXBwZXIgcHJvYy12bXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIg
-bWVtaW5mbwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBzbGFiaW5mbwoJJExLUF9TUkMvc3RhdHMv
-d3JhcHBlciBpbnRlcnJ1cHRzCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGxvY2tfc3RhdAoJJExL
-UF9TUkMvc3RhdHMvd3JhcHBlciBsYXRlbmN5X3N0YXRzCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVy
-IHNvZnRpcnFzCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGRpc2tzdGF0cwoJJExLUF9TUkMvc3Rh
-dHMvd3JhcHBlciBuZnNzdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGNwdWlkbGUKCSRMS1Bf
-U1JDL3N0YXRzL3dyYXBwZXIgdHVyYm9zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHNjaGVk
-X2RlYnVnCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHBlcmYtc3RhdAoJJExLUF9TUkMvc3RhdHMv
-d3JhcHBlciBwZXJmLXByb2ZpbGUKCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHRpbWUgZnNtYXJr
-LnRpbWUKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgdGltZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
-ciBkbWVzZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBrbXNnCgkkTEtQX1NSQy9zdGF0cy93cmFw
-cGVyIHN0ZGVycgoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBsYXN0X3N0YXRlCn0KCiIkQCIK
+IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0nZmlvLWJhc2ljJwoJ
+ZXhwb3J0IHRlc3RjYXNlPSdmaW8tYmFzaWMnCglleHBvcnQgY2F0ZWdvcnk9J2JlbmNobWFyaycK
+CWV4cG9ydCBydW50aW1lPTIwMAoJZXhwb3J0IG5yX3Rhc2s9MjgKCWV4cG9ydCB0aW1lX2Jhc2Vk
+PSd0YicKCWV4cG9ydCBqb2Jfb3JpZ2luPScvbGtwL2xrcC8uc3JjLTIwMTYxMjIzLTEyMDEyMi9h
+bGxvdC9jeWNsaWM6bGludXgtZGV2ZWw6ZGV2ZWwtaG91cmx5L2xrcC1oc3ctZXA2L2Zpby1iYXNp
+Yy0ycG1lbS1kYXgtMjU2Ry55YW1sJwoJZXhwb3J0IHF1ZXVlPSdiaXNlY3QnCglleHBvcnQgdGVz
+dGJveD0nbGtwLWhzdy1lcDYnCglleHBvcnQgdGJveF9ncm91cD0nbGtwLWhzdy1lcDYnCglleHBv
+cnQgc3VibWl0X2lkPSc1ODhiNmNkMjBiOWE5MzdmMWVjMzMxZDAnCglleHBvcnQgam9iX2ZpbGU9
+Jy9sa3Avc2NoZWR1bGVkL2xrcC1oc3ctZXA2L2Zpby1iYXNpYy0ycG1lbS14ZnMtZGF4LTIwMHMt
+NTAlLXRiLXJhbmR3cml0ZS0yTS1zeW5jLTIwMEctcGVyZm9ybWFuY2UtZGViaWFuLXg4Nl82NC0y
+MDE2LTA4LTMxLmNnei0yZTEyMTA5ZDFjMzJjODEwMDg4ODIwNDc4ZDIxYjViN2NkODdhODA1LTIw
+MTcwMTI3LTk4MDc4LWpneHE0ai0wLnlhbWwnCglleHBvcnQgaWQ9JzUyZDRkYWUwZGQwODEyN2Q1
+NTI3ZGYxZGI5NDE2YzE2ZTM3NGU5NWEnCglleHBvcnQgbW9kZWw9J0hhc3dlbGwtRVAnCglleHBv
+cnQgbnJfY3B1PTU2CglleHBvcnQgbWVtb3J5PScyNTZHJwoJZXhwb3J0IHNzZF9wYXJ0aXRpb25z
+PQoJZXhwb3J0IHN3YXBfcGFydGl0aW9ucz0KCWV4cG9ydCByb290ZnNfcGFydGl0aW9uPQoJZXhw
+b3J0IGJyYW5kPSdJbnRlbChSKSBYZW9uKFIpIENQVSBFNS0yNjk1IHYzIEAgMi4zMEdIeicKCWV4
+cG9ydCBuZWVkX2tjb25maWc9J0NPTkZJR19MSUJOVkRJTU0KQ09ORklHX0JUVApDT05GSUdfQkxL
+X0RFVl9QTUVNCkNPTkZJR19YODZfUE1FTV9MRUdBQ1kKQ09ORklHX1hGU19GUycKCWV4cG9ydCBj
+b21taXQ9JzJlMTIxMDlkMWMzMmM4MTAwODg4MjA0NzhkMjFiNWI3Y2Q4N2E4MDUnCglleHBvcnQg
+a2NvbmZpZz0neDg2XzY0LXJoZWwtNy4yJwoJZXhwb3J0IGNvbXBpbGVyPSdnY2MtNicKCWV4cG9y
+dCByb290ZnM9J2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3onCglleHBvcnQgZW5xdWV1ZV90
+aW1lPScyMDE3LTAxLTI3IDIzOjUyOjUzICswODAwJwoJZXhwb3J0IF9pZD0nNTg4YjZjZDIwYjlh
+OTM3ZjFlYzMzMWQwJwoJZXhwb3J0IHVzZXI9J2xrcCcKCWV4cG9ydCBoZWFkX2NvbW1pdD0nODc1
+MGE2ZThjMjgzYTM1ODUzYzJlMjRlMDRkNDZkNTBlZmQ2YzMyMycKCWV4cG9ydCBiYXNlX2NvbW1p
+dD0nNDlkZWYxODUzMzM0Mzk2Zjk0OGRjYjRjZWRiOTM0N2FiYjMxOGRmNScKCWV4cG9ydCBicmFu
+Y2g9J2xpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE3MDEyMjEzJwoJZXhwb3J0IHJlc3VsdF9y
+b290PScvcmVzdWx0L2Zpby1iYXNpYy8ycG1lbS14ZnMtZGF4LTIwMHMtNTAlLXRiLXJhbmR3cml0
+ZS0yTS1zeW5jLTIwMEctcGVyZm9ybWFuY2UvbGtwLWhzdy1lcDYvZGViaWFuLXg4Nl82NC0yMDE2
+LTA4LTMxLmNnei94ODZfNjQtcmhlbC03LjIvZ2NjLTYvMmUxMjEwOWQxYzMyYzgxMDA4ODgyMDQ3
+OGQyMWI1YjdjZDg3YTgwNS8wJwoJZXhwb3J0IExLUF9TRVJWRVI9J2lubicKCWV4cG9ydCBtYXhf
+dXB0aW1lPTEyMDAKCWV4cG9ydCBpbml0cmQ9Jy9vc2ltYWdlL2RlYmlhbi9kZWJpYW4teDg2XzY0
+LTIwMTYtMDgtMzEuY2d6JwoJZXhwb3J0IGJvb3Rsb2FkZXJfYXBwZW5kPSdyb290PS9kZXYvcmFt
+MAp1c2VyPWxrcApqb2I9L2xrcC9zY2hlZHVsZWQvbGtwLWhzdy1lcDYvZmlvLWJhc2ljLTJwbWVt
+LXhmcy1kYXgtMjAwcy01MCUtdGItcmFuZHdyaXRlLTJNLXN5bmMtMjAwRy1wZXJmb3JtYW5jZS1k
+ZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6LTJlMTIxMDlkMWMzMmM4MTAwODg4MjA0NzhkMjFi
+NWI3Y2Q4N2E4MDUtMjAxNzAxMjctOTgwNzgtamd4cTRqLTAueWFtbApBUkNIPXg4Nl82NAprY29u
+ZmlnPXg4Nl82NC1yaGVsLTcuMgpicmFuY2g9bGludXgtZGV2ZWwvZGV2ZWwtaG91cmx5LTIwMTcw
+MTIyMTMKY29tbWl0PTJlMTIxMDlkMWMzMmM4MTAwODg4MjA0NzhkMjFiNWI3Y2Q4N2E4MDUKQk9P
+VF9JTUFHRT0vcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNi8yZTEyMTA5ZDFjMzJjODEw
+MDg4ODIwNDc4ZDIxYjViN2NkODdhODA1L3ZtbGludXotNC4xMC4wLXJjNC0wMDExMS1nMmUxMjEw
+OQptZW1tYXA9MTA0RyE0RwptZW1tYXA9MTA0RyExMzJHCm1heF91cHRpbWU9MTIwMApSRVNVTFRf
+Uk9PVD0vcmVzdWx0L2Zpby1iYXNpYy8ycG1lbS14ZnMtZGF4LTIwMHMtNTAlLXRiLXJhbmR3cml0
+ZS0yTS1zeW5jLTIwMEctcGVyZm9ybWFuY2UvbGtwLWhzdy1lcDYvZGViaWFuLXg4Nl82NC0yMDE2
+LTA4LTMxLmNnei94ODZfNjQtcmhlbC03LjIvZ2NjLTYvMmUxMjEwOWQxYzMyYzgxMDA4ODgyMDQ3
+OGQyMWI1YjdjZDg3YTgwNS8wCkxLUF9TRVJWRVI9aW5uCmRlYnVnCmFwaWM9ZGVidWcKc3lzcnFf
+YWx3YXlzX2VuYWJsZWQKcmN1cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0PTEwMApuZXQuaWZu
+YW1lcz0wCnByaW50ay5kZXZrbXNnPW9uCnBhbmljPS0xCnNvZnRsb2NrdXBfcGFuaWM9MQpubWlf
+d2F0Y2hkb2c9cGFuaWMKb29wcz1wYW5pYwpsb2FkX3JhbWRpc2s9Mgpwcm9tcHRfcmFtZGlzaz0w
+CnN5c3RlbWQubG9nX2xldmVsPWVycgppZ25vcmVfbG9nbGV2ZWwKZWFybHlwcmludGs9dHR5UzAs
+MTE1MjAwCmNvbnNvbGU9dHR5UzAsMTE1MjAwCmNvbnNvbGU9dHR5MAp2Z2E9bm9ybWFsCnJ3JwoJ
+ZXhwb3J0IGxrcF9pbml0cmQ9Jy9sa3AvbGtwL2xrcC14ODZfNjQuY2d6JwoJZXhwb3J0IG1vZHVs
+ZXNfaW5pdHJkPScvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNi8yZTEyMTA5ZDFjMzJj
+ODEwMDg4ODIwNDc4ZDIxYjViN2NkODdhODA1L21vZHVsZXMuY2d6JwoJZXhwb3J0IGJtX2luaXRy
+ZD0nL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L2xrcF8yMDE2LTEx
+LTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovcnN5bmMt
+cm9vdGZzXzIwMTYtMTEtMTUuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4
+LTMxLmNnei9ydW4taXBjb25maWdfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
+eDg2XzY0LTIwMTYtMDgtMzEuY2d6L2ZzXzIwMTYtMTEtMTUuY2d6LC9vc2ltYWdlL2RlcHMvZGVi
+aWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9maW9fMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2UvZGVw
+cy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L2lvc3RhdF8yMDE2LTExLTE1LmNneiwvb3Np
+bWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovdHVyYm9zdGF0XzIwMTYtMTEt
+MTUuY2d6LC9vc2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3R1cmJvc3Rh
+dC14ODZfNjRfMjAxNi0wOS0wMi5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYt
+MDgtMzEuY2d6L3BlcmZfMjAxNi0xMS0xNi5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQt
+MjAxNi0wOC0zMS5jZ3ovcGVyZi14ODZfNjRfMjAxNi0xMS0xNi5jZ3osL29zaW1hZ2UvZGVwcy9k
+ZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L2h3XzIwMTYtMTEtMTUuY2d6JwoJZXhwb3J0IHNp
+dGU9J2lubicKCWV4cG9ydCBMS1BfQ0dJX1BPUlQ9ODAKCWV4cG9ydCBMS1BfQ0lGU19QT1JUPTEz
+OQoJZXhwb3J0IHJlcGVhdF90bz0yCglleHBvcnQga2VybmVsPScvcGtnL2xpbnV4L3g4Nl82NC1y
+aGVsLTcuMi9nY2MtNi8yZTEyMTA5ZDFjMzJjODEwMDg4ODIwNDc4ZDIxYjViN2NkODdhODA1L3Zt
+bGludXotNC4xMC4wLXJjNC0wMDExMS1nMmUxMjEwOScKCWV4cG9ydCBkZXF1ZXVlX3RpbWU9JzIw
+MTctMDEtMjcgMjM6NTc6NTYgKzA4MDAnCglleHBvcnQgam9iX2luaXRyZD0nL2xrcC9zY2hlZHVs
+ZWQvbGtwLWhzdy1lcDYvZmlvLWJhc2ljLTJwbWVtLXhmcy1kYXgtMjAwcy01MCUtdGItcmFuZHdy
+aXRlLTJNLXN5bmMtMjAwRy1wZXJmb3JtYW5jZS1kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6
+LTJlMTIxMDlkMWMzMmM4MTAwODg4MjA0NzhkMjFiNWI3Y2Q4N2E4MDUtMjAxNzAxMjctOTgwNzgt
+amd4cTRqLTAuY2d6JwoKCVsgLW4gIiRMS1BfU1JDIiBdIHx8CglleHBvcnQgTEtQX1NSQz0vbGtw
+LyR7dXNlcjotbGtwfS9zcmMKfQoKcnVuX2pvYigpCnsKCWVjaG8gJCQgPiAkVE1QL3J1bi1qb2Iu
+cGlkCgoJLiAkTEtQX1NSQy9saWIvaHR0cC5zaAoJLiAkTEtQX1NSQy9saWIvam9iLnNoCgkuICRM
+S1BfU1JDL2xpYi9lbnYuc2gKCglleHBvcnRfdG9wX2VudgoKCXJ1bl9zZXR1cCBicDFfbWVtbWFw
+PScxMDRHITRHJyBicDJfbWVtbWFwPScxMDRHITEzMkcnICRMS1BfU1JDL3NldHVwL2Jvb3RfcGFy
+YW1zCgoJcnVuX3NldHVwIG5yX3BtZW09MiAkTEtQX1NSQy9zZXR1cC9kaXNrCgoJcnVuX3NldHVw
+IGZzPSd4ZnMnIG1vdW50X29wdGlvbj0nZGF4JyAkTEtQX1NSQy9zZXR1cC9mcwoKCXJ1bl9zZXR1
+cCBydz0ncmFuZHdyaXRlJyBicz0nMk0nIGlvZW5naW5lPSdzeW5jJyB0ZXN0X3NpemU9JzIwMEcn
+ICRMS1BfU1JDL3NldHVwL2Zpby1zZXR1cC1iYXNpYwoKCXJ1bl9zZXR1cCAkTEtQX1NSQy9zZXR1
+cC9jcHVmcmVxX2dvdmVybm9yICdwZXJmb3JtYW5jZScKCglydW5fbW9uaXRvciAkTEtQX1NSQy9t
+b25pdG9ycy93cmFwcGVyIGttc2cKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBw
+ZXIgaW9zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGhlYXJ0YmVh
+dAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciB2bXN0YXQKCXJ1bl9tb25p
+dG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbnVtYS1udW1hc3RhdAoJcnVuX21vbml0b3Ig
+JExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBudW1hLXZtc3RhdAoJcnVuX21vbml0b3IgJExLUF9T
+UkMvbW9uaXRvcnMvd3JhcHBlciBudW1hLW1lbWluZm8KCXJ1bl9tb25pdG9yICRMS1BfU1JDL21v
+bml0b3JzL3dyYXBwZXIgcHJvYy12bXN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3Jz
+L3dyYXBwZXIgcHJvYy1zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVy
+IG1lbWluZm8KCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgc2xhYmluZm8K
+CXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgaW50ZXJydXB0cwoJcnVuX21v
+bml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBsb2NrX3N0YXQKCXJ1bl9tb25pdG9yICRM
+S1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbGF0ZW5jeV9zdGF0cwoJcnVuX21vbml0b3IgJExLUF9T
+UkMvbW9uaXRvcnMvd3JhcHBlciBzb2Z0aXJxcwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRv
+cnMvb25lLXNob3Qvd3JhcHBlciBiZGlfZGV2X21hcHBpbmcKCXJ1bl9tb25pdG9yICRMS1BfU1JD
+L21vbml0b3JzL3dyYXBwZXIgZGlza3N0YXRzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9y
+cy93cmFwcGVyIG5mc3N0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIg
+Y3B1aWRsZQoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBjcHVmcmVxLXN0
+YXRzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHR1cmJvc3RhdAoJcnVu
+X21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBzY2hlZF9kZWJ1ZwoJcnVuX21vbml0
+b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBwZXJmLXN0YXQKCXJ1bl9tb25pdG9yICRMS1Bf
+U1JDL21vbml0b3JzL25vLXN0ZG91dC93cmFwcGVyIHBlcmYtcHJvZmlsZQoJcnVuX21vbml0b3Ig
+JExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBvb20ta2lsbGVyCglydW5fbW9uaXRvciAkTEtQX1NS
+Qy9tb25pdG9ycy9wbGFpbi93YXRjaGRvZwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMv
+d3JhcHBlciBuZnMtaGFuZwoKCXJ1bl90ZXN0ICRMS1BfU1JDL3Rlc3RzL3dyYXBwZXIgZmlvCn0K
+CmV4dHJhY3Rfc3RhdHMoKQp7CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGZpbwoJJExLUF9TUkMv
+c3RhdHMvd3JhcHBlciBrbXNnCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGlvc3RhdAoJJExLUF9T
+UkMvc3RhdHMvd3JhcHBlciB2bXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbnVtYS1udW1h
+c3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBudW1hLXZtc3RhdAoJJExLUF9TUkMvc3RhdHMv
+d3JhcHBlciBudW1hLW1lbWluZm8KCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgcHJvYy12bXN0YXQK
+CSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbWVtaW5mbwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBz
+bGFiaW5mbwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBpbnRlcnJ1cHRzCgkkTEtQX1NSQy9zdGF0
+cy93cmFwcGVyIGxvY2tfc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBsYXRlbmN5X3N0YXRz
+CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHNvZnRpcnFzCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVy
+IGRpc2tzdGF0cwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBuZnNzdGF0CgkkTEtQX1NSQy9zdGF0
+cy93cmFwcGVyIGNwdWlkbGUKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgdHVyYm9zdGF0CgkkTEtQ
+X1NSQy9zdGF0cy93cmFwcGVyIHNjaGVkX2RlYnVnCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHBl
+cmYtc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBwZXJmLXByb2ZpbGUKCgkkTEtQX1NSQy9z
+dGF0cy93cmFwcGVyIHRpbWUgZmlvLnRpbWUKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgdGltZQoJ
+JExLUF9TUkMvc3RhdHMvd3JhcHBlciBkbWVzZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBrbXNn
+CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHN0ZGVycgoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBs
+YXN0X3N0YXRlCn0KCiIkQCIK
 
---===============7373920002437434349==
+--===============6373023943089651104==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job.yaml"
 
-LS0tCgojISBqb2JzL2ZzbWFyay0zaGRkLXJhaWQueWFtbApzdWl0ZTogZnNtYXJrCnRlc3RjYXNl
-OiBmc21hcmsKY2F0ZWdvcnk6IGJlbmNobWFyawppdGVyYXRpb25zOiAxCm5yX3RocmVhZHM6IDY0
-CmRpc2s6IDNIREQKbWQ6IFJBSUQ1CmZzOiBidHJmcwpmc21hcms6CiAgZmlsZXNpemU6IDRNCiAg
-dGVzdF9zaXplOiAxMzBHCiAgc3luY19tZXRob2Q6IE5vU3luYwpqb2Jfb3JpZ2luOiAiL2xrcC9s
-a3AvLnNyYy0yMDE3MDEyNC0xNzM3NDQvYWxsb3QvY3ljbGljOmxpbnV4LW5leHQ6bWFzdGVyL2l2
-YjQ0L2ZzbWFyay0zaGRkLXJhaWQueWFtbCIKCiMhIHF1ZXVlIG9wdGlvbnMKcXVldWU6IGJpc2Vj
-dAp0ZXN0Ym94OiBpdmI0NAp0Ym94X2dyb3VwOiBpdmI0NApzdWJtaXRfaWQ6IDU4OTBiYzNjMGI5
-YTkzNDk0ZmU5NjlmNwpqb2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL2l2YjQ0L2ZzbWFyay0xLTY0
-LTNIREQtUkFJRDUtYnRyZnMtNE0tMTMwRy1Ob1N5bmMtcGVyZm9ybWFuY2UtZGViaWFuLXg4Nl82
-NC0yMDE2LTA4LTMxLmNnei1mZTIzOTE0ZGRkYjEyNmEyOWFjNDkyOTQxNWViMzE4ZjYwZDk3Y2Fj
-LTIwMTcwMjAxLTg0MzAzLXYxNThtbS0wLnlhbWwiCmlkOiA0ODRjNzg1NjcxNzExNjBlYzgwNWJl
-M2ZjYTZjZDZhNDQ2M2IzODc0CgojISBob3N0cy9pdmI0NAptb2RlbDogSXZ5dG93biBJdnkgQnJp
-ZGdlLUVQCm5yX2NwdTogNDgKbWVtb3J5OiA2NEcKbnJfaGRkX3BhcnRpdGlvbnM6IDMKaGRkX3Bh
-cnRpdGlvbnM6ICIvZGV2L2Rpc2svYnktaWQvYXRhLVdEQ19XRDEwMDNGQllaLTAxMEZCMF9XRC1X
-Q0FXMzYqLXBhcnQxIgpzd2FwX3BhcnRpdGlvbnM6ICIvZGV2L2Rpc2svYnktaWQvYXRhLVdEQ19X
-RDEwMDNGQllaLTAxMEZCMF9XRC1XQ0FXMzY3OTU3NTMtcGFydDIiCnJvb3Rmc19wYXJ0aXRpb246
-ICIvZGV2L2Rpc2svYnktaWQvYXRhLVdEQ19XRDEwMDNGQllaLTAxMEZCMF9XRC1XQ0FXMzY3OTU3
-NTMtcGFydDMiCm5ldGNvbnNvbGVfcG9ydDogNjY0NApicmFuZDogSW50ZWwoUikgWGVvbihSKSBD
-UFUgRTUtMjY5NyB2MiBAIDIuNzBHSHoKCiMhIGluY2x1ZGUvY2F0ZWdvcnkvYmVuY2htYXJrCmtt
-c2c6IAppb3N0YXQ6IApoZWFydGJlYXQ6IAp2bXN0YXQ6IApudW1hLW51bWFzdGF0OiAKbnVtYS12
-bXN0YXQ6IApudW1hLW1lbWluZm86IApwcm9jLXZtc3RhdDogCnByb2Mtc3RhdDogCm1lbWluZm86
-IApzbGFiaW5mbzogCmludGVycnVwdHM6IApsb2NrX3N0YXQ6IApsYXRlbmN5X3N0YXRzOiAKc29m
-dGlycXM6IApiZGlfZGV2X21hcHBpbmc6IApkaXNrc3RhdHM6IApuZnNzdGF0OiAKY3B1aWRsZTog
-CmNwdWZyZXEtc3RhdHM6IAp0dXJib3N0YXQ6IApzY2hlZF9kZWJ1ZzogCnBlcmYtc3RhdDogCnBl
-cmYtcHJvZmlsZTogCgojISBpbmNsdWRlL2NhdGVnb3J5L0FMTApjcHVmcmVxX2dvdmVybm9yOiBw
-ZXJmb3JtYW5jZQoKIyEgaW5jbHVkZS9kaXNrL25yX2hkZApuZWVkX2tjb25maWc6Ci0gQ09ORklH
-X0JMS19ERVZfU0QKLSBDT05GSUdfU0NTSQotIENPTkZJR19CTE9DSz15Ci0gQ09ORklHX1NBVEFf
-QUhDSQotIENPTkZJR19TQVRBX0FIQ0lfUExBVEZPUk0KLSBDT05GSUdfQVRBCi0gQ09ORklHX1BD
-ST15Ci0gQ09ORklHX01EX1JBSUQ0NTYKLSBDT05GSUdfQlRSRlNfRlMKLSBDT05GSUdfQlRSRlNf
-RlMKCiMhIGluY2x1ZGUvbWQvcmFpZF9sZXZlbAoKIyEgaW5jbHVkZS9mcy9idHJmcwoKIyEgaW5j
-bHVkZS9xdWV1ZS9jeWNsaWMKY29tbWl0OiBmZTIzOTE0ZGRkYjEyNmEyOWFjNDkyOTQxNWViMzE4
-ZjYwZDk3Y2FjCgojISBpbmNsdWRlL2ZzL09USEVSUwoKIyEgZGVmYXVsdCBwYXJhbXMKa2NvbmZp
-ZzogeDg2XzY0LXJoZWwtNy4yCmNvbXBpbGVyOiBnY2MtNgpyb290ZnM6IGRlYmlhbi14ODZfNjQt
-MjAxNi0wOC0zMS5jZ3oKZW5xdWV1ZV90aW1lOiAyMDE3LTAyLTAxIDAwOjMzOjAxLjEwMDExNjE2
-NCArMDg6MDAKX2lkOiA1ODkwYmMzYzBiOWE5MzQ5NGZlOTY5ZjcKCiMhIHNjaGVkdWxlIG9wdGlv
-bnMKdXNlcjogbGtwCmhlYWRfY29tbWl0OiA3NjYwNzRlNzgxODhhYWM3ZmZiYzFiNTE4OTNhNjU2
-NjhmMzE1YzU0CmJhc2VfY29tbWl0OiA3YTMwOGJiMzAxNmY1N2U1YmUxMWE2NzdkMTViODIxNTM2
-NDE5ZDM2CmJyYW5jaDogbGludXgtbmV4dC9tYXN0ZXIKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L2Zz
-bWFyay8xLTY0LTNIREQtUkFJRDUtYnRyZnMtNE0tMTMwRy1Ob1N5bmMtcGVyZm9ybWFuY2UvaXZi
-NDQvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhlbC03LjIvZ2NjLTYvZmUy
-MzkxNGRkZGIxMjZhMjlhYzQ5Mjk0MTVlYjMxOGY2MGQ5N2NhYy8wIgpMS1BfU0VSVkVSOiBpbm4K
-bWF4X3VwdGltZTogMTkwMC41Ngppbml0cmQ6ICIvb3NpbWFnZS9kZWJpYW4vZGViaWFuLXg4Nl82
-NC0yMDE2LTA4LTMxLmNneiIKYm9vdGxvYWRlcl9hcHBlbmQ6Ci0gcm9vdD0vZGV2L3JhbTAKLSB1
-c2VyPWxrcAotIGpvYj0vbGtwL3NjaGVkdWxlZC9pdmI0NC9mc21hcmstMS02NC0zSERELVJBSUQ1
-LWJ0cmZzLTRNLTEzMEctTm9TeW5jLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxNi0wOC0z
-MS5jZ3otZmUyMzkxNGRkZGIxMjZhMjlhYzQ5Mjk0MTVlYjMxOGY2MGQ5N2NhYy0yMDE3MDIwMS04
-NDMwMy12MTU4bW0tMC55YW1sCi0gQVJDSD14ODZfNjQKLSBrY29uZmlnPXg4Nl82NC1yaGVsLTcu
-MgotIGJyYW5jaD1saW51eC1uZXh0L21hc3RlcgotIGNvbW1pdD1mZTIzOTE0ZGRkYjEyNmEyOWFj
-NDkyOTQxNWViMzE4ZjYwZDk3Y2FjCi0gQk9PVF9JTUFHRT0vcGtnL2xpbnV4L3g4Nl82NC1yaGVs
-LTcuMi9nY2MtNi9mZTIzOTE0ZGRkYjEyNmEyOWFjNDkyOTQxNWViMzE4ZjYwZDk3Y2FjL3ZtbGlu
-dXotNC4xMC4wLXJjNC0wMDM2NC1nZmUyMzkxNAotIG1heF91cHRpbWU9MTkwMAotIFJFU1VMVF9S
-T09UPS9yZXN1bHQvZnNtYXJrLzEtNjQtM0hERC1SQUlENS1idHJmcy00TS0xMzBHLU5vU3luYy1w
-ZXJmb3JtYW5jZS9pdmI0NC9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3g4Nl82NC1yaGVs
-LTcuMi9nY2MtNi9mZTIzOTE0ZGRkYjEyNmEyOWFjNDkyOTQxNWViMzE4ZjYwZDk3Y2FjLzAKLSBM
-S1BfU0VSVkVSPWlubgotIGRlYnVnCi0gYXBpYz1kZWJ1ZwotIHN5c3JxX2Fsd2F5c19lbmFibGVk
-Ci0gcmN1cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0PTEwMAotIG5ldC5pZm5hbWVzPTAKLSBw
-cmludGsuZGV2a21zZz1vbgotIHBhbmljPS0xCi0gc29mdGxvY2t1cF9wYW5pYz0xCi0gbm1pX3dh
-dGNoZG9nPXBhbmljCi0gb29wcz1wYW5pYwotIGxvYWRfcmFtZGlzaz0yCi0gcHJvbXB0X3JhbWRp
-c2s9MAotIHN5c3RlbWQubG9nX2xldmVsPWVycgotIGlnbm9yZV9sb2dsZXZlbAotIGVhcmx5cHJp
-bnRrPXR0eVMwLDExNTIwMAotIGNvbnNvbGU9dHR5UzAsMTE1MjAwCi0gY29uc29sZT10dHkwCi0g
-dmdhPW5vcm1hbAotIHJ3CmxrcF9pbml0cmQ6ICIvbGtwL2xrcC9sa3AteDg2XzY0LmNneiIKbW9k
-dWxlc19pbml0cmQ6ICIvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNi9mZTIzOTE0ZGRk
-YjEyNmEyOWFjNDkyOTQxNWViMzE4ZjYwZDk3Y2FjL21vZHVsZXMuY2d6IgpibV9pbml0cmQ6ICIv
-b3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovbGtwXzIwMTYtMTEtMTUu
-Y2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9yc3luYy1yb290
-ZnNfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEu
-Y2d6L3J1bi1pcGNvbmZpZ18yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZf
-NjQtMjAxNi0wOC0zMS5jZ3ovbWRfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
-eDg2XzY0LTIwMTYtMDgtMzEuY2d6L2ZzXzIwMTYtMTEtMTUuY2d6LC9vc2ltYWdlL2RlcHMvZGVi
-aWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9mc21hcmtfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2Uv
-cGtnL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovZnNtYXJrLXg4Nl82NF8yMDE2LTExLTE2
-LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovaW9zdGF0XzIw
-MTYtMTEtMTUuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei90
-dXJib3N0YXRfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQtMjAxNi0w
-OC0zMS5jZ3ovdHVyYm9zdGF0LXg4Nl82NF8yMDE2LTA5LTAyLmNneiwvb3NpbWFnZS9kZXBzL2Rl
-Ymlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovcGVyZl8yMDE2LTExLTE2LmNneiwvb3NpbWFnZS9w
-a2cvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9wZXJmLXg4Nl82NF8yMDE2LTExLTE2LmNn
-eiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovaHdfMjAxNi0xMS0x
-NS5jZ3oiCnNpdGU6IGlubgoKIyEgL2xrcC9sa3AvLnNyYy0yMDE3MDEzMC0wMTEzMTMvaW5jbHVk
-ZS9zaXRlL2lubgpMS1BfQ0dJX1BPUlQ6IDgwCkxLUF9DSUZTX1BPUlQ6IDEzOQpvb20ta2lsbGVy
-OiAKd2F0Y2hkb2c6IApuZnMtaGFuZzogCgojISBydW50aW1lIHN0YXR1cwpyZXBlYXRfdG86IDIK
-CiMhIHVzZXIgb3ZlcnJpZGVzCmtlcm5lbDogIi9wa2cvbGludXgveDg2XzY0LXJoZWwtNy4yL2dj
-Yy02L2ZlMjM5MTRkZGRiMTI2YTI5YWM0OTI5NDE1ZWIzMThmNjBkOTdjYWMvdm1saW51ei00LjEw
-LjAtcmM0LTAwMzY0LWdmZTIzOTE0IgpkZXF1ZXVlX3RpbWU6IDIwMTctMDItMDEgMDA6NDA6MDUu
-NDg5MTI0Nzg0ICswODowMAoKIyEgL2xrcC9sa3AvLnNyYy0yMDE3MDEzMS0yMTU3MDEvaW5jbHVk
-ZS9zaXRlL2lubgpqb2Jfc3RhdGU6IGZpbmlzaGVkCmxvYWRhdmc6ICc1Mi4wNScK
+LS0tCgojISBqb2JzL2Zpby1iYXNpYy0ycG1lbS1kYXgtMjU2Ry55YW1sCnN1aXRlOiBmaW8tYmFz
+aWMKdGVzdGNhc2U6IGZpby1iYXNpYwpjYXRlZ29yeTogYmVuY2htYXJrCmJvb3RfcGFyYW1zOgog
+IGJwMV9tZW1tYXA6IDEwNEchNEcKICBicDJfbWVtbWFwOiAxMDRHITEzMkcKZGlzazogMnBtZW0K
+ZnM6CiAgZnM6IHhmcwogIG1vdW50X29wdGlvbjogZGF4CnJ1bnRpbWU6IDIwMHMKbnJfdGFzazog
+NTAlCnRpbWVfYmFzZWQ6IHRiCmZpby1zZXR1cC1iYXNpYzoKICBydzogcmFuZHdyaXRlCiAgYnM6
+IDJNCiAgaW9lbmdpbmU6IHN5bmMKICB0ZXN0X3NpemU6IDIwMEcKZmlvOiAKam9iX29yaWdpbjog
+Ii9sa3AvbGtwLy5zcmMtMjAxNjEyMjMtMTIwMTIyL2FsbG90L2N5Y2xpYzpsaW51eC1kZXZlbDpk
+ZXZlbC1ob3VybHkvbGtwLWhzdy1lcDYvZmlvLWJhc2ljLTJwbWVtLWRheC0yNTZHLnlhbWwiCgoj
+ISBxdWV1ZSBvcHRpb25zCnF1ZXVlOiBiaXNlY3QKdGVzdGJveDogbGtwLWhzdy1lcDYKdGJveF9n
+cm91cDogbGtwLWhzdy1lcDYKc3VibWl0X2lkOiA1ODhiNmNkMjBiOWE5MzdmMWVjMzMxZDAKam9i
+X2ZpbGU6ICIvbGtwL3NjaGVkdWxlZC9sa3AtaHN3LWVwNi9maW8tYmFzaWMtMnBtZW0teGZzLWRh
+eC0yMDBzLTUwJS10Yi1yYW5kd3JpdGUtMk0tc3luYy0yMDBHLXBlcmZvcm1hbmNlLWRlYmlhbi14
+ODZfNjQtMjAxNi0wOC0zMS5jZ3otMmUxMjEwOWQxYzMyYzgxMDA4ODgyMDQ3OGQyMWI1YjdjZDg3
+YTgwNS0yMDE3MDEyNy05ODA3OC1qZ3hxNGotMC55YW1sIgppZDogNTJkNGRhZTBkZDA4MTI3ZDU1
+MjdkZjFkYjk0MTZjMTZlMzc0ZTk1YQoKIyEgaG9zdHMvbGtwLWhzdy1lcDYKbW9kZWw6IEhhc3dl
+bGwtRVAKbnJfY3B1OiA1NgptZW1vcnk6IDI1NkcKc3NkX3BhcnRpdGlvbnM6IApzd2FwX3BhcnRp
+dGlvbnM6IApyb290ZnNfcGFydGl0aW9uOiAKYnJhbmQ6IEludGVsKFIpIFhlb24oUikgQ1BVIEU1
+LTI2OTUgdjMgQCAyLjMwR0h6CgojISBpbmNsdWRlL2NhdGVnb3J5L2JlbmNobWFyawprbXNnOiAK
+aW9zdGF0OiAKaGVhcnRiZWF0OiAKdm1zdGF0OiAKbnVtYS1udW1hc3RhdDogCm51bWEtdm1zdGF0
+OiAKbnVtYS1tZW1pbmZvOiAKcHJvYy12bXN0YXQ6IApwcm9jLXN0YXQ6IAptZW1pbmZvOiAKc2xh
+YmluZm86IAppbnRlcnJ1cHRzOiAKbG9ja19zdGF0OiAKbGF0ZW5jeV9zdGF0czogCnNvZnRpcnFz
+OiAKYmRpX2Rldl9tYXBwaW5nOiAKZGlza3N0YXRzOiAKbmZzc3RhdDogCmNwdWlkbGU6IApjcHVm
+cmVxLXN0YXRzOiAKdHVyYm9zdGF0OiAKc2NoZWRfZGVidWc6IApwZXJmLXN0YXQ6IApwZXJmLXBy
+b2ZpbGU6IAoKIyEgaW5jbHVkZS9jYXRlZ29yeS9BTEwKY3B1ZnJlcV9nb3Zlcm5vcjogcGVyZm9y
+bWFuY2UKCiMhIGluY2x1ZGUvZGlzay9ucl9wbWVtCm5lZWRfa2NvbmZpZzoKLSBDT05GSUdfTElC
+TlZESU1NCi0gQ09ORklHX0JUVAotIENPTkZJR19CTEtfREVWX1BNRU0KLSBDT05GSUdfWDg2X1BN
+RU1fTEVHQUNZCi0gQ09ORklHX1hGU19GUwoKIyEgaW5jbHVkZS9xdWV1ZS9jeWNsaWMKY29tbWl0
+OiAyZTEyMTA5ZDFjMzJjODEwMDg4ODIwNDc4ZDIxYjViN2NkODdhODA1CgojISBpbmNsdWRlL2Zz
+L09USEVSUwoKIyEgZGVmYXVsdCBwYXJhbXMKa2NvbmZpZzogeDg2XzY0LXJoZWwtNy4yCmNvbXBp
+bGVyOiBnY2MtNgpyb290ZnM6IGRlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3oKZW5xdWV1ZV90
+aW1lOiAyMDE3LTAxLTI3IDIzOjUyOjUzLjMwNzc3NzA1OSArMDg6MDAKX2lkOiA1ODhiNmNkMjBi
+OWE5MzdmMWVjMzMxZDAKCiMhIHNjaGVkdWxlIG9wdGlvbnMKdXNlcjogbGtwCmhlYWRfY29tbWl0
+OiA4NzUwYTZlOGMyODNhMzU4NTNjMmUyNGUwNGQ0NmQ1MGVmZDZjMzIzCmJhc2VfY29tbWl0OiA0
+OWRlZjE4NTMzMzQzOTZmOTQ4ZGNiNGNlZGI5MzQ3YWJiMzE4ZGY1CmJyYW5jaDogbGludXgtZGV2
+ZWwvZGV2ZWwtaG91cmx5LTIwMTcwMTIyMTMKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L2Zpby1iYXNp
+Yy8ycG1lbS14ZnMtZGF4LTIwMHMtNTAlLXRiLXJhbmR3cml0ZS0yTS1zeW5jLTIwMEctcGVyZm9y
+bWFuY2UvbGtwLWhzdy1lcDYvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhl
+bC03LjIvZ2NjLTYvMmUxMjEwOWQxYzMyYzgxMDA4ODgyMDQ3OGQyMWI1YjdjZDg3YTgwNS8wIgpM
+S1BfU0VSVkVSOiBpbm4KbWF4X3VwdGltZTogMTIwMAppbml0cmQ6ICIvb3NpbWFnZS9kZWJpYW4v
+ZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNneiIKYm9vdGxvYWRlcl9hcHBlbmQ6Ci0gcm9vdD0v
+ZGV2L3JhbTAKLSB1c2VyPWxrcAotIGpvYj0vbGtwL3NjaGVkdWxlZC9sa3AtaHN3LWVwNi9maW8t
+YmFzaWMtMnBtZW0teGZzLWRheC0yMDBzLTUwJS10Yi1yYW5kd3JpdGUtMk0tc3luYy0yMDBHLXBl
+cmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3otMmUxMjEwOWQxYzMyYzgxMDA4
+ODgyMDQ3OGQyMWI1YjdjZDg3YTgwNS0yMDE3MDEyNy05ODA3OC1qZ3hxNGotMC55YW1sCi0gQVJD
+SD14ODZfNjQKLSBrY29uZmlnPXg4Nl82NC1yaGVsLTcuMgotIGJyYW5jaD1saW51eC1kZXZlbC9k
+ZXZlbC1ob3VybHktMjAxNzAxMjIxMwotIGNvbW1pdD0yZTEyMTA5ZDFjMzJjODEwMDg4ODIwNDc4
+ZDIxYjViN2NkODdhODA1Ci0gQk9PVF9JTUFHRT0vcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9n
+Y2MtNi8yZTEyMTA5ZDFjMzJjODEwMDg4ODIwNDc4ZDIxYjViN2NkODdhODA1L3ZtbGludXotNC4x
+MC4wLXJjNC0wMDExMS1nMmUxMjEwOQotIG1lbW1hcD0xMDRHITRHCi0gbWVtbWFwPTEwNEchMTMy
+RwotIG1heF91cHRpbWU9MTIwMAotIFJFU1VMVF9ST09UPS9yZXN1bHQvZmlvLWJhc2ljLzJwbWVt
+LXhmcy1kYXgtMjAwcy01MCUtdGItcmFuZHdyaXRlLTJNLXN5bmMtMjAwRy1wZXJmb3JtYW5jZS9s
+a3AtaHN3LWVwNi9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3g4Nl82NC1yaGVsLTcuMi9n
+Y2MtNi8yZTEyMTA5ZDFjMzJjODEwMDg4ODIwNDc4ZDIxYjViN2NkODdhODA1LzAKLSBMS1BfU0VS
+VkVSPWlubgotIGRlYnVnCi0gYXBpYz1kZWJ1ZwotIHN5c3JxX2Fsd2F5c19lbmFibGVkCi0gcmN1
+cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0PTEwMAotIG5ldC5pZm5hbWVzPTAKLSBwcmludGsu
+ZGV2a21zZz1vbgotIHBhbmljPS0xCi0gc29mdGxvY2t1cF9wYW5pYz0xCi0gbm1pX3dhdGNoZG9n
+PXBhbmljCi0gb29wcz1wYW5pYwotIGxvYWRfcmFtZGlzaz0yCi0gcHJvbXB0X3JhbWRpc2s9MAot
+IHN5c3RlbWQubG9nX2xldmVsPWVycgotIGlnbm9yZV9sb2dsZXZlbAotIGVhcmx5cHJpbnRrPXR0
+eVMwLDExNTIwMAotIGNvbnNvbGU9dHR5UzAsMTE1MjAwCi0gY29uc29sZT10dHkwCi0gdmdhPW5v
+cm1hbAotIHJ3CmxrcF9pbml0cmQ6ICIvbGtwL2xrcC9sa3AteDg2XzY0LmNneiIKbW9kdWxlc19p
+bml0cmQ6ICIvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNi8yZTEyMTA5ZDFjMzJjODEw
+MDg4ODIwNDc4ZDIxYjViN2NkODdhODA1L21vZHVsZXMuY2d6IgpibV9pbml0cmQ6ICIvb3NpbWFn
+ZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovbGtwXzIwMTYtMTEtMTUuY2d6LC9v
+c2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9yc3luYy1yb290ZnNfMjAx
+Ni0xMS0xNS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3J1
+bi1pcGNvbmZpZ18yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAx
+Ni0wOC0zMS5jZ3ovZnNfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0
+LTIwMTYtMDgtMzEuY2d6L2Zpb18yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14
+ODZfNjQtMjAxNi0wOC0zMS5jZ3ovaW9zdGF0XzIwMTYtMTEtMTUuY2d6LC9vc2ltYWdlL2RlcHMv
+ZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei90dXJib3N0YXRfMjAxNi0xMS0xNS5jZ3osL29z
+aW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovdHVyYm9zdGF0LXg4Nl82NF8y
+MDE2LTA5LTAyLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ov
+cGVyZl8yMDE2LTExLTE2LmNneiwvb3NpbWFnZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMx
+LmNnei9wZXJmLXg4Nl82NF8yMDE2LTExLTE2LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZf
+NjQtMjAxNi0wOC0zMS5jZ3ovaHdfMjAxNi0xMS0xNS5jZ3oiCnNpdGU6IGlubgoKIyEgL2xrcC9s
+a3AvLnNyYy0yMDE3MDEyMi0wMDAzMjMvaW5jbHVkZS9zaXRlL2lubgpMS1BfQ0dJX1BPUlQ6IDgw
+CkxLUF9DSUZTX1BPUlQ6IDEzOQpvb20ta2lsbGVyOiAKd2F0Y2hkb2c6IApuZnMtaGFuZzogCgoj
+ISBydW50aW1lIHN0YXR1cwpyZXBlYXRfdG86IDIKCiMhIHVzZXIgb3ZlcnJpZGVzCmtlcm5lbDog
+Ii9wa2cvbGludXgveDg2XzY0LXJoZWwtNy4yL2djYy02LzJlMTIxMDlkMWMzMmM4MTAwODg4MjA0
+NzhkMjFiNWI3Y2Q4N2E4MDUvdm1saW51ei00LjEwLjAtcmM0LTAwMTExLWcyZTEyMTA5IgpkZXF1
+ZXVlX3RpbWU6IDIwMTctMDEtMjcgMjM6NTc6NTYuMTQwNjg0OTUxICswODowMAoKIyEgL2xrcC9s
+a3AvLnNyYy0yMDE3MDEyNy0yMTI5NTMvaW5jbHVkZS9zaXRlL2lubgpqb2Jfc3RhdGU6IGZpbmlz
+aGVkCmxvYWRhdmc6ICcyNS4wMScK
 
---===============7373920002437434349==
+--===============6373023943089651104==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="reproduce.ksh"
 
-bWRhZG0gLXEgLS1zdG9wIC9kZXYvbWQwCmRtc2V0dXAgcmVtb3ZlX2FsbAp3aXBlZnMgLWEgLS1m
-b3JjZSAvZGV2L3NkYTEKd2lwZWZzIC1hIC0tZm9yY2UgL2Rldi9zZGIxCndpcGVmcyAtYSAtLWZv
-cmNlIC9kZXYvc2RjMQptZGFkbSAtcSAtLWNyZWF0ZSAvZGV2L21kMCAtLWNodW5rPTI1NiAtLWxl
-dmVsPXJhaWQ1IC0tcmFpZC1kZXZpY2VzPTMgLS1mb3JjZSAtLWFzc3VtZS1jbGVhbiAvZGV2L3Nk
-YTEgL2Rldi9zZGIxIC9kZXYvc2RjMQp3aXBlZnMgLWEgLS1mb3JjZSAvZGV2L21kMApta2ZzIC10
-IGJ0cmZzIC9kZXYvbWQwCm1rZGlyIC1wIC9mcy9tZDAKbW91bnQgLXQgYnRyZnMgL2Rldi9tZDAg
-L2ZzL21kMAoKZm9yIGZpbGUgaW4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1Ki9jcHVmcmVx
-L3NjYWxpbmdfZ292ZXJub3IKZG8KCWVjaG8gcGVyZm9ybWFuY2UgPiAkZmlsZQpkb25lCgpmc19t
-YXJrIC1kIC9mcy9tZDAvMSAtZCAvZnMvbWQwLzIgLWQgL2ZzL21kMC8zIC1kIC9mcy9tZDAvNCAt
-ZCAvZnMvbWQwLzUgLWQgL2ZzL21kMC82IC1kIC9mcy9tZDAvNyAtZCAvZnMvbWQwLzggLWQgL2Zz
-L21kMC85IC1kIC9mcy9tZDAvMTAgLWQgL2ZzL21kMC8xMSAtZCAvZnMvbWQwLzEyIC1kIC9mcy9t
-ZDAvMTMgLWQgL2ZzL21kMC8xNCAtZCAvZnMvbWQwLzE1IC1kIC9mcy9tZDAvMTYgLWQgL2ZzL21k
-MC8xNyAtZCAvZnMvbWQwLzE4IC1kIC9mcy9tZDAvMTkgLWQgL2ZzL21kMC8yMCAtZCAvZnMvbWQw
-LzIxIC1kIC9mcy9tZDAvMjIgLWQgL2ZzL21kMC8yMyAtZCAvZnMvbWQwLzI0IC1kIC9mcy9tZDAv
-MjUgLWQgL2ZzL21kMC8yNiAtZCAvZnMvbWQwLzI3IC1kIC9mcy9tZDAvMjggLWQgL2ZzL21kMC8y
-OSAtZCAvZnMvbWQwLzMwIC1kIC9mcy9tZDAvMzEgLWQgL2ZzL21kMC8zMiAtZCAvZnMvbWQwLzMz
-IC1kIC9mcy9tZDAvMzQgLWQgL2ZzL21kMC8zNSAtZCAvZnMvbWQwLzM2IC1kIC9mcy9tZDAvMzcg
-LWQgL2ZzL21kMC8zOCAtZCAvZnMvbWQwLzM5IC1kIC9mcy9tZDAvNDAgLWQgL2ZzL21kMC80MSAt
-ZCAvZnMvbWQwLzQyIC1kIC9mcy9tZDAvNDMgLWQgL2ZzL21kMC80NCAtZCAvZnMvbWQwLzQ1IC1k
-IC9mcy9tZDAvNDYgLWQgL2ZzL21kMC80NyAtZCAvZnMvbWQwLzQ4IC1kIC9mcy9tZDAvNDkgLWQg
-L2ZzL21kMC81MCAtZCAvZnMvbWQwLzUxIC1kIC9mcy9tZDAvNTIgLWQgL2ZzL21kMC81MyAtZCAv
-ZnMvbWQwLzU0IC1kIC9mcy9tZDAvNTUgLWQgL2ZzL21kMC81NiAtZCAvZnMvbWQwLzU3IC1kIC9m
-cy9tZDAvNTggLWQgL2ZzL21kMC81OSAtZCAvZnMvbWQwLzYwIC1kIC9mcy9tZDAvNjEgLWQgL2Zz
-L21kMC82MiAtZCAvZnMvbWQwLzYzIC1kIC9mcy9tZDAvNjQgLW4gNTIwIC1MIDEgLVMgMCAtcyA0
-MTk0MzA0Cg==
+bW9kcHJvYmUgbmRfZTgyMApkbXNldHVwIHJlbW92ZV9hbGwKd2lwZWZzIC1hIC0tZm9yY2UgL2Rl
+di9wbWVtMAp3aXBlZnMgLWEgLS1mb3JjZSAvZGV2L3BtZW0xCm1rZnMgLXQgeGZzIC9kZXYvcG1l
+bTAKbWtmcyAtdCB4ZnMgL2Rldi9wbWVtMQpta2RpciAtcCAvZnMvcG1lbTAKbW91bnQgLXQgeGZz
+IC1vIG5vYmFycmllcixpbm9kZTY0IC1vIGRheCAvZGV2L3BtZW0wIC9mcy9wbWVtMApta2RpciAt
+cCAvZnMvcG1lbTEKbW91bnQgLXQgeGZzIC1vIG5vYmFycmllcixpbm9kZTY0IC1vIGRheCAvZGV2
+L3BtZW0xIC9mcy9wbWVtMQoKZm9yIGZpbGUgaW4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1
+Ki9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKZG8KCWVjaG8gcGVyZm9ybWFuY2UgPiAkZmlsZQpk
+b25lCgplY2hvICcKW2dsb2JhbF0KYnM9Mk0KaW9lbmdpbmU9c3luYwppb2RlcHRoPTMyCnNpemU9
+NzY2OTU4NDQ1NwpkaXJlY3Q9MApydW50aW1lPTIwMAppbnZhbGlkYXRlPTEKZmFsbG9jYXRlPXBv
+c2l4Cmdyb3VwX3JlcG9ydGluZwoKdGltZV9iYXNlZAoKW3Rhc2tfMF0Kcnc9cmFuZHdyaXRlCmRp
+cmVjdG9yeT0vZnMvcG1lbTAKbnVtam9icz0xNAoKW3Rhc2tfMV0Kcnc9cmFuZHdyaXRlCmRpcmVj
+dG9yeT0vZnMvcG1lbTEKbnVtam9icz0xNCcgfCBmaW8gLS1vdXRwdXQtZm9ybWF0PWpzb24gLQo=
 
---===============7373920002437434349==--
+--===============6373023943089651104==--
 
