@@ -1,37 +1,49 @@
-Content-Type: multipart/mixed; boundary="===============8801259317397518500=="
+Content-Type: multipart/mixed; boundary="===============5362064808389789570=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] df387eae80: blogbench.write_score -59% regression
-Date: Fri, 03 Feb 2017 09:41:20 +0100
-Message-ID: <20170203084120.GA27206@lst.de>
-In-Reply-To: <20170203014400.GN17561@yexl-desktop>
+Date: Fri, 03 Feb 2017 16:51:40 +0800
+Message-ID: <20170203085140.GA5957@yexl-desktop>
+In-Reply-To: <20170203084120.GA27206@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8801259317397518500==
+--===============5362064808389789570==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 03, 2017 at 09:44:00AM +0800, kernel test robot wrote:
-> =
+On 02/03, Christoph Hellwig wrote:
+>On Fri, Feb 03, 2017 at 09:44:00AM +0800, kernel test robot wrote:
+>> =
 
-> Greeting,
-> =
+>> Greeting,
+>> =
 
-> FYI, we noticed a -59% regression of blogbench.write_score due to commit:
-> =
+>> FYI, we noticed a -59% regression of blogbench.write_score due to commit:
+>> =
 
-> =
+>> =
 
-> commit: df387eae801490e939f31eab47f47d87ab85b582 ("enable discard by defa=
-ult")
-> git://git.infradead.org/users/hch/vfs xfs-async-discard.5
+>> commit: df387eae801490e939f31eab47f47d87ab85b582 ("enable discard by def=
+ault")
+>> git://git.infradead.org/users/hch/vfs xfs-async-discard.5
+>
+>Hi Xiaolong,
 
-Hi Xiaolong,
+Hi, Christoph
 
-do you also have numbers for the whole branch?  Or should I reorder
-the branch to move the enable last to get those in another run?
+>
+>do you also have numbers for the whole branch?  Or should I reorder
 
---===============8801259317397518500==--
+Do you mean test data for 7f7bfe47 (xfs: wait for discards before retrying =
+an allocation due to busy extents) ?
+I'll need to check whether 0day bot has launched test for it or not.
+
+Thanks,
+Xiaolong
+
+>the branch to move the enable last to get those in another run?
+
+--===============5362064808389789570==--
 
