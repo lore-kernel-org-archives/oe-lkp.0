@@ -1,86 +1,33 @@
-Content-Type: multipart/mixed; boundary="===============8759206542125696126=="
+Content-Type: multipart/mixed; boundary="===============0834964483940093054=="
 MIME-Version: 1.0
-From: Dan Williams <dan.j.williams@intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [scsi, block] 0dba1314d4: WARNING:at_fs/sysfs/dir.c:#sysfs_warn_dup
-Date: Mon, 06 Feb 2017 21:42:13 -0800
-Message-ID: <CAPcyv4jkak-gX3gQaBJiEk1G79skdN2F9WL-sK2DjPwFhA8rdg@mail.gmail.com>
-In-Reply-To: <01c338e2-2a30-610d-b7fa-00cb3ce2cf86@fb.com>
+Subject: Re: [lkp-robot] [fs] 24972782d0: BUG:unable_to_handle_kernel
+Date: Tue, 07 Feb 2017 09:13:17 +0100
+Message-ID: <20170207081317.GU6500@twins.programming.kicks-ass.net>
+In-Reply-To: <20170207013046.GA2568@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8759206542125696126==
+--===============0834964483940093054==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 6, 2017 at 8:09 PM, Jens Axboe <axboe@fb.com> wrote:
-> On 02/06/2017 05:14 PM, James Bottomley wrote:
->> On Sun, 2017-02-05 at 21:13 -0800, Dan Williams wrote:
->>> On Sun, Feb 5, 2017 at 1:13 AM, Christoph Hellwig <hch@lst.de> wrote:
->>>> Dan,
->>>>
->>>> can you please quote your emails?  I can't find any content
->>>> inbetween all these quotes.
->>>
->>> Sorry, I'm using gmail, but I'll switch to attaching the logs.
->>>
->>> So with help from Xiaolong I was able to reproduce this, and it does
->>> not appear to be a regression. We simply change the failure output of
->>> an existing bug. Attached is a log of the same test on v4.10-rc7
->>> (i.e. without the recent block/scsi fixes), and it shows sda being
->>> registered twice.
->>>
->>> "[    6.647077] kobject (d5078ca4): tried to init an initialized
->>> object, something is seriously wrong."
->>>
->>> The change that "scsi, block: fix duplicate bdi name registration
->>> crashes" makes is to properly try to register sdb since the sda devt
->>> is still alive. However that's not a fix because we've managed to
->>> call blk_register_queue() twice on the same queue.
->>
->> OK, time to involve others: linux-scsi and linux-block cc'd and I've
->> inserted the log below.
->>
->> James
->>
->> ---
->>
->> [    5.969672] scsi host0: scsi_debug: version 1.86 [20160430]
->> [    5.969672]   dev_size_mb=3D8, opts=3D0x0, submit_queues=3D1, statist=
-ics=3D0
->> [    5.971895] scsi 0:0:0:0: Direct-Access     Linux    scsi_debug      =
- 0186 PQ: 0 ANSI: 7
->> [    6.006983] sd 0:0:0:0: [sda] 16384 512-byte logical blocks: (8.39 MB=
-/8.00 MiB)
->> [    6.026965] sd 0:0:0:0: [sda] Write Protect is off
->> [    6.027870] sd 0:0:0:0: [sda] Mode Sense: 73 00 10 08
->> [    6.066962] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabl=
-ed, supports DPO and FUA
->> [    6.486962] sd 0:0:0:0: [sda] Attached SCSI disk
->> [    6.488377] sd 0:0:0:0: [sda] Synchronizing SCSI cache
->> [    6.489455] sd 0:0:0:0: Attached scsi generic sg0 type 0
->> [    6.526982] sd 0:0:0:0: [sda] 16384 512-byte logical blocks: (8.39 MB=
-/8.00 MiB)
->> [    6.546964] sd 0:0:0:0: [sda] Write Protect is off
->> [    6.547873] sd 0:0:0:0: [sda] Mode Sense: 73 00 10 08
->> [    6.586963] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabl=
-ed, supports DPO and FUA
->> [    6.647077] kobject (d5078ca4): tried to init an initialized object, =
-something is seriously wrong.
->
-> So sda is probed twice, and hilarity ensues when we try to register it
-> twice.  I can't reproduce this, using scsi_debug and with scsi_async
-> enabled.
->
-> This is running linux-next? What's your .config?
->
+On Tue, Feb 07, 2017 at 09:30:46AM +0800, kernel test robot wrote:
+> =
 
-The original failure report is here:
+> FYI, we noticed the following commit:
+> =
 
-http://marc.info/?l=3Dlinux-kernel&m=3D148619222300774&w=3D2
+> commit: 24972782d0379cd7e2f1d049f642863223c4416b ("fs: Remove iput_final(=
+)")
+> https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git locking/ref=
+counts
+> =
 
-...but it reproduces on current mainline with the same config. I
-haven't spotted what makes scsi_debug behave like this.
 
---===============8759206542125696126==--
+Ah right.. So that series is flaky but I obviously made a dumb mistake
+in that patch (dereferencing @inode before testing its not NULL).
+
+--===============0834964483940093054==--
 
