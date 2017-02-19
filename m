@@ -1,95 +1,87 @@
-Content-Type: multipart/mixed; boundary="===============6937608185972291967=="
+Content-Type: multipart/mixed; boundary="===============0733987756474949075=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [clear_page] 0ad07c8104 BUG: unable to handle kernel NULL pointer dereference at 0000000000000040
-Date: Sun, 19 Feb 2017 09:06:51 +0800
-Message-ID: <20170219010651.nsxugr7j6exvh3wn@wfg-t540p.sh.intel.com>
-In-Reply-To: <20170219001047.ivdkkkmrml6bh5v3@pd.tnic>
+Subject: Re: [locking/mutex] e274795ea7 WARNING: CPU: 0 PID: 1 at arch/x86/include/asm/fpu/internal.h:348 __switch_to
+Date: Sun, 19 Feb 2017 10:53:44 +0800
+Message-ID: <20170219025344.jb235fsecirmpxaq@wfg-t540p.sh.intel.com>
+In-Reply-To: <20170218142645.GH6500@twins.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6937608185972291967==
+--===============0733987756474949075==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Feb 19, 2017 at 01:10:47AM +0100, Borislav Petkov wrote:
->Hey Fengguang,
+Hi Peter,
+
+On Sat, Feb 18, 2017 at 03:26:45PM +0100, Peter Zijlstra wrote:
+>On Sat, Feb 18, 2017 at 09:53:07PM +0800, Fengguang Wu wrote:
 >
->On Sun, Feb 19, 2017 at 07:29:50AM +0800, Fengguang Wu wrote:
->> Good point! I noticed it too while sending out the report. It'll be
->> showed as this in future:
+>> >>[   13.377261] Write protecting the kernel text: 15320k
+>> >>[   13.378910] Write protecting the kernel read-only data: 6316k
+>> >>[   13.380655] NX-protecting the kernel data: 9256k
+>> >>[   13.382475] x86/mm: Checked W+X mappings: passed, no W+X pages foun=
+d.
+>> >>[   13.384781] ------------[ cut here ]------------
+>> >>[   13.386327] WARNING: CPU: 0 PID: 1 at arch/x86/include/asm/fpu/inte=
+rnal.h:348 __switch_to+0x1b6/0x260
+>> >
+>> >What tree is this? on current next/master that file doesn't have a WARN
+>> >on that line.
 >>
->>        https://github.com/0day-ci/linux/commits/Borislav-Petkov/x86-Opti=
-mize-clear_page/20170210-053052
+>> The dmesg comes from the first bad commit e274795ea7 ("locking/mutex: Fi=
+x mutex handoff").
+>>
+>> % git blame -sL 333,350 e274795ea7 arch/x86/include/asm/fpu/internal.h
+>> fd169b05 333) /*
+>> fd169b05 334)  * Save processor xstate to xsave area.
+>> fd169b05 335)  */
+>> 8c05f05e 336) static inline void copy_xregs_to_kernel(struct xregs_state=
+ *xstate)
+>> fd169b05 337) {
+>> fd169b05 338)   u64 mask =3D -1;
+>> fd169b05 339)   u32 lmask =3D mask;
+>> fd169b05 340)   u32 hmask =3D mask >> 32;
+>> b7106fa0 341)   int err;
+>> fd169b05 342)
+>> fd169b05 343)   WARN_ON(!alternatives_patched);
+>> fd169b05 344)
+>> b7106fa0 345)   XSTATE_XSAVE(xstate, lmask, hmask, err);
+>> fd169b05 346)
+>> 8c05f05e 347)   /* We should never fault when copying to a kernel buffer=
+: */
+>> 8c05f05e 348)   WARN_ON_FPU(err);
 >
->How about pointing to the patch directly?
 >
->https://github.com/0day-ci/linux/commit/0ad07c8104eb5c12dfcb86581c1cc65718=
-3496cc
+>Argh, I'm an idiot..
+>
+>Please try this one..
 
-Yes if we add it as a line below the branch URL, it could be a time saver.
+Yes it fixed the warning.
 
->> Sorry the 2nd report was send out manually and I only checked the
->> emails in my _current_ mbox. Since the previous report email has been
->> archived, it slipped through the duplication check.
->
->No worries - this was all a prelude to me hinting at the email-based
->talking to the bot :-)
->
->> CC Xiaolong. It's possible to automate the test-of-fixup-patches.
->> Firstly find out the original email report by the Message-ID being
->> replied to. Then fetch all the information required for deciding where
->> the patch should be applied to, parameters to auto-testing the patch.
->
->Sounds like a plan.
->
->It would probably even be easier for the bot if the reply-mail contained
->specially-formatted hints like:
->
->TEST-WITH-BELOW-PATCH: ...
->
->or so.
+Tested-by: Fengguang Wu <fengguang.wu@intel.com>
 
-Since it's hard to teach ALL people about the rule, it'd be best if we
-can work w/o any rules -- unless you want to be accurate&helpful or to
-customize test behaviors.
-
-Since we already tested the original patch/commit (hence the report),
-we should know where the fixup should be applied to. And it'd be
-reasonably easy to tell whether the fix is incremental or a
-replacement -- just try git-am onto the original commit first, if
-failed, continue to try the parent commit. For old bugs the fix could
-be against linus/master or linux-next/master, which could be tried too.
-
->Btw, another nice aspect of this talking back to the bot is that before
->I, as a recipient of the bug report, go and try to prepare a guest or
->find a machine to reproduce properly, I can send a quick diff to the bot
->in the meantime and say, "try this on the guest. I have a hunch it might
->fix it."
-
-Yes, that'd be most convenient. In general the email interface could
-be something like this:
-
-        # "key: value" fields; if you Re: to an earlier bug report, they ca=
-n be auto retrieved
-        compiler: gcc-6 # optional
-        base-commit: v4.10-rc8 # the robot knows kernel commits from hundre=
-ds of public git trees
-        ---
-        the patch
-        ---
-        attach kconfig files
-
->> Yeah we have a TODO to do email based on-demand service, which looks
->> close to your proposal.
->
->Cool. Ping me if you need testers.
->
->Thanks!
-
-Thanks,
+Regards,
 Fengguang
 
---===============6937608185972291967==--
+>---
+> kernel/fork.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+>diff --git a/kernel/fork.c b/kernel/fork.c
+>index 68b1706c75d0..a366f636e8af 100644
+>--- a/kernel/fork.c
+>+++ b/kernel/fork.c
+>@@ -444,7 +444,7 @@ void __init fork_init(void)
+> #ifndef ARCH_MIN_TASKALIGN
+> #define ARCH_MIN_TASKALIGN	0
+> #endif
+>-	int align =3D min_t(int, L1_CACHE_BYTES, ARCH_MIN_TASKALIGN);
+>+	int align =3D max_t(int, L1_CACHE_BYTES, ARCH_MIN_TASKALIGN);
+>
+> 	/* create a slab on which task_structs can be allocated */
+> 	task_struct_cachep =3D kmem_cache_create("task_struct",
+
+--===============0733987756474949075==--
 
