@@ -1,65 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============7159251595155453946=="
+Content-Type: multipart/mixed; boundary="===============7050945957989049191=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@suse.de>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [clear_page] 0ad07c8104 BUG: unable to handle kernel NULL pointer dereference at 0000000000000040
-Date: Mon, 20 Feb 2017 10:35:51 +0100
-Message-ID: <20170220093551.crucsscnh5zvd2si@pd.tnic>
-In-Reply-To: <20170220030352.fksjiy6ktuxwtvdg@wfg-t540p.sh.intel.com>
+Subject: Re: [lkp-robot] [mm, vmscan] 5e56dfbd83: fsmark.files_per_sec -11.1% regression
+Date: Mon, 20 Feb 2017 11:19:42 +0100
+Message-ID: <20170220101942.GE2431@dhcp22.suse.cz>
+In-Reply-To: <20170220014329.GH29988@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7159251595155453946==
+--===============7050945957989049191==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 20, 2017 at 11:03:52AM +0800, Fengguang Wu wrote:
-> We actually already test LKML patch in that way (Xiaolong maintains
-> this feature). Nevertheless if developers specify "base-commit:" it
-> could help eliminate the guessing works by the dumb robot. We'll
-> appreciate if the "base-commit:" or "base-patchid:" tags are listed
-> in the patches, especially in some non-obvious situations.
+On Mon 20-02-17 09:43:29, Ye Xiaolong wrote:
+> On 02/19, Michal Hocko wrote:
+> >On Mon 13-02-17 14:46:37, Ye Xiaolong wrote:
+> >> On 02/07, Michal Hocko wrote:
+> >> >On Tue 07-02-17 10:22:13, Ye Xiaolong wrote:
+> >> >
+> >> [snip]
+> >> =
 
-Can I specify multiple base commits for testing stable backports?
+> >> >Could you retest with a single NUMA node? I am not familiar with the
+> >> >benchmark enough to judge it was set up properly for a NUMA machine.
+> >> =
 
-For example
+> >> Sorry for the late, I'm not quite familiar with NUMA, could you tell m=
+e how
+> >> to configure a machine to use a single NUMA node? through cmdline?
+> >
+> >I am not aware of any parameter which would disble numa via command
+> >line. You can do that when starting qemu, which I assume you are using.
+> >Just configure a single memory node (-numa parameter).
+> =
 
-base-commit: v4.9.11, v4.4.50, v3.10.105,...
+> Actually we were doing the test on a physical machine, not a guest.
+> Any kernel config will do?
 
-> Such tags could be regarded as "explicit" test requests, where we could
-> send "BUILD COMPLETE" emails as a response (comparing to our normal
-> LKML patch tests, which only build regressions will trigger an email
-> notification).
-
-Yap, similar to those you guys sent when a new branch on k.org has been
-tested.
-
-Btw, can we make the format layout this way:
-
-patch
-
----
-
-<0day bot tags>
-
----
-
-so that when we send it to lkml, it doesn't interfere with review by
-slapping the tags at the beginning of the patch?
-
-Also, should we CC some special mailing list which the 0day bot parses
-or lkml is enough?
-
-Cool stuff.
+You can disbale CONFIG_NUMA. But a much better approach would be
+limitting the test to a single numa node via numactl.
 
 -- =
 
-Regards/Gruss,
-    Boris.
+Michal Hocko
+SUSE Labs
 
-SUSE Linux GmbH, GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton, =
-HRB 21284 (AG N=C3=BCrnberg)
---=20
-
---===============7159251595155453946==--
+--===============7050945957989049191==--
 
