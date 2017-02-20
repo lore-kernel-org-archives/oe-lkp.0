@@ -1,70 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============5122717240717628009=="
+Content-Type: multipart/mixed; boundary="===============7159251595155453946=="
 MIME-Version: 1.0
-From: Marc Zyngier <marc.zyngier@arm.com>
+From: Borislav Petkov <bp@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [hrtimer] 336a9cde10: WARNING:at_kernel/time/hrtimer.c:#hrtimer_init
-Date: Mon, 20 Feb 2017 09:26:53 +0000
-Message-ID: <1d697e31-ec4c-4abd-c602-20e022dcb127@arm.com>
-In-Reply-To: <20170219210659.GA95441@inn.lkp.intel.com>
+Subject: Re: [clear_page] 0ad07c8104 BUG: unable to handle kernel NULL pointer dereference at 0000000000000040
+Date: Mon, 20 Feb 2017 10:35:51 +0100
+Message-ID: <20170220093551.crucsscnh5zvd2si@pd.tnic>
+In-Reply-To: <20170220030352.fksjiy6ktuxwtvdg@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5122717240717628009==
+--===============7159251595155453946==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 19/02/17 21:06, kernel test robot wrote:
-> =
+On Mon, Feb 20, 2017 at 11:03:52AM +0800, Fengguang Wu wrote:
+> We actually already test LKML patch in that way (Xiaolong maintains
+> this feature). Nevertheless if developers specify "base-commit:" it
+> could help eliminate the guessing works by the dumb robot. We'll
+> appreciate if the "base-commit:" or "base-patchid:" tags are listed
+> in the patches, especially in some non-obvious situations.
 
-> FYI, we noticed the following commit:
-> =
+Can I specify multiple base commits for testing stable backports?
 
-> commit: 336a9cde10d641e70bac67d90ae91b3190c3edca ("hrtimer: Catch invalid=
- clockids again")
-> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git timers/core
-> =
+For example
 
-> in testcase: boot
-> =
+base-commit: v4.9.11, v4.4.50, v3.10.105,...
 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 4G
-> =
+> Such tags could be regarded as "explicit" test requests, where we could
+> send "BUILD COMPLETE" emails as a response (comparing to our normal
+> LKML patch tests, which only build regressions will trigger an email
+> notification).
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
+Yap, similar to those you guys sent when a new branch on k.org has been
+tested.
 
-This is indeed the expected effect: mac80211_hwsim is using an illegal
-clockid, and we're letting the world now about it. The obvious
-workaround is the following patch:
+Btw, can we make the format layout this way:
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/m=
-ac80211_hwsim.c
-index 1620a5d2757d..0889fc81ce9e 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2671,7 +2671,7 @@ static int mac80211_hwsim_new_radio(struct genl_info =
-*info,
- =
+patch
 
- 	tasklet_hrtimer_init(&data->beacon_timer,
- 			     mac80211_hwsim_beacon,
--			     CLOCK_MONOTONIC_RAW, HRTIMER_MODE_ABS);
-+			     CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
- =
+---
 
- 	spin_lock_bh(&hwsim_radio_lock);
- 	list_add_tail(&data->list, &hwsim_radios);
+<0day bot tags>
 
-which suppresses the warning and preserves the current behaviour,
-but doesn't provide what the author expected (the kernel never
-pretended to support CLOCK_MONOTONIC_RAW though).
+---
 
-Thanks,
+so that when we send it to lkml, it doesn't interfere with review by
+slapping the tags at the beginning of the patch?
 
-	M.
+Also, should we CC some special mailing list which the 0day bot parses
+or lkml is enough?
+
+Cool stuff.
+
 -- =
 
-Jazz is not dead. It just smells funny...
+Regards/Gruss,
+    Boris.
 
---===============5122717240717628009==--
+SUSE Linux GmbH, GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton, =
+HRB 21284 (AG N=C3=BCrnberg)
+--=20
+
+--===============7159251595155453946==--
 
