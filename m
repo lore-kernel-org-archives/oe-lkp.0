@@ -1,184 +1,167 @@
-Content-Type: multipart/mixed; boundary="===============6047222616834901110=="
+Content-Type: multipart/mixed; boundary="===============8735261127044467519=="
 MIME-Version: 1.0
-From: Dou Liyang <douly.fnst@cn.fujitsu.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/acpi] dc6db24d24: BUG: unable to handle kernel paging request at 0000116007090008
-Date: Mon, 13 Feb 2017 13:30:36 +0800
-Message-ID: <0188ea2f-f2a1-bfb0-5733-8c84abc3acac@cn.fujitsu.com>
-In-Reply-To: <20170213013708.GI16630@yexl-desktop>
+Subject: Re: [PATCH v2 0/4] Revert works for the mapping of cpuid <-> nodeid
+Date: Tue, 21 Feb 2017 15:10:59 +0800
+Message-ID: <20170221071059.GA19410@yexl-desktop>
+In-Reply-To: <20170221010218.GA9932@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6047222616834901110==
+--===============8735261127044467519==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Xiaolong
-
-At 02/13/2017 09:37 AM, Ye Xiaolong wrote:
-> On 11/21, Dou Liyang wrote:
->> Hi, Xiaolong,
+On 02/21, Ye Xiaolong wrote:
+>On 02/20, Dou Liyang wrote:
+>>Currently, We make the mapping of "cpuid <-> nodeid" fixed at the booting=
+ time.
+>>It keeps consistent with the WorkQueue and avoids some bugs which may be =
+caused
+>>by the dynamic assignment.
+>>As we know, It is implemented by the patches as follows: 2532fc318d, f7c2=
+8833c2,
+>>8f54969dc8, 8ad893faf2, dc6db24d24, which depend on ACPI table. Simply sp=
+eaking:
 >>
->> At 11/21/2016 09:31 AM, Ye Xiaolong wrote:
->>> On 11/18, Dou Liyang wrote:
->>>> Hi xiaolong
->>>>
->>>> At 11/18/2016 02:16 PM, Ye Xiaolong wrote:
->>>>> Hi, liyang
->>>>>
->>>>> Sorry for the late.
->>>>>
->>>>> On 10/31, Dou Liyang wrote:
->>>>>> Hi, Xiaolong,
->>>>>>
->>>>>> I research the ACPI table for a long time, and I found that:
->>>>>> The reason for this bug is the duplicate IDs "0xFF" in DSDT.
->>>>>> it has already been fixed in the committed id
->>>>>> 8e089eaa1999def4bb954caa91941f29b0672b6a and
->>>>>> fd74da217df7d4bd25e95411da64e0b92762842e which is after the
->>>>>> dc6db24d2476cd09c0ecf2b8d80313539f737a89 .
->>>>>>
->>>>>> could you help me to Verify my thoughts in the LKP.
->>>>>>
->>>>>
->>>>> I've queued the same test jobs for commit fd74da217d, I'll notify you
->>>>> once I get the results.
->>>>
->>>
->>> Hi, Liyang,
->>>
->>> Results show that the reported error is gone with commit fd74da217df7d4=
-bd25e95411da64e0b92762842e
->>> below is the comparison.
->>>
+>>Step 1. Make the "Logical CPU ID <-> Processor ID/UID" fixed Using MADT:
+>>We generate the logical CPU IDs by the Local APIC/x2APIC IDs orderly and
+>>get the mapping of Processor ID/UID <-> Local Apic ID directly in MADT.
+>>So, we get the mapping of
+>>*Processor ID/UID <-> Local Apic ID <-> Logical CPU ID*
 >>
->> thanks a lot. that means it has been fixed.
+>>Step 2. Make the "Processor ID/UID <-> Node ID(_PXM)" fixed Using DSDT:
+>>The maaping of "Processor ID/UID <-> Node ID(_PXM)" is ready-made in
+>>each entities. we just use it directly.
+>>
+>>So, at last we get the maaping of *Node ID <-> Logical CPU ID* according =
+to
+>>step1 and step2:
+>>*Node ID(_PXM) <-> Processor ID/UID <-> Local Apic ID <-> Logical CPU ID*
+>>
+>>But, The ACPI table is unreliable and it is very risky that we use the en=
+tity
+>>which isn't related to a physical device at booting time. Here has alread=
+y two
+>>bugs we found.
+>>1. Duplicated Processor IDs in DSDT.
+>>	It has been fixed by commit 8e089eaa19, fd74da217d.
+>>2. The _PXM in DSDT is inconsistent with the one in MADT.
+>>	It may cause the bug, which is shown in:
+>>		https://lkml.org/lkml/2017/2/12/200
+>>There may be more later. We shouldn't just only fix them everytime, we sh=
+ould
+>>solve this problem from the source to avoid such problems happend again a=
+nd
+>>again.
+>>
+>>Now, a simple and easy way is found, we revert our patches. Do the Step 2 =
+
+>>at hot-plug time, not at booting time where we did some useless work.
+>>
+>>It also can make the mapping of "cpuid <-> nodeid" fixed and avoid excess=
+ive
+>>use of the ACPI table.
+>>
+>>We have tested them in our box: Fujitsu PQ2000 with 2 nodes for hot-plug.
+>>To Xiaolong: =
+
+>>	Please help me to test it in the special machine.
 >
-> Sorry for my neglect, the result for fd74da217df7d4bd25e95411da showed no=
- dmesg
-> because it's incomplete run and has no demsg stat at all.
+>Got it, I'll queue the tests on the previous machine and let you know the =
+result
+>once I get it.
 
-Is that means:
+Previous kernel panic and incomplete run issue (described in [1]) in 0day
+system is gone with this series.
 
-you have already tested the Linux branch which contains the commit
-fd74da217df7d. and it doesn't work well.
+Tested-by: Xiaolong Ye <xiaolong.ye@intel.com>
 
-Btw, Why the test is incomplete run ?
+Here is the comparison:
 
-> The bug still persists in v4.9, v4.10-rcx, the lastest kernel head,
+$ compare -at dc6db24d2476cd09c0ecf2b8d80313539f737a89 2e61bac54fad4c018afd=
+23c118bce2399e504020
+tests: 1
+testcase/path_params/tbox_group/run: vm-scalability/300-never-never-1-1-swa=
+p-w-rand-performance/lkp-hsw-ep2
 
-If the dmesg and stat of the test is NULL, How do you prove that the
-bug still exists?
+Here dc6db24d24 is previous first bad commit, 2e61bac54 is the head commit =
+of your series
+applied on top of latest tip of linus/master c945d0227d ("Merge branch 'x86=
+-platform-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/t=
+ip")
 
-> could you help to check?
->
+dc6db24d2476cd09  2e61bac54fad4c018afd23c118  =
 
-Yes, I think we first should make the test with commit fd74da217df7d
-work in the specific test machine.
+----------------  --------------------------  =
 
-test machine: 72 threads Intel(R) Xeon(R) CPU E5-2699 v3 @ 2.30GHz with =
+       fail:runs  %reproduction    fail:runs
+           |             |             |    =
 
-128G memory
+           :12          12%           1:8     last_state.OOM
+           :12          12%           1:8     dmesg.page_allocation_failure=
+:order:#,mode:#(GFP_USER|GFP_DMA32|__GFP_ZERO)
+           :12          12%           1:8     dmesg.Mem-Info
+         12:12        -100%            :8     dmesg.BUG:unable_to_handle_ke=
+rnel
+         12:12        -100%            :8     dmesg.Oops
+         12:12        -100%            :8     dmesg.RIP:get_partial_node
+          9:12         -75%            :8     dmesg.RIP:_raw_spin_lock_irqs=
+ave
+          3:12         -25%            :8     dmesg.general_protection_faul=
+t:#[##]SMP
+          3:12         -25%            :8     dmesg.RIP:native_queued_spin_=
+lock_slowpath
+          3:12         -25%            :8     dmesg.Kernel_panic-not_syncin=
+g:Hard_LOCKUP
+          2:12         -17%            :8     dmesg.RIP:load_balance
+          2:12         -17%            :8     dmesg.Kernel_panic-not_syncin=
+g:Fatal_exception_in_interrupt
+          1:12          -8%            :8     dmesg.RIP:resched_curr
+          1:12          -8%            :8     dmesg.Kernel_panic-not_syncin=
+g:Fatal_exception
+          5:12         -42%            :8     dmesg.WARNING:at_include/linu=
+x/uaccess.h:#__probe_kernel_read
+          1:12          -8%            :8     dmesg.WARNING:at_lib/list_deb=
+ug.c:#__list_add
 
-Am I right? waiting your response.
+
+[1] https://lkml.org/lkml/2017/2/12/200
 
 Thanks,
-Liyang
+Xiaolong
 
-> Thanks,
-> Xiaolong
 >
+>Thanks,
+>Xiaolong
 >>
->>>
->>> compare -at dc6db24d2476cd09c0ecf2b8d80313539f737a89 fd74da217df7d4bd25=
-e95411da64e0b92762842e
->>> tests: 1
->>> testcase/path_params/tbox_group/run: vm-scalability/300-never-never-1-1=
--swap-w-rand-performance/lkp-hsw-ep2
->>>
->>> dc6db24d2476cd09  fd74da217df7d4bd25e95411da
->>> ----------------  --------------------------
->>>       fail:runs  %reproduction    fail:runs
->>>           |             |             |
->>>         12:12        -100%            :3     dmesg.BUG:unable_to_handle=
-_kernel
->>>         12:12        -100%            :3     dmesg.Oops
->>>         12:12        -100%            :3     dmesg.RIP:get_partial_node
->>>          9:12         -75%            :3     dmesg.RIP:_raw_spin_lock_i=
-rqsave
->>>          3:12         -25%            :3     dmesg.general_protection_f=
-ault:#[##]SMP
->>>          3:12         -25%            :3     dmesg.RIP:native_queued_sp=
-in_lock_slowpath
->>>          3:12         -25%            :3     dmesg.Kernel_panic-not_syn=
-cing:Hard_LOCKUP
->>>          2:12         -17%            :3     dmesg.RIP:load_balance
->>>          2:12         -17%            :3     dmesg.Kernel_panic-not_syn=
-cing:Fatal_exception_in_interrupt
->>>          1:12          -8%            :3     dmesg.RIP:resched_curr
->>>          1:12          -8%            :3     dmesg.Kernel_panic-not_syn=
-cing:Fatal_exception
->>>          5:12         -42%            :3     dmesg.WARNING:at_include/l=
-inux/uaccess.h:#__probe_kernel_read
->>>          1:12          -8%            :3     dmesg.WARNING:at_lib/list_=
-debug.c:#__list_add
->>>
->>>
+>>Change log:
+>>  v1 -> v2: 1. fix some comments.
+>>            2. add the verification of duplicate processor id.
 >>
->>>>>> 2. About the LKP-tests, I want run the tests in my own pc.
->>>>>> I use the debain sid as an OS. the .yaml file can be installed and
->>>>>> job splited, but it can't be run correctly.
->>>>>>
->>>>>> Is the linux source code must be in /tmp/?
->>>>>> And if I need to modify the .yaml file to fit my pc.
->>>>>>
->>>>>
->>>>> Could you paste the error log for me to analyze?
->>>>
->>>> Yes.  let me tidy up it ah. :)
->>>>
+>>Dou Liyang (4):
+>>  Revert"x86/acpi: Set persistent cpuid <-> nodeid mapping when booting"
+>>  Revert"x86/acpi: Enable MADT APIs to return disabled apicids"
+>>  acpi: Fix the check handle in case of declaring processors using the
+>>    Device operator
+>>  acpi: Move the verification of duplicate proc_id from booting time to
+>>    hot-plug time
 >>
->> And, I am very interesting in LKP-Test. when I built it, I met some
->> problems.
+>> arch/x86/kernel/acpi/boot.c   |   2 +-
+>> drivers/acpi/acpi_processor.c |  50 +++++++++++-----
+>> drivers/acpi/bus.c            |   1 -
+>> drivers/acpi/processor_core.c | 133 +++++++-----------------------------=
+------
+>> include/linux/acpi.h          |   5 +-
+>> 5 files changed, 59 insertions(+), 132 deletions(-)
 >>
->> here is the error log:
->>
->> root(a)debian:/home/douly/lkp-tests# lkp run ./job-unlink2-performance-0=
-4c197c080f2ed7a022f79701455c6837f4b9573-debian-x86_64-2016-08-31.cgz.yaml
->>
->> IPMI BMC is not supported on this machine, skip bmc-watchdog setup!
->> 2016-11-21 15:21:01 ./runtest.py unlink2 32 both 1 54 72
->> /home/douly/lkp-tests/bin/log_cmd: 7: exec: ./runtest.py: not found
->> kill 18805 vmstat -n 10
->> kill 18803 dmesg --follow --decode
->> kill 18829 /lkp/benchmarks/perf-stat/perf stat -a -I 1000 -x  -e cpu-clo=
-ck,task-clock,page-faults,context-switches,cpu-migrations,minor-faults,majo=
-r-faults
->> --log-fd 1 --
->> kill 18806 vmstat -n 1
->> wait for background monitors: 18811 18813 18830 18833 18832 18819
->> 18821 18826 18818 18815 18810 18814 18825 18827 proc-stat meminfo
->> oom-killer uptime nfs-hang softirqs diskstats sched_debug
->> latency_stats interrupts proc-vmstat slabinfo turbostat perf-profile
->> Error:
->> The /tmp/lkp-root/perf.data file has no samples!
->>
->> Thanks,
->>
->> Dou.
->>
->>
->>
->>
->>
->>
->>
->>
->
->
->
+>>-- =
 
+>>2.5.5
+>>
+>>
+>>
 
-
---===============6047222616834901110==--
+--===============8735261127044467519==--
 
