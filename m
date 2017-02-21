@@ -1,55 +1,91 @@
-Content-Type: multipart/mixed; boundary="===============6851673479329708086=="
+Content-Type: multipart/mixed; boundary="===============4434819920715749088=="
 MIME-Version: 1.0
-From: Matt Fleming <matt@codeblueprint.co.uk>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/core] cb42c9a3eb WARNING: CPU: 0 PID: 40 at kernel/sched/sched.h:804 rq_clock_task
-Date: Mon, 20 Feb 2017 22:21:33 +0000
-Message-ID: <20170220222133.GP28416@codeblueprint.co.uk>
-In-Reply-To: <20170220015619.gnb6apcw3ahgw3rr@wfg-t540p.sh.intel.com>
+Subject: email/patch test requests to 0day robot
+Date: Tue, 21 Feb 2017 08:00:37 +0800
+Message-ID: <20170221000037.pnk22hcfv5hbvs2i@wfg-t540p.sh.intel.com>
+In-Reply-To: <20170220093551.crucsscnh5zvd2si@pd.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6851673479329708086==
+--===============4434819920715749088==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 20 Feb, at 09:56:19AM, Fengguang Wu wrote:
-> =
+On Mon, Feb 20, 2017 at 10:35:51AM +0100, Borislav Petkov wrote:
+>On Mon, Feb 20, 2017 at 11:03:52AM +0800, Fengguang Wu wrote:
+>> We actually already test LKML patch in that way (Xiaolong maintains
+>> this feature). Nevertheless if developers specify "base-commit:" it
+>> could help eliminate the guessing works by the dumb robot. We'll
+>> appreciate if the "base-commit:" or "base-patchid:" tags are listed
+>> in the patches, especially in some non-obvious situations.
+>
+>Can I specify multiple base commits for testing stable backports?
+>
+>For example
+>
+>base-commit: v4.9.11, v4.4.50, v3.10.105,...
 
-> [   83.791548] ------------[ cut here ]------------
-> [   83.793245] WARNING: CPU: 0 PID: 40 at kernel/sched/sched.h:804 rq_clo=
-ck_task+0x126/0x290
-> [   83.796441] rq->clock_update_flags < RQCF_ACT_SKIP
-> [   83.796454] CPU: 0 PID: 40 Comm: torture_shuffle Not tainted 4.10.0-rc=
-3-00256-gcb42c9a #3
-> [   83.800931] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.9.3-20161025_171302-gandalf 04/01/2014
-> [   83.815146] Call Trace:
-> [   83.816232]  dump_stack+0x2c6/0x39a
-> [   83.817461]  __warn+0x23d/0x280
-> [   83.818643]  ? rq_clock_task+0x126/0x290
-> [   83.819947]  ? rq_clock_task+0x126/0x290
-> [   83.821244]  warn_slowpath_fmt+0x57/0x70
-> [   83.831558]  rq_clock_task+0x126/0x290
-> [   83.832837]  set_next_entity+0x90/0xc0
-> [   83.834107]  set_curr_task_fair+0x48/0x60
-> [   83.835414]  do_set_cpus_allowed+0x26f/0x470
-> [   83.836768]  __set_cpus_allowed_ptr+0x1e8/0x510
-> [   83.838161]  set_cpus_allowed_ptr+0x1d/0x30
-> [   83.839498]  torture_shuffle+0x21b/0x610
-> [   83.858854]  kthread+0x224/0x240
-> [   83.860043]  ? torture_shutdown+0x620/0x620
-> [   83.861375]  ? __kthread_bind_mask+0xf0/0xf0
-> [   83.862748]  ret_from_fork+0x19/0x30
-> [   83.864065] ---[ end trace 6227f0c8323ad65a ]---
-> [   86.016087] ACPI: PCI Interrupt Link [LNKD] enabled at IRQ 11
+That's reasonable and useful form. BTW for stable testing, it could
+be more convenient to specify the branch names:
 
-Urgh, yeah. This is similar to the one that Peter fixed in
+        stable/linux-4.9.y
+        stable/linux-4.4.y
+        stable/linux-3.10.y
 
-  commit 1b1d62254df0f ("sched/core: Add missing update_rq_clock() call in =
-sched_move_task()")
+There is also the RC stable tree available:
 
-I'll take a closer look at submitting a fix in the morning.
+        linux-stable-rc/linux-4.9.y
+        linux-stable-rc/linux-4.4.y
 
---===============6851673479329708086==--
+BTW it looks a bit inconsistent about the tree names "stable" and
+"linux-stable-rc". These are the current names the robot refer to each
+git tree:
+
+https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/tree/repo/li=
+nux/stable
+https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/tree/repo/li=
+nux/linux-stable-rc
+
+I could rename the latter to "stable-rc" if no other opinions.
+
+>> Such tags could be regarded as "explicit" test requests, where we could
+>> send "BUILD COMPLETE" emails as a response (comparing to our normal
+>> LKML patch tests, which only build regressions will trigger an email
+>> notification).
+>
+>Yap, similar to those you guys sent when a new branch on k.org has been
+>tested.
+
+Yes.
+
+>Btw, can we make the format layout this way:
+>
+>patch
+>
+>---
+>
+><0day bot tags>
+>
+>---
+>
+>so that when we send it to lkml, it doesn't interfere with review by
+>slapping the tags at the beginning of the patch?
+
+Sure. In fact we currently search for the tags in the whole email body.
+
+>Also, should we CC some special mailing list which the 0day bot parses
+>or lkml is enough?
+
+There are dozens of mailing lists monitored, so the CC could grow too
+large to look "normal". So I changed the email subject to make it more
+obvious to people.
+
+>Cool stuff.
+
+Thank you!
+Fengguang
+
+--===============4434819920715749088==--
 
