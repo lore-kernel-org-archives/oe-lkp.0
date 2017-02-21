@@ -1,31 +1,36 @@
-Content-Type: multipart/mixed; boundary="===============5460212943104356885=="
+Content-Type: multipart/mixed; boundary="===============4891802344664906246=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [hrtimer] 336a9cde10 WARNING: CPU: 1 PID: 1 at kernel/time/hrtimer.c:1090 hrtimer_init
-Date: Tue, 21 Feb 2017 10:17:24 +0800
-Message-ID: <20170221021724.nha5nhbchyewpvfw@wfg-t540p.sh.intel.com>
+Date: Tue, 21 Feb 2017 10:23:51 +0800
+Message-ID: <20170221022351.GD10024@yexl-desktop>
 In-Reply-To: <alpine.DEB.2.20.1702201806470.4208@nanos>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5460212943104356885==
+--===============4891802344664906246==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 20, 2017 at 06:07:57PM -0800, Thomas Gleixner wrote:
+Hi, fengguang
+On 02/20, Thomas Gleixner wrote:
 >On Tue, 21 Feb 2017, Fengguang Wu wrote:
 >
 >> Hi Marc,
->>
+>> =
+
 >> FYI here is another bisect result. The attached reproduce-* script can
 >> be used to reproduce the bug.
 >
 >Again. This is a problem in the calling code The WARN_ON merily shows the
 >wreckage in the caller. Marc sent you a patch already...
 
-Ah OK -- sorry I'm lost in the lots of bugs..
+I'm verifying the fix patch.
 
+Thanks,
+Xiaolong
+>
 >> [   11.409712]  hrtimer_init+0x11f/0x199
 >> [   11.410666]  ? mac80211_hwsim_get_tsf+0x1d/0x1d
 >> [   11.411766]  tasklet_hrtimer_init+0x1b/0x4f
@@ -43,5 +48,5 @@ Ah OK -- sorry I'm lost in the lots of bugs..
 >> [   11.423540] ieee80211 phy1: Selected rate control algorithm 'minstrel=
 _ht'
 
---===============5460212943104356885==--
+--===============4891802344664906246==--
 
