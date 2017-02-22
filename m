@@ -1,148 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============5288490245711107532=="
+Content-Type: multipart/mixed; boundary="===============8695533834828187884=="
 MIME-Version: 1.0
-From: Cao Shufeng/曹树烽 <caosf.fnst@cn.fujitsu.com>
+From: Kees Cook <keescook@chromium.org>
 To: lkp@lists.01.org
-Subject: Re: [PATCH_v4.1_0_3] Make core_pattern support namespace
-Date: Wed, 22 Feb 2017 13:25:54 +0800
-Message-ID: <1487741154.2401.10.camel@cn.fujitsu.com>
-In-Reply-To: <1486522857-9946-1-git-send-email-caosf.fnst@cn.fujitsu.com>
+Subject: Re: [x86/vsyscall] 3dc33bd30f Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+Date: Tue, 21 Feb 2017 21:34:53 -0800
+Message-ID: <CAGXu5jLfR=zoxmBMZKOrTKRQV1e+hgqiKWCaDedMs9nNkb39yg@mail.gmail.com>
+In-Reply-To: <CALCETrWpxjKg8VrwKa3nmFVYc6EDBQeENgix0mpz5e_X6xbQig@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5288490245711107532==
+--===============8695533834828187884==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-ping
-=E5=9C=A8 2017-02-08=E4=B8=89=E7=9A=84 11:00 +0800=EF=BC=8CCao Shufeng=E5=
-=86=99=E9=81=93=EF=BC=9A
-> This patchset includes following function points:
-> 1: Let usermodehelper function possible to set pid namespace
->    done by: [PATCH v4 1/3] Make call_usermodehelper_exec possible
->    to set pid namespace.
-> 2: Let pipe_type core_pattern write dump into container's rootfs
->    done by: [PATCH v4 2/3] Limit dump_pipe program's permission to
->    init for container.
-> 2: Make separate core_pattern setting for each container
->    done by: [PATCH v4 3/3] Make core_pattern support namespace
-> 3: Compatibility with current system
->    also included in: [PATCH v4 3/3] Make core_pattern support namespace
->    If container hadn't change core_pattern setting, it will keep
->    same setting with host.
-> =
+On Tue, Feb 21, 2017 at 9:23 PM, Andy Lutomirski <luto@amacapital.net> wr=
+ote:
+> On Tue, Feb 21, 2017 at 4:46 PM, Kees Cook <keescook@chromium.org> wrot=
+e:
+>> On Tue, Feb 21, 2017 at 4:39 PM, Chunyu Hu <chuhu.ncepu@gmail.com> wro=
+te:
+>>> I hit the similar panic on Fedora 25. Is it the same issue?
+>>>
+>>>
+>>> [    2.527391] Freeing unused kernel memory: 1688K (ffffffffbdf66000 -
+>>> ffffffffbe10c000)
+>>> [    2.535222] Write protecting the kernel read-only data: 14336k
+>>> [    2.542679] Freeing unused kernel memory: 1892K (ffff94cb30827000 -
+>>> ffff94cb30a00000)
+>>> [    2.553482] Freeing unused kernel memory: 700K (ffff94cb30d51000 -
+>>> ffff94cb30e00000)
+>>> [    2.572048] x86/mm: Checked W+X mappings: passed, no W+X pages found.
+>>> Fatal: [    2.598239] traps: init[1] general protection ip:7fc841bfc642
+>>> sp:7ffc3fd85870 error:0no entropy gathering module dete[    2.606473]  =
+in
+>>> libc-2.24.so[7fc841bc5000+1bd000]
+>>> cted
+>>
+>> I would not expect a vsyscall table problem if it's truly using glibc
+>> 2.24. Maybe something regressed in glibc? That really looks like an
+>> attempt to call vsyscalls?
+>
+> There should be a vsyscall error if so, and shouldn't it be a page
+> fault, not a gpf?
 
-> Test:
-> 1: Pass a test script for each function of this patchset
->    ## TEST IN HOST ##
->    [root(a)kerneldev dumptest]# ./test_host
->    Set file core_pattern: OK
->    ./test_host: line 41:  2366 Segmentation fault      (core dumped) "$SC=
-RI=3D
-> PT_BASE_DIR"/make_dump
->    Checking dumpfile: OK
->    Set file core_pattern: OK
->    ./test_host: line 41:  2369 Segmentation fault      (core dumped) "$SC=
-RI=3D
-> PT_BASE_DIR"/make_dump
->    Checking dump_pipe triggered: OK
->    Checking rootfs: OK
->    Checking dumpfile: OK
->    Checking namespace: OK
->    Checking process list: OK
->    Checking capabilities: OK
-> =
+Yeah, the earlier email from Fengguang included a vsyscall error, so
+I'm not sure what this is, exactly. But if it bisects to the same
+commit, we likely need to investigate a bit more.
 
->    ## TEST IN GUEST ##
->    # ./test
->    Segmentation fault (core dumped)
->    Checking dump_pipe triggered: OK
->    Checking rootfs: OK
->    Checking dumpfile: OK
->    Checking namespace: OK
->    Checking process list: OK
->    Checking cg pids: OK
->    Checking capabilities: OK
->    [   64.940734] make_dump[2432]: segfault at 0 ip 000000000040049d sp 0=
-00=3D
-> 07ffc4af025f0 error 6 in make_dump[400000+a6000]
->    #
-> 2: Pass other test(which is not easy to do in script) by hand.
-> =
-
-> Changelog v4-v4.1:
-> 1. Fix kernel panic pointed out by:
->    xiaolong.ye(a)intel.com
-> =
-
-> Changelog v3.1-v4:
-> 1. remove extra fork pointed out by:
->    Andrei Vagin <avagin@gmail.com>
-> =
-
-> Changelog v3-v3.1:
-> 1. Switch "pwd" of pipe program to container's root fs.
-> 2. Rebase on top of v4.9-rc1
-> =
-
-> Changelog v2->v3:
-> 1: Fix problem of setting pid namespace, pointed out by:
->    Andrei Vagin <avagin@gmail.com>
-> =
-
-> Changelog v1(RFC)->v2:
-> 1: Add [PATCH 2/2] which was todo in [RFC v1].
-> 2: Pass a test script for each function.
-> 3: Rebase on top of v4.7.
-> =
-
-> Suggested-by: Eric W. Biederman <ebiederm@xmission.com>
-> Suggested-by: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
-> Signed-off-by: Zhao Lei <zhaolei@cn.fujitsu.com>
-> Signed-off-by: Cao Shufeng <caosf.fnst@cn.fujitsu.com>
-> =
-
-> Cao Shufeng (2):
->   Make call_usermodehelper_exec possible to set namespaces
->   Limit dump_pipe program's permission to init for container
-> =
-
-> Zhao Lei (1):
->   Make core_pattern support namespace
-> =
-
->  fs/coredump.c                 | 150 ++++++++++++++++++++++++++++++++++++=
-+++---
->  include/linux/binfmts.h       |   2 +
->  include/linux/kmod.h          |   5 ++
->  include/linux/pid_namespace.h |   3 +
->  init/do_mounts_initrd.c       |   3 +-
->  kernel/kmod.c                 |  55 +++++++++++++---
->  kernel/pid.c                  |   2 +
->  kernel/pid_namespace.c        |   2 +
->  kernel/sysctl.c               |  50 ++++++++++++--
->  lib/kobject_uevent.c          |   3 +-
->  security/keys/request_key.c   |   4 +-
->  11 files changed, 253 insertions(+), 26 deletions(-)
-> =
-
+-Kees
 
 -- =
 
-Best Regards,
-Cao Shufeng
---------------------------------------------------
-Cao Shufeng
-Development Dept.I
-Nanjing Fujitsu Nanda Software Tech. Co., Ltd.(FNST)
-No.6 Wenzhu Road, Nanjing, 210012, China =
+Kees Cook
+Pixel Security
 
-TEL: +86+25-86630566-8552
-FUJITSU INTERNAL: 7998-8552
-EMail: caosf.fnst(a)cn.fujitsu.com
-
-
-
-
-
---===============5288490245711107532==--
+--===============8695533834828187884==--
 
