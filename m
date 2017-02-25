@@ -1,261 +1,160 @@
-Content-Type: multipart/mixed; boundary="===============0533885444824336334=="
+Content-Type: multipart/mixed; boundary="===============8773018156703650065=="
 MIME-Version: 1.0
-From: Mauro Carvalho Chehab <mchehab@infradead.org>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] [media] serial_ir: ensure we're ready to receive interrupts
-Date: Sat, 25 Feb 2017 10:54:09 -0300
-Message-ID: <20170225105409.6a059861@vento.lan>
-In-Reply-To: <20170225103437.58c5a199@vento.lan>
+Subject: Re: [rhashtable] 5d60de5ff1 [ INFO: suspicious RCU usage. ]
+Date: Sat, 25 Feb 2017 22:39:50 +0800
+Message-ID: <20170225143950.GB28272@gondor.apana.org.au>
+In-Reply-To: <20170218052331.dlr4si7gbhnukewb@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0533885444824336334==
+--===============8773018156703650065==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Em Sat, 25 Feb 2017 10:34:37 -0300
-Mauro Carvalho Chehab <mchehab@infradead.org> escreveu:
-
-> Em Sat, 25 Feb 2017 11:28:16 +0000
-> Sean Young <sean@mess.org> escreveu:
+On Sat, Feb 18, 2017 at 01:23:31PM +0800, Fengguang Wu wrote:
+> Greetings,
 > =
 
-> > When the interrupt requested with devm_request_irq(), serial_ir.rcdev
-> > is still null so will cause null deference if the irq handler is called
-> > early on.
-> > =
-
-> > Also ensure that timeout_timer is setup.
-> > =
-
-> > Link: http://lkml.kernel.org/r/CA+55aFxsh2uF8gi5sN_guY3Z+tiLv7LpJYKBw+y=
-8vqLzp+TsnQ(a)mail.gmail.com
-> > =
-
-> > Cc: <stable@vger.kernel.org> # 4.10
-> > Signed-off-by: Sean Young <sean@mess.org>
-> > ---
-> >  drivers/media/rc/serial_ir.c | 243 +++++++++++++++++++++--------------=
---------
-> >  1 file changed, 118 insertions(+), 125 deletions(-)
-> > =
-
-> > diff --git a/drivers/media/rc/serial_ir.c b/drivers/media/rc/serial_ir.c
-> > index 923fb22..22144b4 100644
-> > --- a/drivers/media/rc/serial_ir.c
-> > +++ b/drivers/media/rc/serial_ir.c
-> > @@ -487,74 +487,6 @@ static void serial_ir_timeout(unsigned long arg)
-> >  	ir_raw_event_handle(serial_ir.rcdev);
-> >  }
-> >  =
-
-> > -static int serial_ir_probe(struct platform_device *dev)
-> > -{
-> > -	int i, nlow, nhigh, result;
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
-> Hmm... why did you move this function to be after serial_ir_open()?
+> https://github.com/0day-ci/linux Herbert-Xu/rhashtable-Handle-table-alloc=
+ation-failure-during-insertion/20170212-030221
 > =
 
-> That messes with the diff without no good reason, making harder to
-> identify what you changed here.
+> commit 5d60de5ff12fb1e966c863bcb41c1e2bdde66c50
+> Author:     Herbert Xu <herbert@gondor.apana.org.au>
+> AuthorDate: Sat Feb 11 19:26:47 2017 +0800
+> Commit:     0day robot <fengguang.wu@intel.com>
+> CommitDate: Sun Feb 12 03:02:26 2017 +0800
+> =
 
-Ok, just reordered it. The diff now looks sane. Patch looks ok on
-my eyes.
+>      rhashtable: Add nested tables
+>      =
 
-[PATCH v2] serial_ir: ensure we're ready to receive interrupts
-From: Sean Young <sean@mess.org>
+>      This patch adds code that handles GFP_ATOMIC kmalloc failure on
+>      insertion.  As we cannot use vmalloc, we solve it by making our
+>      hash table nested.  That is, we allocate single pages at each level
+>      and reach our desired table size by nesting them.
+>      =
 
-When the interrupt requested with devm_request_irq(), serial_ir.rcdev
-is still null so will cause null deference if the irq handler is called
-early on.
+>      When a nested table is created, only a single page is allocated
+>      at the top-level.  Lower levels are allocated on demand during
+>      insertion.  Therefore for each insertion to succeed, only two
+>      (non-consecutive) pages are needed.
+>      =
 
-Also ensure that timeout_timer is setup.
+>      After a nested table is created, a rehash will be scheduled in
+>      order to switch to a vmalloced table as soon as possible.  Also,
+>      the rehash code will never rehash into a nested table.  If we
+>      detect a nested table during a rehash, the rehash will be aborted
+>      and a new rehash will be scheduled.
+>      =
 
-Link: http://lkml.kernel.org/r/CA+55aFxsh2uF8gi5sN_guY3Z+tiLv7LpJYKBw+y8vqL=
-zp+TsnQ(a)mail.gmail.com
+>      Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> =
 
-[mchehab(a)s-opensource.com: moved serial_ir_probe() back to its original p=
-lace]
-Cc: <stable@vger.kernel.org> # 4.10
-Signed-off-by: Sean Young <sean@mess.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+> +------------------------------------------------------------------+-----=
+-------+------------+------------------+
+> |                                                                  | eadc=
+ee1e3a | 5d60de5ff1 | v4.10-rc8_021716 |
+> +------------------------------------------------------------------+-----=
+-------+------------+------------------+
+> | boot_successes                                                   | 0   =
+       | 0          | 9                |
+> | boot_failures                                                    | 177 =
+       | 48         | 82               |
+> | Kernel_panic-not_syncing:softlockup:hung_tasks                   | 177 =
+       | 48         | 14               |
+> | INFO:suspicious_RCU_usage                                        | 0   =
+       | 39         | 64               |
+> | BUG:KASAN:user-memory-access_on_address                          | 0   =
+       | 0          | 16               |
+> | BUG:unable_to_handle_kernel                                      | 0   =
+       | 0          | 18               |
+> | Oops                                                             | 0   =
+       | 0          | 18               |
+> | Kernel_panic-not_syncing:Fatal_exception                         | 0   =
+       | 0          | 18               |
+> | BUG:kernel_hang_in_test_stage                                    | 0   =
+       | 0          | 19               |
+> | WARNING:at_kernel/sched/sched.h:#set_next_entity                 | 0   =
+       | 0          | 15               |
+> | INFO:possible_circular_locking_dependency_detected               | 0   =
+       | 0          | 4                |
+> | WARNING:at_include/linux/cpumask.h:#find_get_context             | 0   =
+       | 0          | 2                |
+> | invoked_oom-killer:gfp_mask=3D0x                                   | 0 =
+         | 0          | 4                |
+> | Mem-Info                                                         | 0   =
+       | 0          | 4                |
+> | Kernel_panic-not_syncing:Out_of_memory_and_no_killable_processes | 0   =
+       | 0          | 4                |
+> | Kernel_panic-not_syncing:Attempted_to_kill_init!exitcode=3D        | 0 =
+         | 0          | 7                |
+> +------------------------------------------------------------------+-----=
+-------+------------+------------------+
+> =
 
-diff --git a/drivers/media/rc/serial_ir.c b/drivers/media/rc/serial_ir.c
-index 923fb2299553..4687c34c655a 100644
---- a/drivers/media/rc/serial_ir.c
-+++ b/drivers/media/rc/serial_ir.c
-@@ -489,8 +489,59 @@ static void serial_ir_timeout(unsigned long arg)
+> [    9.022401] Testing concurrent rhashtable access from 10 threads
+> [   15.800003] =
+
+> [   15.801145] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [   15.801802] [ INFO: suspicious RCU usage. ]
+> [   15.802476] 4.10.0-rc7-00090-g5d60de5 #1 Not tainted
+> [   15.803235] -------------------------------
+> [   15.803866] lib/rhashtable.c:1126 suspicious rcu_dereference_protected=
+() usage!
+
+Sorry, I chose the wrong annotation to fix the previous report.
+This patch should fix it completely.
+
+---8<---
+Subject: rhashtable: Fix RCU dereference annotation in rht_bucket_nested
+
+The current annotation is wrong as it says that we're only called
+under spinlock.  In fact it should be marked as under either
+spinlock or RCU read lock.
+
+Fixes: da20420f83ea ("rhashtable: Add nested tables")
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+---
+
+ lib/rhashtable.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/lib/rhashtable.c b/lib/rhashtable.c
+index fac1a78..c5b9b93 100644
+--- a/lib/rhashtable.c
++++ b/lib/rhashtable.c
+@@ -1121,12 +1121,13 @@ struct rhash_head __rcu **rht_bucket_nested(const s=
+truct bucket_table *tbl,
+ 	union nested_table *ntbl;
  =
 
- static int serial_ir_probe(struct platform_device *dev)
- {
-+	struct rc_dev *rcdev;
- 	int i, nlow, nhigh, result;
+ 	ntbl =3D (union nested_table *)rcu_dereference_raw(tbl->buckets[0]);
+-	ntbl =3D rht_dereference_bucket(ntbl[index].table, tbl, hash);
++	ntbl =3D rht_dereference_bucket_rcu(ntbl[index].table, tbl, hash);
+ 	subhash >>=3D tbl->nest;
  =
 
-+	rcdev =3D devm_rc_allocate_device(&dev->dev, RC_DRIVER_IR_RAW);
-+	if (!rcdev)
-+		return -ENOMEM;
-+
-+	if (hardware[type].send_pulse && hardware[type].send_space)
-+		rcdev->tx_ir =3D serial_ir_tx;
-+	if (hardware[type].set_send_carrier)
-+		rcdev->s_tx_carrier =3D serial_ir_tx_carrier;
-+	if (hardware[type].set_duty_cycle)
-+		rcdev->s_tx_duty_cycle =3D serial_ir_tx_duty_cycle;
-+
-+	switch (type) {
-+	case IR_HOMEBREW:
-+		rcdev->input_name =3D "Serial IR type home-brew";
-+		break;
-+	case IR_IRDEO:
-+		rcdev->input_name =3D "Serial IR type IRdeo";
-+		break;
-+	case IR_IRDEO_REMOTE:
-+		rcdev->input_name =3D "Serial IR type IRdeo remote";
-+		break;
-+	case IR_ANIMAX:
-+		rcdev->input_name =3D "Serial IR type AnimaX";
-+		break;
-+	case IR_IGOR:
-+		rcdev->input_name =3D "Serial IR type IgorPlug";
-+		break;
-+	}
-+
-+	rcdev->input_phys =3D KBUILD_MODNAME "/input0";
-+	rcdev->input_id.bustype =3D BUS_HOST;
-+	rcdev->input_id.vendor =3D 0x0001;
-+	rcdev->input_id.product =3D 0x0001;
-+	rcdev->input_id.version =3D 0x0100;
-+	rcdev->open =3D serial_ir_open;
-+	rcdev->close =3D serial_ir_close;
-+	rcdev->dev.parent =3D &serial_ir.pdev->dev;
-+	rcdev->allowed_protocols =3D RC_BIT_ALL_IR_DECODER;
-+	rcdev->driver_name =3D KBUILD_MODNAME;
-+	rcdev->map_name =3D RC_MAP_RC6_MCE;
-+	rcdev->min_timeout =3D 1;
-+	rcdev->timeout =3D IR_DEFAULT_TIMEOUT;
-+	rcdev->max_timeout =3D 10 * IR_DEFAULT_TIMEOUT;
-+	rcdev->rx_resolution =3D 250000;
-+
-+	serial_ir.rcdev =3D rcdev;
-+
-+	setup_timer(&serial_ir.timeout_timer, serial_ir_timeout,
-+		    (unsigned long)&serial_ir);
-+
- 	result =3D devm_request_irq(&dev->dev, irq, serial_ir_irq_handler,
- 				  share_irq ? IRQF_SHARED : 0,
- 				  KBUILD_MODNAME, &hardware);
-@@ -516,9 +567,6 @@ static int serial_ir_probe(struct platform_device *dev)
- 		return -EBUSY;
+ 	while (ntbl && size > (1 << shift)) {
+ 		index =3D subhash & ((1 << shift) - 1);
+-		ntbl =3D rht_dereference_bucket(ntbl[index].table, tbl, hash);
++		ntbl =3D rht_dereference_bucket_rcu(ntbl[index].table,
++						  tbl, hash);
+ 		size >>=3D shift;
+ 		subhash >>=3D shift;
  	}
- =
+-- =
 
--	setup_timer(&serial_ir.timeout_timer, serial_ir_timeout,
--		    (unsigned long)&serial_ir);
--
- 	result =3D hardware_init_port();
- 	if (result < 0)
- 		return result;
-@@ -552,7 +600,8 @@ static int serial_ir_probe(struct platform_device *dev)
- 			 sense ? "low" : "high");
- =
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
- 	dev_dbg(&dev->dev, "Interrupt %d, port %04x obtained\n", irq, io);
--	return 0;
-+
-+	return devm_rc_register_device(&dev->dev, rcdev);
- }
- =
-
- static int serial_ir_open(struct rc_dev *rcdev)
-@@ -723,7 +772,6 @@ static void serial_ir_exit(void)
- =
-
- static int __init serial_ir_init_module(void)
- {
--	struct rc_dev *rcdev;
- 	int result;
- =
-
- 	switch (type) {
-@@ -754,63 +802,9 @@ static int __init serial_ir_init_module(void)
- 		sense =3D !!sense;
- =
-
- 	result =3D serial_ir_init();
--	if (result)
--		return result;
--
--	rcdev =3D devm_rc_allocate_device(&serial_ir.pdev->dev, RC_DRIVER_IR_RAW);
--	if (!rcdev) {
--		result =3D -ENOMEM;
--		goto serial_cleanup;
--	}
--
--	if (hardware[type].send_pulse && hardware[type].send_space)
--		rcdev->tx_ir =3D serial_ir_tx;
--	if (hardware[type].set_send_carrier)
--		rcdev->s_tx_carrier =3D serial_ir_tx_carrier;
--	if (hardware[type].set_duty_cycle)
--		rcdev->s_tx_duty_cycle =3D serial_ir_tx_duty_cycle;
--
--	switch (type) {
--	case IR_HOMEBREW:
--		rcdev->input_name =3D "Serial IR type home-brew";
--		break;
--	case IR_IRDEO:
--		rcdev->input_name =3D "Serial IR type IRdeo";
--		break;
--	case IR_IRDEO_REMOTE:
--		rcdev->input_name =3D "Serial IR type IRdeo remote";
--		break;
--	case IR_ANIMAX:
--		rcdev->input_name =3D "Serial IR type AnimaX";
--		break;
--	case IR_IGOR:
--		rcdev->input_name =3D "Serial IR type IgorPlug";
--		break;
--	}
--
--	rcdev->input_phys =3D KBUILD_MODNAME "/input0";
--	rcdev->input_id.bustype =3D BUS_HOST;
--	rcdev->input_id.vendor =3D 0x0001;
--	rcdev->input_id.product =3D 0x0001;
--	rcdev->input_id.version =3D 0x0100;
--	rcdev->open =3D serial_ir_open;
--	rcdev->close =3D serial_ir_close;
--	rcdev->dev.parent =3D &serial_ir.pdev->dev;
--	rcdev->allowed_protocols =3D RC_BIT_ALL_IR_DECODER;
--	rcdev->driver_name =3D KBUILD_MODNAME;
--	rcdev->map_name =3D RC_MAP_RC6_MCE;
--	rcdev->min_timeout =3D 1;
--	rcdev->timeout =3D IR_DEFAULT_TIMEOUT;
--	rcdev->max_timeout =3D 10 * IR_DEFAULT_TIMEOUT;
--	rcdev->rx_resolution =3D 250000;
--
--	serial_ir.rcdev =3D rcdev;
--
--	result =3D rc_register_device(rcdev);
--
- 	if (!result)
- 		return 0;
--serial_cleanup:
-+
- 	serial_ir_exit();
- 	return result;
- }
-@@ -818,7 +812,6 @@ static int __init serial_ir_init_module(void)
- static void __exit serial_ir_exit_module(void)
- {
- 	del_timer_sync(&serial_ir.timeout_timer);
--	rc_unregister_device(serial_ir.rcdev);
- 	serial_ir_exit();
- }
- =
-
-
-
---===============0533885444824336334==--
+--===============8773018156703650065==--
 
