@@ -1,160 +1,247 @@
-Content-Type: multipart/mixed; boundary="===============8773018156703650065=="
+Content-Type: multipart/mixed; boundary="===============2687260145958497871=="
 MIME-Version: 1.0
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Mauro Carvalho Chehab <mchehab@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [rhashtable] 5d60de5ff1 [ INFO: suspicious RCU usage. ]
-Date: Sat, 25 Feb 2017 22:39:50 +0800
-Message-ID: <20170225143950.GB28272@gondor.apana.org.au>
-In-Reply-To: <20170218052331.dlr4si7gbhnukewb@wfg-t540p.sh.intel.com>
+Subject: [PATCH v3] [media] serial_ir: ensure we're ready to receive interrupts
+Date: Sat, 25 Feb 2017 11:44:19 -0300
+Message-ID: <20170225112213.6e890b38@vento.lan>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8773018156703650065==
+--===============2687260145958497871==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Feb 18, 2017 at 01:23:31PM +0800, Fengguang Wu wrote:
-> Greetings,
-> =
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
+From: Sean Young <sean@mess.org>
 
-> https://github.com/0day-ci/linux Herbert-Xu/rhashtable-Handle-table-alloc=
-ation-failure-during-insertion/20170212-030221
-> =
+When the interrupt requested with devm_request_irq(), serial_ir.rcdev
+is still null so will cause null deference if the irq handler is called
+early on.
 
-> commit 5d60de5ff12fb1e966c863bcb41c1e2bdde66c50
-> Author:     Herbert Xu <herbert@gondor.apana.org.au>
-> AuthorDate: Sat Feb 11 19:26:47 2017 +0800
-> Commit:     0day robot <fengguang.wu@intel.com>
-> CommitDate: Sun Feb 12 03:02:26 2017 +0800
-> =
+Also ensure that timeout_timer is setup.
 
->      rhashtable: Add nested tables
->      =
+Link: http://lkml.kernel.org/r/CA+55aFxsh2uF8gi5sN_guY3Z+tiLv7LpJYKBw+y8vqL=
+zp+TsnQ(a)mail.gmail.com
 
->      This patch adds code that handles GFP_ATOMIC kmalloc failure on
->      insertion.  As we cannot use vmalloc, we solve it by making our
->      hash table nested.  That is, we allocate single pages at each level
->      and reach our desired table size by nesting them.
->      =
+[mchehab(a)s-opensource.com: moved serial_ir_probe() back to its original p=
+lace]
 
->      When a nested table is created, only a single page is allocated
->      at the top-level.  Lower levels are allocated on demand during
->      insertion.  Therefore for each insertion to succeed, only two
->      (non-consecutive) pages are needed.
->      =
+Cc: <stable@vger.kernel.org> # 4.10
+Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+- - ---
+ drivers/media/rc/serial_ir.c | 123 ++++++++++++++++++++++-----------------=
+----
+ 1 file changed, 62 insertions(+), 61 deletions(-)
 
->      After a nested table is created, a rehash will be scheduled in
->      order to switch to a vmalloced table as soon as possible.  Also,
->      the rehash code will never rehash into a nested table.  If we
->      detect a nested table during a rehash, the rehash will be aborted
->      and a new rehash will be scheduled.
->      =
-
->      Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-> =
-
-> +------------------------------------------------------------------+-----=
--------+------------+------------------+
-> |                                                                  | eadc=
-ee1e3a | 5d60de5ff1 | v4.10-rc8_021716 |
-> +------------------------------------------------------------------+-----=
--------+------------+------------------+
-> | boot_successes                                                   | 0   =
-       | 0          | 9                |
-> | boot_failures                                                    | 177 =
-       | 48         | 82               |
-> | Kernel_panic-not_syncing:softlockup:hung_tasks                   | 177 =
-       | 48         | 14               |
-> | INFO:suspicious_RCU_usage                                        | 0   =
-       | 39         | 64               |
-> | BUG:KASAN:user-memory-access_on_address                          | 0   =
-       | 0          | 16               |
-> | BUG:unable_to_handle_kernel                                      | 0   =
-       | 0          | 18               |
-> | Oops                                                             | 0   =
-       | 0          | 18               |
-> | Kernel_panic-not_syncing:Fatal_exception                         | 0   =
-       | 0          | 18               |
-> | BUG:kernel_hang_in_test_stage                                    | 0   =
-       | 0          | 19               |
-> | WARNING:at_kernel/sched/sched.h:#set_next_entity                 | 0   =
-       | 0          | 15               |
-> | INFO:possible_circular_locking_dependency_detected               | 0   =
-       | 0          | 4                |
-> | WARNING:at_include/linux/cpumask.h:#find_get_context             | 0   =
-       | 0          | 2                |
-> | invoked_oom-killer:gfp_mask=3D0x                                   | 0 =
-         | 0          | 4                |
-> | Mem-Info                                                         | 0   =
-       | 0          | 4                |
-> | Kernel_panic-not_syncing:Out_of_memory_and_no_killable_processes | 0   =
-       | 0          | 4                |
-> | Kernel_panic-not_syncing:Attempted_to_kill_init!exitcode=3D        | 0 =
-         | 0          | 7                |
-> +------------------------------------------------------------------+-----=
--------+------------+------------------+
-> =
-
-> [    9.022401] Testing concurrent rhashtable access from 10 threads
-> [   15.800003] =
-
-> [   15.801145] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [   15.801802] [ INFO: suspicious RCU usage. ]
-> [   15.802476] 4.10.0-rc7-00090-g5d60de5 #1 Not tainted
-> [   15.803235] -------------------------------
-> [   15.803866] lib/rhashtable.c:1126 suspicious rcu_dereference_protected=
-() usage!
-
-Sorry, I chose the wrong annotation to fix the previous report.
-This patch should fix it completely.
-
----8<---
-Subject: rhashtable: Fix RCU dereference annotation in rht_bucket_nested
-
-The current annotation is wrong as it says that we're only called
-under spinlock.  In fact it should be marked as under either
-spinlock or RCU read lock.
-
-Fixes: da20420f83ea ("rhashtable: Add nested tables")
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
----
-
- lib/rhashtable.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/lib/rhashtable.c b/lib/rhashtable.c
-index fac1a78..c5b9b93 100644
---- a/lib/rhashtable.c
-+++ b/lib/rhashtable.c
-@@ -1121,12 +1121,13 @@ struct rhash_head __rcu **rht_bucket_nested(const s=
-truct bucket_table *tbl,
- 	union nested_table *ntbl;
+diff --git a/drivers/media/rc/serial_ir.c b/drivers/media/rc/serial_ir.c
+index 923fb2299553..41b54e40176c 100644
+- - --- a/drivers/media/rc/serial_ir.c
++++ b/drivers/media/rc/serial_ir.c
+@@ -487,10 +487,69 @@ static void serial_ir_timeout(unsigned long arg)
+ 	ir_raw_event_handle(serial_ir.rcdev);
+ }
  =
 
- 	ntbl =3D (union nested_table *)rcu_dereference_raw(tbl->buckets[0]);
--	ntbl =3D rht_dereference_bucket(ntbl[index].table, tbl, hash);
-+	ntbl =3D rht_dereference_bucket_rcu(ntbl[index].table, tbl, hash);
- 	subhash >>=3D tbl->nest;
++/* Needed by serial_ir_probe() */
++static int serial_ir_tx(struct rc_dev *dev, unsigned int *txbuf,
++			unsigned int count);
++static int serial_ir_tx_duty_cycle(struct rc_dev *dev, u32 cycle);
++static int serial_ir_tx_carrier(struct rc_dev *dev, u32 carrier);
++static int serial_ir_open(struct rc_dev *rcdev);
++static void serial_ir_close(struct rc_dev *rcdev);
++
+ static int serial_ir_probe(struct platform_device *dev)
+ {
++	struct rc_dev *rcdev;
+ 	int i, nlow, nhigh, result;
  =
 
- 	while (ntbl && size > (1 << shift)) {
- 		index =3D subhash & ((1 << shift) - 1);
--		ntbl =3D rht_dereference_bucket(ntbl[index].table, tbl, hash);
-+		ntbl =3D rht_dereference_bucket_rcu(ntbl[index].table,
-+						  tbl, hash);
- 		size >>=3D shift;
- 		subhash >>=3D shift;
++	rcdev =3D devm_rc_allocate_device(&dev->dev, RC_DRIVER_IR_RAW);
++	if (!rcdev)
++		return -ENOMEM;
++
++	if (hardware[type].send_pulse && hardware[type].send_space)
++		rcdev->tx_ir =3D serial_ir_tx;
++	if (hardware[type].set_send_carrier)
++		rcdev->s_tx_carrier =3D serial_ir_tx_carrier;
++	if (hardware[type].set_duty_cycle)
++		rcdev->s_tx_duty_cycle =3D serial_ir_tx_duty_cycle;
++
++	switch (type) {
++	case IR_HOMEBREW:
++		rcdev->input_name =3D "Serial IR type home-brew";
++		break;
++	case IR_IRDEO:
++		rcdev->input_name =3D "Serial IR type IRdeo";
++		break;
++	case IR_IRDEO_REMOTE:
++		rcdev->input_name =3D "Serial IR type IRdeo remote";
++		break;
++	case IR_ANIMAX:
++		rcdev->input_name =3D "Serial IR type AnimaX";
++		break;
++	case IR_IGOR:
++		rcdev->input_name =3D "Serial IR type IgorPlug";
++		break;
++	}
++
++	rcdev->input_phys =3D KBUILD_MODNAME "/input0";
++	rcdev->input_id.bustype =3D BUS_HOST;
++	rcdev->input_id.vendor =3D 0x0001;
++	rcdev->input_id.product =3D 0x0001;
++	rcdev->input_id.version =3D 0x0100;
++	rcdev->open =3D serial_ir_open;
++	rcdev->close =3D serial_ir_close;
++	rcdev->dev.parent =3D &serial_ir.pdev->dev;
++	rcdev->allowed_protocols =3D RC_BIT_ALL_IR_DECODER;
++	rcdev->driver_name =3D KBUILD_MODNAME;
++	rcdev->map_name =3D RC_MAP_RC6_MCE;
++	rcdev->min_timeout =3D 1;
++	rcdev->timeout =3D IR_DEFAULT_TIMEOUT;
++	rcdev->max_timeout =3D 10 * IR_DEFAULT_TIMEOUT;
++	rcdev->rx_resolution =3D 250000;
++
++	serial_ir.rcdev =3D rcdev;
++
++	setup_timer(&serial_ir.timeout_timer, serial_ir_timeout,
++		    (unsigned long)&serial_ir);
++
+ 	result =3D devm_request_irq(&dev->dev, irq, serial_ir_irq_handler,
+ 				  share_irq ? IRQF_SHARED : 0,
+ 				  KBUILD_MODNAME, &hardware);
+@@ -516,9 +575,6 @@ static int serial_ir_probe(struct platform_device *dev)
+ 		return -EBUSY;
  	}
--- =
+ =
 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+- - -	setup_timer(&serial_ir.timeout_timer, serial_ir_timeout,
+- - -		    (unsigned long)&serial_ir);
+- - -
+ 	result =3D hardware_init_port();
+ 	if (result < 0)
+ 		return result;
+@@ -552,7 +608,8 @@ static int serial_ir_probe(struct platform_device *dev)
+ 			 sense ? "low" : "high");
+ =
 
---===============8773018156703650065==--
+ 	dev_dbg(&dev->dev, "Interrupt %d, port %04x obtained\n", irq, io);
+- - -	return 0;
++
++	return devm_rc_register_device(&dev->dev, rcdev);
+ }
+ =
+
+ static int serial_ir_open(struct rc_dev *rcdev)
+@@ -723,7 +780,6 @@ static void serial_ir_exit(void)
+ =
+
+ static int __init serial_ir_init_module(void)
+ {
+- - -	struct rc_dev *rcdev;
+ 	int result;
+ =
+
+ 	switch (type) {
+@@ -754,63 +810,9 @@ static int __init serial_ir_init_module(void)
+ 		sense =3D !!sense;
+ =
+
+ 	result =3D serial_ir_init();
+- - -	if (result)
+- - -		return result;
+- - -
+- - -	rcdev =3D devm_rc_allocate_device(&serial_ir.pdev->dev, RC_DRIVER_IR_=
+RAW);
+- - -	if (!rcdev) {
+- - -		result =3D -ENOMEM;
+- - -		goto serial_cleanup;
+- - -	}
+- - -
+- - -	if (hardware[type].send_pulse && hardware[type].send_space)
+- - -		rcdev->tx_ir =3D serial_ir_tx;
+- - -	if (hardware[type].set_send_carrier)
+- - -		rcdev->s_tx_carrier =3D serial_ir_tx_carrier;
+- - -	if (hardware[type].set_duty_cycle)
+- - -		rcdev->s_tx_duty_cycle =3D serial_ir_tx_duty_cycle;
+- - -
+- - -	switch (type) {
+- - -	case IR_HOMEBREW:
+- - -		rcdev->input_name =3D "Serial IR type home-brew";
+- - -		break;
+- - -	case IR_IRDEO:
+- - -		rcdev->input_name =3D "Serial IR type IRdeo";
+- - -		break;
+- - -	case IR_IRDEO_REMOTE:
+- - -		rcdev->input_name =3D "Serial IR type IRdeo remote";
+- - -		break;
+- - -	case IR_ANIMAX:
+- - -		rcdev->input_name =3D "Serial IR type AnimaX";
+- - -		break;
+- - -	case IR_IGOR:
+- - -		rcdev->input_name =3D "Serial IR type IgorPlug";
+- - -		break;
+- - -	}
+- - -
+- - -	rcdev->input_phys =3D KBUILD_MODNAME "/input0";
+- - -	rcdev->input_id.bustype =3D BUS_HOST;
+- - -	rcdev->input_id.vendor =3D 0x0001;
+- - -	rcdev->input_id.product =3D 0x0001;
+- - -	rcdev->input_id.version =3D 0x0100;
+- - -	rcdev->open =3D serial_ir_open;
+- - -	rcdev->close =3D serial_ir_close;
+- - -	rcdev->dev.parent =3D &serial_ir.pdev->dev;
+- - -	rcdev->allowed_protocols =3D RC_BIT_ALL_IR_DECODER;
+- - -	rcdev->driver_name =3D KBUILD_MODNAME;
+- - -	rcdev->map_name =3D RC_MAP_RC6_MCE;
+- - -	rcdev->min_timeout =3D 1;
+- - -	rcdev->timeout =3D IR_DEFAULT_TIMEOUT;
+- - -	rcdev->max_timeout =3D 10 * IR_DEFAULT_TIMEOUT;
+- - -	rcdev->rx_resolution =3D 250000;
+- - -
+- - -	serial_ir.rcdev =3D rcdev;
+- - -
+- - -	result =3D rc_register_device(rcdev);
+- - -
+ 	if (!result)
+ 		return 0;
+- - -serial_cleanup:
++
+ 	serial_ir_exit();
+ 	return result;
+ }
+@@ -818,7 +820,6 @@ static int __init serial_ir_init_module(void)
+ static void __exit serial_ir_exit_module(void)
+ {
+ 	del_timer_sync(&serial_ir.timeout_timer);
+- - -	rc_unregister_device(serial_ir.rcdev);
+ 	serial_ir_exit();
+ }
+ =
+
+- - -- =
+
+2.9.3
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBCAAGBQJYsZhEAAoJEAhfPr2O5OEV2l8P/i0jyikTsOC4NaCsImBhVsM5
+sdgjy+wib+hCwdn9HDORxFq7P0ZyKSErkRnHIZSiqu1q4S9Q+Xa5h93taEdZi38H
+2Ain5rB40y7eXgsssU9APHin89HmdT9XWKS7pAEE16mKhiiuu0cgFd+LngDypjNQ
+s5YlzfWFsN6ubjS/t2wJpxxyepsKoCtv8smTOfyQZIhwKUcWWC9kJTA77ubO9egr
+ZBFzsvw0XbEjW8cui4EEuduozD9K1OrSsCib+NK2NMU0luYy9YtsUtjN5Ozu1e6t
+J5QOdsJl0aqLPfEk8TW3++55MaK9LUgE6aaCdntbek5cZmgsk3ad79kDP8gSdxAV
+VUXDEPZQpJXedA6S/bAmXUbEW7mVHH9ALYSa8AGXCArKKtz+5iXNP0+83JoFGEHb
+tTCGInNfsBHd8/NqdW/u/ugGVj4xt0Kc+4oOPYecjO2tiCS+lpKWIDw9bOcaR4/0
+w+zbCmIEmBZ74lM0ys+TmCmDGwXC2QYEqY0U+9ZZcsy+7bMcxJH6slrjfaa6fJa0
+j2OU2qB0VnUTJq0a0O8IL7s5jQn1lKNpmG9TKYNntCzBuHbasL2rsr+Jrr6vpMKU
+vYbpRapoAnIXaUW708bdtA2x7/JfiLj9M7KvYJfeFAt9HGHeXq1HJsaGjix1mZh3
+nL/68Fqc2Scurbzq/C7Z
+=3DApye
+-----END PGP SIGNATURE-----
+
+--===============2687260145958497871==--
 
