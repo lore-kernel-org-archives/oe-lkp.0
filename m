@@ -1,92 +1,344 @@
-Content-Type: multipart/mixed; boundary="===============7941405453002207706=="
+Content-Type: multipart/mixed; boundary="===============2872345158826940854=="
 MIME-Version: 1.0
-From: Marc Zyngier <marc.zyngier@arm.com>
+From: Mauro Carvalho Chehab <mchehab@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [Merge branch 'core-debugobjects-for-linus' of git] 575260e3f8: WARNING: CPU: 0 PID: 1 at kernel/time/hrtimer.c:1090 hrtimer_init
-Date: Sat, 25 Feb 2017 11:06:02 +0000
-Message-ID: <87r32m4jj9.fsf@on-the-bus.cambridge.arm.com>
-In-Reply-To: <20170225015416.vulyx65vr63lvhhj@wfg-t540p.sh.intel.com>
+Subject: Re: [PATCH] [media] serial_ir: ensure we're ready to receive interrupts
+Date: Sat, 25 Feb 2017 10:34:37 -0300
+Message-ID: <20170225103437.58c5a199@vento.lan>
+In-Reply-To: <20170225112816.GA7981@gofer.mess.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7941405453002207706==
+--===============2872345158826940854==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Feb 25 2017 at  1:54:16 am GMT, Fengguang Wu <wfg@linux.intel.com=
-> wrote:
-> Hi Linus,
->
-> On Fri, Feb 24, 2017 at 02:37:04PM -0800, Linus Torvalds wrote:
->>This looks like two -tip trees together show some issue - the timer
->>updates from Thomas triggering a debugobjects check from Ingo, thus
->>fingering my merge as the culprit.
->>
->>Added Thomas/Ingo to the cc, leaving everything quoted for their
->>edification and enjoyment.
->
-> The call trace looks similar to the below bug, so CC mac80211
-> maintainer and Marc.
->
-> The discussed fix patch is for drivers/net/wireless/mac80211_hwsim.c
-> and is not mainlined yet due to in a different tree.
+Em Sat, 25 Feb 2017 11:28:16 +0000
+Sean Young <sean@mess.org> escreveu:
 
-I enjoy running jokes as much as the next guy, but this one is starting
-to get long in the tooth (I have 4 separate reports of it, and patches
-have been proposed at least twice). Can someone please apply the below
-patch or anything to the same effect?
+> When the interrupt requested with devm_request_irq(), serial_ir.rcdev
+> is still null so will cause null deference if the irq handler is called
+> early on.
+> =
+
+> Also ensure that timeout_timer is setup.
+> =
+
+> Link: http://lkml.kernel.org/r/CA+55aFxsh2uF8gi5sN_guY3Z+tiLv7LpJYKBw+y8v=
+qLzp+TsnQ(a)mail.gmail.com
+> =
+
+> Cc: <stable@vger.kernel.org> # 4.10
+> Signed-off-by: Sean Young <sean@mess.org>
+> ---
+>  drivers/media/rc/serial_ir.c | 243 +++++++++++++++++++++----------------=
+------
+>  1 file changed, 118 insertions(+), 125 deletions(-)
+> =
+
+> diff --git a/drivers/media/rc/serial_ir.c b/drivers/media/rc/serial_ir.c
+> index 923fb22..22144b4 100644
+> --- a/drivers/media/rc/serial_ir.c
+> +++ b/drivers/media/rc/serial_ir.c
+> @@ -487,74 +487,6 @@ static void serial_ir_timeout(unsigned long arg)
+>  	ir_raw_event_handle(serial_ir.rcdev);
+>  }
+>  =
+
+> -static int serial_ir_probe(struct platform_device *dev)
+> -{
+> -	int i, nlow, nhigh, result;
+
+Hmm... why did you move this function to be after serial_ir_open()?
+
+That messes with the diff without no good reason, making harder to
+identify what you changed here.
+
+> -
+> -	result =3D devm_request_irq(&dev->dev, irq, serial_ir_irq_handler,
+> -				  share_irq ? IRQF_SHARED : 0,
+> -				  KBUILD_MODNAME, &hardware);
+> -	if (result < 0) {
+> -		if (result =3D=3D -EBUSY)
+> -			dev_err(&dev->dev, "IRQ %d busy\n", irq);
+> -		else if (result =3D=3D -EINVAL)
+> -			dev_err(&dev->dev, "Bad irq number or handler\n");
+> -		return result;
+> -	}
+> -
+> -	/* Reserve io region. */
+> -	if ((iommap &&
+> -	     (devm_request_mem_region(&dev->dev, iommap, 8 << ioshift,
+> -				      KBUILD_MODNAME) =3D=3D NULL)) ||
+> -	     (!iommap && (devm_request_region(&dev->dev, io, 8,
+> -			  KBUILD_MODNAME) =3D=3D NULL))) {
+> -		dev_err(&dev->dev, "port %04x already in use\n", io);
+> -		dev_warn(&dev->dev, "use 'setserial /dev/ttySX uart none'\n");
+> -		dev_warn(&dev->dev,
+> -			 "or compile the serial port driver as module and\n");
+> -		dev_warn(&dev->dev, "make sure this module is loaded first\n");
+> -		return -EBUSY;
+> -	}
+> -
+> -	setup_timer(&serial_ir.timeout_timer, serial_ir_timeout,
+> -		    (unsigned long)&serial_ir);
+> -
+> -	result =3D hardware_init_port();
+> -	if (result < 0)
+> -		return result;
+> -
+> -	/* Initialize pulse/space widths */
+> -	init_timing_params(50, 38000);
+> -
+> -	/* If pin is high, then this must be an active low receiver. */
+> -	if (sense =3D=3D -1) {
+> -		/* wait 1/2 sec for the power supply */
+> -		msleep(500);
+> -
+> -		/*
+> -		 * probe 9 times every 0.04s, collect "votes" for
+> -		 * active high/low
+> -		 */
+> -		nlow =3D 0;
+> -		nhigh =3D 0;
+> -		for (i =3D 0; i < 9; i++) {
+> -			if (sinp(UART_MSR) & hardware[type].signal_pin)
+> -				nlow++;
+> -			else
+> -				nhigh++;
+> -			msleep(40);
+> -		}
+> -		sense =3D nlow >=3D nhigh ? 1 : 0;
+> -		dev_info(&dev->dev, "auto-detected active %s receiver\n",
+> -			 sense ? "low" : "high");
+> -	} else
+> -		dev_info(&dev->dev, "Manually using active %s receiver\n",
+> -			 sense ? "low" : "high");
+> -
+> -	dev_dbg(&dev->dev, "Interrupt %d, port %04x obtained\n", irq, io);
+> -	return 0;
+> -}
+> -
+>  static int serial_ir_open(struct rc_dev *rcdev)
+>  {
+>  	unsigned long flags;
+> @@ -679,6 +611,123 @@ static int serial_ir_resume(struct platform_device =
+*dev)
+>  	return 0;
+>  }
+>  =
+
+> +static int serial_ir_probe(struct platform_device *dev)
+> +{
+> +	struct rc_dev *rcdev;
+> +	int i, nlow, nhigh, result;
+> +
+> +	rcdev =3D devm_rc_allocate_device(&dev->dev, RC_DRIVER_IR_RAW);
+> +	if (!rcdev)
+> +		return -ENOMEM;
+> +
+> +	if (hardware[type].send_pulse && hardware[type].send_space)
+> +		rcdev->tx_ir =3D serial_ir_tx;
+> +	if (hardware[type].set_send_carrier)
+> +		rcdev->s_tx_carrier =3D serial_ir_tx_carrier;
+> +	if (hardware[type].set_duty_cycle)
+> +		rcdev->s_tx_duty_cycle =3D serial_ir_tx_duty_cycle;
+> +
+> +	switch (type) {
+> +	case IR_HOMEBREW:
+> +		rcdev->input_name =3D "Serial IR type home-brew";
+> +		break;
+> +	case IR_IRDEO:
+> +		rcdev->input_name =3D "Serial IR type IRdeo";
+> +		break;
+> +	case IR_IRDEO_REMOTE:
+> +		rcdev->input_name =3D "Serial IR type IRdeo remote";
+> +		break;
+> +	case IR_ANIMAX:
+> +		rcdev->input_name =3D "Serial IR type AnimaX";
+> +		break;
+> +	case IR_IGOR:
+> +		rcdev->input_name =3D "Serial IR type IgorPlug";
+> +		break;
+> +	}
+> +
+> +	rcdev->input_phys =3D KBUILD_MODNAME "/input0";
+> +	rcdev->input_id.bustype =3D BUS_HOST;
+> +	rcdev->input_id.vendor =3D 0x0001;
+> +	rcdev->input_id.product =3D 0x0001;
+> +	rcdev->input_id.version =3D 0x0100;
+> +	rcdev->open =3D serial_ir_open;
+> +	rcdev->close =3D serial_ir_close;
+> +	rcdev->dev.parent =3D &serial_ir.pdev->dev;
+> +	rcdev->allowed_protocols =3D RC_BIT_ALL_IR_DECODER;
+> +	rcdev->driver_name =3D KBUILD_MODNAME;
+> +	rcdev->map_name =3D RC_MAP_RC6_MCE;
+> +	rcdev->min_timeout =3D 1;
+> +	rcdev->timeout =3D IR_DEFAULT_TIMEOUT;
+> +	rcdev->max_timeout =3D 10 * IR_DEFAULT_TIMEOUT;
+> +	rcdev->rx_resolution =3D 250000;
+> +
+> +	serial_ir.rcdev =3D rcdev;
+> +
+> +	setup_timer(&serial_ir.timeout_timer, serial_ir_timeout,
+> +		    (unsigned long)&serial_ir);
+> +
+> +	result =3D devm_request_irq(&dev->dev, irq, serial_ir_irq_handler,
+> +				  share_irq ? IRQF_SHARED : 0,
+> +				  KBUILD_MODNAME, &hardware);
+> +	if (result < 0) {
+> +		if (result =3D=3D -EBUSY)
+> +			dev_err(&dev->dev, "IRQ %d busy\n", irq);
+> +		else if (result =3D=3D -EINVAL)
+> +			dev_err(&dev->dev, "Bad irq number or handler\n");
+> +		return result;
+> +	}
+> +
+> +	/* Reserve io region. */
+> +	if ((iommap &&
+> +	     (devm_request_mem_region(&dev->dev, iommap, 8 << ioshift,
+> +				      KBUILD_MODNAME) =3D=3D NULL)) ||
+> +	     (!iommap && (devm_request_region(&dev->dev, io, 8,
+> +			  KBUILD_MODNAME) =3D=3D NULL))) {
+> +		dev_err(&dev->dev, "port %04x already in use\n", io);
+> +		dev_warn(&dev->dev, "use 'setserial /dev/ttySX uart none'\n");
+> +		dev_warn(&dev->dev,
+> +			 "or compile the serial port driver as module and\n");
+> +		dev_warn(&dev->dev, "make sure this module is loaded first\n");
+> +		return -EBUSY;
+> +	}
+> +
+> +	result =3D hardware_init_port();
+> +	if (result < 0)
+> +		return result;
+> +
+> +	/* Initialize pulse/space widths */
+> +	init_timing_params(50, 38000);
+> +
+> +	/* If pin is high, then this must be an active low receiver. */
+> +	if (sense =3D=3D -1) {
+> +		/* wait 1/2 sec for the power supply */
+> +		msleep(500);
+> +
+> +		/*
+> +		 * probe 9 times every 0.04s, collect "votes" for
+> +		 * active high/low
+> +		 */
+> +		nlow =3D 0;
+> +		nhigh =3D 0;
+> +		for (i =3D 0; i < 9; i++) {
+> +			if (sinp(UART_MSR) & hardware[type].signal_pin)
+> +				nlow++;
+> +			else
+> +				nhigh++;
+> +			msleep(40);
+> +		}
+> +		sense =3D nlow >=3D nhigh ? 1 : 0;
+> +		dev_info(&dev->dev, "auto-detected active %s receiver\n",
+> +			 sense ? "low" : "high");
+> +	} else
+> +		dev_info(&dev->dev, "Manually using active %s receiver\n",
+> +			 sense ? "low" : "high");
+> +
+> +	dev_dbg(&dev->dev, "Interrupt %d, port %04x obtained\n", irq, io);
+> +
+> +	return devm_rc_register_device(&dev->dev, rcdev);
+> +}
+> +
+>  static struct platform_driver serial_ir_driver =3D {
+>  	.probe		=3D serial_ir_probe,
+>  	.suspend	=3D serial_ir_suspend,
+> @@ -723,7 +772,6 @@ static void serial_ir_exit(void)
+>  =
+
+>  static int __init serial_ir_init_module(void)
+>  {
+> -	struct rc_dev *rcdev;
+>  	int result;
+>  =
+
+>  	switch (type) {
+> @@ -754,63 +802,9 @@ static int __init serial_ir_init_module(void)
+>  		sense =3D !!sense;
+>  =
+
+>  	result =3D serial_ir_init();
+> -	if (result)
+> -		return result;
+> -
+> -	rcdev =3D devm_rc_allocate_device(&serial_ir.pdev->dev, RC_DRIVER_IR_RA=
+W);
+> -	if (!rcdev) {
+> -		result =3D -ENOMEM;
+> -		goto serial_cleanup;
+> -	}
+> -
+> -	if (hardware[type].send_pulse && hardware[type].send_space)
+> -		rcdev->tx_ir =3D serial_ir_tx;
+> -	if (hardware[type].set_send_carrier)
+> -		rcdev->s_tx_carrier =3D serial_ir_tx_carrier;
+> -	if (hardware[type].set_duty_cycle)
+> -		rcdev->s_tx_duty_cycle =3D serial_ir_tx_duty_cycle;
+> -
+> -	switch (type) {
+> -	case IR_HOMEBREW:
+> -		rcdev->input_name =3D "Serial IR type home-brew";
+> -		break;
+> -	case IR_IRDEO:
+> -		rcdev->input_name =3D "Serial IR type IRdeo";
+> -		break;
+> -	case IR_IRDEO_REMOTE:
+> -		rcdev->input_name =3D "Serial IR type IRdeo remote";
+> -		break;
+> -	case IR_ANIMAX:
+> -		rcdev->input_name =3D "Serial IR type AnimaX";
+> -		break;
+> -	case IR_IGOR:
+> -		rcdev->input_name =3D "Serial IR type IgorPlug";
+> -		break;
+> -	}
+> -
+> -	rcdev->input_phys =3D KBUILD_MODNAME "/input0";
+> -	rcdev->input_id.bustype =3D BUS_HOST;
+> -	rcdev->input_id.vendor =3D 0x0001;
+> -	rcdev->input_id.product =3D 0x0001;
+> -	rcdev->input_id.version =3D 0x0100;
+> -	rcdev->open =3D serial_ir_open;
+> -	rcdev->close =3D serial_ir_close;
+> -	rcdev->dev.parent =3D &serial_ir.pdev->dev;
+> -	rcdev->allowed_protocols =3D RC_BIT_ALL_IR_DECODER;
+> -	rcdev->driver_name =3D KBUILD_MODNAME;
+> -	rcdev->map_name =3D RC_MAP_RC6_MCE;
+> -	rcdev->min_timeout =3D 1;
+> -	rcdev->timeout =3D IR_DEFAULT_TIMEOUT;
+> -	rcdev->max_timeout =3D 10 * IR_DEFAULT_TIMEOUT;
+> -	rcdev->rx_resolution =3D 250000;
+> -
+> -	serial_ir.rcdev =3D rcdev;
+> -
+> -	result =3D rc_register_device(rcdev);
+> -
+>  	if (!result)
+>  		return 0;
+> -serial_cleanup:
+> +
+>  	serial_ir_exit();
+>  	return result;
+>  }
+> @@ -818,7 +812,6 @@ static int __init serial_ir_init_module(void)
+>  static void __exit serial_ir_exit_module(void)
+>  {
+>  	del_timer_sync(&serial_ir.timeout_timer);
+> -	rc_unregister_device(serial_ir.rcdev);
+>  	serial_ir_exit();
+>  }
+>  =
+
+
+
 
 Thanks,
+Mauro
 
-	M.
-
->From 8a2c82e1024caab5155db4cccbfe20b42f80acd1 Mon Sep 17 00:00:00 2001
-From: Marc Zyngier <marc.zyngier@arm.com>
-Date: Sat, 25 Feb 2017 10:42:36 +0000
-Subject: [PATCH] mac80211_hwsim: Do not use undefined clockids
-
-Since 336a9cde10d6 ("hrtimer: Catch invalid clockids again"),
-we spit out a warning at runtime when an illegal clockid is used,
-catching the offender red handed, and falling back to CLOCK_MONOTONIC.
-
-mac80211_hwsim is trying to use CLOCK_MONOTONIC_RAW, which doesn't
-exist in the kernel. Before the above fix, we would have used
-clockid 0, which happens to be CLOCK_MONOTONIC. This patch simply
-makes this behaviour the expected one.
-
-Cc: Johannes Berg <johannes.berg@intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Fixes: 1d940aaab881 ("mac80211_hwsim: use CLOCK_MONOTONIC_RAW")
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
----
- drivers/net/wireless/mac80211_hwsim.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/m=
-ac80211_hwsim.c
-index 1620a5d2757d..0889fc81ce9e 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2671,7 +2671,7 @@ static int mac80211_hwsim_new_radio(struct genl_info =
-*info,
- =
-
- 	tasklet_hrtimer_init(&data->beacon_timer,
- 			     mac80211_hwsim_beacon,
--			     CLOCK_MONOTONIC_RAW, HRTIMER_MODE_ABS);
-+			     CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
- =
-
- 	spin_lock_bh(&hwsim_radio_lock);
- 	list_add_tail(&data->list, &hwsim_radios);
--- =
-
-2.11.0
-
-
--- =
-
-Jazz is not dead, it just smell funny.
-
---===============7941405453002207706==--
+--===============2872345158826940854==--
 
