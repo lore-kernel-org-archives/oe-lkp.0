@@ -1,247 +1,60 @@
-Content-Type: multipart/mixed; boundary="===============2687260145958497871=="
+Content-Type: multipart/mixed; boundary="===============4742885586527236647=="
 MIME-Version: 1.0
-From: Mauro Carvalho Chehab <mchehab@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: [PATCH v3] [media] serial_ir: ensure we're ready to receive interrupts
-Date: Sat, 25 Feb 2017 11:44:19 -0300
-Message-ID: <20170225112213.6e890b38@vento.lan>
+Subject: Re: [WARNING: A/V UNSCANNABLE][Merge tag 'media/v4.11-1' of git] ff58d005cd: BUG: unable to handle kernel NULL pointer dereference at 0000039c
+Date: Sat, 25 Feb 2017 10:02:44 -0800
+Message-ID: <CA+55aFy+ER8cYV02eZsKAOLnZBWY96zNWqUFWSWT1+3sZD4XnQ@mail.gmail.com>
+In-Reply-To: <20170225090741.GA20463@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2687260145958497871==
+--===============4742885586527236647==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+On Sat, Feb 25, 2017 at 1:07 AM, Ingo Molnar <mingo@kernel.org> wrote:
+>
+> So, should we revert the hw-retrigger change:
+>
+>   a9b4f08770b4 x86/ioapic: Restore IO-APIC irq_chip retrigger callback
+>
+> ... until we managed to fix CONFIG_DEBUG_SHIRQ=3Dy? If you'd like to reve=
+rt it
+> upstream straight away:
+>
+> Acked-by: Ingo Molnar <mingo@kernel.org>
 
-From: Sean Young <sean@mess.org>
+So I'm in no huge hurry to revert that commit as long as we're still
+in the merge window or early -rc's.
 
-When the interrupt requested with devm_request_irq(), serial_ir.rcdev
-is still null so will cause null deference if the irq handler is called
-early on.
+>From a debug standpoint, the spurious early interrupts are fine, and
+hopefully will help us find more broken drivers.
 
-Also ensure that timeout_timer is setup.
+It's just that I'd like to revert it before the actual 4.11 release,
+unless we can find a better solution.
 
-Link: http://lkml.kernel.org/r/CA+55aFxsh2uF8gi5sN_guY3Z+tiLv7LpJYKBw+y8vqL=
-zp+TsnQ(a)mail.gmail.com
+Because it really seems like the interrupt re-trigger is entirely
+bogus. It's not an _actual_ "re-trigger the interrupt that may have
+gotten lost", it's some code that ends up triggering it for no good
+reason.
 
-[mchehab(a)s-opensource.com: moved serial_ir_probe() back to its original p=
-lace]
+So I'd actually hope that we could figure out why IRQS_PENDING got
+set, and perhaps fix the underlying cause?
 
-Cc: <stable@vger.kernel.org> # 4.10
-Signed-off-by: Sean Young <sean@mess.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@s-opensource.com>
-- - ---
- drivers/media/rc/serial_ir.c | 123 ++++++++++++++++++++++-----------------=
-----
- 1 file changed, 62 insertions(+), 61 deletions(-)
+There are several things that set IRQS_PENDING, ranging from "try to
+test mis-routed interrupts while irqd was working", to "prepare for
+suspend losing the irq for us", to "irq auto-probing uses it on
+unassigned probable irqs".
 
-diff --git a/drivers/media/rc/serial_ir.c b/drivers/media/rc/serial_ir.c
-index 923fb2299553..41b54e40176c 100644
-- - --- a/drivers/media/rc/serial_ir.c
-+++ b/drivers/media/rc/serial_ir.c
-@@ -487,10 +487,69 @@ static void serial_ir_timeout(unsigned long arg)
- 	ir_raw_event_handle(serial_ir.rcdev);
- }
- =
+The *actual* reason to re-send, namely getting a nested irq that we
+had to drop because we got a second one while still handling the first
+(or because it was disabled), is just one case.
 
-+/* Needed by serial_ir_probe() */
-+static int serial_ir_tx(struct rc_dev *dev, unsigned int *txbuf,
-+			unsigned int count);
-+static int serial_ir_tx_duty_cycle(struct rc_dev *dev, u32 cycle);
-+static int serial_ir_tx_carrier(struct rc_dev *dev, u32 carrier);
-+static int serial_ir_open(struct rc_dev *rcdev);
-+static void serial_ir_close(struct rc_dev *rcdev);
-+
- static int serial_ir_probe(struct platform_device *dev)
- {
-+	struct rc_dev *rcdev;
- 	int i, nlow, nhigh, result;
- =
+Personally, I'd suspect some left-over state from auto-probing earlier
+in the boot, but I don't know. Could we fix that underlying issue?
 
-+	rcdev =3D devm_rc_allocate_device(&dev->dev, RC_DRIVER_IR_RAW);
-+	if (!rcdev)
-+		return -ENOMEM;
-+
-+	if (hardware[type].send_pulse && hardware[type].send_space)
-+		rcdev->tx_ir =3D serial_ir_tx;
-+	if (hardware[type].set_send_carrier)
-+		rcdev->s_tx_carrier =3D serial_ir_tx_carrier;
-+	if (hardware[type].set_duty_cycle)
-+		rcdev->s_tx_duty_cycle =3D serial_ir_tx_duty_cycle;
-+
-+	switch (type) {
-+	case IR_HOMEBREW:
-+		rcdev->input_name =3D "Serial IR type home-brew";
-+		break;
-+	case IR_IRDEO:
-+		rcdev->input_name =3D "Serial IR type IRdeo";
-+		break;
-+	case IR_IRDEO_REMOTE:
-+		rcdev->input_name =3D "Serial IR type IRdeo remote";
-+		break;
-+	case IR_ANIMAX:
-+		rcdev->input_name =3D "Serial IR type AnimaX";
-+		break;
-+	case IR_IGOR:
-+		rcdev->input_name =3D "Serial IR type IgorPlug";
-+		break;
-+	}
-+
-+	rcdev->input_phys =3D KBUILD_MODNAME "/input0";
-+	rcdev->input_id.bustype =3D BUS_HOST;
-+	rcdev->input_id.vendor =3D 0x0001;
-+	rcdev->input_id.product =3D 0x0001;
-+	rcdev->input_id.version =3D 0x0100;
-+	rcdev->open =3D serial_ir_open;
-+	rcdev->close =3D serial_ir_close;
-+	rcdev->dev.parent =3D &serial_ir.pdev->dev;
-+	rcdev->allowed_protocols =3D RC_BIT_ALL_IR_DECODER;
-+	rcdev->driver_name =3D KBUILD_MODNAME;
-+	rcdev->map_name =3D RC_MAP_RC6_MCE;
-+	rcdev->min_timeout =3D 1;
-+	rcdev->timeout =3D IR_DEFAULT_TIMEOUT;
-+	rcdev->max_timeout =3D 10 * IR_DEFAULT_TIMEOUT;
-+	rcdev->rx_resolution =3D 250000;
-+
-+	serial_ir.rcdev =3D rcdev;
-+
-+	setup_timer(&serial_ir.timeout_timer, serial_ir_timeout,
-+		    (unsigned long)&serial_ir);
-+
- 	result =3D devm_request_irq(&dev->dev, irq, serial_ir_irq_handler,
- 				  share_irq ? IRQF_SHARED : 0,
- 				  KBUILD_MODNAME, &hardware);
-@@ -516,9 +575,6 @@ static int serial_ir_probe(struct platform_device *dev)
- 		return -EBUSY;
- 	}
- =
+                 Linus
 
-- - -	setup_timer(&serial_ir.timeout_timer, serial_ir_timeout,
-- - -		    (unsigned long)&serial_ir);
-- - -
- 	result =3D hardware_init_port();
- 	if (result < 0)
- 		return result;
-@@ -552,7 +608,8 @@ static int serial_ir_probe(struct platform_device *dev)
- 			 sense ? "low" : "high");
- =
-
- 	dev_dbg(&dev->dev, "Interrupt %d, port %04x obtained\n", irq, io);
-- - -	return 0;
-+
-+	return devm_rc_register_device(&dev->dev, rcdev);
- }
- =
-
- static int serial_ir_open(struct rc_dev *rcdev)
-@@ -723,7 +780,6 @@ static void serial_ir_exit(void)
- =
-
- static int __init serial_ir_init_module(void)
- {
-- - -	struct rc_dev *rcdev;
- 	int result;
- =
-
- 	switch (type) {
-@@ -754,63 +810,9 @@ static int __init serial_ir_init_module(void)
- 		sense =3D !!sense;
- =
-
- 	result =3D serial_ir_init();
-- - -	if (result)
-- - -		return result;
-- - -
-- - -	rcdev =3D devm_rc_allocate_device(&serial_ir.pdev->dev, RC_DRIVER_IR_=
-RAW);
-- - -	if (!rcdev) {
-- - -		result =3D -ENOMEM;
-- - -		goto serial_cleanup;
-- - -	}
-- - -
-- - -	if (hardware[type].send_pulse && hardware[type].send_space)
-- - -		rcdev->tx_ir =3D serial_ir_tx;
-- - -	if (hardware[type].set_send_carrier)
-- - -		rcdev->s_tx_carrier =3D serial_ir_tx_carrier;
-- - -	if (hardware[type].set_duty_cycle)
-- - -		rcdev->s_tx_duty_cycle =3D serial_ir_tx_duty_cycle;
-- - -
-- - -	switch (type) {
-- - -	case IR_HOMEBREW:
-- - -		rcdev->input_name =3D "Serial IR type home-brew";
-- - -		break;
-- - -	case IR_IRDEO:
-- - -		rcdev->input_name =3D "Serial IR type IRdeo";
-- - -		break;
-- - -	case IR_IRDEO_REMOTE:
-- - -		rcdev->input_name =3D "Serial IR type IRdeo remote";
-- - -		break;
-- - -	case IR_ANIMAX:
-- - -		rcdev->input_name =3D "Serial IR type AnimaX";
-- - -		break;
-- - -	case IR_IGOR:
-- - -		rcdev->input_name =3D "Serial IR type IgorPlug";
-- - -		break;
-- - -	}
-- - -
-- - -	rcdev->input_phys =3D KBUILD_MODNAME "/input0";
-- - -	rcdev->input_id.bustype =3D BUS_HOST;
-- - -	rcdev->input_id.vendor =3D 0x0001;
-- - -	rcdev->input_id.product =3D 0x0001;
-- - -	rcdev->input_id.version =3D 0x0100;
-- - -	rcdev->open =3D serial_ir_open;
-- - -	rcdev->close =3D serial_ir_close;
-- - -	rcdev->dev.parent =3D &serial_ir.pdev->dev;
-- - -	rcdev->allowed_protocols =3D RC_BIT_ALL_IR_DECODER;
-- - -	rcdev->driver_name =3D KBUILD_MODNAME;
-- - -	rcdev->map_name =3D RC_MAP_RC6_MCE;
-- - -	rcdev->min_timeout =3D 1;
-- - -	rcdev->timeout =3D IR_DEFAULT_TIMEOUT;
-- - -	rcdev->max_timeout =3D 10 * IR_DEFAULT_TIMEOUT;
-- - -	rcdev->rx_resolution =3D 250000;
-- - -
-- - -	serial_ir.rcdev =3D rcdev;
-- - -
-- - -	result =3D rc_register_device(rcdev);
-- - -
- 	if (!result)
- 		return 0;
-- - -serial_cleanup:
-+
- 	serial_ir_exit();
- 	return result;
- }
-@@ -818,7 +820,6 @@ static int __init serial_ir_init_module(void)
- static void __exit serial_ir_exit_module(void)
- {
- 	del_timer_sync(&serial_ir.timeout_timer);
-- - -	rc_unregister_device(serial_ir.rcdev);
- 	serial_ir_exit();
- }
- =
-
-- - -- =
-
-2.9.3
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBCAAGBQJYsZhEAAoJEAhfPr2O5OEV2l8P/i0jyikTsOC4NaCsImBhVsM5
-sdgjy+wib+hCwdn9HDORxFq7P0ZyKSErkRnHIZSiqu1q4S9Q+Xa5h93taEdZi38H
-2Ain5rB40y7eXgsssU9APHin89HmdT9XWKS7pAEE16mKhiiuu0cgFd+LngDypjNQ
-s5YlzfWFsN6ubjS/t2wJpxxyepsKoCtv8smTOfyQZIhwKUcWWC9kJTA77ubO9egr
-ZBFzsvw0XbEjW8cui4EEuduozD9K1OrSsCib+NK2NMU0luYy9YtsUtjN5Ozu1e6t
-J5QOdsJl0aqLPfEk8TW3++55MaK9LUgE6aaCdntbek5cZmgsk3ad79kDP8gSdxAV
-VUXDEPZQpJXedA6S/bAmXUbEW7mVHH9ALYSa8AGXCArKKtz+5iXNP0+83JoFGEHb
-tTCGInNfsBHd8/NqdW/u/ugGVj4xt0Kc+4oOPYecjO2tiCS+lpKWIDw9bOcaR4/0
-w+zbCmIEmBZ74lM0ys+TmCmDGwXC2QYEqY0U+9ZZcsy+7bMcxJH6slrjfaa6fJa0
-j2OU2qB0VnUTJq0a0O8IL7s5jQn1lKNpmG9TKYNntCzBuHbasL2rsr+Jrr6vpMKU
-vYbpRapoAnIXaUW708bdtA2x7/JfiLj9M7KvYJfeFAt9HGHeXq1HJsaGjix1mZh3
-nL/68Fqc2Scurbzq/C7Z
-=3DApye
------END PGP SIGNATURE-----
-
---===============2687260145958497871==--
+--===============4742885586527236647==--
 
