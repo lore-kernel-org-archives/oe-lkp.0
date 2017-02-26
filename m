@@ -1,16 +1,18 @@
-Content-Type: multipart/mixed; boundary="===============2964079915475780450=="
+Content-Type: multipart/mixed; boundary="===============4859677827862337824=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: [usb] bea5b158ff WARNING: CPU: 0 PID: 25 at drivers/usb/core/urb.c:338 usb_submit_urb
-Date: Sun, 26 Feb 2017 17:56:26 +0800
-Message-ID: <20170226095626.tocn7dq3vio4pujz@wfg-t540p.sh.intel.com>
+Date: Sun, 26 Feb 2017 18:19:59 +0800
+Message-ID: <20170226101959.hhtbjj4ee6ujxdr4@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2964079915475780450==
+--===============4859677827862337824==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+
+[Sorry, resend to correct Felipe's email address]
 
 Greetings,
 
@@ -26,22 +28,22 @@ AuthorDate: Thu Aug 11 10:20:58 2016 -0500
 Commit:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 CommitDate: Wed Aug 31 15:13:55 2016 +0200
 
-     driver core: add test of driver remove calls during probe
-     =
+      driver core: add test of driver remove calls during probe
+      =
 
-     In recent discussions on ksummit-discuss[1], it was suggested to do a
-     sequence of probe, remove, probe for testing driver remove paths. This
-     adds a kconfig option for said test.
-     =
+      In recent discussions on ksummit-discuss[1], it was suggested to do a
+      sequence of probe, remove, probe for testing driver remove paths. This
+      adds a kconfig option for said test.
+      =
 
-     [1] https://lists.linuxfoundation.org/pipermail/ksummit-discuss/2016-A=
-ugust/003459.html
-     =
+      [1] https://lists.linuxfoundation.org/pipermail/ksummit-discuss/2016-=
+August/003459.html
+      =
 
-     Suggested-by: Arnd Bergmann <arnd@arndb.de>
-     Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-     Signed-off-by: Rob Herring <robh@kernel.org>
-     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+      Suggested-by: Arnd Bergmann <arnd@arndb.de>
+      Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+      Signed-off-by: Rob Herring <robh@kernel.org>
+      Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 cebf8fd169  driver core: fix race between creating/querying glue dir and it=
 s cleanup
@@ -190,7 +192,7 @@ er
 https://lists.01.org/pipermail/lkp                          Intel Corporati=
 on
 
---===============2964079915475780450==
+--===============4859677827862337824==
 Content-Type: application/gzip
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -584,7 +586,7 @@ afvZfL67k99ArGwAT+nh7k4Wz4tHnef+YvF47R7g2Xt8L0No9/2ncHd/E/cnuD4NSPMHyGs+uetD
 paJBq1m7my8nDvEOrtby1r6Xemfs77KiR7+dcjZd4NJIqOPwsPfcnrk3zNGnr6MxRdTtVF31cxGq
 dCXMo13fdQKhX2F3Zwj5T277jex2v5Pd3Z23l5cfB2cXh+9O+v9XI9CGdgJfzpt/+xeMkL//9fN/
 vWGO/owYPNNXv/8ZHu/+N4TZE2UNnwEA
---===============2964079915475780450==
+--===============4859677827862337824==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -607,7 +609,7 @@ b3JlX2xvZ2xldmVsCgllYXJseXByaW50az10dHlTMCwxMTUyMDAKCWNvbnNvbGU9dHR5UzAsMTE1
 MjAwCgljb25zb2xlPXR0eTAKCXZnYT1ub3JtYWwKCXJ3CglkcmJkLm1pbm9yX2NvdW50PTgKKQoK
 IiR7a3ZtW0BdfSIgLWFwcGVuZCAiJHthcHBlbmRbKl19Igo=
 
---===============2964079915475780450==
+--===============4859677827862337824==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -2434,5 +2436,5 @@ RkRUPXkKIyBDT05GSUdfU0dfU1BMSVQgaXMgbm90IHNldAojIENPTkZJR19TR19QT09MIGlzIG5v
 dCBzZXQKQ09ORklHX0FSQ0hfSEFTX1NHX0NIQUlOPXkKQ09ORklHX0FSQ0hfSEFTX01NSU9fRkxV
 U0g9eQpDT05GSUdfU1RBQ0tERVBPVD15Cg==
 
---===============2964079915475780450==--
+--===============4859677827862337824==--
 
