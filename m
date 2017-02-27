@@ -1,67 +1,56 @@
-Content-Type: multipart/mixed; boundary="===============7990264082360530047=="
+Content-Type: multipart/mixed; boundary="===============8563537671028672723=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Matthew Wilcox <mawilcox@microsoft.com>
 To: lkp@lists.01.org
-Subject: Re: [WARNING: A/V UNSCANNABLE][Merge tag 'media/v4.11-1' of git] ff58d005cd: BUG: unable to handle kernel NULL pointer dereference at 0000039c
-Date: Mon, 27 Feb 2017 11:23:21 -0800
-Message-ID: <CA+55aFxwtkOs95R-v7z8yjguvp91oDTxRKs-x3uN_=sM_33Gvg@mail.gmail.com>
-In-Reply-To: <20170227154124.GA20569@gmail.com>
+Subject: Re: 84e26daf36: BUG: kernel reboot-without-warning in boot stage
+Date: Mon, 27 Feb 2017 21:28:07 +0000
+Message-ID: <SN1PR21MB00457E33940C5C57A3664ECACB570@SN1PR21MB0045.namprd21.prod.outlook.com>
+In-Reply-To: <58b3f6a7.CyhVwPcXO7KF3xSI%fengguang.wu@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7990264082360530047==
+--===============8563537671028672723==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 27, 2017 at 7:41 AM, Ingo Molnar <mingo@kernel.org> wrote:
->
-> BTW., instead of trying to avoid the scenario, wow about moving in the ot=
-her
-> direction: making CONFIG_DEBUG_SHIRQ=3Dy unconditional property in the IR=
-Q core code
-> starting from v4.12 or so
+From: kernel test robot [mailto:fengguang.wu(a)intel.com]
+> =
 
-The problem is that it's generally almost undebuggable ahead of time
-by developers, and most users won't be able to do good reports either,
-because the symptom is geberally a boot-time crash, often with no
-logs.
+> dedab4f65c  Merge 'jss-tpmdd/tabrm-v3' into devel-spot-201702270715
+> 20e85d3670  ida: Move ida_bitmap to a percpu variable
+> 84e26daf36  Merge 'dax/fd-alloc' into devel-spot-201702270715
+> +-------------------------------------------------+------------+---------=
+---+------------+
+> |                                                 | dedab4f65c | 20e85d36=
+70 | 84e26daf36 |
+> +-------------------------------------------------+------------+---------=
+---+------------+
+> | boot_successes                                  | 88         | 82      =
+   | 0          |
+> | boot_failures                                   | 4          | 0       =
+   | 48         |
+> | IP-Config:Auto-configuration_of_network_failed  | 4          |         =
+   |            |
+> | BUG:kernel_reboot-without-warning_in_boot_stage | 0          | 0       =
+   | 48
+> |
+> +-------------------------------------------------+------------+---------=
+---+------------+
+> =
 
-So this option is *not* good for actual users. It's been tried before.
+> [    0.000000] BRK [0x05884000, 0x05884fff] PGTABLE
+> [    0.000000] RAMDISK: [mem 0x1fcc6000-0x1ffcffff]
+> [    0.000000] ACPI: Early table checksum verification disabled
+> =
 
-It's a wonderful thing for developers to run with to make sure the
-drivers they are working on are resilient to this problem, but we have
-too many legacy drivers and lots of random users, and it's unrealistic
-to expect them to handle it.
 
-In other words: what will happen is that distros start getting bootup
-problem reports six months or a year after we've done it, and *if*
-they figure out it's the irq enabling, they'll disable it, because
-they have no way to solve it either.
+Thanks for reporting this.  I don't know quite how to proceed from here; th=
+e modified kernel boots for me just fine.  The code we modified shouldn't e=
+ven be called this early -- it's around file descriptor handling, and I don=
+'t think we even get a file descriptor this early in boot.
 
-And core developers will just maybe see the occasional "4.12 doesn't
-boot for me" reports, but by then developers will ahve moved on to
-4.16 or something.
+Can you share the ramdisk that you're booting the kernel with?
 
-So I don't disagree that in a perfect world all drivers should just
-handle it. It's just that it's not realistic.
 
-The fact that we have now *twice* gotten an oops report or a "this
-machine doesn't boot" report etc within a week or so of merging the
-problematic patch does *not* indicate that it's easy to fix or rare.
-
-Quite the reverse.
-
-It indicates that it's just rare enough that core developers don't see
-it, but it's common enough to have triggered issues in random places.
-
-And it will just get *much* worse when you then get the random
-end-users that usually have older machines than the developers who
-actually test daily development -git trees.
-
-Then we'll just hit *other* random places, and without having testers
-that are competent and willing or able to bisect or debug.
-
-                  Linus
-
---===============7990264082360530047==--
+--===============8563537671028672723==--
 
