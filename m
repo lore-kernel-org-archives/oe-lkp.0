@@ -1,139 +1,136 @@
-Content-Type: multipart/mixed; boundary="===============1472096281509025028=="
+Content-Type: multipart/mixed; boundary="===============8539616679225444018=="
 MIME-Version: 1.0
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Andrey Ryabinin <aryabinin@virtuozzo.com>
 To: lkp@lists.01.org
-Subject: Re: [WARNING: A/V UNSCANNABLE][Merge tag 'media/v4.11-1' of git] ff58d005cd: BUG: unable to handle kernel NULL pointer dereference at 0000039c
-Date: Mon, 27 Feb 2017 13:32:59 +0100
-Message-ID: <alpine.DEB.2.20.1702271231410.4732@nanos>
-In-Reply-To: <alpine.DEB.2.20.1702271105090.4732@nanos>
+Subject: Re: [lkp-robot] [x86/mm/ptdump] 243b72aae2: WARNING:at_arch/x86/mm/dump_pagetables.c:#note_page
+Date: Mon, 27 Feb 2017 16:01:34 +0300
+Message-ID: <34aa4f8e-190a-8895-bf43-22d3f08efd17@virtuozzo.com>
+In-Reply-To: <20170227010341.GA32284@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1472096281509025028==
+--===============8539616679225444018==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 27 Feb 2017, Thomas Gleixner wrote:
-> On Sat, 25 Feb 2017, Linus Torvalds wrote:
-> > There are several things that set IRQS_PENDING, ranging from "try to
-> > test mis-routed interrupts while irqd was working", to "prepare for
-> > suspend losing the irq for us", to "irq auto-probing uses it on
-> > unassigned probable irqs".
-> > =
-
-> > The *actual* reason to re-send, namely getting a nested irq that we
-> > had to drop because we got a second one while still handling the first
-> > (or because it was disabled), is just one case.
-> > =
-
-> > Personally, I'd suspect some left-over state from auto-probing earlier
-> > in the boot, but I don't know. Could we fix that underlying issue?
+On 02/27/2017 04:03 AM, kernel test robot wrote:
 > =
 
-> I'm on it.
+> FYI, we noticed the following commit:
+> =
 
-Adding a few trace points to the irq code gives me a pretty consistent
-picture across a bunch of different machines.
+> commit: 243b72aae28ca1032284028323bb81c9235b15c9 ("x86/mm/ptdump: Optimiz=
+e check for W+X mappings for CONFIG_KASAN=3Dy")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-The pending interrupt issue happens, at least on my test boxen, mostly on
-the 'legacy' interrupts (0 - 15). But even the IOAPIC interrupts >=3D16
-happen occasionally.
+...
+> =
 
- - Spurious interrupts on IRQ7, which are triggered by IRQ 0 (PIT/HPET). On
-   one of the affected machines this stops when the interrupt system is
-   switched to interrupt remapping !?!?!?
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
 
- - Spurious interrupts on various interrupt lines, which are triggered by
-   IOAPIC interrupts >=3D IRQ16. That's a known issue on quite some chipsets
-   that the legacy PCI interrupt (which is used when IOAPIC is disabled) is
-   triggered when the IOAPIC >=3D16 interrupt fires.
+> =
 
- - Spurious interrupt caused by driver probing itself. I.e. the driver
-   probing code causes an interrupt issued from the device
-   inadvertently. That happens even on IRQ >=3D 16.
+> +-----------------------------------------------------+------------+-----=
+-------+
+> |                                                     | 5b1ad68f9b | 243b=
+72aae2 |
+> +-----------------------------------------------------+------------+-----=
+-------+
+> | boot_successes                                      | 0          | 0   =
+       |
+> | boot_failures                                       | 8          | 6   =
+       |
+> | BUG:KASAN:slab-out-of-bounds                        | 8          | 6   =
+       |
+> | WARNING:at_arch/x86/mm/dump_pagetables.c:#note_page | 0          | 6   =
+       |
+> +-----------------------------------------------------+------------+-----=
+-------+
 
-   This problem might be handled by the device driver code itself, but
-   that's going to be ugly. See below.
+Ok, I reproduced this, but it's definitely caused *not* by 243b72aae28.
+This WARN is also reproducible on the parent commit 5b1ad68f9b.
+The only difference here is that on parent one needs dozens of seconds to r=
+each this WARNING.
+It seems that this time difference somehow confused the robot.
 
-None of that was caused by misrouted irq or autoprobing. Autoprobing is not
-used on any modern maschine at all and the misrouted mechanism cannot
-set the pending flag on a interrupt which has no action installed.
-
-Sure, we might not set the pending flag on spurious interrupts, when an
-interrupt has no action assigned. We had it that way quite some years
-ago. But that caused issues on a couple of (non x86) systems because the
-peripheral which sent the spurious interrupt was waiting for
-acknowledgement forever and therefor not sending new interrupts. There was
-no way to handle that other than resending the interrupt after the action
-was installed. The reason for this is the following race:
-
-Device driver init()
-
-  ack_bogus_pending_irq_in_device();
-                          <---- Device sends spurious interrupt
-  request_irq();
-
-We cannot call ack_bogus_pending_irq_in_device() after the handler has been
-installed because it might clear a real interrupt before the handler is
-invoked. In fact we can, but that requires pretty ugly code. See below.
-
-Yes, it's broken hardware, but in that area there is more broken than sane
-hardware.
-
-The other point here is, that the "IOAPIC triggers spurious interrupt on
-legacy lines" issue can actually cause the same problem as the immediate
-resend/retrigger:
-
-  request_irq();
-  			 <---- Other device sends IOAPIC interrupt which
-			       triggers the legacy line.
-
-If the handler is not prepared@that point, then it explodes as
-well. Same for this odd IRQ0 -> IRQ7 trigger, which I can observe on two
-machines.
-
-The whole resend/retrigger business is only relevant for edge type
-interrupts to deal with the following problem:
-
-  disable_irq();
-			<---- Device sends interrupt
-  enable_irq();
-
-  =3D=3D=3D> Previously sent interrupt has not been acked in the device so =
-no
-       further interrupts happen. We lost an edge and are toast.
-
-We never do the resend/retrigger for level type interrupts, because they
-are resent by hardware if the interrupt is still pending, which is the case
-when you don't acknowlegde it at the device level.
-
-So now you might argue that a driver could handle this by doing:
-
-  disable_irq();
-			<---- Device sends interrupt
-  enable_irq();
-
-  lock_device();
-   do_some_magic_checks_and_handle_pending_irq();
-  unlock_device();
-
-Requiring this would add tons of even more broken code to the device
-drivers and I really doubt that we want to go there. Same for the
-request_irq() case.
-
-I rather prefer that drivers are able to deal with spurious interrupts even
-on non shared interrupt lines and let the resend/retrigger mechanism expose
-them early when they do not.
-
-We can try to sample more data from the machines of affected users, but I
-doubt that it will give us more information than confirming that we really
-have to deal with all that hardware wreckage out there in some way or the
-other.
-
-Thanks,
-
-	tglx
+As for the warning itself, it caused by kprobes. krpobe code use module_all=
+oc() which
+creates these RWX mappings.
+I'm not sure how to fix this as AFAIK kprobes actually need RWX mapping.
 
 
---===============1472096281509025028==--
+> =
+
+> [   25.592875] WARNING: CPU: 0 PID: 1 at arch/x86/mm/dump_pagetables.c:22=
+6 note_page+0x820/0xaf0
+> [   25.592875] WARNING: CPU: 0 PID: 1 at arch/x86/mm/dump_pagetables.c:22=
+6 note_page+0x820/0xaf0
+> [   25.597768] x86/mm: Found insecure W+X mapping at address ffffffffa000=
+0000/0xffffffffa0000000
+> [   25.597768] x86/mm: Found insecure W+X mapping at address ffffffffa000=
+0000/0xffffffffa0000000
+> [   25.601564] Modules linked in:
+> [   25.601564] Modules linked in:
+> [   25.603072] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G    B           4.=
+10.0-rc8-00007-g243b72a #2
+> [   25.603072] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G    B           4.=
+10.0-rc8-00007-g243b72a #2
+> [   25.607397] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.9.3-20161025_171302-gandalf 04/01/2014
+> [   25.607397] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.9.3-20161025_171302-gandalf 04/01/2014
+> [   25.611819] Call Trace:
+> [   25.611819] Call Trace:
+> [   25.612954]  dump_stack+0x63/0x8d
+> [   25.612954]  dump_stack+0x63/0x8d
+> [   25.614457]  __warn+0x10d/0x130
+> [   25.614457]  __warn+0x10d/0x130
+> [   25.615885]  warn_slowpath_fmt+0x4a/0x50
+> [   25.615885]  warn_slowpath_fmt+0x4a/0x50
+> [   25.617775]  ? _raw_spin_unlock_irq+0x22/0x40
+> [   25.617775]  ? _raw_spin_unlock_irq+0x22/0x40
+> [   25.619940]  note_page+0x820/0xaf0
+> [   25.619940]  note_page+0x820/0xaf0
+> [   25.621416]  ptdump_walk_pgd_level_core+0x420/0x480
+> [   25.621416]  ptdump_walk_pgd_level_core+0x420/0x480
+> [   25.623820]  ? 0xffffffff81000000
+> [   25.623820]  ? 0xffffffff81000000
+> [   25.625369]  ptdump_walk_pgd_level_checkwx+0x12/0x20
+> [   25.625369]  ptdump_walk_pgd_level_checkwx+0x12/0x20
+> [   25.627604]  mark_rodata_ro+0x112/0x120
+> [   25.627604]  mark_rodata_ro+0x112/0x120
+> [   25.629364]  ? rest_init+0xe0/0xe0
+> [   25.629364]  ? rest_init+0xe0/0xe0
+> [   25.630915]  kernel_init+0x2a/0x120
+> [   25.630915]  kernel_init+0x2a/0x120
+> [   25.632542]  ? rest_init+0xe0/0xe0
+> [   25.632542]  ? rest_init+0xe0/0xe0
+> [   25.634340]  ret_from_fork+0x2c/0x40
+> [   25.634340]  ret_from_fork+0x2c/0x40
+> [   25.635989] ---[ end trace 583b8aa56cec4492 ]---
+> =
+
+> =
+
+> To reproduce:
+> =
+
+>         git clone git://git.kernel.org/pub/scm/linux/kernel/git/wfg/lkp-t=
+ests.git
+>         cd lkp-tests
+>         bin/lkp qemu -k <bzImage> job-script  # job-script is attached in=
+ this email
+> =
+
+> =
+
+> =
+
+> Thanks,
+> Xiaolong
+>=20
+
+--===============8539616679225444018==--
 
