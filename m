@@ -1,80 +1,125 @@
-Content-Type: multipart/mixed; boundary="===============8010534298284094560=="
+Content-Type: multipart/mixed; boundary="===============3748421712881112887=="
 MIME-Version: 1.0
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/mm/ptdump] 243b72aae2: WARNING:at_arch/x86/mm/dump_pagetables.c:#note_page
-Date: Tue, 28 Feb 2017 01:11:40 +0900
-Message-ID: <20170228011140.ef61008afb57976a74ead279@kernel.org>
-In-Reply-To: <34aa4f8e-190a-8895-bf43-22d3f08efd17@virtuozzo.com>
+Subject: Re: [WARNING: A/V UNSCANNABLE][Merge tag 'media/v4.11-1' of git] ff58d005cd: BUG: unable to handle kernel NULL pointer dereference at 0000039c
+Date: Mon, 27 Feb 2017 17:12:16 +0100
+Message-ID: <alpine.DEB.2.20.1702271647570.4732@nanos>
+In-Reply-To: <20170227154124.GA20569@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8010534298284094560==
+--===============3748421712881112887==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 27 Feb 2017 16:01:34 +0300
-Andrey Ryabinin <aryabinin@virtuozzo.com> wrote:
-
-> On 02/27/2017 04:03 AM, kernel test robot wrote:
-> > =
-
-> > FYI, we noticed the following commit:
-> > =
-
-> > commit: 243b72aae28ca1032284028323bb81c9235b15c9 ("x86/mm/ptdump: Optim=
-ize check for W+X mappings for CONFIG_KASAN=3Dy")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+On Mon, 27 Feb 2017, Ingo Molnar wrote:
+> * Thomas Gleixner <tglx@linutronix.de> wrote:
 > =
 
-> ...
+> > The pending interrupt issue happens, at least on my test boxen, mostly =
+on
+> > the 'legacy' interrupts (0 - 15). But even the IOAPIC interrupts >=3D16
+> > happen occasionally.
+> >
 > > =
 
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
+> >  - Spurious interrupts on IRQ7, which are triggered by IRQ 0 (PIT/HPET)=
+. On
+> >    one of the affected machines this stops when the interrupt system is
+> >    switched to interrupt remapping !?!?!?
 > > =
 
+> >  - Spurious interrupts on various interrupt lines, which are triggered =
+by
+> >    IOAPIC interrupts >=3D IRQ16. That's a known issue on quite some chi=
+psets
+> >    that the legacy PCI interrupt (which is used when IOAPIC is disabled=
+) is
+> >    triggered when the IOAPIC >=3D16 interrupt fires.
 > > =
 
-> > +-----------------------------------------------------+------------+---=
----------+
-> > |                                                     | 5b1ad68f9b | 24=
-3b72aae2 |
-> > +-----------------------------------------------------+------------+---=
----------+
-> > | boot_successes                                      | 0          | 0 =
-         |
-> > | boot_failures                                       | 8          | 6 =
-         |
-> > | BUG:KASAN:slab-out-of-bounds                        | 8          | 6 =
-         |
-> > | WARNING:at_arch/x86/mm/dump_pagetables.c:#note_page | 0          | 6 =
-         |
-> > +-----------------------------------------------------+------------+---=
----------+
+> >  - Spurious interrupt caused by driver probing itself. I.e. the driver
+> >    probing code causes an interrupt issued from the device
+> >    inadvertently. That happens even on IRQ >=3D 16.
+> > =
+
+> >    This problem might be handled by the device driver code itself, but
+> >    that's going to be ugly. See below.
 > =
 
-> Ok, I reproduced this, but it's definitely caused *not* by 243b72aae28.
-> This WARN is also reproducible on the parent commit 5b1ad68f9b.
-> The only difference here is that on parent one needs dozens of seconds to=
- reach this WARNING.
-> It seems that this time difference somehow confused the robot.
+> That's pretty colorful behavior...
 > =
 
-> As for the warning itself, it caused by kprobes. krpobe code use module_a=
-lloc() which
-> creates these RWX mappings.
-> I'm not sure how to fix this as AFAIK kprobes actually need RWX mapping.
+> > We can try to sample more data from the machines of affected users, but=
+ I doubt =
 
-Thanks! I also noticed this issue. I actually have a plan to make kprobes w=
-ith R+X mappings (as ftrace does).
-I'll queue this on my TODO list.
+> > that it will give us more information than confirming that we really ha=
+ve to =
+
+> > deal with all that hardware wreckage out there in some way or the other.
+> =
+
+> BTW., instead of trying to avoid the scenario, wow about moving in the ot=
+her =
+
+> direction: making CONFIG_DEBUG_SHIRQ=3Dy unconditional property in the IR=
+Q core code =
+
+> starting from v4.12 or so, i.e. requiring device driver IRQ handlers to h=
+andle the =
+
+> invocation of IRQ handlers at pretty much any moment. (We could also exte=
+nd it a =
+
+> bit, such as invoking IRQ handlers early after suspend/resume wakeup.)
+> =
+
+> Because it's not the requirement that hurts primarily, but the resulting =
+
+> non-determinism and the sporadic crashes. Which can be solved by making t=
+he race =
+
+> deterministic via the debug facility.
+> =
+
+> If the IRQ handler crashed the moment it was first written by the driver =
+author =
+
+> we'd never see these problems.
+
+Yes, I'd love to do that. That's just a nightmare as well.
+
+See commit 6d83f94db95cf, which added the _FIXME suffix to that code.
+
+So recently I tried to invoke the primary handler, which causes another
+issue:
+
+  Some of the low level code (e.g. IOAPIC interrupt migration, but also
+  some PPC irq chip machinery) depends on being called in hard interrupt
+  context. They invoke get_irq_regs(), which obviously does not work from
+  thread context.
+
+So I removed that one from -next as well and postponed it another time. And
+I should have known before I tried it that it does not work. Simply because
+of that stuff x86 cannot use the software based resend mechanism.
+
+Still trying to wrap my head around a proper solution for the problem. On
+x86 we might just check whether we are really in hard irq context and
+otherwise skip the part which depends on get_irq_regs(). That would be a
+sane thing to do. Have not yet looked at the PPC side of affairs, whether
+that's easy to solve as well. But even if it is, then there might be still
+other magic code in some irq chip drivers which relies on things which are
+only available/correct when actually invoked by a hardware interrupt.
+
+Not only the hardware has colorful behaviour ....
+
+Thanks,
+
+	tglx
 
 
 
--- =
 
-Masami Hiramatsu <mhiramat@kernel.org>
-
---===============8010534298284094560==--
+--===============3748421712881112887==--
 
