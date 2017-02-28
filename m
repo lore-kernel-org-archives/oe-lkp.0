@@ -1,69 +1,33 @@
-Content-Type: multipart/mixed; boundary="===============1941775737504885704=="
+Content-Type: multipart/mixed; boundary="===============6645318869738861124=="
 MIME-Version: 1.0
-From: Omar Sandoval <osandov@osandov.com>
+From: Chris Wilson <chris@chris-wilson.co.uk>
 To: lkp@lists.01.org
-Subject: Re: [blk_mq_register_hctx] 29dee3c03a WARNING: CPU: 0 PID: 5 at lib/refcount.c:114 refcount_inc
-Date: Tue, 28 Feb 2017 00:52:15 -0800
-Message-ID: <20170228085215.GA3231@vader>
-In-Reply-To: <20170228083508.fgcncfhksclb2dei@wfg-t540p.sh.intel.com>
+Subject: Re: [locking/ww_mutex] f2a5fec173 EIP: __mutex_trylock
+Date: Tue, 28 Feb 2017 08:53:33 +0000
+Message-ID: <20170228085333.GF10304@nuc-i3427.alporthouse.com>
+In-Reply-To: <20170228035924.hqckycv6at4sfzyc@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1941775737504885704==
+--===============6645318869738861124==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 28, 2017 at 04:35:08PM +0800, Fengguang Wu wrote:
-> On Tue, Feb 28, 2017 at 09:17:11AM +0100, Peter Zijlstra wrote:
-> > On Tue, Feb 28, 2017 at 12:11:17PM +0800, Fengguang Wu wrote:
-> > > Hello,
-> > > =
-
-> > > FYI, an old blk_mq bug triggers new warnings on this commit. It's very
-> > > reproducible and you may try the attached reproduce-* script.
-> > =
-
-> > > [    4.447772] kobject (ffff88001c041f10): tried to init an initializ=
-ed object, something is seriously wrong.
-> > > [    4.453395] CPU: 0 PID: 5 Comm: kworker/u2:0 Not tainted 4.10.0-01=
-216-g29dee3c #2
-> > > [    4.455534] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),=
- BIOS 1.9.3-20161025_171302-gandalf 04/01/2014
-> > > [    4.458252] Workqueue: events_unbound async_run_entry_fn
-> > > [    4.459708] Call Trace:
-> > > [    4.460611]  dump_stack+0x19/0x27
-> > > [    4.461652]  kobject_init+0xda/0xf0
-> > > [    4.462731]  blk_mq_register_dev+0x31/0x150
-> > > [    4.463990]  blk_register_queue+0x205/0x250
-> > > [    4.465217]  device_add_disk+0x1ab/0x710
-> > > [    4.466384]  sd_probe_async+0x11c/0x1e0
-> > > [    4.467544]  async_run_entry_fn+0xbd/0x220
-> > > [    4.468760]  process_one_work+0x4a7/0x990
-> > > [    4.469938]  ? process_one_work+0x348/0x990
-> > > [    4.471168]  worker_thread+0x342/0x8a0
-> > > [    4.472300]  ? process_one_work+0x990/0x990
-> > > [    4.473540]  kthread+0x188/0x190
-> > > [    4.474557]  ? kthread_create_on_node+0x40/0x40
-> > > [    4.475850]  ret_from_fork+0x31/0x40
-> > =
-
-> > So this was pre-existing wreckage? If so, that needs to be sorted first.
-> > Because if the kobject stuff is broken, there's no way the refcount
-> > stuff can begin to work.
+On Tue, Feb 28, 2017 at 11:59:24AM +0800, Fengguang Wu wrote:
+> Hello,
 > =
 
-> Yeah it's old bug that should have existed for quite some time.
-> It's not quite related to the refcount work, just hoping the new
-> warning might serve as new clues to help debugging the blk_mq bug.
-> =
+> Here is another bisect result with a different call trace.
 
-> Thanks,
-> Fengguang
+Is this a single processor VM without pre-emption? It's a busy spin
+loop, so relies on the other thread being run to break the loop. That
+cpu_relax() should become cond_resched()?
+-Chris
 
-Ming Lei posted a series to fix this here [1]. I haven't gotten around
-to testing it, but it'd be great if you could try it, too.
 
-http://marc.info/?l=3Dlinux-block&m=3D148775846217069&w=3D2
+-- =
 
---===============1941775737504885704==--
+Chris Wilson, Intel Open Source Technology Centre
+
+--===============6645318869738861124==--
 
