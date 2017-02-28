@@ -1,67 +1,88 @@
-Content-Type: multipart/mixed; boundary="===============3656882787841927236=="
+Content-Type: multipart/mixed; boundary="===============4273882125251678493=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: [blk_mq_register_hctx] 29dee3c03a WARNING: CPU: 0 PID: 5 at lib/refcount.c:114 refcount_inc
-Date: Tue, 28 Feb 2017 10:45:09 +0100
-Message-ID: <20170228094509.GC6536@twins.programming.kicks-ass.net>
-In-Reply-To: <20170228083804.GB6536@twins.programming.kicks-ass.net>
+Subject: Re: [WARNING: A/V UNSCANNABLE][Merge tag 'media/v4.11-1' of git] ff58d005cd: BUG: unable to handle kernel NULL pointer dereference at 0000039c
+Date: Tue, 28 Feb 2017 11:51:25 +0100
+Message-ID: <alpine.DEB.2.20.1702281103590.4732@nanos>
+In-Reply-To: <CA+55aFxwtkOs95R-v7z8yjguvp91oDTxRKs-x3uN_=sM_33Gvg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3656882787841927236==
+--===============4273882125251678493==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 28, 2017 at 09:38:04AM +0100, Peter Zijlstra wrote:
-> On Tue, Feb 28, 2017 at 09:17:11AM +0100, Peter Zijlstra wrote:
-> > On Tue, Feb 28, 2017 at 12:11:17PM +0800, Fengguang Wu wrote:
-> > > Hello,
-> > > =
-
-> > > FYI, an old blk_mq bug triggers new warnings on this commit. It's very
-> > > reproducible and you may try the attached reproduce-* script.
-> > =
-
-> > > [    4.447772] kobject (ffff88001c041f10): tried to init an initializ=
-ed object, something is seriously wrong.
-> > > [    4.453395] CPU: 0 PID: 5 Comm: kworker/u2:0 Not tainted 4.10.0-01=
-216-g29dee3c #2
-> > > [    4.455534] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),=
- BIOS 1.9.3-20161025_171302-gandalf 04/01/2014
-> > > [    4.458252] Workqueue: events_unbound async_run_entry_fn
-> > > [    4.459708] Call Trace:
-> > > [    4.460611]  dump_stack+0x19/0x27
-> > > [    4.461652]  kobject_init+0xda/0xf0
-> > > [    4.462731]  blk_mq_register_dev+0x31/0x150
-> > > [    4.463990]  blk_register_queue+0x205/0x250
-> > > [    4.465217]  device_add_disk+0x1ab/0x710
-> > > [    4.466384]  sd_probe_async+0x11c/0x1e0
-> > > [    4.467544]  async_run_entry_fn+0xbd/0x220
-> > > [    4.468760]  process_one_work+0x4a7/0x990
-> > > [    4.469938]  ? process_one_work+0x348/0x990
-> > > [    4.471168]  worker_thread+0x342/0x8a0
-> > > [    4.472300]  ? process_one_work+0x990/0x990
-> > > [    4.473540]  kthread+0x188/0x190
-> > > [    4.474557]  ? kthread_create_on_node+0x40/0x40
-> > > [    4.475850]  ret_from_fork+0x31/0x40
-> > =
-
-> > So this was pre-existing wreckage? If so, that needs to be sorted first.
-> > Because if the kobject stuff is broken, there's no way the refcount
-> > stuff can begin to work.
+On Mon, 27 Feb 2017, Linus Torvalds wrote:
+> So I don't disagree that in a perfect world all drivers should just
+> handle it. It's just that it's not realistic.
 > =
 
-> Google just found me:
+> The fact that we have now *twice* gotten an oops report or a "this
+> machine doesn't boot" report etc within a week or so of merging the
+> problematic patch does *not* indicate that it's easy to fix or rare.
 > =
 
->  https://lkml.kernel.org/r/1487758442-5855-2-git-send-email-tom.leiming(a=
-)gmail.com
+> Quite the reverse.
 > =
 
-> Let me see if that works.
+> It indicates that it's just rare enough that core developers don't see
+> it, but it's common enough to have triggered issues in random places.
+> =
 
-Yes, those patches cure the issue.
+> And it will just get *much* worse when you then get the random
+> end-users that usually have older machines than the developers who
+> actually test daily development -git trees.
 
---===============3656882787841927236==--
+I tend to disagree.
+
+The retrigger mechanism has been there forever, at least the history git
+tree which goes back to 2.5.0 has it and as it was in the initial commit is
+it was there in 2.4 already.
+
+We broke that in 4.2 when the x86 interrupt mechanism was reworked
+completely. That went pretty much unnoticed until somebody moved from 4.1
+to 4.9 and discovered that edge interrupts got lost. It's not surprising
+that it went unnoticed because lots of stuff moved towards MSI (which has
+the retrigger still enabled) and the devices which are prone to the 'lost
+edge' issue are limited.
+
+So we had that retrigger exposing crappy older drivers to the spurious
+interrupt until 2 years ago. The two drivers which have been exposed by
+bringing the retrigger back are post 4.2 or have been wreckaged post 4.2.
+
+Due to the fact that the old drivers have been exposed over many years to
+the spurious retrigger (that "feature" exists on old hardware as well) I
+don't think it's much of a problem.
+
+We also had the DEBUG_SHIRQ active until we had to disable it in
+6d83f94db95cf (2.6.38) but not because it exposed crappy interrupt
+handlers. We had to disable due to a functional problem described in the
+commit message. I know for sure that distros had enabled DEBUG_SHIRQ (and
+some still have the reduced functionality of it enabled).
+
+What I find more problematic is:
+
+ - to keep this 'lost edge' regression around, which really can render
+   hardware useless.
+
+ - to ignore the fact that these buggy interrupt handlers can be exposed by
+   spurious interrupt events (as I showed in the other mail) "naturaly",
+   but with a way smaller probability. If a user runs into such a spurious
+   problem he has absolutely NO chance to debug it at all. Exposing it by
+   the retrigger mechanism makes the detection more "reliable" and allows
+   debugging it. The backtraces are pretty telling and clear.
+
+Thanks,
+
+	tglx
+
+
+
+
+
+
+
+
+--===============4273882125251678493==--
 
