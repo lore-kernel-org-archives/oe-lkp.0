@@ -1,71 +1,86 @@
-Content-Type: multipart/mixed; boundary="===============7945956556380040060=="
+Content-Type: multipart/mixed; boundary="===============6208261688831972219=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: 84e26daf36: BUG: kernel reboot-without-warning in boot stage
-Date: Tue, 28 Feb 2017 08:47:57 +0800
-Message-ID: <20170228004757.ie4uvrk6dqglvnqh@wfg-t540p.sh.intel.com>
-In-Reply-To: <20170228004536.o2qflgb7umiwi4xm@wfg-t540p.sh.intel.com>
+Subject: Re: [lkp-robot] [x86/mm/ptdump] 243b72aae2: WARNING:at_arch/x86/mm/dump_pagetables.c:#note_page
+Date: Tue, 28 Feb 2017 09:19:23 +0800
+Message-ID: <20170228011923.GC9855@yexl-desktop>
+In-Reply-To: <20170228011140.ef61008afb57976a74ead279@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7945956556380040060==
+--===============6208261688831972219==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 28, 2017 at 08:45:36AM +0800, Fengguang Wu wrote:
->Hi Matthew,
+On 02/28, Masami Hiramatsu wrote:
+>On Mon, 27 Feb 2017 16:01:34 +0300
+>Andrey Ryabinin <aryabinin@virtuozzo.com> wrote:
 >
->On Mon, Feb 27, 2017 at 09:28:07PM +0000, Matthew Wilcox wrote:
->>From: kernel test robot [mailto:fengguang.wu(a)intel.com]
->>>
->>> dedab4f65c  Merge 'jss-tpmdd/tabrm-v3' into devel-spot-201702270715
->>> 20e85d3670  ida: Move ida_bitmap to a percpu variable
->>> 84e26daf36  Merge 'dax/fd-alloc' into devel-spot-201702270715
+>> On 02/27/2017 04:03 AM, kernel test robot wrote:
+>> > =
 
-Oops, that's our internal merge commit, so it's reasonable you cannot
-reproduce the bug on your tree. Sorry for the noise!
+>> > FYI, we noticed the following commit:
+>> > =
 
-Fengguang
+>> > commit: 243b72aae28ca1032284028323bb81c9235b15c9 ("x86/mm/ptdump: Opti=
+mize check for W+X mappings for CONFIG_KASAN=3Dy")
+>> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>> =
 
->>> +-------------------------------------------------+------------+-------=
------+------------+
->>> |                                                 | dedab4f65c | 20e85d=
-3670 | 84e26daf36 |
->>> +-------------------------------------------------+------------+-------=
------+------------+
->>> | boot_successes                                  | 88         | 82    =
-     | 0          |
->>> | boot_failures                                   | 4          | 0     =
-     | 48         |
->>> | IP-Config:Auto-configuration_of_network_failed  | 4          |       =
-     |            |
->>> | BUG:kernel_reboot-without-warning_in_boot_stage | 0          | 0     =
-     | 48
->>> |
->>> +-------------------------------------------------+------------+-------=
------+------------+
->>>
->>> [    0.000000] BRK [0x05884000, 0x05884fff] PGTABLE
->>> [    0.000000] RAMDISK: [mem 0x1fcc6000-0x1ffcffff]
->>> [    0.000000] ACPI: Early table checksum verification disabled
->>>
->>
->>Thanks for reporting this.  I don't know quite how to proceed from
->>here; the modified kernel boots for me just fine.  The code we
->>modified shouldn't even be called this early -- it's around file
->>descriptor handling, and I don't think we even get a file descriptor
->>this early in boot.
->>
->>Can you share the ramdisk that you're booting the kernel with?
+>> ...
+>> > =
+
+>> > caused below changes (please refer to attached dmesg/kmsg for entire l=
+og/backtrace):
+>> > =
+
+>> > =
+
+>> > +-----------------------------------------------------+------------+--=
+----------+
+>> > |                                                     | 5b1ad68f9b | 2=
+43b72aae2 |
+>> > +-----------------------------------------------------+------------+--=
+----------+
+>> > | boot_successes                                      | 0          | 0=
+          |
+>> > | boot_failures                                       | 8          | 6=
+          |
+>> > | BUG:KASAN:slab-out-of-bounds                        | 8          | 6=
+          |
+>> > | WARNING:at_arch/x86/mm/dump_pagetables.c:#note_page | 0          | 6=
+          |
+>> > +-----------------------------------------------------+------------+--=
+----------+
+>> =
+
+>> Ok, I reproduced this, but it's definitely caused *not* by 243b72aae28.
+>> This WARN is also reproducible on the parent commit 5b1ad68f9b.
+>> The only difference here is that on parent one needs dozens of seconds t=
+o reach this WARNING.
+>> It seems that this time difference somehow confused the robot.
+>> =
+
+>> As for the warning itself, it caused by kprobes. krpobe code use module_=
+alloc() which
+>> creates these RWX mappings.
+>> I'm not sure how to fix this as AFAIK kprobes actually need RWX mapping.
 >
->Have you tried the attached reproduce-* script in the original email?
->It works for me. That script does not include the ramdisk download
->part because initrd is not necessary/relevant for reproducing this
->bug. In fact all ramdisks we tested can trigger it.
+>Thanks! I also noticed this issue. I actually have a plan to make kprobes =
+with R+X mappings (as ftrace does).
+>I'll queue this on my TODO list.
 >
->Thanks,
->Fengguang
 
---===============7945956556380040060==--
+Good to know that, feel free to ask me to verify your fix if needed.
+
+Thanks,
+Xiaolong
+>
+>
+>-- =
+
+>Masami Hiramatsu <mhiramat@kernel.org>
+
+--===============6208261688831972219==--
 
