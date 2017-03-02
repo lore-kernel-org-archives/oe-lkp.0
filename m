@@ -1,122 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============6720170702086016132=="
+Content-Type: multipart/mixed; boundary="===============1500125110015693538=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 To: lkp@lists.01.org
 Subject: Re: [net/bpf] 3051bf36c2 BUG: unable to handle kernel paging request at 0000a7cf
-Date: Fri, 03 Mar 2017 04:23:38 +0800
-Message-ID: <20170302202338.ci6wwb3yzjmdy4n2@wfg-t540p.sh.intel.com>
-In-Reply-To: <20170301125426.l4nf65rx4wahohyl@wfg-t540p.sh.intel.com>
+Date: Thu, 02 Mar 2017 21:40:51 +0100
+Message-ID: <58B88353.2010508@iogearbox.net>
+In-Reply-To: <20170302202338.ci6wwb3yzjmdy4n2@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6720170702086016132==
+--===============1500125110015693538==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 01, 2017 at 08:54:26PM +0800, Fengguang Wu wrote:
->Hi all,
->
->Is it BPF triggering BUGs all over the places?
+On 03/02/2017 09:23 PM, Fengguang Wu wrote:
+[...]
+> I confirm that the below patch provided by Daniel fixes the above
+> issues on mainline kernel, too. Where should this patch be sent to?
 
-It looks so, and here is a fix.
+If nobody objects, I could send it to -net tree via Dave due to being
+BPF related, but I don't mind sending it elsewhere too (f.e. Linus
+directly?) in order to stop your bot from continuing to send such mails.
 
->1e74a2eb1f  Merge tag 'gcc-plugins-v4.11-rc1' of git://git.kernel.org/pub/=
-scm/linux/kernel/git/kees/linux
->005c3490e9  Revert "ath10k: Search SMBIOS for OEM board file extension"
->3051bf36c2  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-=
-next
->+-------------------------------------------------------+------------+----=
---------+------------+
->|                                                       | 1e74a2eb1f | 005=
-c3490e9 | 3051bf36c2 |
->+-------------------------------------------------------+------------+----=
---------+------------+
->| boot_successes                                        | 1223       | 109=
-8       | 242        |
->| boot_failures                                         | 1          | 126=
-        | 72         |
->| BUG:unable_to_handle_kernel                           | 1          | 117=
-        | 69         |
->| Oops                                                  | 1          | 126=
-        | 72         |
->| EIP:perf_callchain_user                               | 1          |    =
-        |            |
->| Kernel_panic-not_syncing:Fatal_exception              | 1          | 121=
-        | 67         |
->| EIP:netlink_release                                   | 0          | 20 =
-        | 3          |
->| EIP:bpf_prog_free                                     | 0          | 22 =
-        | 3          |
->| EIP:filp_close                                        | 0          | 64 =
-        | 23         |
->| EIP:netlink_update_listeners                          | 0          | 10 =
-        | 9          |
->| EIP:security_inode_getattr                            | 0          | 2  =
-        |            |
->| EIP:__lock_acquire                                    | 0          | 1  =
-        | 11         |
->| Kernel_panic-not_syncing:Fatal_exception_in_interrupt | 0          | 5  =
-        | 4          |
->| EIP:__rcu_process_callbacks                           | 0          | 2  =
-        |            |
->| EIP:__fget_light                                      | 0          | 1  =
-        |            |
->| EIP:__unix_remove_socket                              | 0          | 0  =
-        | 13         |
->| INFO:trying_to_register_non-static_key                | 0          | 0  =
-        | 2          |
->| EIP:mnt_want_write_file                               | 0          | 0  =
-        | 1          |
->| EIP:skb_dequeue                                       | 0          | 0  =
-        | 1          |
->| EIP:strlen                                            | 0          | 0  =
-        | 1          |
->| EIP:__netlink_lookup                                  | 0          | 0  =
-        | 2          |
->| EIP:vfs_fsync_range                                   | 0          | 0  =
-        | 1          |
->| EIP:__unix_find_socket_byname                         | 0          | 0  =
-        | 1          |
->| EIP:release_sock                                      | 0          | 0  =
-        | 1          |
->+-------------------------------------------------------+------------+----=
---------+------------+
-
-I confirm that the below patch provided by Daniel fixes the above
-issues on mainline kernel, too. Where should this patch be sent to?
-It'd be very noisy if all these Oops hit the upcoming RC1 kernel.
-
-Daniel thinks there may be deeper problem in i386 set_memory_rw().
-However that could take much longer time to debug.
+The issue seems only related to i386 and doesn't trigger each time with
+Fengguang's kernel config and qemu image when I try to reproduce it.
+set_memory_ro()/set_memory_rw() on i386 seems to work in general, but
+when it's used/reproduced, from time to time (perhaps some corner-case?)
+it looks like that memory area can have issues much later on after being
+fed back to the allocator which then causes a GPF from random locations.
+Gut feeling, it might be an issue in set_memory_*() that my commit
+uncovered. Still looking into it, but mean-time I could just send the
+below, sure.
 
 Thanks,
-Fengguang
----
+Daniel
 
-Re: [bpf] 9d876e79df:  BUG: unable to handle kernel paging request at 653a8=
-346
+> It'd be very noisy if all these Oops hit the upcoming RC1 kernel.
+>
+> Daniel thinks there may be deeper problem in i386 set_memory_rw().
+> However that could take much longer time to debug.
+>
+> Thanks,
+> Fengguang
+> ---
+>
+> Re: [bpf] 9d876e79df:  BUG: unable to handle kernel paging request at 653=
+a8346
+>
+>> On Tue, Feb 28, 2017 at 04:39:36PM +0100, Daniel Borkmann wrote:
+>
+> I have a rough feeling what it is, but I didn't have cycles to work on
+> it yet (due to travel, sorry about that). The issue is likely shut down
+> by just doing:
+>
+> ---
+> arch/x86/Kconfig |    2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> --- linux.orig/arch/x86/Kconfig    2017-03-03 03:44:35.962022996 +0800
+> +++ linux/arch/x86/Kconfig    2017-03-03 03:44:35.962022996 +0800
+> @@ -54,7 +54,7 @@ config X86
+>      select ARCH_HAS_KCOV            if X86_64
+>      select ARCH_HAS_MMIO_FLUSH
+>      select ARCH_HAS_PMEM_API        if X86_64
+> -    select ARCH_HAS_SET_MEMORY
+> +    select ARCH_HAS_SET_MEMORY        if X86_64
+>      select ARCH_HAS_SG_CHAIN
+>      select ARCH_HAS_STRICT_KERNEL_RWX
+>      select ARCH_HAS_STRICT_MODULE_RWX
 
-> On Tue, Feb 28, 2017 at 04:39:36PM +0100, Daniel Borkmann wrote:
 
-I have a rough feeling what it is, but I didn't have cycles to work on
-it yet (due to travel, sorry about that). The issue is likely shut down
-by just doing:
-
----
- arch/x86/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- linux.orig/arch/x86/Kconfig	2017-03-03 03:44:35.962022996 +0800
-+++ linux/arch/x86/Kconfig	2017-03-03 03:44:35.962022996 +0800
-@@ -54,7 +54,7 @@ config X86
- 	select ARCH_HAS_KCOV			if X86_64
- 	select ARCH_HAS_MMIO_FLUSH
- 	select ARCH_HAS_PMEM_API		if X86_64
--	select ARCH_HAS_SET_MEMORY
-+	select ARCH_HAS_SET_MEMORY		if X86_64
- 	select ARCH_HAS_SG_CHAIN
- 	select ARCH_HAS_STRICT_KERNEL_RWX
- 	select ARCH_HAS_STRICT_MODULE_RWX
-
---===============6720170702086016132==--
+--===============1500125110015693538==--
 
