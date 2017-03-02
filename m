@@ -1,166 +1,122 @@
-Content-Type: multipart/mixed; boundary="===============0379037137941378549=="
+Content-Type: multipart/mixed; boundary="===============6720170702086016132=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@alien8.de>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86] ed3ce2a917: BUG:unable_to_handle_kernel
-Date: Thu, 02 Mar 2017 19:19:57 +0100
-Message-ID: <20170302181957.533r5g2feoc53jtq@pd.tnic>
-In-Reply-To: <20170302010934.GI9855@yexl-desktop>
+Subject: Re: [net/bpf] 3051bf36c2 BUG: unable to handle kernel paging request at 0000a7cf
+Date: Fri, 03 Mar 2017 04:23:38 +0800
+Message-ID: <20170302202338.ci6wwb3yzjmdy4n2@wfg-t540p.sh.intel.com>
+In-Reply-To: <20170301125426.l4nf65rx4wahohyl@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0379037137941378549==
+--===============6720170702086016132==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Wed, Mar 01, 2017 at 08:54:26PM +0800, Fengguang Wu wrote:
+>Hi all,
+>
+>Is it BPF triggering BUGs all over the places?
 
-On Thu, Mar 02, 2017 at 09:09:34AM +0800, kernel test robot wrote:
-> =
+It looks so, and here is a fix.
 
-> FYI, we noticed the following commit:
-> =
+>1e74a2eb1f  Merge tag 'gcc-plugins-v4.11-rc1' of git://git.kernel.org/pub/=
+scm/linux/kernel/git/kees/linux
+>005c3490e9  Revert "ath10k: Search SMBIOS for OEM board file extension"
+>3051bf36c2  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-=
+next
+>+-------------------------------------------------------+------------+----=
+--------+------------+
+>|                                                       | 1e74a2eb1f | 005=
+c3490e9 | 3051bf36c2 |
+>+-------------------------------------------------------+------------+----=
+--------+------------+
+>| boot_successes                                        | 1223       | 109=
+8       | 242        |
+>| boot_failures                                         | 1          | 126=
+        | 72         |
+>| BUG:unable_to_handle_kernel                           | 1          | 117=
+        | 69         |
+>| Oops                                                  | 1          | 126=
+        | 72         |
+>| EIP:perf_callchain_user                               | 1          |    =
+        |            |
+>| Kernel_panic-not_syncing:Fatal_exception              | 1          | 121=
+        | 67         |
+>| EIP:netlink_release                                   | 0          | 20 =
+        | 3          |
+>| EIP:bpf_prog_free                                     | 0          | 22 =
+        | 3          |
+>| EIP:filp_close                                        | 0          | 64 =
+        | 23         |
+>| EIP:netlink_update_listeners                          | 0          | 10 =
+        | 9          |
+>| EIP:security_inode_getattr                            | 0          | 2  =
+        |            |
+>| EIP:__lock_acquire                                    | 0          | 1  =
+        | 11         |
+>| Kernel_panic-not_syncing:Fatal_exception_in_interrupt | 0          | 5  =
+        | 4          |
+>| EIP:__rcu_process_callbacks                           | 0          | 2  =
+        |            |
+>| EIP:__fget_light                                      | 0          | 1  =
+        |            |
+>| EIP:__unix_remove_socket                              | 0          | 0  =
+        | 13         |
+>| INFO:trying_to_register_non-static_key                | 0          | 0  =
+        | 2          |
+>| EIP:mnt_want_write_file                               | 0          | 0  =
+        | 1          |
+>| EIP:skb_dequeue                                       | 0          | 0  =
+        | 1          |
+>| EIP:strlen                                            | 0          | 0  =
+        | 1          |
+>| EIP:__netlink_lookup                                  | 0          | 0  =
+        | 2          |
+>| EIP:vfs_fsync_range                                   | 0          | 0  =
+        | 1          |
+>| EIP:__unix_find_socket_byname                         | 0          | 0  =
+        | 1          |
+>| EIP:release_sock                                      | 0          | 0  =
+        | 1          |
+>+-------------------------------------------------------+------------+----=
+--------+------------+
 
-> commit: ed3ce2a9172457ef7dbaa9f964e63dfde2bdcb5f ("x86: Optimize clear_pa=
-ge()")
-> url: https://github.com/0day-ci/linux/commits/Borislav-Petkov/x86-Optimiz=
-e-clear_page/20170215-193441
-> =
+I confirm that the below patch provided by Daniel fixes the above
+issues on mainline kernel, too. Where should this patch be sent to?
+It'd be very noisy if all these Oops hit the upcoming RC1 kernel.
 
-> =
+Daniel thinks there may be deeper problem in i386 set_memory_rw().
+However that could take much longer time to debug.
 
-> in testcase: will-it-scale
-> with following parameters:
-> =
+Thanks,
+Fengguang
+---
 
-> 	test: poll2
-> 	cpufreq_governor: performance
-> =
+Re: [bpf] 9d876e79df:  BUG: unable to handle kernel paging request at 653a8=
+346
 
-> test-description: Will It Scale takes a testcase and runs it from 1 throu=
-gh to n parallel copies to see if the testcase will scale. It builds both a=
- process and threads based test in order to see any differences between the=
- two.
-> test-url: https://github.com/antonblanchard/will-it-scale
+> On Tue, Feb 28, 2017 at 04:39:36PM +0100, Daniel Borkmann wrote:
 
-thanks for the report, I was able to reproduce.
-
-BUT(!) this report is misleading because it talks about will-it-scale
-but your splat happens when you kexec the kernel:
-
-  [  336.340747] LKP: kexec loading...
-  [  336.340852] =
-
-  [  336.343323] kexec --noefi -l /tmp/cache/pkg/linux/x86_64-rhel-7.2/gcc-=
-6/ed3ce2a9172457ef7dbaa9f964e63dfde2bdcb5f/vmlinuz-4.9.0-rc6-00134-ged3ce2a=
- --initrd=3D/tmp/cache/initrd-concatenated
-  [  336.343758] =
-
-  [  337.893471] --append=3Dip=3D::::lkp-ivb-d01::dhcp root=3D/dev/ram0 use=
-r=3Dlkp job=3D/lkp/scheduled/lkp-ivb-d01/will-it-scale-poll2-performance-de=
-bian-x86_64-2016-08-31.cgz-ed3ce2a9172457ef7dbaa9f964e63dfde2bdcb5f-2017030=
-1-28072-1dqjyhl-11.yaml ARCH=3Dx86_64 kconfig=3Dx86_64-rhel-7.2 branch=3Dli=
-nux-devel/devel-hourly-2017022612 commit=3Ded3ce2a9172457ef7dbaa9f964e63dfd=
-e2bdcb5f BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-7.2/gcc-6/ed3ce2a9172457ef7dba=
-a9f964e63dfde2bdcb5f/vmlinuz-4.9.0-rc6-00134-ged3ce2a max_uptime=3D1500 RES=
-ULT_ROOT=3D/result/will-it-scale/poll2-performance/lkp-ivb-d01/debian-x86_6=
-4-2016-08-31.cgz/x86_64-rhel-7.2/gcc-6/ed3ce2a9172457ef7dbaa9f964e63dfde2bd=
-cb5f/11 LKP_SERVER=3Dinn debug apic=3Ddebug sysrq_always_enabled rcupdate.r=
-cu_cpu_stall_timeout=3D100 net.ifnames=3D0 printk.devkmsg=3Don panic=3D-1 s=
-oftlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_ramdisk=3D2 prom=
-pt_ramdisk=3D0 drbd.minor_count=3D8 systemd.log_level=3Derr ignore_
-  [  337.895521] =
-
-  [  339.467661] BUG: unable to handle kernel paging request at ffff8803cf2=
-e2008
-  [  339.468000] IP: [<ffffffff81061e71>] native_set_pmd+0x1/0x10
-  ...
-
-
-Maybe Fengguang has an idea what to do here, maybe something like add
-markers to the log to denote where the test environment is prepared and
-when the actual test starts. Then grep for those and generate the report
-based on that...
-
-Anyway, the diff is below, please try that ontop of tip's x86/asm branch
-which already has the clear_page patch:
-
-http://git.kernel.org/cgit/linux/kernel/git/tip/tip.git/log/?h=3Dx86/asm
-
-Thanks!
+I have a rough feeling what it is, but I didn't have cycles to work on
+it yet (due to travel, sorry about that). The issue is likely shut down
+by just doing:
 
 ---
- arch/x86/include/asm/alternative.h | 17 -----------------
- arch/x86/include/asm/page_64.h     | 11 ++++++-----
- 2 files changed, 6 insertions(+), 22 deletions(-)
+ arch/x86/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/alternative.h b/arch/x86/include/asm/alte=
-rnative.h
-index 12e3d8d607a9..1b020381ab38 100644
---- a/arch/x86/include/asm/alternative.h
-+++ b/arch/x86/include/asm/alternative.h
-@@ -227,23 +227,6 @@ static inline int alternatives_text_reserved(void *sta=
-rt, void *end)
- }
- =
+--- linux.orig/arch/x86/Kconfig	2017-03-03 03:44:35.962022996 +0800
++++ linux/arch/x86/Kconfig	2017-03-03 03:44:35.962022996 +0800
+@@ -54,7 +54,7 @@ config X86
+ 	select ARCH_HAS_KCOV			if X86_64
+ 	select ARCH_HAS_MMIO_FLUSH
+ 	select ARCH_HAS_PMEM_API		if X86_64
+-	select ARCH_HAS_SET_MEMORY
++	select ARCH_HAS_SET_MEMORY		if X86_64
+ 	select ARCH_HAS_SG_CHAIN
+ 	select ARCH_HAS_STRICT_KERNEL_RWX
+ 	select ARCH_HAS_STRICT_MODULE_RWX
 
- /*
-- * Like alternative_call(), but there are two features and respective func=
-tions.
-- * If CPU has feature2, function2 is used.
-- * Otherwise, if CPU has feature1, function1 is used.
-- * Otherwise, old function is used.
-- */
--#define alternative_void_call_2(oldfunc, newfunc1, feature1, newfunc2,		\
--				feature2, input...)				\
--{										\
--	register void *__sp asm(_ASM_SP);					\
--	asm volatile (ALTERNATIVE_2("call %P[old]", "call %P[new1]", feature1,	\
--		"call %P[new2]", feature2)					\
--		: "+r" (__sp)							\
--		: [old] "i" (oldfunc), [new1] "i" (newfunc1),			\
--		  [new2] "i" (newfunc2), ## input);				\
--}
--
--/*
-  * use this macro(s) if you need more than one output parameter
-  * in alternative_io
-  */
-diff --git a/arch/x86/include/asm/page_64.h b/arch/x86/include/asm/page_64.h
-index 254abce980a4..b4a0d43248cf 100644
---- a/arch/x86/include/asm/page_64.h
-+++ b/arch/x86/include/asm/page_64.h
-@@ -41,11 +41,12 @@ void clear_page_erms(void *page);
- =
-
- static inline void clear_page(void *page)
- {
--	alternative_void_call_2(clear_page_orig,
--				clear_page_rep, X86_FEATURE_REP_GOOD,
--				clear_page_erms, X86_FEATURE_ERMS,
--				"D" (page)
--				: "memory", "rax", "rcx");
-+	alternative_call_2(clear_page_orig,
-+			   clear_page_rep, X86_FEATURE_REP_GOOD,
-+			   clear_page_erms, X86_FEATURE_ERMS,
-+			   "=3DD" (page),
-+			   "0" (page)
-+			   : "memory", "rax", "rcx");
- }
- =
-
- void copy_page(void *to, void *from);
--- =
-
-2.11.0
-
-
--- =
-
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---===============0379037137941378549==--
+--===============6720170702086016132==--
 
