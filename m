@@ -1,126 +1,181 @@
-Content-Type: multipart/mixed; boundary="===============5345885111816888385=="
+Content-Type: multipart/mixed; boundary="===============8775077654700234102=="
 MIME-Version: 1.0
-From: Jan Kara <jack@suse.cz>
+From: James Bottomley <jejb@linux.vnet.ibm.com>
 To: lkp@lists.01.org
 Subject: Re: [bdi_unregister] 165a5e22fa INFO: task swapper:1 blocked for more than 120 seconds.
-Date: Tue, 07 Mar 2017 15:41:09 +0100
-Message-ID: <20170307144109.GI2578@quack2.suse.cz>
-In-Reply-To: <1488821142.25848.27.camel@linux.vnet.ibm.com>
+Date: Tue, 07 Mar 2017 08:10:29 -0800
+Message-ID: <1488903029.2363.16.camel@linux.vnet.ibm.com>
+In-Reply-To: <20170307144109.GI2578@quack2.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5345885111816888385==
+--===============8775077654700234102==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 06-03-17 09:25:42, James Bottomley wrote:
-> On Mon, 2017-03-06 at 17:13 +0100, Jan Kara wrote:
-> > On Mon 06-03-17 07:44:55, James Bottomley wrote:
-...
-> > > > Sure. The call trace is:
+On Tue, 2017-03-07 at 15:41 +0100, Jan Kara wrote:
+> On Mon 06-03-17 09:25:42, James Bottomley wrote:
+> > On Mon, 2017-03-06 at 17:13 +0100, Jan Kara wrote:
+> > > On Mon 06-03-17 07:44:55, James Bottomley wrote:
+> ...
+> > > > > Sure. The call trace is:
+> > > > > =
+
+> > > > > [   41.919244] ------------[ cut here ]------------
+> > > > > [   41.919263] WARNING: CPU: 4 PID: 2335 at
+> > > > > drivers/scsi/sd.c:3332
+> > > > > sd_shutdown+0x2f/0x100
+> > > > > [   41.919268] Modules linked in: scsi_debug(+) netconsole =
+
+> > > > > loop btrfs raid6_pq zlib_deflate lzo_compress xor
+> > > > > [   41.919319] CPU: 4 PID: 2335 Comm: modprobe Not tainted =
+
+> > > > > 4.11.0-rc1-xen+ #49
+> > > > > [   41.919325] Hardware name: Bochs Bochs, BIOS Bochs
+> > > > > 01/01/2011
+> > > > > [   41.919331] Call Trace:
+> > > > > [   41.919343]  dump_stack+0x8e/0xf0
+> > > > > [   41.919354]  __warn+0x116/0x120
+> > > > > [   41.919361]  warn_slowpath_null+0x1d/0x20
+> > > > > [   41.919368]  sd_shutdown+0x2f/0x100
+> > > > > [   41.919374]  sd_remove+0x70/0xd0
+> > > > > =
+
+> > > > > *** Here is the unexpected step I guess...
+> > > > > =
+
+> > > > > [   41.919383]  driver_probe_device+0xe0/0x4c0
 > > > > =
 
-> > > > [   41.919244] ------------[ cut here ]------------
-> > > > [   41.919263] WARNING: CPU: 4 PID: 2335 at
-> > > > drivers/scsi/sd.c:3332
-> > > > sd_shutdown+0x2f/0x100
-> > > > [   41.919268] Modules linked in: scsi_debug(+) netconsole loop
-> > > > btrfs
-> > > > raid6_pq zlib_deflate lzo_compress xor
-> > > > [   41.919319] CPU: 4 PID: 2335 Comm: modprobe Not tainted 4.11.0
-> > > > -rc1
-> > > > -xen+ #49
-> > > > [   41.919325] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
-> > > > [   41.919331] Call Trace:
-> > > > [   41.919343]  dump_stack+0x8e/0xf0
-> > > > [   41.919354]  __warn+0x116/0x120
-> > > > [   41.919361]  warn_slowpath_null+0x1d/0x20
-> > > > [   41.919368]  sd_shutdown+0x2f/0x100
-> > > > [   41.919374]  sd_remove+0x70/0xd0
+> > > > Exactly.  It's this, I think
 > > > > =
 
-> > > > *** Here is the unexpected step I guess...
+> > > > 	bool test_remove =3D
+> > > > IS_ENABLED(CONFIG_DEBUG_TEST_DRIVER_REMOVE)
+> > > > &&
+> > > > 			   !drv->suppress_bind_attrs;
 > > > > =
 
-> > > > [   41.919383]  driver_probe_device+0xe0/0x4c0
+> > > > You have that config option set.
 > > > =
 
-> > > Exactly.  It's this, I think
+> > > Yes - or better said 0-day testing has it set. Maybe that is not =
+
+> > > a sane default for 0-day tests? The option is explicitely marked =
+
+> > > as "unstable"... Fengguang?
 > > > =
 
-> > > 	bool test_remove =3D IS_ENABLED(CONFIG_DEBUG_TEST_DRIVER_REMOVE)
-> > > &&
-> > > 			   !drv->suppress_bind_attrs;
+> > > > So the drivers base layer is calling ->remove after probe and
+> > > > triggering the destruction of the queue.
+> > > > =
+
+> > > > What to do about this (apart from nuke such a stupid option) is
+> > > > somewhat more problematic.
 > > > =
 
-> > > You have that config option set.
+> > > I guess this is between you and Greg :).
 > > =
 
-> > Yes - or better said 0-day testing has it set. Maybe that is not a =
+> > Nice try, sport ... you qualify just behind Dan in the "not my =
 
-> > sane default for 0-day tests? The option is explicitely marked as
-> > "unstable"... Fengguang?
-> > =
+> > problem" olympic hurdles event.  I'm annoyed because there's no =
 
-> > > So the drivers base layer is calling ->remove after probe and
-> > > triggering the destruction of the queue.
-> > > =
+> > indication in the log that the driver add behaviour is radically =
 
-> > > What to do about this (apart from nuke such a stupid option) is
-> > > somewhat more problematic.
-> > =
+> > altered, so I've been staring at the wrong code for weeks. =
 
-> > I guess this is between you and Greg :).
+> >  However, the unbind/rebind should work, so the real issue is that =
+
+> > your bdi changes (or perhaps something else in block) have induced =
+
+> > a regression in the unbinding of upper layer drivers.  If you're =
+
+> > going to release the bdi in del_gendisk, you have to have some =
+
+> > mechanism for re-acquiring it on re-probe (likely with the same =
+
+> > name) otherwise rebind is broken for every block driver.
 > =
 
-> Nice try, sport ... you qualify just behind Dan in the "not my problem"
-> olympic hurdles event.  I'm annoyed because there's no indication in
-> the log that the driver add behaviour is radically altered, so I've
-> been staring at the wrong code for weeks.  However, the unbind/rebind
-> should work, so the real issue is that your bdi changes (or perhaps
-> something else in block) have induced a regression in the unbinding of
-> upper layer drivers.  If you're going to release the bdi in
-> del_gendisk, you have to have some mechanism for re-acquiring it on re
-> -probe (likely with the same name) otherwise rebind is broken for every
-> block driver.
+> So my patch does not release bdi in del_gendisk(). Bdi has two
+> initialization / destruction phases (similarly to request queue). You
+> allocate and initialize bdi through bdi_init(), then you call
+> bdi_register() to register it (which happens in device_add_disk()). =
 
-So my patch does not release bdi in del_gendisk(). Bdi has two
-initialization / destruction phases (similarly to request queue). You
-allocate and initialize bdi through bdi_init(), then you call
-bdi_register() to register it (which happens in device_add_disk()). On
-shutdown you have to first call bdi_unregister() (used to be called from
-blk_cleanup_queue(), my patch moved it to del_gendisk()). After that the
-last reference to bdi may be dropped which does final bdi destruction.
+> On shutdown you have to first call bdi_unregister() (used to be =
 
-So do I understand correctly that SCSI may call device_add_disk(),
-del_gendisk() repeatedly for the same request queue? If yes, then indeed I
-have a bug to fix... But gendisk seems to get allocated from scratch on
-each probe so we don't call device_add_disk(), del_gendisk() more times on
-the same disk, right?
+> called from blk_cleanup_queue(), my patch moved it to del_gendisk()). =
 
-> The fact that the second rebind tried with a different name indicates
-> that sd_devt_release wasn't called, so some vestige of the devt remains
-> on the subsequent rebind.
+> After that the last reference to bdi may be dropped which does final =
 
-Yep, I guess that's caused by Dan's patch (commit 0dba1314d4f8 now) which
-calls put_disk_devt() only in blk_cleanup_queue() which, if I understood
-you correctly, does not get called during unbind-bind cycle? In fact Dan's
-patch would end up leaking devt's because of repeated device_add_disk()
-calls for the same request queue...
+> bdi destruction.
+> =
 
-> Here's the problem: the queue belongs to SCSI (the lower layer), so it's
-> not going to change because it doesn't see the release.  The gendisk and
-> its allied stuff belongs to sd so it gets freed and re-created for the
-> same queue.  Something in block is very confused when this happens.
+> So do I understand correctly that SCSI may call device_add_disk(),
+> del_gendisk() repeatedly for the same request queue?
 
-Yep, I think the binding of request queue to different gendisks is
-something I or Dan did not expect.
+Yes.  The upper drivers (sd, sr, st and sg) follow a device model. =
 
-								Honza
--- =
+ They can thus be bound and unbound many times during the lifetime of a
+SCSI device.
 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+>  If yes, then indeed I have a bug to fix... But gendisk seems to get =
 
---===============5345885111816888385==--
+> allocated from scratch on each probe so we don't call =
+
+> device_add_disk(), del_gendisk() more times on the same disk, right?
+
+Right, gendisk, being a generic representation of a disk is a property
+of the upper layer drivers.  We actually cheat and use it in all of
+them (including the apparent character ones, they use alloc_disk,
+put_disk but not add_disk).  So it has to be freed when the driver is
+unbound and reallocated when it is bound.  It's the fundamental entity
+which embeds the SCSI upper layer driver lifetime.
+
+> > The fact that the second rebind tried with a different name =
+
+> > indicates that sd_devt_release wasn't called, so some vestige of =
+
+> > the devt remains on the subsequent rebind.
+> =
+
+> Yep, I guess that's caused by Dan's patch (commit 0dba1314d4f8 now) =
+
+> which calls put_disk_devt() only in blk_cleanup_queue() which, if I
+> understood you correctly, does not get called during unbind-bind =
+
+> cycle? In fact Dan's patch would end up leaking devt's because of =
+
+> repeated device_add_disk() calls for the same request queue...
+
+That's a bit unfortunate.
+
+> > Here's the problem: the queue belongs to SCSI (the lower layer), so =
+
+> > it's not going to change because it doesn't see the release.  The
+> > gendisk and its allied stuff belongs to sd so it gets freed and re
+> > -created for the same queue.  Something in block is very confused
+> > when this happens.
+> =
+
+> Yep, I think the binding of request queue to different gendisks is
+> something I or Dan did not expect.
+
+OK, so I think we now understand why this is happening ... the question
+is what we do about it?  Is it fixable or do we need to go back to
+basics?  The fundamental property which got broken by these patches is
+the idea of the separation of the lifecycles of the queue and the
+gendisk.  The only requirement is that the queue must exist before the
+gendisk is created and must be destroyed after it.  This doesn't forbid
+there being many gendisk lifetimes over one queue lifetime and this is
+what we rely on for the SCSI driver model.  We rarely get called on it
+because unbind/rebind of a ULD is rarely done in production (it's
+mostly a devtest thing).
+
+James
+
+
+
+--===============8775077654700234102==--
 
