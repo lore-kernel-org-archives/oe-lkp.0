@@ -1,110 +1,251 @@
-Content-Type: multipart/mixed; boundary="===============0527601235382471258=="
+Content-Type: multipart/mixed; boundary="===============1648785864003128875=="
 MIME-Version: 1.0
-From: Dou Liyang <douly.fnst@cn.fujitsu.com>
+From: Jan Kara <jack@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [acpi] 2e61bac54f: kmsg.acpi_LNXCPU:#f:Failed_to_get_unique_processor_UID(#)
-Date: Wed, 08 Mar 2017 15:06:12 +0800
-Message-ID: <925d9a68-941a-d223-11c3-02ddc65324ae@cn.fujitsu.com>
-In-Reply-To: <20170308064853.GA22005@yexl-desktop>
+Subject: Re: [bdi_unregister] 165a5e22fa INFO: task swapper:1 blocked for more than 120 seconds.
+Date: Wed, 08 Mar 2017 10:59:38 +0100
+Message-ID: <20170308095938.GA19740@quack2.suse.cz>
+In-Reply-To: <20170307162656.GB11837@quack2.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0527601235382471258==
+--===============1648785864003128875==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Tue 07-03-17 17:26:56, Jan Kara wrote:
+> On Tue 07-03-17 08:10:29, James Bottomley wrote:
+> > On Tue, 2017-03-07 at 15:41 +0100, Jan Kara wrote:
+> > > On Mon 06-03-17 09:25:42, James Bottomley wrote:
+> > > > On Mon, 2017-03-06 at 17:13 +0100, Jan Kara wrote:
+> > > > > On Mon 06-03-17 07:44:55, James Bottomley wrote:
+> > > ...
+> > > > > > > Sure. The call trace is:
+> > > > > > > =
 
+> > > > > > > [   41.919244] ------------[ cut here ]------------
+> > > > > > > [   41.919263] WARNING: CPU: 4 PID: 2335 at
+> > > > > > > drivers/scsi/sd.c:3332
+> > > > > > > sd_shutdown+0x2f/0x100
+> > > > > > > [   41.919268] Modules linked in: scsi_debug(+) netconsole =
 
-At 03/08/2017 02:48 PM, Ye Xiaolong wrote:
-> On 03/08, Dou Liyang wrote:
->> Hi Ying,
->>
->> At 03/08/2017 09:03 AM, kernel test robot wrote:
->>> FYI, we noticed the following commit:
->>>
->>> commit: 2e61bac54fad4c018afd23c118bce2399e504020 ("acpi: Move the verif=
-ication of duplicate proc_id from booting time to hot-plug time")
->>> git://bee.sh.intel.com/git/yexl/linux.git verify-acpi-bug-lkp-hsw-ep2
->>>
->>> in testcase: boot
->>> on test machine: 128 threads 4 Sockets Haswell-EP with 512G memory
->>>
->>> caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
->>>
->>>
->>> kern  :err   : [   11.366678] acpi LNXCPU:20: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.373239] acpi LNXCPU:21: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.379796] acpi LNXCPU:22: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.386349] acpi LNXCPU:23: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.394026] acpi LNXCPU:44: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.400584] acpi LNXCPU:45: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.407141] acpi LNXCPU:46: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.413696] acpi LNXCPU:47: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.421403] acpi LNXCPU:68: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.427963] acpi LNXCPU:69: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.434522] acpi LNXCPU:6a: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.441082] acpi LNXCPU:6b: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.448786] acpi LNXCPU:8c: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.455342] acpi LNXCPU:8d: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.461900] acpi LNXCPU:8e: Failed to get unique proc=
-essor _UID (0xff)
->>> kern  :err   : [   11.468451] acpi LNXCPU:8f: Failed to get unique proc=
-essor _UID (0xff)
->>>
->>
->> These logs in dmesg means there are some processors with the same
->> acpi_id 0xff in the DSDT.
->>
->> As we know, the duplicated processors is forbidden for the DSDT.
->>
->> So I add this check, and print one line log if we found a duplicated
->> processors in the DSDT.
->
-> So this is intended behavior, right?
->
+> > > > > > > loop btrfs raid6_pq zlib_deflate lzo_compress xor
+> > > > > > > [   41.919319] CPU: 4 PID: 2335 Comm: modprobe Not tainted =
 
-Yes, It is.
+> > > > > > > 4.11.0-rc1-xen+ #49
+> > > > > > > [   41.919325] Hardware name: Bochs Bochs, BIOS Bochs
+> > > > > > > 01/01/2011
+> > > > > > > [   41.919331] Call Trace:
+> > > > > > > [   41.919343]  dump_stack+0x8e/0xf0
+> > > > > > > [   41.919354]  __warn+0x116/0x120
+> > > > > > > [   41.919361]  warn_slowpath_null+0x1d/0x20
+> > > > > > > [   41.919368]  sd_shutdown+0x2f/0x100
+> > > > > > > [   41.919374]  sd_remove+0x70/0xd0
+> > > > > > > =
 
-Thanks,
-Liyang.
+> > > > > > > *** Here is the unexpected step I guess...
+> > > > > > > =
 
-> Thanks,
-> Xiaolong
->>
->>
->> Thanks,
->> 	Liyang.
->>>
->>> Thanks,
->>> Ying Huang
->>>
->>>
->>
->>
->> _______________________________________________
->> LKP mailing list
->> LKP(a)lists.01.org
->> https://lists.01.org/mailman/listinfo/lkp
->
->
->
+> > > > > > > [   41.919383]  driver_probe_device+0xe0/0x4c0
+> > > > > > =
 
+> > > > > > Exactly.  It's this, I think
+> > > > > > =
 
+> > > > > > 	bool test_remove =3D
+> > > > > > IS_ENABLED(CONFIG_DEBUG_TEST_DRIVER_REMOVE)
+> > > > > > &&
+> > > > > > 			   !drv->suppress_bind_attrs;
+> > > > > > =
 
---===============0527601235382471258==--
+> > > > > > You have that config option set.
+> > > > > =
+
+> > > > > Yes - or better said 0-day testing has it set. Maybe that is not =
+
+> > > > > a sane default for 0-day tests? The option is explicitely marked =
+
+> > > > > as "unstable"... Fengguang?
+> > > > > =
+
+> > > > > > So the drivers base layer is calling ->remove after probe and
+> > > > > > triggering the destruction of the queue.
+> > > > > > =
+
+> > > > > > What to do about this (apart from nuke such a stupid option) is
+> > > > > > somewhat more problematic.
+> > > > > =
+
+> > > > > I guess this is between you and Greg :).
+> > > > =
+
+> > > > Nice try, sport ... you qualify just behind Dan in the "not my =
+
+> > > > problem" olympic hurdles event.  I'm annoyed because there's no =
+
+> > > > indication in the log that the driver add behaviour is radically =
+
+> > > > altered, so I've been staring at the wrong code for weeks. =
+
+> > > >  However, the unbind/rebind should work, so the real issue is that =
+
+> > > > your bdi changes (or perhaps something else in block) have induced =
+
+> > > > a regression in the unbinding of upper layer drivers.  If you're =
+
+> > > > going to release the bdi in del_gendisk, you have to have some =
+
+> > > > mechanism for re-acquiring it on re-probe (likely with the same =
+
+> > > > name) otherwise rebind is broken for every block driver.
+> > > =
+
+> > > So my patch does not release bdi in del_gendisk(). Bdi has two
+> > > initialization / destruction phases (similarly to request queue). You
+> > > allocate and initialize bdi through bdi_init(), then you call
+> > > bdi_register() to register it (which happens in device_add_disk()). =
+
+> > > On shutdown you have to first call bdi_unregister() (used to be =
+
+> > > called from blk_cleanup_queue(), my patch moved it to del_gendisk()). =
+
+> > > After that the last reference to bdi may be dropped which does final =
+
+> > > bdi destruction.
+> > > =
+
+> > > So do I understand correctly that SCSI may call device_add_disk(),
+> > > del_gendisk() repeatedly for the same request queue?
+> > =
+
+> > Yes.  The upper drivers (sd, sr, st and sg) follow a device model. =
+
+> >  They can thus be bound and unbound many times during the lifetime of a
+> > SCSI device.
+> > =
+
+> > >  If yes, then indeed I have a bug to fix... But gendisk seems to get =
+
+> > > allocated from scratch on each probe so we don't call =
+
+> > > device_add_disk(), del_gendisk() more times on the same disk, right?
+> > =
+
+> > Right, gendisk, being a generic representation of a disk is a property
+> > of the upper layer drivers.  We actually cheat and use it in all of
+> > them (including the apparent character ones, they use alloc_disk,
+> > put_disk but not add_disk).  So it has to be freed when the driver is
+> > unbound and reallocated when it is bound.  It's the fundamental entity
+> > which embeds the SCSI upper layer driver lifetime.
+> > =
+
+> > > > The fact that the second rebind tried with a different name =
+
+> > > > indicates that sd_devt_release wasn't called, so some vestige of =
+
+> > > > the devt remains on the subsequent rebind.
+> > > =
+
+> > > Yep, I guess that's caused by Dan's patch (commit 0dba1314d4f8 now) =
+
+> > > which calls put_disk_devt() only in blk_cleanup_queue() which, if I
+> > > understood you correctly, does not get called during unbind-bind =
+
+> > > cycle? In fact Dan's patch would end up leaking devt's because of =
+
+> > > repeated device_add_disk() calls for the same request queue...
+> > =
+
+> > That's a bit unfortunate.
+> > =
+
+> > > > Here's the problem: the queue belongs to SCSI (the lower layer), so =
+
+> > > > it's not going to change because it doesn't see the release.  The
+> > > > gendisk and its allied stuff belongs to sd so it gets freed and re
+> > > > -created for the same queue.  Something in block is very confused
+> > > > when this happens.
+> > > =
+
+> > > Yep, I think the binding of request queue to different gendisks is
+> > > something I or Dan did not expect.
+> > =
+
+> > OK, so I think we now understand why this is happening ... the question
+> > is what we do about it?  Is it fixable or do we need to go back to
+> > basics?  The fundamental property which got broken by these patches is
+> > the idea of the separation of the lifecycles of the queue and the
+> > gendisk.  The only requirement is that the queue must exist before the
+> > gendisk is created and must be destroyed after it.  This doesn't forbid
+> > there being many gendisk lifetimes over one queue lifetime and this is
+> > what we rely on for the SCSI driver model.  We rarely get called on it
+> > because unbind/rebind of a ULD is rarely done in production (it's
+> > mostly a devtest thing).
+> =
+
+> For now I think it's fixable. Let's see what I'll be able to come up with.
+> Let me also note that before my patch moving bdi_unregister() to
+> del_gendisk() (commit 165a5e22fafb), the SCSI driver model was buggy in a
+> different way - because bdi_unregister() was called only from
+> blk_cleanup_queue(), we were leaking bdi->owner reference to gendisk by
+> repeated calls to bdi_register_owner() from device_add_disk() and
+> thus gendisks were never freed after unbind/bind (I've actually verified
+> this bug exists with debug messages). Also as a result request queue use
+> count was steadily increasing with each new gendisk and request queue cou=
+ld
+> never get freed after unbind / rebind.
+> =
+
+> My patch silently fixed this leakage but introduced a different set of
+> problems which I'll try to fix.
+
+Attached patch fixes the problem for me. If I also revert commit
+0dba1314d4f81115dce711292ec7981d17231064 "scsi, block: fix duplicate bdi
+name registration crashes" which is not needed with my
+165a5e22fafb127ecb5914e12e8c32a1f0d3f820 "block: Move bdi_unregister() to
+del_gendisk()", the device names also do not get incremented and I end up
+with 'sda' device (otherwise I end up with sdc).
+
+								Honza
+-- =
+
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
+
+--===============1648785864003128875==
+Content-Type: text/x-patch
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="0001-block-Allow-bdi-re-registration.patch"
+
+PkZyb20gYmZiY2NmMjg4NTNkNTVkNDQxODQwMWQ4ZWViNmI5MWMzMDUwZTMxNiBNb24gU2VwIDE3
+IDAwOjAwOjAwIDIwMDEKRnJvbTogSmFuIEthcmEgPGphY2tAc3VzZS5jej4KRGF0ZTogVHVlLCA3
+IE1hciAyMDE3IDE4OjAxOjUxICswMTAwClN1YmplY3Q6IFtQQVRDSF0gYmxvY2s6IEFsbG93IGJk
+aSByZS1yZWdpc3RyYXRpb24KClNDU0kgY2FuIGNhbGwgZGV2aWNlX2FkZF9kaXNrKCkgc2V2ZXJh
+bCB0aW1lcyBmb3Igb25lIHJlcXVlc3QgcXVldWUgd2hlbgphIGRldmljZSBpbiB1bmJvdW5kIGFu
+ZCBib3VuZCwgY3JlYXRpbmcgbmV3IGdlbmRpc2sgZWFjaCB0aW1lLiBUaGlzIHdpbGwKbGVhZCB0
+byBiZGkgYmVpbmcgcmVwZWF0ZWRseSByZWdpc3RlcmVkIGFuZCB1bnJlZ2lzdGVyZWQuIE1ha2Ug
+c3VyZQpiZGlfdW5yZWdpc3RlcigpIGNsZWFucyB1cCBiZGkgaW4gc3VjaCBhIHdheSB0aGF0IGl0
+IGlzIHByZXBhcmVkIGZvcgp0aGUgZm9sbG93aW5nIGJkaSByZWdpc3RlciBjYWxsLgoKQW4gZWFz
+eSB3YXkgdG8gcHJvdm9rZSB0aGlzIGJlaGF2aW9yIGlzIHRvIGVuYWJsZQpDT05GSUdfREVCVUdf
+VEVTVF9EUklWRVJfUkVNT1ZFIGFuZCB1c2Ugc2NzaV9kZWJ1ZyBkcml2ZXIgdG8gY3JlYXRlIGEK
+c2NzaSBkaXNrIHdoaWNoIGltbWVkaWF0ZWx5IGhhbmdzIHdpdGhvdXQgdGhpcyBmaXguCgpTaWdu
+ZWQtb2ZmLWJ5OiBKYW4gS2FyYSA8amFja0BzdXNlLmN6PgotLS0KIG1tL2JhY2tpbmctZGV2LmMg
+fCA3ICsrKysrKysKIDEgZmlsZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQg
+YS9tbS9iYWNraW5nLWRldi5jIGIvbW0vYmFja2luZy1kZXYuYwppbmRleCA2ZDg2MWQwOTBlOWYu
+LjZhYzkzMjIxMGY1NiAxMDA2NDQKLS0tIGEvbW0vYmFja2luZy1kZXYuYworKysgYi9tbS9iYWNr
+aW5nLWRldi5jCkBAIC03MTAsNiArNzEwLDExIEBAIHN0YXRpYyB2b2lkIGNnd2JfYmRpX2Rlc3Ry
+b3koc3RydWN0IGJhY2tpbmdfZGV2X2luZm8gKmJkaSkKIAkgKi8KIAlhdG9taWNfZGVjKCZiZGkt
+PnVzYWdlX2NudCk7CiAJd2FpdF9ldmVudChjZ3diX3JlbGVhc2Vfd2FpdCwgIWF0b21pY19yZWFk
+KCZiZGktPnVzYWdlX2NudCkpOworCS8qCisJICogR3JhYiBiYWNrIG91ciByZWZlcmVuY2Ugc28g
+dGhhdCB3ZSBob2xkIGl0IHdoZW4gQGJkaSBnZXRzCisJICogcmUtcmVnaXN0ZXJlZC4KKwkgKi8K
+KwlhdG9taWNfaW5jKCZiZGktPnVzYWdlX2NudCk7CiB9CiAKIC8qKgpAQCAtODU3LDYgKzg2Miw4
+IEBAIGludCBiZGlfcmVnaXN0ZXJfb3duZXIoc3RydWN0IGJhY2tpbmdfZGV2X2luZm8gKmJkaSwg
+c3RydWN0IGRldmljZSAqb3duZXIpCiAJCQlNSU5PUihvd25lci0+ZGV2dCkpOwogCWlmIChyYykK
+IAkJcmV0dXJuIHJjOworCS8qIExlYWtpbmcgb3duZXIgcmVmZXJlbmNlLi4uICovCisJV0FSTl9P
+TihiZGktPm93bmVyKTsKIAliZGktPm93bmVyID0gb3duZXI7CiAJZ2V0X2RldmljZShvd25lcik7
+CiAJcmV0dXJuIDA7Ci0tIAoyLjEwLjIKCg==
+
+--===============1648785864003128875==--
 
