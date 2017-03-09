@@ -1,37 +1,37 @@
-Content-Type: multipart/mixed; boundary="===============7880022148054659296=="
+Content-Type: multipart/mixed; boundary="===============0798350646110154248=="
 MIME-Version: 1.0
 From: Borislav Petkov <bp@alien8.de>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [x86] ed3ce2a917: BUG:unable_to_handle_kernel
-Date: Thu, 09 Mar 2017 09:14:01 +0100
-Message-ID: <20170309081401.7nk6ngcz4eznohi5@pd.tnic>
-In-Reply-To: <20170309021310.GB11500@yexl-desktop>
+Date: Thu, 09 Mar 2017 09:17:36 +0100
+Message-ID: <20170309081736.7jbbbcjwehjnhjwg@pd.tnic>
+In-Reply-To: <20170309023052.grzkmd2m6cttnesv@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7880022148054659296==
+--===============0798350646110154248==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 09, 2017 at 10:13:10AM +0800, Ye Xiaolong wrote:
-> >Anyway, the diff is below, please try that ontop of tip's x86/asm branch
-> >which already has the clear_page patch:
-> >
-> >http://git.kernel.org/cgit/linux/kernel/git/tip/tip.git/log/?h=3Dx86/asm
-> >
-> >Thanks!
-> =
+On Thu, Mar 09, 2017 at 10:30:52AM +0800, Fengguang Wu wrote:
+> One possible improvement is to provide "lkp qemu" reproduce steps for
+> kernel oops -- it would be way more convenient and safe to follow than
+> "lkp run", since the later risks hang the physical machine.
 
-> Hmm, I've checkout the tip's x86/asm branch (HEAD is f25d38475 "x86/asm:
-> Optimize clear_page()"), but I failed to apply your diff on top of it (er=
-ror
-> log as below).
+Right, that would mean that the bug should be triggerable in qemu. Some
+bugs happen on baremetal only though.
 
-Right, Ingo merged the diff I gave you already into the patch there
-so that x86/asm already contains the fixed version. You could run the
-current tip/x86/asm branch to confirm that it fixes the issue for you.
+> As for the test description, the dmesg carries markers for the user
+> space test start/stop points, so the robot can easily tell whether the
+> oops happen during the test or before/after the test -- the latter may
+> well (but not always) indicate the oops is not relevant to the testcase,
+> but to the regular kernel boot/reboot/kexec process.
 
-Thanks.
+Right, if that is made part of the report, it would make the reports
+better. Something like: "this happens when preparing our test env" or
+"this happens while running this test blabla".
+
+Thanks guys and keep up the good work!
 
 -- =
 
@@ -40,5 +40,5 @@ Regards/Gruss,
 
 Good mailing practices for 400: avoid top-posting and trim the reply.
 
---===============7880022148054659296==--
+--===============0798350646110154248==--
 
