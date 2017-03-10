@@ -1,152 +1,77 @@
-Content-Type: multipart/mixed; boundary="===============7596524994505736125=="
+Content-Type: multipart/mixed; boundary="===============5545116096761949521=="
 MIME-Version: 1.0
-From: James Bottomley <jejb@linux.vnet.ibm.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 To: lkp@lists.01.org
-Subject: Re: [bdi_unregister] 165a5e22fa INFO: task swapper:1 blocked for more than 120 seconds.
-Date: Mon, 06 Mar 2017 07:44:55 -0800
-Message-ID: <1488815095.25848.7.camel@linux.vnet.ibm.com>
-In-Reply-To: <20170306151415.GA32207@quack2.suse.cz>
+Subject: Re: [net/bpf] 3051bf36c2 BUG: unable to handle kernel paging request at 0000a7cf
+Date: Fri, 10 Mar 2017 01:13:54 +0100
+Message-ID: <58C1EFC2.7090309@iogearbox.net>
+In-Reply-To: <20170309234411.wec53iexfz6skmpl@pd.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7596524994505736125==
+--===============5545116096761949521==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2017-03-06 at 16:14 +0100, Jan Kara wrote:
-> On Mon 06-03-17 06:35:21, James Bottomley wrote:
-> > On Mon, 2017-03-06 at 13:01 +0100, Jan Kara wrote:
-> > > On Mon 06-03-17 11:27:33, Jan Kara wrote:
-> > > > Hi,
-> > > > =
+On 03/10/2017 12:44 AM, Borislav Petkov wrote:
+> On Thu, Mar 09, 2017 at 03:26:02PM -0800, Linus Torvalds wrote:
+>> So should all of commit ("c109bf95992b x86/cpufeature: Remove
+>> cpu_has_pge") just be reverted (and then marked for stable)?
+>>
+>> Or do we have some alternate plan?
+>
+> I think we want to do this:
+>
+> diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbfl=
+ush.h
+> index 6fa85944af83..fc5abff9b7fd 100644
+> --- a/arch/x86/include/asm/tlbflush.h
+> +++ b/arch/x86/include/asm/tlbflush.h
+> @@ -188,7 +188,7 @@ static inline void __native_flush_tlb_single(unsigned=
+ long addr)
+>
+>   static inline void __flush_tlb_all(void)
+>   {
+> -	if (static_cpu_has(X86_FEATURE_PGE))
+> +	if (boot_cpu_has(X86_FEATURE_PGE))
+>   		__flush_tlb_global();
+>   	else
+>   		__flush_tlb();
+> ---
+>
+> but it is late here so I'd prefer to do a real patch tomorrow when I'm
+> not almost sleeping on the keyboard. Unless Daniel wants to write one
+> and test it now.
 
-> > > > On Sun 05-03-17 10:21:11, Wu Fengguang wrote:
-> > > > > FYI next-20170303 is good while mainline is bad with this
-> > > > > error.
-> > > > > The attached reproduce-* may help reproduce the issue.
-> > > > =
+I think we're in the same time zone. ;) I could send something
+official tomorrow cooking a changelog with analysis, but I don't
+mind at all if you want to go ahead with that either. Feel free
+to add my SoB or Tested-by to it.
 
-> > > > Thanks for report! So from the stacktrace we are in the path =
+>> This has apparently been going on for a long while (it got merged into
+>> 4.7), but presumably it only actually _matters_ if lguest is enabled
+>> and used and we've triggered that lguest_arch_host_init() code.
+>
+> That's what I gather too, yes.
+>
+> What sane code would go and clear X86_FEATURE_PGE?!? :-)))
+>
+>> Maybe it's the lguest games with PGE that need to be removed?
+>
+> Well, as far as I can read the comment in lguest_arch_host_init(), it
+> does some monkey business with switching to the guest kernel where
+> global pages are not present anymore... or something. So it sounds to me
+> like lguest would break if we removed the games but I have no idea what
+> it does with that.
+>
+> And besides, the small hunk above restores the situation before
+> ("c109bf95992b x86/cpufeature: Remove cpu_has_pge") so applying it would
+> actually be a no-brainer.
 
-> > > > testing removal of a device immediately after it has been
-> > > > probed =
+Agree, looks only that hunk changed in behavior from c109bf95992b
+("x86/cpufeature: Remove cpu_has_pge").
 
-> > > > and for some reason bdi_unregister() hangs - likely waiting for
-> > > > cgroup-writeback references to drop. Given how early this
-> > > > happens =
+> Thanks.
 
-> > > > my guess is we fail to initialize something but for now I don't
-> > > > see =
-
-> > > > how my patch could make a difference. I'm trying to reproduce
-> > > > this =
-
-> > > > to be able to debug more...
-> > > =
-
-> > > OK, so after some debugging I think this is yet another problem
-> > > in =
-
-> > > SCSI initialization / destruction code which my patch only makes =
-
-> > > visible (added relevant maintainers).
-> > > =
-
-> > > I can reproduce the problem reliably with enabling:
-> > > =
-
-> > > CONFIG_DEBUG_TEST_DRIVER_REMOVE=3Dy
-> > > CONFIG_SCSI_DEBUG=3Dm
-> > > CONFIG_BLK_CGROUP=3Dy
-> > > CONFIG_MEMCG=3Dy
-> > > (and thus CONFIG_CGROUP_WRITEBACK=3Dy)
-> > > =
-
-> > > then 'modprobe scsi_debug' is all it takes to reproduce hang. =
-
-> > > Relevant kernel messages with some of my debugging added
-> > > (attached is =
-
-> > > a patch that adds those debug messages):
-> > =
-
-> > This looks to be precisely the same problem Dan Williams was
-> > debugging
-> > for us.
-> > =
-
-> > > [   58.721765] scsi host0: scsi_debug: version 1.86 [20160430]
-> > > [   58.721765]   dev_size_mb=3D8, opts=3D0x0, submit_queues=3D1,
-> > > statistics=3D0
-> > > [   58.728946] CGWB init ffff88007fbb2000
-> > > [   58.730095] Created sdev ffff880078e1a000
-> > > [   58.731611] scsi 0:0:0:0: Direct-Access     Linux   =
-
-> > >  scsi_debug
-> > > 0186 PQ : 0 ANSI: 7
-> > > [   58.782246] sd 0:0:0:0: [sda] 16384 512-byte logical blocks:
-> > > (8.39
-> > > MB/8.00 MiB)
-> > > [   58.789687] sd 0:0:0:0: [sda] Write Protect is off
-> > > [   58.791140] sd 0:0:0:0: [sda] Mode Sense: 73 00 10 08
-> > > [   58.800879] sd 0:0:0:0: [sda] Write cache: enabled, read
-> > > cache:
-> > > enabled, supports DPO and FUA
-> > > [   58.893738] sd 0:0:0:0: [sda] Attached SCSI disk
-> > > [   58.896808] Unreg1
-> > > [   58.897960] Unreg2
-> > > [   58.898637] Unreg3
-> > > [   58.899100] CGWB ffff88007fbb2000 usage_cnt: 0
-> > > [   58.900004] Unreg4
-> > > [   58.904976] sd 0:0:0:0: [sda] Synchronizing SCSI cache
-> > =
-
-> > OK, can you put a WARN_ON trace in sd_shutdown and tell us where
-> > this
-> > is coming from.  For the device to be reused after this we have to
-> > be
-> > calling sd_shutdown() without going into SDEV_DEL.
-> =
-
-> Sure. The call trace is:
-> =
-
-> [   41.919244] ------------[ cut here ]------------
-> [   41.919263] WARNING: CPU: 4 PID: 2335 at drivers/scsi/sd.c:3332
-> sd_shutdown+0x2f/0x100
-> [   41.919268] Modules linked in: scsi_debug(+) netconsole loop btrfs
-> raid6_pq zlib_deflate lzo_compress xor
-> [   41.919319] CPU: 4 PID: 2335 Comm: modprobe Not tainted 4.11.0-rc1
-> -xen+ #49
-> [   41.919325] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
-> [   41.919331] Call Trace:
-> [   41.919343]  dump_stack+0x8e/0xf0
-> [   41.919354]  __warn+0x116/0x120
-> [   41.919361]  warn_slowpath_null+0x1d/0x20
-> [   41.919368]  sd_shutdown+0x2f/0x100
-> [   41.919374]  sd_remove+0x70/0xd0
-> =
-
-> *** Here is the unexpected step I guess...
-> =
-
-> [   41.919383]  driver_probe_device+0xe0/0x4c0
-
-Exactly.  It's this, I think
-
-	bool test_remove =3D IS_ENABLED(CONFIG_DEBUG_TEST_DRIVER_REMOVE) &&
-			   !drv->suppress_bind_attrs;
-
-You have that config option set.
-
-So the drivers base layer is calling ->remove after probe and
-triggering the destruction of the queue.
-
-What to do about this (apart from nuke such a stupid option) is
-somewhat more problematic.
-
-James
-
-
---===============7596524994505736125==--
+--===============5545116096761949521==--
 
