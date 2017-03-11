@@ -1,95 +1,108 @@
-Content-Type: multipart/mixed; boundary="===============6670384971806619744=="
+Content-Type: multipart/mixed; boundary="===============1982676501228451557=="
 MIME-Version: 1.0
-From: Boqun Feng <boqun.feng@gmail.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 To: lkp@lists.01.org
-Subject: Re: [locking/ww_mutex] 857811a371 INFO: task swapper/0:1 blocked for more than 120 seconds.
-Date: Fri, 10 Mar 2017 17:45:41 +0800
-Message-ID: <20170310094541.4ou4t3iuauqqxjvt@tardis>
-In-Reply-To: <20170310030746.43zyebko27f62ehd@tardis>
+Subject: [PATCH] x86-32: fix tlb flushing when lguest clears PGE
+Date: Sat, 11 Mar 2017 01:31:19 +0100
+Message-ID: <25c41ad9eca164be4db9ad84f768965b7eb19d9e.1489191673.git.daniel@iogearbox.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6670384971806619744==
+--===============1982676501228451557==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 10, 2017 at 11:07:46AM +0800, Boqun Feng wrote:
-> On Fri, Mar 10, 2017 at 10:56:49AM +0800, Fengguang Wu wrote:
-> > Hi Boqun,
-> > =
+Fengguang reported [1] random corruptions from various locations on
+x86-32 after commits d2852a224050 ("arch: add ARCH_HAS_SET_MEMORY
+config") and 9d876e79df6a ("bpf: fix unlocking of jited image when
+module ronx not set") that uses the former. While x86-32 doesn't
+have a JIT like x86_64, the bpf_prog_lock_ro() and bpf_prog_unlock_ro()
+got enabled due to ARCH_HAS_SET_MEMORY, whereas Fengguang's test
+kernel doesn't have module support built in and therefore never
+had the DEBUG_SET_MODULE_RONX setting enabled.
 
-> =
+After investigating the crashes further, it turned out that using
+set_memory_ro() and set_memory_rw() didn't have the desired effect,
+for example, setting the pages as read-only on x86-32 would still
+let probe_kernel_write() succeed without error. This behavior would
+manifest itself in situations where the vmalloc'ed buffer was accessed
+prior to set_memory_*() such as in case of bpf_prog_alloc(). In
+cases where it wasn't, the page attribute changes seemed to have
+taken effect, leading to the conclusion that a TLB invalidate
+didn't happen. Moreover, it turned out that this issue reproduced
+with qemu in "-cpu kvm64" mode, but not for "-cpu host". When the
+issue occurs, change_page_attr_set_clr() did trigger a TLB flush
+as expected via __flush_tlb_all() through cpa_flush_range(), though.
 
-> Hello Fengguang,
-> =
+There are 3 variants for issuing a TLB flush: invpcid_flush_all()
+(depends on CPU feature bits X86_FEATURE_INVPCID, X86_FEATURE_PGE),
+cr4 based flush (depends on X86_FEATURE_PGE), and cr3 based flush.
+For "-cpu host" case in my setup, the flush used invpcid_flush_all()
+variant, whereas for "-cpu kvm64", the flush was cr4 based. Switching
+the kvm64 case to cr3 manually worked fine, and further investigating
+the cr4 one turned out that X86_CR4_PGE bit was not set in cr4
+register, meaning the __native_flush_tlb_global_irq_disabled() wrote
+cr4 twice with the same value instead of clearing X86_CR4_PGE in the
+first write to trigger the flush.
 
-> > FYI here is another bisect result. I report it once again since the
-> > attached reproduce-* may be more handy for debug. :)
-> > =
+It turned out that X86_CR4_PGE was cleared from cr4 during init
+from lguest_arch_host_init() via adjust_pge(). The X86_FEATURE_PGE
+bit is also cleared from there due to concerns of using PGE in
+guest kernel that can lead to hard to trace bugs (see bff672e630a0
+("lguest: documentation V: Host") in init()). The CPU feature bits
+are cleared in dynamic boot_cpu_data, but they never propagated to
+__flush_tlb_all() as it uses static_cpu_has() instead of boot_cpu_has()
+for testing which variant of TLB flushing to use, meaning they still
+used the old setting of the host kernel.
 
-> =
+Clearing via setup_clear_cpu_cap(X86_FEATURE_PGE) so this would
+propagate to static_cpu_has() checks is too late at this point as
+sections have been patched already, so for now, it seems reasonable
+to switch back to boot_cpu_has(X86_FEATURE_PGE) as it was prior to
+commit c109bf95992b ("x86/cpufeature: Remove cpu_has_pge"). This
+lets the TLB flush trigger via cr3 as originally intended, properly
+makes the new page attributes visible and thus fixes the crashes
+seen by Fengguang.
 
-> That's very helpful! lkp is a bit difficult for me to set up ;-)
-> =
+  [1] https://lkml.org/lkml/2017/3/1/344
+
+Fixes: c109bf95992b ("x86/cpufeature: Remove cpu_has_pge")
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Laura Abbott <labbott@redhat.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Rusty Russell <rusty@rustcorp.com.au>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: David S. Miller <davem@davemloft.net>
+---
+ arch/x86/include/asm/tlbflush.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflus=
+h.h
+index 6fa8594..fc5abff 100644
+--- a/arch/x86/include/asm/tlbflush.h
++++ b/arch/x86/include/asm/tlbflush.h
+@@ -188,7 +188,7 @@ static inline void __native_flush_tlb_single(unsigned l=
+ong addr)
+ =
+
+ static inline void __flush_tlb_all(void)
+ {
+-	if (static_cpu_has(X86_FEATURE_PGE))
++	if (boot_cpu_has(X86_FEATURE_PGE))
+ 		__flush_tlb_global();
+ 	else
+ 		__flush_tlb();
+-- =
+
+1.9.3
 
 
-Hmm... hit this when run the reproduce script:
-
-early console in setup code
-KVM internal error. Suberror: 3
-extra data[0]: 80000306
-extra data[1]: 31
-RAX=3D0000000000000000 RBX=3Dffffffff800c0038 RCX=3D1ffffffff0d8c301 RDX=3D=
-dffffc0000000000
-RSI=3D0000000000000001 RDI=3Dffffffff86c61e78 RBP=3Dffffffff800c0028 RSP=3D=
-ffffffff800c0000
-R8 =3D0000000000000001 R9 =3D0000000000000001 R10=3Dffffffff85e07bd0 R11=3D=
-ffffffff85e079d7
-R12=3D0000000000000006 R13=3D0000000000000003 R14=3D00000000000199a0 R15=3D=
-0000000000000001
-RIP=3Dffffffff84a84715 RFL=3D00010046 [---Z-P-] CPL=3D0 II=3D0 A20=3D1 SMM=
-=3D0 HLT=3D0
-ES =3D0000 0000000000000000 ffffffff 00000000
-CS =3D0010 0000000000000000 ffffffff 00a09b00 DPL=3D0 CS64 [-RA]
-SS =3D0000 0000000000000000 ffffffff 00000000
-DS =3D0000 0000000000000000 ffffffff 00000000
-FS =3D0000 0000000000000000 ffffffff 00000000
-GS =3D0000 ffffffff8737a000 ffffffff 00000000
-LDT=3D0000 0000000000000000 ffffffff 00000000
-TR =3D0020 0000000000000000 00000fff 00808b00 DPL=3D0 TSS64-busy
-GDT=3D     ffffffff8738c000 0000007f
-IDT=3D     ffffffff877ad000 00000fff
-CR0=3D80050033 CR2=3Dffff880000014200 CR3=3D0000000007567000 CR4=3D000000a0
-DR0=3D0000000000000000 DR1=3D0000000000000000 DR2=3D0000000000000000 DR3=3D=
-0000000000000000
-DR6=3D00000000ffff0ff0 DR7=3D0000000000000400
-EFER=3D0000000000000d01
-Code=3D00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 88 47 a8 84 ff <ff> ff =
-ff 07 67 72 81 ff ff ff ff d0 7a b6 86 ff ff ff ff 79 84 4e 81 ff ff ff ff =
-8b 25 d2
-
-Using reproduce script for some other kernel is fine. Any idea?
-
-My host is ArchLinux with kernel 4.9.11-1-ARCH.
-
-Regards,
-Boqun
-
---===============6670384971806619744==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
-
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRRXpCQUFCQ0FBZEZpRUVqNUlvc1FUUHo4
-WFUxd1JIU1hub3c3VUgrcmdGQWxqQ2RjRUFDZ2tRU1hub3c3VUgKK3JoWmpRZitQRnRXelYwRjZH
-MTAvR2xieTl6cXdqZU1tSnhkMXQ2TE5xYnlGN2MrM0YycDFaOGVKYnNleHU1bgpNZXBCY0xpclhW
-aGc1TEpISFpPL1VqY09mUGRMckN3dk9YZXZDTENRdUZnWjMwODdPaVRzR1RXUnVkdUtLRUlnCnlw
-TGs2dElVWmlhenozVzZmV0VCK3ZzZjFRa2tEM1E0b005Zk93R3gyUmMwVkhGS1UwNmJXNnl6NERz
-UFFjSEkKMDU3YnZPdXNDbWJpYjh0amswaVhBU3dmZmZJWEhDUXRmSjNrcnhtSmlHdERTaVZvZy9w
-a0RFeDEzd2c3V2wwdgpwQWNjMi9FRm8waWVtUzJsSTQzNVVMcmlpbGVWZGxtOTA2Q0Z4bitzU2Fk
-WVpORWVBV2RPbWl4enhKTThyMGNVCkd6L2hHMWcySjVYbGxFTDNDcmtKb3kzdmx5MnhHQT09Cj1V
-dlJlCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
-
---===============6670384971806619744==--
+--===============1982676501228451557==--
 
