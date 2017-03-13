@@ -1,114 +1,70 @@
-Content-Type: multipart/mixed; boundary="===============0213616051130705886=="
+Content-Type: multipart/mixed; boundary="===============6248394615205013667=="
 MIME-Version: 1.0
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Linus Lüssing <linus.luessing@c0d3.blue>
 To: lkp@lists.01.org
-Subject: [PATCH 4.10 70/75] x86/tlb: Fix tlb flushing when lguest clears PGE
-Date: Mon, 13 Mar 2017 16:44:19 +0800
-Message-ID: <20170313083415.272521570@linuxfoundation.org>
-In-Reply-To: <20170313083411.408297387@linuxfoundation.org>
+Subject: Re: [ipv6] a088d1d73a: WARNING:at_net/mac80211/agg-tx.c:#ieee80211_start_tx_ba_cb[mac80211]
+Date: Mon, 13 Mar 2017 15:18:35 +0100
+Message-ID: <20170313141835.GL15692@otheros>
+In-Reply-To: <20170222020301.GA1067@inn.lkp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0213616051130705886==
+--===============6248394615205013667==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-4.10-stable review patch.  If anyone has any objections, please let me know.
+On Wed, Feb 22, 2017 at 10:03:02AM +0800, kernel test robot wrote:
+> =
 
-------------------
+> FYI, we noticed the following commit:
+> =
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+> commit: a088d1d73a4bcfd7bc482f8d08375b9b665dc3e5 ("ipv6: Fix IPv6 packet =
+loss in scenarios involving roaming + snooping switches")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> =
 
-commit 2c4ea6e28dbf15ab93632c5c189f3948366b8885 upstream.
+> in testcase: hwsim
+> with following parameters:
+> =
 
-Fengguang reported random corruptions from various locations on x86-32
-after commits d2852a224050 ("arch: add ARCH_HAS_SET_MEMORY config") and
-9d876e79df6a ("bpf: fix unlocking of jited image when module ronx not set")
-that uses the former. While x86-32 doesn't have a JIT like x86_64, the
-bpf_prog_lock_ro() and bpf_prog_unlock_ro() got enabled due to
-ARCH_HAS_SET_MEMORY, whereas Fengguang's test kernel doesn't have module
-support built in and therefore never had the DEBUG_SET_MODULE_RONX setting
-enabled.
+> 	group: hwsim-01
+[...]
+> kern  :warn  : [  146.568070] WARNING: CPU: 12 PID: 669 at net/mac80211/a=
+gg-tx.c:770 ieee80211_start_tx_ba_cb+0x139/0x150 [mac80211]
+[...]
+> kern  :warn  : [  146.568114] CPU: 12 PID: 669 Comm: kworker/u256:1 Not t=
+ainted 4.10.0-rc6-00104-ga088d1d #1
+> kern  :warn  : [  146.568115] Hardware name: Intel Corporation LH Pass/S4=
+600LH...., BIOS SE5C600.86B.99.02.1047.032320122259 03/23/2012
+> kern  :warn  : [  146.568127] Workqueue: phy0 ieee80211_iface_work [mac80=
+211]
+> kern  :warn  : [  146.568128] Call Trace:
+> kern  :warn  : [  146.568141]  dump_stack+0x63/0x8a
+> kern  :warn  : [  146.568146]  __warn+0xcb/0xf0
+> kern  :warn  : [  146.568147]  warn_slowpath_null+0x1d/0x20
+> kern  :warn  : [  146.568156]  ieee80211_start_tx_ba_cb+0x139/0x150 [mac8=
+0211]
+> kern  :warn  : [  146.568166]  ieee80211_iface_work+0x266/0x470 [mac80211]
+> kern  :warn  : [  146.568180]  process_one_work+0x1a3/0x480
+> kern  :warn  : [  146.568182]  worker_thread+0x4e/0x4d0
+> kern  :warn  : [  146.568185]  kthread+0x10c/0x140
+> kern  :warn  : [  146.568187]  ? process_one_work+0x480/0x480
+> kern  :warn  : [  146.568187]  ? kthread_create_on_node+0x40/0x40
+> kern  :warn  : [  146.568195]  ret_from_fork+0x2c/0x40
+> kern  :warn  : [  146.568197] ---[ end trace 0e4afc24db5dbafa ]---
 
-After investigating the crashes further, it turned out that using
-set_memory_ro() and set_memory_rw() didn't have the desired effect, for
-example, setting the pages as read-only on x86-32 would still let
-probe_kernel_write() succeed without error. This behavior would manifest
-itself in situations where the vmalloc'ed buffer was accessed prior to
-set_memory_*() such as in case of bpf_prog_alloc(). In cases where it
-wasn't, the page attribute changes seemed to have taken effect, leading to
-the conclusion that a TLB invalidate didn't happen. Moreover, it turned out
-that this issue reproduced with qemu in "-cpu kvm64" mode, but not for
-"-cpu host". When the issue occurs, change_page_attr_set_clr() did trigger
-a TLB flush as expected via __flush_tlb_all() through cpa_flush_range(),
-though.
+Unfortunately, I wasn't able to reproduce this issue with the
+plain mac80211-hwsim test suite yet. The according test runs successfully
+in my VMs here...
 
-There are 3 variants for issuing a TLB flush: invpcid_flush_all() (depends
-on CPU feature bits X86_FEATURE_INVPCID, X86_FEATURE_PGE), cr4 based flush
-(depends on X86_FEATURE_PGE), and cr3 based flush.  For "-cpu host" case in
-my setup, the flush used invpcid_flush_all() variant, whereas for "-cpu
-kvm64", the flush was cr4 based. Switching the kvm64 case to cr3 manually
-worked fine, and further investigating the cr4 one turned out that
-X86_CR4_PGE bit was not set in cr4 register, meaning the
-__native_flush_tlb_global_irq_disabled() wrote cr4 twice with the same
-value instead of clearing X86_CR4_PGE in the first write to trigger the
-flush.
+To me, it looks like the WARN_ON() could be triggered by a race condition
+in mac80211 or mac80211-hwsim, too. I'm going to forward this to and
+discuss this further on the wireless mailing list.
 
-It turned out that X86_CR4_PGE was cleared from cr4 during init from
-lguest_arch_host_init() via adjust_pge(). The X86_FEATURE_PGE bit is also
-cleared from there due to concerns of using PGE in guest kernel that can
-lead to hard to trace bugs (see bff672e630a0 ("lguest: documentation V:
-Host") in init()). The CPU feature bits are cleared in dynamic
-boot_cpu_data, but they never propagated to __flush_tlb_all() as it uses
-static_cpu_has() instead of boot_cpu_has() for testing which variant of TLB
-flushing to use, meaning they still used the old setting of the host
-kernel.
+Thanks for the notification, Xiaolong!
 
-Clearing via setup_clear_cpu_cap(X86_FEATURE_PGE) so this would propagate
-to static_cpu_has() checks is too late at this point as sections have been
-patched already, so for now, it seems reasonable to switch back to
-boot_cpu_has(X86_FEATURE_PGE) as it was prior to commit c109bf95992b
-("x86/cpufeature: Remove cpu_has_pge"). This lets the TLB flush trigger via
-cr3 as originally intended, properly makes the new page attributes visible
-and thus fixes the crashes seen by Fengguang.
+Regards, Linus
 
-Fixes: c109bf95992b ("x86/cpufeature: Remove cpu_has_pge")
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: bp(a)suse.de
-Cc: Kees Cook <keescook@chromium.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev(a)vger.kernel.org
-Cc: Rusty Russell <rusty@rustcorp.com.au>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: lkp(a)01.org
-Cc: Laura Abbott <labbott@redhat.com>
-Link: http://lkml.kernrl.org/r/20170301125426.l4nf65rx4wahohyl(a)wfg-t540p.=
-sh.intel.com
-Link: http://lkml.kernel.org/r/25c41ad9eca164be4db9ad84f768965b7eb19d9e.148=
-9191673.git.daniel(a)iogearbox.net
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
----
- arch/x86/include/asm/tlbflush.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/arch/x86/include/asm/tlbflush.h
-+++ b/arch/x86/include/asm/tlbflush.h
-@@ -188,7 +188,7 @@ static inline void __native_flush_tlb_si
- =
-
- static inline void __flush_tlb_all(void)
- {
--	if (static_cpu_has(X86_FEATURE_PGE))
-+	if (boot_cpu_has(X86_FEATURE_PGE))
- 		__flush_tlb_global();
- 	else
- 		__flush_tlb();
-
-
-
---===============0213616051130705886==--
+--===============6248394615205013667==--
 
