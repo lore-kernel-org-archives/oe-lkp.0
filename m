@@ -1,70 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============6248394615205013667=="
+Content-Type: multipart/mixed; boundary="===============4854009734182536527=="
 MIME-Version: 1.0
-From: Linus Lüssing <linus.luessing@c0d3.blue>
+From: Andrey Ryabinin <aryabinin@virtuozzo.com>
 To: lkp@lists.01.org
-Subject: Re: [ipv6] a088d1d73a: WARNING:at_net/mac80211/agg-tx.c:#ieee80211_start_tx_ba_cb[mac80211]
-Date: Mon, 13 Mar 2017 15:18:35 +0100
-Message-ID: <20170313141835.GL15692@otheros>
-In-Reply-To: <20170222020301.GA1067@inn.lkp.intel.com>
+Subject: Re: [mm/kasan] 80a9201a59 BUG: kernel reboot-without-warning in early-boot stage, last printk: Booting the kernel.
+Date: Mon, 13 Mar 2017 17:25:04 +0300
+Message-ID: <5211ff97-29ab-c3b5-670b-db98662ce009@virtuozzo.com>
+In-Reply-To: <20170228031227.tm7flsxl7t7klspf@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6248394615205013667==
+--===============4854009734182536527==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 22, 2017 at 10:03:02AM +0800, kernel test robot wrote:
+On 02/28/2017 06:12 AM, Fengguang Wu wrote:
+> Hi Alexander,
 > =
 
-> FYI, we noticed the following commit:
+> FYI, we find an old bug that's still alive in linux-next. The attached
+> reproduce-* script may help debug the problem.
 > =
 
-> commit: a088d1d73a4bcfd7bc482f8d08375b9b665dc3e5 ("ipv6: Fix IPv6 packet =
-loss in scenarios involving roaming + snooping switches")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+...
+
+> +------------------------------------------------------------------------=
+--------------+------------+------------+
+> |                                                                        =
+              | c146a2b98e | 80a9201a59 |
+> +------------------------------------------------------------------------=
+--------------+------------+------------+
+> | boot_successes                                                         =
+              | 740        | 48         |
+> | boot_failures                                                          =
+              | 0          | 142        |
+> | BUG:kernel_reboot-without-warning_in_early-boot_stage,last_printk:Booti=
+ng_the_kernel | 0          | 131        |
+> | BUG:kernel_in_stage                                                    =
+              | 0          | 11         |
+> +------------------------------------------------------------------------=
+--------------+------------+------------+
 > =
 
-> in testcase: hwsim
-> with following parameters:
-> =
 
-> 	group: hwsim-01
-[...]
-> kern  :warn  : [  146.568070] WARNING: CPU: 12 PID: 669 at net/mac80211/a=
-gg-tx.c:770 ieee80211_start_tx_ba_cb+0x139/0x150 [mac80211]
-[...]
-> kern  :warn  : [  146.568114] CPU: 12 PID: 669 Comm: kworker/u256:1 Not t=
-ainted 4.10.0-rc6-00104-ga088d1d #1
-> kern  :warn  : [  146.568115] Hardware name: Intel Corporation LH Pass/S4=
-600LH...., BIOS SE5C600.86B.99.02.1047.032320122259 03/23/2012
-> kern  :warn  : [  146.568127] Workqueue: phy0 ieee80211_iface_work [mac80=
-211]
-> kern  :warn  : [  146.568128] Call Trace:
-> kern  :warn  : [  146.568141]  dump_stack+0x63/0x8a
-> kern  :warn  : [  146.568146]  __warn+0xcb/0xf0
-> kern  :warn  : [  146.568147]  warn_slowpath_null+0x1d/0x20
-> kern  :warn  : [  146.568156]  ieee80211_start_tx_ba_cb+0x139/0x150 [mac8=
-0211]
-> kern  :warn  : [  146.568166]  ieee80211_iface_work+0x266/0x470 [mac80211]
-> kern  :warn  : [  146.568180]  process_one_work+0x1a3/0x480
-> kern  :warn  : [  146.568182]  worker_thread+0x4e/0x4d0
-> kern  :warn  : [  146.568185]  kthread+0x10c/0x140
-> kern  :warn  : [  146.568187]  ? process_one_work+0x480/0x480
-> kern  :warn  : [  146.568187]  ? kthread_create_on_node+0x40/0x40
-> kern  :warn  : [  146.568195]  ret_from_fork+0x2c/0x40
-> kern  :warn  : [  146.568197] ---[ end trace 0e4afc24db5dbafa ]---
 
-Unfortunately, I wasn't able to reproduce this issue with the
-plain mac80211-hwsim test suite yet. The according test runs successfully
-in my VMs here...
+Indeed it is an old bug, I'll send a fix shortly. But the bisection result =
+is not correct. This bug is actually much older.
+Note that commit 80a9201a596 changes Kconfig dependency - it removes depend=
+s on SLUB_DEBUG from config KASAN section.
+And yours config has:
+	# CONFIG_SLUB_DEBUG is not set
 
-To me, it looks like the WARN_ON() could be triggered by a race condition
-in mac80211 or mac80211-hwsim, too. I'm going to forward this to and
-discuss this further on the wireless mailing list.
+So you simply test c146a2b98e with CONFIG_KASAN=3Dn and 80a9201a59 with CON=
+FIG_KASAN=3Dy
 
-Thanks for the notification, Xiaolong!
-
-Regards, Linus
-
---===============6248394615205013667==--
+--===============4854009734182536527==--
 
