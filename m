@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============1628183706601659519=="
+Content-Type: multipart/mixed; boundary="===============1002365017118350596=="
 MIME-Version: 1.0
 From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [f2fs] 4ac912427c: -33.7% aim7.jobs-per-min regression
-Date: Tue, 14 Mar 2017 10:20:09 +0800
-Message-ID: <20170314022009.GD492@yexl-desktop>
+Date: Tue, 14 Mar 2017 16:53:11 +0800
+Message-ID: <20170314085311.GD26669@yexl-desktop>
 In-Reply-To: <19cd8c99-ed38-7a5a-24c3-ea81acefb395@huawei.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1628183706601659519==
+--===============1002365017118350596==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -19,15 +19,12 @@ On 03/14, Chao Yu wrote:
 >>> @Chao Yu/@Jaegeuk Kim: I'm considering to add this to the regressions
 >>> report for 4.11; or is there a reason why it shouldn't be considered a
 >>> regression? Ciao, Thorsten
->> =
-
+>>
 >> Hi,
->> =
-
+>>
 >> I'm planning to submit f2fs updates for 4.11-rcX including a patch which
 >> resolves this issue as well, as I expect.
->> =
-
+>>
 >> https://lkml.org/lkml/2017/3/7/813
 >
 >Sorry for late repay.
@@ -38,23 +35,77 @@ ance
 >
 >	f2fs: skip scanning free nid bitmap of full NAT blocks
 >	f2fs: combine nat_bits and free_nid_bitmap cache
->
->Xiaolong, Thorsten
->
->Could you help to test these patches?
 
-Sure, I'll provide test result later.
+These 2 patches do help recover the performance back. Details as below.
+
+Tested-by: Xiaolong Ye <xiaolong.ye@intel.com>
+
+commit:
+  4ac912427c4214d8031d9ad6fbc3bc75e71512df ("f2fs: introduce free nid bitma=
+p")
+  ced2c7ea8e99b46755a270872cd5ba61c27cffad <=3D parent commit of 4ac912427c
+  c0e39d642e41be12937f4532721fc2538182e264 ("f2fs: combine nat_bits and fre=
+e_nid_bitmap cache")
+
+4ac912427c4214d8 ced2c7ea8e99b46755a270872c c0e39d642e41be12937f453272
+---------------- -------------------------- --------------------------
+         %stddev     %change         %stddev     %change         %stddev
+             \          |                \          |                \
+     77863 =C2=B1  0%     +50.8%     117419 =C2=B1  1%     +50.9%     11750=
+0 =C2=B1  0%  aim7.jobs-per-min
+    231.63 =C2=B1  0%     -33.6%     153.78 =C2=B1  1%     -33.7%     153.6=
+7 =C2=B1  0%  aim7.time.elapsed_time
+    231.63 =C2=B1  0%     -33.6%     153.78 =C2=B1  1%     -33.7%     153.6=
+7 =C2=B1  0%  aim7.time.elapsed_time.max
+    896604 =C2=B1  0%     -10.1%     805644 =C2=B1  3%     -20.8%     71020=
+7 =C2=B1  1%  aim7.time.involuntary_context_switches
+      6240 =C2=B1  0%     -13.3%       5408 =C2=B1  1%     -14.2%       535=
+3 =C2=B1  1%  aim7.time.system_time
+   1111357 =C2=B1  3%      -1.3%    1097209 =C2=B1  2%      -7.8%    102471=
+6 =C2=B1  0%  aim7.time.voluntary_context_switches
+   5600256 =C2=B1  9%      -9.5%    5066069 =C2=B1  0%      -9.3%    507822=
+0 =C2=B1 13%  meminfo.DirectMap2M
+     78738 =C2=B1  8%     +72.1%     135538 =C2=B1  8%     +23.2%      9699=
+5 =C2=B1  6%  meminfo.Dirty
+    315.50 =C2=B1 12%    +210.8%     980.67 =C2=B1 16%    +123.9%     706.4=
+0 =C2=B1 22%  meminfo.Writeback
+      1328 =C2=B1 18%    +357.1%       6069 =C2=B1 57%    +231.1%       439=
+7 =C2=B1 75%  softirqs.NET_RX
+    669152 =C2=B1  3%      -7.4%     619333 =C2=B1  4%     -14.4%     57289=
+6 =C2=B1  1%  softirqs.RCU
+    170724 =C2=B1  0%     -25.0%     128030 =C2=B1  2%     -23.0%     13153=
+1 =C2=B1  4%  softirqs.SCHED
+   2688290 =C2=B1  0%     -13.3%    2331994 =C2=B1  1%     -14.7%    229244=
+3 =C2=B1  1%  softirqs.TIMER
+      4948 =C2=B1  3%     +55.6%       7701 =C2=B1  1%     +55.8%       771=
+0 =C2=B1  0%  vmstat.io.bo
+     39.00 =C2=B1  2%     +65.8%      64.67 =C2=B1  2%     -52.8%      18.4=
+0 =C2=B1 30%  vmstat.procs.b
+    171.50 =C2=B1  2%     +94.4%     333.33 =C2=B1  7%     +29.7%     222.4=
+0 =C2=B1  7%  vmstat.procs.r
+     13425 =C2=B1  1%     +30.6%      17530 =C2=B1  1%     +43.9%      1932=
+1 =C2=B1 10%  vmstat.system.cs
+     45100 =C2=B1  1%      +5.6%      47642 =C2=B1  1%      +6.3%      4795=
+7 =C2=B1  0%  vmstat.system.in
+     19068 =C2=B1  0%     +75.8%      33522 =C2=B1  4%     +24.5%      2374=
+5 =C2=B1  5%  proc-vmstat.nr_dirty
+     80.00 =C2=B1  3%    +195.0%     236.00 =C2=B1 14%    +126.0%     180.8=
+0 =C2=B1 23%  proc-vmstat.nr_writeback
+     19222 =C2=B1  0%     +76.4%      33907 =C2=B1  4%     +24.9%      2400=
+4 =C2=B1  5%  proc-vmstat.nr_zone_write_pending
 
 Thanks,
 Xiaolong
 >
+>Xiaolong, Thorsten
+>
+>Could you help to test these patches?
+>
 >Thanks,
 >
->> =
-
+>>
 >> Thanks,
->> =
-
+>>
 >>>
 >>> On 08.03.2017 02:21, kernel test robot wrote:
 >>>>
@@ -302,12 +353,10 @@ software
 >>>> Thanks,
 >>>> Xiaolong
 >>>>
->> =
-
+>>
 >> .
->> =
-
+>>
 >
 
---===============1628183706601659519==--
+--===============1002365017118350596==--
 
