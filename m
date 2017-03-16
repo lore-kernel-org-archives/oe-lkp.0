@@ -1,74 +1,190 @@
-Content-Type: multipart/mixed; boundary="===============6259767083843355065=="
+Content-Type: multipart/mixed; boundary="===============8998790137673562683=="
 MIME-Version: 1.0
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Aaron Lu <aaron.lu@intel.com>
 To: lkp@lists.01.org
-Subject: [PATCH 4.10 56/63] x86/kasan: Fix boot with KASAN=y and PROFILE_ANNOTATED_BRANCHES=y
-Date: Mon, 20 Mar 2017 18:52:21 +0100
-Message-ID: <20170320174746.824129621@linuxfoundation.org>
-In-Reply-To: <20170320174742.712298584@linuxfoundation.org>
+Subject: Re: [PATCH v2 0/4] Revert works for the mapping of cpuid <-> nodeid
+Date: Thu, 16 Mar 2017 16:14:57 +0800
+Message-ID: <20170316081457.GB13054@aaronlu.sh.intel.com>
+In-Reply-To: <61b3eb11-29cb-0048-e705-47c280aac892@cn.fujitsu.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6259767083843355065==
+--===============8998790137673562683==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-4.10-stable review patch.  If anyone has any objections, please let me know.
+On Wed, Feb 22, 2017 at 09:56:51AM +0800, Dou Liyang wrote:
+> Hi, Xiaolong
+> =
 
-------------------
+> At 02/21/2017 03:10 PM, Ye Xiaolong wrote:
+> > On 02/21, Ye Xiaolong wrote:
+> > > On 02/20, Dou Liyang wrote:
+> > > > Currently, We make the mapping of "cpuid <-> nodeid" fixed at the b=
+ooting time.
+> > > > It keeps consistent with the WorkQueue and avoids some bugs which m=
+ay be caused
+> > > > by the dynamic assignment.
+> > > > As we know, It is implemented by the patches as follows: 2532fc318d=
+, f7c28833c2,
+> > > > 8f54969dc8, 8ad893faf2, dc6db24d24, which depend on ACPI table. Sim=
+ply speaking:
+> > > > =
 
-From: Andrey Ryabinin <aryabinin@virtuozzo.com>
+> > > > Step 1. Make the "Logical CPU ID <-> Processor ID/UID" fixed Using =
+MADT:
+> > > > We generate the logical CPU IDs by the Local APIC/x2APIC IDs orderl=
+y and
+> > > > get the mapping of Processor ID/UID <-> Local Apic ID directly in M=
+ADT.
+> > > > So, we get the mapping of
+> > > > *Processor ID/UID <-> Local Apic ID <-> Logical CPU ID*
+> > > > =
 
-commit be3606ff739d1c1be36389f8737c577ad87e1f57 upstream.
+> > > > Step 2. Make the "Processor ID/UID <-> Node ID(_PXM)" fixed Using D=
+SDT:
+> > > > The maaping of "Processor ID/UID <-> Node ID(_PXM)" is ready-made in
+> > > > each entities. we just use it directly.
+> > > > =
 
-The kernel doesn't boot with both PROFILE_ANNOTATED_BRANCHES=3Dy and KASAN=
-=3Dy
-options selected. With branch profiling enabled we end up calling
-ftrace_likely_update() before kasan_early_init(). ftrace_likely_update() is
-built with KASAN instrumentation, so calling it before kasan has been
-initialized leads to crash.
+> > > > So, at last we get the maaping of *Node ID <-> Logical CPU ID* acco=
+rding to
+> > > > step1 and step2:
+> > > > *Node ID(_PXM) <-> Processor ID/UID <-> Local Apic ID <-> Logical C=
+PU ID*
+> > > > =
 
-Use DISABLE_BRANCH_PROFILING define to make sure that we don't call
-ftrace_likely_update() from early code before kasan_early_init().
+> > > > But, The ACPI table is unreliable and it is very risky that we use =
+the entity
+> > > > which isn't related to a physical device at booting time. Here has =
+already two
+> > > > bugs we found.
+> > > > 1. Duplicated Processor IDs in DSDT.
+> > > > 	It has been fixed by commit 8e089eaa19, fd74da217d.
+> > > > 2. The _PXM in DSDT is inconsistent with the one in MADT.
+> > > > 	It may cause the bug, which is shown in:
+> > > > 		https://lkml.org/lkml/2017/2/12/200
+> > > > There may be more later. We shouldn't just only fix them everytime,=
+ we should
+> > > > solve this problem from the source to avoid such problems happend a=
+gain and
+> > > > again.
+> > > > =
 
-Fixes: ef7f0d6a6ca8 ("x86_64: add KASan support")
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Signed-off-by: Andrey Ryabinin <aryabinin@virtuozzo.com>
-Cc: kasan-dev(a)googlegroups.com
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: lkp(a)01.org
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Link: http://lkml.kernel.org/r/20170313163337.1704-1-aryabinin(a)virtuozzo.=
-com
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > Now, a simple and easy way is found, we revert our patches. Do the =
+Step 2
+> > > > at hot-plug time, not at booting time where we did some useless wor=
+k.
+> > > > =
 
----
- arch/x86/kernel/head64.c    |    1 +
- arch/x86/mm/kasan_init_64.c |    1 +
- 2 files changed, 2 insertions(+)
+> > > > It also can make the mapping of "cpuid <-> nodeid" fixed and avoid =
+excessive
+> > > > use of the ACPI table.
+> > > > =
 
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -4,6 +4,7 @@
-  *  Copyright (C) 2000 Andrea Arcangeli <andrea@suse.de> SuSE
-  */
- =
+> > > > We have tested them in our box: Fujitsu PQ2000 with 2 nodes for hot=
+-plug.
+> > > > To Xiaolong:
+> > > > 	Please help me to test it in the special machine.
+> > > =
 
-+#define DISABLE_BRANCH_PROFILING
- #include <linux/init.h>
- #include <linux/linkage.h>
- #include <linux/types.h>
---- a/arch/x86/mm/kasan_init_64.c
-+++ b/arch/x86/mm/kasan_init_64.c
-@@ -1,3 +1,4 @@
-+#define DISABLE_BRANCH_PROFILING
- #define pr_fmt(fmt) "kasan: " fmt
- #include <linux/bootmem.h>
- #include <linux/kasan.h>
+> > > Got it, I'll queue the tests on the previous machine and let you know=
+ the result
+> > > once I get it.
+> > =
 
+> > Previous kernel panic and incomplete run issue (described in [1]) in 0d=
+ay
+> > system is gone with this series.
+> > =
 
+> =
 
---===============6259767083843355065==--
+> Thanks very much, I am glad to hear that!
+> =
+
+> > Tested-by: Xiaolong Ye <xiaolong.ye@intel.com>
+> > =
+
+> =
+
+> I will add it in my next version.
+
+What is the status of the patch?
+
+I still get oops during boot on a EP machine with today's Linus tree's
+head commit 69eea5a4ab9c("Merge branch 'for-linus' of git://git.kernel.dk/l=
+inux-block")
+
+The first oops call trace:
+
+... ...
+[    8.599850] pci_bus 0000:80: on NUMA node 2
+[    8.605611] ACPI: Enabled 4 GPEs in block 00 to 3F
+[    8.645521] BUG: unable to handle kernel paging request at 000000000001f=
+768
+[    8.653585] IP: get_partial_node+0x2c/0x1f0
+[    8.659302] PGD 0 =
+
+[    8.659303] =
+
+[    8.663724] Oops: 0000 [#1] SMP
+[    8.667499] Modules linked in:
+[    8.671181] CPU: 60 PID: 1 Comm: swapper/0 Not tainted 4.11.0-rc1 #1
+[    8.678554] Hardware name: Intel Corporation S2600WTT/S2600WTT, BIOS SE5=
+C610.86B.01.01.0008.021120151325 02/11/2015
+[    8.690672] task: ffff88202bc10000 task.stack: ffffc9000002c000
+[    8.697542] RIP: 0010:get_partial_node+0x2c/0x1f0
+[    8.703844] RSP: 0000:ffffc9000002fb20 EFLAGS: 00010006
+[    8.709944] RAX: 0000000000000002 RBX: 0000000000000000 RCX: 00000000014=
+080c0
+[    8.718184] RDX: ffff88203281f740 RSI: 000000000001f760 RDI: ffff88202e5=
+48280
+[    8.726422] RBP: ffffc9000002fbc0 R08: 0000000000000000 R09: 00000001002=
+20022
+[    8.734661] R10: ffffea0080a99600 R11: 0000000000000000 R12: ffff88202e5=
+48280
+[    8.742896] R13: ffffea0080a991c0 R14: ffff88202e548280 R15: ffff8820328=
+1f730
+[    8.751144] FS:  0000000000000000(0000) GS:ffff882032800000(0000) knlGS:=
+0000000000000000
+[    8.760633] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    8.767312] CR2: 000000000001f768 CR3: 0000000001e09000 CR4: 00000000001=
+406e0
+[    8.775550] Call Trace:
+[    8.778548]  ? acpi_os_release_lock+0xe/0x10
+[    8.783590]  ? acpi_ut_update_ref_count+0x5a/0x6b3
+[    8.789210]  ___slab_alloc+0x28a/0x4b0
+[    8.793660]  ? __kernfs_new_node+0x41/0xc0
+[    8.798505]  ? __kernfs_new_node+0x41/0xc0
+[    8.803348]  __slab_alloc+0x20/0x40
+[    8.807501]  kmem_cache_alloc+0x17f/0x1c0
+[    8.812231]  __kernfs_new_node+0x41/0xc0
+[    8.816882]  kernfs_new_node+0x26/0x50
+[    8.821338]  __kernfs_create_file+0x2c/0xa0
+[    8.826269]  sysfs_add_file_mode_ns+0x99/0x180
+[    8.831500]  sysfs_create_file_ns+0x2a/0x30
+[    8.836433]  bus_create_file+0x47/0x70
+[    8.840893]  bus_register+0xe4/0x280
+[    8.845157]  ? sfi_init+0x1b0/0x1b0
+[    8.849321]  ? set_debug_rodata+0x12/0x12
+[    8.854064]  pnp_init+0x10/0x12
+[    8.857829]  do_one_initcall+0x43/0x180
+[    8.862383]  ? set_debug_rodata+0x12/0x12
+[    8.867118]  kernel_init_freeable+0x19d/0x22a
+[    8.872259]  ? rest_init+0x90/0x90
+[    8.876324]  kernel_init+0xe/0x100
+[    8.880389]  ret_from_fork+0x2c/0x40
+[    8.884643] Code: 1f 44 00 00 55 48 89 e5 41 57 41 56 41 55 41 54 53 48 =
+83 e4 f0 48 83 ec 70 48 85 f6 48 c7 44 24 20 00 00 00 00 0f 84 87 01 00 00 =
+<48> 83 7e 08 00 0f 84 7c 01 00 00 48 89 f3 49 89 fd 48 89 f7 89 =
+
+[    8.906422] RIP: get_partial_node+0x2c/0x1f0 RSP: ffffc9000002fb20
+[    8.914356] CR2: 000000000001f768
+... ...
+
+Thanks,
+Aaron
+
+--===============8998790137673562683==--
 
