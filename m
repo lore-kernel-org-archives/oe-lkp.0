@@ -1,70 +1,64 @@
-Content-Type: multipart/mixed; boundary="===============3061739421429709215=="
+Content-Type: multipart/mixed; boundary="===============3011067288103614882=="
 MIME-Version: 1.0
 From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [locking/lockdep] 383776fa75: INFO: trying to register non-static key.
-Date: Fri, 17 Mar 2017 14:41:09 +0100
-Message-ID: <20170317134109.e7qmjwpryelpbgz2@hirez.programming.kicks-ass.net>
-In-Reply-To: <58cad449.RTO+aYLdogbZs5Le%fengguang.wu@intel.com>
+Subject: Re: [sched/core] 8a8c69c327: WARNING: CPU: 0 PID: 8 at kernel/locking/lockdep.c:3548 lock_release
+Date: Fri, 17 Mar 2017 15:09:09 +0100
+Message-ID: <20170317140909.yfwvqdouwfad26i3@hirez.programming.kicks-ass.net>
+In-Reply-To: <CANRm+Cxb0=KDpbP+R95sbY=MjxnGkk1Q-13s1VQ2q_Q0DQ+V2w@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3061739421429709215==
+--===============3011067288103614882==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 17, 2017 at 02:07:05AM +0800, kernel test robot wrote:
+On Fri, Mar 17, 2017 at 09:24:11PM +0800, Wanpeng Li wrote:
+> 2017-03-17 21:02 GMT+08:00 Wanpeng Li <kernellwp@gmail.com>:
+> > 2017-03-17 4:02 GMT+08:00 kernel test robot <fengguang.wu@intel.com>:
+> >> Greetings,
+> >>
+> >> 0day kernel testing robot got the below dmesg and the first bad commit=
+ is
+> >>
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+> >>
+> >> commit 8a8c69c32778865affcedc2111bb5d938b50516f
+> >> Author:     Peter Zijlstra <peterz@infradead.org>
+> >> AuthorDate: Tue Oct 4 16:04:35 2016 +0200
+> >> Commit:     Ingo Molnar <mingo@kernel.org>
+> >> CommitDate: Thu Mar 16 09:46:22 2017 +0100
+> >>
+> >>     sched/core: Add rq->lock wrappers
+> >>
+> >>     The missing update_rq_clock() check can work with partial rq->lock
+> >>     wrappery, since a missing wrapper can cause the warning to not be
+> >>     emitted when it should have, but cannot cause the warning to trigg=
+er
+> >>     when it should not have.
+> >>
+> >>     The duplicate update_rq_clock() check however can cause false warn=
+ings
+> >>     to trigger. Therefore add more comprehensive rq->lock wrappery.
+> >>
+> >>     Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> >>     Cc: Linus Torvalds <torvalds@linux-foundation.org>
+> >>     Cc: Mike Galbraith <efault@gmx.de>
+> >>     Cc: Peter Zijlstra <peterz@infradead.org>
+> >>     Cc: Thomas Gleixner <tglx@linutronix.de>
+> >>     Signed-off-by: Ingo Molnar <mingo@kernel.org>
+> >
+> > Please refer to: https://lkml.org/lkml/2017/3/16/1131
+> =
 
->     locking/lockdep: Handle statically initialized PER_CPU locks properly
+> I have another version of patch which utilizes raw_spin_lock_irqsave()
+> instead of rq_lock_irqsave() in __balance_callback() as before, which
+> one do you like, Peterz?
 
-> [   11.712266] INFO: trying to register non-static key.
-
-Blergh; so the problem is that when we assign can_addr to lock->key, we
-can, upon using a different subclass, reach static_obj(lock->key), which
-will fail on the can_addr.
-
-One way to fix this would be to redefine the canonical address as the
-per-cpu address for a specific cpu; the below hard codes cpu0, but I'm
-not sure we want to rely on cpu0 being a valid cpu.
+Hurm.. the raw_spin_lock_irqsave() one I suspect. No point in pinning
+and then unpinning.
 
 
----
-diff --git a/kernel/module.c b/kernel/module.c
-index 5ef618133849..bdd9d62ce08c 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -682,8 +682,10 @@ bool __is_module_percpu_address(unsigned long addr, un=
-signed long *can_addr)
- 			void *va =3D (void *)addr;
- =
 
- 			if (va >=3D start && va < start + mod->percpu_size) {
--				if (can_addr)
-+				if (can_addr) {
- 					*can_addr =3D (unsigned long) (va - start);
-+					*can_addr +=3D (unsigned long)per_cpu_ptr(mod->percpu, 0);
-+				}
- 				preempt_enable();
- 				return true;
- 			}
-diff --git a/mm/percpu.c b/mm/percpu.c
-index e30c995f2b7b..a5d7b7477888 100644
---- a/mm/percpu.c
-+++ b/mm/percpu.c
-@@ -1296,8 +1296,10 @@ bool __is_kernel_percpu_address(unsigned long addr, =
-unsigned long *can_addr)
- 		void *va =3D (void *)addr;
- =
-
- 		if (va >=3D start && va < start + static_size) {
--			if (can_addr)
-+			if (can_addr) {
- 				*can_addr =3D (unsigned long) (va - start);
-+				*can_addr +=3D (unsigned long)per_cpu_ptr(base, 0);
-+			}
- 			return true;
- 		}
- 	}
-
---===============3061739421429709215==--
+--===============3011067288103614882==--
 
