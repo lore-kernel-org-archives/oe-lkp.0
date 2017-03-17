@@ -1,43 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============4594349493750580072=="
+Content-Type: multipart/mixed; boundary="===============1668438009734538457=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [mm] bae58218d8: WARNING:at_mm/page_alloc.c:#drain_all_pages
-Date: Fri, 17 Mar 2017 13:01:05 +0800
-Message-ID: <20170317050105.GF548@yexl-desktop>
-In-Reply-To: <20170316082836.GD30501@dhcp22.suse.cz>
+Subject: Re: [rtc] 4cd8adb100: WARNING: CPU: 0 PID: 1 at lib/kobject.c:690 kobject_put
+Date: Fri, 17 Mar 2017 15:11:37 +0900
+Message-ID: <20170317061137.GA21612@kroah.com>
+In-Reply-To: <72ddb00d-3eda-1a16-9c3b-10055dd4e730@deltatee.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4594349493750580072==
+--===============1668438009734538457==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 03/16, Michal Hocko wrote:
->On Thu 16-03-17 10:38:49, kernel test robot wrote:
->> =
+On Thu, Mar 16, 2017 at 11:23:26PM -0600, Logan Gunthorpe wrote:
+> Hey,
+> =
 
->> FYI, we noticed the following commit:
->> =
+> I think I see the issue here: in a couple of error conditions, the RTC
+> code will not initialize and ask for the cdev. However, my change will
+> always call cdev_add and cdev_del even though the rtc code did not call
+> cdev_init. I'll have to add a guard around dev->devt in the new
+> cdev_device functions. I'll prepare another patch tomorrow.
+> =
 
->> commit: bae58218d80c6beffd5c96c0fcae372a0e63ca32 ("mm: move pcp and lru-=
-pcp draining into single wq")
->> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->
->Could you test with
->http://lkml.kernel.org/r/20170315164021.28532-1-mhocko(a)kernel.org
->applied?
+> I also noticed that I neglected to remove the prototypes for the two RTC
+> function I removed. I'll fix that too.
 
-This warning is gone with above patch applied for 10 time boot.
+Ok, I'm just going to drop this series from my tree so that other
+patches in it can get pushed out to linux-next.  Please resend the full
+series after you have fixed it up, and I'll be glad to queue it up
+again.
 
-Tested-by: Xiaolong Ye <xiaolong.ye@intel.com>
+thanks,
 
-Thanks,
-Xiaolong
->-- =
+greg k-h
 
->Michal Hocko
->SUSE Labs
-
---===============4594349493750580072==--
+--===============1668438009734538457==--
 
