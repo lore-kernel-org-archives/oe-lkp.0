@@ -1,19 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============6991689652951442843=="
+Content-Type: multipart/mixed; boundary="===============6972286884235293951=="
 MIME-Version: 1.0
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: lkp@lists.01.org
-Subject: [PATCH 4.4 25/28] x86/kasan: Fix boot with KASAN=y and PROFILE_ANNOTATED_BRANCHES=y
-Date: Mon, 20 Mar 2017 18:49:20 +0100
-Message-ID: <20170320174720.177859095@linuxfoundation.org>
-In-Reply-To: <20170320174718.794407270@linuxfoundation.org>
+Subject: [PATCH 4.9 88/93] x86/kasan: Fix boot with KASAN=y and PROFILE_ANNOTATED_BRANCHES=y
+Date: Mon, 20 Mar 2017 18:52:03 +0100
+Message-ID: <20170320174741.064969312@linuxfoundation.org>
+In-Reply-To: <20170320174735.243147498@linuxfoundation.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6991689652951442843==
+--===============6972286884235293951==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-4.4-stable review patch.  If anyone has any objections, please let me know.
+4.9-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -70,5 +70,5 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 
 
---===============6991689652951442843==--
+--===============6972286884235293951==--
 
