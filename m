@@ -1,87 +1,78 @@
-Content-Type: multipart/mixed; boundary="===============3963148591556837594=="
+Content-Type: multipart/mixed; boundary="===============4708482707602096270=="
 MIME-Version: 1.0
-From: Waiman Long <longman@redhat.com>
+From: Andy Lutomirski <luto@amacapital.net>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [locking/spinlock/debug] bc88c10d7e: [No primary change] unixbench.lock_stat.&rq->lock.contentions +331%
-Date: Wed, 22 Mar 2017 10:03:24 -0400
-Message-ID: <b9248a4a-f25d-70ee-5ead-2b7e87e04e24@redhat.com>
-In-Reply-To: <20170322051140.GK26669@yexl-desktop>
+Subject: Re: [lkp-robot] [x86] 69218e4799: BUG:kernel_hang_in_boot_stage
+Date: Wed, 22 Mar 2017 09:33:17 -0700
+Message-ID: <CALCETrVnM0OwpN7rfwAvgqk5VyxnLkrxtg95oNKJP6YpATM9Rw@mail.gmail.com>
+In-Reply-To: <20170322073608.GA5538@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3963148591556837594==
+--===============4708482707602096270==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 03/22/2017 01:11 AM, kernel test robot wrote:
-> Greeting,
+On Wed, Mar 22, 2017 at 12:36 AM, Ingo Molnar <mingo@kernel.org> wrote:
 >
-> There is no primary kpi change in this test, below is the data collected =
-through multiple monitors running background just for your information.
+> * Thomas Garnier <thgarnie@google.com> wrote:
 >
+>> >  static inline void setup_fixmap_gdt(int cpu)
+>> >  {
+>> >         __set_fixmap(get_cpu_gdt_ro_index(cpu),
+>> > -                    __pa(get_cpu_gdt_rw(cpu)), pg_fixmap_gdt_flags);
+>> > +                    slow_virt_to_phys(get_cpu_gdt_rw(cpu)),
+>> > +                    pg_fixmap_gdt_flags);
+>> >  }
+>> >
+>> >  /* Load the original GDT from the per-cpu structure */
+>> >
+>> > This makes UP boot for me, but SMP (2 cpus) is still busted.
+>>
+>> This change fixed boot for me:
+>>
+>> diff --git a/arch/x86/include/asm/fixmap.h b/arch/x86/include/asm/fixmap=
+.h
+>> index b65155cc3760..4e30707d9f9a 100644
+>> --- a/arch/x86/include/asm/fixmap.h
+>> +++ b/arch/x86/include/asm/fixmap.h
+>> @@ -104,7 +104,9 @@ enum fixed_addresses {
+>>         FIX_GDT_REMAP_BEGIN,
+>>         FIX_GDT_REMAP_END =3D FIX_GDT_REMAP_BEGIN + NR_CPUS - 1,
+>>
+>> -       __end_of_permanent_fixed_addresses,
+>> +       __end_of_permanent_fixed_addresses =3D
+>> +               (FIX_GDT_REMAP_END + PTRS_PER_PTE - 1) &
+>> +               -PTRS_PER_PTE,
+>>
+>> Just ensure PKMAP_BASE & FIX_WP_TEST are on a different PMD.
+>>
+>> I don't think that the right fix but it might help understand the
+>> exact root cause.
 >
-> commit: bc88c10d7e6900916f5e1ba3829d66a9de92b633 ("locking/spinlock/debug=
-: Remove spinlock lockup detection code")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> in testcase: unixbench
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu Haswell,+smep,+smap =
--smp 2 -m 2G
-> with following parameters:
->
-> 	runtime: 300s
-> 	nr_task: 1
-> 	test: spawn
->
-> test-description: UnixBench is the original BYTE UNIX benchmark suite aim=
-s to test performance of Unix-like system.
-> test-url: https://github.com/kdlucas/byte-unixbench
->
->
->
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
->
->
-> To reproduce:
->
->         git clone https://github.com/01org/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script  # job-script is attached in=
- this email
->
-> testcase/path_params/tbox_group/run: unixbench/300s-1-spawn/vm-kbuild-2G
->
-> f9af456a61ecfbef  bc88c10d7e6900916f5e1ba382  =
-
-> ----------------  --------------------------  =
-
->          %stddev      change         %stddev
->              \          |                \  =
-
->         44              -4%         42        unixbench.time.percent_of_c=
-pu_this_job_got
->        145              -5%        138        unixbench.time.system_time
->       5349 =C2=B1  6%       331%      23032 =C2=B1 13%  lock_stat.&rq->lo=
-ck.contentions
+> Could this be related to the permission bits in the PMD itself getting ou=
+t of sync
+> with the PTEs? WP test marks a page writable/unwritable, and maybe we mes=
+s up the
+> restoration. If they are on separate PMDs then this is worked around beca=
+use the
+> fixmap GDT is on a separate PMD.
 >
 
-The spinlock related config parameters are:
+I don't think so.  I think it's a pair of bugs related to the way that
+percpu areas are virtually mapped.
 
-CONFIG_ARCH_USE_QUEUED_SPINLOCKS=3Dy
-CONFIG_QUEUED_SPINLOCKS=3Dy
-# CONFIG_PARAVIRT_SPINLOCKS is not set
-CONFIG_DEBUG_SPINLOCK=3Dy
+Bug 1: __pa is totally bogus on percpu pointers.  Oddly, we have one
+older instance of exactly the same bug (on the same GDT address) in
+the kernel.  I'll send a patch.
 
-DEBUG_SPINLOCK is set but PARAVIRT_SPINLOCKS is not. Patch bc88c10d will
-replace the unfair debug spinlock with a fare one. A fair lock may not
-fare well in a VM depending on how often the vCPUs are preempted. So the
-slowdown is expected and the number will be similar to that with
-DEBUG_SPINLOCK off. It is not really a problem.
+Bug 2: Nothing syncs a freshly-set-up CPU's percpu area into
+initial_page_table.  This makes access to the gdt fail in
+startup_32_smp.  This looks like a longstanding bug, and I don't see
+what it has to do with Thomas' series.  I'm still mulling over what to
+do about it.
 
-Cheers,
-Longman
+--Andy
 
---===============3963148591556837594==--
+--===============4708482707602096270==--
 
