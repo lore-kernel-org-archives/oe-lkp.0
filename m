@@ -1,199 +1,91 @@
-Content-Type: multipart/mixed; boundary="===============3468426271970351460=="
+Content-Type: multipart/mixed; boundary="===============1868663327359432230=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [refcount] 2bf8784489: kernel_BUG_at_lib/refcount.c
-Date: Wed, 22 Mar 2017 17:35:28 -0700
-Message-ID: <CAGXu5j+2FzkU=J0vh7K2uZqo+NRPJq8k29O4e2cHeTA1nYSbPQ@mail.gmail.com>
-In-Reply-To: <20170321045559.GD23490@yexl-desktop>
+Subject: Re: [lkp-robot] [locking/spinlock/debug] bc88c10d7e: [No primary change] unixbench.lock_stat.&rq->lock.contentions +331%
+Date: Thu, 23 Mar 2017 09:05:06 +0800
+Message-ID: <20170323010506.GA12482@yexl-desktop>
+In-Reply-To: <b9248a4a-f25d-70ee-5ead-2b7e87e04e24@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3468426271970351460==
+--===============1868663327359432230==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 20, 2017 at 9:55 PM, kernel test robot
-<xiaolong.ye@intel.com> wrote:
->
-> FYI, we noticed the following commit:
->
-> commit: 2bf87844891065ac06ae3cc7e5b1bff826841a49 ("refcount: Check bad st=
-ates with CHECK_DATA_CORRUPTION")
-> https://git.kernel.org/cgit/linux/kernel/git/kees/linux.git kspp/corrupti=
-on
->
-> in testcase: trinity
-> with following parameters:
->
->         runtime: 300s
->
-> test-description: Trinity is a linux system call fuzz tester.
-> test-url: http://codemonkey.org.uk/projects/trinity/
->
->
-> on test machine: qemu-system-i386 -enable-kvm -smp 2 -m 320M
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
->
->
-> +------------------------------------------------------------------------=
------+------------+------------+
-> |                                                                        =
-     | 095e6d1bf9 | 2bf8784489 |
-> +------------------------------------------------------------------------=
------+------------+------------+
-> | boot_successes                                                         =
-     | 0          | 0          |
-> | boot_failures                                                          =
-     | 18         | 47         |
-> | kobject(#):tried_to_init_an_initialized_object,something_is_seriously_w=
-rong | 18         | 47         |
-> | WARNING:at_lib/refcount.c:#refcount_inc                                =
-     | 17         |            |
-> | WARNING:at_drivers/usb/core/urb.c:#usb_submit_urb                      =
-     | 3          | 1          |
-> | kernel_BUG_at_lib/list_debug.c                                         =
-     | 2          | 1          |
-> | invalid_opcode:#[##]                                                   =
-     | 2          | 46         |
-> | EIP:__list_add_valid                                                   =
-     | 2          | 1          |
-> | Kernel_panic-not_syncing:Fatal_exception                               =
-     | 2          | 46         |
-> | kernel_BUG_at_lib/refcount.c                                           =
-     | 0          | 45         |
-> | EIP:refcount_inc                                                       =
-     | 0          | 45         |
-> | BUG:unable_to_handle_kernel                                            =
-     | 0          | 1          |
-> | Oops:#[##]                                                             =
-     | 0          | 1          |
-> | EIP:console_unlock                                                     =
-     | 0          | 1          |
-> | Kernel_panic-not_syncing:Fatal_exception_in_interrupt                  =
-     | 0          | 1          |
-> +------------------------------------------------------------------------=
------+------------+------------+
->
->
->
+On 03/22, Waiman Long wrote:
+>On 03/22/2017 01:11 AM, kernel test robot wrote:
+>> Greeting,
+>>
+>> There is no primary kpi change in this test, below is the data collected=
+ through multiple monitors running background just for your information.
+>>
+>>
+>> commit: bc88c10d7e6900916f5e1ba3829d66a9de92b633 ("locking/spinlock/debu=
+g: Remove spinlock lockup detection code")
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>
+>> in testcase: unixbench
+>> on test machine: qemu-system-x86_64 -enable-kvm -cpu Haswell,+smep,+smap=
+ -smp 2 -m 2G
+>> with following parameters:
+>>
+>> 	runtime: 300s
+>> 	nr_task: 1
+>> 	test: spawn
+>>
+>> test-description: UnixBench is the original BYTE UNIX benchmark suite ai=
+ms to test performance of Unix-like system.
+>> test-url: https://github.com/kdlucas/byte-unixbench
+>>
+>>
+>>
+>> Details are as below:
+>> ------------------------------------------------------------------------=
+-------------------------->
+>>
+>>
+>> To reproduce:
+>>
+>>         git clone https://github.com/01org/lkp-tests.git
+>>         cd lkp-tests
+>>         bin/lkp qemu -k <bzImage> job-script  # job-script is attached i=
+n this email
+>>
+>> testcase/path_params/tbox_group/run: unixbench/300s-1-spawn/vm-kbuild-2G
+>>
+>> f9af456a61ecfbef  bc88c10d7e6900916f5e1ba382  =
 
-In the full dmesg, the trigger is:
+>> ----------------  --------------------------  =
 
-[   13.324130] refcount_t: increment on 0; use-after-free.
-[   13.324130] refcount_t: increment on 0; use-after-free.
+>>          %stddev      change         %stddev
+>>              \          |                \  =
 
-Prior to this BUGing with my suggested change, this was just WARNing
-and doing something "odd" that wasn't getting noticed by 0-day. I
-assume this is something in the kref implementation, but I haven't dug
-in yet. Anyone got some spare cycles to track this down? Something in
-the debugfs code for block devices getting added?
-
--Kees
-
-> [   13.324150] kernel BUG at lib/refcount.c:125!
-> [   13.324150] kernel BUG at lib/refcount.c:125!
-> [   13.324153] invalid opcode: 0000 [#1]
-> [   13.324153] invalid opcode: 0000 [#1]
-> [   13.324156] CPU: 0 PID: 115 Comm: kworker/u2:1 Not tainted 4.11.0-rc1-=
-00006-g2bf8784 #1
-> [   13.324156] CPU: 0 PID: 115 Comm: kworker/u2:1 Not tainted 4.11.0-rc1-=
-00006-g2bf8784 #1
-> [   13.324160] Workqueue: events_unbound async_run_entry_fn
-> [   13.324160] Workqueue: events_unbound async_run_entry_fn
-> [   13.324162] task: 8e8a1a00 task.stack: 8e408000
-> [   13.324162] task: 8e8a1a00 task.stack: 8e408000
-> [   13.324166] EIP: refcount_inc+0x7c/0x80
-> [   13.324166] EIP: refcount_inc+0x7c/0x80
-> [   13.324168] EFLAGS: 00210296 CPU: 0
-> [   13.324168] EFLAGS: 00210296 CPU: 0
-> [   13.324170] EAX: 0000002b EBX: 00000001 ECX: 00000000 EDX: 00000037
-> [   13.324170] EAX: 0000002b EBX: 00000001 ECX: 00000000 EDX: 00000037
-> [   13.324171] ESI: 00000001 EDI: 00000691 EBP: 8e409d70 ESP: 8e409d64
-> [   13.324171] ESI: 00000001 EDI: 00000691 EBP: 8e409d70 ESP: 8e409d64
-> [   13.324173]  DS: 007b ES: 007b FS: 0000 GS: 00e0 SS: 0068
-> [   13.324173]  DS: 007b ES: 007b FS: 0000 GS: 00e0 SS: 0068
-> [   13.324175] CR0: 80050033 CR2: 00000000 CR3: 11327000 CR4: 000006b0
-> [   13.324175] CR0: 80050033 CR2: 00000000 CR3: 11327000 CR4: 000006b0
-> [   13.324180] Call Trace:
-> [   13.324180] Call Trace:
-> [   13.324183]  kobject_get+0x51/0xc0
-> [   13.324183]  kobject_get+0x51/0xc0
-> [   13.324187]  ? kfree+0x24d/0x410
-> [   13.324187]  ? kfree+0x24d/0x410
-> [   13.324190]  kobject_add_internal+0x60/0x6b0
-> [   13.324190]  kobject_add_internal+0x60/0x6b0
-> [   13.324194]  ? kfree_const+0x2c/0x30
-> [   13.324194]  ? kfree_const+0x2c/0x30
-> [   13.324197]  ? kobject_set_name_vargs+0xd3/0x100
-> [   13.324197]  ? kobject_set_name_vargs+0xd3/0x100
-> [   13.324200]  kobject_add_varg+0x3f/0x60
-> [   13.324200]  kobject_add_varg+0x3f/0x60
-> [   13.324203]  kobject_add+0x5b/0xa0
-> [   13.324203]  kobject_add+0x5b/0xa0
-> [   13.324206]  ? debugfs_create_dir+0x100/0x130
-> [   13.324206]  ? debugfs_create_dir+0x100/0x130
-> [   13.324209]  blk_mq_register_hctx+0xbf/0xf0
-> [   13.324209]  blk_mq_register_hctx+0xbf/0xf0
-> [   13.324212]  blk_mq_register_dev+0xd1/0x150
-> [   13.324212]  blk_mq_register_dev+0xd1/0x150
-> [   13.324215]  blk_register_queue+0x15a/0x280
-> [   13.324215]  blk_register_queue+0x15a/0x280
-> [   13.324217]  ? disk_part_iter_next+0x4c/0x310
-> [   13.324217]  ? disk_part_iter_next+0x4c/0x310
-> [   13.324220]  device_add_disk+0x1de/0x7e0
-> [   13.324220]  device_add_disk+0x1de/0x7e0
-> [   13.324224]  sd_probe_async+0x10f/0x220
-> [   13.324224]  sd_probe_async+0x10f/0x220
-> [   13.324227]  ? __lock_is_held+0x48/0x90
-> [   13.324227]  ? __lock_is_held+0x48/0x90
-> [   13.324230]  async_run_entry_fn+0x38/0x130
-> [   13.324230]  async_run_entry_fn+0x38/0x130
-> [   13.324232]  process_one_work+0x2e4/0xad0
-> [   13.324232]  process_one_work+0x2e4/0xad0
-> [   13.324235]  ? process_one_work+0x224/0xad0
-> [   13.324235]  ? process_one_work+0x224/0xad0
-> [   13.324237]  worker_thread+0x317/0x9a0
-> [   13.324237]  worker_thread+0x317/0x9a0
-> [   13.324240]  kthread+0x14c/0x150
-> [   13.324240]  kthread+0x14c/0x150
-> [   13.324242]  ? process_one_work+0xad0/0xad0
-> [   13.324242]  ? process_one_work+0xad0/0xad0
-> [   13.324245]  ? __kthread_create_on_node+0x260/0x260
-> [   13.324245]  ? __kthread_create_on_node+0x260/0x260
-> [   13.324248]  ret_from_fork+0x21/0x2c
-> [   13.324248]  ret_from_fork+0x21/0x2c
-> [   13.324250] Code: 00 00 00 89 da 31 c9 b8 70 cc f5 90 e8 3e c9 af ff 8=
-3 c4 04 5b 5e 5d c3 8d b4 26 00 00 00 00 c7 04 24 d4 5c cf 90 e8 51 68 b5 f=
-f <0f> 0b 66 90 55 89 e5 57 56 53 83 ec 0c 8b 1a 89 45 f0 89 55 ec
-> [   13.324250] Code: 00 00 00 89 da 31 c9 b8 70 cc f5 90 e8 3e c9 af ff 8=
-3 c4 04 5b 5e 5d c3 8d b4 26 00 00 00 00 c7 04 24 d4 5c cf 90 e8 51 68 b5 f=
-f <0f> 0b 66 90 55 89 e5 57 56 53 83 ec 0c 8b 1a 89 45 f0 89 55 ec
-> [   13.324304] EIP: refcount_inc+0x7c/0x80 SS:ESP: 0068:8e409d64
-> [   13.324304] EIP: refcount_inc+0x7c/0x80 SS:ESP: 0068:8e409d64
-> [   13.324310] ---[ end trace 7c85e1262bf7be37 ]---
+>>         44              -4%         42        unixbench.time.percent_of_=
+cpu_this_job_got
+>>        145              -5%        138        unixbench.time.system_time
+>>       5349 =C2=B1  6%       331%      23032 =C2=B1 13%  lock_stat.&rq->l=
+ock.contentions
+>>
 >
+>The spinlock related config parameters are:
 >
-> To reproduce:
+>CONFIG_ARCH_USE_QUEUED_SPINLOCKS=3Dy
+>CONFIG_QUEUED_SPINLOCKS=3Dy
+># CONFIG_PARAVIRT_SPINLOCKS is not set
+>CONFIG_DEBUG_SPINLOCK=3Dy
 >
->         git clone https://github.com/01org/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script  # job-script is attached in=
- this email
+>DEBUG_SPINLOCK is set but PARAVIRT_SPINLOCKS is not. Patch bc88c10d will
+>replace the unfair debug spinlock with a fare one. A fair lock may not
+>fare well in a VM depending on how often the vCPUs are preempted. So the
+>slowdown is expected and the number will be similar to that with
+>DEBUG_SPINLOCK off. It is not really a problem.
+
+Thanks for clarification.
+
 >
->
->
-> Thanks,
-> Xiaolong
+>Cheers,
+>Longman
 
-
-
--- =
-
-Kees Cook
-Pixel Security
-
---===============3468426271970351460==--
+--===============1868663327359432230==--
 
