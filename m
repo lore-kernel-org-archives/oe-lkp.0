@@ -1,66 +1,76 @@
-Content-Type: multipart/mixed; boundary="===============7563554384070384366=="
+Content-Type: multipart/mixed; boundary="===============6886151771677016927=="
 MIME-Version: 1.0
-From: Gabriel Krisman Bertazi <krisman@collabora.co.uk>
+From: Andrew Morton <akpm@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [drm] 4e64e5539d [ 1138.272031] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 23s! [swapper:1]
-Date: Wed, 29 Mar 2017 22:37:09 -0300
-Message-ID: <87k277y27u.fsf@dilma.collabora.co.uk>
-In-Reply-To: <20170329042937.ihpexoorzrnd3zqn@wfg-t540p.sh.intel.com>
+Subject: Re: [lkp-robot] [mm, page_alloc] b7ef62aa8a: BUG:kernel_hang_in_boot_stage
+Date: Thu, 30 Mar 2017 15:40:26 -0700
+Message-ID: <20170330154026.3ca919cf3b93da81c25724c4@linux-foundation.org>
+In-Reply-To: <59d71b35-d556-4fc9-ee2e-1574259282fd@suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7563554384070384366==
+--===============6886151771677016927==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Fengguang Wu <fengguang.wu@intel.com> writes:
+> > BUG: kernel hang in boot stage
+> =
 
-> Hi Chris,
+> Thanks, I was able to reproduce and debug this.
+> Andrew, please apply the following -fix. There will be conflicts on later
+> patches, but with trivial resolution (pages -> free_pages). Thanks!
+> =
+
+> ...
 >
->>+------------------------------------------+------------+------------+---=
---------+---------------+
->>|                                          | 17aad8a340 | 4e64e5539d | v4=
-.11-rc3 | next-20170320 |
->>+------------------------------------------+------------+------------+---=
---------+---------------+
->>| boot_successes                           | 0          | 0          | 0 =
-        | 0             |
->>| boot_failures                            | 1220       | 312        | 32=
-4       | 63            |
->>| BUG:unable_to_handle_kernel              | 1220       | 312        | 32=
-4       | 63            |
->>| Oops:#[##]                               | 1220       | 312        | 32=
-4       | 63            |
->>| Kernel_panic-not_syncing:Fatal_exception | 1220       | 312        | 32=
-4       | 63            |
->>+------------------------------------------+------------+------------+---=
---------+---------------+
->>
->>[  195.344608] [TTM] Zone  kernel: Available graphics memory: 200980 kiB
->>[  195.345639] [TTM] Initializing pool allocator
->>[  195.346363] [TTM] Initializing DMA pool allocator
->>[  195.347754] [drm] Initialized bochs-drm 1.0.0 20130925 for 0000:00:02.=
-0 on minor 0
->>[  195.349292] irq event stamp: 5513
->>[  195.349293] BUG: unable to handle kernel NULL pointer dereference at 0=
-000000000000620
->>[  195.349309] IP: __lock_acquire+0xc8/0xfe6
->
->
-> Sorry that looks like an old bug. While the below soft lockup
-> call trace looks more related to the code change.
->
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -1977,6 +1977,9 @@ static void steal_suitable_fallback(struct zone *zo=
+ne, struct page *page,
+>  		goto single_page;
+>  =
 
-Hi,
+>  	pages =3D move_freepages_block(zone, page, start_type);
+> +	/* moving whole block can fail due to zone boundary conditions */
+> +	if (!pages)
+> +		goto single_page;
+>  =
 
-For the record, I suspect the Null pointer dereference is already fixed in =
-the tip
-of drm-misc-next.  See 4fa13dbe8c86 ("drm: bochs: Don't remove uninitialize=
-d fbdev framebuffer").
+>  	/* Claim the whole block if over half of it is free */
+>  	if (pages >=3D (1 << (pageblock_order-1)) ||
 
--- =
+The result is a bit odd:
 
-Gabriel Krisman Bertazi
+	free_pages =3D move_freepages_block(zone, page, start_type,
+						&movable_pages);
+	/*
+	 * Determine how many pages are compatible with our allocation.
+	 * For movable allocation, it's the number of movable pages which
+	 * we just obtained. For other types it's a bit more tricky.
+	 */
+	if (start_type =3D=3D MIGRATE_MOVABLE) {
+		alike_pages =3D movable_pages;
+	} else {
+		/*
+		 * If we are falling back a RECLAIMABLE or UNMOVABLE allocation
+		 * to MOVABLE pageblock, consider all non-movable pages as
+		 * compatible. If it's UNMOVABLE falling back to RECLAIMABLE or
+		 * vice versa, be conservative since we can't distinguish the
+		 * exact migratetype of non-movable pages.
+		 */
+		if (old_block_type =3D=3D MIGRATE_MOVABLE)
+			alike_pages =3D pageblock_nr_pages
+						- (free_pages + movable_pages);
+		else
+			alike_pages =3D 0;
+	}
 
---===============7563554384070384366==--
+	/* moving whole block can fail due to zone boundary conditions */
+	if (!free_pages)
+		goto single_page;
+
+should we do `goto single_page' as soon as the move_freepages_block()
+call fails? =20
+
+--===============6886151771677016927==--
 
