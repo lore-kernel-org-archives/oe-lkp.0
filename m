@@ -1,136 +1,120 @@
-Content-Type: multipart/mixed; boundary="===============0800293384758671392=="
+Content-Type: multipart/mixed; boundary="===============9039540892729105160=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Boqun Feng <boqun.feng@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [printk] fbc14616f4: BUG:kernel_reboot-without-warning_in_test_stage
-Date: Fri, 31 Mar 2017 14:39:13 +0800
-Message-ID: <20170331063913.GE20961@yexl-desktop>
-In-Reply-To: <20170331040438.GA366@jagdpanzerIV.localdomain>
+Subject: Re: [locking/ww_mutex] 857811a371 BUG: kernel hang in boot stage
+Date: Fri, 31 Mar 2017 14:46:41 +0800
+Message-ID: <20170331064641.wxxnmil4ub2wkyxh@tardis>
+In-Reply-To: <20170328090709.fhv6y4maxu7nje42@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0800293384758671392==
+--===============9039540892729105160==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 03/31, Sergey Senozhatsky wrote:
->On (03/31/17 11:35), Sergey Senozhatsky wrote:
->[..]
->> > [   21.009531] VFS: Warning: trinity-c2 using old stat() call. Recompi=
-le your binary.
->> > [   21.148898] VFS: Warning: trinity-c0 using old stat() call. Recompi=
-le your binary.
->> > [   22.298208] warning: process `trinity-c2' used the deprecated sysct=
-l system call with =
-
->> > =
-
->> > Elapsed time: 310
->> > BUG: kernel reboot-without-warning in test stage
->> =
-
->> so as far as I understand, this is the "missing kernel messages"
->> type of bug report. a worst case scenario.
->
->panic() should have called console_flush_on_panic(), which sould have
->flushed the messages regardless the printk_kthread state. so it probably
->was not panic() that rebooted the kernel. (probably).
->
->kernel_restart() and kernel_halt() have pr_emerg() messages, printk switch=
-es
->to printk_emergency mode the first time it sees EMERG level message. (may =
-be
->we switch to late).
->
->on the other hand, there is a emergency_restart(), where we don't switch
->to printk_emergency mode and don't flush the existing kernel messages.
->there is a bunch of places that call emergency_restart(), including sysrq.
->
->may I ask you, how do you usually restart the vm after the test?
->`echo X > /proc/sysrq-trigger'?
-
-Yes.
-
->
->does this patch make it any better?
-
-I am trying it and will post the result once I get it.
-
-Thanks,
-Xiaolong
->
->---
-> drivers/tty/sysrq.c | 8 ++------
-> 1 file changed, 2 insertions(+), 6 deletions(-)
->
->diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
->index 817dfb69914d..069f5540be36 100644
->--- a/drivers/tty/sysrq.c
->+++ b/drivers/tty/sysrq.c
->@@ -240,7 +240,6 @@ static DECLARE_WORK(sysrq_showallcpus, sysrq_showregs_=
-othercpus);
+On Tue, Mar 28, 2017 at 05:07:09PM +0800, Fengguang Wu wrote:
+> Greetings,
 > =
 
-> static void sysrq_handle_showallcpus(int key)
-> {
->-	printk_emergency_begin();
-> 	/*
-> 	 * Fall back to the workqueue based printing if the
-> 	 * backtrace printing did not succeed or the
->@@ -255,7 +254,6 @@ static void sysrq_handle_showallcpus(int key)
-> 		}
-> 		schedule_work(&sysrq_showallcpus);
-> 	}
->-	printk_emergency_end();
-> }
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
-> static struct sysrq_key_op sysrq_showallcpus_op =3D {
->@@ -282,10 +280,8 @@ static struct sysrq_key_op sysrq_showregs_op =3D {
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
 > =
 
-> static void sysrq_handle_showstate(int key)
-> {
->-	printk_emergency_begin();
-> 	show_state();
-> 	show_workqueue_state();
->-	printk_emergency_end();
-> }
-> static struct sysrq_key_op sysrq_showstate_op =3D {
-> 	.handler	=3D sysrq_handle_showstate,
->@@ -296,9 +292,7 @@ static struct sysrq_key_op sysrq_showstate_op =3D {
+> commit 857811a37129f5d2ba162d7be3986eff44724014
+> Author:     Boqun Feng <boqun.feng@gmail.com>
+> AuthorDate: Wed Mar 1 23:01:38 2017 +0800
+> Commit:     Ingo Molnar <mingo@kernel.org>
+> CommitDate: Thu Mar 2 09:00:39 2017 +0100
 > =
 
-> static void sysrq_handle_showstate_blocked(int key)
-> {
->-	printk_emergency_begin();
-> 	show_state_filter(TASK_UNINTERRUPTIBLE);
->-	printk_emergency_end();
-> }
-> static struct sysrq_key_op sysrq_showstate_blocked_op =3D {
-> 	.handler	=3D sysrq_handle_showstate_blocked,
->@@ -537,6 +531,7 @@ void __handle_sysrq(int key, bool check_mask)
-> 	int orig_log_level;
-> 	int i;
+>      locking/ww_mutex: Adjust the lock number for stress test
+>      =
+
+>      Because there are only 12 bits in held_lock::references, so we only
+>      support 4095 nested lock held in the same time, adjust the lock numb=
+er
+>      for ww_mutex stress test to kill one lockdep splat:
+>      =
+
+>        [ ] [ BUG: bad unlock balance detected! ]
+>        [ ] kworker/u2:0/5 is trying to release lock (ww_class_mutex) at:
+>        [ ] ww_mutex_unlock()
+>        [ ] but there are no more locks to release!
+>        ...
+>      =
+
+>      Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+>      Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>      Cc: Andrew Morton <akpm@linux-foundation.org>
+>      Cc: Chris Wilson <chris@chris-wilson.co.uk>
+>      Cc: Fengguang Wu <fengguang.wu@intel.com>
+>      Cc: Linus Torvalds <torvalds@linux-foundation.org>
+>      Cc: Nicolai H=C3=A4hnle <Nicolai.Haehnle@amd.com>
+>      Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+>      Cc: Peter Zijlstra <peterz@infradead.org>
+>      Cc: Thomas Gleixner <tglx@linutronix.de>
+>      Link: http://lkml.kernel.org/r/20170301150138.hdixnmafzfsox7nn(a)tar=
+dis.cn.ibm.com
+>      Signed-off-by: Ingo Molnar <mingo@kernel.org>
 > =
 
->+	printk_emergency_begin();
-> 	rcu_sysrq_start();
-> 	rcu_read_lock();
-> 	/*
->@@ -582,6 +577,7 @@ void __handle_sysrq(int key, bool check_mask)
-> 	}
-> 	rcu_read_unlock();
-> 	rcu_sysrq_end();
->+	printk_emergency_end();
-> }
+> 7fb4a2cea6  locking/lockdep: Add nest_lock integrity test
+> 857811a371  locking/ww_mutex: Adjust the lock number for stress test
+> c02ed2e75e  Linux 4.11-rc4
+> 7f0c4a163a  Add linux-next specific files for 20170327
+> +-----------------------------------------------------+------------+-----=
+-------+-----------+---------------+
+> |                                                     | 7fb4a2cea6 | 8578=
+11a371 | v4.11-rc4 | next-20170327 |
+> +-----------------------------------------------------+------------+-----=
+-------+-----------+---------------+
+> | boot_successes                                      | 0          | 16  =
+       | 29        | 1             |
+> | boot_failures                                       | 221        | 42  =
+       | 64        | 9             |
+> | WARNING:at_kernel/locking/lockdep.c:#__lock_acquire | 221        |     =
+       |           |               |
+> | BUG:kernel_hang_in_boot_stage                       | 0          | 42  =
+       | 60        | 9             |
+> | BUG:kernel_hang_in_test_stage                       | 0          | 0   =
+       | 4         |               |
+> +-----------------------------------------------------+------------+-----=
+-------+-----------+---------------+
 > =
 
-> void handle_sysrq(int key)
->-- =
+> [  319.426004] CPU 0 is now offline
+> [  319.426004] CPU 0 is now offline
+> [  319.427670] =
 
->2.12.2
->
+> <kernel hangs here>
+> =
 
---===============0800293384758671392==--
+
+Hmm.. with the same reproduce script, I'm able to reproduce the hang
+even with CONIFG_WW_MUTEX_SELFTEST=3DN. Fengguang, could you try to verify
+whether ww_mutex test is related to this hang?
+
+Regards,
+Boqun
+
+--===============9039540892729105160==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRRXpCQUFCQ0FBZEZpRUVqNUlvc1FUUHo4
+WFUxd1JIU1hub3c3VUgrcmdGQWxqZCswd0FDZ2tRU1hub3c3VUgKK3JpUVVBZ0FoQndPNnY3aWVM
+UW1iWTRzeUlCMGFqMi9mQjhrUjluMlluYmZ5UWtTdVJGL3Uxejhna3RSYVJsVwp2aFpHekVpUG8x
+L3I1WVdaaUUvYzdqZUdvTndEUnloditGb2NDNjJpczU2VTlxRk52T1JhTmoxRTJYQnR2NThhCmtP
+eitTb3dGbGk4YUYzWkdOM0orZkhSYk1ndENGSGlNSXdnOWs1ZStyVXNLcWIwSlpkczh2K3RFOWEr
+aVJOYjQKQjNnb0RLMiszcGFOU0FBdUFHYVo4NEwvMHRFOCsxRWhNc2Z6WnI1aEV3QlhvZllLaHJP
+ZDBrQkZrclBramkvTQowVGJ5UFphVWEreVNUNERqYWVwZEFqcWo4Y1hLY2VhR0ZibVVmUVdVRUhQ
+Q3cxSTM1SlRORkVJWmJHY0FrUzU3Ck1oQnFyRyt6cmthcVRWeW9rS0REWWFGVHJWYnFJdz09Cj1C
+M0l1Ci0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
+
+--===============9039540892729105160==--
 
