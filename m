@@ -1,259 +1,88 @@
-Content-Type: multipart/mixed; boundary="===============1271782267160696444=="
+Content-Type: multipart/mixed; boundary="===============6770322413789465890=="
 MIME-Version: 1.0
-From: Chao Yu <yuchao0@huawei.com>
+From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [f2fs] 22588f8773: xfstests.generic.026.fail
-Date: Fri, 31 Mar 2017 19:05:00 +0800
-Message-ID: <bfc513a3-461f-0cf8-ed09-4e9495df1b00@huawei.com>
-In-Reply-To: <20170330023933.GD15042@yexl-desktop>
+Subject: Re: [printk] fbc14616f4: BUG:kernel_reboot-without-warning_in_test_stage
+Date: Fri, 31 Mar 2017 23:47:30 +0900
+Message-ID: <20170331144730.GA10578@tigerII.localdomain>
+In-Reply-To: <20170331063913.GE20961@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1271782267160696444==
+--===============6770322413789465890==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Xiaolong,
+On (03/31/17 14:39), Ye Xiaolong wrote:
+> On 03/31, Sergey Senozhatsky wrote:
+> >On (03/31/17 11:35), Sergey Senozhatsky wrote:
+> >[..]
+> >> > [   21.009531] VFS: Warning: trinity-c2 using old stat() call. Recom=
+pile your binary.
+> >> > [   21.148898] VFS: Warning: trinity-c0 using old stat() call. Recom=
+pile your binary.
+> >> > [   22.298208] warning: process `trinity-c2' used the deprecated sys=
+ctl system call with =
 
-Thanks for the report, since this patch has changed xattr node block layout=
-, it
-expanded total xattr space, so this will make generic/026 being failed.
+> >> > =
 
-Till now, we are still testing this patch, anyway after next merge window, =
-if
-there is no issue found or reported, I will send a patch to fstest for fixi=
-ng.
+> >> > Elapsed time: 310
+> >> > BUG: kernel reboot-without-warning in test stage
+> >> =
 
-Thanks,
-
-On 2017/3/30 10:39, kernel test robot wrote:
+> >> so as far as I understand, this is the "missing kernel messages"
+> >> type of bug report. a worst case scenario.
+> >
+> >panic() should have called console_flush_on_panic(), which sould have
+> >flushed the messages regardless the printk_kthread state. so it probably
+> >was not panic() that rebooted the kernel. (probably).
+> >
+> >kernel_restart() and kernel_halt() have pr_emerg() messages, printk swit=
+ches
+> >to printk_emergency mode the first time it sees EMERG level message. (ma=
+y be
+> >we switch to late).
+> >
+> >on the other hand, there is a emergency_restart(), where we don't switch
+> >to printk_emergency mode and don't flush the existing kernel messages.
+> >there is a bunch of places that call emergency_restart(), including sysr=
+q.
+> >
+> >may I ask you, how do you usually restart the vm after the test?
+> >`echo X > /proc/sysrq-trigger'?
 > =
 
-> FYI, we noticed the following commit:
+> Yes.
 > =
 
-> commit: 22588f8773f687449ce6e97dce9f102553440d30 ("f2fs: don't reserve ad=
-ditional space in xattr block")
-> https://git.kernel.org/cgit/linux/kernel/git/jaegeuk/f2fs.git dev-test
+> >
+> >does this patch make it any better?
 > =
 
-> in testcase: xfstests
-> with following parameters:
-> =
-
-> 	disk: 4HDD
-> 	fs: f2fs
-> 	test: generic-quick1
-> =
-
-> test-description: xfstests is a regression test suite for xfs and other f=
-iles ystems.
-> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
-> =
-
-> =
-
-> on test machine: 4 threads Intel(R) Core(TM) i5-2500K CPU @ 3.30GHz with =
-6G memory
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> =
-
-> =
-
-> 2017-03-30 02:02:12 export TEST_DIR=3D/fs/sda5
-> 2017-03-30 02:02:12 export TEST_DEV=3D/dev/sda5
-> 2017-03-30 02:02:12 export FSTYP=3Df2fs
-> 2017-03-30 02:02:12 export SCRATCH_MNT=3D/fs/scratch
-> 2017-03-30 02:02:12 mkdir /fs/scratch -p
-> 2017-03-30 02:02:12 export SCRATCH_DEV=3D/dev/sda8
-> 2017-03-30 02:02:12 ./check generic/001 generic/002 generic/003 generic/0=
-04 generic/005 generic/006 generic/007 generic/008 generic/009 generic/011 =
-generic/012 generic/014 generic/015 generic/015 generic/016 generic/018 gen=
-eric/020 generic/021 generic/022 generic/023 generic/024 generic/025 generi=
-c/026 generic/028 generic/029 generic/030 generic/031 generic/032 generic/0=
-33 generic/034 generic/035 generic/036 generic/037 generic/039 generic/040 =
-generic/041 generic/042 generic/043 generic/044 generic/045 generic/046 gen=
-eric/047 generic/048 generic/049 generic/050 generic/051 generic/052 generi=
-c/052 generic/053 generic/054 generic/054 generic/055 generic/055 generic/0=
-56 generic/057 generic/058 generic/059 generic/060 generic/061 generic/062 =
-generic/064 generic/065 generic/066 generic/067 generic/069 generic/071 gen=
-eric/072 generic/073 generic/077 generic/078 generic/079 generic/080 generi=
-c/082 generic/084 generic/085 generic/086 generic/087
-> FSTYP         -- f2fs
-> PLATFORM      -- Linux/x86_64 snb-drag 4.11.0-rc3-00077-g22588f8
-> MKFS_OPTIONS  -- /dev/sda8
-> MOUNT_OPTIONS -- -o acl,user_xattr /dev/sda8 /fs/scratch
-> =
-
-> generic/001	 2s
-> generic/002	 0s
-> generic/003	 14s
-> generic/004	 0s
-> generic/005	 1s
-> generic/006	 0s
-> generic/007	 0s
-> generic/008	 1s
-> generic/009	 1s
-> generic/011	 0s
-> generic/012	 2s
-> generic/014	 0s
-> generic/015	 0s
-> generic/016	 2s
-> generic/018	 [not run] defragmentation not supported for fstype "f2fs"
-> generic/020	 0s
-> generic/021	 2s
-> generic/022	 2s
-> generic/023	 1s
-> generic/024	 0s
-> generic/025	 0s
-> generic/026	 - output mismatch (see /lkp/benchmarks/xfstests/results//gen=
-eric/026.out.bad)
->     --- tests/generic/026.out	2016-11-10 09:18:29.000000000 +0800
->     +++ /lkp/benchmarks/xfstests/results//generic/026.out.bad	2017-03-30 =
-02:03:20.925483449 +0800
->     @@ -4,6 +4,6 @@
->      1 below acl max
->      acl max
->      1 above acl max
->     -chacl: cannot set access acl on "largeaclfile": Argument list too lo=
-ng
->     +Wrong ACL count - 532 !=3D 531
->      use 16 aces
->      use 17 aces
->     ...
->     (Run 'diff -u tests/generic/026.out /lkp/benchmarks/xfstests/results/=
-/generic/026.out.bad'  to see the entire diff)
-> generic/028	 5s
-> generic/029	 3s
-> generic/030	 3s
-> generic/031	 2s
-> generic/032	 35s
-> generic/033	 2s
-> generic/034	 2s
-> generic/035	 1s
-> generic/036	 11s
-> generic/037	 4s
-> generic/039	 3s
-> generic/040	 5s
-> generic/041	 6s
-> generic/042	 [failed, exit status 1] - output mismatch (see /lkp/benchmar=
-ks/xfstests/results//generic/042.out.bad)
->     --- tests/generic/042.out	2016-11-10 09:18:29.000000000 +0800
->     +++ /lkp/benchmarks/xfstests/results//generic/042.out.bad	2017-03-30 =
-02:05:16.444481154 +0800
->     @@ -1,10 +1 @@
->      QA output created by 042
->     -falloc -k
->     -wrote 65536/65536 bytes at offset 0
->     -XXX Bytes, X ops; XX:XX:XX.X (XXX YYY/sec and XXX ops/sec)
->     -fpunch
->     -wrote 65536/65536 bytes at offset 0
->     -XXX Bytes, X ops; XX:XX:XX.X (XXX YYY/sec and XXX ops/sec)
->     ...
->     (Run 'diff -u tests/generic/042.out /lkp/benchmarks/xfstests/results/=
-/generic/042.out.bad'  to see the entire diff)
-> generic/043	 16s
-> generic/044	 17s
-> generic/045	 17s
-> generic/046	 16s
-> generic/047	 46s
-> generic/048	 104s
-> generic/049	 10s
-> generic/050	 5s
-> generic/051	 97s
-> generic/052	 5s
-> generic/053	 5s
-> generic/054	 111s
-> generic/055	 60s
-> generic/056	 3s
-> generic/057	 2s
-> generic/058	 3s
-> generic/059	 3s
-> generic/060	 2s
-> generic/061	 2s
-> generic/062	 3s
-> generic/064	 5s
-> generic/065	 3s
-> generic/066	 - output mismatch (see /lkp/benchmarks/xfstests/results//gen=
-eric/066.out.bad)
->     --- tests/generic/066.out	2016-11-10 09:18:29.000000000 +0800
->     +++ /lkp/benchmarks/xfstests/results//generic/066.out.bad	2017-03-30 =
-02:14:51.353469734 +0800
->     @@ -6,5 +6,6 @@
->      =
-
->      xattr names and values after second fsync log replay:
->      # file: SCRATCH_MNT/foobar
->     +user.attr1=3D"val1"
->      user.attr3=3D"val3"
->      =
-
->     ...
->     (Run 'diff -u tests/generic/066.out /lkp/benchmarks/xfstests/results/=
-/generic/066.out.bad'  to see the entire diff)
-> generic/067	 2s
-> generic/069	 4s
-> generic/071	 3s
-> generic/072	 4s
-> generic/073	 3s
-> generic/077	 32s
-> generic/078	 0s
-> generic/079	 2s
-> generic/080	 2s
-> generic/082	 [not run] disk quotas not supported by this filesystem type:=
- f2fs
-> generic/084	 7s
-> generic/085	 4s
-> generic/086	 0s
-> generic/087	 0s
-> Ran: generic/001 generic/002 generic/003 generic/004 generic/005 generic/=
-006 generic/007 generic/008 generic/009 generic/011 generic/012 generic/014=
- generic/015 generic/016 generic/020 generic/021 generic/022 generic/023 ge=
-neric/024 generic/025 generic/026 generic/028 generic/029 generic/030 gener=
-ic/031 generic/032 generic/033 generic/034 generic/035 generic/036 generic/=
-037 generic/039 generic/040 generic/041 generic/042 generic/043 generic/044=
- generic/045 generic/046 generic/047 generic/048 generic/049 generic/050 ge=
-neric/051 generic/052 generic/053 generic/054 generic/055 generic/056 gener=
-ic/057 generic/058 generic/059 generic/060 generic/061 generic/062 generic/=
-064 generic/065 generic/066 generic/067 generic/069 generic/071 generic/072=
- generic/073 generic/077 generic/078 generic/079 generic/080 generic/084 ge=
-neric/085 generic/086 generic/087
-> Not run: generic/018 generic/082
-> Failures: generic/026 generic/042 generic/066
-> Failed 3 of 71 tests
-> =
-
-> =
-
-> =
-
-> =
-
-> To reproduce:
-> =
-
->         git clone https://github.com/01org/lkp-tests.git
->         cd lkp-tests
->         bin/lkp install job.yaml  # job file is attached in this email
->         bin/lkp run     job.yaml
-> =
-
-> =
-
-> =
-
-> Thanks,
-> Xiaolong
-> =
+> I am trying it and will post the result once I get it.
 
 
+... I'd also probably add pr_emerg() print-out to emergency_restart(),
+the same way kernel_restart()/kernel_halt()/kernel_power_off() do.
 
---===============1271782267160696444==--
+for those cases when emergency_restart() is called with printk in
+kthreaded mode, not in emergency mode.
+
+---
+
+diff --git a/kernel/reboot.c b/kernel/reboot.c
+index e4ced883d8de..5bce29da913b 100644
+--- a/kernel/reboot.c
++++ b/kernel/reboot.c
+@@ -60,6 +60,7 @@ void (*pm_power_off_prepare)(void);
+  */
+ void emergency_restart(void)
+ {
++	pr_emerg("Emergency restart\n");
+ 	kmsg_dump(KMSG_DUMP_EMERG);
+ 	machine_emergency_restart();
+ }
+
+
+--===============6770322413789465890==--
 
