@@ -1,69 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============5084707418273768171=="
+Content-Type: multipart/mixed; boundary="===============8821516574997347987=="
 MIME-Version: 1.0
-From: Li, Aubrey <aubrey.li@intel.com>
+From: Pavel Machek <pavel@ucw.cz>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [sched/idle] bb400b924e: fio.write_clat_95%_us -8% improvement
-Date: Thu, 06 Apr 2017 13:54:07 +0000
-Message-ID: <070BEF4AC20468458C22969097656CD94BFB54A4@shsmsx102.ccr.corp.intel.com>
-In-Reply-To: <20170406062654.GN17682@yexl-desktop>
+Subject: Re: [printk] fbc14616f4: BUG:kernel_reboot-without-warning_in_test_stage
+Date: Thu, 06 Apr 2017 19:33:06 +0200
+Message-ID: <20170406173306.GD10363@amd>
+In-Reply-To: <20170403093152.GB15168@quack2.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5084707418273768171==
+--===============8821516574997347987==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thursday, April 06, 2017 2:27 PM, Ye, Xiaolong wrote:
-> On 04/06, Li, Aubrey wrote:
-> >Hi Xiaolong,
-> >
-> >Thanks to report this. Several questions on my side:
-> >(1) how to make a report between <linux-stable tree tag:4.8.8> and
-> ><fast_idle tree HEAD>
-> =
+Hi!
 
-> You can queue the same job for linux-stable tree tag:4.8.8 and fast_idle =
-tree
-> HEAD, then get the comparison by `compare` tool in inn server.
-> =
+> This patch set gives up part of the printk() reliability for bounded
+> latency (at least unless we detect we are really in trouble) which is IMHO
+> a good trade-off for lots of users (and others can just turn this feature
+> off).
 
-Can you point me a documentation how to do this?
-Or can you please show me the detailed steps?
+If they can ever realize they were bitten by this feature.
 
-> >
-> >(2) Where can I get the raw data of the report
-> =
+Can we go for different tradeoff?
 
-> You can get detailed result root @
-> =
+In console_unlock(), if you detect too much work, print "Too many
+messages to print, %d bytes delayed" and wake up kernel thread.
 
-> inn:/result/fio-basic/1SSD-btrfs-300s-8-randwrite-4k-sync-512g-performanc=
-e/lkp
-> -bdw-ep2/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-6/bb400b924e0
-> 6e94eb12047621bd70d61564fca4c
+You still get the latency, and people bitten by this feature will at
+least get fair warning.
 
-This is really a confused report. =
+									Pavel
+-- =
 
-What I want is the report of HEAD of the tree, not a commit id in the middl=
-e of my
-patchset.
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
-> >
-> >(3) I need to dig into the test machine bios to confirm if it's
-> >compliant to my expected criteria, how to do that?
-> >
-> =
+--===============8821516574997347987==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
 
-> The test machine is lkp-bdw-ep2, you may ssh into it to check?
-> =
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEKCmlFWUVBUkVD
+QUFZRkFsam1lOUlBQ2drUU1PZndhcFhiK3ZJQ2l3Q2ZUamU5QVY0eFlQb3NRN3dhUWZCU0Q5Wk0K
+dmhrQW5qYlFqT2dBS2xVUG54MU9Hdk82YjVHUmU5REQKPWtlQTAKLS0tLS1FTkQgUEdQIFNJR05B
+VFVSRS0tLS0tCg==
 
-
-ssh is not good enough to me. I need to change the BIOS setting.
-So I need KVM access (screen + keyboard) and root Privilege of that
-machine.
-
-Thanks,
--Aubrey
-
---===============5084707418273768171==--
+--===============8821516574997347987==--
 
