@@ -1,49 +1,69 @@
-Content-Type: multipart/mixed; boundary="===============3441764954470837331=="
+Content-Type: multipart/mixed; boundary="===============5084707418273768171=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Li, Aubrey <aubrey.li@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [debug] 19d436268d: BUG:unable_to_handle_kernel
-Date: Thu, 06 Apr 2017 13:47:26 +0200
-Message-ID: <20170406114726.qnljok4vdfjgabno@hirez.programming.kicks-ass.net>
-In-Reply-To: <20170406025014.GM17682@yexl-desktop>
+Subject: Re: [lkp-robot] [sched/idle] bb400b924e: fio.write_clat_95%_us -8% improvement
+Date: Thu, 06 Apr 2017 13:54:07 +0000
+Message-ID: <070BEF4AC20468458C22969097656CD94BFB54A4@shsmsx102.ccr.corp.intel.com>
+In-Reply-To: <20170406062654.GN17682@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3441764954470837331==
+--===============5084707418273768171==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 06, 2017 at 10:50:14AM +0800, kernel test robot wrote:
+On Thursday, April 06, 2017 2:27 PM, Ye, Xiaolong wrote:
+> On 04/06, Li, Aubrey wrote:
+> >Hi Xiaolong,
+> >
+> >Thanks to report this. Several questions on my side:
+> >(1) how to make a report between <linux-stable tree tag:4.8.8> and
+> ><fast_idle tree HEAD>
 > =
 
-> FYI, we noticed the following commit:
+> You can queue the same job for linux-stable tree tag:4.8.8 and fast_idle =
+tree
+> HEAD, then get the comparison by `compare` tool in inn server.
 > =
 
-> commit: 19d436268dde95389c616bb3819da73f0a8b28a8 ("debug: Add _ONCE() log=
-ic to report_bug()")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+Can you point me a documentation how to do this?
+Or can you please show me the detailed steps?
+
+> >
+> >(2) Where can I get the raw data of the report
+> =
+
+> You can get detailed result root @
+> =
+
+> inn:/result/fio-basic/1SSD-btrfs-300s-8-randwrite-4k-sync-512g-performanc=
+e/lkp
+> -bdw-ep2/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-6/bb400b924e0
+> 6e94eb12047621bd70d61564fca4c
+
+This is really a confused report. =
+
+What I want is the report of HEAD of the tree, not a commit id in the middl=
+e of my
+patchset.
+
+> >
+> >(3) I need to dig into the test machine bios to confirm if it's
+> >compliant to my expected criteria, how to do that?
+> >
+> =
+
+> The test machine is lkp-bdw-ep2, you may ssh into it to check?
 > =
 
 
-next/master doesn't build for me at all with your .config.
+ssh is not good enough to me. I need to change the BIOS setting.
+So I need KVM access (screen + keyboard) and root Privilege of that
+machine.
 
-I get a metric ton of:
+Thanks,
+-Aubrey
 
-  MODPOST 893 modules
-  LZ4     arch/x86/boot/compressed/vmlinux.bin.lz4
-ERROR: "user_describe" [security/keys/trusted.ko] undefined!
-ERROR: "__gcov_merge_add" [security/keys/trusted.ko] undefined!
-ERROR: "__gcov_init" [security/keys/trusted.ko] undefined!
-ERROR: "unregister_key_type" [security/keys/trusted.ko] undefined!
-ERROR: "register_key_type" [security/keys/trusted.ko] undefined!
-ERROR: "crypto_alloc_shash" [security/keys/trusted.ko] undefined!
-ERROR: "tpm_seal_trusted" [security/keys/trusted.ko] undefined!
-ERROR: "tpm_unseal_trusted" [security/keys/trusted.ko] undefined!
-ERROR: "call_rcu" [security/keys/trusted.ko] undefined!
-ERROR: "crypto_shash_digest" [security/keys/trusted.ko] undefined!
-
-$ grep -c ERROR build.log
-27293
-
---===============3441764954470837331==--
+--===============5084707418273768171==--
 
