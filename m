@@ -1,41 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============8054224389613899534=="
+Content-Type: multipart/mixed; boundary="===============2570209826263467810=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [sched/idle] bb400b924e: fio.write_clat_95%_us -8% improvement
-Date: Fri, 07 Apr 2017 11:44:22 +0800
-Message-ID: <20170407034422.GP17682@yexl-desktop>
-In-Reply-To: <070BEF4AC20468458C22969097656CD94BFB563C@shsmsx102.ccr.corp.intel.com>
+Subject: Re: [printk] fbc14616f4: BUG:kernel_reboot-without-warning_in_test_stage
+Date: Fri, 07 Apr 2017 13:44:40 +0900
+Message-ID: <20170407044334.GA487@jagdpanzerIV.localdomain>
+In-Reply-To: <20170406173306.GD10363@amd>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8054224389613899534==
+--===============2570209826263467810==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 04/07, Li, Aubrey wrote:
->Sorry, a few more questions
->
->> 2) $ lkp queue -b fast_idle -k <your head commitid> -t lkp-bdw-ep2 job.y=
-aml -r 3
->
->how to specify the branch in fast_idle git tree? or lkp can find it automa=
-tically by my head commit ID?
+Hello,
 
-Mostly lkp can find it automatically by your commit id, and you can specify=
- it as '-b aubrey-fast_idle/<branch_name>'
-explicitly as well.
+On (04/06/17 19:33), Pavel Machek wrote:
+> > This patch set gives up part of the printk() reliability for bounded
+> > latency (at least unless we detect we are really in trouble) which is I=
+MHO
+> > a good trade-off for lots of users (and others can just turn this featu=
+re
+> > off).
+> =
 
->
->What does "-r 3" mean here?
+> If they can ever realize they were bitten by this feature.
+> =
 
-Run 3 times for the same test.
+> Can we go for different tradeoff?
+> =
 
-Thanks,
-Xiaolong
->
->Thanks,
->-Aubrey
+> In console_unlock(), if you detect too much work, print "Too many
+> messages to print, %d bytes delayed" and wake up kernel thread.
 
---===============8054224389613899534==--
+"too many messages" is undefined. console_unlock() can be called from
+IRQ handler or with preemtion disabled, or under spin_lock, or under
+RCU read lock, etc. etc. By the time we decide to wake up printk_kthread
+from console_unlock() it may be already too late.
+
+besides, this does not really address any of the concerns you have
+pointed out in other emails. we might be unable to wake_up printk_kthread
+(because there is a misbehaving higher prio process, or because the
+scheduler is misbehaving, etc. etc.) so the "emergency mode" is still
+here and still requires special handling.
+
+	-ss
+
+--===============2570209826263467810==--
 
