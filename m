@@ -1,49 +1,37 @@
-Content-Type: multipart/mixed; boundary="===============8056201543802545819=="
+Content-Type: multipart/mixed; boundary="===============7361744450711483187=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Li, Aubrey <aubrey.li@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [sched/idle] bb400b924e: fio.write_clat_95%_us -8% improvement
-Date: Fri, 07 Apr 2017 14:44:56 +0800
-Message-ID: <8760igaf87.fsf@yhuang-dev.intel.com>
-In-Reply-To: <070BEF4AC20468458C22969097656CD94BFB56FF@shsmsx102.ccr.corp.intel.com>
+Date: Fri, 07 Apr 2017 06:51:14 +0000
+Message-ID: <070BEF4AC20468458C22969097656CD94BFB570E@shsmsx102.ccr.corp.intel.com>
+In-Reply-To: <8760igaf87.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8056201543802545819==
+--===============7361744450711483187==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-"Li, Aubrey" <aubrey.li@intel.com> writes:
 
-> On Friday, April 07, 2017 2:26 PM Huang, Ying wrote:
->> =
+> > Should I add my task again after the commit is available or just wait?
+> =
 
->> OK, we need accelerate local git tree mirror fetching.
->> =
+> I think it is better for you to queue the task again.  There is another h=
+ole in
+> queue implementation.  Your original queue should not succeed.
+> Philip is working on that.
+> =
 
->> Hi, Philip,
->> =
 
->> Now we hit this issue and it prevent Aubrey to use our system effectivel=
-y, can
->> you raise the priority of this work item?
->> =
+Then I need to ask again, the same task are scheduled several times, how ar=
+e their
+reports handled? The newest one overwrites the old one? or all of the repor=
+ts are
+kept by the timestamp?
 
->> https://jira01.devtools.intel.com/browse/OLT-2250
->> =
+Thanks,
+-Aubrey
 
->
-> Should I add my task again after the commit is available or just wait?
-
-I think it is better for you to queue the task again.  There is another
-hole in queue implementation.  Your original queue should not succeed.
-Philip is working on that.
-
-Best Regards,
-Huang, Ying
-
-> Thanks,
-> -Aubrey
-
---===============8056201543802545819==--
+--===============7361744450711483187==--
 
