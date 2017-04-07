@@ -1,39 +1,35 @@
-Content-Type: multipart/mixed; boundary="===============7359738010843680863=="
+Content-Type: multipart/mixed; boundary="===============3677879638192552111=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [printk] fbc14616f4: BUG:kernel_reboot-without-warning_in_test_stage
-Date: Fri, 07 Apr 2017 17:23:04 +0200
-Message-ID: <20170407152304.bkbceqmg3kxeqvur@hirez.programming.kicks-ass.net>
-In-Reply-To: <20170407151306.GA384@tigerII.localdomain>
+Date: Sat, 08 Apr 2017 00:40:47 +0900
+Message-ID: <20170407154047.GB384@tigerII.localdomain>
+In-Reply-To: <20170407152304.bkbceqmg3kxeqvur@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7359738010843680863==
+--===============3677879638192552111==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Apr 08, 2017 at 12:13:06AM +0900, Sergey Senozhatsky wrote:
-> On (04/07/17 14:44), Pavel Machek wrote:
-> [..]
-> > > [..]
-> > > > I believe "spend at most 2 seconds in printk(), then print a warning
-> > > > and offload" is a solution closer to what we had before.
-> > > =
-
-> > > a warning here can be very noisy.
-> > =
-
-> > Well, on normally-configured it should be ok. We don't commonly see
-> > printk problems... If it is too noisy, perhaps we should increase from
-> > 2 seconds, but I don't think it will be problem.
+On (04/07/17 17:23), Peter Zijlstra wrote:
+[..]
+> > we are looking at different typical setups :) serial console being 45
+> > seconds behind logbuf does not surprise me anymore.
 > =
 
-> we are looking at different typical setups :) serial console being 45
-> seconds behind logbuf does not surprise me anymore.
+> That does sound like you're doing something wrong and should look at
+> reducing printk() more than anything else.
 
-That does sound like you're doing something wrong and should look at
-reducing printk() more than anything else.
+yeah, 45sec is an extreme case that simply doesn't surprise me anymore ;)
+that's not a normal/usual delay, of course, we are not this mad. on average
+it's much better and may be not so far 2 seconds after all. a massive OOM
+report, of course, appends logbuf messages at a much higher rate than UART
+serial console can swallow, so the delay is getting larger, expectedly.
+and, no, I don't add any printk-s, I'm looking at the lockup reports
 
---===============7359738010843680863==--
+	-ss
+
+--===============3677879638192552111==--
 
