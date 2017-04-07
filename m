@@ -1,109 +1,47 @@
-Content-Type: multipart/mixed; boundary="===============1559859007473325058=="
+Content-Type: multipart/mixed; boundary="===============7669225871767911550=="
 MIME-Version: 1.0
-From: Pavel Machek <pavel@ucw.cz>
+From: Du, Julie <julie.du@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [printk] fbc14616f4: BUG:kernel_reboot-without-warning_in_test_stage
-Date: Fri, 07 Apr 2017 10:14:49 +0200
-Message-ID: <20170407081449.GA12859@amd>
-In-Reply-To: <20170407074634.GB1091@jagdpanzerIV.localdomain>
+Subject: Re: [lkp-robot] [sched/idle] bb400b924e: fio.write_clat_95%_us -8% improvement
+Date: Fri, 07 Apr 2017 08:32:37 +0000
+Message-ID: <BEB82A8EE5E41F42BA493EE057745C6F6398E65B@SHSMSX103.ccr.corp.intel.com>
+In-Reply-To: <070BEF4AC20468458C22969097656CD94BFB573E@shsmsx102.ccr.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1559859007473325058==
+--===============7669225871767911550==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri 2017-04-07 16:46:34, Sergey Senozhatsky wrote:
-> On (04/07/17 09:15), Pavel Machek wrote:
-> > On Fri 2017-04-07 13:44:40, Sergey Senozhatsky wrote:
-> > > Hello,
-> > > =
+Aubrey, I suggest not discuss it by email, we are on the same building. It =
+can be more efficient by just walk to talk to people :)
 
-> > > On (04/06/17 19:33), Pavel Machek wrote:
-> > > > > This patch set gives up part of the printk() reliability for boun=
-ded
-> > > > > latency (at least unless we detect we are really in trouble) whic=
-h is IMHO
-> > > > > a good trade-off for lots of users (and others can just turn this=
- feature
-> > > > > off).
-> > > > =
+-----Original Message-----
+From: Li, Aubrey =
 
-> > > > If they can ever realize they were bitten by this feature.
-> > > > =
+Sent: Friday, April 7, 2017 3:13 PM
+To: Huang, Ying <ying.huang@intel.com>
+Cc: Ye, Xiaolong <xiaolong.ye@intel.com>; lkp(a)01.org; Du, Julie <julie.=
+du@intel.com>
+Subject: RE: [lkp-robot] [sched/idle] bb400b924e: fio.write_clat_95%_us -8%=
+ improvement
 
-> > > > Can we go for different tradeoff?
-> > > > =
-
-> > > > In console_unlock(), if you detect too much work, print "Too many
-> > > > messages to print, %d bytes delayed" and wake up kernel thread.
-> > > =
-
-> > > "too many messages" is undefined. console_unlock() can be called from
-> > > IRQ handler or with preemtion disabled, or under spin_lock, or under
-> > > RCU read lock, etc. etc. By the time we decide to wake up printk_kthr=
-ead
-> > > from console_unlock() it may be already too late.
-> > =
-
-> > So lets define "too many messages" as 240 characters. We know printk
-> > worked rather well for us for more than 20 years. Kernel code is used
-> > to printk taking few miliseconds.
 > =
 
-> serial console can be quite slow. and port->lock, that is acquired by
-> console_unlock()->call_console_drivers()->write(), is also accessible
-> by serial driver's IRQ handler, and this lock may be busy long
-> enough -- as long as that IRQ handler transmits/receives chars. but
-> that's not the point.
+> For this kind of test, to avoid pollute the results of 0-Day, it is =
 
-Well. This is what we had for 20 years.
+> better for you to take the machine out of 0-Day to do the test.  You =
 
-> [..]
-> > Yeah? So you know modified printk() does not work, that's why
-> > "emergency mode" exists. Unfortunately, you can't rely on fact that
-> > you can detect half-crashed machines by printk levels. You usually
-> > can't.
-> =
+> can test with lkp-tests with the same job file.
 
-> I'm not happy with those printk_emergency_begin()/end(), sure. but that's
-> the reality -- every single solution that would offload printing duty imp=
-lies
-> that there will be cases when offloading would not be possible. either
-> PENDING_PRINTK_IPI to other CPUs, or irq_work(PENDING_OUTPUT) on a local =
-CPU,
-> or anything else (um... what it is?... softirq? tasklet? print one logbuf
-> entry from every IRQ handler? dunno, anything else?). There will be cases
-> when we won't be able to expect that something will take over and finish
-> printing for us. Well, may be I'm missing some other solution that would
-> offload printing, eliminating lockup conditions, and at the same time work
-> in 100% of the cases.
+Can you please specify how to take the machine out of 0-day but still test =
+with lkp-tests with the same job file?  =
 
-I don't have magic solution in my sleeve. You made a good case that
-spending 30 seconds in printk() is a bad idea. I agree with that. Your
-solution is to introduce printk_emergency_begin()/end(). I don't agree
-there.
 
-I believe "spend at most 2 seconds in printk(), then print a warning
-and offload" is a solution closer to what we had before.
+setup lkp test on my own? how to prevent lkp schedule task on this machine?
 
-									Pavel
--- =
+Thanks,
+-Aubrey
 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---===============1559859007473325058==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
-
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEKCmlFWUVBUkVD
-QUFZRkFsam5TbmtBQ2drUU1PZndhcFhiK3ZKUmFRQ2RGZWZKdmRVUUFPallTVkFvaHZ6dDdqSDIK
-QnZjQW4ySVloNDJxdml2WXRKUitEOTcxNjdYZHZ0bmwKPVRCM0UKLS0tLS1FTkQgUEdQIFNJR05B
-VFVSRS0tLS0tCg==
-
---===============1559859007473325058==--
+--===============7669225871767911550==--
 
