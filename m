@@ -1,79 +1,48 @@
-Content-Type: multipart/mixed; boundary="===============0919588999882034660=="
+Content-Type: multipart/mixed; boundary="===============6979266209844018718=="
 MIME-Version: 1.0
-From: Pavel Machek <pavel@ucw.cz>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [printk] fbc14616f4: BUG:kernel_reboot-without-warning_in_test_stage
-Date: Fri, 07 Apr 2017 09:15:58 +0200
-Message-ID: <20170407071558.GA11792@amd>
-In-Reply-To: <20170407044334.GA487@jagdpanzerIV.localdomain>
+Subject: Re: [lkp-robot] [sched/idle] bb400b924e: fio.write_clat_95%_us -8% improvement
+Date: Fri, 07 Apr 2017 15:18:35 +0800
+Message-ID: <87efx48z3o.fsf@yhuang-dev.intel.com>
+In-Reply-To: <070BEF4AC20468458C22969097656CD94BFB573E@shsmsx102.ccr.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0919588999882034660==
+--===============6979266209844018718==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri 2017-04-07 13:44:40, Sergey Senozhatsky wrote:
-> Hello,
-> =
+"Li, Aubrey" <aubrey.li@intel.com> writes:
 
-> On (04/06/17 19:33), Pavel Machek wrote:
-> > > This patch set gives up part of the printk() reliability for bounded
-> > > latency (at least unless we detect we are really in trouble) which is=
- IMHO
-> > > a good trade-off for lots of users (and others can just turn this fea=
-ture
-> > > off).
-> > =
+>> =
 
-> > If they can ever realize they were bitten by this feature.
-> > =
+>> For this kind of test, to avoid pollute the results of 0-Day, it is bett=
+er for you to
+>> take the machine out of 0-Day to do the test.  You can test with lkp-tes=
+ts with
+>> the same job file.
+>
+> Can you please specify how to take the machine out of 0-day but still tes=
+t with
+> lkp-tests with the same job file?  =
 
-> > Can we go for different tradeoff?
-> > =
+>
+> setup lkp test on my own? how to prevent lkp schedule task on this machin=
+e?
 
-> > In console_unlock(), if you detect too much work, print "Too many
-> > messages to print, %d bytes delayed" and wake up kernel thread.
-> =
+Lei will take care of take the machine out of 0-day.
 
-> "too many messages" is undefined. console_unlock() can be called from
-> IRQ handler or with preemtion disabled, or under spin_lock, or under
-> RCU read lock, etc. etc. By the time we decide to wake up printk_kthread
-> from console_unlock() it may be already too late.
+To run lkp-tests on your own, please refer to,
 
-So lets define "too many messages" as 240 characters. We know printk
-worked rather well for us for more than 20 years. Kernel code is used
-to printk taking few miliseconds. =
+https://docs.google.com/a/intel.com/presentation/d/1c1qDq8przc1jJTJWq1VDhiI=
+fjC7uhuRsaPdeZmOn-qQ/edit?usp=3Dsharing
 
+Best Regards,
+Huang, Ying
 
-> besides, this does not really address any of the concerns you have
-> pointed out in other emails. we might be unable to wake_up printk_kthread
-> (because there is a misbehaving higher prio process, or because the
-> scheduler is misbehaving, etc. etc.) so the "emergency mode" is still
-> here and still requires special handling.
+> Thanks,
+> -Aubrey
 
-Yeah? So you know modified printk() does not work, that's why
-"emergency mode" exists. Unfortunately, you can't rely on fact that
-you can detect half-crashed machines by printk levels. You usually
-can't.
-
-									Pavel
--- =
-
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---===============0919588999882034660==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
-
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEKCmlFWUVBUkVD
-QUFZRkFsam5QSzRBQ2drUU1PZndhcFhiK3ZMMmFnQ2ZTc0ZSNmlvRW9MWEZXQ1lnbVlvYlNGMEwK
-VnpFQW9KaHU4azVGR2JXRXFXLytnNDRQWG9RWWtaaGEKPXRMTUsKLS0tLS1FTkQgUEdQIFNJR05B
-VFVSRS0tLS0tCg==
-
---===============0919588999882034660==--
+--===============6979266209844018718==--
 
