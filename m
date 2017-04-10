@@ -1,77 +1,76 @@
-Content-Type: multipart/mixed; boundary="===============8247109897995723324=="
+Content-Type: multipart/mixed; boundary="===============7634471864758579472=="
 MIME-Version: 1.0
-From: Petr Mladek <pmladek@suse.com>
+From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [printk] fbc14616f4: BUG:kernel_reboot-without-warning_in_test_stage
-Date: Mon, 10 Apr 2017 13:54:32 +0200
-Message-ID: <20170410115432.GV3452@pathway.suse.cz>
-In-Reply-To: <20170410045339.GB2793@jagdpanzerIV.localdomain>
+Date: Tue, 11 Apr 2017 00:08:20 +0900
+Message-ID: <20170410150820.GB457@tigerII.localdomain>
+In-Reply-To: <20170410115432.GV3452@pathway.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8247109897995723324==
+--===============7634471864758579472==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 2017-04-10 13:53:39, Sergey Senozhatsky wrote:
-> On (04/09/17 12:12), Pavel Machek wrote:
-> [..]
-> > > a side note,
-> > > that's rather unclear to me how would "message delayed" really help.
-> > > if your system hard-lockup so badly and there are no printk messages
-> > > even from NMI watchdog, then we won't be able to print that message.
+On (04/10/17 13:54), Petr Mladek wrote:
+[..]
+> > > that works with my proposal, but not with yours. Seen it happen many
+> > > times before.
 > > =
 
-> > We are talking about
+> > I see your point, sure.
+> > I can't completely agree on "that works with my proposal, but not with =
+yours."
 > > =
 
-> >    printk("unusual condition");
-> >    do_something_clever(); /* Which unfortunately hard-crashes the machi=
-ne */
+> > on SMP system this would be true only if no other CPU holds the console=
+_sem
+> > at the time we call printk(). (skipping irrelevant cases when we have s=
+uspended
+> > console or !online CPU and !CON_ANYTIME console). and there is nothing =
+that
+> > makes "no other CPU holds the console_sem" always true on SMP system at=
+ any
+> > given point in time. so no, "A always works, B never works" is not accu=
+rate.
 > > =
 
-> > that works with my proposal, but not with yours. Seen it happen many
-> > times before.
+> > but, once again, I see your point.
 > =
 
-> I see your point, sure.
-> I can't completely agree on "that works with my proposal, but not with yo=
-urs."
-> =
+> A compromise might be to move the offloading from vprintk_emit() to
+> console_unlock(). By other words, the printk could always try to
+> flush some messages to the console. The console might trigger
+> the offload (wakeup kthread) after few lines
 
-> on SMP system this would be true only if no other CPU holds the console_s=
-em
-> at the time we call printk(). (skipping irrelevant cases when we have sus=
-pended
-> console or !online CPU and !CON_ANYTIME console). and there is nothing th=
-at
-> makes "no other CPU holds the console_sem" always true on SMP system at a=
-ny
-> given point in time. so no, "A always works, B never works" is not accura=
-te.
-> =
+yep, that's the proposal.
 
-> but, once again, I see your point.
 
-A compromise might be to move the offloading from vprintk_emit() to
-console_unlock(). By other words, the printk could always try to
-flush some messages to the console. The console might trigger
-the offload (wakeup kthread) after few lines or when the printing
-takes too long.
+hm, this also should align with one more thing.
 
-We could go even furter. We could replace the cond_resched() in
-console_unlock() with a need_resched() check. Then we could avoid
-sleeping with console_sem taken.
+we briefly discussed it before, and it was on my list, that
+wake_up(printk_kthread) _eventually_ better be moved to console_unlock()
+[1] (I also had it in the slides at KS, but I believe we didn't have much
+time back then).
 
-It will avoid the softlockups caused by printk(). It should
-work pretty well in most critical situations.
+vprintk_emit() is not the only console_lock() caller. user space does
+console_lock() and console_unlock() calls, and in some cases a user
+space process can stuck in system call printing kernel messages to a
+potentially slow console [2]. it can be unpleasant, but far less dramatic
+than doing console_unlock() from IRQ, or under spin_lock. so it was
+moved down the list. seems we have one more reason to reshuffle the
+list and do offloading from console_unlock() from the beginning.
 
-Of course, it will not guarantee that we will see all messages when
-there is a flood of messages from many CPUs. But it was never
-guaranteed.
+will take a look.
 
-Best Regards,
-Petr
+/* in our "in-house" kernels we do 'async' console_unlock(). not
+exactly the way it's shown in [1], but quite similar. */
 
---===============8247109897995723324==--
+[1] https://marc.info/?l=3Dlinux-kernel&m=3D145750373530161
+[2] https://marc.info/?l=3Dlinux-kernel&m=3D145762735308470
+
+	-ss
+
+--===============7634471864758579472==--
 
