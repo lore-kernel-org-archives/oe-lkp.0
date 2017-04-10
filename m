@@ -1,59 +1,51 @@
-Content-Type: multipart/mixed; boundary="===============3426337956994385408=="
+Content-Type: multipart/mixed; boundary="===============0784779335932728618=="
 MIME-Version: 1.0
 From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [printk] fbc14616f4: BUG:kernel_reboot-without-warning_in_test_stage
-Date: Mon, 10 Apr 2017 13:46:19 +0900
-Message-ID: <20170410044619.GA2793@jagdpanzerIV.localdomain>
-In-Reply-To: <87shlhv3uv.fsf@xmission.com>
+Date: Mon, 10 Apr 2017 13:53:39 +0900
+Message-ID: <20170410045339.GB2793@jagdpanzerIV.localdomain>
+In-Reply-To: <20170409101230.GB27363@amd>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3426337956994385408==
+--===============0784779335932728618==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hello Eric,
-
-On (04/09/17 13:21), Eric W. Biederman wrote:
+On (04/09/17 12:12), Pavel Machek wrote:
 [..]
-> It sounds like you are blaming printk when the problem is a very slow
-> logging device.
+> > a side note,
+> > that's rather unclear to me how would "message delayed" really help.
+> > if your system hard-lockup so badly and there are no printk messages
+> > even from NMI watchdog, then we won't be able to print that message.
+> =
 
-sure, slow logging device definitely adds up to the problem. if there
-is no delay in call_console_driver() then printk()->console_unlock()
-take no time. anything (uart, fbdev, etc.) that makes call_console_drivers()
-slower makes printk() slower. the patch set is not about offloading during
-panic(), when offloading make no sense, as you mentioned, or about
-uncommon/extreme/impossible cases of 45sec delays in printk. no.
+> We are talking about
+> =
 
-but about the fact that printk() called from inappropriate context
-can introduce delays/timeouts/stalls and lockups. several CPUs may call
-printk simultaneously, but we don't have any mechanism that would grant
-console_sem ownership to a CPU in !atomic context. the winner (the CPU
-that first acquires console_sem) prints it all, as long as there are
-pending messages.
+>    printk("unusual condition");
+>    do_something_clever(); /* Which unfortunately hard-crashes the machine=
+ */
+> =
 
-e.g.
- lkml.kernel.org/r/20160701165959.GR12473(a)ubuntu
-e.g.
- https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/=
-kernel/printk/printk.c?id=3D8d91f8b15361dfb438ab6eb3b319e2ded43458ff
+> that works with my proposal, but not with yours. Seen it happen many
+> times before.
 
-and so on.
+I see your point, sure.
+I can't completely agree on "that works with my proposal, but not with your=
+s."
 
-I've even seen when printk->console_unlock() invoked from RCU read side
-caused OOM condition (some RCU protected objects are small, but some are
-big -- e.g. slab pages: kmem_rcu_free()). that's very rare, but I've seen
-it.
+on SMP system this would be true only if no other CPU holds the console_sem
+at the time we call printk(). (skipping irrelevant cases when we have suspe=
+nded
+console or !online CPU and !CON_ANYTIME console). and there is nothing that
+makes "no other CPU holds the console_sem" always true on SMP system at any
+given point in time. so no, "A always works, B never works" is not accurate.
 
-so there are too many uncertainties and too many inappropriate contexts
-for printk.
-
-but yes, you are right, if there is nothing that makes call_console_driver()
-slow, then there is no issue.
+but, once again, I see your point.
 
 	-ss
 
---===============3426337956994385408==--
+--===============0784779335932728618==--
 
