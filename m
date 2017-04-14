@@ -1,61 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============5048372016752564582=="
+Content-Type: multipart/mixed; boundary="===============3620311689024304099=="
 MIME-Version: 1.0
 From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [irq/affinity] 13c024422c: fsmark.files_per_sec -4.3% regression
-Date: Fri, 14 Apr 2017 08:49:07 +0800
-Message-ID: <20170414004907.GL16549@yexl-desktop>
-In-Reply-To: <B58D82457FDA0744A320A2FC5AC253B93D8EE499@fmsmsx104.amr.corp.intel.com>
+Subject: Re: [lkp-robot] [x86/intel_rdt] 4ffa3c977b: OSError: [Errno 20] Not a directory: '/sys/fs/resctrl/cpus_list/'
+Date: Fri, 14 Apr 2017 08:49:40 +0800
+Message-ID: <20170414004940.GM16549@yexl-desktop>
+In-Reply-To: <20170413074216.GA4784@krava>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5048372016752564582==
+--===============3620311689024304099==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 04/14, Busch, Keith wrote:
->Actually, additional debug is not necessary. I see the accounting error in=
- the patch you identified and have a fix ready for submission. Thank you fo=
-r finding the mistake. The incorrect setting required a fairly large number=
- of CPU's with that NVMe controller, so I wouldn't have noticed it on most =
-of the servers I have access to. The 0-day regression system is incredibly =
-helpful!
->
+On 04/13, Jiri Olsa wrote:
+>On Thu, Apr 13, 2017 at 11:05:51AM +0800, kernel test robot wrote:
+>> =
 
-I am working on to get these debug data while I receive this message, glad =
-0day helps :).
+>> FYI, we noticed the following commit:
+>> =
+
+>> commit: 4ffa3c977b5da2907eb294dc6d0259a02f2284aa ("x86/intel_rdt: Add cp=
+us_list rdtgroup file")
+>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>> =
+
+>> in testcase: cat
+>> with following parameters:
+>> =
+
+>> =
+
+>> =
+
+>> =
+
+>> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wi=
+th 48G memory
+>> =
+
+>> caused below changes (please refer to attached dmesg/kmsg for entire log=
+/backtrace):
+>> =
+
+>> =
+
+>> =
+
+>> user  :err   : [   71.140457] Traceback (most recent call last):
+>> user  :err   : [   71.142073]   File "width_and_depth_tests.py", line 85=
+, in <module>
+>> user  :err   : [   71.142539]     depth_test()
+>> user  :err   : [   71.144305]   File "width_and_depth_tests.py", line 63=
+, in depth_test
+>> user  :err   : [   71.144834]     os.chdir(path)
+>> user  :err   : [   71.146880] OSError: [Errno 20] Not a directory: '/sys=
+/fs/resctrl/cpus_list/'
+>> user  :err   : [   71.147966] failed to run width_and_depth_tests.py
+>
+>hi,
+>looks like you need to fix the test.. there's one more new file 'cpus_list=
+' now
+
+Thanks letting us know, we'll fix the test accordingly.
 
 Thanks,
 Xiaolong
-
-
->-----Original Message-----
->From: Keith Busch [mailto:keith.busch(a)intel.com] =
-
->Sent: Thursday, April 13, 2017 8:24 AM
->To: Ye, Xiaolong <xiaolong.ye@intel.com>
->Cc: lkp(a)01.org
->Subject: Re: [lkp-robot] [irq/affinity] 13c024422c: fsmark.files_per_sec -=
-4.3% regression
 >
->On Thu, Apr 13, 2017 at 09:06:04AM +0800, Ye Xiaolong wrote:
->> On 04/12, Busch, Keith wrote:
->> >Hi Xiaolong,
->> >
->> >Thanks for letting me know of the regression. This change wasn't suppos=
-ed to affect anything outside the unbalanced numa case, so if it's indeed t=
-he culprit, I'll need to fix that.
->> >
->> >From the machine that demonstrates the regression, could you send me 'l=
-scpu'? And the output from the following commands, both with and without th=
-e patch applied?
->> =
+>thanks,
+>jirka
 
->> Okay, when should I run the `lscpu` and below cmds, before, after or dur=
-ing the test?
->
->The lscpu shouldn't change at any time, so you can grab that either
->before or after, with any set of patches applied.
-
---===============5048372016752564582==--
+--===============3620311689024304099==--
 
