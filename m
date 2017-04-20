@@ -1,31 +1,43 @@
-Content-Type: multipart/mixed; boundary="===============4754940474543789144=="
+Content-Type: multipart/mixed; boundary="===============3684364215648134769=="
 MIME-Version: 1.0
-From: Steven Rostedt <rostedt@goodmis.org>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/ftrace] 644e0e8dc7:
-Date: Thu, 20 Apr 2017 10:57:42 -0400
-Message-ID: <20170420105742.7289d9a8@gandalf.local.home>
+Date: Thu, 20 Apr 2017 10:30:49 -0500
+Message-ID: <20170420153049.k3uyonu36mbpgx6g@treble>
 In-Reply-To: <20170420103316.5d963895@gandalf.local.home>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4754940474543789144==
+--===============3684364215648134769==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 20 Apr 2017 10:33:16 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+On Thu, Apr 20, 2017 at 10:33:16AM -0400, Steven Rostedt wrote:
+> On Thu, 20 Apr 2017 08:28:22 -0500
+> Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> =
 
-> We could do something ugly like:
+> > This seems to be a real bug, unlike some of the other unwinder warnings.
+> > The following line in ftrace_32.S makes ebp point to regs->flags:
+> > =
+
+> > #ifdef CC_USING_FENTRY
+> > 	/* Load 4 off of the parent ip addr into ebp */
+> > 	lea	14*4(%esp), %ebp
+> > #endif
+> > =
+
+> =
+
+> You need to add the entire context:
+> =
+
 > =
 
 > #ifdef CC_USING_FENTRY
-> #ifdef CONFIG_FRAME_POINTERS
-> 	movl	15*4(%esp), %edx
-> #else
 >         /* Load 4 off of the parent ip addr into ebp */
 >         lea     14*4(%esp), %ebp
-> #endif
 > #endif  =
 
 > =
@@ -33,37 +45,29 @@ Steven Rostedt <rostedt@goodmis.org> wrote:
 >         movl    12*4(%esp), %eax                /* Load ip (1st parameter=
 ) */
 >         subl    $MCOUNT_INSN_SIZE, %eax         /* Adjust ip */
-> #if !defined(CC_USING_FENTRY) || !defined(CONFIG_FRAME_POINTERS)
 >         movl    0x4(%ebp), %edx                 /* Load parent ip (2nd pa=
 rameter) */
-> #endif
 >         movl    function_trace_op, %ecx         /* Save ftrace_pos in 3rd=
  parameter */
 >         pushl   %esp                            /* Save pt_regs as 4th pa=
 rameter */
 > =
 
+> We need to load the parent into %edx and we use ebp for both FENTRY and
+> for MCOUNT. And 32 bit gets much more difficult than 64 bit, with the
+> requirement that regs is the address of the stack of where the kernel
+> took the breakpoint or the ftrace callback.
 
-Or perhaps it can be:
+Does the &regs->sp thing really need to be a requirement here though?  I
+know it's due to a HW limitation, but these regs are created in SW.
 
-        movl    12*4(%esp), %eax                /* Load ip (1st parameter) =
-*/
-        subl    $MCOUNT_INSN_SIZE, %eax         /* Adjust ip */
-#ifdef CC_USING_FENTRY
-	movl	15*4(%esp), %edx
-#else
-        movl    0x4(%ebp), %edx                 /* Load parent ip (2nd para=
-meter) */
-#endif
-        movl    function_trace_op, %ecx         /* Save ftrace_pos in 3rd p=
-arameter */
-        pushl   %esp                            /* Save pt_regs as 4th para=
-meter */
+If any ftrace users rely on that, could they just be changed to access
+regs->sp directly?  That would make it a lot easier to simplify this
+code.
 
-There might have been a reason I didn't do it this way. I'll have to
-check.
+-- =
 
--- Steve
+Josh
 
---===============4754940474543789144==--
+--===============3684364215648134769==--
 
