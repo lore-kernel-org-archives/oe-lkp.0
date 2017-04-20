@@ -1,84 +1,79 @@
-Content-Type: multipart/mixed; boundary="===============5578349552269903363=="
+Content-Type: multipart/mixed; boundary="===============6017437001129392256=="
 MIME-Version: 1.0
-From: Cyril Hrubis <chrubis@suse.cz>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [LTP] [lkp-robot] [KEYS] bdf7c0f8bf: ltp.add_key02.fail
-Date: Thu, 20 Apr 2017 14:57:50 +0200
-Message-ID: <20170420125750.GD10246@rei.lan>
-In-Reply-To: <20170417172955.GA31469@gmail.com>
+Subject: Re: [x86/ftrace] 644e0e8dc7:
+Date: Thu, 20 Apr 2017 08:28:22 -0500
+Message-ID: <20170420132822.l5lcr42ij7u4hngc@treble>
+In-Reply-To: <20170415195602.54f9d410@gandalf.local.home>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5578349552269903363==
+--===============6017437001129392256==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi!
-> > commit: bdf7c0f8bf282ba44827ce3c7fd7936c8e90a18a ("KEYS: fix dereferenc=
-ing NULL payload with nonzero length")
-> > url: https://github.com/0day-ci/linux/commits/Eric-Biggers/KEYS-fix-der=
-eferencing-NULL-payload-with-nonzero-length/20170403-102013
-> > base: https://git.kernel.org/cgit/linux/kernel/git/jmorris/linux-securi=
-ty.git next
-> > =
-
-> ...
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
-> > =
-
-> > =
-
-> > user  :notice: [   45.447047] <<<test_start>>>
-> > =
-
-> > user  :notice: [   45.447365] tag=3Dadd_key02 stime=3D1492169102
-> > =
-
-> > user  :notice: [   45.447567] cmdline=3D"add_key02"
-> > =
-
-> > user  :notice: [   45.447685] contacts=3D""
-> > =
-
-> > user  :notice: [   45.447826] analysis=3Dexit
-> > =
-
-> > user  :notice: [   45.448011] <<<test_output>>>
-> > =
-
-> > user  :notice: [   45.448568] tst_test.c:760: INFO: Timeout per run is =
-0h 05m 00s
-> > =
-
-> > user  :notice: [   45.449439] add_key02.c:65: FAIL: add_key() failed un=
-expectedly, expected EINVAL: EFAULT
+On Sat, Apr 15, 2017 at 07:56:02PM -0400, Steven Rostedt wrote:
+> On Sun, 16 Apr 2017 06:44:57 +0800
+> kernel test robot <fengguang.wu@intel.com> wrote:
 > =
 
-> In my opinion this is a valid behavior, and the test is just weird; it's =
-passing
-> in *both* an unaddressable payload and an invalid description, so it's no=
-t clear
-> which case it's meant to be testing.  (Generally, if a syscall will fail =
-for
-> more than one reason, it's not guaranteed which error code you'll get.)
+> > Greetings,
+> > =
 
-That is quite common problem with LTP testcases. Do you care to send a
-patch or should I fix that?
+> > 0day kernel testing robot got the below dmesg and the first bad commit =
+is
+> > =
 
-> In any case, once we have a fix merged, it would be nice for there to be =
-an ltp
-> test added for the "NULL payload with nonzero length" case with one of th=
-e key
-> types that crashed the kernel.
+> > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mas=
+ter
+> =
 
-Here as well, feel free to send a patch or at least point us to a
-reproducer that could be turned into a testcase.
+> Hi Fengguang,
+> =
+
+> What's the issues here? There's a lot of data and I don't see any
+> panics. Is the problem this?
+> =
+
+> [    1.432465] Kprobe smoke test: started
+> [    1.463294] WARNING: kernel stack frame pointer at cf493efc in swapper=
+/0:1 has bad value 00200246
+> [    1.463297] unwind stack type:0 next_sp:  (null) mask:2 graph_idx:0
+> [    1.463299] cf493d18: 00000000cf490040 (0xcf490040)
+> [    1.463300] cf493d1c: 00000000cf493d5c (0xcf493d5c)
+> [    1.463304] cf493d20: 00000000c101318f (__save_stack_trace+0x9a/0xa4)
+> [    1.463306] cf493d24: 0000000000490040 (0x490040)
+> [    1.463307] cf493d28: 0000000000000000 ...
+> [    1.463308] cf493d2c: 00000000cf492000 (0xcf492000)
+> [    1.463309] cf493d30: 00000000cf494000 (0xcf494000)
+> [    1.463310] cf493d34: 0000000000000000 ...
+> =
+
+> Which would make sense as kprobes may use ftrace if a probe is set at
+> the same location as a ftrace nop. And the -mfentry moves the place
+> where the ftrace nop is to the start of a function.
+> =
+
+> That is, this bug may have always been there, but without -mfentry, the
+> ftrace nop is not at the start of the function, which means kprobe
+> smoke tests probably would never land on one. But now that -mfentry is
+> implemented, it's much more likely.
+> =
+
+> I'll still look deeper into this. But I also Cc'd Masami.
+
+This seems to be a real bug, unlike some of the other unwinder warnings.
+The following line in ftrace_32.S makes ebp point to regs->flags:
+
+#ifdef CC_USING_FENTRY
+	/* Load 4 off of the parent ip addr into ebp */
+	lea	14*4(%esp), %ebp
+#endif
 
 -- =
 
-Cyril Hrubis
-chrubis(a)suse.cz
+Josh
 
---===============5578349552269903363==--
+--===============6017437001129392256==--
 
