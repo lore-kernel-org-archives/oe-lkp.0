@@ -1,73 +1,57 @@
-Content-Type: multipart/mixed; boundary="===============3684364215648134769=="
+Content-Type: multipart/mixed; boundary="===============4365896205382074220=="
 MIME-Version: 1.0
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Steven Rostedt <rostedt@goodmis.org>
 To: lkp@lists.01.org
 Subject: Re: [x86/ftrace] 644e0e8dc7:
-Date: Thu, 20 Apr 2017 10:30:49 -0500
-Message-ID: <20170420153049.k3uyonu36mbpgx6g@treble>
-In-Reply-To: <20170420103316.5d963895@gandalf.local.home>
+Date: Thu, 20 Apr 2017 11:44:03 -0400
+Message-ID: <20170420114403.3962adb8@gandalf.local.home>
+In-Reply-To: <20170420153049.k3uyonu36mbpgx6g@treble>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3684364215648134769==
+--===============4365896205382074220==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 20, 2017 at 10:33:16AM -0400, Steven Rostedt wrote:
-> On Thu, 20 Apr 2017 08:28:22 -0500
-> Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-> =
 
-> > This seems to be a real bug, unlike some of the other unwinder warnings.
-> > The following line in ftrace_32.S makes ebp point to regs->flags:
-> > =
+[ Fixed Masami's email. I need to nuke the hitachi one from my address
+  book. ]
 
-> > #ifdef CC_USING_FENTRY
-> > 	/* Load 4 off of the parent ip addr into ebp */
-> > 	lea	14*4(%esp), %ebp
-> > #endif
-> > =
 
-> =
+Masami, here's the thread that I Cc'd your wrong email to.
 
-> You need to add the entire context:
-> =
+ https://lists.01.org/pipermail/lkp/2017-April/006165.html
+
+On Thu, 20 Apr 2017 10:30:49 -0500
+Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+
+
+> > We need to load the parent into %edx and we use ebp for both FENTRY and
+> > for MCOUNT. And 32 bit gets much more difficult than 64 bit, with the
+> > requirement that regs is the address of the stack of where the kernel
+> > took the breakpoint or the ftrace callback.  =
 
 > =
 
-> #ifdef CC_USING_FENTRY
->         /* Load 4 off of the parent ip addr into ebp */
->         lea     14*4(%esp), %ebp
-> #endif  =
-
+> Does the &regs->sp thing really need to be a requirement here though?  I
+> know it's due to a HW limitation, but these regs are created in SW.
 > =
 
->         movl    12*4(%esp), %eax                /* Load ip (1st parameter=
-) */
->         subl    $MCOUNT_INSN_SIZE, %eax         /* Adjust ip */
->         movl    0x4(%ebp), %edx                 /* Load parent ip (2nd pa=
-rameter) */
->         movl    function_trace_op, %ecx         /* Save ftrace_pos in 3rd=
- parameter */
->         pushl   %esp                            /* Save pt_regs as 4th pa=
-rameter */
+> If any ftrace users rely on that, could they just be changed to access
+> regs->sp directly?  That would make it a lot easier to simplify this
+> code.
 > =
 
-> We need to load the parent into %edx and we use ebp for both FENTRY and
-> for MCOUNT. And 32 bit gets much more difficult than 64 bit, with the
-> requirement that regs is the address of the stack of where the kernel
-> took the breakpoint or the ftrace callback.
 
-Does the &regs->sp thing really need to be a requirement here though?  I
-know it's due to a HW limitation, but these regs are created in SW.
+This is for the ftrace_regs_caller code which was specifically created
+for kprobes. And its requirement was to simulate a hw interrupt. Thus,
+it being a HW limitation, means it's also a ftrace_regs_caller
+limitation.
 
-If any ftrace users rely on that, could they just be changed to access
-regs->sp directly?  That would make it a lot easier to simplify this
-code.
+Now would my last change work for you? How does the unwinder deal with
+breakpoints?
 
--- =
+-- Steve
 
-Josh
-
---===============3684364215648134769==--
+--===============4365896205382074220==--
 
