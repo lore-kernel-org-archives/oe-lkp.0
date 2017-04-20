@@ -1,79 +1,87 @@
-Content-Type: multipart/mixed; boundary="===============6017437001129392256=="
+Content-Type: multipart/mixed; boundary="===============1099549897242607536=="
 MIME-Version: 1.0
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Steven Rostedt <rostedt@goodmis.org>
 To: lkp@lists.01.org
 Subject: Re: [x86/ftrace] 644e0e8dc7:
-Date: Thu, 20 Apr 2017 08:28:22 -0500
-Message-ID: <20170420132822.l5lcr42ij7u4hngc@treble>
-In-Reply-To: <20170415195602.54f9d410@gandalf.local.home>
+Date: Thu, 20 Apr 2017 10:33:16 -0400
+Message-ID: <20170420103316.5d963895@gandalf.local.home>
+In-Reply-To: <20170420132822.l5lcr42ij7u4hngc@treble>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6017437001129392256==
+--===============1099549897242607536==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Apr 15, 2017 at 07:56:02PM -0400, Steven Rostedt wrote:
-> On Sun, 16 Apr 2017 06:44:57 +0800
-> kernel test robot <fengguang.wu@intel.com> wrote:
+On Thu, 20 Apr 2017 08:28:22 -0500
+Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+
+> This seems to be a real bug, unlike some of the other unwinder warnings.
+> The following line in ftrace_32.S makes ebp point to regs->flags:
 > =
 
-> > Greetings,
-> > =
-
-> > 0day kernel testing robot got the below dmesg and the first bad commit =
-is
-> > =
-
-> > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mas=
-ter
+> #ifdef CC_USING_FENTRY
+> 	/* Load 4 off of the parent ip addr into ebp */
+> 	lea	14*4(%esp), %ebp
+> #endif
 > =
 
-> Hi Fengguang,
-> =
 
-> What's the issues here? There's a lot of data and I don't see any
-> panics. Is the problem this?
-> =
+You need to add the entire context:
 
-> [    1.432465] Kprobe smoke test: started
-> [    1.463294] WARNING: kernel stack frame pointer at cf493efc in swapper=
-/0:1 has bad value 00200246
-> [    1.463297] unwind stack type:0 next_sp:  (null) mask:2 graph_idx:0
-> [    1.463299] cf493d18: 00000000cf490040 (0xcf490040)
-> [    1.463300] cf493d1c: 00000000cf493d5c (0xcf493d5c)
-> [    1.463304] cf493d20: 00000000c101318f (__save_stack_trace+0x9a/0xa4)
-> [    1.463306] cf493d24: 0000000000490040 (0x490040)
-> [    1.463307] cf493d28: 0000000000000000 ...
-> [    1.463308] cf493d2c: 00000000cf492000 (0xcf492000)
-> [    1.463309] cf493d30: 00000000cf494000 (0xcf494000)
-> [    1.463310] cf493d34: 0000000000000000 ...
-> =
-
-> Which would make sense as kprobes may use ftrace if a probe is set at
-> the same location as a ftrace nop. And the -mfentry moves the place
-> where the ftrace nop is to the start of a function.
-> =
-
-> That is, this bug may have always been there, but without -mfentry, the
-> ftrace nop is not at the start of the function, which means kprobe
-> smoke tests probably would never land on one. But now that -mfentry is
-> implemented, it's much more likely.
-> =
-
-> I'll still look deeper into this. But I also Cc'd Masami.
-
-This seems to be a real bug, unlike some of the other unwinder warnings.
-The following line in ftrace_32.S makes ebp point to regs->flags:
 
 #ifdef CC_USING_FENTRY
-	/* Load 4 off of the parent ip addr into ebp */
-	lea	14*4(%esp), %ebp
+        /* Load 4 off of the parent ip addr into ebp */
+        lea     14*4(%esp), %ebp
+#endif  =
+
+
+        movl    12*4(%esp), %eax                /* Load ip (1st parameter) =
+*/
+        subl    $MCOUNT_INSN_SIZE, %eax         /* Adjust ip */
+        movl    0x4(%ebp), %edx                 /* Load parent ip (2nd para=
+meter) */
+        movl    function_trace_op, %ecx         /* Save ftrace_pos in 3rd p=
+arameter */
+        pushl   %esp                            /* Save pt_regs as 4th para=
+meter */
+
+We need to load the parent into %edx and we use ebp for both FENTRY and
+for MCOUNT. And 32 bit gets much more difficult than 64 bit, with the
+requirement that regs is the address of the stack of where the kernel
+took the breakpoint or the ftrace callback.
+
+I did this just to keep out extra #ifdefs. Yes, the ebp would be
+corrupt here, which would only break the unwinder and nothing else. The
+fix would be to add more #ifdefs for when FENTRY and
+CONFIG_FRAME_POINTERS are enabled. If it is that important for you, we
+can do it, I just didn't want to uglify the code anymore.
+
+We could do something ugly like:
+
+#ifdef CC_USING_FENTRY
+#ifdef CONFIG_FRAME_POINTERS
+	movl	15*4(%esp), %edx
+#else
+        /* Load 4 off of the parent ip addr into ebp */
+        lea     14*4(%esp), %ebp
 #endif
+#endif  =
 
--- =
 
-Josh
+        movl    12*4(%esp), %eax                /* Load ip (1st parameter) =
+*/
+        subl    $MCOUNT_INSN_SIZE, %eax         /* Adjust ip */
+#if !defined(CC_USING_FENTRY) || !defined(CONFIG_FRAME_POINTERS)
+        movl    0x4(%ebp), %edx                 /* Load parent ip (2nd para=
+meter) */
+#endif
+        movl    function_trace_op, %ecx         /* Save ftrace_pos in 3rd p=
+arameter */
+        pushl   %esp                            /* Save pt_regs as 4th para=
+meter */
 
---===============6017437001129392256==--
+-- Steve
+
+--===============1099549897242607536==--
 
