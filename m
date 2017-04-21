@@ -1,83 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============1120834475540301312=="
+Content-Type: multipart/mixed; boundary="===============8759542743632809741=="
 MIME-Version: 1.0
 From: Masami Hiramatsu <mhiramat@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [x86/ftrace] 644e0e8dc7:
-Date: Fri, 21 Apr 2017 18:20:45 +0900
-Message-ID: <20170421182045.d318da0bff3549b60dda67f3@kernel.org>
-In-Reply-To: <20170420114403.3962adb8@gandalf.local.home>
+Date: Fri, 21 Apr 2017 18:28:45 +0900
+Message-ID: <20170421182845.4a1aa48449b96c3b605b4fba@kernel.org>
+In-Reply-To: <20170420140846.3b5d6c93@gandalf.local.home>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1120834475540301312==
+--===============8759542743632809741==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 20 Apr 2017 11:44:03 -0400
+On Thu, 20 Apr 2017 14:08:46 -0400
 Steven Rostedt <rostedt@goodmis.org> wrote:
 
-> =
-
-> [ Fixed Masami's email. I need to nuke the hitachi one from my address
->   book. ]
-> =
-
-> =
-
-> Masami, here's the thread that I Cc'd your wrong email to.
-> =
-
->  https://lists.01.org/pipermail/lkp/2017-April/006165.html
-
-Thanks, I followed that comment, =
-
-
-> =
-
-> On Thu, 20 Apr 2017 10:30:49 -0500
+> On Thu, 20 Apr 2017 11:46:20 -0500
 > Josh Poimboeuf <jpoimboe@redhat.com> wrote:
 > =
 
-> =
-
-> > > We need to load the parent into %edx and we use ebp for both FENTRY a=
-nd
-> > > for MCOUNT. And 32 bit gets much more difficult than 64 bit, with the
-> > > requirement that regs is the address of the stack of where the kernel
-> > > took the breakpoint or the ftrace callback.  =
+> > > Now would my last change work for you? How does the unwinder deal with
+> > > breakpoints?  =
 
 > > =
 
-> > Does the &regs->sp thing really need to be a requirement here though?  I
-> > know it's due to a HW limitation, but these regs are created in SW.
+> > Your last change should fix the unwinder warning (I think).
+> =
+
+> I think I'll include that change then.
+> =
+
 > > =
 
-> > If any ftrace users rely on that, could they just be changed to access
-> > regs->sp directly?  That would make it a lot easier to simplify this
-> > code.
+> > However there's still a minor issue.  Because ftrace_regs_caller()
+> > doesn't create a stack frame header (with the original rip and ebp saved
+> > together on the stack), the function being traced won't show up in the
+> > stack trace.
+> > =
+
+> > There are two possible ways to fix it.  One would be to create a stack
+> > frame header after the pt_regs, and point ebp to it.
+> > =
+
+> > Another possibly better way would be to encode ebp with the address of
+> > the pt_regs, similar to what entry code does with ENCODE_FRAME_POINTER.
+> > That would allow the unwinder to read regs->bp.  It would also be able
+> > to dump the pt_regs.
+> =
+
+> Making it simulate a breakpoint even more so is better.
+
+I agreed with this idea. It keeps changes in ftrace local :)
+
+Thank you!
+
+> > If the latter approach works out, we might also want to consider doing
+> > something similar for x86_64.  (Currently it does the former.)
+> =
+
+> Right, because it did not have this stupid way of accessing regs.
+> =
+
+> > =
+
+> > I can look into fixing it, though it may be a few weeks before I get to
+> > it.  In the meantime I think your last change is reasonable.
 > > =
 
 > =
 
-> This is for the ftrace_regs_caller code which was specifically created
-> for kprobes. And its requirement was to simulate a hw interrupt. Thus,
-> it being a HW limitation, means it's also a ftrace_regs_caller
-> limitation.
-
-Yes, this headache issue always annoys me... Since the hardware saves
-regs->sp on int3 entry, it can not be changed so easily.
-
+> Yep, missing out on a trace function in a backtrace is not the end of
+> the world. But stopping your warning is enough for me to include it.
 > =
 
-> Now would my last change work for you? How does the unwinder deal with
-> breakpoints?
-
-It seems good to me.
-
-Thank you,
-
-
-
+> Thanks!
 > =
 
 > -- Steve
@@ -87,5 +84,5 @@ Thank you,
 
 Masami Hiramatsu <mhiramat@kernel.org>
 
---===============1120834475540301312==--
+--===============8759542743632809741==--
 
