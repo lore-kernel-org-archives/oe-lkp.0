@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============3575771074408633992=="
+Content-Type: multipart/mixed; boundary="===============1612178890330624142=="
 MIME-Version: 1.0
 From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [sched, cpumask] 9475ceda45: -6% regression of hackbench.throughput
-Date: Tue, 16 May 2017 13:32:59 +0200
-Message-ID: <20170516113259.4jdcse2ky5oqylgx@hirez.programming.kicks-ass.net>
+Date: Tue, 16 May 2017 15:05:22 +0200
+Message-ID: <20170516130522.qhfqqwtwimlrawpm@hirez.programming.kicks-ass.net>
 In-Reply-To: <20170516013349.GB23599@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3575771074408633992==
+--===============1612178890330624142==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -25,102 +25,187 @@ On Tue, May 16, 2017 at 09:33:49AM +0800, kernel test robot wrote:
 > commit: 9475ceda453545fc55b2ccf30b1fbed0e590fdca ("sched,cpumask: Export =
 for_each_cpu_wrap()")
 > https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git schd/wip
-> =
 
-> in testcase: hackbench
-> on test machine: 112 threads Skylake with 64G memory
+OK, so that patch fixes an actual bug in the for_each_cpu_wrap()
+implementation.
 
-How many sockets does that have? 112 threads is 56 cores. With a 23 core
-part that gives 2 sockets. But 23 is a very weird number of cores to
-have on a part (also wikipedia doesn't yet list the SKX parts).
-
-> with following parameters:
-> =
-
-> 	nr_threads: 50%
-> 	mode: threads
-> 	ipc: socket
-> 	cpufreq_governor: performance
-> =
-
-> test-description: Hackbench is both a benchmark and a stress test for the=
- Linux kernel scheduler.
-> test-url: https://github.com/linux-test-project/ltp/blob/master/testcases=
-/kernel/sched/cfs-scheduler/hackbench.c
-
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
-> =
-
-> =
-
-> To reproduce:
-> =
-
->         git clone https://github.com/01org/lkp-tests.git
->         cd lkp-tests
->         bin/lkp install job.yaml  # job file is attached in this email
->         bin/lkp run     job.yaml
-> =
-
-> testcase/path_params/tbox_group/run: hackbench/50%-threads-socket-perform=
-ance/lkp-skl-sp1
-> =
+$ gcc -O2 -o find-bit find-bit.c ; ./find-bit 0xF00100100F 16
+100100f 16
+---
+24
+36
+37
+38
+39
+0
+1
+2
+3
+12
+---
+24
+36
+38
+1
+3
+12
+---
+24
+36
+37
+38
+39
+0
+1
+2
+3
+12
 
 
-> =
+See how the second series is much shorter..
 
->                                 hackbench.throughput
-> =
-
->   145000 ++--------------------------------------------------------------=
----+
->   140000 *+**.*.*               *. .**.*.*.**.*.**.*.**.*. *.*.**.      .=
-*  |
->          |       *.*.**.*.**.*.*  *                       *       *.**.* =
- *.*
->   135000 ++                                                              =
-   |
->   130000 ++                         O      OO O OO                       =
-   |
->          |              O OO   OO O  O O O                               =
-   |
->   125000 ++                  O                                           =
-   |
->   120000 ++                                                              =
-   |
->   115000 ++                                                              =
-   |
->          |                                                               =
-   |
->   110000 ++     O                                                        =
-   |
->   105000 ++                                                              =
-   |
->          | O       O OO                                                  =
-   |
->   100000 O+ O O  O                                                       =
-   |
->    95000 ++--------------------------------------------------------------=
----+
+This, on top of the 'old' kernel will 'fix' things and regress the same.
 
 
-So what is 'hackbench.throughput' and how do you run it? My hackbench
-only gives a total time, like:
+ kernel/sched/fair.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-$ perf bench sched messaging -g 50 -l 5000
-# Running 'sched/messaging' benchmark:
-# 20 sender and receiver processes per group
-# 50 groups =3D=3D 2000 processes run
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 4f1825d..3316da6 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -5656,7 +5656,7 @@ static int cpumask_next_wrap(int n, const struct cpum=
+ask *mask, int start, int *
+ 	int next;
+ =
 
-     Total time: 5.302 [sec]
+ again:
+-	next =3D find_next_bit(cpumask_bits(mask), nr_cpumask_bits, n+1);
++	next =3D find_next_bit(cpumask_bits(mask), nr_cpumask_bits, n);
+ =
+
+ 	if (*wrapped) {
+ 		if (next >=3D start)
 
 
-And my numbers are nowhere stable enough to conclusively see a
-regression, but I can maybe see a 2% dip on my IVB-EP.
 
-And I so don't want to dig through your script mess again :/
 
---===============3575771074408633992==--
+---
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+#define nr_bits	(sizeof(unsigned long)*8)
+
+int find_first_bit(unsigned long mask)
+{
+	if (mask)
+		return __builtin_ffsl(mask) - 1;
+
+	return nr_bits;
+}
+
+int find_next_bit(int bit, unsigned long mask)
+{
+	return find_first_bit(mask & (~0UL << (bit + 1)));
+}
+
+#define for_each_bit(bit, mask)	\
+	for ((bit) =3D find_first_bit(mask); (bit) < nr_bits; (bit) =3D find_next_=
+bit((bit), (mask)))
+
+
+int find_next_bit_wrap(int bit, unsigned long mask, int start, bool wrap)
+{
+	int next;
+
+again:
+	next =3D find_next_bit(bit, mask);
+
+	if (wrap && bit < start && next >=3D start)
+		return nr_bits;
+
+	if (next >=3D nr_bits) {
+		wrap =3D true;
+		bit =3D -1;
+		goto again;
+	}
+
+	return next;
+}
+
+#define for_each_bit_wrap(bit, mask, start)					\
+	for ((bit) =3D find_next_bit_wrap((start)-1, (mask), (start), false);	\
+	     (bit) < nr_bits;							\
+	     (bit) =3D find_next_bit_wrap((bit), (mask), (start), true))
+
+
+#define for_each_bit_wrap3(bit, mask, start, wrap) \
+	for ((wrap) =3D false, (bit) =3D (start)-1; \
+	     (bit) =3D find_next_bit_wrap((bit), (mask), (start), (wrap)), (bit) <=
+ nr_bits; \
+	     (wrap) =3D true)
+
+
+static int find_next_bit_wrap2(int n, unsigned long mask, int start, int *w=
+rapped)
+{
+       int next;
+
+again:
+       next =3D find_next_bit(n+1, mask);
+
+       if (*wrapped) {
+               if (next >=3D start)
+                       return nr_bits;
+       } else {
+               if (next >=3D nr_bits) {
+                       *wrapped =3D 1;
+                       n =3D -1;
+                       goto again;
+               }
+       }
+
+       return next;
+}
+
+#define for_each_bit_wrap2(cpu, mask, start, wrap)                         =
+    \
+       for ((wrap) =3D 0, (cpu) =3D (start)-1;                             =
+        \
+               (cpu) =3D find_next_bit_wrap2((cpu), (mask), (start), &(wrap=
+)),    \
+               (cpu) < nr_bits; )
+
+void main(int argc, char *argv[])
+{
+	unsigned long mask;
+	int bit, start, wrap;
+
+	if (argc > 1)
+		mask =3D strtoul(argv[1], NULL, 16);
+	if (argc > 2)
+		start =3D atoi(argv[2]);
+
+	printf("%x %d\n", mask, start);
+
+	printf("---\n");
+
+	for_each_bit_wrap(bit, mask, start)
+		printf("%d\n", bit);
+
+	printf("---\n");
+
+	for_each_bit_wrap2(bit, mask, start, wrap)
+		printf("%d\n", bit);
+
+	printf("---\n");
+
+	for_each_bit_wrap3(bit, mask, start, wrap)
+		printf("%d\n", bit);
+
+}
+
+--===============1612178890330624142==--
 
