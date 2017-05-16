@@ -1,54 +1,35 @@
-Content-Type: multipart/mixed; boundary="===============7546696446245297513=="
+Content-Type: multipart/mixed; boundary="===============6954084785127562831=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [asm] c1aad8dcc4: BUG:kernel_hang_in_boot_stage
-Date: Tue, 16 May 2017 13:00:58 +0800
-Message-ID: <20170516050058.GB18220@yexl-desktop>
-In-Reply-To: <20170516012958.GP390@ZenIV.linux.org.uk>
+Subject: Re: [lkp-robot] [sched, cpumask] 9475ceda45: -6% regression of hackbench.throughput
+Date: Tue, 16 May 2017 09:21:01 +0200
+Message-ID: <20170516072101.gchnduy52q5hjpzs@hirez.programming.kicks-ass.net>
+In-Reply-To: <20170516013349.GB23599@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7546696446245297513==
+--===============6954084785127562831==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 05/16, Al Viro wrote:
->On Tue, May 16, 2017 at 09:19:57AM +0800, kernel test robot wrote:
->> =
+On Tue, May 16, 2017 at 09:33:49AM +0800, kernel test robot wrote:
+> =
 
->> FYI, we noticed the following commit:
->> =
+> Greeting,
+> =
 
->> commit: c1aad8dcc49382399f48541dc47b6e30b0ef1b62 ("asm-generic: zero in =
-__get_user(), not __get_user_fn()")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->> =
+> We noticed a -6% regression of hackbench.throughput due to commit:
+> =
 
->> in testcase: trinity
->> with following parameters:
->> =
+> commit: 9475ceda453545fc55b2ccf30b1fbed0e590fdca ("sched,cpumask: Export =
+for_each_cpu_wrap()")
+> https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git schd/wip
+> =
 
->> 	runtime: 300s
->> =
 
->> test-description: Trinity is a linux system call fuzz tester.
->> test-url: http://codemonkey.org.uk/projects/trinity/
->> =
+*blink* that was unexpected. I'll go have a play.
 
->> =
 
->> on test machine: qemu-system-x86_64 -enable-kvm -smp 2 -m 420M
->
->Huh?  That commit touches only include/asm-generic/uaccess.h and
->this file is not even looked at during x86 builds.
-
-Just double checked, this error also showed in parent commit. So it's a fal=
-se
-positive. Sorry for the noise.
-
-Thanks,
-Xiaolong
-
---===============7546696446245297513==--
+--===============6954084785127562831==--
 
