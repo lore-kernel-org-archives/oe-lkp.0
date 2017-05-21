@@ -1,48 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============0505901785205840079=="
+Content-Type: multipart/mixed; boundary="===============7569479917883507388=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [waitid()] 75f64d68f9: Kernel_panic-not_syncing:Attempted_to_kill_init!exitcode=
-Date: Sun, 21 May 2017 12:04:38 -0700
-Message-ID: <CA+55aFzDP03pKyhFtpLE1jTJESP2usOPsu562aQ3jyY7aRFtGA@mail.gmail.com>
+Date: Sun, 21 May 2017 12:35:28 -0700
+Message-ID: <alpine.LFD.2.20.1705211233580.8607@i7.lan>
 In-Reply-To: <20170521073405.GX390@ZenIV.linux.org.uk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0505901785205840079==
+--===============7569479917883507388==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, May 21, 2017 at 12:34 AM, Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> -       __put_user_size((x), (ptr), sizeof(*(ptr)), __pu_err, -EFAULT);  =
-       \
-> +       __put_user_size((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)), _=
-_pu_err, -EFAULT);             \
 
-Hmm. Looking more at this, the "unsafe_get_user()" case is wrong too -
-for types larger than "long".
 
-But I see you have a pull request pending, and I'll take this fix as-is.
+On Sun, 21 May 2017, Al Viro wrote:
+> =
 
-I *think* the right thing to do is to just do
+> fix unsafe_put_user()
 
-   register __inttype(*(ptr)) __val_gu;
+So here's my proposed patch on top of yours to fix unsafe_get_user() with =
 
-for unsafe_get_user.
+"long long" arguments, and to clean up the extra-long line you did.
 
-I think the error crept in because I copied the "get_user_ex()" code,
-which has the same type confusion (ie it doesn't handle values larger
-then long, so "long long" on x86-32 wouldn't work).
-
-That type limitation was ok'ish simply because get_user_ex() was
-x86-only and of very limited use (and clearly never saw the 64-bit
-value on a 32-bit arch case).
-
-But for unsafe_get_user() we obviously want to make it generic enough
-and just be able to replace existing get_user() calls.
+Comments?
 
                   Linus
 
---===============0505901785205840079==--
+---
+ arch/x86/include/asm/uaccess.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+index d9668c3beb5b..661c497465ce 100644
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -703,14 +703,15 @@ extern struct movsl_mask {
+ #define unsafe_put_user(x, ptr, err_label)					\
+ do {										\
+ 	int __pu_err;								\
+-	__put_user_size((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)), __pu_err,=
+ -EFAULT);		\
++	__typeof__(*(ptr)) __pu_val =3D (__typeof__(*(ptr)))(x);			\
++	__put_user_size(__pu_val, (ptr), sizeof(*(ptr)), __pu_err, -EFAULT);	\
+ 	if (unlikely(__pu_err)) goto err_label;					\
+ } while (0)
+ =
+
+ #define unsafe_get_user(x, ptr, err_label)					\
+ do {										\
+ 	int __gu_err;								\
+-	unsigned long __gu_val;							\
++	__inttype(*(ptr)) __gu_val;						\
+ 	__get_user_size(__gu_val, (ptr), sizeof(*(ptr)), __gu_err, -EFAULT);	\
+ 	(x) =3D (__force __typeof__(*(ptr)))__gu_val;				\
+ 	if (unlikely(__gu_err)) goto err_label;					\
+
+--===============7569479917883507388==--
 
