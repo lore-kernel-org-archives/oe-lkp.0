@@ -1,39 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============5238884757422962633=="
+Content-Type: multipart/mixed; boundary="===============8673062595323210540=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Omar Sandoval <osandov@osandov.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [btrfs] beeeccca9b: WARNING:at_mm/util.c:#kvmalloc_node
-Date: Wed, 31 May 2017 08:51:28 +0200
-Message-ID: <20170531065128.GB3853@dhcp22.suse.cz>
-In-Reply-To: <20170531063033.GC1795@yexl-desktop>
+Date: Wed, 31 May 2017 02:12:02 -0700
+Message-ID: <20170531091202.GA769@vader>
+In-Reply-To: <20170531065128.GB3853@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5238884757422962633==
+--===============8673062595323210540==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed 31-05-17 14:30:33, kernel test robot wrote:
+On Wed, May 31, 2017 at 08:51:28AM +0200, Michal Hocko wrote:
+> On Wed 31-05-17 14:30:33, kernel test robot wrote:
+> > =
+
+> > FYI, we noticed the following commit:
+> > =
+
+> > commit: beeeccca9bebcec386cc31c250cff8a06cf27034 ("btrfs: Use kvzalloc =
+instead of kzalloc/vmalloc in alloc_bitmap")
+> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > =
 
-> FYI, we noticed the following commit:
-> =
+> I have intentionally skipped alloc_bitmap because it relies on GFP_NOFS.
+> This doesn't work properly when falling back to vmalloc and that is what
+> the warning reported here says. I believe the right approach is to check
+> whether the GFP_NOFS is _really_ needed and document why if yes.
+> Otherwise drop the NOFS part in one patch with the explanation and
+> convert it to kvmalloc in a separate patch.
 
-> commit: beeeccca9bebcec386cc31c250cff8a06cf27034 ("btrfs: Use kvzalloc in=
-stead of kzalloc/vmalloc in alloc_bitmap")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+Unfortunately we really do need GFP_NOFS here, the free space tree is
+modified while we are committing a fs transaction, sometimes in the
+critical section when we block new operations from joining the
+transaction. Looking at the comment in kvmalloc_node():
 
-I have intentionally skipped alloc_bitmap because it relies on GFP_NOFS.
-This doesn't work properly when falling back to vmalloc and that is what
-the warning reported here says. I believe the right approach is to check
-whether the GFP_NOFS is _really_ needed and document why if yes.
-Otherwise drop the NOFS part in one patch with the explanation and
-convert it to kvmalloc in a separate patch.
+	/*
+	 * vmalloc uses GFP_KERNEL for some internal allocations (e.g page tables)
+	 * so the given set of flags has to be compatible.
+	 */
+	WARN_ON_ONCE((flags & GFP_KERNEL) !=3D GFP_KERNEL);
 
--- =
+has alloc_bitmap() always been broken by virtue of calling vmalloc()
+with GFP_NOFS?
 
-Michal Hocko
-SUSE Labs
-
---===============5238884757422962633==--
+--===============8673062595323210540==--
 
