@@ -1,49 +1,27 @@
-Content-Type: multipart/mixed; boundary="===============0715631567995312500=="
+Content-Type: multipart/mixed; boundary="===============0276116886260246480=="
 MIME-Version: 1.0
-From: Bart Van Assche <Bart.VanAssche@sandisk.com>
+From: David Howells <dhowells@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] 105931d39f: BUG:unable_to_handle_kernel
-Date: Fri, 02 Jun 2017 01:26:21 +0000
-Message-ID: <1496366780.7614.1.camel@sandisk.com>
-In-Reply-To: <20170602011451.GG16905@yexl-desktop>
+Subject: Re: [LTP] [lkp-robot] [KEYS] bdf7c0f8bf: ltp.add_key02.fail
+Date: Fri, 02 Jun 2017 14:43:52 +0100
+Message-ID: <7358.1496411032@warthog.procyon.org.uk>
+In-Reply-To: <20170421044304.GB626@zzz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0715631567995312500==
+--===============0276116886260246480==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2017-06-02 at 09:14 +0800, kernel test robot wrote:
-> FYI, we noticed the following commit:
-> =
+Eric Biggers <ebiggers3@gmail.com> wrote:
 
-> commit: 105931d39f6a37845e07f65f7e23b4bed9d1d8f8 ("Move most of scsi_init=
-_command() into scsi_initialize_rq()")
-> https://github.com/bvanassche/linux for-next
-> =
+> I'll plan to send a patch.  Also, it looks like the testing that LTP does=
+ of
+> add_key() is very sparse, so I'll try to extend it a bit.
 
-> in testcase: boot
-> =
+There's more testing in the testsuite that's with the keyutils package.
 
-> on test machine: qemu-system-x86_64 -enable-kvm -smp 2 -m 512M
-> =
+David
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> [    6.892331] BUG: unable to handle kernel NULL pointer dereference at  =
-         (null)
-
-Hello,
-
-This report applies to a patch series that I pushed a few days ago into the
-for-next branch of my github repository. This patch is obsolete since I rew=
-orked
-the patch series it was part of and has not been posted on any mailing list=
- so
-this report can be ignored.
-
-Bart.
---===============0715631567995312500==--
+--===============0276116886260246480==--
 
