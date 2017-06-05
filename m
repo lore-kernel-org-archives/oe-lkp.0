@@ -1,88 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============0011552753605274559=="
+Content-Type: multipart/mixed; boundary="===============0272704165177684341=="
 MIME-Version: 1.0
-From: Zhuo, Qiuxu <qiuxu.zhuo@intel.com>
+From: Benjamin Coddington <bcodding@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [EDAC, sb_edac] e2f747b1f4: kmsg.EDAC_sbridge:Failed_to_register_device_with_error
-Date: Mon, 05 Jun 2017 13:07:37 +0000
-Message-ID: <E6AF1AFDEA62A94A97508F458CBDD47F6F5A2058@SHSMSX101.ccr.corp.intel.com>
-In-Reply-To: <20170605062231.GA2969@yexl-desktop>
+Subject: Re: [lkp-robot] [fs/locks] 9d21d181d0: will-it-scale.per_process_ops -14.1% regression
+Date: Mon, 05 Jun 2017 14:34:18 -0400
+Message-ID: <E3321EB0-9365-456C-9470-E74291F6FFEA@redhat.com>
+In-Reply-To: <1496332131.2845.8.camel@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0011552753605274559==
+--===============0272704165177684341==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Xiaolong,
+On 1 Jun 2017, at 11:48, Jeff Layton wrote:
 
-   Thanks!  I'll look at it, and feedback ASAP.
+> On Thu, 2017-06-01 at 11:14 -0400, J. Bruce Fields wrote:
+>> On Thu, Jun 01, 2017 at 08:59:21AM -0400, Jeff Layton wrote:
+>>> I'm not so sure. That would only be the case if the thing were =
 
-BR
-qiuxu
+>>> marked
+>>> for manadatory locking (a really rare thing).
+>>>
+>>> The test is really simple and I don't think any read/write activity =
 
------Original Message-----
-From: lkp-robot-request(a)eclists.intel.com [mailto:lkp-robot-request(a)ecl=
-ists.intel.com] On Behalf Of Ye, Xiaolong
-Sent: Monday, June 5, 2017 2:23 PM
-To: Zhuo, Qiuxu <qiuxu.zhuo@intel.com>
-Cc: Borislav Petkov <bp@suse.de>; linux-edac <linux-edac@vger.kernel.or=
-g>; LKML <linux-kernel@vger.kernel.org>; Stephen Rothwell <sfr@canb.auu=
-g.org.au>; lkp(a)01.org
-Subject: [lkp-robot] [EDAC, sb_edac] e2f747b1f4: kmsg.EDAC_sbridge:Failed_t=
-o_register_device_with_error
+>>> is
+>>> involved:
+>>>
+>>>     https://github.com/antonblanchard/will-it-scale/blob/master/tests/l=
+ock1.c
+>>
+>> So it's just F_WRLCK/F_UNLCK in a loop spread across multiple cores?
+>> I'd think real workloads do some work while holding the lock, and a =
 
+>> 15%
+>> regression on just the pure lock/unlock loop might not matter?  But =
 
-FYI, we noticed the following commit:
+>> best
+>> to be careful, I guess.
+>>
+>> --b.
+>>
+>
+> Yeah, that's my take.
+>
+> I was assuming that getting a pid reference would be essentially free,
+> but it doesn't seem to be.
+>
+> So, I think we probably want to avoid taking it for a file_lock that =
 
-commit: e2f747b1f42a2f6b0cf5416be1684c1b94a42f0f ("EDAC, sb_edac: Assign ED=
-AC memory controller per h/w controller") https://git.kernel.org/cgit/linux=
-/kernel/git/next/linux-next.git master
+> we
+> use to request a lock, but do take it for a file_lock that is used to
+> record a lock. How best to code that up, I'm not quite sure...
 
-in testcase: netperf
-with following parameters:
+Maybe as simple as only setting fl_nspid in locks_insert_lock_ctx(), but
+that seems to just take us back to the problem of getting the pid wrong =
 
-	ip: ipv4
-	runtime: 300s
-	nr_threads: 25%
-	cluster: cs-localhost
-	test: TCP_CRR
-	cpufreq_governor: performance
+if
+the lock is inserted later by a different worker than created the =
 
-test-description: Netperf is a benchmark that can be use to measure various=
- aspect of networking performance.
-test-url: http://www.netperf.org/netperf/
+request.
 
+I have a mind now to just drop fl_nspid off the struct file_lock =
 
-on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz with 8G m=
-emory
+completely,
+and instead just carry fl_pid, and when we do F_GETLK, we can do:
 
-caused below changes (please refer to attached dmesg/kmsg for entire log/ba=
-cktrace):
+task =3D find_task_by_pid_ns(fl_pid, init_pid_ns)
+fl_nspid =3D task_pid_nr_ns(task, task_active_pid_ns(current))
 
+That moves all the work off into the F_GETLK case, which I think is not =
 
-kern  :err   : [   17.309988] EDAC sbridge: Some needed devices are missing
-kern  :info  : [   17.504765] ast 0000:07:00.0: fb0: astdrmfb frame buffer =
-device
-kern  :info  : [   17.533508] EDAC MC: Removed device 0 for sbridge_edac.c =
-Broadwell SrcID#0_Ha#0: DEV 0000:ff:12.0
-kern  :err   : [   17.533529] EDAC sbridge: Couldn't find mci handler
-kern  :err   : [   17.533530] EDAC sbridge: Failed to register device with =
-error -19.
+used
+so much.
 
+Ben
 
-
-
-To reproduce:
-
-        git clone https://github.com/01org/lkp-tests.git
-        cd lkp-tests
-        bin/lkp install job.yaml  # job file is attached in this email
-        bin/lkp run     job.yaml
-
-
-
-Thanks,
-Xiaolong
-
---===============0011552753605274559==--
+--===============0272704165177684341==--
 
