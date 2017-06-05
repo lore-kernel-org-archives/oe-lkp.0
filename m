@@ -1,81 +1,68 @@
-Content-Type: multipart/mixed; boundary="===============0572982531681655877=="
+Content-Type: multipart/mixed; boundary="===============6479786943779516347=="
 MIME-Version: 1.0
 From: David Sterba <dsterba@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [btrfs] beeeccca9b: WARNING:at_mm/util.c:#kvmalloc_node
-Date: Mon, 05 Jun 2017 13:43:06 +0200
-Message-ID: <20170605114306.GR12135@suse.cz>
-In-Reply-To: <20170605133023.57a82e4d@canb.auug.org.au>
+Subject: Re: [btrfs] 6d01952397:
+Date: Mon, 05 Jun 2017 14:03:16 +0200
+Message-ID: <20170605120316.GS12135@suse.cz>
+In-Reply-To: <20170605110432.GA124438@inn.lkp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0572982531681655877==
+--===============6479786943779516347==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 05, 2017 at 01:30:23PM +1000, Stephen Rothwell wrote:
-> Hi David,
+Adding linux-btrfs to CC.
+
+On Mon, Jun 05, 2017 at 07:04:32PM +0800, kernel test robot wrote:
+> FYI, we noticed the following commit:
 > =
 
-> On Wed, 31 May 2017 16:58:48 +0200 David Sterba <dsterba@suse.cz> wrote:
-> >
-> > On Wed, May 31, 2017 at 02:29:20AM -0700, Omar Sandoval wrote:
-> > > diff --git a/fs/btrfs/free-space-tree.c b/fs/btrfs/free-space-tree.c
-> > > index fc0bd8406758..5abd3cd71144 100644
-> > > --- a/fs/btrfs/free-space-tree.c
-> > > +++ b/fs/btrfs/free-space-tree.c
-> > > @@ -153,21 +153,18 @@ static inline u32 free_space_bitmap_size(u64 si=
-ze, u32 sectorsize)
-> > >  =
-
-> > >  static u8 *alloc_bitmap(u32 bitmap_size)
-> > >  {
-> > > -	void *mem;
-> > > +	u8 *ret;
-> > > +	unsigned int nofs_flag;
-> > >  =
-
-> > >  	/*
-> > > -	 * The allocation size varies, observed numbers were < 4K up to 16K.
-> > > -	 * Using vmalloc unconditionally would be too heavy, we'll try
-> > > -	 * contiguous allocations first.
-> > > +	 * GFP_NOFS doesn't work with kvmalloc(), but we really can't recur=
-se
-> > > +	 * into the filesystem as the free space bitmap can be modified in =
-the
-> > > +	 * critical section of a transaction commit.
-> > >  	 */
-> > > -	if  (bitmap_size <=3D PAGE_SIZE)
-> > > -		return kzalloc(bitmap_size, GFP_NOFS);
-> > > -
-> > > -	mem =3D kzalloc(bitmap_size, GFP_NOFS | __GFP_NOWARN);
-> > > -	if (mem)
-> > > -		return mem;
-> > > -
-> > > -	return __vmalloc(bitmap_size, GFP_NOFS | __GFP_ZERO, PAGE_KERNEL);
-> > > +	nofs_flag =3D memalloc_nofs_save();
-> > > +	ret =3D kvmalloc(bitmap_size, GFP_KERNEL);
-> > > +	memalloc_nofs_restore(nofs_flag);
-> > > +	return ret;
-> > >  }
-> > >  =
-
-> > >  int convert_free_space_to_bitmaps(struct btrfs_trans_handle *trans,
-> > > =
-
-> > > Dave, would you prefer to replace the patch we have now or do an
-> > > incremental patch on top of it?  =
-
-> > =
-
-> > I'll drop the patch "btrfs: Use kvzalloc instead of kzalloc/vmalloc in
-> > alloc_bitmap", please send an updated version.
+> commit: 6d01952397a3c0b2a5f2d60148ee70a7f0888d40 ("btrfs: scrub: inline h=
+elper scrub_setup_wr_ctx")
+> https://github.com/kdave/btrfs-devel.git misc-next
 > =
 
-> Ping?
+> in testcase: xfstests
+> with following parameters:
+> =
 
-Now fixed, sorry. Top commit 736202ae51c50a6063087011073e91b6a6ae92e9. I
-didn't notice the patch got back to for-next through another branch.
+> 	disk: 6HDD
+> 	fs: btrfs
+> 	test: btrfs-mid2
+> =
 
---===============0572982531681655877==--
+> test-description: xfstests is a regression test suite for xfs and other f=
+iles ystems.
+> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
+
+Thanks for the report. It's a harmless warning, so you can disregard it
+until it'll get fixed.
+
+In more detail:
+
+* btrfs/100 attempts to do dev-replace and inject an EIO
+* there are expected errors reported in dmesg
+* there's also a stacktrace, caused by
+
+fs/btrfs/dev-replace.c:413
+
+409         ret =3D btrfs_dev_replace_finishing(fs_info, ret);
+410         if (ret =3D=3D -EINPROGRESS) {
+411                 ret =3D BTRFS_IOCTL_DEV_REPLACE_RESULT_SCRUB_INPROGRESS;
+412         } else {
+413                 WARN_ON(ret);
+^^^
+414         }
+
+ie. an unexpected return code after dev-replace, but I don't see much
+point reporting it with the stacktrace. The way the error codes get
+reported back to userspace does not seem to be clean, as there are
+-ERRNO codes returned and also positive values from
+BTRFS_IOCTL_DEV_REPLACE_RESULT_* . I don't have a quick fix, this
+touches the kernel/userspace interface, we'll have to be careful about
+the backward compatibility.
+
+--===============6479786943779516347==--
 
