@@ -1,32 +1,38 @@
-Content-Type: multipart/mixed; boundary="===============2186638938549572254=="
+Content-Type: multipart/mixed; boundary="===============2730216405372300246=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Borislav Petkov <bp@alien8.de>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [KEYS] 501901ac94: ltp.add_key02.fail
-Date: Fri, 09 Jun 2017 14:25:29 +0800
-Message-ID: <20170609062529.GF29690@yexl-desktop>
-In-Reply-To: <16951.1496989457@warthog.procyon.org.uk>
+Subject: Re: [lkp-robot] [EDAC, sb_edac] e2f747b1f4: kmsg.EDAC_sbridge:Failed_to_register_device_with_error
+Date: Fri, 09 Jun 2017 11:40:26 +0200
+Message-ID: <20170609094025.ee33cazzf4qdahle@pd.tnic>
+In-Reply-To: <E6AF1AFDEA62A94A97508F458CBDD47F6F5A321C@SHSMSX101.ccr.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2186638938549572254==
+--===============2730216405372300246==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 06/09, David Howells wrote:
->kernel test robot <xiaolong.ye@intel.com> wrote:
->
->> user  :notice: [   82.772613] add_key02.c:65: FAIL: add_key() failed une=
-xpectedly, expected EINVAL: EFAULT
->
->The LTP test needs updating.  Eric has a patch for that.
+On Fri, Jun 09, 2017 at 02:28:30AM +0000, Zhuo, Qiuxu wrote:
+> Hi Xiaolong,
+> =
 
-Got it, thanks for the information.
+>     Fixed this issue by 'EDAC, sb_edac: Avoid creating 'SOCK' EDAC memory=
+ controller' (you were also CCed by 'Reported-by').
+>     Thanks for this test case :-)
 
-Thanks,
-Xiaolong
->
->David
+Xiaolong,
 
---===============2186638938549572254==--
+can you please run Qiuxu's patch to verify it fixes your issue?
+
+Thanks.
+
+-- =
+
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
+
+--===============2730216405372300246==--
 
