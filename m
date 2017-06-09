@@ -1,26 +1,32 @@
-Content-Type: multipart/mixed; boundary="===============5804657840932153623=="
+Content-Type: multipart/mixed; boundary="===============2186638938549572254=="
 MIME-Version: 1.0
-From: David Howells <dhowells@redhat.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [KEYS] 501901ac94: ltp.add_key02.fail
-Date: Fri, 09 Jun 2017 07:24:17 +0100
-Message-ID: <16951.1496989457@warthog.procyon.org.uk>
-In-Reply-To: <20170609053324.GC21477@yexl-desktop>
+Date: Fri, 09 Jun 2017 14:25:29 +0800
+Message-ID: <20170609062529.GF29690@yexl-desktop>
+In-Reply-To: <16951.1496989457@warthog.procyon.org.uk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5804657840932153623==
+--===============2186638938549572254==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-kernel test robot <xiaolong.ye@intel.com> wrote:
+On 06/09, David Howells wrote:
+>kernel test robot <xiaolong.ye@intel.com> wrote:
+>
+>> user  :notice: [   82.772613] add_key02.c:65: FAIL: add_key() failed une=
+xpectedly, expected EINVAL: EFAULT
+>
+>The LTP test needs updating.  Eric has a patch for that.
 
-> user  :notice: [   82.772613] add_key02.c:65: FAIL: add_key() failed unex=
-pectedly, expected EINVAL: EFAULT
+Got it, thanks for the information.
 
-The LTP test needs updating.  Eric has a patch for that.
+Thanks,
+Xiaolong
+>
+>David
 
-David
-
---===============5804657840932153623==--
+--===============2186638938549572254==--
 
