@@ -1,49 +1,99 @@
-Content-Type: multipart/mixed; boundary="===============8904641658063555759=="
+Content-Type: multipart/mixed; boundary="===============7566295307999615386=="
 MIME-Version: 1.0
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [Merge tag 'pci-v4.12-changes' of git] 857f864014: BUG: unable to handle kernel NULL pointer dereference at 00000000000000a8
-Date: Tue, 13 Jun 2017 06:35:18 +0200
-Message-ID: <20170613043518.GA14621@kroah.com>
-In-Reply-To: <20170613043416.GB14217@kroah.com>
+Subject: Re: [random] 2beeae6409:
+Date: Tue, 13 Jun 2017 12:42:11 +0800
+Message-ID: <20170613044211.fzvkjylo5gbuxyee@wfg-t540p.sh.intel.com>
+In-Reply-To: <20170612150806.roubtzjg42hcgm4a@thunk.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8904641658063555759==
+--===============7566295307999615386==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 13, 2017 at 06:34:16AM +0200, Greg Kroah-Hartman wrote:
-> On Mon, Jun 12, 2017 at 10:29:20PM -0600, Logan Gunthorpe wrote:
-> > =
+Hi Ted,
 
-> > =
+Sorry it's a false report. I'll explain below.
 
-> > On 12/06/17 10:18 PM, Greg Kroah-Hartman wrote:
-> > > What test causes so many major numbers to be allocated?  Is this
-> > > in-kernel test code?  Do you really have a system that requires so ma=
-ny
-> > > different drivers that all want a dynamic char major?
-> > =
+On Mon, Jun 12, 2017 at 11:08:06AM -0400, Theodore Ts'o wrote:
+>On Mon, Jun 12, 2017 at 10:18:52AM +0800, kernel test robot wrote:
+>> Greetings,
+>>
+>> 0day kernel testing robot got the below dmesg and the first bad commit is
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mast=
+er
+>>
+>> commit 2beeae6409f4de00545ce0ff7fb0653d4559aa4c
+>	...
+>> +-------------------------------------------------+------------+--------=
+----+---------------+
+>> |                                                 | ee415ae09e | 2beeae6=
+409 | next-20170609 |
+>> +-------------------------------------------------+------------+--------=
+----+---------------+
+>> | boot_successes                                  | 33         | 4      =
+    | 0             |
+>> | boot_failures                                   | 0          | 0      =
+    | 7             |
+>> | BUG:kernel_reboot-without-warning_in_test_stage | 0          | 0      =
+    | 7             |
+>> +-------------------------------------------------+------------+--------=
+----+---------------+
+>
+>Hi Fungguang,
+>
+>I'm confused.  The attached dmesg shows the following, but none of
+>this looks like it has anything to do with changes to
+>drivers/char/random.c:
 
-> > This is a 0day kernel robot test. I'm not sure the motivations of its
-> > design but it seems to be similar to an allyesconfig. So all/most
-> > modules are compiled in and allocating their char device regions on boot
-> > of a qemu instance.
-> =
+This report is caused by these new lines earlier in the dmesg:
 
-> Ah, that makes sense.  Well, someone can always work on expanding the
-> range of dynamic char major numbers if they are running out of them on a
-> real system, I'll gladly take patches for that :)
+[   10.342960] random: key_alloc+0x22d/0x351 get_random_bytes called with c=
+rng_init =3D 0
+[   10.342960] random: key_alloc+0x22d/0x351 get_random_bytes called with c=
+rng_init =3D 0
+[   10.346809] random: batadv_tp_meter_init+0x15/0x17 get_random_bytes call=
+ed with crng_init =3D 0
+[   10.346809] random: batadv_tp_meter_init+0x15/0x17 get_random_bytes call=
+ed with crng_init =3D 0
 
-Or better yet, just turn all char major allocations into dynamic, which
-would be really good for test systems.  I thought someone proposed
-patches for that a long time ago, but I can't find them anymore.  That
-would be the simplest solution here.
+Here the bisect uses string "key_alloc+0x" to tell whether the dmesg
+is good/bad, because that looks like part of a call trace dump.
 
-thnaks,
+I'll fix it by making the call trace pattern detection more strict.
 
-greg k-h
+Regards,
+Fengguang
 
---===============8904641658063555759==--
+>Kernel tests: Boot OK!
+>[   19.211173] rcu-perf: rcu_perf_writer 0 has 100 measurements
+>[   19.211173] rcu-perf: rcu_perf_writer 0 has 100 measurements
+>[   19.331072] rcu-perf: Test complete
+>[   19.331072] rcu-perf: Test complete
+>Sending all processes the KILL signal...
+>Unmounting remote filesystems...
+>Deactivating swap...
+>Unmounting local filesystems...
+>Rebooting...
+>[   83.132709] Unregister pv shared memory for cpu 0
+>[   83.132709] Unregister pv shared memory for cpu 0
+>[   83.133794] rcu-torture: Unscheduled system shutdown detected
+>[   83.133794] rcu-torture: Unscheduled system shutdown detected
+>[   83.136197] reboot: Restarting system
+>[   83.136197] reboot: Restarting system
+>[   83.136949] reboot: machine restart
+>[   83.136949] reboot: machine restart
+>
+>Elapsed time: 90
+>
+>None of the changes in the random tree should be affecting when the
+>test scripts decide to kick off a shutdown, and this looks like it was
+>initiated by the init scripts deciding it was time to shut down.
+>
+>	     	      	      	       - Ted
+
+--===============7566295307999615386==--
 
