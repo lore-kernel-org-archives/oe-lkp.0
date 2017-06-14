@@ -1,48 +1,155 @@
-Content-Type: multipart/mixed; boundary="===============2520850064108342592=="
+Content-Type: multipart/mixed; boundary="===============6141221300478930540=="
 MIME-Version: 1.0
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Stefan Berger <stefanb@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [Merge tag 'pci-v4.12-changes' of git] 857f864014: BUG: unable to handle kernel NULL pointer dereference at 00000000000000a8
-Date: Wed, 14 Jun 2017 11:59:29 +0200
-Message-ID: <CACRpkdZyup+dH6Yp747yLyaC8DSbA8bEnk37gJKnmnjBvjn=-A@mail.gmail.com>
-In-Reply-To: <20170613043416.GB14217@kroah.com>
+Subject: Re: [PATCH v4] Introduce v3 namespaced file capabilities
+Date: Wed, 14 Jun 2017 08:27:40 -0400
+Message-ID: <ce471b11-e76a-25f3-eae8-eca30e7233af@linux.vnet.ibm.com>
+In-Reply-To: <20170613235521.GC15685@mail.hallyn.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2520850064108342592==
+--===============6141221300478930540==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 13, 2017 at 6:34 AM, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On 06/13/2017 07:55 PM, Serge E. Hallyn wrote:
+> Quoting Stefan Berger (stefanb(a)linux.vnet.ibm.com):
+>> On 06/13/2017 01:18 PM, Serge E. Hallyn wrote:
+>>> Quoting Stefan Berger (stefanb(a)linux.vnet.ibm.com):
+>>>> On 05/08/2017 02:11 PM, Serge E. Hallyn wrote:
+>>>>> Root in a non-initial user ns cannot be trusted to write a traditional
+>>>>> security.capability xattr.  If it were allowed to do so, then any
+>>>>> unprivileged user on the host could map his own uid to root in a priv=
+ate
+>>>>> namespace, write the xattr, and execute the file with privilege on the
+>>>>> host.
+>>>>>
+>>>>> However supporting file capabilities in a user namespace is very
+>>>>> desirable.  Not doing so means that any programs designed to run with
+>>>>> limited privilege must continue to support other methods of gaining a=
+nd
+>>>>> dropping privilege.  For instance a program installer must detect
+>>>>> whether file capabilities can be assigned, and assign them if so but =
+set
+>>>>> setuid-root otherwise.  The program in turn must know how to drop
+>>>>> partial capabilities, and do so only if setuid-root.
+>>>> Hi Serge,
+>>>>
+>>>>
+>>>>    I have been looking at patch below primarily to learn how we could
+>>>> apply a similar technique to security.ima and security.evm for a
+>>>> namespaced IMA. From the paragraphs above I thought that you solved
+>>>> the problem of a shared filesystem where one now can write different
+>>>> security.capability xattrs by effectively supporting for example
+>>>> security.capability[uid=3D1000] and security.capability[uid=3D2000]
+>>>> written into the filesystem. Each would then become visible as
+>>>> security.capability if the userns mapping is set appropriately.
+>>>> However, this doesn't seem to be how it is implemented. There seems
+>>>> to be only a single such entry with uid appended to it and, if it
+>>>> was a shared filesystem, the first one to set this attribute blocks
+>>>> everyone else from writing the xattr. Is that how it works? Would
+>>> Yes, that's how this works here.  I'd considered allowing multiple
+>>> entries, but I didn't feel that was needed for this case.  In a previous
+>>> implementation (which is probably in the lkml archives somewhere) I
+>>> supported variable length xattr so that multiple containers could
+>>> each write a value tagged with their own userns.rootid.  Instead,
+>>> in the final version, if root in any parent container writes an
+>>> xattr, it will take effect in child user namespaces.  Which is
+>>> sensible - the parent presumbly laid out the filesystem to create
+>>> the child container.
+>>>
+>>>> that work differently with an overlay filesystem ? I think a similar
+>>> Certainly an overlay filesystem should be an easy case as the container
+>>> can have its own copy of the inode with its own xattr.  Btrfs/zfs
+>>> would be nicer as the whole file wouldn't need to be copied.
+>>>
+>>>> model could also work for IMA, but maybe you have some thoughts. The
+>>>> only thing I would be concerned about is blocking the parent
+>>>> container's root user from setting an xattr.
+>>> So if you have container c1 creating child container c2 on host h1,
+>>> then if c1 creates an xattr, can c2 not use that?  And if h1 writes it,
+>>> can c1 and c2 use it?
+>> In the case of IMA appraisal the extended attribute security.ima
+>> would be a signature. For c1 and c2 to use that file they would all
+>> have to have the same key on their (isolated IMA namespace )
+>> keyring. I think this type of setup could be arranged.
+> Ok.  If it's too much of a restriction then certainly we can make
+> it more flexible.  I don't think we want to support too many versions
+> of magic in this code, so if there's a chance we'll want to make it
+> more flexible later, then perhaps we should discuss the other options
+> in more detail now.
+>
+>> Following your attack description in the introduction I would say
+>> that we would want to prevent malicious modification of a
+>> security.ima extended attribute:
+>>
+>> "Root in a non-initial user ns cannot be trusted to write a traditional =
+security.ima xattr. If it were allowed to do so, then any unprivileged user=
+ on the host could map his own uid to root in a private namespace, write th=
+e signature in the security.ima xattr, and prevent the file from being acce=
+ssible on the host."
+> Of course.
+>
+> The way this is handled with nsfscaps is not by just forbidding the
+> write, but by only respecting the xattr if the rootid which was
+> written in the xattr (which is translated and enforced by the kernel
+> at write time) is root in the caller's user_ns or a parent thereof.
+>
+> I think that would suffice for ima as well?
+>
+>>> If they can't, then I guess for IMA multiple xattrs would need to be
+>>> supported.
+>> I am not sure about that. I suppose any extended attribute
+>> modifications would have to be designed for the case where a shared
+>> filesystem is used that also shares the extended attributes, not
+>> assuming an overlay filesystem that automatically isolates the
+>> extend attributes. With the shared filesystem I'd like to prevent
+>> any type of setting of extended attributes by a child container or
+>> more generally anyone mounting it as a '2nd consumer', which would
+>> make it a shared filesystem. Only the process that mounts a
+>> filesystem as the '1st consumer' would be able to set the extended
+>> attributes.
+> Right, again that's currently the case in the nscaps patch.
+>
+>>   I am assuming that using an overlay fs would always make
+>> you the '1st consumer' -- I would hope that these conditions could
+>> be detected. And probably the process should also write along its
+>> host uid as part of writing out the xattr.
+> I think that's what the rootid in the nscaps xattr is.
+>
+>>   If all extended
+>> attributes were to support this model, maybe the 'uid' could be
+>> associated with the 'name' of the xattr rather than its 'value' (not
+>> sure whether that's possible).
+> Right, I missed that in your original email when I saw it this morning.
+> It's not what my patch does, but it's an interesting idea.  Do you have
+> a patch to that effect?  We might even be able to generalize that to
 
-> Ah, that makes sense.  Well, someone can always work on expanding the
-> range of dynamic char major numbers if they are running out of them on a
-> real system, I'll gladly take patches for that :)
+No, I don't have a patch. It may not be possible to implement it. The =
 
-I started to take a stab at it at one point and incorporated some feedback
-from Torvalds etc, it's here:
-https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/commi=
-t/?h=3Dchrdev-warn&id=3D65e5b1e9eb3f777ab7535b74b490e882eeec79d7
+xattr_handler's  take the name of the xattr as input to get(). So one =
 
-It tries to use all "holes" in the chardev major map to shun in a bit
-more devices when we run out of the high dynamic major range.
+could try to encode the mapped uid in the name. However, that could lead =
 
-Making them all dynamic seemed dangerous because I was afraid
-of userspace ABI breakage because of old userlands with
-static mknod:s.
+to problems with stale xattrs in a shared filesystem over time unless =
 
-I lost interest when it turned out that the zeroday QEMU stuff was
-generating random machines that have no counterpart in the real
-world, and then the exercise seemed a bit academic.
+one could limit the number of xattrs with the same prefix, e.g., =
 
-The last failures were due to (AFAICT) some relationship between
-major and minor numbers that I didn't untangle.
+security.capability*. So I doubt that it would work. Otherwise it would =
 
-If there is interest I could try to revive it.
+be good if the value was wrapped in a data structure use by all xattrs, =
 
-Yours,
-Linus Walleij
+but that doesn't seem to be the case, either. So I guess we have to go =
 
---===============2520850064108342592==--
+into each type of value structure and add a uid field there.
+
+> namespace any security.* xattrs.  Wouldn't be automatically enabled
+> for anything but ima and capabilities, but we could make the infrastructu=
+re
+> generic and re-usable.
+>
+
+
+--===============6141221300478930540==--
 
