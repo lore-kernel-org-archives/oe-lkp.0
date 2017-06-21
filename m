@@ -1,61 +1,38 @@
-Content-Type: multipart/mixed; boundary="===============0572622834308066847=="
+Content-Type: multipart/mixed; boundary="===============8050813423597263323=="
 MIME-Version: 1.0
-From: Oleg Nesterov <oleg@redhat.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [mm] 1be7107fbe: kernel_BUG_at_mm/mmap.c
-Date: Wed, 21 Jun 2017 21:33:39 +0200
-Message-ID: <20170621193338.GA29222@redhat.com>
-In-Reply-To: <CA+55aFxzdtZ787snPhLhU8+2xUHKd74Som82yRCiFSQVXCNFhA@mail.gmail.com>
+Date: Wed, 21 Jun 2017 12:39:33 -0700
+Message-ID: <CA+55aFyTRPOuzo2-Q0xM4+D6naGxFtaE_7dbxXOOdwQ4QGPfpw@mail.gmail.com>
+In-Reply-To: <20170621193338.GA29222@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0572622834308066847==
+--===============8050813423597263323==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 06/21, Linus Torvalds wrote:
->
-> Hugh, Michal - I also merged Helge's drop-up cleanup, is there
-> anything I've missed? I think Oleg had something, but I can't recall
-> right now, and I might just have missed it.
+On Wed, Jun 21, 2017 at 12:33 PM, Oleg Nesterov <oleg@redhat.com> wrote:
+> -               if (unlikely(address + 65536 + 32 * sizeof(unsigned long)=
+ < regs->sp)) {
+> +if (0)         if (unlikely(address + 65536 + 32 * sizeof(unsigned long)=
+ < regs->sp)) {
 
-Well, I meant, perhaps we need a bit more changes to ensure that a new
-GROWSDOWN vma can't come without a gap below. But this is really minor,
-we can do this later even if I am right.
+This smells bad.
 
-However, there is another regression reported by Cyrill. Fixed by the
-patch below.
+That test is not about grow-down or even the guard page. That test is
+that it's always wrong to grow down the stack below %esp.
 
-And yes, I think this check should either go away, or we need to make
-it more clever.
+Except we allow some slop, because certain instructions take the page
+fault before actually updating %rsp.
 
-In short, the vma created by mmap(MAP_GROWSDOWN) does not grow down
-automatically, because of this check.
+So that patch is not correct. We want a page fault (and *not* expand
+the stack) if somebody accesses below the stack pointer.
 
-This worked before, because with the stack guard page at ->vm_start
-__do_page_fault() hits this expand-stack path only if the stack grows
-by more than PAGE_SIZE, now it is called every time. I'll send the
-patch tomorrow if nobody else does this before.
+If we had a regression, it's due to something else.
 
-Oleg.
----
+                  Linus
 
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index 8ad91a0..edc5d68 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -1416,7 +1416,7 @@ __do_page_fault(struct pt_regs *regs, unsigned long e=
-rror_code,
- 		 * and pusha to work. ("enter $65535, $31" pushes
- 		 * 32 pointers and then decrements %sp by 65535.)
- 		 */
--		if (unlikely(address + 65536 + 32 * sizeof(unsigned long) < regs->sp)) {
-+if (0)		if (unlikely(address + 65536 + 32 * sizeof(unsigned long) < regs->=
-sp)) {
- 			bad_area(regs, error_code, address);
- 			return;
- 		}
-
-
---===============0572622834308066847==--
+--===============8050813423597263323==--
 
