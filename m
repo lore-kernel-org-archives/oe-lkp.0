@@ -1,114 +1,91 @@
-Content-Type: multipart/mixed; boundary="===============9192783645122454387=="
+Content-Type: multipart/mixed; boundary="===============9005114911815946108=="
 MIME-Version: 1.0
-From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+From: Arnd Bergmann <arnd@arndb.de>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v4] Introduce v3 namespaced file capabilities
-Date: Sun, 18 Jun 2017 21:13:28 -0400
-Message-ID: <e9720595-2cdc-4dd7-57e7-95b85896d4ac@linux.vnet.ibm.com>
-In-Reply-To: <20170618221418.GA364@mail.hallyn.com>
+Subject: Re: 44693c7b10 ("clk: keystone: TI_SCI_PROTOCOL is needed for clk driver"): BUG: kernel reboot-without-warning in boot stage
+Date: Wed, 21 Jun 2017 10:32:50 +0200
+Message-ID: <CAK8P3a0Smk6FeStV34Ph0sJsJtB6f6BDkRSDYQPPYe5qgWUj3w@mail.gmail.com>
+In-Reply-To: <594a2a3e.ZtbVhapbFuMvL9dQ%fengguang.wu@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9192783645122454387==
+--===============9005114911815946108==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 06/18/2017 06:14 PM, Serge E. Hallyn wrote:
-> Quoting Stefan Berger (stefanb(a)linux.vnet.ibm.com):
->> On 06/14/2017 11:05 PM, Serge E. Hallyn wrote:
->>> On Wed, Jun 14, 2017 at 08:27:40AM -0400, Stefan Berger wrote:
->>>> On 06/13/2017 07:55 PM, Serge E. Hallyn wrote:
->>>>> Quoting Stefan Berger (stefanb(a)linux.vnet.ibm.com):
->>>>>>   If all extended
->>>>>> attributes were to support this model, maybe the 'uid' could be
->>>>>> associated with the 'name' of the xattr rather than its 'value' (not
->>>>>> sure whether that's possible).
->>>>> Right, I missed that in your original email when I saw it this mornin=
-g.
->>>>> It's not what my patch does, but it's an interesting idea.  Do you ha=
-ve
->>>>> a patch to that effect?  We might even be able to generalize that to
->>>> No, I don't have a patch. It may not be possible to implement it.
->>>> The xattr_handler's  take the name of the xattr as input to get().
->>> That may be ok though.  Assume the host created a container with
->>> 100000 as the uid for root, which created a container with 130000 as
->>> uid for root.  If root in the nested container tries to read the
->>> xattr, the kernel can check for security.foo[130000] first, then
->>> security.foo[100000], then security.foo.  Or, it can do a listxattr
->>> and look for those.  Am I overlooking one?
->>>
->>>> So one could try to encode the mapped uid in the name. However, that
->>> I thought that's exactly what you were suggesting in your original
->>> email?  "security.capability[uid=3D2000]"
->>>
->>>> could lead to problems with stale xattrs in a shared filesystem over
->>>> time unless one could limit the number of xattrs with the same
->>>> prefix, e.g., security.capability*. So I doubt that it would work.
->>> Hm.  Yeah.  But really how many setups are there like that?  I.e. if
->>> you launch a regular docker or lxd container, the image doesn't do a
->>> bind mount of a shared image, it layers something above it or does a
->>> copy.  What setups do you know of where multiple containers in different
->>> user namespaces mount the same filesystem shared and writeable?
->> I think I have something now that accomodates userns access to
->> security.capability:
->>
->> https://github.com/stefanberger/linux/commits/xattr_for_userns
-> Thanks!
+On Wed, Jun 21, 2017 at 10:11 AM, kernel test robot
+<fengguang.wu@intel.com> wrote:
+> Greetings,
 >
->> Encoding of uid is in the attribute name now as follows:
->> security.foo(a)uid=3D<uid>
->>
->> 1) The 'plain' security.capability is only r/w accessible from the
->> host (init_user_ns).
->> 2) When userns reads/writes 'security.capability' it will read/write
->> security.capability(a)uid=3D<uid> instead, with uid being the uid of
->> root , e.g. 1000.
->> 3) When listing xattrs for userns the host's security.capability is
->> filtered out to avoid read failures iof 'security.capability' if
->> security.capability(a)uid=3D<uid> is read but not there. (see 1) and 2))
->> 4) security.capability* may all be read from anywhere
->> 5) security.capability(a)uid=3D<uid> may be read or written directly
->> from a userns if <uid> matches the uid of root (current_uid())
-> This looks very close to what we want.  One exception - we do want
-> to support root in a user namespace being able to write
-> security.capability(a)uid=3D<x> where <x> is a valid uid mapped in its
-> namespace.  In that case the name should be rewritten to be
-> security.capability(a)uid=3D<y> where y is the unmapped kuid.val.
-
-I'll try to write a patch on top of the existing one.
-
-Can  you adapt your test cases. I haven't tried them, but having them =
-
-would be important.
-
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 >
-> Eric,
+> https://github.com/0day-ci/linux/commits/Arnd-Bergmann/clk-keystone-TI_SC=
+I_PROTOCOL-is-needed-for-clk-driver/20170621-135518
 >
-> so far my patch hasn't yet hit Linus' tree.  Given that, would you
-> mind taking a look and seeing what you think of this approach?  If
-> we may decide to go this route, we probably should stop my patch
-> from hitting Linus' tree before we have to continue supporting it.
+> commit 44693c7b10a06f9872daf39a7e303d35faad7b04
+> Author:     Arnd Bergmann <arnd@arndb.de>
+> AuthorDate: Tue Jun 20 22:12:37 2017 +0200
+> Commit:     0day robot <fengguang.wu@intel.com>
+> CommitDate: Wed Jun 21 13:55:21 2017 +0800
 >
-> Stefan,
+>     clk: keystone: TI_SCI_PROTOCOL is needed for clk driver
 >
-> so do you think the general framework could be re-used by IMA?  If
-> we can move the capability-specific code in fs/xattr.c into
-> an LSM hook in a way that IMA can also use, then this is a definite
-> win.
-
-I am fairly sure that this would be easily possible and some of the if =
-
-statements with string comparisons would likely only have to be extended =
-
-with another comparison.
-
-Regards,
-    Stefan
-
+>     CONFIG_COMPILE_TEST allows building a configuration without
+>     TI_SCI_PROTOCOL, which then fails to link:
 >
-> -serge
+>     drivers/clk/keystone/sci-clk.o: In function `ti_sci_clk_probe':
+>     sci-clk.c:(.text.ti_sci_clk_probe+0x4c): undefined reference to `devm=
+_ti_sci_get_handle'
+>
+>     This makes it a hard dependency. Right now, that means we can't
+>     actually compile-test the driver unless ARCH_KEYSTONE is set as
+>     well, but we can fix that by allowing TI_MESSAGE_MANAGER to
+>     be selected for COMPILE_TEST as well.
+>
+>     Fixes: b745c0794e2f ("clk: keystone: Add sci-clk driver support")
+>     Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>
+> 4dea04c1f1  Merge tag 'meson-clk-for-4.13-2' of git://github.com/BayLibre=
+/clk-meson into clk-next
+> 44693c7b10  clk: keystone: TI_SCI_PROTOCOL is needed for clk driver
+> 44693c7b10  clk: keystone: TI_SCI_PROTOCOL is needed for clk driver
+> +-------------------------------------------------+------------+---------=
+---+------------+
+> |                                                 | 4dea04c1f1 | 44693c7b=
+10 | 44693c7b10 |
+> +-------------------------------------------------+------------+---------=
+---+------------+
+> | boot_successes                                  | 163        | 19      =
+   | 19         |
+> | boot_failures                                   | 0          | 2       =
+   | 2          |
+> | BUG:kernel_reboot-without-warning_in_boot_stage | 0          | 2       =
+   | 2          |
+> +-------------------------------------------------+------------+---------=
+---+------------+
+>
+> [   46.831858] VFS: Warning: trinity-c0 using old stat() call. Recompile =
+your binary.
+> [   46.833720] mmap: trinity-c0 (1250) uses deprecated remap_file_pages()=
+ syscall. See Documentation/vm/remap_file_pages.txt.
+> [  105.608167] softdog: Initiating system reboot
 >
 
+Hi Fengguang,
 
---===============9192783645122454387==--
+I looked at the ouput but cannot make sense of it. My patch should have
+no effect at all on x86, other than preventing a driver from being built th=
+at
+cannot be linked anyway.
+
+The "failing" log output shows a trinity process that has managed to trigge=
+r the
+boot watchdog, while the "succeeding" one has triggered the OOM killer.
+
+My best guess is that there is a bug somewhere that you accidentally
+ran into during the testing, but it will only happen some of the time.
+
+        Arnd
+
+--===============9005114911815946108==--
 
