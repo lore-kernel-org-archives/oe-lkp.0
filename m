@@ -1,38 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============8050813423597263323=="
+Content-Type: multipart/mixed; boundary="===============8863450745138173005=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Hugh Dickins <hughd@google.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [mm] 1be7107fbe: kernel_BUG_at_mm/mmap.c
-Date: Wed, 21 Jun 2017 12:39:33 -0700
-Message-ID: <CA+55aFyTRPOuzo2-Q0xM4+D6naGxFtaE_7dbxXOOdwQ4QGPfpw@mail.gmail.com>
-In-Reply-To: <20170621193338.GA29222@redhat.com>
+Date: Wed, 21 Jun 2017 12:39:52 -0700
+Message-ID: <alpine.LSU.2.11.1706211238180.17033@eggly.anvils>
+In-Reply-To: <CA+55aFxzdtZ787snPhLhU8+2xUHKd74Som82yRCiFSQVXCNFhA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8050813423597263323==
+--===============8863450745138173005==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 21, 2017 at 12:33 PM, Oleg Nesterov <oleg@redhat.com> wrote:
-> -               if (unlikely(address + 65536 + 32 * sizeof(unsigned long)=
- < regs->sp)) {
-> +if (0)         if (unlikely(address + 65536 + 32 * sizeof(unsigned long)=
- < regs->sp)) {
+On Wed, 21 Jun 2017, Linus Torvalds wrote:
+> On Tue, Jun 20, 2017 at 7:41 PM, Hugh Dickins <hughd@google.com> wrote:
+> > On Wed, 21 Jun 2017, kernel test robot wrote:
+> >
+> > Thanks for the report: yes, this is the same one as Dave Jones
+> > found yesterday, which is fixed by this patch posted last night:
+> =
 
-This smells bad.
+> .. and that patch is in current -git now, so hopefully we're all good.
+> =
 
-That test is not about grow-down or even the guard page. That test is
-that it's always wrong to grow down the stack below %esp.
+> Hugh, Michal - I also merged Helge's drop-up cleanup, is there
+> anything I've missed? I think Oleg had something, but I can't recall
+> right now, and I might just have missed it.
 
-Except we allow some slop, because certain instructions take the page
-fault before actually updating %rsp.
+No, the tree looks good now, thanks.  You're right that Oleg raised a
+concern about how mmap(MAP_GROWSDOWN) behaves, and is wondering about
+how to make it more sensible: but that's neither a vulnerability nor
+a regression - he agreed minor, to think about another time.  He's
+also been fielding a concern from the CRIU people, we're hoping that's
+just something they need to fix at their end - ah, no, I see Oleg has
+just replied ahead of me, not digested yet, I'll look into that later...
 
-So that patch is not correct. We want a page fault (and *not* expand
-the stack) if somebody accesses below the stack pointer.
+Hugh
 
-If we had a regression, it's due to something else.
-
-                  Linus
-
---===============8050813423597263323==--
+--===============8863450745138173005==--
 
