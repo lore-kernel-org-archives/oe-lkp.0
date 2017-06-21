@@ -1,31 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============8008328990760682042=="
+Content-Type: multipart/mixed; boundary="===============0572622834308066847=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Oleg Nesterov <oleg@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [mm] 1be7107fbe: kernel_BUG_at_mm/mmap.c
-Date: Wed, 21 Jun 2017 11:29:34 -0700
-Message-ID: <CA+55aFxzdtZ787snPhLhU8+2xUHKd74Som82yRCiFSQVXCNFhA@mail.gmail.com>
-In-Reply-To: <alpine.LSU.2.11.1706201937340.14450@eggly.anvils>
+Date: Wed, 21 Jun 2017 21:33:39 +0200
+Message-ID: <20170621193338.GA29222@redhat.com>
+In-Reply-To: <CA+55aFxzdtZ787snPhLhU8+2xUHKd74Som82yRCiFSQVXCNFhA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8008328990760682042==
+--===============0572622834308066847==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 20, 2017 at 7:41 PM, Hugh Dickins <hughd@google.com> wrote:
-> On Wed, 21 Jun 2017, kernel test robot wrote:
+On 06/21, Linus Torvalds wrote:
 >
-> Thanks for the report: yes, this is the same one as Dave Jones
-> found yesterday, which is fixed by this patch posted last night:
+> Hugh, Michal - I also merged Helge's drop-up cleanup, is there
+> anything I've missed? I think Oleg had something, but I can't recall
+> right now, and I might just have missed it.
 
-.. and that patch is in current -git now, so hopefully we're all good.
+Well, I meant, perhaps we need a bit more changes to ensure that a new
+GROWSDOWN vma can't come without a gap below. But this is really minor,
+we can do this later even if I am right.
 
-Hugh, Michal - I also merged Helge's drop-up cleanup, is there
-anything I've missed? I think Oleg had something, but I can't recall
-right now, and I might just have missed it.
+However, there is another regression reported by Cyrill. Fixed by the
+patch below.
 
-               Linus
+And yes, I think this check should either go away, or we need to make
+it more clever.
 
---===============8008328990760682042==--
+In short, the vma created by mmap(MAP_GROWSDOWN) does not grow down
+automatically, because of this check.
+
+This worked before, because with the stack guard page at ->vm_start
+__do_page_fault() hits this expand-stack path only if the stack grows
+by more than PAGE_SIZE, now it is called every time. I'll send the
+patch tomorrow if nobody else does this before.
+
+Oleg.
+---
+
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index 8ad91a0..edc5d68 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -1416,7 +1416,7 @@ __do_page_fault(struct pt_regs *regs, unsigned long e=
+rror_code,
+ 		 * and pusha to work. ("enter $65535, $31" pushes
+ 		 * 32 pointers and then decrements %sp by 65535.)
+ 		 */
+-		if (unlikely(address + 65536 + 32 * sizeof(unsigned long) < regs->sp)) {
++if (0)		if (unlikely(address + 65536 + 32 * sizeof(unsigned long) < regs->=
+sp)) {
+ 			bad_area(regs, error_code, address);
+ 			return;
+ 		}
+
+
+--===============0572622834308066847==--
 
