@@ -1,42 +1,56 @@
-Content-Type: multipart/mixed; boundary="===============8863450745138173005=="
+Content-Type: multipart/mixed; boundary="===============6527707706452035021=="
 MIME-Version: 1.0
-From: Hugh Dickins <hughd@google.com>
+From: Oleg Nesterov <oleg@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [mm] 1be7107fbe: kernel_BUG_at_mm/mmap.c
-Date: Wed, 21 Jun 2017 12:39:52 -0700
-Message-ID: <alpine.LSU.2.11.1706211238180.17033@eggly.anvils>
-In-Reply-To: <CA+55aFxzdtZ787snPhLhU8+2xUHKd74Som82yRCiFSQVXCNFhA@mail.gmail.com>
+Date: Wed, 21 Jun 2017 22:27:51 +0200
+Message-ID: <20170621202751.GA29638@redhat.com>
+In-Reply-To: <CA+55aFyTRPOuzo2-Q0xM4+D6naGxFtaE_7dbxXOOdwQ4QGPfpw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8863450745138173005==
+--===============6527707706452035021==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 21 Jun 2017, Linus Torvalds wrote:
-> On Tue, Jun 20, 2017 at 7:41 PM, Hugh Dickins <hughd@google.com> wrote:
-> > On Wed, 21 Jun 2017, kernel test robot wrote:
-> >
-> > Thanks for the report: yes, this is the same one as Dave Jones
-> > found yesterday, which is fixed by this patch posted last night:
-> =
+On 06/21, Linus Torvalds wrote:
+>
+> On Wed, Jun 21, 2017 at 12:33 PM, Oleg Nesterov <oleg@redhat.com> wrote:
+> > -               if (unlikely(address + 65536 + 32 * sizeof(unsigned lon=
+g) < regs->sp)) {
+> > +if (0)         if (unlikely(address + 65536 + 32 * sizeof(unsigned lon=
+g) < regs->sp)) {
+>
+> This smells bad.
 
-> .. and that patch is in current -git now, so hopefully we're all good.
-> =
+Yes.
 
-> Hugh, Michal - I also merged Helge's drop-up cleanup, is there
-> anything I've missed? I think Oleg had something, but I can't recall
-> right now, and I might just have missed it.
+> That test is not about grow-down or even the guard page. That test is
+> that it's always wrong to grow down the stack below %esp.
 
-No, the tree looks good now, thanks.  You're right that Oleg raised a
-concern about how mmap(MAP_GROWSDOWN) behaves, and is wondering about
-how to make it more sensible: but that's neither a vulnerability nor
-a regression - he agreed minor, to think about another time.  He's
-also been fielding a concern from the CRIU people, we're hoping that's
-just something they need to fix at their end - ah, no, I see Oleg has
-just replied ahead of me, not digested yet, I'll look into that later...
+Sure.
 
-Hugh
+but let me repeat that this test was essentially dismissed when the stack
+guard page was introduced. Simply because do_page_pault() never hits (before
+the recent patch) this need-to-grow-VM_GROWSDOWN-vma path if the stack grows
+by less than PAGE_SIZE.
 
---===============8863450745138173005==--
+IOP. Suppose that an application does
+
+	char * p =3D mmap(MAP_GROWSDOWN);
+	for (;;)
+		*p-- =3D 'x';
+		=
+
+
+before the "larger stack guard gap, between vmas" change the stack was
+enlarged by do_anonymous_page(), __do_page_fault() didn't hit this path.
+
+Now __do_page_fault() tries to expand the stack itself, and this check
+fails.
+
+Oleg.
+
+
+--===============6527707706452035021==--
 
