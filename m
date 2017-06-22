@@ -1,46 +1,67 @@
-Content-Type: multipart/mixed; boundary="===============7480652939530367180=="
+Content-Type: multipart/mixed; boundary="===============2866658726957814424=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Stephen Rothwell <sfr@canb.auug.org.au>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [mm] 1be7107fbe: kernel_BUG_at_mm/mmap.c
-Date: Wed, 21 Jun 2017 15:19:36 -0700
-Message-ID: <CA+55aFzVEzC=FkFihCOyHyDkMP+eq_DR826oXLinrJ7YmENZ7Q@mail.gmail.com>
-In-Reply-To: <20170621205617.GA29841@redhat.com>
+Subject: Re: [lkp-robot] [libata] 818831c8b2: kmsg.ata#.#:failed_to_set_xfermode(err_mask=#)
+Date: Thu, 22 Jun 2017 10:43:48 +1000
+Message-ID: <20170622104348.169aa800@canb.auug.org.au>
+In-Reply-To: <20170615025854.GB14017@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7480652939530367180==
+--===============2866658726957814424==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 21, 2017 at 1:56 PM, Oleg Nesterov <oleg@redhat.com> wrote:
+Hi all,
+
+On Thu, 15 Jun 2017 10:58:54 +0800 kernel test robot <xiaolong.ye@intel.c=
+om> wrote:
 >
-> I understand. My point is that this check was invalidated by stack-guard-=
-page
-> a long ago, and this means that we add the user-visible change now.
+> FYI, we noticed the following commit:
+> =
 
-Yeah. I guess we could consider it an *old* regression that got fixed,
-but if people started relying on the regression...
+> commit: 818831c8b22f75353f59a63a484e20736c0567c9 ("libata: implement SECU=
+RITY PROTOCOL IN/OUT")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> =
 
->> Do you have a pointer to the report for this regression? I must have mis=
-sed it.
->
-> See http://marc.info/?t=3D149794523000001&r=3D1&w=3D2
+> in testcase: unixbench
+> with following parameters:
+> =
 
-Ok.
+> 	runtime: 300s
+> 	nr_task: 100%
+> 	test: fsbuffer
+> =
 
-And thinking about it, while that is a silly test-case, the notion of
-"create top-down segment, then start populating it _before_ moving the
-stack pointer into it" is actually perfectly valid.
+> test-description: UnixBench is the original BYTE UNIX benchmark suite aim=
+s to test performance of Unix-like system.
+> test-url: https://github.com/kdlucas/byte-unixbench
+> =
 
-So I guess checking against the stack pointer is wrong in that case -
-at least if the stack pointer isn't inside that vma to begin with.
+> =
 
-So yes, removing that check looks like the right thing to do for now.
+> on test machine: 8 threads Intel(R) Core(TM) i7 CPU 870 @ 2.93GHz with 4G=
+ memory
+> =
 
-Do you want to send me the patch if you already have a commit message etc?
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
 
-                    Linus
+> =
 
---===============7480652939530367180==--
+> [   16.104144] ata2.00: Security Log not supported
+> [   16.104411] ata2.01: ATAPI: HL-DT-ST DVD+/-RW GH50N, B102, max UDMA/100
+> [   16.104757] ata2.00: failed to set xfermode (err_mask=3D0x40)
+
+Just wondering if this has been fixed.
+
+-- =
+
+Cheers,
+Stephen Rothwell
+
+--===============2866658726957814424==--
 
