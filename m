@@ -1,105 +1,83 @@
-Content-Type: multipart/mixed; boundary="===============1416716290920855295=="
+Content-Type: multipart/mixed; boundary="===============2562439047486741341=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Hugh Dickins <hughd@google.com>
 To: lkp@lists.01.org
-Subject: Re: 44693c7b10 ("clk: keystone: TI_SCI_PROTOCOL is needed for clk driver"): BUG: kernel reboot-without-warning in boot stage
-Date: Thu, 22 Jun 2017 09:06:17 +0800
-Message-ID: <20170622010617.7zpk3y5fb5onj6dx@wfg-t540p.sh.intel.com>
-In-Reply-To: <CAK8P3a0Smk6FeStV34Ph0sJsJtB6f6BDkRSDYQPPYe5qgWUj3w@mail.gmail.com>
+Subject: Re: [lkp-robot] [mm] 1be7107fbe: kernel_BUG_at_mm/mmap.c
+Date: Wed, 21 Jun 2017 18:07:29 -0700
+Message-ID: <alpine.LSU.2.11.1706211725260.18020@eggly.anvils>
+In-Reply-To: <CA+55aFzVEzC=FkFihCOyHyDkMP+eq_DR826oXLinrJ7YmENZ7Q@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1416716290920855295==
+--===============2562439047486741341==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Arnd,
+On Wed, 21 Jun 2017, Linus Torvalds wrote:
+> On Wed, Jun 21, 2017 at 1:56 PM, Oleg Nesterov <oleg@redhat.com> wrote:
+> >
+> > I understand. My point is that this check was invalidated by stack-guar=
+d-page
+> > a long ago, and this means that we add the user-visible change now.
+> =
 
-On Wed, Jun 21, 2017 at 10:32:50AM +0200, Arnd Bergmann wrote:
->On Wed, Jun 21, 2017 at 10:11 AM, kernel test robot
-><fengguang.wu@intel.com> wrote:
->> Greetings,
->>
->> 0day kernel testing robot got the below dmesg and the first bad commit is
->>
->> https://github.com/0day-ci/linux/commits/Arnd-Bergmann/clk-keystone-TI_S=
-CI_PROTOCOL-is-needed-for-clk-driver/20170621-135518
->>
->> commit 44693c7b10a06f9872daf39a7e303d35faad7b04
->> Author:     Arnd Bergmann <arnd@arndb.de>
->> AuthorDate: Tue Jun 20 22:12:37 2017 +0200
->> Commit:     0day robot <fengguang.wu@intel.com>
->> CommitDate: Wed Jun 21 13:55:21 2017 +0800
->>
->>     clk: keystone: TI_SCI_PROTOCOL is needed for clk driver
->>
->>     CONFIG_COMPILE_TEST allows building a configuration without
->>     TI_SCI_PROTOCOL, which then fails to link:
->>
->>     drivers/clk/keystone/sci-clk.o: In function `ti_sci_clk_probe':
->>     sci-clk.c:(.text.ti_sci_clk_probe+0x4c): undefined reference to `dev=
-m_ti_sci_get_handle'
->>
->>     This makes it a hard dependency. Right now, that means we can't
->>     actually compile-test the driver unless ARCH_KEYSTONE is set as
->>     well, but we can fix that by allowing TI_MESSAGE_MANAGER to
->>     be selected for COMPILE_TEST as well.
->>
->>     Fixes: b745c0794e2f ("clk: keystone: Add sci-clk driver support")
->>     Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->>
->> 4dea04c1f1  Merge tag 'meson-clk-for-4.13-2' of git://github.com/BayLibr=
-e/clk-meson into clk-next
->> 44693c7b10  clk: keystone: TI_SCI_PROTOCOL is needed for clk driver
->> 44693c7b10  clk: keystone: TI_SCI_PROTOCOL is needed for clk driver
->> +-------------------------------------------------+------------+--------=
-----+------------+
->> |                                                 | 4dea04c1f1 | 44693c7=
-b10 | 44693c7b10 |
->> +-------------------------------------------------+------------+--------=
-----+------------+
->> | boot_successes                                  | 163        | 19     =
-    | 19         |
->> | boot_failures                                   | 0          | 2      =
-    | 2          |
->> | BUG:kernel_reboot-without-warning_in_boot_stage | 0          | 2      =
-    | 2          |
->> +-------------------------------------------------+------------+--------=
-----+------------+
->>
->> [   46.831858] VFS: Warning: trinity-c0 using old stat() call. Recompile=
- your binary.
->> [   46.833720] mmap: trinity-c0 (1250) uses deprecated remap_file_pages(=
-) syscall. See Documentation/vm/remap_file_pages.txt.
->> [  105.608167] softdog: Initiating system reboot
->>
->
->Hi Fengguang,
->
->I looked at the ouput but cannot make sense of it. My patch should have
->no effect at all on x86, other than preventing a driver from being built t=
-hat
->cannot be linked anyway.
+> Yeah. I guess we could consider it an *old* regression that got fixed,
+> but if people started relying on the regression...
+> =
 
-Yes, I can confirm that the kconfig is the same for the 2 kernel
-images tested.
+> >> Do you have a pointer to the report for this regression? I must have m=
+issed it.
+> >
+> > See http://marc.info/?t=3D149794523000001&r=3D1&w=3D2
+> =
 
->The "failing" log output shows a trinity process that has managed to trigg=
-er the
->boot watchdog, while the "succeeding" one has triggered the OOM killer.
->
->My best guess is that there is a bug somewhere that you accidentally
->ran into during the testing, but it will only happen some of the time.
+> Ok.
+> =
 
-I guess so, too. In our testbed, a small fraction of kernel images
-suffer from reboot/hang issues in QEMU, which cannot be reasonably
-explained at all. They could lead to such false reports.
+> And thinking about it, while that is a silly test-case, the notion of
+> "create top-down segment, then start populating it _before_ moving the
+> stack pointer into it" is actually perfectly valid.
+> =
 
-A straightforward workaround is to add a note that this class of
-boot errors could have false reports.
+> So I guess checking against the stack pointer is wrong in that case -
+> at least if the stack pointer isn't inside that vma to begin with.
+> =
 
-Regards,
-Fengguang
+> So yes, removing that check looks like the right thing to do for now.
+> =
 
---===============1416716290920855295==--
+> Do you want to send me the patch if you already have a commit message etc?
+
+I have a bit of a bad feeling about this.
+
+Perhaps it's just sentimental attachment to all those weird
+and ancient stack pointer checks in arch/<some>/fault.c.
+
+We have been inconsistent: cris frv m32r m68k microblaze mn10300
+openrisc powerpc tile um x86 have such checks, the others don't.
+So that's a good reason to delete them.
+
+But at least at the moment those checks impose some sanity:
+just a page less than we had imagined for several years.
+Once we remove them, they cannot go back.  Should we now
+complicate them with an extra page of slop?
+
+I'm not entirely persuaded by your pre-population argument:
+it's perfectly possible to prepare a MAP_GROWSDOWN area with
+an initial size, that's populated in a normal way, before handing
+off for stack expansion - isn't it?
+
+I'd be interested to hear more about that (redhat internal) bug
+report that Oleg mentions: whether it gives stronger grounds for
+making this sudden change than the CRIU testcase.
+
+I can go ahead and create a patch if Oleg is not there at the
+moment - but I might prefer his or your name on it - particularly
+if we're rushing it in before consulting the arch maintainers
+whose work we would be deleting.
+
+Queasily,
+Hugh
+
+--===============2562439047486741341==--
 
