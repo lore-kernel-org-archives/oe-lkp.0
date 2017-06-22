@@ -1,83 +1,56 @@
-Content-Type: multipart/mixed; boundary="===============2562439047486741341=="
+Content-Type: multipart/mixed; boundary="===============2908339411034328363=="
 MIME-Version: 1.0
 From: Hugh Dickins <hughd@google.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [mm] 1be7107fbe: kernel_BUG_at_mm/mmap.c
-Date: Wed, 21 Jun 2017 18:07:29 -0700
-Message-ID: <alpine.LSU.2.11.1706211725260.18020@eggly.anvils>
-In-Reply-To: <CA+55aFzVEzC=FkFihCOyHyDkMP+eq_DR826oXLinrJ7YmENZ7Q@mail.gmail.com>
+Date: Wed, 21 Jun 2017 21:23:21 -0700
+Message-ID: <alpine.LSU.2.11.1706212050330.19676@eggly.anvils>
+In-Reply-To: <20170621193338.GA29222@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2562439047486741341==
+--===============2908339411034328363==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 21 Jun 2017, Linus Torvalds wrote:
-> On Wed, Jun 21, 2017 at 1:56 PM, Oleg Nesterov <oleg@redhat.com> wrote:
+On Wed, 21 Jun 2017, Oleg Nesterov wrote:
+> On 06/21, Linus Torvalds wrote:
 > >
-> > I understand. My point is that this check was invalidated by stack-guar=
-d-page
-> > a long ago, and this means that we add the user-visible change now.
+> > Hugh, Michal - I also merged Helge's drop-up cleanup, is there
+> > anything I've missed? I think Oleg had something, but I can't recall
+> > right now, and I might just have missed it.
 > =
 
-> Yeah. I guess we could consider it an *old* regression that got fixed,
-> but if people started relying on the regression...
-> =
+> Well, I meant, perhaps we need a bit more changes to ensure that a new
+> GROWSDOWN vma can't come without a gap below. But this is really minor,
+> we can do this later even if I am right.
 
-> >> Do you have a pointer to the report for this regression? I must have m=
-issed it.
-> >
-> > See http://marc.info/?t=3D149794523000001&r=3D1&w=3D2
-> =
+I'm mortified.  At last I understand you, and see that you spelt it out
+perfectly clearly in your "unmapped_gap" mail earlier in another thread,
+when I was in a rush to prioritize what bugs needed looking at first,
+and brusquely persuaded you to say that this is only a minor defect.
 
-> Ok.
-> =
+Well, yes, it's not a new vulnerability and it's not a new regression,
+and the users of MAP_GROWSDOWN are few and far between, and often the
+assignment of holes will work out just fine; but it's an embarrassing
+oversight on my part, that everything was geared to inflating the
+size of the existing VM_GROWS vmas, completely forgetting to inflate
+the size of the area to be added.
 
-> And thinking about it, while that is a silly test-case, the notion of
-> "create top-down segment, then start populating it _before_ moving the
-> stack pointer into it" is actually perfectly valid.
-> =
+Without reading you thoroughly (and all the fault mine not yours),
+I had thought you were referring to the way that a MAP_GROWSDOWN
+area may be assigned a place in which the stack_guard_gap would
+immediately prevent it from growing down afterwards (and I'm not
+sure what to do about that).  But your point is that it may be
+assigned a place in which there is not even a stack_guard_gap
+below it.  (And so the bug that trinity found would not even
+depend upon MAP_FIXED.)
 
-> So I guess checking against the stack pointer is wrong in that case -
-> at least if the stack pointer isn't inside that vma to begin with.
-> =
+I'll go back to read you again and think on the best way to
+correct that, I hope it won't need lots of plumbing through
+different levels.
 
-> So yes, removing that check looks like the right thing to do for now.
-> =
-
-> Do you want to send me the patch if you already have a commit message etc?
-
-I have a bit of a bad feeling about this.
-
-Perhaps it's just sentimental attachment to all those weird
-and ancient stack pointer checks in arch/<some>/fault.c.
-
-We have been inconsistent: cris frv m32r m68k microblaze mn10300
-openrisc powerpc tile um x86 have such checks, the others don't.
-So that's a good reason to delete them.
-
-But at least at the moment those checks impose some sanity:
-just a page less than we had imagined for several years.
-Once we remove them, they cannot go back.  Should we now
-complicate them with an extra page of slop?
-
-I'm not entirely persuaded by your pre-population argument:
-it's perfectly possible to prepare a MAP_GROWSDOWN area with
-an initial size, that's populated in a normal way, before handing
-off for stack expansion - isn't it?
-
-I'd be interested to hear more about that (redhat internal) bug
-report that Oleg mentions: whether it gives stronger grounds for
-making this sudden change than the CRIU testcase.
-
-I can go ahead and create a patch if Oleg is not there at the
-moment - but I might prefer his or your name on it - particularly
-if we're rushing it in before consulting the arch maintainers
-whose work we would be deleting.
-
-Queasily,
 Hugh
 
---===============2562439047486741341==--
+--===============2908339411034328363==--
 
