@@ -1,136 +1,251 @@
-Content-Type: multipart/mixed; boundary="===============4153963170716421809=="
+Content-Type: multipart/mixed; boundary="===============0104716972464791681=="
 MIME-Version: 1.0
-From: Hugh Dickins <hughd@google.com>
+From: Stefan Berger <stefanb@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [mm] 1be7107fbe: kernel_BUG_at_mm/mmap.c
-Date: Thu, 22 Jun 2017 11:04:18 -0700
-Message-ID: <alpine.LSU.2.11.1706221042550.20265@eggly.anvils>
-In-Reply-To: <20170622151623.GB762@redhat.com>
+Subject: [PATCH 2/3] Enable capabilities of files from shared filesystem
+Date: Thu, 22 Jun 2017 14:59:48 -0400
+Message-ID: <1498157989-11814-3-git-send-email-stefanb@linux.vnet.ibm.com>
+In-Reply-To: <1498157989-11814-1-git-send-email-stefanb@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4153963170716421809==
+--===============0104716972464791681==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 22 Jun 2017, Oleg Nesterov wrote:
-> On 06/21, Hugh Dickins wrote:
-> >
-> > On Wed, 21 Jun 2017, Linus Torvalds wrote:
-> > > On Wed, Jun 21, 2017 at 1:56 PM, Oleg Nesterov <oleg@redhat.com> wr=
-ote:
-> > > >
-> > > > I understand. My point is that this check was invalidated by stack-=
-guard-page
-> > > > a long ago, and this means that we add the user-visible change now.
-> > >
-> > > Yeah. I guess we could consider it an *old* regression that got fixed,
-> > > but if people started relying on the regression...
-> > >
-> > > >> Do you have a pointer to the report for this regression? I must ha=
-ve missed it.
-> > > >
-> > > > See http://marc.info/?t=3D149794523000001&r=3D1&w=3D2
-> > >
-> > > Ok.
-> > >
-> > > And thinking about it, while that is a silly test-case, the notion of
-> > > "create top-down segment, then start populating it _before_ moving the
-> > > stack pointer into it" is actually perfectly valid.
-> > >
-> > > So I guess checking against the stack pointer is wrong in that case -
-> > > at least if the stack pointer isn't inside that vma to begin with.
-> > >
-> > > So yes, removing that check looks like the right thing to do for now.
-> > >
-> > > Do you want to send me the patch if you already have a commit message=
- etc?
-> >
-> > I have a bit of a bad feeling about this.
-> >
-> > Perhaps it's just sentimental attachment to all those weird
-> > and ancient stack pointer checks in arch/<some>/fault.c.
-> >
-> > We have been inconsistent: cris frv m32r m68k microblaze mn10300
-> > openrisc powerpc tile um x86 have such checks, the others don't.
-> > So that's a good reason to delete them.
-> =
+The previous patch changed existing behavior in so far as the
+capabilities of files from a shared filesystem or bind-mounted files
+were hidden from a user namespace. This patch makes these capabilties
+visible to the user namespace again, unless the user namespace has set
+its own capabilities, which will hide them until those set by the
+user namespace are removed.
 
-> OK, I didn't bother to check other acrhitectures, thanks...
-> =
+Also the listing of xattrs is adjusted. To avoid double listing of
+names of extended attributes, which can happen if the container and the
+host for example have security.capability, we now check that we do not
+add the same extended attribute to the list twice.
 
-> > But at least at the moment those checks impose some sanity:
-> > just a page less than we had imagined for several years.
-> > Once we remove them, they cannot go back.  Should we now
-> > complicate them with an extra page of slop?
-> =
+Signed-off-by: Stefan Berger <stefanb@linux.vnet.ibm.com>
+Signed-off-by: Serge Hallyn <serge@hallyn.com>
+Reviewed-by: Serge Hallyn <serge@hallyn.com>
+---
+ fs/xattr.c | 90 ++++++++++++++++++++++++++++++++++++++++++++--------------=
+----
+ 1 file changed, 64 insertions(+), 26 deletions(-)
 
-> Something like the patch below? Yes, I thought about this too.
+diff --git a/fs/xattr.c b/fs/xattr.c
+index 64c4b40..045be85 100644
+--- a/fs/xattr.c
++++ b/fs/xattr.c
+@@ -339,6 +339,26 @@ xattr_rewrite_userns_xattr(char *name)
+ }
+ =
 
-Yes, that patch (times 11 for all the architectures) would be a good
-conservative choice: imposing the traditional sanity check, but
-weakened by one page to match what we've inadvertently been doing
-for the last four years.
+ /*
++ * xattr_list_contains - check whether an xattr list already contains a ne=
+edle
++ *
++ * @list    : 0-byte separated strings
++ * @listlen : length of the list
++ * @needle  : the needle to search for
++ */
++static int
++xattr_list_contains(const char *list, size_t listlen, const char *needle)
++{
++	size_t o =3D 0;
++
++	while (o < listlen) {
++		if (!strcmp(&list[o], needle))
++			return true;
++		o +=3D strlen(&list[o]) + 1;
++	}
++	return false;
++}
++
++/*
+  * xattr_list_userns_rewrite - Rewrite list of xattr names for user namesp=
+aces
+  *                             or determine needed size for attribute list
+  *                             in case size =3D=3D 0
+@@ -377,12 +397,16 @@ xattr_list_userns_rewrite(char *list, ssize_t size, s=
+ize_t list_maxlen)
+ 		if (!len)
+ 			break;
+ =
 
-Would deserve a comment (since it makes no sense in any tree by
-itself), but unfair to ask you to write that: I must get this mail
-off before a meeting, can't think what to say now.
+-		newname =3D xattr_rewrite_userns_xattr(name);
+-		if (IS_ERR(newname)) {
+-			d_off =3D PTR_ERR(newname);
+-			goto out_free;
++		if (xattr_is_userns_supported(name, false) >=3D 0)
++			newname =3D name;
++		else {
++			newname =3D xattr_rewrite_userns_xattr(name);
++			if (IS_ERR(newname)) {
++				d_off =3D PTR_ERR(newname);
++				goto out_free;
++			}
+ 		}
+-		if (newname) {
++		if (newname && !xattr_list_contains(nlist, d_off, newname)) {
+ 			nlen =3D strlen(newname);
+ =
 
-But my own preference this morning is to do nothing, until we hear
-more complaints and can classify them as genuine userspace breakage,
-as opposed to testcases surprised by a new kernel implementation.
+ 			if (nlist) {
+@@ -413,13 +437,19 @@ xattr_list_userns_rewrite(char *list, ssize_t size, s=
+ize_t list_maxlen)
+  * security.foo to protect these extended attributes.
+  *
+  * Reading:
+- * 1) Reading security.foo from a user namespace will read
+- *    security.foo(a)uid=3D<uid> of the parent user namespace instead with=
+ uid
+- *    being the mapping of root in that parent user namespace. An
+- *    exception is if root is mapped to uid 0 on the host, and in this case
+- *    we will read security.foo directly.
+- *    -> reading security.foo will read security.foo(a)uid=3D1000 for a uid
+- *       mapping of root to 1000.
++ * 1a) Reading security.foo from a user namespace will read
++ *     security.foo(a)uid=3D<uid> of the parent user namespace instead wit=
+h uid
++ *     being the mapping of root in that parent user namespace. An
++ *     exception is if root is mapped to uid 0 on the host, and in this ca=
+se
++ *     we will read security.foo directly.
++ *     -> reading security.foo will read security.foo(a)uid=3D1000 for a u=
+id
++ *        mapping of root to 1000.
++ *
++ * 1b) If security.foo(a)uid=3D<uid> is not available, the security.foo of=
+ the
++ *     parent namespace is tried to be read. This procedure is repeated up=
+ to
++ *     the init user namespace. This step only applies for reading of exte=
+nded
++ *     attributes and provides the same behavior as older systems where the
++ *     host's extended attributes applied to user namespaces.
+  *
+  * 2) All security.foo(a)uid=3D<uid> with valid uid mappings in the user n=
+amespace
+  *    an be read. The uid within the user namespace will be mapped to the
+@@ -434,7 +464,7 @@ xattr_list_userns_rewrite(char *list, ssize_t size, siz=
+e_t list_maxlen)
+  * 3) No other security.foo* can be read.
+  *
+  * Writing and removing:
+- * The same rules for reading apply to writing and removing.
++ * The same rules for reading apply to writing and removing, except for 1b=
+).
+  *
+  * This function returns a buffer with either the original name or the
+  * user namespace adjusted name of the extended attribute.
+@@ -444,11 +474,12 @@ xattr_list_userns_rewrite(char *list, ssize_t size, s=
+ize_t list_maxlen)
+  * @is_write: whether this is for writing an xattr
+  */
+ char *
+-xattr_userns_name(const char *fullname, const char *suffix)
++xattr_userns_name(const char *fullname, const char *suffix,
++		  struct user_namespace *userns)
+ {
+ 	size_t buflen;
+ 	char *buffer, *ptr, *n_uidstr;
+-	kuid_t root_uid =3D make_kuid(current_user_ns(), 0);
++	kuid_t root_uid =3D make_kuid(userns, 0);
+ 	int idx, error;
+ 	size_t len =3D 0, slen;
+ =
 
-Hugh
+@@ -467,7 +498,7 @@ xattr_userns_name(const char *fullname, const char *suf=
+fix)
+ 		 * init_user_ns or userns with root mapped to uid 0
+ 		 * may read security.foo directly
+ 		 */
+-		if (current_user_ns() =3D=3D &init_user_ns ||
++		if (userns =3D=3D &init_user_ns ||
+ 		    __kuid_val(root_uid) =3D=3D 0)
+ 			goto out_copy;
+ =
 
-> =
+@@ -485,7 +516,7 @@ xattr_userns_name(const char *fullname, const char *suf=
+fix)
+ 	 * We must have fullname[len] =3D=3D '@'.
+ 	 */
+ 	error =3D xattr_parse_uid_make_kuid(&fullname[len],
+-					  current_user_ns(),
++					  userns,
+ 					  &n_uidstr);
+ 	if (error)
+ 		return ERR_PTR(error);
+@@ -540,7 +571,7 @@ __vfs_setxattr(struct dentry *dentry, struct inode *ino=
+de, const char *name,
+ 		return -EOPNOTSUPP;
+ 	if (size =3D=3D 0)
+ 		value =3D "";  /* empty EA, do not remove */
+-	nsuffix =3D xattr_userns_name(fullname, name);
++	nsuffix =3D xattr_userns_name(fullname, name, current_user_ns());
+ 	if (IS_ERR(nsuffix))
+ 		return PTR_ERR(nsuffix);
+ 	ret =3D handler->set(handler, dentry, inode, nsuffix, value, size, flags);
+@@ -703,18 +734,24 @@ __vfs_getxattr(struct dentry *dentry, struct inode *i=
+node, const char *name,
+ 	const struct xattr_handler *handler;
+ 	char *nsuffix;
+ 	const char *fullname =3D name;
+-	int ret;
++	int ret, userns_supt_xattr;
++	struct user_namespace *userns =3D current_user_ns();
+ =
 
-> I simply do not know. Honestly, I do not even know why MAP_GROWSDOWN
-> exists. I mean, I do not understand how user-space can actually use it
-> to get auto-growing, the usage of MAP_GROWSDOWN in (say) criu is clear.
-> The main thread's stack can grow, but this is only because it is placed
-> at the right place, above mm->mmap_base in case of top-down layout.
-> =
+ 	handler =3D xattr_resolve_name(inode, &name);
+ 	if (IS_ERR(handler))
+ 		return PTR_ERR(handler);
+ 	if (!handler->get)
+ 		return -EOPNOTSUPP;
+-	nsuffix =3D xattr_userns_name(fullname, name);
+-	if (IS_ERR(nsuffix))
+-		return PTR_ERR(nsuffix);
+-	ret =3D handler->get(handler, dentry, inode, nsuffix, value, size);
+-	kfree(nsuffix);
++	userns_supt_xattr =3D (xattr_is_userns_supported(fullname, false) >=3D 0);
++	do {
++		nsuffix =3D xattr_userns_name(fullname, name, userns);
++		if (IS_ERR(nsuffix))
++			return PTR_ERR(nsuffix);
++		ret =3D handler->get(handler, dentry, inode, nsuffix, value,
++				   size);
++		kfree(nsuffix);
++		userns =3D userns->parent;
++	} while ((ret =3D=3D -ENODATA) && userns && userns_supt_xattr);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(__vfs_getxattr);
+@@ -737,7 +774,8 @@ vfs_getxattr(struct dentry *dentry, const char *name, v=
+oid *value, size_t size)
+ 				XATTR_SECURITY_PREFIX_LEN)) {
+ 		int ret;
+ 		const char *suffix =3D name + XATTR_SECURITY_PREFIX_LEN;
+-		char *nsuffix =3D xattr_userns_name(name, suffix);
++		char *nsuffix =3D xattr_userns_name(name, suffix,
++						  current_user_ns());
+ =
 
-> > I'm not entirely persuaded by your pre-population argument:
-> > it's perfectly possible to prepare a MAP_GROWSDOWN area with
-> > an initial size, that's populated in a normal way, before handing
-> > off for stack expansion - isn't it?
-> =
+ 		if (IS_ERR(nsuffix))
+ 			return PTR_ERR(nsuffix);
+@@ -794,7 +832,7 @@ __vfs_removexattr(struct dentry *dentry, const char *na=
+me)
+ 		return PTR_ERR(handler);
+ 	if (!handler->set)
+ 		return -EOPNOTSUPP;
+-	nsuffix =3D xattr_userns_name(fullname, name);
++	nsuffix =3D xattr_userns_name(fullname, name, current_user_ns());
+ 	if (IS_ERR(nsuffix))
+ 		return PTR_ERR(nsuffix);
+ 	ret =3D handler->set(handler, dentry, inode, nsuffix, NULL, 0,
+-- =
 
-> Exactly.
-> =
+2.7.4
 
-> > I'd be interested to hear more about that (redhat internal) bug
-> > report that Oleg mentions: whether it gives stronger grounds for
-> > making this sudden change than the CRIU testcase.
-> =
 
-> Probably not. Well, the customer reported multiple problems, but most
-> of them were caused by rhel-specific bugs. As for "MAP_GROWSDOWN does
-> not grow", most probably this was another test-case, not the real
-> application. I will ask and report back if this is not true.
-> =
-
-> In short, I agree with any decision. Even with "we do not care if we
-> break some artificial test-cases".
-> =
-
-> Oleg.
-> ---
-> =
-
-> --- a/arch/x86/mm/fault.c
-> +++ b/arch/x86/mm/fault.c
-> @@ -1409,7 +1409,7 @@ __do_page_fault(struct pt_regs *regs, unsigned long=
- error_code,
->  		bad_area(regs, error_code, address);
->  		return;
->  	}
-> -	if (error_code & PF_USER) {
-> +	if ((error_code & PF_USER) && (address + PAGE_SIZE < vma->vm_start)) {
->  		/*
->  		 * Accessing the stack below %sp is always a bug.
->  		 * The large cushion allows instructions like enter
-
---===============4153963170716421809==--
+--===============0104716972464791681==--
 
