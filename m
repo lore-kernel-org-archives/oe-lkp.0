@@ -1,102 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============3705854161004088248=="
+Content-Type: multipart/mixed; boundary="===============1886832922808713748=="
 MIME-Version: 1.0
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Oleg Nesterov <oleg@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 0/3] Enable namespaced file capabilities
-Date: Thu, 22 Jun 2017 13:33:20 -0700
-Message-ID: <2bf08b3e-27f4-3592-d5e2-a823401ac644@schaufler-ca.com>
-In-Reply-To: <10fb9c1b-e9af-336c-9a1b-cf95259cfaf3@linux.vnet.ibm.com>
+Subject: Re: [lkp-robot] [mm] 1be7107fbe: kernel_BUG_at_mm/mmap.c
+Date: Thu, 22 Jun 2017 22:51:15 +0200
+Message-ID: <20170622205115.GA4938@redhat.com>
+In-Reply-To: <alpine.LSU.2.11.1706221042550.20265@eggly.anvils>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3705854161004088248==
+--===============1886832922808713748==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 6/22/2017 1:12 PM, Stefan Berger wrote:
-> On 06/22/2017 03:59 PM, Casey Schaufler wrote:
->> On 6/22/2017 11:59 AM, Stefan Berger wrote:
->>> This series of patches primary goal is to enable file capabilities
->>> in user namespaces without affecting the file capabilities that are
->>> effective on the host. This is to prevent that any unprivileged user
->>> on the host maps his own uid to root in a private namespace, writes
->>> the xattr, and executes the file with privilege on the host.
->>>
->>> We achieve this goal by writing extended attributes with a different
->>> name when a user namespace is used. If for example the root user
->>> in a user namespace writes the security.capability xattr, the name
->>> of the xattr that is actually written is encoded as
->>> security.capability(a)uid=3D1000 for root mapped to uid 1000 on the hos=
-t.
->> You need to identify the instance of the user namespace for
->> this to work right on a system with multiple user namespaces.
->> If I have a shared filesystem mounted in two different user
->> namespaces a change by one will affect the other.
+On 06/22, Hugh Dickins wrote:
 >
-> Two different user namespaces with different uid mappings will not affect=
- each other.
+> On Thu, 22 Jun 2017, Oleg Nesterov wrote:
+> >
+> > Something like the patch below? Yes, I thought about this too.
+>
+> Yes, that patch (times 11 for all the architectures)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Yes, yes, this is clear to me. But only after you have already explained
+this in your previous email ;)
 
-But two namespaces with the same uid mapping will, and I
-don't think this meets the principle of least astonishment.
-I also object to associating capabilities with UIDs. The
-whole point of capabilities is to disassociate UID 0 from
-privilege. What you've done is explicitly associate a UID
-with the ability to have privilege. That's an architectural
-regression.
+> But my own preference this morning is to do nothing, until we hear
+> more complaints and can classify them as genuine userspace breakage,
+> as opposed to testcases surprised by a new kernel implementation.
 
->
-> If root in userns1 mapped to uid 1000 (size 1000) writes security.capabil=
-ity, it will write security.capability(a)uid=3D1000 into the fs.
-> If root in userns2 mapped to uid 2000 (size 1000) writes security.capabil=
-ity, it will write security.capability(a)uid=3D2000 into the fs.
->
-> Neither of the two will see each other's security.capability, but each wi=
-ll see their own 'security.capability'.
->
-> Assume now userns1 has a size of 2000, so overlapping with userns2, it wi=
-ll now see userns2's security.capability(a)uid=3D1000 as well as its own 's=
-ecurity.capability'. security.capability(a)uid=3D1000 (of userns2) in usern=
-s1 will not have an effect on effective file capabilities.
->
->> ... unless I'm missing something obvious about namespace behavior.
->>
->>> When listing the xattrs on the host, the existing security.capability
->>> as well as the security.capability(a)uid=3D1000 will be shown. Inside t=
-he
->>> namespace only 'security.capability', with the value of
->>> security.capability(a)uid=3D1000, is visible.
->>>
->>> To maintain compatibility with existing behavior, the value of
->>> security.capability of the host is shown inside the user namespace
->>> once the security.capability of the user namespace has been removed
->>> (which really removes security.capability(a)uid=3D1000). Writing to
->>> an extended attribute inside a user namespace effectively hides the
->>> extended attribute of the host.
->>>
->>> The general framework that is established with these patches can
->>> be applied to other extended attributes as well, such as security.ima
->>> or the 'trusted.' prefix . Another extended attribute that needed to
->>> be enabled here is 'security.selinux,' since otherwise this extended
->>> attribute would not be shown anymore inside a user namespace.
->>>
->>> Regards,
->>>     Stefan & Serge
->>>
->>>
->>> Stefan Berger (3):
->>>    xattr: Enable security.capability in user namespaces
->>>    Enable capabilities of files from shared filesystem
->>>    Enable security.selinux in user namespaces
->>>
->>>   fs/xattr.c               | 472 ++++++++++++++++++++++++++++++++++++++=
-++++++++-
->>>   security/commoncap.c     |  36 +++-
->>>   security/selinux/hooks.c |   9 +-
->>>   3 files changed, 501 insertions(+), 16 deletions(-)
->>>
->
->
+OK. Agreed. Lets wait for the "real" bug report.
+
+FYI. I am still investigating that redhat internal bug report. And yes,
+it was the real application. But. I still think that it fails by another
+reason, just the test-case they provided doesn't match the reality and
+it hits another (this) problem by accident.
+
+Oleg.
 
 
---===============3705854161004088248==--
+--===============1886832922808713748==--
 
