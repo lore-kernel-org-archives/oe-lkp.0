@@ -1,81 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============3008202190674355895=="
+Content-Type: multipart/mixed; boundary="===============1059365764773041364=="
 MIME-Version: 1.0
-From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v4] Introduce v3 namespaced file capabilities
-Date: Fri, 16 Jun 2017 18:24:00 -0400
-Message-ID: <6b3431cf-d4cf-f92c-d3c8-073d199fb580@linux.vnet.ibm.com>
-In-Reply-To: <20170615030543.GA8979@mail.hallyn.com>
+Subject: Re: [PATCH 0/3] Enable namespaced file capabilities
+Date: Thu, 22 Jun 2017 16:29:21 -0700
+Message-ID: <1498174161.7636.4.camel@HansenPartnership.com>
+In-Reply-To: <1498157989-11814-1-git-send-email-stefanb@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3008202190674355895==
+--===============1059365764773041364==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 06/14/2017 11:05 PM, Serge E. Hallyn wrote:
-> On Wed, Jun 14, 2017 at 08:27:40AM -0400, Stefan Berger wrote:
->> On 06/13/2017 07:55 PM, Serge E. Hallyn wrote:
->>> Quoting Stefan Berger (stefanb(a)linux.vnet.ibm.com):
->>>>   If all extended
->>>> attributes were to support this model, maybe the 'uid' could be
->>>> associated with the 'name' of the xattr rather than its 'value' (not
->>>> sure whether that's possible).
->>> Right, I missed that in your original email when I saw it this morning.
->>> It's not what my patch does, but it's an interesting idea.  Do you have
->>> a patch to that effect?  We might even be able to generalize that to
->> No, I don't have a patch. It may not be possible to implement it.
->> The xattr_handler's  take the name of the xattr as input to get().
-> That may be ok though.  Assume the host created a container with
-> 100000 as the uid for root, which created a container with 130000 as
-> uid for root.  If root in the nested container tries to read the
-> xattr, the kernel can check for security.foo[130000] first, then
-> security.foo[100000], then security.foo.  Or, it can do a listxattr
-> and look for those.  Am I overlooking one?
+On Thu, 2017-06-22 at 14:59 -0400, Stefan Berger wrote:
+> This series of patches primary goal is to enable file capabilities
+> in user namespaces without affecting the file capabilities that are
+> effective on the host. This is to prevent that any unprivileged user
+> on the host maps his own uid to root in a private namespace, writes
+> the xattr, and executes the file with privilege on the host.
+> =
 
-So that sounds like a child would 'inherit' the value of an xattr from =
+> We achieve this goal by writing extended attributes with a different
+> name when a user namespace is used. If for example the root user
+> in a user namespace writes the security.capability xattr, the name
+> of the xattr that is actually written is encoded as
+> security.capability(a)uid=3D1000 for root mapped to uid 1000 on the host.
+> When listing the xattrs on the host, the existing security.capability
+> as well as the security.capability(a)uid=3D1000 will be shown. Inside the
+> namespace only 'security.capability', with the value of
+> security.capability(a)uid=3D1000, is visible.
 
-the closest parent if it doesn't have one itself. I guess it would =
+I'm a bit bothered by the @uid=3D1000 suffix.  What if I want to use this
+capability but am dynamically mapping the namespaces (i.e. I know I
+want unprivileged root, but I'm going to dynamically select the range
+to map based on what's currently available on the orchestration
+system).  If we stick with the @uid=3DX suffix, then dynamic mapping
+won't work because X is potentially different each time and there'll be
+a name mismatch in my xattrs.  Why not just make the suffix @uid, which
+means if root is mapped to any unprivileged uid then we pick this up
+otherwise we go with the unsuffixed property?
 
-depend on the xattr whether that should apply? And removing an xattr =
+As far as I can see there's no real advantage to discriminating userns
+specific xattrs based on where root is mapped to, unless there's a use
+case I'm missing?
 
-becomes difficult then if the parent container's xattr always shines =
-
-through...
-
->
->> So one could try to encode the mapped uid in the name. However, that
-> I thought that's exactly what you were suggesting in your original
-> email?  "security.capability[uid=3D2000]"
->
->> could lead to problems with stale xattrs in a shared filesystem over
->> time unless one could limit the number of xattrs with the same
->> prefix, e.g., security.capability*. So I doubt that it would work.
-> Hm.  Yeah.  But really how many setups are there like that?  I.e. if
-> you launch a regular docker or lxd container, the image doesn't do a
-> bind mount of a shared image, it layers something above it or does a
-> copy.  What setups do you know of where multiple containers in different
-> user namespaces mount the same filesystem shared and writeable?
-
-So you think it's a good idea? I am not sure when I would get to it, =
-
-though...
-
-    Stefan
+James
 
 
->
->> Otherwise it would be good if the value was wrapped in a data
->> structure use by all xattrs, but that doesn't seem to be the case,
->> either. So I guess we have to go into each type of value structure
->> and add a uid field there.
->>
->>> namespace any security.* xattrs.  Wouldn't be automatically enabled
->>> for anything but ima and capabilities, but we could make the infrastruc=
-ture
->>> generic and re-usable.
->>>
 
-
---===============3008202190674355895==--
+--===============1059365764773041364==--
 
