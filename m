@@ -1,117 +1,92 @@
-Content-Type: multipart/mixed; boundary="===============0746900510151618049=="
+Content-Type: multipart/mixed; boundary="===============2953699816174267189=="
 MIME-Version: 1.0
-From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+From: Casey Schaufler <casey@schaufler-ca.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH 0/3] Enable namespaced file capabilities
-Date: Thu, 22 Jun 2017 17:03:15 -0400
-Message-ID: <916bbb77-1758-8c15-36f1-9d530f79abdc@linux.vnet.ibm.com>
-In-Reply-To: <2bf08b3e-27f4-3592-d5e2-a823401ac644@schaufler-ca.com>
+Date: Thu, 22 Jun 2017 15:40:34 -0700
+Message-ID: <45e59e2e-0e00-cb9a-2f85-dc4606338a08@schaufler-ca.com>
+In-Reply-To: <20170622210925.GA32691@mail.hallyn.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0746900510151618049==
+--===============2953699816174267189==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 06/22/2017 04:33 PM, Casey Schaufler wrote:
-> On 6/22/2017 1:12 PM, Stefan Berger wrote:
->> On 06/22/2017 03:59 PM, Casey Schaufler wrote:
->>> On 6/22/2017 11:59 AM, Stefan Berger wrote:
->>>> This series of patches primary goal is to enable file capabilities
->>>> in user namespaces without affecting the file capabilities that are
->>>> effective on the host. This is to prevent that any unprivileged user
->>>> on the host maps his own uid to root in a private namespace, writes
->>>> the xattr, and executes the file with privilege on the host.
->>>>
->>>> We achieve this goal by writing extended attributes with a different
->>>> name when a user namespace is used. If for example the root user
->>>> in a user namespace writes the security.capability xattr, the name
->>>> of the xattr that is actually written is encoded as
->>>> security.capability(a)uid=3D1000 for root mapped to uid 1000 on the ho=
-st.
->>> You need to identify the instance of the user namespace for
->>> this to work right on a system with multiple user namespaces.
->>> If I have a shared filesystem mounted in two different user
->>> namespaces a change by one will affect the other.
->> Two different user namespaces with different uid mappings will not affec=
-t each other.
-> But two namespaces with the same uid mapping will, and I
-> don't think this meets the principle of least astonishment.
-> I also object to associating capabilities with UIDs. The
-> whole point of capabilities is to disassociate UID 0 from
-> privilege. What you've done is explicitly associate a UID
-> with the ability to have privilege. That's an architectural
-> regression.
+On 6/22/2017 2:09 PM, Serge E. Hallyn wrote:
+> Quoting Casey Schaufler (casey(a)schaufler-ca.com):
+>> On 6/22/2017 1:12 PM, Stefan Berger wrote:
+>>> On 06/22/2017 03:59 PM, Casey Schaufler wrote:
+>>>> On 6/22/2017 11:59 AM, Stefan Berger wrote:
+>>>>> This series of patches primary goal is to enable file capabilities
+>>>>> in user namespaces without affecting the file capabilities that are
+>>>>> effective on the host. This is to prevent that any unprivileged user
+>>>>> on the host maps his own uid to root in a private namespace, writes
+>>>>> the xattr, and executes the file with privilege on the host.
+>>>>>
+>>>>> We achieve this goal by writing extended attributes with a different
+>>>>> name when a user namespace is used. If for example the root user
+>>>>> in a user namespace writes the security.capability xattr, the name
+>>>>> of the xattr that is actually written is encoded as
+>>>>> security.capability(a)uid=3D1000 for root mapped to uid 1000 on the h=
+ost.
+>>>> You need to identify the instance of the user namespace for
+>>>> this to work right on a system with multiple user namespaces.
+>>>> If I have a shared filesystem mounted in two different user
+>>>> namespaces a change by one will affect the other.
+>>> Two different user namespaces with different uid mappings will not affe=
+ct each other.
+>> But two namespaces with the same uid mapping will, and I
+>> don't think this meets the principle of least astonishment.
+> It does.  If you have one filesystem shared among multiple
+> containers, then it needs to be either read-only, or you
+> need to know what you're doing.
 
-It has privilege within the bounding set of the capabilities that it is =
+Joe's a junior devop who has been given a container
+template which he tweaks for various nefarious purposes.
+He doesn't know much about what he's doing. He isn't
+changing the UIDs the template uses because, quite frankly,
+he doesn't know a UID from an entrenching tool. He has
+changed a filesystem from RO to RW because he read on a
+forum somewhere that doing so would fix a problem he had
+once. He doesn't want to have that problem again, so he
+left the change in the template.
 
-given. Afaik, a process cannot gain additional capabilities through file =
-
-capabilities. Allowing to set a process's file capabilities allows one =
-
-to _restrict_ what it can do, which is useful for shared filesystems =
-
-where I can now set my ping capabilities to cap_net_raw, overriding the =
-
-ones one the host which could be cap_net_admin+cap_net_raw. So I don't =
-
-need to extend my bounding set with cap_net_admin or mess with xattrs on =
-
-the host.
+Containers are being sold as a way to make things easier.
+This sort of side effect is dangerous in an environment
+where users are being told that they don't have to worry
+so much, the environment will take care of them. =
 
 
->
->> If root in userns1 mapped to uid 1000 (size 1000) writes security.capabi=
-lity, it will write security.capability(a)uid=3D1000 into the fs.
->> If root in userns2 mapped to uid 2000 (size 1000) writes security.capabi=
-lity, it will write security.capability(a)uid=3D2000 into the fs.
->>
->> Neither of the two will see each other's security.capability, but each w=
-ill see their own 'security.capability'.
->>
->> Assume now userns1 has a size of 2000, so overlapping with userns2, it w=
-ill now see userns2's security.capability(a)uid=3D1000 as well as its own '=
-security.capability'. security.capability(a)uid=3D1000 (of userns2) in user=
-ns1 will not have an effect on effective file capabilities.
->>
->>> ... unless I'm missing something obvious about namespace behavior.
->>>
->>>> When listing the xattrs on the host, the existing security.capability
->>>> as well as the security.capability(a)uid=3D1000 will be shown. Inside =
-the
->>>> namespace only 'security.capability', with the value of
->>>> security.capability(a)uid=3D1000, is visible.
->>>>
->>>> To maintain compatibility with existing behavior, the value of
->>>> security.capability of the host is shown inside the user namespace
->>>> once the security.capability of the user namespace has been removed
->>>> (which really removes security.capability(a)uid=3D1000). Writing to
->>>> an extended attribute inside a user namespace effectively hides the
->>>> extended attribute of the host.
->>>>
->>>> The general framework that is established with these patches can
->>>> be applied to other extended attributes as well, such as security.ima
->>>> or the 'trusted.' prefix . Another extended attribute that needed to
->>>> be enabled here is 'security.selinux,' since otherwise this extended
->>>> attribute would not be shown anymore inside a user namespace.
->>>>
->>>> Regards,
->>>>      Stefan & Serge
->>>>
->>>>
->>>> Stefan Berger (3):
->>>>     xattr: Enable security.capability in user namespaces
->>>>     Enable capabilities of files from shared filesystem
->>>>     Enable security.selinux in user namespaces
->>>>
->>>>    fs/xattr.c               | 472 ++++++++++++++++++++++++++++++++++++=
-++++++++++-
->>>>    security/commoncap.c     |  36 +++-
->>>>    security/selinux/hooks.c |   9 +-
->>>>    3 files changed, 501 insertions(+), 16 deletions(-)
->>>>
->>
+>> I also object to associating capabilities with UIDs. The
+>> whole point of capabilities is to disassociate UID 0 from
+>> privilege. What you've done is explicitly associate a UID
+>> with the ability to have privilege. That's an architectural
+>> regression.
+> IMO this is looking at it the wrong way.
+
+The right way to look at the problem is to identify the
+capabilities the program ought to have and set the file
+capabilities and UID/GID properly on the program on the
+base system. If you have to fix the program so it works
+right under those conditions, so much the better for
+everyone. If you're running with different capabilities
+in a container to prevent the program from doing damage
+to the base system, maybe the program needs fixing instead.
+
+> From inside the container's
+> viewpoint, the capabilities are not associated with a uid.  Any
+> task, regardles off uid, in the container, which executes the file,
+> gets the privilege.  IMO that satisfies the intent of file capabilities.
+
+The UID is the wrong association. The namespace is the correct association.
+You're using the UID because it's something that's different in the
+namespace than in the base system. You can detect it. What you need is a
+non-volatile namespace id to attach to the file rather than using the
+UID mapping (which may not be unique) that the namespace uses.
+
+> -serge
 
 
---===============0746900510151618049==--
+--===============2953699816174267189==--
 
