@@ -1,77 +1,94 @@
-Content-Type: multipart/mixed; boundary="===============2838979288247159568=="
+Content-Type: multipart/mixed; boundary="===============2166665937378696719=="
 MIME-Version: 1.0
-From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+From: Casey Schaufler <casey@schaufler-ca.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 3/3] Enable security.selinux in user namespaces
-Date: Fri, 23 Jun 2017 19:41:52 -0400
-Message-ID: <f477e588-a557-65ae-13db-8e8a87955b7f@linux.vnet.ibm.com>
-In-Reply-To: <1498249800.2063.9.camel@tycho.nsa.gov>
+Subject: Re: [PATCH 0/3] Enable namespaced file capabilities
+Date: Fri, 23 Jun 2017 16:51:35 -0700
+Message-ID: <59197179-8ef9-6be6-315f-41c10a8d7d06@schaufler-ca.com>
+In-Reply-To: <da083027-fcd4-bc08-2d88-93034ba1cacc@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2838979288247159568==
+--===============2166665937378696719==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 06/23/2017 04:30 PM, Stephen Smalley wrote:
-> On Thu, 2017-06-22 at 14:59 -0400, Stefan Berger wrote:
->> Before the current modifications, SELinux extended attributes were
->> visible inside the user namespace but changes in patch 1 hid them.
->> This patch enables security.selinux in user namespaces and allows
->> them to be written to in the same way as security.capability.
->>
->> Signed-off-by: Stefan Berger <stefanb@linux.vnet.ibm.com>
->> ---
->>   fs/xattr.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/fs/xattr.c b/fs/xattr.c
->> index 045be85..37686ee 100644
->> --- a/fs/xattr.c
->> +++ b/fs/xattr.c
->> @@ -138,6 +138,7 @@ xattr_permission(struct inode *inode, const char
->> *name, int mask)
->>    */
->>   static const char *const userns_xattrs[] =3D {
->>   	XATTR_NAME_CAPS,
->> +	XATTR_NAME_SELINUX,
->>   	NULL
->>   };
->>   =
-
-> (cc SELinux maintainers, curiously omitted from these patches)
+On 6/23/2017 4:09 PM, Stefan Berger wrote:
+> On 06/23/2017 02:35 PM, Serge E. Hallyn wrote:
+>> Quoting Stefan Berger (stefanb(a)linux.vnet.ibm.com):
+>>> On 06/23/2017 12:16 PM, Casey Schaufler wrote:
+>>>> On 6/23/2017 9:00 AM, Serge E. Hallyn wrote:
+>>>>> Quoting Amir Goldstein (amir73il(a)gmail.com):
+>>>>>> On Thu, Jun 22, 2017 at 9:59 PM, Stefan Berger
+>>>>>> <stefanb@linux.vnet.ibm.com> wrote:
+>>>>>>> This series of patches primary goal is to enable file capabilities
+>>>>>>> in user namespaces without affecting the file capabilities that are
+>>>>>>> effective on the host. This is to prevent that any unprivileged user
+>>>>>>> on the host maps his own uid to root in a private namespace, writes
+>>>>>>> the xattr, and executes the file with privilege on the host.
+>>>>>>>
+>>>>>>> We achieve this goal by writing extended attributes with a different
+>>>>>>> name when a user namespace is used. If for example the root user
+>>>>>>> in a user namespace writes the security.capability xattr, the name
+>>>>>>> of the xattr that is actually written is encoded as
+>>>>>>> security.capability(a)uid=3D1000 for root mapped to uid 1000 on the=
+ host.
+>>>>>>> When listing the xattrs on the host, the existing security.capabili=
+ty
+>>>>>>> as well as the security.capability(a)uid=3D1000 will be shown. Insi=
+de the
+>>>>>>> namespace only 'security.capability', with the value of
+>>>>>>> security.capability(a)uid=3D1000, is visible.
+>>>>>>>
+>>>>>> Am I the only one who thinks that suffix is perhaps not the best gra=
+mmar
+>>>>>> to use for this namespace?
+>>>>> You're the only one to have mentioned it so far.
+>>>>>
+>>>>>> xattrs are clearly namespaced by prefix, so it seems right to me to =
+keep
+>>>>>> it that way - define a new special xattr namespace "ns" and only if =
+that
+>>>>>> prefix exists, the @uid suffix will be parsed.
+>>>>>> This could be either  ns.security.capability(a)uid=3D1000 or
+>>>>>> ns(a)uid=3D1000.security.capability. The latter seems more correct t=
+o me,
+>>>>>> because then we will be able to namespace any xattr without having to
+>>>>>> protect from "unprivileged xattr injection", i.e.:
+>>>>>> setfattr -n "user.whatever.foo(a)uid=3D0"
+>>>>> I like it for simplifying the parser code.  One concern I have is tha=
+t,
+>>>>> since ns.* is currently not gated, one could write ns.* on an older
+>>>>> kernel and then exploit it on a newer one.
+>>>> security.ns.capability(a)uid=3D1000, then?
+>>> Imo, '.ns' is redundant and 'encoded' in the '@'.
+>> So how about
+>>     security.(a)uid=3D1000@@capability ?
+> Ouch.
+>> Maybe it's not worth it.
 >
-> I don't think this works for SELinux. You don't deal with actually
-> supporting multiple security.selinux attributes within SELinux itself
-> (and I'm not asking you to do so), and without such support, this can't
-> operate as intended. With these patches applied, IIUC, a setxattr() of
-> security.selinux within a userns will end up setting only security.seli
-> nux(a)uid=3D1000 on disk, but will then tell SELinux to update its in-core
-> security label to the new value (via security_inode_post_setxattr).
-> Meanwhile, on a subsequent getxattr(), you'll call
-> security_inode_getsecurity() with the security.selinux(a)uid=3D1000 name,
-> which will always fail because SELinux doesn't know anything about your
-> new scheme, and then you'll call the filesystem handler and returns its
-> value, which is no longer connected in any way to the actual label
-> being used by SELinux.  Also, SELinux itself makes calls to
-> __vfs_getxattr() and __vfs_setxattr_noperm(), and I don't think your
-> name remapping is correct in those cases.
->
-> You also can't hide security.selinux within user namespaces.  Today
-> userspace can get and set security.selinux attributes within user
-> namespaces (if allowed by policy), and further can specify the label to
-> use for new files via /proc/self/attr/fscreate, which unsurprisingly
-> isn't addressed by your changes.  Changing that would be a userspace
-> break.
+> So the .ns is there to be able to possibly extend it in another dimension=
+ in the future, like have '.foo' there at some point?
 
-I modified the 1st patch now in such a way that only security.capability =
+Traditionally we have <kind-of-attribute>.<name-of-attribute>
+If you want to preserve the kind and name you have to introduce
+a third component if you want to have it treated differently
+under curtain (e.g. namespaced) conditions. You want to maintain
+the kind, because that's already treated specially. You want to
+maintain the name because that's what the feature code keys on.
+The kind is expected to be first, and the name last, so your new
+data needs to be in the middle. You need to identify what you
+expect the new bit to be used for because if you're clever enough
+to create a reason to add to the attribute name, someone else is,
+too. Thus
 
-is rewritten, security.selinux and all other ones remain untouched.
+	security.ns(a)uid=3D1000@@.capability
+	security.endian(a)end=3Dbig@@.capability
 
-https://github.com/stefanberger/linux/commits/xattr_for_userns.v2
-
-    Stefan
+It's better to add fields than to change how a field is
+formatted and interpreted.
 
 
---===============2838979288247159568==--
+
+--===============2166665937378696719==--
 
