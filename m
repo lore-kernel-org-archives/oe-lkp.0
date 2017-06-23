@@ -1,83 +1,63 @@
-Content-Type: multipart/mixed; boundary="===============8438227853088178729=="
+Content-Type: multipart/mixed; boundary="===============5275710842548892682=="
 MIME-Version: 1.0
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Stefan Berger <stefanb@linux.vnet.ibm.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH 0/3] Enable namespaced file capabilities
-Date: Fri, 23 Jun 2017 12:49:59 -0500
-Message-ID: <8760fmh9vc.fsf@xmission.com>
-In-Reply-To: <20170623170108.GA19354@mail.hallyn.com>
+Date: Fri, 23 Jun 2017 14:08:45 -0400
+Message-ID: <3404c486-c848-3283-50f7-2283cb631e8e@linux.vnet.ibm.com>
+In-Reply-To: <aa62373e-7cd6-39dd-2e38-2b6d6dbe18a8@schaufler-ca.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8438227853088178729==
+--===============5275710842548892682==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-"Serge E. Hallyn" <serge@hallyn.com> writes:
+On 06/23/2017 12:16 PM, Casey Schaufler wrote:
+> On 6/23/2017 9:00 AM, Serge E. Hallyn wrote:
+>> Quoting Amir Goldstein (amir73il(a)gmail.com):
+>>> On Thu, Jun 22, 2017 at 9:59 PM, Stefan Berger
+>>> <stefanb@linux.vnet.ibm.com> wrote:
+>>>> This series of patches primary goal is to enable file capabilities
+>>>> in user namespaces without affecting the file capabilities that are
+>>>> effective on the host. This is to prevent that any unprivileged user
+>>>> on the host maps his own uid to root in a private namespace, writes
+>>>> the xattr, and executes the file with privilege on the host.
+>>>>
+>>>> We achieve this goal by writing extended attributes with a different
+>>>> name when a user namespace is used. If for example the root user
+>>>> in a user namespace writes the security.capability xattr, the name
+>>>> of the xattr that is actually written is encoded as
+>>>> security.capability(a)uid=3D1000 for root mapped to uid 1000 on the ho=
+st.
+>>>> When listing the xattrs on the host, the existing security.capability
+>>>> as well as the security.capability(a)uid=3D1000 will be shown. Inside =
+the
+>>>> namespace only 'security.capability', with the value of
+>>>> security.capability(a)uid=3D1000, is visible.
+>>>>
+>>> Am I the only one who thinks that suffix is perhaps not the best grammar
+>>> to use for this namespace?
+>> You're the only one to have mentioned it so far.
+>>
+>>> xattrs are clearly namespaced by prefix, so it seems right to me to keep
+>>> it that way - define a new special xattr namespace "ns" and only if that
+>>> prefix exists, the @uid suffix will be parsed.
+>>> This could be either  ns.security.capability(a)uid=3D1000 or
+>>> ns(a)uid=3D1000.security.capability. The latter seems more correct to m=
+e,
+>>> because then we will be able to namespace any xattr without having to
+>>> protect from "unprivileged xattr injection", i.e.:
+>>> setfattr -n "user.whatever.foo(a)uid=3D0"
+>> I like it for simplifying the parser code.  One concern I have is that,
+>> since ns.* is currently not gated, one could write ns.* on an older
+>> kernel and then exploit it on a newer one.
+> security.ns.capability(a)uid=3D1000, then?
 
-> Quoting Casey Schaufler (casey(a)schaufler-ca.com):
->> On 6/23/2017 9:30 AM, Serge E. Hallyn wrote:
->> > Quoting Casey Schaufler (casey(a)schaufler-ca.com):
->> >> Or maybe just security.ns.capability, taking James' comment into acco=
-unt.
->> > That last one may be suitable as an option, useful for his particular
->> > (somewhat barbaric :) use case, but it's not ok for the general soluti=
-on.
->> =
+Imo, '.ns' is redundant and 'encoded' in the '@'.
 
->> security.ns(a)uid=3D100.capability
->
-> I'm ok with this.  It gives protection from older kernels, and puts
-> the 'ns(a)uid=3D' at predictable locations for security and trusted.
->
->> It makes the namespace part explicit and separate from
->> the rest of the attribute name. It also generalizes for
->> other attributes.
->> =
-
->> security.ns(a)uid=3D1000(a)smack=3DWestOfOne.SMACK64
->
-> Looks good to me.
->
-> Do we want to say that '.' ends the attribute list?  That of
-> course means '.' cannot be in the attributes.  Perhaps end
-> with '@@' instead?  Just a thought.
->
-> What do others think?
-
-I think we have two things that will limit the allowed attributes
-severely.
-
-1) We need to the names of all of the xattrs when mounting a filesystem
-   with s_user_ns !=3D &init_user_ns.  I haven't yet checked the patches
-   to see if they do this properly.
-
-2) Names of xattrs are not fully general and filesystems perform various
-   tricks to encode them more densely.  We should see what the games
-   with xattr names do to how densely xattrs can be stored on disk.
-   That matters.
-
-Putting the uid of the root user in the name sounds fundamental to doing
-things this way.  I am not at all certain about putting smack labels and
-generally treating this as something we can add two arbitrarily.
-
-If nothing else this reminds me of the frequent problem in
-certifications with ouids.  Arbitrary attributes tend to defeat parsers
-in a security context on a regular basis.  Even the kernel command line
-parser has seen problems in this area, and it isn't security sensitive
-most of the time.
-
-Extensibility is good in the abstract long term sense.  Extensibility in
-the here and now where we don't even know which attributes we are
-talking about scares me.  I don't see how we can possibily know with
-multiple attributes which xattrs will be the one to use.  As we won't
-even know which properties of the kernel to look at to match attributes.
-
-So while I don't mind reorganizing the order we put the information into
-the attribute.  Let's keep what we place in there very specific.
-
-Eric
+    Stefan
 
 
---===============8438227853088178729==--
+--===============5275710842548892682==--
 
