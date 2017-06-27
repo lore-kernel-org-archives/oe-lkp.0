@@ -1,70 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============9039934539374758726=="
+Content-Type: multipart/mixed; boundary="===============0598405504868663506=="
 MIME-Version: 1.0
-From: Steven Rostedt <rostedt@goodmis.org>
+From: Kirill A. Shutemov <kirill@shutemov.name>
 To: lkp@lists.01.org
 Subject: Re: [PATCH] x86/ftrace: Exclude functions in head64.c from function-tracing
-Date: Tue, 27 Jun 2017 09:38:25 -0400
-Message-ID: <20170627093825.0d0276ba@gandalf.local.home>
-In-Reply-To: <20170627115948.17938-1-kirill.shutemov@linux.intel.com>
+Date: Tue, 27 Jun 2017 17:44:03 +0300
+Message-ID: <20170627144403.wzzdqavodawi32yw@node.shutemov.name>
+In-Reply-To: <20170627093825.0d0276ba@gandalf.local.home>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9039934539374758726==
+--===============0598405504868663506==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 27 Jun 2017 14:59:48 +0300
-"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com> wrote:
-
-> We've moved most logic of early boot up from startup_64() written in
-> assembly to __startup_64() written in C.
+On Tue, Jun 27, 2017 at 09:38:25AM -0400, Steven Rostedt wrote:
+> On Tue, 27 Jun 2017 14:59:48 +0300
+> "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com> wrote:
 > =
 
-> Fengguang reported breakage due to the change. It was tracked down to
-> CONFIG_FUNCTION_TRACER being enabled.
+> > We've moved most logic of early boot up from startup_64() written in
+> > assembly to __startup_64() written in C.
+> > =
 
-Is this due to code that is in linux-next or is this issue currently in
-mainline?
-
-If it is in linux-next, I'll give you:
-
- Acked-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-
-and you can take it. If the issue happens in current mainline, then I'll
-take it and push it out.
-
--- Steve
-
+> > Fengguang reported breakage due to the change. It was tracked down to
+> > CONFIG_FUNCTION_TRACER being enabled.
 > =
 
-> Looks like function-tracing of the new code is harmful.
+> Is this due to code that is in linux-next or is this issue currently in
+> mainline?
 > =
 
-> Let's not comple the code with -pg compiler option.
+> If it is in linux-next, I'll give you:
 > =
 
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> ---
->  arch/x86/kernel/Makefile | 1 +
->  1 file changed, 1 insertion(+)
+>  Acked-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 > =
 
-> diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-> index 4b994232cb57..0db512092f37 100644
-> --- a/arch/x86/kernel/Makefile
-> +++ b/arch/x86/kernel/Makefile
-> @@ -18,6 +18,7 @@ CFLAGS_REMOVE_pvclock.o =3D -pg
->  CFLAGS_REMOVE_kvmclock.o =3D -pg
->  CFLAGS_REMOVE_ftrace.o =3D -pg
->  CFLAGS_REMOVE_early_printk.o =3D -pg
-> +CFLAGS_REMOVE_head64.o =3D -pg
->  endif
->  =
+> and you can take it. If the issue happens in current mainline, then I'll
+> take it and push it out.
 
->  KASAN_SANITIZE_head$(BITS).o				:=3D n
+It's in -next.
 
+Fixes: c88d71508e36 ("x86/boot/64: Rewrite startup_64() in C")
 
---===============9039934539374758726==--
+Although, I'm not sure if commit-id is stable yet.
+
+-- =
+
+ Kirill A. Shutemov
+
+--===============0598405504868663506==--
 
