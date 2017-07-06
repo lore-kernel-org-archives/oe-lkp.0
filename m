@@ -1,155 +1,83 @@
-Content-Type: multipart/mixed; boundary="===============3522322669890121836=="
+Content-Type: multipart/mixed; boundary="===============8772355725985779019=="
 MIME-Version: 1.0
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [include/linux/string.h] 6974f0c455: kernel_BUG_at_lib/string.c
-Date: Fri, 21 Jul 2017 00:51:40 +0900
-Message-ID: <20170721005140.ebf6d119bb30cc6cfe12ae61@kernel.org>
-In-Reply-To: <CA+55aFwuebKQ0-sAiRJWpMcaVJ8MjXvCg56DO5q8jMiPDXvc8A@mail.gmail.com>
+Subject: Re: [lkp-robot] [scsi] 5c279bd9e4: blogbench.read_score -10.0% regression
+Date: Thu, 06 Jul 2017 10:54:21 +0800
+Message-ID: <20170706025421.GB5222@yexl-desktop>
+In-Reply-To: <CACVXFVNWpWb0f-tp2r82Juzq3QH2Prw_gzqVY9tySnAQsLg2Kg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3522322669890121836==
+--===============8772355725985779019==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 19 Jul 2017 21:04:25 -0700
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+Hi, Ming Lei
 
-> Hmm. I wonder why the kernel test robot ends up having that annoying
-> line doubling for the dmesg.
-> =
+On 07/06, Ming Lei wrote:
+>Hi Xiaolong,
+>
+>On Mon, Jul 3, 2017 at 10:57 AM, kernel test robot
+><xiaolong.ye@intel.com> wrote:
+>>
+>> Greeting,
+>>
+>> FYI, we noticed a -10.0% regression of blogbench.read_score due to commi=
+t:
+>
+>Looks like related with mq scheduler, could you test the following patch t=
+o see
+>if your issue can be fixed?
+>
+>https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git/comm=
+it/?h=3Dfor-linus&id=3D32825c45ff8f4cce937ab85b030dc693ceb1aa0a
+>
 
-> On Wed, Jul 19, 2017 at 6:42 PM, kernel test robot
-> <xiaolong.ye@intel.com> wrote:
-> >
-> > FYI, we noticed the following commit:
-> >
-> > commit: 6974f0c4555e285ab217cee58b6e874f776ff409 ("include/linux/string=
-.h: add the option of fortified string.h functions")
-> >
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
-> =
+Here is the comparison of commit 5c279bd9e4 and 32825c45, it does help reco=
+ver
+performance back.
 
-> It does strike me that the fortify_panic() code once again makes life
-> unnecessarily hard for everybody by using "BUG()"
-> =
+$ compare -at 5c279bd9e40624f4ab6e688671026d6005b066fa 32825c45ff8f4cce937a=
+b85b030dc693ceb1aa0a
+tests: 1
+testcase/path_params/tbox_group/run: blogbench/1SSD-ext4-performance/lkp-bd=
+w-de1
 
-> What the hell is wrong with people? I feel; like I have to say this
-> multiple times for every single merge window, and sometimes in
-> between.
-> =
+5c279bd9e40624f4  32825c45ff8f4cce937ab85b03  =
 
-> BUG() and BUG_ON() are not acceptable debugging things. They kill the
-> machine. They make for bad debugging.
-> =
+----------------  --------------------------  =
 
-> > [    8.134860] kernel BUG at lib/string.c:985!
-> =
+         %stddev      change         %stddev
+             \          |                \  =
 
-> This is basically an entirely useless piece of completely
-> information-less garbage.
-> =
+    262860              36%     358558        blogbench.read_score
+      9913 =C2=B1  4%       -33%       6654        blogbench.write_score
+  86266452              31%  1.129e+08        blogbench.time.file_system_in=
+puts
+     29.89              22%      36.46        blogbench.time.user_time
+       214              13%        242        blogbench.time.percent_of_cpu=
+_this_job_got
+       620              12%        696        blogbench.time.system_time
+  1.11e+08             -29%   79019314        blogbench.time.file_system_ou=
+tputs
+    439016             -69%     135286        blogbench.time.involuntary_co=
+ntext_switches
+      0.64              22%       0.78        mpstat.cpu.usr%
+      7.02 =C2=B1  4%       -47%       3.72        mpstat.cpu.idle%
+    237216            1344%    3425183        softirqs.RCU
+    430504             376%    2048486        softirqs.TIMER
+    188376             211%     586308        softirqs.SCHED
+    306478 =C2=B1 32%       -99%       4150 =C2=B1 36%  softirqs.NET_RX
+  86266452              31%  1.129e+08        time.file_system_inputs
+     29.89              22%      36.46        time.user_time
 
-> It would have been much nicer if all the fortify_panic() calls had
-> instead used WARN_ONCE() with helpful pointers to what is going on.
-> =
+Thanks,
+Xiaolong
 
-> As it is, the full dmesg does show that
-> =
+>
+>Thanks,
+>Ming Lei
 
->     detected buffer overflow in memcpy
-> =
-
-> but since it was printed out separately, if comes before the "-- cut
-> here --" part and didn't get reported in the summary.
-> =
-
-> > [    8.134886]  arch_prepare_optimized_kprobe+0xd5/0x171
-> =
-
-> It's apparently this:
-> =
-
->         /* Copy arch-dep-instance from template */
->         memcpy(buf, &optprobe_template_entry, TMPL_END_IDX);
-> =
-
-> and looking at the code generation, the conditional in the fortify case is
-> =
-
-> # ./include/linux/string.h:307:         if (p_size < size || q_size < siz=
-e)
->         cmpq    $1, %r13        #, _14
->         jbe     .L109   #,
-> =
-
-> but it's hard to tell whether that is p_size or q_size. One of them
-> must be ~0ul (or maybe both are 1) for it to have simplified to that
-> single conditional.
-> =
-
-> So the fortify_string code has decided that only a single-byte (or
-> empty) memcpy is ok.
-> =
-
-> And that, in turn, seems to be because we're copying from
-> optprobe_template_entry, which is declared as
-> =
-
->     extern __visible kprobe_opcode_t optprobe_template_entry;
-> =
-
-> so the fortify code decides it's a single character.
-> =
-
-> Does just changing all those things to be declared as arrays fix things?
-> =
-
-
-BTW, I've confirmed this works.
-
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Tested-by: Masami Hiramatsu <mhiramat@kernel.org>
-
-Thank you!
-
-> IOW, a patch something like this white-space damaged mess:
-> =
-
->     diff --git a/arch/x86/include/asm/kprobes.h b/arch/x86/include/asm/kp=
-robes.h
->     index 34b984c60790..6cf65437b5e5 100644
->     --- a/arch/x86/include/asm/kprobes.h
->     +++ b/arch/x86/include/asm/kprobes.h
->     @@ -52,10 +52,10 @@ typedef u8 kprobe_opcode_t;
->      #define flush_insn_slot(p) do { } while (0)
-> =
-
->      /* optinsn template addresses */
->     -extern __visible kprobe_opcode_t optprobe_template_entry;
->     -extern __visible kprobe_opcode_t optprobe_template_val;
->     -extern __visible kprobe_opcode_t optprobe_template_call;
->     -extern __visible kprobe_opcode_t optprobe_template_end;
->     +extern __visible kprobe_opcode_t optprobe_template_entry[];
->     +extern __visible kprobe_opcode_t optprobe_template_val[];
->     +extern __visible kprobe_opcode_t optprobe_template_call[];
->     +extern __visible kprobe_opcode_t optprobe_template_end[];
->      #define MAX_OPTIMIZED_LENGTH (MAX_INSN_SIZE + RELATIVE_ADDR_SIZE)
->      #define MAX_OPTINSN_SIZE                           \
->         (((unsigned long)&optprobe_template_end -       \
-> =
-
-> Hmm?
-> =
-
->                  Linus
-
-
--- =
-
-Masami Hiramatsu <mhiramat@kernel.org>
-
---===============3522322669890121836==--
+--===============8772355725985779019==--
 
