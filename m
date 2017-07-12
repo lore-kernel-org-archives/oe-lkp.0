@@ -1,199 +1,191 @@
-Content-Type: multipart/mixed; boundary="===============6514577656096174501=="
+Content-Type: multipart/mixed; boundary="===============5954293294898402851=="
 MIME-Version: 1.0
-From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+From: Dou Liyang <douly.fnst@cn.fujitsu.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v2] xattr: Enable security.capability in user namespaces
-Date: Tue, 11 Jul 2017 20:15:46 -0400
-Message-ID: <ca6e0001-6aeb-74dc-ab91-44aed3b7d128@linux.vnet.ibm.com>
-In-Reply-To: <20170711171222.GB31603@mail.hallyn.com>
+Subject: Re: [x86/time] f61a8e12b5: ACPI_Error:Table[DMAR]is_not_invalidated_during_early_boot_stage(#/tbxface-#)
+Date: Wed, 12 Jul 2017 10:52:27 +0800
+Message-ID: <955aa34f-f221-0de8-18d9-9c624092d172@cn.fujitsu.com>
+In-Reply-To: <20170708034805.GA129853@inn.lkp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6514577656096174501==
+--===============5954293294898402851==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 07/11/2017 01:12 PM, Serge E. Hallyn wrote:
-> Quoting Stefan Berger (Stefan Bergerstefanb(a)linux.vnet.ibm.com):
->> er.kernel.org>
->> X-Mailing-List: linux-kernel(a)vger.kernel.org
->> Content-Length: 19839
->> Lines: 700
->> X-UID: 24770
->> Status: RO
->>
->> From: Stefan Berger <stefanb@linux.vnet.ibm.com>
->>
->> This patch enables security.capability in user namespaces but also
->> takes a more general approach to enabling extended attributes in user
->> namespaces.
->>
->> The following rules describe the approach using security.foo as a
->> 'user namespace enabled' extended attribute:
->>
->> Reading of extended attributes:
->>
->> 1a) Reading security.foo from a user namespace will read
->>      security.foo(a)uid=3D<uid> of the parent user namespace instead wit=
-h uid
->>      being the mapping of root in that parent user namespace. An
->>      exception is if root is mapped to uid 0 on the host, and in this ca=
-se
->>      we will read security.foo directly.
->>      --> reading security.foo will read security.foo(a)uid=3D1000 for uid
->>          mapping of root to 1000.
->>
->> 1b) If security.foo(a)uid=3D<uid> is not available, the security.foo of =
-the
->>      parent namespace is tried to be read. This procedure is repeated up=
- to
->>      the init user namespace. This step only applies for reading of exte=
-nded
->>      attributes and provides the same behavior as older system where the
->>      host's extended attributes applied to user namespaces.
->>
->> 2) All security.foo(a)uid=3D<uid> with valid uid mapping in the user nam=
-espace
->>     can be read. The uid within the user namespace will be mapped to the
->>     corresponding uid on the host and that uid will be used in the name =
-of
->>     the extended attribute.
->>     -> reading security.foo(a)uid=3D1 will read security.foo(a)uid=3D100=
-1 for uid
->>        mapping of root to 1000, size of at least 2.
->>
->>     All security.foo(a)uid=3D<uid> can be read (by root) on the host wit=
-h values
->>     of <uid> also being subject to checking for valid mappings.
->>
->> 3) No other security.foo* can be read.
->>
->> The same rules for reading apply to writing and removing of user
->> namespace enabled extended attributes.
->>
->> When listing extended attributes of a file, only those are presented
->> to the user namespace that have a valid mapping. Besides that, names
->> of the extended attributes are adjusted to represent the mapping.
->> This means that if root is mapped to uid 1000 on the host, the
->> security.foo(a)uid=3D1000 will be listed as security.foo in the user
->> namespace, security.foo(a)uid=3D1001 becomes security.foo(a)uid=3D1 and =
-so on.
->>
->> Signed-off-by: Stefan Berger <stefanb@linux.vnet.ibm.com>
->> Signed-off-by: Serge Hallyn <serge@hallyn.com>
->> Reviewed-by: Serge Hallyn <serge@hallyn.com>
->> ---
->>   fs/xattr.c               | 509 +++++++++++++++++++++++++++++++++++++++=
-++++++--
->>   security/commoncap.c     |  36 +++-
->>   security/selinux/hooks.c |   9 +-
->>   3 files changed, 523 insertions(+), 31 deletions(-)
->>
->> diff --git a/fs/xattr.c b/fs/xattr.c
->> index 464c94b..eacad9e 100644
->> --- a/fs/xattr.c
->> +++ b/fs/xattr.c
->> @@ -133,20 +133,440 @@ xattr_permission(struct inode *inode, const char =
-*name, int mask)
->>   	return inode_permission(inode, mask);
->>   }
->>   =
+Hi, Xiaolong
 
->> +/*
->> + * A list of extended attributes that are supported in user namespaces
->> + */
->> +static const char *const userns_xattrs[] =3D {
->> +	XATTR_NAME_CAPS,
->> +	NULL
->> +};
->> +
->> +/*
->> + * xattrs_is_userns_supported - Check whether an xattr is supported in =
-userns
->> + *
->> + * @name:   full name of the extended attribute
->> + * @prefix: do a prefix match (true) or a full match (false)
->> + *
->> + * This function returns < 0 if not supported, an index into userns_xat=
-trs[]
->> + * otherwise.
->> + */
->> +static int
->> +xattr_is_userns_supported(const char *name, int prefix)
->> +{
->> +	int i;
->> +
->> +	if (!name)
->> +		return -1;
->> +
->> +	for (i =3D 0; userns_xattrs[i]; i++) {
->> +		if (prefix) {
->> +			if (!strncmp(userns_xattrs[i], name,
->> +				     strlen(userns_xattrs[i])))
->> +				return i;
-> I think you here need to also check that the next char is either
-> '\0' or '.' (or maybe '@')
+Thank you very much for testing. I have got the reason why the ACPI
+error happened and will give a fix patch below.
 
-I have the checks for '@' and '\0' done by the caller. With the current =
+Also cc ACPI maintainers..
 
-support of only security.capability I don't think we need to check for '.'.
-
+At 07/08/2017 11:48 AM, kernel test robot wrote:
+> FYI, we noticed the following commit:
 >
->> +		} else {
->> +			if (!strcmp(userns_xattrs[i], name))
->> +				return i;
->> +		}
->> +	}
->> +	return -1;
->> +}
->> +
->> +/*
->> + * xattr_write_uid - print a string in the format of "%s(a)uid=3D%u", w=
-hich
->> + *                   includes a prefix string
->> + *
->> + * @uid:     the uid
->> + * @prefix:  prefix string; may be NULL
->> + *
->> + * This function returns a buffer with the string, or a NULL pointer in
->> + * case of out-of-memory error.
->> + */
->> +static char *
->> +xattr_write_uid(uid_t uid, const char *prefix)
->> +{
->> +	size_t buflen;
->> +	char *buffer;
->> +
->> +	buflen =3D sizeof("@uid=3D") - 1 + sizeof("4294967295") - 1 + 1;
->> +	if (prefix)
->> +		buflen +=3D strlen(prefix);
->> +
->> +	buffer =3D kmalloc(buflen, GFP_KERNEL);
->> +	if (!buffer)
->> +		return NULL;
->> +
->> +	if (uid =3D=3D 0)
->> +		*buffer =3D 0;
-> Do you need to print out the prefix here?
-
-Right. Fixed.
-
-
+> commit: f61a8e12b5972879f8decfe059e54c813dc4416b ("x86/time: Initialize i=
+nterrupt mode behind timer init")
+> url: https://github.com/0day-ci/linux/commits/Dou-Liyang/Unify-the-interr=
+upt-delivery-mode-and-do-its-setup-in-advance/20170705-124610
 >
->> +	else
->> +		sprintf(buffer, "%s(a)uid=3D%u",
->> +			(prefix) ? prefix : "",
->> +			uid);
->> +
->> +	return buffer;
->> +}
+>
+> in testcase: will-it-scale
+> with following parameters:
+>
+> 	nr_task: 50%
+> 	mode: process
+> 	test: writeseek3
+> 	cpufreq_governor: performance
+>
+> test-description: Will It Scale takes a testcase and runs it from 1 throu=
+gh to n parallel copies to see if the testcase will scale. It builds both a=
+ process and threads based test in order to see any differences between the=
+ two.
+> test-url: https://github.com/antonblanchard/will-it-scale
+>
+>
+> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wit=
+h 64G memory
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+> +------------------------------------------------------------------------=
+-------+------------+------------+
+> |                                                                        =
+       | d021c73124 | f61a8e12b5 |
+> +------------------------------------------------------------------------=
+-------+------------+------------+
+> | boot_successes                                                         =
+       | 0          | 6          |
+> | boot_failures                                                          =
+       | 2          | 4          |
+> | invoked_oom-killer:gfp_mask=3D0x                                       =
+         | 2          |            |
+> | Mem-Info                                                               =
+       | 2          |            |
+> | Kernel_panic-not_syncing:Out_of_memory_and_no_killable_processes       =
+       | 2          |            |
+> | ACPI_Error:Table[DMAR]is_not_invalidated_during_early_boot_stage(#/tbxf=
+ace-#) | 0          | 4          |
+> | WARNING:at_mm/early_ioremap.c:#check_early_ioremap_leak                =
+       | 0          | 4          |
+> +------------------------------------------------------------------------=
+-------+------------+------------+
+>
+>
+>
+> kern  :info  : [    0.005000] tsc: Fast TSC calibration using PIT
+> kern  :info  : [    0.006000] tsc: Detected 2194.957 MHz processor
+> kern  :info  : [    0.007000] Calibrating delay loop (skipped), value cal=
+culated using timer frequency.. 4389.91 BogoMIPS (lpj=3D2194957)
+> kern  :info  : [    0.008002] pid_max: default: 90112 minimum: 704
+> kern  :info  : [    0.009034] ACPI: Core revision 20170303
+> kern  :err   : [    0.010002] ACPI Error: Table [DMAR] is not invalidated=
+ during early boot stage (20170303/tbxface-193)
+
+Here is the ACPI error.
+
+The reason:
+-----------
+
+As we know, Linux divides the ACPI table management into two stages:
+1) the early stage:
+   the mapped ACPI tables is temporary and should be unmapped before the
+early stage ends.
+
+2) the late stage.
+   the mapped ACPI tables is permanent.
+
+And Linux uses *acpi_permanent_mmap* to distinguish the early stage and
+the late stage. the default of *acpi_permanent_mmap* is false and will
+be set to true in *acpi_early_init()*, which means that Linux regards
+*acpi_early_init()* as the dividing line.
+
+Linux maps the ACPI DMAR table in the late stage, But this patch make =
+
+the mapping earlier in the early stage, so the ACPI error happened.
+
+The solution:
+-------------
+
+There are two solution we can use:
+
+1) After use the DMAR table, we unmap it, which likes following
+
+  acpi_get_table();
+  parse the DMAR table and use it...
+  acpi_put_table();
+
+2) Invoke the *acpi_early_init()* earlier.
+
+The 1) has influence on the initialization of IOMMU, not work well.
+The 2) is suitable, and it also can make the change of interrupt trigger =
+
+type earlier than Linux enter into the final interrupt delivery
+mode.
+
+The patch:
+----------
+   it will be added in my next version.
 
 
-Thanks.
+diff --git a/init/main.c b/init/main.c
+index df58a41..7a09467 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -654,12 +654,12 @@ asmlinkage __visible void __init start_kernel(void)
+         kmemleak_init();
+         setup_per_cpu_pageset();
+         numa_policy_init();
++       acpi_early_init();
+         if (late_time_init)
+                 late_time_init();
+         calibrate_delay();
+         pidmap_init();
+         anon_vma_init();
+-       acpi_early_init();
+  #ifdef CONFIG_X86
+         if (efi_enabled(EFI_RUNTIME_SERVICES))
+                 efi_enter_virtual_mode();
 
-    Stefan
+BTY, cc Lee
+
+I try to invoke acpi_early_init() earlier before
+timekeeping_init() for accessing ACPI TAD device to set system clock.
+Now the testing is OK, but There are a lot of operations between them,
+I think we need more investigation.
+
+
+Thanks,
+
+	dou.
+
+> kern  :info  : [    0.125364] ACPI: 4 ACPI AML tables successfully acquir=
+ed and loaded
+> kern  :info  : [    0.126116] Security Framework initialized
+> kern  :info  : [    0.127003] SELinux:  Initializing.
+> kern  :debug : [    0.128012] SELinux:  Starting in permissive mode
+> kern  :info  : [    0.131850] Dentry cache hash table entries: 8388608 (o=
+rder: 14, 67108864 bytes)
+>
+>
+> To reproduce:
+>
+>         git clone https://github.com/01org/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+>
+>
+>
+> Thanks,
+> Kernel Test Robot
+>
+>
 
 
 
---===============6514577656096174501==--
+--===============5954293294898402851==--
 
