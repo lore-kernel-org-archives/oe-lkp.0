@@ -1,74 +1,115 @@
-Content-Type: multipart/mixed; boundary="===============2715026894764694489=="
+Content-Type: multipart/mixed; boundary="===============5179858186838049250=="
 MIME-Version: 1.0
-From: Theodore Ts'o <tytso@mit.edu>
+From: Stefan Berger <stefanb@linux.vnet.ibm.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH v2] xattr: Enable security.capability in user namespaces
-Date: Thu, 13 Jul 2017 12:40:12 -0400
-Message-ID: <20170713164012.brj2flnkaaks2oci@thunk.org>
-In-Reply-To: <87y3rscz9j.fsf@xmission.com>
+Date: Thu, 13 Jul 2017 13:05:47 -0400
+Message-ID: <29fdda5e-ed4a-bcda-e3cc-c06ab87973ce@linux.vnet.ibm.com>
+In-Reply-To: <20170713164012.brj2flnkaaks2oci@thunk.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2715026894764694489==
+--===============5179858186838049250==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 13, 2017 at 07:11:36AM -0500, Eric W. Biederman wrote:
-> The concise summary:
-> =
+On 07/13/2017 12:40 PM, Theodore Ts'o wrote:
+> On Thu, Jul 13, 2017 at 07:11:36AM -0500, Eric W. Biederman wrote:
+>> The concise summary:
+>>
+>> Today we have the xattr security.capable that holds a set of
+>> capabilities that an application gains when executed.  AKA setuid root e=
+xec
+>> without actually being setuid root.
+>>
+>> User namespaces have the concept of capabilities that are not global but
+>> are limited to their user namespace.  We do not currently have
+>> filesystem support for this concept.
+> So correct me if I am wrong; in general, there will only be one
+> variant of the form:
+>
+>     security.foo(a)uid=3D15000
+>
+> It's not like there will be:
+>
+>     security.foo(a)uid=3D1000
+>     security.foo(a)uid=3D2000
 
-> Today we have the xattr security.capable that holds a set of
-> capabilities that an application gains when executed.  AKA setuid root ex=
-ec
-> without actually being setuid root.
-> =
+A file shared by 2 containers, one mapping root to uid=3D1000, the other =
 
-> User namespaces have the concept of capabilities that are not global but
-> are limited to their user namespace.  We do not currently have
-> filesystem support for this concept.
+mapping root to uid=3D2000, will show these two xattrs on the host =
 
-So correct me if I am wrong; in general, there will only be one
-variant of the form:
+(init_user_ns) once these containers set xattrs on that file.
 
-   security.foo(a)uid=3D15000
+>
+> Except.... if you have an Distribution root directory which is shared
+> by many containers, you would need to put the xattrs in the overlay
+> inodes.  Worse, each time you launch a new container, with a new
+> subuid allocation, you will have to iterate over all files with
+> capabilities and do a copy-up operations on the xattrs in overlayfs.
+> So that's actually a bit of a disaster.
 
-It's not like there will be:
+Note that we do keep compatibility to existing behavior. The =
 
-   security.foo(a)uid=3D1000
-   security.foo(a)uid=3D2000
+security.foo of the host is visible inside any container for as long as =
 
-Except.... if you have an Distribution root directory which is shared
-by many containers, you would need to put the xattrs in the overlay
-inodes.  Worse, each time you launch a new container, with a new
-subuid allocation, you will have to iterate over all files with
-capabilities and do a copy-up operations on the xattrs in overlayfs.
-So that's actually a bit of a disaster.
+the container root user doesn't set its own security.foo on that file, =
 
-So for distribution overlays, you will need to do things a different
-way, which is to map the distro subdirectory so you know that the
-capability with the global uid 0 should be used for the container
-"root" uid, right?
+which then hides it. Does that address this concern?
 
-So this hack of using security.foo(a)uid=3D1000 is *only* useful when the
-subcontainer root wants to create the privileged executable.  You
-still have to do things the other way.
 
-So can we make perhaps the assertion that *either*:
+>
+> So for distribution overlays, you will need to do things a different
+> way, which is to map the distro subdirectory so you know that the
+> capability with the global uid 0 should be used for the container
+> "root" uid, right?
+>
+> So this hack of using security.foo(a)uid=3D1000 is *only* useful when the
+> subcontainer root wants to create the privileged executable.  You
+> still have to do things the other way.
+>
+> So can we make perhaps the assertion that *either*:
+>
+>     security.foo
+>
+> exists, *or*
+>
+>     security.foo(a)uid=3DBAR
+>
+> exists, but never both?  And there BAR is exclusive to only one
+> instances?
 
-   security.foo
+In the current implementation BAR is visible inside of any instance that =
 
-exists, *or*
+'covers' this uid with the mapping range. Above example of =
 
-   security.foo(a)uid=3DBAR
+security.foo(a)uid=3D1000 appears as security.foo inside the container with =
 
-exists, but never both?  And there BAR is exclusive to only one
-instances?
+root mapping to uid 1000 (@uid=3D0 is suppressed) but also appears as =
 
-Otherwise, I suspect that the architecture is going to turn around and
-bite us in the *ss eventually, because someone will want to do
-something crazy and the solution will not be scalable.
+security.foo(a)uid=3D100 with root uid mapping to 900 (and range of at leas=
+t =
 
-	  	    		      	   -Ted
+101).
 
---===============2715026894764694489==--
+>
+> Otherwise, I suspect that the architecture is going to turn around and
+> bite us in the *ss eventually, because someone will want to do
+> something crazy and the solution will not be scalable.
+
+Can you define what 'scalable' means for you in this context?
+ From what I can see sharing a filesystem between multiple containers =
+
+doesn't 'scale well' for virtualizing the xattrs primarily because of =
+
+size limitations of xattrs per file.
+
+      Stefan
+
+>
+> 	  	    		      	   -Ted
+>
+
+
+--===============5179858186838049250==--
 
