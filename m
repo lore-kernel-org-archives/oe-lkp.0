@@ -1,96 +1,36 @@
-Content-Type: multipart/mixed; boundary="===============2624714779747725858=="
+Content-Type: multipart/mixed; boundary="===============6481129077662929182=="
 MIME-Version: 1.0
-From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+From: Theodore Ts'o <tytso@mit.edu>
 To: lkp@lists.01.org
 Subject: Re: [PATCH v2] xattr: Enable security.capability in user namespaces
-Date: Wed, 12 Jul 2017 20:44:28 -0400
-Message-ID: <74664cc8-bc3e-75d6-5892-f8934404349f@linux.vnet.ibm.com>
-In-Reply-To: <877ezdgsey.fsf@xmission.com>
+Date: Wed, 12 Jul 2017 21:15:54 -0400
+Message-ID: <20170713011554.xwmrgkzfwnibvgcu@thunk.org>
+In-Reply-To: <74664cc8-bc3e-75d6-5892-f8934404349f@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2624714779747725858==
+--===============6481129077662929182==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 07/12/2017 07:13 PM, Eric W. Biederman wrote:
-> "Serge E. Hallyn" <serge@hallyn.com> writes:
->
->> Quoting Eric W. Biederman (ebiederm(a)xmission.com):
->>> Stefan Berger <"Stefan Bergerstefanb"@linux.vnet.ibm.com> writes:
->>>> Signed-off-by: Stefan Berger <stefanb@linux.vnet.ibm.com>
->>>> Signed-off-by: Serge Hallyn <serge@hallyn.com>
->>>> Reviewed-by: Serge Hallyn <serge@hallyn.com>
->>> It doesn't look like this is coming through Serge so I don't see how
->>> the Signed-off-by tag is legtimate.
->> This is mostly explained by the fact that there have been a *lot* of
->> changes, many of them discussed in private emails.
->>
->>> >From the replies to this it doesn't look like Serge has reviewed this
->>> version either.
->>>
->>> I am disappointed that all of my concerns about technical feasibility
->>> remain unaddressed.
->> Can you re-state those, or give a link to them?
-> Well I only posted about one substantive comment on the last round
-> so it should be easy to find that said.
->
-> The big question is how does this intereact with filesystems
-> xattr implementations?
->
-> There is the potential that we create many more security xattrs this
-> way.  How does that scale?  With more names etc.
+I'm really confused what problem that is trying to be solved, here,
+but it **feels** really, really wrong.
 
-It doesn't scale. Shared filesystems are a problem if many containers =
+Why do we need to store all of this state on a per-file basis, instead
+of some kind of per-file system or per-container data structure?
 
-use them.
+And how many of these security.foo(a)uid=3Dbar xattrs do you expect there
+to be?  How many "foo", and how many "bar"?
 
-'man listxattr' also mentions this here as a BUG:
+Maybe I missed the full write up, in which case please send me a link
+to the full writeup --- ideally in the form of a design doc that
+explains the problem statement, gives some examples of how it's going
+to be used, what were the other alternatives that were considered, and
+why they were rejected, etc.
 
-" As noted in xattr(7), the VFS imposes a limit of 64 kB on the size of
-        the extended attribute name list returned by listxattr(7). If the
-        total size of attribute names attached to a file exceeds this limit,
-        it is no longer possible to retrieve the list of attribute names."
+Thanks,
 
-A simple test on ext4:
+					- Ted
 
-#> touch foo
-#> for ((i =3D 0; i < 200; i++)); do setfattr -n user.foo${i} -v hello =
-
-foo; done
-
-user.foo126 was the last one created...
-
-Depending on the size of the data the xattrs are writing, the limit is =
-
-reached sooner. Writing 'hellohello' only goes up to 'user.foo112'. =
-
-Maybe one could try to encode the data more efficiently or as Serge did =
-
-write the uid on the xattr value side, but either way, it won't scale =
-
-due to that VFS limit.
-
-     Stefan
-
-> What happens if we have one xattr per uid for 1000+ uids?
-
->
-> How does this interact with filesystems optimization of xattr names?
-> For some filesystems they optmize the xattr names, and don't store the
-> entire thing.
->
->> I'd really like to get to a point where unprivileged containers can start
->> using filecaps - at this point if that means having an extra temporary
->> file format based on my earlier patchset while we hash this out, that
->> actually seems worthwhile.  But it would of course be ideal if we could
->> do the name based caps right in the first place.
-> This whole new version has set my review back to square one
-> unfortunately.
->
-> Eric
->
-
-
---===============2624714779747725858==--
+--===============6481129077662929182==--
 
