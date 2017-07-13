@@ -1,46 +1,43 @@
-Content-Type: multipart/mixed; boundary="===============5179858186838049250=="
+Content-Type: multipart/mixed; boundary="===============8878460381569667516=="
 MIME-Version: 1.0
-From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH v2] xattr: Enable security.capability in user namespaces
-Date: Thu, 13 Jul 2017 13:05:47 -0400
-Message-ID: <29fdda5e-ed4a-bcda-e3cc-c06ab87973ce@linux.vnet.ibm.com>
+Date: Thu, 13 Jul 2017 12:14:11 -0500
+Message-ID: <87k23cb6os.fsf@xmission.com>
 In-Reply-To: <20170713164012.brj2flnkaaks2oci@thunk.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5179858186838049250==
+--===============8878460381569667516==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 07/13/2017 12:40 PM, Theodore Ts'o wrote:
+Theodore Ts'o <tytso@mit.edu> writes:
+
 > On Thu, Jul 13, 2017 at 07:11:36AM -0500, Eric W. Biederman wrote:
 >> The concise summary:
->>
+>> =
+
 >> Today we have the xattr security.capable that holds a set of
 >> capabilities that an application gains when executed.  AKA setuid root e=
 xec
 >> without actually being setuid root.
->>
+>> =
+
 >> User namespaces have the concept of capabilities that are not global but
 >> are limited to their user namespace.  We do not currently have
 >> filesystem support for this concept.
+>
 > So correct me if I am wrong; in general, there will only be one
 > variant of the form:
 >
->     security.foo(a)uid=3D15000
+>    security.foo(a)uid=3D15000
 >
 > It's not like there will be:
 >
->     security.foo(a)uid=3D1000
->     security.foo(a)uid=3D2000
-
-A file shared by 2 containers, one mapping root to uid=3D1000, the other =
-
-mapping root to uid=3D2000, will show these two xattrs on the host =
-
-(init_user_ns) once these containers set xattrs on that file.
-
+>    security.foo(a)uid=3D1000
+>    security.foo(a)uid=3D2000
 >
 > Except.... if you have an Distribution root directory which is shared
 > by many containers, you would need to put the xattrs in the overlay
@@ -48,16 +45,6 @@ mapping root to uid=3D2000, will show these two xattrs on the host =
 > subuid allocation, you will have to iterate over all files with
 > capabilities and do a copy-up operations on the xattrs in overlayfs.
 > So that's actually a bit of a disaster.
-
-Note that we do keep compatibility to existing behavior. The =
-
-security.foo of the host is visible inside any container for as long as =
-
-the container root user doesn't set its own security.foo on that file, =
-
-which then hides it. Does that address this concern?
-
-
 >
 > So for distribution overlays, you will need to do things a different
 > way, which is to map the distro subdirectory so you know that the
@@ -70,46 +57,33 @@ which then hides it. Does that address this concern?
 >
 > So can we make perhaps the assertion that *either*:
 >
->     security.foo
+>    security.foo
 >
 > exists, *or*
 >
->     security.foo(a)uid=3DBAR
+>    security.foo(a)uid=3DBAR
 >
 > exists, but never both?  And there BAR is exclusive to only one
 > instances?
-
-In the current implementation BAR is visible inside of any instance that =
-
-'covers' this uid with the mapping range. Above example of =
-
-security.foo(a)uid=3D1000 appears as security.foo inside the container with =
-
-root mapping to uid 1000 (@uid=3D0 is suppressed) but also appears as =
-
-security.foo(a)uid=3D100 with root uid mapping to 900 (and range of at leas=
-t =
-
-101).
-
 >
 > Otherwise, I suspect that the architecture is going to turn around and
 > bite us in the *ss eventually, because someone will want to do
 > something crazy and the solution will not be scalable.
 
-Can you define what 'scalable' means for you in this context?
- From what I can see sharing a filesystem between multiple containers =
+Yep.  That is what it looks like from here.
 
-doesn't 'scale well' for virtualizing the xattrs primarily because of =
+Which is why I asked the question about scalability of the xattr
+implementations.  It looks like trying to accomodate the general
+case just gets us in trouble, and sets unrealistic expectations.
 
-size limitations of xattrs per file.
+Which strongly suggests that Serge's previous version that
+just reved the format of security.capable so that a uid field could
+be added is likely to be the better approach.
 
-      Stefan
+I want to see what Serge and Stefan have to say but the case looks
+pretty clear cut at the moment.
 
->
-> 	  	    		      	   -Ted
->
+Eric
 
-
---===============5179858186838049250==--
+--===============8878460381569667516==--
 
