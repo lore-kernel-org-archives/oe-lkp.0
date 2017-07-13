@@ -1,93 +1,126 @@
-Content-Type: multipart/mixed; boundary="===============7348657357070294313=="
+Content-Type: multipart/mixed; boundary="===============2081055670794799909=="
 MIME-Version: 1.0
-From: Theodore Ts'o <tytso@mit.edu>
+From: Eric W. Biederman <ebiederm@xmission.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH v2] xattr: Enable security.capability in user namespaces
-Date: Thu, 13 Jul 2017 15:14:29 -0400
-Message-ID: <20170713191429.vfaetqscxd7hniwq@thunk.org>
-In-Reply-To: <8760ew9qyp.fsf@xmission.com>
+Date: Thu, 13 Jul 2017 16:12:37 -0500
+Message-ID: <87mv886ny2.fsf@xmission.com>
+In-Reply-To: <20170713194842.GB4895@mail.hallyn.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7348657357070294313==
+--===============2081055670794799909==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 13, 2017 at 12:39:10PM -0500, Eric W. Biederman wrote:
-> > Can you define what 'scalable' means for you in this context?
-> > From what I can see sharing a filesystem between multiple containers
-> > doesn't 'scale well' for virtualizing the xattrs primarily because of
-> > size limitations of xattrs per file.
-> =
+"Serge E. Hallyn" <serge@hallyn.com> writes:
 
-> Worse than that I believe you will find that filesystems are built on
-> the assumption that there will be a small number of xattrs per file.
-> So even if the vfs limitations were lifted the filesystem performance
-> would suffer.
+> Quoting Eric W. Biederman (ebiederm(a)xmission.com):
+>> Stefan Berger <stefanb@linux.vnet.ibm.com> writes:
+>> =
 
-That's why I've been pushing here.  If people try to do
+>> > On 07/13/2017 01:14 PM, Eric W. Biederman wrote:
+>> >> Theodore Ts'o <tytso@mit.edu> writes:
+>> >>
+>> >>> On Thu, Jul 13, 2017 at 07:11:36AM -0500, Eric W. Biederman wrote:
+>> >>>> The concise summary:
+>> >>>>
+>> >>>> Today we have the xattr security.capable that holds a set of
+>> >>>> capabilities that an application gains when executed.  AKA setuid r=
+oot exec
+>> >>>> without actually being setuid root.
+>> >>>>
+>> >>>> User namespaces have the concept of capabilities that are not globa=
+l but
+>> >>>> are limited to their user namespace.  We do not currently have
+>> >>>> filesystem support for this concept.
+>> >>> So correct me if I am wrong; in general, there will only be one
+>> >>> variant of the form:
+>> >>>
+>> >>>     security.foo(a)uid=3D15000
+>> >>>
+>> >>> It's not like there will be:
+>> >>>
+>> >>>     security.foo(a)uid=3D1000
+>> >>>     security.foo(a)uid=3D2000
+>> >>>
+>> >>> Except.... if you have an Distribution root directory which is shared
+>> >>> by many containers, you would need to put the xattrs in the overlay
+>> >>> inodes.  Worse, each time you launch a new container, with a new
+>> >>> subuid allocation, you will have to iterate over all files with
+>> >>> capabilities and do a copy-up operations on the xattrs in overlayfs.
+>> >>> So that's actually a bit of a disaster.
+>> >>>
+>> >>> So for distribution overlays, you will need to do things a different
+>> >>> way, which is to map the distro subdirectory so you know that the
+>> >>> capability with the global uid 0 should be used for the container
+>> >>> "root" uid, right?
+>> >>>
+>> >>> So this hack of using security.foo(a)uid=3D1000 is *only* useful whe=
+n the
+>> >>> subcontainer root wants to create the privileged executable.  You
+>> >>> still have to do things the other way.
+>> >>>
+>> >>> So can we make perhaps the assertion that *either*:
+>> >>>
+>> >>>     security.foo
+>> >>>
+>> >>> exists, *or*
+>> >>>
+>> >>>     security.foo(a)uid=3DBAR
+>> >>>
+>> >>> exists, but never both?  And there BAR is exclusive to only one
+>> >>> instances?
+>> >>>
+>> >>> Otherwise, I suspect that the architecture is going to turn around a=
+nd
+>> >>> bite us in the *ss eventually, because someone will want to do
+>> >>> something crazy and the solution will not be scalable.
+>> >> Yep.  That is what it looks like from here.
+>> >>
+>> >> Which is why I asked the question about scalability of the xattr
+>> >> implementations.  It looks like trying to accomodate the general
+>> >> case just gets us in trouble, and sets unrealistic expectations.
+>> >>
+>> >> Which strongly suggests that Serge's previous version that
+>> >> just reved the format of security.capable so that a uid field could
+>> >> be added is likely to be the better approach.
+>> >>
+>> >> I want to see what Serge and Stefan have to say but the case looks
+>> >> pretty clear cut at the moment.
+>
+> I'm fine with that.  Now, we'll be doing the enforcement at xattr
+> write time, meaning someone *can* come up with an fs image with >1
+> such xattrs.  Which is *fine*, I believe, it won't break anything
+> security-wise, and our goal is only to stop users from thinking it
+> is legitimate two write multiple such xattrs, so that they don't later
+> bug the fs folks like Ted saying "hey why can't I write 1000 of these,
+> I think that's a bug."
+>
+> So at xattr write time,
+>
+> 	1. if there is already an xattr, and it is either the global
+> 	non-namespaced xattr, or it has kuid=3DX where X is the kuid
+> 	mapped to root in a parent of the container, then we refuse
+> 	the write
+> 	2. if there is already an xattr, and it is for a kuid=3DX where
+> 	X is mapped into the container, then we overwrite the existing
+> 	xattr.
+>
+> At read/use time, we use the rules we have now.
+>
+> Does that seem reasonable?
 
-   security.capable(a)uid=3D1000
-   security.capable(a)uid=3D2000
-   security.capable(a)uid=3D3000
-   security.capable(a)uid=3D4000
-   security.capable(a)uid=3D5000
-   security.capable(a)uid=3D6000
-   security.capable(a)uid=3D7000
-   security.capable(a)uid=3D8000
-   security.capable(a)uid=3D9000
-         .
-	 .
-	 .
+That sounds like it would keep us to one xattr of any given type so yes.
 
-... where the values of all of these will be the same, this is going
-to be *awful* even if the file system can support it.
-
-So maybe we are better off if we define an xattr
-
-   security.capable(a)guest-container
-
-... so the property is that it is ignored by the host ("real")
-container, and in all of the subcontainers, it will be used if the
-local container root is trying to execute the file.
-
-Now, this doesn't support the solution of the "turtles all the way
-down" insane containers configuraiton.
-
-E.g., where in one container we boot a RHEL distro, which then
-launches another container running another RHEL distro, and repeat
-this 1000 times, for a very deeply nested subsubsubsubsub...container.
-
-I think this is insane and we shouldn't support this, but I know there
-are people who think this is a perfectly sane thing to do.
+It occurs to me while I am writing this that this is also important
+for ima/evm.  There is an xattr that has a hash of all of the other
+security relevant xattrs.   Without a limit on the number of xattrs
+calculating that security xattr could become time prohibitive.
 
 
-The other thing this doesn't support is someone who wants to use IMA,
-and where the every single IMA is using a different signed HMAC:
+Eric
 
-   security.ima(a)uid=3D1000
-   security.ima(a)uid=3D2000
-   security.ima(a)uid=3D3000
-   security.ima(a)uid=3D4000
-   security.ima(a)uid=3D5000
-   security.ima(a)uid=3D6000
-   security.ima(a)uid=3D7000
-   security.ima(a)uid=3D8000
-   security.ima(a)uid=3D9000
-	.
-	.
-	.
 
-Where each security IMA could either be a 32 byte HMAC, or worse, a
-256 byte RSA signed signature.  Now let's assume there are 10,000
-containers, each of which needs a separate RSA signature.  This sounds
-insane.... but I've seen things that I've thought were more insane
-coming out of containerland, so it would be nice if we can get
-something signed in blood promisng that no, we would *never* do
-something that insane, or better yet, make it impossible to do from an
-architectural standpoint.
-
-					- Ted
-
---===============7348657357070294313==--
+--===============2081055670794799909==--
 
