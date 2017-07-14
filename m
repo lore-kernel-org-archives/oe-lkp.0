@@ -1,84 +1,127 @@
-Content-Type: multipart/mixed; boundary="===============6499268951863088182=="
+Content-Type: multipart/mixed; boundary="===============8764868538724193633=="
 MIME-Version: 1.0
-From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v2] xattr: Enable security.capability in user namespaces
-Date: Fri, 14 Jul 2017 08:39:49 -0400
-Message-ID: <6eb8226e-58b7-88cc-a8e4-35df47ae5688@linux.vnet.ibm.com>
-In-Reply-To: <87vamv2pj0.fsf@xmission.com>
+Subject: Re: [USB] f16443a034: EIP:arch_local_irq_restore
+Date: Fri, 14 Jul 2017 10:17:32 -0400
+Message-ID: <Pine.LNX.4.44L0.1707141008100.2027-100000@iolanthe.rowland.org>
+In-Reply-To: <87a8475wqw.fsf@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6499268951863088182==
+--===============8764868538724193633==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 07/14/2017 08:04 AM, Eric W. Biederman wrote:
-> Stefan Berger <stefanb@linux.vnet.ibm.com> writes:
->
->> On 07/13/2017 08:38 PM, Eric W. Biederman wrote:
->>> Stefan Berger <stefanb@linux.vnet.ibm.com> writes:
->>>
->>>> On 07/13/2017 01:49 PM, Eric W. Biederman wrote:
->>>>
->>>>> My big question right now is can you implement Ted's suggested
->>>>> restriction.  Only one security.foo or secuirty.foo(a)... attribute ?
->>>> We need to raw-list the xattrs and do the check before writing them. I=
- am fairly sure this can be done.
->>>>
->>>> So now you want to allow security.foo and one security.foo(a)uid=3D<> =
-or just a single one security.foo(@[[:print:]]*)?
->>>>
->>> The latter.
->> That case would prevent a container user from overriding the xattr on
->> the host. Is that what we want?
-> Most definitely.  If a more privileged use has set secure.capable that
-> is better.
->
->> For limiting the number of xattrs and
->> getting that functionality (override IMA signature for example) the
->> former seems better...
-> I don't know about IMA.  But my feeling is that we will only be dealing
-> with a single signing key, so I don't see how having multiple IMA xattrs
-> make sense.  Could you explain that to me?
+On Fri, 14 Jul 2017, Felipe Balbi wrote:
 
-Admittedly I would need to construct and example where the user inside =
+> Hi,
+> =
 
-the container doesn't want to share the public key with the host on a =
+> Alan Stern <stern@rowland.harvard.edu> writes:
+> >> > Felipe:
+> >> >
+> >> > On Thu, 29 Jun 2017, kernel test robot wrote:
+> >> >
+> >> >> FYI, we noticed the following commit:
+> >> >> =
 
-file mounted from the host for some reason.
+> >> >> commit: f16443a034c7aa359ddf6f0f9bc40d01ca31faea ("USB: gadgetfs, d=
+ummy-hcd, net2280: fix locking for callbacks")
+> >> >> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git mas=
+ter
+> >> >> =
 
-An example related to security.capability could be a Fedora Docker =
+> >> >> in testcase: trinity
+> >> >> with following parameters:
+> >> >> =
 
-container where the container is distributed with the ping tool =
+> >> >> 	runtime: 300s
+> >> >> =
 
-installed. The ping tool is installed with cap_net_admin,cap_net_raw+ep. =
+> >> >> test-description: Trinity is a linux system call fuzz tester.
+> >> >> test-url: http://codemonkey.org.uk/projects/trinity/
+> >> >> =
 
-On a normal Fedora container I cannot use this tool due to my =
+> >> >> =
 
-capabilities bounding set not including cap_net_admin. So, I overwrite =
+> >> >> on test machine: qemu-system-x86_64 -enable-kvm -m 420M
+> >> >> =
 
-this and set only cap_net_raw+ep and I can use for pinging. I may loose =
+> >> >> caused below changes (please refer to attached dmesg/kmsg for entir=
+e log/backtrace):
+> >> > ...
+> >> >
+> >> > I won't include the entire report.  The gist is that we have a probl=
+em =
 
-some functionality on the way due to the lost cap_net_admin but I can =
+> >> > with lock ordering.  The report is about dummy-hcd, but this could =
 
-now use the tool. I guess the point is one can override the capabilities =
+> >> > affect any UDC driver.
+> >> >
+> >> >      1. When a SETUP request arrives, composite_setup() acquires
+> >> > 	cdev->lock before calling the function driver's callback.
+> >> > 	When that callback submits a reply, it causes the UDC driver
+> >> > 	to acquire its private lock.
+> >> =
 
-set of a distributed container if the container is started with less =
+> >> this only seems to happen before calling set_config():
+> >> =
 
-capabilities.
+> >> 	case USB_REQ_SET_CONFIGURATION:
+> >> 		if (ctrl->bRequestType !=3D 0)
+> >> 			goto unknown;
+> >> 		if (gadget_is_otg(gadget)) {
+> >> 			if (gadget->a_hnp_support)
+> >> 				DBG(cdev, "HNP available\n");
+> >> 			else if (gadget->a_alt_hnp_support)
+> >> 				DBG(cdev, "HNP on another port\n");
+> >> 			else
+> >> 				VDBG(cdev, "HNP inactive\n");
+> >> 		}
+> >> 		spin_lock(&cdev->lock);
+> >> 		value =3D set_config(cdev, ctrl, w_value);
+> >> 		spin_unlock(&cdev->lock);
+> >> 		break;
+> >
+> > That's true.  Why is the lock held for set_config() but not for any of =
 
-    Stefan
+> > the other callbacks?
+> =
+
+> this is really old code from Dave. Your guess is as good as mine :-(
+> =
+
+> > Doesn't that mean the other callbacks can race with function
+> > unregistration?
+> =
+
+> Probably not as UDCs are required to cancel transfers and kill all
+> endpoints before unregistering. We would probably just giveback a few
+> requests with -ESHUTDOWN and prevent new ones from being queued to HW,
+> no?
+
+But SETUP callbacks aren't associated with pending requests.  They get
+generated whenever a SETUP packet is received, even if the gadget
+driver has no requests queued.  Cancelling transfers won't prevent
+them.
+
+Killing all endpoints might or might not do the trick.  Does killing
+ep0 prevent the UDC driver from receiving SETUP packets?  This may vary =
+
+between UDC drivers.
+
+There are also the other callbacks (reset, disconnect, bus suspend, and =
+
+bus resume), which aren't associated with endpoints or requests at all.
+
+Probably drivers really should have something like synchronize_irq() in
+the udc_stop routine.  That would solve a lot of problems (although it =
+
+wouldn't help dummy_hcd, which doesn't rely on interrupts).
+
+Alan Stern
 
 
->
->> For the former I now have the topmost patch here:
->> https://github.com/stefanberger/linux/commits/xattr_for_userns.v3
-> Thank you.
->
-> Eric
->
-
-
---===============6499268951863088182==--
+--===============8764868538724193633==--
 
