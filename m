@@ -1,92 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============1220480762701563207=="
+Content-Type: multipart/mixed; boundary="===============2354621020656578320=="
 MIME-Version: 1.0
 From: Eric W. Biederman <ebiederm@xmission.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH v2] xattr: Enable security.capability in user namespaces
-Date: Fri, 14 Jul 2017 18:41:39 -0500
-Message-ID: <87d192si18.fsf@xmission.com>
-In-Reply-To: <1499785511-17192-2-git-send-email-stefanb@linux.vnet.ibm.com>
+Date: Fri, 14 Jul 2017 18:53:16 -0500
+Message-ID: <87379yshhv.fsf@xmission.com>
+In-Reply-To: <1500064799.2853.36.camel@HansenPartnership.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1220480762701563207==
+--===============2354621020656578320==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Stefan Berger <"Stefan Bergerstefanb"@linux.vnet.ibm.com> writes:
+James Bottomley <James.Bottomley@HansenPartnership.com> writes:
 
-> From: Stefan Berger <stefanb@linux.vnet.ibm.com>
->
-> This patch enables security.capability in user namespaces but also
-> takes a more general approach to enabling extended attributes in user
-> namespaces.
->
-> The following rules describe the approach using security.foo as a
-> 'user namespace enabled' extended attribute:
->
-> Reading of extended attributes:
->
-> 1a) Reading security.foo from a user namespace will read
->     security.foo(a)uid=3D<uid> of the parent user namespace instead with =
-uid
->     being the mapping of root in that parent user namespace. An
->     exception is if root is mapped to uid 0 on the host, and in this case
->     we will read security.foo directly.
->     --> reading security.foo will read security.foo(a)uid=3D1000 for uid
->         mapping of root to 1000.
->
-> 1b) If security.foo(a)uid=3D<uid> is not available, the security.foo of t=
-he
->     parent namespace is tried to be read. This procedure is repeated up to
->     the init user namespace. This step only applies for reading of extend=
-ed
->     attributes and provides the same behavior as older system where the
->     host's extended attributes applied to user namespaces.
->
-> 2) All security.foo(a)uid=3D<uid> with valid uid mapping in the user name=
-space
->    can be read. The uid within the user namespace will be mapped to the
->    corresponding uid on the host and that uid will be used in the name of
->    the extended attribute.
->    -> reading security.foo(a)uid=3D1 will read security.foo(a)uid=3D1001 =
-for uid
->       mapping of root to 1000, size of at least 2.
->
->    All security.foo(a)uid=3D<uid> can be read (by root) on the host with =
-values
->    of <uid> also being subject to checking for valid mappings.
->
-> 3) No other security.foo* can be read.
->
-> The same rules for reading apply to writing and removing of user
-> namespace enabled extended attributes.
->
-> When listing extended attributes of a file, only those are presented
-> to the user namespace that have a valid mapping. Besides that, names
-> of the extended attributes are adjusted to represent the mapping.
-> This means that if root is mapped to uid 1000 on the host, the
-> security.foo(a)uid=3D1000 will be listed as security.foo in the user
-> namespace, security.foo(a)uid=3D1001 becomes security.foo(a)uid=3D1 and s=
-o on.
->
-> Signed-off-by: Stefan Berger <stefanb@linux.vnet.ibm.com>
-> Signed-off-by: Serge Hallyn <serge@hallyn.com>
-> Reviewed-by: Serge Hallyn <serge@hallyn.com>
-> ---
->  fs/xattr.c               | 509 +++++++++++++++++++++++++++++++++++++++++=
-++++--
->  security/commoncap.c     |  36 +++-
->  security/selinux/hooks.c |   9 +-
->  3 files changed, 523 insertions(+), 31 deletions(-)
+> On Fri, 2017-07-14 at 16:03 -0400, Mimi Zohar wrote:
+>> On Fri, 2017-07-14 at 11:52 -0700, James Bottomley wrote:
+>> > =
 
-I am just going to quickly and publicly point out that as designed this
-patch breaks evm inode metadata signing.  As evm_config_xattrnames is not
-updated.
+>> > On Fri, 2017-07-14 at 14:48 -0400, Mimi Zohar wrote:
+>> > > =
 
-While not completely insurmountable that seems like a strong limitation of
-this design.
+>> > > The concern is with a shared filesystems. =C2=A0In that case, for IMA
+>> > > it would make sense to support a native and a namespace xattr.
+>> > > =C2=A0If due to xattr space limitations we have to limit the number =
+of
+>> > > xattrs, then we should limit it to two - a native and a namespace
+>> > > version, with a "uid=3D" tag - first namespace gets permission to
+>> > > write the namespace xattr. =C2=A0Again, like in the layered case, if
+>> > > the namespace xattr doesn't exist, fall back to using the native
+>> > > xattr.
+>> > =
+
+>> > Just on this point: if we're really concerned about the need on
+>> > shared filesystems to have multiple IMA signatures per file, might
+>> > it not make sense simply to support multiple signatures within the
+>> > security.ima xattr? The rules for writing signature updates within
+>> > user namespaces would be somewhat complex (say only able to replace
+>> > a signature for which you demonstrate you possess the key) but it
+>> > would lead to an implementation which would work for traditional
+>> > shared filesystems (like NFS) as well as containerised bind mounts.
+>> =
+
+>> Writing security.ima requires being root with CAP_SYS_ADMIN
+>> privileges. =C2=A0I wouldn't want to give root within the namespace
+>> permission to over write or just extend the native security.ima.
+>
+> but why? =C2=A0That's partly the point of all of this: some security.
+> attributes can't be written by container root without some supervision
+> (the capability ones are the hugely problematic ones from this point of
+> view), but for some there's no reason they shouldn't be. =C2=A0What would=
+ be
+> the reason that root in a container shouldn't be able to write the ima
+> xattr the same as host root could on its filesystem?
+
+Mimi said she ``native''.  It competely makes sense for the things that
+the container doesn't ``own'' to not be allowed to be written/updated by
+the container.
+
+James you are making the case here for root in the container to write
+to the ima and evm attributes that are for the container.
+
+So I don't actually see any disagreement here except perhaps for
+terminology.
 
 Eric
 
---===============1220480762701563207==--
+
+--===============2354621020656578320==--
 
