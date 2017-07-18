@@ -1,102 +1,173 @@
-Content-Type: multipart/mixed; boundary="===============2949057604547026751=="
+Content-Type: multipart/mixed; boundary="===============6189855238951245862=="
 MIME-Version: 1.0
-From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+From: Felipe Balbi <felipe.balbi@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v2] xattr: Enable security.capability in user namespaces
-Date: Mon, 17 Jul 2017 16:50:22 -0400
-Message-ID: <7a39e8a6-a33b-f6a8-3fd5-6211c075ab91@linux.vnet.ibm.com>
-In-Reply-To: <20170717185811.GC15794@redhat.com>
+Subject: Re: [USB] f16443a034: EIP:arch_local_irq_restore
+Date: Tue, 18 Jul 2017 09:02:20 +0300
+Message-ID: <87fuduxoyb.fsf@linux.intel.com>
+In-Reply-To: <Pine.LNX.4.44L0.1707171022040.1737-100000@iolanthe.rowland.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2949057604547026751==
+--===============6189855238951245862==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 07/17/2017 02:58 PM, Vivek Goyal wrote:
-> On Tue, Jul 11, 2017 at 11:05:11AM -0400, Stefan Berger wrote:
+
+Hi,
+
+Alan Stern <stern@rowland.harvard.edu> writes:
+>> Alan Stern <stern@rowland.harvard.edu> writes:
+>> >> >> > On Thu, 29 Jun 2017, kernel test robot wrote:
+>> >> >> >
+>> >> >> >> FYI, we noticed the following commit:
+>> >> >> >> =
+
+>> >> >> >> commit: f16443a034c7aa359ddf6f0f9bc40d01ca31faea ("USB: gadgetf=
+s, dummy-hcd, net2280: fix locking for callbacks")
+>> >> >> >> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git=
+ master
+>> >> >> >> =
+
+>> >> >> >> in testcase: trinity
+>> >> >> >> with following parameters:
+>> >> >> >> =
+
+>> >> >> >> 	runtime: 300s
+>> >> >> >> =
+
+>> >> >> >> test-description: Trinity is a linux system call fuzz tester.
+>> >> >> >> test-url: http://codemonkey.org.uk/projects/trinity/
+>> >> >> >> =
+
+>> >> >> >> =
+
+>> >> >> >> on test machine: qemu-system-x86_64 -enable-kvm -m 420M
+>> >> >> >> =
+
+>> >> >> >> caused below changes (please refer to attached dmesg/kmsg for e=
+ntire log/backtrace):
+>> >> >> > ...
+>> >> >> >
+>> >> >> > I won't include the entire report.  The gist is that we have a p=
+roblem =
+
+>> >> >> > with lock ordering.  The report is about dummy-hcd, but this cou=
+ld =
+
+>> >> >> > affect any UDC driver.
+>> >> >> >
+>> >> >> >      1. When a SETUP request arrives, composite_setup() acquires
+>> >> >> > 	cdev->lock before calling the function driver's callback.
+>> >> >> > 	When that callback submits a reply, it causes the UDC driver
+>> >> >> > 	to acquire its private lock.
+>> >> >> =
+
+>> >> >> this only seems to happen before calling set_config():
+>> >> >> =
+
+>> >> >> 	case USB_REQ_SET_CONFIGURATION:
+>> >> >> 		if (ctrl->bRequestType !=3D 0)
+>> >> >> 			goto unknown;
+>> >> >> 		if (gadget_is_otg(gadget)) {
+>> >> >> 			if (gadget->a_hnp_support)
+>> >> >> 				DBG(cdev, "HNP available\n");
+>> >> >> 			else if (gadget->a_alt_hnp_support)
+>> >> >> 				DBG(cdev, "HNP on another port\n");
+>> >> >> 			else
+>> >> >> 				VDBG(cdev, "HNP inactive\n");
+>> >> >> 		}
+>> >> >> 		spin_lock(&cdev->lock);
+>> >> >> 		value =3D set_config(cdev, ctrl, w_value);
+>> >> >> 		spin_unlock(&cdev->lock);
+>> >> >> 		break;
+>> >> >
+>> >> > That's true.  Why is the lock held for set_config() but not for any=
+ of =
+
+>> >> > the other callbacks?
+>> >> =
+
+>> >> this is really old code from Dave. Your guess is as good as mine :-(
+>> >> =
+
+>> >> > Doesn't that mean the other callbacks can race with function
+>> >> > unregistration?
+>> >> =
+
+>> >> Probably not as UDCs are required to cancel transfers and kill all
+>> >> endpoints before unregistering. We would probably just giveback a few
+>> >> requests with -ESHUTDOWN and prevent new ones from being queued to HW,
+>> >> no?
+>> >
+>> > But SETUP callbacks aren't associated with pending requests.  They get
+>> =
+
+>> they are if ->setup() returns DELAYED_STATUS.
 >
-> [..]
->> +/*
->> + * xattr_list_userns_rewrite - Rewrite list of xattr names for user nam=
-espaces
->> + *                             or determine needed size for attribute l=
-ist
->> + *                             in case size =3D=3D 0
->> + *
->> + * In a user namespace we do not present all extended attributes to the
->> + * user. We filter out those that are in the list of userns supported x=
-attr.
->> + * Besides that we filter out those with @uid=3D<uid> when there is no =
-mapping
->> + * for that uid in the current user namespace.
->> + *
->> + * @list:        list of 0-byte separated xattr names
->> + * @size:        the size of the list; may be 0 to determine needed lis=
-t size
->> + * @list_maxlen: allocated buffer size of list
->> + */
->> +static ssize_t
->> +xattr_list_userns_rewrite(char *list, ssize_t size, size_t list_maxlen)
->> +{
->> +	char *nlist =3D NULL;
->> +	size_t s_off, len, nlen;
->> +	ssize_t d_off;
->> +	char *name, *newname;
->> +
->> +	if (!list || size < 0 || current_user_ns() =3D=3D &init_user_ns)
-> size will never be less than 0 here. Only caller calls this function only
-> if size is >0. So can we remove this?
+> No.  In the DELAYED_STATUS case, the gadget driver submits a request =
 
-Correct.
-
+> _after_ the SETUP packet is received.
 >
-> What about case of "!list". So if user space called listxattr(foo, NULL,
-> 0), we want to return the size of buffer as if all the xattrs will be
-> returned to user space. But in practice we probably will filter out some
-> xattrs so actually returned string will be smaller than size reported
-> previously.
+> In no case is there a pending request that an incoming SETUP packet is
+> associated with.
 
-This case of size=3D0 is a problem in userns. Depending on the mapping of =
+Oh, I see now what you mean. You're talking *specifically* the SETUP
+stage :-) Yeah, I agree. Currently, we don't have a request associated
+with it.
 
-the userid's the list can expand. A security.foo(a)uid=3D100 can become =
+>> > generated whenever a SETUP packet is received, even if the gadget
+>> > driver has no requests queued.  Cancelling transfers won't prevent
+>> > them.
+>> >
+>> > Killing all endpoints might or might not do the trick.  Does killing
+>> > ep0 prevent the UDC driver from receiving SETUP packets?  This may var=
+y =
 
-security.foo(a)uid=3D100000, if the mapping is set up so that uid 100 on th=
-e =
+>> > between UDC drivers.
+>> =
 
-host becomes uid 100000 inside the container. So for now we only have =
-
-security.capability and the way I solved this is by allocating a 65k =
-
-buffer when calling from a userns. In this buffer where we gather the =
-
-xattr names and then walk them to determine the size that's needed for =
-
-the buffer by simulating the rewriting. It's not nice but I don't know =
-
-of any other solution.
-
-
+>> no, it does not. If ->setup() fails, we are required to Stall and
+>> restart ep0. Restarting ep0 involves preparing it to receive a new
+>> SETUP request.
 >
-> Looks like that's the intent of "!list" condition here. Just wanted to
-> make sure, hence asking.
+> I wasn't talking about stalling or restarting ep0; I was talking about
+> killing it.
 
-Thanks for asking. I thought I had this case covered, but obviously I =
+Right, there's no killing of ep0 unless we're talking about module
+removal. In case of ->setup() returning an error, we *must* stall and
+restart ep0 (reprogram DMA, prepare 8-byte buffer, etc).
 
-did not.
+If we don't receive SETUP packet, then we don't even get a completion
+interrupt on ep0.
 
+>> > There are also the other callbacks (reset, disconnect, bus suspend, an=
+d =
+
+>> > bus resume), which aren't associated with endpoints or requests at all.
+>> >
+>> > Probably drivers really should have something like synchronize_irq() in
+>> > the udc_stop routine.  That would solve a lot of problems (although it =
+
+>> > wouldn't help dummy_hcd, which doesn't rely on interrupts).
+>> =
+
+>> Hmm, free_irq() calls synchronize_irq(). UDCs should just request_irq()
+>> on udc_start() and free_irq() on udc_stop(). That's what dwc3 is doing.
 >
-> BTW, I am testing this with overlayfs and trying to figure out if
-> switching of creds will create issues. Simple operations like listxattr
-> and getxattr and setxattr so far worked for me. And reason seems to be
-> that name transformation we are doing in top layer based on creds of
-> caller (and not based on creds of mounter).
->
-> Vivek
->
+> In general, I agree.  But free_irq() isn't enough; you also have to =
 
-    Stefan
+> tell the UDC hardware to stop generating interrupt requests.  Otherwise =
 
+> you'll end up with a "nobody cared!" error.
 
---===============2949057604547026751==--
+Yeah, but that's also up to the UDC driver. It must guarantee that
+interrupts are masked before freeing the handler. This is not
+USB-specific in any way, right?: -)
+
+-- =
+
+balbi
+
+--===============6189855238951245862==--
 
