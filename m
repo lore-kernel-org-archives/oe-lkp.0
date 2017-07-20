@@ -1,112 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============0194715324198934172=="
+Content-Type: multipart/mixed; boundary="===============8830594707699093928=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [include/linux/string.h] 6974f0c455: kernel_BUG_at_lib/string.c
-Date: Wed, 19 Jul 2017 21:04:25 -0700
-Message-ID: <CA+55aFwuebKQ0-sAiRJWpMcaVJ8MjXvCg56DO5q8jMiPDXvc8A@mail.gmail.com>
-In-Reply-To: <20170720014238.GH27396@yexl-desktop>
+Subject: Re: [lkp-robot] [uuid] df33767d9f: kmsg.test_uuid:failed#out_of#tests
+Date: Thu, 20 Jul 2017 09:53:00 +0200
+Message-ID: <20170720075300.GA22306@lst.de>
+In-Reply-To: <20170720010119.GE27396@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0194715324198934172==
+--===============8830594707699093928==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hmm. I wonder why the kernel test robot ends up having that annoying
-line doubling for the dmesg.
+That's an inverted uuid_equal check.  I'll send a fix ASAP.
 
-On Wed, Jul 19, 2017 at 6:42 PM, kernel test robot
-<xiaolong.ye@intel.com> wrote:
->
-> FYI, we noticed the following commit:
->
-> commit: 6974f0c4555e285ab217cee58b6e874f776ff409 ("include/linux/string.h=
-: add the option of fortified string.h functions")
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-
-It does strike me that the fortify_panic() code once again makes life
-unnecessarily hard for everybody by using "BUG()"
-
-What the hell is wrong with people? I feel; like I have to say this
-multiple times for every single merge window, and sometimes in
-between.
-
-BUG() and BUG_ON() are not acceptable debugging things. They kill the
-machine. They make for bad debugging.
-
-> [    8.134860] kernel BUG at lib/string.c:985!
-
-This is basically an entirely useless piece of completely
-information-less garbage.
-
-It would have been much nicer if all the fortify_panic() calls had
-instead used WARN_ONCE() with helpful pointers to what is going on.
-
-As it is, the full dmesg does show that
-
-    detected buffer overflow in memcpy
-
-but since it was printed out separately, if comes before the "-- cut
-here --" part and didn't get reported in the summary.
-
-> [    8.134886]  arch_prepare_optimized_kprobe+0xd5/0x171
-
-It's apparently this:
-
-        /* Copy arch-dep-instance from template */
-        memcpy(buf, &optprobe_template_entry, TMPL_END_IDX);
-
-and looking at the code generation, the conditional in the fortify case is
-
-# ./include/linux/string.h:307:         if (p_size < size || q_size < size)
-        cmpq    $1, %r13        #, _14
-        jbe     .L109   #,
-
-but it's hard to tell whether that is p_size or q_size. One of them
-must be ~0ul (or maybe both are 1) for it to have simplified to that
-single conditional.
-
-So the fortify_string code has decided that only a single-byte (or
-empty) memcpy is ok.
-
-And that, in turn, seems to be because we're copying from
-optprobe_template_entry, which is declared as
-
-    extern __visible kprobe_opcode_t optprobe_template_entry;
-
-so the fortify code decides it's a single character.
-
-Does just changing all those things to be declared as arrays fix things?
-
-IOW, a patch something like this white-space damaged mess:
-
-    diff --git a/arch/x86/include/asm/kprobes.h b/arch/x86/include/asm/kpro=
-bes.h
-    index 34b984c60790..6cf65437b5e5 100644
-    --- a/arch/x86/include/asm/kprobes.h
-    +++ b/arch/x86/include/asm/kprobes.h
-    @@ -52,10 +52,10 @@ typedef u8 kprobe_opcode_t;
-     #define flush_insn_slot(p) do { } while (0)
-
-     /* optinsn template addresses */
-    -extern __visible kprobe_opcode_t optprobe_template_entry;
-    -extern __visible kprobe_opcode_t optprobe_template_val;
-    -extern __visible kprobe_opcode_t optprobe_template_call;
-    -extern __visible kprobe_opcode_t optprobe_template_end;
-    +extern __visible kprobe_opcode_t optprobe_template_entry[];
-    +extern __visible kprobe_opcode_t optprobe_template_val[];
-    +extern __visible kprobe_opcode_t optprobe_template_call[];
-    +extern __visible kprobe_opcode_t optprobe_template_end[];
-     #define MAX_OPTIMIZED_LENGTH (MAX_INSN_SIZE + RELATIVE_ADDR_SIZE)
-     #define MAX_OPTINSN_SIZE                           \
-        (((unsigned long)&optprobe_template_end -       \
-
-Hmm?
-
-                 Linus
-
---===============0194715324198934172==--
+--===============8830594707699093928==--
 
