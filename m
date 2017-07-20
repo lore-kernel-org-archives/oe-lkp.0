@@ -1,80 +1,32 @@
-Content-Type: multipart/mixed; boundary="===============6969027177091319674=="
+Content-Type: multipart/mixed; boundary="===============6210593709127945363=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@kernel.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [platform/x86] bff589be59: kmsg.dell_wmi:Cannot_read_Dell_descriptor_buffer
-Date: Thu, 20 Jul 2017 11:36:59 -0700
-Message-ID: <CALCETrX5HASzSBbaaGyx_KrjY2tjwfUvv1aiCuOnt9RNqZLrdw@mail.gmail.com>
-In-Reply-To: <20170720162330.GN16493@pali>
+Subject: Re: [lkp-robot] [include/linux/string.h] 6974f0c455: kernel_BUG_at_lib/string.c
+Date: Thu, 20 Jul 2017 11:41:38 -0700
+Message-ID: <CA+55aFyeM9+1mQyyS8GN-b2JMVkdMxzyVG_8ajvHYm_W3XwV=w@mail.gmail.com>
+In-Reply-To: <20170721005140.ebf6d119bb30cc6cfe12ae61@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6969027177091319674==
+--===============6210593709127945363==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 20, 2017 at 9:23 AM, Pali Roh=C3=A1r <pali.rohar@gmail.com> w=
+On Thu, Jul 20, 2017 at 8:51 AM, Masami Hiramatsu <mhiramat@kernel.org> w=
 rote:
-> On Thursday 20 July 2017 09:02:20 kernel test robot wrote:
->> commit: bff589be59c50924a9715951160578e570cba5c6 ("platform/x86: dell-wm=
-i: Convert to the WMI bus infrastructure")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->>
->> caused below changes (please refer to attached dmesg/kmsg for entire log=
-/backtrace):
->>
->> [    7.104086] dell_wmi: Cannot read Dell descriptor buffer - 1
 >
-> Hi Andy! Problem is in following code:
->
-> static int __init dell_wmi_init(void)
-> {
->         int err;
->
->         err =3D dell_wmi_check_descriptor_buffer();
->         if (err)
->                 return err;
->
->         dmi_check_system(dell_wmi_smbios_list);
->
->         if (wmi_requires_smbios_request) {
->                 err =3D dell_wmi_events_set_enabled(true);
->                 if (err) {
->                         pr_err("Failed to enable WMI events\n");
->                         return err;
->                 }
->         }
->
->         return wmi_driver_register(&dell_wmi_driver);
-> }
-> module_init(dell_wmi_init);
->
-> static void __exit dell_wmi_exit(void)
-> {
->         if (wmi_requires_smbios_request)
->                 dell_wmi_events_set_enabled(false);
->
->         wmi_driver_unregister(&dell_wmi_driver);
-> }
-> module_exit(dell_wmi_exit);
->
-> dell_wmi_init and dell_wmi_exit should just call wmi_driver_register and
-> wmi_driver_unregister.
->
-> All those other calls (like different checks or enabling wmi events)
-> should be done in dell_wmi_probe from dell_wmi_driver structure. Same
-> for dell_wmi_remove.
->
-> Basically with this bus interface you should be able to load dell-wmi.ko
-> also on non-dell machines. Just bus code would not create and register
-> wmi device and so no probe would be called.
+> Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+> Tested-by: Masami Hiramatsu <mhiramat@kernel.org>
 
-Yep.  Fix coming once I test it.
+Ok, I committed that patch as-is.
 
->
-> --
-> Pali Roh=C3=A1r
-> pali.rohar(a)gmail.com
+Other architectures may end up with the same issue, unless they really
+happen to have just a single instruction that fits in their
+kprobe_opcode_t type in their templates. But I didn't touch any of
+their (similar) code, since it will need testing.
 
---===============6969027177091319674==--
+                  Linus
+
+--===============6210593709127945363==--
 
