@@ -1,83 +1,78 @@
-Content-Type: multipart/mixed; boundary="===============8772355725985779019=="
+Content-Type: multipart/mixed; boundary="===============6470752841347205402=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Pali Rohár <pali.rohar@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [scsi] 5c279bd9e4: blogbench.read_score -10.0% regression
-Date: Thu, 06 Jul 2017 10:54:21 +0800
-Message-ID: <20170706025421.GB5222@yexl-desktop>
-In-Reply-To: <CACVXFVNWpWb0f-tp2r82Juzq3QH2Prw_gzqVY9tySnAQsLg2Kg@mail.gmail.com>
+Subject: Re: [lkp-robot] [platform/x86] bff589be59: kmsg.dell_wmi:Cannot_read_Dell_descriptor_buffer
+Date: Thu, 20 Jul 2017 18:23:30 +0200
+Message-ID: <20170720162330.GN16493@pali>
+In-Reply-To: <20170720010220.GF27396@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8772355725985779019==
+--===============6470752841347205402==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Ming Lei
+On Thursday 20 July 2017 09:02:20 kernel test robot wrote:
+> commit: bff589be59c50924a9715951160578e570cba5c6 ("platform/x86: dell-wmi=
+: Convert to the WMI bus infrastructure")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> =
 
-On 07/06, Ming Lei wrote:
->Hi Xiaolong,
->
->On Mon, Jul 3, 2017 at 10:57 AM, kernel test robot
-><xiaolong.ye@intel.com> wrote:
->>
->> Greeting,
->>
->> FYI, we noticed a -10.0% regression of blogbench.read_score due to commi=
-t:
->
->Looks like related with mq scheduler, could you test the following patch t=
-o see
->if your issue can be fixed?
->
->https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git/comm=
-it/?h=3Dfor-linus&id=3D32825c45ff8f4cce937ab85b030dc693ceb1aa0a
->
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
 
-Here is the comparison of commit 5c279bd9e4 and 32825c45, it does help reco=
-ver
-performance back.
+> [    7.104086] dell_wmi: Cannot read Dell descriptor buffer - 1
 
-$ compare -at 5c279bd9e40624f4ab6e688671026d6005b066fa 32825c45ff8f4cce937a=
-b85b030dc693ceb1aa0a
-tests: 1
-testcase/path_params/tbox_group/run: blogbench/1SSD-ext4-performance/lkp-bd=
-w-de1
+Hi Andy! Problem is in following code:
 
-5c279bd9e40624f4  32825c45ff8f4cce937ab85b03  =
+static int __init dell_wmi_init(void)
+{
+	int err;
 
-----------------  --------------------------  =
+	err =3D dell_wmi_check_descriptor_buffer();
+	if (err)
+		return err;
 
-         %stddev      change         %stddev
-             \          |                \  =
+	dmi_check_system(dell_wmi_smbios_list);
 
-    262860              36%     358558        blogbench.read_score
-      9913 =C2=B1  4%       -33%       6654        blogbench.write_score
-  86266452              31%  1.129e+08        blogbench.time.file_system_in=
-puts
-     29.89              22%      36.46        blogbench.time.user_time
-       214              13%        242        blogbench.time.percent_of_cpu=
-_this_job_got
-       620              12%        696        blogbench.time.system_time
-  1.11e+08             -29%   79019314        blogbench.time.file_system_ou=
-tputs
-    439016             -69%     135286        blogbench.time.involuntary_co=
-ntext_switches
-      0.64              22%       0.78        mpstat.cpu.usr%
-      7.02 =C2=B1  4%       -47%       3.72        mpstat.cpu.idle%
-    237216            1344%    3425183        softirqs.RCU
-    430504             376%    2048486        softirqs.TIMER
-    188376             211%     586308        softirqs.SCHED
-    306478 =C2=B1 32%       -99%       4150 =C2=B1 36%  softirqs.NET_RX
-  86266452              31%  1.129e+08        time.file_system_inputs
-     29.89              22%      36.46        time.user_time
+	if (wmi_requires_smbios_request) {
+		err =3D dell_wmi_events_set_enabled(true);
+		if (err) {
+			pr_err("Failed to enable WMI events\n");
+			return err;
+		}
+	}
 
-Thanks,
-Xiaolong
+	return wmi_driver_register(&dell_wmi_driver);
+}
+module_init(dell_wmi_init);
 
->
->Thanks,
->Ming Lei
+static void __exit dell_wmi_exit(void)
+{
+	if (wmi_requires_smbios_request)
+		dell_wmi_events_set_enabled(false);
 
---===============8772355725985779019==--
+	wmi_driver_unregister(&dell_wmi_driver);
+}
+module_exit(dell_wmi_exit);
+
+dell_wmi_init and dell_wmi_exit should just call wmi_driver_register and
+wmi_driver_unregister.
+
+All those other calls (like different checks or enabling wmi events)
+should be done in dell_wmi_probe from dell_wmi_driver structure. Same
+for dell_wmi_remove.
+
+Basically with this bus interface you should be able to load dell-wmi.ko
+also on non-dell machines. Just bus code would not create and register
+wmi device and so no probe would be called.
+
+-- =
+
+Pali Roh=C3=A1r
+pali.rohar(a)gmail.com
+
+--===============6470752841347205402==--
 
