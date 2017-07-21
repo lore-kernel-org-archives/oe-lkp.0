@@ -1,51 +1,66 @@
-Content-Type: multipart/mixed; boundary="===============0308356986458846152=="
+Content-Type: multipart/mixed; boundary="===============5154545687509782716=="
 MIME-Version: 1.0
-From: Ming Lei <tom.leiming@gmail.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [scsi] 5c279bd9e4: blogbench.read_score -10.0% regression
-Date: Thu, 06 Jul 2017 15:12:31 +0800
-Message-ID: <CACVXFVOJcJY3wYbm6LgqSDm021O+Uk-yNm9zcoLeYR+=Rn_bzg@mail.gmail.com>
-In-Reply-To: <20170706025421.GB5222@yexl-desktop>
+Subject: Re: [lkp-robot] [include/linux/string.h] 6974f0c455: kernel_BUG_at_lib/string.c
+Date: Fri, 21 Jul 2017 10:03:49 +0800
+Message-ID: <20170721020349.GB4273@yexl-desktop>
+In-Reply-To: <20170721015632.c75dmce5tm76jpij@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0308356986458846152==
+--===============5154545687509782716==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 6, 2017 at 10:54 AM, Ye Xiaolong <xiaolong.ye@intel.com> wrot=
-e:
-> Hi, Ming Lei
->
-> On 07/06, Ming Lei wrote:
->>Hi Xiaolong,
->>
->>On Mon, Jul 3, 2017 at 10:57 AM, kernel test robot
->><xiaolong.ye@intel.com> wrote:
+On 07/21, Fengguang Wu wrote:
+>On Fri, Jul 21, 2017 at 09:52:22AM +0800, Ye Xiaolong wrote:
+>>On 07/21, Fengguang Wu wrote:
+>>>Hi Xiaolong,
 >>>
->>> Greeting,
+>>>On Thu, Jul 20, 2017 at 10:50:52PM +0800, Ye Xiaolong wrote:
+>>>>Hi, fengguang
+>>>>
+>>>>On 07/19, Linus Torvalds wrote:
+>>>>>Hmm. I wonder why the kernel test robot ends up having that annoying
+>>>>>line doubling for the dmesg.
+>>>>>
+>>>>
+>>>>I found that the line doubling issue should be caused by setting
+>>>>"earlyprintk=3DttyS0,115200" and "console=3DttyS0,115200" at the same t=
+ime in
+>>>>kernel parameter via debugging with `lkp qemu`, could I just omit one o=
+f them?
 >>>
->>> FYI, we noticed a -10.0% regression of blogbench.read_score due to comm=
-it:
+>>>That's a good finding. I guess it's better to tell that fact and let
+>>>the community know (more) about this caveat of earlyprintk and
+>>>possibly (plan to) fix it.
 >>
->>Looks like related with mq scheduler, could you test the following patch =
-to see
->>if your issue can be fixed?
->>
->>https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git/com=
-mit/?h=3Dfor-linus&id=3D32825c45ff8f4cce937ab85b030dc693ceb1aa0a
->>
+>>Got it, I'll give this feedback to community.
 >
-> Here is the comparison of commit 5c279bd9e4 and 32825c45, it does help re=
-cover
-> performance back.
+>OK, thanks!
+>
+>>>>any side effect it may bring? or I can solve this issue by uniq the dme=
+sg log
+>>>>in report?
+>>>
+>>>Then we can offer the option to strip the duplicate lines in dmesg in
+>>>our robot. It looks like trivial to do in fixup_dmesg():
+>>>
+>>>https://stackoverflow.com/questions/22067201/how-to-delete-duplicate-lin=
+es-in-file-in-unix
+>>>
+>>>sed -r '$!N; /^(.*)\n\1$/!P; D' filename
+>>
+>>I'll send a fix for it.
+>
+>Never mind, I've done a tested patch just now. :)
 
-That is great, thanks for your test!
+You are so quick, thanks. :)
 
-This patch has been in block tree, and will be pushed to v4.13.
+>
+>Thanks,
+>Fengguang
 
-Thanks,
-Ming
-
---===============0308356986458846152==--
+--===============5154545687509782716==--
 
