@@ -1,43 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============7294771023883400554=="
+Content-Type: multipart/mixed; boundary="===============2830138123907271568=="
 MIME-Version: 1.0
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [include/linux/string.h] 6974f0c455: kernel_BUG_at_lib/string.c
-Date: Fri, 21 Jul 2017 07:20:04 +0900
-Message-ID: <20170721072004.3909f2c7c74bb43b65220cc1@kernel.org>
-In-Reply-To: <CA+55aFyeM9+1mQyyS8GN-b2JMVkdMxzyVG_8ajvHYm_W3XwV=w@mail.gmail.com>
+Date: Fri, 21 Jul 2017 09:30:01 +0800
+Message-ID: <20170721013001.liames3lkhnqwmvj@wfg-t540p.sh.intel.com>
+In-Reply-To: <20170720145052.GA18464@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7294771023883400554==
+--===============2830138123907271568==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 20 Jul 2017 11:41:38 -0700
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+Hi Xiaolong,
 
-> On Thu, Jul 20, 2017 at 8:51 AM, Masami Hiramatsu <mhiramat@kernel.org>=
- wrote:
-> >
-> > Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > Tested-by: Masami Hiramatsu <mhiramat@kernel.org>
-> =
+On Thu, Jul 20, 2017 at 10:50:52PM +0800, Ye Xiaolong wrote:
+>Hi, fengguang
+>
+>On 07/19, Linus Torvalds wrote:
+>>Hmm. I wonder why the kernel test robot ends up having that annoying
+>>line doubling for the dmesg.
+>>
+>
+>I found that the line doubling issue should be caused by setting
+>"earlyprintk=3DttyS0,115200" and "console=3DttyS0,115200" at the same time=
+ in
+>kernel parameter via debugging with `lkp qemu`, could I just omit one of t=
+hem?
 
-> Ok, I committed that patch as-is.
-> =
+That's a good finding. I guess it's better to tell that fact and let
+the community know (more) about this caveat of earlyprintk and
+possibly (plan to) fix it.
 
-> Other architectures may end up with the same issue, unless they really
-> happen to have just a single instruction that fits in their
-> kprobe_opcode_t type in their templates. But I didn't touch any of
-> their (similar) code, since it will need testing.
+>any side effect it may bring? or I can solve this issue by uniq the dmesg =
+log
+>in report?
 
-OK, I'll check and fix those.
+Then we can offer the option to strip the duplicate lines in dmesg in
+our robot. It looks like trivial to do in fixup_dmesg():
 
-Thank you!
+https://stackoverflow.com/questions/22067201/how-to-delete-duplicate-lines-=
+in-file-in-unix
 
--- =
+sed -r '$!N; /^(.*)\n\1$/!P; D' filename
 
-Masami Hiramatsu <mhiramat@kernel.org>
+Thanks,
+Fengguang
 
---===============7294771023883400554==--
+--===============2830138123907271568==--
 
