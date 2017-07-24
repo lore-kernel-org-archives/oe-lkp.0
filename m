@@ -1,162 +1,188 @@
-Content-Type: multipart/mixed; boundary="===============6518046842628664146=="
+Content-Type: multipart/mixed; boundary="===============4870720994295441500=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Andy Lutomirski <luto@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/refcount] b631e535c6: WARNING:at_net/netlink/af_netlink.c:#netlink_sock_destruct
-Date: Sun, 23 Jul 2017 20:52:53 -0700
-Message-ID: <CAGXu5j+ijEOp1chiSE9fkzgUcQVYyDpxFRhDbP-RmfUd9_y2aQ@mail.gmail.com>
-In-Reply-To: <20170724021314.GE32356@yexl-desktop>
+Subject: Re: [lkp-robot] [x86/mm] 94b1b03b51: hackbench.throughput -20% regression
+Date: Sun, 23 Jul 2017 22:23:39 -0700
+Message-ID: <CALCETrUbvUmNTej7nRpC0R_GaxD7+Y8NjnNV6V6dmp_oVczTWw@mail.gmail.com>
+In-Reply-To: <20170724021511.GF32356@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6518046842628664146==
+--===============4870720994295441500==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Is 14afee4b6092f ("net: convert sock.sk_wmem_alloc from atomic_t to
-refcount_t") correct? That looks like a statistics counter, not a
-refcounter? I can't quite tell, though...
+AFAICT this is a regression running hackbench with 56 * 40 threads on
+112 CPUs.  The performance numbers are odd -- it looks like only 10
+CPUs worth of work are happening, so the system is 90% or so idle.
+I'm not sure why.
 
-I think this WARN is from:
+I suspect this is hitting the nasty case that Rik thought of: on
+transition to and from idle, we're doing cpumask_clear() and
+cpumask_set() respecitvely on a per-mm bitmask, causing false sharing.
+This is merely a worsening of an existing problem that we do mmgrab()
+and mmdrop() in the scheduler to keep track of the reference counts.
+IOW our performance is generally awful on NUMA or other big systems
+with mms with many threads on many CPUs that are constantly going idle
+and un-idle.
 
-WARN_ON(refcount_read(&sk->sk_wmem_alloc));
+Do we care for the purpose of the PCID series?  This is a bit of a
+weird corner case.
 
--Kees
+--Andy
 
-On Sun, Jul 23, 2017 at 7:13 PM, kernel test robot
+
+On Sun, Jul 23, 2017 at 7:15 PM, kernel test robot
 <xiaolong.ye@intel.com> wrote:
 >
-> FYI, we noticed the following commit:
+> Greeting,
 >
-> commit: b631e535c61d7ddbb7ebac545f729ca9b3b6d70e ("x86/refcount: Implemen=
-t fast refcount overflow protection")
-> https://git.kernel.org/cgit/linux/kernel/git/kees/linux.git kspp/fast-ref=
-count/ud/v6
+> We noticed a -20% regression of hackbench.throughput due to commit:
 >
-> in testcase: boot
+> commit: 94b1b03b519b81c494900cb112aa00ed205cc2d9 ("x86/mm: Rework lazy TL=
+B mode and TLB freshness tracking")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 >
-> on test machine: qemu-system-x86_64 -enable-kvm -smp 2 -m 512M
+> in testcase: hackbench
+> on test machine: 112 threads Skylake with 64G memory
+> with following parameters:
 >
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
+>         nr_threads: 50%
+>         mode: threads
+>         ipc: pipe
+>         cpufreq_governor: performance
 >
->
-> +------------------------------------------------------------+-----------=
--+------------+
-> |                                                            | 561ee9566e=
- | b631e535c6 |
-> +------------------------------------------------------------+-----------=
--+------------+
-> | boot_successes                                             | 37        =
- | 0          |
-> | boot_failures                                              | 0         =
- | 4          |
-> | WARNING:at_net/netlink/af_netlink.c:#netlink_sock_destruct | 0         =
- | 4          |
-> +------------------------------------------------------------+-----------=
--+------------+
+> test-description: Hackbench is both a benchmark and a stress test for the=
+ Linux kernel scheduler.
+> test-url: https://github.com/linux-test-project/ltp/blob/master/testcases=
+/kernel/sched/cfs-scheduler/hackbench.c
 >
 >
 >
-> [   36.991339] WARNING: CPU: 0 PID: 280 at net/netlink/af_netlink.c:374 n=
-etlink_sock_destruct+0x1ea/0x200
-> [   36.994035] Modules linked in:
-> [   36.994815] CPU: 0 PID: 280 Comm: sh Not tainted 4.13.0-rc1-00003-gb63=
-1e53 #1
-> [   36.996546] task: ffff88001448c180 task.stack: ffffc900004e0000
-> [   36.998006] RIP: 0010:netlink_sock_destruct+0x1ea/0x200
-> [   36.999290] RSP: 0018:ffffffff82433de0 EFLAGS: 00010206
-> [   37.000591] RAX: ffff88001448c180 RBX: ffff880016a3d000 RCX: 000000000=
-0000000
-> [   37.002319] RDX: 0000000000000100 RSI: 0000000000000001 RDI: ffffffff8=
-2796f48
-> [   37.004061] RBP: ffffffff82433df0 R08: 0000000000000000 R09: 000000000=
-0000000
-> [   37.005780] R10: 0000000000000001 R11: 0000000000000001 R12: 000000000=
-0000001
-> [   37.007528] R13: ffffffff81cd4a00 R14: 96e49674e09954cf R15: 000000000=
-000001f
-> [   37.009261] FS:  0000000000000000(0000) GS:ffffffff82430000(0000) knlG=
-S:0000000000000000
-> [   37.011233] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   37.012629] CR2: 00007f268a96e688 CR3: 00000000159ff000 CR4: 000000000=
-00006b0
-> [   37.014212] Call Trace:
-> [   37.014745]  <IRQ>
-> [   37.015201]  __sk_destruct+0x3a2/0x4c0
-> [   37.015994]  sk_destruct+0x3f/0x70
-> [   37.016747]  __sk_free+0x10d/0x160
-> [   37.017479]  sk_free+0x4a/0x60
-> [   37.018127]  deferred_put_nlk_sk+0xd9/0xf0
-> [   37.018998]  rcu_process_callbacks+0x766/0x1cb0
-> [   37.019944]  ? rcu_process_callbacks+0x643/0x1cb0
-> [   37.020960]  __do_softirq+0x10c/0x6b2
-> [   37.021749]  irq_exit+0x135/0x140
-> [   37.022458]  smp_apic_timer_interrupt+0x3b/0x50
-> [   37.023429]  apic_timer_interrupt+0x8e/0xa0
-> [   37.024303] RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x60
-> [   37.025141] RSP: 0018:ffffc900004e3c10 EFLAGS: 00000246 ORIG_RAX: ffff=
-ffffffffff10
-> [   37.026605] RAX: ffff88001448c180 RBX: ffffffff82727288 RCX: 000000000=
-0000000
-> [   37.028340] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff8=
-2727288
-> [   37.030077] RBP: ffffc900004e3c60 R08: 0000000000000000 R09: 000000000=
-0000000
-> [   37.031796] R10: 0000000000000000 R11: 0000000000000001 R12: 000000000=
-0000000
-> [   37.033546] R13: 0000000000000000 R14: 0000000000000000 R15: 00007f268=
-9f93000
-> [   37.035262]  </IRQ>
-> [   37.035814]  ? ftrace_likely_update+0x39/0x200
-> [   37.036925]  ? vm_normal_page+0xd7/0x1a0
-> [   37.037886]  unmap_page_range+0x775/0x14d0
-> [   37.038658]  unmap_single_vma+0x158/0x180
-> [   37.039403]  unmap_vmas+0x5b/0x80
-> [   37.040202]  exit_mmap+0x118/0x220
-> [   37.040900]  mmput+0xd5/0x240
-> [   37.041479]  do_exit+0xdb6/0x16d0
-> [   37.042183]  ? entry_SYSCALL_64_fastpath+0x5/0xbd
-> [   37.043365]  do_group_exit+0x8a/0x160
-> [   37.044282]  SyS_exit_group+0x1d/0x20
-> [   37.045192]  entry_SYSCALL_64_fastpath+0x1f/0xbd
-> [   37.046321] RIP: 0033:0x7f268a676408
-> [   37.047221] RSP: 002b:00007ffcba052ea8 EFLAGS: 00000246 ORIG_RAX: 0000=
-0000000000e7
-> [   37.049042] RAX: ffffffffffffffda RBX: 000000000000007f RCX: 00007f268=
-a676408
-> [   37.050784] RDX: 000000000000007f RSI: 000000000000003c RDI: 000000000=
-000007f
-> [   37.052512] RBP: 00007f268a96e688 R08: 00000000000000e7 R09: fffffffff=
-fffffa0
-> [   37.054281] R10: 0000000000000000 R11: 0000000000000246 R12: 00007f268=
-a96ff40
-> [   37.056004] R13: 0000000000000001 R14: 0000000000000000 R15: 00000000f=
-fffffff
-> [   37.057765] Code: e8 56 14 48 ff eb ca e8 b5 42 4f ff 0f ff 0f 1f 00 e=
-b a7 e8 a9 42 4f ff 0f ff 0f 1f 80 00 00 00 00 e9 48 ff ff ff e8 96 42 4f f=
-f <0f> ff 0f 1f 40 00 e9 e5 fe ff ff 90 66 2e 0f 1f 84 00 00 00 00
-> [   37.062621] ---[ end trace db04ba531557bbda ]---
+> Details are as below:
+> -------------------------------------------------------------------------=
+------------------------->
 >
 >
 > To reproduce:
 >
 >         git clone https://github.com/01org/lkp-tests.git
 >         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script  # job-script is attached in=
- this email
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
 >
+> testcase/path_params/tbox_group/run: hackbench/50%-threads-pipe-performan=
+ce/lkp-skl-sp1
+>
+> b0579ade7cd82391  94b1b03b519b81c494900cb112
+> ----------------  --------------------------
+>     341577             -20%     273386        hackbench.throughput
+>        619                         627        hackbench.time.elapsed_time
+>        619                         627        hackbench.time.elapsed_time=
+.max
+>      60730                       61467        hackbench.time.system_time
+>      10342                       10237        hackbench.time.percent_of_c=
+pu_this_job_got
+>  3.668e+09 =C2=B1  3%       -14%  3.162e+09        hackbench.time.involun=
+tary_context_switches
+>       3343             -16%       2822        hackbench.time.user_time
+>      79579             -19%      64691        hackbench.time.minor_page_f=
+aults
+>  7.122e+09             -21%  5.615e+09        hackbench.time.voluntary_co=
+ntext_switches
+>   19184056             -21%   15224960        vmstat.system.cs
+>     657050 =C2=B1  3%       -21%     518229        vmstat.system.in
+>       1.68             111%       3.54        perf-stat.cache-miss-rate%
+>  2.716e+09 =C2=B1  4%        90%  5.153e+09        perf-stat.node-load-mi=
+sses
+>  2.175e+10              78%  3.876e+10        perf-stat.cache-misses
+>  4.423e+08              49%  6.587e+08        perf-stat.node-loads
+>      61682 =C2=B1 12%        30%      80181 =C2=B1  4%  perf-stat.instruc=
+tions-per-iTLB-miss
+>       7.69 =C2=B1 16%        29%       9.91 =C2=B1  3%  perf-stat.iTLB-lo=
+ad-miss-rate%
+>      85.98               3%      88.67        perf-stat.node-load-miss-ra=
+te%
+>  1.336e+14                   1.357e+14        perf-stat.cpu-cycles
+>      50.62              -3%      48.95        perf-stat.node-store-miss-r=
+ate%
+>       0.50              -5%       0.48        perf-stat.branch-miss-rate%
+>  1.863e+09             -14%    1.6e+09        perf-stat.node-stores
+>    3.5e+09             -14%  2.992e+09        perf-stat.cpu-migrations
+>  1.298e+12             -16%  1.094e+12        perf-stat.cache-references
+>       0.01 =C2=B1  5%       -17%       0.00 =C2=B1  5%  perf-stat.dTLB-lo=
+ad-miss-rate%
+>  1.191e+10             -20%  9.584e+09        perf-stat.context-switches
+>   1.91e+09             -20%  1.534e+09        perf-stat.node-store-misses
+>  2.608e+13             -20%  2.087e+13        perf-stat.dTLB-loads
+>  1.734e+13             -20%  1.385e+13        perf-stat.branch-instructio=
+ns
+>  8.712e+13             -20%  6.948e+13        perf-stat.instructions
+>  1.654e+13             -20%  1.318e+13        perf-stat.dTLB-stores
+>       0.65             -21%       0.51        perf-stat.ipc
+>  8.673e+10             -24%  6.587e+10        perf-stat.branch-misses
+>       0.00 =C2=B1  5%       -26%       0.00 =C2=B1  8%  perf-stat.dTLB-st=
+ore-miss-rate%
+>  1.414e+09 =C2=B1  4%       -34%  9.394e+08 =C2=B1  5%  perf-stat.dTLB-lo=
+ad-misses
+>  1.439e+09 =C2=B1 14%       -40%   8.68e+08 =C2=B1  4%  perf-stat.iTLB-lo=
+ad-misses
+>   76075198 =C2=B1  4%       -41%   44671969 =C2=B1  8%  perf-stat.dTLB-st=
+ore-misses
+>  1.735e+10 =C2=B1  4%       -55%  7.885e+09        perf-stat.iTLB-loads
+>
+>
+>
+>                                 hackbench.throughput
+>
+>   350000 *+*-*-*-*-*--*-*-*-*-*-*-*-*-*-*--*-*---------------------------=
+---+
+>          |                                                               =
+   |
+>   300000 ++                                                              =
+   |
+>          O O O O O O  O O O O O O O O O O    O   O   O O O   O O  O O O O=
+ O O
+>   250000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   200000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   150000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>   100000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>    50000 ++                                                              =
+   |
+>          |                                                               =
+   |
+>        0 ++--------------------------------O---O---O-------O-------------=
+---+
+>
+>
+>
+>   [*] bisect-good sample
+>   [O] bisect-bad  sample
+>
+>
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are prov=
+ided
+> for informational purposes only. Any difference in system hardware or sof=
+tware
+> design or configuration may affect actual performance.
 >
 >
 > Thanks,
 > Xiaolong
 
-
-
--- =
-
-Kees Cook
-Pixel Security
-
---===============6518046842628664146==--
+--===============4870720994295441500==--
 
