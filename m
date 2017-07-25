@@ -1,255 +1,75 @@
-Content-Type: multipart/mixed; boundary="===============9167200028534028722=="
+Content-Type: multipart/mixed; boundary="===============8897294282455464494=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/refcount] b631e535c6: WARNING:at_net/netlink/af_netlink.c:#netlink_sock_destruct
-Date: Mon, 24 Jul 2017 20:21:16 -0700
-Message-ID: <CAGXu5jK1Jc2iD-GMkeetaQsaXt=sbG+P08Y4CZpc9HbruAVo_Q@mail.gmail.com>
-In-Reply-To: <20170724130324.ot3nviviwvvn4uhs@ishxps>
+Subject: Re: [lkp-robot] [x86/mm] 94b1b03b51: hackbench.throughput -20% regression
+Date: Tue, 25 Jul 2017 11:35:15 +0200
+Message-ID: <20170725093515.ho5fiwohepti365y@gmail.com>
+In-Reply-To: <CALCETrWJp1zS22SuY4j0z-sy+nvhbH3j_bF4ptEL=B6P4axD7g@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9167200028534028722==
+--===============8897294282455464494==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 24, 2017 at 6:03 AM, Hans Liljestrand
-<liljestrandh@gmail.com> wrote:
-> On Sun, Jul 23, 2017 at 08:52:53PM -0700, Kees Cook wrote:
->>
->> Is 14afee4b6092f ("net: convert sock.sk_wmem_alloc from atomic_t to
->> refcount_t") correct? That looks like a statistics counter, not a
->> refcounter? I can't quite tell, though...
->
->
-> Hmm, yes, it looks a bit weird, but it is used in a refcount fashion here:
->
-> void sk_free(struct sock *sk)
-> {
->         /*
->          * We subtract one from sk_wmem_alloc and can know if
->          * some packets are still in some tx queue.
->          * If not null, sock_wfree() will call __sk_free(sk) later
->          */
->         if (refcount_dec_and_test(&sk->sk_wmem_alloc))
->                 __sk_free(sk);
-> }
-> http://elixir.free-electrons.com/linux/v4.13-rc1/source/net/core/sock.c#L=
-1605
 
-Ah yeah, there it is. Hrmpf. Something is triggering WARNs, though...
-I wonder if this can get examined more closely?
+* Andy Lutomirski <luto@kernel.org> wrote:
 
-Also, why not atomic->refcount for sk_rmem_alloc?
+> > BTW., we could eliminate the MM cpumask twiddling with the following ch=
+ange in its
+> > definition:
+> >
+> >  - don't clear the cpumask in the context switch path
+> >
+> >  - only clear the cpumask if a task is explicitly migrated from one CPU=
+ to another
+> >    and the current task on the old CPU has a different MM
+> >
+> > this should not affect correctness (I think ...) - it might create addi=
+tional TLB
+> > flushes in some patterns where threads that gone idle for a long time, =
+but it
+> > should auto-clear pretty well on busy systems due to the migration rule
+> > (statistically).
+> >
+> > This should get rid of this high rate of cpumask operations.
+> >
+> > Doing this only makes sense if we manage to get rid of the mmgrab()/mmd=
+rop() dance
+> > over context switches that is.
+> =
 
--Kees
+> Just by itself, this would kill performance if there's a task with
+> many threads that are mostly all idle (like your average program with
+> a thread pool, one thread per cpu, that only becomes non-idle when it
+> has work to do) that periodically requires a flush: we'll IPI all
+> CPUs.  That scales even worse than the problematic atomic ops here.
 
->
-> And here:
->
->         if (refcount_sub_and_test(len, &sk->sk_wmem_alloc))
->                 __sk_free(sk);
-> }
-> http://elixir.free-electrons.com/linux/v4.13-rc1/source/net/core/sock.c#L=
-1798
->
->>
->> I think this WARN is from:
->>
->> WARN_ON(refcount_read(&sk->sk_wmem_alloc));
->
->
-> I looked through the commit and couldn't find any direct conversion issue=
-s.
-> Although I guess it is debatable whether refcoun_t should be used in this
-> kind of less conventional case.
->
-> The only potential problem I noticed was that based on the following chan=
-ge
-> (or rather the original code) it seems like sk_wmem_alloc could sometimes=
- be
-> negative. I'm not familiar enough with the code to say whether that really
-> is the case.
->
-> --- a/drivers/atm/fore200e.c
-> +++ b/drivers/atm/fore200e.c
-> @@ -924,12 +924,7 @@ fore200e_tx_irq(struct fore200e* fore200e)
->                else {
->                    dev_kfree_skb_any(entry->skb);
->                }
-> -#if 1
-> -               /* race fixed by the above incarnation mechanism, but... =
-*/
-> -               if (atomic_read(&sk_atm(vcc)->sk_wmem_alloc) < 0) {
-> -                   atomic_set(&sk_atm(vcc)->sk_wmem_alloc, 0);
-> -               }
-> -#endif
-> +
->                /* check error condition */
->                if (*entry->status & STATUS_ERROR)
->                    atomic_inc(&vcc->stats->tx_err);
->
-> But if this is actually supposed to legitimately happen and eventually
-> "balance out" refcount_t might not work here. On the other hand this shou=
-ld
-> have triggered an earlier WARN_ON already, so it doesn't seem to be the
-> issue here?
->
-> Regards,
-> -hans
->
->
->>
->> -Kees
->>
->> On Sun, Jul 23, 2017 at 7:13 PM, kernel test robot
->> <xiaolong.ye@intel.com> wrote:
->>>
->>>
->>> FYI, we noticed the following commit:
->>>
->>> commit: b631e535c61d7ddbb7ebac545f729ca9b3b6d70e ("x86/refcount:
->>> Implement fast refcount overflow protection")
->>> https://git.kernel.org/cgit/linux/kernel/git/kees/linux.git
->>> kspp/fast-refcount/ud/v6
->>>
->>> in testcase: boot
->>>
->>> on test machine: qemu-system-x86_64 -enable-kvm -smp 2 -m 512M
->>>
->>> caused below changes (please refer to attached dmesg/kmsg for entire
->>> log/backtrace):
->>>
->>>
->>>
->>> +------------------------------------------------------------+---------=
----+------------+
->>> |                                                            | 561ee956=
-6e
->>> | b631e535c6 |
->>>
->>> +------------------------------------------------------------+---------=
----+------------+
->>> | boot_successes                                             | 37
->>> | 0          |
->>> | boot_failures                                              | 0
->>> | 4          |
->>> | WARNING:at_net/netlink/af_netlink.c:#netlink_sock_destruct | 0
->>> | 4          |
->>>
->>> +------------------------------------------------------------+---------=
----+------------+
->>>
->>>
->>>
->>> [   36.991339] WARNING: CPU: 0 PID: 280 at net/netlink/af_netlink.c:374
->>> netlink_sock_destruct+0x1ea/0x200
->>> [   36.994035] Modules linked in:
->>> [   36.994815] CPU: 0 PID: 280 Comm: sh Not tainted
->>> 4.13.0-rc1-00003-gb631e53 #1
->>> [   36.996546] task: ffff88001448c180 task.stack: ffffc900004e0000
->>> [   36.998006] RIP: 0010:netlink_sock_destruct+0x1ea/0x200
->>> [   36.999290] RSP: 0018:ffffffff82433de0 EFLAGS: 00010206
->>> [   37.000591] RAX: ffff88001448c180 RBX: ffff880016a3d000 RCX:
->>> 0000000000000000
->>> [   37.002319] RDX: 0000000000000100 RSI: 0000000000000001 RDI:
->>> ffffffff82796f48
->>> [   37.004061] RBP: ffffffff82433df0 R08: 0000000000000000 R09:
->>> 0000000000000000
->>> [   37.005780] R10: 0000000000000001 R11: 0000000000000001 R12:
->>> 0000000000000001
->>> [   37.007528] R13: ffffffff81cd4a00 R14: 96e49674e09954cf R15:
->>> 000000000000001f
->>> [   37.009261] FS:  0000000000000000(0000) GS:ffffffff82430000(0000)
->>> knlGS:0000000000000000
->>> [   37.011233] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> [   37.012629] CR2: 00007f268a96e688 CR3: 00000000159ff000 CR4:
->>> 00000000000006b0
->>> [   37.014212] Call Trace:
->>> [   37.014745]  <IRQ>
->>> [   37.015201]  __sk_destruct+0x3a2/0x4c0
->>> [   37.015994]  sk_destruct+0x3f/0x70
->>> [   37.016747]  __sk_free+0x10d/0x160
->>> [   37.017479]  sk_free+0x4a/0x60
->>> [   37.018127]  deferred_put_nlk_sk+0xd9/0xf0
->>> [   37.018998]  rcu_process_callbacks+0x766/0x1cb0
->>> [   37.019944]  ? rcu_process_callbacks+0x643/0x1cb0
->>> [   37.020960]  __do_softirq+0x10c/0x6b2
->>> [   37.021749]  irq_exit+0x135/0x140
->>> [   37.022458]  smp_apic_timer_interrupt+0x3b/0x50
->>> [   37.023429]  apic_timer_interrupt+0x8e/0xa0
->>> [   37.024303] RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x60
->>> [   37.025141] RSP: 0018:ffffc900004e3c10 EFLAGS: 00000246 ORIG_RAX:
->>> ffffffffffffff10
->>> [   37.026605] RAX: ffff88001448c180 RBX: ffffffff82727288 RCX:
->>> 0000000000000000
->>> [   37.028340] RDX: 0000000000000000 RSI: 0000000000000000 RDI:
->>> ffffffff82727288
->>> [   37.030077] RBP: ffffc900004e3c60 R08: 0000000000000000 R09:
->>> 0000000000000000
->>> [   37.031796] R10: 0000000000000000 R11: 0000000000000001 R12:
->>> 0000000000000000
->>> [   37.033546] R13: 0000000000000000 R14: 0000000000000000 R15:
->>> 00007f2689f93000
->>> [   37.035262]  </IRQ>
->>> [   37.035814]  ? ftrace_likely_update+0x39/0x200
->>> [   37.036925]  ? vm_normal_page+0xd7/0x1a0
->>> [   37.037886]  unmap_page_range+0x775/0x14d0
->>> [   37.038658]  unmap_single_vma+0x158/0x180
->>> [   37.039403]  unmap_vmas+0x5b/0x80
->>> [   37.040202]  exit_mmap+0x118/0x220
->>> [   37.040900]  mmput+0xd5/0x240
->>> [   37.041479]  do_exit+0xdb6/0x16d0
->>> [   37.042183]  ? entry_SYSCALL_64_fastpath+0x5/0xbd
->>> [   37.043365]  do_group_exit+0x8a/0x160
->>> [   37.044282]  SyS_exit_group+0x1d/0x20
->>> [   37.045192]  entry_SYSCALL_64_fastpath+0x1f/0xbd
->>> [   37.046321] RIP: 0033:0x7f268a676408
->>> [   37.047221] RSP: 002b:00007ffcba052ea8 EFLAGS: 00000246 ORIG_RAX:
->>> 00000000000000e7
->>> [   37.049042] RAX: ffffffffffffffda RBX: 000000000000007f RCX:
->>> 00007f268a676408
->>> [   37.050784] RDX: 000000000000007f RSI: 000000000000003c RDI:
->>> 000000000000007f
->>> [   37.052512] RBP: 00007f268a96e688 R08: 00000000000000e7 R09:
->>> ffffffffffffffa0
->>> [   37.054281] R10: 0000000000000000 R11: 0000000000000246 R12:
->>> 00007f268a96ff40
->>> [   37.056004] R13: 0000000000000001 R14: 0000000000000000 R15:
->>> 00000000ffffffff
->>> [   37.057765] Code: e8 56 14 48 ff eb ca e8 b5 42 4f ff 0f ff 0f 1f 00
->>> eb a7 e8 a9 42 4f ff 0f ff 0f 1f 80 00 00 00 00 e9 48 ff ff ff e8 96 42=
- 4f
->>> ff <0f> ff 0f 1f 40 00 e9 e5 fe ff ff 90 66 2e 0f 1f 84 00 00 00 00
->>> [   37.062621] ---[ end trace db04ba531557bbda ]---
->>>
->>>
->>> To reproduce:
->>>
->>>         git clone https://github.com/01org/lkp-tests.git
->>>         cd lkp-tests
->>>         bin/lkp qemu -k <bzImage> job-script  # job-script is attached =
-in
->>> this email
->>>
->>>
->>>
->>> Thanks,
->>> Xiaolong
->>
->>
->>
->>
->> --
->> Kees Cook
->> Pixel Security
+So, that could be improved by adding a small additional twist, by clearing =
+the mat =
 
+from the first IPI: that IPI, being a slow path in itself, would notice tha=
+t no =
 
+flushing is required and could do the clearing.
 
--- =
+I.e. this would be more of a 'delayed clearing' operation than a 'no cleari=
+ng' =
 
-Kees Cook
-Pixel Security
+operation.
 
---===============9167200028534028722==--
+I.e. if done reasonably smartly I don't think this optimization would regre=
+ss =
+
+typical under-utilized thread pools in a measurable fashion. (Although numb=
+ers =
+
+would be required to prove this.)
+
+Thanks,
+
+	Ingo
+
+--===============8897294282455464494==--
 
