@@ -1,118 +1,70 @@
-Content-Type: multipart/mixed; boundary="===============1966716697829358781=="
+Content-Type: multipart/mixed; boundary="===============7435389362928614995=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [include/linux/string.h] 6974f0c455: kernel_BUG_at_lib/string.c
-Date: Tue, 25 Jul 2017 16:35:43 -0700
-Message-ID: <CAGXu5jKxBsJGQHx4Wx24iOBZy5raf0s0iDJ2J+EQOGTrVx9-nw@mail.gmail.com>
-In-Reply-To: <CA+55aFwuebKQ0-sAiRJWpMcaVJ8MjXvCg56DO5q8jMiPDXvc8A@mail.gmail.com>
+Date: Tue, 25 Jul 2017 17:11:42 -0700
+Message-ID: <CA+55aFwZUzAkiv4tkO1r9eoqQcO9uyFnqQbMp=QKRvhCbR-FfQ@mail.gmail.com>
+In-Reply-To: <CAGXu5jKxBsJGQHx4Wx24iOBZy5raf0s0iDJ2J+EQOGTrVx9-nw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1966716697829358781==
+--===============7435389362928614995==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-(Finally getting back around to this thread, sorry for the delay...)
-
-On Wed, Jul 19, 2017 at 9:04 PM, Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
-> As it is, the full dmesg does show that
+On Tue, Jul 25, 2017 at 4:35 PM, Kees Cook <keescook@chromium.org> wrote:
 >
->     detected buffer overflow in memcpy
->
-> but since it was printed out separately, if comes before the "-- cut
-> here --" part and didn't get reported in the summary.
+> In this case, there isn't a sensible way to continue.
 
-Replying to this first: this is actually a long-standing problem, and
-this reporting actually matches how WARNs appear. All the text from
-WARN ends up above the --cut-- line too, which is frustrating to say
-the least. For example, here's the kind of thing I saw while testing
-refcount overflows earlier today:
+Kees, stop this idiocy already.
 
-[   11.971447] refcount_t: saturated; leaking memory.
-[   11.972362] ------------[ cut here ]------------
-[   11.973222] WARNING: CPU: 3 PID: 2181 at lib/refcount.c:132
-refcount_inc_not_zero+0x48/0x60
+These have been FALSE POSITIVES. They haven't actually been bugs in
+the code, they have been bugs in the *checking* code.
 
-Which is from:
+In two years, when this code is actually trusted, that would be one thing.
 
-        WARN_ONCE(new =3D=3D UINT_MAX, "refcount_t: saturated; leaking memo=
-ry.\n");
+But right now, it's a f*cking disgrace that you are in denial about
+the fact that it's the *checking* that is broken, not the code, and
+are making excuses for shit.
 
-Following include/asm-generic/bug.h, it's because WARN(1, "eek\n") becomes:
+That BUG() is broken. Claiming that there was no sane way to continue
+is complete and utter bullshit.
 
-        printk("eek\n"); __WARN();
+Seriously, this is the kind of utter garbage that drives me bonkers.
+Introducing new code that kills a machine, and then not owning the
+fact that it was *your* code that was broken, and instead saying "but
+but we HAD to kill the machine".
 
-Which, IIUC, is mostly because WARN (and BUG) is handled as a trap. We
-don't plumb the printk into a deeper level (or rather, we don't raise
-the --cut-- line to the top).
+So get rid of the BUG(), and get rid of the excuses.
 
-The "cut here" comes from lib/bug.c's report_bug and gets duplicated
-for the WARN path in kernel/panic.c's __warn():
+We *know* this code is likely to find these kinds of "not really a
+bug, but the checker code does something we didn't used to do"
+situations.
 
-enum bug_trap_type report_bug(unsigned long bugaddr, struct pt_regs *regs)
-...
-        if (warning) {
-                /* this is a WARN_ON rather than BUG/BUG_ON */
-                __warn(file, line, (void *)bugaddr, BUG_GET_TAINT(bug), reg=
-s,
-                       NULL);
-                return BUG_TRAP_TYPE_WARN;
-        }
+And even *if* it is a bug, right now we're so much better off having
+it *reported* even if you don't have a serial console, that it's not
+even funny. We want things like abortd (or whatever that thing is
+called) gather reports and sending them to vendors. We want people to
+be able to just run "dmesg" and get the information. We do *not* want
+to possibly have a dead machine that took a BUG in an interrupt, and
+as a result nothing works any more.
 
-        printk(KERN_DEFAULT "------------[ cut here ]------------\n");
-...
+So instead of killing the machine, the code should damn well *warn*
+(and be rate-limited about it too!).  That way we're going to actually
+get reports that can improve the code, instead of having people
 
-void __warn(const char *file, int line, void *caller, unsigned taint,
-            struct pt_regs *regs, struct warn_args *args)
-{
-        disable_trace_on_warning();
+ (a) with dead machines and no idea why
 
-        pr_warn("------------[ cut here ]------------\n");
-...
+ (b) nervous about enabling the debug code that can make things so much wor=
+se.
 
-BUG doesn't even have a way to report text, and the warn paths don't
-know if it came through WARN_ON (without text) or WARN (with text).
-I've never been able to see a sensible way out of this. BUG entirely
-lacks text, and WARN puts it in the wrong place. >_<
+Comprende?
 
-And, as an aside, I notice that the internal printk in WARN doesn't
-include a KERN_WARN by default, and I think I remember having this
-discussion a while back, where I see nearly everything doesn't set it,
-but some do:
+None of this "there is no way to continue" bullshit. Because it is
+pure and utter SHIT.
 
-$ git grep -E 'WARN(_ON)?(_RATELIMIT)?(_ONCE)?\(' | grep -v KERN | wc -l
-14465
-$ git grep -E 'WARN(_ON)?(_RATELIMIT)?(_ONCE)?\(' | grep KERN | wc -l
-87
+                  Linus
 
-> It would have been much nicer if all the fortify_panic() calls had
-> instead used WARN_ONCE() with helpful pointers to what is going on.
-
-In this case, there isn't a sensible way to continue. For other
-things, like refcount hardening, we can WARN and then saturate the
-refcount and continue running, fully avoiding the vulnerable condition
-(use-after-free). Here, we're dealing with a runtime check that knows
-the buffer size and we've been handed something that has turned out to
-be too large, but it's too late (e.g. memcpy, strcpy, etc don't have a
-way to return an error). If this was switched to a WARN, we'd be in a
-situation where we can't truncate, skip the copy, or any other partial
-action, as those each might lead to some other bad situation.
-
-All that said, looking through the fortified functions again, it is
-arguable that we could let kmemdup, memscan, memchr, and memchr_inv
-each return NULL and WARN. I'm nervous about the scan/chr functions
-being switched to "didn't find it" if that leads to logic errors,
-though. Having kmemdup fail should already be a well-handled error
-path...
-
--Kees
-
--- =
-
-Kees Cook
-Pixel Security
-
---===============1966716697829358781==--
+--===============7435389362928614995==--
 
