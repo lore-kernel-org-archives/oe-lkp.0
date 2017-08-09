@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============0966984240279980861=="
+Content-Type: multipart/mixed; boundary="===============2829536506006581951=="
 MIME-Version: 1.0
 From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [mm] 7674270022: will-it-scale.per_process_ops -19.3% regression
-Date: Wed, 09 Aug 2017 09:25:19 +0800
-Message-ID: <20170809012519.GB29499@yexl-desktop>
+Date: Wed, 09 Aug 2017 10:59:02 +0800
+Message-ID: <20170809025902.GA17616@yexl-desktop>
 In-Reply-To: <20170808080821.GA31730@bbox>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0966984240279980861==
+--===============2829536506006581951==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -95,12 +95,34 @@ it?
 >
 >Anyway, thanks for the pointing out.
 >xiaolong.ye, could you retest with this fix?
+>
 
-Sure, I'll provide the result later.
+I've queued tests for 5 times and results show this patch (e8f682574e4 "mm:
+decrease tlb flush pending count in tlb_finish_mmu") does help recover the
+performance back.
+
+378005bdbac0a2ec  76742700225cad9df49f053993  e8f682574e45b6406dadfffeb4  =
+
+----------------  --------------------------  --------------------------  =
+
+         %stddev      change         %stddev      change         %stddev
+             \          |                \          |                \  =
+
+   3405093             -19%    2747088              -2%    3348752        w=
+ill-it-scale.per_process_ops
+      1280 =C2=B1  3%        -2%       1257 =C2=B1  3%        -6%       120=
+7        vmstat.system.cs
+      2702 =C2=B1 18%        11%       3002 =C2=B1 19%        17%       315=
+6 =C2=B1 18%  numa-vmstat.node0.nr_mapped
+     10765 =C2=B1 18%        11%      11964 =C2=B1 19%        17%      1258=
+8 =C2=B1 18%  numa-meminfo.node0.Mapped
+      0.00 =C2=B1 47%       -40%       0.00 =C2=B1 45%       -84%       0.0=
+0 =C2=B1 42%  mpstat.cpu.soft%
 
 Thanks,
 Xiaolong
->
+
+
 >From 83012114c9cd9304f0d55d899bb4b9329d0e22ac Mon Sep 17 00:00:00 2001
 >From: Minchan Kim <minchan@kernel.org>
 >Date: Tue, 8 Aug 2017 17:05:19 +0900
@@ -134,5 +156,5 @@ Xiaolong
 >2.7.4
 >
 
---===============0966984240279980861==--
+--===============2829536506006581951==--
 
