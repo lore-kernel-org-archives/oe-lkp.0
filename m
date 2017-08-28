@@ -1,80 +1,66 @@
-Content-Type: multipart/mixed; boundary="===============2174211550670163689=="
+Content-Type: multipart/mixed; boundary="===============2852645532646754372=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [sched/cfs] 625ed2bf04: unixbench.score -7.4% regression
-Date: Mon, 28 Aug 2017 13:57:39 +0800
-Message-ID: <8760d8i698.fsf@yhuang-dev.intel.com>
-In-Reply-To: <20170519060706.GU568@yexl-desktop>
+Subject: Re: cf5a796e82 ("lockdep/selftests: Add mixed read-write ABBA tests"): BUG: 1 unexpected failures (out of 262) - debugging disabled! |
+Date: Mon, 28 Aug 2017 10:36:15 +0200
+Message-ID: <20170828083615.yjhz4kifonewsys6@hirez.programming.kicks-ass.net>
+In-Reply-To: <59a08760.lM+PcmUKXnDyyAXp%fengguang.wu@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2174211550670163689==
+--===============2852645532646754372==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-kernel test robot <xiaolong.ye@intel.com> writes:
+On Sat, Aug 26, 2017 at 04:24:00AM +0800, kernel test robot wrote:
+> Greetings,
+> =
 
-> Greeting,
->
-> FYI, we noticed a -7.4% regression of unixbench.score due to commit:
->
->
-> commit: 625ed2bf049d5a352c1bcca962d6e133454eaaff ("sched/cfs: Make util/l=
-oad_avg more stable")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->
-> in testcase: unixbench
-> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wit=
-h 64G memory
-> with following parameters:
->
-> 	runtime: 300s
-> 	nr_task: 100%
-> 	test: spawn
-> 	cpufreq_governor: performance
->
-> test-description: UnixBench is the original BYTE UNIX benchmark suite aim=
-s to test performance of Unix-like system.
->
+> 0day kernel testing robot got the below dmesg and the first bad commit is
+> =
 
-This has been merged by v4.13-rc1, so we checked it again.  If my
-understanding were correct, the patch changes the algorithm to calculate
-the load of CPU, so it influences the load balance behavior for this
-test case.
+> https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git locking/=
+core
+> =
 
-      4.73 =C2=B1  8%     -31.3%       3.25 =C2=B1 10%  sched_debug.cpu.nr_=
-running.max
-      0.95 =C2=B1  5%     -29.0%       0.67 =C2=B1  4%  sched_debug.cpu.nr_=
-running.stddev
+> commit cf5a796e827ae9a6520e71610d08a7e1a97cd50e
+> Author:     Peter Zijlstra <peterz@infradead.org>
+> AuthorDate: Wed Aug 23 13:13:11 2017 +0200
+> Commit:     Peter Zijlstra <peterz@infradead.org>
+> CommitDate: Thu Aug 24 19:27:53 2017 +0200
+> =
 
-As above, the effect is that the tasks are distributed into more CPUs,
-that is, system is more balanced.  But this triggered more contention on
-tasklist_lock, so hurt the unixbench score, as below.
+>     lockdep/selftests: Add mixed read-write ABBA tests
+>     =
 
-     26.60           -10.6       16.05        perf-profile.calltrace.cycles=
--pp.intel_idle.cpuidle_enter_state.cpuidle_enter.call_cpuidle.do_idle
-     10.10            +2.4       12.53        perf-profile.calltrace.cycles=
--pp._raw_write_lock_irq.do_exit.do_group_exit.sys_exit_group.entry_SYSCALL_=
-64_fastpath
-      8.03            +2.6       10.63        perf-profile.calltrace.cycles=
--pp._raw_write_lock_irq.release_task.wait_consider_task.do_wait.sys_wait4
-     17.98            +5.2       23.14        perf-profile.calltrace.cycles=
--pp._raw_read_lock.do_wait.sys_wait4.entry_SYSCALL_64_fastpath
-      7.47            +5.9       13.33        perf-profile.calltrace.cycles=
--pp._raw_write_lock_irq.copy_process._do_fork.sys_clone.do_syscall_64
+>     Currently lockdep has limited support for recursive readers, add a few
+>     mixed read-write ABBA selftests to show the extend of these
+>     limitations.
+>     =
+
+>     [    0.000000] ------------------------------------------------------=
+----------------------
+>     [    0.000000]                                  | spin |wlock |rlock =
+|mutex | wsem | rsem |
+>     [    0.000000]   ----------------------------------------------------=
+----------------------
+>     =
+
+>     [    0.000000]   mixed read-lock/lock-write ABBA:             |FAILED=
+|             |  ok  |
+>     [    0.000000]    mixed read-lock/lock-read ABBA:             |  ok  =
+|             |  ok  |
+>     [    0.000000]  mixed write-lock/lock-write ABBA:             |  ok  =
+|             |  ok  |
+>     =
+
+>     This clearly illustrates the case where lockdep fails to find a
+>     deadlock.
+
+If you read the Changelog you'll note that this is an _expected_
+failure.
 
 
-The patch makes the tasks distributed more balanced, so I think
-scheduler do better job here.  The problem is that the tasklist_lock
-isn't scalable.  But considering this is only a micro-benchmark which
-specially exercises fork/exit/wait syscall, this may be not a big
-problem in reality.
-
-So, all in all, I think we can ignore this regression.
-
-Best Regards,
-Huang, Ying
-
---===============2174211550670163689==--
+--===============2852645532646754372==--
 
