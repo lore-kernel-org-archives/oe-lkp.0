@@ -1,52 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============1845347947147450714=="
+Content-Type: multipart/mixed; boundary="===============3388068616210089448=="
 MIME-Version: 1.0
 From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
 Subject: Re: 915f3e3f76 ("mac80211_hwsim: Replace bogus hrtimer clockid"): BUG: kernel reboot-without-warning in test stage
-Date: Tue, 05 Sep 2017 09:12:40 +0200
-Message-ID: <alpine.DEB.2.20.1709050910150.1900@nanos>
-In-Reply-To: <59ade247.WzhbxWeytBOa6Xu4%fengguang.wu@intel.com>
+Date: Tue, 05 Sep 2017 21:30:40 +0200
+Message-ID: <alpine.DEB.2.20.1709052129510.2393@nanos>
+In-Reply-To: <20170905164103.tkrhxzca4b5ulps2@breakpoint.cc>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1845347947147450714==
+--===============3388068616210089448==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 5 Sep 2017, kernel test robot wrote:
+On Tue, 5 Sep 2017, Sebastian Andrzej Siewior wrote:
 
-> Greetings,
+> On 2017-09-05 09:12:40 [+0200], Thomas Gleixner wrote:
+> > Sorry, no. That bisect is completely bogus. The commit in question meri=
+ly
+> > replaces the unsupported clockid with a valid one.
 > =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+> The bisect is correct. It just has problems to express itself properly. So
+> the table says:
 > =
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> | WARNING:at_kernel/time/hrtimer.c:#hrtimer_init  | 7   |     |    |   | =
+                                                                           =
+    =
+
+> | BUG:kernel_reboot-without-warning_in_test_stage | 0   | 12  | 6  | 6 | =
+                                                                           =
+    =
+
 > =
 
-> commit 915f3e3f76c05b2da93c4cc278eebc2d9219d9f4
-> Author:     Thomas Gleixner <tglx@linutronix.de>
-> AuthorDate: Sat Feb 25 11:27:37 2017 +0100
-> Commit:     Linus Torvalds <torvalds@linux-foundation.org>
-> CommitDate: Sat Feb 25 09:48:16 2017 -0800
-> =
+> which means _before_ your commit it counted a warning in hrtimer_init()
+> (an unsupported clock id was used). With your commit, the warning was
+> gone and I *think* the userland then printed
+> "BUG:kernel_reboot-without-warning_in_test_stage" because it had no
+> warning.
+> It seems that the bot learned to live with that warning which was around
+> for more than three years. Now that you removed it, it seems to be a
+> mistake to do so because nobody complained about it so far.
 
->     mac80211_hwsim: Replace bogus hrtimer clockid
->     =
+Thanks for the translation. I'll never learn to decode these reports.
 
->     mac80211_hwsim initializes a hrtimer with clockid CLOCK_MONOTONIC_RAW.
->     That's not supported.
->     =
+       tglx
 
->     Use CLOCK_MONOTNIC instead.
-
-Sorry, no. That bisect is completely bogus. The commit in question merily
-replaces the unsupported clockid with a valid one.
-
-Thanks,
-
-	tglx
-
-
---===============1845347947147450714==--
+--===============3388068616210089448==--
 
