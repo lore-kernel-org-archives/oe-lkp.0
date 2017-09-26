@@ -1,52 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============1446358129763794830=="
+Content-Type: multipart/mixed; boundary="===============7856239977569483574=="
 MIME-Version: 1.0
 From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: 9f4835fb96 ("x86/fpu: Tighten validation of user-supplied .."): Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
-Date: Tue, 26 Sep 2017 08:25:05 +0200
-Message-ID: <20170926062505.jm3euf5bihcnzhdt@gmail.com>
-In-Reply-To: <20170926001947.7ceoek4wt7fvuchz@wfg-t540p.sh.intel.com>
+Subject: Re: [lkp-robot] [x86/fpu] 8d3e268d89: WARNING:at_arch/x86/kernel/fpu/core.c:#fpu__read
+Date: Tue, 26 Sep 2017 09:46:06 +0200
+Message-ID: <20170926074606.idqkvcbkminhno4t@gmail.com>
+In-Reply-To: <20170926021921.GG17200@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1446358129763794830==
+--===============7856239977569483574==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-* Fengguang Wu <wfg@linux.intel.com> wrote:
 
-> On Mon, Sep 25, 2017 at 04:55:09PM +0200, Ingo Molnar wrote:
-> > =
+* kernel test robot <xiaolong.ye@intel.com> wrote:
 
-> > * Fengguang Wu <wfg@linux.intel.com> wrote:
-> > =
-
-> > > On Mon, Sep 25, 2017 at 10:20:13AM +0800, kernel test robot wrote:
-> > > > Hi Ingo,
-> > > >
-> > > > On your request I'm resending the report here, with attached dmesg,
-> > > > kconfig and reproduce script.
-> > > >
-> > > > I'll go on to test your split up commits, too.
-> > > >
-> > > > https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git WIP.x86=
-/fpu
-> > > =
-
-> > > It looks 6fc19a42 ("x86/fpu: Use validate_xstate_header() to validate
-> > > the xstate_header in sanitize_restored_xstate()") is the first bad co=
-mmit.
-> > =
-
-> > Thank you! Could you check that the latest tip:master or tip:WIP.x86/fpu
-> > (9cff7344187e) fixes this crash?
 > =
 
-> Yes, both of them are free from that crash. :)
+> FYI, we noticed the following commit:
+> =
 
-Great, thanks!
+> commit: 8d3e268d89523abba613763da67c7eb47a744ad7 ("x86/fpu: Rename fpu__a=
+ctivate_fpstate_read/write() to fpu__read/write()")
+> git://internal_merge_and_test_tree revert-8d3e268d89523abba613763da67c7eb=
+47a744ad7-8d3e268d89523abba613763da67c7eb47a744ad7
+
+Ok, that's not the guilty commit (it's a simple rename), but I think I know=
+ what =
+
+the problem was, and have fixed tip:WIP.x86/fpu accordingly. This warning s=
+hould =
+
+be gone with the latest trees.
+
+Thanks,
 
 	Ingo
 
---===============1446358129763794830==--
+--===============7856239977569483574==--
 
