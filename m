@@ -1,96 +1,116 @@
-Content-Type: multipart/mixed; boundary="===============2952891261168625993=="
+Content-Type: multipart/mixed; boundary="===============5659311637780698445=="
 MIME-Version: 1.0
-From: Ingo Molnar <mingo@kernel.org>
+From: tip-bot for Josh Poimboeuf <tipbot@zytor.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] x86/asm: Fix inline asm call constraints for GCC 4.4
-Date: Fri, 29 Sep 2017 10:01:28 +0200
-Message-ID: <20170929080128.eygnwju6rbegs3lh@gmail.com>
-In-Reply-To: <20170929014056.gzfge2efgwfxkokj@treble>
+Subject: [tip:x86/urgent] x86/asm: Fix inline asm call constraints for GCC 4.4
+Date: Fri, 29 Sep 2017 02:27:49 -0700
+Message-ID: <tip-b9545e75894b4866c62b36682527f5df1394ac58@git.kernel.org>
+In-Reply-To: <20170928215826.6sdpmwtkiydiytim@treble>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2952891261168625993==
+--===============5659311637780698445==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Commit-ID:  b9545e75894b4866c62b36682527f5df1394ac58
+Gitweb:     https://git.kernel.org/tip/b9545e75894b4866c62b36682527f5df1394=
+ac58
+Author:     Josh Poimboeuf <jpoimboe@redhat.com>
+AuthorDate: Thu, 28 Sep 2017 16:58:26 -0500
+Committer:  Ingo Molnar <mingo@kernel.org>
+CommitDate: Fri, 29 Sep 2017 09:59:17 +0200
 
-* Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+x86/asm: Fix inline asm call constraints for GCC 4.4
 
-> On Thu, Sep 28, 2017 at 04:53:09PM -0700, Linus Torvalds wrote:
-> > On Thu, Sep 28, 2017 at 2:58 PM, Josh Poimboeuf <jpoimboe@redhat.com>=
- wrote:
-> > >
-> > > Reported-by: kernel test robot <xiaolong.ye@intel.com>
-> > > Fixes: f5caf621ee35 ("x86/asm: Fix inline asm call constraints for Cl=
-ang")
-> > > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> > =
+The kernel test bot (run by Xiaolong Ye) reported that the following commit:
 
-> > Side note: it's not like I personally need the credit, but in general
-> > I really want people to pick up on who debugged the code and pointed
-> > to the solution. That's often more of the work than the fix itself.
-> > =
+  f5caf621ee35 ("x86/asm: Fix inline asm call constraints for Clang")
 
-> > The kernel test robot report looked to be ignored as a "gcc-4.4 is too
-> > old to worry about" thing. People who then step up and analyze the
-> > problem are rare as it is. They need to be credited in the commit
-> > logs.
-> > =
+is causing double faults in a kernel compiled with GCC 4.4.
 
-> > We don't have any fixed format for that, but it's pretty free-form. So
-> > we have tags like
-> > =
+Linus subsequently diagnosed the crash pattern and the buggy commit and fou=
+nd that
+the issue is with this code:
 
-> >   Root-caused-by:
-> >   Diagnosed-by:
-> >   Analyzed-by:
-> >   Debugged-by:
-> >   Bisected-by:
-> >   Fix-suggested-by:
-> > =
+  register unsigned int __asm_call_sp asm("esp");
+  #define ASM_CALL_CONSTRAINT "+r" (__asm_call_sp)
 
-> > etc for giving credit to people who figured out some part of a bug
-> > (and, having grepped for this, we also a _shitload_ of miss-spellings
-> > of various things ;)
-> =
+Even on a 64-bit kernel, it's using ESP instead of RSP.  That causes GCC
+to produce the following bogus code:
 
-> Indeed, credit is important and I try to give it where it's due.  Sorry
-> for the snub!  I anoint you with:
-> =
+  ffffffff8147461d:       89 e0                   mov    %esp,%eax
+  ffffffff8147461f:       4c 89 f7                mov    %r14,%rdi
+  ffffffff81474622:       4c 89 fe                mov    %r15,%rsi
+  ffffffff81474625:       ba 20 00 00 00          mov    $0x20,%edx
+  ffffffff8147462a:       89 c4                   mov    %eax,%esp
+  ffffffff8147462c:       e8 bf 52 05 00          callq  ffffffff814c98f0 <=
+copy_user_generic_unrolled>
 
-> Debugged-by: Linus Torvalds <torvalds@linux-foundation.org>
+Despite the absurdity of it backing up and restoring the stack pointer
+for no reason, the bug is actually the fact that it's only backing up
+and restoring the lower 32 bits of the stack pointer.  The upper 32 bits
+are getting cleared out, corrupting the stack pointer.
 
-When applying the fix I went with:
+So change the '__asm_call_sp' register variable to be associated with
+the actual full-size stack pointer.
 
-  Diagnosed-by: Linus Torvalds <torvalds@linux-foundation.org>
+This also requires changing the __ASM_SEL() macro to be based on the
+actual compiled arch size, rather than the CONFIG value, because
+CONFIG_X86_64 compiles some files with '-m32' (e.g., realmode and vdso).
+Otherwise Clang fails to build the kernel because it complains about the
+use of a 64-bit register (RSP) in a 32-bit file.
 
-Because I think 'diagnosing' a bug is a higher category, which implies debu=
-gging. =
+Reported-and-Bisected-by: kernel test robot <xiaolong.ye@intel.com>
+Diagnosed-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Dmitriy Vyukov <dvyukov@google.com>
+Cc: LKP <lkp@01.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Matthias Kaehlcke <mka@chromium.org>
+Cc: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Fixes: f5caf621ee35 ("x86/asm: Fix inline asm call constraints for Clang")
+Link: http://lkml.kernel.org/r/20170928215826.6sdpmwtkiydiytim(a)treble
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ arch/x86/include/asm/asm.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
+diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+index c1eadba..30c3c9a 100644
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -11,10 +11,12 @@
+ # define __ASM_FORM_COMMA(x) " " #x ","
+ #endif
+ =
 
-( Sometimes we refer to 'debugging a bug' as the reporter adding printks on =
+-#ifdef CONFIG_X86_32
++#ifndef __x86_64__
++/* 32 bit */
+ # define __ASM_SEL(a,b) __ASM_FORM(a)
+ # define __ASM_SEL_RAW(a,b) __ASM_FORM_RAW(a)
+ #else
++/* 64 bit */
+ # define __ASM_SEL(a,b) __ASM_FORM(b)
+ # define __ASM_SEL_RAW(a,b) __ASM_FORM_RAW(b)
+ #endif
+@@ -139,7 +141,7 @@
+  * gets set up by the containing function.  If you forget to do this, objt=
+ool
+  * may print a "call without frame pointer save/setup" warning.
+  */
+-register unsigned int __asm_call_sp asm("esp");
++register unsigned long __asm_call_sp asm(_ASM_SP);
+ #define ASM_CALL_CONSTRAINT "+r" (__asm_call_sp)
+ #endif
+=20
 
-  request and printing out key state that helps understand the bug. It does=
- not =
-
-  necessarily imply root-causing the bug. )
-
-Also note that I added a "Reported-and-Bisected-by:" tag for the ktest robo=
-t, to =
-
-further credit the fact that in addition to reporting a kernel crash, a spe=
-cific =
-
-commit was bisected to as well.
-
-I'll wait for another round of ktest robot testing to make sure the crash i=
-s =
-
-indeed fixed.
-
-Thanks,
-
-	Ingo
-
---===============2952891261168625993==--
+--===============5659311637780698445==--
 
