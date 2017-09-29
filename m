@@ -1,60 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============8002009909879609132=="
+Content-Type: multipart/mixed; boundary="===============7346635531845149481=="
 MIME-Version: 1.0
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Arnd Bergmann <arnd@arndb.de>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/mm] 9e52fc2b50: will-it-scale.per_thread_ops -16% regression
-Date: Fri, 29 Sep 2017 16:02:27 +0200
-Message-ID: <874lrlzjpo.fsf@vitty.brq.redhat.com>
-In-Reply-To: <20170929131609.i5t46af7nkjwekbk@hirez.programming.kicks-ass.net>
+Subject: Re: [PATCH] x86/asm: Fix inline asm call constraints for GCC 4.4
+Date: Fri, 29 Sep 2017 08:29:35 -0700
+Message-ID: <CAK8P3a3=WNB2GCZfqNWUFpYf6M9gOZRGJhW0UViQueVNyp5JSg@mail.gmail.com>
+In-Reply-To: <20170929075130.unemx3lbusjd6f6q@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8002009909879609132==
+--===============7346635531845149481==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Peter Zijlstra <peterz@infradead.org> writes:
-
-> On Fri, Sep 29, 2017 at 03:13:29PM +0200, Peter Zijlstra wrote:
->> On Fri, Sep 29, 2017 at 02:24:03PM +0200, Vitaly Kuznetsov wrote:
->> > 1) In case the system is under extreme memory pressure and
->> > __get_free_page() is failing in tlb_remove_table() we'll be doing
->> > smp_call_function() for _each_ call (avoiding batching). We may want to
->> > have a pre-allocated pool.
->> =
-
->> MMU_GATHER_BUNDLE should avoid it being for _every_ call.
+On Fri, Sep 29, 2017 at 12:51 AM, Ingo Molnar <mingo@kernel.org> wrote:
 >
-> My bad, that's only for pages, not tables :/
+> * Linus Torvalds <torvalds@linux-foundation.org> wrote:
 >
->> Also, note that tlb_gather is preemptible, so pre-alloc is 'difficult'
->> and you will run out, esp. when memory is right.
->> =
+>> On Thu, Sep 28, 2017 at 2:58 PM, Josh Poimboeuf <jpoimboe@redhat.com> =
+wrote:
+>> The kernel test robot report looked to be ignored as a "gcc-4.4 is too
+>> old to worry about" thing. [...]
+>
+> No, and sorry if my first reply grumbling about how old GCC 4.4 is sounde=
+d that
+> way! We have to live with compiler bugs no matter how old the compiler is=
+, the
+> release cycles are decoupled to such a degree and external tooling propag=
+ates with
+> such high latencies that that's the only sane thing to do.
+>
+> We also officially support GCC 3.2 and later compilers. Had this regressi=
+on not
+> been resolved within a week or so I was fully ready to queue up a revert =
+commit,
+> no questions asked.
 
+FWIW, we had a discussion about which compiler versions actually still work
+earlier this year: We concluded that gcc-4.0 and earlier have been broken
+for a while without anyone caring. gcc-4.1 support is kept working in certa=
+in
+configurations primarily due to Geert using it for build testing, but my te=
+sts
+across multiple architectures showed that gcc-4.3 is needed on most
+other architectures already. Some architectures need  even newer ones, and
+some features need compiler support that was added much later of course.
 
-(purely teoretical thought) what I meant to say is in tlb_remove_table()
-we may try to get new batch from some pre-allocated (on boot) pool and
-revert to __get_free_page() when it's empty. This may make sense
-combined with the next idea, allocating more than 1 page.
+         Arnd
 
->> > 2) The default MAX_TABLE_BATCH is static (it is equal to the number of
->> > pointer we can fit into one page - sizeof(struct mmu_table_batch) =3D=
-=3D
->> > 509), we may want to adjust it for very big systems.
->> =
-
->> That would then put more stress on the memory allocator because you're
->> then asking for higher order pages.
-
-Of course, but the question is: what's cheaper -- try to alloc e.g. 8
-pages or do 8 smp_call_function() calls?
-
-But adding such complexity to the code would require a good
-justification, of course.
-
--- =
-
-  Vitaly
-
---===============8002009909879609132==--
+--===============7346635531845149481==--
 
