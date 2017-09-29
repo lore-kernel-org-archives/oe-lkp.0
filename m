@@ -1,117 +1,146 @@
-Content-Type: multipart/mixed; boundary="===============8437057525041709965=="
+Content-Type: multipart/mixed; boundary="===============6556450704591083672=="
 MIME-Version: 1.0
-From: tip-bot for Josh Poimboeuf <tipbot@zytor.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 To: lkp@lists.01.org
-Subject: [tip:x86/urgent] x86/asm: Fix inline asm call constraints for GCC 4.4
-Date: Fri, 29 Sep 2017 04:18:49 -0700
-Message-ID: <tip-520a13c530aeb5f63e011d668c42db1af19ed349@git.kernel.org>
-In-Reply-To: <20170928215826.6sdpmwtkiydiytim@treble>
+Subject: Re: [lkp-robot] [x86/mm] 9e52fc2b50: will-it-scale.per_thread_ops -16% regression
+Date: Fri, 29 Sep 2017 14:24:03 +0200
+Message-ID: <87d169zo9o.fsf@vitty.brq.redhat.com>
+In-Reply-To: <20170927055914.GO17200@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8437057525041709965==
+--===============6556450704591083672==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Commit-ID:  520a13c530aeb5f63e011d668c42db1af19ed349
-Gitweb:     https://git.kernel.org/tip/520a13c530aeb5f63e011d668c42db1af19e=
-d349
-Author:     Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate: Thu, 28 Sep 2017 16:58:26 -0500
-Committer:  Ingo Molnar <mingo@kernel.org>
-CommitDate: Fri, 29 Sep 2017 13:15:44 +0200
+kernel test robot <xiaolong.ye@intel.com> writes:
 
-x86/asm: Fix inline asm call constraints for GCC 4.4
+> Greeting,
+>
+> FYI, we noticed a -16% regression of will-it-scale.per_thread_ops due to =
+commit:
+>
+> commit: 9e52fc2b50de3a1c08b44f94c610fbe998c0031a ("x86/mm: Enable RCU bas=
+ed page table freeing (CONFIG_HAVE_RCU_TABLE_FREE=3Dy)")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>
+> in testcase: will-it-scale
+> on test machine: 32 threads Intel(R) Xeon(R) CPU E5-2680 0 @ 2.70GHz with=
+ 64G memory
+> with following parameters:
+>
+> 	test: malloc1
+> 	cpufreq_governor: performance
+>
+> test-description: Will It Scale takes a testcase and runs it from 1 throu=
+gh to n parallel copies to see if the testcase will scale. It builds both a=
+ process and threads based test in order to see any differences between the=
+ two.
+> test-url: https://github.com/antonblanchard/will-it-scale
+>
+> Details are as below:
+> -------------------------------------------------------------------------=
+------------------------->
+>
+> To reproduce:
+>
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+>
+> testcase/path_params/tbox_group/run: will-it-scale/malloc1-performance/lk=
+p-sb03
+>
+> 39e48d9b128abbd2  9e52fc2b50de3a1c08b44f94c6  =
 
-The kernel test bot (run by Xiaolong Ye) reported that the following commit:
+> ----------------  --------------------------  =
 
-  f5caf621ee35 ("x86/asm: Fix inline asm call constraints for Clang")
+>          %stddev      change         %stddev
+>              \          |                \  =
 
-is causing double faults in a kernel compiled with GCC 4.4.
+>      52686 =C2=B1  4%       -16%      44404        will-it-scale.per_thre=
+ad_ops
+>       2351             216%       7432 =C2=B1  9%  will-it-scale.time.inv=
+oluntary_context_switches
 
-Linus subsequently diagnosed the crash pattern and the buggy commit and fou=
-nd that
-the issue is with this code:
+[snip]
 
-  register unsigned int __asm_call_sp asm("esp");
-  #define ASM_CALL_CONSTRAINT "+r" (__asm_call_sp)
+Thank you for the report,
 
-Even on a 64-bit kernel, it's using ESP instead of RSP.  That causes GCC
-to produce the following bogus code:
+I tried reproducing this on a smaller system (16 threads E5-2640, 32 Gb
+RAM) but I'm not seeing this:
 
-  ffffffff8147461d:       89 e0                   mov    %esp,%eax
-  ffffffff8147461f:       4c 89 f7                mov    %r14,%rdi
-  ffffffff81474622:       4c 89 fe                mov    %r15,%rsi
-  ffffffff81474625:       ba 20 00 00 00          mov    $0x20,%edx
-  ffffffff8147462a:       89 c4                   mov    %eax,%esp
-  ffffffff8147462c:       e8 bf 52 05 00          callq  ffffffff814c98f0 <=
-copy_user_generic_unrolled>
+4.14-rc2 with 9e52fc2b50de3a1c08b44f94c6 included:
 
-Despite the absurdity of it backing up and restoring the stack pointer
-for no reason, the bug is actually the fact that it's only backing up
-and restoring the lower 32 bits of the stack pointer.  The upper 32 bits
-are getting cleared out, corrupting the stack pointer.
+time ./runtest.py malloc1
+tasks,processes,processes_idle,threads,threads_idle,linear
+0,0,100,0,100,0
+1,282785,93.75,253402,93.74,282785
+2,453749,87.50,123048,92.69,565570
+3,654495,81.25,121974,91.04,848355
+4,821504,75.01,120409,90.16,1131140
+5,958374,68.76,133752,90.18,1413925
+6,1078434,62.53,138999,90.37,1696710
+7,1165645,56.27,134086,90.45,1979495
+8,1257750,50.03,139918,90.39,2262280
+9,870393,43.78,120765,89.20,2545065
+10,695333,37.54,125554,87.90,2827850
+11,533409,31.28,121283,87.57,3110635
+12,458691,25.06,119839,87.23,3393420
+13,432307,18.79,121203,86.22,3676205
+14,428379,12.58,122107,86.16,3958990
+15,424319,6.32,121789,86.34,4241775
+16,426072,0.12,121244,86.44,4524560
 
-So change the '__asm_call_sp' register variable to be associated with
-the actual full-size stack pointer.
+real    5m52.363s
+user    0m18.204s
+sys     5m7.249s
 
-This also requires changing the __ASM_SEL() macro to be based on the
-actual compiled arch size, rather than the CONFIG value, because
-CONFIG_X86_64 compiles some files with '-m32' (e.g., realmode and vdso).
-Otherwise Clang fails to build the kernel because it complains about the
-use of a 64-bit register (RSP) in a 32-bit file.
+4.14-rc2 with 9e52fc2b50de3a1c08b44f94c6 reverted:
 
-Reported-and-Bisected-and-Tested-by: kernel test robot <xiaolong.ye@intel=
-.com>
-Diagnosed-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Dmitriy Vyukov <dvyukov@google.com>
-Cc: LKP <lkp@01.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Matthias Kaehlcke <mka@chromium.org>
-Cc: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Fixes: f5caf621ee35 ("x86/asm: Fix inline asm call constraints for Clang")
-Link: http://lkml.kernel.org/r/20170928215826.6sdpmwtkiydiytim(a)treble
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
----
- arch/x86/include/asm/asm.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+time ./runtest.py malloc1
+tasks,processes,processes_idle,threads,threads_idle,linear
+0,0,100,0,100,0
+1,290971,93.78,316790,93.76,316790
+2,478501,87.48,122081,93.11,633580
+3,722748,81.25,117410,92.28,950370
+4,945460,75.01,123084,91.30,1267160
+5,1145372,68.76,128113,91.71,1583950
+6,1332411,62.51,132994,92.08,1900740
+7,1479931,56.27,129479,92.24,2217530
+8,1579569,50.03,133241,91.68,2534320
+9,1272772,43.79,131393,89.87,2851110
+10,1105981,37.54,126218,88.76,3167900
+11,892427,31.29,127651,87.48,3484690
+12,703695,25.06,125056,86.97,3801480
+13,642629,18.82,123492,86.68,4118270
+14,625952,12.58,121581,87.02,4435060
+15,617222,6.34,121273,87.47,4751850
+16,611371,0.11,125548,86.74,5068640
 
-diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
-index c1eadba..30c3c9a 100644
---- a/arch/x86/include/asm/asm.h
-+++ b/arch/x86/include/asm/asm.h
-@@ -11,10 +11,12 @@
- # define __ASM_FORM_COMMA(x) " " #x ","
- #endif
- =
+real    5m52.406s
+user    0m27.973s
+sys     5m8.169s
 
--#ifdef CONFIG_X86_32
-+#ifndef __x86_64__
-+/* 32 bit */
- # define __ASM_SEL(a,b) __ASM_FORM(a)
- # define __ASM_SEL_RAW(a,b) __ASM_FORM_RAW(a)
- #else
-+/* 64 bit */
- # define __ASM_SEL(a,b) __ASM_FORM(b)
- # define __ASM_SEL_RAW(a,b) __ASM_FORM_RAW(b)
- #endif
-@@ -139,7 +141,7 @@
-  * gets set up by the containing function.  If you forget to do this, objt=
-ool
-  * may print a "call without frame pointer save/setup" warning.
-  */
--register unsigned int __asm_call_sp asm("esp");
-+register unsigned long __asm_call_sp asm(_ASM_SP);
- #define ASM_CALL_CONSTRAINT "+r" (__asm_call_sp)
- #endif
-=20
+I have a couple of guesses why we may be seeing significantly increased
+number of context switches in some very specific workloads:
 
---===============8437057525041709965==--
+1) In case the system is under extreme memory pressure and
+__get_free_page() is failing in tlb_remove_table() we'll be doing
+smp_call_function() for _each_ call (avoiding batching). We may want to
+have a pre-allocated pool.
+
+2) The default MAX_TABLE_BATCH is static (it is equal to the number of
+pointer we can fit into one page - sizeof(struct mmu_table_batch) =3D=3D
+509), we may want to adjust it for very big systems.
+
+I'd love to work on these but with a good reproducible case I'm afraid
+I'm stuck :-(
+
+-- =
+
+  Vitaly
+
+--===============6556450704591083672==--
 
