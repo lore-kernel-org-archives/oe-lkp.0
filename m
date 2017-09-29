@@ -1,93 +1,96 @@
-Content-Type: multipart/mixed; boundary="===============1100093571543862474=="
+Content-Type: multipart/mixed; boundary="===============2952891261168625993=="
 MIME-Version: 1.0
 From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [PATCH] x86/asm: Fix inline asm call constraints for GCC 4.4
-Date: Fri, 29 Sep 2017 09:51:30 +0200
-Message-ID: <20170929075130.unemx3lbusjd6f6q@gmail.com>
-In-Reply-To: <CA+55aFxkVPZRAuLQ-xOsdvLZtnJpSAWuW0zUefojSmo=uLsgTg@mail.gmail.com>
+Date: Fri, 29 Sep 2017 10:01:28 +0200
+Message-ID: <20170929080128.eygnwju6rbegs3lh@gmail.com>
+In-Reply-To: <20170929014056.gzfge2efgwfxkokj@treble>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1100093571543862474==
+--===============2952891261168625993==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 
-* Linus Torvalds <torvalds@linux-foundation.org> wrote:
+* Josh Poimboeuf <jpoimboe@redhat.com> wrote:
 
-> On Thu, Sep 28, 2017 at 2:58 PM, Josh Poimboeuf <jpoimboe@redhat.com> w=
-rote:
-> >
-> > Reported-by: kernel test robot <xiaolong.ye@intel.com>
-> > Fixes: f5caf621ee35 ("x86/asm: Fix inline asm call constraints for Clan=
-g")
-> > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> On Thu, Sep 28, 2017 at 04:53:09PM -0700, Linus Torvalds wrote:
+> > On Thu, Sep 28, 2017 at 2:58 PM, Josh Poimboeuf <jpoimboe@redhat.com>=
+ wrote:
+> > >
+> > > Reported-by: kernel test robot <xiaolong.ye@intel.com>
+> > > Fixes: f5caf621ee35 ("x86/asm: Fix inline asm call constraints for Cl=
+ang")
+> > > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > =
+
+> > Side note: it's not like I personally need the credit, but in general
+> > I really want people to pick up on who debugged the code and pointed
+> > to the solution. That's often more of the work than the fix itself.
+> > =
+
+> > The kernel test robot report looked to be ignored as a "gcc-4.4 is too
+> > old to worry about" thing. People who then step up and analyze the
+> > problem are rare as it is. They need to be credited in the commit
+> > logs.
+> > =
+
+> > We don't have any fixed format for that, but it's pretty free-form. So
+> > we have tags like
+> > =
+
+> >   Root-caused-by:
+> >   Diagnosed-by:
+> >   Analyzed-by:
+> >   Debugged-by:
+> >   Bisected-by:
+> >   Fix-suggested-by:
+> > =
+
+> > etc for giving credit to people who figured out some part of a bug
+> > (and, having grepped for this, we also a _shitload_ of miss-spellings
+> > of various things ;)
 > =
 
-> Side note: it's not like I personally need the credit, but in general
-> I really want people to pick up on who debugged the code and pointed
-> to the solution. That's often more of the work than the fix itself.
+> Indeed, credit is important and I try to give it where it's due.  Sorry
+> for the snub!  I anoint you with:
 > =
 
-> The kernel test robot report looked to be ignored as a "gcc-4.4 is too
-> old to worry about" thing. [...]
+> Debugged-by: Linus Torvalds <torvalds@linux-foundation.org>
 
-No, and sorry if my first reply grumbling about how old GCC 4.4 is sounded =
-that =
+When applying the fix I went with:
 
-way! We have to live with compiler bugs no matter how old the compiler is, =
-the =
+  Diagnosed-by: Linus Torvalds <torvalds@linux-foundation.org>
 
-release cycles are decoupled to such a degree and external tooling propagat=
-es with =
+Because I think 'diagnosing' a bug is a higher category, which implies debu=
+gging. =
 
-such high latencies that that's the only sane thing to do.
 
-We also officially support GCC 3.2 and later compilers. Had this regression=
+( Sometimes we refer to 'debugging a bug' as the reporter adding printks on =
+
+  request and printing out key state that helps understand the bug. It does=
  not =
 
-been resolved within a week or so I was fully ready to queue up a revert co=
-mmit, =
+  necessarily imply root-causing the bug. )
 
-no questions asked.
+Also note that I added a "Reported-and-Bisected-by:" tag for the ktest robo=
+t, to =
 
-Plus it's not just that it's a regression, but adding support for a differe=
-nt =
+further credit the fact that in addition to reporting a kernel crash, a spe=
+cific =
 
-compiler is about the _worst_ possible reason to break working compilers ...
+commit was bisected to as well.
 
-> [...] People who then step up and analyze the problem are rare as it is. =
-They =
+I'll wait for another round of ktest robot testing to make sure the crash i=
+s =
 
-> need to be credited in the commit logs.
-> =
-
-> We don't have any fixed format for that, but it's pretty free-form. So
-> we have tags like
-> =
-
->   Root-caused-by:
->   Diagnosed-by:
->   Analyzed-by:
->   Debugged-by:
->   Bisected-by:
->   Fix-suggested-by:
-> =
-
-> etc for giving credit to people who figured out some part of a bug
-> (and, having grepped for this, we also a _shitload_ of miss-spellings
-> of various things ;)
-
-Yeah, I sometimes add such tags, but not routinely. I'll lower the threshol=
-d for =
-
-adding such tags, to create further incentives for people to help debug cra=
-shes.
+indeed fixed.
 
 Thanks,
 
 	Ingo
 
---===============1100093571543862474==--
+--===============2952891261168625993==--
 
