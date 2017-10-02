@@ -1,65 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============0376610015899482186=="
+Content-Type: multipart/mixed; boundary="===============3774308507870181844=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [kprobes/x86] a19b2e3d78: WARNING:at_kernel/locking/lockdep.c:#trace_hardirqs_off_caller
-Date: Mon, 02 Oct 2017 18:05:43 +0200
-Message-ID: <20171002160543.5d35jgxxfa4bftnu@hirez.programming.kicks-ass.net>
+Date: Mon, 02 Oct 2017 09:19:10 -0700
+Message-ID: <CA+55aFzNT9VcdbyLTffrYXV10yYAYnKa_taG+7gGdeRfa43CDg@mail.gmail.com>
 In-Reply-To: <20171003004605.8da2be5a86be135f792d29bd@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0376610015899482186==
+--===============3774308507870181844==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 03, 2017 at 12:46:05AM +0900, Masami Hiramatsu wrote:
-> On Mon, 2 Oct 2017 09:33:16 +0200
-> Peter Zijlstra <peterz@infradead.org> wrote:
-
-> > > [   87.018115] Call Trace:
-> > > [   87.025046]  trace_hardirqs_off+0xd/0xf
-> > > [   87.034185]  setjmp_pre_handler+0x6c/0x95
-> > > [   87.043738]  kprobe_ftrace_handler+0xc3/0xf4
-> > =
-
-> > =
-
-> > So setjmp_pre_handler() does:
-> > =
-
-> > 	regs->flags &=3D ~X86_EFLAGS_IF;
-> > 	trace_hardirqs_off();
-> > 	regs->ip =3D (unsigned long)(jp->entry);
-> > =
-
-> > Which clears IF on the regs, but those will only take effect after an
-> > IRET, not instantly. This messes up he IRQ state tracing, which you're
-> > telling it will instantly disable IRQs.
-> =
-
-> Thanks for analyzing!
-> And right, since IRQ should be off while jump handler, it changes
-> regs->flags. (but ...why?)
-
-Otherwise the IRET could re-enable interrupts?
-
-> > A possible 'fix' would be to do local_irq_disable() in front of that,
-> > but I got pretty lost in that stuff so I can't say for sure if that
-> > makes sense or not.
-> =
-
-> I'm not sure how lockdep traces irq-disabling state, but it seems
-> that "enabling" irq state(trace_hardirqs_on()) is already missing
-> from kprobes.
-
-If you could point me at where that is supposed to happen I can have a
-look at how that tracing works. I got lost in the code this morning.
-
+On Mon, Oct 2, 2017 at 8:46 AM, Masami Hiramatsu <mhiramat@kernel.org> wr=
+ote:
+>
 > I'm considering to remove disabling-irq itself from jprobe.
 > (Frankly to say, I would like to remove jprobe itself...)
 
-That would obviously also solve all problems :-)
+Please please please...
 
---===============0376610015899482186==--
+That would be lovely. The jprobe thing is really nasty, and despite
+the thing having been around forever (looking at history, it does back
+to 2004) there are very few users and they all look dubious to me.
+
+I seriously doubt anybody uses them, and I suspect our current tracing
+infrastructure is just *so* much better and more powerful than jprobes
+was.
+
+So I'd heartily recommend just getting rid of jprobes. Or at least
+trying, and seeing if anybody actually even notices (and then
+reverting the removal and looking at what the usage ends up actually
+being).
+
+                            Linus
+
+--===============3774308507870181844==--
 
