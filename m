@@ -1,86 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============1753251838152303674=="
+Content-Type: multipart/mixed; boundary="===============0216254405918563221=="
 MIME-Version: 1.0
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Masami Hiramatsu <mhiramat@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: 4879b7ae05 ("Merge tag 'dmaengine-4.12-rc1' of .."): WARNING: kernel stack regs at bd92bc2e in 01-cpu-hotplug:3811 has bad 'bp' value 000001be
-Date: Mon, 02 Oct 2017 20:17:17 -0500
-Message-ID: <20171003011717.gl6sbyoykb3lzhed@treble>
-In-Reply-To: <CA+55aFwo4U3vHFtKyCrGaumcfCMszfS48QSxNfEC3pD5wLxQnA@mail.gmail.com>
+Subject: Re: [kprobes/x86] a19b2e3d78: WARNING:at_kernel/locking/lockdep.c:#trace_hardirqs_off_caller
+Date: Tue, 03 Oct 2017 11:26:28 +0900
+Message-ID: <20171003112628.932b9c9737a609de5ea7772d@kernel.org>
+In-Reply-To: <CA+55aFzNT9VcdbyLTffrYXV10yYAYnKa_taG+7gGdeRfa43CDg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1753251838152303674==
+--===============0216254405918563221==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 02, 2017 at 02:58:08PM -0700, Linus Torvalds wrote:
-> On Mon, Oct 2, 2017 at 2:26 PM, Josh Poimboeuf <jpoimboe@redhat.com> wr=
-ote:
+On Mon, 2 Oct 2017 09:19:10 -0700
+Linus Torvalds <torvalds@linux-foundation.org> wrote:
+
+> On Mon, Oct 2, 2017 at 8:46 AM, Masami Hiramatsu <mhiramat@kernel.org> =
+wrote:
 > >
-> > The bisect is pointing to a commit which is almost 5 months old, so this
-> > is pre-ORC.  Kallsyms *is* enabled, but the unwinder dump isn't smart
-> > enough to realize it's dumping misaligned stack addresses:
+> > I'm considering to remove disabling-irq itself from jprobe.
+> > (Frankly to say, I would like to remove jprobe itself...)
 > =
 
-> Ahh, I didn't pick up on that "esp isn't aligned" part.
+> Please please please...
 > =
 
-> That said, if %esp gets unaligned at some point, it's not clear
-> exactly when we should align it. An unaligned stack pointer will
-> continue to _work_ just potentially perform fairly badly.
-
-True, but unaligned stacks seem to be very rare, and I don't remember
-ever seeing one with frame pointers enabled.  I think the call return
-addresses will always be aligned, so I think it makes sense to align the
-starting address before dumping.
-
-> But more likely, we picked the wrong frame value to begin with.
-
-Agreed.
-
-> For example, maybe that decode_frame_pointer() logic really should
-> check not that the low bit in bp is set, but instead check that it's a
-> valid "unsigned long *" that has the low bit set.
+> That would be lovely. The jprobe thing is really nasty, and despite
+> the thing having been around forever (looking at history, it does back
+> to 2004) there are very few users and they all look dubious to me.
 > =
 
-> IOW, the difference would be that instead of checking
+> I seriously doubt anybody uses them, and I suspect our current tracing
+> infrastructure is just *so* much better and more powerful than jprobes
+> was.
+
+I completely agree. Moreover, jprobe can not handle the functions
+which is optimized and modified function type by compiler nowadays.
+
+> So I'd heartily recommend just getting rid of jprobes. Or at least
+> trying, and seeing if anybody actually even notices (and then
+> reverting the removal and looking at what the usage ends up actually
+> being).
+
+OK, should I just make a series to remove jprobes and its few users,
+or mark APIs obsolete and remove it after next version?
+
+Thank you,
+
 > =
 
->         if (!(regs & 0x1))
->                 return NULL;
-> =
+>                             Linus
 
-> if would check
-> =
-
->         if ((regs & (sizeof(unsigned long)-1)) !=3D 1)
->                 return NULL;
-
-Yeah, that would be an improvement.
-
-> but also maybe add logic to simply not trust a next frame pointer that
-> isn't appropriately aligned.
-
-Also a good idea.
-
-> So I think adding PTR_ALIGN() there in the unwind dumper might be a
-> bit late. By that time it has already accepted what looks like a
-> garbage frame. No?
-
-Yeah, maybe.  I guess it really depends on what exactly the root cause
-is.  It got a bad frame pointer somehow, but maybe not *too* bad because
-it still ended up in the task stack somehow.  It's not clear how that
-happened, but it's possible the task stack had some clues about what led
-up to it.
-
-I'll implement your suggestions in addition to the patch to align sp in
-the dump code.  Having all of them together would hopefully enable the
-unwinder to detect a bad condition as early as possible and also do a
-better job at dumping it.
 
 -- =
 
-Josh
+Masami Hiramatsu <mhiramat@kernel.org>
 
---===============1753251838152303674==--
+--===============0216254405918563221==--
 
