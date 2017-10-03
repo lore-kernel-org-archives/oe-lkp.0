@@ -1,55 +1,89 @@
-Content-Type: multipart/mixed; boundary="===============6628422293623342726=="
+Content-Type: multipart/mixed; boundary="===============0025320607359575047=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Masami Hiramatsu <mhiramat@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: 4879b7ae05 ("Merge tag 'dmaengine-4.12-rc1' of .."): WARNING: kernel stack regs at bd92bc2e in 01-cpu-hotplug:3811 has bad 'bp' value 000001be
-Date: Mon, 02 Oct 2017 14:58:08 -0700
-Message-ID: <CA+55aFwo4U3vHFtKyCrGaumcfCMszfS48QSxNfEC3pD5wLxQnA@mail.gmail.com>
-In-Reply-To: <20171002212654.rsm4uj3hfioddldd@treble>
+Subject: Re: [kprobes/x86] a19b2e3d78: WARNING:at_kernel/locking/lockdep.c:#trace_hardirqs_off_caller
+Date: Tue, 03 Oct 2017 10:10:12 +0900
+Message-ID: <20171003101012.12cee3b5f7085ddbd0d63fb8@kernel.org>
+In-Reply-To: <20171002160543.5d35jgxxfa4bftnu@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6628422293623342726==
+--===============0025320607359575047==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 2, 2017 at 2:26 PM, Josh Poimboeuf <jpoimboe@redhat.com> wrot=
-e:
->
-> The bisect is pointing to a commit which is almost 5 months old, so this
-> is pre-ORC.  Kallsyms *is* enabled, but the unwinder dump isn't smart
-> enough to realize it's dumping misaligned stack addresses:
+On Mon, 2 Oct 2017 18:05:43 +0200
+Peter Zijlstra <peterz@infradead.org> wrote:
 
-Ahh, I didn't pick up on that "esp isn't aligned" part.
+> On Tue, Oct 03, 2017 at 12:46:05AM +0900, Masami Hiramatsu wrote:
+> > On Mon, 2 Oct 2017 09:33:16 +0200
+> > Peter Zijlstra <peterz@infradead.org> wrote:
+> =
 
-That said, if %esp gets unaligned at some point, it's not clear
-exactly when we should align it. An unaligned stack pointer will
-continue to _work_ just potentially perform fairly badly.
+> > > > [   87.018115] Call Trace:
+> > > > [   87.025046]  trace_hardirqs_off+0xd/0xf
+> > > > [   87.034185]  setjmp_pre_handler+0x6c/0x95
+> > > > [   87.043738]  kprobe_ftrace_handler+0xc3/0xf4
+> > > =
 
-But more likely, we picked the wrong frame value to begin with.
+> > > =
 
-For example, maybe that decode_frame_pointer() logic really should
-check not that the low bit in bp is set, but instead check that it's a
-valid "unsigned long *" that has the low bit set.
+> > > So setjmp_pre_handler() does:
+> > > =
 
-IOW, the difference would be that instead of checking
+> > > 	regs->flags &=3D ~X86_EFLAGS_IF;
+> > > 	trace_hardirqs_off();
+> > > 	regs->ip =3D (unsigned long)(jp->entry);
+> > > =
 
-        if (!(regs & 0x1))
-                return NULL;
+> > > Which clears IF on the regs, but those will only take effect after an
+> > > IRET, not instantly. This messes up he IRQ state tracing, which you're
+> > > telling it will instantly disable IRQs.
+> > =
 
-if would check
+> > Thanks for analyzing!
+> > And right, since IRQ should be off while jump handler, it changes
+> > regs->flags. (but ...why?)
+> =
 
-        if ((regs & (sizeof(unsigned long)-1)) !=3D 1)
-                return NULL;
+> Otherwise the IRET could re-enable interrupts?
 
-but also maybe add logic to simply not trust a next frame pointer that
-isn't appropriately aligned.
+Ah, I meant why IRQ should be disabled... It doesn't guarantee to
+avoid nested kprobes (since another kprobe can be hit in jprobe
+handler).
 
-So I think adding PTR_ALIGN() there in the unwind dumper might be a
-bit late. By that time it has already accepted what looks like a
-garbage frame. No?
+> > > A possible 'fix' would be to do local_irq_disable() in front of that,
+> > > but I got pretty lost in that stuff so I can't say for sure if that
+> > > makes sense or not.
+> > =
 
-                Linus
+> > I'm not sure how lockdep traces irq-disabling state, but it seems
+> > that "enabling" irq state(trace_hardirqs_on()) is already missing
+> > from kprobes.
+> =
 
---===============6628422293623342726==--
+> If you could point me at where that is supposed to happen I can have a
+> look at how that tracing works. I got lost in the code this morning.
+
+The right place to decrement irq counter(trace_hardirqs_on()) should
+be longjmp_break_handler(), which recovers flags register with other
+registers from kcb->jprobe_saved_regs, and IRET recovers IF.
+(maybe it doesn't count inc/dec correctly, isn't it?)
+
+> > I'm considering to remove disabling-irq itself from jprobe.
+> > (Frankly to say, I would like to remove jprobe itself...)
+> =
+
+> That would obviously also solve all problems :-)
+
+Yeah, for long term it needs to be removed :)
+
+Thank you,
+
+-- =
+
+Masami Hiramatsu <mhiramat@kernel.org>
+
+--===============0025320607359575047==--
 
