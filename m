@@ -1,21 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============5686479908468712561=="
+Content-Type: multipart/mixed; boundary="===============4928518501358530361=="
 MIME-Version: 1.0
-From: Ingo Molnar <mingo@kernel.org>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [lockdep] b09be676e0 BUG: unable to handle kernel NULL pointer dereference at 000001f2
-Date: Wed, 04 Oct 2017 12:31:19 +0200
-Message-ID: <20171004103119.sedmwqcfwu3ze5od@gmail.com>
+Date: Wed, 04 Oct 2017 09:15:55 -0500
+Message-ID: <20171004141555.pu7ibzydvpc52ys3@treble>
 In-Reply-To: <20171004092052.ioixdexrsbbwvetr@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5686479908468712561==
+--===============4928518501358530361==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-
-* Peter Zijlstra <peterz@infradead.org> wrote:
-
+On Wed, Oct 04, 2017 at 11:20:52AM +0200, Peter Zijlstra wrote:
 > On Tue, Oct 03, 2017 at 07:18:24PM +0200, Ingo Molnar wrote:
 > > Yes, I'll do that tomorrow. I was always a bit unhappy about cross-rele=
 ase,
@@ -30,14 +28,11 @@ ase,
 
 > Every bug found is one less bug. It did find a few.
 
-Certainly, but the total work saved by finding bugs should be balanced agai=
-nst the =
+It also found a bunch of unwinder bugs ;-)
 
-additional fragility of lockdep and the ongoing maintenance cost.
+-- =
 
-Thanks,
+Josh
 
-	Ingo
-
---===============5686479908468712561==--
+--===============4928518501358530361==--
 
