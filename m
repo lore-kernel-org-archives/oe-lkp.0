@@ -1,75 +1,83 @@
-Content-Type: multipart/mixed; boundary="===============6716651203830229178=="
+Content-Type: multipart/mixed; boundary="===============5673240477708212833=="
 MIME-Version: 1.0
 From: Josh Poimboeuf <jpoimboe@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [lockdep] b09be676e0 BUG: unable to handle kernel NULL pointer dereference at 000001f2
-Date: Thu, 05 Oct 2017 08:01:46 -0500
-Message-ID: <20171005130146.pmayo6owv362zfai@treble>
-In-Reply-To: <CA+55aFxa_1pCMt-GQmBZUzRbc8_UY9sacmEaCqkDM1_=sq8y_A@mail.gmail.com>
+Date: Thu, 05 Oct 2017 08:57:34 -0500
+Message-ID: <20171005135734.7hiztv6i5abdcqv7@treble>
+In-Reply-To: <201710052002.HIH12957.JOFFSMOVFHLOtQ@I-love.SAKURA.ne.jp>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6716651203830229178==
+--===============5673240477708212833==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 03, 2017 at 09:54:31AM -0700, Linus Torvalds wrote:
-> On Tue, Oct 3, 2017 at 7:06 AM, Fengguang Wu <fengguang.wu@intel.com> w=
-rote:
-> >
-> > This patch triggers a NULL-dereference bug at update_stack_state().
-> > Although its parent commit also has a NULL-dereference bug, however
-> > the call stack looks rather different. Both dmesg files are attached.
-> >
-> > It also triggers this warning, which is being discussed in another
-> > thread, so CC Josh. The full dmesg attached, too.
-> >
-> >         Please press Enter to activate this console.
-> >         [  138.605622] WARNING: kernel stack regs at be299c9a in procd:=
-340 has bad 'bp' value 000001be
-> >         [  138.605627] unwind stack type:0 next_sp:  (null) mask:0x2 gr=
-aph_idx:0
-> >         [  138.605631] be299c9a: 299ceb00 (0x299ceb00)
-> >         [  138.605633] be299c9e: 2281f1be (0x2281f1be)
-> >         [  138.605634] be299ca2: 299cebb6 (0x299cebb6)
-> >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git mast=
-er
-> >
-> > commit b09be676e0ff25bd6d2e7637e26d349f9109ad75
-> >      locking/lockdep: Implement the 'crossrelease' feature
-> =
+On Thu, Oct 05, 2017 at 08:02:33PM +0900, Tetsuo Handa wrote:
+> Josh Poimboeuf wrote:
+> > On Wed, Oct 04, 2017 at 06:44:50AM +0900, Tetsuo Handa wrote:
+> > > Josh Poimboeuf wrote:
+> > > > On Tue, Oct 03, 2017 at 11:28:15AM -0500, Josh Poimboeuf wrote:
+> > > > > There are two bugs:
+> > > > > =
 
-> Can we consider just reverting the crossrelease thing?
-> =
+> > > > > 1) Somebody -- presumably lockdep -- is corrupting the stack.  Ne=
+ed the
+> > > > >    lockdep people to look at that.
+> > > > > =
 
-> The apparent stack corruption really worries me, and what worries me
-> most is that commit wasn't even supposed to change anything as far as
-> I can tell - it only adds infrastructure, no actual users that *set*
-> the cross-lock thing.
-> =
+> > > > > 2) The 32-bit FP unwinder isn't handling the corrupt stack very w=
+ell,
+> > > > >    It's blindly dereferencing untrusted data:
+> > > > > =
 
-> So the fact that it actually seems to cause behavioural changes seems
-> to be _really_ scary, and indicates that the code is completely
-> broken.
-> =
+> > > > > 	/* Is the next frame pointer an encoded pointer to pt_regs? */
+> > > > > 	regs =3D decode_frame_pointer(next_bp);
+> > > > > 	if (regs) {
+> > > > > 		frame =3D (unsigned long *)regs;
+> > > > > 		len =3D regs_size(regs);
+> > > > > 		state->got_irq =3D true;
+> > > > > =
 
-> Or am I missing something?
+> > > > >   On 32-bit, regs_size() dereferences the regs pointer before we =
+know it
+> > > > >   points to a valid stack.  I'll fix that, along with the other u=
+nwinder
+> > > > >   improvements I discussed with Linus.
+> > > > =
 
-So I gave crossrelease a bad rap here.  Going back and looking at the
-panics and stack dumps, what I thought was "stack corruption" was
-actually the GCC unaligned stack pointer thing.
+> > > > Tetsuo and/or Fengguang,
+> > > > =
 
-I suspect those commits were implicated in the bisections because they
-started doing more stack traces in general, revealing some existing
-32-bit unwinder/GCC/frame pointer bugs in the process.
+> > > > Would you mind testing with this patch?  It should at least prevent=
+ the
+> > > > unwinder panic and should hopefully print a useful unwinder dump
+> > > > instead.
+> > > > =
 
-So I just wanted to clarify that crossrelease seems to be innocent in
-all this.  Sorry for the confusion!
+> > > Here are two outputs.
+> > =
+
+> > Tetsuo, would you mind trying the following patch?
+> > =
+
+> Here are two outputs. Same kernel with different host hardware.
+
+Thanks, these dumps are more "normal":
+
+- The first shows a missing frame pointer setup in
+  atomic64_add_unless_cx8().
+
+- The second shows some frame pointer related issue in the kthread
+  creation path.
+
+I don't plan on fixing those, because we don't yet have objtool support
+for 32-bit and we don't have anything which needs reliable stack traces
+there.  I'll probably just disable those unwinder dumps on 32-bit.
 
 -- =
 
 Josh
 
---===============6716651203830229178==--
+--===============5673240477708212833==--
 
