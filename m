@@ -1,182 +1,101 @@
-Content-Type: multipart/mixed; boundary="===============5212447739780597367=="
+Content-Type: multipart/mixed; boundary="===============3717845642258947834=="
 MIME-Version: 1.0
-From: Eric Dumazet <edumazet@google.com>
+From: Jeff Moyer <jmoyer@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [ipv6] a94b9367e0: BUG:using_smp_processor_id()in_preemptible
-Date: Tue, 10 Oct 2017 07:02:07 -0700
-Message-ID: <CANn89iKW8KCbs0AgembDwdFjdtp=vHwBPkRbH3q-fqfLTKamRg@mail.gmail.com>
-In-Reply-To: <20171010121325.GA5445@yexl-desktop>
+Subject: Re: [lkp-robot] [fs] 332391a993: WARNING:at_fs/iomap.c:#iomap_dio_complete
+Date: Tue, 10 Oct 2017 10:36:14 -0400
+Message-ID: <x49bmlf5au9.fsf@segfault.boston.devel.redhat.com>
+In-Reply-To: <20171010121627.GD5445@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5212447739780597367==
+--===============3717845642258947834==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 10, 2017 at 5:13 AM, kernel test robot
-<xiaolong.ye@intel.com> wrote:
+kernel test robot <xiaolong.ye@intel.com> writes:
+
+> FYI, we noticed the following commit (built with gcc-6):
 >
-> FYI, we noticed the following commit (built with gcc-4.9):
->
-> commit: a94b9367e044ba672c9f4105eb1516ff6ff4948a ("ipv6: grab rt->rt6i_re=
-f before allocating pcpu rt")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->
-> in testcase: boot
->
-> on test machine: qemu-system-x86_64 -enable-kvm -smp 2 -m 512M
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
->
->
-> +--------------------------------------------+------------+------------+
-> |                                            | 2b760fcf5c | a94b9367e0 |
-> +--------------------------------------------+------------+------------+
-> | boot_successes                             | 8          | 4          |
-> | boot_failures                              | 0          | 4          |
-> | BUG:using_smp_processor_id()in_preemptible | 0          | 4          |
-> +--------------------------------------------+------------+------------+
->
->
->
-> [   28.927206] BUG: using smp_processor_id() in preemptible [00000000] co=
-de: odhcpd/1011
-> [   28.928424] caller is debug_smp_processor_id+0x17/0x19
-> [   28.929085] CPU: 1 PID: 1011 Comm: odhcpd Not tainted 4.14.0-rc3-00908=
--ga94b936 #1
-> [   28.930196] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+> commit: 332391a9935da939319e473b4680e173df75afcf ("fs: Fix page cache
+> inconsistency when mixing buffered and AIO DIO")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+[...]
+
+> [  170.063040] WARNING: CPU: 0 PID: 33 at fs/iomap.c:731 iomap_dio_comple=
+te+0x129/0x130
+> [ 170.068758] Modules linked in: xfs dm_mod rpcsec_gss_krb5
+> auth_rpcgss nfsv4 dns_resolver sr_mod cdrom sg ata_generic pata_acpi
+> ppdev ata_piix parport_pc snd_pcm snd_timer snd soundcore serio_raw
+> pcspkr i2c_piix4 libata floppy parport ip_tables
+> [  170.074819] CPU: 0 PID: 33 Comm: kworker/0:1 Not tainted 4.14.0-rc1-00=
+056-g332391a #1
+> [  170.077915] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
 S 1.10.2-1 04/01/2014
-> [   28.931421] Call Trace:
-> [   28.931765]  dump_stack+0x85/0xbe
-> [   28.932244]  check_preemption_disabled+0xdb/0xed
-> [   28.932845]  debug_smp_processor_id+0x17/0x19
-> [   28.933421]  ip6_pol_route+0x541/0x607
-> [   28.933993]  ip6_pol_route_output+0x11/0x13
-> [   28.934547]  fib6_rule_action+0xbf/0x1ff
-> [   28.935088]  ? ip6_pol_route_input+0x17/0x17
-> [   28.935725]  fib_rules_lookup+0x18e/0x245
-> [   28.936255]  ? fib_rules_lookup+0x18e/0x245
-> [   28.936819]  ? ip6_pol_route_input+0x17/0x17
-> [   28.937404]  fib6_rule_lookup+0x5a/0xe9
-> [   28.937944]  ? ip6_pol_route_input+0x17/0x17
-> [   28.938579]  ip6_route_output_flags+0xd0/0xdc
-> [   28.939147]  ip6_dst_lookup_tail+0x57/0x1aa
-> [   28.939748]  ip6_dst_lookup_flow+0x33/0x73
-> [   28.940347]  ip6_datagram_dst_update+0x25b/0x4c2
-> [   28.940947]  ? save_stack_trace+0x16/0x18
-> [   28.941697]  __ip6_datagram_connect+0x218/0x2ba
-> [   28.942286]  ? __ip6_datagram_connect+0x218/0x2ba
-> [   28.942897]  ? __local_bh_enable_ip+0x87/0xa8
-> [   28.943471]  ? lock_sock_nested+0x42/0x90
-> [   28.944080]  ip6_datagram_connect+0x26/0x3a
-> [   28.944634]  ip6_datagram_connect_v6_only+0x14/0x16
-> [   28.945296]  inet_dgram_connect+0x4a/0x64
-> [   28.945815]  SyS_connect+0x7e/0xbf
-> [   28.946373]  ? __might_fault+0x79/0x7f
-> [   28.946934]  compat_SyS_socketcall+0x113/0x219
-> [   28.947797]  ? do_int80_syscall_32+0x22/0x1c1
-> [   28.948438]  ? trace_hardirqs_on_caller+0x174/0x190
-> [   28.949063]  do_int80_syscall_32+0x74/0x1c1
-> [   28.949664]  entry_INT80_compat+0x32/0x50
-> [   28.950269] RIP: 0023:0xf7ef2384
-> [   28.950735] RSP: 002b:00000000ffa89318 EFLAGS: 00000296 ORIG_RAX: 0000=
-000000000066
-> [   28.951736] RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000f=
-fa89328
-> [   28.952670] RDX: 00000000f7f38000 RSI: 00000000ffa89328 RDI: 00000000f=
-fa89440
-> [   28.953572] RBP: 00000000ffa89388 R08: 0000000000000000 R09: 000000000=
-0000000
-> [   28.954538] R10: 0000000000000000 R11: 0000000000000000 R12: 000000000=
-0000000
-> [   28.955533] R13: 0000000000000000 R14: 0000000000000000 R15: 000000000=
-0000000
->
-> Elapsed time: 30
->
-> initrds=3D(
->         /osimage/openwrt/openwrt-i386-2016-03-16.cgz
->         /lkp/scheduled/vm-lkp-nex04-openwrt-ia32-27/boot-1-openwrt-i386-2=
-016-03-16.cgz-a94b9367e044ba672c9f4105eb1516ff6ff4948a-20171009-12855-139pi=
-yy-0.cgz
->         /lkp/lkp/lkp-i386.cgz
-> )
->
-> cat "${initrds[@]}" > /fs/sdb1/initrd-vm-lkp-nex04-openwrt-ia32-27
->
-> kvm=3D(
->         qemu-system-x86_64
->         -enable-kvm
->         -kernel /pkg/linux/x86_64-randconfig-h0-10091308/gcc-4.9/a94b9367=
-e044ba672c9f4105eb1516ff6ff4948a/vmlinuz-4.14.0-rc3-00908-ga94b936
->         -initrd /fs/sdb1/initrd-vm-lkp-nex04-openwrt-ia32-27
->         -m 512
->         -smp 2
->         -device e1000,netdev=3Dnet0
->         -netdev user,id=3Dnet0,hostfwd=3Dtcp::23296-:22
->         -boot order=3Dnc
->         -no-reboot
->         -watchdog i6300esb
->         -watchdog-action debug
->         -rtc base=3Dlocaltime
->         -pidfile /dev/shm/kboot/pid-vm-lkp-nex04-openwrt-ia32-27
->         -serial file:/dev/shm/kboot/vm-lkp-nex04-openwrt-ia32-27/serial
->         -serial file:/dev/shm/kboot/vm-lkp-nex04-openwrt-ia32-27/kmsg
->         -daemonize
->         -display none
->         -monitor null
-> )
->
-> append=3D(
->         ip=3D::::vm-lkp-nex04-openwrt-ia32-27::dhcp
->         root=3D/dev/ram0
->         user=3Dlkp
->         job=3D/lkp/scheduled/vm-lkp-nex04-openwrt-ia32-27/boot-1-openwrt-=
-i386-2016-03-16.cgz-a94b9367e044ba672c9f4105eb1516ff6ff4948a-20171009-12855=
--139piyy-0.yaml
->         ARCH=3Dx86_64
->         kconfig=3Dx86_64-randconfig-h0-10091308
->         branch=3Dlinux-devel/devel-spot-201710090350
->         commit=3Da94b9367e044ba672c9f4105eb1516ff6ff4948a
->         BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-h0-10091308/gcc-4.9/a94=
-b9367e044ba672c9f4105eb1516ff6ff4948a/vmlinuz-4.14.0-rc3-00908-ga94b936
->         max_uptime=3D600
->         RESULT_ROOT=3D/result/boot/1/vm-lkp-nex04-openwrt-ia32/openwrt-i3=
-86-2016-03-16.cgz/x86_64-randconfig-h0-10091308/gcc-4.9/a94b9367e044ba672c9=
-f4105eb1516ff6ff4948a/0
->         LKP_SERVER=3Dinn
->         debug
->         apic=3Ddebug
->         sysrq_always_enabled
->         rcupdate.rcu_cpu_stall_timeout=3D100
->         net.ifnames=3D0
->         printk.devkmsg=3Don
->         panic=3D-1
->         softlockup_panic=3D1
->         nmi_watchdog=3Dpanic
->         oops=3Dpanic
->         load_ramdisk=3D2
->         prompt_ramdisk=3D0
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script  # job-script is attached in=
- this email
->
->
->
-> Thanks,
-> Xiaolong
+> [  170.081047] Workqueue: dio/vda iomap_dio_complete_work
+> [  170.081974] task: ffff88012e504a80 task.stack: ffffc90000758000
+> [  170.084465] RIP: 0010:iomap_dio_complete+0x129/0x130
+> [  170.085381] RSP: 0018:ffffc9000075be18 EFLAGS: 00010286
+> [  170.087536] RAX: 00000000fffffff0 RBX: 0000000000000001 RCX: 000000000=
+000000c
+> [  170.088853] RDX: 0000000000000000 RSI: ffffc9000075bc50 RDI: ffff88007=
+5715da9
+> [  170.092113] RBP: ffffc9000075be30 R08: ffffc9000075bcf0 R09: ffff88007=
+5715da8
+> [  170.093254] R10: 000000000000000c R11: 0000000000000000 R12: ffff88007=
+afa9300
+> [  170.096475] R13: ffff88007ac7ad80 R14: ffff88007afa9338 R15: ffff88007=
+afa9330
+> [  170.098187] FS:  0000000000000000(0000) GS:ffff88013fc00000(0000) knlG=
+S:0000000000000000
+> [  170.101322] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  170.102265] CR2: 00007f3ad48a8020 CR3: 000000007fe16000 CR4: 000000000=
+00006f0
+> [  170.104631] Call Trace:
+> [  170.105146]  iomap_dio_complete_work+0x25/0x80
+> [  170.106704]  process_one_work+0x198/0x3e0
+> [  170.107874]  worker_thread+0x4e/0x3e0
+> [  170.108522]  kthread+0x114/0x150
+> [  170.110683]  ? process_one_work+0x3e0/0x3e0
+> [  170.111362]  ? kthread_create_on_node+0x40/0x40
+> [  170.113111]  ret_from_fork+0x25/0x30
+> [ 170.113752] Code: c9 74 17 49 63 74 24 28 41 8b 54 24 24 85 f6 0f 84
+> 2a ff ff ff e9 3e ff ff ff 41 8b 74 24 28 49 8b 45 00 48 63 de e9 39
+> ff ff ff <0f> ff eb ca 0f 1f 00 0f 1f 44 00 00 55 48 83 ef 30 48 89 e5
+> 41
 
-Hi Xiaolong
+The test case is doing buffered and direct writes to the same file from
+different processes, and is intended to trigger the case where
+invalidate_inode_pages2_range fails.  I guess it's easier to hit now
+since we defer completion to a worker thread?  Anyway, we should update
+xfstests to ignore this warning.
 
-We believe this was fixed in commit
-951f788a80ff8b6339c5c1ab888b0d4b4352efd8 ipv6: fix a BUG in
-rt6_get_pcpu_route()
+Cheers,
+Jeff
 
---===============5212447739780597367==--
+[...]
+
+> generic/027
+> generic/070
+> generic/117
+> generic/208
+> 2017-10-09 15:50:42 ./check generic/027 generic/070 generic/117 generic/2=
+08
+> FSTYP         -- xfs (non-debug)
+> PLATFORM      -- Linux/x86_64 vm-kbuild-4G-1 4.14.0-rc1-00056-g332391a
+> MKFS_OPTIONS  -- -f -bsize=3D4096 /dev/vdd
+> MOUNT_OPTIONS -- /dev/vdd /fs/scratch
+>
+> generic/027	 54s
+> generic/070	 34s
+> generic/117	 58s
+> generic/208	 200s
+> _check_dmesg: something found in dmesg (see /lkp/benchmarks/xfstests/resu=
+lts//generic/208.dmesg)
+> Ran: generic/027 generic/070 generic/117 generic/208
+> Failures: generic/208
+> Failed 1 of 4 tests
+
+--===============3717845642258947834==--
 
