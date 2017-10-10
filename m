@@ -1,33 +1,133 @@
-Content-Type: multipart/mixed; boundary="===============8718794877724315574=="
+Content-Type: multipart/mixed; boundary="===============0611557987052827679=="
 MIME-Version: 1.0
 From: Josh Poimboeuf <jpoimboe@redhat.com>
 To: lkp@lists.01.org
-Subject: [PATCH 0/4] x86/unwind: 32-bit unwinder fixes
-Date: Mon, 09 Oct 2017 20:20:01 -0500
-Message-ID: <cover.1507597785.git.jpoimboe@redhat.com>
+Subject: [PATCH 1/4] x86/unwind: Fix dereference of untrusted pointer
+Date: Mon, 09 Oct 2017 20:20:02 -0500
+Message-ID: <7f95b9a6993dec7674b3f3ab3dcd3294f7b9644d.1507597785.git.jpoimboe@redhat.com>
+In-Reply-To: <cover.1507597785.git.jpoimboe@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8718794877724315574==
+--===============0611557987052827679==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Some x86-32 unwinder bug fixes.
+Tetsuo Handa and Fengguang Wu reported a panic in the unwinder:
 
-Josh Poimboeuf (4):
-  x86/unwind: Fix dereference of untrusted pointer
-  x86/unwind: Use MSB for frame pointer encoding on 32-bit
-  x86/unwind: Align stack pointer in unwinder dump
-  x86/unwind: Disable unwinder warnings on 32-bit
+  BUG: unable to handle kernel NULL pointer dereference at 000001f2
+  IP: update_stack_state+0xd4/0x340
+  *pde =3D 00000000
 
- arch/x86/entry/entry_32.S      |  4 ++--
- arch/x86/kernel/unwind_frame.c | 38 ++++++++++++++++++++++++++++++++++++--
- 2 files changed, 38 insertions(+), 4 deletions(-)
+  Oops: 0000 [#1] PREEMPT SMP
+  CPU: 0 PID: 18728 Comm: 01-cpu-hotplug Not tainted 4.13.0-rc4-00170-gb09b=
+e67 #592
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.9.3-2016102=
+5_171302-gandalf 04/01/2014
+  task: bb0b53c0 task.stack: bb3ac000
+  EIP: update_stack_state+0xd4/0x340
+  EFLAGS: 00010002 CPU: 0
+  EAX: 0000a570 EBX: bb3adccb ECX: 0000f401 EDX: 0000a570
+  ESI: 00000001 EDI: 000001ba EBP: bb3adc6b ESP: bb3adc3f
+   DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
+  CR0: 80050033 CR2: 000001f2 CR3: 0b3a7000 CR4: 00140690
+  DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
+  DR6: fffe0ff0 DR7: 00000400
+  Call Trace:
+   ? unwind_next_frame+0xea/0x400
+   ? __unwind_start+0xf5/0x180
+   ? __save_stack_trace+0x81/0x160
+   ? save_stack_trace+0x20/0x30
+   ? __lock_acquire+0xfa5/0x12f0
+   ? lock_acquire+0x1c2/0x230
+   ? tick_periodic+0x3a/0xf0
+   ? _raw_spin_lock+0x42/0x50
+   ? tick_periodic+0x3a/0xf0
+   ? tick_periodic+0x3a/0xf0
+   ? debug_smp_processor_id+0x12/0x20
+   ? tick_handle_periodic+0x23/0xc0
+   ? local_apic_timer_interrupt+0x63/0x70
+   ? smp_trace_apic_timer_interrupt+0x235/0x6a0
+   ? trace_apic_timer_interrupt+0x37/0x3c
+   ? strrchr+0x23/0x50
+  Code: 0f 95 c1 89 c7 89 45 e4 0f b6 c1 89 c6 89 45 dc 8b 04 85 98 cb 74 b=
+c 88 4d e3 89 45 f0 83 c0 01 84 c9 89 04 b5 98 cb 74 bc 74 3b <8b> 47 38 8b=
+ 57 34 c6 43 1d 01 25 00 00 02 00 83 e2 03 09 d0 83
+  EIP: update_stack_state+0xd4/0x340 SS:ESP: 0068:bb3adc3f
+  CR2: 00000000000001f2
+  ---[ end trace 0d147fd4aba8ff50 ]---
+  Kernel panic - not syncing: Fatal exception in interrupt
 
+On x86-32, after decoding a frame pointer to get a regs address,
+regs_size() dereferences the regs pointer when it checks regs->cs to see
+if the regs are user mode.  This is dangerous because it's possible that
+what looks like a decoded frame pointer is actually a corrupt value, and
+we don't want the unwinder to make things worse.
+
+Instead of calling regs_size() on an unsafe pointer, just assume they're
+kernel regs to start with.  Later, once it's safe to access the regs, we
+can do the user mode check and corresponding safety check for the
+remaining two regs.
+
+Reported-and-tested-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Reported-and-tested-by: Fengguang Wu <fengguang.wu@intel.com>
+Fixes: 5ed8d8bb38c5 ("x86/unwind: Move common code into update_stack_state(=
+)")
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+---
+ arch/x86/kernel/unwind_frame.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/unwind_frame.c b/arch/x86/kernel/unwind_frame.c
+index d145a0b1f529..d05637726c10 100644
+--- a/arch/x86/kernel/unwind_frame.c
++++ b/arch/x86/kernel/unwind_frame.c
+@@ -184,6 +184,12 @@ static struct pt_regs *decode_frame_pointer(unsigned l=
+ong *bp)
+ 	return (struct pt_regs *)(regs & ~0x1);
+ }
+ =
+
++#ifdef CONFIG_X86_32
++#define KERNEL_REGS_SIZE (sizeof(struct pt_regs) - 2*sizeof(long))
++#else
++#define KERNEL_REGS_SIZE (sizeof(struct pt_regs))
++#endif
++
+ static bool update_stack_state(struct unwind_state *state,
+ 			       unsigned long *next_bp)
+ {
+@@ -202,7 +208,7 @@ static bool update_stack_state(struct unwind_state *sta=
+te,
+ 	regs =3D decode_frame_pointer(next_bp);
+ 	if (regs) {
+ 		frame =3D (unsigned long *)regs;
+-		len =3D regs_size(regs);
++		len =3D KERNEL_REGS_SIZE;
+ 		state->got_irq =3D true;
+ 	} else {
+ 		frame =3D next_bp;
+@@ -226,6 +232,14 @@ static bool update_stack_state(struct unwind_state *st=
+ate,
+ 	    frame < prev_frame_end)
+ 		return false;
+ =
+
++	/*
++	 * On 32-bit with user mode regs, make sure the last two regs are safe
++	 * to access:
++	 */
++	if (IS_ENABLED(CONFIG_X86_32) && regs && user_mode(regs) &&
++	    !on_stack(info, frame, len + 2*sizeof(long)))
++		return false;
++
+ 	/* Move state to the next frame: */
+ 	if (regs) {
+ 		state->regs =3D regs;
 -- =
 
 2.13.6
 
 
---===============8718794877724315574==--
+--===============0611557987052827679==--
 
