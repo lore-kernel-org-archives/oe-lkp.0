@@ -1,133 +1,130 @@
-Content-Type: multipart/mixed; boundary="===============0611557987052827679=="
+Content-Type: multipart/mixed; boundary="===============2419337413231030314=="
 MIME-Version: 1.0
 From: Josh Poimboeuf <jpoimboe@redhat.com>
 To: lkp@lists.01.org
-Subject: [PATCH 1/4] x86/unwind: Fix dereference of untrusted pointer
-Date: Mon, 09 Oct 2017 20:20:02 -0500
-Message-ID: <7f95b9a6993dec7674b3f3ab3dcd3294f7b9644d.1507597785.git.jpoimboe@redhat.com>
+Subject: [PATCH 2/4] x86/unwind: Use MSB for frame pointer encoding on 32-bit
+Date: Mon, 09 Oct 2017 20:20:03 -0500
+Message-ID: <279a26996a482ca716605c7dbc7f2db9d8d91e81.1507597785.git.jpoimboe@redhat.com>
 In-Reply-To: <cover.1507597785.git.jpoimboe@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0611557987052827679==
+--===============2419337413231030314==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Tetsuo Handa and Fengguang Wu reported a panic in the unwinder:
+On x86-32, Tetsuo Handa and Fengguang Wu reported unwinder warnings
+like:
 
-  BUG: unable to handle kernel NULL pointer dereference at 000001f2
-  IP: update_stack_state+0xd4/0x340
-  *pde =3D 00000000
+  WARNING: kernel stack regs at f60bb9c8 in swapper:1 has bad 'bp' value 0b=
+a00000
 
-  Oops: 0000 [#1] PREEMPT SMP
-  CPU: 0 PID: 18728 Comm: 01-cpu-hotplug Not tainted 4.13.0-rc4-00170-gb09b=
-e67 #592
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.9.3-2016102=
-5_171302-gandalf 04/01/2014
-  task: bb0b53c0 task.stack: bb3ac000
-  EIP: update_stack_state+0xd4/0x340
-  EFLAGS: 00010002 CPU: 0
-  EAX: 0000a570 EBX: bb3adccb ECX: 0000f401 EDX: 0000a570
-  ESI: 00000001 EDI: 000001ba EBP: bb3adc6b ESP: bb3adc3f
-   DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
-  CR0: 80050033 CR2: 000001f2 CR3: 0b3a7000 CR4: 00140690
-  DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-  DR6: fffe0ff0 DR7: 00000400
-  Call Trace:
-   ? unwind_next_frame+0xea/0x400
-   ? __unwind_start+0xf5/0x180
-   ? __save_stack_trace+0x81/0x160
-   ? save_stack_trace+0x20/0x30
-   ? __lock_acquire+0xfa5/0x12f0
-   ? lock_acquire+0x1c2/0x230
-   ? tick_periodic+0x3a/0xf0
-   ? _raw_spin_lock+0x42/0x50
-   ? tick_periodic+0x3a/0xf0
-   ? tick_periodic+0x3a/0xf0
-   ? debug_smp_processor_id+0x12/0x20
-   ? tick_handle_periodic+0x23/0xc0
-   ? local_apic_timer_interrupt+0x63/0x70
-   ? smp_trace_apic_timer_interrupt+0x235/0x6a0
-   ? trace_apic_timer_interrupt+0x37/0x3c
-   ? strrchr+0x23/0x50
-  Code: 0f 95 c1 89 c7 89 45 e4 0f b6 c1 89 c6 89 45 dc 8b 04 85 98 cb 74 b=
-c 88 4d e3 89 45 f0 83 c0 01 84 c9 89 04 b5 98 cb 74 bc 74 3b <8b> 47 38 8b=
- 57 34 c6 43 1d 01 25 00 00 02 00 83 e2 03 09 d0 83
-  EIP: update_stack_state+0xd4/0x340 SS:ESP: 0068:bb3adc3f
-  CR2: 00000000000001f2
-  ---[ end trace 0d147fd4aba8ff50 ]---
-  Kernel panic - not syncing: Fatal exception in interrupt
+And also there were some stack dumps with a bunch of unreliable '?'
+symbols after an apic_timer_interrupt symbol, meaning the unwinder got
+confused when it tried to read the regs.
 
-On x86-32, after decoding a frame pointer to get a regs address,
-regs_size() dereferences the regs pointer when it checks regs->cs to see
-if the regs are user mode.  This is dangerous because it's possible that
-what looks like a decoded frame pointer is actually a corrupt value, and
-we don't want the unwinder to make things worse.
+The cause of those issues is that, with GCC 4.8 (and possibly older),
+there are cases where GCC misaligns the stack pointer in a leaf function
+for no apparent reason:
 
-Instead of calling regs_size() on an unsafe pointer, just assume they're
-kernel regs to start with.  Later, once it's safe to access the regs, we
-can do the user mode check and corresponding safety check for the
-remaining two regs.
+  c124a388 <acpi_rs_move_data>:
+  c124a388:       55                      push   %ebp
+  c124a389:       89 e5                   mov    %esp,%ebp
+  c124a38b:       57                      push   %edi
+  c124a38c:       56                      push   %esi
+  c124a38d:       89 d6                   mov    %edx,%esi
+  c124a38f:       53                      push   %ebx
+  c124a390:       31 db                   xor    %ebx,%ebx
+  c124a392:       83 ec 03                sub    $0x3,%esp
+  ...
+  c124a3e3:       83 c4 03                add    $0x3,%esp
+  c124a3e6:       5b                      pop    %ebx
+  c124a3e7:       5e                      pop    %esi
+  c124a3e8:       5f                      pop    %edi
+  c124a3e9:       5d                      pop    %ebp
+  c124a3ea:       c3                      ret
+
+If an interrupt occurs in such a function, the regs on the stack will be
+unaligned, which breaks the frame pointer encoding assumption.  So on
+32-bit, use the MSB instead of the LSB to encode the regs.
+
+This isn't an issue on 64-bit, because interrupts align the stack before
+writing to it.
 
 Reported-and-tested-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Reported-and-tested-by: Fengguang Wu <fengguang.wu@intel.com>
-Fixes: 5ed8d8bb38c5 ("x86/unwind: Move common code into update_stack_state(=
-)")
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 ---
- arch/x86/kernel/unwind_frame.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ arch/x86/entry/entry_32.S      |  4 ++--
+ arch/x86/kernel/unwind_frame.c | 12 ++++++++++++
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/entry/entry_32.S b/arch/x86/entry/entry_32.S
+index 8a13d468635a..50e0d2bc4528 100644
+--- a/arch/x86/entry/entry_32.S
++++ b/arch/x86/entry/entry_32.S
+@@ -176,7 +176,7 @@
+ /*
+  * This is a sneaky trick to help the unwinder find pt_regs on the stack. =
+ The
+  * frame pointer is replaced with an encoded pointer to pt_regs.  The enco=
+ding
+- * is just setting the LSB, which makes it an invalid stack address and is=
+ also
++ * is just clearing the MSB, which makes it an invalid stack address and i=
+s also
+  * a signal to the unwinder that it's a pt_regs pointer in disguise.
+  *
+  * NOTE: This macro must be used *after* SAVE_ALL because it corrupts the
+@@ -185,7 +185,7 @@
+ .macro ENCODE_FRAME_POINTER
+ #ifdef CONFIG_FRAME_POINTER
+ 	mov %esp, %ebp
+-	orl $0x1, %ebp
++	andl $0x7fffffff, %ebp
+ #endif
+ .endm
+ =
 
 diff --git a/arch/x86/kernel/unwind_frame.c b/arch/x86/kernel/unwind_frame.c
-index d145a0b1f529..d05637726c10 100644
+index d05637726c10..4949bbc95f75 100644
 --- a/arch/x86/kernel/unwind_frame.c
 +++ b/arch/x86/kernel/unwind_frame.c
-@@ -184,6 +184,12 @@ static struct pt_regs *decode_frame_pointer(unsigned l=
+@@ -174,6 +174,7 @@ static bool is_last_task_frame(struct unwind_state *sta=
+te)
+  * This determines if the frame pointer actually contains an encoded point=
+er to
+  * pt_regs on the stack.  See ENCODE_FRAME_POINTER.
+  */
++#ifdef CONFIG_X86_64
+ static struct pt_regs *decode_frame_pointer(unsigned long *bp)
+ {
+ 	unsigned long regs =3D (unsigned long)bp;
+@@ -183,6 +184,17 @@ static struct pt_regs *decode_frame_pointer(unsigned l=
 ong *bp)
+ =
+
  	return (struct pt_regs *)(regs & ~0x1);
  }
- =
-
-+#ifdef CONFIG_X86_32
-+#define KERNEL_REGS_SIZE (sizeof(struct pt_regs) - 2*sizeof(long))
 +#else
-+#define KERNEL_REGS_SIZE (sizeof(struct pt_regs))
-+#endif
++static struct pt_regs *decode_frame_pointer(unsigned long *bp)
++{
++	unsigned long regs =3D (unsigned long)bp;
 +
- static bool update_stack_state(struct unwind_state *state,
- 			       unsigned long *next_bp)
- {
-@@ -202,7 +208,7 @@ static bool update_stack_state(struct unwind_state *sta=
-te,
- 	regs =3D decode_frame_pointer(next_bp);
- 	if (regs) {
- 		frame =3D (unsigned long *)regs;
--		len =3D regs_size(regs);
-+		len =3D KERNEL_REGS_SIZE;
- 		state->got_irq =3D true;
- 	} else {
- 		frame =3D next_bp;
-@@ -226,6 +232,14 @@ static bool update_stack_state(struct unwind_state *st=
-ate,
- 	    frame < prev_frame_end)
- 		return false;
++	if (regs & 0x80000000)
++		return NULL;
++
++	return (struct pt_regs *)(regs | 0x80000000);
++}
++#endif
  =
 
-+	/*
-+	 * On 32-bit with user mode regs, make sure the last two regs are safe
-+	 * to access:
-+	 */
-+	if (IS_ENABLED(CONFIG_X86_32) && regs && user_mode(regs) &&
-+	    !on_stack(info, frame, len + 2*sizeof(long)))
-+		return false;
-+
- 	/* Move state to the next frame: */
- 	if (regs) {
- 		state->regs =3D regs;
+ #ifdef CONFIG_X86_32
+ #define KERNEL_REGS_SIZE (sizeof(struct pt_regs) - 2*sizeof(long))
 -- =
 
 2.13.6
 
 
---===============0611557987052827679==--
+--===============2419337413231030314==--
 
