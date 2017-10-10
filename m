@@ -1,49 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============2250626824738234044=="
+Content-Type: multipart/mixed; boundary="===============9027360494381523905=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [lockdep] b09be676e0 BUG: unable to handle kernel NULL pointer dereference at 000001f2
-Date: Tue, 10 Oct 2017 20:14:09 +0200
-Message-ID: <20171010181409.74q7gxvahr7vkpia@hirez.programming.kicks-ass.net>
-In-Reply-To: <CA+55aFxqRb_rK8Fa_b8zL+jg3p43w81zkt5iWpFFfByY6Rx6vg@mail.gmail.com>
+Date: Tue, 10 Oct 2017 11:38:34 -0700
+Message-ID: <CA+55aFzcw=6PPgzquEVOgv8NMpyYVz+2-d8JzCOJA2_SxjnC8A@mail.gmail.com>
+In-Reply-To: <20171010181409.74q7gxvahr7vkpia@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2250626824738234044==
+--===============9027360494381523905==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 10, 2017 at 09:56:26AM -0700, Linus Torvalds wrote:
-
-> So I think the best model would be something like this:
-> =
-
->  - T1:
+On Tue, Oct 10, 2017 at 11:14 AM, Peter Zijlstra <peterz@infradead.org> w=
+rote:
+>
+> Ah, but that's not at all what cross-release is about. Nobody really
+> does wonky ownership transfer of mutexes like that (although there might
+> be someone doing something with semaphores, I didn't check). Its to
+> allow detecting this deadlock:
+>
 >         mutex_lock(&lock)
->         ...
->         mutex_transfer(&lock)
-> =
+>         wait_for_completion(&c);
+>                                         mutex_lock(&lock);
+>                                         complete(&c);
+>
+> The completion doesn't have an owner to transfer.
 
->  - T2:
->         mutex_receive(&lock);
->         ...
->         mutex_unlock(&lock);
-> =
+Well, it really does. The "init_completion()" would be the original
+owner (essentially the same as a "lock()"), then it has a transfer,
+and then a receive, and then "complete()" is basically the unlock
+elsewhere.
 
-> where the "mutex_transfer() -> mutex_receive()" thing really makes it
-> obvious that "now thread 1 is transferring the lock to thread 2".
+Of course, right now that transfer and receive is entirely implicit,
+so you don't really see it anywhere. And for completions, the whole
+_point_ is that transfer, so ..
 
-Ah, but that's not at all what cross-release is about. Nobody really
-does wonky ownership transfer of mutexes like that (although there might
-be someone doing something with semaphores, I didn't check). Its to
-allow detecting this deadlock:
+The "wait_for_completion()" is then a normal lock operation (no
+transfer there - it's just trying to get the lock again).
 
-	mutex_lock(&lock)
-	wait_for_completion(&c);
-					mutex_lock(&lock);
-					complete(&c);
+                Linus
 
-The completion doesn't have an owner to transfer.
-
---===============2250626824738234044==--
+--===============9027360494381523905==--
 
