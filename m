@@ -1,60 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============2842822942220513045=="
+Content-Type: multipart/mixed; boundary="===============8090643788606744932=="
 MIME-Version: 1.0
 From: Josh Poimboeuf <jpoimboe@redhat.com>
 To: lkp@lists.01.org
-Subject: [PATCH 3/4] x86/unwind: Align stack pointer in unwinder dump
-Date: Mon, 09 Oct 2017 20:20:04 -0500
-Message-ID: <2f540c515946ab09ed267e1a1d6421202a0cce08.1507597785.git.jpoimboe@redhat.com>
+Subject: [PATCH 4/4] x86/unwind: Disable unwinder warnings on 32-bit
+Date: Mon, 09 Oct 2017 20:20:05 -0500
+Message-ID: <a69658760800bf281e6353248c23e0fa0acf5230.1507597785.git.jpoimboe@redhat.com>
 In-Reply-To: <cover.1507597785.git.jpoimboe@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2842822942220513045==
+--===============8090643788606744932==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-When printing the unwinder dump, the stack pointer could be unaligned,
-for one of two reasons:
+x86-32 doesn't have stack validation, so in most cases it doesn't make
+sense to warn about bad frame pointers.
 
-- stack corruption; or
-
-- GCC created an unaligned stack.
-
-There's no way for the unwinder to tell the difference between the two,
-so we have to assume one or the other.  GCC unaligned stacks are very
-rare, and have only been spotted before GCC 5.  Presumably, if we're
-doing an unwinder stack dump, stack corruption is more likely than a
-GCC unaligned stack.  So always align the stack before starting the
-dump.
-
-Reported-and-tested-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Reported-and-tested-by: Fengguang Wu <fengguang.wu@intel.com>
+Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 ---
- arch/x86/kernel/unwind_frame.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kernel/unwind_frame.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/arch/x86/kernel/unwind_frame.c b/arch/x86/kernel/unwind_frame.c
-index 4949bbc95f75..81aca077fbb6 100644
+index 81aca077fbb6..3dc26f95d46e 100644
 --- a/arch/x86/kernel/unwind_frame.c
 +++ b/arch/x86/kernel/unwind_frame.c
-@@ -44,7 +44,8 @@ static void unwind_dump(struct unwind_state *state)
- 			state->stack_info.type, state->stack_info.next_sp,
- 			state->stack_mask, state->graph_idx);
+@@ -355,6 +355,13 @@ bool unwind_next_frame(struct unwind_state *state)
+ 	    state->regs->sp < (unsigned long)task_pt_regs(state->task))
+ 		goto the_end;
  =
 
--	for (sp =3D state->orig_sp; sp; sp =3D PTR_ALIGN(stack_info.next_sp, size=
-of(long))) {
-+	for (sp =3D PTR_ALIGN(state->orig_sp, sizeof(long)); sp;
-+	     sp =3D PTR_ALIGN(stack_info.next_sp, sizeof(long))) {
- 		if (get_stack_info(sp, state->task, &stack_info, &visit_mask))
- 			break;
- =
-
++	/*
++	 * There are some known frame pointer issues on 32-bit.  Disable
++	 * unwinder warnings on 32-bit until it gets objtool support.
++	 */
++	if (IS_ENABLED(CONFIG_X86_32))
++		goto the_end;
++
+ 	if (state->regs) {
+ 		printk_deferred_once(KERN_WARNING
+ 			"WARNING: kernel stack regs at %p in %s:%d has bad 'bp' value %p\n",
 -- =
 
 2.13.6
 
 
---===============2842822942220513045==--
+--===============8090643788606744932==--
 
