@@ -1,82 +1,60 @@
-Content-Type: multipart/mixed; boundary="===============4909873760786866470=="
+Content-Type: multipart/mixed; boundary="===============3528562927498258919=="
 MIME-Version: 1.0
 From: Byungchul Park <byungchul.park@lge.com>
 To: lkp@lists.01.org
 Subject: Re: [lockdep] b09be676e0 BUG: unable to handle kernel NULL pointer dereference at 000001f2
-Date: Wed, 11 Oct 2017 10:02:50 +0900
-Message-ID: <20171011010250.GG3323@X58A-UD3R>
-In-Reply-To: <20171011005605.GF3323@X58A-UD3R>
+Date: Wed, 11 Oct 2017 10:14:58 +0900
+Message-ID: <20171011011458.GH3323@X58A-UD3R>
+In-Reply-To: <20171010181409.74q7gxvahr7vkpia@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4909873760786866470==
+--===============3528562927498258919==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 11, 2017 at 09:56:05AM +0900, Byungchul Park wrote:
-> Thank you very much for explaining it in detail.
+On Tue, Oct 10, 2017 at 08:14:09PM +0200, Peter Zijlstra wrote:
+> On Tue, Oct 10, 2017 at 09:56:26AM -0700, Linus Torvalds wrote:
 > =
 
-> But let's shift a viewpoint. Precisely, I didn't want to work on locks
-> but *waiters* becasue dependancies causing deadlocks only can be created
-> by waiters - nevertheless I have no idea for a better name to my feature.
-> =
-
-> Lockdep should also have worked on waiters instead of locks, in the
-> strict sense. Having said that, we can work on locks to detect deadlocks
-> one way or another, becasue typical locks implicitly include wait
-> operations except trylocks, which in turn of course cause other waitings
-> once it's acquired successfully, though.
-> =
-
-> I mean, all we have to do to detect deadlocks is to identify
-> dependencies. *That's all*. IMHO, we don't need to consider "transfering
-> and recieving locks" and even lock protection. We only have to focus on
-                                               ^
-                                         and owership.
-
-> dependecies by waiters and how to identify dependencies from them.
-> =
-
-> > This is kind of similar to my opinion on the C "volatile" keyword, and
-> > why we do not generally use it in the kernel. It's not the *data* that
-> > is volatile, because the data itself might be stable or volatile
-> > depending on whether you hold a lock or not. It's the _code_access_
-> > that is either volatile or not, and rather than using volatile on data
-> > structures, we use volatile in code (although not explicitly as such -
-> > we hide it inside the accessors like "READ_ONCE()" etc).
-> =
-
-> I like it. I agree with you.
-> =
-
-> > I agree wholeheartedly that it can often be much more convenient to
-> > just mark one particular lock as being special, but at the same time
-> > it's really not the lock itself that is interesting, it's the
-> > _handoff_ of the lock that is interesting.
+> > So I think the best model would be something like this:
 > > =
 
-> > And particularly for cross-thread lock/unlock sequences, the hand-over
-> > really is special. For a normal lock/unlock sequence, the lock itself
-> > is the thing that protects the data. But that is simply not true if
-> > you have a cross-thread hand-over of the lock: you also need to make
-> > sure that the hand-over itself is safe. That's generally very easy to
-> > do, you just make sure that the original owner of the lock has done
-> > everything the lock protects and then make the lock available with
-> > smp_store_release() and then the receiving end should do
-> > smp_load_acquire() to read the lock pointer (or lock transfer status,
-> > or whatever). Because *within* a thread, memory ordering is guaranteed
-> > on its own. Between two threads? Memory ordering comes into play even
-> > when you *hold* the lock.
+> >  - T1:
+> >         mutex_lock(&lock)
+> >         ...
+> >         mutex_transfer(&lock)
+> > =
+
+> >  - T2:
+> >         mutex_receive(&lock);
+> >         ...
+> >         mutex_unlock(&lock);
+> > =
+
+> > where the "mutex_transfer() -> mutex_receive()" thing really makes it
+> > obvious that "now thread 1 is transferring the lock to thread 2".
 > =
 
-> I and Peter have handled memory ordering carefully, when identifying
-> dependencies between waiters. That was where we have to consider memory
-> ordering.
+> Ah, but that's not at all what cross-release is about. Nobody really
+> does wonky ownership transfer of mutexes like that (although there might
+> be someone doing something with semaphores, I didn't check). Its to
+> allow detecting this deadlock:
 > =
 
-> Thanks,
-> Byungchul
+> 	mutex_lock(&lock)
+> 	wait_for_completion(&c);
+> 					mutex_lock(&lock);
+> 					complete(&c);
+> =
 
---===============4909873760786866470==--
+> The completion doesn't have an owner to transfer.
+
+Plus, lock_page(). Honestly, I want that to be the main beneficiary when
+we talking about crossrelease.
+
+Actually, I started the crossrelease work to detect deadlocks by
+lock_page() and expect it's more useful.
+
+--===============3528562927498258919==--
 
