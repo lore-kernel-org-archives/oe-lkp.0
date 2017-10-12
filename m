@@ -1,65 +1,73 @@
-Content-Type: multipart/mixed; boundary="===============4460608036388040030=="
+Content-Type: multipart/mixed; boundary="===============2668239162854359288=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Johannes Berg <johannes@sipsolutions.net>
 To: lkp@lists.01.org
-Subject: Re: [locking/paravirt] 9043442b43: WARNING:at_kernel/jump_label.c:#static_key_disable_cpuslocked
-Date: Thu, 12 Oct 2017 09:47:17 +0200
-Message-ID: <20171012074717.jejrvn7q4gvyzg43@hirez.programming.kicks-ass.net>
-In-Reply-To: <8ddf11c2-1cf7-c74c-e72a-29a7404370fe@redhat.com>
+Subject: Re: [lkp-robot] [mac80211] cd1a0cdbf9: hwsim.ap_cipher_bip.fail
+Date: Thu, 12 Oct 2017 10:03:57 +0200
+Message-ID: <1507795437.1998.70.camel@sipsolutions.net>
+In-Reply-To: <20171012061919.GE26196@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4460608036388040030==
+--===============2668239162854359288==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 11, 2017 at 04:14:30PM -0400, Waiman Long wrote:
+Hi,
 
-> > kern  :warn  : [    0.000000] WARNING: CPU: 0 PID: 0 at kernel/jump_lab=
-el.c:161 static_key_disable_cpuslocked+0x69/0x80
+Thanks for the report.
 
-> > kern  :warn  : [    0.000000]  static_key_disable+0x1a/0x30
-> > kern  :warn  : [    0.000000]  native_pv_lock_init+0x1b/0x1e
-> > kern  :warn  : [    0.000000]  native_smp_prepare_boot_cpu+0x32/0x35
-> > kern  :warn  : [    0.000000]  start_kernel+0x14f/0x421
-> > kern  :warn  : [    0.000000]  x86_64_start_reservations+0x2a/0x2c
-> > kern  :warn  : [    0.000000]  x86_64_start_kernel+0x72/0x75
-> > kern  :warn  : [    0.000000]  secondary_startup_64+0xa5/0xa5
+On Thu, 2017-10-12 at 14:19 +0800, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-6):
+> =
 
-> I think you need to move native_pv_lock_init() after jump_lable_init().
+> commit: cd1a0cdbf9ada9bb975d8730a375bc13824ef065 ("mac80211: aead api to =
+reduce redundancy")
 
-Urgh.. I always get lost in that whole patching maze :/ Unless Juergen
-can move it later, I think the below should also work. Moving
-jump_label_init() before smp_prepare_boot_cpu() might not work for all
-architectures, but it should work for x86 (and we explicitly allow for
-archs to initialize this early).
+I guess the commit isn't actually an upstream commit, but one the robot
+made when applying the patch?
 
----
- arch/x86/kernel/smpboot.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+> url: https://github.com/0day-ci/linux/commits/Xiang-Gao/mac80211-aead-api=
+-to-reduce-redundancy/20170929-140556
 
-diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index aed1460135e6..93b42d9d9d4f 100644
---- a/arch/x86/kernel/smpboot.c
-+++ b/arch/x86/kernel/smpboot.c
-@@ -1350,6 +1350,17 @@ void __init native_smp_prepare_boot_cpu(void)
- 	/* already set me in cpu_online_mask in boot_cpu_init() */
- 	cpumask_set_cpu(me, cpu_callout_mask);
- 	cpu_set_state_online(me);
-+
-+	/*
-+	 * native_pv_lock_init() needs jump_labels to work. Moving
-+	 * jump_label_init() in generic code requires auditing all archs for
-+	 * their text_poke requirements.
-+	 *
-+	 * The x86 version really only depends on ideal_nops[] which is
-+	 * initialized at the end of setup_arch(). So doing an arch specific
-+	 * early init of jump-labels here is fine.
-+	 */
-+	jump_label_init();
- 	native_pv_lock_init();
- }
-=20
+This URL doesn't work (any more?)
 
---===============4460608036388040030==--
+> 2017-10-05 23:08:27 	./run-tests.py ap_cipher_bip =
+
+> DEV: wlan0: 02:00:00:00:00:00
+> DEV: wlan1: 02:00:00:00:01:00
+> DEV: wlan2: 02:00:00:00:02:00
+> APDEV: wlan3
+> APDEV: wlan4
+> START ap_cipher_bip 1/1
+> Test: WPA2-PSK with BIP
+> Starting AP wlan3
+> Connect STA wlan0 to AP
+> dev1->dev2 unicast data delivery failed
+> Traceback (most recent call last):
+>   File "./run-tests.py", line 453, in main
+>     t(dev, apdev)
+>   File "/lkp/benchmarks/hwsim/tests/hwsim/test_ap_ciphers.py", line
+> 279, in test_ap_cipher_bip
+>     check_group_mgmt_cipher(dev[0], apdev[0], "AES-128-CMAC")
+>   File "/lkp/benchmarks/hwsim/tests/hwsim/test_ap_ciphers.py", line
+> 51, in check_group_mgmt_cipher
+>     hwsim_utils.test_connectivity(dev, hapd)
+>   File "/lkp/benchmarks/hwsim/tests/hwsim/hwsim_utils.py", line 165,
+> in test_connectivity
+>     raise Exception(last_err)
+> Exception: dev1->dev2 unicast data delivery failed
+> FAIL ap_cipher_bip 5.24306 2017-10-05 23:08:32.620542
+
+[... similar results ...]
+
+As on the previous version of this report (which had different test
+cases failing IIRC), I can't reproduce this on my tree, even with your
+kernel config. Since I can't actually look at the tree state that you
+had (mac80211-next + patch, but which mac80211-next?), I can't
+reproduce entirely.
+
+johannes
+
+--===============2668239162854359288==--
 
