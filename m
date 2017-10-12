@@ -1,73 +1,105 @@
-Content-Type: multipart/mixed; boundary="===============2668239162854359288=="
+Content-Type: multipart/mixed; boundary="===============8483706786392161036=="
 MIME-Version: 1.0
-From: Johannes Berg <johannes@sipsolutions.net>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [mac80211] cd1a0cdbf9: hwsim.ap_cipher_bip.fail
-Date: Thu, 12 Oct 2017 10:03:57 +0200
-Message-ID: <1507795437.1998.70.camel@sipsolutions.net>
-In-Reply-To: <20171012061919.GE26196@yexl-desktop>
+Subject: Re: [lockdep] b09be676e0 BUG: unable to handle kernel NULL pointer dereference at 000001f2
+Date: Thu, 12 Oct 2017 10:47:25 +0200
+Message-ID: <20171012084725.zclmk65qvym5xek7@hirez.programming.kicks-ass.net>
+In-Reply-To: <20171003140634.r2jzujgl62ox4uzh@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2668239162854359288==
+--===============8483706786392161036==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Tue, Oct 03, 2017 at 10:06:34PM +0800, Fengguang Wu wrote:
 
-Thanks for the report.
-
-On Thu, 2017-10-12 at 14:19 +0800, kernel test robot wrote:
-> FYI, we noticed the following commit (built with gcc-6):
+> #!/bin/bash
 > =
 
-> commit: cd1a0cdbf9ada9bb975d8730a375bc13824ef065 ("mac80211: aead api to =
-reduce redundancy")
+> kernel=3D$1
+> initrd=3Dopenwrt-trinity-i386.cgz
+> =
 
-I guess the commit isn't actually an upstream commit, but one the robot
-made when applying the patch?
+> wget --no-clobber https://github.com/fengguang/reproduce-kernel-bug/raw/m=
+aster/initrd/$initrd
+> =
 
-> url: https://github.com/0day-ci/linux/commits/Xiang-Gao/mac80211-aead-api=
--to-reduce-redundancy/20170929-140556
+> kvm=3D(
+> 	qemu-system-x86_64
+> 	-enable-kvm
+> 	-cpu Haswell,+smep
+> 	-kernel $kernel
+> 	-initrd $initrd
+> 	-m 256
+> 	-smp 1
+> 	-device e1000,netdev=3Dnet0
+> 	-netdev user,id=3Dnet0
+> 	-boot order=3Dnc
+> 	-no-reboot
+> 	-watchdog i6300esb
+> 	-watchdog-action debug
+> 	-rtc base=3Dlocaltime
+> 	-serial stdio
+> 	-display none
+> 	-monitor null
+> )
+> =
 
-This URL doesn't work (any more?)
+> append=3D(
+> 	root=3D/dev/ram0
+> 	hung_task_panic=3D1
+> 	debug
+> 	apic=3Ddebug
+> 	sysrq_always_enabled
+> 	rcupdate.rcu_cpu_stall_timeout=3D100
+> 	net.ifnames=3D0
+> 	printk.devkmsg=3Don
+> 	panic=3D-1
+> 	softlockup_panic=3D1
+> 	nmi_watchdog=3Dpanic
+> 	oops=3Dpanic
+> 	load_ramdisk=3D2
+> 	prompt_ramdisk=3D0
+> 	drbd.minor_count=3D8
+> 	systemd.log_level=3Derr
+> 	ignore_loglevel
+> 	console=3Dtty0
+> 	earlyprintk=3DttyS0,115200
+> 	console=3DttyS0,115200
+> 	vga=3Dnormal
+> 	rw
+> 	drbd.minor_count=3D8
+> )
+> =
 
-> 2017-10-05 23:08:27 	./run-tests.py ap_cipher_bip =
+> "${kvm[@]}" -append "${append[*]}"
 
-> DEV: wlan0: 02:00:00:00:00:00
-> DEV: wlan1: 02:00:00:00:01:00
-> DEV: wlan2: 02:00:00:00:02:00
-> APDEV: wlan3
-> APDEV: wlan4
-> START ap_cipher_bip 1/1
-> Test: WPA2-PSK with BIP
-> Starting AP wlan3
-> Connect STA wlan0 to AP
-> dev1->dev2 unicast data delivery failed
-> Traceback (most recent call last):
->   File "./run-tests.py", line 453, in main
->     t(dev, apdev)
->   File "/lkp/benchmarks/hwsim/tests/hwsim/test_ap_ciphers.py", line
-> 279, in test_ap_cipher_bip
->     check_group_mgmt_cipher(dev[0], apdev[0], "AES-128-CMAC")
->   File "/lkp/benchmarks/hwsim/tests/hwsim/test_ap_ciphers.py", line
-> 51, in check_group_mgmt_cipher
->     hwsim_utils.test_connectivity(dev, hapd)
->   File "/lkp/benchmarks/hwsim/tests/hwsim/hwsim_utils.py", line 165,
-> in test_connectivity
->     raise Exception(last_err)
-> Exception: dev1->dev2 unicast data delivery failed
-> FAIL ap_cipher_bip 5.24306 2017-10-05 23:08:32.620542
 
-[... similar results ...]
+So I was wanting to go chase that one splat you triggered, but the above
+(after s/Haswell,+smep/host/) boots right up until it wants an init:
 
-As on the previous version of this report (which had different test
-cases failing IIRC), I can't reproduce this on my tree, even with your
-kernel config. Since I can't actually look at the tree state that you
-had (mac80211-next + patch, but which mac80211-next?), I can't
-reproduce entirely.
+[    0.000000] Kernel command line: root=3D/dev/ram0 hung_task_panic=3D1 de=
+bug apic=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 =
+net.ifnames=3D0 printk.devkmsg=3Don panic=3D-1 softlockup_panic=3D1 nmi_wat=
+chdog=3Dpanic oops=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 drbd.minor_c=
+ount=3D8 systemd.log_level=3Derr ignore_loglevel console=3Dtty0 earlyprintk=
+=3DttyS0,115200 console=3DttyS0,115200 vga=3Dnormal rw drbd.minor_count=3D8
 
-johannes
+[   35.721719] Kernel panic - not syncing: No working init found.  Try pass=
+ing init=3D option to kernel. See Linux Documentation/admin-guide/init.rst =
+for guidance.
 
---===============2668239162854359288==--
+
+
+And it did download that initrd thingy...
+
+$ shasum openwrt-trinity-i386.cgz
+0a405d02a162defd82a5ffd556fd24e0ee2f994a  openwrt-trinity-i386.cgz
+
+
+Anything else I need?
+
+--===============8483706786392161036==--
 
