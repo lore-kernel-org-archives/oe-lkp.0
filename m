@@ -1,204 +1,174 @@
-Content-Type: multipart/mixed; boundary="===============7306155061139530679=="
+Content-Type: multipart/mixed; boundary="===============2805018555176137631=="
 MIME-Version: 1.0
-From: Wei Wang <weiwan@google.com>
+From: Andrey Ryabinin <aryabinin@virtuozzo.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [ipv6] 2b760fcf5c: WARNING:suspicious_RCU_usage
-Date: Thu, 12 Oct 2017 22:09:13 -0700
-Message-ID: <CAEA6p_DEoZ2nRVtxVB_gQ1KaXtrFyetxworMPmZsgjah+TS16A@mail.gmail.com>
-In-Reply-To: <20171013020352.GZ26196@yexl-desktop>
+Subject: Re: [lkp-robot] [x86/kconfig] 81d3871900: BUG:unable_to_handle_kernel
+Date: Fri, 13 Oct 2017 16:56:43 +0300
+Message-ID: <9a1c3232-86e3-7301-23f8-50116abf37d3@virtuozzo.com>
+In-Reply-To: <20171013044521.662ck56gkwaw3xog@treble>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7306155061139530679==
+--===============2805018555176137631==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 12, 2017 at 7:03 PM, kernel test robot
-<xiaolong.ye@intel.com> wrote:
->
-> FYI, we noticed the following commit (built with gcc-6):
->
-> commit: 2b760fcf5cfb34e8610df56d83745b2b74ae1379 ("ipv6: hook up exceptio=
-n table to store dst cache")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->
-> in testcase: boot
->
-> on test machine: qemu-system-x86_64 -enable-kvm -m 420M
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
->
->
-> +-----------------------------------------------------------+------------=
-+------------+
-> |                                                           | 38fbeeeecc =
-| 2b760fcf5c |
-> +-----------------------------------------------------------+------------=
-+------------+
-> | boot_successes                                            | 6          =
-| 2          |
-> | boot_failures                                             | 2          =
-| 32         |
-> | BUG:kernel_hang_in_test_stage                             | 2          =
-|            |
-> | WARNING:suspicious_RCU_usage                              | 0          =
-| 32         |
-> | net/ipv6/route.c:#suspicious_rcu_dereference_check()usage | 0          =
-| 32         |
-> | WARNING:at_net/ipv6/route.c:#__rt6_find_exception_rcu     | 0          =
-| 32         |
-> +-----------------------------------------------------------+------------=
-+------------+
->
->
+On 10/13/2017 07:45 AM, Josh Poimboeuf wrote:
+> On Thu, Oct 12, 2017 at 12:05:04PM -0500, Christopher Lameter wrote:
+>> On Wed, 11 Oct 2017, Josh Poimboeuf wrote:
+>>
+>>> I failed to add the slab maintainers to CC on the last attempt.  Trying
+>>> again.
+>>
+>>
+>> Hmmm... Yea. SLOB is rarely used and tested. Good illustration of a simp=
+le
+>> allocator and the K&R mechanism that was used in the early kernels.
+>>
+>>>> Adding the slub maintainers.  Is slob still supposed to work?
+>>
+>> Have not seen anyone using it in a decade or so.
+>>
+>> Does the same config with SLUB and slub_debug on the commandline run
+>> cleanly?
+>>
+>>>> I have no idea how that crypto panic could could be related to slob, b=
+ut
+>>>> at least it goes away when I switch to slub.
+>>
+>> Can you run SLUB with full debug? specify slub_debug on the commandline =
+or
+>> set CONFIG_SLUB_DEBUG_ON
+> =
 
-This warning should be fixed by later commit 66f5d6ce53e6 ("ipv6:
-replace rwlock with rcu and spinlock in fib6_table").
-But by this commit, rcu is not yet used in ip6_pol_route(). (Sorry
-that I missed this earlier.) Not sure what to do here to fix this
-particular warning for this commit.
+> Oddly enough, with CONFIG_SLUB+slub_debug, I get the same crypto panic I
+> got with CONFIG_SLOB.  The trapping instruction is:
+> =
 
-> [   19.842463] WARNING: suspicious RCU usage
-> [   19.843540] 4.14.0-rc3-00907-g2b760fc #58 Not tainted
-> [   19.844776] -----------------------------
-> [   19.845854] net/ipv6/route.c:1355 suspicious rcu_dereference_check() u=
-sage!
-> [   19.847961]
-> [   19.847961] other info that might help us debug this:
-> [   19.847961]
-> [   19.850409]
-> [   19.850409] rcu_scheduler_active =3D 2, debug_locks =3D 1
-> [   19.852220] 2 locks held by odhcpd/3695:
-> [   19.853285]  #0:  (sk_lock-AF_INET6){+.+.}, at: [<ffffffff9ad44243>] i=
-p6_datagram_connect+0x1d/0x3f
-> [   19.855480]  #1:  (&tb->tb6_lock){++--}, at: [<ffffffff9ad267e6>] ip6_=
-pol_route+0x51/0x80c
-> [   19.857583]
-> [   19.857583] stack backtrace:
-> [   19.859115] CPU: 0 PID: 3695 Comm: odhcpd Not tainted 4.14.0-rc3-00907=
--g2b760fc #58
-> [   19.861087] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [   19.863123] Call Trace:
-> [   19.863963]  dump_stack+0x86/0xc0
-> [   19.864926]  lockdep_rcu_suspicious+0xea/0xf3
-> [   19.866031]  rt6_find_cached_rt+0x51/0x84
-> [   19.867173]  ip6_pol_route+0x21c/0x80c
-> [   19.868199]  ip6_pol_route_output+0x16/0x18
-> [   19.869287]  fib6_rule_lookup+0x1e/0x55
-> [   19.870307]  ip6_route_output_flags+0xb6/0xc2
-> [   19.871410]  ip6_dst_lookup_tail+0x4f/0x194
-> [   19.872500]  ip6_dst_lookup_flow+0x38/0x78
-> [   19.873562]  ip6_datagram_dst_update+0x254/0x482
-> [   19.874690]  ? save_stack_trace+0x1b/0x1d
-> [   19.875760]  __ip6_datagram_connect+0x20e/0x299
-> [   19.876881]  ? __ip6_datagram_connect+0x20e/0x299
-> [   19.878054]  ip6_datagram_connect+0x2b/0x3f
-> [   19.879160]  ip6_datagram_connect_v6_only+0x14/0x1c
-> [   19.880348]  inet_dgram_connect+0x49/0x68
-> [   19.881424]  SyS_connect+0x74/0xa1
-> [   19.882424]  ? __might_fault+0x7e/0x84
-> [   19.883495]  ? _copy_from_user+0x61/0x82
-> [   19.884531]  compat_SyS_socketcall+0xfb/0x1fd
-> [   19.885644]  ? trace_hardirqs_on_caller+0x17b/0x197
-> [   19.886868]  do_int80_syscall_32+0x66/0x15a
-> [   19.887979]  entry_INT80_compat+0x32/0x50
-> [   19.889037] RIP: 0023:0xf7f5e384
-> [   19.889985] RSP: 002b:00000000ffc94db8 EFLAGS: 00000296 ORIG_RAX: 0000=
-000000000066
-> [   19.891958] RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000f=
-fc94dc8
-> [   19.893475] RDX: 00000000f7fa4000 RSI: 00000000ffc94dc8 RDI: 00000000f=
-fc94ee0
-> [   19.894946] RBP: 00000000ffc94e28 R08: 0000000000000000 R09: 000000000=
-0000000
-> [   19.896454] R10: 0000000000000000 R11: 0000000000000000 R12: 000000000=
-0000000
-> [   19.897968] R13: 0000000000000000 R14: 0000000000000000 R15: 000000000=
-0000000
-> [   19.899594] ------------[ cut here ]------------
-> [   19.900775] WARNING: CPU: 0 PID: 3695 at net/ipv6/route.c:1208 __rt6_f=
-ind_exception_rcu+0x1b/0x7b
-> [   19.903220] Modules linked in:
-> [   19.904172] CPU: 0 PID: 3695 Comm: odhcpd Not tainted 4.14.0-rc3-00907=
--g2b760fc #58
-> [   19.906147] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [   19.908263] task: ffffa024549f0040 task.stack: ffffaee580810000
-> [   19.909644] RIP: 0010:__rt6_find_exception_rcu+0x1b/0x7b
-> [   19.910973] RSP: 0000:ffffaee580813af0 EFLAGS: 00010246
-> [   19.912231] RAX: 0000000000000000 RBX: ffffaee580813cf0 RCX: 000000000=
-0000001
-> [   19.913783] RDX: 0000000000000000 RSI: ffffffff9b47f900 RDI: 000000000=
-0000246
-> [   19.915338] RBP: ffffaee580813b00 R08: 000000066508ab1f R09: 000000000=
-0000001
-> [   19.916847] R10: 0000000000000000 R11: ffffffff9c615d07 R12: ffffaee58=
-0813b10
-> [   19.918378] R13: ffffaee580813cc8 R14: ffffffff9b5b9c00 R15: 000000000=
-0000001
-> [   19.919927] FS:  0000000000000000(0000) GS:ffffa02459e00000(0063) knlG=
-S:00000000f7fd8690
-> [   19.922000] CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-> [   19.923380] CR2: 0000000008072f50 CR3: 00000000155eb000 CR4: 000000000=
-00006f0
-> [   19.924900] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
-0000000
-> [   19.926432] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 000000000=
-0000400
-> [   19.927984] Call Trace:
-> [   19.928865]  rt6_find_cached_rt+0x61/0x84
-> [   19.930039]  ip6_pol_route+0x21c/0x80c
-> [   19.931092]  ip6_pol_route_output+0x16/0x18
-> [   19.932201]  fib6_rule_lookup+0x1e/0x55
-> [   19.933277]  ip6_route_output_flags+0xb6/0xc2
-> [   19.934439]  ip6_dst_lookup_tail+0x4f/0x194
-> [   19.935543]  ip6_dst_lookup_flow+0x38/0x78
-> [   19.936617]  ip6_datagram_dst_update+0x254/0x482
-> [   19.937799]  ? save_stack_trace+0x1b/0x1d
-> [   19.938924]  __ip6_datagram_connect+0x20e/0x299
-> [   19.940095]  ? __ip6_datagram_connect+0x20e/0x299
-> [   19.941286]  ip6_datagram_connect+0x2b/0x3f
-> [   19.942395]  ip6_datagram_connect_v6_only+0x14/0x1c
-> [   19.943604]  inet_dgram_connect+0x49/0x68
-> [   19.944673]  SyS_connect+0x74/0xa1
-> [   19.945696]  ? __might_fault+0x7e/0x84
-> [   19.946774]  ? _copy_from_user+0x61/0x82
-> [   19.947851]  compat_SyS_socketcall+0xfb/0x1fd
-> [   19.948968]  ? trace_hardirqs_on_caller+0x17b/0x197
-> [   19.950155]  do_int80_syscall_32+0x66/0x15a
-> [   19.951261]  entry_INT80_compat+0x32/0x50
-> [   19.952327] RIP: 0023:0xf7f5e384
-> [   19.953284] RSP: 002b:00000000ffc94db8 EFLAGS: 00000296 ORIG_RAX: 0000=
-000000000066
-> [   19.955272] RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000f=
-fc94dc8
-> [   19.956794] RDX: 00000000f7fa4000 RSI: 00000000ffc94dc8 RDI: 00000000f=
-fc94ee0
-> [   19.958322] RBP: 00000000ffc94e28 R08: 0000000000000000 R09: 000000000=
-0000000
-> [   19.959821] R10: 0000000000000000 R11: 0000000000000000 R12: 000000000=
-0000000
-> [   19.961360] R13: 0000000000000000 R14: 0000000000000000 R15: 000000000=
-0000000
-> [   19.962902] Code: c9 08 5b 29 c8 5d 69 c0 47 86 c8 61 c1 e8 16 c3 0f 1=
-f 44 00 00 55 48 89 e5 41 54 49 89 fc 53 48 89 f3 e8 47 76 3e ff 85 c0 75 0=
-2 <0f> ff 49 83 3c 24 00 74 05 48 85 db 75 04 31 c0 eb 49 48 89 df
-> [   19.967235] ---[ end trace 3bb578fee2b944dc ]---
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script  # job-script is attached in=
- this email
->
->
->
-> Thanks,
-> Xiaolong
+>   vmovdqa 0x140(%rdi),%xmm0
 
---===============7306155061139530679==--
+
+It's unaligned access. Look at %rdi. vmovdqa requires 16-byte alignment.
+Apparently, something fed kmalloc()'ed data here. But kmalloc() guarantees =
+only sizeof(unsigned long)
+alignment. slub_debug changes slub's objects layout, so what happened to be=
+ 16-bytes aligned
+without slub_debug, may become 8-byte aligned with slub_debg on.
+
+   =
+
+> I'll try to bisect it tomorrow.  It at least goes back to v4.10.
+
+Probably no point. I bet this bug always was here (since this code added).
+
+This could be fixed by s/vmovdqa/vmovdqu change like bellow, but maybe the =
+right fix
+would be to align the data properly?
+
+---
+ arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S b/arch/x8=
+6/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S
+index 8fe6338bcc84..7fd5d9b568c7 100644
+--- a/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S
++++ b/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S
+@@ -155,8 +155,8 @@ LABEL skip_ %I
+ .endr
+ =
+
+ 	# Find min length
+-	vmovdqa _lens+0*16(state), %xmm0
+-	vmovdqa _lens+1*16(state), %xmm1
++	vmovdqu _lens+0*16(state), %xmm0
++	vmovdqu _lens+1*16(state), %xmm1
+ =
+
+ 	vpminud %xmm1, %xmm0, %xmm2		# xmm2 has {D,C,B,A}
+ 	vpalignr $8, %xmm2, %xmm3, %xmm3	# xmm3 has {x,x,D,C}
+@@ -176,8 +176,8 @@ LABEL skip_ %I
+ 	vpsubd	%xmm2, %xmm0, %xmm0
+ 	vpsubd	%xmm2, %xmm1, %xmm1
+ =
+
+-	vmovdqa	%xmm0, _lens+0*16(state)
+-	vmovdqa	%xmm1, _lens+1*16(state)
++	vmovdqu	%xmm0, _lens+0*16(state)
++	vmovdqu	%xmm1, _lens+1*16(state)
+ =
+
+ 	# "state" and "args" are the same address, arg1
+ 	# len is arg2
+-- =
+
+2.13.6
+
+
+
+> I'm
+> not really sure whether this panic is related to SLUB or SLOB at all.
+> (Though the original panic reported upthread by the kernel test robot
+> *does* look SLOB related.)
+> =
+
+>   general protection fault: 0000 [#1] PREEMPT SMP
+>   Modules linked in:
+>   CPU: 0 PID: 58 Comm: kworker/0:1 Not tainted 4.13.0 #81
+>   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1.fc=
+26 04/01/2014
+>   Workqueue: crypto mcryptd_flusher
+>   task: ffff880139108040 task.stack: ffffc9000082c000
+>   RIP: 0010:skip_7+0x0/0x67
+>   RSP: 0018:ffffc9000082fd88 EFLAGS: 00010246
+>   RAX: ffff88013834172c RBX: 00000000f7654321 RCX: 0000000000000003
+>   RDX: 0000000000000000 RSI: ffffffff81d254f9 RDI: ffff8801381b1a88
+>   RBP: ffffc9000082fd90 R08: 0000000000000000 R09: 0000000000000001
+>   R10: 0000000000000001 R11: 0000000000000000 R12: ffffffff82392260
+>   R13: ffff88013a7e6500 R14: 00000000fffb80f5 R15: 0000000000000000
+>   FS:  0000000000000000(0000) GS:ffff88013a600000(0000) knlGS:00000000000=
+00000
+>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>   CR2: 00007f88491ef914 CR3: 0000000001e11000 CR4: 00000000001406f0
+>   Call Trace:
+>    sha256_ctx_mgr_flush+0x28/0x30
+>    sha256_mb_flusher+0x53/0x120
+>    mcryptd_flusher+0xc4/0xf0
+>    process_one_work+0x253/0x6b0
+>    worker_thread+0x4d/0x3b0
+>    ? preempt_count_sub+0x9b/0x100
+>    kthread+0x133/0x150
+>    ? process_one_work+0x6b0/0x6b0
+>    ? kthread_create_on_node+0x70/0x70
+>    ret_from_fork+0x2a/0x40
+>   Code: 89 87 30 01 00 00 c7 87 58 01 00 00 ff ff ff ff 48 83 bf a0 01 00=
+ 00 00 75 11 48 89 87 38 01 00 00 c7 87 5c 01 00 00 ff ff ff ff <c5> f9 6f =
+87 40 01 00 00 c5 f9 6f 8f 50 01 00 00 c4 e2 79 3b d1
+>   RIP: skip_7+0x0/0x67 RSP: ffffc9000082fd88
+>   ---[ end trace d89a1613b7d1b8bc ]---
+>   BUG: sleeping function called from invalid context at ./include/linux/p=
+ercpu-rwsem.h:33
+>   in_atomic(): 1, irqs_disabled(): 0, pid: 58, name: kworker/0:1
+>   INFO: lockdep is turned off.
+>   Preemption disabled at:
+>   [<ffffffff81041933>] kernel_fpu_begin+0x13/0x20
+>   CPU: 0 PID: 58 Comm: kworker/0:1 Tainted: G      D         4.13.0 #81
+>   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1.fc=
+26 04/01/2014
+>   Workqueue: crypto mcryptd_flusher
+>   Call Trace:
+>    dump_stack+0x8e/0xcd
+>    ___might_sleep+0x185/0x260
+>    __might_sleep+0x4a/0x80
+>    exit_signals+0x33/0x2d0
+>    do_exit+0xb4/0xd80
+>    ? kthread+0x133/0x150
+>    rewind_stack_do_exit+0x17/0x20
+>   note: kworker/0:1[58] exited with preempt_count 1
+>   tsc: Refined TSC clocksource calibration: 2793.538 MHz
+>   clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x28446877189, m=
+ax_idle_ns: 440795280878 ns
+>=20
+
+--===============2805018555176137631==--
 
