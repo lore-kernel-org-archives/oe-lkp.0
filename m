@@ -1,70 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============0118536063768074536=="
+Content-Type: multipart/mixed; boundary="===============4860779793006234981=="
 MIME-Version: 1.0
-From: Ingo Molnar <mingo@kernel.org>
+From: Borislav Petkov <bp@alien8.de>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/topology] 379a4bb988: dmesg.WARNING:at_arch/x86/events/intel/uncore.c:#uncore_change_type_ctx
-Date: Mon, 16 Oct 2017 09:50:08 +0200
-Message-ID: <20171016075008.n4v5z3qsxpcg6g3c@gmail.com>
-In-Reply-To: <20171012064439.GN26196@yexl-desktop>
+Subject: Re: [lkp-robot] [x86/mm] c4c3c3c2d0: will-it-scale.per_process_ops -61.0% regression
+Date: Mon, 16 Oct 2017 12:15:48 +0200
+Message-ID: <20171016101548.v3l3jgcbdogrvbvh@pd.tnic>
+In-Reply-To: <20171016023917.GG26196@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0118536063768074536==
+--===============4860779793006234981==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-
-* kernel test robot <xiaolong.ye@intel.com> wrote:
-
+On Mon, Oct 16, 2017 at 10:39:17AM +0800, kernel test robot wrote:
 > =
 
-> FYI, we noticed the following commit (built with gcc-6):
+> Greeting,
 > =
 
-> commit: 379a4bb9880608931642e1b4208380468d347b84 ("x86/topology: Avoid wa=
-sting 128k for package id array")
-> url: https://github.com/0day-ci/linux/commits/Prarit-Bhargava/x86-smpboot=
--Cleanup-logical-package-ID/20170929-202113
+> FYI, we noticed a -61.0% regression of will-it-scale.per_process_ops due =
+to commit:
 > =
 
 > =
 
-> in testcase: ltp
-> with following parameters:
-> =
-
-> 	test: cpuhotplug
-> =
-
-> test-description: The LTP testsuite contains a collection of tools for te=
-sting the Linux kernel and related features.
-> test-url: http://linux-test-project.github.io/
+> commit: c4c3c3c2d00826c88b5c02c20e80704664424b9b ("x86/mm: Flush more agg=
+ressively in lazy TLB mode")
+> url: https://github.com/0day-ci/linux/commits/Borislav-Petkov/x86-mm-Flus=
+h-more-aggressively-in-lazy-TLB-mode/20171011-115901
 > =
 
 > =
 
+> in testcase: will-it-scale
 > on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wit=
 h 64G memory
-> =
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
+Say what now?
 
-> =
+This is actually what got applied upstream:
 
-> kern  :warn  : [  119.686133] ------------[ cut here ]------------
-> kern  :warn  : [  119.692171] WARNING: CPU: 0 PID: 13 at arch/x86/events/=
-intel/uncore.c:1058 uncore_change_type_ctx+0xf0/0x100
+b956575bed91 ("x86/mm: Flush more aggressively in lazy TLB mode")
 
-If this warning is caused by these patches then the warning should be fixed=
- too, =
+and AFAICT, that machine is BDW and it should have PCID, right?
 
-before we can apply the patches.
+Or wait, that's a guest so PCID is probably not even usable for guests.
+Or should we disable it in VMs?
 
-Thanks,
+I'm confused. Andy?
 
-	Ingo
+-- =
 
---===============0118536063768074536==--
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
+
+--===============4860779793006234981==--
 
