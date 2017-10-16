@@ -1,44 +1,70 @@
-Content-Type: multipart/mixed; boundary="===============0968002474696253666=="
+Content-Type: multipart/mixed; boundary="===============0118536063768074536=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [fs] 91f9943e1c: aim7.jobs-per-min -26.6% regression
-Date: Mon, 16 Oct 2017 09:34:18 +0200
-Message-ID: <20171016073418.GA28778@lst.de>
-In-Reply-To: <20171016024021.GH26196@yexl-desktop>
+Subject: Re: [lkp-robot] [x86/topology] 379a4bb988: dmesg.WARNING:at_arch/x86/events/intel/uncore.c:#uncore_change_type_ctx
+Date: Mon, 16 Oct 2017 09:50:08 +0200
+Message-ID: <20171016075008.n4v5z3qsxpcg6g3c@gmail.com>
+In-Reply-To: <20171012064439.GN26196@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0968002474696253666==
+--===============0118536063768074536==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-The only change for the non-nowait case is that we now do a trylock before
-locking i_rwsem.  In the past that was the more optimal pattern.  Can you
-test the patch below if that's not the case anymore?  We have a few more
-instances like that which might also want to be changed then.
 
-diff --git a/fs/xfs/xfs_file.c b/fs/xfs/xfs_file.c
-index 309e26c9dddb..ad61c78605d1 100644
---- a/fs/xfs/xfs_file.c
-+++ b/fs/xfs/xfs_file.c
-@@ -258,10 +258,11 @@ xfs_file_buffered_aio_read(
- 	ssize_t			ret;
- =
+* kernel test robot <xiaolong.ye@intel.com> wrote:
 
- 	trace_xfs_file_buffered_read(ip, iov_iter_count(to), iocb->ki_pos);
--
--	if (!xfs_ilock_nowait(ip, XFS_IOLOCK_SHARED)) {
--		if (iocb->ki_flags & IOCB_NOWAIT)
-+		=
+> =
 
-+	if (iocb->ki_flags & IOCB_NOWAIT) {
-+		if (!xfs_ilock_nowait(ip, XFS_IOLOCK_SHARED))
- 			return -EAGAIN;
-+	} else {
- 		xfs_ilock(ip, XFS_IOLOCK_SHARED);
- 	}
- 	ret =3D generic_file_read_iter(iocb, to);
+> FYI, we noticed the following commit (built with gcc-6):
+> =
 
---===============0968002474696253666==--
+> commit: 379a4bb9880608931642e1b4208380468d347b84 ("x86/topology: Avoid wa=
+sting 128k for package id array")
+> url: https://github.com/0day-ci/linux/commits/Prarit-Bhargava/x86-smpboot=
+-Cleanup-logical-package-ID/20170929-202113
+> =
+
+> =
+
+> in testcase: ltp
+> with following parameters:
+> =
+
+> 	test: cpuhotplug
+> =
+
+> test-description: The LTP testsuite contains a collection of tools for te=
+sting the Linux kernel and related features.
+> test-url: http://linux-test-project.github.io/
+> =
+
+> =
+
+> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wit=
+h 64G memory
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
+
+> =
+
+> kern  :warn  : [  119.686133] ------------[ cut here ]------------
+> kern  :warn  : [  119.692171] WARNING: CPU: 0 PID: 13 at arch/x86/events/=
+intel/uncore.c:1058 uncore_change_type_ctx+0xf0/0x100
+
+If this warning is caused by these patches then the warning should be fixed=
+ too, =
+
+before we can apply the patches.
+
+Thanks,
+
+	Ingo
+
+--===============0118536063768074536==--
 
