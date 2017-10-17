@@ -1,103 +1,59 @@
-Content-Type: multipart/mixed; boundary="===============7089867910167244499=="
+Content-Type: multipart/mixed; boundary="===============0297485064777589379=="
 MIME-Version: 1.0
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+From: Andy Lutomirski <luto@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [uvcvideo] c698cbbd35: Failed to query (GET_INFO) UVC control 11 on unit 1: -32 (exp. 1).
-Date: Tue, 17 Oct 2017 21:18:36 +0300
-Message-ID: <1534341.cxAt6LBOsY@avalon>
-In-Reply-To: <20170808021846.GK25554@yexl-desktop>
+Subject: Re: [lkp-robot] [x86/mm] c4c3c3c2d0: will-it-scale.per_process_ops -61.0% regression
+Date: Tue, 17 Oct 2017 15:06:33 -0700
+Message-ID: <CALCETrWc1EMGihfKJMqZarbAhrOOjdhgsmpNtPHOrXndTyw19w@mail.gmail.com>
+In-Reply-To: <20171017080037.fmgovp53nbvuukzh@pd.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7089867910167244499==
+--===============0297485064777589379==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Guennadi,
+On Tue, Oct 17, 2017 at 1:00 AM, Borislav Petkov <bp@alien8.de> wrote:
+> On Tue, Oct 17, 2017 at 06:57:43AM +0200, Markus Trippelsdorf wrote:
+>> On 2017.10.16 at 18:06 -0700, Andy Lutomirski wrote:
+>> > On Mon, Oct 16, 2017 at 3:15 AM, Borislav Petkov <bp@alien8.de> wrot=
+e:
+>> > > On Mon, Oct 16, 2017 at 10:39:17AM +0800, kernel test robot wrote:
+>> > >>
+>> > >> Greeting,
+>> > >>
+>> > >> FYI, we noticed a -61.0% regression of will-it-scale.per_process_op=
+s due to commit:
+>>
+>> I think you are reading this wrong:
+>> -61.0% regression means 61.0% improvement.
+>
+> Well, it has this:
+>
+> 5b8809deb4b0a77f  c4c3c3c2d00826c88b5c02c20e
+> ----------------  --------------------------
+>          %stddev      change         %stddev
+>              \          |                \
+>     448554             -61%     174892        will-it-scale.per_process_o=
+ps
+>
+> Xiaolong, can you first explain what those numbers mean? And how do you
+> compute those 61%?
 
-I think this problem needs to be handled before merging the patch.
+I still don't understand what the numbers mean, but this is a PCID
+machine (and it's passed through correctly), so the patch will
+certainly cause a regression in a benchmark that involves a lot of
+brief idle periods.  This kind of issue is why I like having the
+debugfs knob there, at least until the dust settles.
 
-On Tuesday, 8 August 2017 05:18:46 EEST kernel test robot wrote:
-> FYI, we noticed the following commit:
-> =
+>
+> Thx.
+>
+> --
+> Regards/Gruss,
+>     Boris.
+>
+> Good mailing practices for 400: avoid top-posting and trim the reply.
 
-> commit: c698cbbd35daebf58ced376bb6f98dd013e6cf9e ("uvcvideo: send a contr=
-ol
-> event when a Control Change interrupt arrives") url:
-> https://github.com/0day-ci/linux/commits/Guennadi-Liakhovetski/UVC-fix-qu=
-eu
-> e_setup-to-check-the-number-of-planes/20170730-123108 base:
-> git://linuxtv.org/media_tree.git master
-> =
-
-> in testcase: netperf
-> with following parameters:
-> =
-
-> 	ip: ipv4
-> 	runtime: 300s
-> 	nr_threads: 200%
-> 	cluster: cs-localhost
-> 	test: SCTP_STREAM
-> 	cpufreq_governor: performance
-> =
-
-> test-description: Netperf is a benchmark that can be use to measure vario=
-us
-> aspect of networking performance. test-url: http://www.netperf.org/netper=
-f/
-> =
-
-> =
-
-> on test machine: 4 threads Intel(R) Core(TM) i5-3317U CPU @ 1.70GHz with =
-4G
-> memory
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire
-> log/backtrace):
-> =
-
-> =
-
-> [   74.743574] uvcvideo: Found UVC 1.00 device Lenovo EasyCamera (5986:02=
-95)
-> [   74.744636] uvcvideo: Failed to query (GET_INFO) UVC control 11 on unit
-> 1: -32 (exp. 1). [   74.745523] input: Ideapad extra buttons as
-> /devices/pci0000:00/0000:00:1f.0/PNP0C09:00/VPC2004:00/input/input15 [  =
-
-> 74.746246] uvcvideo: Failed to query (GET_INFO) UVC control 13 on unit 1:
-> -32 (exp. 1).
-> =
-
-> =
-
-> =
-
-> To reproduce:
-> =
-
->         git clone https://github.com/01org/lkp-tests.git
->         cd lkp-tests
->         bin/lkp install job.yaml  # job file is attached in this email
->         bin/lkp run     job.yaml
-> =
-
-> =
-
-> =
-
-> Thanks,
-> Xiaolong
-
-
--- =
-
-Regards,
-
-Laurent Pinchart
-
-
---===============7089867910167244499==--
+--===============0297485064777589379==--
 
