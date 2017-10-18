@@ -1,73 +1,75 @@
-Content-Type: multipart/mixed; boundary="===============1224115322483565218=="
+Content-Type: multipart/mixed; boundary="===============9123196610498255220=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@kernel.org>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [x86/mm] c4c3c3c2d0: will-it-scale.per_process_ops -61.0% regression
-Date: Mon, 16 Oct 2017 18:06:25 -0700
-Message-ID: <CALCETrW3G_RfMNKvw0katFuV6dB7k4AfUdVRZ603HNjY=bD4GQ@mail.gmail.com>
-In-Reply-To: <20171016101548.v3l3jgcbdogrvbvh@pd.tnic>
+Date: Wed, 18 Oct 2017 09:59:02 +0800
+Message-ID: <20171018015902.GA10466@yexl-desktop>
+In-Reply-To: <20171017080037.fmgovp53nbvuukzh@pd.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1224115322483565218==
+--===============9123196610498255220==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 16, 2017 at 3:15 AM, Borislav Petkov <bp@alien8.de> wrote:
-> On Mon, Oct 16, 2017 at 10:39:17AM +0800, kernel test robot wrote:
->>
->> Greeting,
->>
->> FYI, we noticed a -61.0% regression of will-it-scale.per_process_ops due=
- to commit:
->>
->>
->> commit: c4c3c3c2d00826c88b5c02c20e80704664424b9b ("x86/mm: Flush more ag=
-gressively in lazy TLB mode")
->> url: https://github.com/0day-ci/linux/commits/Borislav-Petkov/x86-mm-Flu=
-sh-more-aggressively-in-lazy-TLB-mode/20171011-115901
->>
->>
->> in testcase: will-it-scale
->> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wi=
-th 64G memory
+On 10/17, Borislav Petkov wrote:
+>On Tue, Oct 17, 2017 at 06:57:43AM +0200, Markus Trippelsdorf wrote:
+>> On 2017.10.16 at 18:06 -0700, Andy Lutomirski wrote:
+>> > On Mon, Oct 16, 2017 at 3:15 AM, Borislav Petkov <bp@alien8.de> wrot=
+e:
+>> > > On Mon, Oct 16, 2017 at 10:39:17AM +0800, kernel test robot wrote:
+>> > >>
+>> > >> Greeting,
+>> > >>
+>> > >> FYI, we noticed a -61.0% regression of will-it-scale.per_process_op=
+s due to commit:
+>> =
+
+>> I think you are reading this wrong:
+>> -61.0% regression means 61.0% improvement.
 >
-> Say what now?
+>Well, it has this:
 >
-> This is actually what got applied upstream:
+>5b8809deb4b0a77f  c4c3c3c2d00826c88b5c02c20e
+>----------------  --------------------------
+>         %stddev      change         %stddev
+>             \          |                \
+>    448554             -61%     174892        will-it-scale.per_process_ops
+
+Here 448554 is the average value of will-it-scale.per_process_ops for commi=
+t 5b8809deb4,
+while 174892 is the average value of will-it-scale.per_process_ops for comm=
+it c4c3c3c2d0,
+metric per_process_ops is calculated through raw output of will-it-scale as=
+ below
+example.
+
+2017-10-14 23:43:02 ./runtest.py context_switch1 295 process 44
+tasks,processes,processes_idle,threads,threads_idle,linear
+0,0,100,0,100,0
+44,7723745,22.45,0,0.00,0
+
+per_process_ops =3D 7723745 / 44 =3D 175540
+
+percent -61% is computed by (174892 - 448554) / 448554
+
+
+Thanks,
+Xiaolong
+
 >
-> b956575bed91 ("x86/mm: Flush more aggressively in lazy TLB mode")
+>Xiaolong, can you first explain what those numbers mean? And how do you
+>compute those 61%?
 >
-> and AFAICT, that machine is BDW and it should have PCID, right?
+>Thx.
 >
-> Or wait, that's a guest so PCID is probably not even usable for guests.
-> Or should we disable it in VMs?
+>-- =
 
-PCID works on new versions of KVM, at least, depending on configuration.
+>Regards/Gruss,
+>    Boris.
+>
+>Good mailing practices for 400: avoid top-posting and trim the reply.
 
-On a PCID machine, with this patch applied, we are still switching CR3
-when we go idle (which is presumably what we're hitting here) -- we're
-just not flushing anything.  The main cost seems to come from
-serialization.  On my laptop, I think I measured about 80 ns per
-non-flushing CR3 load if I do it in a loop.  The cost is larger when
-it's not in a loop because the pipeline is fuller, I assume.  We also
-take a bit of a hit because switch_mm is a bit complex.  I have a
-patch here to try to optimize it:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/luto/linux.git/commit/?h=3D=
-x86/fixes&id=3D1caf24d080dac8b9f952600d1e91879aa782131c
-
-On a non-PCID machine, this patch will increase IPIs, which doesn't
-seem to be what we're seeing.
-
-The test in question is basically the same thing as a test I ran with
-very little in the way of visible regression.  I'm wondering if the
-real problem is some NUMA oddity.
-
-Xiaolong, can you send us /proc/cpuinfo on this kernel on the test
-machine that's seeing this problem?
-
---Andy
-
---===============1224115322483565218==--
+--===============9123196610498255220==--
 
