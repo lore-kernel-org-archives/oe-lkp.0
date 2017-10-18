@@ -1,49 +1,60 @@
-Content-Type: multipart/mixed; boundary="===============0237960614054993108=="
+Content-Type: multipart/mixed; boundary="===============4748283813969534496=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@alien8.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/mm] c4c3c3c2d0: will-it-scale.per_process_ops -61.0% regression
-Date: Wed, 18 Oct 2017 10:11:09 +0200
-Message-ID: <20171018081109.mj6lzzihxmlle3b6@pd.tnic>
-In-Reply-To: <20171018015902.GA10466@yexl-desktop>
+Subject: Re: [lkp-robot] [x86/kconfig] 81d3871900: BUG:unable_to_handle_kernel
+Date: Wed, 18 Oct 2017 06:40:48 -0400
+Message-ID: <CA+55aFxVnFeFcjt=MW=_Uxx6S7nJh5eFxhQCamE5BG6Jr8MXfg@mail.gmail.com>
+In-Reply-To: <20171017073326.GA23865@js1304-P5Q-DELUXE>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0237960614054993108==
+--===============4748283813969534496==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 18, 2017 at 09:59:02AM +0800, Ye Xiaolong wrote:
-> 2017-10-14 23:43:02 ./runtest.py context_switch1 295 process 44
-> tasks,processes,processes_idle,threads,threads_idle,linear
-> 0,0,100,0,100,0
-> 44,7723745,22.45,0,0.00,0
-> =
+On Tue, Oct 17, 2017 at 3:33 AM, Joonsoo Kim <iamjoonsoo.kim@lge.com> wro=
+te:
+>
+> It looks like a compiler bug. The code of slob_units() try to read two
+> bytes at ffff88001c4afffe. It's valid. But the compiler generates
+> wrong code that try to read four bytes.
+>
+> static slobidx_t slob_units(slob_t *s)
+> {
+>   if (s->units > 0)
+>     return s->units;
+>   return 1;
+> }
+>
+> s->units is defined as two bytes in this setup.
+>
+> Wrongly generated code for this part.
+>
+> 'mov 0x0(%rbp), %ebp'
+>
+> %ebp is four bytes.
+>
+> I guess that this wrong four bytes read cross over the valid memory
+> boundary and this issue happend.
 
-> per_process_ops =3D 7723745 / 44 =3D 175540
+Hmm. I can see why the compiler would do that (16-bit accesses are
+slow), but it's definitely wrong.
 
-What is that 7723745 value? 44 too?
+Does it work ok if that slob_units() code is written as
 
-Please explain it in plain english and not in the context of some script
-you're running. Just assume I don't know *anything* about will-it-scale.
-How would you explain what those numbers are, to me?
+  static slobidx_t slob_units(slob_t *s)
+  {
+     int units =3D READ_ONCE(s->units);
 
-And then consider adding boilerplate text to your reports *explaining*
-what you're measuring because as it is now, people are left wondering
-WTF is going on.
+     if (units > 0)
+         return units;
+     return 1;
+  }
 
-> percent -61% is computed by (174892 - 448554) / 448554
+which might be an acceptable workaround for now?
 
-Ok, that I understand.
+                   Linus
 
-Thx.
-
--- =
-
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---===============0237960614054993108==--
+--===============4748283813969534496==--
 
