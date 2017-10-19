@@ -1,96 +1,59 @@
-Content-Type: multipart/mixed; boundary="===============5532204759277220455=="
+Content-Type: multipart/mixed; boundary="===============5959294697912987269=="
 MIME-Version: 1.0
-From: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/kconfig] 81d3871900: BUG:unable_to_handle_kernel
-Date: Thu, 19 Oct 2017 11:14:38 +0900
-Message-ID: <20171019021437.GA3662@js1304-P5Q-DELUXE>
-In-Reply-To: <alpine.DEB.2.20.1710181509310.1925@nanos>
+Subject: Re: [lkp-robot] [x86/mm] c4c3c3c2d0: will-it-scale.per_process_ops -61.0% regression
+Date: Thu, 19 Oct 2017 13:57:25 +0800
+Message-ID: <20171019055725.GA22668@yexl-desktop>
+In-Reply-To: <20171018081109.mj6lzzihxmlle3b6@pd.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5532204759277220455==
+--===============5959294697912987269==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 18, 2017 at 03:15:03PM +0200, Thomas Gleixner wrote:
-> On Wed, 18 Oct 2017, Linus Torvalds wrote:
-> > On Tue, Oct 17, 2017 at 3:33 AM, Joonsoo Kim <iamjoonsoo.kim@lge.com>=
- wrote:
-> > >
-> > > It looks like a compiler bug. The code of slob_units() try to read two
-> > > bytes at ffff88001c4afffe. It's valid. But the compiler generates
-> > > wrong code that try to read four bytes.
-> > >
-> > > static slobidx_t slob_units(slob_t *s)
-> > > {
-> > >   if (s->units > 0)
-> > >     return s->units;
-> > >   return 1;
-> > > }
-> > >
-> > > s->units is defined as two bytes in this setup.
-> > >
-> > > Wrongly generated code for this part.
-> > >
-> > > 'mov 0x0(%rbp), %ebp'
-> > >
-> > > %ebp is four bytes.
-> > >
-> > > I guess that this wrong four bytes read cross over the valid memory
-> > > boundary and this issue happend.
-> > =
+Hi, ying
 
-> > Hmm. I can see why the compiler would do that (16-bit accesses are
-> > slow), but it's definitely wrong.
-> > =
+On 10/18, Borislav Petkov wrote:
+>On Wed, Oct 18, 2017 at 09:59:02AM +0800, Ye Xiaolong wrote:
+>> 2017-10-14 23:43:02 ./runtest.py context_switch1 295 process 44
+>> tasks,processes,processes_idle,threads,threads_idle,linear
+>> 0,0,100,0,100,0
+>> 44,7723745,22.45,0,0.00,0
+>> =
 
-> > Does it work ok if that slob_units() code is written as
-> > =
+>> per_process_ops =3D 7723745 / 44 =3D 175540
+>
+>What is that 7723745 value? 44 too?
+>
+>Please explain it in plain english and not in the context of some script
+>you're running. Just assume I don't know *anything* about will-it-scale.
+>How would you explain what those numbers are, to me?
 
-> >   static slobidx_t slob_units(slob_t *s)
-> >   {
-> >      int units =3D READ_ONCE(s->units);
-> > =
+Could you suggest better wording to describe the meaning of metric "will-it=
+-scale.per_process_ops"?
 
-> >      if (units > 0)
-> >          return units;
-> >      return 1;
-> >   }
-> > =
+Thanks,
+Xiaolong
 
-> > which might be an acceptable workaround for now?
-> =
+>
+>And then consider adding boilerplate text to your reports *explaining*
+>what you're measuring because as it is now, people are left wondering
+>WTF is going on.
+>
+>> percent -61% is computed by (174892 - 448554) / 448554
+>
+>Ok, that I understand.
+>
+>Thx.
+>
+>-- =
 
-> Discussed exactly that with Peter Zijlstra yesterday, but we came to the
-> conclusion that this is a whack a mole game. It might fix this slob issue,
-> but what guarantees that we don't have the same problem in some other
-> place? Just duct taping this particular instance makes me nervous.
+>Regards/Gruss,
+>    Boris.
+>
+>Good mailing practices for 400: avoid top-posting and trim the reply.
 
-I have checked that above patch works fine but I agree with Thomas.
-
-> Joonsoo says:
-> =
-
-> > gcc 4.8 and 4.9 fails to generate proper code. gcc 5.1 and
-> > the latest version works fine.
-> =
-
-> > I guess that this problem is related to the corner case of some
-> > optimization feature since minor code change makes the result
-> > different. And, with -O2, proper code is generated even if gcc 4.8 is
-> > used.
-> =
-
-> So it would be useful to figure out which optimization bit is causing that
-> and blacklist it for the affected compiler versions.
-
-I have tried it but cannot find any clue. What I did is that compiling
-with -O2 and disabling some options to make option list as same as
--Os. Some guide line is roughly mentioned in gcc man page. However, I
-cannot reproduce the issue by this way.
-
-Thanks.
-
---===============5532204759277220455==--
+--===============5959294697912987269==--
 
