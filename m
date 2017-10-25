@@ -1,158 +1,37 @@
-Content-Type: multipart/mixed; boundary="===============4463998388154210741=="
+Content-Type: multipart/mixed; boundary="===============7796854595882009238=="
 MIME-Version: 1.0
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 To: lkp@lists.01.org
-Subject: Re: [bpf] 3ea693a925: BUG:unable_to_handle_kernel
-Date: Wed, 25 Oct 2017 19:59:17 +0300
-Message-ID: <20171025195757-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20171025165323.hdordanzbhkiap7d@inn>
+Subject: Re: ce56a86e2a ("x86/mm: Limit mmap() of /dev/mem to valid physical addresses"): kernel BUG at arch/x86/mm/physaddr.c:79!
+Date: Wed, 25 Oct 2017 16:50:48 -0400
+Message-ID: <c5082661-99a4-1b11-c8a1-8b31e9ab8d95@oracle.com>
+In-Reply-To: <20171024024439.u3ywfgvi67fe4mbg@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4463998388154210741==
+--===============7796854595882009238==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 26, 2017 at 12:53:23AM +0800, kernel test robot wrote:
-> FYI, we noticed the following commit (built with gcc-6):
-> =
+On 10/23/2017 10:44 PM, Fengguang Wu wrote:
+> Greetings,
+>
+> 0day kernel testing robot got the below dmesg and the first bad commit is
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+>
+> commit ce56a86e2ade45d052b3228cdfebe913a1ae7381
+> Author:     Craig Bergstrom <craigb@google.com>
+> AuthorDate: Thu Oct 19 13:28:56 2017 -0600
+> Commit:     Ingo Molnar <mingo@kernel.org>
+> CommitDate: Fri Oct 20 09:48:00 2017 +0200
+>
+>      x86/mm: Limit mmap() of /dev/mem to valid physical addresses
 
-> commit: 3ea693a925e14c1fc54c7d8bebe6f9fd9441b47d ("bpf: introduce new bpf=
- cpu map type BPF_MAP_TYPE_CPUMAP")
-> url: https://github.com/0day-ci/linux/commits/Jesper-Dangaard-Brouer/New-=
-bpf-cpumap-type-for-XDP_REDIRECT/20171006-024959
-> =
+Also note
+https://lists.xenproject.org/archives/html/xen-devel/2017-10/msg02935.html
 
-> =
+-boris
 
-> in testcase: syzkaller
-> with following parameters:
-> =
-
-> 	runtime: 10
-> 	repro_program: repro-68782ef7
-> =
-
-> =
-
-> =
-
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 4G
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> +------------------------------------------+------------+------------+
-> |                                          | 14a0d032f4 | 3ea693a925 |
-> +------------------------------------------+------------+------------+
-> | boot_successes                           | 8          | 4          |
-> | boot_failures                            | 0          | 3          |
-> | BUG:unable_to_handle_kernel              | 0          | 3          |
-> | Oops:#[##]                               | 0          | 3          |
-> | Kernel_panic-not_syncing:Fatal_exception | 0          | 3          |
-> +------------------------------------------+------------+------------+
-> =
-
-> =
-
-> =
-
-> [   55.527578] BUG: unable to handle kernel paging request at ffffffff871=
-ae788
-> [   55.527597] IP: cpu_map_update_elem+0x4d/0x2e0
-> [   55.527600] PGD 4e26067 P4D 4e26067 PUD 4e27063 PMD 0 =
-
-> [   55.527610] Oops: 0000 [#1] SMP KASAN
-> [   55.527613] Modules linked in:
-> [   55.527622] CPU: 0 PID: 6619 Comm: repro-68782ef7 Not tainted 4.14.0-r=
-c1-00610-g3ea693a #1
-> [   55.527625] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [   55.527629] task: ffff8800ae0d48c0 task.stack: ffff8800af840000
-> [   55.527636] RIP: 0010:cpu_map_update_elem+0x4d/0x2e0
-> [   55.527638] RSP: 0018:ffff8800af847d50 EFLAGS: 00010246
-> [   55.527643] RAX: 000000000e601b02 RBX: ffff880118909c18 RCX: 000000000=
-0000002
-> [   55.527647] RDX: 0000000000000000 RSI: ffff880118909c18 RDI: ffff88007=
-ed5e300
-> [   55.527650] RBP: ffff8800af847d78 R08: ffffed0023121386 R09: ffffed002=
-3121386
-> [   55.527653] R10: 0000000000000003 R11: ffffed0023121387 R12: ffff88007=
-ed5e300
-> [   55.527656] R13: ffff880118909c30 R14: 0000000000000002 R15: 000000000=
-e601b02
-> [   55.527660] FS:  00007f8f76205800(0000) GS:ffff88011ac00000(0000) knlG=
-S:0000000000000000
-> [   55.527663] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   55.527666] CR2: ffffffff871ae788 CR3: 00000000af118000 CR4: 000000000=
-00006f0
-> [   55.527673] Call Trace:
-> [   55.527682]  SyS_bpf+0x2977/0x3600
-> [   55.527690]  ? bpf_prog_get+0x20/0x20
-> [   55.527700]  ? lock_downgrade+0x650/0x650
-> [   55.527708]  ? vmacache_find+0x59/0x260
-> [   55.527716]  ? up_read+0x1a/0x40
-> [   55.527724]  ? __do_page_fault+0x350/0xae0
-> [   55.527735]  ? entry_SYSCALL_64_fastpath+0x5/0xbe
-> [   55.527743]  ? trace_hardirqs_on_thunk+0x1a/0x1c
-> [   55.527753]  entry_SYSCALL_64_fastpath+0x1f/0xbe
-> [   55.527758] RIP: 0033:0x7f8f75d2cd49
-> [   55.527760] RSP: 002b:00007fffed5cc7d8 EFLAGS: 00000216 ORIG_RAX: 0000=
-000000000141
-> [   55.527765] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f8f7=
-5d2cd49
-> [   55.527768] RDX: 0000000000000020 RSI: 00000000202ebfe0 RDI: 000000000=
-0000002
-> [   55.527771] RBP: 0000000000000046 R08: 0000000000000000 R09: 000000000=
-0000000
-> [   55.527774] R10: 0000000000000000 R11: 0000000000000216 R12: 000000000=
-0400a70
-> [   55.527777] R13: 00007fffed5cc980 R14: 0000000000000000 R15: 000000000=
-0000000
-> [   55.527786] Code: b8 00 00 00 00 00 fc ff df 48 c1 ea 03 0f b6 14 02 4=
-8 89 d8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 54 02 00 00 8b 03 49 89 c=
-7 <48> 0f a3 05 f3 0d fa 03 0f 83 6f 02 00 00 e8 c0 64 f2 ff 49 83 =
-
-> [   55.527870] RIP: cpu_map_update_elem+0x4d/0x2e0 RSP: ffff8800af847d50
-> [   55.527872] CR2: ffffffff871ae788
-> [   55.527881] ---[ end trace 1f2b13c8215f4b2c ]---
-> =
-
-> =
-
-> To reproduce:
-> =
-
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script  # job-script is attached in=
- this email
-> =
-
-> =
-
-> =
-
-> Thanks,
-> lkp
-
-That commit has a different hash in net-next:
-
-commit 6710e1126934d8b4372b4d2f9ae1646cd3f151bf
-Author: Jesper Dangaard Brouer <brouer@redhat.com>
-Date:   Mon Oct 16 12:19:28 2017 +0200
-
-    bpf: introduce new bpf cpu map type BPF_MAP_TYPE_CPUMAP
-
-Is this from a private tree?
-
--- =
-
-MST
-
---===============4463998388154210741==--
+--===============7796854595882009238==--
 
