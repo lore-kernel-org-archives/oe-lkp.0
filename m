@@ -1,91 +1,172 @@
-Content-Type: multipart/mixed; boundary="===============3605542574794005139=="
+Content-Type: multipart/mixed; boundary="===============6933233712310986196=="
 MIME-Version: 1.0
-From: Craig Bergstrom <craigb@google.com>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: ce56a86e2a ("x86/mm: Limit mmap() of /dev/mem to valid physical addresses"): kernel BUG at arch/x86/mm/physaddr.c:79!
-Date: Wed, 25 Oct 2017 16:02:09 -0600
-Message-ID: <CAOJUGyfTM2J-P29yPhUx2A2SDjA0rv972SE0hmbMHonthMd_bQ@mail.gmail.com>
-In-Reply-To: <c5082661-99a4-1b11-c8a1-8b31e9ab8d95@oracle.com>
+Subject: Re: [bpf] 3ea693a925: BUG:unable_to_handle_kernel
+Date: Wed, 25 Oct 2017 18:02:33 +0800
+Message-ID: <20171025100233.GC3196@yexl-desktop>
+In-Reply-To: <20171025195757-mutt-send-email-mst@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3605542574794005139==
+--===============6933233712310986196==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Thanks for the notification, my apologies for the breakage.  I'll take a
-close look and see if I can figure out what went wrong.
+On 10/25, Michael S. Tsirkin wrote:
+>On Thu, Oct 26, 2017 at 12:53:23AM +0800, kernel test robot wrote:
+>> FYI, we noticed the following commit (built with gcc-6):
+>> =
 
-Sander, any chance you can send /proc/iomem and the inputs to the mmap call
-that fail on your affected system?
+>> commit: 3ea693a925e14c1fc54c7d8bebe6f9fd9441b47d ("bpf: introduce new bp=
+f cpu map type BPF_MAP_TYPE_CPUMAP")
+>> url: https://github.com/0day-ci/linux/commits/Jesper-Dangaard-Brouer/New=
+-bpf-cpumap-type-for-XDP_REDIRECT/20171006-024959
+>> =
 
+>> =
 
-On Wed, Oct 25, 2017 at 2:50 PM, Boris Ostrovsky <boris.ostrovsky@oracle.=
-com
-> wrote:
+>> in testcase: syzkaller
+>> with following parameters:
+>> =
 
-> On 10/23/2017 10:44 PM, Fengguang Wu wrote:
-> > Greetings,
-> >
-> > 0day kernel testing robot got the below dmesg and the first bad commit =
-is
-> >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> master
-> >
-> > commit ce56a86e2ade45d052b3228cdfebe913a1ae7381
-> > Author:     Craig Bergstrom <craigb@google.com>
-> > AuthorDate: Thu Oct 19 13:28:56 2017 -0600
-> > Commit:     Ingo Molnar <mingo@kernel.org>
-> > CommitDate: Fri Oct 20 09:48:00 2017 +0200
-> >
-> >      x86/mm: Limit mmap() of /dev/mem to valid physical addresses
+>> 	runtime: 10
+>> 	repro_program: repro-68782ef7
+>> =
+
+>> =
+
+>> =
+
+>> on test machine: qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 4G
+>> =
+
+>> caused below changes (please refer to attached dmesg/kmsg for entire log=
+/backtrace):
+>> =
+
+>> =
+
+>> +------------------------------------------+------------+------------+
+>> |                                          | 14a0d032f4 | 3ea693a925 |
+>> +------------------------------------------+------------+------------+
+>> | boot_successes                           | 8          | 4          |
+>> | boot_failures                            | 0          | 3          |
+>> | BUG:unable_to_handle_kernel              | 0          | 3          |
+>> | Oops:#[##]                               | 0          | 3          |
+>> | Kernel_panic-not_syncing:Fatal_exception | 0          | 3          |
+>> +------------------------------------------+------------+------------+
+>> =
+
+>> =
+
+>> =
+
+>> [   55.527578] BUG: unable to handle kernel paging request at ffffffff87=
+1ae788
+>> [   55.527597] IP: cpu_map_update_elem+0x4d/0x2e0
+>> [   55.527600] PGD 4e26067 P4D 4e26067 PUD 4e27063 PMD 0 =
+
+>> [   55.527610] Oops: 0000 [#1] SMP KASAN
+>> [   55.527613] Modules linked in:
+>> [   55.527622] CPU: 0 PID: 6619 Comm: repro-68782ef7 Not tainted 4.14.0-=
+rc1-00610-g3ea693a #1
+>> [   55.527625] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BI=
+OS 1.10.2-1 04/01/2014
+>> [   55.527629] task: ffff8800ae0d48c0 task.stack: ffff8800af840000
+>> [   55.527636] RIP: 0010:cpu_map_update_elem+0x4d/0x2e0
+>> [   55.527638] RSP: 0018:ffff8800af847d50 EFLAGS: 00010246
+>> [   55.527643] RAX: 000000000e601b02 RBX: ffff880118909c18 RCX: 00000000=
+00000002
+>> [   55.527647] RDX: 0000000000000000 RSI: ffff880118909c18 RDI: ffff8800=
+7ed5e300
+>> [   55.527650] RBP: ffff8800af847d78 R08: ffffed0023121386 R09: ffffed00=
+23121386
+>> [   55.527653] R10: 0000000000000003 R11: ffffed0023121387 R12: ffff8800=
+7ed5e300
+>> [   55.527656] R13: ffff880118909c30 R14: 0000000000000002 R15: 00000000=
+0e601b02
+>> [   55.527660] FS:  00007f8f76205800(0000) GS:ffff88011ac00000(0000) knl=
+GS:0000000000000000
+>> [   55.527663] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> [   55.527666] CR2: ffffffff871ae788 CR3: 00000000af118000 CR4: 00000000=
+000006f0
+>> [   55.527673] Call Trace:
+>> [   55.527682]  SyS_bpf+0x2977/0x3600
+>> [   55.527690]  ? bpf_prog_get+0x20/0x20
+>> [   55.527700]  ? lock_downgrade+0x650/0x650
+>> [   55.527708]  ? vmacache_find+0x59/0x260
+>> [   55.527716]  ? up_read+0x1a/0x40
+>> [   55.527724]  ? __do_page_fault+0x350/0xae0
+>> [   55.527735]  ? entry_SYSCALL_64_fastpath+0x5/0xbe
+>> [   55.527743]  ? trace_hardirqs_on_thunk+0x1a/0x1c
+>> [   55.527753]  entry_SYSCALL_64_fastpath+0x1f/0xbe
+>> [   55.527758] RIP: 0033:0x7f8f75d2cd49
+>> [   55.527760] RSP: 002b:00007fffed5cc7d8 EFLAGS: 00000216 ORIG_RAX: 000=
+0000000000141
+>> [   55.527765] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f8f=
+75d2cd49
+>> [   55.527768] RDX: 0000000000000020 RSI: 00000000202ebfe0 RDI: 00000000=
+00000002
+>> [   55.527771] RBP: 0000000000000046 R08: 0000000000000000 R09: 00000000=
+00000000
+>> [   55.527774] R10: 0000000000000000 R11: 0000000000000216 R12: 00000000=
+00400a70
+>> [   55.527777] R13: 00007fffed5cc980 R14: 0000000000000000 R15: 00000000=
+00000000
+>> [   55.527786] Code: b8 00 00 00 00 00 fc ff df 48 c1 ea 03 0f b6 14 02 =
+48 89 d8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 54 02 00 00 8b 03 49 89 =
+c7 <48> 0f a3 05 f3 0d fa 03 0f 83 6f 02 00 00 e8 c0 64 f2 ff 49 83 =
+
+>> [   55.527870] RIP: cpu_map_update_elem+0x4d/0x2e0 RSP: ffff8800af847d50
+>> [   55.527872] CR2: ffffffff871ae788
+>> [   55.527881] ---[ end trace 1f2b13c8215f4b2c ]---
+>> =
+
+>> =
+
+>> To reproduce:
+>> =
+
+>>         git clone https://github.com/intel/lkp-tests.git
+>>         cd lkp-tests
+>>         bin/lkp qemu -k <bzImage> job-script  # job-script is attached i=
+n this email
+>> =
+
+>> =
+
+>> =
+
+>> Thanks,
+>> lkp
 >
-> Also note
-> https://lists.xenproject.org/archives/html/xen-devel/2017-10/msg02935.html
+>That commit has a different hash in net-next:
 >
-> -boris
+>commit 6710e1126934d8b4372b4d2f9ae1646cd3f151bf
+>Author: Jesper Dangaard Brouer <brouer@redhat.com>
+>Date:   Mon Oct 16 12:19:28 2017 +0200
 >
+>    bpf: introduce new bpf cpu map type BPF_MAP_TYPE_CPUMAP
+>
+>Is this from a private tree?
 
---===============3605542574794005139==
-Content-Type: text/html
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.html"
+This patch was captured from netdev mailing list by 0day bot and applied to
+0day's private tree, it should be the v4 I think according to its changelog.
+I'll queue tests for 6710e1126934d8b4372b4d2f9ae1646cd3f151bf to see whether
+this bug persists.
 
-PGRpdiBkaXI9Imx0ciI+VGhhbmtzIGZvciB0aGUgbm90aWZpY2F0aW9uLCBteSBhcG9sb2dpZXMg
-Zm9yIHRoZSBicmVha2FnZS7CoCBJJiMzOTtsbCB0YWtlIGEgY2xvc2UgbG9vayBhbmQgc2VlIGlm
-IEkgY2FuIGZpZ3VyZSBvdXQgd2hhdCB3ZW50IHdyb25nLjxkaXY+PGJyPjwvZGl2PjxkaXY+U2Fu
-ZGVyLCBhbnkgY2hhbmNlIHlvdSBjYW4gc2VuZCAvcHJvYy9pb21lbSBhbmQgdGhlIGlucHV0cyB0
-byB0aGUgbW1hcCBjYWxsIHRoYXQgZmFpbCBvbiB5b3VyIGFmZmVjdGVkIHN5c3RlbT88L2Rpdj48
-ZGl2Pjxicj48L2Rpdj48L2Rpdj48ZGl2IGNsYXNzPSJnbWFpbF9leHRyYSI+PGJyPjxkaXYgY2xh
-c3M9ImdtYWlsX3F1b3RlIj5PbiBXZWQsIE9jdCAyNSwgMjAxNyBhdCAyOjUwIFBNLCBCb3JpcyBP
-c3Ryb3Zza3kgPHNwYW4gZGlyPSJsdHIiPiZsdDs8YSBocmVmPSJtYWlsdG86Ym9yaXMub3N0cm92
-c2t5QG9yYWNsZS5jb20iIHRhcmdldD0iX2JsYW5rIj5ib3Jpcy5vc3Ryb3Zza3lAb3JhY2xlLmNv
-bTwvYT4mZ3Q7PC9zcGFuPiB3cm90ZTo8YnI+PGJsb2NrcXVvdGUgY2xhc3M9ImdtYWlsX3F1b3Rl
-IiBzdHlsZT0ibWFyZ2luOjAgMCAwIC44ZXg7Ym9yZGVyLWxlZnQ6MXB4ICNjY2Mgc29saWQ7cGFk
-ZGluZy1sZWZ0OjFleCI+PHNwYW4gY2xhc3M9IiI+T24gMTAvMjMvMjAxNyAxMDo0NCBQTSwgRmVu
-Z2d1YW5nIFd1IHdyb3RlOjxicj4KJmd0OyBHcmVldGluZ3MsPGJyPgomZ3Q7PGJyPgomZ3Q7IDBk
-YXkga2VybmVsIHRlc3Rpbmcgcm9ib3QgZ290IHRoZSBiZWxvdyBkbWVzZyBhbmQgdGhlIGZpcnN0
-IGJhZCBjb21taXQgaXM8YnI+CiZndDs8YnI+CiZndDsgPGEgaHJlZj0iaHR0cHM6Ly9naXQua2Vy
-bmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvdG9ydmFsZHMvbGludXguZ2l0IiByZWw9
-Im5vcmVmZXJyZXIiIHRhcmdldD0iX2JsYW5rIj5odHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi88
-d2JyPnNjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzLzx3YnI+bGludXguZ2l0PC9hPiBtYXN0
-ZXI8YnI+CiZndDs8YnI+CiZndDsgY29tbWl0IGNlNTZhODZlMmFkZTQ1ZDA1MmIzMjI4Y2RmZWJl
-OTx3YnI+MTNhMWFlNzM4MTxicj4KJmd0OyBBdXRob3I6wqAgwqAgwqBDcmFpZyBCZXJnc3Ryb20g
-Jmx0OzxhIGhyZWY9Im1haWx0bzpjcmFpZ2JAZ29vZ2xlLmNvbSI+Y3JhaWdiQGdvb2dsZS5jb208
-L2E+Jmd0Ozxicj4KJmd0OyBBdXRob3JEYXRlOiBUaHUgT2N0IDE5IDEzOjI4OjU2IDIwMTcgLTA2
-MDA8YnI+CiZndDsgQ29tbWl0OsKgIMKgIMKgSW5nbyBNb2xuYXIgJmx0OzxhIGhyZWY9Im1haWx0
-bzptaW5nb0BrZXJuZWwub3JnIj5taW5nb0BrZXJuZWwub3JnPC9hPiZndDs8YnI+CiZndDsgQ29t
-bWl0RGF0ZTogRnJpIE9jdCAyMCAwOTo0ODowMCAyMDE3ICswMjAwPGJyPgomZ3Q7PGJyPgomZ3Q7
-wqAgwqAgwqAgeDg2L21tOiBMaW1pdCBtbWFwKCkgb2YgL2Rldi9tZW0gdG8gdmFsaWQgcGh5c2lj
-YWwgYWRkcmVzc2VzPGJyPgo8YnI+Cjwvc3Bhbj5BbHNvIG5vdGU8YnI+CjxhIGhyZWY9Imh0dHBz
-Oi8vbGlzdHMueGVucHJvamVjdC5vcmcvYXJjaGl2ZXMvaHRtbC94ZW4tZGV2ZWwvMjAxNy0xMC9t
-c2cwMjkzNS5odG1sIiByZWw9Im5vcmVmZXJyZXIiIHRhcmdldD0iX2JsYW5rIj5odHRwczovL2xp
-c3RzLnhlbnByb2plY3Qub3JnLzx3YnI+YXJjaGl2ZXMvaHRtbC94ZW4tZGV2ZWwvMjAxNy08d2Jy
-PjEwL21zZzAyOTM1Lmh0bWw8L2E+PGJyPgo8c3BhbiBjbGFzcz0iSE9FblpiIj48Zm9udCBjb2xv
-cj0iIzg4ODg4OCI+PGJyPgotYm9yaXM8YnI+CjwvZm9udD48L3NwYW4+PC9ibG9ja3F1b3RlPjwv
-ZGl2Pjxicj48L2Rpdj4K
+Thanks,
+Xiaolong
 
---===============3605542574794005139==--
+>
+>-- =
+
+>MST
+>_______________________________________________
+>LKP mailing list
+>LKP(a)lists.01.org
+>https://lists.01.org/mailman/listinfo/lkp
+
+--===============6933233712310986196==--
 
