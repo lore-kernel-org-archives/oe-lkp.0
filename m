@@ -1,56 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============1503210834638573984=="
+Content-Type: multipart/mixed; boundary="===============3975396855671561658=="
 MIME-Version: 1.0
-From: Craig Bergstrom <craigb@google.com>
+From: Andrew Cooper <andrew.cooper3@citrix.com>
 To: lkp@lists.01.org
-Subject: Re: ce56a86e2a ("x86/mm: Limit mmap() of /dev/mem to valid physical addresses"): kernel BUG at arch/x86/mm/physaddr.c:79!
-Date: Thu, 26 Oct 2017 13:50:40 -0600
-Message-ID: <CAOJUGyfZxbhyMuh3zE77R3b30RF3Xi7jB4_mmSjhWtFQhVc5jQ@mail.gmail.com>
-In-Reply-To: <CA+55aFw_7PFDnTRO1C6gH99vdY+w77Rp_8Ns8krSjxmxSs6mVw@mail.gmail.com>
+Subject: Re: [Xen-devel] ce56a86e2a ("x86/mm: Limit mmap() of /dev/mem to valid physical addresses"): kernel BUG at arch/x86/mm/physaddr.c:79!
+Date: Thu, 26 Oct 2017 21:01:00 +0100
+Message-ID: <19584771-c653-5327-b126-3f494ad5717f@citrix.com>
+In-Reply-To: <207b6a75-2eff-8e92-d50c-ec2022fddbf9@eikelenboom.it>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1503210834638573984==
+--===============3975396855671561658==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Reverting seems like the right approach at the moment.  My apologies
-for the breakage so late the in the cycle.
-
-Post-revert, there remains a bug here wherein you can make the system
-OOPS if you mmap memory above the 48 bit bus width.  Linus/Ingo, is
-there something in particular that you'd like to see before pulling in
-a check on the bus width (or some other fix)?  Based on Linus'
-comment, the bus width check smells like something that should cook
-for a while before pulling into mainline.
-
-On Thu, Oct 26, 2017 at 1:29 PM, Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
-> On Thu, Oct 26, 2017 at 9:02 PM, Ingo Molnar <mingo@kernel.org> wrote:
+On 26/10/17 20:29, Sander Eikelenboom wrote:
+> On 26/10/17 19:49, Craig Bergstrom wrote:
+>> Sander, thanks for the details, they've been very useful.
 >>
->> Well, 'mem=3D2048M' shouldn't really limit device memory, it's supposed =
-to limit
->> (trim) 'RAM' and not much else.
->
-> Agreed. You should very much be able to map in IO memory or whatever
-> above the 2G address even if the high_memory itself might be limited
-> to 2GB.
->
-> So I think that commit ce56a86e2ade ("x86/mm: Limit mmap() of /dev/mem
-> to valid physical addresses") is wrong, in that "high_memory" is very
-> much the wrong thing to test.
->
-> The memory mapping limit might validly be something like
->
->    1ull << boot_cpu_data.x86_phys_bits
->
-> or similar, but for now I suspect that the right thing to do is to
-> revert. I'm not convinced that our "x86_phys_bits" value is guaranteed
-> to be always right, since I think we mainlyjust use it for showing
-> things, rather than have lots of code that depends on it.
->
-> Ingo?
->
->                Linus
+>> I suspect that your host system's mem=3D2048M parameter is causing the
+>> problem.  Any chance you can confirm by removing the parameter and
+>> running the guest code path?
+> I removed it, but kept the hypervisor limiting dom0 memory to 2046M intac=
+t (in grub using the xen bootcmd: =
 
---===============1503210834638573984==--
+> "multiboot       /xen-4.10.gz  dom0_mem=3D2048M,max:2048M ....."
+>
+> Unfortunately that doesn't change anything, the guest still fails to star=
+t with the same errors.
+>
+>> More specifically, since you're telling the kernel that it's high
+>> memory address is at 2048M and your device is at 0xfe1fe000 (~4G), the
+>> new mmap() limits are preventing you from mapping addresses that are
+>> explicitly disallowed by the parameter.
+>>
+> Which would probably mean the current patch prohibits hard limiting the d=
+om0 memory to a certain value (below 4G)
+> at least in combination with PCI-passthrough. So the only thing left woul=
+d be to have no hard memory restriction on dom0
+> and rely on auto-ballooning, but I'm not a great fan of that.
+>
+> I don't know how KVM handles setting memory limits for the host system, b=
+ut perhaps it suffers from the same issue.
+>
+> I also tried the patch from one of your last mails to make the check "les=
+s strict", =
+
+> but still get the same errors (when using the hard memory limits).
+
+dom0_mem=3D2048M,max:2048M is used to describe how much RAM the guest has,
+not its maximum address.=C2=A0 (Whether this is how PVops actually interpre=
+ts
+the information and passes it into Linux is a different matter.=C2=A0 I will
+have to defer to Boris/Juergen on that side of things.)
+
+For RAM, PV guests will get a scattering of frames wherever Xen chooses
+to allocate them, and are likely to not be contiguous or adjacent.
+
+For devices, PV guests do get mappings to the real system BARs, which
+will be the real low and high MMIO holes.
+
+~Andrew
+
+--===============3975396855671561658==--
 
