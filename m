@@ -1,61 +1,30 @@
-Content-Type: multipart/mixed; boundary="===============3232692191180317702=="
+Content-Type: multipart/mixed; boundary="===============2791093949311044471=="
 MIME-Version: 1.0
-From: Cyril Hrubis <chrubis@suse.cz>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [LTP] [lkp-robot] [x86/topology] 379a4bb988: dmesg.WARNING:at_arch/x86/events/intel/uncore.c:#uncore_change_type_ctx
-Date: Thu, 26 Oct 2017 12:09:11 +0200
-Message-ID: <20171026100911.GD3873@rei>
-In-Reply-To: <48cfd754-886d-38b0-b9e5-55088e5a9665@redhat.com>
+Subject: LTP cases covered by 0day kernel test robot
+Date: Thu, 26 Oct 2017 15:11:25 +0200
+Message-ID: <20171026131125.4rhdkzwb7qfzw6wq@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3232692191180317702==
+--===============2791093949311044471==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi!
-> >  bin/lkp install job.yaml
-> =
+Hi Ben,
 
-> [root(a)hpe-dl385gen10-02 lkp-tests]# ls
-> allot        daemon  filters       include   Makefile  pkg        repo   =
- spec
-> bin          distro  Gemfile       jobs      monitors  plot       rootfs =
- stats
-> cluster      doc     Gemfile.lock  lib       pack      Rakefile   sbin   =
- tests
-> _config.yml  etc     hosts         lkp-exec  params    README.md  setup  =
- tools
-> [root(a)hpe-dl385gen10-02 lkp-tests]#  bin/lkp install ../job.yaml
-> Not a supported system, cannot install packages.
-> [root(a)hpe-dl385gen10-02 lkp-tests]#
-> =
+Here you can find the LTP cases that we run or ignore.
+The ignored ones are mostly problematic or too time consuming for us.
 
-> Well that's useful.
+https://github.com/intel/lkp-tests/blob/master/jobs/ltp.yaml
+https://github.com/intel/lkp-tests/blob/master/jobs/ltp-1hdd.yaml
+https://github.com/intel/lkp-tests/blob/master/jobs/ltp-1ssd.yaml
+https://github.com/intel/lkp-tests/blob/master/jobs/ltp-large-memory.yaml
 
-Sorry for the late reply, you may have figured it out already, you can
-install and run LTP without the lkp framework and that should be pretty
-straightforward, then you can just run it by:
-
-'cd /opt/ltp && ./runltp -f cpuhotplug'
-
-Looking at the test it may need a kernel source unpacked /usr/src/linux
-as well.
+Thanks,
+Fengguang
 
 
-Short HOWTO for building LTP from git is here:
-
-https://github.com/linux-test-project/ltp/blob/master/doc/mini-howto-buildi=
-ng-ltp-from-git.txt
-
-And we do have (unofficional) packages for some SUSE distributions:
-
-https://build.opensuse.org/package/show/benchmark/ltp
-
--- =
-
-Cyril Hrubis
-chrubis(a)suse.cz
-
---===============3232692191180317702==--
+--===============2791093949311044471==--
 
