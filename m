@@ -1,65 +1,49 @@
-Content-Type: multipart/mixed; boundary="===============3975396855671561658=="
+Content-Type: multipart/mixed; boundary="===============1085562963159162234=="
 MIME-Version: 1.0
-From: Andrew Cooper <andrew.cooper3@citrix.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [Xen-devel] ce56a86e2a ("x86/mm: Limit mmap() of /dev/mem to valid physical addresses"): kernel BUG at arch/x86/mm/physaddr.c:79!
-Date: Thu, 26 Oct 2017 21:01:00 +0100
-Message-ID: <19584771-c653-5327-b126-3f494ad5717f@citrix.com>
-In-Reply-To: <207b6a75-2eff-8e92-d50c-ec2022fddbf9@eikelenboom.it>
+Subject: Re: ce56a86e2a ("x86/mm: Limit mmap() of /dev/mem to valid physical addresses"): kernel BUG at arch/x86/mm/physaddr.c:79!
+Date: Thu, 26 Oct 2017 23:12:09 +0200
+Message-ID: <CA+55aFyEcOMb657vWSmrM13OxmHxC-XxeBmNis=DwVvpJUOogQ@mail.gmail.com>
+In-Reply-To: <CAOJUGyfZxbhyMuh3zE77R3b30RF3Xi7jB4_mmSjhWtFQhVc5jQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3975396855671561658==
+--===============1085562963159162234==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 26/10/17 20:29, Sander Eikelenboom wrote:
-> On 26/10/17 19:49, Craig Bergstrom wrote:
->> Sander, thanks for the details, they've been very useful.
->>
->> I suspect that your host system's mem=3D2048M parameter is causing the
->> problem.  Any chance you can confirm by removing the parameter and
->> running the guest code path?
-> I removed it, but kept the hypervisor limiting dom0 memory to 2046M intac=
-t (in grub using the xen bootcmd: =
-
-> "multiboot       /xen-4.10.gz  dom0_mem=3D2048M,max:2048M ....."
+On Thu, Oct 26, 2017 at 9:50 PM, Craig Bergstrom <craigb@google.com> wrot=
+e:
+> Reverting seems like the right approach at the moment.  My apologies
+> for the breakage so late the in the cycle.
 >
-> Unfortunately that doesn't change anything, the guest still fails to star=
-t with the same errors.
->
->> More specifically, since you're telling the kernel that it's high
->> memory address is at 2048M and your device is at 0xfe1fe000 (~4G), the
->> new mmap() limits are preventing you from mapping addresses that are
->> explicitly disallowed by the parameter.
->>
-> Which would probably mean the current patch prohibits hard limiting the d=
-om0 memory to a certain value (below 4G)
-> at least in combination with PCI-passthrough. So the only thing left woul=
-d be to have no hard memory restriction on dom0
-> and rely on auto-ballooning, but I'm not a great fan of that.
->
-> I don't know how KVM handles setting memory limits for the host system, b=
-ut perhaps it suffers from the same issue.
->
-> I also tried the patch from one of your last mails to make the check "les=
-s strict", =
+> Post-revert, there remains a bug here wherein you can make the system
+> OOPS if you mmap memory above the 48 bit bus width.  Linus/Ingo, is
+> there something in particular that you'd like to see before pulling in
+> a check on the bus width (or some other fix)?
 
-> but still get the same errors (when using the hard memory limits).
+I think we might also look at just also handling the whole RSVD page
+fault case more gracefully.
 
-dom0_mem=3D2048M,max:2048M is used to describe how much RAM the guest has,
-not its maximum address.=C2=A0 (Whether this is how PVops actually interpre=
-ts
-the information and passes it into Linux is a different matter.=C2=A0 I will
-have to defer to Boris/Juergen on that side of things.)
+The fact that we consider it a page table corruption and react in a
+fairly extreme manner to it sounds a bit excessive. Yes, that RSVD it
+clearly happens if we have page table corruption, but if we can
+trigger it other ways, we shouldn't necessarily just assume blindly
+that it's due to some horrible corruption.
 
-For RAM, PV guests will get a scattering of frames wherever Xen chooses
-to allocate them, and are likely to not be contiguous or adjacent.
+So perhaps instead of trying to limit the mmap, see this as a testing
+opportunity for unusual fault handling, and not consider RSVD a
+"corrupted page tables" issue, but just treat it as a normal page
+fault (perhaps after validating that it's a /dev/mem mapping).
 
-For devices, PV guests do get mappings to the real system BARs, which
-will be the real low and high MMIO holes.
+I'll need to go to bed now (in order to wake up again in a couple of
+hours to go to the airport to get back home from the kernel summit),
+but this doesn't sound fundamentally nasty. And handling it at fault
+time avoids the whole worry about "what if we got the physical memory
+size wrong for some CPU or virtualization environment" issue.
 
-~Andrew
+                Linus
 
---===============3975396855671561658==--
+--===============1085562963159162234==--
 
