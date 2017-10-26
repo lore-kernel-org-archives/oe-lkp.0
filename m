@@ -1,65 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============8801155049001868419=="
+Content-Type: multipart/mixed; boundary="===============3232692191180317702=="
 MIME-Version: 1.0
-From: Berg, Johannes <johannes.berg@intel.com>
+From: Cyril Hrubis <chrubis@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [cfg80211] 90a53e4432: kmsg.cfg80211:Problem_loading_in-kernel_X.#certificate(-#)
-Date: Thu, 26 Oct 2017 08:38:11 +0000
-Message-ID: <1DC40B07CD6EC041A66726C271A73AE678E89C38@IRSMSX108.ger.corp.intel.com>
-In-Reply-To: <20171025163149.GJ3294@yexl-desktop>
+Subject: Re: [LTP] [lkp-robot] [x86/topology] 379a4bb988: dmesg.WARNING:at_arch/x86/events/intel/uncore.c:#uncore_change_type_ctx
+Date: Thu, 26 Oct 2017 12:09:11 +0200
+Message-ID: <20171026100911.GD3873@rei>
+In-Reply-To: <48cfd754-886d-38b0-b9e5-55088e5a9665@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8801155049001868419==
+--===============3232692191180317702==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-> FYI, we noticed the following commit (built with gcc-6):
+Hi!
+> >  bin/lkp install job.yaml
 > =
 
-> commit: 90a53e4432b12288316efaa5f308adafb8d304b0 ("cfg80211:
-> implement regdb signature checking")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> [root(a)hpe-dl385gen10-02 lkp-tests]# ls
+> allot        daemon  filters       include   Makefile  pkg        repo   =
+ spec
+> bin          distro  Gemfile       jobs      monitors  plot       rootfs =
+ stats
+> cluster      doc     Gemfile.lock  lib       pack      Rakefile   sbin   =
+ tests
+> _config.yml  etc     hosts         lkp-exec  params    README.md  setup  =
+ tools
+> [root(a)hpe-dl385gen10-02 lkp-tests]#  bin/lkp install ../job.yaml
+> Not a supported system, cannot install packages.
+> [root(a)hpe-dl385gen10-02 lkp-tests]#
 > =
 
-> in testcase: syzkaller
-> with following parameters:
-> =
+> Well that's useful.
 
-> 	runtime: 10
-> 	repro_program: repro-9684fa3c
-> =
+Sorry for the late reply, you may have figured it out already, you can
+install and run LTP without the lkp framework and that should be pretty
+straightforward, then you can just run it by:
 
-> =
+'cd /opt/ltp && ./runltp -f cpuhotplug'
 
-> =
-
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 4G
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire
-> log/backtrace):
-> =
-
-> [    1.128131] cfg80211: Problem loading in-kernel X.509 certificate (-19)
-
-Thanks for the report. Looks like there's an ordering problem when this isn=
-'t built as modules, and the key type only gets registered after cfg80211 r=
-egistration.
-
-I'll look at fixing this as soon as I can, but it might be a while as I'll =
-be travelling soon.
-
-johannes
-Intel Deutschland GmbH
-Registered Address: Am Campeon 10-12, 85579 Neubiberg, Germany
-Tel: +49 89 99 8853-0, www.intel.de
-Managing Directors: Christin Eisenschmid, Christian Lamprechter
-Chairperson of the Supervisory Board: Nicole Lau
-Registered Office: Munich
-Commercial Register: Amtsgericht Muenchen HRB 186928
+Looking at the test it may need a kernel source unpacked /usr/src/linux
+as well.
 
 
---===============8801155049001868419==--
+Short HOWTO for building LTP from git is here:
+
+https://github.com/linux-test-project/ltp/blob/master/doc/mini-howto-buildi=
+ng-ltp-from-git.txt
+
+And we do have (unofficional) packages for some SUSE distributions:
+
+https://build.opensuse.org/package/show/benchmark/ltp
+
+-- =
+
+Cyril Hrubis
+chrubis(a)suse.cz
+
+--===============3232692191180317702==--
 
