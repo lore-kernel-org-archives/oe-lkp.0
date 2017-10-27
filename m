@@ -1,51 +1,37 @@
-Content-Type: multipart/mixed; boundary="===============1660916217091362901=="
+Content-Type: multipart/mixed; boundary="===============7290086740637024518=="
 MIME-Version: 1.0
-From: Craig Bergstrom <craigb@google.com>
+From: Andi Kleen <ak@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: ce56a86e2a ("x86/mm: Limit mmap() of /dev/mem to valid physical addresses"): kernel BUG at arch/x86/mm/physaddr.c:79!
-Date: Fri, 27 Oct 2017 13:28:56 -0600
-Message-ID: <CAOJUGydTX7A=1-ZnODDJ+qAMbvFeb1TabLRKKx9BaLmDUOSj6Q@mail.gmail.com>
-In-Reply-To: <20171027192417.d2x4cy6ra7fghjzw@gmail.com>
+Subject: Re: [lkp-robot] [perf/x86] a5df70c354: perf-sanity-tests.Parse_event_definition_strings.fail
+Date: Fri, 27 Oct 2017 13:44:06 -0700
+Message-ID: <20171027204406.GC22894@tassilo.jf.intel.com>
+In-Reply-To: <53f59e6b-062e-f984-04c8-3ac5161071e8@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1660916217091362901==
+--===============7290086740637024518==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Sounds good.  Thanks for the context.
+On Fri, Oct 27, 2017 at 04:11:09PM +0800, Li Zhijian wrote:
+> + members of perf test
+> =
 
-I'll keep this on my plate and I'll turn something around once I've
-had a chance to test a bit, probably next week.
+> ping
+> =
 
-On Fri, Oct 27, 2017 at 1:24 PM, Ingo Molnar <mingo@kernel.org> wrote:
->
-> * Craig Bergstrom <craigb@google.com> wrote:
->
->> Reverting seems like the right approach at the moment.  My apologies
->> for the breakage so late the in the cycle.
->
-> Note that there's no need for you to apologize and you carry exactly zero=
- amount
-> of blame for the late-cycle breakage: it was my decision to send it to Li=
-nus so
-> quickly, you never asked for it to be sent upstream on such a short notic=
-e.
->
-> ( Classic "patch makes sense, looks good, other arches ar doing this too,=
- and I
->   tested it myself too on multiple systems, so it must be obviously fine =
-for
->   everyone" moment. )
->
-> Your change still makes sense from a robustness POV, so please send it ag=
-ain with
-> the suggested fixes - and I'll be more careful with the upstream merge th=
-is time.
->
-> Thanks,
->
->         Ingo
+> add more results on different platforms
+> haswell: FAIL(OK at v4.13)
 
---===============1660916217091362901==--
+Don't have a system, but can you please post the output of =
+
+
+perf test -F 6 -v =
+
+
+on the Haswell?
+
+-Andi
+
+--===============7290086740637024518==--
 
