@@ -1,179 +1,166 @@
-Content-Type: multipart/mixed; boundary="===============7853471357717867473=="
+Content-Type: multipart/mixed; boundary="===============4302959686517663870=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Laura Abbott <labbott@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: 67bb8e999e ("x86/mm: Disable various instrumentations of .."): BUG: -1 unexpected failures (out of 262) - debugging disabled! |
-Date: Tue, 31 Oct 2017 22:43:14 +0100
-Message-ID: <20171031214314.fjlu7zqqdksnlysf@wfg-t540p.sh.intel.com>
-In-Reply-To: <452160a8-9a8a-574b-aaed-aa748b50e4e1@amd.com>
+Subject: Re: [lkp-robot] [android/ion] 5fb70554d6: kernel_selftests.android.make_fail
+Date: Tue, 31 Oct 2017 14:58:42 -0700
+Message-ID: <19d76d06-1aba-351c-9b7f-2c861828501c@redhat.com>
+In-Reply-To: <CAOuPNLi8yonLAEP=-q91z61minP8TKHKo_VShD1DgbHWCq69Fw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7853471357717867473==
+--===============4302959686517663870==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 31, 2017 at 10:09:44AM -0500, Tom Lendacky wrote:
->On 10/29/2017 8:39 PM, kernel test robot wrote:
->> Greetings,
+On 10/31/2017 03:21 AM, Pintu Kumar wrote:
+> On Tue, Oct 31, 2017 at 2:32 AM, Laura Abbott <labbott@redhat.com> wrot=
+e:
+>> On 10/30/2017 12:12 AM, Pintu Kumar wrote:
+>>> On Sun, Oct 29, 2017 at 7:51 PM, kernel test robot
+>>> <xiaolong.ye@intel.com> wrote:
+>>>>
+>>>> FYI, we noticed the following commit (built with gcc-6):
+>>>>
+>>>> commit: 5fb70554d68e2ea032b6a28b082801d8b7b76cb8 ("android/ion: usersp=
+ace test utility for ion buffer sharing")
+>>>> url: https://github.com/0day-ci/linux/commits/Pintu-Agarwal/android-io=
+n-userspace-test-utility-for-ion-buffer-sharing/20171025-022548
+>>>>
+>>>>
+>>>> in testcase: kernel_selftests
+>>>> with following parameters:
+>>>>
+>>>>
+>>>> test-description: The kernel contains a set of "self tests" under the =
+tools/testing/selftests/ directory. These are intended to be small unit tes=
+ts to exercise individual code paths in the kernel.
+>>>> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+>>>>
+>>>>
+>>>> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz =
+with 64G memory
+>>>>
+>>>> caused below changes (please refer to attached dmesg/kmsg for entire l=
+og/backtrace):
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-r=
+hel-7.2-5fb70554d68e2ea032b6a28b082801d8b7b76cb8
+>>>> 2017-10-26 22:18:16 ln -sf /usr/bin/gcc-5 /usr/bin/gcc
+>>>>
+>>>> 2017-10-26 22:18:16 make run_tests -C android
+>>>> make: Entering directory '/usr/src/linux-selftests-x86_64-rhel-7.2-5fb=
+70554d68e2ea032b6a28b082801d8b7b76cb8/tools/testing/selftests/android'
+>>>> make[1]: Entering directory '/usr/src/linux-selftests-x86_64-rhel-7.2-=
+5fb70554d68e2ea032b6a28b082801d8b7b76cb8/tools/testing/selftests/android/io=
+n'
+>>>> gcc  -I../../../../../drivers/staging/android/uapi/ -Wall -O2 -g    io=
+napp_export.c ipcsocket.c ionutils.c   -o ionapp_export
+>>>> In file included from ionapp_export.c:28:0:
+>>>> ionutils.h:4:17: fatal error: ion.h: No such file or directory
+>>>> compilation terminated.
+>>>> In file included from ionutils.c:9:0:
+>>>> ionutils.h:4:17: fatal error: ion.h: No such file or directory
+>>>> compilation terminated.
+>>>
+>>> This utility requires ion.h header file which should be included from
+>>> kernel source tree: drivers/staging/android/ion/uapi/
+>>> This is already mentioned in the ion/Makefile
+>>> Looks like this ion.h is not getting included inside the linux_headers_=
+dir ?
+>>>
+>>> Shall I include the ion.h locally in my selftests?
+>>> Or, is there a better way to include the header directly...
+>>>
+>>>
 >>
->> 0day kernel testing robot got the below dmesg and the first bad commit is
 >>
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+>> I can't reproduce this in any of my environments but if I had to guess,
+>> it's because you have
 >>
->> commit 67bb8e999e0aeac285d22f0e53c856b9df5282c6
->> Author:     Tom Lendacky <thomas.lendacky@amd.com>
->> AuthorDate: Tue Oct 10 14:45:04 2017 -0500
->> Commit:     Ingo Molnar <mingo@kernel.org>
->> CommitDate: Wed Oct 11 17:22:59 2017 +0200
+>> #include "ion.h"
 >>
->
->So this patch just allows the boot to continue where it previously was not
->able to continue.  The config has KCOV and FUNCTION_TRACER/STACK_TRACER
->enabled which causes issues with the early boot code in mm/mem_encrypt.c.
->
->If there is an issue that is being hidden by these config options, then
->performing a bisect without those settings may help identify the real
->issue.
+>> which is supposed to look in the local path.
+>>
+> =
 
-Yeah sorry for the noise! The exposed bug:
+> I don't think this is the problem.
+> It just means, first it will look into the local path, then it will
+> look into the include path which is specified in the Makefile.
+> And, in the Makefile I have already included the path where it exists.
+> INCLUDEDIR :=3D -I../../../../../drivers/staging/android/uapi/
+> =
 
->> [    0.003333] BUG:  -1 unexpected failures (out of 262) - debugging dis=
-abled! |
 
-looks very similar to the one triggered by
+Ah yeah you are right
 
-        commit d82fed75294229abc9d757f08a4817febae6c4f4
-        Author:     Peter Zijlstra <peterz@infradead.org>
-        AuthorDate: Mon Aug 28 14:42:45 2017 +0200
-        Commit:     Ingo Molnar <mingo@kernel.org>
-        CommitDate: Tue Aug 29 15:15:17 2017 +0200
+> I think the problem is in general, and not specific to this test.
+> Because, when I manually try to install the kernel headers, I could
+> not find the "ion.h" there, or none of the headers from
+> drivers/staging/android/
+> # make headers_install ARCH=3Di386 INSTALL_HDR_PATH=3D../headers/
+> =
 
-            locking/lockdep/selftests: Fix mixed read-write ABBA tests
+> But, I can see the drivers/android/ header files.
+> =
 
-which should have been fixed in latest mainline kernel.
+> Now the question is, how to include the header files from staging
+> folder to kernel headers ?
+> =
+
+> As per reference from some other selftests (such as: gpio/Makefile,
+> vm/Makefile, etc.), I also tried the following.
+> =
+
+> ../../../../../drivers/staging/android/uapi/ion.h:
+>         make -C ../../../../.. headers_install
+> INSTALL_HDR_PATH=3D$(shell pwd)/../../../../usr/
+> =
+
+> But this also does not help in installing the ion.h header file in
+> kernel_header path.
+> =
+
+> Any other pointers to fix this issue ?
+> =
+
+
+The staging uapi headers don't look to be installed with the
+standard install command. This makes sense given that staging
+drivers are well staging and not yet stable.
+
+The tools/gpio Makefile seems to do this trick to allow compilation
+outside the kernel tree (it is a dependency for the gpio selftest)
+
+#
+# We need the following to be outside of kernel tree
+#
+$(OUTPUT)include/linux/gpio.h: ../../include/uapi/linux/gpio.h
+        mkdir -p $(OUTPUT)include/linux 2>&1 || true
+        ln -sf $(CURDIR)/../../include/uapi/linux/gpio.h $@
+
+prepare: $(OUTPUT)include/linux/gpio.h
+
+Maybe something like that needs to happen here unless Shuah has
+any better ideas for headers?
 
 Thanks,
-Fengguang
+Laura
 
-[...]
+> =
 
->>
->> ab7ff471aa  x86/hyperv: Fix hypercalls with extended CPU ranges for TLB =
-flushing
->> 67bb8e999e  x86/mm: Disable various instrumentations of mm/mem_encrypt.c=
- and mm/tlb.c
->> 19e12196da  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net
->> 36ef71cae3  Add linux-next specific files for 20171018
->> +-----------------------------------------------------------------------=
----------------+------------+------------+------------+---------------+
->> |                                                                       =
-               | ab7ff471aa | 67bb8e999e | 19e12196da | next-20171018 |
->> +-----------------------------------------------------------------------=
----------------+------------+------------+------------+---------------+
->> | boot_successes                                                        =
-               | 3          | 0          | 2          | 10            |
->> | boot_failures                                                         =
-               | 761        | 42         | 201        | 77            |
->> | BUG:kernel_reboot-without-warning_in_early-boot_stage,last_printk:Boot=
-ing_the_kernel | 760        |            |            |               |
->> | BUG:kernel_reboot-without-warning_in_test_stage                       =
-               | 1          |            |            |               |
->> | BUG:-#unexpected_failures(out_of#)-debugging_disabled!|               =
-               | 0          | 42         |            |               |
->> | BUG:kernel_hang_in_test_stage                                         =
-               | 0          | 42         | 200        | 77            |
->> | WARNING:at_kernel/events/core.c:#perf_swevent_add                     =
-               | 0          | 1          | 10         | 1             |
->> +-----------------------------------------------------------------------=
----------------+------------+------------+------------+---------------+
->>
->> [    0.003333]                           context:failed|  ok  |  ok  |
->> [    0.003333]                               try:failed|  ok  |failed|
->> [    0.003333]                             block:failed|  ok  |failed|
->> [    0.003333]                          spinlock:failed|  ok  |failed|
->> [    0.003333] ---------------------------------------------------------=
---------
->> [    0.003333] BUG:  -1 unexpected failures (out of 262) - debugging dis=
-abled! |
->> [    0.003333] ---------------------------------------------------------=
---------
->> [    0.003333] ODEBUG: selftest passed
->> [    0.003333] clocksource: hpet: mask: 0xffffffff max_cycles: 0xfffffff=
-f, max_idle_ns: 19112604467 ns
->> [    0.003333] hpet clockevent registered
->> [    0.003345] tsc: Detected 2926.328 MHz processor
->>
->>                                                            # HH:MM RESUL=
-T GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
->> git bisect start bb176f67090ca54869fc1262c913aa69d2ede070 v4.13 --
->> git bisect good 820bf5c419e4b85298e5c3001bd1b5be46d60765  # 21:42  G    =
- 38     0    6   6  Merge tag 'scsi-fixes' of git://git.kernel.org/pub/scm/=
-linux/kernel/git/jejb/scsi
->> git bisect good 9c0c1adab6024ab7222333ead95c57ca60f39f6f  # 21:53  G    =
- 38     0   38  40  Merge tag 'drm-fixes-for-v4.14-rc4' of git://people.fre=
-edesktop.org/~airlied/linux
->> git bisect good 9aa0d2dde6ebd14e9d16e28081a24721d5b41cc8  # 22:29  G    =
- 38     0   38  38  Merge tag 'drm-fixes-for-v4.14-rc5' of git://people.fre=
-edesktop.org/~airlied/linux
->> git bisect  bad 27fdb35fe99011d86bcc54f62fe84712c53f4d05  # 23:11  B    =
-  6     3    6   7  doc: Fix various RCU docbook comment-header problems
->> git bisect  bad 33d930e59a98fa10a0db9f56c7fa2f21a4aef9b9  # 23:12  B    =
-  0     1   15   1  Linux 4.14-rc5
->> git bisect good 7b764cedcb1a04e795795dd0fa38570467583be3  # 23:33  G    =
- 35     0   33  33  Merge branch 'ras-urgent-for-linus' of git://git.kernel=
-.org/pub/scm/linux/kernel/git/tip/tip
->> git bisect  bad 7a23c5abb930cefcef85df6dc0c8fb3e8961980c  # 00:08  B    =
-  8     5    8   8  Merge tag 'dmaengine-fix-4.14-rc5' of git://git.infrade=
-ad.org/users/vkoul/slave-dma
->> git bisect good a339b351304d5e6b02c7cf8eed895d181e64bce0  # 00:31  G    =
- 38     0   10  13  Merge branch 'sched-urgent-for-linus' of git://git.kern=
-el.org/pub/scm/linux/kernel/git/tip/tip
->> git bisect  bad e7a36a6ec9cf1b60273e48ee980b8920f333bd4d  # 01:06  B    =
-  8     5    8   9  Merge branch 'x86-urgent-for-linus' of git://git.kernel=
-.org/pub/scm/linux/kernel/git/tip/tip
->> git bisect good d4a2d031dd42f9594107d317e2a9a0c6d73ad46b  # 01:30  G    =
- 36     0   26  28  x86/unwind: Disable unwinder warnings on 32-bit
->> git bisect  bad 67bb8e999e0aeac285d22f0e53c856b9df5282c6  # 02:05  B    =
- 12     1   12  12  x86/mm: Disable various instrumentations of mm/mem_encr=
-ypt.c and mm/tlb.c
->> git bisect good 60d73a7c96601434dfdb56d5b9167ff3b850d8d7  # 03:04  G    =
-195     0  195 195  x86/hyperv: Don't use percpu areas for pcpu_flush/pcpu_=
-flush_ex structures
->> git bisect good ab7ff471aa5db670197070760f022622793da7e5  # 03:23  G    =
-188     0  188 190  x86/hyperv: Fix hypercalls with extended CPU ranges for=
- TLB flushing
->> # first bad commit: [67bb8e999e0aeac285d22f0e53c856b9df5282c6] x86/mm: D=
-isable various instrumentations of mm/mem_encrypt.c and mm/tlb.c
->> git bisect good ab7ff471aa5db670197070760f022622793da7e5  # 03:55  G    =
-561     0  560 750  x86/hyperv: Fix hypercalls with extended CPU ranges for=
- TLB flushing
->> # extra tests with CONFIG_DEBUG_INFO_REDUCED
->> git bisect  bad 67bb8e999e0aeac285d22f0e53c856b9df5282c6  # 04:40  B    =
- 26    19   26  26  x86/mm: Disable various instrumentations of mm/mem_encr=
-ypt.c and mm/tlb.c
->> # extra tests on HEAD of linux-devel/devel-hourly-2017102915
->> git bisect  bad 75c176ba09dee0b693e5f63442b2c96315799cc1  # 04:40  B    =
-  0     2   28  10  0day head guard for 'devel-hourly-2017102915'
->> # extra tests on tree/branch linus/master
->> git bisect  bad 19e12196da601f7b80b5639adbcecf60fae13389  # 06:25  B    =
- 10     1   10  16  Merge git://git.kernel.org/pub/scm/linux/kernel/git/dav=
-em/net
->> # extra tests with first bad commit reverted
->> git bisect good 191d249fb18624fb43bf27b4105b081db434d721  # 08:20  G    =
-187     0  187 187  Revert "x86/mm: Disable various instrumentations of mm/=
-mem_encrypt.c and mm/tlb.c"
->> # extra tests on tree/branch linux-next/master
->> git bisect  bad 36ef71cae353f88fd6e095e2aaa3e5953af1685d  # 09:27  B    =
- 28     1   28  28  Add linux-next specific files for 20171018
->>
->> ---
->> 0-DAY kernel test infrastructure                Open Source Technology C=
-enter
->> https://lists.01.org/pipermail/lkp                          Intel Corpor=
-ation
->>
->
+> Thanks,
+> Pintu
+> =
 
---===============7853471357717867473==--
+> =
+
+>> Thanks,
+>> Laura
+
+
+--===============4302959686517663870==--
 
