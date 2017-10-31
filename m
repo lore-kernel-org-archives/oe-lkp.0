@@ -1,122 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============3694786417790233007=="
+Content-Type: multipart/mixed; boundary="===============6065814630038445569=="
 MIME-Version: 1.0
-From: Yonghong Song <yhs@fb.com>
+From: Kees Cook <keescook@chromium.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [bpf] 76cdd39f41: WARNING:trinity-c0_still_has_locks_held
-Date: Mon, 30 Oct 2017 14:57:10 -0700
-Message-ID: <c57c939b-c94e-f54d-483a-31723122d965@fb.com>
-In-Reply-To: <20171025161827.GD3294@yexl-desktop>
+Subject: Re: [lkp-robot] [printk] 7f7c60e066: BUG:KASAN:slab-out-of-bounds
+Date: Mon, 30 Oct 2017 17:14:59 -0700
+Message-ID: <CAGXu5jJ+oVhroQHcbbiKERqYQXmoMtsmP_QuQwJX9TdAOdtYvQ@mail.gmail.com>
+In-Reply-To: <20171025162213.GH3294@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3694786417790233007==
+--===============6065814630038445569==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Wed, Oct 25, 2017 at 9:22 AM, kernel test robot
+<xiaolong.ye@intel.com> wrote:
+>
+> FYI, we noticed the following commit (built with gcc-4.9):
+>
+> commit: 7f7c60e0663645e757e520245606fde9c6e326bb ("printk: hash addresses=
+ printed with %p")
+> url: https://github.com/0day-ci/linux/commits/Tobin-C-Harding/printk-hash=
+-addresses-printed-with-p/20171024-231922
 
-I am not able to reproduce the bug with latest net-next.
+It's not clear to me which of the various versions this test ran
+against, but it seems like the printf self-tests got very confused by
+the results:
 
-Thanks Daniel to point it out, looks like your test uses an old-version
-unapplied patchset:
-https://github.com/0day-ci/linux/commit/76cdd39f4117a6cbd520b5d09993ac87acb=
-dcfd8
-which yes, there is a bug to leak the mutext lock and the bug
-is fixed in subsequent patch set.
+> [   40.275423] test_printf: kvasprintf(..., "%p %p", ...) returned '3cf9a=
+dbe eff717bf', expected '0000000001234567 fffffffffedcba98'
+> [   40.296739] test_printf: vsnprintf(buf, 256, "|%-*p|%*p|", ...) return=
+ed 19, expected 39
+> [   40.322776] test_printf: vsnprintf(buf, 16, "|%-*p|%*p|", ...) returne=
+d 19, expected 39
+> [   40.334834] test_printf: vsnprintf(buf, 0, "|%-*p|%*p|", ...) returned=
+ 19, expected 39
 
-> =
+I assume v10 will fix the width issues, but probably not the value tests...
 
-> FYI, we noticed the following commit (built with gcc-4.8):
-> =
+And it claims a use-after-free, too:
 
-> commit: 76cdd39f4117a6cbd520b5d09993ac87acbdcfd8 ("bpf: permit multiple b=
-pf attachments for a single perf event")
-> url: https://github.com/0day-ci/linux/commits/Yonghong-Song/bpf-permit-mu=
-ltiple-bpf-attachments-for-a-single-perf-tracepoint-event/20171024-080608
-> =
+> [   39.757461] The buggy address belongs to the object at 22cb34bb
+> [   39.757461]  which belongs to the cache kmalloc-32 of size 32
+> [   39.757461] The buggy address is located 0 bytes inside of
+> [   39.757461]  32-byte region [22cb34bb, 24ac3a60)
 
-> =
+Which becomes rather unreadable, since the address got hashed. :P
 
-> in testcase: boot
-> =
+-Kees
 
-> on test machine: qemu-system-x86_64 -enable-kvm -smp 2 -m 512M
-> =
+-- =
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
+Kees Cook
+Pixel Security
 
-> =
-
-> +----------------+------------+------------+
-> |                | 052bd6a4fb | 76cdd39f41 |
-> +----------------+------------+------------+
-> | boot_successes | 64         | 66         |
-> +----------------+------------+------------+
-> =
-
-> =
-
-> =
-
-> [   50.247341] WARNING: trinity-c0/3371 still has locks held!
-> [main] Random reseed: 4199236289
-> [   50.258948] 4.14.0-rc5-01671-g76cdd39 #1 Not tainted
-> [   50.260888] ------------------------------------
-> [child0:3373] io_getevents (208) returned ENOSYS, marking as inactive.
-> [child0:3373] sysfs (139) returned ENOSYS, marking as inactive.
-> [   50.273066] 1 lock held by trinity-c0/3371:
-> [   50.274247]  #0:  (bpf_event_mutex){....}, at: [<ffffffff811cd617>] pe=
-rf_event_detach_bpf_prog+0x17/0xd0
-> [child0:3373] fanotify_mark (301) returned ENOSYS, marking as inactive.
-> *** glibc detected *** /trinity: double free or corruption (out): 0x00000=
-00001d51000 ***
-> [   50.288585]
-> [   50.288585] stack backtrace:
-> [   50.290123] CPU: 1 PID: 3371 Comm: trinity-c0 Not tainted 4.14.0-rc5-0=
-1671-g76cdd39 #1
-> [   50.292804] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [   50.295763] Call Trace:
-> [   50.296791]  dump_stack+0xcb/0x13f
-> [   50.298244]  do_exit+0xf1f/0x1380
-> [   50.299525]  ? syscall_trace_enter+0x3ce/0x490
-> [   50.301186]  do_group_exit+0x9d/0x120
-> [   50.302531]  SyS_exit_group+0xb/0x10
-> [   50.303746]  do_syscall_64+0xa6/0x240
-> [   50.305256]  entry_SYSCALL64_slow_path+0x25/0x25
-> [   50.306847] RIP: 0033:0x7f60b8dae408
-> [   50.307944] RSP: 002b:00007fff020656e8 EFLAGS: 00000206 ORIG_RAX: 0000=
-0000000000e7
-> [   50.310457] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f60b=
-8dae408
-> [   50.312482] RDX: 0000000000000000 RSI: 000000000000003c RDI: 000000000=
-0000000
-> [   50.314526] RBP: 00007fff020665a0 R08: 00000000000000e7 R09: fffffffff=
-fffffa0
-> [   50.316981] R10: 00007fff02065480 R11: 0000000000000206 R12: 000000000=
-0000299
-> [   50.319413] R13: 0000000000000059 R14: 00007fff02065d10 R15: 000000000=
-0000002
-> =3D=3D=3D=3D=3D=3D=3D Backtrace: =3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =
-
-> To reproduce:
-> =
-
->          git clone https://github.com/intel/lkp-tests.git
->          cd lkp-tests
->          bin/lkp qemu -k <bzImage> job-script  # job-script is attached i=
-n this email
-> =
-
-> =
-
-> =
-
-> Thanks,
-> Xiaolong
->=20
-
---===============3694786417790233007==--
+--===============6065814630038445569==--
 
