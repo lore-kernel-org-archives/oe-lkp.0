@@ -1,172 +1,282 @@
-Content-Type: multipart/mixed; boundary="===============1213329659895035695=="
+Content-Type: multipart/mixed; boundary="===============6199358426125376011=="
 MIME-Version: 1.0
-From: Roger Quadros <rogerq@ti.com>
+From: Shuah Khan <shuahkh@osg.samsung.com>
 To: lkp@lists.01.org
-Subject: Re: 7be10517c2 ("USB: dummy-hcd: Adapt dummy_udc_set_speed()"): BUG: unable to handle kernel NULL pointer dereference at (null)
-Date: Fri, 03 Nov 2017 15:00:51 +0200
-Message-ID: <4238b0b8-0239-53ab-0632-47a0438d39ef@ti.com>
-In-Reply-To: <59fb95b3./DjHhZ1X9Nu/BA/u%fengguang.wu@intel.com>
+Subject: Re: [lkp-robot] [android/ion] 5fb70554d6: kernel_selftests.android.make_fail
+Date: Wed, 01 Nov 2017 16:38:02 -0600
+Message-ID: <13c66c9d-485f-7615-7a85-47bad9af30d1@osg.samsung.com>
+In-Reply-To: <CAOuPNLjR+3xKoycWc_aYD7e8sh0g-38qQ405A8AN2uCbOOhUBw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1213329659895035695==
+--===============6199358426125376011==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On 03/11/17 00:01, kernel test robot wrote:
-> Greetings,
+On 11/01/2017 11:14 AM, Pintu Kumar wrote:
+> On Wed, Nov 1, 2017 at 10:27 PM, Shuah Khan <shuah@kernel.org> wrote:
+>> On 11/01/2017 10:26 AM, Pintu Kumar wrote:
+>>> On Wed, Nov 1, 2017 at 8:34 PM, Shuah Khan <shuah@kernel.org> wrote:
+>>>> On 11/01/2017 04:12 AM, Pintu Kumar wrote:
+>>>>> On Wed, Nov 1, 2017 at 3:28 AM, Laura Abbott <labbott@redhat.com> w=
+rote:
+>>>>>> On 10/31/2017 03:21 AM, Pintu Kumar wrote:
+>>>>>>> On Tue, Oct 31, 2017 at 2:32 AM, Laura Abbott <labbott@redhat.com=
+> wrote:
+>>>>>>>> On 10/30/2017 12:12 AM, Pintu Kumar wrote:
+>>>>>>>>> On Sun, Oct 29, 2017 at 7:51 PM, kernel test robot
+>>>>>>>>> <xiaolong.ye@intel.com> wrote:
+>>>>>>>>>>
+>>>>>>>>>> FYI, we noticed the following commit (built with gcc-6):
+>>>>>>>>>>
+>>>>>>>>>> commit: 5fb70554d68e2ea032b6a28b082801d8b7b76cb8 ("android/ion: =
+userspace test utility for ion buffer sharing")
+>>>>>>>>>> url: https://github.com/0day-ci/linux/commits/Pintu-Agarwal/andr=
+oid-ion-userspace-test-utility-for-ion-buffer-sharing/20171025-022548
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> in testcase: kernel_selftests
+>>>>>>>>>> with following parameters:
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> test-description: The kernel contains a set of "self tests" unde=
+r the tools/testing/selftests/ directory. These are intended to be small un=
+it tests to exercise individual code paths in the kernel.
+>>>>>>>>>> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.=
+20GHz with 64G memory
+>>>>>>>>>>
+>>>>>>>>>> caused below changes (please refer to attached dmesg/kmsg for en=
+tire log/backtrace):
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x8=
+6_64-rhel-7.2-5fb70554d68e2ea032b6a28b082801d8b7b76cb8
+>>>>>>>>>> 2017-10-26 22:18:16 ln -sf /usr/bin/gcc-5 /usr/bin/gcc
+>>>>>>>>>>
+>>>>>>>>>> 2017-10-26 22:18:16 make run_tests -C android
+>>>>>>>>>> make: Entering directory '/usr/src/linux-selftests-x86_64-rhel-7=
+.2-5fb70554d68e2ea032b6a28b082801d8b7b76cb8/tools/testing/selftests/android'
+>>>>>>>>>> make[1]: Entering directory '/usr/src/linux-selftests-x86_64-rhe=
+l-7.2-5fb70554d68e2ea032b6a28b082801d8b7b76cb8/tools/testing/selftests/andr=
+oid/ion'
+>>>>>>>>>> gcc  -I../../../../../drivers/staging/android/uapi/ -Wall -O2 -g=
+    ionapp_export.c ipcsocket.c ionutils.c   -o ionapp_export
+>>>>>>>>>> In file included from ionapp_export.c:28:0:
+>>>>>>>>>> ionutils.h:4:17: fatal error: ion.h: No such file or directory
+>>>>>>>>>> compilation terminated.
+>>>>>>>>>> In file included from ionutils.c:9:0:
+>>>>>>>>>> ionutils.h:4:17: fatal error: ion.h: No such file or directory
+>>>>>>>>>> compilation terminated.
+>>>>>>>>>
+>>>>>>>>> This utility requires ion.h header file which should be included =
+from
+>>>>>>>>> kernel source tree: drivers/staging/android/ion/uapi/
+>>>>>>>>> This is already mentioned in the ion/Makefile
+>>>>>>>>> Looks like this ion.h is not getting included inside the linux_he=
+aders_dir ?
+>>>>>>>>>
+>>>>>>>>> Shall I include the ion.h locally in my selftests?
+>>>>>>>>> Or, is there a better way to include the header directly...
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> I can't reproduce this in any of my environments but if I had to g=
+uess,
+>>>>>>>> it's because you have
+>>>>>>>>
+>>>>>>>> #include "ion.h"
+>>>>>>>>
+>>>>>>>> which is supposed to look in the local path.
+>>>>>>>>
+>>>>>>>
+>>>>>>> I don't think this is the problem.
+>>>>>>> It just means, first it will look into the local path, then it will
+>>>>>>> look into the include path which is specified in the Makefile.
+>>>>>>> And, in the Makefile I have already included the path where it exis=
+ts.
+>>>>>>> INCLUDEDIR :=3D -I../../../../../drivers/staging/android/uapi/
+>>>>>>>
+>>>>>>
+>>>>>> Ah yeah you are right
+>>>>>>
+>>>>>>> I think the problem is in general, and not specific to this test.
+>>>>>>> Because, when I manually try to install the kernel headers, I could
+>>>>>>> not find the "ion.h" there, or none of the headers from
+>>>>>>> drivers/staging/android/
+>>>>>>> # make headers_install ARCH=3Di386 INSTALL_HDR_PATH=3D../headers/
+>>>>>>>
+>>>>>>> But, I can see the drivers/android/ header files.
+>>>>>>>
+>>>>>>> Now the question is, how to include the header files from staging
+>>>>>>> folder to kernel headers ?
+>>>>>>>
+>>>>>>> As per reference from some other selftests (such as: gpio/Makefile,
+>>>>>>> vm/Makefile, etc.), I also tried the following.
+>>>>>>>
+>>>>>>> ../../../../../drivers/staging/android/uapi/ion.h:
+>>>>>>>         make -C ../../../../.. headers_install
+>>>>>>> INSTALL_HDR_PATH=3D$(shell pwd)/../../../../usr/
+>>>>>>>
+>>>>>>> But this also does not help in installing the ion.h header file in
+>>>>>>> kernel_header path.
+>>>>>>>
+>>>>>>> Any other pointers to fix this issue ?
+>>>>>>>
+>>>>>>
+>>>>>> The staging uapi headers don't look to be installed with the
+>>>>>> standard install command. This makes sense given that staging
+>>>>>> drivers are well staging and not yet stable.
+>>>>>>
+>>>>>> The tools/gpio Makefile seems to do this trick to allow compilation
+>>>>>> outside the kernel tree (it is a dependency for the gpio selftest)
+>>>>>>
+>>>>>> #
+>>>>>> # We need the following to be outside of kernel tree
+>>>>>> #
+>>>>>> $(OUTPUT)include/linux/gpio.h: ../../include/uapi/linux/gpio.h
+>>>>>>         mkdir -p $(OUTPUT)include/linux 2>&1 || true
+>>>>>>         ln -sf $(CURDIR)/../../include/uapi/linux/gpio.h $@
+>>>>>>
+>>>>>> prepare: $(OUTPUT)include/linux/gpio.h
+>>>>>>
+>>>>>
+>>>>> I tried something similar, but it did not help.
+>>>>> Or may be I could not understand how to incorporate this into my code
+>>>>> to make it work.
+>>>>> Basically, when I do make in gpio, it automatically does this using:
+>>>>> make -C headers_install.
+>>>>> But in my case, this command is not getting invoked, using the follow=
+ing:
+>>>>> ../../../../../drivers/staging/android/uapi/ion.h:
+>>>>>         make -C ../../../../.. headers_install
+>>>>> INSTALL_HDR_PATH=3D$(shell pwd)/../../../../usr/
+>>>>>
+>>>>>
+>>>>> https://kernelnewbies.org/KernelHeaders
+>>>>> It says:
+>>>>> [The correct way to address this problem is to isolate the specific
+>>>>> interfaces that you need, e.g. a single header file that is patched in
+>>>>> a new kernel providing the ioctl numbers for a character device used
+>>>>> by your program. In your own program, add a copy of that source file,
+>>>>> with a notice that it should be kept in sync with new kernel
+>>>>> versions.]
+>>>>>
+>>>>> According to this, it looks like we should maintain the local copy of
+>>>>> the header file, until it is available.
+>>>>> I also saw a similar approach in other selftests.
+>>>>>
+>>>>> So, for time being shall I create a local copy of ion.h ?
+>>>>>
+>>>>
+>>>> Sorry. I am late in responding.
+>>>>
+>>>>>
+>>>>>> Maybe something like that needs to happen here unless Shuah has
+>>>>>> any better ideas for headers?
+>>>>>>
+>>>>
+>>>> Since staging headers aren't included in the headers install for good
+>>>> reasons, I have two suggestions:
+>>>>
+>>>> 1. Use bpf as an example:
+>>>>
+>>>> You will find a local include/uapi under bpf and the Makefile looks
+>>>> there first for headers.
+>>>>
+>>>> Also, as Greg suggested, please add comments to indicate that this
+>>>> header needs to be kept in sync with one from staging.
+>>>>
+>>>> This does make a copy of the header which isn't great.
+>>>>
+>>>> 2. Add a include line in the Makefile directly to point to the uapi
+>>>>
+>>>> drivers/staging/android/uapi
+>>>>
+>>>> The downside to this approach is if selftests are built outside the
+>>>> tree, then that would be a problem. However, being able to build selft=
+ests
+>>>> outside the tree requires creating a tarball of the sources first. This
+>>>> header could be added for that special case.
+>>>>
+>>>> I would recommend option 2 to go forward and if that doesn't work, we =
+can
+>>>> refine it.
+>>>
+>>> Thank you for your reply and suggestions.
+>>> The option 2 is already present, if you see my Makefile.
+>>> But this option does not work if built outside the kernel source tree.
+>>> So, I am trying to maintain a local copy of ion.h
+>>>
+>>>
+>>
+>> So where does the test source reside for outside builds? Is this test ho=
+sted
+>> on GitHub?
+>>
+>> I am not opposed to the idea of a local copy. I am trying to understand =
+the
+>> outside env. that this test needs to be built? I am assuming ion test ge=
+ts built
+>> as an independent test and nor from kernel source tree?
+>>
 > =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+> Sorry, I already pushed the local copy patch. I saw your reply later.
+> But we can continue our discussion to find more proper solution.
+> I really don't know about this test robot. I just got this build failure =
+logs.
+> I tried all cases within the kernel source including the kselftest_instal=
+l.sh.
 > =
 
-> https://github.com/0day-ci/linux/commits/Roger-Quadros/USB-dummy-hcd-Adap=
-t-dummy_udc_set_speed/20171103-045118
-> =
-
-> commit 7be10517c266766e46572d60e7c4b3876d461c0c
-> Author:     Roger Quadros <rogerq@ti.com>
-> AuthorDate: Thu Nov 2 11:09:17 2017 +0200
-> Commit:     0day robot <fengguang.wu@intel.com>
-> CommitDate: Fri Nov 3 04:51:20 2017 +0800
-> =
-
->     USB: dummy-hcd: Adapt dummy_udc_set_speed()
->     =
-
->     The UDC core ensures that .udc_set_speed() is called with
->     a speed that is a minimum of the max speeds supported
->     by the gadget function driver and the UDC driver.
->     =
-
->     We can now use the speed argument as is.
->     =
-
->     Get rid of the debug print as that condition will never happen.
->     =
-
->     Signed-off-by: Roger Quadros <rogerq@ti.com>
-> =
-
-> ce2b21a4e5  usb: dwc2: Fix UDC state tracking
-> 7be10517c2  USB: dummy-hcd: Adapt dummy_udc_set_speed()
-> +------------------------------------------+------------+------------+
-> |                                          | ce2b21a4e5 | 7be10517c2 |
-> +------------------------------------------+------------+------------+
-> | boot_successes                           | 33         | 0          |
-> | boot_failures                            | 0          | 13         |
-> | BUG:unable_to_handle_kernel              | 0          | 13         |
-> | Oops:#[##]                               | 0          | 13         |
-> | RIP:dummy_set_selfpowered                | 0          | 13         |
-> | Kernel_panic-not_syncing:Fatal_exception | 0          | 13         |
-> +------------------------------------------+------------+------------+
-> =
-
-> [    4.740314] usb usb1: Product: Dummy host controller
-> [    4.740866] usb usb1: Manufacturer: Linux 4.14.0-rc4-00052-g7be1051 du=
-mmy_hcd
-> [    4.741660] usb usb1: SerialNumber: dummy_hcd.0
-> [    4.742575] hub 1-0:1.0: USB hub found
-> [    4.743043] hub 1-0:1.0: 1 port detected
-> [    4.744153] BUG: unable to handle kernel NULL pointer dereference at  =
-         (null)
-> [    4.745027] IP: dummy_set_selfpowered+0x34/0x4f
-
-Any idea why that might be happening?
-
-> [    4.745536] PGD 0 P4D 0 =
-
-> [    4.745826] Oops: 0000 [#1] PREEMPT SMP
-> [    4.746259] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.14.0-rc4-00052=
--g7be1051 #24
-> [    4.747098] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [    4.748009] task: ffff905840050000 task.stack: ffffa75bc0008000
-> [    4.748012] RIP: 0010:dummy_set_selfpowered+0x34/0x4f
-> [    4.748012] RSP: 0000:ffffa75bc000bd98 EFLAGS: 00010202
-> [    4.748012] RAX: 0000000000000000 RBX: ffff90585ce08e00 RCX: 7cd537960=
-0000000
-> [    4.748012] RDX: ffffffff92a07020 RSI: 0000000000000001 RDI: ffff90585=
-cdeac08
-> [    4.748012] RBP: ffffa75bc000bd98 R08: ffff9058400507d0 R09: 000000005=
-d6b445c
-> [    4.748012] R10: ffff90585e9a7419 R11: ffff90585e9a73f8 R12: ffff90585=
-cdeac08
-> [    4.748012] R13: 0000000000000000 R14: ffff90585d17c990 R15: ffffffff9=
-34df4c0
-> [    4.748012] FS:  0000000000000000(0000) GS:ffff90585fa00000(0000) knlG=
-S:0000000000000000
-> [    4.748012] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    4.748012] CR2: 0000000000000000 CR3: 000000001a416001 CR4: 000000000=
-01606f0
-> [    4.748012] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
-0000000
-> [    4.748012] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 000000000=
-0000400
-> [    4.748012] Call Trace:
-> [    4.748012]  usb_gadget_set_selfpowered+0x18/0x20
-> [    4.748012]  composite_dev_prepare+0x9c/0xda
-> [    4.748012]  composite_bind+0x82/0x17d
-> [    4.748012]  ? set_debug_rodata+0x12/0x12
-> [    4.748012]  udc_bind_to_driver+0x49/0xde
-> [    4.748012]  usb_gadget_probe_driver+0x118/0x131
-> [    4.748012]  ? mass_storagemod_init+0x12/0x12
-> [    4.748012]  usb_composite_probe+0x9b/0x9d
-> [    4.748012]  acm_ms_driver_init+0x10/0x12
-> [    4.748012]  do_one_initcall+0x8b/0x132
-> [    4.748012]  ? set_debug_rodata+0x12/0x12
-> [    4.748012]  kernel_init_freeable+0x19f/0x224
-> [    4.748012]  ? rest_init+0x135/0x135
-> [    4.748012]  kernel_init+0x9/0xe6
-> [    4.748012]  ret_from_fork+0x25/0x30
-> [    4.748012] Code: 48 89 e5 88 c2 8a 87 51 05 00 00 83 e0 df 09 d0 83 7=
-f 78 05 88 87 51 05 00 00 48 8b 87 18 06 00 00 48 0f 45 87 10 06 00 00 85 f=
-6 <48> 8b 00 74 0a 66 83 88 10 12 00 00 01 eb 08 66 83 a0 10 12 00 =
-
-> [    4.748012] RIP: dummy_set_selfpowered+0x34/0x4f RSP: ffffa75bc000bd98
-> [    4.748012] CR2: 0000000000000000
-> [    4.748012] ---[ end trace b94b0554e9424d55 ]---
-> [    4.748012] Kernel panic - not syncing: Fatal exception
-> =
-
->                                                           # HH:MM RESULT =
-GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
-> git bisect start 7be10517c266766e46572d60e7c4b3876d461c0c ce2b21a4e5ce042=
-c0a42c9db8fa9e0f849427d5e --
-> # first bad commit: [7be10517c266766e46572d60e7c4b3876d461c0c] USB: dummy=
--hcd: Adapt dummy_udc_set_speed()
-> git bisect good ce2b21a4e5ce042c0a42c9db8fa9e0f849427d5e  # 05:46  G     =
-32     0    0   0  usb: dwc2: Fix UDC state tracking
-> # extra tests on HEAD of linux-review/Roger-Quadros/USB-dummy-hcd-Adapt-d=
-ummy_udc_set_speed/20171103-045118
-> git bisect  bad 7be10517c266766e46572d60e7c4b3876d461c0c  # 05:46  B     =
- 0    13   28   0  USB: dummy-hcd: Adapt dummy_udc_set_speed()
-> # extra tests on tree/branch linux-review/Roger-Quadros/USB-dummy-hcd-Ada=
-pt-dummy_udc_set_speed/20171103-045118
-> git bisect  bad 7be10517c266766e46572d60e7c4b3876d461c0c  # 05:47  B     =
- 0    13   28   0  USB: dummy-hcd: Adapt dummy_udc_set_speed()
-> # extra tests with first bad commit reverted
-> git bisect good 62cdc97d08c1ab29a70e80800549b794cd512c54  # 06:01  G     =
-11     0    0   0  Revert "USB: dummy-hcd: Adapt dummy_udc_set_speed()"
-> =
-
-> ---
-> 0-DAY kernel test infrastructure                Open Source Technology Ce=
-nter
-> https://lists.01.org/pipermail/lkp                          Intel Corpora=
-tion
+> I guess, what this tests does is, create kernel_headers inside a
+> folder, then copy all selftests also
+> inside this folder and then fire the test one by one.
+> But I really don't have any idea how it works.
 > =
 
 
--- =
+I think they might be pulling sources from kernel tree and compiling
+outside the tree. This will only work when headers get installed.
 
-cheers,
--roger
+In this case staging headers don't get installed and build fails.
+kselftest_install.sh is for building and tar-balling the test programs
+and shell scripts with other run-time dependencies. It is not for tar-balli=
+ng
+sources. Maybe it is something to consider doing.
 
-Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki. Y-tunnus/Bu=
-siness ID: 0615521-4. Kotipaikka/Domicile: Helsinki
+> For me also, if I have to test my code outside kernel tree, I usually
+> copy ion.h header file locally and test it.
+> =
 
---===============1213329659895035695==--
+> But, still I have one question about staging tree kernel headers.
+> How the kernel headers are created in case of Android where it uses
+> the ion and other headers heavily?
+> =
+
+
+So this is a question for Greg KH? How do we handle staging headers?
+
+We have couple of options here:
+
+- add a staging header install as part of kselftest
+- add a kselftest source tar-ball utility that covers the staging header
+  dependencies.
+
+I am reluctant to add a local ion.h. I would rather solve the bigger issue.
+I think this might not be the only time we will run into this type of depen=
+dency
+
+thanks,
+-- Shuah
+
+
+
+--===============6199358426125376011==--
 
