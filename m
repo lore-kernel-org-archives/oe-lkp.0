@@ -1,105 +1,32 @@
-Content-Type: multipart/mixed; boundary="===============4888262614855994470=="
+Content-Type: multipart/mixed; boundary="===============8742420792591745097=="
 MIME-Version: 1.0
-From: Ingo Molnar <mingo@kernel.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v2] x86/asm: Pad assembly functions with INT3 instructions
-Date: Fri, 18 May 2018 09:36:44 +0200
-Message-ID: <20180518073644.GA8593@gmail.com>
-In-Reply-To: <20180515225845.GB21902@avx2>
+Subject: Re: [lkp-robot] [android/ion] 5fb70554d6: kernel_selftests.android.make_fail
+Date: Wed, 01 Nov 2017 11:30:00 +0100
+Message-ID: <20171101103000.GA4976@kroah.com>
+In-Reply-To: <CAOuPNLh3qV_tYz=ah2yYL6EbLDT5dAeQOWofR=X6qk5NO-7EEA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4888262614855994470==
+--===============8742420792591745097==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-
-* Alexey Dobriyan <adobriyan@gmail.com> wrote:
-
-> Use INT3 instead of NOP. All that padding between functions is
-> an illegal area, no legitimate code should jump into it.
+On Wed, Nov 01, 2017 at 03:42:10PM +0530, Pintu Kumar wrote:
+> According to this, it looks like we should maintain the local copy of
+> the header file, until it is available.
+> I also saw a similar approach in other selftests.
 > =
 
-> I've checked x86_64 allyesconfig disassembly, all changes looks sane:
-> INT3 is only used after RET or unconditional JMP.
-> =
+> So, for time being shall I create a local copy of ion.h ?
 
-> On i386:
-> * promote ret_from_exception into ENTRY as it has corresponding END,
-> * demote "resume_userspace" -- unused,
-> * delete ALIGN directive in page_fault. It is leftover from x86 assembly
->   cleanups.
-> =
+Yes, just comment the heck out of both files saying that they need to be
+kept in sync with each other.
 
->     commit d211af055d0c12dc3416c2886e6fbdc6eb74a381
->     i386: get rid of the use of KPROBE_ENTRY / KPROBE_END
-> =
+thanks,
 
->   has ALIGN directive before branch target which makes sense.
->   All the code after ALIGN disappeared later.
-> =
+greg k-h
 
-> Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
-> ---
-> =
-
->  arch/x86/entry/entry_32.S      |    6 +-----
->  arch/x86/include/asm/linkage.h |    2 +-
->  2 files changed, 2 insertions(+), 6 deletions(-)
-> =
-
-> --- a/arch/x86/entry/entry_32.S
-> +++ b/arch/x86/entry/entry_32.S
-> @@ -320,8 +320,7 @@ END(ret_from_fork)
->   */
->  =
-
->  	# userspace resumption stub bypassing syscall exit tracing
-> -	ALIGN
-> -ret_from_exception:
-> +ENTRY(ret_from_exception)
->  	preempt_stop(CLBR_ANY)
->  ret_from_intr:
->  #ifdef CONFIG_VM86
-> @@ -337,8 +336,6 @@ ret_from_intr:
->  #endif
->  	cmpl	$USER_RPL, %eax
->  	jb	resume_kernel			# not returning to v8086 or userspace
-> -
-> -ENTRY(resume_userspace)
->  	DISABLE_INTERRUPTS(CLBR_ANY)
->  	TRACE_IRQS_OFF
->  	movl	%esp, %eax
-> @@ -910,7 +907,6 @@ BUILD_INTERRUPT3(hv_stimer0_callback_vector, HYPERV_S=
-TIMER0_VECTOR,
->  ENTRY(page_fault)
->  	ASM_CLAC
->  	pushl	$do_page_fault
-> -	ALIGN
->  	jmp common_exception
->  END(page_fault)
->  =
-
-> --- a/arch/x86/include/asm/linkage.h
-> +++ b/arch/x86/include/asm/linkage.h
-> @@ -18,7 +18,7 @@
->  	name:
->  =
-
->  #if defined(CONFIG_X86_64) || defined(CONFIG_X86_ALIGNMENT_16)
-> -#define __ALIGN		.p2align 4, 0x90
-> +#define __ALIGN		.p2align 4, 0xCC
->  #define __ALIGN_STR	__stringify(__ALIGN)
->  #endif
-
-So the question is, without objtool support, how will we find INT3-padding =
-related =
-
-crash bugs on 32-bit kernels?
-
-Thanks,
-
-	Ingo
-
---===============4888262614855994470==--
+--===============8742420792591745097==--
 
