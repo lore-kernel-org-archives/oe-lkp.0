@@ -1,105 +1,106 @@
-Content-Type: multipart/mixed; boundary="===============3485349430841406360=="
+Content-Type: multipart/mixed; boundary="===============4212103195075967345=="
 MIME-Version: 1.0
-From: Roger Quadros <rogerq@ti.com>
+From: Shuah Khan <shuahkh@osg.samsung.com>
 To: lkp@lists.01.org
-Subject: Re: 7be10517c2 ("USB: dummy-hcd: Adapt dummy_udc_set_speed()"): BUG: unable to handle kernel NULL pointer dereference at (null)
-Date: Mon, 06 Nov 2017 10:12:45 +0200
-Message-ID: <0229c0ee-17ea-dd99-a3af-c7008e4c654a@ti.com>
-In-Reply-To: <Pine.LNX.4.44L0.1711031335531.1743-100000@iolanthe.rowland.org>
+Subject: Re: [lkp-robot] [android/ion] 5fb70554d6: kernel_selftests.android.make_fail
+Date: Thu, 02 Nov 2017 08:50:15 -0600
+Message-ID: <a3737a76-10e7-5791-7eda-c62bf43b3504@osg.samsung.com>
+In-Reply-To: <20171102085357.GA14531@kroah.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3485349430841406360==
+--===============4212103195075967345==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 03/11/17 19:42, Alan Stern wrote:
-> On Fri, 3 Nov 2017, Roger Quadros wrote:
-> =
-
->> Hi,
+On 11/02/2017 02:53 AM, Greg Kroah-Hartman wrote:
+> On Wed, Nov 01, 2017 at 04:38:02PM -0600, Shuah Khan wrote:
+>>> For me also, if I have to test my code outside kernel tree, I usually
+>>> copy ion.h header file locally and test it.
+>>>
+>>> But, still I have one question about staging tree kernel headers.
+>>> How the kernel headers are created in case of Android where it uses
+>>> the ion and other headers heavily?
+>>>
 >>
->> On 03/11/17 00:01, kernel test robot wrote:
->>> Greetings,
->>>
->>> 0day kernel testing robot got the below dmesg and the first bad commit =
-is
->>>
->>> https://github.com/0day-ci/linux/commits/Roger-Quadros/USB-dummy-hcd-Ad=
-apt-dummy_udc_set_speed/20171103-045118
->>>
->>> commit 7be10517c266766e46572d60e7c4b3876d461c0c
->>> Author:     Roger Quadros <rogerq@ti.com>
->>> AuthorDate: Thu Nov 2 11:09:17 2017 +0200
->>> Commit:     0day robot <fengguang.wu@intel.com>
->>> CommitDate: Fri Nov 3 04:51:20 2017 +0800
->>>
->>>     USB: dummy-hcd: Adapt dummy_udc_set_speed()
->>>     =
+>> So this is a question for Greg KH? How do we handle staging headers?
+> =
 
->>>     The UDC core ensures that .udc_set_speed() is called with
->>>     a speed that is a minimum of the max speeds supported
->>>     by the gadget function driver and the UDC driver.
->>>     =
+> We don't :)
+> =
 
->>>     We can now use the speed argument as is.
->>>     =
+> Don't work too hard, or at all, for staging headers, someone should be
+> working to get the code out of staging.  No need to provide "full
+> functionality" for all of the different kselftest options for staging
+> code, as that's just going to be a pain.
+> =
 
->>>     Get rid of the debug print as that condition will never happen.
->>>     =
-
->>>     Signed-off-by: Roger Quadros <rogerq@ti.com>
->>>
->>> ce2b21a4e5  usb: dwc2: Fix UDC state tracking
->>> 7be10517c2  USB: dummy-hcd: Adapt dummy_udc_set_speed()
->>> +------------------------------------------+------------+------------+
->>> |                                          | ce2b21a4e5 | 7be10517c2 |
->>> +------------------------------------------+------------+------------+
->>> | boot_successes                           | 33         | 0          |
->>> | boot_failures                            | 0          | 13         |
->>> | BUG:unable_to_handle_kernel              | 0          | 13         |
->>> | Oops:#[##]                               | 0          | 13         |
->>> | RIP:dummy_set_selfpowered                | 0          | 13         |
->>> | Kernel_panic-not_syncing:Fatal_exception | 0          | 13         |
->>> +------------------------------------------+------------+------------+
->>>
->>> [    4.740314] usb usb1: Product: Dummy host controller
->>> [    4.740866] usb usb1: Manufacturer: Linux 4.14.0-rc4-00052-g7be1051 =
-dummy_hcd
->>> [    4.741660] usb usb1: SerialNumber: dummy_hcd.0
->>> [    4.742575] hub 1-0:1.0: USB hub found
->>> [    4.743043] hub 1-0:1.0: 1 port detected
->>> [    4.744153] BUG: unable to handle kernel NULL pointer dereference at=
-           (null)
->>> [    4.745027] IP: dummy_set_selfpowered+0x34/0x4f
+>> We have couple of options here:
 >>
->> Any idea why that might be happening?
+>> - add a staging header install as part of kselftest
 > =
 
-> It looks like the problem is in the gadget_to_dummy_hcd() inline
-> routine.  If gadget->speed is USB_SPEED_SUPER but the emulation is high
-> speed then the routine will try to dereference dum->ss_hcd, which isn't
-> set, instead of dum->hs_hcd, which is set.
+> No
+
+Great.
+
 > =
 
-> Was this test made with the earlier change to the UDC core in place?  =
+>> - add a kselftest source tar-ball utility that covers the staging header
+>>   dependencies.
+> =
 
-> That could explain it.
+> No.
+> =
 
-I did test it locally with SS dummy_hcd and HS only gadget driver
-and didn't observe this issue.
+> Just don't install them, as they are not part of the normal process,
+> don't do anything special here please.
 
-So I'm guessing that the earlier change [1] was not included in this test.
+Great.
 
-[1] - https://lkml.org/lkml/2017/10/31/485
+> =
 
--- =
+>> I am reluctant to add a local ion.h. I would rather solve the bigger iss=
+ue.
+>> I think this might not be the only time we will run into this type of de=
+pendency
+> =
 
-cheers,
--roger
+> For any other kernel code, stuff should go into uapi headers, but
+> staging is "special" here, so don't worry about it.  Use relative paths
+> and all should be fine for the limited amount of testing possible.
+> =
 
-Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki. Y-tunnus/Bu=
-siness ID: 0615521-4. Kotipaikka/Domicile: Helsinki
+> I really do not like to see any staging dependancies out of
+> drivers/staging/ at all, as staging code should be self-contained and
+> could be deleted tomorrow with no other side effects at all.  So maybe
+> there should not be any kselftests allowed for staging code...
+> =
 
---===============3485349430841406360==--
+
+Thanks for engaging in this discussion. My intent was to explore all the
+options and rule them out for staging headers and kselftest. This is the
+first test that tests a staging driver and has dependency on staging
+headers.
+
+Here is what I would propose. I am going to take this test as an individual
+test:
+
+- without adding it to the kselftest run.
+- with a local ion.h
+
+This way it is available for people that want to run it. When ion driver
+moves out of staging it can be added to kselftest run with proper uapi
+header.
+
+Pintu! I will review v5 and send you comments. I think you will need to
+make one change to not add ion test to selftests/Makefile.
+
+thanks,
+-- Shuah
+
+
+
+
+--===============4212103195075967345==--
 
