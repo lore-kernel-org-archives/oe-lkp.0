@@ -1,145 +1,105 @@
-Content-Type: multipart/mixed; boundary="===============3665121293616075264=="
+Content-Type: multipart/mixed; boundary="===============3485349430841406360=="
 MIME-Version: 1.0
-From: Chao Yu <yuchao0@huawei.com>
+From: Roger Quadros <rogerq@ti.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [f2fs] cb09c151b6: aim7.jobs-per-min -3.7% regression
-Date: Mon, 06 Nov 2017 10:43:01 +0800
-Message-ID: <ad6926a1-5665-14da-7e7a-70a9c402ff24@huawei.com>
-In-Reply-To: <20171106021219.GU13676@yexl-desktop>
+Subject: Re: 7be10517c2 ("USB: dummy-hcd: Adapt dummy_udc_set_speed()"): BUG: unable to handle kernel NULL pointer dereference at (null)
+Date: Mon, 06 Nov 2017 10:12:45 +0200
+Message-ID: <0229c0ee-17ea-dd99-a3af-c7008e4c654a@ti.com>
+In-Reply-To: <Pine.LNX.4.44L0.1711031335531.1743-100000@iolanthe.rowland.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3665121293616075264==
+--===============3485349430841406360==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-Thanks for the report. :)
-
-This patch adds unneeded verifying logic, let me drop this anyway.
-
-Thanks,
-
-On 2017/11/6 10:12, kernel test robot wrote:
+On 03/11/17 19:42, Alan Stern wrote:
+> On Fri, 3 Nov 2017, Roger Quadros wrote:
 > =
 
-> Greeting,
+>> Hi,
+>>
+>> On 03/11/17 00:01, kernel test robot wrote:
+>>> Greetings,
+>>>
+>>> 0day kernel testing robot got the below dmesg and the first bad commit =
+is
+>>>
+>>> https://github.com/0day-ci/linux/commits/Roger-Quadros/USB-dummy-hcd-Ad=
+apt-dummy_udc_set_speed/20171103-045118
+>>>
+>>> commit 7be10517c266766e46572d60e7c4b3876d461c0c
+>>> Author:     Roger Quadros <rogerq@ti.com>
+>>> AuthorDate: Thu Nov 2 11:09:17 2017 +0200
+>>> Commit:     0day robot <fengguang.wu@intel.com>
+>>> CommitDate: Fri Nov 3 04:51:20 2017 +0800
+>>>
+>>>     USB: dummy-hcd: Adapt dummy_udc_set_speed()
+>>>     =
+
+>>>     The UDC core ensures that .udc_set_speed() is called with
+>>>     a speed that is a minimum of the max speeds supported
+>>>     by the gadget function driver and the UDC driver.
+>>>     =
+
+>>>     We can now use the speed argument as is.
+>>>     =
+
+>>>     Get rid of the debug print as that condition will never happen.
+>>>     =
+
+>>>     Signed-off-by: Roger Quadros <rogerq@ti.com>
+>>>
+>>> ce2b21a4e5  usb: dwc2: Fix UDC state tracking
+>>> 7be10517c2  USB: dummy-hcd: Adapt dummy_udc_set_speed()
+>>> +------------------------------------------+------------+------------+
+>>> |                                          | ce2b21a4e5 | 7be10517c2 |
+>>> +------------------------------------------+------------+------------+
+>>> | boot_successes                           | 33         | 0          |
+>>> | boot_failures                            | 0          | 13         |
+>>> | BUG:unable_to_handle_kernel              | 0          | 13         |
+>>> | Oops:#[##]                               | 0          | 13         |
+>>> | RIP:dummy_set_selfpowered                | 0          | 13         |
+>>> | Kernel_panic-not_syncing:Fatal_exception | 0          | 13         |
+>>> +------------------------------------------+------------+------------+
+>>>
+>>> [    4.740314] usb usb1: Product: Dummy host controller
+>>> [    4.740866] usb usb1: Manufacturer: Linux 4.14.0-rc4-00052-g7be1051 =
+dummy_hcd
+>>> [    4.741660] usb usb1: SerialNumber: dummy_hcd.0
+>>> [    4.742575] hub 1-0:1.0: USB hub found
+>>> [    4.743043] hub 1-0:1.0: 1 port detected
+>>> [    4.744153] BUG: unable to handle kernel NULL pointer dereference at=
+           (null)
+>>> [    4.745027] IP: dummy_set_selfpowered+0x34/0x4f
+>>
+>> Any idea why that might be happening?
 > =
 
-> FYI, we noticed a -3.7% regression of aim7.jobs-per-min due to commit:
+> It looks like the problem is in the gadget_to_dummy_hcd() inline
+> routine.  If gadget->speed is USB_SPEED_SUPER but the emulation is high
+> speed then the routine will try to dereference dum->ss_hcd, which isn't
+> set, instead of dum->hs_hcd, which is set.
 > =
 
-> =
+> Was this test made with the earlier change to the UDC core in place?  =
 
-> commit: cb09c151b69ff411ebc78fe8920d8c9e3cf668ba ("f2fs: track ssr valid =
-blocks")
-> https://git.kernel.org/cgit/linux/kernel/git/chao/linux.git f2fs-dev
-> =
+> That could explain it.
 
-> in testcase: aim7
-> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz wit=
-h 384G memory
-> with following parameters:
-> =
+I did test it locally with SS dummy_hcd and HS only gadget driver
+and didn't observe this issue.
 
-> 	disk: 1BRD_48G
-> 	fs: f2fs
-> 	test: sync_disk_rw
-> 	load: 600
-> 	cpufreq_governor: performance
-> =
+So I'm guessing that the earlier change [1] was not included in this test.
 
-> test-description: AIM7 is a traditional UNIX system level benchmark suite=
- which is used to test and measure the performance of multiuser system.
-> test-url: https://sourceforge.net/projects/aimbench/files/aim-suite7/
-> =
+[1] - https://lkml.org/lkml/2017/10/31/485
 
-> =
+-- =
 
-> =
+cheers,
+-roger
 
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
-> =
+Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki. Y-tunnus/Bu=
+siness ID: 0615521-4. Kotipaikka/Domicile: Helsinki
 
-> =
-
-> To reproduce:
-> =
-
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp install job.yaml  # job file is attached in this email
->         bin/lkp run     job.yaml
-> =
-
-> testcase/path_params/tbox_group/run: aim7/1BRD_48G-f2fs-sync_disk_rw-600-=
-performance/lkp-ivb-ep01
-> =
-
-> c8cdf95f56a2fba5  cb09c151b69ff411ebc78fe892  =
-
-> ----------------  --------------------------  =
-
->          %stddev      change         %stddev
->              \          |                \  =
-
->       3083              -4%       2967        aim7.jobs-per-min
->     120203             101%     241341        aim7.time.involuntary_conte=
-xt_switches
->       6889              15%       7952        aim7.time.system_time
->       1167               4%       1213        aim7.time.elapsed_time
->       1167               4%       1213        aim7.time.elapsed_time.max
->  1.845e+08                   1.809e+08        aim7.time.voluntary_context=
-_switches
->     184305              -4%     177438        vmstat.io.bo
->     313412              -6%     295875        vmstat.system.cs
->  2.282e+10              36%   3.11e+10 =C2=B1  3%  perf-stat.branch-misses
->       1.71 =C2=B1  3%        19%       2.05 =C2=B1  3%  perf-stat.branch-=
-miss-rate%
->  6.145e+12 =C2=B1  5%        16%  7.135e+12 =C2=B1  5%  perf-stat.instruc=
-tions
->       2457 =C2=B1  4%        15%       2825 =C2=B1  6%  perf-stat.instruc=
-tions-per-iTLB-miss
->  1.295e+12 =C2=B1  3%        14%   1.48e+12 =C2=B1  4%  perf-stat.dTLB-lo=
-ads
->  1.334e+12 =C2=B1  5%        14%  1.523e+12 =C2=B1  5%  perf-stat.branch-=
-instructions
->  1.141e+13 =C2=B1  4%        10%  1.261e+13 =C2=B1  4%  perf-stat.cpu-cyc=
-les
->   48287264               7%   51597919        perf-stat.cpu-migrations
->       0.54               5%       0.57        perf-stat.ipc
->  2.889e+09               4%  3.017e+09        perf-stat.node-load-misses
->    2872009               4%    2982612        perf-stat.minor-faults
->    2872016               4%    2982587        perf-stat.page-faults
->  2.294e+09               3%   2.37e+09        perf-stat.node-store-misses
->  3.664e+08                   3.593e+08        perf-stat.context-switches
->       1.86              -5%       1.77        perf-stat.cpi
-> =
-
-> [*] bisect-good sample
-> [O] bisect-bad  sample
-> =
-
-> =
-
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
-> =
-
-> =
-
-> Thanks,
-> Xiaolong
-> =
-
-
-
---===============3665121293616075264==--
+--===============3485349430841406360==--
 
