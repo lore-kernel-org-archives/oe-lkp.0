@@ -1,87 +1,93 @@
-Content-Type: multipart/mixed; boundary="===============6105342772738347256=="
+Content-Type: multipart/mixed; boundary="===============1237524885754741089=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [RING_BUFFER_BENCHMARK] INFO: task rb_producer:73 blocked for more than 120 seconds.
-Date: Tue, 21 Nov 2017 21:28:55 +0800
-Message-ID: <20171121132855.ajdv4k6swzhvktl6@wfg-t540p.sh.intel.com>
-In-Reply-To: <20171121121233.3pvkb34tci47n634@wfg-t540p.sh.intel.com>
+Subject: Re: [serial8250_interrupt] RIP: 0010:arch_local_irq_restore+0x2/0x8
+Date: Tue, 21 Nov 2017 21:31:20 +0800
+Message-ID: <20171121133120.43fe5ak2gct56nmp@wfg-t540p.sh.intel.com>
+In-Reply-To: <20171121123357.bw5raz3vqkob2vgz@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6105342772738347256==
+--===============1237524885754741089==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 21, 2017 at 08:12:33PM +0800, Fengguang Wu wrote:
+On Tue, Nov 21, 2017 at 08:33:57PM +0800, Fengguang Wu wrote:
 >Hello,
 >
->FYI this happens in mainline kernel 4.14.0-10087-g8c60969.
->It happens since 4.11.
+>FYI this happens in mainline kernel 4.14.0-02748-gabc36be.
+>It shows up since v4.13 .
 
-Sorry it occurs once in 4.10, too.
+Sorry it actually also shows up in 4.10:
 
-/pkg/linux/i386-randconfig-sb0-10121726/gcc-5/c470abd4fde40ea6a0846a2beab64=
-2a578c0b8cd/dmesg-vm-lkp-wsx03-openwrt-i386-23:20171016024929:i386-randconf=
-ig-sb0-10121726:4.10.0:1
+/pkg/linux/x86_64-rhel-7.2+CONFIG_DEBUG_INFO_REDUCED/gcc-6/c470abd4fde40ea6=
+a0846a2beab642a578c0b8cd/dmesg-vm-lkp-hsw01-4G-1:20171110043200:x86_64-rhel=
+-7.2+CONFIG_DEBUG_INFO_REDUCED:4.10.0:1
 
-[  363.022350] CE: Reprogramming failure. Giving up
-[  373.638060] INFO: task rb_producer:43 blocked for more than 120 seconds.
-[  373.638158]       Not tainted 4.10.0 #1
-[  373.638189] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables =
-this message.
-[  373.638216] rb_producer     D 7500    43      2 0x00000000
-[  373.639902] Call Trace:
-[  373.640643]  __schedule+0xde8/0x118f
-[  373.651470]  ? rewind_stack_do_exit+0x12/0x12
-[  373.651510]  schedule+0x4e/0xc0
-[  373.651566]  schedule_timeout+0x2a/0x6d9
-[  373.651597]  ? wait_for_common+0x4e/0x2cb
-[  373.651631]  ? _raw_spin_unlock_irq+0x60/0x16f
-[  373.651666]  ? trace_hardirqs_on_caller+0x36b/0x3b1
-[  373.651698]  ? preempt_count_sub+0xdd/0xf7
-[  373.652222]  ? native_irq_disable+0x22/0x22
-[  373.683202]  wait_for_common+0x250/0x2cb
-[  373.706893]  ? do_task_dead+0xad/0xad
-[  373.732749]  wait_for_completion+0x25/0x35
-[  373.732785]  ring_buffer_producer+0x26a/0x818
-[  373.758544]  ? do_task_dead+0xad/0xad
-[  373.767747]  ring_buffer_producer_thread+0xa0/0x1b2
-[  373.767806]  kthread+0x1b1/0x1c4
-[  373.767846]  ? wait_to_die+0xaa/0xaa
-[  373.767880]  ? __kthread_create_on_node+0x2c7/0x2c7
-[  373.796586]  ret_from_fork+0x21/0x30
-[  373.796617]
-[  373.796617] Showing all locks held in the system:
-[  373.798861] 2 locks held by khungtaskd/17:
-[  373.800187]  #0:  (rcu_read_lock){......}, at: [<81172016>] watchdog+0x1=
-24/0x6d1
-[  373.800287]  #1:  (tasklist_lock){.+.+..}, at: [<810e574a>] debug_show_a=
-ll_locks+0x72/0x2d3
-[  373.800702] 2 locks held by askfirst/123:
-[  373.802453]  #0:  (&tty->ldisc_sem){.+.+.+}, at: [<819b98ac>] ldsem_down=
-_read+0x46/0x58
-[  373.802546]  #1:  (&ldata->atomic_read_lock){+.+...}, at: [<81565de8>] n=
-_tty_read+0x115/0xbe4
-[  373.804460]
-[  373.804465] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-[  373.804465]
-[  373.831299] Kernel panic - not syncing: hung_task: blocked tasks
-[  373.831358] CPU: 0 PID: 17 Comm: khungtaskd Not tainted 4.10.0 #1
-[  373.831363] Call Trace:
-[  373.831720]  dump_stack+0x40/0x5e
-[  373.831809]  panic+0x1b5/0x4a3
-[  373.831849]  check_hung_task+0x3d4/0x51d
-[  373.831882]  watchdog+0x269/0x6d1
-[  373.831936]  kthread+0x1b1/0x1c4
-[  373.831979]  ? check_hung_task+0x51d/0x51d
-[  373.832038]  ? __kthread_create_on_node+0x2c7/0x2c7
-[  373.832230]  ret_from_fork+0x21/0x30
-[  373.832400] Kernel Offset: disabled
-[  376.677470] Rebooting in 3 seconds..
+[   19.902933]
+[   19.904514]
+[   19.904515]
+[   21.020567] irq 3: nobody cared (try booting with the "irqpoll" option)
+[   21.021466] CPU: 0 PID: 4094 Comm: dmesg Not tainted 4.10.0 #1
+[   21.022276] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS =
+1.10.2-1 04/01/2014
+[   21.023584] Call Trace:
+[   21.024126]  <IRQ>
+[   21.025622]  dump_stack+0x63/0x8a
+[   21.026238]  __report_bad_irq+0x35/0xc0
+[   21.026890]  note_interrupt+0x234/0x270
+[   21.027548]  handle_irq_event_percpu+0x45/0x60
+[   21.028249]  handle_irq_event+0x42/0x70
+[   21.028901]  handle_edge_irq+0x74/0x140
+[   21.029560]  handle_irq+0x73/0x120
+[   21.030177]  ? irq_exit+0x6a/0xf0
+[   21.030794]  do_IRQ+0x46/0xd0
+[   21.031380]  common_interrupt+0x8e/0x8e
+[   21.032042] RIP: 0010:_raw_spin_unlock_irqrestore+0x15/0x30
+[   21.032831] RSP: 0018:ffffc90002d9fd28 EFLAGS: 00000286 ORIG_RAX: ffffff=
+ffffffffcc
+[   21.034081] RAX: 0000000000000001 RBX: ffffffff82362ee8 RCX: 00000000000=
+00000
+[   21.034999] RDX: 00000000000002f9 RSI: 0000000000000286 RDI: 00000000000=
+00286
+[   21.035914] RBP: ffffc90002d9fd28 R08: 0000000000000004 R09: ffff88012e6=
+dfc38
+[   21.036826] R10: 00007ffc8f5bb708 R11: ffff88007f542580 R12: ffff88007fd=
+51c00
+[   21.037742] R13: 0000000000000286 R14: ffffc900031672a0 R15: 00000000000=
+00001
+[   21.038654]  </IRQ>
+[   21.039171]  uart_start+0x73/0xe0
+[   21.039783]  uart_flush_chars+0xe/0x10
+[   21.040430]  n_tty_write+0x231/0x450
+[   21.041068]  ? __wake_up_sync+0x20/0x20
+[   21.041721]  tty_write+0x1ab/0x330
+[   21.042346]  ? n_tty_open+0xd0/0xd0
+[   21.042972]  __vfs_write+0x28/0x140
+[   21.043602]  ? security_file_permission+0x3b/0xc0
+[   21.044326]  ? rw_verify_area+0x4e/0xb0
+[   21.044977]  vfs_write+0xc8/0x1e0
+[   21.045596]  SyS_write+0x46/0xa0
+[   21.046207]  entry_SYSCALL_64_fastpath+0x1a/0xa9
+[   21.046926] RIP: 0033:0x7f7a0064a720
+[   21.047560] RSP: 002b:00007ffc8f5bb688 EFLAGS: 00000246 ORIG_RAX: 000000=
+0000000001
+[   21.048811] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007f7a006=
+4a720
+[   21.049723] RDX: 0000000000000001 RSI: 000000000060c400 RDI: 00000000000=
+00001
+[   21.050636] RBP: 00007f7a00907683 R08: 00007f7a00908760 R09: 00007f7a009=
+07600
+[   21.051554] R10: 00007ffc8f5bb708 R11: 0000000000000246 R12: 00000000000=
+00001
+[   21.052471] R13: 0000000000000001 R14: 00007f7a00907600 R15: 00000000000=
+00001
+[   21.053383] handlers:
+[   21.053913] [<ffffffff81529190>] serial8250_interrupt
+[   21.054662] Disabling IRQ #3
 
 Fengguang
 
---===============6105342772738347256==--
+--===============1237524885754741089==--
 
