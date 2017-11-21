@@ -1,42 +1,38 @@
-Content-Type: multipart/mixed; boundary="===============4849923211236502549=="
+Content-Type: multipart/mixed; boundary="===============2795799121617138480=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [migration_cpu_stop] WARNING: CPU: 0 PID: 11 at kernel/sched/core.c:1187 set_task_cpu+0x257/0x6b6
-Date: Tue, 21 Nov 2017 14:34:03 +0100
-Message-ID: <20171121133403.GH3165@worktop.lehotels.local>
-In-Reply-To: <20171121120420.lrj46mwmvxhpfwdr@wfg-t540p.sh.intel.com>
+Subject: Re: [x86] 7b1f0050e4 PANIC: double fault, error_code: 0x0
+Date: Tue, 21 Nov 2017 21:36:04 +0800
+Message-ID: <20171121133604.kzxbjtscfjdn4zps@wfg-t540p.sh.intel.com>
+In-Reply-To: <B494B6DF-0CA0-4D14-AAF8-683813E3246B@amacapital.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4849923211236502549==
+--===============2795799121617138480==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 21, 2017 at 08:04:20PM +0800, Fengguang Wu wrote:
-> Hello,
-> =
+On Tue, Nov 21, 2017 at 06:33:13AM -0700, Andy Lutomirski wrote:
+>
+>
+>> On Nov 21, 2017, at 3:19 AM, Fengguang Wu <fengguang.wu@intel.com> wro=
+te:
+>>
+>> Hi Andy,
+>>
+>> FYI, this error looks still active in branch HEAD:
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/luto/linux.git x86/entry=
+_stack.wip
+>>
+>
+>Hmm, I thought I deleted that branch.  Now it's just x86/entry_stack.
 
-> FYI this happens in mainline kernel 4.14.0-00902-g43ff2f4.
-> It happens since 4.13.
-> =
+Ah, we don't detect branch deletion. So it should be fine now. :)
 
-> It occurs in 7 out of 36 boots.
-> =
+Regards,
+Fengguang
 
-> [   58.171538] no ifx modem active;
-> [   58.211860] ACPI: Preparing to enter system sleep state S5
-> [   58.216823] reboot: Power down
-> [   58.244526] acpi_power_off called
-> [   61.460467] ------------[ cut here ]------------
-> [   61.465481] WARNING: CPU: 0 PID: 11 at kernel/sched/core.c:1187 set_ta=
-sk_cpu+0x257/0x6b6:
-> 						set_task_cpu at kernel/sched/core.c:1187
-
-Never seen that before.. but I can't even figure out how CPUs end up
-offline in that reboot path :/
-
-So far I just get lost in the callback maze... Rafael any clues?
-
---===============4849923211236502549==--
+--===============2795799121617138480==--
 
