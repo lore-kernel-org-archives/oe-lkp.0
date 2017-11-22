@@ -1,113 +1,104 @@
-Content-Type: multipart/mixed; boundary="===============3024718483227029704=="
+Content-Type: multipart/mixed; boundary="===============0810959570016146829=="
 MIME-Version: 1.0
 From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [e1000_shutdown] e1000 0000:00:03.0: disabling already-disabled device
-Date: Thu, 23 Nov 2017 07:13:24 +0800
-Message-ID: <20171122231324.dofyw6maxkh5frqv@wfg-t540p.sh.intel.com>
-In-Reply-To: <7fe10136-8f99-c0e8-2a3a-93c34915a95a@oracle.com>
+Subject: Re: [serial8250_interrupt] RIP: 0010:arch_local_irq_restore+0x2/0x8
+Date: Thu, 23 Nov 2017 07:36:23 +0800
+Message-ID: <20171122233623.7ud3wvtuemfvl3t3@wfg-t540p.sh.intel.com>
+In-Reply-To: <1511275154.25007.349.camel@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3024718483227029704==
+--===============0810959570016146829==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 22, 2017 at 03:40:52AM +0530, Tushar Dave wrote:
+On Tue, Nov 21, 2017 at 04:39:14PM +0200, Andy Shevchenko wrote:
+>On Tue, 2017-11-21 at 21:31 +0800, Fengguang Wu wrote:
+>> On Tue, Nov 21, 2017 at 08:33:57PM +0800, Fengguang Wu wrote:
+>> > Hello,
+>> >
+>> > FYI this happens in mainline kernel 4.14.0-02748-gabc36be.
+>> > It shows up since v4.13 .
+>>
+>> Sorry it actually also shows up in 4.10:
 >
+>This one means that interrupt storm is occurred. Last time I saw that
+>was by the fact of some specific IOAPIC configuration when DMA for UART
+>was enabled.
 >
->On 11/21/2017 06:11 PM, Fengguang Wu wrote:
->> Hello,
->>
->> FYI this happens in mainline kernel 4.14.0-01330-g3c07399.
->> It happens since 4.13 .
->>
->> It occurs in 3 out of 162 boots.
->>
->>
->> [   44.637743] advantechwdt: Unexpected close, not stopping watchdog!
->> [   44.997548] input: ImExPS/2 Generic Explorer Mouse as /devices/platfo=
-rm/i8042/serio1/input/input6
->> [   45.013419] e1000 0000:00:03.0: disabling already-disabled device
->> [   45.013447] ------------[ cut here ]------------
->> [   45.014868] WARNING: CPU: 1 PID: 71 at drivers/pci/pci.c:1641 pci_dis=
-able_device+0xa1/0x105:
->> 						pci_disable_device at drivers/pci/pci.c:1640
->> [   45.016171] CPU: 1 PID: 71 Comm: rcu_perf_shutdo Not tainted 4.14.0-0=
-1330-g3c07399 #1
->> [   45.017197] task: ffff88011bee9e40 task.stack: ffffc90000860000
->> [   45.017987] RIP: 0010:pci_disable_device+0xa1/0x105:
->> 						pci_disable_device at drivers/pci/pci.c:1640
->> [   45.018603] RSP: 0000:ffffc90000863e30 EFLAGS: 00010286
->> [   45.019282] RAX: 0000000000000035 RBX: ffff88013a230008 RCX: 00000000=
-00000000
->> [   45.020182] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000=
-00000203
->> [   45.021084] RBP: ffff88013a3f31e8 R08: 0000000000000001 R09: 00000000=
-00000000
->> [   45.021986] R10: ffffffff827ec29c R11: 0000000000000002 R12: 00000000=
-00000001
->> [   45.022946] R13: ffff88013a230008 R14: ffff880117802b20 R15: ffffc900=
-00863e8f
->> [   45.023842] FS:  0000000000000000(0000) GS:ffff88013fd00000(0000) knl=
-GS:0000000000000000
->> [   45.024863] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [   45.025583] CR2: ffffc900006d4000 CR3: 000000000220f000 CR4: 00000000=
-000006a0
->> [   45.026478] Call Trace:
->> [   45.026811]  __e1000_shutdown+0x1d4/0x1e2:
->> 						__e1000_shutdown at drivers/net/ethernet/intel/e1000/e1000_main.c:=
-5162
->> [   45.027344]  ? rcu_perf_cleanup+0x2a1/0x2a1:
->> 						rcu_perf_shutdown at kernel/rcu/rcuperf.c:627
->> [   45.027883]  e1000_shutdown+0x14/0x3a:
->> 						e1000_shutdown at drivers/net/ethernet/intel/e1000/e1000_main.c:52=
-35
->> [   45.028351]  device_shutdown+0x110/0x1aa:
->> 						device_shutdown at drivers/base/core.c:2807
->> [   45.028858]  kernel_power_off+0x31/0x64:
->> 						kernel_power_off at kernel/reboot.c:260
->> [   45.029343]  rcu_perf_shutdown+0x9b/0xa7:
->> 						rcu_perf_shutdown at kernel/rcu/rcuperf.c:637
->> [   45.029852]  ? __wake_up_common_lock+0xa2/0xa2:
->> 						autoremove_wake_function at kernel/sched/wait.c:376
->> [   45.030414]  kthread+0x126/0x12e:
->> 						kthread at kernel/kthread.c:233
->> [   45.030834]  ? __kthread_bind_mask+0x8e/0x8e:
->> 						kthread at kernel/kthread.c:190
->> [   45.031399]  ? ret_from_fork+0x1f/0x30:
->> 						ret_from_fork at arch/x86/entry/entry_64.S:443
->> [   45.031883]  ? kernel_init+0xa/0xf5:
->> 						kernel_init at init/main.c:997
->> [   45.032325]  ret_from_fork+0x1f/0x30:
->> 						ret_from_fork at arch/x86/entry/entry_64.S:443
->> [   45.032777] Code: 00 48 85 ed 75 07 48 8b ab a8 00 00 00 48 8d bb 98 =
-00 00 00 e8 aa d1 11 00 48 89 ea 48 89 c6 48 c7 c7 d8 e4 0b 82 e8 55 7d da =
-ff <0f> ff b9 01 00 00 00 31 d2 be 01 00 00 00 48 c7 c7 f0 b1 61 82
->> [   45.035222] ---[ end trace c257137b1b1976ef ]---
->> [   45.037838] ACPI: Preparing to enter system sleep state S5
->>
->> Attached the full dmesg, kconfig and reproduce scripts.
->Looks like e1000 pci/pxi-x device is already suspended. And therefore
->call to e1000_suspend() -> __e1000_shutdown() -> pci_disable_device()
->already had disabled the device.
->Disabling device again by e1000_shutdown handler during system shutdown
->causes warning at drivers/pci/pci.c:1641.
->
->I think function __e1000_shutdown should just return if device is
->already suspended!
->
->I don't have e1000 hardware to test right now. So if this seems logical
->to others I will send a patch.
+>I'm pretty sure that is not the case here. Though, it would be nice to
+>see link to the following files:
 
-Tushar, it happens on QEMU boot testing, so do not rely on e1000 HW.
-Unless you'd like to prevent regressions on real HW.
+It's basically a KVM machine. This is adapted from the reproduce
+script attached in the first email: =
 
-The original report attached a reproduce script to run the QEMU test.
-Or you may send me the patch for testing.
+
+kvm=3D(
+        qemu-system-x86_64
+        -enable-kvm
+        -cpu IvyBridge
+        -kernel $kernel
+        -initrd initrd.img
+        -m 1536
+        -smp 2
+        -device e1000,netdev=3Dnet0
+        -netdev user,id=3Dnet0,hostfwd=3Dtcp::23406-:22
+        -boot order=3Dnc
+        -no-reboot
+        -watchdog i6300esb
+        -watchdog-action debug
+        -rtc base=3Dlocaltime
+        -drive file=3Ddisk-vm-ivb41-1G-7-0,media=3Ddisk,if=3Dvirtio
+        -drive file=3Ddisk-vm-ivb41-1G-7-1,media=3Ddisk,if=3Dvirtio
+        -drive file=3Ddisk-vm-ivb41-1G-7-2,media=3Ddisk,if=3Dvirtio
+        -drive file=3Ddisk-vm-ivb41-1G-7-3,media=3Ddisk,if=3Dvirtio
+        -drive file=3Ddisk-vm-ivb41-1G-7-4,media=3Ddisk,if=3Dvirtio
+        -drive file=3Ddisk-vm-ivb41-1G-7-5,media=3Ddisk,if=3Dvirtio
+        -serial stdio
+        -display none
+        -monitor null
+)
+
+append=3D(
+        ip=3D::::vm-ivb41-1G-7::dhcp
+        root=3D/dev/ram0
+        user=3Dlkp
+        job=3D/job-script
+        ARCH=3Dx86_64
+        kconfig=3Dx86_64-allyesdebian
+        branch=3Dlinus/master
+        commit=3Dabc36be236358162202e86ad88616ff95a755101
+        BOOT_IMAGE=3D/pkg/linux/x86_64-allyesdebian/gcc-6/abc36be2363581622=
+02e86ad88616ff95a755101/vmlinuz-4.14.0-02748-gabc36be
+        max_uptime=3D600
+        RESULT_ROOT=3D/result/boot/1/vm-ivb41-1G/debian-x86_64-2016-08-31.c=
+gz/x86_64-allyesdebian/gcc-6/abc36be236358162202e86ad88616ff95a755101/0
+        result_service=3Dtmpfs
+        debug
+        apic=3Ddebug
+        sysrq_always_enabled
+        rcupdate.rcu_cpu_stall_timeout=3D100
+        net.ifnames=3D0
+        printk.devkmsg=3Don
+        panic=3D-1
+        softlockup_panic=3D1
+        nmi_watchdog=3Dpanic
+        oops=3Dpanic
+        load_ramdisk=3D2
+        prompt_ramdisk=3D0
+        drbd.minor_count=3D8
+        systemd.log_level=3Derr
+        ignore_loglevel
+        console=3Dtty0
+        earlyprintk=3DttyS0,115200
+        console=3DttyS0,115200
+        vga=3Dnormal
+        rw
+)
 
 Thanks,
 Fengguang
 
---===============3024718483227029704==--
+--===============0810959570016146829==--
 
