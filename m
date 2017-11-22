@@ -1,100 +1,113 @@
-Content-Type: multipart/mixed; boundary="===============1814631686490120009=="
+Content-Type: multipart/mixed; boundary="===============3024718483227029704=="
 MIME-Version: 1.0
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [hrtimer_active ^W ata_port_wait_eh] INFO: trying to register non-static key.
-Date: Wed, 22 Nov 2017 15:37:45 +0100
-Message-ID: <alpine.DEB.2.20.1711221522260.1751@nanos>
-In-Reply-To: <20171121130118.2ckjorhwztxa7awu@wfg-t540p.sh.intel.com>
+Subject: Re: [e1000_shutdown] e1000 0000:00:03.0: disabling already-disabled device
+Date: Thu, 23 Nov 2017 07:13:24 +0800
+Message-ID: <20171122231324.dofyw6maxkh5frqv@wfg-t540p.sh.intel.com>
+In-Reply-To: <7fe10136-8f99-c0e8-2a3a-93c34915a95a@oracle.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1814631686490120009==
+--===============3024718483227029704==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 21 Nov 2017, Fengguang Wu wrote:
+On Wed, Nov 22, 2017 at 03:40:52AM +0530, Tushar Dave wrote:
+>
+>
+>On 11/21/2017 06:11 PM, Fengguang Wu wrote:
+>> Hello,
+>>
+>> FYI this happens in mainline kernel 4.14.0-01330-g3c07399.
+>> It happens since 4.13 .
+>>
+>> It occurs in 3 out of 162 boots.
+>>
+>>
+>> [   44.637743] advantechwdt: Unexpected close, not stopping watchdog!
+>> [   44.997548] input: ImExPS/2 Generic Explorer Mouse as /devices/platfo=
+rm/i8042/serio1/input/input6
+>> [   45.013419] e1000 0000:00:03.0: disabling already-disabled device
+>> [   45.013447] ------------[ cut here ]------------
+>> [   45.014868] WARNING: CPU: 1 PID: 71 at drivers/pci/pci.c:1641 pci_dis=
+able_device+0xa1/0x105:
+>> 						pci_disable_device at drivers/pci/pci.c:1640
+>> [   45.016171] CPU: 1 PID: 71 Comm: rcu_perf_shutdo Not tainted 4.14.0-0=
+1330-g3c07399 #1
+>> [   45.017197] task: ffff88011bee9e40 task.stack: ffffc90000860000
+>> [   45.017987] RIP: 0010:pci_disable_device+0xa1/0x105:
+>> 						pci_disable_device at drivers/pci/pci.c:1640
+>> [   45.018603] RSP: 0000:ffffc90000863e30 EFLAGS: 00010286
+>> [   45.019282] RAX: 0000000000000035 RBX: ffff88013a230008 RCX: 00000000=
+00000000
+>> [   45.020182] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000=
+00000203
+>> [   45.021084] RBP: ffff88013a3f31e8 R08: 0000000000000001 R09: 00000000=
+00000000
+>> [   45.021986] R10: ffffffff827ec29c R11: 0000000000000002 R12: 00000000=
+00000001
+>> [   45.022946] R13: ffff88013a230008 R14: ffff880117802b20 R15: ffffc900=
+00863e8f
+>> [   45.023842] FS:  0000000000000000(0000) GS:ffff88013fd00000(0000) knl=
+GS:0000000000000000
+>> [   45.024863] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> [   45.025583] CR2: ffffc900006d4000 CR3: 000000000220f000 CR4: 00000000=
+000006a0
+>> [   45.026478] Call Trace:
+>> [   45.026811]  __e1000_shutdown+0x1d4/0x1e2:
+>> 						__e1000_shutdown at drivers/net/ethernet/intel/e1000/e1000_main.c:=
+5162
+>> [   45.027344]  ? rcu_perf_cleanup+0x2a1/0x2a1:
+>> 						rcu_perf_shutdown at kernel/rcu/rcuperf.c:627
+>> [   45.027883]  e1000_shutdown+0x14/0x3a:
+>> 						e1000_shutdown at drivers/net/ethernet/intel/e1000/e1000_main.c:52=
+35
+>> [   45.028351]  device_shutdown+0x110/0x1aa:
+>> 						device_shutdown at drivers/base/core.c:2807
+>> [   45.028858]  kernel_power_off+0x31/0x64:
+>> 						kernel_power_off at kernel/reboot.c:260
+>> [   45.029343]  rcu_perf_shutdown+0x9b/0xa7:
+>> 						rcu_perf_shutdown at kernel/rcu/rcuperf.c:637
+>> [   45.029852]  ? __wake_up_common_lock+0xa2/0xa2:
+>> 						autoremove_wake_function at kernel/sched/wait.c:376
+>> [   45.030414]  kthread+0x126/0x12e:
+>> 						kthread at kernel/kthread.c:233
+>> [   45.030834]  ? __kthread_bind_mask+0x8e/0x8e:
+>> 						kthread at kernel/kthread.c:190
+>> [   45.031399]  ? ret_from_fork+0x1f/0x30:
+>> 						ret_from_fork at arch/x86/entry/entry_64.S:443
+>> [   45.031883]  ? kernel_init+0xa/0xf5:
+>> 						kernel_init at init/main.c:997
+>> [   45.032325]  ret_from_fork+0x1f/0x30:
+>> 						ret_from_fork at arch/x86/entry/entry_64.S:443
+>> [   45.032777] Code: 00 48 85 ed 75 07 48 8b ab a8 00 00 00 48 8d bb 98 =
+00 00 00 e8 aa d1 11 00 48 89 ea 48 89 c6 48 c7 c7 d8 e4 0b 82 e8 55 7d da =
+ff <0f> ff b9 01 00 00 00 31 d2 be 01 00 00 00 48 c7 c7 f0 b1 61 82
+>> [   45.035222] ---[ end trace c257137b1b1976ef ]---
+>> [   45.037838] ACPI: Preparing to enter system sleep state S5
+>>
+>> Attached the full dmesg, kconfig and reproduce scripts.
+>Looks like e1000 pci/pxi-x device is already suspended. And therefore
+>call to e1000_suspend() -> __e1000_shutdown() -> pci_disable_device()
+>already had disabled the device.
+>Disabling device again by e1000_shutdown handler during system shutdown
+>causes warning at drivers/pci/pci.c:1641.
+>
+>I think function __e1000_shutdown should just return if device is
+>already suspended!
+>
+>I don't have e1000 hardware to test right now. So if this seems logical
+>to others I will send a patch.
 
-> Hello,
-> =
+Tushar, it happens on QEMU boot testing, so do not rely on e1000 HW.
+Unless you'd like to prevent regressions on real HW.
 
-> FYI this happens in mainline kernel 4.14.0-12872-g020aae3.
-> It looks like a new regression after 4.14.
-> =
-
-> It occurs in 126 out of 945 boots.
-> =
-
-> [   33.016892] INFO: trying to register non-static key.
-> [   33.017745] the code is fine but needs lockdep annotation.
-> [   33.018798] turning off the locking correctness validator.
-> [   33.019713] CPU: 0 PID: 72 Comm: kworker/u4:5 Not tainted 4.14.0-12872=
--g020aae3 #1
-> [   33.020085] scsi host0: ata_piix
-> [   33.020729] Workqueue: events_unbound async_run_entry_fn
-> [   33.020729] Call Trace:
-> [   33.020729]  dump_stack+0x7b/0xa9:
-> 						dump_stack at lib/dump_stack.c:55
-> [   33.020729]  register_lock_class+0x3bb/0x583:
-> 						register_lock_class at kernel/locking/lockdep.c:782
-> [   33.020729]  ? hrtimer_active+0x92/0x99:
-> 						hrtimer_active at kernel/time/hrtimer.c:1151
-> [   33.020729]  ? hrtimer_try_to_cancel+0x23/0xb6:
-> 						hrtimer_try_to_cancel at kernel/time/hrtimer.c:1016
-
-hrtimer_active() does not contain anything which might register a lock
-class. And that calltrace continues:
-
-[   33.020729] Call Trace:
-[   33.020729]  dump_stack+0x7b/0xa9
-[   33.020729]  register_lock_class+0x3bb/0x583
-[   33.020729]  ? hrtimer_active+0x92/0x99
-[   33.020729]  ? hrtimer_try_to_cancel+0x23/0xb6
-[   33.026718] scsi host1: ata_piix
-[   33.027134] ata3: PATA max MWDMA2 cmd 0x1f0 ctl 0x3f6 bmdma 0xc040 irq 14
-[   33.027138] ata4: PATA max MWDMA2 cmd 0x170 ctl 0x376 bmdma 0xc048 irq 15
-[   33.028426] Error: Driver 'pata_platform' is already registered, abortin=
-g...
-[   33.033725] Rounding down aligned max_sectors from 4294967295 to 4294967=
-288
-[   33.040417]  __lock_acquire+0x58/0x86c
-[   33.048261] SSFDC read-only Flash Translation layer
-[   33.048264] mtdoops: mtd device (mtddev=3Dname/number) must be supplied
-[   33.048276] device id =3D 2440
-[   33.048280] device id =3D 2480
-[   33.048283] device id =3D 24c0
-[   33.048286] device id =3D 24d0
-[   33.048289] device id =3D 25a1
-[   33.048292] device id =3D 2670
-[   33.048413] platform physmap-flash.0: failed to claim resource 0: [mem 0=
-x08000000-0x07ffffff]
-[   33.048781] Ramix PMC551 PCI Mezzanine Ram Driver. (C) 1999,2000 Nortel =
-Networks.
-[   33.048784] pmc551: not detected
-[   33.060052]  lock_acquire+0x61/0x7c
-[   33.060052]  ? ata_port_wait_eh+0x7b/0xe1
-[   33.060052]  _raw_spin_lock_irqsave+0x47/0x81
-[   33.060052]  ? ata_port_wait_eh+0x7b/0xe1
-[   33.060052]  ata_port_wait_eh+0x7b/0xe1
-[   33.060052]  ? print_dl_stats+0x27/0x27
-[   33.060052]  ata_port_probe+0x2c/0x4f
-[   33.060052]  async_port_probe+0x33/0x59
-[   33.060052]  async_run_entry_fn+0x3d/0x127
-[   33.060052]  process_one_work+0x244/0x529
-[   33.060052]  ? process_one_work+0x216/0x529
-[   33.060052]  worker_thread+0x56/0x4d9
-[   33.060052]  kthread+0x115/0x152
-[   33.060052]  ? process_one_work+0x529/0x529
-[   33.060052]  ? __kthread_create_on_node+0x190/0x190
-[   33.060052]  ret_from_fork+0x1f/0x30
-
-And looking at the calltrace entries which have no '?' in front you should
-look at ata_port_wait_eh() which makes a lot more sense.
+The original report attached a reproduce script to run the QEMU test.
+Or you may send me the patch for testing.
 
 Thanks,
+Fengguang
 
-	tglx
-
-
---===============1814631686490120009==--
+--===============3024718483227029704==--
 
