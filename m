@@ -1,41 +1,35 @@
-Content-Type: multipart/mixed; boundary="===============7939786786850809456=="
+Content-Type: multipart/mixed; boundary="===============4066167050867930206=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [hrtimer_active ^W ata_port_wait_eh] INFO: trying to register non-static key.
-Date: Fri, 24 Nov 2017 21:41:39 +0800
-Message-ID: <20171124134139.dzfbzuj7qwba4hec@wfg-t540p.sh.intel.com>
-In-Reply-To: <20171124124942.GE983427@devbig577.frc2.facebook.com>
+Subject: Re: [x86/mm/kaiser] a6c70b8b30: WARNING:at_kernel/locking/lockdep.c:#trace_hardirqs_off_caller
+Date: Fri, 24 Nov 2017 15:02:33 +0100
+Message-ID: <20171124140233.4vurnujcykobhccw@gmail.com>
+In-Reply-To: <20171124131934.whmnawezbeggbqhm@inn>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7939786786850809456==
+--===============4066167050867930206==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Tejun,
 
-On Fri, Nov 24, 2017 at 04:49:52AM -0800, Tejun Heo wrote:
->Hello,
->
->On Wed, Nov 22, 2017 at 03:37:45PM +0100, Thomas Gleixner wrote:
->> [   33.027134] ata3: PATA max MWDMA2 cmd 0x1f0 ctl 0x3f6 bmdma 0xc040 ir=
-q 14
->> [   33.027138] ata4: PATA max MWDMA2 cmd 0x170 ctl 0x376 bmdma 0xc048 ir=
-q 15
->> [   33.028426] Error: Driver 'pata_platform' is already registered, abor=
-ting...
->...
->
->This looks like another fallout from CONFIG_DEBUG_TEST_DRIVER_REMOVE.
->Fengguang, that debug option is broken and triggering various spurious
->failures.  Can you please blacklist that from test configs until it's
->fixed?
+* kernel test robot <fengguang.wu@intel.com> wrote:
 
-Sure. I'll disable CONFIG_DEBUG_TEST_DRIVER_REMOVE for 2 months.
+> =
+
+> FYI, we noticed the following commit (built with gcc-6):
+> =
+
+> commit: a6c70b8b30bf35045d14e352bfd1eb16aaee906f ("x86/mm/kaiser: Prepare=
+ assembly for entry/exit CR3 switching")
+> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git WIP.x86/mm
+
+Should be fixed in the latest version - please let me know if it isn't.
 
 Thanks,
-Fengguang
 
---===============7939786786850809456==--
+	Ingo
+
+--===============4066167050867930206==--
 
