@@ -1,4870 +1,2525 @@
-Content-Type: multipart/mixed; boundary="===============7115186943486219394=="
+Content-Type: multipart/mixed; boundary="===============6977828344652353909=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: kernel BUG at lib/list_debug.c:31!
-Date: Mon, 27 Nov 2017 09:36:09 +0100
-Message-ID: <20171127083609.lv7uk5tipwbql3g3@dhcp22.suse.cz>
-In-Reply-To: <20171126160153.wkwsok6jlyjsjhvg@wfg-t540p.sh.intel.com>
+Subject: 21729f81ce ("x86/mm: Provide general kernel support for memory encryption"): BUG: kernel reboot-without-warning in early-boot stage, last printk: early console in setup code
+Date: Sat, 25 Nov 2017 21:55:01 +0800
+Message-ID: <20171125135501.4wvyns7t36fuiqa4@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7115186943486219394==
+--===============6977828344652353909==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 27-11-17 00:01:53, Wu Fengguang wrote:
-> HI Michal,
-> =
-
-> This happens on the merge commit for your patch, and the call trace
-> looks relevant to the change. So there may be some logical conflict
-> with other ongoing works.
-> =
-
-> git://internal_merge_and_test_tree devel-hourly-2017112611
-> =
-
-> commit 90d3322db7d87a99f9e90ffbfeb1c680689d1342
-> Merge: 79a079f4cf8f2 7cb4e13eca353
-> Author:     0day robot <fengguang.wu@intel.com>
-> AuthorDate: Sun Nov 26 14:40:08 2017 +0800
-> Commit:     0day robot <fengguang.wu@intel.com>
-> CommitDate: Sun Nov 26 14:40:08 2017 +0800
-> =
-
->      Merge 'linux-review/Michal-Hocko/fs-handle-shrinker-registration-fai=
-lure-in-sget_userns/20171126-130939' into devel-hourly-2017112611
-> =
-
-> 79a079f4cf  Merge 'linux-review/Juergen-Fitschen/i2c-at91-slave-mode-supp=
-ort/20171113-004248' into devel-hourly-2017112611
-> 7cb4e13eca  fs: handle shrinker registration failure in sget_userns
-> 90d3322db7  Merge 'linux-review/Michal-Hocko/fs-handle-shrinker-registrat=
-ion-failure-in-sget_userns/20171126-130939' into devel-hourly-2017112611
-> 596d5554a2  0day head guard for 'devel-hourly-2017112611'
-
-How do I find out which patch is that? There were more attempts and some
-of them clearly broken. I do not see any Message id or a link to the
-patch.
-
-Anyway, Al will most probably use a different patch so this all thing is
-moot but I was just wondering...
-
-> +------------------------------------------+------------+------------+---=
----------+--------------+
-> |                                          | 79a079f4cf | 7cb4e13eca | 90=
-d3322db7 | v4.14_112611 |
-> +------------------------------------------+------------+------------+---=
----------+--------------+
-> | boot_successes                           | 31         | 35         | 0 =
-         | 0            |
-> | boot_failures                            | 4          | 0          | 13=
-         | 29           |
-> | kernel_BUG_at_arch/x86/mm/physaddr.c     | 4          |            |   =
-         |              |
-> | invalid_opcode:#[##]                     | 4          | 0          | 13=
-         | 29           |
-> | RIP:__phys_addr                          | 4          |            |   =
-         |              |
-> | Kernel_panic-not_syncing:Fatal_exception | 4          | 0          | 13=
-         | 29           |
-> | kernel_BUG_at_lib/list_debug.c           | 0          | 0          | 13=
-         | 29           |
-> | RIP:__list_add_valid                     | 0          | 0          | 13=
-         | 29           |
-> +------------------------------------------+------------+------------+---=
----------+--------------+
-> =
-
-> [    0.016134] Inode-cache hash table entries: 32768 (order: 6, 262144 by=
-tes)
-> [    0.017679] Mount-cache hash table entries: 1024 (order: 1, 8192 bytes)
-> [    0.019099] Mountpoint-cache hash table entries: 1024 (order: 1, 8192 =
-bytes)
-> [    0.020258] list_add double add: new=3Dffff88001d1583f0, prev=3Dffff88=
-001d1583f0, next=3Dffffffff826cfab0.
-> [    0.022213] ------------[ cut here ]------------
-> [    0.023308] kernel BUG at lib/list_debug.c:31!
-> [    0.024016] invalid opcode: 0000 [#1] SMP
-> [    0.024868] Modules linked in:
-> [    0.025539] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.14.0-15792-g90=
-d3322 #1
-> [    0.027104] task: ffffffff81a25500 task.stack: ffffffff81a00000
-> [    0.028000] RIP: 0010:__list_add_valid+0x5b/0x60
-> [    0.028000] RSP: 0000:ffffffff81a03db8 EFLAGS: 00010286
-> [    0.028000] RAX: 0000000000000058 RBX: ffff88001d1583c8 RCX: 000000008=
-315ff06
-> [    0.028000] RDX: 0000000000000000 RSI: ffffffff81a25888 RDI: 000000000=
-0000282
-> [    0.028000] RBP: ffff88001d1583f0 R08: 0000000000000002 R09: 000000000=
-0000000
-> [    0.028000] R10: ffffffff81a25888 R11: 0000000000000002 R12: ffff88001=
-d1583f0
-> [    0.028000] R13: ffffffff826cfab0 R14: ffff88001d158000 R15: ffffffff8=
-1a6a2c0
-> [    0.028000] FS:  0000000000000000(0000) GS:ffff88001d400000(0000) knlG=
-S:0000000000000000
-> [    0.028000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    0.028000] CR2: 00000000ffffffff CR3: 0000000001a1e000 CR4: 000000000=
-00006b0
-> [    0.028000] Call Trace:
-> [    0.028000]  register_shrinker+0x65/0x93
-> [    0.028000]  sget_userns+0x3c1/0x4d1
-> [    0.028000]  ? get_anon_bdev+0x100/0x100
-> [    0.028000]  ? ramfs_symlink+0xaf/0xaf
-> [    0.028000]  mount_nodev+0x21/0x7a
-> [    0.028000]  mount_fs+0xa/0x6b
-> [    0.028000]  vfs_kern_mount+0x5e/0xc3
-> [    0.028000]  mnt_init+0x1d1/0x297
-> [    0.028000]  vfs_caches_init+0xd1/0xf9
-> [    0.028000]  start_kernel+0x601/0x670
-> [    0.028000]  secondary_startup_64+0xa5/0xb0
-> [    0.028000] Code: c7 2f 02 85 81 e8 f6 ca e9 ff 0f 0b 4c 39 c7 74 05 4=
-8 39 d7 75 17 48 89 f2 48 89 c1 48 89 fe 48 c7 c7 7e 02 85 81 e8 d5 ca e9 f=
-f <0f> 0b b0 01 c3 48 8b 0f 48 b8 00 01 00 00 00 00 ad de 48 89 fe =
-
-> [    0.028000] RIP: __list_add_valid+0x5b/0x60 RSP: ffffffff81a03db8
-> [    0.028015] ---[ end trace 641e005672acfc82 ]---
-> [    0.028891] Kernel panic - not syncing: Fatal exception
-> =
-
->                                                            # HH:MM RESULT=
- GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
-> git bisect start 596d5554a28b82b7c2d3b1904a466eb0cafce029 bebc6082da0a9f5=
-d47a1ea2edc099bf671058bd4 --
-> git bisect good 888abd55698ed1d08cd0d66fb09f3f60fffff0f0  # 20:30  G     =
-10     0    0   0  Merge 'linux-review/ssjoholm-mac-com/USB-option-add-Quec=
-tel-BG96-2c7c-0296/20171122-051603' into devel-hourly-2017112611
-> git bisect good 5064a41be0c16637e2f41b9e885dbb521a2d0cc2  # 20:45  G     =
-11     0    0   0  Merge 'linux-review/Jinbum-Park/arm64-pgd-Mark-pgd_cache=
--as-__ro_after_init/20171125-184407' into devel-hourly-2017112611
-> git bisect good b02a24f61ab7c74b0f96c110ee1ff518527c0442  # 21:20  G     =
-11     0    0   0  Merge 'linux-review/yuan-linyu/net-assign-err-to-0-at-be=
-gin-in-do_setlink-function/20171116-151049' into devel-hourly-2017112611
-> git bisect good f461fd20ed1e7cfdb199013b087d186aa9e01339  # 21:38  G     =
-11     0    0   0  Merge 'linux-review/Sihyeon-Jang/perf-help-Document-miss=
-ing-options/20171114-094914' into devel-hourly-2017112611
-> git bisect good 70d83f5b93c9e530c24cc93d70736d9f32f5d61d  # 22:00  G     =
-10     0    0   0  Merge 'linux-review/Tonghao-Zhang/socket-add-THIS_MODULE=
--to-sock_fs_type/20171113-152044' into devel-hourly-2017112611
-> git bisect good 79a079f4cf8f2d5df0e218704e315dc4423e919e  # 22:16  G     =
-11     0    0   0  Merge 'linux-review/Juergen-Fitschen/i2c-at91-slave-mode=
--support/20171113-004248' into devel-hourly-2017112611
-> git bisect  bad 92be618acda7e36ce4708d0a20f706727ec37aa3  # 22:36  B     =
- 0    11   25   0  Merge 'linux-review/Christophe-Lombard/cxl-Add-support-f=
-or-ASB_Notify-on-POWER9/20171126-115704' into devel-hourly-2017112611
-> git bisect  bad 90d3322db7d87a99f9e90ffbfeb1c680689d1342  # 22:54  B     =
- 0     1   15   0  Merge 'linux-review/Michal-Hocko/fs-handle-shrinker-regi=
-stration-failure-in-sget_userns/20171126-130939' into devel-hourly-20171126=
-11
-> git bisect good 7cb4e13eca35332d5289f02aa1e493e9bb5ebc97  # 23:15  G     =
-11     0    0   0  fs: handle shrinker registration failure in sget_userns
-> # first bad commit: [90d3322db7d87a99f9e90ffbfeb1c680689d1342] Merge 'lin=
-ux-review/Michal-Hocko/fs-handle-shrinker-registration-failure-in-sget_user=
-ns/20171126-130939' into devel-hourly-2017112611
-> git bisect good 79a079f4cf8f2d5df0e218704e315dc4423e919e  # 23:22  G     =
-31     0    0   4  Merge 'linux-review/Juergen-Fitschen/i2c-at91-slave-mode=
--support/20171113-004248' into devel-hourly-2017112611
-> git bisect good 7cb4e13eca35332d5289f02aa1e493e9bb5ebc97  # 23:30  G     =
-31     0    0   0  fs: handle shrinker registration failure in sget_userns
-> # extra tests with debug options
-> git bisect  bad 90d3322db7d87a99f9e90ffbfeb1c680689d1342  # 23:48  B     =
- 0     1   15   0  Merge 'linux-review/Michal-Hocko/fs-handle-shrinker-regi=
-stration-failure-in-sget_userns/20171126-130939' into devel-hourly-20171126=
-11
-> # extra tests on HEAD of linux-devel/devel-hourly-2017112611
-> git bisect  bad 596d5554a28b82b7c2d3b1904a466eb0cafce029  # 23:53  B     =
- 0    29   46   0  0day head guard for 'devel-hourly-2017112611'
-> # extra tests on tree/branch linux-devel/devel-hourly-2017112611
-> git bisect  bad 596d5554a28b82b7c2d3b1904a466eb0cafce029  # 23:55  B     =
- 0    29   46   0  0day head guard for 'devel-hourly-2017112611'
-> =
-
-> ---
-> 0-DAY kernel test infrastructure                Open Source Technology Ce=
-nter
-> https://lists.01.org/pipermail/lkp                          Intel Corpora=
-tion
-
-
-
-> #!/bin/bash
-> =
-
-> kernel=3D$1
-> =
-
-> kvm=3D(
-> 	qemu-system-x86_64
-> 	-enable-kvm
-> 	-cpu kvm64
-> 	-kernel $kernel
-> 	-m 512
-> 	-smp 2
-> 	-device e1000,netdev=3Dnet0
-> 	-netdev user,id=3Dnet0
-> 	-boot order=3Dnc
-> 	-no-reboot
-> 	-watchdog i6300esb
-> 	-watchdog-action debug
-> 	-rtc base=3Dlocaltime
-> 	-serial stdio
-> 	-display none
-> 	-monitor null
-> )
-> =
-
-> append=3D(
-> 	root=3D/dev/ram0
-> 	hung_task_panic=3D1
-> 	debug
-> 	apic=3Ddebug
-> 	sysrq_always_enabled
-> 	rcupdate.rcu_cpu_stall_timeout=3D100
-> 	net.ifnames=3D0
-> 	printk.devkmsg=3Don
-> 	panic=3D-1
-> 	softlockup_panic=3D1
-> 	nmi_watchdog=3Dpanic
-> 	oops=3Dpanic
-> 	load_ramdisk=3D2
-> 	prompt_ramdisk=3D0
-> 	drbd.minor_count=3D8
-> 	systemd.log_level=3Derr
-> 	ignore_loglevel
-> 	console=3Dtty0
-> 	earlyprintk=3DttyS0,115200
-> 	console=3DttyS0,115200
-> 	vga=3Dnormal
-> 	rw
-> 	drbd.minor_count=3D8
-> )
-> =
-
-> "${kvm[@]}" -append "${append[*]}"
-
-> #
-> # Automatically generated file; DO NOT EDIT.
-> # Linux/x86_64 4.14.0 Kernel Configuration
-> #
-> CONFIG_64BIT=3Dy
-> CONFIG_X86_64=3Dy
-> CONFIG_X86=3Dy
-> CONFIG_INSTRUCTION_DECODER=3Dy
-> CONFIG_OUTPUT_FORMAT=3D"elf64-x86-64"
-> CONFIG_ARCH_DEFCONFIG=3D"arch/x86/configs/x86_64_defconfig"
-> CONFIG_LOCKDEP_SUPPORT=3Dy
-> CONFIG_STACKTRACE_SUPPORT=3Dy
-> CONFIG_MMU=3Dy
-> CONFIG_ARCH_MMAP_RND_BITS_MIN=3D28
-> CONFIG_ARCH_MMAP_RND_BITS_MAX=3D32
-> CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN=3D8
-> CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX=3D16
-> CONFIG_NEED_DMA_MAP_STATE=3Dy
-> CONFIG_NEED_SG_DMA_LENGTH=3Dy
-> CONFIG_GENERIC_ISA_DMA=3Dy
-> CONFIG_GENERIC_BUG=3Dy
-> CONFIG_GENERIC_BUG_RELATIVE_POINTERS=3Dy
-> CONFIG_GENERIC_HWEIGHT=3Dy
-> CONFIG_ARCH_MAY_HAVE_PC_FDC=3Dy
-> CONFIG_RWSEM_XCHGADD_ALGORITHM=3Dy
-> CONFIG_GENERIC_CALIBRATE_DELAY=3Dy
-> CONFIG_ARCH_HAS_CPU_RELAX=3Dy
-> CONFIG_ARCH_HAS_CACHE_LINE_SIZE=3Dy
-> CONFIG_HAVE_SETUP_PER_CPU_AREA=3Dy
-> CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK=3Dy
-> CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK=3Dy
-> CONFIG_ARCH_HIBERNATION_POSSIBLE=3Dy
-> CONFIG_ARCH_SUSPEND_POSSIBLE=3Dy
-> CONFIG_ARCH_WANT_HUGE_PMD_SHARE=3Dy
-> CONFIG_ARCH_WANT_GENERAL_HUGETLB=3Dy
-> CONFIG_ZONE_DMA32=3Dy
-> CONFIG_AUDIT_ARCH=3Dy
-> CONFIG_ARCH_SUPPORTS_OPTIMIZED_INLINING=3Dy
-> CONFIG_ARCH_SUPPORTS_DEBUG_PAGEALLOC=3Dy
-> CONFIG_HAVE_INTEL_TXT=3Dy
-> CONFIG_X86_64_SMP=3Dy
-> CONFIG_ARCH_SUPPORTS_UPROBES=3Dy
-> CONFIG_FIX_EARLYCON_MEM=3Dy
-> CONFIG_PGTABLE_LEVELS=3D4
-> CONFIG_DEFCONFIG_LIST=3D"/lib/modules/$UNAME_RELEASE/.config"
-> CONFIG_IRQ_WORK=3Dy
-> CONFIG_BUILDTIME_EXTABLE_SORT=3Dy
-> CONFIG_THREAD_INFO_IN_TASK=3Dy
-> =
-
-> #
-> # General setup
-> #
-> CONFIG_INIT_ENV_ARG_LIMIT=3D32
-> CONFIG_CROSS_COMPILE=3D""
-> # CONFIG_COMPILE_TEST is not set
-> CONFIG_LOCALVERSION=3D""
-> CONFIG_LOCALVERSION_AUTO=3Dy
-> CONFIG_HAVE_KERNEL_GZIP=3Dy
-> CONFIG_HAVE_KERNEL_BZIP2=3Dy
-> CONFIG_HAVE_KERNEL_LZMA=3Dy
-> CONFIG_HAVE_KERNEL_XZ=3Dy
-> CONFIG_HAVE_KERNEL_LZO=3Dy
-> CONFIG_HAVE_KERNEL_LZ4=3Dy
-> # CONFIG_KERNEL_GZIP is not set
-> # CONFIG_KERNEL_BZIP2 is not set
-> # CONFIG_KERNEL_LZMA is not set
-> # CONFIG_KERNEL_XZ is not set
-> # CONFIG_KERNEL_LZO is not set
-> CONFIG_KERNEL_LZ4=3Dy
-> CONFIG_DEFAULT_HOSTNAME=3D"(none)"
-> CONFIG_SYSVIPC=3Dy
-> CONFIG_SYSVIPC_SYSCTL=3Dy
-> # CONFIG_POSIX_MQUEUE is not set
-> CONFIG_CROSS_MEMORY_ATTACH=3Dy
-> CONFIG_USELIB=3Dy
-> # CONFIG_AUDIT is not set
-> CONFIG_HAVE_ARCH_AUDITSYSCALL=3Dy
-> =
-
-> #
-> # IRQ subsystem
-> #
-> CONFIG_GENERIC_IRQ_PROBE=3Dy
-> CONFIG_GENERIC_IRQ_SHOW=3Dy
-> CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK=3Dy
-> CONFIG_GENERIC_PENDING_IRQ=3Dy
-> CONFIG_GENERIC_IRQ_MIGRATION=3Dy
-> CONFIG_GENERIC_IRQ_CHIP=3Dy
-> CONFIG_IRQ_DOMAIN=3Dy
-> CONFIG_IRQ_SIM=3Dy
-> CONFIG_IRQ_DOMAIN_HIERARCHY=3Dy
-> CONFIG_GENERIC_MSI_IRQ=3Dy
-> CONFIG_GENERIC_MSI_IRQ_DOMAIN=3Dy
-> CONFIG_GENERIC_IRQ_MATRIX_ALLOCATOR=3Dy
-> CONFIG_GENERIC_IRQ_RESERVATION_MODE=3Dy
-> CONFIG_IRQ_DOMAIN_DEBUG=3Dy
-> CONFIG_IRQ_FORCED_THREADING=3Dy
-> CONFIG_SPARSE_IRQ=3Dy
-> CONFIG_GENERIC_IRQ_DEBUGFS=3Dy
-> CONFIG_CLOCKSOURCE_WATCHDOG=3Dy
-> CONFIG_ARCH_CLOCKSOURCE_DATA=3Dy
-> CONFIG_CLOCKSOURCE_VALIDATE_LAST_CYCLE=3Dy
-> CONFIG_GENERIC_TIME_VSYSCALL=3Dy
-> CONFIG_GENERIC_CLOCKEVENTS=3Dy
-> CONFIG_GENERIC_CLOCKEVENTS_BROADCAST=3Dy
-> CONFIG_GENERIC_CLOCKEVENTS_MIN_ADJUST=3Dy
-> CONFIG_GENERIC_CMOS_UPDATE=3Dy
-> =
-
-> #
-> # Timers subsystem
-> #
-> CONFIG_TICK_ONESHOT=3Dy
-> CONFIG_NO_HZ_COMMON=3Dy
-> # CONFIG_HZ_PERIODIC is not set
-> # CONFIG_NO_HZ_IDLE is not set
-> CONFIG_NO_HZ_FULL=3Dy
-> # CONFIG_NO_HZ_FULL_ALL is not set
-> # CONFIG_NO_HZ is not set
-> CONFIG_HIGH_RES_TIMERS=3Dy
-> =
-
-> #
-> # CPU/Task time and stats accounting
-> #
-> CONFIG_VIRT_CPU_ACCOUNTING=3Dy
-> CONFIG_VIRT_CPU_ACCOUNTING_GEN=3Dy
-> CONFIG_IRQ_TIME_ACCOUNTING=3Dy
-> # CONFIG_BSD_PROCESS_ACCT is not set
-> # CONFIG_TASKSTATS is not set
-> # CONFIG_CPU_ISOLATION is not set
-> =
-
-> #
-> # RCU Subsystem
-> #
-> CONFIG_TREE_RCU=3Dy
-> # CONFIG_RCU_EXPERT is not set
-> CONFIG_SRCU=3Dy
-> CONFIG_TREE_SRCU=3Dy
-> CONFIG_TASKS_RCU=3Dy
-> CONFIG_RCU_STALL_COMMON=3Dy
-> CONFIG_RCU_NEED_SEGCBLIST=3Dy
-> CONFIG_CONTEXT_TRACKING=3Dy
-> CONFIG_CONTEXT_TRACKING_FORCE=3Dy
-> CONFIG_RCU_NOCB_CPU=3Dy
-> CONFIG_BUILD_BIN2C=3Dy
-> CONFIG_IKCONFIG=3Dy
-> CONFIG_IKCONFIG_PROC=3Dy
-> CONFIG_LOG_BUF_SHIFT=3D20
-> CONFIG_LOG_CPU_MAX_BUF_SHIFT=3D12
-> CONFIG_PRINTK_SAFE_LOG_BUF_SHIFT=3D13
-> CONFIG_HAVE_UNSTABLE_SCHED_CLOCK=3Dy
-> CONFIG_ARCH_SUPPORTS_NUMA_BALANCING=3Dy
-> CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH=3Dy
-> CONFIG_ARCH_SUPPORTS_INT128=3Dy
-> # CONFIG_NUMA_BALANCING is not set
-> CONFIG_CGROUPS=3Dy
-> # CONFIG_MEMCG is not set
-> CONFIG_CGROUP_SCHED=3Dy
-> CONFIG_FAIR_GROUP_SCHED=3Dy
-> # CONFIG_CFS_BANDWIDTH is not set
-> # CONFIG_RT_GROUP_SCHED is not set
-> CONFIG_CGROUP_PIDS=3Dy
-> CONFIG_CGROUP_RDMA=3Dy
-> # CONFIG_CGROUP_FREEZER is not set
-> CONFIG_CPUSETS=3Dy
-> # CONFIG_PROC_PID_CPUSET is not set
-> # CONFIG_CGROUP_DEVICE is not set
-> # CONFIG_CGROUP_CPUACCT is not set
-> # CONFIG_CGROUP_PERF is not set
-> # CONFIG_CGROUP_BPF is not set
-> CONFIG_CGROUP_DEBUG=3Dy
-> # CONFIG_SOCK_CGROUP_DATA is not set
-> # CONFIG_NAMESPACES is not set
-> CONFIG_SCHED_AUTOGROUP=3Dy
-> # CONFIG_SYSFS_DEPRECATED is not set
-> # CONFIG_RELAY is not set
-> CONFIG_BLK_DEV_INITRD=3Dy
-> CONFIG_INITRAMFS_SOURCE=3D""
-> CONFIG_RD_GZIP=3Dy
-> CONFIG_RD_BZIP2=3Dy
-> CONFIG_RD_LZMA=3Dy
-> CONFIG_RD_XZ=3Dy
-> CONFIG_RD_LZO=3Dy
-> CONFIG_RD_LZ4=3Dy
-> # CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE is not set
-> CONFIG_CC_OPTIMIZE_FOR_SIZE=3Dy
-> CONFIG_SYSCTL=3Dy
-> CONFIG_ANON_INODES=3Dy
-> CONFIG_SYSCTL_EXCEPTION_TRACE=3Dy
-> CONFIG_HAVE_PCSPKR_PLATFORM=3Dy
-> CONFIG_BPF=3Dy
-> CONFIG_EXPERT=3Dy
-> CONFIG_MULTIUSER=3Dy
-> CONFIG_SGETMASK_SYSCALL=3Dy
-> CONFIG_SYSFS_SYSCALL=3Dy
-> CONFIG_SYSCTL_SYSCALL=3Dy
-> CONFIG_FHANDLE=3Dy
-> CONFIG_POSIX_TIMERS=3Dy
-> CONFIG_PRINTK=3Dy
-> CONFIG_PRINTK_NMI=3Dy
-> CONFIG_BUG=3Dy
-> # CONFIG_ELF_CORE is not set
-> CONFIG_PCSPKR_PLATFORM=3Dy
-> # CONFIG_BASE_FULL is not set
-> CONFIG_FUTEX=3Dy
-> CONFIG_FUTEX_PI=3Dy
-> CONFIG_EPOLL=3Dy
-> CONFIG_SIGNALFD=3Dy
-> CONFIG_TIMERFD=3Dy
-> # CONFIG_EVENTFD is not set
-> CONFIG_SHMEM=3Dy
-> CONFIG_AIO=3Dy
-> # CONFIG_ADVISE_SYSCALLS is not set
-> CONFIG_MEMBARRIER=3Dy
-> CONFIG_CHECKPOINT_RESTORE=3Dy
-> CONFIG_KALLSYMS=3Dy
-> CONFIG_KALLSYMS_ALL=3Dy
-> CONFIG_KALLSYMS_ABSOLUTE_PERCPU=3Dy
-> CONFIG_KALLSYMS_BASE_RELATIVE=3Dy
-> CONFIG_BPF_SYSCALL=3Dy
-> CONFIG_USERFAULTFD=3Dy
-> CONFIG_RSEQ=3Dy
-> CONFIG_CPU_OPV=3Dy
-> # CONFIG_EMBEDDED is not set
-> CONFIG_HAVE_PERF_EVENTS=3Dy
-> CONFIG_PERF_USE_VMALLOC=3Dy
-> # CONFIG_PC104 is not set
-> =
-
-> #
-> # Kernel Performance Events And Counters
-> #
-> CONFIG_PERF_EVENTS=3Dy
-> CONFIG_DEBUG_PERF_USE_VMALLOC=3Dy
-> # CONFIG_VM_EVENT_COUNTERS is not set
-> CONFIG_COMPAT_BRK=3Dy
-> CONFIG_SLAB=3Dy
-> # CONFIG_SLUB is not set
-> # CONFIG_SLOB is not set
-> # CONFIG_SLAB_MERGE_DEFAULT is not set
-> # CONFIG_SLAB_FREELIST_RANDOM is not set
-> CONFIG_SYSTEM_DATA_VERIFICATION=3Dy
-> # CONFIG_PROFILING is not set
-> CONFIG_CRASH_CORE=3Dy
-> CONFIG_KEXEC_CORE=3Dy
-> CONFIG_HAVE_OPROFILE=3Dy
-> CONFIG_OPROFILE_NMI_TIMER=3Dy
-> CONFIG_KPROBES=3Dy
-> CONFIG_JUMP_LABEL=3Dy
-> CONFIG_STATIC_KEYS_SELFTEST=3Dy
-> CONFIG_OPTPROBES=3Dy
-> # CONFIG_UPROBES is not set
-> # CONFIG_HAVE_64BIT_ALIGNED_ACCESS is not set
-> CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS=3Dy
-> CONFIG_ARCH_USE_BUILTIN_BSWAP=3Dy
-> CONFIG_KRETPROBES=3Dy
-> CONFIG_HAVE_IOREMAP_PROT=3Dy
-> CONFIG_HAVE_KPROBES=3Dy
-> CONFIG_HAVE_KRETPROBES=3Dy
-> CONFIG_HAVE_OPTPROBES=3Dy
-> CONFIG_HAVE_KPROBES_ON_FTRACE=3Dy
-> CONFIG_HAVE_NMI=3Dy
-> CONFIG_HAVE_ARCH_TRACEHOOK=3Dy
-> CONFIG_HAVE_DMA_CONTIGUOUS=3Dy
-> CONFIG_GENERIC_SMP_IDLE_THREAD=3Dy
-> CONFIG_ARCH_HAS_FORTIFY_SOURCE=3Dy
-> CONFIG_ARCH_HAS_SET_MEMORY=3Dy
-> CONFIG_ARCH_WANTS_DYNAMIC_TASK_STRUCT=3Dy
-> CONFIG_HAVE_REGS_AND_STACK_ACCESS_API=3Dy
-> CONFIG_HAVE_RSEQ=3Dy
-> CONFIG_HAVE_CLK=3Dy
-> CONFIG_HAVE_DMA_API_DEBUG=3Dy
-> CONFIG_HAVE_HW_BREAKPOINT=3Dy
-> CONFIG_HAVE_MIXED_BREAKPOINTS_REGS=3Dy
-> CONFIG_HAVE_USER_RETURN_NOTIFIER=3Dy
-> CONFIG_HAVE_PERF_EVENTS_NMI=3Dy
-> CONFIG_HAVE_HARDLOCKUP_DETECTOR_PERF=3Dy
-> CONFIG_HAVE_PERF_REGS=3Dy
-> CONFIG_HAVE_PERF_USER_STACK_DUMP=3Dy
-> CONFIG_HAVE_ARCH_JUMP_LABEL=3Dy
-> CONFIG_HAVE_RCU_TABLE_FREE=3Dy
-> CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG=3Dy
-> CONFIG_HAVE_CMPXCHG_LOCAL=3Dy
-> CONFIG_HAVE_CMPXCHG_DOUBLE=3Dy
-> CONFIG_HAVE_ARCH_SECCOMP_FILTER=3Dy
-> CONFIG_HAVE_GCC_PLUGINS=3Dy
-> CONFIG_GCC_PLUGINS=3Dy
-> # CONFIG_GCC_PLUGIN_CYC_COMPLEXITY is not set
-> CONFIG_GCC_PLUGIN_LATENT_ENTROPY=3Dy
-> CONFIG_GCC_PLUGIN_STRUCTLEAK=3Dy
-> CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL=3Dy
-> # CONFIG_GCC_PLUGIN_STRUCTLEAK_VERBOSE is not set
-> CONFIG_GCC_PLUGIN_RANDSTRUCT=3Dy
-> # CONFIG_GCC_PLUGIN_RANDSTRUCT_PERFORMANCE is not set
-> CONFIG_HAVE_CC_STACKPROTECTOR=3Dy
-> CONFIG_CC_STACKPROTECTOR=3Dy
-> # CONFIG_CC_STACKPROTECTOR_NONE is not set
-> # CONFIG_CC_STACKPROTECTOR_REGULAR is not set
-> CONFIG_CC_STACKPROTECTOR_STRONG=3Dy
-> CONFIG_THIN_ARCHIVES=3Dy
-> CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES=3Dy
-> CONFIG_HAVE_CONTEXT_TRACKING=3Dy
-> CONFIG_HAVE_VIRT_CPU_ACCOUNTING_GEN=3Dy
-> CONFIG_HAVE_IRQ_TIME_ACCOUNTING=3Dy
-> CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE=3Dy
-> CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD=3Dy
-> CONFIG_HAVE_ARCH_HUGE_VMAP=3Dy
-> CONFIG_HAVE_ARCH_SOFT_DIRTY=3Dy
-> CONFIG_HAVE_MOD_ARCH_SPECIFIC=3Dy
-> CONFIG_MODULES_USE_ELF_RELA=3Dy
-> CONFIG_HAVE_IRQ_EXIT_ON_IRQ_STACK=3Dy
-> CONFIG_ARCH_HAS_ELF_RANDOMIZE=3Dy
-> CONFIG_HAVE_ARCH_MMAP_RND_BITS=3Dy
-> CONFIG_HAVE_EXIT_THREAD=3Dy
-> CONFIG_ARCH_MMAP_RND_BITS=3D28
-> CONFIG_HAVE_COPY_THREAD_TLS=3Dy
-> CONFIG_HAVE_STACK_VALIDATION=3Dy
-> # CONFIG_HAVE_ARCH_HASH is not set
-> CONFIG_ISA_BUS_API=3Dy
-> # CONFIG_CPU_NO_EFFICIENT_FFS is not set
-> CONFIG_HAVE_ARCH_VMAP_STACK=3Dy
-> CONFIG_VMAP_STACK=3Dy
-> # CONFIG_ARCH_OPTIONAL_KERNEL_RWX is not set
-> # CONFIG_ARCH_OPTIONAL_KERNEL_RWX_DEFAULT is not set
-> CONFIG_ARCH_HAS_STRICT_KERNEL_RWX=3Dy
-> CONFIG_STRICT_KERNEL_RWX=3Dy
-> CONFIG_ARCH_HAS_STRICT_MODULE_RWX=3Dy
-> CONFIG_STRICT_MODULE_RWX=3Dy
-> CONFIG_ARCH_HAS_REFCOUNT=3Dy
-> CONFIG_REFCOUNT_FULL=3Dy
-> =
-
-> #
-> # GCOV-based kernel profiling
-> #
-> # CONFIG_GCOV_KERNEL is not set
-> CONFIG_ARCH_HAS_GCOV_PROFILE_ALL=3Dy
-> # CONFIG_HAVE_GENERIC_DMA_COHERENT is not set
-> CONFIG_RT_MUTEXES=3Dy
-> CONFIG_BASE_SMALL=3D1
-> CONFIG_MODULES=3Dy
-> CONFIG_MODULE_FORCE_LOAD=3Dy
-> # CONFIG_MODULE_UNLOAD is not set
-> CONFIG_MODVERSIONS=3Dy
-> # CONFIG_MODULE_SRCVERSION_ALL is not set
-> # CONFIG_MODULE_SIG is not set
-> # CONFIG_MODULE_COMPRESS is not set
-> CONFIG_MODULES_TREE_LOOKUP=3Dy
-> # CONFIG_BLOCK is not set
-> CONFIG_ASN1=3Dy
-> CONFIG_UNINLINE_SPIN_UNLOCK=3Dy
-> CONFIG_ARCH_SUPPORTS_ATOMIC_RMW=3Dy
-> CONFIG_MUTEX_SPIN_ON_OWNER=3Dy
-> CONFIG_RWSEM_SPIN_ON_OWNER=3Dy
-> CONFIG_LOCK_SPIN_ON_OWNER=3Dy
-> CONFIG_ARCH_USE_QUEUED_SPINLOCKS=3Dy
-> CONFIG_QUEUED_SPINLOCKS=3Dy
-> CONFIG_ARCH_USE_QUEUED_RWLOCKS=3Dy
-> CONFIG_QUEUED_RWLOCKS=3Dy
-> CONFIG_FREEZER=3Dy
-> =
-
-> #
-> # Processor type and features
-> #
-> CONFIG_ZONE_DMA=3Dy
-> CONFIG_SMP=3Dy
-> CONFIG_X86_FEATURE_NAMES=3Dy
-> CONFIG_X86_FAST_FEATURE_TESTS=3Dy
-> CONFIG_X86_X2APIC=3Dy
-> # CONFIG_X86_MPPARSE is not set
-> # CONFIG_GOLDFISH is not set
-> # CONFIG_INTEL_RDT is not set
-> CONFIG_X86_EXTENDED_PLATFORM=3Dy
-> # CONFIG_X86_NUMACHIP is not set
-> CONFIG_X86_VSMP=3Dy
-> # CONFIG_X86_GOLDFISH is not set
-> # CONFIG_X86_INTEL_MID is not set
-> # CONFIG_X86_INTEL_LPSS is not set
-> # CONFIG_X86_AMD_PLATFORM_DEVICE is not set
-> CONFIG_IOSF_MBI=3Dm
-> # CONFIG_IOSF_MBI_DEBUG is not set
-> CONFIG_X86_SUPPORTS_MEMORY_FAILURE=3Dy
-> # CONFIG_SCHED_OMIT_FRAME_POINTER is not set
-> CONFIG_HYPERVISOR_GUEST=3Dy
-> CONFIG_PARAVIRT=3Dy
-> CONFIG_PARAVIRT_DEBUG=3Dy
-> CONFIG_PARAVIRT_SPINLOCKS=3Dy
-> # CONFIG_QUEUED_LOCK_STAT is not set
-> CONFIG_XEN=3Dy
-> CONFIG_XEN_PV=3Dy
-> CONFIG_XEN_PV_SMP=3Dy
-> CONFIG_XEN_DOM0=3Dy
-> CONFIG_XEN_PVHVM=3Dy
-> CONFIG_XEN_PVHVM_SMP=3Dy
-> CONFIG_XEN_512GB=3Dy
-> CONFIG_XEN_SAVE_RESTORE=3Dy
-> # CONFIG_XEN_DEBUG_FS is not set
-> # CONFIG_XEN_PVH is not set
-> CONFIG_KVM_GUEST=3Dy
-> CONFIG_KVM_DEBUG_FS=3Dy
-> # CONFIG_PARAVIRT_TIME_ACCOUNTING is not set
-> CONFIG_PARAVIRT_CLOCK=3Dy
-> CONFIG_NO_BOOTMEM=3Dy
-> # CONFIG_MK8 is not set
-> # CONFIG_MPSC is not set
-> # CONFIG_MCORE2 is not set
-> # CONFIG_MATOM is not set
-> CONFIG_GENERIC_CPU=3Dy
-> CONFIG_X86_INTERNODE_CACHE_SHIFT=3D12
-> CONFIG_X86_L1_CACHE_SHIFT=3D6
-> CONFIG_X86_TSC=3Dy
-> CONFIG_X86_CMPXCHG64=3Dy
-> CONFIG_X86_CMOV=3Dy
-> CONFIG_X86_MINIMUM_CPU_FAMILY=3D64
-> CONFIG_X86_DEBUGCTLMSR=3Dy
-> # CONFIG_PROCESSOR_SELECT is not set
-> CONFIG_CPU_SUP_INTEL=3Dy
-> CONFIG_CPU_SUP_AMD=3Dy
-> CONFIG_CPU_SUP_CENTAUR=3Dy
-> CONFIG_HPET_TIMER=3Dy
-> CONFIG_HPET_EMULATE_RTC=3Dy
-> # CONFIG_DMI is not set
-> # CONFIG_GART_IOMMU is not set
-> # CONFIG_CALGARY_IOMMU is not set
-> CONFIG_SWIOTLB=3Dy
-> CONFIG_IOMMU_HELPER=3Dy
-> CONFIG_MAXSMP=3Dy
-> CONFIG_NR_CPUS=3D8192
-> CONFIG_SCHED_SMT=3Dy
-> # CONFIG_SCHED_MC is not set
-> # CONFIG_PREEMPT_NONE is not set
-> CONFIG_PREEMPT_VOLUNTARY=3Dy
-> # CONFIG_PREEMPT is not set
-> CONFIG_PREEMPT_COUNT=3Dy
-> CONFIG_X86_LOCAL_APIC=3Dy
-> CONFIG_X86_IO_APIC=3Dy
-> CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS=3Dy
-> CONFIG_X86_MCE=3Dy
-> CONFIG_X86_MCELOG_LEGACY=3Dy
-> # CONFIG_X86_MCE_INTEL is not set
-> CONFIG_X86_MCE_AMD=3Dy
-> CONFIG_X86_MCE_THRESHOLD=3Dy
-> # CONFIG_X86_MCE_INJECT is not set
-> =
-
-> #
-> # Performance monitoring
-> #
-> CONFIG_PERF_EVENTS_INTEL_UNCORE=3Dy
-> CONFIG_PERF_EVENTS_INTEL_RAPL=3Dm
-> CONFIG_PERF_EVENTS_INTEL_CSTATE=3Dy
-> # CONFIG_PERF_EVENTS_AMD_POWER is not set
-> # CONFIG_VM86 is not set
-> CONFIG_X86_VSYSCALL_EMULATION=3Dy
-> CONFIG_I8K=3Dm
-> # CONFIG_MICROCODE is not set
-> CONFIG_X86_MSR=3Dm
-> # CONFIG_X86_CPUID is not set
-> # CONFIG_X86_5LEVEL is not set
-> CONFIG_ARCH_PHYS_ADDR_T_64BIT=3Dy
-> CONFIG_ARCH_DMA_ADDR_T_64BIT=3Dy
-> CONFIG_X86_DIRECT_GBPAGES=3Dy
-> CONFIG_ARCH_HAS_MEM_ENCRYPT=3Dy
-> CONFIG_AMD_MEM_ENCRYPT=3Dy
-> CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT=3Dy
-> CONFIG_ARCH_USE_MEMREMAP_PROT=3Dy
-> CONFIG_NUMA=3Dy
-> CONFIG_AMD_NUMA=3Dy
-> # CONFIG_X86_64_ACPI_NUMA is not set
-> # CONFIG_NUMA_EMU is not set
-> CONFIG_NODES_SHIFT=3D10
-> CONFIG_ARCH_SPARSEMEM_ENABLE=3Dy
-> CONFIG_ARCH_SPARSEMEM_DEFAULT=3Dy
-> CONFIG_ARCH_SELECT_MEMORY_MODEL=3Dy
-> CONFIG_ILLEGAL_POINTER_VALUE=3D0xdead000000000000
-> CONFIG_SELECT_MEMORY_MODEL=3Dy
-> CONFIG_SPARSEMEM_MANUAL=3Dy
-> CONFIG_SPARSEMEM=3Dy
-> CONFIG_NEED_MULTIPLE_NODES=3Dy
-> CONFIG_HAVE_MEMORY_PRESENT=3Dy
-> CONFIG_SPARSEMEM_EXTREME=3Dy
-> CONFIG_SPARSEMEM_VMEMMAP_ENABLE=3Dy
-> CONFIG_SPARSEMEM_ALLOC_MEM_MAP_TOGETHER=3Dy
-> CONFIG_SPARSEMEM_VMEMMAP=3Dy
-> CONFIG_HAVE_MEMBLOCK=3Dy
-> CONFIG_HAVE_MEMBLOCK_NODE_MAP=3Dy
-> CONFIG_HAVE_GENERIC_GUP=3Dy
-> CONFIG_ARCH_DISCARD_MEMBLOCK=3Dy
-> # CONFIG_HAVE_BOOTMEM_INFO_NODE is not set
-> # CONFIG_MEMORY_HOTPLUG is not set
-> CONFIG_SPLIT_PTLOCK_CPUS=3D4
-> CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK=3Dy
-> CONFIG_MEMORY_BALLOON=3Dy
-> CONFIG_BALLOON_COMPACTION=3Dy
-> CONFIG_COMPACTION=3Dy
-> CONFIG_MIGRATION=3Dy
-> CONFIG_ARCH_ENABLE_THP_MIGRATION=3Dy
-> CONFIG_PHYS_ADDR_T_64BIT=3Dy
-> CONFIG_VIRT_TO_BUS=3Dy
-> CONFIG_MMU_NOTIFIER=3Dy
-> CONFIG_KSM=3Dy
-> CONFIG_DEFAULT_MMAP_MIN_ADDR=3D4096
-> CONFIG_ARCH_SUPPORTS_MEMORY_FAILURE=3Dy
-> # CONFIG_MEMORY_FAILURE is not set
-> CONFIG_TRANSPARENT_HUGEPAGE=3Dy
-> CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=3Dy
-> # CONFIG_TRANSPARENT_HUGEPAGE_MADVISE is not set
-> CONFIG_ARCH_WANTS_THP_SWAP=3Dy
-> CONFIG_THP_SWAP=3Dy
-> CONFIG_TRANSPARENT_HUGE_PAGECACHE=3Dy
-> # CONFIG_CLEANCACHE is not set
-> # CONFIG_CMA is not set
-> CONFIG_MEM_SOFT_DIRTY=3Dy
-> CONFIG_ZPOOL=3Dm
-> CONFIG_ZBUD=3Dm
-> # CONFIG_Z3FOLD is not set
-> CONFIG_ZSMALLOC=3Dm
-> # CONFIG_PGTABLE_MAPPING is not set
-> # CONFIG_ZSMALLOC_STAT is not set
-> CONFIG_GENERIC_EARLY_IOREMAP=3Dy
-> CONFIG_ARCH_SUPPORTS_DEFERRED_STRUCT_PAGE_INIT=3Dy
-> # CONFIG_IDLE_PAGE_TRACKING is not set
-> CONFIG_ARCH_HAS_ZONE_DEVICE=3Dy
-> CONFIG_ARCH_USES_HIGH_VMA_FLAGS=3Dy
-> CONFIG_ARCH_HAS_PKEYS=3Dy
-> # CONFIG_PERCPU_STATS is not set
-> # CONFIG_GUP_BENCHMARK is not set
-> CONFIG_X86_CHECK_BIOS_CORRUPTION=3Dy
-> CONFIG_X86_BOOTPARAM_MEMORY_CORRUPTION_CHECK=3Dy
-> CONFIG_X86_RESERVE_LOW=3D64
-> CONFIG_MTRR=3Dy
-> CONFIG_MTRR_SANITIZER=3Dy
-> CONFIG_MTRR_SANITIZER_ENABLE_DEFAULT=3D0
-> CONFIG_MTRR_SANITIZER_SPARE_REG_NR_DEFAULT=3D1
-> CONFIG_X86_PAT=3Dy
-> CONFIG_ARCH_USES_PG_UNCACHED=3Dy
-> CONFIG_ARCH_RANDOM=3Dy
-> # CONFIG_X86_SMAP is not set
-> CONFIG_X86_INTEL_UMIP=3Dy
-> # CONFIG_X86_INTEL_MPX is not set
-> CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS=3Dy
-> # CONFIG_EFI is not set
-> # CONFIG_SECCOMP is not set
-> # CONFIG_HZ_100 is not set
-> CONFIG_HZ_250=3Dy
-> # CONFIG_HZ_300 is not set
-> # CONFIG_HZ_1000 is not set
-> CONFIG_HZ=3D250
-> CONFIG_SCHED_HRTICK=3Dy
-> CONFIG_KEXEC=3Dy
-> CONFIG_KEXEC_FILE=3Dy
-> CONFIG_KEXEC_VERIFY_SIG=3Dy
-> CONFIG_CRASH_DUMP=3Dy
-> CONFIG_PHYSICAL_START=3D0x1000000
-> CONFIG_RELOCATABLE=3Dy
-> # CONFIG_RANDOMIZE_BASE is not set
-> CONFIG_PHYSICAL_ALIGN=3D0x200000
-> CONFIG_HOTPLUG_CPU=3Dy
-> CONFIG_BOOTPARAM_HOTPLUG_CPU0=3Dy
-> # CONFIG_DEBUG_HOTPLUG_CPU0 is not set
-> # CONFIG_LEGACY_VSYSCALL_NATIVE is not set
-> CONFIG_LEGACY_VSYSCALL_EMULATE=3Dy
-> # CONFIG_LEGACY_VSYSCALL_NONE is not set
-> # CONFIG_CMDLINE_BOOL is not set
-> # CONFIG_MODIFY_LDT_SYSCALL is not set
-> CONFIG_HAVE_LIVEPATCH=3Dy
-> CONFIG_ARCH_HAS_ADD_PAGES=3Dy
-> CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG=3Dy
-> CONFIG_USE_PERCPU_NUMA_NODE_ID=3Dy
-> =
-
-> #
-> # Power management and ACPI options
-> #
-> # CONFIG_SUSPEND is not set
-> CONFIG_HIBERNATE_CALLBACKS=3Dy
-> CONFIG_PM_SLEEP=3Dy
-> CONFIG_PM_SLEEP_SMP=3Dy
-> CONFIG_PM_AUTOSLEEP=3Dy
-> CONFIG_PM_WAKELOCKS=3Dy
-> CONFIG_PM_WAKELOCKS_LIMIT=3D100
-> # CONFIG_PM_WAKELOCKS_GC is not set
-> CONFIG_PM=3Dy
-> # CONFIG_PM_DEBUG is not set
-> CONFIG_PM_CLK=3Dy
-> CONFIG_WQ_POWER_EFFICIENT_DEFAULT=3Dy
-> CONFIG_ACPI=3Dy
-> CONFIG_ACPI_LEGACY_TABLES_LOOKUP=3Dy
-> CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC=3Dy
-> CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT=3Dy
-> # CONFIG_ACPI_DEBUGGER is not set
-> CONFIG_ACPI_LPIT=3Dy
-> # CONFIG_ACPI_PROCFS_POWER is not set
-> # CONFIG_ACPI_REV_OVERRIDE_POSSIBLE is not set
-> # CONFIG_ACPI_EC_DEBUGFS is not set
-> CONFIG_ACPI_AC=3Dy
-> CONFIG_ACPI_BATTERY=3Dy
-> # CONFIG_ACPI_BUTTON is not set
-> CONFIG_ACPI_VIDEO=3Dm
-> CONFIG_ACPI_FAN=3Dm
-> CONFIG_ACPI_DOCK=3Dy
-> CONFIG_ACPI_PROCESSOR_CSTATE=3Dy
-> # CONFIG_ACPI_PROCESSOR is not set
-> CONFIG_ACPI_NUMA=3Dy
-> # CONFIG_ACPI_CUSTOM_DSDT is not set
-> CONFIG_ARCH_HAS_ACPI_TABLE_UPGRADE=3Dy
-> CONFIG_ACPI_TABLE_UPGRADE=3Dy
-> # CONFIG_ACPI_DEBUG is not set
-> CONFIG_ACPI_PCI_SLOT=3Dy
-> CONFIG_X86_PM_TIMER=3Dy
-> CONFIG_ACPI_CONTAINER=3Dy
-> CONFIG_ACPI_HOTPLUG_IOAPIC=3Dy
-> # CONFIG_ACPI_SBS is not set
-> CONFIG_ACPI_HED=3Dm
-> CONFIG_ACPI_CUSTOM_METHOD=3Dm
-> CONFIG_ACPI_REDUCED_HARDWARE_ONLY=3Dy
-> CONFIG_HAVE_ACPI_APEI=3Dy
-> CONFIG_HAVE_ACPI_APEI_NMI=3Dy
-> CONFIG_ACPI_APEI=3Dy
-> # CONFIG_ACPI_APEI_GHES is not set
-> # CONFIG_ACPI_APEI_PCIEAER is not set
-> CONFIG_ACPI_APEI_EINJ=3Dy
-> CONFIG_ACPI_APEI_ERST_DEBUG=3Dy
-> CONFIG_DPTF_POWER=3Dy
-> CONFIG_ACPI_EXTLOG=3Dm
-> # CONFIG_PMIC_OPREGION is not set
-> # CONFIG_ACPI_CONFIGFS is not set
-> CONFIG_SFI=3Dy
-> =
-
-> #
-> # CPU Frequency scaling
-> #
-> CONFIG_CPU_FREQ=3Dy
-> CONFIG_CPU_FREQ_GOV_ATTR_SET=3Dy
-> CONFIG_CPU_FREQ_GOV_COMMON=3Dy
-> # CONFIG_CPU_FREQ_STAT is not set
-> # CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE is not set
-> # CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE is not set
-> CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE=3Dy
-> # CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND is not set
-> # CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE is not set
-> # CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL is not set
-> CONFIG_CPU_FREQ_GOV_PERFORMANCE=3Dm
-> # CONFIG_CPU_FREQ_GOV_POWERSAVE is not set
-> CONFIG_CPU_FREQ_GOV_USERSPACE=3Dy
-> CONFIG_CPU_FREQ_GOV_ONDEMAND=3Dy
-> CONFIG_CPU_FREQ_GOV_CONSERVATIVE=3Dy
-> # CONFIG_CPU_FREQ_GOV_SCHEDUTIL is not set
-> =
-
-> #
-> # CPU frequency scaling drivers
-> #
-> # CONFIG_X86_INTEL_PSTATE is not set
-> # CONFIG_X86_P4_CLOCKMOD is not set
-> =
-
-> #
-> # shared options
-> #
-> # CONFIG_X86_SPEEDSTEP_LIB is not set
-> =
-
-> #
-> # CPU Idle
-> #
-> # CONFIG_CPU_IDLE is not set
-> # CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED is not set
-> =
-
-> #
-> # Bus options (PCI etc.)
-> #
-> CONFIG_PCI=3Dy
-> CONFIG_PCI_DIRECT=3Dy
-> CONFIG_PCI_MMCONFIG=3Dy
-> CONFIG_PCI_XEN=3Dy
-> CONFIG_PCI_DOMAINS=3Dy
-> CONFIG_PCI_CNB20LE_QUIRK=3Dy
-> CONFIG_PCIEPORTBUS=3Dy
-> CONFIG_PCIEAER=3Dy
-> # CONFIG_PCIE_ECRC is not set
-> CONFIG_PCIEAER_INJECT=3Dy
-> CONFIG_PCIEASPM=3Dy
-> CONFIG_PCIEASPM_DEBUG=3Dy
-> CONFIG_PCIEASPM_DEFAULT=3Dy
-> # CONFIG_PCIEASPM_POWERSAVE is not set
-> # CONFIG_PCIEASPM_POWER_SUPERSAVE is not set
-> # CONFIG_PCIEASPM_PERFORMANCE is not set
-> CONFIG_PCIE_PME=3Dy
-> CONFIG_PCIE_DPC=3Dy
-> CONFIG_PCIE_PTM=3Dy
-> CONFIG_PCI_BUS_ADDR_T_64BIT=3Dy
-> CONFIG_PCI_MSI=3Dy
-> CONFIG_PCI_MSI_IRQ_DOMAIN=3Dy
-> CONFIG_PCI_QUIRKS=3Dy
-> # CONFIG_PCI_DEBUG is not set
-> CONFIG_PCI_REALLOC_ENABLE_AUTO=3Dy
-> CONFIG_PCI_STUB=3Dy
-> # CONFIG_XEN_PCIDEV_FRONTEND is not set
-> CONFIG_PCI_ATS=3Dy
-> CONFIG_PCI_LOCKLESS_CONFIG=3Dy
-> CONFIG_PCI_IOV=3Dy
-> CONFIG_PCI_PRI=3Dy
-> CONFIG_PCI_PASID=3Dy
-> CONFIG_PCI_LABEL=3Dy
-> # CONFIG_HOTPLUG_PCI is not set
-> =
-
-> #
-> # DesignWare PCI Core Support
-> #
-> CONFIG_PCIE_DW=3Dy
-> CONFIG_PCIE_DW_HOST=3Dy
-> CONFIG_PCIE_DW_PLAT=3Dy
-> =
-
-> #
-> # PCI host controller drivers
-> #
-> CONFIG_VMD=3Dy
-> =
-
-> #
-> # PCI Endpoint
-> #
-> CONFIG_PCI_ENDPOINT=3Dy
-> # CONFIG_PCI_ENDPOINT_CONFIGFS is not set
-> CONFIG_PCI_EPF_TEST=3Dy
-> =
-
-> #
-> # PCI switch controller drivers
-> #
-> CONFIG_PCI_SW_SWITCHTEC=3Dm
-> CONFIG_ISA_BUS=3Dy
-> CONFIG_ISA_DMA_API=3Dy
-> CONFIG_AMD_NB=3Dy
-> # CONFIG_PCCARD is not set
-> CONFIG_RAPIDIO=3Dm
-> # CONFIG_RAPIDIO_TSI721 is not set
-> CONFIG_RAPIDIO_DISC_TIMEOUT=3D30
-> # CONFIG_RAPIDIO_ENABLE_RX_TX_PORTS is not set
-> CONFIG_RAPIDIO_DMA_ENGINE=3Dy
-> CONFIG_RAPIDIO_DEBUG=3Dy
-> CONFIG_RAPIDIO_ENUM_BASIC=3Dm
-> CONFIG_RAPIDIO_CHMAN=3Dm
-> # CONFIG_RAPIDIO_MPORT_CDEV is not set
-> =
-
-> #
-> # RapidIO Switch drivers
-> #
-> CONFIG_RAPIDIO_TSI57X=3Dm
-> CONFIG_RAPIDIO_CPS_XX=3Dm
-> CONFIG_RAPIDIO_TSI568=3Dm
-> CONFIG_RAPIDIO_CPS_GEN2=3Dm
-> CONFIG_RAPIDIO_RXS_GEN3=3Dm
-> # CONFIG_X86_SYSFB is not set
-> =
-
-> #
-> # Executable file formats / Emulations
-> #
-> CONFIG_BINFMT_ELF=3Dy
-> CONFIG_ELFCORE=3Dy
-> CONFIG_BINFMT_SCRIPT=3Dy
-> # CONFIG_HAVE_AOUT is not set
-> # CONFIG_BINFMT_MISC is not set
-> CONFIG_COREDUMP=3Dy
-> # CONFIG_IA32_EMULATION is not set
-> # CONFIG_X86_X32 is not set
-> CONFIG_X86_DEV_DMA_OPS=3Dy
-> CONFIG_NET=3Dy
-> =
-
-> #
-> # Networking options
-> #
-> # CONFIG_PACKET is not set
-> CONFIG_UNIX=3Dy
-> # CONFIG_UNIX_DIAG is not set
-> # CONFIG_NET_KEY is not set
-> # CONFIG_INET is not set
-> # CONFIG_NETWORK_SECMARK is not set
-> # CONFIG_NET_PTP_CLASSIFY is not set
-> # CONFIG_NETWORK_PHY_TIMESTAMPING is not set
-> # CONFIG_NETFILTER is not set
-> # CONFIG_ATM is not set
-> # CONFIG_BRIDGE is not set
-> # CONFIG_VLAN_8021Q is not set
-> # CONFIG_LLC2 is not set
-> # CONFIG_ATALK is not set
-> # CONFIG_X25 is not set
-> # CONFIG_LAPB is not set
-> # CONFIG_PHONET is not set
-> # CONFIG_IEEE802154 is not set
-> # CONFIG_NET_SCHED is not set
-> # CONFIG_DCB is not set
-> # CONFIG_DNS_RESOLVER is not set
-> # CONFIG_BATMAN_ADV is not set
-> # CONFIG_VSOCKETS is not set
-> # CONFIG_NETLINK_DIAG is not set
-> # CONFIG_MPLS is not set
-> # CONFIG_NET_NSH is not set
-> # CONFIG_HSR is not set
-> CONFIG_RPS=3Dy
-> CONFIG_RFS_ACCEL=3Dy
-> CONFIG_XPS=3Dy
-> # CONFIG_CGROUP_NET_PRIO is not set
-> # CONFIG_CGROUP_NET_CLASSID is not set
-> CONFIG_NET_RX_BUSY_POLL=3Dy
-> CONFIG_BQL=3Dy
-> # CONFIG_BPF_JIT is not set
-> # CONFIG_BPF_STREAM_PARSER is not set
-> CONFIG_NET_FLOW_LIMIT=3Dy
-> =
-
-> #
-> # Network testing
-> #
-> # CONFIG_HAMRADIO is not set
-> # CONFIG_CAN is not set
-> # CONFIG_BT is not set
-> # CONFIG_STREAM_PARSER is not set
-> CONFIG_WIRELESS=3Dy
-> # CONFIG_CFG80211 is not set
-> CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=3Dy
-> CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=3Dy
-> # CONFIG_LIB80211 is not set
-> =
-
-> #
-> # CFG80211 needs to be enabled for MAC80211
-> #
-> CONFIG_MAC80211_STA_HASH_MAX_SIZE=3D0
-> # CONFIG_WIMAX is not set
-> # CONFIG_RFKILL is not set
-> # CONFIG_NET_9P is not set
-> # CONFIG_CAIF is not set
-> # CONFIG_NFC is not set
-> # CONFIG_PSAMPLE is not set
-> # CONFIG_NET_IFE is not set
-> # CONFIG_LWTUNNEL is not set
-> # CONFIG_DST_CACHE is not set
-> # CONFIG_GRO_CELLS is not set
-> # CONFIG_NET_DEVLINK is not set
-> CONFIG_MAY_USE_DEVLINK=3Dy
-> CONFIG_HAVE_EBPF_JIT=3Dy
-> =
-
-> #
-> # Device Drivers
-> #
-> =
-
-> #
-> # Generic Driver Options
-> #
-> # CONFIG_UEVENT_HELPER is not set
-> CONFIG_DEVTMPFS=3Dy
-> # CONFIG_DEVTMPFS_MOUNT is not set
-> CONFIG_STANDALONE=3Dy
-> # CONFIG_PREVENT_FIRMWARE_BUILD is not set
-> CONFIG_FW_LOADER=3Dy
-> # CONFIG_FIRMWARE_IN_KERNEL is not set
-> CONFIG_EXTRA_FIRMWARE=3D""
-> CONFIG_FW_LOADER_USER_HELPER=3Dy
-> # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
-> # CONFIG_ALLOW_DEV_COREDUMP is not set
-> # CONFIG_DEBUG_DRIVER is not set
-> # CONFIG_DEBUG_DEVRES is not set
-> # CONFIG_DEBUG_TEST_DRIVER_REMOVE is not set
-> CONFIG_TEST_ASYNC_DRIVER_PROBE=3Dm
-> # CONFIG_SYS_HYPERVISOR is not set
-> # CONFIG_GENERIC_CPU_DEVICES is not set
-> CONFIG_GENERIC_CPU_AUTOPROBE=3Dy
-> CONFIG_REGMAP=3Dy
-> CONFIG_REGMAP_I2C=3Dy
-> CONFIG_REGMAP_SPI=3Dy
-> CONFIG_REGMAP_W1=3Dy
-> CONFIG_REGMAP_MMIO=3Dy
-> CONFIG_REGMAP_IRQ=3Dy
-> CONFIG_DMA_SHARED_BUFFER=3Dy
-> # CONFIG_DMA_FENCE_TRACE is not set
-> =
-
-> #
-> # Bus devices
-> #
-> # CONFIG_CONNECTOR is not set
-> # CONFIG_MTD is not set
-> # CONFIG_OF is not set
-> CONFIG_ARCH_MIGHT_HAVE_PC_PARPORT=3Dy
-> # CONFIG_PARPORT is not set
-> CONFIG_PNP=3Dy
-> CONFIG_PNP_DEBUG_MESSAGES=3Dy
-> =
-
-> #
-> # Protocols
-> #
-> CONFIG_PNPACPI=3Dy
-> =
-
-> #
-> # NVME Support
-> #
-> =
-
-> #
-> # Misc devices
-> #
-> CONFIG_SENSORS_LIS3LV02D=3Dy
-> CONFIG_AD525X_DPOT=3Dm
-> CONFIG_AD525X_DPOT_I2C=3Dm
-> CONFIG_AD525X_DPOT_SPI=3Dm
-> CONFIG_DUMMY_IRQ=3Dm
-> # CONFIG_IBM_ASM is not set
-> CONFIG_PHANTOM=3Dm
-> CONFIG_SGI_IOC4=3Dm
-> CONFIG_TIFM_CORE=3Dy
-> CONFIG_TIFM_7XX1=3Dm
-> CONFIG_ICS932S401=3Dy
-> # CONFIG_ENCLOSURE_SERVICES is not set
-> CONFIG_HP_ILO=3Dm
-> CONFIG_APDS9802ALS=3Dm
-> # CONFIG_ISL29003 is not set
-> CONFIG_ISL29020=3Dy
-> CONFIG_SENSORS_TSL2550=3Dm
-> # CONFIG_SENSORS_BH1770 is not set
-> CONFIG_SENSORS_APDS990X=3Dy
-> # CONFIG_HMC6352 is not set
-> CONFIG_DS1682=3Dy
-> # CONFIG_VMWARE_BALLOON is not set
-> # CONFIG_USB_SWITCH_FSA9480 is not set
-> # CONFIG_LATTICE_ECP3_CONFIG is not set
-> CONFIG_SRAM=3Dy
-> CONFIG_PCI_ENDPOINT_TEST=3Dm
-> # CONFIG_C2PORT is not set
-> =
-
-> #
-> # EEPROM support
-> #
-> CONFIG_EEPROM_AT24=3Dy
-> # CONFIG_EEPROM_AT25 is not set
-> CONFIG_EEPROM_LEGACY=3Dy
-> # CONFIG_EEPROM_MAX6875 is not set
-> CONFIG_EEPROM_93CX6=3Dy
-> CONFIG_EEPROM_93XX46=3Dm
-> # CONFIG_EEPROM_IDT_89HPESX is not set
-> CONFIG_CB710_CORE=3Dm
-> CONFIG_CB710_DEBUG=3Dy
-> CONFIG_CB710_DEBUG_ASSUMPTIONS=3Dy
-> =
-
-> #
-> # Texas Instruments shared transport line discipline
-> #
-> # CONFIG_TI_ST is not set
-> CONFIG_SENSORS_LIS3_I2C=3Dy
-> # CONFIG_ALTERA_STAPL is not set
-> CONFIG_INTEL_MEI=3Dy
-> # CONFIG_INTEL_MEI_ME is not set
-> CONFIG_INTEL_MEI_TXE=3Dy
-> CONFIG_VMWARE_VMCI=3Dm
-> =
-
-> #
-> # Intel MIC & related support
-> #
-> =
-
-> #
-> # Intel MIC Bus Driver
-> #
-> # CONFIG_INTEL_MIC_BUS is not set
-> =
-
-> #
-> # SCIF Bus Driver
-> #
-> CONFIG_SCIF_BUS=3Dy
-> =
-
-> #
-> # VOP Bus Driver
-> #
-> # CONFIG_VOP_BUS is not set
-> =
-
-> #
-> # Intel MIC Host Driver
-> #
-> =
-
-> #
-> # Intel MIC Card Driver
-> #
-> =
-
-> #
-> # SCIF Driver
-> #
-> CONFIG_SCIF=3Dy
-> =
-
-> #
-> # Intel MIC Coprocessor State Management (COSM) Drivers
-> #
-> CONFIG_MIC_COSM=3Dm
-> =
-
-> #
-> # VOP Driver
-> #
-> CONFIG_GENWQE=3Dm
-> CONFIG_GENWQE_PLATFORM_ERROR_RECOVERY=3D0
-> # CONFIG_ECHO is not set
-> # CONFIG_CXL_BASE is not set
-> # CONFIG_CXL_AFU_DRIVER_OPS is not set
-> # CONFIG_CXL_LIB is not set
-> # CONFIG_W2SG0004 is not set
-> CONFIG_HAVE_IDE=3Dy
-> =
-
-> #
-> # SCSI device support
-> #
-> CONFIG_SCSI_MOD=3Dy
-> # CONFIG_SCSI_DMA is not set
-> # CONFIG_SCSI_NETLINK is not set
-> CONFIG_FUSION=3Dy
-> CONFIG_FUSION_MAX_SGE=3D128
-> CONFIG_FUSION_LOGGING=3Dy
-> =
-
-> #
-> # IEEE 1394 (FireWire) support
-> #
-> CONFIG_FIREWIRE=3Dy
-> # CONFIG_FIREWIRE_OHCI is not set
-> CONFIG_FIREWIRE_NOSY=3Dy
-> CONFIG_MACINTOSH_DRIVERS=3Dy
-> CONFIG_MAC_EMUMOUSEBTN=3Dm
-> # CONFIG_NETDEVICES is not set
-> =
-
-> #
-> # Input device support
-> #
-> CONFIG_INPUT=3Dy
-> CONFIG_INPUT_LEDS=3Dy
-> CONFIG_INPUT_FF_MEMLESS=3Dy
-> CONFIG_INPUT_POLLDEV=3Dy
-> CONFIG_INPUT_SPARSEKMAP=3Dy
-> CONFIG_INPUT_MATRIXKMAP=3Dy
-> =
-
-> #
-> # Userland interfaces
-> #
-> CONFIG_INPUT_MOUSEDEV=3Dy
-> # CONFIG_INPUT_MOUSEDEV_PSAUX is not set
-> CONFIG_INPUT_MOUSEDEV_SCREEN_X=3D1024
-> CONFIG_INPUT_MOUSEDEV_SCREEN_Y=3D768
-> CONFIG_INPUT_JOYDEV=3Dm
-> CONFIG_INPUT_EVDEV=3Dy
-> CONFIG_INPUT_EVBUG=3Dy
-> =
-
-> #
-> # Input Device Drivers
-> #
-> CONFIG_INPUT_KEYBOARD=3Dy
-> # CONFIG_KEYBOARD_ADC is not set
-> # CONFIG_KEYBOARD_ADP5588 is not set
-> # CONFIG_KEYBOARD_ADP5589 is not set
-> CONFIG_KEYBOARD_ATKBD=3Dy
-> # CONFIG_KEYBOARD_QT1070 is not set
-> # CONFIG_KEYBOARD_QT2160 is not set
-> # CONFIG_KEYBOARD_DLINK_DIR685 is not set
-> # CONFIG_KEYBOARD_LKKBD is not set
-> # CONFIG_KEYBOARD_GPIO is not set
-> # CONFIG_KEYBOARD_GPIO_POLLED is not set
-> # CONFIG_KEYBOARD_TCA6416 is not set
-> # CONFIG_KEYBOARD_TCA8418 is not set
-> # CONFIG_KEYBOARD_MATRIX is not set
-> # CONFIG_KEYBOARD_LM8323 is not set
-> # CONFIG_KEYBOARD_LM8333 is not set
-> # CONFIG_KEYBOARD_MAX7359 is not set
-> # CONFIG_KEYBOARD_MCS is not set
-> # CONFIG_KEYBOARD_MPR121 is not set
-> # CONFIG_KEYBOARD_NEWTON is not set
-> # CONFIG_KEYBOARD_OPENCORES is not set
-> # CONFIG_KEYBOARD_SAMSUNG is not set
-> # CONFIG_KEYBOARD_STOWAWAY is not set
-> # CONFIG_KEYBOARD_SUNKBD is not set
-> # CONFIG_KEYBOARD_TM2_TOUCHKEY is not set
-> # CONFIG_KEYBOARD_TWL4030 is not set
-> # CONFIG_KEYBOARD_XTKBD is not set
-> # CONFIG_KEYBOARD_CROS_EC is not set
-> # CONFIG_INPUT_MOUSE is not set
-> CONFIG_INPUT_JOYSTICK=3Dy
-> CONFIG_JOYSTICK_ANALOG=3Dy
-> CONFIG_JOYSTICK_A3D=3Dm
-> # CONFIG_JOYSTICK_ADI is not set
-> CONFIG_JOYSTICK_COBRA=3Dy
-> # CONFIG_JOYSTICK_GF2K is not set
-> CONFIG_JOYSTICK_GRIP=3Dy
-> CONFIG_JOYSTICK_GRIP_MP=3Dy
-> CONFIG_JOYSTICK_GUILLEMOT=3Dm
-> # CONFIG_JOYSTICK_INTERACT is not set
-> # CONFIG_JOYSTICK_SIDEWINDER is not set
-> CONFIG_JOYSTICK_TMDC=3Dy
-> CONFIG_JOYSTICK_IFORCE=3Dy
-> # CONFIG_JOYSTICK_IFORCE_USB is not set
-> # CONFIG_JOYSTICK_IFORCE_232 is not set
-> CONFIG_JOYSTICK_WARRIOR=3Dm
-> CONFIG_JOYSTICK_MAGELLAN=3Dm
-> CONFIG_JOYSTICK_SPACEORB=3Dy
-> CONFIG_JOYSTICK_SPACEBALL=3Dy
-> CONFIG_JOYSTICK_STINGER=3Dm
-> CONFIG_JOYSTICK_TWIDJOY=3Dy
-> CONFIG_JOYSTICK_ZHENHUA=3Dy
-> # CONFIG_JOYSTICK_AS5011 is not set
-> CONFIG_JOYSTICK_JOYDUMP=3Dm
-> CONFIG_JOYSTICK_XPAD=3Dy
-> CONFIG_JOYSTICK_XPAD_FF=3Dy
-> CONFIG_JOYSTICK_XPAD_LEDS=3Dy
-> CONFIG_JOYSTICK_PSXPAD_SPI=3Dm
-> CONFIG_JOYSTICK_PSXPAD_SPI_FF=3Dy
-> # CONFIG_INPUT_TABLET is not set
-> # CONFIG_INPUT_TOUCHSCREEN is not set
-> CONFIG_INPUT_MISC=3Dy
-> CONFIG_INPUT_88PM80X_ONKEY=3Dm
-> CONFIG_INPUT_AD714X=3Dm
-> # CONFIG_INPUT_AD714X_I2C is not set
-> # CONFIG_INPUT_AD714X_SPI is not set
-> CONFIG_INPUT_BMA150=3Dy
-> # CONFIG_INPUT_E3X0_BUTTON is not set
-> # CONFIG_INPUT_PCSPKR is not set
-> CONFIG_INPUT_MAX8925_ONKEY=3Dy
-> CONFIG_INPUT_MC13783_PWRBUTTON=3Dm
-> CONFIG_INPUT_MMA8450=3Dy
-> # CONFIG_INPUT_APANEL is not set
-> CONFIG_INPUT_GP2A=3Dy
-> CONFIG_INPUT_GPIO_BEEPER=3Dm
-> # CONFIG_INPUT_GPIO_TILT_POLLED is not set
-> CONFIG_INPUT_GPIO_DECODER=3Dy
-> # CONFIG_INPUT_ATLAS_BTNS is not set
-> CONFIG_INPUT_ATI_REMOTE2=3Dm
-> # CONFIG_INPUT_KEYSPAN_REMOTE is not set
-> # CONFIG_INPUT_KXTJ9 is not set
-> CONFIG_INPUT_POWERMATE=3Dy
-> CONFIG_INPUT_YEALINK=3Dy
-> # CONFIG_INPUT_CM109 is not set
-> # CONFIG_INPUT_REGULATOR_HAPTIC is not set
-> CONFIG_INPUT_TWL4030_PWRBUTTON=3Dy
-> CONFIG_INPUT_TWL4030_VIBRA=3Dm
-> # CONFIG_INPUT_TWL6040_VIBRA is not set
-> # CONFIG_INPUT_UINPUT is not set
-> CONFIG_INPUT_PCF50633_PMU=3Dm
-> CONFIG_INPUT_PCF8574=3Dm
-> CONFIG_INPUT_GPIO_ROTARY_ENCODER=3Dm
-> # CONFIG_INPUT_DA9052_ONKEY is not set
-> CONFIG_INPUT_DA9055_ONKEY=3Dy
-> CONFIG_INPUT_DA9063_ONKEY=3Dm
-> CONFIG_INPUT_WM831X_ON=3Dm
-> # CONFIG_INPUT_PCAP is not set
-> CONFIG_INPUT_ADXL34X=3Dy
-> CONFIG_INPUT_ADXL34X_I2C=3Dy
-> CONFIG_INPUT_ADXL34X_SPI=3Dm
-> CONFIG_INPUT_IMS_PCU=3Dm
-> CONFIG_INPUT_CMA3000=3Dy
-> # CONFIG_INPUT_CMA3000_I2C is not set
-> # CONFIG_INPUT_XEN_KBDDEV_FRONTEND is not set
-> # CONFIG_INPUT_IDEAPAD_SLIDEBAR is not set
-> CONFIG_INPUT_DRV260X_HAPTICS=3Dm
-> CONFIG_INPUT_DRV2665_HAPTICS=3Dm
-> # CONFIG_INPUT_DRV2667_HAPTICS is not set
-> CONFIG_RMI4_CORE=3Dm
-> # CONFIG_RMI4_I2C is not set
-> CONFIG_RMI4_SPI=3Dm
-> # CONFIG_RMI4_SMB is not set
-> CONFIG_RMI4_F03=3Dy
-> CONFIG_RMI4_F03_SERIO=3Dm
-> CONFIG_RMI4_2D_SENSOR=3Dy
-> CONFIG_RMI4_F11=3Dy
-> CONFIG_RMI4_F12=3Dy
-> CONFIG_RMI4_F30=3Dy
-> # CONFIG_RMI4_F34 is not set
-> CONFIG_RMI4_F55=3Dy
-> =
-
-> #
-> # Hardware I/O ports
-> #
-> CONFIG_SERIO=3Dy
-> CONFIG_ARCH_MIGHT_HAVE_PC_SERIO=3Dy
-> CONFIG_SERIO_I8042=3Dy
-> CONFIG_SERIO_SERPORT=3Dm
-> CONFIG_SERIO_CT82C710=3Dm
-> CONFIG_SERIO_PCIPS2=3Dm
-> CONFIG_SERIO_LIBPS2=3Dy
-> CONFIG_SERIO_RAW=3Dy
-> CONFIG_SERIO_ALTERA_PS2=3Dm
-> # CONFIG_SERIO_PS2MULT is not set
-> CONFIG_SERIO_ARC_PS2=3Dm
-> CONFIG_SERIO_GPIO_PS2=3Dy
-> CONFIG_USERIO=3Dm
-> CONFIG_GAMEPORT=3Dy
-> CONFIG_GAMEPORT_NS558=3Dm
-> # CONFIG_GAMEPORT_L4 is not set
-> CONFIG_GAMEPORT_EMU10K1=3Dm
-> CONFIG_GAMEPORT_FM801=3Dm
-> =
-
-> #
-> # Character devices
-> #
-> CONFIG_TTY=3Dy
-> # CONFIG_VT is not set
-> CONFIG_UNIX98_PTYS=3Dy
-> CONFIG_LEGACY_PTYS=3Dy
-> CONFIG_LEGACY_PTY_COUNT=3D256
-> CONFIG_SERIAL_NONSTANDARD=3Dy
-> CONFIG_ROCKETPORT=3Dy
-> CONFIG_CYCLADES=3Dm
-> # CONFIG_CYZ_INTR is not set
-> # CONFIG_MOXA_INTELLIO is not set
-> CONFIG_MOXA_SMARTIO=3Dm
-> CONFIG_SYNCLINK=3Dm
-> CONFIG_SYNCLINKMP=3Dy
-> # CONFIG_SYNCLINK_GT is not set
-> CONFIG_NOZOMI=3Dm
-> CONFIG_ISI=3Dy
-> # CONFIG_N_HDLC is not set
-> # CONFIG_N_GSM is not set
-> # CONFIG_TRACE_SINK is not set
-> CONFIG_DEVMEM=3Dy
-> # CONFIG_DEVKMEM is not set
-> =
-
-> #
-> # Serial drivers
-> #
-> CONFIG_SERIAL_EARLYCON=3Dy
-> CONFIG_SERIAL_8250=3Dy
-> # CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
-> CONFIG_SERIAL_8250_PNP=3Dy
-> # CONFIG_SERIAL_8250_FINTEK is not set
-> CONFIG_SERIAL_8250_CONSOLE=3Dy
-> # CONFIG_SERIAL_8250_DMA is not set
-> CONFIG_SERIAL_8250_PCI=3Dy
-> CONFIG_SERIAL_8250_EXAR=3Dy
-> CONFIG_SERIAL_8250_MEN_MCB=3Dy
-> CONFIG_SERIAL_8250_NR_UARTS=3D4
-> CONFIG_SERIAL_8250_RUNTIME_UARTS=3D4
-> CONFIG_SERIAL_8250_EXTENDED=3Dy
-> CONFIG_SERIAL_8250_MANY_PORTS=3Dy
-> # CONFIG_SERIAL_8250_SHARE_IRQ is not set
-> # CONFIG_SERIAL_8250_DETECT_IRQ is not set
-> # CONFIG_SERIAL_8250_RSA is not set
-> # CONFIG_SERIAL_8250_FSL is not set
-> # CONFIG_SERIAL_8250_DW is not set
-> CONFIG_SERIAL_8250_RT288X=3Dy
-> CONFIG_SERIAL_8250_LPSS=3Dm
-> CONFIG_SERIAL_8250_MID=3Dm
-> CONFIG_SERIAL_8250_MOXA=3Dy
-> =
-
-> #
-> # Non-8250 serial port support
-> #
-> CONFIG_SERIAL_MAX3100=3Dm
-> CONFIG_SERIAL_MAX310X=3Dm
-> CONFIG_SERIAL_UARTLITE=3Dy
-> CONFIG_SERIAL_UARTLITE_CONSOLE=3Dy
-> CONFIG_SERIAL_UARTLITE_NR_UARTS=3D1
-> CONFIG_SERIAL_CORE=3Dy
-> CONFIG_SERIAL_CORE_CONSOLE=3Dy
-> CONFIG_SERIAL_JSM=3Dy
-> # CONFIG_SERIAL_SCCNXP is not set
-> # CONFIG_SERIAL_SC16IS7XX is not set
-> CONFIG_SERIAL_ALTERA_JTAGUART=3Dm
-> CONFIG_SERIAL_ALTERA_UART=3Dy
-> CONFIG_SERIAL_ALTERA_UART_MAXPORTS=3D4
-> CONFIG_SERIAL_ALTERA_UART_BAUDRATE=3D115200
-> CONFIG_SERIAL_ALTERA_UART_CONSOLE=3Dy
-> CONFIG_SERIAL_IFX6X60=3Dm
-> CONFIG_SERIAL_ARC=3Dm
-> CONFIG_SERIAL_ARC_NR_PORTS=3D1
-> CONFIG_SERIAL_RP2=3Dm
-> CONFIG_SERIAL_RP2_NR_UARTS=3D32
-> # CONFIG_SERIAL_FSL_LPUART is not set
-> CONFIG_SERIAL_MEN_Z135=3Dm
-> CONFIG_SERIAL_DEV_BUS=3Dm
-> CONFIG_TTY_PRINTK=3Dm
-> CONFIG_HVC_DRIVER=3Dy
-> CONFIG_HVC_IRQ=3Dy
-> CONFIG_HVC_XEN=3Dy
-> # CONFIG_HVC_XEN_FRONTEND is not set
-> CONFIG_VIRTIO_CONSOLE=3Dm
-> # CONFIG_IPMI_HANDLER is not set
-> CONFIG_HW_RANDOM=3Dy
-> CONFIG_HW_RANDOM_TIMERIOMEM=3Dy
-> # CONFIG_HW_RANDOM_INTEL is not set
-> # CONFIG_HW_RANDOM_AMD is not set
-> CONFIG_HW_RANDOM_VIA=3Dm
-> CONFIG_HW_RANDOM_VIRTIO=3Dm
-> CONFIG_NVRAM=3Dm
-> # CONFIG_R3964 is not set
-> # CONFIG_APPLICOM is not set
-> CONFIG_MWAVE=3Dm
-> # CONFIG_HPET is not set
-> # CONFIG_HANGCHECK_TIMER is not set
-> # CONFIG_TCG_TPM is not set
-> CONFIG_TELCLOCK=3Dm
-> CONFIG_DEVPORT=3Dy
-> # CONFIG_XILLYBUS is not set
-> =
-
-> #
-> # I2C support
-> #
-> CONFIG_I2C=3Dy
-> # CONFIG_ACPI_I2C_OPREGION is not set
-> CONFIG_I2C_BOARDINFO=3Dy
-> # CONFIG_I2C_COMPAT is not set
-> # CONFIG_I2C_CHARDEV is not set
-> CONFIG_I2C_MUX=3Dm
-> =
-
-> #
-> # Multiplexer I2C Chip support
-> #
-> CONFIG_I2C_MUX_GPIO=3Dm
-> CONFIG_I2C_MUX_LTC4306=3Dm
-> # CONFIG_I2C_MUX_PCA9541 is not set
-> # CONFIG_I2C_MUX_PCA954x is not set
-> CONFIG_I2C_MUX_REG=3Dm
-> CONFIG_I2C_MUX_MLXCPLD=3Dm
-> CONFIG_I2C_HELPER_AUTO=3Dy
-> CONFIG_I2C_ALGOBIT=3Dy
-> CONFIG_I2C_ALGOPCA=3Dm
-> =
-
-> #
-> # I2C Hardware Bus support
-> #
-> =
-
-> #
-> # PC SMBus host controller drivers
-> #
-> CONFIG_I2C_ALI1535=3Dy
-> CONFIG_I2C_ALI1563=3Dy
-> CONFIG_I2C_ALI15X3=3Dm
-> CONFIG_I2C_AMD756=3Dy
-> # CONFIG_I2C_AMD756_S4882 is not set
-> CONFIG_I2C_AMD8111=3Dm
-> # CONFIG_I2C_I801 is not set
-> # CONFIG_I2C_ISCH is not set
-> CONFIG_I2C_ISMT=3Dy
-> CONFIG_I2C_PIIX4=3Dy
-> # CONFIG_I2C_CHT_WC is not set
-> CONFIG_I2C_NFORCE2=3Dm
-> CONFIG_I2C_NFORCE2_S4985=3Dm
-> # CONFIG_I2C_SIS5595 is not set
-> CONFIG_I2C_SIS630=3Dy
-> CONFIG_I2C_SIS96X=3Dm
-> CONFIG_I2C_VIA=3Dm
-> CONFIG_I2C_VIAPRO=3Dy
-> =
-
-> #
-> # ACPI drivers
-> #
-> # CONFIG_I2C_SCMI is not set
-> =
-
-> #
-> # I2C system bus drivers (mostly embedded / system-on-chip)
-> #
-> CONFIG_I2C_CBUS_GPIO=3Dm
-> CONFIG_I2C_DESIGNWARE_CORE=3Dy
-> CONFIG_I2C_DESIGNWARE_PLATFORM=3Dy
-> CONFIG_I2C_DESIGNWARE_SLAVE=3Dy
-> CONFIG_I2C_DESIGNWARE_PCI=3Dy
-> CONFIG_I2C_EMEV2=3Dm
-> CONFIG_I2C_GPIO=3Dm
-> CONFIG_I2C_OCORES=3Dm
-> CONFIG_I2C_PCA_PLATFORM=3Dm
-> # CONFIG_I2C_PXA_PCI is not set
-> CONFIG_I2C_SIMTEC=3Dy
-> # CONFIG_I2C_XILINX is not set
-> =
-
-> #
-> # External I2C/SMBus adapter drivers
-> #
-> # CONFIG_I2C_DIOLAN_U2C is not set
-> # CONFIG_I2C_PARPORT_LIGHT is not set
-> CONFIG_I2C_ROBOTFUZZ_OSIF=3Dy
-> # CONFIG_I2C_TAOS_EVM is not set
-> CONFIG_I2C_TINY_USB=3Dy
-> CONFIG_I2C_VIPERBOARD=3Dy
-> =
-
-> #
-> # Other I2C/SMBus bus drivers
-> #
-> CONFIG_I2C_MLXCPLD=3Dy
-> # CONFIG_I2C_CROS_EC_TUNNEL is not set
-> CONFIG_I2C_STUB=3Dm
-> CONFIG_I2C_SLAVE=3Dy
-> CONFIG_I2C_SLAVE_EEPROM=3Dy
-> # CONFIG_I2C_DEBUG_CORE is not set
-> # CONFIG_I2C_DEBUG_ALGO is not set
-> # CONFIG_I2C_DEBUG_BUS is not set
-> CONFIG_SPI=3Dy
-> # CONFIG_SPI_DEBUG is not set
-> CONFIG_SPI_MASTER=3Dy
-> =
-
-> #
-> # SPI Master Controller Drivers
-> #
-> CONFIG_SPI_ALTERA=3Dm
-> CONFIG_SPI_AXI_SPI_ENGINE=3Dy
-> CONFIG_SPI_BITBANG=3Dy
-> # CONFIG_SPI_CADENCE is not set
-> CONFIG_SPI_DESIGNWARE=3Dy
-> CONFIG_SPI_DW_PCI=3Dm
-> CONFIG_SPI_DW_MID_DMA=3Dy
-> CONFIG_SPI_DW_MMIO=3Dy
-> CONFIG_SPI_GPIO=3Dy
-> # CONFIG_SPI_OC_TINY is not set
-> # CONFIG_SPI_PXA2XX is not set
-> # CONFIG_SPI_PXA2XX_PCI is not set
-> # CONFIG_SPI_ROCKCHIP is not set
-> CONFIG_SPI_SC18IS602=3Dy
-> # CONFIG_SPI_XCOMM is not set
-> CONFIG_SPI_XILINX=3Dy
-> # CONFIG_SPI_ZYNQMP_GQSPI is not set
-> =
-
-> #
-> # SPI Protocol Masters
-> #
-> CONFIG_SPI_SPIDEV=3Dm
-> # CONFIG_SPI_LOOPBACK_TEST is not set
-> CONFIG_SPI_TLE62X0=3Dy
-> # CONFIG_SPI_SLAVE is not set
-> CONFIG_SPMI=3Dy
-> # CONFIG_HSI is not set
-> CONFIG_PPS=3Dy
-> # CONFIG_PPS_DEBUG is not set
-> =
-
-> #
-> # PPS clients support
-> #
-> CONFIG_PPS_CLIENT_KTIMER=3Dm
-> CONFIG_PPS_CLIENT_LDISC=3Dm
-> CONFIG_PPS_CLIENT_GPIO=3Dy
-> =
-
-> #
-> # PPS generators support
-> #
-> =
-
-> #
-> # PTP clock support
-> #
-> # CONFIG_PTP_1588_CLOCK is not set
-> =
-
-> #
-> # Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
-> #
-> # CONFIG_PINCTRL is not set
-> CONFIG_GPIOLIB=3Dy
-> CONFIG_GPIO_ACPI=3Dy
-> CONFIG_GPIOLIB_IRQCHIP=3Dy
-> # CONFIG_DEBUG_GPIO is not set
-> CONFIG_GPIO_SYSFS=3Dy
-> CONFIG_GPIO_GENERIC=3Dy
-> CONFIG_GPIO_MAX730X=3Dy
-> =
-
-> #
-> # Memory mapped GPIO drivers
-> #
-> # CONFIG_GPIO_AMDPT is not set
-> CONFIG_GPIO_DWAPB=3Dm
-> CONFIG_GPIO_EXAR=3Dm
-> CONFIG_GPIO_GENERIC_PLATFORM=3Dy
-> CONFIG_GPIO_ICH=3Dy
-> # CONFIG_GPIO_LYNXPOINT is not set
-> # CONFIG_GPIO_MB86S7X is not set
-> # CONFIG_GPIO_MENZ127 is not set
-> CONFIG_GPIO_MOCKUP=3Dm
-> # CONFIG_GPIO_VX855 is not set
-> =
-
-> #
-> # Port-mapped I/O GPIO drivers
-> #
-> CONFIG_GPIO_F7188X=3Dy
-> CONFIG_GPIO_IT87=3Dy
-> # CONFIG_GPIO_SCH is not set
-> CONFIG_GPIO_SCH311X=3Dy
-> # CONFIG_GPIO_WS16C48 is not set
-> =
-
-> #
-> # I2C GPIO expanders
-> #
-> CONFIG_GPIO_ADP5588=3Dy
-> # CONFIG_GPIO_ADP5588_IRQ is not set
-> CONFIG_GPIO_MAX7300=3Dy
-> # CONFIG_GPIO_MAX732X is not set
-> CONFIG_GPIO_PCA953X=3Dm
-> # CONFIG_GPIO_PCF857X is not set
-> CONFIG_GPIO_TPIC2810=3Dm
-> =
-
-> #
-> # MFD GPIO expanders
-> #
-> # CONFIG_GPIO_BD9571MWV is not set
-> CONFIG_GPIO_DA9052=3Dm
-> CONFIG_GPIO_DA9055=3Dm
-> CONFIG_GPIO_JANZ_TTL=3Dm
-> # CONFIG_GPIO_LP3943 is not set
-> # CONFIG_GPIO_LP873X is not set
-> # CONFIG_GPIO_RC5T583 is not set
-> CONFIG_GPIO_TPS65086=3Dy
-> CONFIG_GPIO_TPS6586X=3Dy
-> CONFIG_GPIO_TPS65910=3Dy
-> # CONFIG_GPIO_TPS65912 is not set
-> CONFIG_GPIO_TWL4030=3Dy
-> CONFIG_GPIO_TWL6040=3Dm
-> # CONFIG_GPIO_UCB1400 is not set
-> # CONFIG_GPIO_WM831X is not set
-> CONFIG_GPIO_WM8350=3Dy
-> # CONFIG_GPIO_WM8994 is not set
-> =
-
-> #
-> # PCI GPIO expanders
-> #
-> CONFIG_GPIO_AMD8111=3Dm
-> CONFIG_GPIO_BT8XX=3Dy
-> # CONFIG_GPIO_ML_IOH is not set
-> CONFIG_GPIO_PCI_IDIO_16=3Dy
-> CONFIG_GPIO_RDC321X=3Dm
-> =
-
-> #
-> # SPI GPIO expanders
-> #
-> # CONFIG_GPIO_MAX3191X is not set
-> CONFIG_GPIO_MAX7301=3Dy
-> CONFIG_GPIO_MC33880=3Dy
-> CONFIG_GPIO_PISOSR=3Dm
-> # CONFIG_GPIO_XRA1403 is not set
-> =
-
-> #
-> # USB GPIO expanders
-> #
-> CONFIG_GPIO_VIPERBOARD=3Dm
-> CONFIG_W1=3Dy
-> =
-
-> #
-> # 1-wire Bus Masters
-> #
-> CONFIG_W1_MASTER_MATROX=3Dy
-> CONFIG_W1_MASTER_DS2490=3Dy
-> CONFIG_W1_MASTER_DS2482=3Dm
-> CONFIG_W1_MASTER_DS1WM=3Dm
-> # CONFIG_W1_MASTER_GPIO is not set
-> =
-
-> #
-> # 1-wire Slaves
-> #
-> # CONFIG_W1_SLAVE_THERM is not set
-> # CONFIG_W1_SLAVE_SMEM is not set
-> # CONFIG_W1_SLAVE_DS2405 is not set
-> CONFIG_W1_SLAVE_DS2408=3Dm
-> CONFIG_W1_SLAVE_DS2408_READBACK=3Dy
-> CONFIG_W1_SLAVE_DS2413=3Dy
-> # CONFIG_W1_SLAVE_DS2406 is not set
-> CONFIG_W1_SLAVE_DS2423=3Dm
-> CONFIG_W1_SLAVE_DS2805=3Dm
-> # CONFIG_W1_SLAVE_DS2431 is not set
-> CONFIG_W1_SLAVE_DS2433=3Dm
-> # CONFIG_W1_SLAVE_DS2433_CRC is not set
-> # CONFIG_W1_SLAVE_DS2438 is not set
-> CONFIG_W1_SLAVE_DS2760=3Dy
-> CONFIG_W1_SLAVE_DS2780=3Dm
-> CONFIG_W1_SLAVE_DS2781=3Dy
-> CONFIG_W1_SLAVE_DS28E04=3Dm
-> # CONFIG_W1_SLAVE_DS28E17 is not set
-> CONFIG_POWER_AVS=3Dy
-> # CONFIG_POWER_RESET is not set
-> CONFIG_POWER_SUPPLY=3Dy
-> # CONFIG_POWER_SUPPLY_DEBUG is not set
-> CONFIG_PDA_POWER=3Dy
-> CONFIG_GENERIC_ADC_BATTERY=3Dm
-> CONFIG_MAX8925_POWER=3Dm
-> CONFIG_WM831X_BACKUP=3Dm
-> CONFIG_WM831X_POWER=3Dy
-> CONFIG_WM8350_POWER=3Dm
-> # CONFIG_TEST_POWER is not set
-> CONFIG_BATTERY_DS2760=3Dy
-> CONFIG_BATTERY_DS2780=3Dm
-> CONFIG_BATTERY_DS2781=3Dy
-> CONFIG_BATTERY_DS2782=3Dm
-> CONFIG_BATTERY_SBS=3Dm
-> CONFIG_CHARGER_SBS=3Dm
-> # CONFIG_MANAGER_SBS is not set
-> CONFIG_BATTERY_BQ27XXX=3Dy
-> CONFIG_BATTERY_BQ27XXX_I2C=3Dy
-> CONFIG_BATTERY_BQ27XXX_HDQ=3Dm
-> # CONFIG_BATTERY_BQ27XXX_DT_UPDATES_NVM is not set
-> # CONFIG_BATTERY_DA9052 is not set
-> CONFIG_CHARGER_DA9150=3Dm
-> CONFIG_BATTERY_DA9150=3Dy
-> # CONFIG_BATTERY_MAX17040 is not set
-> CONFIG_BATTERY_MAX17042=3Dy
-> CONFIG_BATTERY_MAX1721X=3Dy
-> CONFIG_BATTERY_TWL4030_MADC=3Dm
-> CONFIG_CHARGER_PCF50633=3Dm
-> CONFIG_BATTERY_RX51=3Dm
-> # CONFIG_CHARGER_ISP1704 is not set
-> CONFIG_CHARGER_MAX8903=3Dm
-> CONFIG_CHARGER_TWL4030=3Dm
-> CONFIG_CHARGER_LP8727=3Dy
-> CONFIG_CHARGER_LP8788=3Dm
-> CONFIG_CHARGER_GPIO=3Dm
-> CONFIG_CHARGER_MANAGER=3Dy
-> CONFIG_CHARGER_LTC3651=3Dm
-> # CONFIG_CHARGER_BQ2415X is not set
-> CONFIG_CHARGER_BQ24190=3Dy
-> CONFIG_CHARGER_BQ24257=3Dy
-> # CONFIG_CHARGER_BQ24735 is not set
-> CONFIG_CHARGER_BQ25890=3Dm
-> CONFIG_CHARGER_SMB347=3Dm
-> CONFIG_BATTERY_GAUGE_LTC2941=3Dy
-> CONFIG_BATTERY_RT5033=3Dm
-> # CONFIG_CHARGER_RT9455 is not set
-> CONFIG_HWMON=3Dy
-> CONFIG_HWMON_VID=3Dy
-> # CONFIG_HWMON_DEBUG_CHIP is not set
-> =
-
-> #
-> # Native drivers
-> #
-> # CONFIG_SENSORS_AD7314 is not set
-> CONFIG_SENSORS_AD7414=3Dm
-> # CONFIG_SENSORS_AD7418 is not set
-> CONFIG_SENSORS_ADM1021=3Dy
-> CONFIG_SENSORS_ADM1025=3Dm
-> CONFIG_SENSORS_ADM1026=3Dm
-> CONFIG_SENSORS_ADM1029=3Dy
-> # CONFIG_SENSORS_ADM1031 is not set
-> # CONFIG_SENSORS_ADM9240 is not set
-> CONFIG_SENSORS_ADT7X10=3Dm
-> CONFIG_SENSORS_ADT7310=3Dm
-> # CONFIG_SENSORS_ADT7410 is not set
-> CONFIG_SENSORS_ADT7411=3Dy
-> CONFIG_SENSORS_ADT7462=3Dm
-> # CONFIG_SENSORS_ADT7470 is not set
-> CONFIG_SENSORS_ADT7475=3Dy
-> CONFIG_SENSORS_ASC7621=3Dm
-> # CONFIG_SENSORS_K8TEMP is not set
-> CONFIG_SENSORS_K10TEMP=3Dy
-> CONFIG_SENSORS_FAM15H_POWER=3Dm
-> CONFIG_SENSORS_APPLESMC=3Dy
-> # CONFIG_SENSORS_ASB100 is not set
-> # CONFIG_SENSORS_ASPEED is not set
-> CONFIG_SENSORS_ATXP1=3Dm
-> # CONFIG_SENSORS_DS620 is not set
-> CONFIG_SENSORS_DS1621=3Dy
-> CONFIG_SENSORS_DELL_SMM=3Dm
-> CONFIG_SENSORS_DA9052_ADC=3Dm
-> # CONFIG_SENSORS_DA9055 is not set
-> CONFIG_SENSORS_I5K_AMB=3Dy
-> CONFIG_SENSORS_F71805F=3Dy
-> CONFIG_SENSORS_F71882FG=3Dm
-> CONFIG_SENSORS_F75375S=3Dy
-> # CONFIG_SENSORS_MC13783_ADC is not set
-> CONFIG_SENSORS_FSCHMD=3Dm
-> CONFIG_SENSORS_GL518SM=3Dm
-> # CONFIG_SENSORS_GL520SM is not set
-> # CONFIG_SENSORS_G760A is not set
-> CONFIG_SENSORS_G762=3Dm
-> CONFIG_SENSORS_HIH6130=3Dm
-> # CONFIG_SENSORS_IIO_HWMON is not set
-> # CONFIG_SENSORS_I5500 is not set
-> # CONFIG_SENSORS_CORETEMP is not set
-> # CONFIG_SENSORS_IT87 is not set
-> # CONFIG_SENSORS_JC42 is not set
-> CONFIG_SENSORS_POWR1220=3Dm
-> # CONFIG_SENSORS_LINEAGE is not set
-> # CONFIG_SENSORS_LTC2945 is not set
-> CONFIG_SENSORS_LTC2990=3Dy
-> CONFIG_SENSORS_LTC4151=3Dm
-> CONFIG_SENSORS_LTC4215=3Dm
-> # CONFIG_SENSORS_LTC4222 is not set
-> CONFIG_SENSORS_LTC4245=3Dm
-> CONFIG_SENSORS_LTC4260=3Dy
-> CONFIG_SENSORS_LTC4261=3Dm
-> CONFIG_SENSORS_MAX1111=3Dm
-> CONFIG_SENSORS_MAX16065=3Dy
-> CONFIG_SENSORS_MAX1619=3Dy
-> CONFIG_SENSORS_MAX1668=3Dm
-> # CONFIG_SENSORS_MAX197 is not set
-> # CONFIG_SENSORS_MAX31722 is not set
-> # CONFIG_SENSORS_MAX6621 is not set
-> CONFIG_SENSORS_MAX6639=3Dm
-> # CONFIG_SENSORS_MAX6642 is not set
-> # CONFIG_SENSORS_MAX6650 is not set
-> CONFIG_SENSORS_MAX6697=3Dm
-> CONFIG_SENSORS_MAX31790=3Dm
-> CONFIG_SENSORS_MCP3021=3Dm
-> CONFIG_SENSORS_TC654=3Dm
-> CONFIG_SENSORS_MENF21BMC_HWMON=3Dy
-> CONFIG_SENSORS_ADCXX=3Dy
-> CONFIG_SENSORS_LM63=3Dm
-> CONFIG_SENSORS_LM70=3Dy
-> CONFIG_SENSORS_LM73=3Dy
-> # CONFIG_SENSORS_LM75 is not set
-> CONFIG_SENSORS_LM77=3Dy
-> # CONFIG_SENSORS_LM78 is not set
-> # CONFIG_SENSORS_LM80 is not set
-> # CONFIG_SENSORS_LM83 is not set
-> CONFIG_SENSORS_LM85=3Dy
-> CONFIG_SENSORS_LM87=3Dy
-> CONFIG_SENSORS_LM90=3Dm
-> CONFIG_SENSORS_LM92=3Dm
-> # CONFIG_SENSORS_LM93 is not set
-> CONFIG_SENSORS_LM95234=3Dy
-> # CONFIG_SENSORS_LM95241 is not set
-> CONFIG_SENSORS_LM95245=3Dm
-> # CONFIG_SENSORS_PC87360 is not set
-> # CONFIG_SENSORS_PC87427 is not set
-> # CONFIG_SENSORS_NTC_THERMISTOR is not set
-> CONFIG_SENSORS_NCT6683=3Dy
-> CONFIG_SENSORS_NCT6775=3Dm
-> # CONFIG_SENSORS_NCT7802 is not set
-> # CONFIG_SENSORS_NCT7904 is not set
-> # CONFIG_SENSORS_OCC is not set
-> CONFIG_SENSORS_PCF8591=3Dm
-> CONFIG_PMBUS=3Dm
-> # CONFIG_SENSORS_PMBUS is not set
-> CONFIG_SENSORS_ADM1275=3Dm
-> CONFIG_SENSORS_IBM_CFFPS=3Dm
-> # CONFIG_SENSORS_IR35221 is not set
-> CONFIG_SENSORS_LM25066=3Dm
-> CONFIG_SENSORS_LTC2978=3Dm
-> # CONFIG_SENSORS_LTC2978_REGULATOR is not set
-> CONFIG_SENSORS_LTC3815=3Dm
-> CONFIG_SENSORS_MAX16064=3Dm
-> # CONFIG_SENSORS_MAX20751 is not set
-> # CONFIG_SENSORS_MAX31785 is not set
-> CONFIG_SENSORS_MAX34440=3Dm
-> CONFIG_SENSORS_MAX8688=3Dm
-> # CONFIG_SENSORS_TPS40422 is not set
-> CONFIG_SENSORS_TPS53679=3Dm
-> CONFIG_SENSORS_UCD9000=3Dm
-> # CONFIG_SENSORS_UCD9200 is not set
-> CONFIG_SENSORS_ZL6100=3Dm
-> # CONFIG_SENSORS_SHT15 is not set
-> # CONFIG_SENSORS_SHT21 is not set
-> # CONFIG_SENSORS_SHT3x is not set
-> CONFIG_SENSORS_SHTC1=3Dy
-> CONFIG_SENSORS_SIS5595=3Dm
-> CONFIG_SENSORS_DME1737=3Dm
-> CONFIG_SENSORS_EMC1403=3Dy
-> CONFIG_SENSORS_EMC2103=3Dy
-> CONFIG_SENSORS_EMC6W201=3Dy
-> # CONFIG_SENSORS_SMSC47M1 is not set
-> CONFIG_SENSORS_SMSC47M192=3Dm
-> CONFIG_SENSORS_SMSC47B397=3Dy
-> # CONFIG_SENSORS_SCH56XX_COMMON is not set
-> CONFIG_SENSORS_STTS751=3Dy
-> # CONFIG_SENSORS_SMM665 is not set
-> # CONFIG_SENSORS_ADC128D818 is not set
-> CONFIG_SENSORS_ADS1015=3Dy
-> CONFIG_SENSORS_ADS7828=3Dm
-> # CONFIG_SENSORS_ADS7871 is not set
-> CONFIG_SENSORS_AMC6821=3Dy
-> CONFIG_SENSORS_INA209=3Dm
-> CONFIG_SENSORS_INA2XX=3Dm
-> # CONFIG_SENSORS_INA3221 is not set
-> CONFIG_SENSORS_TC74=3Dy
-> # CONFIG_SENSORS_THMC50 is not set
-> CONFIG_SENSORS_TMP102=3Dy
-> CONFIG_SENSORS_TMP103=3Dy
-> CONFIG_SENSORS_TMP108=3Dm
-> CONFIG_SENSORS_TMP401=3Dy
-> CONFIG_SENSORS_TMP421=3Dy
-> # CONFIG_SENSORS_VIA_CPUTEMP is not set
-> CONFIG_SENSORS_VIA686A=3Dm
-> CONFIG_SENSORS_VT1211=3Dm
-> # CONFIG_SENSORS_VT8231 is not set
-> CONFIG_SENSORS_W83781D=3Dy
-> CONFIG_SENSORS_W83791D=3Dm
-> CONFIG_SENSORS_W83792D=3Dy
-> # CONFIG_SENSORS_W83793 is not set
-> CONFIG_SENSORS_W83795=3Dy
-> CONFIG_SENSORS_W83795_FANCTRL=3Dy
-> # CONFIG_SENSORS_W83L785TS is not set
-> CONFIG_SENSORS_W83L786NG=3Dy
-> CONFIG_SENSORS_W83627HF=3Dm
-> # CONFIG_SENSORS_W83627EHF is not set
-> CONFIG_SENSORS_WM831X=3Dm
-> # CONFIG_SENSORS_WM8350 is not set
-> =
-
-> #
-> # ACPI drivers
-> #
-> CONFIG_SENSORS_ACPI_POWER=3Dm
-> CONFIG_SENSORS_ATK0110=3Dy
-> CONFIG_THERMAL=3Dm
-> CONFIG_THERMAL_EMERGENCY_POWEROFF_DELAY_MS=3D0
-> # CONFIG_THERMAL_HWMON is not set
-> CONFIG_THERMAL_WRITABLE_TRIPS=3Dy
-> CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE=3Dy
-> # CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE is not set
-> # CONFIG_THERMAL_DEFAULT_GOV_USER_SPACE is not set
-> # CONFIG_THERMAL_DEFAULT_GOV_POWER_ALLOCATOR is not set
-> # CONFIG_THERMAL_GOV_FAIR_SHARE is not set
-> CONFIG_THERMAL_GOV_STEP_WISE=3Dy
-> CONFIG_THERMAL_GOV_BANG_BANG=3Dy
-> CONFIG_THERMAL_GOV_USER_SPACE=3Dy
-> CONFIG_THERMAL_GOV_POWER_ALLOCATOR=3Dy
-> CONFIG_CLOCK_THERMAL=3Dy
-> # CONFIG_DEVFREQ_THERMAL is not set
-> # CONFIG_THERMAL_EMULATION is not set
-> # CONFIG_INTEL_POWERCLAMP is not set
-> CONFIG_INTEL_SOC_DTS_IOSF_CORE=3Dm
-> CONFIG_INTEL_SOC_DTS_THERMAL=3Dm
-> =
-
-> #
-> # ACPI INT340X thermal drivers
-> #
-> CONFIG_INT340X_THERMAL=3Dm
-> CONFIG_ACPI_THERMAL_REL=3Dm
-> CONFIG_INT3406_THERMAL=3Dm
-> CONFIG_INTEL_PCH_THERMAL=3Dm
-> CONFIG_GENERIC_ADC_THERMAL=3Dm
-> # CONFIG_WATCHDOG is not set
-> CONFIG_SSB_POSSIBLE=3Dy
-> =
-
-> #
-> # Sonics Silicon Backplane
-> #
-> CONFIG_SSB=3Dy
-> CONFIG_SSB_PCIHOST_POSSIBLE=3Dy
-> # CONFIG_SSB_PCIHOST is not set
-> CONFIG_SSB_SDIOHOST_POSSIBLE=3Dy
-> CONFIG_SSB_SDIOHOST=3Dy
-> # CONFIG_SSB_SILENT is not set
-> CONFIG_SSB_DEBUG=3Dy
-> CONFIG_SSB_DRIVER_GPIO=3Dy
-> CONFIG_BCMA_POSSIBLE=3Dy
-> # CONFIG_BCMA is not set
-> =
-
-> #
-> # Multifunction device drivers
-> #
-> CONFIG_MFD_CORE=3Dy
-> # CONFIG_MFD_AS3711 is not set
-> # CONFIG_PMIC_ADP5520 is not set
-> # CONFIG_MFD_AAT2870_CORE is not set
-> CONFIG_MFD_BCM590XX=3Dy
-> CONFIG_MFD_BD9571MWV=3Dy
-> # CONFIG_MFD_AXP20X_I2C is not set
-> CONFIG_MFD_CROS_EC=3Dm
-> CONFIG_MFD_CROS_EC_I2C=3Dm
-> # CONFIG_MFD_CROS_EC_SPI is not set
-> # CONFIG_MFD_CROS_EC_CHARDEV is not set
-> # CONFIG_PMIC_DA903X is not set
-> CONFIG_PMIC_DA9052=3Dy
-> CONFIG_MFD_DA9052_SPI=3Dy
-> # CONFIG_MFD_DA9052_I2C is not set
-> CONFIG_MFD_DA9055=3Dy
-> CONFIG_MFD_DA9062=3Dm
-> # CONFIG_MFD_DA9063 is not set
-> CONFIG_MFD_DA9150=3Dy
-> # CONFIG_MFD_DLN2 is not set
-> CONFIG_MFD_MC13XXX=3Dm
-> CONFIG_MFD_MC13XXX_SPI=3Dm
-> CONFIG_MFD_MC13XXX_I2C=3Dm
-> CONFIG_HTC_PASIC3=3Dm
-> CONFIG_HTC_I2CPLD=3Dy
-> # CONFIG_MFD_INTEL_QUARK_I2C_GPIO is not set
-> CONFIG_LPC_ICH=3Dy
-> # CONFIG_LPC_SCH is not set
-> # CONFIG_INTEL_SOC_PMIC is not set
-> CONFIG_INTEL_SOC_PMIC_CHTWC=3Dy
-> # CONFIG_INTEL_SOC_PMIC_CHTDC_TI is not set
-> CONFIG_MFD_INTEL_LPSS=3Dy
-> CONFIG_MFD_INTEL_LPSS_ACPI=3Dy
-> CONFIG_MFD_INTEL_LPSS_PCI=3Dy
-> CONFIG_MFD_JANZ_CMODIO=3Dm
-> # CONFIG_MFD_KEMPLD is not set
-> CONFIG_MFD_88PM800=3Dm
-> CONFIG_MFD_88PM805=3Dm
-> # CONFIG_MFD_88PM860X is not set
-> # CONFIG_MFD_MAX14577 is not set
-> # CONFIG_MFD_MAX77693 is not set
-> CONFIG_MFD_MAX77843=3Dy
-> # CONFIG_MFD_MAX8907 is not set
-> CONFIG_MFD_MAX8925=3Dy
-> # CONFIG_MFD_MAX8997 is not set
-> # CONFIG_MFD_MAX8998 is not set
-> # CONFIG_MFD_MT6397 is not set
-> CONFIG_MFD_MENF21BMC=3Dy
-> CONFIG_EZX_PCAP=3Dy
-> CONFIG_MFD_VIPERBOARD=3Dy
-> # CONFIG_MFD_RETU is not set
-> CONFIG_MFD_PCF50633=3Dm
-> # CONFIG_PCF50633_ADC is not set
-> CONFIG_PCF50633_GPIO=3Dm
-> CONFIG_UCB1400_CORE=3Dm
-> CONFIG_MFD_RDC321X=3Dm
-> CONFIG_MFD_RTSX_PCI=3Dm
-> CONFIG_MFD_RT5033=3Dm
-> # CONFIG_MFD_RTSX_USB is not set
-> CONFIG_MFD_RC5T583=3Dy
-> # CONFIG_MFD_SEC_CORE is not set
-> CONFIG_MFD_SI476X_CORE=3Dm
-> CONFIG_MFD_SM501=3Dy
-> CONFIG_MFD_SM501_GPIO=3Dy
-> CONFIG_MFD_SKY81452=3Dm
-> # CONFIG_MFD_SMSC is not set
-> CONFIG_ABX500_CORE=3Dy
-> # CONFIG_AB3100_CORE is not set
-> CONFIG_MFD_SYSCON=3Dy
-> CONFIG_MFD_TI_AM335X_TSCADC=3Dm
-> CONFIG_MFD_LP3943=3Dm
-> CONFIG_MFD_LP8788=3Dy
-> CONFIG_MFD_TI_LMU=3Dy
-> # CONFIG_MFD_PALMAS is not set
-> CONFIG_TPS6105X=3Dy
-> # CONFIG_TPS65010 is not set
-> CONFIG_TPS6507X=3Dm
-> CONFIG_MFD_TPS65086=3Dy
-> # CONFIG_MFD_TPS65090 is not set
-> # CONFIG_MFD_TPS68470 is not set
-> CONFIG_MFD_TI_LP873X=3Dy
-> CONFIG_MFD_TPS6586X=3Dy
-> CONFIG_MFD_TPS65910=3Dy
-> CONFIG_MFD_TPS65912=3Dm
-> CONFIG_MFD_TPS65912_I2C=3Dm
-> CONFIG_MFD_TPS65912_SPI=3Dm
-> CONFIG_MFD_TPS80031=3Dy
-> CONFIG_TWL4030_CORE=3Dy
-> CONFIG_MFD_TWL4030_AUDIO=3Dy
-> CONFIG_TWL6040_CORE=3Dy
-> CONFIG_MFD_WL1273_CORE=3Dm
-> CONFIG_MFD_LM3533=3Dm
-> # CONFIG_MFD_TMIO is not set
-> # CONFIG_MFD_VX855 is not set
-> # CONFIG_MFD_ARIZONA_I2C is not set
-> # CONFIG_MFD_ARIZONA_SPI is not set
-> # CONFIG_MFD_WM8400 is not set
-> CONFIG_MFD_WM831X=3Dy
-> CONFIG_MFD_WM831X_I2C=3Dy
-> CONFIG_MFD_WM831X_SPI=3Dy
-> CONFIG_MFD_WM8350=3Dy
-> CONFIG_MFD_WM8350_I2C=3Dy
-> CONFIG_MFD_WM8994=3Dm
-> CONFIG_REGULATOR=3Dy
-> # CONFIG_REGULATOR_DEBUG is not set
-> CONFIG_REGULATOR_FIXED_VOLTAGE=3Dy
-> CONFIG_REGULATOR_VIRTUAL_CONSUMER=3Dy
-> CONFIG_REGULATOR_USERSPACE_CONSUMER=3Dm
-> CONFIG_REGULATOR_88PM800=3Dm
-> CONFIG_REGULATOR_ACT8865=3Dy
-> CONFIG_REGULATOR_AD5398=3Dm
-> CONFIG_REGULATOR_ANATOP=3Dm
-> # CONFIG_REGULATOR_BCM590XX is not set
-> # CONFIG_REGULATOR_BD9571MWV is not set
-> CONFIG_REGULATOR_DA9052=3Dy
-> CONFIG_REGULATOR_DA9055=3Dy
-> CONFIG_REGULATOR_DA9062=3Dm
-> CONFIG_REGULATOR_DA9210=3Dy
-> # CONFIG_REGULATOR_DA9211 is not set
-> CONFIG_REGULATOR_FAN53555=3Dy
-> # CONFIG_REGULATOR_GPIO is not set
-> # CONFIG_REGULATOR_ISL9305 is not set
-> CONFIG_REGULATOR_ISL6271A=3Dm
-> CONFIG_REGULATOR_LM363X=3Dm
-> CONFIG_REGULATOR_LP3971=3Dy
-> # CONFIG_REGULATOR_LP3972 is not set
-> CONFIG_REGULATOR_LP872X=3Dy
-> CONFIG_REGULATOR_LP8755=3Dm
-> CONFIG_REGULATOR_LP8788=3Dm
-> CONFIG_REGULATOR_LTC3589=3Dm
-> CONFIG_REGULATOR_LTC3676=3Dy
-> CONFIG_REGULATOR_MAX1586=3Dm
-> CONFIG_REGULATOR_MAX8649=3Dm
-> # CONFIG_REGULATOR_MAX8660 is not set
-> CONFIG_REGULATOR_MAX8925=3Dm
-> CONFIG_REGULATOR_MAX8952=3Dm
-> # CONFIG_REGULATOR_MAX77693 is not set
-> CONFIG_REGULATOR_MC13XXX_CORE=3Dm
-> CONFIG_REGULATOR_MC13783=3Dm
-> CONFIG_REGULATOR_MC13892=3Dm
-> CONFIG_REGULATOR_MT6311=3Dm
-> CONFIG_REGULATOR_PCAP=3Dy
-> CONFIG_REGULATOR_PCF50633=3Dm
-> CONFIG_REGULATOR_PFUZE100=3Dy
-> # CONFIG_REGULATOR_PV88060 is not set
-> # CONFIG_REGULATOR_PV88080 is not set
-> CONFIG_REGULATOR_PV88090=3Dy
-> # CONFIG_REGULATOR_QCOM_SPMI is not set
-> # CONFIG_REGULATOR_RC5T583 is not set
-> CONFIG_REGULATOR_RT5033=3Dm
-> CONFIG_REGULATOR_SKY81452=3Dm
-> CONFIG_REGULATOR_TPS51632=3Dy
-> CONFIG_REGULATOR_TPS6105X=3Dm
-> CONFIG_REGULATOR_TPS62360=3Dy
-> CONFIG_REGULATOR_TPS65023=3Dy
-> CONFIG_REGULATOR_TPS6507X=3Dy
-> CONFIG_REGULATOR_TPS65086=3Dm
-> CONFIG_REGULATOR_TPS65132=3Dy
-> CONFIG_REGULATOR_TPS6524X=3Dy
-> CONFIG_REGULATOR_TPS6586X=3Dm
-> CONFIG_REGULATOR_TPS65910=3Dm
-> CONFIG_REGULATOR_TPS65912=3Dm
-> CONFIG_REGULATOR_TPS80031=3Dy
-> CONFIG_REGULATOR_TWL4030=3Dm
-> CONFIG_REGULATOR_WM831X=3Dm
-> # CONFIG_REGULATOR_WM8350 is not set
-> # CONFIG_REGULATOR_WM8994 is not set
-> CONFIG_RC_CORE=3Dm
-> CONFIG_RC_MAP=3Dm
-> CONFIG_RC_DECODERS=3Dy
-> CONFIG_LIRC=3Dm
-> # CONFIG_IR_LIRC_CODEC is not set
-> CONFIG_IR_NEC_DECODER=3Dm
-> CONFIG_IR_RC5_DECODER=3Dm
-> CONFIG_IR_RC6_DECODER=3Dm
-> # CONFIG_IR_JVC_DECODER is not set
-> CONFIG_IR_SONY_DECODER=3Dm
-> CONFIG_IR_SANYO_DECODER=3Dm
-> # CONFIG_IR_SHARP_DECODER is not set
-> CONFIG_IR_MCE_KBD_DECODER=3Dm
-> # CONFIG_IR_XMP_DECODER is not set
-> # CONFIG_RC_DEVICES is not set
-> # CONFIG_MEDIA_SUPPORT is not set
-> =
-
-> #
-> # Graphics support
-> #
-> CONFIG_AGP=3Dy
-> CONFIG_AGP_AMD64=3Dm
-> CONFIG_AGP_INTEL=3Dy
-> # CONFIG_AGP_SIS is not set
-> CONFIG_AGP_VIA=3Dm
-> CONFIG_INTEL_GTT=3Dy
-> CONFIG_VGA_ARB=3Dy
-> CONFIG_VGA_ARB_MAX_GPUS=3D16
-> CONFIG_VGA_SWITCHEROO=3Dy
-> # CONFIG_DRM is not set
-> # CONFIG_DRM_DP_CEC is not set
-> =
-
-> #
-> # ACP (Audio CoProcessor) Configuration
-> #
-> =
-
-> #
-> # AMD Library routines
-> #
-> # CONFIG_CHASH is not set
-> # CONFIG_DRM_LIB_RANDOM is not set
-> =
-
-> #
-> # Frame buffer Devices
-> #
-> # CONFIG_FB is not set
-> # CONFIG_BACKLIGHT_LCD_SUPPORT is not set
-> CONFIG_BACKLIGHT_CLASS_DEVICE=3Dm
-> # CONFIG_VGASTATE is not set
-> CONFIG_SOUND=3Dm
-> CONFIG_SOUND_OSS_CORE=3Dy
-> # CONFIG_SOUND_OSS_CORE_PRECLAIM is not set
-> CONFIG_SND=3Dm
-> CONFIG_SND_TIMER=3Dm
-> CONFIG_SND_PCM=3Dm
-> CONFIG_SND_DMAENGINE_PCM=3Dm
-> CONFIG_SND_HWDEP=3Dm
-> CONFIG_SND_SEQ_DEVICE=3Dm
-> CONFIG_SND_RAWMIDI=3Dm
-> CONFIG_SND_JACK=3Dy
-> CONFIG_SND_JACK_INPUT_DEV=3Dy
-> CONFIG_SND_OSSEMUL=3Dy
-> CONFIG_SND_MIXER_OSS=3Dm
-> # CONFIG_SND_PCM_OSS is not set
-> CONFIG_SND_PCM_TIMER=3Dy
-> CONFIG_SND_HRTIMER=3Dm
-> # CONFIG_SND_DYNAMIC_MINORS is not set
-> # CONFIG_SND_SUPPORT_OLD_API is not set
-> # CONFIG_SND_PROC_FS is not set
-> # CONFIG_SND_VERBOSE_PRINTK is not set
-> # CONFIG_SND_DEBUG is not set
-> CONFIG_SND_VMASTER=3Dy
-> CONFIG_SND_DMA_SGBUF=3Dy
-> CONFIG_SND_SEQUENCER=3Dm
-> CONFIG_SND_SEQ_DUMMY=3Dm
-> # CONFIG_SND_SEQUENCER_OSS is not set
-> # CONFIG_SND_SEQ_HRTIMER_DEFAULT is not set
-> CONFIG_SND_SEQ_MIDI_EVENT=3Dm
-> CONFIG_SND_SEQ_MIDI=3Dm
-> CONFIG_SND_SEQ_MIDI_EMUL=3Dm
-> CONFIG_SND_MPU401_UART=3Dm
-> CONFIG_SND_OPL3_LIB=3Dm
-> CONFIG_SND_OPL3_LIB_SEQ=3Dm
-> # CONFIG_SND_OPL4_LIB_SEQ is not set
-> CONFIG_SND_VX_LIB=3Dm
-> CONFIG_SND_AC97_CODEC=3Dm
-> # CONFIG_SND_DRIVERS is not set
-> CONFIG_SND_SB_COMMON=3Dm
-> CONFIG_SND_PCI=3Dy
-> CONFIG_SND_AD1889=3Dm
-> CONFIG_SND_ALS300=3Dm
-> CONFIG_SND_ALS4000=3Dm
-> # CONFIG_SND_ALI5451 is not set
-> CONFIG_SND_ASIHPI=3Dm
-> # CONFIG_SND_ATIIXP is not set
-> CONFIG_SND_ATIIXP_MODEM=3Dm
-> CONFIG_SND_AU8810=3Dm
-> # CONFIG_SND_AU8820 is not set
-> CONFIG_SND_AU8830=3Dm
-> CONFIG_SND_AW2=3Dm
-> CONFIG_SND_AZT3328=3Dm
-> # CONFIG_SND_BT87X is not set
-> # CONFIG_SND_CA0106 is not set
-> CONFIG_SND_CMIPCI=3Dm
-> CONFIG_SND_OXYGEN_LIB=3Dm
-> CONFIG_SND_OXYGEN=3Dm
-> # CONFIG_SND_CS4281 is not set
-> CONFIG_SND_CS46XX=3Dm
-> # CONFIG_SND_CS46XX_NEW_DSP is not set
-> # CONFIG_SND_CTXFI is not set
-> CONFIG_SND_DARLA20=3Dm
-> CONFIG_SND_GINA20=3Dm
-> CONFIG_SND_LAYLA20=3Dm
-> CONFIG_SND_DARLA24=3Dm
-> # CONFIG_SND_GINA24 is not set
-> # CONFIG_SND_LAYLA24 is not set
-> CONFIG_SND_MONA=3Dm
-> CONFIG_SND_MIA=3Dm
-> CONFIG_SND_ECHO3G=3Dm
-> # CONFIG_SND_INDIGO is not set
-> CONFIG_SND_INDIGOIO=3Dm
-> CONFIG_SND_INDIGODJ=3Dm
-> CONFIG_SND_INDIGOIOX=3Dm
-> CONFIG_SND_INDIGODJX=3Dm
-> # CONFIG_SND_EMU10K1 is not set
-> # CONFIG_SND_EMU10K1_SEQ is not set
-> CONFIG_SND_EMU10K1X=3Dm
-> CONFIG_SND_ENS1370=3Dm
-> # CONFIG_SND_ENS1371 is not set
-> CONFIG_SND_ES1938=3Dm
-> CONFIG_SND_ES1968=3Dm
-> # CONFIG_SND_ES1968_INPUT is not set
-> CONFIG_SND_FM801=3Dm
-> # CONFIG_SND_HDSP is not set
-> CONFIG_SND_HDSPM=3Dm
-> CONFIG_SND_ICE1712=3Dm
-> CONFIG_SND_ICE1724=3Dm
-> CONFIG_SND_INTEL8X0=3Dm
-> # CONFIG_SND_INTEL8X0M is not set
-> CONFIG_SND_KORG1212=3Dm
-> CONFIG_SND_LOLA=3Dm
-> # CONFIG_SND_LX6464ES is not set
-> # CONFIG_SND_MAESTRO3 is not set
-> CONFIG_SND_MIXART=3Dm
-> # CONFIG_SND_NM256 is not set
-> CONFIG_SND_PCXHR=3Dm
-> # CONFIG_SND_RIPTIDE is not set
-> CONFIG_SND_RME32=3Dm
-> # CONFIG_SND_RME96 is not set
-> CONFIG_SND_RME9652=3Dm
-> CONFIG_SND_SONICVIBES=3Dm
-> CONFIG_SND_TRIDENT=3Dm
-> CONFIG_SND_VIA82XX=3Dm
-> # CONFIG_SND_VIA82XX_MODEM is not set
-> # CONFIG_SND_VIRTUOSO is not set
-> CONFIG_SND_VX222=3Dm
-> # CONFIG_SND_YMFPCI is not set
-> =
-
-> #
-> # HD-Audio
-> #
-> CONFIG_SND_HDA=3Dm
-> CONFIG_SND_HDA_INTEL=3Dm
-> CONFIG_SND_HDA_HWDEP=3Dy
-> CONFIG_SND_HDA_RECONFIG=3Dy
-> CONFIG_SND_HDA_INPUT_BEEP=3Dy
-> CONFIG_SND_HDA_INPUT_BEEP_MODE=3D1
-> CONFIG_SND_HDA_PATCH_LOADER=3Dy
-> CONFIG_SND_HDA_CODEC_REALTEK=3Dm
-> # CONFIG_SND_HDA_CODEC_ANALOG is not set
-> CONFIG_SND_HDA_CODEC_SIGMATEL=3Dm
-> CONFIG_SND_HDA_CODEC_VIA=3Dm
-> CONFIG_SND_HDA_CODEC_HDMI=3Dm
-> CONFIG_SND_HDA_CODEC_CIRRUS=3Dm
-> CONFIG_SND_HDA_CODEC_CONEXANT=3Dm
-> # CONFIG_SND_HDA_CODEC_CA0110 is not set
-> CONFIG_SND_HDA_CODEC_CA0132=3Dm
-> CONFIG_SND_HDA_CODEC_CA0132_DSP=3Dy
-> CONFIG_SND_HDA_CODEC_CMEDIA=3Dm
-> # CONFIG_SND_HDA_CODEC_SI3054 is not set
-> CONFIG_SND_HDA_GENERIC=3Dm
-> CONFIG_SND_HDA_POWER_SAVE_DEFAULT=3D0
-> CONFIG_SND_HDA_CORE=3Dm
-> CONFIG_SND_HDA_DSP_LOADER=3Dy
-> CONFIG_SND_HDA_PREALLOC_SIZE=3D64
-> CONFIG_SND_SPI=3Dy
-> # CONFIG_SND_USB is not set
-> CONFIG_SND_FIREWIRE=3Dy
-> CONFIG_SND_FIREWIRE_LIB=3Dm
-> CONFIG_SND_DICE=3Dm
-> CONFIG_SND_OXFW=3Dm
-> CONFIG_SND_ISIGHT=3Dm
-> CONFIG_SND_FIREWORKS=3Dm
-> CONFIG_SND_BEBOB=3Dm
-> # CONFIG_SND_FIREWIRE_DIGI00X is not set
-> CONFIG_SND_FIREWIRE_TASCAM=3Dm
-> CONFIG_SND_FIREWIRE_MOTU=3Dm
-> # CONFIG_SND_FIREFACE is not set
-> CONFIG_SND_SOC=3Dm
-> CONFIG_SND_SOC_GENERIC_DMAENGINE_PCM=3Dy
-> CONFIG_SND_SOC_AMD_ACP=3Dm
-> # CONFIG_SND_SOC_AMD_CZ_RT5645_MACH is not set
-> CONFIG_SND_ATMEL_SOC=3Dm
-> CONFIG_SND_DESIGNWARE_I2S=3Dm
-> CONFIG_SND_DESIGNWARE_PCM=3Dy
-> =
-
-> #
-> # SoC Audio for Freescale CPUs
-> #
-> =
-
-> #
-> # Common SoC Audio options for Freescale CPUs:
-> #
-> CONFIG_SND_SOC_FSL_ASRC=3Dm
-> CONFIG_SND_SOC_FSL_SAI=3Dm
-> # CONFIG_SND_SOC_FSL_SSI is not set
-> # CONFIG_SND_SOC_FSL_SPDIF is not set
-> # CONFIG_SND_SOC_FSL_ESAI is not set
-> # CONFIG_SND_SOC_IMX_AUDMUX is not set
-> CONFIG_SND_I2S_HI6210_I2S=3Dm
-> CONFIG_SND_SOC_IMG=3Dy
-> CONFIG_SND_SOC_IMG_I2S_IN=3Dm
-> CONFIG_SND_SOC_IMG_I2S_OUT=3Dm
-> CONFIG_SND_SOC_IMG_PARALLEL_OUT=3Dm
-> # CONFIG_SND_SOC_IMG_SPDIF_IN is not set
-> # CONFIG_SND_SOC_IMG_SPDIF_OUT is not set
-> CONFIG_SND_SOC_IMG_PISTACHIO_INTERNAL_DAC=3Dm
-> # CONFIG_SND_SOC_INTEL_SST_TOPLEVEL is not set
-> =
-
-> #
-> # STMicroelectronics STM32 SOC audio support
-> #
-> CONFIG_SND_SOC_XTFPGA_I2S=3Dm
-> CONFIG_ZX_TDM=3Dm
-> CONFIG_SND_SOC_I2C_AND_SPI=3Dm
-> =
-
-> #
-> # CODEC drivers
-> #
-> # CONFIG_SND_SOC_AC97_CODEC is not set
-> CONFIG_SND_SOC_ADAU_UTILS=3Dm
-> CONFIG_SND_SOC_ADAU1701=3Dm
-> CONFIG_SND_SOC_ADAU17X1=3Dm
-> CONFIG_SND_SOC_ADAU1761=3Dm
-> CONFIG_SND_SOC_ADAU1761_I2C=3Dm
-> CONFIG_SND_SOC_ADAU1761_SPI=3Dm
-> CONFIG_SND_SOC_ADAU7002=3Dm
-> CONFIG_SND_SOC_AK4104=3Dm
-> CONFIG_SND_SOC_AK4554=3Dm
-> # CONFIG_SND_SOC_AK4613 is not set
-> CONFIG_SND_SOC_AK4642=3Dm
-> # CONFIG_SND_SOC_AK5386 is not set
-> CONFIG_SND_SOC_ALC5623=3Dm
-> CONFIG_SND_SOC_BT_SCO=3Dm
-> # CONFIG_SND_SOC_CS35L32 is not set
-> CONFIG_SND_SOC_CS35L33=3Dm
-> CONFIG_SND_SOC_CS35L34=3Dm
-> CONFIG_SND_SOC_CS35L35=3Dm
-> # CONFIG_SND_SOC_CS42L42 is not set
-> # CONFIG_SND_SOC_CS42L51_I2C is not set
-> # CONFIG_SND_SOC_CS42L52 is not set
-> CONFIG_SND_SOC_CS42L56=3Dm
-> CONFIG_SND_SOC_CS42L73=3Dm
-> CONFIG_SND_SOC_CS4265=3Dm
-> CONFIG_SND_SOC_CS4270=3Dm
-> CONFIG_SND_SOC_CS4271=3Dm
-> CONFIG_SND_SOC_CS4271_I2C=3Dm
-> CONFIG_SND_SOC_CS4271_SPI=3Dm
-> # CONFIG_SND_SOC_CS42XX8_I2C is not set
-> CONFIG_SND_SOC_CS43130=3Dm
-> CONFIG_SND_SOC_CS4349=3Dm
-> CONFIG_SND_SOC_CS53L30=3Dm
-> CONFIG_SND_SOC_DIO2125=3Dm
-> CONFIG_SND_SOC_ES7134=3Dm
-> CONFIG_SND_SOC_ES8316=3Dm
-> CONFIG_SND_SOC_ES8328=3Dm
-> CONFIG_SND_SOC_ES8328_I2C=3Dm
-> # CONFIG_SND_SOC_ES8328_SPI is not set
-> CONFIG_SND_SOC_GTM601=3Dm
-> # CONFIG_SND_SOC_INNO_RK3036 is not set
-> CONFIG_SND_SOC_MAX98504=3Dm
-> CONFIG_SND_SOC_MAX98927=3Dm
-> CONFIG_SND_SOC_MAX9860=3Dm
-> CONFIG_SND_SOC_MSM8916_WCD_ANALOG=3Dm
-> CONFIG_SND_SOC_MSM8916_WCD_DIGITAL=3Dm
-> CONFIG_SND_SOC_PCM1681=3Dm
-> CONFIG_SND_SOC_PCM179X=3Dm
-> CONFIG_SND_SOC_PCM179X_I2C=3Dm
-> CONFIG_SND_SOC_PCM179X_SPI=3Dm
-> CONFIG_SND_SOC_PCM3168A=3Dm
-> # CONFIG_SND_SOC_PCM3168A_I2C is not set
-> CONFIG_SND_SOC_PCM3168A_SPI=3Dm
-> CONFIG_SND_SOC_PCM512x=3Dm
-> CONFIG_SND_SOC_PCM512x_I2C=3Dm
-> # CONFIG_SND_SOC_PCM512x_SPI is not set
-> CONFIG_SND_SOC_RL6231=3Dm
-> # CONFIG_SND_SOC_RT5514_SPI_BUILTIN is not set
-> CONFIG_SND_SOC_RT5616=3Dm
-> # CONFIG_SND_SOC_RT5631 is not set
-> # CONFIG_SND_SOC_RT5677_SPI is not set
-> CONFIG_SND_SOC_SGTL5000=3Dm
-> CONFIG_SND_SOC_SIGMADSP=3Dm
-> CONFIG_SND_SOC_SIGMADSP_I2C=3Dm
-> CONFIG_SND_SOC_SIGMADSP_REGMAP=3Dm
-> # CONFIG_SND_SOC_SIRF_AUDIO_CODEC is not set
-> CONFIG_SND_SOC_SPDIF=3Dm
-> CONFIG_SND_SOC_SSM2602=3Dm
-> CONFIG_SND_SOC_SSM2602_SPI=3Dm
-> CONFIG_SND_SOC_SSM2602_I2C=3Dm
-> CONFIG_SND_SOC_SSM4567=3Dm
-> CONFIG_SND_SOC_STA32X=3Dm
-> CONFIG_SND_SOC_STA350=3Dm
-> CONFIG_SND_SOC_STI_SAS=3Dm
-> # CONFIG_SND_SOC_TAS2552 is not set
-> # CONFIG_SND_SOC_TAS5086 is not set
-> CONFIG_SND_SOC_TAS571X=3Dm
-> CONFIG_SND_SOC_TAS5720=3Dm
-> CONFIG_SND_SOC_TFA9879=3Dm
-> CONFIG_SND_SOC_TLV320AIC23=3Dm
-> CONFIG_SND_SOC_TLV320AIC23_I2C=3Dm
-> # CONFIG_SND_SOC_TLV320AIC23_SPI is not set
-> # CONFIG_SND_SOC_TLV320AIC31XX is not set
-> # CONFIG_SND_SOC_TLV320AIC3X is not set
-> CONFIG_SND_SOC_TS3A227E=3Dm
-> # CONFIG_SND_SOC_WM8510 is not set
-> # CONFIG_SND_SOC_WM8523 is not set
-> CONFIG_SND_SOC_WM8524=3Dm
-> CONFIG_SND_SOC_WM8580=3Dm
-> CONFIG_SND_SOC_WM8711=3Dm
-> CONFIG_SND_SOC_WM8728=3Dm
-> CONFIG_SND_SOC_WM8731=3Dm
-> # CONFIG_SND_SOC_WM8737 is not set
-> CONFIG_SND_SOC_WM8741=3Dm
-> CONFIG_SND_SOC_WM8750=3Dm
-> # CONFIG_SND_SOC_WM8753 is not set
-> # CONFIG_SND_SOC_WM8770 is not set
-> CONFIG_SND_SOC_WM8776=3Dm
-> CONFIG_SND_SOC_WM8804=3Dm
-> CONFIG_SND_SOC_WM8804_I2C=3Dm
-> CONFIG_SND_SOC_WM8804_SPI=3Dm
-> CONFIG_SND_SOC_WM8903=3Dm
-> CONFIG_SND_SOC_WM8960=3Dm
-> CONFIG_SND_SOC_WM8962=3Dm
-> # CONFIG_SND_SOC_WM8974 is not set
-> # CONFIG_SND_SOC_WM8978 is not set
-> # CONFIG_SND_SOC_WM8985 is not set
-> CONFIG_SND_SOC_ZX_AUD96P22=3Dm
-> # CONFIG_SND_SOC_NAU8540 is not set
-> CONFIG_SND_SOC_NAU8810=3Dm
-> CONFIG_SND_SOC_NAU8824=3Dm
-> # CONFIG_SND_SOC_TPA6130A2 is not set
-> # CONFIG_SND_SIMPLE_CARD is not set
-> CONFIG_SND_X86=3Dy
-> CONFIG_AC97_BUS=3Dm
-> =
-
-> #
-> # HID support
-> #
-> CONFIG_HID=3Dy
-> # CONFIG_HID_BATTERY_STRENGTH is not set
-> CONFIG_HIDRAW=3Dy
-> # CONFIG_UHID is not set
-> CONFIG_HID_GENERIC=3Dy
-> =
-
-> #
-> # Special HID drivers
-> #
-> CONFIG_HID_A4TECH=3Dy
-> # CONFIG_HID_ACCUTOUCH is not set
-> CONFIG_HID_ACRUX=3Dm
-> CONFIG_HID_ACRUX_FF=3Dy
-> # CONFIG_HID_APPLE is not set
-> # CONFIG_HID_APPLEIR is not set
-> CONFIG_HID_ASUS=3Dm
-> CONFIG_HID_AUREAL=3Dy
-> CONFIG_HID_BELKIN=3Dm
-> CONFIG_HID_BETOP_FF=3Dm
-> CONFIG_HID_CHERRY=3Dm
-> # CONFIG_HID_CHICONY is not set
-> CONFIG_HID_CORSAIR=3Dy
-> CONFIG_HID_PRODIKEYS=3Dm
-> CONFIG_HID_CMEDIA=3Dm
-> CONFIG_HID_CP2112=3Dm
-> # CONFIG_HID_CYPRESS is not set
-> CONFIG_HID_DRAGONRISE=3Dy
-> CONFIG_DRAGONRISE_FF=3Dy
-> CONFIG_HID_EMS_FF=3Dm
-> CONFIG_HID_ELECOM=3Dy
-> CONFIG_HID_ELO=3Dm
-> CONFIG_HID_EZKEY=3Dm
-> CONFIG_HID_GEMBIRD=3Dy
-> # CONFIG_HID_GFRM is not set
-> # CONFIG_HID_HOLTEK is not set
-> CONFIG_HID_GT683R=3Dm
-> CONFIG_HID_KEYTOUCH=3Dm
-> # CONFIG_HID_KYE is not set
-> # CONFIG_HID_UCLOGIC is not set
-> # CONFIG_HID_WALTOP is not set
-> # CONFIG_HID_GYRATION is not set
-> # CONFIG_HID_ICADE is not set
-> CONFIG_HID_ITE=3Dy
-> # CONFIG_HID_JABRA is not set
-> # CONFIG_HID_TWINHAN is not set
-> CONFIG_HID_KENSINGTON=3Dm
-> CONFIG_HID_LCPOWER=3Dm
-> CONFIG_HID_LED=3Dm
-> CONFIG_HID_LENOVO=3Dy
-> CONFIG_HID_LOGITECH=3Dy
-> CONFIG_HID_LOGITECH_DJ=3Dy
-> CONFIG_HID_LOGITECH_HIDPP=3Dy
-> # CONFIG_LOGITECH_FF is not set
-> # CONFIG_LOGIRUMBLEPAD2_FF is not set
-> CONFIG_LOGIG940_FF=3Dy
-> CONFIG_LOGIWHEELS_FF=3Dy
-> CONFIG_HID_MAGICMOUSE=3Dy
-> CONFIG_HID_MAYFLASH=3Dy
-> CONFIG_HID_MICROSOFT=3Dy
-> CONFIG_HID_MONTEREY=3Dy
-> # CONFIG_HID_MULTITOUCH is not set
-> # CONFIG_HID_NTI is not set
-> # CONFIG_HID_NTRIG is not set
-> CONFIG_HID_ORTEK=3Dm
-> CONFIG_HID_PANTHERLORD=3Dy
-> CONFIG_PANTHERLORD_FF=3Dy
-> CONFIG_HID_PENMOUNT=3Dm
-> CONFIG_HID_PETALYNX=3Dy
-> # CONFIG_HID_PICOLCD is not set
-> CONFIG_HID_PLANTRONICS=3Dm
-> CONFIG_HID_PRIMAX=3Dm
-> CONFIG_HID_RETRODE=3Dm
-> # CONFIG_HID_ROCCAT is not set
-> CONFIG_HID_SAITEK=3Dm
-> CONFIG_HID_SAMSUNG=3Dy
-> CONFIG_HID_SONY=3Dm
-> # CONFIG_SONY_FF is not set
-> CONFIG_HID_SPEEDLINK=3Dy
-> CONFIG_HID_STEELSERIES=3Dy
-> # CONFIG_HID_SUNPLUS is not set
-> CONFIG_HID_RMI=3Dm
-> CONFIG_HID_GREENASIA=3Dy
-> CONFIG_GREENASIA_FF=3Dy
-> # CONFIG_HID_SMARTJOYPLUS is not set
-> # CONFIG_HID_TIVO is not set
-> # CONFIG_HID_TOPSEED is not set
-> CONFIG_HID_THINGM=3Dm
-> CONFIG_HID_THRUSTMASTER=3Dy
-> CONFIG_THRUSTMASTER_FF=3Dy
-> # CONFIG_HID_UDRAW_PS3 is not set
-> # CONFIG_HID_WACOM is not set
-> # CONFIG_HID_WIIMOTE is not set
-> # CONFIG_HID_XINMO is not set
-> CONFIG_HID_ZEROPLUS=3Dm
-> CONFIG_ZEROPLUS_FF=3Dy
-> CONFIG_HID_ZYDACRON=3Dm
-> CONFIG_HID_SENSOR_HUB=3Dy
-> CONFIG_HID_SENSOR_CUSTOM_SENSOR=3Dy
-> CONFIG_HID_ALPS=3Dm
-> =
-
-> #
-> # USB HID support
-> #
-> CONFIG_USB_HID=3Dm
-> CONFIG_HID_PID=3Dy
-> CONFIG_USB_HIDDEV=3Dy
-> =
-
-> #
-> # USB HID Boot Protocol drivers
-> #
-> CONFIG_USB_KBD=3Dy
-> CONFIG_USB_MOUSE=3Dy
-> =
-
-> #
-> # I2C HID support
-> #
-> CONFIG_I2C_HID=3Dy
-> =
-
-> #
-> # Intel ISH HID support
-> #
-> # CONFIG_INTEL_ISH_HID is not set
-> CONFIG_USB_OHCI_LITTLE_ENDIAN=3Dy
-> CONFIG_USB_SUPPORT=3Dy
-> CONFIG_USB_COMMON=3Dy
-> CONFIG_USB_ARCH_HAS_HCD=3Dy
-> CONFIG_USB=3Dy
-> CONFIG_USB_PCI=3Dy
-> CONFIG_USB_ANNOUNCE_NEW_DEVICES=3Dy
-> =
-
-> #
-> # Miscellaneous USB options
-> #
-> CONFIG_USB_DEFAULT_PERSIST=3Dy
-> CONFIG_USB_DYNAMIC_MINORS=3Dy
-> # CONFIG_USB_OTG is not set
-> # CONFIG_USB_OTG_WHITELIST is not set
-> # CONFIG_USB_OTG_BLACKLIST_HUB is not set
-> # CONFIG_USB_MON is not set
-> CONFIG_USB_WUSB=3Dm
-> CONFIG_USB_WUSB_CBAF=3Dm
-> CONFIG_USB_WUSB_CBAF_DEBUG=3Dy
-> =
-
-> #
-> # USB Host Controller Drivers
-> #
-> # CONFIG_USB_C67X00_HCD is not set
-> # CONFIG_USB_XHCI_HCD is not set
-> # CONFIG_USB_EHCI_HCD is not set
-> CONFIG_USB_OXU210HP_HCD=3Dm
-> # CONFIG_USB_ISP116X_HCD is not set
-> # CONFIG_USB_ISP1362_HCD is not set
-> CONFIG_USB_FOTG210_HCD=3Dy
-> # CONFIG_USB_MAX3421_HCD is not set
-> CONFIG_USB_OHCI_HCD=3Dy
-> # CONFIG_USB_OHCI_HCD_PCI is not set
-> CONFIG_USB_OHCI_HCD_SSB=3Dy
-> CONFIG_USB_OHCI_HCD_PLATFORM=3Dy
-> CONFIG_USB_UHCI_HCD=3Dm
-> CONFIG_USB_SL811_HCD=3Dy
-> # CONFIG_USB_SL811_HCD_ISO is not set
-> CONFIG_USB_R8A66597_HCD=3Dy
-> CONFIG_USB_WHCI_HCD=3Dm
-> CONFIG_USB_HWA_HCD=3Dm
-> CONFIG_USB_HCD_SSB=3Dy
-> # CONFIG_USB_HCD_TEST_MODE is not set
-> =
-
-> #
-> # USB Device Class drivers
-> #
-> # CONFIG_USB_ACM is not set
-> # CONFIG_USB_PRINTER is not set
-> CONFIG_USB_WDM=3Dm
-> CONFIG_USB_TMC=3Dy
-> =
-
-> #
-> # NOTE: USB_STORAGE depends on SCSI but BLK_DEV_SD may
-> #
-> =
-
-> #
-> # also be needed; see USB_STORAGE Help for more info
-> #
-> =
-
-> #
-> # USB Imaging devices
-> #
-> CONFIG_USB_MDC800=3Dm
-> # CONFIG_USBIP_CORE is not set
-> # CONFIG_USB_MUSB_HDRC is not set
-> # CONFIG_USB_DWC3 is not set
-> # CONFIG_USB_DWC2 is not set
-> CONFIG_USB_ISP1760=3Dm
-> CONFIG_USB_ISP1760_HCD=3Dy
-> CONFIG_USB_ISP1760_HOST_ROLE=3Dy
-> =
-
-> #
-> # USB port drivers
-> #
-> CONFIG_USB_SERIAL=3Dm
-> CONFIG_USB_SERIAL_GENERIC=3Dy
-> CONFIG_USB_SERIAL_SIMPLE=3Dm
-> CONFIG_USB_SERIAL_AIRCABLE=3Dm
-> CONFIG_USB_SERIAL_ARK3116=3Dm
-> CONFIG_USB_SERIAL_BELKIN=3Dm
-> CONFIG_USB_SERIAL_CH341=3Dm
-> CONFIG_USB_SERIAL_WHITEHEAT=3Dm
-> CONFIG_USB_SERIAL_DIGI_ACCELEPORT=3Dm
-> # CONFIG_USB_SERIAL_CP210X is not set
-> # CONFIG_USB_SERIAL_CYPRESS_M8 is not set
-> CONFIG_USB_SERIAL_EMPEG=3Dm
-> CONFIG_USB_SERIAL_FTDI_SIO=3Dm
-> # CONFIG_USB_SERIAL_VISOR is not set
-> CONFIG_USB_SERIAL_IPAQ=3Dm
-> # CONFIG_USB_SERIAL_IR is not set
-> CONFIG_USB_SERIAL_EDGEPORT=3Dm
-> CONFIG_USB_SERIAL_EDGEPORT_TI=3Dm
-> CONFIG_USB_SERIAL_F81232=3Dm
-> # CONFIG_USB_SERIAL_F8153X is not set
-> CONFIG_USB_SERIAL_GARMIN=3Dm
-> CONFIG_USB_SERIAL_IPW=3Dm
-> CONFIG_USB_SERIAL_IUU=3Dm
-> CONFIG_USB_SERIAL_KEYSPAN_PDA=3Dm
-> CONFIG_USB_SERIAL_KEYSPAN=3Dm
-> CONFIG_USB_SERIAL_KLSI=3Dm
-> # CONFIG_USB_SERIAL_KOBIL_SCT is not set
-> CONFIG_USB_SERIAL_MCT_U232=3Dm
-> CONFIG_USB_SERIAL_METRO=3Dm
-> CONFIG_USB_SERIAL_MOS7720=3Dm
-> CONFIG_USB_SERIAL_MOS7840=3Dm
-> # CONFIG_USB_SERIAL_MXUPORT is not set
-> # CONFIG_USB_SERIAL_NAVMAN is not set
-> CONFIG_USB_SERIAL_PL2303=3Dm
-> # CONFIG_USB_SERIAL_OTI6858 is not set
-> CONFIG_USB_SERIAL_QCAUX=3Dm
-> # CONFIG_USB_SERIAL_QUALCOMM is not set
-> # CONFIG_USB_SERIAL_SPCP8X5 is not set
-> # CONFIG_USB_SERIAL_SAFE is not set
-> # CONFIG_USB_SERIAL_SIERRAWIRELESS is not set
-> CONFIG_USB_SERIAL_SYMBOL=3Dm
-> # CONFIG_USB_SERIAL_TI is not set
-> CONFIG_USB_SERIAL_CYBERJACK=3Dm
-> CONFIG_USB_SERIAL_XIRCOM=3Dm
-> CONFIG_USB_SERIAL_WWAN=3Dm
-> CONFIG_USB_SERIAL_OPTION=3Dm
-> # CONFIG_USB_SERIAL_OMNINET is not set
-> CONFIG_USB_SERIAL_OPTICON=3Dm
-> CONFIG_USB_SERIAL_XSENS_MT=3Dm
-> # CONFIG_USB_SERIAL_WISHBONE is not set
-> # CONFIG_USB_SERIAL_SSU100 is not set
-> # CONFIG_USB_SERIAL_QT2 is not set
-> CONFIG_USB_SERIAL_UPD78F0730=3Dm
-> # CONFIG_USB_SERIAL_DEBUG is not set
-> =
-
-> #
-> # USB Miscellaneous drivers
-> #
-> CONFIG_USB_EMI62=3Dy
-> CONFIG_USB_EMI26=3Dm
-> # CONFIG_USB_ADUTUX is not set
-> # CONFIG_USB_SEVSEG is not set
-> # CONFIG_USB_RIO500 is not set
-> CONFIG_USB_LEGOTOWER=3Dy
-> CONFIG_USB_LCD=3Dm
-> # CONFIG_USB_CYPRESS_CY7C63 is not set
-> # CONFIG_USB_CYTHERM is not set
-> CONFIG_USB_IDMOUSE=3Dm
-> # CONFIG_USB_FTDI_ELAN is not set
-> # CONFIG_USB_APPLEDISPLAY is not set
-> CONFIG_USB_LD=3Dy
-> # CONFIG_USB_TRANCEVIBRATOR is not set
-> CONFIG_USB_IOWARRIOR=3Dm
-> CONFIG_USB_TEST=3Dm
-> CONFIG_USB_EHSET_TEST_FIXTURE=3Dy
-> # CONFIG_USB_ISIGHTFW is not set
-> # CONFIG_USB_YUREX is not set
-> CONFIG_USB_EZUSB_FX2=3Dy
-> CONFIG_USB_HUB_USB251XB=3Dm
-> # CONFIG_USB_HSIC_USB3503 is not set
-> CONFIG_USB_HSIC_USB4604=3Dy
-> # CONFIG_USB_LINK_LAYER_TEST is not set
-> # CONFIG_USB_CHAOSKEY is not set
-> =
-
-> #
-> # USB Physical Layer drivers
-> #
-> CONFIG_USB_PHY=3Dy
-> CONFIG_NOP_USB_XCEIV=3Dm
-> # CONFIG_USB_GPIO_VBUS is not set
-> CONFIG_USB_ISP1301=3Dy
-> # CONFIG_USB_GADGET is not set
-> CONFIG_TYPEC=3Dm
-> # CONFIG_TYPEC_TCPM is not set
-> CONFIG_TYPEC_UCSI=3Dm
-> # CONFIG_UCSI_ACPI is not set
-> # CONFIG_TYPEC_TPS6598X is not set
-> # CONFIG_USB_ULPI_BUS is not set
-> CONFIG_UWB=3Dm
-> CONFIG_UWB_HWA=3Dm
-> CONFIG_UWB_WHCI=3Dm
-> # CONFIG_UWB_I1480U is not set
-> CONFIG_MMC=3Dy
-> # CONFIG_SDIO_UART is not set
-> # CONFIG_MMC_TEST is not set
-> =
-
-> #
-> # MMC/SD/SDIO Host Controller Drivers
-> #
-> CONFIG_MMC_DEBUG=3Dy
-> CONFIG_MMC_SDHCI=3Dm
-> CONFIG_MMC_SDHCI_PCI=3Dm
-> # CONFIG_MMC_RICOH_MMC is not set
-> CONFIG_MMC_SDHCI_ACPI=3Dm
-> # CONFIG_MMC_SDHCI_PLTFM is not set
-> CONFIG_MMC_WBSD=3Dy
-> CONFIG_MMC_TIFM_SD=3Dy
-> # CONFIG_MMC_SPI is not set
-> CONFIG_MMC_CB710=3Dm
-> # CONFIG_MMC_VIA_SDMMC is not set
-> CONFIG_MMC_VUB300=3Dm
-> CONFIG_MMC_USHC=3Dy
-> CONFIG_MMC_USDHI6ROL0=3Dm
-> CONFIG_MMC_REALTEK_PCI=3Dm
-> # CONFIG_MMC_TOSHIBA_PCI is not set
-> CONFIG_MMC_MTK=3Dy
-> # CONFIG_MEMSTICK is not set
-> CONFIG_NEW_LEDS=3Dy
-> CONFIG_LEDS_CLASS=3Dy
-> # CONFIG_LEDS_CLASS_FLASH is not set
-> # CONFIG_LEDS_BRIGHTNESS_HW_CHANGED is not set
-> =
-
-> #
-> # LED drivers
-> #
-> CONFIG_LEDS_LM3530=3Dm
-> CONFIG_LEDS_LM3533=3Dm
-> CONFIG_LEDS_LM3642=3Dm
-> # CONFIG_LEDS_PCA9532 is not set
-> # CONFIG_LEDS_GPIO is not set
-> # CONFIG_LEDS_LP3944 is not set
-> # CONFIG_LEDS_LP3952 is not set
-> CONFIG_LEDS_LP55XX_COMMON=3Dy
-> CONFIG_LEDS_LP5521=3Dy
-> CONFIG_LEDS_LP5523=3Dm
-> # CONFIG_LEDS_LP5562 is not set
-> # CONFIG_LEDS_LP8501 is not set
-> # CONFIG_LEDS_LP8788 is not set
-> CONFIG_LEDS_LP8860=3Dy
-> CONFIG_LEDS_PCA955X=3Dy
-> # CONFIG_LEDS_PCA955X_GPIO is not set
-> CONFIG_LEDS_PCA963X=3Dy
-> # CONFIG_LEDS_WM831X_STATUS is not set
-> # CONFIG_LEDS_WM8350 is not set
-> # CONFIG_LEDS_DA9052 is not set
-> # CONFIG_LEDS_DAC124S085 is not set
-> CONFIG_LEDS_REGULATOR=3Dm
-> CONFIG_LEDS_BD2802=3Dy
-> CONFIG_LEDS_LT3593=3Dm
-> CONFIG_LEDS_MC13783=3Dm
-> CONFIG_LEDS_TCA6507=3Dm
-> CONFIG_LEDS_TLC591XX=3Dy
-> CONFIG_LEDS_LM355x=3Dm
-> CONFIG_LEDS_MENF21BMC=3Dm
-> =
-
-> #
-> # LED driver for blink(1) USB RGB LED is under Special HID drivers (HID_T=
-HINGM)
-> #
-> # CONFIG_LEDS_BLINKM is not set
-> CONFIG_LEDS_USER=3Dm
-> CONFIG_LEDS_NIC78BX=3Dy
-> =
-
-> #
-> # LED Triggers
-> #
-> # CONFIG_LEDS_TRIGGERS is not set
-> CONFIG_ACCESSIBILITY=3Dy
-> CONFIG_EDAC_ATOMIC_SCRUB=3Dy
-> CONFIG_EDAC_SUPPORT=3Dy
-> CONFIG_EDAC=3Dm
-> # CONFIG_EDAC_LEGACY_SYSFS is not set
-> CONFIG_EDAC_DEBUG=3Dy
-> CONFIG_EDAC_DECODE_MCE=3Dm
-> CONFIG_EDAC_AMD64=3Dm
-> # CONFIG_EDAC_AMD64_ERROR_INJECTION is not set
-> # CONFIG_EDAC_E752X is not set
-> CONFIG_EDAC_I82975X=3Dm
-> # CONFIG_EDAC_I3000 is not set
-> CONFIG_EDAC_I3200=3Dm
-> CONFIG_EDAC_IE31200=3Dm
-> # CONFIG_EDAC_X38 is not set
-> CONFIG_EDAC_I5400=3Dm
-> # CONFIG_EDAC_I5000 is not set
-> # CONFIG_EDAC_I5100 is not set
-> CONFIG_EDAC_I7300=3Dm
-> CONFIG_RTC_LIB=3Dy
-> CONFIG_RTC_MC146818_LIB=3Dy
-> CONFIG_RTC_CLASS=3Dy
-> CONFIG_RTC_HCTOSYS=3Dy
-> CONFIG_RTC_HCTOSYS_DEVICE=3D"rtc0"
-> CONFIG_RTC_SYSTOHC=3Dy
-> CONFIG_RTC_SYSTOHC_DEVICE=3D"rtc0"
-> CONFIG_RTC_DEBUG=3Dy
-> # CONFIG_RTC_NVMEM is not set
-> =
-
-> #
-> # RTC interfaces
-> #
-> CONFIG_RTC_INTF_SYSFS=3Dy
-> # CONFIG_RTC_INTF_PROC is not set
-> CONFIG_RTC_INTF_DEV=3Dy
-> CONFIG_RTC_INTF_DEV_UIE_EMUL=3Dy
-> CONFIG_RTC_DRV_TEST=3Dy
-> =
-
-> #
-> # I2C RTC drivers
-> #
-> CONFIG_RTC_DRV_88PM80X=3Dm
-> # CONFIG_RTC_DRV_ABB5ZES3 is not set
-> # CONFIG_RTC_DRV_ABX80X is not set
-> CONFIG_RTC_DRV_DS1307=3Dm
-> # CONFIG_RTC_DRV_DS1307_HWMON is not set
-> CONFIG_RTC_DRV_DS1307_CENTURY=3Dy
-> # CONFIG_RTC_DRV_DS1374 is not set
-> CONFIG_RTC_DRV_DS1672=3Dm
-> CONFIG_RTC_DRV_LP8788=3Dy
-> CONFIG_RTC_DRV_MAX6900=3Dm
-> # CONFIG_RTC_DRV_MAX8925 is not set
-> CONFIG_RTC_DRV_RS5C372=3Dm
-> # CONFIG_RTC_DRV_ISL1208 is not set
-> CONFIG_RTC_DRV_ISL12022=3Dm
-> # CONFIG_RTC_DRV_X1205 is not set
-> CONFIG_RTC_DRV_PCF8523=3Dy
-> # CONFIG_RTC_DRV_PCF85063 is not set
-> # CONFIG_RTC_DRV_PCF85363 is not set
-> CONFIG_RTC_DRV_PCF8563=3Dm
-> CONFIG_RTC_DRV_PCF8583=3Dy
-> CONFIG_RTC_DRV_M41T80=3Dm
-> CONFIG_RTC_DRV_M41T80_WDT=3Dy
-> # CONFIG_RTC_DRV_BQ32K is not set
-> CONFIG_RTC_DRV_TPS6586X=3Dm
-> CONFIG_RTC_DRV_TPS65910=3Dm
-> # CONFIG_RTC_DRV_TPS80031 is not set
-> CONFIG_RTC_DRV_RC5T583=3Dy
-> CONFIG_RTC_DRV_S35390A=3Dm
-> CONFIG_RTC_DRV_FM3130=3Dm
-> CONFIG_RTC_DRV_RX8010=3Dy
-> # CONFIG_RTC_DRV_RX8581 is not set
-> CONFIG_RTC_DRV_RX8025=3Dy
-> CONFIG_RTC_DRV_EM3027=3Dy
-> # CONFIG_RTC_DRV_RV8803 is not set
-> =
-
-> #
-> # SPI RTC drivers
-> #
-> CONFIG_RTC_DRV_M41T93=3Dy
-> # CONFIG_RTC_DRV_M41T94 is not set
-> CONFIG_RTC_DRV_DS1302=3Dm
-> CONFIG_RTC_DRV_DS1305=3Dm
-> # CONFIG_RTC_DRV_DS1343 is not set
-> # CONFIG_RTC_DRV_DS1347 is not set
-> CONFIG_RTC_DRV_DS1390=3Dm
-> CONFIG_RTC_DRV_MAX6916=3Dy
-> # CONFIG_RTC_DRV_R9701 is not set
-> CONFIG_RTC_DRV_RX4581=3Dy
-> CONFIG_RTC_DRV_RX6110=3Dy
-> CONFIG_RTC_DRV_RS5C348=3Dy
-> CONFIG_RTC_DRV_MAX6902=3Dy
-> # CONFIG_RTC_DRV_PCF2123 is not set
-> CONFIG_RTC_DRV_MCP795=3Dy
-> CONFIG_RTC_I2C_AND_SPI=3Dy
-> =
-
-> #
-> # SPI and I2C RTC drivers
-> #
-> CONFIG_RTC_DRV_DS3232=3Dm
-> CONFIG_RTC_DRV_DS3232_HWMON=3Dy
-> CONFIG_RTC_DRV_PCF2127=3Dy
-> # CONFIG_RTC_DRV_RV3029C2 is not set
-> =
-
-> #
-> # Platform RTC drivers
-> #
-> CONFIG_RTC_DRV_CMOS=3Dm
-> # CONFIG_RTC_DRV_DS1286 is not set
-> # CONFIG_RTC_DRV_DS1511 is not set
-> CONFIG_RTC_DRV_DS1553=3Dy
-> CONFIG_RTC_DRV_DS1685_FAMILY=3Dm
-> # CONFIG_RTC_DRV_DS1685 is not set
-> # CONFIG_RTC_DRV_DS1689 is not set
-> # CONFIG_RTC_DRV_DS17285 is not set
-> CONFIG_RTC_DRV_DS17485=3Dy
-> # CONFIG_RTC_DRV_DS17885 is not set
-> CONFIG_RTC_DS1685_PROC_REGS=3Dy
-> # CONFIG_RTC_DS1685_SYSFS_REGS is not set
-> CONFIG_RTC_DRV_DS1742=3Dm
-> # CONFIG_RTC_DRV_DS2404 is not set
-> CONFIG_RTC_DRV_DA9052=3Dy
-> CONFIG_RTC_DRV_DA9055=3Dy
-> # CONFIG_RTC_DRV_DA9063 is not set
-> CONFIG_RTC_DRV_STK17TA8=3Dy
-> CONFIG_RTC_DRV_M48T86=3Dm
-> CONFIG_RTC_DRV_M48T35=3Dm
-> CONFIG_RTC_DRV_M48T59=3Dm
-> CONFIG_RTC_DRV_MSM6242=3Dm
-> CONFIG_RTC_DRV_BQ4802=3Dm
-> # CONFIG_RTC_DRV_RP5C01 is not set
-> # CONFIG_RTC_DRV_V3020 is not set
-> CONFIG_RTC_DRV_WM831X=3Dy
-> CONFIG_RTC_DRV_WM8350=3Dy
-> CONFIG_RTC_DRV_PCF50633=3Dm
-> =
-
-> #
-> # on-CPU RTC drivers
-> #
-> CONFIG_RTC_DRV_FTRTC010=3Dy
-> CONFIG_RTC_DRV_PCAP=3Dy
-> CONFIG_RTC_DRV_MC13XXX=3Dm
-> =
-
-> #
-> # HID Sensor RTC drivers
-> #
-> CONFIG_RTC_DRV_HID_SENSOR_TIME=3Dm
-> CONFIG_DMADEVICES=3Dy
-> CONFIG_DMADEVICES_DEBUG=3Dy
-> # CONFIG_DMADEVICES_VDEBUG is not set
-> =
-
-> #
-> # DMA Devices
-> #
-> CONFIG_DMA_ENGINE=3Dy
-> CONFIG_DMA_ACPI=3Dy
-> # CONFIG_ALTERA_MSGDMA is not set
-> # CONFIG_INTEL_IDMA64 is not set
-> CONFIG_INTEL_IOATDMA=3Dm
-> CONFIG_QCOM_HIDMA_MGMT=3Dy
-> CONFIG_QCOM_HIDMA=3Dm
-> CONFIG_DW_DMAC_CORE=3Dy
-> CONFIG_DW_DMAC=3Dy
-> CONFIG_DW_DMAC_PCI=3Dy
-> =
-
-> #
-> # DMA Clients
-> #
-> # CONFIG_ASYNC_TX_DMA is not set
-> CONFIG_DMATEST=3Dm
-> CONFIG_DMA_ENGINE_RAID=3Dy
-> =
-
-> #
-> # DMABUF options
-> #
-> CONFIG_SYNC_FILE=3Dy
-> CONFIG_SW_SYNC=3Dy
-> CONFIG_DCA=3Dm
-> # CONFIG_AUXDISPLAY is not set
-> CONFIG_UIO=3Dm
-> CONFIG_UIO_CIF=3Dm
-> # CONFIG_UIO_PDRV_GENIRQ is not set
-> CONFIG_UIO_DMEM_GENIRQ=3Dm
-> CONFIG_UIO_AEC=3Dm
-> # CONFIG_UIO_SERCOS3 is not set
-> # CONFIG_UIO_PCI_GENERIC is not set
-> CONFIG_UIO_NETX=3Dm
-> CONFIG_UIO_PRUSS=3Dm
-> CONFIG_UIO_MF624=3Dm
-> CONFIG_VFIO_IOMMU_TYPE1=3Dm
-> CONFIG_VFIO=3Dm
-> # CONFIG_VFIO_NOIOMMU is not set
-> CONFIG_VFIO_MDEV=3Dm
-> CONFIG_VFIO_MDEV_DEVICE=3Dm
-> CONFIG_VIRT_DRIVERS=3Dy
-> CONFIG_VIRTIO=3Dm
-> =
-
-> #
-> # Virtio drivers
-> #
-> CONFIG_VIRTIO_PCI=3Dm
-> CONFIG_VIRTIO_PCI_LEGACY=3Dy
-> CONFIG_VIRTIO_BALLOON=3Dm
-> CONFIG_VIRTIO_INPUT=3Dm
-> CONFIG_VIRTIO_MMIO=3Dm
-> CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=3Dy
-> =
-
-> #
-> # Microsoft Hyper-V guest support
-> #
-> # CONFIG_HYPERV is not set
-> # CONFIG_HYPERV_TSCPAGE is not set
-> =
-
-> #
-> # Xen driver support
-> #
-> CONFIG_XEN_BALLOON=3Dy
-> # CONFIG_XEN_SCRUB_PAGES is not set
-> CONFIG_XEN_DEV_EVTCHN=3Dm
-> CONFIG_XEN_BACKEND=3Dy
-> CONFIG_XENFS=3Dm
-> # CONFIG_XEN_COMPAT_XENFS is not set
-> # CONFIG_XEN_SYS_HYPERVISOR is not set
-> CONFIG_XEN_GNTDEV=3Dm
-> CONFIG_XEN_GRANT_DEV_ALLOC=3Dm
-> CONFIG_SWIOTLB_XEN=3Dy
-> CONFIG_XEN_PCIDEV_BACKEND=3Dm
-> CONFIG_XEN_PRIVCMD=3Dm
-> # CONFIG_XEN_MCE_LOG is not set
-> CONFIG_XEN_HAVE_PVMMU=3Dy
-> CONFIG_XEN_AUTO_XLATE=3Dy
-> CONFIG_XEN_ACPI=3Dy
-> CONFIG_XEN_SYMS=3Dy
-> CONFIG_XEN_HAVE_VPMU=3Dy
-> CONFIG_STAGING=3Dy
-> # CONFIG_IRDA is not set
-> # CONFIG_IPX is not set
-> CONFIG_COMEDI=3Dm
-> # CONFIG_COMEDI_DEBUG is not set
-> CONFIG_COMEDI_DEFAULT_BUF_SIZE_KB=3D2048
-> CONFIG_COMEDI_DEFAULT_BUF_MAXSIZE_KB=3D20480
-> CONFIG_COMEDI_MISC_DRIVERS=3Dy
-> # CONFIG_COMEDI_BOND is not set
-> CONFIG_COMEDI_TEST=3Dm
-> CONFIG_COMEDI_PARPORT=3Dm
-> # CONFIG_COMEDI_SERIAL2002 is not set
-> CONFIG_COMEDI_ISA_DRIVERS=3Dy
-> # CONFIG_COMEDI_PCL711 is not set
-> CONFIG_COMEDI_PCL724=3Dm
-> # CONFIG_COMEDI_PCL726 is not set
-> # CONFIG_COMEDI_PCL730 is not set
-> CONFIG_COMEDI_PCL812=3Dm
-> CONFIG_COMEDI_PCL816=3Dm
-> CONFIG_COMEDI_PCL818=3Dm
-> CONFIG_COMEDI_PCM3724=3Dm
-> CONFIG_COMEDI_AMPLC_DIO200_ISA=3Dm
-> CONFIG_COMEDI_AMPLC_PC236_ISA=3Dm
-> CONFIG_COMEDI_AMPLC_PC263_ISA=3Dm
-> CONFIG_COMEDI_RTI800=3Dm
-> CONFIG_COMEDI_RTI802=3Dm
-> CONFIG_COMEDI_DAC02=3Dm
-> # CONFIG_COMEDI_DAS16M1 is not set
-> CONFIG_COMEDI_DAS08_ISA=3Dm
-> # CONFIG_COMEDI_DAS16 is not set
-> # CONFIG_COMEDI_DAS800 is not set
-> # CONFIG_COMEDI_DAS1800 is not set
-> CONFIG_COMEDI_DAS6402=3Dm
-> # CONFIG_COMEDI_DT2801 is not set
-> # CONFIG_COMEDI_DT2811 is not set
-> CONFIG_COMEDI_DT2814=3Dm
-> CONFIG_COMEDI_DT2815=3Dm
-> # CONFIG_COMEDI_DT2817 is not set
-> # CONFIG_COMEDI_DT282X is not set
-> CONFIG_COMEDI_DMM32AT=3Dm
-> # CONFIG_COMEDI_FL512 is not set
-> # CONFIG_COMEDI_AIO_AIO12_8 is not set
-> CONFIG_COMEDI_AIO_IIRO_16=3Dm
-> CONFIG_COMEDI_II_PCI20KC=3Dm
-> CONFIG_COMEDI_C6XDIGIO=3Dm
-> CONFIG_COMEDI_MPC624=3Dm
-> # CONFIG_COMEDI_ADQ12B is not set
-> CONFIG_COMEDI_NI_AT_A2150=3Dm
-> CONFIG_COMEDI_NI_AT_AO=3Dm
-> CONFIG_COMEDI_NI_ATMIO=3Dm
-> CONFIG_COMEDI_NI_ATMIO16D=3Dm
-> CONFIG_COMEDI_NI_LABPC_ISA=3Dm
-> # CONFIG_COMEDI_PCMAD is not set
-> CONFIG_COMEDI_PCMDA12=3Dm
-> CONFIG_COMEDI_PCMMIO=3Dm
-> CONFIG_COMEDI_PCMUIO=3Dm
-> # CONFIG_COMEDI_MULTIQ3 is not set
-> CONFIG_COMEDI_S526=3Dm
-> # CONFIG_COMEDI_PCI_DRIVERS is not set
-> # CONFIG_COMEDI_USB_DRIVERS is not set
-> CONFIG_COMEDI_8254=3Dm
-> CONFIG_COMEDI_8255=3Dm
-> CONFIG_COMEDI_8255_SA=3Dm
-> CONFIG_COMEDI_KCOMEDILIB=3Dm
-> CONFIG_COMEDI_AMPLC_DIO200=3Dm
-> CONFIG_COMEDI_AMPLC_PC236=3Dm
-> CONFIG_COMEDI_DAS08=3Dm
-> CONFIG_COMEDI_ISADMA=3Dm
-> CONFIG_COMEDI_NI_LABPC=3Dm
-> CONFIG_COMEDI_NI_LABPC_ISADMA=3Dm
-> CONFIG_COMEDI_NI_TIO=3Dm
-> # CONFIG_DECNET is not set
-> =
-
-> #
-> # IIO staging drivers
-> #
-> =
-
-> #
-> # Accelerometers
-> #
-> CONFIG_ADIS16201=3Dm
-> CONFIG_ADIS16203=3Dm
-> CONFIG_ADIS16209=3Dm
-> CONFIG_ADIS16240=3Dm
-> =
-
-> #
-> # Analog to digital converters
-> #
-> # CONFIG_AD7606 is not set
-> CONFIG_AD7780=3Dm
-> CONFIG_AD7816=3Dm
-> CONFIG_AD7192=3Dm
-> # CONFIG_AD7280 is not set
-> =
-
-> #
-> # Analog digital bi-direction converters
-> #
-> # CONFIG_ADT7316 is not set
-> =
-
-> #
-> # Capacitance to digital converters
-> #
-> # CONFIG_AD7150 is not set
-> # CONFIG_AD7152 is not set
-> CONFIG_AD7746=3Dm
-> =
-
-> #
-> # Direct Digital Synthesis
-> #
-> CONFIG_AD9832=3Dm
-> CONFIG_AD9834=3Dm
-> =
-
-> #
-> # Digital gyroscope sensors
-> #
-> CONFIG_ADIS16060=3Dm
-> =
-
-> #
-> # Network Analyzer, Impedance Converters
-> #
-> CONFIG_AD5933=3Dm
-> =
-
-> #
-> # Light sensors
-> #
-> # CONFIG_TSL2x7x is not set
-> =
-
-> #
-> # Active energy metering IC
-> #
-> # CONFIG_ADE7753 is not set
-> # CONFIG_ADE7754 is not set
-> # CONFIG_ADE7758 is not set
-> # CONFIG_ADE7759 is not set
-> # CONFIG_ADE7854 is not set
-> =
-
-> #
-> # Resolver to digital converters
-> #
-> CONFIG_AD2S90=3Dm
-> # CONFIG_AD2S1200 is not set
-> CONFIG_AD2S1210=3Dm
-> =
-
-> #
-> # Triggers - standalone
-> #
-> =
-
-> #
-> # Speakup console speech
-> #
-> CONFIG_STAGING_MEDIA=3Dy
-> =
-
-> #
-> # Android
-> #
-> # CONFIG_ASHMEM is not set
-> CONFIG_ION=3Dy
-> CONFIG_ION_SYSTEM_HEAP=3Dy
-> CONFIG_ION_CARVEOUT_HEAP=3Dy
-> # CONFIG_ION_CHUNK_HEAP is not set
-> # CONFIG_LTE_GDM724X is not set
-> CONFIG_FIREWIRE_SERIAL=3Dm
-> CONFIG_FWTTY_MAX_TOTAL_PORTS=3D64
-> CONFIG_FWTTY_MAX_CARD_PORTS=3D32
-> CONFIG_DGNC=3Dm
-> # CONFIG_GS_FPGABOOT is not set
-> CONFIG_CRYPTO_SKEIN=3Dm
-> # CONFIG_UNISYSSPAR is not set
-> CONFIG_MOST=3Dy
-> # CONFIG_MOST_CDEV is not set
-> # CONFIG_MOST_NET is not set
-> # CONFIG_MOST_SOUND is not set
-> # CONFIG_MOST_DIM2 is not set
-> # CONFIG_MOST_I2C is not set
-> # CONFIG_MOST_USB is not set
-> # CONFIG_KS7010 is not set
-> # CONFIG_GREYBUS is not set
-> =
-
-> #
-> # USB Power Delivery and Type-C drivers
-> #
-> CONFIG_PI433=3Dy
-> CONFIG_X86_PLATFORM_DEVICES=3Dy
-> # CONFIG_ACER_WMI is not set
-> # CONFIG_ACER_WIRELESS is not set
-> CONFIG_ACERHDF=3Dm
-> CONFIG_ALIENWARE_WMI=3Dm
-> # CONFIG_ASUS_LAPTOP is not set
-> # CONFIG_DELL_SMBIOS_WMI is not set
-> # CONFIG_DELL_SMBIOS_SMM is not set
-> # CONFIG_DELL_WMI_AIO is not set
-> CONFIG_DELL_WMI_LED=3Dy
-> # CONFIG_DELL_SMO8800 is not set
-> CONFIG_FUJITSU_LAPTOP=3Dm
-> CONFIG_FUJITSU_TABLET=3Dy
-> # CONFIG_HP_ACCEL is not set
-> CONFIG_HP_WIRELESS=3Dy
-> CONFIG_HP_WMI=3Dy
-> CONFIG_PANASONIC_LAPTOP=3Dm
-> # CONFIG_THINKPAD_ACPI is not set
-> CONFIG_SENSORS_HDAPS=3Dm
-> CONFIG_ASUS_WIRELESS=3Dm
-> CONFIG_ACPI_WMI=3Dy
-> CONFIG_WMI_BMOF=3Dm
-> # CONFIG_INTEL_WMI_THUNDERBOLT is not set
-> CONFIG_MSI_WMI=3Dm
-> # CONFIG_PEAQ_WMI is not set
-> # CONFIG_TOPSTAR_LAPTOP is not set
-> # CONFIG_ACPI_TOSHIBA is not set
-> # CONFIG_TOSHIBA_BT_RFKILL is not set
-> # CONFIG_TOSHIBA_HAPS is not set
-> # CONFIG_TOSHIBA_WMI is not set
-> CONFIG_ACPI_CMPC=3Dm
-> CONFIG_INTEL_CHT_INT33FE=3Dy
-> # CONFIG_INTEL_INT0002_VGPIO is not set
-> CONFIG_INTEL_HID_EVENT=3Dm
-> # CONFIG_INTEL_VBTN is not set
-> # CONFIG_INTEL_IPS is not set
-> CONFIG_INTEL_PMC_CORE=3Dy
-> CONFIG_IBM_RTL=3Dm
-> CONFIG_SAMSUNG_LAPTOP=3Dm
-> CONFIG_MXM_WMI=3Dm
-> CONFIG_SAMSUNG_Q10=3Dm
-> CONFIG_APPLE_GMUX=3Dm
-> CONFIG_INTEL_RST=3Dy
-> CONFIG_INTEL_SMARTCONNECT=3Dm
-> # CONFIG_PVPANIC is not set
-> # CONFIG_INTEL_PMC_IPC is not set
-> # CONFIG_SURFACE_PRO3_BUTTON is not set
-> CONFIG_INTEL_PUNIT_IPC=3Dm
-> CONFIG_MLX_PLATFORM=3Dy
-> CONFIG_MLX_CPLD_PLATFORM=3Dy
-> CONFIG_PMC_ATOM=3Dy
-> CONFIG_CHROME_PLATFORMS=3Dy
-> CONFIG_CHROMEOS_PSTORE=3Dm
-> # CONFIG_CROS_EC_LPC is not set
-> CONFIG_CROS_EC_PROTO=3Dy
-> CONFIG_CROS_KBD_LED_BACKLIGHT=3Dy
-> CONFIG_CLKDEV_LOOKUP=3Dy
-> CONFIG_HAVE_CLK_PREPARE=3Dy
-> CONFIG_COMMON_CLK=3Dy
-> =
-
-> #
-> # Common Clock Framework
-> #
-> # CONFIG_COMMON_CLK_WM831X is not set
-> CONFIG_COMMON_CLK_SI5351=3Dm
-> CONFIG_COMMON_CLK_CDCE706=3Dy
-> # CONFIG_COMMON_CLK_CS2000_CP is not set
-> CONFIG_CLK_TWL6040=3Dm
-> # CONFIG_COMMON_CLK_NXP is not set
-> # CONFIG_COMMON_CLK_PXA is not set
-> # CONFIG_COMMON_CLK_PIC32 is not set
-> # CONFIG_HWSPINLOCK is not set
-> =
-
-> #
-> # Clock Source drivers
-> #
-> CONFIG_CLKEVT_I8253=3Dy
-> CONFIG_I8253_LOCK=3Dy
-> CONFIG_CLKBLD_I8253=3Dy
-> # CONFIG_ATMEL_PIT is not set
-> # CONFIG_SH_TIMER_CMT is not set
-> # CONFIG_SH_TIMER_MTU2 is not set
-> # CONFIG_SH_TIMER_TMU is not set
-> # CONFIG_EM_TIMER_STI is not set
-> # CONFIG_MAILBOX is not set
-> CONFIG_IOMMU_API=3Dy
-> CONFIG_IOMMU_SUPPORT=3Dy
-> =
-
-> #
-> # Generic IOMMU Pagetable Support
-> #
-> CONFIG_IOMMU_IOVA=3Dy
-> CONFIG_AMD_IOMMU=3Dy
-> CONFIG_AMD_IOMMU_V2=3Dy
-> CONFIG_DMAR_TABLE=3Dy
-> CONFIG_INTEL_IOMMU=3Dy
-> # CONFIG_INTEL_IOMMU_SVM is not set
-> # CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
-> CONFIG_INTEL_IOMMU_FLOPPY_WA=3Dy
-> CONFIG_IRQ_REMAP=3Dy
-> =
-
-> #
-> # Remoteproc drivers
-> #
-> CONFIG_REMOTEPROC=3Dm
-> =
-
-> #
-> # Rpmsg drivers
-> #
-> # CONFIG_RPMSG_VIRTIO is not set
-> =
-
-> #
-> # SOC (System On Chip) specific Drivers
-> #
-> =
-
-> #
-> # Amlogic SoC drivers
-> #
-> =
-
-> #
-> # Broadcom SoC drivers
-> #
-> =
-
-> #
-> # i.MX SoC drivers
-> #
-> =
-
-> #
-> # Qualcomm SoC drivers
-> #
-> # CONFIG_SUNXI_SRAM is not set
-> CONFIG_SOC_TI=3Dy
-> CONFIG_PM_DEVFREQ=3Dy
-> =
-
-> #
-> # DEVFREQ Governors
-> #
-> CONFIG_DEVFREQ_GOV_SIMPLE_ONDEMAND=3Dy
-> # CONFIG_DEVFREQ_GOV_PERFORMANCE is not set
-> # CONFIG_DEVFREQ_GOV_POWERSAVE is not set
-> CONFIG_DEVFREQ_GOV_USERSPACE=3Dy
-> # CONFIG_DEVFREQ_GOV_PASSIVE is not set
-> =
-
-> #
-> # DEVFREQ Drivers
-> #
-> # CONFIG_PM_DEVFREQ_EVENT is not set
-> CONFIG_EXTCON=3Dy
-> =
-
-> #
-> # Extcon Device Drivers
-> #
-> CONFIG_EXTCON_ADC_JACK=3Dm
-> # CONFIG_EXTCON_GPIO is not set
-> CONFIG_EXTCON_INTEL_INT3496=3Dy
-> CONFIG_EXTCON_INTEL_CHT_WC=3Dy
-> # CONFIG_EXTCON_MAX3355 is not set
-> # CONFIG_EXTCON_MAX77843 is not set
-> # CONFIG_EXTCON_RT8973A is not set
-> CONFIG_EXTCON_SM5502=3Dm
-> CONFIG_EXTCON_USB_GPIO=3Dm
-> CONFIG_EXTCON_USBC_CROS_EC=3Dm
-> # CONFIG_MEMORY is not set
-> CONFIG_IIO=3Dm
-> CONFIG_IIO_BUFFER=3Dy
-> CONFIG_IIO_BUFFER_CB=3Dm
-> CONFIG_IIO_KFIFO_BUF=3Dm
-> CONFIG_IIO_TRIGGERED_BUFFER=3Dm
-> CONFIG_IIO_CONFIGFS=3Dm
-> CONFIG_IIO_TRIGGER=3Dy
-> CONFIG_IIO_CONSUMERS_PER_TRIGGER=3D2
-> CONFIG_IIO_SW_DEVICE=3Dm
-> # CONFIG_IIO_SW_TRIGGER is not set
-> =
-
-> #
-> # Accelerometers
-> #
-> # CONFIG_BMA180 is not set
-> CONFIG_BMA220=3Dm
-> CONFIG_BMC150_ACCEL=3Dm
-> CONFIG_BMC150_ACCEL_I2C=3Dm
-> CONFIG_BMC150_ACCEL_SPI=3Dm
-> # CONFIG_DA280 is not set
-> CONFIG_DA311=3Dm
-> CONFIG_DMARD09=3Dm
-> # CONFIG_DMARD10 is not set
-> CONFIG_HID_SENSOR_ACCEL_3D=3Dm
-> # CONFIG_IIO_CROS_EC_ACCEL_LEGACY is not set
-> CONFIG_KXSD9=3Dm
-> CONFIG_KXSD9_SPI=3Dm
-> CONFIG_KXSD9_I2C=3Dm
-> CONFIG_KXCJK1013=3Dm
-> # CONFIG_MC3230 is not set
-> CONFIG_MMA7455=3Dm
-> CONFIG_MMA7455_I2C=3Dm
-> CONFIG_MMA7455_SPI=3Dm
-> CONFIG_MMA7660=3Dm
-> # CONFIG_MMA8452 is not set
-> CONFIG_MMA9551_CORE=3Dm
-> CONFIG_MMA9551=3Dm
-> CONFIG_MMA9553=3Dm
-> CONFIG_MXC4005=3Dm
-> CONFIG_MXC6255=3Dm
-> CONFIG_SCA3000=3Dm
-> # CONFIG_STK8312 is not set
-> # CONFIG_STK8BA50 is not set
-> =
-
-> #
-> # Analog to digital converters
-> #
-> CONFIG_AD_SIGMA_DELTA=3Dm
-> CONFIG_AD7266=3Dm
-> CONFIG_AD7291=3Dm
-> CONFIG_AD7298=3Dm
-> # CONFIG_AD7476 is not set
-> CONFIG_AD7766=3Dm
-> # CONFIG_AD7791 is not set
-> # CONFIG_AD7793 is not set
-> # CONFIG_AD7887 is not set
-> CONFIG_AD7923=3Dm
-> # CONFIG_AD799X is not set
-> CONFIG_CC10001_ADC=3Dm
-> CONFIG_DA9150_GPADC=3Dm
-> # CONFIG_HI8435 is not set
-> CONFIG_HX711=3Dm
-> CONFIG_INA2XX_ADC=3Dm
-> CONFIG_LP8788_ADC=3Dm
-> CONFIG_LTC2471=3Dm
-> CONFIG_LTC2485=3Dm
-> CONFIG_LTC2497=3Dm
-> CONFIG_MAX1027=3Dm
-> CONFIG_MAX11100=3Dm
-> # CONFIG_MAX1118 is not set
-> CONFIG_MAX1363=3Dm
-> CONFIG_MAX9611=3Dm
-> CONFIG_MCP320X=3Dm
-> CONFIG_MCP3422=3Dm
-> # CONFIG_MEN_Z188_ADC is not set
-> # CONFIG_NAU7802 is not set
-> # CONFIG_QCOM_SPMI_IADC is not set
-> # CONFIG_QCOM_SPMI_VADC is not set
-> # CONFIG_TI_ADC081C is not set
-> CONFIG_TI_ADC0832=3Dm
-> CONFIG_TI_ADC084S021=3Dm
-> # CONFIG_TI_ADC12138 is not set
-> CONFIG_TI_ADC108S102=3Dm
-> CONFIG_TI_ADC128S052=3Dm
-> # CONFIG_TI_ADC161S626 is not set
-> # CONFIG_TI_ADS7950 is not set
-> CONFIG_TI_AM335X_ADC=3Dm
-> CONFIG_TI_TLC4541=3Dm
-> CONFIG_TWL4030_MADC=3Dm
-> CONFIG_TWL6030_GPADC=3Dm
-> # CONFIG_VIPERBOARD_ADC is not set
-> =
-
-> #
-> # Amplifiers
-> #
-> # CONFIG_AD8366 is not set
-> =
-
-> #
-> # Chemical Sensors
-> #
-> CONFIG_ATLAS_PH_SENSOR=3Dm
-> CONFIG_CCS811=3Dm
-> # CONFIG_IAQCORE is not set
-> CONFIG_VZ89X=3Dm
-> # CONFIG_IIO_CROS_EC_SENSORS_CORE is not set
-> =
-
-> #
-> # Hid Sensor IIO Common
-> #
-> CONFIG_HID_SENSOR_IIO_COMMON=3Dm
-> CONFIG_HID_SENSOR_IIO_TRIGGER=3Dm
-> CONFIG_IIO_MS_SENSORS_I2C=3Dm
-> =
-
-> #
-> # SSP Sensor Common
-> #
-> # CONFIG_IIO_SSP_SENSORHUB is not set
-> CONFIG_IIO_ST_SENSORS_I2C=3Dm
-> CONFIG_IIO_ST_SENSORS_SPI=3Dm
-> CONFIG_IIO_ST_SENSORS_CORE=3Dm
-> =
-
-> #
-> # Counters
-> #
-> =
-
-> #
-> # Digital to analog converters
-> #
-> # CONFIG_AD5064 is not set
-> CONFIG_AD5360=3Dm
-> CONFIG_AD5380=3Dm
-> CONFIG_AD5421=3Dm
-> # CONFIG_AD5446 is not set
-> CONFIG_AD5449=3Dm
-> CONFIG_AD5592R_BASE=3Dm
-> CONFIG_AD5592R=3Dm
-> CONFIG_AD5593R=3Dm
-> CONFIG_AD5504=3Dm
-> CONFIG_AD5624R_SPI=3Dm
-> CONFIG_LTC2632=3Dm
-> CONFIG_AD5686=3Dm
-> # CONFIG_AD5755 is not set
-> # CONFIG_AD5761 is not set
-> CONFIG_AD5764=3Dm
-> CONFIG_AD5791=3Dm
-> # CONFIG_AD7303 is not set
-> CONFIG_CIO_DAC=3Dm
-> CONFIG_AD8801=3Dm
-> # CONFIG_DS4424 is not set
-> # CONFIG_M62332 is not set
-> CONFIG_MAX517=3Dm
-> CONFIG_MCP4725=3Dm
-> CONFIG_MCP4922=3Dm
-> # CONFIG_TI_DAC082S085 is not set
-> =
-
-> #
-> # IIO dummy driver
-> #
-> CONFIG_IIO_SIMPLE_DUMMY=3Dm
-> # CONFIG_IIO_SIMPLE_DUMMY_EVENTS is not set
-> # CONFIG_IIO_SIMPLE_DUMMY_BUFFER is not set
-> =
-
-> #
-> # Frequency Synthesizers DDS/PLL
-> #
-> =
-
-> #
-> # Clock Generator/Distribution
-> #
-> CONFIG_AD9523=3Dm
-> =
-
-> #
-> # Phase-Locked Loop (PLL) frequency synthesizers
-> #
-> CONFIG_ADF4350=3Dm
-> =
-
-> #
-> # Digital gyroscope sensors
-> #
-> CONFIG_ADIS16080=3Dm
-> # CONFIG_ADIS16130 is not set
-> CONFIG_ADIS16136=3Dm
-> CONFIG_ADIS16260=3Dm
-> # CONFIG_ADXRS450 is not set
-> CONFIG_BMG160=3Dm
-> CONFIG_BMG160_I2C=3Dm
-> CONFIG_BMG160_SPI=3Dm
-> CONFIG_HID_SENSOR_GYRO_3D=3Dm
-> CONFIG_MPU3050=3Dm
-> CONFIG_MPU3050_I2C=3Dm
-> # CONFIG_IIO_ST_GYRO_3AXIS is not set
-> CONFIG_ITG3200=3Dm
-> =
-
-> #
-> # Health Sensors
-> #
-> =
-
-> #
-> # Heart Rate Monitors
-> #
-> # CONFIG_AFE4403 is not set
-> CONFIG_AFE4404=3Dm
-> CONFIG_MAX30100=3Dm
-> # CONFIG_MAX30102 is not set
-> =
-
-> #
-> # Humidity sensors
-> #
-> CONFIG_AM2315=3Dm
-> CONFIG_DHT11=3Dm
-> CONFIG_HDC100X=3Dm
-> # CONFIG_HID_SENSOR_HUMIDITY is not set
-> CONFIG_HTS221=3Dm
-> CONFIG_HTS221_I2C=3Dm
-> CONFIG_HTS221_SPI=3Dm
-> CONFIG_HTU21=3Dm
-> CONFIG_SI7005=3Dm
-> CONFIG_SI7020=3Dm
-> =
-
-> #
-> # Inertial measurement units
-> #
-> CONFIG_ADIS16400=3Dm
-> # CONFIG_ADIS16480 is not set
-> CONFIG_BMI160=3Dm
-> CONFIG_BMI160_I2C=3Dm
-> CONFIG_BMI160_SPI=3Dm
-> CONFIG_KMX61=3Dm
-> CONFIG_INV_MPU6050_IIO=3Dm
-> CONFIG_INV_MPU6050_I2C=3Dm
-> CONFIG_INV_MPU6050_SPI=3Dm
-> CONFIG_IIO_ST_LSM6DSX=3Dm
-> CONFIG_IIO_ST_LSM6DSX_I2C=3Dm
-> CONFIG_IIO_ST_LSM6DSX_SPI=3Dm
-> CONFIG_IIO_ADIS_LIB=3Dm
-> CONFIG_IIO_ADIS_LIB_BUFFER=3Dy
-> =
-
-> #
-> # Light sensors
-> #
-> CONFIG_ACPI_ALS=3Dm
-> CONFIG_ADJD_S311=3Dm
-> CONFIG_AL3320A=3Dm
-> CONFIG_APDS9300=3Dm
-> CONFIG_APDS9960=3Dm
-> # CONFIG_BH1750 is not set
-> # CONFIG_BH1780 is not set
-> CONFIG_CM32181=3Dm
-> CONFIG_CM3232=3Dm
-> CONFIG_CM3323=3Dm
-> CONFIG_CM36651=3Dm
-> CONFIG_GP2AP020A00F=3Dm
-> CONFIG_SENSORS_ISL29018=3Dm
-> CONFIG_SENSORS_ISL29028=3Dm
-> CONFIG_ISL29125=3Dm
-> CONFIG_HID_SENSOR_ALS=3Dm
-> CONFIG_HID_SENSOR_PROX=3Dm
-> CONFIG_JSA1212=3Dm
-> CONFIG_RPR0521=3Dm
-> # CONFIG_SENSORS_LM3533 is not set
-> CONFIG_LTR501=3Dm
-> CONFIG_MAX44000=3Dm
-> CONFIG_OPT3001=3Dm
-> # CONFIG_PA12203001 is not set
-> # CONFIG_SI1145 is not set
-> # CONFIG_STK3310 is not set
-> # CONFIG_TCS3414 is not set
-> CONFIG_TCS3472=3Dm
-> CONFIG_SENSORS_TSL2563=3Dm
-> CONFIG_TSL2583=3Dm
-> CONFIG_TSL4531=3Dm
-> CONFIG_US5182D=3Dm
-> # CONFIG_VCNL4000 is not set
-> CONFIG_VEML6070=3Dm
-> # CONFIG_VL6180 is not set
-> =
-
-> #
-> # Magnetometer sensors
-> #
-> # CONFIG_AK8975 is not set
-> # CONFIG_AK09911 is not set
-> CONFIG_BMC150_MAGN=3Dm
-> CONFIG_BMC150_MAGN_I2C=3Dm
-> # CONFIG_BMC150_MAGN_SPI is not set
-> CONFIG_MAG3110=3Dm
-> CONFIG_HID_SENSOR_MAGNETOMETER_3D=3Dm
-> CONFIG_MMC35240=3Dm
-> CONFIG_IIO_ST_MAGN_3AXIS=3Dm
-> CONFIG_IIO_ST_MAGN_I2C_3AXIS=3Dm
-> CONFIG_IIO_ST_MAGN_SPI_3AXIS=3Dm
-> CONFIG_SENSORS_HMC5843=3Dm
-> CONFIG_SENSORS_HMC5843_I2C=3Dm
-> # CONFIG_SENSORS_HMC5843_SPI is not set
-> =
-
-> #
-> # Multiplexers
-> #
-> =
-
-> #
-> # Inclinometer sensors
-> #
-> CONFIG_HID_SENSOR_INCLINOMETER_3D=3Dm
-> CONFIG_HID_SENSOR_DEVICE_ROTATION=3Dm
-> =
-
-> #
-> # Triggers - standalone
-> #
-> CONFIG_IIO_INTERRUPT_TRIGGER=3Dm
-> CONFIG_IIO_SYSFS_TRIGGER=3Dm
-> =
-
-> #
-> # Digital potentiometers
-> #
-> CONFIG_DS1803=3Dm
-> CONFIG_MAX5481=3Dm
-> CONFIG_MAX5487=3Dm
-> # CONFIG_MCP4131 is not set
-> CONFIG_MCP4531=3Dm
-> CONFIG_TPL0102=3Dm
-> =
-
-> #
-> # Digital potentiostats
-> #
-> CONFIG_LMP91000=3Dm
-> =
-
-> #
-> # Pressure sensors
-> #
-> CONFIG_ABP060MG=3Dm
-> CONFIG_BMP280=3Dm
-> CONFIG_BMP280_I2C=3Dm
-> CONFIG_BMP280_SPI=3Dm
-> CONFIG_HID_SENSOR_PRESS=3Dm
-> # CONFIG_HP03 is not set
-> CONFIG_MPL115=3Dm
-> CONFIG_MPL115_I2C=3Dm
-> # CONFIG_MPL115_SPI is not set
-> # CONFIG_MPL3115 is not set
-> CONFIG_MS5611=3Dm
-> CONFIG_MS5611_I2C=3Dm
-> CONFIG_MS5611_SPI=3Dm
-> CONFIG_MS5637=3Dm
-> CONFIG_IIO_ST_PRESS=3Dm
-> CONFIG_IIO_ST_PRESS_I2C=3Dm
-> CONFIG_IIO_ST_PRESS_SPI=3Dm
-> CONFIG_T5403=3Dm
-> CONFIG_HP206C=3Dm
-> CONFIG_ZPA2326=3Dm
-> CONFIG_ZPA2326_I2C=3Dm
-> CONFIG_ZPA2326_SPI=3Dm
-> =
-
-> #
-> # Lightning sensors
-> #
-> CONFIG_AS3935=3Dm
-> =
-
-> #
-> # Proximity and distance sensors
-> #
-> # CONFIG_LIDAR_LITE_V2 is not set
-> # CONFIG_RFD77402 is not set
-> CONFIG_SRF04=3Dm
-> CONFIG_SX9500=3Dm
-> CONFIG_SRF08=3Dm
-> =
-
-> #
-> # Temperature sensors
-> #
-> CONFIG_MAXIM_THERMOCOUPLE=3Dm
-> CONFIG_HID_SENSOR_TEMP=3Dm
-> # CONFIG_MLX90614 is not set
-> CONFIG_TMP006=3Dm
-> # CONFIG_TMP007 is not set
-> CONFIG_TSYS01=3Dm
-> CONFIG_TSYS02D=3Dm
-> CONFIG_NTB=3Dy
-> # CONFIG_NTB_AMD is not set
-> CONFIG_NTB_IDT=3Dm
-> CONFIG_NTB_INTEL=3Dm
-> # CONFIG_NTB_SWITCHTEC is not set
-> CONFIG_NTB_PINGPONG=3Dy
-> CONFIG_NTB_TOOL=3Dm
-> CONFIG_NTB_PERF=3Dy
-> CONFIG_NTB_TRANSPORT=3Dm
-> # CONFIG_VME_BUS is not set
-> # CONFIG_PWM is not set
-> =
-
-> #
-> # IRQ chip support
-> #
-> CONFIG_ARM_GIC_MAX_NR=3D1
-> # CONFIG_ARM_GIC_V3_ITS is not set
-> CONFIG_IPACK_BUS=3Dm
-> CONFIG_BOARD_TPCI200=3Dm
-> CONFIG_SERIAL_IPOCTAL=3Dm
-> CONFIG_RESET_CONTROLLER=3Dy
-> # CONFIG_RESET_ATH79 is not set
-> # CONFIG_RESET_AXS10X is not set
-> # CONFIG_RESET_BERLIN is not set
-> # CONFIG_RESET_IMX7 is not set
-> # CONFIG_RESET_LANTIQ is not set
-> # CONFIG_RESET_LPC18XX is not set
-> # CONFIG_RESET_MESON is not set
-> # CONFIG_RESET_PISTACHIO is not set
-> # CONFIG_RESET_SIMPLE is not set
-> # CONFIG_RESET_SUNXI is not set
-> CONFIG_RESET_TI_SYSCON=3Dy
-> # CONFIG_RESET_ZYNQ is not set
-> # CONFIG_RESET_TEGRA_BPMP is not set
-> CONFIG_FMC=3Dy
-> # CONFIG_FMC_FAKEDEV is not set
-> CONFIG_FMC_TRIVIAL=3Dy
-> CONFIG_FMC_WRITE_EEPROM=3Dm
-> CONFIG_FMC_CHARDEV=3Dm
-> =
-
-> #
-> # PHY Subsystem
-> #
-> CONFIG_GENERIC_PHY=3Dy
-> # CONFIG_BCM_KONA_USB2_PHY is not set
-> CONFIG_PHY_PXA_28NM_HSIC=3Dm
-> # CONFIG_PHY_PXA_28NM_USB2 is not set
-> CONFIG_PHY_CPCAP_USB=3Dm
-> CONFIG_POWERCAP=3Dy
-> CONFIG_INTEL_RAPL=3Dm
-> CONFIG_MCB=3Dy
-> CONFIG_MCB_PCI=3Dm
-> # CONFIG_MCB_LPC is not set
-> =
-
-> #
-> # Performance monitor support
-> #
-> CONFIG_RAS=3Dy
-> CONFIG_THUNDERBOLT=3Dy
-> =
-
-> #
-> # Android
-> #
-> CONFIG_ANDROID=3Dy
-> CONFIG_ANDROID_BINDER_IPC=3Dy
-> CONFIG_ANDROID_BINDER_DEVICES=3D"binder,hwbinder,vndbinder"
-> # CONFIG_ANDROID_BINDER_IPC_SELFTEST is not set
-> CONFIG_DAX=3Dy
-> CONFIG_DEV_DAX=3Dm
-> CONFIG_NVMEM=3Dy
-> CONFIG_STM=3Dy
-> # CONFIG_STM_DUMMY is not set
-> # CONFIG_STM_SOURCE_CONSOLE is not set
-> # CONFIG_STM_SOURCE_HEARTBEAT is not set
-> CONFIG_INTEL_TH=3Dy
-> CONFIG_INTEL_TH_PCI=3Dm
-> CONFIG_INTEL_TH_GTH=3Dy
-> # CONFIG_INTEL_TH_STH is not set
-> # CONFIG_INTEL_TH_MSU is not set
-> CONFIG_INTEL_TH_PTI=3Dy
-> # CONFIG_INTEL_TH_DEBUG is not set
-> CONFIG_FPGA=3Dy
-> # CONFIG_FPGA_MGR_ALTERA_CVP is not set
-> CONFIG_FPGA_MGR_ALTERA_PS_SPI=3Dm
-> # CONFIG_FPGA_MGR_XILINX_SPI is not set
-> CONFIG_ALTERA_PR_IP_CORE=3Dm
-> =
-
-> #
-> # FSI support
-> #
-> CONFIG_FSI=3Dm
-> CONFIG_FSI_MASTER_GPIO=3Dm
-> # CONFIG_FSI_MASTER_HUB is not set
-> # CONFIG_FSI_SCOM is not set
-> CONFIG_PM_OPP=3Dy
-> =
-
-> #
-> # Firmware Drivers
-> #
-> CONFIG_EDD=3Dm
-> CONFIG_EDD_OFF=3Dy
-> # CONFIG_FIRMWARE_MEMMAP is not set
-> CONFIG_DELL_RBU=3Dm
-> CONFIG_DCDBAS=3Dy
-> CONFIG_ISCSI_IBFT_FIND=3Dy
-> CONFIG_FW_CFG_SYSFS=3Dm
-> # CONFIG_FW_CFG_SYSFS_CMDLINE is not set
-> # CONFIG_GOOGLE_FIRMWARE is not set
-> CONFIG_UEFI_CPER=3Dy
-> # CONFIG_EFI_DEV_PATH_PARSER is not set
-> =
-
-> #
-> # Tegra firmware driver
-> #
-> =
-
-> #
-> # File systems
-> #
-> CONFIG_DCACHE_WORD_ACCESS=3Dy
-> CONFIG_FS_POSIX_ACL=3Dy
-> CONFIG_EXPORTFS=3Dy
-> CONFIG_EXPORTFS_BLOCK_OPS=3Dy
-> CONFIG_FILE_LOCKING=3Dy
-> CONFIG_MANDATORY_FILE_LOCKING=3Dy
-> CONFIG_FS_ENCRYPTION=3Dy
-> CONFIG_FSNOTIFY=3Dy
-> CONFIG_DNOTIFY=3Dy
-> CONFIG_INOTIFY_USER=3Dy
-> CONFIG_FANOTIFY=3Dy
-> # CONFIG_QUOTA is not set
-> # CONFIG_QUOTACTL is not set
-> CONFIG_AUTOFS4_FS=3Dy
-> CONFIG_FUSE_FS=3Dm
-> CONFIG_CUSE=3Dm
-> # CONFIG_OVERLAY_FS is not set
-> =
-
-> #
-> # Caches
-> #
-> CONFIG_FSCACHE=3Dm
-> CONFIG_FSCACHE_STATS=3Dy
-> # CONFIG_FSCACHE_HISTOGRAM is not set
-> CONFIG_FSCACHE_DEBUG=3Dy
-> # CONFIG_FSCACHE_OBJECT_LIST is not set
-> =
-
-> #
-> # Pseudo filesystems
-> #
-> CONFIG_PROC_FS=3Dy
-> # CONFIG_PROC_KCORE is not set
-> # CONFIG_PROC_VMCORE is not set
-> CONFIG_PROC_SYSCTL=3Dy
-> CONFIG_PROC_PAGE_MONITOR=3Dy
-> CONFIG_PROC_CHILDREN=3Dy
-> CONFIG_KERNFS=3Dy
-> CONFIG_SYSFS=3Dy
-> CONFIG_TMPFS=3Dy
-> # CONFIG_TMPFS_POSIX_ACL is not set
-> # CONFIG_TMPFS_XATTR is not set
-> # CONFIG_HUGETLBFS is not set
-> # CONFIG_HUGETLB_PAGE is not set
-> CONFIG_CONFIGFS_FS=3Dy
-> CONFIG_MISC_FILESYSTEMS=3Dy
-> # CONFIG_ORANGEFS_FS is not set
-> CONFIG_ECRYPT_FS=3Dy
-> CONFIG_ECRYPT_FS_MESSAGING=3Dy
-> # CONFIG_CRAMFS is not set
-> CONFIG_PSTORE=3Dy
-> CONFIG_PSTORE_ZLIB_COMPRESS=3Dy
-> # CONFIG_PSTORE_LZO_COMPRESS is not set
-> # CONFIG_PSTORE_LZ4_COMPRESS is not set
-> # CONFIG_PSTORE_CONSOLE is not set
-> # CONFIG_PSTORE_PMSG is not set
-> # CONFIG_PSTORE_RAM is not set
-> CONFIG_NETWORK_FILESYSTEMS=3Dy
-> CONFIG_NLS=3Dy
-> CONFIG_NLS_DEFAULT=3D"iso8859-1"
-> # CONFIG_NLS_CODEPAGE_437 is not set
-> # CONFIG_NLS_CODEPAGE_737 is not set
-> CONFIG_NLS_CODEPAGE_775=3Dy
-> CONFIG_NLS_CODEPAGE_850=3Dy
-> CONFIG_NLS_CODEPAGE_852=3Dy
-> # CONFIG_NLS_CODEPAGE_855 is not set
-> # CONFIG_NLS_CODEPAGE_857 is not set
-> CONFIG_NLS_CODEPAGE_860=3Dm
-> CONFIG_NLS_CODEPAGE_861=3Dy
-> CONFIG_NLS_CODEPAGE_862=3Dm
-> CONFIG_NLS_CODEPAGE_863=3Dm
-> CONFIG_NLS_CODEPAGE_864=3Dy
-> CONFIG_NLS_CODEPAGE_865=3Dm
-> # CONFIG_NLS_CODEPAGE_866 is not set
-> # CONFIG_NLS_CODEPAGE_869 is not set
-> CONFIG_NLS_CODEPAGE_936=3Dy
-> # CONFIG_NLS_CODEPAGE_950 is not set
-> CONFIG_NLS_CODEPAGE_932=3Dm
-> CONFIG_NLS_CODEPAGE_949=3Dy
-> CONFIG_NLS_CODEPAGE_874=3Dy
-> CONFIG_NLS_ISO8859_8=3Dy
-> CONFIG_NLS_CODEPAGE_1250=3Dm
-> CONFIG_NLS_CODEPAGE_1251=3Dm
-> CONFIG_NLS_ASCII=3Dy
-> CONFIG_NLS_ISO8859_1=3Dy
-> CONFIG_NLS_ISO8859_2=3Dy
-> CONFIG_NLS_ISO8859_3=3Dm
-> CONFIG_NLS_ISO8859_4=3Dy
-> # CONFIG_NLS_ISO8859_5 is not set
-> CONFIG_NLS_ISO8859_6=3Dm
-> CONFIG_NLS_ISO8859_7=3Dm
-> # CONFIG_NLS_ISO8859_9 is not set
-> # CONFIG_NLS_ISO8859_13 is not set
-> CONFIG_NLS_ISO8859_14=3Dm
-> CONFIG_NLS_ISO8859_15=3Dm
-> # CONFIG_NLS_KOI8_R is not set
-> CONFIG_NLS_KOI8_U=3Dy
-> CONFIG_NLS_MAC_ROMAN=3Dm
-> CONFIG_NLS_MAC_CELTIC=3Dm
-> # CONFIG_NLS_MAC_CENTEURO is not set
-> CONFIG_NLS_MAC_CROATIAN=3Dy
-> CONFIG_NLS_MAC_CYRILLIC=3Dm
-> # CONFIG_NLS_MAC_GAELIC is not set
-> CONFIG_NLS_MAC_GREEK=3Dy
-> # CONFIG_NLS_MAC_ICELAND is not set
-> CONFIG_NLS_MAC_INUIT=3Dm
-> CONFIG_NLS_MAC_ROMANIAN=3Dy
-> CONFIG_NLS_MAC_TURKISH=3Dm
-> CONFIG_NLS_UTF8=3Dm
-> =
-
-> #
-> # Kernel hacking
-> #
-> CONFIG_TRACE_IRQFLAGS_SUPPORT=3Dy
-> =
-
-> #
-> # printk and dmesg options
-> #
-> CONFIG_PRINTK_TIME=3Dy
-> CONFIG_CONSOLE_LOGLEVEL_DEFAULT=3D7
-> CONFIG_MESSAGE_LOGLEVEL_DEFAULT=3D4
-> CONFIG_BOOT_PRINTK_DELAY=3Dy
-> # CONFIG_DYNAMIC_DEBUG is not set
-> =
-
-> #
-> # Compile-time checks and compiler options
-> #
-> CONFIG_DEBUG_INFO=3Dy
-> CONFIG_DEBUG_INFO_REDUCED=3Dy
-> # CONFIG_DEBUG_INFO_SPLIT is not set
-> # CONFIG_DEBUG_INFO_DWARF4 is not set
-> # CONFIG_GDB_SCRIPTS is not set
-> # CONFIG_ENABLE_WARN_DEPRECATED is not set
-> CONFIG_ENABLE_MUST_CHECK=3Dy
-> CONFIG_FRAME_WARN=3D2048
-> CONFIG_STRIP_ASM_SYMS=3Dy
-> CONFIG_READABLE_ASM=3Dy
-> CONFIG_UNUSED_SYMBOLS=3Dy
-> CONFIG_PAGE_OWNER=3Dy
-> CONFIG_DEBUG_FS=3Dy
-> CONFIG_HEADERS_CHECK=3Dy
-> CONFIG_DEBUG_SECTION_MISMATCH=3Dy
-> CONFIG_SECTION_MISMATCH_WARN_ONLY=3Dy
-> CONFIG_STACK_VALIDATION=3Dy
-> # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
-> CONFIG_MAGIC_SYSRQ=3Dy
-> CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=3D0x1
-> CONFIG_MAGIC_SYSRQ_SERIAL=3Dy
-> CONFIG_DEBUG_KERNEL=3Dy
-> =
-
-> #
-> # Memory Debugging
-> #
-> CONFIG_PAGE_EXTENSION=3Dy
-> # CONFIG_DEBUG_PAGEALLOC is not set
-> CONFIG_PAGE_POISONING=3Dy
-> CONFIG_PAGE_POISONING_NO_SANITY=3Dy
-> # CONFIG_PAGE_POISONING_ZERO is not set
-> CONFIG_DEBUG_RODATA_TEST=3Dy
-> # CONFIG_DEBUG_OBJECTS is not set
-> # CONFIG_DEBUG_SLAB is not set
-> CONFIG_HAVE_DEBUG_KMEMLEAK=3Dy
-> # CONFIG_DEBUG_KMEMLEAK is not set
-> CONFIG_DEBUG_STACK_USAGE=3Dy
-> CONFIG_DEBUG_VM=3Dy
-> # CONFIG_DEBUG_VM_VMACACHE is not set
-> CONFIG_DEBUG_VM_RB=3Dy
-> CONFIG_DEBUG_VM_PGFLAGS=3Dy
-> CONFIG_ARCH_HAS_DEBUG_VIRTUAL=3Dy
-> CONFIG_DEBUG_VIRTUAL=3Dy
-> # CONFIG_DEBUG_MEMORY_INIT is not set
-> # CONFIG_DEBUG_PER_CPU_MAPS is not set
-> CONFIG_HAVE_DEBUG_STACKOVERFLOW=3Dy
-> # CONFIG_DEBUG_STACKOVERFLOW is not set
-> CONFIG_HAVE_ARCH_KASAN=3Dy
-> # CONFIG_KASAN is not set
-> CONFIG_ARCH_HAS_KCOV=3Dy
-> # CONFIG_KCOV is not set
-> CONFIG_DEBUG_SHIRQ=3Dy
-> =
-
-> #
-> # Debug Lockups and Hangs
-> #
-> CONFIG_LOCKUP_DETECTOR=3Dy
-> CONFIG_SOFTLOCKUP_DETECTOR=3Dy
-> CONFIG_HARDLOCKUP_DETECTOR_PERF=3Dy
-> CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=3Dy
-> CONFIG_HARDLOCKUP_DETECTOR=3Dy
-> CONFIG_BOOTPARAM_HARDLOCKUP_PANIC=3Dy
-> CONFIG_BOOTPARAM_HARDLOCKUP_PANIC_VALUE=3D1
-> # CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
-> CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE=3D0
-> # CONFIG_DETECT_HUNG_TASK is not set
-> CONFIG_WQ_WATCHDOG=3Dy
-> CONFIG_PANIC_ON_OOPS=3Dy
-> CONFIG_PANIC_ON_OOPS_VALUE=3D1
-> CONFIG_PANIC_TIMEOUT=3D0
-> CONFIG_SCHED_DEBUG=3Dy
-> CONFIG_SCHED_INFO=3Dy
-> CONFIG_SCHEDSTATS=3Dy
-> # CONFIG_SCHED_STACK_END_CHECK is not set
-> # CONFIG_DEBUG_TIMEKEEPING is not set
-> =
-
-> #
-> # Lock Debugging (spinlocks, mutexes, etc...)
-> #
-> CONFIG_DEBUG_RT_MUTEXES=3Dy
-> CONFIG_DEBUG_SPINLOCK=3Dy
-> CONFIG_DEBUG_MUTEXES=3Dy
-> # CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
-> CONFIG_DEBUG_LOCK_ALLOC=3Dy
-> CONFIG_PROVE_LOCKING=3Dy
-> CONFIG_LOCKDEP=3Dy
-> CONFIG_LOCK_STAT=3Dy
-> CONFIG_LOCKDEP_CROSSRELEASE=3Dy
-> CONFIG_LOCKDEP_COMPLETIONS=3Dy
-> # CONFIG_BOOTPARAM_LOCKDEP_CROSSRELEASE_FULLSTACK is not set
-> CONFIG_DEBUG_LOCKDEP=3Dy
-> CONFIG_DEBUG_ATOMIC_SLEEP=3Dy
-> CONFIG_DEBUG_LOCKING_API_SELFTESTS=3Dy
-> CONFIG_LOCK_TORTURE_TEST=3Dm
-> # CONFIG_WW_MUTEX_SELFTEST is not set
-> CONFIG_TRACE_IRQFLAGS=3Dy
-> CONFIG_STACKTRACE=3Dy
-> CONFIG_WARN_ALL_UNSEEDED_RANDOM=3Dy
-> # CONFIG_DEBUG_KOBJECT is not set
-> CONFIG_DEBUG_BUGVERBOSE=3Dy
-> CONFIG_DEBUG_LIST=3Dy
-> CONFIG_DEBUG_PI_LIST=3Dy
-> # CONFIG_DEBUG_SG is not set
-> CONFIG_DEBUG_NOTIFIERS=3Dy
-> CONFIG_DEBUG_CREDENTIALS=3Dy
-> =
-
-> #
-> # RCU Debugging
-> #
-> CONFIG_PROVE_RCU=3Dy
-> CONFIG_TORTURE_TEST=3Dm
-> CONFIG_RCU_PERF_TEST=3Dm
-> CONFIG_RCU_TORTURE_TEST=3Dm
-> CONFIG_RCU_CPU_STALL_TIMEOUT=3D21
-> # CONFIG_RCU_TRACE is not set
-> # CONFIG_RCU_EQS_DEBUG is not set
-> # CONFIG_DEBUG_WQ_FORCE_RR_CPU is not set
-> # CONFIG_CPU_HOTPLUG_STATE_CONTROL is not set
-> CONFIG_NOTIFIER_ERROR_INJECTION=3Dy
-> CONFIG_PM_NOTIFIER_ERROR_INJECT=3Dm
-> # CONFIG_NETDEV_NOTIFIER_ERROR_INJECT is not set
-> # CONFIG_FAULT_INJECTION is not set
-> # CONFIG_LATENCYTOP is not set
-> CONFIG_USER_STACKTRACE_SUPPORT=3Dy
-> CONFIG_HAVE_FUNCTION_TRACER=3Dy
-> CONFIG_HAVE_FUNCTION_GRAPH_TRACER=3Dy
-> CONFIG_HAVE_DYNAMIC_FTRACE=3Dy
-> CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS=3Dy
-> CONFIG_HAVE_FTRACE_MCOUNT_RECORD=3Dy
-> CONFIG_HAVE_SYSCALL_TRACEPOINTS=3Dy
-> CONFIG_HAVE_FENTRY=3Dy
-> CONFIG_HAVE_C_RECORDMCOUNT=3Dy
-> CONFIG_TRACING_SUPPORT=3Dy
-> # CONFIG_FTRACE is not set
-> CONFIG_PROVIDE_OHCI1394_DMA_INIT=3Dy
-> # CONFIG_DMA_API_DEBUG is not set
-> =
-
-> #
-> # Runtime Testing
-> #
-> # CONFIG_TEST_LIST_SORT is not set
-> CONFIG_TEST_SORT=3Dy
-> CONFIG_KPROBES_SANITY_TEST=3Dy
-> # CONFIG_BACKTRACE_SELF_TEST is not set
-> CONFIG_RBTREE_TEST=3Dy
-> CONFIG_INTERVAL_TREE_TEST=3Dm
-> CONFIG_PERCPU_TEST=3Dm
-> CONFIG_ATOMIC64_SELFTEST=3Dy
-> CONFIG_TEST_HEXDUMP=3Dm
-> CONFIG_TEST_STRING_HELPERS=3Dm
-> CONFIG_TEST_KSTRTOX=3Dm
-> CONFIG_TEST_PRINTF=3Dy
-> CONFIG_TEST_BITMAP=3Dy
-> # CONFIG_TEST_UUID is not set
-> # CONFIG_TEST_RHASHTABLE is not set
-> # CONFIG_TEST_HASH is not set
-> CONFIG_TEST_LKM=3Dm
-> CONFIG_TEST_USER_COPY=3Dm
-> # CONFIG_TEST_BPF is not set
-> # CONFIG_TEST_FIND_BIT is not set
-> CONFIG_TEST_FIRMWARE=3Dy
-> # CONFIG_TEST_SYSCTL is not set
-> # CONFIG_TEST_UDELAY is not set
-> CONFIG_TEST_STATIC_KEYS=3Dm
-> # CONFIG_TEST_DEBUG_VIRTUAL is not set
-> CONFIG_MEMTEST=3Dy
-> CONFIG_BUG_ON_DATA_CORRUPTION=3Dy
-> # CONFIG_SAMPLES is not set
-> CONFIG_HAVE_ARCH_KGDB=3Dy
-> # CONFIG_KGDB is not set
-> CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=3Dy
-> # CONFIG_ARCH_WANTS_UBSAN_NO_NULL is not set
-> CONFIG_UBSAN=3Dy
-> # CONFIG_UBSAN_SANITIZE_ALL is not set
-> # CONFIG_UBSAN_ALIGNMENT is not set
-> # CONFIG_UBSAN_NULL is not set
-> CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=3Dy
-> CONFIG_STRICT_DEVMEM=3Dy
-> # CONFIG_IO_STRICT_DEVMEM is not set
-> CONFIG_EARLY_PRINTK_USB=3Dy
-> CONFIG_X86_VERBOSE_BOOTUP=3Dy
-> CONFIG_EARLY_PRINTK=3Dy
-> CONFIG_EARLY_PRINTK_DBGP=3Dy
-> CONFIG_EARLY_PRINTK_USB_XDBC=3Dy
-> # CONFIG_X86_PTDUMP_CORE is not set
-> # CONFIG_X86_PTDUMP is not set
-> # CONFIG_DEBUG_WX is not set
-> # CONFIG_DOUBLEFAULT is not set
-> # CONFIG_DEBUG_TLBFLUSH is not set
-> # CONFIG_IOMMU_STRESS is not set
-> CONFIG_HAVE_MMIOTRACE_SUPPORT=3Dy
-> # CONFIG_X86_DECODER_SELFTEST is not set
-> CONFIG_IO_DELAY_TYPE_0X80=3D0
-> CONFIG_IO_DELAY_TYPE_0XED=3D1
-> CONFIG_IO_DELAY_TYPE_UDELAY=3D2
-> CONFIG_IO_DELAY_TYPE_NONE=3D3
-> # CONFIG_IO_DELAY_0X80 is not set
-> # CONFIG_IO_DELAY_0XED is not set
-> # CONFIG_IO_DELAY_UDELAY is not set
-> CONFIG_IO_DELAY_NONE=3Dy
-> CONFIG_DEFAULT_IO_DELAY_TYPE=3D3
-> # CONFIG_DEBUG_BOOT_PARAMS is not set
-> # CONFIG_CPA_DEBUG is not set
-> CONFIG_OPTIMIZE_INLINING=3Dy
-> CONFIG_DEBUG_ENTRY=3Dy
-> CONFIG_DEBUG_NMI_SELFTEST=3Dy
-> CONFIG_X86_DEBUG_FPU=3Dy
-> # CONFIG_PUNIT_ATOM_DEBUG is not set
-> CONFIG_UNWINDER_ORC=3Dy
-> # CONFIG_UNWINDER_FRAME_POINTER is not set
-> # CONFIG_UNWINDER_GUESS is not set
-> =
-
-> #
-> # Security options
-> #
-> CONFIG_KEYS=3Dy
-> # CONFIG_PERSISTENT_KEYRINGS is not set
-> # CONFIG_BIG_KEYS is not set
-> CONFIG_ENCRYPTED_KEYS=3Dy
-> # CONFIG_KEY_DH_OPERATIONS is not set
-> CONFIG_SECURITY_DMESG_RESTRICT=3Dy
-> # CONFIG_SECURITY is not set
-> CONFIG_SECURITYFS=3Dy
-> # CONFIG_INTEL_TXT is not set
-> CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR=3Dy
-> # CONFIG_HARDENED_USERCOPY is not set
-> CONFIG_FORTIFY_SOURCE=3Dy
-> # CONFIG_STATIC_USERMODEHELPER is not set
-> CONFIG_DEFAULT_SECURITY_DAC=3Dy
-> CONFIG_DEFAULT_SECURITY=3D""
-> CONFIG_CRYPTO=3Dy
-> =
-
-> #
-> # Crypto core or helper
-> #
-> CONFIG_CRYPTO_ALGAPI=3Dy
-> CONFIG_CRYPTO_ALGAPI2=3Dy
-> CONFIG_CRYPTO_AEAD=3Dy
-> CONFIG_CRYPTO_AEAD2=3Dy
-> CONFIG_CRYPTO_BLKCIPHER=3Dy
-> CONFIG_CRYPTO_BLKCIPHER2=3Dy
-> CONFIG_CRYPTO_HASH=3Dy
-> CONFIG_CRYPTO_HASH2=3Dy
-> CONFIG_CRYPTO_RNG=3Dy
-> CONFIG_CRYPTO_RNG2=3Dy
-> CONFIG_CRYPTO_RNG_DEFAULT=3Dy
-> CONFIG_CRYPTO_AKCIPHER2=3Dy
-> CONFIG_CRYPTO_AKCIPHER=3Dy
-> CONFIG_CRYPTO_KPP2=3Dy
-> CONFIG_CRYPTO_KPP=3Dm
-> CONFIG_CRYPTO_ACOMP2=3Dy
-> CONFIG_CRYPTO_RSA=3Dy
-> CONFIG_CRYPTO_DH=3Dm
-> CONFIG_CRYPTO_ECDH=3Dy
-> CONFIG_CRYPTO_MANAGER=3Dy
-> CONFIG_CRYPTO_MANAGER2=3Dy
-> # CONFIG_CRYPTO_USER is not set
-> CONFIG_CRYPTO_MANAGER_DISABLE_TESTS=3Dy
-> CONFIG_CRYPTO_GF128MUL=3Dy
-> CONFIG_CRYPTO_NULL=3Dy
-> CONFIG_CRYPTO_NULL2=3Dy
-> # CONFIG_CRYPTO_PCRYPT is not set
-> CONFIG_CRYPTO_WORKQUEUE=3Dy
-> CONFIG_CRYPTO_CRYPTD=3Dy
-> CONFIG_CRYPTO_MCRYPTD=3Dy
-> CONFIG_CRYPTO_AUTHENC=3Dm
-> CONFIG_CRYPTO_TEST=3Dm
-> CONFIG_CRYPTO_ABLK_HELPER=3Dy
-> CONFIG_CRYPTO_SIMD=3Dm
-> CONFIG_CRYPTO_GLUE_HELPER_X86=3Dy
-> =
-
-> #
-> # Authenticated Encryption with Associated Data
-> #
-> # CONFIG_CRYPTO_CCM is not set
-> CONFIG_CRYPTO_GCM=3Dy
-> CONFIG_CRYPTO_CHACHA20POLY1305=3Dy
-> CONFIG_CRYPTO_SEQIV=3Dy
-> CONFIG_CRYPTO_ECHAINIV=3Dm
-> =
-
-> #
-> # Block modes
-> #
-> CONFIG_CRYPTO_CBC=3Dy
-> CONFIG_CRYPTO_CTR=3Dy
-> CONFIG_CRYPTO_CTS=3Dy
-> CONFIG_CRYPTO_ECB=3Dy
-> CONFIG_CRYPTO_LRW=3Dy
-> CONFIG_CRYPTO_PCBC=3Dy
-> CONFIG_CRYPTO_XTS=3Dy
-> CONFIG_CRYPTO_KEYWRAP=3Dm
-> =
-
-> #
-> # Hash modes
-> #
-> CONFIG_CRYPTO_CMAC=3Dm
-> CONFIG_CRYPTO_HMAC=3Dy
-> CONFIG_CRYPTO_XCBC=3Dy
-> # CONFIG_CRYPTO_VMAC is not set
-> =
-
-> #
-> # Digest
-> #
-> CONFIG_CRYPTO_CRC32C=3Dm
-> CONFIG_CRYPTO_CRC32C_INTEL=3Dm
-> # CONFIG_CRYPTO_CRC32 is not set
-> CONFIG_CRYPTO_CRC32_PCLMUL=3Dm
-> CONFIG_CRYPTO_CRCT10DIF=3Dm
-> CONFIG_CRYPTO_CRCT10DIF_PCLMUL=3Dm
-> CONFIG_CRYPTO_GHASH=3Dy
-> CONFIG_CRYPTO_POLY1305=3Dy
-> CONFIG_CRYPTO_POLY1305_X86_64=3Dy
-> CONFIG_CRYPTO_MD4=3Dm
-> CONFIG_CRYPTO_MD5=3Dy
-> # CONFIG_CRYPTO_MICHAEL_MIC is not set
-> # CONFIG_CRYPTO_RMD128 is not set
-> # CONFIG_CRYPTO_RMD160 is not set
-> # CONFIG_CRYPTO_RMD256 is not set
-> CONFIG_CRYPTO_RMD320=3Dy
-> CONFIG_CRYPTO_SHA1=3Dy
-> CONFIG_CRYPTO_SHA1_SSSE3=3Dy
-> CONFIG_CRYPTO_SHA256_SSSE3=3Dm
-> # CONFIG_CRYPTO_SHA512_SSSE3 is not set
-> CONFIG_CRYPTO_SHA1_MB=3Dy
-> CONFIG_CRYPTO_SHA256_MB=3Dm
-> # CONFIG_CRYPTO_SHA512_MB is not set
-> CONFIG_CRYPTO_SHA256=3Dy
-> CONFIG_CRYPTO_SHA512=3Dy
-> CONFIG_CRYPTO_SHA3=3Dy
-> # CONFIG_CRYPTO_SM3 is not set
-> CONFIG_CRYPTO_TGR192=3Dm
-> CONFIG_CRYPTO_WP512=3Dm
-> CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL=3Dm
-> =
-
-> #
-> # Ciphers
-> #
-> CONFIG_CRYPTO_AES=3Dy
-> CONFIG_CRYPTO_AES_TI=3Dy
-> CONFIG_CRYPTO_AES_X86_64=3Dm
-> CONFIG_CRYPTO_AES_NI_INTEL=3Dm
-> CONFIG_CRYPTO_ANUBIS=3Dm
-> CONFIG_CRYPTO_ARC4=3Dy
-> CONFIG_CRYPTO_BLOWFISH=3Dy
-> CONFIG_CRYPTO_BLOWFISH_COMMON=3Dy
-> CONFIG_CRYPTO_BLOWFISH_X86_64=3Dy
-> # CONFIG_CRYPTO_CAMELLIA is not set
-> CONFIG_CRYPTO_CAMELLIA_X86_64=3Dy
-> CONFIG_CRYPTO_CAMELLIA_AESNI_AVX_X86_64=3Dy
-> CONFIG_CRYPTO_CAMELLIA_AESNI_AVX2_X86_64=3Dy
-> CONFIG_CRYPTO_CAST_COMMON=3Dy
-> CONFIG_CRYPTO_CAST5=3Dy
-> # CONFIG_CRYPTO_CAST5_AVX_X86_64 is not set
-> CONFIG_CRYPTO_CAST6=3Dy
-> CONFIG_CRYPTO_CAST6_AVX_X86_64=3Dy
-> CONFIG_CRYPTO_DES=3Dy
-> CONFIG_CRYPTO_DES3_EDE_X86_64=3Dy
-> CONFIG_CRYPTO_FCRYPT=3Dm
-> CONFIG_CRYPTO_KHAZAD=3Dy
-> # CONFIG_CRYPTO_SALSA20 is not set
-> # CONFIG_CRYPTO_SALSA20_X86_64 is not set
-> CONFIG_CRYPTO_CHACHA20=3Dy
-> CONFIG_CRYPTO_CHACHA20_X86_64=3Dm
-> CONFIG_CRYPTO_SEED=3Dm
-> CONFIG_CRYPTO_SERPENT=3Dy
-> CONFIG_CRYPTO_SERPENT_SSE2_X86_64=3Dy
-> CONFIG_CRYPTO_SERPENT_AVX_X86_64=3Dm
-> CONFIG_CRYPTO_SERPENT_AVX2_X86_64=3Dm
-> CONFIG_CRYPTO_TEA=3Dy
-> CONFIG_CRYPTO_TWOFISH=3Dm
-> CONFIG_CRYPTO_TWOFISH_COMMON=3Dy
-> CONFIG_CRYPTO_TWOFISH_X86_64=3Dy
-> CONFIG_CRYPTO_TWOFISH_X86_64_3WAY=3Dy
-> CONFIG_CRYPTO_TWOFISH_AVX_X86_64=3Dy
-> =
-
-> #
-> # Compression
-> #
-> CONFIG_CRYPTO_DEFLATE=3Dy
-> CONFIG_CRYPTO_LZO=3Dm
-> CONFIG_CRYPTO_842=3Dy
-> CONFIG_CRYPTO_LZ4=3Dm
-> CONFIG_CRYPTO_LZ4HC=3Dm
-> =
-
-> #
-> # Random Number Generation
-> #
-> CONFIG_CRYPTO_ANSI_CPRNG=3Dy
-> CONFIG_CRYPTO_DRBG_MENU=3Dy
-> CONFIG_CRYPTO_DRBG_HMAC=3Dy
-> # CONFIG_CRYPTO_DRBG_HASH is not set
-> # CONFIG_CRYPTO_DRBG_CTR is not set
-> CONFIG_CRYPTO_DRBG=3Dy
-> CONFIG_CRYPTO_JITTERENTROPY=3Dy
-> # CONFIG_CRYPTO_USER_API_HASH is not set
-> # CONFIG_CRYPTO_USER_API_SKCIPHER is not set
-> # CONFIG_CRYPTO_USER_API_RNG is not set
-> # CONFIG_CRYPTO_USER_API_AEAD is not set
-> CONFIG_CRYPTO_HASH_INFO=3Dy
-> # CONFIG_CRYPTO_HW is not set
-> CONFIG_ASYMMETRIC_KEY_TYPE=3Dy
-> CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE=3Dy
-> CONFIG_X509_CERTIFICATE_PARSER=3Dy
-> CONFIG_PKCS7_MESSAGE_PARSER=3Dy
-> # CONFIG_PKCS7_TEST_KEY is not set
-> # CONFIG_SIGNED_PE_FILE_VERIFICATION is not set
-> =
-
-> #
-> # Certificates for signature checking
-> #
-> CONFIG_SYSTEM_TRUSTED_KEYRING=3Dy
-> CONFIG_SYSTEM_TRUSTED_KEYS=3D""
-> # CONFIG_SYSTEM_EXTRA_CERTIFICATE is not set
-> # CONFIG_SECONDARY_TRUSTED_KEYRING is not set
-> CONFIG_SYSTEM_BLACKLIST_KEYRING=3Dy
-> CONFIG_SYSTEM_BLACKLIST_HASH_LIST=3D""
-> CONFIG_HAVE_KVM=3Dy
-> # CONFIG_VIRTUALIZATION is not set
-> # CONFIG_BINARY_PRINTF is not set
-> =
-
-> #
-> # Library routines
-> #
-> CONFIG_BITREVERSE=3Dy
-> # CONFIG_HAVE_ARCH_BITREVERSE is not set
-> CONFIG_RATIONAL=3Dy
-> CONFIG_GENERIC_STRNCPY_FROM_USER=3Dy
-> CONFIG_GENERIC_STRNLEN_USER=3Dy
-> CONFIG_GENERIC_NET_UTILS=3Dy
-> CONFIG_GENERIC_FIND_FIRST_BIT=3Dy
-> CONFIG_GENERIC_PCI_IOMAP=3Dy
-> CONFIG_GENERIC_IOMAP=3Dy
-> CONFIG_ARCH_USE_CMPXCHG_LOCKREF=3Dy
-> CONFIG_ARCH_HAS_FAST_MULTIPLIER=3Dy
-> # CONFIG_CRC_CCITT is not set
-> CONFIG_CRC16=3Dm
-> CONFIG_CRC_T10DIF=3Dm
-> CONFIG_CRC_ITU_T=3Dy
-> CONFIG_CRC32=3Dy
-> CONFIG_CRC32_SELFTEST=3Dm
-> # CONFIG_CRC32_SLICEBY8 is not set
-> # CONFIG_CRC32_SLICEBY4 is not set
-> # CONFIG_CRC32_SARWATE is not set
-> CONFIG_CRC32_BIT=3Dy
-> CONFIG_CRC4=3Dm
-> CONFIG_CRC7=3Dy
-> CONFIG_LIBCRC32C=3Dm
-> # CONFIG_CRC8 is not set
-> # CONFIG_AUDIT_ARCH_COMPAT_GENERIC is not set
-> # CONFIG_RANDOM32_SELFTEST is not set
-> CONFIG_842_COMPRESS=3Dy
-> CONFIG_842_DECOMPRESS=3Dy
-> CONFIG_ZLIB_INFLATE=3Dy
-> CONFIG_ZLIB_DEFLATE=3Dy
-> CONFIG_LZO_COMPRESS=3Dm
-> CONFIG_LZO_DECOMPRESS=3Dy
-> CONFIG_LZ4_COMPRESS=3Dm
-> CONFIG_LZ4HC_COMPRESS=3Dm
-> CONFIG_LZ4_DECOMPRESS=3Dy
-> CONFIG_XZ_DEC=3Dy
-> # CONFIG_XZ_DEC_X86 is not set
-> CONFIG_XZ_DEC_POWERPC=3Dy
-> CONFIG_XZ_DEC_IA64=3Dy
-> CONFIG_XZ_DEC_ARM=3Dy
-> # CONFIG_XZ_DEC_ARMTHUMB is not set
-> CONFIG_XZ_DEC_SPARC=3Dy
-> CONFIG_XZ_DEC_BCJ=3Dy
-> # CONFIG_XZ_DEC_TEST is not set
-> CONFIG_DECOMPRESS_GZIP=3Dy
-> CONFIG_DECOMPRESS_BZIP2=3Dy
-> CONFIG_DECOMPRESS_LZMA=3Dy
-> CONFIG_DECOMPRESS_XZ=3Dy
-> CONFIG_DECOMPRESS_LZO=3Dy
-> CONFIG_DECOMPRESS_LZ4=3Dy
-> CONFIG_GENERIC_ALLOCATOR=3Dy
-> CONFIG_INTERVAL_TREE=3Dy
-> CONFIG_RADIX_TREE_MULTIORDER=3Dy
-> CONFIG_ASSOCIATIVE_ARRAY=3Dy
-> CONFIG_HAS_IOMEM=3Dy
-> CONFIG_HAS_IOPORT_MAP=3Dy
-> CONFIG_HAS_DMA=3Dy
-> # CONFIG_DMA_NOOP_OPS is not set
-> # CONFIG_DMA_VIRT_OPS is not set
-> CONFIG_CPUMASK_OFFSTACK=3Dy
-> CONFIG_CPU_RMAP=3Dy
-> CONFIG_DQL=3Dy
-> CONFIG_NLATTR=3Dy
-> CONFIG_CLZ_TAB=3Dy
-> # CONFIG_CORDIC is not set
-> # CONFIG_DDR is not set
-> # CONFIG_IRQ_POLL is not set
-> CONFIG_MPILIB=3Dy
-> CONFIG_OID_REGISTRY=3Dy
-> # CONFIG_SG_SPLIT is not set
-> # CONFIG_SG_POOL is not set
-> CONFIG_ARCH_HAS_SG_CHAIN=3Dy
-> CONFIG_ARCH_HAS_PMEM_API=3Dy
-> CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=3Dy
-> CONFIG_STACKDEPOT=3Dy
-> CONFIG_STRING_SELFTEST=3Dy
-
-
--- =
-
-Michal Hocko
-SUSE Labs
-
---===============7115186943486219394==--
+Greetings,
+
+0day kernel testing robot got the below dmesg and the first bad commit is
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+
+commit 21729f81ce8ae76a6995681d40e16f7ce8075db4
+Author:     Tom Lendacky <thomas.lendacky@amd.com>
+AuthorDate: Mon Jul 17 16:10:07 2017 -0500
+Commit:     Ingo Molnar <mingo@kernel.org>
+CommitDate: Tue Jul 18 11:38:00 2017 +0200
+
+     x86/mm: Provide general kernel support for memory encryption
+     =
+
+     Changes to the existing page table macros will allow the SME support to
+     be enabled in a simple fashion with minimal changes to files that use =
+these
+     macros.  Since the memory encryption mask will now be part of the regu=
+lar
+     pagetable macros, we introduce two new macros (_PAGE_TABLE_NOENC and
+     _KERNPG_TABLE_NOENC) to allow for early pagetable creation/initializat=
+ion
+     without the encryption mask before SME becomes active.  Two new pgprot=
+()
+     macros are defined to allow setting or clearing the page encryption ma=
+sk.
+     =
+
+     The FIXMAP_PAGE_NOCACHE define is introduced for use with MMIO.  SME d=
+oes
+     not support encryption for MMIO areas so this define removes the encry=
+ption
+     mask from the page attribute.
+     =
+
+     Two new macros are introduced (__sme_pa() / __sme_pa_nodebug()) to all=
+ow
+     creating a physical address with the encryption mask.  These are used =
+when
+     working with the cr3 register so that the PGD can be encrypted. The cu=
+rrent
+     __va() macro is updated so that the virtual address is generated based=
+ off
+     of the physical address without the encryption mask thus allowing the =
+same
+     virtual address to be generated regardless of whether encryption is en=
+abled
+     for that physical location or not.
+     =
+
+     Also, an early initialization function is added for SME.  If SME is ac=
+tive,
+     this function:
+     =
+
+      - Updates the early_pmd_flags so that early page faults create mappin=
+gs
+        with the encryption mask.
+     =
+
+      - Updates the __supported_pte_mask to include the encryption mask.
+     =
+
+      - Updates the protection_map entries to include the encryption mask so
+        that user-space allocations will automatically have the encryption =
+mask
+        applied.
+     =
+
+     Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+     Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+     Reviewed-by: Borislav Petkov <bp@suse.de>
+     Cc: Alexander Potapenko <glider@google.com>
+     Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>
+     Cc: Andy Lutomirski <luto@kernel.org>
+     Cc: Arnd Bergmann <arnd@arndb.de>
+     Cc: Borislav Petkov <bp@alien8.de>
+     Cc: Brijesh Singh <brijesh.singh@amd.com>
+     Cc: Dave Young <dyoung@redhat.com>
+     Cc: Dmitry Vyukov <dvyukov@google.com>
+     Cc: Jonathan Corbet <corbet@lwn.net>
+     Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+     Cc: Larry Woodman <lwoodman@redhat.com>
+     Cc: Linus Torvalds <torvalds@linux-foundation.org>
+     Cc: Matt Fleming <matt@codeblueprint.co.uk>
+     Cc: Michael S. Tsirkin <mst@redhat.com>
+     Cc: Paolo Bonzini <pbonzini@redhat.com>
+     Cc: Peter Zijlstra <peterz@infradead.org>
+     Cc: Radim Kr=C4=8Dm=C3=A1=C5=99 <rkrcmar@redhat.com>
+     Cc: Rik van Riel <riel@redhat.com>
+     Cc: Toshimitsu Kani <toshi.kani@hpe.com>
+     Cc: kasan-dev(a)googlegroups.com
+     Cc: kvm(a)vger.kernel.org
+     Cc: linux-arch(a)vger.kernel.org
+     Cc: linux-doc(a)vger.kernel.org
+     Cc: linux-efi(a)vger.kernel.org
+     Cc: linux-mm(a)kvack.org
+     Link: http://lkml.kernel.org/r/b36e952c4c39767ae7f0a41cf5345adf2743848=
+0.1500319216.git.thomas.lendacky(a)amd.com
+     Signed-off-by: Ingo Molnar <mingo@kernel.org>
+
+fd7e315988  x86/mm: Simplify p[g4um]d_page() macros
+21729f81ce  x86/mm: Provide general kernel support for memory encryption
+7753ea0964  Merge tag 'kvm-4.15-2' of git://git.kernel.org/pub/scm/virt/kvm=
+/kvm
+6fc478f80f  Add linux-next specific files for 20171124
++--------------------------------------------------------------------------=
+---------------------+------------+------------+------------+--------------=
+-+
+|                                                                          =
+                     | fd7e315988 | 21729f81ce | 7753ea0964 | next-20171124=
+ |
++--------------------------------------------------------------------------=
+---------------------+------------+------------+------------+--------------=
+-+
+| boot_successes                                                           =
+                     | 14         | 0          | 0          | 21           =
+ |
+| boot_failures                                                            =
+                     | 26         | 11         | 19         | 4            =
+ |
+| WARNING:at_drivers/pci/pci-sysfs.c:#pci_mmap_resource                    =
+                     | 17         | 0          | 0          | 4            =
+ |
+| RIP:pci_mmap_resource                                                    =
+                     | 17         | 0          | 0          | 4            =
+ |
+| BUG:KASAN:slab-out-of-bounds_in_c                                        =
+                     | 5          |            |            |              =
+ |
+| WARNING:bad_unlock_balance_detected                                      =
+                     | 7          |            |            |              =
+ |
+| is_trying_to_release_lock(rcu_preempt_state)at                           =
+                     | 7          |            |            |              =
+ |
+| calltrace:SyS_setpriority                                                =
+                     | 7          |            |            |              =
+ |
+| BUG:kernel_reboot-without-warning_in_early-boot_stage,last_printk:early_c=
+onsole_in_setup_code | 0          | 11         | 19         |              =
+ |
++--------------------------------------------------------------------------=
+---------------------+------------+------------+------------+--------------=
+-+
+
+early console in setup code
+BUG: kernel reboot-without-warning in early-boot stage, last printk: early =
+console in setup code
+Linux version 4.13.0-rc1-00045-g21729f8 #3
+Command line: root=3D/dev/ram0 hung_task_panic=3D1 debug apic=3Ddebug sysrq=
+_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 net.ifnames=3D0 printk=
+.devkmsg=3Don panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dp=
+anic load_ramdisk=3D2 prompt_ramdisk=3D0 drbd.minor_count=3D8 systemd.log_l=
+evel=3Derr ignore_loglevel console=3Dtty0 earlyprintk=3DttyS0,115200 consol=
+e=3DttyS0,115200 vga=3Dnormal rw link=3D/kbuild-tests/run-queue/yocto-intel=
+12/x86_64-randconfig-s1-11211736/linux-devel:rebased-cc73fee0bae2d66594d1fa=
+2df92bbd783aa98e04:21729f81ce8ae76a6995681d40e16f7ce8075db4:bisect-linux-49=
+/.vmlinuz-21729f81ce8ae76a6995681d40e16f7ce8075db4-20171125131312-7:yocto-i=
+ntel12-1 branch=3Dlinux-devel/rebased-cc73fee0bae2d66594d1fa2df92bbd783aa98=
+e04 BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-s1-11211736/gcc-6/21729f81ce8=
+ae76a6995681d40e16f7ce8075db4/vmlinuz-4.13.0-rc1-00045-g21729f8 drbd.minor_=
+count=3D8
+
+
+                                                           # HH:MM RESULT G=
+OOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
+git bisect start e7cdb60fd28b252f1c15a0e50f79a01906124915 v4.13 --
+git bisect  bad 2500e287bca1beb313aa298f2d36be1257cbb483  # 23:19  B      0=
+     4   18   0  Merge git://git.kvack.org/~bcrl/aio-next
+git bisect  bad c0da4fa0d1a54495d6055c009ac46b76d1da2c86  # 00:43  B      0=
+    10   24   0  Merge tag 'media/v4.14-1' of git://git.kernel.org/pub/scm/=
+linux/kernel/git/mchehab/linux-media
+git bisect good b0c79f49c343cda8954b3322984c32f258ca4ccb  # 01:58  G     10=
+     0    2   2  Merge branch 'x86-asm-for-linus' of git://git.kernel.org/p=
+ub/scm/linux/kernel/git/tip/tip
+git bisect  bad c7f396f12fb3644ff325acb2384b64c8eea7a746  # 02:52  B      0=
+     1   15   0  Merge tag 'dlm-4.14' of git://git.kernel.org/pub/scm/linux=
+/kernel/git/teigland/linux-dlm
+git bisect  bad 9e85ae6af6e907975f68d82ff127073ec024cb05  # 03:53  B      0=
+     4   18   0  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/l=
+inux/kernel/git/s390/linux
+git bisect  bad b1b6f83ac938d176742c85757960dec2cf10e468  # 04:47  B      0=
+     2   16   0  Merge branch 'x86-mm-for-linus' of git://git.kernel.org/pu=
+b/scm/linux/kernel/git/tip/tip
+git bisect good f29139bf109d35967229b2caf4e6297c201cc690  # 06:02  G     11=
+     0    6   6  Merge branch 'x86-debug-for-linus' of git://git.kernel.org=
+/pub/scm/linux/kernel/git/tip/tip
+git bisect good e0a195b5225e1285806622cc146dc5c3312fb392  # 06:57  G     11=
+     0    6   6  Merge branch 'x86-spinlocks-for-linus' of git://git.kernel=
+.org/pub/scm/linux/kernel/git/tip/tip
+git bisect good 6c51e67b64d169419fb13318035bb442f9176612  # 07:47  G     11=
+     0   10  10  Merge branch 'x86-syscall-for-linus' of git://git.kernel.o=
+rg/pub/scm/linux/kernel/git/tip/tip
+git bisect good 5f82e71a001d14824a7728ad9e49f6aea420f161  # 08:33  G     11=
+     0    3   3  Merge branch 'locking-core-for-linus' of git://git.kernel.=
+org/pub/scm/linux/kernel/git/tip/tip
+git bisect  bad f655e6e6b992a2fb0d0334db2620607b98df39e7  # 09:12  B      0=
+     4   18   0  x86/cpu/AMD: Make the microcode level available earlier in=
+ the boot
+git bisect good fd7e315988b784509ba3f1b42f539bd0b1fca9bb  # 10:01  G     11=
+     0    8   8  x86/mm: Simplify p[g4um]d_page() macros
+git bisect  bad f99afd08a45fbbd9ce35a7624ffd1d850a1906c0  # 11:09  B      0=
+    11   25   0  efi: Update efi_mem_type() to return an error rather than 0
+git bisect  bad 7f8b7e7f4ccbbd1fb8badddfabd28c955aea87b4  # 12:01  B      0=
+    11   25   0  x86/mm: Add support for early encryption/decryption of mem=
+ory
+git bisect  bad eef9c4abe77f55b1600f59d8ac5f1d953e2f5384  # 12:41  B      0=
+     3   17   0  x86/mm: Add SME support for read_cr3_pa()
+git bisect  bad 21729f81ce8ae76a6995681d40e16f7ce8075db4  # 13:17  B      0=
+     3   17   0  x86/mm: Provide general kernel support for memory encrypti=
+on
+# first bad commit: [21729f81ce8ae76a6995681d40e16f7ce8075db4] x86/mm: Prov=
+ide general kernel support for memory encryption
+git bisect good fd7e315988b784509ba3f1b42f539bd0b1fca9bb  # 14:34  G     32=
+     0   18  26  x86/mm: Simplify p[g4um]d_page() macros
+# extra tests on HEAD of linux-devel/rebased-cc73fee0bae2d66594d1fa2df92bbd=
+783aa98e04
+git bisect  bad c6633fb7bfbc4d02255fb1ab79dc84b2eda89620  # 14:35  B      0=
+   444  458   0  ipc: msg: Make msg_queue timestamps y2038 safe
+# extra tests on tree/branch linus/master
+git bisect  bad 7753ea09640807104c8e353f6d5dc47ee55307cf  # 15:19  B      0=
+     5   19   0  Merge tag 'kvm-4.15-2' of git://git.kernel.org/pub/scm/vir=
+t/kvm/kvm
+# extra tests on tree/branch linux-next/master
+git bisect good 6fc478f80f6809cc4b1a4230f47a62d3b7378dc0  # 16:20  G     11=
+     0    4   4  Add linux-next specific files for 20171124
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Cent=
+er
+https://lists.01.org/pipermail/lkp                          Intel Corporati=
+on
+
+--===============6977828344652353909==
+Content-Type: application/gzip
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="3.gz"
+
+H4sICPMnGVoAA2RtZXNnLXlvY3RvLWludGVsMTItMToyMDE3MTEyNTEzMTYxNDp4ODZfNjQtcmFu
+ZGNvbmZpZy1zMS0xMTIxMTczNjo0LjEzLjAtcmMxLTAwMDQ1LWcyMTcyOWY4OjMAzVVNj9s2ED2L
+v4JIc+iHaYmyLX8AAtoUwaZAixzanoJCoMSRljBFaknKjlP0v3dkebPreBdJjB4KAyb1yDfDGQ7n
+gXD6QCtrvNVAlaEeQt8hIIG8+vNmQ7fgDGjqoLQ2sL0Kt7bHUTijTDMQYLDAhlXqg2hgQrXwgXZO
+mbDdjMvPOPhVmf493YHzyho6n/LZNGGu4ixJkvmCNSlfput6Rb+ZkZ9t2wojqVYGNtShtzyWsIud
+aBN625umCMJvi04YVeWcSij7hooOP8apP3h3Vwi9FwdfgBGlBkld1XdSBJjipKi6vsAAtC6CagGD
+zHmSUANhqmojWvB5cgpqio63rW9yPPTokHHqbR20rbZ99/EQplXFXoTqVtomP4LU2s6fptoKWeDx
+pfLbPEXTtu3CRyCh0pVy2ipjXVHZ3oR8NQQRoJVTbZtCww50Ds5R1eAeKBA8Yve5zkM4JGP6x2MP
+wO/JhPNFioE92vUA7hqRo7FW4IXvh1xv83hb9kpLFsAHH7vesLseeogPtgqWoV3QPI3fr7IimzOH
+V4SGa9UwzxnnKefLWRbr4Z6ZHE63wUISHiSrquWsBkhKAanMssV6LnktUlmv07KUy9VMiPUKkvnm
+VAS8gpWAZSay9XqRrbicJ8CzeolwslzIcr4plYcqsNHZfB1Pd+0w/8C+1AJLE77EQy/4DH8pW27O
+gsRLLjHA6jZ/FE/8tfHQV2/f/lH88ttPN6/zuNs2Y3I+k8CmqlgWf2kc8X3gz7+oy+Ii5LUWHUZC
+h/LfUJ4Qcgdtz1Tb0MoBPhPKanpX2X1KhxJlnySHJTRdZDdfSeLXkNJrSLNrSPNrSItrSNlIIttd
+m39LoiN5fO9srA0SsbFvMdyCH9iv6Bvh96D15AffQjf8iw5XTi375TgioIwKTtLYetVihx7f7ukF
+BzesHk5OplXzAQktXfAUR992lOOIpa4qoIAdMZlgS8TvHIcEl8Yv2ntwEyXv0aMcWCfB5aYadlk2
+KgjO71siVdksScCXjzAmqjBowbFpI+5CRYf3lWNrFXqozOE0Tu2A1gq719OFOGlBKnFcnKg63ymH
+Rr+AyK8lptcSZ9cS59cSF9cSs+eIePMKBcMHOdpRvtPiQI01w2W1FsvLOmp6rcl3hIiuAyOHEj8X
+cRJdqDiJTmXwoOMkekrI0dZnlZxEZ1JOogstR+gk5ujlQs2RfyHnJHrQcxKdC/rg4FzRMZzLrhs9
+qekk+kTUSfRY1Un0nKyf7XuEPgg75mpPov9AyEj0f1CyJ5OKZfbi5d/YJt/9+Nc/Lygba44iNs7e
+fY8w+Rd8sWZn+woAAA==
+--===============6977828344652353909==
+Content-Type: application/gzip
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="2.gz"
+
+H4sICOEnGVoAA2RtZXNnLXlvY3RvLWludGVsMTItMTE6MjAxNzExMjUxMzI1MzM6eDg2XzY0LXJh
+bmRjb25maWctczEtMTEyMTE3MzY6NC4xMy4wLXJjMS0wMDA0NC1nZmQ3ZTMxNToyAOxcW3PiyJJ+
+3v0VuTEv9I7BKt2Q2ODEYoy7Cd8Y456ZPR0dhJBKWGMhMbpge6J//GaWJG5C2HLT8zR0tIWkyi+z
+siqrMquy4Fbkv4AdBnHoc/ACiHmSLvCBw//zC+BHakni8xUiK3DCeQdmPJlk3yfTl4THYFu+zx1w
+o3AOcWJFyeSRRwH3f5aep+xUemaSq8CTlzyAHQWziRd4SVfaRb/ygvQZljyKvTAAtcWUltSMbNbE
+t6ranLlOmytMg8bjNPV853/9x0UznkraB2jMbHtFqLfUlgSyxNpMknVonPOpZ+WPm+aHD/CTDKO7
+weB6dA9jK4GbcAmyBpLZUVhHMqE/vhfUu+L1w/kc6wy+F/AORGGYdE8dvjyNrLkEDylWK7Hix8nC
+Cjy7y8Dh03QG1gJvsq/xSxz9ObH8J+slnvDAmpLGIjtdOFbCW/hlYi/SCWrP9yeJN+dhmnSZJEHA
+k5bnBtacx10JFpEXJI8tZPw4j2ddrG/GsMkgDt3ED+3HdLESIph7kycrsR+ccNYVDyEMF3H+1Q8t
+B9tx7njxY1dG6HC+SFYPJHCiqdOae0EYTewwDZKuQZVI+Nxp+eFs4vMl97s8isCbYRk+wYfiWdGZ
+uknyIgGn/pWJTQ/G0gljmowV2yi1fricWV0Em1s+RE+k68fuadbeTexoSXwapUHzz5Sn/PQltJOw
+ibjcZ/Lps6FPdLVJ3RKBXW/WjFmTMZmxtqKf+tS3mg5J14n41Iq507TttuJyLk0tLju6rpmqw1xL
+dlxTnk6dtqFYlmlwSe3kHc80jGnbUDXJnFqKy6aq7GqKOXWkKXNty5xOO1Mv5nbSzJip5mlrOafv
+fzXfitAU3ZbJGlNkhclNZnS2aokVgilW0X7obtTotG6N4Oz29n4yvO59HHRPF4+zTD2vqBBtrKmf
+vrUmp0XVq+243L12TQ4FOnUXaQe/tOFi9BmHEN+HNOZw8fu49+tgtzw3ZKkDZ8PbcRM789Jz0MIW
+Dy+xh+MT3PWuYW4tOrtEonhG+WXO5yA9Szuf5tYj05267leUgiy4Fpjp2mUwl8AiHvNoyZ1acG5Z
+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
+f4rIs7Ci7QAA
+--===============6977828344652353909==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="4.13.0-rc1-00045-g21729f83"
+
+IyEvYmluL2Jhc2gKCmtlcm5lbD0kMQoKa3ZtPSgKCXFlbXUtc3lzdGVtLXg4Nl82NAoJLWVuYWJs
+ZS1rdm0KCS1jcHUgSGFzd2VsbCwrc21lcCwrc21hcAoJLWtlcm5lbCAka2VybmVsCgktbSA1MTIK
+CS1zbXAgMQoJLWRldmljZSBlMTAwMCxuZXRkZXY9bmV0MAoJLW5ldGRldiB1c2VyLGlkPW5ldDAK
+CS1ib290IG9yZGVyPW5jCgktbm8tcmVib290Cgktd2F0Y2hkb2cgaTYzMDBlc2IKCS13YXRjaGRv
+Zy1hY3Rpb24gZGVidWcKCS1ydGMgYmFzZT1sb2NhbHRpbWUKCS1zZXJpYWwgc3RkaW8KCS1kaXNw
+bGF5IG5vbmUKCS1tb25pdG9yIG51bGwKKQoKYXBwZW5kPSgKCXJvb3Q9L2Rldi9yYW0wCglodW5n
+X3Rhc2tfcGFuaWM9MQoJZGVidWcKCWFwaWM9ZGVidWcKCXN5c3JxX2Fsd2F5c19lbmFibGVkCgly
+Y3VwZGF0ZS5yY3VfY3B1X3N0YWxsX3RpbWVvdXQ9MTAwCgluZXQuaWZuYW1lcz0wCglwcmludGsu
+ZGV2a21zZz1vbgoJcGFuaWM9LTEKCXNvZnRsb2NrdXBfcGFuaWM9MQoJbm1pX3dhdGNoZG9nPXBh
+bmljCglvb3BzPXBhbmljCglsb2FkX3JhbWRpc2s9MgoJcHJvbXB0X3JhbWRpc2s9MAoJZHJiZC5t
+aW5vcl9jb3VudD04CglzeXN0ZW1kLmxvZ19sZXZlbD1lcnIKCWlnbm9yZV9sb2dsZXZlbAoJY29u
+c29sZT10dHkwCgllYXJseXByaW50az10dHlTMCwxMTUyMDAKCWNvbnNvbGU9dHR5UzAsMTE1MjAw
+Cgl2Z2E9bm9ybWFsCglydwoJZHJiZC5taW5vcl9jb3VudD04CikKCiIke2t2bVtAXX0iIC1hcHBl
+bmQgIiR7YXBwZW5kWypdfSIK
+
+--===============6977828344652353909==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="config-4.13.0-rc1-00045-g21729f8"
+
+IwojIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZpbGU7IERPIE5PVCBFRElULgojIExpbnV4L3g4
+Nl82NCA0LjEzLjAtcmMxIEtlcm5lbCBDb25maWd1cmF0aW9uCiMKQ09ORklHXzY0QklUPXkKQ09O
+RklHX1g4Nl82ND15CkNPTkZJR19YODY9eQpDT05GSUdfSU5TVFJVQ1RJT05fREVDT0RFUj15CkNP
+TkZJR19PVVRQVVRfRk9STUFUPSJlbGY2NC14ODYtNjQiCkNPTkZJR19BUkNIX0RFRkNPTkZJRz0i
+YXJjaC94ODYvY29uZmlncy94ODZfNjRfZGVmY29uZmlnIgpDT05GSUdfTE9DS0RFUF9TVVBQT1JU
+PXkKQ09ORklHX1NUQUNLVFJBQ0VfU1VQUE9SVD15CkNPTkZJR19NTVU9eQpDT05GSUdfQVJDSF9N
+TUFQX1JORF9CSVRTX01JTj0yOApDT05GSUdfQVJDSF9NTUFQX1JORF9CSVRTX01BWD0zMgpDT05G
+SUdfQVJDSF9NTUFQX1JORF9DT01QQVRfQklUU19NSU49OApDT05GSUdfQVJDSF9NTUFQX1JORF9D
+T01QQVRfQklUU19NQVg9MTYKQ09ORklHX05FRURfRE1BX01BUF9TVEFURT15CkNPTkZJR19ORUVE
+X1NHX0RNQV9MRU5HVEg9eQpDT05GSUdfR0VORVJJQ19CVUc9eQpDT05GSUdfR0VORVJJQ19CVUdf
+UkVMQVRJVkVfUE9JTlRFUlM9eQpDT05GSUdfR0VORVJJQ19IV0VJR0hUPXkKQ09ORklHX1JXU0VN
+X1hDSEdBRERfQUxHT1JJVEhNPXkKQ09ORklHX0dFTkVSSUNfQ0FMSUJSQVRFX0RFTEFZPXkKQ09O
+RklHX0FSQ0hfSEFTX0NQVV9SRUxBWD15CkNPTkZJR19BUkNIX0hBU19DQUNIRV9MSU5FX1NJWkU9
+eQpDT05GSUdfSEFWRV9TRVRVUF9QRVJfQ1BVX0FSRUE9eQpDT05GSUdfTkVFRF9QRVJfQ1BVX0VN
+QkVEX0ZJUlNUX0NIVU5LPXkKQ09ORklHX05FRURfUEVSX0NQVV9QQUdFX0ZJUlNUX0NIVU5LPXkK
+Q09ORklHX0FSQ0hfSElCRVJOQVRJT05fUE9TU0lCTEU9eQpDT05GSUdfQVJDSF9TVVNQRU5EX1BP
+U1NJQkxFPXkKQ09ORklHX0FSQ0hfV0FOVF9IVUdFX1BNRF9TSEFSRT15CkNPTkZJR19BUkNIX1dB
+TlRfR0VORVJBTF9IVUdFVExCPXkKQ09ORklHX1pPTkVfRE1BMzI9eQpDT05GSUdfQVVESVRfQVJD
+SD15CkNPTkZJR19BUkNIX1NVUFBPUlRTX09QVElNSVpFRF9JTkxJTklORz15CkNPTkZJR19BUkNI
+X1NVUFBPUlRTX0RFQlVHX1BBR0VBTExPQz15CkNPTkZJR19LQVNBTl9TSEFET1dfT0ZGU0VUPTB4
+ZGZmZmZjMDAwMDAwMDAwMApDT05GSUdfQVJDSF9TVVBQT1JUU19VUFJPQkVTPXkKQ09ORklHX0ZJ
+WF9FQVJMWUNPTl9NRU09eQpDT05GSUdfUEdUQUJMRV9MRVZFTFM9NApDT05GSUdfREVGQ09ORklH
+X0xJU1Q9Ii9saWIvbW9kdWxlcy8kVU5BTUVfUkVMRUFTRS8uY29uZmlnIgpDT05GSUdfQ09OU1RS
+VUNUT1JTPXkKQ09ORklHX0lSUV9XT1JLPXkKQ09ORklHX0JVSUxEVElNRV9FWFRBQkxFX1NPUlQ9
+eQpDT05GSUdfVEhSRUFEX0lORk9fSU5fVEFTSz15CgojCiMgR2VuZXJhbCBzZXR1cAojCkNPTkZJ
+R19CUk9LRU5fT05fU01QPXkKQ09ORklHX0lOSVRfRU5WX0FSR19MSU1JVD0zMgpDT05GSUdfQ1JP
+U1NfQ09NUElMRT0iIgojIENPTkZJR19DT01QSUxFX1RFU1QgaXMgbm90IHNldApDT05GSUdfTE9D
+QUxWRVJTSU9OPSIiCkNPTkZJR19MT0NBTFZFUlNJT05fQVVUTz15CkNPTkZJR19IQVZFX0tFUk5F
+TF9HWklQPXkKQ09ORklHX0hBVkVfS0VSTkVMX0JaSVAyPXkKQ09ORklHX0hBVkVfS0VSTkVMX0xa
+TUE9eQpDT05GSUdfSEFWRV9LRVJORUxfWFo9eQpDT05GSUdfSEFWRV9LRVJORUxfTFpPPXkKQ09O
+RklHX0hBVkVfS0VSTkVMX0xaND15CiMgQ09ORklHX0tFUk5FTF9HWklQIGlzIG5vdCBzZXQKQ09O
+RklHX0tFUk5FTF9CWklQMj15CiMgQ09ORklHX0tFUk5FTF9MWk1BIGlzIG5vdCBzZXQKIyBDT05G
+SUdfS0VSTkVMX1haIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VSTkVMX0xaTyBpcyBub3Qgc2V0CiMg
+Q09ORklHX0tFUk5FTF9MWjQgaXMgbm90IHNldApDT05GSUdfREVGQVVMVF9IT1NUTkFNRT0iKG5v
+bmUpIgojIENPTkZJR19TWVNWSVBDIGlzIG5vdCBzZXQKIyBDT05GSUdfUE9TSVhfTVFVRVVFIGlz
+IG5vdCBzZXQKQ09ORklHX0NST1NTX01FTU9SWV9BVFRBQ0g9eQpDT05GSUdfRkhBTkRMRT15CiMg
+Q09ORklHX1VTRUxJQiBpcyBub3Qgc2V0CiMgQ09ORklHX0FVRElUIGlzIG5vdCBzZXQKQ09ORklH
+X0hBVkVfQVJDSF9BVURJVFNZU0NBTEw9eQoKIwojIElSUSBzdWJzeXN0ZW0KIwpDT05GSUdfR0VO
+RVJJQ19JUlFfUFJPQkU9eQpDT05GSUdfR0VORVJJQ19JUlFfU0hPVz15CkNPTkZJR19HRU5FUklD
+X0lSUV9DSElQPXkKQ09ORklHX0lSUV9ET01BSU49eQpDT05GSUdfSVJRX0RPTUFJTl9ISUVSQVJD
+SFk9eQojIENPTkZJR19JUlFfRE9NQUlOX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX0lSUV9GT1JD
+RURfVEhSRUFESU5HPXkKQ09ORklHX1NQQVJTRV9JUlE9eQpDT05GSUdfR0VORVJJQ19JUlFfREVC
+VUdGUz15CkNPTkZJR19DTE9DS1NPVVJDRV9XQVRDSERPRz15CkNPTkZJR19BUkNIX0NMT0NLU09V
+UkNFX0RBVEE9eQpDT05GSUdfQ0xPQ0tTT1VSQ0VfVkFMSURBVEVfTEFTVF9DWUNMRT15CkNPTkZJ
+R19HRU5FUklDX1RJTUVfVlNZU0NBTEw9eQpDT05GSUdfR0VORVJJQ19DTE9DS0VWRU5UUz15CkNP
+TkZJR19HRU5FUklDX0NMT0NLRVZFTlRTX0JST0FEQ0FTVD15CkNPTkZJR19HRU5FUklDX0NMT0NL
+RVZFTlRTX01JTl9BREpVU1Q9eQpDT05GSUdfR0VORVJJQ19DTU9TX1VQREFURT15CgojCiMgVGlt
+ZXJzIHN1YnN5c3RlbQojCkNPTkZJR19USUNLX09ORVNIT1Q9eQpDT05GSUdfSFpfUEVSSU9ESUM9
+eQojIENPTkZJR19OT19IWl9JRExFIGlzIG5vdCBzZXQKIyBDT05GSUdfTk9fSFogaXMgbm90IHNl
+dApDT05GSUdfSElHSF9SRVNfVElNRVJTPXkKCiMKIyBDUFUvVGFzayB0aW1lIGFuZCBzdGF0cyBh
+Y2NvdW50aW5nCiMKQ09ORklHX1RJQ0tfQ1BVX0FDQ09VTlRJTkc9eQojIENPTkZJR19WSVJUX0NQ
+VV9BQ0NPVU5USU5HX0dFTiBpcyBub3Qgc2V0CkNPTkZJR19JUlFfVElNRV9BQ0NPVU5USU5HPXkK
+IyBDT05GSUdfQlNEX1BST0NFU1NfQUNDVCBpcyBub3Qgc2V0CiMgQ09ORklHX1RBU0tTVEFUUyBp
+cyBub3Qgc2V0CgojCiMgUkNVIFN1YnN5c3RlbQojCkNPTkZJR19QUkVFTVBUX1JDVT15CkNPTkZJ
+R19SQ1VfRVhQRVJUPXkKQ09ORklHX1NSQ1U9eQpDT05GSUdfVFJFRV9TUkNVPXkKQ09ORklHX1RB
+U0tTX1JDVT15CkNPTkZJR19SQ1VfU1RBTExfQ09NTU9OPXkKQ09ORklHX1JDVV9ORUVEX1NFR0NC
+TElTVD15CkNPTkZJR19SQ1VfRkFOT1VUPTY0CkNPTkZJR19SQ1VfRkFOT1VUX0xFQUY9MTYKQ09O
+RklHX1JDVV9CT09TVD15CkNPTkZJR19SQ1VfQk9PU1RfREVMQVk9NTAwCkNPTkZJR19SQ1VfTk9D
+Ql9DUFU9eQpDT05GSUdfQlVJTERfQklOMkM9eQpDT05GSUdfSUtDT05GSUc9eQpDT05GSUdfSUtD
+T05GSUdfUFJPQz15CkNPTkZJR19MT0dfQlVGX1NISUZUPTIwCkNPTkZJR19QUklOVEtfU0FGRV9M
+T0dfQlVGX1NISUZUPTEzCkNPTkZJR19IQVZFX1VOU1RBQkxFX1NDSEVEX0NMT0NLPXkKQ09ORklH
+X0FSQ0hfU1VQUE9SVFNfTlVNQV9CQUxBTkNJTkc9eQpDT05GSUdfQVJDSF9XQU5UX0JBVENIRURf
+VU5NQVBfVExCX0ZMVVNIPXkKQ09ORklHX0FSQ0hfU1VQUE9SVFNfSU5UMTI4PXkKQ09ORklHX0NH
+Uk9VUFM9eQojIENPTkZJR19NRU1DRyBpcyBub3Qgc2V0CkNPTkZJR19DR1JPVVBfU0NIRUQ9eQpD
+T05GSUdfRkFJUl9HUk9VUF9TQ0hFRD15CiMgQ09ORklHX0NGU19CQU5EV0lEVEggaXMgbm90IHNl
+dAojIENPTkZJR19SVF9HUk9VUF9TQ0hFRCBpcyBub3Qgc2V0CiMgQ09ORklHX0NHUk9VUF9QSURT
+IGlzIG5vdCBzZXQKIyBDT05GSUdfQ0dST1VQX1JETUEgaXMgbm90IHNldAojIENPTkZJR19DR1JP
+VVBfRlJFRVpFUiBpcyBub3Qgc2V0CkNPTkZJR19DR1JPVVBfREVWSUNFPXkKIyBDT05GSUdfQ0dS
+T1VQX0NQVUFDQ1QgaXMgbm90IHNldAojIENPTkZJR19DR1JPVVBfUEVSRiBpcyBub3Qgc2V0CkNP
+TkZJR19DR1JPVVBfQlBGPXkKIyBDT05GSUdfQ0dST1VQX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklH
+X1NPQ0tfQ0dST1VQX0RBVEE9eQojIENPTkZJR19DSEVDS1BPSU5UX1JFU1RPUkUgaXMgbm90IHNl
+dAojIENPTkZJR19OQU1FU1BBQ0VTIGlzIG5vdCBzZXQKIyBDT05GSUdfU0NIRURfQVVUT0dST1VQ
+IGlzIG5vdCBzZXQKIyBDT05GSUdfU1lTRlNfREVQUkVDQVRFRCBpcyBub3Qgc2V0CkNPTkZJR19S
+RUxBWT15CkNPTkZJR19CTEtfREVWX0lOSVRSRD15CkNPTkZJR19JTklUUkFNRlNfU09VUkNFPSIi
+CkNPTkZJR19SRF9HWklQPXkKQ09ORklHX1JEX0JaSVAyPXkKQ09ORklHX1JEX0xaTUE9eQpDT05G
+SUdfUkRfWFo9eQpDT05GSUdfUkRfTFpPPXkKQ09ORklHX1JEX0xaND15CkNPTkZJR19DQ19PUFRJ
+TUlaRV9GT1JfUEVSRk9STUFOQ0U9eQojIENPTkZJR19DQ19PUFRJTUlaRV9GT1JfU0laRSBpcyBu
+b3Qgc2V0CkNPTkZJR19TWVNDVEw9eQpDT05GSUdfQU5PTl9JTk9ERVM9eQpDT05GSUdfSEFWRV9V
+SUQxNj15CkNPTkZJR19TWVNDVExfRVhDRVBUSU9OX1RSQUNFPXkKQ09ORklHX0hBVkVfUENTUEtS
+X1BMQVRGT1JNPXkKQ09ORklHX0JQRj15CkNPTkZJR19FWFBFUlQ9eQojIENPTkZJR19VSUQxNiBp
+cyBub3Qgc2V0CkNPTkZJR19NVUxUSVVTRVI9eQpDT05GSUdfU0dFVE1BU0tfU1lTQ0FMTD15CkNP
+TkZJR19TWVNGU19TWVNDQUxMPXkKIyBDT05GSUdfU1lTQ1RMX1NZU0NBTEwgaXMgbm90IHNldApD
+T05GSUdfUE9TSVhfVElNRVJTPXkKQ09ORklHX0tBTExTWU1TPXkKQ09ORklHX0tBTExTWU1TX0FM
+TD15CiMgQ09ORklHX0tBTExTWU1TX0FCU09MVVRFX1BFUkNQVSBpcyBub3Qgc2V0CkNPTkZJR19L
+QUxMU1lNU19CQVNFX1JFTEFUSVZFPXkKQ09ORklHX1BSSU5USz15CkNPTkZJR19QUklOVEtfTk1J
+PXkKQ09ORklHX0JVRz15CiMgQ09ORklHX0VMRl9DT1JFIGlzIG5vdCBzZXQKQ09ORklHX1BDU1BL
+Ul9QTEFURk9STT15CkNPTkZJR19CQVNFX0ZVTEw9eQpDT05GSUdfRlVURVg9eQpDT05GSUdfRVBP
+TEw9eQpDT05GSUdfU0lHTkFMRkQ9eQpDT05GSUdfVElNRVJGRD15CiMgQ09ORklHX0VWRU5URkQg
+aXMgbm90IHNldApDT05GSUdfQlBGX1NZU0NBTEw9eQojIENPTkZJR19TSE1FTSBpcyBub3Qgc2V0
+CiMgQ09ORklHX0FJTyBpcyBub3Qgc2V0CiMgQ09ORklHX0FEVklTRV9TWVNDQUxMUyBpcyBub3Qg
+c2V0CkNPTkZJR19VU0VSRkFVTFRGRD15CkNPTkZJR19QQ0lfUVVJUktTPXkKIyBDT05GSUdfTUVN
+QkFSUklFUiBpcyBub3Qgc2V0CkNPTkZJR19FTUJFRERFRD15CkNPTkZJR19IQVZFX1BFUkZfRVZF
+TlRTPXkKIyBDT05GSUdfUEMxMDQgaXMgbm90IHNldAoKIwojIEtlcm5lbCBQZXJmb3JtYW5jZSBF
+dmVudHMgQW5kIENvdW50ZXJzCiMKQ09ORklHX1BFUkZfRVZFTlRTPXkKIyBDT05GSUdfREVCVUdf
+UEVSRl9VU0VfVk1BTExPQyBpcyBub3Qgc2V0CiMgQ09ORklHX1ZNX0VWRU5UX0NPVU5URVJTIGlz
+IG5vdCBzZXQKIyBDT05GSUdfQ09NUEFUX0JSSyBpcyBub3Qgc2V0CkNPTkZJR19TTEFCPXkKIyBD
+T05GSUdfU0xVQiBpcyBub3Qgc2V0CiMgQ09ORklHX1NMT0IgaXMgbm90IHNldApDT05GSUdfU0xB
+Ql9NRVJHRV9ERUZBVUxUPXkKQ09ORklHX1NMQUJfRlJFRUxJU1RfUkFORE9NPXkKIyBDT05GSUdf
+U1lTVEVNX0RBVEFfVkVSSUZJQ0FUSU9OIGlzIG5vdCBzZXQKIyBDT05GSUdfUFJPRklMSU5HIGlz
+IG5vdCBzZXQKQ09ORklHX1RSQUNFUE9JTlRTPXkKQ09ORklHX0hBVkVfT1BST0ZJTEU9eQpDT05G
+SUdfT1BST0ZJTEVfTk1JX1RJTUVSPXkKQ09ORklHX0tQUk9CRVM9eQpDT05GSUdfSlVNUF9MQUJF
+TD15CiMgQ09ORklHX1NUQVRJQ19LRVlTX1NFTEZURVNUIGlzIG5vdCBzZXQKIyBDT05GSUdfVVBS
+T0JFUyBpcyBub3Qgc2V0CiMgQ09ORklHX0hBVkVfNjRCSVRfQUxJR05FRF9BQ0NFU1MgaXMgbm90
+IHNldApDT05GSUdfSEFWRV9FRkZJQ0lFTlRfVU5BTElHTkVEX0FDQ0VTUz15CkNPTkZJR19BUkNI
+X1VTRV9CVUlMVElOX0JTV0FQPXkKQ09ORklHX0tSRVRQUk9CRVM9eQpDT05GSUdfSEFWRV9JT1JF
+TUFQX1BST1Q9eQpDT05GSUdfSEFWRV9LUFJPQkVTPXkKQ09ORklHX0hBVkVfS1JFVFBST0JFUz15
+CkNPTkZJR19IQVZFX09QVFBST0JFUz15CkNPTkZJR19IQVZFX0tQUk9CRVNfT05fRlRSQUNFPXkK
+Q09ORklHX0hBVkVfTk1JPXkKQ09ORklHX0hBVkVfQVJDSF9UUkFDRUhPT0s9eQpDT05GSUdfSEFW
+RV9ETUFfQ09OVElHVU9VUz15CkNPTkZJR19HRU5FUklDX1NNUF9JRExFX1RIUkVBRD15CkNPTkZJ
+R19BUkNIX0hBU19GT1JUSUZZX1NPVVJDRT15CkNPTkZJR19BUkNIX0hBU19TRVRfTUVNT1JZPXkK
+Q09ORklHX0FSQ0hfV0FOVFNfRFlOQU1JQ19UQVNLX1NUUlVDVD15CkNPTkZJR19IQVZFX1JFR1Nf
+QU5EX1NUQUNLX0FDQ0VTU19BUEk9eQpDT05GSUdfSEFWRV9DTEs9eQpDT05GSUdfSEFWRV9ETUFf
+QVBJX0RFQlVHPXkKQ09ORklHX0hBVkVfSFdfQlJFQUtQT0lOVD15CkNPTkZJR19IQVZFX01JWEVE
+X0JSRUFLUE9JTlRTX1JFR1M9eQpDT05GSUdfSEFWRV9VU0VSX1JFVFVSTl9OT1RJRklFUj15CkNP
+TkZJR19IQVZFX1BFUkZfRVZFTlRTX05NST15CkNPTkZJR19IQVZFX0hBUkRMT0NLVVBfREVURUNU
+T1JfUEVSRj15CkNPTkZJR19IQVZFX1BFUkZfUkVHUz15CkNPTkZJR19IQVZFX1BFUkZfVVNFUl9T
+VEFDS19EVU1QPXkKQ09ORklHX0hBVkVfQVJDSF9KVU1QX0xBQkVMPXkKQ09ORklHX0FSQ0hfSEFW
+RV9OTUlfU0FGRV9DTVBYQ0hHPXkKQ09ORklHX0hBVkVfQ01QWENIR19MT0NBTD15CkNPTkZJR19I
+QVZFX0NNUFhDSEdfRE9VQkxFPXkKQ09ORklHX0FSQ0hfV0FOVF9DT01QQVRfSVBDX1BBUlNFX1ZF
+UlNJT049eQpDT05GSUdfQVJDSF9XQU5UX09MRF9DT01QQVRfSVBDPXkKQ09ORklHX0hBVkVfQVJD
+SF9TRUNDT01QX0ZJTFRFUj15CkNPTkZJR19IQVZFX0dDQ19QTFVHSU5TPXkKQ09ORklHX0dDQ19Q
+TFVHSU5TPXkKIyBDT05GSUdfR0NDX1BMVUdJTl9DWUNfQ09NUExFWElUWSBpcyBub3Qgc2V0CkNP
+TkZJR19HQ0NfUExVR0lOX1NBTkNPVj15CkNPTkZJR19HQ0NfUExVR0lOX0xBVEVOVF9FTlRST1BZ
+PXkKQ09ORklHX0dDQ19QTFVHSU5fU1RSVUNUTEVBSz15CiMgQ09ORklHX0dDQ19QTFVHSU5fU1RS
+VUNUTEVBS19WRVJCT1NFIGlzIG5vdCBzZXQKIyBDT05GSUdfR0NDX1BMVUdJTl9SQU5EU1RSVUNU
+IGlzIG5vdCBzZXQKQ09ORklHX0hBVkVfQ0NfU1RBQ0tQUk9URUNUT1I9eQpDT05GSUdfQ0NfU1RB
+Q0tQUk9URUNUT1I9eQojIENPTkZJR19DQ19TVEFDS1BST1RFQ1RPUl9OT05FIGlzIG5vdCBzZXQK
+IyBDT05GSUdfQ0NfU1RBQ0tQUk9URUNUT1JfUkVHVUxBUiBpcyBub3Qgc2V0CkNPTkZJR19DQ19T
+VEFDS1BST1RFQ1RPUl9TVFJPTkc9eQpDT05GSUdfVEhJTl9BUkNISVZFUz15CkNPTkZJR19IQVZF
+X0FSQ0hfV0lUSElOX1NUQUNLX0ZSQU1FUz15CkNPTkZJR19IQVZFX0NPTlRFWFRfVFJBQ0tJTkc9
+eQpDT05GSUdfSEFWRV9WSVJUX0NQVV9BQ0NPVU5USU5HX0dFTj15CkNPTkZJR19IQVZFX0lSUV9U
+SU1FX0FDQ09VTlRJTkc9eQpDT05GSUdfSEFWRV9BUkNIX1RSQU5TUEFSRU5UX0hVR0VQQUdFPXkK
+Q09ORklHX0hBVkVfQVJDSF9UUkFOU1BBUkVOVF9IVUdFUEFHRV9QVUQ9eQpDT05GSUdfSEFWRV9B
+UkNIX0hVR0VfVk1BUD15CkNPTkZJR19IQVZFX0FSQ0hfU09GVF9ESVJUWT15CkNPTkZJR19NT0RV
+TEVTX1VTRV9FTEZfUkVMQT15CkNPTkZJR19IQVZFX0lSUV9FWElUX09OX0lSUV9TVEFDSz15CkNP
+TkZJR19BUkNIX0hBU19FTEZfUkFORE9NSVpFPXkKQ09ORklHX0hBVkVfQVJDSF9NTUFQX1JORF9C
+SVRTPXkKQ09ORklHX0hBVkVfRVhJVF9USFJFQUQ9eQpDT05GSUdfQVJDSF9NTUFQX1JORF9CSVRT
+PTI4CkNPTkZJR19IQVZFX0FSQ0hfTU1BUF9STkRfQ09NUEFUX0JJVFM9eQpDT05GSUdfQVJDSF9N
+TUFQX1JORF9DT01QQVRfQklUUz04CkNPTkZJR19IQVZFX0FSQ0hfQ09NUEFUX01NQVBfQkFTRVM9
+eQpDT05GSUdfSEFWRV9DT1BZX1RIUkVBRF9UTFM9eQpDT05GSUdfSEFWRV9TVEFDS19WQUxJREFU
+SU9OPXkKQ09ORklHX0hBVkVfUkVMSUFCTEVfU1RBQ0tUUkFDRT15CiMgQ09ORklHX0hBVkVfQVJD
+SF9IQVNIIGlzIG5vdCBzZXQKQ09ORklHX0lTQV9CVVNfQVBJPXkKQ09ORklHX09MRF9TSUdTVVNQ
+RU5EMz15CkNPTkZJR19DT01QQVRfT0xEX1NJR0FDVElPTj15CiMgQ09ORklHX0NQVV9OT19FRkZJ
+Q0lFTlRfRkZTIGlzIG5vdCBzZXQKQ09ORklHX0hBVkVfQVJDSF9WTUFQX1NUQUNLPXkKIyBDT05G
+SUdfQVJDSF9PUFRJT05BTF9LRVJORUxfUldYIGlzIG5vdCBzZXQKIyBDT05GSUdfQVJDSF9PUFRJ
+T05BTF9LRVJORUxfUldYX0RFRkFVTFQgaXMgbm90IHNldApDT05GSUdfQVJDSF9IQVNfU1RSSUNU
+X0tFUk5FTF9SV1g9eQpDT05GSUdfU1RSSUNUX0tFUk5FTF9SV1g9eQpDT05GSUdfQVJDSF9IQVNf
+U1RSSUNUX01PRFVMRV9SV1g9eQpDT05GSUdfU1RSSUNUX01PRFVMRV9SV1g9eQpDT05GSUdfUkVG
+Q09VTlRfRlVMTD15CgojCiMgR0NPVi1iYXNlZCBrZXJuZWwgcHJvZmlsaW5nCiMKQ09ORklHX0dD
+T1ZfS0VSTkVMPXkKQ09ORklHX0FSQ0hfSEFTX0dDT1ZfUFJPRklMRV9BTEw9eQojIENPTkZJR19H
+Q09WX1BST0ZJTEVfQUxMIGlzIG5vdCBzZXQKQ09ORklHX0dDT1ZfRk9STUFUX0FVVE9ERVRFQ1Q9
+eQojIENPTkZJR19HQ09WX0ZPUk1BVF8zXzQgaXMgbm90IHNldAojIENPTkZJR19HQ09WX0ZPUk1B
+VF80XzcgaXMgbm90IHNldAojIENPTkZJR19IQVZFX0dFTkVSSUNfRE1BX0NPSEVSRU5UIGlzIG5v
+dCBzZXQKQ09ORklHX1NMQUJJTkZPPXkKQ09ORklHX1JUX01VVEVYRVM9eQpDT05GSUdfQkFTRV9T
+TUFMTD0wCkNPTkZJR19NT0RVTEVTPXkKIyBDT05GSUdfTU9EVUxFX0ZPUkNFX0xPQUQgaXMgbm90
+IHNldAojIENPTkZJR19NT0RVTEVfVU5MT0FEIGlzIG5vdCBzZXQKIyBDT05GSUdfTU9EVkVSU0lP
+TlMgaXMgbm90IHNldAojIENPTkZJR19NT0RVTEVfU1JDVkVSU0lPTl9BTEwgaXMgbm90IHNldAoj
+IENPTkZJR19NT0RVTEVfU0lHIGlzIG5vdCBzZXQKIyBDT05GSUdfTU9EVUxFX0NPTVBSRVNTIGlz
+IG5vdCBzZXQKQ09ORklHX1RSSU1fVU5VU0VEX0tTWU1TPXkKQ09ORklHX01PRFVMRVNfVFJFRV9M
+T09LVVA9eQojIENPTkZJR19CTE9DSyBpcyBub3Qgc2V0CkNPTkZJR19BU04xPXkKQ09ORklHX1VO
+SU5MSU5FX1NQSU5fVU5MT0NLPXkKQ09ORklHX0FSQ0hfU1VQUE9SVFNfQVRPTUlDX1JNVz15CkNP
+TkZJR19BUkNIX1VTRV9RVUVVRURfU1BJTkxPQ0tTPXkKQ09ORklHX0FSQ0hfVVNFX1FVRVVFRF9S
+V0xPQ0tTPXkKQ09ORklHX0ZSRUVaRVI9eQoKIwojIFByb2Nlc3NvciB0eXBlIGFuZCBmZWF0dXJl
+cwojCiMgQ09ORklHX1pPTkVfRE1BIGlzIG5vdCBzZXQKIyBDT05GSUdfU01QIGlzIG5vdCBzZXQK
+Q09ORklHX1g4Nl9GRUFUVVJFX05BTUVTPXkKIyBDT05GSUdfWDg2X0ZBU1RfRkVBVFVSRV9URVNU
+UyBpcyBub3Qgc2V0CkNPTkZJR19YODZfWDJBUElDPXkKIyBDT05GSUdfWDg2X01QUEFSU0UgaXMg
+bm90IHNldAojIENPTkZJR19HT0xERklTSCBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX1JEVF9B
+IGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9FWFRFTkRFRF9QTEFURk9STT15CiMgQ09ORklHX1g4Nl9H
+T0xERklTSCBpcyBub3Qgc2V0CiMgQ09ORklHX1g4Nl9JTlRFTF9NSUQgaXMgbm90IHNldAojIENP
+TkZJR19YODZfSU5URUxfTFBTUyBpcyBub3Qgc2V0CiMgQ09ORklHX1g4Nl9BTURfUExBVEZPUk1f
+REVWSUNFIGlzIG5vdCBzZXQKIyBDT05GSUdfSU9TRl9NQkkgaXMgbm90IHNldAojIENPTkZJR19T
+Q0hFRF9PTUlUX0ZSQU1FX1BPSU5URVIgaXMgbm90IHNldApDT05GSUdfSFlQRVJWSVNPUl9HVUVT
+VD15CkNPTkZJR19QQVJBVklSVD15CiMgQ09ORklHX1BBUkFWSVJUX0RFQlVHIGlzIG5vdCBzZXQK
+Q09ORklHX1hFTj15CiMgQ09ORklHX1hFTl9QViBpcyBub3Qgc2V0CkNPTkZJR19YRU5fUFZIVk09
+eQpDT05GSUdfWEVOX1NBVkVfUkVTVE9SRT15CiMgQ09ORklHX1hFTl9ERUJVR19GUyBpcyBub3Qg
+c2V0CiMgQ09ORklHX1hFTl9QVkggaXMgbm90IHNldApDT05GSUdfS1ZNX0dVRVNUPXkKIyBDT05G
+SUdfS1ZNX0RFQlVHX0ZTIGlzIG5vdCBzZXQKQ09ORklHX1BBUkFWSVJUX1RJTUVfQUNDT1VOVElO
+Rz15CkNPTkZJR19QQVJBVklSVF9DTE9DSz15CkNPTkZJR19OT19CT09UTUVNPXkKIyBDT05GSUdf
+TUs4IGlzIG5vdCBzZXQKIyBDT05GSUdfTVBTQyBpcyBub3Qgc2V0CiMgQ09ORklHX01DT1JFMiBp
+cyBub3Qgc2V0CiMgQ09ORklHX01BVE9NIGlzIG5vdCBzZXQKQ09ORklHX0dFTkVSSUNfQ1BVPXkK
+Q09ORklHX1g4Nl9JTlRFUk5PREVfQ0FDSEVfU0hJRlQ9NgpDT05GSUdfWDg2X0wxX0NBQ0hFX1NI
+SUZUPTYKQ09ORklHX1g4Nl9UU0M9eQpDT05GSUdfWDg2X0NNUFhDSEc2ND15CkNPTkZJR19YODZf
+Q01PVj15CkNPTkZJR19YODZfTUlOSU1VTV9DUFVfRkFNSUxZPTY0CkNPTkZJR19YODZfREVCVUdD
+VExNU1I9eQojIENPTkZJR19QUk9DRVNTT1JfU0VMRUNUIGlzIG5vdCBzZXQKQ09ORklHX0NQVV9T
+VVBfSU5URUw9eQpDT05GSUdfQ1BVX1NVUF9BTUQ9eQpDT05GSUdfQ1BVX1NVUF9DRU5UQVVSPXkK
+Q09ORklHX0hQRVRfVElNRVI9eQojIENPTkZJR19ETUkgaXMgbm90IHNldAojIENPTkZJR19HQVJU
+X0lPTU1VIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0FMR0FSWV9JT01NVSBpcyBub3Qgc2V0CkNPTkZJ
+R19TV0lPVExCPXkKQ09ORklHX0lPTU1VX0hFTFBFUj15CkNPTkZJR19OUl9DUFVTPTEKIyBDT05G
+SUdfUFJFRU1QVF9OT05FIGlzIG5vdCBzZXQKIyBDT05GSUdfUFJFRU1QVF9WT0xVTlRBUlkgaXMg
+bm90IHNldApDT05GSUdfUFJFRU1QVD15CkNPTkZJR19QUkVFTVBUX0NPVU5UPXkKQ09ORklHX1VQ
+X0xBVEVfSU5JVD15CkNPTkZJR19YODZfTE9DQUxfQVBJQz15CkNPTkZJR19YODZfSU9fQVBJQz15
+CkNPTkZJR19YODZfUkVST1VURV9GT1JfQlJPS0VOX0JPT1RfSVJRUz15CiMgQ09ORklHX1g4Nl9N
+Q0UgaXMgbm90IHNldAoKIwojIFBlcmZvcm1hbmNlIG1vbml0b3JpbmcKIwpDT05GSUdfUEVSRl9F
+VkVOVFNfSU5URUxfVU5DT1JFPXkKQ09ORklHX1BFUkZfRVZFTlRTX0lOVEVMX1JBUEw9eQpDT05G
+SUdfUEVSRl9FVkVOVFNfSU5URUxfQ1NUQVRFPXkKIyBDT05GSUdfUEVSRl9FVkVOVFNfQU1EX1BP
+V0VSIGlzIG5vdCBzZXQKIyBDT05GSUdfVk04NiBpcyBub3Qgc2V0CkNPTkZJR19YODZfMTZCSVQ9
+eQpDT05GSUdfWDg2X0VTUEZJWDY0PXkKQ09ORklHX1g4Nl9WU1lTQ0FMTF9FTVVMQVRJT049eQoj
+IENPTkZJR19JOEsgaXMgbm90IHNldApDT05GSUdfTUlDUk9DT0RFPXkKIyBDT05GSUdfTUlDUk9D
+T0RFX0lOVEVMIGlzIG5vdCBzZXQKQ09ORklHX01JQ1JPQ09ERV9BTUQ9eQpDT05GSUdfTUlDUk9D
+T0RFX09MRF9JTlRFUkZBQ0U9eQpDT05GSUdfWDg2X01TUj1tCkNPTkZJR19YODZfQ1BVSUQ9bQpD
+T05GSUdfQVJDSF9QSFlTX0FERFJfVF82NEJJVD15CkNPTkZJR19BUkNIX0RNQV9BRERSX1RfNjRC
+SVQ9eQpDT05GSUdfWDg2X0RJUkVDVF9HQlBBR0VTPXkKQ09ORklHX0FSQ0hfSEFTX01FTV9FTkNS
+WVBUPXkKQ09ORklHX0FNRF9NRU1fRU5DUllQVD15CkNPTkZJR19BTURfTUVNX0VOQ1JZUFRfQUNU
+SVZFX0JZX0RFRkFVTFQ9eQpDT05GSUdfQVJDSF9TUEFSU0VNRU1fRU5BQkxFPXkKQ09ORklHX0FS
+Q0hfU1BBUlNFTUVNX0RFRkFVTFQ9eQpDT05GSUdfQVJDSF9TRUxFQ1RfTUVNT1JZX01PREVMPXkK
+IyBDT05GSUdfQVJDSF9NRU1PUllfUFJPQkUgaXMgbm90IHNldApDT05GSUdfSUxMRUdBTF9QT0lO
+VEVSX1ZBTFVFPTB4ZGVhZDAwMDAwMDAwMDAwMApDT05GSUdfU0VMRUNUX01FTU9SWV9NT0RFTD15
+CkNPTkZJR19TUEFSU0VNRU1fTUFOVUFMPXkKQ09ORklHX1NQQVJTRU1FTT15CkNPTkZJR19IQVZF
+X01FTU9SWV9QUkVTRU5UPXkKQ09ORklHX1NQQVJTRU1FTV9FWFRSRU1FPXkKQ09ORklHX1NQQVJT
+RU1FTV9WTUVNTUFQX0VOQUJMRT15CkNPTkZJR19TUEFSU0VNRU1fQUxMT0NfTUVNX01BUF9UT0dF
+VEhFUj15CkNPTkZJR19TUEFSU0VNRU1fVk1FTU1BUD15CkNPTkZJR19IQVZFX01FTUJMT0NLPXkK
+Q09ORklHX0hBVkVfTUVNQkxPQ0tfTk9ERV9NQVA9eQpDT05GSUdfSEFWRV9HRU5FUklDX0dVUD15
+CkNPTkZJR19BUkNIX0RJU0NBUkRfTUVNQkxPQ0s9eQpDT05GSUdfTUVNT1JZX0lTT0xBVElPTj15
+CkNPTkZJR19IQVZFX0JPT1RNRU1fSU5GT19OT0RFPXkKQ09ORklHX01FTU9SWV9IT1RQTFVHPXkK
+Q09ORklHX01FTU9SWV9IT1RQTFVHX1NQQVJTRT15CkNPTkZJR19NRU1PUllfSE9UUExVR19ERUZB
+VUxUX09OTElORT15CkNPTkZJR19NRU1PUllfSE9UUkVNT1ZFPXkKQ09ORklHX1NQTElUX1BUTE9D
+S19DUFVTPTQKQ09ORklHX0FSQ0hfRU5BQkxFX1NQTElUX1BNRF9QVExPQ0s9eQpDT05GSUdfTUVN
+T1JZX0JBTExPT049eQpDT05GSUdfQkFMTE9PTl9DT01QQUNUSU9OPXkKQ09ORklHX0NPTVBBQ1RJ
+T049eQpDT05GSUdfTUlHUkFUSU9OPXkKQ09ORklHX1BIWVNfQUREUl9UXzY0QklUPXkKQ09ORklH
+X1ZJUlRfVE9fQlVTPXkKQ09ORklHX01NVV9OT1RJRklFUj15CkNPTkZJR19LU009eQpDT05GSUdf
+REVGQVVMVF9NTUFQX01JTl9BRERSPTQwOTYKIyBDT05GSUdfVFJBTlNQQVJFTlRfSFVHRVBBR0Ug
+aXMgbm90IHNldApDT05GSUdfQVJDSF9XQU5UU19USFBfU1dBUD15CkNPTkZJR19ORUVEX1BFUl9D
+UFVfS009eQpDT05GSUdfQ0xFQU5DQUNIRT15CkNPTkZJR19DTUE9eQpDT05GSUdfQ01BX0RFQlVH
+PXkKQ09ORklHX0NNQV9ERUJVR0ZTPXkKQ09ORklHX0NNQV9BUkVBUz03CkNPTkZJR19aUE9PTD1t
+CkNPTkZJR19aQlVEPXkKIyBDT05GSUdfWjNGT0xEIGlzIG5vdCBzZXQKQ09ORklHX1pTTUFMTE9D
+PXkKQ09ORklHX1BHVEFCTEVfTUFQUElORz15CiMgQ09ORklHX1pTTUFMTE9DX1NUQVQgaXMgbm90
+IHNldApDT05GSUdfR0VORVJJQ19FQVJMWV9JT1JFTUFQPXkKQ09ORklHX0FSQ0hfU1VQUE9SVFNf
+REVGRVJSRURfU1RSVUNUX1BBR0VfSU5JVD15CkNPTkZJR19ERUZFUlJFRF9TVFJVQ1RfUEFHRV9J
+TklUPXkKQ09ORklHX0lETEVfUEFHRV9UUkFDS0lORz15CkNPTkZJR19BUkNIX0hBU19aT05FX0RF
+VklDRT15CiMgQ09ORklHX1pPTkVfREVWSUNFIGlzIG5vdCBzZXQKQ09ORklHX0ZSQU1FX1ZFQ1RP
+Uj15CkNPTkZJR19BUkNIX1VTRVNfSElHSF9WTUFfRkxBR1M9eQpDT05GSUdfQVJDSF9IQVNfUEtF
+WVM9eQpDT05GSUdfUEVSQ1BVX1NUQVRTPXkKQ09ORklHX1g4Nl9DSEVDS19CSU9TX0NPUlJVUFRJ
+T049eQpDT05GSUdfWDg2X0JPT1RQQVJBTV9NRU1PUllfQ09SUlVQVElPTl9DSEVDSz15CkNPTkZJ
+R19YODZfUkVTRVJWRV9MT1c9NjQKQ09ORklHX01UUlI9eQpDT05GSUdfTVRSUl9TQU5JVElaRVI9
+eQpDT05GSUdfTVRSUl9TQU5JVElaRVJfRU5BQkxFX0RFRkFVTFQ9MApDT05GSUdfTVRSUl9TQU5J
+VElaRVJfU1BBUkVfUkVHX05SX0RFRkFVTFQ9MQpDT05GSUdfWDg2X1BBVD15CkNPTkZJR19BUkNI
+X1VTRVNfUEdfVU5DQUNIRUQ9eQojIENPTkZJR19BUkNIX1JBTkRPTSBpcyBub3Qgc2V0CiMgQ09O
+RklHX1g4Nl9TTUFQIGlzIG5vdCBzZXQKIyBDT05GSUdfWDg2X0lOVEVMX01QWCBpcyBub3Qgc2V0
+CkNPTkZJR19YODZfSU5URUxfTUVNT1JZX1BST1RFQ1RJT05fS0VZUz15CiMgQ09ORklHX0VGSSBp
+cyBub3Qgc2V0CiMgQ09ORklHX1NFQ0NPTVAgaXMgbm90IHNldAojIENPTkZJR19IWl8xMDAgaXMg
+bm90IHNldApDT05GSUdfSFpfMjUwPXkKIyBDT05GSUdfSFpfMzAwIGlzIG5vdCBzZXQKIyBDT05G
+SUdfSFpfMTAwMCBpcyBub3Qgc2V0CkNPTkZJR19IWj0yNTAKQ09ORklHX1NDSEVEX0hSVElDSz15
+CiMgQ09ORklHX0tFWEVDIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VYRUNfRklMRSBpcyBub3Qgc2V0
+CiMgQ09ORklHX0NSQVNIX0RVTVAgaXMgbm90IHNldApDT05GSUdfUEhZU0lDQUxfU1RBUlQ9MHgx
+MDAwMDAwCiMgQ09ORklHX1JFTE9DQVRBQkxFIGlzIG5vdCBzZXQKQ09ORklHX1BIWVNJQ0FMX0FM
+SUdOPTB4MjAwMDAwCiMgQ09ORklHX0NPTVBBVF9WRFNPIGlzIG5vdCBzZXQKIyBDT05GSUdfTEVH
+QUNZX1ZTWVNDQUxMX05BVElWRSBpcyBub3Qgc2V0CkNPTkZJR19MRUdBQ1lfVlNZU0NBTExfRU1V
+TEFURT15CiMgQ09ORklHX0xFR0FDWV9WU1lTQ0FMTF9OT05FIGlzIG5vdCBzZXQKIyBDT05GSUdf
+Q01ETElORV9CT09MIGlzIG5vdCBzZXQKQ09ORklHX01PRElGWV9MRFRfU1lTQ0FMTD15CkNPTkZJ
+R19IQVZFX0xJVkVQQVRDSD15CkNPTkZJR19BUkNIX0VOQUJMRV9NRU1PUllfSE9UUExVRz15CkNP
+TkZJR19BUkNIX0VOQUJMRV9NRU1PUllfSE9UUkVNT1ZFPXkKCiMKIyBQb3dlciBtYW5hZ2VtZW50
+IGFuZCBBQ1BJIG9wdGlvbnMKIwojIENPTkZJR19TVVNQRU5EIGlzIG5vdCBzZXQKQ09ORklHX0hJ
+QkVSTkFURV9DQUxMQkFDS1M9eQpDT05GSUdfUE1fU0xFRVA9eQojIENPTkZJR19QTV9BVVRPU0xF
+RVAgaXMgbm90IHNldAojIENPTkZJR19QTV9XQUtFTE9DS1MgaXMgbm90IHNldApDT05GSUdfUE09
+eQpDT05GSUdfUE1fREVCVUc9eQpDT05GSUdfUE1fQURWQU5DRURfREVCVUc9eQpDT05GSUdfUE1f
+U0xFRVBfREVCVUc9eQojIENPTkZJR19EUE1fV0FUQ0hET0cgaXMgbm90IHNldAojIENPTkZJR19Q
+TV9UUkFDRV9SVEMgaXMgbm90IHNldApDT05GSUdfUE1fQ0xLPXkKIyBDT05GSUdfV1FfUE9XRVJf
+RUZGSUNJRU5UX0RFRkFVTFQgaXMgbm90IHNldApDT05GSUdfQUNQST15CkNPTkZJR19BQ1BJX0xF
+R0FDWV9UQUJMRVNfTE9PS1VQPXkKQ09ORklHX0FSQ0hfTUlHSFRfSEFWRV9BQ1BJX1BEQz15CkNP
+TkZJR19BQ1BJX1NZU1RFTV9QT1dFUl9TVEFURVNfU1VQUE9SVD15CiMgQ09ORklHX0FDUElfREVC
+VUdHRVIgaXMgbm90IHNldAojIENPTkZJR19BQ1BJX1BST0NGU19QT1dFUiBpcyBub3Qgc2V0CkNP
+TkZJR19BQ1BJX1JFVl9PVkVSUklERV9QT1NTSUJMRT15CiMgQ09ORklHX0FDUElfRUNfREVCVUdG
+UyBpcyBub3Qgc2V0CkNPTkZJR19BQ1BJX0FDPXkKQ09ORklHX0FDUElfQkFUVEVSWT15CkNPTkZJ
+R19BQ1BJX0JVVFRPTj15CiMgQ09ORklHX0FDUElfVklERU8gaXMgbm90IHNldApDT05GSUdfQUNQ
+SV9GQU49eQojIENPTkZJR19BQ1BJX0RPQ0sgaXMgbm90IHNldApDT05GSUdfQUNQSV9DUFVfRlJF
+UV9QU1M9eQpDT05GSUdfQUNQSV9QUk9DRVNTT1JfQ1NUQVRFPXkKQ09ORklHX0FDUElfUFJPQ0VT
+U09SX0lETEU9eQpDT05GSUdfQUNQSV9QUk9DRVNTT1I9eQojIENPTkZJR19BQ1BJX0lQTUkgaXMg
+bm90IHNldAojIENPTkZJR19BQ1BJX1BST0NFU1NPUl9BR0dSRUdBVE9SIGlzIG5vdCBzZXQKQ09O
+RklHX0FDUElfVEhFUk1BTD15CkNPTkZJR19BQ1BJX0NVU1RPTV9EU0RUX0ZJTEU9IiIKIyBDT05G
+SUdfQUNQSV9DVVNUT01fRFNEVCBpcyBub3Qgc2V0CkNPTkZJR19BUkNIX0hBU19BQ1BJX1RBQkxF
+X1VQR1JBREU9eQpDT05GSUdfQUNQSV9UQUJMRV9VUEdSQURFPXkKIyBDT05GSUdfQUNQSV9ERUJV
+RyBpcyBub3Qgc2V0CiMgQ09ORklHX0FDUElfUENJX1NMT1QgaXMgbm90IHNldApDT05GSUdfWDg2
+X1BNX1RJTUVSPXkKIyBDT05GSUdfQUNQSV9DT05UQUlORVIgaXMgbm90IHNldAojIENPTkZJR19B
+Q1BJX0hPVFBMVUdfTUVNT1JZIGlzIG5vdCBzZXQKQ09ORklHX0FDUElfSE9UUExVR19JT0FQSUM9
+eQojIENPTkZJR19BQ1BJX1NCUyBpcyBub3Qgc2V0CiMgQ09ORklHX0FDUElfSEVEIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfQUNQSV9DVVNUT01fTUVUSE9EIGlzIG5vdCBzZXQKIyBDT05GSUdfQUNQSV9S
+RURVQ0VEX0hBUkRXQVJFX09OTFkgaXMgbm90IHNldApDT05GSUdfSEFWRV9BQ1BJX0FQRUk9eQpD
+T05GSUdfSEFWRV9BQ1BJX0FQRUlfTk1JPXkKIyBDT05GSUdfQUNQSV9BUEVJIGlzIG5vdCBzZXQK
+IyBDT05GSUdfRFBURl9QT1dFUiBpcyBub3Qgc2V0CiMgQ09ORklHX1BNSUNfT1BSRUdJT04gaXMg
+bm90IHNldAojIENPTkZJR19BQ1BJX0NPTkZJR0ZTIGlzIG5vdCBzZXQKQ09ORklHX1NGST15Cgoj
+CiMgQ1BVIEZyZXF1ZW5jeSBzY2FsaW5nCiMKQ09ORklHX0NQVV9GUkVRPXkKQ09ORklHX0NQVV9G
+UkVRX0dPVl9BVFRSX1NFVD15CkNPTkZJR19DUFVfRlJFUV9HT1ZfQ09NTU9OPXkKQ09ORklHX0NQ
+VV9GUkVRX1NUQVQ9eQpDT05GSUdfQ1BVX0ZSRVFfREVGQVVMVF9HT1ZfUEVSRk9STUFOQ0U9eQoj
+IENPTkZJR19DUFVfRlJFUV9ERUZBVUxUX0dPVl9QT1dFUlNBVkUgaXMgbm90IHNldAojIENPTkZJ
+R19DUFVfRlJFUV9ERUZBVUxUX0dPVl9VU0VSU1BBQ0UgaXMgbm90IHNldAojIENPTkZJR19DUFVf
+RlJFUV9ERUZBVUxUX0dPVl9PTkRFTUFORCBpcyBub3Qgc2V0CiMgQ09ORklHX0NQVV9GUkVRX0RF
+RkFVTFRfR09WX0NPTlNFUlZBVElWRSBpcyBub3Qgc2V0CkNPTkZJR19DUFVfRlJFUV9HT1ZfUEVS
+Rk9STUFOQ0U9eQpDT05GSUdfQ1BVX0ZSRVFfR09WX1BPV0VSU0FWRT15CiMgQ09ORklHX0NQVV9G
+UkVRX0dPVl9VU0VSU1BBQ0UgaXMgbm90IHNldApDT05GSUdfQ1BVX0ZSRVFfR09WX09OREVNQU5E
+PW0KIyBDT05GSUdfQ1BVX0ZSRVFfR09WX0NPTlNFUlZBVElWRSBpcyBub3Qgc2V0CgojCiMgQ1BV
+IGZyZXF1ZW5jeSBzY2FsaW5nIGRyaXZlcnMKIwojIENPTkZJR19DUFVGUkVRX0RUIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfWDg2X0lOVEVMX1BTVEFURSBpcyBub3Qgc2V0CiMgQ09ORklHX1g4Nl9QQ0Nf
+Q1BVRlJFUSBpcyBub3Qgc2V0CiMgQ09ORklHX1g4Nl9BQ1BJX0NQVUZSRVEgaXMgbm90IHNldAoj
+IENPTkZJR19YODZfU1BFRURTVEVQX0NFTlRSSU5PIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9QNF9D
+TE9DS01PRD15CgojCiMgc2hhcmVkIG9wdGlvbnMKIwpDT05GSUdfWDg2X1NQRUVEU1RFUF9MSUI9
+eQoKIwojIENQVSBJZGxlCiMKQ09ORklHX0NQVV9JRExFPXkKQ09ORklHX0NQVV9JRExFX0dPVl9M
+QURERVI9eQpDT05GSUdfQ1BVX0lETEVfR09WX01FTlU9eQojIENPTkZJR19BUkNIX05FRURTX0NQ
+VV9JRExFX0NPVVBMRUQgaXMgbm90IHNldAojIENPTkZJR19JTlRFTF9JRExFIGlzIG5vdCBzZXQK
+CiMKIyBCdXMgb3B0aW9ucyAoUENJIGV0Yy4pCiMKQ09ORklHX1BDST15CkNPTkZJR19QQ0lfRElS
+RUNUPXkKIyBDT05GSUdfUENJX01NQ09ORklHIGlzIG5vdCBzZXQKQ09ORklHX1BDSV9YRU49eQpD
+T05GSUdfUENJX0RPTUFJTlM9eQojIENPTkZJR19QQ0lfQ05CMjBMRV9RVUlSSyBpcyBub3Qgc2V0
+CiMgQ09ORklHX1BDSUVQT1JUQlVTIGlzIG5vdCBzZXQKQ09ORklHX1BDSV9CVVNfQUREUl9UXzY0
+QklUPXkKIyBDT05GSUdfUENJX01TSSBpcyBub3Qgc2V0CiMgQ09ORklHX1BDSV9ERUJVRyBpcyBu
+b3Qgc2V0CiMgQ09ORklHX1BDSV9SRUFMTE9DX0VOQUJMRV9BVVRPIGlzIG5vdCBzZXQKIyBDT05G
+SUdfUENJX1NUVUIgaXMgbm90IHNldApDT05GSUdfWEVOX1BDSURFVl9GUk9OVEVORD15CkNPTkZJ
+R19IVF9JUlE9eQpDT05GSUdfUENJX0xPQ0tMRVNTX0NPTkZJRz15CiMgQ09ORklHX1BDSV9JT1Yg
+aXMgbm90IHNldAojIENPTkZJR19QQ0lfUFJJIGlzIG5vdCBzZXQKIyBDT05GSUdfUENJX1BBU0lE
+IGlzIG5vdCBzZXQKQ09ORklHX1BDSV9MQUJFTD15CiMgQ09ORklHX0hPVFBMVUdfUENJIGlzIG5v
+dCBzZXQKCiMKIyBEZXNpZ25XYXJlIFBDSSBDb3JlIFN1cHBvcnQKIwoKIwojIFBDSSBob3N0IGNv
+bnRyb2xsZXIgZHJpdmVycwojCgojCiMgUENJIEVuZHBvaW50CiMKQ09ORklHX1BDSV9FTkRQT0lO
+VD15CiMgQ09ORklHX1BDSV9FTkRQT0lOVF9DT05GSUdGUyBpcyBub3Qgc2V0CkNPTkZJR19QQ0lf
+RVBGX1RFU1Q9bQoKIwojIFBDSSBzd2l0Y2ggY29udHJvbGxlciBkcml2ZXJzCiMKIyBDT05GSUdf
+UENJX1NXX1NXSVRDSFRFQyBpcyBub3Qgc2V0CkNPTkZJR19JU0FfQlVTPXkKIyBDT05GSUdfSVNB
+X0RNQV9BUEkgaXMgbm90IHNldApDT05GSUdfQU1EX05CPXkKQ09ORklHX1BDQ0FSRD15CkNPTkZJ
+R19QQ01DSUE9eQojIENPTkZJR19QQ01DSUFfTE9BRF9DSVMgaXMgbm90IHNldApDT05GSUdfQ0FS
+REJVUz15CgojCiMgUEMtY2FyZCBicmlkZ2VzCiMKIyBDT05GSUdfWUVOVEEgaXMgbm90IHNldAoj
+IENPTkZJR19QRDY3MjkgaXMgbm90IHNldAojIENPTkZJR19JODIwOTIgaXMgbm90IHNldAojIENP
+TkZJR19SQVBJRElPIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9TWVNGQj15CgojCiMgRXhlY3V0YWJs
+ZSBmaWxlIGZvcm1hdHMgLyBFbXVsYXRpb25zCiMKQ09ORklHX0JJTkZNVF9FTEY9eQpDT05GSUdf
+Q09NUEFUX0JJTkZNVF9FTEY9eQpDT05GSUdfRUxGQ09SRT15CkNPTkZJR19CSU5GTVRfU0NSSVBU
+PXkKIyBDT05GSUdfSEFWRV9BT1VUIGlzIG5vdCBzZXQKQ09ORklHX0JJTkZNVF9NSVNDPW0KQ09O
+RklHX0NPUkVEVU1QPXkKQ09ORklHX0lBMzJfRU1VTEFUSU9OPXkKIyBDT05GSUdfSUEzMl9BT1VU
+IGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9YMzI9eQpDT05GSUdfQ09NUEFUXzMyPXkKQ09ORklHX0NP
+TVBBVD15CkNPTkZJR19DT01QQVRfRk9SX1U2NF9BTElHTk1FTlQ9eQpDT05GSUdfWDg2X0RFVl9E
+TUFfT1BTPXkKQ09ORklHX05FVD15CgojCiMgTmV0d29ya2luZyBvcHRpb25zCiMKIyBDT05GSUdf
+UEFDS0VUIGlzIG5vdCBzZXQKQ09ORklHX1VOSVg9eQojIENPTkZJR19VTklYX0RJQUcgaXMgbm90
+IHNldAojIENPTkZJR19ORVRfS0VZIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5FVCBpcyBub3Qgc2V0
+CiMgQ09ORklHX05FVFdPUktfU0VDTUFSSyBpcyBub3Qgc2V0CiMgQ09ORklHX05FVF9QVFBfQ0xB
+U1NJRlkgaXMgbm90IHNldAojIENPTkZJR19ORVRXT1JLX1BIWV9USU1FU1RBTVBJTkcgaXMgbm90
+IHNldAojIENPTkZJR19ORVRGSUxURVIgaXMgbm90IHNldAojIENPTkZJR19BVE0gaXMgbm90IHNl
+dAojIENPTkZJR19CUklER0UgaXMgbm90IHNldAojIENPTkZJR19WTEFOXzgwMjFRIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfREVDTkVUIGlzIG5vdCBzZXQKIyBDT05GSUdfTExDMiBpcyBub3Qgc2V0CiMg
+Q09ORklHX0lQWCBpcyBub3Qgc2V0CiMgQ09ORklHX0FUQUxLIGlzIG5vdCBzZXQKIyBDT05GSUdf
+WDI1IGlzIG5vdCBzZXQKIyBDT05GSUdfTEFQQiBpcyBub3Qgc2V0CiMgQ09ORklHX1BIT05FVCBp
+cyBub3Qgc2V0CiMgQ09ORklHX0lFRUU4MDIxNTQgaXMgbm90IHNldAojIENPTkZJR19ORVRfU0NI
+RUQgaXMgbm90IHNldAojIENPTkZJR19EQ0IgaXMgbm90IHNldAojIENPTkZJR19ETlNfUkVTT0xW
+RVIgaXMgbm90IHNldAojIENPTkZJR19CQVRNQU5fQURWIGlzIG5vdCBzZXQKIyBDT05GSUdfVlNP
+Q0tFVFMgaXMgbm90IHNldAojIENPTkZJR19ORVRMSU5LX0RJQUcgaXMgbm90IHNldAojIENPTkZJ
+R19NUExTIGlzIG5vdCBzZXQKIyBDT05GSUdfSFNSIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0dST1VQ
+X05FVF9QUklPIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0dST1VQX05FVF9DTEFTU0lEIGlzIG5vdCBz
+ZXQKQ09ORklHX05FVF9SWF9CVVNZX1BPTEw9eQpDT05GSUdfQlFMPXkKIyBDT05GSUdfQlBGX0pJ
+VCBpcyBub3Qgc2V0CgojCiMgTmV0d29yayB0ZXN0aW5nCiMKIyBDT05GSUdfSEFNUkFESU8gaXMg
+bm90IHNldAojIENPTkZJR19DQU4gaXMgbm90IHNldAojIENPTkZJR19JUkRBIGlzIG5vdCBzZXQK
+IyBDT05GSUdfQlQgaXMgbm90IHNldAojIENPTkZJR19TVFJFQU1fUEFSU0VSIGlzIG5vdCBzZXQK
+Q09ORklHX1dJUkVMRVNTPXkKIyBDT05GSUdfQ0ZHODAyMTEgaXMgbm90IHNldAojIENPTkZJR19M
+SUI4MDIxMSBpcyBub3Qgc2V0CgojCiMgQ0ZHODAyMTEgbmVlZHMgdG8gYmUgZW5hYmxlZCBmb3Ig
+TUFDODAyMTEKIwpDT05GSUdfTUFDODAyMTFfU1RBX0hBU0hfTUFYX1NJWkU9MAojIENPTkZJR19X
+SU1BWCBpcyBub3Qgc2V0CiMgQ09ORklHX1JGS0lMTCBpcyBub3Qgc2V0CiMgQ09ORklHX05FVF85
+UCBpcyBub3Qgc2V0CiMgQ09ORklHX0NBSUYgaXMgbm90IHNldAojIENPTkZJR19ORkMgaXMgbm90
+IHNldAojIENPTkZJR19QU0FNUExFIGlzIG5vdCBzZXQKIyBDT05GSUdfTkVUX0lGRSBpcyBub3Qg
+c2V0CiMgQ09ORklHX0xXVFVOTkVMIGlzIG5vdCBzZXQKIyBDT05GSUdfRFNUX0NBQ0hFIGlzIG5v
+dCBzZXQKIyBDT05GSUdfR1JPX0NFTExTIGlzIG5vdCBzZXQKIyBDT05GSUdfTkVUX0RFVkxJTksg
+aXMgbm90IHNldApDT05GSUdfTUFZX1VTRV9ERVZMSU5LPXkKQ09ORklHX0hBVkVfRUJQRl9KSVQ9
+eQoKIwojIERldmljZSBEcml2ZXJzCiMKCiMKIyBHZW5lcmljIERyaXZlciBPcHRpb25zCiMKIyBD
+T05GSUdfVUVWRU5UX0hFTFBFUiBpcyBub3Qgc2V0CkNPTkZJR19ERVZUTVBGUz15CkNPTkZJR19E
+RVZUTVBGU19NT1VOVD15CiMgQ09ORklHX1NUQU5EQUxPTkUgaXMgbm90IHNldApDT05GSUdfUFJF
+VkVOVF9GSVJNV0FSRV9CVUlMRD15CkNPTkZJR19GV19MT0FERVI9eQojIENPTkZJR19GSVJNV0FS
+RV9JTl9LRVJORUwgaXMgbm90IHNldApDT05GSUdfRVhUUkFfRklSTVdBUkU9IiIKQ09ORklHX0ZX
+X0xPQURFUl9VU0VSX0hFTFBFUj15CiMgQ09ORklHX0ZXX0xPQURFUl9VU0VSX0hFTFBFUl9GQUxM
+QkFDSyBpcyBub3Qgc2V0CkNPTkZJR19BTExPV19ERVZfQ09SRURVTVA9eQojIENPTkZJR19ERUJV
+R19EUklWRVIgaXMgbm90IHNldApDT05GSUdfREVCVUdfREVWUkVTPXkKIyBDT05GSUdfREVCVUdf
+VEVTVF9EUklWRVJfUkVNT1ZFIGlzIG5vdCBzZXQKIyBDT05GSUdfVEVTVF9BU1lOQ19EUklWRVJf
+UFJPQkUgaXMgbm90IHNldAojIENPTkZJR19TWVNfSFlQRVJWSVNPUiBpcyBub3Qgc2V0CiMgQ09O
+RklHX0dFTkVSSUNfQ1BVX0RFVklDRVMgaXMgbm90IHNldApDT05GSUdfR0VORVJJQ19DUFVfQVVU
+T1BST0JFPXkKQ09ORklHX1JFR01BUD15CkNPTkZJR19SRUdNQVBfSTJDPXkKQ09ORklHX1JFR01B
+UF9TUEk9eQpDT05GSUdfUkVHTUFQX1NQTUk9bQpDT05GSUdfUkVHTUFQX01NSU89eQpDT05GSUdf
+UkVHTUFQX0lSUT15CkNPTkZJR19ETUFfU0hBUkVEX0JVRkZFUj15CiMgQ09ORklHX0RNQV9GRU5D
+RV9UUkFDRSBpcyBub3Qgc2V0CkNPTkZJR19ETUFfQ01BPXkKCiMKIyBEZWZhdWx0IGNvbnRpZ3Vv
+dXMgbWVtb3J5IGFyZWEgc2l6ZToKIwpDT05GSUdfQ01BX1NJWkVfTUJZVEVTPTAKQ09ORklHX0NN
+QV9TSVpFX1NFTF9NQllURVM9eQojIENPTkZJR19DTUFfU0laRV9TRUxfUEVSQ0VOVEFHRSBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0NNQV9TSVpFX1NFTF9NSU4gaXMgbm90IHNldAojIENPTkZJR19DTUFf
+U0laRV9TRUxfTUFYIGlzIG5vdCBzZXQKQ09ORklHX0NNQV9BTElHTk1FTlQ9OAoKIwojIEJ1cyBk
+ZXZpY2VzCiMKIyBDT05GSUdfU0lNUExFX1BNX0JVUyBpcyBub3Qgc2V0CiMgQ09ORklHX0NPTk5F
+Q1RPUiBpcyBub3Qgc2V0CiMgQ09ORklHX01URCBpcyBub3Qgc2V0CkNPTkZJR19PRj15CiMgQ09O
+RklHX09GX1VOSVRURVNUIGlzIG5vdCBzZXQKQ09ORklHX09GX0FERFJFU1M9eQpDT05GSUdfT0Zf
+QUREUkVTU19QQ0k9eQpDT05GSUdfT0ZfSVJRPXkKQ09ORklHX09GX1BDST15CkNPTkZJR19PRl9Q
+Q0lfSVJRPXkKIyBDT05GSUdfT0ZfT1ZFUkxBWSBpcyBub3Qgc2V0CkNPTkZJR19BUkNIX01JR0hU
+X0hBVkVfUENfUEFSUE9SVD15CiMgQ09ORklHX1BBUlBPUlQgaXMgbm90IHNldApDT05GSUdfUE5Q
+PXkKQ09ORklHX1BOUF9ERUJVR19NRVNTQUdFUz15CgojCiMgUHJvdG9jb2xzCiMKQ09ORklHX1BO
+UEFDUEk9eQoKIwojIE1pc2MgZGV2aWNlcwojCiMgQ09ORklHX1NFTlNPUlNfTElTM0xWMDJEIGlz
+IG5vdCBzZXQKQ09ORklHX0FENTI1WF9EUE9UPW0KQ09ORklHX0FENTI1WF9EUE9UX0kyQz1tCkNP
+TkZJR19BRDUyNVhfRFBPVF9TUEk9bQojIENPTkZJR19EVU1NWV9JUlEgaXMgbm90IHNldAojIENP
+TkZJR19JQk1fQVNNIGlzIG5vdCBzZXQKIyBDT05GSUdfUEhBTlRPTSBpcyBub3Qgc2V0CiMgQ09O
+RklHX1NHSV9JT0M0IGlzIG5vdCBzZXQKIyBDT05GSUdfVElGTV9DT1JFIGlzIG5vdCBzZXQKQ09O
+RklHX0lDUzkzMlM0MDE9eQpDT05GSUdfRU5DTE9TVVJFX1NFUlZJQ0VTPXkKIyBDT05GSUdfSFBf
+SUxPIGlzIG5vdCBzZXQKQ09ORklHX0FQRFM5ODAyQUxTPW0KQ09ORklHX0lTTDI5MDAzPW0KQ09O
+RklHX0lTTDI5MDIwPXkKIyBDT05GSUdfU0VOU09SU19UU0wyNTUwIGlzIG5vdCBzZXQKIyBDT05G
+SUdfU0VOU09SU19CSDE3NzAgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19BUERTOTkwWD1tCiMg
+Q09ORklHX0hNQzYzNTIgaXMgbm90IHNldApDT05GSUdfRFMxNjgyPXkKQ09ORklHX1RJX0RBQzc1
+MTI9eQpDT05GSUdfVVNCX1NXSVRDSF9GU0E5NDgwPW0KIyBDT05GSUdfTEFUVElDRV9FQ1AzX0NP
+TkZJRyBpcyBub3Qgc2V0CiMgQ09ORklHX1NSQU0gaXMgbm90IHNldAojIENPTkZJR19QQ0lfRU5E
+UE9JTlRfVEVTVCBpcyBub3Qgc2V0CiMgQ09ORklHX0MyUE9SVCBpcyBub3Qgc2V0CgojCiMgRUVQ
+Uk9NIHN1cHBvcnQKIwpDT05GSUdfRUVQUk9NX0FUMjQ9bQpDT05GSUdfRUVQUk9NX0FUMjU9bQpD
+T05GSUdfRUVQUk9NX0xFR0FDWT1tCkNPTkZJR19FRVBST01fTUFYNjg3NT1tCkNPTkZJR19FRVBS
+T01fOTNDWDY9bQpDT05GSUdfRUVQUk9NXzkzWFg0Nj15CiMgQ09ORklHX0VFUFJPTV9JRFRfODlI
+UEVTWCBpcyBub3Qgc2V0CiMgQ09ORklHX0NCNzEwX0NPUkUgaXMgbm90IHNldAoKIwojIFRleGFz
+IEluc3RydW1lbnRzIHNoYXJlZCB0cmFuc3BvcnQgbGluZSBkaXNjaXBsaW5lCiMKIyBDT05GSUdf
+VElfU1QgaXMgbm90IHNldAojIENPTkZJR19TRU5TT1JTX0xJUzNfSTJDIGlzIG5vdCBzZXQKCiMK
+IyBBbHRlcmEgRlBHQSBmaXJtd2FyZSBkb3dubG9hZCBtb2R1bGUKIwpDT05GSUdfQUxURVJBX1NU
+QVBMPXkKIyBDT05GSUdfSU5URUxfTUVJIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5URUxfTUVJX01F
+IGlzIG5vdCBzZXQKIyBDT05GSUdfSU5URUxfTUVJX1RYRSBpcyBub3Qgc2V0CiMgQ09ORklHX1ZN
+V0FSRV9WTUNJIGlzIG5vdCBzZXQKCiMKIyBJbnRlbCBNSUMgQnVzIERyaXZlcgojCiMgQ09ORklH
+X0lOVEVMX01JQ19CVVMgaXMgbm90IHNldAoKIwojIFNDSUYgQnVzIERyaXZlcgojCiMgQ09ORklH
+X1NDSUZfQlVTIGlzIG5vdCBzZXQKCiMKIyBWT1AgQnVzIERyaXZlcgojCiMgQ09ORklHX1ZPUF9C
+VVMgaXMgbm90IHNldAoKIwojIEludGVsIE1JQyBIb3N0IERyaXZlcgojCgojCiMgSW50ZWwgTUlD
+IENhcmQgRHJpdmVyCiMKCiMKIyBTQ0lGIERyaXZlcgojCgojCiMgSW50ZWwgTUlDIENvcHJvY2Vz
+c29yIFN0YXRlIE1hbmFnZW1lbnQgKENPU00pIERyaXZlcnMKIwoKIwojIFZPUCBEcml2ZXIKIwoj
+IENPTkZJR19HRU5XUUUgaXMgbm90IHNldAojIENPTkZJR19FQ0hPIGlzIG5vdCBzZXQKIyBDT05G
+SUdfQ1hMX0JBU0UgaXMgbm90IHNldAojIENPTkZJR19DWExfQUZVX0RSSVZFUl9PUFMgaXMgbm90
+IHNldAojIENPTkZJR19DWExfTElCIGlzIG5vdCBzZXQKQ09ORklHX0hBVkVfSURFPXkKCiMKIyBT
+Q1NJIGRldmljZSBzdXBwb3J0CiMKQ09ORklHX1NDU0lfTU9EPXkKIyBDT05GSUdfU0NTSV9ETUEg
+aXMgbm90IHNldAojIENPTkZJR19TQ1NJX05FVExJTksgaXMgbm90IHNldAojIENPTkZJR19GVVNJ
+T04gaXMgbm90IHNldAoKIwojIElFRUUgMTM5NCAoRmlyZVdpcmUpIHN1cHBvcnQKIwojIENPTkZJ
+R19GSVJFV0lSRSBpcyBub3Qgc2V0CiMgQ09ORklHX0ZJUkVXSVJFX05PU1kgaXMgbm90IHNldApD
+T05GSUdfTUFDSU5UT1NIX0RSSVZFUlM9eQojIENPTkZJR19NQUNfRU1VTU9VU0VCVE4gaXMgbm90
+IHNldAojIENPTkZJR19ORVRERVZJQ0VTIGlzIG5vdCBzZXQKCiMKIyBJbnB1dCBkZXZpY2Ugc3Vw
+cG9ydAojCkNPTkZJR19JTlBVVD15CkNPTkZJR19JTlBVVF9MRURTPXkKIyBDT05GSUdfSU5QVVRf
+RkZfTUVNTEVTUyBpcyBub3Qgc2V0CiMgQ09ORklHX0lOUFVUX1BPTExERVYgaXMgbm90IHNldAoj
+IENPTkZJR19JTlBVVF9TUEFSU0VLTUFQIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5QVVRfTUFUUklY
+S01BUCBpcyBub3Qgc2V0CgojCiMgVXNlcmxhbmQgaW50ZXJmYWNlcwojCiMgQ09ORklHX0lOUFVU
+X01PVVNFREVWIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5QVVRfSk9ZREVWIGlzIG5vdCBzZXQKIyBD
+T05GSUdfSU5QVVRfRVZERVYgaXMgbm90IHNldAojIENPTkZJR19JTlBVVF9FVkJVRyBpcyBub3Qg
+c2V0CgojCiMgSW5wdXQgRGV2aWNlIERyaXZlcnMKIwpDT05GSUdfSU5QVVRfS0VZQk9BUkQ9eQoj
+IENPTkZJR19LRVlCT0FSRF9BREMgaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9BRFA1NTIw
+IGlzIG5vdCBzZXQKIyBDT05GSUdfS0VZQk9BUkRfQURQNTU4OCBpcyBub3Qgc2V0CiMgQ09ORklH
+X0tFWUJPQVJEX0FEUDU1ODkgaXMgbm90IHNldApDT05GSUdfS0VZQk9BUkRfQVRLQkQ9eQojIENP
+TkZJR19LRVlCT0FSRF9RVDEwNzAgaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9RVDIxNjAg
+aXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9ETElOS19ESVI2ODUgaXMgbm90IHNldAojIENP
+TkZJR19LRVlCT0FSRF9MS0tCRCBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX0dQSU8gaXMg
+bm90IHNldAojIENPTkZJR19LRVlCT0FSRF9HUElPX1BPTExFRCBpcyBub3Qgc2V0CiMgQ09ORklH
+X0tFWUJPQVJEX1RDQTY0MTYgaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9UQ0E4NDE4IGlz
+IG5vdCBzZXQKIyBDT05GSUdfS0VZQk9BUkRfTUFUUklYIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VZ
+Qk9BUkRfTE04MzIzIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VZQk9BUkRfTE04MzMzIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfS0VZQk9BUkRfTUFYNzM1OSBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJE
+X01DUyBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX01QUjEyMSBpcyBub3Qgc2V0CiMgQ09O
+RklHX0tFWUJPQVJEX05FV1RPTiBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX09QRU5DT1JF
+UyBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX1NBTVNVTkcgaXMgbm90IHNldAojIENPTkZJ
+R19LRVlCT0FSRF9TVE9XQVdBWSBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX1NVTktCRCBp
+cyBub3Qgc2V0CiMgQ09ORklHX0tFWUJPQVJEX1NUTVBFIGlzIG5vdCBzZXQKIyBDT05GSUdfS0VZ
+Qk9BUkRfT01BUDQgaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9UTTJfVE9VQ0hLRVkgaXMg
+bm90IHNldAojIENPTkZJR19LRVlCT0FSRF9YVEtCRCBpcyBub3Qgc2V0CiMgQ09ORklHX0tFWUJP
+QVJEX0NBUDExWFggaXMgbm90IHNldAojIENPTkZJR19LRVlCT0FSRF9CQ00gaXMgbm90IHNldApD
+T05GSUdfSU5QVVRfTU9VU0U9eQpDT05GSUdfTU9VU0VfUFMyPXkKQ09ORklHX01PVVNFX1BTMl9B
+TFBTPXkKQ09ORklHX01PVVNFX1BTMl9CWUQ9eQpDT05GSUdfTU9VU0VfUFMyX0xPR0lQUzJQUD15
+CkNPTkZJR19NT1VTRV9QUzJfU1lOQVBUSUNTPXkKQ09ORklHX01PVVNFX1BTMl9TWU5BUFRJQ1Nf
+U01CVVM9eQpDT05GSUdfTU9VU0VfUFMyX0NZUFJFU1M9eQpDT05GSUdfTU9VU0VfUFMyX1RSQUNL
+UE9JTlQ9eQojIENPTkZJR19NT1VTRV9QUzJfRUxBTlRFQ0ggaXMgbm90IHNldAojIENPTkZJR19N
+T1VTRV9QUzJfU0VOVEVMSUMgaXMgbm90IHNldAojIENPTkZJR19NT1VTRV9QUzJfVE9VQ0hLSVQg
+aXMgbm90IHNldApDT05GSUdfTU9VU0VfUFMyX0ZPQ0FMVEVDSD15CiMgQ09ORklHX01PVVNFX1BT
+Ml9WTU1PVVNFIGlzIG5vdCBzZXQKQ09ORklHX01PVVNFX1BTMl9TTUJVUz15CiMgQ09ORklHX01P
+VVNFX1NFUklBTCBpcyBub3Qgc2V0CiMgQ09ORklHX01PVVNFX0FQUExFVE9VQ0ggaXMgbm90IHNl
+dAojIENPTkZJR19NT1VTRV9CQ001OTc0IGlzIG5vdCBzZXQKIyBDT05GSUdfTU9VU0VfQ1lBUEEg
+aXMgbm90IHNldAojIENPTkZJR19NT1VTRV9FTEFOX0kyQyBpcyBub3Qgc2V0CiMgQ09ORklHX01P
+VVNFX1ZTWFhYQUEgaXMgbm90IHNldAojIENPTkZJR19NT1VTRV9HUElPIGlzIG5vdCBzZXQKIyBD
+T05GSUdfTU9VU0VfU1lOQVBUSUNTX0kyQyBpcyBub3Qgc2V0CiMgQ09ORklHX01PVVNFX1NZTkFQ
+VElDU19VU0IgaXMgbm90IHNldAojIENPTkZJR19JTlBVVF9KT1lTVElDSyBpcyBub3Qgc2V0CiMg
+Q09ORklHX0lOUFVUX1RBQkxFVCBpcyBub3Qgc2V0CiMgQ09ORklHX0lOUFVUX1RPVUNIU0NSRUVO
+IGlzIG5vdCBzZXQKIyBDT05GSUdfSU5QVVRfTUlTQyBpcyBub3Qgc2V0CiMgQ09ORklHX1JNSTRf
+Q09SRSBpcyBub3Qgc2V0CgojCiMgSGFyZHdhcmUgSS9PIHBvcnRzCiMKQ09ORklHX1NFUklPPXkK
+Q09ORklHX0FSQ0hfTUlHSFRfSEFWRV9QQ19TRVJJTz15CkNPTkZJR19TRVJJT19JODA0Mj15CkNP
+TkZJR19TRVJJT19TRVJQT1JUPXkKIyBDT05GSUdfU0VSSU9fQ1Q4MkM3MTAgaXMgbm90IHNldAoj
+IENPTkZJR19TRVJJT19QQ0lQUzIgaXMgbm90IHNldApDT05GSUdfU0VSSU9fTElCUFMyPXkKQ09O
+RklHX1NFUklPX1JBVz1tCiMgQ09ORklHX1NFUklPX0FMVEVSQV9QUzIgaXMgbm90IHNldAojIENP
+TkZJR19TRVJJT19QUzJNVUxUIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSU9fQVJDX1BTMiBpcyBu
+b3Qgc2V0CiMgQ09ORklHX1NFUklPX0FQQlBTMiBpcyBub3Qgc2V0CkNPTkZJR19VU0VSSU89bQpD
+T05GSUdfR0FNRVBPUlQ9eQpDT05GSUdfR0FNRVBPUlRfTlM1NTg9eQojIENPTkZJR19HQU1FUE9S
+VF9MNCBpcyBub3Qgc2V0CiMgQ09ORklHX0dBTUVQT1JUX0VNVTEwSzEgaXMgbm90IHNldAojIENP
+TkZJR19HQU1FUE9SVF9GTTgwMSBpcyBub3Qgc2V0CgojCiMgQ2hhcmFjdGVyIGRldmljZXMKIwpD
+T05GSUdfVFRZPXkKIyBDT05GSUdfVlQgaXMgbm90IHNldApDT05GSUdfVU5JWDk4X1BUWVM9eQpD
+T05GSUdfTEVHQUNZX1BUWVM9eQpDT05GSUdfTEVHQUNZX1BUWV9DT1VOVD0yNTYKIyBDT05GSUdf
+U0VSSUFMX05PTlNUQU5EQVJEIGlzIG5vdCBzZXQKIyBDT05GSUdfTk9aT01JIGlzIG5vdCBzZXQK
+IyBDT05GSUdfTl9HU00gaXMgbm90IHNldAojIENPTkZJR19UUkFDRV9TSU5LIGlzIG5vdCBzZXQK
+IyBDT05GSUdfREVWTUVNIGlzIG5vdCBzZXQKQ09ORklHX0RFVktNRU09eQoKIwojIFNlcmlhbCBk
+cml2ZXJzCiMKQ09ORklHX1NFUklBTF9FQVJMWUNPTj15CkNPTkZJR19TRVJJQUxfODI1MD15CkNP
+TkZJR19TRVJJQUxfODI1MF9ERVBSRUNBVEVEX09QVElPTlM9eQpDT05GSUdfU0VSSUFMXzgyNTBf
+UE5QPXkKIyBDT05GSUdfU0VSSUFMXzgyNTBfRklOVEVLIGlzIG5vdCBzZXQKQ09ORklHX1NFUklB
+TF84MjUwX0NPTlNPTEU9eQpDT05GSUdfU0VSSUFMXzgyNTBfUENJPXkKQ09ORklHX1NFUklBTF84
+MjUwX0VYQVI9eQojIENPTkZJR19TRVJJQUxfODI1MF9DUyBpcyBub3Qgc2V0CkNPTkZJR19TRVJJ
+QUxfODI1MF9OUl9VQVJUUz00CkNPTkZJR19TRVJJQUxfODI1MF9SVU5USU1FX1VBUlRTPTQKIyBD
+T05GSUdfU0VSSUFMXzgyNTBfRVhURU5ERUQgaXMgbm90IHNldAojIENPTkZJR19TRVJJQUxfODI1
+MF9BU1BFRURfVlVBUlQgaXMgbm90IHNldAojIENPTkZJR19TRVJJQUxfODI1MF9GU0wgaXMgbm90
+IHNldAojIENPTkZJR19TRVJJQUxfODI1MF9EVyBpcyBub3Qgc2V0CiMgQ09ORklHX1NFUklBTF84
+MjUwX1JUMjg4WCBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxfODI1MF9MUFNTPXkKQ09ORklHX1NF
+UklBTF84MjUwX01JRD15CiMgQ09ORklHX1NFUklBTF84MjUwX01PWEEgaXMgbm90IHNldAojIENP
+TkZJR19TRVJJQUxfT0ZfUExBVEZPUk0gaXMgbm90IHNldAoKIwojIE5vbi04MjUwIHNlcmlhbCBw
+b3J0IHN1cHBvcnQKIwojIENPTkZJR19TRVJJQUxfTUFYMzEwMCBpcyBub3Qgc2V0CiMgQ09ORklH
+X1NFUklBTF9NQVgzMTBYIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFMX1VBUlRMSVRFIGlzIG5v
+dCBzZXQKQ09ORklHX1NFUklBTF9DT1JFPXkKQ09ORklHX1NFUklBTF9DT1JFX0NPTlNPTEU9eQoj
+IENPTkZJR19TRVJJQUxfSlNNIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFMX1NDQ05YUCBpcyBu
+b3Qgc2V0CiMgQ09ORklHX1NFUklBTF9TQzE2SVM3WFggaXMgbm90IHNldAojIENPTkZJR19TRVJJ
+QUxfQUxURVJBX0pUQUdVQVJUIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFMX0FMVEVSQV9VQVJU
+IGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFMX0lGWDZYNjAgaXMgbm90IHNldAojIENPTkZJR19T
+RVJJQUxfWElMSU5YX1BTX1VBUlQgaXMgbm90IHNldAojIENPTkZJR19TRVJJQUxfQVJDIGlzIG5v
+dCBzZXQKIyBDT05GSUdfU0VSSUFMX1JQMiBpcyBub3Qgc2V0CiMgQ09ORklHX1NFUklBTF9GU0xf
+TFBVQVJUIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VSSUFMX0NPTkVYQU5UX0RJR0lDT0xPUiBpcyBu
+b3Qgc2V0CiMgQ09ORklHX1NFUklBTF9NRU5fWjEzNSBpcyBub3Qgc2V0CkNPTkZJR19TRVJJQUxf
+REVWX0JVUz15CiMgQ09ORklHX1NFUklBTF9ERVZfQ1RSTF9UVFlQT1JUIGlzIG5vdCBzZXQKIyBD
+T05GSUdfVFRZX1BSSU5USyBpcyBub3Qgc2V0CkNPTkZJR19IVkNfRFJJVkVSPXkKQ09ORklHX0hW
+Q19JUlE9eQpDT05GSUdfSFZDX1hFTj15CkNPTkZJR19IVkNfWEVOX0ZST05URU5EPXkKIyBDT05G
+SUdfVklSVElPX0NPTlNPTEUgaXMgbm90IHNldApDT05GSUdfSVBNSV9IQU5ETEVSPW0KQ09ORklH
+X0lQTUlfUEFOSUNfRVZFTlQ9eQojIENPTkZJR19JUE1JX1BBTklDX1NUUklORyBpcyBub3Qgc2V0
+CiMgQ09ORklHX0lQTUlfREVWSUNFX0lOVEVSRkFDRSBpcyBub3Qgc2V0CkNPTkZJR19JUE1JX1NJ
+PW0KQ09ORklHX0lQTUlfU1NJRj1tCiMgQ09ORklHX0lQTUlfV0FUQ0hET0cgaXMgbm90IHNldApD
+T05GSUdfSVBNSV9QT1dFUk9GRj1tCkNPTkZJR19IV19SQU5ET009eQpDT05GSUdfSFdfUkFORE9N
+X1RJTUVSSU9NRU09bQpDT05GSUdfSFdfUkFORE9NX0lOVEVMPXkKQ09ORklHX0hXX1JBTkRPTV9B
+TUQ9eQpDT05GSUdfSFdfUkFORE9NX1ZJQT15CiMgQ09ORklHX0hXX1JBTkRPTV9WSVJUSU8gaXMg
+bm90IHNldApDT05GSUdfSFdfUkFORE9NX1RQTT1tCkNPTkZJR19OVlJBTT15CiMgQ09ORklHX1Iz
+OTY0IGlzIG5vdCBzZXQKIyBDT05GSUdfQVBQTElDT00gaXMgbm90IHNldAoKIwojIFBDTUNJQSBj
+aGFyYWN0ZXIgZGV2aWNlcwojCiMgQ09ORklHX1NZTkNMSU5LX0NTIGlzIG5vdCBzZXQKIyBDT05G
+SUdfQ0FSRE1BTl80MDAwIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0FSRE1BTl80MDQwIGlzIG5vdCBz
+ZXQKQ09ORklHX1NDUjI0WD1tCiMgQ09ORklHX01XQVZFIGlzIG5vdCBzZXQKIyBDT05GSUdfSFBF
+VCBpcyBub3Qgc2V0CiMgQ09ORklHX0hBTkdDSEVDS19USU1FUiBpcyBub3Qgc2V0CkNPTkZJR19U
+Q0dfVFBNPW0KIyBDT05GSUdfVENHX1RJUyBpcyBub3Qgc2V0CiMgQ09ORklHX1RDR19USVNfU1BJ
+IGlzIG5vdCBzZXQKQ09ORklHX1RDR19USVNfSTJDX0FUTUVMPW0KQ09ORklHX1RDR19USVNfSTJD
+X0lORklORU9OPW0KQ09ORklHX1RDR19USVNfSTJDX05VVk9UT049bQojIENPTkZJR19UQ0dfTlND
+IGlzIG5vdCBzZXQKQ09ORklHX1RDR19BVE1FTD1tCiMgQ09ORklHX1RDR19JTkZJTkVPTiBpcyBu
+b3Qgc2V0CkNPTkZJR19UQ0dfWEVOPW0KIyBDT05GSUdfVENHX0NSQiBpcyBub3Qgc2V0CkNPTkZJ
+R19UQ0dfVlRQTV9QUk9YWT1tCkNPTkZJR19UQ0dfVElTX1NUMzNaUDI0PW0KQ09ORklHX1RDR19U
+SVNfU1QzM1pQMjRfSTJDPW0KIyBDT05GSUdfVENHX1RJU19TVDMzWlAyNF9TUEkgaXMgbm90IHNl
+dAojIENPTkZJR19URUxDTE9DSyBpcyBub3Qgc2V0CkNPTkZJR19ERVZQT1JUPXkKQ09ORklHX1hJ
+TExZQlVTPXkKIyBDT05GSUdfWElMTFlCVVNfT0YgaXMgbm90IHNldAoKIwojIEkyQyBzdXBwb3J0
+CiMKQ09ORklHX0kyQz15CkNPTkZJR19BQ1BJX0kyQ19PUFJFR0lPTj15CkNPTkZJR19JMkNfQk9B
+UkRJTkZPPXkKQ09ORklHX0kyQ19DT01QQVQ9eQojIENPTkZJR19JMkNfQ0hBUkRFViBpcyBub3Qg
+c2V0CkNPTkZJR19JMkNfTVVYPW0KCiMKIyBNdWx0aXBsZXhlciBJMkMgQ2hpcCBzdXBwb3J0CiMK
+IyBDT05GSUdfSTJDX0FSQl9HUElPX0NIQUxMRU5HRSBpcyBub3Qgc2V0CkNPTkZJR19JMkNfTVVY
+X0dQSU89bQpDT05GSUdfSTJDX01VWF9HUE1VWD1tCkNPTkZJR19JMkNfTVVYX0xUQzQzMDY9bQpD
+T05GSUdfSTJDX01VWF9QQ0E5NTQxPW0KQ09ORklHX0kyQ19NVVhfUENBOTU0eD1tCiMgQ09ORklH
+X0kyQ19NVVhfUkVHIGlzIG5vdCBzZXQKQ09ORklHX0kyQ19NVVhfTUxYQ1BMRD1tCiMgQ09ORklH
+X0kyQ19IRUxQRVJfQVVUTyBpcyBub3Qgc2V0CkNPTkZJR19JMkNfU01CVVM9bQoKIwojIEkyQyBB
+bGdvcml0aG1zCiMKQ09ORklHX0kyQ19BTEdPQklUPXkKQ09ORklHX0kyQ19BTEdPUENGPW0KQ09O
+RklHX0kyQ19BTEdPUENBPW0KCiMKIyBJMkMgSGFyZHdhcmUgQnVzIHN1cHBvcnQKIwoKIwojIFBD
+IFNNQnVzIGhvc3QgY29udHJvbGxlciBkcml2ZXJzCiMKIyBDT05GSUdfSTJDX0FMSTE1MzUgaXMg
+bm90IHNldAojIENPTkZJR19JMkNfQUxJMTU2MyBpcyBub3Qgc2V0CiMgQ09ORklHX0kyQ19BTEkx
+NVgzIGlzIG5vdCBzZXQKIyBDT05GSUdfSTJDX0FNRDc1NiBpcyBub3Qgc2V0CiMgQ09ORklHX0ky
+Q19BTUQ4MTExIGlzIG5vdCBzZXQKIyBDT05GSUdfSTJDX0k4MDEgaXMgbm90IHNldAojIENPTkZJ
+R19JMkNfSVNDSCBpcyBub3Qgc2V0CiMgQ09ORklHX0kyQ19JU01UIGlzIG5vdCBzZXQKIyBDT05G
+SUdfSTJDX1BJSVg0IGlzIG5vdCBzZXQKIyBDT05GSUdfSTJDX05GT1JDRTIgaXMgbm90IHNldAoj
+IENPTkZJR19JMkNfU0lTNTU5NSBpcyBub3Qgc2V0CiMgQ09ORklHX0kyQ19TSVM2MzAgaXMgbm90
+IHNldAojIENPTkZJR19JMkNfU0lTOTZYIGlzIG5vdCBzZXQKIyBDT05GSUdfSTJDX1ZJQSBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0kyQ19WSUFQUk8gaXMgbm90IHNldAoKIwojIEFDUEkgZHJpdmVycwoj
+CiMgQ09ORklHX0kyQ19TQ01JIGlzIG5vdCBzZXQKCiMKIyBJMkMgc3lzdGVtIGJ1cyBkcml2ZXJz
+IChtb3N0bHkgZW1iZWRkZWQgLyBzeXN0ZW0tb24tY2hpcCkKIwpDT05GSUdfSTJDX0NCVVNfR1BJ
+Tz15CiMgQ09ORklHX0kyQ19ERVNJR05XQVJFX1BMQVRGT1JNIGlzIG5vdCBzZXQKIyBDT05GSUdf
+STJDX0RFU0lHTldBUkVfUENJIGlzIG5vdCBzZXQKIyBDT05GSUdfSTJDX0VNRVYyIGlzIG5vdCBz
+ZXQKQ09ORklHX0kyQ19HUElPPXkKQ09ORklHX0kyQ19PQ09SRVM9eQpDT05GSUdfSTJDX1BDQV9Q
+TEFURk9STT1tCiMgQ09ORklHX0kyQ19QWEFfUENJIGlzIG5vdCBzZXQKIyBDT05GSUdfSTJDX1JL
+M1ggaXMgbm90IHNldApDT05GSUdfSTJDX1NJTVRFQz15CkNPTkZJR19JMkNfWElMSU5YPXkKCiMK
+IyBFeHRlcm5hbCBJMkMvU01CdXMgYWRhcHRlciBkcml2ZXJzCiMKQ09ORklHX0kyQ19ESU9MQU5f
+VTJDPXkKQ09ORklHX0kyQ19QQVJQT1JUX0xJR0hUPW0KQ09ORklHX0kyQ19ST0JPVEZVWlpfT1NJ
+Rj15CiMgQ09ORklHX0kyQ19UQU9TX0VWTSBpcyBub3Qgc2V0CkNPTkZJR19JMkNfVElOWV9VU0I9
+eQpDT05GSUdfSTJDX1ZJUEVSQk9BUkQ9bQoKIwojIE90aGVyIEkyQy9TTUJ1cyBidXMgZHJpdmVy
+cwojCkNPTkZJR19JMkNfTUxYQ1BMRD1tCkNPTkZJR19JMkNfU1RVQj1tCkNPTkZJR19JMkNfU0xB
+VkU9eQpDT05GSUdfSTJDX1NMQVZFX0VFUFJPTT1tCiMgQ09ORklHX0kyQ19ERUJVR19DT1JFIGlz
+IG5vdCBzZXQKIyBDT05GSUdfSTJDX0RFQlVHX0FMR08gaXMgbm90IHNldAojIENPTkZJR19JMkNf
+REVCVUdfQlVTIGlzIG5vdCBzZXQKQ09ORklHX1NQST15CiMgQ09ORklHX1NQSV9ERUJVRyBpcyBu
+b3Qgc2V0CkNPTkZJR19TUElfTUFTVEVSPXkKCiMKIyBTUEkgTWFzdGVyIENvbnRyb2xsZXIgRHJp
+dmVycwojCiMgQ09ORklHX1NQSV9BTFRFUkEgaXMgbm90IHNldApDT05GSUdfU1BJX0FYSV9TUElf
+RU5HSU5FPXkKQ09ORklHX1NQSV9CSVRCQU5HPXkKIyBDT05GSUdfU1BJX0NBREVOQ0UgaXMgbm90
+IHNldApDT05GSUdfU1BJX0RFU0lHTldBUkU9bQojIENPTkZJR19TUElfRFdfUENJIGlzIG5vdCBz
+ZXQKQ09ORklHX1NQSV9EV19NTUlPPW0KQ09ORklHX1NQSV9HUElPPXkKQ09ORklHX1NQSV9GU0xf
+TElCPXkKQ09ORklHX1NQSV9GU0xfU1BJPXkKQ09ORklHX1NQSV9PQ19USU5ZPW0KIyBDT05GSUdf
+U1BJX1BYQTJYWCBpcyBub3Qgc2V0CiMgQ09ORklHX1NQSV9QWEEyWFhfUENJIGlzIG5vdCBzZXQK
+Q09ORklHX1NQSV9ST0NLQ0hJUD15CkNPTkZJR19TUElfU0MxOElTNjAyPXkKQ09ORklHX1NQSV9Y
+Q09NTT1tCkNPTkZJR19TUElfWElMSU5YPXkKQ09ORklHX1NQSV9aWU5RTVBfR1FTUEk9bQoKIwoj
+IFNQSSBQcm90b2NvbCBNYXN0ZXJzCiMKQ09ORklHX1NQSV9TUElERVY9bQojIENPTkZJR19TUElf
+TE9PUEJBQ0tfVEVTVCBpcyBub3Qgc2V0CkNPTkZJR19TUElfVExFNjJYMD15CkNPTkZJR19TUElf
+U0xBVkU9eQpDT05GSUdfU1BJX1NMQVZFX1RJTUU9eQpDT05GSUdfU1BJX1NMQVZFX1NZU1RFTV9D
+T05UUk9MPW0KQ09ORklHX1NQTUk9eQpDT05GSUdfSFNJPXkKQ09ORklHX0hTSV9CT0FSRElORk89
+eQoKIwojIEhTSSBjb250cm9sbGVycwojCgojCiMgSFNJIGNsaWVudHMKIwojIENPTkZJR19IU0lf
+Q0hBUiBpcyBub3Qgc2V0CkNPTkZJR19QUFM9eQojIENPTkZJR19QUFNfREVCVUcgaXMgbm90IHNl
+dAojIENPTkZJR19OVFBfUFBTIGlzIG5vdCBzZXQKCiMKIyBQUFMgY2xpZW50cyBzdXBwb3J0CiMK
+Q09ORklHX1BQU19DTElFTlRfS1RJTUVSPW0KIyBDT05GSUdfUFBTX0NMSUVOVF9MRElTQyBpcyBu
+b3Qgc2V0CkNPTkZJR19QUFNfQ0xJRU5UX0dQSU89bQoKIwojIFBQUyBnZW5lcmF0b3JzIHN1cHBv
+cnQKIwoKIwojIFBUUCBjbG9jayBzdXBwb3J0CiMKIyBDT05GSUdfUFRQXzE1ODhfQ0xPQ0sgaXMg
+bm90IHNldAoKIwojIEVuYWJsZSBQSFlMSUIgYW5kIE5FVFdPUktfUEhZX1RJTUVTVEFNUElORyB0
+byBzZWUgdGhlIGFkZGl0aW9uYWwgY2xvY2tzLgojCkNPTkZJR19HUElPTElCPXkKQ09ORklHX09G
+X0dQSU89eQpDT05GSUdfR1BJT19BQ1BJPXkKQ09ORklHX0dQSU9MSUJfSVJRQ0hJUD15CkNPTkZJ
+R19ERUJVR19HUElPPXkKQ09ORklHX0dQSU9fU1lTRlM9eQpDT05GSUdfR1BJT19HRU5FUklDPW0K
+Q09ORklHX0dQSU9fTUFYNzMwWD15CgojCiMgTWVtb3J5IG1hcHBlZCBHUElPIGRyaXZlcnMKIwoj
+IENPTkZJR19HUElPXzc0WFhfTU1JTyBpcyBub3Qgc2V0CkNPTkZJR19HUElPX0FMVEVSQT1tCiMg
+Q09ORklHX0dQSU9fQU1EUFQgaXMgbm90IHNldApDT05GSUdfR1BJT19EV0FQQj1tCiMgQ09ORklH
+X0dQSU9fRVhBUiBpcyBub3Qgc2V0CiMgQ09ORklHX0dQSU9fRlRHUElPMDEwIGlzIG5vdCBzZXQK
+Q09ORklHX0dQSU9fR0VORVJJQ19QTEFURk9STT1tCkNPTkZJR19HUElPX0dSR1BJTz1tCiMgQ09O
+RklHX0dQSU9fSUNIIGlzIG5vdCBzZXQKIyBDT05GSUdfR1BJT19MWU5YUE9JTlQgaXMgbm90IHNl
+dAojIENPTkZJR19HUElPX01FTloxMjcgaXMgbm90IHNldApDT05GSUdfR1BJT19NT0NLVVA9eQpD
+T05GSUdfR1BJT19TWVNDT049bQojIENPTkZJR19HUElPX1ZYODU1IGlzIG5vdCBzZXQKQ09ORklH
+X0dQSU9fWElMSU5YPXkKCiMKIyBQb3J0LW1hcHBlZCBJL08gR1BJTyBkcml2ZXJzCiMKIyBDT05G
+SUdfR1BJT19GNzE4OFggaXMgbm90IHNldApDT05GSUdfR1BJT19JVDg3PW0KIyBDT05GSUdfR1BJ
+T19TQ0ggaXMgbm90IHNldApDT05GSUdfR1BJT19TQ0gzMTFYPXkKQ09ORklHX0dQSU9fV1MxNkM0
+OD1tCgojCiMgSTJDIEdQSU8gZXhwYW5kZXJzCiMKQ09ORklHX0dQSU9fQURQNTU4OD15CkNPTkZJ
+R19HUElPX0FEUDU1ODhfSVJRPXkKQ09ORklHX0dQSU9fQUROUD15CkNPTkZJR19HUElPX01BWDcz
+MDA9eQpDT05GSUdfR1BJT19NQVg3MzJYPXkKIyBDT05GSUdfR1BJT19NQVg3MzJYX0lSUSBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0dQSU9fUENBOTUzWCBpcyBub3Qgc2V0CkNPTkZJR19HUElPX1BDRjg1
+N1g9bQpDT05GSUdfR1BJT19UUElDMjgxMD1tCgojCiMgTUZEIEdQSU8gZXhwYW5kZXJzCiMKQ09O
+RklHX0dQSU9fQURQNTUyMD15CkNPTkZJR19HUElPX0FSSVpPTkE9eQojIENPTkZJR19HUElPX0RB
+OTA1MiBpcyBub3Qgc2V0CiMgQ09ORklHX0dQSU9fREE5MDU1IGlzIG5vdCBzZXQKQ09ORklHX0dQ
+SU9fTFAzOTQzPW0KQ09ORklHX0dQSU9fTFA4NzNYPXkKQ09ORklHX0dQSU9fTFA4NzU2NT1tCiMg
+Q09ORklHX0dQSU9fUEFMTUFTIGlzIG5vdCBzZXQKQ09ORklHX0dQSU9fUkM1VDU4Mz15CkNPTkZJ
+R19HUElPX1NUTVBFPXkKQ09ORklHX0dQSU9fVFBTNjU4Nlg9eQojIENPTkZJR19HUElPX1RQUzY1
+OTEyIGlzIG5vdCBzZXQKIyBDT05GSUdfR1BJT19VQ0IxNDAwIGlzIG5vdCBzZXQKQ09ORklHX0dQ
+SU9fV004MzFYPXkKQ09ORklHX0dQSU9fV004OTk0PXkKCiMKIyBQQ0kgR1BJTyBleHBhbmRlcnMK
+IwojIENPTkZJR19HUElPX0FNRDgxMTEgaXMgbm90IHNldAojIENPTkZJR19HUElPX0JUOFhYIGlz
+IG5vdCBzZXQKIyBDT05GSUdfR1BJT19NTF9JT0ggaXMgbm90IHNldAojIENPTkZJR19HUElPX1BD
+SV9JRElPXzE2IGlzIG5vdCBzZXQKIyBDT05GSUdfR1BJT19SREMzMjFYIGlzIG5vdCBzZXQKIyBD
+T05GSUdfR1BJT19TT0RBVklMTEUgaXMgbm90IHNldAoKIwojIFNQSSBHUElPIGV4cGFuZGVycwoj
+CkNPTkZJR19HUElPXzc0WDE2ND1tCkNPTkZJR19HUElPX01BWDczMDE9eQojIENPTkZJR19HUElP
+X01DMzM4ODAgaXMgbm90IHNldApDT05GSUdfR1BJT19QSVNPU1I9bQpDT05GSUdfR1BJT19YUkEx
+NDAzPW0KCiMKIyBVU0IgR1BJTyBleHBhbmRlcnMKIwpDT05GSUdfR1BJT19WSVBFUkJPQVJEPW0K
+Q09ORklHX1cxPXkKCiMKIyAxLXdpcmUgQnVzIE1hc3RlcnMKIwojIENPTkZJR19XMV9NQVNURVJf
+TUFUUk9YIGlzIG5vdCBzZXQKQ09ORklHX1cxX01BU1RFUl9EUzI0OTA9bQojIENPTkZJR19XMV9N
+QVNURVJfRFMyNDgyIGlzIG5vdCBzZXQKQ09ORklHX1cxX01BU1RFUl9EUzFXTT1tCkNPTkZJR19X
+MV9NQVNURVJfR1BJTz1tCgojCiMgMS13aXJlIFNsYXZlcwojCkNPTkZJR19XMV9TTEFWRV9USEVS
+TT1tCkNPTkZJR19XMV9TTEFWRV9TTUVNPW0KQ09ORklHX1cxX1NMQVZFX0RTMjQwNT15CiMgQ09O
+RklHX1cxX1NMQVZFX0RTMjQwOCBpcyBub3Qgc2V0CkNPTkZJR19XMV9TTEFWRV9EUzI0MTM9eQpD
+T05GSUdfVzFfU0xBVkVfRFMyNDA2PW0KIyBDT05GSUdfVzFfU0xBVkVfRFMyNDIzIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfVzFfU0xBVkVfRFMyNDMxIGlzIG5vdCBzZXQKIyBDT05GSUdfVzFfU0xBVkVf
+RFMyNDMzIGlzIG5vdCBzZXQKIyBDT05GSUdfVzFfU0xBVkVfRFMyNDM4IGlzIG5vdCBzZXQKQ09O
+RklHX1cxX1NMQVZFX0RTMjc2MD15CkNPTkZJR19XMV9TTEFWRV9EUzI3ODA9eQpDT05GSUdfVzFf
+U0xBVkVfRFMyNzgxPXkKQ09ORklHX1cxX1NMQVZFX0RTMjhFMDQ9bQojIENPTkZJR19XMV9TTEFW
+RV9CUTI3MDAwIGlzIG5vdCBzZXQKIyBDT05GSUdfUE9XRVJfQVZTIGlzIG5vdCBzZXQKIyBDT05G
+SUdfUE9XRVJfUkVTRVQgaXMgbm90IHNldApDT05GSUdfUE9XRVJfU1VQUExZPXkKIyBDT05GSUdf
+UE9XRVJfU1VQUExZX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX1BEQV9QT1dFUj15CiMgQ09ORklH
+X0dFTkVSSUNfQURDX0JBVFRFUlkgaXMgbm90IHNldApDT05GSUdfV004MzFYX0JBQ0tVUD15CiMg
+Q09ORklHX1dNODMxWF9QT1dFUiBpcyBub3Qgc2V0CkNPTkZJR19URVNUX1BPV0VSPXkKQ09ORklH
+X0JBVFRFUllfRFMyNzYwPXkKQ09ORklHX0JBVFRFUllfRFMyNzgwPXkKQ09ORklHX0JBVFRFUllf
+RFMyNzgxPXkKQ09ORklHX0JBVFRFUllfRFMyNzgyPXkKQ09ORklHX0JBVFRFUllfTEVHT19FVjM9
+bQpDT05GSUdfQkFUVEVSWV9TQlM9eQojIENPTkZJR19DSEFSR0VSX1NCUyBpcyBub3Qgc2V0CkNP
+TkZJR19CQVRURVJZX0JRMjdYWFg9bQojIENPTkZJR19CQVRURVJZX0JRMjdYWFhfSTJDIGlzIG5v
+dCBzZXQKIyBDT05GSUdfQkFUVEVSWV9EQTkwNTIgaXMgbm90IHNldApDT05GSUdfQkFUVEVSWV9E
+QTkxNTA9eQpDT05GSUdfQkFUVEVSWV9NQVgxNzA0MD1tCkNPTkZJR19CQVRURVJZX01BWDE3MDQy
+PXkKQ09ORklHX0NIQVJHRVJfUENGNTA2MzM9bQpDT05GSUdfQ0hBUkdFUl9JU1AxNzA0PW0KIyBD
+T05GSUdfQ0hBUkdFUl9NQVg4OTAzIGlzIG5vdCBzZXQKQ09ORklHX0NIQVJHRVJfTFA4NzI3PXkK
+Q09ORklHX0NIQVJHRVJfR1BJTz1tCiMgQ09ORklHX0NIQVJHRVJfTUFOQUdFUiBpcyBub3Qgc2V0
+CiMgQ09ORklHX0NIQVJHRVJfTFRDMzY1MSBpcyBub3Qgc2V0CkNPTkZJR19DSEFSR0VSX01BWDE0
+NTc3PW0KQ09ORklHX0NIQVJHRVJfREVURUNUT1JfTUFYMTQ2NTY9eQojIENPTkZJR19DSEFSR0VS
+X0JRMjQxNVggaXMgbm90IHNldApDT05GSUdfQ0hBUkdFUl9CUTI0MTkwPXkKIyBDT05GSUdfQ0hB
+UkdFUl9CUTI0MjU3IGlzIG5vdCBzZXQKQ09ORklHX0NIQVJHRVJfQlEyNDczNT15CkNPTkZJR19D
+SEFSR0VSX0JRMjU4OTA9bQpDT05GSUdfQ0hBUkdFUl9TTUIzNDc9eQpDT05GSUdfQ0hBUkdFUl9U
+UFM2NTA5MD1tCkNPTkZJR19DSEFSR0VSX1RQUzY1MjE3PW0KIyBDT05GSUdfQkFUVEVSWV9HQVVH
+RV9MVEMyOTQxIGlzIG5vdCBzZXQKQ09ORklHX0JBVFRFUllfUlQ1MDMzPW0KIyBDT05GSUdfQ0hB
+UkdFUl9SVDk0NTUgaXMgbm90IHNldApDT05GSUdfSFdNT049eQpDT05GSUdfSFdNT05fVklEPXkK
+IyBDT05GSUdfSFdNT05fREVCVUdfQ0hJUCBpcyBub3Qgc2V0CgojCiMgTmF0aXZlIGRyaXZlcnMK
+IwojIENPTkZJR19TRU5TT1JTX0FENzMxNCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0FENzQx
+ND15CiMgQ09ORklHX1NFTlNPUlNfQUQ3NDE4IGlzIG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19B
+RE0xMDIxIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19BRE0xMDI1IGlzIG5vdCBzZXQKIyBD
+T05GSUdfU0VOU09SU19BRE0xMDI2IGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfQURNMTAyOT1t
+CkNPTkZJR19TRU5TT1JTX0FETTEwMzE9bQpDT05GSUdfU0VOU09SU19BRE05MjQwPW0KQ09ORklH
+X1NFTlNPUlNfQURUN1gxMD15CiMgQ09ORklHX1NFTlNPUlNfQURUNzMxMCBpcyBub3Qgc2V0CkNP
+TkZJR19TRU5TT1JTX0FEVDc0MTA9eQojIENPTkZJR19TRU5TT1JTX0FEVDc0MTEgaXMgbm90IHNl
+dApDT05GSUdfU0VOU09SU19BRFQ3NDYyPXkKIyBDT05GSUdfU0VOU09SU19BRFQ3NDcwIGlzIG5v
+dCBzZXQKQ09ORklHX1NFTlNPUlNfQURUNzQ3NT15CiMgQ09ORklHX1NFTlNPUlNfQVNDNzYyMSBp
+cyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfSzhURU1QIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VO
+U09SU19LMTBURU1QIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19GQU0xNUhfUE9XRVIgaXMg
+bm90IHNldAojIENPTkZJR19TRU5TT1JTX0FQUExFU01DIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNP
+UlNfQVNCMTAwPW0KQ09ORklHX1NFTlNPUlNfQVNQRUVEPW0KQ09ORklHX1NFTlNPUlNfQVRYUDE9
+bQojIENPTkZJR19TRU5TT1JTX0RTNjIwIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfRFMxNjIx
+PXkKIyBDT05GSUdfU0VOU09SU19ERUxMX1NNTSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0RB
+OTA1Ml9BREM9eQpDT05GSUdfU0VOU09SU19EQTkwNTU9bQojIENPTkZJR19TRU5TT1JTX0k1S19B
+TUIgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19GNzE4MDVGPXkKIyBDT05GSUdfU0VOU09SU19G
+NzE4ODJGRyBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0Y3NTM3NVM9bQpDT05GSUdfU0VOU09S
+U19NQzEzNzgzX0FEQz1tCkNPTkZJR19TRU5TT1JTX0ZTQ0hNRD1tCkNPTkZJR19TRU5TT1JTX0ZU
+U1RFVVRBVEVTPW0KIyBDT05GSUdfU0VOU09SU19HTDUxOFNNIGlzIG5vdCBzZXQKQ09ORklHX1NF
+TlNPUlNfR0w1MjBTTT1tCkNPTkZJR19TRU5TT1JTX0c3NjBBPW0KQ09ORklHX1NFTlNPUlNfRzc2
+Mj1tCkNPTkZJR19TRU5TT1JTX0dQSU9fRkFOPW0KQ09ORklHX1NFTlNPUlNfSElINjEzMD15CiMg
+Q09ORklHX1NFTlNPUlNfSUJNQUVNIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19JQk1QRVgg
+aXMgbm90IHNldAojIENPTkZJR19TRU5TT1JTX0lJT19IV01PTiBpcyBub3Qgc2V0CiMgQ09ORklH
+X1NFTlNPUlNfSTU1MDAgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19DT1JFVEVNUD15CiMgQ09O
+RklHX1NFTlNPUlNfSVQ4NyBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0pDNDI9eQpDT05GSUdf
+U0VOU09SU19QT1dSMTIyMD1tCkNPTkZJR19TRU5TT1JTX0xJTkVBR0U9eQpDT05GSUdfU0VOU09S
+U19MVEMyOTQ1PW0KIyBDT05GSUdfU0VOU09SU19MVEMyOTkwIGlzIG5vdCBzZXQKIyBDT05GSUdf
+U0VOU09SU19MVEM0MTUxIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfTFRDNDIxNT1tCkNPTkZJ
+R19TRU5TT1JTX0xUQzQyMjI9bQpDT05GSUdfU0VOU09SU19MVEM0MjQ1PXkKQ09ORklHX1NFTlNP
+UlNfTFRDNDI2MD15CkNPTkZJR19TRU5TT1JTX0xUQzQyNjE9bQpDT05GSUdfU0VOU09SU19NQVgx
+MTExPW0KIyBDT05GSUdfU0VOU09SU19NQVgxNjA2NSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JT
+X01BWDE2MTk9eQojIENPTkZJR19TRU5TT1JTX01BWDE2NjggaXMgbm90IHNldApDT05GSUdfU0VO
+U09SU19NQVgxOTc9bQpDT05GSUdfU0VOU09SU19NQVgzMTcyMj15CkNPTkZJR19TRU5TT1JTX01B
+WDY2Mzk9bQojIENPTkZJR19TRU5TT1JTX01BWDY2NDIgaXMgbm90IHNldAojIENPTkZJR19TRU5T
+T1JTX01BWDY2NTAgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19NQVg2Njk3PW0KIyBDT05GSUdf
+U0VOU09SU19NQVgzMTc5MCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX01DUDMwMjE9bQpDT05G
+SUdfU0VOU09SU19UQzY1ND1tCkNPTkZJR19TRU5TT1JTX01FTkYyMUJNQ19IV01PTj15CkNPTkZJ
+R19TRU5TT1JTX0FEQ1hYPXkKIyBDT05GSUdfU0VOU09SU19MTTYzIGlzIG5vdCBzZXQKIyBDT05G
+SUdfU0VOU09SU19MTTcwIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfTE03Mz15CiMgQ09ORklH
+X1NFTlNPUlNfTE03NSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0xNNzc9bQojIENPTkZJR19T
+RU5TT1JTX0xNNzggaXMgbm90IHNldApDT05GSUdfU0VOU09SU19MTTgwPXkKQ09ORklHX1NFTlNP
+UlNfTE04Mz15CkNPTkZJR19TRU5TT1JTX0xNODU9bQpDT05GSUdfU0VOU09SU19MTTg3PXkKIyBD
+T05GSUdfU0VOU09SU19MTTkwIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfTE05Mj15CkNPTkZJ
+R19TRU5TT1JTX0xNOTM9bQpDT05GSUdfU0VOU09SU19MTTk1MjM0PXkKQ09ORklHX1NFTlNPUlNf
+TE05NTI0MT15CkNPTkZJR19TRU5TT1JTX0xNOTUyNDU9eQojIENPTkZJR19TRU5TT1JTX1BDODcz
+NjAgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19QQzg3NDI3PXkKIyBDT05GSUdfU0VOU09SU19O
+VENfVEhFUk1JU1RPUiBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX05DVDY2ODM9bQpDT05GSUdf
+U0VOU09SU19OQ1Q2Nzc1PXkKIyBDT05GSUdfU0VOU09SU19OQ1Q3ODAyIGlzIG5vdCBzZXQKQ09O
+RklHX1NFTlNPUlNfTkNUNzkwND15CiMgQ09ORklHX1NFTlNPUlNfUENGODU5MSBpcyBub3Qgc2V0
+CkNPTkZJR19QTUJVUz1tCkNPTkZJR19TRU5TT1JTX1BNQlVTPW0KQ09ORklHX1NFTlNPUlNfQURN
+MTI3NT1tCiMgQ09ORklHX1NFTlNPUlNfSVIzNTIyMSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JT
+X0xNMjUwNjY9bQojIENPTkZJR19TRU5TT1JTX0xUQzI5NzggaXMgbm90IHNldApDT05GSUdfU0VO
+U09SU19MVEMzODE1PW0KQ09ORklHX1NFTlNPUlNfTUFYMTYwNjQ9bQojIENPTkZJR19TRU5TT1JT
+X01BWDIwNzUxIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19NQVgzNDQ0MCBpcyBub3Qgc2V0
+CkNPTkZJR19TRU5TT1JTX01BWDg2ODg9bQpDT05GSUdfU0VOU09SU19UUFM0MDQyMj1tCkNPTkZJ
+R19TRU5TT1JTX1VDRDkwMDA9bQpDT05GSUdfU0VOU09SU19VQ0Q5MjAwPW0KIyBDT05GSUdfU0VO
+U09SU19aTDYxMDAgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19QV01fRkFOPXkKQ09ORklHX1NF
+TlNPUlNfU0hUMTU9eQpDT05GSUdfU0VOU09SU19TSFQyMT15CkNPTkZJR19TRU5TT1JTX1NIVDN4
+PXkKIyBDT05GSUdfU0VOU09SU19TSFRDMSBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfU0lT
+NTU5NSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0RNRTE3Mzc9bQpDT05GSUdfU0VOU09SU19F
+TUMxNDAzPW0KQ09ORklHX1NFTlNPUlNfRU1DMjEwMz15CkNPTkZJR19TRU5TT1JTX0VNQzZXMjAx
+PXkKQ09ORklHX1NFTlNPUlNfU01TQzQ3TTE9bQpDT05GSUdfU0VOU09SU19TTVNDNDdNMTkyPXkK
+Q09ORklHX1NFTlNPUlNfU01TQzQ3QjM5Nz15CiMgQ09ORklHX1NFTlNPUlNfU0NINTZYWF9DT01N
+T04gaXMgbm90IHNldAojIENPTkZJR19TRU5TT1JTX1NDSDU2MjcgaXMgbm90IHNldAojIENPTkZJ
+R19TRU5TT1JTX1NDSDU2MzYgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19TVFRTNzUxPXkKQ09O
+RklHX1NFTlNPUlNfU01NNjY1PW0KQ09ORklHX1NFTlNPUlNfQURDMTI4RDgxOD15CiMgQ09ORklH
+X1NFTlNPUlNfQURTMTAxNSBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0FEUzc4Mjg9eQojIENP
+TkZJR19TRU5TT1JTX0FEUzc4NzEgaXMgbm90IHNldApDT05GSUdfU0VOU09SU19BTUM2ODIxPXkK
+IyBDT05GSUdfU0VOU09SU19JTkEyMDkgaXMgbm90IHNldAojIENPTkZJR19TRU5TT1JTX0lOQTJY
+WCBpcyBub3Qgc2V0CkNPTkZJR19TRU5TT1JTX0lOQTMyMjE9bQpDT05GSUdfU0VOU09SU19UQzc0
+PW0KQ09ORklHX1NFTlNPUlNfVEhNQzUwPW0KIyBDT05GSUdfU0VOU09SU19UTVAxMDIgaXMgbm90
+IHNldApDT05GSUdfU0VOU09SU19UTVAxMDM9eQpDT05GSUdfU0VOU09SU19UTVAxMDg9bQpDT05G
+SUdfU0VOU09SU19UTVA0MDE9eQpDT05GSUdfU0VOU09SU19UTVA0MjE9eQpDT05GSUdfU0VOU09S
+U19WSUFfQ1BVVEVNUD15CiMgQ09ORklHX1NFTlNPUlNfVklBNjg2QSBpcyBub3Qgc2V0CiMgQ09O
+RklHX1NFTlNPUlNfVlQxMjExIGlzIG5vdCBzZXQKIyBDT05GSUdfU0VOU09SU19WVDgyMzEgaXMg
+bm90IHNldAojIENPTkZJR19TRU5TT1JTX1c4Mzc4MUQgaXMgbm90IHNldAojIENPTkZJR19TRU5T
+T1JTX1c4Mzc5MUQgaXMgbm90IHNldAojIENPTkZJR19TRU5TT1JTX1c4Mzc5MkQgaXMgbm90IHNl
+dApDT05GSUdfU0VOU09SU19XODM3OTM9bQojIENPTkZJR19TRU5TT1JTX1c4Mzc5NSBpcyBub3Qg
+c2V0CkNPTkZJR19TRU5TT1JTX1c4M0w3ODVUUz1tCiMgQ09ORklHX1NFTlNPUlNfVzgzTDc4Nk5H
+IGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfVzgzNjI3SEY9bQojIENPTkZJR19TRU5TT1JTX1c4
+MzYyN0VIRiBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfV004MzFYIGlzIG5vdCBzZXQKCiMK
+IyBBQ1BJIGRyaXZlcnMKIwojIENPTkZJR19TRU5TT1JTX0FDUElfUE9XRVIgaXMgbm90IHNldAoj
+IENPTkZJR19TRU5TT1JTX0FUSzAxMTAgaXMgbm90IHNldApDT05GSUdfVEhFUk1BTD15CkNPTkZJ
+R19USEVSTUFMX0VNRVJHRU5DWV9QT1dFUk9GRl9ERUxBWV9NUz0wCkNPTkZJR19USEVSTUFMX0hX
+TU9OPXkKQ09ORklHX1RIRVJNQUxfT0Y9eQojIENPTkZJR19USEVSTUFMX1dSSVRBQkxFX1RSSVBT
+IGlzIG5vdCBzZXQKQ09ORklHX1RIRVJNQUxfREVGQVVMVF9HT1ZfU1RFUF9XSVNFPXkKIyBDT05G
+SUdfVEhFUk1BTF9ERUZBVUxUX0dPVl9GQUlSX1NIQVJFIGlzIG5vdCBzZXQKIyBDT05GSUdfVEhF
+Uk1BTF9ERUZBVUxUX0dPVl9VU0VSX1NQQUNFIGlzIG5vdCBzZXQKIyBDT05GSUdfVEhFUk1BTF9E
+RUZBVUxUX0dPVl9QT1dFUl9BTExPQ0FUT1IgaXMgbm90IHNldAojIENPTkZJR19USEVSTUFMX0dP
+Vl9GQUlSX1NIQVJFIGlzIG5vdCBzZXQKQ09ORklHX1RIRVJNQUxfR09WX1NURVBfV0lTRT15CiMg
+Q09ORklHX1RIRVJNQUxfR09WX0JBTkdfQkFORyBpcyBub3Qgc2V0CiMgQ09ORklHX1RIRVJNQUxf
+R09WX1VTRVJfU1BBQ0UgaXMgbm90IHNldAojIENPTkZJR19USEVSTUFMX0dPVl9QT1dFUl9BTExP
+Q0FUT1IgaXMgbm90IHNldAojIENPTkZJR19DUFVfVEhFUk1BTCBpcyBub3Qgc2V0CiMgQ09ORklH
+X1RIRVJNQUxfRU1VTEFUSU9OIGlzIG5vdCBzZXQKIyBDT05GSUdfUU9SSVFfVEhFUk1BTCBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0RBOTA2Ml9USEVSTUFMIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5URUxf
+UE9XRVJDTEFNUCBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX1NPQ19EVFNfVEhFUk1BTCBpcyBu
+b3Qgc2V0CgojCiMgQUNQSSBJTlQzNDBYIHRoZXJtYWwgZHJpdmVycwojCiMgQ09ORklHX0lOVDM0
+MFhfVEhFUk1BTCBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX1BDSF9USEVSTUFMIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfUUNPTV9TUE1JX1RFTVBfQUxBUk0gaXMgbm90IHNldAojIENPTkZJR19HRU5F
+UklDX0FEQ19USEVSTUFMIGlzIG5vdCBzZXQKQ09ORklHX1dBVENIRE9HPXkKQ09ORklHX1dBVENI
+RE9HX0NPUkU9eQojIENPTkZJR19XQVRDSERPR19OT1dBWU9VVCBpcyBub3Qgc2V0CkNPTkZJR19X
+QVRDSERPR19IQU5ETEVfQk9PVF9FTkFCTEVEPXkKQ09ORklHX1dBVENIRE9HX1NZU0ZTPXkKCiMK
+IyBXYXRjaGRvZyBEZXZpY2UgRHJpdmVycwojCiMgQ09ORklHX1NPRlRfV0FUQ0hET0cgaXMgbm90
+IHNldApDT05GSUdfREE5MDUyX1dBVENIRE9HPXkKQ09ORklHX0RBOTA1NV9XQVRDSERPRz1tCkNP
+TkZJR19EQTkwNjNfV0FUQ0hET0c9eQojIENPTkZJR19EQTkwNjJfV0FUQ0hET0cgaXMgbm90IHNl
+dAojIENPTkZJR19HUElPX1dBVENIRE9HIGlzIG5vdCBzZXQKQ09ORklHX01FTkYyMUJNQ19XQVRD
+SERPRz1tCiMgQ09ORklHX1dEQVRfV0RUIGlzIG5vdCBzZXQKQ09ORklHX1dNODMxWF9XQVRDSERP
+Rz1tCkNPTkZJR19YSUxJTlhfV0FUQ0hET0c9eQpDT05GSUdfWklJUkFWRV9XQVRDSERPRz15CkNP
+TkZJR19DQURFTkNFX1dBVENIRE9HPW0KQ09ORklHX0RXX1dBVENIRE9HPXkKQ09ORklHX1JONVQ2
+MThfV0FUQ0hET0c9bQpDT05GSUdfTUFYNjNYWF9XQVRDSERPRz15CkNPTkZJR19BQ1FVSVJFX1dE
+VD1tCiMgQ09ORklHX0FEVkFOVEVDSF9XRFQgaXMgbm90IHNldAojIENPTkZJR19BTElNMTUzNV9X
+RFQgaXMgbm90IHNldAojIENPTkZJR19BTElNNzEwMV9XRFQgaXMgbm90IHNldApDT05GSUdfRUJD
+X0MzODRfV0RUPW0KIyBDT05GSUdfRjcxODA4RV9XRFQgaXMgbm90IHNldAojIENPTkZJR19TUDUx
+MDBfVENPIGlzIG5vdCBzZXQKQ09ORklHX1NCQ19GSVRQQzJfV0FUQ0hET0c9bQojIENPTkZJR19F
+VVJPVEVDSF9XRFQgaXMgbm90IHNldApDT05GSUdfSUI3MDBfV0RUPXkKIyBDT05GSUdfSUJNQVNS
+IGlzIG5vdCBzZXQKQ09ORklHX1dBRkVSX1dEVD1tCiMgQ09ORklHX0k2MzAwRVNCX1dEVCBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0lFNlhYX1dEVCBpcyBub3Qgc2V0CiMgQ09ORklHX0lUQ09fV0RUIGlz
+IG5vdCBzZXQKQ09ORklHX0lUODcxMkZfV0RUPXkKQ09ORklHX0lUODdfV0RUPW0KIyBDT05GSUdf
+SFBfV0FUQ0hET0cgaXMgbm90IHNldApDT05GSUdfU0MxMjAwX1dEVD15CkNPTkZJR19QQzg3NDEz
+X1dEVD15CiMgQ09ORklHX05WX1RDTyBpcyBub3Qgc2V0CkNPTkZJR182MFhYX1dEVD1tCkNPTkZJ
+R19DUFU1X1dEVD15CkNPTkZJR19TTVNDX1NDSDMxMVhfV0RUPW0KQ09ORklHX1NNU0MzN0I3ODdf
+V0RUPW0KIyBDT05GSUdfVklBX1dEVCBpcyBub3Qgc2V0CkNPTkZJR19XODM2MjdIRl9XRFQ9bQpD
+T05GSUdfVzgzODc3Rl9XRFQ9bQpDT05GSUdfVzgzOTc3Rl9XRFQ9eQpDT05GSUdfTUFDSFpfV0RU
+PXkKQ09ORklHX1NCQ19FUFhfQzNfV0FUQ0hET0c9eQojIENPTkZJR19OSTkwM1hfV0RUIGlzIG5v
+dCBzZXQKIyBDT05GSUdfTklDNzAxOF9XRFQgaXMgbm90IHNldApDT05GSUdfTUVOX0EyMV9XRFQ9
+bQojIENPTkZJR19YRU5fV0RUIGlzIG5vdCBzZXQKCiMKIyBQQ0ktYmFzZWQgV2F0Y2hkb2cgQ2Fy
+ZHMKIwojIENPTkZJR19QQ0lQQ1dBVENIRE9HIGlzIG5vdCBzZXQKIyBDT05GSUdfV0RUUENJIGlz
+IG5vdCBzZXQKCiMKIyBVU0ItYmFzZWQgV2F0Y2hkb2cgQ2FyZHMKIwpDT05GSUdfVVNCUENXQVRD
+SERPRz1tCgojCiMgV2F0Y2hkb2cgUHJldGltZW91dCBHb3Zlcm5vcnMKIwpDT05GSUdfV0FUQ0hE
+T0dfUFJFVElNRU9VVF9HT1Y9eQpDT05GSUdfV0FUQ0hET0dfUFJFVElNRU9VVF9ERUZBVUxUX0dP
+Vl9OT09QPXkKIyBDT05GSUdfV0FUQ0hET0dfUFJFVElNRU9VVF9ERUZBVUxUX0dPVl9QQU5JQyBp
+cyBub3Qgc2V0CkNPTkZJR19XQVRDSERPR19QUkVUSU1FT1VUX0dPVl9OT09QPXkKQ09ORklHX1dB
+VENIRE9HX1BSRVRJTUVPVVRfR09WX1BBTklDPXkKQ09ORklHX1NTQl9QT1NTSUJMRT15CgojCiMg
+U29uaWNzIFNpbGljb24gQmFja3BsYW5lCiMKQ09ORklHX1NTQj15CkNPTkZJR19TU0JfU1BST009
+eQpDT05GSUdfU1NCX1BDSUhPU1RfUE9TU0lCTEU9eQpDT05GSUdfU1NCX1BDSUhPU1Q9eQojIENP
+TkZJR19TU0JfQjQzX1BDSV9CUklER0UgaXMgbm90IHNldApDT05GSUdfU1NCX1BDTUNJQUhPU1Rf
+UE9TU0lCTEU9eQojIENPTkZJR19TU0JfUENNQ0lBSE9TVCBpcyBub3Qgc2V0CkNPTkZJR19TU0Jf
+U0lMRU5UPXkKQ09ORklHX1NTQl9EUklWRVJfUENJQ09SRV9QT1NTSUJMRT15CiMgQ09ORklHX1NT
+Ql9EUklWRVJfUENJQ09SRSBpcyBub3Qgc2V0CkNPTkZJR19TU0JfRFJJVkVSX0dQSU89eQpDT05G
+SUdfQkNNQV9QT1NTSUJMRT15CgojCiMgQnJvYWRjb20gc3BlY2lmaWMgQU1CQQojCkNPTkZJR19C
+Q01BPXkKQ09ORklHX0JDTUFfSE9TVF9QQ0lfUE9TU0lCTEU9eQpDT05GSUdfQkNNQV9IT1NUX1BD
+ST15CkNPTkZJR19CQ01BX0hPU1RfU09DPXkKQ09ORklHX0JDTUFfRFJJVkVSX1BDST15CkNPTkZJ
+R19CQ01BX1NGTEFTSD15CiMgQ09ORklHX0JDTUFfRFJJVkVSX0dNQUNfQ01OIGlzIG5vdCBzZXQK
+Q09ORklHX0JDTUFfRFJJVkVSX0dQSU89eQpDT05GSUdfQkNNQV9ERUJVRz15CgojCiMgTXVsdGlm
+dW5jdGlvbiBkZXZpY2UgZHJpdmVycwojCkNPTkZJR19NRkRfQ09SRT15CiMgQ09ORklHX01GRF9B
+Q1Q4OTQ1QSBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9BUzM3MTEgaXMgbm90IHNldAojIENPTkZJ
+R19NRkRfQVMzNzIyIGlzIG5vdCBzZXQKQ09ORklHX1BNSUNfQURQNTUyMD15CkNPTkZJR19NRkRf
+QUFUMjg3MF9DT1JFPXkKIyBDT05GSUdfTUZEX0FUTUVMX0ZMRVhDT00gaXMgbm90IHNldAojIENP
+TkZJR19NRkRfQVRNRUxfSExDREMgaXMgbm90IHNldApDT05GSUdfTUZEX0JDTTU5MFhYPXkKIyBD
+T05GSUdfTUZEX0FYUDIwWF9JMkMgaXMgbm90IHNldAojIENPTkZJR19NRkRfQ1JPU19FQyBpcyBu
+b3Qgc2V0CiMgQ09ORklHX1BNSUNfREE5MDNYIGlzIG5vdCBzZXQKQ09ORklHX1BNSUNfREE5MDUy
+PXkKQ09ORklHX01GRF9EQTkwNTJfU1BJPXkKIyBDT05GSUdfTUZEX0RBOTA1Ml9JMkMgaXMgbm90
+IHNldApDT05GSUdfTUZEX0RBOTA1NT15CkNPTkZJR19NRkRfREE5MDYyPXkKQ09ORklHX01GRF9E
+QTkwNjM9eQpDT05GSUdfTUZEX0RBOTE1MD15CiMgQ09ORklHX01GRF9ETE4yIGlzIG5vdCBzZXQK
+Q09ORklHX01GRF9NQzEzWFhYPW0KIyBDT05GSUdfTUZEX01DMTNYWFhfU1BJIGlzIG5vdCBzZXQK
+Q09ORklHX01GRF9NQzEzWFhYX0kyQz1tCiMgQ09ORklHX01GRF9ISTY0MjFfUE1JQyBpcyBub3Qg
+c2V0CkNPTkZJR19IVENfUEFTSUMzPW0KQ09ORklHX0hUQ19JMkNQTEQ9eQojIENPTkZJR19NRkRf
+SU5URUxfUVVBUktfSTJDX0dQSU8gaXMgbm90IHNldAojIENPTkZJR19MUENfSUNIIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfTFBDX1NDSCBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX1NPQ19QTUlDIGlz
+IG5vdCBzZXQKIyBDT05GSUdfSU5URUxfU09DX1BNSUNfQ0hUV0MgaXMgbm90IHNldAojIENPTkZJ
+R19NRkRfSU5URUxfTFBTU19BQ1BJIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX0lOVEVMX0xQU1Nf
+UENJIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX0pBTlpfQ01PRElPIGlzIG5vdCBzZXQKIyBDT05G
+SUdfTUZEX0tFTVBMRCBpcyBub3Qgc2V0CkNPTkZJR19NRkRfODhQTTgwMD15CkNPTkZJR19NRkRf
+ODhQTTgwNT15CiMgQ09ORklHX01GRF84OFBNODYwWCBpcyBub3Qgc2V0CkNPTkZJR19NRkRfTUFY
+MTQ1Nzc9bQojIENPTkZJR19NRkRfTUFYNzc2MjAgaXMgbm90IHNldApDT05GSUdfTUZEX01BWDc3
+Njg2PW0KIyBDT05GSUdfTUZEX01BWDc3NjkzIGlzIG5vdCBzZXQKQ09ORklHX01GRF9NQVg3Nzg0
+Mz15CiMgQ09ORklHX01GRF9NQVg4OTA3IGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX01BWDg5MjUg
+aXMgbm90IHNldAojIENPTkZJR19NRkRfTUFYODk5NyBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9N
+QVg4OTk4IGlzIG5vdCBzZXQKQ09ORklHX01GRF9NVDYzOTc9eQpDT05GSUdfTUZEX01FTkYyMUJN
+Qz15CiMgQ09ORklHX0VaWF9QQ0FQIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX0NQQ0FQIGlzIG5v
+dCBzZXQKQ09ORklHX01GRF9WSVBFUkJPQVJEPW0KIyBDT05GSUdfTUZEX1JFVFUgaXMgbm90IHNl
+dApDT05GSUdfTUZEX1BDRjUwNjMzPW0KQ09ORklHX1BDRjUwNjMzX0FEQz1tCkNPTkZJR19QQ0Y1
+MDYzM19HUElPPW0KQ09ORklHX1VDQjE0MDBfQ09SRT1tCiMgQ09ORklHX01GRF9SREMzMjFYIGlz
+IG5vdCBzZXQKIyBDT05GSUdfTUZEX1JUU1hfUENJIGlzIG5vdCBzZXQKQ09ORklHX01GRF9SVDUw
+MzM9bQpDT05GSUdfTUZEX1JUU1hfVVNCPXkKQ09ORklHX01GRF9SQzVUNTgzPXkKIyBDT05GSUdf
+TUZEX1JLODA4IGlzIG5vdCBzZXQKQ09ORklHX01GRF9STjVUNjE4PW0KIyBDT05GSUdfTUZEX1NF
+Q19DT1JFIGlzIG5vdCBzZXQKQ09ORklHX01GRF9TSTQ3NlhfQ09SRT15CkNPTkZJR19NRkRfU001
+MDE9bQpDT05GSUdfTUZEX1NNNTAxX0dQSU89eQpDT05GSUdfTUZEX1NLWTgxNDUyPW0KIyBDT05G
+SUdfTUZEX1NNU0MgaXMgbm90IHNldAojIENPTkZJR19BQlg1MDBfQ09SRSBpcyBub3Qgc2V0CkNP
+TkZJR19NRkRfU1RNUEU9eQoKIwojIFNUTWljcm9lbGVjdHJvbmljcyBTVE1QRSBJbnRlcmZhY2Ug
+RHJpdmVycwojCkNPTkZJR19TVE1QRV9JMkM9eQpDT05GSUdfU1RNUEVfU1BJPXkKQ09ORklHX01G
+RF9TWVNDT049eQojIENPTkZJR19NRkRfVElfQU0zMzVYX1RTQ0FEQyBpcyBub3Qgc2V0CkNPTkZJ
+R19NRkRfTFAzOTQzPW0KIyBDT05GSUdfTUZEX0xQODc4OCBpcyBub3Qgc2V0CkNPTkZJR19NRkRf
+VElfTE1VPW0KQ09ORklHX01GRF9QQUxNQVM9eQpDT05GSUdfVFBTNjEwNVg9eQojIENPTkZJR19U
+UFM2NTAxMCBpcyBub3Qgc2V0CkNPTkZJR19UUFM2NTA3WD15CiMgQ09ORklHX01GRF9UUFM2NTA4
+NiBpcyBub3Qgc2V0CkNPTkZJR19NRkRfVFBTNjUwOTA9eQpDT05GSUdfTUZEX1RQUzY1MjE3PW0K
+Q09ORklHX01GRF9USV9MUDg3M1g9eQpDT05GSUdfTUZEX1RJX0xQODc1NjU9eQojIENPTkZJR19N
+RkRfVFBTNjUyMTggaXMgbm90IHNldApDT05GSUdfTUZEX1RQUzY1ODZYPXkKIyBDT05GSUdfTUZE
+X1RQUzY1OTEwIGlzIG5vdCBzZXQKQ09ORklHX01GRF9UUFM2NTkxMj15CkNPTkZJR19NRkRfVFBT
+NjU5MTJfSTJDPW0KQ09ORklHX01GRF9UUFM2NTkxMl9TUEk9eQojIENPTkZJR19NRkRfVFBTODAw
+MzEgaXMgbm90IHNldAojIENPTkZJR19UV0w0MDMwX0NPUkUgaXMgbm90IHNldAojIENPTkZJR19U
+V0w2MDQwX0NPUkUgaXMgbm90IHNldAojIENPTkZJR19NRkRfV0wxMjczX0NPUkUgaXMgbm90IHNl
+dAojIENPTkZJR19NRkRfTE0zNTMzIGlzIG5vdCBzZXQKIyBDT05GSUdfTUZEX1RDMzU4OVggaXMg
+bm90IHNldAojIENPTkZJR19NRkRfVE1JTyBpcyBub3Qgc2V0CiMgQ09ORklHX01GRF9WWDg1NSBp
+cyBub3Qgc2V0CkNPTkZJR19NRkRfQVJJWk9OQT15CkNPTkZJR19NRkRfQVJJWk9OQV9JMkM9eQpD
+T05GSUdfTUZEX0FSSVpPTkFfU1BJPW0KIyBDT05GSUdfTUZEX0NTNDdMMjQgaXMgbm90IHNldApD
+T05GSUdfTUZEX1dNNTEwMj15CiMgQ09ORklHX01GRF9XTTUxMTAgaXMgbm90IHNldApDT05GSUdf
+TUZEX1dNODk5Nz15CkNPTkZJR19NRkRfV004OTk4PXkKIyBDT05GSUdfTUZEX1dNODQwMCBpcyBu
+b3Qgc2V0CkNPTkZJR19NRkRfV004MzFYPXkKIyBDT05GSUdfTUZEX1dNODMxWF9JMkMgaXMgbm90
+IHNldApDT05GSUdfTUZEX1dNODMxWF9TUEk9eQojIENPTkZJR19NRkRfV004MzUwX0kyQyBpcyBu
+b3Qgc2V0CkNPTkZJR19NRkRfV004OTk0PXkKQ09ORklHX1JFR1VMQVRPUj15CiMgQ09ORklHX1JF
+R1VMQVRPUl9ERUJVRyBpcyBub3Qgc2V0CkNPTkZJR19SRUdVTEFUT1JfRklYRURfVk9MVEFHRT15
+CkNPTkZJR19SRUdVTEFUT1JfVklSVFVBTF9DT05TVU1FUj1tCkNPTkZJR19SRUdVTEFUT1JfVVNF
+UlNQQUNFX0NPTlNVTUVSPW0KQ09ORklHX1JFR1VMQVRPUl84OFBNODAwPW0KQ09ORklHX1JFR1VM
+QVRPUl9BQ1Q4ODY1PXkKIyBDT05GSUdfUkVHVUxBVE9SX0FENTM5OCBpcyBub3Qgc2V0CiMgQ09O
+RklHX1JFR1VMQVRPUl9BTkFUT1AgaXMgbm90IHNldApDT05GSUdfUkVHVUxBVE9SX0FBVDI4NzA9
+bQpDT05GSUdfUkVHVUxBVE9SX0FSSVpPTkFfTERPMT1tCiMgQ09ORklHX1JFR1VMQVRPUl9BUkla
+T05BX01JQ1NVUFAgaXMgbm90IHNldApDT05GSUdfUkVHVUxBVE9SX0JDTTU5MFhYPW0KQ09ORklH
+X1JFR1VMQVRPUl9EQTkwNTI9bQojIENPTkZJR19SRUdVTEFUT1JfREE5MDU1IGlzIG5vdCBzZXQK
+IyBDT05GSUdfUkVHVUxBVE9SX0RBOTA2MiBpcyBub3Qgc2V0CkNPTkZJR19SRUdVTEFUT1JfREE5
+MDYzPW0KIyBDT05GSUdfUkVHVUxBVE9SX0RBOTIxMCBpcyBub3Qgc2V0CkNPTkZJR19SRUdVTEFU
+T1JfREE5MjExPXkKQ09ORklHX1JFR1VMQVRPUl9GQU41MzU1NT1tCkNPTkZJR19SRUdVTEFUT1Jf
+R1BJTz15CkNPTkZJR19SRUdVTEFUT1JfSVNMOTMwNT1tCkNPTkZJR19SRUdVTEFUT1JfSVNMNjI3
+MUE9eQojIENPTkZJR19SRUdVTEFUT1JfTE0zNjNYIGlzIG5vdCBzZXQKQ09ORklHX1JFR1VMQVRP
+Ul9MUDM5NzE9eQojIENPTkZJR19SRUdVTEFUT1JfTFAzOTcyIGlzIG5vdCBzZXQKIyBDT05GSUdf
+UkVHVUxBVE9SX0xQODcyWCBpcyBub3Qgc2V0CiMgQ09ORklHX1JFR1VMQVRPUl9MUDg3M1ggaXMg
+bm90IHNldApDT05GSUdfUkVHVUxBVE9SX0xQODc1NT1tCkNPTkZJR19SRUdVTEFUT1JfTFA4NzU2
+NT15CiMgQ09ORklHX1JFR1VMQVRPUl9MVEMzNTg5IGlzIG5vdCBzZXQKQ09ORklHX1JFR1VMQVRP
+Ul9MVEMzNjc2PW0KIyBDT05GSUdfUkVHVUxBVE9SX01BWDE0NTc3IGlzIG5vdCBzZXQKQ09ORklH
+X1JFR1VMQVRPUl9NQVgxNTg2PXkKIyBDT05GSUdfUkVHVUxBVE9SX01BWDg2NDkgaXMgbm90IHNl
+dAojIENPTkZJR19SRUdVTEFUT1JfTUFYODY2MCBpcyBub3Qgc2V0CkNPTkZJR19SRUdVTEFUT1Jf
+TUFYODk1Mj1tCiMgQ09ORklHX1JFR1VMQVRPUl9NQVg4OTczIGlzIG5vdCBzZXQKQ09ORklHX1JF
+R1VMQVRPUl9NQVg3NzY4Nj1tCkNPTkZJR19SRUdVTEFUT1JfTUFYNzc2OTM9eQpDT05GSUdfUkVH
+VUxBVE9SX01BWDc3ODAyPW0KQ09ORklHX1JFR1VMQVRPUl9NQzEzWFhYX0NPUkU9bQpDT05GSUdf
+UkVHVUxBVE9SX01DMTM3ODM9bQpDT05GSUdfUkVHVUxBVE9SX01DMTM4OTI9bQpDT05GSUdfUkVH
+VUxBVE9SX01UNjMxMT1tCiMgQ09ORklHX1JFR1VMQVRPUl9NVDYzMjMgaXMgbm90IHNldApDT05G
+SUdfUkVHVUxBVE9SX01UNjM5Nz1tCkNPTkZJR19SRUdVTEFUT1JfUEFMTUFTPW0KQ09ORklHX1JF
+R1VMQVRPUl9QQ0Y1MDYzMz1tCkNPTkZJR19SRUdVTEFUT1JfUEZVWkUxMDA9eQojIENPTkZJR19S
+RUdVTEFUT1JfUFY4ODA2MCBpcyBub3Qgc2V0CkNPTkZJR19SRUdVTEFUT1JfUFY4ODA4MD15CkNP
+TkZJR19SRUdVTEFUT1JfUFY4ODA5MD15CkNPTkZJR19SRUdVTEFUT1JfUFdNPXkKQ09ORklHX1JF
+R1VMQVRPUl9RQ09NX1NQTUk9bQojIENPTkZJR19SRUdVTEFUT1JfUkM1VDU4MyBpcyBub3Qgc2V0
+CkNPTkZJR19SRUdVTEFUT1JfUk41VDYxOD1tCiMgQ09ORklHX1JFR1VMQVRPUl9SVDUwMzMgaXMg
+bm90IHNldAojIENPTkZJR19SRUdVTEFUT1JfU0tZODE0NTIgaXMgbm90IHNldApDT05GSUdfUkVH
+VUxBVE9SX1RQUzUxNjMyPXkKQ09ORklHX1JFR1VMQVRPUl9UUFM2MTA1WD1tCkNPTkZJR19SRUdV
+TEFUT1JfVFBTNjIzNjA9eQpDT05GSUdfUkVHVUxBVE9SX1RQUzY1MDIzPXkKIyBDT05GSUdfUkVH
+VUxBVE9SX1RQUzY1MDdYIGlzIG5vdCBzZXQKIyBDT05GSUdfUkVHVUxBVE9SX1RQUzY1MDkwIGlz
+IG5vdCBzZXQKQ09ORklHX1JFR1VMQVRPUl9UUFM2NTEzMj15CiMgQ09ORklHX1JFR1VMQVRPUl9U
+UFM2NTIxNyBpcyBub3Qgc2V0CkNPTkZJR19SRUdVTEFUT1JfVFBTNjUyNFg9eQpDT05GSUdfUkVH
+VUxBVE9SX1RQUzY1ODZYPW0KQ09ORklHX1JFR1VMQVRPUl9UUFM2NTkxMj15CkNPTkZJR19SRUdV
+TEFUT1JfVkNUUkw9bQpDT05GSUdfUkVHVUxBVE9SX1dNODMxWD15CkNPTkZJR19SRUdVTEFUT1Jf
+V004OTk0PXkKQ09ORklHX0NFQ19DT1JFPW0KQ09ORklHX01FRElBX1NVUFBPUlQ9bQoKIwojIE11
+bHRpbWVkaWEgY29yZSBzdXBwb3J0CiMKQ09ORklHX01FRElBX0NBTUVSQV9TVVBQT1JUPXkKIyBD
+T05GSUdfTUVESUFfQU5BTE9HX1RWX1NVUFBPUlQgaXMgbm90IHNldApDT05GSUdfTUVESUFfRElH
+SVRBTF9UVl9TVVBQT1JUPXkKQ09ORklHX01FRElBX1JBRElPX1NVUFBPUlQ9eQojIENPTkZJR19N
+RURJQV9TRFJfU1VQUE9SVCBpcyBub3Qgc2V0CiMgQ09ORklHX01FRElBX1JDX1NVUFBPUlQgaXMg
+bm90IHNldApDT05GSUdfTUVESUFfQ0VDX1NVUFBPUlQ9eQojIENPTkZJR19NRURJQV9DT05UUk9M
+TEVSIGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX0RFVj1tCkNPTkZJR19WSURFT19WNEwyPW0KIyBD
+T05GSUdfVklERU9fQURWX0RFQlVHIGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX0ZJWEVEX01JTk9S
+X1JBTkdFUz15CiMgQ09ORklHX1ZJREVPX1BDSV9TS0VMRVRPTiBpcyBub3Qgc2V0CkNPTkZJR19W
+NEwyX01FTTJNRU1fREVWPW0KQ09ORklHX1Y0TDJfRldOT0RFPW0KQ09ORklHX1ZJREVPQlVGMl9D
+T1JFPW0KQ09ORklHX1ZJREVPQlVGMl9NRU1PUFM9bQpDT05GSUdfVklERU9CVUYyX0RNQV9DT05U
+SUc9bQpDT05GSUdfVklERU9CVUYyX1ZNQUxMT0M9bQpDT05GSUdfRFZCX0NPUkU9bQojIENPTkZJ
+R19UVFBDSV9FRVBST00gaXMgbm90IHNldApDT05GSUdfRFZCX01BWF9BREFQVEVSUz0xNgpDT05G
+SUdfRFZCX0RZTkFNSUNfTUlOT1JTPXkKIyBDT05GSUdfRFZCX0RFTVVYX1NFQ1RJT05fTE9TU19M
+T0cgaXMgbm90IHNldAoKIwojIE1lZGlhIGRyaXZlcnMKIwojIENPTkZJR19NRURJQV9VU0JfU1VQ
+UE9SVCBpcyBub3Qgc2V0CiMgQ09ORklHX01FRElBX1BDSV9TVVBQT1JUIGlzIG5vdCBzZXQKQ09O
+RklHX1Y0TF9QTEFURk9STV9EUklWRVJTPXkKIyBDT05GSUdfVklERU9fQ0FGRV9DQ0lDIGlzIG5v
+dCBzZXQKIyBDT05GSUdfU09DX0NBTUVSQSBpcyBub3Qgc2V0CkNPTkZJR19WNExfTUVNMk1FTV9E
+UklWRVJTPXkKIyBDT05GSUdfVklERU9fU0hfVkVVIGlzIG5vdCBzZXQKQ09ORklHX1Y0TF9URVNU
+X0RSSVZFUlM9eQpDT05GSUdfVklERU9fVklWSUQ9bQpDT05GSUdfVklERU9fVklWSURfQ0VDPXkK
+Q09ORklHX1ZJREVPX1ZJVklEX01BWF9ERVZTPTY0CkNPTkZJR19WSURFT19WSU0yTT1tCiMgQ09O
+RklHX0RWQl9QTEFURk9STV9EUklWRVJTIGlzIG5vdCBzZXQKIyBDT05GSUdfQ0VDX1BMQVRGT1JN
+X0RSSVZFUlMgaXMgbm90IHNldAoKIwojIFN1cHBvcnRlZCBNTUMvU0RJTyBhZGFwdGVycwojCkNP
+TkZJR19SQURJT19BREFQVEVSUz15CkNPTkZJR19SQURJT19URUE1NzVYPW0KIyBDT05GSUdfUkFE
+SU9fU0k0NzBYIGlzIG5vdCBzZXQKQ09ORklHX1JBRElPX1NJNDcxMz1tCkNPTkZJR19VU0JfU0k0
+NzEzPW0KIyBDT05GSUdfUExBVEZPUk1fU0k0NzEzIGlzIG5vdCBzZXQKQ09ORklHX0kyQ19TSTQ3
+MTM9bQojIENPTkZJR19SQURJT19TSTQ3NlggaXMgbm90IHNldAojIENPTkZJR19VU0JfTVI4MDAg
+aXMgbm90IHNldApDT05GSUdfVVNCX0RTQlI9bQojIENPTkZJR19SQURJT19NQVhJUkFESU8gaXMg
+bm90IHNldApDT05GSUdfUkFESU9fU0hBUks9bQpDT05GSUdfUkFESU9fU0hBUksyPW0KQ09ORklH
+X1VTQl9LRUVORT1tCkNPTkZJR19VU0JfUkFSRU1PTk89bQpDT05GSUdfVVNCX01BOTAxPW0KQ09O
+RklHX1JBRElPX1RFQTU3NjQ9bQpDT05GSUdfUkFESU9fU0FBNzcwNkg9bQpDT05GSUdfUkFESU9f
+VEVGNjg2Mj1tCiMgQ09ORklHX1JBRElPX1dMMTI3MyBpcyBub3Qgc2V0CgojCiMgVGV4YXMgSW5z
+dHJ1bWVudHMgV0wxMjh4IEZNIGRyaXZlciAoU1QgYmFzZWQpCiMKIyBDT05GSUdfQ1lQUkVTU19G
+SVJNV0FSRSBpcyBub3Qgc2V0CkNPTkZJR19WSURFT19WNEwyX1RQRz1tCgojCiMgTWVkaWEgYW5j
+aWxsYXJ5IGRyaXZlcnMgKHR1bmVycywgc2Vuc29ycywgaTJjLCBzcGksIGZyb250ZW5kcykKIwoj
+IENPTkZJR19NRURJQV9TVUJEUlZfQVVUT1NFTEVDVCBpcyBub3Qgc2V0CkNPTkZJR19NRURJQV9B
+VFRBQ0g9eQoKIwojIEkyQyBFbmNvZGVycywgZGVjb2RlcnMsIHNlbnNvcnMgYW5kIG90aGVyIGhl
+bHBlciBjaGlwcwojCgojCiMgQXVkaW8gZGVjb2RlcnMsIHByb2Nlc3NvcnMgYW5kIG1peGVycwoj
+CiMgQ09ORklHX1ZJREVPX1RWQVVESU8gaXMgbm90IHNldApDT05GSUdfVklERU9fVERBNzQzMj1t
+CiMgQ09ORklHX1ZJREVPX1REQTk4NDAgaXMgbm90IHNldAojIENPTkZJR19WSURFT19URUE2NDE1
+QyBpcyBub3Qgc2V0CkNPTkZJR19WSURFT19URUE2NDIwPW0KQ09ORklHX1ZJREVPX01TUDM0MDA9
+bQpDT05GSUdfVklERU9fQ1MzMzA4PW0KQ09ORklHX1ZJREVPX0NTNTM0NT1tCkNPTkZJR19WSURF
+T19DUzUzTDMyQT1tCkNPTkZJR19WSURFT19UTFYzMjBBSUMyM0I9bQpDT05GSUdfVklERU9fVURB
+MTM0Mj1tCiMgQ09ORklHX1ZJREVPX1dNODc3NSBpcyBub3Qgc2V0CkNPTkZJR19WSURFT19XTTg3
+Mzk9bQpDT05GSUdfVklERU9fVlAyN1NNUFg9bQpDT05GSUdfVklERU9fU09OWV9CVEZfTVBYPW0K
+CiMKIyBSRFMgZGVjb2RlcnMKIwpDT05GSUdfVklERU9fU0FBNjU4OD1tCgojCiMgVmlkZW8gZGVj
+b2RlcnMKIwpDT05GSUdfVklERU9fQURWNzE4Mz1tCkNPTkZJR19WSURFT19CVDgxOT1tCiMgQ09O
+RklHX1ZJREVPX0JUODU2IGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX0JUODY2PW0KIyBDT05GSUdf
+VklERU9fS1MwMTI3IGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX01MODZWNzY2Nz1tCkNPTkZJR19W
+SURFT19TQUE3MTEwPW0KIyBDT05GSUdfVklERU9fU0FBNzExWCBpcyBub3Qgc2V0CkNPTkZJR19W
+SURFT19UVlA1MTRYPW0KQ09ORklHX1ZJREVPX1RWUDUxNTA9bQpDT05GSUdfVklERU9fVFZQNzAw
+Mj1tCkNPTkZJR19WSURFT19UVzI4MDQ9bQpDT05GSUdfVklERU9fVFc5OTAzPW0KQ09ORklHX1ZJ
+REVPX1RXOTkwNj1tCiMgQ09ORklHX1ZJREVPX1ZQWDMyMjAgaXMgbm90IHNldAoKIwojIFZpZGVv
+IGFuZCBhdWRpbyBkZWNvZGVycwojCiMgQ09ORklHX1ZJREVPX1NBQTcxN1ggaXMgbm90IHNldApD
+T05GSUdfVklERU9fQ1gyNTg0MD1tCgojCiMgVmlkZW8gZW5jb2RlcnMKIwojIENPTkZJR19WSURF
+T19TQUE3MTI3IGlzIG5vdCBzZXQKIyBDT05GSUdfVklERU9fU0FBNzE4NSBpcyBub3Qgc2V0CkNP
+TkZJR19WSURFT19BRFY3MTcwPW0KIyBDT05GSUdfVklERU9fQURWNzE3NSBpcyBub3Qgc2V0CiMg
+Q09ORklHX1ZJREVPX0FEVjczNDMgaXMgbm90IHNldApDT05GSUdfVklERU9fQURWNzM5Mz1tCkNP
+TkZJR19WSURFT19BSzg4MVg9bQpDT05GSUdfVklERU9fVEhTODIwMD1tCgojCiMgQ2FtZXJhIHNl
+bnNvciBkZXZpY2VzCiMKIyBDT05GSUdfVklERU9fT1YyNjQwIGlzIG5vdCBzZXQKIyBDT05GSUdf
+VklERU9fT1YyNjU5IGlzIG5vdCBzZXQKIyBDT05GSUdfVklERU9fT1Y3NjQwIGlzIG5vdCBzZXQK
+IyBDT05GSUdfVklERU9fT1Y3NjcwIGlzIG5vdCBzZXQKQ09ORklHX1ZJREVPX1ZTNjYyND1tCiMg
+Q09ORklHX1ZJREVPX01UOU0xMTEgaXMgbm90IHNldApDT05GSUdfVklERU9fTVQ5VjAxMT1tCkNP
+TkZJR19WSURFT19TUjAzMFBDMzA9bQoKIwojIEZsYXNoIGRldmljZXMKIwoKIwojIFZpZGVvIGlt
+cHJvdmVtZW50IGNoaXBzCiMKQ09ORklHX1ZJREVPX1VQRDY0MDMxQT1tCiMgQ09ORklHX1ZJREVP
+X1VQRDY0MDgzIGlzIG5vdCBzZXQKCiMKIyBBdWRpby9WaWRlbyBjb21wcmVzc2lvbiBjaGlwcwoj
+CiMgQ09ORklHX1ZJREVPX1NBQTY3NTJIUyBpcyBub3Qgc2V0CgojCiMgU0RSIHR1bmVyIGNoaXBz
+CiMKCiMKIyBNaXNjZWxsYW5lb3VzIGhlbHBlciBjaGlwcwojCiMgQ09ORklHX1ZJREVPX1RIUzcz
+MDMgaXMgbm90IHNldApDT05GSUdfVklERU9fTTUyNzkwPW0KCiMKIyBTZW5zb3JzIHVzZWQgb24g
+c29jX2NhbWVyYSBkcml2ZXIKIwoKIwojIFNQSSBoZWxwZXIgY2hpcHMKIwpDT05GSUdfTUVESUFf
+VFVORVI9bQoKIwojIEN1c3RvbWl6ZSBUViB0dW5lcnMKIwpDT05GSUdfTUVESUFfVFVORVJfU0lN
+UExFPW0KIyBDT05GSUdfTUVESUFfVFVORVJfVERBODI5MCBpcyBub3Qgc2V0CiMgQ09ORklHX01F
+RElBX1RVTkVSX1REQTgyN1ggaXMgbm90IHNldAojIENPTkZJR19NRURJQV9UVU5FUl9UREExODI3
+MSBpcyBub3Qgc2V0CkNPTkZJR19NRURJQV9UVU5FUl9UREE5ODg3PW0KIyBDT05GSUdfTUVESUFf
+VFVORVJfVEVBNTc2MSBpcyBub3Qgc2V0CkNPTkZJR19NRURJQV9UVU5FUl9URUE1NzY3PW0KQ09O
+RklHX01FRElBX1RVTkVSX01TSTAwMT1tCkNPTkZJR19NRURJQV9UVU5FUl9NVDIwWFg9bQojIENP
+TkZJR19NRURJQV9UVU5FUl9NVDIwNjAgaXMgbm90IHNldAojIENPTkZJR19NRURJQV9UVU5FUl9N
+VDIwNjMgaXMgbm90IHNldAojIENPTkZJR19NRURJQV9UVU5FUl9NVDIyNjYgaXMgbm90IHNldAoj
+IENPTkZJR19NRURJQV9UVU5FUl9NVDIxMzEgaXMgbm90IHNldAojIENPTkZJR19NRURJQV9UVU5F
+Ul9RVDEwMTAgaXMgbm90IHNldApDT05GSUdfTUVESUFfVFVORVJfWEMyMDI4PW0KQ09ORklHX01F
+RElBX1RVTkVSX1hDNTAwMD1tCiMgQ09ORklHX01FRElBX1RVTkVSX1hDNDAwMCBpcyBub3Qgc2V0
+CkNPTkZJR19NRURJQV9UVU5FUl9NWEw1MDA1Uz1tCkNPTkZJR19NRURJQV9UVU5FUl9NWEw1MDA3
+VD1tCkNPTkZJR19NRURJQV9UVU5FUl9NQzQ0UzgwMz1tCkNPTkZJR19NRURJQV9UVU5FUl9NQVgy
+MTY1PW0KQ09ORklHX01FRElBX1RVTkVSX1REQTE4MjE4PW0KQ09ORklHX01FRElBX1RVTkVSX0ZD
+MDAxMT1tCiMgQ09ORklHX01FRElBX1RVTkVSX0ZDMDAxMiBpcyBub3Qgc2V0CkNPTkZJR19NRURJ
+QV9UVU5FUl9GQzAwMTM9bQpDT05GSUdfTUVESUFfVFVORVJfVERBMTgyMTI9bQpDT05GSUdfTUVE
+SUFfVFVORVJfRTQwMDA9bQojIENPTkZJR19NRURJQV9UVU5FUl9GQzI1ODAgaXMgbm90IHNldAoj
+IENPTkZJR19NRURJQV9UVU5FUl9NODhSUzYwMDBUIGlzIG5vdCBzZXQKQ09ORklHX01FRElBX1RV
+TkVSX1RVQTkwMDE9bQpDT05GSUdfTUVESUFfVFVORVJfU0kyMTU3PW0KIyBDT05GSUdfTUVESUFf
+VFVORVJfSVQ5MTNYIGlzIG5vdCBzZXQKQ09ORklHX01FRElBX1RVTkVSX1I4MjBUPW0KQ09ORklH
+X01FRElBX1RVTkVSX01YTDMwMVJGPW0KQ09ORklHX01FRElBX1RVTkVSX1FNMUQxQzAwNDI9bQoK
+IwojIEN1c3RvbWlzZSBEVkIgRnJvbnRlbmRzCiMKCiMKIyBNdWx0aXN0YW5kYXJkIChzYXRlbGxp
+dGUpIGZyb250ZW5kcwojCkNPTkZJR19EVkJfU1RCMDg5OT1tCiMgQ09ORklHX0RWQl9TVEI2MTAw
+IGlzIG5vdCBzZXQKQ09ORklHX0RWQl9TVFYwOTB4PW0KIyBDT05GSUdfRFZCX1NUVjYxMTB4IGlz
+IG5vdCBzZXQKIyBDT05GSUdfRFZCX004OERTMzEwMyBpcyBub3Qgc2V0CgojCiMgTXVsdGlzdGFu
+ZGFyZCAoY2FibGUgKyB0ZXJyZXN0cmlhbCkgZnJvbnRlbmRzCiMKQ09ORklHX0RWQl9EUlhLPW0K
+IyBDT05GSUdfRFZCX1REQTE4MjcxQzJERCBpcyBub3Qgc2V0CiMgQ09ORklHX0RWQl9TSTIxNjUg
+aXMgbm90IHNldApDT05GSUdfRFZCX01OODg0NzI9bQpDT05GSUdfRFZCX01OODg0NzM9bQoKIwoj
+IERWQi1TIChzYXRlbGxpdGUpIGZyb250ZW5kcwojCiMgQ09ORklHX0RWQl9DWDI0MTEwIGlzIG5v
+dCBzZXQKQ09ORklHX0RWQl9DWDI0MTIzPW0KIyBDT05GSUdfRFZCX01UMzEyIGlzIG5vdCBzZXQK
+Q09ORklHX0RWQl9aTDEwMDM2PW0KIyBDT05GSUdfRFZCX1pMMTAwMzkgaXMgbm90IHNldApDT05G
+SUdfRFZCX1M1SDE0MjA9bQojIENPTkZJR19EVkJfU1RWMDI4OCBpcyBub3Qgc2V0CkNPTkZJR19E
+VkJfU1RCNjAwMD1tCiMgQ09ORklHX0RWQl9TVFYwMjk5IGlzIG5vdCBzZXQKIyBDT05GSUdfRFZC
+X1NUVjYxMTAgaXMgbm90IHNldApDT05GSUdfRFZCX1NUVjA5MDA9bQojIENPTkZJR19EVkJfVERB
+ODA4MyBpcyBub3Qgc2V0CkNPTkZJR19EVkJfVERBMTAwODY9bQpDT05GSUdfRFZCX1REQTgyNjE9
+bQpDT05GSUdfRFZCX1ZFUzFYOTM9bQpDT05GSUdfRFZCX1RVTkVSX0lURDEwMDA9bQpDT05GSUdf
+RFZCX1RVTkVSX0NYMjQxMTM9bQpDT05GSUdfRFZCX1REQTgyNlg9bQojIENPTkZJR19EVkJfVFVB
+NjEwMCBpcyBub3Qgc2V0CiMgQ09ORklHX0RWQl9DWDI0MTE2IGlzIG5vdCBzZXQKQ09ORklHX0RW
+Ql9DWDI0MTE3PW0KQ09ORklHX0RWQl9DWDI0MTIwPW0KIyBDT05GSUdfRFZCX1NJMjFYWCBpcyBu
+b3Qgc2V0CkNPTkZJR19EVkJfVFMyMDIwPW0KQ09ORklHX0RWQl9EUzMwMDA9bQpDT05GSUdfRFZC
+X01CODZBMTY9bQpDT05GSUdfRFZCX1REQTEwMDcxPW0KCiMKIyBEVkItVCAodGVycmVzdHJpYWwp
+IGZyb250ZW5kcwojCiMgQ09ORklHX0RWQl9TUDg4NzAgaXMgbm90IHNldApDT05GSUdfRFZCX1NQ
+ODg3WD1tCkNPTkZJR19EVkJfQ1gyMjcwMD1tCiMgQ09ORklHX0RWQl9DWDIyNzAyIGlzIG5vdCBz
+ZXQKQ09ORklHX0RWQl9TNUgxNDMyPW0KQ09ORklHX0RWQl9EUlhEPW0KQ09ORklHX0RWQl9MNjQ3
+ODE9bQpDT05GSUdfRFZCX1REQTEwMDRYPW0KIyBDT05GSUdfRFZCX05YVDYwMDAgaXMgbm90IHNl
+dAojIENPTkZJR19EVkJfTVQzNTIgaXMgbm90IHNldAojIENPTkZJR19EVkJfWkwxMDM1MyBpcyBu
+b3Qgc2V0CkNPTkZJR19EVkJfRElCMzAwME1CPW0KQ09ORklHX0RWQl9ESUIzMDAwTUM9bQpDT05G
+SUdfRFZCX0RJQjcwMDBNPW0KIyBDT05GSUdfRFZCX0RJQjcwMDBQIGlzIG5vdCBzZXQKIyBDT05G
+SUdfRFZCX0RJQjkwMDAgaXMgbm90IHNldApDT05GSUdfRFZCX1REQTEwMDQ4PW0KQ09ORklHX0RW
+Ql9BRjkwMTM9bQpDT05GSUdfRFZCX0VDMTAwPW0KQ09ORklHX0RWQl9TVFYwMzY3PW0KIyBDT05G
+SUdfRFZCX0NYRDI4MjBSIGlzIG5vdCBzZXQKIyBDT05GSUdfRFZCX0NYRDI4NDFFUiBpcyBub3Qg
+c2V0CkNPTkZJR19EVkJfUlRMMjgzMD1tCkNPTkZJR19EVkJfUlRMMjgzMj1tCiMgQ09ORklHX0RW
+Ql9TSTIxNjggaXMgbm90IHNldAojIENPTkZJR19EVkJfQVMxMDJfRkUgaXMgbm90IHNldApDT05G
+SUdfRFZCX1pEMTMwMV9ERU1PRD1tCiMgQ09ORklHX0RWQl9HUDhQU0tfRkUgaXMgbm90IHNldAoK
+IwojIERWQi1DIChjYWJsZSkgZnJvbnRlbmRzCiMKQ09ORklHX0RWQl9WRVMxODIwPW0KQ09ORklH
+X0RWQl9UREExMDAyMT1tCiMgQ09ORklHX0RWQl9UREExMDAyMyBpcyBub3Qgc2V0CiMgQ09ORklH
+X0RWQl9TVFYwMjk3IGlzIG5vdCBzZXQKCiMKIyBBVFNDIChOb3J0aCBBbWVyaWNhbi9Lb3JlYW4g
+VGVycmVzdHJpYWwvQ2FibGUgRFRWKSBmcm9udGVuZHMKIwojIENPTkZJR19EVkJfTlhUMjAwWCBp
+cyBub3Qgc2V0CkNPTkZJR19EVkJfT1I1MTIxMT1tCiMgQ09ORklHX0RWQl9PUjUxMTMyIGlzIG5v
+dCBzZXQKQ09ORklHX0RWQl9CQ00zNTEwPW0KIyBDT05GSUdfRFZCX0xHRFQzMzBYIGlzIG5vdCBz
+ZXQKQ09ORklHX0RWQl9MR0RUMzMwNT1tCkNPTkZJR19EVkJfTEdEVDMzMDZBPW0KIyBDT05GSUdf
+RFZCX0xHMjE2MCBpcyBub3Qgc2V0CkNPTkZJR19EVkJfUzVIMTQwOT1tCkNPTkZJR19EVkJfQVU4
+NTIyPW0KQ09ORklHX0RWQl9BVTg1MjJfRFRWPW0KQ09ORklHX0RWQl9BVTg1MjJfVjRMPW0KQ09O
+RklHX0RWQl9TNUgxNDExPW0KCiMKIyBJU0RCLVQgKHRlcnJlc3RyaWFsKSBmcm9udGVuZHMKIwpD
+T05GSUdfRFZCX1M5MjE9bQpDT05GSUdfRFZCX0RJQjgwMDA9bQpDT05GSUdfRFZCX01CODZBMjBT
+PW0KCiMKIyBJU0RCLVMgKHNhdGVsbGl0ZSkgJiBJU0RCLVQgKHRlcnJlc3RyaWFsKSBmcm9udGVu
+ZHMKIwpDT05GSUdfRFZCX1RDOTA1MjI9bQoKIwojIERpZ2l0YWwgdGVycmVzdHJpYWwgb25seSB0
+dW5lcnMvUExMCiMKIyBDT05GSUdfRFZCX1BMTCBpcyBub3Qgc2V0CiMgQ09ORklHX0RWQl9UVU5F
+Ul9ESUIwMDcwIGlzIG5vdCBzZXQKQ09ORklHX0RWQl9UVU5FUl9ESUIwMDkwPW0KCiMKIyBTRUMg
+Y29udHJvbCBkZXZpY2VzIGZvciBEVkItUwojCiMgQ09ORklHX0RWQl9EUlgzOVhZSiBpcyBub3Qg
+c2V0CkNPTkZJR19EVkJfTE5CSDI1PW0KQ09ORklHX0RWQl9MTkJQMjE9bQojIENPTkZJR19EVkJf
+TE5CUDIyIGlzIG5vdCBzZXQKQ09ORklHX0RWQl9JU0w2NDA1PW0KQ09ORklHX0RWQl9JU0w2NDIx
+PW0KQ09ORklHX0RWQl9JU0w2NDIzPW0KIyBDT05GSUdfRFZCX0E4MjkzIGlzIG5vdCBzZXQKIyBD
+T05GSUdfRFZCX1NQMiBpcyBub3Qgc2V0CkNPTkZJR19EVkJfTEdTOEdMNT1tCiMgQ09ORklHX0RW
+Ql9MR1M4R1hYIGlzIG5vdCBzZXQKIyBDT05GSUdfRFZCX0FUQk04ODMwIGlzIG5vdCBzZXQKQ09O
+RklHX0RWQl9UREE2NjV4PW0KIyBDT05GSUdfRFZCX0lYMjUwNVYgaXMgbm90IHNldAojIENPTkZJ
+R19EVkJfTTg4UlMyMDAwIGlzIG5vdCBzZXQKQ09ORklHX0RWQl9BRjkwMzM9bQpDT05GSUdfRFZC
+X0hPUlVTM0E9bQojIENPTkZJR19EVkJfQVNDT1QyRSBpcyBub3Qgc2V0CiMgQ09ORklHX0RWQl9I
+RUxFTkUgaXMgbm90IHNldAoKIwojIFRvb2xzIHRvIGRldmVsb3AgbmV3IGZyb250ZW5kcwojCkNP
+TkZJR19EVkJfRFVNTVlfRkU9bQoKIwojIEdyYXBoaWNzIHN1cHBvcnQKIwojIENPTkZJR19BR1Ag
+aXMgbm90IHNldApDT05GSUdfVkdBX0FSQj15CkNPTkZJR19WR0FfQVJCX01BWF9HUFVTPTE2CiMg
+Q09ORklHX1ZHQV9TV0lUQ0hFUk9PIGlzIG5vdCBzZXQKQ09ORklHX0RSTT15CkNPTkZJR19EUk1f
+TUlQSV9EU0k9eQojIENPTkZJR19EUk1fRFBfQVVYX0NIQVJERVYgaXMgbm90IHNldAojIENPTkZJ
+R19EUk1fREVCVUdfTU0gaXMgbm90IHNldAojIENPTkZJR19EUk1fREVCVUdfTU1fU0VMRlRFU1Qg
+aXMgbm90IHNldApDT05GSUdfRFJNX0tNU19IRUxQRVI9eQpDT05GSUdfRFJNX0tNU19GQl9IRUxQ
+RVI9eQpDT05GSUdfRFJNX0ZCREVWX0VNVUxBVElPTj15CkNPTkZJR19EUk1fRkJERVZfT1ZFUkFM
+TE9DPTEwMApDT05GSUdfRFJNX0xPQURfRURJRF9GSVJNV0FSRT15CkNPTkZJR19EUk1fVFRNPXkK
+Q09ORklHX0RSTV9HRU1fQ01BX0hFTFBFUj15CkNPTkZJR19EUk1fS01TX0NNQV9IRUxQRVI9eQpD
+T05GSUdfRFJNX1ZNPXkKCiMKIyBJMkMgZW5jb2RlciBvciBoZWxwZXIgY2hpcHMKIwojIENPTkZJ
+R19EUk1fSTJDX0NINzAwNiBpcyBub3Qgc2V0CiMgQ09ORklHX0RSTV9JMkNfU0lMMTY0IGlzIG5v
+dCBzZXQKQ09ORklHX0RSTV9JMkNfTlhQX1REQTk5OFg9eQojIENPTkZJR19EUk1fUkFERU9OIGlz
+IG5vdCBzZXQKIyBDT05GSUdfRFJNX0FNREdQVSBpcyBub3Qgc2V0CgojCiMgQUNQIChBdWRpbyBD
+b1Byb2Nlc3NvcikgQ29uZmlndXJhdGlvbgojCiMgQ09ORklHX0RSTV9OT1VWRUFVIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfRFJNX0k5MTUgaXMgbm90IHNldApDT05GSUdfRFJNX1ZHRU09eQojIENPTkZJ
+R19EUk1fVk1XR0ZYIGlzIG5vdCBzZXQKIyBDT05GSUdfRFJNX0dNQTUwMCBpcyBub3Qgc2V0CiMg
+Q09ORklHX0RSTV9VREwgaXMgbm90IHNldAojIENPTkZJR19EUk1fQVNUIGlzIG5vdCBzZXQKIyBD
+T05GSUdfRFJNX01HQUcyMDAgaXMgbm90IHNldAojIENPTkZJR19EUk1fQ0lSUlVTX1FFTVUgaXMg
+bm90IHNldApDT05GSUdfRFJNX1JDQVJfRFdfSERNST1tCiMgQ09ORklHX0RSTV9RWEwgaXMgbm90
+IHNldAojIENPTkZJR19EUk1fQk9DSFMgaXMgbm90IHNldApDT05GSUdfRFJNX1ZJUlRJT19HUFU9
+eQpDT05GSUdfRFJNX1BBTkVMPXkKCiMKIyBEaXNwbGF5IFBhbmVscwojCkNPTkZJR19EUk1fUEFO
+RUxfTFZEUz1tCkNPTkZJR19EUk1fUEFORUxfU0lNUExFPXkKQ09ORklHX0RSTV9QQU5FTF9JTk5P
+TFVYX1AwNzlaQ0E9eQojIENPTkZJR19EUk1fUEFORUxfSkRJX0xUMDcwTUUwNTAwMCBpcyBub3Qg
+c2V0CkNPTkZJR19EUk1fUEFORUxfU0FNU1VOR19MRDkwNDA9eQojIENPTkZJR19EUk1fUEFORUxf
+TEdfTEc0NTczIGlzIG5vdCBzZXQKQ09ORklHX0RSTV9QQU5FTF9QQU5BU09OSUNfVlZYMTBGMDM0
+TjAwPXkKIyBDT05GSUdfRFJNX1BBTkVMX1NBTVNVTkdfUzZFM0hBMiBpcyBub3Qgc2V0CkNPTkZJ
+R19EUk1fUEFORUxfU0FNU1VOR19TNkU4QUEwPW0KQ09ORklHX0RSTV9QQU5FTF9TSEFSUF9MUTEw
+MVIxU1gwMT15CkNPTkZJR19EUk1fUEFORUxfU0hBUlBfTFMwNDNUMUxFMDE9eQpDT05GSUdfRFJN
+X1BBTkVMX1NJVFJPTklYX1NUNzc4OVY9bQpDT05GSUdfRFJNX0JSSURHRT15CkNPTkZJR19EUk1f
+UEFORUxfQlJJREdFPXkKCiMKIyBEaXNwbGF5IEludGVyZmFjZSBCcmlkZ2VzCiMKQ09ORklHX0RS
+TV9BTkFMT0dJWF9BTlg3OFhYPW0KIyBDT05GSUdfRFJNX0RVTUJfVkdBX0RBQyBpcyBub3Qgc2V0
+CiMgQ09ORklHX0RSTV9MVkRTX0VOQ09ERVIgaXMgbm90IHNldApDT05GSUdfRFJNX01FR0FDSElQ
+U19TVERQWFhYWF9HRV9CODUwVjNfRlc9bQpDT05GSUdfRFJNX05YUF9QVE4zNDYwPXkKIyBDT05G
+SUdfRFJNX1BBUkFERV9QUzg2MjIgaXMgbm90IHNldApDT05GSUdfRFJNX1NJTF9TSUk4NjIwPW0K
+Q09ORklHX0RSTV9TSUk5MDJYPXkKIyBDT05GSUdfRFJNX1RPU0hJQkFfVEMzNTg3NjcgaXMgbm90
+IHNldApDT05GSUdfRFJNX1RJX1RGUDQxMD15CkNPTkZJR19EUk1fSTJDX0FEVjc1MTE9eQojIENP
+TkZJR19EUk1fSTJDX0FEVjc1MTFfQVVESU8gaXMgbm90IHNldAojIENPTkZJR19EUk1fSTJDX0FE
+Vjc1MzMgaXMgbm90IHNldApDT05GSUdfRFJNX0RXX0hETUk9bQojIENPTkZJR19EUk1fRFdfSERN
+SV9BSEJfQVVESU8gaXMgbm90IHNldApDT05GSUdfRFJNX0RXX0hETUlfSTJTX0FVRElPPW0KIyBD
+T05GSUdfRFJNX0FSQ1BHVSBpcyBub3Qgc2V0CiMgQ09ORklHX0RSTV9ISVNJX0hJQk1DIGlzIG5v
+dCBzZXQKIyBDT05GSUdfRFJNX01YU0ZCIGlzIG5vdCBzZXQKQ09ORklHX0RSTV9USU5ZRFJNPXkK
+Q09ORklHX1RJTllEUk1fTUlQSV9EQkk9eQpDT05GSUdfVElOWURSTV9NSTAyODNRVD15CkNPTkZJ
+R19EUk1fTEVHQUNZPXkKIyBDT05GSUdfRFJNX1RERlggaXMgbm90IHNldAojIENPTkZJR19EUk1f
+UjEyOCBpcyBub3Qgc2V0CiMgQ09ORklHX0RSTV9NR0EgaXMgbm90IHNldAojIENPTkZJR19EUk1f
+VklBIGlzIG5vdCBzZXQKIyBDT05GSUdfRFJNX1NBVkFHRSBpcyBub3Qgc2V0CiMgQ09ORklHX0RS
+TV9MSUJfUkFORE9NIGlzIG5vdCBzZXQKCiMKIyBGcmFtZSBidWZmZXIgRGV2aWNlcwojCkNPTkZJ
+R19GQj15CiMgQ09ORklHX0ZJUk1XQVJFX0VESUQgaXMgbm90IHNldApDT05GSUdfRkJfQ01ETElO
+RT15CkNPTkZJR19GQl9OT1RJRlk9eQojIENPTkZJR19GQl9EREMgaXMgbm90IHNldApDT05GSUdf
+RkJfQk9PVF9WRVNBX1NVUFBPUlQ9eQpDT05GSUdfRkJfQ0ZCX0ZJTExSRUNUPXkKQ09ORklHX0ZC
+X0NGQl9DT1BZQVJFQT15CkNPTkZJR19GQl9DRkJfSU1BR0VCTElUPXkKIyBDT05GSUdfRkJfQ0ZC
+X1JFVl9QSVhFTFNfSU5fQllURSBpcyBub3Qgc2V0CkNPTkZJR19GQl9TWVNfRklMTFJFQ1Q9eQpD
+T05GSUdfRkJfU1lTX0NPUFlBUkVBPXkKQ09ORklHX0ZCX1NZU19JTUFHRUJMSVQ9eQojIENPTkZJ
+R19GQl9QUk9WSURFX0dFVF9GQl9VTk1BUFBFRF9BUkVBIGlzIG5vdCBzZXQKQ09ORklHX0ZCX0ZP
+UkVJR05fRU5ESUFOPXkKIyBDT05GSUdfRkJfQk9USF9FTkRJQU4gaXMgbm90IHNldApDT05GSUdf
+RkJfQklHX0VORElBTj15CiMgQ09ORklHX0ZCX0xJVFRMRV9FTkRJQU4gaXMgbm90IHNldApDT05G
+SUdfRkJfU1lTX0ZPUFM9eQpDT05GSUdfRkJfREVGRVJSRURfSU89eQpDT05GSUdfRkJfSEVDVUJB
+PW0KIyBDT05GSUdfRkJfU1ZHQUxJQiBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX01BQ01PREVTIGlz
+IG5vdCBzZXQKQ09ORklHX0ZCX0JBQ0tMSUdIVD15CkNPTkZJR19GQl9NT0RFX0hFTFBFUlM9eQpD
+T05GSUdfRkJfVElMRUJMSVRUSU5HPXkKCiMKIyBGcmFtZSBidWZmZXIgaGFyZHdhcmUgZHJpdmVy
+cwojCiMgQ09ORklHX0ZCX0NJUlJVUyBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1BNMiBpcyBub3Qg
+c2V0CiMgQ09ORklHX0ZCX0NZQkVSMjAwMCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX0FSQyBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0ZCX0FTSUxJQU5UIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfSU1TVFQg
+aXMgbm90IHNldAojIENPTkZJR19GQl9WR0ExNiBpcyBub3Qgc2V0CkNPTkZJR19GQl9WRVNBPXkK
+Q09ORklHX0ZCX040MTE9bQpDT05GSUdfRkJfSEdBPXkKQ09ORklHX0ZCX09QRU5DT1JFUz15CkNP
+TkZJR19GQl9TMUQxM1hYWD15CiMgQ09ORklHX0ZCX05WSURJQSBpcyBub3Qgc2V0CiMgQ09ORklH
+X0ZCX1JJVkEgaXMgbm90IHNldAojIENPTkZJR19GQl9JNzQwIGlzIG5vdCBzZXQKIyBDT05GSUdf
+RkJfTEU4MDU3OCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX01BVFJPWCBpcyBub3Qgc2V0CiMgQ09O
+RklHX0ZCX1JBREVPTiBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX0FUWTEyOCBpcyBub3Qgc2V0CiMg
+Q09ORklHX0ZCX0FUWSBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX1MzIGlzIG5vdCBzZXQKIyBDT05G
+SUdfRkJfU0FWQUdFIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfU0lTIGlzIG5vdCBzZXQKIyBDT05G
+SUdfRkJfVklBIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfTkVPTUFHSUMgaXMgbm90IHNldAojIENP
+TkZJR19GQl9LWVJPIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfM0RGWCBpcyBub3Qgc2V0CiMgQ09O
+RklHX0ZCX1ZPT0RPTzEgaXMgbm90IHNldAojIENPTkZJR19GQl9WVDg2MjMgaXMgbm90IHNldAoj
+IENPTkZJR19GQl9UUklERU5UIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfQVJLIGlzIG5vdCBzZXQK
+IyBDT05GSUdfRkJfUE0zIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfQ0FSTUlORSBpcyBub3Qgc2V0
+CiMgQ09ORklHX0ZCX1NNNTAxIGlzIG5vdCBzZXQKIyBDT05GSUdfRkJfU01TQ1VGWCBpcyBub3Qg
+c2V0CiMgQ09ORklHX0ZCX1VETCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZCX0lCTV9HWFQ0NTAwIGlz
+IG5vdCBzZXQKIyBDT05GSUdfRkJfVklSVFVBTCBpcyBub3Qgc2V0CkNPTkZJR19YRU5fRkJERVZf
+RlJPTlRFTkQ9bQpDT05GSUdfRkJfTUVUUk9OT01FPXkKIyBDT05GSUdfRkJfTUI4NjJYWCBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0ZCX0JST0FEU0hFRVQgaXMgbm90IHNldAojIENPTkZJR19GQl9BVU9f
+SzE5MFggaXMgbm90IHNldAojIENPTkZJR19GQl9TSU1QTEUgaXMgbm90IHNldApDT05GSUdfRkJf
+U1NEMTMwNz1tCiMgQ09ORklHX0ZCX1NNNzEyIGlzIG5vdCBzZXQKQ09ORklHX0JBQ0tMSUdIVF9M
+Q0RfU1VQUE9SVD15CiMgQ09ORklHX0xDRF9DTEFTU19ERVZJQ0UgaXMgbm90IHNldApDT05GSUdf
+QkFDS0xJR0hUX0NMQVNTX0RFVklDRT15CkNPTkZJR19CQUNLTElHSFRfR0VORVJJQz1tCkNPTkZJ
+R19CQUNLTElHSFRfUFdNPW0KQ09ORklHX0JBQ0tMSUdIVF9EQTkwNTI9eQojIENPTkZJR19CQUNL
+TElHSFRfQVBQTEUgaXMgbm90IHNldAojIENPTkZJR19CQUNLTElHSFRfUE04OTQxX1dMRUQgaXMg
+bm90IHNldApDT05GSUdfQkFDS0xJR0hUX1NBSEFSQT15CkNPTkZJR19CQUNLTElHSFRfV004MzFY
+PXkKIyBDT05GSUdfQkFDS0xJR0hUX0FEUDU1MjAgaXMgbm90IHNldApDT05GSUdfQkFDS0xJR0hU
+X0FEUDg4NjA9eQpDT05GSUdfQkFDS0xJR0hUX0FEUDg4NzA9eQojIENPTkZJR19CQUNLTElHSFRf
+UENGNTA2MzMgaXMgbm90IHNldApDT05GSUdfQkFDS0xJR0hUX0FBVDI4NzA9bQojIENPTkZJR19C
+QUNLTElHSFRfTE0zNjMwQSBpcyBub3Qgc2V0CkNPTkZJR19CQUNLTElHSFRfTE0zNjM5PW0KQ09O
+RklHX0JBQ0tMSUdIVF9MUDg1NVg9eQpDT05GSUdfQkFDS0xJR0hUX1NLWTgxNDUyPW0KQ09ORklH
+X0JBQ0tMSUdIVF9UUFM2NTIxNz1tCiMgQ09ORklHX0JBQ0tMSUdIVF9HUElPIGlzIG5vdCBzZXQK
+Q09ORklHX0JBQ0tMSUdIVF9MVjUyMDdMUD15CkNPTkZJR19CQUNLTElHSFRfQkQ2MTA3PW0KIyBD
+T05GSUdfQkFDS0xJR0hUX0FSQ1hDTk4gaXMgbm90IHNldAojIENPTkZJR19WR0FTVEFURSBpcyBu
+b3Qgc2V0CkNPTkZJR19WSURFT01PREVfSEVMUEVSUz15CkNPTkZJR19IRE1JPXkKIyBDT05GSUdf
+TE9HTyBpcyBub3Qgc2V0CkNPTkZJR19TT1VORD1tCiMgQ09ORklHX1NPVU5EX09TU19DT1JFIGlz
+IG5vdCBzZXQKQ09ORklHX1NORD1tCkNPTkZJR19TTkRfVElNRVI9bQpDT05GSUdfU05EX1BDTT1t
+CkNPTkZJR19TTkRfUENNX0VMRD15CkNPTkZJR19TTkRfUENNX0lFQzk1OD15CkNPTkZJR19TTkRf
+RE1BRU5HSU5FX1BDTT1tCkNPTkZJR19TTkRfSFdERVA9bQpDT05GSUdfU05EX1JBV01JREk9bQpD
+T05GSUdfU05EX0pBQ0s9eQpDT05GSUdfU05EX0pBQ0tfSU5QVVRfREVWPXkKIyBDT05GSUdfU05E
+X09TU0VNVUwgaXMgbm90IHNldAojIENPTkZJR19TTkRfUENNX1RJTUVSIGlzIG5vdCBzZXQKQ09O
+RklHX1NORF9IUlRJTUVSPW0KQ09ORklHX1NORF9EWU5BTUlDX01JTk9SUz15CkNPTkZJR19TTkRf
+TUFYX0NBUkRTPTMyCiMgQ09ORklHX1NORF9TVVBQT1JUX09MRF9BUEkgaXMgbm90IHNldApDT05G
+SUdfU05EX1BST0NfRlM9eQojIENPTkZJR19TTkRfVkVSQk9TRV9QUk9DRlMgaXMgbm90IHNldAoj
+IENPTkZJR19TTkRfVkVSQk9TRV9QUklOVEsgaXMgbm90IHNldAojIENPTkZJR19TTkRfREVCVUcg
+aXMgbm90IHNldApDT05GSUdfU05EX1ZNQVNURVI9eQpDT05GSUdfU05EX0RNQV9TR0JVRj15CiMg
+Q09ORklHX1NORF9TRVFVRU5DRVIgaXMgbm90IHNldAojIENPTkZJR19TTkRfT1BMM19MSUJfU0VR
+IGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX09QTDRfTElCX1NFUSBpcyBub3Qgc2V0CkNPTkZJR19T
+TkRfVlhfTElCPW0KQ09ORklHX1NORF9BQzk3X0NPREVDPW0KIyBDT05GSUdfU05EX0RSSVZFUlMg
+aXMgbm90IHNldApDT05GSUdfU05EX1BDST15CiMgQ09ORklHX1NORF9BRDE4ODkgaXMgbm90IHNl
+dAojIENPTkZJR19TTkRfQVNJSFBJIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX0FUSUlYUCBpcyBu
+b3Qgc2V0CiMgQ09ORklHX1NORF9BVElJWFBfTU9ERU0gaXMgbm90IHNldAojIENPTkZJR19TTkRf
+QVU4ODEwIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX0FVODgyMCBpcyBub3Qgc2V0CiMgQ09ORklH
+X1NORF9BVTg4MzAgaXMgbm90IHNldAojIENPTkZJR19TTkRfQVcyIGlzIG5vdCBzZXQKIyBDT05G
+SUdfU05EX0JUODdYIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX0NBMDEwNiBpcyBub3Qgc2V0CiMg
+Q09ORklHX1NORF9DTUlQQ0kgaXMgbm90IHNldAojIENPTkZJR19TTkRfT1hZR0VOIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfU05EX0NTNDI4MSBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9DUzQ2WFggaXMg
+bm90IHNldAojIENPTkZJR19TTkRfQ1RYRkkgaXMgbm90IHNldAojIENPTkZJR19TTkRfREFSTEEy
+MCBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9HSU5BMjAgaXMgbm90IHNldAojIENPTkZJR19TTkRf
+TEFZTEEyMCBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9EQVJMQTI0IGlzIG5vdCBzZXQKIyBDT05G
+SUdfU05EX0dJTkEyNCBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9MQVlMQTI0IGlzIG5vdCBzZXQK
+IyBDT05GSUdfU05EX01PTkEgaXMgbm90IHNldAojIENPTkZJR19TTkRfTUlBIGlzIG5vdCBzZXQK
+IyBDT05GSUdfU05EX0VDSE8zRyBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9JTkRJR08gaXMgbm90
+IHNldAojIENPTkZJR19TTkRfSU5ESUdPSU8gaXMgbm90IHNldAojIENPTkZJR19TTkRfSU5ESUdP
+REogaXMgbm90IHNldAojIENPTkZJR19TTkRfSU5ESUdPSU9YIGlzIG5vdCBzZXQKIyBDT05GSUdf
+U05EX0lORElHT0RKWCBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9FTVUxMEsxX1NFUSBpcyBub3Qg
+c2V0CiMgQ09ORklHX1NORF9FTlMxMzcwIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX0VOUzEzNzEg
+aXMgbm90IHNldAojIENPTkZJR19TTkRfRk04MDEgaXMgbm90IHNldAojIENPTkZJR19TTkRfSERT
+UCBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9IRFNQTSBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9J
+Q0UxNzI0IGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX0lOVEVMOFgwIGlzIG5vdCBzZXQKIyBDT05G
+SUdfU05EX0lOVEVMOFgwTSBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9LT1JHMTIxMiBpcyBub3Qg
+c2V0CiMgQ09ORklHX1NORF9MT0xBIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX0xYNjQ2NEVTIGlz
+IG5vdCBzZXQKIyBDT05GSUdfU05EX01JWEFSVCBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9OTTI1
+NiBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9QQ1hIUiBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9S
+SVBUSURFIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1JNRTMyIGlzIG5vdCBzZXQKIyBDT05GSUdf
+U05EX1JNRTk2IGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1JNRTk2NTIgaXMgbm90IHNldAojIENP
+TkZJR19TTkRfU0U2WCBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9WSUE4MlhYIGlzIG5vdCBzZXQK
+IyBDT05GSUdfU05EX1ZJQTgyWFhfTU9ERU0gaXMgbm90IHNldAojIENPTkZJR19TTkRfVklSVFVP
+U08gaXMgbm90IHNldAojIENPTkZJR19TTkRfVlgyMjIgaXMgbm90IHNldAojIENPTkZJR19TTkRf
+WU1GUENJIGlzIG5vdCBzZXQKCiMKIyBIRC1BdWRpbwojCiMgQ09ORklHX1NORF9IREFfSU5URUwg
+aXMgbm90IHNldApDT05GSUdfU05EX0hEQV9QUkVBTExPQ19TSVpFPTY0CiMgQ09ORklHX1NORF9T
+UEkgaXMgbm90IHNldApDT05GSUdfU05EX1VTQj15CiMgQ09ORklHX1NORF9VU0JfQVVESU8gaXMg
+bm90IHNldApDT05GSUdfU05EX1VTQl9VQTEwMT1tCkNPTkZJR19TTkRfVVNCX1VTWDJZPW0KQ09O
+RklHX1NORF9VU0JfQ0FJQVE9bQojIENPTkZJR19TTkRfVVNCX0NBSUFRX0lOUFVUIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfU05EX1VTQl9VUzEyMkwgaXMgbm90IHNldApDT05GSUdfU05EX1VTQl82RklS
+RT1tCkNPTkZJR19TTkRfVVNCX0hJRkFDRT1tCkNPTkZJR19TTkRfQkNEMjAwMD1tCkNPTkZJR19T
+TkRfVVNCX0xJTkU2PW0KQ09ORklHX1NORF9VU0JfUE9EPW0KQ09ORklHX1NORF9VU0JfUE9ESEQ9
+bQpDT05GSUdfU05EX1VTQl9UT05FUE9SVD1tCkNPTkZJR19TTkRfVVNCX1ZBUklBWD1tCkNPTkZJ
+R19TTkRfUENNQ0lBPXkKQ09ORklHX1NORF9WWFBPQ0tFVD1tCkNPTkZJR19TTkRfUERBVURJT0NG
+PW0KQ09ORklHX1NORF9TT0M9bQpDT05GSUdfU05EX1NPQ19BQzk3X0JVUz15CkNPTkZJR19TTkRf
+U09DX0dFTkVSSUNfRE1BRU5HSU5FX1BDTT15CkNPTkZJR19TTkRfU09DX0FNRF9BQ1A9bQpDT05G
+SUdfU05EX0FUTUVMX1NPQz1tCiMgQ09ORklHX1NORF9ERVNJR05XQVJFX0kyUyBpcyBub3Qgc2V0
+CgojCiMgU29DIEF1ZGlvIGZvciBGcmVlc2NhbGUgQ1BVcwojCgojCiMgQ29tbW9uIFNvQyBBdWRp
+byBvcHRpb25zIGZvciBGcmVlc2NhbGUgQ1BVczoKIwpDT05GSUdfU05EX1NPQ19GU0xfQVNSQz1t
+CkNPTkZJR19TTkRfU09DX0ZTTF9TQUk9bQpDT05GSUdfU05EX1NPQ19GU0xfU1NJPW0KQ09ORklH
+X1NORF9TT0NfRlNMX1NQRElGPW0KQ09ORklHX1NORF9TT0NfRlNMX0VTQUk9bQojIENPTkZJR19T
+TkRfU09DX0lNWF9BVURNVVggaXMgbm90IHNldApDT05GSUdfU05EX0kyU19ISTYyMTBfSTJTPW0K
+Q09ORklHX1NORF9TT0NfSU1HPXkKQ09ORklHX1NORF9TT0NfSU1HX0kyU19JTj1tCkNPTkZJR19T
+TkRfU09DX0lNR19JMlNfT1VUPW0KQ09ORklHX1NORF9TT0NfSU1HX1BBUkFMTEVMX09VVD1tCkNP
+TkZJR19TTkRfU09DX0lNR19TUERJRl9JTj1tCkNPTkZJR19TTkRfU09DX0lNR19TUERJRl9PVVQ9
+bQpDT05GSUdfU05EX1NPQ19JTUdfUElTVEFDSElPX0lOVEVSTkFMX0RBQz1tCiMgQ09ORklHX1NO
+RF9TT0NfSU5URUxfQlhUX0RBNzIxOV9NQVg5ODM1N0FfTUFDSCBpcyBub3Qgc2V0CiMgQ09ORklH
+X1NORF9TT0NfSU5URUxfQlhUX1JUMjk4X01BQ0ggaXMgbm90IHNldAojIENPTkZJR19TTkRfU09D
+X0lOVEVMX0JZVENSX1JUNTY0MF9NQUNIIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1NPQ19JTlRF
+TF9CWVRDUl9SVDU2NTFfTUFDSCBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9TT0NfSU5URUxfU0tM
+X1JUMjg2X01BQ0ggaXMgbm90IHNldAoKIwojIFNUTWljcm9lbGVjdHJvbmljcyBTVE0zMiBTT0Mg
+YXVkaW8gc3VwcG9ydAojCkNPTkZJR19TTkRfU09DX1hURlBHQV9JMlM9bQojIENPTkZJR19aWF9U
+RE0gaXMgbm90IHNldApDT05GSUdfU05EX1NPQ19JMkNfQU5EX1NQST1tCgojCiMgQ09ERUMgZHJp
+dmVycwojCkNPTkZJR19TTkRfU09DX0FDOTdfQ09ERUM9bQpDT05GSUdfU05EX1NPQ19BREFVX1VU
+SUxTPW0KQ09ORklHX1NORF9TT0NfQURBVTE3MDE9bQpDT05GSUdfU05EX1NPQ19BREFVMTdYMT1t
+CkNPTkZJR19TTkRfU09DX0FEQVUxNzYxPW0KIyBDT05GSUdfU05EX1NPQ19BREFVMTc2MV9JMkMg
+aXMgbm90IHNldApDT05GSUdfU05EX1NPQ19BREFVMTc2MV9TUEk9bQpDT05GSUdfU05EX1NPQ19B
+REFVNzAwMj1tCiMgQ09ORklHX1NORF9TT0NfQUs0MTA0IGlzIG5vdCBzZXQKQ09ORklHX1NORF9T
+T0NfQUs0NTU0PW0KIyBDT05GSUdfU05EX1NPQ19BSzQ2MTMgaXMgbm90IHNldApDT05GSUdfU05E
+X1NPQ19BSzQ2NDI9bQpDT05GSUdfU05EX1NPQ19BSzUzODY9bQojIENPTkZJR19TTkRfU09DX0FM
+QzU2MjMgaXMgbm90IHNldApDT05GSUdfU05EX1NPQ19CVF9TQ089bQojIENPTkZJR19TTkRfU09D
+X0NTMzVMMzIgaXMgbm90IHNldApDT05GSUdfU05EX1NPQ19DUzM1TDMzPW0KQ09ORklHX1NORF9T
+T0NfQ1MzNUwzND1tCkNPTkZJR19TTkRfU09DX0NTMzVMMzU9bQojIENPTkZJR19TTkRfU09DX0NT
+NDJMNDIgaXMgbm90IHNldAojIENPTkZJR19TTkRfU09DX0NTNDJMNTFfSTJDIGlzIG5vdCBzZXQK
+IyBDT05GSUdfU05EX1NPQ19DUzQyTDUyIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1NPQ19DUzQy
+TDU2IGlzIG5vdCBzZXQKQ09ORklHX1NORF9TT0NfQ1M0Mkw3Mz1tCiMgQ09ORklHX1NORF9TT0Nf
+Q1M0MjY1IGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1NPQ19DUzQyNzAgaXMgbm90IHNldApDT05G
+SUdfU05EX1NPQ19DUzQyNzE9bQojIENPTkZJR19TTkRfU09DX0NTNDI3MV9JMkMgaXMgbm90IHNl
+dApDT05GSUdfU05EX1NPQ19DUzQyNzFfU1BJPW0KQ09ORklHX1NORF9TT0NfQ1M0MlhYOD1tCkNP
+TkZJR19TTkRfU09DX0NTNDJYWDhfSTJDPW0KQ09ORklHX1NORF9TT0NfQ1M0MzQ5PW0KQ09ORklH
+X1NORF9TT0NfQ1M1M0wzMD1tCkNPTkZJR19TTkRfU09DX0RJTzIxMjU9bQpDT05GSUdfU05EX1NP
+Q19IRE1JX0NPREVDPW0KQ09ORklHX1NORF9TT0NfRVM3MTM0PW0KIyBDT05GSUdfU05EX1NPQ19F
+UzgzMTYgaXMgbm90IHNldApDT05GSUdfU05EX1NPQ19FUzgzMjg9bQpDT05GSUdfU05EX1NPQ19F
+UzgzMjhfSTJDPW0KQ09ORklHX1NORF9TT0NfRVM4MzI4X1NQST1tCkNPTkZJR19TTkRfU09DX0dU
+TTYwMT1tCkNPTkZJR19TTkRfU09DX0lOTk9fUkszMDM2PW0KQ09ORklHX1NORF9TT0NfTUFYOTg1
+MDQ9bQpDT05GSUdfU05EX1NPQ19NQVg5ODkyNz1tCiMgQ09ORklHX1NORF9TT0NfTUFYOTg2MCBp
+cyBub3Qgc2V0CiMgQ09ORklHX1NORF9TT0NfTVNNODkxNl9XQ0RfQU5BTE9HIGlzIG5vdCBzZXQK
+Q09ORklHX1NORF9TT0NfTVNNODkxNl9XQ0RfRElHSVRBTD1tCiMgQ09ORklHX1NORF9TT0NfUENN
+MTY4MSBpcyBub3Qgc2V0CkNPTkZJR19TTkRfU09DX1BDTTE3OVg9bQojIENPTkZJR19TTkRfU09D
+X1BDTTE3OVhfSTJDIGlzIG5vdCBzZXQKQ09ORklHX1NORF9TT0NfUENNMTc5WF9TUEk9bQojIENP
+TkZJR19TTkRfU09DX1BDTTMxNjhBX0kyQyBpcyBub3Qgc2V0CiMgQ09ORklHX1NORF9TT0NfUENN
+MzE2OEFfU1BJIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1NPQ19QQ001MTJ4X0kyQyBpcyBub3Qg
+c2V0CiMgQ09ORklHX1NORF9TT0NfUENNNTEyeF9TUEkgaXMgbm90IHNldApDT05GSUdfU05EX1NP
+Q19STDYyMzE9bQpDT05GSUdfU05EX1NPQ19SVDU2MTY9bQpDT05GSUdfU05EX1NPQ19SVDU2MzE9
+bQojIENPTkZJR19TTkRfU09DX1JUNTY3N19TUEkgaXMgbm90IHNldAojIENPTkZJR19TTkRfU09D
+X1NHVEw1MDAwIGlzIG5vdCBzZXQKQ09ORklHX1NORF9TT0NfU0lHTUFEU1A9bQpDT05GSUdfU05E
+X1NPQ19TSUdNQURTUF9JMkM9bQpDT05GSUdfU05EX1NPQ19TSUdNQURTUF9SRUdNQVA9bQpDT05G
+SUdfU05EX1NPQ19TSVJGX0FVRElPX0NPREVDPW0KQ09ORklHX1NORF9TT0NfU1BESUY9bQpDT05G
+SUdfU05EX1NPQ19TU00yNjAyPW0KQ09ORklHX1NORF9TT0NfU1NNMjYwMl9TUEk9bQojIENPTkZJ
+R19TTkRfU09DX1NTTTI2MDJfSTJDIGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1NPQ19TU000NTY3
+IGlzIG5vdCBzZXQKQ09ORklHX1NORF9TT0NfU1RBMzJYPW0KQ09ORklHX1NORF9TT0NfU1RBMzUw
+PW0KIyBDT05GSUdfU05EX1NPQ19TVElfU0FTIGlzIG5vdCBzZXQKQ09ORklHX1NORF9TT0NfVEFT
+MjU1Mj1tCkNPTkZJR19TTkRfU09DX1RBUzUwODY9bQpDT05GSUdfU05EX1NPQ19UQVM1NzFYPW0K
+IyBDT05GSUdfU05EX1NPQ19UQVM1NzIwIGlzIG5vdCBzZXQKQ09ORklHX1NORF9TT0NfVEZBOTg3
+OT1tCkNPTkZJR19TTkRfU09DX1RMVjMyMEFJQzIzPW0KQ09ORklHX1NORF9TT0NfVExWMzIwQUlD
+MjNfSTJDPW0KQ09ORklHX1NORF9TT0NfVExWMzIwQUlDMjNfU1BJPW0KQ09ORklHX1NORF9TT0Nf
+VExWMzIwQUlDMzFYWD1tCiMgQ09ORklHX1NORF9TT0NfVExWMzIwQUlDM1ggaXMgbm90IHNldApD
+T05GSUdfU05EX1NPQ19UUzNBMjI3RT1tCkNPTkZJR19TTkRfU09DX1dNODUxMD1tCkNPTkZJR19T
+TkRfU09DX1dNODUyMz1tCkNPTkZJR19TTkRfU09DX1dNODU4MD1tCkNPTkZJR19TTkRfU09DX1dN
+ODcxMT1tCiMgQ09ORklHX1NORF9TT0NfV004NzI4IGlzIG5vdCBzZXQKIyBDT05GSUdfU05EX1NP
+Q19XTTg3MzEgaXMgbm90IHNldAojIENPTkZJR19TTkRfU09DX1dNODczNyBpcyBub3Qgc2V0CiMg
+Q09ORklHX1NORF9TT0NfV004NzQxIGlzIG5vdCBzZXQKQ09ORklHX1NORF9TT0NfV004NzUwPW0K
+Q09ORklHX1NORF9TT0NfV004NzUzPW0KIyBDT05GSUdfU05EX1NPQ19XTTg3NzAgaXMgbm90IHNl
+dApDT05GSUdfU05EX1NPQ19XTTg3NzY9bQpDT05GSUdfU05EX1NPQ19XTTg4MDQ9bQpDT05GSUdf
+U05EX1NPQ19XTTg4MDRfSTJDPW0KQ09ORklHX1NORF9TT0NfV004ODA0X1NQST1tCkNPTkZJR19T
+TkRfU09DX1dNODkwMz1tCkNPTkZJR19TTkRfU09DX1dNODk2MD1tCiMgQ09ORklHX1NORF9TT0Nf
+V004OTYyIGlzIG5vdCBzZXQKQ09ORklHX1NORF9TT0NfV004OTc0PW0KIyBDT05GSUdfU05EX1NP
+Q19XTTg5NzggaXMgbm90IHNldApDT05GSUdfU05EX1NPQ19XTTg5ODU9bQpDT05GSUdfU05EX1NP
+Q19aWF9BVUQ5NlAyMj1tCkNPTkZJR19TTkRfU09DX05BVTg1NDA9bQpDT05GSUdfU05EX1NPQ19O
+QVU4ODEwPW0KQ09ORklHX1NORF9TT0NfTkFVODgyND1tCiMgQ09ORklHX1NORF9TT0NfVFBBNjEz
+MEEyIGlzIG5vdCBzZXQKQ09ORklHX1NORF9TSU1QTEVfQ0FSRF9VVElMUz1tCiMgQ09ORklHX1NO
+RF9TSU1QTEVfQ0FSRCBpcyBub3Qgc2V0CkNPTkZJR19TTkRfU0lNUExFX1NDVV9DQVJEPW0KQ09O
+RklHX1NORF9BVURJT19HUkFQSF9DQVJEPW0KQ09ORklHX1NORF9BVURJT19HUkFQSF9TQ1VfQ0FS
+RD1tCiMgQ09ORklHX1NORF9YODYgaXMgbm90IHNldApDT05GSUdfQUM5N19CVVM9bQoKIwojIEhJ
+RCBzdXBwb3J0CiMKQ09ORklHX0hJRD15CiMgQ09ORklHX0hJRF9CQVRURVJZX1NUUkVOR1RIIGlz
+IG5vdCBzZXQKIyBDT05GSUdfSElEUkFXIGlzIG5vdCBzZXQKIyBDT05GSUdfVUhJRCBpcyBub3Qg
+c2V0CkNPTkZJR19ISURfR0VORVJJQz15CgojCiMgU3BlY2lhbCBISUQgZHJpdmVycwojCiMgQ09O
+RklHX0hJRF9BNFRFQ0ggaXMgbm90IHNldAojIENPTkZJR19ISURfQUNDVVRPVUNIIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfSElEX0FDUlVYIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0FQUExFIGlzIG5v
+dCBzZXQKIyBDT05GSUdfSElEX0FQUExFSVIgaXMgbm90IHNldAojIENPTkZJR19ISURfQVNVUyBp
+cyBub3Qgc2V0CiMgQ09ORklHX0hJRF9BVVJFQUwgaXMgbm90IHNldAojIENPTkZJR19ISURfQkVM
+S0lOIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0JFVE9QX0ZGIGlzIG5vdCBzZXQKIyBDT05GSUdf
+SElEX0NIRVJSWSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9DSElDT05ZIGlzIG5vdCBzZXQKIyBD
+T05GSUdfSElEX0NPUlNBSVIgaXMgbm90IHNldAojIENPTkZJR19ISURfUFJPRElLRVlTIGlzIG5v
+dCBzZXQKIyBDT05GSUdfSElEX0NNRURJQSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9DUDIxMTIg
+aXMgbm90IHNldAojIENPTkZJR19ISURfQ1lQUkVTUyBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9E
+UkFHT05SSVNFIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0VNU19GRiBpcyBub3Qgc2V0CiMgQ09O
+RklHX0hJRF9FTEVDT00gaXMgbm90IHNldAojIENPTkZJR19ISURfRUxPIGlzIG5vdCBzZXQKIyBD
+T05GSUdfSElEX0VaS0VZIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0dFTUJJUkQgaXMgbm90IHNl
+dAojIENPTkZJR19ISURfR0ZSTSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9IT0xURUsgaXMgbm90
+IHNldAojIENPTkZJR19ISURfR1Q2ODNSIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0tFWVRPVUNI
+IGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0tZRSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9VQ0xP
+R0lDIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1dBTFRPUCBpcyBub3Qgc2V0CiMgQ09ORklHX0hJ
+RF9HWVJBVElPTiBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9JQ0FERSBpcyBub3Qgc2V0CiMgQ09O
+RklHX0hJRF9JVEUgaXMgbm90IHNldAojIENPTkZJR19ISURfVFdJTkhBTiBpcyBub3Qgc2V0CiMg
+Q09ORklHX0hJRF9LRU5TSU5HVE9OIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0xDUE9XRVIgaXMg
+bm90IHNldAojIENPTkZJR19ISURfTEVEIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX0xFTk9WTyBp
+cyBub3Qgc2V0CiMgQ09ORklHX0hJRF9MT0dJVEVDSCBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9N
+QUdJQ01PVVNFIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX01BWUZMQVNIIGlzIG5vdCBzZXQKIyBD
+T05GSUdfSElEX01JQ1JPU09GVCBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9NT05URVJFWSBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0hJRF9NVUxUSVRPVUNIIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX05U
+SSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9OVFJJRyBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9P
+UlRFSyBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9QQU5USEVSTE9SRCBpcyBub3Qgc2V0CiMgQ09O
+RklHX0hJRF9QRU5NT1VOVCBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9QRVRBTFlOWCBpcyBub3Qg
+c2V0CiMgQ09ORklHX0hJRF9QSUNPTENEIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1BMQU5UUk9O
+SUNTIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1BSSU1BWCBpcyBub3Qgc2V0CiMgQ09ORklHX0hJ
+RF9SRVRST0RFIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1JPQ0NBVCBpcyBub3Qgc2V0CiMgQ09O
+RklHX0hJRF9TQUlURUsgaXMgbm90IHNldAojIENPTkZJR19ISURfU0FNU1VORyBpcyBub3Qgc2V0
+CiMgQ09ORklHX0hJRF9TT05ZIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1NQRUVETElOSyBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0hJRF9TVEVFTFNFUklFUyBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9T
+VU5QTFVTIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1JNSSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJ
+RF9HUkVFTkFTSUEgaXMgbm90IHNldAojIENPTkZJR19ISURfU01BUlRKT1lQTFVTIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfSElEX1RJVk8gaXMgbm90IHNldAojIENPTkZJR19ISURfVE9QU0VFRCBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0hJRF9USElOR00gaXMgbm90IHNldAojIENPTkZJR19ISURfVEhSVVNU
+TUFTVEVSIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1VEUkFXX1BTMyBpcyBub3Qgc2V0CiMgQ09O
+RklHX0hJRF9XQUNPTSBpcyBub3Qgc2V0CiMgQ09ORklHX0hJRF9XSUlNT1RFIGlzIG5vdCBzZXQK
+IyBDT05GSUdfSElEX1hJTk1PIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1pFUk9QTFVTIGlzIG5v
+dCBzZXQKIyBDT05GSUdfSElEX1pZREFDUk9OIGlzIG5vdCBzZXQKIyBDT05GSUdfSElEX1NFTlNP
+Ul9IVUIgaXMgbm90IHNldAojIENPTkZJR19ISURfQUxQUyBpcyBub3Qgc2V0CgojCiMgVVNCIEhJ
+RCBzdXBwb3J0CiMKQ09ORklHX1VTQl9ISUQ9eQojIENPTkZJR19ISURfUElEIGlzIG5vdCBzZXQK
+IyBDT05GSUdfVVNCX0hJRERFViBpcyBub3Qgc2V0CgojCiMgSTJDIEhJRCBzdXBwb3J0CiMKIyBD
+T05GSUdfSTJDX0hJRCBpcyBub3Qgc2V0CgojCiMgSW50ZWwgSVNIIEhJRCBzdXBwb3J0CiMKIyBD
+T05GSUdfSU5URUxfSVNIX0hJRCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfT0hDSV9MSVRUTEVfRU5E
+SUFOPXkKQ09ORklHX1VTQl9TVVBQT1JUPXkKQ09ORklHX1VTQl9DT01NT049eQpDT05GSUdfVVNC
+X0FSQ0hfSEFTX0hDRD15CkNPTkZJR19VU0I9eQpDT05GSUdfVVNCX1BDST15CkNPTkZJR19VU0Jf
+QU5OT1VOQ0VfTkVXX0RFVklDRVM9eQoKIwojIE1pc2NlbGxhbmVvdXMgVVNCIG9wdGlvbnMKIwoj
+IENPTkZJR19VU0JfREVGQVVMVF9QRVJTSVNUIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9EWU5BTUlD
+X01JTk9SUz15CkNPTkZJR19VU0JfT1RHPXkKQ09ORklHX1VTQl9PVEdfV0hJVEVMSVNUPXkKQ09O
+RklHX1VTQl9PVEdfQkxBQ0tMSVNUX0hVQj15CkNPTkZJR19VU0JfT1RHX0ZTTT15CkNPTkZJR19V
+U0JfTU9OPXkKQ09ORklHX1VTQl9XVVNCX0NCQUY9bQpDT05GSUdfVVNCX1dVU0JfQ0JBRl9ERUJV
+Rz15CgojCiMgVVNCIEhvc3QgQ29udHJvbGxlciBEcml2ZXJzCiMKQ09ORklHX1VTQl9DNjdYMDBf
+SENEPW0KIyBDT05GSUdfVVNCX1hIQ0lfSENEIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9FSENJX0hD
+RD15CkNPTkZJR19VU0JfRUhDSV9ST09UX0hVQl9UVD15CiMgQ09ORklHX1VTQl9FSENJX1RUX05F
+V1NDSEVEIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9FSENJX1BDST15CkNPTkZJR19VU0JfRUhDSV9I
+Q0RfUExBVEZPUk09eQpDT05GSUdfVVNCX09YVTIxMEhQX0hDRD15CkNPTkZJR19VU0JfSVNQMTE2
+WF9IQ0Q9eQpDT05GSUdfVVNCX0lTUDEzNjJfSENEPW0KQ09ORklHX1VTQl9GT1RHMjEwX0hDRD1t
+CkNPTkZJR19VU0JfTUFYMzQyMV9IQ0Q9eQpDT05GSUdfVVNCX09IQ0lfSENEPXkKQ09ORklHX1VT
+Ql9PSENJX0hDRF9QQ0k9eQojIENPTkZJR19VU0JfT0hDSV9IQ0RfU1NCIGlzIG5vdCBzZXQKQ09O
+RklHX1VTQl9PSENJX0hDRF9QTEFURk9STT15CiMgQ09ORklHX1VTQl9VSENJX0hDRCBpcyBub3Qg
+c2V0CkNPTkZJR19VU0JfVTEzMl9IQ0Q9bQojIENPTkZJR19VU0JfU0w4MTFfSENEIGlzIG5vdCBz
+ZXQKQ09ORklHX1VTQl9SOEE2NjU5N19IQ0Q9eQpDT05GSUdfVVNCX0hDRF9CQ01BPW0KQ09ORklH
+X1VTQl9IQ0RfU1NCPXkKQ09ORklHX1VTQl9IQ0RfVEVTVF9NT0RFPXkKCiMKIyBVU0IgRGV2aWNl
+IENsYXNzIGRyaXZlcnMKIwojIENPTkZJR19VU0JfQUNNIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9Q
+UklOVEVSPXkKIyBDT05GSUdfVVNCX1dETSBpcyBub3Qgc2V0CkNPTkZJR19VU0JfVE1DPW0KCiMK
+IyBOT1RFOiBVU0JfU1RPUkFHRSBkZXBlbmRzIG9uIFNDU0kgYnV0IEJMS19ERVZfU0QgbWF5CiMK
+CiMKIyBhbHNvIGJlIG5lZWRlZDsgc2VlIFVTQl9TVE9SQUdFIEhlbHAgZm9yIG1vcmUgaW5mbwoj
+CgojCiMgVVNCIEltYWdpbmcgZGV2aWNlcwojCkNPTkZJR19VU0JfTURDODAwPXkKIyBDT05GSUdf
+VVNCSVBfQ09SRSBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9NVVNCX0hEUkMgaXMgbm90IHNldAoj
+IENPTkZJR19VU0JfRFdDMyBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9EV0MyIGlzIG5vdCBzZXQK
+Q09ORklHX1VTQl9DSElQSURFQT1tCkNPTkZJR19VU0JfQ0hJUElERUFfT0Y9bQpDT05GSUdfVVNC
+X0NISVBJREVBX1BDST1tCiMgQ09ORklHX1VTQl9DSElQSURFQV9VREMgaXMgbm90IHNldApDT05G
+SUdfVVNCX0NISVBJREVBX0hPU1Q9eQpDT05GSUdfVVNCX0NISVBJREVBX1VMUEk9eQpDT05GSUdf
+VVNCX0lTUDE3NjA9bQpDT05GSUdfVVNCX0lTUDE3NjFfVURDPXkKIyBDT05GSUdfVVNCX0lTUDE3
+NjBfSE9TVF9ST0xFIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9JU1AxNzYwX0dBREdFVF9ST0xFPXkK
+IyBDT05GSUdfVVNCX0lTUDE3NjBfRFVBTF9ST0xFIGlzIG5vdCBzZXQKCiMKIyBVU0IgcG9ydCBk
+cml2ZXJzCiMKIyBDT05GSUdfVVNCX1NFUklBTCBpcyBub3Qgc2V0CgojCiMgVVNCIE1pc2NlbGxh
+bmVvdXMgZHJpdmVycwojCiMgQ09ORklHX1VTQl9FTUk2MiBpcyBub3Qgc2V0CkNPTkZJR19VU0Jf
+RU1JMjY9eQpDT05GSUdfVVNCX0FEVVRVWD15CkNPTkZJR19VU0JfU0VWU0VHPW0KIyBDT05GSUdf
+VVNCX1JJTzUwMCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfTEVHT1RPV0VSPW0KQ09ORklHX1VTQl9M
+Q0Q9eQojIENPTkZJR19VU0JfQ1lQUkVTU19DWTdDNjMgaXMgbm90IHNldApDT05GSUdfVVNCX0NZ
+VEhFUk09bQpDT05GSUdfVVNCX0lETU9VU0U9bQpDT05GSUdfVVNCX0ZURElfRUxBTj1tCiMgQ09O
+RklHX1VTQl9BUFBMRURJU1BMQVkgaXMgbm90IHNldAojIENPTkZJR19VU0JfU0lTVVNCVkdBIGlz
+IG5vdCBzZXQKQ09ORklHX1VTQl9MRD15CiMgQ09ORklHX1VTQl9UUkFOQ0VWSUJSQVRPUiBpcyBu
+b3Qgc2V0CiMgQ09ORklHX1VTQl9JT1dBUlJJT1IgaXMgbm90IHNldApDT05GSUdfVVNCX1RFU1Q9
+eQpDT05GSUdfVVNCX0VIU0VUX1RFU1RfRklYVFVSRT1tCiMgQ09ORklHX1VTQl9JU0lHSFRGVyBp
+cyBub3Qgc2V0CiMgQ09ORklHX1VTQl9ZVVJFWCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfRVpVU0Jf
+RlgyPW0KIyBDT05GSUdfVVNCX0hVQl9VU0IyNTFYQiBpcyBub3Qgc2V0CkNPTkZJR19VU0JfSFNJ
+Q19VU0IzNTAzPXkKQ09ORklHX1VTQl9IU0lDX1VTQjQ2MDQ9bQpDT05GSUdfVVNCX0xJTktfTEFZ
+RVJfVEVTVD1tCkNPTkZJR19VU0JfQ0hBT1NLRVk9eQoKIwojIFVTQiBQaHlzaWNhbCBMYXllciBk
+cml2ZXJzCiMKQ09ORklHX1VTQl9QSFk9eQpDT05GSUdfTk9QX1VTQl9YQ0VJVj1tCkNPTkZJR19V
+U0JfR1BJT19WQlVTPW0KQ09ORklHX1VTQl9JU1AxMzAxPXkKQ09ORklHX1VTQl9HQURHRVQ9bQoj
+IENPTkZJR19VU0JfR0FER0VUX0RFQlVHIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0dBREdFVF9E
+RUJVR19GSUxFUyBpcyBub3Qgc2V0CkNPTkZJR19VU0JfR0FER0VUX0RFQlVHX0ZTPXkKQ09ORklH
+X1VTQl9HQURHRVRfVkJVU19EUkFXPTIKQ09ORklHX1VTQl9HQURHRVRfU1RPUkFHRV9OVU1fQlVG
+RkVSUz0yCgojCiMgVVNCIFBlcmlwaGVyYWwgQ29udHJvbGxlcgojCkNPTkZJR19VU0JfRk9URzIx
+MF9VREM9bQojIENPTkZJR19VU0JfR1JfVURDIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9SOEE2NjU5
+Nz1tCkNPTkZJR19VU0JfUFhBMjdYPW0KQ09ORklHX1VTQl9NVl9VREM9bQojIENPTkZJR19VU0Jf
+TVZfVTNEIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9TTlBfQ09SRT1tCkNPTkZJR19VU0JfU05QX1VE
+Q19QTEFUPW0KQ09ORklHX1VTQl9NNjY1OTI9bQpDT05GSUdfVVNCX0JEQ19VREM9bQoKIwojIFBs
+YXRmb3JtIFN1cHBvcnQKIwpDT05GSUdfVVNCX0JEQ19QQ0k9bQojIENPTkZJR19VU0JfQU1ENTUz
+NlVEQyBpcyBub3Qgc2V0CkNPTkZJR19VU0JfTkVUMjI3Mj1tCkNPTkZJR19VU0JfTkVUMjI3Ml9E
+TUE9eQojIENPTkZJR19VU0JfTkVUMjI4MCBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9HT0tVIGlz
+IG5vdCBzZXQKIyBDT05GSUdfVVNCX0VHMjBUIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9HQURHRVRf
+WElMSU5YPW0KIyBDT05GSUdfVVNCX0RVTU1ZX0hDRCBpcyBub3Qgc2V0CkNPTkZJR19VU0JfTElC
+Q09NUE9TSVRFPW0KQ09ORklHX1VTQl9VX0FVRElPPW0KQ09ORklHX1VTQl9GX0ZTPW0KQ09ORklH
+X1VTQl9GX1VBQzE9bQpDT05GSUdfVVNCX0ZfVUFDMj1tCkNPTkZJR19VU0JfRl9NSURJPW0KQ09O
+RklHX1VTQl9DT05GSUdGUz1tCiMgQ09ORklHX1VTQl9DT05GSUdGU19TRVJJQUwgaXMgbm90IHNl
+dAojIENPTkZJR19VU0JfQ09ORklHRlNfQUNNIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0NPTkZJ
+R0ZTX09CRVggaXMgbm90IHNldAojIENPTkZJR19VU0JfQ09ORklHRlNfTkNNIGlzIG5vdCBzZXQK
+IyBDT05GSUdfVVNCX0NPTkZJR0ZTX0VDTSBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9DT05GSUdG
+U19FQ01fU1VCU0VUIGlzIG5vdCBzZXQKIyBDT05GSUdfVVNCX0NPTkZJR0ZTX1JORElTIGlzIG5v
+dCBzZXQKIyBDT05GSUdfVVNCX0NPTkZJR0ZTX0VFTSBpcyBub3Qgc2V0CiMgQ09ORklHX1VTQl9D
+T05GSUdGU19GX0xCX1NTIGlzIG5vdCBzZXQKQ09ORklHX1VTQl9DT05GSUdGU19GX0ZTPXkKQ09O
+RklHX1VTQl9DT05GSUdGU19GX1VBQzE9eQojIENPTkZJR19VU0JfQ09ORklHRlNfRl9VQUMxX0xF
+R0FDWSBpcyBub3Qgc2V0CkNPTkZJR19VU0JfQ09ORklHRlNfRl9VQUMyPXkKQ09ORklHX1VTQl9D
+T05GSUdGU19GX01JREk9eQojIENPTkZJR19VU0JfQ09ORklHRlNfRl9ISUQgaXMgbm90IHNldAoj
+IENPTkZJR19VU0JfQ09ORklHRlNfRl9VVkMgaXMgbm90IHNldAojIENPTkZJR19VU0JfQ09ORklH
+RlNfRl9QUklOVEVSIGlzIG5vdCBzZXQKCiMKIyBVU0IgUG93ZXIgRGVsaXZlcnkgYW5kIFR5cGUt
+QyBkcml2ZXJzCiMKQ09ORklHX1RZUEVDPW0KQ09ORklHX1RZUEVDX1VDU0k9bQojIENPTkZJR19V
+Q1NJX0FDUEkgaXMgbm90IHNldApDT05GSUdfVVNCX1VMUElfQlVTPW0KIyBDT05GSUdfVVdCIGlz
+IG5vdCBzZXQKIyBDT05GSUdfTU1DIGlzIG5vdCBzZXQKQ09ORklHX01FTVNUSUNLPXkKIyBDT05G
+SUdfTUVNU1RJQ0tfREVCVUcgaXMgbm90IHNldAoKIwojIE1lbW9yeVN0aWNrIGRyaXZlcnMKIwoj
+IENPTkZJR19NRU1TVElDS19VTlNBRkVfUkVTVU1FIGlzIG5vdCBzZXQKCiMKIyBNZW1vcnlTdGlj
+ayBIb3N0IENvbnRyb2xsZXIgRHJpdmVycwojCiMgQ09ORklHX01FTVNUSUNLX1RJRk1fTVMgaXMg
+bm90IHNldAojIENPTkZJR19NRU1TVElDS19KTUlDUk9OXzM4WCBpcyBub3Qgc2V0CiMgQ09ORklH
+X01FTVNUSUNLX1I1OTIgaXMgbm90IHNldApDT05GSUdfTUVNU1RJQ0tfUkVBTFRFS19VU0I9bQpD
+T05GSUdfTkVXX0xFRFM9eQpDT05GSUdfTEVEU19DTEFTUz15CkNPTkZJR19MRURTX0NMQVNTX0ZM
+QVNIPW0KIyBDT05GSUdfTEVEU19CUklHSFRORVNTX0hXX0NIQU5HRUQgaXMgbm90IHNldAoKIwoj
+IExFRCBkcml2ZXJzCiMKIyBDT05GSUdfTEVEU19CQ002MzI4IGlzIG5vdCBzZXQKQ09ORklHX0xF
+RFNfQkNNNjM1OD15CkNPTkZJR19MRURTX0xNMzUzMD15CkNPTkZJR19MRURTX0xNMzY0Mj15CkNP
+TkZJR19MRURTX01UNjMyMz1tCiMgQ09ORklHX0xFRFNfUENBOTUzMiBpcyBub3Qgc2V0CiMgQ09O
+RklHX0xFRFNfR1BJTyBpcyBub3Qgc2V0CiMgQ09ORklHX0xFRFNfTFAzOTQ0IGlzIG5vdCBzZXQK
+Q09ORklHX0xFRFNfTFAzOTUyPXkKQ09ORklHX0xFRFNfTFA1NVhYX0NPTU1PTj15CkNPTkZJR19M
+RURTX0xQNTUyMT1tCkNPTkZJR19MRURTX0xQNTUyMz1tCkNPTkZJR19MRURTX0xQNTU2Mj15CkNP
+TkZJR19MRURTX0xQODUwMT15CiMgQ09ORklHX0xFRFNfTFA4ODYwIGlzIG5vdCBzZXQKQ09ORklH
+X0xFRFNfUENBOTU1WD15CkNPTkZJR19MRURTX1BDQTk2M1g9bQpDT05GSUdfTEVEU19XTTgzMVhf
+U1RBVFVTPW0KQ09ORklHX0xFRFNfREE5MDUyPW0KIyBDT05GSUdfTEVEU19EQUMxMjRTMDg1IGlz
+IG5vdCBzZXQKIyBDT05GSUdfTEVEU19QV00gaXMgbm90IHNldApDT05GSUdfTEVEU19SRUdVTEFU
+T1I9eQojIENPTkZJR19MRURTX0JEMjgwMiBpcyBub3Qgc2V0CkNPTkZJR19MRURTX0xUMzU5Mz15
+CkNPTkZJR19MRURTX0FEUDU1MjA9bQpDT05GSUdfTEVEU19NQzEzNzgzPW0KQ09ORklHX0xFRFNf
+VENBNjUwNz1tCiMgQ09ORklHX0xFRFNfVExDNTkxWFggaXMgbm90IHNldAojIENPTkZJR19MRURT
+X0xNMzU1eCBpcyBub3Qgc2V0CiMgQ09ORklHX0xFRFNfTUVORjIxQk1DIGlzIG5vdCBzZXQKQ09O
+RklHX0xFRFNfS1REMjY5Mj1tCkNPTkZJR19MRURTX0lTMzFGTDMxOVg9bQojIENPTkZJR19MRURT
+X0lTMzFGTDMyWFggaXMgbm90IHNldAoKIwojIExFRCBkcml2ZXIgZm9yIGJsaW5rKDEpIFVTQiBS
+R0IgTEVEIGlzIHVuZGVyIFNwZWNpYWwgSElEIGRyaXZlcnMgKEhJRF9USElOR00pCiMKIyBDT05G
+SUdfTEVEU19CTElOS00gaXMgbm90IHNldAojIENPTkZJR19MRURTX1NZU0NPTiBpcyBub3Qgc2V0
+CiMgQ09ORklHX0xFRFNfVVNFUiBpcyBub3Qgc2V0CiMgQ09ORklHX0xFRFNfTklDNzhCWCBpcyBu
+b3Qgc2V0CgojCiMgTEVEIFRyaWdnZXJzCiMKIyBDT05GSUdfTEVEU19UUklHR0VSUyBpcyBub3Qg
+c2V0CiMgQ09ORklHX0FDQ0VTU0lCSUxJVFkgaXMgbm90IHNldApDT05GSUdfRURBQ19BVE9NSUNf
+U0NSVUI9eQpDT05GSUdfRURBQ19TVVBQT1JUPXkKQ09ORklHX0VEQUM9bQojIENPTkZJR19FREFD
+X0xFR0FDWV9TWVNGUyBpcyBub3Qgc2V0CkNPTkZJR19FREFDX0RFQlVHPXkKIyBDT05GSUdfRURB
+Q19FNzUyWCBpcyBub3Qgc2V0CiMgQ09ORklHX0VEQUNfSTgyOTc1WCBpcyBub3Qgc2V0CiMgQ09O
+RklHX0VEQUNfSTMwMDAgaXMgbm90IHNldAojIENPTkZJR19FREFDX0kzMjAwIGlzIG5vdCBzZXQK
+IyBDT05GSUdfRURBQ19JRTMxMjAwIGlzIG5vdCBzZXQKIyBDT05GSUdfRURBQ19YMzggaXMgbm90
+IHNldAojIENPTkZJR19FREFDX0k1NDAwIGlzIG5vdCBzZXQKIyBDT05GSUdfRURBQ19JNTAwMCBp
+cyBub3Qgc2V0CiMgQ09ORklHX0VEQUNfSTUxMDAgaXMgbm90IHNldAojIENPTkZJR19FREFDX0k3
+MzAwIGlzIG5vdCBzZXQKQ09ORklHX1JUQ19MSUI9eQpDT05GSUdfUlRDX01DMTQ2ODE4X0xJQj15
+CiMgQ09ORklHX1JUQ19DTEFTUyBpcyBub3Qgc2V0CiMgQ09ORklHX0RNQURFVklDRVMgaXMgbm90
+IHNldAoKIwojIERNQUJVRiBvcHRpb25zCiMKQ09ORklHX1NZTkNfRklMRT15CiMgQ09ORklHX1NX
+X1NZTkMgaXMgbm90IHNldApDT05GSUdfQVVYRElTUExBWT15CiMgQ09ORklHX0hENDQ3ODAgaXMg
+bm90IHNldAojIENPTkZJR19JTUdfQVNDSUlfTENEIGlzIG5vdCBzZXQKIyBDT05GSUdfSFQxNksz
+MyBpcyBub3Qgc2V0CkNPTkZJR19VSU89bQojIENPTkZJR19VSU9fQ0lGIGlzIG5vdCBzZXQKIyBD
+T05GSUdfVUlPX1BEUlZfR0VOSVJRIGlzIG5vdCBzZXQKQ09ORklHX1VJT19ETUVNX0dFTklSUT1t
+CiMgQ09ORklHX1VJT19BRUMgaXMgbm90IHNldAojIENPTkZJR19VSU9fU0VSQ09TMyBpcyBub3Qg
+c2V0CiMgQ09ORklHX1VJT19QQ0lfR0VORVJJQyBpcyBub3Qgc2V0CiMgQ09ORklHX1VJT19ORVRY
+IGlzIG5vdCBzZXQKIyBDT05GSUdfVUlPX1BSVVNTIGlzIG5vdCBzZXQKIyBDT05GSUdfVUlPX01G
+NjI0IGlzIG5vdCBzZXQKIyBDT05GSUdfVklSVF9EUklWRVJTIGlzIG5vdCBzZXQKQ09ORklHX1ZJ
+UlRJTz15CgojCiMgVmlydGlvIGRyaXZlcnMKIwojIENPTkZJR19WSVJUSU9fUENJIGlzIG5vdCBz
+ZXQKQ09ORklHX1ZJUlRJT19CQUxMT09OPW0KIyBDT05GSUdfVklSVElPX0lOUFVUIGlzIG5vdCBz
+ZXQKQ09ORklHX1ZJUlRJT19NTUlPPXkKQ09ORklHX1ZJUlRJT19NTUlPX0NNRExJTkVfREVWSUNF
+Uz15CgojCiMgTWljcm9zb2Z0IEh5cGVyLVYgZ3Vlc3Qgc3VwcG9ydAojCiMgQ09ORklHX0hZUEVS
+ViBpcyBub3Qgc2V0CiMgQ09ORklHX0hZUEVSVl9UU0NQQUdFIGlzIG5vdCBzZXQKCiMKIyBYZW4g
+ZHJpdmVyIHN1cHBvcnQKIwpDT05GSUdfWEVOX0JBTExPT049eQojIENPTkZJR19YRU5fQkFMTE9P
+Tl9NRU1PUllfSE9UUExVRyBpcyBub3Qgc2V0CkNPTkZJR19YRU5fU0NSVUJfUEFHRVM9eQpDT05G
+SUdfWEVOX0RFVl9FVlRDSE49eQojIENPTkZJR19YRU5GUyBpcyBub3Qgc2V0CiMgQ09ORklHX1hF
+Tl9TWVNfSFlQRVJWSVNPUiBpcyBub3Qgc2V0CkNPTkZJR19YRU5fWEVOQlVTX0ZST05URU5EPXkK
+Q09ORklHX1hFTl9HTlRERVY9eQpDT05GSUdfWEVOX0dSQU5UX0RFVl9BTExPQz1tCkNPTkZJR19T
+V0lPVExCX1hFTj15CkNPTkZJR19YRU5fVE1FTT1tCkNPTkZJR19YRU5fUFJJVkNNRD1tCkNPTkZJ
+R19YRU5fQUNQSV9QUk9DRVNTT1I9bQpDT05GSUdfWEVOX0FVVE9fWExBVEU9eQpDT05GSUdfWEVO
+X0FDUEk9eQojIENPTkZJR19TVEFHSU5HIGlzIG5vdCBzZXQKQ09ORklHX1g4Nl9QTEFURk9STV9E
+RVZJQ0VTPXkKIyBDT05GSUdfQUNFUkhERiBpcyBub3Qgc2V0CiMgQ09ORklHX0FTVVNfTEFQVE9Q
+IGlzIG5vdCBzZXQKIyBDT05GSUdfREVMTF9TTU84ODAwIGlzIG5vdCBzZXQKIyBDT05GSUdfRlVK
+SVRTVV9MQVBUT1AgaXMgbm90IHNldAojIENPTkZJR19GVUpJVFNVX1RBQkxFVCBpcyBub3Qgc2V0
+CiMgQ09ORklHX0hQX0FDQ0VMIGlzIG5vdCBzZXQKIyBDT05GSUdfSFBfV0lSRUxFU1MgaXMgbm90
+IHNldAojIENPTkZJR19QQU5BU09OSUNfTEFQVE9QIGlzIG5vdCBzZXQKIyBDT05GSUdfVEhJTktQ
+QURfQUNQSSBpcyBub3Qgc2V0CiMgQ09ORklHX1NFTlNPUlNfSERBUFMgaXMgbm90IHNldAojIENP
+TkZJR19JTlRFTF9NRU5MT1cgaXMgbm90IHNldAojIENPTkZJR19BU1VTX1dJUkVMRVNTIGlzIG5v
+dCBzZXQKIyBDT05GSUdfQUNQSV9XTUkgaXMgbm90IHNldAojIENPTkZJR19UT1BTVEFSX0xBUFRP
+UCBpcyBub3Qgc2V0CiMgQ09ORklHX1RPU0hJQkFfQlRfUkZLSUxMIGlzIG5vdCBzZXQKIyBDT05G
+SUdfVE9TSElCQV9IQVBTIGlzIG5vdCBzZXQKIyBDT05GSUdfQUNQSV9DTVBDIGlzIG5vdCBzZXQK
+IyBDT05GSUdfSU5URUxfQ0hUX0lOVDMzRkUgaXMgbm90IHNldAojIENPTkZJR19JTlRFTF9JTlQw
+MDAyX1ZHUElPIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5URUxfSElEX0VWRU5UIGlzIG5vdCBzZXQK
+IyBDT05GSUdfSU5URUxfVkJUTiBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX0lQUyBpcyBub3Qg
+c2V0CiMgQ09ORklHX0lOVEVMX1BNQ19DT1JFIGlzIG5vdCBzZXQKIyBDT05GSUdfSUJNX1JUTCBp
+cyBub3Qgc2V0CiMgQ09ORklHX1NBTVNVTkdfTEFQVE9QIGlzIG5vdCBzZXQKIyBDT05GSUdfU0FN
+U1VOR19RMTAgaXMgbm90IHNldAojIENPTkZJR19BUFBMRV9HTVVYIGlzIG5vdCBzZXQKIyBDT05G
+SUdfSU5URUxfUlNUIGlzIG5vdCBzZXQKIyBDT05GSUdfSU5URUxfU01BUlRDT05ORUNUIGlzIG5v
+dCBzZXQKIyBDT05GSUdfUFZQQU5JQyBpcyBub3Qgc2V0CiMgQ09ORklHX0lOVEVMX1BNQ19JUEMg
+aXMgbm90IHNldAojIENPTkZJR19TVVJGQUNFX1BSTzNfQlVUVE9OIGlzIG5vdCBzZXQKQ09ORklH
+X0lOVEVMX1BVTklUX0lQQz15CkNPTkZJR19NTFhfUExBVEZPUk09eQpDT05GSUdfTUxYX0NQTERf
+UExBVEZPUk09eQpDT05GSUdfUE1DX0FUT009eQojIENPTkZJR19DSFJPTUVfUExBVEZPUk1TIGlz
+IG5vdCBzZXQKQ09ORklHX0NMS0RFVl9MT09LVVA9eQpDT05GSUdfSEFWRV9DTEtfUFJFUEFSRT15
+CkNPTkZJR19DT01NT05fQ0xLPXkKCiMKIyBDb21tb24gQ2xvY2sgRnJhbWV3b3JrCiMKIyBDT05G
+SUdfQ09NTU9OX0NMS19XTTgzMVggaXMgbm90IHNldAojIENPTkZJR19DT01NT05fQ0xLX01BWDc3
+Njg2IGlzIG5vdCBzZXQKIyBDT05GSUdfQ09NTU9OX0NMS19TSTUzNTEgaXMgbm90IHNldAojIENP
+TkZJR19DT01NT05fQ0xLX1NJNTE0IGlzIG5vdCBzZXQKIyBDT05GSUdfQ09NTU9OX0NMS19TSTU3
+MCBpcyBub3Qgc2V0CiMgQ09ORklHX0NPTU1PTl9DTEtfQ0RDRTcwNiBpcyBub3Qgc2V0CiMgQ09O
+RklHX0NPTU1PTl9DTEtfQ0RDRTkyNSBpcyBub3Qgc2V0CiMgQ09ORklHX0NPTU1PTl9DTEtfQ1My
+MDAwX0NQIGlzIG5vdCBzZXQKIyBDT05GSUdfQ09NTU9OX0NMS19OWFAgaXMgbm90IHNldAojIENP
+TkZJR19DT01NT05fQ0xLX1BBTE1BUyBpcyBub3Qgc2V0CiMgQ09ORklHX0NPTU1PTl9DTEtfUFdN
+IGlzIG5vdCBzZXQKIyBDT05GSUdfQ09NTU9OX0NMS19QWEEgaXMgbm90IHNldAojIENPTkZJR19D
+T01NT05fQ0xLX1BJQzMyIGlzIG5vdCBzZXQKIyBDT05GSUdfQ09NTU9OX0NMS19WQzUgaXMgbm90
+IHNldAojIENPTkZJR19IV1NQSU5MT0NLIGlzIG5vdCBzZXQKCiMKIyBDbG9jayBTb3VyY2UgZHJp
+dmVycwojCkNPTkZJR19DTEtFVlRfSTgyNTM9eQpDT05GSUdfSTgyNTNfTE9DSz15CkNPTkZJR19D
+TEtCTERfSTgyNTM9eQojIENPTkZJR19BVE1FTF9QSVQgaXMgbm90IHNldAojIENPTkZJR19TSF9U
+SU1FUl9DTVQgaXMgbm90IHNldAojIENPTkZJR19TSF9USU1FUl9NVFUyIGlzIG5vdCBzZXQKIyBD
+T05GSUdfU0hfVElNRVJfVE1VIGlzIG5vdCBzZXQKIyBDT05GSUdfRU1fVElNRVJfU1RJIGlzIG5v
+dCBzZXQKIyBDT05GSUdfTUFJTEJPWCBpcyBub3Qgc2V0CiMgQ09ORklHX0lPTU1VX1NVUFBPUlQg
+aXMgbm90IHNldAoKIwojIFJlbW90ZXByb2MgZHJpdmVycwojCkNPTkZJR19SRU1PVEVQUk9DPXkK
+CiMKIyBScG1zZyBkcml2ZXJzCiMKCiMKIyBTT0MgKFN5c3RlbSBPbiBDaGlwKSBzcGVjaWZpYyBE
+cml2ZXJzCiMKCiMKIyBCcm9hZGNvbSBTb0MgZHJpdmVycwojCgojCiMgaS5NWCBTb0MgZHJpdmVy
+cwojCiMgQ09ORklHX1NVTlhJX1NSQU0gaXMgbm90IHNldApDT05GSUdfU09DX1RJPXkKIyBDT05G
+SUdfU09DX1pURSBpcyBub3Qgc2V0CiMgQ09ORklHX1BNX0RFVkZSRVEgaXMgbm90IHNldApDT05G
+SUdfRVhUQ09OPXkKCiMKIyBFeHRjb24gRGV2aWNlIERyaXZlcnMKIwpDT05GSUdfRVhUQ09OX0FE
+Q19KQUNLPW0KIyBDT05GSUdfRVhUQ09OX0FSSVpPTkEgaXMgbm90IHNldAojIENPTkZJR19FWFRD
+T05fR1BJTyBpcyBub3Qgc2V0CiMgQ09ORklHX0VYVENPTl9JTlRFTF9JTlQzNDk2IGlzIG5vdCBz
+ZXQKQ09ORklHX0VYVENPTl9NQVgxNDU3Nz1tCkNPTkZJR19FWFRDT05fTUFYMzM1NT1tCkNPTkZJ
+R19FWFRDT05fTUFYNzc4NDM9eQpDT05GSUdfRVhUQ09OX1BBTE1BUz1tCkNPTkZJR19FWFRDT05f
+UlQ4OTczQT15CkNPTkZJR19FWFRDT05fU001NTAyPW0KQ09ORklHX0VYVENPTl9VU0JfR1BJTz15
+CiMgQ09ORklHX01FTU9SWSBpcyBub3Qgc2V0CkNPTkZJR19JSU89bQpDT05GSUdfSUlPX0JVRkZF
+Uj15CkNPTkZJR19JSU9fQlVGRkVSX0NCPW0KQ09ORklHX0lJT19LRklGT19CVUY9bQpDT05GSUdf
+SUlPX1RSSUdHRVJFRF9CVUZGRVI9bQpDT05GSUdfSUlPX0NPTkZJR0ZTPW0KQ09ORklHX0lJT19U
+UklHR0VSPXkKQ09ORklHX0lJT19DT05TVU1FUlNfUEVSX1RSSUdHRVI9MgpDT05GSUdfSUlPX1NX
+X0RFVklDRT1tCkNPTkZJR19JSU9fU1dfVFJJR0dFUj1tCkNPTkZJR19JSU9fVFJJR0dFUkVEX0VW
+RU5UPW0KCiMKIyBBY2NlbGVyb21ldGVycwojCiMgQ09ORklHX0FEWEwzNDVfSTJDIGlzIG5vdCBz
+ZXQKIyBDT05GSUdfQURYTDM0NV9TUEkgaXMgbm90IHNldAojIENPTkZJR19CTUExODAgaXMgbm90
+IHNldApDT05GSUdfQk1BMjIwPW0KQ09ORklHX0JNQzE1MF9BQ0NFTD1tCkNPTkZJR19CTUMxNTBf
+QUNDRUxfSTJDPW0KQ09ORklHX0JNQzE1MF9BQ0NFTF9TUEk9bQojIENPTkZJR19EQTI4MCBpcyBu
+b3Qgc2V0CiMgQ09ORklHX0RBMzExIGlzIG5vdCBzZXQKQ09ORklHX0RNQVJEMDY9bQpDT05GSUdf
+RE1BUkQwOT1tCkNPTkZJR19ETUFSRDEwPW0KIyBDT05GSUdfSUlPX1NUX0FDQ0VMXzNBWElTIGlz
+IG5vdCBzZXQKQ09ORklHX0tYU0Q5PW0KQ09ORklHX0tYU0Q5X1NQST1tCkNPTkZJR19LWFNEOV9J
+MkM9bQojIENPTkZJR19LWENKSzEwMTMgaXMgbm90IHNldApDT05GSUdfTUMzMjMwPW0KQ09ORklH
+X01NQTc0NTU9bQojIENPTkZJR19NTUE3NDU1X0kyQyBpcyBub3Qgc2V0CkNPTkZJR19NTUE3NDU1
+X1NQST1tCkNPTkZJR19NTUE3NjYwPW0KIyBDT05GSUdfTU1BODQ1MiBpcyBub3Qgc2V0CkNPTkZJ
+R19NTUE5NTUxX0NPUkU9bQpDT05GSUdfTU1BOTU1MT1tCkNPTkZJR19NTUE5NTUzPW0KQ09ORklH
+X01YQzQwMDU9bQpDT05GSUdfTVhDNjI1NT1tCkNPTkZJR19TQ0EzMDAwPW0KQ09ORklHX1NUSzgz
+MTI9bQpDT05GSUdfU1RLOEJBNTA9bQoKIwojIEFuYWxvZyB0byBkaWdpdGFsIGNvbnZlcnRlcnMK
+IwpDT05GSUdfQURfU0lHTUFfREVMVEE9bQpDT05GSUdfQUQ3MjY2PW0KQ09ORklHX0FENzI5MT1t
+CkNPTkZJR19BRDcyOTg9bQpDT05GSUdfQUQ3NDc2PW0KQ09ORklHX0FENzc2Nj1tCkNPTkZJR19B
+RDc3OTE9bQpDT05GSUdfQUQ3NzkzPW0KQ09ORklHX0FENzg4Nz1tCkNPTkZJR19BRDc5MjM9bQpD
+T05GSUdfQUQ3OTlYPW0KIyBDT05GSUdfQ0MxMDAwMV9BREMgaXMgbm90IHNldAojIENPTkZJR19E
+QTkxNTBfR1BBREMgaXMgbm90IHNldAojIENPTkZJR19FTlZFTE9QRV9ERVRFQ1RPUiBpcyBub3Qg
+c2V0CkNPTkZJR19ISTg0MzU9bQpDT05GSUdfSFg3MTE9bQojIENPTkZJR19JTkEyWFhfQURDIGlz
+IG5vdCBzZXQKQ09ORklHX0xUQzI0ODU9bQpDT05GSUdfTFRDMjQ5Nz1tCkNPTkZJR19NQVgxMDI3
+PW0KIyBDT05GSUdfTUFYMTExMDAgaXMgbm90IHNldApDT05GSUdfTUFYMTExOD1tCkNPTkZJR19N
+QVgxMzYzPW0KQ09ORklHX01BWDk2MTE9bQojIENPTkZJR19NQ1AzMjBYIGlzIG5vdCBzZXQKQ09O
+RklHX01DUDM0MjI9bQpDT05GSUdfTUVOX1oxODhfQURDPW0KIyBDT05GSUdfTkFVNzgwMiBpcyBu
+b3Qgc2V0CkNPTkZJR19QQUxNQVNfR1BBREM9bQpDT05GSUdfUUNPTV9TUE1JX0lBREM9bQojIENP
+TkZJR19RQ09NX1NQTUlfVkFEQyBpcyBub3Qgc2V0CiMgQ09ORklHX1RJX0FEQzA4MUMgaXMgbm90
+IHNldAojIENPTkZJR19USV9BREMwODMyIGlzIG5vdCBzZXQKIyBDT05GSUdfVElfQURDMDg0UzAy
+MSBpcyBub3Qgc2V0CiMgQ09ORklHX1RJX0FEQzEyMTM4IGlzIG5vdCBzZXQKQ09ORklHX1RJX0FE
+QzEwOFMxMDI9bQojIENPTkZJR19USV9BREMxMjhTMDUyIGlzIG5vdCBzZXQKQ09ORklHX1RJX0FE
+QzE2MVM2MjY9bQpDT05GSUdfVElfQURTMTAxNT1tCiMgQ09ORklHX1RJX0FEUzc5NTAgaXMgbm90
+IHNldApDT05GSUdfVElfQURTODY4OD1tCkNPTkZJR19USV9UTEM0NTQxPW0KIyBDT05GSUdfVkY2
+MTBfQURDIGlzIG5vdCBzZXQKQ09ORklHX1ZJUEVSQk9BUkRfQURDPW0KCiMKIyBBbXBsaWZpZXJz
+CiMKQ09ORklHX0FEODM2Nj1tCgojCiMgQ2hlbWljYWwgU2Vuc29ycwojCkNPTkZJR19BVExBU19Q
+SF9TRU5TT1I9bQojIENPTkZJR19JQVFDT1JFIGlzIG5vdCBzZXQKIyBDT05GSUdfVlo4OVggaXMg
+bm90IHNldAoKIwojIEhpZCBTZW5zb3IgSUlPIENvbW1vbgojCkNPTkZJR19JSU9fTVNfU0VOU09S
+U19JMkM9bQoKIwojIFNTUCBTZW5zb3IgQ29tbW9uCiMKIyBDT05GSUdfSUlPX1NTUF9TRU5TT1JT
+X0NPTU1PTlMgaXMgbm90IHNldApDT05GSUdfSUlPX1NTUF9TRU5TT1JIVUI9bQpDT05GSUdfSUlP
+X1NUX1NFTlNPUlNfSTJDPW0KQ09ORklHX0lJT19TVF9TRU5TT1JTX1NQST1tCkNPTkZJR19JSU9f
+U1RfU0VOU09SU19DT1JFPW0KCiMKIyBDb3VudGVycwojCgojCiMgRGlnaXRhbCB0byBhbmFsb2cg
+Y29udmVydGVycwojCiMgQ09ORklHX0FENTA2NCBpcyBub3Qgc2V0CiMgQ09ORklHX0FENTM2MCBp
+cyBub3Qgc2V0CiMgQ09ORklHX0FENTM4MCBpcyBub3Qgc2V0CkNPTkZJR19BRDU0MjE9bQojIENP
+TkZJR19BRDU0NDYgaXMgbm90IHNldApDT05GSUdfQUQ1NDQ5PW0KQ09ORklHX0FENTU5MlJfQkFT
+RT1tCkNPTkZJR19BRDU1OTJSPW0KQ09ORklHX0FENTU5M1I9bQpDT05GSUdfQUQ1NTA0PW0KQ09O
+RklHX0FENTYyNFJfU1BJPW0KIyBDT05GSUdfTFRDMjYzMiBpcyBub3Qgc2V0CkNPTkZJR19BRDU2
+ODY9bQpDT05GSUdfQUQ1NzU1PW0KQ09ORklHX0FENTc2MT1tCiMgQ09ORklHX0FENTc2NCBpcyBu
+b3Qgc2V0CkNPTkZJR19BRDU3OTE9bQojIENPTkZJR19BRDczMDMgaXMgbm90IHNldApDT05GSUdf
+Q0lPX0RBQz1tCkNPTkZJR19BRDg4MDE9bQpDT05GSUdfRFBPVF9EQUM9bQojIENPTkZJR19NNjIz
+MzIgaXMgbm90IHNldAojIENPTkZJR19NQVg1MTcgaXMgbm90IHNldApDT05GSUdfTUFYNTgyMT1t
+CkNPTkZJR19NQ1A0NzI1PW0KIyBDT05GSUdfTUNQNDkyMiBpcyBub3Qgc2V0CiMgQ09ORklHX1ZG
+NjEwX0RBQyBpcyBub3Qgc2V0CgojCiMgSUlPIGR1bW15IGRyaXZlcgojCkNPTkZJR19JSU9fU0lN
+UExFX0RVTU1ZPW0KIyBDT05GSUdfSUlPX1NJTVBMRV9EVU1NWV9FVkVOVFMgaXMgbm90IHNldApD
+T05GSUdfSUlPX1NJTVBMRV9EVU1NWV9CVUZGRVI9eQoKIwojIEZyZXF1ZW5jeSBTeW50aGVzaXpl
+cnMgRERTL1BMTAojCgojCiMgQ2xvY2sgR2VuZXJhdG9yL0Rpc3RyaWJ1dGlvbgojCkNPTkZJR19B
+RDk1MjM9bQoKIwojIFBoYXNlLUxvY2tlZCBMb29wIChQTEwpIGZyZXF1ZW5jeSBzeW50aGVzaXpl
+cnMKIwpDT05GSUdfQURGNDM1MD1tCgojCiMgRGlnaXRhbCBneXJvc2NvcGUgc2Vuc29ycwojCkNP
+TkZJR19BRElTMTYwODA9bQpDT05GSUdfQURJUzE2MTMwPW0KQ09ORklHX0FESVMxNjEzNj1tCiMg
+Q09ORklHX0FESVMxNjI2MCBpcyBub3Qgc2V0CkNPTkZJR19BRFhSUzQ1MD1tCiMgQ09ORklHX0JN
+RzE2MCBpcyBub3Qgc2V0CkNPTkZJR19NUFUzMDUwPW0KQ09ORklHX01QVTMwNTBfSTJDPW0KQ09O
+RklHX0lJT19TVF9HWVJPXzNBWElTPW0KQ09ORklHX0lJT19TVF9HWVJPX0kyQ18zQVhJUz1tCkNP
+TkZJR19JSU9fU1RfR1lST19TUElfM0FYSVM9bQojIENPTkZJR19JVEczMjAwIGlzIG5vdCBzZXQK
+CiMKIyBIZWFsdGggU2Vuc29ycwojCgojCiMgSGVhcnQgUmF0ZSBNb25pdG9ycwojCkNPTkZJR19B
+RkU0NDAzPW0KIyBDT05GSUdfQUZFNDQwNCBpcyBub3Qgc2V0CkNPTkZJR19NQVgzMDEwMD1tCkNP
+TkZJR19NQVgzMDEwMj1tCgojCiMgSHVtaWRpdHkgc2Vuc29ycwojCkNPTkZJR19BTTIzMTU9bQoj
+IENPTkZJR19ESFQxMSBpcyBub3Qgc2V0CiMgQ09ORklHX0hEQzEwMFggaXMgbm90IHNldApDT05G
+SUdfSFRTMjIxPW0KQ09ORklHX0hUUzIyMV9JMkM9bQpDT05GSUdfSFRTMjIxX1NQST1tCiMgQ09O
+RklHX0hUVTIxIGlzIG5vdCBzZXQKQ09ORklHX1NJNzAwNT1tCkNPTkZJR19TSTcwMjA9bQoKIwoj
+IEluZXJ0aWFsIG1lYXN1cmVtZW50IHVuaXRzCiMKQ09ORklHX0FESVMxNjQwMD1tCkNPTkZJR19B
+RElTMTY0ODA9bQpDT05GSUdfQk1JMTYwPW0KQ09ORklHX0JNSTE2MF9JMkM9bQojIENPTkZJR19C
+TUkxNjBfU1BJIGlzIG5vdCBzZXQKQ09ORklHX0tNWDYxPW0KQ09ORklHX0lOVl9NUFU2MDUwX0lJ
+Tz1tCkNPTkZJR19JTlZfTVBVNjA1MF9JMkM9bQojIENPTkZJR19JTlZfTVBVNjA1MF9TUEkgaXMg
+bm90IHNldApDT05GSUdfSUlPX1NUX0xTTTZEU1g9bQpDT05GSUdfSUlPX1NUX0xTTTZEU1hfSTJD
+PW0KQ09ORklHX0lJT19TVF9MU002RFNYX1NQST1tCkNPTkZJR19JSU9fQURJU19MSUI9bQpDT05G
+SUdfSUlPX0FESVNfTElCX0JVRkZFUj15CgojCiMgTGlnaHQgc2Vuc29ycwojCiMgQ09ORklHX0FD
+UElfQUxTIGlzIG5vdCBzZXQKQ09ORklHX0FESkRfUzMxMT1tCiMgQ09ORklHX0FMMzMyMEEgaXMg
+bm90IHNldAojIENPTkZJR19BUERTOTMwMCBpcyBub3Qgc2V0CiMgQ09ORklHX0FQRFM5OTYwIGlz
+IG5vdCBzZXQKIyBDT05GSUdfQkgxNzUwIGlzIG5vdCBzZXQKQ09ORklHX0JIMTc4MD1tCiMgQ09O
+RklHX0NNMzIxODEgaXMgbm90IHNldApDT05GSUdfQ00zMjMyPW0KIyBDT05GSUdfQ00zMzIzIGlz
+IG5vdCBzZXQKQ09ORklHX0NNMzYwNT1tCkNPTkZJR19DTTM2NjUxPW0KIyBDT05GSUdfR1AyQVAw
+MjBBMDBGIGlzIG5vdCBzZXQKQ09ORklHX1NFTlNPUlNfSVNMMjkwMTg9bQpDT05GSUdfU0VOU09S
+U19JU0wyOTAyOD1tCkNPTkZJR19JU0wyOTEyNT1tCkNPTkZJR19KU0ExMjEyPW0KIyBDT05GSUdf
+UlBSMDUyMSBpcyBub3Qgc2V0CiMgQ09ORklHX0xUUjUwMSBpcyBub3Qgc2V0CiMgQ09ORklHX01B
+WDQ0MDAwIGlzIG5vdCBzZXQKQ09ORklHX09QVDMwMDE9bQpDT05GSUdfUEExMjIwMzAwMT1tCkNP
+TkZJR19TSTExNDU9bQpDT05GSUdfU1RLMzMxMD1tCkNPTkZJR19UQ1MzNDE0PW0KQ09ORklHX1RD
+UzM0NzI9bQpDT05GSUdfU0VOU09SU19UU0wyNTYzPW0KQ09ORklHX1RTTDI1ODM9bQojIENPTkZJ
+R19UU0w0NTMxIGlzIG5vdCBzZXQKQ09ORklHX1VTNTE4MkQ9bQojIENPTkZJR19WQ05MNDAwMCBp
+cyBub3Qgc2V0CiMgQ09ORklHX1ZFTUw2MDcwIGlzIG5vdCBzZXQKQ09ORklHX1ZMNjE4MD1tCgoj
+CiMgTWFnbmV0b21ldGVyIHNlbnNvcnMKIwpDT05GSUdfQUs4OTc0PW0KQ09ORklHX0FLODk3NT1t
+CiMgQ09ORklHX0FLMDk5MTEgaXMgbm90IHNldApDT05GSUdfQk1DMTUwX01BR049bQpDT05GSUdf
+Qk1DMTUwX01BR05fSTJDPW0KQ09ORklHX0JNQzE1MF9NQUdOX1NQST1tCkNPTkZJR19NQUczMTEw
+PW0KQ09ORklHX01NQzM1MjQwPW0KQ09ORklHX0lJT19TVF9NQUdOXzNBWElTPW0KQ09ORklHX0lJ
+T19TVF9NQUdOX0kyQ18zQVhJUz1tCkNPTkZJR19JSU9fU1RfTUFHTl9TUElfM0FYSVM9bQpDT05G
+SUdfU0VOU09SU19ITUM1ODQzPW0KQ09ORklHX1NFTlNPUlNfSE1DNTg0M19JMkM9bQpDT05GSUdf
+U0VOU09SU19ITUM1ODQzX1NQST1tCgojCiMgTXVsdGlwbGV4ZXJzCiMKQ09ORklHX0lJT19NVVg9
+bQoKIwojIEluY2xpbm9tZXRlciBzZW5zb3JzCiMKCiMKIyBUcmlnZ2VycyAtIHN0YW5kYWxvbmUK
+IwojIENPTkZJR19JSU9fSFJUSU1FUl9UUklHR0VSIGlzIG5vdCBzZXQKIyBDT05GSUdfSUlPX0lO
+VEVSUlVQVF9UUklHR0VSIGlzIG5vdCBzZXQKIyBDT05GSUdfSUlPX1RJR0hUTE9PUF9UUklHR0VS
+IGlzIG5vdCBzZXQKQ09ORklHX0lJT19TWVNGU19UUklHR0VSPW0KCiMKIyBEaWdpdGFsIHBvdGVu
+dGlvbWV0ZXJzCiMKQ09ORklHX0RTMTgwMz1tCiMgQ09ORklHX01BWDU0ODEgaXMgbm90IHNldAoj
+IENPTkZJR19NQVg1NDg3IGlzIG5vdCBzZXQKQ09ORklHX01DUDQxMzE9bQpDT05GSUdfTUNQNDUz
+MT1tCkNPTkZJR19UUEwwMTAyPW0KCiMKIyBEaWdpdGFsIHBvdGVudGlvc3RhdHMKIwpDT05GSUdf
+TE1QOTEwMDA9bQoKIwojIFByZXNzdXJlIHNlbnNvcnMKIwpDT05GSUdfQUJQMDYwTUc9bQpDT05G
+SUdfQk1QMjgwPW0KQ09ORklHX0JNUDI4MF9JMkM9bQpDT05GSUdfQk1QMjgwX1NQST1tCkNPTkZJ
+R19IUDAzPW0KQ09ORklHX01QTDExNT1tCkNPTkZJR19NUEwxMTVfSTJDPW0KIyBDT05GSUdfTVBM
+MTE1X1NQSSBpcyBub3Qgc2V0CkNPTkZJR19NUEwzMTE1PW0KQ09ORklHX01TNTYxMT1tCkNPTkZJ
+R19NUzU2MTFfSTJDPW0KQ09ORklHX01TNTYxMV9TUEk9bQojIENPTkZJR19NUzU2MzcgaXMgbm90
+IHNldApDT05GSUdfSUlPX1NUX1BSRVNTPW0KQ09ORklHX0lJT19TVF9QUkVTU19JMkM9bQpDT05G
+SUdfSUlPX1NUX1BSRVNTX1NQST1tCkNPTkZJR19UNTQwMz1tCiMgQ09ORklHX0hQMjA2QyBpcyBu
+b3Qgc2V0CiMgQ09ORklHX1pQQTIzMjYgaXMgbm90IHNldAoKIwojIExpZ2h0bmluZyBzZW5zb3Jz
+CiMKQ09ORklHX0FTMzkzNT1tCgojCiMgUHJveGltaXR5IGFuZCBkaXN0YW5jZSBzZW5zb3JzCiMK
+Q09ORklHX0xJREFSX0xJVEVfVjI9bQpDT05GSUdfU1JGMDQ9bQpDT05GSUdfU1g5NTAwPW0KIyBD
+T05GSUdfU1JGMDggaXMgbm90IHNldAoKIwojIFRlbXBlcmF0dXJlIHNlbnNvcnMKIwojIENPTkZJ
+R19NQVhJTV9USEVSTU9DT1VQTEUgaXMgbm90IHNldApDT05GSUdfTUxYOTA2MTQ9bQojIENPTkZJ
+R19UTVAwMDYgaXMgbm90IHNldApDT05GSUdfVE1QMDA3PW0KQ09ORklHX1RTWVMwMT1tCiMgQ09O
+RklHX1RTWVMwMkQgaXMgbm90IHNldAojIENPTkZJR19OVEIgaXMgbm90IHNldAojIENPTkZJR19W
+TUVfQlVTIGlzIG5vdCBzZXQKQ09ORklHX1BXTT15CkNPTkZJR19QV01fU1lTRlM9eQpDT05GSUdf
+UFdNX0ZTTF9GVE09eQpDT05GSUdfUFdNX0xQMzk0Mz1tCiMgQ09ORklHX1BXTV9MUFNTX1BDSSBp
+cyBub3Qgc2V0CiMgQ09ORklHX1BXTV9MUFNTX1BMQVRGT1JNIGlzIG5vdCBzZXQKIyBDT05GSUdf
+UFdNX1BDQTk2ODUgaXMgbm90IHNldApDT05GSUdfUFdNX1NUTVBFPXkKQ09ORklHX0lSUUNISVA9
+eQpDT05GSUdfQVJNX0dJQ19NQVhfTlI9MQpDT05GSUdfSVBBQ0tfQlVTPW0KIyBDT05GSUdfQk9B
+UkRfVFBDSTIwMCBpcyBub3Qgc2V0CiMgQ09ORklHX1NFUklBTF9JUE9DVEFMIGlzIG5vdCBzZXQK
+Q09ORklHX1JFU0VUX0NPTlRST0xMRVI9eQojIENPTkZJR19SRVNFVF9BVEg3OSBpcyBub3Qgc2V0
+CiMgQ09ORklHX1JFU0VUX0JFUkxJTiBpcyBub3Qgc2V0CiMgQ09ORklHX1JFU0VUX0dFTUlOSSBp
+cyBub3Qgc2V0CiMgQ09ORklHX1JFU0VUX0lNWDcgaXMgbm90IHNldAojIENPTkZJR19SRVNFVF9M
+UEMxOFhYIGlzIG5vdCBzZXQKIyBDT05GSUdfUkVTRVRfTUVTT04gaXMgbm90IHNldAojIENPTkZJ
+R19SRVNFVF9QSVNUQUNISU8gaXMgbm90IHNldAojIENPTkZJR19SRVNFVF9TT0NGUEdBIGlzIG5v
+dCBzZXQKIyBDT05GSUdfUkVTRVRfU1RNMzIgaXMgbm90IHNldAojIENPTkZJR19SRVNFVF9TVU5Y
+SSBpcyBub3Qgc2V0CkNPTkZJR19SRVNFVF9USV9TWVNDT049eQojIENPTkZJR19SRVNFVF9aWU5R
+IGlzIG5vdCBzZXQKIyBDT05GSUdfUkVTRVRfVEVHUkFfQlBNUCBpcyBub3Qgc2V0CiMgQ09ORklH
+X0ZNQyBpcyBub3Qgc2V0CgojCiMgUEhZIFN1YnN5c3RlbQojCkNPTkZJR19HRU5FUklDX1BIWT15
+CiMgQ09ORklHX0JDTV9LT05BX1VTQjJfUEhZIGlzIG5vdCBzZXQKQ09ORklHX1BIWV9QWEFfMjhO
+TV9IU0lDPW0KQ09ORklHX1BIWV9QWEFfMjhOTV9VU0IyPW0KIyBDT05GSUdfUEhZX0NQQ0FQX1VT
+QiBpcyBub3Qgc2V0CkNPTkZJR19QSFlfUUNPTV9VU0JfSFM9bQojIENPTkZJR19QSFlfUUNPTV9V
+U0JfSFNJQyBpcyBub3Qgc2V0CkNPTkZJR19QSFlfVFVTQjEyMTA9bQojIENPTkZJR19QT1dFUkNB
+UCBpcyBub3Qgc2V0CkNPTkZJR19NQ0I9eQojIENPTkZJR19NQ0JfUENJIGlzIG5vdCBzZXQKQ09O
+RklHX01DQl9MUEM9bQoKIwojIFBlcmZvcm1hbmNlIG1vbml0b3Igc3VwcG9ydAojCkNPTkZJR19S
+QVM9eQojIENPTkZJR19USFVOREVSQk9MVCBpcyBub3Qgc2V0CgojCiMgQW5kcm9pZAojCkNPTkZJ
+R19BTkRST0lEPXkKIyBDT05GSUdfQU5EUk9JRF9CSU5ERVJfSVBDIGlzIG5vdCBzZXQKIyBDT05G
+SUdfREFYIGlzIG5vdCBzZXQKQ09ORklHX05WTUVNPXkKQ09ORklHX1NUTT15CkNPTkZJR19TVE1f
+RFVNTVk9bQpDT05GSUdfU1RNX1NPVVJDRV9DT05TT0xFPXkKIyBDT05GSUdfU1RNX1NPVVJDRV9I
+RUFSVEJFQVQgaXMgbm90IHNldAojIENPTkZJR19JTlRFTF9USCBpcyBub3Qgc2V0CgojCiMgRlBH
+QSBDb25maWd1cmF0aW9uIFN1cHBvcnQKIwpDT05GSUdfRlBHQT1tCkNPTkZJR19GUEdBX1JFR0lP
+Tj1tCkNPTkZJR19GUEdBX01HUl9JQ0U0MF9TUEk9bQpDT05GSUdfRlBHQV9NR1JfWElMSU5YX1NQ
+ST1tCkNPTkZJR19GUEdBX0JSSURHRT1tCiMgQ09ORklHX0FMVEVSQV9QUl9JUF9DT1JFIGlzIG5v
+dCBzZXQKQ09ORklHX1hJTElOWF9QUl9ERUNPVVBMRVI9bQoKIwojIEZTSSBzdXBwb3J0CiMKQ09O
+RklHX0ZTST1tCkNPTkZJR19GU0lfTUFTVEVSX0dQSU89bQpDT05GSUdfRlNJX01BU1RFUl9IVUI9
+bQojIENPTkZJR19GU0lfU0NPTSBpcyBub3Qgc2V0CkNPTkZJR19NVUxUSVBMRVhFUj1tCkNPTkZJ
+R19NVVhfQURHNzkyQT1tCkNPTkZJR19NVVhfR1BJTz1tCkNPTkZJR19NVVhfTU1JTz1tCgojCiMg
+RmlybXdhcmUgRHJpdmVycwojCiMgQ09ORklHX0VERCBpcyBub3Qgc2V0CiMgQ09ORklHX0ZJUk1X
+QVJFX01FTU1BUCBpcyBub3Qgc2V0CkNPTkZJR19ERUxMX1JCVT15CkNPTkZJR19EQ0RCQVM9bQoj
+IENPTkZJR19JU0NTSV9JQkZUX0ZJTkQgaXMgbm90IHNldAojIENPTkZJR19GV19DRkdfU1lTRlMg
+aXMgbm90IHNldApDT05GSUdfR09PR0xFX0ZJUk1XQVJFPXkKQ09ORklHX0dPT0dMRV9DT1JFQk9P
+VF9UQUJMRT15CiMgQ09ORklHX0dPT0dMRV9DT1JFQk9PVF9UQUJMRV9BQ1BJIGlzIG5vdCBzZXQK
+Q09ORklHX0dPT0dMRV9DT1JFQk9PVF9UQUJMRV9PRj15CiMgQ09ORklHX0dPT0dMRV9NRU1DT05T
+T0xFX0NPUkVCT09UIGlzIG5vdCBzZXQKIyBDT05GSUdfR09PR0xFX1ZQRCBpcyBub3Qgc2V0CiMg
+Q09ORklHX0VGSV9ERVZfUEFUSF9QQVJTRVIgaXMgbm90IHNldAoKIwojIFRlZ3JhIGZpcm13YXJl
+IGRyaXZlcgojCgojCiMgRmlsZSBzeXN0ZW1zCiMKQ09ORklHX0RDQUNIRV9XT1JEX0FDQ0VTUz15
+CkNPTkZJR19GU19QT1NJWF9BQ0w9eQpDT05GSUdfRVhQT1JURlM9eQojIENPTkZJR19FWFBPUlRG
+U19CTE9DS19PUFMgaXMgbm90IHNldApDT05GSUdfRklMRV9MT0NLSU5HPXkKQ09ORklHX01BTkRB
+VE9SWV9GSUxFX0xPQ0tJTkc9eQpDT05GSUdfRlNfRU5DUllQVElPTj15CkNPTkZJR19GU05PVElG
+WT15CkNPTkZJR19ETk9USUZZPXkKQ09ORklHX0lOT1RJRllfVVNFUj15CiMgQ09ORklHX0ZBTk9U
+SUZZIGlzIG5vdCBzZXQKIyBDT05GSUdfUVVPVEEgaXMgbm90IHNldAojIENPTkZJR19RVU9UQUNU
+TCBpcyBub3Qgc2V0CkNPTkZJR19BVVRPRlM0X0ZTPW0KQ09ORklHX0ZVU0VfRlM9bQpDT05GSUdf
+Q1VTRT1tCkNPTkZJR19PVkVSTEFZX0ZTPXkKQ09ORklHX09WRVJMQVlfRlNfUkVESVJFQ1RfRElS
+PXkKIyBDT05GSUdfT1ZFUkxBWV9GU19JTkRFWCBpcyBub3Qgc2V0CgojCiMgQ2FjaGVzCiMKQ09O
+RklHX0ZTQ0FDSEU9eQpDT05GSUdfRlNDQUNIRV9TVEFUUz15CkNPTkZJR19GU0NBQ0hFX0hJU1RP
+R1JBTT15CkNPTkZJR19GU0NBQ0hFX0RFQlVHPXkKQ09ORklHX0ZTQ0FDSEVfT0JKRUNUX0xJU1Q9
+eQoKIwojIFBzZXVkbyBmaWxlc3lzdGVtcwojCkNPTkZJR19QUk9DX0ZTPXkKIyBDT05GSUdfUFJP
+Q19LQ09SRSBpcyBub3Qgc2V0CkNPTkZJR19QUk9DX1NZU0NUTD15CiMgQ09ORklHX1BST0NfUEFH
+RV9NT05JVE9SIGlzIG5vdCBzZXQKIyBDT05GSUdfUFJPQ19DSElMRFJFTiBpcyBub3Qgc2V0CkNP
+TkZJR19LRVJORlM9eQpDT05GSUdfU1lTRlM9eQojIENPTkZJR19IVUdFVExCRlMgaXMgbm90IHNl
+dAojIENPTkZJR19IVUdFVExCX1BBR0UgaXMgbm90IHNldApDT05GSUdfQVJDSF9IQVNfR0lHQU5U
+SUNfUEFHRT15CkNPTkZJR19DT05GSUdGU19GUz15CkNPTkZJR19NSVNDX0ZJTEVTWVNURU1TPXkK
+IyBDT05GSUdfT1JBTkdFRlNfRlMgaXMgbm90IHNldApDT05GSUdfRUNSWVBUX0ZTPW0KIyBDT05G
+SUdfRUNSWVBUX0ZTX01FU1NBR0lORyBpcyBub3Qgc2V0CkNPTkZJR19QU1RPUkU9eQojIENPTkZJ
+R19QU1RPUkVfWkxJQl9DT01QUkVTUyBpcyBub3Qgc2V0CiMgQ09ORklHX1BTVE9SRV9MWk9fQ09N
+UFJFU1MgaXMgbm90IHNldApDT05GSUdfUFNUT1JFX0xaNF9DT01QUkVTUz15CiMgQ09ORklHX1BT
+VE9SRV9DT05TT0xFIGlzIG5vdCBzZXQKIyBDT05GSUdfUFNUT1JFX1BNU0cgaXMgbm90IHNldApD
+T05GSUdfUFNUT1JFX1JBTT15CkNPTkZJR19ORVRXT1JLX0ZJTEVTWVNURU1TPXkKQ09ORklHX05M
+Uz15CkNPTkZJR19OTFNfREVGQVVMVD0iaXNvODg1OS0xIgpDT05GSUdfTkxTX0NPREVQQUdFXzQz
+Nz1tCkNPTkZJR19OTFNfQ09ERVBBR0VfNzM3PW0KIyBDT05GSUdfTkxTX0NPREVQQUdFXzc3NSBp
+cyBub3Qgc2V0CiMgQ09ORklHX05MU19DT0RFUEFHRV84NTAgaXMgbm90IHNldAojIENPTkZJR19O
+TFNfQ09ERVBBR0VfODUyIGlzIG5vdCBzZXQKQ09ORklHX05MU19DT0RFUEFHRV84NTU9bQpDT05G
+SUdfTkxTX0NPREVQQUdFXzg1Nz1tCiMgQ09ORklHX05MU19DT0RFUEFHRV84NjAgaXMgbm90IHNl
+dApDT05GSUdfTkxTX0NPREVQQUdFXzg2MT1tCiMgQ09ORklHX05MU19DT0RFUEFHRV84NjIgaXMg
+bm90IHNldApDT05GSUdfTkxTX0NPREVQQUdFXzg2Mz15CiMgQ09ORklHX05MU19DT0RFUEFHRV84
+NjQgaXMgbm90IHNldApDT05GSUdfTkxTX0NPREVQQUdFXzg2NT15CkNPTkZJR19OTFNfQ09ERVBB
+R0VfODY2PXkKIyBDT05GSUdfTkxTX0NPREVQQUdFXzg2OSBpcyBub3Qgc2V0CiMgQ09ORklHX05M
+U19DT0RFUEFHRV85MzYgaXMgbm90IHNldApDT05GSUdfTkxTX0NPREVQQUdFXzk1MD1tCiMgQ09O
+RklHX05MU19DT0RFUEFHRV85MzIgaXMgbm90IHNldAojIENPTkZJR19OTFNfQ09ERVBBR0VfOTQ5
+IGlzIG5vdCBzZXQKIyBDT05GSUdfTkxTX0NPREVQQUdFXzg3NCBpcyBub3Qgc2V0CkNPTkZJR19O
+TFNfSVNPODg1OV84PXkKIyBDT05GSUdfTkxTX0NPREVQQUdFXzEyNTAgaXMgbm90IHNldApDT05G
+SUdfTkxTX0NPREVQQUdFXzEyNTE9bQpDT05GSUdfTkxTX0FTQ0lJPW0KQ09ORklHX05MU19JU084
+ODU5XzE9eQojIENPTkZJR19OTFNfSVNPODg1OV8yIGlzIG5vdCBzZXQKIyBDT05GSUdfTkxTX0lT
+Tzg4NTlfMyBpcyBub3Qgc2V0CkNPTkZJR19OTFNfSVNPODg1OV80PXkKQ09ORklHX05MU19JU084
+ODU5XzU9bQpDT05GSUdfTkxTX0lTTzg4NTlfNj1tCkNPTkZJR19OTFNfSVNPODg1OV83PW0KQ09O
+RklHX05MU19JU084ODU5Xzk9eQojIENPTkZJR19OTFNfSVNPODg1OV8xMyBpcyBub3Qgc2V0CkNP
+TkZJR19OTFNfSVNPODg1OV8xND15CkNPTkZJR19OTFNfSVNPODg1OV8xNT1tCiMgQ09ORklHX05M
+U19LT0k4X1IgaXMgbm90IHNldApDT05GSUdfTkxTX0tPSThfVT15CkNPTkZJR19OTFNfTUFDX1JP
+TUFOPW0KQ09ORklHX05MU19NQUNfQ0VMVElDPXkKQ09ORklHX05MU19NQUNfQ0VOVEVVUk89bQoj
+IENPTkZJR19OTFNfTUFDX0NST0FUSUFOIGlzIG5vdCBzZXQKQ09ORklHX05MU19NQUNfQ1lSSUxM
+SUM9eQpDT05GSUdfTkxTX01BQ19HQUVMSUM9bQojIENPTkZJR19OTFNfTUFDX0dSRUVLIGlzIG5v
+dCBzZXQKQ09ORklHX05MU19NQUNfSUNFTEFORD15CkNPTkZJR19OTFNfTUFDX0lOVUlUPW0KQ09O
+RklHX05MU19NQUNfUk9NQU5JQU49eQpDT05GSUdfTkxTX01BQ19UVVJLSVNIPXkKQ09ORklHX05M
+U19VVEY4PXkKCiMKIyBLZXJuZWwgaGFja2luZwojCkNPTkZJR19UUkFDRV9JUlFGTEFHU19TVVBQ
+T1JUPXkKCiMKIyBwcmludGsgYW5kIGRtZXNnIG9wdGlvbnMKIwpDT05GSUdfUFJJTlRLX1RJTUU9
+eQpDT05GSUdfQ09OU09MRV9MT0dMRVZFTF9ERUZBVUxUPTcKQ09ORklHX01FU1NBR0VfTE9HTEVW
+RUxfREVGQVVMVD00CkNPTkZJR19CT09UX1BSSU5US19ERUxBWT15CkNPTkZJR19EWU5BTUlDX0RF
+QlVHPXkKCiMKIyBDb21waWxlLXRpbWUgY2hlY2tzIGFuZCBjb21waWxlciBvcHRpb25zCiMKQ09O
+RklHX0RFQlVHX0lORk89eQpDT05GSUdfREVCVUdfSU5GT19SRURVQ0VEPXkKIyBDT05GSUdfREVC
+VUdfSU5GT19TUExJVCBpcyBub3Qgc2V0CiMgQ09ORklHX0RFQlVHX0lORk9fRFdBUkY0IGlzIG5v
+dCBzZXQKIyBDT05GSUdfR0RCX1NDUklQVFMgaXMgbm90IHNldApDT05GSUdfRU5BQkxFX1dBUk5f
+REVQUkVDQVRFRD15CkNPTkZJR19FTkFCTEVfTVVTVF9DSEVDSz15CkNPTkZJR19GUkFNRV9XQVJO
+PTgxOTIKQ09ORklHX1NUUklQX0FTTV9TWU1TPXkKIyBDT05GSUdfUkVBREFCTEVfQVNNIGlzIG5v
+dCBzZXQKIyBDT05GSUdfVU5VU0VEX1NZTUJPTFMgaXMgbm90IHNldApDT05GSUdfUEFHRV9PV05F
+Uj15CkNPTkZJR19ERUJVR19GUz15CkNPTkZJR19IRUFERVJTX0NIRUNLPXkKIyBDT05GSUdfREVC
+VUdfU0VDVElPTl9NSVNNQVRDSCBpcyBub3Qgc2V0CkNPTkZJR19TRUNUSU9OX01JU01BVENIX1dB
+Uk5fT05MWT15CkNPTkZJR19BUkNIX1dBTlRfRlJBTUVfUE9JTlRFUlM9eQpDT05GSUdfRlJBTUVf
+UE9JTlRFUj15CkNPTkZJR19TVEFDS19WQUxJREFUSU9OPXkKIyBDT05GSUdfREVCVUdfRk9SQ0Vf
+V0VBS19QRVJfQ1BVIGlzIG5vdCBzZXQKQ09ORklHX01BR0lDX1NZU1JRPXkKQ09ORklHX01BR0lD
+X1NZU1JRX0RFRkFVTFRfRU5BQkxFPTB4MQojIENPTkZJR19NQUdJQ19TWVNSUV9TRVJJQUwgaXMg
+bm90IHNldApDT05GSUdfREVCVUdfS0VSTkVMPXkKCiMKIyBNZW1vcnkgRGVidWdnaW5nCiMKQ09O
+RklHX1BBR0VfRVhURU5TSU9OPXkKIyBDT05GSUdfREVCVUdfUEFHRUFMTE9DIGlzIG5vdCBzZXQK
+IyBDT05GSUdfUEFHRV9QT0lTT05JTkcgaXMgbm90IHNldAojIENPTkZJR19ERUJVR19QQUdFX1JF
+RiBpcyBub3Qgc2V0CiMgQ09ORklHX0RFQlVHX1JPREFUQV9URVNUIGlzIG5vdCBzZXQKQ09ORklH
+X0RFQlVHX09CSkVDVFM9eQpDT05GSUdfREVCVUdfT0JKRUNUU19TRUxGVEVTVD15CiMgQ09ORklH
+X0RFQlVHX09CSkVDVFNfRlJFRSBpcyBub3Qgc2V0CkNPTkZJR19ERUJVR19PQkpFQ1RTX1RJTUVS
+Uz15CkNPTkZJR19ERUJVR19PQkpFQ1RTX1dPUks9eQojIENPTkZJR19ERUJVR19PQkpFQ1RTX1JD
+VV9IRUFEIGlzIG5vdCBzZXQKIyBDT05GSUdfREVCVUdfT0JKRUNUU19QRVJDUFVfQ09VTlRFUiBp
+cyBub3Qgc2V0CkNPTkZJR19ERUJVR19PQkpFQ1RTX0VOQUJMRV9ERUZBVUxUPTEKIyBDT05GSUdf
+REVCVUdfU0xBQiBpcyBub3Qgc2V0CkNPTkZJR19IQVZFX0RFQlVHX0tNRU1MRUFLPXkKIyBDT05G
+SUdfREVCVUdfS01FTUxFQUsgaXMgbm90IHNldAojIENPTkZJR19ERUJVR19TVEFDS19VU0FHRSBp
+cyBub3Qgc2V0CkNPTkZJR19ERUJVR19WTT15CkNPTkZJR19ERUJVR19WTV9WTUFDQUNIRT15CkNP
+TkZJR19ERUJVR19WTV9SQj15CkNPTkZJR19ERUJVR19WTV9QR0ZMQUdTPXkKQ09ORklHX0FSQ0hf
+SEFTX0RFQlVHX1ZJUlRVQUw9eQpDT05GSUdfREVCVUdfVklSVFVBTD15CiMgQ09ORklHX0RFQlVH
+X01FTU9SWV9JTklUIGlzIG5vdCBzZXQKQ09ORklHX01FTU9SWV9OT1RJRklFUl9FUlJPUl9JTkpF
+Q1Q9bQpDT05GSUdfSEFWRV9ERUJVR19TVEFDS09WRVJGTE9XPXkKQ09ORklHX0RFQlVHX1NUQUNL
+T1ZFUkZMT1c9eQpDT05GSUdfSEFWRV9BUkNIX0tNRU1DSEVDSz15CiMgQ09ORklHX0tNRU1DSEVD
+SyBpcyBub3Qgc2V0CkNPTkZJR19IQVZFX0FSQ0hfS0FTQU49eQpDT05GSUdfS0FTQU49eQojIENP
+TkZJR19LQVNBTl9PVVRMSU5FIGlzIG5vdCBzZXQKQ09ORklHX0tBU0FOX0lOTElORT15CiMgQ09O
+RklHX1RFU1RfS0FTQU4gaXMgbm90IHNldApDT05GSUdfQVJDSF9IQVNfS0NPVj15CkNPTkZJR19L
+Q09WPXkKIyBDT05GSUdfS0NPVl9JTlNUUlVNRU5UX0FMTCBpcyBub3Qgc2V0CkNPTkZJR19ERUJV
+R19TSElSUT15CgojCiMgRGVidWcgTG9ja3VwcyBhbmQgSGFuZ3MKIwpDT05GSUdfTE9DS1VQX0RF
+VEVDVE9SPXkKQ09ORklHX1NPRlRMT0NLVVBfREVURUNUT1I9eQpDT05GSUdfSEFSRExPQ0tVUF9E
+RVRFQ1RPUl9QRVJGPXkKQ09ORklHX0hBUkRMT0NLVVBfREVURUNUT1I9eQojIENPTkZJR19CT09U
+UEFSQU1fSEFSRExPQ0tVUF9QQU5JQyBpcyBub3Qgc2V0CkNPTkZJR19CT09UUEFSQU1fSEFSRExP
+Q0tVUF9QQU5JQ19WQUxVRT0wCkNPTkZJR19CT09UUEFSQU1fU09GVExPQ0tVUF9QQU5JQz15CkNP
+TkZJR19CT09UUEFSQU1fU09GVExPQ0tVUF9QQU5JQ19WQUxVRT0xCkNPTkZJR19ERVRFQ1RfSFVO
+R19UQVNLPXkKQ09ORklHX0RFRkFVTFRfSFVOR19UQVNLX1RJTUVPVVQ9MTIwCiMgQ09ORklHX0JP
+T1RQQVJBTV9IVU5HX1RBU0tfUEFOSUMgaXMgbm90IHNldApDT05GSUdfQk9PVFBBUkFNX0hVTkdf
+VEFTS19QQU5JQ19WQUxVRT0wCkNPTkZJR19XUV9XQVRDSERPRz15CkNPTkZJR19QQU5JQ19PTl9P
+T1BTPXkKQ09ORklHX1BBTklDX09OX09PUFNfVkFMVUU9MQpDT05GSUdfUEFOSUNfVElNRU9VVD0w
+CkNPTkZJR19TQ0hFRF9ERUJVRz15CkNPTkZJR19TQ0hFRF9JTkZPPXkKQ09ORklHX1NDSEVEU1RB
+VFM9eQpDT05GSUdfU0NIRURfU1RBQ0tfRU5EX0NIRUNLPXkKQ09ORklHX0RFQlVHX1RJTUVLRUVQ
+SU5HPXkKIyBDT05GSUdfREVCVUdfUFJFRU1QVCBpcyBub3Qgc2V0CgojCiMgTG9jayBEZWJ1Z2dp
+bmcgKHNwaW5sb2NrcywgbXV0ZXhlcywgZXRjLi4uKQojCkNPTkZJR19ERUJVR19SVF9NVVRFWEVT
+PXkKQ09ORklHX0RFQlVHX1NQSU5MT0NLPXkKQ09ORklHX0RFQlVHX01VVEVYRVM9eQojIENPTkZJ
+R19ERUJVR19XV19NVVRFWF9TTE9XUEFUSCBpcyBub3Qgc2V0CkNPTkZJR19ERUJVR19MT0NLX0FM
+TE9DPXkKQ09ORklHX1BST1ZFX0xPQ0tJTkc9eQpDT05GSUdfTE9DS0RFUD15CiMgQ09ORklHX0xP
+Q0tfU1RBVCBpcyBub3Qgc2V0CkNPTkZJR19ERUJVR19MT0NLREVQPXkKQ09ORklHX0RFQlVHX0FU
+T01JQ19TTEVFUD15CkNPTkZJR19ERUJVR19MT0NLSU5HX0FQSV9TRUxGVEVTVFM9eQpDT05GSUdf
+TE9DS19UT1JUVVJFX1RFU1Q9eQojIENPTkZJR19XV19NVVRFWF9TRUxGVEVTVCBpcyBub3Qgc2V0
+CkNPTkZJR19UUkFDRV9JUlFGTEFHUz15CkNPTkZJR19TVEFDS1RSQUNFPXkKQ09ORklHX1dBUk5f
+QUxMX1VOU0VFREVEX1JBTkRPTT15CiMgQ09ORklHX0RFQlVHX0tPQkpFQ1QgaXMgbm90IHNldAoj
+IENPTkZJR19ERUJVR19LT0JKRUNUX1JFTEVBU0UgaXMgbm90IHNldApDT05GSUdfREVCVUdfQlVH
+VkVSQk9TRT15CkNPTkZJR19ERUJVR19MSVNUPXkKQ09ORklHX0RFQlVHX1BJX0xJU1Q9eQpDT05G
+SUdfREVCVUdfU0c9eQpDT05GSUdfREVCVUdfTk9USUZJRVJTPXkKQ09ORklHX0RFQlVHX0NSRURF
+TlRJQUxTPXkKCiMKIyBSQ1UgRGVidWdnaW5nCiMKQ09ORklHX1BST1ZFX1JDVT15CkNPTkZJR19U
+T1JUVVJFX1RFU1Q9eQojIENPTkZJR19SQ1VfUEVSRl9URVNUIGlzIG5vdCBzZXQKQ09ORklHX1JD
+VV9UT1JUVVJFX1RFU1Q9eQpDT05GSUdfUkNVX0NQVV9TVEFMTF9USU1FT1VUPTIxCiMgQ09ORklH
+X1JDVV9UUkFDRSBpcyBub3Qgc2V0CkNPTkZJR19SQ1VfRVFTX0RFQlVHPXkKQ09ORklHX0RFQlVH
+X1dRX0ZPUkNFX1JSX0NQVT15CkNPTkZJR19OT1RJRklFUl9FUlJPUl9JTkpFQ1RJT049eQpDT05G
+SUdfUE1fTk9USUZJRVJfRVJST1JfSU5KRUNUPW0KIyBDT05GSUdfTkVUREVWX05PVElGSUVSX0VS
+Uk9SX0lOSkVDVCBpcyBub3Qgc2V0CkNPTkZJR19GQVVMVF9JTkpFQ1RJT049eQpDT05GSUdfRkFJ
+TFNMQUI9eQojIENPTkZJR19GQUlMX1BBR0VfQUxMT0MgaXMgbm90IHNldAojIENPTkZJR19GQUlM
+X0ZVVEVYIGlzIG5vdCBzZXQKQ09ORklHX0ZBVUxUX0lOSkVDVElPTl9ERUJVR19GUz15CkNPTkZJ
+R19MQVRFTkNZVE9QPXkKQ09ORklHX1VTRVJfU1RBQ0tUUkFDRV9TVVBQT1JUPXkKQ09ORklHX05P
+UF9UUkFDRVI9eQpDT05GSUdfSEFWRV9GVU5DVElPTl9UUkFDRVI9eQpDT05GSUdfSEFWRV9GVU5D
+VElPTl9HUkFQSF9UUkFDRVI9eQpDT05GSUdfSEFWRV9EWU5BTUlDX0ZUUkFDRT15CkNPTkZJR19I
+QVZFX0RZTkFNSUNfRlRSQUNFX1dJVEhfUkVHUz15CkNPTkZJR19IQVZFX0ZUUkFDRV9NQ09VTlRf
+UkVDT1JEPXkKQ09ORklHX0hBVkVfU1lTQ0FMTF9UUkFDRVBPSU5UUz15CkNPTkZJR19IQVZFX0ZF
+TlRSWT15CkNPTkZJR19IQVZFX0NfUkVDT1JETUNPVU5UPXkKQ09ORklHX1RSQUNFUl9NQVhfVFJB
+Q0U9eQpDT05GSUdfVFJBQ0VfQ0xPQ0s9eQpDT05GSUdfUklOR19CVUZGRVI9eQpDT05GSUdfRVZF
+TlRfVFJBQ0lORz15CkNPTkZJR19DT05URVhUX1NXSVRDSF9UUkFDRVI9eQpDT05GSUdfUklOR19C
+VUZGRVJfQUxMT1dfU1dBUD15CkNPTkZJR19UUkFDSU5HPXkKQ09ORklHX0dFTkVSSUNfVFJBQ0VS
+PXkKQ09ORklHX1RSQUNJTkdfU1VQUE9SVD15CkNPTkZJR19GVFJBQ0U9eQojIENPTkZJR19GVU5D
+VElPTl9UUkFDRVIgaXMgbm90IHNldAojIENPTkZJR19JUlFTT0ZGX1RSQUNFUiBpcyBub3Qgc2V0
+CkNPTkZJR19QUkVFTVBUX1RSQUNFUj15CkNPTkZJR19TQ0hFRF9UUkFDRVI9eQojIENPTkZJR19I
+V0xBVF9UUkFDRVIgaXMgbm90IHNldApDT05GSUdfRlRSQUNFX1NZU0NBTExTPXkKQ09ORklHX1RS
+QUNFUl9TTkFQU0hPVD15CkNPTkZJR19UUkFDRVJfU05BUFNIT1RfUEVSX0NQVV9TV0FQPXkKQ09O
+RklHX1RSQUNFX0JSQU5DSF9QUk9GSUxJTkc9eQojIENPTkZJR19CUkFOQ0hfUFJPRklMRV9OT05F
+IGlzIG5vdCBzZXQKIyBDT05GSUdfUFJPRklMRV9BTk5PVEFURURfQlJBTkNIRVMgaXMgbm90IHNl
+dApDT05GSUdfUFJPRklMRV9BTExfQlJBTkNIRVM9eQpDT05GSUdfVFJBQ0lOR19CUkFOQ0hFUz15
+CkNPTkZJR19CUkFOQ0hfVFJBQ0VSPXkKIyBDT05GSUdfU1RBQ0tfVFJBQ0VSIGlzIG5vdCBzZXQK
+Q09ORklHX0tQUk9CRV9FVkVOVFM9eQojIENPTkZJR19VUFJPQkVfRVZFTlRTIGlzIG5vdCBzZXQK
+Q09ORklHX0JQRl9FVkVOVFM9eQpDT05GSUdfUFJPQkVfRVZFTlRTPXkKIyBDT05GSUdfRlRSQUNF
+X1NUQVJUVVBfVEVTVCBpcyBub3Qgc2V0CiMgQ09ORklHX01NSU9UUkFDRSBpcyBub3Qgc2V0CiMg
+Q09ORklHX0hJU1RfVFJJR0dFUlMgaXMgbm90IHNldAojIENPTkZJR19UUkFDRVBPSU5UX0JFTkNI
+TUFSSyBpcyBub3Qgc2V0CiMgQ09ORklHX1JJTkdfQlVGRkVSX0JFTkNITUFSSyBpcyBub3Qgc2V0
+CiMgQ09ORklHX1JJTkdfQlVGRkVSX1NUQVJUVVBfVEVTVCBpcyBub3Qgc2V0CiMgQ09ORklHX1RS
+QUNFX0VWQUxfTUFQX0ZJTEUgaXMgbm90IHNldAojIENPTkZJR19UUkFDSU5HX0VWRU5UU19HUElP
+IGlzIG5vdCBzZXQKCiMKIyBSdW50aW1lIFRlc3RpbmcKIwpDT05GSUdfVEVTVF9MSVNUX1NPUlQ9
+bQpDT05GSUdfVEVTVF9TT1JUPW0KIyBDT05GSUdfS1BST0JFU19TQU5JVFlfVEVTVCBpcyBub3Qg
+c2V0CiMgQ09ORklHX0JBQ0tUUkFDRV9TRUxGX1RFU1QgaXMgbm90IHNldAojIENPTkZJR19SQlRS
+RUVfVEVTVCBpcyBub3Qgc2V0CkNPTkZJR19JTlRFUlZBTF9UUkVFX1RFU1Q9bQpDT05GSUdfUEVS
+Q1BVX1RFU1Q9bQpDT05GSUdfQVRPTUlDNjRfU0VMRlRFU1Q9eQpDT05GSUdfVEVTVF9IRVhEVU1Q
+PW0KIyBDT05GSUdfVEVTVF9TVFJJTkdfSEVMUEVSUyBpcyBub3Qgc2V0CkNPTkZJR19URVNUX0tT
+VFJUT1g9eQpDT05GSUdfVEVTVF9QUklOVEY9eQpDT05GSUdfVEVTVF9CSVRNQVA9eQpDT05GSUdf
+VEVTVF9VVUlEPXkKQ09ORklHX1RFU1RfUkhBU0hUQUJMRT1tCiMgQ09ORklHX1RFU1RfSEFTSCBp
+cyBub3Qgc2V0CiMgQ09ORklHX1BST1ZJREVfT0hDSTEzOTRfRE1BX0lOSVQgaXMgbm90IHNldAoj
+IENPTkZJR19ETUFfQVBJX0RFQlVHIGlzIG5vdCBzZXQKIyBDT05GSUdfVEVTVF9MS00gaXMgbm90
+IHNldApDT05GSUdfVEVTVF9VU0VSX0NPUFk9bQojIENPTkZJR19URVNUX0JQRiBpcyBub3Qgc2V0
+CkNPTkZJR19URVNUX0ZJUk1XQVJFPW0KQ09ORklHX1RFU1RfU1lTQ1RMPW0KIyBDT05GSUdfVEVT
+VF9VREVMQVkgaXMgbm90IHNldApDT05GSUdfTUVNVEVTVD15CiMgQ09ORklHX1RFU1RfU1RBVElD
+X0tFWVMgaXMgbm90IHNldApDT05GSUdfQlVHX09OX0RBVEFfQ09SUlVQVElPTj15CiMgQ09ORklH
+X1NBTVBMRVMgaXMgbm90IHNldApDT05GSUdfSEFWRV9BUkNIX0tHREI9eQojIENPTkZJR19LR0RC
+IGlzIG5vdCBzZXQKQ09ORklHX0FSQ0hfSEFTX1VCU0FOX1NBTklUSVpFX0FMTD15CiMgQ09ORklH
+X0FSQ0hfV0FOVFNfVUJTQU5fTk9fTlVMTCBpcyBub3Qgc2V0CiMgQ09ORklHX1VCU0FOIGlzIG5v
+dCBzZXQKQ09ORklHX0FSQ0hfSEFTX0RFVk1FTV9JU19BTExPV0VEPXkKQ09ORklHX1g4Nl9WRVJC
+T1NFX0JPT1RVUD15CiMgQ09ORklHX0VBUkxZX1BSSU5USyBpcyBub3Qgc2V0CkNPTkZJR19YODZf
+UFREVU1QX0NPUkU9eQpDT05GSUdfWDg2X1BURFVNUD1tCiMgQ09ORklHX0RFQlVHX1dYIGlzIG5v
+dCBzZXQKQ09ORklHX0RPVUJMRUZBVUxUPXkKIyBDT05GSUdfREVCVUdfVExCRkxVU0ggaXMgbm90
+IHNldApDT05GSUdfSU9NTVVfU1RSRVNTPXkKQ09ORklHX0hBVkVfTU1JT1RSQUNFX1NVUFBPUlQ9
+eQpDT05GSUdfWDg2X0RFQ09ERVJfU0VMRlRFU1Q9eQpDT05GSUdfSU9fREVMQVlfVFlQRV8wWDgw
+PTAKQ09ORklHX0lPX0RFTEFZX1RZUEVfMFhFRD0xCkNPTkZJR19JT19ERUxBWV9UWVBFX1VERUxB
+WT0yCkNPTkZJR19JT19ERUxBWV9UWVBFX05PTkU9MwpDT05GSUdfSU9fREVMQVlfMFg4MD15CiMg
+Q09ORklHX0lPX0RFTEFZXzBYRUQgaXMgbm90IHNldAojIENPTkZJR19JT19ERUxBWV9VREVMQVkg
+aXMgbm90IHNldAojIENPTkZJR19JT19ERUxBWV9OT05FIGlzIG5vdCBzZXQKQ09ORklHX0RFRkFV
+TFRfSU9fREVMQVlfVFlQRT0wCkNPTkZJR19ERUJVR19CT09UX1BBUkFNUz15CiMgQ09ORklHX0NQ
+QV9ERUJVRyBpcyBub3Qgc2V0CiMgQ09ORklHX09QVElNSVpFX0lOTElOSU5HIGlzIG5vdCBzZXQK
+IyBDT05GSUdfREVCVUdfRU5UUlkgaXMgbm90IHNldApDT05GSUdfREVCVUdfTk1JX1NFTEZURVNU
+PXkKIyBDT05GSUdfWDg2X0RFQlVHX0ZQVSBpcyBub3Qgc2V0CiMgQ09ORklHX1BVTklUX0FUT01f
+REVCVUcgaXMgbm90IHNldAoKIwojIFNlY3VyaXR5IG9wdGlvbnMKIwpDT05GSUdfS0VZUz15CkNP
+TkZJR19LRVlTX0NPTVBBVD15CkNPTkZJR19QRVJTSVNURU5UX0tFWVJJTkdTPXkKIyBDT05GSUdf
+VFJVU1RFRF9LRVlTIGlzIG5vdCBzZXQKQ09ORklHX0VOQ1JZUFRFRF9LRVlTPXkKQ09ORklHX0tF
+WV9ESF9PUEVSQVRJT05TPXkKIyBDT05GSUdfU0VDVVJJVFlfRE1FU0dfUkVTVFJJQ1QgaXMgbm90
+IHNldAojIENPTkZJR19TRUNVUklUWSBpcyBub3Qgc2V0CkNPTkZJR19TRUNVUklUWUZTPXkKQ09O
+RklHX0hBVkVfSEFSREVORURfVVNFUkNPUFlfQUxMT0NBVE9SPXkKQ09ORklHX0hBUkRFTkVEX1VT
+RVJDT1BZPXkKIyBDT05GSUdfSEFSREVORURfVVNFUkNPUFlfUEFHRVNQQU4gaXMgbm90IHNldApD
+T05GSUdfRk9SVElGWV9TT1VSQ0U9eQojIENPTkZJR19TVEFUSUNfVVNFUk1PREVIRUxQRVIgaXMg
+bm90IHNldApDT05GSUdfREVGQVVMVF9TRUNVUklUWV9EQUM9eQpDT05GSUdfREVGQVVMVF9TRUNV
+UklUWT0iIgpDT05GSUdfQ1JZUFRPPXkKCiMKIyBDcnlwdG8gY29yZSBvciBoZWxwZXIKIwpDT05G
+SUdfQ1JZUFRPX0FMR0FQST15CkNPTkZJR19DUllQVE9fQUxHQVBJMj15CkNPTkZJR19DUllQVE9f
+QUVBRD15CkNPTkZJR19DUllQVE9fQUVBRDI9eQpDT05GSUdfQ1JZUFRPX0JMS0NJUEhFUj15CkNP
+TkZJR19DUllQVE9fQkxLQ0lQSEVSMj15CkNPTkZJR19DUllQVE9fSEFTSD15CkNPTkZJR19DUllQ
+VE9fSEFTSDI9eQpDT05GSUdfQ1JZUFRPX1JORz15CkNPTkZJR19DUllQVE9fUk5HMj15CkNPTkZJ
+R19DUllQVE9fUk5HX0RFRkFVTFQ9eQpDT05GSUdfQ1JZUFRPX0FLQ0lQSEVSMj15CkNPTkZJR19D
+UllQVE9fQUtDSVBIRVI9eQpDT05GSUdfQ1JZUFRPX0tQUDI9eQpDT05GSUdfQ1JZUFRPX0tQUD15
+CkNPTkZJR19DUllQVE9fQUNPTVAyPXkKQ09ORklHX0NSWVBUT19SU0E9eQpDT05GSUdfQ1JZUFRP
+X0RIPXkKQ09ORklHX0NSWVBUT19FQ0RIPXkKQ09ORklHX0NSWVBUT19NQU5BR0VSPXkKQ09ORklH
+X0NSWVBUT19NQU5BR0VSMj15CiMgQ09ORklHX0NSWVBUT19VU0VSIGlzIG5vdCBzZXQKQ09ORklH
+X0NSWVBUT19NQU5BR0VSX0RJU0FCTEVfVEVTVFM9eQpDT05GSUdfQ1JZUFRPX0dGMTI4TVVMPXkK
+Q09ORklHX0NSWVBUT19OVUxMPXkKQ09ORklHX0NSWVBUT19OVUxMMj15CkNPTkZJR19DUllQVE9f
+V09SS1FVRVVFPXkKQ09ORklHX0NSWVBUT19DUllQVEQ9eQpDT05GSUdfQ1JZUFRPX01DUllQVEQ9
+eQojIENPTkZJR19DUllQVE9fQVVUSEVOQyBpcyBub3Qgc2V0CiMgQ09ORklHX0NSWVBUT19URVNU
+IGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19BQkxLX0hFTFBFUj15CkNPTkZJR19DUllQVE9fR0xV
+RV9IRUxQRVJfWDg2PXkKCiMKIyBBdXRoZW50aWNhdGVkIEVuY3J5cHRpb24gd2l0aCBBc3NvY2lh
+dGVkIERhdGEKIwojIENPTkZJR19DUllQVE9fQ0NNIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRP
+X0dDTSBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9fQ0hBQ0hBMjBQT0xZMTMwNT1tCkNPTkZJR19D
+UllQVE9fU0VRSVY9eQpDT05GSUdfQ1JZUFRPX0VDSEFJTklWPW0KCiMKIyBCbG9jayBtb2Rlcwoj
+CkNPTkZJR19DUllQVE9fQ0JDPXkKQ09ORklHX0NSWVBUT19DVFI9eQpDT05GSUdfQ1JZUFRPX0NU
+Uz15CkNPTkZJR19DUllQVE9fRUNCPXkKQ09ORklHX0NSWVBUT19MUlc9eQpDT05GSUdfQ1JZUFRP
+X1BDQkM9bQpDT05GSUdfQ1JZUFRPX1hUUz15CkNPTkZJR19DUllQVE9fS0VZV1JBUD1tCgojCiMg
+SGFzaCBtb2RlcwojCiMgQ09ORklHX0NSWVBUT19DTUFDIGlzIG5vdCBzZXQKQ09ORklHX0NSWVBU
+T19ITUFDPXkKIyBDT05GSUdfQ1JZUFRPX1hDQkMgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9f
+Vk1BQyBpcyBub3Qgc2V0CgojCiMgRGlnZXN0CiMKQ09ORklHX0NSWVBUT19DUkMzMkM9eQpDT05G
+SUdfQ1JZUFRPX0NSQzMyQ19JTlRFTD1tCkNPTkZJR19DUllQVE9fQ1JDMzI9bQpDT05GSUdfQ1JZ
+UFRPX0NSQzMyX1BDTE1VTD1tCkNPTkZJR19DUllQVE9fQ1JDVDEwRElGPXkKIyBDT05GSUdfQ1JZ
+UFRPX0NSQ1QxMERJRl9QQ0xNVUwgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9fR0hBU0ggaXMg
+bm90IHNldApDT05GSUdfQ1JZUFRPX1BPTFkxMzA1PXkKQ09ORklHX0NSWVBUT19QT0xZMTMwNV9Y
+ODZfNjQ9eQojIENPTkZJR19DUllQVE9fTUQ0IGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19NRDU9
+bQojIENPTkZJR19DUllQVE9fTUlDSEFFTF9NSUMgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9f
+Uk1EMTI4IGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19STUQxNjA9bQpDT05GSUdfQ1JZUFRPX1JN
+RDI1Nj15CkNPTkZJR19DUllQVE9fUk1EMzIwPXkKQ09ORklHX0NSWVBUT19TSEExPW0KIyBDT05G
+SUdfQ1JZUFRPX1NIQTFfU1NTRTMgaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX1NIQTI1Nl9TU1NF
+Mz1tCkNPTkZJR19DUllQVE9fU0hBNTEyX1NTU0UzPW0KQ09ORklHX0NSWVBUT19TSEExX01CPW0K
+IyBDT05GSUdfQ1JZUFRPX1NIQTI1Nl9NQiBpcyBub3Qgc2V0CkNPTkZJR19DUllQVE9fU0hBNTEy
+X01CPXkKQ09ORklHX0NSWVBUT19TSEEyNTY9eQpDT05GSUdfQ1JZUFRPX1NIQTUxMj15CkNPTkZJ
+R19DUllQVE9fU0hBMz15CiMgQ09ORklHX0NSWVBUT19UR1IxOTIgaXMgbm90IHNldAojIENPTkZJ
+R19DUllQVE9fV1A1MTIgaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX0dIQVNIX0NMTVVMX05JX0lO
+VEVMPW0KCiMKIyBDaXBoZXJzCiMKQ09ORklHX0NSWVBUT19BRVM9eQpDT05GSUdfQ1JZUFRPX0FF
+U19UST1tCkNPTkZJR19DUllQVE9fQUVTX1g4Nl82ND15CiMgQ09ORklHX0NSWVBUT19BRVNfTklf
+SU5URUwgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9fQU5VQklTIGlzIG5vdCBzZXQKIyBDT05G
+SUdfQ1JZUFRPX0FSQzQgaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX0JMT1dGSVNIPXkKQ09ORklH
+X0NSWVBUT19CTE9XRklTSF9DT01NT049eQojIENPTkZJR19DUllQVE9fQkxPV0ZJU0hfWDg2XzY0
+IGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX0NBTUVMTElBIGlzIG5vdCBzZXQKQ09ORklHX0NS
+WVBUT19DQU1FTExJQV9YODZfNjQ9eQpDT05GSUdfQ1JZUFRPX0NBTUVMTElBX0FFU05JX0FWWF9Y
+ODZfNjQ9bQojIENPTkZJR19DUllQVE9fQ0FNRUxMSUFfQUVTTklfQVZYMl9YODZfNjQgaXMgbm90
+IHNldApDT05GSUdfQ1JZUFRPX0NBU1RfQ09NTU9OPXkKQ09ORklHX0NSWVBUT19DQVNUNT15CiMg
+Q09ORklHX0NSWVBUT19DQVNUNV9BVlhfWDg2XzY0IGlzIG5vdCBzZXQKQ09ORklHX0NSWVBUT19D
+QVNUNj1tCkNPTkZJR19DUllQVE9fQ0FTVDZfQVZYX1g4Nl82ND1tCiMgQ09ORklHX0NSWVBUT19E
+RVMgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9fREVTM19FREVfWDg2XzY0IGlzIG5vdCBzZXQK
+Q09ORklHX0NSWVBUT19GQ1JZUFQ9eQpDT05GSUdfQ1JZUFRPX0tIQVpBRD15CkNPTkZJR19DUllQ
+VE9fU0FMU0EyMD15CkNPTkZJR19DUllQVE9fU0FMU0EyMF9YODZfNjQ9eQpDT05GSUdfQ1JZUFRP
+X0NIQUNIQTIwPW0KQ09ORklHX0NSWVBUT19DSEFDSEEyMF9YODZfNjQ9bQpDT05GSUdfQ1JZUFRP
+X1NFRUQ9eQpDT05GSUdfQ1JZUFRPX1NFUlBFTlQ9eQpDT05GSUdfQ1JZUFRPX1NFUlBFTlRfU1NF
+Ml9YODZfNjQ9bQpDT05GSUdfQ1JZUFRPX1NFUlBFTlRfQVZYX1g4Nl82ND15CiMgQ09ORklHX0NS
+WVBUT19TRVJQRU5UX0FWWDJfWDg2XzY0IGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX1RFQSBp
+cyBub3Qgc2V0CkNPTkZJR19DUllQVE9fVFdPRklTSD1tCkNPTkZJR19DUllQVE9fVFdPRklTSF9D
+T01NT049eQpDT05GSUdfQ1JZUFRPX1RXT0ZJU0hfWDg2XzY0PXkKQ09ORklHX0NSWVBUT19UV09G
+SVNIX1g4Nl82NF8zV0FZPXkKQ09ORklHX0NSWVBUT19UV09GSVNIX0FWWF9YODZfNjQ9bQoKIwoj
+IENvbXByZXNzaW9uCiMKQ09ORklHX0NSWVBUT19ERUZMQVRFPW0KQ09ORklHX0NSWVBUT19MWk89
+eQpDT05GSUdfQ1JZUFRPXzg0Mj1tCkNPTkZJR19DUllQVE9fTFo0PW0KQ09ORklHX0NSWVBUT19M
+WjRIQz1tCgojCiMgUmFuZG9tIE51bWJlciBHZW5lcmF0aW9uCiMKQ09ORklHX0NSWVBUT19BTlNJ
+X0NQUk5HPXkKQ09ORklHX0NSWVBUT19EUkJHX01FTlU9eQpDT05GSUdfQ1JZUFRPX0RSQkdfSE1B
+Qz15CiMgQ09ORklHX0NSWVBUT19EUkJHX0hBU0ggaXMgbm90IHNldApDT05GSUdfQ1JZUFRPX0RS
+QkdfQ1RSPXkKQ09ORklHX0NSWVBUT19EUkJHPXkKQ09ORklHX0NSWVBUT19KSVRURVJFTlRST1BZ
+PXkKIyBDT05GSUdfQ1JZUFRPX1VTRVJfQVBJX0hBU0ggaXMgbm90IHNldAojIENPTkZJR19DUllQ
+VE9fVVNFUl9BUElfU0tDSVBIRVIgaXMgbm90IHNldAojIENPTkZJR19DUllQVE9fVVNFUl9BUElf
+Uk5HIGlzIG5vdCBzZXQKIyBDT05GSUdfQ1JZUFRPX1VTRVJfQVBJX0FFQUQgaXMgbm90IHNldApD
+T05GSUdfQ1JZUFRPX0hBU0hfSU5GTz15CiMgQ09ORklHX0NSWVBUT19IVyBpcyBub3Qgc2V0CkNP
+TkZJR19BU1lNTUVUUklDX0tFWV9UWVBFPXkKQ09ORklHX0FTWU1NRVRSSUNfUFVCTElDX0tFWV9T
+VUJUWVBFPXkKQ09ORklHX1g1MDlfQ0VSVElGSUNBVEVfUEFSU0VSPXkKQ09ORklHX1BLQ1M3X01F
+U1NBR0VfUEFSU0VSPXkKCiMKIyBDZXJ0aWZpY2F0ZXMgZm9yIHNpZ25hdHVyZSBjaGVja2luZwoj
+CkNPTkZJR19TWVNURU1fVFJVU1RFRF9LRVlSSU5HPXkKQ09ORklHX1NZU1RFTV9UUlVTVEVEX0tF
+WVM9IiIKQ09ORklHX1NZU1RFTV9FWFRSQV9DRVJUSUZJQ0FURT15CkNPTkZJR19TWVNURU1fRVhU
+UkFfQ0VSVElGSUNBVEVfU0laRT00MDk2CkNPTkZJR19TRUNPTkRBUllfVFJVU1RFRF9LRVlSSU5H
+PXkKQ09ORklHX1NZU1RFTV9CTEFDS0xJU1RfS0VZUklORz15CkNPTkZJR19TWVNURU1fQkxBQ0tM
+SVNUX0hBU0hfTElTVD0iIgpDT05GSUdfSEFWRV9LVk09eQojIENPTkZJR19WSVJUVUFMSVpBVElP
+TiBpcyBub3Qgc2V0CkNPTkZJR19CSU5BUllfUFJJTlRGPXkKCiMKIyBMaWJyYXJ5IHJvdXRpbmVz
+CiMKQ09ORklHX0JJVFJFVkVSU0U9eQojIENPTkZJR19IQVZFX0FSQ0hfQklUUkVWRVJTRSBpcyBu
+b3Qgc2V0CkNPTkZJR19SQVRJT05BTD15CkNPTkZJR19HRU5FUklDX1NUUk5DUFlfRlJPTV9VU0VS
+PXkKQ09ORklHX0dFTkVSSUNfU1RSTkxFTl9VU0VSPXkKQ09ORklHX0dFTkVSSUNfTkVUX1VUSUxT
+PXkKQ09ORklHX0dFTkVSSUNfRklORF9GSVJTVF9CSVQ9eQpDT05GSUdfR0VORVJJQ19QQ0lfSU9N
+QVA9eQpDT05GSUdfR0VORVJJQ19JT01BUD15CkNPTkZJR19HRU5FUklDX0lPPXkKQ09ORklHX0FS
+Q0hfVVNFX0NNUFhDSEdfTE9DS1JFRj15CkNPTkZJR19BUkNIX0hBU19GQVNUX01VTFRJUExJRVI9
+eQpDT05GSUdfQ1JDX0NDSVRUPXkKQ09ORklHX0NSQzE2PW0KQ09ORklHX0NSQ19UMTBESUY9eQoj
+IENPTkZJR19DUkNfSVRVX1QgaXMgbm90IHNldApDT05GSUdfQ1JDMzI9eQojIENPTkZJR19DUkMz
+Ml9TRUxGVEVTVCBpcyBub3Qgc2V0CiMgQ09ORklHX0NSQzMyX1NMSUNFQlk4IGlzIG5vdCBzZXQK
+Q09ORklHX0NSQzMyX1NMSUNFQlk0PXkKIyBDT05GSUdfQ1JDMzJfU0FSV0FURSBpcyBub3Qgc2V0
+CiMgQ09ORklHX0NSQzMyX0JJVCBpcyBub3Qgc2V0CkNPTkZJR19DUkM0PW0KIyBDT05GSUdfQ1JD
+NyBpcyBub3Qgc2V0CkNPTkZJR19MSUJDUkMzMkM9eQpDT05GSUdfQ1JDOD15CiMgQ09ORklHX0FV
+RElUX0FSQ0hfQ09NUEFUX0dFTkVSSUMgaXMgbm90IHNldAojIENPTkZJR19SQU5ET00zMl9TRUxG
+VEVTVCBpcyBub3Qgc2V0CkNPTkZJR184NDJfQ09NUFJFU1M9bQpDT05GSUdfODQyX0RFQ09NUFJF
+U1M9bQpDT05GSUdfWkxJQl9JTkZMQVRFPXkKQ09ORklHX1pMSUJfREVGTEFURT1tCkNPTkZJR19M
+Wk9fQ09NUFJFU1M9eQpDT05GSUdfTFpPX0RFQ09NUFJFU1M9eQpDT05GSUdfTFo0X0NPTVBSRVNT
+PXkKQ09ORklHX0xaNEhDX0NPTVBSRVNTPW0KQ09ORklHX0xaNF9ERUNPTVBSRVNTPXkKQ09ORklH
+X1haX0RFQz15CkNPTkZJR19YWl9ERUNfWDg2PXkKQ09ORklHX1haX0RFQ19QT1dFUlBDPXkKQ09O
+RklHX1haX0RFQ19JQTY0PXkKQ09ORklHX1haX0RFQ19BUk09eQpDT05GSUdfWFpfREVDX0FSTVRI
+VU1CPXkKQ09ORklHX1haX0RFQ19TUEFSQz15CkNPTkZJR19YWl9ERUNfQkNKPXkKIyBDT05GSUdf
+WFpfREVDX1RFU1QgaXMgbm90IHNldApDT05GSUdfREVDT01QUkVTU19HWklQPXkKQ09ORklHX0RF
+Q09NUFJFU1NfQlpJUDI9eQpDT05GSUdfREVDT01QUkVTU19MWk1BPXkKQ09ORklHX0RFQ09NUFJF
+U1NfWFo9eQpDT05GSUdfREVDT01QUkVTU19MWk89eQpDT05GSUdfREVDT01QUkVTU19MWjQ9eQpD
+T05GSUdfUkVFRF9TT0xPTU9OPXkKQ09ORklHX1JFRURfU09MT01PTl9FTkM4PXkKQ09ORklHX1JF
+RURfU09MT01PTl9ERUM4PXkKQ09ORklHX0lOVEVSVkFMX1RSRUU9eQpDT05GSUdfQVNTT0NJQVRJ
+VkVfQVJSQVk9eQpDT05GSUdfSEFTX0lPTUVNPXkKQ09ORklHX0hBU19JT1BPUlRfTUFQPXkKQ09O
+RklHX0hBU19ETUE9eQojIENPTkZJR19ETUFfTk9PUF9PUFMgaXMgbm90IHNldAojIENPTkZJR19E
+TUFfVklSVF9PUFMgaXMgbm90IHNldApDT05GSUdfRFFMPXkKQ09ORklHX0dMT0I9eQpDT05GSUdf
+R0xPQl9TRUxGVEVTVD15CkNPTkZJR19OTEFUVFI9eQpDT05GSUdfQ0xaX1RBQj15CkNPTkZJR19D
+T1JESUM9eQojIENPTkZJR19ERFIgaXMgbm90IHNldApDT05GSUdfSVJRX1BPTEw9eQpDT05GSUdf
+TVBJTElCPXkKQ09ORklHX09JRF9SRUdJU1RSWT15CkNPTkZJR19GT05UX1NVUFBPUlQ9bQpDT05G
+SUdfRk9OVF84eDE2PXkKQ09ORklHX0ZPTlRfQVVUT1NFTEVDVD15CiMgQ09ORklHX1NHX1NQTElU
+IGlzIG5vdCBzZXQKIyBDT05GSUdfU0dfUE9PTCBpcyBub3Qgc2V0CkNPTkZJR19BUkNIX0hBU19T
+R19DSEFJTj15CkNPTkZJR19BUkNIX0hBU19QTUVNX0FQST15CkNPTkZJR19BUkNIX0hBU19VQUND
+RVNTX0ZMVVNIQ0FDSEU9eQpDT05GSUdfQVJDSF9IQVNfTU1JT19GTFVTSD15CkNPTkZJR19TVEFD
+S0RFUE9UPXkK
+
+--===============6977828344652353909==--
 
