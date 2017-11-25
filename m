@@ -1,46 +1,35 @@
-Content-Type: multipart/mixed; boundary="===============1144652741477455273=="
+Content-Type: multipart/mixed; boundary="===============2243323307837429186=="
 MIME-Version: 1.0
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH net] net: dsa: fix 'increment on 0' warning
-Date: Fri, 24 Nov 2017 13:21:20 -0800
-Message-ID: <64d9f179-7635-b51a-7688-9bd546e2059f@gmail.com>
-In-Reply-To: <20171124163606.11212-1-vivien.didelot@savoirfairelinux.com>
+Subject: Re: [x86/mm/kaiser] a6c70b8b30: WARNING:at_kernel/locking/lockdep.c:#trace_hardirqs_off_caller
+Date: Sat, 25 Nov 2017 10:17:15 +0800
+Message-ID: <20171125021715.zclu4tci5cmoeaby@wfg-t540p.sh.intel.com>
+In-Reply-To: <20171124140233.4vurnujcykobhccw@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1144652741477455273==
+--===============2243323307837429186==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Fri, Nov 24, 2017 at 03:02:33PM +0100, Ingo Molnar wrote:
+>
+>* kernel test robot <fengguang.wu@intel.com> wrote:
+>
+>>
+>> FYI, we noticed the following commit (built with gcc-6):
+>>
+>> commit: a6c70b8b30bf35045d14e352bfd1eb16aaee906f ("x86/mm/kaiser: Prepar=
+e assembly for entry/exit CR3 switching")
+>> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git WIP.x86/mm
+>
+>Should be fixed in the latest version - please let me know if it isn't.
 
+Yes it's indeed fixed!
 
-On 11/24/2017 08:36 AM, Vivien Didelot wrote:
-> Setting the refcount to 0 when allocating a tree to match the number of
-> switch devices it holds may cause an 'increment on 0; use-after-free',
-> if CONFIG_REFCOUNT_FULL is enabled.
-> =
+Thanks,
+Fengguang
 
-> To fix this, do not decrement the refcount of a newly allocated tree,
-> increment it when an already allocated tree is found, and decrement it
-> after the probing of a switch, as done with the previous behavior.
-> =
-
-> At the same time, make dsa_tree_get and dsa_tree_put accept a NULL
-> argument to simplify callers, and return the tree after incrementation,
-> as most kref users like of_node_get and of_node_put do.
-> =
-
-> Fixes: 8e5bf9759a06 ("net: dsa: simplify tree reference counting")
-> Signed-off-by: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-
-Thanks!
--- =
-
-Florian
-
---===============1144652741477455273==--
+--===============2243323307837429186==--
 
