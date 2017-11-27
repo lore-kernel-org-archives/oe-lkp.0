@@ -1,35 +1,31 @@
-Content-Type: multipart/mixed; boundary="===============5784533610346222584=="
+Content-Type: multipart/mixed; boundary="===============1447982171468350547=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [rht_deferred_worker] BUG: workqueue lockup - pool cpus=0 node=0 flags=0x0 nice=0 stuck for 62s!
-Date: Mon, 27 Nov 2017 13:32:59 -0800
-Message-ID: <CA+55aFyAjWZ2jOuasn6CfBiCkvafin036QL+Nb-xFmFWm4s0sw@mail.gmail.com>
-In-Reply-To: <20171121111907.2i2caauehsdyhbs7@wfg-t540p.sh.intel.com>
+Subject: Re: [test_rht_init] INFO: task swapper/0:1 blocked for more than 120 seconds.
+Date: Mon, 27 Nov 2017 13:34:55 -0800
+Message-ID: <CA+55aFzouo1TKk9SOBL5Hht1p8R=MTn18wgW=0TmMDgBRUS23A@mail.gmail.com>
+In-Reply-To: <20171121115228.v3z5vxaiirdh276q@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5784533610346222584==
+--===============1447982171468350547==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 21, 2017 at 3:19 AM, Fengguang Wu <fengguang.wu@intel.com> wr=
+On Tue, Nov 21, 2017 at 3:52 AM, Fengguang Wu <fengguang.wu@intel.com> wr=
 ote:
+> Here is a different call trace related to rhashtable.
 >
-> FYI this happens in mainline kernel 4.14.0-10859-gcf9b077.
-> It at least dates back to v4.5 .
+> It occurs in 17 out of 90 boots.
+>
+> [  342.666234] Writes:  Total: 4  Max/Min: 0/0   Fail: 0
+> [  381.918047] INFO: task swapper/0:1 blocked for more than 120 seconds.
 
-Hmm. This seems to be doing some concurrent rhashtable stress testing,
-while at the same time doing the RCU stress testing. All with a ton of
-other debug options enabled too (ie lockdep etc).
+This looks very similar to the other lockup case: lock torture testing
+and rhashtable testing at the same time, causing long long delays..
 
-And the result seems to just time out.
+          Linus
 
-I'm inclined to say that this is just "too much testing". Together
-with the "it's been going on for a while", I'm going to just ignore
-it.
-
-                Linus
-
---===============5784533610346222584==--
+--===============1447982171468350547==--
 
