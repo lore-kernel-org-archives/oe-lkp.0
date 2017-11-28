@@ -1,20 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============3294921207225907024=="
+Content-Type: multipart/mixed; boundary="===============2107983288451957577=="
 MIME-Version: 1.0
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [torture] b151f93a71: INFO:rcu_preempt_detected_stalls_on_CPUs/tasks
-Date: Tue, 28 Nov 2017 17:47:35 +0100
-Message-ID: <alpine.DEB.2.20.1711281745000.2222@nanos>
+Date: Tue, 28 Nov 2017 08:52:06 -0800
+Message-ID: <20171128165206.GA11626@linux.vnet.ibm.com>
 In-Reply-To: <20171128164144.GS3624@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3294921207225907024==
+--===============2107983288451957577==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 28 Nov 2017, Paul E. McKenney wrote:
-
+On Tue, Nov 28, 2017 at 08:41:44AM -0800, Paul E. McKenney wrote:
 > On Tue, Nov 28, 2017 at 03:16:30PM +0100, Thomas Gleixner wrote:
 > > On Mon, 27 Nov 2017, Paul E. McKenney wrote:
 > > > On Sun, Nov 26, 2017 at 04:42:03PM +0800, kernel test robot wrote:
@@ -82,12 +81,68 @@ fy
 
 > Is there something more useful that I could make this thing print?
 
-Please let it print base->clk, jiffies, base->next_expiry, timer->flags,
-and timer->expires.
+For example, is there some useful data available at the time that the
+timer is posted that could be placed in new fields in the timer_list
+structure, which could then be printed out once it became clear that
+the timer was waylayed?
 
-Thanks,
+						Thanx, Paul
 
-=09
+> ------------------------------------------------------------------------
+> =
 
---===============3294921207225907024==--
+> commit ae343c59e5df18e639ea8832e43c09b4a35f14d1
+> Author: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> Date:   Mon Nov 27 16:24:26 2017 -0800
+> =
+
+>     EXP: timer: Dump info if timer misses by huge amount
+>     =
+
+>     Part of the eternal chase of timer misses...
+>     =
+
+>     Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> =
+
+> diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+> index ffebcf878fba..db774b0f217e 100644
+> --- a/kernel/time/timer.c
+> +++ b/kernel/time/timer.c
+> @@ -1755,8 +1755,12 @@ static void process_timeout(struct timer_list *t)
+>   */
+>  signed long __sched schedule_timeout(signed long timeout)
+>  {
+> +	struct timer_base *base;
+>  	struct process_timer timer;
+>  	unsigned long expire;
+> +	unsigned long flags;
+> +	unsigned int idx, idx_now;
+> +	unsigned long j;
+>  =
+
+>  	switch (timeout)
+>  	{
+> @@ -1793,6 +1797,14 @@ signed long __sched schedule_timeout(signed long t=
+imeout)
+>  	timer_setup_on_stack(&timer.timer, process_timeout, 0);
+>  	__mod_timer(&timer.timer, expire, 0);
+>  	schedule();
+> +	j =3D jiffies;
+> +	if (timeout < 5 && time_after(j, expire + 8 * HZ) && timer_pending(&tim=
+er.timer)) {
+> +		base =3D lock_timer_base(&timer.timer, &flags);
+> +		idx =3D timer_get_idx(&timer.timer);
+> +		idx_now =3D calc_wheel_index(j, base->clk);
+> +		raw_spin_unlock_irqrestore(&base->lock, flags);
+> +		pr_info("%s: Waylayed timer idx: %u idx_now: %u\n", __func__, idx, idx=
+_now);
+> +	}
+>  	del_singleshot_timer_sync(&timer.timer);
+>  =
+
+>  	/* Remove the timer from the object tracker */
+
+
+--===============2107983288451957577==--
 
