@@ -1,212 +1,130 @@
-Content-Type: multipart/mixed; boundary="===============6671959122527369673=="
+Content-Type: multipart/mixed; boundary="===============3156449320039556488=="
 MIME-Version: 1.0
-From: Dmitry Vyukov <dvyukov@google.com>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [ 0.003333] BUG: KASAN: use-after-scope in console_unlock+0x605/0xcc0
-Date: Thu, 30 Nov 2017 09:16:17 +0100
-Message-ID: <CACT4Y+amQZApke6MneeK0tax=MzDbj5bce6r4MuSf8PHpzeaoA@mail.gmail.com>
-In-Reply-To: <20171130064712.GA488@jagdpanzerIV>
+Subject: Re: [lkp-robot] [torture] b151f93a71: INFO:rcu_preempt_detected_stalls_on_CPUs/tasks
+Date: Wed, 29 Nov 2017 14:07:03 -0800
+Message-ID: <20171129220703.GA12908@linux.vnet.ibm.com>
+In-Reply-To: <20171129190819.GA18159@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6671959122527369673==
+--===============3156449320039556488==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 30, 2017 at 7:47 AM, Sergey Senozhatsky
-<sergey.senozhatsky.work@gmail.com> wrote:
-> Hi,
->
-> On (11/30/17 10:26), Fengguang Wu wrote:
->> FYI this happens in mainline kernel v4.15-rc1 .
->> It shows up after v4.14 . Bisect is on the way.
->
-> hm, printk saw no changes between 4.14 and 4.15
->
->
->> It occurs in 4 out of 4 boots.
->>
->> [    0.003333]        RCU callback double-/use-after-free debug enabled.
->> [    0.003333]        RCU CPU stall warnings timeout set to 100 (rcu_cpu=
-_stall_timeout).
->> [    0.003333]        Tasks RCU enabled.
->> [    0.003333] NR_IRQS: 4352, nr_irqs: 48, preallocated irqs: 16
->> [    0.003333] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> [    0.003333] BUG: KASAN: use-after-scope in console_unlock+0x605/0xcc0:
->>                                               atomic_read at arch/x86/in=
-clude/asm/atomic.h:27
->>                                                (inlined by) static_key_c=
-ount at include/linux/jump_label.h:191
->>                                                (inlined by) static_key_f=
-alse at include/linux/jump_label.h:201
->>                                                (inlined by) trace_consol=
-e_rcuidle at include/trace/events/printk.h:10
->>                                                (inlined by) call_console=
-_drivers at kernel/printk/printk.c:1556
->>                                                (inlined by) console_unlo=
-ck at kernel/printk/printk.c:2233
->> [    0.003333] Write of size 4 at addr ffffffff83607aa0 by task swapper/0
->> [    0.003333]
->> [    0.003333] CPU: 0 PID: 0 Comm: swapper Not tainted 4.15.0-rc1 #1
->> [    0.003333] Call Trace:
->> [    0.003333]  ? print_address_description+0x4f/0x3c0:
->>                                               print_address_description =
-at mm/kasan/report.c:253
->> [    0.003333]  ? console_unlock+0x605/0xcc0:
->>                                               atomic_read at arch/x86/in=
-clude/asm/atomic.h:27
->>                                                (inlined by) static_key_c=
-ount at include/linux/jump_label.h:191
->>                                                (inlined by) static_key_f=
-alse at include/linux/jump_label.h:201
->>                                                (inlined by) trace_consol=
-e_rcuidle at include/trace/events/printk.h:10
->>                                                (inlined by) call_console=
-_drivers at kernel/printk/printk.c:1556
->>                                                (inlined by) console_unlo=
-ck at kernel/printk/printk.c:2233
->
-> so KASAN didn't like atomic_read(&key->enabled) from static_key_count()?
-> "Write of size 4"...
->
->
->> [    0.003333]  ? kasan_report+0x304/0x390:
->>                                               kasan_report_error at mm/k=
-asan/report.c:352
->>                                                (inlined by) kasan_report=
- at mm/kasan/report.c:409
->> [    0.003333]  ? console_unlock+0x605/0xcc0:
->>                                               atomic_read at arch/x86/in=
-clude/asm/atomic.h:27
->>                                                (inlined by) static_key_c=
-ount at include/linux/jump_label.h:191
->>                                                (inlined by) static_key_f=
-alse at include/linux/jump_label.h:201
->>                                                (inlined by) trace_consol=
-e_rcuidle at include/trace/events/printk.h:10
->>                                                (inlined by) call_console=
-_drivers at kernel/printk/printk.c:1556
->>                                                (inlined by) console_unlo=
-ck at kernel/printk/printk.c:2233
->> [    0.003333]  ? wake_up_klogd+0x180/0x180:
->>                                               console_unlock at kernel/p=
-rintk/printk.c:2138
->> [    0.003333]  ? _raw_spin_unlock_irqrestore+0xcf/0xf0:
->>                                               __raw_spin_unlock_irqresto=
-re at include/linux/spinlock_api_smp.h:161
->>                                                (inlined by) _raw_spin_un=
-lock_irqrestore at kernel/locking/spinlock.c:191
->> [    0.003333]  ? __down_trylock_console_sem+0xf8/0x120:
->>                                               __down_trylock_console_sem=
- at kernel/printk/printk.c:234
->> [    0.003333]  ? __down_trylock_console_sem+0x106/0x120:
->>                                               __down_trylock_console_sem=
- at kernel/printk/printk.c:235
->> [    0.003333]  ? vprintk_emit+0x63e/0x6f0:
->>                                               vprintk_emit at kernel/pri=
-ntk/printk.c:1757
->> [    0.003333]  ? vprintk_func+0x11e/0x130:
->>                                               vprintk_func at kernel/pri=
-ntk/printk_safe.c:379
->> [    0.003333]  ? printk+0xaf/0xcf:
->>                                               printk at kernel/printk/pr=
-intk.c:1824
->> [    0.003333]  ? show_regs_print_info+0x40/0x40:
->>                                               printk at kernel/printk/pr=
-intk.c:1824
->> [    0.003333]  ? __flush_tlb_all+0x1e/0x31:
->>                                               __flush_tlb_global at arch=
-/x86/include/asm/paravirt.h:298
->>                                                (inlined by) __flush_tlb_=
-all at arch/x86/include/asm/tlbflush.h:293
->> [    0.003333]  ? native_flush_tlb_global+0x5/0xa0:
->>                                               native_flush_tlb_global at=
- arch/x86/kernel/paravirt.c:199
->> [    0.003333]  ? kasan_init+0x276/0x306:
->>                                               kasan_init at arch/x86/mm/=
-kasan_init_64.c:349
->> [    0.003333]  ? setup_arch+0x1bb0/0x1cad:
->>                                               setup_arch at arch/x86/ker=
-nel/setup.c:1236
->> [    0.003333]  ? reserve_standard_io_resources+0x88/0x88:
->>                                               setup_arch at arch/x86/ker=
-nel/setup.c:829
->> [    0.003333]  ? vprintk_emit+0x6dc/0x6f0:
->>                                               vprintk_emit at kernel/pri=
-ntk/printk.c:1761
->> [    0.003333]  ? vprintk_func+0x125/0x130:
->>                                               vprintk_func at kernel/pri=
-ntk/printk_safe.c:380
->> [    0.003333]  ? printk+0xaf/0xcf:
->>                                               printk at kernel/printk/pr=
-intk.c:1824
->> [    0.003333]  ? show_regs_print_info+0x40/0x40:
->>                                               printk at kernel/printk/pr=
-intk.c:1824
->> [    0.003333]  ? trace_hardirqs_on+0x220/0x220:
->>                                               trace_hardirqs_off at kern=
-el/trace/trace_irqsoff.c:799
->> [    0.003333]  ? __early_make_pgtable+0x2a5/0x308:
->>                                               __early_make_pgtable at ar=
-ch/x86/kernel/head64.c:251
->> [    0.003333]  ? boot_cpu_init+0x16/0x56:
->>                                               set_bit at arch/x86/includ=
-e/asm/bitops.h:76
->>                                                (inlined by) cpumask_set_=
-cpu at include/linux/cpumask.h:297
->>                                                (inlined by) set_cpu_onli=
-ne at include/linux/cpumask.h:799
->>                                                (inlined by) boot_cpu_ini=
-t at kernel/cpu.c:2012
->> [    0.003333]  ? start_kernel+0xe7/0x8cd:
->>                                               add_latent_entropy at incl=
-ude/linux/random.h:26
->>                                                (inlined by) start_kernel=
- at init/main.c:535
->> [    0.003333]  ? thread_stack_cache_init+0x37/0x37
->> [    0.003333]  ? x86_cpuid_vendor+0xbe/0xd0:
->>                                               x86_cpuid_vendor at arch/x=
-86/include/asm/microcode.h:125
->> [    0.003333]  ? x86_family+0x2f/0x40:
->>                                               x86_family at arch/x86/lib=
-/cpu.c:14
->> [    0.003333]  ? load_ucode_bsp+0x3c4/0x46f:
->>                                               load_ucode_bsp at arch/x86=
-/kernel/cpu/microcode/core.c:189
->> [    0.003333]  ? x86_early_init_platform_quirks+0x146/0x1a1:
->>                                               x86_early_init_platform_qu=
-irks at arch/x86/kernel/platform-quirks.c:31
->> [    0.003333]  ? secondary_startup_64+0xa5/0xb0:
->>                                               secondary_startup_64 at ar=
-ch/x86/kernel/head_64.S:237
->> [    0.003333]
->> [    0.003333] Memory state around the buggy address:
->> [    0.003333]  ffffffff83607980: 00 00 00 00 00 00 00 00 00 00 00 00 00=
- 00 00 00
->> [    0.003333]  ffffffff83607a00: 00 00 00 00 00 00 00 00 00 00 00 00 00=
- 00 00 00
->> [    0.003333] >ffffffff83607a80: f1 f1 f1 f1 f8 f2 f2 f2 f2 f2 f2 f2 00=
- f2 f2 f2
->
-> to be honest, this backtrace hardly makes any sense to me.
->
-> vprintk_emit()
->  reserve_standard_io_resources()
->   __flush_tlb_all()
->    vprintk_emit()
->     __down_trylock_console_sem()
->      wake_up_klogd()
->       console_unlock()
->
-> I need some help here.
+On Wed, Nov 29, 2017 at 11:08:19AM -0800, Paul E. McKenney wrote:
+> On Tue, Nov 28, 2017 at 01:08:10PM -0800, Paul E. McKenney wrote:
+> > On Tue, Nov 28, 2017 at 12:46:19PM -0800, Paul E. McKenney wrote:
+> > > On Tue, Nov 28, 2017 at 09:35:54AM -0800, Paul E. McKenney wrote:
+> > > > On Tue, Nov 28, 2017 at 06:10:08PM +0100, Thomas Gleixner wrote:
+> > > > > On Tue, 28 Nov 2017, Paul E. McKenney wrote:
+> > > > > > On Tue, Nov 28, 2017 at 05:47:35PM +0100, Thomas Gleixner wrote:
+> > > > > > diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+> > > > > > index db774b0f217e..a3321bb565db 100644
+> > > > > > --- a/kernel/time/timer.c
+> > > > > > +++ b/kernel/time/timer.c
+> > > > > > @@ -1803,7 +1803,7 @@ signed long __sched schedule_timeout(sign=
+ed long timeout)
+> > > > > >  		idx =3D timer_get_idx(&timer.timer);
+> > > > > >  		idx_now =3D calc_wheel_index(j, base->clk);
+> > > > > >  		raw_spin_unlock_irqrestore(&base->lock, flags);
+> > > > > > -		pr_info("%s: Waylayed timer idx: %u idx_now: %u\n", __func__=
+, idx, idx_now);
+> > > > > > +		pr_info("%s: Waylayed timer base->clk: %#lx jiffies: %#lx ba=
+se->next_expiry: %#lx timer->flags: %#x timer->expires %#lx idx: %u idx_now=
+: %u\n", __func__, base->clk, j, base->next_expiry, timer.timer.flags, time=
+r.timer.expires, idx, idx_now);
+> > > > > =
+
+> > > > > Please print idx and idx_now as hex values. It's simpler to decod=
+e that way.
+> > > > =
+
+> > > > Here you go!  Starting tests at this end, focusing on TREE01 and TR=
+EE04.
+> > > > BTW, TREE04 doesn't do any CPU hotplug, providing a counterexample =
+to
+> > > > my long-held assumption that this only happened in the presence of =
+CPU
+> > > > hotplug operations.
+> > > =
+
+> > > And here is output with changes discussed on IRC.  TREE04 managed to
+> > > have not one but two overlapping RCU CPU stall warnings, one for RCU-=
+bh
+> > > and the second for RCU-sched.  TREE04 and TREE04.  HZ=3D1000.
+> > =
+
+> > And here is the full patch, in all its lack of aesthetic appeal.
+> =
+
+> And here is the list of waylaid timers from last night's testing.  The big
+> pile of them from TREE01 at the end is due to wakeups from kthread_stop(),
+> I am guessing.  The TREE04 run only had two of them, but they seem reliab=
+le
+> enough that I just might be able to bisect.  I will try that.
+
+And it converged to 5c4991e24c69 ("sched/isolation: Split out new
+CONFIG_CPU_ISOLATION=3Dy config from CONFIG_NO_HZ_FULL"), which is a bit
+hard to believe.  Please see below for the log.  I will be retesting
+some of the allegedly good commits, just in case.
+
+> Did your setup reproduce the problem?
+
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+# bad: [4fbd8d194f06c8a3fd2af1ce560ddb31f7ec8323] Linux 4.15-rc1
+# good: [bebc6082da0a9f5d47a1ea2edc099bf671058bd4] Linux 4.14
+git bisect start 'v4.15-rc1' 'v4.14'
+# bad: [1be2172e96e33bfa22a5c7a651f768ef30ce3984] Merge tag 'modules-for-v4=
+.15' of git://git.kernel.org/pub/scm/linux/kernel/git/jeyu/linux
+git bisect bad 1be2172e96e33bfa22a5c7a651f768ef30ce3984
+# bad: [2cd83ba5bede2f72cc6c79a19a1bddf576b50e88] Merge tag 'iommu-v4.15-rc=
+1' of git://github.com/awilliam/linux-vfio
+git bisect bad 2cd83ba5bede2f72cc6c79a19a1bddf576b50e88
+# bad: [449fcf3ab0baf3dde9952385e6789f2ca10c3980] Merge tag 'staging-4.15-r=
+c1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging
+git bisect bad 449fcf3ab0baf3dde9952385e6789f2ca10c3980
+# bad: [43ff2f4db9d0f76452b77cfa645f02b471143b24] Merge branch 'x86-platfor=
+m-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+git bisect bad 43ff2f4db9d0f76452b77cfa645f02b471143b24
+# good: [f08d8bcc12de5a153e587027e77de83662eefb8a] Merge tag 'please-pull-g=
+ettime_vsyscall_update' of git://git.kernel.org/pub/scm/linux/kernel/git/ae=
+gl/linux
+git bisect good f08d8bcc12de5a153e587027e77de83662eefb8a
+# good: [31486372a1e9a66ec2e9e2903b8792bba7e503e1] Merge branch 'perf-core-=
+for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+git bisect good 31486372a1e9a66ec2e9e2903b8792bba7e503e1
+# good: [9275b933d409d3a4efa08102ca813557b93fb0b9] resource: Fix resource_s=
+ize.cocci warnings
+git bisect good 9275b933d409d3a4efa08102ca813557b93fb0b9
+# bad: [765cc3a4b224e22bf524fabe40284a524f37cdd0] sched/core: Optimize sche=
+d_feat() for !CONFIG_SCHED_DEBUG builds
+git bisect bad 765cc3a4b224e22bf524fabe40284a524f37cdd0
+# good: [93824900a2e242766f5fe6ae7697e3d7171aa234] sched/fair: Search a tas=
+k from the tail of the queue
+git bisect good 93824900a2e242766f5fe6ae7697e3d7171aa234
+# good: [7863406143d8bbbbda07a61285c5f4c217908dfd] sched/isolation: Move ho=
+usekeeping related code to its own file
+git bisect good 7863406143d8bbbbda07a61285c5f4c217908dfd
+# bad: [de201559df872f83d0c08fb4effe3efd28e6cbc8] sched/isolation: Introduc=
+e housekeeping flags
+git bisect bad de201559df872f83d0c08fb4effe3efd28e6cbc8
+# good: [7e56a1cf4b28f5739526877b8dbad623fae2e4e7] sched/isolation: Make th=
+e housekeeping cpumask private
+git bisect good 7e56a1cf4b28f5739526877b8dbad623fae2e4e7
+# good: [204c083a009378dfa751175b5fcddc75988bab6c] sched/isolation: Rename =
+is_housekeeping_cpu() to housekeeping_cpu()
+git bisect good 204c083a009378dfa751175b5fcddc75988bab6c
+# bad: [5c4991e24c69737bd41fc2737b1e3980abbf73f9] sched/isolation: Split ou=
+t new CONFIG_CPU_ISOLATION=3Dy config from CONFIG_NO_HZ_FULL
+git bisect bad 5c4991e24c69737bd41fc2737b1e3980abbf73f9
+# first bad commit: [5c4991e24c69737bd41fc2737b1e3980abbf73f9] sched/isolat=
+ion: Split out new CONFIG_CPU_ISOLATION=3Dy config from CONFIG_NO_HZ_FULL
 
 
-You can try dirty patch from here:
-https://groups.google.com/d/msg/kasan-dev/iDb5bhcMBT0/55QzwWaHAwAJ
-It should make KASAN print the exact variable name and frame where it
-was allocated.
-
---===============6671959122527369673==--
+--===============3156449320039556488==--
 
