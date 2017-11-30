@@ -1,49 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============3669339641981501124=="
+Content-Type: multipart/mixed; boundary="===============5883160158341661249=="
 MIME-Version: 1.0
 From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: BUG: KASAN: slab-out-of-bounds in perf_callchain_user+0x494/0x530
-Date: Thu, 30 Nov 2017 09:20:26 +0100
-Message-ID: <20171130082026.ih7esfpn4wfsfoge@hirez.programming.kicks-ass.net>
-In-Reply-To: <20171130023218.g2y35nn4zyufqk6t@wfg-t540p.sh.intel.com>
+Subject: Re: BUG: KASAN: use-after-free in cmp_ex_search+0x29/0x71
+Date: Thu, 30 Nov 2017 09:27:30 +0100
+Message-ID: <20171130082730.bmvwejejovqrp3ez@hirez.programming.kicks-ass.net>
+In-Reply-To: <20171130045443.2pflxxr2da2gk6ys@olymp>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3669339641981501124==
+--===============5883160158341661249==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 30, 2017 at 10:32:19AM +0800, Fengguang Wu wrote:
-> Hello,
-> =
+On Thu, Nov 30, 2017 at 06:16:58AM +0100, Thomas Meyer wrote:
+> On Thu, Nov 30, 2017 at 11:36:06AM +0800, Fengguang Wu wrote:
 
-> FYI this happens in mainline kernel 4.15.0-rc1.
-> It looks like a new regression and hard to bisect.
-> =
 
-> It occurs in 1 out of 57 boots.
-> =
-
-> [   10.009610] chown (367) used greatest stack depth: 26944 bytes left
-> Kernel tests: Boot OK!
-> [   30.357729] trinity-main uses obsolete (PF_INET,SOCK_PACKET)
-> [   31.301433] sock: process `trinity-main' is using obsolete setsockopt =
-SO_BSDCOMPAT
-> [   31.310289] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+> > [   40.847825] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [   31.311490] BUG: KASAN: slab-out-of-bounds in perf_callchain_user+0x49=
-4/0x530:
-> 						perf_callchain_store at include/linux/perf_event.h:1128
-> 						 (inlined by) perf_callchain_user at arch/x86/events/core.c:2485
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > [   40.848720] BUG: KASAN: use-after-free in cmp_ex_search+0x29/0x71:
+> > 						ex_to_insn at lib/extable.c:23
+> > 						 (inlined by) cmp_ex_search at lib/extable.c:104
 
-I don't think we recently changed anything here...
+Right after this it does:
 
-But I do have vague memories of something being off here; I never quite
-could penetrate the max_stack / contexts_maxed stuff, and istr acme was
-going to have a peek.
+> [   40.872223] kernel tried to execute NX-protected page - exploit attemp=
+t? (uid: 0)
+> [   40.873011] BUG: unable to handle kernel paging request at fffffbfff07=
+66694
+> [   40.874648] IP: 0xfffffbfff0766694
+> [   40.875112] PGD 1b3df067 P4D 1b3df067 PUD 1b3de067 PMD 800000001ac001e3
+> [   40.876293] Thread overran stack, or stack corrupted
 
+which seems to suggest the machine is completely fucked and the uaf
+could very well be the result of that.
 
-
---===============3669339641981501124==--
+--===============5883160158341661249==--
 
