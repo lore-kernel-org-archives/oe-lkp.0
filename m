@@ -1,77 +1,56 @@
-Content-Type: multipart/mixed; boundary="===============7614708834293928933=="
+Content-Type: multipart/mixed; boundary="===============7219644789311207751=="
 MIME-Version: 1.0
-From: Jason Baron <jbaron@akamai.com>
+From: Arnaldo Carvalho de Melo <acme@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: BUG: KASAN: use-after-scope in ep_poll+0x5cd/0xc90
-Date: Thu, 30 Nov 2017 13:57:16 -0500
-Message-ID: <519d86ca-1de8-060d-487f-0ee90451b957@akamai.com>
-In-Reply-To: <20171130034139.o5br7xc57buhnseb@wfg-t540p.sh.intel.com>
+Subject: Re: BUG: KASAN: slab-out-of-bounds in perf_callchain_user+0x494/0x530
+Date: Thu, 30 Nov 2017 16:37:12 -0300
+Message-ID: <20171130193712.GU3298@kernel.org>
+In-Reply-To: <20171130082026.ih7esfpn4wfsfoge@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7614708834293928933==
+--===============7219644789311207751==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Em Thu, Nov 30, 2017 at 09:20:26AM +0100, Peter Zijlstra escreveu:
+> On Thu, Nov 30, 2017 at 10:32:19AM +0800, Fengguang Wu wrote:
+> > Hello,
+> > =
 
-On 11/29/2017 10:41 PM, Fengguang Wu wrote:
-> Hello,
-> =
+> > FYI this happens in mainline kernel 4.15.0-rc1.
+> > It looks like a new regression and hard to bisect.
+> > =
 
-> FYI this happens in mainline kernel 4.15.0-rc1.
-> It looks a new regression and bisect is on the way.
-> =
+> > It occurs in 1 out of 57 boots.
+> > =
 
-> It occurs in 3 out of 3 boots.
-> =
-
-> [   35.704690] init: Failed to create pty - disabling logging for job
-> [   35.706676] init: Temporary process spawn error: No such file or direc=
-tory
-> [   35.731988] init: Failed to create pty - disabling logging for job
-> [   35.734084] init: Temporary process spawn error: No such file or direc=
-tory
-> [   35.737946] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+> > [   10.009610] chown (367) used greatest stack depth: 26944 bytes left
+> > Kernel tests: Boot OK!
+> > [   30.357729] trinity-main uses obsolete (PF_INET,SOCK_PACKET)
+> > [   31.301433] sock: process `trinity-main' is using obsolete setsockop=
+t SO_BSDCOMPAT
+> > [   31.310289] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [   35.739635] BUG: KASAN: use-after-scope in ep_poll+0x5cd/0xc90:
-> 						ep_send_events at fs/eventpoll.c:1700
-> 						 (inlined by) ep_poll at fs/eventpoll.c:1829
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > [   31.311490] BUG: KASAN: slab-out-of-bounds in perf_callchain_user+0x=
+494/0x530:
+> > 						perf_callchain_store at include/linux/perf_event.h:1128
+> > 						 (inlined by) perf_callchain_user at arch/x86/events/core.c:2485
+> =
 
-This seems to be pointing out that 'struct ep_send_events_data esed' on
-line 1700 (below) is being used out of scope?
+> I don't think we recently changed anything here...
+> =
 
-1697 static int ep_send_events(struct eventpoll *ep,
+> But I do have vague memories of something being off here; I never quite
+> could penetrate the max_stack / contexts_maxed stuff, and istr acme was
+> going to have a peek.
+ =
 
-1698                           struct epoll_event __user *events, int
-maxevents)
-1699 {
+Sure, but I saw some backward ring buffer stuff in there as well, no?
+IIRC that came after the max-stack code, Adding Wang to the CC list.
 
-1700         struct ep_send_events_data esed;
+- Arnaldo
 
-1701
-
-1702         esed.maxevents =3D maxevents;
-
-1703         esed.events =3D events;
-
-1704
-
-1705         return ep_scan_ready_list(ep, ep_send_events_proc, &esed,
-0, false);
-
-There have been some epoll changes new to 4.15 that would be tempting to
-blame, but I don't see anything obvious wrong and the usage of 'esed'
-hasn't really changed.
-
-So I'm curious to see where your bisect leads. There also seems to be a
-number of reports of false positives with KASAN out of scope reported
-recently, so I'm not sure if this could be a false positive?
-
-Thanks,
-
--Jason
-
---===============7614708834293928933==--
+--===============7219644789311207751==--
 
