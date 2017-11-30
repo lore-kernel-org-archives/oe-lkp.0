@@ -1,76 +1,181 @@
-Content-Type: multipart/mixed; boundary="===============8446337164001988188=="
+Content-Type: multipart/mixed; boundary="===============2670095225715639276=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: dd: page allocation failure: order:0, mode:0x1080020(GFP_ATOMIC), nodemask=(null)
-Date: Thu, 30 Nov 2017 15:23:52 +0100
-Message-ID: <20171130142352.3iva2g5ygn4byh7r@dhcp22.suse.cz>
-In-Reply-To: <20171130140103.arapa4qphgtmjyqm@wfg-t540p.sh.intel.com>
+Subject: Re: [ 0.003333] BUG: KASAN: use-after-scope in console_unlock+0x605/0xcc0
+Date: Thu, 30 Nov 2017 22:30:06 +0800
+Message-ID: <20171130143006.76eebrxp5rpwdtok@wfg-t540p.sh.intel.com>
+In-Reply-To: <20171130082909.GA469@jagdpanzerIV>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8446337164001988188==
+--===============2670095225715639276==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu 30-11-17 22:01:03, Wu Fengguang wrote:
-> On Thu, Nov 30, 2017 at 02:50:16PM +0100, Michal Hocko wrote:
-> > On Thu 30-11-17 21:38:40, Wu Fengguang wrote:
-> > > Hello,
-> > > =
+On Thu, Nov 30, 2017 at 05:29:09PM +0900, Sergey Senozhatsky wrote:
+>On (11/30/17 09:16), Dmitry Vyukov wrote:
+>[..]
+>> > to be honest, this backtrace hardly makes any sense to me.
+>> >
+>> > vprintk_emit()
+>> >  reserve_standard_io_resources()
+>> >   __flush_tlb_all()
+>> >    vprintk_emit()
+>> >     __down_trylock_console_sem()
+>> >      wake_up_klogd()
+>> >       console_unlock()
+>> >
+>> > I need some help here.
+>>
+>>
+>> You can try dirty patch from here:
+>> https://groups.google.com/d/msg/kasan-dev/iDb5bhcMBT0/55QzwWaHAwAJ
+>> It should make KASAN print the exact variable name and frame where it
+>> was allocated.
+>
+>would be good if Fengguang can try this out. I can't reproduce the
+>problem on my x86 box (linux-next and Linus's trees both work fine
+>for me with KASAN + lockdep + TRACE_IRQ).
 
-> > > It looks like a regression in 4.15.0-rc1 -- the test case simply run a
-> > > set of parallel dd's and there seems no reason to run into memory pro=
-blem.
-> > > =
+Attached is the dmesg with Dmitry's patch. The new output is:
 
-> > > It occurs in 1 out of 4 tests.
-> > =
+[    0.003333] frame offset: 32
+[    0.003333] desc: '2 32 4 3 __u 96 8 3 __u '
+[    0.003333] func: console_unlock+0x0/0xcc0
 
-> > This is an atomic allocations. So the failure really depends on the
-> > state of the free memory and that can vary between runs depending on
-> > timing I guess. So I am not really sure this is a regression. But maybe
-> > there is something reclaim related going on here.
-> =
+Thanks,
+Fengguang
 
-> Yes, it does depend on how the drivers rely on atomic allocations.
-> I just wonder if any changes make the pressure more tight than before.
-> It may not even be a MM change -- in theory drivers might also use atomic
-> allocations more aggressively than before.
-> =
+--===============2670095225715639276==
+Content-Type: application/x-xz
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="dmesg.xz"
 
-[...]
-> Attached the JSON format per-second vmstat records.
-> It feels more readable than the raw dumps.
-
-Well from a quick check it seems that there is just a legit memory
-pressure where kswapd doesn't keep up with the allocation pace. If we
-just check the overal kswapd reclaim efficiency
-(proc-vmstat.pgsteal_kswapd/proc-vmstat.pgscan_kswapd)
-13311631/1331957
-then we are ~99% which means that kswad made a good work to reclaim and
-didn't stumble over anything. We reclaim _a lot_ from the direct reclaim
-context which means that kswapd doesn't keep up at all
-(proc-vmstat.pgsteal_direct/proc-vmstat.pgscan_direct)
-107767391/108058968 again ~99% but 8x the kswapd of what kswapd does.
-
-If you look at diffs in pgsteal numbers, we are at 2M pages reclaimed
-per second for the direct reclaim and ~200k p/s from kswapd. kswapd is
-naturally slower as it is a single thread compared to many reclaimers
-hitting the direct reclaim at once.
-
-allocstall numbers show that this was not a single peak but rather a
-continual direct reclaim storm, starting with dozens of direct reclaim
-invocations per second reaching to hundres on zone Normal and even worse
-on the movable zone where we are in thousands (just have a look at diffs
-between respective numbres).
-
-So from a quick look it really seems like a heavy memory pressure rather
-than some reclaim defficiency to me.
--- =
-
-Michal Hocko
-SUSE Labs
-
---===============8446337164001988188==--
+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
+--===============2670095225715639276==--
 
