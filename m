@@ -1,40 +1,77 @@
-Content-Type: multipart/mixed; boundary="===============1328140033611421732=="
+Content-Type: multipart/mixed; boundary="===============7614708834293928933=="
 MIME-Version: 1.0
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Jason Baron <jbaron@akamai.com>
 To: lkp@lists.01.org
-Subject: Re: [futex] 35ca678967 WARNING: CPU: 0 PID: 2334 at kernel/sched/core.c:6845 migrate_enable
-Date: Thu, 30 Nov 2017 19:16:11 +0100
-Message-ID: <20171130181611.GB14267@linutronix.de>
-In-Reply-To: <20171127010914.2ay5kisugrvnprgz@wfg-t540p.sh.intel.com>
+Subject: Re: BUG: KASAN: use-after-scope in ep_poll+0x5cd/0xc90
+Date: Thu, 30 Nov 2017 13:57:16 -0500
+Message-ID: <519d86ca-1de8-060d-487f-0ee90451b957@akamai.com>
+In-Reply-To: <20171130034139.o5br7xc57buhnseb@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1328140033611421732==
+--===============7614708834293928933==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2017-11-27 09:09:14 [+0800], Fengguang Wu wrote:
-> Greetings,
-Him
+Hi,
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+On 11/29/2017 10:41 PM, Fengguang Wu wrote:
+> Hello,
 > =
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git lin=
-ux-4.14.y-rt-rebase
+> FYI this happens in mainline kernel 4.15.0-rc1.
+> It looks a new regression and bisect is on the way.
+> =
 
-I looked at this and those other report you sent. The
-boot-RT-in-the-middle-of-the-queue is kind of difficult. There are a lot
-of warnings on the RT part and this is not really a surprise. Here we
-have the migrate-enable/disable fixup but locking with migrate-disable
-is not yet introduced. Here we have it logically sorted in the futex
-corner however. There are a lot of things that get broken once sleeping
-locks are wired-up properly so it is not that easy.
+> It occurs in 3 out of 3 boots.
+> =
 
-Would it be possible to limit the testing part to a complete kernel i.e.
-to the last patch in the tree?
+> [   35.704690] init: Failed to create pty - disabling logging for job
+> [   35.706676] init: Temporary process spawn error: No such file or direc=
+tory
+> [   35.731988] init: Failed to create pty - disabling logging for job
+> [   35.734084] init: Temporary process spawn error: No such file or direc=
+tory
+> [   35.737946] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [   35.739635] BUG: KASAN: use-after-scope in ep_poll+0x5cd/0xc90:
+> 						ep_send_events at fs/eventpoll.c:1700
+> 						 (inlined by) ep_poll at fs/eventpoll.c:1829
 
-Sebastian
+This seems to be pointing out that 'struct ep_send_events_data esed' on
+line 1700 (below) is being used out of scope?
 
---===============1328140033611421732==--
+1697 static int ep_send_events(struct eventpoll *ep,
+
+1698                           struct epoll_event __user *events, int
+maxevents)
+1699 {
+
+1700         struct ep_send_events_data esed;
+
+1701
+
+1702         esed.maxevents =3D maxevents;
+
+1703         esed.events =3D events;
+
+1704
+
+1705         return ep_scan_ready_list(ep, ep_send_events_proc, &esed,
+0, false);
+
+There have been some epoll changes new to 4.15 that would be tempting to
+blame, but I don't see anything obvious wrong and the usage of 'esed'
+hasn't really changed.
+
+So I'm curious to see where your bisect leads. There also seems to be a
+number of reports of false positives with KASAN out of scope reported
+recently, so I'm not sure if this could be a false positive?
+
+Thanks,
+
+-Jason
+
+--===============7614708834293928933==--
 
