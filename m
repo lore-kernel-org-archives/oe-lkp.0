@@ -1,143 +1,259 @@
-Content-Type: multipart/mixed; boundary="===============7635483565539940436=="
+Content-Type: multipart/mixed; boundary="===============6994905664744971843=="
 MIME-Version: 1.0
-From: Vincent Guittot <vincent.guittot@linaro.org>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/pelt] 2d02fa8cc2: stress-ng.pipeherd.ops_per_sec -9.7% regression
-Date: Thu, 31 Mar 2022 18:17:26 +0200
-Message-ID: <CAKfTPtDFhORUyOfqr==ZrOSgBd8=vzvYgWMxw87bvq3pQmq7DQ@mail.gmail.com>
-In-Reply-To: <CADjb_WT0fcP2QBjYpsCAJEcVYWKNw1rQ6XZNz33i+KCbD8jB-A@mail.gmail.com>
+Subject: Re: [lkp-robot] [torture] b151f93a71: INFO:rcu_preempt_detected_stalls_on_CPUs/tasks
+Date: Thu, 30 Nov 2017 16:45:57 -0800
+Message-ID: <20171201004557.GA19717@linux.vnet.ibm.com>
+In-Reply-To: <20171129223806.GA15615@linux.vnet.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7635483565539940436==
+--===============6994905664744971843==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 31 Mar 2022 at 16:19, Chen Yu <yu.chen.surf@gmail.com> wrote:
->
-> Hi Vincent,
->
-> On Wed, Feb 9, 2022 at 1:17 PM kernel test robot <oliver.sang@intel.com=
-> wrote:
-> >
-> >
-> >
-> > Greeting,
-> >
-> > FYI, we noticed a -9.7% regression of stress-ng.pipeherd.ops_per_sec du=
-e to commit:
-> >
-> >
-> > commit: 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax th=
-e sync of load_sum with load_avg")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> >
-> > in testcase: stress-ng
-> > on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 C=
-PU @ 2.60GHz with 128G memory
-> > with following parameters:
-> >
-> >         nr_threads: 100%
-> >         testtime: 60s
-> >         class: memory
-> >         test: pipeherd
-> >         cpufreq_governor: performance
-> >         ucode: 0xd000280
-> >
-> This week we have re-run the test result and it seems that this
-> regression is still there.
-> As we are evaluating whether this report is valid or if the
-> downgrading is expected, appreciated
-> if you could give suggestion on further steps:
->
-> 1.  If I understand correctly,
-> 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax the sync
-> of load_sum with load_avg")
->      fixed the calculating of  load_sum.  Before this patch  the
-> contribution part would be 'skipped' and caused the load_sum
->      to be lower than expected.
+On Wed, Nov 29, 2017 at 02:38:06PM -0800, Paul E. McKenney wrote:
+> On Wed, Nov 29, 2017 at 02:07:03PM -0800, Paul E. McKenney wrote:
 
-Yes, you understand it correctly
+[ . . . ]
 
-> 2. If above is true, after this patch, the load_sum becomes higher. Is
-> there a scenario that higher load_sum added to 1 cfs_rq brings
->     more imbalance between this group and other sched_group, thus
-> brings more task migration/wake up? (because in below perf result,
->     it seems that, with this patch applied, there are slightly more
-> take wake up)
+> > And it converged to 5c4991e24c69 ("sched/isolation: Split out new
+> > CONFIG_CPU_ISOLATION=3Dy config from CONFIG_NO_HZ_FULL"), which is a bit
+> > hard to believe.  Please see below for the log.  I will be retesting
+> > some of the allegedly good commits, just in case.
+> =
 
-This change should not impact load balance as it only does comparison
-and I expect the load increase to happen on all cfs rq.
-The only place that could be impacted, would be wake_affine_weight()
-because it removes task load from previous cfs rq load before
-comparing.
-The task's load was not impacted by the underestimate which means that
-the load of prev cfs  might be seen lower than current cfs after
-subtracting the task's load whereas both cfs rqs were similarly
-underestimated.
-Now the load of prev cfs rq is not underestimated and becomes
-comparable or slightly higher than the current cfs and the task
-migrate on current cfs instead of staying on prev one at wakeup
+> And the bisection really did converge here.  It appears that splitting
+> CONFIG_CPU_ISOLATION from CONFIG_NO_HZ_FULL isn't fully cooked.
+> Adding CONFIG_CPU_ISOLATION=3Dy to my tests causes them to pass, but I
+> get the eternal wait for a three-jiffy timeout given CONFIG_NO_HZ_FULL=3Dy
+> and CONFIG_CPU_ISOLATION=3Dn.  Both cases use CONFIG_NO_HZ_FULL_ALL=3Dy.
+> =
 
-One possible test would be to run the test with WA_WEIGHT features
-disable and check if there is still a difference
+> Adding Frederic for his perspective.
 
-> 3.  Consider the 9.7% downgrading is not that high,  do you think if
-> lkp team should continue track this issue or just close it
->     as documented?
->
-> Best,
-> Yu
-> >
-> > commit:
-> >   95246d1ec8 ("sched/pelt: Relax the sync of runnable_sum with runnable=
-_avg")
-> >   2d02fa8cc2 ("sched/pelt: Relax the sync of load_sum with load_avg")
-> >
-> > 95246d1ec80b8d19 2d02fa8cc21a93da35cfba462bf
-> > ---------------- ---------------------------
-> >          %stddev     %change         %stddev
-> >              \          |                \
-> >       0.21           +11.0%       0.24 =C4=85  2%  stress-ng.pipeherd.c=
-ontext_switches_per_bogo_op
-> >  3.869e+09            -9.7%  3.494e+09        stress-ng.pipeherd.ops
-> >   64412021            -9.7%   58171101        stress-ng.pipeherd.ops_pe=
-r_sec
-> >     442.37            -7.2%     410.54        stress-ng.time.user_time
-> >       5.49 =C4=85  2%      -0.5        4.94 =C4=85  4%  mpstat.cpu.all.=
-usr%
-> >      80705 =C4=85  7%     +26.7%     102266 =C4=85 17%  numa-meminfo.no=
-de1.Active
-> >      80705 =C4=85  7%     +26.7%     102266 =C4=85 17%  numa-meminfo.no=
-de1.Active(anon)
-> >      12324 =C4=85  3%     -22.1%       9603 =C4=85 25%  softirqs.CPU106=
-.RCU
-> >      12703 =C4=85  4%     -23.1%       9769 =C4=85 24%  softirqs.CPU27.=
-RCU
-> >      15.96            +1.0       16.95        perf-profile.calltrace.cy=
-cles-pp.prepare_to_wait_event.pipe_read.new_sync_read.vfs_read.ksys_read
-> >       6.67            +1.0        7.68 =C4=85  2%  perf-profile.calltra=
-ce.cycles-pp.enqueue_task_fair.ttwu_do_activate.try_to_wake_up.autoremove_w=
-ake_function.__wake_up_common
-> >       6.77            +1.0        7.79 =C4=85  2%  perf-profile.calltra=
-ce.cycles-pp.ttwu_do_activate.try_to_wake_up.autoremove_wake_function.__wak=
-e_up_common.__wake_up_common_lock
-> >      14.46            +1.0       15.48 =C4=85  2%  perf-profile.calltra=
-ce.cycles-pp._raw_spin_lock_irqsave.prepare_to_wait_event.pipe_read.new_syn=
-c_read.vfs_read
-> >      13.73            +1.1       14.79 =C4=85  2%  perf-profile.calltra=
-ce.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.prepar=
-e_to_wait_event.pipe_read.new_sync_read
-> >      26.95            +1.4       28.34        perf-profile.calltrace.cy=
-cles-pp.__wake_up_common_lock.pipe_write.new_sync_write.vfs_write.ksys_write
-> >      25.85            +1.5       27.32        perf-profile.calltrace.cy=
-cles-pp.__wake_up_common.__wake_up_common_lock.pipe_write.new_sync_write.vf=
-s_write
-> >      25.18            +1.5       26.69        perf-profile.calltrace.cy=
-cles-pp.autoremove_wake_function.__wake_up_common.__wake_up_common_lock.pip=
-e_write.new_sync_write
-> >      24.61            +1.5       26.14        perf-profile.calltrace.cy=
-cles-pp.try_to_wake_up.autoremove_wake_function.__wake_up_common.__wake_up_=
-common_lock.pipe_write
---===============7635483565539940436==--
+And the next layer of this onion is 6f1982fedd59 ("sched/isolation:
+Handle the nohz_full=3D parameter").  This one seems to have broken
+CONFIG_NO_HZ_FULL_ALL:  If you have CONFIG_NO_HZ_FULL_ALL=3Dy, but
+don't supply the nohz_full=3D boot parameter, it is supposed to put all
+but the boot CPU into nohz_full mode.  But the code doesn't do that.
+The tick_nohz_init_all() function simply creates the tick_nohz_full_mask
+and sets tick_nohz_full_running, but doesn't do any of the housekeeping
+initialization that now appears to be required.
+
+My path of least resistance is to just remove CONFIG_NO_HZ_FULL_ALL,
+as in the following patch.  And the lack of bug reports leads me to believe
+that I am the only one using this Kconfig option.
+
+If someone else is using CONFIG_NO_HZ_FULL_ALL, I of course have no
+problem with them putting forward an alternative patch that makes it
+work correctly.  ;-)
+
+With both patches applied, things appear to work much better.
+
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+commit cf3b2149af558fb4e09f486bf937256e5c7947fe
+Author: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Date:   Thu Nov 30 15:36:35 2017 -0800
+
+    sched/isolation: Eliminate NO_HZ_FULL_ALL
+    =
+
+    Commit 6f1982fedd59 ("sched/isolation: Handle the nohz_full=3D paramete=
+r")
+    broke CONFIG_NO_HZ_FULL_ALL=3Dy kernels.  This breakage is due to the c=
+ode
+    under CONFIG_NO_HZ_FULL_ALL failing to invoke the shiny new housekeeping
+    functions.  This means that rcutorture scenario TREE04 now emits RCU CPU
+    stall warnings due to the RCU grace-period kthreads not being awakened
+    at a time of their choosing, or perhaps even not at all:
+    =
+
+    [   27.731422] rcu_bh kthread starved for 21001 jiffies! g1844674407370=
+9551369 c18446744073709551368 f0x0 RCU_GP_WAIT_FQS(3) ->state=3D0x402 ->cpu=
+=3D3
+    [   27.731423] rcu_bh          I14936     9      2 0x80080000
+    [   27.731435] Call Trace:
+    [   27.731440]  __schedule+0x31a/0x6d0
+    [   27.731442]  schedule+0x31/0x80
+    [   27.731446]  schedule_timeout+0x15a/0x320
+    [   27.731453]  ? call_timer_fn+0x130/0x130
+    [   27.731457]  rcu_gp_kthread+0x66c/0xea0
+    [   27.731458]  ? rcu_gp_kthread+0x66c/0xea0
+    =
+
+    Because no one has complained about CONFIG_NO_HZ_FULL_ALL=3Dy being bro=
+ken,
+    I hypothesize that no one is in fact using it, other than rcutorture.
+    This commit therefore eliminates CONFIG_NO_HZ_FULL_ALL and updates
+    rcutorture's config files to instead use the nohz_full=3D kernel parame=
+ter
+    to put the desired CPUs into nohz_full mode.
+    =
+
+    Fixes: 6f1982fedd59 ("sched/isolation: Handle the nohz_full=3D paramete=
+r")
+    =
+
+    Reported-by: kernel test robot <xiaolong.ye@intel.com>
+    Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+    Cc: Frederic Weisbecker <frederic@kernel.org>
+    Cc: Thomas Gleixner <tglx@linutronix.de>
+    Cc: Chris Metcalf <cmetcalf@mellanox.com>
+    Cc: Christoph Lameter <cl@linux.com>
+    Cc: Linus Torvalds <torvalds@linux-foundation.org>
+    Cc: Luiz Capitulino <lcapitulino@redhat.com>
+    Cc: Mike Galbraith <efault@gmx.de>
+    Cc: Peter Zijlstra <peterz@infradead.org>
+    Cc: Rik van Riel <riel@redhat.com>
+    Cc: Wanpeng Li <kernellwp@gmail.com>
+    Cc: Ingo Molnar <mingo@kernel.org>
+    Cc: John Stultz <john.stultz@linaro.org>
+    Cc: Jonathan Corbet <corbet@lwn.net>
+
+diff --git a/Documentation/timers/NO_HZ.txt b/Documentation/timers/NO_HZ.txt
+index 2dcaf9adb7a7..9591092da5e0 100644
+--- a/Documentation/timers/NO_HZ.txt
++++ b/Documentation/timers/NO_HZ.txt
+@@ -131,13 +131,6 @@ error message, and the boot CPU will be removed from t=
+he mask.  Note that
+ this means that your system must have at least two CPUs in order for
+ CONFIG_NO_HZ_FULL=3Dy to do anything for you.
+ =
+
+-Alternatively, the CONFIG_NO_HZ_FULL_ALL=3Dy Kconfig parameter specifies
+-that all CPUs other than the boot CPU are adaptive-ticks CPUs.  This
+-Kconfig parameter will be overridden by the "nohz_full=3D" boot parameter,
+-so that if both the CONFIG_NO_HZ_FULL_ALL=3Dy Kconfig parameter and
+-the "nohz_full=3D1" boot parameter is specified, the boot parameter will
+-prevail so that only CPU 1 will be an adaptive-ticks CPU.
+-
+ Finally, adaptive-ticks CPUs must have their RCU callbacks offloaded.
+ This is covered in the "RCU IMPLICATIONS" section below.
+ =
+
+diff --git a/kernel/time/Kconfig b/kernel/time/Kconfig
+index f6b5f19223d6..78eabc41eaa6 100644
+--- a/kernel/time/Kconfig
++++ b/kernel/time/Kconfig
+@@ -113,16 +113,6 @@ config NO_HZ_FULL
+ =
+
+ endchoice
+ =
+
+-config NO_HZ_FULL_ALL
+-       bool "Full dynticks system on all CPUs by default (except CPU 0)"
+-       depends on NO_HZ_FULL
+-       help
+-         If the user doesn't pass the nohz_full boot option to
+-	 define the range of full dynticks CPUs, consider that all
+-	 CPUs in the system are full dynticks by default.
+-	 Note the boot CPU will still be kept outside the range to
+-	 handle the timekeeping duty.
+-
+ config NO_HZ
+ 	bool "Old Idle dynticks config"
+ 	depends on !ARCH_USES_GETTIMEOFFSET && GENERIC_CLOCKEVENTS
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index 99578f06c8d4..ee10208148d5 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -405,30 +405,12 @@ static int tick_nohz_cpu_down(unsigned int cpu)
+ 	return 0;
+ }
+ =
+
+-static int tick_nohz_init_all(void)
+-{
+-	int err =3D -1;
+-
+-#ifdef CONFIG_NO_HZ_FULL_ALL
+-	if (!alloc_cpumask_var(&tick_nohz_full_mask, GFP_KERNEL)) {
+-		WARN(1, "NO_HZ: Can't allocate full dynticks cpumask\n");
+-		return err;
+-	}
+-	err =3D 0;
+-	cpumask_setall(tick_nohz_full_mask);
+-	tick_nohz_full_running =3D true;
+-#endif
+-	return err;
+-}
+-
+ void __init tick_nohz_init(void)
+ {
+ 	int cpu, ret;
+ =
+
+-	if (!tick_nohz_full_running) {
+-		if (tick_nohz_init_all() < 0)
+-			return;
+-	}
++	if (!tick_nohz_full_running)
++		return;
+ =
+
+ 	/*
+ 	 * Full dynticks uses irq work to drive the tick rescheduling on safe
+diff --git a/tools/testing/selftests/rcutorture/configs/rcu/TASKS03 b/tools=
+/testing/selftests/rcutorture/configs/rcu/TASKS03
+index c70c51d5ded1..28568b72a31b 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcu/TASKS03
++++ b/tools/testing/selftests/rcutorture/configs/rcu/TASKS03
+@@ -9,5 +9,4 @@ CONFIG_PREEMPT=3Dy
+ CONFIG_HZ_PERIODIC=3Dn
+ CONFIG_NO_HZ_IDLE=3Dn
+ CONFIG_NO_HZ_FULL=3Dy
+-CONFIG_NO_HZ_FULL_ALL=3Dy
+ #CHECK#CONFIG_RCU_EXPERT=3Dn
+diff --git a/tools/testing/selftests/rcutorture/configs/rcu/TASKS03.boot b/=
+tools/testing/selftests/rcutorture/configs/rcu/TASKS03.boot
+index cd2a188eeb6d..838297c58318 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcu/TASKS03.boot
++++ b/tools/testing/selftests/rcutorture/configs/rcu/TASKS03.boot
+@@ -1 +1 @@
+-rcutorture.torture_type=3Dtasks
++rcutorture.torture_type=3Dtasks nohz_full=3D1
+diff --git a/tools/testing/selftests/rcutorture/configs/rcu/TREE04 b/tools/=
+testing/selftests/rcutorture/configs/rcu/TREE04
+index 27d22695d64c..24c9f6012e35 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcu/TREE04
++++ b/tools/testing/selftests/rcutorture/configs/rcu/TREE04
+@@ -7,7 +7,6 @@ CONFIG_PREEMPT=3Dn
+ CONFIG_HZ_PERIODIC=3Dn
+ CONFIG_NO_HZ_IDLE=3Dn
+ CONFIG_NO_HZ_FULL=3Dy
+-CONFIG_NO_HZ_FULL_ALL=3Dy
+ CONFIG_RCU_FAST_NO_HZ=3Dy
+ CONFIG_RCU_TRACE=3Dy
+ CONFIG_HOTPLUG_CPU=3Dn
+diff --git a/tools/testing/selftests/rcutorture/configs/rcu/TREE04.boot b/t=
+ools/testing/selftests/rcutorture/configs/rcu/TREE04.boot
+index e34c33430447..e6071bb96c7d 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcu/TREE04.boot
++++ b/tools/testing/selftests/rcutorture/configs/rcu/TREE04.boot
+@@ -1 +1 @@
+-rcutorture.torture_type=3Drcu_bh rcutree.rcu_fanout_leaf=3D4
++rcutorture.torture_type=3Drcu_bh rcutree.rcu_fanout_leaf=3D4 nohz_full=3D1=
+-7
+diff --git a/tools/testing/selftests/rcutorture/configs/rcu/TREE07 b/tools/=
+testing/selftests/rcutorture/configs/rcu/TREE07
+index 0f4759f4232e..d7afb271a586 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcu/TREE07
++++ b/tools/testing/selftests/rcutorture/configs/rcu/TREE07
+@@ -7,7 +7,6 @@ CONFIG_PREEMPT=3Dn
+ CONFIG_HZ_PERIODIC=3Dn
+ CONFIG_NO_HZ_IDLE=3Dn
+ CONFIG_NO_HZ_FULL=3Dy
+-CONFIG_NO_HZ_FULL_ALL=3Dn
+ CONFIG_RCU_FAST_NO_HZ=3Dn
+ CONFIG_RCU_TRACE=3Dy
+ CONFIG_HOTPLUG_CPU=3Dy
+
+
+--===============6994905664744971843==--
 
