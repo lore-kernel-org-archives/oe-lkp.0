@@ -1,316 +1,310 @@
-Content-Type: multipart/mixed; boundary="===============3806453920173373647=="
+Content-Type: multipart/mixed; boundary="===============4647122177616731908=="
 MIME-Version: 1.0
-From: Fengguang Wu <fengguang.wu@intel.com>
+From: Chris Wilson <chris@chris-wilson.co.uk>
 To: lkp@lists.01.org
-Subject: Re: [e1000_shutdown] e1000 0000:00:03.0: disabling already-disabled device
-Date: Mon, 04 Dec 2017 19:33:57 +0800
-Message-ID: <20171204113357.ccc3anyrl3pn7yuj@wfg-t540p.sh.intel.com>
-In-Reply-To: <97fc7c6e-cc19-dfcf-c1cc-353f7ebf1ceb@oracle.com>
+Subject: Re: d17a1d97dc ("x86/mm/kasan: don't use vmemmap_populate() to initialize shadow"): BUG: KASAN: use-after-scope in __drm_mm_interval_first
+Date: Mon, 04 Dec 2017 11:57:35 +0000
+Message-ID: <151238865557.4852.10258661301122491354@mail.alporthouse.com>
+In-Reply-To: <CACT4Y+bxW3HrYArjAbh+eriTnTzVsSaUf7d1ZY0_6HNnnsUYZw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3806453920173373647==
+--===============4647122177616731908==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Tushar,
+Quoting Dmitry Vyukov (2017-11-29 19:00:59)
+> On Wed, Nov 29, 2017 at 6:21 AM, Fengguang Wu <fengguang.wu@intel.com> =
+wrote:
+> > Greetings,
+> >
+> > 0day kernel testing robot got the below dmesg and the first bad commit =
+is
+> >
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git mast=
+er
+> >
+> > commit d17a1d97dc208d664c91cc387ffb752c7f85dc61
+> > Author:     Andrey Ryabinin <aryabinin@virtuozzo.com>
+> > AuthorDate: Wed Nov 15 17:36:35 2017 -0800
+> > Commit:     Linus Torvalds <torvalds@linux-foundation.org>
+> > CommitDate: Wed Nov 15 18:21:05 2017 -0800
+> >
+> >      x86/mm/kasan: don't use vmemmap_populate() to initialize shadow
+> >
+> >      The kasan shadow is currently mapped using vmemmap_populate() sinc=
+e that
+> >      provides a semi-convenient way to map pages into init_top_pgt.  Ho=
+wever,
+> >      since that no longer zeroes the mapped pages, it is not suitable f=
+or
+> >      kasan, which requires zeroed shadow memory.
+> >
+> >      Add kasan_populate_shadow() interface and use it instead of
+> >      vmemmap_populate().  Besides, this allows us to take advantage of
+> >      gigantic pages and use them to populate the shadow, which should s=
+ave us
+> >      some memory wasted on page tables and reduce TLB pressure.
+> >
+> >      Link: http://lkml.kernel.org/r/20171103185147.2688-2-pasha.tatashi=
+n(a)oracle.com
+> >      Signed-off-by: Andrey Ryabinin <aryabinin@virtuozzo.com>
+> >      Signed-off-by: Pavel Tatashin <pasha.tatashin@oracle.com>
+> >      Cc: Steven Sistare <steven.sistare@oracle.com>
+> >      Cc: Daniel Jordan <daniel.m.jordan@oracle.com>
+> >      Cc: Bob Picco <bob.picco@oracle.com>
+> >      Cc: Michal Hocko <mhocko@suse.com>
+> >      Cc: Alexander Potapenko <glider@google.com>
+> >      Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+> >      Cc: Catalin Marinas <catalin.marinas@arm.com>
+> >      Cc: Christian Borntraeger <borntraeger@de.ibm.com>
+> >      Cc: David S. Miller <davem@davemloft.net>
+> >      Cc: Dmitry Vyukov <dvyukov@google.com>
+> >      Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
+> >      Cc: "H. Peter Anvin" <hpa@zytor.com>
+> >      Cc: Ingo Molnar <mingo@redhat.com>
+> >      Cc: Mark Rutland <mark.rutland@arm.com>
+> >      Cc: Matthew Wilcox <willy@infradead.org>
+> >      Cc: Mel Gorman <mgorman@techsingularity.net>
+> >      Cc: Michal Hocko <mhocko@kernel.org>
+> >      Cc: Sam Ravnborg <sam@ravnborg.org>
+> >      Cc: Thomas Gleixner <tglx@linutronix.de>
+> >      Cc: Will Deacon <will.deacon@arm.com>
+> >      Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> >      Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+> >
+> > a4a3ede213  mm: zero reserved and unavailable struct pages
+> > d17a1d97dc  x86/mm/kasan: don't use vmemmap_populate() to initialize sh=
+adow
+> > 43570f0383  Merge branch 'linus' of git://git.kernel.org/pub/scm/linux/=
+kernel/git/herbert/crypto-2.6
+> > 5bef2980ad  Add linux-next specific files for 20171128
+> > +-------------------------------------------------------+------------+-=
+-----------+------------+---------------+
+> > |                                                       | a4a3ede213 | =
+d17a1d97dc | 43570f0383 | next-20171128 |
+> > +-------------------------------------------------------+------------+-=
+-----------+------------+---------------+
+> > | boot_successes                                        | 30         | =
+0          | 0          | 0             |
+> > | boot_failures                                         | 8          | =
+15         | 19         | 2             |
+> > | WARNING:at_drivers/pci/pci-sysfs.c:#pci_mmap_resource | 8          | =
+           |            |               |
+> > | RIP:pci_mmap_resource                                 | 8          | =
+           |            |               |
+> > | BUG:KASAN:use-after-scope_in__drm_mm_interval_first   | 0          | =
+15         | 19         | 2             |
+> > +-------------------------------------------------------+------------+-=
+-----------+------------+---------------+
+> >
+> > [   27.628251] AMD IOMMUv2 functionality not available on this system
+> > [   27.631925] drm_mm: Testing DRM range manger (struct drm_mm), with r=
+andom_seed=3D0x248e657d max_iterations=3D8192 max_prime=3D128
+> > [   27.633191] drm_mm: igt_sanitycheck - ok!
+> > [   79.880445] Writes:  Total: 2  Max/Min: 0/0   Fail: 0
+> > [  103.749567] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > [  103.750064] BUG: KASAN: use-after-scope in __drm_mm_interval_first+0=
+xbb/0x1bf
+> > [  103.750064] Read of size 8 at addr ffff880016577c08 by task swapper/=
+0/1
+> > [  103.750064]
+> > [  103.750064] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.14.0-04319-g=
+d17a1d9 #1
+> > [  103.750064] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), B=
+IOS 1.10.2-1 04/01/2014
+> > [  103.750064] Call Trace:
+> > [  103.750064]  ? dump_stack+0xd1/0x16c
+> > [  103.750064]  ? _atomic_dec_and_lock+0x10f/0x10f
+> > [  103.750064]  ? print_address_description+0x93/0x22e
+> > [  103.750064]  ? __drm_mm_interval_first+0xbb/0x1bf
+> > [  103.750064]  ? kasan_report+0x219/0x23f
+> > [  103.750064]  ? __drm_mm_interval_first+0xbb/0x1bf
+> > [  103.750064]  ? assert_continuous+0x13c/0x22f
+> > [  103.750064]  ? drm_mm_replace_node+0x210/0x3ed
+> > [  103.750064]  ? __igt_insert+0x5af/0xb3a
+> > [  103.750064]  ? igt_bottomup+0x9e6/0x9e6
+> > [  103.750064]  ? kvm_clock_read+0x21/0x29
+> > [  103.750064]  ? kvm_sched_clock_read+0x5/0xd
+> > [  103.750064]  ? sched_clock+0x5/0x8
+> > [  103.750064]  ? sched_clock_local+0x36/0xe8
+> > [  103.750064]  ? sched_clock_cpu+0x123/0x13f
+> > [  103.750064]  ? rcu_irq_enter_disabled+0x8/0x8
+> > [  103.750064]  ? next_prime_number+0x33f/0x368
+> > [  103.750064]  ? rcu_note_context_switch+0x267/0x267
+> > [  103.750064]  ? igt_replace+0x45/0xa9
+> > [  103.750064]  ? test_drm_mm_init+0x112/0x164
+> > [  103.750064]  ? drm_kms_helper_init+0x5/0x5
+> > [  103.750064]  ? do_one_initcall+0xe7/0x1ef
+> > [  103.750064]  ? initcall_blacklisted+0x15d/0x15d
+> > [  103.750064]  ? up_read+0x2c/0x2c
+> > [  103.750064]  ? kasan_unpoison_shadow+0xf/0x2e
+> > [  103.750064]  ? kernel_init_freeable+0x2a8/0x33b
+> > [  103.750064]  ? rest_init+0x24f/0x24f
+> > [  103.750064]  ? kernel_init+0x7/0xfe
+> > [  103.750064]  ? rest_init+0x24f/0x24f
+> > [  103.750064]  ? ret_from_fork+0x24/0x30
+> > [  103.750064]
+> > [  103.750064] The buggy address belongs to the page:
+> > [  103.750064] page:ffff88001b1e3208 count:0 mapcount:0 mapping:       =
+   (null) index:0x0
+> > [  103.750064] flags: 0x401fff800000()
+> > [  103.750064] raw: 0000401fff800000 0000000000000000 0000000000000000 =
+00000000ffffffff
+> =
 
-On Tue, Nov 28, 2017 at 01:01:23AM +0530, Tushar Dave wrote:
->
->
->On 11/23/2017 04:43 AM, Fengguang Wu wrote:
->> On Wed, Nov 22, 2017 at 03:40:52AM +0530, Tushar Dave wrote:
->>>
->>>
->>> On 11/21/2017 06:11 PM, Fengguang Wu wrote:
->>>> Hello,
->>>>
->>>> FYI this happens in mainline kernel 4.14.0-01330-g3c07399.
->>>> It happens since 4.13 .
->>>>
->>>> It occurs in 3 out of 162 boots.
->>>>
->>>>
->>>> [=C2=A0=C2=A0 44.637743] advantechwdt: Unexpected close, not stopping =
-watchdog!
->>>> [=C2=A0=C2=A0 44.997548] input: ImExPS/2 Generic Explorer Mouse as
->>>> /devices/platform/i8042/serio1/input/input6
->>>> [=C2=A0=C2=A0 45.013419] e1000 0000:00:03.0: disabling already-disable=
-d device
->>>> [=C2=A0=C2=A0 45.013447] ------------[ cut here ]------------
->>>> [=C2=A0=C2=A0 45.014868] WARNING: CPU: 1 PID: 71 at drivers/pci/pci.c:=
-1641
->>>> pci_disable_device+0xa1/0x105:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pci_d=
-isable_device at drivers/pci/pci.c:1640
->>>> [=C2=A0=C2=A0 45.016171] CPU: 1 PID: 71 Comm: rcu_perf_shutdo Not tain=
-ted
->>>> 4.14.0-01330-g3c07399 #1
->>>> [=C2=A0=C2=A0 45.017197] task: ffff88011bee9e40 task.stack: ffffc90000=
-860000
->>>> [=C2=A0=C2=A0 45.017987] RIP: 0010:pci_disable_device+0xa1/0x105:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pci_d=
-isable_device at drivers/pci/pci.c:1640
->>>> [=C2=A0=C2=A0 45.018603] RSP: 0000:ffffc90000863e30 EFLAGS: 00010286
->>>> [=C2=A0=C2=A0 45.019282] RAX: 0000000000000035 RBX: ffff88013a230008 R=
-CX:
->>>> 0000000000000000
->>>> [=C2=A0=C2=A0 45.020182] RDX: 0000000000000000 RSI: 0000000000000000 R=
-DI:
->>>> 0000000000000203
->>>> [=C2=A0=C2=A0 45.021084] RBP: ffff88013a3f31e8 R08: 0000000000000001 R=
-09:
->>>> 0000000000000000
->>>> [=C2=A0=C2=A0 45.021986] R10: ffffffff827ec29c R11: 0000000000000002 R=
-12:
->>>> 0000000000000001
->>>> [=C2=A0=C2=A0 45.022946] R13: ffff88013a230008 R14: ffff880117802b20 R=
-15:
->>>> ffffc90000863e8f
->>>> [=C2=A0=C2=A0 45.023842] FS:=C2=A0 0000000000000000(0000) GS:ffff88013=
-fd00000(0000)
->>>> knlGS:0000000000000000
->>>> [=C2=A0=C2=A0 45.024863] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 0000000=
-080050033
->>>> [=C2=A0=C2=A0 45.025583] CR2: ffffc900006d4000 CR3: 000000000220f000 C=
-R4:
->>>> 00000000000006a0
->>>> [=C2=A0=C2=A0 45.026478] Call Trace:
->>>> [=C2=A0=C2=A0 45.026811]=C2=A0 __e1000_shutdown+0x1d4/0x1e2:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 __e10=
-00_shutdown at
->>>> drivers/net/ethernet/intel/e1000/e1000_main.c:5162
->>>> [=C2=A0=C2=A0 45.027344]=C2=A0 ? rcu_perf_cleanup+0x2a1/0x2a1:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rcu_p=
-erf_shutdown at kernel/rcu/rcuperf.c:627
->>>> [=C2=A0=C2=A0 45.027883]=C2=A0 e1000_shutdown+0x14/0x3a:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 e1000=
-_shutdown at
->>>> drivers/net/ethernet/intel/e1000/e1000_main.c:5235
->>>> [=C2=A0=C2=A0 45.028351]=C2=A0 device_shutdown+0x110/0x1aa:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 devic=
-e_shutdown at drivers/base/core.c:2807
->>>> [=C2=A0=C2=A0 45.028858]=C2=A0 kernel_power_off+0x31/0x64:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kerne=
-l_power_off at kernel/reboot.c:260
->>>> [=C2=A0=C2=A0 45.029343]=C2=A0 rcu_perf_shutdown+0x9b/0xa7:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rcu_p=
-erf_shutdown at kernel/rcu/rcuperf.c:637
->>>> [=C2=A0=C2=A0 45.029852]=C2=A0 ? __wake_up_common_lock+0xa2/0xa2:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 autor=
-emove_wake_function at
->>>> kernel/sched/wait.c:376
->>>> [=C2=A0=C2=A0 45.030414]=C2=A0 kthread+0x126/0x12e:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kthre=
-ad at kernel/kthread.c:233
->>>> [=C2=A0=C2=A0 45.030834]=C2=A0 ? __kthread_bind_mask+0x8e/0x8e:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kthre=
-ad at kernel/kthread.c:190
->>>> [=C2=A0=C2=A0 45.031399]=C2=A0 ? ret_from_fork+0x1f/0x30:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret_f=
-rom_fork at arch/x86/entry/entry_64.S:443
->>>> [=C2=A0=C2=A0 45.031883]=C2=A0 ? kernel_init+0xa/0xf5:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kerne=
-l_init at init/main.c:997
->>>> [=C2=A0=C2=A0 45.032325]=C2=A0 ret_from_fork+0x1f/0x30:
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret_f=
-rom_fork at arch/x86/entry/entry_64.S:443
->>>> [=C2=A0=C2=A0 45.032777] Code: 00 48 85 ed 75 07 48 8b ab a8 00 00 00 =
-48 8d bb
->>>> 98 00 00 00 e8 aa d1 11 00 48 89 ea 48 89 c6 48 c7 c7 d8 e4 0b 82 e8
->>>> 55 7d da ff <0f> ff b9 01 00 00 00 31 d2 be 01 00 00 00 48 c7 c7 f0
->>>> b1 61 82
->>>> [=C2=A0=C2=A0 45.035222] ---[ end trace c257137b1b1976ef ]---
->>>> [=C2=A0=C2=A0 45.037838] ACPI: Preparing to enter system sleep state S5
->>>>
->>>> Attached the full dmesg, kconfig and reproduce scripts.
->>> Looks like e1000 pci/pxi-x device is already suspended. And therefore
->>> call to e1000_suspend() -> __e1000_shutdown() -> pci_disable_device()
->>> already had disabled the device.
->>> Disabling device again by e1000_shutdown handler during system shutdown
->>> causes warning at drivers/pci/pci.c:1641.
->>>
->>> I think function __e1000_shutdown should just return if device is
->>> already suspended!
->>>
->>> I don't have e1000 hardware to test right now. So if this seems logical
->>> to others I will send a patch.
->>
->> Tushar, it happens on QEMU boot testing, so do not rely on e1000 HW.
->> Unless you'd like to prevent regressions on real HW.
->>
->> The original report attached a reproduce script to run the QEMU test.
->> Or you may send me the patch for testing.
->Fengguang,
->
->Would you please try this patch and test. The patch is compile tested
->only. The patch is similar to how ixgbe handled the issue.
->Thanks.
->
->e1000: fix disabling already-disabled warning
->
->This patch adds check so that driver does not disable already
->disabled device.
+> =
 
-It works! I tried 100 boots and the "e1000 0000:00:03.0: disabling
-already-disabled device" error no longer show up.
+> Hi,
+> =
 
-Tested-by: Fengguang Wu <fengguang.wu@intel.com>
+> I hacked a quick prototype of improvemet for KASAN for printing frame inf=
+o:
+> =
 
-Thanks,
-Fengguang
+> --- a/mm/kasan/report.c
+> +++ b/mm/kasan/report.c
+> @@ -289,6 +289,7 @@ static void print_shadow_for_address(const void *addr)
+>         int i;
+>         const void *shadow =3D kasan_mem_to_shadow(addr);
+>         const void *shadow_row;
+> +       unsigned long *ptr;
+> =
 
->Signed-off-by: Tushar Dave <tushar.n.dave@oracle.com>
->---
->  drivers/net/ethernet/intel/e1000/e1000.h      |  3 ++-
->  drivers/net/ethernet/intel/e1000/e1000_main.c | 23 ++++++++++++++++++---=
---
->  2 files changed, 20 insertions(+), 6 deletions(-)
->
->diff --git a/drivers/net/ethernet/intel/e1000/e1000.h
->b/drivers/net/ethernet/intel/e1000/e1000.h
->index d7bdea7..8fd2458 100644
->--- a/drivers/net/ethernet/intel/e1000/e1000.h
->+++ b/drivers/net/ethernet/intel/e1000/e1000.h
->@@ -331,7 +331,8 @@ struct e1000_adapter {
->  enum e1000_state_t {
->  	__E1000_TESTING,
->  	__E1000_RESETTING,
->-	__E1000_DOWN
->+	__E1000_DOWN,
->+	__E1000_DISABLED
->  };
->
->  #undef pr_fmt
->diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c
->b/drivers/net/ethernet/intel/e1000/e1000_main.c
->index 1982f79..a7de31d 100644
->--- a/drivers/net/ethernet/intel/e1000/e1000_main.c
->+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
->@@ -945,7 +945,7 @@ static int e1000_init_hw_struct(struct e1000_adapter
->*adapter,
->  static int e1000_probe(struct pci_dev *pdev, const struct
->pci_device_id *ent)
->  {
->  	struct net_device *netdev;
->-	struct e1000_adapter *adapter;
->+	struct e1000_adapter *adapter =3D NULL;
->  	struct e1000_hw *hw;
->
->  	static int cards_found;
->@@ -955,6 +955,7 @@ static int e1000_probe(struct pci_dev *pdev, const
->struct pci_device_id *ent)
->  	u16 tmp =3D 0;
->  	u16 eeprom_apme_mask =3D E1000_EEPROM_APME;
->  	int bars, need_ioport;
->+	bool disable_dev =3D false;
->
->  	/* do not allocate ioport bars when not needed */
->  	need_ioport =3D e1000_is_need_ioport(pdev);
->@@ -1259,11 +1260,13 @@ static int e1000_probe(struct pci_dev *pdev,
->const struct pci_device_id *ent)
->  	iounmap(hw->ce4100_gbe_mdio_base_virt);
->  	iounmap(hw->hw_addr);
->  err_ioremap:
->+	disable_dev =3D !test_and_set_bit(__E1000_DISABLED, &adapter->flags);
->  	free_netdev(netdev);
->  err_alloc_etherdev:
->  	pci_release_selected_regions(pdev, bars);
->  err_pci_reg:
->-	pci_disable_device(pdev);
->+	if (!adapter || disable_dev)
->+		pci_disable_device(pdev);
->  	return err;
+>         shadow_row =3D (void *)round_down((unsigned long)shadow,
+>                                         SHADOW_BYTES_PER_ROW)
+> @@ -320,6 +321,18 @@ static void print_shadow_for_address(const void *add=
+r)
+> =
+
+>                 shadow_row +=3D SHADOW_BYTES_PER_ROW;
+>         }
+> +
+> +
+> +       ptr =3D (unsigned long *)((unsigned long)addr & ~7);
+> +       for (i =3D 0; i < 1000; i++, ptr--) {
+> +               if (*ptr =3D=3D 0x41b58ab3) {
+> +                       pr_err("\n");
+> +                       pr_err("frame offset: %lu\n", (unsigned
+> long)addr - (unsigned long)ptr);
+> +                       pr_err("desc: '%s'\n", (const char*)*(ptr+1));
+> +                       pr_err("func: %pS\n", (void*)*(ptr+2));
+> +                       break;
+> +               }
+> +       }
 >  }
->
->@@ -1281,6 +1284,7 @@ static void e1000_remove(struct pci_dev *pdev)
->  	struct net_device *netdev =3D pci_get_drvdata(pdev);
->  	struct e1000_adapter *adapter =3D netdev_priv(netdev);
->  	struct e1000_hw *hw =3D &adapter->hw;
->+	bool disable_dev;
->
->  	e1000_down_and_stop(adapter);
->  	e1000_release_manageability(adapter);
->@@ -1299,9 +1303,11 @@ static void e1000_remove(struct pci_dev *pdev)
->  		iounmap(hw->flash_address);
->  	pci_release_selected_regions(pdev, adapter->bars);
->
->+	disable_dev =3D !test_and_set_bit(__E1000_DISABLED, &adapter->flags);
->  	free_netdev(netdev);
->
->-	pci_disable_device(pdev);
->+	if (disable_dev)
->+		pci_disable_device(pdev);
->  }
->
->  /**
->@@ -5156,7 +5162,8 @@ static int __e1000_shutdown(struct pci_dev *pdev,
->bool *enable_wake)
->  	if (netif_running(netdev))
->  		e1000_free_irq(adapter);
->
->-	pci_disable_device(pdev);
->+	if (!test_and_set_bit(__E1000_DISABLED, &adapter->flags))
->+		pci_disable_device(pdev);
->
->  	return 0;
->  }
->@@ -5200,6 +5207,8 @@ static int e1000_resume(struct pci_dev *pdev)
->  		pr_err("Cannot enable PCI device from suspend\n");
->  		return err;
->  	}
->+	smp_mb__before_atomic();
->+	clear_bit(__E1000_DISABLED, &adapter->flags);
->  	pci_set_master(pdev);
->
->  	pci_enable_wake(pdev, PCI_D3hot, 0);
->@@ -5274,7 +5283,9 @@ static pci_ers_result_t
->e1000_io_error_detected(struct pci_dev *pdev,
->
->  	if (netif_running(netdev))
->  		e1000_down(adapter);
->-	pci_disable_device(pdev);
->+
->+	if (!test_and_set_bit(__E1000_DISABLED, &adapter->flags))
->+		pci_disable_device(pdev);
->
->  	/* Request a slot slot reset. */
->  	return PCI_ERS_RESULT_NEED_RESET;
->@@ -5302,6 +5313,8 @@ static pci_ers_result_t e1000_io_slot_reset(struct
->pci_dev *pdev)
->  		pr_err("Cannot re-enable PCI device after reset.\n");
->  		return PCI_ERS_RESULT_DISCONNECT;
->  	}
->+	smp_mb__before_atomic();
->+	clear_bit(__E1000_DISABLED, &adapter->flags);
->  	pci_set_master(pdev);
->
->  	pci_enable_wake(pdev, PCI_D3hot, 0);
->-- =
+> =
 
->1.8.3.1
->
->
->-Tushar
->>
->> Thanks,
->> Fengguang
->>
->
+> =
 
---===============3806453920173373647==--
+> =
+
+> And this gave me:
+> =
+
+> =
+
+> [   26.763495] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [   26.764454] BUG: KASAN: use-after-scope in __drm_mm_interval_first+0xc=
+0/0x1e2
+> [   26.765297] Read of size 8 at addr ffff88006cb3fbe0 by task swapper/0/1
+> [   26.766081]
+> [   26.766278] CPU: 1 PID: 1 Comm: swapper/0 Not tainted
+> 4.14.0-04319-gd17a1d97dc20-dirty #12
+> [   26.767760] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS Bochs 01/01/2011
+> [   26.769419] Call Trace:
+> [   26.769895]  dump_stack+0xdb/0x17a
+> [   26.770152]  ? _atomic_dec_and_lock+0x12f/0x12f
+> [   26.770152]  ? show_regs_print_info+0x5b/0x5b
+> [   26.770152]  ? kasan_report+0x4d/0x247
+> [   26.770152]  ? __drm_mm_interval_first+0xc0/0x1e2
+> [   26.770152]  print_address_description+0x9a/0x232
+> [   26.770152]  ? __drm_mm_interval_first+0xc0/0x1e2
+> [   26.770152]  kasan_report+0x21e/0x247
+> [   26.770152]  __asan_report_load8_noabort+0x14/0x16
+> [   26.770152]  __drm_mm_interval_first+0xc0/0x1e2
+> [   26.770152]  assert_continuous+0x13e/0x22f
+> [   26.770152]  __igt_insert+0x665/0xc87
+> [   26.770152]  ? igt_bottomup+0xaa0/0xaa0
+> [   26.770152]  ? sched_clock_local+0x3c/0xfb
+> [   26.770152]  ? find_held_lock+0x33/0x103
+> [   26.770152]  ? next_prime_number+0x318/0x362
+> [   26.770152]  ? rcu_irq_enter_disabled+0xd/0xd
+> [   26.770152]  ? next_prime_number+0x337/0x362
+> [   26.770152]  igt_replace+0x4b/0xb3
+> [   26.770152]  test_drm_mm_init+0x118/0x172
+> [   26.770152]  ? drm_kms_helper_init+0xb/0xb
+> [   26.770152]  do_one_initcall+0x10f/0x21f
+> [   26.770152]  ? initcall_blacklisted+0x185/0x185
+> [   26.770152]  ? down_write_nested+0xa1/0x164
+> [   26.770152]  ? kasan_poison_shadow+0x2f/0x31
+> [   26.770152]  ? kasan_unpoison_shadow+0x14/0x35
+> [   26.770152]  kernel_init_freeable+0x2ae/0x339
+> [   26.770152]  ? rest_init+0x250/0x250
+> [   26.770152]  kernel_init+0xc/0x105
+> [   26.770152]  ? rest_init+0x250/0x250
+> [   26.770152]  ret_from_fork+0x24/0x30
+> [   26.770152]
+> [   26.770152] The buggy address belongs to the page:
+> [   26.770152] page:ffff88007f39c5c8 count:0 mapcount:0 mapping:
+>    (null) index:0x0
+> [   26.770152] flags: 0x1a01fff800000()
+> [   26.770152] raw: 0001a01fff800000 0000000000000000 0000000000000000
+> 00000000ffffffff
+> [   26.770152] raw: ffff88007f39c5e8 ffff88007f39c5e8 0000000000000000
+> [   26.770152] page dumped because: kasan: bad access detected
+> [   26.790299]
+> [   26.790299] Memory state around the buggy address:
+> [   26.790299]  ffff88006cb3fa80: 00 00 00 00 00 00 00 00 00 00 00 00
+> 00 00 00 f1
+> [   26.790299]  ffff88006cb3fb00: f1 f1 f1 00 f2 f2 f2 f2 f2 f2 f2 00
+> 00 f2 f2 f2
+> [   26.790299] >ffff88006cb3fb80: f2 f2 f2 f8 f8 f2 f2 f2 f2 f2 f2 f8
+> f8 f8 f8 f8
+> [   26.790299]                                                        ^
+> [   26.790299]  ffff88006cb3fc00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+> f8 f8 f8 f2
+> [   26.790299]  ffff88006cb3fc80: f2 f2 f2 00 00 00 00 00 00 00 00 00
+> 00 00 00 00
+> [   26.790299]
+> [   26.790299] frame offset: 232
+> [   26.790299] desc: '5 32 8 3 __u 96 16 4 prng 160 16 7 state__ 224
+> 160 3 tmp 416 224 2 mm '
+> [   26.790299] func: __igt_insert+0x0/0xc87
+> [   26.790299] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> =
+
+> =
+
+> That desc string is: number of local objects, then for each object:
+> offset, size, name length, name.
+> =
+
+> So that's variable tmp in __igt_insert.
+> =
+
+> Looks very much like a real use-after-scope.
+
+The fix should already be in mmotm:
+
+commit 3e6e51217dd14dcda10d4bc9a38b1440e2d42c14
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Nov 9 21:24:34 2017 +0000
+
+    lib/rbtree,drm/mm: Add rbtree_replace_node_cached()
+    =
+
+    Add a variant of rbtree_replace_node() that maintains the leftmost
+    cache of struct rbtree_root_cached when replacing nodes within the
+    rbtree.
+-Chris
+
+--===============4647122177616731908==--
 
