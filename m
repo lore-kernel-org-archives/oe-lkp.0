@@ -1,148 +1,63 @@
-Content-Type: multipart/mixed; boundary="===============8546464921006589659=="
+Content-Type: multipart/mixed; boundary="===============2825944317041045036=="
 MIME-Version: 1.0
-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+From: Namhyung Kim <namhyung@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: BUG: KASAN: slab-out-of-bounds in perf_callchain_user+0x494/0x530
-Date: Tue, 05 Dec 2017 10:37:40 -0300
-Message-ID: <20171205133740.GA28405@kernel.org>
-In-Reply-To: <20171205081156.GB16663@sejong>
+Date: Tue, 05 Dec 2017 23:47:18 +0900
+Message-ID: <20171205144718.GA27916@danjae.aot.lge.com>
+In-Reply-To: <20171205133740.GA28405@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8546464921006589659==
+--===============2825944317041045036==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Em Tue, Dec 05, 2017 at 05:11:56PM +0900, Namhyung Kim escreveu:
-> Hello,
+Hi Arnaldo,
+
+On Tue, Dec 05, 2017 at 10:37:40AM -0300, Arnaldo Carvalho de Melo wrote:
+> Em Tue, Dec 05, 2017 at 05:11:56PM +0900, Namhyung Kim escreveu:
+> > Also I'm not sure that the allocation failure check would work
+> > correctly since it decrements nr_callchain_events when it fails.
 > =
 
-> On Thu, Nov 30, 2017 at 04:37:12PM -0300, Arnaldo Carvalho de Melo wrote:
-> > Em Thu, Nov 30, 2017 at 09:20:26AM +0100, Peter Zijlstra escreveu:
-> > > On Thu, Nov 30, 2017 at 10:32:19AM +0800, Fengguang Wu wrote:
-> > > > Hello,
-> > > > =
+> Can you elaborate a bit more?
 
-> > > > FYI this happens in mainline kernel 4.15.0-rc1.
-> > > > It looks like a new regression and hard to bisect.
-> > > > =
+Sure, I mean the following code:
 
-> > > > It occurs in 1 out of 57 boots.
-> > > > =
+	mutex_lock(&callchain_mutex);
 
-> > > > [   10.009610] chown (367) used greatest stack depth: 26944 bytes l=
-eft
-> > > > Kernel tests: Boot OK!
-> > > > [   30.357729] trinity-main uses obsolete (PF_INET,SOCK_PACKET)
-> > > > [   31.301433] sock: process `trinity-main' is using obsolete setso=
-ckopt SO_BSDCOMPAT
-> > > > [   31.310289] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > [   31.311490] BUG: KASAN: slab-out-of-bounds in perf_callchain_use=
-r+0x494/0x530:
-> > > > 						perf_callchain_store at include/linux/perf_event.h:1128
-> > > > 						 (inlined by) perf_callchain_user at arch/x86/events/core.c:2=
-485
-> > > =
+	count =3D atomic_inc_return(&nr_callchain_events);
+	if (WARN_ON_ONCE(count < 1)) {
+		err =3D -EINVAL;
+		goto exit;
+	}
 
-> > > I don't think we recently changed anything here...
-> > > =
+	if (count > 1) {
+		/* If the allocation failed, give up */
+		if (!callchain_cpus_entries)
+			err =3D -ENOMEM;
 
-> > > But I do have vague memories of something being off here; I never qui=
-te
-> > > could penetrate the max_stack / contexts_maxed stuff, and istr acme w=
-as
-> > > going to have a peek.
-> >  =
+		goto exit;
+	}
 
-> > Sure, but I saw some backward ring buffer stuff in there as well, no?
-> > IIRC that came after the max-stack code, Adding Wang to the CC list.
-> =
+	err =3D alloc_callchain_buffers();
+exit:
+	if (err)
+		atomic_dec(&nr_callchain_events);
 
-> I think it's because of per-event max-stack not being checked for the
-> first event.  Please see the patch below..
+	mutex_unlock(&callchain_mutex);
 
-Argh, well spotted,
 
-Acked-by: Arnaldo Carvalho de Melo <acme@redhat.com>
- =
+The callchain_cpus_entries is allocated in alloc_callchain_buffers()
+only when the count is 1.  But if it failed to allocate, it decrease
+the count so next event would try to allocate it again.  Thus it seems
+not possible to see the callchain_cpus_entries being NULL in the
+'if (count > 1)' block.  If you want to make next event give up, it'd
+need to take an additional count IMHO.
 
-> Also I'm not sure that the allocation failure check would work
-> correctly since it decrements nr_callchain_events when it fails.
+Thanks,
+Namhyung
 
-Can you elaborate a bit more?
- =
-
-> Thanks,
-> Namhyung
-> =
-
-> =
-
-> =
-
-> >From c12126c4ff9835f0899619db3ee7b4a3151ff2bb Mon Sep 17 00:00:00 2001
-> From: Namhyung Kim <namhyung@kernel.org>
-> Date: Tue, 5 Dec 2017 16:54:50 +0900
-> Subject: [PATCH] perf/core: Fix overflow on perf_callchain_entry
-> =
-
-> The commit 97c79a38cd45 add a check whether per-event max stack is
-> greater than the global max.  But it missed to do it for the first
-> event.  So if the event had a stack depth greater than the global max,
-> it could overflow the callchain entry list.
-> =
-
-> Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-> Fixes: 97c79a38cd45 ("perf core: Per event callchain limit")
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> ---
->  kernel/events/callchain.c | 21 ++++++++++++---------
->  1 file changed, 12 insertions(+), 9 deletions(-)
-> =
-
-> diff --git a/kernel/events/callchain.c b/kernel/events/callchain.c
-> index 1b2be63c8528..e449e23802eb 100644
-> --- a/kernel/events/callchain.c
-> +++ b/kernel/events/callchain.c
-> @@ -119,19 +119,22 @@ int get_callchain_buffers(int event_max_stack)
->  		goto exit;
->  	}
->  =
-
-> +	/*
-> +	 * If requesting per event more than the global cap,
-> +	 * return a different error to help userspace figure this out.
-> +	 *
-> +	 * And also do it here so that we have &callchain_mutex held.
-> +	 */
-> +	if (event_max_stack > sysctl_perf_event_max_stack) {
-> +		err =3D -EOVERFLOW;
-> +		goto exit;
-> +	}
-> +
->  	if (count > 1) {
->  		/* If the allocation failed, give up */
->  		if (!callchain_cpus_entries)
->  			err =3D -ENOMEM;
-> -		/*
-> -		 * If requesting per event more than the global cap,
-> -		 * return a different error to help userspace figure
-> -		 * this out.
-> -		 *
-> -		 * And also do it here so that we have &callchain_mutex held.
-> -		 */
-> -		if (event_max_stack > sysctl_perf_event_max_stack)
-> -			err =3D -EOVERFLOW;
-> +
->  		goto exit;
->  	}
->  =
-
-> -- =
-
-> 2.15.0
-
---===============8546464921006589659==--
+--===============2825944317041045036==--
 
