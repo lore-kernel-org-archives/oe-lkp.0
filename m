@@ -1,207 +1,148 @@
-Content-Type: multipart/mixed; boundary="===============4098957450459964387=="
+Content-Type: multipart/mixed; boundary="===============8546464921006589659=="
 MIME-Version: 1.0
-From: Prarit Bhargava <prarit@redhat.com>
+From: Arnaldo Carvalho de Melo <acme@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: b1cbacc866 ("x86/smpboot: Do not use smp_num_siblings in .."): divide error: 0000 [#1] SMP DEBUG_PAGEALLOC
-Date: Tue, 05 Dec 2017 07:23:06 -0500
-Message-ID: <450d8bc5-dee3-98ce-b9a7-55de0903f0ca@redhat.com>
-In-Reply-To: <5a265207.6iaCTw+bsnaHzUrb%fengguang.wu@intel.com>
+Subject: Re: BUG: KASAN: slab-out-of-bounds in perf_callchain_user+0x494/0x530
+Date: Tue, 05 Dec 2017 10:37:40 -0300
+Message-ID: <20171205133740.GA28405@kernel.org>
+In-Reply-To: <20171205081156.GB16663@sejong>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4098957450459964387==
+--===============8546464921006589659==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-
-
-On 12/05/2017 03:00 AM, kernel test robot wrote:
-> Greetings,
+Em Tue, Dec 05, 2017 at 05:11:56PM +0900, Namhyung Kim escreveu:
+> Hello,
 > =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+> On Thu, Nov 30, 2017 at 04:37:12PM -0300, Arnaldo Carvalho de Melo wrote:
+> > Em Thu, Nov 30, 2017 at 09:20:26AM +0100, Peter Zijlstra escreveu:
+> > > On Thu, Nov 30, 2017 at 10:32:19AM +0800, Fengguang Wu wrote:
+> > > > Hello,
+> > > > =
+
+> > > > FYI this happens in mainline kernel 4.15.0-rc1.
+> > > > It looks like a new regression and hard to bisect.
+> > > > =
+
+> > > > It occurs in 1 out of 57 boots.
+> > > > =
+
+> > > > [   10.009610] chown (367) used greatest stack depth: 26944 bytes l=
+eft
+> > > > Kernel tests: Boot OK!
+> > > > [   30.357729] trinity-main uses obsolete (PF_INET,SOCK_PACKET)
+> > > > [   31.301433] sock: process `trinity-main' is using obsolete setso=
+ckopt SO_BSDCOMPAT
+> > > > [   31.310289] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > [   31.311490] BUG: KASAN: slab-out-of-bounds in perf_callchain_use=
+r+0x494/0x530:
+> > > > 						perf_callchain_store at include/linux/perf_event.h:1128
+> > > > 						 (inlined by) perf_callchain_user at arch/x86/events/core.c:2=
+485
+> > > =
+
+> > > I don't think we recently changed anything here...
+> > > =
+
+> > > But I do have vague memories of something being off here; I never qui=
+te
+> > > could penetrate the max_stack / contexts_maxed stuff, and istr acme w=
+as
+> > > going to have a peek.
+> >  =
+
+> > Sure, but I saw some backward ring buffer stuff in there as well, no?
+> > IIRC that came after the max-stack code, Adding Wang to the CC list.
 > =
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/urgent
+> I think it's because of per-event max-stack not being checked for the
+> first event.  Please see the patch below..
+
+Argh, well spotted,
+
+Acked-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+ =
+
+> Also I'm not sure that the allocation failure check would work
+> correctly since it decrements nr_callchain_events when it fails.
+
+Can you elaborate a bit more?
+ =
+
+> Thanks,
+> Namhyung
 > =
 
-> commit b1cbacc8663a4dce62e4ae501e859c82f4aeb1ca
-> Author:     Prarit Bhargava <prarit@redhat.com>
-> AuthorDate: Mon Dec 4 11:45:21 2017 -0500
-> Commit:     Thomas Gleixner <tglx@linutronix.de>
-> CommitDate: Mon Dec 4 23:03:48 2017 +0100
 > =
 
->     x86/smpboot: Do not use smp_num_siblings in __max_logical_packages ca=
-lculation
->     =
-
->     Documentation/x86/topology.txt defines smp_num_siblings as "The numbe=
-r of
->     threads in a core".  Since commit bbb65d2d365e ("x86: use cpuid vecto=
-r 0xb
->     when available for detecting cpu topology") smp_num_siblings is the
->     maximum number of threads in a core.  If Simultaneous MultiThreading
->     (SMT) is disabled on a system, smp_num_siblings is 2 and not 1 as
->     expected.
->     =
-
->     Use topology_max_smt_threads(), which contains the active numer of th=
-reads,
->     in the __max_logical_packages calculation.
->     =
-
-
-Looking now.
-
-P.
-
->     Fixes: b4c0a7326f5d ("x86/smpboot: Fix __max_logical_packages estimat=
-e")
->     Reported-by: Jakub Kicinski <kubakici@wp.pl>
->     Signed-off-by: Prarit Bhargava <prarit@redhat.com
->     Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
->     Tested-by: Jakub Kicinski <kubakici@wp.pl>
->     Cc: netdev(a)vger.kernel.org
->     Cc: "netdev(a)vger.kernel.org"
->     Cc: Clark Williams <williams@redhat.com>
->     Link: https://lkml.kernel.org/r/20171204164521.17870-1-prarit(a)redha=
-t.com
 > =
 
-> 866a79a1c9  x86/microcode/AMD: Add support for fam17h microcode loading
-> b1cbacc866  x86/smpboot: Do not use smp_num_siblings in __max_logical_pac=
-kages calculation
-> cdf577209a  x86/power: Fix some ordering bugs in __restore_processor_cont=
-ext()
-> 5b33501b13  Merge branch 'WIP.x86/mm'
-> +------------------------------------------+------------+------------+---=
----------+------------+
-> |                                          | 866a79a1c9 | b1cbacc866 | cd=
-f577209a | 5b33501b13 |
-> +------------------------------------------+------------+------------+---=
----------+------------+
-> | boot_successes                           | 33         | 0          | 0 =
-         | 10         |
-> | boot_failures                            | 0          | 15         | 19=
-         |            |
-> | divide_error:#[##]                       | 0          | 15         | 19=
-         |            |
-> | RIP:native_smp_cpus_done                 | 0          | 15         | 19=
-         |            |
-> | Kernel_panic-not_syncing:Fatal_exception | 0          | 15         | 19=
-         |            |
-> +------------------------------------------+------------+------------+---=
----------+------------+
+> >From c12126c4ff9835f0899619db3ee7b4a3151ff2bb Mon Sep 17 00:00:00 2001
+> From: Namhyung Kim <namhyung@kernel.org>
+> Date: Tue, 5 Dec 2017 16:54:50 +0900
+> Subject: [PATCH] perf/core: Fix overflow on perf_callchain_entry
 > =
 
-> [    0.025056] smpboot: CPU0: Intel QEMU Virtual CPU version 2.5+ (family=
-: 0x6, model: 0x6, stepping: 0x3)
-> [    0.026373] Performance Events: PMU not available due to virtualizatio=
-n, using software events only.
-> [    0.029102] Hierarchical SRCU implementation.
-> [    0.030040] smp: Bringing up secondary CPUs ...
-> [    0.030528] smp: Brought up 1 node, 1 CPU
-> [    0.030953] divide error: 0000 [#1] SMP DEBUG_PAGEALLOC
-> [    0.031000] Modules linked in:
-> [    0.031000] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.14.0-01223-gb1=
-cbacc #1
-> [    0.031000] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [    0.031000] task: ffff88001e460000 task.stack: ffffc90000008000
-> [    0.031000] RIP: 0010:native_smp_cpus_done+0x3a/0xd9
-> [    0.031000] RSP: 0000:ffffc9000000bed8 EFLAGS: 00010246
-> [    0.031000] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 000000000=
-0000000
-> [    0.031000] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffffffff8=
-2645830
-> [    0.031000] RBP: ffffc9000000bee8 R08: 0000000000000000 R09: 000000000=
-0000000
-> [    0.031000] R10: ffff88001e460ce0 R11: 0000000000000001 R12: 000000000=
-000a020
-> [    0.031000] R13: 0000000000000000 R14: 0000000000000000 R15: 000000000=
-0000000
-> [    0.031000] FS:  0000000000000000(0000) GS:ffff88001f800000(0000) knlG=
-S:0000000000000000
-> [    0.031000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    0.031000] CR2: 00000000ffffffff CR3: 000000000c822000 CR4: 000000000=
-00006b0
-> [    0.031000] Call Trace:
-> [    0.031000]  smp_init+0xa4/0xa9
-> [    0.031000]  kernel_init_freeable+0x7d/0x1af
-> [    0.031000]  ? rest_init+0xc0/0xc0
-> [    0.031000]  kernel_init+0x9/0xeb
-> [    0.031000]  ret_from_fork+0x24/0x30
-> [    0.031000] Code: 64 82 48 89 e5 41 54 49 c7 c4 20 a0 00 00 53 31 db 4=
-2 0f b7 8c 20 d8 00 00 00 8b 05 26 7d de ff 0f af 0d 7b 67 de ff 8d 44 01 f=
-f <f7> f1 89 c6 89 05 75 67 de ff e8 91 55 6b fe e8 96 33 00 00 83 =
-
-> [    0.031000] RIP: native_smp_cpus_done+0x3a/0xd9 RSP: ffffc9000000bed8
-> [    0.031004] ---[ end trace 5c005ba3fb078002 ]---
-> [    0.031461] Kernel panic - not syncing: Fatal exception
+> The commit 97c79a38cd45 add a check whether per-event max stack is
+> greater than the global max.  But it missed to do it for the first
+> event.  So if the event had a stack depth greater than the global max,
+> it could overflow the callchain entry list.
 > =
 
->                                                           # HH:MM RESULT =
-GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
-> git bisect start a2b385361ab06450408875fe58a45445ed300a40 4fbd8d194f06c8a=
-3fd2af1ce560ddb31f7ec8323 --
-> git bisect  bad 60f97903c07c2f9dec16f3434fa6bc8374553c75  # 07:54  B     =
- 0     1   15   0  Merge 'krzk/for-next' into devel-catchup-201712050639
-> git bisect  bad c5ae250423192c95979baa9e26553078c6fbdb12  # 09:33  B     =
- 0     5   19   0  Merge 'linux-review/yuan-linyu/netlink-optimize-err-assi=
-gnment/20171205-051606' into devel-catchup-201712050639
-> git bisect  bad d45ca31b78f444ff0f7c6dbd56df9c75991b1748  # 10:16  B     =
- 0     6   20   0  Merge 'jcmvbkbc-xtensa/xtensa-ssp-kasan' into devel-catc=
-hup-201712050639
-> git bisect good 9b490c677dc4246f6f2adad29d94a71a25f492a8  # 10:49  G     =
-10     0    0   1  Merge 'abelloni/at91-dt-fixes' into devel-catchup-201712=
-050639
-> git bisect good fcfab2f4b076cdd0c000c2e1a30404e4007c2c06  # 11:13  G     =
-11     0    0   0  Merge 'abelloni/at91-dt' into devel-catchup-201712050639
-> git bisect  bad b9115db1d525e5a59a515ec6ffc53e5163b53f9b  # 11:52  B     =
- 0    10   24   0  Merge 'tip/x86/urgent' into devel-catchup-201712050639
-> git bisect good 2b67799bdf25d19690710a88c2bce9127cf3ba6f  # 12:16  G     =
-10     0    0   0  x86: Make X86_BUG_FXSAVE_LEAK detectable in CPUID on AMD
-> git bisect good 866a79a1c98c5004a410122b06f808152f2fe53c  # 12:53  G     =
-11     0    0   0  x86/microcode/AMD: Add support for fam17h microcode load=
-ing
-> git bisect  bad 2ee90363a838cf41ebf1ad24bad274762e467d8d  # 13:15  B     =
- 0     3   17   0  x86 / PCI: Make broadcom_postcore_init() check acpi_disa=
-bled
-> git bisect  bad b1cbacc8663a4dce62e4ae501e859c82f4aeb1ca  # 13:39  B     =
- 0     1   15   0  x86/smpboot: Do not use smp_num_siblings in __max_logica=
-l_packages calculation
-> # first bad commit: [b1cbacc8663a4dce62e4ae501e859c82f4aeb1ca] x86/smpboo=
-t: Do not use smp_num_siblings in __max_logical_packages calculation
-> git bisect good 866a79a1c98c5004a410122b06f808152f2fe53c  # 13:55  G     =
-31     0    0   0  x86/microcode/AMD: Add support for fam17h microcode load=
-ing
-> # extra tests with debug options
-> git bisect  bad b1cbacc8663a4dce62e4ae501e859c82f4aeb1ca  # 14:22  B     =
- 0    11   25   0  x86/smpboot: Do not use smp_num_siblings in __max_logica=
-l_packages calculation
-> # extra tests on HEAD of linux-devel/devel-catchup-201712050639
-> git bisect  bad a2b385361ab06450408875fe58a45445ed300a40  # 14:22  B     =
- 0    21   38   0  0day head guard for 'devel-catchup-201712050639'
-> # extra tests on tree/branch tip/x86/urgent
-> git bisect  bad cdf577209aad4cdbe3455d3efa6cf631f838c55d  # 14:37  B     =
- 0     1   15   0  x86/power: Fix some ordering bugs in __restore_processor=
-_context()
-> # extra tests with first bad commit reverted
-> git bisect good 886fa2f68001f51d63c3934943f4a844faaa5e8f  # 15:15  G     =
-11     0    0   0  Revert "x86/smpboot: Do not use smp_num_siblings in __ma=
-x_logical_packages calculation"
-> # extra tests on tree/branch tip/master
-> git bisect good 5b33501b13ab807284ae73492938d162e0f8629e  # 15:59  G     =
-10     0    0   0  Merge branch 'WIP.x86/mm'
-> =
-
+> Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+> Fixes: 97c79a38cd45 ("perf core: Per event callchain limit")
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 > ---
-> 0-DAY kernel test infrastructure                Open Source Technology Ce=
-nter
-> https://lists.01.org/pipermail/lkp                          Intel Corpora=
-tion
->=20
+>  kernel/events/callchain.c | 21 ++++++++++++---------
+>  1 file changed, 12 insertions(+), 9 deletions(-)
+> =
 
---===============4098957450459964387==--
+> diff --git a/kernel/events/callchain.c b/kernel/events/callchain.c
+> index 1b2be63c8528..e449e23802eb 100644
+> --- a/kernel/events/callchain.c
+> +++ b/kernel/events/callchain.c
+> @@ -119,19 +119,22 @@ int get_callchain_buffers(int event_max_stack)
+>  		goto exit;
+>  	}
+>  =
+
+> +	/*
+> +	 * If requesting per event more than the global cap,
+> +	 * return a different error to help userspace figure this out.
+> +	 *
+> +	 * And also do it here so that we have &callchain_mutex held.
+> +	 */
+> +	if (event_max_stack > sysctl_perf_event_max_stack) {
+> +		err =3D -EOVERFLOW;
+> +		goto exit;
+> +	}
+> +
+>  	if (count > 1) {
+>  		/* If the allocation failed, give up */
+>  		if (!callchain_cpus_entries)
+>  			err =3D -ENOMEM;
+> -		/*
+> -		 * If requesting per event more than the global cap,
+> -		 * return a different error to help userspace figure
+> -		 * this out.
+> -		 *
+> -		 * And also do it here so that we have &callchain_mutex held.
+> -		 */
+> -		if (event_max_stack > sysctl_perf_event_max_stack)
+> -			err =3D -EOVERFLOW;
+> +
+>  		goto exit;
+>  	}
+>  =
+
+> -- =
+
+> 2.15.0
+
+--===============8546464921006589659==--
 
