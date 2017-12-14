@@ -1,37 +1,35 @@
-Content-Type: multipart/mixed; boundary="===============9142752544403706057=="
+Content-Type: multipart/mixed; boundary="===============8591706226134872976=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@kernel.org>
+From: Stephen Rothwell <sfr@canb.auug.org.au>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/fixmap] b00b798255: BUG:unable_to_handle_kernel
-Date: Wed, 13 Dec 2017 20:19:43 -0800
-Message-ID: <CALCETrVc6rkQJ+G0RonuDRhshwoi-Hd3BCJtbFNN2ntvMpRPeQ@mail.gmail.com>
-In-Reply-To: <20171214032950.GP1211@yexl-desktop>
+Subject: Re: d1fc031747 ("sched/wait: assert the wait_queue_head lock is .."): EIP: __wake_up_common
+Date: Thu, 14 Dec 2017 15:58:00 +1100
+Message-ID: <20171214155800.4f5376a5@canb.auug.org.au>
+In-Reply-To: <20171213170300.b0bb26900dd00641819b4872@linux-foundation.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9142752544403706057==
+--===============8591706226134872976==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 13, 2017 at 7:29 PM, kernel test robot
-<xiaolong.ye@intel.com> wrote:
->
-> FYI, we noticed the following commit (built with gcc-6):
->
-> commit: b00b798255eb414246718eeec93d1ef10f894445 ("x86/fixmap: Add LDT en=
-tries to user-shared fixmap")
-> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git WIP.x86/pti
->
-> in testcase: boot
->
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -m 512M
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
->
+Hi Andrew,
 
+On Wed, 13 Dec 2017 17:03:00 -0800 Andrew Morton <akpm@linux-foundation.o=
+rg> wrote:
+>
+> I'm probably sitting on an older version.  I've dropped
+> =
 
-I think the right solution is to drop this patch in favor of my series.
+> epoll: use the waitqueue lock to protect ep->wq
+> sched/wait: assert the wait_queue_head lock is held in __wake_up_common
 
---===============9142752544403706057==--
+Dropped from linux-next as well.
+
+-- =
+
+Cheers,
+Stephen Rothwell
+
+--===============8591706226134872976==--
 
