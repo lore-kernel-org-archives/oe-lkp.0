@@ -1,34 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============0598634697531686567=="
+Content-Type: multipart/mixed; boundary="===============7669230063102323953=="
 MIME-Version: 1.0
-From: Roman Gushchin <guro@fb.com>
+From: Andy Lutomirski <luto@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [selftests/bpf] 37f1ba0909: kernel_selftests.bpf.test_dev_cgroup.fail
-Date: Wed, 03 Jan 2018 14:08:24 +0000
-Message-ID: <20180103140819.GA15762@castle.DHCP.thefacebook.com>
-In-Reply-To: <20180103025541.GA12392@yexl-desktop>
+Subject: Re: [lkp-robot] [x86/entry/64] 11a1251e3a: hackbench.throughput -12.1% regression
+Date: Wed, 03 Jan 2018 14:17:34 -0800
+Message-ID: <CALCETrWRkoF6n9FzJ0HH1BxYdt=FvMykOtP7gMPG8VvkB3_FRw@mail.gmail.com>
+In-Reply-To: <20180103025826.GB12392@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0598634697531686567==
+--===============7669230063102323953==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 03, 2018 at 10:55:41AM +0800, kernel test robot wrote:
-> =
+> On Jan 2, 2018, at 6:58 PM, kernel test robot <xiaolong.ye@intel.com> w=
+rote:
+>
+>
+> Greeting,
+>
+> We noticed a -12.1% regression of hackbench.throughput due to commit:
+>
+>
+> commit: 11a1251e3a3cc9532f358c889deea63169bd2c65 ("x86/entry/64: Make cpu=
+_entry_area.tss read-only")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>
+> in testcase: hackbench
+> on test machine: 256 threads Phi with 96G memory
+> with following parameters:
+>
+>    nr_threads: 100%
+>    mode: threads
+>    ipc: pipe
+>    cpufreq_governor: performance
+>
+> test-description: Hackbench is both a benchmark and a stress test for the=
+ Linux kernel scheduler.
+> test-url: https://github.com/linux-test-project/ltp/blob/master/testcases=
+/kernel/sched/cfs-scheduler/hackbench.c
+>
+>
+>
+> Details are as below:
+> -------------------------------------------------------------------------=
+------------------------->
+>
+>
+> To reproduce:
+>
+>        git clone https://github.com/intel/lkp-tests.git
+>        cd lkp-tests
+>        bin/lkp install job.yaml  # job file is attached in this email
+>        bin/lkp run     job.yaml
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> compiler/kconfig/rootfs/sleep/tbox_group/testcase:
+>  gcc-7/x86_64-kexec/debian-x86_64-2016-08-31.cgz/1/vm-lkp-wsx03-2G/boot
+>
+> commit:
+>  dff71e3c0e ("x86/entry: Clean up the SYSENTER_stack code")
+>  11a1251e3a ("x86/entry/64: Make cpu_entry_area.tss read-only")
 
-> FYI, we noticed the following commit (built with gcc-7):
-> =
+That's bizarre.  How confident are your that this is attributed to the
+right patch?
 
-> commit: 37f1ba0909dfa12c75f8e8ea7a2f01355ebd60f1 ("selftests/bpf: add a t=
-est for device cgroup controller")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+--Andy
 
-Hello!
-
-This issue has already been fixed by commit 06ef0ccb5a36
-("bpf/cgroup: fix a verification error for a CGROUP_DEVICE type prog").
-
-Thanks!
-
---===============0598634697531686567==--
+--===============7669230063102323953==--
 
