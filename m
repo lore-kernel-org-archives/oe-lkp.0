@@ -1,43 +1,51 @@
-Content-Type: multipart/mixed; boundary="===============0294216910738199656=="
+Content-Type: multipart/mixed; boundary="===============1175727433891309943=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [nfs] dc4fd9ab01: fsmark.app_overhead 850.9% regression
-Date: Sat, 06 Jan 2018 17:28:22 +0800
-Message-ID: <20180106092822.GB27910@yexl-desktop>
+Date: Mon, 08 Jan 2018 09:20:40 +0800
+Message-ID: <87zi5p9mdz.fsf@yhuang-dev.intel.com>
 In-Reply-To: <20180105194821.pkjponlrdy3hrjrw@tonberry.usersys.redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0294216910738199656==
+--===============1175727433891309943==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 01/05, Scott Mayhew wrote:
->It looks to me like there was actually a tiny improvement in the
->benchmark, rather than a huge regression.  fs_mark calculates
->app_overhead by subtracting the amount of time spent in
->creat/write/fsync/sync/close (total_file_ops) from the amount of time
->spent inside the main file-writing loop (loop_usecs).  Average time for
->fsync decreased by about 50ms and average time for close decreased by
->about 18ms, which in turn drove down total_file_ops by a large amount.
->But loop_usecs only decreased by a little bit, because the majority of
->the time in fs_mark is spent in gettimeofday(), followed by srandom(),
->with write() a distant third.  Since loop_usecs decreased only a little,
->but total_file_ops decreased a lot, naturally app_overhead would
->increase by a large amount.  FWIW files/sec actually went up a little,
->from the mid 240's on commit ccede7598588 to the mid 250's on commit
->dc4fd9ab01ab (tested manually on 48-core Xeon Gold 6126 with 128G of
->memory).
+Scott Mayhew <smayhew@redhat.com> writes:
 
-Thanks for your explanation.
+> It looks to me like there was actually a tiny improvement in the
+> benchmark, rather than a huge regression.  fs_mark calculates
+> app_overhead by subtracting the amount of time spent in
+> creat/write/fsync/sync/close (total_file_ops) from the amount of time
+> spent inside the main file-writing loop (loop_usecs).  Average time for
+> fsync decreased by about 50ms and average time for close decreased by
+> about 18ms, which in turn drove down total_file_ops by a large amount.
+> But loop_usecs only decreased by a little bit, because the majority of
+> the time in fs_mark is spent in gettimeofday(), followed by srandom(),
+> with write() a distant third.  Since loop_usecs decreased only a little,
+> but total_file_ops decreased a lot, naturally app_overhead would
+> increase by a large amount.  FWIW files/sec actually went up a little,
+> from the mid 240's on commit ccede7598588 to the mid 250's on commit
+> dc4fd9ab01ab (tested manually on 48-core Xeon Gold 6126 with 128G of
+> memory).
 
-Thanks,
-Xiaolong
+TBH, I still cannot understand the huge difference of app_overhead.  For
+each run,
+
+app_overhead =3D loop_usecs - total_file_ops
+
+So it reflects time spent not in file operations.  If total_file_ops
+decreases for a run, the corresponding app_overhead will decrease too,
+result in similar app_overhead.
+
+Best Regards,
+Huang, Ying
+
+> -Scott
 >
->-Scott
->
->On Mon, 25 Dec 2017, kernel test robot wrote:
+> On Mon, 25 Dec 2017, kernel test robot wrote:
 >
 >> =
 
@@ -120,149 +128,139 @@ were no commit requests")
 >>          %stddev     %change         %stddev
 >>              \          |                \  =
 
->>   13296395 =C2=B1  7%    +850.9%  1.264e+08        fsmark.app_overhead
+>>   13296395   7%    +850.9%  1.264e+08        fsmark.app_overhead
 >>    1230639            -2.7%    1197079        fsmark.time.voluntary_cont=
 ext_switches
 >>       1.08            +0.1        1.21        mpstat.cpu.iowait%
 >>       6.00           +16.7%       7.00        nfsstat.Client.nfs.v4.geta=
 ttr
->>     910.00 =C2=B1  2%      -9.5%     823.50        proc-vmstat.kswapd_lo=
-w_wmark_hit_quickly
+>>     910.00   2%      -9.5%     823.50        proc-vmstat.kswapd_low_wmar=
+k_hit_quickly
 >>      23577            -2.2%      23058        vmstat.system.cs
->>   53057401 =C2=B1  2%     +18.5%   62851465        cpuidle.C3.time
->>   29194791 =C2=B1 44%     -54.6%   13240888 =C2=B1 33%  cpuidle.POLL.time
->>     807076 =C2=B1 29%     -47.3%     425456 =C2=B1 13%  numa-numastat.no=
-de0.numa_miss
->>     812559 =C2=B1 29%     -46.9%     431720 =C2=B1 12%  numa-numastat.no=
-de0.other_node
->>     807076 =C2=B1 29%     -47.3%     425456 =C2=B1 13%  numa-numastat.no=
-de1.numa_foreign
+>>   53057401   2%     +18.5%   62851465        cpuidle.C3.time
+>>   29194791  44%     -54.6%   13240888  33%  cpuidle.POLL.time
+>>     807076  29%     -47.3%     425456  13%  numa-numastat.node0.numa_miss
+>>     812559  29%     -46.9%     431720  12%  numa-numastat.node0.other_no=
+de
+>>     807076  29%     -47.3%     425456  13%  numa-numastat.node1.numa_for=
+eign
 >>       6413           +14.7%       7358        numa-meminfo.node0.KernelS=
 tack
->>       2369 =C2=B1  8%     +46.6%       3474 =C2=B1  7%  numa-meminfo.nod=
-e0.PageTables
->>       6744           -12.4%       5908 =C2=B1  2%  numa-meminfo.node1.Ke=
-rnelStack
->>       3512 =C2=B1  6%     -31.9%       2392 =C2=B1 13%  numa-meminfo.nod=
-e1.PageTables
->>     565.50 =C2=B1 64%     +79.5%       1015 =C2=B1  4%  slabinfo.btrfs_e=
-xtent_buffer.active_objs
->>     565.50 =C2=B1 64%     +79.5%       1015 =C2=B1  4%  slabinfo.btrfs_e=
-xtent_buffer.num_objs
->>       1827 =C2=B1  4%     +20.9%       2210 =C2=B1  5%  slabinfo.fsnotif=
-y_mark_connector.active_objs
->>       1827 =C2=B1  4%     +20.9%       2210 =C2=B1  5%  slabinfo.fsnotif=
-y_mark_connector.num_objs
->>     809.25 =C2=B1  9%     +16.9%     946.00 =C2=B1  4%  slabinfo.nfsd4_o=
-penowners.active_objs
->>     809.25 =C2=B1  9%     +16.9%     946.00 =C2=B1  4%  slabinfo.nfsd4_o=
-penowners.num_objs
->>     194.75 =C2=B1  2%      -5.0%     185.00        turbostat.Avg_MHz
->>       0.77 =C2=B1  2%      +0.1        0.91        turbostat.C3%
->>       0.65 =C2=B1  2%     +22.7%       0.80        turbostat.CPU%c3
->>      62.34 =C2=B1  2%      -4.5%      59.52        turbostat.CorWatt
->>      70.25 =C2=B1  3%      -6.8%      65.50        turbostat.PkgTmp
+>>       2369   8%     +46.6%       3474   7%  numa-meminfo.node0.PageTables
+>>       6744           -12.4%       5908   2%  numa-meminfo.node1.KernelSt=
+ack
+>>       3512   6%     -31.9%       2392  13%  numa-meminfo.node1.PageTables
+>>     565.50  64%     +79.5%       1015   4%  slabinfo.btrfs_extent_buffer=
+.active_objs
+>>     565.50  64%     +79.5%       1015   4%  slabinfo.btrfs_extent_buffer=
+.num_objs
+>>       1827   4%     +20.9%       2210   5%  slabinfo.fsnotify_mark_conne=
+ctor.active_objs
+>>       1827   4%     +20.9%       2210   5%  slabinfo.fsnotify_mark_conne=
+ctor.num_objs
+>>     809.25   9%     +16.9%     946.00   4%  slabinfo.nfsd4_openowners.ac=
+tive_objs
+>>     809.25   9%     +16.9%     946.00   4%  slabinfo.nfsd4_openowners.nu=
+m_objs
+>>     194.75   2%      -5.0%     185.00        turbostat.Avg_MHz
+>>       0.77   2%      +0.1        0.91        turbostat.C3%
+>>       0.65   2%     +22.7%       0.80        turbostat.CPU%c3
+>>      62.34   2%      -4.5%      59.52        turbostat.CorWatt
+>>      70.25   3%      -6.8%      65.50        turbostat.PkgTmp
 >>      93.02            -3.4%      89.82        turbostat.PkgWatt
 >>       6411           +14.7%       7357        numa-vmstat.node0.nr_kerne=
 l_stack
->>     590.75 =C2=B1  8%     +46.7%     866.75 =C2=B1  7%  numa-vmstat.node=
-0.nr_page_table_pages
->>     120900 =C2=B1 13%     +27.2%     153728 =C2=B1  6%  numa-vmstat.node=
-0.numa_foreign
->>      77163 =C2=B1 42%     -49.3%      39123 =C2=B1 24%  numa-vmstat.node=
-0.numa_miss
->>      82748 =C2=B1 35%     -45.1%      45452 =C2=B1 25%  numa-vmstat.node=
-0.numa_other
->>       6741           -12.4%       5907 =C2=B1  2%  numa-vmstat.node1.nr_=
-kernel_stack
->>     877.00 =C2=B1  6%     -31.9%     597.50 =C2=B1 13%  numa-vmstat.node=
-1.nr_page_table_pages
->>      77170 =C2=B1 42%     -49.3%      39127 =C2=B1 24%  numa-vmstat.node=
-1.numa_foreign
->>     120916 =C2=B1 13%     +27.2%     153763 =C2=B1  6%  numa-vmstat.node=
-1.numa_miss
->>     285504 =C2=B1  5%     +11.4%     318085 =C2=B1  3%  numa-vmstat.node=
-1.numa_other
->>       1737 =C2=B1 10%     -34.5%       1137 =C2=B1 50%  sched_debug.cfs_=
-rq:/.exec_clock.max
->>     281.24 =C2=B1  5%     -33.3%     187.70 =C2=B1 48%  sched_debug.cfs_=
-rq:/.exec_clock.stddev
->>     417.83 =C2=B1  4%     -16.9%     347.04 =C2=B1 22%  sched_debug.cfs_=
-rq:/.runnable_load_avg.max
->>     553.42 =C2=B1 45%     -37.5%     346.04 =C2=B1 22%  sched_debug.cpu.=
-cpu_load[0].max
->>     129.77 =C2=B1  7%     -29.0%      92.14 =C2=B1 37%  sched_debug.cpu.=
-cpu_load[0].stddev
->>     388.83 =C2=B1 14%     -24.7%     292.79 =C2=B1 26%  sched_debug.cpu.=
-cpu_load[2].max
->>     347.25 =C2=B1  8%     -27.3%     252.50 =C2=B1 34%  sched_debug.cpu.=
-cpu_load[3].max
->>     320.17 =C2=B1  2%     -30.7%     222.00 =C2=B1 42%  sched_debug.cpu.=
-cpu_load[4].max
->>      62796 =C2=B1  6%     -31.8%      42829 =C2=B1 20%  sched_debug.cpu.=
-sched_count.max
->>       7742 =C2=B1  6%     -26.2%       5714 =C2=B1 14%  sched_debug.cpu.=
-sched_count.stddev
->>  1.374e+11 =C2=B1  3%     -11.8%  1.212e+11 =C2=B1  5%  perf-stat.branch=
--instructions
->>       0.93 =C2=B1  5%      +0.1        1.07 =C2=B1  7%  perf-stat.branch=
--miss-rate%
->>   4.55e+09 =C2=B1  3%      -6.8%  4.242e+09 =C2=B1  3%  perf-stat.cache-=
-misses
->>  9.994e+09 =C2=B1  2%      -5.4%  9.455e+09 =C2=B1  3%  perf-stat.cache-=
-references
+>>     590.75   8%     +46.7%     866.75   7%  numa-vmstat.node0.nr_page_ta=
+ble_pages
+>>     120900  13%     +27.2%     153728   6%  numa-vmstat.node0.numa_forei=
+gn
+>>      77163  42%     -49.3%      39123  24%  numa-vmstat.node0.numa_miss
+>>      82748  35%     -45.1%      45452  25%  numa-vmstat.node0.numa_other
+>>       6741           -12.4%       5907   2%  numa-vmstat.node1.nr_kernel=
+_stack
+>>     877.00   6%     -31.9%     597.50  13%  numa-vmstat.node1.nr_page_ta=
+ble_pages
+>>      77170  42%     -49.3%      39127  24%  numa-vmstat.node1.numa_forei=
+gn
+>>     120916  13%     +27.2%     153763   6%  numa-vmstat.node1.numa_miss
+>>     285504   5%     +11.4%     318085   3%  numa-vmstat.node1.numa_other
+>>       1737  10%     -34.5%       1137  50%  sched_debug.cfs_rq:/.exec_cl=
+ock.max
+>>     281.24   5%     -33.3%     187.70  48%  sched_debug.cfs_rq:/.exec_cl=
+ock.stddev
+>>     417.83   4%     -16.9%     347.04  22%  sched_debug.cfs_rq:/.runnabl=
+e_load_avg.max
+>>     553.42  45%     -37.5%     346.04  22%  sched_debug.cpu.cpu_load[0].=
+max
+>>     129.77   7%     -29.0%      92.14  37%  sched_debug.cpu.cpu_load[0].=
+stddev
+>>     388.83  14%     -24.7%     292.79  26%  sched_debug.cpu.cpu_load[2].=
+max
+>>     347.25   8%     -27.3%     252.50  34%  sched_debug.cpu.cpu_load[3].=
+max
+>>     320.17   2%     -30.7%     222.00  42%  sched_debug.cpu.cpu_load[4].=
+max
+>>      62796   6%     -31.8%      42829  20%  sched_debug.cpu.sched_count.=
+max
+>>       7742   6%     -26.2%       5714  14%  sched_debug.cpu.sched_count.=
+stddev
+>>  1.374e+11   3%     -11.8%  1.212e+11   5%  perf-stat.branch-instructions
+>>       0.93   5%      +0.1        1.07   7%  perf-stat.branch-miss-rate%
+>>   4.55e+09   3%      -6.8%  4.242e+09   3%  perf-stat.cache-misses
+>>  9.994e+09   2%      -5.4%  9.455e+09   3%  perf-stat.cache-references
 >>    3386653            -1.4%    3340360        perf-stat.context-switches
->>  1.559e+12           -11.8%  1.375e+12 =C2=B1  4%  perf-stat.cpu-cycles
+>>  1.559e+12           -11.8%  1.375e+12   4%  perf-stat.cpu-cycles
 >>      16599           -25.5%      12360        perf-stat.cpu-migrations
->>  1.712e+11 =C2=B1  3%      -8.6%  1.564e+11        perf-stat.dTLB-loads
->>  7.092e+11 =C2=B1  3%     -11.7%  6.263e+11 =C2=B1  5%  perf-stat.instru=
-ctions
->>       7701 =C2=B1  4%     -12.5%       6741 =C2=B1  5%  perf-stat.instru=
-ctions-per-iTLB-miss
+>>  1.712e+11   3%      -8.6%  1.564e+11        perf-stat.dTLB-loads
+>>  7.092e+11   3%     -11.7%  6.263e+11   5%  perf-stat.instructions
+>>       7701   4%     -12.5%       6741   5%  perf-stat.instructions-per-i=
+TLB-miss
 >>      39.52            -0.5       39.06        perf-stat.node-load-miss-r=
 ate%
 >>  9.658e+08            -4.0%   9.27e+08        perf-stat.node-load-misses
 >>      22.56            -0.6       21.96        perf-stat.node-store-miss-=
 rate%
 >>  5.902e+08            -3.8%  5.678e+08        perf-stat.node-store-misses
->>      12.98 =C2=B1 48%      -1.6       11.41 =C2=B1 32%  perf-profile.cal=
-ltrace.cycles-pp.poll_idle.cpuidle_enter_state.cpuidle_enter.call_cpuidle.d=
-o_idle
->>      13.80 =C2=B1 11%      -0.1       13.66 =C2=B1 10%  perf-profile.cal=
-ltrace.cycles-pp.__irqentry_text_start.cpuidle_enter_state.cpuidle_enter.ca=
-ll_cpuidle.do_idle
->>      13.64 =C2=B1 10%      -0.1       13.51 =C2=B1 11%  perf-profile.cal=
-ltrace.cycles-pp.smp_apic_timer_interrupt.__irqentry_text_start.cpuidle_ent=
-er_state.cpuidle_enter.call_cpuidle
->>      87.54            -0.1       87.48        perf-profile.calltrace.cyc=
-les-pp.cpuidle_enter_state.cpuidle_enter.call_cpuidle.do_idle.cpu_startup_e=
-ntry
->>      86.74            -0.0       86.71        perf-profile.calltrace.cyc=
-les-pp.cpuidle_enter.call_cpuidle.do_idle.cpu_startup_entry.start_secondary
->>      86.83            -0.0       86.82        perf-profile.calltrace.cyc=
-les-pp.call_cpuidle.do_idle.cpu_startup_entry.start_secondary.verify_cpu
+>> 12.98  48% -1.6 11.41  32%
+> perf-profile.calltrace.cycles-pp.poll_idle.cpuidle_enter_state.cpuidle_en=
+ter.call_cpuidle.do_idle
+>> 13.80  11% -0.1 13.66  10%
+> perf-profile.calltrace.cycles-pp.__irqentry_text_start.cpuidle_enter_stat=
+e.cpuidle_enter.call_cpuidle.do_idle
+>> 13.64  10% -0.1 13.51  11%
+> perf-profile.calltrace.cycles-pp.smp_apic_timer_interrupt.__irqentry_text=
+_start.cpuidle_enter_state.cpuidle_enter.call_cpuidle
+>> 87.54 -0.1 87.48
+> perf-profile.calltrace.cycles-pp.cpuidle_enter_state.cpuidle_enter.call_c=
+puidle.do_idle.cpu_startup_entry
+>> 86.74 -0.0 86.71
+> perf-profile.calltrace.cycles-pp.cpuidle_enter.call_cpuidle.do_idle.cpu_s=
+tartup_entry.start_secondary
+>> 86.83 -0.0 86.82
+> perf-profile.calltrace.cycles-pp.call_cpuidle.do_idle.cpu_startup_entry.s=
+tart_secondary.verify_cpu
 >>      93.11            +0.0       93.12        perf-profile.calltrace.cyc=
 les-pp.verify_cpu
->>       5.83 =C2=B1  9%      +0.1        5.89 =C2=B1 14%  perf-profile.cal=
-ltrace.cycles-pp.hrtimer_interrupt.smp_apic_timer_interrupt.__irqentry_text=
-_start.cpuidle_enter_state.cpuidle_enter
+>> 5.83  9% +0.1 5.89  14%
+> perf-profile.calltrace.cycles-pp.hrtimer_interrupt.smp_apic_timer_interru=
+pt.__irqentry_text_start.cpuidle_enter_state.cpuidle_enter
 >>      90.70            +0.1       90.79        perf-profile.calltrace.cyc=
 les-pp.do_idle.cpu_startup_entry.start_secondary.verify_cpu
 >>      91.28            +0.2       91.44        perf-profile.calltrace.cyc=
 les-pp.cpu_startup_entry.start_secondary.verify_cpu
 >>      91.28            +0.2       91.44        perf-profile.calltrace.cyc=
 les-pp.start_secondary.verify_cpu
->>      57.64 =C2=B1  6%      +1.5       59.11 =C2=B1  3%  perf-profile.cal=
-ltrace.cycles-pp.intel_idle.cpuidle_enter_state.cpuidle_enter.call_cpuidle.=
-do_idle
->>      13.04 =C2=B1 49%      -1.6       11.41 =C2=B1 32%  perf-profile.chi=
-ldren.cycles-pp.poll_idle
+>> 57.64  6% +1.5 59.11  3%
+> perf-profile.calltrace.cycles-pp.intel_idle.cpuidle_enter_state.cpuidle_e=
+nter.call_cpuidle.do_idle
+>>      13.04  49%      -1.6       11.41  32%  perf-profile.children.cycles=
+-pp.poll_idle
 >>      88.49            -0.2       88.33        perf-profile.children.cycl=
 es-pp.cpuidle_enter
->>      14.31 =C2=B1 10%      -0.1       14.17 =C2=B1 10%  perf-profile.chi=
-ldren.cycles-pp.__irqentry_text_start
->>      14.06 =C2=B1 10%      -0.1       13.92 =C2=B1 10%  perf-profile.chi=
-ldren.cycles-pp.smp_apic_timer_interrupt
+>>      14.31  10%      -0.1       14.17  10%  perf-profile.children.cycles=
+-pp.__irqentry_text_start
+>>      14.06  10%      -0.1       13.92  10%  perf-profile.children.cycles=
+-pp.smp_apic_timer_interrupt
 >>      88.60            -0.1       88.49        perf-profile.children.cycl=
 es-pp.call_cpuidle
 >>      87.57            -0.1       87.51        perf-profile.children.cycl=
@@ -273,16 +271,16 @@ es-pp.do_idle
 es-pp.verify_cpu
 >>      93.11            +0.0       93.12        perf-profile.children.cycl=
 es-pp.cpu_startup_entry
->>       6.00 =C2=B1  9%      +0.1        6.09 =C2=B1 14%  perf-profile.chi=
-ldren.cycles-pp.hrtimer_interrupt
+>>       6.00   9%      +0.1        6.09  14%  perf-profile.children.cycles=
+-pp.hrtimer_interrupt
 >>      91.28            +0.2       91.44        perf-profile.children.cycl=
 es-pp.start_secondary
->>      57.72 =C2=B1  6%      +1.5       59.18 =C2=B1  3%  perf-profile.chi=
-ldren.cycles-pp.intel_idle
->>      13.02 =C2=B1 49%      -1.6       11.41 =C2=B1 32%  perf-profile.sel=
-f.cycles-pp.poll_idle
->>      57.72 =C2=B1  6%      +1.5       59.18 =C2=B1  3%  perf-profile.sel=
-f.cycles-pp.intel_idle
+>>      57.72   6%      +1.5       59.18   3%  perf-profile.children.cycles=
+-pp.intel_idle
+>>      13.02  49%      -1.6       11.41  32%  perf-profile.self.cycles-pp.=
+poll_idle
+>>      57.72   6%      +1.5       59.18   3%  perf-profile.self.cycles-pp.=
+intel_idle
 >> =
 
 >> =
@@ -344,10 +342,7 @@ f.cycles-pp.intel_idle
 >>                                                                         =
         =
 
->>                                                                         =
-                                                                           =
-             =
-
+>>
 >>                               perf-stat.cpu-migrations                  =
         =
 
@@ -7382,9 +7377,10 @@ ext:master/ivb44/fsmark-generic-1brd.yaml'
 >> 	export testbox=3D'ivb44'
 >> 	export tbox_group=3D'ivb44'
 >> 	export submit_id=3D'5a4007550b9a9341fbd75f47'
->> 	export job_file=3D'/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-nfs=
-v4-4M-40G-fsyncBeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9a=
-b01ab379ae5af522b3efd4187a7c30a31-20171225-16891-npgdfu-0.yaml'
+>> export
+> job_file=3D'/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G=
+-fsyncBeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9ab01ab379a=
+e5af522b3efd4187a7c30a31-20171225-16891-npgdfu-0.yaml'
 >> 	export id=3D'58bf61012f057be2defbf0fa58f1d534d8dec68b'
 >> 	export model=3D'Ivytown Ivy Bridge-EP'
 >> 	export nr_cpu=3D48
@@ -7410,24 +7406,27 @@ WCAW36795753-part2'
 >> 	export rootfs=3D'debian-x86_64-2016-08-31.cgz'
 >> 	export enqueue_time=3D'2017-12-25 04:00:23 +0800'
 >> 	export _id=3D'5a4007550b9a9341fbd75f47'
->> 	export _rt=3D'/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBef=
-oreClose-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc=
--7/dc4fd9ab01ab379ae5af522b3efd4187a7c30a31'
+>> export
+> _rt=3D'/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBeforeClose-=
+performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-7/dc4fd9=
+ab01ab379ae5af522b3efd4187a7c30a31'
 >> 	export user=3D'lkp'
 >> 	export head_commit=3D'3514267557aabe5f0a616e82ffed7dc066f67ece'
 >> 	export base_commit=3D'1291a0d5049dbc06baaaf66a9ff3f53db493b19b'
 >> 	export branch=3D'linux-next/master'
->> 	export result_root=3D'/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-=
-fsyncBeforeClose-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel=
--7.2/gcc-7/dc4fd9ab01ab379ae5af522b3efd4187a7c30a31/0'
+>> export
+> result_root=3D'/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBefo=
+reClose-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-=
+7/dc4fd9ab01ab379ae5af522b3efd4187a7c30a31/0'
 >> 	export LKP_SERVER=3D'inn'
 >> 	export max_uptime=3D2407.1400000000003
 >> 	export initrd=3D'/osimage/debian/debian-x86_64-2016-08-31.cgz'
 >> 	export bootloader_append=3D'root=3D/dev/ram0
 >> user=3Dlkp
->> job=3D/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyn=
-cBeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9ab01ab379ae5af5=
-22b3efd4187a7c30a31-20171225-16891-npgdfu-0.yaml
+>>
+> job=3D/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsync=
+BeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9ab01ab379ae5af52=
+2b3efd4187a7c30a31-20171225-16891-npgdfu-0.yaml
 >> ARCH=3Dx86_64
 >> kconfig=3Dx86_64-rhel-7.2
 >> branch=3Dlinux-next/master
@@ -7435,9 +7434,10 @@ cBeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9ab01ab379ae5af5=
 >> BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-7.2/gcc-7/dc4fd9ab01ab379ae5af522b3e=
 fd4187a7c30a31/vmlinuz-4.14.0-rc5-00068-gdc4fd9a
 >> max_uptime=3D2407
->> RESULT_ROOT=3D/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBefo=
-reClose-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-=
-7/dc4fd9ab01ab379ae5af522b3efd4187a7c30a31/0
+>>
+> RESULT_ROOT=3D/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBefor=
+eClose-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-7=
+/dc4fd9ab01ab379ae5af522b3efd4187a7c30a31/0
 >> LKP_SERVER=3Dinn
 >> debug
 >> apic=3Ddebug
@@ -7461,19 +7461,19 @@ reClose-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-=
 >> rw'
 >> 	export modules_initrd=3D'/pkg/linux/x86_64-rhel-7.2/gcc-7/dc4fd9ab01ab3=
 79ae5af522b3efd4187a7c30a31/modules.cgz'
->> 	export bm_initrd=3D'/osimage/deps/debian-x86_64-2016-08-31.cgz/lkp_2017=
--12-14.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/rsync-rootfs_2016-11-=
-15.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/run-ipconfig_2016-11-15.c=
-gz,/osimage/deps/debian-x86_64-2016-08-31.cgz/perf_2017-12-21.cgz,/osimage/=
-pkg/debian-x86_64-2016-08-31.cgz/perf-x86_64-d1ce8ceb8ba8_2017-12-21.cgz,/o=
-simage/deps/debian-x86_64-2016-08-31.cgz/fs_2016-11-15.cgz,/osimage/deps/de=
-bian-x86_64-2016-08-31.cgz/fs2_2016-11-15.cgz,/osimage/deps/debian-x86_64-2=
-016-08-31.cgz/fsmark_2016-11-15.cgz,/osimage/pkg/debian-x86_64-2016-08-31.c=
-gz/fsmark-x86_64_2016-11-16.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/=
-iostat_2016-11-15.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/turbostat_=
-2016-11-15.cgz,/osimage/pkg/debian-x86_64-2016-08-31.cgz/turbostat-x86_64-d=
-5256b2_2017-06-20.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/hw_2016-11=
--15.cgz'
+>> export
+> bm_initrd=3D'/osimage/deps/debian-x86_64-2016-08-31.cgz/lkp_2017-12-14.cg=
+z,/osimage/deps/debian-x86_64-2016-08-31.cgz/rsync-rootfs_2016-11-15.cgz,/o=
+simage/deps/debian-x86_64-2016-08-31.cgz/run-ipconfig_2016-11-15.cgz,/osima=
+ge/deps/debian-x86_64-2016-08-31.cgz/perf_2017-12-21.cgz,/osimage/pkg/debia=
+n-x86_64-2016-08-31.cgz/perf-x86_64-d1ce8ceb8ba8_2017-12-21.cgz,/osimage/de=
+ps/debian-x86_64-2016-08-31.cgz/fs_2016-11-15.cgz,/osimage/deps/debian-x86_=
+64-2016-08-31.cgz/fs2_2016-11-15.cgz,/osimage/deps/debian-x86_64-2016-08-31=
+.cgz/fsmark_2016-11-15.cgz,/osimage/pkg/debian-x86_64-2016-08-31.cgz/fsmark=
+-x86_64_2016-11-16.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/iostat_20=
+16-11-15.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/turbostat_2016-11-1=
+5.cgz,/osimage/pkg/debian-x86_64-2016-08-31.cgz/turbostat-x86_64-d5256b2_20=
+17-06-20.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/hw_2016-11-15.cgz'
 >> 	export lkp_initrd=3D'/lkp/lkp/lkp-x86_64.cgz'
 >> 	export site=3D'inn'
 >> 	export LKP_CGI_PORT=3D80
@@ -7482,9 +7482,10 @@ iostat_2016-11-15.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/turbostat_=
 >> 	export kernel=3D'/pkg/linux/x86_64-rhel-7.2/gcc-7/dc4fd9ab01ab379ae5af5=
 22b3efd4187a7c30a31/vmlinuz-4.14.0-rc5-00068-gdc4fd9a'
 >> 	export dequeue_time=3D'2017-12-25 04:20:44 +0800'
->> 	export job_initrd=3D'/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-n=
-fsv4-4M-40G-fsyncBeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd=
-9ab01ab379ae5af522b3efd4187a7c30a31-20171225-16891-npgdfu-0.cgz'
+>> export
+> job_initrd=3D'/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-nfsv4-4M-4=
+0G-fsyncBeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9ab01ab37=
+9ae5af522b3efd4187a7c30a31-20171225-16891-npgdfu-0.cgz'
 >> =
 
 >> 	[ -n "$LKP_SRC" ] ||
@@ -7618,9 +7619,10 @@ r/ivb44/fsmark-generic-1brd.yaml"
 >> testbox: ivb44
 >> tbox_group: ivb44
 >> submit_id: 5a4007550b9a9341fbd75f47
->> job_file: "/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G=
--fsyncBeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9ab01ab379a=
-e5af522b3efd4187a7c30a31-20171225-16891-npgdfu-0.yaml"
+>> job_file:
+> "/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBefor=
+eClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9ab01ab379ae5af522b3ef=
+d4187a7c30a31-20171225-16891-npgdfu-0.yaml"
 >> id: 58bf61012f057be2defbf0fa58f1d534d8dec68b
 >> =
 
@@ -7725,9 +7727,10 @@ e5af522b3efd4187a7c30a31-20171225-16891-npgdfu-0.yaml"
 >> rootfs: debian-x86_64-2016-08-31.cgz
 >> enqueue_time: 2017-12-25 04:00:23.524078873 +08:00
 >> _id: 5a4007550b9a9341fbd75f47
->> _rt: "/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBeforeClose-=
-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-7/dc4fd9=
-ab01ab379ae5af522b3efd4187a7c30a31"
+>> _rt:
+> "/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBeforeClose-perfor=
+mance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-7/dc4fd9ab01ab=
+379ae5af522b3efd4187a7c30a31"
 >> =
 
 >> #! schedule options
@@ -7735,18 +7738,20 @@ ab01ab379ae5af522b3efd4187a7c30a31"
 >> head_commit: 3514267557aabe5f0a616e82ffed7dc066f67ece
 >> base_commit: 1291a0d5049dbc06baaaf66a9ff3f53db493b19b
 >> branch: linux-next/master
->> result_root: "/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBefo=
-reClose-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-=
-7/dc4fd9ab01ab379ae5af522b3efd4187a7c30a31/0"
+>> result_root:
+> "/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBeforeClose-perfor=
+mance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-7/dc4fd9ab01ab=
+379ae5af522b3efd4187a7c30a31/0"
 >> LKP_SERVER: inn
 >> max_uptime: 2407.1400000000003
 >> initrd: "/osimage/debian/debian-x86_64-2016-08-31.cgz"
 >> bootloader_append:
 >> - root=3D/dev/ram0
 >> - user=3Dlkp
->> - job=3D/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fs=
-yncBeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9ab01ab379ae5a=
-f522b3efd4187a7c30a31-20171225-16891-npgdfu-0.yaml
+>> -
+> job=3D/lkp/scheduled/ivb44/fsmark-1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsync=
+BeforeClose-performance-debian-x86_64-2016-08-31.cgz-dc4fd9ab01ab379ae5af52=
+2b3efd4187a7c30a31-20171225-16891-npgdfu-0.yaml
 >> - ARCH=3Dx86_64
 >> - kconfig=3Dx86_64-rhel-7.2
 >> - branch=3Dlinux-next/master
@@ -7754,9 +7759,10 @@ f522b3efd4187a7c30a31-20171225-16891-npgdfu-0.yaml
 >> - BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-7.2/gcc-7/dc4fd9ab01ab379ae5af522b=
 3efd4187a7c30a31/vmlinuz-4.14.0-rc5-00068-gdc4fd9a
 >> - max_uptime=3D2407
->> - RESULT_ROOT=3D/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBe=
-foreClose-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gc=
-c-7/dc4fd9ab01ab379ae5af522b3efd4187a7c30a31/0
+>> -
+> RESULT_ROOT=3D/result/fsmark/1x-64t-1BRD_48G-f2fs-nfsv4-4M-40G-fsyncBefor=
+eClose-performance/ivb44/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.2/gcc-7=
+/dc4fd9ab01ab379ae5af522b3efd4187a7c30a31/0
 >> - LKP_SERVER=3Dinn
 >> - debug
 >> - apic=3Ddebug
@@ -7780,18 +7786,19 @@ c-7/dc4fd9ab01ab379ae5af522b3efd4187a7c30a31/0
 >> - rw
 >> modules_initrd: "/pkg/linux/x86_64-rhel-7.2/gcc-7/dc4fd9ab01ab379ae5af52=
 2b3efd4187a7c30a31/modules.cgz"
->> bm_initrd: "/osimage/deps/debian-x86_64-2016-08-31.cgz/lkp_2017-12-14.cg=
-z,/osimage/deps/debian-x86_64-2016-08-31.cgz/rsync-rootfs_2016-11-15.cgz,/o=
-simage/deps/debian-x86_64-2016-08-31.cgz/run-ipconfig_2016-11-15.cgz,/osima=
-ge/deps/debian-x86_64-2016-08-31.cgz/perf_2017-12-21.cgz,/osimage/pkg/debia=
-n-x86_64-2016-08-31.cgz/perf-x86_64-d1ce8ceb8ba8_2017-12-21.cgz,/osimage/de=
-ps/debian-x86_64-2016-08-31.cgz/fs_2016-11-15.cgz,/osimage/deps/debian-x86_=
-64-2016-08-31.cgz/fs2_2016-11-15.cgz,/osimage/deps/debian-x86_64-2016-08-31=
-.cgz/fsmark_2016-11-15.cgz,/osimage/pkg/debian-x86_64-2016-08-31.cgz/fsmark=
--x86_64_2016-11-16.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/iostat_20=
-16-11-15.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/turbostat_2016-11-1=
-5.cgz,/osimage/pkg/debian-x86_64-2016-08-31.cgz/turbostat-x86_64-d5256b2_20=
-17-06-20.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/hw_2016-11-15.cgz"
+>> bm_initrd:
+> "/osimage/deps/debian-x86_64-2016-08-31.cgz/lkp_2017-12-14.cgz,/osimage/d=
+eps/debian-x86_64-2016-08-31.cgz/rsync-rootfs_2016-11-15.cgz,/osimage/deps/=
+debian-x86_64-2016-08-31.cgz/run-ipconfig_2016-11-15.cgz,/osimage/deps/debi=
+an-x86_64-2016-08-31.cgz/perf_2017-12-21.cgz,/osimage/pkg/debian-x86_64-201=
+6-08-31.cgz/perf-x86_64-d1ce8ceb8ba8_2017-12-21.cgz,/osimage/deps/debian-x8=
+6_64-2016-08-31.cgz/fs_2016-11-15.cgz,/osimage/deps/debian-x86_64-2016-08-3=
+1.cgz/fs2_2016-11-15.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/fsmark_=
+2016-11-15.cgz,/osimage/pkg/debian-x86_64-2016-08-31.cgz/fsmark-x86_64_2016=
+-11-16.cgz,/osimage/deps/debian-x86_64-2016-08-31.cgz/iostat_2016-11-15.cgz=
+,/osimage/deps/debian-x86_64-2016-08-31.cgz/turbostat_2016-11-15.cgz,/osima=
+ge/pkg/debian-x86_64-2016-08-31.cgz/turbostat-x86_64-d5256b2_2017-06-20.cgz=
+,/osimage/deps/debian-x86_64-2016-08-31.cgz/hw_2016-11-15.cgz"
 >> lkp_initrd: "/lkp/lkp/lkp-x86_64.cgz"
 >> site: inn
 >> =
@@ -7853,25 +7860,33 @@ ports
 >> done
 >> =
 
->>  "fs_mark" "-d" "/nfs/ram0/1" "-d" "/nfs/ram0/2" "-d" "/nfs/ram0/3" "-d"=
- "/nfs/ram0/4" "-d" "/nfs/ram0/5" "-d" "/nfs/ram0/6" "-d" "/nfs/ram0/7" "-d=
-" "/nfs/ram0/8" "-d" "/nfs/ram0/9" "-d" "/nfs/ram0/10" "-d" "/nfs/ram0/11" =
-"-d" "/nfs/ram0/12" "-d" "/nfs/ram0/13" "-d" "/nfs/ram0/14" "-d" "/nfs/ram0=
-/15" "-d" "/nfs/ram0/16" "-d" "/nfs/ram0/17" "-d" "/nfs/ram0/18" "-d" "/nfs=
-/ram0/19" "-d" "/nfs/ram0/20" "-d" "/nfs/ram0/21" "-d" "/nfs/ram0/22" "-d" =
-"/nfs/ram0/23" "-d" "/nfs/ram0/24" "-d" "/nfs/ram0/25" "-d" "/nfs/ram0/26" =
-"-d" "/nfs/ram0/27" "-d" "/nfs/ram0/28" "-d" "/nfs/ram0/29" "-d" "/nfs/ram0=
-/30" "-d" "/nfs/ram0/31" "-d" "/nfs/ram0/32" "-d" "/nfs/ram0/33" "-d" "/nfs=
-/ram0/34" "-d" "/nfs/ram0/35" "-d" "/nfs/ram0/36" "-d" "/nfs/ram0/37" "-d" =
-"/nfs/ram0/38" "-d" "/nfs/ram0/39" "-d" "/nfs/ram0/40" "-d" "/nfs/ram0/41" =
-"-d" "/nfs/ram0/42" "-d" "/nfs/ram0/43" "-d" "/nfs/ram0/44" "-d" "/nfs/ram0=
-/45" "-d" "/nfs/ram0/46" "-d" "/nfs/ram0/47" "-d" "/nfs/ram0/48" "-d" "/nfs=
-/ram0/49" "-d" "/nfs/ram0/50" "-d" "/nfs/ram0/51" "-d" "/nfs/ram0/52" "-d" =
-"/nfs/ram0/53" "-d" "/nfs/ram0/54" "-d" "/nfs/ram0/55" "-d" "/nfs/ram0/56" =
-"-d" "/nfs/ram0/57" "-d" "/nfs/ram0/58" "-d" "/nfs/ram0/59" "-d" "/nfs/ram0=
-/60" "-d" "/nfs/ram0/61" "-d" "/nfs/ram0/62" "-d" "/nfs/ram0/63" "-d" "/nfs=
-/ram0/64" "-n" "160" "-L" "1" "-S" "1" "-s" "4194304"
+>> "fs_mark" "-d" "/nfs/ram0/1" "-d" "/nfs/ram0/2" "-d" "/nfs/ram0/3"
+> "-d" "/nfs/ram0/4" "-d" "/nfs/ram0/5" "-d" "/nfs/ram0/6" "-d"
+> "/nfs/ram0/7" "-d" "/nfs/ram0/8" "-d" "/nfs/ram0/9" "-d"
+> "/nfs/ram0/10" "-d" "/nfs/ram0/11" "-d" "/nfs/ram0/12" "-d"
+> "/nfs/ram0/13" "-d" "/nfs/ram0/14" "-d" "/nfs/ram0/15" "-d"
+> "/nfs/ram0/16" "-d" "/nfs/ram0/17" "-d" "/nfs/ram0/18" "-d"
+> "/nfs/ram0/19" "-d" "/nfs/ram0/20" "-d" "/nfs/ram0/21" "-d"
+> "/nfs/ram0/22" "-d" "/nfs/ram0/23" "-d" "/nfs/ram0/24" "-d"
+> "/nfs/ram0/25" "-d" "/nfs/ram0/26" "-d" "/nfs/ram0/27" "-d"
+> "/nfs/ram0/28" "-d" "/nfs/ram0/29" "-d" "/nfs/ram0/30" "-d"
+> "/nfs/ram0/31" "-d" "/nfs/ram0/32" "-d" "/nfs/ram0/33" "-d"
+> "/nfs/ram0/34" "-d" "/nfs/ram0/35" "-d" "/nfs/ram0/36" "-d"
+> "/nfs/ram0/37" "-d" "/nfs/ram0/38" "-d" "/nfs/ram0/39" "-d"
+> "/nfs/ram0/40" "-d" "/nfs/ram0/41" "-d" "/nfs/ram0/42" "-d"
+> "/nfs/ram0/43" "-d" "/nfs/ram0/44" "-d" "/nfs/ram0/45" "-d"
+> "/nfs/ram0/46" "-d" "/nfs/ram0/47" "-d" "/nfs/ram0/48" "-d"
+> "/nfs/ram0/49" "-d" "/nfs/ram0/50" "-d" "/nfs/ram0/51" "-d"
+> "/nfs/ram0/52" "-d" "/nfs/ram0/53" "-d" "/nfs/ram0/54" "-d"
+> "/nfs/ram0/55" "-d" "/nfs/ram0/56" "-d" "/nfs/ram0/57" "-d"
+> "/nfs/ram0/58" "-d" "/nfs/ram0/59" "-d" "/nfs/ram0/60" "-d"
+> "/nfs/ram0/61" "-d" "/nfs/ram0/62" "-d" "/nfs/ram0/63" "-d"
+> "/nfs/ram0/64" "-n" "160" "-L" "1" "-S" "1" "-s" "4194304"
 >
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
 
---===============0294216910738199656==--
+--===============1175727433891309943==--
 
