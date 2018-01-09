@@ -1,373 +1,196 @@
-Content-Type: multipart/mixed; boundary="===============7840951987529861754=="
+Content-Type: multipart/mixed; boundary="===============7050186536000244886=="
 MIME-Version: 1.0
-From: Vincent Guittot <vincent.guittot@linaro.org>
+From: Felipe Balbi <balbi@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [sched/fair] a4c3c04974: unixbench.score -4.3% regression
-Date: Tue, 09 Jan 2018 08:58:11 +0100
-Message-ID: <CAKfTPtBz+Li1i5fdhrnju-oP4BkFg_FNFjYD-YoAA26E6JBRdw@mail.gmail.com>
-In-Reply-To: <CAKfTPtDN2e-Y6c3F3C5f1dtmra6YMv2MC3j8gcPoMsbRCrApcQ@mail.gmail.com>
+Subject: Re: [usb_add_gadget_udc_release] BUG: KASAN: double-free or invalid-free in (null)
+Date: Tue, 09 Jan 2018 11:31:00 +0200
+Message-ID: <87bmi3z8dn.fsf@linux.intel.com>
+In-Reply-To: <Pine.LNX.4.44L0.1712171135030.15295-100000@netrider.rowland.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7840951987529861754==
+--===============7050186536000244886==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+
 Hi,
 
-On 8 January 2018 at 10:34, Vincent Guittot <vincent.guittot@linaro.org> =
-wrote:
-> Hi Xiaolong,
+Alan Stern <stern@rowland.harvard.edu> writes:
+> On Sun, 17 Dec 2017, Fengguang Wu wrote:
 >
-> On 25 December 2017 at 07:07, kernel test robot <xiaolong.ye@intel.com>=
- wrote:
->>
->> Greeting,
->>
->> FYI, we noticed a -4.3% regression of unixbench.score due to commit:
->>
->>
->> commit: a4c3c04974d648ee6e1a09ef4131eb32a02ab494 ("sched/fair: Update an=
-d fix the runnable propagation rule")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->>
->> in testcase: unixbench
->> on test machine: 8 threads Ivy Bridge with 16G memory
->> with following parameters:
->>
->>         runtime: 300s
->>         nr_task: 100%
->>         test: shell1
->>         cpufreq_governor: performance
->>
->> test-description: UnixBench is the original BYTE UNIX benchmark suite ai=
-ms to test performance of Unix-like system.
->> test-url: https://github.com/kdlucas/byte-unixbench
->>
->
-> I don't have the machine described above so i have tried to reproduce
-> the problem on my 8 cores cortex A53 platform but I don't have
-> performance regression.
-> I have also tried with a VM on a Intel(R) Core(TM) i7-4810MQ and
-> haven't seen regression too.
->
-> Have you seen the regression on other platform ?
+>> Hello,
+>> =
 
-I have been able to run the test on a 12 cores Intel(R) Xeon(R) CPU
-E5-2630 and haven't seen any regression as well
-I have changed the command to ./Run Shell1 -c 12 -i 30 instead of
-./Run Shell1 -c 8 -i 30 as there were more cores
+>> FYI this happens in mainline kernel 4.15.0-rc3.
+>> It looks like a new regression.
+>> =
 
-Regards,
-Vincent
+>> It occurs in 23 out of 36 boots.
+>> =
 
->
-> Regards,
-> Vincent
->
->>
->> Details are as below:
->> ------------------------------------------------------------------------=
--------------------------->
->>
->>
->> To reproduce:
->>
->>         git clone https://github.com/intel/lkp-tests.git
->>         cd lkp-tests
->>         bin/lkp install job.yaml  # job file is attached in this email
->>         bin/lkp run     job.yaml
->>
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+>> [   38.592360] LUN: removable file: (no medium)
+>> [   38.593442] no file given for LUN0
+>> [   38.594589] g_mass_storage usbip-vudc.0: failed to start g_mass_stora=
+ge: -22
+>> [   38.600881] udc usbip-vudc.0: releasing 'usbip-vudc.0'
+>> [   38.604397] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test=
-/testcase:
->>   gcc-7/performance/x86_64-rhel-7.2/100%/debian-x86_64-2016-08-31.cgz/30=
-0s/lkp-ivb-d01/shell1/unixbench
->>
->> commit:
->>   c6b9d9a330 ("sched/wait: Fix add_wait_queue() behavioral change")
->>   a4c3c04974 ("sched/fair: Update and fix the runnable propagation rule")
->>
->> c6b9d9a330290144 a4c3c04974d648ee6e1a09ef41
->> ---------------- --------------------------
->>          %stddev     %change         %stddev
->>              \          |                \
->>      13264            -4.3%      12694        unixbench.score
->>   10619292           -11.7%    9374917        unixbench.time.involuntary=
-_context_switches
->>  4.829e+08            -4.3%   4.62e+08        unixbench.time.minor_page_=
-faults
->>       1126            -3.6%       1086        unixbench.time.system_time
->>       2645            -3.0%       2566        unixbench.time.user_time
->>   15855720            -6.2%   14878247        unixbench.time.voluntary_c=
-ontext_switches
->>       0.00 =C4=85 56%      -0.0        0.00 =C4=85 57%  mpstat.cpu.iowai=
-t%
->>      79517            -5.7%      74990        vmstat.system.cs
->>      16361            -3.3%      15822        vmstat.system.in
->>  1.814e+08           -24.0%  1.379e+08        cpuidle.C1.time
->>    3436399           -20.6%    2728227        cpuidle.C1.usage
->>    7772815            -9.9%    7001076        cpuidle.C1E.usage
->>  1.479e+08           +66.1%  2.456e+08        cpuidle.C3.time
->>    1437889           +38.7%    1994073        cpuidle.C3.usage
->>      18147           +13.9%      20676        cpuidle.POLL.usage
->>    3436173           -20.6%    2727580        turbostat.C1
->>       3.54            -0.8        2.73        turbostat.C1%
->>    7772758            -9.9%    7001012        turbostat.C1E
->>    1437858           +38.7%    1994034        turbostat.C3
->>       2.88            +2.0        4.86        turbostat.C3%
->>      18.50           +10.8%      20.50        turbostat.CPU%c1
->>       0.54 =C4=85  2%    +179.6%       1.51        turbostat.CPU%c3
->>   2.32e+12            -4.3%   2.22e+12        perf-stat.branch-instructi=
-ons
->>  6.126e+10            -4.9%  5.823e+10        perf-stat.branch-misses
->>       8.64 =C4=85  4%      +0.6        9.25        perf-stat.cache-miss-=
-rate%
->>  1.662e+11            -4.3%   1.59e+11        perf-stat.cache-references
->>   51040611            -7.0%   47473754        perf-stat.context-switches
->>  1.416e+13            -3.6%  1.365e+13        perf-stat.cpu-cycles
->>    8396968            -3.9%    8065835        perf-stat.cpu-migrations
->>  2.919e+12            -4.3%  2.793e+12        perf-stat.dTLB-loads
->>   1.89e+12            -4.3%  1.809e+12        perf-stat.dTLB-stores
->>      67.97            +1.1       69.03        perf-stat.iTLB-load-miss-r=
-ate%
->>  4.767e+09            -1.3%  4.704e+09        perf-stat.iTLB-load-misses
->>  2.247e+09            -6.0%  2.111e+09        perf-stat.iTLB-loads
->>   1.14e+13            -4.3%  1.091e+13        perf-stat.instructions
->>       2391            -3.0%       2319        perf-stat.instructions-per=
--iTLB-miss
->>  4.726e+08            -4.3%  4.523e+08        perf-stat.minor-faults
->>  4.726e+08            -4.3%  4.523e+08        perf-stat.page-faults
->>     585.14 =C4=85  4%     -55.0%     263.59 =C4=85 12%  sched_debug.cfs_=
-rq:/.load_avg.avg
->>       1470 =C4=85  4%     -42.2%     850.09 =C4=85 24%  sched_debug.cfs_=
-rq:/.load_avg.max
->>     154.17 =C4=85 22%     -49.2%      78.39 =C4=85  7%  sched_debug.cfs_=
-rq:/.load_avg.min
->>     438.33 =C4=85  6%     -41.9%     254.49 =C4=85 27%  sched_debug.cfs_=
-rq:/.load_avg.stddev
->>       2540 =C4=85 15%     +23.5%       3137 =C4=85 11%  sched_debug.cfs_=
-rq:/.removed.runnable_sum.avg
->>     181.83 =C4=85 11%     -56.3%      79.50 =C4=85 34%  sched_debug.cfs_=
-rq:/.runnable_load_avg.avg
->>      16.46 =C4=85 37%     -72.9%       4.45 =C4=85110%  sched_debug.cfs_=
-rq:/.runnable_load_avg.min
->>     294.77 =C4=85  5%     +11.2%     327.87 =C4=85  6%  sched_debug.cfs_=
-rq:/.util_avg.stddev
->>     220260 =C4=85  8%     +20.3%     264870 =C4=85  4%  sched_debug.cpu.=
-avg_idle.avg
->>     502903 =C4=85  4%     +21.0%     608663        sched_debug.cpu.avg_i=
-dle.max
->>     148667 =C4=85  6%     +29.5%     192468 =C4=85  2%  sched_debug.cpu.=
-avg_idle.stddev
->>     180.64 =C4=85 10%     -53.4%      84.23 =C4=85 34%  sched_debug.cpu.=
-cpu_load[0].avg
->>      25.73 =C4=85 15%     -85.6%       3.70 =C4=85113%  sched_debug.cpu.=
-cpu_load[0].min
->>     176.98 =C4=85  6%     -52.5%      84.06 =C4=85 35%  sched_debug.cpu.=
-cpu_load[1].avg
->>      53.93 =C4=85 13%     -72.6%      14.75 =C4=85 15%  sched_debug.cpu.=
-cpu_load[1].min
->>     176.61 =C4=85  4%     -55.3%      78.92 =C4=85 31%  sched_debug.cpu.=
-cpu_load[2].avg
->>      73.78 =C4=85 11%     -73.4%      19.61 =C4=85  7%  sched_debug.cpu.=
-cpu_load[2].min
->>     177.42 =C4=85  3%     -58.8%      73.09 =C4=85 21%  sched_debug.cpu.=
-cpu_load[3].avg
->>      93.01 =C4=85  8%     -73.9%      24.25 =C4=85  6%  sched_debug.cpu.=
-cpu_load[3].min
->>     173.36 =C4=85  3%     -60.6%      68.26 =C4=85 13%  sched_debug.cpu.=
-cpu_load[4].avg
->>     274.36 =C4=85  5%     -48.6%     141.16 =C4=85 44%  sched_debug.cpu.=
-cpu_load[4].max
->>     107.87 =C4=85  6%     -73.0%      29.11 =C4=85  9%  sched_debug.cpu.=
-cpu_load[4].min
->>      11203 =C4=85  9%      +9.9%      12314 =C4=85  6%  sched_debug.cpu.=
-curr->pid.avg
->>    1042556 =C4=85  3%      -6.9%     970165 =C4=85  2%  sched_debug.cpu.=
-sched_goidle.max
->>     748905 =C4=85  5%     -13.4%     648459        sched_debug.cpu.sched=
-_goidle.min
->>      90872 =C4=85 11%     +17.4%     106717 =C4=85  5%  sched_debug.cpu.=
-sched_goidle.stddev
->>     457847 =C4=85  4%     -15.0%     389113        sched_debug.cpu.ttwu_=
-local.min
->>      18.60            -1.1       17.45        perf-profile.calltrace.cyc=
-les-pp.secondary_startup_64
->>      16.33 =C4=85  2%      -1.0       15.29        perf-profile.calltrac=
-e.cycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64
->>      16.33 =C4=85  2%      -1.0       15.29        perf-profile.calltrac=
-e.cycles-pp.start_secondary.secondary_startup_64
->>      16.32 =C4=85  2%      -1.0       15.29        perf-profile.calltrac=
-e.cycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64
->>      15.44 =C4=85  2%      -1.0       14.43        perf-profile.calltrac=
-e.cycles-pp.intel_idle.cpuidle_enter_state.do_idle.cpu_startup_entry.start_=
-secondary
->>      15.69 =C4=85  2%      -1.0       14.71        perf-profile.calltrac=
-e.cycles-pp.cpuidle_enter_state.do_idle.cpu_startup_entry.start_secondary.s=
-econdary_startup_64
->>       5.54            -0.1        5.45        perf-profile.calltrace.cyc=
-les-pp.__libc_fork
->>      10.28            +0.0       10.32        perf-profile.calltrace.cyc=
-les-pp.page_fault
->>      10.16            +0.0       10.21        perf-profile.calltrace.cyc=
-les-pp.do_page_fault.page_fault
->>      10.15            +0.1       10.20        perf-profile.calltrace.cyc=
-les-pp.__do_page_fault.do_page_fault.page_fault
->>       9.47            +0.1        9.56        perf-profile.calltrace.cyc=
-les-pp.__handle_mm_fault.handle_mm_fault.__do_page_fault.do_page_fault.page=
-_fault
->>      11.49            +0.1       11.59        perf-profile.calltrace.cyc=
-les-pp.sys_execve.do_syscall_64.return_from_SYSCALL_64.execve
->>       8.28            +0.1        8.38        perf-profile.calltrace.cyc=
-les-pp.load_elf_binary.search_binary_handler.do_execveat_common.sys_execve.=
-do_syscall_64
->>      11.49            +0.1       11.59        perf-profile.calltrace.cyc=
-les-pp.return_from_SYSCALL_64.execve
->>      11.49            +0.1       11.59        perf-profile.calltrace.cyc=
-les-pp.do_syscall_64.return_from_SYSCALL_64.execve
->>       8.30            +0.1        8.41        perf-profile.calltrace.cyc=
-les-pp.search_binary_handler.do_execveat_common.sys_execve.do_syscall_64.re=
-turn_from_SYSCALL_64
->>      11.46            +0.1       11.58        perf-profile.calltrace.cyc=
-les-pp.do_execveat_common.sys_execve.do_syscall_64.return_from_SYSCALL_64.e=
-xecve
->>       8.46            +0.1        8.57        perf-profile.calltrace.cyc=
-les-pp.handle_mm_fault.__do_page_fault.do_page_fault.page_fault
->>       5.21            +0.1        5.34 =C4=85  2%  perf-profile.calltrac=
-e.cycles-pp.exit_mmap.mmput.do_exit.do_group_exit.__wake_up_parent
->>       5.24            +0.1        5.38 =C4=85  2%  perf-profile.calltrac=
-e.cycles-pp.mmput.do_exit.do_group_exit.__wake_up_parent.entry_SYSCALL_64_f=
-astpath
->>      13.20            +0.1       13.34        perf-profile.calltrace.cyc=
-les-pp.execve
->>       6.79            +0.2        6.94 =C4=85  2%  perf-profile.calltrac=
-e.cycles-pp.__wake_up_parent.entry_SYSCALL_64_fastpath
->>       6.79            +0.2        6.95 =C4=85  2%  perf-profile.calltrac=
-e.cycles-pp.do_group_exit.__wake_up_parent.entry_SYSCALL_64_fastpath
->>       6.78            +0.2        6.94        perf-profile.calltrace.cyc=
-les-pp.do_exit.do_group_exit.__wake_up_parent.entry_SYSCALL_64_fastpath
->>       5.98            +0.2        6.18        perf-profile.calltrace.cyc=
-les-pp.vfprintf.__vsnprintf_chk
->>       8.38            +0.2        8.61        perf-profile.calltrace.cyc=
-les-pp.__vsnprintf_chk
->>      14.17            +0.3       14.49        perf-profile.calltrace.cyc=
-les-pp.entry_SYSCALL_64_fastpath
->>      18.60            -1.1       17.45        perf-profile.children.cycl=
-es-pp.do_idle
->>      18.60            -1.1       17.45        perf-profile.children.cycl=
-es-pp.cpu_startup_entry
->>      18.60            -1.1       17.45        perf-profile.children.cycl=
-es-pp.secondary_startup_64
->>      17.60            -1.1       16.46        perf-profile.children.cycl=
-es-pp.intel_idle
->>      17.89            -1.1       16.80        perf-profile.children.cycl=
-es-pp.cpuidle_enter_state
->>      16.33 =C4=85  2%      -1.0       15.29        perf-profile.children=
-.cycles-pp.start_secondary
->>       5.54            -0.1        5.45        perf-profile.children.cycl=
-es-pp.__libc_fork
->>      16.15            +0.0       16.18        perf-profile.children.cycl=
-es-pp.do_page_fault
->>      16.19            +0.0       16.22        perf-profile.children.cycl=
-es-pp.page_fault
->>       6.24            +0.1        6.29 =C4=85  2%  perf-profile.children=
-.cycles-pp.filemap_map_pages
->>      16.07            +0.1       16.13        perf-profile.children.cycl=
-es-pp.__do_page_fault
->>      16.85            +0.1       16.92        perf-profile.children.cycl=
-es-pp.do_syscall_64
->>      16.85            +0.1       16.92        perf-profile.children.cycl=
-es-pp.return_from_SYSCALL_64
->>       9.22            +0.1        9.33        perf-profile.children.cycl=
-es-pp.search_binary_handler
->>      13.49            +0.1       13.61        perf-profile.children.cycl=
-es-pp.__handle_mm_fault
->>       4.89            +0.1        5.02 =C4=85  2%  perf-profile.children=
-.cycles-pp.unmap_page_range
->>       9.11            +0.1        9.24        perf-profile.children.cycl=
-es-pp.load_elf_binary
->>      13.20            +0.1       13.34        perf-profile.children.cycl=
-es-pp.execve
->>      12.82            +0.1       12.96        perf-profile.children.cycl=
-es-pp.sys_execve
->>       4.95            +0.2        5.10 =C4=85  2%  perf-profile.children=
-.cycles-pp.unmap_vmas
->>      12.79            +0.2       12.95        perf-profile.children.cycl=
-es-pp.do_execveat_common
->>      13.90            +0.2       14.07        perf-profile.children.cycl=
-es-pp.handle_mm_fault
->>       6.95            +0.2        7.13 =C4=85  2%  perf-profile.children=
-.cycles-pp.do_exit
->>       6.95            +0.2        7.13 =C4=85  2%  perf-profile.children=
-.cycles-pp.do_group_exit
->>       6.95            +0.2        7.13 =C4=85  2%  perf-profile.children=
-.cycles-pp.__wake_up_parent
->>       6.40 =C4=85  2%      +0.2        6.62        perf-profile.children=
-.cycles-pp.vfprintf
->>       8.38            +0.2        8.61        perf-profile.children.cycl=
-es-pp.__vsnprintf_chk
->>       9.21            +0.2        9.46        perf-profile.children.cycl=
-es-pp.mmput
->>       9.16            +0.2        9.41        perf-profile.children.cycl=
-es-pp.exit_mmap
->>      19.85            +0.3       20.13        perf-profile.children.cycl=
-es-pp.entry_SYSCALL_64_fastpath
->>      17.60            -1.1       16.46        perf-profile.self.cycles-p=
-p.intel_idle
->>       6.03 =C4=85  2%      +0.2        6.26        perf-profile.self.cyc=
-les-pp.vfprintf
->>
->>
->>
->>                                    unixbench.score
->>
->>   14000 +-+-------------------------------------------------------------=
-----+
->>         O.O..O.O.O.O..O.O.O.O..O.O.O.O..O.O.O..O.O.O.+    +.+.+..+.+.+.+=
-..+.|
->>   12000 +-+                                          :    :             =
-    |
->>         |                                            :    :             =
-    |
->>   10000 +-+                                           :   :             =
-    |
->>         |                                             :  :              =
-    |
->>    8000 +-+                                           :  :              =
-    |
->>         |                                             :  :              =
-    |
->>    6000 +-+                                            : :              =
-    |
->>         |                                              : :              =
-    |
->>    4000 +-+                                            : :              =
-    |
->>         |                                              ::               =
-    |
->>    2000 +-+                                             :               =
-    |
->>         |                                               :               =
-    |
->>       0 +-+-------------------------------------------------------------=
-----+
->>
->>
->>
->> Disclaimer:
->> Results have been estimated based on internal Intel analysis and are pro=
-vided
->> for informational purposes only. Any difference in system hardware or so=
-ftware
->> design or configuration may affect actual performance.
->>
->>
->> Thanks,
->> Xiaolong
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> [   38.605034] BUG: KASAN: double-free or invalid-free in           (nul=
+l)
+>> [   38.605034]
+>> [   38.605034] CPU: 0 PID: 1 Comm: swapper Not tainted 4.15.0-rc3 #468
+>> [   38.605034] Call Trace:
+>> [   38.605034]  dump_stack+0x2f/0x3e:
+>> 						__dump_stack at lib/dump_stack.c:17
+>> 						 (inlined by) dump_stack at lib/dump_stack.c:63
+>> [   38.605034]  print_address_description+0xc2/0x3b7:
+>> 						print_address_description at mm/kasan/report.c:253
+>> [   38.605034]  kasan_report_double_free+0x50/0x8c:
+>> 						kasan_report_double_free at mm/kasan/report.c:334
+>> [   38.605034]  kasan_slab_free+0x60/0x1ef:
+>> 						kasan_slab_free at mm/kasan/kasan.c:514
+>> [   38.605034]  ? ftrace_likely_update+0x5c/0xc4:
+>> 						ftrace_likely_update at kernel/trace/trace_branch.c:223
+>> [   38.605034]  ? kobj_kset_leave+0x193/0x1dc:
+>> 						kobj_kset_leave at lib/kobject.c:184
+>> [   38.605034]  ? lock_acquired+0x8d2/0x8d2:
+>> 						lock_release at kernel/locking/lockdep.c:4013
+>> [   38.605034]  ? ftrace_likely_update+0x5c/0xc4:
+>> 						ftrace_likely_update at kernel/trace/trace_branch.c:223
+>> [   38.605034]  ? trace_preempt_on+0x489/0x4d7:
+>> 						trace_preempt_enable_rcuidle at include/trace/events/preemptirq.h:=
+50
+>> 						 (inlined by) trace_preempt_on at kernel/trace/trace_irqsoff.c:855
+>> [   38.605034]  ? static_obj+0x40/0x40:
+>> 						match_held_lock at kernel/locking/lockdep.c:3567
+>> [   38.605034]  ? kobject_put+0xf5/0x642:
+>> 						refcount_dec_and_test at arch/x86/include/asm/refcount.h:75
+>> 						 (inlined by) kref_put at include/linux/kref.h:69
+>> 						 (inlined by) kobject_put at lib/kobject.c:694
+>> [   38.605034]  ? trace_hardirqs_off+0x17/0x1f:
+>> 						trace_hardirqs_off at kernel/locking/lockdep.c:2984
+>> [   38.605034]  ? kfree+0x419/0x5e7:
+>> 						slab_free_hook at mm/slub.c:1380
+>> 						 (inlined by) slab_free_freelist_hook at mm/slub.c:1412
+>> 						 (inlined by) slab_free at mm/slub.c:2968
+>> 						 (inlined by) kfree at mm/slub.c:3899
+>> [   38.605034]  kfree+0x43c/0x5e7:
+>> 						slab_free at mm/slub.c:2973
+>> 						 (inlined by) kfree at mm/slub.c:3899
+>> [   38.605034]  usb_add_gadget_udc_release+0x693/0x6ca:
+>> 						usb_add_gadget_udc_release at drivers/usb/gadget/udc/core.c:1199
+>
+> Boy, the error handling in that routine is a mess.  The patch below =
 
---===============7840951987529861754==--
+> should straighten it out.
+
+looks good:
+
+Acked-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+
+
+> Alan Stern
+>
+>
+>
+> Index: usb-4.x/drivers/usb/gadget/udc/core.c
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --- usb-4.x.orig/drivers/usb/gadget/udc/core.c
+> +++ usb-4.x/drivers/usb/gadget/udc/core.c
+> @@ -1147,11 +1147,7 @@ int usb_add_gadget_udc_release(struct de
+>  =
+
+>  	udc =3D kzalloc(sizeof(*udc), GFP_KERNEL);
+>  	if (!udc)
+> -		goto err1;
+> -
+> -	ret =3D device_add(&gadget->dev);
+> -	if (ret)
+> -		goto err2;
+> +		goto err_put_gadget;
+>  =
+
+>  	device_initialize(&udc->dev);
+>  	udc->dev.release =3D usb_udc_release;
+> @@ -1160,7 +1156,11 @@ int usb_add_gadget_udc_release(struct de
+>  	udc->dev.parent =3D parent;
+>  	ret =3D dev_set_name(&udc->dev, "%s", kobject_name(&parent->kobj));
+>  	if (ret)
+> -		goto err3;
+> +		goto err_put_udc;
+> +
+> +	ret =3D device_add(&gadget->dev);
+> +	if (ret)
+> +		goto err_put_udc;
+>  =
+
+>  	udc->gadget =3D gadget;
+>  	gadget->udc =3D udc;
+> @@ -1170,7 +1170,7 @@ int usb_add_gadget_udc_release(struct de
+>  =
+
+>  	ret =3D device_add(&udc->dev);
+>  	if (ret)
+> -		goto err4;
+> +		goto err_unlist_udc;
+>  =
+
+>  	usb_gadget_set_state(gadget, USB_STATE_NOTATTACHED);
+>  	udc->vbus =3D true;
+> @@ -1178,27 +1178,25 @@ int usb_add_gadget_udc_release(struct de
+>  	/* pick up one of pending gadget drivers */
+>  	ret =3D check_pending_gadget_drivers(udc);
+>  	if (ret)
+> -		goto err5;
+> +		goto err_del_udc;
+>  =
+
+>  	mutex_unlock(&udc_lock);
+>  =
+
+>  	return 0;
+>  =
+
+> -err5:
+> + err_del_udc:
+>  	device_del(&udc->dev);
+>  =
+
+> -err4:
+> + err_unlist_udc:
+>  	list_del(&udc->list);
+>  	mutex_unlock(&udc_lock);
+>  =
+
+> -err3:
+> -	put_device(&udc->dev);
+>  	device_del(&gadget->dev);
+>  =
+
+> -err2:
+> -	kfree(udc);
+> + err_put_udc:
+> +	put_device(&udc->dev);
+>  =
+
+> -err1:
+> + err_put_gadget:
+>  	put_device(&gadget->dev);
+>  	return ret;
+>  }
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+> the body of a message to majordomo(a)vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+-- =
+
+balbi
+
+--===============7050186536000244886==--
 
