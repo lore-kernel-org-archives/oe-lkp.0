@@ -1,78 +1,146 @@
-Content-Type: multipart/mixed; boundary="===============2909453442087734322=="
+Content-Type: multipart/mixed; boundary="===============6893170135394148454=="
 MIME-Version: 1.0
-From: Dmitry Vyukov <dvyukov@google.com>
+From: Andrey Ryabinin <aryabinin@virtuozzo.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/cpu_entry_area] 10043e02db: kernel_BUG_at_arch/x86/mm/physaddr.c
-Date: Wed, 10 Jan 2018 10:36:15 +0100
-Message-ID: <CACT4Y+bfdX4r5CTX3d+HxUgfv05JvUCqbnSCv8wFk36yO8yQcQ@mail.gmail.com>
-In-Reply-To: <ba1bc259-9db7-64d8-f136-c889d2c967e0@virtuozzo.com>
+Subject: [PATCH] x86/kasan: panic if there is not enough memory to boot.
+Date: Wed, 10 Jan 2018 18:36:02 +0300
+Message-ID: <20180110153602.18919-1-aryabinin@virtuozzo.com>
+In-Reply-To: <alpine.DEB.2.20.1712271849490.2431@nanos>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2909453442087734322==
+--===============6893170135394148454==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 28, 2017 at 5:18 PM, Andrey Ryabinin
-<aryabinin@virtuozzo.com> wrote:
->
->
-> On 12/28/2017 02:54 PM, Dmitry Vyukov wrote:
->> On Thu, Dec 28, 2017 at 12:51 PM, Thomas Gleixner <tglx@linutronix.de>=
- wrote:
->>> On Wed, 27 Dec 2017, Dmitry Vyukov wrote:
->>>> On Wed, Dec 27, 2017 at 7:05 PM, Thomas Gleixner <tglx@linutronix.de=
-> wrote:
->>>>> So this dies simply because kasan_populate_shadow() runs out of memor=
-y and
->>>>> has no sanity check whatsoever.
->>>>>
->>>>> static __init void *early_alloc(size_t size, int nid)
->>>>> {
->>>>>         return memblock_virt_alloc_try_nid_nopanic(size, size,
->>>>>                 __pa(MAX_DMA_ADDRESS), BOOTMEM_ALLOC_ACCESSIBLE, nid);
->>>>> }
->>>>>
->>>>> kasan_populate_pmd()
->>>>> {
->>>>>         .....
->>>>>
->>>>>                 p =3D early_alloc(PAGE_SIZE, nid);
->>>>>                 entry =3D pfn_pte(PFN_DOWN(__pa(p)), PAGE_KERNEL);
->>>>>
->>>>> I've instrumented the whole thing and early_alloc() returns NULL at s=
-ome
->>>>> point and then __pa(NULL) dies in the VIRTUAL_DEBUG code. Well, it wo=
-uld
->>>>> die with VIRTUAL_DEBUG=3Dn as well at some other place.
->>>>>
->>>>> Not really a problem caused by the patch above, it's merily exposing =
-a code
->>>>> path which relies blindly on "enough memory available" assumptions.
->>>>>
->>>>> Throwing more memory at the VM makes the problem go away...
->>>>
->>>> Hi Thomas,
->>>>
->>>> We just need a check inside of early_alloc() to properly diagnose such
->>>> situation, right?
->>>
->>> At least you want to panic with a proper out of memory message. But let=
-ting
->>> the thing die at a random place is a bad idea.
->>
->> Thanks. I will cook a patch (if Andrey won't beat me to it).
->>
->
-> We probably should panic only if PAGE_SIZE allocation failed. PUD_SIZE,PM=
-D_SIZE allocations have
-> failure fallback. I would suggest add 'bool panic' param  to early_alloc(=
-) and call
-> memblock_virt_alloc_try_nid() if it's true.
+Currently KASAN doesn't panic in case it don't have enough memory
+to boot. Instead, it crashes in some random place:
+
+ kernel BUG at arch/x86/mm/physaddr.c:27!
+
+ RIP: 0010:__phys_addr+0x268/0x276
+ Call Trace:
+  kasan_populate_shadow+0x3f2/0x497
+  kasan_init+0x12e/0x2b2
+  setup_arch+0x2825/0x2a2c
+  start_kernel+0xc8/0x15f4
+  x86_64_start_reservations+0x2a/0x2c
+  x86_64_start_kernel+0x72/0x75
+  secondary_startup_64+0xa5/0xb0
+
+Use memblock_virt_alloc_try_nid() for allocations without failure
+fallback. It will panic with an out of memory message.
+
+Reported-by: kernel test robot <xiaolong.ye@intel.com>
+Signed-off-by: Andrey Ryabinin <aryabinin@virtuozzo.com>
+---
+ arch/x86/mm/kasan_init_64.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/mm/kasan_init_64.c b/arch/x86/mm/kasan_init_64.c
+index 47388f0c0e59..af6f2f9c6a26 100644
+--- a/arch/x86/mm/kasan_init_64.c
++++ b/arch/x86/mm/kasan_init_64.c
+@@ -21,10 +21,14 @@ extern struct range pfn_mapped[E820_MAX_ENTRIES];
+ =
+
+ static p4d_t tmp_p4d_table[PTRS_PER_P4D] __initdata __aligned(PAGE_SIZE);
+ =
+
+-static __init void *early_alloc(size_t size, int nid)
++static __init void *early_alloc(size_t size, int nid, bool panic)
+ {
+-	return memblock_virt_alloc_try_nid_nopanic(size, size,
+-		__pa(MAX_DMA_ADDRESS), BOOTMEM_ALLOC_ACCESSIBLE, nid);
++	if (panic)
++		return memblock_virt_alloc_try_nid(size, size,
++			__pa(MAX_DMA_ADDRESS), BOOTMEM_ALLOC_ACCESSIBLE, nid);
++	else
++		return memblock_virt_alloc_try_nid_nopanic(size, size,
++			__pa(MAX_DMA_ADDRESS), BOOTMEM_ALLOC_ACCESSIBLE, nid);
+ }
+ =
+
+ static void __init kasan_populate_pmd(pmd_t *pmd, unsigned long addr,
+@@ -38,14 +42,14 @@ static void __init kasan_populate_pmd(pmd_t *pmd, unsig=
+ned long addr,
+ 		if (boot_cpu_has(X86_FEATURE_PSE) &&
+ 		    ((end - addr) =3D=3D PMD_SIZE) &&
+ 		    IS_ALIGNED(addr, PMD_SIZE)) {
+-			p =3D early_alloc(PMD_SIZE, nid);
++			p =3D early_alloc(PMD_SIZE, nid, false);
+ 			if (p && pmd_set_huge(pmd, __pa(p), PAGE_KERNEL))
+ 				return;
+ 			else if (p)
+ 				memblock_free(__pa(p), PMD_SIZE);
+ 		}
+ =
+
+-		p =3D early_alloc(PAGE_SIZE, nid);
++		p =3D early_alloc(PAGE_SIZE, nid, true);
+ 		pmd_populate_kernel(&init_mm, pmd, p);
+ 	}
+ =
+
+@@ -57,7 +61,7 @@ static void __init kasan_populate_pmd(pmd_t *pmd, unsigne=
+d long addr,
+ 		if (!pte_none(*pte))
+ 			continue;
+ =
+
+-		p =3D early_alloc(PAGE_SIZE, nid);
++		p =3D early_alloc(PAGE_SIZE, nid, true);
+ 		entry =3D pfn_pte(PFN_DOWN(__pa(p)), PAGE_KERNEL);
+ 		set_pte_at(&init_mm, addr, pte, entry);
+ 	} while (pte++, addr +=3D PAGE_SIZE, addr !=3D end);
+@@ -75,14 +79,14 @@ static void __init kasan_populate_pud(pud_t *pud, unsig=
+ned long addr,
+ 		if (boot_cpu_has(X86_FEATURE_GBPAGES) &&
+ 		    ((end - addr) =3D=3D PUD_SIZE) &&
+ 		    IS_ALIGNED(addr, PUD_SIZE)) {
+-			p =3D early_alloc(PUD_SIZE, nid);
++			p =3D early_alloc(PUD_SIZE, nid, false);
+ 			if (p && pud_set_huge(pud, __pa(p), PAGE_KERNEL))
+ 				return;
+ 			else if (p)
+ 				memblock_free(__pa(p), PUD_SIZE);
+ 		}
+ =
+
+-		p =3D early_alloc(PAGE_SIZE, nid);
++		p =3D early_alloc(PAGE_SIZE, nid, true);
+ 		pud_populate(&init_mm, pud, p);
+ 	}
+ =
+
+@@ -101,7 +105,7 @@ static void __init kasan_populate_p4d(p4d_t *p4d, unsig=
+ned long addr,
+ 	unsigned long next;
+ =
+
+ 	if (p4d_none(*p4d)) {
+-		void *p =3D early_alloc(PAGE_SIZE, nid);
++		void *p =3D early_alloc(PAGE_SIZE, nid, true);
+ =
+
+ 		p4d_populate(&init_mm, p4d, p);
+ 	}
+@@ -122,7 +126,7 @@ static void __init kasan_populate_pgd(pgd_t *pgd, unsig=
+ned long addr,
+ 	unsigned long next;
+ =
+
+ 	if (pgd_none(*pgd)) {
+-		p =3D early_alloc(PAGE_SIZE, nid);
++		p =3D early_alloc(PAGE_SIZE, nid, true);
+ 		pgd_populate(&init_mm, pgd, p);
+ 	}
+ =
+
+-- =
+
+2.13.6
 
 
-FTR, I filed https://bugzilla.kernel.org/show_bug.cgi?id=3D198427 for
-this so it's not get lost.
-
---===============2909453442087734322==--
+--===============6893170135394148454==--
 
