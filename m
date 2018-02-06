@@ -1,129 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============7408941108891210158=="
+Content-Type: multipart/mixed; boundary="===============2077481922055084332=="
 MIME-Version: 1.0
-From: gregkh@linuxfoundation.org
+From: Marc-Andre Lureau <mlureau@redhat.com>
 To: lkp@lists.01.org
-Subject: Patch "x86/asm: Fix inline asm call constraints for GCC 4.4" has been added to the 4.9-stable tree
-Date: Tue, 06 Feb 2018 14:52:43 -0800
-Message-ID: <151795756323871@kroah.com>
+Subject: Re: e7e61e51f9 ("fw_cfg: do DMA read operation"): kernel BUG at arch/x86/mm/physaddr.c:75!
+Date: Wed, 07 Feb 2018 00:19:39 +0100
+Message-ID: <CAMxuvawXOAUvtz01583hFse0XjCMN7bOspvjzDRjpAo_oWTrJQ@mail.gmail.com>
+In-Reply-To: <20180206224129-mutt-send-email-mst@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7408941108891210158==
+--===============2077481922055084332==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi
 
-This is a note to let you know that I've just added the patch titled
+On Tue, Feb 6, 2018 at 10:01 PM, Michael S. Tsirkin <mst@redhat.com> wrot=
+e:
+> On Fri, Feb 02, 2018 at 11:59:00AM +0100, Marc-Andre Lureau wrote:
+>> Hi
+>>
+>> On Fri, Feb 2, 2018 at 3:19 AM, Michael S. Tsirkin <mst@redhat.com> wr=
+ote:
+>> > On Fri, Feb 02, 2018 at 06:01:01AM +0800, kernel test robot wrote:
+>> That's actually the regression, before Peter patch squashed in v10, we
+>> checked if the given address wasn't NULL before doing dma_map_single.
+>> Now it is gone and raises the panic.
+>>
+>> Thus, the diff I propose is:
+>>
+>> diff --git a/drivers/firmware/qemu_fw_cfg.c b/drivers/firmware/qemu_fw_c=
+fg.c
+>> index 3b3cf6222c97..08309939cd94 100644
+>> --- a/drivers/firmware/qemu_fw_cfg.c
+>> +++ b/drivers/firmware/qemu_fw_cfg.c
+>> @@ -128,7 +128,7 @@ static ssize_t fw_cfg_dma_transfer(struct device *de=
+v,
+>>         }
+>>
+>>         *d =3D (struct fw_cfg_dma) {
+>> -               .address =3D cpu_to_be64(virt_to_phys(address)),
+>> +               .address =3D address ? cpu_to_be64(virt_to_phys(address)=
+) : 0,
+>>                 .length =3D cpu_to_be32(length),
+>>                 .control =3D cpu_to_be32(control)
+>>         };
+>> @@ -518,7 +518,8 @@ static ssize_t fw_cfg_sysfs_read_raw(struct file
+>> *filp, struct kobject *kobj,
+>>         if (count > entry->f.size - pos)
+>>                 count =3D entry->f.size - pos;
+>>
+>> -       return fw_cfg_read_blob(dev, entry->f.select, buf, pos, count, t=
+rue);
+>> +       /* do not use DMA, virt_to_phys(buf) might not be ok */
+>> +       return fw_cfg_read_blob(dev, entry->f.select, buf, pos, count, f=
+alse);
+>>  }
+>>
+>> (and I tested it works both with x86 and x86_64 kernel/qemu)
+>>
+>> thanks
+>
+> Point is there are callers where address is on stack.
 
-    x86/asm: Fix inline asm call constraints for GCC 4.4
+Which one do you see left where we don't pass dma=3Dfalse?
 
-to the 4.9-stable tree which can be found at:
-    http://www.kernel.org/git/?p=3Dlinux/kernel/git/stable/stable-queue.git=
-;a=3Dsummary
+> Let's try to do a minimal approach - enable coredump
+> writes first. Defer speedups to next version.
 
-The filename of the patch is:
-     x86-asm-fix-inline-asm-call-constraints-for-gcc-4.4.patch
-and it can be found in the queue-4.9 subdirectory.
+Fair enough (although it would have been nice to ask before reaching v12)
 
-If you, or anyone else, feels it should not be added to the stable tree,
-please let <stable@vger.kernel.org> know about it.
-
-
->From 520a13c530aeb5f63e011d668c42db1af19ed349 Mon Sep 17 00:00:00 2001
-From: Josh Poimboeuf <jpoimboe@redhat.com>
-Date: Thu, 28 Sep 2017 16:58:26 -0500
-Subject: x86/asm: Fix inline asm call constraints for GCC 4.4
-
-From: Josh Poimboeuf <jpoimboe@redhat.com>
-
-commit 520a13c530aeb5f63e011d668c42db1af19ed349 upstream.
-
-The kernel test bot (run by Xiaolong Ye) reported that the following commit:
-
-  f5caf621ee35 ("x86/asm: Fix inline asm call constraints for Clang")
-
-is causing double faults in a kernel compiled with GCC 4.4.
-
-Linus subsequently diagnosed the crash pattern and the buggy commit and fou=
-nd that
-the issue is with this code:
-
-  register unsigned int __asm_call_sp asm("esp");
-  #define ASM_CALL_CONSTRAINT "+r" (__asm_call_sp)
-
-Even on a 64-bit kernel, it's using ESP instead of RSP.  That causes GCC
-to produce the following bogus code:
-
-  ffffffff8147461d:       89 e0                   mov    %esp,%eax
-  ffffffff8147461f:       4c 89 f7                mov    %r14,%rdi
-  ffffffff81474622:       4c 89 fe                mov    %r15,%rsi
-  ffffffff81474625:       ba 20 00 00 00          mov    $0x20,%edx
-  ffffffff8147462a:       89 c4                   mov    %eax,%esp
-  ffffffff8147462c:       e8 bf 52 05 00          callq  ffffffff814c98f0 <=
-copy_user_generic_unrolled>
-
-Despite the absurdity of it backing up and restoring the stack pointer
-for no reason, the bug is actually the fact that it's only backing up
-and restoring the lower 32 bits of the stack pointer.  The upper 32 bits
-are getting cleared out, corrupting the stack pointer.
-
-So change the '__asm_call_sp' register variable to be associated with
-the actual full-size stack pointer.
-
-This also requires changing the __ASM_SEL() macro to be based on the
-actual compiled arch size, rather than the CONFIG value, because
-CONFIG_X86_64 compiles some files with '-m32' (e.g., realmode and vdso).
-Otherwise Clang fails to build the kernel because it complains about the
-use of a 64-bit register (RSP) in a 32-bit file.
-
-Reported-and-Bisected-and-Tested-by: kernel test robot <xiaolong.ye@intel=
-.com>
-Diagnosed-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Dmitriy Vyukov <dvyukov@google.com>
-Cc: LKP <lkp@01.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Matthias Kaehlcke <mka@chromium.org>
-Cc: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Fixes: f5caf621ee35 ("x86/asm: Fix inline asm call constraints for Clang")
-Link: http://lkml.kernel.org/r/20170928215826.6sdpmwtkiydiytim(a)treble
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Cc: Matthias Kaehlcke <mka@chromium.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
----
- arch/x86/include/asm/asm.h |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
---- a/arch/x86/include/asm/asm.h
-+++ b/arch/x86/include/asm/asm.h
-@@ -11,10 +11,12 @@
- # define __ASM_FORM_COMMA(x) " " #x ","
- #endif
- =
-
--#ifdef CONFIG_X86_32
-+#ifndef __x86_64__
-+/* 32 bit */
- # define __ASM_SEL(a,b) __ASM_FORM(a)
- # define __ASM_SEL_RAW(a,b) __ASM_FORM_RAW(a)
- #else
-+/* 64 bit */
- # define __ASM_SEL(a,b) __ASM_FORM(b)
- # define __ASM_SEL_RAW(a,b) __ASM_FORM_RAW(b)
- #endif
-
-
-Patches currently in stable-queue which might be from jpoimboe(a)redhat.com=
- are
-
-queue-4.9/x86-asm-fix-inline-asm-call-constraints-for-gcc-4.4.patch
-
---===============7408941108891210158==--
+--===============2077481922055084332==--
 
