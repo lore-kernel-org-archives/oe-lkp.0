@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============5689617741086330389=="
+Content-Type: multipart/mixed; boundary="===============7408941108891210158=="
 MIME-Version: 1.0
 From: gregkh@linuxfoundation.org
 To: lkp@lists.01.org
-Subject: Patch "x86/asm: Fix inline asm call constraints for GCC 4.4" has been added to the 4.4-stable tree
-Date: Tue, 06 Feb 2018 14:52:32 -0800
-Message-ID: <151795755268121@kroah.com>
+Subject: Patch "x86/asm: Fix inline asm call constraints for GCC 4.4" has been added to the 4.9-stable tree
+Date: Tue, 06 Feb 2018 14:52:43 -0800
+Message-ID: <151795756323871@kroah.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5689617741086330389==
+--===============7408941108891210158==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -17,13 +17,13 @@ This is a note to let you know that I've just added the patch titled
 
     x86/asm: Fix inline asm call constraints for GCC 4.4
 
-to the 4.4-stable tree which can be found at:
+to the 4.9-stable tree which can be found at:
     http://www.kernel.org/git/?p=3Dlinux/kernel/git/stable/stable-queue.git=
 ;a=3Dsummary
 
 The filename of the patch is:
      x86-asm-fix-inline-asm-call-constraints-for-gcc-4.4.patch
-and it can be found in the queue-4.4 subdirectory.
+and it can be found in the queue-4.9 subdirectory.
 
 If you, or anyone else, feels it should not be added to the stable tree,
 please let <stable@vger.kernel.org> know about it.
@@ -123,7 +123,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Patches currently in stable-queue which might be from jpoimboe(a)redhat.com=
  are
 
-queue-4.4/x86-asm-fix-inline-asm-call-constraints-for-gcc-4.4.patch
+queue-4.9/x86-asm-fix-inline-asm-call-constraints-for-gcc-4.4.patch
 
---===============5689617741086330389==--
+--===============7408941108891210158==--
 
