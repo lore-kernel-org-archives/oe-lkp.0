@@ -1,331 +1,131 @@
-Content-Type: multipart/mixed; boundary="===============8801766670063338031=="
+Content-Type: multipart/mixed; boundary="===============0053159770616821050=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Kirill Tkhai <ktkhai@virtuozzo.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [iversion] c0cef30e4f: aim7.jobs-per-min -18.0% regression
-Date: Mon, 26 Feb 2018 16:38:07 +0800
-Message-ID: <20180226083807.GE8942@yexl-desktop>
-In-Reply-To: <1519573271.4702.10.camel@redhat.com>
+Subject: Re: [lkp-robot] [net] 37b927536f: kernel_BUG_at_net/core/net_namespace.c
+Date: Mon, 26 Feb 2018 12:40:33 +0300
+Message-ID: <7f32f11e-ed61-5a90-d8f1-63511959ae70@virtuozzo.com>
+In-Reply-To: <20180226020446.GC3019@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8801766670063338031==
+--===============0053159770616821050==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 02/25, Jeff Layton wrote:
->On Sun, 2018-02-25 at 23:05 +0800, kernel test robot wrote:
->> Greeting,
->> =
+On 26.02.2018 05:04, kernel test robot wrote:
+> =
 
->> FYI, we noticed a -18.0% regression of aim7.jobs-per-min due to commit:
->> =
+> FYI, we noticed the following commit (built with gcc-7):
+> =
 
->> =
+> commit: 37b927536f46b27de240934db9580c3d3eba9937 ("net: Introduce net_sem=
+ for protection of pernet_list")
+> url: https://github.com/0day-ci/linux/commits/Kirill-Tkhai/Replacing-net_=
+mutex-with-rw_semaphore/20180215-064145
+> =
 
->> commit: c0cef30e4ff0dc025f4a1660b8f0ba43ed58426e ("iversion: make inode_=
-cmp_iversion{+raw} return bool instead of s64")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->> =
+> =
 
->> in testcase: aim7
->> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz wi=
-th 384G memory
->> with following parameters:
->> =
+> in testcase: trinity
+> with following parameters:
+> =
 
->> 	disk: 4BRD_12G
->> 	md: RAID0
->> 	fs: xfs
->> 	test: disk_src
->> 	load: 3000
->> 	cpufreq_governor: performance
->> =
+> 	runtime: 300s
+> =
 
->> test-description: AIM7 is a traditional UNIX system level benchmark suit=
-e which is used to test and measure the performance of multiuser system.
->> test-url: https://sourceforge.net/projects/aimbench/files/aim-suite7/
->> =
+> test-description: Trinity is a linux system call fuzz tester.
+> test-url: http://codemonkey.org.uk/projects/trinity/
+> =
 
->> =
+> =
 
->
->I'm a bit suspicious of this result.
->
->This patch only changes inode_cmp_iversion{+raw} (since renamed to
->inode_eq_iversion{+raw}), and that neither should ever be called from
->xfs. The patch is fairly trivial too, and I wouldn't expect a big
->performance hit.
+> on test machine: qemu-system-x86_64 -enable-kvm -m 512M
+> =
 
-I tried to queue 4 more times test for both commit c0cef30e4f and its paren=
-t,
-the result seems quite stable.
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
 
-c0cef30e4ff0dc025f4a1660b8f0ba43ed58426e:
- "aim7.jobs-per-min": [
-    32964.01,
-    32938.68,
-    33068.18,
-    32886.32,
-    32843.72,
-    32798.83,
-    32898.34,
-    32952.55
-  ],
+> =
 
-3da90b159b146672f830bcd2489dd3a1f4e9e089:
-  "aim7.jobs-per-min": [
-    40239.65,
-    40163.33,
-    40353.32,
-    39976.9,
-    40185.75,
-    40411.3,
-    40213.58,
-    39900.69
-  ],
+> +------------------------------------------+------------+------------+
+> |                                          | b6d8347bf7 | 37b927536f |
+> +------------------------------------------+------------+------------+
+> | boot_successes                           | 8          | 0          |
+> | boot_failures                            | 0          | 8          |
+> | kernel_BUG_at_net/core/net_namespace.c   | 0          | 8          |
+> | invalid_opcode:#[##]                     | 0          | 8          |
+> | RIP:ops_init                             | 0          | 8          |
+> | Kernel_panic-not_syncing:Fatal_exception | 0          | 8          |
+> +------------------------------------------+------------+------------+
+> =
 
-Any other test data you may need?
+> =
 
->
->Is IMA involved here at all? I didn't see any evidence of it, but the
->kernel config did have it enabled.
->
+> =
 
-Sorry, not quite familiar with IMA, could you tell more about how to check =
-it?
+> [    0.258559] kernel BUG at net/core/net_namespace.c:73!
+> [    0.260018] invalid opcode: 0000 [#1]
+> [    0.261073] Modules linked in:
+> [    0.262005] CPU: 0 PID: 1 Comm: swapper Not tainted 4.15.0-05871-g37b9=
+275 #1
+> [    0.263875] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.10.2-1 04/01/2014
+> [    0.266084] RIP: 0010:ops_init+0x101/0x120
+> [    0.267233] RSP: 0000:ffffc9000000be00 EFLAGS: 00010246
+> [    0.268647] RAX: 0000000000000000 RBX: ffffffff823280a0 RCX: 000000000=
+0000000
+> [    0.270000] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88001=
+c602180
+> [    0.270000] RBP: ffff88001c602140 R08: ffffffff82323d00 R09: ffff88001=
+c602140
+> [    0.270000] R10: ffffffff82323308 R11: ffffffff827ff64d R12: ffffffff8=
+2323400
+> [    0.270000] R13: 0000000000000003 R14: ffffffff826e17b9 R15: 000000000=
+0000000
+> [    0.270000] FS:  0000000000000000(0000) GS:ffffffff82235000(0000) knlG=
+S:0000000000000000
+> [    0.270000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    0.270000] CR2: 0000000000000000 CR3: 0000000002213000 CR4: 000000000=
+00006b0
+> [    0.270000] Call Trace:
+> [    0.270000]  ? set_debug_rodata+0x11/0x11
+> [    0.270000]  register_pernet_operations+0x101/0x1e0
+> [    0.270000]  register_pernet_subsys+0x24/0x40
+> [    0.270000]  netlink_proto_init+0x143/0x160
+> [    0.270000]  ? eth_offload_init+0x14/0x14
+> [    0.270000]  do_one_initcall+0x4d/0x190
+> [    0.270000]  kernel_init_freeable+0x10e/0x190
+> [    0.270000]  ? rest_init+0xa0/0xa0
+> [    0.270000]  kernel_init+0xa/0xf0
+> [    0.270000]  ret_from_fork+0x3a/0x50
+> [    0.270000] Code: 8d 14 c5 e8 ff ff ff e8 be 14 11 00 4b 89 2c ef 49 8=
+d 7e 08 4d 89 bc 24 50 06 00 00 be 08 00 00 00 e8 34 22 95 ff e9 77 ff ff f=
+f <0f> 0b 0f 0b b8 f4 ff ff ff eb 91 b8 f4 ff ff ff e9 77 ff ff ff =
 
-Thanks,
-Xiaolong
->
->> =
+> [    0.270000] RIP: ops_init+0x101/0x120 RSP: ffffc9000000be00
+> [    0.270013] ---[ end trace e0045ead2b146f98 ]---
 
->> Details are as below:
->> ------------------------------------------------------------------------=
--------------------------->
->> =
+There was the check:
 
->> =
+	BUG_ON(!mutex_is_locked(&net_mutex));
+ =
 
->> To reproduce:
->> =
+which was killed in one of next commits of this patchset:
 
->>         git clone https://github.com/intel/lkp-tests.git
->>         cd lkp-tests
->>         bin/lkp install job.yaml  # job file is attached in this email
->>         bin/lkp run     job.yaml
->> =
+	commit 447cd7a0d7d1e5b4486e99cce289654fec9951e3
+	Author: Kirill Tkhai <ktkhai@virtuozzo.com>
+	Date:   Tue Feb 13 12:26:44 2018 +0300
 
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> compiler/cpufreq_governor/disk/fs/kconfig/load/md/rootfs/tbox_group/test=
-/testcase:
->>   gcc-7/performance/4BRD_12G/xfs/x86_64-rhel-7.2/3000/RAID0/debian-x86_6=
-4-2016-08-31.cgz/lkp-ivb-ep01/disk_src/aim7
->> =
+	net: Allow pernet_operations to be executed in parallel
 
->> commit: =
+So, the whole patchset as an atomic change is safe; and the only thing
+is the hunk removing the BUG_ON() had to go in another patch.
 
->>   3da90b159b (" f2fs-for-4.16-rc1")
->>   c0cef30e4f ("iversion: make inode_cmp_iversion{+raw} return bool inste=
-ad of s64")
->> =
+Anyway, thanks for testing, Xiaolong.
 
->> 3da90b159b146672 c0cef30e4ff0dc025f4a1660b8 =
+Kirill
 
->> ---------------- -------------------------- =
-
->>          %stddev     %change         %stddev
->>              \          |                \  =
-
->>      40183           -18.0%      32964        aim7.jobs-per-min
->>     448.60           +21.9%     546.68        aim7.time.elapsed_time
->>     448.60           +21.9%     546.68        aim7.time.elapsed_time.max
->>       5615 =C2=B1  5%     +33.4%       7489 =C2=B1  4%  aim7.time.involu=
-ntary_context_switches
->>       3086           +14.0%       3518        aim7.time.system_time
->>   19439782            -5.6%   18359474        aim7.time.voluntary_contex=
-t_switches
->>     199333           +14.3%     227794 =C2=B1  2%  interrupts.CAL:Functi=
-on_call_interrupts
->>       0.59            -0.1        0.50        mpstat.cpu.usr%
->>    2839401           +16.0%    3293688        softirqs.SCHED
->>    7600068           +15.1%    8747820        softirqs.TIMER
->>     118.00 =C2=B1 43%     +98.7%     234.50 =C2=B1 15%  vmstat.io.bo
->>      87840           -22.4%      68154        vmstat.system.cs
->>     552798 =C2=B1  6%     +15.8%     640107 =C2=B1  4%  numa-numastat.no=
-de0.local_node
->>     557345 =C2=B1  6%     +15.7%     644666 =C2=B1  4%  numa-numastat.no=
-de0.numa_hit
->>     528341 =C2=B1  7%     +21.7%     642933 =C2=B1  4%  numa-numastat.no=
-de1.local_node
->>     531604 =C2=B1  7%     +21.6%     646209 =C2=B1  4%  numa-numastat.no=
-de1.numa_hit
->>  2.147e+09           -12.4%   1.88e+09        cpuidle.C1.time
->>   13702041           -14.7%   11683737        cpuidle.C1.usage
->>  2.082e+08 =C2=B1  4%     +28.1%  2.667e+08 =C2=B1  5%  cpuidle.C1E.time
->>  4.719e+08 =C2=B1  2%     +23.1%  5.807e+08 =C2=B1  4%  cpuidle.C3.time
->>  1.141e+10           +31.0%  1.496e+10        cpuidle.C6.time
->>   15672622           +27.8%   20031028        cpuidle.C6.usage
->>   13520572 =C2=B1  3%     +29.5%   17514398 =C2=B1  9%  cpuidle.POLL.time
->>     278.25 =C2=B1  5%     -46.0%     150.25 =C2=B1 73%  numa-vmstat.node=
-0.nr_dirtied
->>       3200 =C2=B1 14%     -20.6%       2542 =C2=B1 19%  numa-vmstat.node=
-0.nr_mapped
->>     277.75 =C2=B1  5%     -46.2%     149.50 =C2=B1 73%  numa-vmstat.node=
-0.nr_written
->>      28.50 =C2=B1 52%    +448.2%     156.25 =C2=B1 70%  numa-vmstat.node=
-1.nr_dirtied
->>       2577 =C2=B1 19%     +26.3%       3255 =C2=B1 15%  numa-vmstat.node=
-1.nr_mapped
->>     634338 =C2=B1  4%      +7.8%     683959 =C2=B1  4%  numa-vmstat.node=
-1.numa_hit
->>     457411 =C2=B1  6%     +10.8%     506800 =C2=B1  5%  numa-vmstat.node=
-1.numa_local
->>       3734 =C2=B1  8%     -11.5%       3306 =C2=B1  6%  proc-vmstat.numa=
-_hint_faults_local
->>    1114538           +18.3%    1318978        proc-vmstat.numa_hit
->>    1106722           +18.5%    1311136        proc-vmstat.numa_local
->>      22100            +7.5%      23753 =C2=B1  4%  proc-vmstat.numa_page=
-s_migrated
->>    1174556           +18.0%    1386359        proc-vmstat.pgalloc_normal
->>    1241445           +18.1%    1466086        proc-vmstat.pgfault
->>    1138310           +19.3%    1358132        proc-vmstat.pgfree
->>      22100            +7.5%      23753 =C2=B1  4%  proc-vmstat.pgmigrate=
-_success
->>      53332 =C2=B1 43%    +143.0%     129617 =C2=B1 14%  proc-vmstat.pgpg=
-out
->>       1.42 =C2=B1  2%      +1.7        3.07        perf-stat.branch-miss=
--rate%
->>  1.064e+10          +123.3%  2.375e+10        perf-stat.branch-misses
->>      10.79            +0.6       11.43        perf-stat.cache-miss-rate%
->>  5.583e+09            +5.9%  5.915e+09        perf-stat.cache-misses
->>   39652092            -5.0%   37662545        perf-stat.context-switches
->>       1.29           +11.7%       1.44        perf-stat.cpi
->>  4.637e+12           +12.8%   5.23e+12        perf-stat.cpu-cycles
->>  8.653e+11            +9.8%  9.498e+11 =C2=B1  2%  perf-stat.dTLB-loads
->>  3.654e+11           +12.4%  4.109e+11        perf-stat.dTLB-stores
->>       0.78           -10.5%       0.70        perf-stat.ipc
->>    1214932           +17.9%    1432266        perf-stat.minor-faults
->>  1.334e+09            -1.8%   1.31e+09        perf-stat.node-store-misses
->>  1.651e+09            -1.8%   1.62e+09        perf-stat.node-stores
->>    1214954           +17.9%    1432313        perf-stat.page-faults
->>     256.75          -100.0%       0.00        turbostat.Avg_MHz
->>      21.39           -21.4        0.00        turbostat.Busy%
->>       1200          -100.0%       0.00        turbostat.Bzy_MHz
->>   13695007          -100.0%       0.00        turbostat.C1
->>      11.92           -11.9        0.00        turbostat.C1%
->>    2116683 =C2=B1  2%    -100.0%       0.00        turbostat.C1E
->>       1.16 =C2=B1  4%      -1.2        0.00        turbostat.C1E%
->>    3112269          -100.0%       0.00        turbostat.C3
->>       2.62 =C2=B1  2%      -2.6        0.00        turbostat.C3%
->>   15671277          -100.0%       0.00        turbostat.C6
->>      63.38           -63.4        0.00        turbostat.C6%
->>      49.46          -100.0%       0.00        turbostat.CPU%c1
->>       1.42 =C2=B1  2%    -100.0%       0.00        turbostat.CPU%c3
->>      27.73          -100.0%       0.00        turbostat.CPU%c6
->>      31.41          -100.0%       0.00        turbostat.CorWatt
->>      63.25          -100.0%       0.00        turbostat.CoreTmp
->>   18919351          -100.0%       0.00        turbostat.IRQ
->>       1.21 =C2=B1 18%    -100.0%       0.00        turbostat.Pkg%pc2
->>       0.67 =C2=B1 31%    -100.0%       0.00        turbostat.Pkg%pc6
->>      63.25          -100.0%       0.00        turbostat.PkgTmp
->>      57.63          -100.0%       0.00        turbostat.PkgWatt
->>      30.73          -100.0%       0.00        turbostat.RAMWatt
->>      36030          -100.0%       0.00        turbostat.SMI
->>       3000          -100.0%       0.00        turbostat.TSC_MHz
->> =
-
->>                                                                         =
-        =
-
->>                                   aim7.jobs-per-min                     =
-        =
-
->>                                                                         =
-        =
-
->>   41000 +-+-------------------------------------------------------------=
-----+   =
-
->>         |  ..+....+....  ..+....+....+....   ..+....+....+...+....      =
-    |   =
-
->>   40000 +-+            +.                 +..                     +     =
-    |   =
-
->>   39000 +-+                                                             =
-    |   =
-
->>         |                                                               =
-    |   =
-
->>   38000 +-+                                                             =
-    |   =
-
->>   37000 +-+                                                             =
-    |   =
-
->>         |                                                               =
-    |   =
-
->>   36000 +-+                                                             =
-    |   =
-
->>   35000 +-+                                                             =
-    |   =
-
->>         |                                                               =
-    |   =
-
->>   34000 +-+                                                             =
-    |   =
-
->>   33000 +-+                                         O                  O=
-    |   =
-
->>         O    O    O    O   O    O    O    O    O         O   O    O     =
-    O   =
-
->>   32000 +-+-------------------------------------------------------------=
-----+   =
-
->>                                                                         =
-        =
-
->>                                                                         =
-                                                                           =
-                                                                           =
-          =
-
->>                                                                         =
-        =
-
->> [*] bisect-good sample
->> [O] bisect-bad  sample
->> =
-
->> =
-
->> =
-
->> Disclaimer:
->> Results have been estimated based on internal Intel analysis and are pro=
-vided
->> for informational purposes only. Any difference in system hardware or so=
-ftware
->> design or configuration may affect actual performance.
->> =
-
->> =
-
->> Thanks,
->> Xiaolong
->-- =
-
->Jeff Layton <jlayton@redhat.com>
-
---===============8801766670063338031==--
+--===============0053159770616821050==--
 
