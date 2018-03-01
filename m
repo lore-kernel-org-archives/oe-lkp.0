@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============8866933631415198943=="
+Content-Type: multipart/mixed; boundary="===============3013443335934472066=="
 MIME-Version: 1.0
 From: Dmitry Vyukov <dvyukov@google.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [printk] c162d5b433: BUG:KASAN:use-after-scope_in_c
-Date: Thu, 01 Mar 2018 09:47:05 +0100
-Message-ID: <CACT4Y+ZuCq+yN3YwusmHuv1CN86CfEYEhaJGoaD7xLG9irgyYw@mail.gmail.com>
+Date: Thu, 01 Mar 2018 09:51:22 +0100
+Message-ID: <CACT4Y+ZUDu588gwgCbqru5D1RD5C+s3+E5ydhP7h9RoCjwQWJw@mail.gmail.com>
 In-Reply-To: <20180301013722.GA6763@tigerII.localdomain>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8866933631415198943==
+--===============3013443335934472066==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -77,7 +77,15 @@ l/printk/printk.c:1556
 tk/printk.c:2233
 >
 > complaining that there was a write of size 4... at atomic_read().
->
+
+Hi Sergey,
+
+Where is that report?
+I doubt that KASAN has instrumented a read as a write (at least there
+are no such known cases), so perhaps it's pointing to some other
+memory access.
+
+
 > Now it's reporting that the write of size 1 was out of scope.
 >
 >> I am really curious what code is proceed on the line
@@ -100,8 +108,10 @@ tk/printk.c:2233
 >      193a:       b9 00 04 00 00          mov    $0x400,%ecx
 >      193f:       4c 89 ef                mov    %r13,%rdi
 >      1942:       31 ed                   xor    %ebp,%ebp
->
->
+
+For a KASAN report IP must point to one of __asan_[report_]load/store funct=
+ion.
+
 > That jmp 18dd after log_next() is a `goto skip' in
 > suppress_message_printing() branch
 >
@@ -126,14 +136,8 @@ el.
 >
 >
 > As far as I can tell.
+>
+>         -ss
 
-
-Hi Shun,
-
-The report says "job-script is attached in this email", but I don't
-see it attached. Did you forget to attach it? How can I reproduce this
-exact build?
-Could you post a symbolized report with inlines frames?
-
---===============8866933631415198943==--
+--===============3013443335934472066==--
 
