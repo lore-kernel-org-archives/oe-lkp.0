@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============2418675258084976712=="
+Content-Type: multipart/mixed; boundary="===============4319481128357805144=="
 MIME-Version: 1.0
 From: Sasha Levin <Alexander.Levin@microsoft.com>
 To: lkp@lists.01.org
-Subject: [PATCH AUTOSEL for 4.4 037/115] mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()
-Date: Sat, 03 Mar 2018 22:31:10 +0000
-Message-ID: <20180303223010.27106-37-alexander.levin@microsoft.com>
-In-Reply-To: <20180303223010.27106-1-alexander.levin@microsoft.com>
+Subject: [PATCH AUTOSEL for 3.18 22/63] mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()
+Date: Sat, 03 Mar 2018 22:33:22 +0000
+Message-ID: <20180303223228.27323-22-alexander.levin@microsoft.com>
+In-Reply-To: <20180303223228.27323-1-alexander.levin@microsoft.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2418675258084976712==
+--===============4319481128357805144==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -62,10 +62,10 @@ Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index fbfadba81c5a..771774e13f10 100644
+index 30a8f531236c..2629fc3e24e0 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
-@@ -153,7 +153,7 @@ static inline int page_cache_get_speculative(struct pag=
+@@ -146,7 +146,7 @@ static inline int page_cache_get_speculative(struct pag=
 e *page)
  =
 
@@ -76,7 +76,7 @@ e *page)
  # endif
  	/*
  	 * Preempt must be disabled here - we rely on rcu_read_lock doing
-@@ -191,7 +191,7 @@ static inline int page_cache_add_speculative(struct pag=
+@@ -184,7 +184,7 @@ static inline int page_cache_add_speculative(struct pag=
 e *page, int count)
  =
 
@@ -91,5 +91,5 @@ e *page, int count)
 
 2.14.1
 
---===============2418675258084976712==--
+--===============4319481128357805144==--
 
