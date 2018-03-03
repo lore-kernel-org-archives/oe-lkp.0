@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============8054887982559579266=="
+Content-Type: multipart/mixed; boundary="===============2418675258084976712=="
 MIME-Version: 1.0
 From: Sasha Levin <Alexander.Levin@microsoft.com>
 To: lkp@lists.01.org
-Subject: [PATCH AUTOSEL for 4.9 077/219] mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()
-Date: Sat, 03 Mar 2018 22:28:40 +0000
-Message-ID: <20180303222716.26640-77-alexander.levin@microsoft.com>
-In-Reply-To: <20180303222716.26640-1-alexander.levin@microsoft.com>
+Subject: [PATCH AUTOSEL for 4.4 037/115] mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()
+Date: Sat, 03 Mar 2018 22:31:10 +0000
+Message-ID: <20180303223010.27106-37-alexander.levin@microsoft.com>
+In-Reply-To: <20180303223010.27106-1-alexander.levin@microsoft.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8054887982559579266==
+--===============2418675258084976712==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -62,10 +62,10 @@ Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 7dbe9148b2f8..35f4c4d9c405 100644
+index fbfadba81c5a..771774e13f10 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
-@@ -148,7 +148,7 @@ static inline int page_cache_get_speculative(struct pag=
+@@ -153,7 +153,7 @@ static inline int page_cache_get_speculative(struct pag=
 e *page)
  =
 
@@ -76,7 +76,7 @@ e *page)
  # endif
  	/*
  	 * Preempt must be disabled here - we rely on rcu_read_lock doing
-@@ -186,7 +186,7 @@ static inline int page_cache_add_speculative(struct pag=
+@@ -191,7 +191,7 @@ static inline int page_cache_add_speculative(struct pag=
 e *page, int count)
  =
 
@@ -86,10 +86,10 @@ e *page, int count)
 +	VM_BUG_ON(!in_atomic() && !irqs_disabled());
  # endif
  	VM_BUG_ON_PAGE(page_count(page) =3D=3D 0, page);
- 	page_ref_add(page, count);
+ 	atomic_add(count, &page->_count);
 -- =
 
 2.14.1
 
---===============8054887982559579266==--
+--===============2418675258084976712==--
 
