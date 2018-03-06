@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============8376549303156018615=="
+Content-Type: multipart/mixed; boundary="===============6280602243984867132=="
 MIME-Version: 1.0
 From: kernel test robot <shun.hao@intel.com>
 To: lkp@lists.01.org
-Subject: [lkp-robot] [signal] b68a68d3dc: [No primary change]
-Date: Tue, 06 Mar 2018 10:02:57 +0800
-Message-ID: <20180306020256.qtpngoitgo3pzxoz@shao2-debian>
+Subject: [lkp-robot] [signal] b68a68d3dc: [kernel_selftests.x86.protection_keys_64.fail]
+Date: Tue, 06 Mar 2018 10:37:41 +0800
+Message-ID: <20180306023741.za6bemfkn73n6joh@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8376549303156018615==
+--===============6280602243984867132==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -38,6 +38,35 @@ test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
 Details are as below:
 ---------------------------------------------------------------------------=
 ----------------------->
+tbox_group/testcase/rootfs/kconfig/compiler/group:
+  lkp-skl-2sp2/kernel_selftests/debian-x86_64-2016-08-31.cgz/x86_64-rhel-7.=
+2/gcc-7/kselftests-03
+
+commit:
+  b713da69e4c91d9addada4e58d26df1c9b5cd840
+  b68a68d3dcc15ebbf23cbe91af1abf57591bd96b
+
+b713da69e4c91d9a b68a68d3dcc15ebbf23cbe91af
+---------------- --------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :18          72%          13:18    kernel_selftests.x86.protecti=
+on_keys_64.fail
+          2:18         -11%            :18    kmsg.ACPI_BIOS_Error(bug):A_v=
+alid_RSDP_was_not_found(#/tbxfroot-#)
+          6:18          -6%           5:18    kmsg.i801_smbus#:#:#f.#:Faile=
+d_to_allocate_irq
+          6:18          -6%           5:18    dmesg.boot_failures
+          6:18          -6%           5:18    dmesg.genirq:Flags_mismatch_i=
+rq##(i801_smbus)vs.#(timer)
+         30:18        -167%           0:18    dmesg.timestamp:genirq:Flags_=
+mismatch_irq##(i801_smbus)vs.#(timer)
+       4504:18      -17862%        1288:18    dmesg.timestamp:last
+         %stddev     %change         %stddev
+             \          |                \
+      1.00          -100.0%       0.00        kernel_selftests.x86.protecti=
+on_keys_64.pass
+
 
 
 To reproduce:
@@ -62,7 +91,7 @@ design or configuration may affect actual performance.
 Thanks,
 Shun
 
---===============8376549303156018615==
+--===============6280602243984867132==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -2961,102 +2990,7 @@ eQpDT05GSUdfQVJDSF9IQVNfU0dfQ0hBSU49eQpDT05GSUdfQVJDSF9IQVNfUE1FTV9BUEk9eQpD
 T05GSUdfQVJDSF9IQVNfVUFDQ0VTU19GTFVTSENBQ0hFPXkKQ09ORklHX1NCSVRNQVA9eQojIENP
 TkZJR19TVFJJTkdfU0VMRlRFU1QgaXMgbm90IHNldAo=
 
---===============8376549303156018615==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="job-script.ksh"
-
-IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0na2VybmVsX3NlbGZ0
-ZXN0cycKCWV4cG9ydCB0ZXN0Y2FzZT0na2VybmVsX3NlbGZ0ZXN0cycKCWV4cG9ydCBjYXRlZ29y
-eT0nZnVuY3Rpb25hbCcKCWV4cG9ydCBuZWVkX2NwdT0yCglleHBvcnQga2VybmVsX2NtZGxpbmU9
-J2Vyc3RfZGlzYWJsZScKCWV4cG9ydCBqb2Jfb3JpZ2luPScvaG9tZS9saXpoaWppYW4vbGl6aGlq
-aWFuL3NyYy9qb2JzL2tlcm5lbF9zZWxmdGVzdHMueWFtbCcKCWV4cG9ydCB0ZXN0Ym94PSdsa3At
-c2tsLTJzcDInCglleHBvcnQgdGJveF9ncm91cD0nbGtwLXNrbC0yc3AyJwoJZXhwb3J0IHNlcmlh
-bF9zZXJ2ZXJzPSdsa3Atd2lsZGNhdCBsa3Atc3QwMSBsa3Atb3MgbGtwLW5obS1kcDEgbGtwLW5o
-bS1kcDInCglleHBvcnQgbmVlZF9rZXJuZWxfaGVhZGVycz0ndHJ1ZQp0cnVlJwoJZXhwb3J0IG5l
-ZWRfa2VybmVsX3NlbGZ0ZXN0cz0ndHJ1ZQp0cnVlJwoJZXhwb3J0IGtjb25maWc9J3g4Nl82NC1y
-aGVsLTcuMicKCWV4cG9ydCBjb21waWxlcj0nZ2NjLTcnCglleHBvcnQgcXVldWU9J2Jpc2VjdCcK
-CWV4cG9ydCBicmFuY2g9J2xpbnVzL21hc3RlcicKCWV4cG9ydCBjb21taXQ9J2I2OGE2OGQzZGNj
-MTVlYmJmMjNjYmU5MWFmMWFiZjU3NTkxYmQ5NmInCglleHBvcnQgc3VibWl0X2lkPSc1YTljODQ3
-YTBiOWE5MzIyM2MzODI0NTYnCglleHBvcnQgam9iX2ZpbGU9Jy9sa3Avc2NoZWR1bGVkL2xrcC1z
-a2wtMnNwMi9rZXJuZWxfc2VsZnRlc3RzLWtzZWxmdGVzdHMtMDMtZGViaWFuLXg4Nl82NC0yMDE2
-LTA4LTMxLmNnei1iNjhhNjhkM2RjYzE1ZWJiZjIzY2JlOTFhZjFhYmY1NzU5MWJkOTZiLTIwMTgw
-MzA1LTg3NjQtMmNlN242LTAueWFtbCcKCWV4cG9ydCBpZD0nMTM2ZjI4YjkxNGNmODlhOGU0NWUz
-NGFkMzhlOGU2ZWU3MWExOTU4MCcKCWV4cG9ydCBtb2RlbD0nU2t5bGFrZScKCWV4cG9ydCBucl9j
-cHU9MTEyCglleHBvcnQgbWVtb3J5PSc2NEcnCglleHBvcnQgbnJfc3NkX3BhcnRpdGlvbnM9MQoJ
-ZXhwb3J0IHNzZF9wYXJ0aXRpb25zPScvZGV2L2Rpc2svYnktaWQvYXRhLUlOVEVMX1NTRFNBMk0w
-ODBHMkdOX0NWUE85MzQ1MDA2TjA4MEJHTi1wYXJ0MScKCWV4cG9ydCBzd2FwX3BhcnRpdGlvbnM9
-J0xBQkVMPVNXQVAnCglleHBvcnQgcm9vdGZzX3BhcnRpdGlvbj0nTEFCRUw9TEtQLVJPT1RGUycK
-CWV4cG9ydCBuZWVkX2tjb25maWc9CglleHBvcnQgdXNlcj0nbGl6aGlqaWFuJwoJZXhwb3J0IHJv
-b3Rmcz0nZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNneicKCWV4cG9ydCBlbnF1ZXVlX3RpbWU9
-JzIwMTgtMDMtMDUgMDc6NDI6NTAgKzA4MDAnCglleHBvcnQgX2lkPSc1YTljODQ3YTBiOWE5MzIy
-M2MzODI0NTYnCglleHBvcnQgX3J0PScvcmVzdWx0L2tlcm5lbF9zZWxmdGVzdHMva3NlbGZ0ZXN0
-cy0wMy9sa3Atc2tsLTJzcDIvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhl
-bC03LjIvZ2NjLTcvYjY4YTY4ZDNkY2MxNWViYmYyM2NiZTkxYWYxYWJmNTc1OTFiZDk2YicKCWV4
-cG9ydCByZXN1bHRfcm9vdD0nL3Jlc3VsdC9rZXJuZWxfc2VsZnRlc3RzL2tzZWxmdGVzdHMtMDMv
-bGtwLXNrbC0yc3AyL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3oveDg2XzY0LXJoZWwtNy4y
-L2djYy03L2I2OGE2OGQzZGNjMTVlYmJmMjNjYmU5MWFmMWFiZjU3NTkxYmQ5NmIvMScKCWV4cG9y
-dCBMS1BfU0VSVkVSPSdpbm4nCglleHBvcnQgbWF4X3VwdGltZT0zNjAwCglleHBvcnQgaW5pdHJk
-PScvb3NpbWFnZS9kZWJpYW4vZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNneicKCWV4cG9ydCBi
-b290bG9hZGVyX2FwcGVuZD0ncm9vdD0vZGV2L3JhbTAKdXNlcj1saXpoaWppYW4Kam9iPS9sa3Av
-c2NoZWR1bGVkL2xrcC1za2wtMnNwMi9rZXJuZWxfc2VsZnRlc3RzLWtzZWxmdGVzdHMtMDMtZGVi
-aWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei1iNjhhNjhkM2RjYzE1ZWJiZjIzY2JlOTFhZjFhYmY1
-NzU5MWJkOTZiLTIwMTgwMzA1LTg3NjQtMmNlN242LTAueWFtbApBUkNIPXg4Nl82NAprY29uZmln
-PXg4Nl82NC1yaGVsLTcuMgpicmFuY2g9bGludXMvbWFzdGVyCmNvbW1pdD1iNjhhNjhkM2RjYzE1
-ZWJiZjIzY2JlOTFhZjFhYmY1NzU5MWJkOTZiCkJPT1RfSU1BR0U9L3BrZy9saW51eC94ODZfNjQt
-cmhlbC03LjIvZ2NjLTcvYjY4YTY4ZDNkY2MxNWViYmYyM2NiZTkxYWYxYWJmNTc1OTFiZDk2Yi92
-bWxpbnV6LTQuMTUuMC1yYzYtMDAwMjYtZ2I2OGE2OGQKZXJzdF9kaXNhYmxlCm1heF91cHRpbWU9
-MzYwMApSRVNVTFRfUk9PVD0vcmVzdWx0L2tlcm5lbF9zZWxmdGVzdHMva3NlbGZ0ZXN0cy0wMy9s
-a3Atc2tsLTJzcDIvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhlbC03LjIv
-Z2NjLTcvYjY4YTY4ZDNkY2MxNWViYmYyM2NiZTkxYWYxYWJmNTc1OTFiZDk2Yi8xCkxLUF9TRVJW
-RVI9aW5uCmRlYnVnCmFwaWM9ZGVidWcKc3lzcnFfYWx3YXlzX2VuYWJsZWQKcmN1cGRhdGUucmN1
-X2NwdV9zdGFsbF90aW1lb3V0PTEwMApuZXQuaWZuYW1lcz0wCnByaW50ay5kZXZrbXNnPW9uCnBh
-bmljPS0xCnNvZnRsb2NrdXBfcGFuaWM9MQpubWlfd2F0Y2hkb2c9cGFuaWMKb29wcz1wYW5pYwps
-b2FkX3JhbWRpc2s9Mgpwcm9tcHRfcmFtZGlzaz0wCmRyYmQubWlub3JfY291bnQ9OApzeXN0ZW1k
-LmxvZ19sZXZlbD1lcnIKaWdub3JlX2xvZ2xldmVsCmNvbnNvbGU9dHR5MAplYXJseXByaW50az10
-dHlTMCwxMTUyMDAKY29uc29sZT10dHlTMCwxMTUyMDAKdmdhPW5vcm1hbApydycKCWV4cG9ydCBt
-b2R1bGVzX2luaXRyZD0nL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvYjY4YTY4ZDNk
-Y2MxNWViYmYyM2NiZTkxYWYxYWJmNTc1OTFiZDk2Yi9tb2R1bGVzLmNneicKCWV4cG9ydCBibV9p
-bml0cmQ9Jy9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9sa3BfMjAx
-Ny0xMi0xNC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3Jz
-eW5jLXJvb3Rmc18yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAx
-Ni0wOC0zMS5jZ3ovcnVuLWlwY29uZmlnXzIwMTYtMTEtMTUuY2d6LC9vc2ltYWdlL2RlcHMvZGVi
-aWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9rZXJuZWxfc2VsZnRlc3RzXzIwMTgtMDItMDkuY2d6
-LC9vc2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L2tlcm5lbF9zZWxmdGVz
-dHMteDg2XzY0LWI0ZGYyZTM1MzdiZV8yMDE3LTA3LTAxLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlh
-bi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovaHdfMjAxNi0xMS0xNS5jZ3onCglleHBvcnQgbGludXhf
-aGVhZGVyc19pbml0cmQ9Jy9wa2cvbGludXgveDg2XzY0LXJoZWwtNy4yL2djYy03L2I2OGE2OGQz
-ZGNjMTVlYmJmMjNjYmU5MWFmMWFiZjU3NTkxYmQ5NmIvbGludXgtaGVhZGVycy5jZ3onCglleHBv
-cnQgbGludXhfc2VsZnRlc3RzX2luaXRyZD0nL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2Nj
-LTcvYjY4YTY4ZDNkY2MxNWViYmYyM2NiZTkxYWYxYWJmNTc1OTFiZDk2Yi9saW51eC1zZWxmdGVz
-dHMuY2d6JwoJZXhwb3J0IGxrcF9pbml0cmQ9Jy9sa3AvbGl6aGlqaWFuL2xrcC14ODZfNjQuY2d6
-JwoJZXhwb3J0IHNpdGU9J2lubicKCWV4cG9ydCBMS1BfQ0dJX1BPUlQ9ODAKCWV4cG9ydCBMS1Bf
-Q0lGU19QT1JUPTEzOQoJZXhwb3J0IGtlcm5lbD0nL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIv
-Z2NjLTcvYjY4YTY4ZDNkY2MxNWViYmYyM2NiZTkxYWYxYWJmNTc1OTFiZDk2Yi92bWxpbnV6LTQu
-MTUuMC1yYzYtMDAwMjYtZ2I2OGE2OGQnCglleHBvcnQgZGVxdWV1ZV90aW1lPScyMDE4LTAzLTA1
-IDA3OjQ2OjEwICswODAwJwoJZXhwb3J0IGpvYl9pbml0cmQ9Jy9sa3Avc2NoZWR1bGVkL2xrcC1z
-a2wtMnNwMi9rZXJuZWxfc2VsZnRlc3RzLWtzZWxmdGVzdHMtMDMtZGViaWFuLXg4Nl82NC0yMDE2
-LTA4LTMxLmNnei1iNjhhNjhkM2RjYzE1ZWJiZjIzY2JlOTFhZjFhYmY1NzU5MWJkOTZiLTIwMTgw
-MzA1LTg3NjQtMmNlN242LTAuY2d6JwoKCVsgLW4gIiRMS1BfU1JDIiBdIHx8CglleHBvcnQgTEtQ
-X1NSQz0vbGtwLyR7dXNlcjotbGtwfS9zcmMKfQoKcnVuX2pvYigpCnsKCWVjaG8gJCQgPiAkVE1Q
-L3J1bi1qb2IucGlkCgoJLiAkTEtQX1NSQy9saWIvaHR0cC5zaAoJLiAkTEtQX1NSQy9saWIvam9i
-LnNoCgkuICRMS1BfU1JDL2xpYi9lbnYuc2gKCglleHBvcnRfdG9wX2VudgoKCXJ1bl9tb25pdG9y
-ICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIga21zZwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9u
-aXRvcnMvd3JhcHBlciBoZWFydGJlYXQKCXJ1bl9tb25pdG9yIHBtZXRlcl9zZXJ2ZXI9J2xrcC1u
-aG0tZHAxJyBwbWV0ZXJfZGV2aWNlPSd5b2tvZ2F3YS13dDMxMCcgJExLUF9TUkMvbW9uaXRvcnMv
-d3JhcHBlciBwbWV0ZXIKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgb29t
-LWtpbGxlcgoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvcGxhaW4vd2F0Y2hkb2cKCgly
-dW5fdGVzdCBncm91cD0na3NlbGZ0ZXN0cy0wMycgJExLUF9TUkMvdGVzdHMvd3JhcHBlciBrZXJu
-ZWxfc2VsZnRlc3RzCn0KCmV4dHJhY3Rfc3RhdHMoKQp7CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVy
-IGtlcm5lbF9zZWxmdGVzdHMKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIga21zZwoJJExLUF9TUkMv
-c3RhdHMvd3JhcHBlciBwbWV0ZXIKCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHRpbWUga2VybmVs
-X3NlbGZ0ZXN0cy50aW1lCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHRpbWUKCSRMS1BfU1JDL3N0
-YXRzL3dyYXBwZXIgZG1lc2cKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIga21zZwoJJExLUF9TUkMv
-c3RhdHMvd3JhcHBlciBzdGRlcnIKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbGFzdF9zdGF0ZQp9
-CgoiJEAiCg==
-
---===============8376549303156018615==
+--===============6280602243984867132==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -3137,7 +3071,7 @@ MTUuMC1yYzYtMDAwMjYtZ2I2OGE2OGQiCmRlcXVldWVfdGltZTogMjAxOC0wMy0wNSAwNjo1MDo0
 Mi41ODM5MjkzMTcgKzA4OjAwCgojISAvbGtwL2xrcC8uc3JjLTIwMTgwMzAyLTIzNDU0MS9pbmNs
 dWRlL3NpdGUvaW5uCmpvYl9zdGF0ZTogYm9vdGluZwo=
 
---===============8376549303156018615==
+--===============6280602243984867132==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -3148,5 +3082,5 @@ dGVzdHMiICItQyIgInVzZXIiCiAibWFrZSIgIlRBUkdFVFM9dkRTTyIKICJtYWtlIiAicnVuX3Rl
 c3RzIiAiLUMiICJ2RFNPIgogIm1ha2UiICJydW5fdGVzdHMiICItQyIgInZtIgogIm1ha2UiICJU
 QVJHRVRTPXdhdGNoZG9nIgogIm1ha2UiICJydW5fdGVzdHMiICItQyIgIng4NiIK
 
---===============8376549303156018615==--
+--===============6280602243984867132==--
 
