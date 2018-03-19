@@ -1,19 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============5283984788071183748=="
+Content-Type: multipart/mixed; boundary="===============1874690443181828603=="
 MIME-Version: 1.0
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: lkp@lists.01.org
-Subject: [PATCH 3.18 20/68] mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()
-Date: Mon, 19 Mar 2018 19:05:58 +0100
-Message-ID: <20180319171830.694141961@linuxfoundation.org>
-In-Reply-To: <20180319171827.899658615@linuxfoundation.org>
+Subject: [PATCH 4.4 036/134] mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()
+Date: Mon, 19 Mar 2018 19:05:19 +0100
+Message-ID: <20180319171854.521145165@linuxfoundation.org>
+In-Reply-To: <20180319171849.024066323@linuxfoundation.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5283984788071183748==
+--===============1874690443181828603==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-3.18-stable review patch.  If anyone has any objections, please let me know.
+4.4-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -69,7 +69,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
-@@ -146,7 +146,7 @@ static inline int page_cache_get_specula
+@@ -153,7 +153,7 @@ static inline int page_cache_get_specula
  =
 
  #ifdef CONFIG_TINY_RCU
@@ -79,7 +79,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  # endif
  	/*
  	 * Preempt must be disabled here - we rely on rcu_read_lock doing
-@@ -184,7 +184,7 @@ static inline int page_cache_add_specula
+@@ -191,7 +191,7 @@ static inline int page_cache_add_specula
  =
 
  #if !defined(CONFIG_SMP) && defined(CONFIG_TREE_RCU)
@@ -92,5 +92,5 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 
 
---===============5283984788071183748==--
+--===============1874690443181828603==--
 
