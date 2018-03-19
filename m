@@ -1,121 +1,92 @@
-Content-Type: multipart/mixed; boundary="===============7558905730323576604=="
+Content-Type: multipart/mixed; boundary="===============6258046309120365558=="
 MIME-Version: 1.0
-From: gregkh@linuxfoundation.org
+From: Dou Liyang <douly.fnst@cn.fujitsu.com>
 To: lkp@lists.01.org
-Subject: Patch "mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()" has been added to the 4.9-stable tree
-Date: Sun, 18 Mar 2018 17:02:07 +0100
-Message-ID: <152138892739183@kroah.com>
+Subject: Re: [ACPI / processor] d619c81e24: WARNING:at_include/linux/cpumask.h:#cpumask_test_cpu
+Date: Mon, 19 Mar 2018 08:41:11 +0800
+Message-ID: <6212a66a-e301-4f9f-d435-34063da9df4f@cn.fujitsu.com>
+In-Reply-To: <20180316111752.qi3u42mag367vx46@inn>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7558905730323576604==
+--===============6258046309120365558==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi lkp team
 
-This is a note to let you know that I've just added the patch titled
+Thank you for testing.
 
-    mm: Fix false-positive VM_BUG_ON() in page_cache_{get,add}_speculative()
+At 03/16/2018 07:17 PM, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-7):
+> =
 
-to the 4.9-stable tree which can be found at:
-    http://www.kernel.org/git/?p=3Dlinux/kernel/git/stable/stable-queue.git=
-;a=3Dsummary
+> commit: d619c81e246424e322f7a902bed6e60b90668d56 ("ACPI / processor: Get =
+accurate possible CPU count")
+> url: https://github.com/0day-ci/linux/commits/Dou-Liyang/ACPI-processor-G=
+et-accurate-possible-CPU-count/20180316-140349
+> =
 
-The filename of the patch is:
-     mm-fix-false-positive-vm_bug_on-in-page_cache_-get-add-_speculative.pa=
-tch
-and it can be found in the queue-4.9 subdirectory.
+> =
 
-If you, or anyone else, feels it should not be added to the stable tree,
-please let <stable@vger.kernel.org> know about it.
+> in testcase: boot
+> =
 
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 1G
+> =
 
->From foo(a)baz Sun Mar 18 16:55:33 CET 2018
-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Date: Fri, 24 Mar 2017 14:13:05 +0300
-Subject: mm: Fix false-positive VM_BUG_ON() in page_cache_{get,add}_specula=
-tive()
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
 
-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+> =
 
+> +------------------------------------------------------+------------+----=
+--------+
+> |                                                      | 3266b5bd97 | d61=
+9c81e24 |
+> +------------------------------------------------------+------------+----=
+--------+
+> | boot_successes                                       | 16         | 2  =
+        |
+> | boot_failures                                        | 0          | 18 =
+        |
+> | WARNING:at_include/linux/cpumask.h:#cpumask_test_cpu | 0          | 18 =
+        |
+> | WARNING:at_include/linux/cpumask.h:#cpumask_check    | 0          | 18 =
+        |
+> | RIP:cpumask_check                                    | 0          | 18 =
+        |
+> | RIP:cpumask_test_cpu                                 | 0          | 18 =
+        |
+> | general_protection_fault:#[##]                       | 0          | 13 =
+        |
+> | RIP:__lock_acquire                                   | 0          | 13 =
+        |
+> | Kernel_panic-not_syncing:Fatal_exception             | 0          | 13 =
+        |
+> | BUG:kernel_hang_in_boot_stage                        | 0          | 5  =
+        |
+> +------------------------------------------------------+------------+----=
+--------+
+> =
 
-[ Upstream commit 591a3d7c09fa08baff48ad86c2347dbd28a52753 ]
+> =
 
-0day testing by Fengguang Wu triggered this crash while running Trinity:
+> =
 
-  kernel BUG at include/linux/pagemap.h:151!
-  ...
-  CPU: 0 PID: 458 Comm: trinity-c0 Not tainted 4.11.0-rc2-00251-g2947ba0 #1
-  ...
-  Call Trace:
-   __get_user_pages_fast()
-   get_user_pages_fast()
-   get_futex_key()
-   futex_requeue()
-   do_futex()
-   SyS_futex()
-   do_syscall_64()
-   entry_SYSCALL64_slow_path()
+> [    0.830741] WARNING: CPU: 1 PID: 1 at include/linux/cpumask.h:122 cpum=
+ask_test_cpu+0x32/0x57
+> [    0.830785] WARNING: CPU: 1 PID: 1 at include/linux/cpumask.h:122 cpum=
+ask_check+0x2d/0x48
 
-It' VM_BUG_ON() due to false-negative in_atomic(). We call
-page_cache_get_speculative() with disabled local interrupts.
-It should be atomic enough.
+Yes, this patch broke the number of CPUs, we will find out a new way,
+please drop the test work of this patch.
 
-So let's check for disabled interrupts in the VM_BUG_ON() condition
-too, to resolve this.
-
-( This got triggered by the conversion of the x86 GUP code to the
-  generic GUP code. )
-
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
-Cc: Kirill A. Shutemov <kirill@shutemov.name>
-Cc: LKP <lkp@01.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-mm(a)kvack.org
-Link: http://lkml.kernel.org/r/20170324114709.pcytvyb3d6ajux33(a)black.fi.i=
-ntel.com
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/linux/pagemap.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- a/include/linux/pagemap.h
-+++ b/include/linux/pagemap.h
-@@ -148,7 +148,7 @@ static inline int page_cache_get_specula
- =
-
- #ifdef CONFIG_TINY_RCU
- # ifdef CONFIG_PREEMPT_COUNT
--	VM_BUG_ON(!in_atomic());
-+	VM_BUG_ON(!in_atomic() && !irqs_disabled());
- # endif
- 	/*
- 	 * Preempt must be disabled here - we rely on rcu_read_lock doing
-@@ -186,7 +186,7 @@ static inline int page_cache_add_specula
- =
-
- #if !defined(CONFIG_SMP) && defined(CONFIG_TREE_RCU)
- # ifdef CONFIG_PREEMPT_COUNT
--	VM_BUG_ON(!in_atomic());
-+	VM_BUG_ON(!in_atomic() && !irqs_disabled());
- # endif
- 	VM_BUG_ON_PAGE(page_count(page) =3D=3D 0, page);
- 	page_ref_add(page, count);
+Thanks,
+	dou
 
 
-Patches currently in stable-queue which might be from kirill.shutemov(a)lin=
-ux.intel.com are
 
-queue-4.9/mm-fix-false-positive-vm_bug_on-in-page_cache_-get-add-_speculati=
-ve.patch
-queue-4.9/x86-mm-make-mmap-map_32bit-work-correctly.patch
-
---===============7558905730323576604==--
+--===============6258046309120365558==--
 
