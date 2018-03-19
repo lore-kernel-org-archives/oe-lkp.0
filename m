@@ -1,19 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============1874690443181828603=="
+Content-Type: multipart/mixed; boundary="===============4537830088144833778=="
 MIME-Version: 1.0
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: lkp@lists.01.org
-Subject: [PATCH 4.4 036/134] mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()
-Date: Mon, 19 Mar 2018 19:05:19 +0100
-Message-ID: <20180319171854.521145165@linuxfoundation.org>
-In-Reply-To: <20180319171849.024066323@linuxfoundation.org>
+Subject: [PATCH 4.9 074/241] mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()
+Date: Mon, 19 Mar 2018 19:05:39 +0100
+Message-ID: <20180319180754.269544891@linuxfoundation.org>
+In-Reply-To: <20180319180751.172155436@linuxfoundation.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1874690443181828603==
+--===============4537830088144833778==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-4.4-stable review patch.  If anyone has any objections, please let me know.
+4.9-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -69,7 +69,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
-@@ -153,7 +153,7 @@ static inline int page_cache_get_specula
+@@ -148,7 +148,7 @@ static inline int page_cache_get_specula
  =
 
  #ifdef CONFIG_TINY_RCU
@@ -79,7 +79,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  # endif
  	/*
  	 * Preempt must be disabled here - we rely on rcu_read_lock doing
-@@ -191,7 +191,7 @@ static inline int page_cache_add_specula
+@@ -186,7 +186,7 @@ static inline int page_cache_add_specula
  =
 
  #if !defined(CONFIG_SMP) && defined(CONFIG_TREE_RCU)
@@ -88,9 +88,9 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +	VM_BUG_ON(!in_atomic() && !irqs_disabled());
  # endif
  	VM_BUG_ON_PAGE(page_count(page) =3D=3D 0, page);
- 	atomic_add(count, &page->_count);
+ 	page_ref_add(page, count);
 
 
 
---===============1874690443181828603==--
+--===============4537830088144833778==--
 
