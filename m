@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============5281759783615818956=="
+Content-Type: multipart/mixed; boundary="===============5857143648214906687=="
 MIME-Version: 1.0
 From: gregkh@linuxfoundation.org
 To: lkp@lists.01.org
-Subject: Patch "mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()" has been added to the 4.4-stable tree
-Date: Mon, 19 Mar 2018 10:09:32 +0100
-Message-ID: <1521450572124164@kroah.com>
+Subject: Patch "mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()" has been added to the 3.18-stable tree
+Date: Mon, 19 Mar 2018 10:13:09 +0100
+Message-ID: <152145078913724@kroah.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5281759783615818956==
+--===============5857143648214906687==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -17,20 +17,20 @@ This is a note to let you know that I've just added the patch titled
 
     mm: Fix false-positive VM_BUG_ON() in page_cache_{get,add}_speculative()
 
-to the 4.4-stable tree which can be found at:
+to the 3.18-stable tree which can be found at:
     http://www.kernel.org/git/?p=3Dlinux/kernel/git/stable/stable-queue.git=
 ;a=3Dsummary
 
 The filename of the patch is:
      mm-fix-false-positive-vm_bug_on-in-page_cache_-get-add-_speculative.pa=
 tch
-and it can be found in the queue-4.4 subdirectory.
+and it can be found in the queue-3.18 subdirectory.
 
 If you, or anyone else, feels it should not be added to the stable tree,
 please let <stable@vger.kernel.org> know about it.
 
 
->From foo(a)baz Mon Mar 19 09:58:12 CET 2018
+>From foo(a)baz Mon Mar 19 10:11:52 CET 2018
 From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 Date: Fri, 24 Mar 2017 14:13:05 +0300
 Subject: mm: Fix false-positive VM_BUG_ON() in page_cache_{get,add}_specula=
@@ -88,7 +88,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
-@@ -153,7 +153,7 @@ static inline int page_cache_get_specula
+@@ -146,7 +146,7 @@ static inline int page_cache_get_specula
  =
 
  #ifdef CONFIG_TINY_RCU
@@ -98,7 +98,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  # endif
  	/*
  	 * Preempt must be disabled here - we rely on rcu_read_lock doing
-@@ -191,7 +191,7 @@ static inline int page_cache_add_specula
+@@ -184,7 +184,7 @@ static inline int page_cache_add_specula
  =
 
  #if !defined(CONFIG_SMP) && defined(CONFIG_TREE_RCU)
@@ -113,8 +113,8 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Patches currently in stable-queue which might be from kirill.shutemov(a)lin=
 ux.intel.com are
 
-queue-4.4/mm-fix-false-positive-vm_bug_on-in-page_cache_-get-add-_speculati=
-ve.patch
+queue-3.18/mm-fix-false-positive-vm_bug_on-in-page_cache_-get-add-_speculat=
+ive.patch
 
---===============5281759783615818956==--
+--===============5857143648214906687==--
 
