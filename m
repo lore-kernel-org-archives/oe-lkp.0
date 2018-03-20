@@ -1,96 +1,92 @@
-Content-Type: multipart/mixed; boundary="===============4537830088144833778=="
+Content-Type: multipart/mixed; boundary="===============7567186945413937954=="
 MIME-Version: 1.0
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: NeilBrown <neilb@suse.com>
 To: lkp@lists.01.org
-Subject: [PATCH 4.9 074/241] mm: Fix false-positive VM_BUG_ON() in page_cache_{get, add}_speculative()
-Date: Mon, 19 Mar 2018 19:05:39 +0100
-Message-ID: <20180319180754.269544891@linuxfoundation.org>
-In-Reply-To: <20180319180751.172155436@linuxfoundation.org>
+Subject: Re: [staging] 184ecc5ceb: BUG:unable_to_handle_kernel
+Date: Tue, 20 Mar 2018 13:34:09 +1100
+Message-ID: <87h8pba31a.fsf@notabene.neil.brown.name>
+In-Reply-To: <20180319091931.gt6ijdw7ahkbtvrq@inn>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4537830088144833778==
+--===============7567186945413937954==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-4.9-stable review patch.  If anyone has any objections, please let me know.
+On Mon, Mar 19 2018, kernel test robot wrote:
 
-------------------
+> FYI, we noticed the following commit (built with gcc-6):
+>
+> commit: 184ecc5ceb379b43b29fc373f497fca88c73ad38 ("staging: lustre: allow=
+ monolithic builds")
+> https://git.kernel.org/cgit/linux/kernel/git/gregkh/staging.git staging-t=
+esting
+>
+> in testcase: trinity
+> with following parameters:
+>
+> 	runtime: 300s
+>
+> test-description: Trinity is a linux system call fuzz tester.
+> test-url: http://codemonkey.org.uk/projects/trinity/
+>
+>
+> on test machine: qemu-system-i386 -enable-kvm -smp 2 -m 320M
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+> +------------------------------------------+------------+------------+
+> |                                          | 26f7a294e5 | 184ecc5ceb |
+> +------------------------------------------+------------+------------+
+> | boot_successes                           | 14         | 4          |
+> | boot_failures                            | 0          | 12         |
+> | BUG:unable_to_handle_kernel              | 0          | 12         |
+> | Oops:#[##]                               | 0          | 12         |
+> | EIP:cfs_cpt_spread_node                  | 0          | 12         |
+> | Kernel_panic-not_syncing:Fatal_exception | 0          | 12         |
+> +------------------------------------------+------------+------------+
+>
+>
+>
+> [  123.548190] BUG: unable to handle kernel NULL pointer dereference at 0=
+0000008
+> [  123.551023] IP: cfs_cpt_spread_node+0x31/0x100
 
-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Thanks.
+This happens when both USERIO and LNET are built into the kernel
+drivers/staging/lustre/TODO says
+  LNET_MINOR conflicts with USERIO_MINOR
 
+I'll add a Kconfig rule preventing them from being built together until
+this is resolved properly.
+I'll also lok into making the module init routine more robust.
 
-[ Upstream commit 591a3d7c09fa08baff48ad86c2347dbd28a52753 ]
+Thanks,
 
-0day testing by Fengguang Wu triggered this crash while running Trinity:
+NeilBrown
 
-  kernel BUG at include/linux/pagemap.h:151!
-  ...
-  CPU: 0 PID: 458 Comm: trinity-c0 Not tainted 4.11.0-rc2-00251-g2947ba0 #1
-  ...
-  Call Trace:
-   __get_user_pages_fast()
-   get_user_pages_fast()
-   get_futex_key()
-   futex_requeue()
-   do_futex()
-   SyS_futex()
-   do_syscall_64()
-   entry_SYSCALL64_slow_path()
+--===============7567186945413937954==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
 
-It' VM_BUG_ON() due to false-negative in_atomic(). We call
-page_cache_get_speculative() with disabled local interrupts.
-It should be atomic enough.
-
-So let's check for disabled interrupts in the VM_BUG_ON() condition
-too, to resolve this.
-
-( This got triggered by the conversion of the x86 GUP code to the
-  generic GUP code. )
-
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
-Cc: Kirill A. Shutemov <kirill@shutemov.name>
-Cc: LKP <lkp@01.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-mm(a)kvack.org
-Link: http://lkml.kernel.org/r/20170324114709.pcytvyb3d6ajux33(a)black.fi.i=
-ntel.com
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/linux/pagemap.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- a/include/linux/pagemap.h
-+++ b/include/linux/pagemap.h
-@@ -148,7 +148,7 @@ static inline int page_cache_get_specula
- =
-
- #ifdef CONFIG_TINY_RCU
- # ifdef CONFIG_PREEMPT_COUNT
--	VM_BUG_ON(!in_atomic());
-+	VM_BUG_ON(!in_atomic() && !irqs_disabled());
- # endif
- 	/*
- 	 * Preempt must be disabled here - we rely on rcu_read_lock doing
-@@ -186,7 +186,7 @@ static inline int page_cache_add_specula
- =
-
- #if !defined(CONFIG_SMP) && defined(CONFIG_TREE_RCU)
- # ifdef CONFIG_PREEMPT_COUNT
--	VM_BUG_ON(!in_atomic());
-+	VM_BUG_ON(!in_atomic() && !irqs_disabled());
- # endif
- 	VM_BUG_ON_PAGE(page_count(page) =3D=3D 0, page);
- 	page_ref_add(page, count);
-
-
-
---===============4537830088144833778==--
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRSXpCQUVCQ0FBZEZpRUVHOFlwNjlPUTJI
+QjdYMGw2T2V5ZTNWWmlnYmtGQWxxd2N5RUFDZ2tRT2V5ZTNWWmkKZ2JreVVRLy9YYnVieWZQMTgv
+VnBpRXpaU2hRNERnTFdwb0VnbThPWkxyd2dnY2s5ZHMrdkdZd2Ryd0gzNU10eQpobDExZWMrdWtR
+VCtrNWIzVktzLytjaVMxSzJxc2ZEUlVwemJjVHBHTEVRRnZ0dVZxb0prUXozSVBDUXV6MnZHCng0
+dkxXVjdmQnVBZUpTa2czQUlCYS9WU1Vta0JwL1ExcWRIRXpOOENqaDRzQi9NcTc3eEZodzY5eWlv
+QUNoMUMKeDBJdmV1cnh1ck5sVzVJaUpiQzNQVzR3M1M5QlQrZ0ljWUt3cDFHYisrSjJDZEdvczVw
+NitaTFpobUsxTHpFcAptMEtlQS9mbnhXQ2o5TW84WjhOMk8zM0xFOGFCMHZNdm5XL2FBZmNmaGdp
+TFZOTUdrNURobUtneHNmRXU3azh2CjJURmdWVEY2N2VtYUZGU0ZTUUExNTJzcldUM3UvQzFBci9Z
+V3lBZzhYdkVON3hQNFBUSGlUQmozT2Q4Q3p0Y3QKNm1SUVVTS1ZFektOaS9VczhlcHNZdmM3Vk5C
+SVQ1bUwzNnoxSERqd2t5UWprVUtTR3hOUVU3RUJ6S0V0cDhhUwo1UFJzcDBSdVl1RkZzSXNORWRx
+RWprRWtGY1Z6NTcwQzFQaHlwWDhRbzRtbEc2YXpWT2I3VGxRL1prNmlsQ1lHCmlaYmJ2SnlTQnZy
+VGJXUVpkYk10cXBlZUowbnVrc043Uzg3ZVhMdk9NUEZ6dG9TWGg3M0hWdU9iVTVuNVRWT3UKQkhG
+Z2dmZGJJMkh6cGE2ZDhINWRZWGJUWTdpQmo4MG5jQ01sU2EyMTJLc3lGVHBWaS9zTWJVdFp3Smk1
+dEpXTQpxUURSME9UT0RRdTVmL3owNlYwdDBVWnZvU2Q2SkhPSEZvU0o4OTQ5VFlKWU5IOXNJb0k9
+Cj1Vbm5WCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ==
+--===============7567186945413937954==--
 
