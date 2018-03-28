@@ -1,44 +1,93 @@
-Content-Type: multipart/mixed; boundary="===============5041288716926256487=="
+Content-Type: multipart/mixed; boundary="===============8064763071505860454=="
 MIME-Version: 1.0
 From: Eric W. Biederman <ebiederm@xmission.com>
 To: lkp@lists.01.org
-Subject: Re: 98f929b1bd ("ipc/shm: Fix shmctl(..., IPC_STAT, ...) between .."): Oops: 0000 [#1]
-Date: Wed, 28 Mar 2018 12:53:31 -0500
-Message-ID: <87o9j8axyc.fsf@xmission.com>
-In-Reply-To: <f249d351-240a-8c0e-ef50-f9155b696e86@oracle.com>
+Subject: [PATCH] ipc/shm: Fix pid freeing.
+Date: Wed, 28 Mar 2018 13:47:03 -0500
+Message-ID: <877epwavh4.fsf@xmission.com>
+In-Reply-To: <5abb446e.XtEK088UbWSHCPaF%fengguang.wu@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5041288716926256487==
+--===============8064763071505860454==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Nagarathnam Muthusamy <nagarathnam.muthusamy@oracle.com> writes:
 
-> Hi Eric,
+The 0day kernel test build report reported an oops:
 >
-> =C2=A0=C2=A0=C2=A0 From
-> https://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.g=
-it/tree/ipc/shm.c?h=3Dfor-next
->
-> It looks like if the following condition in Line 616 succeeds
->
-> error =3D PTR_ERR(file);
-> if (IS_ERR(file))
-> =C2=A0=C2=A0=C2=A0 goto no_file;
->
-> we get to no_file with garbage value in shm_cprid. An attempt to
-> put_pid on this garbage value might be causing panic.
->
-> We could initialize shm_cprid to NULL as soon as it was created.
+>  IP: put_pid+0x22/0x5c
+>  PGD 19efa067 P4D 19efa067 PUD 0
+>  Oops: 0000 [#1]
+>  CPU: 0 PID: 727 Comm: trinity Not tainted 4.16.0-rc2-00010-g98f929b #1
+>  RIP: 0010:put_pid+0x22/0x5c
+>  RSP: 0018:ffff986719f73e48 EFLAGS: 00010202
+>  RAX: 00000006d765f710 RBX: ffff98671a4fa4d0 RCX: ffff986719f73d40
+>  RDX: 000000006f6e6125 RSI: 0000000000000000 RDI: ffffffffa01e6d21
+>  RBP: ffffffffa0955fe0 R08: 0000000000000020 R09: 0000000000000000
+>  R10: 0000000000000078 R11: ffff986719f73e76 R12: 0000000000001000
+>  R13: 00000000ffffffea R14: 0000000054000fb0 R15: 0000000000000000
+>  FS:  00000000028c2880(0000) GS:ffffffffa06ad000(0000) knlGS:000000000000=
+0000
+>  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>  CR2: 0000000677846439 CR3: 0000000019fc1005 CR4: 00000000000606b0
+>  Call Trace:
+>   ? ipc_update_pid+0x36/0x3e
+>   ? newseg+0x34c/0x3a6
+>   ? ipcget+0x5d/0x528
+>   ? entry_SYSCALL_64_after_hwframe+0x52/0xb7
+>   ? SyS_shmget+0x5a/0x84
+>   ? do_syscall_64+0x194/0x1b3
+>   ? entry_SYSCALL_64_after_hwframe+0x42/0xb7
+>  Code: ff 05 e7 20 9b 03 58 c9 c3 48 ff 05 85 21 9b 03 48 85 ff 74 4f 8b =
+47 04 8b 17 48 ff 05 7c 21 9b 03 48 83 c0 03 48 c1 e0 04 ff ca <48> 8b 44 0=
+7 08 74 1f 48 ff 05 6c 21 9b 03 ff 0f 0f 94 c2 48 ff
+>  RIP: put_pid+0x22/0x5c RSP: ffff986719f73e48
+>  CR2: 0000000677846439
+>  ---[ end trace ab8c5cb4389d37c5 ]---
+>  Kernel panic - not syncing: Fatal exception
 
-Yes.  I misread the kvmalloc as a kvzalloc.
-I am planning on placing the pid freeing under the no_id label
-instead of the no_file label.  Which should also avoid the issue.
+In newseg when changing shm_cprid and shm_lprid from pid_t to struct
+pid* I misread the kvmalloc as kvzalloc and thought shp was
+initialized to 0.  As that is not the case it is not safe to for the
+error handling to address shm_cprid and shm_lprid before they are
+initialized.
 
-It is a rare enough issue an incremental patch should be fine.
+Therefore move the cleanup of shm_cprid and shm_lprid from the no_file
+error cleanup path to the no_id error cleanup path.  Ensuring that an
+early error exit won't cause the oops above.
 
-Eric
+Reported-by:  kernel test robot <fengguang.wu@intel.com>
+Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+---
+ ipc/shm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---===============5041288716926256487==--
+diff --git a/ipc/shm.c b/ipc/shm.c
+index 018db3d0e70e..35bdfe76d11b 100644
+--- a/ipc/shm.c
++++ b/ipc/shm.c
+@@ -646,12 +646,12 @@ static int newseg(struct ipc_namespace *ns, struct ip=
+c_params *params)
+ 	return error;
+ =
+
+ no_id:
++	ipc_update_pid(&shp->shm_cprid, NULL);
++	ipc_update_pid(&shp->shm_lprid, NULL);
+ 	if (is_file_hugepages(file) && shp->mlock_user)
+ 		user_shm_unlock(size, shp->mlock_user);
+ 	fput(file);
+ no_file:
+-	ipc_update_pid(&shp->shm_cprid, NULL);
+-	ipc_update_pid(&shp->shm_lprid, NULL);
+ 	call_rcu(&shp->shm_perm.rcu, shm_rcu_free);
+ 	return error;
+ }
+-- =
+
+2.14.1
+
+
+--===============8064763071505860454==--
 
