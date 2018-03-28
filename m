@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============3045222963123741327=="
+Content-Type: multipart/mixed; boundary="===============7531605044647979772=="
 MIME-Version: 1.0
 From: kernel test robot <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: 0162204f7a ("RFC: debugobjects: capture stack traces at .."): BUG: kernel hang in early-boot stage, last printk: early console in setup code
-Date: Wed, 28 Mar 2018 11:25:59 +0800
-Message-ID: <5abb0b47.w1z13iu2y1wnujbl%fengguang.wu@intel.com>
+Subject: [lkp-robot] [bisect done] 0162204f7a BUG: kernel hang in early-boot stage, last printk: early console in setup code
+Date: Wed, 28 Mar 2018 11:58:56 +0800
+Message-ID: <20180328035856.jttdh5ilunlzhidt@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3045222963123741327==
+--===============7531605044647979772==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -185,7 +185,7 @@ er
 https://lists.01.org/pipermail/lkp                          Intel Corporati=
 on
 
---===============3045222963123741327==
+--===============7531605044647979772==
 Content-Type: application/gzip
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -210,7 +210,7 @@ ojRD+Q3ReL0ButLYes6LbdKC0nK/MNGrYqM9GnyGlL2EJF5Cmr2ENH8JafESUv4UCW9XY0cPUY02
 dOiM3FHr7HAhrcMScp7a3hjyHSGy68CqoYwfqixJzmSWJIervhdakjymtGjrWaklyQOtJcmZ2CJ0
 UFv0cia3yD/TW5LcCy5JHiru4OCh5GI6Zx11n8+56JLkP6pLklPZJclTuvtg3wl6r7x4VluSfL0W
 keT/IEaPn90jcoQV9ur139gFP/741z+vKBvLjSI2jj5+jzD5F0aUF5CFCgAA
---===============3045222963123741327==
+--===============7531605044647979772==
 Content-Type: application/gzip
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -682,7 +682,7 @@ cVBcLG7pdd/6Ev/0Kpn3F3jN3z+s7y6Xj/jR5BEPNMLrt17ebuit9/PqOvsQP3t8WFyHEXLpPz0/
 Wy5X6/Dv++Xk5hq7Ko6E95eCDoAz+qb4BA958zS9uXhYPC4Janx+3FyCPx+cJm4u7pd31/fU/y7n
 T084Su4e6QUlfuo/pC74uF7eY8tsPqGn+eTp/lN2BvTJ92zIuRaMbdlVPv1wN7lEhw8T9PT0sb4m
 1Ibzp9uL9bvnzc3y4yPWGAcuzsg4ZeFs/LfPBqNsFNMsnf3r6vf48fn/ARdVUbFf+QEA
---===============3045222963123741327==
+--===============7531605044647979772==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -703,7 +703,7 @@ c29sZT10dHkwCgllYXJseXByaW50az10dHlTMCwxMTUyMDAKCWNvbnNvbGU9dHR5UzAsMTE1MjAw
 Cgl2Z2E9bm9ybWFsCglydwoJZHJiZC5taW5vcl9jb3VudD04CglyY3VwZXJmLnNodXRkb3duPTAK
 KQoKIiR7a3ZtW0BdfSIgLWFwcGVuZCAiJHthcHBlbmRbKl19Igo=
 
---===============3045222963123741327==
+--===============7531605044647979772==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -2831,5 +2831,5 @@ eQpDT05GSUdfQVJDSF9IQVNfUE1FTV9BUEk9eQpDT05GSUdfQVJDSF9IQVNfVUFDQ0VTU19GTFVT
 SENBQ0hFPXkKQ09ORklHX1NUQUNLREVQT1Q9eQpDT05GSUdfUFJJTUVfTlVNQkVSUz15CkNPTkZJ
 R19TVFJJTkdfU0VMRlRFU1Q9bQo=
 
---===============3045222963123741327==--
+--===============7531605044647979772==--
 
