@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============8312341140545319149=="
+Content-Type: multipart/mixed; boundary="===============0408474977719275110=="
 MIME-Version: 1.0
 From: kernel test robot <fengguang.wu@intel.com>
 To: lkp@lists.01.org
-Subject: 7a9dc63e94 ("fs/dcache: disable preemption on i_dir_seq's .."): watchdog: BUG: soft lockup - CPU#0 stuck for 23s! [swapper:1]
-Date: Fri, 30 Mar 2018 08:58:31 +0800
-Message-ID: <5abd8bb7.cNpFLdEtn0kZNuI+%fengguang.wu@intel.com>
+Subject: [lkp-robot] [bisect done] 7a9dc63e94 [ 28.030041] watchdog: BUG: soft lockup - CPU#0 stuck for 23s! [swapper:1]
+Date: Fri, 30 Mar 2018 09:11:12 +0800
+Message-ID: <20180330011112.gjym6exwhgsfc3va@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8312341140545319149==
+--===============0408474977719275110==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -291,7 +291,7 @@ er
 https://lists.01.org/pipermail/lkp                          Intel Corporati=
 on
 
---===============8312341140545319149==
+--===============0408474977719275110==
 Content-Type: application/gzip
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -459,7 +459,7 @@ MLHjeH4LQnZXQn5XQnFXQnlXwuiuhKqLEN78OJuAITGyOONqge4gxuUQRGkO4jVfktnlZNK73+vh
 Ync2QhHfTgfZ22vlg+zt1WLgMkL29kIpIQHrxpyQvb2tpJC9vVZWSHhUp4WEWlp5IYG+lRiyt+cy
 Q/b2tlNDYgXbuSGhO61kf6Y/7eyQvb1Gesjenp8fsrfXlSByq5z31KWIBF5d9fZ2ypTY2/srpEoM
 sy+QLBGE7Icf/wNK8sPPH//7A+lbiSPwzH768AAe9/4HtSB7RDqTAAA=
---===============8312341140545319149==
+--===============0408474977719275110==
 Content-Type: application/gzip
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -996,7 +996,7 @@ gG9eii/I+lK4y6xc9u0vr05fkMB3ZCx+cvv+ySdnt6dX5z+/ePv66uGveLt3b5/xf0/ubq7vT0it
 DqQuYP2ITz756ocf/rT99vsvf/fNi2c3b14940rP0nxxQnIu6JKXr1+d3KkTriSFf/bq/PzEPats
 gNOdEV6dnamLeGEuL3T0pzsf/fnOnZ6eO3Vx8eyXdxD6HyeDZkR/3+Gp724vn979/HB/cf3+ivqY
 Rtjf/t3/phnyL//l3/7v325O0nDb0HfpX3/5nL5+8v8AqjqlLAmTAgA=
---===============8312341140545319149==
+--===============0408474977719275110==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -1017,7 +1017,7 @@ c29sZT10dHkwCgllYXJseXByaW50az10dHlTMCwxMTUyMDAKCWNvbnNvbGU9dHR5UzAsMTE1MjAw
 Cgl2Z2E9bm9ybWFsCglydwoJZHJiZC5taW5vcl9jb3VudD04CglyY3VwZXJmLnNodXRkb3duPTAK
 KQoKIiR7a3ZtW0BdfSIgLWFwcGVuZCAiJHthcHBlbmRbKl19Igo=
 
---===============8312341140545319149==
+--===============0408474977719275110==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -3118,5 +3118,5 @@ QVJDSF9IQVNfUE1FTV9BUEk9eQpDT05GSUdfQVJDSF9IQVNfVUFDQ0VTU19GTFVTSENBQ0hFPXkK
 Q09ORklHX1NUQUNLREVQT1Q9eQpDT05GSUdfUFJJTUVfTlVNQkVSUz15CkNPTkZJR19TVFJJTkdf
 U0VMRlRFU1Q9bQo=
 
---===============8312341140545319149==--
+--===============0408474977719275110==--
 
