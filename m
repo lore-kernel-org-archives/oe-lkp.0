@@ -1,50 +1,57 @@
-Content-Type: multipart/mixed; boundary="===============4780621472886048249=="
+Content-Type: multipart/mixed; boundary="===============7046275513342569962=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Andrew Morton <akpm@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [cfs_trace_lock_tcd] BUG: KASAN: null-ptr-deref in cfs_trace_lock_tcd+0x25/0xeb
-Date: Wed, 18 Apr 2018 11:37:21 -0700
-Message-ID: <CA+55aFz=VCq6w=kH5aYavOM0-h130HgzVhVc94JxeYSdbMWbxg@mail.gmail.com>
-In-Reply-To: <20180418134058.l3orjjxcpv7cxjfw@wfg-t540p.sh.intel.com>
+Subject: Re: [do_execve] attempted to set unsupported pgprot
+Date: Wed, 18 Apr 2018 12:59:16 -0700
+Message-ID: <20180418125916.a8be1fac1ac017f41a10f0fb@linux-foundation.org>
+In-Reply-To: <20180418135933.t3dyszi2phhsvaah@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4780621472886048249==
+--===============7046275513342569962==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Ugh, that lustre code is disgusting.
+On Wed, 18 Apr 2018 21:59:33 +0800 Fengguang Wu <fengguang.wu@intel.com> =
+wrote:
 
-I thought we were getting rid of it.
+> Hello,
+> =
 
-Anyway, I started looking at why the stack trace is such an incredible
-mess, with lots of stale entries.
+> FYI this happens in mainline kernel 4.17.0-rc1.
+> It looks like a new regression.
+> =
 
-The reason (well, _one_ reason) seems to be "ksocknal_startup". It has
-a 500-byte stack frame for some incomprehensible reason. I assume due
-to excessive inlining, because the function itself doesn't seem to be
-that bad.
+> It occurs in 4 out of 4 boots.
+> =
 
-Similarly, LNetNIInit has a 300-byte stack frame. So it gets pretty deep.
+> [   12.345562] Write protecting the kernel text: 14376k
+> [   12.346649] Write protecting the kernel read-only data: 4740k
+> [   12.347584] rodata_test: all tests were successful
+> [   12.348499] ------------[ cut here ]------------
+> [   12.349193] attempted to set unsupported pgprot: 8000000000000025 bits=
+: 8000000000000000 supported: 7fffffffffffffff
+> [   12.350792] WARNING: CPU: 0 PID: 1 at arch/x86/include/asm/pgtable.h:5=
+40 handle_mm_fault+0xfc1/0xfe0:
+> 						check_pgprot at arch/x86/include/asm/pgtable.h:535
+> 						 (inlined by) pfn_pte at arch/x86/include/asm/pgtable.h:549
+> 						 (inlined by) do_anonymous_page at mm/memory.c:3169
+> 						 (inlined by) handle_pte_fault at mm/memory.c:3961
+> 						 (inlined by) __handle_mm_fault at mm/memory.c:4087
+> 						 (inlined by) handle_mm_fault at mm/memory.c:4124
+> [   12.352294] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.17.0-rc1 #172
+> [   12.353357] EIP: handle_mm_fault+0xfc1/0xfe0:
+> 						check_pgprot at arch/x86/include/asm/pgtable.h:535
+> 						 (inlined by) pfn_pte at arch/x86/include/asm/pgtable.h:549
+> 						 (inlined by) do_anonymous_page at mm/memory.c:3169
+> 						 (inlined by) handle_pte_fault at mm/memory.c:3961
+> 						 (inlined by) __handle_mm_fault at mm/memory.c:4087
+> 						 (inlined by) handle_mm_fault at mm/memory.c:4124
 
-I'm getting the feeling that KASAN is making things worse because
-probably it's disabling all the sane stack frame stuff (ie no merging
-of stack slot entries, perhaps?).
+Dave, fb43d6cb91ef57 ("x86/mm: Do not auto-massage page protections")
+looks like a culprit?
 
-Without KASAN (but also without a lot of other things, so I might be
-blaming KASAN incorrectly), the stack usage of ksocknal_startup() is
-just under 100 bytes, so if it is KASAN, it's really a big difference.
 
-Anyway, apart from the excessive elements, the report seems fine, but
-I'm adding Neil Brown to the cc, since he's the one that has been
-making most of the lustre/lnet changes this merge window.
-
-Also adding Andrey to check about the oddly large stack usage.
-
-Not including the whole email with the attachements - Neil, it's on
-lkml and lustre-devel if you hadn't seen it.
-
-                Linus
-
---===============4780621472886048249==--
+--===============7046275513342569962==--
 
