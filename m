@@ -1,98 +1,116 @@
-Content-Type: multipart/mixed; boundary="===============0042142822635661214=="
+Content-Type: multipart/mixed; boundary="===============8421793101881896480=="
 MIME-Version: 1.0
-From: Andrey Ryabinin <aryabinin@virtuozzo.com>
+From: Pavel Tatashin <pasha.tatashin@oracle.com>
 To: lkp@lists.01.org
-Subject: Re: [kcov] watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [swapper/0:1]
-Date: Fri, 20 Apr 2018 17:08:23 +0300
-Message-ID: <be75eae0-624d-f5ab-1b07-9a0d86d366b5@virtuozzo.com>
-In-Reply-To: <20180419030135.nn454aqxlqdwe7ah@wfg-t540p.sh.intel.com>
+Subject: Re: c9e97a1997 BUG: kernel reboot-without-warning in early-boot stage, last printk: early console in setup code
+Date: Fri, 20 Apr 2018 11:42:48 -0400
+Message-ID: <CAGM2rebm1nU4=SAVQAObxsYEa9JpKZbYgeh+dcfb_pfEW6rxfA@mail.gmail.com>
+In-Reply-To: <CAGM2reZvZZy6b+SEtpz_a_JTGBEB2nhBdfZJSZ89F99szv9peA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0042142822635661214==
+--===============8421793101881896480==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+I have root caused the issue, and will submit a fix shortly. The fix
+also fixes the per_cpu_ptr_to_phys bug that is sent in a separate
+thread.
 
+The issue arises in this stack:
 
-On 04/19/2018 06:01 AM, Fengguang Wu wrote:
-> Hello,
-> =
+start_kernel()
+ trap_init()
+  setup_cpu_entry_areas()
+   setup_cpu_entry_area(cpu)
+    get_cpu_gdt_paddr(cpu)
+     per_cpu_ptr_to_phys(addr)
+      pcpu_addr_to_page(addr)
+       virt_to_page(addr)
+        pfn_to_page(__pa(addr) >> PAGE_SHIFT)
+The returned "struct page" is sometimes uninitialized, and thus
+failing later when used. It turns out sometimes is because it depends
+on KASLR.
 
-> FYI this happens in mainline kernel 4.17.0-rc1.
-> It at least dates back to v4.8 .
-> =
+When boot is failing we have this when  pfn_to_page() is called:
+kasrl: 0x000000000d600000
+ addr: ffffffff83e0d000
+    pa: 1040d000
+   pfn: 1040d
+page: ffff88001f113340
+page->flags ffffffffffffffff <- Uninitialized!
 
-> [   25.697463]
-> [   25.697463] Start testing find_bit() with random-filled bitmap
-> [   25.736615] find_next_bit:                30203201 ns, 163965 iteratio=
-ns
-> [   25.783266] find_next_zero_bit:           45554622 ns, 163716 iteratio=
-ns
-> [   25.832480] find_last_bit:                48003878 ns, 163965 iteratio=
-ns
-> [   52.050031] watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [swapper=
-/0:1]
-> [   52.050031] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.17.0-rc1 #210
-> [   52.050031] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [   52.050031] RIP: 0010:__sanitizer_cov_trace_pc+0x65/0x66:
-> 						__sanitizer_cov_trace_pc at kernel/kcov.c:111
-> [   52.050031] RSP: 0000:ffff88000fd43e40 EFLAGS: 00000246 ORIG_RAX: ffff=
-ffffffffff13
-> [   52.050031] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 000000000=
-0000017
-> [   52.050031] RDX: 0000000000000000 RSI: ffff88000fd3e000 RDI: 000000000=
-0000002
-> [   52.050031] RBP: 0000000000050000 R08: 0000000000000008 R09: 000000000=
-0000000
-> [   52.050031] R10: ffff88000fd3e000 R11: 00000000222e2c32 R12: ffffffff8=
-5565d90
-> [   52.050031] R13: 0000000000030f80 R14: 0000000000030f80 R15: 000000000=
-0000000
-> [   52.050031] FS:  0000000000000000(0000) GS:ffff88001f600000(0000) knlG=
-S:0000000000000000
-> [   52.050031] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   52.050031] CR2: 0000000000000000 CR3: 0000000003c6a000 CR4: 000000000=
-00006b0
-> [   52.050031] Call Trace:
-> [   52.050031]  find_first_bit+0x66/0x7c:
-> 						find_first_bit at lib/find_bit.c:106 (discriminator 1)
-> [   52.050031]  test_find_first_bit+0x3a/0x93
+When boot is successful:
+kaslr: 0x000000000a800000
+ addr: ffffffff83e0d000
+     pa: d60d000
+    pfn: d60d
+ page: ffff88001f05b340
+page->flags 280000000000 <- Initialized!
 
+Here are physical addresses that BIOS provided to us:
+[    0.000000] e820: BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable
+[    0.000000] BIOS-e820: [mem 0x000000000009fc00-0x000000000009ffff] reser=
+ved
+[    0.000000] BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reser=
+ved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x000000001ffdffff] usable
+[    0.000000] BIOS-e820: [mem 0x000000001ffe0000-0x000000001fffffff] reser=
+ved
+[    0.000000] BIOS-e820: [mem 0x00000000feffc000-0x00000000feffffff] reser=
+ved
+[    0.000000] BIOS-e820: [mem 0x00000000fffc0000-0x00000000ffffffff] reser=
+ved
 
-I suppose test_find_first_bit() needs a little more than zero cond_resched(=
-) calls.
+In both cases, working and non-working the real physical address is the sam=
+e:
+pa - kasrl =3D 0x2E0D000
 
+The only thing that is different is PFN.
 
-> [   52.050031]  find_bit_test+0x84/0x173:
-> 						find_bit_test at lib/find_bit_benchmark.c:135
-> [   52.050031]  ? test_find_next_and_bit+0x9b/0x9b
-> [   52.050031]  do_one_initcall+0x18e/0x3df:
-> 						do_one_initcall at init/main.c:883
-> [   52.050031]  ? check_kcov_mode+0x5/0x37:
-> 						check_kcov_mode at kernel/kcov.c:60
-> [   52.050031]  ? __sanitizer_cov_trace_pc+0x2b/0x66:
-> 						__sanitizer_cov_trace_pc at kernel/kcov.c:101
-> [   52.050031]  ? check_kcov_mode+0x5/0x37:
-> 						check_kcov_mode at kernel/kcov.c:60
-> [   52.050031]  kernel_init_freeable+0x250/0x3a5:
-> 						do_initcall_level at init/main.c:951
-> 						 (inlined by) do_initcalls at init/main.c:959
-> 						 (inlined by) do_basic_setup at init/main.c:977
-> 						 (inlined by) kernel_init_freeable at init/main.c:1127
-> [   52.050031]  ? rest_init+0x13a/0x13a:
-> 						kernel_init at init/main.c:1050
-> [   52.050031]  kernel_init+0x17/0x218:
-> 						kernel_init at init/main.c:1053
-> [   52.050031]  ? rest_init+0x13a/0x13a:
-> 						kernel_init at init/main.c:1050
-> [   52.050031]  ret_from_fork+0x35/0x40:
-> 						ret_from_fork at arch/x86/entry/entry_64.S:418
-> [   52.050031] Code: 1c 00 00 8b 8b 1c 1c 00 00 48 ff 05 d2 2d fd 04 48 8=
-b 02 48 ff c0 48 39 c1 76 0e 48 ff 05 c8 2d fd 04 48 89 2c c2 48 89 02 5b 5=
-d <c3> 48 8b 0c 24 40 0f b6 d6 40 0f b6 f7 31 ff 48 ff 05 e9 2d fd
-> [   52.050031] Kernel panic - not syncing: softlockup: hung tasks
+We initialize struct pages in four places:
 
---===============0042142822635661214==--
+1. Early in boot a small set of struct pages is initialized to fill
+the first section, and lower zones.
+2. During mm_init() we initialize "struct pages" for all the memory
+that is allocated, i.e reserved in memblock.
+3. Using on-demand logic when pages are allocated after mm_init call
+4. After smp_init() when the rest free deferred pages are initialized.
+
+The above path happens before deferred memory is initialized, and thus
+it must be covered either by 1, 2 or 3.
+
+So, lets check what PFNs are initialized after (1).
+
+memmap_init_zone() is called for pfn ranges:
+1 - 1000, and 1000 - 1ffe0, but it quits after reaching pfn 0x10000,
+as it leaves the rest to be initialized as deferred pages.
+
+In the working scenario pfn ended up being below 1000, but in the
+failing scenario it is above. Hence, we must initialize this page in
+(2). But trap_init() is called before mm_init().
+
+The bug was introduced by "mm: initialize pages on demand during boot"
+because we lowered amount of pages that is initialized in the step
+(1). But, it still could happen, because the number of initialized
+pages was a guessing.
+
+The proposed fix is this:
+
+diff --git a/init/main.c b/init/main.c
+index b795aa341a3a..870f75581cea 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -585,8 +585,8 @@ asmlinkage __visible void __init start_kernel(void)
+        setup_log_buf(0);
+        vfs_caches_init_early();
+        sort_main_extable();
+-       trap_init();
+        mm_init();
++       trap_init();
+
+        ftrace_init();
+
+--===============8421793101881896480==--
 
