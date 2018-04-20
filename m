@@ -1,116 +1,87 @@
-Content-Type: multipart/mixed; boundary="===============8421793101881896480=="
+Content-Type: multipart/mixed; boundary="===============0748751763315994184=="
 MIME-Version: 1.0
-From: Pavel Tatashin <pasha.tatashin@oracle.com>
+From: Yury Norov <ynorov@caviumnetworks.com>
 To: lkp@lists.01.org
-Subject: Re: c9e97a1997 BUG: kernel reboot-without-warning in early-boot stage, last printk: early console in setup code
-Date: Fri, 20 Apr 2018 11:42:48 -0400
-Message-ID: <CAGM2rebm1nU4=SAVQAObxsYEa9JpKZbYgeh+dcfb_pfEW6rxfA@mail.gmail.com>
-In-Reply-To: <CAGM2reZvZZy6b+SEtpz_a_JTGBEB2nhBdfZJSZ89F99szv9peA@mail.gmail.com>
+Subject: Re: [kcov] watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [swapper/0:1]
+Date: Fri, 20 Apr 2018 19:45:23 +0300
+Message-ID: <20180420164523.zrjykc4jhx73cfjo@yury-thinkpad>
+In-Reply-To: <be75eae0-624d-f5ab-1b07-9a0d86d366b5@virtuozzo.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8421793101881896480==
+--===============0748751763315994184==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-I have root caused the issue, and will submit a fix shortly. The fix
-also fixes the per_cpu_ptr_to_phys bug that is sent in a separate
-thread.
+On Fri, Apr 20, 2018 at 05:08:23PM +0300, Andrey Ryabinin wrote:
+> =
 
-The issue arises in this stack:
+> =
 
-start_kernel()
- trap_init()
-  setup_cpu_entry_areas()
-   setup_cpu_entry_area(cpu)
-    get_cpu_gdt_paddr(cpu)
-     per_cpu_ptr_to_phys(addr)
-      pcpu_addr_to_page(addr)
-       virt_to_page(addr)
-        pfn_to_page(__pa(addr) >> PAGE_SHIFT)
-The returned "struct page" is sometimes uninitialized, and thus
-failing later when used. It turns out sometimes is because it depends
-on KASLR.
+> On 04/19/2018 06:01 AM, Fengguang Wu wrote:
+> > Hello,
+> > =
 
-When boot is failing we have this when  pfn_to_page() is called:
-kasrl: 0x000000000d600000
- addr: ffffffff83e0d000
-    pa: 1040d000
-   pfn: 1040d
-page: ffff88001f113340
-page->flags ffffffffffffffff <- Uninitialized!
+> > FYI this happens in mainline kernel 4.17.0-rc1.
+> > It at least dates back to v4.8 .
+> > =
 
-When boot is successful:
-kaslr: 0x000000000a800000
- addr: ffffffff83e0d000
-     pa: d60d000
-    pfn: d60d
- page: ffff88001f05b340
-page->flags 280000000000 <- Initialized!
+> > [   25.697463]
+> > [   25.697463] Start testing find_bit() with random-filled bitmap
+> > [   25.736615] find_next_bit:                30203201 ns, 163965 iterat=
+ions
+> > [   25.783266] find_next_zero_bit:           45554622 ns, 163716 iterat=
+ions
+> > [   25.832480] find_last_bit:                48003878 ns, 163965 iterat=
+ions
+> > [   52.050031] watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [swapp=
+er/0:1]
+> > [   52.050031] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.17.0-rc1 #210
+> > [   52.050031] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), B=
+IOS 1.10.2-1 04/01/2014
+> > [   52.050031] RIP: 0010:__sanitizer_cov_trace_pc+0x65/0x66:
+> > 						__sanitizer_cov_trace_pc at kernel/kcov.c:111
+> > [   52.050031] RSP: 0000:ffff88000fd43e40 EFLAGS: 00000246 ORIG_RAX: ff=
+ffffffffffff13
+> > [   52.050031] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000=
+000000017
+> > [   52.050031] RDX: 0000000000000000 RSI: ffff88000fd3e000 RDI: 0000000=
+000000002
+> > [   52.050031] RBP: 0000000000050000 R08: 0000000000000008 R09: 0000000=
+000000000
+> > [   52.050031] R10: ffff88000fd3e000 R11: 00000000222e2c32 R12: fffffff=
+f85565d90
+> > [   52.050031] R13: 0000000000030f80 R14: 0000000000030f80 R15: 0000000=
+000000000
+> > [   52.050031] FS:  0000000000000000(0000) GS:ffff88001f600000(0000) kn=
+lGS:0000000000000000
+> > [   52.050031] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [   52.050031] CR2: 0000000000000000 CR3: 0000000003c6a000 CR4: 0000000=
+0000006b0
+> > [   52.050031] Call Trace:
+> > [   52.050031]  find_first_bit+0x66/0x7c:
+> > 						find_first_bit at lib/find_bit.c:106 (discriminator 1)
+> > [   52.050031]  test_find_first_bit+0x3a/0x93
+> =
 
-Here are physical addresses that BIOS provided to us:
-[    0.000000] e820: BIOS-provided physical RAM map:
-[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable
-[    0.000000] BIOS-e820: [mem 0x000000000009fc00-0x000000000009ffff] reser=
-ved
-[    0.000000] BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reser=
-ved
-[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x000000001ffdffff] usable
-[    0.000000] BIOS-e820: [mem 0x000000001ffe0000-0x000000001fffffff] reser=
-ved
-[    0.000000] BIOS-e820: [mem 0x00000000feffc000-0x00000000feffffff] reser=
-ved
-[    0.000000] BIOS-e820: [mem 0x00000000fffc0000-0x00000000ffffffff] reser=
-ved
+> =
 
-In both cases, working and non-working the real physical address is the sam=
-e:
-pa - kasrl =3D 0x2E0D000
+> I suppose test_find_first_bit() needs a little more than zero cond_resche=
+d() calls.
 
-The only thing that is different is PFN.
+Or just decrease length of bitmap in this test. find_first_bit() takes
+lion's share of time of the test.
+ =
 
-We initialize struct pages in four places:
+Start testing find_bit() with random-filled bitmap
+find_next_bit:          240043 cycles,  164062 iterations
+find_next_zero_bit:     312848 cycles,  163619 iterations
+find_last_bit:          193748 cycles,  164062 iterations
+find_first_bit:      177720874 cycles,  164062 iterations
 
-1. Early in boot a small set of struct pages is initialized to fill
-the first section, and lower zones.
-2. During mm_init() we initialize "struct pages" for all the memory
-that is allocated, i.e reserved in memblock.
-3. Using on-demand logic when pages are allocated after mm_init call
-4. After smp_init() when the rest free deferred pages are initialized.
+I'll test the patch and send it soon if you OK with it.
 
-The above path happens before deferred memory is initialized, and thus
-it must be covered either by 1, 2 or 3.
+Yury
 
-So, lets check what PFNs are initialized after (1).
-
-memmap_init_zone() is called for pfn ranges:
-1 - 1000, and 1000 - 1ffe0, but it quits after reaching pfn 0x10000,
-as it leaves the rest to be initialized as deferred pages.
-
-In the working scenario pfn ended up being below 1000, but in the
-failing scenario it is above. Hence, we must initialize this page in
-(2). But trap_init() is called before mm_init().
-
-The bug was introduced by "mm: initialize pages on demand during boot"
-because we lowered amount of pages that is initialized in the step
-(1). But, it still could happen, because the number of initialized
-pages was a guessing.
-
-The proposed fix is this:
-
-diff --git a/init/main.c b/init/main.c
-index b795aa341a3a..870f75581cea 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -585,8 +585,8 @@ asmlinkage __visible void __init start_kernel(void)
-        setup_log_buf(0);
-        vfs_caches_init_early();
-        sort_main_extable();
--       trap_init();
-        mm_init();
-+       trap_init();
-
-        ftrace_init();
-
---===============8421793101881896480==--
+--===============0748751763315994184==--
 
