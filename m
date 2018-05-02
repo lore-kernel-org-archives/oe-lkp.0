@@ -1,14 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============8838767005231492399=="
+Content-Type: multipart/mixed; boundary="===============1277153677689591833=="
 MIME-Version: 1.0
 From: kernel test robot <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: [lkp-robot] [ACPI] f6f47c66af: unixbench.score -14.5% regression
-Date: Wed, 02 May 2018 09:33:16 +0800
-Message-ID: <20180502013316.GI6376@yexl-desktop>
-In-Reply-To: <20180424193505.6934-3-ahs3@redhat.com>
+Subject: [lkp-robot] [MD] 683362afd2: aim7.jobs-per-min -13.3% regression
+Date: Wed, 02 May 2018 09:35:28 +0800
+Message-ID: <20180502013527.GJ6376@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8838767005231492399==
+--===============1277153677689591833==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -16,588 +15,251 @@ Content-Transfer-Encoding: quoted-printable
 
 Greeting,
 
-FYI, we noticed a -14.5% regression of unixbench.score due to commit:
+FYI, we noticed a -13.3% regression of aim7.jobs-per-min due to commit:
 
 
-commit: f6f47c66aff878aeb5bc0e11dce3783308c38d95 ("ACPI: ensure acpi_parse_=
-entries_array() does not access non-existent table data")
-url: https://github.com/0day-ci/linux/commits/Al-Stone/mailbox-ACPI-Remove-=
-incorrect-error-message-about-parsing-PCCT/20180426-020343
-base: https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git linu=
-x-next
+commit: 683362afd206730cd30fa2846f298d4c2a67895f ("MD: fix lock contention =
+for flush bios")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-in testcase: unixbench
-on test machine: 8 threads Ivy Bridge with 16G memory
+in testcase: aim7
+on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz with =
+384G memory
 with following parameters:
 
-	runtime: 300s
-	nr_task: 100%
-	test: execl
+	disk: 4BRD_12G
+	md: RAID0
+	fs: xfs
+	test: sync_disk_rw
+	load: 600
 	cpufreq_governor: performance
 
-test-description: UnixBench is the original BYTE UNIX benchmark suite aims =
-to test performance of Unix-like system.
-test-url: https://github.com/kdlucas/byte-unixbench
+test-description: AIM7 is a traditional UNIX system level benchmark suite w=
+hich is used to test and measure the performance of multiuser system.
+test-url: https://sourceforge.net/projects/aimbench/files/aim-suite7/
 
-In addition to that, the commit also has significant impact on the followin=
-g tests:
-
-+------------------+-------------------------------------------------------=
-------------------------------------+
-| testcase: change | hackbench: hackbench.throughput -95.1% regression     =
-                                    |
-| test machine     | 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz w=
-ith 64G memory                      |
-| test parameters  | cpufreq_governor=3Dperformance                        =
-                                      |
-|                  | ipc=3Dpipe                                            =
-                                      |
-|                  | mode=3Dprocess                                        =
-                                      |
-|                  | nr_threads=3D100%                                     =
-                                      |
-+------------------+-------------------------------------------------------=
-------------------------------------+
 
 
 Details are as below:
 ---------------------------------------------------------------------------=
 ----------------------->
 
-
-To reproduce:
-
-        git clone https://github.com/intel/lkp-tests.git
-        cd lkp-tests
-        bin/lkp install job.yaml  # job file is attached in this email
-        bin/lkp run     job.yaml
-
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test/te=
+compiler/cpufreq_governor/disk/fs/kconfig/load/md/rootfs/tbox_group/test/te=
 stcase:
-  gcc-7/performance/x86_64-rhel-7.2/100%/debian-x86_64-2016-08-31.cgz/300s/=
-lkp-ivb-d01/execl/unixbench
+  gcc-7/performance/4BRD_12G/xfs/x86_64-rhel-7.2/600/RAID0/debian-x86_64-20=
+16-08-31.cgz/lkp-ivb-ep01/sync_disk_rw/aim7
 
 commit: =
 
-  e45a9eb6b4 ("ACPI: improve function documentation for acpi_parse_entries_=
-array()")
-  f6f47c66af ("ACPI: ensure acpi_parse_entries_array() does not access non-=
-existent table data")
+  83beed7b2b ("Merge branch 'fixes' of git://git.kernel.org/pub/scm/linux/k=
+ernel/git/evalenti/linux-soc-thermal")
+  683362afd2 ("MD: fix lock contention for flush bios")
 
-e45a9eb6b4c80e5d f6f47c66aff878aeb5bc0e11dc =
+83beed7b2b26f232 683362afd206730cd30fa2846f =
 
 ---------------- -------------------------- =
 
          %stddev     %change         %stddev
              \          |                \  =
 
-      5716           -14.5%       4887        unixbench.score
-   9824578           -42.7%    5626983        unixbench.time.involuntary_co=
-ntext_switches
- 3.511e+08           -17.1%  2.912e+08        unixbench.time.minor_page_fau=
-lts
-    581.00           -42.3%     335.50        unixbench.time.percent_of_cpu=
-_this_job_got
-      1550           -43.6%     874.53        unixbench.time.system_time
-    369.43           -36.8%     233.58        unixbench.time.user_time
-   1561424           -96.6%      53172 =C2=B1  2%  unixbench.time.voluntary=
-_context_switches
-   8118092           -14.6%    6935766        unixbench.workload
-     18459           -52.5%       8775 =C2=B1  3%  interrupts.CAL:Function_=
-call_interrupts
-      8.74 =C2=B1 10%     -13.2%       7.59 =C2=B1  3%  boot-time.dhcp
-    177.82 =C2=B1  7%     -53.1%      83.42 =C2=B1  2%  boot-time.idle
-    881987           -96.5%      30765 =C2=B1 10%  softirqs.SCHED
-   1154747           -46.5%     617571 =C2=B1  4%  softirqs.TIMER
-     19.97           -10.8        9.18        mpstat.cpu.idle%
-     60.08            +7.4       67.53        mpstat.cpu.sys%
-     19.89            +3.3       23.24        mpstat.cpu.usr%
-      8.00           -12.5%       7.00        vmstat.procs.r
-     89951           -55.2%      40309        vmstat.system.cs
-     20224           -16.7%      16845        vmstat.system.in
- 1.524e+08           -96.5%    5363146        cpuidle.C1.time
-   4745339           -88.5%     548049        cpuidle.C1.usage
- 1.152e+08 =C2=B1  2%     -99.7%     338861 =C2=B1 17%  cpuidle.C1E.time
-   2548771           -99.8%       5043 =C2=B1 13%  cpuidle.C1E.usage
-   7046006 =C2=B1  3%     -95.3%     327803 =C2=B1 47%  cpuidle.C3.time
-    107964 =C2=B1  3%     -98.8%       1290 =C2=B1 27%  cpuidle.C3.usage
- 2.326e+08           -51.6%  1.126e+08        cpuidle.C6.time
-    243171           -51.9%     117083        cpuidle.C6.usage
-    191721 =C2=B1  3%     -86.6%      25746 =C2=B1116%  cpuidle.POLL.time
-     18959           -81.8%       3455 =C2=B1 97%  cpuidle.POLL.usage
-     58707 =C2=B1  2%     -13.0%      51065 =C2=B1  2%  meminfo.AnonHugePag=
-es
-     92684            -9.6%      83796        meminfo.AnonPages
-     79059           +15.7%      91464        meminfo.CmaFree
-     74600 =C2=B1  6%     -30.9%      51560 =C2=B1  4%  meminfo.DirectMap4k
-     21958           -38.5%      13498        meminfo.Inactive
-     21862           -38.7%      13405        meminfo.Inactive(anon)
-      3797           -15.3%       3215        meminfo.KernelStack
-     37184           -25.4%      27745        meminfo.Mapped
-     26611 =C2=B1  7%     -29.6%      18738        meminfo.SUnreclaim
-     27976            -9.8%      25234        meminfo.Shmem
-     64748 =C2=B1  3%     -15.3%      54809        meminfo.Slab
-     23223            -9.6%      20992        proc-vmstat.nr_anon_pages
-     19724           +15.8%      22843        proc-vmstat.nr_free_cma
-      5463           -38.9%       3337        proc-vmstat.nr_inactive_anon
-      3799           -15.4%       3215        proc-vmstat.nr_kernel_stack
-      9540           -24.8%       7170        proc-vmstat.nr_mapped
-      6993            -9.8%       6304        proc-vmstat.nr_shmem
-      6648 =C2=B1  6%     -29.5%       4684        proc-vmstat.nr_slab_unre=
-claimable
-      5464           -38.9%       3337        proc-vmstat.nr_zone_inactive_=
-anon
- 2.828e+08           -17.2%  2.341e+08        proc-vmstat.numa_hit
- 2.828e+08           -17.2%  2.341e+08        proc-vmstat.numa_local
-      7794           -10.5%       6974        proc-vmstat.pgactivate
- 1.651e+08           -17.5%  1.361e+08        proc-vmstat.pgalloc_movable
- 1.251e+08           -16.8%  1.041e+08        proc-vmstat.pgalloc_normal
-  3.53e+08           -17.4%  2.916e+08        proc-vmstat.pgfault
- 2.901e+08           -17.2%  2.402e+08        proc-vmstat.pgfree
-      2985           +12.6%       3361        turbostat.Avg_MHz
-     80.89           +10.2       91.06        turbostat.Busy%
-   4743122           -88.4%     547984        turbostat.C1
-      5.75            -5.3        0.40        turbostat.C1%
-   2548705           -99.8%       5034 =C2=B1 13%  turbostat.C1E
-      4.34            -4.3        0.02 =C2=B1 19%  turbostat.C1E%
-    107927 =C2=B1  3%     -98.8%       1282 =C2=B1 27%  turbostat.C3
-      0.27 =C2=B1  3%      -0.2        0.03 =C2=B1 34%  turbostat.C3%
-    242619           -51.8%     116964        turbostat.C6
-     11.60           -22.9%       8.94        turbostat.CPU%c1
-      0.04 =C2=B1 34%    -100.0%       0.00        turbostat.CPU%c3
-      7.47          -100.0%       0.00        turbostat.CPU%c6
-     40.40            -8.0%      37.18        turbostat.CorWatt
-   6728888           -16.8%    5601270        turbostat.IRQ
-      0.77 =C2=B1 16%    -100.0%       0.00        turbostat.Pkg%pc2
-      0.03 =C2=B1 34%    -100.0%       0.00        turbostat.Pkg%pc3
-      2.00 =C2=B1  8%    -100.0%       0.00        turbostat.Pkg%pc6
-     45.40            -7.3%      42.07        turbostat.PkgWatt
- 9.253e+11 =C2=B1  5%     -19.1%  7.484e+11        perf-stat.branch-instruc=
-tions
-      2.50 =C2=B1  4%      -0.4        2.12 =C2=B1  2%  perf-stat.branch-mi=
-ss-rate%
- 2.305e+10 =C2=B1  2%     -31.3%  1.585e+10        perf-stat.branch-misses
- 1.093e+11 =C2=B1  4%     -30.1%  7.638e+10        perf-stat.cache-referenc=
-es
-  29935645           -55.3%   13391567        perf-stat.context-switches
-      1.72 =C2=B1  9%     -30.7%       1.19        perf-stat.cpi
- 7.859e+12 =C2=B1  2%     -43.6%  4.435e+12        perf-stat.cpu-cycles
-   6938084           -75.3%    1711723 =C2=B1  2%  perf-stat.cpu-migrations
-      1.84 =C2=B1  3%      -0.5        1.31 =C2=B1  5%  perf-stat.dTLB-load=
--miss-rate%
- 2.344e+10 =C2=B1  4%     -41.6%   1.37e+10 =C2=B1  4%  perf-stat.dTLB-load=
--misses
-  1.25e+12 =C2=B1  6%     -17.6%  1.029e+12        perf-stat.dTLB-loads
-      0.22 =C2=B1  5%      -0.0        0.17 =C2=B1  2%  perf-stat.dTLB-stor=
-e-miss-rate%
- 1.568e+09 =C2=B1 12%     -35.3%  1.015e+09 =C2=B1  3%  perf-stat.dTLB-stor=
-e-misses
- 7.244e+11 =C2=B1  8%     -19.1%  5.858e+11 =C2=B1  2%  perf-stat.dTLB-stor=
-es
- 4.402e+09 =C2=B1 10%     -18.3%  3.595e+09 =C2=B1  2%  perf-stat.iTLB-load=
--misses
-  4.08e+08 =C2=B1  6%     -14.3%  3.496e+08 =C2=B1  2%  perf-stat.iTLB-loads
- 4.607e+12 =C2=B1  6%     -19.0%   3.73e+12        perf-stat.instructions
-      0.59 =C2=B1  8%     +43.2%       0.84        perf-stat.ipc
- 3.371e+08           -17.1%  2.796e+08        perf-stat.minor-faults
- 3.371e+08           -17.1%  2.796e+08        perf-stat.page-faults
-     40678          -100.0%       0.00        slabinfo.Acpi-Namespace.activ=
-e_objs
-    398.25          -100.0%       0.00        slabinfo.Acpi-Namespace.activ=
-e_slabs
-     40678          -100.0%       0.00        slabinfo.Acpi-Namespace.num_o=
-bjs
-    398.25          -100.0%       0.00        slabinfo.Acpi-Namespace.num_s=
-labs
-      3807          -100.0%       0.00        slabinfo.Acpi-Operand.active_=
-objs
-      3807          -100.0%       0.00        slabinfo.Acpi-Operand.num_objs
-    185.25 =C2=B1  9%    -100.0%       0.00        slabinfo.Acpi-ParseExt.a=
-ctive_objs
-    185.25 =C2=B1  9%    -100.0%       0.00        slabinfo.Acpi-ParseExt.n=
-um_objs
-    382.75 =C2=B1 14%    -100.0%       0.00        slabinfo.Acpi-State.acti=
-ve_objs
-    382.75 =C2=B1 14%    -100.0%       0.00        slabinfo.Acpi-State.num_=
-objs
-      4334 =C2=B1 11%     -35.3%       2806 =C2=B1  3%  slabinfo.anon_vma.a=
-ctive_objs
-      4384 =C2=B1 11%     -33.4%       2918 =C2=B1  3%  slabinfo.anon_vma.n=
-um_objs
-    894.00 =C2=B1 20%     -28.7%     637.50 =C2=B1 11%  slabinfo.avtab_node=
-.active_objs
-    894.00 =C2=B1 20%     -28.7%     637.50 =C2=B1 11%  slabinfo.avtab_node=
-.num_objs
-    256.00           -59.0%     105.00 =C2=B1  8%  slabinfo.biovec-64.activ=
-e_objs
-    256.00           -59.0%     105.00 =C2=B1  8%  slabinfo.biovec-64.num_o=
-bjs
-      5602 =C2=B1 65%     -56.3%       2447 =C2=B1 11%  slabinfo.cred_jar.a=
-ctive_objs
-    230.50 =C2=B1  2%     -47.9%     120.00        slabinfo.dmaengine-unmap=
--128.active_objs
-    230.50 =C2=B1  2%     -47.9%     120.00        slabinfo.dmaengine-unmap=
--128.num_objs
-    336.00 =C2=B1 20%     -38.1%     208.00 =C2=B1 13%  slabinfo.ebitmap_no=
-de.active_objs
-    336.00 =C2=B1 20%     -38.1%     208.00 =C2=B1 13%  slabinfo.ebitmap_no=
-de.num_objs
-    448.00           -50.0%     224.00        slabinfo.eventpoll_pwq.active=
-_objs
-    448.00           -50.0%     224.00        slabinfo.eventpoll_pwq.num_ob=
-js
-      5163 =C2=B1 59%     -55.0%       2321 =C2=B1  9%  slabinfo.filp.activ=
-e_objs
-      6702 =C2=B1 52%     -56.8%       2897 =C2=B1  9%  slabinfo.filp.num_o=
-bjs
-     26667           -18.0%      21865        slabinfo.kernfs_node_cache.ac=
-tive_objs
-    888.75           -18.0%     728.75        slabinfo.kernfs_node_cache.ac=
-tive_slabs
-     26667           -18.0%      21865        slabinfo.kernfs_node_cache.nu=
-m_objs
-    888.75           -18.0%     728.75        slabinfo.kernfs_node_cache.nu=
-m_slabs
-      1187 =C2=B1 14%     -38.6%     728.75 =C2=B1  4%  slabinfo.kmalloc-10=
-24.active_objs
-      1223 =C2=B1 10%     -37.8%     761.25 =C2=B1  2%  slabinfo.kmalloc-10=
-24.num_objs
-    725.50           -18.4%     591.75 =C2=B1  2%  slabinfo.kmalloc-128.act=
-ive_objs
-    725.50           -18.4%     591.75 =C2=B1  2%  slabinfo.kmalloc-128.num=
-_objs
-      5056 =C2=B1  4%     -26.6%       3712 =C2=B1  3%  slabinfo.kmalloc-16=
-.active_objs
-      5056 =C2=B1  4%     -26.6%       3712 =C2=B1  3%  slabinfo.kmalloc-16=
-.num_objs
-      1477           -23.2%       1134        slabinfo.kmalloc-192.active_o=
-bjs
-      1477           -23.2%       1134        slabinfo.kmalloc-192.num_objs
-      1005           -32.7%     676.75 =C2=B1  3%  slabinfo.kmalloc-2048.ac=
-tive_objs
-      1059           -32.2%     717.50        slabinfo.kmalloc-2048.num_objs
-    496.00 =C2=B1  3%     -30.7%     343.50 =C2=B1  3%  slabinfo.kmalloc-25=
-6.active_objs
-    496.00 =C2=B1  3%     -30.7%     343.50 =C2=B1  3%  slabinfo.kmalloc-25=
-6.num_objs
-     14402 =C2=B1 20%     -47.0%       7630 =C2=B1  4%  slabinfo.kmalloc-32=
-.active_objs
-     15416 =C2=B1 22%     -47.3%       8131 =C2=B1  4%  slabinfo.kmalloc-32=
-.num_objs
-      1404 =C2=B1  9%     -53.0%     660.00 =C2=B1  5%  slabinfo.kmalloc-51=
-2.active_objs
-      1455 =C2=B1 10%     -52.6%     689.25 =C2=B1  5%  slabinfo.kmalloc-51=
-2.num_objs
-      6603           -25.8%       4898 =C2=B1  9%  slabinfo.kmalloc-64.acti=
-ve_objs
-      6603           -25.8%       4898 =C2=B1  9%  slabinfo.kmalloc-64.num_=
-objs
-      6272 =C2=B1  3%     -34.7%       4096        slabinfo.kmalloc-8.activ=
-e_objs
-      6272 =C2=B1  3%     -34.7%       4096        slabinfo.kmalloc-8.num_o=
-bjs
-      2483           -18.6%       2020 =C2=B1  2%  slabinfo.kmalloc-96.acti=
-ve_objs
-      2483           -18.6%       2020 =C2=B1  2%  slabinfo.kmalloc-96.num_=
-objs
-    184.25 =C2=B1  4%     -57.0%      79.25 =C2=B1  7%  slabinfo.nfs_read_d=
-ata.active_objs
-    184.25 =C2=B1  4%     -57.0%      79.25 =C2=B1  7%  slabinfo.nfs_read_d=
-ata.num_objs
-    502.50 =C2=B1  2%     -41.9%     292.00        slabinfo.nsproxy.active_=
-objs
-    502.50 =C2=B1  2%     -41.9%     292.00        slabinfo.nsproxy.num_objs
-    816.00           -50.0%     408.00        slabinfo.pde_opener.active_ob=
-js
-    816.00           -50.0%     408.00        slabinfo.pde_opener.num_objs
-      6633 =C2=B1  3%     -35.0%       4308        slabinfo.pid.active_objs
-      6973 =C2=B1  3%     -31.6%       4769        slabinfo.pid.num_objs
-    224.00 =C2=B1 14%     -64.3%      80.00        slabinfo.pool_workqueue.=
-active_objs
-    224.00 =C2=B1 14%     -64.3%      80.00        slabinfo.pool_workqueue.=
-num_objs
-      2248 =C2=B1  4%     -19.2%       1817 =C2=B1  3%  slabinfo.proc_inode=
-_cache.active_objs
-      2253 =C2=B1  4%     -18.2%       1842 =C2=B1  4%  slabinfo.proc_inode=
-_cache.num_objs
-      2366 =C2=B1  4%     -13.8%       2039        slabinfo.selinux_file_se=
-curity.active_objs
-      2366 =C2=B1  4%     -13.8%       2039        slabinfo.selinux_file_se=
-curity.num_objs
-    341.75 =C2=B1  3%     -32.1%     232.00 =C2=B1  5%  slabinfo.seq_file.a=
-ctive_objs
-    341.75 =C2=B1  3%     -32.1%     232.00 =C2=B1  5%  slabinfo.seq_file.n=
-um_objs
-      1023           -13.5%     885.25        slabinfo.shmem_inode_cache.ac=
-tive_objs
-      1023           -13.5%     885.25        slabinfo.shmem_inode_cache.nu=
-m_objs
-    502.00 =C2=B1  8%     -27.6%     363.50        slabinfo.signal_cache.ac=
-tive_objs
-    502.00 =C2=B1  8%     -27.6%     363.50        slabinfo.signal_cache.nu=
-m_objs
-    239.25 =C2=B1  5%     -73.5%      63.50        slabinfo.skbuff_fclone_c=
-ache.active_objs
-    239.25 =C2=B1  5%     -73.5%      63.50        slabinfo.skbuff_fclone_c=
-ache.num_objs
-      1164 =C2=B1 18%     -51.1%     569.50 =C2=B1  8%  slabinfo.skbuff_hea=
-d_cache.active_objs
-      1200 =C2=B1 19%     -48.6%     616.50 =C2=B1  7%  slabinfo.skbuff_hea=
-d_cache.num_objs
-      4509 =C2=B1  2%     -14.1%       3874        slabinfo.vm_area_struct.=
-active_objs
-      4553 =C2=B1  2%     -13.9%       3920        slabinfo.vm_area_struct.=
-num_objs
-
-                                                                           =
-     =
-
-                                  unixbench.score                          =
-     =
-
-                                                                           =
-     =
-
-  5800 +-+-----------------------------------------------------------------=
--+   =
-
-  5700 +-+..+.+.+.. .+.+.  .+. .+.. .+.+..+.+.+.+..+.+.+..+.+.+..+.+.+.+..+=
-.|   =
-
-       |           +     +.   +    +                                       =
- |   =
-
-  5600 +-+                                                                 =
- |   =
-
-  5500 +-+                                                                 =
- |   =
-
-       |                                                                   =
- |   =
-
-  5400 +-+                                                                 =
- |   =
-
-  5300 +-+                                                                 =
- |   =
-
-  5200 +-+                                                                 =
- |   =
-
-       |                                                                   =
- |   =
-
-  5100 +-+                                                                 =
- |   =
-
-  5000 +-+  O                                                              =
- |   =
-
-       O O      O  O     O    O O    O O                                   =
- |   =
-
-  4900 +-+    O      O O    O      O      O O O O  O O O  O O O  O O       =
- |   =
-
-  4800 +-+-----------------------------------------------------------------=
--+   =
-
-                                                                           =
-     =
-
-                                                                           =
-                                                                           =
-          =
-
-[*] bisect-good sample
-[O] bisect-bad  sample
-
-***************************************************************************=
-************************
-lkp-bdw-ep3b: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz with 64G=
- memory
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-compiler/cpufreq_governor/ipc/kconfig/mode/nr_threads/rootfs/tbox_group/tes=
-tcase:
-  gcc-7/performance/pipe/x86_64-rhel-7.2/process/100%/debian-x86_64-2016-08=
--31.cgz/lkp-bdw-ep3b/hackbench
-
-commit: =
-
-  e45a9eb6b4 ("ACPI: improve function documentation for acpi_parse_entries_=
-array()")
-  f6f47c66af ("ACPI: ensure acpi_parse_entries_array() does not access non-=
-existent table data")
-
-e45a9eb6b4c80e5d f6f47c66aff878aeb5bc0e11dc =
-
----------------- -------------------------- =
-
-         %stddev     %change         %stddev
-             \          |                \  =
-
-    177788           -95.1%       8746        hackbench.throughput
-    641.40           +83.9%       1179        hackbench.time.elapsed_time
-    641.40           +83.9%       1179        hackbench.time.elapsed_time.m=
-ax
-  4.66e+09           -99.5%   25439590 =C2=B1  3%  hackbench.time.involunta=
-ry_context_switches
-   1586570           -91.6%     132493 =C2=B1  4%  hackbench.time.minor_pag=
+      1939           -13.3%       1681        aim7.jobs-per-min
+      1856           +15.3%       2141        aim7.time.elapsed_time
+      1856           +15.3%       2141        aim7.time.elapsed_time.max
+  52116745           -57.5%   22137934        aim7.time.involuntary_context=
+_switches
+    125972 =C2=B1  5%     +34.1%     168964 =C2=B1  5%  aim7.time.minor_pag=
 e_faults
-      8723           -98.9%      99.00        hackbench.time.percent_of_cpu=
-_this_job_got
-     50191           -98.1%     939.04        hackbench.time.system_time
-      5766           -95.9%     237.15        hackbench.time.user_time
- 7.263e+09           -99.5%   39101040 =C2=B1  2%  hackbench.time.voluntary=
-_context_switches
- 1.162e+09           -90.9%  1.056e+08        hackbench.workload
-    582717 =C2=B1  4%    -100.0%       0.00        interrupts.CAL:Function_=
-call_interrupts
-   8957595 =C2=B1  4%     -99.1%      80234 =C2=B1 20%  softirqs.RCU
-    735697 =C2=B1  2%    -100.0%       0.00        softirqs.SCHED
-  28611795           -97.8%     617521        softirqs.TIMER
-      1523           -44.2%     849.50        vmstat.procs.r
-  18536113           -99.7%      55229 =C2=B1  2%  vmstat.system.cs
-    931570           -99.9%       1059        vmstat.system.in
-     41.02           -27.9%      29.58        boot-time.boot
-     23.22 =C2=B1  3%     -45.4%      12.67 =C2=B1  3%  boot-time.dhcp
-      3493           -99.5%      17.33 =C2=B1  5%  boot-time.idle
-     30.84           -34.8%      20.11 =C2=B1  2%  boot-time.kernel_boot
-      1.11 =C2=B1  5%      -1.0        0.09 =C2=B1 23%  mpstat.cpu.idle%
-      0.00 =C2=B1 24%      +0.0        0.01 =C2=B1 39%  mpstat.cpu.soft%
-     89.26            -9.3       79.99        mpstat.cpu.sys%
-      9.63           +10.3       19.91        mpstat.cpu.usr%
-  30360951 =C2=B1 11%    -100.0%       0.00        numa-numastat.node0.loca=
-l_node
-  30365227 =C2=B1 11%    -100.0%       0.00        numa-numastat.node0.numa=
-_hit
-      4279 =C2=B1172%    -100.0%       0.00        numa-numastat.node0.othe=
-r_node
-  32060088 =C2=B1  9%    -100.0%       0.00        numa-numastat.node1.loca=
-l_node
-  32073069 =C2=B1  9%    -100.0%       0.00        numa-numastat.node1.numa=
-_hit
-     12981 =C2=B1 57%    -100.0%       0.00        numa-numastat.node1.othe=
-r_node
-  71672048 =C2=B1  6%    -100.0%       0.00        cpuidle.C1.time
-   8045786 =C2=B1  8%    -100.0%     509.00 =C2=B1 44%  cpuidle.C1.usage
-  20380096 =C2=B1  7%    -100.0%       0.00        cpuidle.C1E.time
-    597373 =C2=B1  7%    -100.0%       0.00        cpuidle.C1E.usage
-   6114163 =C2=B1  4%    -100.0%       0.00        cpuidle.C3.time
-     24165 =C2=B1  5%    -100.0%       0.00        cpuidle.C3.usage
- 4.467e+08 =C2=B1  6%    -100.0%       0.00        cpuidle.C6.time
-    523881 =C2=B1  6%    -100.0%       0.00        cpuidle.C6.usage
-    710524 =C2=B1  7%    -100.0%       0.00        cpuidle.POLL.time
-     92427 =C2=B1 10%    -100.0%       0.00        cpuidle.POLL.usage
-    273154 =C2=B1  2%     -26.7%     200231 =C2=B1  3%  meminfo.Active
-    273150 =C2=B1  2%     -26.7%     200227 =C2=B1  3%  meminfo.Active(anon)
-   1464016           -15.1%    1243254        meminfo.Committed_AS
-   5995008           -19.1%    4851200 =C2=B1  9%  meminfo.DirectMap2M
-    199624 =C2=B1  6%     -83.6%      32712 =C2=B1  2%  meminfo.DirectMap4k
-     11322           -19.3%       9132        meminfo.Inactive
-     11170           -19.2%       9028        meminfo.Inactive(anon)
-     63373           -11.3%      56191        meminfo.KernelStack
-     75016           -30.6%      52088        meminfo.SReclaimable
-    270756           -60.7%     106300        meminfo.SUnreclaim
-     93053 =C2=B1  7%     -88.0%      11179        meminfo.Shmem
-    345773           -54.2%     158389        meminfo.Slab
-      2755            +1.4%       2793        turbostat.Avg_MHz
-   8045019 =C2=B1  8%    -100.0%     509.00 =C2=B1 44%  turbostat.C1
-      0.12 =C2=B1  6%      -0.1        0.00        turbostat.C1%
-    597155 =C2=B1  7%    -100.0%       0.00        turbostat.C1E
-      0.04 =C2=B1 14%      -0.0        0.00        turbostat.C1E%
-     23959 =C2=B1  5%    -100.0%       0.00        turbostat.C3
-      0.01            -0.0        0.00        turbostat.C3%
-    520673 =C2=B1  6%    -100.0%       0.00        turbostat.C6
-      0.79 =C2=B1  7%      -0.8        0.00        turbostat.C6%
-      0.60 =C2=B1  5%     -93.8%       0.04 =C2=B1 51%  turbostat.CPU%c1
+     68075           +17.7%      80145        aim7.time.system_time
+     39.37 =C2=B1  2%     +10.8%      43.62        aim7.time.user_time
+ 5.808e+08 =C2=B1  2%     +12.8%  6.553e+08        aim7.time.voluntary_cont=
+ext_switches
+    576013           +13.3%     652804        interrupts.CAL:Function_call_=
+interrupts
+      1901 =C2=B1  6%      +8.9%       2070 =C2=B1  5%  meminfo.Mlocked
+      4.22            +0.7        4.90        mpstat.cpu.idle%
+    801.00 =C2=B1  6%     +28.9%       1032 =C2=B1 18%  numa-meminfo.node1.=
+Mlocked
+    199.75 =C2=B1  6%     +29.0%     257.75 =C2=B1 18%  numa-vmstat.node1.n=
+r_mlock
+      9504 =C2=B1  3%      -8.9%       8658 =C2=B1  3%  slabinfo.kmalloc-96=
+.active_objs
+   6706696           +46.8%    9847771        softirqs.SCHED
+  28394239           +14.4%   32489803        softirqs.TIMER
+     72874           -13.5%      63058        vmstat.io.bo
+    312.75           -21.7%     245.00        vmstat.procs.r
+    395501           -10.4%     354245        vmstat.system.cs
+    169403           -18.6%     137847        vmstat.system.in
+    475.00 =C2=B1  6%      +8.9%     517.25 =C2=B1  5%  proc-vmstat.nr_mlock
+     94834 =C2=B1  7%     +45.5%     137988 =C2=B1  6%  proc-vmstat.numa_hi=
+nt_faults
+     45268 =C2=B1  2%     +41.0%      63812 =C2=B1  7%  proc-vmstat.numa_hi=
+nt_faults_local
+     19923 =C2=B1 14%     +48.7%      29627 =C2=B1  4%  proc-vmstat.numa_pa=
+ges_migrated
+     96311 =C2=B1  7%     +45.1%     139707 =C2=B1  6%  proc-vmstat.numa_pt=
+e_updates
+   4628086           +16.8%    5405597        proc-vmstat.pgfault
+     19923 =C2=B1 14%     +48.7%      29627 =C2=B1  4%  proc-vmstat.pgmigra=
+te_success
+ 2.164e+09           +32.6%  2.869e+09        cpuidle.C1.time
+  46281314           +19.0%   55096679        cpuidle.C1.usage
+ 2.451e+08 =C2=B1  2%     +97.9%  4.852e+08        cpuidle.C1E.time
+   4597817           +77.9%    8180887        cpuidle.C1E.usage
+ 1.343e+08 =C2=B1  2%     +67.1%  2.244e+08        cpuidle.C3.time
+   1837553 =C2=B1  2%     +80.0%    3307538        cpuidle.C3.usage
+   1962707           +32.6%    2603450        cpuidle.POLL.time
+     56419           +26.9%      71623        cpuidle.POLL.usage
+  46276504           +19.0%   55091297        turbostat.C1
+      2.91            +0.4        3.35        turbostat.C1%
+   4597783           +77.9%    8180806        turbostat.C1E
+      0.33 =C2=B1  2%      +0.2        0.56        turbostat.C1E%
+   1837451 =C2=B1  2%     +80.0%    3307414        turbostat.C3
+      0.18 =C2=B1  2%      +0.1        0.26        turbostat.C3%
+      0.62            -0.1        0.53 =C2=B1  2%  turbostat.C6%
+      3.54 =C2=B1  2%     +20.4%       4.26        turbostat.CPU%c1
       0.01          -100.0%       0.00        turbostat.CPU%c3
-      0.55 =C2=B1  8%    -100.0%       0.00        turbostat.CPU%c6
- 5.999e+08           -99.8%    1240362        turbostat.IRQ
-      0.28 =C2=B1 14%    -100.0%       0.00        turbostat.Pkg%pc2
-      0.01 =C2=B1 34%    -100.0%       0.00        turbostat.Pkg%pc6
-    276.01           -77.5%      62.11        turbostat.PkgWatt
-      6.95           -66.0%       2.37        turbostat.RAMWatt
-     68257 =C2=B1  2%     -27.1%      49784 =C2=B1  3%  proc-vmstat.nr_acti=
-ve_anon
-      2782           -18.9%       2257        proc-vmstat.nr_inactive_anon
-     63459           -12.3%      55658        proc-vmstat.nr_kernel_stack
-     23194 =C2=B1  7%     -87.9%       2795        proc-vmstat.nr_shmem
-     18749           -30.8%      12977        proc-vmstat.nr_slab_reclaimab=
-le
-     67678           -61.0%      26364        proc-vmstat.nr_slab_unreclaim=
-able
-     68274 =C2=B1  2%     -27.1%      49792 =C2=B1  3%  proc-vmstat.nr_zone=
-_active_anon
-      2782           -18.8%       2258        proc-vmstat.nr_zone_inactive_=
-anon
-    143278          -100.0%       0.00        proc-vmstat.numa_hint_faults
-    841.00 =C2=B1 18%    -100.0%       0.00        proc-vmstat.numa_hint_fa=
-ults_local
-  62453059           -65.1%   21796302        proc-vmstat.numa_hit
-  62435789           -65.1%   21796302        proc-vmstat.numa_local
-     17269          -100.0%       0.00        proc-vmstat.numa_other
-    142432          -100.0%       0.00        proc-vmstat.numa_pages_migrat=
-ed
-    162954          -100.0%       0.00        proc-vmstat.numa_pte_updates
-     19738 =C2=B1 10%     -98.0%     391.25 =C2=B1  2%  proc-vmstat.pgactiv=
-ate
-    642378 =C2=B1  4%     -79.9%     129353 =C2=B1  2%  proc-vmstat.pgalloc=
-_movable
-  62058297           -65.0%   21692675        proc-vmstat.pgalloc_normal
-   2743971           -89.5%     287612 =C2=B1  3%  proc-vmstat.pgfault
-  62631040           -65.2%   21803113        proc-vmstat.pgfree
-    142432          -100.0%       0.00        proc-vmstat.pgmigrate_success
- 1.769e+13           -96.4%  6.361e+11        perf-stat.branch-instructions
-      1.37            +0.5        1.86        perf-stat.branch-miss-rate%
- 2.429e+11           -95.1%  1.182e+10        perf-stat.branch-misses
-      0.49 =C2=B1  3%      +1.4        1.87        perf-stat.cache-miss-rat=
-e%
- 6.263e+09 =C2=B1  3%     -97.4%  1.625e+08        perf-stat.cache-misses
- 1.265e+12           -99.3%  8.702e+09        perf-stat.cache-references
- 1.194e+10           -99.5%   65085344 =C2=B1  2%  perf-stat.context-switch=
-es
-      1.72           -42.6%       0.99        perf-stat.cpi
-  1.55e+14           -97.9%  3.284e+12        perf-stat.cpu-cycles
- 1.078e+09 =C2=B1  2%    -100.0%       0.00        perf-stat.cpu-migrations
-      1.54            -1.4        0.18 =C2=B1  6%  perf-stat.dTLB-load-miss=
+    149550           +14.6%     171390        turbostat.SMI
+ 1.168e+13           +14.2%  1.335e+13        perf-stat.branch-instructions
+      0.29            -0.0        0.28        perf-stat.branch-miss-rate%
+ 3.427e+10 =C2=B1  2%     +10.5%  3.787e+10        perf-stat.branch-misses
+     12.70            +1.0       13.68        perf-stat.cache-miss-rate%
+ 2.515e+10            +9.2%  2.747e+10        perf-stat.cache-misses
+  7.35e+08            +3.3%   7.59e+08        perf-stat.context-switches
+ 2.125e+14           +14.6%  2.435e+14        perf-stat.cpu-cycles
+  25714777          +125.7%   58033642        perf-stat.cpu-migrations
+      0.29            -0.0        0.25 =C2=B1  2%  perf-stat.dTLB-load-miss=
 -rate%
- 4.077e+11           -99.5%  1.837e+09 =C2=B1  6%  perf-stat.dTLB-load-miss=
+ 3.514e+10            -3.6%  3.387e+10 =C2=B1  2%  perf-stat.dTLB-load-miss=
 es
- 2.609e+13           -96.1%  1.006e+12        perf-stat.dTLB-loads
-      0.11 =C2=B1  3%      -0.1        0.01 =C2=B1 15%  perf-stat.dTLB-stor=
-e-miss-rate%
- 1.729e+10 =C2=B1  2%     -99.5%   81741597 =C2=B1 15%  perf-stat.dTLB-stor=
+ 1.198e+13           +13.9%  1.365e+13        perf-stat.dTLB-loads
+ 2.443e+09 =C2=B1  2%      +9.0%  2.663e+09 =C2=B1  2%  perf-stat.dTLB-stor=
 e-misses
- 1.538e+13           -95.8%  6.403e+11        perf-stat.dTLB-stores
-     54.95           +36.0       90.93        perf-stat.iTLB-load-miss-rate%
- 1.317e+11           -94.7%  7.023e+09 =C2=B1  2%  perf-stat.iTLB-load-miss=
-es
-  1.08e+11           -99.4%  6.996e+08 =C2=B1  2%  perf-stat.iTLB-loads
- 8.995e+13           -96.3%  3.319e+12        perf-stat.instructions
-    682.80           -30.7%     473.06 =C2=B1  2%  perf-stat.instructions-p=
-er-iTLB-miss
-      0.58           +74.1%       1.01        perf-stat.ipc
-   2716306           -89.5%     284279 =C2=B1  3%  perf-stat.minor-faults
-     93.97            +6.0      100.00        perf-stat.node-load-miss-rate%
- 2.947e+09 =C2=B1  4%     -97.4%   76154669        perf-stat.node-load-miss=
-es
- 1.887e+08 =C2=B1  6%    -100.0%      19.50 =C2=B1 78%  perf-stat.node-loads
-     47.70 =C2=B1  5%     -47.7        0.00        perf-stat.node-store-mis=
-s-rate%
- 8.988e+08 =C2=B1  5%     -99.1%    8198414 =C2=B1  2%  perf-stat.node-stor=
-e-misses
- 9.864e+08 =C2=B1  6%    -100.0%       0.00        perf-stat.node-stores
-   2716307           -89.5%     284279 =C2=B1  3%  perf-stat.page-faults
-     77434           -59.4%      31434        perf-stat.path-length
+ 1.236e+12            +7.5%  1.329e+12        perf-stat.dTLB-stores
+ 7.368e+09            +2.9%  7.578e+09        perf-stat.iTLB-load-misses
+ 6.926e+08 =C2=B1  3%     +12.2%  7.768e+08 =C2=B1  2%  perf-stat.iTLB-loads
+ 4.777e+13           +14.1%  5.452e+13        perf-stat.instructions
+      6482           +11.0%       7193        perf-stat.instructions-per-iT=
+LB-miss
+   4534169           +16.9%    5300068        perf-stat.minor-faults
+  1.45e+10            +8.9%  1.579e+10        perf-stat.node-load-misses
+ 1.602e+10            +8.6%   1.74e+10        perf-stat.node-loads
+     37.62            +0.6       38.26        perf-stat.node-store-miss-rat=
+e%
+ 5.539e+09           +14.0%  6.313e+09        perf-stat.node-store-misses
+ 9.184e+09           +10.9%  1.019e+10        perf-stat.node-stores
+   4534203           +16.9%    5300070        perf-stat.page-faults
+    872330           +14.0%     994555        sched_debug.cfs_rq:/.exec_clo=
+ck.avg
+    872962           +14.1%     996142        sched_debug.cfs_rq:/.exec_clo=
+ck.max
+    871715           +13.9%     993040        sched_debug.cfs_rq:/.exec_clo=
+ck.min
+    369.73 =C2=B1 34%    +171.8%       1005 =C2=B1  6%  sched_debug.cfs_rq:=
+/.exec_clock.stddev
+    266.63 =C2=B1  2%     -22.6%     206.40        sched_debug.cfs_rq:/.loa=
+d_avg.avg
+     37.92           -63.7%      13.76 =C2=B1  8%  sched_debug.cfs_rq:/.loa=
+d_avg.min
+  30602628           +13.0%   34575258        sched_debug.cfs_rq:/.min_vrun=
+time.avg
+  30847328           +15.9%   35764398        sched_debug.cfs_rq:/.min_vrun=
+time.max
+    118388 =C2=B1 12%    +652.5%     890888 =C2=B1  5%  sched_debug.cfs_rq:=
+/.min_vruntime.stddev
+      0.06 =C2=B1 46%     -62.4%       0.02 =C2=B1110%  sched_debug.cfs_rq:=
+/.nr_running.min
+      6.57           +17.6%       7.73 =C2=B1  3%  sched_debug.cfs_rq:/.nr_=
+spread_over.avg
+     15.81 =C2=B1 12%     +64.6%      26.03 =C2=B1 15%  sched_debug.cfs_rq:=
+/.nr_spread_over.max
+      3.00 =C2=B1  8%     +50.3%       4.50 =C2=B1  6%  sched_debug.cfs_rq:=
+/.nr_spread_over.stddev
+     18.41 =C2=B1  8%     -17.1%      15.26 =C2=B1 11%  sched_debug.cfs_rq:=
+/.runnable_load_avg.avg
+    131005 =C2=B1 71%    +961.0%    1389936 =C2=B1 64%  sched_debug.cfs_rq:=
+/.spread0.max
+    118362 =C2=B1 12%    +652.7%     890879 =C2=B1  5%  sched_debug.cfs_rq:=
+/.spread0.stddev
+    298.95 =C2=B1  4%     -29.8%     210.00 =C2=B1  6%  sched_debug.cfs_rq:=
+/.util_est_enqueued.avg
+    859.21 =C2=B1  4%      -9.8%     774.82 =C2=B1  3%  sched_debug.cfs_rq:=
+/.util_est_enqueued.max
+      0.06 =C2=B1 34%     -78.1%       0.01 =C2=B1173%  sched_debug.cfs_rq:=
+/.util_est_enqueued.min
+    242.71 =C2=B1  4%     -17.1%     201.19 =C2=B1  3%  sched_debug.cfs_rq:=
+/.util_est_enqueued.stddev
+     20620 =C2=B1 11%     +22.8%      25322 =C2=B1  5%  sched_debug.cpu.avg=
+_idle.min
+    941791           +14.4%    1077461        sched_debug.cpu.clock.avg
+    941804           +14.4%    1077476        sched_debug.cpu.clock.max
+    941773           +14.4%    1077443        sched_debug.cpu.clock.min
+    941791           +14.4%    1077461        sched_debug.cpu.clock_task.avg
+    941804           +14.4%    1077476        sched_debug.cpu.clock_task.max
+    941773           +14.4%    1077443        sched_debug.cpu.clock_task.min
+     21.66 =C2=B1  3%     +13.5%      24.58 =C2=B1  8%  sched_debug.cpu.cpu=
+_load[0].avg
+      0.47 =C2=B1 23%     -73.7%       0.12 =C2=B1 59%  sched_debug.cpu.cpu=
+_load[0].min
+     22.23 =C2=B1  2%     +11.0%      24.67 =C2=B1  6%  sched_debug.cpu.cpu=
+_load[1].avg
+      3.06 =C2=B1  9%     +70.2%       5.22 =C2=B1  8%  sched_debug.cpu.cpu=
+_load[1].min
+      5.32 =C2=B1  8%     +62.1%       8.62 =C2=B1  7%  sched_debug.cpu.cpu=
+_load[2].min
+      7.76 =C2=B1  7%     +50.6%      11.69 =C2=B1  8%  sched_debug.cpu.cpu=
+_load[3].min
+     10.15 =C2=B1  5%     +40.2%      14.23 =C2=B1  6%  sched_debug.cpu.cpu=
+_load[4].min
+      2627           -11.6%       2321 =C2=B1  2%  sched_debug.cpu.curr->pi=
+d.avg
+    920455           +14.4%    1053006        sched_debug.cpu.nr_load_updat=
+es.avg
+    925277           +14.4%    1058207        sched_debug.cpu.nr_load_updat=
+es.max
+    917488           +14.5%    1050311        sched_debug.cpu.nr_load_updat=
+es.min
+      4.24 =C2=B1  4%     -28.0%       3.05 =C2=B1  6%  sched_debug.cpu.nr_=
+running.avg
+      3.43 =C2=B1  3%     -15.6%       2.89 =C2=B1  4%  sched_debug.cpu.nr_=
+running.stddev
+    108978 =C2=B1  2%     +61.8%     176305 =C2=B1  3%  sched_debug.cpu.nr_=
+switches.stddev
+     10.36           +11.9%      11.59        sched_debug.cpu.nr_uninterrup=
+tible.avg
+      5064 =C2=B1  3%     +29.2%       6541 =C2=B1  9%  sched_debug.cpu.nr_=
+uninterruptible.max
+     -3978           +36.2%      -5419        sched_debug.cpu.nr_uninterrup=
+tible.min
+      2671 =C2=B1  5%     +37.2%       3666 =C2=B1  4%  sched_debug.cpu.nr_=
+uninterruptible.stddev
+    105278 =C2=B1  2%     +63.2%     171842 =C2=B1  3%  sched_debug.cpu.sch=
+ed_count.stddev
+    626153           +25.0%     782785        sched_debug.cpu.sched_goidle.=
+avg
+    639712           +27.5%     815859        sched_debug.cpu.sched_goidle.=
+max
+    611175           +23.1%     752427        sched_debug.cpu.sched_goidle.=
+min
+      7730 =C2=B1  9%    +151.9%      19474 =C2=B1  6%  sched_debug.cpu.sch=
+ed_goidle.stddev
+   8164197 =C2=B1  2%     +13.8%    9293981        sched_debug.cpu.ttwu_cou=
+nt.max
+    135340 =C2=B1 11%    +409.5%     689596 =C2=B1  4%  sched_debug.cpu.ttw=
+u_count.stddev
+     13440 =C2=B1  4%    +158.2%      34701 =C2=B1  7%  sched_debug.cpu.ttw=
+u_local.stddev
+    941771           +14.4%    1077441        sched_debug.cpu_clk
+    941771           +14.4%    1077441        sched_debug.ktime
+      0.30 =C2=B1  8%     -17.1%       0.25 =C2=B1  8%  sched_debug.rt_rq:/=
+.rt_time.max
+      0.05 =C2=B1  9%     -17.1%       0.04 =C2=B1  8%  sched_debug.rt_rq:/=
+.rt_time.stddev
+    942193           +14.4%    1077851        sched_debug.sched_clk
+
 
 
 Disclaimer:
@@ -611,14 +273,14 @@ design or configuration may affect actual performance.
 Thanks,
 Xiaolong
 
---===============8838767005231492399==
+--===============1277153677689591833==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="config-4.17.0-rc2-00006-gf6f47c6"
+Content-Disposition: attachment; filename="config-4.17.0-rc1-00182-g683362a"
 
 IwojIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZpbGU7IERPIE5PVCBFRElULgojIExpbnV4L3g4
-Nl82NCA0LjE3LjAtcmMyIEtlcm5lbCBDb25maWd1cmF0aW9uCiMKQ09ORklHXzY0QklUPXkKQ09O
+Nl82NCA0LjE3LjAtcmMxIEtlcm5lbCBDb25maWd1cmF0aW9uCiMKQ09ORklHXzY0QklUPXkKQ09O
 RklHX1g4Nl82ND15CkNPTkZJR19YODY9eQpDT05GSUdfSU5TVFJVQ1RJT05fREVDT0RFUj15CkNP
 TkZJR19PVVRQVVRfRk9STUFUPSJlbGY2NC14ODYtNjQiCkNPTkZJR19BUkNIX0RFRkNPTkZJRz0i
 YXJjaC94ODYvY29uZmlncy94ODZfNjRfZGVmY29uZmlnIgpDT05GSUdfTE9DS0RFUF9TVVBQT1JU
@@ -3498,233 +3160,273 @@ OHgxNj15CkNPTkZJR19TR19QT09MPXkKQ09ORklHX0FSQ0hfSEFTX1NHX0NIQUlOPXkKQ09ORklH
 X0FSQ0hfSEFTX1BNRU1fQVBJPXkKQ09ORklHX0FSQ0hfSEFTX1VBQ0NFU1NfRkxVU0hDQUNIRT15
 CkNPTkZJR19TQklUTUFQPXkKIyBDT05GSUdfU1RSSU5HX1NFTEZURVNUIGlzIG5vdCBzZXQK
 
---===============8838767005231492399==
+--===============1277153677689591833==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job-script.ksh"
 
-IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0ndW5peGJlbmNoJwoJ
-ZXhwb3J0IHRlc3RjYXNlPSd1bml4YmVuY2gnCglleHBvcnQgY2F0ZWdvcnk9J2JlbmNobWFyaycK
-CWV4cG9ydCBydW50aW1lPTMwMAoJZXhwb3J0IG5yX3Rhc2s9OAoJZXhwb3J0IGpvYl9vcmlnaW49
-Jy9sa3AvbGtwLy5zcmMtMjAxODA0MjYtMDc1NTI2L2FsbG90L2N5Y2xpYzpsaW51eC1kZXZlbDpk
-ZXZlbC1ob3VybHkvbGtwLWl2Yi1kMDEvdW5peGJlbmNoLnlhbWwnCglleHBvcnQgcXVldWU9J2Jp
-c2VjdCcKCWV4cG9ydCB0ZXN0Ym94PSdsa3AtaXZiLWQwMScKCWV4cG9ydCB0Ym94X2dyb3VwPSds
-a3AtaXZiLWQwMScKCWV4cG9ydCBzdWJtaXRfaWQ9JzVhZTQyOWNmMGI5YTkzOGFkNzQ5YjlmOCcK
-CWV4cG9ydCBqb2JfZmlsZT0nL2xrcC9zY2hlZHVsZWQvbGtwLWl2Yi1kMDEvdW5peGJlbmNoLTMw
-MHMtMTAwJS1leGVjbC1wZXJmb3JtYW5jZS1kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6LWY2
-ZjQ3YzY2YWZmODc4YWViNWJjMGUxMWRjZTM3ODMzMDhjMzhkOTUtMjAxODA0MjgtMzU1NDMtN3A1
-dGU3LTAueWFtbCcKCWV4cG9ydCBpZD0nNTI3ZDdjMTMxYjJlM2U4NWI5YzA0ZjU3NjUwNGNmNTdk
-NmMwZDc1MicKCWV4cG9ydCBtb2RlbD0nSXZ5IEJyaWRnZScKCWV4cG9ydCBucl9jcHU9OAoJZXhw
-b3J0IG1lbW9yeT0nMTZHJwoJZXhwb3J0IG5yX2hkZF9wYXJ0aXRpb25zPTAKCWV4cG9ydCBoZGRf
-cGFydGl0aW9ucz0KCWV4cG9ydCBuZXRjb25zb2xlX3BvcnQ9NjY3MgoJZXhwb3J0IGNvbW1pdD0n
-ZjZmNDdjNjZhZmY4NzhhZWI1YmMwZTExZGNlMzc4MzMwOGMzOGQ5NScKCWV4cG9ydCBrY29uZmln
-PSd4ODZfNjQtcmhlbC03LjInCglleHBvcnQgY29tcGlsZXI9J2djYy03JwoJZXhwb3J0IHJvb3Rm
-cz0nZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNneicKCWV4cG9ydCBlbnF1ZXVlX3RpbWU9JzIw
-MTgtMDQtMjggMTU6NTk6MTEgKzA4MDAnCglleHBvcnQgX2lkPSc1YWU0MjljZjBiOWE5MzhhZDc0
-OWI5ZjgnCglleHBvcnQgX3J0PScvcmVzdWx0L3VuaXhiZW5jaC8zMDBzLTEwMCUtZXhlY2wtcGVy
-Zm9ybWFuY2UvbGtwLWl2Yi1kMDEvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQt
-cmhlbC03LjIvZ2NjLTcvZjZmNDdjNjZhZmY4NzhhZWI1YmMwZTExZGNlMzc4MzMwOGMzOGQ5NScK
-CWV4cG9ydCB1c2VyPSdsa3AnCglleHBvcnQgaGVhZF9jb21taXQ9J2UyZDRlMGI4MTI3NDVjOGI3
-ODY4ZTI3ZmMzZjg1ODg3Y2I2NzZiZDgnCglleHBvcnQgYmFzZV9jb21taXQ9JzZkMDhiMDZlNjdj
-ZDExN2Y2OTkyYzQ2NjExZGZiNGNlMjY3Y2Q3MWUnCglleHBvcnQgYnJhbmNoPSdsaW51eC1kZXZl
-bC9kZXZlbC1ob3VybHktMjAxODA0MjYxNCcKCWV4cG9ydCByZXN1bHRfcm9vdD0nL3Jlc3VsdC91
-bml4YmVuY2gvMzAwcy0xMDAlLWV4ZWNsLXBlcmZvcm1hbmNlL2xrcC1pdmItZDAxL2RlYmlhbi14
-ODZfNjQtMjAxNi0wOC0zMS5jZ3oveDg2XzY0LXJoZWwtNy4yL2djYy03L2Y2ZjQ3YzY2YWZmODc4
-YWViNWJjMGUxMWRjZTM3ODMzMDhjMzhkOTUvMCcKCWV4cG9ydCBMS1BfU0VSVkVSPSdpbm4nCgll
-eHBvcnQgbWF4X3VwdGltZT0xNTAwCglleHBvcnQgaW5pdHJkPScvb3NpbWFnZS9kZWJpYW4vZGVi
-aWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNneicKCWV4cG9ydCBib290bG9hZGVyX2FwcGVuZD0ncm9v
-dD0vZGV2L3JhbTAKdXNlcj1sa3AKam9iPS9sa3Avc2NoZWR1bGVkL2xrcC1pdmItZDAxL3VuaXhi
-ZW5jaC0zMDBzLTEwMCUtZXhlY2wtcGVyZm9ybWFuY2UtZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMx
-LmNnei1mNmY0N2M2NmFmZjg3OGFlYjViYzBlMTFkY2UzNzgzMzA4YzM4ZDk1LTIwMTgwNDI4LTM1
-NTQzLTdwNXRlNy0wLnlhbWwKQVJDSD14ODZfNjQKa2NvbmZpZz14ODZfNjQtcmhlbC03LjIKYnJh
-bmNoPWxpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE4MDQyNjE0CmNvbW1pdD1mNmY0N2M2NmFm
-Zjg3OGFlYjViYzBlMTFkY2UzNzgzMzA4YzM4ZDk1CkJPT1RfSU1BR0U9L3BrZy9saW51eC94ODZf
-NjQtcmhlbC03LjIvZ2NjLTcvZjZmNDdjNjZhZmY4NzhhZWI1YmMwZTExZGNlMzc4MzMwOGMzOGQ5
-NS92bWxpbnV6LTQuMTcuMC1yYzItMDAwMDYtZ2Y2ZjQ3YzYKbWF4X3VwdGltZT0xNTAwClJFU1VM
-VF9ST09UPS9yZXN1bHQvdW5peGJlbmNoLzMwMHMtMTAwJS1leGVjbC1wZXJmb3JtYW5jZS9sa3At
-aXZiLWQwMS9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3g4Nl82NC1yaGVsLTcuMi9nY2Mt
-Ny9mNmY0N2M2NmFmZjg3OGFlYjViYzBlMTFkY2UzNzgzMzA4YzM4ZDk1LzAKTEtQX1NFUlZFUj1p
-bm4KZGVidWcKYXBpYz1kZWJ1ZwpzeXNycV9hbHdheXNfZW5hYmxlZApyY3VwZGF0ZS5yY3VfY3B1
-X3N0YWxsX3RpbWVvdXQ9MTAwCm5ldC5pZm5hbWVzPTAKcHJpbnRrLmRldmttc2c9b24KcGFuaWM9
-LTEKc29mdGxvY2t1cF9wYW5pYz0xCm5taV93YXRjaGRvZz1wYW5pYwpvb3BzPXBhbmljCmxvYWRf
-cmFtZGlzaz0yCnByb21wdF9yYW1kaXNrPTAKZHJiZC5taW5vcl9jb3VudD04CnN5c3RlbWQubG9n
-X2xldmVsPWVycgppZ25vcmVfbG9nbGV2ZWwKY29uc29sZT10dHkwCmVhcmx5cHJpbnRrPXR0eVMw
-LDExNTIwMApjb25zb2xlPXR0eVMwLDExNTIwMAp2Z2E9bm9ybWFsCnJ3JwoJZXhwb3J0IG1vZHVs
-ZXNfaW5pdHJkPScvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNy9mNmY0N2M2NmFmZjg3
-OGFlYjViYzBlMTFkY2UzNzgzMzA4YzM4ZDk1L21vZHVsZXMuY2d6JwoJZXhwb3J0IGJtX2luaXRy
-ZD0nL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3J1bi1pcGNvbmZp
-Z18yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5j
-Z3ovbGtwXzIwMTgtMDQtMTkuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4
-LTMxLmNnei9yc3luYy1yb290ZnNfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
-eDg2XzY0LTIwMTYtMDgtMzEuY2d6L3VuaXhiZW5jaF8yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9w
-a2cvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei91bml4YmVuY2gteDg2XzY0XzIwMTctMDQt
-MTEuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9tcHN0YXRf
-MjAxNy0xMi0yNS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6
-L3R1cmJvc3RhdF8yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE2
-LTA4LTMxLmNnei90dXJib3N0YXQteDg2XzY0LWQ1MjU2YjJfMjAxNy0wNi0yMC5jZ3osL29zaW1h
-Z2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3BlcmZfMjAxOC0wNC0wNC5jZ3os
-L29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovcGVyZi14ODZfNjQtZjhj
-ZjJmMTZhN2M5XzIwMTgtMDQtMDkuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2
-LTA4LTMxLmNnei9od18yMDE2LTExLTE1LmNneicKCWV4cG9ydCBsa3BfaW5pdHJkPScvbGtwL2xr
-cC9sa3AteDg2XzY0LmNneicKCWV4cG9ydCBzaXRlPSdpbm4nCglleHBvcnQgTEtQX0NHSV9QT1JU
-PTgwCglleHBvcnQgTEtQX0NJRlNfUE9SVD0xMzkKCWV4cG9ydCByZXBlYXRfdG89MgoJZXhwb3J0
-IGtlcm5lbD0nL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvZjZmNDdjNjZhZmY4Nzhh
-ZWI1YmMwZTExZGNlMzc4MzMwOGMzOGQ5NS92bWxpbnV6LTQuMTcuMC1yYzItMDAwMDYtZ2Y2ZjQ3
-YzYnCglleHBvcnQgZGVxdWV1ZV90aW1lPScyMDE4LTA0LTI4IDE2OjAyOjU1ICswODAwJwoJZXhw
-b3J0IGpvYl9pbml0cmQ9Jy9sa3Avc2NoZWR1bGVkL2xrcC1pdmItZDAxL3VuaXhiZW5jaC0zMDBz
-LTEwMCUtZXhlY2wtcGVyZm9ybWFuY2UtZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei1mNmY0
-N2M2NmFmZjg3OGFlYjViYzBlMTFkY2UzNzgzMzA4YzM4ZDk1LTIwMTgwNDI4LTM1NTQzLTdwNXRl
-Ny0wLmNneicKCglbIC1uICIkTEtQX1NSQyIgXSB8fAoJZXhwb3J0IExLUF9TUkM9L2xrcC8ke3Vz
-ZXI6LWxrcH0vc3JjCn0KCnJ1bl9qb2IoKQp7CgllY2hvICQkID4gJFRNUC9ydW4tam9iLnBpZAoK
-CS4gJExLUF9TUkMvbGliL2h0dHAuc2gKCS4gJExLUF9TUkMvbGliL2pvYi5zaAoJLiAkTEtQX1NS
-Qy9saWIvZW52LnNoCgoJZXhwb3J0X3RvcF9lbnYKCglydW5fc2V0dXAgJExLUF9TUkMvc2V0dXAv
-Y3B1ZnJlcV9nb3Zlcm5vciAncGVyZm9ybWFuY2UnCgoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9u
-aXRvcnMvd3JhcHBlciBrbXNnCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy9uby1zdGRv
-dXQvd3JhcHBlciBib290LXRpbWUKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBw
-ZXIgaW9zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGhlYXJ0YmVh
-dAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciB2bXN0YXQKCXJ1bl9tb25p
-dG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbnVtYS1udW1hc3RhdAoJcnVuX21vbml0b3Ig
-JExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBudW1hLXZtc3RhdAoJcnVuX21vbml0b3IgJExLUF9T
-UkMvbW9uaXRvcnMvd3JhcHBlciBudW1hLW1lbWluZm8KCXJ1bl9tb25pdG9yICRMS1BfU1JDL21v
-bml0b3JzL3dyYXBwZXIgcHJvYy12bXN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3Jz
-L3dyYXBwZXIgcHJvYy1zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVy
-IG1lbWluZm8KCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgc2xhYmluZm8K
-CXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgaW50ZXJydXB0cwoJcnVuX21v
-bml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBsb2NrX3N0YXQKCXJ1bl9tb25pdG9yICRM
-S1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbGF0ZW5jeV9zdGF0cwoJcnVuX21vbml0b3IgJExLUF9T
-UkMvbW9uaXRvcnMvd3JhcHBlciBzb2Z0aXJxcwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRv
-cnMvb25lLXNob3Qvd3JhcHBlciBiZGlfZGV2X21hcHBpbmcKCXJ1bl9tb25pdG9yICRMS1BfU1JD
-L21vbml0b3JzL3dyYXBwZXIgZGlza3N0YXRzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9y
-cy93cmFwcGVyIG5mc3N0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIg
-Y3B1aWRsZQoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBjcHVmcmVxLXN0
-YXRzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHR1cmJvc3RhdAoJcnVu
-X21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBzY2hlZF9kZWJ1ZwoJcnVuX21vbml0
-b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBwZXJmLXN0YXQKCXJ1bl9tb25pdG9yICRMS1Bf
-U1JDL21vbml0b3JzL3dyYXBwZXIgbXBzdGF0CglydW5fbW9uaXRvciBkdXJhdGlvbj0yICRMS1Bf
-U1JDL21vbml0b3JzL25vLXN0ZG91dC93cmFwcGVyIHBlcmYtcHJvZmlsZQoJcnVuX21vbml0b3Ig
-JExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBvb20ta2lsbGVyCglydW5fbW9uaXRvciAkTEtQX1NS
-Qy9tb25pdG9ycy9wbGFpbi93YXRjaGRvZwoKCXJ1bl90ZXN0IHRlc3Q9J2V4ZWNsJyAkTEtQX1NS
-Qy90ZXN0cy93cmFwcGVyIHVuaXhiZW5jaAp9CgpleHRyYWN0X3N0YXRzKCkKewoJJExLUF9TUkMv
-c3RhdHMvd3JhcHBlciB1bml4YmVuY2gKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIga21zZwoJJExL
-UF9TUkMvc3RhdHMvd3JhcHBlciBib290LXRpbWUKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgaW9z
-dGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHZtc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
-ciBudW1hLW51bWFzdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG51bWEtdm1zdGF0CgkkTEtQ
-X1NSQy9zdGF0cy93cmFwcGVyIG51bWEtbWVtaW5mbwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBw
-cm9jLXZtc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBtZW1pbmZvCgkkTEtQX1NSQy9zdGF0
-cy93cmFwcGVyIHNsYWJpbmZvCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGludGVycnVwdHMKCSRM
-S1BfU1JDL3N0YXRzL3dyYXBwZXIgbG9ja19zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGxh
-dGVuY3lfc3RhdHMKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc29mdGlycXMKCSRMS1BfU1JDL3N0
-YXRzL3dyYXBwZXIgZGlza3N0YXRzCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG5mc3N0YXQKCSRM
-S1BfU1JDL3N0YXRzL3dyYXBwZXIgY3B1aWRsZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciB0dXJi
-b3N0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc2NoZWRfZGVidWcKCSRMS1BfU1JDL3N0YXRz
-L3dyYXBwZXIgcGVyZi1zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG1wc3RhdAoJJExLUF9T
-UkMvc3RhdHMvd3JhcHBlciBwZXJmLXByb2ZpbGUKCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHRp
-bWUgdW5peGJlbmNoLnRpbWUKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgdGltZQoJJExLUF9TUkMv
-c3RhdHMvd3JhcHBlciBkbWVzZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBrbXNnCgkkTEtQX1NS
-Qy9zdGF0cy93cmFwcGVyIHN0ZGVycgoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBsYXN0X3N0YXRl
-Cn0KCiIkQCIK
+IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0nYWltNycKCWV4cG9y
+dCB0ZXN0Y2FzZT0nYWltNycKCWV4cG9ydCBjYXRlZ29yeT0nYmVuY2htYXJrJwoJZXhwb3J0IGpv
+Yl9vcmlnaW49Jy9sa3AvbGtwLy5zcmMtMjAxODA0MjctMDg1ODE4L2FsbG90L2N5Y2xpYzpsaW51
+eC1kZXZlbDpkZXZlbC1ob3VybHkvbGtwLWl2Yi1lcDAxL2FpbTctZnMtcmFpZC55YW1sJwoJZXhw
+b3J0IHF1ZXVlPSdiaXNlY3QnCglleHBvcnQgdGVzdGJveD0nbGtwLWl2Yi1lcDAxJwoJZXhwb3J0
+IHRib3hfZ3JvdXA9J2xrcC1pdmItZXAwMScKCWV4cG9ydCBzdWJtaXRfaWQ9JzVhZTg0ZGI3MGI5
+YTkzM2Y2Yjk3OWVhOScKCWV4cG9ydCBqb2JfZmlsZT0nL2xrcC9zY2hlZHVsZWQvbGtwLWl2Yi1l
+cDAxL2FpbTctNEJSRF8xMkctUkFJRDAteGZzLXN5bmNfZGlza19ydy02MDAtcGVyZm9ybWFuY2Ut
+ZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei02ODMzNjJhZmQyMDY3MzBjZDMwZmEyODQ2ZjI5
+OGQ0YzJhNjc4OTVmLTIwMTgwNTAxLTE2MjM1LXV5ZnRmeC0wLnlhbWwnCglleHBvcnQgaWQ9Jzk2
+Y2M2NzY1ZGZmOGUxMjUwODNhYjU5YjU5YmQwZjU3NGRiNzhlOTcnCglleHBvcnQgbW9kZWw9J0l2
+eSBCcmlkZ2UtRVAnCglleHBvcnQgbnJfY3B1PTQwCglleHBvcnQgbWVtb3J5PSczODRHJwoJZXhw
+b3J0IGhkZF9wYXJ0aXRpb25zPScvZGV2L2Rpc2svYnktaWQvc2NzaS0zNmI4Y2EzYTBlNjUwZTEw
+MDFmNzY0NjA4MGNhM2I2MDEtcGFydDEgL2Rldi9kaXNrL2J5LWlkL3Njc2ktMzZiOGNhM2EwZTY1
+MGUxMDAxZjc2NDYwODBjYTNiNjAxLXBhcnQyIC9kZXYvZGlzay9ieS1pZC9zY3NpLTM2YjhjYTNh
+MGU2NTBlMTAwMWY3NjQ2MDgwY2EzYjYwMS1wYXJ0MyAvZGV2L2Rpc2svYnktaWQvc2NzaS0zNmI4
+Y2EzYTBlNjUwZTEwMDFmNzY0NjA4MGNhM2I2MDEtcGFydDQgL2Rldi9kaXNrL2J5LWlkL3Njc2kt
+MzZiOGNhM2EwZTY1MGUxMDAxZjc2NDYwODBjYTNiNjAxLXBhcnQ1IC9kZXYvZGlzay9ieS1pZC9z
+Y3NpLTM2YjhjYTNhMGU2NTBlMTAwMWY3NjQ2MDgwY2EzYjYwMS1wYXJ0NiAvZGV2L2Rpc2svYnkt
+aWQvc2NzaS0zNmI4Y2EzYTBlNjUwZTEwMDFmNzY0NjA4MGNhM2I2MDEtcGFydDcgL2Rldi9kaXNr
+L2J5LWlkL3Njc2ktMzZiOGNhM2EwZTY1MGUxMDAxZjc2NDYwODBjYTNiNjAxLXBhcnQ4JwoJZXhw
+b3J0IHN3YXBfcGFydGl0aW9ucz0KCWV4cG9ydCByb290ZnNfcGFydGl0aW9uPQoJZXhwb3J0IGJy
+YW5kPSdJbnRlbChSKSBYZW9uKFIpIENQVSBFNS0yNjkwIHYyIEAgMy4wMEdIeicKCWV4cG9ydCBj
+b21taXQ9JzY4MzM2MmFmZDIwNjczMGNkMzBmYTI4NDZmMjk4ZDRjMmE2Nzg5NWYnCglleHBvcnQg
+bmVlZF9rY29uZmlnPSdDT05GSUdfQkxLX0RFVl9SQU09bQpDT05GSUdfQkxLX0RFVj15CkNPTkZJ
+R19CTE9DSz15CkNPTkZJR19NRF9SQUlEMApDT05GSUdfWEZTX0ZTJwoJZXhwb3J0IGtjb25maWc9
+J3g4Nl82NC1yaGVsLTcuMicKCWV4cG9ydCBjb21waWxlcj0nZ2NjLTcnCglleHBvcnQgcm9vdGZz
+PSdkZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6JwoJZXhwb3J0IGVucXVldWVfdGltZT0nMjAx
+OC0wNS0wMSAxOToyMToyNyArMDgwMCcKCWV4cG9ydCBfaWQ9JzVhZTg0ZGI3MGI5YTkzM2Y2Yjk3
+OWVhOScKCWV4cG9ydCBfcnQ9Jy9yZXN1bHQvYWltNy80QlJEXzEyRy1SQUlEMC14ZnMtc3luY19k
+aXNrX3J3LTYwMC1wZXJmb3JtYW5jZS9sa3AtaXZiLWVwMDEvZGViaWFuLXg4Nl82NC0yMDE2LTA4
+LTMxLmNnei94ODZfNjQtcmhlbC03LjIvZ2NjLTcvNjgzMzYyYWZkMjA2NzMwY2QzMGZhMjg0NmYy
+OThkNGMyYTY3ODk1ZicKCWV4cG9ydCB1c2VyPSdsa3AnCglleHBvcnQgaGVhZF9jb21taXQ9JzI4
+YWJhY2I2ZmY5N2U1YjdjOTBiNTcyMzk4ZThkNGQwNmY0MDVjODAnCglleHBvcnQgYmFzZV9jb21t
+aXQ9JzZkMDhiMDZlNjdjZDExN2Y2OTkyYzQ2NjExZGZiNGNlMjY3Y2Q3MWUnCglleHBvcnQgYnJh
+bmNoPSdsaW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxODA0MjkyMCcKCWV4cG9ydCByZXN1bHRf
+cm9vdD0nL3Jlc3VsdC9haW03LzRCUkRfMTJHLVJBSUQwLXhmcy1zeW5jX2Rpc2tfcnctNjAwLXBl
+cmZvcm1hbmNlL2xrcC1pdmItZXAwMS9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3g4Nl82
+NC1yaGVsLTcuMi9nY2MtNy82ODMzNjJhZmQyMDY3MzBjZDMwZmEyODQ2ZjI5OGQ0YzJhNjc4OTVm
+LzAnCglleHBvcnQgTEtQX1NFUlZFUj0naW5uJwoJZXhwb3J0IG1heF91cHRpbWU9MzYwMAoJZXhw
+b3J0IGluaXRyZD0nL29zaW1hZ2UvZGViaWFuL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3on
+CglleHBvcnQgYm9vdGxvYWRlcl9hcHBlbmQ9J3Jvb3Q9L2Rldi9yYW0wCnVzZXI9bGtwCmpvYj0v
+bGtwL3NjaGVkdWxlZC9sa3AtaXZiLWVwMDEvYWltNy00QlJEXzEyRy1SQUlEMC14ZnMtc3luY19k
+aXNrX3J3LTYwMC1wZXJmb3JtYW5jZS1kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6LTY4MzM2
+MmFmZDIwNjczMGNkMzBmYTI4NDZmMjk4ZDRjMmE2Nzg5NWYtMjAxODA1MDEtMTYyMzUtdXlmdGZ4
+LTAueWFtbApBUkNIPXg4Nl82NAprY29uZmlnPXg4Nl82NC1yaGVsLTcuMgpicmFuY2g9bGludXgt
+ZGV2ZWwvZGV2ZWwtaG91cmx5LTIwMTgwNDI5MjAKY29tbWl0PTY4MzM2MmFmZDIwNjczMGNkMzBm
+YTI4NDZmMjk4ZDRjMmE2Nzg5NWYKQk9PVF9JTUFHRT0vcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcu
+Mi9nY2MtNy82ODMzNjJhZmQyMDY3MzBjZDMwZmEyODQ2ZjI5OGQ0YzJhNjc4OTVmL3ZtbGludXot
+NC4xNy4wLXJjMS0wMDE4Mi1nNjgzMzYyYQptYXhfdXB0aW1lPTM2MDAKUkVTVUxUX1JPT1Q9L3Jl
+c3VsdC9haW03LzRCUkRfMTJHLVJBSUQwLXhmcy1zeW5jX2Rpc2tfcnctNjAwLXBlcmZvcm1hbmNl
+L2xrcC1pdmItZXAwMS9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3g4Nl82NC1yaGVsLTcu
+Mi9nY2MtNy82ODMzNjJhZmQyMDY3MzBjZDMwZmEyODQ2ZjI5OGQ0YzJhNjc4OTVmLzAKTEtQX1NF
+UlZFUj1pbm4KZGVidWcKYXBpYz1kZWJ1ZwpzeXNycV9hbHdheXNfZW5hYmxlZApyY3VwZGF0ZS5y
+Y3VfY3B1X3N0YWxsX3RpbWVvdXQ9MTAwCm5ldC5pZm5hbWVzPTAKcHJpbnRrLmRldmttc2c9b24K
+cGFuaWM9LTEKc29mdGxvY2t1cF9wYW5pYz0xCm5taV93YXRjaGRvZz1wYW5pYwpvb3BzPXBhbmlj
+CmxvYWRfcmFtZGlzaz0yCnByb21wdF9yYW1kaXNrPTAKZHJiZC5taW5vcl9jb3VudD04CnN5c3Rl
+bWQubG9nX2xldmVsPWVycgppZ25vcmVfbG9nbGV2ZWwKY29uc29sZT10dHkwCmVhcmx5cHJpbnRr
+PXR0eVMwLDExNTIwMApjb25zb2xlPXR0eVMwLDExNTIwMAp2Z2E9bm9ybWFsCnJ3JwoJZXhwb3J0
+IG1vZHVsZXNfaW5pdHJkPScvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNy82ODMzNjJh
+ZmQyMDY3MzBjZDMwZmEyODQ2ZjI5OGQ0YzJhNjc4OTVmL21vZHVsZXMuY2d6JwoJZXhwb3J0IGJt
+X2luaXRyZD0nL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3J1bi1p
+cGNvbmZpZ18yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0w
+OC0zMS5jZ3ovbGtwXzIwMTgtMDQtMTkuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0y
+MDE2LTA4LTMxLmNnei9yc3luYy1yb290ZnNfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2UvZGVwcy9k
+ZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3BlcmZfMjAxOC0wNC0wNC5jZ3osL29zaW1hZ2Uv
+cGtnL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovcGVyZi14ODZfNjQtZjhjZjJmMTZhN2M5
+XzIwMTgtMDQtMDkuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNn
+ei9tZF8yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0z
+MS5jZ3ovZnNfMjAxNi0xMS0xNS5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQtMjAxNi0w
+OC0zMS5jZ3ovYWltNy14ODZfNjRfMjAxNi0xMS0xNi5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
+eDg2XzY0LTIwMTYtMDgtMzEuY2d6L21wc3RhdF8yMDE3LTEyLTI1LmNneiwvb3NpbWFnZS9kZXBz
+L2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovdHVyYm9zdGF0XzIwMTYtMTEtMTUuY2d6LC9v
+c2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3R1cmJvc3RhdC14ODZfNjQt
+ZDUyNTZiMl8yMDE3LTA2LTIwLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0w
+OC0zMS5jZ3ovaHdfMjAxNi0xMS0xNS5jZ3onCglleHBvcnQgbGtwX2luaXRyZD0nL2xrcC9sa3Av
+bGtwLXg4Nl82NC5jZ3onCglleHBvcnQgc2l0ZT0naW5uJwoJZXhwb3J0IExLUF9DR0lfUE9SVD04
+MAoJZXhwb3J0IExLUF9DSUZTX1BPUlQ9MTM5CglleHBvcnQgcmVwZWF0X3RvPTIKCWV4cG9ydCBr
+ZXJuZWw9Jy9wa2cvbGludXgveDg2XzY0LXJoZWwtNy4yL2djYy03LzY4MzM2MmFmZDIwNjczMGNk
+MzBmYTI4NDZmMjk4ZDRjMmE2Nzg5NWYvdm1saW51ei00LjE3LjAtcmMxLTAwMTgyLWc2ODMzNjJh
+JwoJZXhwb3J0IGRlcXVldWVfdGltZT0nMjAxOC0wNS0wMSAxOTozNjoyOSArMDgwMCcKCWV4cG9y
+dCBqb2JfaW5pdHJkPScvbGtwL3NjaGVkdWxlZC9sa3AtaXZiLWVwMDEvYWltNy00QlJEXzEyRy1S
+QUlEMC14ZnMtc3luY19kaXNrX3J3LTYwMC1wZXJmb3JtYW5jZS1kZWJpYW4teDg2XzY0LTIwMTYt
+MDgtMzEuY2d6LTY4MzM2MmFmZDIwNjczMGNkMzBmYTI4NDZmMjk4ZDRjMmE2Nzg5NWYtMjAxODA1
+MDEtMTYyMzUtdXlmdGZ4LTAuY2d6JwoKCVsgLW4gIiRMS1BfU1JDIiBdIHx8CglleHBvcnQgTEtQ
+X1NSQz0vbGtwLyR7dXNlcjotbGtwfS9zcmMKfQoKcnVuX2pvYigpCnsKCWVjaG8gJCQgPiAkVE1Q
+L3J1bi1qb2IucGlkCgoJLiAkTEtQX1NSQy9saWIvaHR0cC5zaAoJLiAkTEtQX1NSQy9saWIvam9i
+LnNoCgkuICRMS1BfU1JDL2xpYi9lbnYuc2gKCglleHBvcnRfdG9wX2VudgoKCXJ1bl9zZXR1cCBu
+cl9icmQ9NCByYW1kaXNrX3NpemU9MTI4ODQ5MDE4ODggJExLUF9TUkMvc2V0dXAvZGlzawoKCXJ1
+bl9zZXR1cCByYWlkX2xldmVsPSdyYWlkMCcgJExLUF9TUkMvc2V0dXAvbWQKCglydW5fc2V0dXAg
+ZnM9J3hmcycgJExLUF9TUkMvc2V0dXAvZnMKCglydW5fc2V0dXAgJExLUF9TUkMvc2V0dXAvY3B1
+ZnJlcV9nb3Zlcm5vciAncGVyZm9ybWFuY2UnCgoJcnVuX21vbml0b3IgZGVsYXk9MTUgJExLUF9T
+UkMvbW9uaXRvcnMvbm8tc3Rkb3V0L3dyYXBwZXIgcGVyZi1wcm9maWxlCglydW5fbW9uaXRvciAk
+TEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGttc2cKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0
+b3JzL25vLXN0ZG91dC93cmFwcGVyIGJvb3QtdGltZQoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9u
+aXRvcnMvd3JhcHBlciBpb3N0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBw
+ZXIgaGVhcnRiZWF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHZtc3Rh
+dAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBudW1hLW51bWFzdGF0Cgly
+dW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIG51bWEtdm1zdGF0CglydW5fbW9u
+aXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIG51bWEtbWVtaW5mbwoJcnVuX21vbml0b3Ig
+JExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBwcm9jLXZtc3RhdAoJcnVuX21vbml0b3IgJExLUF9T
+UkMvbW9uaXRvcnMvd3JhcHBlciBwcm9jLXN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0
+b3JzL3dyYXBwZXIgbWVtaW5mbwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBl
+ciBzbGFiaW5mbwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBpbnRlcnJ1
+cHRzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGxvY2tfc3RhdAoJcnVu
+X21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBsYXRlbmN5X3N0YXRzCglydW5fbW9u
+aXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHNvZnRpcnFzCglydW5fbW9uaXRvciAkTEtQ
+X1NSQy9tb25pdG9ycy9vbmUtc2hvdC93cmFwcGVyIGJkaV9kZXZfbWFwcGluZwoJcnVuX21vbml0
+b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBkaXNrc3RhdHMKCXJ1bl9tb25pdG9yICRMS1Bf
+U1JDL21vbml0b3JzL3dyYXBwZXIgbmZzc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRv
+cnMvd3JhcHBlciBjcHVpZGxlCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVy
+IGNwdWZyZXEtc3RhdHMKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgdHVy
+Ym9zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHNjaGVkX2RlYnVn
+CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHBlcmYtc3RhdAoJcnVuX21v
+bml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBtcHN0YXQKCXJ1bl9tb25pdG9yICRMS1Bf
+U1JDL21vbml0b3JzL3dyYXBwZXIgb29tLWtpbGxlcgoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9u
+aXRvcnMvcGxhaW4vd2F0Y2hkb2cKCglydW5fdGVzdCB0ZXN0PSdzeW5jX2Rpc2tfcncnIGxvYWQ9
+NjAwICRMS1BfU1JDL3Rlc3RzL3dyYXBwZXIgYWltNwp9CgpleHRyYWN0X3N0YXRzKCkKewoJJExL
+UF9TUkMvc3RhdHMvd3JhcHBlciBwZXJmLXByb2ZpbGUKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIg
+YWltNwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBrbXNnCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVy
+IGJvb3QtdGltZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBpb3N0YXQKCSRMS1BfU1JDL3N0YXRz
+L3dyYXBwZXIgdm1zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG51bWEtbnVtYXN0YXQKCSRM
+S1BfU1JDL3N0YXRzL3dyYXBwZXIgbnVtYS12bXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIg
+bnVtYS1tZW1pbmZvCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHByb2Mtdm1zdGF0CgkkTEtQX1NS
+Qy9zdGF0cy93cmFwcGVyIG1lbWluZm8KCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc2xhYmluZm8K
+CSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgaW50ZXJydXB0cwoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
+ciBsb2NrX3N0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbGF0ZW5jeV9zdGF0cwoJJExLUF9T
+UkMvc3RhdHMvd3JhcHBlciBzb2Z0aXJxcwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBkaXNrc3Rh
+dHMKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbmZzc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
+ciBjcHVpZGxlCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHR1cmJvc3RhdAoJJExLUF9TUkMvc3Rh
+dHMvd3JhcHBlciBzY2hlZF9kZWJ1ZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBwZXJmLXN0YXQK
+CSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbXBzdGF0CgoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciB0
+aW1lIGFpbTcudGltZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciB0aW1lCgkkTEtQX1NSQy9zdGF0
+cy93cmFwcGVyIGRtZXNnCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGttc2cKCSRMS1BfU1JDL3N0
+YXRzL3dyYXBwZXIgc3RkZXJyCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGxhc3Rfc3RhdGUKfQoK
+IiRAIgo=
 
---===============8838767005231492399==
+--===============1277153677689591833==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job.yaml"
 
-LS0tCgojISBqb2JzL3VuaXhiZW5jaC55YW1sCnN1aXRlOiB1bml4YmVuY2gKdGVzdGNhc2U6IHVu
-aXhiZW5jaApjYXRlZ29yeTogYmVuY2htYXJrCnJ1bnRpbWU6IDMwMHMKbnJfdGFzazogMTAwJQp1
-bml4YmVuY2g6CiAgdGVzdDogZXhlY2wKam9iX29yaWdpbjogIi9sa3AvbGtwLy5zcmMtMjAxODA0
-MjYtMDc1NTI2L2FsbG90L2N5Y2xpYzpsaW51eC1kZXZlbDpkZXZlbC1ob3VybHkvbGtwLWl2Yi1k
-MDEvdW5peGJlbmNoLnlhbWwiCgojISBxdWV1ZSBvcHRpb25zCnF1ZXVlOiBiaXNlY3QKdGVzdGJv
-eDogbGtwLWl2Yi1kMDEKdGJveF9ncm91cDogbGtwLWl2Yi1kMDEKc3VibWl0X2lkOiA1YWU0Mjlj
-ZjBiOWE5MzhhZDc0OWI5ZjgKam9iX2ZpbGU6ICIvbGtwL3NjaGVkdWxlZC9sa3AtaXZiLWQwMS91
-bml4YmVuY2gtMzAwcy0xMDAlLWV4ZWNsLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxNi0w
-OC0zMS5jZ3otZjZmNDdjNjZhZmY4NzhhZWI1YmMwZTExZGNlMzc4MzMwOGMzOGQ5NS0yMDE4MDQy
-OC0zNTU0My03cDV0ZTctMC55YW1sIgppZDogNTI3ZDdjMTMxYjJlM2U4NWI5YzA0ZjU3NjUwNGNm
-NTdkNmMwZDc1MgoKIyEgaG9zdHMvbGtwLWl2Yi1kMDEKbW9kZWw6IEl2eSBCcmlkZ2UKbnJfY3B1
-OiA4Cm1lbW9yeTogMTZHCm5yX2hkZF9wYXJ0aXRpb25zOiAwCmhkZF9wYXJ0aXRpb25zOiAKbmV0
-Y29uc29sZV9wb3J0OiA2NjcyCgojISBpbmNsdWRlL2NhdGVnb3J5L2JlbmNobWFyawprbXNnOiAK
-Ym9vdC10aW1lOiAKaW9zdGF0OiAKaGVhcnRiZWF0OiAKdm1zdGF0OiAKbnVtYS1udW1hc3RhdDog
-Cm51bWEtdm1zdGF0OiAKbnVtYS1tZW1pbmZvOiAKcHJvYy12bXN0YXQ6IApwcm9jLXN0YXQ6IApt
-ZW1pbmZvOiAKc2xhYmluZm86IAppbnRlcnJ1cHRzOiAKbG9ja19zdGF0OiAKbGF0ZW5jeV9zdGF0
-czogCnNvZnRpcnFzOiAKYmRpX2Rldl9tYXBwaW5nOiAKZGlza3N0YXRzOiAKbmZzc3RhdDogCmNw
-dWlkbGU6IApjcHVmcmVxLXN0YXRzOiAKdHVyYm9zdGF0OiAKc2NoZWRfZGVidWc6IApwZXJmLXN0
-YXQ6IAptcHN0YXQ6IApwZXJmLXByb2ZpbGU6CiAgZHVyYXRpb246IDIKCiMhIGluY2x1ZGUvY2F0
-ZWdvcnkvQUxMCmNwdWZyZXFfZ292ZXJub3I6IHBlcmZvcm1hbmNlCgojISBpbmNsdWRlL3F1ZXVl
-L2N5Y2xpYwpjb21taXQ6IGY2ZjQ3YzY2YWZmODc4YWViNWJjMGUxMWRjZTM3ODMzMDhjMzhkOTUK
-CiMhIGluY2x1ZGUvdGVzdGJveC9sa3AtaXZiLWQwMQprY29uZmlnOiB4ODZfNjQtcmhlbC03LjIK
-CiMgZXhlY2wgdXNlcyBhIGxvdCBvZiBtbWFwIHN5c2NhbGwgd2hpY2ggd2lsbCBjYXVzZSBwZXJm
-IHRvIHJlY29yZAoKIyEgZGVmYXVsdCBwYXJhbXMKY29tcGlsZXI6IGdjYy03CnJvb3RmczogZGVi
-aWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnegplbnF1ZXVlX3RpbWU6IDIwMTgtMDQtMjggMTU6NTk6
-MTEuMzYyMDkyMjU5ICswODowMApfaWQ6IDVhZTQyOWNmMGI5YTkzOGFkNzQ5YjlmOApfcnQ6ICIv
-cmVzdWx0L3VuaXhiZW5jaC8zMDBzLTEwMCUtZXhlY2wtcGVyZm9ybWFuY2UvbGtwLWl2Yi1kMDEv
-ZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhlbC03LjIvZ2NjLTcvZjZmNDdj
-NjZhZmY4NzhhZWI1YmMwZTExZGNlMzc4MzMwOGMzOGQ5NSIKCiMhIHNjaGVkdWxlIG9wdGlvbnMK
-dXNlcjogbGtwCmhlYWRfY29tbWl0OiBlMmQ0ZTBiODEyNzQ1YzhiNzg2OGUyN2ZjM2Y4NTg4N2Ni
-Njc2YmQ4CmJhc2VfY29tbWl0OiA2ZDA4YjA2ZTY3Y2QxMTdmNjk5MmM0NjYxMWRmYjRjZTI2N2Nk
-NzFlCmJyYW5jaDogbGludXgtZGV2ZWwvZGV2ZWwtaG91cmx5LTIwMTgwNDI2MTQKcmVzdWx0X3Jv
-b3Q6ICIvcmVzdWx0L3VuaXhiZW5jaC8zMDBzLTEwMCUtZXhlY2wtcGVyZm9ybWFuY2UvbGtwLWl2
-Yi1kMDEvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhlbC03LjIvZ2NjLTcv
-ZjZmNDdjNjZhZmY4NzhhZWI1YmMwZTExZGNlMzc4MzMwOGMzOGQ5NS8wIgpMS1BfU0VSVkVSOiBp
-bm4KbWF4X3VwdGltZTogMTUwMAppbml0cmQ6ICIvb3NpbWFnZS9kZWJpYW4vZGViaWFuLXg4Nl82
-NC0yMDE2LTA4LTMxLmNneiIKYm9vdGxvYWRlcl9hcHBlbmQ6Ci0gcm9vdD0vZGV2L3JhbTAKLSB1
-c2VyPWxrcAotIGpvYj0vbGtwL3NjaGVkdWxlZC9sa3AtaXZiLWQwMS91bml4YmVuY2gtMzAwcy0x
-MDAlLWV4ZWNsLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3otZjZmNDdj
-NjZhZmY4NzhhZWI1YmMwZTExZGNlMzc4MzMwOGMzOGQ5NS0yMDE4MDQyOC0zNTU0My03cDV0ZTct
-MC55YW1sCi0gQVJDSD14ODZfNjQKLSBrY29uZmlnPXg4Nl82NC1yaGVsLTcuMgotIGJyYW5jaD1s
-aW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxODA0MjYxNAotIGNvbW1pdD1mNmY0N2M2NmFmZjg3
-OGFlYjViYzBlMTFkY2UzNzgzMzA4YzM4ZDk1Ci0gQk9PVF9JTUFHRT0vcGtnL2xpbnV4L3g4Nl82
-NC1yaGVsLTcuMi9nY2MtNy9mNmY0N2M2NmFmZjg3OGFlYjViYzBlMTFkY2UzNzgzMzA4YzM4ZDk1
-L3ZtbGludXotNC4xNy4wLXJjMi0wMDAwNi1nZjZmNDdjNgotIG1heF91cHRpbWU9MTUwMAotIFJF
-U1VMVF9ST09UPS9yZXN1bHQvdW5peGJlbmNoLzMwMHMtMTAwJS1leGVjbC1wZXJmb3JtYW5jZS9s
-a3AtaXZiLWQwMS9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3g4Nl82NC1yaGVsLTcuMi9n
-Y2MtNy9mNmY0N2M2NmFmZjg3OGFlYjViYzBlMTFkY2UzNzgzMzA4YzM4ZDk1LzAKLSBMS1BfU0VS
-VkVSPWlubgotIGRlYnVnCi0gYXBpYz1kZWJ1ZwotIHN5c3JxX2Fsd2F5c19lbmFibGVkCi0gcmN1
-cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0PTEwMAotIG5ldC5pZm5hbWVzPTAKLSBwcmludGsu
-ZGV2a21zZz1vbgotIHBhbmljPS0xCi0gc29mdGxvY2t1cF9wYW5pYz0xCi0gbm1pX3dhdGNoZG9n
-PXBhbmljCi0gb29wcz1wYW5pYwotIGxvYWRfcmFtZGlzaz0yCi0gcHJvbXB0X3JhbWRpc2s9MAot
-IGRyYmQubWlub3JfY291bnQ9OAotIHN5c3RlbWQubG9nX2xldmVsPWVycgotIGlnbm9yZV9sb2ds
-ZXZlbAotIGNvbnNvbGU9dHR5MAotIGVhcmx5cHJpbnRrPXR0eVMwLDExNTIwMAotIGNvbnNvbGU9
-dHR5UzAsMTE1MjAwCi0gdmdhPW5vcm1hbAotIHJ3Cm1vZHVsZXNfaW5pdHJkOiAiL3BrZy9saW51
-eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvZjZmNDdjNjZhZmY4NzhhZWI1YmMwZTExZGNlMzc4MzMw
-OGMzOGQ5NS9tb2R1bGVzLmNneiIKYm1faW5pdHJkOiAiL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2
-XzY0LTIwMTYtMDgtMzEuY2d6L3J1bi1pcGNvbmZpZ18yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9k
-ZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovbGtwXzIwMTgtMDQtMTkuY2d6LC9vc2lt
-YWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9yc3luYy1yb290ZnNfMjAxNi0x
-MS0xNS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3VuaXhi
-ZW5jaF8yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMx
-LmNnei91bml4YmVuY2gteDg2XzY0XzIwMTctMDQtMTEuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFu
-LXg4Nl82NC0yMDE2LTA4LTMxLmNnei9tcHN0YXRfMjAxNy0xMi0yNS5jZ3osL29zaW1hZ2UvZGVw
-cy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEuY2d6L3R1cmJvc3RhdF8yMDE2LTExLTE1LmNneiwv
-b3NpbWFnZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei90dXJib3N0YXQteDg2XzY0
-LWQ1MjU2YjJfMjAxNy0wNi0yMC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYt
-MDgtMzEuY2d6L3BlcmZfMjAxOC0wNC0wNC5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQt
-MjAxNi0wOC0zMS5jZ3ovcGVyZi14ODZfNjQtZjhjZjJmMTZhN2M5XzIwMTgtMDQtMDkuY2d6LC9v
-c2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9od18yMDE2LTExLTE1LmNn
-eiIKbGtwX2luaXRyZDogIi9sa3AvbGtwL2xrcC14ODZfNjQuY2d6IgpzaXRlOiBpbm4KCiMhIC9s
-a3AvbGtwLy5zcmMtMjAxODA0MjctMTQ1NjA0L2luY2x1ZGUvc2l0ZS9pbm4KTEtQX0NHSV9QT1JU
-OiA4MApMS1BfQ0lGU19QT1JUOiAxMzkKb29tLWtpbGxlcjogCndhdGNoZG9nOiAKCiMhIHJ1bnRp
-bWUgc3RhdHVzCnJlcGVhdF90bzogMgoKIyEgdXNlciBvdmVycmlkZXMKa2VybmVsOiAiL3BrZy9s
-aW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvZjZmNDdjNjZhZmY4NzhhZWI1YmMwZTExZGNlMzc4
-MzMwOGMzOGQ5NS92bWxpbnV6LTQuMTcuMC1yYzItMDAwMDYtZ2Y2ZjQ3YzYiCmRlcXVldWVfdGlt
-ZTogMjAxOC0wNC0yOCAxNjowMjo1NS4zNjM1NjQ0NTEgKzA4OjAwCgojISAvbGtwL2xrcC8uc3Jj
-LTIwMTgwNDI4LTE1MTMyNS9pbmNsdWRlL3NpdGUvaW5uCmpvYl9zdGF0ZTogZmluaXNoZWQKbG9h
-ZGF2ZzogMy40MCA0LjUxIDIuMjkgMS8xMTYgNTY0MQpzdGFydF90aW1lOiAnMTUyNDkwMjYyNCcK
-ZW5kX3RpbWU6ICcxNTI0OTAyOTU0Jwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE4MDQyOC0x
-NTEzMjUiCg==
+LS0tCgojISBqb2JzL2FpbTctZnMtcmFpZC55YW1sCnN1aXRlOiBhaW03CnRlc3RjYXNlOiBhaW03
+CmNhdGVnb3J5OiBiZW5jaG1hcmsKcGVyZi1wcm9maWxlOgogIGRlbGF5OiAxNQpkaXNrOiA0QlJE
+XzEyRwptZDogUkFJRDAKZnM6IHhmcwphaW03OgogIHRlc3Q6IHN5bmNfZGlza19ydwogIGxvYWQ6
+IDYwMApqb2Jfb3JpZ2luOiAiL2xrcC9sa3AvLnNyYy0yMDE4MDQyNy0wODU4MTgvYWxsb3QvY3lj
+bGljOmxpbnV4LWRldmVsOmRldmVsLWhvdXJseS9sa3AtaXZiLWVwMDEvYWltNy1mcy1yYWlkLnlh
+bWwiCgojISBxdWV1ZSBvcHRpb25zCnF1ZXVlOiBiaXNlY3QKdGVzdGJveDogbGtwLWl2Yi1lcDAx
+CnRib3hfZ3JvdXA6IGxrcC1pdmItZXAwMQpzdWJtaXRfaWQ6IDVhZTg0ZGI3MGI5YTkzM2Y2Yjk3
+OWVhOQpqb2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL2xrcC1pdmItZXAwMS9haW03LTRCUkRfMTJH
+LVJBSUQwLXhmcy1zeW5jX2Rpc2tfcnctNjAwLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAx
+Ni0wOC0zMS5jZ3otNjgzMzYyYWZkMjA2NzMwY2QzMGZhMjg0NmYyOThkNGMyYTY3ODk1Zi0yMDE4
+MDUwMS0xNjIzNS11eWZ0ZngtMC55YW1sIgppZDogOTZjYzY3NjVkZmY4ZTEyNTA4M2FiNTliNTli
+ZDBmNTc0ZGI3OGU5NwoKIyEgaG9zdHMvbGtwLWl2Yi1lcDAxCm1vZGVsOiBJdnkgQnJpZGdlLUVQ
+Cm5yX2NwdTogNDAKbWVtb3J5OiAzODRHCmhkZF9wYXJ0aXRpb25zOiAiL2Rldi9kaXNrL2J5LWlk
+L3Njc2ktMzZiOGNhM2EwZTY1MGUxMDAxZjc2NDYwODBjYTNiNjAxLXBhcnQxIC9kZXYvZGlzay9i
+eS1pZC9zY3NpLTM2YjhjYTNhMGU2NTBlMTAwMWY3NjQ2MDgwY2EzYjYwMS1wYXJ0MgogIC9kZXYv
+ZGlzay9ieS1pZC9zY3NpLTM2YjhjYTNhMGU2NTBlMTAwMWY3NjQ2MDgwY2EzYjYwMS1wYXJ0MyAv
+ZGV2L2Rpc2svYnktaWQvc2NzaS0zNmI4Y2EzYTBlNjUwZTEwMDFmNzY0NjA4MGNhM2I2MDEtcGFy
+dDQKICAvZGV2L2Rpc2svYnktaWQvc2NzaS0zNmI4Y2EzYTBlNjUwZTEwMDFmNzY0NjA4MGNhM2I2
+MDEtcGFydDUgL2Rldi9kaXNrL2J5LWlkL3Njc2ktMzZiOGNhM2EwZTY1MGUxMDAxZjc2NDYwODBj
+YTNiNjAxLXBhcnQ2CiAgL2Rldi9kaXNrL2J5LWlkL3Njc2ktMzZiOGNhM2EwZTY1MGUxMDAxZjc2
+NDYwODBjYTNiNjAxLXBhcnQ3IC9kZXYvZGlzay9ieS1pZC9zY3NpLTM2YjhjYTNhMGU2NTBlMTAw
+MWY3NjQ2MDgwY2EzYjYwMS1wYXJ0OCIKc3dhcF9wYXJ0aXRpb25zOiAKcm9vdGZzX3BhcnRpdGlv
+bjogCmJyYW5kOiBJbnRlbChSKSBYZW9uKFIpIENQVSBFNS0yNjkwIHYyIEAgMy4wMEdIegoKIyEg
+aW5jbHVkZS9jYXRlZ29yeS9iZW5jaG1hcmsKa21zZzogCmJvb3QtdGltZTogCmlvc3RhdDogCmhl
+YXJ0YmVhdDogCnZtc3RhdDogCm51bWEtbnVtYXN0YXQ6IApudW1hLXZtc3RhdDogCm51bWEtbWVt
+aW5mbzogCnByb2Mtdm1zdGF0OiAKcHJvYy1zdGF0OiAKbWVtaW5mbzogCnNsYWJpbmZvOiAKaW50
+ZXJydXB0czogCmxvY2tfc3RhdDogCmxhdGVuY3lfc3RhdHM6IApzb2Z0aXJxczogCmJkaV9kZXZf
+bWFwcGluZzogCmRpc2tzdGF0czogCm5mc3N0YXQ6IApjcHVpZGxlOiAKY3B1ZnJlcS1zdGF0czog
+CnR1cmJvc3RhdDogCnNjaGVkX2RlYnVnOiAKcGVyZi1zdGF0OiAKbXBzdGF0OiAKCiMhIGluY2x1
+ZGUvY2F0ZWdvcnkvQUxMCmNwdWZyZXFfZ292ZXJub3I6IHBlcmZvcm1hbmNlCgojISBpbmNsdWRl
+L3F1ZXVlL2N5Y2xpYwpjb21taXQ6IDY4MzM2MmFmZDIwNjczMGNkMzBmYTI4NDZmMjk4ZDRjMmE2
+Nzg5NWYKCiMhIGluY2x1ZGUvZGlzay9ucl9icmQKbmVlZF9rY29uZmlnOgotIENPTkZJR19CTEtf
+REVWX1JBTT1tCi0gQ09ORklHX0JMS19ERVY9eQotIENPTkZJR19CTE9DSz15Ci0gQ09ORklHX01E
+X1JBSUQwCi0gQ09ORklHX1hGU19GUwoKIyEgaW5jbHVkZS9tZC9yYWlkX2xldmVsCgojISBpbmNs
+dWRlL2ZzL09USEVSUwoKIyEgZGVmYXVsdCBwYXJhbXMKa2NvbmZpZzogeDg2XzY0LXJoZWwtNy4y
+CmNvbXBpbGVyOiBnY2MtNwpyb290ZnM6IGRlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3oKZW5x
+dWV1ZV90aW1lOiAyMDE4LTA1LTAxIDE5OjIxOjI3Ljc0ODE0NzMwOSArMDg6MDAKX2lkOiA1YWU4
+NGRiNzBiOWE5MzNmNmI5NzllYTkKX3J0OiAiL3Jlc3VsdC9haW03LzRCUkRfMTJHLVJBSUQwLXhm
+cy1zeW5jX2Rpc2tfcnctNjAwLXBlcmZvcm1hbmNlL2xrcC1pdmItZXAwMS9kZWJpYW4teDg2XzY0
+LTIwMTYtMDgtMzEuY2d6L3g4Nl82NC1yaGVsLTcuMi9nY2MtNy82ODMzNjJhZmQyMDY3MzBjZDMw
+ZmEyODQ2ZjI5OGQ0YzJhNjc4OTVmIgoKIyEgc2NoZWR1bGUgb3B0aW9ucwp1c2VyOiBsa3AKaGVh
+ZF9jb21taXQ6IDI4YWJhY2I2ZmY5N2U1YjdjOTBiNTcyMzk4ZThkNGQwNmY0MDVjODAKYmFzZV9j
+b21taXQ6IDZkMDhiMDZlNjdjZDExN2Y2OTkyYzQ2NjExZGZiNGNlMjY3Y2Q3MWUKYnJhbmNoOiBs
+aW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxODA0MjkyMApyZXN1bHRfcm9vdDogIi9yZXN1bHQv
+YWltNy80QlJEXzEyRy1SQUlEMC14ZnMtc3luY19kaXNrX3J3LTYwMC1wZXJmb3JtYW5jZS9sa3At
+aXZiLWVwMDEvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei94ODZfNjQtcmhlbC03LjIvZ2Nj
+LTcvNjgzMzYyYWZkMjA2NzMwY2QzMGZhMjg0NmYyOThkNGMyYTY3ODk1Zi8wIgpMS1BfU0VSVkVS
+OiBpbm4KbWF4X3VwdGltZTogMzYwMAppbml0cmQ6ICIvb3NpbWFnZS9kZWJpYW4vZGViaWFuLXg4
+Nl82NC0yMDE2LTA4LTMxLmNneiIKYm9vdGxvYWRlcl9hcHBlbmQ6Ci0gcm9vdD0vZGV2L3JhbTAK
+LSB1c2VyPWxrcAotIGpvYj0vbGtwL3NjaGVkdWxlZC9sa3AtaXZiLWVwMDEvYWltNy00QlJEXzEy
+Ry1SQUlEMC14ZnMtc3luY19kaXNrX3J3LTYwMC1wZXJmb3JtYW5jZS1kZWJpYW4teDg2XzY0LTIw
+MTYtMDgtMzEuY2d6LTY4MzM2MmFmZDIwNjczMGNkMzBmYTI4NDZmMjk4ZDRjMmE2Nzg5NWYtMjAx
+ODA1MDEtMTYyMzUtdXlmdGZ4LTAueWFtbAotIEFSQ0g9eDg2XzY0Ci0ga2NvbmZpZz14ODZfNjQt
+cmhlbC03LjIKLSBicmFuY2g9bGludXgtZGV2ZWwvZGV2ZWwtaG91cmx5LTIwMTgwNDI5MjAKLSBj
+b21taXQ9NjgzMzYyYWZkMjA2NzMwY2QzMGZhMjg0NmYyOThkNGMyYTY3ODk1ZgotIEJPT1RfSU1B
+R0U9L3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvNjgzMzYyYWZkMjA2NzMwY2QzMGZh
+Mjg0NmYyOThkNGMyYTY3ODk1Zi92bWxpbnV6LTQuMTcuMC1yYzEtMDAxODItZzY4MzM2MmEKLSBt
+YXhfdXB0aW1lPTM2MDAKLSBSRVNVTFRfUk9PVD0vcmVzdWx0L2FpbTcvNEJSRF8xMkctUkFJRDAt
+eGZzLXN5bmNfZGlza19ydy02MDAtcGVyZm9ybWFuY2UvbGtwLWl2Yi1lcDAxL2RlYmlhbi14ODZf
+NjQtMjAxNi0wOC0zMS5jZ3oveDg2XzY0LXJoZWwtNy4yL2djYy03LzY4MzM2MmFmZDIwNjczMGNk
+MzBmYTI4NDZmMjk4ZDRjMmE2Nzg5NWYvMAotIExLUF9TRVJWRVI9aW5uCi0gZGVidWcKLSBhcGlj
+PWRlYnVnCi0gc3lzcnFfYWx3YXlzX2VuYWJsZWQKLSByY3VwZGF0ZS5yY3VfY3B1X3N0YWxsX3Rp
+bWVvdXQ9MTAwCi0gbmV0LmlmbmFtZXM9MAotIHByaW50ay5kZXZrbXNnPW9uCi0gcGFuaWM9LTEK
+LSBzb2Z0bG9ja3VwX3BhbmljPTEKLSBubWlfd2F0Y2hkb2c9cGFuaWMKLSBvb3BzPXBhbmljCi0g
+bG9hZF9yYW1kaXNrPTIKLSBwcm9tcHRfcmFtZGlzaz0wCi0gZHJiZC5taW5vcl9jb3VudD04Ci0g
+c3lzdGVtZC5sb2dfbGV2ZWw9ZXJyCi0gaWdub3JlX2xvZ2xldmVsCi0gY29uc29sZT10dHkwCi0g
+ZWFybHlwcmludGs9dHR5UzAsMTE1MjAwCi0gY29uc29sZT10dHlTMCwxMTUyMDAKLSB2Z2E9bm9y
+bWFsCi0gcncKbW9kdWxlc19pbml0cmQ6ICIvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2Mt
+Ny82ODMzNjJhZmQyMDY3MzBjZDMwZmEyODQ2ZjI5OGQ0YzJhNjc4OTVmL21vZHVsZXMuY2d6Igpi
+bV9pbml0cmQ6ICIvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovcnVu
+LWlwY29uZmlnXzIwMTYtMTEtMTUuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2
+LTA4LTMxLmNnei9sa3BfMjAxOC0wNC0xOS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0
+LTIwMTYtMDgtMzEuY2d6L3JzeW5jLXJvb3Rmc18yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9kZXBz
+L2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovcGVyZl8yMDE4LTA0LTA0LmNneiwvb3NpbWFn
+ZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei9wZXJmLXg4Nl82NC1mOGNmMmYxNmE3
+YzlfMjAxOC0wNC0wOS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTYtMDgtMzEu
+Y2d6L21kXzIwMTYtMTEtMTUuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4
+LTMxLmNnei9mc18yMDE2LTExLTE1LmNneiwvb3NpbWFnZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE2
+LTA4LTMxLmNnei9haW03LXg4Nl82NF8yMDE2LTExLTE2LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlh
+bi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovbXBzdGF0XzIwMTctMTItMjUuY2d6LC9vc2ltYWdlL2Rl
+cHMvZGViaWFuLXg4Nl82NC0yMDE2LTA4LTMxLmNnei90dXJib3N0YXRfMjAxNi0xMS0xNS5jZ3os
+L29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQtMjAxNi0wOC0zMS5jZ3ovdHVyYm9zdGF0LXg4Nl82
+NC1kNTI1NmIyXzIwMTctMDYtMjAuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE2
+LTA4LTMxLmNnei9od18yMDE2LTExLTE1LmNneiIKbGtwX2luaXRyZDogIi9sa3AvbGtwL2xrcC14
+ODZfNjQuY2d6IgpzaXRlOiBpbm4KCiMhIC9sa3AvbGtwLy5zcmMtMjAxODA0MjgtMjA1MDQwL2lu
+Y2x1ZGUvc2l0ZS9pbm4KTEtQX0NHSV9QT1JUOiA4MApMS1BfQ0lGU19QT1JUOiAxMzkKb29tLWtp
+bGxlcjogCndhdGNoZG9nOiAKCiMhIHJ1bnRpbWUgc3RhdHVzCnJlcGVhdF90bzogMgoKIyEgdXNl
+ciBvdmVycmlkZXMKa2VybmVsOiAiL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvNjgz
+MzYyYWZkMjA2NzMwY2QzMGZhMjg0NmYyOThkNGMyYTY3ODk1Zi92bWxpbnV6LTQuMTcuMC1yYzEt
+MDAxODItZzY4MzM2MmEiCmRlcXVldWVfdGltZTogMjAxOC0wNS0wMSAxOTozNjoyOS42OTczMDc3
+MDAgKzA4OjAwCmpvYl9zdGF0ZTogZmluaXNoZWQKbG9hZGF2ZzogNDI0LjE3IDU1OS4xMCA1Mjcu
+MTggMS80NTIgNTc2OQpzdGFydF90aW1lOiAnMTUyNTE3NDY3NycKZW5kX3RpbWU6ICcxNTI1MTc2
+ODA3Jwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNyYy0yMDE4MDQyOC0yMDUwNDAiCg==
 
---===============8838767005231492399==
+--===============1277153677689591833==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="reproduce.ksh"
 
-CmZvciBjcHVfZGlyIGluIC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdVswLTldKgpkbwoJb25s
-aW5lX2ZpbGU9IiRjcHVfZGlyIi9vbmxpbmUKCVsgLWYgIiRvbmxpbmVfZmlsZSIgXSAmJiBbICIk
-KGNhdCAiJG9ubGluZV9maWxlIikiIC1lcSAwIF0gJiYgY29udGludWUKCglmaWxlPSIkY3B1X2Rp
-ciIvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCglbIC1mICIkZmlsZSIgXSAmJiBlY2hvICJwZXJm
-b3JtYW5jZSIgPiAiJGZpbGUiCmRvbmUKCiAiLi9SdW4iICJleGVjbCIgIi1jIiAiOCIgIi1pIiAi
-MzAiCg==
+ICJtb2Rwcm9iZSIgIi1yIiAiYnJkIgogIm1vZHByb2JlIiAiYnJkIiAicmRfbnI9NCIgInJkX3Np
+emU9MTI1ODI5MTIiCiAiZG1zZXR1cCIgInJlbW92ZV9hbGwiCiAid2lwZWZzIiAiLWEiICItLWZv
+cmNlIiAiL2Rldi9yYW0wIgogIndpcGVmcyIgIi1hIiAiLS1mb3JjZSIgIi9kZXYvcmFtMSIKICJ3
+aXBlZnMiICItYSIgIi0tZm9yY2UiICIvZGV2L3JhbTIiCiAid2lwZWZzIiAiLWEiICItLWZvcmNl
+IiAiL2Rldi9yYW0zIgogIm1kYWRtIiAiLXEiICItLWNyZWF0ZSIgIi9kZXYvbWQwIiAiLS1jaHVu
+az0yNTYiICItLWxldmVsPXJhaWQwIiAiLS1yYWlkLWRldmljZXM9NCIgIi0tZm9yY2UiICItLWFz
+c3VtZS1jbGVhbiIgIi9kZXYvcmFtMCIgIi9kZXYvcmFtMSIgIi9kZXYvcmFtMiIgIi9kZXYvcmFt
+MyIKd2lwZWZzIC1hIC0tZm9yY2UgL2Rldi9tZDAKbWtmcyAtdCB4ZnMgL2Rldi9tZDAKbWtkaXIg
+LXAgL2ZzL21kMAptb3VudCAtdCB4ZnMgLW8gbm9iYXJyaWVyLGlub2RlNjQgL2Rldi9tZDAgL2Zz
+L21kMAoKZm9yIGNwdV9kaXIgaW4gL3N5cy9kZXZpY2VzL3N5c3RlbS9jcHUvY3B1WzAtOV0qCmRv
+CglvbmxpbmVfZmlsZT0iJGNwdV9kaXIiL29ubGluZQoJWyAtZiAiJG9ubGluZV9maWxlIiBdICYm
+IFsgIiQoY2F0ICIkb25saW5lX2ZpbGUiKSIgLWVxIDAgXSAmJiBjb250aW51ZQoKCWZpbGU9IiRj
+cHVfZGlyIi9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IKCVsgLWYgIiRmaWxlIiBdICYmIGVjaG8g
+InBlcmZvcm1hbmNlIiA+ICIkZmlsZSIKZG9uZQoKZWNobyAiNTAwIDMyMDAwIDEyOCA1MTIiID4g
+L3Byb2Mvc3lzL2tlcm5lbC9zZW0KY2F0ID4gd29ya2ZpbGUgPDxFT0YKRklMRVNJWkU6IDFNClBP
+T0xTSVpFOiAxME0KMTAgc3luY19kaXNrX3J3CkVPRgplY2hvICIvZnMvbWQwIiA+IGNvbmZpZwoK
+CSgKCQllY2hvIGxrcC1pdmItZXAwMQoJCWVjaG8gc3luY19kaXNrX3J3CgoJCWVjaG8gMQoJCWVj
+aG8gNjAwCgkJZWNobyAyCgkJZWNobyA2MDAKCQllY2hvIDEKCSkgfCAuL211bHRpdGFzayAtdAo=
 
---===============8838767005231492399==--
+--===============1277153677689591833==--
 
