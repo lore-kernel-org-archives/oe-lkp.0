@@ -1,288 +1,164 @@
-Content-Type: multipart/mixed; boundary="===============0108344934221707922=="
+Content-Type: multipart/mixed; boundary="===============1119022159675504509=="
 MIME-Version: 1.0
-From: Byungchul Park <byungchul.park@lge.com>
+From: Pavel Tatashin <pasha.tatashin@oracle.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [rcu] eef6430cc5: WARNING:at_lib/debugobjects.c:#__debug_object_init
-Date: Tue, 08 May 2018 16:04:46 +0900
-Message-ID: <1591a37e-e08e-141b-a33e-1bf04346fd34@lge.com>
-In-Reply-To: <edb4ed0f-7bc6-08af-6bfb-2d0e4fd9542d@lge.com>
+Subject: Re: [per_cpu_ptr_to_phys] PANIC: early exception 0x0d IP 10:ffffffffa892f15f error 0 cr2 0xffff88001fbff000
+Date: Thu, 03 May 2018 13:45:43 +0000
+Message-ID: <CAGM2reY7QvAdnGFhHAGR-TxOhWhW2vvjPvLJUXxoAJmLiSipVA@mail.gmail.com>
+In-Reply-To: <20180502124417.du2ytsnrulevihp4@wfg-t540p.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0108344934221707922==
+--===============1119022159675504509==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi Fengguang,
 
+My root cause for the problem was correct. You are now finding either a
+different problem that has the same signature, or what is more likely the
+same issue but simply was not introduced by my change: my change reduced
+number of pre-initialized pages because we init them on demand with my
+work, but we could run out of them even before my change, and because of
+KASLR we never know how much is needed to be pre-initialized.
 
-On 2018-05-08 =EC=98=A4=ED=9B=84 2:43, Byungchul Park wrote:
-> =
+Could you please test if my patch fixes the issue?
 
-> =
+http://ozlabs.org/~akpm/mmots/broken-out/mm-access-to-uninitialized-struct-=
+page.patch
 
-> On 2018-05-04 =EC=98=A4=EC=A0=84 11:33, kernel test robot wrote:
->>
->>
->> FYI, we noticed the following commit (built with gcc-7):
->>
->> commit: eef6430cc57075ee58259ecad500ba7cae031040 ("rcu: Remove =
+Thank you,
+Pavel
+On Wed, May 2, 2018 at 8:44 AM Fengguang Wu <fengguang.wu@intel.com> wrot=
+e:
 
->> deprecated RCU debugfs tracing code")
->> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->>
->> in testcase: netpipe
->> with following parameters:
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0test: tcp
->> =C2=A0=C2=A0=C2=A0=C2=A0cluster: cs-localhost
->>
->> test-description: NetPIPE is a protocol independent performance tool =
+> Hi all,
 
->> that encapsulates the best of ttcp and netperf and visually represents =
+> On Wed, Apr 18, 2018 at 06:38:25PM -0500, Dennis Zhou wrote:
+> >Hi,
+> >
+> >On Wed, Apr 18, 2018 at 09:55:53PM +0800, Fengguang Wu wrote:
+> >>
+> >> Hello,
+> >>
+> >> FYI here is a slightly different boot error in mainline kernel
+4.17.0-rc1.
+> >> It also dates back to v4.16 .
 
->> the network performance under a variety of conditions.
->> test-url: http://bitspjoule.org/netpipe/
->>
->>
->> on test machine: qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 4G
->>
->> caused below changes (please refer to attached dmesg/kmsg for entire =
+> Now I find 2 more occurrances in v4.15 kernel.
 
->> log/backtrace):
->>
->>
->> +--------------------------------------------------------------------+--=
-----------+------------+ =
+> Here are the statistics:
 
->>
->> |=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | =
+>          kernel      count     error-id
+>          v4.15:          2     RIP:per_cpu_ptr_to_phys
+>          v4.16:         12     RIP:per_cpu_ptr_to_phys
+>          v4.16:          1
+BUG:KASAN:null-ptr-deref-in-per_cpu_ptr_to_phys
+>          v4.16-rc7:      2     RIP:per_cpu_ptr_to_phys
+>          v4.17-rc1:    217     RIP:per_cpu_ptr_to_phys
+>          v4.17-rc1:      5
+BUG:KASAN:null-ptr-deref-in-per_cpu_ptr_to_phys
+>          v4.17-rc2:     46     RIP:per_cpu_ptr_to_phys
+>          v4.17-rc2:     15
+BUG:KASAN:null-ptr-deref-in-per_cpu_ptr_to_phys
+>          v4.17-rc3:     12     RIP:per_cpu_ptr_to_phys
 
->> 5f499c03af | eef6430cc5 |
->> +--------------------------------------------------------------------+--=
-----------+------------+ =
+> >> It occurs in 4 out of 4 boots.
+> >>
+> >> [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages:
+128873
+> >> [    0.000000] Kernel command line: root=3D/dev/ram0 hung_task_panic=
+=3D1
+debug apic=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100
+net.ifnames=3D0 printk.devkmsg=3Don panic=3D-1 softlockup_panic=3D1
+nmi_watchdog=3Dpanic oops=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0
+drbd.minor_count=3D8 systemd.log_level=3Derr ignore_loglevel console=3Dtty0
+earlyprintk=3DttyS0,115200 console=3DttyS0,115200 vga=3Dnormal rw
+link=3D/kbuild-tests/run-queue/kvm/x86_64-randconfig-a0-04172313/linux-deve=
+l:devel-hourly-2018041714:60cc43fc888428bb2f18f08997432d426a243338/.vmlinuz=
+-60cc43fc888428bb2f18f08997432d426a243338-20180418000325-19:yocto-lkp-nhm-d=
+p2-4
+branch=3Dlinux-devel/devel-hourly-2018041714
+BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-a0-04172313/gcc-7/60cc43fc888428b=
+b2f18f08997432d426a243338/vmlinuz-4.17.0-rc1
+drbd.minor_count=3D8 rcuperf.shutdown=3D0
+> >> [    0.000000] sysrq: sysrq always enabled.
+> >> [    0.000000] Dentry cache hash table entries: 65536 (order: 7,
+524288 bytes)
+> >> [    0.000000] Inode-cache hash table entries: 32768 (order: 6, 262144
+bytes)
+> >> PANIC: early exception 0x0d IP 10:ffffffffa892f15f error 0 cr2
+0xffff88001fbff000
+> >> [    0.000000] CPU: 0 PID: 0 Comm: swapper Tainted: G                T
+4.17.0-rc1 #238
+> >> [    0.000000] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS 1.10.2-1 04/01/2014
+> >> [    0.000000] RIP: 0010:per_cpu_ptr_to_phys+0x16a/0x298:
+> >>                                              __section_mem_map_addr at
+include/linux/mmzone.h:1188
+> >>                                               (inlined by)
+per_cpu_ptr_to_phys at mm/percpu.c:1849
+> >> [    0.000000] RSP: 0000:ffffffffab407e50 EFLAGS: 00010046 ORIG_RAX:
+0000000000000000
+> >> [    0.000000] RAX: dffffc0000000000 RBX: ffff88001f17c340 RCX:
+000000000000000f
+> >> [    0.000000] RDX: 0000000000000000 RSI: 0000000000000001 RDI:
+ffffffffacfbf580
+> >> [    0.000000] RBP: ffffffffab40d000 R08: fffffbfff57c4eca R09:
+0000000000000000
+> >> [    0.000000] R10: ffff880015421000 R11: fffffbfff57c4ec9 R12:
+0000000000000000
+> >> [    0.000000] R13: ffff88001fb03ff8 R14: ffff88001fc051c0 R15:
+0000000000000000
+> >> [    0.000000] FS:  0000000000000000(0000) GS:ffffffffab4c5000(0000)
+knlGS:0000000000000000
+> >> [    0.000000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> >> [    0.000000] CR2: ffff88001fbff000 CR3: 000000001a06c000 CR4:
+00000000000006b0
+> >> [    0.000000] Call Trace:
+> >> [    0.000000]  setup_cpu_entry_areas+0x7b/0x27b:
+> >>                                              setup_cpu_entry_area at
+arch/x86/mm/cpu_entry_area.c:104
+> >>                                               (inlined by)
+setup_cpu_entry_areas at arch/x86/mm/cpu_entry_area.c:177
+> >> [    0.000000]  trap_init+0xb/0x13d:
+> >>                                              trap_init at
+arch/x86/kernel/traps.c:949
+> >> [    0.000000]  start_kernel+0x2a5/0x91d:
+> >>                                              mm_init at init/main.c:519
+> >>                                               (inlined by)
+start_kernel at init/main.c:589
+> >> [    0.000000]  ? thread_stack_cache_init+0x6/0x6
+> >> [    0.000000]  ? memcpy_orig+0x16/0x110:
+> >>                                              memcpy_orig at
+arch/x86/lib/memcpy_64.S:77
+> >> [    0.000000]  ? x86_family+0x5/0x1d:
+> >>                                              x86_family at
+arch/x86/lib/cpu.c:8
+> >> [    0.000000]  ? load_ucode_bsp+0x42/0x13e:
+> >>                                              load_ucode_bsp at
+arch/x86/kernel/cpu/microcode/core.c:183
+> >> [    0.000000]  secondary_startup_64+0xa5/0xb0:
+> >>                                              secondary_startup_64 at
+arch/x86/kernel/head_64.S:242
+> >> [    0.000000] Code: 78 06 00 49 8b 45 00 48 85 c0 74 a5 49 c1 ec 28
+41 81 e4 e0 0f 00 00 49 01 c4 4c 89 e2 48 b8 00 00 00 00 00 fc ff df 48 c1
+ea 03 <80> 3c 02 00 74 08 4c 89 e7 e8 63 78 06 00 49 8b 04 24 81 e5 ff
+> >> BUG: kernel hang in boot stage
+> >>
+> >
+> >I spent some time bisecting this one and it seemse to be an intermittent
+> >issue starting with this commit for me:
+> >c9e97a1997, mm: initialize pages on demand during boot. The prior
+> >commit, 3a2d7fa8a3, did not run into this issue after 10+ boots.
 
->>
->> | boot_successes=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | =
+> That commit is post-4.16, so probably not the root cause.
 
->> 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> | boot_failures=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | =
+> >I don't have that much time right now, nor the expertise with this code.
+> >Pavel could you take a look at this?
 
->> 24=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 24=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> | invoked_oom-killer:gfp_mask=3D0x=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | =
+> Thanks,
+> Fengguang
 
->> 4=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 4=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> | Mem-Info=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | =
-
->> 4=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 4=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> | Kernel_panic-not_syncing:Out_of_memory_and_no_killable_processes=C2=A0=
-=C2=A0 | =
-
->> 4=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 4=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> | WARNING:suspicious_RCU_usage=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | =
-
->> 20=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 20=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> | lib/test_rhashtable.c:#suspicious_rcu_dereference_protected()usage | =
-
->> 20=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 20=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> | WARNING:at_lib/debugobjects.c:#__debug_object_init=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 | =
-
->> 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 20=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> | RIP:__debug_object_init=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | =
-
->> 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 20=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> | BUG:kernel_hang_in_test_stage=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | =
-
->> 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 19=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
->> +--------------------------------------------------------------------+--=
-----------+------------+ =
-
->>
-> =
-
-> Hello,
-> =
-
-> I wanna check this warning.
-> =
-
-> Could you provide me ELF vmlinux? It would be helpful and appreciated
-> if you do.
-> =
-
-> Honestly I guess there seems to be another problem than the eef6430cc5
-> commit tho.
-> =
-
-> Thanks in advance.
-> Byungchul
-
-I asked you for the vmlinux because I want to give you what's the
-exact problem here after checking the compiled code with the exact
-offset and the vmlinux.
-
-I suspect the code calling test_insert_dup() with stack variables in
-test_insert_duplicates_run() but initializing them with =
-
-debug_object_init() than debug_object_init_on_stack(). I'll let you
-know the correct information with the vmlinux.
-
-Furthermore, because this is not related to the eef6430cc5 commit,
-it should be seen in the 5f499c03af commit as well. Could you
-provide me the dmsg of the 5f499c03af commit as well?
-
->> [=C2=A0=C2=A0 41.762662] WARNING: CPU: 0 PID: 1 at lib/debugobjects.c:36=
-6 =
-
->> __debug_object_init+0x7ab/0x8ea
->> [=C2=A0=C2=A0 41.766378] Modules linked in:
->> [=C2=A0=C2=A0 41.767681] CPU: 0 PID: 1 Comm: swapper/0 Not tainted =
-
->> 4.17.0-rc1-00004-geef6430 #1
->> [=C2=A0=C2=A0 41.769534] Hardware name: QEMU Standard PC (i440FX + PIIX,=
- 1996), =
-
->> BIOS 1.10.2-1 04/01/2014
->> [=C2=A0=C2=A0 41.770591] RIP: 0010:__debug_object_init+0x7ab/0x8ea
->> [=C2=A0=C2=A0 41.770591] RSP: 0000:ffff88011a12f940 EFLAGS: 00010082
->> [=C2=A0=C2=A0 41.770591] RAX: dffffc0000000000 RBX: ffff88007eef8310 RCX=
-: =
-
->> 0000000000000001
->> [=C2=A0=C2=A0 41.770591] RDX: 1ffffffff08ab7dd RSI: 0000000000000001 RDI=
-: =
-
->> ffffffff8455bee8
->> [=C2=A0=C2=A0 41.770591] RBP: 0000000000000001 R08: fffffbfff07a7905 R09=
-: =
-
->> 0000000000000001
->> [=C2=A0=C2=A0 41.770591] R10: fffffbfff07fde35 R11: fffffbfff07a7904 R12=
-: =
-
->> ffff88011a120000
->> [=C2=A0=C2=A0 41.770591] R13: ffff88011a12fb68 R14: ffff88008a83b3f0 R15=
-: =
-
->> ffffffff83d0ec40
->> [=C2=A0=C2=A0 41.770591] FS:=C2=A0 0000000000000000(0000) GS:ffff88011aa=
-00000(0000) =
-
->> knlGS:0000000000000000
->> [=C2=A0=C2=A0 41.770591] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 000000008=
-0050033
->> [=C2=A0=C2=A0 41.770591] CR2: 0000000000000000 CR3: 0000000003c80000 CR4=
-: =
-
->> 00000000000006f0
->> [=C2=A0=C2=A0 41.770591] Call Trace:
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? debug_object_free+0x25c/0x25c
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? get_random_u32+0x142/0x155
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? bucket_table_alloc+0x242/0x2f6
->> [=C2=A0=C2=A0 41.770591]=C2=A0 rhashtable_init+0x536/0x5fa
->> [=C2=A0=C2=A0 41.770591]=C2=A0 rhltable_init+0x45/0x77
->> [=C2=A0=C2=A0 41.770591]=C2=A0 test_insert_dup+0xec/0x150f
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? print_ht+0x7ef/0x7ef
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? config_num_requests_show+0x70/0x70
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? jhash+0x474/0x474
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? my_hashfn+0x36/0x36
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? kfree+0x30a/0x441
->> [=C2=A0=C2=A0 41.770591]=C2=A0 test_rht_init+0x522/0xbc1
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? test_rhashtable+0x1791/0x1791
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? test_rhashtable+0x1791/0x1791
->> [=C2=A0=C2=A0 41.770591]=C2=A0 do_one_initcall+0x29e/0x5db
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? initcall_blacklisted+0x15d/0x15d
->> [=C2=A0=C2=A0 41.770591]=C2=A0 kernel_init_freeable+0xe50/0xf6c
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? rest_init+0x24a/0x24a
->> [=C2=A0=C2=A0 41.770591]=C2=A0 kernel_init+0x7/0xfe
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ? rest_init+0x24a/0x24a
->> [=C2=A0=C2=A0 41.770591]=C2=A0 ret_from_fork+0x24/0x30
->> [=C2=A0=C2=A0 41.770591] Code: c5 48 c7 c7 c0 80 4e 83 89 2d 9a d5 f3 03=
- e8 39 =
-
->> 39 43 ff b9 01 00 00 00 31 d2 be 01 00 00 00 48 c7 c7 d0 be 55 84 e8 =
-
->> 99 e3 54 ff <0f> 0b b9 01 00 00 00 31 d2 be 01 00 00 00 48 c7 c7 a0 be =
-
->> 55 84
->> [=C2=A0=C2=A0 41.770591] irq event stamp: 6584434
->> [=C2=A0=C2=A0 41.770591] hardirqs last=C2=A0 enabled at (6584433): =
-
->> [<ffffffff82decfcf>] _raw_read_unlock_irqrestore+0x3f/0x53
->> [=C2=A0=C2=A0 41.770591] hardirqs last disabled at (6584434): =
-
->> [<ffffffff82dec9f3>] _raw_spin_lock_irqsave+0x1d/0x7a
->> [=C2=A0=C2=A0 41.770591] softirqs last=C2=A0 enabled at (6584286): =
-
->> [<ffffffff8300088a>] __do_softirq+0x88a/0x95a
->> [=C2=A0=C2=A0 41.770591] softirqs last disabled at (6584279): =
-
->> [<ffffffff81113852>] irq_exit+0x8c/0x171
->> [=C2=A0=C2=A0 41.770591] ---[ end trace c7a565a44a68a5cb ]---
->>
->>
->> To reproduce:
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 git clone https://githu=
-b.com/intel/lkp-tests.git
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 cd lkp-tests
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bin/lkp qemu -k <bzImag=
-e> job-script # job-script is attached =
-
->> in this email
->>
->>
->>
->> Thanks,
->> Xiaolong
->>
-> =
-
-
--- =
-
-Thanks,
-Byungchul
-
---===============0108344934221707922==--
+--===============1119022159675504509==--
 
