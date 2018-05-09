@@ -1,96 +1,63 @@
-Content-Type: multipart/mixed; boundary="===============7121976808986480449=="
+Content-Type: multipart/mixed; boundary="===============6063820873960403402=="
 MIME-Version: 1.0
-From: Aaron Lu <aaron.lu@intel.com>
+From: Roopa Prabhu <roopa@cumulusnetworks.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [mm] e27be240df: will-it-scale.per_process_ops -27.2% regression
-Date: Wed, 09 May 2018 23:02:21 +0800
-Message-ID: <20180509150221.GA4848@intel.com>
-In-Reply-To: <20180509023211.GB10016@intel.com>
+Subject: Re: [lkp-robot] [net] 69d73ea95c: kernel_selftests.net.fib-onlink-tests.sh.fail
+Date: Wed, 09 May 2018 10:46:35 -0700
+Message-ID: <CAJieiUhOJ+VW=rfbQwvL3jsgnsu9-b8ECi2vF-oicyfPBur9wQ@mail.gmail.com>
+In-Reply-To: <20180508052909.GJ22317@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7121976808986480449==
+--===============6063820873960403402==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 09, 2018 at 10:32:11AM +0800, Aaron Lu wrote:
-> On Tue, May 08, 2018 at 01:26:40PM -0400, Johannes Weiner wrote:
-> > Hello,
-> > =
+On Mon, May 7, 2018 at 10:29 PM, kernel test robot
+<xiaolong.ye@intel.com> wrote:
+>
+> FYI, we noticed the following commit (built with gcc-7):
+>
+> commit: 69d73ea95c7cf323f92234e7c4aca2fbfa9a2208 ("net: fib_rules: add ex=
+tack support")
+> url: https://github.com/0day-ci/linux/commits/Roopa-Prabhu/fib-rules-exta=
+ck-support/20180423-115437
+>
+>
+> in testcase: kernel_selftests
+> with following parameters:
+>
+>         group: kselftests-02
+>
+> test-description: The kernel contains a set of "self tests" under the too=
+ls/testing/selftests/ directory. These are intended to be small unit tests =
+to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+>
+>
+> on test machine: 8 threads Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz with =
+8G memory
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+> selftests: fib-onlink-tests.sh
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+> ########################################
+> Configuring interfaces
+> RTNETLINK answers: Invalid argument
+> not ok 1..12 selftests:  fib-onlink-tests.sh [FAIL]
+>
+>
 
-> > On Tue, May 08, 2018 at 01:34:51PM +0800, kernel test robot wrote:
-> > > FYI, we noticed a -27.2% regression of will-it-scale.per_process_ops =
-due to commit:
-> > > =
 
-> > > =
+Thanks for reporting.
 
-> > > commit: e27be240df53f1a20c659168e722b5d9f16cc7f4 ("mm: memcg: make su=
-re memory.events is uptodate when waking pollers")
-> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > > =
+This should be fixed by
+9c20b9372fba "net: fib_rules: fix l3mdev netlink attr processing"
 
-> > > in testcase: will-it-scale
-> > > on test machine: 72 threads Intel(R) Xeon(R) CPU E5-2699 v3 @ 2.30GHz=
- with 128G memory
-> > > with following parameters:
-> > > =
-
-> > > 	nr_task: 100%
-> > > 	mode: process
-> > > 	test: page_fault3
-> > > 	cpufreq_governor: performance
-> > > =
-
-> > > test-description: Will It Scale takes a testcase and runs it from 1 t=
-hrough to n parallel copies to see if the testcase will scale. It builds bo=
-th a process and threads based test in order to see any differences between=
- the two.
-> > > test-url: https://github.com/antonblanchard/will-it-scale
-> > =
-
-> > This is surprising. Do you run these tests in a memory cgroup with a
-> > limit set? Can you dump that cgroup's memory.events after the run?
-> =
-
-> There is no cgroup related setup so yes, this is surprising.
-> But the result is quite stable, I have just confirmed on another
-> Haswell-EP machine.
-> =
-
-> perf shows increased cycles spent for lock_page_memcg and
-> unlock_page_memcg, maybe this can shed some light. Full profile for this
-> commit and its parent are attached.
-> =
-
-> I have also attached dmesg for both commits in case they are useful,
-> please feel free to let me know if you need any other information. We
-> also collected a ton of other information during the run like
-> /proc/vmstat, /proc/meminfo, /proc/interrupt etc.
-
-Test on Broadwell-EP also showed 35% regression, here are a list of
-functions that take more CPU cycles with this commit according to perf:
-
-a38c015f3156895b e27be240df53f1a20c659168e7                                =
-                                                    =
-
----------------- --------------------------                                =
-                                                    =
-
-         %stddev     %change         %stddev
-             \          |                \
-  58033709           -35.0%   37727244        will-it-scale.workload
-... ...
-      3.82            +6.1        9.97        perf-profile.self.cycles-pp.h=
-andle_mm_fault
-      3.19            +6.2        9.37        perf-profile.self.cycles-pp.p=
-age_remove_rmap
-      0.25            +6.5        6.71        perf-profile.self.cycles-pp._=
-_unlock_page_memcg
-      3.63            +7.5       11.15        perf-profile.self.cycles-pp.p=
-age_add_file_rmap
-      0.60            +8.1        8.70        perf-profile.self.cycles-pp.l=
-ock_page_memcg
-
---===============7121976808986480449==--
+--===============6063820873960403402==--
 
