@@ -1,42 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============3299845919893567293=="
+Content-Type: multipart/mixed; boundary="===============5490451078251626130=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@kernel.org>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [x86/asm] 51bad67ffb: int3:#[##]
-Date: Tue, 15 May 2018 15:29:12 -0700
-Message-ID: <CALCETrWjMdTn8OyKgaydjK12sP8XKHtuXonEVnVHFPQ=jUtQLA@mail.gmail.com>
-In-Reply-To: <alpine.DEB.2.21.1805160009230.1605@nanos.tec.linutronix.de>
+Date: Tue, 15 May 2018 17:43:54 -0500
+Message-ID: <20180515224354.zmygmsnlqj5lrdbo@treble>
+In-Reply-To: <CA+55aFw1MxjUKtrt-KyiNxmpuKUY273L5uy8ggzOFjBSYMwwog@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3299845919893567293==
+--===============5490451078251626130==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 15, 2018 at 3:25 PM Thomas Gleixner <tglx@linutronix.de> wrot=
-e:
+On Tue, May 15, 2018 at 03:28:19PM -0700, Linus Torvalds wrote:
+> On Tue, May 15, 2018 at 3:22 PM Josh Poimboeuf <jpoimboe@redhat.com> wr=
+ote:
+> =
 
-> On Wed, 16 May 2018, Alexey Dobriyan wrote:
+> > The padding isn't needed there, and the resume_userspace symbol is never
+> > used, so wouldn't this fix it?
+> =
 
-> --- a/arch/x86/entry/entry_32.S
-> +++ b/arch/x86/entry/entry_32.S
-> @@ -338,6 +338,11 @@ END(ret_from_fork)
->          cmpl    $USER_RPL, %eax
->          jb      resume_kernel                   # not returning to v8086
-or userspace
+> This looks like the correct fix for this case, but are we sure there aren=
+'t
+> other cases where we have this same "fall through to an ENTRY" case?
+> =
 
-> +       /*
-> +        * Jump over the alignment padding which is filled with int3
-instructions
-> +        */
-> +       jmp     resume_userspace
-> +
->   ENTRY(resume_userspace)
+> Because we've definitely had that kind of code before too - sometimes
+> simply because we want profiles and oopses to show which "part" of the asm
+> we're faulting in (that could be the case here too).
 
-The problem is already solved, but NAK to this concept.  If we're going to
-make ENTRY supply int3 alignment, then we need to avoid using ENTRY if we
-fall through.  Jumping over the alignment is just silly.  The macro we
-should use is GLOBAL.
+Glancing through the 32-bit and 64-bit entry code, I didn't see any more
+cases.  At least it will fail loudly if any such cases do still exist.
 
---===============3299845919893567293==--
+-- =
+
+Josh
+
+--===============5490451078251626130==--
 
