@@ -1,57 +1,45 @@
-Content-Type: multipart/mixed; boundary="===============8790799374579907799=="
+Content-Type: multipart/mixed; boundary="===============5302164110980690939=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/asm] 51bad67ffb: int3:#[##]
-Date: Tue, 15 May 2018 16:05:33 -0700
-Message-ID: <CA+55aFwrT-BAvdujUonX5MvB=8GFopQJT4x6xMhtjNN2G0AxSw@mail.gmail.com>
-In-Reply-To: <CA+55aFzTpkn_fokmm+ddi+cgk5K3EOftRmPad+NkUb5W2z0Fqg@mail.gmail.com>
+Subject: Re: [PATCH v2] x86/asm: Pad assembly functions with INT3 instructions
+Date: Tue, 15 May 2018 16:28:58 -0700
+Message-ID: <CA+55aFySWuQvnJ=27GUbz+h=Jop6F2TYFqnALAaeXXiPivLtqQ@mail.gmail.com>
+In-Reply-To: <20180515225845.GB21902@avx2>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8790799374579907799==
+--===============5302164110980690939==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Side note: doing some grepping, I find some other sequences that are a bit
-scary, like this:
+On Tue, May 15, 2018 at 3:58 PM Alexey Dobriyan <adobriyan@gmail.com> wro=
+te:
+>          jb      resume_kernel                   # not returning to v8086
+or userspace
+> -
+> -ENTRY(resume_userspace)
 
-arch/x86/kernel/acpi/wakeup_32.S-.data
-arch/x86/kernel/acpi/wakeup_32.S-ALIGN
-arch/x86/kernel/acpi/wakeup_32.S:ENTRY(saved_magic)     .long   0
-arch/x86/kernel/acpi/wakeup_32.S:ENTRY(saved_eip)       .long   0
+I went back in history, and we used to have multiple "jmp resume_userspace"
+including even the vm86.c code (in a different file) doing that, so there
+*used* to be a reason for this being a global symbol (and yes, we had a
+fall-through to that global symbol even in those days).
 
-so apparently people are using ENTRY() for data too (the same pattern
-exists in wakeup_64.S).
+That said, I also look at "resume_kernel". There's no reason to make that
+globally visible afaik. It looks local to entry_32.S, and should look like
+restore_all rather than resume_userspace.
 
-So we end up having those odd 0x90 bytes (now 0xcc) in the data section as
-"padding" between those two values. Crazy.
+So we probably should remove the ENTRY() for that too, and just make it be
 
-Not an actual problem, but it does show that people seem to be mis-using
-ENTRY().
+          ALIGN
+         resume_kernel:
 
-There that padding is actually entirely wrong. We do *not* want to pad
-between those "saved_xyz" fields. I think those should use GLOBAL too.
+instead?
 
-Or lookie here:
+I guess the reason for removing that other ENTRY() is different from this
+case, though..
 
-arch/x86/kernel/head_32.S-# boot GDT descriptor (later on used by CPU#0):
-arch/x86/kernel/head_32.S-      .word 0                         # 32 bit
-align gdt_desc.address
-arch/x86/kernel/head_32.S:ENTRY(early_gdt_descr)
-arch/x86/kernel/head_32.S-      .word GDT_ENTRIES*8-1
-arch/x86/kernel/head_32.S-      .long gdt_page                  /*
-Overwritten for secondary CPUs */
+                Linus
 
-where ENTRY() will actually screw up how the code says it wants to align
-the address, but now it doesn't.
-
-I wonder if there's some way to add a test for "ENTRY only works in a code
-section"?
-
-My grep was just me doing a visual scan, I might have missed something.
-
-               Linus
-
---===============8790799374579907799==--
+--===============5302164110980690939==--
 
