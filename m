@@ -1,28 +1,32 @@
-Content-Type: multipart/mixed; boundary="===============3524311759345298509=="
+Content-Type: multipart/mixed; boundary="===============0947179355343760007=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [x86/asm] 51bad67ffb: int3:#[##]
-Date: Tue, 15 May 2018 15:27:34 -0700
-Message-ID: <CA+55aFy6_fJkmuWDZC=d_WE+_oYHtXXCbb=R31jyC1qDKZ8HJw@mail.gmail.com>
-In-Reply-To: <20180515214337.GA18021@avx2>
+Date: Tue, 15 May 2018 15:28:19 -0700
+Message-ID: <CA+55aFw1MxjUKtrt-KyiNxmpuKUY273L5uy8ggzOFjBSYMwwog@mail.gmail.com>
+In-Reply-To: <20180515222211.ods5hzne46hozojq@treble>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3524311759345298509==
+--===============0947179355343760007==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 15, 2018 at 2:43 PM Alexey Dobriyan <adobriyan@gmail.com> wro=
-te:
+On Tue, May 15, 2018 at 3:22 PM Josh Poimboeuf <jpoimboe@redhat.com> wrot=
+e:
 
-> It crashed into the middle of the padding.
+> The padding isn't needed there, and the resume_userspace symbol is never
+> used, so wouldn't this fix it?
 
-No, the beginning of the padding. "int3" will push the return address on
-the stack, so when it points to the second 'int3' instruction, it's because
-the first one triggered.
+This looks like the correct fix for this case, but are we sure there aren't
+other cases where we have this same "fall through to an ENTRY" case?
 
-                Linus
+Because we've definitely had that kind of code before too - sometimes
+simply because we want profiles and oopses to show which "part" of the asm
+we're faulting in (that could be the case here too).
 
---===============3524311759345298509==--
+              Linus
+
+--===============0947179355343760007==--
 
