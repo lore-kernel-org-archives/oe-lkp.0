@@ -1,87 +1,57 @@
-Content-Type: multipart/mixed; boundary="===============0645423908256765083=="
+Content-Type: multipart/mixed; boundary="===============8790799374579907799=="
 MIME-Version: 1.0
-From: Alexey Dobriyan <adobriyan@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: [PATCH v2] x86/asm: Pad assembly functions with INT3 instructions
-Date: Wed, 16 May 2018 01:58:45 +0300
-Message-ID: <20180515225845.GB21902@avx2>
-In-Reply-To: <20180515225028.GA21902@avx2>
+Subject: Re: [lkp-robot] [x86/asm] 51bad67ffb: int3:#[##]
+Date: Tue, 15 May 2018 16:05:33 -0700
+Message-ID: <CA+55aFwrT-BAvdujUonX5MvB=8GFopQJT4x6xMhtjNN2G0AxSw@mail.gmail.com>
+In-Reply-To: <CA+55aFzTpkn_fokmm+ddi+cgk5K3EOftRmPad+NkUb5W2z0Fqg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0645423908256765083==
+--===============8790799374579907799==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Use INT3 instead of NOP. All that padding between functions is
-an illegal area, no legitimate code should jump into it.
+Side note: doing some grepping, I find some other sequences that are a bit
+scary, like this:
 
-I've checked x86_64 allyesconfig disassembly, all changes looks sane:
-INT3 is only used after RET or unconditional JMP.
+arch/x86/kernel/acpi/wakeup_32.S-.data
+arch/x86/kernel/acpi/wakeup_32.S-ALIGN
+arch/x86/kernel/acpi/wakeup_32.S:ENTRY(saved_magic)     .long   0
+arch/x86/kernel/acpi/wakeup_32.S:ENTRY(saved_eip)       .long   0
 
-On i386:
-* promote ret_from_exception into ENTRY as it has corresponding END,
-* demote "resume_userspace" -- unused,
-* delete ALIGN directive in page_fault. It is leftover from x86 assembly
-  cleanups.
+so apparently people are using ENTRY() for data too (the same pattern
+exists in wakeup_64.S).
 
-    commit d211af055d0c12dc3416c2886e6fbdc6eb74a381
-    i386: get rid of the use of KPROBE_ENTRY / KPROBE_END
+So we end up having those odd 0x90 bytes (now 0xcc) in the data section as
+"padding" between those two values. Crazy.
 
-  has ALIGN directive before branch target which makes sense.
-  All the code after ALIGN disappeared later.
+Not an actual problem, but it does show that people seem to be mis-using
+ENTRY().
 
-Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
----
+There that padding is actually entirely wrong. We do *not* want to pad
+between those "saved_xyz" fields. I think those should use GLOBAL too.
 
- arch/x86/entry/entry_32.S      |    6 +-----
- arch/x86/include/asm/linkage.h |    2 +-
- 2 files changed, 2 insertions(+), 6 deletions(-)
+Or lookie here:
 
---- a/arch/x86/entry/entry_32.S
-+++ b/arch/x86/entry/entry_32.S
-@@ -320,8 +320,7 @@ END(ret_from_fork)
-  */
- =
+arch/x86/kernel/head_32.S-# boot GDT descriptor (later on used by CPU#0):
+arch/x86/kernel/head_32.S-      .word 0                         # 32 bit
+align gdt_desc.address
+arch/x86/kernel/head_32.S:ENTRY(early_gdt_descr)
+arch/x86/kernel/head_32.S-      .word GDT_ENTRIES*8-1
+arch/x86/kernel/head_32.S-      .long gdt_page                  /*
+Overwritten for secondary CPUs */
 
- 	# userspace resumption stub bypassing syscall exit tracing
--	ALIGN
--ret_from_exception:
-+ENTRY(ret_from_exception)
- 	preempt_stop(CLBR_ANY)
- ret_from_intr:
- #ifdef CONFIG_VM86
-@@ -337,8 +336,6 @@ ret_from_intr:
- #endif
- 	cmpl	$USER_RPL, %eax
- 	jb	resume_kernel			# not returning to v8086 or userspace
--
--ENTRY(resume_userspace)
- 	DISABLE_INTERRUPTS(CLBR_ANY)
- 	TRACE_IRQS_OFF
- 	movl	%esp, %eax
-@@ -910,7 +907,6 @@ BUILD_INTERRUPT3(hv_stimer0_callback_vector, HYPERV_STI=
-MER0_VECTOR,
- ENTRY(page_fault)
- 	ASM_CLAC
- 	pushl	$do_page_fault
--	ALIGN
- 	jmp common_exception
- END(page_fault)
- =
+where ENTRY() will actually screw up how the code says it wants to align
+the address, but now it doesn't.
 
---- a/arch/x86/include/asm/linkage.h
-+++ b/arch/x86/include/asm/linkage.h
-@@ -18,7 +18,7 @@
- 	name:
- =
+I wonder if there's some way to add a test for "ENTRY only works in a code
+section"?
 
- #if defined(CONFIG_X86_64) || defined(CONFIG_X86_ALIGNMENT_16)
--#define __ALIGN		.p2align 4, 0x90
-+#define __ALIGN		.p2align 4, 0xCC
- #define __ALIGN_STR	__stringify(__ALIGN)
- #endif
-=20
+My grep was just me doing a visual scan, I might have missed something.
 
---===============0645423908256765083==--
+               Linus
+
+--===============8790799374579907799==--
 
