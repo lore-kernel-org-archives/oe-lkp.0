@@ -1,34 +1,31 @@
-Content-Type: multipart/mixed; boundary="===============7613686209379414695=="
+Content-Type: multipart/mixed; boundary="===============1190860097225394172=="
 MIME-Version: 1.0
-From: Alexey Dobriyan <adobriyan@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [x86/asm] 51bad67ffb: int3:#[##]
-Date: Wed, 16 May 2018 01:50:28 +0300
-Message-ID: <20180515225028.GA21902@avx2>
-In-Reply-To: <CA+55aFy6_fJkmuWDZC=d_WE+_oYHtXXCbb=R31jyC1qDKZ8HJw@mail.gmail.com>
+Date: Tue, 15 May 2018 15:52:21 -0700
+Message-ID: <CA+55aFzTpkn_fokmm+ddi+cgk5K3EOftRmPad+NkUb5W2z0Fqg@mail.gmail.com>
+In-Reply-To: <20180515224354.zmygmsnlqj5lrdbo@treble>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7613686209379414695==
+--===============1190860097225394172==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 15, 2018 at 03:27:34PM -0700, Linus Torvalds wrote:
-> On Tue, May 15, 2018 at 2:43 PM Alexey Dobriyan <adobriyan@gmail.com> w=
-rote:
-> =
+On Tue, May 15, 2018 at 3:43 PM Josh Poimboeuf <jpoimboe@redhat.com> wrot=
+e:
 
-> > It crashed into the middle of the padding.
-> =
+> Glancing through the 32-bit and 64-bit entry code, I didn't see any more
+> cases.  At least it will fail loudly if any such cases do still exist.
 
-> No, the beginning of the padding. "int3" will push the return address on
-> the stack, so when it points to the second 'int3' instruction, it's becau=
-se
-> the first one triggered.
+\Will it? Do we have objtool checks for it now?
 
-Sending i386 patches should not be done that late...
+Because without static checks, there could be things hiding that just don't
+happen normally (think compat code etc that for most people is just dead
+code).
 
-I checked 32-bit asm as well.
+              Linus
 
---===============7613686209379414695==--
+--===============1190860097225394172==--
 
