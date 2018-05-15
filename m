@@ -1,32 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============0947179355343760007=="
+Content-Type: multipart/mixed; boundary="===============3299845919893567293=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Andy Lutomirski <luto@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [x86/asm] 51bad67ffb: int3:#[##]
-Date: Tue, 15 May 2018 15:28:19 -0700
-Message-ID: <CA+55aFw1MxjUKtrt-KyiNxmpuKUY273L5uy8ggzOFjBSYMwwog@mail.gmail.com>
-In-Reply-To: <20180515222211.ods5hzne46hozojq@treble>
+Date: Tue, 15 May 2018 15:29:12 -0700
+Message-ID: <CALCETrWjMdTn8OyKgaydjK12sP8XKHtuXonEVnVHFPQ=jUtQLA@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.21.1805160009230.1605@nanos.tec.linutronix.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0947179355343760007==
+--===============3299845919893567293==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 15, 2018 at 3:22 PM Josh Poimboeuf <jpoimboe@redhat.com> wrot=
+On Tue, May 15, 2018 at 3:25 PM Thomas Gleixner <tglx@linutronix.de> wrot=
 e:
 
-> The padding isn't needed there, and the resume_userspace symbol is never
-> used, so wouldn't this fix it?
+> On Wed, 16 May 2018, Alexey Dobriyan wrote:
 
-This looks like the correct fix for this case, but are we sure there aren't
-other cases where we have this same "fall through to an ENTRY" case?
+> --- a/arch/x86/entry/entry_32.S
+> +++ b/arch/x86/entry/entry_32.S
+> @@ -338,6 +338,11 @@ END(ret_from_fork)
+>          cmpl    $USER_RPL, %eax
+>          jb      resume_kernel                   # not returning to v8086
+or userspace
 
-Because we've definitely had that kind of code before too - sometimes
-simply because we want profiles and oopses to show which "part" of the asm
-we're faulting in (that could be the case here too).
+> +       /*
+> +        * Jump over the alignment padding which is filled with int3
+instructions
+> +        */
+> +       jmp     resume_userspace
+> +
+>   ENTRY(resume_userspace)
 
-              Linus
+The problem is already solved, but NAK to this concept.  If we're going to
+make ENTRY supply int3 alignment, then we need to avoid using ENTRY if we
+fall through.  Jumping over the alignment is just silly.  The macro we
+should use is GLOBAL.
 
---===============0947179355343760007==--
+--===============3299845919893567293==--
 
