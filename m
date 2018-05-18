@@ -1,59 +1,84 @@
-Content-Type: multipart/mixed; boundary="===============5809394214285575054=="
+Content-Type: multipart/mixed; boundary="===============4952950765313407881=="
 MIME-Version: 1.0
 From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [PATCH] objtool: Detect assembly code falling through to INT3 padding
-Date: Fri, 18 May 2018 09:18:14 +0200
-Message-ID: <20180518071814.GB26358@gmail.com>
-In-Reply-To: <20180517134934.eog2fgoby5azq5a7@treble>
+Date: Fri, 18 May 2018 09:24:12 +0200
+Message-ID: <20180518072412.GC26358@gmail.com>
+In-Reply-To: <20180517140118.GT12217@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5809394214285575054==
+--===============4952950765313407881==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 
-* Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+* Peter Zijlstra <peterz@infradead.org> wrote:
 
-> With the following commit:
+> On Thu, May 17, 2018 at 08:49:34AM -0500, Josh Poimboeuf wrote:
+> > With the following commit:
+> > =
+
+> >   51bad67ffbce ("x86/asm: Pad assembly functions with INT3 instructions=
+")
+> > =
+
+> > ... asm function alignments are padded with INT3, so it's no longer safe
+> > to fall through to an aligned function.  Make sure we catch any such
+> > cases with objtool.
+> > =
+
+> > Note this only adds checking for 64-bit, since objtool doesn't support
+> > x86-32.
+> > =
+
+> > Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+> > Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > ---
+> >  arch/x86/kernel/head_64.S       |  2 --
+> >  tools/objtool/arch.h            |  3 ++-
+> >  tools/objtool/arch/x86/decode.c |  2 +-
+> >  tools/objtool/check.c           | 11 ++++++++++-
+> >  4 files changed, 13 insertions(+), 5 deletions(-)
+> > =
+
+> > diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+> > index 8344dd2f310a..3ed8cec6e765 100644
+> > --- a/arch/x86/kernel/head_64.S
+> > +++ b/arch/x86/kernel/head_64.S
+> > @@ -285,11 +285,9 @@ ENTRY(early_idt_handler_array)
+> >  	.endif
+> >  	pushq $i		# 72(%rsp) Vector number
+> >  	jmp early_idt_handler_common
+> > -	UNWIND_HINT_IRET_REGS
+> >  	i =3D i + 1
+> >  	.fill early_idt_handler_array + i*EARLY_IDT_HANDLER_SIZE - ., 1, 0xcc
+> >  	.endr
+> > -	UNWIND_HINT_IRET_REGS offset=3D16
+> >  END(early_idt_handler_array)
+> >  =
+
+> >  early_idt_handler_common:
 > =
 
->   51bad67ffbce ("x86/asm: Pad assembly functions with INT3 instructions")
+> As noted on IRC; I got slightly confused what this was about.
 > =
 
-> ... asm function alignments are padded with INT3, so it's no longer safe
-> to fall through to an aligned function.  Make sure we catch any such
-> cases with objtool.
+> Other than that:
 > =
 
-> Note this only adds checking for 64-bit, since objtool doesn't support
-> x86-32.
-> =
+> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> ---
->  arch/x86/kernel/head_64.S       |  2 --
->  tools/objtool/arch.h            |  3 ++-
->  tools/objtool/arch/x86/decode.c |  2 +-
->  tools/objtool/check.c           | 11 ++++++++++-
->  4 files changed, 13 insertions(+), 5 deletions(-)
+And after talking to you on IRC I added this paragraph to the changelog:
 
-Ok, this is cool, it addresses the robustness problem that INT3 padding int=
-roduced =
-
-very nicely.
-
-The concept of built-in kernel tooling working at the machine code level is=
- just =
-
-so powerful - we should have added our own KCC compiler 20 years ago.
+  Also remove incorrect and unnecessary unwinder hints from head_64.S
+  which caused false positives in the new detection code.
 
 Thanks,
 
 	Ingo
 
---===============5809394214285575054==--
+--===============4952950765313407881==--
 
