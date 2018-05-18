@@ -1,72 +1,105 @@
-Content-Type: multipart/mixed; boundary="===============8517315857998100048=="
+Content-Type: multipart/mixed; boundary="===============4888262614855994470=="
 MIME-Version: 1.0
 From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] objtool: Detect assembly code falling through to INT3 padding
-Date: Fri, 18 May 2018 09:27:59 +0200
-Message-ID: <20180518072759.GA4326@gmail.com>
-In-Reply-To: <20180518071814.GB26358@gmail.com>
+Subject: Re: [PATCH v2] x86/asm: Pad assembly functions with INT3 instructions
+Date: Fri, 18 May 2018 09:36:44 +0200
+Message-ID: <20180518073644.GA8593@gmail.com>
+In-Reply-To: <20180515225845.GB21902@avx2>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8517315857998100048==
+--===============4888262614855994470==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 
-* Ingo Molnar <mingo@kernel.org> wrote:
+* Alexey Dobriyan <adobriyan@gmail.com> wrote:
 
+> Use INT3 instead of NOP. All that padding between functions is
+> an illegal area, no legitimate code should jump into it.
 > =
 
-> * Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> I've checked x86_64 allyesconfig disassembly, all changes looks sane:
+> INT3 is only used after RET or unconditional JMP.
 > =
 
-> > With the following commit:
-> > =
-
-> >   51bad67ffbce ("x86/asm: Pad assembly functions with INT3 instructions=
-")
-> > =
-
-> > ... asm function alignments are padded with INT3, so it's no longer safe
-> > to fall through to an aligned function.  Make sure we catch any such
-> > cases with objtool.
-> > =
-
-> > Note this only adds checking for 64-bit, since objtool doesn't support
-> > x86-32.
-> > =
-
-> > Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-> > Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> > ---
-> >  arch/x86/kernel/head_64.S       |  2 --
-> >  tools/objtool/arch.h            |  3 ++-
-> >  tools/objtool/arch/x86/decode.c |  2 +-
-> >  tools/objtool/check.c           | 11 ++++++++++-
-> >  4 files changed, 13 insertions(+), 5 deletions(-)
+> On i386:
+> * promote ret_from_exception into ENTRY as it has corresponding END,
+> * demote "resume_userspace" -- unused,
+> * delete ALIGN directive in page_fault. It is leftover from x86 assembly
+>   cleanups.
 > =
 
-> Ok, this is cool, it addresses the robustness problem that INT3 padding i=
-ntroduced =
-
-> very nicely.
+>     commit d211af055d0c12dc3416c2886e6fbdc6eb74a381
+>     i386: get rid of the use of KPROBE_ENTRY / KPROBE_END
 > =
 
-> The concept of built-in kernel tooling working at the machine code level =
-is just =
+>   has ALIGN directive before branch target which makes sense.
+>   All the code after ALIGN disappeared later.
+> =
 
-> so powerful - we should have added our own KCC compiler 20 years ago.
+> Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+> ---
+> =
 
-Hm, so a problem is that if we change the padding on 32-bit as well we won'=
-t have =
+>  arch/x86/entry/entry_32.S      |    6 +-----
+>  arch/x86/include/asm/linkage.h |    2 +-
+>  2 files changed, 2 insertions(+), 6 deletions(-)
+> =
 
-this detection there, because objtool doesn't work on 32-bit.
+> --- a/arch/x86/entry/entry_32.S
+> +++ b/arch/x86/entry/entry_32.S
+> @@ -320,8 +320,7 @@ END(ret_from_fork)
+>   */
+>  =
+
+>  	# userspace resumption stub bypassing syscall exit tracing
+> -	ALIGN
+> -ret_from_exception:
+> +ENTRY(ret_from_exception)
+>  	preempt_stop(CLBR_ANY)
+>  ret_from_intr:
+>  #ifdef CONFIG_VM86
+> @@ -337,8 +336,6 @@ ret_from_intr:
+>  #endif
+>  	cmpl	$USER_RPL, %eax
+>  	jb	resume_kernel			# not returning to v8086 or userspace
+> -
+> -ENTRY(resume_userspace)
+>  	DISABLE_INTERRUPTS(CLBR_ANY)
+>  	TRACE_IRQS_OFF
+>  	movl	%esp, %eax
+> @@ -910,7 +907,6 @@ BUILD_INTERRUPT3(hv_stimer0_callback_vector, HYPERV_S=
+TIMER0_VECTOR,
+>  ENTRY(page_fault)
+>  	ASM_CLAC
+>  	pushl	$do_page_fault
+> -	ALIGN
+>  	jmp common_exception
+>  END(page_fault)
+>  =
+
+> --- a/arch/x86/include/asm/linkage.h
+> +++ b/arch/x86/include/asm/linkage.h
+> @@ -18,7 +18,7 @@
+>  	name:
+>  =
+
+>  #if defined(CONFIG_X86_64) || defined(CONFIG_X86_ALIGNMENT_16)
+> -#define __ALIGN		.p2align 4, 0x90
+> +#define __ALIGN		.p2align 4, 0xCC
+>  #define __ALIGN_STR	__stringify(__ALIGN)
+>  #endif
+
+So the question is, without objtool support, how will we find INT3-padding =
+related =
+
+crash bugs on 32-bit kernels?
 
 Thanks,
 
 	Ingo
 
---===============8517315857998100048==--
+--===============4888262614855994470==--
 
