@@ -1,49 +1,123 @@
-Content-Type: multipart/mixed; boundary="===============2173992321510851725=="
+Content-Type: multipart/mixed; boundary="===============9201628732698407600=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@alien8.de>
+From: Alexey Dobriyan <adobriyan@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] objtool: Detect assembly code falling through to INT3 padding
-Date: Fri, 18 May 2018 18:06:38 +0200
-Message-ID: <20180518160638.GG17285@pd.tnic>
-In-Reply-To: <ce49ca7a-c5fd-6e93-9578-c91290f819d8@zytor.com>
+Subject: Re: [PATCH v2] x86/asm: Pad assembly functions with INT3 instructions
+Date: Fri, 18 May 2018 20:34:46 +0300
+Message-ID: <20180518173446.GA2055@avx2>
+In-Reply-To: <20180518130224.4bmp6s6wnjucypml@treble>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2173992321510851725==
+--===============9201628732698407600==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 18, 2018 at 12:27:15AM -0700, H. Peter Anvin wrote:
-> On 05/18/18 00:18, Ingo Molnar wrote:
+On Fri, May 18, 2018 at 08:02:24AM -0500, Josh Poimboeuf wrote:
+> On Fri, May 18, 2018 at 09:36:44AM +0200, Ingo Molnar wrote:
 > > =
 
-> > Ok, this is cool, it addresses the robustness problem that INT3 padding=
- introduced =
-
-> > very nicely.
+> > * Alexey Dobriyan <adobriyan@gmail.com> wrote:
 > > =
 
-> > The concept of built-in kernel tooling working at the machine code leve=
-l is just =
+> > > Use INT3 instead of NOP. All that padding between functions is
+> > > an illegal area, no legitimate code should jump into it.
+> > > =
 
-> > so powerful - we should have added our own KCC compiler 20 years ago.
+> > > I've checked x86_64 allyesconfig disassembly, all changes looks sane:
+> > > INT3 is only used after RET or unconditional JMP.
+> > > =
+
+> > > On i386:
+> > > * promote ret_from_exception into ENTRY as it has corresponding END,
+> > > * demote "resume_userspace" -- unused,
+> > > * delete ALIGN directive in page_fault. It is leftover from x86 assem=
+bly
+> > >   cleanups.
+> > > =
+
+> > >     commit d211af055d0c12dc3416c2886e6fbdc6eb74a381
+> > >     i386: get rid of the use of KPROBE_ENTRY / KPROBE_END
+> > > =
+
+> > >   has ALIGN directive before branch target which makes sense.
+> > >   All the code after ALIGN disappeared later.
+> > > =
+
+> > > Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+> > > ---
+> > > =
+
+> > >  arch/x86/entry/entry_32.S      |    6 +-----
+> > >  arch/x86/include/asm/linkage.h |    2 +-
+> > >  2 files changed, 2 insertions(+), 6 deletions(-)
+> > > =
+
+> > > --- a/arch/x86/entry/entry_32.S
+> > > +++ b/arch/x86/entry/entry_32.S
+> > > @@ -320,8 +320,7 @@ END(ret_from_fork)
+> > >   */
+> > >  =
+
+> > >  	# userspace resumption stub bypassing syscall exit tracing
+> > > -	ALIGN
+> > > -ret_from_exception:
+> > > +ENTRY(ret_from_exception)
+> > >  	preempt_stop(CLBR_ANY)
+> > >  ret_from_intr:
+> > >  #ifdef CONFIG_VM86
+> > > @@ -337,8 +336,6 @@ ret_from_intr:
+> > >  #endif
+> > >  	cmpl	$USER_RPL, %eax
+> > >  	jb	resume_kernel			# not returning to v8086 or userspace
+> > > -
+> > > -ENTRY(resume_userspace)
+> > >  	DISABLE_INTERRUPTS(CLBR_ANY)
+> > >  	TRACE_IRQS_OFF
+> > >  	movl	%esp, %eax
+> > > @@ -910,7 +907,6 @@ BUILD_INTERRUPT3(hv_stimer0_callback_vector, HYPE=
+RV_STIMER0_VECTOR,
+> > >  ENTRY(page_fault)
+> > >  	ASM_CLAC
+> > >  	pushl	$do_page_fault
+> > > -	ALIGN
+> > >  	jmp common_exception
+> > >  END(page_fault)
+> > >  =
+
+> > > --- a/arch/x86/include/asm/linkage.h
+> > > +++ b/arch/x86/include/asm/linkage.h
+> > > @@ -18,7 +18,7 @@
+> > >  	name:
+> > >  =
+
+> > >  #if defined(CONFIG_X86_64) || defined(CONFIG_X86_ALIGNMENT_16)
+> > > -#define __ALIGN		.p2align 4, 0x90
+> > > +#define __ALIGN		.p2align 4, 0xCC
+> > >  #define __ALIGN_STR	__stringify(__ALIGN)
+> > >  #endif
 > > =
 
+> > So the question is, without objtool support, how will we find INT3-padd=
+ing related =
+
+> > crash bugs on 32-bit kernels?
 > =
 
-> How many times has this been suggested? ;)
+> Is the INT3 padding really worth it, even on x86-64?  What problem are
+> we trying to solve?
 
-Goes to show we still really need it. Imagine the simplifications and
-improvements we'll be able to do. Oh myyy....
+It is a start: manual padding, then compiler inserted padding, then
+kernel CFI (in the future).
 
-/me has a wet dream.
+The only ways processor can end up in the padding are memory corruption,
+exploit, some kind of miscompilation or CPU bug. In every case it is better
+to crash immediately.
 
--- =
+> I've seen cases with GCC functions falling through, but with asm code,
+> falling through could just be working as designed.
 
-Regards/Gruss,
-    Boris.
+Manual NOP align still can be inserted, fallthough is not the common case.
 
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---===============2173992321510851725==--
+--===============9201628732698407600==--
 
