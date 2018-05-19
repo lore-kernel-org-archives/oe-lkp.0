@@ -1,71 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============3819356390230627425=="
+Content-Type: multipart/mixed; boundary="===============5809135286865142599=="
 MIME-Version: 1.0
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+From: Pavel Machek <pavel@ucw.cz>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [ALSA] e6a1b7e880: kmsg.parport#:cannot_grant_exclusive_access_for_device_portman
-Date: Fri, 18 May 2018 22:40:31 +0100
-Message-ID: <CADVatmPp=zSc+NqhhAsik1r_kvheUGrjwG8siX7fDfiwztxNvg@mail.gmail.com>
-In-Reply-To: <20180517015410.GI4134@yexl-desktop>
+Subject: "interesting" entry in hibernation code was Re: [lkp-robot] [x86/asm] 51bad67ffb: int3:#[##]
+Date: Sat, 19 May 2018 09:00:08 +0200
+Message-ID: <20180519070008.GC30676@amd>
+In-Reply-To: <CA+55aFwrT-BAvdujUonX5MvB=8GFopQJT4x6xMhtjNN2G0AxSw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3819356390230627425==
+--===============5809135286865142599==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Xiaolong,
+Hi!
 
-This is expected behaviour. lp0 has already registered with the
-parport at 3.931898 sec.
-So, when portman tries to register for exclusive access, it is denied
-as another device has
-already registered with the parport. And parport code says:
-/*
- * If a device is already registered and this new
- * device wants exclusive access, then no need to
- * continue as we can not grant exclusive access to
- * this device.
- */
+> Side note: doing some grepping, I find some other sequences that are a bit
+> scary, like this:
+> =
 
-Similar error is with ks0108 also in your dmesg.
+> arch/x86/kernel/acpi/wakeup_32.S-.data
+> arch/x86/kernel/acpi/wakeup_32.S-ALIGN
+> arch/x86/kernel/acpi/wakeup_32.S:ENTRY(saved_magic)     .long   0
+> arch/x86/kernel/acpi/wakeup_32.S:ENTRY(saved_eip)       .long   0
+> =
 
---
-Regards
-Sudip
+> so apparently people are using ENTRY() for data too (the same pattern
+> exists in wakeup_64.S).
+> =
 
-On Thu, May 17, 2018 at 2:54 AM, kernel test robot
-<xiaolong.ye@intel.com> wrote:
->
-> FYI, we noticed the following commit (built with gcc-7):
->
-> commit: e6a1b7e88046055989b8b59c1d648fda4e606f34 ("ALSA: portman2x4 - use=
- new parport device model")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> in testcase: boot
->
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu Nehalem -smp 2 -m 51=
-2M
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
->
->
-> [    4.394883] parport0: cannot grant exclusive access for device portman
->
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script # job-script is attached in =
-this email
->
->
->
-> Thanks,
-> Xiaolong
+> So we end up having those odd 0x90 bytes (now 0xcc) in the data section as
+> "padding" between those two values. Crazy.
 
---===============3819356390230627425==--
+Sorry about that. I'm pretty sure intention was simply to use the
+variable from C code.. and ENTRY() worked. I was not aware that it has
+side effect of padding...
+
+Let me see how this can be improved... (untested).
+
+diff --git a/arch/x86/kernel/acpi/wakeup_32.S b/arch/x86/kernel/acpi/wakeup=
+_32.S
+index 0c26b1b..d6f477f 100644
+--- a/arch/x86/kernel/acpi/wakeup_32.S
++++ b/arch/x86/kernel/acpi/wakeup_32.S
+@@ -89,8 +89,8 @@ ret_point:
+ =
+
+ .data
+ ALIGN
+-ENTRY(saved_magic)	.long	0
+-ENTRY(saved_eip)	.long	0
++GLOBAL(saved_magic)	.long	0
++saved_eip:	.long	0
+ =
+
+ # saved registers
+ saved_idt:	.long	0,0
+
+
+									Pavel
+-- =
+
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--===============5809135286865142599==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEKCmlFWUVBUkVD
+QUFZRkFsci95M2dBQ2drUU1PZndhcFhiK3ZLNURRQ2dtMFcvcGlwbGtObVpwb3VnUzJab0J1bysK
+eTR3QW9MN1dKY0F1RzNKMjgraldINHpxREJiRGF6K0IKPS9EK00KLS0tLS1FTkQgUEdQIFNJR05B
+VFVSRS0tLS0tCg==
+
+--===============5809135286865142599==--
 
