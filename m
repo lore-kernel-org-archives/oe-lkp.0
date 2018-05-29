@@ -1,50 +1,91 @@
-Content-Type: multipart/mixed; boundary="===============5356144381598240714=="
+Content-Type: multipart/mixed; boundary="===============5934319684208657330=="
 MIME-Version: 1.0
-From: Ingo Molnar <mingo@kernel.org>
+From: Aaron Lu <aaron.lu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/asm] 51bad67ffb: int3:#[##]
-Date: Fri, 18 May 2018 09:15:59 +0200
-Message-ID: <20180518071559.GA26358@gmail.com>
-In-Reply-To: <CA+55aFzTpkn_fokmm+ddi+cgk5K3EOftRmPad+NkUb5W2z0Fqg@mail.gmail.com>
+Subject: Re: [lkp-robot] [mm, memcontrol] 309fe96bfc: vm-scalability.throughput +23.0% improvement
+Date: Tue, 29 May 2018 16:11:27 +0800
+Message-ID: <20180529081127.GB14785@intel.com>
+In-Reply-To: <20180529075800.GL27180@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5356144381598240714==
+--===============5934319684208657330==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Tue, May 29, 2018 at 09:58:00AM +0200, Michal Hocko wrote:
+> On Tue 29-05-18 03:15:51, Lu, Aaron wrote:
+> > On Mon, 2018-05-28 at 14:03 +0200, Michal Hocko wrote:
+> > > On Mon 28-05-18 19:40:19, kernel test robot wrote:
+> > > > =
 
-* Linus Torvalds <torvalds@linux-foundation.org> wrote:
+> > > > Greeting,
+> > > > =
 
-> On Tue, May 15, 2018 at 3:43 PM Josh Poimboeuf <jpoimboe@redhat.com> wr=
-ote:
+> > > > FYI, we noticed a +23.0% improvement of vm-scalability.throughput d=
+ue to commit:
+> > > > =
+
+> > > > =
+
+> > > > commit: 309fe96bfc0ae387f53612927a8f0dc3eb056efd ("mm, memcontrol: =
+implement memory.swap.events")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git ma=
+ster
+> > > =
+
+> > > This doesn't make any sense to me. The patch merely adds an accountin=
+g.
+> > > It doesn't optimize anything. So I strongly suspect the result is just
+> > > misleading or the test (environment) misconfigured. Not the first time
+> > > I am seeing something like that I am afraid.
+> > > =
+
+> > =
+
+> > Most likely the same situation as:
+> > "
+> > FYI, we noticed a -27.2% regression of will-it-scale.per_process_ops
+> > due to commit:
+> > =
+
+> > =
+
+> > commit: e27be240df53f1a20c659168e722b5d9f16cc7f4 ("mm: memcg: make sure
+> > memory.events is uptodate when waking pollers")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > "
+> > =
+
+> > Where the performance change is due to layout change of
+> > 'struct mem_cgroup':
+> > http://lkml.kernel.org/r/20180528085201.GA2918(a)intel.com
 > =
 
-> > Glancing through the 32-bit and 64-bit entry code, I didn't see any more
-> > cases.  At least it will fail loudly if any such cases do still exist.
-> =
+> I do not follow. How can _this_ patch lead to an improvement when it
+> actually _adds_ an accounting? The other report you are mentioning is a
 
-> \Will it? Do we have objtool checks for it now?
-> =
+This patch also changed the layout of 'struct mem_cgroup':
 
-> Because without static checks, there could be things hiding that just don=
-'t
-> happen normally (think compat code etc that for most people is just dead
-> code).
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index d99b71bc2c66..517096c3cc99 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -208,6 +210,9 @@ struct mem_cgroup {
+ 	atomic_long_t memory_events[MEMCG_NR_MEMORY_EVENTS];
+ 	struct cgroup_file events_file;
+ =
 
-And it's not just about infrequent uses, it's also about hard to debug cras=
-hes =
++	/* handle for "memory.swap.events" */
++	struct cgroup_file swap_events_file;
++
+ 	/* protect arrays of thresholds */
+ 	struct mutex thresholds_lock;
 
-like in suspend/resume code, where people can only report "machine is dead".
+And I'm guessing that might be the cause.
 
-So I'm not sure this side effect of turning padding into crashes is good fo=
-r =
+> _regression_ and I can imagine that the layout changes can lead to that
+> result.
 
-overall robustness, without static analysis finding such bugs.
-
-Thanks,
-
-	Ingo
-
---===============5356144381598240714==--
+--===============5934319684208657330==--
 
