@@ -1,141 +1,90 @@
-Content-Type: multipart/mixed; boundary="===============0216463416422743454=="
+Content-Type: multipart/mixed; boundary="===============4812049987005623087=="
 MIME-Version: 1.0
 From: Aaron Lu <aaron.lu@intel.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH] mem_cgroup: make sure moving_account, move_lock_task and stat_cpu in the same cacheline
-Date: Fri, 01 Jun 2018 15:11:15 +0800
-Message-ID: <20180601071115.GA27302@intel.com>
-In-Reply-To: <20180530082752.GF14785@intel.com>
+Subject: Re: [lkp-robot] [mm, memcontrol] 309fe96bfc: vm-scalability.throughput +23.0% improvement
+Date: Fri, 01 Jun 2018 15:26:04 +0800
+Message-ID: <20180601072604.GB27302@intel.com>
+In-Reply-To: <20180528114019.GF9904@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0216463416422743454==
+--===============4812049987005623087==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-The LKP robot found a 27% will-it-scale/page_fault3 performance regression
-regarding commit e27be240df53("mm: memcg: make sure memory.events is
-uptodate when waking pollers").
+On Mon, May 28, 2018 at 07:40:19PM +0800, kernel test robot wrote:
+> =
 
-What the test does is:
-1 mkstemp() a 128M file on a tmpfs;
-2 start $nr_cpu processes, each to loop the following:
-  2.1 mmap() this file in shared write mode;
-  2.2 write 0 to this file in a PAGE_SIZE step till the end of the file;
-  2.3 unmap() this file and repeat this process.
-3 After 5 minutes, check how many loops they managed to complete,
-  the higher the better.
+> Greeting,
+> =
 
-The commit itself looks innocent enough as it merely changed some event
-counting mechanism and this test didn't trigger those events at all.
-Perf shows increased cycles spent on accessing root_mem_cgroup->stat_cpu
-in count_memcg_event_mm()(called by handle_mm_fault()) and in
-__mod_memcg_state() called by page_add_file_rmap(). So it's likely due
-to the changed layout of 'struct mem_cgroup' that either make stat_cpu
-falling into a constantly modifying cacheline or some hot fields stop
-being in the same cacheline.
+> FYI, we noticed a +23.0% improvement of vm-scalability.throughput due to =
+commit:
+> =
 
-I verified this by moving memory_events[] back to where it was:
+> =
 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index d99b71b..c767db1 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -205,7 +205,6 @@ struct mem_cgroup {
- 	int		oom_kill_disable;
+> commit: 309fe96bfc0ae387f53612927a8f0dc3eb056efd ("mm, memcontrol: implem=
+ent memory.swap.events")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> =
 
- 	/* memory.events */
--	atomic_long_t memory_events[MEMCG_NR_MEMORY_EVENTS];
- 	struct cgroup_file events_file;
+> in testcase: vm-scalability
+> on test machine: 144 threads Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50GHz wi=
+th 512G memory
+> with following parameters:
+> =
 
- 	/* protect arrays of thresholds */
-@@ -238,6 +237,7 @@ struct mem_cgroup {
- 	struct mem_cgroup_stat_cpu __percpu *stat_cpu;
- 	atomic_long_t		stat[MEMCG_NR_STAT];
- 	atomic_long_t		events[NR_VM_EVENT_ITEMS];
-+	atomic_long_t memory_events[MEMCG_NR_MEMORY_EVENTS];
+> 	runtime: 300s
+> 	size: 1T
+> 	test: lru-shm
+> 	cpufreq_governor: performance
+> =
 
- 	unsigned long		socket_pressure;
+> test-description: The motivation behind this suite is to exercise functio=
+ns and regions of the mm/ of the Linux kernel which are of interest to us.
+> test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability=
+.git/
+> =
 
-And performance restored.
 
-Later investigation found that as long as the following 3 fields
-moving_account, move_lock_task and stat_cpu are in the same cacheline,
-performance will be good. To avoid future performance surprise by
-other commits changing the layout of 'struct mem_cgroup', this patch
-makes sure the 3 fields stay in the same cacheline.
+With the patch I just sent out:
+"mem_cgroup: make sure moving_account, move_lock_task and stat_cpu in the
+same cacheline"
 
-One concern of this approach is, moving_account and move_lock_task
-could be modified when a process changes memory cgroup while stat_cpu
-is a always read field, it might hurt to place them in the same
-cacheline. I assume it is rare for a process to change memory cgroup
-so this should be OK.
+Applying this commit on top doesn't yield 23% improvement any more, but
+a 6% performace drop...
 
-LINK: https://lkml.kernel.org/r/20180528114019.GF9904(a)yexl-desktop
-Reported-by: kernel test robot <xiaolong.ye@intel.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Tejun Heo <tj@kernel.org>
-Signed-off-by: Aaron Lu <aaron.lu@intel.com>
----
- include/linux/memcontrol.h | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+I found the culprit being the following one line introduced in this commit:
 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index d99b71bc2c66..c79972a78d6c 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -158,6 +158,15 @@ enum memcg_kmem_state {
- 	KMEM_ONLINE,
- };
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index d90b0201a8c4..07ab974c0a49 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -6019,13 +6019,17 @@ int mem_cgroup_try_charge_swap(struct page *page, s=
+wp_entry_t entry)
+ 	if (!memcg)
+ 		return 0;
  =
 
-+#if defined(CONFIG_SMP)
-+struct memcg_padding {
-+	char x[0];
-+} ____cacheline_internodealigned_in_smp;
-+#define MEMCG_PADDING(name)      struct memcg_padding name;
-+#else
-+#define MEMCG_PADDING(name)
-+#endif
-+
- /*
-  * The memory controller data structure. The memory controller controls bo=
-th
-  * page cache and RSS per cgroup. We would eventually like to provide
-@@ -225,17 +234,23 @@ struct mem_cgroup {
- 	 * mem_cgroup ? And what type of charges should we move ?
- 	 */
- 	unsigned long move_charge_at_immigrate;
-+	/* taken only while moving_account > 0 */
-+	spinlock_t		move_lock;
-+	unsigned long		move_lock_flags;
-+
-+	MEMCG_PADDING(_pad1_);
-+
- 	/*
- 	 * set > 0 if pages under this cgroup are moving to other cgroup.
- 	 */
- 	atomic_t		moving_account;
--	/* taken only while moving_account > 0 */
--	spinlock_t		move_lock;
- 	struct task_struct	*move_lock_task;
--	unsigned long		move_lock_flags;
+-	if (!entry.val)
++	if (!entry.val) {
++		memcg_memory_event(memcg, MEMCG_SWAP_FAIL);
+ 		return 0;
++	}
  =
 
- 	/* memory.stat */
- 	struct mem_cgroup_stat_cpu __percpu *stat_cpu;
-+
-+	MEMCG_PADDING(_pad2_);
-+
- 	atomic_long_t		stat[MEMCG_NR_STAT];
- 	atomic_long_t		events[NR_VM_EVENT_ITEMS];
+ 	memcg =3D mem_cgroup_id_get_online(memcg);
  =
 
--- =
+If I remove that memcg_memory_event() call, performance will restore.
 
-2.17.0
+It's beyond my understanding why this code path matters since there is
+no swap device setup in the test machine so I don't see how possible
+get_swap_page() could ever be called.
 
+Still investigating...
 
---===============0216463416422743454==--
+--===============4812049987005623087==--
 
