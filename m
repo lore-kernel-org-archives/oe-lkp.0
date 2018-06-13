@@ -1,14 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============0002516209697818326=="
+Content-Type: multipart/mixed; boundary="===============7468503852610368485=="
 MIME-Version: 1.0
 From: kernel test robot <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: [lkp-robot] [sched/fair] 89754410a3: vm-scalability.throughput 49.2% improvement
-Date: Wed, 13 Jun 2018 13:21:17 +0800
-Message-ID: <20180613052117.GL12146@yexl-desktop>
-In-Reply-To: <20180530143106.291552903@infradead.org>
+Subject: [lkp-robot] [vfs] aff96711df: stress-ng.full.ops_per_sec -58.4% regression
+Date: Wed, 13 Jun 2018 14:52:11 +0800
+Message-ID: <20180613065211.GU16472@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0002516209697818326==
+--===============7468503852610368485==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -16,904 +15,335 @@ Content-Transfer-Encoding: quoted-printable
 
 Greeting,
 
-FYI, we noticed a 49.2% improvement of vm-scalability.throughput due to com=
-mit:
+FYI, we noticed a -58.4% regression of stress-ng.full.ops_per_sec due to co=
+mmit:
 
 
-commit: 89754410a38ef47e93b0bf29c26c1eb89234e918 ("sched/fair: Optimize SIS=
-_FOLD")
-url: https://github.com/0day-ci/linux/commits/Peter-Zijlstra/select_idle_si=
-bling-rework/20180602-125730
+commit: aff96711dfa234290e9f696944b65024f63839fe ("vfs: Implement a filesys=
+tem superblock creation/configuration context")
+https://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git mount-co=
+ntext
 
-
-in testcase: vm-scalability
+in testcase: stress-ng
 on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz with =
 128G memory
 with following parameters:
 
-	runtime: 300s
-	test: small-allocs-mt
+	nr_threads: 100%
+	testtime: 60s
+	class: device
 	cpufreq_governor: performance
 
-test-description: The motivation behind this suite is to exercise functions=
- and regions of the mm/ of the Linux kernel which are of interest to us.
-test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.g=
-it/
+
 
 
 Details are as below:
 ---------------------------------------------------------------------------=
 ----------------------->
 
+
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-compiler/cpufreq_governor/kconfig/rootfs/runtime/tbox_group/test/testcase:
-  gcc-7/performance/x86_64-rhel-7.2/debian-x86_64-2018-04-03.cgz/300s/lkp-b=
-dw-ep2/small-allocs-mt/vm-scalability
+class/compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/testca=
+se/testtime:
+  device/gcc-7/performance/x86_64-rhel-7.2/100%/debian-x86_64-2018-04-03.cg=
+z/lkp-bdw-ep6/stress-ng/60s
 
 commit: =
 
-  f9c12278f5 ("sched/fair: Fold the select_idle_sibling() scans")
-  89754410a3 ("sched/fair: Optimize SIS_FOLD")
+  561d0ab022 ("vfs: Require specification of size of mount data for interna=
+l mounts")
+  aff96711df ("vfs: Implement a filesystem superblock creation/configuratio=
+n context")
 
-f9c12278f59b2691 89754410a38ef47e93b0bf29c2 =
+561d0ab022238b26 aff96711dfa234290e9f696944 =
 
 ---------------- -------------------------- =
 
          %stddev     %change         %stddev
              \          |                \  =
 
-    918987           +49.2%    1371581 =C2=B1  9%  vm-scalability.throughput
-     10443           +49.3%      15586 =C2=B1  9%  vm-scalability.median
-  61413746           +49.1%   91587395 =C2=B1  9%  vm-scalability.time.mino=
-r_page_faults
-    403.50           -19.1%     326.25        vm-scalability.time.percent_o=
-f_cpu_this_job_got
-    853.94           -19.1%     691.17        vm-scalability.time.system_ti=
-me
-    382.45           -19.1%     309.38        vm-scalability.time.user_time
-  66858209           +49.0%   99617647 =C2=B1  9%  vm-scalability.time.volu=
-ntary_context_switches
- 2.763e+08           +49.1%  4.121e+08 =C2=B1  9%  vm-scalability.workload
-      0.03 =C2=B1 22%      +0.2        0.27 =C2=B1 62%  mpstat.cpu.soft%
-      3386           +50.4%       5092 =C2=B1 13%  pmeter.performance_per_w=
-att
-      3.00           -33.3%       2.00        vmstat.procs.r
-    434277           +48.9%     646428 =C2=B1  9%  vmstat.system.cs
-     62028 =C2=B1 26%     +45.7%      90399 =C2=B1 17%  meminfo.CmaFree
-    250022 =C2=B1  2%     +49.0%     372560 =C2=B1 10%  meminfo.PageTables
-    764439           +40.9%    1077309 =C2=B1  8%  meminfo.SUnreclaim
-    834393           +37.5%    1147299 =C2=B1  8%  meminfo.Slab
-    580.75 =C2=B1  5%     -22.6%     449.25 =C2=B1  7%  slabinfo.dmaengine-=
-unmap-128.active_objs
-    580.75 =C2=B1  5%     -22.6%     449.25 =C2=B1  7%  slabinfo.dmaengine-=
-unmap-128.num_objs
-     11229           +12.7%      12651        slabinfo.kmalloc-96.active_ob=
-js
-     11237           +12.6%      12656        slabinfo.kmalloc-96.num_objs
-   3177042 =C2=B1  2%     +49.8%    4758350 =C2=B1 10%  slabinfo.vm_area_st=
-ruct.active_objs
-     79425 =C2=B1  2%     +49.8%     118959 =C2=B1 10%  slabinfo.vm_area_st=
-ruct.active_slabs
-   3177054 =C2=B1  2%     +49.8%    4758371 =C2=B1 10%  slabinfo.vm_area_st=
-ruct.num_objs
-     79425 =C2=B1  2%     +49.8%     118959 =C2=B1 10%  slabinfo.vm_area_st=
-ruct.num_slabs
-   1965195 =C2=B1  8%   +1269.7%   26916307 =C2=B1 55%  turbostat.C1
-      0.22 =C2=B1 16%      +3.8        4.03 =C2=B1 46%  turbostat.C1%
-  13751186 =C2=B1  5%    +241.6%   46968812 =C2=B1 10%  turbostat.C1E
-      5.82 =C2=B1  3%      +7.4       13.17 =C2=B1 10%  turbostat.C1E%
-  46498956           -30.7%   32236731 =C2=B1 34%  turbostat.C3
-     60.93           -42.5       18.38 =C2=B1 43%  turbostat.C3%
-  29076101           -34.5%   19034557 =C2=B1  3%  turbostat.C6
-     27.69           +31.4       59.07 =C2=B1 11%  turbostat.C6%
-     18.05           -76.8%       4.20 =C2=B1 57%  turbostat.CPU%c3
-  60170645 =C2=B1 17%   +1711.1%   1.09e+09 =C2=B1 45%  cpuidle.C1.time
-   1971660 =C2=B1  9%   +1265.4%   26920643 =C2=B1 55%  cpuidle.C1.usage
- 1.573e+09 =C2=B1  4%    +126.5%  3.564e+09 =C2=B1 10%  cpuidle.C1E.time
-  13754266 =C2=B1  5%    +241.5%   46972717 =C2=B1 10%  cpuidle.C1E.usage
- 1.647e+10           -69.8%  4.978e+09 =C2=B1 43%  cpuidle.C3.time
-  46499489           -30.7%   32237377 =C2=B1 34%  cpuidle.C3.usage
- 7.489e+09          +113.4%  1.598e+10 =C2=B1 11%  cpuidle.C6.time
-  29079126           -34.5%   19037743 =C2=B1  3%  cpuidle.C6.usage
-  10406605           +25.7%   13078192 =C2=B1  3%  cpuidle.POLL.time
-    171054           +55.8%     266468 =C2=B1 10%  cpuidle.POLL.usage
-    474738 =C2=B1  9%     +12.2%     532879 =C2=B1  7%  numa-meminfo.node0.=
-FilePages
-     16361 =C2=B1163%    +252.4%      57659 =C2=B1 41%  numa-meminfo.node0.=
-Inactive
-     16284 =C2=B1164%    +249.6%      56935 =C2=B1 41%  numa-meminfo.node0.=
-Inactive(anon)
-     76.75 =C2=B1100%    +843.3%     724.00 =C2=B1 68%  numa-meminfo.node0.=
-Inactive(file)
-     20676 =C2=B1144%    +219.5%      66063 =C2=B1 43%  numa-meminfo.node0.=
-Shmem
-     64163 =C2=B1 41%     -64.4%      22855 =C2=B1105%  numa-meminfo.node1.=
-Inactive
-     62938 =C2=B1 42%     -64.6%      22286 =C2=B1106%  numa-meminfo.node1.=
-Inactive(anon)
-      1224 =C2=B1  7%     -53.6%     568.75 =C2=B1 87%  numa-meminfo.node1.=
-Inactive(file)
-     41228 =C2=B1 12%     -21.9%      32204 =C2=B1 18%  numa-meminfo.node1.=
-SReclaimable
-     68872 =C2=B1 43%     -61.6%      26452 =C2=B1105%  numa-meminfo.node1.=
-Shmem
-     15501 =C2=B1 26%     +45.7%      22588 =C2=B1 17%  proc-vmstat.nr_free=
-_cma
-     62599           +48.6%      93048 =C2=B1 10%  proc-vmstat.nr_page_tabl=
-e_pages
-     22399            +3.2%      23127        proc-vmstat.nr_shmem
-    190969           +41.1%     269492 =C2=B1  9%  proc-vmstat.nr_slab_unre=
+ 1.059e+08           -58.4%   44037798 =C2=B1  2%  stress-ng.full.ops
+   1764361           -58.4%     733966 =C2=B1  2%  stress-ng.full.ops_per_s=
+ec
+    285462 =C2=B1  2%      -8.4%     261526 =C2=B1  7%  stress-ng.time.invo=
+luntary_context_switches
+  65106862           -44.2%   36305786        stress-ng.time.minor_page_fau=
+lts
+     19062            +1.2%      19290        stress-ng.time.system_time
+      1997           -11.7%       1763        stress-ng.time.user_time
+  65068235           -44.3%   36267155        stress-ng.zero.ops
+   1084473           -44.3%     604453        stress-ng.zero.ops_per_sec
+     16257 =C2=B1  3%     -47.9%       8469 =C2=B1 74%  softirqs.NET_RX
+     13.67            -3.7%      13.16 =C2=B1  2%  turbostat.RAMWatt
+    204428           -17.8%     168079 =C2=B1  5%  meminfo.SUnreclaim
+    270743           -13.3%     234745 =C2=B1  3%  meminfo.Slab
+      0.01 =C2=B1 42%      -0.0        0.00 =C2=B1123%  mpstat.cpu.soft%
+      9.43            -1.1        8.32        mpstat.cpu.usr%
+     36.09            -5.7%      34.04 =C2=B1  2%  boot-time.boot
+      2937 =C2=B1  3%      -4.1%       2816        boot-time.idle
+     25.96            -7.3%      24.06 =C2=B1  3%  boot-time.kernel_boot
+    106889 =C2=B1  2%     -14.1%      91849 =C2=B1  4%  numa-meminfo.node0.=
+SUnreclaim
+    147038 =C2=B1  3%     -11.8%     129648 =C2=B1  3%  numa-meminfo.node0.=
+Slab
+     97500 =C2=B1  2%     -21.6%      76487 =C2=B1  6%  numa-meminfo.node1.=
+SUnreclaim
+    123668 =C2=B1  3%     -14.8%     105350 =C2=B1  5%  numa-meminfo.node1.=
+Slab
+  34900285           -44.8%   19259205        numa-numastat.node0.local_node
+  34904564           -44.8%   19269152        numa-numastat.node0.numa_hit
+  35263785           -45.1%   19367716        numa-numastat.node1.local_node
+  35276709           -45.1%   19374917        numa-numastat.node1.numa_hit
+     26671 =C2=B1  2%     -14.3%      22867 =C2=B1  5%  numa-vmstat.node0.n=
+r_slab_unreclaimable
+   5690873           -42.2%    3288845 =C2=B1  2%  numa-vmstat.node0.numa_h=
+it
+   5686561           -42.3%    3278889 =C2=B1  2%  numa-vmstat.node0.numa_l=
+ocal
+     24437 =C2=B1  3%     -22.4%      18975 =C2=B1  6%  numa-vmstat.node1.n=
+r_slab_unreclaimable
+   5940400           -44.6%    3290148        numa-vmstat.node1.numa_hit
+   5790743           -45.7%    3146009        numa-vmstat.node1.numa_local
+     51002           -18.2%      41706 =C2=B1  5%  proc-vmstat.nr_slab_unre=
 claimable
-   1022616           +12.9%    1154317 =C2=B1  2%  proc-vmstat.numa_hit
-   1005494           +13.1%    1137175 =C2=B1  2%  proc-vmstat.numa_local
-      3276 =C2=B1  3%     +48.7%       4871 =C2=B1  7%  proc-vmstat.pgactiv=
-ate
-    173814 =C2=B1 19%     +40.3%     243939 =C2=B1 16%  proc-vmstat.pgalloc=
-_movable
-   1056966 =C2=B1  3%     +13.0%    1194569 =C2=B1  7%  proc-vmstat.pgalloc=
-_normal
-  62201223           +48.5%   92379166 =C2=B1  9%  proc-vmstat.pgfault
-     15350 =C2=B1 14%     +21.5%      18643 =C2=B1  6%  numa-vmstat.node0
-    118684 =C2=B1  9%     +12.2%     133211 =C2=B1  7%  numa-vmstat.node0.n=
-r_file_pages
-      4072 =C2=B1164%    +249.3%      14226 =C2=B1 41%  numa-vmstat.node0.n=
-r_inactive_anon
-     19.00 =C2=B1100%    +851.3%     180.75 =C2=B1 68%  numa-vmstat.node0.n=
-r_inactive_file
-      2404 =C2=B1  2%     +27.5%       3066 =C2=B1 18%  numa-vmstat.node0.n=
-r_mapped
-      5169 =C2=B1145%    +219.3%      16507 =C2=B1 43%  numa-vmstat.node0.n=
-r_shmem
-      4072 =C2=B1164%    +249.3%      14226 =C2=B1 41%  numa-vmstat.node0.n=
-r_zone_inactive_anon
-     19.00 =C2=B1100%    +851.3%     180.75 =C2=B1 68%  numa-vmstat.node0.n=
-r_zone_inactive_file
-     15513 =C2=B1 26%     +45.6%      22581 =C2=B1 17%  numa-vmstat.node1.n=
-r_free_cma
-     15726 =C2=B1 42%     -64.5%       5586 =C2=B1106%  numa-vmstat.node1.n=
-r_inactive_anon
-    305.75 =C2=B1  7%     -53.6%     141.75 =C2=B1 87%  numa-vmstat.node1.n=
-r_inactive_file
-     17209 =C2=B1 43%     -61.5%       6626 =C2=B1105%  numa-vmstat.node1.n=
-r_shmem
-     10308 =C2=B1 12%     -21.9%       8051 =C2=B1 18%  numa-vmstat.node1.n=
-r_slab_reclaimable
-     15726 =C2=B1 42%     -64.5%       5586 =C2=B1106%  numa-vmstat.node1.n=
-r_zone_inactive_anon
-    305.75 =C2=B1  7%     -53.6%     141.75 =C2=B1 87%  numa-vmstat.node1.n=
-r_zone_inactive_file
-  5.26e+11           +43.6%  7.551e+11 =C2=B1  8%  perf-stat.branch-instruc=
-tions
-      1.60            -0.6        0.96 =C2=B1  4%  perf-stat.branch-miss-ra=
-te%
-  8.41e+09           -14.5%  7.194e+09 =C2=B1  4%  perf-stat.branch-misses
-  5.12e+10           -10.7%  4.571e+10 =C2=B1  4%  perf-stat.cache-referenc=
-es
- 1.341e+08           +48.8%  1.995e+08 =C2=B1  9%  perf-stat.context-switch=
-es
-      2.02           -32.9%       1.36 =C2=B1  7%  perf-stat.cpi
- 3.945e+12            -5.3%  3.737e+12        perf-stat.cpu-cycles
-    319154 =C2=B1  6%   +1063.6%    3713657 =C2=B1 24%  perf-stat.cpu-migra=
-tions
-      0.85 =C2=B1  2%      -0.6        0.28 =C2=B1 32%  perf-stat.dTLB-load=
--miss-rate%
- 4.391e+09           -51.0%  2.152e+09 =C2=B1 24%  perf-stat.dTLB-load-miss=
-es
- 5.118e+11           +54.1%  7.888e+11 =C2=B1 14%  perf-stat.dTLB-loads
-      0.19            -0.1        0.08 =C2=B1 31%  perf-stat.dTLB-store-mis=
-s-rate%
- 5.165e+08           -54.6%  2.345e+08 =C2=B1 23%  perf-stat.dTLB-store-mis=
-ses
-     40.39           -23.0       17.37 =C2=B1 13%  perf-stat.iTLB-load-miss=
--rate%
- 7.477e+08           -44.4%  4.158e+08 =C2=B1  5%  perf-stat.iTLB-load-miss=
-es
- 1.104e+09           +82.1%   2.01e+09 =C2=B1 14%  perf-stat.iTLB-loads
- 1.952e+12           +42.0%  2.771e+12 =C2=B1  8%  perf-stat.instructions
-      2611          +156.6%       6701 =C2=B1 11%  perf-stat.instructions-p=
-er-iTLB-miss
-      0.49           +49.8%       0.74 =C2=B1  7%  perf-stat.ipc
-  62179847           +48.5%   92357820 =C2=B1  9%  perf-stat.minor-faults
-  62179848           +48.5%   92357828 =C2=B1  9%  perf-stat.page-faults
-      7064            -4.7%       6731        perf-stat.path-length
-      7042           +24.3%       8756 =C2=B1  7%  sched_debug.cfs_rq:/.exe=
-c_clock.avg
-     10615 =C2=B1  6%     +71.1%      18162 =C2=B1 13%  sched_debug.cfs_rq:=
-/.exec_clock.max
-      6270           -99.7%      20.11 =C2=B1 46%  sched_debug.cfs_rq:/.exe=
-c_clock.min
-    633.14 =C2=B1 12%   +1047.5%       7265 =C2=B1 28%  sched_debug.cfs_rq:=
-/.exec_clock.stddev
-      8606 =C2=B1 11%     +58.4%      13629 =C2=B1 18%  sched_debug.cfs_rq:=
-/.load.avg
-    145860 =C2=B1  6%     +14.9%     167581        sched_debug.cfs_rq:/.loa=
-d.max
-     31946 =C2=B1  5%     +31.0%      41851 =C2=B1  9%  sched_debug.cfs_rq:=
-/.load.stddev
-     85789 =C2=B1  9%     +24.2%     106586 =C2=B1 10%  sched_debug.cfs_rq:=
-/.min_vruntime.max
-     40789 =C2=B1  8%     -85.1%       6069 =C2=B1 64%  sched_debug.cfs_rq:=
-/.min_vruntime.min
-      5917 =C2=B1 13%    +483.7%      34542 =C2=B1 25%  sched_debug.cfs_rq:=
-/.min_vruntime.stddev
-      2.28 =C2=B1  6%     +96.0%       4.46 =C2=B1 21%  sched_debug.cfs_rq:=
-/.runnable_load_avg.avg
-    140.75 =C2=B1  5%     +13.1%     159.17        sched_debug.cfs_rq:/.run=
-nable_load_avg.max
-     15.71 =C2=B1  5%     +46.0%      22.94 =C2=B1  9%  sched_debug.cfs_rq:=
-/.runnable_load_avg.stddev
-      8407 =C2=B1 10%     +63.3%      13728 =C2=B1 17%  sched_debug.cfs_rq:=
-/.runnable_weight.avg
-    145203 =C2=B1  5%     +13.1%     164158        sched_debug.cfs_rq:/.run=
-nable_weight.max
-     31655 =C2=B1  5%     +32.5%      41958 =C2=B1  9%  sched_debug.cfs_rq:=
-/.runnable_weight.stddev
-     -4724         +1124.7%     -57858        sched_debug.cfs_rq:/.spread0.=
-min
-      5917 =C2=B1 13%    +483.7%      34543 =C2=B1 25%  sched_debug.cfs_rq:=
-/.spread0.stddev
-    108.15 =C2=B1  7%     +18.1%     127.68 =C2=B1  3%  sched_debug.cfs_rq:=
-/.util_avg.avg
-    103.97 =C2=B1  5%     +28.0%     133.13 =C2=B1  5%  sched_debug.cfs_rq:=
-/.util_avg.stddev
-    400005 =C2=B1  2%     +51.4%     605778 =C2=B1  7%  sched_debug.cpu.avg=
-_idle.avg
-    777273 =C2=B1 14%     +28.7%    1000000        sched_debug.cpu.avg_idle=
-.max
-    113285 =C2=B1  9%    +234.4%     378780        sched_debug.cpu.avg_idle=
-.stddev
-      3.38 =C2=B1  2%     -14.9%       2.88 =C2=B1  8%  sched_debug.cpu.clo=
-ck.stddev
-      3.38 =C2=B1  2%     -14.9%       2.88 =C2=B1  8%  sched_debug.cpu.clo=
-ck_task.stddev
-    140.79 =C2=B1  5%     +13.0%     159.12        sched_debug.cpu.cpu_load=
-[0].max
-    159.71 =C2=B1  6%     +18.6%     189.39 =C2=B1  6%  sched_debug.cpu.cur=
-r->pid.avg
-    145898 =C2=B1  6%     +15.1%     167962        sched_debug.cpu.load.max
-      1261 =C2=B1  2%     +42.7%       1799 =C2=B1 25%  sched_debug.cpu.nr_=
-load_updates.stddev
-    770662           +49.5%    1152469 =C2=B1  9%  sched_debug.cpu.nr_switc=
-hes.avg
-    892609 =C2=B1  4%    +308.7%    3648412 =C2=B1 28%  sched_debug.cpu.nr_=
-switches.max
-    632870           -99.9%     411.67 =C2=B1 15%  sched_debug.cpu.nr_switc=
-hes.min
-    108433 =C2=B1 25%   +1290.6%    1507875 =C2=B1 29%  sched_debug.cpu.nr_=
-switches.stddev
-    769918           +49.6%    1151644 =C2=B1  9%  sched_debug.cpu.sched_co=
-unt.avg
-    892186 =C2=B1  4%    +308.4%    3643927 =C2=B1 28%  sched_debug.cpu.sch=
-ed_count.max
-    630092          -100.0%     122.38 =C2=B1  5%  sched_debug.cpu.sched_co=
-unt.min
-    107933 =C2=B1 25%   +1296.7%    1507495 =C2=B1 29%  sched_debug.cpu.sch=
-ed_count.stddev
-    384792 =C2=B1  2%     +49.6%     575579 =C2=B1 10%  sched_debug.cpu.sch=
-ed_goidle.avg
-    445085 =C2=B1  4%    +309.2%    1821277 =C2=B1 28%  sched_debug.cpu.sch=
-ed_goidle.max
-    314935          -100.0%      56.83 =C2=B1 12%  sched_debug.cpu.sched_go=
-idle.min
-     54007 =C2=B1 25%   +1295.3%     753558 =C2=B1 29%  sched_debug.cpu.sch=
-ed_goidle.stddev
-    385354           +49.5%     576195 =C2=B1  9%  sched_debug.cpu.ttwu_cou=
-nt.avg
-    450592 =C2=B1  4%    +302.7%    1814736 =C2=B1 28%  sched_debug.cpu.ttw=
-u_count.max
-    313249          -100.0%      78.17 =C2=B1 16%  sched_debug.cpu.ttwu_cou=
-nt.min
-     54160 =C2=B1 25%   +1291.5%     753641 =C2=B1 29%  sched_debug.cpu.ttw=
-u_count.stddev
-    216.58 =C2=B1  3%     -81.5%      40.08 =C2=B1  5%  sched_debug.cpu.ttw=
+  69632151           -44.7%   38511293        proc-vmstat.numa_hit
+  69614971           -44.7%   38494145        proc-vmstat.numa_local
+  32422549           -43.8%   18210987        proc-vmstat.pgalloc_movable
+  48488912           -47.3%   25568383 =C2=B1  5%  proc-vmstat.pgalloc_norm=
+al
+  65128144           -43.7%   36687425        proc-vmstat.pgfault
+  80826583           -45.9%   43711144 =C2=B1  3%  proc-vmstat.pgfree
+      1.94 =C2=B1 12%     -32.7%       1.31 =C2=B1  3%  sched_debug.cfs_rq:=
+/.nr_spread_over.avg
+     60.65 =C2=B1 23%     -45.0%      33.35 =C2=B1  6%  sched_debug.cfs_rq:=
+/.nr_spread_over.max
+      6.50 =C2=B1 22%     -46.5%       3.48 =C2=B1  6%  sched_debug.cfs_rq:=
+/.nr_spread_over.stddev
+    727.80 =C2=B1  7%     -21.3%     572.65 =C2=B1  7%  sched_debug.cfs_rq:=
+/.util_est_enqueued.max
+      3069 =C2=B1  5%     -38.6%       1885 =C2=B1 16%  sched_debug.cpu.cur=
+r->pid.min
+    263.31 =C2=B1  9%     +39.4%     367.09 =C2=B1  5%  sched_debug.cpu.cur=
+r->pid.stddev
+      3163 =C2=B1  5%     -32.5%       2133 =C2=B1  4%  sched_debug.cpu.nr_=
+switches.min
+     -8.75           -25.7%      -6.50        sched_debug.cpu.nr_uninterrup=
+tible.min
+      2865 =C2=B1  7%     -33.7%       1898 =C2=B1  6%  sched_debug.cpu.sch=
+ed_count.min
+      1488 =C2=B1  4%     -36.3%     948.55 =C2=B1  6%  sched_debug.cpu.ttw=
+u_count.min
+      1370 =C2=B1  6%     -33.6%     909.45 =C2=B1  7%  sched_debug.cpu.ttw=
 u_local.min
-    121.31 =C2=B1 25%    +270.7%     449.64 =C2=B1 32%  sched_debug.cpu.ttw=
-u_local.stddev
-     10.53 =C2=B1  2%      -5.6        4.98 =C2=B1  6%  perf-profile.calltr=
-ace.cycles-pp.page_fault
-     10.48 =C2=B1  2%      -5.5        4.97 =C2=B1  6%  perf-profile.calltr=
-ace.cycles-pp.do_page_fault.page_fault
-     10.47 =C2=B1  2%      -5.5        4.97 =C2=B1  6%  perf-profile.calltr=
-ace.cycles-pp.__do_page_fault.do_page_fault.page_fault
-      5.97 =C2=B1  4%      -3.9        2.02 =C2=B1 58%  perf-profile.calltr=
-ace.cycles-pp.sched_ttwu_pending.do_idle.cpu_startup_entry.start_secondary.=
-secondary_startup_64
-      5.17 =C2=B1  4%      -3.4        1.73 =C2=B1 58%  perf-profile.calltr=
-ace.cycles-pp.ttwu_do_activate.sched_ttwu_pending.do_idle.cpu_startup_entry=
-.start_secondary
-      5.07 =C2=B1  4%      -3.4        1.72 =C2=B1 58%  perf-profile.calltr=
-ace.cycles-pp.enqueue_task_fair.ttwu_do_activate.sched_ttwu_pending.do_idle=
-.cpu_startup_entry
-      6.59 =C2=B1  3%      -3.3        3.25 =C2=B1  7%  perf-profile.calltr=
-ace.cycles-pp.down_read.__do_page_fault.do_page_fault.page_fault
-      4.85 =C2=B1  5%      -3.2        1.62 =C2=B1 58%  perf-profile.calltr=
-ace.cycles-pp.enqueue_entity.enqueue_task_fair.ttwu_do_activate.sched_ttwu_=
-pending.do_idle
-      6.29 =C2=B1  3%      -3.2        3.11 =C2=B1  8%  perf-profile.calltr=
-ace.cycles-pp.call_rwsem_down_read_failed.down_read.__do_page_fault.do_page=
-_fault.page_fault
-      6.29 =C2=B1  3%      -3.2        3.11 =C2=B1  8%  perf-profile.calltr=
-ace.cycles-pp.rwsem_down_read_failed.call_rwsem_down_read_failed.down_read.=
-__do_page_fault.do_page_fault
-      7.28            -2.2        5.03 =C2=B1 25%  perf-profile.calltrace.c=
-ycles-pp.entry_SYSCALL_64_after_hwframe
-      7.27            -2.2        5.03 =C2=B1 25%  perf-profile.calltrace.c=
-ycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      7.19            -2.2        4.98 =C2=B1 26%  perf-profile.calltrace.c=
-ycles-pp.ksys_mmap_pgoff.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      3.22 =C2=B1  7%      -2.1        1.11 =C2=B1 58%  perf-profile.calltr=
-ace.cycles-pp.__account_scheduler_latency.enqueue_entity.enqueue_task_fair.=
-ttwu_do_activate.sched_ttwu_pending
-      5.53 =C2=B1  2%      -2.0        3.49 =C2=B1  9%  perf-profile.calltr=
-ace.cycles-pp.apic_timer_interrupt.cpuidle_enter_state.do_idle.cpu_startup_=
-entry.start_secondary
-      5.50 =C2=B1  2%      -2.0        3.48 =C2=B1  9%  perf-profile.calltr=
-ace.cycles-pp.smp_apic_timer_interrupt.apic_timer_interrupt.cpuidle_enter_s=
-tate.do_idle.cpu_startup_entry
-      3.71 =C2=B1  2%      -1.8        1.90 =C2=B1 22%  perf-profile.calltr=
-ace.cycles-pp.schedule_idle.do_idle.cpu_startup_entry.start_secondary.secon=
-dary_startup_64
-      3.68 =C2=B1  2%      -1.8        1.89 =C2=B1 22%  perf-profile.calltr=
-ace.cycles-pp.__schedule.schedule_idle.do_idle.cpu_startup_entry.start_seco=
-ndary
-      3.17 =C2=B1  4%      -1.6        1.53 =C2=B1 13%  perf-profile.calltr=
-ace.cycles-pp.hrtimer_interrupt.smp_apic_timer_interrupt.apic_timer_interru=
-pt.cpuidle_enter_state.do_idle
-      3.55            -1.6        1.98 =C2=B1 11%  perf-profile.calltrace.c=
-ycles-pp.schedule.rwsem_down_read_failed.call_rwsem_down_read_failed.down_r=
-ead.__do_page_fault
-      3.52            -1.5        1.98 =C2=B1 11%  perf-profile.calltrace.c=
-ycles-pp.__schedule.schedule.rwsem_down_read_failed.call_rwsem_down_read_fa=
-iled.down_read
-      2.95 =C2=B1  2%      -1.4        1.55 =C2=B1 12%  perf-profile.calltr=
-ace.cycles-pp.__save_stack_trace.save_stack_trace_tsk.__account_scheduler_l=
-atency.enqueue_entity.enqueue_task_fair
-      2.44 =C2=B1  3%      -1.4        1.05 =C2=B1 14%  perf-profile.calltr=
-ace.cycles-pp.__hrtimer_run_queues.hrtimer_interrupt.smp_apic_timer_interru=
-pt.apic_timer_interrupt.cpuidle_enter_state
-      3.14 =C2=B1  2%      -1.3        1.81 =C2=B1 15%  perf-profile.calltr=
-ace.cycles-pp.save_stack_trace_tsk.__account_scheduler_latency.enqueue_enti=
-ty.enqueue_task_fair.ttwu_do_activate
-      1.77            -1.2        0.61 =C2=B1 77%  perf-profile.calltrace.c=
-ycles-pp.unwind_next_frame.__save_stack_trace.save_stack_trace_tsk.__accoun=
-t_scheduler_latency.enqueue_entity
-      1.95 =C2=B1  2%      -1.1        0.81 =C2=B1 13%  perf-profile.calltr=
-ace.cycles-pp.handle_mm_fault.__do_page_fault.do_page_fault.page_fault
-      1.50 =C2=B1  2%      -1.0        0.51 =C2=B1 58%  perf-profile.calltr=
-ace.cycles-pp.__handle_mm_fault.handle_mm_fault.__do_page_fault.do_page_fau=
-lt.page_fault
-      1.89 =C2=B1  2%      -1.0        0.92 =C2=B1  6%  perf-profile.calltr=
-ace.cycles-pp.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff.do_syscall_64.entry_SYS=
-CALL_64_after_hwframe
-      3.25 =C2=B1  5%      -1.0        2.29 =C2=B1 21%  perf-profile.calltr=
-ace.cycles-pp.menu_select.do_idle.cpu_startup_entry.start_secondary.seconda=
-ry_startup_64
-      1.18 =C2=B1  2%      -0.9        0.27 =C2=B1100%  perf-profile.calltr=
-ace.cycles-pp.update_process_times.tick_sched_handle.tick_sched_timer.__hrt=
-imer_run_queues.hrtimer_interrupt
-      1.50 =C2=B1  2%      -0.8        0.66 =C2=B1  6%  perf-profile.calltr=
-ace.cycles-pp.tick_sched_timer.__hrtimer_run_queues.hrtimer_interrupt.smp_a=
-pic_timer_interrupt.apic_timer_interrupt
-      1.30            -0.7        0.58 =C2=B1  4%  perf-profile.calltrace.c=
-ycles-pp.tick_sched_handle.tick_sched_timer.__hrtimer_run_queues.hrtimer_in=
-terrupt.smp_apic_timer_interrupt
-      1.53 =C2=B1  5%      -0.7        0.84 =C2=B1  8%  perf-profile.calltr=
-ace.cycles-pp.switch_mm_irqs_off.__schedule.schedule_idle.do_idle.cpu_start=
-up_entry
-      1.14            -0.7        0.47 =C2=B1 62%  perf-profile.calltrace.c=
-ycles-pp.dequeue_entity.dequeue_task_fair.__schedule.schedule.rwsem_down_re=
-ad_failed
-      0.88 =C2=B1  3%      -0.6        0.26 =C2=B1100%  perf-profile.calltr=
-ace.cycles-pp.select_task_rq_fair.try_to_wake_up.wake_up_q.rwsem_wake.call_=
-rwsem_wake
-      1.23            -0.6        0.64 =C2=B1 21%  perf-profile.calltrace.c=
-ycles-pp.dequeue_task_fair.__schedule.schedule.rwsem_down_read_failed.call_=
-rwsem_down_read_failed
-      0.77            -0.5        0.28 =C2=B1100%  perf-profile.calltrace.c=
-ycles-pp.switch_mm.__schedule.schedule.rwsem_down_read_failed.call_rwsem_do=
-wn_read_failed
-      0.74            -0.5        0.26 =C2=B1100%  perf-profile.calltrace.c=
-ycles-pp.switch_mm_irqs_off.switch_mm.__schedule.schedule.rwsem_down_read_f=
-ailed
-      0.69 =C2=B1  5%      -0.2        0.45 =C2=B1 58%  perf-profile.calltr=
-ace.cycles-pp.native_irq_return_iret
-     75.60           +10.5       86.08 =C2=B1  2%  perf-profile.calltrace.c=
-ycles-pp.secondary_startup_64
-     74.70           +11.0       85.75 =C2=B1  2%  perf-profile.calltrace.c=
-ycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64
-     74.70           +11.0       85.75 =C2=B1  2%  perf-profile.calltrace.c=
-ycles-pp.start_secondary.secondary_startup_64
-     74.69           +11.1       85.75 =C2=B1  2%  perf-profile.calltrace.c=
-ycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64
-     59.75           +18.5       78.20 =C2=B1  3%  perf-profile.calltrace.c=
-ycles-pp.cpuidle_enter_state.do_idle.cpu_startup_entry.start_secondary.seco=
-ndary_startup_64
-     53.15           +20.8       73.92 =C2=B1  4%  perf-profile.calltrace.c=
-ycles-pp.intel_idle.cpuidle_enter_state.do_idle.cpu_startup_entry.start_sec=
-ondary
-     10.54 =C2=B1  2%      -5.6        4.99 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.page_fault
-     10.51 =C2=B1  2%      -5.5        4.98 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.do_page_fault
-     10.51 =C2=B1  2%      -5.5        4.99 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.__do_page_fault
-      6.11 =C2=B1  4%      -4.0        2.10 =C2=B1 56%  perf-profile.childr=
-en.cycles-pp.sched_ttwu_pending
-      7.55 =C2=B1  3%      -3.5        4.04 =C2=B1  7%  perf-profile.childr=
-en.cycles-pp.ttwu_do_activate
-      7.59            -3.5        4.12 =C2=B1 15%  perf-profile.children.cy=
-cles-pp.__schedule
-      7.45 =C2=B1  3%      -3.4        4.00 =C2=B1  7%  perf-profile.childr=
-en.cycles-pp.enqueue_task_fair
-      6.60 =C2=B1  3%      -3.3        3.26 =C2=B1  7%  perf-profile.childr=
-en.cycles-pp.down_read
-      7.15 =C2=B1  3%      -3.3        3.82 =C2=B1  8%  perf-profile.childr=
-en.cycles-pp.enqueue_entity
-      6.31 =C2=B1  3%      -3.2        3.11 =C2=B1  8%  perf-profile.childr=
-en.cycles-pp.call_rwsem_down_read_failed
-      6.29 =C2=B1  3%      -3.2        3.11 =C2=B1  8%  perf-profile.childr=
-en.cycles-pp.rwsem_down_read_failed
-      7.51            -2.4        5.15 =C2=B1 25%  perf-profile.children.cy=
-cles-pp.entry_SYSCALL_64_after_hwframe
-      7.50            -2.3        5.15 =C2=B1 25%  perf-profile.children.cy=
-cles-pp.do_syscall_64
-      7.19            -2.2        4.98 =C2=B1 26%  perf-profile.children.cy=
-cles-pp.ksys_mmap_pgoff
-      5.82 =C2=B1  2%      -2.2        3.63 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.apic_timer_interrupt
-      5.79 =C2=B1  2%      -2.2        3.62 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.smp_apic_timer_interrupt
-      4.90 =C2=B1  5%      -2.1        2.76 =C2=B1 11%  perf-profile.childr=
-en.cycles-pp.__account_scheduler_latency
-      3.76 =C2=B1  2%      -1.8        1.93 =C2=B1 21%  perf-profile.childr=
-en.cycles-pp.schedule_idle
-      3.39 =C2=B1  4%      -1.8        1.63 =C2=B1 14%  perf-profile.childr=
-en.cycles-pp.hrtimer_interrupt
-      3.89            -1.7        2.21 =C2=B1 11%  perf-profile.children.cy=
-cles-pp.schedule
-      2.20 =C2=B1  7%      -1.7        0.55 =C2=B1 14%  perf-profile.childr=
-en.cycles-pp.native_queued_spin_lock_slowpath
-      3.19            -1.5        1.68 =C2=B1 14%  perf-profile.children.cy=
-cles-pp.__save_stack_trace
-      2.63 =C2=B1  3%      -1.5        1.12 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.__hrtimer_run_queues
-      3.40            -1.4        1.96 =C2=B1 17%  perf-profile.children.cy=
-cles-pp.save_stack_trace_tsk
-      1.78 =C2=B1  9%      -1.3        0.47 =C2=B1 29%  perf-profile.childr=
-en.cycles-pp._raw_spin_lock_irq
-      1.97 =C2=B1  2%      -1.2        0.82 =C2=B1 13%  perf-profile.childr=
-en.cycles-pp.handle_mm_fault
-      1.75 =C2=B1  2%      -1.1        0.64 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.update_load_avg
-      2.42            -1.0        1.39 =C2=B1 18%  perf-profile.children.cy=
-cles-pp.unwind_next_frame
-      3.33 =C2=B1  5%      -1.0        2.35 =C2=B1 22%  perf-profile.childr=
-en.cycles-pp.menu_select
-      2.38 =C2=B1  3%      -1.0        1.41 =C2=B1  7%  perf-profile.childr=
-en.cycles-pp.switch_mm_irqs_off
-      1.90 =C2=B1  2%      -1.0        0.93 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.do_mmap
-      1.65            -0.9        0.72 =C2=B1  6%  perf-profile.children.cy=
-cles-pp.tick_sched_timer
-      1.52 =C2=B1  2%      -0.9        0.62 =C2=B1 17%  perf-profile.childr=
-en.cycles-pp.__handle_mm_fault
-      1.40            -0.8        0.62 =C2=B1  5%  perf-profile.children.cy=
-cles-pp.tick_sched_handle
-      1.47 =C2=B1  5%      -0.8        0.71 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp._raw_spin_lock_irqsave
-      1.29            -0.7        0.56 =C2=B1  7%  perf-profile.children.cy=
-cles-pp.update_process_times
-      1.32 =C2=B1  3%      -0.7        0.65 =C2=B1 32%  perf-profile.childr=
-en.cycles-pp.pick_next_task_fair
-      1.38            -0.7        0.73 =C2=B1 21%  perf-profile.children.cy=
-cles-pp.dequeue_task_fair
-      0.82 =C2=B1 11%      -0.6        0.20 =C2=B1 17%  perf-profile.childr=
-en.cycles-pp.___perf_sw_event
-      1.29            -0.6        0.68 =C2=B1 23%  perf-profile.children.cy=
-cles-pp.dequeue_entity
-      0.90 =C2=B1 26%      -0.6        0.33 =C2=B1 25%  perf-profile.childr=
-en.cycles-pp.start_kernel
-      0.92 =C2=B1  6%      -0.5        0.43 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.get_unmapped_area
-      0.87 =C2=B1  5%      -0.5        0.41 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.arch_get_unmapped_area_topdown
-      0.82 =C2=B1  4%      -0.5        0.37 =C2=B1  9%  perf-profile.childr=
-en.cycles-pp.down_write_killable
-      1.00 =C2=B1  2%      -0.4        0.55 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.select_task_rq_fair
-      0.91 =C2=B1  2%      -0.4        0.47 =C2=B1  7%  perf-profile.childr=
-en.cycles-pp.mmap_region
-      0.83 =C2=B1  5%      -0.4        0.40 =C2=B1  9%  perf-profile.childr=
-en.cycles-pp.unmapped_area_topdown
-      0.76 =C2=B1  4%      -0.4        0.34 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.call_rwsem_down_write_failed_killable
-      0.76 =C2=B1  4%      -0.4        0.34 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.rwsem_down_write_failed_killable
-      0.62 =C2=B1  2%      -0.4        0.22 =C2=B1  9%  perf-profile.childr=
-en.cycles-pp.__update_load_avg_se
-      0.75 =C2=B1  4%      -0.4        0.40 =C2=B1 41%  perf-profile.childr=
-en.cycles-pp.set_next_entity
-      0.58 =C2=B1  8%      -0.4        0.23 =C2=B1 19%  perf-profile.childr=
-en.cycles-pp.perf_mux_hrtimer_handler
-      0.68 =C2=B1  3%      -0.3        0.33 =C2=B1  8%  perf-profile.childr=
-en.cycles-pp.update_curr
-      0.55 =C2=B1  4%      -0.3        0.23 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.__orc_find
-      0.71 =C2=B1  3%      -0.3        0.40 =C2=B1 20%  perf-profile.childr=
-en.cycles-pp.load_new_mm_cr3
-      0.48 =C2=B1  5%      -0.3        0.17 =C2=B1 12%  perf-profile.childr=
-en.cycles-pp.find_vma
-      1.00            -0.3        0.71 =C2=B1 10%  perf-profile.children.cy=
-cles-pp._raw_spin_lock
-      0.43 =C2=B1  6%      -0.3        0.14 =C2=B1 20%  perf-profile.childr=
-en.cycles-pp.update_cfs_rq_h_load
-      0.75 =C2=B1 23%      -0.3        0.46 =C2=B1 32%  perf-profile.childr=
-en.cycles-pp.ktime_get
-      0.40 =C2=B1 11%      -0.3        0.11 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.__perf_sw_event
-      0.86            -0.3        0.58 =C2=B1  7%  perf-profile.children.cy=
-cles-pp.switch_mm
-      0.56            -0.3        0.29 =C2=B1  8%  perf-profile.children.cy=
-cles-pp.scheduler_tick
-      0.55 =C2=B1  5%      -0.3        0.28 =C2=B1 19%  perf-profile.childr=
-en.cycles-pp.__unwind_start
-      0.39 =C2=B1  7%      -0.3        0.12 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.unwind_get_return_address
-      0.52 =C2=B1  6%      -0.3        0.26 =C2=B1 11%  perf-profile.childr=
-en.cycles-pp.tick_nohz_idle_exit
-      0.38 =C2=B1  2%      -0.2        0.14 =C2=B1 18%  perf-profile.childr=
-en.cycles-pp.rcu_check_callbacks
-      0.53 =C2=B1  7%      -0.2        0.29 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.vma_link
-      0.34 =C2=B1  7%      -0.2        0.10 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.__kernel_text_address
-      0.31 =C2=B1  6%      -0.2        0.09 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.kernel_text_address
-      0.37 =C2=B1  2%      -0.2        0.15 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.orc_find
-      0.49 =C2=B1  7%      -0.2        0.28 =C2=B1 13%  perf-profile.childr=
-en.cycles-pp.finish_task_switch
-      0.57 =C2=B1  4%      -0.2        0.36 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.__rwsem_mark_wake
-      0.40 =C2=B1  8%      -0.2        0.20 =C2=B1 13%  perf-profile.childr=
-en.cycles-pp.update_ts_time_stats
-      0.57 =C2=B1  4%      -0.2        0.38 =C2=B1 21%  perf-profile.childr=
-en.cycles-pp.native_write_msr
-      0.35 =C2=B1  8%      -0.2        0.17 =C2=B1 11%  perf-profile.childr=
-en.cycles-pp.nr_iowait_cpu
-      0.39 =C2=B1  5%      -0.2        0.21 =C2=B1 13%  perf-profile.childr=
-en.cycles-pp.update_cfs_group
-      0.35 =C2=B1  4%      -0.2        0.19 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.run_rebalance_domains
-      0.39 =C2=B1  4%      -0.2        0.22 =C2=B1 25%  perf-profile.childr=
-en.cycles-pp.swapgs_restore_regs_and_return_to_usermode
-      0.32 =C2=B1  5%      -0.2        0.17 =C2=B1  7%  perf-profile.childr=
-en.cycles-pp.update_blocked_averages
-      0.28 =C2=B1  6%      -0.2        0.12 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.pick_next_task_idle
-      0.44 =C2=B1  4%      -0.1        0.30 =C2=B1  8%  perf-profile.childr=
-en.cycles-pp.update_rq_clock
-      0.23 =C2=B1  8%      -0.1        0.09        perf-profile.children.cy=
-cles-pp.save_stack_address
-      0.26 =C2=B1  4%      -0.1        0.12 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.__list_add_valid
-      0.48 =C2=B1  2%      -0.1        0.35 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.poll_idle
-      0.30 =C2=B1  6%      -0.1        0.16 =C2=B1 13%  perf-profile.childr=
-en.cycles-pp.vma_interval_tree_insert
-      0.24 =C2=B1 10%      -0.1        0.11 =C2=B1 65%  perf-profile.childr=
-en.cycles-pp.irq_enter
-      0.17 =C2=B1  4%      -0.1        0.04 =C2=B1 58%  perf-profile.childr=
-en.cycles-pp.vmacache_find
-      0.70 =C2=B1  5%      -0.1        0.57 =C2=B1 12%  perf-profile.childr=
-en.cycles-pp.native_irq_return_iret
-      0.38 =C2=B1  4%      -0.1        0.26 =C2=B1 27%  perf-profile.childr=
-en.cycles-pp.__switch_to
-      0.22 =C2=B1 45%      -0.1        0.10 =C2=B1 36%  perf-profile.childr=
-en.cycles-pp.console_unlock
-      0.17 =C2=B1 12%      -0.1        0.06 =C2=B1120%  perf-profile.childr=
-en.cycles-pp.tick_irq_enter
-      0.17 =C2=B1  6%      -0.1        0.05 =C2=B1 74%  perf-profile.childr=
-en.cycles-pp.enqueue_hrtimer
-      0.39 =C2=B1  3%      -0.1        0.28 =C2=B1 12%  perf-profile.childr=
-en.cycles-pp.wake_q_add
-      0.15 =C2=B1  5%      -0.1        0.04 =C2=B1 60%  perf-profile.childr=
-en.cycles-pp.decay_load
-      0.19 =C2=B1  8%      -0.1        0.08        perf-profile.children.cy=
-cles-pp.mem_cgroup_from_task
-      0.22 =C2=B1  3%      -0.1        0.12 =C2=B1 33%  perf-profile.childr=
-en.cycles-pp.__hrtimer_next_event_base
-      0.20 =C2=B1 45%      -0.1        0.09 =C2=B1 37%  perf-profile.childr=
-en.cycles-pp.wait_for_xmitr
-      0.20 =C2=B1 45%      -0.1        0.09 =C2=B1 37%  perf-profile.childr=
-en.cycles-pp.uart_console_write
-      0.20 =C2=B1 44%      -0.1        0.10 =C2=B1 37%  perf-profile.childr=
-en.cycles-pp.serial8250_console_write
-      0.19 =C2=B1 45%      -0.1        0.09 =C2=B1 39%  perf-profile.childr=
-en.cycles-pp.serial8250_console_putchar
-      0.17 =C2=B1  8%      -0.1        0.07 =C2=B1 23%  perf-profile.childr=
-en.cycles-pp.perf_event_mmap
-      0.31 =C2=B1  8%      -0.1        0.21 =C2=B1 10%  perf-profile.childr=
-en.cycles-pp.read_tsc
-      0.29 =C2=B1  6%      -0.1        0.20 =C2=B1 11%  perf-profile.childr=
-en.cycles-pp.run_timer_softirq
-      0.12 =C2=B1 53%      -0.1        0.03 =C2=B1105%  perf-profile.childr=
-en.cycles-pp.io_serial_in
-      0.23 =C2=B1  4%      -0.1        0.15 =C2=B1 12%  perf-profile.childr=
-en.cycles-pp.__list_del_entry_valid
-      0.35 =C2=B1 20%      -0.1        0.27 =C2=B1 12%  perf-profile.childr=
-en.cycles-pp._raw_spin_unlock_irqrestore
-      0.11 =C2=B1  3%      -0.1        0.03 =C2=B1102%  perf-profile.childr=
-en.cycles-pp.put_prev_task_fair
-      0.17 =C2=B1  7%      -0.1        0.10 =C2=B1 24%  perf-profile.childr=
-en.cycles-pp.tick_nohz_idle_enter
-      0.10 =C2=B1 17%      -0.1        0.03 =C2=B1100%  perf-profile.childr=
-en.cycles-pp.cpu_needs_another_gp
-      0.21 =C2=B1 10%      -0.1        0.15 =C2=B1 17%  perf-profile.childr=
-en.cycles-pp.rcu_idle_exit
-      0.20 =C2=B1  4%      -0.1        0.13 =C2=B1 20%  perf-profile.childr=
-en.cycles-pp.__indirect_thunk_start
-      0.14 =C2=B1  3%      -0.1        0.07 =C2=B1 24%  perf-profile.childr=
-en.cycles-pp.rcu_eqs_exit
-      0.25 =C2=B1  4%      -0.1        0.19 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.reweight_entity
-      0.08 =C2=B1  5%      -0.1        0.03 =C2=B1100%  perf-profile.childr=
-en.cycles-pp.available_idle_cpu
-      0.16 =C2=B1  9%      -0.1        0.11 =C2=B1 26%  perf-profile.childr=
-en.cycles-pp.down_read_trylock
-      0.12 =C2=B1  5%      -0.1        0.07 =C2=B1 13%  perf-profile.childr=
-en.cycles-pp.ksys_read
-      0.12 =C2=B1  5%      -0.1        0.07 =C2=B1 13%  perf-profile.childr=
-en.cycles-pp.vfs_read
-      0.12 =C2=B1 11%      -0.1        0.07 =C2=B1 13%  perf-profile.childr=
-en.cycles-pp.run_posix_cpu_timers
-      0.11 =C2=B1  4%      -0.1        0.06 =C2=B1 14%  perf-profile.childr=
-en.cycles-pp.__vfs_read
-      0.11 =C2=B1  7%      -0.0        0.06 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.write
-      0.11 =C2=B1  7%      -0.0        0.07 =C2=B1 23%  perf-profile.childr=
-en.cycles-pp.rcu_dynticks_eqs_exit
-      0.14 =C2=B1  3%      -0.0        0.09 =C2=B1 23%  perf-profile.childr=
-en.cycles-pp.menu_reflect
-      0.11 =C2=B1  4%      -0.0        0.07 =C2=B1 33%  perf-profile.childr=
-en.cycles-pp.__calc_delta
-      0.11 =C2=B1  9%      -0.0        0.07 =C2=B1 17%  perf-profile.childr=
-en.cycles-pp.read
-      0.08 =C2=B1  5%      -0.0        0.04 =C2=B1 57%  perf-profile.childr=
-en.cycles-pp.ksys_write
-      0.08 =C2=B1  5%      -0.0        0.04 =C2=B1 57%  perf-profile.childr=
-en.cycles-pp.vfs_write
-      0.09 =C2=B1  9%      -0.0        0.06 =C2=B1 17%  perf-profile.childr=
-en.cycles-pp.select_idle_sibling
-      0.64 =C2=B1  5%      +0.1        0.74 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.rebalance_domains
-      0.10 =C2=B1 11%      +0.1        0.24 =C2=B1 30%  perf-profile.childr=
-en.cycles-pp._raw_spin_trylock
-     75.69           +10.4       86.14 =C2=B1  2%  perf-profile.children.cy=
-cles-pp.do_idle
-     75.60           +10.5       86.08 =C2=B1  2%  perf-profile.children.cy=
-cles-pp.cpu_startup_entry
-     75.60           +10.5       86.08 =C2=B1  2%  perf-profile.children.cy=
-cles-pp.secondary_startup_64
-     74.70           +11.0       85.75 =C2=B1  2%  perf-profile.children.cy=
-cles-pp.start_secondary
-     60.78           +17.8       78.57 =C2=B1  2%  perf-profile.children.cy=
-cles-pp.cpuidle_enter_state
-     53.85           +20.3       74.14 =C2=B1  3%  perf-profile.children.cy=
-cles-pp.intel_idle
-      2.20 =C2=B1  7%      -1.7        0.55 =C2=B1 14%  perf-profile.self.c=
-ycles-pp.native_queued_spin_lock_slowpath
-      1.78 =C2=B1  5%      -0.7        1.05 =C2=B1  3%  perf-profile.self.c=
-ycles-pp.switch_mm_irqs_off
-      1.08 =C2=B1  4%      -0.7        0.41 =C2=B1  4%  perf-profile.self.c=
-ycles-pp.update_load_avg
-      0.89 =C2=B1  6%      -0.6        0.29 =C2=B1 24%  perf-profile.self.c=
-ycles-pp.__handle_mm_fault
-      1.49 =C2=B1  6%      -0.6        0.93 =C2=B1 21%  perf-profile.self.c=
-ycles-pp.menu_select
-      0.71 =C2=B1 13%      -0.5        0.16 =C2=B1 16%  perf-profile.self.c=
-ycles-pp.___perf_sw_event
-      1.46            -0.5        0.98 =C2=B1 27%  perf-profile.self.cycles=
--pp.unwind_next_frame
-      1.08 =C2=B1  5%      -0.4        0.66 =C2=B1 25%  perf-profile.self.c=
-ycles-pp.__schedule
-      0.81 =C2=B1  4%      -0.4        0.39 =C2=B1 10%  perf-profile.self.c=
-ycles-pp.unmapped_area_topdown
-      0.52 =C2=B1  2%      -0.3        0.19 =C2=B1 12%  perf-profile.self.c=
-ycles-pp.__update_load_avg_se
-      0.55 =C2=B1  4%      -0.3        0.23 =C2=B1  4%  perf-profile.self.c=
-ycles-pp.__orc_find
-      0.71 =C2=B1  3%      -0.3        0.40 =C2=B1 20%  perf-profile.self.c=
-ycles-pp.load_new_mm_cr3
-      0.54 =C2=B1  4%      -0.3        0.25 =C2=B1  2%  perf-profile.self.c=
-ycles-pp.update_curr
-      0.43 =C2=B1  6%      -0.3        0.14 =C2=B1 20%  perf-profile.self.c=
-ycles-pp.update_cfs_rq_h_load
-      0.89 =C2=B1  2%      -0.3        0.63 =C2=B1  9%  perf-profile.self.c=
-ycles-pp._raw_spin_lock
-      0.62 =C2=B1  6%      -0.3        0.37 =C2=B1 23%  perf-profile.self.c=
-ycles-pp.cpuidle_enter_state
-      0.36 =C2=B1  4%      -0.2        0.12 =C2=B1  4%  perf-profile.self.c=
-ycles-pp.pick_next_task_fair
-      0.71 =C2=B1  5%      -0.2        0.47 =C2=B1 11%  perf-profile.self.c=
-ycles-pp._raw_spin_lock_irqsave
-      0.37 =C2=B1  2%      -0.2        0.15 =C2=B1 10%  perf-profile.self.c=
-ycles-pp.orc_find
-      0.43 =C2=B1  4%      -0.2        0.22 =C2=B1 17%  perf-profile.self.c=
-ycles-pp.enqueue_entity
-      0.63 =C2=B1  8%      -0.2        0.43 =C2=B1  6%  perf-profile.self.c=
-ycles-pp.rwsem_down_read_failed
-      0.44 =C2=B1  4%      -0.2        0.24 =C2=B1 10%  perf-profile.self.c=
-ycles-pp._raw_spin_lock_irq
-      0.45 =C2=B1  7%      -0.2        0.25 =C2=B1 14%  perf-profile.self.c=
-ycles-pp.finish_task_switch
-      0.50 =C2=B1  3%      -0.2        0.31 =C2=B1 25%  perf-profile.self.c=
-ycles-pp.try_to_wake_up
-      0.57 =C2=B1  4%      -0.2        0.38 =C2=B1 21%  perf-profile.self.c=
-ycles-pp.native_write_msr
-      0.35 =C2=B1  8%      -0.2        0.17 =C2=B1 11%  perf-profile.self.c=
-ycles-pp.nr_iowait_cpu
-      0.39 =C2=B1  5%      -0.2        0.21 =C2=B1 13%  perf-profile.self.c=
-ycles-pp.update_cfs_group
-      0.30 =C2=B1  9%      -0.2        0.13 =C2=B1  3%  perf-profile.self.c=
-ycles-pp.find_vma
-      0.26 =C2=B1 10%      -0.2        0.09 =C2=B1 23%  perf-profile.self.c=
-ycles-pp.rcu_check_callbacks
-      0.23 =C2=B1  5%      -0.2        0.07 =C2=B1 39%  perf-profile.self.c=
-ycles-pp.__do_page_fault
-      0.38 =C2=B1  4%      -0.2        0.22 =C2=B1 25%  perf-profile.self.c=
-ycles-pp.swapgs_restore_regs_and_return_to_usermode
-      0.27 =C2=B1  4%      -0.2        0.12 =C2=B1  5%  perf-profile.self.c=
-ycles-pp.handle_mm_fault
-      0.28 =C2=B1 12%      -0.1        0.13 =C2=B1 23%  perf-profile.self.c=
-ycles-pp.down_read
-      0.49 =C2=B1  2%      -0.1        0.35 =C2=B1  5%  perf-profile.self.c=
-ycles-pp.select_task_rq_fair
-      0.30 =C2=B1  6%      -0.1        0.16 =C2=B1 11%  perf-profile.self.c=
-ycles-pp.vma_interval_tree_insert
-      0.26 =C2=B1  4%      -0.1        0.12 =C2=B1 15%  perf-profile.self.c=
-ycles-pp.__list_add_valid
-      0.17 =C2=B1  4%      -0.1        0.04 =C2=B1 58%  perf-profile.self.c=
-ycles-pp.vmacache_find
-      0.70 =C2=B1  5%      -0.1        0.57 =C2=B1 12%  perf-profile.self.c=
-ycles-pp.native_irq_return_iret
-      0.33 =C2=B1  4%      -0.1        0.20 =C2=B1  5%  perf-profile.self.c=
-ycles-pp.enqueue_task_fair
-      0.38 =C2=B1  4%      -0.1        0.26 =C2=B1 27%  perf-profile.self.c=
-ycles-pp.__switch_to
-      0.32 =C2=B1  4%      -0.1        0.20 =C2=B1 19%  perf-profile.self.c=
-ycles-pp.update_rq_clock
-      0.59 =C2=B1  3%      -0.1        0.47 =C2=B1 11%  perf-profile.self.c=
-ycles-pp.do_idle
-      0.19 =C2=B1  8%      -0.1        0.08 =C2=B1  5%  perf-profile.self.c=
-ycles-pp.mem_cgroup_from_task
-      0.39 =C2=B1  3%      -0.1        0.28 =C2=B1 12%  perf-profile.self.c=
-ycles-pp.wake_q_add
-      0.15 =C2=B1  5%      -0.1        0.04 =C2=B1 60%  perf-profile.self.c=
-ycles-pp.decay_load
-      0.16 =C2=B1 14%      -0.1        0.06 =C2=B1 71%  perf-profile.self.c=
-ycles-pp.dequeue_entity
-      0.43 =C2=B1  4%      -0.1        0.33 =C2=B1 15%  perf-profile.self.c=
-ycles-pp.poll_idle
-      0.22 =C2=B1  3%      -0.1        0.11 =C2=B1 33%  perf-profile.self.c=
-ycles-pp.__hrtimer_next_event_base
-      0.15 =C2=B1  6%      -0.1        0.05 =C2=B1 62%  perf-profile.self.c=
-ycles-pp.perf_mux_hrtimer_handler
-      0.22 =C2=B1  3%      -0.1        0.12 =C2=B1 11%  perf-profile.self.c=
-ycles-pp.update_blocked_averages
-      0.31 =C2=B1  8%      -0.1        0.21 =C2=B1 10%  perf-profile.self.c=
-ycles-pp.read_tsc
-      0.17 =C2=B1  8%      -0.1        0.08 =C2=B1 27%  perf-profile.self.c=
-ycles-pp.__save_stack_trace
-      0.12 =C2=B1 53%      -0.1        0.03 =C2=B1105%  perf-profile.self.c=
-ycles-pp.io_serial_in
-      0.18 =C2=B1  6%      -0.1        0.10 =C2=B1 23%  perf-profile.self.c=
-ycles-pp.up_read
-      0.23 =C2=B1  4%      -0.1        0.15 =C2=B1 12%  perf-profile.self.c=
-ycles-pp.__list_del_entry_valid
-      0.15 =C2=B1 11%      -0.1        0.07 =C2=B1 10%  perf-profile.self.c=
-ycles-pp.save_stack_address
-      0.14 =C2=B1  6%      -0.1        0.06 =C2=B1 15%  perf-profile.self.c=
-ycles-pp.sched_ttwu_pending
-      0.23 =C2=B1  3%      -0.1        0.15 =C2=B1  8%  perf-profile.self.c=
-ycles-pp.run_timer_softirq
-      0.15 =C2=B1  5%      -0.1        0.07 =C2=B1 31%  perf-profile.self.c=
-ycles-pp.__unwind_start
-      0.10 =C2=B1 17%      -0.1        0.03 =C2=B1100%  perf-profile.self.c=
-ycles-pp.cpu_needs_another_gp
-      0.20 =C2=B1  4%      -0.1        0.13 =C2=B1 20%  perf-profile.self.c=
-ycles-pp.__indirect_thunk_start
-      0.12 =C2=B1  9%      -0.1        0.05 =C2=B1 67%  perf-profile.self.c=
-ycles-pp.__hrtimer_run_queues
-      0.14 =C2=B1  8%      -0.1        0.08 =C2=B1  6%  perf-profile.self.c=
-ycles-pp.dequeue_task_fair
-      0.25 =C2=B1  5%      -0.1        0.19 =C2=B1  6%  perf-profile.self.c=
-ycles-pp.reweight_entity
-      0.08 =C2=B1  5%      -0.1        0.03 =C2=B1100%  perf-profile.self.c=
-ycles-pp.available_idle_cpu
-      0.12 =C2=B1  9%      -0.1        0.06 =C2=B1 58%  perf-profile.self.c=
-ycles-pp.ttwu_do_wakeup
-      0.12 =C2=B1 11%      -0.1        0.06 =C2=B1 26%  perf-profile.self.c=
-ycles-pp.hrtimer_interrupt
-      0.16 =C2=B1  8%      -0.1        0.11 =C2=B1 26%  perf-profile.self.c=
-ycles-pp.down_read_trylock
-      0.11 =C2=B1  9%      -0.1        0.06 =C2=B1 11%  perf-profile.self.c=
-ycles-pp.mmap_region
-      0.12 =C2=B1 11%      -0.1        0.07 =C2=B1 13%  perf-profile.self.c=
-ycles-pp.run_posix_cpu_timers
-      0.12 =C2=B1  5%      -0.0        0.07 =C2=B1 17%  perf-profile.self.c=
-ycles-pp.__rwsem_mark_wake
-      0.11 =C2=B1  7%      -0.0        0.07 =C2=B1 23%  perf-profile.self.c=
-ycles-pp.rcu_dynticks_eqs_exit
-      0.11 =C2=B1  4%      -0.0        0.07 =C2=B1 33%  perf-profile.self.c=
-ycles-pp.__calc_delta
-      0.12 =C2=B1  6%      -0.0        0.09 =C2=B1  9%  perf-profile.self.c=
-ycles-pp.load_balance
-      0.07 =C2=B1  7%      -0.0        0.05        perf-profile.self.cycles=
--pp.lapic_next_event
-      0.20 =C2=B1  3%      +0.1        0.28 =C2=B1 33%  perf-profile.self.c=
-ycles-pp.save_stack_trace_tsk
-      0.10 =C2=B1 11%      +0.1        0.24 =C2=B1 30%  perf-profile.self.c=
-ycles-pp._raw_spin_trylock
-     53.84           +20.3       74.10 =C2=B1  3%  perf-profile.self.cycles=
--pp.intel_idle
+      0.00 =C2=B1 24%     -50.1%       0.00 =C2=B1 60%  sched_debug.rt_rq:/=
+.rt_time.min
+    170844           -18.8%     138654 =C2=B1  2%  slabinfo.Acpi-Namespace.=
+active_objs
+      1679           -18.8%       1363 =C2=B1  2%  slabinfo.Acpi-Namespace.=
+active_slabs
+    171313           -18.8%     139089 =C2=B1  2%  slabinfo.Acpi-Namespace.=
+num_objs
+      1679           -18.8%       1363 =C2=B1  2%  slabinfo.Acpi-Namespace.=
+num_slabs
+    114840           -40.0%      68941 =C2=B1  9%  slabinfo.filp.active_objs
+      3647           -39.1%       2222 =C2=B1  9%  slabinfo.filp.active_sla=
+bs
+    116721           -39.1%      71122 =C2=B1  9%  slabinfo.filp.num_objs
+      3647           -39.1%       2222 =C2=B1  9%  slabinfo.filp.num_slabs
+     69246           -49.8%      34795 =C2=B1 17%  slabinfo.shmem_inode_cac=
+he.active_objs
+      1516           -49.0%     773.00 =C2=B1 20%  slabinfo.shmem_inode_cac=
+he.active_slabs
+     69765           -49.0%      35589 =C2=B1 20%  slabinfo.shmem_inode_cac=
+he.num_objs
+      1516           -49.0%     773.00 =C2=B1 20%  slabinfo.shmem_inode_cac=
+he.num_slabs
+ 4.644e+12            -4.3%  4.442e+12        perf-stat.branch-instructions
+ 5.931e+10            -4.8%  5.646e+10        perf-stat.branch-misses
+     17.98 =C2=B1  2%      -7.3       10.72 =C2=B1  4%  perf-stat.cache-mis=
+s-rate%
+ 5.664e+09           -53.7%  2.622e+09        perf-stat.cache-misses
+ 3.152e+10 =C2=B1  2%     -22.3%   2.45e+10 =C2=B1  3%  perf-stat.cache-ref=
+erences
+      3.02            +1.1%       3.06        perf-stat.cpi
+     11544            -5.6%      10892        perf-stat.cpu-migrations
+      0.01 =C2=B1  2%      -0.0        0.01        perf-stat.dTLB-load-miss=
+-rate%
+  4.64e+08 =C2=B1  2%     -33.1%  3.103e+08        perf-stat.dTLB-load-miss=
+es
+      0.00 =C2=B1 19%      -0.0        0.00 =C2=B1  8%  perf-stat.dTLB-stor=
+e-miss-rate%
+  85636023 =C2=B1 19%     -64.3%   30579221 =C2=B1  8%  perf-stat.dTLB-stor=
+e-misses
+ 1.989e+12           -10.9%  1.773e+12        perf-stat.dTLB-stores
+ 1.424e+10            -2.1%  1.393e+10        perf-stat.iTLB-loads
+  1.94e+13            -1.1%  1.919e+13        perf-stat.instructions
+      0.33            -1.1%       0.33        perf-stat.ipc
+  65705861           -43.8%   36905574        perf-stat.minor-faults
+     85.44            +4.4       89.82        perf-stat.node-load-miss-rate%
+ 1.017e+09 =C2=B1  2%     -18.9%  8.245e+08        perf-stat.node-load-miss=
+es
+ 1.731e+08 =C2=B1  2%     -46.0%   93424544 =C2=B1  2%  perf-stat.node-loads
+     63.19            -7.7       55.52        perf-stat.node-store-miss-rat=
+e%
+ 8.949e+08           -44.1%  5.001e+08 =C2=B1  2%  perf-stat.node-store-mis=
+ses
+ 5.212e+08           -23.2%  4.004e+08        perf-stat.node-stores
+  65705862           -43.8%   36905572        perf-stat.page-faults
+     47.02            -0.4       46.58        perf-profile.calltrace.cycles=
+-pp.entry_SYSCALL_64_after_hwframe
+      2.84 =C2=B1  6%      -0.4        2.48        perf-profile.calltrace.c=
+ycles-pp.__vfs_write.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_af=
+ter_hwframe
+      2.35            -0.2        2.13        perf-profile.calltrace.cycles=
+-pp.write_null.__vfs_write.vfs_write.ksys_write.do_syscall_64
+      2.96            -0.1        2.84        perf-profile.calltrace.cycles=
+-pp.__x64_sys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      2.55            -0.1        2.47        perf-profile.calltrace.cycles=
+-pp.entry_SYSCALL_64_stage2
+      1.01 =C2=B1  2%      -0.1        0.93 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.vfs_write
+      1.94 =C2=B1  2%      -0.1        1.86        perf-profile.calltrace.c=
+ycles-pp.__vfs_write
+      0.76            -0.1        0.70 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.__fsnotify_parent
+      0.66            +0.0        0.70        perf-profile.calltrace.cycles=
+-pp.write_null
+      0.77            +0.1        0.83        perf-profile.calltrace.cycles=
+-pp.rw_verify_area.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_afte=
+r_hwframe
+      0.60            +0.1        0.68        perf-profile.calltrace.cycles=
+-pp._cond_resched.__inode_security_revalidate.selinux_file_permission.secur=
+ity_file_permission.vfs_write
+      1.19            +0.1        1.27 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.selinux_file_permission
+      2.75 =C2=B1  9%      +0.4        3.11        perf-profile.calltrace.c=
+ycles-pp.fsnotify.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after=
+_hwframe
+      6.02 =C2=B1  2%      +0.4        6.45 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.__fget_light.__fdget_pos.ksys_write.do_syscall_64.entry_SYSCA=
+LL_64_after_hwframe
+      6.42            +0.4        6.87 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.__fdget_pos.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     35.16            +0.5       35.63        perf-profile.calltrace.cycles=
+-pp.syscall_return_via_sysret
+     43.73            -0.5       43.24        perf-profile.children.cycles-=
+pp.do_syscall_64
+     47.08            -0.5       46.62        perf-profile.children.cycles-=
+pp.entry_SYSCALL_64_after_hwframe
+      4.80 =C2=B1  4%      -0.4        4.37        perf-profile.children.cy=
+cles-pp.__vfs_write
+      3.02            -0.2        2.83        perf-profile.children.cycles-=
+pp.write_null
+      2.97            -0.1        2.86        perf-profile.children.cycles-=
+pp.__x64_sys_write
+      2.55            -0.1        2.47        perf-profile.children.cycles-=
+pp.entry_SYSCALL_64_stage2
+      1.08            -0.1        1.02 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.__fsnotify_parent
+      0.54            +0.0        0.58        perf-profile.children.cycles-=
+pp.rcu_all_qs
+      0.79            +0.1        0.85        perf-profile.children.cycles-=
+pp.rw_verify_area
+      0.83            +0.1        0.94        perf-profile.children.cycles-=
+pp._cond_resched
+      3.98 =C2=B1  5%      +0.4        4.33        perf-profile.children.cy=
+cles-pp.fsnotify
+      6.03            +0.4        6.45 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.__fget_light
+      6.91            +0.5        7.37        perf-profile.children.cycles-=
+pp.__fdget_pos
+     35.16            +0.5       35.63        perf-profile.children.cycles-=
+pp.syscall_return_via_sysret
+      6.76            -0.5        6.22        perf-profile.self.cycles-pp.v=
+fs_write
+      7.16            -0.4        6.77        perf-profile.self.cycles-pp.d=
+o_syscall_64
+      2.41 =C2=B1  8%      -0.2        2.21        perf-profile.self.cycles=
+-pp.__vfs_write
+      3.01            -0.2        2.83        perf-profile.self.cycles-pp.w=
+rite_null
+      2.32            -0.2        2.16        perf-profile.self.cycles-pp._=
+_inode_security_revalidate
+      2.94            -0.1        2.83        perf-profile.self.cycles-pp._=
+_x64_sys_write
+      2.55            -0.1        2.47        perf-profile.self.cycles-pp.e=
+ntry_SYSCALL_64_stage2
+      1.08            -0.1        1.01 =C2=B1  2%  perf-profile.self.cycles=
+-pp.__fsnotify_parent
+      0.88            +0.0        0.92        perf-profile.self.cycles-pp._=
+_fdget_pos
+      0.54            +0.0        0.57        perf-profile.self.cycles-pp.r=
+cu_all_qs
+      0.79            +0.1        0.84        perf-profile.self.cycles-pp.r=
+w_verify_area
+      0.61            +0.1        0.69        perf-profile.self.cycles-pp._=
+cond_resched
+      2.95            +0.1        3.04        perf-profile.self.cycles-pp.k=
+sys_write
+      3.96 =C2=B1  5%      +0.3        4.31        perf-profile.self.cycles=
+-pp.fsnotify
+      6.00 =C2=B1  2%      +0.4        6.43 =C2=B1  2%  perf-profile.self.c=
+ycles-pp.__fget_light
+     35.16            +0.5       35.63        perf-profile.self.cycles-pp.s=
+yscall_return_via_sysret
 
 
                                                                            =
      =
 
-                               vm-scalability.throughput                   =
+                                  stress-ng.full.ops                       =
      =
 
                                                                            =
      =
 
-  1.6e+06 +-+--------------------------------------------------------------=
+  1.2e+08 +-+--------------------------------------------------------------=
 -+   =
 
-          |                                             O         O O      =
+          |.+.+.   .+.      .+.+.           .+.+                           =
  |   =
 
-  1.5e+06 +-+                                                              =
+  1.1e+08 +-+   +.+   +.+..+     +.+.+.+.+.+    + .+.+.+.+..+              =
  |   =
 
-          |                             O                                O =
- |   =
-
-  1.4e+06 +-+O                                     O         O             =
- |   =
-
-  1.3e+06 +-+               O    O    O              O         O           =
- O   =
-
-          |    O              O               O                            =
- |   =
-
-  1.2e+06 +-+            O                 O    O         O            O   =
- |   =
-
-          O       O O  O           O                                       =
- |   =
-
-  1.1e+06 +-+                                                              =
- |   =
-
-    1e+06 +-+                                                              =
+    1e+08 +-+                                    +                         =
  |   =
 
           |                                                                =
  |   =
 
-   900000 +-+      .+..    .+.+.. .+..    .+.. .+.. .+..      .+..+.+..+.+.=
-.|   =
-
-          |..+.+..+    +.+.      +    +.+.    +    +    +.+..+             =
+    9e+07 +-+                                                              =
  |   =
 
-   800000 +-+--------------------------------------------------------------=
+    8e+07 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+    7e+07 +-+                                                              =
+ |   =
+
+    6e+07 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+    5e+07 +-+         O    O                                               =
+ |   =
+
+    4e+07 +-O O O O O   O    O O O O O O O O O O O O O O O  O O O O O O O O=
+ O   =
+
+          O                                                                =
+ |   =
+
+    3e+07 +-+--------------------------------------------------------------=
 -+   =
 
                                                                            =
@@ -922,6 +352,292 @@ ycles-pp._raw_spin_trylock
                                                                            =
                                                                            =
           =
+
+                              stress-ng.full.ops_per_sec                   =
+     =
+
+                                                                           =
+     =
+
+    2e+06 +-+--------------------------------------------------------------=
+-+   =
+
+          |.+.+.   .+.      .+.+.           .+.+                           =
+ |   =
+
+  1.8e+06 +-+   +.+   +.+..+     +.+.+.+.+.+    :  +.+.+.+..+              =
+ |   =
+
+          |                                     : +                        =
+ |   =
+
+  1.6e+06 +-+                                    +                         =
+ |   =
+
+          |                                                                =
+ |   =
+
+  1.4e+06 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+  1.2e+06 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+    1e+06 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+   800000 +-O O O O   O O  O O O O     O O       O   O   O    O     O     O=
+ |   =
+
+          |         O              O O     O O O   O   O    O   O O   O O  =
+ O   =
+
+   600000 O-+--------------------------------------------------------------=
+-+   =
+
+                                                                           =
+     =
+
+                                                                           =
+                                                                           =
+          =
+
+                                  stress-ng.zero.ops                       =
+     =
+
+                                                                           =
+     =
+
+  7.5e+07 +-+--------------------------------------------------------------=
+-+   =
+
+          |                                                                =
+ |   =
+
+    7e+07 +-+.     .+.      .+.+.                                          =
+ |   =
+
+  6.5e+07 +-+ +.+.+   +.  .+     +.+.+.+.       .+. .+. .+..               =
+ |   =
+
+          |             +.               +.+.+.+   +   +    +              =
+ |   =
+
+    6e+07 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+  5.5e+07 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+    5e+07 +-+                                                              =
+ |   =
+
+  4.5e+07 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+    4e+07 +-+                                                              =
+ |   =
+
+          O   O   O     O  O   O O O       O O O O O   O O  O   O       O  =
+ |   =
+
+  3.5e+07 +-O---O---O-O------O-------O-O-O-----------O--------O---O-O-O---O=
+-O   =
+
+                                                                           =
+     =
+
+                                                                           =
+                                                                           =
+          =
+
+                              stress-ng.zero.ops_per_sec                   =
+     =
+
+                                                                           =
+     =
+
+  1.2e+06 +-+--------------------------------------------------------------=
+-+   =
+
+          |.+.     .+.      .+.+.                                          =
+ |   =
+
+  1.1e+06 +-+ +.+.+   +.+..+     +.+.+.+.+.+.   .+. .+.+.+..               =
+ |   =
+
+          |                                  +.+   +        +              =
+ |   =
+
+    1e+06 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+   900000 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+   800000 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+   700000 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+   600000 O-O O O O O O O  O O O O O O O O O O O O O O O O  O O O O O O O O=
+ O   =
+
+          |                                                                =
+ |   =
+
+   500000 +-+--------------------------------------------------------------=
+-+   =
+
+                                                                           =
+     =
+
+                                                                           =
+                                                                           =
+          =
+
+                             stress-ng.time.user_time                      =
+     =
+
+                                                                           =
+     =
+
+  2050 +-+-----------------------------------------------------------------=
+-+   =
+
+       |                                     .+                            =
+ |   =
+
+  2000 +-+.      .+.   .+.+..+.+.+.+.+.+.. .+  + .+.+.+..+.+               =
+ |   =
+
+       |   +.+..+   +.+                   +     +                          =
+ |   =
+
+  1950 +-+                                                                 =
+ |   =
+
+       |                                                                   =
+ |   =
+
+  1900 +-+                                                                 =
+ |   =
+
+       |                                                                   =
+ |   =
+
+  1850 +-+ O                                                               =
+ |   =
+
+       |                           O                                       =
+ |   =
+
+  1800 +-+                O                                                =
+ |   =
+
+       | O   O  O                                                       O O=
+ |   =
+
+  1750 O-+        O O O O    O O O   O O    O O O O O O  O O O O O O  O    =
+ O   =
+
+       |                                  O                                =
+ |   =
+
+  1700 +-+-----------------------------------------------------------------=
+-+   =
+
+                                                                           =
+     =
+
+                                                                           =
+                                                                           =
+          =
+
+                           stress-ng.time.minor_page_faults                =
+     =
+
+                                                                           =
+     =
+
+  7.5e+07 +-+--------------------------------------------------------------=
+-+   =
+
+          |                                                                =
+ |   =
+
+    7e+07 +-+.     .+.      .+.+.                                          =
+ |   =
+
+  6.5e+07 +-+ +.+.+   +.  .+     +.+.+.+.       .+. .+. .+..               =
+ |   =
+
+          |             +.               +.+.+.+   +   +    +              =
+ |   =
+
+    6e+07 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+  5.5e+07 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+    5e+07 +-+                                                              =
+ |   =
+
+  4.5e+07 +-+                                                              =
+ |   =
+
+          |                                                                =
+ |   =
+
+    4e+07 +-+                                                              =
+ |   =
+
+          O   O   O     O  O   O O O     O O O O O O   O O  O   O       O O=
+ O   =
+
+  3.5e+07 +-O---O---O-O------O-------O-O-------------O--------O---O-O-O----=
+-+   =
+
+                                                                           =
+     =
 
                                                                            =
      =
@@ -942,11 +658,11 @@ design or configuration may affect actual performance.
 Thanks,
 Xiaolong
 
---===============0002516209697818326==
+--===============7468503852610368485==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="config-4.17.0-rc5-00016-g8975441"
+Content-Disposition: attachment; filename="config-4.17.0-rc5-00198-gaff9671"
 
 IwojIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZpbGU7IERPIE5PVCBFRElULgojIExpbnV4L3g4
 Nl82NCA0LjE3LjAtcmM1IEtlcm5lbCBDb25maWd1cmF0aW9uCiMKQ09ORklHXzY0QklUPXkKQ09O
@@ -3834,238 +3550,218 @@ T05GSUdfQVJDSF9IQVNfUE1FTV9BUEk9eQpDT05GSUdfQVJDSF9IQVNfVUFDQ0VTU19GTFVTSENB
 Q0hFPXkKQ09ORklHX1NCSVRNQVA9eQojIENPTkZJR19TVFJJTkdfU0VMRlRFU1QgaXMgbm90IHNl
 dAo=
 
---===============0002516209697818326==
+--===============7468503852610368485==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job-script.ksh"
 
-IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0ndm0tc2NhbGFiaWxp
-dHknCglleHBvcnQgdGVzdGNhc2U9J3ZtLXNjYWxhYmlsaXR5JwoJZXhwb3J0IGNhdGVnb3J5PSdi
-ZW5jaG1hcmsnCglleHBvcnQgcnVudGltZT0zMDAKCWV4cG9ydCBzaXplPQoJZXhwb3J0IGpvYl9v
-cmlnaW49Jy9sa3AvbGtwLy5zcmMtMjAxODA2MDctMjE0MzU4L2FsbG90L2N5Y2xpYzpsaW51eC1k
-ZXZlbDpkZXZlbC1ob3VybHkvbGtwLWJkdy1lcDIvdm0tc2NhbGFiaWxpdHkueWFtbCcKCWV4cG9y
-dCBxdWV1ZT0nYmlzZWN0JwoJZXhwb3J0IHRlc3Rib3g9J2xrcC1iZHctZXAyJwoJZXhwb3J0IHRi
-b3hfZ3JvdXA9J2xrcC1iZHctZXAyJwoJZXhwb3J0IHN1Ym1pdF9pZD0nNWIxYmQxODQwYjlhOTMz
-YjU0Y2VjZmM5JwoJZXhwb3J0IGpvYl9maWxlPScvbGtwL3NjaGVkdWxlZC9sa3AtYmR3LWVwMi92
-bS1zY2FsYWJpbGl0eS0zMDBzLXNtYWxsLWFsbG9jcy1tdC1wZXJmb3JtYW5jZS1kZWJpYW4teDg2
-XzY0LTIwMTgtMDQtMDMuY2d6LTg5NzU0NDEwYTM4ZWY0N2U5M2IwYmYyOWMyNmMxZWI4OTIzNGU5
-MTgtMjAxODA2MDktODA3MjQteDN1anVuLTAueWFtbCcKCWV4cG9ydCBpZD0nNjk1ZDFkNGQ1Njgx
-ODgyZDYxY2U4YjA1ZDU0NTY2MTQ5YmJkODFkMCcKCWV4cG9ydCBtb2RlbD0nQnJvYWR3ZWxsLUVQ
-JwoJZXhwb3J0IG5yX25vZGU9MgoJZXhwb3J0IG5yX2NwdT04OAoJZXhwb3J0IG1lbW9yeT0nMTI4
-RycKCWV4cG9ydCBucl9zc2RfcGFydGl0aW9ucz0xCglleHBvcnQgc3NkX3BhcnRpdGlvbnM9Jy9k
-ZXYvZGlzay9ieS1pZC9hdGEtSU5URUxfU1NEU0MyQlczNjBINl9DVlRSNTUxNDA1WlAzNjBER04t
-cGFydDEnCglleHBvcnQgc3dhcF9wYXJ0aXRpb25zPQoJZXhwb3J0IHJvb3Rmc19wYXJ0aXRpb249
-Jy9kZXYvZGlzay9ieS1pZC9hdGEtSU5URUxfU1NEU0MyQkE4MDBHNF9CVEhWNTM5NjAwWVI4MDBP
-R04tcGFydDEnCglleHBvcnQgYnJhbmQ9J0ludGVsKFIpIFhlb24oUikgQ1BVIEU1LTI2OTkgdjQg
-QCAyLjIwR0h6JwoJZXhwb3J0IG5lZWRfa2NvbmZpZz0nQ09ORklHX0JMS19ERVZfTE9PUCcKCWV4
-cG9ydCBjb21taXQ9Jzg5NzU0NDEwYTM4ZWY0N2U5M2IwYmYyOWMyNmMxZWI4OTIzNGU5MTgnCgll
-eHBvcnQga2NvbmZpZz0neDg2XzY0LXJoZWwtNy4yJwoJZXhwb3J0IGNvbXBpbGVyPSdnY2MtNycK
-CWV4cG9ydCByb290ZnM9J2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3onCglleHBvcnQgZW5x
-dWV1ZV90aW1lPScyMDE4LTA2LTA5IDIxOjA5OjI0ICswODAwJwoJZXhwb3J0IF9pZD0nNWIxYmQx
-ODQwYjlhOTMzYjU0Y2VjZmM5JwoJZXhwb3J0IF9ydD0nL3Jlc3VsdC92bS1zY2FsYWJpbGl0eS8z
-MDBzLXNtYWxsLWFsbG9jcy1tdC1wZXJmb3JtYW5jZS9sa3AtYmR3LWVwMi9kZWJpYW4teDg2XzY0
-LTIwMTgtMDQtMDMuY2d6L3g4Nl82NC1yaGVsLTcuMi9nY2MtNy84OTc1NDQxMGEzOGVmNDdlOTNi
-MGJmMjljMjZjMWViODkyMzRlOTE4JwoJZXhwb3J0IHVzZXI9J2xrcCcKCWV4cG9ydCBoZWFkX2Nv
-bW1pdD0nZDAwNjlhZDMyYzc3ZDAxNjkyMzQwOTcxNWVkYmNlZTgxOTkzNjk3MicKCWV4cG9ydCBi
-YXNlX2NvbW1pdD0nMjlkY2VhODg3NzljODU2YzdkYzkyMDQwYTBjMDEyMzMyNjMxMDFkNCcKCWV4
-cG9ydCBicmFuY2g9J2xpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE4MDYwNzIxJwoJZXhwb3J0
-IHJlc3VsdF9yb290PScvcmVzdWx0L3ZtLXNjYWxhYmlsaXR5LzMwMHMtc21hbGwtYWxsb2NzLW10
-LXBlcmZvcm1hbmNlL2xrcC1iZHctZXAyL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3oveDg2
-XzY0LXJoZWwtNy4yL2djYy03Lzg5NzU0NDEwYTM4ZWY0N2U5M2IwYmYyOWMyNmMxZWI4OTIzNGU5
-MTgvMCcKCWV4cG9ydCBMS1BfU0VSVkVSPSdpbm4nCglleHBvcnQgbWF4X3VwdGltZT0xNTAwCgll
-eHBvcnQgaW5pdHJkPScvb3NpbWFnZS9kZWJpYW4vZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNn
-eicKCWV4cG9ydCBib290bG9hZGVyX2FwcGVuZD0ncm9vdD0vZGV2L3JhbTAKdXNlcj1sa3AKam9i
-PS9sa3Avc2NoZWR1bGVkL2xrcC1iZHctZXAyL3ZtLXNjYWxhYmlsaXR5LTMwMHMtc21hbGwtYWxs
-b2NzLW10LXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3otODk3NTQ0MTBh
-MzhlZjQ3ZTkzYjBiZjI5YzI2YzFlYjg5MjM0ZTkxOC0yMDE4MDYwOS04MDcyNC14M3VqdW4tMC55
-YW1sCkFSQ0g9eDg2XzY0Cmtjb25maWc9eDg2XzY0LXJoZWwtNy4yCmJyYW5jaD1saW51eC1kZXZl
-bC9kZXZlbC1ob3VybHktMjAxODA2MDcyMQpjb21taXQ9ODk3NTQ0MTBhMzhlZjQ3ZTkzYjBiZjI5
-YzI2YzFlYjg5MjM0ZTkxOApCT09UX0lNQUdFPS9wa2cvbGludXgveDg2XzY0LXJoZWwtNy4yL2dj
-Yy03Lzg5NzU0NDEwYTM4ZWY0N2U5M2IwYmYyOWMyNmMxZWI4OTIzNGU5MTgvdm1saW51ei00LjE3
-LjAtcmM1LTAwMDE2LWc4OTc1NDQxCm1heF91cHRpbWU9MTUwMApSRVNVTFRfUk9PVD0vcmVzdWx0
-L3ZtLXNjYWxhYmlsaXR5LzMwMHMtc21hbGwtYWxsb2NzLW10LXBlcmZvcm1hbmNlL2xrcC1iZHct
-ZXAyL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3oveDg2XzY0LXJoZWwtNy4yL2djYy03Lzg5
-NzU0NDEwYTM4ZWY0N2U5M2IwYmYyOWMyNmMxZWI4OTIzNGU5MTgvMApMS1BfU0VSVkVSPWlubgpk
-ZWJ1ZwphcGljPWRlYnVnCnN5c3JxX2Fsd2F5c19lbmFibGVkCnJjdXBkYXRlLnJjdV9jcHVfc3Rh
-bGxfdGltZW91dD0xMDAKbmV0LmlmbmFtZXM9MApwcmludGsuZGV2a21zZz1vbgpwYW5pYz0tMQpz
-b2Z0bG9ja3VwX3BhbmljPTEKbm1pX3dhdGNoZG9nPXBhbmljCm9vcHM9cGFuaWMKbG9hZF9yYW1k
-aXNrPTIKcHJvbXB0X3JhbWRpc2s9MApkcmJkLm1pbm9yX2NvdW50PTgKc3lzdGVtZC5sb2dfbGV2
-ZWw9ZXJyCmlnbm9yZV9sb2dsZXZlbApjb25zb2xlPXR0eTAKZWFybHlwcmludGs9dHR5UzAsMTE1
-MjAwCmNvbnNvbGU9dHR5UzAsMTE1MjAwCnZnYT1ub3JtYWwKcncnCglleHBvcnQgbW9kdWxlc19p
-bml0cmQ9Jy9wa2cvbGludXgveDg2XzY0LXJoZWwtNy4yL2djYy03Lzg5NzU0NDEwYTM4ZWY0N2U5
-M2IwYmYyOWMyNmMxZWI4OTIzNGU5MTgvbW9kdWxlcy5jZ3onCglleHBvcnQgYm1faW5pdHJkPScv
-b3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovcnVuLWlwY29uZmlnXzIw
-MTgtMDQtMDMuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9s
-a3BfMjAxOC0wNC0wMy5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMu
-Y2d6L3JzeW5jLXJvb3Rmc18yMDE4LTA0LTAzLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZf
-NjQtMjAxOC0wNC0wMy5jZ3ovcGVyZl8yMDE4LTA1LTE3LmNneiwvb3NpbWFnZS9wa2cvZGViaWFu
-LXg4Nl82NC0yMDE4LTA0LTAzLmNnei9wZXJmLXg4Nl82NC0zYWNmNGUzOTUyNjBfMjAxOC0wNS0x
-OC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3ZtLXNjYWxh
-YmlsaXR5XzIwMTgtMDUtMTcuY2d6LC9vc2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTgtMDQt
-MDMuY2d6L3ZtLXNjYWxhYmlsaXR5LXg4Nl82NC03YWZkZWFiXzIwMTgtMDYtMDYuY2d6LC9vc2lt
-YWdlL3BrZy9jb21tb24vdm0tc2NhbGFiaWxpdHkteDg2XzY0LmNneiwvb3NpbWFnZS9kZXBzL2Rl
-Ymlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovbXBzdGF0XzIwMTgtMDUtMTguY2d6LC9vc2ltYWdl
-L2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei90dXJib3N0YXRfMjAxOC0wNS0xNy5j
-Z3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovdHVyYm9zdGF0LXg4
-Nl82NC1kNTI1NmIyXzIwMTgtMDUtMTguY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0y
-MDE4LTA0LTAzLmNnei9od18yMDE2LTExLTE1LmNneicKCWV4cG9ydCBsa3BfaW5pdHJkPScvbGtw
-L2xrcC9sa3AteDg2XzY0LmNneicKCWV4cG9ydCBzaXRlPSdpbm4nCglleHBvcnQgTEtQX0NHSV9Q
-T1JUPTgwCglleHBvcnQgTEtQX0NJRlNfUE9SVD0xMzkKCWV4cG9ydCByZXBlYXRfdG89MgoJZXhw
-b3J0IGtlcm5lbD0nL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvODk3NTQ0MTBhMzhl
-ZjQ3ZTkzYjBiZjI5YzI2YzFlYjg5MjM0ZTkxOC92bWxpbnV6LTQuMTcuMC1yYzUtMDAwMTYtZzg5
-NzU0NDEnCglleHBvcnQgZGVxdWV1ZV90aW1lPScyMDE4LTA2LTA5IDIxOjI0OjI2ICswODAwJwoJ
-ZXhwb3J0IGpvYl9pbml0cmQ9Jy9sa3Avc2NoZWR1bGVkL2xrcC1iZHctZXAyL3ZtLXNjYWxhYmls
-aXR5LTMwMHMtc21hbGwtYWxsb2NzLW10LXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAxOC0w
-NC0wMy5jZ3otODk3NTQ0MTBhMzhlZjQ3ZTkzYjBiZjI5YzI2YzFlYjg5MjM0ZTkxOC0yMDE4MDYw
-OS04MDcyNC14M3VqdW4tMC5jZ3onCgoJWyAtbiAiJExLUF9TUkMiIF0gfHwKCWV4cG9ydCBMS1Bf
-U1JDPS9sa3AvJHt1c2VyOi1sa3B9L3NyYwp9CgpydW5fam9iKCkKewoJZWNobyAkJCA+ICRUTVAv
-cnVuLWpvYi5waWQKCgkuICRMS1BfU1JDL2xpYi9odHRwLnNoCgkuICRMS1BfU1JDL2xpYi9qb2Iu
-c2gKCS4gJExLUF9TUkMvbGliL2Vudi5zaAoKCWV4cG9ydF90b3BfZW52CgoJcnVuX3NldHVwICRM
-S1BfU1JDL3NldHVwL2NwdWZyZXFfZ292ZXJub3IgJ3BlcmZvcm1hbmNlJwoKCXJ1bl9tb25pdG9y
-ICRMS1BfU1JDL21vbml0b3JzL25vLXN0ZG91dC93cmFwcGVyIHBlcmYtcHJvZmlsZQoJcnVuX21v
-bml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBrbXNnCglydW5fbW9uaXRvciAkTEtQX1NS
-Qy9tb25pdG9ycy9uby1zdGRvdXQvd3JhcHBlciBib290LXRpbWUKCXJ1bl9tb25pdG9yICRMS1Bf
-U1JDL21vbml0b3JzL3dyYXBwZXIgaW9zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9y
-cy93cmFwcGVyIGhlYXJ0YmVhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBl
-ciB2bXN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbnVtYS1udW1h
-c3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBudW1hLXZtc3RhdAoJ
-cnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBudW1hLW1lbWluZm8KCXJ1bl9t
-b25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgcHJvYy12bXN0YXQKCXJ1bl9tb25pdG9y
-ICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgcHJvYy1zdGF0CglydW5fbW9uaXRvciAkTEtQX1NS
-Qy9tb25pdG9ycy93cmFwcGVyIG1lbWluZm8KCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3Jz
-L3dyYXBwZXIgc2xhYmluZm8KCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIg
-aW50ZXJydXB0cwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBsb2NrX3N0
-YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbGF0ZW5jeV9zdGF0cwoJ
-cnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBzb2Z0aXJxcwoJcnVuX21vbml0
-b3IgJExLUF9TUkMvbW9uaXRvcnMvb25lLXNob3Qvd3JhcHBlciBiZGlfZGV2X21hcHBpbmcKCXJ1
-bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgZGlza3N0YXRzCglydW5fbW9uaXRv
-ciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIG5mc3N0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JD
-L21vbml0b3JzL3dyYXBwZXIgY3B1aWRsZQoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMv
-d3JhcHBlciBjcHVmcmVxLXN0YXRzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFw
-cGVyIHR1cmJvc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBzY2hl
-ZF9kZWJ1ZwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBwZXJmLXN0YXQK
-CXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbXBzdGF0CglydW5fbW9uaXRv
-ciBwbWV0ZXJfc2VydmVyPSdsa3AtbmhtLWRwMicgcG1ldGVyX2RldmljZT0neW9rb2dhd2Etd3Qz
-MTAnICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgcG1ldGVyCglydW5fbW9uaXRvciAkTEtQX1NS
-Qy9tb25pdG9ycy93cmFwcGVyIG9vbS1raWxsZXIKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0
-b3JzL3BsYWluL3dhdGNoZG9nCgoJcnVuX3Rlc3QgdGVzdD0nc21hbGwtYWxsb2NzLW10JyAkTEtQ
-X1NSQy90ZXN0cy93cmFwcGVyIHZtLXNjYWxhYmlsaXR5Cn0KCmV4dHJhY3Rfc3RhdHMoKQp7Cgkk
-TEtQX1NSQy9zdGF0cy93cmFwcGVyIHBlcmYtcHJvZmlsZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
-ciB2bS1zY2FsYWJpbGl0eQoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBrbXNnCgkkTEtQX1NSQy9z
-dGF0cy93cmFwcGVyIGJvb3QtdGltZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBpb3N0YXQKCSRM
-S1BfU1JDL3N0YXRzL3dyYXBwZXIgdm1zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG51bWEt
-bnVtYXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbnVtYS12bXN0YXQKCSRMS1BfU1JDL3N0
-YXRzL3dyYXBwZXIgbnVtYS1tZW1pbmZvCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHByb2Mtdm1z
-dGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG1lbWluZm8KCSRMS1BfU1JDL3N0YXRzL3dyYXBw
-ZXIgc2xhYmluZm8KCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgaW50ZXJydXB0cwoJJExLUF9TUkMv
-c3RhdHMvd3JhcHBlciBsb2NrX3N0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbGF0ZW5jeV9z
-dGF0cwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBzb2Z0aXJxcwoJJExLUF9TUkMvc3RhdHMvd3Jh
-cHBlciBkaXNrc3RhdHMKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbmZzc3RhdAoJJExLUF9TUkMv
-c3RhdHMvd3JhcHBlciBjcHVpZGxlCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHR1cmJvc3RhdAoJ
-JExLUF9TUkMvc3RhdHMvd3JhcHBlciBzY2hlZF9kZWJ1ZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
-ciBwZXJmLXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbXBzdGF0CgkkTEtQX1NSQy9zdGF0
-cy93cmFwcGVyIHBtZXRlcgoKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgdGltZSB2bS1zY2FsYWJp
-bGl0eS50aW1lCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHRpbWUKCSRMS1BfU1JDL3N0YXRzL3dy
-YXBwZXIgZG1lc2cKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIga21zZwoJJExLUF9TUkMvc3RhdHMv
-d3JhcHBlciBzdGRlcnIKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbGFzdF9zdGF0ZQp9CgoiJEAi
-Cg==
+IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0nc3RyZXNzLW5nJwoJ
+ZXhwb3J0IHRlc3RjYXNlPSdzdHJlc3MtbmcnCglleHBvcnQgY2F0ZWdvcnk9J2JlbmNobWFyaycK
+CWV4cG9ydCBucl90aHJlYWRzPTg4CglleHBvcnQgdGVzdHRpbWU9NjAKCWV4cG9ydCBqb2Jfb3Jp
+Z2luPScvbGtwL2xrcC8uc3JjLTIwMTgwNjA4LTE2NDE1My9hbGxvdC9jeWNsaWM6bGludXgtZGV2
+ZWw6ZGV2ZWwtaG91cmx5L2xrcC1iZHctZXA2L3N0cmVzcy1uZy55YW1sJwoJZXhwb3J0IHF1ZXVl
+PSdiaXNlY3QnCglleHBvcnQgdGVzdGJveD0nbGtwLWJkdy1lcDYnCglleHBvcnQgdGJveF9ncm91
+cD0nbGtwLWJkdy1lcDYnCglleHBvcnQgc3VibWl0X2lkPSc1YjFjYTMzYzBiOWE5MzUzYjg0OWRj
+ZGQnCglleHBvcnQgam9iX2ZpbGU9Jy9sa3Avc2NoZWR1bGVkL2xrcC1iZHctZXA2L3N0cmVzcy1u
+Zy0xMDAlLTYwcy1kZXZpY2UtcGVyZm9ybWFuY2UtZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNn
+ei1hZmY5NjcxMWRmYTIzNDI5MGU5ZjY5Njk0NGI2NTAyNGY2MzgzOWZlLTIwMTgwNjEwLTg2OTY4
+LXB5dHhmay0wLnlhbWwnCglleHBvcnQgaWQ9JzRiYmIzMjkyYzFjNWIzYTVmYTc2Nzc1M2M0NzI0
+YTAxMmE0MTg3YjknCglleHBvcnQgbW9kZWw9J0Jyb2Fkd2VsbC1FUCcKCWV4cG9ydCBucl9jcHU9
+ODgKCWV4cG9ydCBtZW1vcnk9JzEyOEcnCglleHBvcnQgcm9vdGZzX3BhcnRpdGlvbj0KCWV4cG9y
+dCBicmFuZD0nSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjY5OSB2NCBAIDIuMjBHSHonCglleHBv
+cnQgbmVlZF9rY29uZmlnPSdDT05GSUdfU0VDVVJJVFlfQVBQQVJNT1I9eScKCWV4cG9ydCBjb21t
+aXQ9J2FmZjk2NzExZGZhMjM0MjkwZTlmNjk2OTQ0YjY1MDI0ZjYzODM5ZmUnCglleHBvcnQga2Nv
+bmZpZz0neDg2XzY0LXJoZWwtNy4yJwoJZXhwb3J0IGNvbXBpbGVyPSdnY2MtNycKCWV4cG9ydCBy
+b290ZnM9J2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3onCglleHBvcnQgZW5xdWV1ZV90aW1l
+PScyMDE4LTA2LTEwIDEyOjA0OjEzICswODAwJwoJZXhwb3J0IF9pZD0nNWIxY2EzM2MwYjlhOTM1
+M2I4NDlkY2RkJwoJZXhwb3J0IF9ydD0nL3Jlc3VsdC9zdHJlc3MtbmcvMTAwJS02MHMtZGV2aWNl
+LXBlcmZvcm1hbmNlL2xrcC1iZHctZXA2L2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3oveDg2
+XzY0LXJoZWwtNy4yL2djYy03L2FmZjk2NzExZGZhMjM0MjkwZTlmNjk2OTQ0YjY1MDI0ZjYzODM5
+ZmUnCglleHBvcnQgdXNlcj0nbGtwJwoJZXhwb3J0IGhlYWRfY29tbWl0PSdkMDA2OWFkMzJjNzdk
+MDE2OTIzNDA5NzE1ZWRiY2VlODE5OTM2OTcyJwoJZXhwb3J0IGJhc2VfY29tbWl0PScyOWRjZWE4
+ODc3OWM4NTZjN2RjOTIwNDBhMGMwMTIzMzI2MzEwMWQ0JwoJZXhwb3J0IGJyYW5jaD0nbGludXgt
+ZGV2ZWwvZGV2ZWwtaG91cmx5LTIwMTgwNjA3MjEnCglleHBvcnQgcmVzdWx0X3Jvb3Q9Jy9yZXN1
+bHQvc3RyZXNzLW5nLzEwMCUtNjBzLWRldmljZS1wZXJmb3JtYW5jZS9sa3AtYmR3LWVwNi9kZWJp
+YW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3g4Nl82NC1yaGVsLTcuMi9nY2MtNy9hZmY5NjcxMWRm
+YTIzNDI5MGU5ZjY5Njk0NGI2NTAyNGY2MzgzOWZlLzAnCglleHBvcnQgTEtQX1NFUlZFUj0naW5u
+JwoJZXhwb3J0IG1heF91cHRpbWU9MTE2NS42MgoJZXhwb3J0IGluaXRyZD0nL29zaW1hZ2UvZGVi
+aWFuL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3onCglleHBvcnQgYm9vdGxvYWRlcl9hcHBl
+bmQ9J3Jvb3Q9L2Rldi9yYW0wCnVzZXI9bGtwCmpvYj0vbGtwL3NjaGVkdWxlZC9sa3AtYmR3LWVw
+Ni9zdHJlc3MtbmctMTAwJS02MHMtZGV2aWNlLXBlcmZvcm1hbmNlLWRlYmlhbi14ODZfNjQtMjAx
+OC0wNC0wMy5jZ3otYWZmOTY3MTFkZmEyMzQyOTBlOWY2OTY5NDRiNjUwMjRmNjM4MzlmZS0yMDE4
+MDYxMC04Njk2OC1weXR4ZmstMC55YW1sCkFSQ0g9eDg2XzY0Cmtjb25maWc9eDg2XzY0LXJoZWwt
+Ny4yCmJyYW5jaD1saW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxODA2MDcyMQpjb21taXQ9YWZm
+OTY3MTFkZmEyMzQyOTBlOWY2OTY5NDRiNjUwMjRmNjM4MzlmZQpCT09UX0lNQUdFPS9wa2cvbGlu
+dXgveDg2XzY0LXJoZWwtNy4yL2djYy03L2FmZjk2NzExZGZhMjM0MjkwZTlmNjk2OTQ0YjY1MDI0
+ZjYzODM5ZmUvdm1saW51ei00LjE3LjAtcmM1LTAwMTk4LWdhZmY5NjcxCm1heF91cHRpbWU9MTE2
+NQpSRVNVTFRfUk9PVD0vcmVzdWx0L3N0cmVzcy1uZy8xMDAlLTYwcy1kZXZpY2UtcGVyZm9ybWFu
+Y2UvbGtwLWJkdy1lcDYvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei94ODZfNjQtcmhlbC03
+LjIvZ2NjLTcvYWZmOTY3MTFkZmEyMzQyOTBlOWY2OTY5NDRiNjUwMjRmNjM4MzlmZS8wCkxLUF9T
+RVJWRVI9aW5uCmRlYnVnCmFwaWM9ZGVidWcKc3lzcnFfYWx3YXlzX2VuYWJsZWQKcmN1cGRhdGUu
+cmN1X2NwdV9zdGFsbF90aW1lb3V0PTEwMApuZXQuaWZuYW1lcz0wCnByaW50ay5kZXZrbXNnPW9u
+CnBhbmljPS0xCnNvZnRsb2NrdXBfcGFuaWM9MQpubWlfd2F0Y2hkb2c9cGFuaWMKb29wcz1wYW5p
+Ywpsb2FkX3JhbWRpc2s9Mgpwcm9tcHRfcmFtZGlzaz0wCmRyYmQubWlub3JfY291bnQ9OApzeXN0
+ZW1kLmxvZ19sZXZlbD1lcnIKaWdub3JlX2xvZ2xldmVsCmNvbnNvbGU9dHR5MAplYXJseXByaW50
+az10dHlTMCwxMTUyMDAKY29uc29sZT10dHlTMCwxMTUyMDAKdmdhPW5vcm1hbApydycKCWV4cG9y
+dCBtb2R1bGVzX2luaXRyZD0nL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvYWZmOTY3
+MTFkZmEyMzQyOTBlOWY2OTY5NDRiNjUwMjRmNjM4MzlmZS9tb2R1bGVzLmNneicKCWV4cG9ydCBi
+bV9pbml0cmQ9Jy9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9ydW4t
+aXBjb25maWdfMjAxOC0wNC0wMy5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgt
+MDQtMDMuY2d6L2xrcF8yMDE4LTA0LTAzLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQt
+MjAxOC0wNC0wMy5jZ3ovcnN5bmMtcm9vdGZzXzIwMTgtMDQtMDMuY2d6LC9vc2ltYWdlL2RlcHMv
+ZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9zdHJlc3MtbmdfMjAxOC0wNS0xNy5jZ3osL29z
+aW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L21wc3RhdF8yMDE4LTA1LTE4
+LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovdHVyYm9zdGF0
+XzIwMTgtMDUtMTcuY2d6LC9vc2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6
+L3R1cmJvc3RhdC14ODZfNjQtZDUyNTZiMl8yMDE4LTA1LTE4LmNneiwvb3NpbWFnZS9kZXBzL2Rl
+Ymlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovcGVyZl8yMDE4LTA1LTE3LmNneiwvb3NpbWFnZS9w
+a2cvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9wZXJmLXg4Nl82NC0zYWNmNGUzOTUyNjBf
+MjAxOC0wNS0xOC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6
+L2h3XzIwMTYtMTEtMTUuY2d6JwoJZXhwb3J0IGxrcF9pbml0cmQ9Jy9sa3AvbGtwL2xrcC14ODZf
+NjQuY2d6JwoJZXhwb3J0IHNpdGU9J2lubicKCWV4cG9ydCBMS1BfQ0dJX1BPUlQ9ODAKCWV4cG9y
+dCBMS1BfQ0lGU19QT1JUPTEzOQoJZXhwb3J0IHJlcGVhdF90bz0yCglleHBvcnQga2VybmVsPScv
+cGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNy9hZmY5NjcxMWRmYTIzNDI5MGU5ZjY5Njk0
+NGI2NTAyNGY2MzgzOWZlL3ZtbGludXotNC4xNy4wLXJjNS0wMDE5OC1nYWZmOTY3MScKCWV4cG9y
+dCBkZXF1ZXVlX3RpbWU9JzIwMTgtMDYtMTAgMTI6MTY6MTQgKzA4MDAnCglleHBvcnQgam9iX2lu
+aXRyZD0nL2xrcC9zY2hlZHVsZWQvbGtwLWJkdy1lcDYvc3RyZXNzLW5nLTEwMCUtNjBzLWRldmlj
+ZS1wZXJmb3JtYW5jZS1kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6LWFmZjk2NzExZGZhMjM0
+MjkwZTlmNjk2OTQ0YjY1MDI0ZjYzODM5ZmUtMjAxODA2MTAtODY5NjgtcHl0eGZrLTAuY2d6JwoK
+CVsgLW4gIiRMS1BfU1JDIiBdIHx8CglleHBvcnQgTEtQX1NSQz0vbGtwLyR7dXNlcjotbGtwfS9z
+cmMKfQoKcnVuX2pvYigpCnsKCWVjaG8gJCQgPiAkVE1QL3J1bi1qb2IucGlkCgoJLiAkTEtQX1NS
+Qy9saWIvaHR0cC5zaAoJLiAkTEtQX1NSQy9saWIvam9iLnNoCgkuICRMS1BfU1JDL2xpYi9lbnYu
+c2gKCglleHBvcnRfdG9wX2VudgoKCXJ1bl9zZXR1cCAkTEtQX1NSQy9zZXR1cC9jcHVmcmVxX2dv
+dmVybm9yICdwZXJmb3JtYW5jZScKCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFw
+cGVyIGttc2cKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL25vLXN0ZG91dC93cmFwcGVy
+IGJvb3QtdGltZQoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBpb3N0YXQK
+CXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgaGVhcnRiZWF0CglydW5fbW9u
+aXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHZtc3RhdAoJcnVuX21vbml0b3IgJExLUF9T
+UkMvbW9uaXRvcnMvd3JhcHBlciBudW1hLW51bWFzdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9t
+b25pdG9ycy93cmFwcGVyIG51bWEtdm1zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9y
+cy93cmFwcGVyIG51bWEtbWVtaW5mbwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3Jh
+cHBlciBwcm9jLXZtc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBw
+cm9jLXN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgbWVtaW5mbwoJ
+cnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBzbGFiaW5mbwoJcnVuX21vbml0
+b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBpbnRlcnJ1cHRzCglydW5fbW9uaXRvciAkTEtQ
+X1NSQy9tb25pdG9ycy93cmFwcGVyIGxvY2tfc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9u
+aXRvcnMvd3JhcHBlciBsYXRlbmN5X3N0YXRzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9y
+cy93cmFwcGVyIHNvZnRpcnFzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy9vbmUtc2hv
+dC93cmFwcGVyIGJkaV9kZXZfbWFwcGluZwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMv
+d3JhcHBlciBkaXNrc3RhdHMKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIg
+bmZzc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBjcHVpZGxlCgly
+dW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGNwdWZyZXEtc3RhdHMKCXJ1bl9t
+b25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgdHVyYm9zdGF0CglydW5fbW9uaXRvciAk
+TEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHNjaGVkX2RlYnVnCglydW5fbW9uaXRvciAkTEtQX1NS
+Qy9tb25pdG9ycy93cmFwcGVyIHBlcmYtc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRv
+cnMvd3JhcHBlciBtcHN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL25vLXN0ZG91
+dC93cmFwcGVyIHBlcmYtcHJvZmlsZQoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3Jh
+cHBlciBvb20ta2lsbGVyCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy9wbGFpbi93YXRj
+aGRvZwoKCXJ1bl90ZXN0IGNsYXNzPSdkZXZpY2UnICRMS1BfU1JDL3Rlc3RzL3dyYXBwZXIgc3Ry
+ZXNzLW5nCn0KCmV4dHJhY3Rfc3RhdHMoKQp7CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHN0cmVz
+cy1uZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBrbXNnCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVy
+IGJvb3QtdGltZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBpb3N0YXQKCSRMS1BfU1JDL3N0YXRz
+L3dyYXBwZXIgdm1zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG51bWEtbnVtYXN0YXQKCSRM
+S1BfU1JDL3N0YXRzL3dyYXBwZXIgbnVtYS12bXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIg
+bnVtYS1tZW1pbmZvCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHByb2Mtdm1zdGF0CgkkTEtQX1NS
+Qy9zdGF0cy93cmFwcGVyIG1lbWluZm8KCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc2xhYmluZm8K
+CSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgaW50ZXJydXB0cwoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
+ciBsb2NrX3N0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbGF0ZW5jeV9zdGF0cwoJJExLUF9T
+UkMvc3RhdHMvd3JhcHBlciBzb2Z0aXJxcwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBkaXNrc3Rh
+dHMKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbmZzc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
+ciBjcHVpZGxlCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHR1cmJvc3RhdAoJJExLUF9TUkMvc3Rh
+dHMvd3JhcHBlciBzY2hlZF9kZWJ1ZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBwZXJmLXN0YXQK
+CSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbXBzdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHBl
+cmYtcHJvZmlsZQoKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgdGltZSBzdHJlc3MtbmcudGltZQoJ
+JExLUF9TUkMvc3RhdHMvd3JhcHBlciB0aW1lCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGRtZXNn
+CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGttc2cKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc3Rk
+ZXJyCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGxhc3Rfc3RhdGUKfQoKIiRAIgo=
 
---===============0002516209697818326==
+--===============7468503852610368485==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job.yaml"
 
-LS0tCgojISBqb2JzL3ZtLXNjYWxhYmlsaXR5LnlhbWwKc3VpdGU6IHZtLXNjYWxhYmlsaXR5CnRl
-c3RjYXNlOiB2bS1zY2FsYWJpbGl0eQpjYXRlZ29yeTogYmVuY2htYXJrCnBlcmYtcHJvZmlsZTog
-CnJ1bnRpbWU6IDMwMHMKc2l6ZTogCnZtLXNjYWxhYmlsaXR5OgogIHRlc3Q6IHNtYWxsLWFsbG9j
-cy1tdApqb2Jfb3JpZ2luOiAiL2xrcC9sa3AvLnNyYy0yMDE4MDYwNy0yMTQzNTgvYWxsb3QvY3lj
-bGljOmxpbnV4LWRldmVsOmRldmVsLWhvdXJseS9sa3AtYmR3LWVwMi92bS1zY2FsYWJpbGl0eS55
-YW1sIgoKIyEgcXVldWUgb3B0aW9ucwpxdWV1ZTogYmlzZWN0CnRlc3Rib3g6IGxrcC1iZHctZXAy
-CnRib3hfZ3JvdXA6IGxrcC1iZHctZXAyCnN1Ym1pdF9pZDogNWIxYmQxODQwYjlhOTMzYjU0Y2Vj
-ZmM5CmpvYl9maWxlOiAiL2xrcC9zY2hlZHVsZWQvbGtwLWJkdy1lcDIvdm0tc2NhbGFiaWxpdHkt
-MzAwcy1zbWFsbC1hbGxvY3MtbXQtcGVyZm9ybWFuY2UtZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAz
-LmNnei04OTc1NDQxMGEzOGVmNDdlOTNiMGJmMjljMjZjMWViODkyMzRlOTE4LTIwMTgwNjA5LTgw
-NzI0LXgzdWp1bi0wLnlhbWwiCmlkOiA2OTVkMWQ0ZDU2ODE4ODJkNjFjZThiMDVkNTQ1NjYxNDli
-YmQ4MWQwCgojISBob3N0cy9sa3AtYmR3LWVwMgptb2RlbDogQnJvYWR3ZWxsLUVQCm5yX25vZGU6
-IDIKbnJfY3B1OiA4OAptZW1vcnk6IDEyOEcKbnJfc3NkX3BhcnRpdGlvbnM6IDEKc3NkX3BhcnRp
-dGlvbnM6ICIvZGV2L2Rpc2svYnktaWQvYXRhLUlOVEVMX1NTRFNDMkJXMzYwSDZfQ1ZUUjU1MTQw
-NVpQMzYwREdOLXBhcnQxIgpzd2FwX3BhcnRpdGlvbnM6IApyb290ZnNfcGFydGl0aW9uOiAiL2Rl
-di9kaXNrL2J5LWlkL2F0YS1JTlRFTF9TU0RTQzJCQTgwMEc0X0JUSFY1Mzk2MDBZUjgwME9HTi1w
-YXJ0MSIKYnJhbmQ6IEludGVsKFIpIFhlb24oUikgQ1BVIEU1LTI2OTkgdjQgQCAyLjIwR0h6Cgoj
-ISBpbmNsdWRlL2NhdGVnb3J5L2JlbmNobWFyawprbXNnOiAKYm9vdC10aW1lOiAKaW9zdGF0OiAK
-aGVhcnRiZWF0OiAKdm1zdGF0OiAKbnVtYS1udW1hc3RhdDogCm51bWEtdm1zdGF0OiAKbnVtYS1t
-ZW1pbmZvOiAKcHJvYy12bXN0YXQ6IApwcm9jLXN0YXQ6IAptZW1pbmZvOiAKc2xhYmluZm86IApp
-bnRlcnJ1cHRzOiAKbG9ja19zdGF0OiAKbGF0ZW5jeV9zdGF0czogCnNvZnRpcnFzOiAKYmRpX2Rl
-dl9tYXBwaW5nOiAKZGlza3N0YXRzOiAKbmZzc3RhdDogCmNwdWlkbGU6IApjcHVmcmVxLXN0YXRz
-OiAKdHVyYm9zdGF0OiAKc2NoZWRfZGVidWc6IApwZXJmLXN0YXQ6IAptcHN0YXQ6IAoKIyEgaW5j
-bHVkZS9jYXRlZ29yeS9BTEwKY3B1ZnJlcV9nb3Zlcm5vcjogcGVyZm9ybWFuY2UKCiMhIGluY2x1
-ZGUvdm0tc2NhbGFiaWxpdHkKbmVlZF9rY29uZmlnOiBDT05GSUdfQkxLX0RFVl9MT09QCgojISBp
-bmNsdWRlL3F1ZXVlL2N5Y2xpYwpjb21taXQ6IDg5NzU0NDEwYTM4ZWY0N2U5M2IwYmYyOWMyNmMx
-ZWI4OTIzNGU5MTgKCiMhIGluY2x1ZGUvdGVzdGJveC9sa3AtYmR3LWVwMgpwbWV0ZXI6CiAgcG1l
-dGVyX3NlcnZlcjogbGtwLW5obS1kcDIKICBwbWV0ZXJfZGV2aWNlOiB5b2tvZ2F3YS13dDMxMAoK
-IyEgZGVmYXVsdCBwYXJhbXMKa2NvbmZpZzogeDg2XzY0LXJoZWwtNy4yCmNvbXBpbGVyOiBnY2Mt
-Nwpyb290ZnM6IGRlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3oKZW5xdWV1ZV90aW1lOiAyMDE4
-LTA2LTA5IDIxOjA5OjI0LjIyODMwOTY0NSArMDg6MDAKX2lkOiA1YjFiZDE4NDBiOWE5MzNiNTRj
-ZWNmYzkKX3J0OiAiL3Jlc3VsdC92bS1zY2FsYWJpbGl0eS8zMDBzLXNtYWxsLWFsbG9jcy1tdC1w
-ZXJmb3JtYW5jZS9sa3AtYmR3LWVwMi9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3g4Nl82
-NC1yaGVsLTcuMi9nY2MtNy84OTc1NDQxMGEzOGVmNDdlOTNiMGJmMjljMjZjMWViODkyMzRlOTE4
-IgoKIyEgc2NoZWR1bGUgb3B0aW9ucwp1c2VyOiBsa3AKaGVhZF9jb21taXQ6IGQwMDY5YWQzMmM3
-N2QwMTY5MjM0MDk3MTVlZGJjZWU4MTk5MzY5NzIKYmFzZV9jb21taXQ6IDI5ZGNlYTg4Nzc5Yzg1
-NmM3ZGM5MjA0MGEwYzAxMjMzMjYzMTAxZDQKYnJhbmNoOiBsaW51eC1kZXZlbC9kZXZlbC1ob3Vy
-bHktMjAxODA2MDcyMQpyZXN1bHRfcm9vdDogIi9yZXN1bHQvdm0tc2NhbGFiaWxpdHkvMzAwcy1z
-bWFsbC1hbGxvY3MtbXQtcGVyZm9ybWFuY2UvbGtwLWJkdy1lcDIvZGViaWFuLXg4Nl82NC0yMDE4
-LTA0LTAzLmNnei94ODZfNjQtcmhlbC03LjIvZ2NjLTcvODk3NTQ0MTBhMzhlZjQ3ZTkzYjBiZjI5
-YzI2YzFlYjg5MjM0ZTkxOC8wIgpMS1BfU0VSVkVSOiBpbm4KbWF4X3VwdGltZTogMTUwMAppbml0
-cmQ6ICIvb3NpbWFnZS9kZWJpYW4vZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNneiIKYm9vdGxv
-YWRlcl9hcHBlbmQ6Ci0gcm9vdD0vZGV2L3JhbTAKLSB1c2VyPWxrcAotIGpvYj0vbGtwL3NjaGVk
-dWxlZC9sa3AtYmR3LWVwMi92bS1zY2FsYWJpbGl0eS0zMDBzLXNtYWxsLWFsbG9jcy1tdC1wZXJm
-b3JtYW5jZS1kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6LTg5NzU0NDEwYTM4ZWY0N2U5M2Iw
-YmYyOWMyNmMxZWI4OTIzNGU5MTgtMjAxODA2MDktODA3MjQteDN1anVuLTAueWFtbAotIEFSQ0g9
-eDg2XzY0Ci0ga2NvbmZpZz14ODZfNjQtcmhlbC03LjIKLSBicmFuY2g9bGludXgtZGV2ZWwvZGV2
-ZWwtaG91cmx5LTIwMTgwNjA3MjEKLSBjb21taXQ9ODk3NTQ0MTBhMzhlZjQ3ZTkzYjBiZjI5YzI2
-YzFlYjg5MjM0ZTkxOAotIEJPT1RfSU1BR0U9L3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2Nj
-LTcvODk3NTQ0MTBhMzhlZjQ3ZTkzYjBiZjI5YzI2YzFlYjg5MjM0ZTkxOC92bWxpbnV6LTQuMTcu
-MC1yYzUtMDAwMTYtZzg5NzU0NDEKLSBtYXhfdXB0aW1lPTE1MDAKLSBSRVNVTFRfUk9PVD0vcmVz
-dWx0L3ZtLXNjYWxhYmlsaXR5LzMwMHMtc21hbGwtYWxsb2NzLW10LXBlcmZvcm1hbmNlL2xrcC1i
-ZHctZXAyL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3oveDg2XzY0LXJoZWwtNy4yL2djYy03
-Lzg5NzU0NDEwYTM4ZWY0N2U5M2IwYmYyOWMyNmMxZWI4OTIzNGU5MTgvMAotIExLUF9TRVJWRVI9
-aW5uCi0gZGVidWcKLSBhcGljPWRlYnVnCi0gc3lzcnFfYWx3YXlzX2VuYWJsZWQKLSByY3VwZGF0
-ZS5yY3VfY3B1X3N0YWxsX3RpbWVvdXQ9MTAwCi0gbmV0LmlmbmFtZXM9MAotIHByaW50ay5kZXZr
-bXNnPW9uCi0gcGFuaWM9LTEKLSBzb2Z0bG9ja3VwX3BhbmljPTEKLSBubWlfd2F0Y2hkb2c9cGFu
-aWMKLSBvb3BzPXBhbmljCi0gbG9hZF9yYW1kaXNrPTIKLSBwcm9tcHRfcmFtZGlzaz0wCi0gZHJi
-ZC5taW5vcl9jb3VudD04Ci0gc3lzdGVtZC5sb2dfbGV2ZWw9ZXJyCi0gaWdub3JlX2xvZ2xldmVs
-Ci0gY29uc29sZT10dHkwCi0gZWFybHlwcmludGs9dHR5UzAsMTE1MjAwCi0gY29uc29sZT10dHlT
-MCwxMTUyMDAKLSB2Z2E9bm9ybWFsCi0gcncKbW9kdWxlc19pbml0cmQ6ICIvcGtnL2xpbnV4L3g4
-Nl82NC1yaGVsLTcuMi9nY2MtNy84OTc1NDQxMGEzOGVmNDdlOTNiMGJmMjljMjZjMWViODkyMzRl
-OTE4L21vZHVsZXMuY2d6IgpibV9pbml0cmQ6ICIvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQt
-MjAxOC0wNC0wMy5jZ3ovcnVuLWlwY29uZmlnXzIwMTgtMDQtMDMuY2d6LC9vc2ltYWdlL2RlcHMv
-ZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9sa3BfMjAxOC0wNC0wMy5jZ3osL29zaW1hZ2Uv
-ZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3JzeW5jLXJvb3Rmc18yMDE4LTA0LTAz
-LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovcGVyZl8yMDE4
-LTA1LTE3LmNneiwvb3NpbWFnZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9wZXJm
-LXg4Nl82NC0zYWNmNGUzOTUyNjBfMjAxOC0wNS0xOC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
-eDg2XzY0LTIwMTgtMDQtMDMuY2d6L3ZtLXNjYWxhYmlsaXR5XzIwMTgtMDUtMTcuY2d6LC9vc2lt
-YWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3ZtLXNjYWxhYmlsaXR5LXg4Nl82
-NC03YWZkZWFiXzIwMTgtMDYtMDYuY2d6LC9vc2ltYWdlL3BrZy9jb21tb24vdm0tc2NhbGFiaWxp
-dHkteDg2XzY0LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ov
-bXBzdGF0XzIwMTgtMDUtMTguY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0
-LTAzLmNnei90dXJib3N0YXRfMjAxOC0wNS0xNy5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZf
-NjQtMjAxOC0wNC0wMy5jZ3ovdHVyYm9zdGF0LXg4Nl82NC1kNTI1NmIyXzIwMTgtMDUtMTguY2d6
-LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9od18yMDE2LTExLTE1
-LmNneiIKbGtwX2luaXRyZDogIi9sa3AvbGtwL2xrcC14ODZfNjQuY2d6IgpzaXRlOiBpbm4KCiMh
-IC9sa3AvbGtwLy5zcmMtMjAxODA2MDktMTExMjI3L2luY2x1ZGUvc2l0ZS9pbm4KTEtQX0NHSV9Q
-T1JUOiA4MApMS1BfQ0lGU19QT1JUOiAxMzkKb29tLWtpbGxlcjogCndhdGNoZG9nOiAKCiMhIHJ1
-bnRpbWUgc3RhdHVzCnJlcGVhdF90bzogMgoKIyEgdXNlciBvdmVycmlkZXMKa2VybmVsOiAiL3Br
-Zy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvODk3NTQ0MTBhMzhlZjQ3ZTkzYjBiZjI5YzI2
-YzFlYjg5MjM0ZTkxOC92bWxpbnV6LTQuMTcuMC1yYzUtMDAwMTYtZzg5NzU0NDEiCmRlcXVldWVf
-dGltZTogMjAxOC0wNi0wOSAyMToyNDoyNi41NDk4OTU0MzAgKzA4OjAwCmpvYl9zdGF0ZTogZmlu
-aXNoZWQKbG9hZGF2ZzogNzQuMjIgNTQuMDkgMjQuMTMgMS83NTEgOTk2MApzdGFydF90aW1lOiAn
-MTUyODU1MDcyNicKZW5kX3RpbWU6ICcxNTI4NTUxMDMwJwp2ZXJzaW9uOiAiL2xrcC9sa3AvLnNy
-Yy0yMDE4MDYwOC0xNjQxNTMiCg==
+LS0tCgojISBqb2JzL3N0cmVzcy1uZy55YW1sCnN1aXRlOiBzdHJlc3MtbmcKdGVzdGNhc2U6IHN0
+cmVzcy1uZwpjYXRlZ29yeTogYmVuY2htYXJrCm5yX3RocmVhZHM6IDEwMCUKdGVzdHRpbWU6IDYw
+cwpzdHJlc3Mtbmc6CiAgY2xhc3M6IGRldmljZQpqb2Jfb3JpZ2luOiAiL2xrcC9sa3AvLnNyYy0y
+MDE4MDYwOC0xNjQxNTMvYWxsb3QvY3ljbGljOmxpbnV4LWRldmVsOmRldmVsLWhvdXJseS9sa3At
+YmR3LWVwNi9zdHJlc3MtbmcueWFtbCIKCiMhIHF1ZXVlIG9wdGlvbnMKcXVldWU6IGJpc2VjdAp0
+ZXN0Ym94OiBsa3AtYmR3LWVwNgp0Ym94X2dyb3VwOiBsa3AtYmR3LWVwNgpzdWJtaXRfaWQ6IDVi
+MWNhMzNjMGI5YTkzNTNiODQ5ZGNkZApqb2JfZmlsZTogIi9sa3Avc2NoZWR1bGVkL2xrcC1iZHct
+ZXA2L3N0cmVzcy1uZy0xMDAlLTYwcy1kZXZpY2UtcGVyZm9ybWFuY2UtZGViaWFuLXg4Nl82NC0y
+MDE4LTA0LTAzLmNnei1hZmY5NjcxMWRmYTIzNDI5MGU5ZjY5Njk0NGI2NTAyNGY2MzgzOWZlLTIw
+MTgwNjEwLTg2OTY4LXB5dHhmay0wLnlhbWwiCmlkOiA0YmJiMzI5MmMxYzViM2E1ZmE3Njc3NTNj
+NDcyNGEwMTJhNDE4N2I5CgojISBob3N0cy9sa3AtYmR3LWVwNgptb2RlbDogQnJvYWR3ZWxsLUVQ
+Cm5yX2NwdTogODgKbWVtb3J5OiAxMjhHCnJvb3Rmc19wYXJ0aXRpb246IApicmFuZDogSW50ZWwo
+UikgWGVvbihSKSBDUFUgRTUtMjY5OSB2NCBAIDIuMjBHSHoKCiMhIGluY2x1ZGUvY2F0ZWdvcnkv
+YmVuY2htYXJrCmttc2c6IApib290LXRpbWU6IAppb3N0YXQ6IApoZWFydGJlYXQ6IAp2bXN0YXQ6
+IApudW1hLW51bWFzdGF0OiAKbnVtYS12bXN0YXQ6IApudW1hLW1lbWluZm86IApwcm9jLXZtc3Rh
+dDogCnByb2Mtc3RhdDogCm1lbWluZm86IApzbGFiaW5mbzogCmludGVycnVwdHM6IApsb2NrX3N0
+YXQ6IApsYXRlbmN5X3N0YXRzOiAKc29mdGlycXM6IApiZGlfZGV2X21hcHBpbmc6IApkaXNrc3Rh
+dHM6IApuZnNzdGF0OiAKY3B1aWRsZTogCmNwdWZyZXEtc3RhdHM6IAp0dXJib3N0YXQ6IApzY2hl
+ZF9kZWJ1ZzogCnBlcmYtc3RhdDogCm1wc3RhdDogCnBlcmYtcHJvZmlsZTogCgojISBpbmNsdWRl
+L2NhdGVnb3J5L0FMTApjcHVmcmVxX2dvdmVybm9yOiBwZXJmb3JtYW5jZQoKIyEgaW5jbHVkZS9z
+dHJlc3MtbmcKbmVlZF9rY29uZmlnOgotIENPTkZJR19TRUNVUklUWV9BUFBBUk1PUj15CgojISBp
+bmNsdWRlL3F1ZXVlL2N5Y2xpYwpjb21taXQ6IGFmZjk2NzExZGZhMjM0MjkwZTlmNjk2OTQ0YjY1
+MDI0ZjYzODM5ZmUKCiMhIGRlZmF1bHQgcGFyYW1zCmtjb25maWc6IHg4Nl82NC1yaGVsLTcuMgpj
+b21waWxlcjogZ2NjLTcKcm9vdGZzOiBkZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6CmVucXVl
+dWVfdGltZTogMjAxOC0wNi0xMCAxMjowNDoxMy4wNzkwNzY0NjUgKzA4OjAwCl9pZDogNWIxY2Ez
+M2MwYjlhOTM1M2I4NDlkY2RkCl9ydDogIi9yZXN1bHQvc3RyZXNzLW5nLzEwMCUtNjBzLWRldmlj
+ZS1wZXJmb3JtYW5jZS9sa3AtYmR3LWVwNi9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3g4
+Nl82NC1yaGVsLTcuMi9nY2MtNy9hZmY5NjcxMWRmYTIzNDI5MGU5ZjY5Njk0NGI2NTAyNGY2Mzgz
+OWZlIgoKIyEgc2NoZWR1bGUgb3B0aW9ucwp1c2VyOiBsa3AKaGVhZF9jb21taXQ6IGQwMDY5YWQz
+MmM3N2QwMTY5MjM0MDk3MTVlZGJjZWU4MTk5MzY5NzIKYmFzZV9jb21taXQ6IDI5ZGNlYTg4Nzc5
+Yzg1NmM3ZGM5MjA0MGEwYzAxMjMzMjYzMTAxZDQKYnJhbmNoOiBsaW51eC1kZXZlbC9kZXZlbC1o
+b3VybHktMjAxODA2MDcyMQpyZXN1bHRfcm9vdDogIi9yZXN1bHQvc3RyZXNzLW5nLzEwMCUtNjBz
+LWRldmljZS1wZXJmb3JtYW5jZS9sa3AtYmR3LWVwNi9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMu
+Y2d6L3g4Nl82NC1yaGVsLTcuMi9nY2MtNy9hZmY5NjcxMWRmYTIzNDI5MGU5ZjY5Njk0NGI2NTAy
+NGY2MzgzOWZlLzAiCkxLUF9TRVJWRVI6IGlubgptYXhfdXB0aW1lOiAxMTY1LjYyCmluaXRyZDog
+Ii9vc2ltYWdlL2RlYmlhbi9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6Igpib290bG9hZGVy
+X2FwcGVuZDoKLSByb290PS9kZXYvcmFtMAotIHVzZXI9bGtwCi0gam9iPS9sa3Avc2NoZWR1bGVk
+L2xrcC1iZHctZXA2L3N0cmVzcy1uZy0xMDAlLTYwcy1kZXZpY2UtcGVyZm9ybWFuY2UtZGViaWFu
+LXg4Nl82NC0yMDE4LTA0LTAzLmNnei1hZmY5NjcxMWRmYTIzNDI5MGU5ZjY5Njk0NGI2NTAyNGY2
+MzgzOWZlLTIwMTgwNjEwLTg2OTY4LXB5dHhmay0wLnlhbWwKLSBBUkNIPXg4Nl82NAotIGtjb25m
+aWc9eDg2XzY0LXJoZWwtNy4yCi0gYnJhbmNoPWxpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDE4
+MDYwNzIxCi0gY29tbWl0PWFmZjk2NzExZGZhMjM0MjkwZTlmNjk2OTQ0YjY1MDI0ZjYzODM5ZmUK
+LSBCT09UX0lNQUdFPS9wa2cvbGludXgveDg2XzY0LXJoZWwtNy4yL2djYy03L2FmZjk2NzExZGZh
+MjM0MjkwZTlmNjk2OTQ0YjY1MDI0ZjYzODM5ZmUvdm1saW51ei00LjE3LjAtcmM1LTAwMTk4LWdh
+ZmY5NjcxCi0gbWF4X3VwdGltZT0xMTY1Ci0gUkVTVUxUX1JPT1Q9L3Jlc3VsdC9zdHJlc3Mtbmcv
+MTAwJS02MHMtZGV2aWNlLXBlcmZvcm1hbmNlL2xrcC1iZHctZXA2L2RlYmlhbi14ODZfNjQtMjAx
+OC0wNC0wMy5jZ3oveDg2XzY0LXJoZWwtNy4yL2djYy03L2FmZjk2NzExZGZhMjM0MjkwZTlmNjk2
+OTQ0YjY1MDI0ZjYzODM5ZmUvMAotIExLUF9TRVJWRVI9aW5uCi0gZGVidWcKLSBhcGljPWRlYnVn
+Ci0gc3lzcnFfYWx3YXlzX2VuYWJsZWQKLSByY3VwZGF0ZS5yY3VfY3B1X3N0YWxsX3RpbWVvdXQ9
+MTAwCi0gbmV0LmlmbmFtZXM9MAotIHByaW50ay5kZXZrbXNnPW9uCi0gcGFuaWM9LTEKLSBzb2Z0
+bG9ja3VwX3BhbmljPTEKLSBubWlfd2F0Y2hkb2c9cGFuaWMKLSBvb3BzPXBhbmljCi0gbG9hZF9y
+YW1kaXNrPTIKLSBwcm9tcHRfcmFtZGlzaz0wCi0gZHJiZC5taW5vcl9jb3VudD04Ci0gc3lzdGVt
+ZC5sb2dfbGV2ZWw9ZXJyCi0gaWdub3JlX2xvZ2xldmVsCi0gY29uc29sZT10dHkwCi0gZWFybHlw
+cmludGs9dHR5UzAsMTE1MjAwCi0gY29uc29sZT10dHlTMCwxMTUyMDAKLSB2Z2E9bm9ybWFsCi0g
+cncKbW9kdWxlc19pbml0cmQ6ICIvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuMi9nY2MtNy9hZmY5
+NjcxMWRmYTIzNDI5MGU5ZjY5Njk0NGI2NTAyNGY2MzgzOWZlL21vZHVsZXMuY2d6IgpibV9pbml0
+cmQ6ICIvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovcnVuLWlwY29u
+ZmlnXzIwMTgtMDQtMDMuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAz
+LmNnei9sa3BfMjAxOC0wNC0wMy5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgt
+MDQtMDMuY2d6L3JzeW5jLXJvb3Rmc18yMDE4LTA0LTAzLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlh
+bi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovc3RyZXNzLW5nXzIwMTgtMDUtMTcuY2d6LC9vc2ltYWdl
+L2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9tcHN0YXRfMjAxOC0wNS0xOC5jZ3os
+L29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3R1cmJvc3RhdF8yMDE4
+LTA1LTE3LmNneiwvb3NpbWFnZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei90dXJi
+b3N0YXQteDg2XzY0LWQ1MjU2YjJfMjAxOC0wNS0xOC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
+eDg2XzY0LTIwMTgtMDQtMDMuY2d6L3BlcmZfMjAxOC0wNS0xNy5jZ3osL29zaW1hZ2UvcGtnL2Rl
+Ymlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovcGVyZi14ODZfNjQtM2FjZjRlMzk1MjYwXzIwMTgt
+MDUtMTguY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9od18y
+MDE2LTExLTE1LmNneiIKbGtwX2luaXRyZDogIi9sa3AvbGtwL2xrcC14ODZfNjQuY2d6IgpzaXRl
+OiBpbm4KCiMhIC9sa3AvbGtwLy5zcmMtMjAxODA2MDktMTExMjI3L2luY2x1ZGUvc2l0ZS9pbm4K
+TEtQX0NHSV9QT1JUOiA4MApMS1BfQ0lGU19QT1JUOiAxMzkKb29tLWtpbGxlcjogCndhdGNoZG9n
+OiAKCiMhIHJ1bnRpbWUgc3RhdHVzCnJlcGVhdF90bzogMgoKIyEgdXNlciBvdmVycmlkZXMKa2Vy
+bmVsOiAiL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjIvZ2NjLTcvYWZmOTY3MTFkZmEyMzQyOTBl
+OWY2OTY5NDRiNjUwMjRmNjM4MzlmZS92bWxpbnV6LTQuMTcuMC1yYzUtMDAxOTgtZ2FmZjk2NzEi
+CmRlcXVldWVfdGltZTogMjAxOC0wNi0xMCAxMjoxNjoxNC4xMDk0NTQyOTIgKzA4OjAwCmpvYl9z
+dGF0ZTogZmluaXNoZWQKbG9hZGF2ZzogNzMuODAgNDcuNDUgMjAuMDMgMS83NTAgODI5MgpzdGFy
+dF90aW1lOiAnMTUyODYwNDIzOCcKZW5kX3RpbWU6ICcxNTI4NjA0NDc4Jwp2ZXJzaW9uOiAiL2xr
+cC9sa3AvLnNyYy0yMDE4MDYwOS0xMTEyMjciCg==
 
---===============0002516209697818326==
+--===============7468503852610368485==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -4075,16 +3771,7 @@ CmZvciBjcHVfZGlyIGluIC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdVswLTldKgpkbwoJb25s
 aW5lX2ZpbGU9IiRjcHVfZGlyIi9vbmxpbmUKCVsgLWYgIiRvbmxpbmVfZmlsZSIgXSAmJiBbICIk
 KGNhdCAiJG9ubGluZV9maWxlIikiIC1lcSAwIF0gJiYgY29udGludWUKCglmaWxlPSIkY3B1X2Rp
 ciIvY3B1ZnJlcS9zY2FsaW5nX2dvdmVybm9yCglbIC1mICIkZmlsZSIgXSAmJiBlY2hvICJwZXJm
-b3JtYW5jZSIgPiAiJGZpbGUiCmRvbmUKCmNkIC9sa3AvYmVuY2htYXJrcy92bS1zY2FsYWJpbGl0
-eQogbW91bnQgLXQgdG1wZnMgLW8gc2l6ZT0xMDAlIHZtLXNjYWxhYmlsaXR5LXRtcCAvdG1wL3Zt
-LXNjYWxhYmlsaXR5LXRtcAogdHJ1bmNhdGUgLXMgMTM1MDU5MDM0MTEyIC90bXAvdm0tc2NhbGFi
-aWxpdHktdG1wL3ZtLXNjYWxhYmlsaXR5LmltZwogbWtmcy54ZnMgLXEgL3RtcC92bS1zY2FsYWJp
-bGl0eS10bXAvdm0tc2NhbGFiaWxpdHkuaW1nCiBtb3VudCAtbyBsb29wIC90bXAvdm0tc2NhbGFi
-aWxpdHktdG1wL3ZtLXNjYWxhYmlsaXR5LmltZyAvdG1wL3ZtLXNjYWxhYmlsaXR5LXRtcC92bS1z
-Y2FsYWJpbGl0eQogLi9jYXNlLXNtYWxsLWFsbG9jcy1tdAogLi91c2VtZW0gLS1ydW50aW1lIDMw
-MCAtdCA4OCAtLXJlYWRvbmx5IC0tdW5pdCA0MDk2MCA0OTk3NzgwMTI2MgogdW1vdW50IC90bXAv
-dm0tc2NhbGFiaWxpdHktdG1wL3ZtLXNjYWxhYmlsaXR5CiBybSAvdG1wL3ZtLXNjYWxhYmlsaXR5
-LXRtcC92bS1zY2FsYWJpbGl0eS5pbWcKIHVtb3VudCAvdG1wL3ZtLXNjYWxhYmlsaXR5LXRtcAo=
+b3JtYW5jZSIgPiAiJGZpbGUiCmRvbmUKCg==
 
---===============0002516209697818326==--
+--===============7468503852610368485==--
 
