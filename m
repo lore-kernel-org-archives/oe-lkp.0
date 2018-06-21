@@ -1,53 +1,28 @@
-Content-Type: multipart/mixed; boundary="===============6016020876921861905=="
+Content-Type: multipart/mixed; boundary="===============7879796152665878421=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [lkp-robot] [Kbuild] 050e9baa9d: netperf.Throughput_total_tps -5.6% regression (FYI)
-Date: Thu, 21 Jun 2018 16:25:53 +0800
-Message-ID: <87muvoh7fy.fsf@yhuang-dev.intel.com>
-In-Reply-To: <CA+55aFxXCD8qLfHcnshLR2_Feb=RLkOFfCeqPF_sShy7rK2cAw@mail.gmail.com>
+Date: Thu, 21 Jun 2018 17:37:23 +0900
+Message-ID: <CA+55aFywQwJDAu6tdouAung+wHxRAWS7Rj8KhtMtHC=NGbF7rw@mail.gmail.com>
+In-Reply-To: <87muvoh7fy.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6016020876921861905==
+--===============7879796152665878421==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Linus,
+On Thu, Jun 21, 2018 at 5:25 PM Huang, Ying <ying.huang@intel.com> wrote:
+> Do you have interest in some other comparison?
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+No, I think the overhead of the strong stackprotector is a bit sad,
+but I assume it's because of the nasty code to load the stack canary
+from a cacheline that has absolutely nothing else in it.
 
-> On Thu, Jun 21, 2018 at 5:10 PM kernel test robot <xiaolong.ye@intel.co=
-m> wrote:
->>
->> FYI, we noticed a -5.6% regression of netperf.Throughput_total_tps
->> due to commit 050e9b ("Kbuild: rename CC_STACKPROTECTOR[_STRONG]
->> config variables")
->
-> That's perhaps a surprisingly large cost to stack protector, but you
-> did move from "no stack protector at all":
->
->> $ grep STACKPROTECTOR config-4.17.0-11782-gbe779f0
->> CONFIG_HAVE_CC_STACKPROTECTOR=3Dy
->> CONFIG_CC_HAS_STACKPROTECTOR_NONE=3Dy
->> # CONFIG_CC_STACKPROTECTOR is not set
->> CONFIG_CC_HAS_SANE_STACKPROTECTOR=3Dy
->
-> To having the *strong* stack protector enabled:
->
->> $ grep STACKPROTECTOR config-4.17.0-11783-g050e9baa
->> CONFIG_HAVE_CC_STACKPROTECTOR=3Dy
->> CONFIG_CC_HAS_STACKPROTECTOR_NONE=3Dy
->> CONFIG_STACKPROTECTOR=3Dy
->> CONFIG_STACKPROTECTOR_STRONG=3Dy
->> CONFIG_CC_HAS_SANE_STACKPROTECTOR=3Dy
->
-> so you're testing the "no overhead" case to the "worst overhead" case.
+Oh well.
 
-Do you have interest in some other comparison?
+          Linus
 
-Best Regards,
-Huang, Ying
-
---===============6016020876921861905==--
+--===============7879796152665878421==--
 
