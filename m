@@ -1,53 +1,67 @@
-Content-Type: multipart/mixed; boundary="===============8847540139462857984=="
+Content-Type: multipart/mixed; boundary="===============1739343831561115377=="
 MIME-Version: 1.0
-From: Ilya Dryomov <idryomov@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [rbd] 2f18d46683: vm-scalability.throughput -92.3% regression
-Date: Fri, 22 Jun 2018 11:00:08 +0200
-Message-ID: <CAOi1vP8q45y35hbFyqkNGN4iB2BAbBwzhwROO6TmaoURJUcFEg@mail.gmail.com>
-In-Reply-To: <20180622083408.GZ11011@yexl-desktop>
+Subject: Re: [lkp-robot] [fs] 3deb642f0d: will-it-scale.per_process_ops -8.8% regression
+Date: Fri, 22 Jun 2018 18:25:45 +0900
+Message-ID: <CA+55aFw5ghByk_zCN25G6rPPSAQma3Mh0t4s18CtLg=h6U9+Zg@mail.gmail.com>
+In-Reply-To: <20180622082752.GX11011@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8847540139462857984==
+--===============1739343831561115377==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 22, 2018 at 10:37 AM kernel test robot
-<xiaolong.ye@intel.com> wrote:
->
->
-> Greeting,
->
-> We noticed a -92.3% regression of vm-scalability.throughput due to commit:
->
-> commit: 2f18d46683cb3047c41229d57cf7c6e2ee48676f ("rbd: refactor rbd_wait=
-_state_locked()")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> in testcase: vm-scalability
-> on test machine: 80 threads Skylake with 64G memory
-> with following parameters:
->
->         runtime: 300s
->         test: lru-file-readonce
->         cpufreq_governor: performance
->
-> test-description: The motivation behind this suite is to exercise functio=
-ns and regions of the mm/ of the Linux kernel which are of interest to us.
-> test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability=
-.git/
+[ Added Al, since this all came in through his trees. The guilty
+authors were already added by the robot ]
 
-This is a false positive: rbd is disabled in the attached config,
-as is the rest of ceph:
+On Fri, Jun 22, 2018 at 5:31 PM kernel test robot <xiaolong.ye@intel.com>=
+ wrote:
+>
+> FYI, we noticed a -8.8% regression of will-it-scale.per_process_ops due t=
+o commit:
 
-  # CONFIG_CEPH_LIB is not set
-  # CONFIG_BLK_DEV_RBD is not set
-  # CONFIG_CEPH_FS is not set
+Guys, this seems pretty big.
 
-Thanks,
+What was the alleged advantage of the new poll methods again? Because
+it sure isn't obvious - not from the numbers, and not from the commit
+messages.
 
-                Ilya
+The code seems to be garbage. It replaces our nice generic "you can do
+anything you damn well like in your poll function" with two limited
+fixed-function "just give me the poll head and the mask".
 
---===============8847540139462857984==--
+I was assuming there  was a good reason for it, but looking closer I
+see absolutely nothing but negatives. The argument that keyed wake-ups
+somehow make multiple wake-queues irrelevant doesn't hold water when
+the code is more complex and apparently slower. It's not like anybody
+ever *had* to use multiple wait-queues, but the old code was both
+simpler and cleaner and *allowed* you to use multiple queues if you
+wanted to.
+
+So the old code is simpler, cleaner, and more flexible. And according
+to the test robot, it also performs better.
+
+So I'm inclined to just revert the whole mess unless I get some
+serious explanations for what the supposed advantages are.
+
+The disadvantages are obvious: every poll event now causes *two*
+indirect branches to the low-level filesystem or driver - one to get
+he poll head, and one to get the mask. Add to that all the new "do we
+have the new-style or old sane poll interface" tests, and poll is
+obviously more complicated.
+
+Quite frankly, when I look at it, I just go "that's _stupid_". I'm
+entirely  missing the point of the conversion, and it's not explained
+in the messages either.
+
+If we could get the poll head by just having a direct pointer in the
+'struct file', maybe that would be one thing. As it is, this all
+literally just adds overhead for no obvious reason. It replaced one
+simple direct call with two dependent but separate ones.
+
+                Linus
+
+--===============1739343831561115377==--
 
