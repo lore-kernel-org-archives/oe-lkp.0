@@ -1,85 +1,27 @@
-Content-Type: multipart/mixed; boundary="===============4383008848444589696=="
+Content-Type: multipart/mixed; boundary="===============2515003746803895023=="
 MIME-Version: 1.0
-From: Al Viro <viro@ZenIV.linux.org.uk>
+From: David Howells <dhowells@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [fs] 3deb642f0d: will-it-scale.per_process_ops -8.8% regression
-Date: Fri, 22 Jun 2018 12:01:17 +0100
-Message-ID: <20180622110117.GU30522@ZenIV.linux.org.uk>
-In-Reply-To: <20180622100014.GA12425@lst.de>
+Subject: Re: [lkp-robot] [ipc] 5cd6a50ace: stress-ng.mq.ops_per_sec -100% regression
+Date: Fri, 22 Jun 2018 12:43:01 +0100
+Message-ID: <29080.1529667781@warthog.procyon.org.uk>
+In-Reply-To: <20180622082555.GV11011@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4383008848444589696==
+--===============2515003746803895023==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 22, 2018 at 12:00:14PM +0200, Christoph Hellwig wrote:
-> And a version with select() also covered:
+kernel test robot <xiaolong.ye@intel.com> wrote:
 
-For fuck sake, if you want vfs_poll() inlined, *make* *it* *inlined*.
-Is there any reason for not doing that other than EXPORT_SYMBOL_GPL
-fetish?  Because if there isn't, I would like to draw your attention
-to the fact that _this_ pwecious inchewlekshul pwopewty can be trivially
-open-coded by out-of-tree shite even if it happens to be non-GPL one.
+> FYI, we noticed a -100% regression of stress-ng.mq.ops_per_sec due to com=
+mit:
 
->  					mask =3D vfs_poll(f.file, wait);
-> +					if (f.file->f_op->poll) {
+Sorry, I'm not sure what "-100%" means in this case.  Does it not work at a=
+ll?
 
-... not to mention that here you forgot to remove the call itself while
-expanding it.
+David
 
-Said that, you are not attacking the worst part of it - it's a static
-branch, not the considerably more costly indirect ones.  Remember when
-I asked you about the price of those?  Method calls are costly.
-
-Another problem with with ->get_poll_head() calling conventions is
-that originally you wanted to return ERR_PTR(-mask) as a way to report
-not needing to call ->poll_mask(); that got shot down since quite
-a few of those don't fit into 12 bits that ERR_PTR() gives us.
-
-IIRC, the real reason for non-constant ->get_poll_head() was the sockets,
-with
-
-static struct wait_queue_head *sock_get_poll_head(struct file *file,
-                __poll_t events)
-{
-        struct socket *sock =3D file->private_data;
-
-        if (!sock->ops->poll_mask)
-                return NULL;
-        sock_poll_busy_loop(sock, events);
-        return sk_sleep(sock->sk); =
-
-}
-
-The first part isn't a problem (it is constant).  The second is
-static inline void sock_poll_busy_loop(struct socket *sock, __poll_t events)
-{
-        if (sk_can_busy_loop(sock->sk) &&
-            events && (events & POLL_BUSY_LOOP)) {
-                /* once, only if requested by syscall */
-                sk_busy_loop(sock->sk, 1);
-        }
-} =
-
-
-and the third -
-
-static inline wait_queue_head_t *sk_sleep(struct sock *sk)
-{
-        BUILD_BUG_ON(offsetof(struct socket_wq, wait) !=3D 0);
-        return &rcu_dereference_raw(sk->sk_wq)->wait; =
-
-} =
-
-
-Now, ->sk_wq is modified only in sock_init_data() and sock_graft();
-the latter, IIRC, is ->accept() helper.  Do we ever call either of
-those on a sock of already opened file?  IOW, is there any real
-reason for socket ->get_poll_head() not to be constant, other
-than wanting to keep POLL_BUSY_LOOP handling out of ->poll_mask()?
-I agree that POLL_BUSY_LOOP is ugly as hell, but you *still* have
-sock_poll_mask() not free from it...
-
---===============4383008848444589696==--
+--===============2515003746803895023==--
 
