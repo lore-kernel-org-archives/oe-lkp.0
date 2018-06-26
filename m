@@ -1,86 +1,83 @@
-Content-Type: multipart/mixed; boundary="===============0289828934866734185=="
+Content-Type: multipart/mixed; boundary="===============6281872916057846948=="
 MIME-Version: 1.0
-From: Bjorn Helgaas <helgaas@kernel.org>
+From: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [bisect done] ef1433f717 [ 7.049860] BUG: unable to handle kernel NULL pointer dereference at 0000004c
-Date: Tue, 26 Jun 2018 16:15:01 -0500
-Message-ID: <20180626211501.GC181504@bhelgaas-glaptop.roam.corp.google.com>
-In-Reply-To: <20180626011007.GI11011@yexl-desktop>
+Subject: Re: [lkp-robot] 173fb50cb6 [ 15.588995] WARNING: suspicious RCU usage
+Date: Tue, 26 Jun 2018 15:10:20 -0700
+Message-ID: <20180626221020.GO3593@linux.vnet.ibm.com>
+In-Reply-To: <20180626215306.GA259070@joelaf.mtv.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0289828934866734185==
+--===============6281872916057846948==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 26, 2018 at 09:10:07AM +0800, kernel test robot wrote:
+On Tue, Jun 26, 2018 at 02:53:06PM -0700, Joel Fernandes wrote:
+> On Tue, Jun 26, 2018 at 03:53:49PM +0800, kernel test robot wrote:
+> > =
+
+> > Greetings,
+> > =
+
+> > 0day kernel testing robot got the below dmesg and the first bad commit =
+is
+> > =
+
+> > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git mas=
+ter
+> > =
+
+> > commit 173fb50cb6e99b86f5c67a0220a8b1a75f5c1f67
+> > Author:     Joel Fernandes (Google) <joel@joelfernandes.org>
+> > AuthorDate: Sun Jun 10 16:45:44 2018 -0700
+> > Commit:     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> > CommitDate: Wed Jun 20 07:44:37 2018 -0700
+> > =
+
+> >     rcutorture: Make boost test more robust
+> >     Currently, with RCU_BOOST disabled, I get no failures when forcing
+> >     rcutorture to test RCU boost priority inversion. The reason seems t=
+o be
+> >     that we don't check for failures if the callback never ran at all f=
+or
+> >     the duration of the boost-test loop.
+> >     Further, the 'rtb' and 'rtbf' counters seem to be used inconsistent=
+ly.
+> >     'rtb' is incremented at the start of each test and 'rtbf' is increm=
+ented
+> >     per-cpu on each failure of call_rcu. So its possible 'rtbf' > 'rtb'.
+> >     To test the boost with rcutorture, I did following on a 4-CPU x86 m=
+achine:
+> >     modprobe rcutorture  test_boost=3D2
+> >     sleep 20
+> >     rmmod rcutorture
+> >     With patch:
+> >     rtbf: 8 rtb: 12
+> >     Without patch:
+> >     rtbf: 0 rtb: 2
+> >     In summary this patch:
+> >      - Increments failed and total test counters once per boost-test.
+> >      - Checks for failure cases correctly.
+> >     Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> >     Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 > =
 
-> Greetings,
+> This -next tree seems to be missing this patch:
 > =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+> 7e9736664ada rcu: Assign higher prio to RCU threads if rcutorture is buil=
+t-in
 > =
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> =
+> Paul's rcu/next tree already has this patch. I think this reported issue =
+will
+> go away once Paul's rcu/next tree is pulled.
 
-> commit ef1433f717a2c63747a519d86965d73ff9bd08b3
-> Author:     Kishon Vijay Abraham I <kishon@ti.com>
-> AuthorDate: Mon Apr 2 18:59:35 2018 +0530
-> Commit:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> CommitDate: Fri May 18 16:40:50 2018 +0100
-> =
+Which is updated again, so hopefully this should be taken care of.  ;-)
 
->     PCI: endpoint: Create configfs entry for each pci_epf_device_id table=
- entry
->     =
+							Thanx, Paul
 
->     In order to be able to provide correct driver_data for pci_epf device,
->     a separate configfs entry for each pci_epf_device_id table entry in
->     pci_epf_driver is required.
->     =
 
->     Add support to create configfs entry for each pci_epf_device_id
->     table entry here.
->     =
-
->     Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
->     Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
->     Tested-by: Gustavo Pimentel <gustavo.pimentel@synopsys.com>
-
->From the .config below:
-
-  # CONFIG_PCI_ENDPOINT_CONFIGFS is not set
-
->From include/linux/pci-ep-cfs.h:
-
-  #ifdef CONFIG_PCI_ENDPOINT_CONFIGFS
-  ...
-  #else
-  static inline struct config_group *pci_ep_cfs_add_epf_group(const char *n=
-ame)
-  {
-        return 0;
-  }
-
->From ef1433f717a2:
-
-  +       id =3D driver->id_table;
-  +       while (id->name[0]) {
-  +               group =3D pci_ep_cfs_add_epf_group(id->name);
-  +               mutex_lock(&pci_epf_mutex);
-  +               list_add_tail(&group->group_entry, &driver->epf_group);
-
-Obviously group =3D=3D 0 and the list_add_tail() is a NULL pointer
-dereference.
-
-Looks like we need either some sort of #ifdef CONFIG_PCI_ENDPOINT_CONFIGFS
-in __pci_epf_register_driver() and pci_epf_unregister_driver(), or
-higher-level interfaces and corresponding stubs that add/remove all
-the IDs.
-
-Bjorn
-
---===============0289828934866734185==--
+--===============6281872916057846948==--
 
