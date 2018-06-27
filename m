@@ -1,47 +1,103 @@
-Content-Type: multipart/mixed; boundary="===============5700007307618988988=="
+Content-Type: multipart/mixed; boundary="===============3260917844687980558=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [fs] 3deb642f0d: will-it-scale.per_process_ops -8.8% regression
-Date: Wed, 27 Jun 2018 09:07:45 +0200
-Message-ID: <20180627070745.GA9765@lst.de>
-In-Reply-To: <20180626060338.GU12146@yexl-desktop>
+Subject: Re: [lkp-robot] [bisect done] ef1433f717 [ 7.049860] BUG: unable to handle kernel NULL pointer dereference at 0000004c
+Date: Wed, 27 Jun 2018 11:26:42 +0100
+Message-ID: <20180627102620.GA7893@red-moon>
+In-Reply-To: <20180626211501.GC181504@bhelgaas-glaptop.roam.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5700007307618988988==
+--===============3260917844687980558==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 26, 2018 at 02:03:38PM +0800, Ye Xiaolong wrote:
-> Hi,
+On Tue, Jun 26, 2018 at 04:15:01PM -0500, Bjorn Helgaas wrote:
+> On Tue, Jun 26, 2018 at 09:10:07AM +0800, kernel test robot wrote:
+> > =
+
+> > Greetings,
+> > =
+
+> > 0day kernel testing robot got the below dmesg and the first bad commit =
+is
+> > =
+
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git mast=
+er
+> > =
+
+> > commit ef1433f717a2c63747a519d86965d73ff9bd08b3
+> > Author:     Kishon Vijay Abraham I <kishon@ti.com>
+> > AuthorDate: Mon Apr 2 18:59:35 2018 +0530
+> > Commit:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > CommitDate: Fri May 18 16:40:50 2018 +0100
+> > =
+
+> >     PCI: endpoint: Create configfs entry for each pci_epf_device_id tab=
+le entry
+> >     =
+
+> >     In order to be able to provide correct driver_data for pci_epf devi=
+ce,
+> >     a separate configfs entry for each pci_epf_device_id table entry in
+> >     pci_epf_driver is required.
+> >     =
+
+> >     Add support to create configfs entry for each pci_epf_device_id
+> >     table entry here.
+> >     =
+
+> >     Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+> >     Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> >     Tested-by: Gustavo Pimentel <gustavo.pimentel@synopsys.com>
 > =
 
-> On 06/22, Christoph Hellwig wrote:
-> >Hi Xiaolong,
-> >
-> >can you retest this workload on the following branch:
-> >
-> >    git://git.infradead.org/users/hch/vfs.git remove-get-poll-head
-> >
-> >Gitweb:
-> >
-> >    http://git.infradead.org/users/hch/vfs.git/shortlog/refs/heads/remov=
-e-get-poll-head
+> From the .config below:
 > =
 
-> Here is the comparison for commit 3deb642f0d and commit 8fbedc1 ("fs: rep=
-lace f_ops->get_poll_head with a static ->f_poll_head pointer") in remove-g=
-et-poll-head branch.
+>   # CONFIG_PCI_ENDPOINT_CONFIGFS is not set
+> =
 
-Especially the boot time ones and others look like they have additional
-changes.
+> From include/linux/pci-ep-cfs.h:
+> =
 
-Can you compare the baseline of my tree, which is
-894b8c00 ("Merge tag 'for_v4.18-rc2' of
-git://git.kernel.org/pub/scm/linux/kernel/git/jack/linux-fs") against 8fbed=
-c1
-(("fs: replace f_ops->get_poll_head with a static ->f_poll_head pointer") ?
+>   #ifdef CONFIG_PCI_ENDPOINT_CONFIGFS
+>   ...
+>   #else
+>   static inline struct config_group *pci_ep_cfs_add_epf_group(const char =
+*name)
+>   {
+>         return 0;
+>   }
+> =
 
---===============5700007307618988988==--
+> From ef1433f717a2:
+> =
+
+>   +       id =3D driver->id_table;
+>   +       while (id->name[0]) {
+>   +               group =3D pci_ep_cfs_add_epf_group(id->name);
+>   +               mutex_lock(&pci_epf_mutex);
+>   +               list_add_tail(&group->group_entry, &driver->epf_group);
+> =
+
+> Obviously group =3D=3D 0 and the list_add_tail() is a NULL pointer
+> dereference.
+> =
+
+> Looks like we need either some sort of #ifdef CONFIG_PCI_ENDPOINT_CONFIGFS
+> in __pci_epf_register_driver() and pci_epf_unregister_driver(), or
+> higher-level interfaces and corresponding stubs that add/remove all
+> the IDs.
+
+Yes, probably augment pci_ep_cfs_add_epf_group() to take a driver
+pointer so that adding a group is a NOP on !CONFIG_PCI_ENDPOINT_CONFIGFS.
+
+Kishon can you please post a fix as soon as you can, thanks.
+
+Lorenzo
+
+--===============3260917844687980558==--
 
