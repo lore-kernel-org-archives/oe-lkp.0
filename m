@@ -1,59 +1,60 @@
-Content-Type: multipart/mixed; boundary="===============4465185908311080067=="
+Content-Type: multipart/mixed; boundary="===============5407390690330198991=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 6/6] fs: replace f_ops->get_poll_head with a static ->f_poll_head pointer
-Date: Thu, 28 Jun 2018 15:35:03 -0700
-Message-ID: <CA+55aFzjUeacfpB8F2_J3rmOv3+hXF2zNNWP4UzdXxWTgD=nxQ@mail.gmail.com>
-In-Reply-To: <20180628222016.GL30522@ZenIV.linux.org.uk>
+Subject: [PATCH 4/6] net: remove busy polling from sock_get_poll_head
+Date: Thu, 28 Jun 2018 16:20:57 +0200
+Message-ID: <20180628142059.10017-5-hch@lst.de>
+In-Reply-To: <20180628142059.10017-1-hch@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4465185908311080067==
+--===============5407390690330198991==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 28, 2018 at 3:20 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> The rules for drivers change only in one respect - if your ->poll() is go=
-ing to
-> need to block, check poll_requested_events(pt) & EPOLL_ATOMIC and return =
-EPOLLNVAL
-> in such case.
+Busy polling always comes from a synchronous poll context, so for now we
+can assume that it calls ->poll if present.  Move the busy polling in
+sock_poll to the common block and remove it from sock_get_poll_head to
+prepare for the removal of the get_poll_head method.
 
-OI still don't even understand why you care.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ net/socket.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Yes, the AIO poll implementation did it under the spinlock.
+diff --git a/net/socket.c b/net/socket.c
+index 7cf037d21805..ca300c97b7ba 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1135,7 +1135,6 @@ static struct wait_queue_head *sock_get_poll_head(str=
+uct file *file,
+ =
 
-But there's no good *reason* for that.  The "aio_poll()" function
-itself is called in perfectly fine blocking context.
+ 	if (!sock->ops->poll_mask)
+ 		return NULL;
+-	sock_poll_busy_loop(sock, events);
+ 	return &sock->wq->wait;
+ }
+ =
 
-The only reason it does it under the spinlock is that apparently
-Christoph didn't understand how poll() worked.
+@@ -1161,8 +1160,9 @@ static __poll_t sock_poll(struct file *file, poll_tab=
+le *wait)
+ 	struct socket *sock =3D file->private_data;
+ 	__poll_t events =3D poll_requested_events(wait), mask =3D 0;
+ =
 
-As far as I can tell, Christoph could have just done the first pass
-'->poll()' *without* taking a spinlock, and that adds the table entry
-to the table. Then, *under the spinlock*, you associate the table the
-the kioctx. And then *after* the spinlock, you can call "->poll()"
-again (now with a NULL table pointer), to verify that the state is
-still not triggered. That's the whole point of the two-phgase poll
-thing - the first phase adds the entry to the wait queues, and the
-second phase checks for the race of "did it the event happen in the
-meantime".
++	sock_poll_busy_loop(sock, events);
++
+ 	if (sock->ops->poll) {
+-		sock_poll_busy_loop(sock, events);
+ 		mask =3D sock->ops->poll(file, sock, wait);
+ 	} else if (sock->ops->poll_mask) {
+ 		sock_poll_wait(file, sock_get_poll_head(file, events), wait);
+-- =
 
-There is absolutely no excuse for calling '->poll()' itself under the
-spinlock. I don't see any reason for it. The whole "AIO needs this to
-avoid races" was always complete and utter bullshit, as far as I can
-tell.
+2.17.1
 
-So stop it with this crazy and pointless "poll() might block".
 
-IT DAMN WELL SHOULD BE ABLE TO BLOCK, AND NOBODY SANE WILL EVER CARE!
-
-If somebody cares, they are doing things wrong. So fix the AIO code,
-don't look at the poll() code, for chrissake!
-
-               Linus
-
---===============4465185908311080067==--
+--===============5407390690330198991==--
 
