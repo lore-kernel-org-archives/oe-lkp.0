@@ -1,40 +1,31 @@
-Content-Type: multipart/mixed; boundary="===============6415444370425638078=="
+Content-Type: multipart/mixed; boundary="===============5426512681742210223=="
 MIME-Version: 1.0
-From: Matthew Wilcox <willy@infradead.org>
+From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [shmem] a067b3644b: vm-scalability.throughput -73.2% regression
-Date: Wed, 20 Jun 2018 13:27:41 -0700
-Message-ID: <20180620202741.GB11479@bombadil.infradead.org>
-In-Reply-To: <20180620073406.GH11011@yexl-desktop>
+Subject: [RFC] replace ->get_poll_head with a waitqueue pointer in struct file
+Date: Thu, 28 Jun 2018 16:20:53 +0200
+Message-ID: <20180628142059.10017-1-hch@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6415444370425638078==
+--===============5426512681742210223==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 20, 2018 at 03:34:06PM +0800, kernel test robot wrote:
-> To reproduce:
-> =
+Introducing the new poll methods showed up a regression in the
+will-it-scale ltp tests.  One reason for that is that indirect function
+calls are very expensive now with the spectre mitigations.  I'm waiting
+for better numbers, but this series has shown a 5% improvements in the
+ops per second so far, while for the get_poll_head addition we had
+regressions of 3.7% or 8.8% depending on the measurement.
 
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script # job-script is attached in =
-this email
+This series removes the get_poll_head method again and instead stores an
+optional wait_queue_head pointer in struct file, on which the poll_mask
+method can be used if it is set.  The only complication is the networking
+poll code which not only does some interesting gymnastics to get at the
+wait queue pointer, but also has a mode to to hardware polling before
+waiting for an even from poll or epoll.  Because of that this series has
+a few net prep patches that need careful review.
 
-$ /usr/bin/wget --local-encoding=3DUTF-8 --retry-connrefused --waitretry 10=
-00 --tries 1000 https://download.01.org/0day-ci/lkp-qemu/osimage/pkg/common=
-/vm-scalability-x86_64.cgz -N -P /home/willy/.lkp/cache/osimage/pkg/common
---2018-06-20 16:24:50--  https://download.01.org/0day-ci/lkp-qemu/osimage/p=
-kg/common/vm-scalability-x86_64.cgz
-Resolving download.01.org (download.01.org)... 184.26.212.127, 2600:140b:20=
-00:286::ae6, 2600:140b:2000:2bf::ae6
-Connecting to download.01.org (download.01.org)|184.26.212.127|:443... conn=
-ected.
-HTTP request sent, awaiting response... 404 Not Found
-2018-06-20 16:24:50 ERROR 404: Not Found.
-
-:-(
-
---===============6415444370425638078==--
+--===============5426512681742210223==--
 
