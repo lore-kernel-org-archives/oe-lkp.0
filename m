@@ -1,49 +1,73 @@
-Content-Type: multipart/mixed; boundary="===============5105100660370130716=="
+Content-Type: multipart/mixed; boundary="===============5637412672524898136=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 6/6] fs: replace f_ops->get_poll_head with a static ->f_poll_head pointer
-Date: Thu, 28 Jun 2018 14:16:04 -0700
-Message-ID: <CA+55aFxMGvgDavTjeLw77XSy0pCd=GBnzzryp3=vvsQNgyzcaw@mail.gmail.com>
-In-Reply-To: <20180628203746.GJ30522@ZenIV.linux.org.uk>
+Subject: [PATCH 5/6] net: remove sock_poll_busy_loop
+Date: Thu, 28 Jun 2018 16:20:58 +0200
+Message-ID: <20180628142059.10017-6-hch@lst.de>
+In-Reply-To: <20180628142059.10017-1-hch@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5105100660370130716==
+--===============5637412672524898136==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 28, 2018 at 1:37 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
->
-> Speaking of obvious bogosities (a lot more so than a blocking allocation
-> several calls down into helper):
->
-> static __poll_t ca8210_test_int_poll(
->         struct file *filp,
->         struct poll_table_struct *ptable
-> )
+There is no point in hiding this logic in a helper.  Also remove the
+useless events !=3D 0 check, and reorder the remaining ones so that the
+cheaper test comes first.
 
-Ok, that's just garbage.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ include/net/busy_poll.h | 9 ---------
+ net/socket.c            | 4 +++-
+ 2 files changed, 3 insertions(+), 10 deletions(-)
 
-Again, this is not an excuse for changing "->poll()". This is just a
-bogus driver that does stupid things.
+diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+index 4a459a0d70d1..71c72a939bf8 100644
+--- a/include/net/busy_poll.h
++++ b/include/net/busy_poll.h
+@@ -121,15 +121,6 @@ static inline void sk_busy_loop(struct sock *sk, int n=
+onblock)
+ #endif
+ }
+ =
 
-And again, don't use this as an example of "poll must not block" The
-fact is, poll() *can* block for locking and other such things, and
-it's perfectly normal and ok. It just shouldn't block for IO.
+-static inline void sock_poll_busy_loop(struct socket *sock, __poll_t event=
+s)
+-{
+-	if (sk_can_busy_loop(sock->sk) &&
+-	    events && (events & POLL_BUSY_LOOP)) {
+-		/* once, only if requested by syscall */
+-		sk_busy_loop(sock->sk, 1);
+-	}
+-}
+-
+ /* used in the NIC receive handler to mark the skb */
+ static inline void skb_mark_napi_id(struct sk_buff *skb,
+ 				    struct napi_struct *napi)
+diff --git a/net/socket.c b/net/socket.c
+index ca300c97b7ba..4354afe8ad96 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1160,7 +1160,9 @@ static __poll_t sock_poll(struct file *file, poll_tab=
+le *wait)
+ 	struct socket *sock =3D file->private_data;
+ 	__poll_t events =3D poll_requested_events(wait), mask =3D 0;
+ =
 
-I will not take any misguided patches to try to "fix" poll functions
-that might block.
+-	sock_poll_busy_loop(sock, events);
++	/* poll once if requested by the syscall */
++	if ((events & POLL_BUSY_LOOP) && sk_can_busy_loop(sock->sk))
++		sk_busy_loop(sock->sk, 1);
+ =
 
-But I will take patches to fix bugs in drivers. In this case, I think
-the fix is to just remove that crazy "wait_event_interruptible()"
-entirely.
+ 	if (sock->ops->poll) {
+ 		mask =3D sock->ops->poll(file, sock, wait);
+-- =
 
-Not that anybody cares, obviously. Apparently nobody has ever noticed
-how broken that poll function is.
+2.17.1
 
-               Linus
 
---===============5105100660370130716==--
+--===============5637412672524898136==--
 
