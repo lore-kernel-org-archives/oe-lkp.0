@@ -1,55 +1,59 @@
-Content-Type: multipart/mixed; boundary="===============2609324556714502965=="
+Content-Type: multipart/mixed; boundary="===============4465185908311080067=="
 MIME-Version: 1.0
-From: Al Viro <viro@ZenIV.linux.org.uk>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [PATCH 6/6] fs: replace f_ops->get_poll_head with a static ->f_poll_head pointer
-Date: Thu, 28 Jun 2018 23:20:16 +0100
-Message-ID: <20180628222016.GL30522@ZenIV.linux.org.uk>
-In-Reply-To: <20180628213027.GK30522@ZenIV.linux.org.uk>
+Date: Thu, 28 Jun 2018 15:35:03 -0700
+Message-ID: <CA+55aFzjUeacfpB8F2_J3rmOv3+hXF2zNNWP4UzdXxWTgD=nxQ@mail.gmail.com>
+In-Reply-To: <20180628222016.GL30522@ZenIV.linux.org.uk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2609324556714502965==
+--===============4465185908311080067==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 28, 2018 at 10:30:27PM +0100, Al Viro wrote:
+On Thu, Jun 28, 2018 at 3:20 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>
+> The rules for drivers change only in one respect - if your ->poll() is go=
+ing to
+> need to block, check poll_requested_events(pt) & EPOLL_ATOMIC and return =
+EPOLLNVAL
+> in such case.
 
-> I'm not saying that blocking on other things is a bug; some of such *are*=
- bogus,
-> but a lot aren't really broken.  What I said is that in a lot of cases we=
- really
-> have hard "no blocking other than in callback" (and on subsequent passes =
-there's
-> no callback at all).  Which is just about perfect for AIO purposes, so *I=
-F* we
-> go for "new method just for AIO, those who don't have it can take a hike"=
-, we might
-> as well indicate that "can take a hike" in some way (be it opt-in or opt-=
-out) and
-> use straight unchanged ->poll(), with alternative callback.
+OI still don't even understand why you care.
 
-PS: one way of doing that would be to steal a flag from pt->_key and have -=
->poll()
-instances do an equivalent of
-        if (flags & LOOKUP_RCU)
-                return -ECHILD;
-we have in a lot of ->d_revalidate() instances for "need to block" case.  O=
-nly
-here they would've returned EPOLLNVAL.
+Yes, the AIO poll implementation did it under the spinlock.
 
-Most of the ->poll() instances wouldn't care at all - they do not block unl=
-ess
-the callback does (and in this case it wouldn't have).  Normal poll(2)/sele=
-ct(2)
-are completely unaffected.  And AIO would just have that bit set in its
-poll_table_struct.
+But there's no good *reason* for that.  The "aio_poll()" function
+itself is called in perfectly fine blocking context.
 
-The rules for drivers change only in one respect - if your ->poll() is goin=
-g to
-need to block, check poll_requested_events(pt) & EPOLL_ATOMIC and return EP=
-OLLNVAL
-in such case.
+The only reason it does it under the spinlock is that apparently
+Christoph didn't understand how poll() worked.
 
---===============2609324556714502965==--
+As far as I can tell, Christoph could have just done the first pass
+'->poll()' *without* taking a spinlock, and that adds the table entry
+to the table. Then, *under the spinlock*, you associate the table the
+the kioctx. And then *after* the spinlock, you can call "->poll()"
+again (now with a NULL table pointer), to verify that the state is
+still not triggered. That's the whole point of the two-phgase poll
+thing - the first phase adds the entry to the wait queues, and the
+second phase checks for the race of "did it the event happen in the
+meantime".
+
+There is absolutely no excuse for calling '->poll()' itself under the
+spinlock. I don't see any reason for it. The whole "AIO needs this to
+avoid races" was always complete and utter bullshit, as far as I can
+tell.
+
+So stop it with this crazy and pointless "poll() might block".
+
+IT DAMN WELL SHOULD BE ABLE TO BLOCK, AND NOBODY SANE WILL EVER CARE!
+
+If somebody cares, they are doing things wrong. So fix the AIO code,
+don't look at the poll() code, for chrissake!
+
+               Linus
+
+--===============4465185908311080067==--
 
