@@ -1,31 +1,68 @@
-Content-Type: multipart/mixed; boundary="===============5426512681742210223=="
+Content-Type: multipart/mixed; boundary="===============3366449079139302895=="
 MIME-Version: 1.0
 From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
-Subject: [RFC] replace ->get_poll_head with a waitqueue pointer in struct file
-Date: Thu, 28 Jun 2018 16:20:53 +0200
-Message-ID: <20180628142059.10017-1-hch@lst.de>
+Subject: [PATCH 1/6] net: remove sock_poll_busy_flag
+Date: Thu, 28 Jun 2018 16:20:54 +0200
+Message-ID: <20180628142059.10017-2-hch@lst.de>
+In-Reply-To: <20180628142059.10017-1-hch@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5426512681742210223==
+--===============3366449079139302895==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Introducing the new poll methods showed up a regression in the
-will-it-scale ltp tests.  One reason for that is that indirect function
-calls are very expensive now with the spectre mitigations.  I'm waiting
-for better numbers, but this series has shown a 5% improvements in the
-ops per second so far, while for the get_poll_head addition we had
-regressions of 3.7% or 8.8% depending on the measurement.
+Can simplify be inlined into the only caller.
 
-This series removes the get_poll_head method again and instead stores an
-optional wait_queue_head pointer in struct file, on which the poll_mask
-method can be used if it is set.  The only complication is the networking
-poll code which not only does some interesting gymnastics to get at the
-wait queue pointer, but also has a mode to to hardware polling before
-waiting for an even from poll or epoll.  Because of that this series has
-a few net prep patches that need careful review.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ include/net/busy_poll.h | 6 ------
+ net/socket.c            | 5 ++++-
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
---===============5426512681742210223==--
+diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+index c5187438af38..4a459a0d70d1 100644
+--- a/include/net/busy_poll.h
++++ b/include/net/busy_poll.h
+@@ -130,12 +130,6 @@ static inline void sock_poll_busy_loop(struct socket *=
+sock, __poll_t events)
+ 	}
+ }
+ =
+
+-/* if this socket can poll_ll, tell the system call */
+-static inline __poll_t sock_poll_busy_flag(struct socket *sock)
+-{
+-	return sk_can_busy_loop(sock->sk) ? POLL_BUSY_LOOP : 0;
+-}
+-
+ /* used in the NIC receive handler to mark the skb */
+ static inline void skb_mark_napi_id(struct sk_buff *skb,
+ 				    struct napi_struct *napi)
+diff --git a/net/socket.c b/net/socket.c
+index 8a109012608a..0f397fa33614 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1171,7 +1171,10 @@ static __poll_t sock_poll(struct file *file, poll_ta=
+ble *wait)
+ 		mask =3D sock->ops->poll_mask(sock, events);
+ 	}
+ =
+
+-	return mask | sock_poll_busy_flag(sock);
++	/* this socket can poll_ll so tell the system call */
++	if (sk_can_busy_loop(sock->sk))
++		mask |=3D POLL_BUSY_LOOP;
++	return mask;
+ }
+ =
+
+ static int sock_mmap(struct file *file, struct vm_area_struct *vma)
+-- =
+
+2.17.1
+
+
+--===============3366449079139302895==--
 
