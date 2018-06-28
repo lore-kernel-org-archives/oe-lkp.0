@@ -1,60 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============5407390690330198991=="
+Content-Type: multipart/mixed; boundary="===============5351328262686361486=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Al Viro <viro@ZenIV.linux.org.uk>
 To: lkp@lists.01.org
-Subject: [PATCH 4/6] net: remove busy polling from sock_get_poll_head
-Date: Thu, 28 Jun 2018 16:20:57 +0200
-Message-ID: <20180628142059.10017-5-hch@lst.de>
-In-Reply-To: <20180628142059.10017-1-hch@lst.de>
+Subject: Re: [PATCH 6/6] fs: replace f_ops->get_poll_head with a static ->f_poll_head pointer
+Date: Thu, 28 Jun 2018 23:49:30 +0100
+Message-ID: <20180628224930.GM30522@ZenIV.linux.org.uk>
+In-Reply-To: <CA+55aFzjUeacfpB8F2_J3rmOv3+hXF2zNNWP4UzdXxWTgD=nxQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5407390690330198991==
+--===============5351328262686361486==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Busy polling always comes from a synchronous poll context, so for now we
-can assume that it calls ->poll if present.  Move the busy polling in
-sock_poll to the common block and remove it from sock_get_poll_head to
-prepare for the removal of the get_poll_head method.
+On Thu, Jun 28, 2018 at 03:35:03PM -0700, Linus Torvalds wrote:
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- net/socket.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> Yes, the AIO poll implementation did it under the spinlock.
+> =
 
-diff --git a/net/socket.c b/net/socket.c
-index 7cf037d21805..ca300c97b7ba 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -1135,7 +1135,6 @@ static struct wait_queue_head *sock_get_poll_head(str=
-uct file *file,
- =
+> But there's no good *reason* for that.  The "aio_poll()" function
+> itself is called in perfectly fine blocking context.
 
- 	if (!sock->ops->poll_mask)
- 		return NULL;
--	sock_poll_busy_loop(sock, events);
- 	return &sock->wq->wait;
- }
- =
+aio_poll() is not a problem.  It's wakeup callback that is one.
 
-@@ -1161,8 +1160,9 @@ static __poll_t sock_poll(struct file *file, poll_tab=
-le *wait)
- 	struct socket *sock =3D file->private_data;
- 	__poll_t events =3D poll_requested_events(wait), mask =3D 0;
- =
+> As far as I can tell, Christoph could have just done the first pass
+> '->poll()' *without* taking a spinlock, and that adds the table entry
+> to the table. Then, *under the spinlock*, you associate the table the
+> the kioctx. And then *after* the spinlock, you can call "->poll()"
+> again (now with a NULL table pointer), to verify that the state is
+> still not triggered. That's the whole point of the two-phgase poll
+> thing - the first phase adds the entry to the wait queues, and the
+> second phase checks for the race of "did it the event happen in the
+> meantime".
 
-+	sock_poll_busy_loop(sock, events);
-+
- 	if (sock->ops->poll) {
--		sock_poll_busy_loop(sock, events);
- 		mask =3D sock->ops->poll(file, sock, wait);
- 	} else if (sock->ops->poll_mask) {
- 		sock_poll_wait(file, sock_get_poll_head(file, events), wait);
--- =
+You are misreading that mess.  What he's trying to do (other than surviving
+the awful clusterfuck around cancels) is to handle the decision what to
+report to userland right in the wakeup callback.  *That* is what really
+drives the "make the second-pass ->poll() or something similar to it
+non-blocking" (in addition to the fact that it is such in considerable
+majority of instances).
 
-2.17.1
-
-
---===============5407390690330198991==--
+--===============5351328262686361486==--
 
