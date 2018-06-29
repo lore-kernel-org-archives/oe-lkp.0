@@ -1,88 +1,48 @@
-Content-Type: multipart/mixed; boundary="===============2198146830298527131=="
+Content-Type: multipart/mixed; boundary="===============9175511609814316469=="
 MIME-Version: 1.0
-From: Gao Xiang <gaoxiang25@huawei.com>
+From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
-Subject: Re: 29b848451d ("<linux/taggedptr.h>: Introduce tagged pointer"): WARNING: lock held when returning to user space!
-Date: Fri, 29 Jun 2018 11:14:08 +0800
-Message-ID: <e52e0ca7-38a1-8e97-b8e2-80223a9a2f1c@huawei.com>
-In-Reply-To: <5b34d1ad.WIuhuOip1TcwTENt%lkp@intel.com>
+Subject: Re: [PATCH 6/6] fs: replace f_ops->get_poll_head with a static ->f_poll_head pointer
+Date: Fri, 29 Jun 2018 15:28:48 +0200
+Message-ID: <20180629132848.GA28510@lst.de>
+In-Reply-To: <CA+55aFxfkD9ozw77j-bshReLJN4dN2GEdW+R-LkxztceCW6OTg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2198146830298527131==
+--===============9175511609814316469==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Thu, Jun 28, 2018 at 02:11:17PM -0700, Linus Torvalds wrote:
+> Christoph, do you have a test program for IOCB_CMD_POLL and what it's
+> actually supposed to do?
 
-On 2018/6/28 20:16, kernel test robot wrote:
-> Greetings,
-> =
+https://pagure.io/libaio/c/9c6935e81854d1585bbfa48c35b185849d746864?branch=
+=3Daio-poll
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
+is the actual test in libaio.  In addition to that the seastar library
+actually has a real life user.  But given that is c++ with all modern
+bells and whistles you'll probably have an as hard time as me actually
+understanding that.
 
-> https://github.com/0day-ci/linux/commits/Gao-Xiang/linux-taggedptr-h-Intr=
-oduce-tagged-pointer/20180628-175554
-> =
+> Because I think that what it can do is simply to do the ->poll() calls
+> outside the iocb locks, and then just attach the poll table to the
+> kioctx afterwards.
 
-> commit 29b848451ddc66bd7f72780d70d7022f0eed9931
-> Author:     Gao Xiang <gaoxiang25@huawei.com>
-> AuthorDate: Thu Jun 28 17:06:29 2018 +0800
-> Commit:     0day robot <lkp@intel.com>
-> CommitDate: Thu Jun 28 17:55:56 2018 +0800
-> =
+We could do that on the submit side fairly easily.  The problem
+is really the completion side, where I'd much avoid introducing a
+spurious context switch.  Right now even with a NULL qproc we can't
+guarantee any of that.  So we'll need to schedule out to a workqueue,
+and then from that schedule the potential multiple NULL qproc calls,
+which might actually block elsewhere even if __pollwait is never called.
 
->     <linux/taggedptr.h>: Introduce tagged pointer
->     =
+> This whole "poll must not block" is a complete red herring. It doesn't
+> come from any other requirements than BAD AIO GARBAGE CODE.
 
->     Currently kernel has scattered tagged pointer usages hacked
->     by hand in plain code, without a unique and portable functionset
->     to highlight the tagged pointer itself and wrap these hacked code
->     in order to clean up all over meaningless magic masks.
->     =
+I comes from the fact to avoid a totally pointless context switch.
+aio code itself works just fine called from a workqueue, we have
+exatly that case when file system do non-trivial operations in their
+end_io handler.
 
->     Therefore, this patch introduces simple generic methods to fold
->     tags into a pointer integer. It currently reuses the last 2 bits
->     of the pointer for tags, which are safely for all modern platforms.
->     =
-
->     In addition, it will also be used for the upcoming EROFS filesystem,
->     which heavily uses tagged pointer approach for high performance
->     and reducing extra memory allocation.
->     =
-
->     Refer to:
->     https://en.wikipedia.org/wiki/Tagged_pointer
->     =
-
->     To: Alexander Viro <viro@zeniv.linux.org.uk>
->     Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->     Cc: Kate Stewart <kstewart@linuxfoundation.org>
->     Cc: Philippe Ombredanne <pombredanne@nexb.com>
->     Cc: Thomas Gleixner <tglx@linutronix.de>
->     Cc: Chao Yu <yuchao0@huawei.com>
->     Cc: Miao Xie <miaoxie@huawei.com>
->     Cc: linux-fsdevel(a)vger.kernel.org
->     Cc: linux-erofs(a)lists.ozlabs.org
->     Cc: linux-kernel(a)vger.kernel.org
->     Signed-off-by: Gao Xiang <gaoxiang25@huawei.com>
-
-Thanks for quickly pointing out. :)
-
-The v1 patch is broken accidently by mistake, I already fixed this issue in=
- v2, v3 patch, please drop this version patch.
-
-Please refer to:
-v2:
-https://marc.info/?l=3Dlinux-fsdevel&m=3D153019547331833&w=3D2
-
-v3:
-https://marc.info/?l=3Dlinux-fsdevel&m=3D153019818032728&w=3D2
-
-
-Thanks,
-Gao Xiang
-
---===============2198146830298527131==--
+--===============9175511609814316469==--
 
