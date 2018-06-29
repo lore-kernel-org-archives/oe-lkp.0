@@ -1,22 +1,21 @@
-Content-Type: multipart/mixed; boundary="===============0146816829920607306=="
+Content-Type: multipart/mixed; boundary="===============2198146830298527131=="
 MIME-Version: 1.0
 From: Gao Xiang <gaoxiang25@huawei.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] 29b848451d [ 1.806501] WARNING: lock held when returning to user space!
-Date: Fri, 29 Jun 2018 11:05:42 +0800
-Message-ID: <67f4c145-5561-0969-60ee-754612ef3d02@huawei.com>
-In-Reply-To: <20180629025048.GA21648@nfs>
+Subject: Re: 29b848451d ("<linux/taggedptr.h>: Introduce tagged pointer"): WARNING: lock held when returning to user space!
+Date: Fri, 29 Jun 2018 11:14:08 +0800
+Message-ID: <e52e0ca7-38a1-8e97-b8e2-80223a9a2f1c@huawei.com>
+In-Reply-To: <5b34d1ad.WIuhuOip1TcwTENt%lkp@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0146816829920607306==
+--===============2198146830298527131==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, =
+Hi,
 
-
-On 2018/6/29 10:50, kernel test robot wrote:
+On 2018/6/28 20:16, kernel test robot wrote:
 > Greetings,
 > =
 
@@ -71,9 +70,10 @@ oduce-tagged-pointer/20180628-175554
 
 Thanks for quickly pointing out. :)
 
-The v1 patch is broken actually, I fixed this issue in v2, v3 patch, please=
- refer to:
+The v1 patch is broken accidently by mistake, I already fixed this issue in=
+ v2, v3 patch, please drop this version patch.
 
+Please refer to:
 v2:
 https://marc.info/?l=3Dlinux-fsdevel&m=3D153019547331833&w=3D2
 
@@ -84,5 +84,5 @@ https://marc.info/?l=3Dlinux-fsdevel&m=3D153019818032728&w=3D2
 Thanks,
 Gao Xiang
 
---===============0146816829920607306==--
+--===============2198146830298527131==--
 
