@@ -1,33 +1,31 @@
-Content-Type: multipart/mixed; boundary="===============5679050427279501558=="
+Content-Type: multipart/mixed; boundary="===============5925566680977649423=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [PATCH 6/6] fs: replace f_ops->get_poll_head with a static ->f_poll_head pointer
-Date: Fri, 29 Jun 2018 15:29:24 +0200
-Message-ID: <20180629132924.GB28510@lst.de>
-In-Reply-To: <20180628213027.GK30522@ZenIV.linux.org.uk>
+Date: Fri, 29 Jun 2018 06:40:49 -0700
+Message-ID: <CA+55aFwOtTVTjwLB11_k=7sPTz55TRhaF=Tfn+MhjwGtu5bScA@mail.gmail.com>
+In-Reply-To: <20180629132924.GB28510@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5679050427279501558==
+--===============5925566680977649423==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 28, 2018 at 10:30:27PM +0100, Al Viro wrote:
-> > Because I think that what it can do is simply to do the ->poll() calls
-> > outside the iocb locks, and then just attach the poll table to the
-> > kioctx afterwards.
-> =
+On Fri, Jun 29, 2018 at 6:29 AM Christoph Hellwig <hch@lst.de> wrote:
+> No need for poll_table_entry, we just need a wait_queue_head.
+> poll_table_entry is an select.c internal (except for two nasty driver) -
+> neither epoll nor most in-kernel callers use it.
 
-> I'd do a bit more - embed the first poll_table_entry into poll iocb itsel=
-f,
-> so that the instances that use only one queue wouldn't need any allocatio=
-ns
-> at all.
+Well, you need the poll_table for the "poll_wait()", and you would
+need to be able to have multiple wait-queues even though you only have
+one file you're waiting for.
 
-No need for poll_table_entry, we just need a wait_queue_head.
-poll_table_entry is an select.c internal (except for two nasty driver) -
-neither epoll nor most in-kernel callers use it.
+But yes, it doesn't really need to be the full complex poll_table_entry mod=
+el.
 
---===============5679050427279501558==--
+              Linus
+
+--===============5925566680977649423==--
 
