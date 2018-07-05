@@ -1,44 +1,56 @@
-Content-Type: multipart/mixed; boundary="===============8510577597681029323=="
+Content-Type: multipart/mixed; boundary="===============7538013872453893098=="
 MIME-Version: 1.0
-From: Al Viro <viro@ZenIV.linux.org.uk>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [fs] 5c6de586e8: vm-scalability.throughput +12.4% improvement (from reorganizing struct inode?)
-Date: Thu, 05 Jul 2018 00:34:15 +0100
-Message-ID: <20180704233415.GA30522@ZenIV.linux.org.uk>
-In-Reply-To: <CA+55aFy-tgKkq_oiQaZge3URgZL0ruvoJ6pUCf=H+aschPdqAw@mail.gmail.com>
+Subject: Re: [lkp-robot] [x86/entry/64/compat] 8bb2610bc4: kernel_selftests.x86.test_syscall_vdso_32.fail
+Date: Thu, 05 Jul 2018 08:39:10 +0800
+Message-ID: <20180705003910.GD10005@yexl-desktop>
+In-Reply-To: <CA+55aFwSD8T1dusD_Q14MhAxQcYG===ZTdS+CXuT-odj88xWkA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8510577597681029323==
+--===============7538013872453893098==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 02, 2018 at 11:59:30AM -0700, Linus Torvalds wrote:
-> On Sun, Jul 1, 2018 at 11:27 PM Amir Goldstein <amir73il@gmail.com> wro=
-te:
-> >
-> > This may be a test fluctuation or as a result of moving
-> > i_blkbits closer to i_bytes and i_lock.
-> =
+On 07/04, Linus Torvalds wrote:
+>On Tue, Jul 3, 2018 at 11:58 PM kernel test robot <xiaolong.ye@intel.com=
+> wrote:
+>>
+>> FYI, we noticed the following commit (built with gcc-7):
+>>
+>> commit: 8bb2610bc4967f19672444a7b0407367f1540028 ("x86/entry/64/compat: =
+Preserve r8-r11 in int $0x80")
+>> [...]
+>> caused below changes (please refer to attached dmesg/kmsg for entire log=
+/backtrace):
+>
+>So that commit is expected to fix things, but it also *enabled* the
+>selftests to warn about the change.
+>
+>Did you run the new selftest on an old kernel?
+>
+>It looks that way, because you talk about running the selftests for
+>commit 8bb2610bc496 (which is 4.17-rc2+), but the dmesg you include is
+>some ancient version"
+>
+>    Linux version 4.12.0-10998-g6974f0c
 
-> Hey, I certainly am not against shrinking the inode (and in general,
-> removing 'enum's from internal structures), although that benchmark
-> improvement looks suspiciously large. The kernel test robot is lovely,
-> but some of the performance fluctuations may be more noise than
-> others.
-> =
+Just double checked the attached dmesg, the version seems correct, did you
+check the right one?
 
-> I was hoping the patch would go through the regular vfs tree, though. Al?
+[    0.000000] Linux version 4.17.0-rc2-00006-g8bb2610 (kbuild(a)cairo) (gc=
+c version 7.3.0 (Debian 7.3.0-16)) #1 SMP Thu Jun 7 15:10:14 CST 2018      =
 
-Sure, but
-	* please, repost it.  github's webshite is atrocious ;-/
-	* I would like more details about the variation of timing -
-what's the dispersion from boot to boot, for starters?
 
-I don't hate that patch, but there are immediate followup questions - e.g.
-how sensitive is relative position of i_lock/i_hash/i_sb?  Those are *not*
-close to each other.  E.g. what happens if one moves i_hash right after
-i_ino?
 
---===============8510577597681029323==--
+Thanks,
+Xiaolong
+>
+>Hmm. Some of those self-tests are very much expected to break on old kerne=
+ls.
+>
+>                  Linus
+
+--===============7538013872453893098==--
 
