@@ -1,56 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============7538013872453893098=="
+Content-Type: multipart/mixed; boundary="===============2341052262460458150=="
 MIME-Version: 1.0
-From: Ye Xiaolong <xiaolong.ye@intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [x86/entry/64/compat] 8bb2610bc4: kernel_selftests.x86.test_syscall_vdso_32.fail
-Date: Thu, 05 Jul 2018 08:39:10 +0800
-Message-ID: <20180705003910.GD10005@yexl-desktop>
-In-Reply-To: <CA+55aFwSD8T1dusD_Q14MhAxQcYG===ZTdS+CXuT-odj88xWkA@mail.gmail.com>
+Subject: Re: [lkp-robot] [fs] 5c6de586e8: vm-scalability.throughput +12.4% improvement (from reorganizing struct inode?)
+Date: Wed, 04 Jul 2018 18:37:00 -0700
+Message-ID: <CA+55aFxaBZ+9RQcNbeJZPAUeutJhVe5QLsRYEzTeOX_8vROAFQ@mail.gmail.com>
+In-Reply-To: <20180704233415.GA30522@ZenIV.linux.org.uk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7538013872453893098==
+--===============2341052262460458150==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 07/04, Linus Torvalds wrote:
->On Tue, Jul 3, 2018 at 11:58 PM kernel test robot <xiaolong.ye@intel.com=
-> wrote:
->>
->> FYI, we noticed the following commit (built with gcc-7):
->>
->> commit: 8bb2610bc4967f19672444a7b0407367f1540028 ("x86/entry/64/compat: =
-Preserve r8-r11 in int $0x80")
->> [...]
->> caused below changes (please refer to attached dmesg/kmsg for entire log=
-/backtrace):
+On Wed, Jul 4, 2018 at 4:34 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
 >
->So that commit is expected to fix things, but it also *enabled* the
->selftests to warn about the change.
->
->Did you run the new selftest on an old kernel?
->
->It looks that way, because you talk about running the selftests for
->commit 8bb2610bc496 (which is 4.17-rc2+), but the dmesg you include is
->some ancient version"
->
->    Linux version 4.12.0-10998-g6974f0c
+> I don't hate that patch, but there are immediate followup questions - e.g.
+> how sensitive is relative position of i_lock/i_hash/i_sb?  Those are *not*
+> close to each other.  E.g. what happens if one moves i_hash right after
+> i_ino?
 
-Just double checked the attached dmesg, the version seems correct, did you
-check the right one?
+I think that's a separate issue from just packing things better.
 
-[    0.000000] Linux version 4.17.0-rc2-00006-g8bb2610 (kbuild(a)cairo) (gc=
-c version 7.3.0 (Debian 7.3.0-16)) #1 SMP Thu Jun 7 15:10:14 CST 2018      =
+The original patch is at
 
+    https://marc.info/?l=3Dlinux-fsdevel&m=3D152880180732361&w=3D2
 
+although I certainly agree with the "just re-send as a proper patch,
+now with a note on potential performance improvements".
 
-Thanks,
-Xiaolong
->
->Hmm. Some of those self-tests are very much expected to break on old kerne=
-ls.
->
->                  Linus
+I do agree that we could also see if there is something we could do
+about sorting the inode by commonly used fields. We already do to some
+degree (thge first fields up to and including i_security are certainly
+hot), but the field ordering is old and maybe things have changed.
 
---===============7538013872453893098==--
+           Linus
+
+--===============2341052262460458150==--
 
