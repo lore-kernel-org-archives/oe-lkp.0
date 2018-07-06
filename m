@@ -1,87 +1,63 @@
-Content-Type: multipart/mixed; boundary="===============4181760881210974747=="
+Content-Type: multipart/mixed; boundary="===============6065865984299203812=="
 MIME-Version: 1.0
-From: Dietmar Eggemann <dietmar.eggemann@arm.com>
+From: Matthew Wilcox <willy@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [sched/fair] fbd5188493: WARNING:inconsistent_lock_state
-Date: Thu, 05 Jul 2018 16:59:02 +0200
-Message-ID: <42d319f5-1a3a-fb69-5ec5-d2e9836e49c9@arm.com>
-In-Reply-To: <20180705132458.GA3864@codeblueprint.co.uk>
+Subject: Re: [lkp-robot] [shmem] a067b3644b: vm-scalability.throughput -73.2% regression
+Date: Thu, 05 Jul 2018 19:59:05 -0700
+Message-ID: <20180706025905.GA29008@bombadil.infradead.org>
+In-Reply-To: <20180704062532.GC10005@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4181760881210974747==
+--===============6065865984299203812==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 07/05/2018 03:24 PM, Matt Fleming wrote:
-> On Thu, 05 Jul, at 11:52:21AM, Dietmar Eggemann wrote:
->>
->> Moving the code from _nohz_idle_balance to nohz_idle_balance let it disa=
-ppear:
->>
->> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
->> index 02be51c9dcc1..070924f07c68 100644
->> --- a/kernel/sched/fair.c
->> +++ b/kernel/sched/fair.c
->> @@ -9596,16 +9596,6 @@ static bool _nohz_idle_balance(struct rq *this_rq=
-, unsigned int flags,
->>           */
->>          smp_mb();
->>   =
-
->> -       /*
->> -        * Ensure this_rq's clock and load are up-to-date before we
->> -        * rebalance since it's possible that they haven't been
->> -        * updated for multiple schedule periods, i.e. many seconds.
->> -        */
->> -       raw_spin_lock_irq(&this_rq->lock);
->> -       update_rq_clock(this_rq);
->> -       cpu_load_update_idle(this_rq);
->> -       raw_spin_unlock_irq(&this_rq->lock);
->> -
->>          for_each_cpu(balance_cpu, nohz.idle_cpus_mask) {
->>                  if (balance_cpu =3D=3D this_cpu || !idle_cpu(balance_cp=
-u))
->>                          continue;
->> @@ -9701,6 +9691,16 @@ static bool nohz_idle_balance(struct rq *this_rq,=
- enum cpu_idle_type idle)
->>          if (!(flags & NOHZ_KICK_MASK))
->>                  return false;
->>   =
-
->> +       /*
->> +        * Ensure this_rq's clock and load are up-to-date before we
->> +        * rebalance since it's possible that they haven't been
->> +        * updated for multiple schedule periods, i.e. many seconds.
->> +        */
->> +       raw_spin_lock_irq(&this_rq->lock);
->> +       update_rq_clock(this_rq);
->> +       cpu_load_update_idle(this_rq);
->> +       raw_spin_unlock_irq(&this_rq->lock);
->> +
->>          _nohz_idle_balance(this_rq, flags, idle);
->>   =
-
->>          return true;
->>
+On Wed, Jul 04, 2018 at 02:25:32PM +0800, Ye Xiaolong wrote:
+> Hi, Matthew
 > =
 
-> Hmm.. it still looks to me like we should be saving and restoring IRQs
-> since this can be called from IRQ context, no?
+> The issue should be fixed now, could you have a try?
 
-You mean in nohz_idle_balance()? Yes.
+This is weird.
 
-I just wanted to hint that since you need this cpu_load_update_idle() in =
+The reason the throughput goes down by 75% is that the test runs four
+copies of usemem before the patch, but only runs one copy after applying
+the patch.  I can't figure out why.
 
-the nohz idle balance case and not in idle balance, you could just =
+Snippets from the logs.  Before:
 
-update it in nohz_idle_balance() rather than in _nohz_idle_balance() =
+[  296.668278] 2018-07-06 02:47:42  ./case-shm-pread-seq
+[  296.719718] 2018-07-06 02:47:42  truncate /tmp/vm-scalability-tmp/sparse=
+-shm-pread-seq -s 3109629952
+[  296.732949] 2018-07-06 02:47:42  ./usemem --runtime 300 -n 4 -f /tmp/vm-=
+scalability-tmp/sparse-shm-pread-seq --readonly 1554814976
+[  303.181283] 1749166848 bytes / 6413550 usecs =3D 266337 KB/s
+[  303.189929] 1749166848 bytes / 6408060 usecs =3D 266565 KB/s
+[  303.198156] 1749166848 bytes / 6411154 usecs =3D 266437 KB/s
+[  303.214077] 1749166848 bytes / 6407897 usecs =3D 266572 KB/s
+[  303.219016] 54573 usecs to free memory
+[  303.298229] 134967 usecs to free memory
+[  303.300565] 133675 usecs to free memory
+[  303.303657] 126904 usecs to free memory
 
-(which is also called in nohz_newidle_balance()) avoiding this =
+After:
 
-inconsistent lock state warning.
+[  301.803901] 2018-07-06 02:56:16  ./case-shm-pread-seq
+[  301.824971] 2018-07-06 02:56:16  truncate /tmp/vm-scalability-tmp/sparse=
+-shm-pread-seq -s 3367575552
+[  301.831988] 2018-07-06 02:56:16  ./usemem --runtime 300 -n 4 -f /tmp/vm-=
+scalability-tmp/sparse-shm-pread-seq --readonly 1683787776
+[  305.081653] 1894261248 bytes / 3249525 usecs =3D 569272 KB/s
+[  305.111355] 29653 usecs to free memory
 
-[...]
+I've tried both the patches from 06-20 and the patches from today,
+which are rather different from each other as I tried to fix what I
+thought the problem was, and the same thing happens each time.
 
---===============4181760881210974747==--
+I'm going to have to dive into the test-suite and try to diagnose what's
+going wrong.  Unless someone wants to do that for me ... ?  ;-)
+
+
+--===============6065865984299203812==--
 
