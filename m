@@ -1,120 +1,568 @@
-Content-Type: multipart/mixed; boundary="===============3000534828361617678=="
+Content-Type: multipart/mixed; boundary="===============3221579863768343462=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: kemi <kemi.wang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] 9cf57731b6 [ 8.051016] WARNING: CPU: 1 PID: 58 at lib/list_debug.c:28 __list_add_valid
-Date: Fri, 13 Jul 2018 12:42:08 +0200
-Message-ID: <20180713104208.GW2494@hirez.programming.kicks-ass.net>
-In-Reply-To: <85eb9dd4-2a20-9c2a-d805-e38cf749f187@intel.com>
+Subject: Re: [lkp-robot] [brd] 316ba5736c: aim7.jobs-per-min -11.2% regression
+Date: Tue, 10 Jul 2018 13:27:19 +0800
+Message-ID: <1483bdb1-df0c-3b9c-43b9-4f477d00b097@intel.com>
+In-Reply-To: <20180604055259.GF16472@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3000534828361617678==
+--===============3221579863768343462==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 13, 2018 at 12:32:41PM +0800, Rong Chen wrote:
-> Thanks, it's fixed with the patch.
+Hi, SeongJae
+  Do you have any input for this regression? thanks
 
-Ingo, could you merge?
+On 2018=E5=B9=B406=E6=9C=8804=E6=97=A5 13:52, kernel test robot wrote:
+> =
 
----
-Subject: watchdog/softlockup: Fix cpu_stop_queue_work double-queue
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Wed, 11 Jul 2018 14:34:36 +0200
+> Greeting,
+> =
 
-When scheduling is delayed for longer than the softlockup interrupt
-period it is possible to double-queue the cpu_stop_work, causing list
-corruption.
+> FYI, we noticed a -11.2% regression of aim7.jobs-per-min due to commit:
+> =
 
-Cure this by adding a completion to track the cpu_stop_work's
-progress.
+> =
 
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Rong Chen <rong.a.chen@intel.com>
-Fixes: 9cf57731b63e ("watchdog/softlockup: Replace "watchdog/%u" threads wi=
-th cpu_stop_work")
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- kernel/watchdog.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+> commit: 316ba5736c9caa5dbcd84085989862d2df57431d ("brd: Mark as non-rotat=
+ional")
+> https://git.kernel.org/cgit/linux/kernel/git/axboe/linux-block.git for-4.=
+18/block
+> =
 
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index b81f777838d5..5470dce212c0 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -330,6 +330,9 @@ static void watchdog_interrupt_count(void)
- 	__this_cpu_inc(hrtimer_interrupts);
- }
- =
+> in testcase: aim7
+> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz wit=
+h 384G memory
+> with following parameters:
+> =
 
-+static DEFINE_PER_CPU(struct completion, softlockup_completion);
-+static DEFINE_PER_CPU(struct cpu_stop_work, softlockup_stop_work);
-+
- /*
-  * The watchdog thread function - touches the timestamp.
-  *
-@@ -343,12 +346,11 @@ static int softlockup_fn(void *data)
- 	__this_cpu_write(soft_lockup_hrtimer_cnt,
- 			 __this_cpu_read(hrtimer_interrupts));
- 	__touch_watchdog();
-+	complete(this_cpu_ptr(&softlockup_completion));
- =
+> 	disk: 1BRD_48G
+> 	fs: btrfs
+> 	test: disk_rw
+> 	load: 1500
+> 	cpufreq_governor: performance
+> =
 
- 	return 0;
- }
- =
+> test-description: AIM7 is a traditional UNIX system level benchmark suite=
+ which is used to test and measure the performance of multiuser system.
+> test-url: https://sourceforge.net/projects/aimbench/files/aim-suite7/
+> =
 
--static DEFINE_PER_CPU(struct cpu_stop_work, softlockup_stop_work);
--
- /* watchdog kicker functions */
- static enum hrtimer_restart watchdog_timer_fn(struct hrtimer *hrtimer)
- {
-@@ -364,9 +366,12 @@ static enum hrtimer_restart watchdog_timer_fn(struct h=
-rtimer *hrtimer)
- 	watchdog_interrupt_count();
- =
+> =
 
- 	/* kick the softlockup detector */
--	stop_one_cpu_nowait(smp_processor_id(),
--			softlockup_fn, NULL,
--			this_cpu_ptr(&softlockup_stop_work));
-+	if (completion_done(this_cpu_ptr(&softlockup_completion))) {
-+		reinit_completion(this_cpu_ptr(&softlockup_completion));
-+		stop_one_cpu_nowait(smp_processor_id(),
-+				softlockup_fn, NULL,
-+				this_cpu_ptr(&softlockup_stop_work));
-+	}
- =
+> =
 
- 	/* .. and repeat */
- 	hrtimer_forward_now(hrtimer, ns_to_ktime(sample_period));
-@@ -467,9 +472,13 @@ static enum hrtimer_restart watchdog_timer_fn(struct h=
-rtimer *hrtimer)
- static void watchdog_enable(unsigned int cpu)
- {
- 	struct hrtimer *hrtimer =3D this_cpu_ptr(&watchdog_hrtimer);
-+	struct completion *done =3D this_cpu_ptr(&softlockup_completion);
- =
+> Details are as below:
+> -------------------------------------------------------------------------=
+------------------------->
+> =
 
- 	WARN_ON_ONCE(cpu !=3D smp_processor_id());
- =
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> compiler/cpufreq_governor/disk/fs/kconfig/load/rootfs/tbox_group/test/tes=
+tcase:
+>   gcc-7/performance/1BRD_48G/btrfs/x86_64-rhel-7.2/1500/debian-x86_64-201=
+6-08-31.cgz/lkp-ivb-ep01/disk_rw/aim7
+> =
 
-+	init_completion(done);
-+	complete(done);
-+
- 	/*
- 	 * Start the timer first to prevent the NMI watchdog triggering
- 	 * before the timer has a chance to fire.
-@@ -499,6 +508,7 @@ static void watchdog_disable(unsigned int cpu)
- 	 */
- 	watchdog_nmi_disable(cpu);
- 	hrtimer_cancel(hrtimer);
-+	wait_for_completion(this_cpu_ptr(&softlockup_completion));
- }
- =
+> commit: =
 
- static int softlockup_stop_fn(void *data)
+>   522a777566 ("block: consolidate struct request timestamp fields")
+>   316ba5736c ("brd: Mark as non-rotational")
+> =
 
---===============3000534828361617678==--
+> 522a777566f56696 316ba5736c9caa5dbcd8408598 =
+
+> ---------------- -------------------------- =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>      28321           -11.2%      25147        aim7.jobs-per-min
+>     318.19           +12.6%     358.23        aim7.time.elapsed_time
+>     318.19           +12.6%     358.23        aim7.time.elapsed_time.max
+>    1437526 =C2=B1  2%     +14.6%    1646849 =C2=B1  2%  aim7.time.involun=
+tary_context_switches
+>      11986           +14.2%      13691        aim7.time.system_time
+>      73.06 =C2=B1  2%      -3.6%      70.43        aim7.time.user_time
+>    2449470 =C2=B1  2%     -25.0%    1837521 =C2=B1  4%  aim7.time.volunta=
+ry_context_switches
+>      20.25 =C2=B1 58%   +1681.5%     360.75 =C2=B1109%  numa-meminfo.node=
+1.Mlocked
+>     456062           -16.3%     381859        softirqs.SCHED
+>       9015 =C2=B1  7%     -21.3%       7098 =C2=B1 22%  meminfo.CmaFree
+>      47.50 =C2=B1 58%   +1355.8%     691.50 =C2=B1 92%  meminfo.Mlocked
+>       5.24 =C2=B1  3%      -1.2        3.99 =C2=B1  2%  mpstat.cpu.idle%
+>       0.61 =C2=B1  2%      -0.1        0.52 =C2=B1  2%  mpstat.cpu.usr%
+>      16627           +12.8%      18762 =C2=B1  4%  slabinfo.Acpi-State.ac=
+tive_objs
+>      16627           +12.9%      18775 =C2=B1  4%  slabinfo.Acpi-State.nu=
+m_objs
+>      57.00 =C2=B1  2%     +17.5%      67.00        vmstat.procs.r
+>      20936           -24.8%      15752 =C2=B1  2%  vmstat.system.cs
+>      45474            -1.7%      44681        vmstat.system.in
+>       6.50 =C2=B1 59%   +1157.7%      81.75 =C2=B1 75%  numa-vmstat.node0=
+.nr_mlock
+>     242870 =C2=B1  3%     +13.2%     274913 =C2=B1  7%  numa-vmstat.node0=
+.nr_written
+>       2278 =C2=B1  7%     -22.6%       1763 =C2=B1 21%  numa-vmstat.node1=
+.nr_free_cma
+>       4.75 =C2=B1 58%   +1789.5%      89.75 =C2=B1109%  numa-vmstat.node1=
+.nr_mlock
+>   88018135 =C2=B1  3%     -48.9%   44980457 =C2=B1  7%  cpuidle.C1.time
+>    1398288 =C2=B1  3%     -51.1%     683493 =C2=B1  9%  cpuidle.C1.usage
+>    3499814 =C2=B1  2%     -38.5%    2153158 =C2=B1  5%  cpuidle.C1E.time
+>      52722 =C2=B1  4%     -45.6%      28692 =C2=B1  6%  cpuidle.C1E.usage
+>    9865857 =C2=B1  3%     -40.1%    5905155 =C2=B1  5%  cpuidle.C3.time
+>      69656 =C2=B1  2%     -42.6%      39990 =C2=B1  5%  cpuidle.C3.usage
+>     590856 =C2=B1  2%     -12.3%     517910        cpuidle.C6.usage
+>      46160 =C2=B1  7%     -53.7%      21372 =C2=B1 11%  cpuidle.POLL.time
+>       1716 =C2=B1  7%     -46.6%     916.25 =C2=B1 14%  cpuidle.POLL.usage
+>     197656            +4.1%     205732        proc-vmstat.nr_active_file
+>     191867            +4.1%     199647        proc-vmstat.nr_dirty
+>     509282            +1.6%     517318        proc-vmstat.nr_file_pages
+>       2282 =C2=B1  8%     -24.4%       1725 =C2=B1 22%  proc-vmstat.nr_fr=
+ee_cma
+>     357.50           +10.6%     395.25 =C2=B1  2%  proc-vmstat.nr_inactiv=
+e_file
+>      11.50 =C2=B1 58%   +1397.8%     172.25 =C2=B1 93%  proc-vmstat.nr_ml=
+ock
+>     970355 =C2=B1  4%     +14.6%    1111549 =C2=B1  8%  proc-vmstat.nr_wr=
+itten
+>     197984            +4.1%     206034        proc-vmstat.nr_zone_active_=
+file
+>     357.50           +10.6%     395.25 =C2=B1  2%  proc-vmstat.nr_zone_in=
+active_file
+>     192282            +4.1%     200126        proc-vmstat.nr_zone_write_p=
+ending
+>    7901465 =C2=B1  3%     -14.0%    6795016 =C2=B1 16%  proc-vmstat.pgall=
+oc_movable
+>     886101           +10.2%     976329        proc-vmstat.pgfault
+>  2.169e+12           +15.2%  2.497e+12        perf-stat.branch-instructio=
+ns
+>       0.41            -0.1        0.35        perf-stat.branch-miss-rate%
+>      31.19 =C2=B1  2%      +1.6       32.82        perf-stat.cache-miss-r=
+ate%
+>  9.116e+09            +8.3%  9.869e+09        perf-stat.cache-misses
+>  2.924e+10            +2.9%  3.008e+10 =C2=B1  2%  perf-stat.cache-refere=
+nces
+>    6712739 =C2=B1  2%     -15.4%    5678643 =C2=B1  2%  perf-stat.context=
+-switches
+>       4.02            +2.7%       4.13        perf-stat.cpi
+>  3.761e+13           +17.3%  4.413e+13        perf-stat.cpu-cycles
+>     606958           -13.7%     523758 =C2=B1  2%  perf-stat.cpu-migratio=
+ns
+>  2.476e+12           +13.4%  2.809e+12        perf-stat.dTLB-loads
+>       0.18 =C2=B1  2%      -0.0        0.16 =C2=B1  9%  perf-stat.dTLB-st=
+ore-miss-rate%
+>  1.079e+09 =C2=B1  2%      -9.6%  9.755e+08 =C2=B1  9%  perf-stat.dTLB-st=
+ore-misses
+>  5.933e+11            +1.6%  6.029e+11        perf-stat.dTLB-stores
+>  9.349e+12           +14.2%  1.068e+13        perf-stat.instructions
+>      11247 =C2=B1 11%     +19.8%      13477 =C2=B1  9%  perf-stat.instruc=
+tions-per-iTLB-miss
+>       0.25            -2.6%       0.24        perf-stat.ipc
+>     865561           +10.3%     954350        perf-stat.minor-faults
+>  2.901e+09 =C2=B1  3%      +9.8%  3.186e+09 =C2=B1  3%  perf-stat.node-lo=
+ad-misses
+>  3.682e+09 =C2=B1  3%     +11.0%  4.088e+09 =C2=B1  3%  perf-stat.node-lo=
+ads
+>  3.778e+09            +4.8%  3.959e+09 =C2=B1  2%  perf-stat.node-store-m=
+isses
+>  5.079e+09            +6.4%  5.402e+09        perf-stat.node-stores
+>     865565           +10.3%     954352        perf-stat.page-faults
+>      51.75 =C2=B1  5%     -12.5%      45.30 =C2=B1 10%  sched_debug.cfs_r=
+q:/.load_avg.avg
+>     316.35 =C2=B1  3%     +17.2%     370.81 =C2=B1  8%  sched_debug.cfs_r=
+q:/.util_est_enqueued.stddev
+>      15294 =C2=B1 30%    +234.9%      51219 =C2=B1 76%  sched_debug.cpu.a=
+vg_idle.min
+>     299443 =C2=B1  3%      -7.3%     277566 =C2=B1  5%  sched_debug.cpu.a=
+vg_idle.stddev
+>       1182 =C2=B1 19%     -26.3%     872.02 =C2=B1 13%  sched_debug.cpu.n=
+r_load_updates.stddev
+>       1.22 =C2=B1  8%     +21.7%       1.48 =C2=B1  6%  sched_debug.cpu.n=
+r_running.avg
+>       2.75 =C2=B1 10%     +26.2%       3.47 =C2=B1  6%  sched_debug.cpu.n=
+r_running.max
+>       0.58 =C2=B1  7%     +24.2%       0.73 =C2=B1  6%  sched_debug.cpu.n=
+r_running.stddev
+>      77148           -20.0%      61702 =C2=B1  7%  sched_debug.cpu.nr_swi=
+tches.avg
+>      70024           -24.8%      52647 =C2=B1  8%  sched_debug.cpu.nr_swi=
+tches.min
+>       6662 =C2=B1  6%     +61.9%      10789 =C2=B1 24%  sched_debug.cpu.n=
+r_switches.stddev
+>      80.45 =C2=B1 18%     -19.1%      65.05 =C2=B1  6%  sched_debug.cpu.n=
+r_uninterruptible.stddev
+>      76819           -19.3%      62008 =C2=B1  8%  sched_debug.cpu.sched_=
+count.avg
+>      70616           -23.5%      53996 =C2=B1  8%  sched_debug.cpu.sched_=
+count.min
+>       5494 =C2=B1  9%     +85.3%      10179 =C2=B1 26%  sched_debug.cpu.s=
+ched_count.stddev
+>      16936           -52.9%       7975 =C2=B1  9%  sched_debug.cpu.sched_=
+goidle.avg
+>      19281           -49.9%       9666 =C2=B1  7%  sched_debug.cpu.sched_=
+goidle.max
+>      15417           -54.8%       6962 =C2=B1 10%  sched_debug.cpu.sched_=
+goidle.min
+>     875.00 =C2=B1  6%     -35.0%     569.09 =C2=B1 13%  sched_debug.cpu.s=
+ched_goidle.stddev
+>      40332           -23.5%      30851 =C2=B1  7%  sched_debug.cpu.ttwu_c=
+ount.avg
+>      35074           -26.3%      25833 =C2=B1  6%  sched_debug.cpu.ttwu_c=
+ount.min
+>       3239 =C2=B1  8%     +67.4%       5422 =C2=B1 28%  sched_debug.cpu.t=
+twu_count.stddev
+>       5232           +27.4%       6665 =C2=B1 13%  sched_debug.cpu.ttwu_l=
+ocal.avg
+>      15877 =C2=B1 12%     +77.5%      28184 =C2=B1 27%  sched_debug.cpu.t=
+twu_local.max
+>       2530 =C2=B1 10%     +95.9%       4956 =C2=B1 27%  sched_debug.cpu.t=
+twu_local.stddev
+>       2.52 =C2=B1  7%      -0.6        1.95 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.btrfs_dirty_pages.__btrfs_buffered_write.btrfs_file_write_i=
+ter.__vfs_write.vfs_write
+>       1.48 =C2=B1 12%      -0.5        1.01 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.btrfs_get_extent.btrfs_dirty_pages.__btrfs_buffered_write.b=
+trfs_file_write_iter.__vfs_write
+>       1.18 =C2=B1 16%      -0.4        0.76 =C2=B1  7%  perf-profile.call=
+trace.cycles-pp.btrfs_search_slot.btrfs_lookup_file_extent.btrfs_get_extent=
+.btrfs_dirty_pages.__btrfs_buffered_write
+>       1.18 =C2=B1 16%      -0.4        0.76 =C2=B1  7%  perf-profile.call=
+trace.cycles-pp.btrfs_lookup_file_extent.btrfs_get_extent.btrfs_dirty_pages=
+.__btrfs_buffered_write.btrfs_file_write_iter
+>       0.90 =C2=B1 17%      -0.3        0.56 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.__dentry_kill.dentry_kill.dput.__fput.task_work_run
+>       0.90 =C2=B1 17%      -0.3        0.56 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.evict.__dentry_kill.dentry_kill.dput.__fput
+>       0.90 =C2=B1 17%      -0.3        0.56 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.dentry_kill.dput.__fput.task_work_run.exit_to_usermode_loop
+>       0.90 =C2=B1 18%      -0.3        0.56 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.btrfs_evict_inode.evict.__dentry_kill.dentry_kill.dput
+>       0.90 =C2=B1 17%      -0.3        0.57 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.exit_to_usermode_loop.do_syscall_64.entry_SYSCALL_64_after_=
+hwframe
+>       0.90 =C2=B1 17%      -0.3        0.57 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.task_work_run.exit_to_usermode_loop.do_syscall_64.entry_SYS=
+CALL_64_after_hwframe
+>       0.90 =C2=B1 17%      -0.3        0.57 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.__fput.task_work_run.exit_to_usermode_loop.do_syscall_64.en=
+try_SYSCALL_64_after_hwframe
+>       0.90 =C2=B1 17%      -0.3        0.57 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.dput.__fput.task_work_run.exit_to_usermode_loop.do_syscall_=
+64
+>       1.69            -0.1        1.54 =C2=B1  2%  perf-profile.calltrace=
+.cycles-pp.lock_and_cleanup_extent_if_need.__btrfs_buffered_write.btrfs_fil=
+e_write_iter.__vfs_write.vfs_write
+>       0.87 =C2=B1  4%      -0.1        0.76 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.__clear_extent_bit.clear_extent_bit.lock_and_cleanup_extent=
+_if_need.__btrfs_buffered_write.btrfs_file_write_iter
+>       0.87 =C2=B1  4%      -0.1        0.76 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.clear_extent_bit.lock_and_cleanup_extent_if_need.__btrfs_bu=
+ffered_write.btrfs_file_write_iter.__vfs_write
+>       0.71 =C2=B1  6%      -0.1        0.61 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.clear_state_bit.__clear_extent_bit.clear_extent_bit.lock_an=
+d_cleanup_extent_if_need.__btrfs_buffered_write
+>       0.69 =C2=B1  6%      -0.1        0.60 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.btrfs_clear_bit_hook.clear_state_bit.__clear_extent_bit.cle=
+ar_extent_bit.lock_and_cleanup_extent_if_need
+>      96.77            +0.6       97.33        perf-profile.calltrace.cycl=
+es-pp.entry_SYSCALL_64_after_hwframe
+>       0.00            +0.6        0.56 =C2=B1  3%  perf-profile.calltrace=
+.cycles-pp.can_overcommit.reserve_metadata_bytes.btrfs_delalloc_reserve_met=
+adata.__btrfs_buffered_write.btrfs_file_write_iter
+>      96.72            +0.6       97.29        perf-profile.calltrace.cycl=
+es-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      43.13            +0.8       43.91        perf-profile.calltrace.cycl=
+es-pp.btrfs_inode_rsv_release.__btrfs_buffered_write.btrfs_file_write_iter.=
+__vfs_write.vfs_write
+>      42.37            +0.8       43.16        perf-profile.calltrace.cycl=
+es-pp.native_queued_spin_lock_slowpath._raw_spin_lock.block_rsv_release_byt=
+es.btrfs_inode_rsv_release.__btrfs_buffered_write
+>      43.11            +0.8       43.89        perf-profile.calltrace.cycl=
+es-pp.block_rsv_release_bytes.btrfs_inode_rsv_release.__btrfs_buffered_writ=
+e.btrfs_file_write_iter.__vfs_write
+>      42.96            +0.8       43.77        perf-profile.calltrace.cycl=
+es-pp._raw_spin_lock.block_rsv_release_bytes.btrfs_inode_rsv_release.__btrf=
+s_buffered_write.btrfs_file_write_iter
+>      95.28            +0.9       96.23        perf-profile.calltrace.cycl=
+es-pp.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      95.22            +1.0       96.18        perf-profile.calltrace.cycl=
+es-pp.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      94.88            +1.0       95.85        perf-profile.calltrace.cycl=
+es-pp.__vfs_write.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after=
+_hwframe
+>      94.83            +1.0       95.80        perf-profile.calltrace.cycl=
+es-pp.btrfs_file_write_iter.__vfs_write.vfs_write.ksys_write.do_syscall_64
+>      94.51            +1.0       95.50        perf-profile.calltrace.cycl=
+es-pp.__btrfs_buffered_write.btrfs_file_write_iter.__vfs_write.vfs_write.ks=
+ys_write
+>      42.44            +1.1       43.52        perf-profile.calltrace.cycl=
+es-pp._raw_spin_lock.reserve_metadata_bytes.btrfs_delalloc_reserve_metadata=
+.__btrfs_buffered_write.btrfs_file_write_iter
+>      42.09            +1.1       43.18        perf-profile.calltrace.cycl=
+es-pp.native_queued_spin_lock_slowpath._raw_spin_lock.reserve_metadata_byte=
+s.btrfs_delalloc_reserve_metadata.__btrfs_buffered_write
+>      44.07            +1.2       45.29        perf-profile.calltrace.cycl=
+es-pp.btrfs_delalloc_reserve_metadata.__btrfs_buffered_write.btrfs_file_wri=
+te_iter.__vfs_write.vfs_write
+>      43.42            +1.3       44.69        perf-profile.calltrace.cycl=
+es-pp.reserve_metadata_bytes.btrfs_delalloc_reserve_metadata.__btrfs_buffer=
+ed_write.btrfs_file_write_iter.__vfs_write
+>       2.06 =C2=B1 18%      -0.9        1.21 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.btrfs_search_slot
+>       2.54 =C2=B1  7%      -0.6        1.96 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.btrfs_dirty_pages
+>       1.05 =C2=B1 24%      -0.5        0.52 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp._raw_spin_lock_irqsave
+>       1.50 =C2=B1 12%      -0.5        1.03 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.btrfs_get_extent
+>       1.22 =C2=B1 15%      -0.4        0.79 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.btrfs_lookup_file_extent
+>       0.81 =C2=B1  5%      -0.4        0.41 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.btrfs_calc_reclaim_metadata_size
+>       0.74 =C2=B1 24%      -0.4        0.35 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.btrfs_lock_root_node
+>       0.74 =C2=B1 24%      -0.4        0.35 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.btrfs_tree_lock
+>       0.90 =C2=B1 17%      -0.3        0.56 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.__dentry_kill
+>       0.90 =C2=B1 17%      -0.3        0.56 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.evict
+>       0.90 =C2=B1 17%      -0.3        0.56 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.dentry_kill
+>       0.90 =C2=B1 18%      -0.3        0.56 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.btrfs_evict_inode
+>       0.91 =C2=B1 18%      -0.3        0.57 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.exit_to_usermode_loop
+>       0.52 =C2=B1 20%      -0.3        0.18 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.do_idle
+>       0.90 =C2=B1 17%      -0.3        0.57 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.task_work_run
+>       0.90 =C2=B1 17%      -0.3        0.57 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.__fput
+>       0.90 =C2=B1 18%      -0.3        0.57 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.dput
+>       0.51 =C2=B1 20%      -0.3        0.18 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.secondary_startup_64
+>       0.51 =C2=B1 20%      -0.3        0.18 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.cpu_startup_entry
+>       0.50 =C2=B1 21%      -0.3        0.17 =C2=B1 16%  perf-profile.chil=
+dren.cycles-pp.start_secondary
+>       0.47 =C2=B1 20%      -0.3        0.16 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.cpuidle_enter_state
+>       0.47 =C2=B1 19%      -0.3        0.16 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.intel_idle
+>       0.61 =C2=B1 20%      -0.3        0.36 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.btrfs_tree_read_lock
+>       0.47 =C2=B1 26%      -0.3        0.21 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.prepare_to_wait_event
+>       0.64 =C2=B1 18%      -0.2        0.39 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.btrfs_read_lock_root_node
+>       0.40 =C2=B1 22%      -0.2        0.21 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.btrfs_clear_path_blocking
+>       0.38 =C2=B1 23%      -0.2        0.19 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.finish_wait
+>       1.51 =C2=B1  3%      -0.2        1.35 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.__clear_extent_bit
+>       1.71            -0.1        1.56 =C2=B1  2%  perf-profile.children.=
+cycles-pp.lock_and_cleanup_extent_if_need
+>       0.29 =C2=B1 25%      -0.1        0.15 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.btrfs_orphan_del
+>       0.27 =C2=B1 27%      -0.1        0.12 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.btrfs_del_orphan_item
+>       0.33 =C2=B1 18%      -0.1        0.19 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.queued_read_lock_slowpath
+>       0.33 =C2=B1 19%      -0.1        0.20 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.__wake_up_common_lock
+>       0.45 =C2=B1 15%      -0.1        0.34 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.btrfs_alloc_data_chunk_ondemand
+>       0.47 =C2=B1 16%      -0.1        0.36 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.btrfs_check_data_free_space
+>       0.91 =C2=B1  4%      -0.1        0.81 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.clear_extent_bit
+>       1.07 =C2=B1  5%      -0.1        0.97        perf-profile.children.=
+cycles-pp.__set_extent_bit
+>       0.77 =C2=B1  6%      -0.1        0.69 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.btrfs_clear_bit_hook
+>       0.17 =C2=B1 20%      -0.1        0.08 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.queued_write_lock_slowpath
+>       0.16 =C2=B1 22%      -0.1        0.08 =C2=B1 24%  perf-profile.chil=
+dren.cycles-pp.btrfs_lookup_inode
+>       0.21 =C2=B1 17%      -0.1        0.14 =C2=B1 19%  perf-profile.chil=
+dren.cycles-pp.__btrfs_update_delayed_inode
+>       0.26 =C2=B1 12%      -0.1        0.18 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.btrfs_async_run_delayed_root
+>       0.52 =C2=B1  5%      -0.1        0.45        perf-profile.children.=
+cycles-pp.set_extent_bit
+>       0.45 =C2=B1  5%      -0.1        0.40 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.alloc_extent_state
+>       0.11 =C2=B1 17%      -0.1        0.06 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.btrfs_clear_lock_blocking_rw
+>       0.28 =C2=B1  9%      -0.0        0.23 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.btrfs_drop_pages
+>       0.07            -0.0        0.03 =C2=B1100%  perf-profile.children.=
+cycles-pp.btrfs_set_lock_blocking_rw
+>       0.39 =C2=B1  3%      -0.0        0.34 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.get_alloc_profile
+>       0.33 =C2=B1  7%      -0.0        0.29        perf-profile.children.=
+cycles-pp.btrfs_set_extent_delalloc
+>       0.38 =C2=B1  2%      -0.0        0.35 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.__set_page_dirty_nobuffers
+>       0.49 =C2=B1  3%      -0.0        0.46 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.pagecache_get_page
+>       0.18 =C2=B1  4%      -0.0        0.15 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.truncate_inode_pages_range
+>       0.08 =C2=B1  5%      -0.0        0.05 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.btrfs_set_path_blocking
+>       0.08 =C2=B1  6%      -0.0        0.06 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.truncate_cleanup_page
+>       0.80 =C2=B1  4%      +0.2        0.95 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.can_overcommit
+>      96.84            +0.5       97.37        perf-profile.children.cycle=
+s-pp.entry_SYSCALL_64_after_hwframe
+>      96.80            +0.5       97.35        perf-profile.children.cycle=
+s-pp.do_syscall_64
+>      43.34            +0.8       44.17        perf-profile.children.cycle=
+s-pp.btrfs_inode_rsv_release
+>      43.49            +0.8       44.32        perf-profile.children.cycle=
+s-pp.block_rsv_release_bytes
+>      95.32            +0.9       96.26        perf-profile.children.cycle=
+s-pp.ksys_write
+>      95.26            +0.9       96.20        perf-profile.children.cycle=
+s-pp.vfs_write
+>      94.91            +1.0       95.88        perf-profile.children.cycle=
+s-pp.__vfs_write
+>      94.84            +1.0       95.81        perf-profile.children.cycle=
+s-pp.btrfs_file_write_iter
+>      94.55            +1.0       95.55        perf-profile.children.cycle=
+s-pp.__btrfs_buffered_write
+>      86.68            +1.0       87.70        perf-profile.children.cycle=
+s-pp.native_queued_spin_lock_slowpath
+>      44.08            +1.2       45.31        perf-profile.children.cycle=
+s-pp.btrfs_delalloc_reserve_metadata
+>      43.49            +1.3       44.77        perf-profile.children.cycle=
+s-pp.reserve_metadata_bytes
+>      87.59            +1.8       89.38        perf-profile.children.cycle=
+s-pp._raw_spin_lock
+>       0.47 =C2=B1 19%      -0.3        0.16 =C2=B1 13%  perf-profile.self=
+.cycles-pp.intel_idle
+>       0.33 =C2=B1  6%      -0.1        0.18 =C2=B1  6%  perf-profile.self=
+.cycles-pp.get_alloc_profile
+>       0.27 =C2=B1  8%      -0.0        0.22 =C2=B1  4%  perf-profile.self=
+.cycles-pp.btrfs_drop_pages
+>       0.07            -0.0        0.03 =C2=B1100%  perf-profile.self.cycl=
+es-pp.btrfs_set_lock_blocking_rw
+>       0.14 =C2=B1  5%      -0.0        0.12 =C2=B1  6%  perf-profile.self=
+.cycles-pp.clear_page_dirty_for_io
+>       0.09 =C2=B1  5%      -0.0        0.07 =C2=B1 10%  perf-profile.self=
+.cycles-pp._raw_spin_lock_irqsave
+>       0.17 =C2=B1  4%      +0.1        0.23 =C2=B1  3%  perf-profile.self=
+.cycles-pp.reserve_metadata_bytes
+>       0.31 =C2=B1  7%      +0.1        0.45 =C2=B1  2%  perf-profile.self=
+.cycles-pp.can_overcommit
+>      86.35            +1.0       87.39        perf-profile.self.cycles-pp=
+.native_queued_spin_lock_slowpath
+> =
+
+> =
+
+>                                                                          =
+       =
+
+>                                   aim7.jobs-per-min                      =
+       =
+
+>                                                                          =
+       =
+
+>   29000 +-+--------------------------------------------------------------=
+---+   =
+
+>   28500 +-+               +..   +                           +..+..  +..  =
+   |   =
+
+>         |..+    +.+..+.. :    .. +  .+.+..+..+.+.. .+..+.. +       +   + =
+   |   =
+
+>   28000 +-+ + ..         :   +    +.              +       +       +      =
+   |   =
+
+>   27500 +-+  +          +                                                =
+   |   =
+
+>         |                                                                =
+   |   =
+
+>   27000 +-+                                                              =
+   |   =
+
+>   26500 +-+                                                              =
+   |   =
+
+>   26000 +-+                                                              =
+   |   =
+
+>         |                                                                =
+   |   =
+
+>   25500 +-+               O       O                               O O  O =
+   |   =
+
+>   25000 +-+                     O    O         O  O O  O  O O            =
+   O   =
+
+>         |    O  O O     O    O         O                       O         =
+O  |   =
+
+>   24500 O-+O         O                    O  O                           =
+   |   =
+
+>   24000 +-+--------------------------------------------------------------=
+---+   =
+
+>                                                                          =
+       =
+
+>                                                                          =
+       =
+
+> [*] bisect-good sample
+> [O] bisect-bad  sample
+> =
+
+> =
+
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are prov=
+ided
+> for informational purposes only. Any difference in system hardware or sof=
+tware
+> design or configuration may affect actual performance.
+> =
+
+> =
+
+> Thanks,
+> Xiaolong
+> =
+
+> =
+
+> =
+
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
+>=20
+
+--===============3221579863768343462==--
 
