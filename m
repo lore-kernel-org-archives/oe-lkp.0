@@ -1,68 +1,159 @@
-Content-Type: multipart/mixed; boundary="===============8844143904912476573=="
+Content-Type: multipart/mixed; boundary="===============1936586758130290588=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [mm] 9092c71bb7: blogbench.write_score -12.3% regression
-Date: Fri, 13 Jul 2018 09:55:11 +0800
-Message-ID: <87zhyvew74.fsf@yhuang-dev.intel.com>
-In-Reply-To: <B33D77FE-E654-4BB3-A7F3-CEBCE93C6589@fb.com>
+Subject: Re: [lkp-robot] 9cf57731b6 [ 8.051016] WARNING: CPU: 1 PID: 58 at lib/list_debug.c:28 __list_add_valid
+Date: Fri, 13 Jul 2018 12:32:41 +0800
+Message-ID: <85eb9dd4-2a20-9c2a-d805-e38cf749f187@intel.com>
+In-Reply-To: <20180711123436.GD2476@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8844143904912476573==
+--===============1936586758130290588==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Chris,
 
-Chris Mason <clm@fb.com> writes:
 
-> On 19 Jun 2018, at 23:51, Huang, Ying wrote:
->>>> "Huang, Ying" <ying.huang@intel.com> writes:
->>>>
->>>>> Hi, Josef,
->>>>>
->>>>> Do you have time to take a look at the regression?
->>>>>
->>>>> kernel test robot <xiaolong.ye@intel.com> writes:
->>>>>
->>>>>> Greeting,
->>>>>>
->>>>>> FYI, we noticed a -12.3% regression of blogbench.write_score and
->>>>>> a +9.6% improvement
->>>>>> of blogbench.read_score due to commit:
->>>>>>
->>>>>>
->>>>>> commit: 9092c71bb724dba2ecba849eae69e5c9d39bd3d2 ("mm: use
->>>>>> sc->priority for slab shrink targets")
->>>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git
->>>>>> master
->>>>>>
->>>>>> in testcase: blogbench
->>>>>> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @
->>>>>> 2.10GHz with 8G memory
->>>>>> with following parameters:
->>>>>>
->>>>>> 	disk: 1SSD
->>>>>> 	fs: btrfs
->>>>>> 	cpufreq_governor: performance
->>>>>>
->>>>>> test-description: Blogbench is a portable filesystem benchmark
->>>>>> that tries to reproduce the load of a real-world busy file
->>>>>> server.
->>>>>> test-url:
+On 07/11/2018 08:34 PM, Peter Zijlstra wrote:
+> On Wed, Jul 11, 2018 at 02:07:53PM +0800, kernel test robot wrote:
+>> commit 9cf57731b63e37ed995b46690adc604891a9a28f
+>> Author:     Peter Zijlstra <peterz@infradead.org>
+>> AuthorDate: Thu Jun 7 10:52:03 2018 +0200
+>> Commit:     Ingo Molnar <mingo@kernel.org>
+>> CommitDate: Tue Jul 3 09:20:43 2018 +0200
+>>
+>>      watchdog/softlockup: Replace "watchdog/%u" threads with cpu_stop_wo=
+rk
+>>      =
+
+>>      Oleg suggested to replace the "watchdog/%u" threads with
+>>      cpu_stop_work. That removes one thread per CPU while at the same ti=
+me
+>>      fixes softlockup vs SCHED_DEADLINE.
+>>      =
+
+>>      But more importantly, it does away with the single
+>>      smpboot_update_cpumask_percpu_thread() user, which allows
+>>      cleanups/shrinkage of the smpboot interface.
+>>      =
+
+>>      Suggested-by: Oleg Nesterov <oleg@redhat.com>
+>>      Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>>      Cc: Linus Torvalds <torvalds@linux-foundation.org>
+>>      Cc: Peter Zijlstra <peterz@infradead.org>
+>>      Cc: Thomas Gleixner <tglx@linutronix.de>
+>>      Cc: linux-kernel(a)vger.kernel.org
+>>      Signed-off-by: Ingo Molnar <mingo@kernel.org>
+>>
+>> [    8.051016] ------------[ cut here ]------------
+>> [    8.051016] list_add corruption. prev->next should be next (ffff88001=
+d7dc998), but was 0000000000000000. (prev=3Dffff88001d7dc9e0).
+>> [    8.051016] WARNING: CPU: 1 PID: 58 at lib/list_debug.c:28 __list_add=
+_valid+0xc8/0x15c
+>> [    8.051016] CPU: 1 PID: 58 Comm: rb_consumer Not tainted 4.18.0-rc3-0=
+0013-g9cf5773 #2
+>> [    8.051016] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BI=
+OS 1.10.2-1 04/01/2014
+>> [    8.051016] RIP: 0010:__list_add_valid+0xc8/0x15c
+>> [    8.051016] Call Trace:
+>> [    8.051016]  <IRQ>
+>> [    8.051016]  __cpu_stop_queue_work+0x2c/0x53
+>> [    8.051016]  cpu_stop_queue_work+0x60/0x93
+>> [    8.051016]  watchdog_timer_fn+0x66/0x227
+> Does the below fix?
+
+Thanks, it's fixed with the patch.
+
+Regards,
+Rong, Chen
+
 >
-> I'm surprised, this patch is a big win in production here at FB.  I'll
-> have to reproduce these results to better understand what is going on.
-> My first guess is that since we have fewer inodes in slab, we're
-> reading more inodes from disk in order to do the writes.
+> ---
+>   kernel/watchdog.c | 20 +++++++++++++++-----
+>   1 file changed, 15 insertions(+), 5 deletions(-)
 >
-> But that should also make our read scores lower.
+> diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+> index b81f777838d5..5470dce212c0 100644
+> --- a/kernel/watchdog.c
+> +++ b/kernel/watchdog.c
+> @@ -330,6 +330,9 @@ static void watchdog_interrupt_count(void)
+>   	__this_cpu_inc(hrtimer_interrupts);
+>   }
+>   =
 
-Any update on this?
+> +static DEFINE_PER_CPU(struct completion, softlockup_completion);
+> +static DEFINE_PER_CPU(struct cpu_stop_work, softlockup_stop_work);
+> +
+>   /*
+>    * The watchdog thread function - touches the timestamp.
+>    *
+> @@ -343,12 +346,11 @@ static int softlockup_fn(void *data)
+>   	__this_cpu_write(soft_lockup_hrtimer_cnt,
+>   			 __this_cpu_read(hrtimer_interrupts));
+>   	__touch_watchdog();
+> +	complete(this_cpu_ptr(&softlockup_completion));
+>   =
 
-Best Regards,
-Huang, Ying
+>   	return 0;
+>   }
+>   =
 
---===============8844143904912476573==--
+> -static DEFINE_PER_CPU(struct cpu_stop_work, softlockup_stop_work);
+> -
+>   /* watchdog kicker functions */
+>   static enum hrtimer_restart watchdog_timer_fn(struct hrtimer *hrtimer)
+>   {
+> @@ -364,9 +366,12 @@ static enum hrtimer_restart watchdog_timer_fn(struct=
+ hrtimer *hrtimer)
+>   	watchdog_interrupt_count();
+>   =
+
+>   	/* kick the softlockup detector */
+> -	stop_one_cpu_nowait(smp_processor_id(),
+> -			softlockup_fn, NULL,
+> -			this_cpu_ptr(&softlockup_stop_work));
+> +	if (completion_done(this_cpu_ptr(&softlockup_completion))) {
+> +		reinit_completion(this_cpu_ptr(&softlockup_completion));
+> +		stop_one_cpu_nowait(smp_processor_id(),
+> +				softlockup_fn, NULL,
+> +				this_cpu_ptr(&softlockup_stop_work));
+> +	}
+>   =
+
+>   	/* .. and repeat */
+>   	hrtimer_forward_now(hrtimer, ns_to_ktime(sample_period));
+> @@ -467,9 +472,13 @@ static enum hrtimer_restart watchdog_timer_fn(struct=
+ hrtimer *hrtimer)
+>   static void watchdog_enable(unsigned int cpu)
+>   {
+>   	struct hrtimer *hrtimer =3D this_cpu_ptr(&watchdog_hrtimer);
+> +	struct completion *done =3D this_cpu_ptr(&softlockup_completion);
+>   =
+
+>   	WARN_ON_ONCE(cpu !=3D smp_processor_id());
+>   =
+
+> +	init_completion(done);
+> +	complete(done);
+> +
+>   	/*
+>   	 * Start the timer first to prevent the NMI watchdog triggering
+>   	 * before the timer has a chance to fire.
+> @@ -499,6 +508,7 @@ static void watchdog_disable(unsigned int cpu)
+>   	 */
+>   	watchdog_nmi_disable(cpu);
+>   	hrtimer_cancel(hrtimer);
+> +	wait_for_completion(this_cpu_ptr(&softlockup_completion));
+>   }
+>   =
+
+>   static int softlockup_stop_fn(void *data)
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
+
+
+--===============1936586758130290588==--
 
