@@ -1,192 +1,161 @@
-Content-Type: multipart/mixed; boundary="===============5025162274828652202=="
+Content-Type: multipart/mixed; boundary="===============2388895135561491271=="
 MIME-Version: 1.0
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: Ming Lei <ming.lei@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [tracing] ecadccb31b: kernel_selftests.ftrace.ftracetest.fail
-Date: Sat, 21 Jul 2018 18:40:32 +0900
-Message-ID: <20180721184032.01b1b6d70e0dd3b0f32aac95@kernel.org>
-In-Reply-To: <20180721024113.GI12513@shao2-debian>
+Subject: Re: [lkp-robot] [confidence: ] 6ce3dd6eec [ 10.247585] WARNING: CPU: 0 PID: 210 at block/blk-mq.c:647 blk_mq_start_request
+Date: Sun, 22 Jul 2018 08:02:59 +0800
+Message-ID: <20180722000252.GA25343@ming.t460p>
+In-Reply-To: <20180721022805.GG12513@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5025162274828652202==
+--===============2388895135561491271==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-OK, I'll handle this.
-The reason why this error is that kprobe event tests probe ftrace itself fo=
-r test.
-
-
-On Sat, 21 Jul 2018 10:41:13 +0800
-kernel test robot <rong.a.chen@intel.com> wrote:
-
+On Sat, Jul 21, 2018 at 10:28:05AM +0800, kernel test robot wrote:
 > =
 
-> FYI, we noticed the following commit (built with gcc-7):
+> Greetings,
 > =
 
-> commit: ecadccb31b8f1516dd045cc64fc7bc7a2d72947f ("[PATCH 1/2] tracing: k=
-probes: Prohibit probing on notrace functions")
-> url: https://github.com/0day-ci/linux/commits/Francis-Deslauriers/tracing=
--kprobes-Prohibit-probing-on-notrace-functions/20180714-072854
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
 > =
 
-> in testcase: kernel_selftests
-> with following parameters:
+> commit 6ce3dd6eec114930cf2035a8bcb1e80477ed79a8
+> Author:     Ming Lei <ming.lei@redhat.com>
+> AuthorDate: Tue Jul 10 09:03:31 2018 +0800
+> Commit:     Jens Axboe <axboe@kernel.dk>
+> CommitDate: Tue Jul 17 16:04:00 2018 -0600
 > =
 
-> 	group: kselftests-01
+>     blk-mq: issue directly if hw queue isn't busy in case of 'none'
+>     =
+
+>     In case of 'none' io scheduler, when hw queue isn't busy, it isn't
+>     necessary to enqueue request to sw queue and dequeue it from
+>     sw queue because request may be submitted to hw queue asap without
+>     extra cost, meantime there shouldn't be much request in sw queue,
+>     and we don't need to worry about effect on IO merge.
+>     =
+
+>     There are still some single hw queue SCSI HBAs(HPSA, megaraid_sas, ..=
+.)
+>     which may connect high performance devices, so 'none' is often requir=
+ed
+>     for obtaining good performance.
+>     =
+
+>     This patch improves IOPS and decreases CPU unilization on megaraid_sa=
+s,
+>     per Kashyap's test.
+>     =
+
+>     Cc: Kashyap Desai <kashyap.desai@broadcom.com>
+>     Cc: Laurence Oberman <loberman@redhat.com>
+>     Cc: Omar Sandoval <osandov@fb.com>
+>     Cc: Christoph Hellwig <hch@lst.de>
+>     Cc: Bart Van Assche <bart.vanassche@wdc.com>
+>     Cc: Hannes Reinecke <hare@suse.de>
+>     Reported-by: Kashyap Desai <kashyap.desai@broadcom.com>
+>     Tested-by: Kashyap Desai <kashyap.desai@broadcom.com>
+>     Signed-off-by: Ming Lei <ming.lei@redhat.com>
+>     Signed-off-by: Jens Axboe <axboe@kernel.dk>
 > =
 
-> test-description: The kernel contains a set of "self tests" under the too=
-ls/testing/selftests/ directory. These are intended to be small unit tests =
-to exercise individual code paths in the kernel.
-> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+> 71e9690b59  blk-iolatency: truncate our current time
+> 6ce3dd6eec  blk-mq: issue directly if hw queue isn't busy in case of 'non=
+e'
+> 89cf553533  Add linux-next specific files for 20180720
+> +-------------------------------------------------+------------+---------=
+---+---------------+
+> |                                                 | 71e9690b59 | 6ce3dd6e=
+ec | next-20180720 |
+> +-------------------------------------------------+------------+---------=
+---+---------------+
+> | boot_successes                                  | 32         | 4       =
+   | 18            |
+> | boot_failures                                   | 13         | 12      =
+   | 12            |
+> | BUG:workqueue_lockup-pool                       | 13         | 2       =
+   | 3             |
+> | WARNING:at_block/blk-mq.c:#blk_mq_start_request | 0          | 12      =
+   | 11            |
+> | RIP:blk_mq_start_request                        | 0          | 12      =
+   | 11            |
+> +-------------------------------------------------+------------+---------=
+---+---------------+
 > =
 
-> =
+> [   10.225908] UDF-fs: error (device nbd11): udf_read_tagged: read failed=
+, block=3D512, location=3D512
+> [   10.230004] UDF-fs: error (device nbd6): udf_read_tagged: read failed,=
+ block=3D512, location=3D512
+> [   10.234011] UDF-fs: error (device nbd15): udf_read_tagged: read failed=
+, block=3D512, location=3D512
+> [   10.238978] UDF-fs: error (device nbd11): udf_read_tagged: read failed=
+, block=3D256, location=3D256
+> [   10.243423] UDF-fs: error (device nbd6): udf_read_tagged: read failed,=
+ block=3D256, location=3D256
+> [   10.247585] WARNING: CPU: 0 PID: 210 at block/blk-mq.c:647 blk_mq_star=
+t_request+0x57/0x84
+> [   10.255769] CPU: 0 PID: 210 Comm: kworker/0:1H Not tainted 4.18.0-rc4-=
+00068-g6ce3dd6 #1
+> [   10.258705] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.10.2-1 04/01/2014
+> [   10.261751] Workqueue: kblockd blk_mq_run_work_fn
+> [   10.263469] RIP: 0010:blk_mq_start_request+0x57/0x84
+> [   10.265231] Code: 73 1e e8 32 9c b9 ff 81 4b 18 00 00 02 00 48 89 83 b=
+0 00 00 00 48 89 de 48 89 ef e8 4a e5 00 00 8b 83 d4 00 00 00 85 c0 74 02 <=
+0f> 0b 48 89 df e8 65 dd ff ff c7 83 d4 00 00 00 01 00 00 00 83 bd =
 
-> on test machine: 8 threads Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz with =
-8G memory
-> =
+> [   10.271321] RSP: 0018:ffffc900002a7cb0 EFLAGS: 00010202
+> [   10.273134] RAX: 0000000000000001 RBX: ffff88001c61ccc0 RCX: 000000000=
+00000ff
+> [   10.275339] RDX: 0000000000000000 RSI: ffff88001c5ae300 RDI: ffff88001=
+c61ccc0
+> [   10.277534] RBP: ffff88001c5f7008 R08: 0000000437ddd47e R09: 000000000=
+0000000
+> [   10.279729] R10: 0000000000000000 R11: ffff88001c61cd00 R12: 000000000=
+000000a
+> [   10.287969] R13: 0000000000000000 R14: ffff88001c5f7000 R15: ffff88001=
+c308a00
+> [   10.290141] FS:  0000000000000000(0000) GS:ffffffff82e98000(0000) knlG=
+S:0000000000000000
+> [   10.293062] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   10.294955] CR2: 00007f661eaba000 CR3: 0000000002e75002 CR4: 000000000=
+00606b0
+> [   10.297108] Call Trace:
+> [   10.298313]  nbd_queue_rq+0x105/0x3c5
+> [   10.310816]  ? kvm_sched_clock_read+0x5/0xd
+> [   10.312427]  ? __lock_acquire+0x217/0x7ae
+> [   10.314125]  blk_mq_dispatch_rq_list+0x2db/0x4ec
+> [   10.315808]  ? blk_mq_flush_busy_ctxs+0x5d/0x145
+> [   10.317460]  blk_mq_sched_dispatch_requests+0x127/0x165
+> [   10.319212]  __blk_mq_run_hw_queue+0x9d/0xc4
+> [   10.320769]  process_one_work+0x205/0x36f
+> [   10.322277]  ? process_one_work+0x1a4/0x36f
+> [   10.327153]  worker_thread+0x1ec/0x2bb
+> [   10.329387]  ? process_scheduled_works+0x27/0x27
+> [   10.331067]  kthread+0x117/0x11f
+> [   10.332477]  ? kthread_flush_work_fn+0x9/0x9
+> [   10.348547]  ret_from_fork+0x35/0x40
+> [   10.349980] ---[ end trace 29f1a54dd1591b2f ]---
+> [   10.352707] NILFS (nbd9): unable to read superblock
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
+Hello,
 
-> =
+Could you share your exact test case on nbd? So that we may integrate it
+into blktests.
 
-> =
+BTW, I can't find the related test script in the initrd, guess you put
+all as binary?
 
-> =
+Thanks,
+Ming
 
-> KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel=
--7.2-ecadccb31b8f1516dd045cc64fc7bc7a2d72947f
-> 2018-07-18 22:17:02 ln -sf /usr/bin/clang-7 /usr/bin/clang
-> 2018-07-18 22:17:02 ln -sf /usr/bin/llc-7 /usr/bin/llc
-> =
-
-> 2018-07-18 22:17:47 make run_tests -C ftrace
-> make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-7.2-ecadccb=
-31b8f1516dd045cc64fc7bc7a2d72947f/tools/testing/selftests/ftrace'
-> TAP version 13
-> selftests: ftrace: ftracetest
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =3D=3D=3D Ftrace unit tests =3D=3D=3D
-> [1] Basic trace file check	[PASS]
-> [2] Basic test for tracers	[PASS]
-> [3] Basic trace clock test	[PASS]
-> [4] Basic event tracing check	[PASS]
-> [5] event tracing - enable/disable with event level files	[PASS]
-> [6] event tracing - restricts events based on pid	[PASS]
-> [7] event tracing - enable/disable with subsystem level files	[PASS]
-> [8] event tracing - enable/disable with top level files	[PASS]
-> [9] ftrace - function graph filters with stack tracer	[PASS]
-> [10] ftrace - function graph filters	[PASS]
-> [11] ftrace - function glob filters	[PASS]
-> [12] ftrace - function pid filters	[PASS]
-> [13] ftrace - test for function event triggers	[PASS]
-> [14] ftrace - function profiler with function tracing	[PASS]
-> [15] ftrace - test reading of set_ftrace_filter	[PASS]
-> [16] ftrace - test for function traceon/off triggers	[PASS]
-> [17] Test creation and deletion of trace instances while setting an event=
-	[PASS]
-> [18] Test creation and deletion of trace instances	[PASS]
-> [19] Kprobe dynamic event - adding and removing	[PASS]
-> [20] Kprobe dynamic event - busy event check	[PASS]
-> [21] Kprobe dynamic event with arguments	[PASS]
-> [22] Kprobe event string type argument	[FAIL]
-> [23] Kprobe event argument syntax	[PASS]
-> [24] Kprobes event arguments with types	[PASS]
-> [25] Kprobe event auto/manual naming	[PASS]
-> [26] Kprobe dynamic event with function tracer	[PASS]
-> [27] Kprobe dynamic event - probing module	[FAIL]
-> [28] Kretprobe dynamic event with arguments	[PASS]
-> [29] Kretprobe dynamic event with maxactive	[PASS]
-> [30] Register/unregister many kprobe events	[PASS]
-> [31] Kprobe events - probe points	[FAIL]
-> [32] event trigger - test extended error support	[PASS]
-> [33] event trigger - test field variable support	[PASS]
-> [34] event trigger - test inter-event combined histogram trigger	[PASS]
-> [35] event trigger - test multiple actions on hist trigger	[PASS]
-> [36] event trigger - test inter-event histogram trigger onmatch action	[P=
-ASS]
-> [37] event trigger - test inter-event histogram trigger onmatch-onmax act=
-ion	[PASS]
-> [38] event trigger - test inter-event histogram trigger onmax action	[PAS=
-S]
-> [39] event trigger - test synthetic event create remove	[PASS]
-> [40] event trigger - test event enable/disable trigger	[PASS]
-> [41] event trigger - test trigger filter	[PASS]
-> [42] event trigger - test histogram modifiers	[PASS]
-> [43] event trigger - test histogram trigger	[PASS]
-> [44] event trigger - test multiple histogram triggers	[PASS]
-> [45] event trigger - test snapshot-trigger	[PASS]
-> [46] event trigger - test stacktrace-trigger	[PASS]
-> [47] trace_marker trigger - test histogram trigger	[PASS]
-> [48] trace_marker trigger - test snapshot trigger	[PASS]
-> [49] trace_marker trigger - test histogram with synthetic event against k=
-ernel event	[PASS]
-> [50] trace_marker trigger - test histogram with synthetic event	[PASS]
-> [51] event trigger - test traceon/off trigger	[PASS]
-> [52] (instance)  Basic test for tracers	[PASS]
-> [53] (instance)  Basic trace clock test	[PASS]
-> [54] (instance)  event tracing - enable/disable with event level files	[P=
-ASS]
-> [55] (instance)  event tracing - restricts events based on pid	[PASS]
-> [56] (instance)  event tracing - enable/disable with subsystem level file=
-s	[PASS]
-> [57] (instance)  ftrace - test for function event triggers	[PASS]
-> [58] (instance)  ftrace - test for function traceon/off triggers	[PASS]
-> [59] (instance)  event trigger - test event enable/disable trigger	[PASS]
-> [60] (instance)  event trigger - test trigger filter	[PASS]
-> [61] (instance)  event trigger - test histogram modifiers	[PASS]
-> [62] (instance)  event trigger - test histogram trigger	[PASS]
-> [63] (instance)  event trigger - test multiple histogram triggers	[PASS]
-> [64] (instance)  trace_marker trigger - test histogram trigger	[PASS]
-> [65] (instance)  trace_marker trigger - test snapshot trigger	[PASS]
-> =
-
-> # of passed:  62
-> # of failed:  3
-> # of unresolved:  0
-> # of untested:  0
-> # of unsupported:  0
-> # of xfailed:  0
-> # of undefined(test bug):  0
-> not ok 1..1 selftests: ftrace: ftracetest [FAIL]
-> make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-7.2-ecadccb3=
-1b8f1516dd045cc64fc7bc7a2d72947f/tools/testing/selftests/ftrace'
-> =
-
-> =
-
-> to reproduce:
-> =
-
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp install job.yaml  # job file is attached in this email
->         bin/lkp run     job.yaml
-> =
-
-> =
-
-> =
-
-> thanks,
-> rong, chen
-
-
--- =
-
-Masami Hiramatsu <mhiramat@kernel.org>
-
---===============5025162274828652202==--
+--===============2388895135561491271==--
 
