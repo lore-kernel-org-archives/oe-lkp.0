@@ -1,155 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============7805685773961904604=="
+Content-Type: multipart/mixed; boundary="===============8468747276495953611=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Joerg Roedel <jroedel@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [mm, oom] c1e4c54f9c: BUG:KASAN:null-ptr-deref_in_d
-Date: Tue, 31 Jul 2018 08:54:34 +0200
-Message-ID: <20180731065434.GB4557@dhcp22.suse.cz>
-In-Reply-To: <alpine.DEB.2.21.1807301854040.198273@chino.kir.corp.google.com>
+Subject: Re: [lkp-robot] [confidence: ] 7757d607c6 [ 56.996267] BUG: Bad page map in process trinity-c2 pte:0d755065 pmd:0d55b067
+Date: Tue, 31 Jul 2018 09:27:25 +0200
+Message-ID: <20180731072725.ecbhfm6642xxao5z@suse.de>
+In-Reply-To: <20180731020036.GB22500@yexl-desktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7805685773961904604==
+--===============8468747276495953611==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 30-07-18 19:05:50, David Rientjes wrote:
-> On Mon, 30 Jul 2018, Michal Hocko wrote:
+On Tue, Jul 31, 2018 at 10:00:36AM +0800, Ye Xiaolong wrote:
+> On 07/27, Joerg Roedel wrote:
+> >May I ask how this was bisected? I found it very hard to reproduce, it
+> >triggered less then two times a day with the attached reproducer. Given
+> >that the report came pretty fast after the patches landed in
+> >tip/x86/pti, I guess it triggered a lot faster in your testing.
+> >
 > =
 
-> > On Mon 30-07-18 17:03:20, kernel test robot wrote:
-> > [...]
-> > > [    9.034310] BUG: KASAN: null-ptr-deref in dump_header+0x10c/0x448
-> > =
+> There is higher reproduce rate (2/310) in 0day environment, and we got do=
+zens
+> of qemu running simultaneously for bisection thus can get bisect result p=
+romptly.
 
-> > Could you faddr2line on the offset please?
-> > =
+Ah okay, that makes sense. Thanks for your answer and thanks for the
+report again.
 
-> =
 
-> It's possible that p is NULL when calling dump_header().  In this case we =
+Regards,
 
-> do not want to print any line concerning a victim because no oom kill has =
+	Joerg
 
-> occurred.
 
-You are right. I have missed those.
-
-> This code shouldn't be part of dump_header(), which is called from =
-
-> multiple contexts even when an oom kill has not occurred, and is =
-
-> ratelimited.  The single line output should be the canonical way that =
-
-> userspace parses the log for oom victims, we can't ratelimit it.
-> =
-
-> The following would be a fix patch, but it will be broken if the cgroup =
-
-> aware oom killer is removed from -mm so that the oom_group stuff can be =
-
-> merged.
-
-cgroup aware oom killer is going to be replaced by a new implementation
-IIUC so the fix should be based on the yuzhoujian patch. Ideally to be
-resubmitted.
-
-I would just suggest adding it into a function
-dump_oom_summary(struct oom_control *oc, struct task_struct *p)
-
-yuzhoujian could you take care of that please?
-
-> diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-> --- a/mm/oom_kill.c
-> +++ b/mm/oom_kill.c
-> @@ -438,14 +438,6 @@ static void dump_header(struct oom_control *oc, stru=
-ct task_struct *p)
->  =
-
->  	dump_stack();
->  =
-
-> -	/* one line summary of the oom killer context. */
-> -	pr_info("oom-kill:constraint=3D%s,nodemask=3D%*pbl",
-> -			oom_constraint_text[oc->constraint],
-> -			nodemask_pr_args(oc->nodemask));
-> -	cpuset_print_current_mems_allowed();
-> -	mem_cgroup_print_oom_context(oc->memcg, p);
-> -	pr_cont(",task=3D%s,pid=3D%d,uid=3D%d\n", p->comm, p->pid,
-> -		from_kuid(&init_user_ns, task_uid(p)));
->  	if (is_memcg_oom(oc))
->  		mem_cgroup_print_oom_meminfo(oc->memcg);
->  	else {
-> @@ -836,7 +828,8 @@ static bool task_will_free_mem(struct task_struct *ta=
-sk)
->  	return ret;
->  }
->  =
-
-> -static void __oom_kill_process(struct task_struct *victim)
-> +static void __oom_kill_process(struct task_struct *victim,
-> +			       struct oom_control *oc)
->  {
->  	struct task_struct *p;
->  	struct mm_struct *mm;
-> @@ -883,6 +876,18 @@ static void __oom_kill_process(struct task_struct *v=
-ictim)
->  		K(get_mm_counter(victim->mm, MM_ANONPAGES)),
->  		K(get_mm_counter(victim->mm, MM_FILEPAGES)),
->  		K(get_mm_counter(victim->mm, MM_SHMEMPAGES)));
-> +
-> +	if (oc) {
-> +		/* One line summary for non-group oom kills */
-> +		pr_info("oom-kill: constraint=3D%s, nodemask=3D%*pbl",
-> +			oom_constraint_text[oc->constraint],
-> +			nodemask_pr_args(oc->nodemask));
-> +		cpuset_print_current_mems_allowed();
-> +		mem_cgroup_print_oom_context(oc->memcg, victim);
-> +		pr_cont(", task=3D%s, pid=3D%d, uid=3D%d\n",
-> +			victim->comm, victim->pid,
-> +			from_kuid(&init_user_ns, task_uid(victim)));
-> +	}
->  	task_unlock(victim);
->  =
-
->  	/*
-> @@ -986,13 +991,13 @@ static void oom_kill_process(struct oom_control *oc=
-, const char *message)
->  	}
->  	read_unlock(&tasklist_lock);
->  =
-
-> -	__oom_kill_process(victim);
-> +	__oom_kill_process(victim, oc);
->  }
->  =
-
->  static int oom_kill_memcg_member(struct task_struct *task, void *unused)
->  {
->  	get_task_struct(task);
-> -	__oom_kill_process(task);
-> +	__oom_kill_process(task, NULL);
->  	return 0;
->  }
->  =
-
-> @@ -1020,7 +1025,7 @@ static bool oom_kill_memcg_victim(struct oom_contro=
-l *oc)
->  		    oc->chosen_task =3D=3D INFLIGHT_VICTIM)
->  			goto out;
->  =
-
-> -		__oom_kill_process(oc->chosen_task);
-> +		__oom_kill_process(oc->chosen_task, oc);
->  	}
->  =
-
->  out:
-
--- =
-
-Michal Hocko
-SUSE Labs
-
---===============7805685773961904604==--
+--===============8468747276495953611==--
 
