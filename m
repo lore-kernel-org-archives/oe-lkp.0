@@ -1,40 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============8468747276495953611=="
+Content-Type: multipart/mixed; boundary="===============6866265112877161293=="
 MIME-Version: 1.0
-From: Joerg Roedel <jroedel@suse.de>
+From: Ye Xiaolong <xiaolong.ye@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [confidence: ] 7757d607c6 [ 56.996267] BUG: Bad page map in process trinity-c2 pte:0d755065 pmd:0d55b067
-Date: Tue, 31 Jul 2018 09:27:25 +0200
-Message-ID: <20180731072725.ecbhfm6642xxao5z@suse.de>
-In-Reply-To: <20180731020036.GB22500@yexl-desktop>
+Subject: Re: [lkp-robot] [shmem] 85766f621c: vm-scalability.throughput -15.5% regression
+Date: Tue, 31 Jul 2018 16:05:06 +0800
+Message-ID: <20180731080506.GD22500@yexl-desktop>
+In-Reply-To: <20180710132458.GA17016@bombadil.infradead.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8468747276495953611==
+--===============6866265112877161293==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 31, 2018 at 10:00:36AM +0800, Ye Xiaolong wrote:
-> On 07/27, Joerg Roedel wrote:
-> >May I ask how this was bisected? I found it very hard to reproduce, it
-> >triggered less then two times a day with the attached reproducer. Given
-> >that the report came pretty fast after the patches landed in
-> >tip/x86/pti, I guess it triggered a lot faster in your testing.
-> >
-> =
+Hi,
 
-> There is higher reproduce rate (2/310) in 0day environment, and we got do=
-zens
-> of qemu running simultaneously for bisection thus can get bisect result p=
-romptly.
+On 07/10, Matthew Wilcox wrote:
+>On Tue, Jul 10, 2018 at 09:19:47AM +0800, kernel test robot wrote:
+>> =
 
-Ah okay, that makes sense. Thanks for your answer and thanks for the
-report again.
+>> Greeting,
+>> =
+
+>> FYI, we noticed a -15.5% regression of vm-scalability.throughput due to =
+commit:
+>> =
+
+>> =
+
+>> commit: 85766f621c492a9aa7904050ad2f80893ab2a8fd ("shmem: Convert shmem_=
+add_to_page_cache to XArray")
+>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>> =
+
+>> in testcase: vm-scalability
+>> on test machine: 4 threads Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz with =
+8G memory
+>> with following parameters:
+>> =
+
+>> 	runtime: 300s
+>> 	size: 16G
+>> 	test: shm-xread-rand
+>> 	cpufreq_governor: performance
+>
+>I believe this (and the other reported regression with vm-scalability) is
+>now fixed with f63145ae97486dfd391797a3d65e72ca21f72d76.  Can you please
+>re-run this test with today's tree (next-20180710) which includes this fix?
+>Thanks!
+
+Just confirmed the performance is recovered back in next-20180716 which also
+contains your fix ("shmem: Convert shmem_add_to_page_cache to XArray").
 
 
-Regards,
+Thanks,
+Xiaolong
+>
 
-	Joerg
-
-
---===============8468747276495953611==--
+--===============6866265112877161293==--
 
