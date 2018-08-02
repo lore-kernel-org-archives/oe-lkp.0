@@ -1,72 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============5367944022905003022=="
+Content-Type: multipart/mixed; boundary="===============1238813282090434941=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: David Howells <dhowells@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [lkp-robot] [mm] 9092c71bb7: blogbench.write_score -12.3% regression
-Date: Thu, 02 Aug 2018 13:55:23 +0800
-Message-ID: <87tvod8g8k.fsf@yhuang-dev.intel.com>
-In-Reply-To: <87zhyvew74.fsf@yhuang-dev.intel.com>
+Subject: Re: ffbe758dbb [ 0.052456] Kernel panic - not syncing: Can't create rootfs
+Date: Thu, 02 Aug 2018 09:54:35 +0100
+Message-ID: <23713.1533200075@warthog.procyon.org.uk>
+In-Reply-To: <20180802021453.GA26770@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5367944022905003022==
+--===============1238813282090434941==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-"Huang, Ying" <ying.huang@intel.com> writes:
+kernel test robot <rong.a.chen@intel.com> wrote:
 
-> Hi, Chris,
->
-> Chris Mason <clm@fb.com> writes:
->
->> On 19 Jun 2018, at 23:51, Huang, Ying wrote:
->>>>> "Huang, Ying" <ying.huang@intel.com> writes:
->>>>>
->>>>>> Hi, Josef,
->>>>>>
->>>>>> Do you have time to take a look at the regression?
->>>>>>
->>>>>> kernel test robot <xiaolong.ye@intel.com> writes:
->>>>>>
->>>>>>> Greeting,
->>>>>>>
->>>>>>> FYI, we noticed a -12.3% regression of blogbench.write_score and
->>>>>>> a +9.6% improvement
->>>>>>> of blogbench.read_score due to commit:
->>>>>>>
->>>>>>>
->>>>>>> commit: 9092c71bb724dba2ecba849eae69e5c9d39bd3d2 ("mm: use
->>>>>>> sc->priority for slab shrink targets")
->>>>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git
->>>>>>> master
->>>>>>>
->>>>>>> in testcase: blogbench
->>>>>>> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @
->>>>>>> 2.10GHz with 8G memory
->>>>>>> with following parameters:
->>>>>>>
->>>>>>> 	disk: 1SSD
->>>>>>> 	fs: btrfs
->>>>>>> 	cpufreq_governor: performance
->>>>>>>
->>>>>>> test-description: Blogbench is a portable filesystem benchmark
->>>>>>> that tries to reproduce the load of a real-world busy file
->>>>>>> server.
->>>>>>> test-url:
->>
->> I'm surprised, this patch is a big win in production here at FB.  I'll
->> have to reproduce these results to better understand what is going on.
->> My first guess is that since we have fewer inodes in slab, we're
->> reading more inodes from disk in order to do the writes.
->>
->> But that should also make our read scores lower.
->
-> Any update on this?
+> [    0.052449] smack: Unknown parameter 'source'
 
-Ping.
+That is the actual problem.  I think this should be fixed by the attached
+patch.  I can replicate it with SELinux by removing the equivalent line from
+there.
 
-Best Regards,
-Huang, Ying
+David
+---
+diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
+index 339ac4d42785..c325c89be68e 100644
+--- a/security/smack/smack_lsm.c
++++ b/security/smack/smack_lsm.c
+@@ -678,6 +678,7 @@ static const struct fs_parameter_description smack_fs_p=
+arameters =3D {
+ 	.nr_keys	=3D ARRAY_SIZE(smack_param_keys),
+ 	.keys		=3D smack_param_keys,
+ 	.specs		=3D smack_param_specs,
++	.ignore_unknown	=3D true,
+ };
+ =
 
---===============5367944022905003022==--
+ /**
+
+--===============1238813282090434941==--
 
