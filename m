@@ -1,36 +1,119 @@
-Content-Type: multipart/mixed; boundary="===============2928306593661448032=="
+Content-Type: multipart/mixed; boundary="===============9080562570517223083=="
 MIME-Version: 1.0
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
-Subject: Re: d1b40ae9ca [ 18.779992] BUG: unable to handle kernel paging request at c0351cd8
-Date: Mon, 06 Aug 2018 11:46:27 -0500
-Message-ID: <8736vrcujg.fsf@xmission.com>
-In-Reply-To: <20180806011423.GC18936@shao2-debian>
+Subject: Re: [mm, oom] c1e4c54f9c: BUG:KASAN:null-ptr-deref_in_d
+Date: Mon, 06 Aug 2018 14:37:40 -0700
+Message-ID: <alpine.DEB.2.21.1808061436270.43071@chino.kir.corp.google.com>
+In-Reply-To: <CAHCio2j-oH2v5xY9F=Naoj9ao4cYw+LP6kqi_GELafqJ4qB6iw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2928306593661448032==
+--===============9080562570517223083==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-kernel test robot <rong.a.chen@intel.com> writes:
+On Mon, 6 Aug 2018, =E7=A6=B9=E8=88=9F=E9=94=AE wrote:
 
-> Greetings,
->
-> 0day kernel testing robot got the below dmesg and the first bad commit is
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.g=
-it siginfo-testing
+> Hi Michal
+> Sorry, I cannot open the link you shared.
+> =
 
-I finally think I see what is going on.  fork_idle being confusing
-things with it's specialness.
 
-I have updated my branch once again to handle this case.  If you could
-place the branch above back into testing and let me know how it goes I
-would appreciate it.
+The suggestion atop your previous patch was
 
-Thank you,
-Eric Biederman
+diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+--- a/mm/oom_kill.c
++++ b/mm/oom_kill.c
+@@ -438,14 +438,6 @@ static void dump_header(struct oom_control *oc, struct=
+ task_struct *p)
+ =
 
---===============2928306593661448032==--
+ 	dump_stack();
+ =
+
+-	/* one line summary of the oom killer context. */
+-	pr_info("oom-kill:constraint=3D%s,nodemask=3D%*pbl",
+-			oom_constraint_text[oc->constraint],
+-			nodemask_pr_args(oc->nodemask));
+-	cpuset_print_current_mems_allowed();
+-	mem_cgroup_print_oom_context(oc->memcg, p);
+-	pr_cont(",task=3D%s,pid=3D%d,uid=3D%d\n", p->comm, p->pid,
+-		from_kuid(&init_user_ns, task_uid(p)));
+ 	if (is_memcg_oom(oc))
+ 		mem_cgroup_print_oom_meminfo(oc->memcg);
+ 	else {
+@@ -836,7 +828,8 @@ static bool task_will_free_mem(struct task_struct *task)
+ 	return ret;
+ }
+ =
+
+-static void __oom_kill_process(struct task_struct *victim)
++static void __oom_kill_process(struct task_struct *victim,
++			       struct oom_control *oc)
+ {
+ 	struct task_struct *p;
+ 	struct mm_struct *mm;
+@@ -883,6 +876,18 @@ static void __oom_kill_process(struct task_struct *vic=
+tim)
+ 		K(get_mm_counter(victim->mm, MM_ANONPAGES)),
+ 		K(get_mm_counter(victim->mm, MM_FILEPAGES)),
+ 		K(get_mm_counter(victim->mm, MM_SHMEMPAGES)));
++
++	if (oc) {
++		/* One line summary for non-group oom kills */
++		pr_info("oom-kill: constraint=3D%s, nodemask=3D%*pbl",
++			oom_constraint_text[oc->constraint],
++			nodemask_pr_args(oc->nodemask));
++		cpuset_print_current_mems_allowed();
++		mem_cgroup_print_oom_context(oc->memcg, victim);
++		pr_cont(", task=3D%s, pid=3D%d, uid=3D%d\n",
++			victim->comm, victim->pid,
++			from_kuid(&init_user_ns, task_uid(victim)));
++	}
+ 	task_unlock(victim);
+ =
+
+ 	/*
+@@ -986,13 +991,13 @@ static void oom_kill_process(struct oom_control *oc, =
+const char *message)
+ 	}
+ 	read_unlock(&tasklist_lock);
+ =
+
+-	__oom_kill_process(victim);
++	__oom_kill_process(victim, oc);
+ }
+ =
+
+ static int oom_kill_memcg_member(struct task_struct *task, void *unused)
+ {
+ 	get_task_struct(task);
+-	__oom_kill_process(task);
++	__oom_kill_process(task, NULL);
+ 	return 0;
+ }
+ =
+
+@@ -1020,7 +1025,7 @@ static bool oom_kill_memcg_victim(struct oom_control =
+*oc)
+ 		    oc->chosen_task =3D=3D INFLIGHT_VICTIM)
+ 			goto out;
+ =
+
+-		__oom_kill_process(oc->chosen_task);
++		__oom_kill_process(oc->chosen_task, oc);
+ 	}
+ =
+
+ out:
+
+
+You should be able to find this in your email.  We don't want to emit the =
+
+line when a victim is not chosen.  I also did a couple of cleanups like =
+
+spaces between commas.
+
+--===============9080562570517223083==--
 
