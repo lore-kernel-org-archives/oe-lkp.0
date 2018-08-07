@@ -1,119 +1,140 @@
-Content-Type: multipart/mixed; boundary="===============9080562570517223083=="
+Content-Type: multipart/mixed; boundary="===============2577269215562240869=="
 MIME-Version: 1.0
-From: David Rientjes <rientjes@google.com>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm, oom] c1e4c54f9c: BUG:KASAN:null-ptr-deref_in_d
-Date: Mon, 06 Aug 2018 14:37:40 -0700
-Message-ID: <alpine.DEB.2.21.1808061436270.43071@chino.kir.corp.google.com>
-In-Reply-To: <CAHCio2j-oH2v5xY9F=Naoj9ao4cYw+LP6kqi_GELafqJ4qB6iw@mail.gmail.com>
+Subject: Re: [lkp-robot] [nfsd4] 517dc52baa: fsmark.files_per_sec 32.4% improvement
+Date: Tue, 07 Aug 2018 13:02:16 +0800
+Message-ID: <63c5dff1-ab1d-3caa-682e-c8b5ff7025d5@intel.com>
+In-Reply-To: <20180801114642.GA21500@parsley.fieldses.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9080562570517223083==
+--===============2577269215562240869==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 6 Aug 2018, =E7=A6=B9=E8=88=9F=E9=94=AE wrote:
-
-> Hi Michal
-> Sorry, I cannot open the link you shared.
-> =
 
 
-The suggestion atop your previous patch was
+On 08/01/2018 07:46 PM, J. Bruce Fields wrote:
+> On Fri, Jul 27, 2018 at 08:22:25AM +0800, Ye Xiaolong wrote:
+>> On 07/16, Ye Xiaolong wrote:
+>>> On 07/04, Huang, Ying wrote:
+>>>> "J. Bruce Fields" <bfields@redhat.com> writes:
+>>>>
+>>>>> Thanks!
+>>>>>
+>>>>> On Wed, Jun 20, 2018 at 02:52:43PM +0800, kernel test robot wrote:
+>>>>>> FYI, we noticed a 32.4% improvement of fsmark.files_per_sec due to c=
+ommit:
+>>>>>>
+>>>>>>
+>>>>>> commit: 517dc52baa2a508c82f68bbc7219b48169e6b29f ("nfsd4: shortern d=
+efault lease period")
+>>>>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git mas=
+ter
+>>>>> That doesn't make any sense....
+>>>>>
+>>>>> OK, I think I see the problem:
+>>>>>
+>>>>>> in testcase: fsmark
+>>>>>> on test machine: 48 threads Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GH=
+z with 64G memory
+>>>>>> with following parameters:
+>>>>>>
+>>>>>> 	iterations: 1x
+>>>>>> 	nr_threads: 1t
+>>>>>> 	disk: 1BRD_48G
+>>>>>> 	fs: f2fs
+>>>>>> 	fs2: nfsv4
+>>>>>> 	filesize: 4M
+>>>>>> 	test_size: 40G
+>>>>>> 	sync_method: fsyncBeforeClose
+>>>>>> 	cpufreq_governor: performance
+>>>>>>
+>>>>>> test-description: The fsmark is a file system benchmark to test sync=
+hronous write workloads, for example, mail servers workload.
+>>>>>> test-url: https://sourceforge.net/projects/fsmark/
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> Details are as below:
+>>>>>> --------------------------------------------------------------------=
+------------------------------>
+>>>>>>
+>>>>>>
+>>>>>> To reproduce:
+>>>>>>
+>>>>>>          git clone https://github.com/intel/lkp-tests.git
+>>>>>>          cd lkp-tests
+>>>>>>          bin/lkp install job.yaml  # job file is attached in this em=
+ail
+>>>>>>          bin/lkp run     job.yaml
+>>>>>>
+>>>>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>>>>> compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr=
+_threads/rootfs/sync_method/tbox_group/test_size/testcase:
+>>>>>>    gcc-7/performance/1BRD_48G/4M/nfsv4/f2fs/1x/x86_64-rhel-7.2/1t/de=
+bian-x86_64-2016-08-31.cgz/fsyncBeforeClose/ivb44/40G/fsmark
+>>>>>>
+>>>>>> commit:
+>>>>>>    c2993a1d7d ("nfsd4: extend reclaim period for reclaiming clients")
+>>>>>>    517dc52baa ("nfsd4: shortern default lease period")
+>>>>>>
+>>>>>> c2993a1d7d6687fd 517dc52baa2a508c82f68bbc72
+>>>>>> ---------------- --------------------------
+>>>>>>           %stddev     %change         %stddev
+>>>>>>               \          |                \
+>>>>>>       53.60           +32.4%      70.95        fsmark.files_per_sec
+>>>>>>      191.89           -24.4%     145.16        fsmark.time.elapsed_t=
+ime
+>>>>>>      191.89           -24.4%     145.16        fsmark.time.elapsed_t=
+ime.max
+>>>>> So what happened is the test took about 45 seconds less.
+>>>>>
+>>>>> I suspect you're starting the nfs server and then immediately running
+>>>>> this test.
+>>>> Yes.
+>>>>
+>>>>> The problem is that if there's a grace period on startup, any open wi=
+ll
+>>>>> just hang until the grace period ends.
+>>>>>
+>>>>> This patch changed the default grace period from 90 seconds to 45, so
+>>>>> that would explain the change.
+>>>>>
+>>>>> In my testing I usually
+>>>>>
+>>>>> 	start the nfs server
+>>>>> 	on the client:
+>>>>> 		mount the server
+>>>>> 		touch a file
+>>>>>
+>>>>> When the touch returns, I know any grace period has completed, and th=
+en
+>>>>> I can run any tests normally.
+>>> I've modified our test to touch a file before running the actual worklo=
+ad, then
+>>> requeue tests for both commit 517dc52baa and its parent c2993a1d7d, but=
+ the
+>>> result seems persistent which shows a ~30% improvement of fsmark.files_=
+per_sec.
+>>>
+>> Any suggestions?	=
 
-diff --git a/mm/oom_kill.c b/mm/oom_kill.c
---- a/mm/oom_kill.c
-+++ b/mm/oom_kill.c
-@@ -438,14 +438,6 @@ static void dump_header(struct oom_control *oc, struct=
- task_struct *p)
- =
+> You're sure you only start timing after the "touch" returns?
+The result is normal after retesting, thank you for helping us improve =
 
- 	dump_stack();
- =
+the test.
 
--	/* one line summary of the oom killer context. */
--	pr_info("oom-kill:constraint=3D%s,nodemask=3D%*pbl",
--			oom_constraint_text[oc->constraint],
--			nodemask_pr_args(oc->nodemask));
--	cpuset_print_current_mems_allowed();
--	mem_cgroup_print_oom_context(oc->memcg, p);
--	pr_cont(",task=3D%s,pid=3D%d,uid=3D%d\n", p->comm, p->pid,
--		from_kuid(&init_user_ns, task_uid(p)));
- 	if (is_memcg_oom(oc))
- 		mem_cgroup_print_oom_meminfo(oc->memcg);
- 	else {
-@@ -836,7 +828,8 @@ static bool task_will_free_mem(struct task_struct *task)
- 	return ret;
- }
- =
+Best Regards,
+Rong, Chen
 
--static void __oom_kill_process(struct task_struct *victim)
-+static void __oom_kill_process(struct task_struct *victim,
-+			       struct oom_control *oc)
- {
- 	struct task_struct *p;
- 	struct mm_struct *mm;
-@@ -883,6 +876,18 @@ static void __oom_kill_process(struct task_struct *vic=
-tim)
- 		K(get_mm_counter(victim->mm, MM_ANONPAGES)),
- 		K(get_mm_counter(victim->mm, MM_FILEPAGES)),
- 		K(get_mm_counter(victim->mm, MM_SHMEMPAGES)));
-+
-+	if (oc) {
-+		/* One line summary for non-group oom kills */
-+		pr_info("oom-kill: constraint=3D%s, nodemask=3D%*pbl",
-+			oom_constraint_text[oc->constraint],
-+			nodemask_pr_args(oc->nodemask));
-+		cpuset_print_current_mems_allowed();
-+		mem_cgroup_print_oom_context(oc->memcg, victim);
-+		pr_cont(", task=3D%s, pid=3D%d, uid=3D%d\n",
-+			victim->comm, victim->pid,
-+			from_kuid(&init_user_ns, task_uid(victim)));
-+	}
- 	task_unlock(victim);
- =
-
- 	/*
-@@ -986,13 +991,13 @@ static void oom_kill_process(struct oom_control *oc, =
-const char *message)
- 	}
- 	read_unlock(&tasklist_lock);
- =
-
--	__oom_kill_process(victim);
-+	__oom_kill_process(victim, oc);
- }
- =
-
- static int oom_kill_memcg_member(struct task_struct *task, void *unused)
- {
- 	get_task_struct(task);
--	__oom_kill_process(task);
-+	__oom_kill_process(task, NULL);
- 	return 0;
- }
- =
-
-@@ -1020,7 +1025,7 @@ static bool oom_kill_memcg_victim(struct oom_control =
-*oc)
- 		    oc->chosen_task =3D=3D INFLIGHT_VICTIM)
- 			goto out;
- =
-
--		__oom_kill_process(oc->chosen_task);
-+		__oom_kill_process(oc->chosen_task, oc);
- 	}
- =
-
- out:
+>
+> --b.
 
 
-You should be able to find this in your email.  We don't want to emit the =
-
-line when a victim is not chosen.  I also did a couple of cleanups like =
-
-spaces between commas.
-
---===============9080562570517223083==--
+--===============2577269215562240869==--
 
