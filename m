@@ -1,42 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============9200517013540824885=="
+Content-Type: multipart/mixed; boundary="===============0145764065396906324=="
 MIME-Version: 1.0
-From: Joerg Roedel <jroedel@suse.de>
+From: David Howells <dhowells@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: 30514effc9 ("x86/mm/pti: Don't clear permissions in .."): WARNING: CPU: 0 PID: 1 at arch/x86/mm/dump_pagetables.c:283 note_page
-Date: Wed, 08 Aug 2018 11:46:59 +0200
-Message-ID: <20180808094659.rcnxq32v3p2mdrwt@suse.de>
-In-Reply-To: <5b6ab75d.0adGiApE+ajF886e%lkp@intel.com>
+Subject: Re: ffbe758dbb [ 0.052456] Kernel panic - not syncing: Can't create rootfs
+Date: Wed, 08 Aug 2018 11:26:23 +0100
+Message-ID: <18008.1533723983@warthog.procyon.org.uk>
+In-Reply-To: <33324432-64e8-2349-a3d5-ec7592d3693b@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9200517013540824885==
+--===============0145764065396906324==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Rong Chen <rong.a.chen@intel.com> wrote:
 
-thanks for the report!
+> >> [    0.052449] smack: Unknown parameter 'source'
+> > That is the actual problem.  I think this should be fixed by the attach=
+ed
+> > patch.  I can replicate it with SELinux by removing the equivalent line=
+ from
+> > there.
+> results of the attached patch:
+> boot_successes: 0
+> boot_failures: 118
+> BUG:kernel_hang_in_boot_stage: 118
 
-On Wed, Aug 08, 2018 at 05:26:53PM +0800, kernel test robot wrote:
-> [   16.937839] Freeing unused kernel image memory: 556K
-> [   16.954368] x86/mm: Checked W+X mappings: passed, no W+X pages found.
-> [   16.956696] x86/mm: Checking user space page tables
-> [   16.973108] ------------[ cut here ]------------
-> [   16.975052] x86/mm: Found insecure W+X mapping at address (____ptrval_=
-___)/native_usergs_sysret64+0x0/0x10
-> [   16.978787] WARNING: CPU: 0 PID: 1 at arch/x86/mm/dump_pagetables.c:28=
-3 note_page+0xdd/0x890
+Can you give a revised boot log?
 
-I think this is caused by debug_checkrwx() running before
-pti_finalize(). The check runs on the user page-tables before they are
-finished. I prepare a patch to move the check for the user page-table to
-pti_finilize() after the page-tables are updated. That should fix the
-warning.
+David
 
-
-Thanks,
-
-	Joerg
-
---===============9200517013540824885==--
+--===============0145764065396906324==--
 
