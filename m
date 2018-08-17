@@ -1,92 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============3598345669410028085=="
+Content-Type: multipart/mixed; boundary="===============3105362788220536473=="
 MIME-Version: 1.0
-From: Yury Norov <ynorov@caviumnetworks.com>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] linux/bitmap.h: (buildbot-only) check if we have any compile-time zero-size bitmaps
-Date: Fri, 17 Aug 2018 02:21:25 +0300
-Message-ID: <20180816232125.GA6119@yury-thinkpad>
-In-Reply-To: <20180815085539.27485-1-linux@rasmusvillemoes.dk>
+Subject: Re: d1b40ae9ca [ 18.779992] BUG: unable to handle kernel paging request at c0351cd8
+Date: Fri, 17 Aug 2018 16:29:15 +0800
+Message-ID: <e1157194-9de8-4627-1e08-28d158c8d766@intel.com>
+In-Reply-To: <8736vrcujg.fsf@xmission.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3598345669410028085==
+--===============3105362788220536473==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Rasmus,
 
-On Wed, Aug 15, 2018 at 10:55:39AM +0200, Rasmus Villemoes wrote:
-> Most of the inline bitmap functions are buggy if passed a compile-time
-> constant nbits=3D=3D0.
 
-I think it's bad wording. Functions are OK. The problem is in users.
-Also, run-time nbits=3D=3D0 is buggy as well. On the other hand, we have a =
-rule
-in include/linux/bitmap.h:
-  * Note that nbits should be always a compile time evaluable constant.
-  * Otherwise many inlines will generate horrible code.
-So runtime-defined nbits is bad thing by itself.
+On 08/07/2018 12:46 AM, Eric W. Biederman wrote:
+> kernel test robot <rong.a.chen@intel.com> writes:
+>
+>> Greetings,
+>>
+>> 0day kernel testing robot got the below dmesg and the first bad commit is
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.=
+git siginfo-testing
+> I finally think I see what is going on.  fork_idle being confusing
+> things with it's specialness.
+>
+> I have updated my branch once again to handle this case.  If you could
+> place the branch above back into testing and let me know how it goes I
+> would appreciate it.
+the robot keeps track of the branch, and the branch looks fine so far.
 
-> The convention is that the caller only guarantees
-> BITS_TO_LONGS(nbits) words can be accessed, which for nbits=3D=3D0 is of
-> course 0. However, all the small_const_nbits() cases proceed to
-> dereferencing the passed src or dst pointers unconditionally.
-> =
+Best Regards,
+Rong Chen
 
-> Of course, nobody passes a literal 0 as nbits, but it could come about
-> from some odd CONFIG_ combination, or because the compiler is smart
-> enough to reduce some expression to 0, or... In any case, this patch is
-> just for the build-bots to chew on for various .config and arches to see
-> if we have any.
-> =
+>
+> Thank you,
+> Eric Biederman
 
-> Since most (if not all, I'll check) of the out-of-line implementations
-> handle nbits=3D=3D0 correctly, I'll probably just unconditionally add the
-> nbits>0 clause to small_const_nbits() to force the ool versions to be
-> used if any compile-time zero-size bitmap should turn up.
-> =
 
-> Not-really-signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> ---
->  include/linux/bitmap.h | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> =
-
-> diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
-> index 1ee46f492267..a5879cb45687 100644
-> --- a/include/linux/bitmap.h
-> +++ b/include/linux/bitmap.h
-> @@ -196,8 +196,10 @@ extern int bitmap_print_to_pagebuf(bool list, char *=
-buf,
->  #define BITMAP_FIRST_WORD_MASK(start) (~0UL << ((start) & (BITS_PER_LONG=
- - 1)))
->  #define BITMAP_LAST_WORD_MASK(nbits) (~0UL >> (-(nbits) & (BITS_PER_LONG=
- - 1)))
-> =
-
-> +int const_zero_size_bitmaps_are_buggy(void);
-
-It introduces undefined symbol and uses it in pretty unusual way. I think
-it worth to add comment about it.
-
->  #define small_const_nbits(nbits) \
-> -       (__builtin_constant_p(nbits) && (nbits) <=3D BITS_PER_LONG)
-> +       (__builtin_constant_p(nbits) && (nbits) <=3D BITS_PER_LONG && \
-> +        ((nbits) > 0 || const_zero_size_bitmaps_are_buggy()))
-
-Some functions in bitmap API has signed type for nbits. (This is wrong
-by itself. I think I'll write patch for it.) So in fact you check here
-that nbits is not negative as well. Would it be better name like
-const_nonpositive_size_bitmaps_are_buggy?
-
-Yury
-
-> =
-
->  static inline void bitmap_zero(unsigned long *dst, unsigned int nbits)
->  {
-> --
-> 2.16.4
-
---===============3598345669410028085==--
+--===============3105362788220536473==--
 
