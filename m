@@ -1,56 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============0630926496142123926=="
+Content-Type: multipart/mixed; boundary="===============4707519586997878273=="
 MIME-Version: 1.0
 From: David Ahern <dsahern@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [ltp] 93531c6743:sctp6_ipsec_vti04.fail
-Date: Tue, 21 Aug 2018 08:51:57 -0600
-Message-ID: <ed79a158-b323-ba1b-05c0-96fc1e269bc4@gmail.com>
+Date: Tue, 21 Aug 2018 09:31:39 -0600
+Message-ID: <b45ad7b6-94c8-c87c-3f0a-7fc5991080c8@gmail.com>
 In-Reply-To: <cd63e2ba-5990-d1c9-2007-87be37dfcdff@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0630926496142123926==
+--===============4707519586997878273==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 On 8/21/18 1:46 AM, Rong Chen wrote:
-> FYI, we noticed the following commit (built with gcc-7):
+> To reproduce:
 > =
 
-> commit 93531c6743157d7e8c5792f8ed1a57641149d62c ("net/ipv6: separate
-> handling of FIB entries from dst based routes")
-> git://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git
-> tags/next-20180419~47^2^2~2
-> =
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 git clone https://github.com/i=
+ntel/lkp-tests.git
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 cd lkp-tests
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bin/lkp qemu -k <bzImage> job-=
+script # job-script is attached in
+> this email
 
-> in testcase: ltp
-> =
+What am I missing?
 
-> on test machine: 48 threads Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz
-> with 64G memory
-> =
+lkp-tests.git$ bin/lkp qemu -k
+~/kernel.git/kbuild/lkp/arch/x86/boot/bzImage /tmp/job-script
+kernel module is required, please specify it with '-m'
 
-> caused below changes (please refer to attached dmesg/kmsg for entire
-> log/backtrace):
-> =
-
-
-...
-
-> [=C2=A0 825.136087] unregister_netdevice: waiting for ltp_vti0 to become
-> free. Usage count =3D 7
-> [=C2=A0 835.384088] unregister_netdevice: waiting for ltp_vti0 to become
-> free. Usage count =3D 7
-> [=C2=A0 845.632089] unregister_netdevice: waiting for ltp_vti0 to become
-> free. Usage count =3D 7
-> [=C2=A0 855.880104] unregister_netdevice: waiting for ltp_vti0 to become
-> free. Usage count =3D 7
-> [=C2=A0 866.136085] unregister_netdevice: waiting for ltp_vti0 to become
-> free. Usage count =3D 7
-> [=C2=A0 876.384080] unregister_netdevice: waiting for ltp_vti0 to become
-> free. Usage count =3D 7
-
-Thanks for the report. I will take a look.
-
---===============0630926496142123926==--
+--===============4707519586997878273==--
 
