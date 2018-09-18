@@ -1,52 +1,30 @@
-Content-Type: multipart/mixed; boundary="===============3165206179166504008=="
+Content-Type: multipart/mixed; boundary="===============6904520316432782605=="
 MIME-Version: 1.0
-From: Andrey Konovalov <andreyknvl@google.com>
+From: David Howells <dhowells@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: 7b5b51e7b3 qemux86-64: can't read binary file (No such file or directory)
-Date: Tue, 18 Sep 2018 17:49:56 +0200
-Message-ID: <CAAeHK+zD9zDTaFnRDkDvtGy4pVuKH09vx5YWy-EqsMQeihx0-g@mail.gmail.com>
-In-Reply-To: <ef6d291d-7fc9-d53f-eb81-99605e9a2886@intel.com>
+Subject: Re: [ipc] 61224adcd2: general_protection_fault:#[##]
+Date: Wed, 19 Sep 2018 00:23:00 +0100
+Message-ID: <5176.1537312980@warthog.procyon.org.uk>
+In-Reply-To: <20180913010517.GB7632@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3165206179166504008==
+--===============6904520316432782605==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 18, 2018 at 10:57 AM, Rong Chen <rong.a.chen@intel.com> wrote:
->
->
-> On 09/13/2018 09:00 AM, Rong Chen wrote:
->
->
->
-> On 09/12/2018 07:41 PM, Andrey Konovalov wrote:
->
-> That commit only adds noop annotations, so this is most likely a false
-> positive. I also can't make anything out of the error log you
-> provided.
->
-> The issue is that the binary paths become garbled from this commit,
-> and it can be reproduced on 0day-ci tree in high probability,
-> It's possible that the commit is influenced by other merged commits.
-> Could you confirm it on your own tree if you have time?
->
-> Hi Andrey,
->
-> Any update on this?
->
->
-> Best Regards,
-> Rong Chen
+Okay, I managed to run the job script for about 6 hours, but saw no problem=
+s.
+I'm guessing it's one of those things that you have to hit just right.
 
-Hi Rong,
+I've updated my mount-api and fsinfo branches to remove the "shortcut" code
+from mqueue_get_tree() and just rely on vfs_get_super() finding a duplicate
+superblock.
 
-I'll take a look this week.
+I'll ask Al to pull it tomorrow if I can work out solutions to Stephen's
+issues with building the sample programs.
 
-Do I understand correctly that I need to run the repro with my
-patchset and without and check whether it differs?
+David
 
-Thanks!
-
---===============3165206179166504008==--
+--===============6904520316432782605==--
 
