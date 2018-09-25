@@ -1,32 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============8547168167620028794=="
+Content-Type: multipart/mixed; boundary="===============1597777528553392747=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Kalle Valo <kvalo@qca.qualcomm.com>
 To: lkp@lists.01.org
-Subject: Re: [mm, oom] 6209f6fc62: general_protection_fault:#[##]
-Date: Tue, 25 Sep 2018 08:06:53 +0200
-Message-ID: <20180925060653.GN18685@dhcp22.suse.cz>
-In-Reply-To: <20180925054820.GC27173@shao2-debian>
+Subject: Re: [0-Day CI notification] 0-Day CI test service will be unavailable from Sep 30 to Oct 8
+Date: Tue, 25 Sep 2018 06:40:34 +0000
+Message-ID: <875zyu3wrl.fsf@qca.qualcomm.com>
+In-Reply-To: <20180925043238.GA14135@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8547168167620028794==
+--===============1597777528553392747==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue 25-09-18 13:48:20, kernel test robot wrote:
-> FYI, we noticed the following commit (built with gcc-7):
-> =
+Philip Li <philip.li@intel.com> writes:
 
-> commit: 6209f6fc62835d84c2a92d237588a114e39436ce ("mm, oom: rework mmap_e=
-xit vs. oom_reaper synchronization")
-> https://github.com/0day-ci/linux UPDATE-20180911-024633/Tetsuo-Handa/mm-o=
-om-Fix-unnecessary-killing-of-additional-processes/20180910-163452
+> Hi all, this is Philip who maintains the 0-Day CI test service. Thanks for
+> subscribing to the service. We will have site level power down during Chi=
+na
+> national holiday, so the service will be unavailable from Asia Pacific Ti=
+me
+> Sep 30 5PM to Oct 8 5PM. We will recover it as soon as we can. Sorry for =
+any
+> inconvenience caused during this period.
 
-Do you have a msg-id to the patch that has been tested?
+I so much rely on the 0-day reports that being without it for a week
+sounds horrible :) I hope you get it up quickly after the power down.
+
 -- =
 
-Michal Hocko
-SUSE Labs
-
---===============8547168167620028794==--
+Kalle Valo
+--===============1597777528553392747==--
 
