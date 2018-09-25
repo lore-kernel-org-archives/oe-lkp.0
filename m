@@ -1,34 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============1597777528553392747=="
+Content-Type: multipart/mixed; boundary="===============4233512580000192732=="
 MIME-Version: 1.0
-From: Kalle Valo <kvalo@qca.qualcomm.com>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [0-Day CI notification] 0-Day CI test service will be unavailable from Sep 30 to Oct 8
-Date: Tue, 25 Sep 2018 06:40:34 +0000
-Message-ID: <875zyu3wrl.fsf@qca.qualcomm.com>
-In-Reply-To: <20180925043238.GA14135@intel.com>
+Subject: Re: [mm, oom] 6209f6fc62: general_protection_fault:#[##]
+Date: Tue, 25 Sep 2018 15:00:15 +0800
+Message-ID: <084cf8cd-f384-8694-16c0-d1e2abfb9099@intel.com>
+In-Reply-To: <20180925060653.GN18685@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1597777528553392747==
+--===============4233512580000192732==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Philip Li <philip.li@intel.com> writes:
 
-> Hi all, this is Philip who maintains the 0-Day CI test service. Thanks for
-> subscribing to the service. We will have site level power down during Chi=
-na
-> national holiday, so the service will be unavailable from Asia Pacific Ti=
-me
-> Sep 30 5PM to Oct 8 5PM. We will recover it as soon as we can. Sorry for =
-any
-> inconvenience caused during this period.
 
-I so much rely on the 0-day reports that being without it for a week
-sounds horrible :) I hope you get it up quickly after the power down.
+On 09/25/2018 02:06 PM, Michal Hocko wrote:
+> On Tue 25-09-18 13:48:20, kernel test robot wrote:
+>> FYI, we noticed the following commit (built with gcc-7):
+>>
+>> commit: 6209f6fc62835d84c2a92d237588a114e39436ce ("mm, oom: rework mmap_=
+exit vs. oom_reaper synchronization")
+>> https://github.com/0day-ci/linux UPDATE-20180911-024633/Tetsuo-Handa/mm-=
+oom-Fix-unnecessary-killing-of-additional-processes/20180910-163452
+> Do you have a msg-id to the patch that has been tested?
 
--- =
+message_id: 20180910125513.311-2-mhocko(a)kernel.org
 
-Kalle Valo
---===============1597777528553392747==--
+Best Regards,
+Rong Chen
+
+--===============4233512580000192732==--
 
