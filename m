@@ -1,184 +1,221 @@
-Content-Type: multipart/mixed; boundary="===============7250904896276091929=="
+Content-Type: multipart/mixed; boundary="===============8650398469236473643=="
 MIME-Version: 1.0
-From: Rong Chen <rong.a.chen@intel.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 To: lkp@lists.01.org
-Subject: Re: [mailbox] afd0b1fb22: kmsg.Error_parsing_PCC_subspaces_from_PCCT
-Date: Wed, 10 Oct 2018 16:36:57 +0800
-Message-ID: <6f7dfa1a-20b9-8109-d585-cee63fd1eec7@intel.com>
-In-Reply-To: <639587bc-bbdc-8ff4-6e3d-7ef4c0a4a034@redhat.com>
+Subject: Re: 4ce5f9c9e7 [ 1.323881] WARNING: CPU: 0 PID: 1 at mm/slab_common.c:1031 kmalloc_slab
+Date: Wed, 10 Oct 2018 10:43:38 -0500
+Message-ID: <87sh1dvmc5.fsf@xmission.com>
+In-Reply-To: <20181010020641.GE13396@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7250904896276091929==
+--===============8650398469236473643==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 
+So I am flummoxed.  I am reading through the code and I don't see
+anything that could trigger this, and when I ran the supplied reproducer
+it did not reproduce for me.
 
-On 10/02/2018 08:06 PM, David Arcari wrote:
-> Hi,
->
-> Can someone help me interpret this email?  I was expecting this to be abo=
-ut a
-> dmesg change which is expected, but the content doesn't seem to indicate =
-that.
->
-> For the record, the commit shouldn't really introduce any functional chan=
-ges.
-> It merely avoids calling kcalloc with count=3D=3D-EINVAL.  In both cases,=
- an error
-> should be returned from  acpi_pcc_probe to pcc_init, which should in turn=
- always
-> return -ENODEV.
->
-> So with the commit in place, this would be logged:
->
-> [    3.957345] ACPI: [PCCT:0x00] Invalid zero length
-> [    3.962340] Error parsing PCC subspaces from PCCT
->
-> instead of:
->
-> [    3.957345] ACPI: [PCCT:0x00] Invalid zero length
-> [    3.962340] Could not allocate space for PCC mbox channels
-Thanks for the explanation, robot found an new error is from this commit,
-but it may not make sense.=C2=A0 please ignore this report.
+Plus there is the noise from the kmalloc_slab test that is goofing up
+the subject line.
 
-Best Regards,
-Rong Chen
+Is there any chance I can get a disassembly of the
+copy_siginfo_from_user or post_copy_siginfo_from_user from your build?
+I don't have the same tool chain.
 
->
-> On 09/29/2018 11:17 PM, kernel test robot wrote:
->> FYI, we noticed the following commit (built with gcc-7):
->>
->> commit: afd0b1fb22269f48d68fdf269891c653818c8047 ("mailbox: PCC: handle =
-parse error")
->> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->>
->> in testcase: ftq
->> with following parameters:
->>
->> 	nr_task: 100%
->> 	samples: 6000ss
->> 	test: cache
->> 	freq: 20
->> 	ucode: 0x200004d
->> 	cpufreq_governor: performance
->>
->> test-description: The FTQ benchmarks measure hardware and software inter=
-ference or 'noise' on a node from the applications perspective.
->> test-url: https://github.com/rminnich/ftq
->>
->>
->> on test machine: 104 threads Intel(R) Xeon(R) Platinum 8170 CPU @ 2.10GH=
-z with 192G memory
->>
->> caused below changes (please refer to attached dmesg/kmsg for entire log=
-/backtrace):
->>
->>
->>
->>
->> 2018-09-21 23:31:26 ./ftq_cache -f 20 -n 6000 -t 104 -a 360448
->> ticks per ns 2.09508
-> This ^^^ appears to be the actual error, but I don't understand what the
-> expected result should be or what this really means.
->
-> Thanks,
->
-> -Dave
->
->
->>
->>
->> To reproduce:
->>
->>          git clone https://github.com/intel/lkp-tests.git
->>          cd lkp-tests
->>          bin/lkp install job.yaml  # job file is attached in this email
->>          bin/lkp run     job.yaml
->>
->>
->>
->> Thanks,
->> Rong Chen
->>
-> _______________________________________________
-> LKP mailing list
-> LKP(a)lists.01.org
-> https://lists.01.org/mailman/listinfo/lkp
+Right now I am strongly suspecting that there is a memory stomp
+somewhere and the earlier tests just happen on something that is the
+pinpointed commit to misbehave.
 
+Either that or it is simply that I don't have the latest and greatest
+smep/smap hardware and there is an off by one I am not seeing.
 
---===============7250904896276091929==
-Content-Type: text/html
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.html"
+I don't doubt that this test is finding something I haven't figured out
+how to see what it is finding, and when I exercise the same code path
+with my own tests everything appears to work.
 
-PGh0bWw+CiAgPGhlYWQ+CiAgICA8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVR5cGUiIGNvbnRl
-bnQ9InRleHQvaHRtbDsgY2hhcnNldD11dGYtOCI+CiAgPC9oZWFkPgogIDxib2R5IHRleHQ9IiMw
-MDAwMDAiIGJnY29sb3I9IiNGRkZGRkYiPgogICAgPHA+PGJyPgogICAgPC9wPgogICAgPGJyPgog
-ICAgPGRpdiBjbGFzcz0ibW96LWNpdGUtcHJlZml4Ij5PbiAxMC8wMi8yMDE4IDA4OjA2IFBNLCBE
-YXZpZCBBcmNhcmkKICAgICAgd3JvdGU6PGJyPgogICAgPC9kaXY+CiAgICA8YmxvY2txdW90ZSB0
-eXBlPSJjaXRlIgogICAgICBjaXRlPSJtaWQ6NjM5NTg3YmMtYmJkYy04ZmY0LTZlM2QtN2VmNGMw
-YTRhMDM0QHJlZGhhdC5jb20iPgogICAgICA8cHJlIHdyYXA9IiI+CkhpLAoKQ2FuIHNvbWVvbmUg
-aGVscCBtZSBpbnRlcnByZXQgdGhpcyBlbWFpbD8gIEkgd2FzIGV4cGVjdGluZyB0aGlzIHRvIGJl
-IGFib3V0IGEKZG1lc2cgY2hhbmdlIHdoaWNoIGlzIGV4cGVjdGVkLCBidXQgdGhlIGNvbnRlbnQg
-ZG9lc24ndCBzZWVtIHRvIGluZGljYXRlIHRoYXQuCgpGb3IgdGhlIHJlY29yZCwgdGhlIGNvbW1p
-dCBzaG91bGRuJ3QgcmVhbGx5IGludHJvZHVjZSBhbnkgZnVuY3Rpb25hbCBjaGFuZ2VzLgpJdCBt
-ZXJlbHkgYXZvaWRzIGNhbGxpbmcga2NhbGxvYyB3aXRoIGNvdW50PT0tRUlOVkFMLiAgSW4gYm90
-aCBjYXNlcywgYW4gZXJyb3IKc2hvdWxkIGJlIHJldHVybmVkIGZyb20gIGFjcGlfcGNjX3Byb2Jl
-IHRvIHBjY19pbml0LCB3aGljaCBzaG91bGQgaW4gdHVybiBhbHdheXMKcmV0dXJuIC1FTk9ERVYu
-CgpTbyB3aXRoIHRoZSBjb21taXQgaW4gcGxhY2UsIHRoaXMgd291bGQgYmUgbG9nZ2VkOgoKWyAg
-ICAzLjk1NzM0NV0gQUNQSTogW1BDQ1Q6MHgwMF0gSW52YWxpZCB6ZXJvIGxlbmd0aApbICAgIDMu
-OTYyMzQwXSBFcnJvciBwYXJzaW5nIFBDQyBzdWJzcGFjZXMgZnJvbSBQQ0NUCgppbnN0ZWFkIG9m
-OgoKWyAgICAzLjk1NzM0NV0gQUNQSTogW1BDQ1Q6MHgwMF0gSW52YWxpZCB6ZXJvIGxlbmd0aApb
-ICAgIDMuOTYyMzQwXSBDb3VsZCBub3QgYWxsb2NhdGUgc3BhY2UgZm9yIFBDQyBtYm94IGNoYW5u
-ZWxzCjwvcHJlPgogICAgPC9ibG9ja3F1b3RlPgogICAgPHNwYW4gaWQ9IndfMTAiIGNsYXNzPSIi
-PlRoYW5rcyA8L3NwYW4+PHNwYW4gaWQ9IndfMTEiIGNsYXNzPSIiPmZvcgogICAgPC9zcGFuPjxz
-cGFuIGlkPSJ3XzEyIiBjbGFzcz0iIj50aGUgPC9zcGFuPjxzcGFuIGlkPSJ3XzEzIiBjbGFzcz0i
-Ij5leHBsYW5hdGlvbjwvc3Bhbj48c3BhbgogICAgICBpZD0id18xNCIgY2xhc3M9IiI+LCByb2Jv
-dCBmb3VuZCBhbiBuZXcgZXJyb3IgaXMgZnJvbSB0aGlzIGNvbW1pdCwKICAgICAgPGJyPgogICAg
-ICBidXQgaXQgbWF5IG5vdCBtYWtlIHNlbnNlLsKgIHBsZWFzZSBpZ25vcmUgdGhpcyByZXBvcnQu
-PGJyPgogICAgICA8YnI+CiAgICAgIEJlc3QgUmVnYXJkcyw8YnI+CiAgICAgIFJvbmcgQ2hlbjxi
-cj4KICAgICAgPGJyPgogICAgPC9zcGFuPgogICAgPGJsb2NrcXVvdGUgdHlwZT0iY2l0ZSIKICAg
-ICAgY2l0ZT0ibWlkOjYzOTU4N2JjLWJiZGMtOGZmNC02ZTNkLTdlZjRjMGE0YTAzNEByZWRoYXQu
-Y29tIj4KICAgICAgPHByZSB3cmFwPSIiPgoKT24gMDkvMjkvMjAxOCAxMToxNyBQTSwga2VybmVs
-IHRlc3Qgcm9ib3Qgd3JvdGU6CjwvcHJlPgogICAgICA8YmxvY2txdW90ZSB0eXBlPSJjaXRlIj4K
-ICAgICAgICA8cHJlIHdyYXA9IiI+RllJLCB3ZSBub3RpY2VkIHRoZSBmb2xsb3dpbmcgY29tbWl0
-IChidWlsdCB3aXRoIGdjYy03KToKCmNvbW1pdDogYWZkMGIxZmIyMjI2OWY0OGQ2OGZkZjI2OTg5
-MWM2NTM4MThjODA0NyAoIm1haWxib3g6IFBDQzogaGFuZGxlIHBhcnNlIGVycm9yIikKPGEgY2xh
-c3M9Im1vei10eHQtbGluay1mcmVldGV4dCIgaHJlZj0iaHR0cHM6Ly9naXQua2VybmVsLm9yZy9j
-Z2l0L2xpbnV4L2tlcm5lbC9naXQvbmV4dC9saW51eC1uZXh0LmdpdCI+aHR0cHM6Ly9naXQua2Vy
-bmVsLm9yZy9jZ2l0L2xpbnV4L2tlcm5lbC9naXQvbmV4dC9saW51eC1uZXh0LmdpdDwvYT4gbWFz
-dGVyCgppbiB0ZXN0Y2FzZTogZnRxCndpdGggZm9sbG93aW5nIHBhcmFtZXRlcnM6CgoJbnJfdGFz
-azogMTAwJQoJc2FtcGxlczogNjAwMHNzCgl0ZXN0OiBjYWNoZQoJZnJlcTogMjAKCXVjb2RlOiAw
-eDIwMDAwNGQKCWNwdWZyZXFfZ292ZXJub3I6IHBlcmZvcm1hbmNlCgp0ZXN0LWRlc2NyaXB0aW9u
-OiBUaGUgRlRRIGJlbmNobWFya3MgbWVhc3VyZSBoYXJkd2FyZSBhbmQgc29mdHdhcmUgaW50ZXJm
-ZXJlbmNlIG9yICdub2lzZScgb24gYSBub2RlIGZyb20gdGhlIGFwcGxpY2F0aW9ucyBwZXJzcGVj
-dGl2ZS4KdGVzdC11cmw6IDxhIGNsYXNzPSJtb3otdHh0LWxpbmstZnJlZXRleHQiIGhyZWY9Imh0
-dHBzOi8vZ2l0aHViLmNvbS9ybWlubmljaC9mdHEiPmh0dHBzOi8vZ2l0aHViLmNvbS9ybWlubmlj
-aC9mdHE8L2E+CgoKb24gdGVzdCBtYWNoaW5lOiAxMDQgdGhyZWFkcyBJbnRlbChSKSBYZW9uKFIp
-IFBsYXRpbnVtIDgxNzAgQ1BVIEAgMi4xMEdIeiB3aXRoIDE5MkcgbWVtb3J5CgpjYXVzZWQgYmVs
-b3cgY2hhbmdlcyAocGxlYXNlIHJlZmVyIHRvIGF0dGFjaGVkIGRtZXNnL2ttc2cgZm9yIGVudGly
-ZSBsb2cvYmFja3RyYWNlKToKCgoKCjIwMTgtMDktMjEgMjM6MzE6MjYgLi9mdHFfY2FjaGUgLWYg
-MjAgLW4gNjAwMCAtdCAxMDQgLWEgMzYwNDQ4CnRpY2tzIHBlciBucyAyLjA5NTA4CjwvcHJlPgog
-ICAgICA8L2Jsb2NrcXVvdGU+CiAgICAgIDxwcmUgd3JhcD0iIj4KVGhpcyBeXl4gYXBwZWFycyB0
-byBiZSB0aGUgYWN0dWFsIGVycm9yLCBidXQgSSBkb24ndCB1bmRlcnN0YW5kIHdoYXQgdGhlCmV4
-cGVjdGVkIHJlc3VsdCBzaG91bGQgYmUgb3Igd2hhdCB0aGlzIHJlYWxseSBtZWFucy4KClRoYW5r
-cywKCi1EYXZlCgoKPC9wcmU+CiAgICAgIDxibG9ja3F1b3RlIHR5cGU9ImNpdGUiPgogICAgICAg
-IDxwcmUgd3JhcD0iIj4KCgpUbyByZXByb2R1Y2U6CgogICAgICAgIGdpdCBjbG9uZSA8YSBjbGFz
-cz0ibW96LXR4dC1saW5rLWZyZWV0ZXh0IiBocmVmPSJodHRwczovL2dpdGh1Yi5jb20vaW50ZWwv
-bGtwLXRlc3RzLmdpdCI+aHR0cHM6Ly9naXRodWIuY29tL2ludGVsL2xrcC10ZXN0cy5naXQ8L2E+
-CiAgICAgICAgY2QgbGtwLXRlc3RzCiAgICAgICAgYmluL2xrcCBpbnN0YWxsIGpvYi55YW1sICAj
-IGpvYiBmaWxlIGlzIGF0dGFjaGVkIGluIHRoaXMgZW1haWwKICAgICAgICBiaW4vbGtwIHJ1biAg
-ICAgam9iLnlhbWwKCgoKVGhhbmtzLApSb25nIENoZW4KCjwvcHJlPgogICAgICA8L2Jsb2NrcXVv
-dGU+CiAgICAgIDxwcmUgd3JhcD0iIj4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KTEtQIG1haWxpbmcgbGlzdAo8YSBjbGFzcz0ibW96LXR4dC1saW5rLWFi
-YnJldmlhdGVkIiBocmVmPSJtYWlsdG86TEtQQGxpc3RzLjAxLm9yZyI+TEtQQGxpc3RzLjAxLm9y
-ZzwvYT4KPGEgY2xhc3M9Im1vei10eHQtbGluay1mcmVldGV4dCIgaHJlZj0iaHR0cHM6Ly9saXN0
-cy4wMS5vcmcvbWFpbG1hbi9saXN0aW5mby9sa3AiPmh0dHBzOi8vbGlzdHMuMDEub3JnL21haWxt
-YW4vbGlzdGluZm8vbGtwPC9hPgo8L3ByZT4KICAgIDwvYmxvY2txdW90ZT4KICAgIDxicj4KICA8
-L2JvZHk+CjwvaHRtbD4K
+Eric
 
---===============7250904896276091929==--
+kernel test robot <rong.a.chen@intel.com> writes:
+
+> Greetings,
+>
+> 0day kernel testing robot got the below dmesg and the first bad commit is
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+>
+> commit 4ce5f9c9e7546915c559ffae594e6d73f918db00
+> Author:     Eric W. Biederman <ebiederm@xmission.com>
+> AuthorDate: Tue Sep 25 12:59:31 2018 +0200
+> Commit:     Eric W. Biederman <ebiederm@xmission.com>
+> CommitDate: Wed Oct 3 16:50:39 2018 +0200
+>
+>     signal: Use a smaller struct siginfo in the kernel
+>     =
+
+>     We reserve 128 bytes for struct siginfo but only use about 48 bytes on
+>     64bit and 32 bytes on 32bit.  Someday we might use more but it is unl=
+ikely
+>     to be anytime soon.
+>     =
+
+>     Userspace seems content with just enough bytes of siginfo to implement
+>     sigqueue.  Or in the case of checkpoint/restart reinjecting signals
+>     the kernel has sent.
+>     =
+
+>     Reducing the stack footprint and the work to copy siginfo around from
+>     2 cachelines to 1 cachelines seems worth doing even if I don't have
+>     benchmarks to show a performance difference.
+>     =
+
+>     Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+>     Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+>
+> ae7795bc61  signal: Distinguish between kernel_siginfo and siginfo
+> 4ce5f9c9e7  signal: Use a smaller struct siginfo in the kernel
+> 570b7bdeaf  Add linux-next specific files for 20181009
+> +-------------------------------------------+------------+------------+--=
+-------------+
+> |                                           | ae7795bc61 | 4ce5f9c9e7 | n=
+ext-20181009 |
+> +-------------------------------------------+------------+------------+--=
+-------------+
+> | boot_successes                            | 0          | 0          | 2=
+8            |
+> | boot_failures                             | 1144       | 280        | 8=
+             |
+> | WARNING:at_mm/slab_common.c:#kmalloc_slab | 1144       | 280        |  =
+             |
+> | RIP:kmalloc_slab                          | 1144       | 280        |  =
+             |
+> | Mem-Info                                  | 1144       | 280        | 8=
+             |
+> | BUG:unable_to_handle_kernel               | 0          | 5          | 7=
+             |
+> | Oops:#[##]                                | 0          | 7          | 8=
+             |
+> | RIP:copy_siginfo_from_user                | 0          | 7          |  =
+             |
+> | Kernel_panic-not_syncing:Fatal_exception  | 0          | 7          | 8=
+             |
+> | RIP:post_copy_siginfo_from_user           | 0          | 0          | 8=
+             |
+> +-------------------------------------------+------------+------------+--=
+-------------+
+>
+> [    1.320405] test_overflow: ok: (s8)(0 << 7) =3D=3D 0
+> [    1.321071] test_overflow: ok: (s16)(0 << 15) =3D=3D 0
+> [    1.321756] test_overflow: ok: (int)(0 << 31) =3D=3D 0
+> [    1.322442] test_overflow: ok: (s32)(0 << 31) =3D=3D 0
+> [    1.323121] test_overflow: ok: (s64)(0 << 63) =3D=3D 0
+> [    1.323881] WARNING: CPU: 0 PID: 1 at mm/slab_common.c:1031 kmalloc_sl=
+ab+0x17/0x70
+> [    1.324113] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G                T =
+4.19.0-rc1-00077-g4ce5f9c #1
+> [    1.324113] RIP: 0010:kmalloc_slab+0x17/0x70
+> [    1.324113] Code: 00 00 00 83 3d 11 78 14 03 02 55 48 89 e5 5d 0f 97 c=
+0 c3 55 48 81 ff 00 00 40 00 48 89 e5 76 0e 31 c0 81 e6 00 02 00 00 75 4b <=
+0f> 0b eb 47 48 81 ff c0 00 00 00 77 19 48 85 ff b8 10 00 00 00 74
+> [    1.324113] RSP: 0000:ffff88000fc7fd50 EFLAGS: 00010246
+> [    1.324113] RAX: 0000000000000000 RBX: 00000000006000c0 RCX: ffff88001=
+fb68d47
+> [    1.324113] RDX: 0000000000000001 RSI: 0000000000000000 RDI: fffffffff=
+fffffff
+> [    1.324113] RBP: ffff88000fc7fd50 R08: 00000000b128ac78 R09: 000000000=
+0000001
+> [    1.324113] R10: 0000000000000001 R11: 0000000000000000 R12: ffff88001=
+d814800
+> [    1.324113] R13: 0000000000000000 R14: ffffffff836e16f4 R15: 000000000=
+0000001
+> [    1.324113] FS:  0000000000000000(0000) GS:ffff88001f000000(0000) knlG=
+S:0000000000000000
+> [    1.324113] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    1.324113] CR2: 0000000000000000 CR3: 0000000003012001 CR4: 000000000=
+01606b0
+> [    1.324113] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
+0000000
+> [    1.324113] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 000000000=
+0000400
+> [    1.324113] Call Trace:
+> [    1.324113]  __kmalloc+0x10/0x130
+> [    1.324113]  ? test_overflow_calculation+0x152b/0x152b
+> [    1.324113]  test_module_init+0x1262/0x1dfa
+> [    1.324113]  ? vprintk_emit+0x29e/0x2b0
+> [    1.324113]  ? _kstrtoull+0x2c/0x70
+> [    1.324113]  ? kstrtoll+0x4b/0x70
+> [    1.324113]  ? kstrtos8+0x15/0x40
+> [    1.324113]  ? test_overflow_calculation+0x152b/0x152b
+> [    1.324113]  ? do_early_param+0x92/0x92
+> [    1.324113]  do_one_initcall+0x65/0x130
+> [    1.324113]  ? do_early_param+0x92/0x92
+> [    1.324113]  kernel_init_freeable+0x1b5/0x250
+> [    1.324113]  ? rest_init+0xf0/0xf0
+> [    1.324113]  kernel_init+0x9/0xf0
+> [    1.324113]  ret_from_fork+0x35/0x40
+> [    1.324113] _warn_unseeded_randomness: 1 callbacks suppressed
+> [    1.324113] random: get_random_bytes called from print_oops_end_marker=
++0x21/0x50 with crng_init=3D0
+> [    1.324113] ---[ end trace 8ef06e4cef93b260 ]---
+> [    1.351969] test_overflow: kmalloc detected saturation
+>
+>                                                           # HH:MM RESULT =
+GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
+> git bisect start 570b7bdeaf18a5d66dc76d79d7f1e36cb10b5da0 0238df646e62240=
+16a45505d2c111a24669ebe21 --
+> git bisect good 073ceed8e5a6c9835a915549d248569067e11268  # 04:27  G    2=
+13     0  213 289  Merge remote-tracking branch 'opp/opp/linux-next'
+> git bisect good fc708c9582d94983c6c908271390c9720ca3ec4c  # 04:42  G    2=
+16     0  216 293  Merge remote-tracking branch 'mailbox/mailbox-for-next'
+> git bisect good 8c55f3646e42de506c5832d4ac8bf116ff3cb246  # 04:59  G    2=
+11     0  211 288  Merge remote-tracking branch 'char-misc/char-misc-next'
+> git bisect  bad 616b28683e7f382c5dc8fa8ab7837fbd64ed261f  # 04:59  B     =
+ 0     7   93  72  Merge remote-tracking branch 'userns/for-next'
+> git bisect good 756752870e5af5586fecb5973a50db7f6ab96f91  # 05:23  G    2=
+12     0  212 289  Merge remote-tracking branch 'cgroup/for-next'
+> git bisect good 50473600212c8bbd945d24a5f1fcb60e3e70c607  # 05:54  G    2=
+13     0  213 288  Merge remote-tracking branch 'rpmsg/for-next'
+> git bisect good d112058d6e522116e9ba88c6962c7ce02d2c3d8f  # 06:17  G    2=
+09     0  209 286  Merge remote-tracking branch 'gpio/for-next'
+> git bisect good 5ebcede43c9e797b6b3cb412f83fcbff65818ba9  # 06:33  G    2=
+15     0  215 294  Merge remote-tracking branch 'pinctrl/for-next'
+> git bisect good cd60ab7abb3df301c4ff2cf7d619cf7e30cca289  # 06:46  G    2=
+10     0  210 289  signal/powerpc: Remove pkey parameter from __bad_area_no=
+semaphore
+> git bisect good c852680959d0964198e829da80f012b3df43060c  # 06:57  G    2=
+08     0  208 285  signal/arm64: Use send_sig_fault where appropriate
+> git bisect good 5ee527d7cefddebd72970d290e5cc06c9ae32890  # 07:20  G    2=
+09     0  209 286  signal/unicore32: Use send_sig_fault where appropriate
+> git bisect good f28380185193610c716a90ec9b9e696638a495ce  # 07:39  G    2=
+08     0  208 283  signal: Remove the need for __ARCH_SI_PREABLE_SIZE and S=
+I_PAD_SIZE
+> git bisect good ae7795bc6187a15ec51cf258abae656a625f9980  # 07:54  G    2=
+16     0  216 291  signal: Distinguish between kernel_siginfo and siginfo
+> git bisect  bad 601d5abfeaf244b86bb68c1e05c6e0d57be2f6b0  # 07:54  B     =
+ 0     5   89  70  signal: In sigqueueinfo prefer sig not si_signo
+> git bisect  bad 4ce5f9c9e7546915c559ffae594e6d73f918db00  # 07:54  B     =
+ 0     5  294 275  signal: Use a smaller struct siginfo in the kernel
+> # first bad commit: [4ce5f9c9e7546915c559ffae594e6d73f918db00] signal: Us=
+e a smaller struct siginfo in the kernel
+> git bisect good ae7795bc6187a15ec51cf258abae656a625f9980  # 08:59  G    8=
+53     0  853 1144  signal: Distinguish between kernel_siginfo and siginfo
+> # extra tests with debug options
+> git bisect  bad 4ce5f9c9e7546915c559ffae594e6d73f918db00  # 09:21  B    1=
+56     1  156 158  signal: Use a smaller struct siginfo in the kernel
+> # extra tests on HEAD of linux-next/master
+> git bisect  bad 570b7bdeaf18a5d66dc76d79d7f1e36cb10b5da0  # 09:26  B     =
+21     7    0   1  Add linux-next specific files for 20181009
+> # extra tests on tree/branch linux-next/master
+> git bisect  bad 570b7bdeaf18a5d66dc76d79d7f1e36cb10b5da0  # 09:27  B     =
+21     7    0   1  Add linux-next specific files for 20181009
+>
+> ---
+> 0-DAY kernel test infrastructure                Open Source Technology Ce=
+nter
+> https://lists.01.org/pipermail/lkp                          Intel Corpora=
+tion
+
+--===============8650398469236473643==--
 
