@@ -1,45 +1,45 @@
-Content-Type: multipart/mixed; boundary="===============1141750097100164543=="
+Content-Type: multipart/mixed; boundary="===============4095043794765572668=="
 MIME-Version: 1.0
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 To: lkp@lists.01.org
 Subject: Re: 4ce5f9c9e7 [ 1.323881] WARNING: CPU: 0 PID: 1 at mm/slab_common.c:1031 kmalloc_slab
-Date: Wed, 10 Oct 2018 17:31:42 -0700
-Message-ID: <20181011003141.GA25974@linux.intel.com>
+Date: Wed, 10 Oct 2018 20:11:08 -0500
+Message-ID: <87in29s2xf.fsf@xmission.com>
 In-Reply-To: <20181010234148.GA25537@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1141750097100164543==
+--===============4095043794765572668==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 10, 2018 at 04:41:48PM -0700, Sean Christopherson wrote:
+Sean Christopherson <sean.j.christopherson@intel.com> writes:
+
 > On Wed, Oct 10, 2018 at 05:06:52PM -0500, Eric W. Biederman wrote:
-> > ebiederm(a)xmission.com (Eric W. Biederman) writes:
-> > =
+>> ebiederm(a)xmission.com (Eric W. Biederman) writes:
+>> =
 
-> > > So I am flummoxed.  I am reading through the code and I don't see
-> > > anything that could trigger this, and when I ran the supplied reprodu=
-cer
-> > > it did not reproduce for me.
-> > =
+>> > So I am flummoxed.  I am reading through the code and I don't see
+>> > anything that could trigger this, and when I ran the supplied reproduc=
+er
+>> > it did not reproduce for me.
+>> =
 
-> > Even more so.  With my tool chain the line that reports the failing
-> > address is impossible.
-> > =
+>> Even more so.  With my tool chain the line that reports the failing
+>> address is impossible.
+>> =
 
-> > [   73.034423] RIP: 0010:copy_siginfo_from_user+0x4d/0xd0
-> > =
+>> [   73.034423] RIP: 0010:copy_siginfo_from_user+0x4d/0xd0
+>> =
 
-> > With the supplied configureation my tool chain only has 0x30 bytes for
-> > all of copy_siginfo_from_user.  So I can't even begin to guess where
-> > in that function things are failing.
-> > =
+>> With the supplied configureation my tool chain only has 0x30 bytes for
+>> all of copy_siginfo_from_user.  So I can't even begin to guess where
+>> in that function things are failing.
+>> =
 
-> > Any additional information that you can provide would be a real help
-> > in tracking down this strange failure.
-> =
-
+>> Any additional information that you can provide would be a real help
+>> in tracking down this strange failure.
+>
 > I don't have the exact toolchain, but I was able to get somewhat close
 > and may have found a smoking gun.  0x4d in my build is in the general
 > vicinity of "sig_sicodes[sig].limit" in known_siginfo_layout().  This
@@ -51,35 +51,72 @@ cer
 > sig_specific_sicodes and result in an out-of-bounds access to
 > @sig_sicodes.  siginfo_layout() for example explicitly checks @sig
 > before indexing @sig_sicode, e.g. "sig < ARRAY_SIZE(sig_sicodes)".
-
-Hmm, siginmask explicitly checks sig < SIGRTMIN, which might squash
-my theory.
-
-> =
-
+>
 > Maybe this?
-> =
 
-> ---
->  kernel/signal.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> =
+But sig is bounds checked.  Even better sig is checked to see if it
+is one of the values in the array.
 
-> diff --git a/kernel/signal.c b/kernel/signal.c
-> index 1c2dd117fee0..6ee7491de906 100644
-> --- a/kernel/signal.c
-> +++ b/kernel/signal.c
-> @@ -2865,7 +2865,8 @@ static bool known_siginfo_layout(int sig, int si_co=
-de)
->         if (si_code =3D=3D SI_KERNEL)
->                 return true;
->         else if ((si_code > SI_USER)) {
-> -               if (sig_specific_sicodes(sig)) {
-> +               if (sig < ARRAY_SIZE(sig_sicodes) &&
-> +                   sig_specific_sicodes(sig)) {
->                         if (si_code <=3D sig_sicodes[sig].limit)
->                                 return true;
->                 }
+>From include/linux/signal.h
 
---===============1141750097100164543==--
+#define SIG_SPECIFIC_SICODES_MASK (\
+	rt_sigmask(SIGILL)    |  rt_sigmask(SIGFPE)    | \
+	rt_sigmask(SIGSEGV)   |  rt_sigmask(SIGBUS)    | \
+	rt_sigmask(SIGTRAP)   |  rt_sigmask(SIGCHLD)   | \
+	rt_sigmask(SIGPOLL)   |  rt_sigmask(SIGSYS)    | \
+	SIGEMT_MASK                                    )
+
+#define siginmask(sig, mask) \
+	((sig) < SIGRTMIN && (rt_sigmask(sig) & (mask)))
+
+#define sig_specific_sicodes(sig)	siginmask(sig, SIG_SPECIFIC_SICODES_MASK)
+
+
+
+Hmm.  I wonder if something is passing in a negative signal number.
+There is not a bounds check for that.  A sufficiently large signal
+number might be the problem here.  Yes.  I can get an oops with
+a sufficiently large negative signal number.
+
+The code will later call valid_signal in check_permissions and
+that will cause the system call to fail, so the issue is just that
+the signal number is not being validated early enough.
+
+On the output path (copy_siginfo_to_user and copy_siginfo_to_user32) the
+signal number should be validated before it ever reaches userspace
+which is why I expect trinity never triggered anything.
+
+There is copy_siginfo_from_user32 and that does call siginfo_layout with
+a possibly negative signal number.  Which has the same potential issues.
+
+So I am going to go with the fix below.  That fixes things in my testing
+and by being unsigned should fix keep negative numbers from being a
+problem.
+
+diff --git a/kernel/signal.c b/kernel/signal.c
+index 2bffc5a50183..4fd431ce4f91 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -2860,7 +2860,7 @@ static const struct {
+        [SIGSYS]  =3D { NSIGSYS,  SIL_SYS },
+ };
+ =
+
+-static bool known_siginfo_layout(int sig, int si_code)
++static bool known_siginfo_layout(unsigned sig, int si_code)
+ {
+        if (si_code =3D=3D SI_KERNEL)
+                return true;
+@@ -2879,7 +2879,7 @@ static bool known_siginfo_layout(int sig, int si_code)
+        return false;
+ }
+ =
+
+-enum siginfo_layout siginfo_layout(int sig, int si_code)
++enum siginfo_layout siginfo_layout(unsigned sig, int si_code)
+ {
+        enum siginfo_layout layout =3D SIL_KILL;
+        if ((si_code > SI_USER) && (si_code < SI_KERNEL)) {
+
+--===============4095043794765572668==--
 
