@@ -1,51 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============3419804190429789932=="
+Content-Type: multipart/mixed; boundary="===============4932913550415763587=="
 MIME-Version: 1.0
-From: Joe Perches <joe@perches.com>
+From: Eric Dumazet <eric.dumazet@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH] Change judgment len position
-Date: Wed, 24 Oct 2018 17:23:35 -0700
-Message-ID: <825268591809f66eb475c3b41c327809a304388f.camel@perches.com>
-In-Reply-To: <20181024.170213.632063387857625082.davem@davemloft.net>
+Date: Wed, 24 Oct 2018 17:50:34 -0700
+Message-ID: <203ed8b3-2744-44d2-78dc-6d463acfb977@gmail.com>
+In-Reply-To: <825268591809f66eb475c3b41c327809a304388f.camel@perches.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3419804190429789932==
+--===============4932913550415763587==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2018-10-24 at 17:02 -0700, David Miller wrote:
-> From: Joe Perches <joe@perches.com>
-> Date: Wed, 24 Oct 2018 16:46:18 -0700
+
+
+On 10/24/2018 05:23 PM, Joe Perches wrote:
 > =
 
-> > I would have suggested David reply with only his second sentence
-> > and maybe a pointer to kernelnewbies or staging.is
-> =
+> "You can't be serious?" is kind?
 
-> I maintain that I was not out of line with my comment.
-> =
+Context maybe ? As a non native, I do not see why it is an offense.
 
-> I sought a second opinion from Greg KH and others, and they agree with
-> me that I was still kind with my choice of words.
+I would like very much we discuss about patches here, not about whatever
+interpretation you or anyone could make from any answers.
 
-"You can't be serious?" is kind?
+Recipe for disaster in linux community :
 
-> I think you're taking things too far, and I will simply not stand for
-> this overreaching judgement upon my behavior on this list which is
-> completely not justified.
+1) Write a bot, sending one wrong patch every hour, with a random "From:" n=
+ame
+  and email address.
 
-Even above here, concision is generally better.
+  Yeah, can you believe a bot can actually 'Signed-off-by:' a patch ???
 
-overreaching and completely are probably not reasonable.
-
-openness and defensiveness are somewhat antithetic.
-
->From the new Code of Conduct (which I don't even approve)
-
-* Gracefully accepting constructive criticism.
-
-cheers, Joe
+2) Hundred of emails sent, from reviewers, annoyed maintainers, and flames
+  because the proper words for newbies were not _carefully_ chosen.
 
 
---===============3419804190429789932==--
+So just wait for an answer from the supposed patch author, and see what hap=
+pens next.
+
+Thank you.
+
+--===============4932913550415763587==--
 
