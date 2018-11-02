@@ -1,58 +1,100 @@
-Content-Type: multipart/mixed; boundary="===============6094677451217938671=="
+Content-Type: multipart/mixed; boundary="===============4570043275049401949=="
 MIME-Version: 1.0
-From: David Howells <dhowells@redhat.com>
+From: Ming Lei <ming.lei@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [sunrpc] 6a7da2a288: kernel_BUG_at_lib/iov_iter.c
-Date: Fri, 02 Nov 2018 00:50:12 +0000
-Message-ID: <7958.1541119812@warthog.procyon.org.uk>
-In-Reply-To: <20181102001633.GD24195@shao2-debian>
+Subject: Re: a518560778 [ 16.132179] BUG: KASAN: null-ptr-deref in brd_alloc
+Date: Fri, 02 Nov 2018 08:53:45 +0800
+Message-ID: <20181102005344.GD24769@ming.t460p>
+In-Reply-To: <20181102001957.GE24195@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6094677451217938671==
+--===============4570043275049401949==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-kernel test robot <rong.a.chen@intel.com> wrote:
-
-> FYI, we noticed the following commit (built with gcc-7):
+On Fri, Nov 02, 2018 at 08:19:57AM +0800, kernel test robot wrote:
+> Greetings,
 > =
 
-> commit: 6a7da2a288ce412d7ac117a2912a7b0d9104ee6d ("[RFC] sunrpc: Fix floo=
-d of warnings from iov_iter_kvec in linux-next")
-> url: https://github.com/0day-ci/linux/commits/Leonard-Crestez/sunrpc-Fix-=
-flood-of-warnings-from-iov_iter_kvec-in-linux-next/20181101-070713
-> base: git://git.linux-nfs.org/projects/trondmy/linux-nfs.git linux-next
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
-> in testcase: boot
+> https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git for=
+-linus
 > =
 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu kvm64,+ssse3 -smp 2 =
--m 8G
+> commit a5185607787e030fcb0009194d3b12f8bcca59d6
+> Author:     Ming Lei <ming.lei@redhat.com>
+> AuthorDate: Wed Oct 31 16:40:50 2018 +0800
+> Commit:     Jens Axboe <axboe@kernel.dk>
+> CommitDate: Wed Oct 31 08:43:09 2018 -0600
 > =
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
+>     block: brd: associate with queue until adding disk
+>     =
 
-Ummm...  You can't just apply that commit to Trond's linux-next branch unle=
-ss
-that branch also includes the iov_iter changes from my afs-next branch.
+>     brd_free() may be called in failure path on one brd instance without
+>     the disk being added yet, so release handler of gendisk may free the
+>     associated request_queue early and cause the following use-after-free=
+[1].
+>     =
 
-Before those changes, ITER_KVEC is required:
+>     This patch fixes this issue by associating gendisk with request_queue
+>     just before adding disk.
+>     =
 
-	BUG_ON(!(direction & ITER_KVEC));
+>     [1] KASAN: use-after-free Read in del_timer_syncNon-volatile memory d=
+river v1.3
+>     Linux agpgart interface v0.103
+>     [drm] Initialized vgem 1.0.0 20120112 for virtual device on minor 0
+>     usbcore: registered new interface driver udl
+>     =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>     BUG: KASAN: use-after-free in __lock_acquire+0x36d9/0x4c20
+>     kernel/locking/lockdep.c:3218
+>     Read of size 8 at addr ffff8801d1b6b540 by task swapper/0/1
+>     =
 
-and after, it will be prohibited:
+>     CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.0+ #88
+>     Hardware name: Google Google Compute Engine/Google Compute Engine, BI=
+OS
+>     Google 01/01/2011
+>     Call Trace:
+>       __dump_stack lib/dump_stack.c:77 [inline]
+>       dump_stack+0x244/0x39d lib/dump_stack.c:113
+>       print_address_description.cold.7+0x9/0x1ff mm/kasan/report.c:256
+>       kasan_report_error mm/kasan/report.c:354 [inline]
+>       kasan_report.cold.8+0x242/0x309 mm/kasan/report.c:412
+>       __asan_report_load8_noabort+0x14/0x20 mm/kasan/report.c:433
+>       __lock_acquire+0x36d9/0x4c20 kernel/locking/lockdep.c:3218
+>       lock_acquire+0x1ed/0x520 kernel/locking/lockdep.c:3844
+>       del_timer_sync+0xb7/0x270 kernel/time/timer.c:1283
+>       blk_cleanup_queue+0x413/0x710 block/blk-core.c:809
+>       brd_free+0x5d/0x71 drivers/block/brd.c:422
+>       brd_init+0x2eb/0x393 drivers/block/brd.c:518
+>       do_one_initcall+0x145/0x957 init/main.c:890
+>       do_initcall_level init/main.c:958 [inline]
+>       do_initcalls init/main.c:966 [inline]
+>       do_basic_setup init/main.c:984 [inline]
+>       kernel_init_freeable+0x5c6/0x6b9 init/main.c:1148
+>       kernel_init+0x11/0x1ae init/main.c:1068
+>       ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:350
+>     =
 
-	WARN_ON(direction & ~(READ | WRITE));
+>     Reported-by: syzbot+3701447012fe951dabb2(a)syzkaller.appspotmail.com
+>     Signed-off-by: Ming Lei <ming.lei@redhat.com>
+>     Signed-off-by: Jens Axboe <axboe@kernel.dk>
 
-The reason for this is that have yet more patches that split the direction
-from the iov_iter::type member into their own member and turn the types int=
-o a
-simple integer sequence instead of a bit mask.
+Sorry, my fault.
 
-David
+Jens, I just sent you V2 which fixes this issue, could you drop V1 from
+your for-linus and apply V2 against it?
 
---===============6094677451217938671==--
+
+Thanks,
+Ming
+
+--===============4570043275049401949==--
 
