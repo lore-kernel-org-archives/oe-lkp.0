@@ -1,46 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============3737518341345367340=="
+Content-Type: multipart/mixed; boundary="===============5212166221079763764=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [mm] 9bc8039e71: will-it-scale.per_thread_ops -64.1% regression
-Date: Mon, 05 Nov 2018 09:50:09 -0800
-Message-ID: <CAHk-=wi8BNNTp+Xt4ROz1TqGgFT-c6-Hmmc9yW0B6p2FTFwJTg@mail.gmail.com>
-In-Reply-To: <20181105050813.GP24195@shao2-debian>
+Subject: Re: [xarray] 0e9446c35a: WARNING:at_include/linux/xarray.h:#xa_mk_value
+Date: Mon, 05 Nov 2018 09:57:47 -0800
+Message-ID: <CAHk-=wgHY5EdhvPoS458Wu8iUfC9C8UBG8GzEO72=0prT2nVcw@mail.gmail.com>
+In-Reply-To: <20181105070337.GX24195@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3737518341345367340==
+--===============5212166221079763764==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Nov 4, 2018 at 9:08 PM kernel test robot <rong.a.chen@intel.com> =
-wrote:
+Willy,
+
+On Sun, Nov 4, 2018 at 11:03 PM kernel test robot <rong.a.chen@intel.com>=
+ wrote:
 >
-> FYI, we noticed a -64.1% regression of will-it-scale.per_thread_ops
-> due to commit 9bc8039e715d ("mm: brk: downgrade mmap_sem to read when
-> shrinking")
+> commit: 0e9446c35a80931044b6d8d2d74a9cabd248539f ("xarray: Add range stor=
+e functionality")
+...
+> [   11.880031] WARNING: CPU: 0 PID: 1 at include/linux/xarray.h:54 xa_mk_=
+value+0x7/0x10
+> [   11.881944] EIP: xa_mk_value+0x7/0x10
+> [   11.883565] Call Trace:
+> [   11.883565]  __check_store_range+0xe/0x171
+> [   11.883565]  check_store_range+0x5d/0x87
 
-Ugh. That looks pretty bad.
+If I read this right, it's simply this case:
 
-> in testcase: will-it-scale
-> on test machine: 8 threads Ivy Bridge with 16G memory
-> with following parameters:
->
->         nr_task: 100%
->         mode: thread
->         test: brk1
->         ucode: 0x20
->         cpufreq_governor: performance
+                __check_store_range(xa, UINT_MAX + i, UINT_MAX + j);
 
-The reason seems to be way more scheduler time due to lots more
-context switches:
+which turns into negative values on a 32-bit machine, and then
+xa_mk_value() warns.
 
->   34925294 =C2=B1 18%    +270.3%  1.293e+08 =C2=B1  4%  will-it-scale.tim=
-e.voluntary_context_switches
+Should that part of the test be surrounded by #ifdef CONFIG_64BIT? Or
+did you _want_ the warnings?
 
-Yang Shi, would you mind taking a look at what's going on?
+                 Linus
 
-              Linus
-
---===============3737518341345367340==--
+--===============5212166221079763764==--
 
