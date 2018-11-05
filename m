@@ -1,40 +1,79 @@
-Content-Type: multipart/mixed; boundary="===============7200426885621287773=="
+Content-Type: multipart/mixed; boundary="===============2195530421319280434=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Vlastimil Babka <vbabka@suse.cz>
 To: lkp@lists.01.org
 Subject: Re: [mm] 9bc8039e71: will-it-scale.per_thread_ops -64.1% regression
-Date: Mon, 05 Nov 2018 10:35:31 -0800
-Message-ID: <CAHk-=whr2Aio3R49TVWqW3es6heyxXDuxGHcv8Bcc=_kw4vDeQ@mail.gmail.com>
-In-Reply-To: <4feae9c4-432d-a362-58e4-11e0cb10b24d@linux.alibaba.com>
+Date: Mon, 05 Nov 2018 21:09:24 +0100
+Message-ID: <f901e346-6203-371d-a39a-ed9231187570@suse.cz>
+In-Reply-To: <CAHk-=wi8BNNTp+Xt4ROz1TqGgFT-c6-Hmmc9yW0B6p2FTFwJTg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7200426885621287773==
+--===============2195530421319280434==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 5, 2018 at 10:28 AM Yang Shi <yang.shi@linux.alibaba.com> wro=
-te:
->
-> Actually, the commit is mainly for optimizing the long stall time caused
-> by holding mmap_sem by write when unmapping or shrinking large mapping.
-> It downgrades write mmap_sem to read when zapping pages. So, it looks
-> the downgrade incurs more context switches. This is kind of expected.
->
-> However, the test looks just shrink the mapping with one normal 4K page
-> size. It sounds the overhead of context switches outpace the gain in
-> this case at the first glance.
+On 11/5/18 6:50 PM, Linus Torvalds wrote:
+> On Sun, Nov 4, 2018 at 9:08 PM kernel test robot <rong.a.chen@intel.com=
+> wrote:
+>>
+>> FYI, we noticed a -64.1% regression of will-it-scale.per_thread_ops
+>> due to commit 9bc8039e715d ("mm: brk: downgrade mmap_sem to read when
+>> shrinking")
+> =
 
-I'm not seeing why there should be a context switch in the first place.
+> Ugh. That looks pretty bad.
+> =
 
-Even if you have lots of concurrent brk() users, they should all block
-exactly the same way as before (a write lock blocks against a write
-lock, but it *also* blocks against a downgraded read lock).
+>> in testcase: will-it-scale
+>> on test machine: 8 threads Ivy Bridge with 16G memory
+>> with following parameters:
+>>
+>>         nr_task: 100%
+>>         mode: thread
+>>         test: brk1
+>>         ucode: 0x20
+>>         cpufreq_governor: performance
+> =
 
-So no, I don't want just some limit to hide this problem for that
-particular test. There's something else going on.
+> The reason seems to be way more scheduler time due to lots more
+> context switches:
+> =
 
-                 Linus
+>>   34925294 =C2=B1 18%    +270.3%  1.293e+08 =C2=B1  4%  will-it-scale.ti=
+me.voluntary_context_switches
 
---===============7200426885621287773==--
+And what about this:
+
+      0.83 =C2=B1 27%     +25.9       26.75 =C2=B1 11%  perf-profile.calltr=
+ace.cycles-pp.intel_idle.cpuidle_enter_state.do_idle.cpu_startup_entry.star=
+t_secondary
+      1.09 =C2=B1 32%     +30.9       31.97 =C2=B1 10%  perf-profile.calltr=
+ace.cycles-pp.cpuidle_enter_state.do_idle.cpu_startup_entry.start_secondary=
+.secondary_startup_64
+      1.62 =C2=B1 36%     +44.4       46.01 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64
+      1.63 =C2=B1 36%     +44.5       46.18 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64
+      1.63 =C2=B1 36%     +44.6       46.21 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.start_secondary.secondary_startup_64
+      1.73 =C2=B1 29%     +51.1       52.86 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.secondary_startup_64
+
+And the graphs showing less user/kernel time and less "percent_of_cpu_this_=
+job_got"...
+
+I didn't spot an obvious mistake in the patch itself, so it looks
+like some bad interaction between scheduler and the mmap downgrade?
+ =
+
+> Yang Shi, would you mind taking a look at what's going on?
+> =
+
+>               Linus
+> =
+
+
+
+--===============2195530421319280434==--
 
