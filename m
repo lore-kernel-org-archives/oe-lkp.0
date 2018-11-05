@@ -1,45 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============1897160279067694204=="
+Content-Type: multipart/mixed; boundary="===============0289302474544923633=="
 MIME-Version: 1.0
-From: Matthew Wilcox <willy@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [xarray] 0e9446c35a: WARNING:at_include/linux/xarray.h:#xa_mk_value
-Date: Mon, 05 Nov 2018 14:08:47 -0800
-Message-ID: <20181105220847.GA16465@bombadil.infradead.org>
-In-Reply-To: <20181105180004.GA4923@bombadil.infradead.org>
+Subject: Re: [mm] 9bc8039e71: will-it-scale.per_thread_ops -64.1% regression
+Date: Mon, 05 Nov 2018 14:14:33 -0800
+Message-ID: <CAHk-=wjZ1C2iL79jOuC9ysvX2oRpUjoqXirvY0NRuLC0eQ8nbg@mail.gmail.com>
+In-Reply-To: <f901e346-6203-371d-a39a-ed9231187570@suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1897160279067694204==
+--===============0289302474544923633==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 05, 2018 at 10:00:04AM -0800, Matthew Wilcox wrote:
-> On Mon, Nov 05, 2018 at 09:57:47AM -0800, Linus Torvalds wrote:
-> > Should that part of the test be surrounded by #ifdef CONFIG_64BIT? Or
-> > did you _want_ the warnings?
-> =
+On Mon, Nov 5, 2018 at 12:12 PM Vlastimil Babka <vbabka@suse.cz> wrote:
+>
+> I didn't spot an obvious mistake in the patch itself, so it looks
+> like some bad interaction between scheduler and the mmap downgrade?
 
-> I should have just made that (1 << 24) instead of UINT_MAX.  I had forgot=
-ten
-> about 32-bit machines while writing that test.
-> =
+I'm thinking it's RWSEM_SPIN_ON_OWNER that ends up being confused by
+the downgrade.
 
-> That prompted me to actually build the test suite on 32-bit and there's
-> a few other things in there that want fixing.  I'll have a pull request
-> for you later today.
+It looks like the benchmark used to be basically CPU-bound, at about
+800% CPU, and now it's somewhere in the 200% CPU region:
 
-I've pushed out an update to
-http://git.infradead.org/users/willy/linux-dax.git/shortlog/refs/heads/xarr=
-ay
+                  will-it-scale.time.percent_of_cpu_this_job_got
 
-Let's give the automated testers a couple of days to chew on this before
-I send you a real pull request?  The last two commits are today's work
-while the other commits have been stewing in the xarray-conv branch for
-the last 2-3 weeks while I've been busily converting all the radix trees
-and some of the IDRs to the XArray.
+  800 +-+------------------------------------------------------------------=
+-+
+      |.+.+.+.+.+.+.+.  .+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+..+.+.+.+. .+.+.+=
+.|
+  700 +-+             +.                                            +      =
+ |
+      |                                                                    =
+ |
+  600 +-+                                                                  =
+ |
+      |                                                                    =
+ |
+  500 +-+                                                                  =
+ |
+      |                                                                    =
+ |
+  400 +-+                                                                  =
+ |
+      |                                                                    =
+ |
+  300 +-+                                                                  =
+ |
+      |                                                                    =
+ |
+  200 O-O O O O O                O                                         =
+ |
+      |           O O O  O O O O   O O O O O O O O O O O                   =
+ |
+  100 +-+------------------------------------------------------------------=
+-+
 
-They say no battle plan survives contact with the enemy ... no API
-survives contact with its users.
+which sounds like the downgrade really messes with the "spin waiting
+for lock" logic.
 
---===============1897160279067694204==--
+I'm thinking it's the "wake up waiter" logic that has some bad
+interaction with spinning, and breaks that whole optimization.
+
+Adding Waiman and Davidlohr to the participants, because they seem to
+be the obvious experts in this area.
+
+                            Linus
+
+--===============0289302474544923633==--
 
