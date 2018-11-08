@@ -1,35 +1,360 @@
-Content-Type: multipart/mixed; boundary="===============1069344349440120066=="
+Content-Type: multipart/mixed; boundary="===============3044530396589183914=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@suse.com>
+From: Jeff Layton <jlayton@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: 79904925f4 ("mm, memory_hotplug: teach has_unmovable_pages .."): BUG: KASAN: slab-out-of-bounds in has_unmovable_pages
-Date: Thu, 08 Nov 2018 09:18:28 +0100
-Message-ID: <20181108081828.GO27423@dhcp22.suse.cz>
-In-Reply-To: <5be3b39a.eGB2QlysHxs7H5yv%lkp@intel.com>
+Subject: Re: [locks] dee160df82: BUG:KASAN:null-ptr-deref_in_l
+Date: Thu, 08 Nov 2018 06:19:15 -0500
+Message-ID: <8d93cedddf918af3a1b25f585248bfd521cff4cb.camel@redhat.com>
+In-Reply-To: <871s7wxtm0.fsf@notabene.neil.brown.name>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1069344349440120066==
+--===============3044530396589183914==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu 08-11-18 11:55:06, kernel test robot wrote:
-> Greetings,
+On Thu, 2018-11-08 at 12:09 +1100, NeilBrown wrote:
+> On Wed, Nov 07 2018, Jeff Layton wrote:
 > =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+> > On Wed, 2018-11-07 at 16:54 +0100, Thierry Reding wrote:
+> > > On Wed, Nov 07, 2018 at 07:01:29AM -0500, Jeff Layton wrote:
+> > > > On Wed, 2018-11-07 at 16:43 +0800, kernel test robot wrote:
+> > > > > FYI, we noticed the following commit (built with gcc-7):
+> > > > > =
+
+> > > > > commit: dee160df820de41ff2f59a715643680822a0ab06 ("locks: use pro=
+perly initialized file_lock when unlocking.")
+> > > > > https://git.kernel.org/cgit/linux/kernel/git/jlayton/linux.git lo=
+cks-next
+> > > > > =
+
+> > > > > in testcase: boot
+> > > > > =
+
+> > > > > on test machine: qemu-system-x86_64 -enable-kvm -cpu host -smp 2 =
+-m 2G
+> > > > > =
+
+> > > > > caused below changes (please refer to attached dmesg/kmsg for ent=
+ire log/backtrace):
+> > > > > =
+
+> > > > > =
+
+> > > > > +------------------------------------------+------------+--------=
+----+
+> > > > > >                                          | a4399c3b7b | dee160d=
+f82 |
+> > > > > =
+
+> > > > > +------------------------------------------+------------+--------=
+----+
+> > > > > > boot_successes                           | 6          | 2      =
+    |
+> > > > > > boot_failures                            | 0          | 8      =
+    |
+> > > > > > BUG:KASAN:null-ptr-deref_in_l            | 0          | 8      =
+    |
+> > > > > > BUG:unable_to_handle_kernel              | 0          | 8      =
+    |
+> > > > > > Oops:#[##]                               | 0          | 8      =
+    |
+> > > > > > RIP:locks_remove_flock                   | 0          | 8      =
+    |
+> > > > > > Kernel_panic-not_syncing:Fatal_exception | 0          | 8      =
+    |
+> > > > > =
+
+> > > > > +------------------------------------------+------------+--------=
+----+
+> > > > > =
+
+> > > > > =
+
+> > > > > =
+
+> > > > > [   41.286774] BUG: KASAN: null-ptr-deref in locks_remove_flock+0=
+x147/0x180
+> > > > > [   41.288812] Read of size 8 at addr 000000000000004e by task sy=
+stemd-udevd/348
+> > > > > [   41.290790] =
+
+> > > > > [   41.291485] CPU: 0 PID: 348 Comm: systemd-udevd Not tainted 4.=
+20.0-rc1-00006-gdee160d #154
+> > > > > [   41.293876] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
+96), BIOS 1.10.2-1 04/01/2014
+> > > > > [   41.296488] Call Trace:
+> > > > > [   41.297339]  kasan_report+0x224/0x254
+> > > > > [   41.298538]  locks_remove_flock+0x147/0x180
+> > > > > [   41.299936]  ? flock_lock_inode+0x4b7/0x4b7
+> > > > > [   41.301333]  ? hlock_class+0x6f/0x8d
+> > > > > [   41.302572]  ? check_chain_key+0x102/0x15c
+> > > > > [   41.303936]  ? __lock_acquire+0x15ee/0x16bd
+> > > > > [   41.305240]  ? debug_show_all_locks+0x2bd/0x2bd
+> > > > > [   41.306735]  ? lookup_chain_cache+0xc9/0x14a
+> > > > > [   41.308147]  ? fsnotify+0x1c4/0x7ab
+> > > > > [   41.309366]  ? lock_downgrade+0x30a/0x30a
+> > > > > [   41.310712]  locks_remove_file+0xda/0x280
+> > > > > [   41.312052]  ? locks_remove_posix+0x3ba/0x3ba
+> > > > > [   41.313397]  ? __fsnotify_parent+0x82/0x1aa
+> > > > > [   41.314571]  ? fsnotify_sb_delete+0x373/0x373
+> > > > > [   41.315967]  ? ___might_sleep+0x12b/0x290
+> > > > > [   41.317315]  ? in_sched_functions+0x30/0x30
+> > > > > [   41.318701]  ? __might_sleep+0x2f/0xbf
+> > > > > [   41.319976]  __fput+0x1a1/0x2fc
+> > > > > [   41.321062]  ? file_free_rcu+0x62/0x62
+> > > > > [   41.322132]  ? in_sched_functions+0x30/0x30
+> > > > > [   41.323451]  ? mark_held_locks+0x67/0x81
+> > > > > [   41.324770]  ? _raw_spin_unlock_irq+0x24/0x2d
+> > > > > [   41.326202]  task_work_run+0x122/0x16c
+> > > > > [   41.327485]  ? task_work_cancel+0x13d/0x13d
+> > > > > [   41.328869]  ? task_work_add+0xc7/0x116
+> > > > > [   41.330043]  ? mark_held_locks+0x67/0x81
+> > > > > [   41.331368]  ? prepare_exit_to_usermode+0x18a/0x296
+> > > > > [   41.332950]  prepare_exit_to_usermode+0x1d4/0x296
+> > > > > [   41.334476]  ? enter_from_user_mode+0x2e/0x2e
+> > > > > [   41.335893]  ? fput+0x7a/0xae
+> > > > > [   41.336961]  ? filp_close+0xf7/0x122
+> > > > > [   41.338196]  ? __ia32_sys_creat+0x31/0x31
+> > > > > [   41.339543]  syscall_return_slowpath+0x23d/0x268
+> > > > > [   41.341049]  ? prepare_exit_to_usermode+0x296/0x296
+> > > > > [   41.342625]  ? fd_install+0x32/0x32
+> > > > > [   41.343832]  ? ksys_write+0xf1/0x124
+> > > > > [   41.345028]  ? mark_held_locks+0x67/0x81
+> > > > > [   41.346310]  do_syscall_64+0xf3/0x119
+> > > > > [   41.347573]  ? syscall_return_slowpath+0x268/0x268
+> > > > > [   41.349075]  ? lockdep_hardirqs_off+0x103/0x129
+> > > > > [   41.350458]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+> > > > > [   41.351971]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> > > > > [   41.353604] RIP: 0033:0x7f31c39fe250
+> > > > > [   41.354838] Code: 73 01 c3 48 8b 0d 58 7d 20 00 f7 d8 64 89 01=
+ 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 79 c1 20 00 00 75 10 b8 03 00 00 00=
+ 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 ee fb ff ff 48 89 04 24
+> > > > > [   41.360261] RSP: 002b:00007fffc28371d8 EFLAGS: 00000246 ORIG_R=
+AX: 0000000000000003
+> > > > > [   41.362406] RAX: 0000000000000000 RBX: 0000000000000007 RCX: 0=
+0007f31c39fe250
+> > > > > [   41.364543] RDX: 000000000aba9500 RSI: 0000000000000000 RDI: 0=
+000000000000007
+> > > > > [   41.366593] RBP: 00007f31c48b6708 R08: 0000000000000045 R09: 0=
+000000000000018
+> > > > > [   41.368739] R10: 00005569133cb718 R11: 0000000000000246 R12: 0=
+000000000000000
+> > > > > [   41.370901] R13: 00005569133c26c0 R14: 0000000000000003 R15: 0=
+00000000000000e
+> > > > > [   41.373009] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > > [   41.375220] Disabling lock debugging due to kernel taint
+> > > > > [   41.973175] BUG: unable to handle kernel NULL pointer derefere=
+nce at 000000000000024e
+> > > > > [   41.975580] PGD 0 P4D 0 =
+
+> > > > > [   41.976496] Oops: 0000 [#1] KASAN PTI
+> > > > > [   41.977678] CPU: 0 PID: 386 Comm: systemd-udevd Tainted: G    =
+B             4.20.0-rc1-00006-gdee160d #154
+> > > > > [   41.980388] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
+96), BIOS 1.10.2-1 04/01/2014
+> > > > > [   41.982865] RIP: 0010:locks_remove_flock+0x147/0x180
+> > > > > [   41.984361] Code: ff ff 4c 8d 64 24 68 49 8d bc 24 d8 00 00 00=
+ e8 7c d2 f3 ff 48 8b ac 24 40 01 00 00 48 85 ed 74 17 48 8d 7d 08 e8 66 d2=
+ f3 ff <48> 8b 45 08 48 85 c0 74 05 4c 89 e7 ff d0 48 b8 00 00 00 00 00 fc
+> > > > > [   41.989211] RSP: 0018:ffff880050ae7858 EFLAGS: 00010247
+> > > > > [   41.990806] RAX: 0000000000000007 RBX: 1ffff1000a15cf0c RCX: f=
+fffffff8136ab82
+> > > > > [   41.992826] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 0=
+00000000000024e
+> > > > > [   41.994856] RBP: 0000000000000246 R08: 0000000000000007 R09: 0=
+000000000000000
+> > > > > [   41.996872] R10: ffff880050ae75d8 R11: ffff880050ae7b0f R12: f=
+fff880050ae78c0
+> > > > > [   41.998897] R13: dffffc0000000000 R14: ffff88004f658150 R15: f=
+fff880057578d58
+> > > > > [   42.000912] FS:  00007f31c48b68c0(0000) GS:ffffffff83ac6000(00=
+00) knlGS:0000000000000000
+> > > > > [   42.003090] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > > > [   42.004780] CR2: 000000000000024e CR3: 0000000051e30004 CR4: 0=
+0000000000606b0
+> > > > > [   42.006814] Call Trace:
+> > > > > [   42.007697]  ? flock_lock_inode+0x4b7/0x4b7
+> > > > > [   42.008999]  ? debug_lockdep_rcu_enabled+0x26/0x51
+> > > > > [   42.010343]  ? debug_lockdep_rcu_enabled+0x26/0x51
+> > > > > [   42.011765]  ? __lock_acquire+0xf7/0x16bd
+> > > > > [   42.013024]  ? debug_lockdep_rcu_enabled+0x26/0x51
+> > > > > [   42.014492]  ? lockdep_rcu_suspicious+0xc5/0xc5
+> > > > > [   42.015880]  ? lock_downgrade+0x30a/0x30a
+> > > > > [   42.017143]  ? debug_show_all_locks+0x2bd/0x2bd
+> > > > > [   42.018424]  ? debug_lockdep_rcu_enabled+0x26/0x51
+> > > > > [   42.019701]  ? fsnotify+0x1c4/0x7ab
+> > > > > [   42.020841]  locks_remove_file+0xda/0x280
+> > > > > [   42.022120]  ? locks_remove_posix+0x3ba/0x3ba
+> > > > > [   42.023477]  ? locks_remove_posix+0x11c/0x3ba
+> > > > > [   42.024815]  ? __fsnotify_parent+0x82/0x1aa
+> > > > > [   42.026137]  ? fsnotify_sb_delete+0x373/0x373
+> > > > > [   42.027495]  ? ___might_sleep+0x12b/0x290
+> > > > > [   42.028760]  ? in_sched_functions+0x30/0x30
+> > > > > [   42.030014]  ? __might_sleep+0x2f/0xbf
+> > > > > [   42.031098]  __fput+0x1a1/0x2fc
+> > > > > [   42.032150]  ? file_free_rcu+0x62/0x62
+> > > > > [   42.033344]  ? in_sched_functions+0x30/0x30
+> > > > > [   42.034673]  ? trace_irq_disable_rcuidle+0x1f4/0x1f4
+> > > > > [   42.036165]  ? preempt_schedule_common+0x35/0x35
+> > > > > [   42.037572]  ? __kasan_slab_free+0xd9/0xfa
+> > > > > [   42.038865]  task_work_run+0x122/0x16c
+> > > > > [   42.040067]  ? task_work_cancel+0x13d/0x13d
+> > > > > [   42.041373]  ? task_work_add+0xc7/0x116
+> > > > > [   42.042610]  prepare_exit_to_usermode+0x1d4/0x296
+> > > > > [   42.044044]  ? enter_from_user_mode+0x2e/0x2e
+> > > > > [   42.045402]  ? fput+0x7a/0xae
+> > > > > [   42.046422]  ? filp_close+0xf7/0x122
+> > > > > [   42.047571]  ? __ia32_sys_creat+0x31/0x31
+> > > > > [   42.048831]  ? ptrace_report_syscall+0xad/0xad
+> > > > > [   42.050382]  syscall_return_slowpath+0x23d/0x268
+> > > > > [   42.051784]  ? prepare_exit_to_usermode+0x296/0x296
+> > > > > [   42.053250]  ? fd_install+0x32/0x32
+> > > > > [   42.054341]  ? kmem_cache_free+0xbf/0x101
+> > > > > [   42.055620]  ? do_sys_open+0x13d/0x168
+> > > > > [   42.056812]  do_syscall_64+0xf3/0x119
+> > > > > [   42.057995]  ? syscall_return_slowpath+0x268/0x268
+> > > > > [   42.059460]  ? lockdep_hardirqs_off+0x19/0x129
+> > > > > [   42.060820]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+> > > > > [   42.062196]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> > > > > [   42.063639] RIP: 0033:0x7f31c39fe250
+> > > > > [   42.064798] Code: 73 01 c3 48 8b 0d 58 7d 20 00 f7 d8 64 89 01=
+ 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 79 c1 20 00 00 75 10 b8 03 00 00 00=
+ 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 ee fb ff ff 48 89 04 24
+> > > > > [   42.069903] RSP: 002b:00007fffc28323a8 EFLAGS: 00000246 ORIG_R=
+AX: 0000000000000003
+> > > > > [   42.072126] RAX: 0000000000000000 RBX: 000000000000000f RCX: 0=
+0007f31c39fe250
+> > > > > [   42.074153] RDX: 00007f31c39e8b58 RSI: 0000000000000000 RDI: 0=
+00000000000000f
+> > > > > [   42.076185] RBP: 00007f31c48b6708 R08: 36b3f544af500741 R09: 0=
+000000000000001
+> > > > > [   42.078211] R10: 0000000000000116 R11: 0000000000000246 R12: 0=
+000000000000002
+> > > > > [   42.080237] R13: 0000000000000000 R14: 00005569133c1b50 R15: 0=
+00000000000000f
+> > > > > [   42.082273] CR2: 000000000000024e
+> > > > > [   42.083438] ---[ end trace b25bd2587e58b9b9 ]---
+> > > > > =
+
+> > > > > =
+
+> > > > > To reproduce:
+> > > > > =
+
+> > > > >         git clone https://github.com/intel/lkp-tests.git
+> > > > >         cd lkp-tests
+> > > > >         bin/lkp qemu -k <bzImage> job-script # job-script is atta=
+ched in this email
+> > > > > =
+
+> > > > > =
+
+> > > > > =
+
+> > > > > Thanks,
+> > > > > lkp
+> > > > =
+
+> > > > Thanks LKP,
+> > > > =
+
+> > > > I think I see the problem. locks_remove_flock calls flock_make_lock=
+ and
+> > > > passes it a pointer to a file_lock that lives on the stack. That
+> > > > file_lock is not zeroed out beforehand, and fl_ops is not overwritt=
+en
+> > > > during the initialization in flock_make_lock.
+> > > > =
+
+> > > > I went ahead and updated this patch to zero out the file_lock struc=
+ture
+> > > > in locks_remove_flock.
+> > > =
+
+> > > Should the zeroing out part perhaps be part of flock_make_lock()? That
+> > > way we can either pass in fl =3D=3D NULL and get the lock automatical=
+ly
+> > > allocated, or if we pass in fl !=3D NULL and then get it zeroed out by
+> > > flock_make_lock(), so callers don't have to bother with it.
+> > > =
+
+> > > That said, the API is not public and there's only one user, so this is
+> > > somewhat moot.
+> > > =
+
+> > =
+
+> > Yeah, I'm inclined to just do the minimum to fix this one up. We can
+> > revisit it later with a cleanup patch though if we feel the need.
 > =
 
-> https://github.com/0day-ci/linux/commits/UPDATE-20181103-085315/Baoquan-H=
-e/Memory-hotplug-failed-to-offline-on-bare-metal-system-of-multiple-nodes/2=
-0181102-015735
+> Thanks for fixing this up Jeff, though I think we really need
+> to call locks_init_lock() on the fl, either in flock_make_lock() or
+> locks_remove_lock().
+> =
 
-Thanks for the report but we have dropped this patch in favor of
-http://lkml.kernel.org/r/20181106095524.14629-1-mhocko(a)kernel.org
+> Thanks,
+> NeilBrown
+> =
+
+> =
+
+
+Good point. Maybe something like this on top of the current branch then
+(more like Thierry suggested):
+
+-----------------8<--------------------
+
+[PATCH] SQUASH: fix up lock initialization in locks_remove_flock
+
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+---
+ fs/locks.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/fs/locks.c b/fs/locks.c
+index 1eb49c186148..23c2a7864faf 100644
+--- a/fs/locks.c
++++ b/fs/locks.c
+@@ -434,10 +434,13 @@ flock_make_lock(struct file *filp, unsigned int
+cmd, struct file_lock *fl)
+ 	if (type < 0)
+ 		return ERR_PTR(type);
+ =
+
+-	if (fl =3D=3D NULL)
++	if (fl =3D=3D NULL) {
+ 		fl =3D locks_alloc_lock();
+-	if (fl =3D=3D NULL)
+-		return ERR_PTR(-ENOMEM);
++		if (fl =3D=3D NULL)
++			return ERR_PTR(-ENOMEM);
++	} else {
++		locks_init_lock(fl);
++	}
+ =
+
+ 	fl->fl_file =3D filp;
+ 	fl->fl_owner =3D filp;
+@@ -2550,7 +2553,7 @@ EXPORT_SYMBOL(locks_remove_posix);
+ static void
+ locks_remove_flock(struct file *filp, struct file_lock_context *flctx)
+ {
+-	struct file_lock fl =3D {};
++	struct file_lock fl;
+ 	struct inode *inode =3D locks_inode(filp);
+ =
+
+ 	if (list_empty(&flctx->flc_flock))
 -- =
 
-Michal Hocko
-SUSE Labs
+2.17.2
 
---===============1069344349440120066==--
+
+
+--===============3044530396589183914==--
 
