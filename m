@@ -1,195 +1,527 @@
-Content-Type: multipart/mixed; boundary="===============3404385447198386728=="
+Content-Type: multipart/mixed; boundary="===============5968169369965000286=="
 MIME-Version: 1.0
-From: jianchao.wang <jianchao.w.wang@oracle.com>
+From: Aaron Lu <aaron.lu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: a9f38e1dec [ 245.678853] INFO: task mount:580 blocked for more than 120 seconds.
-Date: Fri, 09 Nov 2018 09:38:29 +0800
-Message-ID: <912dadf9-2a33-0a36-0aa6-dcff388f6217@oracle.com>
-In-Reply-To: <1de09da9-fc06-b26e-99fa-97d813c0ccf0@kernel.dk>
+Subject: Re: [bpf] fd978bf7fd: will-it-scale.per_process_ops -4.0% regression
+Date: Fri, 09 Nov 2018 10:56:34 +0800
+Message-ID: <20181109025634.GC20462@intel.com>
+In-Reply-To: <9de53d57-b1be-2186-c90b-dbeda21ed717@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3404385447198386728==
+--===============5968169369965000286==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-
-
-On 11/7/18 11:17 PM, Jens Axboe wrote:
-> On 11/7/18 1:22 AM, jianchao.wang wrote:
->>
->>
->> On 11/7/18 11:16 AM, kernel test robot wrote:
->>> Greetings,
->>>
->>> 0day kernel testing robot got the below dmesg and the first bad commit =
-is
->>>
->>> https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__git.kernel.org_p=
-ub_scm_linux_kernel_git_torvalds_linux.git&d=3DDwIBaQ&c=3DRoP1YumCXCgaWHvlZ=
-YR8PZh8Bv7qIrMUB65eapI_JnE&r=3D7WdAxUBeiTUTCy8v-7zXyr4qk7sx26ATvfo6QSTvZyQ&=
-m=3D8qsZc_c8QfZOGoITiebvlt5BO9GBK61cAY4xLOCegFU&s=3DZGRhkdRCPvSKvbZzx-HAQtW=
-cDZfzce60e2TMvBQyORo&e=3D master
->>>
->>> commit a9f38e1dec107af70d81338332494bf0a1e76597
->>> Author:     Omar Sandoval <osandov@fb.com>
->>> AuthorDate: Mon Oct 15 09:21:34 2018 -0600
->>> Commit:     Jens Axboe <axboe@kernel.dk>
->>> CommitDate: Tue Oct 16 09:50:14 2018 -0600
->>>
->>>     floppy: convert to blk-mq
->>>     =
-
->>>     This driver likes to fetch requests from all over the place, so make
->>>     queue_rq put requests on a list so that the logic stays the same. T=
-ested
->>>     with QEMU.
->>>     =
-
->>>     Signed-off-by: Omar Sandoval <osandov@fb.com>
->>>     =
-
->>>     Converted to blk_mq_init_sq_queue() and fixed a few spots where the
->>>     tag_set leaked on cleanup.
->>>     =
-
->>>     Signed-off-by: Jens Axboe <axboe@kernel.dk>
->>>
->>> 6ec3938cff  ataflop: convert to blk-mq
->>> a9f38e1dec  floppy: convert to blk-mq
->>> 8053e5b93e  Merge tag 'trace-v4.20-rc1' of git://git.kernel.org/pub/scm=
-/linux/kernel/git/rostedt/linux-trace
->>> 337734cbca  Add linux-next specific files for 20181106
->>> +---------------------------------------------------------+------------=
-+------------+------------+---------------+
->>> |                                                         | 6ec3938cff =
-| a9f38e1dec | 8053e5b93e | next-20181106 |
->>> +---------------------------------------------------------+------------=
-+------------+------------+---------------+
->>> | boot_successes                                          | 251        =
-| 68         | 69         | 74            |
->>> | boot_failures                                           | 48         =
-| 27         | 25         | 23            |
->>> | Mem-Info                                                | 48         =
-| 12         | 15         | 7             |
->>> | invoked_oom-killer:gfp_mask=3D0x                          | 6        =
-  | 4          | 3          | 2             |
->>> | EIP:iov_iter_fault_in_readable                          | 4          =
-| 1          |            |               |
->>> | Out_of_memory:Kill_process                              | 3          =
-| 2          | 2          |               |
->>> | Out_of_memory_and_no_killable_processes                 | 3          =
-| 2          | 2          |               |
->>> | Kernel_panic-not_syncing:System_is_deadlocked_on_memory | 3          =
-| 2          | 2          |               |
->>> | EIP:__put_user_4                                        | 1          =
-|            |            |               |
->>> | INFO:task_blocked_for_more_than#seconds                 | 0          =
-| 15         | 10         | 16            |
->>> | EIP:lock_is_held_type                                   | 0          =
-| 1          | 0          | 1             |
->>> | EIP:native_safe_halt                                    | 0          =
-| 3          |            |               |
->>> | Kernel_panic-not_syncing:hung_task:blocked_tasks        | 0          =
-| 15         | 10         | 16            |
->>> | EIP:strnlen_user                                        | 0          =
-| 1          |            |               |
->>> | EIP:_local_bh_enable                                    | 0          =
-| 1          |            |               |
->>> | EIP:__lock_acquire                                      | 0          =
-| 1          | 1          | 1             |
->>> | EIP:vprintk_emit                                        | 0          =
-| 1          |            |               |
->>> | EIP:do_softirq_own_stack                                | 0          =
-| 0          | 1          |               |
->>> | EIP:default_idle                                        | 0          =
-| 0          | 2          | 1             |
->>> | EIP:reschedule_interrupt                                | 0          =
-| 0          | 1          |               |
->>> | EIP:delay_tsc                                           | 0          =
-| 0          | 0          | 1             |
->>> | EIP:copy_page_from_iter                                 | 0          =
-| 0          | 0          | 1             |
->>> | EIP:_cond_resched                                       | 0          =
-| 0          | 0          | 1             |
->>> +---------------------------------------------------------+------------=
-+------------+------------+---------------+
->>>
->>> [  244.196551] random: get_random_u32 called from arch_align_stack+0x2d=
-/0x40 with crng_init=3D1
->>> [  245.254485] _warn_unseeded_randomness: 54 callbacks suppressed
->>> [  245.254491] random: get_random_u32 called from copy_process+0x1c8/0x=
-17b0 with crng_init=3D1
->>> [  245.257366] random: get_random_u32 called from arch_pick_mmap_layout=
-+0x110/0x140 with crng_init=3D1
->>> [  245.258675] random: get_random_u32 called from load_elf_binary+0x2b6=
-/0xb48 with crng_init=3D1
->>> [  245.678853] INFO: task mount:580 blocked for more than 120 seconds.
->>> [  245.679906]       Tainted: G                T 4.19.0-rc6-00172-ga9f3=
-8e1 #1
->>> [  245.680959] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disab=
-les this message.
->>> [  245.682181] mount           D 6372   580      1 0x00000004
->>> [  245.683023] Call Trace:
->>> [  245.683425]  __schedule+0x2df/0x570
->>> [  245.683975]  schedule+0x2d/0x80
->>> [  245.684476]  schedule_timeout+0x19d/0x330
->>> [  245.685090]  ? wait_for_common+0xa5/0x170
->>> [  245.685735]  wait_for_common+0xac/0x170
->>> [  245.686339]  ? do_sched_yield+0x90/0x90
->>> [  245.686935]  wait_for_completion+0x12/0x20
->>> [  245.687571]  __floppy_read_block_0+0xfb/0x150
->>> [  245.688244]  ? floppy_resume+0x40/0x40
->>> [  245.688844]  floppy_revalidate+0x20f/0x240
->>> [  245.689486]  check_disk_change+0x43/0x60
->>> [  245.690087]  floppy_open+0x1ea/0x360
->>> [  245.690653]  __blkdev_get+0xb4/0x4d0
->>> [  245.691212]  ? blkdev_get+0x1db/0x370
->>> [  245.691777]  blkdev_get+0x1f3/0x370
->>> [  245.692351]  ? path_put+0x15/0x20
->>> [  245.692871]  ? lookup_bdev+0x4b/0x90
->>> [  245.693539]  blkdev_get_by_path+0x3d/0x80
->>> [  245.694165]  mount_bdev+0x2a/0x190
->>> [  245.694695]  squashfs_mount+0x10/0x20
->>> [  245.695271]  ? squashfs_alloc_inode+0x30/0x30
->>> [  245.695960]  mount_fs+0xf/0x90
->>> [  245.696451]  vfs_kern_mount+0x43/0x130
->>> [  245.697036]  do_mount+0x187/0xc40
->>> [  245.697563]  ? memdup_user+0x28/0x50
->>> [  245.698124]  ksys_mount+0x60/0xc0
->>> [  245.698639]  sys_mount+0x19/0x20
->>> [  245.699167]  do_int80_syscall_32+0x61/0x130
->>> [  245.699813]  entry_INT80_32+0xc7/0xc7
->>> [  245.700391] EIP: 0x47f46fee
->>> [  245.700829] Code: 11 83 c8 ff eb e2 90 90 90 90 90 90 57 56 53 8b 7c=
- 24 20 8b 74 24 1c 8b 54 24 18 8b 4c 24 14 8b 5c 24 10 b8 15 00 00 00 cd 80=
- <5b> 5e 5f 3d 01 f0 ff ff 73 01 c3 e8 e8 80 03 00 81 c1 f6 5f 09 00
->>> [  245.703680] EAX: ffffffda EBX: affa4efa ECX: affa4f03 EDX: 080d3630
->>> [  245.704642] ESI: 00008010 EDI: 00000000 EBP: 00000000 ESP: affa45c0
->>> [  245.705637] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 000=
-00282
->>
->> There is not a q->queue_lock as blk-legacy to serialize floppy_queue_rq =
-from different contexts.
+On Fri, Nov 09, 2018 at 08:19:54AM +0800, Rong Chen wrote:
 > =
 
-> Doesn't look immediately racy, the internal queue list is protected by
-> the floppy_lock, and the busy start is marked by atomic bit setting.
-
-Oops, I missed the fdc_busy bit set.
-I just looked at the patch and found the biggest change was this.
-Sorry for the noise.
-
-> Do you see an issue with it, or are you just pontificating?
 > =
 
-> FWIW, just ran qemu with two floppy drives and concurrent access,
-> didn't see an issue.
+> On 11/02/2018 04:36 PM, Daniel Borkmann wrote:
+> > Hi Rong,
+> > =
+
+> > On 11/02/2018 03:14 AM, kernel test robot wrote:
+> > > Greeting,
+> > > =
+
+> > > FYI, we noticed a -4.0% regression of will-it-scale.per_process_ops d=
+ue to commit:
+> > > =
+
+> > > =
+
+> > > commit: fd978bf7fd312581a7ca454a991f0ffb34c4204b ("bpf: Add reference=
+ tracking to verifier")
+> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > > =
+
+> > > in testcase: will-it-scale
+> > > on test machine: 80 threads Skylake with 64G memory
+> > > with following parameters:
+> > > =
+
+> > > 	nr_task: 100%
+> > > 	mode: process
+> > > 	test: mmap1
+> > > 	cpufreq_governor: performance
+> > Hmm, so the test cases you are running are these ones:
+> > =
+
+> >    https://github.com/antonblanchard/will-it-scale/blob/master/tests/mm=
+ap1.c
+> >    https://github.com/antonblanchard/will-it-scale/blob/master/tests/mm=
+ap2.c
+> > =
+
+> > The commit from Joe referenced above only adds a feature to the (eBPF) =
+verifier. Looking
+> > through will-it-scale test suite, looks like there's neither cBPF nor e=
+BPF in use and if
+> > it would have been the former (e.g. via seccomp BPF), then also this ha=
+s no effect on it
+> > since this doesn't load through bpf(2); meaning if so then something mu=
+st use eBPF here,
+> > but then it's also unclear right now how this would even remotely affec=
+t mmap() test
+> > performance by -4%. Hm, are you certain it's not a false bisection? If =
+so, what else is
+> > loading eBPF on your machine in parallel when you run the tests?
 > =
 
+> Please accept my apologies for taking your time, It's a false bisection.
 
-Thanks
-Jianchao
+It shouldn't be a false bisection - I rerun the two kernels using this
+workload with this commit and its parent on the same test box, the
+performance gap is there.
 
---===============3404385447198386728==--
+> Something strange happened, we're trying to figure out the root cause.
+
+Yeah, it's not clear what it is :-)
+
+Daniel & Joe,
+
+We will see if we can find something and will let you know if we do.
+Before then, I think you can ignore this report, thanks for your time.
+
+Regards,
+Aaron
+
+> > > test-description: Will It Scale takes a testcase and runs it from 1 t=
+hrough to n parallel copies to see if the testcase will scale. It builds bo=
+th a process and threads based test in order to see any differences between=
+ the two.
+> > > test-url: https://github.com/antonblanchard/will-it-scale
+> > > =
+
+> > > In addition to that, the commit also has significant impact on the fo=
+llowing tests:
+> > > =
+
+> > > +------------------+-------------------------------------------------=
+--------------+
+> > > | testcase: change | will-it-scale: will-it-scale.per_process_ops -3.=
+8% regression |
+> > > | test machine     | 80 threads Skylake with 64G memory              =
+              |
+> > > | test parameters  | cpufreq_governor=3Dperformance                  =
+                |
+> > > |                  | mode=3Dprocess                                  =
+                |
+> > > |                  | nr_task=3D100%                                  =
+                |
+> > > |                  | test=3Dmmap2                                    =
+                |
+> > > +------------------+-------------------------------------------------=
+--------------+
+> > > =
+
+> > > =
+
+> > > Details are as below:
+> > > ---------------------------------------------------------------------=
+----------------------------->
+> > > =
+
+> > > =
+
+> > > To reproduce:
+> > > =
+
+> > >          git clone https://github.com/intel/lkp-tests.git
+> > >          cd lkp-tests
+> > >          bin/lkp install job.yaml  # job file is attached in this ema=
+il
+> > >          bin/lkp run     job.yaml
+> > > =
+
+> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test=
+/testcase:
+> > >    gcc-7/performance/x86_64-rhel-7.2/process/100%/debian-x86_64-2018-=
+04-03.cgz/lkp-skl-2sp2/mmap1/will-it-scale
+> > > =
+
+> > > commit:
+> > >    84dbf35073 ("bpf: Macrofy stack state copy")
+> > >    fd978bf7fd ("bpf: Add reference tracking to verifier")
+> > > =
+
+> > > 84dbf3507349696b fd978bf7fd312581a7ca454a99
+> > > ---------------- --------------------------
+> > >           %stddev     %change         %stddev
+> > >               \          |                \
+> > >       16811            -4.0%      16140        will-it-scale.per_proc=
+ess_ops
+> > >     1344946            -4.0%    1291230        will-it-scale.workload
+> > >      107.75 =C2=B1 38%    +252.4%     379.75 =C2=B1 93%  cpuidle.POLL=
+.usage
+> > >      121.70 =C2=B1 18%     +18.9%     144.70 =C2=B1  4%  sched_debug.=
+cfs_rq:/.exec_clock.stddev
+> > >        4933            +2.0%       5031        proc-vmstat.nr_inactiv=
+e_anon
+> > >        4933            +2.0%       5031        proc-vmstat.nr_zone_in=
+active_anon
+> > >        9874            +9.0%      10765 =C2=B1  7%  slabinfo.proc_ino=
+de_cache.active_objs
+> > >        9874            +9.0%      10765 =C2=B1  7%  slabinfo.proc_ino=
+de_cache.num_objs
+> > >       12248 =C2=B1 50%     +52.2%      18640 =C2=B1  2%  numa-meminfo=
+.node0.Inactive
+> > >       33943 =C2=B1  8%     +16.2%      39453 =C2=B1  6%  numa-meminfo=
+.node0.SReclaimable
+> > >       91549 =C2=B1  9%      -9.9%      82530 =C2=B1  7%  numa-meminfo=
+.node1.Slab
+> > >       18091 =C2=B1 15%     +29.2%      23382 =C2=B1 17%  numa-vmstat.=
+node0
+> > >        3027 =C2=B1 52%     +52.6%       4620 =C2=B1  3%  numa-vmstat.=
+node0.nr_inactive_anon
+> > >        8485 =C2=B1  8%     +16.2%       9862 =C2=B1  6%  numa-vmstat.=
+node0.nr_slab_reclaimable
+> > >        3027 =C2=B1 52%     +52.6%       4620 =C2=B1  3%  numa-vmstat.=
+node0.nr_zone_inactive_anon
+> > >     1.4e+12            -2.5%  1.364e+12        perf-stat.branch-instr=
+uctions
+> > >       41.42            +0.7       42.15        perf-stat.cache-miss-r=
+ate%
+> > >   2.166e+10            -2.1%   2.12e+10        perf-stat.cache-refere=
+nces
+> > >       12.16            +2.7%      12.49        perf-stat.cpi
+> > >   1.741e+12            -2.8%  1.692e+12        perf-stat.dTLB-loads
+> > >        0.00 =C2=B1  3%      +0.0        0.00 =C2=B1  9%  perf-stat.dT=
+LB-store-miss-rate%
+> > >   5.713e+11            -3.9%   5.49e+11        perf-stat.dTLB-stores
+> > >   6.103e+12            -2.6%  5.943e+12        perf-stat.instructions
+> > >        0.08            -2.6%       0.08        perf-stat.ipc
+> > >   1.954e+09            -1.8%  1.919e+09        perf-stat.node-load-mi=
+sses
+> > >     4538060            +1.4%    4602862        perf-stat.path-length
+> > >       49.62            -0.5       49.14        perf-profile.calltrace=
+.cycles-pp.do_munmap.vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCALL=
+_64_after_hwframe
+> > >       47.64            -0.5       47.17        perf-profile.calltrace=
+.cycles-pp._raw_spin_lock_irqsave.percpu_counter_add_batch.do_munmap.vm_mun=
+map.__x64_sys_munmap
+> > >       47.49            -0.5       47.02        perf-profile.calltrace=
+.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.percpu_c=
+ounter_add_batch.do_munmap.vm_munmap
+> > >       49.99            -0.5       49.53        perf-profile.calltrace=
+.cycles-pp.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hwframe
+> > >       49.96            -0.5       49.51        perf-profile.calltrace=
+.cycles-pp.vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_=
+hwframe
+> > >       48.02            -0.4       47.58        perf-profile.calltrace=
+.cycles-pp.percpu_counter_add_batch.do_munmap.vm_munmap.__x64_sys_munmap.do=
+_syscall_64
+> > >        1.41            -0.0        1.37        perf-profile.calltrace=
+.cycles-pp.unmap_region.do_munmap.vm_munmap.__x64_sys_munmap.do_syscall_64
+> > >       47.73            +0.4       48.11        perf-profile.calltrace=
+.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.percpu_c=
+ounter_add_batch.__vm_enough_memory.mmap_region
+> > >       47.85            +0.4       48.25        perf-profile.calltrace=
+.cycles-pp._raw_spin_lock_irqsave.percpu_counter_add_batch.__vm_enough_memo=
+ry.mmap_region.do_mmap
+> > >       48.28            +0.4       48.68        perf-profile.calltrace=
+.cycles-pp.__vm_enough_memory.mmap_region.do_mmap.vm_mmap_pgoff.ksys_mmap_p=
+goff
+> > >       48.23            +0.4       48.63        perf-profile.calltrace=
+.cycles-pp.percpu_counter_add_batch.__vm_enough_memory.mmap_region.do_mmap.=
+vm_mmap_pgoff
+> > >       48.96            +0.4       49.41        perf-profile.calltrace=
+.cycles-pp.mmap_region.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff.do_syscall_64
+> > >       49.11            +0.5       49.56        perf-profile.calltrace=
+.cycles-pp.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff.do_syscall_64.entry_SYSCAL=
+L_64_after_hwframe
+> > >       49.24            +0.5       49.70        perf-profile.calltrace=
+.cycles-pp.vm_mmap_pgoff.ksys_mmap_pgoff.do_syscall_64.entry_SYSCALL_64_aft=
+er_hwframe
+> > >       49.25            +0.5       49.72        perf-profile.calltrace=
+.cycles-pp.ksys_mmap_pgoff.do_syscall_64.entry_SYSCALL_64_after_hwframe
+> > >       49.62            -0.5       49.15        perf-profile.children.=
+cycles-pp.do_munmap
+> > >       49.99            -0.5       49.53        perf-profile.children.=
+cycles-pp.__x64_sys_munmap
+> > >       49.97            -0.5       49.51        perf-profile.children.=
+cycles-pp.vm_munmap
+> > >        0.51 =C2=B1  2%      -0.0        0.46        perf-profile.chil=
+dren.cycles-pp.___might_sleep
+> > >        1.16            -0.0        1.11        perf-profile.children.=
+cycles-pp.unmap_vmas
+> > >        1.15            -0.0        1.10        perf-profile.children.=
+cycles-pp.unmap_page_range
+> > >        1.41            -0.0        1.37        perf-profile.children.=
+cycles-pp.unmap_region
+> > >        0.32 =C2=B1  2%      +0.0        0.34 =C2=B1  2%  perf-profile=
+.children.cycles-pp.up_write
+> > >        0.32 =C2=B1  2%      +0.0        0.34        perf-profile.chil=
+dren.cycles-pp.vm_area_alloc
+> > >        0.29            +0.0        0.32        perf-profile.children.=
+cycles-pp.kmem_cache_alloc
+> > >       48.28            +0.4       48.68        perf-profile.children.=
+cycles-pp.__vm_enough_memory
+> > >       48.96            +0.4       49.41        perf-profile.children.=
+cycles-pp.mmap_region
+> > >       49.11            +0.5       49.56        perf-profile.children.=
+cycles-pp.do_mmap
+> > >       49.25            +0.5       49.71        perf-profile.children.=
+cycles-pp.vm_mmap_pgoff
+> > >       49.25            +0.5       49.72        perf-profile.children.=
+cycles-pp.ksys_mmap_pgoff
+> > >        0.47 =C2=B1  3%      -0.0        0.43        perf-profile.self=
+.cycles-pp.___might_sleep
+> > >        0.32 =C2=B1  3%      +0.0        0.34 =C2=B1  2%  perf-profile=
+.self.cycles-pp.up_write
+> > >        0.27            +0.0        0.30        perf-profile.self.cycl=
+es-pp.kmem_cache_alloc
+> > >        0.49            +0.0        0.53        perf-profile.self.cycl=
+es-pp.percpu_counter_add_batch
+> > > =
+
+> > > =
+
+> > >                              will-it-scale.per_process_ops
+> > >    18000 +-+---------------------------------------------------------=
+--------+
+> > >          |                                                           =
+        |
+> > >    17500 +-+   +.+                                                   =
+        |
+> > >          |+.+++  :            +.++++.+++           ++++.++++.++      =
+        |
+> > >          |        :++. +      :        :          :            :     =
+        |
+> > >    17000 +-+      +   + ++.++:          :  ++.+++ :            ++.+ +=
++.   +. |
+> > >          |                   +          +.+      +                 + =
+  +++  +|
+> > >    16500 +-+                                                         =
+        |
+> > >          |              O  OOOO OOOO O O                             =
+        |
+> > >    16000 +-+           O O            O O O                          =
+        |
+> > >          |                                                           =
+        |
+> > >          O     O  OOO O                                              =
+        |
+> > >    15500 +O+OOO  O                                                   =
+        |
+> > >          |                                                           =
+        |
+> > >    15000 +-+---------------------------------------------------------=
+--------+
+> > >                                  will-it-scale.workload
+> > >    1.42e+06 +-+------------------------------------------------------=
+--------+
+> > >     1.4e+06 +-+   ++                                                 =
+        |
+> > >             |++.++ :                 ++.                   +++.+     =
+        |
+> > >    1.38e+06 +-+     :           +.+++   ++          ++++.++    :     =
+        |
+> > >    1.36e+06 +-+     +.+++++.    :         :         :           :+   =
+        |
+> > >             |               ++++          ++.+++++.+            + ++.=
++++++.++|
+> > >    1.34e+06 +-+                                                      =
+        |
+> > >    1.32e+06 +-+                                                      =
+        |
+> > >     1.3e+06 +-+               O                                      =
+        |
+> > >             |            OO OO OO OOOOO  OOO                         =
+        |
+> > >    1.28e+06 +-+                         O                            =
+        |
+> > >    1.26e+06 +-+       O                                              =
+        |
+> > >             O     O O  OO                                            =
+        |
+> > >    1.24e+06 +OO OO O                                                 =
+        |
+> > >    1.22e+06 +-+------------------------------------------------------=
+--------+
+> > > [*] bisect-good sample
+> > > [O] bisect-bad  sample
+> > > =
+
+> > > *********************************************************************=
+******************************
+> > > lkp-skl-2sp2: 80 threads Skylake with 64G memory
+> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test=
+/testcase:
+> > >    gcc-7/performance/x86_64-rhel-7.2/process/100%/debian-x86_64-2018-=
+04-03.cgz/lkp-skl-2sp2/mmap2/will-it-scale
+> > > =
+
+> > > commit:
+> > >    84dbf35073 ("bpf: Macrofy stack state copy")
+> > >    fd978bf7fd ("bpf: Add reference tracking to verifier")
+> > > =
+
+> > > 84dbf3507349696b fd978bf7fd312581a7ca454a99
+> > > ---------------- --------------------------
+> > >           %stddev     %change         %stddev
+> > >               \          |                \
+> > >       16832            -3.8%      16186        will-it-scale.per_proc=
+ess_ops
+> > >     1346634            -3.8%    1294984        will-it-scale.workload
+> > >      390809 =C2=B1 21%     +51.6%     592424 =C2=B1 27%  cpuidle.C1.t=
+ime
+> > >        6897            +2.7%       7085        proc-vmstat.nr_mapped
+> > >      936.00 =C2=B1  7%     +15.6%       1082 =C2=B1  5%  slabinfo.Acp=
+i-ParseExt.active_objs
+> > >      936.00 =C2=B1  7%     +15.6%       1082 =C2=B1  5%  slabinfo.Acp=
+i-ParseExt.num_objs
+> > >      968.00 =C2=B1  9%     +27.5%       1233 =C2=B1 16%  slabinfo.poo=
+l_workqueue.active_objs
+> > >      968.00 =C2=B1  9%     +29.7%       1255 =C2=B1 16%  slabinfo.poo=
+l_workqueue.num_objs
+> > >        8430           -14.1%       7244 =C2=B1  2%  numa-meminfo.node=
+0.KernelStack
+> > >        4283 =C2=B1 14%     -22.4%       3325 =C2=B1 10%  numa-meminfo=
+.node0.PageTables
+> > >       73929 =C2=B1  3%     -10.6%      66061 =C2=B1  6%  numa-meminfo=
+.node0.SUnreclaim
+> > >        5569 =C2=B1  2%     +21.0%       6738 =C2=B1  3%  numa-meminfo=
+.node1.KernelStack
+> > >       55085 =C2=B1  5%     +17.5%      64739 =C2=B1  5%  numa-meminfo=
+.node1.SUnreclaim
+> > >       81155 =C2=B1  6%     +16.2%      94292 =C2=B1  7%  numa-meminfo=
+.node1.Slab
+> > >      230.00          -100.0%       0.00        numa-vmstat.node0.nr_a=
+ctive_file
+> > >      100.25 =C2=B1  3%     -88.8%      11.25 =C2=B1173%  numa-vmstat.=
+node0.nr_inactive_file
+> > >        8431           -14.1%       7245 =C2=B1  2%  numa-vmstat.node0=
+.nr_kernel_stack
+> > >        1071 =C2=B1 14%     -22.4%     831.25 =C2=B1 10%  numa-vmstat.=
+node0.nr_page_table_pages
+> > >       18482 =C2=B1  3%     -10.6%      16515 =C2=B1  6%  numa-vmstat.=
+node0.nr_slab_unreclaimable
+> > >      230.00          -100.0%       0.00        numa-vmstat.node0.nr_z=
+one_active_file
+> > >      100.25 =C2=B1  3%     -88.8%      11.25 =C2=B1173%  numa-vmstat.=
+node0.nr_zone_inactive_file
+> > >        5569 =C2=B1  2%     +21.0%       6738 =C2=B1  3%  numa-vmstat.=
+node1.nr_kernel_stack
+> > >        2778 =C2=B1  3%     +28.4%       3567 =C2=B1 16%  numa-vmstat.=
+node1.nr_mapped
+> > >       13771 =C2=B1  5%     +17.5%      16184 =C2=B1  5%  numa-vmstat.=
+node1.nr_slab_unreclaimable
+> > >   1.506e+12            -2.5%  1.468e+12        perf-stat.branch-instr=
+uctions
+> > >       41.41            +0.8       42.20        perf-stat.cache-miss-r=
+ate%
+> > >   2.165e+10            -1.7%  2.129e+10        perf-stat.cache-refere=
+nces
+> > >       11.25            +2.8%      11.57        perf-stat.cpi
+> > >   1.891e+12            -2.8%  1.838e+12        perf-stat.dTLB-loads
+> > >   6.543e+11            -3.7%    6.3e+11        perf-stat.dTLB-stores
+> > >   6.591e+12            -2.6%  6.419e+12        perf-stat.instructions
+> > >        0.09            -2.7%       0.09        perf-stat.ipc
+> > >   1.967e+09            -1.3%  1.941e+09        perf-stat.node-load-mi=
+sses
+> > >     4894750            +1.3%    4956596        perf-stat.path-length
+> > >       40.37 =C2=B1 12%     -16.2%      33.81 =C2=B1  7%  sched_debug.=
+cfs_rq:/.load_avg.stddev
+> > >        0.05 =C2=B1  2%     +18.7%       0.06 =C2=B1  3%  sched_debug.=
+cfs_rq:/.nr_running.stddev
+> > >        6.37 =C2=B1 40%     -50.2%       3.17 =C2=B1 32%  sched_debug.=
+cfs_rq:/.removed.load_avg.avg
+> > >       31.64 =C2=B1 18%     -28.5%      22.63 =C2=B1 16%  sched_debug.=
+cfs_rq:/.removed.load_avg.stddev
+> > >      293.89 =C2=B1 40%     -50.1%     146.61 =C2=B1 32%  sched_debug.=
+cfs_rq:/.removed.runnable_sum.avg
+> > >        1459 =C2=B1 18%     -28.3%       1045 =C2=B1 16%  sched_debug.=
+cfs_rq:/.removed.runnable_sum.stddev
+> > >        2.46 =C2=B1 43%     -60.9%       0.96 =C2=B1 66%  sched_debug.=
+cfs_rq:/.removed.util_avg.avg
+> > >       12.42 =C2=B1 26%     -46.5%       6.64 =C2=B1 59%  sched_debug.=
+cfs_rq:/.removed.util_avg.stddev
+> > >      385.92 =C2=B1  6%     +12.8%     435.46 =C2=B1  2%  sched_debug.=
+cpu.nr_switches.min
+> > >      -14.21           -31.4%      -9.75        sched_debug.cpu.nr_uni=
+nterruptible.min
+> > >       47.54            -0.2       47.31        perf-profile.calltrace=
+.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.percpu_c=
+ounter_add_batch.do_munmap.vm_munmap
+> > >       47.67            -0.2       47.45        perf-profile.calltrace=
+.cycles-pp._raw_spin_lock_irqsave.percpu_counter_add_batch.do_munmap.vm_mun=
+map.__x64_sys_munmap
+> > >       48.04            -0.2       47.86        perf-profile.calltrace=
+.cycles-pp.percpu_counter_add_batch.do_munmap.vm_munmap.__x64_sys_munmap.do=
+_syscall_64
+> > >       99.36            -0.0       99.34        perf-profile.calltrace=
+.cycles-pp.entry_SYSCALL_64_after_hwframe
+> > >        1.47            +0.0        1.51        perf-profile.calltrace=
+.cycles-pp.unmap_region.do_munmap.vm_munmap.__x64_sys_munmap.do_syscall_64
+> > >       94.77            -0.3       94.52        perf-profile.children.=
+cycles-pp.native_queued_spin_lock_slowpath
+> > >       95.04            -0.2       94.81        perf-profile.children.=
+cycles-pp._raw_spin_lock_irqsave
+> > >       95.77            -0.2       95.60        perf-profile.children.=
+cycles-pp.percpu_counter_add_batch
+> > >       49.72            -0.1       49.58        perf-profile.children.=
+cycles-pp.do_munmap
+> > >        0.53 =C2=B1  2%      -0.1        0.47        perf-profile.chil=
+dren.cycles-pp.___might_sleep
+> > >        0.30 =C2=B1  2%      +0.0        0.33        perf-profile.chil=
+dren.cycles-pp.perf_event_mmap
+> > >        0.30 =C2=B1  3%      +0.0        0.33 =C2=B1  2%  perf-profile=
+.children.cycles-pp.vm_area_alloc
+> > >        0.33 =C2=B1  2%      +0.0        0.36 =C2=B1  2%  perf-profile=
+.children.cycles-pp.up_write
+> > >        1.48            +0.0        1.51        perf-profile.children.=
+cycles-pp.unmap_region
+> > >       94.77            -0.3       94.52        perf-profile.self.cycl=
+es-pp.native_queued_spin_lock_slowpath
+> > >        0.48 =C2=B1  2%      -0.0        0.44        perf-profile.self=
+.cycles-pp.___might_sleep
+> > >        0.33 =C2=B1  2%      +0.0        0.36 =C2=B1  2%  perf-profile=
+.self.cycles-pp.up_write
+> > >        0.53            +0.0        0.57        perf-profile.self.cycl=
+es-pp.unmap_page_range
+> > >        0.47            +0.0        0.52 =C2=B1  2%  perf-profile.self=
+.cycles-pp.percpu_counter_add_batch
+> > > =
+
+> > > =
+
+> > > =
+
+> > > =
+
+> > > =
+
+> > > Disclaimer:
+> > > Results have been estimated based on internal Intel analysis and are =
+provided
+> > > for informational purposes only. Any difference in system hardware or=
+ software
+> > > design or configuration may affect actual performance.
+> > > =
+
+> > > =
+
+> > > Thanks,
+> > > Rong Chen
+> > > =
+
+> =
+
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
+
+--===============5968169369965000286==--
 
