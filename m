@@ -1,123 +1,514 @@
-Content-Type: multipart/mixed; boundary="===============1076053990581394746=="
+Content-Type: multipart/mixed; boundary="===============7747580083414945713=="
 MIME-Version: 1.0
-From: Kirill A. Shutemov <kirill@shutemov.name>
+From: Jeff Layton <jlayton@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: dd2283f260 [ 97.263072] WARNING:at_kernel/locking/lockdep.c:#lock_downgrade
-Date: Wed, 21 Nov 2018 14:17:45 +0300
-Message-ID: <20181121111745.v56gygpfn5gvdoc4@kshutemo-mobl1>
-In-Reply-To: <d552af11-7b73-da6a-ed12-6cb7bd1bb5a4@linux.alibaba.com>
+Subject: Re: [fs/locks] 3c19f2312f: will-it-scale.per_thread_ops -65.2% regression
+Date: Wed, 21 Nov 2018 06:21:19 -0500
+Message-ID: <cd0a28f4b699024e611cb464a82a957c41217466.camel@kernel.org>
+In-Reply-To: <20181121004450.GB18977@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1076053990581394746==
+--===============7747580083414945713==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 21, 2018 at 08:35:28AM +0800, Yang Shi wrote:
+On Wed, 2018-11-21 at 08:44 +0800, kernel test robot wrote:
+> Greeting,
+> =
+
+> FYI, we noticed a -65.2% regression of will-it-scale.per_thread_ops due t=
+o commit:
 > =
 
 > =
 
-> On 11/20/18 9:42 PM, Kirill A. Shutemov wrote:
-> > On Tue, Nov 20, 2018 at 08:10:51PM +0800, Yang Shi wrote:
-> > > =
-
-> > > On 11/20/18 4:57 PM, Kirill A. Shutemov wrote:
-> > > > On Fri, Nov 16, 2018 at 08:56:04AM -0800, Yang Shi wrote:
-> > > > > > a8dda165ec  vfree: add debug might_sleep()
-> > > > > > dd2283f260  mm: mmap: zap pages with read mmap_sem in munmap
-> > > > > > 5929a1f0ff  Merge tag 'riscv-for-linus-4.20-rc2' of git://git.k=
-ernel.org/pub/scm/linux/kernel/git/palmer/riscv-linux
-> > > > > > 0bc80e3cb0  Add linux-next specific files for 20181114
-> > > > > > +-----------------------------------------------------+--------=
-----+------------+------------+---------------+
-> > > > > > |                                                     | a8dda16=
-5ec | dd2283f260 | 5929a1f0ff | next-20181114 |
-> > > > > > +-----------------------------------------------------+--------=
-----+------------+------------+---------------+
-> > > > > > | boot_successes                                      | 314    =
-    | 178        | 190        | 168           |
-> > > > > > | boot_failures                                       | 393    =
-    | 27         | 21         | 40            |
-> > > > > > | WARNING:held_lock_freed                             | 383    =
-    | 23         | 17         | 39            |
-> > > > > > | is_freeing_memory#-#,with_a_lock_still_held_there   | 383    =
-    | 23         | 17         | 39            |
-> > > > > > | BUG:unable_to_handle_kernel                         | 5      =
-    | 2          | 4          | 1             |
-> > > > > > | Oops:#[##]                                          | 9      =
-    | 3          | 4          | 1             |
-> > > > > > | EIP:debug_check_no_locks_freed                      | 9      =
-    | 3          | 4          | 1             |
-> > > > > > | Kernel_panic-not_syncing:Fatal_exception            | 9      =
-    | 3          | 4          | 1             |
-> > > > > > | Mem-Info                                            | 4      =
-    | 1          |            |               |
-> > > > > > | invoked_oom-killer:gfp_mask=3D0x                      | 1    =
-      | 1          |            |               |
-> > > > > > | WARNING:at_kernel/locking/lockdep.c:#lock_downgrade | 0      =
-    | 6          | 4          | 7             |
-> > > > > > | EIP:lock_downgrade                                  | 0      =
-    | 6          | 4          | 7             |
-> > > > > > +-----------------------------------------------------+--------=
-----+------------+------------+---------------+
-> > > > > > =
-
-> > > > > > [   96.288009] random: get_random_u32 called from arch_rnd+0x3c=
-/0x70 with crng_init=3D0
-> > > > > > [   96.359626] input_id (331) used greatest stack depth: 6360 b=
-ytes left
-> > > > > > [   96.749228] grep (358) used greatest stack depth: 6336 bytes=
- left
-> > > > > > [   96.921470] network.sh (341) used greatest stack depth: 6212=
- bytes left
-> > > > > > [   97.262340]
-> > > > > > [   97.262587] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > > > [   97.263072] WARNING: held lock freed!
-> > > > > > [   97.263536] 4.19.0-06969-gdd2283f #1 Not tainted
-> > > > > > [   97.264110] -------------------------
-> > > > > > [   97.264575] udevd/198 is freeing memory 9c16c930-9c16c99b, w=
-ith a lock still held there!
-> > > > > > [   97.265542] (ptrval) (&anon_vma->rwsem){....}, at: unlink_an=
-on_vmas+0x14e/0x420
-> > > > > > [   97.266450] 1 lock held by udevd/198:
-> > > > > > [   97.266924]  #0: (ptrval) (&mm->mmap_sem){....}, at: __do_mu=
-nmap+0x531/0x730
-> > > > > I have not figured out what this is caused by. But, the below war=
-ning looks
-> > > > > more confusing. This might be caused by the below one.
-> > > > I *think* we need to understand more about what detached VMAs mean =
-for
-> > > > rmap. The anon_vma for these VMAs still reachable for the rmap and
-> > > > therefore VMA too. I don't quite grasp what is implications of this=
-, but
-> > > > it doesn't look good.
-> > > I'm supposed before accessing anon_vma, VMA need to be found by find_=
-vma()
-> > > first, right? But, finding VMA need hold mmap_sem, once detach VMAs is
-> > > called, others should not be able to find the VMAs anymore. So, the a=
-non_vma
-> > > should not be reachable except the munmap caller.
-> > No. anon_vma can be reached from page->mapping. The page can be reached
-> > during physcal memory scan or if the page is shared (across fork()). No=
-ne
-> > of these accesses require mmap_sem.
+> commit: 3c19f2312f48a3d36a4e13f5072a6a95e755b3d5 ("fs/locks: always delet=
+e_block after waiting.")
+> https://git.kernel.org/cgit/linux/kernel/git/jlayton/linux.git locks-4.21
 > =
 
-> If they don't require mmap_sem at all, this problem should be valid
-> regardless of the optimization. We just downgraded write mmap_sem to read,
-> but still hold it.
+> in testcase: will-it-scale
+> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wit=
+h 64G memory
+> with following parameters:
+> =
 
-I tend to agree with you.
+> 	nr_task: 100%
+> 	mode: thread
+> 	test: lock1
+> 	ucode: 0xb00002e
+> 	cpufreq_governor: performance
+> =
 
-But having the crash in the picture makes me wounder if there's scenario
-when VMA reachable via anon_vma, but not via find_vma() causes a problem.
-I cannot think of any, but who knows.
+> test-description: Will It Scale takes a testcase and runs it from 1 throu=
+gh to n parallel copies to see if the testcase will scale. It builds both a=
+ process and threads based test in order to see any differences between the=
+ two.
+> test-url: https://github.com/antonblanchard/will-it-scale
+> =
+
+> =
+
+
+Looking at the testcase, it just does whole-file exclusive fcntl
+lock/unlock cycles. My gut feeling is that the reduction in wakeups is
+probably worth some extra processing time here, but maybe it's possible
+to do better.
+
+If I'm looking at the profile below correctly, it looks like we're
+spending quite a bit more time spinning on spinlocks. That makes some
+sense since we're now taking the blocked_lock_lock in more cases.
+
+I wonder if we could optimize that function away in some cases without
+taking the lock? Maybe if fl_blocked_requests is empty and fl_blocker is
+NULL? How to test those in a race-free way without taking the spinlock
+may not be possible though.
+
+Thoughts?
+
+
+> =
+
+> Details are as below:
+> -------------------------------------------------------------------------=
+------------------------->
+> =
+
+> =
+
+> To reproduce:
+> =
+
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+> =
+
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/tes=
+tcase/ucode:
+>   gcc-7/performance/x86_64-rhel-7.2/thread/100%/debian-x86_64-2018-04-03.=
+cgz/lkp-bdw-ep3b/lock1/will-it-scale/0xb00002e
+> =
+
+> commit: =
+
+>   816f2fb5a2 ("fs/locks: allow a lock request to block other requests.")
+>   3c19f2312f ("fs/locks: always delete_block after waiting.")
+> =
+
+> 816f2fb5a2fc678c 3c19f2312f48a3d36a4e13f507 =
+
+> ---------------- -------------------------- =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>      71447           -65.2%      24854        will-it-scale.per_thread_ops
+>     138940            -2.9%     134886        will-it-scale.time.involunt=
+ary_context_switches
+>     279.85           -64.2%     100.29        will-it-scale.time.user_time
+>    6287454           -65.2%    2187242        will-it-scale.workload
+>       1.09            -0.7        0.42        mpstat.cpu.usr%
+>     371230 =C2=B1  4%      +9.5%     406403        softirqs.SCHED
+>       1803 =C2=B1 16%     +48.9%       2685 =C2=B1  8%  numa-meminfo.node=
+0.PageTables
+>       2784 =C2=B1 10%     -30.7%       1928 =C2=B1 12%  numa-meminfo.node=
+1.PageTables
+>     224.55            -1.8%     220.57        turbostat.PkgWatt
+>       7.70            -3.0%       7.47        turbostat.RAMWatt
+>     450.50 =C2=B1 17%     +49.0%     671.25 =C2=B1  8%  numa-vmstat.node0=
+.nr_page_table_pages
+>     644147 =C2=B1 10%     -19.8%     516646 =C2=B1 11%  numa-vmstat.node0=
+.numa_hit
+>     639812 =C2=B1 10%     -20.6%     508027 =C2=B1 12%  numa-vmstat.node0=
+.numa_local
+>     696.25 =C2=B1 10%     -30.7%     482.50 =C2=B1 12%  numa-vmstat.node1=
+.nr_page_table_pages
+>       4617            +2.1%       4715        proc-vmstat.nr_inactive_anon
+>       7097            +2.0%       7241        proc-vmstat.nr_mapped
+>      20507            +7.0%      21934 =C2=B1  3%  proc-vmstat.nr_shmem
+>       4617            +2.1%       4715        proc-vmstat.nr_zone_inactiv=
+e_anon
+>     690109            +1.0%     696863        proc-vmstat.numa_hit
+>     672911            +1.0%     679694        proc-vmstat.numa_local
+>      23133 =C2=B1  2%      +8.9%      25196 =C2=B1  4%  proc-vmstat.pgact=
+ivate
+>     607.03 =C2=B1  6%     -16.0%     509.80 =C2=B1 12%  sched_debug.cfs_r=
+q:/.util_est_enqueued.avg
+>      24.42 =C2=B1 28%     +38.2%      33.75 =C2=B1 22%  sched_debug.cpu.c=
+pu_load[2].max
+>       2.20 =C2=B1 28%     +39.9%       3.08 =C2=B1 23%  sched_debug.cpu.c=
+pu_load[2].stddev
+>      25.33 =C2=B1 12%     +23.2%      31.21 =C2=B1  9%  sched_debug.cpu.c=
+pu_load[3].max
+>       2.28 =C2=B1 21%     +29.6%       2.95 =C2=B1 12%  sched_debug.cpu.c=
+pu_load[3].stddev
+>      52140 =C2=B1 23%     +37.1%      71510 =C2=B1  3%  sched_debug.cpu.n=
+r_switches.max
+>      53379 =C2=B1 24%     +46.4%      78158 =C2=B1 11%  sched_debug.cpu.s=
+ched_count.max
+>       7132 =C2=B1 12%     +32.3%       9436 =C2=B1 15%  sched_debug.cpu.s=
+ched_count.stddev
+>  4.587e+12            -7.5%  4.245e+12        perf-stat.branch-instructio=
+ns
+>       0.24            -0.1        0.15        perf-stat.branch-miss-rate%
+>  1.107e+10           -43.0%  6.312e+09        perf-stat.branch-misses
+>      40.04            -2.0       38.01        perf-stat.cache-miss-rate%
+>  8.415e+09 =C2=B1  2%     -19.4%  6.782e+09 =C2=B1  6%  perf-stat.cache-m=
+isses
+>  2.101e+10           -15.1%  1.783e+10 =C2=B1  5%  perf-stat.cache-refere=
+nces
+>       3.85           +10.7%       4.26        perf-stat.cpi
+>       0.00 =C2=B1  2%      +0.0        0.00 =C2=B1  4%  perf-stat.dTLB-lo=
+ad-miss-rate%
+>   90399109 =C2=B1  2%      +6.6%   96381582 =C2=B1  4%  perf-stat.dTLB-lo=
+ad-misses
+>  4.956e+12           -11.6%   4.38e+12        perf-stat.dTLB-loads
+>       0.00 =C2=B1  8%      +0.0        0.01 =C2=B1 24%  perf-stat.dTLB-st=
+ore-miss-rate%
+>  8.789e+11           -61.0%  3.427e+11        perf-stat.dTLB-stores
+>      80.76           -10.8       69.98        perf-stat.iTLB-load-miss-ra=
+te%
+>  3.901e+09           -63.3%   1.43e+09        perf-stat.iTLB-load-misses
+>    9.3e+08 =C2=B1  6%     -34.0%  6.135e+08 =C2=B1  2%  perf-stat.iTLB-lo=
+ads
+>  1.912e+13            -9.6%  1.728e+13        perf-stat.instructions
+>       4901          +146.5%      12081        perf-stat.instructions-per-=
+iTLB-miss
+>       0.26            -9.6%       0.23        perf-stat.ipc
+>      82.36            -3.7       78.70        perf-stat.node-store-miss-r=
+ate%
+>  2.319e+09           -20.6%  1.842e+09        perf-stat.node-store-misses
+>    3041599          +159.7%    7898884        perf-stat.path-length
+>      61.02 =C2=B1 10%     -61.0        0.00        perf-profile.calltrace=
+.cycles-pp._raw_spin_lock.fcntl_setlk.do_fcntl.__x64_sys_fcntl.do_syscall_64
+>      60.64 =C2=B1 10%     -60.6        0.00        perf-profile.calltrace=
+.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.fcntl_setlk.do_f=
+cntl.__x64_sys_fcntl
+>      98.79            +0.7       99.50        perf-profile.calltrace.cycl=
+es-pp.entry_SYSCALL_64_after_hwframe
+>      98.76            +0.7       99.49        perf-profile.calltrace.cycl=
+es-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      98.64            +0.8       99.44        perf-profile.calltrace.cycl=
+es-pp.__x64_sys_fcntl.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      97.70            +1.5       99.16        perf-profile.calltrace.cycl=
+es-pp.do_fcntl.__x64_sys_fcntl.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      97.41            +1.6       99.05        perf-profile.calltrace.cycl=
+es-pp.fcntl_setlk.do_fcntl.__x64_sys_fcntl.do_syscall_64.entry_SYSCALL_64_a=
+fter_hwframe
+>      35.73 =C2=B1 18%     +62.7       98.45        perf-profile.calltrace=
+.cycles-pp.do_lock_file_wait.fcntl_setlk.do_fcntl.__x64_sys_fcntl.do_syscal=
+l_64
+>       0.00           +65.1       65.07        perf-profile.calltrace.cycl=
+es-pp.native_queued_spin_lock_slowpath._raw_spin_lock.locks_delete_block.do=
+_lock_file_wait.fcntl_setlk
+>       0.00           +65.3       65.28        perf-profile.calltrace.cycl=
+es-pp._raw_spin_lock.locks_delete_block.do_lock_file_wait.fcntl_setlk.do_fc=
+ntl
+>       0.00           +65.3       65.31        perf-profile.calltrace.cycl=
+es-pp.locks_delete_block.do_lock_file_wait.fcntl_setlk.do_fcntl.__x64_sys_f=
+cntl
+>       1.13 =C2=B1  2%      -0.7        0.43        perf-profile.children.=
+cycles-pp.locks_alloc_lock
+>       0.98 =C2=B1  2%      -0.6        0.38        perf-profile.children.=
+cycles-pp.kmem_cache_alloc
+>       0.59            -0.4        0.23 =C2=B1  2%  perf-profile.children.=
+cycles-pp.syscall_return_via_sysret
+>       0.53            -0.3        0.20 =C2=B1  2%  perf-profile.children.=
+cycles-pp.entry_SYSCALL_64
+>       0.35 =C2=B1 11%      -0.3        0.06 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.fput
+>       0.41 =C2=B1  2%      -0.3        0.15 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.file_has_perm
+>       0.33 =C2=B1  2%      -0.2        0.12 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.memset_erms
+>       0.30 =C2=B1  3%      -0.2        0.11 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.security_file_lock
+>       0.25 =C2=B1  3%      -0.2        0.10 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.security_file_fcntl
+>       0.24 =C2=B1  2%      -0.1        0.10 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp._copy_from_user
+>       0.22 =C2=B1 12%      -0.1        0.07 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.__fget_light
+>       0.21 =C2=B1  3%      -0.1        0.08 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.avc_has_perm
+>       0.20 =C2=B1  5%      -0.1        0.08        perf-profile.children.=
+cycles-pp.___might_sleep
+>       0.16 =C2=B1  5%      -0.1        0.06        perf-profile.children.=
+cycles-pp.__fget
+>       0.24 =C2=B1  3%      -0.1        0.17 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.kmem_cache_free
+>       0.12 =C2=B1  5%      -0.1        0.05        perf-profile.children.=
+cycles-pp.__might_sleep
+>       0.24 =C2=B1 15%      -0.1        0.18        perf-profile.children.=
+cycles-pp.locks_insert_lock_ctx
+>       0.11 =C2=B1  3%      -0.0        0.10 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.locks_free_lock
+>      98.83            +0.7       99.54        perf-profile.children.cycle=
+s-pp.entry_SYSCALL_64_after_hwframe
+>      98.79            +0.7       99.52        perf-profile.children.cycle=
+s-pp.do_syscall_64
+>      98.65            +0.8       99.44        perf-profile.children.cycle=
+s-pp.__x64_sys_fcntl
+>      97.71            +1.5       99.17        perf-profile.children.cycle=
+s-pp.do_fcntl
+>      97.42            +1.6       99.05        perf-profile.children.cycle=
+s-pp.fcntl_setlk
+>      94.97            +3.0       97.98        perf-profile.children.cycle=
+s-pp._raw_spin_lock
+>      93.97            +3.3       97.24        perf-profile.children.cycle=
+s-pp.native_queued_spin_lock_slowpath
+>      35.74 =C2=B1 18%     +62.7       98.46        perf-profile.children.=
+cycles-pp.do_lock_file_wait
+>       0.00           +65.3       65.31        perf-profile.children.cycle=
+s-pp.locks_delete_block
+>       0.59            -0.4        0.23 =C2=B1  2%  perf-profile.self.cycl=
+es-pp.syscall_return_via_sysret
+>       0.53            -0.3        0.20 =C2=B1  2%  perf-profile.self.cycl=
+es-pp.entry_SYSCALL_64
+>       0.35 =C2=B1 10%      -0.3        0.06 =C2=B1  9%  perf-profile.self=
+.cycles-pp.fput
+>       1.00 =C2=B1  2%      -0.3        0.74        perf-profile.self.cycl=
+es-pp._raw_spin_lock
+>       0.38 =C2=B1  3%      -0.2        0.14        perf-profile.self.cycl=
+es-pp.kmem_cache_alloc
+>       0.32 =C2=B1  2%      -0.2        0.12 =C2=B1  3%  perf-profile.self=
+.cycles-pp.memset_erms
+>       0.20 =C2=B1  3%      -0.1        0.08 =C2=B1  6%  perf-profile.self=
+.cycles-pp.avc_has_perm
+>       0.20 =C2=B1  2%      -0.1        0.08 =C2=B1  6%  perf-profile.self=
+.cycles-pp.posix_lock_inode
+>       0.20 =C2=B1  6%      -0.1        0.08        perf-profile.self.cycl=
+es-pp.___might_sleep
+>       0.16 =C2=B1  4%      -0.1        0.05 =C2=B1  9%  perf-profile.self=
+.cycles-pp.__fget
+>       0.15 =C2=B1  8%      -0.1        0.06        perf-profile.self.cycl=
+es-pp.fcntl_setlk
+>       0.24            -0.1        0.15 =C2=B1  2%  perf-profile.self.cycl=
+es-pp.kmem_cache_free
+>       0.11            -0.1        0.03 =C2=B1100%  perf-profile.self.cycl=
+es-pp.__x64_sys_fcntl
+>       0.11 =C2=B1  4%      -0.1        0.03 =C2=B1100%  perf-profile.self=
+.cycles-pp.__might_sleep
+>       0.13            -0.1        0.05        perf-profile.self.cycles-pp=
+.locks_alloc_lock
+>       0.13 =C2=B1  5%      -0.1        0.05        perf-profile.self.cycl=
+es-pp.file_has_perm
+>       0.07 =C2=B1  7%      -0.0        0.05        perf-profile.self.cycl=
+es-pp.locks_free_lock
+>      93.64            +3.3       96.89        perf-profile.self.cycles-pp=
+.native_queued_spin_lock_slowpath
+> =
+
+> =
+
+>                                                                          =
+       =
+
+>                             will-it-scale.per_thread_ops                 =
+       =
+
+>                                                                          =
+       =
+
+>   75000 +-+--------------------------------------------------------------=
+---+   =
+
+>   70000 +-+.. .+.+.+..+.+.+.+..        .+. .+.. .+.+.  .+. .+.+..+.+.+.+.=
+.+.|   =
+
+>         |    +                 +. .+.+.   +    +     +.   +              =
+   |   =
+
+>   65000 +-+                      +                                       =
+   |   =
+
+>   60000 +-+                                                              =
+   |   =
+
+>   55000 +-+                                                              =
+   |   =
+
+>   50000 +-+                                                              =
+   |   =
+
+>         |                                                                =
+   |   =
+
+>   45000 +-+                                                              =
+   |   =
+
+>   40000 +-+                                                              =
+   |   =
+
+>   35000 +-+                                                              =
+   |   =
+
+>   30000 +-+                                                              =
+   |   =
+
+>         |                                                                =
+   |   =
+
+>   25000 O-O  O O O O  O O O O  O O O O  O O O  O O O O  O O              =
+   |   =
+
+>   20000 +-+--------------------------------------------------------------=
+---+   =
+
+>                                                                          =
+       =
+
+>                                                                          =
+                                                                           =
+            =
+
+>                                 will-it-scale.workload                   =
+       =
+
+>                                                                          =
+       =
+
+>   6.5e+06 +-+------------------------------------------------------------=
+---+   =
+
+>           |.+.  .+.+.+.+    +   +.      .+. .+.  .+.+. .+.  .+.+   +.+..+=
+.+ |   =
+
+>     6e+06 +-+ +.                  +.+..+   +   +.     +   +.             =
+   |   =
+
+>   5.5e+06 +-+                                                            =
+   |   =
+
+>           |                                                              =
+   |   =
+
+>     5e+06 +-+                                                            =
+   |   =
+
+>   4.5e+06 +-+                                                            =
+   |   =
+
+>           |                                                              =
+   |   =
+
+>     4e+06 +-+                                                            =
+   |   =
+
+>   3.5e+06 +-+                                                            =
+   |   =
+
+>           |                                                              =
+   |   =
+
+>     3e+06 +-+                                                            =
+   |   =
+
+>   2.5e+06 +-+                                                            =
+   |   =
+
+>           O O O  O O     O  O O O O O  O O O O O  O O O O O              =
+   |   =
+
+>     2e+06 +-+--------O-O-------------------------------------------------=
+---+   =
+
+>                                                                          =
+       =
+
+>                                                                          =
+                                                                           =
+            =
+
+>                            will-it-scale.time.user_time                  =
+       =
+
+>                                                                          =
+       =
+
+>   300 +-+----------------------------------------------------------------=
+---+   =
+
+>   280 +-+            .+.. .+.                                  .+.. .+.  =
+.+.|   =
+
+>       |.+..+.+.+..+.+    +   +..      .+.+.+..+.+.+..+.+.+..+.+    +   +.=
+   |   =
+
+>   260 +-+                       +.+.+.                                   =
+   |   =
+
+>   240 +-+                                                                =
+   |   =
+
+>   220 +-+                                                                =
+   |   =
+
+>   200 +-+                                                                =
+   |   =
+
+>       |                                                                  =
+   |   =
+
+>   180 +-+                                                                =
+   |   =
+
+>   160 +-+                                                                =
+   |   =
+
+>   140 +-+  O                                                             =
+   |   =
+
+>   120 +-+                                                                =
+   |   =
+
+>       O O    O O                  O                                      =
+   |   =
+
+>   100 +-+         O O O  O O O  O   O  O O O  O O O  O O O               =
+   |   =
+
+>    80 +-+----------------------------------------------------------------=
+---+   =
+
+>                                                                          =
+       =
+
+>                                                                          =
+       =
+
+> [*] bisect-good sample
+> [O] bisect-bad  sample
+> =
+
+> =
+
+> =
+
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are prov=
+ided
+> for informational purposes only. Any difference in system hardware or sof=
+tware
+> design or configuration may affect actual performance.
+> =
+
+> =
+
+> Thanks,
+> Rong Chen
 
 -- =
 
- Kirill A. Shutemov
+Jeff Layton <jlayton@kernel.org>
 
---===============1076053990581394746==--
+
+--===============7747580083414945713==--
 
