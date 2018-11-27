@@ -1,287 +1,73 @@
-Content-Type: multipart/mixed; boundary="===============8107283663202327947=="
+Content-Type: multipart/mixed; boundary="===============1961344779216194092=="
 MIME-Version: 1.0
-From: J. Bruce Fields <bfields@redhat.com>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [fs/locks] 83b381078b: will-it-scale.per_thread_ops -62.5% regression
-Date: Tue, 27 Nov 2018 12:43:16 -0500
-Message-ID: <20181127174315.GA29963@parsley.fieldses.org>
-In-Reply-To: <20181127060102.GF6163@shao2-debian>
+Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
+Date: Tue, 27 Nov 2018 19:17:27 +0100
+Message-ID: <20181127181727.GD6923@dhcp22.suse.cz>
+In-Reply-To: <CAHk-=wiq9eTzenOPh9srdB=Y8NcP6NJxh7o8Y5SfSjfqZ20-RA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8107283663202327947==
+--===============1961344779216194092==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Thanks for the report!
-
-On Tue, Nov 27, 2018 at 02:01:02PM +0800, kernel test robot wrote:
-> FYI, we noticed a -62.5% regression of will-it-scale.per_thread_ops due t=
-o commit:
+On Tue 27-11-18 09:08:50, Linus Torvalds wrote:
+> On Mon, Nov 26, 2018 at 10:24 PM kernel test robot
+> <rong.a.chen@intel.com> wrote:
+> >
+> > FYI, we noticed a -61.3% regression of vm-scalability.throughput due
+> > to commit ac5b2c18911f ("mm: thp: relax __GFP_THISNODE for
+> > MADV_HUGEPAGE mappings")
 > =
 
+> Well, that's certainly noticeable and not good.
 > =
 
-> commit: 83b381078b5ecab098ebf6bc9548bb32af1dbf31 ("fs/locks: always delet=
-e_block after waiting.")
-> https://git.kernel.org/cgit/linux/kernel/git/jlayton/linux.git locks-next
+> Andrea, I suspect it might be causing fights with auto numa migration..
 > =
 
-> in testcase: will-it-scale
-> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wit=
-h 64G memory
-> with following parameters:
+> Lots more system time, but also look at this:
 > =
 
-> 	nr_task: 16
-> 	mode: thread
-> 	test: lock1
-
-So I guess it's doing this, uncontended file lock/unlock?:
-
-	https://github.com/antonblanchard/will-it-scale/blob/master/tests/lock1.c
-
-Each thread is repeatedly locking and unlocking a file that is only used
-by that thread.
-
-By the way, what's the X-axis on these graphs?  (Or the y-axis, for that
-matter?)
-
---b.
-
->                             will-it-scale.per_thread_ops                 =
-       =
-
->                                                                          =
-       =
-
->   450000 +-+-------------------------------------------------------------=
----+   =
-
->          |                                                               =
-   |   =
-
->   400000 +-+   +..+..  .+..+..  .+..+..+...+..+..+..   +..        .+..   =
- ..|   =
-
->   350000 +-+ ..      +.       +.                     ..         +.    +..=
-+  |   =
-
->          |  +                                       +     +     :        =
-   |   =
-
->   300000 +-+                                              :    :         =
-   |   =
-
->   250000 +-+                                               :   :         =
-   |   =
-
->          |                                                 :   :         =
-   |   =
-
->   200000 +-+                                               :   :         =
-   |   =
-
->   150000 +-+                                                : :          =
-   |   =
-
->          O  O  O  O  O  O  O  O  O  O  O   O  O  O  O  O  O :O: O  O  O  =
-O  O   =
-
->   100000 +-+                                                : :          =
-   |   =
-
->    50000 +-+                                                : :          =
-   |   =
-
->          |                                                   :           =
-   |   =
-
->        0 +-+-------------------------------------------------------------=
----+   =
-
->                                                                          =
-       =
-
->                                                                          =
-                                                                           =
-            =
-
->                                will-it-scale.workload                    =
-       =
-
->                                                                          =
-       =
-
->   7e+06 +-+--------------------------------------------------------------=
----+   =
-
->         |              +...+..           .+..+..+     +            +..   =
-   |   =
-
->   6e+06 +-+   +..+.. ..         .+..+..+.        +   + +         ..      =
- ..|   =
-
->         |   ..      +         +.                  + +   +       +     +..=
-+  |   =
-
->   5e+06 +-++                                       +     +      :        =
-   |   =
-
->         |                                                :     :         =
-   |   =
-
->   4e+06 +-+                                               :    :         =
-   |   =
-
->         |                                                 :    :         =
-   |   =
-
->   3e+06 +-+                                                :   :         =
-   |   =
-
->         |                                       O     O    :  : O  O     =
-   |   =
-
->   2e+06 O-+O  O  O  O  O   O  O  O  O  O  O  O     O     O : O:       O  =
-O  O   =
-
->         |                                                   : :          =
-   |   =
-
->   1e+06 +-+                                                 : :          =
-   |   =
-
->         |                                                    :           =
-   |   =
-
->       0 +-+--------------------------------------------------------------=
----+   =
-
->                                                                          =
-       =
-
->                                                                          =
-                                                                           =
-            =
-
->                            will-it-scale.time.user_time                  =
-       =
-
->                                                                          =
-       =
-
->   250 +-+----------------------------------------------------------------=
----+   =
-
->       |                 .+..               .+..                   +..    =
-   |   =
-
->       |..   +...+..  .+.      .+...+..+..+.    +..    +..       ..   .   =
- ..|   =
-
->   200 +-+ ..       +.       +.                    . ..         +      +..=
-+  |   =
-
->       |  +                                         +     +     :         =
-   |   =
-
->       |                                                  :    :          =
-   |   =
-
->   150 +-+                                                 :   :          =
-   |   =
-
->       |                                                   :   :          =
-   |   =
-
->   100 +-+                                                 :   :          =
-   |   =
-
->       |  O      O                                          : :           =
-   |   =
-
->       O     O      O  O  O  O  O   O  O  O  O  O   O  O  O :O: O  O   O  =
-O  O   =
-
->    50 +-+                                                  : :           =
-   |   =
-
->       |                                                    : :           =
-   |   =
-
->       |                                                     :            =
-   |   =
-
->     0 +-+----------------------------------------------------------------=
----+   =
-
->                                                                          =
-       =
-
->                                                                          =
-                                                                           =
-            =
-
->                           will-it-scale.time.system_time                 =
-       =
-
->                                                                          =
-       =
-
->   5000 +-+---------------------------------------------------------------=
----+   =
-
->   4500 O-+O..O..O...O..O..O..O..O..O..O...O..O..O..O..O..O  O  O...O..O..=
-O..O   =
-
->        |                                                 :     :         =
-   |   =
-
->   4000 +-+                                               :     :         =
-   |   =
-
->   3500 +-+                                                :   :          =
-   |   =
-
->        |                                                  :   :          =
-   |   =
-
->   3000 +-+                                                :   :          =
-   |   =
-
->   2500 +-+                                                :   :          =
-   |   =
-
->   2000 +-+                                                 : :           =
-   |   =
-
->        |                                                   : :           =
-   |   =
-
->   1500 +-+                                                 : :           =
-   |   =
-
->   1000 +-+                                                 : :           =
-   |   =
-
->        |                                                    :            =
-   |   =
-
->    500 +-+                                                  :            =
-   |   =
-
->      0 +-+---------------------------------------------------------------=
----+   =
-
->                                                                          =
-       =
-
->                                                                          =
-       =
-
-> [*] bisect-good sample
-> [O] bisect-bad  sample
-
---===============8107283663202327947==--
+> >    1122389 =C2=B1  9%     +17.2%    1315380 =C2=B1  4%  proc-vmstat.num=
+a_hit
+> >     214722 =C2=B1  5%     +21.6%     261076 =C2=B1  3%  proc-vmstat.num=
+a_huge_pte_updates
+> >    1108142 =C2=B1  9%     +17.4%    1300857 =C2=B1  4%  proc-vmstat.num=
+a_local
+> >     145368 =C2=B1 48%     +63.1%     237050 =C2=B1 17%  proc-vmstat.num=
+a_miss
+> >     159615 =C2=B1 44%     +57.6%     251573 =C2=B1 16%  proc-vmstat.num=
+a_other
+> >     185.50 =C2=B1 81%   +8278.6%      15542 =C2=B1 40%  proc-vmstat.num=
+a_pages_migrated
+> =
+
+> Should the commit be reverted? Or perhaps at least modified?
+
+Well, the commit is trying to revert to the behavior before
+5265047ac301 because there are real usecases that suffered from that
+change and bug reports as a result of that.
+
+will-it-scale is certainly worth considering but it is an artificial
+testcase. A higher NUMA miss rate is an expected side effect of the
+patch because the fallback to a different NUMA node is more likely. The
+__GFP_THISNODE side effect is basically introducing node-reclaim
+behavior for THPages. Another thing is that there is no good behavior
+for everybody. Reclaim locally vs. THP on a remote node is hard to
+tell by default. We have discussed that at length and there were some
+conclusions. One of them is that we need a numa policy to tell whether
+a expensive localility is preferred over remote allocation.  Also we
+definitely need a better pro-active defragmentation to allow larger
+pages on a local node. This is a work in progress and this patch is a
+stop gap fix.
+
+-- =
+
+Michal Hocko
+SUSE Labs
+
+--===============1961344779216194092==--
 
