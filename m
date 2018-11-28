@@ -1,43 +1,37 @@
-Content-Type: multipart/mixed; boundary="===============3933420640643438986=="
+Content-Type: multipart/mixed; boundary="===============6996702657244751934=="
 MIME-Version: 1.0
-From: Matthew Wilcox <willy@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: dad4f140ed [ 7.709376] WARNING:suspicious_RCU_usage
-Date: Sun, 18 Nov 2018 17:19:04 -0800
-Message-ID: <20181119011904.GE7861@bombadil.infradead.org>
-In-Reply-To: <20181119010820.GM18977@shao2-debian>
+Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
+Date: Wed, 28 Nov 2018 08:48:46 -0800
+Message-ID: <CAHk-=wjgRO-=NPaU9EmrdC3it3o7kvf4u7sewv3crtNLkE13Hg@mail.gmail.com>
+In-Reply-To: <87tvk1yjkp.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3933420640643438986==
+--===============6996702657244751934==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 19, 2018 at 09:08:20AM +0800, kernel test robot wrote:
-> Greetings,
-> =
+On Tue, Nov 27, 2018 at 7:20 PM Huang, Ying <ying.huang@intel.com> wrote:
+>
+> From the above data, for the parent commit 3 processes exited within
+> 14s, another 3 exited within 100s.  For this commit, the first process
+> exited at 203s.  That is, this commit makes memory allocation more fair
+> among processes, so that processes proceeded at more similar speed.  But
+> this raises system memory footprint too, so triggered much more swap,
+> thus lower benchmark score.
+>
+> In general, memory allocation fairness among processes should be a good
+> thing.  So I think the report should have been a "performance
+> improvement" instead of "performance regression".
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+Hey, when you put it that way...
 
-Umm.  I don't see a 'suspicious RCU usage' message in here.  I see a
-lot of vmalloc warnings ... ?
+Let's ignore this issue for now, and see if it shows up in some real
+workload and people complain.
 
-> [    7.699777] swapper: vmalloc: allocation failure: 18446744073709551615=
- bytes, mode:0x6000c0(GFP_KERNEL), nodemask=3D(null)
-> [    7.724561] swapper: vmalloc: allocation failure: 18446744073709551615=
- bytes, mode:0x6000c0(GFP_KERNEL), nodemask=3D(null)
-> [    7.737925] swapper: vmalloc: allocation failure: 18446744073709551615=
- bytes, mode:0x6080c0(GFP_KERNEL|__GFP_ZERO), nodemask=3D(null)
-> [    7.750283] swapper: vmalloc: allocation failure: 18446744073709551615=
- bytes, mode:0x6080c0(GFP_KERNEL|__GFP_ZERO), nodemask=3D(null)
-> [    7.777903] swapper: vmalloc: allocation failure: 18446744073709551615=
- bytes, mode:0x6000c0(GFP_KERNEL), nodemask=3D(null)
-> [    7.787175] swapper: vmalloc: allocation failure: 18446744073709551615=
- bytes, mode:0x6000c0(GFP_KERNEL), nodemask=3D(null)
-> [    7.796181] swapper: vmalloc: allocation failure: 18446744073709551615=
- bytes, mode:0x6080c0(GFP_KERNEL|__GFP_ZERO), nodemask=3D(null)
-> [    7.804841] swapper: vmalloc: allocation failure: 18446744073709551615=
- bytes, mode:0x6080c0(GFP_KERNEL|__GFP_ZERO), nodemask=3D(null)
+                     Linus
 
---===============3933420640643438986==--
+--===============6996702657244751934==--
 
