@@ -1,112 +1,60 @@
-Content-Type: multipart/mixed; boundary="===============3962138924258339211=="
+Content-Type: multipart/mixed; boundary="===============0406886226764855922=="
 MIME-Version: 1.0
 From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Mon, 03 Dec 2018 14:57:55 -0800
-Message-ID: <alpine.DEB.2.21.1812031452280.253907@chino.kir.corp.google.com>
-In-Reply-To: <CAHk-=whDg5+e2-eXYo-jwC1spt2r7JjLQSaLm4OyfGMQHLTrdw@mail.gmail.com>
+Subject: [patch 0/2 for-4.20] mm, thp: fix remote access and allocation regressions
+Date: Mon, 03 Dec 2018 15:50:18 -0800
+Message-ID: <alpine.DEB.2.21.1812031545080.161134@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3962138924258339211==
+--===============0406886226764855922==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 3 Dec 2018, Linus Torvalds wrote:
+This fixes a 13.9% of remote memory access regression and 40% remote
+memory allocation regression on Haswell when the local node is fragmented
+for hugepage sized pages and memory is being faulted with either the thp
+defrag setting of "always" or has been madvised with MADV_HUGEPAGE.
 
-> Side note: I think maybe people should just look at that whole
-> compaction logic for that block, because it doesn't make much sense to
-> me:
-> =
+The usecase that initially identified this issue were binaries that mremap
+their .text segment to be backed by transparent hugepages on startup.
+They do mmap(), madvise(MADV_HUGEPAGE), memcpy(), and mremap().
 
->                 /*
->                  * Checks for costly allocations with __GFP_NORETRY, which
->                  * includes THP page fault allocations
->                  */
->                 if (costly_order && (gfp_mask & __GFP_NORETRY)) {
->                         /*
->                          * If compaction is deferred for high-order alloc=
-ations,
->                          * it is because sync compaction recently failed.=
- If
->                          * this is the case and the caller requested a THP
->                          * allocation, we do not want to heavily disrupt =
-the
->                          * system, so we fail the allocation instead of e=
-ntering
->                          * direct reclaim.
->                          */
->                         if (compact_result =3D=3D COMPACT_DEFERRED)
->                                 goto nopage;
-> =
+This requires a full revert and partial revert of commits merged during
+the 4.20 rc cycle.  The full revert, of ac5b2c18911f ("mm: thp: relax
+__GFP_THISNODE for MADV_HUGEPAGE mappings"), was anticipated to fix large
+amounts of swap activity on the local zone when faulting hugepages by
+falling back to remote memory.  This remote allocation causes the access
+regression and, if fragmented, the allocation regression.
 
->                         /*
->                          * Looks like reclaim/compaction is worth trying,=
- but
->                          * sync compaction could be very expensive, so ke=
-ep
->                          * using async compaction.
->                          */
->                         compact_priority =3D INIT_COMPACT_PRIORITY;
->                 }
-> =
+This patchset also fixes that issue by not attempting direct reclaim at
+all when compaction fails to free a hugepage.  Note that if remote memory
+was also low or fragmented that ac5b2c18911f ("mm: thp: relax
+__GFP_THISNODE for MADV_HUGEPAGE mappings") would only have compounded the
+problem it attempts to address by now thrashing all nodes instead of only
+the local node.
 
-> this is where David wants to add *his* odd test, and I think everybody
-> looks at that added case
-> =
+The reverts for the stable trees will be different: just a straight revert
+of commit ac5b2c18911f ("mm: thp: relax __GFP_THISNODE for MADV_HUGEPAGE
+mappings") is likely needed.
 
-> +                       if (order =3D=3D pageblock_order &&
-> +                                       !(current->flags & PF_KTHREAD))
-> +                               goto nopage;
-> =
+Cross compiled for architectures with thp support and thp enabled:
+arc (with ISA_ARCV2), arm (with ARM_LPAE), arm64, i386, mips64, powerpc, =
 
-> and just goes "Eww".
-> =
+s390, sparc, x86_64.
 
-> But I think the real problem is that it's the "goto nopage" thing that
-> makes _sense_, and the current cases for "let's try compaction" that
-> are the odd ones, and then David adds one new special case for the
-> sensible behavior.
-> =
+Andrea, is this acceptable?
+---
+ drivers/gpu/drm/ttm/ttm_page_alloc.c     |    8 +++---
+ drivers/gpu/drm/ttm/ttm_page_alloc_dma.c |    3 --
+ include/linux/gfp.h                      |    3 +-
+ include/linux/mempolicy.h                |    2 -
+ mm/huge_memory.c                         |   41 +++++++++++---------------=
+-----
+ mm/mempolicy.c                           |    7 +++--
+ mm/page_alloc.c                          |   16 ++++++++++++
+ 7 files changed, 42 insertions(+), 38 deletions(-)
 
-> For example, why would COMPACT_DEFERRED mean "don't bother", but not
-> all the other reasons it didn't really make sense?
-> =
-
-> So does it really make sense to fall through AT ALL to that "retry"
-> case, when we explicitly already had (gfp_mask & __GFP_NORETRY)?
-> =
-
-> Maybe the real fix is to instead of adding yet another special case
-> for "goto nopage", it should just be unconditional: simply don't try
-> to compact large-pages if __GFP_NORETRY was set.
-> =
-
-
-I think what is intended, which may not be represented by the code, is =
-
-that if compaction is not suitable (__compaction_suitable() returns =
-
-COMPACT_SKIPPED because of failing watermarks) that for non-hugepage =
-
-allocations reclaim may be useful.  We just want to reclaim memory so that =
-
-memory compaction has pages available for migration targets.
-
-Note the same caveat I keep bringing up still applies, though: if reclaim =
-
-frees memory that is iterated over by the compaction migration scanner, it =
-
-was pointless.  That is a memory compaction implementation detail and can =
-
-lead to a lot of unnecessary reclaim (or even thrashing) if unmovable page =
-
-fragmentation cause compaction to fail even after it has migrated =
-
-everything it could.  I think the likelihood of that happening increases =
-
-by the allocation order.
-
---===============3962138924258339211==--
+--===============0406886226764855922==--
 
