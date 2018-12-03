@@ -1,58 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============5257515625029629527=="
+Content-Type: multipart/mixed; boundary="===============4906034629961808757=="
 MIME-Version: 1.0
-From: Jacqueline <GeorgeMartinjitna@google.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: I would go through the streets slack-jawed!
-Date: Sun, 02 Dec 2018 07:32:29 -0800
-Message-ID: <396CB49A.A73F9EFA@google.com>
+Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
+Date: Mon, 03 Dec 2018 10:01:18 -0800
+Message-ID: <CAHk-=wjgpWOA7zQ9H5=Zj6KQijm5CBXZc7J=it6C5gdEV0hb5Q@mail.gmail.com>
+In-Reply-To: <CAHk-=wjgRO-=NPaU9EmrdC3it3o7kvf4u7sewv3crtNLkE13Hg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5257515625029629527==
+--===============4906034629961808757==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Wed, Nov 28, 2018 at 8:48 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Tue, Nov 27, 2018 at 7:20 PM Huang, Ying <ying.huang@intel.com> wrot=
+e:
+> >
+> > In general, memory allocation fairness among processes should be a good
+> > thing.  So I think the report should have been a "performance
+> > improvement" instead of "performance regression".
+>
+> Hey, when you put it that way...
+>
+> Let's ignore this issue for now, and see if it shows up in some real
+> workload and people complain.
 
---===============5257515625029629527==
-Content-Type: text/html
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.html"
+Well, David Rientjes points out that it *does* cause real problems in
+real workloads, so it's not just this benchmark run that shows the
+issue.
 
-PCFkb2N0eXBlIGh0bWw+DQo8aHRtbD4NCjxoZWFkPg0KPG1ldGEgY2hhcnNldD0idXRmLTgiPg0K
-PC9oZWFkPg0KPGJvZHk+DQo8cD5JJ20gYSByZWFsIGdpcmwuIEkgcmVhbGx5IGxvdmUgc2V4LiBX
-YW50IHRvIG1lZXQgbWU/IE1heWJlIHlvdSB3YW50IHRvIGZ1dXVjayBtZSAuLi4/PGJyPg0KICBP
-aywgaGVyZSB5b3UgY2FuIGZpbmQgbXkgcGhvbmUgYW5kIGp1c3Qgd3JpdGUgbWUgd2hlbiB5b3Ug
-d2FudC4gQW55dGltZS48dWw+PC91bD4NCiAgQW5kIHlvdSBjYW4gc2VlIHNvbWUgb2YgbXkgcHJp
-dmF0ZSBwaG90b3MgdGhlcmUuPGRpdj48L2Rpdj4NCjwvcD4NCjxhIGhyZWY9Imh0dHA6Ly9oZWxl
-bm1hcnRhLnN1IiB0YXJnZXQ9Il9ibGFuayI+aHR0cDovL2hlbGVubWFydGEuc3UgIDxwPjwvcD48
-L2E+DQo8dGFibGU+DQo8dHI+DQo8dGQgYmFja2dyb3VuZD0iaHR0cDovLzI0LWluZm8uaW5mby91
-cGxvYWRzL3Bvc3RzLzIwMTgtMDcvZGV2dXNoa2ktZm90b2dyYWZpcnV5dXQtc2VieWEtcGVyZWQt
-emVya2Fsb20tNzAtZm90b184LmpwZyIgdmFsaWduPSJ0b3AiIHN0eWxlPSJiYWNrZ3JvdW5kOiB1
-cmwoaHR0cDovLzI0LWluZm8uaW5mby91cGxvYWRzL3Bvc3RzLzIwMTgtMDcvZGV2dXNoa2ktZm90
-b2dyYWZpcnV5dXQtc2VieWEtcGVyZWQtemVya2Fsb20tNzAtZm90b18xMi5qcGcpIG5vLXJlcGVh
-dCBjZW50ZXI7YmFja2dyb3VuZC1wb3NpdGlvbjogdG9wOyI+PCEtLVtpZiBndGUgbXNvIDldPiA8
-djpyZWN0IHhtbG5zOnY9InVybjpzY2hlbWFzLW1pY3Jvc29mdC1jb206dm1sIiBmaWxsPSJ0cnVl
-IiBzdHJva2U9ImZhbHNlIiBzdHlsZT0ibXNvLXdpZHRoLXBlcmNlbnQ6MTAwMDtoZWlnaHQ6MTcw
-M3B4OyI+IDx2OmZpbGwgdHlwZT0idGlsZSIgc3JjPSJodHRwczovL3RodW1iLXAyLnhoY2RuLmNv
-bS9hL1gwbUFkTkNlV2p5bU1DV0ZkNFVqcHcvMDAwLzExMC85MzYvNTYyXzEwMDAuanBnIiAgLz4g
-PHY6dGV4dGJveCBpbnNldD0iMCwwLDAsMCI+IDwhW2VuZGlmXS0tPjxhcnRpY2xlPjwvYXJ0aWNs
-ZT4NCjxkaXY+DQo8Y2VudGVyPg0KPHRhYmxlIGNlbGxzcGFjaW5nPSIwIiBjZWxscGFkZGluZz0i
-MCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIxODAzIiBjbGFzcz0idzMyMCI+DQo8dHI+DQo8dGQgdmFs
-aWduPSJtaWRkbGUiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjptaWRkbGU7dGV4dC1hbGlnbjpsZWZ0
-OyIgY2xhc3M9Im1vYmlsZS1jZW50ZXIiIGhlaWdodD0iMTgwMyI+PGhyPiA8L3RkPg0KPC90cj4N
-CjwvdGFibGU+DQo8L2NlbnRlcj4NCjwvZGl2Pg0KPCEtLVtpZiBndGUgbXNvIDldPiA8L3Y6dGV4
-dGJveD4gPC92OnJlY3Q+IDwhW2VuZGlmXS0tPjwvdGQ+DQo8L3RyPg0KPC90YWJsZT4NCjxwPmBO
-b3csIGl0IGlzIHZlcnkgcmVtYXJrYWJsZSB0aGF0IHRoaXMgaXMgc28gZXh0ZW5zaXZlbHk8L3A+
-DQo8cD5BTE9ORyBJVC4gQnV0IHNvbWUgZm9vbGlzaCBwZW9wbGUgaGF2ZSBnb3QgaG9sZCBvZiB0
-aGUgd3Jvbmc8L3A+DQo8cD5gX0lfIGhhdmUgbm90LCcgc2FpZCB0aGUgUHJvdmluY2lhbCBNYXlv
-ci48L3A+DQo8cD5hbmdsZXMgdG8gdGhlIG90aGVyIHRocmVlPy0tYW5kIGhhdmUgZXZlbiB0cmll
-ZCB0byBjb25zdHJ1Y3QgYTwvcD4NCjxwPllvdSBrbm93IGhvdyBvbiBhIGZsYXQgc3VyZmFjZSwg
-d2hpY2ggaGFzIG9ubHkgdHdvIGRpbWVuc2lvbnMsPC9wPg0KPHA+YEkgdGhpbmsgc28sJyBtdXJt
-dXJlZCB0aGUgUHJvdmluY2lhbCBNYXlvcjsgYW5kLCBrbml0dGluZyBoaXM8L3A+DQo8cD5gV2Vs
-bCwgSSBkbyBub3QgbWluZCB0ZWxsaW5nIHlvdSBJIGhhdmUgYmVlbiBhdCB3b3JrIHVwb24gdGhp
-czwvcD4NCjxwPmdlb21ldHJ5IG9mIEZvdXIgRGltZW5zaW9ucyBmb3Igc29tZSB0aW1lLiBTb21l
-IG9mIG15IHJlc3VsdHM8L3A+DQo8L2JvZHk+DQo8L2h0bWw+DQo=
+So I guess we should revert, or at least fix. David, please post your
+numbers again in public along with your suggested solution...
 
---===============5257515625029629527==--
+                   Linus
+
+--===============4906034629961808757==--
 
