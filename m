@@ -1,75 +1,93 @@
-Content-Type: multipart/mixed; boundary="===============1244582060765112624=="
+Content-Type: multipart/mixed; boundary="===============1005890906058572524=="
 MIME-Version: 1.0
 From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
 Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Mon, 03 Dec 2018 12:26:28 -0800
-Message-ID: <alpine.DEB.2.21.1812031210490.192288@chino.kir.corp.google.com>
-In-Reply-To: <20181203192344.GA2986@redhat.com>
+Date: Mon, 03 Dec 2018 12:36:09 -0800
+Message-ID: <alpine.DEB.2.21.1812031226510.192288@chino.kir.corp.google.com>
+In-Reply-To: <20181203201214.GB3540@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1244582060765112624==
+--===============1005890906058572524==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 On Mon, 3 Dec 2018, Andrea Arcangeli wrote:
 
-> It's trivial to reproduce the badness by running a memhog process that
-> allocates more than the RAM of 1 NUMA node, under defrag=3Dalways
-> setting (or by changing memhog to use MADV_HUGEPAGE) and it'll create
-> swap storms despite 75% of the RAM is completely free in a 4 node NUMA
-> (or 50% of RAM free in a 2 node NUMA) etc..
+> In my earlier review of David's patch, it looked runtime equivalent to
+> the __GFP_COMPACT_ONLY solution. It has the only advantage of adding a
+> new gfpflag until we're sure we need it but it's the worst solution
+> available for the long term in my view. It'd be ok to apply it as
+> stop-gap measure though.
 > =
 
-> How can it be ok to push the system into gigabytes of swap by default
-> without any special capability despite 50% - 75% or more of the RAM is
-> free? That's the downside of the __GFP_THISNODE optimizaton.
-> =
-
-
-The swap storm is the issue that is being addressed.  If your remote =
-
-memory is as low as local memory, the patch to clear __GFP_THISNODE has =
-
-done nothing to fix it: you still get swap storms and memory compaction =
-
-can still fail if the per-zone freeing scanner cannot utilize the =
-
-reclaimed memory.  Recall that this patch to clear __GFP_THISNODE was =
-
-measured by me to have a 40% increase in allocation latency for fragmented =
-
-remote memory on Haswell.  It makes the problem much, much worse.
-
-> __GFP_THISNODE helps increasing NUMA locality if your app can fit in a
-> single node which is the common David's workload. But if his workload
-> would more often than not fit in a single node, he would also run into
-> an unacceptable slowdown because of the __GFP_THISNODE.
+> The "order =3D=3D pageblock_order" hardcoding inside the allocator to
+> workaround the __GFP_THISNODE flag passed from outside the allocator
+> in the THP MADV_HUGEPAGE case, didn't look very attractive because
+> it's not just THP allocating order >0 pages.
 > =
 
 
-Which is why I have suggested that we do not do direct reclaim, as the =
+We have two different things to consider: NUMA locality and the order of =
 
-page allocator implementation expects all thp page fault allocations to =
+the allocation.  THP is preferred locally and we know the order.  For the =
 
-have __GFP_NORETRY set, because no amount of reclaim can be shown to be =
+other high-order pages you're referring to, I don't know if they are using =
 
-useful to the memory compaction freeing scanner if it is iterated over by =
+__GFP_THISNODE or not (likely not).  I see them as two separate issues.
 
-the migration scanner.
+For thp on all platforms I have measured it on specifically for this patch =
 
-> I think there's lots of room for improvement for the future, but in my
-> view that __GFP_THISNODE as it was implemented was an incomplete hack,
-> that opened the door for bad VM corner cases that should not happen.
+(Broadwell, Haswell, Rome) there is a clear advantage to faulting local =
+
+pages of the native page size over remote hugepages.  It also has the =
+
+added effect of allowing khugepaged to collapse it into a hugepage later =
+
+if fragmentation allows (the reason why khugepaged cares about NUMA =
+
+locality, the same reason I do).  This is the rationale for __GFP_THISNODE =
+
+for thp allocations.
+
+For order =3D=3D pageblock_order (or more correctly order >=3D pageblock_or=
+der), =
+
+this is not based on NUMA whatsoever but is rather based on the =
+
+implementation of memory compaction.  If it has already failed (or was =
+
+deferred for order-HPAGE_PMD_ORDER), reclaim cannot be shown to help if =
+
+memory compaction cannot utilize the freed memory in isolate_freepages(), =
+
+so that reclaim has been pointless.  If compaction fails for other reasons =
+
+(any unmovable page preventing a pageblock from becoming free), *all* =
+
+reclaim activity has been pointless.  =
+
+
+> It'd be nicer if whatever compaction latency optimization that applies
+> to THP could also apply to all other allocation orders too and the
+> hardcoding of the THP order prevents that.
+> =
+
+> On the same lines if __GFP_THISNODE is so badly needed by
+> MADV_HUGEPAGE, all other larger order allocations should also be able
+> to take advantage of __GFP_THISNODE without ending in the same VM
+> corner cases that required the "order =3D=3D pageblock_order" hardcoding
+> inside the allocator.
+> =
+
+> If you prefer David's patch I would suggest pageblock_order to be
+> replaced with HPAGE_PMD_ORDER so it's more likely to match the THP
+> order in all archs.
 > =
 
 
-__GFP_THISNODE is intended specifically because of the remote access =
+That sounds fine and I will do that in my v2.
 
-latency increase that is encountered if you fault remote hugepages over =
-
-local pages of the native page size.
-
---===============1244582060765112624==--
+--===============1005890906058572524==--
 
