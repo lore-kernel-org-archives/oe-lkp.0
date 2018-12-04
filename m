@@ -1,84 +1,138 @@
-Content-Type: multipart/mixed; boundary="===============7980800978108089823=="
+Content-Type: multipart/mixed; boundary="===============8832375931892011464=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Vlastimil Babka <vbabka@suse.cz>
 To: lkp@lists.01.org
 Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Tue, 04 Dec 2018 09:48:21 +0100
-Message-ID: <20181204084821.GB1286@dhcp22.suse.cz>
-In-Reply-To: <alpine.DEB.2.21.1812031345180.224765@chino.kir.corp.google.com>
+Date: Tue, 04 Dec 2018 10:22:26 +0100
+Message-ID: <64a4aec6-3275-a716-8345-f021f6186d9b@suse.cz>
+In-Reply-To: <CAHk-=whDg5+e2-eXYo-jwC1spt2r7JjLQSaLm4OyfGMQHLTrdw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7980800978108089823==
+--===============8832375931892011464==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 03-12-18 13:53:21, David Rientjes wrote:
-> On Mon, 3 Dec 2018, Michal Hocko wrote:
+On 12/3/18 11:27 PM, Linus Torvalds wrote:
+> On Mon, Dec 3, 2018 at 2:04 PM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+>>
+>> so I think all of David's patch is somewhat sensible, even if that
+>> specific "order =3D=3D pageblock_order" test really looks like it might
+>> want to be clarified.
 > =
 
-> > > I think extending functionality so thp can be allocated remotely if t=
-ruly =
-
-> > > desired is worthwhile
-> > =
-
-> > This is a complete NUMA policy antipatern that we have for all other
-> > user memory allocations. So far you have to be explicit for your numa
-> > requirements. You are trying to conflate NUMA api with MADV and that is
-> > just conflating two orthogonal things and that is just wrong.
-> > =
-
+> Side note: I think maybe people should just look at that whole
+> compaction logic for that block, because it doesn't make much sense to
+> me:
 > =
 
-> No, the page allocator change for both my patch and __GFP_COMPACT_ONLY ha=
-s =
+>                 /*
+>                  * Checks for costly allocations with __GFP_NORETRY, which
+>                  * includes THP page fault allocations
+>                  */
+>                 if (costly_order && (gfp_mask & __GFP_NORETRY)) {
+>                         /*
+>                          * If compaction is deferred for high-order alloc=
+ations,
+>                          * it is because sync compaction recently failed.=
+ If
+>                          * this is the case and the caller requested a THP
+>                          * allocation, we do not want to heavily disrupt =
+the
+>                          * system, so we fail the allocation instead of e=
+ntering
+>                          * direct reclaim.
+>                          */
+>                         if (compact_result =3D=3D COMPACT_DEFERRED)
+>                                 goto nopage;
+> =
 
-> nothing to do with any madvise() mode.  It has to do with where thp =
+>                         /*
+>                          * Looks like reclaim/compaction is worth trying,=
+ but
+>                          * sync compaction could be very expensive, so ke=
+ep
+>                          * using async compaction.
+>                          */
+>                         compact_priority =3D INIT_COMPACT_PRIORITY;
+>                 }
+> =
 
-> allocations are preferred.  Yes, this is different than other memory =
+> this is where David wants to add *his* odd test, and I think everybody
+> looks at that added case
+> =
 
-> allocations where it doesn't cause a 13.9% access latency regression for =
+> +                       if (order =3D=3D pageblock_order &&
+> +                                       !(current->flags & PF_KTHREAD))
+> +                               goto nopage;
+> =
 
-> the lifetime of a binary for users who back their text with hugepages.  =
+> and just goes "Eww".
+> =
 
-> MADV_HUGEPAGE still has its purpose to try synchronous memory compaction =
+> But I think the real problem is that it's the "goto nopage" thing that
+> makes _sense_, and the current cases for "let's try compaction" that
 
-> at fault time under all thp defrag modes other than "never".  The specifi=
-c =
+More precisely it's "let's try reclaim + compaction".
 
-> problem being reported here, and that both my patch and __GFP_COMPACT_ONL=
-Y =
+> are the odd ones, and then David adds one new special case for the
+> sensible behavior.
+> =
 
-> address, is the pointless reclaim activity that does not assist in making =
+> For example, why would COMPACT_DEFERRED mean "don't bother", but not
+> all the other reasons it didn't really make sense?
 
-> compaction more successful.
+COMPACT_DEFERRED means that compaction was failing recently, even with
+sufficient free pages (e.g. freed by direct reclaim), so it doesn't make
+sense to continue.
+What are "all the other reasons"? __alloc_pages_direct_compact() could
+have also returned COMPACT_SKIPPED, which means compaction actually
+didn't happen at all, because there's not enough free pages.
 
-You do not address my concern though. Sure there are reclaim related
-issues. Nobody is questioning that. But that is only half of the
-problem.
+> So does it really make sense to fall through AT ALL to that "retry"
+> case, when we explicitly already had (gfp_mask & __GFP_NORETRY)?
 
-The thing I am really up to here is that reintroduction of
-__GFP_THISNODE, which you are pushing for, will conflate madvise mode
-resp. defrag=3Dalways with a numa placement policy because the allocation
-doesn't fallback to a remote node.
+Well if there was no free memory to begin with, and thus compaction
+returned COMPACT_SKIPPED, then we didn't really "try" anything yet, so
+there's nothing to "not retry".
 
-And that is a fundamental problem and the antipattern I am talking
-about. Look at it this way. All normal allocations are utilizing all the
-available memory even though they might hit a remote latency penalty. If
-you do care about NUMA placement you have an API to enforce a specific
-placement.  What is so different about THP to behave differently. Do
-we really want to later invent an API to actually allow to utilize all
-the memory? There are certainly usecases (that triggered the discussion
-previously) that do not mind the remote latency because all other
-benefits simply outweight it?
+> Maybe the real fix is to instead of adding yet another special case
+> for "goto nopage", it should just be unconditional: simply don't try
+> to compact large-pages if __GFP_NORETRY was set.
 
-That being said what should users who want to use all the memory do to
-use as many THPs as possible?
--- =
+I think that would destroy THP success rates too much, in situations
+where reclaim and compaction would succeed, because there's enough
+easily reclaimable and migratable memory.
 
-Michal Hocko
-SUSE Labs
+> Hmm? I dunno. Right now - for 4.20, I'd obviously want to keep changes
+> smallish, so a hacky added special case might be the right thing to
+> do. But the code does look odd, doesn't it?
+> =
 
---===============7980800978108089823==--
+> I think part of it comes from the fact that we *used* to do the
+> compaction first, and then we did the reclaim, and then it was
+> re-orghanized to do reclaim first, but it tried to keep semantic
+> changes minimal and some of the above comes from that re-org.
+
+IIRC the point of reorg was that in typical case we actually do want to
+try the reclaim first (or only), and the exception are those THP-ish
+allocations where typically the problem is fragmentation, and not number
+of free pages, so we check first if we can defragment the memory or
+whether it makes sense to free pages in case the defragmentation is
+expected to help afterwards. It seemed better to put this special case
+out of the main reclaim/compaction retry-with-increasing-priority loop
+for non-costly-order allocations that in general can't fail.
+
+Vlastimil
+
+> I think.
+> =
+
+>                 Linus
+> =
+
+
+
+--===============8832375931892011464==--
 
