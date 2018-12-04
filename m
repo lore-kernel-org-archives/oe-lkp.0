@@ -1,138 +1,95 @@
-Content-Type: multipart/mixed; boundary="===============8832375931892011464=="
+Content-Type: multipart/mixed; boundary="===============4211561009598816770=="
 MIME-Version: 1.0
 From: Vlastimil Babka <vbabka@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Tue, 04 Dec 2018 10:22:26 +0100
-Message-ID: <64a4aec6-3275-a716-8345-f021f6186d9b@suse.cz>
-In-Reply-To: <CAHk-=whDg5+e2-eXYo-jwC1spt2r7JjLQSaLm4OyfGMQHLTrdw@mail.gmail.com>
+Subject: Re: [patch 0/2 for-4.20] mm, thp: fix remote access and allocation regressions
+Date: Tue, 04 Dec 2018 11:10:58 +0100
+Message-ID: <bb198d88-27be-0d5c-d871-1ffd26a08e29@suse.cz>
+In-Reply-To: <alpine.DEB.2.21.1812031545080.161134@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8832375931892011464==
+--===============4211561009598816770==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 12/3/18 11:27 PM, Linus Torvalds wrote:
-> On Mon, Dec 3, 2018 at 2:04 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
->>
->> so I think all of David's patch is somewhat sensible, even if that
->> specific "order =3D=3D pageblock_order" test really looks like it might
->> want to be clarified.
+On 12/4/18 12:50 AM, David Rientjes wrote:
+> This fixes a 13.9% of remote memory access regression and 40% remote
+> memory allocation regression on Haswell when the local node is fragmented
+> for hugepage sized pages and memory is being faulted with either the thp
+> defrag setting of "always" or has been madvised with MADV_HUGEPAGE.
 > =
 
-> Side note: I think maybe people should just look at that whole
-> compaction logic for that block, because it doesn't make much sense to
-> me:
+> The usecase that initially identified this issue were binaries that mremap
+> their .text segment to be backed by transparent hugepages on startup.
+> They do mmap(), madvise(MADV_HUGEPAGE), memcpy(), and mremap().
 > =
 
->                 /*
->                  * Checks for costly allocations with __GFP_NORETRY, which
->                  * includes THP page fault allocations
->                  */
->                 if (costly_order && (gfp_mask & __GFP_NORETRY)) {
->                         /*
->                          * If compaction is deferred for high-order alloc=
-ations,
->                          * it is because sync compaction recently failed.=
- If
->                          * this is the case and the caller requested a THP
->                          * allocation, we do not want to heavily disrupt =
-the
->                          * system, so we fail the allocation instead of e=
-ntering
->                          * direct reclaim.
->                          */
->                         if (compact_result =3D=3D COMPACT_DEFERRED)
->                                 goto nopage;
+> This requires a full revert and partial revert of commits merged during
+> the 4.20 rc cycle.  The full revert, of ac5b2c18911f ("mm: thp: relax
+> __GFP_THISNODE for MADV_HUGEPAGE mappings"), was anticipated to fix large
+> amounts of swap activity on the local zone when faulting hugepages by
+> falling back to remote memory.  This remote allocation causes the access
+> regression and, if fragmented, the allocation regression.
 > =
 
->                         /*
->                          * Looks like reclaim/compaction is worth trying,=
- but
->                          * sync compaction could be very expensive, so ke=
-ep
->                          * using async compaction.
->                          */
->                         compact_priority =3D INIT_COMPACT_PRIORITY;
->                 }
+> This patchset also fixes that issue by not attempting direct reclaim at
+> all when compaction fails to free a hugepage.  Note that if remote memory
+> was also low or fragmented that ac5b2c18911f ("mm: thp: relax
+> __GFP_THISNODE for MADV_HUGEPAGE mappings") would only have compounded the
+> problem it attempts to address by now thrashing all nodes instead of only
+> the local node.
 > =
 
-> this is where David wants to add *his* odd test, and I think everybody
-> looks at that added case
+> The reverts for the stable trees will be different: just a straight revert
+> of commit ac5b2c18911f ("mm: thp: relax __GFP_THISNODE for MADV_HUGEPAGE
+> mappings") is likely needed.
 > =
 
-> +                       if (order =3D=3D pageblock_order &&
-> +                                       !(current->flags & PF_KTHREAD))
-> +                               goto nopage;
+> Cross compiled for architectures with thp support and thp enabled:
+> arc (with ISA_ARCV2), arm (with ARM_LPAE), arm64, i386, mips64, powerpc, =
+
+> s390, sparc, x86_64.
 > =
 
-> and just goes "Eww".
-> =
+> Andrea, is this acceptable?
 
-> But I think the real problem is that it's the "goto nopage" thing that
-> makes _sense_, and the current cases for "let's try compaction" that
+So, AFAIK, the situation is:
 
-More precisely it's "let's try reclaim + compaction".
+- commit 5265047ac301 in 4.1 introduced __GFP_THISNODE for THP. The
+intention came a bit earlier in 4.0 commit 077fcf116c8c. (I admit acking
+both as it seemed to make sense).
+- The resulting node-reclaim-like behavior regressed Andrea's KVM
+workloads, but reverting it (only for madvised or non-default
+defrag=3Dalways THP by commit ac5b2c18911f) would regress David's
+workloads starting with 4.20 to pre-4.1 levels.
 
-> are the odd ones, and then David adds one new special case for the
-> sensible behavior.
-> =
+If the decision is that it's too late to revert a 4.1 regression for one
+kind of workload in 4.20 because it causes regression for another
+workload, then I guess we just revert ac5b2c18911f (patch 1) for 4.20
+and don't rush a different fix (patch 2) to 4.20. It's not a big
+difference if a 4.1 regression is fixed in 4.20 or 4.21?
 
-> For example, why would COMPACT_DEFERRED mean "don't bother", but not
-> all the other reasons it didn't really make sense?
+Because there might be other unexpected consequences of patch 2 that
+testing won't be able to catch in the remaining 4.20 rc's. And I'm not
+even sure if it will fix Andrea's workloads. While it should prevent
+node-reclaim-like thrashing, it will still mean that KVM (or anyone)
+won't be able to allocate THP's remotely, even if the local node is
+exhausted of both huge and base pages.
 
-COMPACT_DEFERRED means that compaction was failing recently, even with
-sufficient free pages (e.g. freed by direct reclaim), so it doesn't make
-sense to continue.
-What are "all the other reasons"? __alloc_pages_direct_compact() could
-have also returned COMPACT_SKIPPED, which means compaction actually
-didn't happen at all, because there's not enough free pages.
-
-> So does it really make sense to fall through AT ALL to that "retry"
-> case, when we explicitly already had (gfp_mask & __GFP_NORETRY)?
-
-Well if there was no free memory to begin with, and thus compaction
-returned COMPACT_SKIPPED, then we didn't really "try" anything yet, so
-there's nothing to "not retry".
-
-> Maybe the real fix is to instead of adding yet another special case
-> for "goto nopage", it should just be unconditional: simply don't try
-> to compact large-pages if __GFP_NORETRY was set.
-
-I think that would destroy THP success rates too much, in situations
-where reclaim and compaction would succeed, because there's enough
-easily reclaimable and migratable memory.
-
-> Hmm? I dunno. Right now - for 4.20, I'd obviously want to keep changes
-> smallish, so a hacky added special case might be the right thing to
-> do. But the code does look odd, doesn't it?
-> =
-
-> I think part of it comes from the fact that we *used* to do the
-> compaction first, and then we did the reclaim, and then it was
-> re-orghanized to do reclaim first, but it tried to keep semantic
-> changes minimal and some of the above comes from that re-org.
-
-IIRC the point of reorg was that in typical case we actually do want to
-try the reclaim first (or only), and the exception are those THP-ish
-allocations where typically the problem is fragmentation, and not number
-of free pages, so we check first if we can defragment the memory or
-whether it makes sense to free pages in case the defragmentation is
-expected to help afterwards. It seemed better to put this special case
-out of the main reclaim/compaction retry-with-increasing-priority loop
-for non-costly-order allocations that in general can't fail.
-
-Vlastimil
-
-> I think.
-> =
-
->                 Linus
+> ---
+>  drivers/gpu/drm/ttm/ttm_page_alloc.c     |    8 +++---
+>  drivers/gpu/drm/ttm/ttm_page_alloc_dma.c |    3 --
+>  include/linux/gfp.h                      |    3 +-
+>  include/linux/mempolicy.h                |    2 -
+>  mm/huge_memory.c                         |   41 +++++++++++-------------=
+-------
+>  mm/mempolicy.c                           |    7 +++--
+>  mm/page_alloc.c                          |   16 ++++++++++++
+>  7 files changed, 42 insertions(+), 38 deletions(-)
 > =
 
 
 
---===============8832375931892011464==--
+--===============4211561009598816770==--
 
