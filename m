@@ -1,70 +1,114 @@
-Content-Type: multipart/mixed; boundary="===============7176858295576066545=="
+Content-Type: multipart/mixed; boundary="===============7645798786389383468=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [patch 0/2 for-4.20] mm, thp: fix remote access and allocation regressions
-Date: Wed, 05 Dec 2018 10:15:12 +0000
-Message-ID: <20181205101512.GY23260@techsingularity.net>
-In-Reply-To: <alpine.DEB.2.21.1812041415270.159770@chino.kir.corp.google.com>
+Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
+Date: Wed, 05 Dec 2018 11:18:36 +0100
+Message-ID: <20181205101836.GF1286@dhcp22.suse.cz>
+In-Reply-To: <alpine.DEB.2.21.1812041551170.213718@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7176858295576066545==
+--===============7645798786389383468==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 04, 2018 at 02:25:54PM -0800, David Rientjes wrote:
+On Tue 04-12-18 16:07:27, David Rientjes wrote:
 > On Tue, 4 Dec 2018, Michal Hocko wrote:
 > =
 
-> > > This fixes a 13.9% of remote memory access regression and 40% remote
-> > > memory allocation regression on Haswell when the local node is fragme=
-nted
-> > > for hugepage sized pages and memory is being faulted with either the =
-thp
-> > > defrag setting of "always" or has been madvised with MADV_HUGEPAGE.
-> > > =
-
-> > > The usecase that initially identified this issue were binaries that m=
-remap
-> > > their .text segment to be backed by transparent hugepages on startup.
-> > > They do mmap(), madvise(MADV_HUGEPAGE), memcpy(), and mremap().
-> > =
-
-> > Do you have something you can share with so that other people can play
-> > and try to reproduce?
+> > The thing I am really up to here is that reintroduction of
+> > __GFP_THISNODE, which you are pushing for, will conflate madvise mode
+> > resp. defrag=3Dalways with a numa placement policy because the allocati=
+on
+> > doesn't fallback to a remote node.
 > > =
 
 > =
 
-> This is a single MADV_HUGEPAGE usecase, there is nothing special about it=
+> It isn't specific to MADV_HUGEPAGE, it is the policy for all transparent =
+
+> hugepage allocations, including defrag=3Dalways.  We agree that =
+
+> MADV_HUGEPAGE is not exactly defined: does it mean try harder to allocate =
+
+> a hugepage locally, try compaction synchronous to the fault, allow remote =
+
+> fallback?  It's undefined.
+
+Yeah, it is certainly underdefined. One thing is clear though. Using
+MADV_HUGEPAGE implies that the specific mapping benefits from THPs and
+is willing to pay associated init cost. This doesn't imply anything
+regarding NUMA locality and as we have NUMA API it shouldn't even
+attempt to do so because it would be conflating two things.
+[...]
+
+> > And that is a fundamental problem and the antipattern I am talking
+> > about. Look at it this way. All normal allocations are utilizing all the
+> > available memory even though they might hit a remote latency penalty. If
+> > you do care about NUMA placement you have an API to enforce a specific
+> > placement.  What is so different about THP to behave differently. Do
+> > we really want to later invent an API to actually allow to utilize all
+> > the memory? There are certainly usecases (that triggered the discussion
+> > previously) that do not mind the remote latency because all other
+> > benefits simply outweight it?
+> > =
+
+> =
+
+> What is different about THP is that on every platform I have measured, =
+
+> NUMA matters more than hugepages.  Obviously if on Broadwell, Haswell, an=
+d =
+
+> Rome, remote hugepages were a performance win over local pages, this =
+
+> discussion would not be happening.  Faulting local pages rather than =
+
+> local hugepages, if possible, is easy and doesn't require reclaim.  =
+
+> Faulting remote pages rather than reclaiming local pages is easy in your =
+
+> scenario, it's non-disruptive.
+
+You keep ignoring all other usecases mentioned before and that is not
+really helpful. Access cost can be amortized by other savings. Not to
+mention NUMA balancing moving around hot THPs with remote accesses.
+
+> So to answer "what is so different about THP?", it's the performance data=
 .  =
 
-> It would be the same as if you did mmap(), madvise(MADV_HUGEPAGE), and =
+> The NUMA locality matters more than whether the pages are huge or not.  W=
+e =
 
-> faulted the memory with a fragmented local node and then measured the =
+> also have the added benefit of khugepaged being able to collapse pages =
 
-> remote access latency to the remote hugepage that occurs without setting =
+> locally if fragmentation improves rather than being stuck accessing a =
 
-> __GFP_THISNODE.  You can also measure the remote allocation latency by =
+> remote hugepage forever.
 
-> fragmenting the entire system and then faulting.
-> =
+Please back your claims by a variety of workloads. Including mentioned
+KVMs one. You keep hand waving about access latency completely ignoring
+all other aspects and that makes my suspicious that you do not really
+appreciate all the complexity here even stronger.
 
+If there was a general consensus we want to make THP very special wrt.
+numa locality, I could live with that. It would be inconsistency in the
+API and as such something that will kick us sooner or later. But it
+seems that _you_ are the only one to push that direction and you keep
+ignoring all other usecases consistently throughout all the discussions
+we have had so far. Several people keeps pointing out that this is a
+wrong direction but that seems to be completely ignored.
 
-I'll make the same point as before, the form the fragmentation takes
-matters as well as the types of pages that are resident and whether
-they are active or not. It affects the level of work the system does
-as well as the overall success rate of operations (be it reclaim, THP
-allocation, compaction, whatever). This is why a reproduction case that is
-representative of the problem you're facing on the real workload matters
-would have been helpful because then any alternative proposal could have
-taken your workload into account during testing.
-
+I believe that the only way forward is back your claims by numbers
+covering a larger set of THP users and prove that remote THP is
+a wrong default behavior. But you cannot really push that through based
+on a single usecase of yours which you refuse to describe beyond a
+simple access latency metric.
 -- =
 
-Mel Gorman
+Michal Hocko
 SUSE Labs
 
---===============7176858295576066545==--
+--===============7645798786389383468==--
 
