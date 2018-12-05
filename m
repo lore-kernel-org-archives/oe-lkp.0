@@ -1,100 +1,103 @@
-Content-Type: multipart/mixed; boundary="===============1924289449510618578=="
+Content-Type: multipart/mixed; boundary="===============5771168758429636150=="
 MIME-Version: 1.0
 From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
-Subject: Re: [patch 0/2 for-4.20] mm, thp: fix remote access and allocation regressions
-Date: Tue, 04 Dec 2018 14:25:54 -0800
-Message-ID: <alpine.DEB.2.21.1812041415270.159770@chino.kir.corp.google.com>
-In-Reply-To: <20181204073850.GW31738@dhcp22.suse.cz>
+Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
+Date: Tue, 04 Dec 2018 16:07:27 -0800
+Message-ID: <alpine.DEB.2.21.1812041551170.213718@chino.kir.corp.google.com>
+In-Reply-To: <20181204084821.GB1286@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1924289449510618578==
+--===============5771168758429636150==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 On Tue, 4 Dec 2018, Michal Hocko wrote:
 
-> > This fixes a 13.9% of remote memory access regression and 40% remote
-> > memory allocation regression on Haswell when the local node is fragment=
-ed
-> > for hugepage sized pages and memory is being faulted with either the thp
-> > defrag setting of "always" or has been madvised with MADV_HUGEPAGE.
-> > =
-
-> > The usecase that initially identified this issue were binaries that mre=
-map
-> > their .text segment to be backed by transparent hugepages on startup.
-> > They do mmap(), madvise(MADV_HUGEPAGE), memcpy(), and mremap().
-> =
-
-> Do you have something you can share with so that other people can play
-> and try to reproduce?
+> The thing I am really up to here is that reintroduction of
+> __GFP_THISNODE, which you are pushing for, will conflate madvise mode
+> resp. defrag=3Dalways with a numa placement policy because the allocation
+> doesn't fallback to a remote node.
 > =
 
 
-This is a single MADV_HUGEPAGE usecase, there is nothing special about it.  =
+It isn't specific to MADV_HUGEPAGE, it is the policy for all transparent =
 
-It would be the same as if you did mmap(), madvise(MADV_HUGEPAGE), and =
+hugepage allocations, including defrag=3Dalways.  We agree that =
 
-faulted the memory with a fragmented local node and then measured the =
+MADV_HUGEPAGE is not exactly defined: does it mean try harder to allocate =
 
-remote access latency to the remote hugepage that occurs without setting =
+a hugepage locally, try compaction synchronous to the fault, allow remote =
 
-__GFP_THISNODE.  You can also measure the remote allocation latency by =
+fallback?  It's undefined.
 
-fragmenting the entire system and then faulting.
+The original intent was to be used when thp is disabled system wide =
 
-(Remapping the text segment only involves parsing /proc/self/exe, mmap, =
+(enabled set to "madvise") because its possible the rss of the process =
 
-madvise, memcpy, and mremap.)
+increases if backed by thp.  That occurs either if faulting on a hugepage =
 
-> > This requires a full revert and partial revert of commits merged during
-> > the 4.20 rc cycle.  The full revert, of ac5b2c18911f ("mm: thp: relax
-> > __GFP_THISNODE for MADV_HUGEPAGE mappings"), was anticipated to fix lar=
-ge
-> > amounts of swap activity on the local zone when faulting hugepages by
-> > falling back to remote memory.  This remote allocation causes the access
-> > regression and, if fragmented, the allocation regression.
+aligned area or based on max_ptes_none.  So we have at least three =
+
+possible policies that have evolved over time: preventing increased rss, =
+
+direct compaction, remote fallback.  Certainly not something that fits =
+
+under a single madvise mode.
+
+> And that is a fundamental problem and the antipattern I am talking
+> about. Look at it this way. All normal allocations are utilizing all the
+> available memory even though they might hit a remote latency penalty. If
+> you do care about NUMA placement you have an API to enforce a specific
+> placement.  What is so different about THP to behave differently. Do
+> we really want to later invent an API to actually allow to utilize all
+> the memory? There are certainly usecases (that triggered the discussion
+> previously) that do not mind the remote latency because all other
+> benefits simply outweight it?
 > =
 
-> Have you tried to measure any of the workloads Mel and Andrea have
-> pointed out during the previous review discussion? In other words what
-> is the impact on the THP success rate and allocation latencies for other
-> usecases?
 
-It isn't a property of the workload, it's a property of the how fragmented =
+What is different about THP is that on every platform I have measured, =
 
-both local and remote memory is.  In Andrea's case, I believe he has =
+NUMA matters more than hugepages.  Obviously if on Broadwell, Haswell, and =
 
-stated that memory compaction has failed locally and the resulting reclaim =
+Rome, remote hugepages were a performance win over local pages, this =
 
-activity ends up looping and causing it the thrash the local node whereas =
+discussion would not be happening.  Faulting local pages rather than =
 
-75% of remote memory is free and not fragmented.  So we have local =
+local hugepages, if possible, is easy and doesn't require reclaim.  =
 
-fragmentation and reclaim is very expensive to enable compaction to =
+Faulting remote pages rather than reclaiming local pages is easy in your =
 
-succeed, if it ever does succeed[*], and mostly free remote memory.
+scenario, it's non-disruptive.
 
-If remote memory is also fragmented, Andrea's case will run into a much =
+So to answer "what is so different about THP?", it's the performance data.  =
 
-more severe swap storm as a result of not setting __GFP_THISNODE.  The =
+The NUMA locality matters more than whether the pages are huge or not.  We =
 
-premise of the entire change is that his remote memory is mostly free so =
+also have the added benefit of khugepaged being able to collapse pages =
 
-fallback results in a quick allocation.  For balanced nodes, that's not =
+locally if fragmentation improves rather than being stuck accessing a =
 
-going to be the case.  The fix to prevent the heavy reclaim activity is to =
+remote hugepage forever.
 
-set __GFP_NORETRY as the page allocator suspects, which patch 2 here does.
+> That being said what should users who want to use all the memory do to
+> use as many THPs as possible?
 
-That's an interesting memory state to
+If those users want to accept the performance degradation of allocating =
 
- [*] Reclaim here would only be beneficial if we fail the order-0 =
+remote hugepages instead of local pages, that should likely be an =
 
-     watermark check in __compaction_suitable() *and* the reclaimed
-     memory can be accessed during isolate_freepages().
+extension, either madvise or prctl.  That's not necessarily the usecase =
 
---===============1924289449510618578==--
+Andrea would have, I don't believe: he'd still prefer to compact memory =
+
+locally and avoid the swap storm than allocate remotely.  If impossible to =
+
+reclaim locally for regular pages, remote hugepages may be more beneficial =
+
+than remote pages.
+
+--===============5771168758429636150==--
 
