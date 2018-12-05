@@ -1,55 +1,49 @@
-Content-Type: multipart/mixed; boundary="===============3220657103307455214=="
+Content-Type: multipart/mixed; boundary="===============6952289096911414460=="
 MIME-Version: 1.0
-From: David Rientjes <rientjes@google.com>
+From: Andrea Arcangeli <aarcange@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Wed, 05 Dec 2018 14:12:35 -0800
-Message-ID: <alpine.DEB.2.21.1812051411210.9633@chino.kir.corp.google.com>
-In-Reply-To: <CAHk-=whi8Ju-cTDL4cYtwuLA7BYgGJYyy6HVMoknZaLHnRc83g@mail.gmail.com>
+Subject: Re: [patch 1/2 for-4.20] mm, thp: restore node-local hugepage allocations
+Date: Wed, 05 Dec 2018 17:21:47 -0500
+Message-ID: <20181205222147.GD11899@redhat.com>
+In-Reply-To: <20181205201528.GW1286@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3220657103307455214==
+--===============6952289096911414460==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 5 Dec 2018, Linus Torvalds wrote:
+On Wed, Dec 05, 2018 at 09:15:28PM +0100, Michal Hocko wrote:
+> If the __GFP_THISNODE should be really used then it should be applied to
+> all other types of pages. Not only THP. And as such done in a separate
+> patch. Not a part of the revert. The cleanup was meant to unify THP
+> allocations and that is why I object to reverting it as a part of this
+> work.
 
-> > So ultimately we decided that the saner behavior that gives the least
-> > risk of regression for the short term, until we can do something
-> > better, was the one that is already applied upstream.
-> =
+I also wonder if using __GFP_THISNODE for all pages and not only THP
+may really help David's workload performance further if it's so NUMA
+sensitive and short lived too (plus we know it most of the time fits
+in a single node). It'll get rid of the cache in the local node before
+allocating remote memory. Of course than the swap storms and
+pathological performance for processes that don't fit in a node, will
+also materialize without THP enabled. If this is true, that'd point
+further to the need of a MPOL that can set __GFP_THISNODE not just for
+THP but for all allocations, with the only difference that if it's the
+regular page size failing, instead of hitting OOM it should do one
+last fallback to a regular page size allocation without __GFP_THISNODE
+set.
 
-> You're ignoring the fact that people *did* report things regressed.
-> =
+Regardless of the above I think it's still interesting to look into
+adding more NUMA affinity to THP somehow, but I doubt we want to do
+that at the price of crippling compaction in a way it can't generate
+THP anymore once a node is full of cache, and certainly we don't want
+to cripple compaction in non-NUMA hosts too like it'd be happening
+with the current proposed patch. Furthermore whatever we do should
+work for order 8 7 6 etc.. too. If we did a order 9 specialized trick
+that cripples compaction effectiveness, it'd be a short term approach
+and it'd be tailored to David's use case that seems to be sensitive to
+allocation latency. Being sensitive to allocation latency doesn't make
+that process a good fit for MADV_HUGEPAGE to begin with.
 
-> That's the part I find unacceptable. You're saying "we picked
-> something that minimized regressions".
-> =
-
-> No it didn't. The regression is present and real, and is on a real
-> load, not a benchmark.
-> =
-
-> So that argument is clearly bogus.
-> =
-
-> I'm going to revert the commit since people apparently seem to be
-> ignoring this fundamental issue.
-> =
-
-> Real workloads regressed.  The regressions got reported. Ignoring that
-> isn't acceptable.
-> =
-
-
-Please allow me to prepare my v2 because it's not a clean revert due to =
-
-the follow-up 89c83fb539f9 ("mm, thp: consolidate THP gfp handling into =
-
-alloc_hugepage_direct_gfpmask") and will incorporate the feedback from =
-
-Michal to not change anything outside of the thp fault path.
-
---===============3220657103307455214==--
+--===============6952289096911414460==--
 
