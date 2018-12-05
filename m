@@ -1,103 +1,185 @@
-Content-Type: multipart/mixed; boundary="===============5771168758429636150=="
+Content-Type: multipart/mixed; boundary="===============3052865521330934150=="
 MIME-Version: 1.0
 From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
 Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Tue, 04 Dec 2018 16:07:27 -0800
-Message-ID: <alpine.DEB.2.21.1812041551170.213718@chino.kir.corp.google.com>
-In-Reply-To: <20181204084821.GB1286@dhcp22.suse.cz>
+Date: Tue, 04 Dec 2018 16:47:23 -0800
+Message-ID: <alpine.DEB.2.21.1812041609160.213718@chino.kir.corp.google.com>
+In-Reply-To: <20181204104558.GV23260@techsingularity.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5771168758429636150==
+--===============3052865521330934150==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 4 Dec 2018, Michal Hocko wrote:
+On Tue, 4 Dec 2018, Mel Gorman wrote:
 
-> The thing I am really up to here is that reintroduction of
-> __GFP_THISNODE, which you are pushing for, will conflate madvise mode
-> resp. defrag=3Dalways with a numa placement policy because the allocation
-> doesn't fallback to a remote node.
+> What should also be kept in mind is that we should avoid conflating
+> locality preferences with THP preferences which is separate from THP
+> allocation latencies. The whole __GFP_THISNODE approach is pushing too
+> hard on locality versus huge pages when MADV_HUGEPAGE or always-defrag
+> are used which is very unfortunate given that MADV_HUGEPAGE in itself says
+> nothing about locality -- that is the business of other madvise flags or
+> a specific policy.
+
+We currently lack those other madvise modes or mempolicies: mbind() is not =
+
+a viable alternative because we do not want to oom kill when local memory =
+
+is depleted, we want to fallback to remote memory.  In my response to =
+
+Michal, I noted three possible usecases that MADV_HUGEPAGE either =
+
+currently has or has taken before: direct compaction/reclaim, avoid =
+
+increased rss, and allow fallback to remote memory.  It's certainly not =
+
+the business of one madvise mode to define this.  Thus, I'm trying to =
+
+return to the behavior that was in 4.1 and what was restored three years =
+
+ago because suddenly changing the behavior to allow remote allocation =
+
+causes real-world regressions.
+
+> Using remote nodes is bad but reclaiming excessively
+> and pushing data out of memory is worse as the latency to fault data back
+> from disk is higher than a remote access.
 > =
 
 
-It isn't specific to MADV_HUGEPAGE, it is the policy for all transparent =
+That's discussing two things at the same time: local fragmentation and =
 
-hugepage allocations, including defrag=3Dalways.  We agree that =
+local low-on-memory conditions.  If compaction quickly fails and local =
 
-MADV_HUGEPAGE is not exactly defined: does it mean try harder to allocate =
+pages are available as fallback, that requires no reclaim.  If we're truly =
 
-a hugepage locally, try compaction synchronous to the fault, allow remote =
+low-on-memory locally then it is obviously better to allocate remotely =
 
-fallback?  It's undefined.
+than aggressively reclaim.
 
-The original intent was to be used when thp is disabled system wide =
-
-(enabled set to "madvise") because its possible the rss of the process =
-
-increases if backed by thp.  That occurs either if faulting on a hugepage =
-
-aligned area or based on max_ptes_none.  So we have at least three =
-
-possible policies that have evolved over time: preventing increased rss, =
-
-direct compaction, remote fallback.  Certainly not something that fits =
-
-under a single madvise mode.
-
-> And that is a fundamental problem and the antipattern I am talking
-> about. Look at it this way. All normal allocations are utilizing all the
-> available memory even though they might hit a remote latency penalty. If
-> you do care about NUMA placement you have an API to enforce a specific
-> placement.  What is so different about THP to behave differently. Do
-> we really want to later invent an API to actually allow to utilize all
-> the memory? There are certainly usecases (that triggered the discussion
-> previously) that do not mind the remote latency because all other
-> benefits simply outweight it?
+> Andrea already pointed it out -- workloads that fit within a node are hap=
+py
+> to reclaim local memory, particularly in the case where the existing data
+> is old which is the ideal for David. Workloads that do not fit within a
+> node will often prefer using remote memory -- either THP or base pages
+> in the general case and THP for definite in the KVM case. While KVM
+> might not like remote memory, using THP at least reduces the page table
+> access overhead even if the access is remote and eventually automatic
+> NUMA balancing might intervene.
 > =
 
 
-What is different about THP is that on every platform I have measured, =
+Sure, but not at the cost of regressing real-world workloads; what is =
 
-NUMA matters more than hugepages.  Obviously if on Broadwell, Haswell, and =
+being asked for here is legitimate and worthy of an extension, but since =
 
-Rome, remote hugepages were a performance win over local pages, this =
+the long-standing behavior has been to use __GFP_THISNODE and people =
 
-discussion would not be happening.  Faulting local pages rather than =
+depend on that for NUMA locality, can we not fix the swap storm and look =
 
-local hugepages, if possible, is easy and doesn't require reclaim.  =
+to extending the API to include workloads that span multiple nodes?
 
-Faulting remote pages rather than reclaiming local pages is easy in your =
+> I have *one* result of the series on a 1-socket machine running
+> "thpscale". It creates a file, punches holes in it to create a
+> very light form of fragmentation and then tries THP allocations
+> using madvise measuring latency and success rates. It's the
+> global-dhp__workload_thpscale-madvhugepage in mmtests using XFS as the
+> filesystem.
+> =
 
-scenario, it's non-disruptive.
+> thpscale Fault Latencies
+>                                     4.20.0-rc4             4.20.0-rc4
+>                                 mmots-20181130       gfpthisnode-v1r1
+> Amean     fault-base-3      5358.54 (   0.00%)     2408.93 *  55.04%*
+> Amean     fault-base-5      9742.30 (   0.00%)     3035.25 *  68.84%*
+> Amean     fault-base-7     13069.18 (   0.00%)     4362.22 *  66.62%*
+> Amean     fault-base-12    14882.53 (   0.00%)     9424.38 *  36.67%*
+> Amean     fault-base-18    15692.75 (   0.00%)    16280.03 (  -3.74%)
+> Amean     fault-base-24    28775.11 (   0.00%)    18374.84 *  36.14%*
+> Amean     fault-base-30    42056.32 (   0.00%)    21984.55 *  47.73%*
+> Amean     fault-base-32    38634.26 (   0.00%)    22199.49 *  42.54%*
+> Amean     fault-huge-1         0.00 (   0.00%)        0.00 (   0.00%)
+> Amean     fault-huge-3      3628.86 (   0.00%)      963.45 *  73.45%*
+> Amean     fault-huge-5      4926.42 (   0.00%)     2959.85 *  39.92%*
+> Amean     fault-huge-7      6717.15 (   0.00%)     3828.68 *  43.00%*
+> Amean     fault-huge-12    11393.47 (   0.00%)     5772.92 *  49.33%*
+> Amean     fault-huge-18    16979.38 (   0.00%)     4435.95 *  73.87%*
+> Amean     fault-huge-24    16558.00 (   0.00%)     4416.46 *  73.33%*
+> Amean     fault-huge-30    20351.46 (   0.00%)     5099.73 *  74.94%*
+> Amean     fault-huge-32    23332.54 (   0.00%)     6524.73 *  72.04%*
+> =
 
-So to answer "what is so different about THP?", it's the performance data.  =
+> So, looks like massive latency improvements but then the THP allocation
+> success rates
+> =
 
-The NUMA locality matters more than whether the pages are huge or not.  We =
+> thpscale Percentage Faults Huge
+>                                4.20.0-rc4             4.20.0-rc4
+>                            mmots-20181130       gfpthisnode-v1r1
+> Percentage huge-3        95.14 (   0.00%)        7.94 ( -91.65%)
+> Percentage huge-5        91.28 (   0.00%)        5.00 ( -94.52%)
+> Percentage huge-7        86.87 (   0.00%)        9.36 ( -89.22%)
+> Percentage huge-12       83.36 (   0.00%)       21.03 ( -74.78%)
+> Percentage huge-18       83.04 (   0.00%)       30.73 ( -63.00%)
+> Percentage huge-24       83.74 (   0.00%)       27.47 ( -67.20%)
+> Percentage huge-30       83.66 (   0.00%)       31.85 ( -61.93%)
+> Percentage huge-32       83.89 (   0.00%)       29.09 ( -65.32%)
+> =
 
-also have the added benefit of khugepaged being able to collapse pages =
+> They're down the toilet. 3 threads are able to get 95% of the requested
+> THP pages with Andrews tree as of Nov 30th. David's patch drops that to
+> 8% success rate.
+> =
 
-locally if fragmentation improves rather than being stuck accessing a =
 
-remote hugepage forever.
+I'm not as concerned about fault latency for these binaries that remap =
 
-> That being said what should users who want to use all the memory do to
-> use as many THPs as possible?
+their text segments to be backed by transparent hugepages, that's =
 
-If those users want to accept the performance degradation of allocating =
+secondary to the primary concern: access latency.  I agree that faulting =
 
-remote hugepages instead of local pages, that should likely be an =
+thp is more likely successful if allowed to access remote memory; I'm =
 
-extension, either madvise or prctl.  That's not necessarily the usecase =
+reporting the regression in the access latency to that memory for the =
 
-Andrea would have, I don't believe: he'd still prefer to compact memory =
+lifetime of the binary.
 
-locally and avoid the swap storm than allocate remotely.  If impossible to =
+> "Compaction efficiency" which takes success vs failure rate into account
+> goes from 45% to 1%. Compaction scan efficiency, which is how many pages
+> for migration are scanned vs how many are scanned as free targets goes
+> from 21% to 1%.
+> =
 
-reclaim locally for regular pages, remote hugepages may be more beneficial =
+> I do not consider this to be a good outcome and hence will not be acking
+> the patches.
+> =
 
-than remote pages.
+> I would also re-emphasise that a major problem with addressing this
+> problem is that we do not have a general reproducible test case for
+> David's scenario where as we do have reproduction cases for the others.
+> They're not related to KVM but that doesn't matter because it's enough
+> to have a memory hog try allocating more memory than fits on a single nod=
+e.
+> =
 
---===============5771168758429636150==--
+
+It's trivial to reproduce this issue: fragment all local memory that =
+
+compaction cannot resolve, do posix_memalign() for hugepage aligned =
+
+memory, and measure the access latency.  To fragment all local memory, you =
+
+can simply insert a kernel module and allocate high-order memory (just do =
+
+kmem_cache_alloc_node() or get_page() to pin it so compaction fails or =
+
+punch holes in the file as you did above).  You can do this for all memory =
+
+rather than the local node to measure the even more severe allocation =
+
+latency regression that not setting __GFP_THISNODE introduces.
+
+--===============3052865521330934150==--
 
