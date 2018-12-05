@@ -1,76 +1,67 @@
-Content-Type: multipart/mixed; boundary="===============1927351598449920265=="
+Content-Type: multipart/mixed; boundary="===============2793190053774817076=="
 MIME-Version: 1.0
-From: David Rientjes <rientjes@google.com>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [patch 0/2 for-4.20] mm, thp: fix remote access and allocation regressions
-Date: Wed, 05 Dec 2018 11:49:26 -0800
-Message-ID: <alpine.DEB.2.21.1812051142040.240991@chino.kir.corp.google.com>
-In-Reply-To: <20181205090554.GX1286@dhcp22.suse.cz>
+Subject: Re: [patch 1/2 for-4.20] mm, thp: restore node-local hugepage allocations
+Date: Wed, 05 Dec 2018 21:15:28 +0100
+Message-ID: <20181205201528.GW1286@dhcp22.suse.cz>
+In-Reply-To: <alpine.DEB.2.21.1812051120550.240991@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1927351598449920265==
+--===============2793190053774817076==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 5 Dec 2018, Michal Hocko wrote:
-
-> > The revert is certainly needed to prevent the regression, yes, but I =
-
-> > anticipate that Andrea will report back that patch 2 at least improves =
-the =
-
-> > situation for the problem that he was addressing, specifically that it =
-is =
-
-> > pointless to thrash any node or reclaim unnecessarily when compaction h=
-as =
-
-> > already failed.  This is what setting __GFP_NORETRY for all thp fault =
-
-> > allocations fixes.
+On Wed 05-12-18 11:24:53, David Rientjes wrote:
+> On Wed, 5 Dec 2018, Michal Hocko wrote:
 > =
 
-> Yes but earlier numbers from Mel and repeated again [1] simply show
-> that the swap storms are only handled in favor of an absolute drop of
-> THP success rate.
->  =
+> > > > At minimum do not remove the cleanup part which consolidates the gfp
+> > > > hadnling to a single place. There is no real reason to have the
+> > > > __GFP_THISNODE ugliness outside of alloc_hugepage_direct_gfpmask.
+> > > > =
 
+> > > =
 
-As we've been over countless times, this is the desired effect for =
+> > > The __GFP_THISNODE usage is still confined to =
 
-workloads that fit on a single node.  We want local pages of the native =
+> > > alloc_hugepage_direct_gfpmask() for the thp fault path, we no longer =
+set =
 
-page size because they (1) are accessed faster than remote hugepages and =
+> > > it in alloc_pages_vma() as done before the cleanup.
+> > =
 
-(2) are candidates for collapse by khugepaged.
+> > Why should be new_page any different?
+> > =
 
-For applications that do not fit in a single node, we have discussed =
-
-possible ways to extend the API to allow remote faulting of hugepages, =
-
-absent remote fragmentation as well, then the long-standing behavior is =
-
-preserved and large applications can use the API to increase their thp =
-
-success rate.
-
-> Yes, this is understood. So we are getting worst of both. We have a
-> numa locality side effect of MADV_HUGEPAGE and we have a poor THP
-> utilization. So how come this is an improvement. Especially when the
-> reported regression hasn't been demonstrated on a real or repeatable
-> workload but rather a very vague presumably worst case behavior where
-> the access penalty is absolutely prevailing.
 > =
 
+> To match alloc_new_node_page() which does it correctly and does not chang=
+e =
 
-High thp utilization is not always better, especially when those hugepages =
+> the behavior of mbind() that the cleanup did, which used =
 
-are accessed remotely and introduce the regressions that I've reported.  =
+> alloc_hugepage_vma() to get the __GFP_THISNODE behavior.  If there is a =
 
-Seeking high thp utilization at all costs is not the goal if it causes =
+> reason mbind() is somehow different wrt allocating hugepages locally, I =
 
-workloads to regress.
+> think that should be a separate patch, but the goal of this patch is to =
 
---===============1927351598449920265==--
+> revert all the behavioral change that caused hugepages to be allocated =
+
+> remotely.
+
+If the __GFP_THISNODE should be really used then it should be applied to
+all other types of pages. Not only THP. And as such done in a separate
+patch. Not a part of the revert. The cleanup was meant to unify THP
+allocations and that is why I object to reverting it as a part of this
+work.
+
+-- =
+
+Michal Hocko
+SUSE Labs
+
+--===============2793190053774817076==--
 
