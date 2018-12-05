@@ -1,126 +1,109 @@
-Content-Type: multipart/mixed; boundary="===============6626593010751627708=="
+Content-Type: multipart/mixed; boundary="===============5031939628898873959=="
 MIME-Version: 1.0
 From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [patch 0/2 for-4.20] mm, thp: fix remote access and allocation regressions
-Date: Wed, 05 Dec 2018 08:40:52 +0100
-Message-ID: <20181205074052.GU1286@dhcp22.suse.cz>
-In-Reply-To: <alpine.DEB.2.21.1812041415270.159770@chino.kir.corp.google.com>
+Date: Wed, 05 Dec 2018 10:05:54 +0100
+Message-ID: <20181205090554.GX1286@dhcp22.suse.cz>
+In-Reply-To: <alpine.DEB.2.21.1812041356490.157466@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6626593010751627708==
+--===============5031939628898873959==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue 04-12-18 14:25:54, David Rientjes wrote:
-> On Tue, 4 Dec 2018, Michal Hocko wrote:
+On Tue 04-12-18 14:04:10, David Rientjes wrote:
+> On Tue, 4 Dec 2018, Vlastimil Babka wrote:
 > =
 
-> > > This fixes a 13.9% of remote memory access regression and 40% remote
-> > > memory allocation regression on Haswell when the local node is fragme=
-nted
-> > > for hugepage sized pages and memory is being faulted with either the =
-thp
-> > > defrag setting of "always" or has been madvised with MADV_HUGEPAGE.
-> > > =
-
-> > > The usecase that initially identified this issue were binaries that m=
-remap
-> > > their .text segment to be backed by transparent hugepages on startup.
-> > > They do mmap(), madvise(MADV_HUGEPAGE), memcpy(), and mremap().
+> > So, AFAIK, the situation is:
 > > =
 
-> > Do you have something you can share with so that other people can play
-> > and try to reproduce?
+> > - commit 5265047ac301 in 4.1 introduced __GFP_THISNODE for THP. The
+> > intention came a bit earlier in 4.0 commit 077fcf116c8c. (I admit acking
+> > both as it seemed to make sense).
+> =
+
+> Yes, both are based on the preference to fault local thp and fallback to =
+
+> local pages before allocating remotely because it does not cause the =
+
+> performance regression introduced by not setting __GFP_THISNODE.
+> =
+
+> > - The resulting node-reclaim-like behavior regressed Andrea's KVM
+> > workloads, but reverting it (only for madvised or non-default
+> > defrag=3Dalways THP by commit ac5b2c18911f) would regress David's
+> > workloads starting with 4.20 to pre-4.1 levels.
 > > =
 
 > =
 
-> This is a single MADV_HUGEPAGE usecase, there is nothing special about it=
-.  =
+> Almost, but the defrag=3Dalways case had the subtle difference of also =
 
-> It would be the same as if you did mmap(), madvise(MADV_HUGEPAGE), and =
+> setting __GFP_NORETRY whereas MADV_HUGEPAGE did not.  This was different =
 
-> faulted the memory with a fragmented local node and then measured the =
+> than the comment in __alloc_pages_slowpath() that expected thp fault =
 
-> remote access latency to the remote hugepage that occurs without setting =
-
-> __GFP_THISNODE.  You can also measure the remote allocation latency by =
-
-> fragmenting the entire system and then faulting.
+> allocations to be caught by checking __GFP_NORETRY.
 > =
 
-> (Remapping the text segment only involves parsing /proc/self/exe, mmap, =
-
-> madvise, memcpy, and mremap.)
-
-How does this reflect your real workload and regressions in it. It
-certainly shows the worst case behavior where the access penalty is
-prevalent while there are no other metrics which might be interesting or
-even important. E.g. page table savings or the TLB pressure in general
-when THP fail too eagerly.
-As Anrea mentioned there are really valid cases where the remote latency
-pays off.
-
-Have you actually seen the advertised regression in the real workload
-and do you have any means to simulate that workload.
-
-> > > This requires a full revert and partial revert of commits merged duri=
-ng
-> > > the 4.20 rc cycle.  The full revert, of ac5b2c18911f ("mm: thp: relax
-> > > __GFP_THISNODE for MADV_HUGEPAGE mappings"), was anticipated to fix l=
-arge
-> > > amounts of swap activity on the local zone when faulting hugepages by
-> > > falling back to remote memory.  This remote allocation causes the acc=
-ess
-> > > regression and, if fragmented, the allocation regression.
+> > If the decision is that it's too late to revert a 4.1 regression for one
+> > kind of workload in 4.20 because it causes regression for another
+> > workload, then I guess we just revert ac5b2c18911f (patch 1) for 4.20
+> > and don't rush a different fix (patch 2) to 4.20. It's not a big
+> > difference if a 4.1 regression is fixed in 4.20 or 4.21?
 > > =
 
-> > Have you tried to measure any of the workloads Mel and Andrea have
-> > pointed out during the previous review discussion? In other words what
-> > is the impact on the THP success rate and allocation latencies for other
-> > usecases?
 > =
 
-> It isn't a property of the workload, it's a property of the how fragmente=
-d =
+> The revert is certainly needed to prevent the regression, yes, but I =
 
-> both local and remote memory is.  In Andrea's case, I believe he has =
+> anticipate that Andrea will report back that patch 2 at least improves th=
+e =
 
-> stated that memory compaction has failed locally and the resulting reclai=
-m =
+> situation for the problem that he was addressing, specifically that it is =
 
-> activity ends up looping and causing it the thrash the local node whereas =
+> pointless to thrash any node or reclaim unnecessarily when compaction has =
 
-> 75% of remote memory is free and not fragmented.  So we have local =
+> already failed.  This is what setting __GFP_NORETRY for all thp fault =
 
-> fragmentation and reclaim is very expensive to enable compaction to =
+> allocations fixes.
 
-> succeed, if it ever does succeed[*], and mostly free remote memory.
+Yes but earlier numbers from Mel and repeated again [1] simply show
+that the swap storms are only handled in favor of an absolute drop of
+THP success rate.
+ =
+
+> > Because there might be other unexpected consequences of patch 2 that
+> > testing won't be able to catch in the remaining 4.20 rc's. And I'm not
+> > even sure if it will fix Andrea's workloads. While it should prevent
+> > node-reclaim-like thrashing, it will still mean that KVM (or anyone)
+> > won't be able to allocate THP's remotely, even if the local node is
+> > exhausted of both huge and base pages.
+> > =
+
 > =
 
-> If remote memory is also fragmented, Andrea's case will run into a much =
+> Patch 2 does nothing with respect to the remote allocation policy; it =
 
-> more severe swap storm as a result of not setting __GFP_THISNODE.  The =
+> simply prevents reclaim (and potentially thrashing).  Patch 1 sets =
 
-> premise of the entire change is that his remote memory is mostly free so =
+> __GFP_THISNODE to prevent the remote allocation.
 
-> fallback results in a quick allocation.  For balanced nodes, that's not =
+Yes, this is understood. So we are getting worst of both. We have a
+numa locality side effect of MADV_HUGEPAGE and we have a poor THP
+utilization. So how come this is an improvement. Especially when the
+reported regression hasn't been demonstrated on a real or repeatable
+workload but rather a very vague presumably worst case behavior where
+the access penalty is absolutely prevailing.
 
-> going to be the case.  The fix to prevent the heavy reclaim activity is t=
-o =
-
-> set __GFP_NORETRY as the page allocator suspects, which patch 2 here does.
-
-You are not answering my question and I take it as you haven't actually
-tested this in a variety of workload and base your assumptions on an
-artificial worst case scenario. Please correct me if I am wrong.
-
+[1] http://lkml.kernel.org/r/20181204104558.GV23260(a)techsingularity.net
 -- =
 
 Michal Hocko
 SUSE Labs
 
---===============6626593010751627708==--
+--===============5031939628898873959==--
 
