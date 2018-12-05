@@ -1,114 +1,78 @@
-Content-Type: multipart/mixed; boundary="===============7645798786389383468=="
+Content-Type: multipart/mixed; boundary="===============5993379657023486385=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Mel Gorman <mgorman@techsingularity.net>
 To: lkp@lists.01.org
 Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Wed, 05 Dec 2018 11:18:36 +0100
-Message-ID: <20181205101836.GF1286@dhcp22.suse.cz>
-In-Reply-To: <alpine.DEB.2.21.1812041551170.213718@chino.kir.corp.google.com>
+Date: Wed, 05 Dec 2018 10:43:43 +0000
+Message-ID: <20181205104343.GZ23260@techsingularity.net>
+In-Reply-To: <20181205090856.GY1286@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7645798786389383468==
+--===============5993379657023486385==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue 04-12-18 16:07:27, David Rientjes wrote:
-> On Tue, 4 Dec 2018, Michal Hocko wrote:
-> =
-
-> > The thing I am really up to here is that reintroduction of
-> > __GFP_THISNODE, which you are pushing for, will conflate madvise mode
-> > resp. defrag=3Dalways with a numa placement policy because the allocati=
-on
-> > doesn't fallback to a remote node.
+On Wed, Dec 05, 2018 at 10:08:56AM +0100, Michal Hocko wrote:
+> On Tue 04-12-18 16:47:23, David Rientjes wrote:
+> > On Tue, 4 Dec 2018, Mel Gorman wrote:
 > > =
 
-> =
-
-> It isn't specific to MADV_HUGEPAGE, it is the policy for all transparent =
-
-> hugepage allocations, including defrag=3Dalways.  We agree that =
-
-> MADV_HUGEPAGE is not exactly defined: does it mean try harder to allocate =
-
-> a hugepage locally, try compaction synchronous to the fault, allow remote =
-
-> fallback?  It's undefined.
-
-Yeah, it is certainly underdefined. One thing is clear though. Using
-MADV_HUGEPAGE implies that the specific mapping benefits from THPs and
-is willing to pay associated init cost. This doesn't imply anything
-regarding NUMA locality and as we have NUMA API it shouldn't even
-attempt to do so because it would be conflating two things.
-[...]
-
-> > And that is a fundamental problem and the antipattern I am talking
-> > about. Look at it this way. All normal allocations are utilizing all the
-> > available memory even though they might hit a remote latency penalty. If
-> > you do care about NUMA placement you have an API to enforce a specific
-> > placement.  What is so different about THP to behave differently. Do
-> > we really want to later invent an API to actually allow to utilize all
-> > the memory? There are certainly usecases (that triggered the discussion
-> > previously) that do not mind the remote latency because all other
-> > benefits simply outweight it?
+> > > What should also be kept in mind is that we should avoid conflating
+> > > locality preferences with THP preferences which is separate from THP
+> > > allocation latencies. The whole __GFP_THISNODE approach is pushing too
+> > > hard on locality versus huge pages when MADV_HUGEPAGE or always-defrag
+> > > are used which is very unfortunate given that MADV_HUGEPAGE in itself=
+ says
+> > > nothing about locality -- that is the business of other madvise flags=
+ or
+> > > a specific policy.
 > > =
 
+> > We currently lack those other madvise modes or mempolicies: mbind() is =
+not =
+
+> > a viable alternative because we do not want to oom kill when local memo=
+ry =
+
+> > is depleted, we want to fallback to remote memory.
 > =
 
-> What is different about THP is that on every platform I have measured, =
+> Yes, there was a clear agreement that there is no suitable mempolicy
+> right now and there were proposals to introduce MPOL_NODE_RECLAIM to
+> introduce that behavior. This would be an improvement regardless of THP
+> because global node-reclaim policy was simply a disaster we had to turn
+> off by default and the global semantic was a reason people just gave up
+> using it completely.
+> =
 
-> NUMA matters more than hugepages.  Obviously if on Broadwell, Haswell, an=
-d =
 
-> Rome, remote hugepages were a performance win over local pages, this =
+The alternative is to define a clear semantic for THP allocation
+requests that are considered "light" regardless of whether that needs a
+GFP flag or not. A sensible default might be
 
-> discussion would not be happening.  Faulting local pages rather than =
+o Allocate THP local if the amount of work is light or non-existant.
+o Allocate THP remote if one is freely available with no additional work
+  (maybe kick remote kcompactd)
+o Allocate base page local if the amount of work is light or non-existant
+o Allocate base page remote if the amount of work is light or non-existant
+o Do heavy work in zonelist order until a base page is allocated somewhere
 
-> local hugepages, if possible, is easy and doesn't require reclaim.  =
+It's not something could be clearly expressed with either NORETRY or
+THISNODE but longer-term might be saner than chopping and changing on
+which flags are more important and which workload is most relevant. That
+runs the risk of a revert-loop where each person targetting one workload
+reverts one patch to insert another until someone throws up their hands
+in frustration and just carries patches out-of-tree long-term.
 
-> Faulting remote pages rather than reclaiming local pages is easy in your =
+I'm not going to prototype something along these lines for now as
+fundamentally a better compaction could cut out part of the root cause
+of pain.
 
-> scenario, it's non-disruptive.
-
-You keep ignoring all other usecases mentioned before and that is not
-really helpful. Access cost can be amortized by other savings. Not to
-mention NUMA balancing moving around hot THPs with remote accesses.
-
-> So to answer "what is so different about THP?", it's the performance data=
-.  =
-
-> The NUMA locality matters more than whether the pages are huge or not.  W=
-e =
-
-> also have the added benefit of khugepaged being able to collapse pages =
-
-> locally if fragmentation improves rather than being stuck accessing a =
-
-> remote hugepage forever.
-
-Please back your claims by a variety of workloads. Including mentioned
-KVMs one. You keep hand waving about access latency completely ignoring
-all other aspects and that makes my suspicious that you do not really
-appreciate all the complexity here even stronger.
-
-If there was a general consensus we want to make THP very special wrt.
-numa locality, I could live with that. It would be inconsistency in the
-API and as such something that will kick us sooner or later. But it
-seems that _you_ are the only one to push that direction and you keep
-ignoring all other usecases consistently throughout all the discussions
-we have had so far. Several people keeps pointing out that this is a
-wrong direction but that seems to be completely ignored.
-
-I believe that the only way forward is back your claims by numbers
-covering a larger set of THP users and prove that remote THP is
-a wrong default behavior. But you cannot really push that through based
-on a single usecase of yours which you refuse to describe beyond a
-simple access latency metric.
 -- =
 
-Michal Hocko
+Mel Gorman
 SUSE Labs
 
---===============7645798786389383468==--
+--===============5993379657023486385==--
 
