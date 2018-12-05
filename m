@@ -1,81 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============4284577032166871582=="
+Content-Type: multipart/mixed; boundary="===============2843774304934712885=="
 MIME-Version: 1.0
-From: David Rientjes <rientjes@google.com>
+From: Andrea Arcangeli <aarcange@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [patch 0/2 for-4.20] mm, thp: fix remote access and allocation regressions
-Date: Wed, 05 Dec 2018 13:14:37 -0800
-Message-ID: <alpine.DEB.2.21.1812051308330.9633@chino.kir.corp.google.com>
-In-Reply-To: <20181205203243.GX1286@dhcp22.suse.cz>
+Date: Wed, 05 Dec 2018 16:45:42 -0500
+Message-ID: <20181205214542.GC11899@redhat.com>
+In-Reply-To: <alpine.DEB.2.21.1812051142040.240991@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4284577032166871582==
+--===============2843774304934712885==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 5 Dec 2018, Michal Hocko wrote:
+On Wed, Dec 05, 2018 at 11:49:26AM -0800, David Rientjes wrote:
+> High thp utilization is not always better, especially when those hugepage=
+s =
 
-> > As we've been over countless times, this is the desired effect for =
+> are accessed remotely and introduce the regressions that I've reported.  =
 
-> > workloads that fit on a single node.  We want local pages of the native =
+> Seeking high thp utilization at all costs is not the goal if it causes =
 
-> > page size because they (1) are accessed faster than remote hugepages an=
-d =
+> workloads to regress.
 
-> > (2) are candidates for collapse by khugepaged.
-> > =
+Is it possible what you need is a defrag=3Dcompactonly_thisnode to set
+instead of the default defrag=3Dmadvise? The fact you seem concerned
+about page fault latencies doesn't make your workload an obvious
+candidate for MADV_HUGEPAGE to begin with. At least unless you decide
+to smooth the MADV_HUGEPAGE behavior with an mbind that will simply
+add __GFP_THISNODE to the allocations, perhaps you'll be even faster
+if you invoke reclaim in the local node for 4k allocations too.
 
-> > For applications that do not fit in a single node, we have discussed =
+It looks like for your workload THP is a nice to have add-on, which is
+practically true of all workloads (with a few corner cases that must
+use MADV_NOHUGEPAGE), and it's what the defrag=3D default is about.
 
-> > possible ways to extend the API to allow remote faulting of hugepages, =
+Is it possible that you just don't want to shut off completely
+compaction in the page fault and if you're ok to do it for your
+library, you may be ok with that for all other apps too?
 
-> > absent remote fragmentation as well, then the long-standing behavior is =
+That's a different stance from other MADV_HUGEPAGE users because you
+don't seem to mind a severely crippled THP utilization in your
+app.
 
-> > preserved and large applications can use the API to increase their thp =
+With your patch the utilization will go down a lot compared to the
+previous __GFP_THISNODE swap storm capable and you're still very fine
+with that. The fact you're fine with that points in the direction of
+changing the default tuning for defrag=3D to something stronger than
+madvise (that is precisely the default setting that is forcing you to
+use MADV_HUGEPAGE to get a chance to get some THP once a in a while
+during the page fault, after some uptime).
 
-> > success rate.
-> =
+Considering mbind surprisingly isn't privileged (so I suppose it may
+cause swap storms equivalent to __GFP_THISNODE if maliciously used
+after all) you could even consider a defrag=3Dthisnode to force
+compaction+defrag local to the node to retain your THP+NUMA dynamic
+partitioning behavior that ends up swappin heavy in the local node.
 
-> OK, I just give up. This doesn't lead anywhere. You keep repeating the
-> same stuff over and over, neglect other usecases and actually force them
-> to do something special just to keep your very specific usecase which
-> you clearly refuse to abstract into a form other people can experiment
-> with or at least provide more detailed broken down numbers for a more
-> serious analyses. Fault latency is only a part of the picture which is
-> much more complex. Look at Mel's report to get an impression of what
-> might be really useful for a _productive_ discussion.
-
-The other usecases is part of patch 2/2 in this series that is =
-
-functionally similar to the __GFP_COMPACT_ONLY patch that Andrea proposed.  =
-
-We can also work to extend the API to allow remote thp allocations.
-
-Patch 1/2 reverts the behavior of commit ac5b2c18911f ("mm: thp: relax =
-
-__GFP_THISNODE for MADV_HUGEPAGE mappings") which added NUMA locality on =
-
-top of an already conflated madvise mode.  Prior to this commit that was =
-
-merged for 4.20, *all* thp faults were constrained to the local node; this =
-
-has been the case for three years and even prior to that in other kernels.  =
-
-It turns out that allowing remote allocations introduces access latency in =
-
-the presence of local fragmentation.
-
-The solution is not to conflate MADV_HUGEPAGE with any sematic that =
-
-suggests it allows remote thp allocations, especially when that changes =
-
-long-standing behavior, regresses my usecase, and regresses the kernel =
-
-test robot.
-
-I'll change patch 1/2 to not touch new_page() so that we are only =
-
-addressing thp faults and post a v2.
-
---===============4284577032166871582==--
+--===============2843774304934712885==--
 
