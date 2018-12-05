@@ -1,109 +1,114 @@
-Content-Type: multipart/mixed; boundary="===============5031939628898873959=="
+Content-Type: multipart/mixed; boundary="===============6640650448576567406=="
 MIME-Version: 1.0
 From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [patch 0/2 for-4.20] mm, thp: fix remote access and allocation regressions
-Date: Wed, 05 Dec 2018 10:05:54 +0100
-Message-ID: <20181205090554.GX1286@dhcp22.suse.cz>
-In-Reply-To: <alpine.DEB.2.21.1812041356490.157466@chino.kir.corp.google.com>
+Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
+Date: Wed, 05 Dec 2018 10:08:56 +0100
+Message-ID: <20181205090856.GY1286@dhcp22.suse.cz>
+In-Reply-To: <alpine.DEB.2.21.1812041609160.213718@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5031939628898873959==
+--===============6640650448576567406==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue 04-12-18 14:04:10, David Rientjes wrote:
-> On Tue, 4 Dec 2018, Vlastimil Babka wrote:
+On Tue 04-12-18 16:47:23, David Rientjes wrote:
+> On Tue, 4 Dec 2018, Mel Gorman wrote:
 > =
 
-> > So, AFAIK, the situation is:
-> > =
-
-> > - commit 5265047ac301 in 4.1 introduced __GFP_THISNODE for THP. The
-> > intention came a bit earlier in 4.0 commit 077fcf116c8c. (I admit acking
-> > both as it seemed to make sense).
+> > What should also be kept in mind is that we should avoid conflating
+> > locality preferences with THP preferences which is separate from THP
+> > allocation latencies. The whole __GFP_THISNODE approach is pushing too
+> > hard on locality versus huge pages when MADV_HUGEPAGE or always-defrag
+> > are used which is very unfortunate given that MADV_HUGEPAGE in itself s=
+ays
+> > nothing about locality -- that is the business of other madvise flags or
+> > a specific policy.
 > =
 
-> Yes, both are based on the preference to fault local thp and fallback to =
+> We currently lack those other madvise modes or mempolicies: mbind() is no=
+t =
 
-> local pages before allocating remotely because it does not cause the =
+> a viable alternative because we do not want to oom kill when local memory =
 
-> performance regression introduced by not setting __GFP_THISNODE.
-> =
+> is depleted, we want to fallback to remote memory.
 
-> > - The resulting node-reclaim-like behavior regressed Andrea's KVM
-> > workloads, but reverting it (only for madvised or non-default
-> > defrag=3Dalways THP by commit ac5b2c18911f) would regress David's
-> > workloads starting with 4.20 to pre-4.1 levels.
-> > =
+Yes, there was a clear agreement that there is no suitable mempolicy
+right now and there were proposals to introduce MPOL_NODE_RECLAIM to
+introduce that behavior. This would be an improvement regardless of THP
+because global node-reclaim policy was simply a disaster we had to turn
+off by default and the global semantic was a reason people just gave up
+using it completely.
 
-> =
+[...]
 
-> Almost, but the defrag=3Dalways case had the subtle difference of also =
+> Sure, but not at the cost of regressing real-world workloads; what is =
 
-> setting __GFP_NORETRY whereas MADV_HUGEPAGE did not.  This was different =
+> being asked for here is legitimate and worthy of an extension, but since =
 
-> than the comment in __alloc_pages_slowpath() that expected thp fault =
+> the long-standing behavior has been to use __GFP_THISNODE and people =
 
-> allocations to be caught by checking __GFP_NORETRY.
-> =
+> depend on that for NUMA locality,
 
-> > If the decision is that it's too late to revert a 4.1 regression for one
-> > kind of workload in 4.20 because it causes regression for another
-> > workload, then I guess we just revert ac5b2c18911f (patch 1) for 4.20
-> > and don't rush a different fix (patch 2) to 4.20. It's not a big
-> > difference if a 4.1 regression is fixed in 4.20 or 4.21?
-> > =
+Well, your patch has altered the semantic and has introduced a subtle
+and _undocumented_ NUMA policy into MADV_HUGEPAGE. All that without any
+workload numbers. It would be preferable to have a simulator of those
+real world workloads of course but even getting some more detailed
+metric - e.g. without the patch we have X THP utilization and the
+runtime characteristics Y but without X1 and Y1).
 
-> =
+> can we not fix the swap storm and look =
 
-> The revert is certainly needed to prevent the regression, yes, but I =
+> to extending the API to include workloads that span multiple nodes?
 
-> anticipate that Andrea will report back that patch 2 at least improves th=
-e =
+Yes, we definitely want to address swap storms. No question about that.
+But our established approach for NUMA policy has been to fallback to
+other nodes and everybody focused on NUMA latency should use NUMA API to
+achive that. Not vice versa.
 
-> situation for the problem that he was addressing, specifically that it is =
+As I've said in other thread, I am OK with restoring __GFP_THISNODE for
+now but we should really have a very good plan for further steps. And
+that involves an agreed NUMA behavior. I haven't seen any widespread
+agreement on that yet though.
 
-> pointless to thrash any node or reclaim unnecessarily when compaction has =
-
-> already failed.  This is what setting __GFP_NORETRY for all thp fault =
-
-> allocations fixes.
-
-Yes but earlier numbers from Mel and repeated again [1] simply show
-that the swap storms are only handled in favor of an absolute drop of
-THP success rate.
- =
-
-> > Because there might be other unexpected consequences of patch 2 that
-> > testing won't be able to catch in the remaining 4.20 rc's. And I'm not
-> > even sure if it will fix Andrea's workloads. While it should prevent
-> > node-reclaim-like thrashing, it will still mean that KVM (or anyone)
-> > won't be able to allocate THP's remotely, even if the local node is
-> > exhausted of both huge and base pages.
+[...]
+> > I would also re-emphasise that a major problem with addressing this
+> > problem is that we do not have a general reproducible test case for
+> > David's scenario where as we do have reproduction cases for the others.
+> > They're not related to KVM but that doesn't matter because it's enough
+> > to have a memory hog try allocating more memory than fits on a single n=
+ode.
 > > =
 
 > =
 
-> Patch 2 does nothing with respect to the remote allocation policy; it =
+> It's trivial to reproduce this issue: fragment all local memory that =
 
-> simply prevents reclaim (and potentially thrashing).  Patch 1 sets =
+> compaction cannot resolve, do posix_memalign() for hugepage aligned =
 
-> __GFP_THISNODE to prevent the remote allocation.
+> memory, and measure the access latency.  To fragment all local memory, yo=
+u =
 
-Yes, this is understood. So we are getting worst of both. We have a
-numa locality side effect of MADV_HUGEPAGE and we have a poor THP
-utilization. So how come this is an improvement. Especially when the
-reported regression hasn't been demonstrated on a real or repeatable
-workload but rather a very vague presumably worst case behavior where
-the access penalty is absolutely prevailing.
+> can simply insert a kernel module and allocate high-order memory (just do =
 
-[1] http://lkml.kernel.org/r/20181204104558.GV23260(a)techsingularity.net
+> kmem_cache_alloc_node() or get_page() to pin it so compaction fails or =
+
+> punch holes in the file as you did above).  You can do this for all memor=
+y =
+
+> rather than the local node to measure the even more severe allocation =
+
+> latency regression that not setting __GFP_THISNODE introduces.
+
+Sure, but can we get some numbers from a real workload rather than an
+artificial worst case? The utilization issue Mel pointed out before and
+here again is a real concern IMHO. We we definitely need a better
+picture to make an educated decision.
 -- =
 
 Michal Hocko
 SUSE Labs
 
---===============5031939628898873959==--
+--===============6640650448576567406==--
 
