@@ -1,78 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============5993379657023486385=="
+Content-Type: multipart/mixed; boundary="===============8230878232813111274=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Wed, 05 Dec 2018 10:43:43 +0000
-Message-ID: <20181205104343.GZ23260@techsingularity.net>
-In-Reply-To: <20181205090856.GY1286@dhcp22.suse.cz>
+Subject: Re: [mm] 19717e78a0: stderr.if(target_node==NUMA_NO_NODE){
+Date: Wed, 05 Dec 2018 16:50:57 +0530
+Message-ID: <d75d097f-78a5-865e-a80a-b1e6faeff337@arm.com>
+In-Reply-To: <20181205050057.GB23332@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5993379657023486385==
+--===============8230878232813111274==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 05, 2018 at 10:08:56AM +0100, Michal Hocko wrote:
-> On Tue 04-12-18 16:47:23, David Rientjes wrote:
-> > On Tue, 4 Dec 2018, Mel Gorman wrote:
-> > =
-
-> > > What should also be kept in mind is that we should avoid conflating
-> > > locality preferences with THP preferences which is separate from THP
-> > > allocation latencies. The whole __GFP_THISNODE approach is pushing too
-> > > hard on locality versus huge pages when MADV_HUGEPAGE or always-defrag
-> > > are used which is very unfortunate given that MADV_HUGEPAGE in itself=
- says
-> > > nothing about locality -- that is the business of other madvise flags=
- or
-> > > a specific policy.
-> > =
-
-> > We currently lack those other madvise modes or mempolicies: mbind() is =
-not =
-
-> > a viable alternative because we do not want to oom kill when local memo=
-ry =
-
-> > is depleted, we want to fallback to remote memory.
+On 12/05/2018 10:30 AM, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-7):
 > =
 
-> Yes, there was a clear agreement that there is no suitable mempolicy
-> right now and there were proposals to introduce MPOL_NODE_RECLAIM to
-> introduce that behavior. This would be an improvement regardless of THP
-> because global node-reclaim policy was simply a disaster we had to turn
-> off by default and the global semantic was a reason people just gave up
-> using it completely.
+> commit: 19717e78a04d51512cf0e7b9b09c61f06b2af071 ("[PATCH V2] mm: Replace=
+ all open encodings for NUMA_NO_NODE")
+> url: https://github.com/0day-ci/linux/commits/Anshuman-Khandual/mm-Replac=
+e-all-open-encodings-for-NUMA_NO_NODE/20181126-203831
 > =
 
+> =
 
-The alternative is to define a clear semantic for THP allocation
-requests that are considered "light" regardless of whether that needs a
-GFP flag or not. A sensible default might be
+> in testcase: perf-sanity-tests
+> with following parameters:
+> =
 
-o Allocate THP local if the amount of work is light or non-existant.
-o Allocate THP remote if one is freely available with no additional work
-  (maybe kick remote kcompactd)
-o Allocate base page local if the amount of work is light or non-existant
-o Allocate base page remote if the amount of work is light or non-existant
-o Do heavy work in zonelist order until a base page is allocated somewhere
+> 	perf_compiler: gcc
+> 	ucode: 0x7000013
+> =
 
-It's not something could be clearly expressed with either NORETRY or
-THISNODE but longer-term might be saner than chopping and changing on
-which flags are more important and which workload is most relevant. That
-runs the risk of a revert-loop where each person targetting one workload
-reverts one patch to insert another until someone throws up their hands
-in frustration and just carries patches out-of-tree long-term.
+> =
 
-I'm not going to prototype something along these lines for now as
-fundamentally a better compaction could cut out part of the root cause
-of pain.
+> =
 
--- =
+> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz with 8G=
+ memory
+> =
 
-Mel Gorman
-SUSE Labs
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
 
---===============5993379657023486385==--
+The fix (in Andrew's staging tree) from Stephen Rothwell which adds <linux/=
+numa.h>
+definitions to <tools/include/linux/numa.h> should fix this.
+
+--===============8230878232813111274==--
 
