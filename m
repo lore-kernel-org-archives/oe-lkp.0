@@ -1,30 +1,28 @@
-Content-Type: multipart/mixed; boundary="===============1549859414367600932=="
+Content-Type: multipart/mixed; boundary="===============1390247450626754915=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Andrea Arcangeli <aarcange@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Wed, 05 Dec 2018 15:51:06 -0800
-Message-ID: <CAHk-=wguXjkbK8BUU998s7HD7AXJgBkuc9JmuNxiN7uGQyfSfQ@mail.gmail.com>
-In-Reply-To: <20181205233632.GE11899@redhat.com>
+Date: Wed, 05 Dec 2018 19:00:34 -0500
+Message-ID: <20181206000034.GH11899@redhat.com>
+In-Reply-To: <alpine.DEB.2.21.1812051316150.9633@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1549859414367600932==
+--===============1390247450626754915==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 5, 2018 at 3:36 PM Andrea Arcangeli <aarcange@redhat.com> wro=
-te:
->
-> Like said earlier still better to apply __GFP_COMPACT_ONLY or David's
-> patch than to return to v4.18 though.
+Hello,
 
-Ok, I've applied David's latest patch.
+On Wed, Dec 05, 2018 at 01:59:32PM -0800, David Rientjes wrote:
+> [..] and the kernel test robot has reported, [..]
 
-I'm not at all objecting to tweaking this further, I just didn't want
-to have this regression stand.
+Just for completeness you may have missed one email:
+https://lkml.kernel.org/r/87tvk1yjkp.fsf(a)yhuang-dev.intel.com
 
-           Linus
+'So I think the report should have been a "performance
+improvement" instead of "performance regression".'
 
---===============1549859414367600932==--
+--===============1390247450626754915==--
 
