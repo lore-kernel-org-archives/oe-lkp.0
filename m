@@ -1,126 +1,269 @@
-Content-Type: multipart/mixed; boundary="===============3101177832701988279=="
+Content-Type: multipart/mixed; boundary="===============9200392515686891413=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
-Subject: Re: [patch for-4.20] Revert "mm, thp: consolidate THP gfp handling into alloc_hugepage_direct_gfpmask"
-Date: Fri, 07 Dec 2018 14:33:40 -0800
-Message-ID: <CAHk-=wiGjzXQSPhq-TNkwUAqZKNobOgyJJKMXFooaOMyDDG38g@mail.gmail.com>
-In-Reply-To: <alpine.DEB.2.21.1812071421030.148470@chino.kir.corp.google.com>
+Subject: [patch v2 for-4.20] Revert "mm, thp: consolidate THP gfp handling into alloc_hugepage_direct_gfpmask"
+Date: Fri, 07 Dec 2018 14:50:16 -0800
+Message-ID: <alpine.DEB.2.21.1812071449500.173448@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3101177832701988279==
+--===============9200392515686891413==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 7, 2018 at 2:27 PM David Rientjes <rientjes@google.com> wrote:
->
-> I noticed the race in 89c83fb539f9 ("mm, thp: consolidate THP gfp handling
-> into alloc_hugepage_direct_gfpmask") that is fixed by the revert, but as
-> you noted it didn't cleanup the second part which is the balancing act for
-> gfp flags between alloc_hugepage_direct_gfpmask() and alloc_pages_vma().
-> Syzbot found this to trigger the WARN_ON_ONCE() you mention.
+This reverts commit 89c83fb539f95491be80cdd5158e6f0ce329e317.
 
-Can you rewrite the commit message to explain this better rather than
-the misleading "race" description?
+This should have been done as part of 2f0799a0ffc0 ("mm, thp: restore
+node-local hugepage allocations").  The movement of the thp allocation
+policy from alloc_pages_vma() to alloc_hugepage_direct_gfpmask() was
+intended to only set __GFP_THISNODE for mempolicies that are not
+MPOL_BIND whereas the revert could set this regardless of mempolicy.
 
-                 Linus
+While the check for MPOL_BIND between alloc_hugepage_direct_gfpmask()
+and alloc_pages_vma() was racy, that has since been removed since the
+revert.  What is left is the possibility to use __GFP_THISNODE in
+policy_node() when it is unexpected because the special handling for
+hugepages in alloc_pages_vma()  was removed as part of the consolidation.
 
---===============3101177832701988279==
-Content-Type: application/pkcs7-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
+Secondly, prior to 89c83fb539f9, alloc_pages_vma() implemented a somewhat =
 
-MIIT/AYJKoZIhvcNAQcCoIIT7TCCE+kCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ghEQMIIF5jCCA86gAwIBAgIQapvhODv/K2ufAdXZuKdSVjANBgkqhkiG9w0BAQwFADCBhTELMAkG
-A1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEa
-MBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxKzApBgNVBAMTIkNPTU9ETyBSU0EgQ2VydGlmaWNh
-dGlvbiBBdXRob3JpdHkwHhcNMTMwMTEwMDAwMDAwWhcNMjgwMTA5MjM1OTU5WjCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
-AoIBAQC+s55XrCh2dUAWxzgDmNPGGHYhUPMleQtMtaDRfTpYPpynMS6n9jR22YRq2tA9NEjk6vW7
-rN/5sYFLIP1of3l0NKZ6fLWfF2VgJ5cijKYy/qlAckY1wgOkUMgzKlWlVJGyK+UlNEQ1/5ErCsHq
-9x9aU/x1KwTdF/LCrT03Rl/FwFrf1XTCwa2QZYL55AqLPikFlgqOtzk06kb2qvGlnHJvijjI03BO
-rNpo+kZGpcHsgyO1/u1OZTaOo8wvEU17VVeP1cHWse9tGKTDyUGg2hJZjrqck39UIm/nKbpDSZ0J
-sMoIw/JtOOg0JC56VzQgBo7ictReTQE5LFLG3yQK+xS1AgMBAAGjggE8MIIBODAfBgNVHSMEGDAW
-gBS7r34CPfqm8TyEjq3uOJjs2TIy1DAdBgNVHQ4EFgQUgq9sjPjF/pZhfOgfPStxSF7Ei8AwDgYD
-VR0PAQH/BAQDAgGGMBIGA1UdEwEB/wQIMAYBAf8CAQAwEQYDVR0gBAowCDAGBgRVHSAAMEwGA1Ud
-HwRFMEMwQaA/oD2GO2h0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1JTQUNlcnRpZmljYXRp
-b25BdXRob3JpdHkuY3JsMHEGCCsGAQUFBwEBBGUwYzA7BggrBgEFBQcwAoYvaHR0cDovL2NydC5j
-b21vZG9jYS5jb20vQ09NT0RPUlNBQWRkVHJ1c3RDQS5jcnQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9v
-Y3NwLmNvbW9kb2NhLmNvbTANBgkqhkiG9w0BAQwFAAOCAgEAeFyygSg0TzzuX1bOn5dW7I+iaxf2
-8/ZJCAbU2C81zd9A/tNx4+jsQgwRGiHjZrAYayZrrm78hOx7aEpkfNPQIHGG6Fvq3EzWf/Lvx7/h
-k6zSPwIal9v5IkDcZoFD7f3iT7PdkHJY9B51csvU50rxpEg1OyOT8fk2zvvPBuM4qQNqbGWlnhMp
-IMwpWZT89RY0wpJO+2V6eXEGGHsROs3njeP9DqqqAJaBa4wBeKOdGCWn1/Jp2oY6dyNmNppI4ZNM
-UH4Tam85S1j6E95u4+1Nuru84OrMIzqvISE2HN/56ebTOWlcrurffade2022O/tUU1gb4jfWCcyv
-B8czm12FgX/y/lRjmDbEA08QJNB2729Y+io1IYO3ztveBdvUCIYZojTq/OCR6MvnzS6X72HP0PRL
-RTiOSEmIDsS5N5w/8IW1Hva5hEFy6fDAfd9yI+O+IMMAj1KcL/Zo9jzJ16HO5m60ttl1Enk8MQkz
-/W3JlHaeI5iKFn4UJu1/cP2YHXYPiWf2JyBzsLBrGk1II+3yL8aorYew6CQvdVifC3HtwlSam9V1
-niiCfOBe2C12TdKGu05LWIA3ZkFcWJGaNXOZ6Ggyh/TqvXG5v7zmEVDNXFnHn9tFpMpOUvxhcsjy
-cBtH0dZ0WrNw6gH+HF8TIhCnH3+zzWuDN0Rk6h9KVkfKehIwggXYMIIDwKADAgECAhBMqvnK22Nv
-4B/3TthbA4adMA0GCSqGSIb3DQEBDAUAMIGFMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRl
-ciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRowGAYDVQQKExFDT01PRE8gQ0EgTGltaXRl
-ZDErMCkGA1UEAxMiQ09NT0RPIFJTQSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0xMDAxMTkw
-MDAwMDBaFw0zODAxMTgyMzU5NTlaMIGFMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBN
-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
-AaOCAfMwggHvMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBRjn/GS
-Juh8DKxLx8YgPKopKgyxBTAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAgBgNVHSUEGTAX
-BggrBgEFBQcDBAYLKwYBBAGyMQEDBQIwEQYJYIZIAYb4QgEBBAQDAgUgMEYGA1UdIAQ/MD0wOwYM
-KwYBBAGyMQECAQEBMCswKQYIKwYBBQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQvQ1BT
-MFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1JTQUNsaWVu
-dEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYsGCCsGAQUFBwEBBH8wfTBVBggr
-BgEFBQcwAoZJaHR0cDovL2NydC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGlj
-YXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2Rv
-Y2EuY29tMCgGA1UdEQQhMB+BHXRvcnZhbGRzQGxpbnV4LWZvdW5kYXRpb24ub3JnMA0GCSqGSIb3
-DQEBCwUAA4IBAQAGi1sxlNUFKWBzuBr+awa5Pl46M0AHRkFPiu3VKUkaNu8XuIA2i6Pj6rgiT/3l
-7ca/KvxohOUvFTYnq6Fr26H6BJT6XaMiC6LItbfoIMB2yzFOVuruxfTUO7TCJPCg4oLEtUUIMS1v
-KrajMYuEaI5rVAY04ntAa9nRnjj8TqDg+OXupr8yHrkomt7qWlsyZQKExtmQ4DvfEUADDY2ue6Kn
-qNa5FHY8uBWlYBSaHnnR90Rr0Rqd4naFPQ1Kkkxp35g0tcdGBN5Qcyli834X9rdyhj9CwSwOSnCD
-KYvaXyUP3o7hBubLcdMz/VM9VKT5HnU6c3rFemJSmUc41Htu57YYMYICsDCCAqwCAQEwga0wgZcx
-CzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZv
-cmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVu
-dCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAyRamH6VuTQrvgXSXzzbh6jAN
-BglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgSYpP4HayndFg0EygUAl1v1z4lqai1Lym
-mp4iUnK2CK4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTgxMjA3
-MjIzMzU3WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQMEARYwCwYJYIZI
-AWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJYIZIAWUDBAIB
-MA0GCSqGSIb3DQEBAQUABIIBAKE3+pjC7XLBeHL69fb6sWDl1Aa5Ey7FHQh8tr9SG1UjRupvOyxJ
-/AFbaE4s9GndlJLDjlxPFAXtKKjYIiur3xQNQpykyOORsNopJeg7rsz7A/chVgyPt6962fKy++so
-oH4R9I80WSV7a5wNC+wAwUxJRrE1qjRE+i1uv8PgA5XmbPpjE1Fp9iI0a8j6emKElNVXube2mqeq
-DwiRc00/VLXaP+1tkl1Hdn+H0s8ysQzYJpO8Zp7Q2mJBXAWmY3k3T/WX9OKMIp+QvQD23iSYfAQ1
-F3O277j8256566FHG3BBhPQvZ7gUWJ44eLd49FFHJpakgjmjk+QDCjUcE3J77w8=
---===============3101177832701988279==--
+different policy for hugepage allocations, which were allocated through =
+
+alloc_hugepage_vma().  For hugepage allocations, if the allocating =
+
+process's node is in the set of allowed nodes, allocate with =
+
+__GFP_THISNODE for that node (for MPOL_PREFERRED, use that node with =
+
+__GFP_THISNODE instead).  This was changed for shmem_alloc_hugepage() to =
+
+allow fallback to other nodes in 89c83fb539f9 as it did for new_page() in =
+
+mm/mempolicy.c which is functionally different behavior and removes the =
+
+requirement to only allocate hugepages locally.
+
+So this commit does a full revert of 89c83fb539f9 instead of the partial
+revert that was done in 2f0799a0ffc0.  The result is the same thp
+allocation policy for 4.20 that was in 4.19.
+
+Fixes: 89c83fb539f9 ("mm, thp: consolidate THP gfp handling into alloc_huge=
+page_direct_gfpmask")
+Fixes: 2f0799a0ffc0 ("mm, thp: restore node-local hugepage allocations")
+Signed-off-by: David Rientjes <rientjes@google.com>
+---
+ This indeed restores the thp allocation policy fully to what it was in
+ 4.19 since there is obivously more discussion to be had about how the
+ NUMA aspects of thp allocations should be addressed.  We can do this
+ with a stable 4.20 tree in the background that has the same allocation
+ policy that was in 4.0.
+
+ I'll handle the reverts of the removal of __GFP_THISNODE for the stable
+ trees separately.
+
+ include/linux/gfp.h | 12 ++++++++----
+ mm/huge_memory.c    | 27 +++++++++++++--------------
+ mm/mempolicy.c      | 32 +++++++++++++++++++++++++++++---
+ mm/shmem.c          |  2 +-
+ 4 files changed, 51 insertions(+), 22 deletions(-)
+
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -510,18 +510,22 @@ alloc_pages(gfp_t gfp_mask, unsigned int order)
+ }
+ extern struct page *alloc_pages_vma(gfp_t gfp_mask, int order,
+ 			struct vm_area_struct *vma, unsigned long addr,
+-			int node);
++			int node, bool hugepage);
++#define alloc_hugepage_vma(gfp_mask, vma, addr, order) \
++	alloc_pages_vma(gfp_mask, order, vma, addr, numa_node_id(), true)
+ #else
+ #define alloc_pages(gfp_mask, order) \
+ 		alloc_pages_node(numa_node_id(), gfp_mask, order)
+-#define alloc_pages_vma(gfp_mask, order, vma, addr, node)\
++#define alloc_pages_vma(gfp_mask, order, vma, addr, node, false)\
++	alloc_pages(gfp_mask, order)
++#define alloc_hugepage_vma(gfp_mask, vma, addr, order) \
+ 	alloc_pages(gfp_mask, order)
+ #endif
+ #define alloc_page(gfp_mask) alloc_pages(gfp_mask, 0)
+ #define alloc_page_vma(gfp_mask, vma, addr)			\
+-	alloc_pages_vma(gfp_mask, 0, vma, addr, numa_node_id())
++	alloc_pages_vma(gfp_mask, 0, vma, addr, numa_node_id(), false)
+ #define alloc_page_vma_node(gfp_mask, vma, addr, node)		\
+-	alloc_pages_vma(gfp_mask, 0, vma, addr, node)
++	alloc_pages_vma(gfp_mask, 0, vma, addr, node, false)
+ =
+
+ extern unsigned long __get_free_pages(gfp_t gfp_mask, unsigned int order);
+ extern unsigned long get_zeroed_page(gfp_t gfp_mask);
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -629,30 +629,30 @@ static vm_fault_t __do_huge_pmd_anonymous_page(struct=
+ vm_fault *vmf,
+  *	    available
+  * never: never stall for any thp allocation
+  */
+-static inline gfp_t alloc_hugepage_direct_gfpmask(struct vm_area_struct *v=
+ma, unsigned long addr)
++static inline gfp_t alloc_hugepage_direct_gfpmask(struct vm_area_struct *v=
+ma)
+ {
+ 	const bool vma_madvised =3D !!(vma->vm_flags & VM_HUGEPAGE);
+-	const gfp_t gfp_mask =3D GFP_TRANSHUGE_LIGHT | __GFP_THISNODE;
+ =
+
+ 	/* Always do synchronous compaction */
+ 	if (test_bit(TRANSPARENT_HUGEPAGE_DEFRAG_DIRECT_FLAG, &transparent_hugepa=
+ge_flags))
+-		return GFP_TRANSHUGE | __GFP_THISNODE |
+-		       (vma_madvised ? 0 : __GFP_NORETRY);
++		return GFP_TRANSHUGE | (vma_madvised ? 0 : __GFP_NORETRY);
+ =
+
+ 	/* Kick kcompactd and fail quickly */
+ 	if (test_bit(TRANSPARENT_HUGEPAGE_DEFRAG_KSWAPD_FLAG, &transparent_hugepa=
+ge_flags))
+-		return gfp_mask | __GFP_KSWAPD_RECLAIM;
++		return GFP_TRANSHUGE_LIGHT | __GFP_KSWAPD_RECLAIM;
+ =
+
+ 	/* Synchronous compaction if madvised, otherwise kick kcompactd */
+ 	if (test_bit(TRANSPARENT_HUGEPAGE_DEFRAG_KSWAPD_OR_MADV_FLAG, &transparen=
+t_hugepage_flags))
+-		return gfp_mask | (vma_madvised ? __GFP_DIRECT_RECLAIM :
+-						  __GFP_KSWAPD_RECLAIM);
++		return GFP_TRANSHUGE_LIGHT |
++			(vma_madvised ? __GFP_DIRECT_RECLAIM :
++					__GFP_KSWAPD_RECLAIM);
+ =
+
+ 	/* Only do synchronous compaction if madvised */
+ 	if (test_bit(TRANSPARENT_HUGEPAGE_DEFRAG_REQ_MADV_FLAG, &transparent_huge=
+page_flags))
+-		return gfp_mask | (vma_madvised ? __GFP_DIRECT_RECLAIM : 0);
++		return GFP_TRANSHUGE_LIGHT |
++		       (vma_madvised ? __GFP_DIRECT_RECLAIM : 0);
+ =
+
+-	return gfp_mask;
++	return GFP_TRANSHUGE_LIGHT;
+ }
+ =
+
+ /* Caller must hold page table lock. */
+@@ -724,8 +724,8 @@ vm_fault_t do_huge_pmd_anonymous_page(struct vm_fault *=
+vmf)
+ 			pte_free(vma->vm_mm, pgtable);
+ 		return ret;
+ 	}
+-	gfp =3D alloc_hugepage_direct_gfpmask(vma, haddr);
+-	page =3D alloc_pages_vma(gfp, HPAGE_PMD_ORDER, vma, haddr, numa_node_id()=
+);
++	gfp =3D alloc_hugepage_direct_gfpmask(vma);
++	page =3D alloc_hugepage_vma(gfp, vma, haddr, HPAGE_PMD_ORDER);
+ 	if (unlikely(!page)) {
+ 		count_vm_event(THP_FAULT_FALLBACK);
+ 		return VM_FAULT_FALLBACK;
+@@ -1295,9 +1295,8 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf, =
+pmd_t orig_pmd)
+ alloc:
+ 	if (transparent_hugepage_enabled(vma) &&
+ 	    !transparent_hugepage_debug_cow()) {
+-		huge_gfp =3D alloc_hugepage_direct_gfpmask(vma, haddr);
+-		new_page =3D alloc_pages_vma(huge_gfp, HPAGE_PMD_ORDER, vma,
+-				haddr, numa_node_id());
++		huge_gfp =3D alloc_hugepage_direct_gfpmask(vma);
++		new_page =3D alloc_hugepage_vma(huge_gfp, vma, haddr, HPAGE_PMD_ORDER);
+ 	} else
+ 		new_page =3D NULL;
+ =
+
+diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -1116,8 +1116,8 @@ static struct page *new_page(struct page *page, unsig=
+ned long start)
+ 	} else if (PageTransHuge(page)) {
+ 		struct page *thp;
+ =
+
+-		thp =3D alloc_pages_vma(GFP_TRANSHUGE, HPAGE_PMD_ORDER, vma,
+-				address, numa_node_id());
++		thp =3D alloc_hugepage_vma(GFP_TRANSHUGE, vma, address,
++					 HPAGE_PMD_ORDER);
+ 		if (!thp)
+ 			return NULL;
+ 		prep_transhuge_page(thp);
+@@ -2011,6 +2011,7 @@ static struct page *alloc_page_interleave(gfp_t gfp, =
+unsigned order,
+  * 	@vma:  Pointer to VMA or NULL if not available.
+  *	@addr: Virtual Address of the allocation. Must be inside the VMA.
+  *	@node: Which node to prefer for allocation (modulo policy).
++ *	@hugepage: for hugepages try only the preferred node if possible
+  *
+  * 	This function allocates a page from the kernel page pool and applies
+  *	a NUMA policy associated with the VMA or the current process.
+@@ -2021,7 +2022,7 @@ static struct page *alloc_page_interleave(gfp_t gfp, =
+unsigned order,
+  */
+ struct page *
+ alloc_pages_vma(gfp_t gfp, int order, struct vm_area_struct *vma,
+-		unsigned long addr, int node)
++		unsigned long addr, int node, bool hugepage)
+ {
+ 	struct mempolicy *pol;
+ 	struct page *page;
+@@ -2039,6 +2040,31 @@ alloc_pages_vma(gfp_t gfp, int order, struct vm_area=
+_struct *vma,
+ 		goto out;
+ 	}
+ =
+
++	if (unlikely(IS_ENABLED(CONFIG_TRANSPARENT_HUGEPAGE) && hugepage)) {
++		int hpage_node =3D node;
++
++		/*
++		 * For hugepage allocation and non-interleave policy which
++		 * allows the current node (or other explicitly preferred
++		 * node) we only try to allocate from the current/preferred
++		 * node and don't fall back to other nodes, as the cost of
++		 * remote accesses would likely offset THP benefits.
++		 *
++		 * If the policy is interleave, or does not allow the current
++		 * node in its nodemask, we allocate the standard way.
++		 */
++		if (pol->mode =3D=3D MPOL_PREFERRED && !(pol->flags & MPOL_F_LOCAL))
++			hpage_node =3D pol->v.preferred_node;
++
++		nmask =3D policy_nodemask(gfp, pol);
++		if (!nmask || node_isset(hpage_node, *nmask)) {
++			mpol_cond_put(pol);
++			page =3D __alloc_pages_node(hpage_node,
++						gfp | __GFP_THISNODE, order);
++			goto out;
++		}
++	}
++
+ 	nmask =3D policy_nodemask(gfp, pol);
+ 	preferred_nid =3D policy_node(gfp, pol, node);
+ 	page =3D __alloc_pages_nodemask(gfp, order, preferred_nid, nmask);
+diff --git a/mm/shmem.c b/mm/shmem.c
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -1439,7 +1439,7 @@ static struct page *shmem_alloc_hugepage(gfp_t gfp,
+ =
+
+ 	shmem_pseudo_vma_init(&pvma, info, hindex);
+ 	page =3D alloc_pages_vma(gfp | __GFP_COMP | __GFP_NORETRY | __GFP_NOWARN,
+-			HPAGE_PMD_ORDER, &pvma, 0, numa_node_id());
++			HPAGE_PMD_ORDER, &pvma, 0, numa_node_id(), true);
+ 	shmem_pseudo_vma_destroy(&pvma);
+ 	if (page)
+ 		prep_transhuge_page(page);
+
+--===============9200392515686891413==--
 
