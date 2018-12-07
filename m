@@ -1,70 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============2777361346034367658=="
+Content-Type: multipart/mixed; boundary="===============4472753991493073621=="
 MIME-Version: 1.0
 From: Vlastimil Babka <vbabka@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: MADV_HUGEPAGE vs. NUMA semantic (was: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression)
-Date: Fri, 07 Dec 2018 10:06:18 +0100
-Message-ID: <779efc07-cac0-5d36-72fc-11d99060cac7@suse.cz>
-In-Reply-To: <20181207074954.GR1286@dhcp22.suse.cz>
+Subject: Re: [patch for-4.20] Revert "mm, thp: consolidate THP gfp handling into alloc_hugepage_direct_gfpmask"
+Date: Fri, 07 Dec 2018 15:41:49 +0100
+Message-ID: <296d9813-1dfe-f27c-8d2c-6f140d8a5b0d@suse.cz>
+In-Reply-To: <alpine.DEB.2.21.1812061343240.144733@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2777361346034367658==
+--===============4472753991493073621==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 12/7/18 8:49 AM, Michal Hocko wrote:
->> But *that* in turn makes for other possible questions:
->>
->>  - if the reason we couldn't get a local hugepage is that we're simply
->> out of local memory (huge *or* small), then maybe a remote hugepage is
->> better.
->>
->>    Note that this now implies that the choice can be an issue of "did
->> the hugepage allocation fail due to fragmentation, or due to the node
->> being low of memory"
-> How exactly do you tell? Many systems are simply low on memory due to
-> caching. A clean pagecache is quite cheap to reclaim but it can be more
-> expensive to fault in. Do we consider it to be a viable target?
-
-Compaction can report if it failed (more precisely: was skipped) due to
-low memory, or for other reasons. It doesn't distinguish how easily
-reclaimable is the memory, but I don't think we should reclaim anything
-(see below).
-
->> and there is the other question that I asked in the other thread
->> (before subject edit):
->>
->>  - how local is the load to begin with?
->>
->>    Relatively shortlived processes - or processes that are explicitly
->> bound to a node - might have different preferences than some
->> long-lived process where the CPU bounces around, and might have
->> different trade-offs for the local vs remote question too.
-> Agreed
+On 12/6/18 11:00 PM, David Rientjes wrote:
+> This reverts commit 89c83fb539f95491be80cdd5158e6f0ce329e317.
 > =
 
->> So just based on David's numbers, and some wild handwaving on my part,
->> a slightly more complex, but still very sensible default might be
->> something like
->>
->>  1) try to do a cheap local node hugepage allocation
->>
->>     Rationale: everybody agrees this is the best case.
->>
->>     But if that fails:
->>
->>  2) look at compacting and the local node, but not very hard.
->>
->>     If there's lots of memory on the local node, but synchronous
->> compaction doesn't do anything easily, just fall back to small pages.
-> Do we reclaim at this stage or this is mostly GFP_NOWAIT attempt?
+> There are a couple of issues with 89c83fb539f9 independent of its partial =
 
-I would expect no reclaim, because for non-THP faults we also don't
-reclaim the local node before trying to allocate from remote node. If
-somebody wants such behavior they can enable the node reclaim mode. THP
-faults shouldn't be different in this regard, right?
+> revert in 2f0799a0ffc0 ("mm, thp: restore node-local hugepage =
 
+> allocations"):
+> =
 
---===============2777361346034367658==--
+> Firstly, the interaction between alloc_hugepage_direct_gfpmask() and =
+
+> alloc_pages_vma() is racy wrt __GFP_THISNODE and MPOL_BIND.  =
+
+> alloc_hugepage_direct_gfpmask() makes sure not to set __GFP_THISNODE for =
+
+> an MPOL_BIND policy but the policy used in alloc_pages_vma() may not be =
+
+> the same for shared vma policies, triggering the WARN_ON_ONCE() in =
+
+> policy_node().
+
+AFAICS 2f0799a0ffc0 removed the policy check in
+alloc_hugepage_direct_gfpmask() comlpetely, so it's not racy and the
+warning will always trigger for a MPOL_BIND policy right now?
+
+--===============4472753991493073621==--
 
