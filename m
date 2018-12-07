@@ -1,108 +1,52 @@
-Content-Type: multipart/mixed; boundary="===============0734527806123795887=="
+Content-Type: multipart/mixed; boundary="===============6386442209582305320=="
 MIME-Version: 1.0
 From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
-Subject: Re: [patch for-4.20] Revert "mm, thp: consolidate THP gfp handling into alloc_hugepage_direct_gfpmask"
-Date: Fri, 07 Dec 2018 15:05:28 -0800
-Message-ID: <alpine.DEB.2.21.1812071450270.173448@chino.kir.corp.google.com>
-In-Reply-To: <20181207080515.GT1286@dhcp22.suse.cz>
+Subject: Re: MADV_HUGEPAGE vs. NUMA semantic (was: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression)
+Date: Fri, 07 Dec 2018 15:15:37 -0800
+Message-ID: <alpine.DEB.2.21.1812071512040.173448@chino.kir.corp.google.com>
+In-Reply-To: <779efc07-cac0-5d36-72fc-11d99060cac7@suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0734527806123795887==
+--===============6386442209582305320==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 7 Dec 2018, Michal Hocko wrote:
+On Fri, 7 Dec 2018, Vlastimil Babka wrote:
 
-> > This reverts commit 89c83fb539f95491be80cdd5158e6f0ce329e317.
-> > =
-
-> > There are a couple of issues with 89c83fb539f9 independent of its parti=
-al =
-
-> > revert in 2f0799a0ffc0 ("mm, thp: restore node-local hugepage =
-
-> > allocations"):
-> > =
-
-> > Firstly, the interaction between alloc_hugepage_direct_gfpmask() and =
-
-> > alloc_pages_vma() is racy wrt __GFP_THISNODE and MPOL_BIND.  =
-
-> > alloc_hugepage_direct_gfpmask() makes sure not to set __GFP_THISNODE fo=
-r =
-
-> > an MPOL_BIND policy but the policy used in alloc_pages_vma() may not be =
-
-> > the same for shared vma policies, triggering the WARN_ON_ONCE() in =
-
-> > policy_node().
+> >> But *that* in turn makes for other possible questions:
+> >>
+> >>  - if the reason we couldn't get a local hugepage is that we're simply
+> >> out of local memory (huge *or* small), then maybe a remote hugepage is
+> >> better.
+> >>
+> >>    Note that this now implies that the choice can be an issue of "did
+> >> the hugepage allocation fail due to fragmentation, or due to the node
+> >> being low of memory"
+> > How exactly do you tell? Many systems are simply low on memory due to
+> > caching. A clean pagecache is quite cheap to reclaim but it can be more
+> > expensive to fault in. Do we consider it to be a viable target?
 > =
 
-> Could you share a test case?
+> Compaction can report if it failed (more precisely: was skipped) due to
+> low memory, or for other reasons. It doesn't distinguish how easily
+> reclaimable is the memory, but I don't think we should reclaim anything
+> (see below).
 > =
 
 
-Sorry, as Vlastimil pointed out this race does not exist anymore since =
+Note that just reclaiming when the order-0 watermark in =
 
-commit 2f0799a0ffc0 ("mm, thp: restore node-local hugepage allocations") =
+__compaction_suitable() fails is unfortunately not always sufficient: it =
 
-since it removed the restructuring of alloc_hugepage_direct_gfpmask().  It =
+needs to be accessible to isolate_freepages().  For order-9 memory, it's =
 
-existed prior to this commit for shared vma policies that could modify the =
+possible for isolate_migratepages_block() to skip over a top of free pages =
 
-policy between alloc_hugepage_direct_gfpmask() and alloc_pages_vma() if =
+that were just reclaimed if there are unmovable pages preventing the =
 
-the policy switches to MPOL_BIND in that window.
+entire pageblock from being freed.
 
-> > Secondly, prior to 89c83fb539f9, alloc_pages_vma() implemented a somewh=
-at =
-
-> > different policy for hugepage allocations, which were allocated through =
-
-> > alloc_hugepage_vma().  For hugepage allocations, if the allocating =
-
-> > process's node is in the set of allowed nodes, allocate with =
-
-> > __GFP_THISNODE for that node (for MPOL_PREFERRED, use that node with =
-
-> > __GFP_THISNODE instead).
-> =
-
-> Why is it wrong to fallback to an explicitly configured mbind mask?
-> =
-
-
-The new_page() case is similar to the shmem_alloc_hugepage() case.  Prior =
-
-to 89c83fb539f9 ("mm, thp: consolidate THP gfp handling into =
-
-alloc_hugepage_direct_gfpmask"), shmem_alloc_hugepage() did =
-
-alloc_pages_vma() with hugepage =3D=3D true, which effected a different =
-
-allocation policy: if the node current is running on is allowed by the =
-
-policy, use __GFP_THISNODE (considering ac5b2c18911ff is reverted, which =
-
-it is in Linus's tree).
-
-After 89c83fb539f9, we lose that and can fallback to remote memory.  Since =
-
-the discussion is on-going wrt the NUMA aspects of hugepage allocations, =
-
-it's better to have a stable 4.20 tree while that is being worked out and =
-
-likely deserves separate patches for both new_page() and =
-
-shmem_alloc_hugepage().  For the latter specifically, I assume it would be =
-
-nice to get an Acked-by by Kirill who implemented shmem_alloc_hugepage() =
-
-with hugepage =3D=3D true back in 4.8 that also had the __GFP_THISNODE =
-
-behavior before the allocation policy is suddenly changed.
-
---===============0734527806123795887==--
+--===============6386442209582305320==--
 
