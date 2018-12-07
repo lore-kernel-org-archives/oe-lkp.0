@@ -1,88 +1,136 @@
-Content-Type: multipart/mixed; boundary="===============5515972282086234380=="
+Content-Type: multipart/mixed; boundary="===============8641480946085755085=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Thu, 06 Dec 2018 20:01:46 -0800
-Message-ID: <CAHk-=wjVuLjZ1Wr52W=hNqh=_8gbzuKA+YpsVb4NBHCJsE6cyA@mail.gmail.com>
-In-Reply-To: <alpine.DEB.2.21.1812061505010.162675@chino.kir.corp.google.com>
+Subject: Re: MADV_HUGEPAGE vs. NUMA semantic (was: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression)
+Date: Thu, 06 Dec 2018 20:31:46 -0800
+Message-ID: <CAHk-=whCnERJt8bterD5yXABvoSmoJAx004Y76c82bBHCWbgDg@mail.gmail.com>
+In-Reply-To: <20181206091405.GD1286@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5515972282086234380==
+--===============8641480946085755085==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 6, 2018 at 3:43 PM David Rientjes <rientjes@google.com> wrote:
+[ Oops. different thread for me due to edited subject, so I saw this
+after replying to the earlier email by David ]
+
+On Thu, Dec 6, 2018 at 1:14 AM Michal Hocko <mhocko@kernel.org> wrote:
 >
-> On Broadwell, the access latency to local small pages was +5.6%, remote
-> hugepages +16.4%, and remote small pages +19.9%.
->
-> On Naples, the access latency to local small pages was +4.9%, intrasocket
-> hugepages +10.5%, intrasocket small pages +19.6%, intersocket small pages
-> +26.6%, and intersocket hugepages +29.2%
+> MADV_HUGEPAGE changes the picture because the caller expressed a need
+> for THP and is willing to go extra mile to get it.
 
-Are those two last numbers transposed?
+Actually, I think MADV_HUGEPAGE should just be
+"TRANSPARENT_HUGEPAGE_ALWAYS but only for this vma".
 
-Or why would small page accesses be *faster* than hugepages for the
-intersocket case?
+So MADV_HUGEPAGE shouldn't change any behavior at all, if the kernel
+was built with TRANSPARENT_HUGEPAGE_ALWAYS.
 
-Of course, depending on testing, maybe the page itself was remote, but
-the page tables were random, and you happened to get a remote page
-table for the hugepage case?
+Put another way: even if you decide to run a kernel that does *not*
+have that "always THP" (beause you presumably think that it's too
+blunt an instrument), then MADV_HUGEPAGE says "for _this_ vma, do the
+'always THP' bebavior"
 
-> The results on Murano were similar, which is why I suspect Aneesh
-> introduced the __GFP_THISNODE requirement for thp in 4.0, which preferred,
-> in order, local small pages, remote 1-hop hugepages, remote 2-hop
-> hugepages, remote 1-hop small pages, remote 2-hop small pages.
+I think those semantics would be a whole lot easier to explain to
+people, and perhaps more imporantly, starting off from that kind of
+mindset also gives good guidance to what MADV_HUGEPAGE behavior should
+be: it should be sane enough that it makes sense as the _default_
+behavior for the TRANSPARENT_HUGEPAGE_ALWAYS configuration.
 
-it sounds like on the whole the TLB advantage of hugepages is smaller
-than the locality advantage.
+But that also means that no, MADV_HUGEPAGE doesn't really change the
+picture. All it does is says "I know that for this vma, THP really
+does make sense as a default".
 
-Which doesn't surprise me on x86, because TLB costs really are fairly
-low. Very good TLB fills, relatively to what I've seen elsewhere.
+It doesn't say "I _have_ to have THP", exactly like
+TRANSPARENT_HUGEPAGE_ALWAYS does not mean that every allocation should
+strive to be THP.
 
-> So it *appears* from the x86 platforms that NUMA matters much more
-> significantly than hugeness, but remote hugepages are a slight win over
-> remote small pages.  PPC appeared the same wrt the local node but then
-> prefers hugeness over affinity when it comes to remote pages.
+>I believe that something like the below would be sensible
+>         1) THP on a local node with compaction not giving up too early
+>         2) THP on a remote node in NOWAIT mode - so no direct
+>            compaction/reclaim (trigger kswapd/kcompactd only for
+>            defrag=3Ddefer+madvise)
+>         3) fallback to the base page allocation
 
-I do think POWER at least historically has much weaker TLB fills, but
-also very costly page table creation/teardown. Constant-time O(1)
-arguments about hash lookups are only worth so much when the constant
-time is pretty big. They've been working on it.
+That doesn't sound insane to me. That said, the numbers David quoted
+do fairly strongly imply that local small-pages are actually preferred
+to any remote THP pages.
 
-So at least on POWER, afaik one issue is literally that hugepages made
-the hash setup and teardown situation much better.
+But *that* in turn makes for other possible questions:
 
-One thing that might be worth looking at is whether the process itself
-is all that node-local. Maybe we could aim for a policy that says
-"prefer local memory, but if we notice that the accesses to this vma
-aren't all that local, then who cares?".
+ - if the reason we couldn't get a local hugepage is that we're simply
+out of local memory (huge *or* small), then maybe a remote hugepage is
+better.
 
-IOW, the default could be something more dynamic than just "always use
-__GFP_THISNODE". It could be more along the lines of "start off using
-__GFP_THISNODE, but for longer-lived processes that bounce around
-across nodes, maybe relax it?"
+   Note that this now implies that the choice can be an issue of "did
+the hugepage allocation fail due to fragmentation, or due to the node
+being low of memory"
 
-I don't think we have that kind of information right now, though, do we?
+and there is the other question that I asked in the other thread
+(before subject edit):
 
-Honestly, I think things like vm_policy etc should not be the solution
-- yes, some people may know *exactly* what access patterns they want,
-but for most situations, I think the policy should be that defaults
-"just work".
+ - how local is the load to begin with?
 
-In fact, I wish even MADV_HUGEPAGE itself were to approach being a
-no-op with THP.
+   Relatively shortlived processes - or processes that are explicitly
+bound to a node - might have different preferences than some
+long-lived process where the CPU bounces around, and might have
+different trade-offs for the local vs remote question too.
 
-We already have TRANSPARENT_HUGEPAGE_ALWAYS being the default kconfig
-option (but I think it's a bit detbatable, because I'm not sure
-everybody always agrees about memory use), so on the whole
-MADV_HUGEPAGE shouldn't really *do* anything.
+So just based on David's numbers, and some wild handwaving on my part,
+a slightly more complex, but still very sensible default might be
+something like
+
+ 1) try to do a cheap local node hugepage allocation
+
+    Rationale: everybody agrees this is the best case.
+
+    But if that fails:
+
+ 2) look at compacting and the local node, but not very hard.
+
+    If there's lots of memory on the local node, but synchronous
+compaction doesn't do anything easily, just fall back to small pages.
+
+    Rationale: local memory is generally more important than THP.
+
+    If that fails (ie local node is simply low on memory):
+
+ 3) Try to do remote THP allocation
+
+     Rationale: Ok, we simply didn't have a lot of local memory, so
+it's not just a question of fragmentation. If it *had* been
+fragmentation, lots of small local pages would have been better than a
+remote THP page.
+
+     Oops, remote THP allocation failed (possibly after synchronous
+remote compaction, but maybe this is where we do kcompactd).
+
+ 4) Just do any small page, and do reclaim etc. THP isn't happening,
+and it's not a priority when you're starting to feel memory pressure.
+
+In general, I really would want to avoid magic kernel command lines
+(or sysfs settings, or whatever) making a huge difference in behavior.
+So I really wish people would see the whole
+'transparent_hugepage_flags' thing as a way for kernel developers to
+try different settings, not as a way for users to tune their loads.
+
+Our default should work as sane defaults, we shouldn't have a "ok,
+let's have this sysfs tunable and let people make their own
+decisions". That's a cop-out.
+
+Btw, don't get me wrong: I'm not suggesting removing the sysfs knob.
+As a debug tool, it's great, where you can ask "ok, do things work
+better if you set THP-defrag to defer+madvise".
+
+I'm just saying that we should *not* use that sysfs flag as an excuse
+for "ok, if we get the default wrong, people can make their own
+defaults". We should strive to do well enough that it really shouldn't
+be an issue in normal situations.
 
                      Linus
 
---===============5515972282086234380==
+--===============8641480946085755085==
 Content-Type: application/pkcs7-signature
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -169,14 +217,14 @@ KYvaXyUP3o7hBubLcdMz/VM9VKT5HnU6c3rFemJSmUc41Htu57YYMYICsDCCAqwCAQEwga0wgZcx
 CzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZv
 cmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVu
 dCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAyRamH6VuTQrvgXSXzzbh6jAN
-BglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg8V7GOBqqf6NYUcSE6YP7JH9o7vjJR6Jf
-+3H6BEFn0hQwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTgxMjA3
-MDQwMjAzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQMEARYwCwYJYIZI
+BglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgEYxGj42qgyihj9yBcR5TCN5jEds0p2qD
+5z0SiI4Gz6IwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTgxMjA3
+MDQzMjAyWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQMEARYwCwYJYIZI
 AWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJYIZIAWUDBAIB
-MA0GCSqGSIb3DQEBAQUABIIBAJH1L9rfPkUkABIW5uRd4FB08HHjm30kOAOz7jaI62G2SvhPsj71
-cugMJBLOgzTfflcbfMHUxOeTVFrxIqMpTC4PGdHRjzJsYl76yU6jmAkeUjzd8WUuxaiuefEqFrkI
-6aKaEAxCARrZve+ao7zM6nGwUQLEsz1seRIy4Ofrnf8ejIkxSXniP7zVq/EPI05nBiYnoH7ErT40
-GPVKqt26SbPFyyl/PoyZXJC+sO9bz5xIVOJhNBEmb3FJ1qSkvgx7Q5VauCz0MDEvQtOrly3RXtyP
-JaeTYTHwLdAAeix8wGUqK9SYfCsCuoTlBWAvy+QSUNZAICVAPs7tXA7oSpiuDWQ=
---===============5515972282086234380==--
+MA0GCSqGSIb3DQEBAQUABIIBAHBBZlQeHs8JX3Yfg210EUz4+uXZL1eagD17s5HwzqE013gHYUBN
+iiYPljkDsH88bBwkzhyVZNmZjdbTf2pr3NfvwkokTuem5UyyRAGdFogt3PB4tcpQ8tlOp29G7aJS
+4vAy81rbybOLc5yY7got0RddY9D9wzNRCnnIQ/Z6PiB2tvkMGpWlMM53JtMRv4NBTyLyzCeBFz5A
+ogDVRoC221Ps5gK4tPbRevNU0E6X60hHvti4emJKbLGxbsZxFM9K+swlB6ppn773jXv5gHq0NUQB
+PQ3G3PZ6RA4/7KD+pWAvYRzMx3qCJSF8IFZS1CNnA8zxqsCU+QOrph9WaMx2sto=
+--===============8641480946085755085==--
 
