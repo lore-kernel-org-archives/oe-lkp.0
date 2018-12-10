@@ -1,117 +1,214 @@
-Content-Type: multipart/mixed; boundary="===============2314615889976767423=="
+Content-Type: multipart/mixed; boundary="===============5153054558479837610=="
 MIME-Version: 1.0
 From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
-Subject: Re: [patch 0/2 for-4.20] mm, thp: fix remote access and allocation regressions
-Date: Sun, 09 Dec 2018 14:44:23 -0800
-Message-ID: <alpine.DEB.2.21.1812091420350.95551@chino.kir.corp.google.com>
-In-Reply-To: <20181206003126.GA21159@redhat.com>
+Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
+Date: Sun, 09 Dec 2018 16:29:13 -0800
+Message-ID: <alpine.DEB.2.21.1812091538310.215735@chino.kir.corp.google.com>
+In-Reply-To: <CAHk-=wjVuLjZ1Wr52W=hNqh=_8gbzuKA+YpsVb4NBHCJsE6cyA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2314615889976767423==
+--===============5153054558479837610==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 5 Dec 2018, Andrea Arcangeli wrote:
+On Thu, 6 Dec 2018, Linus Torvalds wrote:
 
-> > I've must have said this at least six or seven times: fault latency is =
-
+> > On Broadwell, the access latency to local small pages was +5.6%, remote
+> > hugepages +16.4%, and remote small pages +19.9%.
+> >
+> > On Naples, the access latency to local small pages was +4.9%, intrasock=
+et
+> > hugepages +10.5%, intrasocket small pages +19.6%, intersocket small pag=
+es
+> > +26.6%, and intersocket hugepages +29.2%
 > =
 
-> In your original regression report in this thread to Linus:
+> Are those two last numbers transposed?
 > =
 
-> https://lkml.kernel.org/r/alpine.DEB.2.21.1811281504030.231719(a)chino.ki=
-r.corp.google.com
+> Or why would small page accesses be *faster* than hugepages for the
+> intersocket case?
 > =
 
-> you said "On a fragmented host, the change itself showed a 13.9%
-> access latency regression on Haswell and up to 40% allocation latency
->                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> regression. This is more substantial on Naples and Rome.  I also
-> ^^^^^^^^^^
-> measured similar numbers to this for Haswell."
-> =
-
-> > secondary to the *access* latency.  We want to try hard for MADV_HUGEPA=
-GE =
-
-> > users to do synchronous compaction and try to make a hugepage available=
-.  =
-
-> =
-
-> I'm glad you said it six or seven times now, because you forgot to
-> mention in the above email that the "40% allocation/fault latency
-> regression" you reported above, is actually a secondary concern because
-> those must be long lived allocations and we can't yet generate
-> compound pages for free after all..
+> Of course, depending on testing, maybe the page itself was remote, but
+> the page tables were random, and you happened to get a remote page
+> table for the hugepage case?
 > =
 
 
-I've been referring to the long history of this discussion, namely my =
+Yes, looks like that was the case, if the page tables were from the same =
 
-explicit Nacked-by in https://marc.info/?l=3Dlinux-kernel&m=3D1538684201267=
-75 =
+node as the intersocket remote hugepage it looks like a ~0.1% increase =
 
-two months ago stating the 13.9% access latency regression.  The patch was =
+accessing small pages, so basically unchanged.  So this complicates the =
 
-nonetheless still merged and I proposed the revert for the same chief =
+allocation strategy somewhat; on this platform, at least, hugepages are =
 
-complaint, and it was reverted.
+preferred on the same socket but there isn't a significant benefit from =
 
-I brought up the access latency issue three months ago in
-https://marc.info/?l=3Dlinux-kernel&m=3D153661012118046 and said allocation =
+getting a cross socket hugepage over small page.
 
-latency was a secondary concern, specifically that our users of =
+The typical way this is resolved is based on the SLIT and how the kernel =
 
-MADV_HUGEPAGE are willing to accept the increased allocation latency for =
+defines RECLAIM_DISTANCE.  I'm not sure that we can expect the distances =
 
-local hugepages.
+between proximity domains to be defined according to this value for a =
 
-> BTW, I never bothered to ask yet, but, did you enable NUMA balancing
-> in your benchmarks? NUMA balancing would fix the access latency very
-> easily too, so that 13.9% access latency must quickly disappear if you
-> correctly have NUMA balancing enabled in a NUMA system.
+one-size-fits-all solution.  I've always thought that RECLAIM_DISTANCE =
+
+should be configurable so that initscripts can actually determine its =
+
+ideal value when using vm.zone_reclaim_mode.
+
+> > So it *appears* from the x86 platforms that NUMA matters much more
+> > significantly than hugeness, but remote hugepages are a slight win over
+> > remote small pages.  PPC appeared the same wrt the local node but then
+> > prefers hugeness over affinity when it comes to remote pages.
+> =
+
+> I do think POWER at least historically has much weaker TLB fills, but
+> also very costly page table creation/teardown. Constant-time O(1)
+> arguments about hash lookups are only worth so much when the constant
+> time is pretty big. They've been working on it.
+> =
+
+> So at least on POWER, afaik one issue is literally that hugepages made
+> the hash setup and teardown situation much better.
 > =
 
 
-No, we do not have CONFIG_NUMA_BALANCING enabled.  The __GFP_THISNODE =
+I'm still working on the more elaborate test case that will generate these =
 
-behavior for hugepages was added in 4.0 for the PPC usecase, not by me.  =
+results because I think I can use it at boot to determine an ideal =
 
-That had nothing to do with the madvise mode: the initial documentation =
+RECLAIM_DISTANCE.  I can also get numbers for hash vs radix MMU if you're =
 
-referred to the mode as a way to prevent an increase in rss for configs =
+interested.
 
-where "enabled" was set to madvise.  The allocation policy was never about =
+> One thing that might be worth looking at is whether the process itself
+> is all that node-local. Maybe we could aim for a policy that says
+> "prefer local memory, but if we notice that the accesses to this vma
+> aren't all that local, then who cares?".
+> =
 
-MADV_HUGEPAGE in any 4.x kernel, it was only an indication for certain =
+> IOW, the default could be something more dynamic than just "always use
+> __GFP_THISNODE". It could be more along the lines of "start off using
+> __GFP_THISNODE, but for longer-lived processes that bounce around
+> across nodes, maybe relax it?"
+> =
 
-defrag settings to determine how much work should be done to allocate =
 
-*local* hugepages at fault.
+It would allow the use of MPOL_PREFERRED for an exact preference if they =
 
-If you are saying that the change in allocator policy in a patch from =
+are known to not be bounced around.  This would be required for processes =
 
-Aneesh almost four years ago and has gone unreported by anybody up until a =
+that are bound to the cpus of a single node through cpuset or =
 
-few months ago, I can understand the frustration.  I do, however, support =
+sched_setaffinity() but unconstrained as far as memory is concerned.
 
-the __GFP_THISNODE change he made because his data shows the same results =
+The goal of __GFP_THISNODE being the default for thp, however, is that we =
 
-as mine.
+*know* we're going to be accessing it locally at least in the short term, =
 
-I've suggested a very simple extension, specifically a prctl() mode that =
+perhaps forever.  Any other default would assume the remotely allocated =
 
-is inherited across fork, that would allow a workload to specify that it =
+hugepage would eventually be accessed locally, otherwise we would have =
 
-prefers remote allocations over local compaction/reclaim because it is too =
+been much better off just failing the hugepage allocation and accessing =
 
-large to fit on a single node.  I'd value your feedback for that =
+small pages.  You could make an assumption that's the case iff the process =
 
-suggestion to fix your usecase.
+does not fit in its local node, and I think that would be the minority of =
 
---===============2314615889976767423==--
+applications.
+
+I guess there could be some heuristic that could determine this based on =
+
+MM_ANONPAGES of Andrea's qemu and zone->zone_pgdat->node_present_pages.  =
+
+It feels like something that should be more exactly defined, though, for =
+
+the application to say that it prefers remote hugepages over local =
+
+small pages because it can't access either locally forever anyway.
+
+This was where I suggested a new prctl() mode so that an application can =
+
+prefer remote hugepages because it knows it's larger than the single node =
+
+and that requires no change to the binary itself because it is inherited =
+
+across fork.
+
+The sane default, though, seems to always prefer local allocation, whether =
+
+hugepages or small pages, for the majority of workloads since that's where =
+
+the lowest access latency is.
+
+> Honestly, I think things like vm_policy etc should not be the solution
+> - yes, some people may know *exactly* what access patterns they want,
+> but for most situations, I think the policy should be that defaults
+> "just work".
+> =
+
+> In fact, I wish even MADV_HUGEPAGE itself were to approach being a
+> no-op with THP.
+> =
+
+
+Besides the NUMA locality of the allocations, we still have the allocation =
+
+latency concern that MADV_HUGEPAGE changes.  The madvise mode has taken on =
+
+two meanings: (1) prefer to fault hugepages when the thp enabled setting =
+
+is "madvise" so other applications don't blow up their rss unexpectedly, =
+
+and (2) try synchronous compaction/reclaim at fault for thp defrag =
+
+settings of "madvise" or "defer+madvise".
+
+ [ It was intended to take on an additional meaning through the =
+
+   now-reverted patch, which was (3) relax the NUMA locality preference. ]
+
+My binaries that remap their text segment to be backed by transparent =
+
+hugepages and qemu both share the same preference to try hard to fault =
+
+hugepages through compaction because we don't necessarily care about =
+
+allocation latency, we care about access latency later.  Smaller binaries, =
+
+those that do not have strict NUMA locality requirements, and short-lived =
+
+allocations are not going to want to incur the performance penalty of =
+
+synchronous compaction.
+
+So I think today's semantics for MADV_HUGEPAGE make sense, but I'd like to =
+
+explore other areas that could improve this, both for the default case and =
+
+the specialized cases:
+
+ - prctl() mode to readily allow remote allocations rather than reclaiming
+   or compacting memory locally (affects more than just hugepages if the
+   system has a non-zero vm.zone_reclaim_mode),
+
+ - better feedback loop after the first compaction attempt in the page =
+
+   allocator slowpath to determine if reclaim is actually worthwhile for
+   high-order allocations, and
+
+ - configurable vm.reclaim_distance (use RECLAIM_DISTANCE as the default)
+   which can be defined since there is not a one-size-fits-all strategy
+   for allocations (there's no benefit to allocating hugepages cross =
+
+   socket on Naples, for example),
+
+--===============5153054558479837610==--
 
