@@ -1,214 +1,271 @@
-Content-Type: multipart/mixed; boundary="===============5153054558479837610=="
+Content-Type: multipart/mixed; boundary="===============5831014760633997838=="
 MIME-Version: 1.0
-From: David Rientjes <rientjes@google.com>
+From: Andrea Arcangeli <aarcange@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Sun, 09 Dec 2018 16:29:13 -0800
-Message-ID: <alpine.DEB.2.21.1812091538310.215735@chino.kir.corp.google.com>
-In-Reply-To: <CAHk-=wjVuLjZ1Wr52W=hNqh=_8gbzuKA+YpsVb4NBHCJsE6cyA@mail.gmail.com>
+Date: Sun, 09 Dec 2018 23:49:16 -0500
+Message-ID: <20181210044916.GC24097@redhat.com>
+In-Reply-To: <alpine.DEB.2.21.1812091538310.215735@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5153054558479837610==
+--===============5831014760633997838==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 6 Dec 2018, Linus Torvalds wrote:
-
-> > On Broadwell, the access latency to local small pages was +5.6%, remote
-> > hugepages +16.4%, and remote small pages +19.9%.
-> >
-> > On Naples, the access latency to local small pages was +4.9%, intrasock=
-et
-> > hugepages +10.5%, intrasocket small pages +19.6%, intersocket small pag=
-es
-> > +26.6%, and intersocket hugepages +29.2%
-> =
-
-> Are those two last numbers transposed?
-> =
-
-> Or why would small page accesses be *faster* than hugepages for the
-> intersocket case?
-> =
-
-> Of course, depending on testing, maybe the page itself was remote, but
-> the page tables were random, and you happened to get a remote page
-> table for the hugepage case?
-> =
-
-
-Yes, looks like that was the case, if the page tables were from the same =
-
-node as the intersocket remote hugepage it looks like a ~0.1% increase =
-
-accessing small pages, so basically unchanged.  So this complicates the =
-
-allocation strategy somewhat; on this platform, at least, hugepages are =
-
-preferred on the same socket but there isn't a significant benefit from =
-
-getting a cross socket hugepage over small page.
-
-The typical way this is resolved is based on the SLIT and how the kernel =
-
-defines RECLAIM_DISTANCE.  I'm not sure that we can expect the distances =
-
-between proximity domains to be defined according to this value for a =
-
-one-size-fits-all solution.  I've always thought that RECLAIM_DISTANCE =
-
-should be configurable so that initscripts can actually determine its =
-
-ideal value when using vm.zone_reclaim_mode.
-
-> > So it *appears* from the x86 platforms that NUMA matters much more
-> > significantly than hugeness, but remote hugepages are a slight win over
-> > remote small pages.  PPC appeared the same wrt the local node but then
-> > prefers hugeness over affinity when it comes to remote pages.
-> =
-
-> I do think POWER at least historically has much weaker TLB fills, but
-> also very costly page table creation/teardown. Constant-time O(1)
-> arguments about hash lookups are only worth so much when the constant
-> time is pretty big. They've been working on it.
-> =
-
-> So at least on POWER, afaik one issue is literally that hugepages made
-> the hash setup and teardown situation much better.
-> =
-
-
-I'm still working on the more elaborate test case that will generate these =
-
-results because I think I can use it at boot to determine an ideal =
-
-RECLAIM_DISTANCE.  I can also get numbers for hash vs radix MMU if you're =
-
-interested.
-
-> One thing that might be worth looking at is whether the process itself
-> is all that node-local. Maybe we could aim for a policy that says
-> "prefer local memory, but if we notice that the accesses to this vma
-> aren't all that local, then who cares?".
-> =
-
-> IOW, the default could be something more dynamic than just "always use
-> __GFP_THISNODE". It could be more along the lines of "start off using
-> __GFP_THISNODE, but for longer-lived processes that bounce around
-> across nodes, maybe relax it?"
-> =
-
-
-It would allow the use of MPOL_PREFERRED for an exact preference if they =
-
-are known to not be bounced around.  This would be required for processes =
-
-that are bound to the cpus of a single node through cpuset or =
-
-sched_setaffinity() but unconstrained as far as memory is concerned.
-
-The goal of __GFP_THISNODE being the default for thp, however, is that we =
-
-*know* we're going to be accessing it locally at least in the short term, =
-
-perhaps forever.  Any other default would assume the remotely allocated =
-
-hugepage would eventually be accessed locally, otherwise we would have =
-
-been much better off just failing the hugepage allocation and accessing =
-
-small pages.  You could make an assumption that's the case iff the process =
-
-does not fit in its local node, and I think that would be the minority of =
-
-applications.
-
-I guess there could be some heuristic that could determine this based on =
-
-MM_ANONPAGES of Andrea's qemu and zone->zone_pgdat->node_present_pages.  =
-
-It feels like something that should be more exactly defined, though, for =
-
-the application to say that it prefers remote hugepages over local =
-
-small pages because it can't access either locally forever anyway.
-
-This was where I suggested a new prctl() mode so that an application can =
-
-prefer remote hugepages because it knows it's larger than the single node =
-
-and that requires no change to the binary itself because it is inherited =
-
-across fork.
-
-The sane default, though, seems to always prefer local allocation, whether =
-
-hugepages or small pages, for the majority of workloads since that's where =
-
-the lowest access latency is.
-
-> Honestly, I think things like vm_policy etc should not be the solution
-> - yes, some people may know *exactly* what access patterns they want,
-> but for most situations, I think the policy should be that defaults
-> "just work".
-> =
-
-> In fact, I wish even MADV_HUGEPAGE itself were to approach being a
-> no-op with THP.
-> =
-
-
-Besides the NUMA locality of the allocations, we still have the allocation =
-
-latency concern that MADV_HUGEPAGE changes.  The madvise mode has taken on =
-
-two meanings: (1) prefer to fault hugepages when the thp enabled setting =
-
-is "madvise" so other applications don't blow up their rss unexpectedly, =
-
-and (2) try synchronous compaction/reclaim at fault for thp defrag =
-
-settings of "madvise" or "defer+madvise".
-
- [ It was intended to take on an additional meaning through the =
-
-   now-reverted patch, which was (3) relax the NUMA locality preference. ]
-
-My binaries that remap their text segment to be backed by transparent =
-
-hugepages and qemu both share the same preference to try hard to fault =
-
-hugepages through compaction because we don't necessarily care about =
-
-allocation latency, we care about access latency later.  Smaller binaries, =
-
-those that do not have strict NUMA locality requirements, and short-lived =
-
-allocations are not going to want to incur the performance penalty of =
-
-synchronous compaction.
-
-So I think today's semantics for MADV_HUGEPAGE make sense, but I'd like to =
-
-explore other areas that could improve this, both for the default case and =
-
-the specialized cases:
-
- - prctl() mode to readily allow remote allocations rather than reclaiming
-   or compacting memory locally (affects more than just hugepages if the
-   system has a non-zero vm.zone_reclaim_mode),
-
- - better feedback loop after the first compaction attempt in the page =
-
-   allocator slowpath to determine if reclaim is actually worthwhile for
-   high-order allocations, and
-
- - configurable vm.reclaim_distance (use RECLAIM_DISTANCE as the default)
-   which can be defined since there is not a one-size-fits-all strategy
-   for allocations (there's no benefit to allocating hugepages cross =
-
-   socket on Naples, for example),
-
---===============5153054558479837610==--
+Hello,
+
+On Sun, Dec 09, 2018 at 04:29:13PM -0800, David Rientjes wrote:
+> [..] on this platform, at least, hugepages are =
+
+> preferred on the same socket but there isn't a significant benefit from =
+
+> getting a cross socket hugepage over small page. [..]
+
+You didn't release the proprietary software that depends on
+__GFP_THISNODE behavior and that you're afraid is getting a
+regression.
+
+Could you at least release with an open source license the benchmark
+software that you must have used to do the above measurement to
+understand why it gives such a weird result on remote THP?
+
+On skylake and on the threadripper I can't confirm that there isn't a
+significant benefit from cross socket hugepage over cross socket small
+page.
+
+Skylake Xeon(R) Gold 5115:
+
+# numactl --hardware
+available: 2 nodes (0-1)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 20 21 22 23 24 25 26 27 28 29
+node 0 size: 15602 MB
+node 0 free: 14077 MB
+node 1 cpus: 10 11 12 13 14 15 16 17 18 19 30 31 32 33 34 35 36 37 38 39
+node 1 size: 16099 MB
+node 1 free: 15949 MB
+node distances:
+node   0   1
+  0:  10  21
+  1:  21  10
+# numactl -m 0 -C 0 ./numa-thp-bench
+random writes MADV_HUGEPAGE 10109753 usec
+random writes MADV_NOHUGEPAGE 13682041 usec
+random writes MADV_NOHUGEPAGE 13704208 usec
+random writes MADV_HUGEPAGE 10120405 usec
+# numactl -m 0 -C 10 ./numa-thp-bench
+random writes MADV_HUGEPAGE 15393923 usec
+random writes MADV_NOHUGEPAGE 19644793 usec
+random writes MADV_NOHUGEPAGE 19671287 usec
+random writes MADV_HUGEPAGE 15495281 usec
+# grep Xeon /proc/cpuinfo |head -1
+model name      : Intel(R) Xeon(R) Gold 5115 CPU @ 2.40GHz
+
+local 4k -> local 2m: +35%
+local 4k -> remote 2m: -11% =
+
+remote 4k -> remote 2m: +26%
+
+threadripper 1950x:
+
+# numactl --hardware
+available: 2 nodes (0-1)
+node 0 cpus: 0 1 2 3 4 5 6 7 16 17 18 19 20 21 22 23
+node 0 size: 15982 MB
+node 0 free: 14422 MB
+node 1 cpus: 8 9 10 11 12 13 14 15 24 25 26 27 28 29 30 31
+node 1 size: 16124 MB
+node 1 free: 5357 MB
+node distances:
+node   0   1
+  0:  10  16
+  1:  16  10
+# numactl -m 0 -C 0 /tmp/numa-thp-bench
+random writes MADV_HUGEPAGE 12902667 usec
+random writes MADV_NOHUGEPAGE 17543070 usec
+random writes MADV_NOHUGEPAGE 17568858 usec
+random writes MADV_HUGEPAGE 12896588 usec
+# numactl -m 0 -C 8 /tmp/numa-thp-bench
+random writes MADV_HUGEPAGE 19663515 usec
+random writes MADV_NOHUGEPAGE 27819864 usec
+random writes MADV_NOHUGEPAGE 27844066 usec
+random writes MADV_HUGEPAGE 19662706 usec
+# grep Threadripper /proc/cpuinfo |head -1
+model name      : AMD Ryzen Threadripper 1950X 16-Core Processor
+
+local 4k -> local 2m: +35%
+local 4k -> remote 2m: -10% =
+
+remote 4k -> remote 2m: +41%
+
+Or if you prefer reversed in terms of compute time (negative
+percentage is better in this case):
+
+local 4k -> local 2m: -26%
+local 4k -> remote 2m: +12%
+remote 4k -> remote 2m: -29%
+
+It's true that local 4k is generally a win vs remote THP when the
+workload is memory bound also for the threadripper, the threadripper
+seems even more favorable to remote THP than skylake Xeon is.
+
+The above is the host bare metal result. Now let's try guest mode on
+the threadripper. The last two lines seems more reliable (the first
+two lines also needs to fault in the guest RAM because the guest
+was fresh booted).
+
+guest backed by local 2M pages:
+
+random writes MADV_HUGEPAGE 16025855 usec
+random writes MADV_NOHUGEPAGE 21903002 usec
+random writes MADV_NOHUGEPAGE 19762767 usec
+random writes MADV_HUGEPAGE 15189231 usec
+
+guest backed by remote 2M pages:
+
+random writes MADV_HUGEPAGE 25434251 usec
+random writes MADV_NOHUGEPAGE 32404119 usec
+random writes MADV_NOHUGEPAGE 31455592 usec
+random writes MADV_HUGEPAGE 22248304 usec
+
+guest backed by local 4k pages:
+
+random writes MADV_HUGEPAGE 28945251 usec
+random writes MADV_NOHUGEPAGE 32217690 usec
+random writes MADV_NOHUGEPAGE 30664731 usec
+random writes MADV_HUGEPAGE 22981082 usec
+
+guest backed by remote 4k pages:
+
+random writes MADV_HUGEPAGE 43772939 usec
+random writes MADV_NOHUGEPAGE 52745664 usec
+random writes MADV_NOHUGEPAGE 51632065 usec
+random writes MADV_HUGEPAGE 40263194 usec
+
+I haven't yet tried the guest mode on the skylake nor
+haswell/broadwell. I can do that too but I don't expect a significant
+difference.
+
+On a threadripper guest, the remote 2m is practically identical to
+local 4k. So shutting down compaction to try to generate local 4k
+memory looks a sure loss.
+
+Even if we ignore the guest mode results completely, if we don't make
+assumption on the workload to be able to fit in the node, if I use
+MADV_HUGEPAGE I think I'd prefer the risk of a -10% slowdown if the
+THP page ends up in a remote node, than not getting the +41% THP
+speedup on remote memory if the pagetable ends up being remote or the
+4k page itself ends up being remote over time.
+
+The cons left from your latest patch, is that you eventually also lose
+the +35% speedup when compaction is clogged by COMPACT_SKIPPED, which
+for a guest mode computation translates in losing the +59% speedup of
+having host local THP (when guest uses 4k pages). khugepaged will
+correct that by unclogging compaction but it may take hours. The idea
+was to have MADV_HUGEPAGE provide THP without having to wait for
+khugepaged to catch up with it.
+
+Thanks,
+Andrea
+
+=3D=3D=3D=3D=3D
+/*
+ *  numa-thp-bench.c
+ *
+ *  Copyright (C) 2018 Red Hat, Inc.
+ *
+ *  This work is licensed under the terms of the GNU GPL, version 2.
+ */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <sys/time.h>
+
+#define HPAGE_PMD_SIZE (2*1024*1024)
+#define SIZE (2048UL*1024*1024-HPAGE_PMD_SIZE)
+#if SIZE >=3D RAND_MAX
+#error "SIZE >=3D RAND_MAX"
+#endif
+#define RATIO 5
+
+int main()
+{
+	char * p;
+	struct timeval before, after;
+	unsigned long i;
+
+	if (posix_memalign((void **) &p, HPAGE_PMD_SIZE, SIZE))
+		perror("posix_memalign"), exit(1);
+	if (madvise(p, SIZE, MADV_HUGEPAGE))
+		perror("madvise"), exit(1);
+	memset(p, 0, SIZE);
+	srand(100);
+	if (gettimeofday(&before, NULL))
+		perror("gettimeofday"), exit(1);
+	for (i =3D 0; i < SIZE / RATIO; i++)
+		p[rand() % SIZE] =3D 0;
+	if (gettimeofday(&after, NULL))
+		perror("gettimeofday"), exit(1);
+	printf("random writes MADV_HUGEPAGE %lu usec\n",
+	       (after.tv_sec-before.tv_sec)*1000000UL +
+	       after.tv_usec-before.tv_usec);
+	munmap(p, SIZE);
+
+	if (posix_memalign((void **) &p, HPAGE_PMD_SIZE, SIZE))
+		perror("posix_memalign"), exit(1);
+	if (madvise(p, SIZE, MADV_NOHUGEPAGE))
+		perror("madvise"), exit(1);
+	memset(p, 0, SIZE);
+	srand(100);
+	if (gettimeofday(&before, NULL))
+		perror("gettimeofday"), exit(1);
+	for (i =3D 0; i < SIZE / RATIO; i++)
+		p[rand() % SIZE] =3D 0;
+	if (gettimeofday(&after, NULL))
+		perror("gettimeofday"), exit(1);
+	printf("random writes MADV_NOHUGEPAGE %lu usec\n",
+	       (after.tv_sec-before.tv_sec)*1000000UL +
+	       after.tv_usec-before.tv_usec);
+	munmap(p, SIZE);
+
+	if (posix_memalign((void **) &p, HPAGE_PMD_SIZE, SIZE))
+		perror("posix_memalign"), exit(1);
+	if (madvise(p, SIZE, MADV_NOHUGEPAGE))
+		perror("madvise"), exit(1);
+	memset(p, 0, SIZE);
+	srand(100);
+	if (gettimeofday(&before, NULL))
+		perror("gettimeofday"), exit(1);
+	for (i =3D 0; i < SIZE / RATIO; i++)
+		p[rand() % SIZE] =3D 0;
+	if (gettimeofday(&after, NULL))
+		perror("gettimeofday"), exit(1);
+	printf("random writes MADV_NOHUGEPAGE %lu usec\n",
+	       (after.tv_sec-before.tv_sec)*1000000UL +
+	       after.tv_usec-before.tv_usec);
+	munmap(p, SIZE);
+
+	if (posix_memalign((void **) &p, HPAGE_PMD_SIZE, SIZE))
+		perror("posix_memalign"), exit(1);
+	if (madvise(p, SIZE, MADV_HUGEPAGE))
+		perror("madvise"), exit(1);
+	memset(p, 0, SIZE);
+	srand(100);
+	if (gettimeofday(&before, NULL))
+		perror("gettimeofday"), exit(1);
+	for (i =3D 0; i < SIZE / RATIO; i++)
+		p[rand() % SIZE] =3D 0;
+	if (gettimeofday(&after, NULL))
+		perror("gettimeofday"), exit(1);
+	printf("random writes MADV_HUGEPAGE %lu usec\n",
+	       (after.tv_sec-before.tv_sec)*1000000UL +
+	       after.tv_usec-before.tv_usec);
+	munmap(p, SIZE);
+
+	return 0;
+}
+
+--===============5831014760633997838==--
 
