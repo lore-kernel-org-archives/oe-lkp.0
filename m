@@ -1,176 +1,195 @@
-Content-Type: multipart/mixed; boundary="===============4432994622780967653=="
+Content-Type: multipart/mixed; boundary="===============0540535433542218237=="
 MIME-Version: 1.0
-From: J. Bruce Fields <bfields@redhat.com>
+From: Dmitry Safonov <dima@arista.com>
 To: lkp@lists.01.org
-Subject: Re: [fs/locks] fd7732e033: stress-ng.eventfd.ops 21.9% improvement
-Date: Tue, 11 Dec 2018 12:05:51 -0500
-Message-ID: <20181211170551.GB32360@parsley.fieldses.org>
-In-Reply-To: <20181211091429.GO23332@shao2-debian>
+Subject: Re: [tty] c96cf923a9: WARNING:possible_circular_locking_dependency_detected
+Date: Tue, 11 Dec 2018 20:59:35 +0000
+Message-ID: <2780774e-b397-dcc2-6950-cccb527d5014@arista.com>
+In-Reply-To: <b8a5b151-9eaa-b098-f24f-b17c1886f456@suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4432994622780967653==
+--===============0540535433542218237==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 11, 2018 at 05:14:29PM +0800, kernel test robot wrote:
-> FYI, we noticed a 21.9% improvement of stress-ng.eventfd.ops due to commi=
-t:
+Hi, everyone,
 
-So, doesn't sound like a problem, but just looking into it out of
-curiosity.....
+I'm looking into that.
 
-I love that you do this, but these reports can be hard to figure out
-sometimes.  The graphs especially could use better labeling.
+Greg, please, keep tty patches set in linux-next, I'll address this
+report before it goes into master.
 
-> commit: fd7732e033e30b3a586923b57e338c859e17858a ("fs/locks: create a tre=
-e of dependent requests.")
-> https://git.kernel.org/cgit/linux/kernel/git/jlayton/linux.git locks-next
+This theoretical issue is not strictly related to the patches set, but
+can be hit without patches.
+
+On 12/11/18 1:49 PM, Jiri Slaby wrote:
+> On 11. 12. 18, 10:11, kernel test robot wrote:
+>> FYI, we noticed the following commit (built with gcc-7):
+>>
+>> commit: c96cf923a98d1b094df9f0cf97a83e118817e31b ("tty: Don't block on I=
+O when ldisc change is pending")
+>> https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git tty-testing
+> ...
+>> [   87.209665] WARNING: possible circular locking dependency detected
+>> [   87.210547] 4.20.0-rc4-00057-gc96cf92 #1 Tainted: G        W        =
+
+>> [   87.211449] ------------------------------------------------------
+>> [   87.212405] getty/519 is trying to acquire lock:
+>> [   87.213074] (____ptrval____) (&obj_hash[i].lock){-.-.}, at: debug_che=
+ck_no_obj_freed+0xb4/0x302
+>> [   87.214343] =
+
+>> [   87.214343] but task is already holding lock:
+>> [   87.215174] (____ptrval____) (&port_lock_key){-.-.}, at: uart_shutdow=
+n+0x3a3/0x4e2
 > =
 
-> in testcase: stress-ng
-> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wit=
-h 64G memory
-> with following parameters:
+> This looks sensible -- normal use case.
 > =
 
-> 	nr_threads: 100%
-> 	disk: 1HDD
-> 	testtime: 1s
-> 	class: filesystem
-> 	ucode: 0xb00002e
-> 	cpufreq_governor: performance
+>> [   87.216260] which lock already depends on the new lock.
+>> [   87.216260] =
 
-Looking at the man page for stress-ng, it doesn't say much about what it
-actually does.  It does say not to use stress-ng as a benchmark.  I
-can't tell if it does file locking--the man pages does document some
-options which ask for locking (--flock, --locka, --lockf) but I don't
-see any evidence in the yaml file or elsewhere that those options are in
-use?
+>> [   87.217421] =
 
-These graphs could really use units on the axes.  Also:
+>> [   87.217421] the existing dependency chain (in reverse order) is:
+> =
 
->                                  stress-ng.fcntl.ops                     =
-       =
+> This is during console init, so even if the report is not false
+> positive, the deadlock is unlikely to happen. And only triggered with
+> CONFIG_DEBUG_OBJECTS_FREE.
+> =
 
->                                                                          =
-       =
+> In any way, I don't see any connection between #2 and #0 below. The
+> stack traces are completely different -- one from start_kernel, one from
+> exit syscall.
+> =
 
->   120000 +-+-------------------------------------------------------------=
----+   =
+> I also wonder how could the commit above start causing this? Well, it
+> might make it happen more likely due to more of EAGAINs.
 
->          O     O    O O O      O   O O O O  O O O O O O  O   O           =
-   |   =
+Yes, as far as I can see right now, this is not related to tty changes,
+but to non-clear locking policy between
+DEBUG_OBJECTS_FREE hash bucket lock <-> uart's port->mutex.
 
->   110000 +-O O    O       O O    O                         O             =
-   |   =
+As far as I remember WARN() prints can't be deferred and it makes sense
+to have WARN() in debug objects.
+I see probably fast and quite simple solution: to copy debug object's
+state on stack and call debug_print_object() without bucket lock...
+But not sure how straight-forward is this. I mean if speaking from
+lib/debugobjects perspective.
 
->   100000 +-+                                                             =
-   |   =
+I'll prepare a patch for that as it seems the easiest way (I haven't
+looked long yet, though).
 
->          |                                                               =
-   |   =
++Cc: Sergey, Petr, Steven - with their console_unlock()/printk() and
+deferring expertise they probably have more brighter ideas.
 
->    90000 +-+                                                             =
-   |   =
+>> [   87.218483] -> #2 (&port_lock_key){-.-.}:
+>> [   87.219282]        lock_acquire+0x28c/0x2e7
+>> [   87.219901]        _raw_spin_lock_irqsave+0x35/0x49
+>> [   87.220601]        serial8250_console_write+0x110/0x5b5
+>> [   87.221354]        univ8250_console_write+0x5f/0x64
+>> [   87.222056]        console_unlock+0x61c/0x7cf
+>> [   87.222680]        register_console+0x63a/0x7b0
+>> [   87.223345]        univ8250_console_init+0x1e/0x28
+>> [   87.224041]        console_init+0x3be/0x57e
+>> [   87.224641]        start_kernel+0x441/0x6c6
+>> [   87.225246]        x86_64_start_reservations+0x29/0x2b
+>> [   87.225979]        x86_64_start_kernel+0x6f/0x72
+>> [   87.226637]        secondary_startup_64+0xa4/0xb0
+>> [   87.227314] =
 
->    80000 +-+                                                             =
-   |   =
+>> [   87.227314] -> #1 (console_owner){-...}:
+>> [   87.228127]        lock_acquire+0x28c/0x2e7
+>> [   87.228728]        console_unlock+0x424/0x7cf
+>> [   87.229363]        vprintk_emit+0x22d/0x252
+>> [   87.229969]        vprintk_default+0x18/0x1a
+>> [   87.230576]        vprintk_func+0xa9/0xab
+>> [   87.231156]        printk+0x97/0xbe
+>> [   87.231659]        __debug_object_init+0x8db/0x92d
+>> [   87.232349]        debug_object_init+0x14/0x17
+>> [   87.232987]        __init_work+0x1b/0x1d
+>> [   87.233551]        rhashtable_init+0x53b/0x602
+>> [   87.234192]        rhltable_init+0xe/0x41
+>> [   87.234772]        test_insert_dup+0xac/0xa94
+>> [   87.235467]        test_rht_init+0x387/0x79c
+>> [   87.236222]        do_one_initcall+0x23c/0x4af
+>> [   87.236869]        kernel_init_freeable+0x5ec/0x69f
+>> [   87.237855]        kernel_init+0xc/0x100
+>> [   87.238470]        ret_from_fork+0x3a/0x50
+>> [   87.239071] =
 
->          |                                                               =
-   |   =
+>> [   87.239071] -> #0 (&obj_hash[i].lock){-.-.}:
+>> [   87.239904]        __lock_acquire+0x1f78/0x22d1
+>> [   87.240556]        lock_acquire+0x28c/0x2e7
+>> [   87.241173]        _raw_spin_lock_irqsave+0x35/0x49
+>> [   87.241882]        debug_check_no_obj_freed+0xb4/0x302
+>> [   87.242620]        free_unref_page_prepare+0x33a/0x483
+>> [   87.243368]        free_unref_page+0x48/0x80
+>> [   87.243991]        __free_pages+0x2e/0x40
+>> [   87.244611]        free_pages+0x54/0x5a
+>> [   87.245188]        uart_shutdown+0x3df/0x4e2
+>> [   87.245817]        uart_hangup+0x123/0x280
+>> [   87.246406]        __tty_hangup+0x4da/0x50f
+>> [   87.247025]        tty_vhangup_session+0xe/0x10
+>> [   87.247680]        disassociate_ctty+0xeb/0x5c5
+>> [   87.248349]        do_exit+0xc97/0x1daf
+>> [   87.248920]        __x64_sys_exit_group+0x0/0x3e
+>> [   87.249587]        __wake_up_parent+0x0/0x52
+>> [   87.250211]        do_syscall_64+0x5e8/0x881
+>> [   87.250839]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
+>> [   87.251637] =
 
->    70000 +-+                                                             =
-   |   =
+>> [   87.251637] other info that might help us debug this:
+>> [   87.251637] =
 
->    60000 +-+                                                             =
-   |   =
+>> [   87.252790] Chain exists of:
+>> [   87.252790]   &obj_hash[i].lock --> console_owner --> &port_lock_key
+>> [   87.252790] =
 
->          |                                                               =
-   |   =
+>> [   87.254307]  Possible unsafe locking scenario:
+>> [   87.254307] =
 
->    50000 +-+                                                             =
-   |   =
+>> [   87.255156]        CPU0                    CPU1
+>> [   87.255813]        ----                    ----
+>> [   87.256460]   lock(&port_lock_key);
+>> [   87.256973]                                lock(console_owner);
+>> [   87.257829]                                lock(&port_lock_key);
+>> [   87.258680]   lock(&obj_hash[i].lock);
+>> [   87.259223] =
 
->    40000 +-+                                                             =
-   |   =
+>> [   87.259223]  *** DEADLOCK ***
+>> [   87.259223] =
 
->          |. .+.+..+.+.   .+.+..+.+. .+.+.+..+. .+.   .+.. .+.   .+.      =
-.+.|   =
+>> [   87.260067] 3 locks held by getty/519:
+>> [   87.260605]  #0: (____ptrval____) (&tty->legacy_mutex){+.+.}, at: tty=
+_lock+0x5c/0x68
+>> [   87.261717]  #1: (____ptrval____) (&port->mutex){+.+.}, at: uart_hang=
+up+0x4b/0x280
+>> [   87.262795]  #2: (____ptrval____) (&port_lock_key){-.-.}, at: uart_sh=
+utdown+0x3a3/0x4e2
+>> [   87.263974] =
 
->    30000 +-+-------------------------------------------------------------=
----+   =
+>> [   87.263974] stack backtrace:
+>> [   87.264631] CPU: 0 PID: 519 Comm: getty Tainted: G        W         4=
+.20.0-rc4-00057-gc96cf92 #1
+>> [   87.265893] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BI=
+OS 1.10.2-1 04/01/2014
+>> [   87.267082] Call Trace:
+>> [   87.267451]  dump_stack+0x86/0xc3
+>> [   87.267942]  print_circular_bug+0x4a8/0x4b9
+>> [   87.268635]  check_prevs_add+0x466/0x109c
+>> [   87.269230]  ? quarantine_put+0x114/0x135
+>> [   87.269821]  ? quarantine_put+0x114/0x135
+>> [   87.270399]  ? serial_do_unlink+0x266/0x272
+>> [   87.271009]  ? print_circular_bug_header+0x122/0x122
+>> [   87.271722]  ? __kasan_slab_free+0x1e8/0x1fd
+>> [   87.272341]  ? __kasan_slab_free+0x153/0x1fd
 
->                                                                          =
-       =
+Thanks,
+          Dmitry
 
->                                                                          =
-                                                                           =
-            =
-
->                              stress-ng.fcntl.ops_per_sec                 =
-       =
-
->                                                                          =
-       =
-
->   120000 +-+-------------------------------------------------------------=
----+   =
-
->          O     O    O O O      O   O O O O  O O O O O O  O   O           =
-   |   =
-
->   110000 +-O O    O       O O    O                         O             =
-   |   =
-
->   100000 +-+                                                             =
-   |   =
-
->          |                                                               =
-   |   =
-
->    90000 +-+                                                             =
-   |   =
-
->    80000 +-+                                                             =
-   |   =
-
->          |                                                               =
-   |   =
-
->    70000 +-+                                                             =
-   |   =
-
->    60000 +-+                                                             =
-   |   =
-
->          |                                                               =
-   |   =
-
->    50000 +-+                                                             =
-   |   =
-
->    40000 +-+                                                             =
-   |   =
-
->          |. .+.+..+.+.   .+.+..+.+. .+.+.+..+. .+.   .+.. .+.   .+.      =
-.+.|   =
-
->    30000 +-+-------------------------------------------------------------=
----+   =
-
->                                                                          =
-       =
-
->                                                                          =
-       =
-
-> [*] bisect-good sample
-> [O] bisect-bad  sample
-
-I see O's, not but any *'s.  And what are the +'s?
-
---b.
-
---===============4432994622780967653==--
+--===============0540535433542218237==--
 
