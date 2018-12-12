@@ -1,151 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============3851578580689546001=="
+Content-Type: multipart/mixed; boundary="===============7777152967180421221=="
 MIME-Version: 1.0
-From: Dmitry Safonov <dima@arista.com>
+From: Waiman Long <longman@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [tty] c96cf923a9: WARNING:possible_circular_locking_dependency_detected
-Date: Wed, 12 Dec 2018 14:54:20 +0000
-Message-ID: <137479ad-d38e-7d26-dae4-a4e721d69928@arista.com>
-In-Reply-To: <20181212034252.GD431@jagdpanzerIV>
+Date: Wed, 12 Dec 2018 10:12:11 -0500
+Message-ID: <fb2e249a-fbda-d197-95ea-0f8a85acf6e7@redhat.com>
+In-Reply-To: <20181212050432.GE431@jagdpanzerIV>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3851578580689546001==
+--===============7777152967180421221==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Sergey,
+On 12/12/2018 12:04 AM, Sergey Senozhatsky wrote:
+> On (12/12/18 12:42), Sergey Senozhatsky wrote:
+> [..]
+>>>>> [   87.255156]        CPU0                    CPU1
+>>>>> [   87.255813]        ----                    ----
+>>>>> [   87.256460]   lock(&port_lock_key);
+>>>>> [   87.256973]                                lock(console_owner);
+>>>>> [   87.257829]                                lock(&port_lock_key);
+>>>>> [   87.258680]   lock(&obj_hash[i].lock);
+>> So it's like
+>>
+>> 	CPU0					CPU1
+>>
+>> 	uart_shutdown()				db->lock
+>> 	 uart_port->lock			 debug_print_object()
+>> 	  free_page()				  printk
+>> 	   debug_check_no_obj_freed		   uart_port->lock
+>> 	    db->lock
+>>
+>>
+>> In this particular case we probably can just move free_page()
+>> out of uart_port lock scope. Note that free_page()->MM can printk()
+>> on its own.
+>>
+> [..]
+>> [1] https://lore.kernel.org/lkml/1542653726-5655-8-git-send-email-longma=
+n(a)redhat.com/T/#u
+> That said, I'd first try Waiman's patch. The one I suggested is
+> more of a defense move - there are too many things happening under
+> uart_port->lock. This is not the first time we see lockdep complaining
+> about the way uart and the rest of the kernel interact.
+>
+> 	-ss
 
-On 12/12/18 3:42 AM, Sergey Senozhatsky wrote:
-[..]
-> =
+Thanks for the information. I will extract my debugobjects patch out of
+my lockdep patchset and send it out as standalone patch.
 
-> db->lock -> console_sem -> uart_port->lock
-> =
-
->    obj_hash[i].lock
->    /* db->lock */
->     __debug_object_init()
->       debug_print_object()
->        printk()
->         spin_lock_irqsave(uart->port_lock)
-> =
-
-> BTW, there is a patch from Waiman which moves debug_print_object()
-> out of db->lock scope [1].
-
-Thanks much for pointing this, didn't know about that and started to
-write something like that yesterday :)
-
->>>> [   87.239071] -> #0 (&obj_hash[i].lock){-.-.}:
->>>> [   87.239904]        __lock_acquire+0x1f78/0x22d1
->>>> [   87.240556]        lock_acquire+0x28c/0x2e7
->>>> [   87.241173]        _raw_spin_lock_irqsave+0x35/0x49
->>>> [   87.241882]        debug_check_no_obj_freed+0xb4/0x302
->>>> [   87.242620]        free_unref_page_prepare+0x33a/0x483
->>>> [   87.243368]        free_unref_page+0x48/0x80
->>>> [   87.243991]        __free_pages+0x2e/0x40
->>>> [   87.244611]        free_pages+0x54/0x5a
->>>> [   87.245188]        uart_shutdown+0x3df/0x4e2
->>>> [   87.245817]        uart_hangup+0x123/0x280
->>>> [   87.246406]        __tty_hangup+0x4da/0x50f
->>>> [   87.247025]        tty_vhangup_session+0xe/0x10
->>>> [   87.247680]        disassociate_ctty+0xeb/0x5c5
->>>> [   87.248349]        do_exit+0xc97/0x1daf
->>>> [   87.248920]        __x64_sys_exit_group+0x0/0x3e
->>>> [   87.249587]        __wake_up_parent+0x0/0x52
->>>> [   87.250211]        do_syscall_64+0x5e8/0x881
->>>> [   87.250839]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> =
-
-> But I think what really makes lockdep nervous is this thing:
-> =
-
-> 	uart_shutdown()
-> 	 uart_port_lock()  //  spin_lock_irqsave(uart_port->lock)
-> 	  free_page()
-> 	   debug_check_no_obj_freed()
-> 	    db->lock
-> 	     debug_print_object()
-> 	      printk()
-> 	       spin_lock_irqsave(uart_port->lock)
-> =
-
-> =
-
-> Lockdep complains about:   uart_port->lock -> db->lock
-> =
-
-> It knows that we already have the reverse chain: db->lock -> uart_port->l=
-ock
-> From
-> 	db->lock -> debug_print_object() -> printk() -> console_sem -> uart_port=
-->lock
-> =
-
-> =
-
->>>> [   87.255156]        CPU0                    CPU1
->>>> [   87.255813]        ----                    ----
->>>> [   87.256460]   lock(&port_lock_key);
->>>> [   87.256973]                                lock(console_owner);
->>>> [   87.257829]                                lock(&port_lock_key);
->>>> [   87.258680]   lock(&obj_hash[i].lock);
-> =
-
-> =
-
-> So it's like
-> =
-
-> 	CPU0					CPU1
-> =
-
-> 	uart_shutdown()				db->lock
-> 	 uart_port->lock			 debug_print_object()
-> 	  free_page()				  printk
-> 	   debug_check_no_obj_freed		   uart_port->lock
-> 	    db->lock
-> =
-
-> =
-
-> In this particular case we probably can just move free_page()
-> out of uart_port lock scope. Note that free_page()->MM can printk()
-> on its own.
-> =
-
-> =
-
-> Something like this (not tested):
-
-Looks good to me.
-Probably, it's worth to update comment about freeing just to make sure
-no one will "refactor"/"simplify" it some day.
-
-Does it make sense to add this to your patch?
-
---->8---
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -205,10 +205,11 @@ static int uart_port_startup(struct tty_struct
-*tty, struct uar>
-        if (!state->xmit.buf) {
-                state->xmit.buf =3D (unsigned char *) page;
-                uart_circ_clear(&state->xmit);
-+               uart_port_unlock(uport, flags);
-        } else {
-+               uart_port_unlock(uport, flags);
-                free_page(page);
-        }
--       uart_port_unlock(uport, flags);
-
-        retval =3D uport->ops->startup(uport);
-        if (retval =3D=3D 0) {
--- =
+Cheers,
+Longman
 
 
-Thanks,
-          Dima
-
---===============3851578580689546001==--
+--===============7777152967180421221==--
 
