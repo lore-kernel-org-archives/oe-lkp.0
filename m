@@ -1,63 +1,77 @@
-Content-Type: multipart/mixed; boundary="===============5204003073493189528=="
+Content-Type: multipart/mixed; boundary="===============8658105922276973876=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@kernel.org>
+From: Vlastimil Babka <vbabka@suse.cz>
 To: lkp@lists.01.org
 Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Wed, 12 Dec 2018 10:50:51 +0100
-Message-ID: <20181212095051.GO1286@dhcp22.suse.cz>
+Date: Wed, 12 Dec 2018 11:14:05 +0100
+Message-ID: <0bbf4202-6187-28fb-37b7-da6885b89cce@suse.cz>
 In-Reply-To: <alpine.DEB.2.21.1812111609060.255489@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5204003073493189528==
+--===============8658105922276973876==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue 11-12-18 16:37:22, David Rientjes wrote:
-[...]
-> Since it depends on the workload, specifically workloads that fit within =
-a =
+On 12/12/18 1:37 AM, David Rientjes wrote:
+> =
 
-> single node, I think the reasonable approach would be to have a sane =
+> Regarding the role of direct reclaim in the allocator, I think we need =
 
-> default regardless of the use of MADV_HUGEPAGE or thp defrag settings and =
+> work on the feedback from compaction to determine whether it's worthwhile=
+.  =
 
-> then optimzie for the minority of cases where the workload does not fit i=
-n =
+> That's difficult because of the point I continue to bring up: =
 
-> a single node.  I'm assuming there is no debate about these larger =
+> isolate_freepages() is not necessarily always able to access this freed =
 
-> workloads being in the minority, although we have single machines where =
+> memory.
 
-> this encompasses the totality of their workloads.
+That's one of the *many* reasons why having free base pages doesn't
+guarantee compaction success. We can and will improve on that. But I
+don't think it would be e.g. practical to check the pfns of free pages
+wrt compaction scanner positions and decide based on that. Also when you
+invoke reclaim, you can't tell in advance those pfns, so I'm not sure
+how the better feedback from compaction to reclaim for this specific
+aspect would be supposed to work?
 
-Your assumption is wrong I believe. This is the fundamental disagreement
-we are discussing here. You are essentially arguing for node_reclaim
-(formerly zone_reclaim) behavior for THP pages. All that without any
-actual data on wider variety of workloads. As the matter of _fact_ we
-know that node_reclaim behavior is not a suitable default. We did
-that mistake in the past and we had to revert that default _exactly_
-because a wider variety of workloads suffered from over reclaim and
-performance issues as a result of constant reclaim
+> But for cases where we get COMPACT_SKIPPED because the order-0 =
 
-You have also haven't explained why you do care so much about remote THP
-while you do not care about remote base bages (the page allocator
-falls back to those as soon as the kswapd doesn't keep pace with the
-allocation rate; THP or high order pages in general is analoguous with
-kcompactd doing a pro-active compaction). Like the base pages we do not
-want larger pages to fallback to a remote node too easily. There is no
-question about that I believe.
+> watermarks are failing, reclaim *is* likely to have an impact in the =
 
-I can be convinced that larger pages really require a different behavior
-than base pages but you should better show _real_ numbers on a wider
-variety workloads to back your claims. I have only heard hand waving and
-a very vague and quite doubtful numbers for a non-disclosed benchmark
-without a clear indication on how it relates to real world workloads. So
-color me unconvinced.
--- =
+> success of compaction,
 
-Michal Hocko
-SUSE Labs
+Yes that's the heuristic we rely on.
 
---===============5204003073493189528==--
+> otherwise we fail and defer because it wasn't able =
+
+> to make a hugepage available.
+
+Note that THP fault compaction doesn't actually defer itself, which I
+think is a weakness of the current implementation and hope that patch 3
+in my series from yesterday [1] can address that. Because defering is
+the general feedback mechanism that we have for suppressing compaction
+(and thus associated reclaim) in cases it fails for any reason, not just
+the one you mention. Instead of inspecting failure conditions in detail,
+which would be costly, it's a simple statistical approach. And when
+compaction is improved to fail less, defering automatically also happens
+less.
+
+>  [ If we run compaction regardless of the order-0 watermark check and find
+>    a pageblock where we can likely free a hugepage because it is =
+
+>    fragmented movable pages, this is a pretty good indication that reclaim
+>    is worthwhile iff the reclaimed memory is beyond the migration scanner=
+. ]
+
+I don't think that would be a good direction to pursue, to let scanning
+happen even without having the free pages. Also as I've mentioned above,
+LRU-based reclaim cannot satisfy your 'iff' condition, unless it
+inspected the pfn's it freed, and continued reclaiming until enough of
+those beyond migration scanner were freed. Instead IMHO we should look
+again into replacing the free scanner with direct allocation from freelists.
+
+[1] https://lkml.kernel.org/r/20181211142941.20500-1-vbabka(a)suse.cz
+
+--===============8658105922276973876==--
 
