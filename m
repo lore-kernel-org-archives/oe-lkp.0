@@ -1,70 +1,63 @@
-Content-Type: multipart/mixed; boundary="===============7520913307064869426=="
+Content-Type: multipart/mixed; boundary="===============5204003073493189528=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [tty] c96cf923a9: WARNING:possible_circular_locking_dependency_detected
-Date: Wed, 12 Dec 2018 10:07:51 +0100
-Message-ID: <20181212090751.GU5289@hirez.programming.kicks-ass.net>
-In-Reply-To: <20181212034252.GD431@jagdpanzerIV>
+Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
+Date: Wed, 12 Dec 2018 10:50:51 +0100
+Message-ID: <20181212095051.GO1286@dhcp22.suse.cz>
+In-Reply-To: <alpine.DEB.2.21.1812111609060.255489@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7520913307064869426==
+--===============5204003073493189528==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 12, 2018 at 12:42:52PM +0900, Sergey Senozhatsky wrote:
-> Something like this (not tested):
-> =
+On Tue 11-12-18 16:37:22, David Rientjes wrote:
+[...]
+> Since it depends on the workload, specifically workloads that fit within =
+a =
 
-> ---
-> =
+> single node, I think the reasonable approach would be to have a sane =
 
->  drivers/tty/serial/serial_core.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
-> =
+> default regardless of the use of MADV_HUGEPAGE or thp defrag settings and =
 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index c439a5a1e6c0..64050f506348 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -268,6 +268,7 @@ static void uart_shutdown(struct tty_struct *tty, str=
-uct uart_state *state)
->  	struct uart_port *uport =3D uart_port_check(state);
->  	struct tty_port *port =3D &state->port;
->  	unsigned long flags =3D 0;
-> +	char *xmit_buf =3D NULL;
->  =
+> then optimzie for the minority of cases where the workload does not fit i=
+n =
 
->  	/*
->  	 * Set the TTY IO error marker
-> @@ -297,15 +298,16 @@ static void uart_shutdown(struct tty_struct *tty, s=
-truct uart_state *state)
->  	 */
->  	tty_port_set_suspended(port, 0);
->  =
+> a single node.  I'm assuming there is no debate about these larger =
 
-> +	uart_port_lock(state, flags);
-> +	xmit_buf =3D state->xmit.buf;
-> +	state->xmit.buf =3D NULL;
-> +	uart_port_unlock(uport, flags);
-> +
->  	/*
->  	 * Free the transmit buffer page.
->  	 */
-> -	uart_port_lock(state, flags);
-> -	if (state->xmit.buf) {
-> -		free_page((unsigned long)state->xmit.buf);
-> -		state->xmit.buf =3D NULL;
-> -	}
-> -	uart_port_unlock(uport, flags);
-> +	if (xmit_buf)
-> +		free_page((unsigned long)xmit_buf);
->  }
+> workloads being in the minority, although we have single machines where =
 
-That looks sensible anyhow. One should strive to not do alloc or free
-under locks as much as possible anyway.
+> this encompasses the totality of their workloads.
 
---===============7520913307064869426==--
+Your assumption is wrong I believe. This is the fundamental disagreement
+we are discussing here. You are essentially arguing for node_reclaim
+(formerly zone_reclaim) behavior for THP pages. All that without any
+actual data on wider variety of workloads. As the matter of _fact_ we
+know that node_reclaim behavior is not a suitable default. We did
+that mistake in the past and we had to revert that default _exactly_
+because a wider variety of workloads suffered from over reclaim and
+performance issues as a result of constant reclaim
+
+You have also haven't explained why you do care so much about remote THP
+while you do not care about remote base bages (the page allocator
+falls back to those as soon as the kswapd doesn't keep pace with the
+allocation rate; THP or high order pages in general is analoguous with
+kcompactd doing a pro-active compaction). Like the base pages we do not
+want larger pages to fallback to a remote node too easily. There is no
+question about that I believe.
+
+I can be convinced that larger pages really require a different behavior
+than base pages but you should better show _real_ numbers on a wider
+variety workloads to back your claims. I have only heard hand waving and
+a very vague and quite doubtful numbers for a non-disclosed benchmark
+without a clear indication on how it relates to real world workloads. So
+color me unconvinced.
+-- =
+
+Michal Hocko
+SUSE Labs
+
+--===============5204003073493189528==--
 
