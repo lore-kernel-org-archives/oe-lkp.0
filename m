@@ -1,28 +1,88 @@
-Content-Type: multipart/mixed; boundary="===============1654254354639897008=="
+Content-Type: multipart/mixed; boundary="===============2329169040206294155=="
 MIME-Version: 1.0
-From: Vlastimil Babka <vbabka@suse.cz>
+From: Mel Gorman <mgorman@techsingularity.net>
 To: lkp@lists.01.org
 Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Fri, 14 Dec 2018 22:33:42 +0100
-Message-ID: <0700f5c3-66a8-338a-0ba0-2231cc3bb637@suse.cz>
+Date: Fri, 14 Dec 2018 23:11:47 +0000
+Message-ID: <20181214231147.GF29005@techsingularity.net>
 In-Reply-To: <alpine.DEB.2.21.1812141244450.186427@chino.kir.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1654254354639897008==
+--===============2329169040206294155==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 12/14/18 10:04 PM, David Rientjes wrote:
+On Fri, Dec 14, 2018 at 01:04:11PM -0800, David Rientjes wrote:
 > On Wed, 12 Dec 2018, Vlastimil Babka wrote:
-
-...
-
-> Reclaim likely could be deterministically useful if we consider a redesig=
-n =
-
-> of how migration sources and targets are determined in compaction.
 > =
+
+> > > Regarding the role of direct reclaim in the allocator, I think we nee=
+d =
+
+> > > work on the feedback from compaction to determine whether it's worthw=
+hile.  =
+
+> > > That's difficult because of the point I continue to bring up: =
+
+> > > isolate_freepages() is not necessarily always able to access this fre=
+ed =
+
+> > > memory.
+> > =
+
+> > That's one of the *many* reasons why having free base pages doesn't
+> > guarantee compaction success. We can and will improve on that. But I
+> > don't think it would be e.g. practical to check the pfns of free pages
+> > wrt compaction scanner positions and decide based on that.
+> =
+
+> Yeah, agreed.  Rather than proposing that memory is only reclaimed if its =
+
+> known that it can be accessible to isolate_freepages(), I'm wondering =
+
+> about the implementation of the freeing scanner entirely.
+> =
+
+> In other words, I think there is a lot of potential stranding that occurs =
+
+> for both scanners that could otherwise result in completely free =
+
+> pageblocks.  If there a single movable page present near the end of the =
+
+> zone in an otherwise fully free pageblock, surely we can do better than =
+
+> the current implementation that would never consider this very easy to =
+
+> compact memory.
+> =
+
+
+While it's somewhat premature, I posted a series before I had a full set
+of results because it uses free lists to reduce searches and reduces
+inference between multiple scanners. Preliminary results indicated it
+boosted allocation success rates by 20%ish, reduced migration scanning
+by 99% and free scanning by 27%.
+
+> The same problem occurs for the migration scanner where we can iterate =
+
+> over a ton of free memory that is never considered a suitable migration =
+
+> target.  The implementation that attempts to migrate all memory toward th=
+e =
+
+> end of the zone penalizes the freeing scanner when it is reset: we just =
+
+> iterate over a ton of used pages.
+> =
+
+
+Yes, partially addressed in series. It can be improved significantly but it
+hit a boundary condition near the points where compaction scanners meet. I
+dropped the patch in question as it needs more thought on how to deal
+with the boundary condition without remigrating the blocks close to it.
+Besides, at 14 patches, it would probably be best to get that reviewed
+and finalised before building upon it further so review would be welcome.
 
 > Has anybody tried a migration scanner that isn't linearly based, rather =
 
@@ -31,27 +91,17 @@ e =
 
 > pages of its pageblock, and using this to determine whether the actual =
 
-> migration will be worthwhile or not?
-
-Not exactly that AFAIK, but a year ago in my series [1] patch 6 made
-migration scanner 'prescan' the block of requested order before actually
-trying to isolate anything for migration.
-
-> I could imagine pageblock_skip being =
+> migration will be worthwhile or not?  I could imagine pageblock_skip bein=
+g =
 
 > repurposed for this as the heuristic.
 > =
 
-> Finding migration targets would be more tricky, but if we iterate the =
 
-> pages of the pageblock for low-order free pages and find them to be mostl=
-y =
-
-> used, that seems more appropriate than just pushing all memory to the end =
-
-> of the zone?
-
-Agree. That was patch 8/8 of the same series [1].
+Yes, but it has downsides. Redoing the same work on pageblocks, tracking
+state and tracking the exit conditions are tricky. I think it's best to
+squeeze the most out of the linear scanning first and the series is the
+first step in that.
 
 > It would be interesting to know if anybody has tried using the per-zone =
 
@@ -60,43 +110,15 @@ Agree. That was patch 8/8 of the same series [1].
 > considered a migration source or a migration target.  If all pages for a =
 
 > pageblock are not on free_areas, they are fully used.
-
-Repurposing/adding a new pageblock bit was in my mind to help multiple
-compactors not undo each other's work in the scheme where there's no
-free page scanner, but I didn't implement it yet.
-
->>> otherwise we fail and defer because it wasn't able =
-
->>> to make a hugepage available.
->>
->> Note that THP fault compaction doesn't actually defer itself, which I
->> think is a weakness of the current implementation and hope that patch 3
->> in my series from yesterday [1] can address that. Because defering is
->> the general feedback mechanism that we have for suppressing compaction
->> (and thus associated reclaim) in cases it fails for any reason, not just
->> the one you mention. Instead of inspecting failure conditions in detail,
->> which would be costly, it's a simple statistical approach. And when
->> compaction is improved to fail less, defering automatically also happens
->> less.
->>
 > =
 
-> I couldn't get the link to work, unfortunately, I don't think the patch =
 
-> series made it to LKML :/  I do see it archived for linux-mm, though, so =
+Series has patches which implement something similar to this idea.
 
-> I'll take a look, thanks!
+-- =
 
-Yeah I forgot to Cc: LKML, but you were also in direct To: so you should
-have received them directly. Also the abovementioned series, but that's
-year ago. My fault for not returning to it after being done with the
-Meltdown fun. I hope to do that soon.
+Mel Gorman
+SUSE Labs
 
-[1] https://marc.info/?l=3Dlinux-mm&m=3D151315560308753
-
->> [1] https://lkml.kernel.org/r/20181211142941.20500-1-vbabka(a)suse.cz
->>
-
-
---===============1654254354639897008==--
+--===============2329169040206294155==--
 
