@@ -1,61 +1,131 @@
-Content-Type: multipart/mixed; boundary="===============5160644629412138709=="
+Content-Type: multipart/mixed; boundary="===============6728139165059314562=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Bart Van Assche <bvanassche@acm.org>
 To: lkp@lists.01.org
-Subject: Re: [ide] ec7d9c9ce8: WARNING:at_fs/proc/generic.c:#remove_proc_entry
-Date: Thu, 20 Dec 2018 17:18:32 +0100
-Message-ID: <20181220161832.GA19486@lst.de>
-In-Reply-To: <bd9cad88-08c6-ee65-abef-eaa8a4540019@kernel.dk>
+Subject: Re: [locking/lockdep] 15693f040b: WARNING:at_kernel/locking/lockdep.c:#lockdep_free_key_range
+Date: Mon, 17 Dec 2018 09:27:37 -0800
+Message-ID: <1545067657.185366.433.camel@acm.org>
+In-Reply-To: <20181217084128.GE23332@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5160644629412138709==
+--===============6728139165059314562==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 20, 2018 at 09:14:50AM -0700, Jens Axboe wrote:
-> Maybe the the tiny subset of IDE users don't actually have the proc
-> stuff enabled? A few months ago I did plenty of IDE testing with the
-> MQ conversion, but I never saw anything like this. I'm guessing that
-> I, too, did not have IDE_PROC_FS enabled.
+On Mon, 2018-12-17 at 16:41 +0800, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-4.9):
+> =
 
-Or the tiny subset of ide users basically doesn't exist and the
-few platforms that use ide are basically bitrotting?
+> commit: 15693f040b149ffff598cc048c2697b258d3901c ("locking/lockdep: Free =
+lock classes that are no longer in use")
+> https://github.com/bvanassche/linux for-next
+> =
 
-> Christoph, do you want to post the one-liner fix for this one?
+> in testcase: locktorture
+> with following parameters:
+> =
 
-See below:
+> 	runtime: 300s
+> 	test: cpuhotplug
+> =
 
---
->From c3550c617ffc48079fe6364a4fa3c7f75a09028b Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Thu, 20 Dec 2018 17:16:53 +0100
-Subject: ide: fix a typo in the settings proc file name
+> test-description: This torture test consists of creating a number of kern=
+el threads which acquire the lock and hold it for specific amount of time, =
+thus simulating different critical region
+> behaviors.
+> test-url: https://www.kernel.org/doc/Documentation/locking/locktorture.txt
+> =
 
-Fixes: ec7d9c9ce8 ("ide: replace ->proc_fops with ->proc_show")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/ide/ide-proc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> =
 
-diff --git a/drivers/ide/ide-proc.c b/drivers/ide/ide-proc.c
-index 45c997430332..0e51803de0e7 100644
---- a/drivers/ide/ide-proc.c
-+++ b/drivers/ide/ide-proc.c
-@@ -544,7 +544,7 @@ void ide_proc_port_register_devices(ide_hwif_t *hwif)
- 		drive->proc =3D proc_mkdir(drive->name, parent);
- 		if (drive->proc) {
- 			ide_add_proc_entries(drive->proc, generic_drive_entries, drive);
--			proc_create_data("setting", S_IFREG|S_IRUSR|S_IWUSR,
-+			proc_create_data("settings", S_IFREG|S_IRUSR|S_IWUSR,
- 					drive->proc, &ide_settings_proc_fops,
- 					drive);
- 		}
--- =
+> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m =
+512M
+> =
 
-2.19.2
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
+
+> =
+
+> +-------------------------------------------------------------+----------=
+--+------------+
+> >                                                             | b7001c6cc=
+e | 15693f040b |
+> =
+
+> +-------------------------------------------------------------+----------=
+--+------------+
+> > boot_successes                                              | 0        =
+  | 0          |
+> > boot_failures                                               | 394      =
+  | 396        |
+> > WARNING:at_lib/debugobjects.c:#__debug_object_init          | 394      =
+  | 396        |
+> > EIP:__debug_object_init                                     | 394      =
+  | 396        |
+> > WARNING:possible_circular_locking_dependency_detected       | 370      =
+  | 375        |
+> > WARNING:at_kernel/locking/lockdep.c:#lock_downgrade         | 145      =
+  | 159        |
+> > EIP:lock_downgrade                                          | 145      =
+  | 159        |
+> > BUG:soft_lockup-CPU##stuck_for#s                            | 24       =
+  | 21         |
+> > EIP:thread_lookup_test                                      | 12       =
+  | 9          |
+> > Kernel_panic-not_syncing:softlockup:hung_tasks              | 24       =
+  | 21         |
+> > EIP:memcmp                                                  | 3        =
+  | 3          |
+> > EIP:threadfunc                                              | 4        =
+  | 2          |
+> > EIP:lock_acquire                                            | 3        =
+  | 1          |
+> > EIP:lock_is_held_type                                       | 2        =
+  | 2          |
+> > WARNING:at_net/sched/sch_generic.c:#dev_watchdog            | 1        =
+  |            |
+> > EIP:dev_watchdog                                            | 1        =
+  |            |
+> > WARNING:at_kernel/locking/lockdep.c:#lockdep_free_key_range | 0        =
+  | 22         |
+> > EIP:lockdep_free_key_range                                  | 0        =
+  | 22         |
+> > EIP:lock_release                                            | 0        =
+  | 2          |
+> > EIP:rht_deferred_worker                                     | 0        =
+  | 2          |
+> =
+
+> +-------------------------------------------------------------+----------=
+--+------------+
+
+The WARNING:at_kernel/locking/lockdep.c:#lockdep_free_key_range warnings we=
+re caused by the
+following code:
+
+	pf =3D get_pending_free_lock(&flags);
+	if (WARN_ON_ONCE(!pf))
+		return;
+
+Before this report was produced I had already pushed out a new version of m=
+y lockdep patch
+series to the for-next branch of my github repository in which that code ha=
+d been modified
+into the following:
+
+	pf =3D get_pending_free_lock(&flags);
+	if (!pf)
+		return;
+
+Since the above report refers to a WARN_ON_ONCE() statement that has been r=
+emoved, I think
+that this report can be ignored.
+
+Bart.
 
 
---===============5160644629412138709==--
+--===============6728139165059314562==--
 
