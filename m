@@ -1,51 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============0233423617593463698=="
+Content-Type: multipart/mixed; boundary="===============5160644629412138709=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
 Subject: Re: [ide] ec7d9c9ce8: WARNING:at_fs/proc/generic.c:#remove_proc_entry
-Date: Thu, 20 Dec 2018 08:05:28 -0800
-Message-ID: <CAHk-=wjvxCn2uYp7USY5bbVuffJcugusxHc-RU7u5H1=ubMyPw@mail.gmail.com>
-In-Reply-To: <20181220091931.zcibvplow3oxzacs@inn2.lkp.intel.com>
+Date: Thu, 20 Dec 2018 17:18:32 +0100
+Message-ID: <20181220161832.GA19486@lst.de>
+In-Reply-To: <bd9cad88-08c6-ee65-abef-eaa8a4540019@kernel.dk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0233423617593463698==
+--===============5160644629412138709==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 20, 2018 at 1:19 AM kernel test robot <lkp@intel.com> wrote:
->
-> FYI, we noticed the following commit (built with gcc-7):
->
-> commit: ec7d9c9ce897174243af4fcd201dbfc34df0f3a3 ("ide: replace ->proc_fo=
-ps with ->proc_show")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+On Thu, Dec 20, 2018 at 09:14:50AM -0700, Jens Axboe wrote:
+> Maybe the the tiny subset of IDE users don't actually have the proc
+> stuff enabled? A few months ago I did plenty of IDE testing with the
+> MQ conversion, but I never saw anything like this. I'm guessing that
+> I, too, did not have IDE_PROC_FS enabled.
 
-Funky.  How did the kernel test robot suddenly figure out an 8-month
-old problem?
+Or the tiny subset of ide users basically doesn't exist and the
+few platforms that use ide are basically bitrotting?
 
-> [   44.180514] WARNING: CPU: 1 PID: 165 at fs/proc/generic.c:662 remove_p=
-roc_entry+0xb9/0x155
+> Christoph, do you want to post the one-liner fix for this one?
 
-This is a warning for somebody doing "remove_proc_entry() on a name
-that doesn't actually exist in that /proc directory.
+See below:
 
-In this case, it does seem to be due to the named commit adding a
+--
+>From c3550c617ffc48079fe6364a4fa3c7f75a09028b Mon Sep 17 00:00:00 2001
+From: Christoph Hellwig <hch@lst.de>
+Date: Thu, 20 Dec 2018 17:16:53 +0100
+Subject: ide: fix a typo in the settings proc file name
 
-+               remove_proc_entry("settings", drive->proc);
+Fixes: ec7d9c9ce8 ("ide: replace ->proc_fops with ->proc_show")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/ide/ide-proc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-to ide_proc_unregister_device(), and looking at the patch I get the
-feeling that it's due to a typo: the code *creates* the file called
-"setting", but removes the file "settings". Note the missing "s" at
-creation time.
+diff --git a/drivers/ide/ide-proc.c b/drivers/ide/ide-proc.c
+index 45c997430332..0e51803de0e7 100644
+--- a/drivers/ide/ide-proc.c
++++ b/drivers/ide/ide-proc.c
+@@ -544,7 +544,7 @@ void ide_proc_port_register_devices(ide_hwif_t *hwif)
+ 		drive->proc =3D proc_mkdir(drive->name, parent);
+ 		if (drive->proc) {
+ 			ide_add_proc_entries(drive->proc, generic_drive_entries, drive);
+-			proc_create_data("setting", S_IFREG|S_IRUSR|S_IWUSR,
++			proc_create_data("settings", S_IFREG|S_IRUSR|S_IWUSR,
+ 					drive->proc, &ide_settings_proc_fops,
+ 					drive);
+ 		}
+-- =
 
-And yes, the name of the /proc file _should_be "settings", judging by
-the rest of the patch.
+2.19.2
 
-So it does seem to be a real bug. Nobody noticed until now? Why did
-the test robot suddenly react to it?
 
-              Linus
-
---===============0233423617593463698==--
+--===============5160644629412138709==--
 
