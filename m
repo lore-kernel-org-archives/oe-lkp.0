@@ -1,131 +1,147 @@
-Content-Type: multipart/mixed; boundary="===============6728139165059314562=="
+Content-Type: multipart/mixed; boundary="===============6036092057613719324=="
 MIME-Version: 1.0
-From: Bart Van Assche <bvanassche@acm.org>
+From: Alexander Popov <alex.popov@linux.com>
 To: lkp@lists.01.org
-Subject: Re: [locking/lockdep] 15693f040b: WARNING:at_kernel/locking/lockdep.c:#lockdep_free_key_range
-Date: Mon, 17 Dec 2018 09:27:37 -0800
-Message-ID: <1545067657.185366.433.camel@acm.org>
-In-Reply-To: <20181217084128.GE23332@shao2-debian>
+Subject: Re: 10e9ae9fab ("gcc-plugins: Add STACKLEAK plugin for tracking .."): WARNING: can't dereference registers at (null) for ip entry_SYSCALL_64_after_hwframe
+Date: Thu, 20 Dec 2018 23:18:01 +0300
+Message-ID: <532c3a5b-3358-6f70-b0e8-c2b4afbbbab3@linux.com>
+In-Reply-To: <5c18828f.VHbQvL3kBXAW0ohl%lkp@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6728139165059314562==
+--===============6036092057613719324==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2018-12-17 at 16:41 +0800, kernel test robot wrote:
-> FYI, we noticed the following commit (built with gcc-4.9):
+Hello everyone,
+
+I've carefully worked with this report, let me share the results.
+
+On 18.12.2018 8:15, kernel test robot wrote:
+> Greetings,
 > =
 
-> commit: 15693f040b149ffff598cc048c2697b258d3901c ("locking/lockdep: Free =
-lock classes that are no longer in use")
-> https://github.com/bvanassche/linux for-next
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
-> in testcase: locktorture
-> with following parameters:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
 > =
 
-> 	runtime: 300s
-> 	test: cpuhotplug
-> =
+> commit 10e9ae9fabaf96c8e5227c1cd4827d58b3aa406d
+>     gcc-plugins: Add STACKLEAK plugin for tracking the kernel stack
 
-> test-description: This torture test consists of creating a number of kern=
-el threads which acquire the lock and hold it for specific amount of time, =
-thus simulating different critical region
-> behaviors.
-> test-url: https://www.kernel.org/doc/Documentation/locking/locktorture.txt
-> =
+This bot has been running trinity at the following points:
 
-> =
+> afaef01c00  x86/entry: Add STACKLEAK erasing the kernel stack at the end =
+of syscalls
+> 10e9ae9fab  gcc-plugins: Add STACKLEAK plugin for tracking the kernel sta=
+ck
 
-> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m =
-512M
-> =
+    just after stackleak was merged into 4.20-rc1
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
+> 1a9430db28  ima: cleanup the match_token policy code
 
-> =
+    near 4.20-rc7 (Dec 17)
 
-> +-------------------------------------------------------------+----------=
---+------------+
-> >                                                             | b7001c6cc=
-e | 15693f040b |
-> =
+> 6648e120dd  Add linux-next specific files for 20181217
 
-> +-------------------------------------------------------------+----------=
---+------------+
-> > boot_successes                                              | 0        =
-  | 0          |
-> > boot_failures                                               | 394      =
-  | 396        |
-> > WARNING:at_lib/debugobjects.c:#__debug_object_init          | 394      =
-  | 396        |
-> > EIP:__debug_object_init                                     | 394      =
-  | 396        |
-> > WARNING:possible_circular_locking_dependency_detected       | 370      =
-  | 375        |
-> > WARNING:at_kernel/locking/lockdep.c:#lock_downgrade         | 145      =
-  | 159        |
-> > EIP:lock_downgrade                                          | 145      =
-  | 159        |
-> > BUG:soft_lockup-CPU##stuck_for#s                            | 24       =
-  | 21         |
-> > EIP:thread_lookup_test                                      | 12       =
-  | 9          |
-> > Kernel_panic-not_syncing:softlockup:hung_tasks              | 24       =
-  | 21         |
-> > EIP:memcmp                                                  | 3        =
-  | 3          |
-> > EIP:threadfunc                                              | 4        =
-  | 2          |
-> > EIP:lock_acquire                                            | 3        =
-  | 1          |
-> > EIP:lock_is_held_type                                       | 2        =
-  | 2          |
-> > WARNING:at_net/sched/sch_generic.c:#dev_watchdog            | 1        =
-  |            |
-> > EIP:dev_watchdog                                            | 1        =
-  |            |
-> > WARNING:at_kernel/locking/lockdep.c:#lockdep_free_key_range | 0        =
-  | 22         |
-> > EIP:lockdep_free_key_range                                  | 0        =
-  | 22         |
-> > EIP:lock_release                                            | 0        =
-  | 2          |
-> > EIP:rht_deferred_worker                                     | 0        =
-  | 2          |
-> =
+    rc + next (Dec 17)
 
-> +-------------------------------------------------------------+----------=
---+------------+
+> +---------------------------------------------------------------+--------=
+----+------------+------------+---------------+
+> |                                                               | afaef01=
+c00 | 10e9ae9fab | 1a9430db28 | next-20181217 |
+> +---------------------------------------------------------------+--------=
+----+------------+------------+---------------+
+> | boot_successes                                                | 386    =
+    | 141        | 134        | 135           |
+> | boot_failures                                                 | 68     =
+    | 9          | 16         | 8             |
 
-The WARNING:at_kernel/locking/lockdep.c:#lockdep_free_key_range warnings we=
-re caused by the
-following code:
+The following oopses happened on 4.20-rc1 and disappeared on 4.20-rc7:
 
-	pf =3D get_pending_free_lock(&flags);
-	if (WARN_ON_ONCE(!pf))
-		return;
+> | RIP:trace                                                     | 37     =
+    |            |            |               |
+> | WARNING:stack_recursion                                       | 36     =
+    |            |            |               |
+> | WARNING:at(____ptrval____)for_ip_syscall_return_via_sysret/0x | 37     =
+    |            |            |               |
+> | Kernel_panic-not_syncing:Machine_halted                       | 37     =
+    |            |            |               |
+> | PANIC:double_fault                                            | 27     =
+    |            |            |               |
 
-Before this report was produced I had already pushed out a new version of m=
-y lockdep patch
-series to the for-next branch of my github repository in which that code ha=
-d been modified
-into the following:
+They are caused by stackleak issues with ftrace and kprobes, that are fixed
+in these commits:
+    e9c7d656610e
+    ef1a84093489
 
-	pf =3D get_pending_free_lock(&flags);
-	if (!pf)
-		return;
+I've double-checked that now stackleak works properly with function tracing,
+function_graph tracing and kprobes.
 
-Since the above report refers to a WARN_ON_ONCE() statement that has been r=
-emoved, I think
-that this report can be ignored.
+> | Mem-Info                                                      | 2      =
+    | 0          | 1          |               |
+> | invoked_oom-killer:gfp_mask=3D0x                                | 1    =
+      | 0          | 1          |               |
+> | RIP:__put_user_4                                              | 1      =
+    |            |            |               |
 
-Bart.
+These 3 lines are not meaningful to me.
 
+> | BUG:KASAN:stack-out-of-bounds_in_u                            | 25     =
+    | 8          | 12         | 7             |
 
---===============6728139165059314562==--
+This is interesting. How does KASAN work with stackleak? I tested it using
+test_kasan.ko -- it works properly both for KASAN outline and inline
+instrumentation.
+
+However I noticed that stackleak lkdtm test sometimes reports that kernel
+stack is not properly erased in case of KASAN outline instrumentation.
+I think it happens because KASAN increases kernel stack usage, so
+CONFIG_STACKLEAK_TRACK_MIN_SIZE should be adjusted. I will investigate
+that later.
+
+> | RIP:__x86_indirect_thunk_rdx                                  | 26     =
+    | 9          | 12         | 7             |
+> | INFO:rcu_preempt_detected_stalls_on_CPUs/tasks                | 3      =
+    | 0          | 3          |               |
+> | RIP:arch_local_irq_enable                                     | 1      =
+    |            |            |               |
+> | RIP:mntput_no_expire                                          | 1      =
+    |            |            |               |
+> | RIP:arch_local_irq_restore                                    | 1      =
+    |            |            |               |
+> | RIP:compound_head                                             | 1      =
+    |            |            |               |
+> | RIP:rcu_read_lock                                             | 1      =
+    |            |            |               |
+> | RIP:check_kill_permission                                     | 1      =
+    |            |            |               |
+> | RIP:radix_tree_load_root                                      | 1      =
+    |            |            |               |
+> | WARNING:at(null)for_ip_entry_SYSCALL_64_after_hwframe/0x      | 0      =
+    | 7          | 11         | 7             |
+> | WARNING:at(null)for_ip_async_page_fault/0x                    | 0      =
+    | 1          | 1          |               |
+> | WARNING:at_kernel/locking/lockdep.c:#lock_downgrade           | 0      =
+    | 0          | 2          |               |
+> | RIP:lock_downgrade                                            | 0      =
+    | 0          | 2          |               |
+> | RIP:xa_is_node                                                | 0      =
+    | 0          | 1          |               |
+> | BUG:kernel_reboot-without-warning_in_test_stage               | 0      =
+    | 0          | 0          | 1             |
+> +---------------------------------------------------------------+--------=
+----+------------+------------+---------------+
+
+Unfortunately, I can't extract anything useful from these lines.
+And trinity doesn't provide reproducers...
+
+Anyway, I've created exactly the same trinity setup and have been running
+it for 2 days (900 tests) on 4.20-rc7 -- no kernel crashes were hit.
+
+Best regards,
+Alexander
+
+--===============6036092057613719324==--
 
