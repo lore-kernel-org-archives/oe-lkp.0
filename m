@@ -1,80 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============1138343919151489147=="
+Content-Type: multipart/mixed; boundary="===============2892094062947469252=="
 MIME-Version: 1.0
-From: Bart Van Assche <bvanassche@acm.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: cdbeb78c7a ("kernel/workqueue: Use dynamic lockdep keys for .."): WARNING: CPU: 0 PID: 0 at kernel/locking/lockdep.c:1002 lockdep_register_key
-Date: Mon, 17 Dec 2018 09:32:57 -0800
-Message-ID: <1545067977.185366.436.camel@acm.org>
-In-Reply-To: <5c17230f.mbgTPR4404Mp8abU%lkp@intel.com>
+Subject: Re: [bochs] df2052cc92: WARNING:at_drivers/gpu/drm/drm_mode_config.c:#drm_mode_config_cleanup
+Date: Fri, 21 Dec 2018 11:25:41 -0800
+Message-ID: <CAHk-=whM09ZxdrrN-o3k1JOAn0keF5aXtPAcEYiukn7kW7yp2g@mail.gmail.com>
+In-Reply-To: <20181221083226.GI23332@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1138343919151489147==
+--===============2892094062947469252==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2018-12-17 at 12:16 +0800, kernel test robot wrote:
-> Greetings,
-> =
+On Fri, Dec 21, 2018 at 12:32 AM kernel test robot
+<rong.a.chen@intel.com> wrote:
+>
+> FYI, we noticed commit df2052cc9221 ("bochs: convert to
+> drm_fb_helper_fbdev_setup/teardown") caused
+>
+> [  487.591733] WARNING: CPU: 0 PID: 1 at drivers/gpu/drm/drm_mode_config.=
+c:478 drm_mode_config_cleanup+0x270/0x290
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
+Ok, this is apparently just a leak for what appears to be a not
+particularly interesting error case, but the warning is new to 4.20
+(*) so it would be nice to have somebody look at it.
 
-> https://github.com/bvanassche/linux for-next
-> =
+That commit is supposed to fix a leak, but there's apparently
+something still there.
 
-> commit cdbeb78c7a2e34af6d6cc5d3570a585a23eea8e9
-> Author:     Bart Van Assche <bvanassche@acm.org>
-> AuthorDate: Fri Nov 9 09:53:31 2018 -0800
-> Commit:     Bart Van Assche <bvanassche@acm.org>
-> CommitDate: Fri Dec 14 11:24:37 2018 -0800
-> =
+Daniel, Peter, Gerd?
 
->     kernel/workqueue: Use dynamic lockdep keys for workqueues
->     =
+                       Linus
 
->     [ ... ]
-> =
+(*) the *problem* is probably not new, it's just now exposed by the
+switch to drm_mode_config_cleanup().
 
-> 60e521015c  locking/lockdep: Add support for dynamic keys
-> cdbeb78c7a  kernel/workqueue: Use dynamic lockdep keys for workqueues
-> 9294000d6d  IB/srp: Drain the send queue before destroying a QP
-> +-----------------------------------------------------------+------------=
-+------------+---------------------+
-> >                                                           | 60e521015c =
-| cdbeb78c7a | bvanassche/for-next |
-> =
-
-> +-----------------------------------------------------------+------------=
-+------------+---------------------+
-> > boot_successes                                            | 915        =
-| 305        | 0                   |
-> > boot_failures                                             | 1          =
-| 7          | 310                 |
-> > INFO:rcu_preempt_self-detected_stall_on_CPU               | 1          =
-|            |                     |
-> > EIP:smp_call_function_single                              | 1          =
-|            |                     |
-> > BUG:kernel_hang_in_boot-around-mounting-root_stage        | 1          =
-|            |                     |
-> > WARNING:at_kernel/locking/lockdep.c:#lockdep_register_key | 0          =
-| 7          |                     |
-> > EIP:lockdep_register_key                                  | 0          =
-| 7          |                     |
-> > WARNING:kernel_stack                                      | 0          =
-| 0          | 310                 |
-> =
-
-> +-----------------------------------------------------------+------------=
-+------------+---------------------+
-
-The "WARNING:at_kernel/locking/lockdep.c:#lockdep_register_key" warnings ha=
-ve
-already been removed from my branch so I think this report can be ignored.
-
-Bart.
-
-
-
---===============1138343919151489147==--
+--===============2892094062947469252==--
 
