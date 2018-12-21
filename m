@@ -1,47 +1,54 @@
-Content-Type: multipart/mixed; boundary="===============7081708477012070924=="
+Content-Type: multipart/mixed; boundary="===============2165150607060137853=="
 MIME-Version: 1.0
 From: David Rientjes <rientjes@google.com>
 To: lkp@lists.01.org
 Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Fri, 21 Dec 2018 14:15:05 -0800
-Message-ID: <alpine.DEB.2.21.1812211413460.219499@chino.kir.corp.google.com>
-In-Reply-To: <20181214231147.GF29005@techsingularity.net>
+Date: Fri, 21 Dec 2018 14:18:45 -0800
+Message-ID: <alpine.DEB.2.21.1812211416020.219499@chino.kir.corp.google.com>
+In-Reply-To: <0700f5c3-66a8-338a-0ba0-2231cc3bb637@suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7081708477012070924==
+--===============2165150607060137853==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 14 Dec 2018, Mel Gorman wrote:
+On Fri, 14 Dec 2018, Vlastimil Babka wrote:
 
-> > In other words, I think there is a lot of potential stranding that occu=
-rs =
+> > It would be interesting to know if anybody has tried using the per-zone =
 
-> > for both scanners that could otherwise result in completely free =
+> > free_area's to determine migration targets and set a bit if it should b=
+e =
 
-> > pageblocks.  If there a single movable page present near the end of the =
+> > considered a migration source or a migration target.  If all pages for =
+a =
 
-> > zone in an otherwise fully free pageblock, surely we can do better than =
-
-> > the current implementation that would never consider this very easy to =
-
-> > compact memory.
-> > =
-
+> > pageblock are not on free_areas, they are fully used.
 > =
 
-> While it's somewhat premature, I posted a series before I had a full set
-> of results because it uses free lists to reduce searches and reduces
-> inference between multiple scanners. Preliminary results indicated it
-> boosted allocation success rates by 20%ish, reduced migration scanning
-> by 99% and free scanning by 27%.
+> Repurposing/adding a new pageblock bit was in my mind to help multiple
+> compactors not undo each other's work in the scheme where there's no
+> free page scanner, but I didn't implement it yet.
 > =
 
 
-Always good to have code to look at, I'll take a closer look.  I've =
+It looks like Mel has a series posted that still is implemented with =
 
-unfortunately been distracted with other kernel issues lately :/
+linear scans through memory, so I'm happy to move the discussion there; I =
 
---===============7081708477012070924==--
+think the goal for compaction with regard to this thread is determining =
+
+whether reclaim in the page allocator would actually be useful and =
+
+targeted reclaim to make memory available for isolate_freepages() could be =
+
+expensive.  I'd hope that we could move in a direction where compaction =
+
+doesn't care where the pageblock is and does the minimal amount of work =
+
+possible to make a high-order page available, not sure if that's possible =
+
+with a linear scan.  I'll take a look at Mel's series though.
+
+--===============2165150607060137853==--
 
