@@ -1,196 +1,101 @@
-Content-Type: multipart/mixed; boundary="===============6622446549461589637=="
+Content-Type: multipart/mixed; boundary="===============1433437053913936151=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Al Viro <viro@zeniv.linux.org.uk>
 To: lkp@lists.01.org
-Subject: Re: [mm] ac5b2c1891: vm-scalability.throughput -61.3% regression
-Date: Sat, 22 Dec 2018 12:08:31 +0000
-Message-ID: <20181222120831.GC31517@techsingularity.net>
-In-Reply-To: <alpine.DEB.2.21.1812211416020.219499@chino.kir.corp.google.com>
+Subject: Re: c774ef18d3 ("new helpers: vfs_create_mount(), fc_mount()"): BUG: unable to handle kernel NULL pointer dereference at 00000000000000c0
+Date: Sat, 22 Dec 2018 15:38:33 +0000
+Message-ID: <20181222153833.GB2217@ZenIV.linux.org.uk>
+In-Reply-To: <5c1e02d8.rYm2nATLgWPqW+bw%lkp@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6622446549461589637==
+--===============1433437053913936151==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 21, 2018 at 02:18:45PM -0800, David Rientjes wrote:
-> On Fri, 14 Dec 2018, Vlastimil Babka wrote:
+On Sat, Dec 22, 2018 at 05:24:40PM +0800, kernel test robot wrote:
+> Greetings,
 > =
 
-> > > It would be interesting to know if anybody has tried using the per-zo=
-ne =
-
-> > > free_area's to determine migration targets and set a bit if it should=
- be =
-
-> > > considered a migration source or a migration target.  If all pages fo=
-r a =
-
-> > > pageblock are not on free_areas, they are fully used.
-> > =
-
-> > Repurposing/adding a new pageblock bit was in my mind to help multiple
-> > compactors not undo each other's work in the scheme where there's no
-> > free page scanner, but I didn't implement it yet.
-> > =
-
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 > =
 
-> It looks like Mel has a series posted that still is implemented with =
+> https://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git Q33
+> =
 
-> linear scans through memory, so I'm happy to move the discussion there; I =
+> commit c774ef18d367b033d99817a994552d2d63873395
+> Author:     Al Viro <viro@zeniv.linux.org.uk>
+> AuthorDate: Sun Nov 4 06:48:34 2018 -0500
+> Commit:     Al Viro <viro@zeniv.linux.org.uk>
+> CommitDate: Thu Dec 20 13:17:59 2018 -0500
+> =
 
-> think the goal for compaction with regard to this thread is determining =
+>     new helpers: vfs_create_mount(), fc_mount()
 
-> whether reclaim in the page allocator would actually be useful and =
+Somewhat similar to bisect hazards, only between the branches...
+FWIW, the changelog on branch level would've been along the lines of
 
-> targeted reclaim to make memory available for isolate_freepages() could b=
-e =
+#Q33: most of the calls of vfs_get_tree() are directly followed by
+vfs_create_mount().  Introduce a helper doing the usual combination,
+switch to it reducing the amount of vfs_get_tree() call sites.
+Reducing the amount of boilerplate also doesn't hurt.
 
-> expensive.  I'd hope that we could move in a direction where compaction =
+#Q34: now that the callers of vfs_get_tree() are few, we can massage
+the calling conventions.  First of all, let's move unlocking the
+resulting superblock into the callers.
 
-> doesn't care where the pageblock is and does the minimal amount of work =
+#Q35: a part of LSM checks in vfs_get_tree() is done to all mounts.
+Then there are extra checks done only to non-SB_KERNMOUNT/non-SB_SUBMOUNT
+ones.  Now that we return with superblock locked, those extra checks
+can be safely moved out to callers; better yet, there they either
+become unconditional (for real userland mount/fsconfig) or
+unconditionally vanish.
 
-> possible to make a high-order page available, not sure if that's possible =
+#Q36: FS_CONTEXT_FOR_ROOT_MOUNT is never actually stored anywhere -
+it only gets passed to vfs_dup_fs_mount() as the 'purpose' argument
+and that argument is ignored there - the ->purpose of cloned fc
+is inherited from the original, as it bloody well ought to.
+Get rid of the second argument of vfs_dup_fs_mount(), remove
+FS_CONTEXT_FOR_ROOT_MOUNT.   Also in that branch: fold a smack leak
+fix.
 
-> with a linear scan.  I'll take a look at Mel's series though.
+#Q37: vfs_new_fs_context() is not a constructor - it's 3 constructors
+squeshed into one.  Unfortunately, the arguments' lists are different
+for all 3 and "merging" them (with enum selector added) leads to
+rather confusing mess for callers to deal with.  Unsquash those;
+they are much happier as
+	fs_config_for_mount(type, flags)
+	fs_config_for_remount(dentry, flags, flags_mask)
+	fs_config_for_fsmount(type, mountpoint)
+and so are the callers...
 
-That series has evolved significantly because there was a lot of missing
-pieces. While it's somewhat ready other than badly written changelogs, I
-didn't post it because I'm going offline and wouldn't respond to feedback
-and I imagine others are offline too and unavailable for review. Besides,
-the merge window is about to open and I know there are patches in Andrews
-tree for mainline that should be taken into account.
 
-The series is now 25 patches long and covers a lot of pre-requisites that
-would be necessary before removing the linear scanner. What is critical
-for a purely free-list scanner is that the exit conditions are identified
-and the series provides a lot of the pieces. For example, a non-linear
-scanner must properly control skip bits and isolate pageblocks from
-multiple compaction instances which this series does.
+Q33 introduces the bug, Q34 fixes it.
 
-The main takeawy from the series is that it reduces system CPU usage by
-17%, reduces free scan rates by 99.5% and increases THP allocation success
-rates by 33% giving almost 99% allocation success rates. It also;
+in Q33:
+struct vfsmount *fc_mount(struct fs_context *fc)
+{
+	int err =3D vfs_get_tree(fc);
+	return err ? vfs_create_mount(fc) : ERR_PTR(err);
+}
 
-o Isolates pageblocks for a single compaction instance
-o Synchronises async/sync scanners when appropriate to reduce rescanning
-o Identifies when a pageblock is being rescanned and is "sticky" and
-  makes forward progress instead of looping excessively
-o Smarter logic when clearing pageblock skip bits so reduce scanning
-o Various different methods for reducing unnecessary scanning
-o Better handling of contention
-o Avoids compaction of remote nodes in direct compaction context
+in Q34:
+struct vfsmount *fc_mount(struct fs_context *fc)
+{
+	int err =3D vfs_get_tree(fc);
+	if (!err) {
+		up_write(&fc->root->d_sb->s_umount);
+		return vfs_create_mount(fc);
+	}
+	return ERR_PTR(err);
+}
 
-If you do not want to wait until the new year, it's at
-git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-fast-compact=
--v2r15
+Note the inverted condition in Q33 variant.  Mea culpa - it was
+basically "I know where I want to get with that transformation,
+let's do the introduction of helper first, ripple it into the
+branch, then do the calling conventions' massage on remaining
+callers", with intermediate (introduce the helper, switch to
+it) getting only compile testing ;-/
 
-Preliminary results based on thpscale using MADV_HUGEPAGE to allocate
-huge pages on a fragmented system.
-
-thpscale Fault Latencies
-                                    4.20.0-rc6             4.20.0-rc6
-                                mmotm-20181210         noremote-v2r14
-Amean     fault-both-1       864.83 (   0.00%)     1006.88 * -16.43%*
-Amean     fault-both-3      3566.05 (   0.00%)     2460.97 *  30.99%*
-Amean     fault-both-5      5685.02 (   0.00%)     4052.92 *  28.71%*
-Amean     fault-both-7      7289.40 (   0.00%)     5929.65 (  18.65%)
-Amean     fault-both-12    10937.46 (   0.00%)     8870.53 (  18.90%)
-Amean     fault-both-18    15440.48 (   0.00%)    11464.86 *  25.75%*
-Amean     fault-both-24    15345.83 (   0.00%)    13040.01 *  15.03%*
-Amean     fault-both-30    20159.73 (   0.00%)    16618.73 *  17.56%*
-Amean     fault-both-32    20843.51 (   0.00%)    14401.25 *  30.91%*
-
-Fault latency (either huge or base) is mostly improved even when 32
-tasks are trying to allocate huge pages on an 8-CPU single socket
-machine where contention is a factor
-
-thpscale Percentage Faults Huge
-                               4.20.0-rc6             4.20.0-rc6
-                           mmotm-20181210         noremote-v2r14
-Percentage huge-1        96.03 (   0.00%)       96.94 (   0.95%)
-Percentage huge-3        71.43 (   0.00%)       95.43 (  33.60%)
-Percentage huge-5        70.44 (   0.00%)       96.85 (  37.48%)
-Percentage huge-7        70.39 (   0.00%)       94.77 (  34.63%)
-Percentage huge-12       71.53 (   0.00%)       98.07 (  37.11%)
-Percentage huge-18       70.61 (   0.00%)       98.42 (  39.38%)
-Percentage huge-24       71.84 (   0.00%)       97.85 (  36.20%)
-Percentage huge-30       69.94 (   0.00%)       98.13 (  40.31%)
-Percentage huge-32       66.92 (   0.00%)       97.79 (  46.13%)
-
-96-98% of THP requests get huge pages on request
-
-         4.20.0-rc6  4.20.0-rc6
-       mmotm-20181210noremote-v2r14
-User          27.30       27.86
-System       192.70      159.42
-Elapsed      580.13      571.98
-
-System CPU usage is reduced so we get more huge pages for less work and
-the workload completes slightly faster.
-
-                               4.20.0-rc6     4.20.0-rc6
-                           mmotm-20181210 noremote-v2r14
-Allocation stalls                19156.00        3627.00
-
-Fewer stalls which is always a plus.
-
-THP fault alloc                  77804.00       84618.00
-THP fault fallback                7628.00         816.00
-THP collapse alloc                  12.00           0.00
-THP collapse fail                    0.00           0.00
-THP split                        56921.00       56920.00
-THP split failed                  1982.00         116.00
-Compaction stalls                36350.00       25541.00
-Compaction success               17491.00       22651.00
-Compaction failures              18859.00        2890.00
-Compaction efficiency               48.12          88.68
-
-Compaction efficiency is increased a lot (efficiency is a basic measure
-of success vs failure). Previously almost half of the THP requests failed.
-
-Page migrate success          10200844.00     7802473.00
-Page migrate failure              3703.00         409.00
-Compaction pages isolated     23093029.00    16532642.00
-Compaction migrate scanned    28454655.00     8976143.00
-Compaction free scanned      717517120.00     3632762.00
-Compact scan efficiency              3.97         247.09
-
-Migration scanning is down 32%, free scanning is down 99.5%. Scan efficiency
-is interesting because it's a measure of how many pages the free scanner
-examines for one migration source. Before the series, we had to scan *way*
-more pages to find a free page where as now we scan *fewer* pages to find
-a migration target due to the use of free lists.
-
-Kcompactd wake                       1.00           9.00
-Kcompactd migrate scanned        14023.00       13318.00
-Kcompactd free scanned            6932.00        6643.00
-
-Minor improvements for kcompactd but for this workload, it was barely
-active.
-
-I'll rebase and repost in the new year and I think it should be considered
-a prerequisite before considering the removal of the linear scanning.
-It'll be impossible to remove completely due to memory isoluation. If
-built on this series I would imagine that it would take the following
-approach.
-
-o The migration scanner remains linear or mostly linear (series uses
-  free page lists to get hints on where suitable migration sources are)
-o The free scanner would be purely based on the free lists i.e.
-  fast_isolate_freepages would be the only scanner
-o The migration scanner would need to be strict about obeying the skip
-  bit to avoid picking a migration source that was previously a
-  migration target
-o The exit condition for compaction is not when scanners meet but when
-  fast_isolate_freepages cannot find any pageblock that is
-  MIGRATE_MOVABLE && !pageblock_skip
-
--- =
-
-Mel Gorman
-SUSE Labs
-
---===============6622446549461589637==--
+--===============1433437053913936151==--
 
