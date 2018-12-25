@@ -1,209 +1,150 @@
-Content-Type: multipart/mixed; boundary="===============3210116387802913281=="
+Content-Type: multipart/mixed; boundary="===============7198722556775837439=="
 MIME-Version: 1.0
-From: Peter Wu <peter@lekensteyn.nl>
+From: Chao Yu <yuchao0@huawei.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] drm/fb-helper: fix leaks in error path of drm_fb_helper_fbdev_setup
-Date: Mon, 24 Dec 2018 16:03:02 +0100
-Message-ID: <20181224150302.GA2259@al>
-In-Reply-To: <80d98ab2-dbf8-8d77-e5ca-07995cef0f1b@tronnes.org>
+Subject: Re: [f2fs] aa5ba25c63: WARNING:at_fs/f2fs/segment.c:#f2fs_wait_on_page_writeback[f2fs]
+Date: Tue, 25 Dec 2018 17:52:29 +0800
+Message-ID: <808f7e34-0432-ae2b-f584-8c53fa100312@huawei.com>
+In-Reply-To: <20181224004958.GK23332@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3210116387802913281==
+--===============7198722556775837439==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Dec 24, 2018 at 03:52:55PM +0100, Noralf Tr=C3=B8nnes wrote:
+Hi,
+
+Thanks for the report, I've updated the patch.
+
+On 2018/12/24 8:49, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-7):
+> =
+
+> commit: aa5ba25c6364dff554416b8aea334acc4146b349 ("f2fs: check PageWriteb=
+ack flag for ordered case")
+> https://git.kernel.org/cgit/linux/kernel/git/chao/linux.git f2fs-dev
+> =
+
+> in testcase: xfstests
+> with following parameters:
+> =
+
+> 	disk: 4HDD
+> 	fs: f2fs
+> 	test: generic-slow1
+> =
+
+> test-description: xfstests is a regression test suite for xfs and other f=
+iles ystems.
+> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
 > =
 
 > =
 
-> Den 24.12.2018 00.10, skrev Peter Wu:
-> > On Sun, Dec 23, 2018 at 02:55:52PM +0100, Noralf Tr=C3=B8nnes wrote:
-> > > =
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
+m 4G
+> =
 
-> > > =
-
-> > > Den 23.12.2018 01.55, skrev Peter Wu:
-> > > > After drm_fb_helper_fbdev_setup calls drm_fb_helper_init,
-> > > > "dev->fb_helper" will be initialized (and thus drm_fb_helper_fini w=
-ill
-> > > > have some effect). After that, drm_fb_helper_initial_config is call=
-ed
-> > > > which may call the "fb_probe" driver callback.
-> > > > =
-
-> > > > This driver callback may call drm_fb_helper_defio_init (as is done =
-by
-> > > > drm_fb_helper_generic_probe) or set a framebuffer (as is done by bo=
-chs)
-> > > > as documented. These are normally cleaned up on exit by
-> > > > drm_fb_helper_fbdev_teardown which also calls drm_fb_helper_fini.
-> > > > =
-
-> > > > If an error occurs after "fb_probe", but before setup is complete, =
-then
-> > > > calling just drm_fb_helper_fini will leak resources. This was trigg=
-ered
-> > > > by df2052cc922 ("bochs: convert to drm_fb_helper_fbdev_setup/teardo=
-wn"):
-> > > > =
-
-> > > >       [   50.008030] bochsdrmfb: enable CONFIG_FB_LITTLE_ENDIAN to =
-support this framebuffer
-> > > >       [   50.009436] bochs-drm 0000:00:02.0: [drm:drm_fb_helper_fbd=
-ev_setup] *ERROR* fbdev: Failed to set configuration (ret=3D-38)
-> > > >       [   50.011456] [drm] Initialized bochs-drm 1.0.0 20130925 for=
- 0000:00:02.0 on minor 2
-> > > >       [   50.013604] WARNING: CPU: 1 PID: 1 at drivers/gpu/drm/drm_=
-mode_config.c:477 drm_mode_config_cleanup+0x280/0x2a0
-> > > >       [   50.016175] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G      =
-          T 4.20.0-rc7 #1
-> > > >       [   50.017732] EIP: drm_mode_config_cleanup+0x280/0x2a0
-> > > >       ...
-> > > >       [   50.023155] Call Trace:
-> > > >       [   50.023155]  ? bochs_kms_fini+0x1e/0x30
-> > > >       [   50.023155]  ? bochs_unload+0x18/0x40
-> > > > =
-
-> > > > This can be reproduced with QEMU and CONFIG_FB_LITTLE_ENDIAN=3Dn.
-> > > > =
-
-> > > > Link: https://lkml.kernel.org/r/20181221083226.GI23332(a)shao2-debi=
-an
-> > > > Link: https://lkml.kernel.org/r/20181223004315.GA11455(a)al
-> > > > Fixes: 8741216396b2 ("drm/fb-helper: Add drm_fb_helper_fbdev_setup/=
-teardown()")
-> > > > Reported-by: kernel test robot <rong.a.chen@intel.com>
-> > > > Cc: Noralf Tr=C3=B8nnes <noralf@tronnes.org>
-> > > > Signed-off-by: Peter Wu <peter@lekensteyn.nl>
-> > > > ---
-> > > >    drivers/gpu/drm/drm_fb_helper.c | 2 +-
-> > > >    1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > =
-
-> > > > diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_=
-fb_helper.c
-> > > > index 9d64f874f965..432e0f3b9267 100644
-> > > > --- a/drivers/gpu/drm/drm_fb_helper.c
-> > > > +++ b/drivers/gpu/drm/drm_fb_helper.c
-> > > > @@ -2860,7 +2860,7 @@ int drm_fb_helper_fbdev_setup(struct drm_devi=
-ce *dev,
-> > > >    	return 0;
-> > > >    err_drm_fb_helper_fini:
-> > > > -	drm_fb_helper_fini(fb_helper);
-> > > > +	drm_fb_helper_fbdev_teardown(dev);
-> > > =
-
-> > > This change will break the error path for drm_fbdev_generic_setup()
-> > > because drm_fb_helper_generic_probe() cleans up on error but doesn't
-> > > clear drm_fb_helper->fb resulting in a double drm_framebuffer_remove(=
-).
-> > =
-
-> > This should probably considered a bug of drm_fb_helper_generic_probe.
-> > Ownership of fb_helper should remain with the caller. The caller can
-> > detect an error and act accordingly.
-> > =
-
-> > > My assumption has been that the drm_fb_helper_funcs->fb_probe callback
-> > > cleans up its resources on error. Clearly this is not the case for bo=
-chs, so
-> > > my take on this is that bochsfb_create() needs to clean up on error.
-> > =
-
-> > That assumption still holds for bochs. The problem is this sequence:
-> > - drm_fb_helper_fbdev_setup is called.
-> > - fb_probe succeeds (this is crucial).
-> > - register_framebuffer fails.
-> > - error path of setup is triggered.
-> > =
-
-> > As fb_helper is fully setup by drivers, the drm_fb_helper core should
-> > fully deallocate it again on the error path or else a leak occurs.
-> > =
-
-> > > Gerd has a patchset that switches bochs over to the generic fbdev
-> > > emulation, but ofc that doesn't help with 4.20:
-> > > https://patchwork.freedesktop.org/series/54269/
-> > =
-
-> > And that does not help with other users of the drm_fb_helper who use
-> > functions like drm_fb_helper_defio_init. They will likely run in the
-> > same problem.
-> > =
-
-> > I don't have a way to test tinydrm or other drivers, but if you force
-> > register_framebuffer to fail, you should be able to reproduce the
-> > problem with drm_fb_helper_generic_probe.
-> > =
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
 
 > =
 
-> Now I understand. I have looked at the drivers that use drm_fb_helper
-> and no one seem to handle the case where register_framebuffer() is
-> failing.
+> +-----------------------------------------------------------------+------=
+------+------------+
+> |                                                                 | e62c1=
+d30c1 | aa5ba25c63 |
+> +-----------------------------------------------------------------+------=
+------+------------+
+> | boot_successes                                                  | 45   =
+      | 69         |
+> | boot_failures                                                   | 2    =
+      | 24         |
+> | End_of_test:RCU_HOTPLUG                                         | 2    =
+      |            |
+> | WARNING:at_fs/f2fs/segment.c:#f2fs_wait_on_page_writeback[f2fs] | 0    =
+      | 24         |
+> | RIP:f2fs_wait_on_page_writeback[f2fs]                           | 0    =
+      | 24         |
+> +-----------------------------------------------------------------+------=
+------+------------+
 > =
 
-> Here's what drivers do when drm_fb_helper_initial_config() fails:
 > =
 
-> Doesn't check:
-> amdgpu
-> virtio
 > =
 
-> Calls drm_fb_helper_fini():
-> armada
-> ast
-> exynos
-> gma500
-> hisilicon
-> mgag200
-> msm
-> nouveau
-> omap
-> radeon
-> rockchip
-> tegra
-> udl
-> bochs - Uses drm_fb_helper_fbdev_setup()
-> qxl - Uses drm_fb_helper_fbdev_setup()
-> vboxvideo - Uses drm_fb_helper_fbdev_setup()
+> [  182.205329] WARNING: CPU: 0 PID: 3485 at fs/f2fs/segment.c:3286 f2fs_w=
+ait_on_page_writeback+0x8d/0xb0 [f2fs]
+> [  182.209739] Modules linked in: dm_mod f2fs sr_mod crct10dif_pclmul cdr=
+om sg crc32_pclmul crc32c_intel ghash_clmulni_intel ppdev ata_generic pata_=
+acpi snd_pcm aesni_intel crypto_simd cryptd glue_helper snd_timer snd sound=
+core serio_raw pcspkr ata_piix libata i2c_piix4 parport_pc parport floppy i=
+p_tables
+> [  182.217889] CPU: 0 PID: 3485 Comm: kworker/0:141 Not tainted 4.20.0-rc=
+4-00036-gaa5ba25 #1
+> [  182.220045] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.10.2-1 04/01/2014
+> [  182.222212] Workqueue: dio/vda dio_aio_complete_work
+> [  182.223520] RIP: 0010:f2fs_wait_on_page_writeback+0x8d/0xb0 [f2fs]
+> [  182.225061] Code: 8b 00 f6 c4 80 74 0d be 0f 00 00 00 48 89 df e8 f9 6=
+b ff e0 48 8b 43 08 48 8d 50 ff a8 01 48 0f 45 da 48 8b 03 f6 c4 80 74 95 <=
+0f> 0b f0 41 80 4c 24 48 04 eb 8a 48 89 df 5b 5d 41 5c e9 5c 72 00
+> [  182.228200] RSP: 0018:ffffc90002d9bd38 EFLAGS: 00010282
+> [  182.229095] RAX: 000fffffc000a0b7 RBX: ffffea0002882080 RCX: 000000000=
+0000000
+> [  182.230241] RDX: ffffea0002882387 RSI: ffffc90002d9bcd0 RDI: ffffffff8=
+2607150
+> [  182.231397] RBP: 0000000000000001 R08: ffff88806f174d30 R09: 000000000=
+00003a8
+> [  182.232549] R10: ffffffff82603d78 R11: 0000000000000000 R12: ffff8880a=
+a27b000
+> [  182.233693] R13: ffff8880aa27b2d8 R14: ffff8880a34ed101 R15: 000000000=
+00000f7
+> [  182.234836] FS:  0000000000000000(0000) GS:ffff88813fc00000(0000) knlG=
+S:0000000000000000
+> [  182.236200] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  182.237076] CR2: 00007f7fd41f7000 CR3: 000000009f10c000 CR4: 000000000=
+00406f0
+> [  182.238109] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
+0000000
+> [  182.239141] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 000000000=
+0000400
+> [  182.240169] Call Trace:
+> [  182.240654]  f2fs_wait_on_node_pages_writeback+0x81/0x170 [f2fs]
+> [  182.241556]  f2fs_do_sync_file+0x6a4/0x900 [f2fs]
+> [  182.242305]  dio_complete+0x1ee/0x210
+> [  182.242934]  process_one_work+0x1ae/0x3d0
+> [  182.243597]  worker_thread+0x3c/0x3b0
+> [  182.244225]  ? process_one_work+0x3d0/0x3d0
+> [  182.244906]  kthread+0x11e/0x140
+> [  182.245478]  ? kthread_park+0x90/0x90
+> [  182.246102]  ret_from_fork+0x35/0x40
+> [  182.246713] ---[ end trace e675fa4d1f37ed91 ]---
 > =
 
-> Might clean up, not sure:
-> cirrus
 > =
 
-> Looks suspicious:
-> i915
+> To reproduce:
 > =
 
-> I looked at bochs before it switched to drm_fb_helper_fbdev_setup() and
-> it also just called drm_fb_helper_fini().
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp qemu -k <bzImage> job-script # job-script is attached in =
+this email
 > =
 
-> It looks like you've uncovered something no one has though about (or
-> not implemented at least).
 > =
 
-> It's not just the framebuffer that's not destroyed, the buffer object
-> is also leaked. drm_mode_config_cleanup() yells about the framebuffer
-> (and frees it), but says nothing about the buffer object. It might be
-> that it can't even be made to detect that since some drivers do special
-> stuff for the fbdev buffer.
 > =
 
-> I'll pick up on this and do some testing after the Christmas holidays.
+> Thanks,
+> lkp
+> =
 
-Thanks, the warning is bad for CI (which uses QEMU), but otherwise it
-should not have any effect on regular users so it can wait.
--- =
 
-Kind regards,
-Peter Wu
-https://lekensteyn.nl
 
---===============3210116387802913281==--
+--===============7198722556775837439==--
 
