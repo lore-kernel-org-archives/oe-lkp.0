@@ -1,335 +1,103 @@
-Content-Type: multipart/mixed; boundary="===============3307633719237451389=="
+Content-Type: multipart/mixed; boundary="===============3089839948743201394=="
 MIME-Version: 1.0
-From: Vincent Guittot <vincent.guittot@linaro.org>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PM] 8234f6734c: will-it-scale.per_process_ops -3.6% regression
-Date: Tue, 15 Jan 2019 14:13:47 +0100
-Message-ID: <CAKfTPtB4cHpF2JcUiOLbmczDVSLEmBCpNDcYqCdAqwYZ2LAsRg@mail.gmail.com>
-In-Reply-To: <20190115032444.GP17624@shao2-debian>
+Subject: Re: bea5b158ff BUG: kernel reboot-without-warning in boot-around-mounting-root stage
+Date: Thu, 03 Jan 2019 08:44:42 +0800
+Message-ID: <728637bb-3ffe-d19a-4ca9-5abe1617e12a@intel.com>
+In-Reply-To: <20190102095844.GB14448@kroah.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3307633719237451389==
+--===============3089839948743201394==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Rong,
 
-On Tue, 15 Jan 2019 at 04:24, kernel test robot <rong.a.chen@intel.com> w=
-rote:
->
-> Greeting,
->
-> FYI, we noticed a -3.6% regression of will-it-scale.per_process_ops due t=
-o commit:
->
->
-> commit: 8234f6734c5d74ac794e5517437f51c57d65f865 ("PM-runtime: Switch aut=
-osuspend over to using hrtimers")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
 
-Could you rerun with the patch :
-https://lore.kernel.org/patchwork/patch/1030857/ ?
-It optimizes autosuspend by reducing the number of call to ktime_get
+On 01/02/2019 05:58 PM, Greg Kroah-Hartman wrote:
+> On Wed, Jan 02, 2019 at 09:15:12AM +0800, kernel test robot wrote:
+>> Greetings,
+>>
+>> 0day kernel testing robot got the below dmesg and the first bad commit is
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+>>
+>> commit bea5b158ff0da9c7246ff391f754f5f38e34577a
+>> Author:     Rob Herring <robh@kernel.org>
+>> AuthorDate: Thu Aug 11 10:20:58 2016 -0500
+>> Commit:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> CommitDate: Wed Aug 31 15:13:55 2016 +0200
+>>
+>>      driver core: add test of driver remove calls during probe
+>>      =
 
-Regards,
-Vincent
+>>      In recent discussions on ksummit-discuss[1], it was suggested to do=
+ a
+>>      sequence of probe, remove, probe for testing driver remove paths. T=
+his
+>>      adds a kconfig option for said test.
+>>      =
 
-> in testcase: will-it-scale
-> on test machine: 104 threads Skylake with 192G memory
-> with following parameters:
->
->         nr_task: 100%
->         mode: process
->         test: poll2
->         cpufreq_governor: performance
->
-> test-description: Will It Scale takes a testcase and runs it from 1 throu=
-gh to n parallel copies to see if the testcase will scale. It builds both a=
- process and threads based test in order to see any differences between the=
- two.
-> test-url: https://github.com/antonblanchard/will-it-scale
->
->
->
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp install job.yaml  # job file is attached in this email
->         bin/lkp run     job.yaml
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/tes=
-tcase:
->   gcc-7/performance/x86_64-rhel-7.2/process/100%/debian-x86_64-2018-04-03=
-.cgz/lkp-skl-fpga01/poll2/will-it-scale
->
-> commit:
->   v4.20-rc7
->   8234f6734c ("PM-runtime: Switch autosuspend over to using hrtimers")
->
->        v4.20-rc7 8234f6734c5d74ac794e551743
-> ---------------- --------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :2           50%           1:4     dmesg.WARNING:at#for_ip_int=
-errupt_entry/0x
->          %stddev     %change         %stddev
->              \          |                \
->     240408            -3.6%     231711        will-it-scale.per_process_o=
-ps
->   25002520            -3.6%   24097991        will-it-scale.workload
->     351914            -1.7%     345882        interrupts.CAL:Function_cal=
-l_interrupts
->       1.77 =C2=B1 45%      -1.1        0.64        mpstat.cpu.idle%
->     106164 =C2=B1 24%     -23.2%      81494 =C2=B1 28%  numa-meminfo.node=
-0.AnonHugePages
->     326430 =C2=B1  8%     -11.3%     289513        softirqs.SCHED
->       1294            -2.0%       1268        vmstat.system.cs
->       3178           +48.4%       4716 =C2=B1 16%  slabinfo.eventpoll_pwq=
-.active_objs
->       3178           +48.4%       4716 =C2=B1 16%  slabinfo.eventpoll_pwq=
-.num_objs
->     336.32          -100.0%       0.00        uptime.boot
->       3192          -100.0%       0.00        uptime.idle
->  3.456e+08 =C2=B1 76%     -89.9%   34913819 =C2=B1 62%  cpuidle.C1E.time
->     747832 =C2=B1 72%     -87.5%      93171 =C2=B1 45%  cpuidle.C1E.usage
->      16209 =C2=B1 26%     -38.2%      10021 =C2=B1 44%  cpuidle.POLL.time
->       6352 =C2=B1 32%     -39.5%       3843 =C2=B1 48%  cpuidle.POLL.usage
->     885259 =C2=B1  2%     -13.8%     763434 =C2=B1  7%  numa-vmstat.node0=
-.numa_hit
->     865117 =C2=B1  2%     -13.9%     744992 =C2=B1  7%  numa-vmstat.node0=
-.numa_local
->     405085 =C2=B1  7%     +38.0%     558905 =C2=B1  9%  numa-vmstat.node1=
-.numa_hit
->     254056 =C2=B1 11%     +59.7%     405824 =C2=B1 13%  numa-vmstat.node1=
-.numa_local
->     738158 =C2=B1 73%     -88.5%      85078 =C2=B1 47%  turbostat.C1E
->       1.07 =C2=B1 76%      -1.0        0.11 =C2=B1 62%  turbostat.C1E%
->       1.58 =C2=B1 49%     -65.4%       0.55 =C2=B1  6%  turbostat.CPU%c1
->       0.15 =C2=B1 13%     -35.0%       0.10 =C2=B1 38%  turbostat.CPU%c6
->     153.97 =C2=B1 16%     -54.7       99.31        turbostat.PKG_%
->      64141            +1.5%      65072        proc-vmstat.nr_anon_pages
->      19541            -7.0%      18178 =C2=B1  8%  proc-vmstat.nr_shmem
->      18296            +1.1%      18506        proc-vmstat.nr_slab_reclaim=
-able
->     713938            -2.3%     697489        proc-vmstat.numa_hit
->     693688            -2.4%     677228        proc-vmstat.numa_local
->     772220            -1.9%     757334        proc-vmstat.pgalloc_normal
->     798565            -1.8%     784042        proc-vmstat.pgfault
->     732336            -2.7%     712661        proc-vmstat.pgfree
->      20.33 =C2=B1  4%      -7.0%      18.92        sched_debug.cfs_rq:/.r=
-unnable_load_avg.max
->     160603           -44.5%      89108 =C2=B1 38%  sched_debug.cfs_rq:/.s=
-pread0.avg
->     250694           -29.3%     177358 =C2=B1 18%  sched_debug.cfs_rq:/.s=
-pread0.max
->       1109 =C2=B1  4%      -7.0%       1031        sched_debug.cfs_rq:/.u=
-til_avg.max
->      20.33 =C2=B1  4%      -7.2%      18.88        sched_debug.cpu.cpu_lo=
-ad[0].max
->     -10.00           +35.0%     -13.50        sched_debug.cpu.nr_uninterr=
-uptible.min
->       3.56 =C2=B1 10%     +44.2%       5.14 =C2=B1 18%  sched_debug.cpu.n=
-r_uninterruptible.stddev
->      87.10 =C2=B1 24%     -34.0%      57.44 =C2=B1 37%  sched_debug.cpu.s=
-ched_goidle.avg
->     239.48           -25.6%     178.07 =C2=B1 18%  sched_debug.cpu.sched_=
-goidle.stddev
->     332.67 =C2=B1  7%     -25.5%     247.83 =C2=B1 13%  sched_debug.cpu.t=
-twu_count.min
->     231.67 =C2=B1  8%     -15.4%     195.96 =C2=B1 12%  sched_debug.cpu.t=
-twu_local.min
->      95.47           -95.5        0.00        perf-profile.calltrace.cycl=
-es-pp.poll
->      90.26           -90.3        0.00        perf-profile.calltrace.cycl=
-es-pp.entry_SYSCALL_64_after_hwframe.poll
->      90.08           -90.1        0.00        perf-profile.calltrace.cycl=
-es-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.poll
->      89.84           -89.8        0.00        perf-profile.calltrace.cycl=
-es-pp.__x64_sys_poll.do_syscall_64.entry_SYSCALL_64_after_hwframe.poll
->      88.04           -88.0        0.00        perf-profile.calltrace.cycl=
-es-pp.do_sys_poll.__x64_sys_poll.do_syscall_64.entry_SYSCALL_64_after_hwfra=
-me.poll
->       2.66            -0.1        2.54        perf-profile.calltrace.cycl=
-es-pp._copy_from_user.do_sys_poll.__x64_sys_poll.do_syscall_64.entry_SYSCAL=
-L_64_after_hwframe
->       1.90            -0.1        1.81        perf-profile.calltrace.cycl=
-es-pp.copy_user_enhanced_fast_string._copy_from_user.do_sys_poll.__x64_sys_=
-poll.do_syscall_64
->       2.56            +0.1        2.64        perf-profile.calltrace.cycl=
-es-pp.__fdget.do_sys_poll.__x64_sys_poll.do_syscall_64.entry_SYSCALL_64_aft=
-er_hwframe
->       0.00            +2.3        2.29        perf-profile.calltrace.cycl=
-es-pp.syscall_return_via_sysret
->       0.00            +2.3        2.34        perf-profile.calltrace.cycl=
-es-pp.entry_SYSCALL_64
->      17.45            +3.8       21.24        perf-profile.calltrace.cycl=
-es-pp.__fget_light.do_sys_poll.__x64_sys_poll.do_syscall_64.entry_SYSCALL_6=
-4_after_hwframe
->       0.00           +92.7       92.66        perf-profile.calltrace.cycl=
-es-pp.do_sys_poll.__x64_sys_poll.do_syscall_64.entry_SYSCALL_64_after_hwfra=
-me
->       0.00           +94.5       94.51        perf-profile.calltrace.cycl=
-es-pp.__x64_sys_poll.do_syscall_64.entry_SYSCALL_64_after_hwframe
->       0.00           +94.8       94.75        perf-profile.calltrace.cycl=
-es-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe
->       0.00           +94.9       94.92        perf-profile.calltrace.cycl=
-es-pp.entry_SYSCALL_64_after_hwframe
->      96.03           -96.0        0.00        perf-profile.children.cycle=
-s-pp.poll
->      90.29           -90.3        0.00        perf-profile.children.cycle=
-s-pp.entry_SYSCALL_64_after_hwframe
->      90.11           -90.1        0.00        perf-profile.children.cycle=
-s-pp.do_syscall_64
->      89.87           -89.9        0.00        perf-profile.children.cycle=
-s-pp.__x64_sys_poll
->      89.39           -89.4        0.00        perf-profile.children.cycle=
-s-pp.do_sys_poll
->      16.19           -16.2        0.00        perf-profile.children.cycle=
-s-pp.__fget_light
->      68.59           -68.6        0.00        perf-profile.self.cycles-pp=
-.do_sys_poll
->      14.84           -14.8        0.00        perf-profile.self.cycles-pp=
-.__fget_light
->  1.759e+13          -100.0%       0.00        perf-stat.branch-instructio=
-ns
->       0.28            -0.3        0.00        perf-stat.branch-miss-rate%
->  4.904e+10          -100.0%       0.00        perf-stat.branch-misses
->       6.79 =C2=B1  3%      -6.8        0.00        perf-stat.cache-miss-r=
-ate%
->  1.071e+08 =C2=B1  4%    -100.0%       0.00        perf-stat.cache-misses
->  1.578e+09          -100.0%       0.00        perf-stat.cache-references
->     385311 =C2=B1  2%    -100.0%       0.00        perf-stat.context-swit=
-ches
->       1.04          -100.0%       0.00        perf-stat.cpi
->  8.643e+13          -100.0%       0.00        perf-stat.cpu-cycles
->      13787          -100.0%       0.00        perf-stat.cpu-migrations
->       0.00 =C2=B1  4%      -0.0        0.00        perf-stat.dTLB-load-mi=
-ss-rate%
->   23324811 =C2=B1  5%    -100.0%       0.00        perf-stat.dTLB-load-mi=
-sses
->  1.811e+13          -100.0%       0.00        perf-stat.dTLB-loads
->       0.00            -0.0        0.00        perf-stat.dTLB-store-miss-r=
-ate%
->    2478029          -100.0%       0.00        perf-stat.dTLB-store-misses
->  8.775e+12          -100.0%       0.00        perf-stat.dTLB-stores
->      99.66           -99.7        0.00        perf-stat.iTLB-load-miss-ra=
-te%
->  7.527e+09          -100.0%       0.00        perf-stat.iTLB-load-misses
->   25540468 =C2=B1 39%    -100.0%       0.00        perf-stat.iTLB-loads
->   8.33e+13          -100.0%       0.00        perf-stat.instructions
->      11066          -100.0%       0.00        perf-stat.instructions-per-=
-iTLB-miss
->       0.96          -100.0%       0.00        perf-stat.ipc
->     777357          -100.0%       0.00        perf-stat.minor-faults
->      81.69           -81.7        0.00        perf-stat.node-load-miss-ra=
-te%
->   20040093          -100.0%       0.00        perf-stat.node-load-misses
->    4491667 =C2=B1  7%    -100.0%       0.00        perf-stat.node-loads
->      75.23 =C2=B1 10%     -75.2        0.00        perf-stat.node-store-m=
-iss-rate%
->    3418662 =C2=B1 30%    -100.0%       0.00        perf-stat.node-store-m=
-isses
->    1027183 =C2=B1 11%    -100.0%       0.00        perf-stat.node-stores
->     777373          -100.0%       0.00        perf-stat.page-faults
->    3331644          -100.0%       0.00        perf-stat.path-length
->
->
->
->                             will-it-scale.per_process_ops
->
->   242000 +-+-------------------------------------------------------------=
----+
->          |                      +.+..   .+..+.      .+.+..+.+.+.    .+.+.=
-.  |
->   240000 +-+                   +     +.+      +.+..+            +..+     =
- +.|
->   238000 +-+..+.+.  .+.   .+..+                                          =
-   |
->          |        +.   +.+                                               =
-   |
->   236000 +-+                                                             =
-   |
->          |                                                               =
-   |
->   234000 +-+                                                             =
-   |
->          |                                  O O O  O                     =
-   |
->   232000 +-+             O O  O O                      O  O O O O  O O O =
- O |
->   230000 +-+           O          O  O O O           O                   =
-   |
->          |           O                                                   =
-   |
->   228000 O-+    O O                                                      =
-   |
->          | O  O                                                          =
-   |
->   226000 +-+-------------------------------------------------------------=
----+
->
->
->                                 will-it-scale.workload
->
->   2.52e+07 +-+-----------------------------------------------------------=
----+
->            |                     +..+.   .+..+.      .+. .+.+..+.   .+..+=
-.  |
->    2.5e+07 +-+                  +     +.+      +.+.+.   +        +.+     =
- +.|
->   2.48e+07 +-+.+..+. .+.    .+.+                                         =
-   |
->            |        +   +..+                                             =
-   |
->   2.46e+07 +-+                                                           =
-   |
->   2.44e+07 +-+                                                           =
-   |
->            |                                                             =
-   |
->   2.42e+07 +-+               O   O           O O O O        O        O   =
-   |
->    2.4e+07 +-+          O  O   O                        O O    O O O    O=
- O |
->            |          O             O O O O           O                  =
-   |
->   2.38e+07 O-+    O                                                      =
-   |
->   2.36e+07 +-O O    O                                                    =
-   |
->            |                                                             =
-   |
->   2.34e+07 +-+-----------------------------------------------------------=
----+
->
->
-> [*] bisect-good sample
-> [O] bisect-bad  sample
->
->
->
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
->
->
-> Thanks,
-> Rong Chen
+>>      [1] https://lists.linuxfoundation.org/pipermail/ksummit-discuss/201=
+6-August/003459.html
+>>      =
 
---===============3307633719237451389==--
+>>      Suggested-by: Arnd Bergmann <arnd@arndb.de>
+>>      Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>      Signed-off-by: Rob Herring <robh@kernel.org>
+>>      Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>
+>> cebf8fd169  driver core: fix race between creating/querying glue dir and=
+ its cleanup
+>> bea5b158ff  driver core: add test of driver remove calls during probe
+>> e1ef035d27  Merge tag 'armsoc-defconfig' of git://git.kernel.org/pub/scm=
+/linux/kernel/git/arm/arm-soc
+>> 6a1d293238  Add linux-next specific files for 20181224
+>> +----------------------------------------------------------------------+=
+------------+------------+------------+---------------+
+>> |                                                                      |=
+ cebf8fd169 | bea5b158ff | e1ef035d27 | next-20181224 |
+>> +----------------------------------------------------------------------+=
+------------+------------+------------+---------------+
+>> | boot_successes                                                       |=
+ 31         | 0          | 0          | 0             |
+>> | boot_failures                                                        |=
+ 0          | 11         | 11         | 7             |
+>> | BUG:kernel_reboot-without-warning_in_boot-around-mounting-root_stage |=
+ 0          | 11         | 11         | 7             |
+>> +----------------------------------------------------------------------+=
+------------+------------+------------+---------------+
+>>
+>> [   14.073515] shpchp: Standard Hot Plug PCI Controller Driver version: =
+0.4
+>> [   14.095297] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+>> [   14.177113] serial8250: ttyS0 at I/O 0x3f8 (irq =3D 4, base_baud =3D =
+115200) is a 16550A
+>> [   14.256672] serial8250: ttyS1 at I/O 0x2f8 (irq =3D 3, base_baud =3D =
+115200) is a 16550A
+>> [   14.278578] console [ttyS0] disabled
+>> BUG: kernel reboot-without-warning in boot-around-mounting-root stage
+>>
+>>
+>>                                                            # HH:MM RESUL=
+T GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
+>> git bisect start v4.9 v4.8 --
+> You are testing the 4.9 kernel release here?
+>
+> A commit from 2016 is a "problem"?  Are you sure this is still an issue?
+
+I'm very sorry for the old commit report, we're testing latest code,
+and the robot shouldn't track old commits. we'll fix it.
+
+Best Regards,
+Rong Chen
+
+>
+> thanks,
+>
+> greg k-h
+
+
+--===============3089839948743201394==--
 
