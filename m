@@ -1,122 +1,190 @@
-Content-Type: multipart/mixed; boundary="===============2608930047617329389=="
+Content-Type: multipart/mixed; boundary="===============3533911084548563784=="
 MIME-Version: 1.0
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Noralf Trønnes <noralf@tronnes.org>
 To: lkp@lists.01.org
-Subject: Re: 047fb56f7e ("blk-mq: fix changelog"): BUG: unable to handle kernel NULL pointer dereference at 00000030
-Date: Sat, 05 Jan 2019 18:35:33 +0100
-Message-ID: <20190105173533.GA26461@kroah.com>
-In-Reply-To: <5c30e6f2.FK3oPXlyr6MtdG/V%lkp@intel.com>
+Subject: Re: [PATCH] drm/fb-helper: fix leaks in error path of drm_fb_helper_fbdev_setup
+Date: Sat, 05 Jan 2019 19:25:53 +0100
+Message-ID: <564896a7-e232-70e2-dd01-fec265f731eb@tronnes.org>
+In-Reply-To: <20181224150302.GA2259@al>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2608930047617329389==
+--===============3533911084548563784==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 06, 2019 at 01:18:42AM +0800, kernel test robot wrote:
-> Greetings,
+
+
+Den 24.12.2018 16.03, skrev Peter Wu:
+> On Mon, Dec 24, 2018 at 03:52:55PM +0100, Noralf Tr=C3=B8nnes wrote:
+>>
+>>
+>> Den 24.12.2018 00.10, skrev Peter Wu:
+>>> On Sun, Dec 23, 2018 at 02:55:52PM +0100, Noralf Tr=C3=B8nnes wrote:
+>>>>
+>>>>
+>>>> Den 23.12.2018 01.55, skrev Peter Wu:
+>>>>> After drm_fb_helper_fbdev_setup calls drm_fb_helper_init,
+>>>>> "dev->fb_helper" will be initialized (and thus drm_fb_helper_fini will
+>>>>> have some effect). After that, drm_fb_helper_initial_config is called
+>>>>> which may call the "fb_probe" driver callback.
+>>>>>
+>>>>> This driver callback may call drm_fb_helper_defio_init (as is done by
+>>>>> drm_fb_helper_generic_probe) or set a framebuffer (as is done by boch=
+s)
+>>>>> as documented. These are normally cleaned up on exit by
+>>>>> drm_fb_helper_fbdev_teardown which also calls drm_fb_helper_fini.
+>>>>>
+>>>>> If an error occurs after "fb_probe", but before setup is complete, th=
+en
+>>>>> calling just drm_fb_helper_fini will leak resources. This was trigger=
+ed
+>>>>> by df2052cc922 ("bochs: convert to drm_fb_helper_fbdev_setup/teardown=
+"):
+>>>>>
+>>>>>        [   50.008030] bochsdrmfb: enable CONFIG_FB_LITTLE_ENDIAN to s=
+upport this framebuffer
+>>>>>        [   50.009436] bochs-drm 0000:00:02.0: [drm:drm_fb_helper_fbde=
+v_setup] *ERROR* fbdev: Failed to set configuration (ret=3D-38)
+>>>>>        [   50.011456] [drm] Initialized bochs-drm 1.0.0 20130925 for =
+0000:00:02.0 on minor 2
+>>>>>        [   50.013604] WARNING: CPU: 1 PID: 1 at drivers/gpu/drm/drm_m=
+ode_config.c:477 drm_mode_config_cleanup+0x280/0x2a0
+>>>>>        [   50.016175] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G       =
+         T 4.20.0-rc7 #1
+>>>>>        [   50.017732] EIP: drm_mode_config_cleanup+0x280/0x2a0
+>>>>>        ...
+>>>>>        [   50.023155] Call Trace:
+>>>>>        [   50.023155]  ? bochs_kms_fini+0x1e/0x30
+>>>>>        [   50.023155]  ? bochs_unload+0x18/0x40
+>>>>>
+>>>>> This can be reproduced with QEMU and CONFIG_FB_LITTLE_ENDIAN=3Dn.
+>>>>>
+>>>>> Link: https://lkml.kernel.org/r/20181221083226.GI23332(a)shao2-debian
+>>>>> Link: https://lkml.kernel.org/r/20181223004315.GA11455(a)al
+>>>>> Fixes: 8741216396b2 ("drm/fb-helper: Add drm_fb_helper_fbdev_setup/te=
+ardown()")
+>>>>> Reported-by: kernel test robot <rong.a.chen@intel.com>
+>>>>> Cc: Noralf Tr=C3=B8nnes <noralf@tronnes.org>
+>>>>> Signed-off-by: Peter Wu <peter@lekensteyn.nl>
+>>>>> ---
+>>>>>     drivers/gpu/drm/drm_fb_helper.c | 2 +-
+>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb=
+_helper.c
+>>>>> index 9d64f874f965..432e0f3b9267 100644
+>>>>> --- a/drivers/gpu/drm/drm_fb_helper.c
+>>>>> +++ b/drivers/gpu/drm/drm_fb_helper.c
+>>>>> @@ -2860,7 +2860,7 @@ int drm_fb_helper_fbdev_setup(struct drm_device=
+ *dev,
+>>>>>     	return 0;
+>>>>>     err_drm_fb_helper_fini:
+>>>>> -	drm_fb_helper_fini(fb_helper);
+>>>>> +	drm_fb_helper_fbdev_teardown(dev);
+>>>>
+>>>> This change will break the error path for drm_fbdev_generic_setup()
+>>>> because drm_fb_helper_generic_probe() cleans up on error but doesn't
+>>>> clear drm_fb_helper->fb resulting in a double drm_framebuffer_remove().
+>>>
+>>> This should probably considered a bug of drm_fb_helper_generic_probe.
+>>> Ownership of fb_helper should remain with the caller. The caller can
+>>> detect an error and act accordingly.
+>>>
+>>>> My assumption has been that the drm_fb_helper_funcs->fb_probe callback
+>>>> cleans up its resources on error. Clearly this is not the case for boc=
+hs, so
+>>>> my take on this is that bochsfb_create() needs to clean up on error.
+>>>
+>>> That assumption still holds for bochs. The problem is this sequence:
+>>> - drm_fb_helper_fbdev_setup is called.
+>>> - fb_probe succeeds (this is crucial).
+>>> - register_framebuffer fails.
+>>> - error path of setup is triggered.
+>>>
+>>> As fb_helper is fully setup by drivers, the drm_fb_helper core should
+>>> fully deallocate it again on the error path or else a leak occurs.
+>>>
+>>>> Gerd has a patchset that switches bochs over to the generic fbdev
+>>>> emulation, but ofc that doesn't help with 4.20:
+>>>> https://patchwork.freedesktop.org/series/54269/
+>>>
+>>> And that does not help with other users of the drm_fb_helper who use
+>>> functions like drm_fb_helper_defio_init. They will likely run in the
+>>> same problem.
+>>>
+>>> I don't have a way to test tinydrm or other drivers, but if you force
+>>> register_framebuffer to fail, you should be able to reproduce the
+>>> problem with drm_fb_helper_generic_probe.
+>>>
+>>
+>> Now I understand. I have looked at the drivers that use drm_fb_helper
+>> and no one seem to handle the case where register_framebuffer() is
+>> failing.
+>>
+>> Here's what drivers do when drm_fb_helper_initial_config() fails:
+>>
+>> Doesn't check:
+>> amdgpu
+>> virtio
+>>
+>> Calls drm_fb_helper_fini():
+>> armada
+>> ast
+>> exynos
+>> gma500
+>> hisilicon
+>> mgag200
+>> msm
+>> nouveau
+>> omap
+>> radeon
+>> rockchip
+>> tegra
+>> udl
+>> bochs - Uses drm_fb_helper_fbdev_setup()
+>> qxl - Uses drm_fb_helper_fbdev_setup()
+>> vboxvideo - Uses drm_fb_helper_fbdev_setup()
+>>
+>> Might clean up, not sure:
+>> cirrus
+>>
+>> Looks suspicious:
+>> i915
+>>
+>> I looked at bochs before it switched to drm_fb_helper_fbdev_setup() and
+>> it also just called drm_fb_helper_fini().
+>>
+>> It looks like you've uncovered something no one has though about (or
+>> not implemented at least).
+>>
+>> It's not just the framebuffer that's not destroyed, the buffer object
+>> is also leaked. drm_mode_config_cleanup() yells about the framebuffer
+>> (and frees it), but says nothing about the buffer object. It might be
+>> that it can't even be made to detect that since some drivers do special
+>> stuff for the fbdev buffer.
+>>
+>> I'll pick up on this and do some testing after the Christmas holidays.
 > =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+> Thanks, the warning is bad for CI (which uses QEMU), but otherwise it
+> should not have any effect on regular users so it can wait.
 > =
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git de=
-bugfs_cleanup
-> =
 
-> commit 047fb56f7ecf53620d6e93fbcc8ca9166108d14c
-> Author:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> AuthorDate: Fri Jan 4 14:06:22 2019 +0100
-> Commit:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CommitDate: Fri Jan 4 17:29:15 2019 +0100
-> =
+This patch is good as long as it's applied along side the fix[1] to the =
 
->     blk-mq: fix changelog
-> =
+generic emulation:
 
-> 464573328e  wireless: fix changelog
-> 047fb56f7e  blk-mq: fix changelog
-> 24aeb03f70  lib: WIP, break up
-> +------------------------------------------+------------+------------+---=
----------+
-> |                                          | 464573328e | 047fb56f7e | 24=
-aeb03f70 |
-> +------------------------------------------+------------+------------+---=
----------+
-> | boot_successes                           | 33         | 0          | 0 =
-         |
-> | boot_failures                            | 0          | 13         | 19=
-         |
-> | BUG:unable_to_handle_kernel              | 0          | 13         | 19=
-         |
-> | Oops:#[##]                               | 0          | 13         | 19=
-         |
-> | EIP:debugfs_create_files                 | 0          | 13         | 19=
-         |
-> | Kernel_panic-not_syncing:Fatal_exception | 0          | 13         | 19=
-         |
-> +------------------------------------------+------------+------------+---=
----------+
-> =
+Reviewed-by: Noralf Tr=C3=B8nnes <noralf@tronnes.org>
 
-> [    1.939685] toshiba: not a supported Toshiba laptop
-> [    1.940314] platform pc8736x_gpio.0: NatSemi pc8736x GPIO Driver Initi=
-alizing
-> [    1.941204] platform pc8736x_gpio.0: no device found
-> [    1.941848] nsc_gpio initializing
-> [    1.942249] Hangcheck: starting hangcheck timer 0.9.1 (tick is 180 sec=
-onds, margin is 60 seconds).
-> [    1.943923] BUG: unable to handle kernel NULL pointer dereference at 0=
-0000030
-> [    1.944889] #PF error: [normal kernel read fault]
-> [    1.945527] *pdpt =3D 0000000000000000 *pde =3D f000ff53f000ff53 =
+I can apply them both when I get an ack/rb on the other patch.
 
-> [    1.946287] Oops: 0000 [#1] SMP PTI
-> [    1.946760] CPU: 0 PID: 7 Comm: kworker/u4:0 Not tainted 4.20.0-11088-=
-g047fb56 #1
-> [    1.947149] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [    1.947149] Workqueue: events_unbound async_run_entry_fn
-> [    1.947149] EIP: debugfs_create_files+0x9/0x50
-> [    1.947149] Code: 00 e8 db 11 52 00 8b 16 8b 4e 04 8d 83 c0 03 00 00 e=
-8 4b 24 da ff 5b 5e 5d c3 8d b4 26 00 00 00 00 55 89 e5 56 53 89 c6 89 cb <=
-8b> 40 30 89 90 14 02 00 00 8b 01 85 c0 74 26 90 8d b4 26 00 00 00
-> [    1.947149] EAX: 00000000 EBX: 00000000 ECX: 00000000 EDX: da18f800
-> [    1.947149] ESI: 00000000 EDI: da18f800 EBP: c005de24 ESP: c005de1c
-> [    1.947149] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00210=
-246
-> [    1.947149] CR0: 80050033 CR2: 00000030 CR3: 01da4000 CR4: 003406f0
-> [    1.947149] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> [    1.947149] DR6: fffe0ff0 DR7: 00000400
-> [    1.947149] Call Trace:
-> [    1.947149]  blk_mq_debugfs_register_sched_hctx+0x2f/0x40
-> [    1.947149]  blk_mq_init_sched+0x156/0x1c0
-> [    1.947149]  elevator_init_mq+0x4b/0x80
-> [    1.947149]  blk_mq_init_allocated_queue+0x409/0x460
-> [    1.947149]  blk_mq_init_queue+0x23/0x60
-> [    1.947149]  blk_mq_init_sq_queue+0x77/0x90
-> [    1.947149]  floppy_async_init+0xc0/0xd2c
-> [    1.947149]  ? __lock_acquire+0x35/0x860
-> [    1.947149]  async_run_entry_fn+0x2e/0xf0
-> [    1.947149]  process_one_work+0x195/0x3c0
-> [    1.947149]  ? process_one_work+0x176/0x3c0
-> [    1.947149]  worker_thread+0x39/0x3d0
-> [    1.947149]  kthread+0xda/0x110
-> [    1.947149]  ? process_one_work+0x3c0/0x3c0
-> [    1.947149]  ? kthread_park+0xa0/0xa0
-> [    1.947149]  ret_from_fork+0x19/0x30
-> [    1.947149] Modules linked in:
-> [    1.947149] CR2: 0000000000000030
-> [    1.947149] ---[ end trace 34fc82d8056f573a ]---
-> [    1.947150] BUG: unable to handle kernel NULL pointer dereference at 0=
-0000030
+Thanks for fixing this.
 
-This is my fault, due to some debugfs patches I'm working on, it's not a
-block-specific issue at the moment.
+Noralf.
 
-sorry for the noise.
+[1] https://patchwork.freedesktop.org/patch/275002/
 
-greg k-h
-
---===============2608930047617329389==--
+--===============3533911084548563784==--
 
