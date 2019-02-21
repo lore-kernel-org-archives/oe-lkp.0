@@ -1,165 +1,190 @@
-Content-Type: multipart/mixed; boundary="===============2978680362536026775=="
+Content-Type: multipart/mixed; boundary="===============5724362749075060167=="
 MIME-Version: 1.0
-From: Rong Chen <rong.a.chen@intel.com>
+From: kernel test robot <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [audit] dffb589851: BUG:unable_to_handle_kernel
-Date: Thu, 21 Feb 2019 08:42:45 +0800
-Message-ID: <722b26a7-f05c-3a26-296e-8c4a2c02e05c@intel.com>
-In-Reply-To: <20190215150052.ttzkyom7h27ikaoz@madcap2.tricolour.ca>
+Subject: Re: [driver core] 570d020012: will-it-scale.per_thread_ops -12.2% regression
+Date: Thu, 21 Feb 2019 11:10:49 +0800
+Message-ID: <20190221031049.GE28258@shao2-debian>
+In-Reply-To: <20190219121904.GA24103@kroah.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2978680362536026775==
+--===============5724362749075060167==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Tue, Feb 19, 2019 at 01:19:04PM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Feb 19, 2019 at 08:59:45AM +0800, Wei Yang wrote:
+> > On Mon, Feb 18, 2019 at 03:54:42PM +0800, kernel test robot wrote:
+> > >Greeting,
+> > >
+> > >FYI, we noticed a -12.2% regression of will-it-scale.per_thread_ops du=
+e to commit:
+> > >
+> > >
+> > >commit: 570d0200123fb4f809aa2f6226e93a458d664d70 ("driver core: move d=
+evice->knode_class to device_private")
+> > >https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> > >
+> > =
 
-On 2/15/19 11:00 PM, Richard Guy Briggs wrote:
-> On 2019-02-15 06:09, kernel test robot wrote:
->> FYI, we noticed the following commit (built with gcc-8):
->>
->> commit: dffb5898515333cbafb2ccdfcdc5942c1f151c6b ("audit: collect audit =
-task parameters")
->> git://toccata2.tricolour.ca/linux-2.6-rgb.git ghak90-audit-containerID.v=
-5.6
->>
->> in testcase: trinity
->> with following parameters:
->>
->> 	runtime: 300s
->>
->> test-description: Trinity is a linux system call fuzz tester.
->> test-url: http://codemonkey.org.uk/projects/trinity/
->>
->>
->> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 =
--m 8G
->>
->> caused below changes (please refer to attached dmesg/kmsg for entire log=
-/backtrace):
->>
->>
->> +-----------------------------------------------------------------------=
----------+------------+------------+
->> |                                                                       =
-         | cd108b5c51 | dffb589851 |
->> +-----------------------------------------------------------------------=
----------+------------+------------+
->> | boot_successes                                                        =
-         | 16         | 0          |
->> | boot_failures                                                         =
-         | 16         | 4          |
->> | End_of_test:RCU_HOTPLUG                                               =
-         | 9          |            |
->> | WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_stats_print.cold.#[rcu=
-torture] | 7          |            |
->> | RIP:rcu_torture_stats_print.cold.#[rcutorture]                        =
-         | 7          |            |
->> | End_of_test:FAILURE                                                   =
-         | 7          |            |
->> | BUG:unable_to_handle_kernel                                           =
-         | 0          | 4          |
->> | Oops:#[##]                                                            =
-         | 0          | 4          |
->> | RIP:audit_free_syscall                                                =
-         | 0          | 4          |
->> | Kernel_panic-not_syncing:Fatal_exception                              =
-         | 0          | 4          |
->> | RIP:getname_kernel                                                    =
-         | 0          | 1          |
->> +-----------------------------------------------------------------------=
----------+------------+------------+
->>
->>
->>
->> [   10.298417] BUG: unable to handle kernel NULL pointer dereference at =
-000000000000034b
->> [   10.299381] #PF error: [normal kernel read fault]
->> [   10.299381] PGD 0 P4D 0
->> [   10.299381] Oops: 0000 [#1] SMP PTI
->> [   10.299381] CPU: 1 PID: 41 Comm: cryptomgr_test Not tainted 5.0.0-rc1=
--00013-gdffb589 #1
->> [   10.299381] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BI=
-OS 1.10.2-1 04/01/2014
->> [   10.299381] RIP: 0010:audit_free_syscall+0x23/0x240
->> [   10.299381] Code: c8 f3 ff 0f 1f 40 00 66 66 66 66 90 41 57 41 56 41 =
-55 41 54 55 53 48 8b 87 48 0b 00 00 48 8b 58 08 48 85 db 0f 84 04 02 00 00 =
-<48> 8b 83 48 03 00 00 48 8d 93 48 03 00 00 48 89 fd 48 39 c2 74 08
->> [   10.299381] RSP: 0000:ffffc90000f8be38 EFLAGS: 00010206
->> [   10.299381] RAX: ffff88822a1b9630 RBX: 0000000000000003 RCX: 00000000=
-00000000
->> [   10.299381] RDX: ffffc90000f8be48 RSI: ffffc90000f8be40 RDI: ffff8882=
-2900a500
->> [   10.299381] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff=
-8143bb01
->> [   10.299381] R10: ffff888229dab600 R11: 0000000000000001 R12: ffff8882=
-2900b001
->> [   10.299381] R13: ffff88822900a500 R14: ffff888229dab600 R15: ffffffff=
-8143bbe0
->> [   10.299381] FS:  0000000000000000(0000) GS:ffff88823fd00000(0000) knl=
-GS:0000000000000000
->> [   10.299381] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [   10.299381] CR2: 000000000000034b CR3: 000000000260e000 CR4: 00000000=
-000006e0
->> [   10.299381] Call Trace:
->> [   10.299381]  ? crypto_acomp_scomp_free_ctx+0x30/0x30
->> [   10.299381]  audit_free+0xe/0x30
->> [   10.299381]  do_exit+0x50f/0xb70
->> [   10.299381]  ? crypto_alg_tested+0x128/0x1c0
->> [   10.299381]  ? crypto_acomp_scomp_free_ctx+0x30/0x30
->> [   10.299381]  __module_put_and_exit+0x16/0x20
->> [   10.299381]  cryptomgr_test+0x21/0x30
->> [   10.299381]  kthread+0x11d/0x140
->> [   10.299381]  ? __kthread_parkme+0x80/0x80
->> [   10.299381]  ret_from_fork+0x35/0x40
->> [   10.299381] Modules linked in:
->> [   10.299381] CR2: 000000000000034b
->> [   10.299381] ---[ end trace 0c5b275fb9ac2313 ]---
->>
->>
->> To reproduce:
->>
->>          git clone https://github.com/intel/lkp-tests.git
->>          cd lkp-tests
->>          bin/lkp qemu -k <bzImage> job-script # job-script is attached i=
-n this email
-> [rgb(a)madcap2 lkp-tests (master)]$ bin/lkp qemu -k /home/rgb/git/linux-2=
-.6/arch/x86_64/boot/bzImage job-script
-> Do you agree to create lkp users for testing? [N/y]
-> Skip to create user steps.
+> > This is interesting.
+> > =
+
+> > I didn't expect the move of this field will impact the performance.
+> > =
+
+> > The reason is struct device is a hotter memory than device->device_priv=
+ate?
+> > =
+
+> > >in testcase: will-it-scale
+> > >on test machine: 288 threads Knights Mill with 80G memory
+> > >with following parameters:
+> > >
+> > >	nr_task: 100%
+> > >	mode: thread
+> > >	test: unlink2
+> > >	cpufreq_governor: performance
+> > >
+> > >test-description: Will It Scale takes a testcase and runs it from 1 th=
+rough to n parallel copies to see if the testcase will scale. It builds bot=
+h a process and threads based test in order to see any differences between =
+the two.
+> > >test-url: https://github.com/antonblanchard/will-it-scale
+> > >
+> > >In addition to that, the commit also has significant impact on the fol=
+lowing tests:
+> > >
+> > >+------------------+--------------------------------------------------=
+-------------+
+> > >| testcase: change | will-it-scale: will-it-scale.per_thread_ops -29.9=
+% regression |
+> > >| test machine     | 288 threads Knights Mill with 80G memory         =
+             |
+> > >| test parameters  | cpufreq_governor=3Dperformance                   =
+               |
+> > >|                  | mode=3Dthread                                    =
+               |
+> > >|                  | nr_task=3D100%                                   =
+               |
+> > >|                  | test=3Dsignal1                                   =
+               |
+> =
+
+> Ok, I'm going to blame your testing system, or something here, and not
+> the above patch.
+> =
+
+> All this test does is call raise(3).  That does not touch the driver
+> core at all.
+> =
+
+> > >+------------------+--------------------------------------------------=
+-------------+
+> > >| testcase: change | will-it-scale: will-it-scale.per_thread_ops -16.5=
+% regression |
+> > >| test machine     | 288 threads Knights Mill with 80G memory         =
+             |
+> > >| test parameters  | cpufreq_governor=3Dperformance                   =
+               |
+> > >|                  | mode=3Dthread                                    =
+               |
+> > >|                  | nr_task=3D100%                                   =
+               |
+> > >|                  | test=3Dopen1                                     =
+               |
+> > >+------------------+--------------------------------------------------=
+-------------+
+> =
+
+> Same here, open1 just calls open/close a lot.  No driver core
+> interaction at all there either.
+> =
+
+> So are you _sure_ this is the offending patch?
+
+Hi Greg,
+
+We did an experiment, recovered the layout of struct device. and we
+found the regression is gone. I guess the regession is not from the
+patch but related to the struct layout.
 
 
-Hi RGB,
+tests: 1
+testcase/path_params/tbox_group/run: will-it-scale/performance-thread-100%-=
+unlink2/lkp-knm01
 
-user lkp is required for the lkp test. we have updated the prompt info.
+570d0200123fb4f8  a36dc70b810afe9183de2ea18f  =
+
+----------------  --------------------------  =
+
+         %stddev      change         %stddev
+             \          |                \  =
+
+    237096              14%     270789        will-it-scale.workload
+       823              14%        939        will-it-scale.per_thread_ops
+
+
+tests: 1
+testcase/path_params/tbox_group/run: will-it-scale/performance-thread-100%-=
+signal1/lkp-knm01
+
+570d0200123fb4f8  a36dc70b810afe9183de2ea18f  =
+
+----------------  --------------------------  =
+
+         %stddev      change         %stddev
+             \          |                \  =
+
+     93.51 =C2=B1  3%        48%     138.53 =C2=B1  3%  will-it-scale.time.=
+user_time
+       186              40%        261        will-it-scale.per_thread_ops
+     53909              40%      75507        will-it-scale.workload
+
+
+tests: 1
+testcase/path_params/tbox_group/run: will-it-scale/performance-thread-100%-=
+open1/lkp-knm01
+
+570d0200123fb4f8  a36dc70b810afe9183de2ea18f  =
+
+----------------  --------------------------  =
+
+         %stddev      change         %stddev
+             \          |                \  =
+
+    447722              22%     546258 =C2=B1 10%  will-it-scale.time.invol=
+untary_context_switches
+    226995              19%     269751        will-it-scale.workload
+       787              19%        936        will-it-scale.per_thread_ops
+
+
+
+commit a36dc70b810afe9183de2ea18faa4c0939c139ac
+Author: 0day robot <lkp@intel.com>
+Date:   Wed Feb 20 14:21:19 2019 +0800
+
+    backfile klist_node in struct device for debugging
+    =
+
+    Signed-off-by: 0day robot <lkp@intel.com>
+
+diff --git a/include/linux/device.h b/include/linux/device.h
+index d0e452fd0bff2..31666cb72b3ba 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -1035,6 +1035,7 @@ struct device {
+ 	spinlock_t		devres_lock;
+ 	struct list_head	devres_head;
+ =
+
++	struct klist_node       knode_class_test_by_rongc;
+ 	struct class		*class;
+ 	const struct attribute_group **groups;	/* optional groups */
 
 Best Regards,
 Rong Chen
 
-
-> make: Entering directory `/home/rgb/git/lkp-tests/bin/event'
-> gcc  -static -o wakeup wakeup.o
-> rm -f wakeup.o
-> strip wakeup
-> make: Leaving directory `/home/rgb/git/lkp-tests/bin/event'
-> cpio: root:lkp: invalid group
-> cpio: root:lkp: invalid group
-> cpio: root:lkp: invalid group
-> gzip: /home/rgb/.lkp/cache/lkp-x86_64.cpio: No such file or directory
-> mv: cannot stat _/home/rgb/.lkp/cache/lkp-x86_64.cpio.gz_: No such file o=
-r directory
->
->> Thanks,
->> lkp
-> - RGB
->
-> --
-> Richard Guy Briggs <rgb@redhat.com>
-> Sr. S/W Engineer, Kernel Security, Base Operating Systems
-> Remote, Ottawa, Red Hat Canada
-> IRC: rgb, SunRaycer
-> Voice: +1.647.777.2635, Internal: (81) 32635
->
-
---===============2978680362536026775==--
+--===============5724362749075060167==--
 
