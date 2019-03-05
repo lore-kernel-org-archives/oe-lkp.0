@@ -1,104 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============5531846792543897288=="
+Content-Type: multipart/mixed; boundary="===============5748048407566358129=="
 MIME-Version: 1.0
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
 Subject: Re: [uaccess] 780464aed0: WARNING:at_arch/x86/include/asm/uaccess.h:#strnlen_user/0x
-Date: Tue, 05 Mar 2019 18:01:26 +0900
-Message-ID: <20190305180126.0f7201d8ec733fdc887135f1@kernel.org>
-In-Reply-To: <20190305172241.2eef39c6ca74d09120bbbcad@kernel.org>
+Date: Tue, 05 Mar 2019 10:07:29 +0100
+Message-ID: <20190305090729.GF32477@hirez.programming.kicks-ass.net>
+In-Reply-To: <20190305113635.18f80ea3b1f4fca54b9d21e4@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5531846792543897288==
+--===============5748048407566358129==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 5 Mar 2019 17:22:41 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
-
-> On Tue, 5 Mar 2019 11:36:35 +0900
-> Masami Hiramatsu <mhiramat@kernel.org> wrote:
+On Tue, Mar 05, 2019 at 11:36:35AM +0900, Masami Hiramatsu wrote:
+> I think the better way to do this is allowing strncpy_from_user()
+O
+> if some conditions are match, like
 > =
 
-> > On Mon, 4 Mar 2019 10:59:22 -0800
-> > Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> > =
+>  - strncpy_from_user() will be able to copy user memory with set_fs(USER_=
+DS)
+>  - strncpy_from_user() can copy kernel memory with set_fs(KERNEL_DS)
+>  - strncpy_from_user() can access unsafe memory in IRQ context if
+>    pagefault is disabled.
+> =
 
-> > I think the better way to do this is allowing strncpy_from_user()
-> > if some conditions are match, like
-> > =
+> This is almost done, except for CONFIG_DEBUG_ATOMIC_SLEEP=3Dy on x86.
+> =
 
-> >  - strncpy_from_user() will be able to copy user memory with set_fs(USE=
-R_DS)
-> >  - strncpy_from_user() can copy kernel memory with set_fs(KERNEL_DS)
-> >  - strncpy_from_user() can access unsafe memory in IRQ context if
-> >    pagefault is disabled.
-> > =
+> So, what about adding a condition to WARN_ON_IN_IRQ() like below
+> instead of introducing user_access_ok() ?
+> =
 
-> > This is almost done, except for CONFIG_DEBUG_ATOMIC_SLEEP=3Dy on x86.
-> > =
+> diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uacces=
+s.h
+> index 780f2b42c8ef..ec0f0b74c9ab 100644
+> --- a/arch/x86/include/asm/uaccess.h
+> +++ b/arch/x86/include/asm/uaccess.h
+> @@ -70,7 +70,7 @@ static inline bool __chk_range_not_ok(unsigned long add=
+r, unsigned long size, un
+>  })
+>  =
 
-> > So, what about adding a condition to WARN_ON_IN_IRQ() like below
-> > instead of introducing user_access_ok() ?
+>  #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
+> -# define WARN_ON_IN_IRQ()      WARN_ON_ONCE(!in_task())
+> +# define WARN_ON_IN_IRQ()      WARN_ON_ONCE(pagefault_disabled() && !in_=
+task())
 
-OK, here is the patch. Does it work for us?
+That doesn't make any kind of sense to me; see faulthandler_disabled().
+IOW. interrupt (and any atomic context really) won't take faults anyway.
 
-=3D=3D=3D=3D
-x86/uaccess: Verify access_ok() context strictly
+I dislike that whole KERNEL_DS thing, but obviously that's not something
+that's going away.
 
-From: Masami Hiramatsu <mhiramat@kernel.org>
+Would something like:
 
-WARN_ON_IN_IRQ() assumes that the access_ok() and following
-user memory access can sleep. But this assumption is not
-always correct; when the pagefault is disabled, following
-memory access will just returns -EFAULT and never sleep.
+	WARN_ON_ONCE(!(in_task || segment_eq(get_fs(), USER_DS)))
 
-Add pagefault_disabled() check in WARN_ON_ONCE() so that
-it can ignore the case we call it with disabling pagefault.
-For this purpose, this modified pagefault_disabled() as
-an inline function.
+Work? Then we allow KERNEL_DS in task context, but for interrupt and
+others require USER_DS.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- arch/x86/include/asm/uaccess.h |    4 +++-
- include/linux/uaccess.h        |    5 ++++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 780f2b4..b98a552 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -70,7 +70,9 @@ static inline bool __chk_range_not_ok(unsigned long addr,=
- unsigned long size, un
- })
- =
-
- #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
--# define WARN_ON_IN_IRQ()	WARN_ON_ONCE(!in_task())
-+static inline bool pagefault_disabled(void);
-+# define WARN_ON_IN_IRQ()	\
-+	WARN_ON_ONCE(!in_task() && !pagefault_disabled())
- #else
- # define WARN_ON_IN_IRQ()
- #endif
-diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
-index 37b226e..ef3032d 100644
---- a/include/linux/uaccess.h
-+++ b/include/linux/uaccess.h
-@@ -203,7 +203,10 @@ static inline void pagefault_enable(void)
- /*
-  * Is the pagefault handler disabled? If so, user access methods will not =
-sleep.
-  */
--#define pagefault_disabled() (current->pagefault_disabled !=3D 0)
-+static inline bool pagefault_disabled(void)
-+{
-+	return current->pagefault_disabled !=3D 0;
-+}
- =
-
- /*
-  * The pagefault handler is in general disabled by pagefault_disable() or
-
---===============5531846792543897288==--
+--===============5748048407566358129==--
 
