@@ -1,147 +1,70 @@
-Content-Type: multipart/mixed; boundary="===============6243888562832111493=="
+Content-Type: multipart/mixed; boundary="===============5894206562228910683=="
 MIME-Version: 1.0
 From: Masami Hiramatsu <mhiramat@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [uaccess] 780464aed0: WARNING:at_arch/x86/include/asm/uaccess.h:#strnlen_user/0x
-Date: Tue, 05 Mar 2019 11:36:35 +0900
-Message-ID: <20190305113635.18f80ea3b1f4fca54b9d21e4@kernel.org>
-In-Reply-To: <CAHk-=wiQM84VsAiw92UWyQZTQxr+F032Gm5BiFBXk7tC+LQohQ@mail.gmail.com>
+Date: Tue, 05 Mar 2019 17:22:41 +0900
+Message-ID: <20190305172241.2eef39c6ca74d09120bbbcad@kernel.org>
+In-Reply-To: <20190305113635.18f80ea3b1f4fca54b9d21e4@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6243888562832111493==
+--===============5894206562228910683==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 4 Mar 2019 10:59:22 -0800
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+On Tue, 5 Mar 2019 11:36:35 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-> On Mon, Mar 4, 2019 at 1:06 AM Masami Hiramatsu <mhiramat@kernel.org> w=
-rote:
-> >
-> > On Sun, 3 Mar 2019 18:37:59 -0800
-> > Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> > > We've had this before. We've gotten rid of the actual "use system
-> > > calls", but we still have some of the init sequence in particular just
-> > > calling the wrappers instead.
-> >
-> > Are those safe if we are in init sequence?
+> On Mon, 4 Mar 2019 10:59:22 -0800
+> Linus Torvalds <torvalds@linux-foundation.org> wrote:
 > =
 
-> Yes, they are, it runs with set_fs(KERNEL_DS).
+> I think the better way to do this is allowing strncpy_from_user()
+> if some conditions are match, like
 > =
 
-> But the patches made that now complain about copying from non-user
-> space, even though it's fine.
+>  - strncpy_from_user() will be able to copy user memory with set_fs(USER_=
+DS)
+>  - strncpy_from_user() can copy kernel memory with set_fs(KERNEL_DS)
+>  - strncpy_from_user() can access unsafe memory in IRQ context if
+>    pagefault is disabled.
 > =
 
-> Basically, "strncpy_from_user()" shouldn't use "user_access_ok()",
-> since it actually can take a kernel address (with set_fs()).
-
-OK, so strncpy_from_user() or any other copy_from_user() should be
-available for copying kernel memory if set_fs(KERNEL_DS).
-
-> Your "unsafe" version for tracing that actually sets "set_fs(USER_DS)"
-> is thje only thing that should use that helper.
-
-I see, it ensures it is accessing user-memory.
-
+> This is almost done, except for CONFIG_DEBUG_ATOMIC_SLEEP=3Dy on x86.
 > =
 
-> > > And yes, ksys_mount() takes __user pointers.
-> > >
-> > > It would be a lot better to use "do_mount()", which is the interface
-> > > that takes actual "char *" pointers.
-> >
-> > Unfortunately, it still takes a __user pointer.
+> So, what about adding a condition to WARN_ON_IN_IRQ() like below
+> instead of introducing user_access_ok() ?
 > =
 
-> Ahh, yes, the name remains in user space.
+> diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uacces=
+s.h
+> index 780f2b42c8ef..ec0f0b74c9ab 100644
+> --- a/arch/x86/include/asm/uaccess.h
+> +++ b/arch/x86/include/asm/uaccess.h
+> @@ -70,7 +70,7 @@ static inline bool __chk_range_not_ok(unsigned long add=
+r, unsigned long size, un
+>  })
+>  =
+
+>  #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
+> -# define WARN_ON_IN_IRQ()      WARN_ON_ONCE(!in_task())
+> +# define WARN_ON_IN_IRQ()      WARN_ON_ONCE(pagefault_disabled() && !in_=
+task())
+
+Oops, I meant !pagefault_disabled() && !in_task().
+
+>  #else
+>  # define WARN_ON_IN_IRQ()
+>  #endif
 > =
 
-> Besides, I'm sure you'd just hit other cases instead where people use
-> set_fs() and copy strings.
+> Of course we have to move pagefault_disabled() macro in somewhere better =
+place.
 
-Yeah, under init/ I saw such cases.
-
-> =
-
-> > So what we need is
-> >
-> > long do_mount(const char *dev_name, struct path *dir_path,
-> >                 const char *type_page, unsigned long flags, void *data_=
-page)
-> >
-> > or introduce kern_do_mount()?
-> =
-
-> It's actually fairly painful. Particularly because of that "void *data_pa=
-ge".
-
-Yeah, that is what I've hit while testing :-(
-
-> =
-
-> Your second email with "Would this work?" helper function _wopuldn't_
-> work correctly, exactly because you passed in a regular string to the
-> data page.
-> =
-
-> Also, I don't want to see code that replaces the unconditional "copy
-> path from user space" with a conditional "do we have path in kernel
-> space".
-
-Yes, that's just a hack :)
-
-> =
-
-> So together with the whole "uyou'll hit other peoblems anyway", I
-> don't think this is a good approach.
-> =
-
-> I think you simply need to have a separate "unsafe_strncpy()"
-> function, and not change the existing "strncpy_from_user()".
-
-Would you mean implementing yet another "strncpy_from_user without
-pagefault"? =
-
-What we changed here is just use user_access_ok() instead access_ok() =
-
-in user_access_begin() because access_ok() may cause false-positive
-warning if we use it in IRQ.
-
-I think the better way to do this is allowing strncpy_from_user()
-if some conditions are match, like
-
- - strncpy_from_user() will be able to copy user memory with set_fs(USER_DS)
- - strncpy_from_user() can copy kernel memory with set_fs(KERNEL_DS)
- - strncpy_from_user() can access unsafe memory in IRQ context if
-   pagefault is disabled.
-
-This is almost done, except for CONFIG_DEBUG_ATOMIC_SLEEP=3Dy on x86.
-
-So, what about adding a condition to WARN_ON_IN_IRQ() like below
-instead of introducing user_access_ok() ?
-
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 780f2b42c8ef..ec0f0b74c9ab 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -70,7 +70,7 @@ static inline bool __chk_range_not_ok(unsigned long addr,=
- unsigned long size, un
- })
- =
-
- #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
--# define WARN_ON_IN_IRQ()      WARN_ON_ONCE(!in_task())
-+# define WARN_ON_IN_IRQ()      WARN_ON_ONCE(pagefault_disabled() && !in_ta=
-sk())
- #else
- # define WARN_ON_IN_IRQ()
- #endif
-
-Of course we have to move pagefault_disabled() macro in somewhere better pl=
-ace.
+And I think we don't need it. anyway the macro is referenced via linux/uacc=
+ess.h.
 
 Thank you,
 
@@ -149,5 +72,5 @@ Thank you,
 
 Masami Hiramatsu <mhiramat@kernel.org>
 
---===============6243888562832111493==--
+--===============5894206562228910683==--
 
