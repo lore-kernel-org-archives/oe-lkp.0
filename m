@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============0210025656780851215=="
+Content-Type: multipart/mixed; boundary="===============0745268305209635243=="
 MIME-Version: 1.0
 From: Ondrej Mosnacek <omosnace@redhat.com>
 To: lkp@lists.01.org
-Subject: [PATCH] kernfs: fix xattr name handling in LSM helpers
-Date: Tue, 26 Mar 2019 09:17:29 +0100
-Message-ID: <20190326081729.21406-1-omosnace@redhat.com>
+Subject: [PATCH v2] kernfs: fix xattr name handling in LSM helpers
+Date: Tue, 26 Mar 2019 13:12:10 +0100
+Message-ID: <20190326121210.17414-1-omosnace@redhat.com>
 In-Reply-To: <20190325145032.GB21359@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0210025656780851215==
+--===============0745268305209635243==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -33,6 +33,9 @@ Fixes: b230d5aba2d1 ("LSM: add new hook for kernfs node initialization")
 Fixes: ec882da5cda9 ("selinux: implement the kernfs_init_security hook")
 Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
 ---
+
+v2: Rebase on current selinux/next.
+
  fs/kernfs/inode.c        | 38 ++++++++++++++++++--------------------
  include/linux/kernfs.h   |  8 ++++----
  security/selinux/hooks.c |  6 +++---
@@ -179,11 +182,11 @@ kn,
  =
 
 diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index ab4b049daf17..716ae37d4834 100644
+index b6e61524d68d..43f1f244b7de 100644
 --- a/security/selinux/hooks.c
 +++ b/security/selinux/hooks.c
-@@ -3394,7 +3394,7 @@ int selinux_kernfs_init_security(struct kernfs_node *=
-kn_dir,
+@@ -3394,7 +3394,7 @@ static int selinux_kernfs_init_security(struct kernfs=
+_node *kn_dir,
  	int rc;
  	char *context;
  =
@@ -193,8 +196,8 @@ kn_dir,
  	if (rc =3D=3D -ENODATA)
  		return 0;
  	else if (rc < 0)
-@@ -3405,7 +3405,7 @@ int selinux_kernfs_init_security(struct kernfs_node *=
-kn_dir,
+@@ -3405,7 +3405,7 @@ static int selinux_kernfs_init_security(struct kernfs=
+_node *kn_dir,
  	if (!context)
  		return -ENOMEM;
  =
@@ -204,8 +207,8 @@ kn_dir,
  				       clen);
  	if (rc < 0) {
  		kfree(context);
-@@ -3439,7 +3439,7 @@ int selinux_kernfs_init_security(struct kernfs_node *=
-kn_dir,
+@@ -3439,7 +3439,7 @@ static int selinux_kernfs_init_security(struct kernfs=
+_node *kn_dir,
  	if (rc)
  		return rc;
  =
@@ -220,5 +223,5 @@ kn_dir,
 2.20.1
 
 
---===============0210025656780851215==--
+--===============0745268305209635243==--
 
