@@ -1,110 +1,98 @@
-Content-Type: multipart/mixed; boundary="===============6691445207055818581=="
+Content-Type: multipart/mixed; boundary="===============0282790738636533144=="
 MIME-Version: 1.0
-From: Tobin C. Harding <tobin@kernel.org>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 To: lkp@lists.01.org
-Subject: [PATCH 0/1] slob: Fix list_head bug during allocation
-Date: Tue, 02 Apr 2019 14:29:56 +1100
-Message-ID: <20190402032957.26249-1-tobin@kernel.org>
+Subject: Re: [xdp] 9cb54e254c: kernel/bpf/devmap.c:#suspicious_rcu_dereference_check()
+Date: Wed, 10 Apr 2019 12:00:58 +0200
+Message-ID: <87r2aaw55x.fsf@toke.dk>
+In-Reply-To: <20190410075954.GC17122@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6691445207055818581==
+--===============0282790738636533144==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Andrew,
+kernel test robot <rong.a.chen@intel.com> writes:
 
-This patch is in response to an email from the 0day kernel test robot
-subject:
+> FYI, we noticed the following commit (built with gcc-7):
+>
+> commit: 9cb54e254ca479ce636857a1fd1e1a3e9f8796b1 ("[PATCH net-next v4 4/6=
+] xdp: Always use a devmap for XDP_REDIRECT to a device")
+> url: https://github.com/0day-ci/linux/commits/Toke-H-iland-J-rgensen/xdp-=
+Use-a-default-map-for-xdp_redirect-helper/20190409-161851
+>
+>
+> in testcase: trinity
+> with following parameters:
+>
+> 	runtime: 300s
+>
+> test-description: Trinity is a linux system call fuzz tester.
+> test-url: http://codemonkey.org.uk/projects/trinity/
+>
+>
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
+m 8G
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+> +--------------------------------------------------------------+---------=
+---+------------+
+> |                                                              | c76c6654=
+40 | 9cb54e254c |
+> +--------------------------------------------------------------+---------=
+---+------------+
+> | boot_successes                                               | 0       =
+   | 0          |
+> | boot_failures                                                | 40      =
+   | 38         |
+> | BUG:kernel_reboot-without-warning_in_test_stage              | 28      =
+   | 10         |
+> | BUG:kernel_hang_in_boot_stage                                | 12      =
+   | 12         |
+> | WARNING:suspicious_RCU_usage                                 | 0       =
+   | 16         |
+> | kernel/bpf/devmap.c:#suspicious_rcu_dereference_check()usage | 0       =
+   | 16         |
+> +--------------------------------------------------------------+---------=
+---+------------+
+>
+>
+>
+> [  413.653218] WARNING: suspicious RCU usage
+> [  413.654564] 5.1.0-rc4-00599-g9cb54e2 #43 Tainted: G                T
+> [  413.656563] -----------------------------
+> [  413.657808] kernel/bpf/devmap.c:807 suspicious rcu_dereference_check()=
+ usage!
+> [  413.660285] =
 
-  340d3d6178 ("mm/slob.c: respect list_head abstraction layer"):  kernel BU=
-G at lib/list_debug.c:31!
+> [  413.660285] other info that might help us debug this:
+> [  413.660285] =
 
+> [  413.662614] =
 
-This patch applies on top of linux-next tag: next-20190401
+> [  413.662614] rcu_scheduler_active =3D 2, debug_locks =3D 1
+> [  413.664483] 2 locks held by trinity-c3/2248:
+> [  413.665800]  #0: 00000000713e8e50 (&f->f_pos_lock){+.+.}, at: __fdget_=
+pos+0x81/0x90
+> [  413.668184]  #1: 000000005e54a26c (&p->lock){+.+.}, at: seq_lseek+0x42=
+/0x1c0
+> [  413.670412] =
 
-It fixes a patch that was merged recently into mm:
+> [  413.670412] stack backtrace:
+> [  413.671876] CPU: 0 PID: 2248 Comm: trinity-c3 Tainted: G              =
+  T 5.1.0-rc4-00599-g9cb54e2 #43
+> [  413.674557] Call Trace:
+> [  413.675374]  dump_stack+0x1e/0x28
+> [  413.676366]  lockdep_rcu_suspicious+0xc6/0xd0
+> [  413.677802]  dev_map_default_show+0x84/0xd0
 
-  The patch titled
-       Subject: mm/slob.c: respect list_head abstraction layer
-  has been added to the -mm tree.  Its filename is
-       slob-respect-list_head-abstraction-layer.patch
-  =
+Ah, right, seems I forgot an rcu_read_lock() here. Will fix :)
 
-  This patch should soon appear at
-      http://ozlabs.org/~akpm/mmots/broken-out/slob-respect-list_head-abstr=
-action-layer.patch
-  and later at
-      http://ozlabs.org/~akpm/mmotm/broken-out/slob-respect-list_head-abstr=
-action-layer.patch
+-Toke
 
-
-If reverting is easier than patching I can re-work this into another
-version of the original (buggy) patch set which was the series:
-
-  [PATCH 0/4] mm: Use slab_list list_head instead of lru
-
-Please don't be afraid to give a firm response.  I'm new to mm and I'd
-like to not be a nuisance if I can manage it ;)  I'd also like to fix
-this in a way that makes your day as easy as possible.
-
-
-The 0day kernel test robot found a bug in the slob allocator caused by a
-patch from me recently merged into the mm tree.  This is the first time
-the 0day has found a bug in already merged code of mine so I do not know
-the exact protocol in regards to linking the fix with the report,
-patching, reverting etc.
-
-I was unable to reproduce the crash, I tried building with the config
-attached to the email above but the kernel booted fine for me in Qemu.
-
-So I re-worked the module originally used for testing, it can be found
-here:
-
-	https://github.com/tcharding/ktest/tree/master/list_head
-
->From this I think the list.h code added prior to the buggy patch is
-ok.
-
-Next I tried to find the bug just using my eyes.  This patch is the
-result.  Unfortunately I can not understand why this bug was not
-triggered _before_ I originally patched it.  Perhaps I'm not juggling
-all the state perfectly in my head.  Anyways, this patch stops and code
-calling list manipulation functions if the slab_list page member has
-been modified during allocation.
-
-The code in question revolves around an optimisation aimed at preventing
-fragmentation at the start of a slab due to the first fit nature of the
-allocation algorithm.
-
-Full explanation is in the commit log for the patch, the short version
-is; skip optimisation if page list is modified, this only occurs when an
-allocation completely fills the slab and in this case the optimisation
-is unnecessary since we have not fragmented the slab by this allocation.
-
-This is more than just a bug fix, it significantly reduces the
-complexity of the function while still fixing the reason for originally
-touching this code (violation of list_head abstraction).
-
-The only testing I've done is to build and boot a kernel in Qemu (with
-CONFIG_LIST_DEBUG and CONFIG_SLOB) enabled).  However, as mentioned,
-this method of testing did _not_ reproduce the 0day crash so if there
-are better suggestions on how I should test these I'm happy to do so.
-
-thanks,
-Tobin.
-
-
-Tobin C. Harding (1):
-  slob: Only use list functions when safe to do so
-
- mm/slob.c | 50 ++++++++++++++++++++++++++++++--------------------
- 1 file changed, 30 insertions(+), 20 deletions(-)
-
--- =
-
-2.21.0
-
-
---===============6691445207055818581==--
+--===============0282790738636533144==--
 
