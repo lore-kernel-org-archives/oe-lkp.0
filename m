@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============5047777402750135535=="
+Content-Type: multipart/mixed; boundary="===============3105211970074330691=="
 MIME-Version: 1.0
-From: kernel test robot <lkp@intel.com>
+From: kernel test robot <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: 68b68a99e7 ("media: Set subdev's device node to NULL on .."): BUG kmalloc-4k (Not tainted): Poison overwritten
-Date: Thu, 11 Apr 2019 07:27:07 +0800
-Message-ID: <5cae7bcb.L+QjMxcW5ALCONOf%lkp@intel.com>
+Subject: 68b68a99e7 [ 68.054311] BUG kmalloc-4k (Not tainted): Poison overwritten
+Date: Thu, 11 Apr 2019 08:42:39 +0800
+Message-ID: <20190411004239.GD17122@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5047777402750135535==
+--===============3105211970074330691==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -175,7 +175,7 @@ er
 https://lists.01.org/pipermail/lkp                          Intel Corporati=
 on
 
---===============5047777402750135535==
+--===============3105211970074330691==
 Content-Type: application/gzip
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -563,7 +563,7 @@ smywB4tAkgUTeCtfDvbKrTSj9XoLkAI3i7bFCPDNDRq9Jt661K7Xens3d0cx3tcBkLL7wd4UFL23
 GEV4rgrZKYgO5V8VxAggq3huh+IZdGuwdwSqYHJ2Pn57OjpMl/ND2eiwYFAVFwxAOQvn6oKqsolj
 WIdzz1PFYXkJoBMIn+r2zDEDR0xn1NSFE5gzPgPd5c646x/erRDoX+pL1wg+Tzqc9CCbaflis8Y7
 YIHEwGA//fwfkL5P//r835+IWnAbgXfF06d/wuvB/wCz7w4/WI4BAA==
---===============5047777402750135535==
+--===============3105211970074330691==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -586,7 +586,7 @@ ZWwKCWNvbnNvbGU9dHR5MAoJZWFybHlwcmludGs9dHR5UzAsMTE1MjAwCgljb25zb2xlPXR0eVMw
 LDExNTIwMAoJdmdhPW5vcm1hbAoJcncKCWRyYmQubWlub3JfY291bnQ9OAoJcmN1cGVyZi5zaHV0
 ZG93bj0wCikKCiIke2t2bVtAXX0iIC1hcHBlbmQgIiR7YXBwZW5kWypdfSIK
 
---===============5047777402750135535==
+--===============3105211970074330691==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -2653,5 +2653,5 @@ TkZJR19ERUJVR19OTUlfU0VMRlRFU1QgaXMgbm90IHNldApDT05GSUdfWDg2X0RFQlVHX0ZQVT15
 CiMgQ09ORklHX1BVTklUX0FUT01fREVCVUcgaXMgbm90IHNldApDT05GSUdfVU5XSU5ERVJfT1JD
 PXkKIyBDT05GSUdfVU5XSU5ERVJfRlJBTUVfUE9JTlRFUiBpcyBub3Qgc2V0Cg==
 
---===============5047777402750135535==--
+--===============3105211970074330691==--
 
