@@ -1,288 +1,309 @@
-Content-Type: multipart/mixed; boundary="===============5562396353498824600=="
+Content-Type: multipart/mixed; boundary="===============7314407837933223876=="
 MIME-Version: 1.0
-From: Nadav Amit <namit@vmware.com>
+From: Andy Lutomirski <luto@amacapital.net>
 To: lkp@lists.01.org
 Subject: Re: 1808d65b55 ("asm-generic/tlb: Remove arch_tlb*_mmu()"): BUG: KASAN: stack-out-of-bounds in __change_page_attr_set_clr
-Date: Fri, 12 Apr 2019 17:05:53 +0000
-Message-ID: <E33FDED8-8B95-431D-9AC7-71D45AB49011@vmware.com>
-In-Reply-To: <F18AF0D5-D8B4-4F4B-8469-F9DEC49683C7@vmware.com>
+Date: Fri, 12 Apr 2019 10:14:49 -0700
+Message-ID: <43ACD9F9-6373-4325-A97A-B8E8588E24BD@amacapital.net>
+In-Reply-To: <E33FDED8-8B95-431D-9AC7-71D45AB49011@vmware.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5562396353498824600==
+--===============7314407837933223876==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-> On Apr 12, 2019, at 8:11 AM, Nadav Amit <namit@vmware.com> wrote:
-> =
 
->> On Apr 12, 2019, at 4:17 AM, Peter Zijlstra <peterz@infradead.org> wro=
-te:
+
+On Apr 12, 2019, at 10:05 AM, Nadav Amit <namit@vmware.com> wrote:
+
+>> On Apr 12, 2019, at 8:11 AM, Nadav Amit <namit@vmware.com> wrote:
 >> =
 
->> On Fri, Apr 12, 2019 at 12:56:33PM +0200, Peter Zijlstra wrote:
->>> On Thu, Apr 11, 2019 at 11:13:48PM +0200, Peter Zijlstra wrote:
->>>> On Thu, Apr 11, 2019 at 09:54:24PM +0200, Peter Zijlstra wrote:
->>>>> On Thu, Apr 11, 2019 at 09:39:06PM +0200, Peter Zijlstra wrote:
->>>>>> I think this bisect is bad. If you look at your own logs this patch
->>>>>> merely changes the failure, but doesn't make it go away.
+>>> On Apr 12, 2019, at 4:17 AM, Peter Zijlstra <peterz@infradead.org> wr=
+ote:
+>>> =
+
+>>> On Fri, Apr 12, 2019 at 12:56:33PM +0200, Peter Zijlstra wrote:
+>>>>> On Thu, Apr 11, 2019 at 11:13:48PM +0200, Peter Zijlstra wrote:
+>>>>>> On Thu, Apr 11, 2019 at 09:54:24PM +0200, Peter Zijlstra wrote:
+>>>>>>> On Thu, Apr 11, 2019 at 09:39:06PM +0200, Peter Zijlstra wrote:
+>>>>>>> I think this bisect is bad. If you look at your own logs this patch
+>>>>>>> merely changes the failure, but doesn't make it go away.
+>>>>>>> =
+
+>>>>>>> Before this patch (in fact, before tip/core/mm entirely) the errror
+>>>>>>> reads like the below, which suggests there is memory corruption
+>>>>>>> somewhere, and the fingered patch just makes it trigger differently.
+>>>>>>> =
+
+>>>>>>> It would be very good to find the source of this corruption, but I'm
+>>>>>>> fairly certain it is not here.
 >>>>>> =
 
->>>>>> Before this patch (in fact, before tip/core/mm entirely) the errror
->>>>>> reads like the below, which suggests there is memory corruption
->>>>>> somewhere, and the fingered patch just makes it trigger differently.
->>>>>> =
-
->>>>>> It would be very good to find the source of this corruption, but I'm
->>>>>> fairly certain it is not here.
+>>>>>> I went back to v4.20 to try and find a time when the below error did=
+ not
+>>>>>> occur, but even that reliably triggers the warning.
 >>>>> =
 
->>>>> I went back to v4.20 to try and find a time when the below error did =
-not
->>>>> occur, but even that reliably triggers the warning.
+>>>>> So I also tested v4.19 and found that that was good, which made me
+>>>>> bisect v4.19..v4.20
+>>>>> =
+
+>>>>> # bad: [8fe28cb58bcb235034b64cbbb7550a8a43fd88be] Linux 4.20
+>>>>> # good: [84df9525b0c27f3ebc2ebb1864fa62a97fdedb7d] Linux 4.19
+>>>>> git bisect start 'v4.20' 'v4.19'
+>>>>> # bad: [ec9c166434595382be3babf266febf876327774d] Merge tag 'mips_fix=
+es_4.20_1' of git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux
+>>>>> git bisect bad ec9c166434595382be3babf266febf876327774d
+>>>>> # bad: [50b825d7e87f4cff7070df6eb26390152bb29537] Merge git://git.ker=
+nel.org/pub/scm/linux/kernel/git/davem/net-next
+>>>>> git bisect bad 50b825d7e87f4cff7070df6eb26390152bb29537
+>>>>> # good: [99e9acd85ccbdc8f5785f9e961d4956e96bd6aa5] Merge tag 'mlx5-up=
+dates-2018-10-17' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/li=
+nux
+>>>>> git bisect good 99e9acd85ccbdc8f5785f9e961d4956e96bd6aa5
+>>>>> # good: [c403993a41d50db1e7d9bc2d43c3c8498162312f] Merge tag 'for-lin=
+us-4.20' of https://nam04.safelinks.protection.outlook.com/?url=3Dhttps%3A%=
+2F%2Fgithub.com%2Fcminyard%2Flinux-ipmi&amp;data=3D02%7C01%7Cnamit%40vmware=
+.com%7Ca1c3ea5d4bc34cfc785508d6bf388ff3%7Cb39138ca3cee4b4aa4d6cd83d9dd62f0%=
+7C0%7C0%7C636906647013777573&amp;sdata=3D3VSR3VdE5rxOitAdkqFNPpAnAtLgDmYLzJ=
+toUrs5v9Y%3D&amp;reserved=3D0
+>>>>> git bisect good c403993a41d50db1e7d9bc2d43c3c8498162312f
+>>>>> # good: [c05f3642f4304dd081876e77a68555b6aba4483f] Merge branch 'perf=
+-core-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+>>>>> git bisect good c05f3642f4304dd081876e77a68555b6aba4483f
+>>>>> # bad: [44786880df196a4200c178945c4d41675faf9fb7] Merge branch 'paris=
+c-4.20-1' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-li=
+nux
+>>>>> git bisect bad 44786880df196a4200c178945c4d41675faf9fb7
+>>>>> # bad: [99792e0cea1ed733cdc8d0758677981e0cbebfed] Merge branch 'x86-m=
+m-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+>>>>> git bisect bad 99792e0cea1ed733cdc8d0758677981e0cbebfed
+>>>>> # good: [fec98069fb72fb656304a3e52265e0c2fc9adf87] Merge branch 'x86-=
+cpu-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+>>>>> git bisect good fec98069fb72fb656304a3e52265e0c2fc9adf87
+>>>>> # bad: [a31acd3ee8f7dbc0370bdf4a4bfef7a8c13c7542] x86/mm: Page size a=
+ware flush_tlb_mm_range()
+>>>>> git bisect bad a31acd3ee8f7dbc0370bdf4a4bfef7a8c13c7542
+>>>>> # good: [a7295fd53c39ce781a9792c9dd2c8747bf274160] x86/mm/cpa: Use fl=
+ush_tlb_kernel_range()
+>>>>> git bisect good a7295fd53c39ce781a9792c9dd2c8747bf274160
+>>>>> # good: [9cf38d5559e813cccdba8b44c82cc46ba48d0896] kexec: Allocate de=
+crypted control pages for kdump if SME is enabled
+>>>>> git bisect good 9cf38d5559e813cccdba8b44c82cc46ba48d0896
+>>>>> # good: [5b12904065798fee8b153a506ac7b72d5ebbe26c] x86/mm/doc: Clean =
+up the x86-64 virtual memory layout descriptions
+>>>>> git bisect good 5b12904065798fee8b153a506ac7b72d5ebbe26c
+>>>>> # good: [cf089611f4c446285046fcd426d90c18f37d2905] proc/vmcore: Fix i=
+386 build error of missing copy_oldmem_page_encrypted()
+>>>>> git bisect good cf089611f4c446285046fcd426d90c18f37d2905
+>>>>> # good: [a5b966ae42a70b194b03eaa5eaea70d8b3790c40] Merge branch 'tlb/=
+asm-generic' of git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux i=
+nto x86/mm
+>>>>> git bisect good a5b966ae42a70b194b03eaa5eaea70d8b3790c40
+>>>>> # first bad commit: [a31acd3ee8f7dbc0370bdf4a4bfef7a8c13c7542] x86/mm=
+: Page size aware flush_tlb_mm_range()
+>>>>> =
+
+>>>>> And 'funnily' the bad patch is one of mine too :/
+>>>>> =
+
+>>>>> I'll go have a look at that tomorrow, because currrently I'm way past
+>>>>> tired.
 >>>> =
 
->>>> So I also tested v4.19 and found that that was good, which made me
->>>> bisect v4.19..v4.20
+>>>> OK, so the below patchlet makes it all good. It turns out that the
+>>>> provided config has:
 >>>> =
 
->>>> # bad: [8fe28cb58bcb235034b64cbbb7550a8a43fd88be] Linux 4.20
->>>> # good: [84df9525b0c27f3ebc2ebb1864fa62a97fdedb7d] Linux 4.19
->>>> git bisect start 'v4.20' 'v4.19'
->>>> # bad: [ec9c166434595382be3babf266febf876327774d] Merge tag 'mips_fixe=
-s_4.20_1' of git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux
->>>> git bisect bad ec9c166434595382be3babf266febf876327774d
->>>> # bad: [50b825d7e87f4cff7070df6eb26390152bb29537] Merge git://git.kern=
-el.org/pub/scm/linux/kernel/git/davem/net-next
->>>> git bisect bad 50b825d7e87f4cff7070df6eb26390152bb29537
->>>> # good: [99e9acd85ccbdc8f5785f9e961d4956e96bd6aa5] Merge tag 'mlx5-upd=
-ates-2018-10-17' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/lin=
-ux
->>>> git bisect good 99e9acd85ccbdc8f5785f9e961d4956e96bd6aa5
->>>> # good: [c403993a41d50db1e7d9bc2d43c3c8498162312f] Merge tag 'for-linu=
-s-4.20' of https://nam04.safelinks.protection.outlook.com/?url=3Dhttps%3A%2=
-F%2Fgithub.com%2Fcminyard%2Flinux-ipmi&amp;data=3D02%7C01%7Cnamit%40vmware.=
-com%7Ca1c3ea5d4bc34cfc785508d6bf388ff3%7Cb39138ca3cee4b4aa4d6cd83d9dd62f0%7=
-C0%7C0%7C636906647013777573&amp;sdata=3D3VSR3VdE5rxOitAdkqFNPpAnAtLgDmYLzJt=
-oUrs5v9Y%3D&amp;reserved=3D0
->>>> git bisect good c403993a41d50db1e7d9bc2d43c3c8498162312f
->>>> # good: [c05f3642f4304dd081876e77a68555b6aba4483f] Merge branch 'perf-=
-core-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
->>>> git bisect good c05f3642f4304dd081876e77a68555b6aba4483f
->>>> # bad: [44786880df196a4200c178945c4d41675faf9fb7] Merge branch 'parisc=
--4.20-1' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-lin=
-ux
->>>> git bisect bad 44786880df196a4200c178945c4d41675faf9fb7
->>>> # bad: [99792e0cea1ed733cdc8d0758677981e0cbebfed] Merge branch 'x86-mm=
--for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
->>>> git bisect bad 99792e0cea1ed733cdc8d0758677981e0cbebfed
->>>> # good: [fec98069fb72fb656304a3e52265e0c2fc9adf87] Merge branch 'x86-c=
-pu-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
->>>> git bisect good fec98069fb72fb656304a3e52265e0c2fc9adf87
->>>> # bad: [a31acd3ee8f7dbc0370bdf4a4bfef7a8c13c7542] x86/mm: Page size aw=
-are flush_tlb_mm_range()
->>>> git bisect bad a31acd3ee8f7dbc0370bdf4a4bfef7a8c13c7542
->>>> # good: [a7295fd53c39ce781a9792c9dd2c8747bf274160] x86/mm/cpa: Use flu=
-sh_tlb_kernel_range()
->>>> git bisect good a7295fd53c39ce781a9792c9dd2c8747bf274160
->>>> # good: [9cf38d5559e813cccdba8b44c82cc46ba48d0896] kexec: Allocate dec=
-rypted control pages for kdump if SME is enabled
->>>> git bisect good 9cf38d5559e813cccdba8b44c82cc46ba48d0896
->>>> # good: [5b12904065798fee8b153a506ac7b72d5ebbe26c] x86/mm/doc: Clean u=
-p the x86-64 virtual memory layout descriptions
->>>> git bisect good 5b12904065798fee8b153a506ac7b72d5ebbe26c
->>>> # good: [cf089611f4c446285046fcd426d90c18f37d2905] proc/vmcore: Fix i3=
-86 build error of missing copy_oldmem_page_encrypted()
->>>> git bisect good cf089611f4c446285046fcd426d90c18f37d2905
->>>> # good: [a5b966ae42a70b194b03eaa5eaea70d8b3790c40] Merge branch 'tlb/a=
-sm-generic' of git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux in=
-to x86/mm
->>>> git bisect good a5b966ae42a70b194b03eaa5eaea70d8b3790c40
->>>> # first bad commit: [a31acd3ee8f7dbc0370bdf4a4bfef7a8c13c7542] x86/mm:=
- Page size aware flush_tlb_mm_range()
+>>>> CONFIG_X86_L1_CACHE_SHIFT=3D7
 >>>> =
 
->>>> And 'funnily' the bad patch is one of mine too :/
+>>>> which then, for some obscure raisin, results in flush_tlb_mm_range()
+>>>> compiling to use 320 bytes of stack:
 >>>> =
 
->>>> I'll go have a look at that tomorrow, because currrently I'm way past
->>>> tired.
+>>>> sub    $0x140,%rsp
+>>>> =
+
+>>>> Where a 'defconfig' build results in:
+>>>> =
+
+>>>> sub    $0x58,%rsp
+>>>> =
+
+>>>> The thing that pushes it over the edge in the above fingered patch is
+>>>> the addition of a field to struct flush_tlb_info, which grows if from =
+32
+>>>> to 36 bytes.
+>>>> =
+
+>>>> So my proposal is to basically revert that, unless we can come up with
+>>>> something that GCC can't screw up.
 >>> =
 
->>> OK, so the below patchlet makes it all good. It turns out that the
->>> provided config has:
+>>> To clarify, 'that' is Nadav's patch:
 >>> =
 
->>> CONFIG_X86_L1_CACHE_SHIFT=3D7
+>>> 515ab7c41306 ("x86/mm: Align TLB invalidation info")
 >>> =
 
->>> which then, for some obscure raisin, results in flush_tlb_mm_range()
->>> compiling to use 320 bytes of stack:
->>> =
-
->>> sub    $0x140,%rsp
->>> =
-
->>> Where a 'defconfig' build results in:
->>> =
-
->>> sub    $0x58,%rsp
->>> =
-
->>> The thing that pushes it over the edge in the above fingered patch is
->>> the addition of a field to struct flush_tlb_info, which grows if from 32
->>> to 36 bytes.
->>> =
-
->>> So my proposal is to basically revert that, unless we can come up with
->>> something that GCC can't screw up.
+>>> which turns out to be the real problem.
 >> =
 
->> To clarify, 'that' is Nadav's patch:
+>> Sorry for that. I still think it should be aligned, especially with all =
+the
+>> effort the Intel puts around to avoid bus-locking on unaligned atomic
+>> operations.
 >> =
 
->> 515ab7c41306 ("x86/mm: Align TLB invalidation info")
+>> So the right solution seems to me as putting this data structure off sta=
+ck.
+>> It would prevent flush_tlb_mm_range() from being reentrant, so we can ke=
+ep a
+>> few entries for this matter and atomically increase the entry number eve=
+ry
+>> time we enter flush_tlb_mm_range().
 >> =
 
->> which turns out to be the real problem.
+>> But my question is - should flush_tlb_mm_range() be reentrant, or can we
+>> assume no TLB shootdowns are initiated in interrupt handlers and #MC
+>> handlers?
 > =
 
-> Sorry for that. I still think it should be aligned, especially with all t=
-he
-> effort the Intel puts around to avoid bus-locking on unaligned atomic
-> operations.
+> Peter, what do you say about this one? I assume there are no nested TLB
+> flushes, but the code can easily be adapted (assuming there is a limit on
+> the nesting level).
+
+You need IRQs on to flush, right?  So as long as preemption is off, it won=
+=E2=80=99t nest.
+
+But is there really any measurable performance benefit to aligning it like =
+this?  There shouldn=E2=80=99t actually be any atomically =E2=80=94 it=E2=
+=80=99s just a little data structure telling everyone what to do.
+
 > =
 
-> So the right solution seems to me as putting this data structure off stac=
-k.
-> It would prevent flush_tlb_mm_range() from being reentrant, so we can kee=
-p a
-> few entries for this matter and atomically increase the entry number every
-> time we enter flush_tlb_mm_range().
+> -- >8 --
 > =
 
-> But my question is - should flush_tlb_mm_range() be reentrant, or can we
-> assume no TLB shootdowns are initiated in interrupt handlers and #MC
-> handlers?
+> Subject: [PATCH] x86: Move flush_tlb_info off the stack
+> ---
+> arch/x86/mm/tlb.c | 49 +++++++++++++++++++++++++++++++++--------------
+> 1 file changed, 35 insertions(+), 14 deletions(-)
+> =
 
-Peter, what do you say about this one? I assume there are no nested TLB
-flushes, but the code can easily be adapted (assuming there is a limit on
-the nesting level).
+> diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+> index bc4bc7b2f075..15fe90d4e3e1 100644
+> --- a/arch/x86/mm/tlb.c
+> +++ b/arch/x86/mm/tlb.c
+> @@ -14,6 +14,7 @@
+> #include <asm/cache.h>
+> #include <asm/apic.h>
+> #include <asm/uv/uv.h>
+> +#include <asm/local.h>
+> =
 
--- >8 --
+> #include "mm_internal.h"
+> =
 
-Subject: [PATCH] x86: Move flush_tlb_info off the stack
----
- arch/x86/mm/tlb.c | 49 +++++++++++++++++++++++++++++++++--------------
- 1 file changed, 35 insertions(+), 14 deletions(-)
+> @@ -722,43 +723,63 @@ void native_flush_tlb_others(const struct cpumask *=
+cpumask,
+>  */
+> unsigned long tlb_single_page_flush_ceiling __read_mostly =3D 33;
+> =
 
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index bc4bc7b2f075..15fe90d4e3e1 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -14,6 +14,7 @@
- #include <asm/cache.h>
- #include <asm/apic.h>
- #include <asm/uv/uv.h>
-+#include <asm/local.h>
- =
+> +static DEFINE_PER_CPU_SHARED_ALIGNED(struct flush_tlb_info, flush_tlb_in=
+fo);
+> +#ifdef CONFIG_DEBUG_VM
+> +static DEFINE_PER_CPU(local_t, flush_tlb_info_idx);
+> +#endif
+> +
+> void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
+>                unsigned long end, unsigned int stride_shift,
+>                bool freed_tables)
+> {
+> +    struct flush_tlb_info *info;
+>    int cpu;
+> =
 
- #include "mm_internal.h"
- =
+> -    struct flush_tlb_info info __aligned(SMP_CACHE_BYTES) =3D {
+> -        .mm =3D mm,
+> -        .stride_shift =3D stride_shift,
+> -        .freed_tables =3D freed_tables,
+> -    };
+> -
+>    cpu =3D get_cpu();
+> =
 
-@@ -722,43 +723,63 @@ void native_flush_tlb_others(const struct cpumask *cp=
-umask,
-  */
- unsigned long tlb_single_page_flush_ceiling __read_mostly =3D 33;
- =
+> +    info =3D this_cpu_ptr(&flush_tlb_info);
+> +
+> +#ifdef CONFIG_DEBUG_VM
+> +    /*
+> +     * Ensure that the following code is non-reentrant and flush_tlb_info
+> +     * is not overwritten. This means no TLB flushing is initiated by
+> +     * interrupt handlers and machine-check exception handlers. If neede=
+d,
+> +     * we can add additional flush_tlb_info entries.
+> +     */
+> +    BUG_ON(local_inc_return(this_cpu_ptr(&flush_tlb_info_idx)) !=3D 1);
+> +#endif
+> +
+> +    info->mm =3D mm;
+> +    info->stride_shift =3D stride_shift;
+> +    info->freed_tables =3D freed_tables;
+> +
+>    /* This is also a barrier that synchronizes with switch_mm(). */
+> -    info.new_tlb_gen =3D inc_mm_tlb_gen(mm);
+> +    info->new_tlb_gen =3D inc_mm_tlb_gen(mm);
+> =
 
-+static DEFINE_PER_CPU_SHARED_ALIGNED(struct flush_tlb_info, flush_tlb_info=
-);
-+#ifdef CONFIG_DEBUG_VM
-+static DEFINE_PER_CPU(local_t, flush_tlb_info_idx);
-+#endif
-+
- void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
- 				unsigned long end, unsigned int stride_shift,
- 				bool freed_tables)
- {
-+	struct flush_tlb_info *info;
- 	int cpu;
- =
+>    /* Should we flush just the requested range? */
+>    if ((end !=3D TLB_FLUSH_ALL) &&
+>        ((end - start) >> stride_shift) <=3D tlb_single_page_flush_ceiling=
+) {
+> -        info.start =3D start;
+> -        info.end =3D end;
+> +        info->start =3D start;
+> +        info->end =3D end;
+>    } else {
+> -        info.start =3D 0UL;
+> -        info.end =3D TLB_FLUSH_ALL;
+> +        info->start =3D 0UL;
+> +        info->end =3D TLB_FLUSH_ALL;
+>    }
+> =
 
--	struct flush_tlb_info info __aligned(SMP_CACHE_BYTES) =3D {
--		.mm =3D mm,
--		.stride_shift =3D stride_shift,
--		.freed_tables =3D freed_tables,
--	};
--
- 	cpu =3D get_cpu();
- =
+>    if (mm =3D=3D this_cpu_read(cpu_tlbstate.loaded_mm)) {
+> -        VM_WARN_ON(irqs_disabled());
+> +        lockdep_assert_irqs_enabled();
+>        local_irq_disable();
+> -        flush_tlb_func_local(&info, TLB_LOCAL_MM_SHOOTDOWN);
+> +        flush_tlb_func_local(info, TLB_LOCAL_MM_SHOOTDOWN);
+>        local_irq_enable();
+>    }
+> =
 
-+	info =3D this_cpu_ptr(&flush_tlb_info);
-+
-+#ifdef CONFIG_DEBUG_VM
-+	/*
-+	 * Ensure that the following code is non-reentrant and flush_tlb_info
-+	 * is not overwritten. This means no TLB flushing is initiated by
-+	 * interrupt handlers and machine-check exception handlers. If needed,
-+	 * we can add additional flush_tlb_info entries.
-+	 */
-+	BUG_ON(local_inc_return(this_cpu_ptr(&flush_tlb_info_idx)) !=3D 1);
-+#endif
-+
-+	info->mm =3D mm;
-+	info->stride_shift =3D stride_shift;
-+	info->freed_tables =3D freed_tables;
-+
- 	/* This is also a barrier that synchronizes with switch_mm(). */
--	info.new_tlb_gen =3D inc_mm_tlb_gen(mm);
-+	info->new_tlb_gen =3D inc_mm_tlb_gen(mm);
- =
+>    if (cpumask_any_but(mm_cpumask(mm), cpu) < nr_cpu_ids)
+> -        flush_tlb_others(mm_cpumask(mm), &info);
+> +        flush_tlb_others(mm_cpumask(mm), info);
+> =
 
- 	/* Should we flush just the requested range? */
- 	if ((end !=3D TLB_FLUSH_ALL) &&
- 	    ((end - start) >> stride_shift) <=3D tlb_single_page_flush_ceiling) {
--		info.start =3D start;
--		info.end =3D end;
-+		info->start =3D start;
-+		info->end =3D end;
- 	} else {
--		info.start =3D 0UL;
--		info.end =3D TLB_FLUSH_ALL;
-+		info->start =3D 0UL;
-+		info->end =3D TLB_FLUSH_ALL;
- 	}
- =
+> +#ifdef CONFIG_DEBUG_VM
+> +    barrier();
+> +    local_dec(this_cpu_ptr(&flush_tlb_info_idx));
+> +#endif
+>    put_cpu();
+> }
+> =
 
- 	if (mm =3D=3D this_cpu_read(cpu_tlbstate.loaded_mm)) {
--		VM_WARN_ON(irqs_disabled());
-+		lockdep_assert_irqs_enabled();
- 		local_irq_disable();
--		flush_tlb_func_local(&info, TLB_LOCAL_MM_SHOOTDOWN);
-+		flush_tlb_func_local(info, TLB_LOCAL_MM_SHOOTDOWN);
- 		local_irq_enable();
- 	}
- =
+> -- =
 
- 	if (cpumask_any_but(mm_cpumask(mm), cpu) < nr_cpu_ids)
--		flush_tlb_others(mm_cpumask(mm), &info);
-+		flush_tlb_others(mm_cpumask(mm), info);
- =
+> 2.17.1
+> =
 
-+#ifdef CONFIG_DEBUG_VM
-+	barrier();
-+	local_dec(this_cpu_ptr(&flush_tlb_info_idx));
-+#endif
- 	put_cpu();
- }
- =
+>=20
 
--- =
-
-2.17.1
-
-
-
---===============5562396353498824600==--
+--===============7314407837933223876==--
 
