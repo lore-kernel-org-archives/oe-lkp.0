@@ -1,27 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============3391390725038515450=="
+Content-Type: multipart/mixed; boundary="===============2934563821502011909=="
 MIME-Version: 1.0
-From: David Howells <dhowells@redhat.com>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: c81b289acb ("keys: Network namespace domain tag"): WARNING: CPU: 0 PID: 53 at lib/refcount.c:190 refcount_sub_and_test_checked
-Date: Wed, 24 Apr 2019 22:47:23 +0100
-Message-ID: <706.1556142443@warthog.procyon.org.uk>
-In-Reply-To: <5cc0be6b.UKvnuj6zAOc9ywai%lkp@intel.com>
+Subject: Re: [btrfs] 302167c50b: fio.write_bw_MBps -12.4% regression
+Date: Fri, 26 Apr 2019 14:14:11 +0800
+Message-ID: <87h8alqong.fsf@yhuang-dev.intel.com>
+In-Reply-To: <20190203081802.GD10498@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3391390725038515450==
+--===============2934563821502011909==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-This can be reproduced with:
+Hi, Josef,
 
-unshare -n
-echo -ne "1.2.3.4\0" | keyctl padd dns_resolver foo.bar @s
-logout
+kernel test robot <rong.a.chen@intel.com> writes:
 
-There was a missing initialisation of the refcount on a new tag.
+> Greeting,
+>
+> FYI, we noticed a -12.4% regression of fio.write_bw_MBps due to commit:
+>
+>
+> commit: 302167c50b32e7fccc98994a91d40ddbbab04e52 ("btrfs: don't end the t=
+ransaction for delayed refs in throttle")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git pending-=
+fixes
+>
+> in testcase: fio-basic
+> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wit=
+h 64G memory
+> with following parameters:
+>
+> 	runtime: 300s
+> 	nr_task: 8t
+> 	disk: 1SSD
+> 	fs: btrfs
+> 	rw: randwrite
+> 	bs: 4k
+> 	ioengine: sync
+> 	test_size: 400g
+> 	cpufreq_governor: performance
+> 	ucode: 0xb00002e
+>
+> test-description: Fio is a tool that will spawn a number of threads or pr=
+ocesses doing a particular type of I/O action as specified by the user.
+> test-url: https://github.com/axboe/fio
+>
+>
 
-David
+Do you have time to take a look at this regression?
 
---===============3391390725038515450==--
+Best Regards,
+Huang, Ying
+
+--===============2934563821502011909==--
 
