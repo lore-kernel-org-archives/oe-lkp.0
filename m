@@ -1,62 +1,54 @@
-Content-Type: multipart/mixed; boundary="===============5547091740501601479=="
+Content-Type: multipart/mixed; boundary="===============1106019378358376028=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Jan Kara <jack@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] 302167c50b: fio.write_bw_MBps -12.4% regression
-Date: Wed, 08 May 2019 15:56:59 +0800
-Message-ID: <87o94dl6pg.fsf@yhuang-dev.intel.com>
-In-Reply-To: <87h8alqong.fsf@yhuang-dev.intel.com>
+Subject: Re: [PATCH v2] fsnotify: fix unlink performance regression
+Date: Thu, 09 May 2019 11:46:29 +0200
+Message-ID: <20190509094629.GB23589@quack2.suse.cz>
+In-Reply-To: <CAOQ4uxgHgSiNGqozbR-pqF0BU7J-R51wXUwT_fDUnYbix3kGXw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5547091740501601479==
+--===============1106019378358376028==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-"Huang, Ying" <ying.huang@intel.com> writes:
+On Tue 07-05-19 22:12:57, Amir Goldstein wrote:
+> On Tue, May 7, 2019 at 7:19 PM Jan Kara <jack@suse.cz> wrote:
+> > So I'd rather move the fsnotify call to vfs_unlink(),
+> > vfs_rmdir(), simple_unlink(), simple_rmdir(), and then those few caller=
+s of
+> > d_delete() that remain as you suggest elsewhere in this thread. And the=
+n we
+> > get more consistent context for fsnotify_nameremove() and could just use
+> > fsnotify_dirent().
+> >
+> =
 
-> Hi, Josef,
->
-> kernel test robot <rong.a.chen@intel.com> writes:
->
->> Greeting,
->>
->> FYI, we noticed a -12.4% regression of fio.write_bw_MBps due to commit:
->>
->>
->> commit: 302167c50b32e7fccc98994a91d40ddbbab04e52 ("btrfs: don't end the =
-transaction for delayed refs in throttle")
->> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git pending=
--fixes
->>
->> in testcase: fio-basic
->> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz wi=
-th 64G memory
->> with following parameters:
->>
->> 	runtime: 300s
->> 	nr_task: 8t
->> 	disk: 1SSD
->> 	fs: btrfs
->> 	rw: randwrite
->> 	bs: 4k
->> 	ioengine: sync
->> 	test_size: 400g
->> 	cpufreq_governor: performance
->> 	ucode: 0xb00002e
->>
->> test-description: Fio is a tool that will spawn a number of threads or p=
-rocesses doing a particular type of I/O action as specified by the user.
->> test-url: https://github.com/axboe/fio
->>
->>
->
-> Do you have time to take a look at this regression?
+> Yes, I much prefer this solution myself and I will follow up with it,
+> but it would not be honest to suggest said solution as a stable fix
+> to the performance regression that was introduced in v5.1.
+> I think is it better if you choose between lesser evil:
+> v1 with ifdef CONFIG_FSNOTIFY to fix build issue
+> v2 as subtle as it is
+> OR another obviously safe stable fix that you can think of
 
-Ping
+OK, fair enough. I'll go with v1 + build fix for current merge window +
+stable as it's local to fsnotify_nameremove().
 
-Best Regards,
-Huang, Ying
+> The change of cleansing d_delete() from fsnotify_nameremove()
+> requires more research and is anyway not stable tree material -
+> if not for the level of complexity, then because all the users of
+> FS_DELETE from pseudo and clustered filesystems need more time
+> to find regressions (we do not have test coverage for those in LTP).
 
---===============5547091740501601479==--
+Agreed.
+
+								Honza
+-- =
+
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
+
+--===============1106019378358376028==--
 
