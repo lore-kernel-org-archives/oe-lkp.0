@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============7862082244382301940=="
+Content-Type: multipart/mixed; boundary="===============4667693490721595755=="
 MIME-Version: 1.0
 From: kernel test robot <lkp@intel.com>
 To: lkp@lists.01.org
 Subject: [sched] b0f464c9c8: WARNING:at_kernel/sched/sched.h:#pick_next_task_fair
-Date: Sat, 25 May 2019 08:38:13 +0800
-Message-ID: <20190525003813.esbpemaqijxdvftl@42dff341a7fd>
+Date: Fri, 17 May 2019 14:34:00 +0800
+Message-ID: <20190517063400.cwajn7kk3nktec2g@inn2.lkp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7862082244382301940==
+--===============4667693490721595755==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -44,19 +44,19 @@ cktrace):
 4c9c8 |
 +------------------------------------------------------+------------+------=
 ------+
-| boot_successes                                       | 5          | 10   =
+| boot_successes                                       | 5          | 0    =
       |
-| boot_failures                                        | 1          | 16   =
+| boot_failures                                        | 1          | 8    =
       |
 | BUG:kernel_reboot-without-warning_in_test_stage      | 1          |      =
       |
-| WARNING:at_kernel/sched/sched.h:#pick_next_task_fair | 0          | 16   =
+| WARNING:at_kernel/sched/sched.h:#pick_next_task_fair | 0          | 8    =
       |
-| RIP:pick_next_task_fair                              | 0          | 16   =
+| RIP:pick_next_task_fair                              | 0          | 8    =
       |
-| WARNING:at_kernel/sched/sched.h:#sched_cpu_dying     | 0          | 16   =
+| WARNING:at_kernel/sched/sched.h:#sched_cpu_dying     | 0          | 8    =
       |
-| RIP:sched_cpu_dying                                  | 0          | 16   =
+| RIP:sched_cpu_dying                                  | 0          | 8    =
       |
 +------------------------------------------------------+------------+------=
 ------+
@@ -141,7 +141,7 @@ Thanks,
 lkp
 
 
---===============7862082244382301940==
+--===============4667693490721595755==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -3657,7 +3657,7 @@ cyBub3Qgc2V0CiMgQ09ORklHX1BVTklUX0FUT01fREVCVUcgaXMgbm90IHNldApDT05GSUdfVU5X
 SU5ERVJfT1JDPXkKIyBDT05GSUdfVU5XSU5ERVJfRlJBTUVfUE9JTlRFUiBpcyBub3Qgc2V0CiMg
 Q09ORklHX1VOV0lOREVSX0dVRVNTIGlzIG5vdCBzZXQK
 
---===============7862082244382301940==
+--===============4667693490721595755==
 Content-Type: application/x-xz
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -3954,7 +3954,7 @@ f9DYGpjoth6ZayXK6XdnuSg+/XSPZQDT8nas5dFbPczpSi49G+/N0XkmFzZC3FKBv+nBmQcJPpdK
 Pm2Mx6oH4a3xtefUagY+vXjap0BcZa/Nv+WpDQ7JeE+NoAFB9bBV3hWUMZ1IOEduGXCsnymGQZ1y
 qlGQdIJMj8RvozHVcW0hdht6LhaXTgJtPAMVTHRM3W0s1o1w2SUESm4LiZ4qSPVQ+0lc2WO/fhHY
 IK7yNOSR6AAAAJjGnqEEf0MkAAGWgQHr8wTilhuhscRn+wIAAAAABFla
---===============7862082244382301940==
+--===============4667693490721595755==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -4009,5 +4009,5 @@ bmQgb2YgdGVzdDogU1VDQ0VTUzogbndyaXRlcnNfc3RyZXNzPTQgbnJlYWRlcnNfc3RyZXNzPTAg
 c3RhdF9pbnRlcnZhbD02MCB2ZXJib3NlPTEgc2h1ZmZsZV9pbnRlcnZhbD0zIHN0dXR0ZXI9NSBz
 aHV0ZG93bl9zZWNzPTAgb25vZmZfaW50ZXJ2YWw9MyBvbm9mZl9ob2xkb2ZmPTMwCg==
 
---===============7862082244382301940==--
+--===============4667693490721595755==--
 
