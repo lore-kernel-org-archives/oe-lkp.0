@@ -1,206 +1,379 @@
-Content-Type: multipart/mixed; boundary="===============0054350755740772025=="
+Content-Type: multipart/mixed; boundary="===============3527700942710521483=="
 MIME-Version: 1.0
-From: Jan Stancek <jstancek@redhat.com>
+From: Johannes Weiner <hannes@cmpxchg.org>
 To: lkp@lists.01.org
-Subject: Re: [LTP] [mm] 8c7829b04c: ltp.overcommit_memory01.fail
-Date: Mon, 20 May 2019 06:04:46 -0400
-Message-ID: <875220079.23570847.1558346686738.JavaMail.zimbra@redhat.com>
-In-Reply-To: <20190520032018.GW31424@shao2-debian>
+Subject: Re: [mm] 42a3003535: will-it-scale.per_process_ops -25.9% regression
+Date: Mon, 20 May 2019 17:53:28 -0400
+Message-ID: <20190520215328.GA1186@cmpxchg.org>
+In-Reply-To: <20190520063534.GB19312@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0054350755740772025==
+--===============3527700942710521483==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hello,
 
-
------ Original Message -----
-> FYI, we noticed the following commit (built with gcc-7):
+On Mon, May 20, 2019 at 02:35:34PM +0800, kernel test robot wrote:
+> Greeting,
 > =
 
-> commit: 8c7829b04c523cdc732cb77f59f03320e09f3386 ("mm: fix false-positive
-> OVERCOMMIT_GUESS failures")
+> FYI, we noticed a -25.9% regression of will-it-scale.per_process_ops due =
+to commit:
+> =
 
-This matches report from Naresh:
-  http://lists.linux.it/pipermail/ltp/2019-May/011962.html
+> =
 
+> commit: 42a300353577ccc17ecc627b8570a89fa1678bec ("mm: memcontrol: fix re=
+cursive statistics correctness & scalabilty")
 > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 > =
 
-> in testcase: ltp
+> in testcase: will-it-scale
+> on test machine: 192 threads Skylake-SP with 256G memory
 > with following parameters:
-> =
 
-> 	disk: 1HDD
-> 	test: mm-01
-> =
+Ouch. That has to be the additional cache footprint of the split
+local/recursive stat counters, rather than the extra instructions.
 
-> test-description: The LTP testsuite contains a collection of tools for
-> testing the Linux kernel and related features.
-> test-url: http://linux-test-project.github.io/
-> =
+Could you please try re-running the test on that host with the below
+patch applied?
 
-> =
+Also CCing Aaron Lu, who has previously investigated the cache layout
+in the struct memcg stat counters.
 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
-m 4G
-> =
+> 	nr_task: 100%
+> 	mode: process
+> 	test: page_fault3
+> 	cpufreq_governor: performance
 
-> caused below changes (please refer to attached dmesg/kmsg for entire
-> log/backtrace):
-> =
+>From c9ed8f78dfa25c4d29adf5a09cf9adeeb43e8bdd Mon Sep 17 00:00:00 2001
+From: Johannes Weiner <hannes@cmpxchg.org>
+Date: Mon, 20 May 2019 14:18:26 -0400
+Subject: [PATCH] mm: memcontrol: don't batch updates of local VM stats and
+ events
 
-> =
+The kernel test robot noticed a 26% will-it-scale pagefault regression
+from commit 42a300353577 ("mm: memcontrol: fix recursive statistics
+correctness & scalabilty"). This appears to be caused by bouncing the
+additional cachelines from the new hierarchical statistics counters.
 
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <rong.a.chen@intel.com>
-> =
+We can fix this by getting rid of the batched local counters instead.
 
-> =
+Originally, there were *only* group-local counters, and they were
+fully maintained per cpu. A reader of a stats file high up in the
+cgroup tree would have to walk the entire subtree and collect each
+level's per-cpu counters to get the recursive view. This was
+prohibitively expensive, and so we switched to per-cpu batched updates
+of the local counters during a983b5ebee57 ("mm: memcontrol: fix
+excessive complexity in memory.stat reporting"), reducing the
+complexity from nr_subgroups * nr_cpus to nr_subgroups.
 
-> [  554.112267 ] <<<test_start>>>
-> [  554.112269 ]
-> [  554.115806 ] tag=3Dovercommit_memory01 stime=3D1558074982
-> [  554.115809 ]
-> [  554.119303 ] cmdline=3D"overcommit_memory"
-> [  554.119306 ]
-> [  554.121962 ] contacts=3D""
-> [  554.121965 ]
-> [  554.124459 ] analysis=3Dexit
-> [  554.124463 ]
-> [  554.127140 ] <<<test_output>>>
-> [  554.127144 ]
-> [  554.131401 ] tst_test.c:1096: INFO: Timeout per run is 0h 05m 00s
-> [  554.131404 ]
-> [  554.136248 ] overcommit_memory.c:117: INFO: MemTotal is 4033124 kB
-> [  554.136251 ]
-> [  554.141365 ] overcommit_memory.c:119: INFO: SwapTotal is 268435452 kB
-> [  554.141368 ]
-> [  554.146664 ] overcommit_memory.c:123: INFO: CommitLimit is 270452012 kB
-> [  554.146666 ]
-> [  554.151375 ] mem.c:814: INFO: set overcommit_ratio to 50
-> [  554.151378 ]
-> [  554.155796 ] mem.c:814: INFO: set overcommit_memory to 2
-> [  554.155799 ]
-> [  554.159951 ] overcommit_memory.c:190: INFO: malloc 538608648 kB failed
-> [  554.159953 ]
-> [  554.164801 ] overcommit_memory.c:211: PASS: alloc failed as expected
-> [  554.164804 ]
-> [  554.170196 ] overcommit_memory.c:190: INFO: malloc 270452012 kB failed
-> [  554.170199 ]
-> [  554.175344 ] overcommit_memory.c:211: PASS: alloc failed as expected
-> [  554.175347 ]
-> [  554.180932 ] overcommit_memory.c:186: INFO: malloc 134651878 kB
-> successfully
-> [  554.180935 ]
-> [  554.186522 ] overcommit_memory.c:205: PASS: alloc passed as expected
-> [  554.186524 ]
-> [  554.191234 ] mem.c:814: INFO: set overcommit_memory to 0
-> [  554.191237 ]
-> [  554.196930 ] overcommit_memory.c:186: INFO: malloc 134734122 kB
-> successfully
-> [  554.196933 ]
-> [  554.202738 ] overcommit_memory.c:205: PASS: alloc passed as expected
-> [  554.202742 ]
-> [  554.208563 ] overcommit_memory.c:190: INFO: malloc 538936488 kB failed
-> [  554.208566 ]
-> [  554.214355 ] overcommit_memory.c:211: PASS: alloc failed as expected
-> [  554.214357 ]
-> [  554.220506 ] overcommit_memory.c:186: INFO: malloc 272468576 kB
-> successfully
-> [  554.220509 ]
-> [  554.226564 ] overcommit_memory.c:213: FAIL: alloc passed, expected to =
-fail
-> [  554.226568 ]
-> [  554.231870 ] mem.c:814: INFO: set overcommit_memory to 1
-> [  554.231873 ]
-> [  554.237819 ] overcommit_memory.c:186: INFO: malloc 136234288 kB
-> successfully
-> [  554.237821 ]
-> [  554.243711 ] overcommit_memory.c:205: PASS: alloc passed as expected
-> [  554.243713 ]
-> [  554.249791 ] overcommit_memory.c:186: INFO: malloc 272468576 kB
-> successfully
-> [  554.249794 ]
-> [  554.255069 ] overcommit_memory.c:205: PASS: alloc passed as expected
-> [  554.255073 ]
-> [  554.261594 ] overcommit_memory.c:186: INFO: malloc 544937152 kB
-> successfully
-> [  554.261597 ]
-> [  554.267855 ] overcommit_memory.c:205: PASS: alloc passed as expected
-> [  554.267858 ]
-> [  554.273445 ] mem.c:814: INFO: set overcommit_memory to 0
-> [  554.273448 ]
-> [  554.278882 ] mem.c:814: INFO: set overcommit_ratio to 50
-> [  554.278885 ]
-> [  554.282419 ]
-> [  554.284170 ] Summary:
-> [  554.284173 ]
-> [  554.287476 ] passed   8
-> [  554.287480 ]
-> [  554.290740 ] failed   1
-> [  554.290743 ]
-> [  554.293971 ] skipped  0
-> [  554.293974 ]
-> [  554.297123 ] warnings 0
-> [  554.297126 ]
-> [  554.300746 ] <<<execution_status>>>
-> [  554.300749 ]
-> [  554.304489 ] initiation_status=3D"ok"
-> [  554.304492 ]
-> [  554.309762 ] duration=3D0 termination_type=3Dexited termination_id=3D1
-> corefile=3Dno
-> [  554.309765 ]
-> [  554.313681 ] cutime=3D0 cstime=3D0
-> [  554.313685 ]
-> [  554.316880 ] <<<test_end>>>
-> =
+With growing machines and cgroup trees, the tree walk itself became
+too expensive for monitoring top-level groups, and this is when the
+culprit patch added hierarchy counters on each cgroup level. When the
+per-cpu batch size would be reached, both the local and the hierarchy
+counters would get batch-updated from the per-cpu delta simultaneously.
 
-> =
+This makes local and hierarchical counter reads blazingly fast, but it
+unfortunately makes the write-side too cache line intense.
 
-> =
+Since local counter reads were never a problem - we only centralized
+them to accelerate the hierarchy walk - and use of the local counters
+are becoming rarer due to replacement with hierarchical views (ongoing
+rework in the page reclaim and workingset code), we can make those
+local counters unbatched per-cpu counters again.
 
-> To reproduce:
-> =
+The scheme will then be as such:
 
->         # build kernel
-> 	cd linux
-> 	cp config-5.1.0-10246-g8c7829b .config
-> 	make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 olddefconfig
-> 	make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 prepare
-> 	make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 modules_prepare
-> 	make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 SHELL=3D/bin/bash
-> 	make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 bzImage
-> =
+   when a memcg statistic changes, the writer will:
+   - update the local counter (per-cpu)
+   - update the batch counter (per-cpu). If the batch is full:
+   - spill the batch into the group's atomic_t
+   - spill the batch into all ancestors' atomic_ts
+   - empty out the batch counter (per-cpu)
 
-> =
+   when a local memcg counter is read, the reader will:
+   - collect the local counter from all cpus
 
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
-> 	bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-script is atta=
-ched
-> 	in this email
-> =
+   when a hiearchy memcg counter is read, the reader will:
+   - read the atomic_t
 
-> =
+We might be able to simplify this further and make the recursive
+counters unbatched per-cpu counters as well (batch upward propagation,
+but leave per-cpu collection to the readers), but that will require a
+more in-depth analysis and testing of all the callsites. Deal with the
+immediate regression for now.
 
-> =
+Fixes: 42a300353577 ("mm: memcontrol: fix recursive statistics correctness =
+& scalabilty")
+Reported-by: kernel test robot <rong.a.chen@intel.com>
+Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+---
+ include/linux/memcontrol.h | 26 ++++++++++++++++--------
+ mm/memcontrol.c            | 41 ++++++++++++++++++++++++++------------
+ 2 files changed, 46 insertions(+), 21 deletions(-)
 
-> =
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index bc74d6a4407c..2d23ae7bd36d 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -126,9 +126,12 @@ struct memcg_shrinker_map {
+ struct mem_cgroup_per_node {
+ 	struct lruvec		lruvec;
+ =
 
-> Thanks,
-> Rong Chen
-> =
++	/* Legacy local VM stats */
++	struct lruvec_stat __percpu *lruvec_stat_local;
++
++	/* Subtree VM stats (batched updates) */
+ 	struct lruvec_stat __percpu *lruvec_stat_cpu;
+ 	atomic_long_t		lruvec_stat[NR_VM_NODE_STAT_ITEMS];
+-	atomic_long_t		lruvec_stat_local[NR_VM_NODE_STAT_ITEMS];
+ =
 
-> =
+ 	unsigned long		lru_zone_size[MAX_NR_ZONES][NR_LRU_LISTS];
+ =
 
-> =
+@@ -274,17 +277,18 @@ struct mem_cgroup {
+ 	atomic_t		moving_account;
+ 	struct task_struct	*move_lock_task;
+ =
 
-> --
-> Mailing list info: https://lists.linux.it/listinfo/ltp
->=20
+-	/* memory.stat */
++	/* Legacy local VM stats and events */
++	struct memcg_vmstats_percpu __percpu *vmstats_local;
++
++	/* Subtree VM stats and events (batched updates) */
+ 	struct memcg_vmstats_percpu __percpu *vmstats_percpu;
+ =
 
---===============0054350755740772025==--
+ 	MEMCG_PADDING(_pad2_);
+ =
+
+ 	atomic_long_t		vmstats[MEMCG_NR_STAT];
+-	atomic_long_t		vmstats_local[MEMCG_NR_STAT];
+-
+ 	atomic_long_t		vmevents[NR_VM_EVENT_ITEMS];
+-	atomic_long_t		vmevents_local[NR_VM_EVENT_ITEMS];
+ =
+
++	/* memory.events */
+ 	atomic_long_t		memory_events[MEMCG_NR_MEMORY_EVENTS];
+ =
+
+ 	unsigned long		socket_pressure;
+@@ -576,7 +580,11 @@ static inline unsigned long memcg_page_state(struct me=
+m_cgroup *memcg, int idx)
+ static inline unsigned long memcg_page_state_local(struct mem_cgroup *memc=
+g,
+ 						   int idx)
+ {
+-	long x =3D atomic_long_read(&memcg->vmstats_local[idx]);
++	long x =3D 0;
++	int cpu;
++
++	for_each_possible_cpu(cpu)
++		x +=3D per_cpu(memcg->vmstats_local->stat[idx], cpu);
+ #ifdef CONFIG_SMP
+ 	if (x < 0)
+ 		x =3D 0;
+@@ -650,13 +658,15 @@ static inline unsigned long lruvec_page_state_local(s=
+truct lruvec *lruvec,
+ 						    enum node_stat_item idx)
+ {
+ 	struct mem_cgroup_per_node *pn;
+-	long x;
++	long x =3D 0;
++	int cpu;
+ =
+
+ 	if (mem_cgroup_disabled())
+ 		return node_page_state(lruvec_pgdat(lruvec), idx);
+ =
+
+ 	pn =3D container_of(lruvec, struct mem_cgroup_per_node, lruvec);
+-	x =3D atomic_long_read(&pn->lruvec_stat_local[idx]);
++	for_each_possible_cpu(cpu)
++		x +=3D per_cpu(pn->lruvec_stat_local->count[idx], cpu);
+ #ifdef CONFIG_SMP
+ 	if (x < 0)
+ 		x =3D 0;
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index e50a2db5b4ff..8d42e5c7bf37 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -700,11 +700,12 @@ void __mod_memcg_state(struct mem_cgroup *memcg, int =
+idx, int val)
+ 	if (mem_cgroup_disabled())
+ 		return;
+ =
+
++	__this_cpu_add(memcg->vmstats_local->stat[idx], val);
++
+ 	x =3D val + __this_cpu_read(memcg->vmstats_percpu->stat[idx]);
+ 	if (unlikely(abs(x) > MEMCG_CHARGE_BATCH)) {
+ 		struct mem_cgroup *mi;
+ =
+
+-		atomic_long_add(x, &memcg->vmstats_local[idx]);
+ 		for (mi =3D memcg; mi; mi =3D parent_mem_cgroup(mi))
+ 			atomic_long_add(x, &mi->vmstats[idx]);
+ 		x =3D 0;
+@@ -754,11 +755,12 @@ void __mod_lruvec_state(struct lruvec *lruvec, enum n=
+ode_stat_item idx,
+ 	__mod_memcg_state(memcg, idx, val);
+ =
+
+ 	/* Update lruvec */
++	__this_cpu_add(pn->lruvec_stat_local->count[idx], val);
++
+ 	x =3D val + __this_cpu_read(pn->lruvec_stat_cpu->count[idx]);
+ 	if (unlikely(abs(x) > MEMCG_CHARGE_BATCH)) {
+ 		struct mem_cgroup_per_node *pi;
+ =
+
+-		atomic_long_add(x, &pn->lruvec_stat_local[idx]);
+ 		for (pi =3D pn; pi; pi =3D parent_nodeinfo(pi, pgdat->node_id))
+ 			atomic_long_add(x, &pi->lruvec_stat[idx]);
+ 		x =3D 0;
+@@ -780,11 +782,12 @@ void __count_memcg_events(struct mem_cgroup *memcg, e=
+num vm_event_item idx,
+ 	if (mem_cgroup_disabled())
+ 		return;
+ =
+
++	__this_cpu_add(memcg->vmstats_local->events[idx], count);
++
+ 	x =3D count + __this_cpu_read(memcg->vmstats_percpu->events[idx]);
+ 	if (unlikely(x > MEMCG_CHARGE_BATCH)) {
+ 		struct mem_cgroup *mi;
+ =
+
+-		atomic_long_add(x, &memcg->vmevents_local[idx]);
+ 		for (mi =3D memcg; mi; mi =3D parent_mem_cgroup(mi))
+ 			atomic_long_add(x, &mi->vmevents[idx]);
+ 		x =3D 0;
+@@ -799,7 +802,12 @@ static unsigned long memcg_events(struct mem_cgroup *m=
+emcg, int event)
+ =
+
+ static unsigned long memcg_events_local(struct mem_cgroup *memcg, int even=
+t)
+ {
+-	return atomic_long_read(&memcg->vmevents_local[event]);
++	long x =3D 0;
++	int cpu;
++
++	for_each_possible_cpu(cpu)
++		x +=3D per_cpu(memcg->vmstats_local->events[event], cpu);
++	return x;
+ }
+ =
+
+ static void mem_cgroup_charge_statistics(struct mem_cgroup *memcg,
+@@ -2200,11 +2208,9 @@ static int memcg_hotplug_cpu_dead(unsigned int cpu)
+ 			long x;
+ =
+
+ 			x =3D this_cpu_xchg(memcg->vmstats_percpu->stat[i], 0);
+-			if (x) {
+-				atomic_long_add(x, &memcg->vmstats_local[i]);
++			if (x)
+ 				for (mi =3D memcg; mi; mi =3D parent_mem_cgroup(mi))
+ 					atomic_long_add(x, &memcg->vmstats[i]);
+-			}
+ =
+
+ 			if (i >=3D NR_VM_NODE_STAT_ITEMS)
+ 				continue;
+@@ -2214,12 +2220,10 @@ static int memcg_hotplug_cpu_dead(unsigned int cpu)
+ =
+
+ 				pn =3D mem_cgroup_nodeinfo(memcg, nid);
+ 				x =3D this_cpu_xchg(pn->lruvec_stat_cpu->count[i], 0);
+-				if (x) {
+-					atomic_long_add(x, &pn->lruvec_stat_local[i]);
++				if (x)
+ 					do {
+ 						atomic_long_add(x, &pn->lruvec_stat[i]);
+ 					} while ((pn =3D parent_nodeinfo(pn, nid)));
+-				}
+ 			}
+ 		}
+ =
+
+@@ -2227,11 +2231,9 @@ static int memcg_hotplug_cpu_dead(unsigned int cpu)
+ 			long x;
+ =
+
+ 			x =3D this_cpu_xchg(memcg->vmstats_percpu->events[i], 0);
+-			if (x) {
+-				atomic_long_add(x, &memcg->vmevents_local[i]);
++			if (x)
+ 				for (mi =3D memcg; mi; mi =3D parent_mem_cgroup(mi))
+ 					atomic_long_add(x, &memcg->vmevents[i]);
+-			}
+ 		}
+ 	}
+ =
+
+@@ -4492,8 +4494,15 @@ static int alloc_mem_cgroup_per_node_info(struct mem=
+_cgroup *memcg, int node)
+ 	if (!pn)
+ 		return 1;
+ =
+
++	pn->lruvec_stat_local =3D alloc_percpu(struct lruvec_stat);
++	if (!pn->lruvec_stat_local) {
++		kfree(pn);
++		return 1;
++	}
++
+ 	pn->lruvec_stat_cpu =3D alloc_percpu(struct lruvec_stat);
+ 	if (!pn->lruvec_stat_cpu) {
++		free_percpu(pn->lruvec_stat_local);
+ 		kfree(pn);
+ 		return 1;
+ 	}
+@@ -4515,6 +4524,7 @@ static void free_mem_cgroup_per_node_info(struct mem_=
+cgroup *memcg, int node)
+ 		return;
+ =
+
+ 	free_percpu(pn->lruvec_stat_cpu);
++	free_percpu(pn->lruvec_stat_local);
+ 	kfree(pn);
+ }
+ =
+
+@@ -4525,6 +4535,7 @@ static void __mem_cgroup_free(struct mem_cgroup *memc=
+g)
+ 	for_each_node(node)
+ 		free_mem_cgroup_per_node_info(memcg, node);
+ 	free_percpu(memcg->vmstats_percpu);
++	free_percpu(memcg->vmstats_local);
+ 	kfree(memcg);
+ }
+ =
+
+@@ -4553,6 +4564,10 @@ static struct mem_cgroup *mem_cgroup_alloc(void)
+ 	if (memcg->id.id < 0)
+ 		goto fail;
+ =
+
++	memcg->vmstats_local =3D alloc_percpu(struct memcg_vmstats_percpu);
++	if (!memcg->vmstats_local)
++		goto fail;
++
+ 	memcg->vmstats_percpu =3D alloc_percpu(struct memcg_vmstats_percpu);
+ 	if (!memcg->vmstats_percpu)
+ 		goto fail;
+-- =
+
+2.21.0
+
+
+--===============3527700942710521483==--
 
