@@ -1,106 +1,81 @@
-Content-Type: multipart/mixed; boundary="===============5605503924031799617=="
+Content-Type: multipart/mixed; boundary="===============5949402422574820641=="
 MIME-Version: 1.0
-From: Veronika Kabatova <vkabatov@redhat.com>
+From: Johannes Weiner <hannes@cmpxchg.org>
 To: lkp@lists.01.org
-Subject: CKI hackfest @Plumbers invite
-Date: Tue, 21 May 2019 10:54:12 -0400
-Message-ID: <1667759567.21267950.1558450452057.JavaMail.zimbra@redhat.com>
-In-Reply-To: <1204558561.21265703.1558449611621.JavaMail.zimbra@redhat.com>
+Subject: Re: [mm] 42a3003535: will-it-scale.per_process_ops -25.9% regression
+Date: Tue, 21 May 2019 11:13:55 -0400
+Message-ID: <20190521151355.GA2870@cmpxchg.org>
+In-Reply-To: <20190521134646.GE19312@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5605503924031799617==
+--===============5949402422574820641==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Tue, May 21, 2019 at 09:46:46PM +0800, kernel test robot wrote:
+> On Mon, May 20, 2019 at 05:53:28PM -0400, Johannes Weiner wrote:
+> > Hello,
+> > =
 
-as some of you have heard, CKI Project is planning hackfest CI meetings aft=
-er
-Plumbers conference this year (Sept. 12-13). We would like to invite everyo=
-ne
-who has interest in CI for kernel to come and join us.
+> > On Mon, May 20, 2019 at 02:35:34PM +0800, kernel test robot wrote:
+> > > Greeting,
+> > > =
 
-The early agenda with summary is at the end of the email. If you think ther=
-e's
-something important missing let us know! Also let us know in case you'd wan=
-t to
-lead any of the sessions, we'd be happy to delegate out some work :)
+> > > FYI, we noticed a -25.9% regression of will-it-scale.per_process_ops =
+due to commit:
+> > > =
 
+> > > =
 
-Please send us an email as soon as you decide to come and feel free to invi=
-te
-other people who should be present. We are not planning to cap the attendan=
-ce
-right now but need to solve the logistics based on the interest. The event =
-is
-free to attend, no additional registration except letting us know is needed.
+> > > commit: 42a300353577ccc17ecc627b8570a89fa1678bec ("mm: memcontrol: fi=
+x recursive statistics correctness & scalabilty")
+> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > > =
 
-Feel free to contact us if you have any questions,
-Veronika
-CKI Project
+> > > in testcase: will-it-scale
+> > > on test machine: 192 threads Skylake-SP with 256G memory
+> > > with following parameters:
+> > =
 
+> > Ouch. That has to be the additional cache footprint of the split
+> > local/recursive stat counters, rather than the extra instructions.
+> > =
 
------------------------------------------------------------
-Here is an early agenda we put together:
-- Introductions
-- Common place for upstream results, result publishing in general
-  - The discussion on the mailing list is going strong so we might be able =
-to
-    substitute this session for a different one in case everything is solve=
-d by
-    September.
-- Test result interpretation and bug detection
-  - How to autodetect infrastructure failures, regressions/new bugs and test
-    bugs? How to handle continuous failures due to known bugs in both tests=
- and
-    kernel? What's your solution? Can people always trust the results they
-    receive?
-- Getting results to developers/maintainers
-  - Aimed at kernel developers and maintainers, share your feedback and
-    expectations.
-  - How much data should be sent in the initial communication vs. a click a=
-way
-    in a dashboard? Do you want incremental emails with new results as they=
- come
-    in?
-  - What about adding checks to tested patches in Patchwork when patch seri=
-es
-    are being tested?
-  - Providing enough data/script to reproduce the failure. What if special =
-HW
-    is needed?
-- Onboarding new kernel trees to test
-  - Aimed at kernel developers and maintainers.
-  - Which trees are most prone to bring in new problems? Which are the most
-    critical ones? Do you want them to be tested? Which tests do you feel a=
-re
-    most beneficial for specific trees or in general?
-- Security when testing untrusted patches
-  - How do we merge, compile, and test patches that have untrusted code in =
-them
-    and have not yet been reviewed? How do we avoid abuse of systems,
-    information theft, or other damage?
-  - Check out the original patch that sparked the discussion at
-    https://patchwork.ozlabs.org/patch/862123/
-- Avoiding effort duplication
-  - Food for thought by GregKH
-  - X different CI systems running ${TEST} on latest stable kernel on x86_64
-    might look useless on the first look but is it? AMD/Intel CPUs, differe=
-nt
-    network cards, different graphic drivers, compilers, kernel configurati=
-on...
-    How do we distribute the workload to avoid doing the same thing all over
-    again while still running in enough different environments to get the m=
-ost
-    coverage?
-- Common hardware pools
-  - Is this something people are interested in? Would be helpful especially=
- for
-    HW that's hard to access, eg. ppc64le or s390x systems. Companies could=
- also
-    sing up to share their HW for testing to ensure kernel works with their
-    products.
+> > Could you please try re-running the test on that host with the below
+> > patch applied?
+> =
 
---===============5605503924031799617==--
+> Hi,
+> =
+
+> The patch can fix the regression.
+> =
+
+> tests: 1
+> testcase/path_params/tbox_group/run: will-it-scale/performance-process-10=
+0%-page_fault3/lkp-skl-4sp1
+> =
+
+> db9adbcbe7 ("mm: memcontrol: move stat/event counting functions out-of-li=
+ne")
+> 8d8245997d ("mm: memcontrol: don't batch updates of local VM stats and ev=
+ents")
+> =
+
+> db9adbcbe740e098  8d8245997dbd17c5056094f15c  =
+
+> ----------------  --------------------------  =
+
+>          %stddev      change         %stddev
+>              \          |                \  =
+
+>   87819982                    85307742        will-it-scale.workload
+>     457395                      444310        will-it-scale.per_process_o=
+ps
+
+Fantastic, thank you for verifying! I'm going to take that as a
+Tested-by.
+
+--===============5949402422574820641==--
 
