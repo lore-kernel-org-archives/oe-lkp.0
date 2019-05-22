@@ -1,55 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============3126317937051177911=="
+Content-Type: multipart/mixed; boundary="===============1095682544973913134=="
 MIME-Version: 1.0
-From: Theodore Ts'o <tytso@mit.edu>
+From: Kees Cook <keescook@chromium.org>
 To: lkp@lists.01.org
-Subject: Re: eb9d1bf079 [ 88.881528] EIP: _random_read
-Date: Wed, 22 May 2019 12:24:44 -0400
-Message-ID: <20190522162444.GB2744@mit.edu>
-In-Reply-To: <20190516071405.GO31424@shao2-debian>
+Subject: Re: 36b74766f2 ("mm: security: introduce init_on_alloc=1 and .."): general protection fault: 0000 [#1] PREEMPT SMP PTI
+Date: Wed, 22 May 2019 13:59:38 -0700
+Message-ID: <201905221357.3F1F2818@keescook>
+In-Reply-To: <CAG_fn=WLq2sh0A5L4=i2AVF=17g92LVnow1HDzDGQG6NK5=rDg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3126317937051177911==
+--===============1095682544973913134==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Can you check and see if this addresses the issue?  I'm not able to
-easily repro the softlockup.
+On Wed, May 22, 2019 at 05:26:00PM +0200, Alexander Potapenko wrote:
+> No, I believe my analysis is correct.
+> I've built the kernel with debug info and saw the same calls of
+> kernel_init_free_pages() from memblock_free_pages().
+> The call happened from the early_page_uninitialised(pfn) branch, which
+> is generally incorrect, as the struct page itself is, well,
+> uninitialized.
+> As such pages aren't passed to __free_pages_core(), it should be fine
+> to skip their initialization.
 
-Thanks!
+Ah! I see. I misunderstood what you meant in the other email. Sorry! :)
+Sounds like you've got a fix under way. Thanks!
 
-						- Ted
+-- =
 
-commit f93d3e94983bf8b4697ceb121c79afd941862860
-Author: Theodore Ts'o <tytso@mit.edu>
-Date:   Wed May 22 12:02:16 2019 -0400
+Kees Cook
 
-    random: fix soft lockup when trying to read from an uninitialized block=
-ing pool
-    =
-
-    Fixes: eb9d1bf079bb: "random: only read from /dev/random after its pool=
- has received 128 bits"
-    Reported-by: kernel test robot <lkp@intel.com>
-    Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index a42b3d764da8..9cea93d0bfb3 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1936,8 +1936,8 @@ _random_read(int nonblock, char __user *buf, size_t n=
-bytes)
- 			return -EAGAIN;
- =
-
- 		wait_event_interruptible(random_read_wait,
--			ENTROPY_BITS(&input_pool) >=3D
--			random_read_wakeup_bits);
-+		    blocking_pool.initialized &&
-+		    (ENTROPY_BITS(&input_pool) >=3D random_read_wakeup_bits));
- 		if (signal_pending(current))
- 			return -ERESTARTSYS;
- 	}
-
---===============3126317937051177911==--
+--===============1095682544973913134==--
 
