@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============1052044080738380151=="
+Content-Type: multipart/mixed; boundary="===============3521892230993406016=="
 MIME-Version: 1.0
 From: kernel test robot <lkp@intel.com>
 To: lkp@lists.01.org
 Subject: [sched] b0f464c9c8: WARNING:at_kernel/sched/sched.h:#pick_next_task_fair
-Date: Fri, 24 May 2019 20:10:17 +0800
-Message-ID: <20190524121017.rxc5vbth7xn6g7hb@42dff341a7fd>
+Date: Sat, 25 May 2019 00:19:57 +0800
+Message-ID: <20190524161957.2cm5fsz56apxitpk@42dff341a7fd>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1052044080738380151==
+--===============3521892230993406016==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -38,17 +38,28 @@ caused below changes (please refer to attached dmesg/kmsg for entire log/ba=
 cktrace):
 
 
-+------------------------------------------------------+--------+--------+
-|                                                      | error: | error: |
-+------------------------------------------------------+--------+--------+
-| boot_successes                                       | 5      | 10     |
-| boot_failures                                        | 1      | 16     |
-| BUG:kernel_reboot-without-warning_in_test_stage      | 1      |        |
-| WARNING:at_kernel/sched/sched.h:#pick_next_task_fair | 0      | 16     |
-| RIP:pick_next_task_fair                              | 0      | 16     |
-| WARNING:at_kernel/sched/sched.h:#sched_cpu_dying     | 0      | 16     |
-| RIP:sched_cpu_dying                                  | 0      | 16     |
-+------------------------------------------------------+--------+--------+
++------------------------------------------------------+------------+------=
+------+
+|                                                      | 4f53939e5f | b0f46=
+4c9c8 |
++------------------------------------------------------+------------+------=
+------+
+| boot_successes                                       | 5          | 10   =
+      |
+| boot_failures                                        | 1          | 16   =
+      |
+| BUG:kernel_reboot-without-warning_in_test_stage      | 1          |      =
+      |
+| WARNING:at_kernel/sched/sched.h:#pick_next_task_fair | 0          | 16   =
+      |
+| RIP:pick_next_task_fair                              | 0          | 16   =
+      |
+| WARNING:at_kernel/sched/sched.h:#sched_cpu_dying     | 0          | 16   =
+      |
+| RIP:sched_cpu_dying                                  | 0          | 16   =
+      |
++------------------------------------------------------+------------+------=
+------+
 
 
 If you fix the issue, kindly add following tag
@@ -130,7 +141,7 @@ Thanks,
 lkp
 
 
---===============1052044080738380151==
+--===============3521892230993406016==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -3646,7 +3657,7 @@ cyBub3Qgc2V0CiMgQ09ORklHX1BVTklUX0FUT01fREVCVUcgaXMgbm90IHNldApDT05GSUdfVU5X
 SU5ERVJfT1JDPXkKIyBDT05GSUdfVU5XSU5ERVJfRlJBTUVfUE9JTlRFUiBpcyBub3Qgc2V0CiMg
 Q09ORklHX1VOV0lOREVSX0dVRVNTIGlzIG5vdCBzZXQK
 
---===============1052044080738380151==
+--===============3521892230993406016==
 Content-Type: application/x-xz
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -3943,7 +3954,7 @@ f9DYGpjoth6ZayXK6XdnuSg+/XSPZQDT8nas5dFbPczpSi49G+/N0XkmFzZC3FKBv+nBmQcJPpdK
 Pm2Mx6oH4a3xtefUagY+vXjap0BcZa/Nv+WpDQ7JeE+NoAFB9bBV3hWUMZ1IOEduGXCsnymGQZ1y
 qlGQdIJMj8RvozHVcW0hdht6LhaXTgJtPAMVTHRM3W0s1o1w2SUESm4LiZ4qSPVQ+0lc2WO/fhHY
 IK7yNOSR6AAAAJjGnqEEf0MkAAGWgQHr8wTilhuhscRn+wIAAAAABFla
---===============1052044080738380151==
+--===============3521892230993406016==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -3998,5 +4009,5 @@ bmQgb2YgdGVzdDogU1VDQ0VTUzogbndyaXRlcnNfc3RyZXNzPTQgbnJlYWRlcnNfc3RyZXNzPTAg
 c3RhdF9pbnRlcnZhbD02MCB2ZXJib3NlPTEgc2h1ZmZsZV9pbnRlcnZhbD0zIHN0dXR0ZXI9NSBz
 aHV0ZG93bl9zZWNzPTAgb25vZmZfaW50ZXJ2YWw9MyBvbm9mZl9ob2xkb2ZmPTMwCg==
 
---===============1052044080738380151==--
+--===============3521892230993406016==--
 
