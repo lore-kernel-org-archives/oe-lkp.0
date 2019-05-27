@@ -1,68 +1,94 @@
-Content-Type: multipart/mixed; boundary="===============9040318655423004473=="
+Content-Type: multipart/mixed; boundary="===============2335669039794656562=="
 MIME-Version: 1.0
-From: Ingo Molnar <mingo@kernel.org>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: 8d2bd61bd8 ("sched/core: Clean up sched_init() a bit"): BUG: unable to handle page fault for address: 00ba0396
-Date: Sat, 25 May 2019 13:49:48 +0200
-Message-ID: <20190525114948.GA24312@gmail.com>
-In-Reply-To: <5ce91b39.Txl3DDmbeNsPYyrE%lkp@intel.com>
+Subject: Re: [btrfs] 302167c50b: fio.write_bw_MBps -12.4% regression
+Date: Mon, 27 May 2019 08:38:54 +0800
+Message-ID: <87r28k91ep.fsf@yhuang-dev.intel.com>
+In-Reply-To: <20190524143558.mem7gircjjmut54f@MacBook-Pro-91.local>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9040318655423004473==
+--===============2335669039794656562==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Josef Bacik <josef@toxicpanda.com> writes:
 
-* kernel test robot <lkp@intel.com> wrote:
+> On Fri, May 24, 2019 at 03:46:17PM +0800, Huang, Ying wrote:
+>> "Huang, Ying" <ying.huang@intel.com> writes:
+>> =
 
-> Greetings,
-> =
+>> > "Huang, Ying" <ying.huang@intel.com> writes:
+>> >
+>> >> Hi, Josef,
+>> >>
+>> >> kernel test robot <rong.a.chen@intel.com> writes:
+>> >>
+>> >>> Greeting,
+>> >>>
+>> >>> FYI, we noticed a -12.4% regression of fio.write_bw_MBps due to comm=
+it:
+>> >>>
+>> >>>
+>> >>> commit: 302167c50b32e7fccc98994a91d40ddbbab04e52 ("btrfs: don't end
+>> >>> the transaction for delayed refs in throttle")
+>> >>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git pen=
+ding-fixes
+>> >>>
+>> >>> in testcase: fio-basic
+>> >>> on test machine: 88 threads Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GH=
+z with 64G memory
+>> >>> with following parameters:
+>> >>>
+>> >>> 	runtime: 300s
+>> >>> 	nr_task: 8t
+>> >>> 	disk: 1SSD
+>> >>> 	fs: btrfs
+>> >>> 	rw: randwrite
+>> >>> 	bs: 4k
+>> >>> 	ioengine: sync
+>> >>> 	test_size: 400g
+>> >>> 	cpufreq_governor: performance
+>> >>> 	ucode: 0xb00002e
+>> >>>
+>> >>> test-description: Fio is a tool that will spawn a number of threads
+>> >>> or processes doing a particular type of I/O action as specified by
+>> >>> the user.
+>> >>> test-url: https://github.com/axboe/fio
+>> >>>
+>> >>>
+>> >>
+>> >> Do you have time to take a look at this regression?
+>> >
+>> > Ping
+>> =
 
-> 0day kernel testing robot got the below dmesg and the first bad commit is
-> =
+>> Ping again.
+>> =
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
-> =
+>
+> This happens because now we rely more on on-demand flushing than the catc=
+hup
+> flushing that happened before.  This is just one case where it's slightly=
+ worse,
+> overall this change provides better latencies, and even in this result it
+> provided better completion latencies because we're not randomly flushing =
+at the
+> end of a transaction.  It does appear to be costing writes in that they w=
+ill
+> spend more time flushing than before, so you get slightly lower throughpu=
+t on
+> pure small write workloads.  I can't actually see the slowdown locally.
+>
+> This patch is here to stay, it just shows we need to continue to refine t=
+he
+> flushing code to be less spikey/painful.  Thanks,
 
-> commit 8d2bd61bd89260d5da5eaef7cf264587f19a7e0d
-> Author:     Qian Cai <cai@lca.pw>
-> AuthorDate: Wed May 22 14:20:06 2019 -0400
-> Commit:     Ingo Molnar <mingo@kernel.org>
-> CommitDate: Fri May 24 08:57:29 2019 +0200
-> =
+Thanks for detailed explanation.  We will ignore this regression.
 
->     sched/core: Clean up sched_init() a bit
->     =
+Best Regards,
+Huang, Ying
 
->     Compiling a kernel with both FAIR_GROUP_SCHED=3Dn and RT_GROUP_SCHED=
-=3Dn
->     will generate a warning using W=3D1:
->     =
-
->       kernel/sched/core.c: In function 'sched_init':
->       kernel/sched/core.c:5906:32: warning: variable 'ptr' set but not us=
-ed
->     =
-
->     Use this opportunity to tidy up a code a bit by removing unnecssary
->     indentations and lines.
->     =
-
->     Signed-off-by: Qian Cai <cai@lca.pw>
->     Cc: Linus Torvalds <torvalds@linux-foundation.org>
->     Cc: Peter Zijlstra <peterz@infradead.org>
->     Cc: Thomas Gleixner <tglx@linutronix.de>
->     Link: http://lkml.kernel.org/r/1558549206-13031-1-git-send-email-cai(=
-a)lca.pw
->     [ Also remove some of the unnecessary #endif comments. ]
->     Signed-off-by: Ingo Molnar <mingo@kernel.org>
-
-I've removed this commit for the time being.
-
-Thanks,
-
-	Ingo
-
---===============9040318655423004473==--
+--===============2335669039794656562==--
 
