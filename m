@@ -1,49 +1,51 @@
-Content-Type: multipart/mixed; boundary="===============0386449407727528124=="
+Content-Type: multipart/mixed; boundary="===============5374172945722269438=="
 MIME-Version: 1.0
-From: Naresh Kamboju <naresh.kamboju@linaro.org>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [ext4] 079f9927c7: ltp.mmap16.fail
-Date: Wed, 29 May 2019 13:34:42 +0530
-Message-ID: <CA+G9fYtVH0UF55Xins22sXCvcOLN+JGv-p2brj58BjzNGqdE2A@mail.gmail.com>
-In-Reply-To: <20190529035613.GA6210@mit.edu>
+Subject: Re: [btrfs] c8eaeac7b7: aim7.jobs-per-min -11.7% regression
+Date: Wed, 29 May 2019 16:42:22 +0800
+Message-ID: <87blzl7itt.fsf@yhuang-dev.intel.com>
+In-Reply-To: <20190513025004.GG31424@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0386449407727528124==
+--===============5374172945722269438==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Ted,
+Hi, Josef,
 
-On Wed, 29 May 2019 at 09:26, Theodore Ts'o <tytso@mit.edu> wrote:
+kernel test robot <rong.a.chen@intel.com> writes:
+
+> Greeting,
 >
-> On Wed, May 29, 2019 at 10:52:56AM +0800, kernel test robot wrote:
-> > FYI, we noticed the following commit (built with gcc-7):
-> >
-> > commit: 079f9927c7bfa026d963db1455197159ebe5b534 ("ext4: gracefully han=
-dle ext4_break_layouts() failure during truncate")
-> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-
-I do have found this problem on linux next 20190528 on x86_64, i386,
-arm64 and arm architectures.
-But, this failure is not easy to reproduce.
-so thought of sharing report with steps to reproduce and got delayed.
-
+> FYI, we noticed a -11.7% regression of aim7.jobs-per-min due to commit:
 >
-> Jan --- this is the old version of your patch, which I had dropped
-> before sending a push request to Linus.  However, I forgot to reset
-> the dev branch so it still had the old patch on it, and so it got
-> picked up in linux-next.  Apologies for the confusion.
 >
-> I've reset the dev branch on ext4.git, and the new version of your
-> patch will show up there shortly, as I start reviewing patches for the
-> next merge window.
+> commit: c8eaeac7b734347c3afba7008b7af62f37b9c140 ("btrfs: reserve delallo=
+c metadata differently")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>
+> in testcase: aim7
+> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz wit=
+h 384G memory
+> with following parameters:
+>
+> 	disk: 4BRD_12G
+> 	md: RAID0
+> 	fs: btrfs
+> 	test: disk_rr
+> 	load: 1500
+> 	cpufreq_governor: performance
+>
+> test-description: AIM7 is a traditional UNIX system level benchmark suite=
+ which is used to test and measure the performance of multiuser system.
+> test-url: https://sourceforge.net/projects/aimbench/files/aim-suite7/
 
-However, Thanks for looking into this problem.
-I will keep monitoring this mmap16 failure and let you know when it
-will get fixed.
+Here's another regression, do you have time to take a look at this?
 
-- Naresh
+Best Regards,
+Huang, Ying
 
---===============0386449407727528124==--
+--===============5374172945722269438==--
 
