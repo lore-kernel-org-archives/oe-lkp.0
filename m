@@ -1,51 +1,31 @@
-Content-Type: multipart/mixed; boundary="===============5374172945722269438=="
+Content-Type: multipart/mixed; boundary="===============3760133422742625825=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Andrew Lunn <andrew@lunn.ch>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] c8eaeac7b7: aim7.jobs-per-min -11.7% regression
-Date: Wed, 29 May 2019 16:42:22 +0800
-Message-ID: <87blzl7itt.fsf@yhuang-dev.intel.com>
-In-Reply-To: <20190513025004.GG31424@shao2-debian>
+Subject: Re: [net] 9dd6d07682: kernel_BUG_at_drivers/net/phy/mdio_bus.c
+Date: Thu, 30 May 2019 01:03:32 +0200
+Message-ID: <20190529230332.GC18059@lunn.ch>
+In-Reply-To: <VI1PR0402MB28000F3C6A070321299AA57EE01F0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5374172945722269438==
+--===============3760133422742625825==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Josef,
+>     phydev =3D dsa_port_get_phy_device(dp);
+>     if (!phydev)
+>           return 0;
+> =
 
-kernel test robot <rong.a.chen@intel.com> writes:
+> I don't see how this method is sane either.
 
-> Greeting,
->
-> FYI, we noticed a -11.7% regression of aim7.jobs-per-min due to commit:
->
->
-> commit: c8eaeac7b734347c3afba7008b7af62f37b9c140 ("btrfs: reserve delallo=
-c metadata differently")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> in testcase: aim7
-> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz wit=
-h 384G memory
-> with following parameters:
->
-> 	disk: 4BRD_12G
-> 	md: RAID0
-> 	fs: btrfs
-> 	test: disk_rr
-> 	load: 1500
-> 	cpufreq_governor: performance
->
-> test-description: AIM7 is a traditional UNIX system level benchmark suite=
- which is used to test and measure the performance of multiuser system.
-> test-url: https://sourceforge.net/projects/aimbench/files/aim-suite7/
+If i remember correctly, the thinking was, you can get away without
+the PHY, at least during bring up of a new switch/board. So don't
+consider this a fatal error. Now that it is fatal, in the sense of an
+Opps, maybe we should change this.
 
-Here's another regression, do you have time to take a look at this?
+      Andrew
 
-Best Regards,
-Huang, Ying
-
---===============5374172945722269438==--
+--===============3760133422742625825==--
 
