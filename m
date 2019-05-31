@@ -1,53 +1,60 @@
-Content-Type: multipart/mixed; boundary="===============0534989253322398370=="
+Content-Type: multipart/mixed; boundary="===============6999309360727832167=="
 MIME-Version: 1.0
-From: kernel test robot <rong.a.chen@intel.com>
+From: Dietmar Eggemann <dietmar.eggemann@arm.com>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] 2996e1f8bc: aim7.jobs-per-min -13.2% regression
-Date: Thu, 30 May 2019 21:32:15 +0800
-Message-ID: <20190530133215.GC22325@shao2-debian>
-In-Reply-To: <20190527114914.GG15290@suse.cz>
+Subject: Re: [sched/fair] cca2ae2c00: aim7.jobs-per-min -35.9% regression
+Date: Fri, 31 May 2019 12:42:40 +0200
+Message-ID: <e9669b39-d8ca-a2cd-fc8a-237aac648501@arm.com>
+In-Reply-To: <20190531055923.GD22325@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0534989253322398370==
+--===============6999309360727832167==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 27, 2019 at 01:49:14PM +0200, David Sterba wrote:
-> On Mon, May 27, 2019 at 05:17:19PM +0800, kernel test robot wrote:
-> > Greeting,
-> > =
-
-> > FYI, we noticed a -13.2% regression of aim7.jobs-per-min due to commit:
-> =
-
-> That's interesting and worth an investigation. This should not happen,
-> the code is almost the same, moved from one function to another and the
-> call is direct. I'd suspect some low-level causes like cache effects or
-> branching, the perf-stats.i.* show some differences.
-> =
-
-> Other stats say (slabinfo.*extent_buffer) that there was less work over
-> the period. The slab object counter says that the object reuse was
-> higher in the bad case.
-> =
-
-> And there are many stats that show two digit difference, I'm trying to
-> make some sense of that, eg. if memory placement on NUMA nodes can
-> affect the speed of checksumming (changed by the patch)
-> =
-
-> So I wonder how reliable the test is and if it really does the same
-> thing in both cases or if there's some subtle change in the patch that
-> we've missed.
-
 Hi,
 
-The test is unstable, we can't reproduce the issue. It's probably a false
-positive, sorry for the inconvenience.
+On 5/31/19 7:59 AM, kernel test robot wrote:
+> Greeting,
+> =
 
-Best Regards,
-Rong Chen
+> FYI, we noticed a -35.9% regression of aim7.jobs-per-min due to commit:
+> =
 
---===============0534989253322398370==--
+> =
+
+> commit: cca2ae2c00b5fc7893f1a184d822812ee3425b7e ("sched/fair: Replace so=
+urce_load() & target_load() w/ weighted_cpuload()")
+> git://linux-arm.org/linux-de.git upstream/rem_rq_load
+> =
+
+> in testcase: aim7
+> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz wit=
+h 384G memory
+> with following parameters:
+> =
+
+> 	disk: 1BRD_48G
+> 	fs: xfs
+> 	test: creat-clo
+> 	load: 1500
+> 	cpufreq_governor: performance
+
+This patch had a bug which was discovered on LKML by Hillf Danton.
+
+https://lore.kernel.org/lkml/63ee8775-f159-e172-15f4-2ddf941870ee(a)arm.com
+
+I force pushed an updated linux-arm.org/linux-de.git upstream/rem_rq_load.
+
+On LKML, the maintainer fixed this issue before taking this patch.
+
+Many thanks for providing this test service!
+
+-- Dietmar
+
+[...]
+
+
+--===============6999309360727832167==--
 
