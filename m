@@ -1,84 +1,82 @@
-Content-Type: multipart/mixed; boundary="===============8019720156826840560=="
+Content-Type: multipart/mixed; boundary="===============1745118319159145224=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: rcu_read_lock lost its compiler barrier
-Date: Mon, 03 Jun 2019 08:55:13 -0700
-Message-ID: <CAHk-=wj2t+GK+DGQ7Xy6U7zMf72e7Jkxn4_-kGyfH3WFEoH+YQ@mail.gmail.com>
-In-Reply-To: <20190603030324.kl3bckqmebzis2vw@gondor.apana.org.au>
+Date: Mon, 03 Jun 2019 09:07:29 -0700
+Message-ID: <CAHk-=wgZcrb_vQi5rwpv+=wwG+68SRDY16HcqcMtgPFL_kdfyQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wj2t+GK+DGQ7Xy6U7zMf72e7Jkxn4_-kGyfH3WFEoH+YQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8019720156826840560==
+--===============1745118319159145224==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jun 2, 2019 at 8:03 PM Herbert Xu <herbert@gondor.apana.org.au> w=
-rote:
+On Mon, Jun 3, 2019 at 8:55 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> In any case, I am now even more certain that compiler barriers are
-> not needed in the code in question.  The reasoning is quite simple.
-> If you need those compiler barriers then you surely need real memory
-> barriers.
+> I don't believe that it would necessarily help to turn a
+> rcu_read_lock() into a compiler barrier, because for the non-preempt
+> case rcu_read_lock() doesn't need to actually _do_ anything, and
+> anything that matters for the RCU read lock will already be a compiler
+> barrier for other reasons (ie a function call that can schedule).
 
-So the above statement is not necessarily correct.
+Actually, thinking a bit more about this, and trying to come up with
+special cases, I'm not at all convinced.
 
-Compiler barriers very much can have real effects even in the absense
-of "real" memory barriers.
+Even if we don't have preemption enabled, it turns out that we *do*
+have things that can cause scheduling without being compiler barriers.
 
-But those effects are obviously not about multiple CPU's - they are
-about code generation and can be about ordering on _one_ CPU. Those
-effects definitely happen, though.
+In particular, user accesses are not necessarily full compiler
+barriers. One common pattern (x86) is
 
-So a compiler barrier without a memory barrier may make a difference if you
+        asm volatile("call __get_user_%P4"
 
- (a) compile for UP (when a compiler barrier basically _is_ a memory barrie=
-r)
+which explicitly has a "asm volaile" so that it doesn't re-order wrt
+other asms (and thus other user accesses), but it does *not* have a
+"memory" clobber, because the user access doesn't actually change
+kernel memory. Not even if it's a "put_user()".
 
- (b) have deadlock or ordering avoidance with only the local CPU
-taking interrupts.
+So we've made those fairly relaxed on purpose. And they might be
+relaxed enough that they'd allow re-ordering wrt something that does a
+rcu read lock, unless the rcu read lock has some compiler barrier in
+it.
 
- (c) need to re-load a value in a loop, but ordering isn't a concern
+IOW, imagine completely made up code like
 
-and possibly other situations.
+     get_user(val, ptr)
+     rcu_read_lock();
+     WRITE_ONCE(state, 1);
 
-In the above, (a) may be pointless and trivial, but (b) and (c) are
-issues even on SMP. Some things only matter for the local CPU - an
-interrupt or a code sequence that happens on another CPU can just
-block, but if an interrupt comes in on the same CPU may dead-lock and
-depend on particular access ordering. And (c) is for things like
-cpu_relax() in loops that read stuff (although honestly, READ_ONCE()
-is generally a much better pattern).
+and unless the rcu lock has a barrier in it, I actually think that
+write to 'state' could migrate to *before* the get_user().
 
-But it sounds like in this case at least, Herbert's and Paul's
-disagreements aren't really all that fundamentally about the memory
-barriers and locking, as just the fact that in general the only thing
-that RCU protects against is single accesses, and thus any RCU region
-technically should use something that guarantees that the compiler
-might not do stupid things.
+I'm not convinced we have anything that remotely looks like the above,
+but I'm actually starting to think that yes, all RCU barriers had
+better be compiler barriers.
 
-We do require a _minimum_ of compiler sanity, but the compiler turning
-a non-marked read into two reads has definitely happened, and can be
-very subtle. Even if on a C level it looks like a single access, and
-correctness doesn't care about _what_ the value we read is, it might
-be turned by the compiler into two separate accesses that get two
-different values, and then the end result may be insane and
-unreliable.
+Because this is very much an example of something where you don't
+necessarily need a memory barrier, but there's a code generation
+barrier needed because of local ordering requirements. The possible
+faulting behavior of "get_user()" must not migrate into the RCU
+critical region.
 
-So on the whole, I do think that it's usually a good idea to show
-_which_ access is protected by RCU. Perhaps with a
-READ_ONCE/WRITE_ONCE pattern, although it can be other things.
+Paul?
 
-I don't believe that it would necessarily help to turn a
-rcu_read_lock() into a compiler barrier, because for the non-preempt
-case rcu_read_lock() doesn't need to actually _do_ anything, and
-anything that matters for the RCU read lock will already be a compiler
-barrier for other reasons (ie a function call that can schedule).
+So I think the rule really should be: every single form of locking
+that has any semantic meaning at all, absolutely needs to be at least
+a compiler barrier.
 
-Anyway, I suspect the code is correct in practice, but I do have some
-sympathy for the "RCU protected accesses should be marked".
+(That "any semantic meaning" weaselwording is because I suspect that
+we have locking that truly and intentionally becomes no-ops because
+it's based on things that aren't relevant in some configurations. But
+generally compiler barriers are really pretty damn cheap, even from a
+code generation standpoint, and can help make the resulting code more
+legible, so I think we should not try to aggressively remove them
+without _very_ good reasons)
 
-                    Linus
+                      Linus
 
---===============8019720156826840560==--
+--===============1745118319159145224==--
 
