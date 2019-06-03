@@ -1,199 +1,159 @@
-Content-Type: multipart/mixed; boundary="===============0357996874792744654=="
+Content-Type: multipart/mixed; boundary="===============6383441694193418695=="
 MIME-Version: 1.0
-From: Boqun Feng <boqun.feng@gmail.com>
+From: Christian Borntraeger <borntraeger@de.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: rcu_read_lock lost its compiler barrier
-Date: Mon, 03 Jun 2019 14:42:00 +0800
-Message-ID: <20190603064200.GA11024@tardis>
-In-Reply-To: <20190603052626.nz2qktwmkswxfnsd@gondor.apana.org.au>
+Subject: Re: [KVM] 2ee567d31a: kernel_selftests.kvm.make_fail
+Date: Mon, 03 Jun 2019 09:54:17 +0200
+Message-ID: <ca2f7911-43dc-de4c-a9e3-dce7fd8afe9b@de.ibm.com>
+In-Reply-To: <20190603023112.GL22325@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0357996874792744654==
+--===============6383441694193418695==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 03, 2019 at 01:26:26PM +0800, Herbert Xu wrote:
-> On Sun, Jun 02, 2019 at 08:47:07PM -0700, Paul E. McKenney wrote:
-> > =
-
-> > 1.	These guarantees are of full memory barriers, -not- compiler
-> > 	barriers.
+On 03.06.19 04:31, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-7):
 > =
 
-> What I'm saying is that wherever they are, they must come with
-> compiler barriers.  I'm not aware of any synchronisation mechanism
-> in the kernel that gives a memory barrier without a compiler barrier.
+> commit: 2ee567d31a5812cf93c0ec943b142de252ce1cff ("KVM: selftests: enable=
+ pgste option for the linker on s390")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > =
 
-> > 2.	These rules don't say exactly where these full memory barriers
-> > 	go.  SRCU is at one extreme, placing those full barriers in
-> > 	srcu_read_lock() and srcu_read_unlock(), and !PREEMPT Tree RCU
-> > 	at the other, placing these barriers entirely within the callback
-> > 	queueing/invocation, grace-period computation, and the scheduler.
-> > 	Preemptible Tree RCU is in the middle, with rcu_read_unlock()
-> > 	sometimes including a full memory barrier, but other times with
-> > 	the full memory barrier being confined as it is with !PREEMPT
-> > 	Tree RCU.
+> in testcase: kernel_selftests
+> with following parameters:
 > =
 
-> The rules do say that the (full) memory barrier must precede any
-> RCU read-side that occur after the synchronize_rcu and after the
-> end of any RCU read-side that occur before the synchronize_rcu.
+> 	group: kselftests-01
 > =
 
-> All I'm arguing is that wherever that full mb is, as long as it
-> also carries with it a barrier() (which it must do if it's done
-> using an existing kernel mb/locking primitive), then we're fine.
+> test-description: The kernel contains a set of "self tests" under the too=
+ls/testing/selftests/ directory. These are intended to be small unit tests =
+to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
 > =
-
-> > Interleaving and inserting full memory barriers as per the rules above:
-> > =
-
-> > 	CPU1: WRITE_ONCE(a, 1)
-> > 	CPU1: synchronize_rcu	=
-
-> > 	/* Could put a full memory barrier here, but it wouldn't help. */
-> =
-
-> 	CPU1: smp_mb();
-> 	CPU2: smp_mb();
-> =
-
-> Let's put them in because I think they are critical.  smp_mb() also
-> carries with it a barrier().
-> =
-
-> > 	CPU2: rcu_read_lock();
-> > 	CPU1: b =3D 2;	=
-
-> > 	CPU2: if (READ_ONCE(a) =3D=3D 0)
-> > 	CPU2:         if (b !=3D 1)  /* Weakly ordered CPU moved this up! */
-> > 	CPU2:                 b =3D 1;
-> > 	CPU2: rcu_read_unlock
-> > =
-
-> > In fact, CPU2's load from b might be moved up to race with CPU1's store,
-> > which (I believe) is why the model complains in this case.
-> =
-
-> Let's put aside my doubt over how we're even allowing a compiler
-> to turn
-> =
-
-> 	b =3D 1
-> =
-
-> into
-> =
-
-> 	if (b !=3D 1)
-> 		b =3D 1
-> =
-
-> Since you seem to be assuming that (a =3D=3D 0) is true in this case
-
-I think Paul's example assuming (a =3D=3D 0) is false, and maybe
-speculative writes (by compilers) needs to added into consideration?
-Please consider the following case (I add a few smp_mb()s), the case may
-be a little bit crasy, you have been warned ;-)
-
- 	CPU1: WRITE_ONCE(a, 1)
- 	CPU1: synchronize_rcu called
-
- 	CPU1: smp_mb(); /* let assume there is one here */
-
- 	CPU2: rcu_read_lock();
- 	CPU2: smp_mb(); /* let assume there is one here */
-
-	/* "if (b !=3D 1) b =3D 1" reordered  */
- 	CPU2: r0 =3D b;       /* if (b !=3D 1) reordered here, r0 =3D=3D 0 */
- 	CPU2: if (r0 !=3D 1)  /* true */
-	CPU2:     b =3D 1;    /* b =3D=3D 1 now, this is a speculative write
-	                       by compiler
-			     */
-
-	CPU1: b =3D 2;        /* b =3D=3D 2 */
-
- 	CPU2: if (READ_ONCE(a) =3D=3D 0) /* false */
-	CPU2: ...
-	CPU2  else                   /* undo the speculative write */
-	CPU2:	  b =3D r0;   /* b =3D=3D 0 */
-
- 	CPU2: smp_mb();
-	CPU2: read_read_unlock();
-
-I know this is too crasy for us to think a compiler like this, but this
-might be the reason why the model complain about this.
-
-Paul, did I get this right? Or you mean something else?
-
-Regards,
-Boqun
-
-
-
-> (as the assignment b =3D 1 is carried out), then because of the
-> presence of the full memory barrier, the RCU read-side section
-> must have started prior to the synchronize_rcu.  This means that
-> synchronize_rcu is not allowed to return until at least the end
-> of the grace period, or at least until the end of rcu_read_unlock.
-> =
-
-> So it actually should be:
-> =
-
-> 	CPU1: WRITE_ONCE(a, 1)
-> 	CPU1: synchronize_rcu called
-> 	/* Could put a full memory barrier here, but it wouldn't help. */
-> =
-
-> 	CPU1: smp_mb();
-> 	CPU2: smp_mb();
-> =
-
-> 	CPU2: grace period starts
-> 	...time passes...
-> 	CPU2: rcu_read_lock();
-> 	CPU2: if (READ_ONCE(a) =3D=3D 0)
-> 	CPU2:         if (b !=3D 1)  /* Weakly ordered CPU moved this up! */
-> 	CPU2:                 b =3D 1;
-> 	CPU2: rcu_read_unlock
-> 	...time passes...
-> 	CPU2: grace period ends
-> =
-
-> 	/* This full memory barrier is also guaranteed by RCU. */
-> 	CPU2: smp_mb();
-> =
-
-> 	CPU1 synchronize_rcu returns
-> 	CPU1: b =3D 2;	=
 
 > =
 
-> Cheers,
-> -- =
+> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 8=
+G memory
+> =
 
-> Email: Herbert Xu <herbert@gondor.apana.org.au>
-> Home Page: http://gondor.apana.org.au/~herbert/
-> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
 
---===============0357996874792744654==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
+> =
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRRXpCQUFCQ0FBZEZpRUVqNUlvc1FUUHo4
-WFUxd1JIU1hub3c3VUgrcmdGQWx6MHdUVUFDZ2tRU1hub3c3VUgKK3JobFVRZi9mT1dZdDJzYXdY
-bG9NZzlTS0VGQTA4ZG90NkdXeDdNWFl6cFlRSVgxWnA4UnhjQUxDVlZXUDBDRApyQmV4bjZKRk45
-OVZEaE1ZVTQ4ZjJaUnM2ZGswWUFIQVZKcHFuQVhCSkRCQVJkeHdiVmlCOEdkRC9zZXUrM2hDCkhC
-RmVPWFpWdHF3MzAzbFp0RjJHaWE4KzFNMDFYd3VSM1lWL0JCOFRTc0Q3RllaUE1ReDFOSUJ0UUoy
-SXJISUYKRzU4cXNiQjcrNEg3TExDSkNqU2IrbVV5ZWt0NUhHWmd1aFpMK2liM2tiUHNFWTB5b1o5
-UzNocXFRMTRPVFBGRwp5eWVyUDBSWE1LYmhxTkVKeE5ua3VzSVlpaWF5YndNYkxZSStyL216WmtF
-Y1RFekdmZVJxZW9OSHpzSktKcjgyCnZUU1k0NUhBdFJqaGphc2JpM2c5SGNLYldob0Y1Zz09Cj1s
-MlM5Ci0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <rong.a.chen@intel.com>
 
---===============0357996874792744654==--
+I fixed up the offending commit.
+ =
+
+> =
+
+> 2019-05-31 18:25:21 make run_tests -C kvm
+> make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-7.6-2ee567d=
+31a5812cf93c0ec943b142de252ce1cff/tools/testing/selftests/kvm'
+> make --no-builtin-rules ARCH=3Dx86 -C ../../../.. headers_install
+> make[1]: Entering directory '/usr/src/perf_selftests-x86_64-rhel-7.6-2ee5=
+67d31a5812cf93c0ec943b142de252ce1cff'
+> make[1]: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-7.6-2ee56=
+7d31a5812cf93c0ec943b142de252ce1cff'
+> gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-st=
+ack-protector -fno-PIE -I../../../../tools/include -I../../../../usr/includ=
+e/ -Iinclude -Ilib -Iinclude/x86_64 -I..   -c lib/assert.c -o /usr/src/perf=
+_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1cff/tools/t=
+esting/selftests/kvm/lib/assert.o
+> gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-st=
+ack-protector -fno-PIE -I../../../../tools/include -I../../../../usr/includ=
+e/ -Iinclude -Ilib -Iinclude/x86_64 -I..   -c lib/elf.c -o /usr/src/perf_se=
+lftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1cff/tools/test=
+ing/selftests/kvm/lib/elf.o
+> gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-st=
+ack-protector -fno-PIE -I../../../../tools/include -I../../../../usr/includ=
+e/ -Iinclude -Ilib -Iinclude/x86_64 -I..   -c lib/io.c -o /usr/src/perf_sel=
+ftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1cff/tools/testi=
+ng/selftests/kvm/lib/io.o
+> gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-st=
+ack-protector -fno-PIE -I../../../../tools/include -I../../../../usr/includ=
+e/ -Iinclude -Ilib -Iinclude/x86_64 -I..   -c lib/kvm_util.c -o /usr/src/pe=
+rf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1cff/tools=
+/testing/selftests/kvm/lib/kvm_util.o
+> gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-st=
+ack-protector -fno-PIE -I../../../../tools/include -I../../../../usr/includ=
+e/ -Iinclude -Ilib -Iinclude/x86_64 -I..   -c lib/ucall.c -o /usr/src/perf_=
+selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1cff/tools/te=
+sting/selftests/kvm/lib/ucall.o
+> gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-st=
+ack-protector -fno-PIE -I../../../../tools/include -I../../../../usr/includ=
+e/ -Iinclude -Ilib -Iinclude/x86_64 -I..   -c lib/sparsebit.c -o /usr/src/p=
+erf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1cff/tool=
+s/testing/selftests/kvm/lib/sparsebit.o
+> gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-st=
+ack-protector -fno-PIE -I../../../../tools/include -I../../../../usr/includ=
+e/ -Iinclude -Ilib/x86_64 -Iinclude/x86_64 -I..   -c lib/x86_64/processor.c=
+ -o /usr/src/perf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de=
+252ce1cff/tools/testing/selftests/kvm/lib/x86_64/processor.o
+> gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-st=
+ack-protector -fno-PIE -I../../../../tools/include -I../../../../usr/includ=
+e/ -Iinclude -Ilib/x86_64 -Iinclude/x86_64 -I..   -c lib/x86_64/vmx.c -o /u=
+sr/src/perf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1=
+cff/tools/testing/selftests/kvm/lib/x86_64/vmx.o
+> ar crs /usr/src/perf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b=
+142de252ce1cff/tools/testing/selftests/kvm/libkvm.a /usr/src/perf_selftests=
+-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1cff/tools/testing/sel=
+ftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-7.6-2ee567d31a5=
+812cf93c0ec943b142de252ce1cff/tools/testing/selftests/kvm/lib/elf.o /usr/sr=
+c/perf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1cff/t=
+ools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-7.6=
+-2ee567d31a5812cf93c0ec943b142de252ce1cff/tools/testing/selftests/kvm/lib/k=
+vm_util.o /usr/src/perf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943=
+b142de252ce1cff/tools/testing/selftests/kvm/lib/ucall.o /usr/src/perf_selft=
+ests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142de252ce1cff/tools/testing=
+/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-7.6-2ee5=
+67d31a5812cf93c0ec943b142de252ce1cff/tools/testing/selftests/kvm/lib/x86_64=
+/processor.o /usr/src/perf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec=
+943b142de252ce1cff/tools/testing/selftests/kvm/lib/x86_64/vmx.o
+> gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-st=
+ack-protector -fno-PIE -I../../../../tools/include -I../../../../usr/includ=
+e/ -Iinclude -Ix86_64 -Iinclude/x86_64 -I..  -pthread  -no-pie -Wl,--s390-p=
+gste  x86_64/platform_info_test.c /usr/src/perf_selftests-x86_64-rhel-7.6-2=
+ee567d31a5812cf93c0ec943b142de252ce1cff/tools/testing/selftests/kvm/libkvm.=
+a  -o /usr/src/perf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec943b142=
+de252ce1cff/tools/testing/selftests/kvm/x86_64/platform_info_test
+> /usr/bin/ld: unrecognized option '--s390-pgste'
+> /usr/bin/ld: use the --help option for usage information
+> collect2: error: ld returned 1 exit status
+> ../lib.mk:138: recipe for target '/usr/src/perf_selftests-x86_64-rhel-7.6=
+-2ee567d31a5812cf93c0ec943b142de252ce1cff/tools/testing/selftests/kvm/x86_6=
+4/platform_info_test' failed
+> make: *** [/usr/src/perf_selftests-x86_64-rhel-7.6-2ee567d31a5812cf93c0ec=
+943b142de252ce1cff/tools/testing/selftests/kvm/x86_64/platform_info_test] E=
+rror 1
+> make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-7.6-2ee567d3=
+1a5812cf93c0ec943b142de252ce1cff/tools/testing/selftests/kvm'
+> =
+
+> =
+
+> To reproduce:
+> =
+
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+> =
+
+> =
+
+> Thanks,
+> Rong Chen
+>=20
+
+--===============6383441694193418695==--
 
