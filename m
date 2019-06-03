@@ -1,142 +1,88 @@
-Content-Type: multipart/mixed; boundary="===============0999049925993043022=="
+Content-Type: multipart/mixed; boundary="===============4398009952144963128=="
 MIME-Version: 1.0
 From: Herbert Xu <herbert@gondor.apana.org.au>
 To: lkp@lists.01.org
 Subject: Re: rcu_read_lock lost its compiler barrier
-Date: Mon, 03 Jun 2019 10:46:40 +0800
-Message-ID: <20190603024640.2soysu4rpkwjuash@gondor.apana.org.au>
-In-Reply-To: <CAHk-=whLGKOmM++OQi5GX08_dfh8Xfz9Wq7khPo+MVtPYh_8hw@mail.gmail.com>
+Date: Mon, 03 Jun 2019 11:03:24 +0800
+Message-ID: <20190603030324.kl3bckqmebzis2vw@gondor.apana.org.au>
+In-Reply-To: <20190603000617.GD28207@linux.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0999049925993043022==
+--===============4398009952144963128==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jun 02, 2019 at 01:54:12PM -0700, Linus Torvalds wrote:
-> On Sat, Jun 1, 2019 at 10:56 PM Herbert Xu <herbert@gondor.apana.org.au=
-> wrote:
-> >
-> > You can't then go and decide to remove the compiler barrier!  To do
-> > that you'd need to audit every single use of rcu_read_lock in the
-> > kernel to ensure that they're not depending on the compiler barrier.
+On Sun, Jun 02, 2019 at 05:06:17PM -0700, Paul E. McKenney wrote:
+>
+> Please note that preemptible Tree RCU has lacked the compiler barrier on
+> all but the outermost rcu_read_unlock() for years before Boqun's patch.
+
+Actually this is not true.  Boqun's patch (commit bb73c52bad36) does
+not add a barrier() to __rcu_read_lock.  In fact I dug into the git
+history and this compiler barrier() has existed in preemptible tree
+RCU since the very start in 2009:
+
+: commit f41d911f8c49a5d65c86504c19e8204bb605c4fd
+: Author: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+: Date:   Sat Aug 22 13:56:52 2009 -0700
+:
+:     rcu: Merge preemptable-RCU functionality into hierarchical RCU
+:
+: +/*
+: + * Tree-preemptable RCU implementation for rcu_read_lock().
+: + * Just increment ->rcu_read_lock_nesting, shared state will be updated
+: + * if we block.
+: + */
+: +void __rcu_read_lock(void)
+: +{
+: +       ACCESS_ONCE(current->rcu_read_lock_nesting)++;
+: +       barrier();  /* needed if we ever invoke rcu_read_lock in rcutree.=
+c */
+: +}
+: +EXPORT_SYMBOL_GPL(__rcu_read_lock);
+
+However, you are correct that in the non-preempt tree RCU case,
+the compiler barrier in __rcu_read_lock was not always present.
+In fact it was added by:
+
+: commit 386afc91144b36b42117b0092893f15bc8798a80
+: Author: Linus Torvalds <torvalds@linux-foundation.org>
+: Date:   Tue Apr 9 10:48:33 2013 -0700
+:
+:     spinlocks and preemption points need to be at least compiler barriers
+
+I suspect this is what prompted you to remove it in 2015.
+
+> I do not believe that reverting that patch will help you at all.
 > =
 
-> What's the possible case where it would matter when there is no preemptio=
-n?
+> But who knows?  So please point me at the full code body that was being
+> debated earlier on this thread.  It will no doubt take me quite a while to
+> dig through it, given my being on the road for the next couple of weeks,
+> but so it goes.
 
-The case we were discussing is from net/ipv4/inet_fragment.c from
-the net-next tree:
+Please refer to my response to Linus for the code in question.
 
-void fqdir_exit(struct fqdir *fqdir)
-{
-	...
-	fqdir->dead =3D true;
+In any case, I am now even more certain that compiler barriers are
+not needed in the code in question.  The reasoning is quite simple.
+If you need those compiler barriers then you surely need real memory
+barriers.
 
-	/* call_rcu is supposed to provide memory barrier semantics,
-	 * separating the setting of fqdir->dead with the destruction
-	 * work.  This implicit barrier is paired with inet_frag_kill().
-	 */
+Vice versa, if real memory barriers are already present thanks to
+RCU, then you don't need those compiler barriers.
 
-	INIT_RCU_WORK(&fqdir->destroy_rwork, fqdir_rwork_fn);
-	queue_rcu_work(system_wq, &fqdir->destroy_rwork);
-}
+In fact this calls into question the use of READ_ONCE/WRITE_ONCE in
+RCU primitives such as rcu_dereference and rcu_assign_pointer.  IIRC
+when RCU was first added to the Linux kernel we did not have compiler
+barriers in rcu_dereference and rcu_assign_pointer.  They were added
+later on.
 
-and
-
-void inet_frag_kill(struct inet_frag_queue *fq)
-{
-		...
-		rcu_read_lock();
-		/* The RCU read lock provides a memory barrier
-		 * guaranteeing that if fqdir->dead is false then
-		 * the hash table destruction will not start until
-		 * after we unlock.  Paired with inet_frags_exit_net().
-		 */
-		if (!fqdir->dead) {
-			rhashtable_remove_fast(&fqdir->rhashtable, &fq->node,
-					       fqdir->f->rhash_params);
-			...
-		}
-		...
-		rcu_read_unlock();
-		...
-}
-
-I simplified this to
-
-Initial values:
-
-a =3D 0
-b =3D 0
-
-CPU1				CPU2
-----				----
-a =3D 1				rcu_read_lock
-synchronize_rcu			if (a =3D=3D 0)
-b =3D 2					b =3D 1
-				rcu_read_unlock
-
-On exit we want this to be true:
-b =3D=3D 2
-
-Now what Paul was telling me is that unless every memory operation
-is done with READ_ONCE/WRITE_ONCE then his memory model shows that
-the exit constraint won't hold.  IOW, we need
-
-CPU1				CPU2
-----				----
-WRITE_ONCE(a, 1)		rcu_read_lock
-synchronize_rcu			if (READ_ONCE(a) =3D=3D 0)
-WRITE_ONCE(b, 2)			WRITE_ONCE(b, 1)
-				rcu_read_unlock
-
-Now I think this bullshit because if we really needed these compiler
-barriers then we surely would need real memory barriers to go with
-them.
-
-In fact, the sole purpose of the RCU mechanism is to provide those
-memory barriers.  Quoting from
-Documentation/RCU/Design/Requirements/Requirements.html:
-
-<li>	Each CPU that has an RCU read-side critical section that
-	begins before <tt>synchronize_rcu()</tt> starts is
-	guaranteed to execute a full memory barrier between the time
-	that the RCU read-side critical section ends and the time that
-	<tt>synchronize_rcu()</tt> returns.
-	Without this guarantee, a pre-existing RCU read-side critical section
-	might hold a reference to the newly removed <tt>struct foo</tt>
-	after the <tt>kfree()</tt> on line&nbsp;14 of
-	<tt>remove_gp_synchronous()</tt>.
-<li>	Each CPU that has an RCU read-side critical section that ends
-	after <tt>synchronize_rcu()</tt> returns is guaranteed
-	to execute a full memory barrier between the time that
-	<tt>synchronize_rcu()</tt> begins and the time that the RCU
-	read-side critical section begins.
-	Without this guarantee, a later RCU read-side critical section
-	running after the <tt>kfree()</tt> on line&nbsp;14 of
-	<tt>remove_gp_synchronous()</tt> might
-	later run <tt>do_something_gp()</tt> and find the
-	newly deleted <tt>struct foo</tt>.
-
-My review of the RCU code shows that these memory barriers are
-indeed present (at least when we're not in tiny mode where all
-this discussion would be moot anyway).  For example, in call_rcu
-we eventually get down to rcu_segcblist_enqueue which has an smp_mb.
-On the reader side (correct me if I'm wrong Paul) the memory
-barrier is implicitly coming from the scheduler.
-
-My point is that within our kernel whenever we have a CPU memory
-barrier we always have a compiler barrier too.  Therefore my code
-example above does not need any extra compiler barriers such as
-the ones provided by READ_ONCE/WRITE_ONCE.
-
-I think perhaps Paul was perhaps thinking that I'm expecting
-rcu_read_lock/rcu_read_unlock themselves to provide the memory
-or compiler barriers.  That would indeed be wrong but this is
-not what I need.  All I need is the RCU semantics as documented
-for there to be memory and compiler barriers around the whole
-grace period.
+As compiler barriers per se are useless, these are surely meant to
+be coupled with the memory barriers provided by RCU grace periods
+and synchronize_rcu.  But then those real memory barriers would have
+compiler barriers too.  So why do we need the compiler barriers in
+rcu_dereference and rcu_assign_pointer?
 
 Cheers,
 -- =
@@ -145,5 +91,5 @@ Email: Herbert Xu <herbert@gondor.apana.org.au>
 Home Page: http://gondor.apana.org.au/~herbert/
 PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
---===============0999049925993043022==--
+--===============4398009952144963128==--
 
