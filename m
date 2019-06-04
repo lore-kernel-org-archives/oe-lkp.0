@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============6694027122118679400=="
+Content-Type: multipart/mixed; boundary="===============6249683605553153907=="
 MIME-Version: 1.0
 From: kernel test robot <lkp@intel.com>
 To: lkp@lists.01.org
 Subject: [mm/vmalloc.c] 728e0fbf26: kernel_BUG_at_mm/vmalloc.c
-Date: Wed, 05 Jun 2019 06:52:39 +0800
-Message-ID: <20190604225239.whrfzovwy4pooysl@inn2.lkp.intel.com>
+Date: Wed, 05 Jun 2019 07:54:51 +0800
+Message-ID: <20190604235450.3dde7yw5woeng7kk@inn2.lkp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6694027122118679400==
+--===============6249683605553153907==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -124,7 +124,7 @@ Thanks,
 lkp
 
 
---===============6694027122118679400==
+--===============6249683605553153907==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -2141,7 +2141,7 @@ VU5XSU5ERVJfT1JDPXkKIyBDT05GSUdfVU5XSU5ERVJfRlJBTUVfUE9JTlRFUiBpcyBub3Qgc2V0
 CiMgQ09ORklHX1VOV0lOREVSX0dVRVNTIGlzIG5vdCBzZXQKIyBlbmQgb2YgS2VybmVsIGhhY2tp
 bmcK
 
---===============6694027122118679400==
+--===============6249683605553153907==
 Content-Type: application/x-xz
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -2301,5 +2301,5 @@ zgbHaqRI19s6FIx87PD1lCzraIR2Up1f1VThvfCLWjTn7EhjEwwUXvI3970tG79ZeW/U8D72X+Ub
 CdL5fdp7TfCZZ3OX2DAVQxg3VcnoVf1HYjZLRRu92ueXtnvSkb0bQCcMuulH6IrrxLyLEVKUcmfo
 c9lNm74YU8g6CiJjdtjAA++L8w1nYOMylup4bJ3k3isksHG4N82FdCbi2lUfdlUYqoAN5kxzDIfe
 Enp3R/qwNdX+ijisPPqdAAAAALxF7mdZLEqMAAGdRKjOAgDrxwbuscRn+wIAAAAABFla
---===============6694027122118679400==--
+--===============6249683605553153907==--
 
