@@ -1,152 +1,236 @@
-Content-Type: multipart/mixed; boundary="===============4814389599286399452=="
+Content-Type: multipart/mixed; boundary="===============4623639418599664123=="
 MIME-Version: 1.0
-From: Ming Lei <ming.lei@redhat.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 To: lkp@lists.01.org
-Subject: Re: [block] 47cdee29ef: BUG:kernel_NULL_pointer_dereference, address
-Date: Tue, 04 Jun 2019 21:11:53 +0800
-Message-ID: <20190604131152.GA17248@ming.t460p>
-In-Reply-To: <20190604104326.GA22492@ming.t460p>
+Subject: Re: rcu_read_lock lost its compiler barrier
+Date: Tue, 04 Jun 2019 10:44:18 -0400
+Message-ID: <Pine.LNX.4.44L0.1906041026570.1731-100000@iolanthe.rowland.org>
+In-Reply-To: <20190603200301.GM28207@linux.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4814389599286399452==
+--===============4623639418599664123==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 04, 2019 at 06:43:27PM +0800, Ming Lei wrote:
-> On Tue, Jun 04, 2019 at 05:06:44PM +0800, Rong Chen wrote:
-> > Hi,
+On Mon, 3 Jun 2019, Paul E. McKenney wrote:
+
+> On Mon, Jun 03, 2019 at 02:42:00PM +0800, Boqun Feng wrote:
+> > On Mon, Jun 03, 2019 at 01:26:26PM +0800, Herbert Xu wrote:
+> > > On Sun, Jun 02, 2019 at 08:47:07PM -0700, Paul E. McKenney wrote:
+> > > > =
+
+> > > > 1.	These guarantees are of full memory barriers, -not- compiler
+> > > > 	barriers.
+> > > =
+
+> > > What I'm saying is that wherever they are, they must come with
+> > > compiler barriers.  I'm not aware of any synchronisation mechanism
+> > > in the kernel that gives a memory barrier without a compiler barrier.
+> > > =
+
+> > > > 2.	These rules don't say exactly where these full memory barriers
+> > > > 	go.  SRCU is at one extreme, placing those full barriers in
+> > > > 	srcu_read_lock() and srcu_read_unlock(), and !PREEMPT Tree RCU
+> > > > 	at the other, placing these barriers entirely within the callback
+> > > > 	queueing/invocation, grace-period computation, and the scheduler.
+> > > > 	Preemptible Tree RCU is in the middle, with rcu_read_unlock()
+> > > > 	sometimes including a full memory barrier, but other times with
+> > > > 	the full memory barrier being confined as it is with !PREEMPT
+> > > > 	Tree RCU.
+> > > =
+
+> > > The rules do say that the (full) memory barrier must precede any
+> > > RCU read-side that occur after the synchronize_rcu and after the
+> > > end of any RCU read-side that occur before the synchronize_rcu.
+> > > =
+
+> > > All I'm arguing is that wherever that full mb is, as long as it
+> > > also carries with it a barrier() (which it must do if it's done
+> > > using an existing kernel mb/locking primitive), then we're fine.
+> > > =
+
+> > > > Interleaving and inserting full memory barriers as per the rules ab=
+ove:
+> > > > =
+
+> > > > 	CPU1: WRITE_ONCE(a, 1)
+> > > > 	CPU1: synchronize_rcu	=
+
+> > > > 	/* Could put a full memory barrier here, but it wouldn't help. */
+> > > =
+
+> > > 	CPU1: smp_mb();
+> > > 	CPU2: smp_mb();
+> > > =
+
+> > > Let's put them in because I think they are critical.  smp_mb() also
+> > > carries with it a barrier().
+> > > =
+
+> > > > 	CPU2: rcu_read_lock();
+> > > > 	CPU1: b =3D 2;	=
+
+> > > > 	CPU2: if (READ_ONCE(a) =3D=3D 0)
+> > > > 	CPU2:         if (b !=3D 1)  /* Weakly ordered CPU moved this up! =
+*/
+> > > > 	CPU2:                 b =3D 1;
+> > > > 	CPU2: rcu_read_unlock
+> > > > =
+
+> > > > In fact, CPU2's load from b might be moved up to race with CPU1's s=
+tore,
+> > > > which (I believe) is why the model complains in this case.
+> > > =
+
+> > > Let's put aside my doubt over how we're even allowing a compiler
+> > > to turn
+> > > =
+
+> > > 	b =3D 1
+> > > =
+
+> > > into
+> > > =
+
+> > > 	if (b !=3D 1)
+> > > 		b =3D 1
+
+Even if you don't think the compiler will ever do this, the C standard
+gives compilers the right to invent read accesses if a plain (i.e.,
+non-atomic and non-volatile) write is present.  The Linux Kernel Memory
+Model has to assume that compilers will sometimes do this, even if it
+doesn't take the exact form of checking a variable's value before
+writing to it.
+
+(Incidentally, regardless of whether the compiler will ever do this, I =
+
+have seen examples in the kernel where people did exactly this =
+
+manually, in order to avoid dirtying a cache line unnecessarily.)
+
+> > > Since you seem to be assuming that (a =3D=3D 0) is true in this case
 > > =
 
-> > On 6/4/19 12:03 PM, Ming Lei wrote:
-> > > Hi Rong Chen,
-> > > =
+> > I think Paul's example assuming (a =3D=3D 0) is false, and maybe
+> =
 
-> > > Thanks for your test & report!
-> > > =
+> Yes, otherwise, P0()'s write to "b" cannot have happened.
+> =
 
-> > > On Tue, Jun 04, 2019 at 10:09:56AM +0800, kernel test robot wrote:
-> > > > FYI, we noticed the following commit (built with gcc-7):
-> > > > =
+> > speculative writes (by compilers) needs to added into consideration?
 
-> > > > commit: 47cdee29ef9d94e485eb08f962c74943023a5271 ("block: move blk_=
-exit_queue into __blk_release_queue")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git mas=
-ter
-> > > > =
+On the other hand, the C standard does not allow compilers to add
+speculative writes.  The LKMM assumes they will never occur.
 
-> > > > in testcase: trinity
-> > > > with following parameters:
-> > > > =
+> I would instead call it the compiler eliminating needless writes
+> by inventing reads -- if the variable already has the correct value,
+> no write happens.  So no compiler speculation.
+> =
 
-> > > > 	runtime: 300s
-> > > > =
+> However, it is difficult to create a solid defensible example.  Yes,
+> from LKMM's viewpoint, the weakly reordered invented read from "b"
+> can be concurrent with P0()'s write to "b", but in that case the value
+> loaded would have to manage to be equal to 1 for anything bad to happen.
+> This does feel wrong to me, but again, it is difficult to create a solid
+> defensible example.
+> =
 
-> > > > test-description: Trinity is a linux system call fuzz tester.
-> > > > test-url: http://codemonkey.org.uk/projects/trinity/
-> > > > =
-
-> > > > =
-
-> > > > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -s=
-mp 2 -m 2G
-> > > > =
-
-> > > > caused below changes (please refer to attached dmesg/kmsg for entir=
-e log/backtrace):
-> > > > =
-
-> > > > =
-
-> > > > +-------------------------------------------------+------------+---=
----------+
-> > > > |                                                 | 31cb1d64da | 47=
-cdee29ef |
-> > > > +-------------------------------------------------+------------+---=
----------+
-> > > > | boot_successes                                  | 3          | 0 =
-         |
-> > > > | boot_failures                                   | 13         | 8 =
-         |
-> > > > | BUG:kernel_reboot-without-warning_in_test_stage | 13         |   =
-         |
-> > > > | BUG:kernel_NULL_pointer_dereference,address     | 0          | 8 =
-         |
-> > > > | Oops:#[##]                                      | 0          | 8 =
-         |
-> > > > | RIP:blk_mq_free_rqs                             | 0          | 8 =
-         |
-> > > > | Kernel_panic-not_syncing:Fatal_exception        | 0          | 8 =
-         |
-> > > > +-------------------------------------------------+------------+---=
----------+
-> > > > =
-
-> > > > =
-
-> > > > If you fix the issue, kindly add following tag
-> > > > Reported-by: kernel test robot <rong.a.chen@intel.com>
-> > > > =
-
-> > > > =
-
-> > > > [    6.560544] BUG: kernel NULL pointer dereference, address: 00000=
-00000000020
-> > > > [    6.561658] #PF: supervisor read access in kernel mode
-> > > > [    6.562495] #PF: error_code(0x0000) - not-present page
-> > > > [    6.563277] PGD 0 P4D 0
-> > > > [    6.563277] Oops: 0000 [#1] PTI
-> > > > [    6.563277] CPU: 0 PID: 147 Comm: kworker/0:2 Tainted: G        =
-        T 5.2.0-rc1-00387-g47cdee29 #1
-> > > > [    6.563277] Workqueue: events __blk_release_queue
-> > > > [    6.563277] RIP: 0010:blk_mq_free_rqs+0x2c/0xaf
-> > > =
-
-> > > Looks there is race between removing queue and switching elevator, and
-> > > which should be done by Trinity.
-> > > =
-
-> > > I guess that commit 47cdee29ef9d94e485eb08f962c74943023a5271 just
-> > > changes the timing and makes it easy to trigger.
-> > > =
-
-> > > Please test the following patch and see if difference can be made.
-> > > If the patch can't fix the issue, please enable KASAN and reproduce,
-> > > then more useful log may be got.
+> > Please consider the following case (I add a few smp_mb()s), the case may
+> > be a little bit crasy, you have been warned ;-)
 > > =
 
-> > The patch doesn't work, Attached please find the dmesg file with KASAN
-> > enabled.
+> >  	CPU1: WRITE_ONCE(a, 1)
+> >  	CPU1: synchronize_rcu called
+> > =
+
+> >  	CPU1: smp_mb(); /* let assume there is one here */
+> > =
+
+> >  	CPU2: rcu_read_lock();
+> >  	CPU2: smp_mb(); /* let assume there is one here */
+> > =
+
+> > 	/* "if (b !=3D 1) b =3D 1" reordered  */
+> >  	CPU2: r0 =3D b;       /* if (b !=3D 1) reordered here, r0 =3D=3D 0 */
+> >  	CPU2: if (r0 !=3D 1)  /* true */
+> > 	CPU2:     b =3D 1;    /* b =3D=3D 1 now, this is a speculative write
+> > 	                       by compiler
+> > 			     */
+> > =
+
+> > 	CPU1: b =3D 2;        /* b =3D=3D 2 */
+> > =
+
+> >  	CPU2: if (READ_ONCE(a) =3D=3D 0) /* false */
+> > 	CPU2: ...
+> > 	CPU2  else                   /* undo the speculative write */
+> > 	CPU2:	  b =3D r0;   /* b =3D=3D 0 */
+> > =
+
+> >  	CPU2: smp_mb();
+> > 	CPU2: read_read_unlock();
+> > =
+
+> > I know this is too crasy for us to think a compiler like this, but this
+> > might be the reason why the model complain about this.
+> > =
+
+> > Paul, did I get this right? Or you mean something else?
 > =
 
-> =
+> Mostly there, except that I am not yet desperate enough to appeal to
+> compilers speculating stores.  ;-)
 
-> Thanks for your test.
-> =
+This example really does point out a weakness in the LKMM's handling of =
 
-> I think I can understand the issue now, it is because blk_mq_free_rqs()
-> needs tag_set, however tag_set may have been freed.
-> =
-
-> In theory, we don't need tagset for freeing scheduler tags which is
-> per-request-queue, not like driver tags.
-> =
-
-> However, the big trouble is that .exit_request() needs tagset, and this
-> one is a generic issue, not limited to ide.
-> =
-
-> Give me a little time, I will investigate and see if good solution can be
-> figured out. Otherwise, we may have to revert that commit.
-
-Patch has been posted out:
-
-https://lore.kernel.org/linux-block/20190604130802.17076-1-ming.lei(a)redha=
-t.com/T/#u
+data races.  Herbert's litmus test is a great starting point:
 
 
-Thanks,
-Ming
+C xu
 
---===============4814389599286399452==--
+{}
+
+P0(int *a, int *b)
+{
+	WRITE_ONCE(*a, 1);
+	synchronize_rcu();
+	*b =3D 2;
+}
+
+P1(int *a, int *b)
+{
+	rcu_read_lock();
+	if (READ_ONCE(*a) =3D=3D 0)
+		*b =3D 1;
+	rcu_read_unlock();
+}
+
+exists (~b=3D2)
+
+
+Currently the LKMM says the test is allowed and there is a data race, =
+
+but this answer clearly is wrong since it would violate the RCU =
+
+guarantee.
+
+The problem is that the LKMM currently requires all ordering/visibility
+of plain accesses to be mediated by marked accesses.  But in this case,
+the visibility is mediated by RCU.  Technically, we need to add a
+relation like
+
+	([M] ; po ; rcu-fence ; po ; [M])
+
+into the definitions of ww-vis, wr-vis, and rw-xbstar.  Doing so
+changes the litmus test's result to "not allowed" and no data race.  =
+
+However, I'm not certain that this single change is the entire fix;  =
+
+more thought is needed.
+
+Alan
+
+
+--===============4623639418599664123==--
 
