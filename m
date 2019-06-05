@@ -1,58 +1,62 @@
-Content-Type: multipart/mixed; boundary="===============0239089342668337995=="
+Content-Type: multipart/mixed; boundary="===============7292004826141557300=="
 MIME-Version: 1.0
-From: Philip Li <philip.li@intel.com>
+From: Joe Lawrence <joe.lawrence@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: livepatching selftests failure on current master branch
-Date: Wed, 05 Jun 2019 22:31:17 +0800
-Message-ID: <20190605143117.GC19267@intel.com>
-In-Reply-To: <c3a528e2-40f1-5a3d-38d7-6acb188bbd88@redhat.com>
+Date: Wed, 05 Jun 2019 10:51:53 -0400
+Message-ID: <e264efb1-0b6e-c860-7a6d-ce92bde8efa2@redhat.com>
+In-Reply-To: <20190605143117.GC19267@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0239089342668337995==
+--===============7292004826141557300==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 05, 2019 at 09:48:02AM -0400, Joe Lawrence wrote:
-> On 5/17/19 10:17 AM, Miroslav Benes wrote:
-> >Hi,
-> >
-> >I noticed that livepatching selftests fail on our master branch
-> >(https://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatchi=
-ng.git/).
-> >
-> >...
-> =
+On 6/5/19 10:31 AM, Philip Li wrote:
+> On Wed, Jun 05, 2019 at 09:48:02AM -0400, Joe Lawrence wrote:
+>> On 5/17/19 10:17 AM, Miroslav Benes wrote:
+>>> Hi,
+>>>
+>>> I noticed that livepatching selftests fail on our master branch
+>>> (https://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatch=
+ing.git/).
+>>>
+>>> ...
+>>
+>> [ adding lkp(a)01.org to this email ]
+>>
+>> lkp folks, I was wondering if the kernel selftests were included as
+>> part of the test-bot and if so, do we need to do anything specific
+> yes, kernel selftest is part of regular execution, which includes the liv=
+epatching
+ > test. Also the livepatching.git is under our testing...
 
-> [ adding lkp(a)01.org to this email ]
-> =
+Hi Philip,
 
-> lkp folks, I was wondering if the kernel selftests were included as
-> part of the test-bot and if so, do we need to do anything specific
-yes, kernel selftest is part of regular execution, which includes the livep=
-atching
-test. Also the livepatching.git is under our testing. But we may not succes=
-sfully
-bisect all failures.
+Good to hear.  My github tree and Josh's kernel.org tree are included as =
 
-The mails related to livepatching test or livepatch  in last two months are
+(perhaps other livepatching dev trees as well), so the more coverage the =
 
-https://lists.01.org/pipermail/lkp/2019-April/010026.html
-https://lists.01.org/pipermail/lkp/2019-May/010218.html
+better :)
 
-Thanks
+>                                                   ... But we may not succ=
+essfully
+> bisect all failures.
 
-> to include the livepatching selftests?
-> =
+That's okay, though I guess I'm not clear why there wasn't an email =
 
-> Thanks,
-> =
+reporting that the livepatching selftests failed after livepatching.git =
 
-> -- Joe
-> _______________________________________________
-> LKP mailing list
-> LKP(a)lists.01.org
-> https://lists.01.org/mailman/listinfo/lkp
+was recently updated to include tglx's stack trace fixes.
 
---===============0239089342668337995==--
+Do the tests only run for unique commits (ie, will it skip when =
+
+livepatching.git updates/merges latest linux tree ??)
+
+Thanks,
+
+-- Joe
+
+--===============7292004826141557300==--
 
