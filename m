@@ -1,24 +1,24 @@
-Content-Type: multipart/mixed; boundary="===============0796099619129903552=="
+Content-Type: multipart/mixed; boundary="===============1378242642266682292=="
 MIME-Version: 1.0
 From: Philip Li <philip.li@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [mm/vmalloc.c] 728e0fbf26: kernel_BUG_at_mm/vmalloc.c
-Date: Wed, 05 Jun 2019 22:01:32 +0800
-Message-ID: <20190605140132.GA19267@intel.com>
-In-Reply-To: <20190605135020.44j2fedl6ilnbxcg@inn2.lkp.intel.com>
+Date: Wed, 05 Jun 2019 22:02:44 +0800
+Message-ID: <20190605140244.GB19267@intel.com>
+In-Reply-To: <20190604235450.3dde7yw5woeng7kk@inn2.lkp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0796099619129903552==
+--===============1378242642266682292==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 05, 2019 at 09:50:20PM +0800, kernel test robot wrote:
+On Wed, Jun 05, 2019 at 07:54:51AM +0800, kernel test robot wrote:
 > =
 
 > FYI, we noticed the following commit (built with gcc-7):
-kindly ignore the duplicated report if you had already received one, we
-are working on the fix of this problem.
+kindly ignore the duplicated report, we are working on the fix
+of this problem. sorry for the inconvenience.
 
 > =
 
@@ -46,19 +46,19 @@ backtrace):
 26 |
 > +-------------------------------------------------+------------+---------=
 ---+
-> | boot_successes                                  | 6          | 0       =
+> | boot_successes                                  | 0          | 0       =
    |
-> | boot_failures                                   | 10         | 17      =
+> | boot_failures                                   | 6          | 14      =
    |
-> | BUG:kernel_reboot-without-warning_in_test_stage | 10         |         =
+> | BUG:kernel_reboot-without-warning_in_test_stage | 6          |         =
    |
-> | kernel_BUG_at_mm/vmalloc.c                      | 0          | 17      =
+> | kernel_BUG_at_mm/vmalloc.c                      | 0          | 14      =
    |
-> | invalid_opcode:#[##]                            | 0          | 17      =
+> | invalid_opcode:#[##]                            | 0          | 14      =
    |
-> | RIP:__free_vmap_area                            | 0          | 17      =
+> | RIP:__free_vmap_area                            | 0          | 14      =
    |
-> | Kernel_panic-not_syncing:Fatal_exception        | 0          | 17      =
+> | Kernel_panic-not_syncing:Fatal_exception        | 0          | 14      =
    |
 > +-------------------------------------------------+------------+---------=
 ---+
@@ -4903,5 +4903,5 @@ this email
 > https://lists.01.org/mailman/listinfo/lkp
 
 
---===============0796099619129903552==--
+--===============1378242642266682292==--
 
