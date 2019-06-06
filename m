@@ -1,41 +1,32 @@
-Content-Type: multipart/mixed; boundary="===============3493211080496744333=="
+Content-Type: multipart/mixed; boundary="===============8647816408375301056=="
 MIME-Version: 1.0
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Alan Stern <stern@rowland.harvard.edu>
 To: lkp@lists.01.org
 Subject: Re: rcu_read_lock lost its compiler barrier
-Date: Thu, 06 Jun 2019 21:38:24 +0800
-Message-ID: <20190606133824.aibysezb5qdo3x27@gondor.apana.org.au>
-In-Reply-To: <20190606105817.GE28207@linux.ibm.com>
+Date: Thu, 06 Jun 2019 10:19:43 -0400
+Message-ID: <Pine.LNX.4.44L0.1906061017200.1641-100000@iolanthe.rowland.org>
+In-Reply-To: <20190606081657.GA4249@andrea>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3493211080496744333==
+--===============8647816408375301056==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 06, 2019 at 03:58:17AM -0700, Paul E. McKenney wrote:
->
-> I cannot immediately think of a way that the compiler could get this
-> wrong even in theory, but similar code sequences can be messed up.
-> The reason for this is that in theory, the compiler could use the
-> stored-to location as temporary storage, like this:
+On Thu, 6 Jun 2019, Andrea Parri wrote:
+
+> This seems a sensible change to me: looking forward to seeing a patch,
+> on top of -rcu/dev, for further review and testing!
 > =
 
-> 	a =3D whatever;	// Compiler uses "a" as a temporary
-> 	do_something();
-> 	whatever =3D a;
-> 	a =3D 1;		// Intended store
+> We could also add (to LKMM) the barrier() for rcu_read_{lock,unlock}()
+> discussed in this thread (maybe once the RCU code and the informal doc
+> will have settled in such direction).
 
-Well if the compiler is going to do this then surely it would
-continue to do this even if you used WRITE_ONCE.  Remember a is
-not volatile, only the access of a through WRITE_ONCE is volatile.
+Yes.  Also for SRCU.  That point had not escaped me.
 
-Cheers,
--- =
+Alan
 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
---===============3493211080496744333==--
+--===============8647816408375301056==--
 
