@@ -1,54 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============3974781378138860054=="
+Content-Type: multipart/mixed; boundary="===============0593471930689124575=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Dmitry Vyukov <dvyukov@google.com>
 To: lkp@lists.01.org
-Subject: Re: inet: frags: Turn fqdir->dead into an int for old Alphas
-Date: Fri, 07 Jun 2019 09:19:42 -0700
-Message-ID: <CAHk-=wgtY1hNQX9TM=4ono-UJ-hsoFA0OT36ixFWBG2eeO011w@mail.gmail.com>
-In-Reply-To: <da5eedfe-92f9-6c50-b9e7-68886047dd25@gmail.com>
+Subject: Re: CKI hackfest @Plumbers invite
+Date: Fri, 07 Jun 2019 18:27:57 +0200
+Message-ID: <CACT4Y+YFHZhm0pwoZdXSXtG4z1wHPOC9hG-RvRy=3szteEe6XA@mail.gmail.com>
+In-Reply-To: <CAKocOONHHuL2xSBUQx0=pw5AHMG4im=9kv3GrJLrKaH6+wguDw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3974781378138860054==
+--===============0593471930689124575==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 7, 2019 at 8:26 AM Eric Dumazet <eric.dumazet@gmail.com> wrot=
-e:
+On Thu, Jun 6, 2019 at 12:00 AM Shuah Khan <shuahkhan@gmail.com> wrote:
 >
-> There is common knowledge among us programmers that bit fields
-> (or bool) sharing a common 'word' need to be protected
-> with a common lock.
+> Hi Veronika,
 >
-> Converting all bit fields to plain int/long would be quite a waste of mem=
-ory.
+> On Wed, Jun 5, 2019 at 2:47 PM Dan Rue <dan.rue@linaro.org> wrote:
+> >
+> > On Tue, May 21, 2019 at 10:54:12AM -0400, Veronika Kabatova wrote:
+> > > Hi,
+> > >
+> > > as some of you have heard, CKI Project is planning hackfest CI meetin=
+gs after
+> > > Plumbers conference this year (Sept. 12-13). We would like to invite =
+everyone
+> > > who has interest in CI for kernel to come and join us.
+> > >
+> > > The early agenda with summary is at the end of the email. If you thin=
+k there's
+> > > something important missing let us know! Also let us know in case you=
+'d want to
+> > > lead any of the sessions, we'd be happy to delegate out some work :)
+> > >
+> > >
+> > > Please send us an email as soon as you decide to come and feel free t=
+o invite
+> > > other people who should be present. We are not planning to cap the at=
+tendance
+> > > right now but need to solve the logistics based on the interest. The =
+event is
+> > > free to attend, no additional registration except letting us know is =
+needed.
+> > >
+>
+> I am going be there and plan to attend.
+>
+> > > Feel free to contact us if you have any questions,
+> > > Veronika
+> > > CKI Project
+> >
+> > Hi Veronika! Thanks for organizing this. I plan to attend, and I'm happy
+> > to help out.
+> >
+> > With regard to the agenda, I've been following the '[Ksummit-discuss]
+> > [MAINTAINERS SUMMIT] Squashing bugs!'[1] thread with interest, as it
+> > relates especially to 'Getting results to developers/maintainers'. This,
+> > along with result aggregation, are important areas to focus.
+> >
+> >
+> > [1] https://lists.linuxfoundation.org/pipermail/ksummit-discuss/2019-Ma=
+y/006389.html
+> >
+>
+> Good to know there is an overlap and it makes sense for me to attend. :)
 
-Yeah, and we really don't care about alpha. So 'char' should be safe.
+Hi Shuah,
 
-No compiler actually turns a 'bool' in a struct into a bitfield,
-afaik, because you're still supposed to be able to take the address of
-a boolean.
+Oh, and I did not even know about
+https://lists.linuxfoundation.org/pipermail/ksummit-discuss/2019-May/006389=
+.html
+How can I be kept in the loop/provide inputs/receive
+feedback/discussion summary?
 
-But on the whole, I do not believe that we should ever use 'bool' in
-structures anyway, because it's such a badly defined type. I think
-it's 'char' in practice on just about all architectures, but there
-really were traditional use cases where 'bool' was int.
+Thanks
 
-But:
-
- - we shouldn't turn them into 'int' anyway - alpha is dead, and no
-sane architecture will make the same mistake anyway. People learnt.
-
- - we might want to make sure 'bool' really is 'char' in practice, to
-double-check that fthe compiler doesn't do anything stupid.
-
- - bitfields obviously do need locks. 'char' does not.
-
-If there's somebody who really notices the alpha issue in PRACTICE, we
-can then bother to fix it. But there is approximately one user, and
-it's not a heavy-duty one.
-
-                   Linus
-
---===============3974781378138860054==--
+--===============0593471930689124575==--
 
