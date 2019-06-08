@@ -1,80 +1,82 @@
-Content-Type: multipart/mixed; boundary="===============0593471930689124575=="
+Content-Type: multipart/mixed; boundary="===============6086898313599006413=="
 MIME-Version: 1.0
-From: Dmitry Vyukov <dvyukov@google.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 To: lkp@lists.01.org
-Subject: Re: CKI hackfest @Plumbers invite
-Date: Fri, 07 Jun 2019 18:27:57 +0200
-Message-ID: <CACT4Y+YFHZhm0pwoZdXSXtG4z1wHPOC9hG-RvRy=3szteEe6XA@mail.gmail.com>
-In-Reply-To: <CAKocOONHHuL2xSBUQx0=pw5AHMG4im=9kv3GrJLrKaH6+wguDw@mail.gmail.com>
+Subject: Re: rcu_read_lock lost its compiler barrier
+Date: Sat, 08 Jun 2019 11:56:04 -0400
+Message-ID: <Pine.LNX.4.44L0.1906081153140.11124-100000@netrider.rowland.org>
+In-Reply-To: <20190608151943.GD28207@linux.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0593471930689124575==
+--===============6086898313599006413==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 6, 2019 at 12:00 AM Shuah Khan <shuahkhan@gmail.com> wrote:
->
-> Hi Veronika,
->
-> On Wed, Jun 5, 2019 at 2:47 PM Dan Rue <dan.rue@linaro.org> wrote:
-> >
-> > On Tue, May 21, 2019 at 10:54:12AM -0400, Veronika Kabatova wrote:
-> > > Hi,
-> > >
-> > > as some of you have heard, CKI Project is planning hackfest CI meetin=
-gs after
-> > > Plumbers conference this year (Sept. 12-13). We would like to invite =
-everyone
-> > > who has interest in CI for kernel to come and join us.
-> > >
-> > > The early agenda with summary is at the end of the email. If you thin=
-k there's
-> > > something important missing let us know! Also let us know in case you=
-'d want to
-> > > lead any of the sessions, we'd be happy to delegate out some work :)
-> > >
-> > >
-> > > Please send us an email as soon as you decide to come and feel free t=
-o invite
-> > > other people who should be present. We are not planning to cap the at=
-tendance
-> > > right now but need to solve the logistics based on the interest. The =
-event is
-> > > free to attend, no additional registration except letting us know is =
-needed.
-> > >
->
-> I am going be there and plan to attend.
->
-> > > Feel free to contact us if you have any questions,
-> > > Veronika
-> > > CKI Project
-> >
-> > Hi Veronika! Thanks for organizing this. I plan to attend, and I'm happy
-> > to help out.
-> >
-> > With regard to the agenda, I've been following the '[Ksummit-discuss]
-> > [MAINTAINERS SUMMIT] Squashing bugs!'[1] thread with interest, as it
-> > relates especially to 'Getting results to developers/maintainers'. This,
-> > along with result aggregation, are important areas to focus.
-> >
-> >
-> > [1] https://lists.linuxfoundation.org/pipermail/ksummit-discuss/2019-Ma=
-y/006389.html
-> >
->
-> Good to know there is an overlap and it makes sense for me to attend. :)
+On Sat, 8 Jun 2019, Paul E. McKenney wrote:
 
-Hi Shuah,
+> On Thu, Jun 06, 2019 at 10:19:43AM -0400, Alan Stern wrote:
+> > On Thu, 6 Jun 2019, Andrea Parri wrote:
+> > =
 
-Oh, and I did not even know about
-https://lists.linuxfoundation.org/pipermail/ksummit-discuss/2019-May/006389=
-.html
-How can I be kept in the loop/provide inputs/receive
-feedback/discussion summary?
+> > > This seems a sensible change to me: looking forward to seeing a patch,
+> > > on top of -rcu/dev, for further review and testing!
+> > > =
 
-Thanks
+> > > We could also add (to LKMM) the barrier() for rcu_read_{lock,unlock}()
+> > > discussed in this thread (maybe once the RCU code and the informal doc
+> > > will have settled in such direction).
+> > =
 
---===============0593471930689124575==--
+> > Yes.  Also for SRCU.  That point had not escaped me.
+> =
+
+> And it does seem pretty settled.  There are quite a few examples where
+> there are normal accesses at either end of the RCU read-side critical
+> sections, for example, the one in the requirements diffs below.
+> =
+
+> For SRCU, srcu_read_lock() and srcu_read_unlock() have implied compiler
+> barriers since 2006.  ;-)
+> =
+
+> 							Thanx, Paul
+> =
+
+> ------------------------------------------------------------------------
+> =
+
+> diff --git a/Documentation/RCU/Design/Requirements/Requirements.html b/Do=
+cumentation/RCU/Design/Requirements/Requirements.html
+> index 5a9238a2883c..080b39cc1dbb 100644
+> --- a/Documentation/RCU/Design/Requirements/Requirements.html
+> +++ b/Documentation/RCU/Design/Requirements/Requirements.html
+> @@ -2129,6 +2129,8 @@ Some of the relevant points of interest are as foll=
+ows:
+>  <li>	<a href=3D"#Hotplug CPU">Hotplug CPU</a>.
+>  <li>	<a href=3D"#Scheduler and RCU">Scheduler and RCU</a>.
+>  <li>	<a href=3D"#Tracing and RCU">Tracing and RCU</a>.
+> +<li>	<a href=3D"#Accesses to User Mamory and RCU">
+------------------------------------^
+> +Accesses to User Mamory and RCU</a>.
+---------------------^
+>  <li>	<a href=3D"#Energy Efficiency">Energy Efficiency</a>.
+>  <li>	<a href=3D"#Scheduling-Clock Interrupts and RCU">
+>  	Scheduling-Clock Interrupts and RCU</a>.
+> @@ -2521,6 +2523,75 @@ cannot be used.
+>  The tracing folks both located the requirement and provided the
+>  needed fix, so this surprise requirement was relatively painless.
+>  =
+
+> +<h3><a name=3D"Accesses to User Mamory and RCU">
+----------------------------------^
+> +Accesses to User Mamory and RCU</a></h3>
+---------------------^
+
+Are these issues especially notable for female programmers?  :-)
+
+Alan
+
+
+--===============6086898313599006413==--
 
