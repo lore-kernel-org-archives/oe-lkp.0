@@ -1,65 +1,67 @@
-Content-Type: multipart/mixed; boundary="===============4414573394607787171=="
+Content-Type: multipart/mixed; boundary="===============2909154170757071968=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Philip Li <philip.li@intel.com>
 To: lkp@lists.01.org
-Subject: Re: inet: frags: Turn fqdir->dead into an int for old Alphas
-Date: Sat, 08 Jun 2019 10:50:51 -0700
-Message-ID: <CAHk-=wiRduKzoLpAwU7iFiOJ6DX7RE+PZ_wFi9Cvq=hDoaNsPA@mail.gmail.com>
-In-Reply-To: <CAHk-=wj1G9nXMzAu=Ldbd4_bbzVtWgNORDKMD4bKTO6dRrMPmQ@mail.gmail.com>
+Subject: Re: livepatching selftests failure on current master branch
+Date: Mon, 10 Jun 2019 22:36:13 +0800
+Message-ID: <20190610143613.GB20569@intel.com>
+In-Reply-To: <95d6fe2a-595b-c73c-4ec0-af02eeaf29e4@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4414573394607787171==
+--===============2909154170757071968==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jun 8, 2019 at 10:42 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> There are no atomic rmw sequences that have reasonable performance for
-> the bitfield updates themselves.
+On Thu, Jun 06, 2019 at 02:43:43PM -0400, Joe Lawrence wrote:
+> On 6/5/19 8:49 PM, Philip Li wrote:
+> >On Wed, Jun 05, 2019 at 10:51:53AM -0400, Joe Lawrence wrote:
+> >>Do the tests only run for unique commits (ie, will it skip when
+> >>livepatching.git updates/merges latest linux tree ??)
+> >it will not skip, though we are not testing commit by commit. If the iss=
+ue
+> >is found, and bisect to the bad commit, we will report to author of that
+> >commit for information.
+> =
 
-Note that this is purely about the writing side. Reads of bitfield
-values can be (and generally _should_ be) atomic, and hopefully C11
-means that you wouldn't see intermediate values.
+> Sorry, I'm not following along, let me rephrase my question...
+sorry for late response, i was taken a few days off.
 
-But I'm not convinced about that either: one natural way to update a
-bitfield is to first do the masking, and then do the insertion of new
-bits, so a bitfield assignment very easily exposes non-real values to
-a concurrent read on another CPU.
+> =
 
-What I think C11 is supposed to protect is from compilers doing
-horribly bad things, and accessing bitfields with bigger types than
-the field itself, ie when you have
+> This is the rough timeline that recently occurred:
+> =
 
-   struct {
-       char c;
-       int field1:5;
-   };
+> - changes were made to stacktracing API
+> -- one commit affected livepatching and broke a selftest
+i assume this is another kernel tree, not necessary the livepatch
+kernel tree. This tree may or may not be in our monitor list.
+- if not, we can't report is before linus pull.
+- if yes, we should be able to detect the failure in normal situation,
+and trigger a bisect. But due to how we run the testing internally,
+it sometimes can fail to trigger bisect or bisect successfully.
 
-then a write to "field1" had better not touch "char c" as part of the
-rmw operation, because that would indeed introduce a data-race with a
-completely independent field that might have completely independent
-locking rules.
+> -- Linus pulled the changes
+> - the livepatching tree updated its master to Linus tree
+> -- Miroslav noticed that self-tests were broken in the livepatch tree
+> -- we fixed up the stacktracing API, pushed up to Linus
+> -- all is good now
+> =
 
-But
+> Could the 0-day bot testing have helped us spot the self-test
+> breakage before Linus pulled or when the livepatching tree updated?
+This is similar to previous answer. If the error is not fixed, and exists
+in any tree under 0day's monitor, we can figure out the culprit patch.
 
-   struct {
-        int c:8;
-        int field1:5;
-   };
+For now, we will have our best effort to detect regression as many as
+possible, while it is not reaching 100% for the test suites we have.
 
-would not sanely have the same guarantees, even if the layout in
-memory might be identical. Once you have bitfields next to each other,
-and use a base type that means they can be combined together, they
-can't be sanely modified without locking.
+> =
 
-(And I don't know if C11 took up the "base type of the bitfield"
-thing. Maybe you still need to use the ":0" thing to force alignment,
-and maybe the C standards people still haven't made the underlying
-type be meaningful other than for sign handling).
+> Thanks,
+> =
 
-            Linus
+> -- Joe
 
---===============4414573394607787171==--
+--===============2909154170757071968==--
 
