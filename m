@@ -1,56 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============4388699326273393864=="
+Content-Type: multipart/mixed; boundary="===============8729558327083206411=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Petr Mladek <pmladek@suse.com>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] c8eaeac7b7: aim7.jobs-per-min -11.7% regression
-Date: Tue, 11 Jun 2019 08:52:11 +0800
-Message-ID: <87v9xdymdg.fsf@yhuang-dev.intel.com>
-In-Reply-To: <87blzl7itt.fsf@yhuang-dev.intel.com>
+Subject: Re: livepatching selftests failure on current master branch
+Date: Tue, 11 Jun 2019 09:42:57 +0200
+Message-ID: <20190611074257.kogayuriz5aovv4b@pathway.suse.cz>
+In-Reply-To: <20190606004943.GA30795@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4388699326273393864==
+--===============8729558327083206411==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-"Huang, Ying" <ying.huang@intel.com> writes:
+On Thu 2019-06-06 08:49:43, Philip Li wrote:
+> On Wed, Jun 05, 2019 at 10:51:53AM -0400, Joe Lawrence wrote:
+> > On 6/5/19 10:31 AM, Philip Li wrote:
+> > >On Wed, Jun 05, 2019 at 09:48:02AM -0400, Joe Lawrence wrote:
+> > That's okay, though I guess I'm not clear why there wasn't an email
+> > reporting that the livepatching selftests failed after
+> > livepatching.git was recently updated to include tglx's stack trace
+> > fixes.
+> > =
 
-> Hi, Josef,
->
-> kernel test robot <rong.a.chen@intel.com> writes:
->
->> Greeting,
->>
->> FYI, we noticed a -11.7% regression of aim7.jobs-per-min due to commit:
->>
->>
->> commit: c8eaeac7b734347c3afba7008b7af62f37b9c140 ("btrfs: reserve
->> delalloc metadata differently")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->>
->> in testcase: aim7
->> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz wi=
-th 384G memory
->> with following parameters:
->>
->> 	disk: 4BRD_12G
->> 	md: RAID0
->> 	fs: btrfs
->> 	test: disk_rr
->> 	load: 1500
->> 	cpufreq_governor: performance
->>
->> test-description: AIM7 is a traditional UNIX system level benchmark
->> suite which is used to test and measure the performance of multiuser
->> system.
->> test-url: https://sourceforge.net/projects/aimbench/files/aim-suite7/
->
-> Here's another regression, do you have time to take a look at this?
+> > Do the tests only run for unique commits (ie, will it skip when
+> > livepatching.git updates/merges latest linux tree ??)
+> it will not skip, though we are not testing commit by commit. If the issue
+> is found, and bisect to the bad commit, we will report to author of that
+> commit for information.
 
-Ping
+Bisecting might take a lot of time or even fail. But each selftest
+should get associated with a kernel subsystem. It would be helpful
+to always inform the subsystem maintainers. Or at least the author
+of the selftest that failed.
 
 Best Regards,
-Huang, Ying
+Petr
 
---===============4388699326273393864==--
+--===============8729558327083206411==--
 
