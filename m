@@ -1,55 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============2976113607998483399=="
+Content-Type: multipart/mixed; boundary="===============8735105250274771361=="
 MIME-Version: 1.0
-From: Waiman Long <longman@redhat.com>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [locking/rwsem] 4f23dbc1e6: reaim.jobs_per_min -37.0% regression
-Date: Mon, 24 Jun 2019 15:45:03 -0400
-Message-ID: <f0381605-e266-4816-653a-91c6e17ca3a5@redhat.com>
-In-Reply-To: <20190624054511.GA7221@shao2-debian>
+Subject: Re: [x86/hotplug] e1056a25da: WARNING:at_arch/x86/kernel/apic/apic.c:#setup_local_APIC
+Date: Tue, 25 Jun 2019 09:46:01 +0800
+Message-ID: <58ea508f-dc2e-8537-fe96-49cca0a7c799@intel.com>
+In-Reply-To: <alpine.DEB.2.21.1906212108150.5503@nanos.tec.linutronix.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2976113607998483399==
+--===============8735105250274771361==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 6/24/19 1:45 AM, kernel test robot wrote:
-> Greeting,
+On 6/22/19 3:08 AM, Thomas Gleixner wrote:
+> On Thu, 20 Jun 2019, kernel test robot wrote:
 >
-> FYI, we noticed a -37.0% regression of reaim.jobs_per_min due to commit:
->
->
-> commit: 4f23dbc1e657951e5d94c60369bc1db065961fb3 ("locking/rwsem: Impleme=
-nt lock handoff to prevent lock starvation")
-> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git locking/core
->
-> in testcase: reaim
-> on test machine: 48 threads Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz wit=
-h 64G memory
-> with following parameters:
->
-> 	runtime: 300s
-> 	nr_task: 7000t
-> 	test: shared_memory
-> 	cpufreq_governor: performance
-> 	ucode: 0x42e
->
-> test-description: REAIM is an updated and improved version of AIM 7 bench=
-mark.
-> test-url: https://sourceforge.net/projects/re-aim-7/
+>> FYI, we noticed the following commit (built with gcc-7):
+>>
+>> commit: e1056a25daa6460c95e92d7d6853d05ad62458f7 ("x86/hotplug: Silence =
+APIC and NMI when CPU is dead")
+>> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git WIP.x86/ipi
+>>
+>> in testcase: locktorture
+>> with following parameters:
+>>
+>> 	runtime: 300s
+>> 	test: cpuhotplug
+>>
+>> test-description: This torture test consists of creating a number of ker=
+nel threads which acquire the lock and hold it for specific amount of time,=
+ thus simulating different critical region behaviors.
+>> test-url: https://www.kernel.org/doc/Documentation/locking/locktorture.t=
+xt
+>>
+>>
+>> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 =
+-m 2G
+> I cannot reproduce that issue. What's the underlying hardware machine?
 
-With 7000 users, there will be extreme contention on the rwsems. The
-lock handoff patch is known to reduce throughput with such level of lock
-contention. This is a tradeoff between throughput and fairness. I don't
-think this is a problem unless some real world workloads also have
-significant regression in performance. I will try to reproduce the
-regression and see if we can do something to reduce the performance
-regression.
+brand: Genuine Intel(R) CPU 000 @ 2.27GHz
+model: Westmere-EX
+memory: 256G
+nr_node: 4
+nr_cpu: 80
 
-Cheers,
-Longman
-
+Best Regards,
+Rong Chen
 
 
---===============2976113607998483399==--
+>
+> Thanks,
+>
+> 	tglx
+
+--===============8735105250274771361==--
 
