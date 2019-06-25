@@ -1,69 +1,57 @@
-Content-Type: multipart/mixed; boundary="===============8937361770414998085=="
+Content-Type: multipart/mixed; boundary="===============0220738874302017727=="
 MIME-Version: 1.0
-From: Ming Lei <ming.lei@redhat.com>
+From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: 07173c3ec2: stderr.fio:pid=#, err=#/file:filesetup.c:#, func=fsync, error=Input/output_error
-Date: Tue, 25 Jun 2019 18:47:14 +0800
-Message-ID: <20190625104713.GA20120@ming.t460p>
-In-Reply-To: <f54a4338-410a-c96b-19e1-9932ed207aa3@intel.com>
+Subject: Re: [x86/hotplug] e1056a25da: WARNING:at_arch/x86/kernel/apic/apic.c:#setup_local_APIC
+Date: Tue, 25 Jun 2019 13:32:03 +0200
+Message-ID: <alpine.DEB.2.21.1906251330330.32342@nanos.tec.linutronix.de>
+In-Reply-To: <f5c36f89-61bf-a82e-3d3b-79720b2da2ef@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8937361770414998085==
+--===============0220738874302017727==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi rong.a.chen,
+Rong,
 
-Thanks for your report!
+On Tue, 25 Jun 2019, Rong Chen wrote:
+> On 6/25/19 2:24 PM, Thomas Gleixner wrote:
+> > > On 6/22/19 3:08 AM, Thomas Gleixner wrote:
+> > > > > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge =
+-smp
+> > > > > 2 -m
+> > > > > 2G
+> > > > I cannot reproduce that issue. What's the underlying hardware machi=
+ne?
+> > > brand: Genuine Intel(R) CPU 000 @ 2.27GHz
+> > > model: Westmere-EX
+> > > memory: 256G
+> > > nr_node: 4
+> > > nr_cpu: 80
+> > Ok. I'll try to find something similar. Can please you rerun that test =
+on
+> > that particular configuration with the updated branch?
+> > =
 
-On Tue, Jun 25, 2019 at 04:32:48PM +0800, kernel test robot wrote:
-> FYI, we noticed the following commit (built with gcc-7):
-> =
+> >     git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git WIP.x86/i=
+pi
+> > =
 
-> commit: 07173c3ec276cbb18dc0e0687d37d310e98a1480 ("block: enable multipag=
-e bvecs")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git  master
-> =
+> I have tested commit e0b179bc1a ("x86/apic/x2apic: Add conditional IPI
+> shorthands support"), the problem is still exist.
 
-> in testcase: fio-basic
-> on test machine: 72 threads Intel(R) Xeon(R) CPU E5-2699 v3 @ 2.30GHz wit=
-h 256G memory
-> with following parameters:
-> =
+the head of that branch is:
 
-> 	runtime: 300s
-> 	nr_task: 8t
-> 	disk: 1SSD
-> 	fs: xfs
-> 	rw: randread
-> 	bs: 2M
-> 	ioengine: sync
-> 	test_size: 512g
-> =
+      4f3f6d6a7f8e ("x86/apic/x2apic: Add conditional IPI shorthands suppor=
+t")
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> fio: pid=3D0, err=3D5/file:filesetup.c:190, func=3Dfsync, error=3DInput/o=
-utput error
-> fio: pid=3D0, err=3D5/file:filesetup.c:190, func=3Dfsync, error=3DInput/o=
-utput error
-
-I just tried the fio(randread, bs:2M, sync, nvme, xfs and block device) tes=
-t on
-5.2-rc6 kernel, looks it can't be reproduced.
-
-For multi-page bvec change, I'd suggest to run test on 5.1 at least,
-since there are several follow-up fixes.
-
-Also the dmesg log seems not intact, looks it only shows booting.
-
-Please let us know if the issue can be triggered on 5.1 or 5.2.
+This is WIP and force pushed. There are no incremental changes. Could you
+please check again?
 
 Thanks,
-Ming
 
---===============8937361770414998085==--
+	tglx
+
+--===============0220738874302017727==--
 
