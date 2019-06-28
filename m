@@ -1,169 +1,277 @@
-Content-Type: multipart/mixed; boundary="===============6355920290508599100=="
+Content-Type: multipart/mixed; boundary="===============2389766940946995003=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/hotplug] e1056a25da: WARNING:at_arch/x86/kernel/apic/apic.c:#setup_local_APIC
-Date: Fri, 28 Jun 2019 14:32:31 +0800
-Message-ID: <20190628063231.GA7766@shbuild999.sh.intel.com>
-In-Reply-To: <alpine.DEB.2.21.1906251330330.32342@nanos.tec.linutronix.de>
+Subject: Re: fcc784be83 [ 150.952780] WARNING: held lock freed!
+Date: Fri, 28 Jun 2019 16:31:35 +0800
+Message-ID: <515d36cc-343d-e686-9e96-a29166039f7f@intel.com>
+In-Reply-To: <20190627103202.2680e4e0@gandalf.local.home>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6355920290508599100==
+--===============2389766940946995003==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Thomas,
+On 6/27/19 10:32 PM, Steven Rostedt wrote:
+> On Wed, 19 Jun 2019 10:41:14 +0800
+> kernel test robot <lkp@intel.com> wrote:
+>
+>> Greetings,
+>>
+>> 0day kernel testing robot got the below dmesg and the first bad commit is
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+>>
+>> commit fcc784be837714a9173b372ff9fb9b514590dad9
+>> Author:     Steven Rostedt (VMware) <rostedt@goodmis.org>
+>> AuthorDate: Wed Apr 4 14:06:30 2018 -0400
+>> Commit:     Ingo Molnar <mingo@kernel.org>
+>> CommitDate: Thu Jun 21 18:19:01 2018 +0200
+>>
+>>      locking/lockdep: Do not record IRQ state within lockdep code
+>>      =
 
-On Tue, Jun 25, 2019 at 07:32:03PM +0800, Thomas Gleixner wrote:
-> Rong,
-> =
+>>      While debugging where things were going wrong with mapping
+>>      enabling/disabling interrupts with the lockdep state and actual real
+>>      enabling and disabling interrupts, I had to silent the IRQ
+>>      disabling/enabling in debug_check_no_locks_freed() because it was
+>>      always showing up as it was called before the splat was.
+>>      =
 
-> On Tue, 25 Jun 2019, Rong Chen wrote:
-> > On 6/25/19 2:24 PM, Thomas Gleixner wrote:
-> > > > On 6/22/19 3:08 AM, Thomas Gleixner wrote:
-> > > > > > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridg=
-e -smp
-> > > > > > 2 -m
-> > > > > > 2G
-> > > > > I cannot reproduce that issue. What's the underlying hardware mac=
-hine?
-> > > > brand: Genuine Intel(R) CPU 000 @ 2.27GHz
-> > > > model: Westmere-EX
-> > > > memory: 256G
-> > > > nr_node: 4
-> > > > nr_cpu: 80
-> > > Ok. I'll try to find something similar. Can please you rerun that tes=
-t on
-> > > that particular configuration with the updated branch?
-> > > =
+>>      Use raw_local_irq_save/restore() for not only debug_check_no_locks_=
+freed()
+>>      but for all internal lockdep functions, as they hide useful informa=
+tion
+>>      about where interrupts were used incorrectly last.
+>>      =
 
-> > >     git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git WIP.x86=
-/ipi
-> > > =
+>>      Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+>>      Cc: Andrew Morton <akpm@linux-foundation.org>
+>>      Cc: Linus Torvalds <torvalds@linux-foundation.org>
+>>      Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+>>      Cc: Peter Zijlstra <peterz@infradead.org>
+>>      Cc: Thomas Gleixner <tglx@linutronix.de>
+>>      Cc: Will Deacon <will.deacon@arm.com>
+>>      Link: https://lkml.kernel.org/lkml/20180404140630.3f4f4c7a(a)gandal=
+f.local.home
+>>      Signed-off-by: Ingo Molnar <mingo@kernel.org>
+>>
+> I can crash with this config with and without this commit.
+>
+> Are you sure the bug is with this commit? Can you consistently
+> reproduce the problem with the commit applied, and consistently not see
+> the problem with the commit removed? If not, then you should definitely
+> add that procedure before sending these reports, otherwise they will
+> start to be ignored.
 
-> > I have tested commit e0b179bc1a ("x86/apic/x2apic: Add conditional IPI
-> > shorthands support"), the problem is still exist.
-> =
+Hi Steve,
 
-> the head of that branch is:
-> =
+Sorry for the inconvenience, the robot noticed that the error "WARNING: =
 
->       4f3f6d6a7f8e ("x86/apic/x2apic: Add conditional IPI shorthands supp=
-ort")
-> =
+held lock freed!" first appears with commit fcc784be83
+and didn't find the error in parent commit. then it sent it out =
 
-> This is WIP and force pushed. There are no incremental changes. Could you
-> please check again?
+automatically. We'll improve the robot to sent reports more carefully.
 
-Since you can't reproduce it yet, we've added some debug hook to get more
-info, like dmesg below:
-
-[  288.865969] kvm-clock: cpu 0, msr 6d201001, secondary cpu clock
-[  288.866069] IRR[7]: 0x1000
-[  289.890274] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/apic/apic.c:1502 s=
-etup_local_APIC+0x2d1/0x4f0
-[  289.911792] Modules linked in: locktorture torture sr_mod cdrom ata_gene=
-ric pata_acpi bochs_drm ppdev ttm ata_piix drm_kms_helper snd_pcm libata sy=
-scopyarea sysfillrect snd_timer snd sysimgblt soundcore fb_sys_fops joydev =
-crc32c_intel drm serio_raw pcspkr parport_pc i2c_piix4 floppy parport
-[  289.959629] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.2.0-rc5-00493-g1=
-965704 #1
-[  289.975340] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS =
-1.10.2-1 04/01/2014
-[  289.990568] RIP: 0010:setup_local_APIC+0x2d1/0x4f0
-[  290.000361] Code: 7a 7d 01 85 c9 0f 84 a9 00 00 00 0f 31 c1 e1 0a 48 c1 =
-e2 20 41 89 ce 4c 03 34 24 48 09 d0 49 29 c6 4d 85 f6 0f 8f a1 fe ff ff <0f=
-> 0b 48 c7 c7 09 08 cc 8e 89 ea 44 89 ee bb 07 00 00 00 48 c7 c5
-[  290.035653] RSP: 0000:ffffffff8f003ee0 EFLAGS: 00010086
-[  290.044854] RAX: 0000009c7aa7aeb4 RBX: 0000000000000020 RCX: 000000008a0=
-01800
-[  290.057690] RDX: 0000009c00000000 RSI: 0000000000000020 RDI: ffffffff8f0=
-03ef0
-[  290.070711] RBP: 0000000000000000 R08: 0000000000000341 R09: 00000000000=
-0001d
-[  290.083680] R10: ffff943bcf49b740 R11: ffffffff8f003d90 R12: 00000000000=
-000f0
-[  290.096414] R13: 0000000000001000 R14: fffffffffffc581b R15: 00000000000=
-00000
-[  290.109369] FS:  0000000000000000(0000) GS:ffff943c32400000(0000) knlGS:=
-0000000000000000
-[  290.124123] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  290.134558] CR2: 00000000f7ec7710 CR3: 000000006c60a000 CR4: 00000000000=
-006f0
-[  290.147451] Call Trace:
-[  290.152154]  apic_ap_setup+0xa/0x20
-[  290.158663]  start_secondary+0x78/0x1e0
-[  290.165411]  secondary_startup_64+0xb6/0xc0
-[  290.173158] ---[ end trace bfefeb8bcdb1b9e3 ]---
-[  290.182418] queued =3D 0x1000 acked =3D 0
-[  290.189159] IRR[7]: 0x1000
-
-Which shows the IRR[7] was set 0x1000, IIUC, it means vector
-0xec, which is for LAPIC timer, and ISRs are all 0 before and
-after the loop.
+Best Regards,
+Rong Chen
 
 
-The debug code is as follows:
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 197a150..38e0851 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -1447,6 +1447,22 @@ static void apic_pending_intr_clear(void)
- =
+>
+> -- Steve
+>
+>
+>> 03eeafdd9a  locking/rwsem: Fix up_read_non_owner() warning with DEBUG_RW=
+SEMS
+>> fcc784be83  locking/lockdep: Do not record IRQ state within lockdep code
+>> bed3c0d84e  Merge tag 'for-5.2-rc5-tag' of git://git.kernel.org/pub/scm/=
+linux/kernel/git/kdave/linux
+>> 1c6b40509d  Add linux-next specific files for 20190618
+>> +-----------------------------------------------------------------------=
+-----------+------------+------------+------------+---------------+
+>> |                                                                       =
+           | 03eeafdd9a | fcc784be83 | bed3c0d84e | next-20190618 |
+>> +-----------------------------------------------------------------------=
+-----------+------------+------------+------------+---------------+
+>> | boot_successes                                                        =
+           | 874        | 277        | 276        | 21            |
+>> | boot_failures                                                         =
+           | 14         | 19         | 64         | 7             |
+>> | BUG:soft_lockup-CPU##stuck_for#s                                      =
+           | 11         | 2          | 4          |               |
+>> | EIP:smp_call_function_single                                          =
+           | 1          | 1          |            |               |
+>> | Kernel_panic-not_syncing:softlockup:hung_tasks                        =
+           | 11         | 2          | 4          |               |
+>> | EIP:_raw_spin_unlock_irqrestore                                       =
+           | 3          | 0          | 1          |               |
+>> | EIP:__copy_user_ll                                                    =
+           | 2          | 0          | 1          |               |
+>> | invoked_oom-killer:gfp_mask=3D0x                                      =
+             | 1          | 2          | 1          |               |
+>> | Mem-Info                                                              =
+           | 1          | 2          | 2          |               |
+>> | EIP:wp_page_copy                                                      =
+           | 3          |            |            |               |
+>> | BUG:kernel_hang_in_early-boot_stage                                   =
+           | 1          |            |            |               |
+>> | EIP:shmem_getpage_gfp                                                 =
+           | 2          | 0          | 1          |               |
+>> | BUG:workqueue_lockup-pool                                             =
+           | 1          | 0          | 1          |               |
+>> | BUG:kernel_hang_in_boot-around-mounting-root_stage                    =
+           | 0          | 1          |            |               |
+>> | Out_of_memory:Kill_process                                            =
+           | 0          | 1          |            |               |
+>> | WARNING:held_lock_freed                                               =
+           | 0          | 13         | 58         | 7             |
+>> | is_freeing_memory#-#,with_a_lock_still_held_there                     =
+           | 0          | 13         | 58         | 7             |
+>> | BUG:kernel_hang_in_early-boot_stage,last_printk:early_console_in_setup=
+_code      | 0          | 1          |            |               |
+>> | EIP:rcu_is_watching                                                   =
+           | 0          | 1          |            |               |
+>> | EIP:ring_buffer_consume                                               =
+           | 0          | 0          | 1          |               |
+>> | page_allocation_failure:order:#,mode:#(GFP_KERNEL|__GFP_NORETRY),nodem=
+ask=3D(null) | 0          | 0          | 1          |               |
+>> | BUG:unable_to_handle_page_fault_for_address                           =
+           | 0          | 0          | 1          |               |
+>> | Oops:#[##]                                                            =
+           | 0          | 0          | 1          |               |
+>> | EIP:debug_check_no_locks_freed                                        =
+           | 0          | 0          | 1          |               |
+>> | Kernel_panic-not_syncing:Fatal_exception                              =
+           | 0          | 0          | 1          |               |
+>> +-----------------------------------------------------------------------=
+-----------+------------+------------+------------+---------------+
+>>
+>> If you fix the issue, kindly add following tag
+>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> [  147.470176] init: tty3 main process (364) terminated with status 1
+>> [  147.497211] init: tty3 main process ended, respawning
+>> [  147.612415] init: tty6 main process (365) terminated with status 1
+>> [  147.687364] init: tty6 main process ended, respawning
+>> [  150.937355]
+>> [  150.941927] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+>> [  150.952780] WARNING: held lock freed!
+>> [  150.963993] 4.17.0-09747-gfcc784b #1 Tainted: G                T
+>> [  150.989489] -------------------------
+>> [  151.005112] trinity-main/356 is freeing memory ce93de20-ce93de47, wit=
+h a lock still held there!
+>> [  151.040984] (ptrval) (&wq#3){....}, at: __wake_up_common_lock+0x5a/0x=
+140
+>> [  151.069147] 1 lock held by trinity-main/356:
+>> [  151.087139]  #0: (ptrval) (&sb->s_type->i_mutex_key){....}, at: itera=
+te_dir+0x42/0x2a0
+>> [  151.117861]
+>> [  151.117861] stack backtrace:
+>> [  151.132116] CPU: 1 PID: 356 Comm: trinity-main Tainted: G            =
+    T 4.17.0-09747-gfcc784b #1
+>> [  151.162025] Call Trace:
+>> [  151.170423]  dump_stack+0x2bc/0x41a
+>> [  151.182441]  debug_check_no_locks_freed+0x354/0x370
+>> [  151.199065]  __raw_spin_lock_init+0x29/0x80
+>> [  151.214099]  __init_waitqueue_head+0x2e/0x70
+>> [  151.228615]  ? proc_tgid_base_lookup+0x40/0x40
+>> [  151.243819]  proc_fill_cache+0x118/0x360
+>> [  151.256974]  ? format_decode+0x1a6/0x890
+>> [  151.270037]  ? format_decode+0x308/0x890
+>> [  151.283679]  ? vsnprintf+0x622/0x860
+>> [  151.293724]  proc_map_files_readdir+0x648/0x6a0
+>> [  151.306619]  ? proc_tgid_base_lookup+0x40/0x40
+>> [  151.320722]  iterate_dir+0x225/0x2a0
+>> [  151.331637]  ? __fget_light+0x7f/0x100
+>> [  151.342010]  ksys_getdents64+0x1ac/0x2f0
+>> [  151.353610]  ? sys_old_readdir+0x160/0x160
+>> [  151.366017]  sys_getdents64+0x24/0x40
+>> [  151.377653]  do_fast_syscall_32+0x14b/0x780
+>> [  151.392209]  entry_SYSENTER_32+0x53/0x86
+>> [  151.404786] EIP: 0xa7fc4cd9
+>> [  151.423581] Code: 08 8b 80 5c cd ff ff 85 d2 74 02 89 02 5d c3 8b 04 =
+24 c3 8b 0c 24 c3 8b 1c 24 c3 8b 3c 24 c3 90 90 51 52 55 89 e5 0f 34 cd 80 =
+<5d> 5a 59 c3 90 90 90 90 8d 76 00 58 b8 77 00 00 00 cd 80 90 8d 76
+>> [  151.547420] EAX: ffffffda EBX: 0000002b ECX: 08aefedc EDX: 00008000
+>> [  151.586666] ESI: 08aefedc EDI: ffffffd0 EBP: 00000026 ESP: af88aac4
+>> [  151.605753] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 0000=
+0246
+>> [main] Added 10680 filenames from /proc
+>> [main] Added 13148 filenames from /proc
+>> [main] Added 13151 filenames from /proc
+>> [  156.784347] init: tty4 main process (366) terminated with status 1
+>> [  156.849880] init: tty4 main process ended, respawning
+>>
+>>                                                            # HH:MM RESUL=
+T GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
+>> git bisect start v4.18 v4.17 --
+>> git bisect  bad c81b995f00c7a1c2ca9ad67f5bb4a50d02f98f84  # 23:06  B    =
+  6     1    0   0  Merge branch 'perf-urgent-for-linus' of git://git.kerne=
+l.org/pub/scm/linux/kernel/git/tip/tip
+>> git bisect good 2a70ea5cda00214a1d573acf19fa0cd06d947e38  # 23:43  G    =
+205     0    9   9  Merge tag 'hsi-for-4.18' of git://git.kernel.org/pub/sc=
+m/linux/kernel/git/sre/linux-hsi
+>> git bisect good e7655d2b25466c534ed1f539367dae595bb0bd20  # 00:13  G    =
+209     0   15  15  Merge tag 'for-4.18-part2-tag' of git://git.kernel.org/=
+pub/scm/linux/kernel/git/kdave/linux
+>> git bisect good 6d90eb7ba341b3eb035121eff0b69d370cbc251e  # 00:44  G    =
+206     0   18  18  Merge tag 'dma-rename-4.18' of git://git.infradead.org/=
+users/hch/dma-mapping
+>> git bisect good 5e2204832b20ef9db859dd6a2e955ac3e33eef27  # 01:07  G    =
+212     0    9   9  Merge tag 'powerpc-4.18-2' of git://git.kernel.org/pub/=
+scm/linux/kernel/git/powerpc/linux
+>> git bisect good 6242258b6b472f8fdd8ed9b735cc1190c185d16d  # 01:37  G    =
+206     0   24  24  Merge branch 'timers-urgent-for-linus' of git://git.ker=
+nel.org/pub/scm/linux/kernel/git/tip/tip
+>> git bisect  bad d4e860eaf0584dfcc1375e06eeb34f85f43c8d34  # 02:10  B    =
+ 36     1    4   4  Merge branch 'x86-urgent-for-linus' of git://git.kernel=
+.org/pub/scm/linux/kernel/git/tip/tip
+>> git bisect  bad 2da2ca24a38f0200111e3b8823c08d02cb59d362  # 03:07  B    =
+ 90     1    7   7  Merge branch 'locking-urgent-for-linus' of git://git.ke=
+rnel.org/pub/scm/linux/kernel/git/tip/tip
+>> git bisect good a43de489934cadcbc4cc08a6590fdcc833768461  # 04:05  G    =
+302     0   21  21  Merge branch 'ras-urgent-for-linus' of git://git.kernel=
+.org/pub/scm/linux/kernel/git/tip/tip
+>> git bisect good 7ea959c45769612aa92557fb6464679f5fec7d9e  # 04:37  G    =
+306     0   18  18  locking/refcounts: Implement refcount_dec_and_lock_irqs=
+ave()
+>> git bisect  bad fcc784be837714a9173b372ff9fb9b514590dad9  # 06:19  B    =
+ 19     1    3   3  locking/lockdep: Do not record IRQ state within lockdep=
+ code
+>> git bisect good 03eeafdd9ab06a770d42c2b264d50dff7e2f4eee  # 06:47  G    =
+305     0   18  18  locking/rwsem: Fix up_read_non_owner() warning with DEB=
+UG_RWSEMS
+>> # first bad commit: [fcc784be837714a9173b372ff9fb9b514590dad9] locking/l=
+ockdep: Do not record IRQ state within lockdep code
+>> git bisect good 03eeafdd9ab06a770d42c2b264d50dff7e2f4eee  # 07:23  G    =
+904     0   40  58  locking/rwsem: Fix up_read_non_owner() warning with DEB=
+UG_RWSEMS
+>> # extra tests on HEAD of internal-eywa/master
+>> git bisect  bad b4c6b079156ebc029114a45812d5e5298f51fa01  # 07:23  B    =
+  8     3    0   2  Intel Next: Add release files for v5.2-rc5 2019-06-17
+>> # extra tests on tree/branch linus/master
+>> git bisect  bad bed3c0d84e7e25c8e0964d297794f4c215b01f33  # 08:52  B    =
+  5     2    0   0  Merge tag 'for-5.2-rc5-tag' of git://git.kernel.org/pub=
+/scm/linux/kernel/git/kdave/linux
+>> # extra tests with first bad commit reverted
+>> git bisect  bad b0f031ad2fd0758b5bb7c58afe7f8bbaab65c265  # 09:42  B    =
+126     2   10  10  Revert "locking/lockdep: Do not record IRQ state within=
+ lockdep code"
+>> # extra tests on tree/branch linux-next/master
+>> git bisect  bad 1c6b40509daf5190b1fd2c758649f7df1da4827b  # 10:20  B    =
+  9     2    0   0  Add linux-next specific files for 20190618
+>>
+>> ---
+>> 0-DAY kernel test infrastructure                Open Source Technology C=
+enter
+>> https://lists.01.org/pipermail/lkp                          Intel Corpor=
+ation
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
 
- 	if (boot_cpu_has(X86_FEATURE_TSC))
- 		tsc =3D rdtsc();
-+
-+	{
-+		for (i =3D APIC_ISR_NR - 1; i >=3D 0; i--) {
-+			queued =3D apic_read(APIC_IRR + i*0x10);
-+
-+			if (queued)
-+				printk("IRR[%d]: 0x%x\n", i, queued);
-+		}
-+
-+		for (i =3D APIC_ISR_NR - 1; i >=3D 0; i--) {
-+			value =3D apic_read(APIC_ISR + i*0x10);
-+			if (value)
-+				printk("ISR[%d]: 0x%lx\n", i, value);
-+		}
-+	}
-+
- 	/*
- 	 * After a crash, we no longer service the interrupts and a pending
- 	 * interrupt from previous kernel might still have ISR bit set.
-@@ -1484,6 +1500,25 @@ static void apic_pending_intr_clear(void)
- 		}
- 	} while (queued && max_loops > 0);
- 	WARN_ON(max_loops <=3D 0);
-+
-+	if (max_loops <=3D 0) {
-+		printk("queued =3D 0x%x acked =3D %d\n", queued, acked);
-+
-+		queued =3D 0;
-+		for (i =3D APIC_ISR_NR - 1; i >=3D 0; i--) {
-+			queued =3D apic_read(APIC_IRR + i*0x10);
-+
-+			if (queued)
-+				printk("IRR[%d]: 0x%x\n", i, queued);
-+		}
-+
-+		for (i =3D APIC_ISR_NR - 1; i >=3D 0; i--) {
-+			value =3D apic_read(APIC_ISR + i*0x10);
-+			if (value)
-+				printk("ISR[%d]: 0x%lx\n", i, value);
-+
-+		}
-+	}
- }
- =
-
- /**
-
-
-Thanks,
-Feng
-
---===============6355920290508599100==--
+--===============2389766940946995003==--
 
