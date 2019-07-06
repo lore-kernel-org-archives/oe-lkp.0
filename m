@@ -1,416 +1,339 @@
-Content-Type: multipart/mixed; boundary="===============1399901089514739395=="
+Content-Type: multipart/mixed; boundary="===============3478412461674000022=="
 MIME-Version: 1.0
-From: Ming Lei <ming.lei@redhat.com>
+From: Chen, Rong A <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: 07173c3ec2: stderr.fio:pid=#, err=#/file:filesetup.c:#, func=fsync, error=Input/output_error
-Date: Mon, 01 Jul 2019 15:14:11 +0800
-Message-ID: <20190701071409.GD16809@ming.t460p>
-In-Reply-To: <14cf3658-21d5-a8fe-982e-60776476eb75@cn.fujitsu.com>
+Subject: Re: 1d03958188: WARNING:at_lib/vsprintf.c:#format_decode
+Date: Sat, 06 Jul 2019 14:24:34 +0800
+Message-ID: <52465594-ee03-b1c2-cef7-f17256438146@intel.com>
+In-Reply-To: <13851.1562314644@warthog.procyon.org.uk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1399901089514739395==
+--===============3478412461674000022==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 01, 2019 at 02:54:31PM +0800, Liu Yiding wrote:
-> =
 
-> =E5=9C=A8 2019/7/1 =E4=B8=8B=E5=8D=882:44, Ming Lei =E5=86=99=E9=81=93:
-> > On Mon, Jul 01, 2019 at 12:49:51PM +0800, Liu Yiding wrote:
-> > > =E5=9C=A8 2019/7/1 =E4=B8=8A=E5=8D=8810:47, Ming Lei =E5=86=99=E9=81=
-=93:
-> > > > [snip]
-> > > > > > > ------
-> > > > > > > =
+On 7/5/2019 4:17 PM, David Howells wrote:
+> kernel test robot <rong.a.chen@intel.com> wrote:
+>
+>> [   31.652058] WARNING: CPU: 1 PID: 947 at lib/vsprintf.c:2359 format_de=
+code+0x3dd/0x3f0
+> Was there more to the warning message than this?
 
-> > > > > > > 2412 [=C2=A0 112.558155] XFS (sdb1): Ending clean mount
-> > > > > > > 2413 [ 1317.330820] WARNING: CPU: 63 PID: 1495 at
-> > > > > > > drivers/scsi/scsi_lib.c:1034 scsi_init_io+0x11a/0x2e0
-> > > > > > > 2414 [ 1317.344000] Modules linked in: xfs dm_mod btrfs xor z=
-std_decompress
-> > > > > > > zstd_compress raid6_pq libcrc32c sd_mod sg intel_rapl sb_edac
-> > > > > > > x86_pkg_temp_thermal intel_powerclamp coretemp kvm_i=C2=A0=C2=
-=A0=C2=A0=C2=A0 ntel kvm irqbypass
-> > > > > > > crct10dif_pclmul crc32_pclmul crc32c_intel mgag200 snd_pcm
-> > > > > > > ghash_clmulni_intel ttm snd_timer drm_kms_helper ipmi_si ahci=
- snd
-> > > > > > > aesni_intel syscopyarea libahci ipmi_devi=C2=A0=C2=A0=C2=A0=
-=C2=A0 ntf sysfillrect sysimgblt
-> > > > > > > crypto_simd mei_me fb_sys_fops soundcore ioatdma cryptd ipmi_=
-msghandler
-> > > > > > > glue_helper pcspkr drm libata mei joydev lpc_ich i2c_i801 dca=
- wmi
-> > > > > > > acpi_power_meter acpi=C2=A0=C2=A0=C2=A0=C2=A0 _pad pcc_cpufre=
-q ip_tables
-> > > > > > > 2415 [ 1317.408135] CPU: 63 PID: 1495 Comm: kworker/63:1H Tai=
-nted:
-> > > > > > > G=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 I=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.2.0-rc5-00001-gc2d55e2 #1
-> > > > > > > 2416 [ 1317.420350] Hardware name: Intel Corporation S2600WTT=
-/S2600WTT, BIOS
-> > > > > > > SE5C610.86B.01.01.0008.021120151325 02/11/2015
-> > > > > > > 2417 [ 1317.433545] Workqueue: kblockd blk_mq_run_work_fn
-> > > > > > > 2418 [ 1317.440295] RIP: 0010:scsi_init_io+0x11a/0x2e0
-> > > > > > > 2419 [ 1317.446746] Code: be 01 00 00 00 e9 44 ff ff ff 8b 45=
- 70 89 83 08 01
-> > > > > > > 00 00 f6 45 1a 01 75 8a 31 c0 48 83 c4 08 5b 5d 41 5c 41 5d 4=
-1 5e 41 5f c3
-> > > > > > > <0f> 0b 8b 4d 18 8b 55 28 45 31 c9 48=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 c7 c6 98 da 69 82 48 c7 c7 f0
-> > > > > > > 2420 [ 1317.470863] RSP: 0018:ffffa5fa4f7e7c68 EFLAGS: 000102=
-46
-> > > > > > > 2421 [ 1317.478294] RAX: 000000003d17d1b8 RBX: ffff8ae6cb7426=
-90 RCX:
-> > > > > > > 0000000000000000
-> > > > > > > 2422 [ 1317.487878] RDX: 0000000000000000 RSI: 00000000000000=
-00 RDI:
-> > > > > > > ffff8ae6cb742690
-> > > > > > > 2423 [ 1317.497469] RBP: ffff8ae6cb742580 R08: 00000000000230=
-03 R09:
-> > > > > > > ffff8ae6cb7426c8
-> > > > > > > 2424 [ 1317.507057] R10: ffffa5fa4c7d7da0 R11: fefefefefefefe=
-ff R12:
-> > > > > > > 0000000000000801
-> > > > > > > 2425 [ 1317.516650] R13: 0000000000000000 R14: 00000000000000=
-00 R15:
-> > > > > > > ffff8ac800bd1800
-> > > > > > > 2426 [ 1317.526253] FS:=C2=A0 0000000000000000(0000) GS:ffff8=
-b077fac0000(0000)
-> > > > > > > knlGS:0000000000000000
-> > > > > > > 2427 [ 1317.536918] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 000=
-0000080050033
-> > > > > > > 2428 [ 1317.544952] CR2: 00007f39a5818004 CR3: 000000343440a0=
-06 CR4:
-> > > > > > > 00000000001606e0
-> > > > > > > 2429 [ 1317.554554] Call Trace:
-> > > > > > > 2430 [ 1317.558921]=C2=A0 sd_init_command+0x2ee/0xaf0 [sd_mod]
-> > > > > > > 2431 [ 1317.565800]=C2=A0 scsi_queue_rq+0x559/0xa80
-> > > > > > > 2432 [ 1317.571607]=C2=A0 blk_mq_dispatch_rq_list+0x3da/0x5b0
-> > > > > > > 2433 [ 1317.578375]=C2=A0 ? syscall_return_via_sysret+0x10/0x=
-7f
-> > > > > > > 2434 [ 1317.585339]=C2=A0 ? __switch_to_asm+0x40/0x70
-> > > > > > > 2435 [ 1317.591321]=C2=A0 ? elv_rb_del+0x1f/0x30
-> > > > > > > 2436 [ 1317.596807]=C2=A0 ? deadline_remove_request+0x55/0xc0
-> > > > > > > 2437 [ 1317.603560]=C2=A0 blk_mq_do_dispatch_sched+0x76/0x120
-> > > > > > > 2438 [ 1317.610302]=C2=A0 blk_mq_sched_dispatch_requests+0x10=
-0/0x170
-> > > > > > > 2439 [ 1317.617733]=C2=A0 __blk_mq_run_hw_queue+0x60/0x130
-> > > > > > > 2440 [ 1317.624200]=C2=A0 process_one_work+0x19c/0x3c0
-> > > > > > > 2441 [ 1317.630258]=C2=A0 worker_thread+0x3c/0x3b0
-> > > > > > > 2442 [ 1317.635937]=C2=A0 ? process_one_work+0x3c0/0x3c0
-> > > > > > > 2443 [ 1317.642183]=C2=A0 kthread+0x11e/0x140
-> > > > > > > 2444 [ 1317.647346]=C2=A0 ? kthread_park+0x90/0x90
-> > > > > > > 2445 [ 1317.652986]=C2=A0 ret_from_fork+0x35/0x40
-> > > > > > > 2446 [ 1317.658523] ---[ end trace 61026ff97261da6a ]---
-> > > > > > > 2447 [ 1317.665327] scsi_dump_rq: rq 6(f:801/23003, seg: 0)
-> > > > > > > 2448 [ 1317.671601] bio 0: d602/801 0 1024971192 0
-> > > > > > > 2449 [ 1317.676991] print_req_error: I/O error, dev sdb, sect=
-or 1024971192
-> > > > > > > flags 801
-> > > > > > > 2450 [ 1317.685722] scsi_dump_rq: rq 8(f:801/23003, seg: 0)
-> > > > > > > 2451 [ 1317.691994] bio 0: d602/801 0 1033359800 0
-> > > > > > The above line shows the bio is zero-size, and this bio is subm=
-itted
-> > > > > > from bio, since the bio->bi_flags indicates that BIO_CLONED isn=
-'t set.
-> > > > > > =
+Hi David,
 
-> > > > > > Please apply the following debug patch, and we may see where is=
- wrong.
-> > > > > > =
+I have found the warning message, please find it in the attachment.
 
-> > > > > > diff --git a/block/blk-core.c b/block/blk-core.c
-> > > > > > index 8340f69670d8..86bb61b0df83 100644
-> > > > > > --- a/block/blk-core.c
-> > > > > > +++ b/block/blk-core.c
-> > > > > > @@ -1125,6 +1125,7 @@ blk_qc_t submit_bio(struct bio *bio)
-> > > > > >     				bio_devname(bio, b), count);
-> > > > > >     		}
-> > > > > >     	}
-> > > > > > +	WARN_ON(bio->bi_iter.bi_size =3D=3D 0 && bio_op(bio) =3D=3D R=
-EQ_OP_WRITE);
-> > > > > >     	return generic_make_request(bio);
-> > > > > Sorry for delay,
-> > > > > =
+[=C2=A0 120.564466] Please remove unsupported %F in format
 
-> > > > > ------
-> > > > > =
+Best Regards,
+Rong Chen
 
-> > > > > [=C2=A0 116.619136] 2019-06-29 16:12:41 mkdir -p /fs/sdb1
-> > > > > [=C2=A0 116.619138]
-> > > > > [=C2=A0 116.628743] 2019-06-29 16:12:41 mount -t xfs -o inode64 /=
-dev/sdb1
-> > > > > /fs/sdb1
-> > > > > [=C2=A0 116.628745]
-> > > > > [=C2=A0 116.634699] SGI XFS with ACLs, security attributes, realt=
-ime, scrub,
-> > > > > debug enabled
-> > > > > [=C2=A0 116.653110] XFS (sdb1): Mounting V5 Filesystem
-> > > > > [=C2=A0 116.670081] XFS (sdb1): Ending clean mount
-> > > > > [=C2=A0 690.106779] WARNING: CPU: 53 PID: 1477 at block/blk-core.=
-c:1128
-> > > > > submit_bio+0x93/0x150
-> > > > > [=C2=A0 690.117972] Modules linked in: xfs dm_mod btrfs xor zstd_=
-decompress
-> > > > > zstd_compress raid6_pq libcrc32c sd_mod sg intel_rapl sb_edac
-> > > > > x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqb=
-ypass
-> > > > > mgag200 crct10dif_pclmul crc32_pclmul ttm crc32c_intel snd_pcm
-> > > > > ghash_clmulni_intel drm_kms_helper snd_timer ahci syscopyarea sys=
-fillrect
-> > > > > snd aesni_intel sysimgblt libahci ipmi_si soundcore fb_sys_fops m=
-ei_me
-> > > > > crypto_simd ipmi_devintf ioatdma cryptd pcspkr drm ipmi_msghandler
-> > > > > glue_helper libata mei joydev lpc_ich i2c_i801 dca wmi acpi_power=
-_meter
-> > > > > acpi_pad pcc_cpufreq ip_tables
-> > > > > [=C2=A0 690.176967] CPU: 53 PID: 1477 Comm: fio Tainted: G=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 W I
-> > > > > 5.2.0-rc5-00002-g9fa09bd #1
-> > > > > [=C2=A0 690.187198] Hardware name: Intel Corporation S2600WTT/S26=
-00WTT, BIOS
-> > > > > SE5C610.86B.01.01.0008.021120151325 02/11/2015
-> > > > > [=C2=A0 690.199375] RIP: 0010:submit_bio+0x93/0x150
-> > > > > [=C2=A0 690.204583] Code: ee 74 45 83 e1 01 74 26 65 48 01 35 bf =
-39 3f 45 8b 0d
-> > > > > ad 96 c4 01 85 c9 75 56 8b 43 28 85 c0 75 b3 0f b6 53 10 83 fa 01=
- 75 aa <0f>
-> > > > > 0b eb a6 65 48 8b 14 25 c0 6b 01 00 65 48 01 35 88 39 3f 45 48
-> > > > > [=C2=A0 690.226668] RSP: 0018:ffffb2d90efc3b40 EFLAGS: 00010246
-> > > > > [=C2=A0 690.233072] RAX: 0000000000000000 RBX: ffff9654c6ad9f40 R=
-CX:
-> > > > > 0000000000000801
-> > > > > [=C2=A0 690.241617] RDX: 0000000000000001 RSI: ffff9654c6ad9f00 R=
-DI:
-> > > > > ffff9654c6ad9f40
-> > > > > [=C2=A0 690.250146] RBP: 0000000000000000 R08: 0000000000000002 R=
-09:
-> > > > > 0000000000000000
-> > > > > [=C2=A0 690.258667] R10: 00000000000303a0 R11: ffff96757ffd4000 R=
-12:
-> > > > > ffffb2d90efc3e08
-> > > > > [=C2=A0 690.267183] R13: ffff9654c6ad9f00 R14: ffffb2d90efc3e08 R=
-15:
-> > > > > 0000000000000000
-> > > > > [=C2=A0 690.275696] FS:=C2=A0 00007fa8e005da80(0000) GS:ffff9654f=
-fac0000(0000)
-> > > > > knlGS:0000000000000000
-> > > > > [=C2=A0 690.285282] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 0000000=
-080050033
-> > > > > [=C2=A0 690.292252] CR2: 00007fa8cc05b3c0 CR3: 0000001fc8518001 C=
-R4:
-> > > > > 00000000001606e0
-> > > > > [=C2=A0 690.300770] Call Trace:
-> > > > > [=C2=A0 690.304123]=C2=A0 xfs_submit_ioend+0x84/0x1e0 [xfs]
-> > > > > [=C2=A0 690.309668]=C2=A0 xfs_do_writepage+0x246/0x5a0 [xfs]
-> > > > > [=C2=A0 690.315279]=C2=A0 write_cache_pages+0x16b/0x440
-> > > > > [=C2=A0 690.320420]=C2=A0 ? xfs_vm_releasepage+0x80/0x80 [xfs]
-> > > > > [=C2=A0 690.326238]=C2=A0 xfs_vm_writepages+0x6b/0xa0 [xfs]
-> > > > > [=C2=A0 690.331742]=C2=A0 do_writepages+0x4b/0xf0
-> > > > > [=C2=A0 690.336275]=C2=A0 ? iomap_file_buffered_write+0x62/0x90
-> > > > > [=C2=A0 690.342162]=C2=A0 ? iomap_write_end+0x240/0x240
-> > > > > [=C2=A0 690.347295]=C2=A0 ? xfs_iunlock+0x165/0x220 [xfs]
-> > > > > [=C2=A0 690.352595]=C2=A0 ? __filemap_fdatawrite_range+0xc1/0x100
-> > > > > [=C2=A0 690.358673]=C2=A0 __filemap_fdatawrite_range+0xc1/0x100
-> > > > > [=C2=A0 690.364571]=C2=A0 ? __switch_to_asm+0x34/0x70
-> > > > > [=C2=A0 690.369484]=C2=A0 file_write_and_wait_range+0x4c/0xa0
-> > > > > [=C2=A0 690.375198]=C2=A0 xfs_file_fsync+0x5d/0x230 [xfs]
-> > > > > [=C2=A0 690.380499]=C2=A0 do_fsync+0x38/0x60
-> > > > > [=C2=A0 690.384534]=C2=A0 __x64_sys_fsync+0x10/0x20
-> > > > > [=C2=A0 690.389243]=C2=A0 do_syscall_64+0x5b/0x1e0
-> > > > > [=C2=A0 690.393857]=C2=A0 entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > > > > [=C2=A0 690.400020] RIP: 0033:0x7fa8cbe4f70d
-> > > > > [=C2=A0 690.404533] Code: bc 20 00 00 75 10 b8 4a 00 00 00 0f 05 =
-48 3d 01 f0 ff
-> > > > > ff 73 31 c3 48 83 ec 08 e8 6e f7 ff ff 48 89 04 24 b8 4a 00 00 00=
- 0f 05 <48>
-> > > > > 8b 3c 24 48 89 c2 e8 b7 f7 ff ff 48 89 d0 48 83 c4 08 48 3d 01
-> > > > > [=C2=A0 690.426581] RSP: 002b:00007ffed6954160 EFLAGS: 00000293 O=
-RIG_RAX:
-> > > > > 000000000000004a
-> > > > > [=C2=A0 690.435583] RAX: ffffffffffffffda RBX: 00005573363790f0 R=
-CX:
-> > > > > 00007fa8cbe4f70d
-> > > > > [=C2=A0 690.444102] RDX: 0000000000200000 RSI: 00005573363790f0 R=
-DI:
-> > > > > 0000000000000003
-> > > > > [=C2=A0 690.452615] RBP: 00007fa8b337f418 R08: 0000000000000008 R=
-09:
-> > > > > 0000000000000001
-> > > > > [=C2=A0 690.461124] R10: 00000000897b0000 R11: 0000000000000293 R=
-12:
-> > > > > 0000000000000000
-> > > > > [=C2=A0 690.469631] R13: 0000001000000000 R14: 00007fa8c81dda50 R=
-15:
-> > > > > 0000000000000000
-> > > > > [=C2=A0 690.478130] ---[ end trace 90dd4ee6d5cdfcb8 ]---
-> > > > I have just checked xfs code, and looks the only reason is that bio=
- size
-> > > > is overflowed, that means the whole bio may reach 4GB. That might be
-> > > > possible in case of writeback. But I have to double check if that is
-> > > > the case, could you test the following patch and provide the log?
-> > > > =
 
-> > > > diff --git a/block/blk-core.c b/block/blk-core.c
-> > > > index 8340f69670d8..9d61e408c608 100644
-> > > > --- a/block/blk-core.c
-> > > > +++ b/block/blk-core.c
-> > > > @@ -1125,6 +1125,19 @@ blk_qc_t submit_bio(struct bio *bio)
-> > > >    				bio_devname(bio, b), count);
-> > > >    		}
-> > > >    	}
-> > > > +	if (WARN_ON(bio->bi_iter.bi_size =3D=3D 0 && bio_op(bio) =3D=3D R=
-EQ_OP_WRITE)) {
-> > > > +		int i;
-> > > > +		printk("bio: %hx/%hx %u %llu %u\n", bio->bi_flags, bio->bi_opf,
-> > > > +                       bio->bi_vcnt,
-> > > > +                       (unsigned long long)bio->bi_iter.bi_sector,
-> > > > +                       bio->bi_iter.bi_size);
-> > > > +		for (i =3D 0; i < bio->bi_vcnt; i++) {
-> > > > +			struct bio_vec *bvec =3D &bio->bi_io_vec[i];
-> > > > +			printk("%d: pfn %lu offset %u len %u\n", i++,
-> > > > +                               (unsigned long)page_to_pfn(bvec->bv=
-_page),
-> > > > +                               bvec->bv_offset, bvec->bv_len);
-> > > > +		}
-> > > > +	}
-> > > >    	return generic_make_request(bio);
-> > > >    }
-> > > the newest log and i also see you fix patch,=C2=A0 i will test your f=
-ix patch
-> > > more times to check it.
-> > > =
+>
+> Looking at that line, it would appear to be:
+>
+> 		WARN_ONCE(1, "Please remove unsupported %%%c in format string\n", *fmt);
+>
+> which should print a message.
+>
+> The only format string in my patch is:
+>
+> +               modname =3D kasprintf(GFP_KERNEL, "key-type-%s", type);
+>
+> which there doesn't appear to be a problem with.
+>
+> David
 
-> > > ------
-> > > =
+--===============3478412461674000022==
+Content-Type: application/octet-stream
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="dmesg.xz"
 
-> > > [=C2=A0=C2=A0 54.656016] 2019-07-01 11:48:52 mkfs -t xfs /dev/sdb1
-> > > [=C2=A0=C2=A0 54.656017]
-> > > [=C2=A0 119.228467] WARNING: CPU: 5 PID: 1530 at block/blk-core.c:1128
-> > > submit_bio+0xa5/0x1d0
-> > > [=C2=A0 119.240810] Modules linked in: dm_mod btrfs xor zstd_decompre=
-ss
-> > > zstd_compress raid6_pq libcrc32c sd_mod intel_rapl sg sb_edac
-> > > x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass
-> > > mgag200 crct10dif_pclmul snd_pcm crc32_pclmul ttm crc32c_intel snd_ti=
-mer
-> > > drm_kms_helper ghash_clmulni_intel snd syscopyarea ipmi_si sysfillrect
-> > > soundcore aesni_intel sysimgblt ipmi_devintf crypto_simd fb_sys_fops =
-ahci
-> > > mei_me libahci cryptd ipmi_msghandler pcspkr glue_helper drm mei liba=
-ta
-> > > joydev ioatdma lpc_ich i2c_i801 dca wmi acpi_power_meter acpi_pad
-> > > pcc_cpufreq ip_tables
-> > > [=C2=A0 119.306252] CPU: 5 PID: 1530 Comm: mkfs.xfs Tainted: G=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 W I
-> > > 5.2.0-rc5-00001-g82f8097 #1
-> > > [=C2=A0 119.318274] Hardware name: Intel Corporation S2600WTT/S2600WT=
-T, BIOS
-> > > SE5C610.86B.01.01.0008.021120151325 02/11/2015
-> > > [=C2=A0 119.331852] RIP: 0010:submit_bio+0xa5/0x1d0
-> > > [=C2=A0 119.338422] Code: 00 00 65 48 01 35 b3 39 5f 76 8b 0d a1 96 c=
-4 01 85 c9
-> > > 0f 85 9b 00 00 00 8b 43 28 85 c0 75 a5 8b 53 10 0f b6 ca 83 f9 01 75 =
-9a <0f>
-> > > 0b 0f b7 4b 68 0f b7 73 14 45 31 c9 4c 8b 43 20 48 c7 c7 f1 99
-> > > [=C2=A0 119.363296] RSP: 0018:ffff940c4fb17e58 EFLAGS: 00010246
-> > > [=C2=A0 119.371107] RAX: 0000000000000000 RBX: ffff88a53e3d6900 RCX:
-> > > 0000000000000001
-> > > [=C2=A0 119.381068] RDX: 0000000000040801 RSI: ffff88868138c000 RDI:
-> > > ffff88a53e3d6900
-> > > [=C2=A0 119.391041] RBP: ffff88a5448b0000 R08: ffff88a53e3d6900 R09:
-> > > 0000000000000000
-> > > [=C2=A0 119.401003] R10: 0000000000000000 R11: 0000000000000000 R12:
-> > > 0000000000000000
-> > > [=C2=A0 119.410967] R13: 0000000000000000 R14: 0000000000000000 R15:
-> > > 0000000000000000
-> > > [=C2=A0 119.420881] FS:=C2=A0 00007f37eba81780(0000) GS:ffff88a57f340=
-000(0000)
-> > > knlGS:0000000000000000
-> > > [=C2=A0 119.431839] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
-> > > [=C2=A0 119.440161] CR2: 00005630eb09d000 CR3: 0000001fc711c002 CR4:
-> > > 00000000001606e0
-> > > [=C2=A0 119.450017] Call Trace:
-> > > [=C2=A0 119.454595]=C2=A0 submit_bio_wait+0x53/0x80
-> > > [=C2=A0 119.460636]=C2=A0 blkdev_issue_flush+0x81/0xb0
-> > > [=C2=A0 119.466930]=C2=A0 blkdev_fsync+0x2f/0x40
-> > > [=C2=A0 119.472590]=C2=A0 do_fsync+0x38/0x60
-> > > [=C2=A0 119.477810]=C2=A0 __x64_sys_fsync+0x10/0x20
-> > > [=C2=A0 119.483722]=C2=A0 do_syscall_64+0x5b/0x1e0
-> > > [=C2=A0 119.489516]=C2=A0 entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > > [=C2=A0 119.496857] RIP: 0033:0x7f37eb2146f0
-> > > [=C2=A0 119.502502] Code: 48 3d 01 f0 ff ff 73 01 c3 48 8b 0d b2 78 2=
-0 00 f7 d8
-> > > 64 89 01 48 83 c8 ff c3 83 3d d9 bc 20 00 00 75 10 b8 4a 00 00 00 0f =
-05 <48>
-> > > 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 6e f7 ff ff 48 89 04 24
-> > > [=C2=A0 119.526842] RSP: 002b:00007fffb27f4878 EFLAGS: 00000246 ORIG_=
-RAX:
-> > > 000000000000004a
-> > > [=C2=A0 119.536975] RAX: ffffffffffffffda RBX: 0000000000000811 RCX:
-> > > 00007f37eb2146f0
-> > > [=C2=A0 119.546592] RDX: 00005630e91ba8e0 RSI: 0000000000000000 RDI:
-> > > 0000000000000004
-> > > [=C2=A0 119.556171] RBP: 0000000000000004 R08: 00005630eb02b8a0 R09:
-> > > 00007fffb27f4e00
-> > > [=C2=A0 119.565753] R10: 000000000000009b R11: 0000000000000246 R12:
-> > > 00007fffb27f4c60
-> > > [=C2=A0 119.575339] R13: 00007fffb27f4a30 R14: 00005630eb048800 R15:
-> > > 00005630eb05a800
-> > > [=C2=A0 119.584940] ---[ end trace 46a2e1214c930529 ]---
-> > > [=C2=A0 119.591765] bio: 0/801 0 0 0
-> > > =
-
-> > Hi Yiding,
-> > =
-
-> > The above warning is false positive, and it is flush request, and
-> > it isn't same with your original report in which the following warning
-> > is triggered.
-> > =
-
-> > 	"drivers/scsi/scsi_lib.c:1034 scsi_init_io+0x11a/0x2e0"
-> > =
-
-> > So please run the test kernel with the debug patch I sent to you today
-> > and try to trigger the warning in scsi_init_io().
-> =
-
-> =
-
-> ------
-> =
-
-> [=C2=A0 728.863669] 230: pfn 66784668 offset 0 len 17031168
-> [=C2=A0 728.869319] 232: pfn 66788826 offset 0 len 22708224
-> [=C2=A0 728.874946] 234: pfn 66794370 offset 0 len 29933568
-> [=C2=A0 728.880563] 236: pfn 66801678 offset 0 len 4136960
-> [=C2=A0 728.886086] 238: pfn 66820096 offset 0 len 2506752
-
-Hi Yiding,
-
-Could you include all logs dumped by the debug patch?
-
-+       if (WARN_ON(bio->bi_iter.bi_size =3D=3D 0 && bio_op(bio) =3D=3D REQ=
-_OP_WRITE)) {
-+               int i;
-+               printk("bio: %hx/%hx %u %llu %u\n", bio->bi_flags, bio->bi_=
-opf,
-+                       bio->bi_vcnt,
-+                       (unsigned long long)bio->bi_iter.bi_sector,
-+                       bio->bi_iter.bi_size);
-+               for (i =3D 0; i < bio->bi_vcnt; i++) {
-+                       struct bio_vec *bvec =3D &bio->bi_io_vec[i];
-+                       printk("%d: pfn %lu offset %u len %u\n", i++,
-+                               (unsigned long)page_to_pfn(bvec->bv_page),
-+                               bvec->bv_offset, bvec->bv_len);
-+               }
-+       }
-
-Thanks,
-Ming
-
---===============1399901089514739395==--
+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
+WVo=
+--===============3478412461674000022==--
 
