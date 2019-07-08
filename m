@@ -1,56 +1,83 @@
-Content-Type: multipart/mixed; boundary="===============7952167894979819291=="
+Content-Type: multipart/mixed; boundary="===============1734329750713249137=="
 MIME-Version: 1.0
-From: Brian Foster <bfoster@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] xfs: don't update lastino for FSBULKSTAT_SINGLE
-Date: Mon, 08 Jul 2019 08:28:00 -0400
-Message-ID: <20190708122800.GC51396@bfoster>
-In-Reply-To: <20190706212517.GH1654093@magnolia>
+Subject: Re: 7457c0da02 [ 0.733186] BUG: KASAN: unknown-crash in unwind_next_frame
+Date: Mon, 08 Jul 2019 15:36:21 +0200
+Message-ID: <20190708133621.GJ3402@hirez.programming.kicks-ass.net>
+In-Reply-To: <CACT4Y+aJYy-aRCAArTEsTKSz1NPE2JONk68P67qPb=7iun3uwQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7952167894979819291==
+--===============1734329750713249137==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jul 06, 2019 at 02:25:17PM -0700, Darrick J. Wong wrote:
-> From: Darrick J. Wong <darrick.wong@oracle.com>
+On Mon, Jul 08, 2019 at 01:04:18PM +0200, Dmitry Vyukov wrote:
+> On Mon, Jul 8, 2019 at 12:55 PM Peter Zijlstra <peterz@infradead.org> w=
+rote:
+> > On Mon, Jul 08, 2019 at 08:47:29AM +0800, kernel test robot wrote:
+
+> > >     x86/alternatives: Add int3_emulate_call() selftest
+
+> > > [    0.726834] CPU: GenuineIntel Intel Core Processor (Haswell) (fami=
+ly: 0x6, model: 0x3c, stepping: 0x1)
+> > > [    0.728007] Spectre V2 : Spectre mitigation: kernel not compiled w=
+ith retpoline; no mitigation available!
+> > > [    0.728009] Speculative Store Bypass: Vulnerable
+> > > [    0.729969] MDS: Vulnerable: Clear CPU buffers attempted, no micro=
+code
+> > > [    0.732269] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > [    0.733186] BUG: KASAN: unknown-crash in unwind_next_frame+0x3f6/0=
+x490
+> >
+> > This is a bit of a puzzle; I'm not sure what KASAN is trying to tell us
+> > here, also isn't the unwinder expected to go off into the weeds at times
+> > and 'expected' to cope with that? I'm also very much unsure how the
+> > fingered commit would lead to this, the below splat is in a lockdep
+> > unwind from completely unrealted code (pageattr).
+> >
+> > Josh, Andrey, any clues?
 > =
 
-> The kernel test robot found a regression of xfs/054 in the conversion of
-> bulkstat to use the new iwalk infrastructure -- if a caller set *lastip
-> =3D 128 and invoked FSBULKSTAT_SINGLE, the bstat info would be for inode
-> 128, but *lastip would be increased by the kernel to 129.
+> +kasan-dev(a)googlegroups.com
 > =
 
-> FSBULKSTAT_SINGLE never incremented lastip before, so it's incorrect to
-> make such an update to the internal lastino value now.
-> =
+> Frame pointer unwinder is supposed to be precise for the current task,
+> it should not touch random memory. This is thoroughly tested. If we
+> start giving up on this property, we will open door for lots of bugs.
+> Don't know about ORC, I guess it also meant to be precise, but we just
+> never stressed it.
+> I don't see what unwinder is involved here.
 
-> Fixes: 2810bd6840e463 ("xfs: convert bulkstat to new iwalk infrastructure=
-")
-> Reported-by: kernel test robot <rong.a.chen@intel.com>
-> Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
-> ---
+The config that came with had:
 
-Reviewed-by: Brian Foster <bfoster@redhat.com>
+  CONFIG_UNWINDER_FRAME_POINTER=3Dy
 
->  fs/xfs/xfs_ioctl.c |    1 -
->  1 file changed, 1 deletion(-)
-> =
+So that should, according to what you say, be solid.
 
-> diff --git a/fs/xfs/xfs_ioctl.c b/fs/xfs/xfs_ioctl.c
-> index 6bf04e71325b..1876461e5104 100644
-> --- a/fs/xfs/xfs_ioctl.c
-> +++ b/fs/xfs/xfs_ioctl.c
-> @@ -797,7 +797,6 @@ xfs_ioc_fsbulkstat(
->  		breq.startino =3D lastino;
->  		breq.icount =3D 1;
->  		error =3D xfs_bulkstat_one(&breq, xfs_fsbulkstat_one_fmt);
-> -		lastino =3D breq.startino;
->  	} else {	/* XFS_IOC_FSBULKSTAT */
->  		breq.startino =3D lastino ? lastino + 1 : 0;
->  		error =3D xfs_bulkstat(&breq, xfs_fsbulkstat_one_fmt);
+Now, the fingered commit will unconditionally trigger the idtentry
+create_gap logic; and since this splat is *right* after
+alternative_instructions(), which does the int3_selftest(), this could
+maybe indicate some stack corruption.
 
---===============7952167894979819291==--
+	check_bugs()
+	  alternative_instructions()
+	    int3_selftest();
+	    stop_nmi()
+	    apply_aternatives()
+	    ...
+	    restart_nmi()
+	  set_memory_4k()
+	    ...
+	      *SPLAT*
+
+Still, what does KASAN want to tell us here? AFAICT there's 2 separate
+conditions under which it states "unknown-crash", and I'm not sure I
+understand either one of them. In one case the memory has shadow memory,
+the other not.
+
+--===============1734329750713249137==--
 
