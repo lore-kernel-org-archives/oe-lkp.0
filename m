@@ -1,117 +1,159 @@
-Content-Type: multipart/mixed; boundary="===============0919852690623673196=="
+Content-Type: multipart/mixed; boundary="===============6311191240542501970=="
 MIME-Version: 1.0
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Schmauss, Erik <erik.schmauss@intel.com>
 To: lkp@lists.01.org
-Subject: Re: 7457c0da02 [ 0.733186] BUG: KASAN: unknown-crash in unwind_next_frame
-Date: Tue, 09 Jul 2019 07:17:18 -0500
-Message-ID: <20190709121718.4omsyxcowfmeyrww@treble>
-In-Reply-To: <CAG_fn=VDBbGbtuedYaviq0HfQ3Wm5DciwFO2uSL-ncQS4ZjTLQ@mail.gmail.com>
+Subject: Re: c522ad0637: kernel hang in boot stage
+Date: Tue, 09 Jul 2019 17:53:01 +0000
+Message-ID: <CF6A88132359CE47947DB4C6E1709ED53C60F1C8@ORSMSX122.amr.corp.intel.com>
+In-Reply-To: <70847a01-5eb4-341f-9f0b-51a798746ad2@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0919852690623673196==
+--===============6311191240542501970==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 09, 2019 at 02:03:07PM +0200, Alexander Potapenko wrote:
-> On Tue, Jul 9, 2019 at 11:15 AM Peter Zijlstra <peterz@infradead.org> w=
-rote:
-> >
-> > On Mon, Jul 08, 2019 at 02:21:27PM -0500, Josh Poimboeuf wrote:
-> > > On Mon, Jul 08, 2019 at 12:07:12PM -0500, Josh Poimboeuf wrote:
-> > > > I recreated with the attached script.  It looks like the unwinder
-> > > > encountered a corrupt frame pointer on the stack.  The unwinder tho=
-ught
-> > > > it was an "encoded" pt_regs pointer because it had bit 1 set, so it=
- then
-> > > > tried to read the embedded pt_regs (which wasn't actually there) on=
- the
-> > > > same stack, apparently causing the kasan error.
-> > > >
-> > > > So, IIUC, the unwinder isn't trying to access memory beyond the sta=
-ck
-> > > > page, it's just trying to access memory in the middle of a stack fr=
-ame,
-> > > > which KASAN is flagging.  So the unwinder bounds checks don't seem =
-to be
-> > > > broken.  It isn't doing a "bad" memory access per se.
-> > > >
-> > > > However... what I can't yet explain is why the original unwind fail=
-ed,
-> > > > but then the KASAN unwind succeeded.  With a corrupt frame pointer,=
- the
-> > > > KASAN unwind should have stopped early and fallen back to the "gues=
-s"
-> > > > unwind, so the KASAN unwind should have had a lot of '?' entries.
-> > > >
-> > > > So something doesn't quite add up, but at first glance it does seem=
- to
-> > > > be some kind of stack corruption, and the call emulation code is lo=
-oking
-> > > > quite guilty.
-> > > >
-> > > > I can dig more into it later today.
-> > >
-> > > Figured it out.  The KASAN-ified version of int3_magic() clobbers many
-> > > more registers than you would imagine:
-> > >
-> > > ffffffff850138ed <int3_magic>:
-> > > ffffffff850138ed:       55                      push   %rbp
-> > > ffffffff850138ee:       48 89 e5                mov    %rsp,%rbp
-> > > ffffffff850138f1:       41 54                   push   %r12
-> > > ffffffff850138f3:       53                      push   %rbx
-> > > ffffffff850138f4:       49 89 fc                mov    %rdi,%r12
-> > > ffffffff850138f7:       48 8b 1d e2 0e 51 ff    mov    -0xaef11e(%rip=
-),%rbx        # ffffffff845247e0 <latent_entropy>
-> > > ffffffff850138fe:       48 31 eb                xor    %rbp,%rbx
-> > > ffffffff85013901:       e8 de 87 2d fc          callq  ffffffff812ec0=
-e4 <__asan_store4>
-> > > ffffffff85013906:       41 c7 04 24 01 00 00    movl   $0x1,(%r12)
-> > > ffffffff8501390d:       00
-> > > ffffffff8501390e:       48 8b 05 cb 0e 51 ff    mov    -0xaef135(%rip=
-),%rax        # ffffffff845247e0 <latent_entropy>
-> > > ffffffff85013915:       48 ba 33 d9 81 a7 e7    movabs $0x1db2d7e7a78=
-1d933,%rdx
-> > > ffffffff8501391c:       d7 b2 1d
-> > > ffffffff8501391f:       48 31 d3                xor    %rdx,%rbx
-> > > ffffffff85013922:       48 01 c3                add    %rax,%rbx
-> > > ffffffff85013925:       48 89 1d b4 0e 51 ff    mov    %rbx,-0xaef14c=
-(%rip)        # ffffffff845247e0 <latent_entropy>
-> > > ffffffff8501392c:       5b                      pop    %rbx
-> > > ffffffff8501392d:       41 5c                   pop    %r12
-> > > ffffffff8501392f:       5d                      pop    %rbp
-> > > ffffffff85013930:       c3                      retq
-> > >
-> > > And it calls __asan_store4() which clobbers even more.
-> > >
-> > > One way to fix it (doesn't compile on 32-bit obviously):
-> > >
-> > > diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternat=
-ive.c
-> > > index 99ef8b6f9a1a..0a074d207720 100644
-> > > --- a/arch/x86/kernel/alternative.c
-> > > +++ b/arch/x86/kernel/alternative.c
-> > > @@ -676,7 +676,7 @@ static void __init int3_selftest(void)
-> > >                     "int3_selftest_ip:\n\t"
-> > >                     __ASM_SEL(.long, .quad) " 1b\n\t"
-> > >                     ".popsection\n\t"
-> > > -                   : : __ASM_SEL_RAW(a, D) (&val) : "memory");
-> > > +                   : : __ASM_SEL_RAW(a, D) (&val) : "memory", "rax",=
- "rcx", "rdx", "rsi", "r8", "r9", "r10", "r11");
-> >
-> > ARGH!!!
-> >
-> > How about we stick int3_magic() in asm isntead and control the calling
-> > convetion that way?
-> Won't it be enough to just annotate int3_magic() with __no_sanitize_addre=
-ss?
+Can you give us more information? Which function does it hang on?
 
-The problem isn't necessarily specific to KASAN.  You never know what
-some other compiler feature/plugin will do.
+Is this reproducible on every boot?
 
--- =
+Thanks,
+Erik
 
-Josh
+> -----Original Message-----
+> From: Chen, Rong A
+> Sent: Monday, July 8, 2019 11:45 PM
+> To: Schmauss, Erik <erik.schmauss@intel.com>
+> Cc: Moore, Robert <robert.moore@intel.com>; Wysocki, Rafael J
+> <rafael.j.wysocki@intel.com>; LKP <lkp@01.org>
+> Subject: c522ad0637: kernel hang in boot stage
+> =
 
---===============0919852690623673196==--
+> FYI, we noticed the following commit (built with gcc-7):
+> =
+
+> commit: c522ad0637cacca1775a3849c2b554f46577b98d ("ACPICA: Update
+> table load object initialization")
+> https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next.=
+git
+> master
+> =
+
+> in testcase: fio
+> with following parameters:
+> =
+
+> 	runtime: 300s
+>          disk: 1SSD
+>          fs: ext4
+>          nr_task: 1
+>          test_size: 128G
+>          rw: write
+>          bs: 4k
+>          ioengine: sync
+>          direct: direct
+> =
+
+> test-description: Fio is a tool that will spawn a number of threads or pr=
+ocesses
+> doing a particular type of I/O action as specified by the user.
+> test-url:https://github.com/axboe/fio
+> =
+
+> =
+
+> =
+
+> on test machine: Intel(R) Xeon(R) Gold 6139 CPU @ 2.30GHz with 128G
+> memory
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire
+> log/backtrace):
+> =
+
+> [    5.408282] smp: Brought up 2 nodes, 72 CPUs
+> [    5.409283] smpboot: Max logical packages: 2
+> [    5.410282] smpboot: Total of 72 processors activated (331375.89 BogoM=
+IPS)
+> [    5.605290] node 0 initialised, 15956993 pages in 192ms
+> [    5.611291] node 1 initialised, 16343433 pages in 198ms
+> [    5.621060] devtmpfs: initialized
+> [    5.621340] x86/mm: Memory block size: 2048MB
+> [    5.622967] PM: Registering ACPI NVS region [mem 0x6b521000-0x6bf50fff]
+> (10682368 bytes)
+> [    5.623599] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xfffff=
+fff,
+> max_idle_ns: 1911260446275000 ns
+> [    5.624357] futex hash table entries: 32768 (order: 9, 2097152 bytes)
+> [    5.626618] pinctrl core: initialized pinctrl subsystem
+> [    5.627368] PM: RTC time: 06:13:50, date: 2019-07-09
+> [    5.628697] NET: Registered protocol family 16
+> [    5.629457] audit: initializing netlink subsys (disabled)
+> [    5.630299] audit: type=3D2000 audit(1562652826.903:1): state=3Dinitia=
+lized
+> audit_enabled=3D0 res=3D1
+> [    5.638286] cpuidle: using governor menu
+> [    5.642292] Detected 1 PCC Subspaces
+> [    5.646314] Registering PCC driver as Mailbox controller
+> [    5.651409] ACPI FADT declares the system doesn't support PCIe ASPM, so
+> disable it
+> [    5.659283] ACPI: bus type PCI registered
+> [    5.663282] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+> [    5.669472] PCI: MMCONFIG for domain 0000 [bus 00-ff] at [mem
+> 0x80000000-0x8fffffff] (base 0x80000000)
+> [    5.679302] PCI: MMCONFIG at [mem 0x80000000-0x8fffffff] reserved in
+> E820
+> [    5.680293] PCI: Using configuration type 1 for base access
+> [    5.685300] HugeTLB registered 1.00 GiB page size, pre-allocated 0 pag=
+es
+> [    5.691283] HugeTLB registered 2.00 MiB page size, pre-allocated 0 pag=
+es
+> [    5.702283] ACPI: Added _OSI(Module Device)
+> [    5.706285] ACPI: Added _OSI(Processor Device)
+> [    5.710282] ACPI: Added _OSI(3.0 _SCP Extensions)
+> [    5.715281] ACPI: Added _OSI(Processor Aggregator Device)
+> [    5.720282] ACPI: Added _OSI(Linux-Dell-Video)
+> [    5.725282] ACPI: Added _OSI(Linux-Lenovo-NV-HDMI-Audio)
+> [    5.730282] ACPI: Added _OSI(Linux-HPI-Hybrid-Graphics)
+> [    5.776862] ACPI: 4 ACPI AML tables successfully acquired and loaded
+> [    5.786441] ACPI: [Firmware Bug]: BIOS _OSI(Linux) query ignored
+> [    5.809488] ACPI: Dynamic OEM Table Load:
+> IFWI Version: SE5C620.86B.OR.64.2018.28.1.01.0847.selfboot
+> Primary Bios Version: SE5C620.86B.00.01.0014.070920180847
+> Backup Bios Version: SE5C620.86B.00.01.0014.070920180847
+> System is booting from BIOS Primary Area!
+> BMC Firmware Version: 1.60.56383BEF
+> SDR Version: SDR Package 1.60
+> ME Firmware Version: 04.00.04.340
+> Platform ID: S2600WF
+> System memory detected: 131072 MB
+> Current memory speed: 2666 MT/s
+> Intel(R) Xeon(R) Gold 6139 CPU @ 2.30GHz Number of physical processors
+> identified: 2 AHCI Capable Controller 1 enabling 8 ports of 6Gb/s SATA AH=
+CI
+> Capable Controller 2 enabling 6 ports of 6Gb/s SATA
+> =
+
+> USB Keyboard detected
+> USB Mouse detected
+> =
+
+> BMC BaseBoard IP Address 1 : 192.168.3.35 BMC BaseBoard IP Address 2 :
+> 192.168.3.35 BMC Dedicated NIC IP Address : 192.168.3.36
+> =
+
+> =
+
+>            Press [Enter] to directly boot.
+>            Press [F2]    to enter setup and select boot options.
+>            Press [F6]    to show boot menu options.
+>            Press [F12]   to boot from network.
+> =
+
+> Best Regards,
+> Rong Chen
+
+
+--===============6311191240542501970==--
 
