@@ -1,44 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============2748842279771928007=="
+Content-Type: multipart/mixed; boundary="===============4353145920270950290=="
 MIME-Version: 1.0
-From: Dave Wysochanski <dwysocha@redhat.com>
+From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [SUNRPC] 661ccd4df3: ltp.proc01.fail
-Date: Mon, 29 Jul 2019 09:40:57 -0400
-Message-ID: <ee309a53cd55517886691c36152044a630da391c.camel@redhat.com>
-In-Reply-To: <20190729095353.GS22106@shao2-debian>
+Subject: Re: [gpio] f69e00bd21: unixbench.score -24.2% regression
+Date: Mon, 22 Jul 2019 09:27:50 +0800
+Message-ID: <20190722012750.GB50506@shbuild999.sh.intel.com>
+In-Reply-To: <CACRpkdYmtgO_E-KKE8zjA04POawJ=4RN3xFUPY__7GF+gSNbNQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2748842279771928007==
+--===============4353145920270950290==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2019-07-29 at 17:53 +0800, kernel test robot wrote:
-> FYI, we noticed the following commit (built with gcc-7):
+Hi Linus,
+
+On Wed, Jul 17, 2019 at 05:42:15AM +0800, Linus Walleij wrote:
+> On Wed, Jul 10, 2019 at 2:15 PM kernel test robot <rong.a.chen@intel.co=
+m> wrote:
 > =
 
-> commit: 661ccd4df38fdcddfeb1f314ac1a1de6c947c3f9 ("[RFC PATCH]
-> SUNRPC: Harden the cache 'channel' interface to only allow legitimate
-> daemons")
-> url: =
-
-> https://github.com/0day-ci/linux/commits/Dave-Wysochanski/SUNRPC-Harden-t=
-he-cache-channel-interface-to-only-allow-legitimate-daemons/20190727-042349
-> base: git://linux-nfs.org/~bfields/linux.git nfsd-next
+> > FYI, we noticed a -24.2% regression of unixbench.score due to commit:
+> > commit: f69e00bd21aa6a1961c521b6eb199137fcb8a76a ("gpio: mmio: Support =
+two direction registers")
+> > https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux=
+.git master
 > =
 
+> That's pretty bogus since the test doesn't even seem to be using GPIO.
+> Further AFAIK Intel chips don't even use that driver.
+> =
 
-This patch is no good and should be NACKd.
+> Can you provide some rootcausing?
 
-Bruce, Neil please consider alternative patch:
-[RFC PATCH] SUNRPC: Track writers of the 'channel' file to improve cache_li=
-steners_exist
+We did some further check, and found this is a false alarm. That some recen=
+t =
+
+change to LKP itself has enabled the latencytop for newer kernel(post 5.1-r=
+c1),
+and latencytop is known to bring extra system load to scheduling related
+benchmarks like unixbench, which caused this -24.7 difference of unixbench
+score. Sorry for the noise.
+
+Thanks,
+Feng
 
 
-Thanks.
+> If you are using GPIOs from userspace in the test somehow I am
+> sure both me and Bartosz would be interested to hear how.
+> =
 
+> Yours,
+> Linus Walleij
+> _______________________________________________
+> LKP mailing list
+> LKP(a)lists.01.org
+> https://lists.01.org/mailman/listinfo/lkp
 
-
-
---===============2748842279771928007==--
+--===============4353145920270950290==--
 
