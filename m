@@ -1,140 +1,128 @@
-Content-Type: multipart/mixed; boundary="===============4853233690916346718=="
+Content-Type: multipart/mixed; boundary="===============1212045151549575757=="
 MIME-Version: 1.0
 From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/mgag200] 90f479ae51: vm-scalability.median -18.8% regression
-Date: Wed, 31 Jul 2019 17:25:33 +0800
-Message-ID: <87wofyzhbm.fsf@yhuang-dev.intel.com>
-In-Reply-To: <CAKMK7uEbLP7j38VhdX9qniwqLfSc0_LrcrCD1R8m4kihbxePUA@mail.gmail.com>
+Subject: Re: [btrfs] c8eaeac7b7: aim7.jobs-per-min -11.7% regression
+Date: Mon, 22 Jul 2019 16:03:09 +0800
+Message-ID: <874l3ebio2.fsf@yhuang-dev.intel.com>
+In-Reply-To: <87pnml0zrk.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4853233690916346718==
+--===============1212045151549575757==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Daniel,
+"Huang, Ying" <ying.huang@intel.com> writes:
 
-Daniel Vetter <daniel@ffwll.ch> writes:
-
-> On Tue, Jul 30, 2019 at 10:27 PM Dave Airlie <airlied@gmail.com> wrote:
+> Rong Chen <rong.a.chen@intel.com> writes:
+>
+>> On 6/26/19 11:17 AM, Josef Bacik wrote:
+>>> On Wed, Jun 26, 2019 at 10:39:36AM +0800, Rong Chen wrote:
+>>>> On 6/25/19 10:22 PM, Josef Bacik wrote:
+>>>>> On Fri, Jun 21, 2019 at 08:48:03AM +0800, Huang, Ying wrote:
+>>>>>> "Huang, Ying" <ying.huang@intel.com> writes:
+>>>>>>
+>>>>>>> "Huang, Ying" <ying.huang@intel.com> writes:
+>>>>>>>
+>>>>>>>> Hi, Josef,
+>>>>>>>>
+>>>>>>>> kernel test robot <rong.a.chen@intel.com> writes:
+>>>>>>>>
+>>>>>>>>> Greeting,
+>>>>>>>>>
+>>>>>>>>> FYI, we noticed a -11.7% regression of aim7.jobs-per-min due to c=
+ommit:
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> commit: c8eaeac7b734347c3afba7008b7af62f37b9c140 ("btrfs: reserve
+>>>>>>>>> delalloc metadata differently")
+>>>>>>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git m=
+aster
+>>>>>>>>>
+>>>>>>>>> in testcase: aim7
+>>>>>>>>> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @
+>>>>>>>>> 3.00GHz with 384G memory
+>>>>>>>>> with following parameters:
+>>>>>>>>>
+>>>>>>>>> 	disk: 4BRD_12G
+>>>>>>>>> 	md: RAID0
+>>>>>>>>> 	fs: btrfs
+>>>>>>>>> 	test: disk_rr
+>>>>>>>>> 	load: 1500
+>>>>>>>>> 	cpufreq_governor: performance
+>>>>>>>>>
+>>>>>>>>> test-description: AIM7 is a traditional UNIX system level benchma=
+rk
+>>>>>>>>> suite which is used to test and measure the performance of multiu=
+ser
+>>>>>>>>> system.
+>>>>>>>>> test-url: https://sourceforge.net/projects/aimbench/files/aim-sui=
+te7/
+>>>>>>>> Here's another regression, do you have time to take a look at this?
+>>>>>>> Ping
+>>>>>> Ping again ...
+>>>>>>
+>>>>> Finally got time to look at this but I can't get the reproducer to wo=
+rk
+>>>>>
+>>>>> root(a)destiny ~/lkp-tests# bin/lkp run ~/job-aim.yaml
+>>>>> Traceback (most recent call last):
+>>>>>           11: from /root/lkp-tests/bin/run-local:18:in `<main>'
+>>>>>           10: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
+re.rb:54:in `require'
+>>>>>            9: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
+re.rb:54:in `require'
+>>>>>            8: from /root/lkp-tests/lib/yaml.rb:5:in `<top (required)>'
+>>>>>            7: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
+re.rb:54:in `require'
+>>>>>            6: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
+re.rb:54:in `require'
+>>>>>            5: from /root/lkp-tests/lib/common.rb:9:in `<top (required=
+)>'
+>>>>>            4: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
+re.rb:54:in `require'
+>>>>>            3: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
+re.rb:54:in `require'
+>>>>>            2: from /root/lkp-tests/lib/array_ext.rb:3:in `<top (requi=
+red)>'
+>>>>>            1: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
+re.rb:54:in `require'
+>>>>> /usr/share/rubygems/rubygems/core_ext/kernel_require.rb:54:in `requir=
+e': cannot load such file -- active_support/core_ext/enumerable (LoadError)
+>>>> Hi Josef,
+>>>>
+>>>> I tried the latest lkp-tests, and didn't have the problem. Could you p=
+lease
+>>>> update the lkp-tests repo and run "lkp install" again?
+>>>>
+>>> I updated it this morning, and I just updated it now, my tree is on
+>>>
+>>> 2c5b1a95b08dbe81bba64419c482a877a3b424ac
+>>>
+>>> lkp install says everything is installed except
+>>>
+>>> No match for argument: libipc-run-perl
 >>
->> On Wed, 31 Jul 2019 at 05:00, Daniel Vetter <daniel@ffwll.ch> wrote:
->> >
->> > On Tue, Jul 30, 2019 at 8:50 PM Thomas Zimmermann <tzimmermann@suse.=
-de> wrote:
->> > >
->> > > Hi
->> > >
->> > > Am 30.07.19 um 20:12 schrieb Daniel Vetter:
->> > > > On Tue, Jul 30, 2019 at 7:50 PM Thomas Zimmermann <tzimmermann@s=
-use.de> wrote:
->> > > >> Am 29.07.19 um 11:51 schrieb kernel test robot:
->> > > >>> Greeting,
->> > > >>>
->> > > >>> FYI, we noticed a -18.8% regression of vm-scalability.median due=
- to commit:>
->> > > >>>
->> > > >>> commit: 90f479ae51afa45efab97afdde9b94b9660dd3e4 ("drm/mgag200: =
-Replace struct mga_fbdev with generic framebuffer emulation")
->> > > >>> https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next.git master
->> > > >>
->> > > >> Daniel, Noralf, we may have to revert this patch.
->> > > >>
->> > > >> I expected some change in display performance, but not in VM. Sin=
-ce it's
->> > > >> a server chipset, probably no one cares much about display perfor=
-mance.
->> > > >> So that seemed like a good trade-off for re-using shared code.
->> > > >>
->> > > >> Part of the patch set is that the generic fb emulation now maps a=
-nd
->> > > >> unmaps the fbdev BO when updating the screen. I guess that's the =
-cause
->> > > >> of the performance regression. And it should be visible with other
->> > > >> drivers as well if they use a shadow FB for fbdev emulation.
->> > > >
->> > > > For fbcon we should need to do any maps/unamps at all, this is for=
- the
->> > > > fbdev mmap support only. If the testcase mentioned here tests fbdev
->> > > > mmap handling it's pretty badly misnamed :-) And as long as you do=
-n't
->> > > > have an fbdev mmap there shouldn't be any impact at all.
->> > >
->> > > The ast and mgag200 have only a few MiB of VRAM, so we have to get t=
-he
->> > > fbdev BO out if it's not being displayed. If not being mapped, it ca=
-n be
->> > > evicted and make room for X, etc.
->> > >
->> > > To make this work, the BO's memory is mapped and unmapped in
->> > > drm_fb_helper_dirty_work() before being updated from the shadow FB. =
-[1]
->> > > That fbdev mapping is established on each screen update, more or les=
-s.
->> > > From my (yet unverified) understanding, this causes the performance
->> > > regression in the VM code.
->> > >
->> > > The original code in mgag200 used to kmap the fbdev BO while it's be=
-ing
->> > > displayed; [2] and the drawing code only mapped it when necessary (i=
-.e.,
->> > > not being display). [3]
->> >
->> > Hm yeah, this vmap/vunmap is going to be pretty bad. We indeed should
->> > cache this.
->> >
->> > > I think this could be added for VRAM helpers as well, but it's still=
- a
->> > > workaround and non-VRAM drivers might also run into such a performan=
-ce
->> > > regression if they use the fbdev's shadow fb.
->> >
->> > Yeah agreed, fbdev emulation should try to cache the vmap.
->> >
->> > > Noralf mentioned that there are plans for other DRM clients besides =
-the
->> > > console. They would as well run into similar problems.
->> > >
->> > > >> The thing is that we'd need another generic fbdev emulation for a=
-st and
->> > > >> mgag200 that handles this issue properly.
->> > > >
->> > > > Yeah I dont think we want to jump the gun here.  If you can try to
->> > > > repro locally and profile where we're wasting cpu time I hope that
->> > > > should sched a light what's going wrong here.
->> > >
->> > > I don't have much time ATM and I'm not even officially at work until
->> > > late Aug. I'd send you the revert and investigate later. I agree that
->> > > using generic fbdev emulation would be preferable.
->> >
->> > Still not sure that's the right thing to do really. Yes it's a
->> > regression, but vm testcases shouldn run a single line of fbcon or drm
->> > code. So why this is impacted so heavily by a silly drm change is very
->> > confusing to me. We might be papering over a deeper and much more
->> > serious issue ...
+>> I've just fixed it. could you add "libipc-run-perl: perl-IPC-Run" to
+>> the end of distro/adaptation/fedora?
 >>
->> It's a regression, the right thing is to revert first and then work
->> out the right thing to do.
+>> Thanks,
+>> Rong Chen
+>>
+>>
+>>>
+>>> and it still doesn't run properly.  Thanks,
 >
-> Sure, but I have no idea whether the testcase is doing something
-> reasonable. If it's accidentally testing vm scalability of fbdev and
-> there's no one else doing something this pointless, then it's not a
-> real bug. Plus I think we're shooting the messenger here.
+> Hi, Josef,
 >
->> It's likely the test runs on the console and printfs stuff out while run=
-ning.
->
-> But why did we not regress the world if a few prints on the console
-> have such a huge impact? We didn't get an entire stream of mails about
-> breaking stuff ...
+> Do you have time to try it again?  The latest lkp-tests code has the fix =
+merged.
 
-The regression seems not related to the commit.  But we have retested
-and confirmed the regression.  Hard to understand what happens.
+Ping...
 
 Best Regards,
 Huang, Ying
 
---===============4853233690916346718==--
+--===============1212045151549575757==--
 
