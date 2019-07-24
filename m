@@ -1,79 +1,360 @@
-Content-Type: multipart/mixed; boundary="===============5524406523742117829=="
+Content-Type: multipart/mixed; boundary="===============0796579234810273864=="
 MIME-Version: 1.0
-From: Mahesh Bandewar (महेश बंडेवार) <maheshb@google.com>
+From: Xing Zhengjun <zhengjun.xing@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [blackhole_dev] 509e56b37c: kernel_selftests.net.test_blackhole_dev.sh.fail
-Date: Sun, 14 Jul 2019 22:01:12 -0700
-Message-ID: <CAF2d9jheTrhh2e_PBqWOTy6gy-vVVZMyj3_dM1hkV1NP+-7r6Q@mail.gmail.com>
-In-Reply-To: <20190712064850.GC20848@shao2-debian>
+Subject: Re: [SUNRPC] 0472e47660: fsmark.app_overhead 16.0% regression
+Date: Wed, 24 Jul 2019 13:17:54 +0800
+Message-ID: <491bd283-f607-3111-32ae-07294eda123d@linux.intel.com>
+In-Reply-To: <b4e5ab18-6329-f22e-3962-230c965b0b5d@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5524406523742117829==
+--===============0796579234810273864==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 11, 2019 at 11:48 PM kernel test robot
-<rong.a.chen@intel.com> wrote:
->
-> FYI, we noticed the following commit (built with gcc-7):
->
-> commit: 509e56b37cc32c9b5fc2be585c25d1e60d6a1d73 ("blackhole_dev: add a s=
-elftest")
-> https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next.=
-git master
->
-> in testcase: kernel_selftests
+
+
+On 7/12/2019 2:42 PM, Xing Zhengjun wrote:
+> Hi Trond,
+> =
+
+>  =C2=A0=C2=A0=C2=A0 I attached perf-profile part big changes, hope it is =
+useful for =
+
+> analyzing the issue.
+
+Ping...
+
+> =
+
+> =
+
+> In testcase: fsmark
+> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz =
+
+> with 384G memory
 > with following parameters:
->
->         group: kselftests-02
->
-> test-description: The kernel contains a set of "self tests" under the too=
-ls/testing/selftests/ directory. These are intended to be small unit tests =
-to exercise individual code paths in the kernel.
-> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
->
->
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
-m 8G
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
->
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <rong.a.chen@intel.com>
->
->
-> # selftests: net: test_blackhole_dev.sh
-> # test_blackhole_dev: [FAIL]
-> not ok 13 selftests: net: test_blackhole_dev.sh
->
-> To reproduce:
->
->         # build kernel
->         cd linux
->         cp config-5.2.0-rc6-01701-g509e56b37cc32c .config
->         make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 olddefconfig prepare=
- modules_prepare bzImage
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script # job-script is attached in =
-this email
->
-unfortunately, I could not get this to work as my qemu instance just
-hangs. Will spend some more time on this later.
-However, If you have identified config related issue, please state
-that so that it would be helpful to fix it faster.
+> =
 
-thanks,
---mahesh..
->
->
-> Thanks,
-> Rong Chen
->
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iterations: 20x
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 nr_threads: 64t
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 disk: 1BRD_48G
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 fs: xfs
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 fs2: nfsv4
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 filesize: 4M
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 test_size: 80G
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sync_method: fsyncBeforeClose
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 cpufreq_governor: performance
+> =
 
---===============5524406523742117829==--
+> test-description: The fsmark is a file system benchmark to test =
+
+> synchronous write workloads, for example, mail servers workload.
+> test-url: https://sourceforge.net/projects/fsmark/
+> =
+
+> commit:
+>  =C2=A0 e791f8e938 ("SUNRPC: Convert xs_send_kvec() to use iov_iter_kvec(=
+)")
+>  =C2=A0 0472e47660 ("SUNRPC: Convert socket page send code to use iov_ite=
+r()")
+> =
+
+> e791f8e9380d945e 0472e476604998c127f3c80d291
+> ---------------- ---------------------------
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev=C2=A0=C2=A0=C2=
+=A0=C2=A0 %change=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ \=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ \
+>  =C2=A0=C2=A0=C2=A0 527.29=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 -22.6%=C2=A0=C2=A0=C2=A0=C2=A0 407.96=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 fsmark.files_per_sec
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.97 =C2=B1 11%=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 +0.9=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2.88 =C2=B1=C2=A0 4% =
+
+> perf-profile.calltrace.cycles-pp.smp_apic_timer_interrupt.apic_timer_inte=
+rrupt.cpuidle_enter_state.do_idle.cpu_startup_entry =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +0.9=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 0.93 =C2=B1=C2=A0 4% =
+
+> perf-profile.calltrace.cycles-pp.tcp_write_xmit.tcp_sendmsg_locked.tcp_se=
+ndmsg.sock_sendmsg.xs_sendpages =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2.11 =C2=B1 10%=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 +0.9=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 3.05 =C2=B1=C2=A0 4% =
+
+> perf-profile.calltrace.cycles-pp.apic_timer_interrupt.cpuidle_enter_state=
+.do_idle.cpu_startup_entry.start_secondary =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.29 =C2=B1=C2=A0 2%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +1.2=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 6.46 =C2=B1=C2=A0 =
+7% =
+
+> perf-profile.calltrace.cycles-pp.svc_recv.nfsd.kthread.ret_from_fork
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 9.61 =C2=B1=C2=A0 5%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 12.70 =C2=B1=C2=A0 2% =
+
+> perf-profile.calltrace.cycles-pp.worker_thread.kthread.ret_from_fork
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 9.27 =C2=B1=C2=A0 5%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 12.40 =C2=B1=C2=A0 2% =
+
+> perf-profile.calltrace.cycles-pp.process_one_work.worker_thread.kthread.r=
+et_from_fork =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0 34.52 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 +3.3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 37.78 =C2=B1=C2=A0 2% =
+
+> perf-profile.calltrace.cycles-pp.ret_from_fork
+>  =C2=A0=C2=A0=C2=A0=C2=A0 34.52 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 +3.3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 37.78 =C2=B1=C2=A0 2% =
+
+> perf-profile.calltrace.cycles-pp.kthread.ret_from_fork
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +3.4=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 3.41 =C2=B1=C2=A0 4% =
+
+> perf-profile.calltrace.cycles-pp.memcpy_erms.memcpy_from_page._copy_from_=
+iter_full.tcp_sendmsg_locked.tcp_sendmsg =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +3.4=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 3.44 =C2=B1=C2=A0 4% =
+
+> perf-profile.calltrace.cycles-pp.memcpy_from_page._copy_from_iter_full.tc=
+p_sendmsg_locked.tcp_sendmsg.sock_sendmsg =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +3.5=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 3.54 =C2=B1=C2=A0 4% =
+
+> perf-profile.calltrace.cycles-pp._copy_from_iter_full.tcp_sendmsg_locked.=
+tcp_sendmsg.sock_sendmsg.xs_sendpages =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2.30 =C2=B1=C2=A0 5%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.7=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 6.02 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.calltrace.cycles-pp.__rpc_execute.rpc_async_schedule.process=
+_one_work.worker_thread.kthread =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2.30 =C2=B1=C2=A0 5%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.7=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 6.02 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.calltrace.cycles-pp.rpc_async_schedule.process_one_work.work=
+er_thread.kthread.ret_from_fork =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.81 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.59 =C2=B1=C2=A0 =
+4% =
+
+> perf-profile.calltrace.cycles-pp.call_transmit.__rpc_execute.rpc_async_sc=
+hedule.process_one_work.worker_thread =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.80 =C2=B1=C2=A0 3%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.59 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.calltrace.cycles-pp.xprt_transmit.call_transmit.__rpc_execut=
+e.rpc_async_schedule.process_one_work =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.73 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.54 =C2=B1=C2=A0 =
+4% =
+
+> perf-profile.calltrace.cycles-pp.xs_tcp_send_request.xprt_transmit.call_t=
+ransmit.__rpc_execute.rpc_async_schedule =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.72 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.54 =C2=B1=C2=A0 =
+4% =
+
+> perf-profile.calltrace.cycles-pp.xs_sendpages.xs_tcp_send_request.xprt_tr=
+ansmit.call_transmit.__rpc_execute =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +5.4=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 5.42 =C2=B1=C2=A0 4% =
+
+> perf-profile.calltrace.cycles-pp.tcp_sendmsg_locked.tcp_sendmsg.sock_send=
+msg.xs_sendpages.xs_tcp_send_request =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +5.5=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 5.52 =C2=B1=C2=A0 4% =
+
+> perf-profile.calltrace.cycles-pp.tcp_sendmsg.sock_sendmsg.xs_sendpages.xs=
+_tcp_send_request.xprt_transmit =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +5.5=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 5.53 =C2=B1=C2=A0 4% =
+
+> perf-profile.calltrace.cycles-pp.sock_sendmsg.xs_sendpages.xs_tcp_send_re=
+quest.xprt_transmit.call_transmit =
+
+> =
+
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 9.61 =C2=B1=C2=A0 5%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 12.70 =C2=B1=C2=A0 2% =
+
+> perf-profile.children.cycles-pp.worker_thread
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 9.27 =C2=B1=C2=A0 5%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 12.40 =C2=B1=C2=A0 2% =
+
+> perf-profile.children.cycles-pp.process_one_work
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 6.19=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +3.2=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 9.40 =C2=B1=C2=A0 4% =
+
+> perf-profile.children.cycles-pp.memcpy_erms
+>  =C2=A0=C2=A0=C2=A0=C2=A0 34.53 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 +3.3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 37.78 =C2=B1=C2=A0 2% =
+
+> perf-profile.children.cycles-pp.ret_from_fork
+>  =C2=A0=C2=A0=C2=A0=C2=A0 34.52 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 +3.3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 37.78 =C2=B1=C2=A0 2% =
+
+> perf-profile.children.cycles-pp.kthread
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +3.5=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 3.46 =C2=B1=C2=A0 4% =
+
+> perf-profile.children.cycles-pp.memcpy_from_page
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.00=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +3.6=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 3.56 =C2=B1=C2=A0 4% =
+
+> perf-profile.children.cycles-pp._copy_from_iter_full
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2.47 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.7=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 6.18 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.children.cycles-pp.__rpc_execute
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2.30 =C2=B1=C2=A0 5%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.7=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 6.02 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.children.cycles-pp.rpc_async_schedule
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.90 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.67 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.children.cycles-pp.call_transmit
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.89 =C2=B1=C2=A0 3%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.66 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.children.cycles-pp.xprt_transmit
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.82 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.62 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.children.cycles-pp.xs_tcp_send_request
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.81 =C2=B1=C2=A0 4%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +3.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.62 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.children.cycles-pp.xs_sendpages
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.21 =C2=B1 17%=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 +5.3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.48 =C2=B1=C2=A0 4% =
+
+> perf-profile.children.cycles-pp.tcp_sendmsg_locked
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.25 =C2=B1 18%=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 +5.3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.59 =C2=B1=C2=A0 3% =
+
+> perf-profile.children.cycles-pp.tcp_sendmsg
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0.26 =C2=B1 16%=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 +5.3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 5.60 =C2=B1=C2=A0 3% =
+
+> perf-profile.children.cycles-pp.sock_sendmsg
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.19 =C2=B1=C2=A0 5%=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 +0.5=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1.68 =C2=B1=C2=A0 =
+3% =
+
+> perf-profile.self.cycles-pp.get_page_from_freelist
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 6.10=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 +3.2=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 9.27 =C2=B1=C2=A0 4% =
+
+> perf-profile.self.cycles-pp.memcpy_erms
+> =
+
+> =
+
+> On 7/9/2019 10:39 AM, Xing Zhengjun wrote:
+>> Hi Trond,
+>>
+>> On 7/8/2019 7:44 PM, Trond Myklebust wrote:
+>>> I've asked several times now about how to interpret your results. As =
+
+>>> far as I can tell from your numbers, the overhead appears to be =
+
+>>> entirely contained in the NUMA section of your results.
+>>> IOW: it would appear to be a scheduling overhead due to NUMA. I've =
+
+>>> been asking whether or not that is a correct interpretation of the =
+
+>>> numbers you published.
+>> Thanks for your feedback. I used the same hardware and the same test =
+
+>> parameters to test the two commits:
+>> =C2=A0=C2=A0=C2=A0 e791f8e938 ("SUNRPC: Convert xs_send_kvec() to use io=
+v_iter_kvec()")
+>> =C2=A0=C2=A0=C2=A0 0472e47660 ("SUNRPC: Convert socket page send code to=
+ use =
+
+>> iov_iter()")
+>>
+>> If it is caused by NUMA, why only commit 0472e47660 throughput is =
+
+>> decreased? The filesystem we test is NFS, commit 0472e47660 is related =
+
+>> with the network, could you help to check if have any other clues for =
+
+>> the regression. Thanks.
+>>
+> =
+
+
+-- =
+
+Zhengjun Xing
+
+--===============0796579234810273864==--
 
