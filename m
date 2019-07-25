@@ -1,37 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============4730087715155041896=="
+Content-Type: multipart/mixed; boundary="===============0714470126353073070=="
 MIME-Version: 1.0
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Cyril Hrubis <chrubis@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [gpio] f69e00bd21: unixbench.score -24.2% regression
-Date: Tue, 16 Jul 2019 23:42:15 +0200
-Message-ID: <CACRpkdYmtgO_E-KKE8zjA04POawJ=4RN3xFUPY__7GF+gSNbNQ@mail.gmail.com>
-In-Reply-To: <20190710121518.GR17490@shao2-debian>
+Subject: Re: [LTP] 56cbb429d9: ltp.fs_fill.fail
+Date: Thu, 25 Jul 2019 15:26:27 +0200
+Message-ID: <20190725132617.GA23135@rei.lan>
+In-Reply-To: <20190725110944.GA22106@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4730087715155041896==
+--===============0714470126353073070==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 10, 2019 at 2:15 PM kernel test robot <rong.a.chen@intel.com>=
- wrote:
+Hi!
+> tst_test.c:1161: INFO: Testing on vfat
+> tst_mkfs.c:90: INFO: Formatting /dev/loop0 with vfat opts=3D'' extra opts=
+=3D''
+> mkfs.vfat: unable to open /dev/loop0: Device or resource busy
+> tst_mkfs.c:101: BROK: mkfs.vfat:1: tst_test.c failed with 741
 
-> FYI, we noticed a -24.2% regression of unixbench.score due to commit:
-> commit: f69e00bd21aa6a1961c521b6eb199137fcb8a76a ("gpio: mmio: Support tw=
-o direction registers")
-> https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.g=
-it master
+This looks like mkfs.vfat got EBUSY after the loop device was
+succesfully umounted.
 
-That's pretty bogus since the test doesn't even seem to be using GPIO.
-Further AFAIK Intel chips don't even use that driver.
+We do run the test in a loop for several filesystems and the loop
+generally does:
 
-Can you provide some rootcausing?
+next:
+	mkfs
+	mount
+	test
+	umount
+	goto next;
 
-If you are using GPIOs from userspace in the test somehow I am
-sure both me and Bartosz would be interested to hear how.
+-- =
 
-Yours,
-Linus Walleij
+Cyril Hrubis
+chrubis(a)suse.cz
 
---===============4730087715155041896==--
+--===============0714470126353073070==--
 
