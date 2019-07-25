@@ -1,47 +1,32 @@
-Content-Type: multipart/mixed; boundary="===============3239175901625350819=="
+Content-Type: multipart/mixed; boundary="===============0230086002945049249=="
 MIME-Version: 1.0
-From: Li, Philip <philip.li@intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [BUG] unixbench: libperl5.28 does not exist on ubuntu-18.04
-Date: Thu, 25 Jul 2019 15:56:17 +0000
-Message-ID: <831EE4E5E37DCC428EB295A351E662495207D277@shsmsx102.ccr.corp.intel.com>
-In-Reply-To: <20190725145247.zc3apygng5kkqxp5@mojo.amd.com>
+Subject: Re: [LTP] 56cbb429d9: ltp.fs_fill.fail
+Date: Thu, 25 Jul 2019 09:32:13 -0700
+Message-ID: <CAHk-=wg+yRjY_AUrjbgrN59OeGAWMF_q=-Dqf2cYtVzoY01j7Q@mail.gmail.com>
+In-Reply-To: <20190725132617.GA23135@rei.lan>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3239175901625350819==
+--===============0230086002945049249==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-> Subject: [LKP] [BUG] unixbench: libperl5.28 does not exist on ubuntu-18.04
-> =
+On Thu, Jul 25, 2019 at 6:26 AM Cyril Hrubis <chrubis@suse.cz> wrote:
+>
+> This looks like mkfs.vfat got EBUSY after the loop device was
+> succesfully umounted.
 
-> 7cd78129d06e3c8fd47eaab4ff seems to have introduced an issue with ubuntu-
-> 18.04.
-Thanks John for the input, would you like to open an issue on github.com/in=
-tel/lkp-tests,
-we will add it to plan to look for ways to resolve it.
+Hmm. Smells like the RCU-delaying got triggered again.
 
-> The patch changes the install dependencies for ubuntu to perl-modules-5.2=
-8 and
-> libperl5.28 from 5.26. However, ubuntu-18.04 repos seem to only contain v=
-ersion
-> 5.26. Is ubuntu 18.04 not a supported distro? If it is supported, it seem=
-s that
-> we will need a way to specify to install whichever version of the package=
- is
-> available. Ideally, it would be nice to be able to specify something like
-> "perl-modules >=3D 5.26", but the current method of installing packages d=
-oesn't
-> seem to be equipped to handle that sort of thing.
-> =
+We have that "synchronize_rcu_expedited()" in namespace_unlock(),
+which is so that everything should be done by the time we return to
+user space.
 
-> Thanks,
-> John
-> _______________________________________________
-> LKP mailing list
-> LKP(a)lists.01.org
-> https://lists.01.org/mailman/listinfo/lkp
+Al, maybe that RCU synchronization should be after the mntput()s?
 
---===============3239175901625350819==--
+               Linus
+
+--===============0230086002945049249==--
 
