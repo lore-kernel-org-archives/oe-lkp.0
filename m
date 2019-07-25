@@ -1,42 +1,33 @@
-Content-Type: multipart/mixed; boundary="===============0714470126353073070=="
+Content-Type: multipart/mixed; boundary="===============4647796841291567106=="
 MIME-Version: 1.0
-From: Cyril Hrubis <chrubis@suse.cz>
+From: Allen, John <John.Allen@amd.com>
 To: lkp@lists.01.org
-Subject: Re: [LTP] 56cbb429d9: ltp.fs_fill.fail
-Date: Thu, 25 Jul 2019 15:26:27 +0200
-Message-ID: <20190725132617.GA23135@rei.lan>
-In-Reply-To: <20190725110944.GA22106@shao2-debian>
+Subject: [BUG] unixbench: libperl5.28 does not exist on ubuntu-18.04
+Date: Thu, 25 Jul 2019 14:53:00 +0000
+Message-ID: <20190725145247.zc3apygng5kkqxp5@mojo.amd.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0714470126353073070==
+--===============4647796841291567106==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi!
-> tst_test.c:1161: INFO: Testing on vfat
-> tst_mkfs.c:90: INFO: Formatting /dev/loop0 with vfat opts=3D'' extra opts=
-=3D''
-> mkfs.vfat: unable to open /dev/loop0: Device or resource busy
-> tst_mkfs.c:101: BROK: mkfs.vfat:1: tst_test.c failed with 741
+7cd78129d06e3c8fd47eaab4ff seems to have introduced an issue with ubuntu-18=
+.04.
+The patch changes the install dependencies for ubuntu to perl-modules-5.28 =
+and
+libperl5.28 from 5.26. However, ubuntu-18.04 repos seem to only contain ver=
+sion
+5.26. Is ubuntu 18.04 not a supported distro? If it is supported, it seems =
+that
+we will need a way to specify to install whichever version of the package is
+available. Ideally, it would be nice to be able to specify something like
+"perl-modules >=3D 5.26", but the current method of installing packages doe=
+sn't
+seem to be equipped to handle that sort of thing.
 
-This looks like mkfs.vfat got EBUSY after the loop device was
-succesfully umounted.
+Thanks,
+John
 
-We do run the test in a loop for several filesystems and the loop
-generally does:
-
-next:
-	mkfs
-	mount
-	test
-	umount
-	goto next;
-
--- =
-
-Cyril Hrubis
-chrubis(a)suse.cz
-
---===============0714470126353073070==--
+--===============4647796841291567106==--
 
