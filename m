@@ -1,50 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============3182150825679624323=="
+Content-Type: multipart/mixed; boundary="===============1968060482037321239=="
 MIME-Version: 1.0
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Li, Philip <philip.li@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [LTP] 56cbb429d9: ltp.fs_fill.fail
-Date: Fri, 26 Jul 2019 01:00:32 +0100
-Message-ID: <20190726000032.GK1131@ZenIV.linux.org.uk>
-In-Reply-To: <20190725180428.GH1131@ZenIV.linux.org.uk>
+Subject: Re: [BUG] unixbench: libperl5.28 does not exist on ubuntu-18.04
+Date: Fri, 26 Jul 2019 00:26:18 +0000
+Message-ID: <831EE4E5E37DCC428EB295A351E662495207D979@shsmsx102.ccr.corp.intel.com>
+In-Reply-To: <20190725170630.pyf6ktebhwqhrwig@mojo.amd.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3182150825679624323==
+--===============1968060482037321239==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 25, 2019 at 07:04:28PM +0100, Al Viro wrote:
-> On Thu, Jul 25, 2019 at 09:32:13AM -0700, Linus Torvalds wrote:
-> > On Thu, Jul 25, 2019 at 6:26 AM Cyril Hrubis <chrubis@suse.cz> wrote:
-> > >
-> > > This looks like mkfs.vfat got EBUSY after the loop device was
-> > > succesfully umounted.
-> > =
 
-> > Hmm. Smells like the RCU-delaying got triggered again.
-> > =
 
-> > We have that "synchronize_rcu_expedited()" in namespace_unlock(),
-> > which is so that everything should be done by the time we return to
-> > user space.
-> > =
-
-> > Al, maybe that RCU synchronization should be after the mntput()s?
+> -----Original Message-----
+> From: Allen, John [mailto:John.Allen(a)amd.com]
+> Sent: Friday, July 26, 2019 1:07 AM
+> To: Li, Philip <philip.li@intel.com>
+> Cc: lkp(a)lists.01.org
+> Subject: Re: [LKP] [BUG] unixbench: libperl5.28 does not exist on ubuntu-=
+18.04
 > =
 
-> There are several interesting issues in there, but synchronize_rcu()
-> should be between zeroing ->mnt_ns and dropping the final refs.
-> I'm digging through that crap right now; at least one bug is dealt
-> with by #fixes, but there's more, unfortunately.
+> On Thu, Jul 25, 2019 at 03:56:17PM +0000, Li, Philip wrote:
+> > > Subject: [LKP] [BUG] unixbench: libperl5.28 does not exist on ubuntu-=
+18.04
+> > >
+> > > 7cd78129d06e3c8fd47eaab4ff seems to have introduced an issue with ubu=
+ntu-
+> > > 18.04.
+> > Thanks John for the input, would you like to open an issue on
+> github.com/intel/lkp-tests,
+> > we will add it to plan to look for ways to resolve it.
+> =
 
-No, it's not synchronize_rcu().  It's a bug dealt with in vfs.git #fixes,
-triggering the struct mount leak in mount_subtree(), which is used
-by btrfs.  Immediately prior to vfat in their list...
+> Thanks, issue opened here:
+> =
 
-(oh, and AFAICS "more" in the above had been a mismerge in -next, so
-it might really be all there is to it)
+> https://github.com/fengguang/lkp-tests/issues/11
+thanks, the official repo is https://github.com/intel/lkp-tests, can you he=
+lp move the
+issue to it?
 
-Folks, see if vfs.git #fixes solves that one.
+> =
 
---===============3182150825679624323==--
+> >
+> > > The patch changes the install dependencies for ubuntu to perl-modules=
+-5.28
+> and
+> > > libperl5.28 from 5.26. However, ubuntu-18.04 repos seem to only conta=
+in
+> version
+> > > 5.26. Is ubuntu 18.04 not a supported distro? If it is supported, it =
+seems that
+> > > we will need a way to specify to install whichever version of the pac=
+kage is
+> > > available. Ideally, it would be nice to be able to specify something =
+like
+> > > "perl-modules >=3D 5.26", but the current method of installing packag=
+es doesn't
+> > > seem to be equipped to handle that sort of thing.
+> > >
+> > > Thanks,
+> > > John
+> > > _______________________________________________
+> > > LKP mailing list
+> > > LKP(a)lists.01.org
+> > > https://lists.01.org/mailman/listinfo/lkp
+
+--===============1968060482037321239==--
 
