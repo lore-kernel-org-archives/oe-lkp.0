@@ -1,61 +1,59 @@
-Content-Type: multipart/mixed; boundary="===============4353145920270950290=="
+Content-Type: multipart/mixed; boundary="===============7343232430112474007=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 To: lkp@lists.01.org
-Subject: Re: [gpio] f69e00bd21: unixbench.score -24.2% regression
-Date: Mon, 22 Jul 2019 09:27:50 +0800
-Message-ID: <20190722012750.GB50506@shbuild999.sh.intel.com>
-In-Reply-To: <CACRpkdYmtgO_E-KKE8zjA04POawJ=4RN3xFUPY__7GF+gSNbNQ@mail.gmail.com>
+Subject: Re: [can] 60649d4e0a: ltp.can_rcv_own_msgs.fail
+Date: Mon, 29 Jul 2019 16:13:15 +0200
+Message-ID: <786568d6-bd24-327a-8367-319efbe2cccb@hartkopp.net>
+In-Reply-To: <20190729094112.GM22106@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4353145920270950290==
+--===============7343232430112474007==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Linus,
+Hello Marc,
 
-On Wed, Jul 17, 2019 at 05:42:15AM +0800, Linus Walleij wrote:
-> On Wed, Jul 10, 2019 at 2:15 PM kernel test robot <rong.a.chen@intel.co=
-m> wrote:
+On 29/07/2019 11.41, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-7):
 > =
 
-> > FYI, we noticed a -24.2% regression of unixbench.score due to commit:
-> > commit: f69e00bd21aa6a1961c521b6eb199137fcb8a76a ("gpio: mmio: Support =
-two direction registers")
-> > https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux=
-.git master
-> =
+> commit: 60649d4e0af6c26b6c423dea9c57f39e823fc0c5 ("can: remove obsolete e=
+mpty ioctl() handler")
+> https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next.=
+git master
 
-> That's pretty bogus since the test doesn't even seem to be using GPIO.
-> Further AFAIK Intel chips don't even use that driver.
-> =
+the kernel test robot is right.
 
-> Can you provide some rootcausing?
+The patch ("can: remove obsolete empty ioctl() handler") leads to a =
 
-We did some further check, and found this is a false alarm. That some recen=
-t =
+return value of -EOPNOTSUPP instead of the former -ENOIOCTLCMD.
 
-change to LKP itself has enabled the latencytop for newer kernel(post 5.1-r=
-c1),
-and latencytop is known to bring extra system load to scheduling related
-benchmarks like unixbench, which caused this -24.7 difference of unixbench
-score. Sorry for the noise.
+As we can see in socket.c ...
 
-Thanks,
-Feng
+https://elixir.bootlin.com/linux/v5.3-rc2/source/net/socket.c#L1041
 
+         /*
+          * If this ioctl is unknown try to hand it down
+          * to the NIC driver.
+          */
+         if (err !=3D -ENOIOCTLCMD)
+                 return err;
 
-> If you are using GPIOs from userspace in the test somehow I am
-> sure both me and Bartosz would be interested to hear how.
-> =
+... we need to return -ENOIOCTLCMD to pass the SIOCGIFINDEX ioctl to the =
 
-> Yours,
-> Linus Walleij
-> _______________________________________________
-> LKP mailing list
-> LKP(a)lists.01.org
-> https://lists.01.org/mailman/listinfo/lkp
+NIC layer.
 
---===============4353145920270950290==--
+Therefore the entire commit needs to be *reverted* to restore the =
+
+required functionality.
+
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <rong.a.chen@intel.com>
+
+Many thanks,
+Oliver
+
+--===============7343232430112474007==--
 
