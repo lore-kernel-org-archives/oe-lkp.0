@@ -1,178 +1,160 @@
-Content-Type: multipart/mixed; boundary="===============6785761072415243977=="
+Content-Type: multipart/mixed; boundary="===============1587276678861357378=="
 MIME-Version: 1.0
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Alexander Potapenko <glider@google.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/mgag200] 90f479ae51: vm-scalability.median -18.8% regression
-Date: Wed, 31 Jul 2019 12:12:27 +0200
-Message-ID: <f71cc655-7a9f-2bdd-1a31-fd40e9cc73f5@suse.de>
-In-Reply-To: <87wofyzhbm.fsf@yhuang-dev.intel.com>
+Subject: Re: [mm] 6471384af2: kernel_BUG_at_mm/slub.c
+Date: Wed, 31 Jul 2019 17:30:10 +0200
+Message-ID: <CAG_fn=VBGE=YvkZX0C45qu29zqfvLMP10w_owj4vfFxPcK5iow@mail.gmail.com>
+In-Reply-To: <538637ba-f4e3-0dfa-cb13-3aee51c659bd@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6785761072415243977==
+--===============1587276678861357378==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi
+On Wed, Jul 31, 2019 at 12:39 AM Laura Abbott <labbott@redhat.com> wrote:
+>
+> On 7/29/19 5:43 AM, kernel test robot wrote:
+> > FYI, we noticed the following commit (built with gcc-7):
+> >
+> > commit: 6471384af2a6530696fc0203bafe4de41a23c9ef ("mm: security: introd=
+uce init_on_alloc=3D1 and init_on_free=3D1 boot options")
+> > https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux=
+.git master
+> >
+> > in testcase: trinity
+> > with following parameters:
+> >
+> >       runtime: 300s
+> >
+> > test-description: Trinity is a linux system call fuzz tester.
+> > test-url: http://codemonkey.org.uk/projects/trinity/
+> >
+> >
+> > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2=
+ -m 8G
+> >
+> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
+g/backtrace):
+> >
+> >
+> > +------------------------------------------+------------+------------+
+> > |                                          | ba5c5e4a5d | 6471384af2 |
+> > +------------------------------------------+------------+------------+
+> > | boot_successes                           | 8          | 0          |
+> > | boot_failures                            | 2          | 15         |
+> > | invoked_oom-killer:gfp_mask=3D0x           | 1          |            |
+> > | Mem-Info                                 | 1          |            |
+> > | kernel_BUG_at_security/keys/keyring.c    | 1          |            |
+> > | invalid_opcode:#[##]                     | 1          | 15         |
+> > | RIP:__key_link_begin                     | 1          |            |
+> > | Kernel_panic-not_syncing:Fatal_exception | 1          | 15         |
+> > | kernel_BUG_at_mm/slub.c                  | 0          | 15         |
+> > | RIP:kfree                                | 0          | 15         |
+> > +------------------------------------------+------------+------------+
+> >
+> >
+> > If you fix the issue, kindly add following tag
+> > Reported-by: kernel test robot <rong.a.chen@intel.com>
+> >
+> >
+> > [    4.478342] kernel BUG at mm/slub.c:306!
+> > [    4.482437] invalid opcode: 0000 [#1] PREEMPT PTI
+> > [    4.485750] CPU: 0 PID: 0 Comm: swapper Not tainted 5.2.0-05754-g647=
+1384a #4
+> > [    4.490635] RIP: 0010:kfree+0x58a/0x5c0
+> > [    4.493679] Code: 48 83 05 78 37 51 02 01 0f 0b 48 83 05 7e 37 51 02=
+ 01 48 83 05 7e 37 51 02 01 48 83 05 7e 37 51 02 01 48 83 05 d6 37 51 02 01=
+ <0f> 0b 48 83 05 d4 37 51 02 01 48 83 05 d4 37 51 02 01 48 83 05 d4
+> > [    4.506827] RSP: 0000:ffffffff82603d90 EFLAGS: 00010002
+> > [    4.510475] RAX: ffff8c3976c04320 RBX: ffff8c3976c04300 RCX: 0000000=
+000000000
+> > [    4.515420] RDX: ffff8c3976c04300 RSI: 0000000000000000 RDI: ffff8c3=
+976c04320
+> > [    4.520331] RBP: ffffffff82603db8 R08: 0000000000000000 R09: 0000000=
+000000000
+> > [    4.525288] R10: ffff8c3976c04320 R11: ffffffff8289e1e0 R12: ffffd52=
+cc8db0100
+> > [    4.530180] R13: ffff8c3976c01a00 R14: ffffffff810f10d4 R15: ffff8c3=
+976c04300
+> > [    4.535079] FS:  0000000000000000(0000) GS:ffffffff8266b000(0000) kn=
+lGS:0000000000000000
+> > [    4.540628] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [    4.544593] CR2: ffff8c397ffff000 CR3: 0000000125020000 CR4: 0000000=
+0000406b0
+> > [    4.549558] Call Trace:
+> > [    4.551266]  apply_wqattrs_prepare+0x154/0x280
+> > [    4.554357]  apply_workqueue_attrs_locked+0x4e/0xe0
+> > [    4.557728]  apply_workqueue_attrs+0x36/0x60
+> > [    4.560654]  alloc_workqueue+0x25a/0x6d0
+> > [    4.563381]  ? kmem_cache_alloc_trace+0x1e3/0x500
+> > [    4.566628]  ? __mutex_unlock_slowpath+0x44/0x3f0
+> > [    4.569875]  workqueue_init_early+0x246/0x348
+> > [    4.573025]  start_kernel+0x3c7/0x7ec
+> > [    4.575558]  x86_64_start_reservations+0x40/0x49
+> > [    4.578738]  x86_64_start_kernel+0xda/0xe4
+> > [    4.581600]  secondary_startup_64+0xb6/0xc0
+> > [    4.584473] Modules linked in:
+> > [    4.586620] ---[ end trace f67eb9af4d8d492b ]---
+>
+> I think this is catching an edge case with the freelist walking code
+> in slab_free_freelist_hook. If we're not doing a bulk free,
+> getting the free pointer from the object is going to be bogus so
+> there's a chance it could trigger the bug in set_freepointer even
+> if we don't actually care about it since it's going to get
+> overwritten when we actually free. It's probably more robust
+> to make sure we're terminating it with NULL. Lightly tested:
+I see, my understanding was that it's safe to write the value we've
+previously read with get_freepointer().
+But chances are that the random data from this pointer simply matches
+the object pointer.
 
-Am 31.07.19 um 11:25 schrieb Huang, Ying:
-> Hi, Daniel,
-> =
-
-> Daniel Vetter <daniel@ffwll.ch> writes:
-> =
-
->> On Tue, Jul 30, 2019 at 10:27 PM Dave Airlie <airlied@gmail.com> wrote:
->>>
->>> On Wed, 31 Jul 2019 at 05:00, Daniel Vetter <daniel@ffwll.ch> wrote:
->>>>
->>>> On Tue, Jul 30, 2019 at 8:50 PM Thomas Zimmermann <tzimmermann@suse.=
-de> wrote:
->>>>>
->>>>> Hi
->>>>>
->>>>> Am 30.07.19 um 20:12 schrieb Daniel Vetter:
->>>>>> On Tue, Jul 30, 2019 at 7:50 PM Thomas Zimmermann <tzimmermann@sus=
-e.de> wrote:
->>>>>>> Am 29.07.19 um 11:51 schrieb kernel test robot:
->>>>>>>> Greeting,
->>>>>>>>
->>>>>>>> FYI, we noticed a -18.8% regression of vm-scalability.median due t=
-o commit:>
->>>>>>>>
->>>>>>>> commit: 90f479ae51afa45efab97afdde9b94b9660dd3e4 ("drm/mgag200: Re=
-place struct mga_fbdev with generic framebuffer emulation")
->>>>>>>> https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linu=
-x-next.git master
->>>>>>>
->>>>>>> Daniel, Noralf, we may have to revert this patch.
->>>>>>>
->>>>>>> I expected some change in display performance, but not in VM. Since=
- it's
->>>>>>> a server chipset, probably no one cares much about display performa=
-nce.
->>>>>>> So that seemed like a good trade-off for re-using shared code.
->>>>>>>
->>>>>>> Part of the patch set is that the generic fb emulation now maps and
->>>>>>> unmaps the fbdev BO when updating the screen. I guess that's the ca=
-use
->>>>>>> of the performance regression. And it should be visible with other
->>>>>>> drivers as well if they use a shadow FB for fbdev emulation.
->>>>>>
->>>>>> For fbcon we should need to do any maps/unamps at all, this is for t=
-he
->>>>>> fbdev mmap support only. If the testcase mentioned here tests fbdev
->>>>>> mmap handling it's pretty badly misnamed :-) And as long as you don't
->>>>>> have an fbdev mmap there shouldn't be any impact at all.
->>>>>
->>>>> The ast and mgag200 have only a few MiB of VRAM, so we have to get the
->>>>> fbdev BO out if it's not being displayed. If not being mapped, it can=
- be
->>>>> evicted and make room for X, etc.
->>>>>
->>>>> To make this work, the BO's memory is mapped and unmapped in
->>>>> drm_fb_helper_dirty_work() before being updated from the shadow FB. [=
-1]
->>>>> That fbdev mapping is established on each screen update, more or less.
->>>>> From my (yet unverified) understanding, this causes the performance
->>>>> regression in the VM code.
->>>>>
->>>>> The original code in mgag200 used to kmap the fbdev BO while it's bei=
-ng
->>>>> displayed; [2] and the drawing code only mapped it when necessary (i.=
-e.,
->>>>> not being display). [3]
->>>>
->>>> Hm yeah, this vmap/vunmap is going to be pretty bad. We indeed should
->>>> cache this.
->>>>
->>>>> I think this could be added for VRAM helpers as well, but it's still a
->>>>> workaround and non-VRAM drivers might also run into such a performance
->>>>> regression if they use the fbdev's shadow fb.
->>>>
->>>> Yeah agreed, fbdev emulation should try to cache the vmap.
->>>>
->>>>> Noralf mentioned that there are plans for other DRM clients besides t=
-he
->>>>> console. They would as well run into similar problems.
->>>>>
->>>>>>> The thing is that we'd need another generic fbdev emulation for ast=
- and
->>>>>>> mgag200 that handles this issue properly.
->>>>>>
->>>>>> Yeah I dont think we want to jump the gun here.  If you can try to
->>>>>> repro locally and profile where we're wasting cpu time I hope that
->>>>>> should sched a light what's going wrong here.
->>>>>
->>>>> I don't have much time ATM and I'm not even officially at work until
->>>>> late Aug. I'd send you the revert and investigate later. I agree that
->>>>> using generic fbdev emulation would be preferable.
->>>>
->>>> Still not sure that's the right thing to do really. Yes it's a
->>>> regression, but vm testcases shouldn run a single line of fbcon or drm
->>>> code. So why this is impacted so heavily by a silly drm change is very
->>>> confusing to me. We might be papering over a deeper and much more
->>>> serious issue ...
->>>
->>> It's a regression, the right thing is to revert first and then work
->>> out the right thing to do.
->>
->> Sure, but I have no idea whether the testcase is doing something
->> reasonable. If it's accidentally testing vm scalability of fbdev and
->> there's no one else doing something this pointless, then it's not a
->> real bug. Plus I think we're shooting the messenger here.
->>
->>> It's likely the test runs on the console and printfs stuff out while ru=
-nning.
->>
->> But why did we not regress the world if a few prints on the console
->> have such a huge impact? We didn't get an entire stream of mails about
->> breaking stuff ...
-> =
-
-> The regression seems not related to the commit.  But we have retested
-> and confirmed the regression.  Hard to understand what happens.
-
-Take a look at commit cf1ca9aeb930df074bb5bbcde55f935fec04e529
-
-Best regards
-Thomas
-
-> =
-
-> Best Regards,
-> Huang, Ying
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel(a)lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/dri-devel
-> =
-
+> diff --git a/mm/slub.c b/mm/slub.c
+> index e6c030e47364..8834563cdb4b 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -1432,7 +1432,9 @@ static inline bool slab_free_freelist_hook(struct k=
+mem_cache *s,
+>         void *old_tail =3D *tail ? *tail : *head;
+>         int rsize;
+>
+> -       if (slab_want_init_on_free(s))
+> +       if (slab_want_init_on_free(s)) {
+> +               void *p =3D NULL;
+> +
+>                 do {
+>                         object =3D next;
+>                         next =3D get_freepointer(s, object);
+> @@ -1445,8 +1447,10 @@ static inline bool slab_free_freelist_hook(struct =
+kmem_cache *s,
+>                                                            : 0;
+>                         memset((char *)object + s->inuse, 0,
+>                                s->size - s->inuse - rsize);
+> -                       set_freepointer(s, object, next);
+> +                       set_freepointer(s, object, p);
+> +                       p =3D object;
+>                 } while (object !=3D old_tail);
+> +       }
+>
+>   /*
+>    * Compiler cannot detect this function can be removed if slab_free_hoo=
+k()
+>
+This one looks good, care to send a patch? Otherwise I can do that for you.
 
 -- =
 
-Thomas Zimmermann
-Graphics Driver Developer
-SUSE Linux GmbH, Maxfeldstrasse 5, 90409 Nuernberg, Germany
-GF: Felix Imend=C3=B6rffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG N=C3=BCrnberg)
+Alexander Potapenko
+Software Engineer
 
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
 
---===============6785761072415243977==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Halimah DeLaine Prado
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRRXpCQUVCQ0FBZEZpRUVjaGY3ckl6cHoy
-TkVvV2psYUEzQkhWTUxlaU1GQWwxQmFZc0FDZ2tRYUEzQkhWTUwKZWlQSzZRZ0FqUTZ1cEZHWDJn
-WkhINUpSQjRnbVl0TENyK0c5SXVJQ3QyQ2FDSmhSN3NHL2ozbnZUcDRoZlB3awpHRUNoMk5NcEls
-YVVlN2xHN0d6eHZobEhPeEgvQTlZeDF4Z2QrSUFHT2I5bGFtK0NKZVF3VjR4YTlhZUEzLzgwCnBK
-Mi9CRlhKOEQzTjJsMWFZZHczRm94SnV2aXN5cmttcURUeWY3emhRWkNrQU1CQ2RIbG12SnpvVkkw
-TUZhMVMKNTVoc1hXLzdiSlVZM3dYMWUweEM3NE1URm9lSk1iR3JXelI1eTQ5ZVhyOVdYaTAwWjE2
-dVVPTm5GMzFFUExWUQpTOHNtUkFJL2NNRlc2YzRHdzFsYmoxNDBrTE1uOFBuL2hTdVNZcXlIUjVq
-UU1LMGJEQ2NydFE3bGh3QVZCZkhZCjFXQnNnRmp2eW9Ndm13Mkg4d0hFeE9PUjViWDZMZz09Cj1V
-dTFoCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
-
---===============6785761072415243977==--
+--===============1587276678861357378==--
 
