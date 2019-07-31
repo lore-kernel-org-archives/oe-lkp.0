@@ -1,128 +1,163 @@
-Content-Type: multipart/mixed; boundary="===============1212045151549575757=="
+Content-Type: multipart/mixed; boundary="===============3151413284168520231=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] c8eaeac7b7: aim7.jobs-per-min -11.7% regression
-Date: Mon, 22 Jul 2019 16:03:09 +0800
-Message-ID: <874l3ebio2.fsf@yhuang-dev.intel.com>
-In-Reply-To: <87pnml0zrk.fsf@yhuang-dev.intel.com>
+Subject: Re: [drm/mgag200] 90f479ae51: vm-scalability.median -18.8% regression
+Date: Wed, 31 Jul 2019 12:10:54 +0200
+Message-ID: <0dd8808d-4c43-b624-ff49-924f6345b757@suse.de>
+In-Reply-To: <CAKMK7uEbLP7j38VhdX9qniwqLfSc0_LrcrCD1R8m4kihbxePUA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1212045151549575757==
+--===============3151413284168520231==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-"Huang, Ying" <ying.huang@intel.com> writes:
+Hi
 
-> Rong Chen <rong.a.chen@intel.com> writes:
->
->> On 6/26/19 11:17 AM, Josef Bacik wrote:
->>> On Wed, Jun 26, 2019 at 10:39:36AM +0800, Rong Chen wrote:
->>>> On 6/25/19 10:22 PM, Josef Bacik wrote:
->>>>> On Fri, Jun 21, 2019 at 08:48:03AM +0800, Huang, Ying wrote:
->>>>>> "Huang, Ying" <ying.huang@intel.com> writes:
->>>>>>
->>>>>>> "Huang, Ying" <ying.huang@intel.com> writes:
+Am 31.07.19 um 10:13 schrieb Daniel Vetter:
+> On Tue, Jul 30, 2019 at 10:27 PM Dave Airlie <airlied@gmail.com> wrote:
+>>
+>> On Wed, 31 Jul 2019 at 05:00, Daniel Vetter <daniel@ffwll.ch> wrote:
+>>>
+>>> On Tue, Jul 30, 2019 at 8:50 PM Thomas Zimmermann <tzimmermann@suse.d=
+e> wrote:
+>>>>
+>>>> Hi
+>>>>
+>>>> Am 30.07.19 um 20:12 schrieb Daniel Vetter:
+>>>>> On Tue, Jul 30, 2019 at 7:50 PM Thomas Zimmermann <tzimmermann@suse=
+.de> wrote:
+>>>>>> Am 29.07.19 um 11:51 schrieb kernel test robot:
+>>>>>>> Greeting,
 >>>>>>>
->>>>>>>> Hi, Josef,
->>>>>>>>
->>>>>>>> kernel test robot <rong.a.chen@intel.com> writes:
->>>>>>>>
->>>>>>>>> Greeting,
->>>>>>>>>
->>>>>>>>> FYI, we noticed a -11.7% regression of aim7.jobs-per-min due to c=
-ommit:
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> commit: c8eaeac7b734347c3afba7008b7af62f37b9c140 ("btrfs: reserve
->>>>>>>>> delalloc metadata differently")
->>>>>>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git m=
-aster
->>>>>>>>>
->>>>>>>>> in testcase: aim7
->>>>>>>>> on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @
->>>>>>>>> 3.00GHz with 384G memory
->>>>>>>>> with following parameters:
->>>>>>>>>
->>>>>>>>> 	disk: 4BRD_12G
->>>>>>>>> 	md: RAID0
->>>>>>>>> 	fs: btrfs
->>>>>>>>> 	test: disk_rr
->>>>>>>>> 	load: 1500
->>>>>>>>> 	cpufreq_governor: performance
->>>>>>>>>
->>>>>>>>> test-description: AIM7 is a traditional UNIX system level benchma=
-rk
->>>>>>>>> suite which is used to test and measure the performance of multiu=
-ser
->>>>>>>>> system.
->>>>>>>>> test-url: https://sourceforge.net/projects/aimbench/files/aim-sui=
-te7/
->>>>>>>> Here's another regression, do you have time to take a look at this?
->>>>>>> Ping
->>>>>> Ping again ...
+>>>>>>> FYI, we noticed a -18.8% regression of vm-scalability.median due to=
+ commit:>
+>>>>>>>
+>>>>>>> commit: 90f479ae51afa45efab97afdde9b94b9660dd3e4 ("drm/mgag200: Rep=
+lace struct mga_fbdev with generic framebuffer emulation")
+>>>>>>> https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux=
+-next.git master
 >>>>>>
->>>>> Finally got time to look at this but I can't get the reproducer to wo=
-rk
+>>>>>> Daniel, Noralf, we may have to revert this patch.
+>>>>>>
+>>>>>> I expected some change in display performance, but not in VM. Since =
+it's
+>>>>>> a server chipset, probably no one cares much about display performan=
+ce.
+>>>>>> So that seemed like a good trade-off for re-using shared code.
+>>>>>>
+>>>>>> Part of the patch set is that the generic fb emulation now maps and
+>>>>>> unmaps the fbdev BO when updating the screen. I guess that's the cau=
+se
+>>>>>> of the performance regression. And it should be visible with other
+>>>>>> drivers as well if they use a shadow FB for fbdev emulation.
 >>>>>
->>>>> root(a)destiny ~/lkp-tests# bin/lkp run ~/job-aim.yaml
->>>>> Traceback (most recent call last):
->>>>>           11: from /root/lkp-tests/bin/run-local:18:in `<main>'
->>>>>           10: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
-re.rb:54:in `require'
->>>>>            9: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
-re.rb:54:in `require'
->>>>>            8: from /root/lkp-tests/lib/yaml.rb:5:in `<top (required)>'
->>>>>            7: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
-re.rb:54:in `require'
->>>>>            6: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
-re.rb:54:in `require'
->>>>>            5: from /root/lkp-tests/lib/common.rb:9:in `<top (required=
-)>'
->>>>>            4: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
-re.rb:54:in `require'
->>>>>            3: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
-re.rb:54:in `require'
->>>>>            2: from /root/lkp-tests/lib/array_ext.rb:3:in `<top (requi=
-red)>'
->>>>>            1: from /usr/share/rubygems/rubygems/core_ext/kernel_requi=
-re.rb:54:in `require'
->>>>> /usr/share/rubygems/rubygems/core_ext/kernel_require.rb:54:in `requir=
-e': cannot load such file -- active_support/core_ext/enumerable (LoadError)
->>>> Hi Josef,
+>>>>> For fbcon we should need to do any maps/unamps at all, this is for the
+>>>>> fbdev mmap support only. If the testcase mentioned here tests fbdev
+>>>>> mmap handling it's pretty badly misnamed :-) And as long as you don't
+>>>>> have an fbdev mmap there shouldn't be any impact at all.
 >>>>
->>>> I tried the latest lkp-tests, and didn't have the problem. Could you p=
-lease
->>>> update the lkp-tests repo and run "lkp install" again?
+>>>> The ast and mgag200 have only a few MiB of VRAM, so we have to get the
+>>>> fbdev BO out if it's not being displayed. If not being mapped, it can =
+be
+>>>> evicted and make room for X, etc.
 >>>>
->>> I updated it this morning, and I just updated it now, my tree is on
+>>>> To make this work, the BO's memory is mapped and unmapped in
+>>>> drm_fb_helper_dirty_work() before being updated from the shadow FB. [1]
+>>>> That fbdev mapping is established on each screen update, more or less.
+>>>> From my (yet unverified) understanding, this causes the performance
+>>>> regression in the VM code.
+>>>>
+>>>> The original code in mgag200 used to kmap the fbdev BO while it's being
+>>>> displayed; [2] and the drawing code only mapped it when necessary (i.e=
+.,
+>>>> not being display). [3]
 >>>
->>> 2c5b1a95b08dbe81bba64419c482a877a3b424ac
+>>> Hm yeah, this vmap/vunmap is going to be pretty bad. We indeed should
+>>> cache this.
 >>>
->>> lkp install says everything is installed except
+>>>> I think this could be added for VRAM helpers as well, but it's still a
+>>>> workaround and non-VRAM drivers might also run into such a performance
+>>>> regression if they use the fbdev's shadow fb.
 >>>
->>> No match for argument: libipc-run-perl
->>
->> I've just fixed it. could you add "libipc-run-perl: perl-IPC-Run" to
->> the end of distro/adaptation/fedora?
->>
->> Thanks,
->> Rong Chen
->>
->>
+>>> Yeah agreed, fbdev emulation should try to cache the vmap.
 >>>
->>> and it still doesn't run properly.  Thanks,
->
-> Hi, Josef,
->
-> Do you have time to try it again?  The latest lkp-tests code has the fix =
-merged.
+>>>> Noralf mentioned that there are plans for other DRM clients besides the
+>>>> console. They would as well run into similar problems.
+>>>>
+>>>>>> The thing is that we'd need another generic fbdev emulation for ast =
+and
+>>>>>> mgag200 that handles this issue properly.
+>>>>>
+>>>>> Yeah I dont think we want to jump the gun here.  If you can try to
+>>>>> repro locally and profile where we're wasting cpu time I hope that
+>>>>> should sched a light what's going wrong here.
+>>>>
+>>>> I don't have much time ATM and I'm not even officially at work until
+>>>> late Aug. I'd send you the revert and investigate later. I agree that
+>>>> using generic fbdev emulation would be preferable.
+>>>
+>>> Still not sure that's the right thing to do really. Yes it's a
+>>> regression, but vm testcases shouldn run a single line of fbcon or drm
+>>> code. So why this is impacted so heavily by a silly drm change is very
+>>> confusing to me. We might be papering over a deeper and much more
+>>> serious issue ...
+>>
+>> It's a regression, the right thing is to revert first and then work
+>> out the right thing to do.
+> =
 
-Ping...
+> Sure, but I have no idea whether the testcase is doing something
+> reasonable. If it's accidentally testing vm scalability of fbdev and
+> there's no one else doing something this pointless, then it's not a
+> real bug. Plus I think we're shooting the messenger here.
+> =
 
-Best Regards,
-Huang, Ying
+>> It's likely the test runs on the console and printfs stuff out while run=
+ning.
+> =
 
---===============1212045151549575757==--
+> But why did we not regress the world if a few prints on the console
+> have such a huge impact? We didn't get an entire stream of mails about
+> breaking stuff ...
+
+The vmap/vunmap pair is only executed for fbdev emulation with a shadow
+FB. And most of those are with shmem helpers, which ref-count the vmap
+calls internally. My guess is that VRAM helpers are currently the only
+BOs triggering this problem.
+
+Best regards
+Thomas
+
+> -Daniel
+> =
+
+
+-- =
+
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Linux GmbH, Maxfeldstrasse 5, 90409 Nuernberg, Germany
+GF: Felix Imend=C3=B6rffer, Mary Higgins, Sri Rasiah
+HRB 21284 (AG N=C3=BCrnberg)
+
+
+--===============3151413284168520231==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRRXpCQUVCQ0FBZEZpRUVjaGY3ckl6cHoy
+TkVvV2psYUEzQkhWTUxlaU1GQWwxQmFUd0FDZ2tRYUEzQkhWTUwKZWlQWDRBZi9YQUMwenpHaGdQ
+RVNYVURFT2tNMDdxK0NkWXdlRmY3UkVaRHRjbnVSaldEc2ZuUzcwSkdvOGVqZQo3dzVBR3JNYzRQ
+dEgxK1FVZTJzaEFla21HampKUWZSZmNidHlNMS9UNVdKd2VoZEh1MHJPSERsU2gvZENlNXpTCnEr
+RnlzYkdxd2w1WEpyRjM1Vk1aRlllWTN2aE1scEJ4amcxaTMrUmRBamdEek5aRzY4bE1PbDZHWWZr
+aHZwZEIKUFp0ckZTOUdqSDV2R01qTTdWMVpDeXpLd3gvZWN4WnJ6eDlETkhXcUliR0xnWDgzOXhZ
+SGtKbTBzKzFHOTFSZgpTVWNpeVU2Ny9oM2FWUStkT29HcVBqMUl2OUVPYlhuaHNRVEdKeDUrWFdC
+ZWV4d3BONEFNVktTY3RONERLaGtKCjBxaGdTcit0bWRMMGtZSlVNMldsVlRqREVVanhBQT09Cj1y
+UFpiCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
+
+--===============3151413284168520231==--
 
