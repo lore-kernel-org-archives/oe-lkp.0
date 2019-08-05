@@ -1,184 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============7156897344204792765=="
+Content-Type: multipart/mixed; boundary="===============4366740181902193310=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Borislav Petkov <bp@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [drm/mgag200] 90f479ae51: vm-scalability.median -18.8% regression
-Date: Mon, 05 Aug 2019 20:52:39 +0800
-Message-ID: <20190805125239.GB96155@shbuild999.sh.intel.com>
-In-Reply-To: <2f524683-d9ee-77b6-1253-5645dff050a7@suse.de>
+Subject: Re: [x86/boot] 5b51ae969e: kexec boot failed
+Date: Mon, 05 Aug 2019 15:02:21 +0200
+Message-ID: <20190805130221.GA18887@zn.tnic>
+In-Reply-To: <0f817336-2d87-2110-13c0-e0a417d70e90@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7156897344204792765==
+--===============4366740181902193310==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Thomas,
+On Mon, Aug 05, 2019 at 07:49:54PM +0800, Chen, Rong A wrote:
+> We use the following command to boot a new kernel:
+> kexec --noefi -l /opt/rootfs/tmp/pkg/linux/x86_64-rhel-7.6/gcc-7/5b51ae96=
+9e3d8ab0134ee3c98a769ad6d2cc2e24/vmlinuz-5.2.0-rc3-00004-g5b51ae969e3d8a
+> --initrd=3D/opt/rootfs/tmp/initrd-concatenated
 
-On Mon, Aug 05, 2019 at 12:22:11PM +0200, Thomas Zimmermann wrote:
+And this "concatenated" initrd, how do you generate that?
 
-	[snip] =
+FWIW, trying this in a vm doesn't seem to work because of EFI even though
+--noefi is supplied on the cmdline:
 
+$ kexec --noefi -l /mnt/tmp/bzImage
+Unknown type (Reserved) while parsing /sys/firmware/memmap/5/type. Please r=
+eport this as bug. Using RANGE_RESERVED now.
+Unknown type (Reserved) while parsing /sys/firmware/memmap/1/type. Please r=
+eport this as bug. Using RANGE_RESERVED now.
+Unknown type (Reserved) while parsing /sys/firmware/memmap/6/type. Please r=
+eport this as bug. Using RANGE_RESERVED now.
+Unknown type (Reserved) while parsing /sys/firmware/memmap/4/type. Please r=
+eport this as bug. Using RANGE_RESERVED now.
+Unknown type (Reserved) while parsing /sys/firmware/memmap/2/type. Please r=
+eport this as bug. Using RANGE_RESERVED now.
 
-> >>   2019-08-03 19:29:17  ./case-anon-cow-seq-hugetlb
-> >>   2019-08-03 19:29:17  ./usemem --runtime 300 -n 4 --prealloc --prefau=
-lt
-> >>     -O -U 815394406
-> >>   917318700 bytes / 659419 usecs =3D 1358497 KB/s
-> >>   917318700 bytes / 659658 usecs =3D 1358005 KB/s
-> >>   917318700 bytes / 659916 usecs =3D 1357474 KB/s
-> >>   917318700 bytes / 660168 usecs =3D 1356956 KB/s
-> >>
-> >> Rong, Feng, could you confirm this by disabling the cursor or blinking?
-> > =
+I need to try it on a real box.
 
-> > Glad to know this method restored the drop. Rong is running the case.
-> > =
+-- =
 
-> > While I have another finds, as I noticed your patch changed the bpp from
-> > 24 to 32, I had a patch to change it back to 24, and run the case in
-> > the weekend, the -18% regrssion was reduced to about -5%. Could this
-> > be related?
-> =
+Regards/Gruss,
+    Boris.
 
-> In the original code, the fbdev console already ran with 32 bpp [1] and
-> 16 bpp was selected for low-end devices. [2][3] The patch only set the
-> same values for userspace; nothing changed for the console.
+SUSE Linux GmbH, GF: Felix Imend=C3=B6rffer, Mary Higgins, Sri Rasiah, HRB =
+21284 (AG N=C3=BCrnberg)
 
-I did the experiment becasue I checked the commit =
-
-
-90f479ae51afa4 drm/mgag200: Replace struct mga_fbdev with generic framebuff=
-er emulation
-
-in which there is code:
-
-diff --git a/drivers/gpu/drm/mgag200/mgag200_main.c b/drivers/gpu/drm/mgag2=
-00/mgag200_main.c
-index b10f726..a977333 100644
---- a/drivers/gpu/drm/mgag200/mgag200_main.c
-+++ b/drivers/gpu/drm/mgag200/mgag200_main.c
-@@ -162,7 +162,7 @@ int mgag200_driver_load(struct drm_device *dev, unsigne=
-d long flags)
- 	if (IS_G200_SE(mdev) && mdev->mc.vram_size < (2048*1024))
- 		dev->mode_config.preferred_depth =3D 16;
- 	else
--		dev->mode_config.preferred_depth =3D 24;
-+		dev->mode_config.preferred_depth =3D 32;
- 	dev->mode_config.prefer_shadow =3D 1;
- =
-
-My debug patch was kind of restoring of this part.
-
-Thanks,
-Feng
-
-> =
-
-> Best regards
-> Thomas
-> =
-
-> [1]
-> https://cgit.freedesktop.org/drm/drm-tip/tree/drivers/gpu/drm/mgag200/mga=
-g200_fb.c?id=3D5d17718997367c435dbe5341a8e270d9b19478d3#n259
-> [2]
-> https://cgit.freedesktop.org/drm/drm-tip/tree/drivers/gpu/drm/mgag200/mga=
-g200_fb.c?id=3D5d17718997367c435dbe5341a8e270d9b19478d3#n263
-> [3]
-> https://cgit.freedesktop.org/drm/drm-tip/tree/drivers/gpu/drm/mgag200/mga=
-g200_fb.c?id=3D5d17718997367c435dbe5341a8e270d9b19478d3#n286
-> =
-
-> > =
-
-> > commit: =
-
-> >   f1f8555dfb9 drm/bochs: Use shadow buffer for bochs framebuffer console
-> >   90f479ae51a drm/mgag200: Replace struct mga_fbdev with generic frameb=
-uffer emulation
-> >   01e75fea0d5 mgag200: restore the depth back to 24
-> > =
-
-> > f1f8555dfb9a70a2 90f479ae51afa45efab97afdde9 01e75fea0d5ff39d3e588c20ec=
-5 =
-
-> > ---------------- --------------------------- --------------------------=
-- =
-
-> >      43921 =C2=B1  2%     -18.3%      35884            -4.8%      41826=
-        vm-scalability.median
-> >   14889337           -17.5%   12291029            -4.1%   14278574     =
-   vm-scalability.throughput
-> >  =
-
-> > commit 01e75fea0d5ff39d3e588c20ec52e7a4e6588a74
-> > Author: Feng Tang <feng.tang@intel.com>
-> > Date:   Fri Aug 2 15:09:19 2019 +0800
-> > =
-
-> >     mgag200: restore the depth back to 24
-> >     =
-
-> >     Signed-off-by: Feng Tang <feng.tang@intel.com>
-> > =
-
-> > diff --git a/drivers/gpu/drm/mgag200/mgag200_main.c b/drivers/gpu/drm/m=
-gag200/mgag200_main.c
-> > index a977333..ac8f6c9 100644
-> > --- a/drivers/gpu/drm/mgag200/mgag200_main.c
-> > +++ b/drivers/gpu/drm/mgag200/mgag200_main.c
-> > @@ -162,7 +162,7 @@ int mgag200_driver_load(struct drm_device *dev, uns=
-igned long flags)
-> >  	if (IS_G200_SE(mdev) && mdev->mc.vram_size < (2048*1024))
-> >  		dev->mode_config.preferred_depth =3D 16;
-> >  	else
-> > -		dev->mode_config.preferred_depth =3D 32;
-> > +		dev->mode_config.preferred_depth =3D 24;>  	dev->mode_config.prefer_=
-shadow =3D 1;
-> >  =
-
-> >  	r =3D mgag200_modeset_init(mdev);
-> > =
-
-> > Thanks,
-> > Feng
-> > =
-
-> >>
-> >>
-> >> The difference between mgag200's original fbdev support and generic
-> >> fbdev emulation is generic fbdev's worker task that updates the VRAM
-> >> buffer from the shadow buffer. mgag200 does this immediately, but reli=
-es
-> >> on drm_can_sleep(), which is deprecated.
-> >>
-> >> I think that the worker task interferes with the test case, as the
-> >> worker has been in fbdev emulation since forever and no performance
-> >> regressions have been reported so far.
-> >>
-> >>
-> >> So unless there's a report where this problem happens in a real-world
-> >> use case, I'd like to keep code as it is. And apparently there's always
-> >> the workaround of disabling the cursor blinking.
-> >>
-> >> Best regards
-> >> Thomas
-> >>
-> =
-
-> -- =
-
-> Thomas Zimmermann
-> Graphics Driver Developer
-> SUSE Linux GmbH, Maxfeldstrasse 5, 90409 Nuernberg, Germany
-> GF: Felix Imend=C3=B6rffer, Mary Higgins, Sri Rasiah
-> HRB 21284 (AG N=C3=BCrnberg)
-> =
-
-
-
-
-
---===============7156897344204792765==--
+--===============4366740181902193310==--
 
