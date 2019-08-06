@@ -1,86 +1,54 @@
-Content-Type: multipart/mixed; boundary="===============5544053382112623868=="
+Content-Type: multipart/mixed; boundary="===============1981335024559622750=="
 MIME-Version: 1.0
 From: Dave Young <dyoung@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/boot] 5b51ae969e: kexec boot failed
-Date: Tue, 06 Aug 2019 16:45:43 +0800
-Message-ID: <20190806084543.GA2164@dhcp-128-65.nay.redhat.com>
-In-Reply-To: <0f817336-2d87-2110-13c0-e0a417d70e90@intel.com>
+Date: Tue, 06 Aug 2019 16:56:11 +0800
+Message-ID: <20190806085611.GA2671@dhcp-128-65.nay.redhat.com>
+In-Reply-To: <20190805130221.GA18887@zn.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5544053382112623868==
+--===============1981335024559622750==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 08/05/19 at 07:49pm, Chen, Rong A wrote:
-> Hi,
+On 08/05/19 at 03:02pm, Borislav Petkov wrote:
+> On Mon, Aug 05, 2019 at 07:49:54PM +0800, Chen, Rong A wrote:
+> > We use the following command to boot a new kernel:
+> > kexec --noefi -l /opt/rootfs/tmp/pkg/linux/x86_64-rhel-7.6/gcc-7/5b51ae=
+969e3d8ab0134ee3c98a769ad6d2cc2e24/vmlinuz-5.2.0-rc3-00004-g5b51ae969e3d8a
+> > --initrd=3D/opt/rootfs/tmp/initrd-concatenated
 > =
 
-> On 8/2/2019 5:30 PM, Borislav Petkov wrote:
-> > On Fri, Aug 02, 2019 at 03:48:53PM +0800, kernel test robot wrote:
-> > > FYI, we noticed the following commit (built with gcc-7):
-> > > =
-
-> > > commit: 5b51ae969e3d8ab0134ee3c98a769ad6d2cc2e24 ("x86/boot: Call get=
-_rsdp_addr() after console_init()")
-> > > https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/lin=
-ux.git  master
-> > > =
-
-> > > in testcase: boot
-> > > =
-
-> > > on test machine: Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz with 4G memo=
-ry
-> > > =
-
-> > > The commit broke kexec boot on physical machines, We have to set "nok=
-aslr" to kernel cmdline to avoid the issue.
-> > How exactly do you trigger it? Details?
-> > =
-
+> And this "concatenated" initrd, how do you generate that?
 > =
 
-> We use the following command to boot a new kernel:
-> kexec --noefi -l /opt/rootfs/tmp/pkg/linux/x86_64-rhel-7.6/gcc-7/5b51ae96=
-9e3d8ab0134ee3c98a769ad6d2cc2e24/vmlinuz-5.2.0-rc3-00004-g5b51ae969e3d8a
-> --initrd=3D/opt/rootfs/tmp/initrd-concatenated
+> FWIW, trying this in a vm doesn't seem to work because of EFI even though
+> --noefi is supplied on the cmdline:
 > =
 
+> $ kexec --noefi -l /mnt/tmp/bzImage
+> Unknown type (Reserved) while parsing /sys/firmware/memmap/5/type. Please=
+ report this as bug. Using RANGE_RESERVED now.
+> Unknown type (Reserved) while parsing /sys/firmware/memmap/1/type. Please=
+ report this as bug. Using RANGE_RESERVED now.
+> Unknown type (Reserved) while parsing /sys/firmware/memmap/6/type. Please=
+ report this as bug. Using RANGE_RESERVED now.
+> Unknown type (Reserved) while parsing /sys/firmware/memmap/4/type. Please=
+ report this as bug. Using RANGE_RESERVED now.
+> Unknown type (Reserved) while parsing /sys/firmware/memmap/2/type. Please=
+ report this as bug. Using RANGE_RESERVED now.
 
---noefi is a corner case as kexec now supports efi, it is expected not
-work with old kexec-tools in case you do not use acpi_rsdp=3D cmdline
-explicitly.
- =
+These warning messages should have been fixed in latest kexec-tools
+since 2017.  e820 (/proc/iomem) previously used "reserved", later
+changed to "Reserved" thus kexec-tools can not recognize.
 
-I suspect it is still the rsdp getting failed instead of the moving
-chunk after console_init.
- =
+I would suggest you also upgrade to latest kexec-tools, but this should
+be not harmful since it is still using those ranges as reserved..
 
-Can you do more testing?
-  =
+Thanks
+Dave
 
-1.  test latest kexec-tools
-git://git.kernel.org/pub/scm/utils/kernel/kexec/kexec-tools.git
- =
-
-2. still use your old kexec-tools:
-  a. test without --noefi
-  b. test with --noefi but with some appending acpi_rsdp=3D cmdline, for
-example (enable serial to capture console log):
-kexec --noefi -l .../vmlinuz-... --reuse-cmdline --append
-"acpi_rsdp=3D0xaabbccdd earlyprintk=3Dserial"
- =
-
-Note: get the acpi pointer by:
-cat /sys/firmware/efi/systab
-for example on my laptop the acpi cmdline should be acpi_rsdp=3D0x7b5fe014:
-[root(a)dhcp-*-* dyoung]# cat /sys/firmware/efi/systab
-ACPI20=3D0x7b5fe014
-ACPI=3D0x7b5fe000
-SMBIOS3=3D0x7a671000
-SMBIOS=3D0x7a674000
-
---===============5544053382112623868==--
+--===============1981335024559622750==--
 
