@@ -1,54 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============1981335024559622750=="
+Content-Type: multipart/mixed; boundary="===============6230071117890711400=="
 MIME-Version: 1.0
-From: Dave Young <dyoung@redhat.com>
+From: Minchan Kim <minchan@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [x86/boot] 5b51ae969e: kexec boot failed
-Date: Tue, 06 Aug 2019 16:56:11 +0800
-Message-ID: <20190806085611.GA2671@dhcp-128-65.nay.redhat.com>
-In-Reply-To: <20190805130221.GA18887@zn.tnic>
+Subject: Re: [mm] 755d6edc1a: will-it-scale.per_process_ops -4.1% regression
+Date: Tue, 06 Aug 2019 20:00:24 +0900
+Message-ID: <20190806110024.GA32615@google.com>
+In-Reply-To: <20190806080415.GG11812@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1981335024559622750==
+--===============6230071117890711400==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 08/05/19 at 03:02pm, Borislav Petkov wrote:
-> On Mon, Aug 05, 2019 at 07:49:54PM +0800, Chen, Rong A wrote:
-> > We use the following command to boot a new kernel:
-> > kexec --noefi -l /opt/rootfs/tmp/pkg/linux/x86_64-rhel-7.6/gcc-7/5b51ae=
-969e3d8ab0134ee3c98a769ad6d2cc2e24/vmlinuz-5.2.0-rc3-00004-g5b51ae969e3d8a
-> > --initrd=3D/opt/rootfs/tmp/initrd-concatenated
+On Tue, Aug 06, 2019 at 10:04:15AM +0200, Michal Hocko wrote:
+> On Tue 06-08-19 15:05:47, kernel test robot wrote:
+> > Greeting,
+> > =
+
+> > FYI, we noticed a -4.1% regression of will-it-scale.per_process_ops due=
+ to commit:
 > =
 
-> And this "concatenated" initrd, how do you generate that?
+> I have to confess I cannot make much sense from numbers because they
+> seem to be too volatile and the main contributor doesn't stand up for
+> me. Anyway, regressions on microbenchmarks like this are not all that
+> surprising when a locking is slightly changed and the critical section
+> made shorter. I have seen that in the past already.
+
+I guess if it's multi process workload. The patch will give more chance
+to be scheduled out so TLB miss ratio would be bigger than old.
+I see it's natural trade-off for latency vs. performance so only thing
+I could think is just increase threshold from 32 to 64 or 128?
+
 > =
 
-> FWIW, trying this in a vm doesn't seem to work because of EFI even though
-> --noefi is supplied on the cmdline:
-> =
+> That being said I would still love to get to bottom of this bug rather
+> than play with the lock duration by a magic. In other words
+> http://lkml.kernel.org/r/20190730125751.GS9330(a)dhcp22.suse.cz
 
-> $ kexec --noefi -l /mnt/tmp/bzImage
-> Unknown type (Reserved) while parsing /sys/firmware/memmap/5/type. Please=
- report this as bug. Using RANGE_RESERVED now.
-> Unknown type (Reserved) while parsing /sys/firmware/memmap/1/type. Please=
- report this as bug. Using RANGE_RESERVED now.
-> Unknown type (Reserved) while parsing /sys/firmware/memmap/6/type. Please=
- report this as bug. Using RANGE_RESERVED now.
-> Unknown type (Reserved) while parsing /sys/firmware/memmap/4/type. Please=
- report this as bug. Using RANGE_RESERVED now.
-> Unknown type (Reserved) while parsing /sys/firmware/memmap/2/type. Please=
- report this as bug. Using RANGE_RESERVED now.
+Yes, if we could remove mark_page_accessed there, it would be best.
+I added a commen in the thread.
 
-These warning messages should have been fixed in latest kexec-tools
-since 2017.  e820 (/proc/iomem) previously used "reserved", later
-changed to "Reserved" thus kexec-tools can not recognize.
-
-I would suggest you also upgrade to latest kexec-tools, but this should
-be not harmful since it is still using those ranges as reserved..
-
-Thanks
-Dave
-
---===============1981335024559622750==--
+--===============6230071117890711400==--
 
