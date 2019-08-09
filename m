@@ -1,144 +1,313 @@
-Content-Type: multipart/mixed; boundary="===============0227036454633768894=="
+Content-Type: multipart/mixed; boundary="===============4390512664111616289=="
 MIME-Version: 1.0
-From: Saravana Kannan <saravanak@google.com>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: 21871a99b3 ("of/platform: Pause/resume sync state during init .."): WARNING: CPU: 0 PID: 1 at drivers/base/core.c:691 device_links_supplier_sync_state_resume
-Date: Thu, 08 Aug 2019 13:55:05 -0700
-Message-ID: <CAGETcx__STm5jSWRCFc3eZYVm4sW7P=HNjuGBa+Tj_YCc3o8Bg@mail.gmail.com>
-In-Reply-To: <5d4bce76.Bu8zZv8tcbDqokLR%lkp@intel.com>
+Subject: Re: [drm/mgag200] 90f479ae51: vm-scalability.median -18.8% regression
+Date: Fri, 09 Aug 2019 16:12:29 +0800
+Message-ID: <c6e220fe-230c-265c-f2fc-b0948d1cb898@intel.com>
+In-Reply-To: <370747ca-4dc9-917b-096c-891dcc2aedf0@suse.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0227036454633768894==
+--===============4390512664111616289==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 8, 2019 at 12:25 AM kernel test robot <lkp@intel.com> wrote:
->
-> Greetings,
->
-> 0day kernel testing robot got the below dmesg and the first bad commit is
->
-> https://kernel.googlesource.com/pub/scm/linux/kernel/git/gregkh/driver-co=
-re.git driver-core-testing
->
-> commit 21871a99b34c65c56a24193c277a4981529c306f
-> Author:     Saravana Kannan <saravanak@google.com>
-> AuthorDate: Wed Jul 31 15:17:18 2019 -0700
-> Commit:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CommitDate: Thu Aug 1 16:04:14 2019 +0200
->
->     of/platform: Pause/resume sync state during init and of_platform_popu=
-late()
->
->     When all the top level devices are populated from DT during kernel
->     init, the supplier devices could be added and probed before the
->     consumer devices are added and linked to the suppliers. To avoid the
->     sync_state() callback from being called prematurely, pause the
->     sync_state() callbacks before populating the devices and resume them
->     at late_initcall_sync().
->
->     Similarly, when children devices are populated after kernel init using
->     of_platform_populate(), there could be supplier-consumer dependencies
->     between the children devices that are populated. To avoid the same
->     problem with sync_state() being called prematurely, pause and resume
->     sync_state() callbacks across of_platform_populate().
->
->     Signed-off-by: Saravana Kannan <saravanak@google.com>
->     Link: https://lore.kernel.org/r/20190731221721.187713-6-saravanak(a)g=
-oogle.com
->     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->
-> 8f8184d6bf  driver core: Add sync_state driver/bus callback
-> 21871a99b3  of/platform: Pause/resume sync state during init and of_platf=
-orm_populate()
-> 5adf578101  of/platform: Fix device_links_supplier_sync_state_resume() wa=
-rning
-> 3880be629e  Add linux-next specific files for 20190807
-> +------------------------------------------------------------------------=
--+------------+------------+------------+---------------+
-> |                                                                        =
- | 8f8184d6bf | 21871a99b3 | 5adf578101 | next-20190807 |
-> +------------------------------------------------------------------------=
--+------------+------------+------------+---------------+
-> | boot_successes                                                         =
- | 27         | 0          | 0          | 0             |
-> | boot_failures                                                          =
- | 2          | 11         | 11         | 11            |
-> | WARNING:at_mm/usercopy.c:#usercopy_warn                                =
- | 1          |            |            |               |
-> | RIP:usercopy_warn                                                      =
- | 1          |            |            |               |
-> | invoked_oom-killer:gfp_mask=3D0x                                       =
-   | 1          |            |            |               |
-> | Mem-Info                                                               =
- | 1          |            |            |               |
-> | WARNING:at_drivers/base/core.c:#device_links_supplier_sync_state_resume=
- | 0          | 11         | 11         | 11            |
-> | RIP:device_links_supplier_sync_state_resume                            =
- | 0          | 11         | 11         | 11            |
-> +------------------------------------------------------------------------=
--+------------+------------+------------+---------------+
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> [   26.905004] i2c i2c-1: Added multiplexed i2c bus 3
-> [   26.917068] ### dt-test ### FAIL of_unittest_overlay_high_level():2380=
- overlay_base_root not initialized
-> [   26.920311] ### dt-test ### end of unittest - 219 passed, 1 failed
-> [   26.922504] ------------[ cut here ]------------
-> [   26.924102] Unmatched sync_state pause/resume!
-> [   26.924192] WARNING: CPU: 0 PID: 1 at drivers/base/core.c:691 device_l=
-inks_supplier_sync_state_resume+0x140/0x160
-> [   26.929493] Modules linked in:
-> [   26.930681] CPU: 0 PID: 1 Comm: swapper Tainted: G                T 5.=
-3.0-rc1-00025-g21871a99b34c6 #1
-> [   26.933665] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [   26.936451] RIP: 0010:device_links_supplier_sync_state_resume+0x140/0x=
-160
-> [   26.938611] Code: 84 c0 49 8d 84 24 c8 00 00 00 0f 85 48 ff ff ff 49 8=
-d 94 24 d0 00 00 00 48 89 55 d0 eb 86 48 c7 c7 c0 30 be 83 e8 10 c0 e5 fe <=
-0f> 0b 48 c7 c7 80 33 c4 84 e8 12 19 d0 00 48 83 c4 10 5b 41 5c 41
-> [   26.944420] RSP: 0018:ffff88801a397da8 EFLAGS: 00010286
-> [   26.946213] RAX: 0000000000000022 RBX: b05332a62e1f2e76 RCX: 000000000=
-0000000
-> [   26.948487] RDX: 0000000000000022 RSI: ffffffff81276c83 RDI: 000000000=
-0000246
-> [   26.950858] RBP: ffff88801a397de0 R08: fffffbfff0aa192d R09: fffffbfff=
-0aa192d
-> [   26.953192] R10: ffff88801a397df0 R11: 0000000000000001 R12: 000000000=
-0000000
-> [   26.955411] R13: 00000000ffffffff R14: 1ffff11003472fc3 R15: ffff88801=
-a397eb8
-> [   26.957678] FS:  0000000000000000(0000) GS:ffffffff846b3000(0000) knlG=
-S:0000000000000000
-> [   26.960398] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   26.962374] CR2: 00007fb42acb9480 CR3: 000000000462a006 CR4: 000000000=
-01606f0
-> [   26.964683] Call Trace:
-> [   26.965713]  of_platform_sync_state_init+0x17/0x3a
-> [   26.967381]  ? of_core_init+0x16a/0x16a
-> [   26.968769]  do_one_initcall+0x103/0x295
-> [   26.970179]  ? trace_event_raw_event_initcall_finish+0x150/0x150
-> [   26.972130]  ? down_write+0xbe/0x100
-> [   26.973467]  ? __down_killable+0x260/0x260
-> [   26.974933]  ? __kasan_check_write+0x1f/0x30
-> [   26.976433]  kernel_init_freeable+0x232/0x349
-> [   26.978003]  ? rest_init+0xd0/0xd0
-> [   26.979274]  kernel_init+0xe/0x120
-> [   26.980580]  ? rest_init+0xd0/0xd0
-> [   26.981870]  ret_from_fork+0x24/0x30
-> [   26.983168] ---[ end trace fa753e8363323d3d ]---
-> [   26.991111] Freeing unused decrypted memory: 2040K
+Hi,
 
-This looks like the same issue fixed by:
-https://lore.kernel.org/lkml/20190807020559.74458-1-saravanak(a)google.com/
+On 8/7/19 6:42 PM, Thomas Zimmermann wrote:
+> Hi Rong
+>
+> Am 06.08.19 um 14:59 schrieb Chen, Rong A:
+>> Hi,
+>>
+>> On 8/5/2019 6:25 PM, Thomas Zimmermann wrote:
+>>> Hi
+>>>
+>>> Am 05.08.19 um 09:28 schrieb Rong Chen:
+>>>> Hi,
+>>>>
+>>>> On 8/5/19 3:02 PM, Feng Tang wrote:
+>>>>> Hi Thomas,
+>>>>>
+>>>>> On Sun, Aug 04, 2019 at 08:39:19PM +0200, Thomas Zimmermann wrote:
+>>>>>> Hi
+>>>>>>
+>>>>>> I did some further analysis on this problem and found that the blink=
+ing
+>>>>>> cursor affects performance of the vm-scalability test case.
+>>>>>>
+>>>>>> I only have a 4-core machine, so scalability is not really testable.=
+ Yet
+>>>>>> I see the effects of running vm-scalibility against drm-tip, a rever=
+t of
+>>>>>> the mgag200 patch and the vmap fixes that I posted a few days ago.
+>>>>>>
+>>>>>> After reverting the mgag200 patch, running the test as described in =
+the
+>>>>>> report
+>>>>>>
+>>>>>>  =C2=A0=C2=A0 bin/lkp run job.yaml
+>>>>>>
+>>>>>> gives results like
+>>>>>>
+>>>>>>  =C2=A0=C2=A0 2019-08-02 19:34:37=C2=A0 ./case-anon-cow-seq-hugetlb
+>>>>>>  =C2=A0=C2=A0 2019-08-02 19:34:37=C2=A0 ./usemem --runtime 300 -n 4 =
+--prealloc
+>>>>>> --prefault
+>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 -O -U 815395225
+>>>>>>  =C2=A0=C2=A0 917319627 bytes / 756534 usecs =3D 1184110 KB/s
+>>>>>>  =C2=A0=C2=A0 917319627 bytes / 764675 usecs =3D 1171504 KB/s
+>>>>>>  =C2=A0=C2=A0 917319627 bytes / 766414 usecs =3D 1168846 KB/s
+>>>>>>  =C2=A0=C2=A0 917319627 bytes / 777990 usecs =3D 1151454 KB/s
+>>>>>>
+>>>>>> Running the test against current drm-tip gives slightly worse result=
+s,
+>>>>>> such as.
+>>>>>>
+>>>>>>  =C2=A0=C2=A0 2019-08-03 19:17:06=C2=A0 ./case-anon-cow-seq-hugetlb
+>>>>>>  =C2=A0=C2=A0 2019-08-03 19:17:06=C2=A0 ./usemem --runtime 300 -n 4 =
+--prealloc
+>>>>>> --prefault
+>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 -O -U 815394406
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 871607 usecs =3D 1027778 KB/s
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 894173 usecs =3D 1001840 KB/s
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 919694 usecs =3D 974040 KB/s
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 923341 usecs =3D 970193 KB/s
+>>>>>>
+>>>>>> The test puts out roughly one result per second. Strangely sending t=
+he
+>>>>>> output to /dev/null can make results significantly worse.
+>>>>>>
+>>>>>>  =C2=A0=C2=A0 bin/lkp run job.yaml > /dev/null
+>>>>>>
+>>>>>>  =C2=A0=C2=A0 2019-08-03 19:23:04=C2=A0 ./case-anon-cow-seq-hugetlb
+>>>>>>  =C2=A0=C2=A0 2019-08-03 19:23:04=C2=A0 ./usemem --runtime 300 -n 4 =
+--prealloc
+>>>>>> --prefault
+>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 -O -U 815394406
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 1207358 usecs =3D 741966 KB/s
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 1210456 usecs =3D 740067 KB/s
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 1216572 usecs =3D 736346 KB/s
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 1239152 usecs =3D 722929 KB/s
+>>>>>>
+>>>>>> I realized that there's still a blinking cursor on the screen, which=
+ I
+>>>>>> disabled with
+>>>>>>
+>>>>>>  =C2=A0=C2=A0 tput civis
+>>>>>>
+>>>>>> or alternatively
+>>>>>>
+>>>>>>  =C2=A0=C2=A0 echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_bl=
+ink
+>>>>>>
+>>>>>> Running the the test now gives the original or even better results,
+>>>>>> such as
+>>>>>>
+>>>>>>  =C2=A0=C2=A0 bin/lkp run job.yaml > /dev/null
+>>>>>>
+>>>>>>  =C2=A0=C2=A0 2019-08-03 19:29:17=C2=A0 ./case-anon-cow-seq-hugetlb
+>>>>>>  =C2=A0=C2=A0 2019-08-03 19:29:17=C2=A0 ./usemem --runtime 300 -n 4 =
+--prealloc
+>>>>>> --prefault
+>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 -O -U 815394406
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 659419 usecs =3D 1358497 KB/s
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 659658 usecs =3D 1358005 KB/s
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 659916 usecs =3D 1357474 KB/s
+>>>>>>  =C2=A0=C2=A0 917318700 bytes / 660168 usecs =3D 1356956 KB/s
+>>>>>>
+>>>>>> Rong, Feng, could you confirm this by disabling the cursor or blinki=
+ng?
+>>>>> Glad to know this method restored the drop. Rong is running the case.
+>>>> I set "echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink" for
+>>>> both commits,
+>>>> and the regression has no obvious change.
+>>> Ah, I see. Thank you for testing. There are two questions that come to
+>>> my mind: did you send the regular output to /dev/null? And what happens
+>>> if you disable the cursor with 'tput civis'?
+>> I didn't send the output to /dev/null because we need to collect data
+>> from the output,
+> You can send it to any file, as long as it doesn't show up on the
+> console. I also found the latest results in the file result/vm-scalabilit=
+y.
+>
+>
+>> Actually we run the benchmark as a background process, do we need to
+>> disable the cursor and test again?
+> There's a worker thread that updates the display from the shadow buffer.
+> The blinking cursor periodically triggers the worker thread, but the
+> actual update is just the size of one character.
+>
+> The point of the test without output is to see if the regression comes
+> from the buffer update (i.e., the memcpy from shadow buffer to VRAM), or
+> from the worker thread. If the regression goes away after disabling the
+> blinking cursor, then the worker thread is the problem. If it already
+> goes away if there's simply no output from the test, the screen update
+> is the problem. On my machine I have to disable the blinking cursor, so
+> I think the worker causes the performance drop.
 
-If anyone thinks otherwise, please let me know.
+We disabled redirecting stdout/stderr to /dev/kmsg,=C2=A0 and the regressio=
+n =
 
--Saravana
+is gone.
 
---===============0227036454633768894==--
+commit:
+ =C2=A0 f1f8555dfb9 drm/bochs: Use shadow buffer for bochs framebuffer cons=
+ole
+ =C2=A0 90f479ae51a drm/mgag200: Replace struct mga_fbdev with generic =
+
+framebuffer emulation
+
+f1f8555dfb9a70a2=C2=A0 90f479ae51afa45efab97afdde testcase/testparams/testb=
+ox
+----------------=C2=A0 -------------------------- -------------------------=
+--
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 change=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
+ =C2=A0=C2=A0=C2=A0=C2=A0 43785=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 44481 =
+
+vm-scalability/300s-8T-anon-cow-seq-hugetlb/lkp-knm01
+ =C2=A0=C2=A0=C2=A0=C2=A0 43785=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 44481=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 GEO-MEAN =
+
+vm-scalability.median
+
+Best Regards,
+Rong Chen
+
+
+>
+> Best regards
+> Thomas
+>
+>> Best Regards,
+>> Rong Chen
+>>
+>>> If there is absolutely nothing changing on the screen, I don't see how
+>>> the regression could persist.
+>>>
+>>> Best regards
+>>> Thomas
+>>>
+>>>
+>>>> commit:
+>>>>  =C2=A0 f1f8555dfb9 drm/bochs: Use shadow buffer for bochs framebuffer=
+ console
+>>>>  =C2=A0 90f479ae51a drm/mgag200: Replace struct mga_fbdev with generic
+>>>> framebuffer emulation
+>>>>
+>>>> f1f8555dfb9a70a2=C2=A0 90f479ae51afa45efab97afdde testcase/testparams/=
+testbox
+>>>> ----------------=C2=A0 -------------------------- --------------------=
+-------
+>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 change=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %=
+stddev
+>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 \=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 \
+>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 43394=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -20%=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 34575 =
+=C2=B1=C2=A0 3%
+>>>> vm-scalability/performance-300s-8T-anon-cow-seq-hugetlb/lkp-knm01
+>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 43393=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -20%=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 34575=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 GEO-MEAN
+>>>> vm-scalability.median
+>>>>
+>>>> Best Regards,
+>>>> Rong Chen
+>>>>
+>>>>> While I have another finds, as I noticed your patch changed the bpp f=
+rom
+>>>>> 24 to 32, I had a patch to change it back to 24, and run the case in
+>>>>> the weekend, the -18% regrssion was reduced to about -5%. Could this
+>>>>> be related?
+>>>>>
+>>>>> commit:
+>>>>>  =C2=A0=C2=A0 f1f8555dfb9 drm/bochs: Use shadow buffer for bochs fram=
+ebuffer console
+>>>>>  =C2=A0=C2=A0 90f479ae51a drm/mgag200: Replace struct mga_fbdev with =
+generic
+>>>>> framebuffer emulation
+>>>>>  =C2=A0=C2=A0 01e75fea0d5 mgag200: restore the depth back to 24
+>>>>>
+>>>>> f1f8555dfb9a70a2 90f479ae51afa45efab97afdde9 01e75fea0d5ff39d3e588c20=
+ec5
+>>>>> ---------------- --------------------------- ------------------------=
+---
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 43921 =C2=B1=C2=A0 2%=C2=A0=C2=A0=C2=
+=A0=C2=A0 -18.3%=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 35884=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -4.8%
+>>>>> 41826=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vm-scalability.median
+>>>>>  =C2=A0=C2=A0 14889337=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 -17.5%=C2=A0=C2=A0 12291029=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -4.1%
+>>>>> 14278574=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vm-scalability.thr=
+oughput
+>>>>>  =C2=A0 commit 01e75fea0d5ff39d3e588c20ec52e7a4e6588a74
+>>>>> Author: Feng Tang <feng.tang@intel.com>
+>>>>> Date:=C2=A0=C2=A0 Fri Aug 2 15:09:19 2019 +0800
+>>>>>
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 mgag200: restore the depth back to 24
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0 Signed-off-by: Fen=
+g Tang <feng.tang@intel.com>
+>>>>>
+>>>>> diff --git a/drivers/gpu/drm/mgag200/mgag200_main.c
+>>>>> b/drivers/gpu/drm/mgag200/mgag200_main.c
+>>>>> index a977333..ac8f6c9 100644
+>>>>> --- a/drivers/gpu/drm/mgag200/mgag200_main.c
+>>>>> +++ b/drivers/gpu/drm/mgag200/mgag200_main.c
+>>>>> @@ -162,7 +162,7 @@ int mgag200_driver_load(struct drm_device *dev,
+>>>>> unsigned long flags)
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_G200_SE(mdev) && mdev->mc.vram=
+_size < (2048*1024))
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev->mode_con=
+fig.preferred_depth =3D 16;
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 else
+>>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev->mode_config.preferre=
+d_depth =3D 32;
+>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev->mode_config.preferre=
+d_depth =3D 24;
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev->mode_config.prefer_shadow =3D 1;
+>>>>>  =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r =3D mgag200_modeset_init(mde=
+v);
+>>>>>
+>>>>> Thanks,
+>>>>> Feng
+>>>>>
+>>>>>> The difference between mgag200's original fbdev support and generic
+>>>>>> fbdev emulation is generic fbdev's worker task that updates the VRAM
+>>>>>> buffer from the shadow buffer. mgag200 does this immediately, but re=
+lies
+>>>>>> on drm_can_sleep(), which is deprecated.
+>>>>>>
+>>>>>> I think that the worker task interferes with the test case, as the
+>>>>>> worker has been in fbdev emulation since forever and no performance
+>>>>>> regressions have been reported so far.
+>>>>>>
+>>>>>>
+>>>>>> So unless there's a report where this problem happens in a real-world
+>>>>>> use case, I'd like to keep code as it is. And apparently there's alw=
+ays
+>>>>>> the workaround of disabling the cursor blinking.
+>>>>>>
+>>>>>> Best regards
+>>>>>> Thomas
+>>>>>>
+>>> _______________________________________________
+>>> LKP mailing list
+>>> LKP(a)lists.01.org
+>>> https://lists.01.org/mailman/listinfo/lkp
+
+
+--===============4390512664111616289==--
 
