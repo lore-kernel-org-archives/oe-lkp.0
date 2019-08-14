@@ -1,83 +1,98 @@
-Content-Type: multipart/mixed; boundary="===============3239125793821993266=="
+Content-Type: multipart/mixed; boundary="===============1426582244138909038=="
 MIME-Version: 1.0
-From: Chen, Rong A <rong.a.chen@intel.com>
+From: Dietmar Eggemann <dietmar.eggemann@arm.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/boot] 5b51ae969e: kexec boot failed
-Date: Mon, 05 Aug 2019 19:46:33 +0800
-Message-ID: <d25662bc-c70c-7118-263a-63da41d5bcf1@intel.com>
-In-Reply-To: <20190802075949.GA4681@dhcp-128-65.nay.redhat.com>
+Subject: Re: [sched/fair] 6b8fd01b21: INFO:rcu_sched_detected_stalls_on_CPUs/tasks
+Date: Wed, 14 Aug 2019 09:38:22 +0200
+Message-ID: <f0f71f15-9136-afa7-e367-0042bf88b306@arm.com>
+In-Reply-To: <20190814063705.GB734@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3239125793821993266==
+--===============1426582244138909038==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On 8/14/19 8:37 AM, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-7):
+> =
 
-On 8/2/2019 3:59 PM, Dave Young wrote:
-> Hi,
->
-> On 08/02/19 at 03:48pm, kernel test robot wrote:
->> FYI, we noticed the following commit (built with gcc-7):
->>
->> commit: 5b51ae969e3d8ab0134ee3c98a769ad6d2cc2e24 ("x86/boot: Call get_rs=
-dp_addr() after console_init()")
->> https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.=
-git  master
->>
->> in testcase: boot
->>
->> on test machine: Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz with 4G memory
->>
->> The commit broke kexec boot on physical machines, We have to set "nokasl=
-r" to kernel cmdline to avoid the issue.
->>
-> Does moving line of "sanitize_boot_params(boot_params);" after get_rsdp_a=
-ddr()
-> callback work?
+> commit: 6b8fd01b21f5f2701b407a7118f236ba4c41226d ("sched/fair: Use rq_loc=
+k/unlock in online_fair_sched_group")
+> https://kernel.googlesource.com/pub/scm/linux/kernel/git/peterz/queue.git=
+ sched/core
+> =
 
-It doesn't work with the following patch:
+> in testcase: trinity
+> with following parameters:
+> =
 
-diff --git a/arch/x86/boot/compressed/misc.c =
+> 	runtime: 300s
+> =
 
-b/arch/x86/boot/compressed/misc.c
-index 24e65a0f756d6..a3746e154e971 100644
---- a/arch/x86/boot/compressed/misc.c
-+++ b/arch/x86/boot/compressed/misc.c
-@@ -351,8 +351,6 @@ asmlinkage __visible void *extract_kernel(void =
+> test-description: Trinity is a linux system call fuzz tester.
+> test-url: http://codemonkey.org.uk/projects/trinity/
+> =
 
-*rmode, memptr heap,
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Clear flags intended for sol=
-ely in-kernel use. */
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 boot_params->hdr.loadflags &=3D=
- ~KASLR_FLAG;
+> =
 
--=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sanitize_boot_params(boot_params);
--
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (boot_params->screen_info.or=
-ig_video_mode =3D=3D 7) {
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 vidmem =3D (char *) 0xb0000;
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 vidport =3D 0x3b4;
-@@ -373,6 +371,8 @@ asmlinkage __visible void *extract_kernel(void =
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
+m 4G
+> =
 
-*rmode, memptr heap,
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 boot_params->acpi_rsdp_addr =3D=
- get_rsdp_addr();
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
 
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sanitize_boot_params(boot_params);
-+
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 debug_putstr("early console in =
-extract_kernel\n");
+> =
 
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 free_mem_ptr=C2=A0=C2=A0=C2=A0=
-=C2=A0 =3D heap;=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Heap */
+> +----------------------------------------------------+------------+------=
+------+
+> |                                                    | 5c3ceef9ad | 6b8fd=
+01b21 |
+> +----------------------------------------------------+------------+------=
+------+
+> | boot_successes                                     | 39         | 391  =
+      |
+> | boot_failures                                      | 0          | 87   =
+      |
+> | BUG:kernel_hang_in_test_stage                      | 0          | 68   =
+      |
+> | BUG:kernel_hang_in_boot-around-mounting-root_stage | 0          | 7    =
+      |
+> | BUG:soft_lockup-CPU##stuck_for#s                   | 0          | 12   =
+      |
+> | RIP:smp_call_function_single                       | 0          | 8    =
+      |
+> | Kernel_panic-not_syncing:softlockup:hung_tasks     | 0          | 12   =
+      |
+> | RIP:native_queued_spin_lock_slowpath               | 0          | 6    =
+      |
+> | INFO:rcu_sched_detected_stalls_on_CPUs/tasks       | 0          | 5    =
+      |
+> | RIP:propagate_entity_cfs_rq                        | 0          | 2    =
+      |
+> | RIP:native_safe_halt                               | 0          | 3    =
+      |
+> | RIP:console_unlock                                 | 0          | 1    =
+      |
+> +----------------------------------------------------+------------+------=
+------+
+> =
 
-Best Regards,
-Rong Chen
+> =
 
---===============3239125793821993266==--
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <lkp@intel.com>
+
+This has been fixed already on
+https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+by using rq_lock_irq()/rq_unlock_irq() instead of rq_lock()/rq_unlock().
+
+https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?h=3Dsch=
+ed/core&id=3Da46d14eca7b75fffe35603aa8b81df654353d80f
+
+[...]
+
+--===============1426582244138909038==--
 
