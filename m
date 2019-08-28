@@ -1,79 +1,71 @@
-Content-Type: multipart/mixed; boundary="===============3872204681071725778=="
+Content-Type: multipart/mixed; boundary="===============0815133852505358699=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Dmitry Vyukov <dvyukov@google.com>
 To: lkp@lists.01.org
-Subject: Re: [ptrace] 201766a20e: kernel_selftests.seccomp.make_fail
-Date: Sun, 25 Aug 2019 16:23:39 -0700
-Message-ID: <201908251622.0EE8CE0E@keescook>
-In-Reply-To: <20190805094719.GA1693@altlinux.org>
+Subject: Some questions on 0-day
+Date: Wed, 28 Aug 2019 11:40:57 -0700
+Message-ID: <CACT4Y+YuS_O1hnZ0EwT-YE=J3Y9Lr=WboGgtKbcqvfz++ZO0Zg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3872204681071725778==
+--===============0815133852505358699==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 05, 2019 at 12:47:19PM +0300, Dmitry V. Levin wrote:
-> On Mon, Jul 29, 2019 at 05:35:30PM +0800, kernel test robot wrote:
-> > FYI, we noticed the following commit (built with gcc-7):
-> > =
+Hello 0-day devs,
 
-> > commit: 201766a20e30f982ccfe36bebfad9602c3ff574a ("ptrace: add PTRACE_G=
-ET_SYSCALL_INFO request")
-> > https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux=
-.git master
-> > =
+[Hope I figures correct email addresses]
 
-> > in testcase: kernel_selftests
-> > with following parameters:
-> > =
+I have some questions regarding state of 0-day project to better
+understand state of upstream kernel testing.
 
-> > 	group: kselftests-02
-> > =
+1. What kernel configs does 0-day bot use? In particular I am
+interested in various runtime debugging features. Is there a list of
+all configs? I've found one in a recent "[bpf] 9fe4f05d33:
+kernel_selftests.bpf.test_verifier.fail" report, but it does not
+include CONFIG_KASAN, though I am sure 0-day uses KASAN. So is it a
+different config? Or the config was "minimized" to exclude KASAN since
+it was not relevant for the failure? I am interested in the following
+debug features: KASAN, LOCKDEP, KMEMLEAK, FAULT_INJECTION,
+DEBUG_OBJECTS, DEBUG_VM. Are these used? Any other notable debug
+features that are used?
 
-> > test-description: The kernel contains a set of "self tests" under the t=
-ools/testing/selftests/ directory. These are intended to be small unit test=
-s to exercise individual code paths in the kernel.
-> > test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
-> =
+2. What tests are being run? Is there a list somewhere?
+I know that 0-day now runs a pretty extensive set of tests. But is
+there any quantitative qualification? Are you done with onboarding
+more test suites? Or
+you want to onboard more? How would you estimate your progress on test
+onboarding? Is it 10%, 50% or 90%?
 
-> The URL above also says: "Tests are intended to be run after building,
-> installing and booting a kernel".
-> =
+3. On a related note, do you know test code coverage? Are there
+reports available?
 
-> Please build selftests with installed kernel headers corresponding to the
-> installed kernel.
-> =
+4. As far as I understand there is no automated reporting and a human
+is involved in sending of each report. Is it correct? What is the
+reason? You want to double-check? It's not automated? Something else?
 
-> Alternatively, tools/testing/selftests/lib.mk could be extended
-> to include uapi headers from the kernel tree into CPPFLAGS, e.g.
-> =
+5. Do you intercept all incoming upstream patches or you know that
+some are missing? If you don't intercept all, what are the main
+sources? I know some people send pull requests to Linus from their
+github trees and these may skip most of the common process.
 
-> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib=
-.mk
-> index 1c8a1963d03f..b5f4f0fb8eeb 100644
-> --- a/tools/testing/selftests/lib.mk
-> +++ b/tools/testing/selftests/lib.mk
-> @@ -10,6 +10,9 @@ ifeq (0,$(MAKELEVEL))
->  endif
->  selfdir =3D $(realpath $(dir $(filter %/lib.mk,$(MAKEFILE_LIST))))
->  =
+6. Does it happen that 0-day fails to parse/apply a patch? I mean things
+like parsing problems when 0-day just can't make sense out of the email
+text, or when you can't figure out base tree/branch.
 
-> +uapi_dir =3D $(realpath $(selfdir)/../../../include/uapi)
-> +CPPFLAGS +=3D -I$(uapi_dir)
-> +
->  # The following are built by lib.mk common compile rules.
->  # TEST_CUSTOM_PROGS should be used by tests that require
->  # custom build rule and prevent common build rule use.
+7. As far as I understand 0-day has some heuristics to figure out base
+git repo/branch. How frequently do they fail? How much tuning and
+maintenance does this require?
 
-I like this solution, as it's a common problem and it solves it in one
-place for all of the selftests.
+8. What are your major pain points? Or where time is going to? Major TODO i=
+tems?
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+9. How many people are working on 0-day? Or taking into account the
+project started long time ago, more relevant question is probably:
+what is the estimation of engineer-years spent on 0-day? Are there any
+major areas where the human time goes?
 
--- =
+Thanks in advance
 
-Kees Cook
-
---===============3872204681071725778==--
+--===============0815133852505358699==--
 
