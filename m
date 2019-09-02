@@ -1,127 +1,76 @@
-Content-Type: multipart/mixed; boundary="===============5319213803709986313=="
+Content-Type: multipart/mixed; boundary="===============8402994878259513516=="
 MIME-Version: 1.0
-From: Oliver Sang <oliver.sang@intel.com>
+From: Dmitry Vyukov <dvyukov@google.com>
 To: lkp@lists.01.org
-Subject: Re: [sched] 9ae606bc74: WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_stats_print[rcutorture]
-Date: Fri, 29 Jul 2022 13:18:49 +0800
-Message-ID: <YuNtuaIwGknyxJcm@xsang-OptiPlex-9020>
-In-Reply-To: <20220725092057.GB20370@willie-the-truck>
+Subject: Re: Some questions on 0-day
+Date: Mon, 02 Sep 2019 06:26:26 +0200
+Message-ID: <CACT4Y+bujTaVdW-bnXWkXgZumgpueJYx1u8EysZQw30vEekw3g@mail.gmail.com>
+In-Reply-To: <CACT4Y+YuS_O1hnZ0EwT-YE=J3Y9Lr=WboGgtKbcqvfz++ZO0Zg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5319213803709986313==
+--===============8402994878259513516==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-hi Will,
+On Wed, Aug 28, 2019 at 8:40 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> Hello 0-day devs,
+>
+> [Hope I figures correct email addresses]
+>
+> I have some questions regarding state of 0-day project to better
+> understand state of upstream kernel testing.
+>
+> 1. What kernel configs does 0-day bot use? In particular I am
+> interested in various runtime debugging features. Is there a list of
+> all configs? I've found one in a recent "[bpf] 9fe4f05d33:
+> kernel_selftests.bpf.test_verifier.fail" report, but it does not
+> include CONFIG_KASAN, though I am sure 0-day uses KASAN. So is it a
+> different config? Or the config was "minimized" to exclude KASAN since
+> it was not relevant for the failure? I am interested in the following
+> debug features: KASAN, LOCKDEP, KMEMLEAK, FAULT_INJECTION,
+> DEBUG_OBJECTS, DEBUG_VM. Are these used? Any other notable debug
+> features that are used?
+>
+> 2. What tests are being run? Is there a list somewhere?
+> I know that 0-day now runs a pretty extensive set of tests. But is
+> there any quantitative qualification? Are you done with onboarding
+> more test suites? Or
+> you want to onboard more? How would you estimate your progress on test
+> onboarding? Is it 10%, 50% or 90%?
+>
+> 3. On a related note, do you know test code coverage? Are there
+> reports available?
+>
+> 4. As far as I understand there is no automated reporting and a human
+> is involved in sending of each report. Is it correct? What is the
+> reason? You want to double-check? It's not automated? Something else?
+>
+> 5. Do you intercept all incoming upstream patches or you know that
+> some are missing? If you don't intercept all, what are the main
+> sources? I know some people send pull requests to Linus from their
+> github trees and these may skip most of the common process.
+>
+> 6. Does it happen that 0-day fails to parse/apply a patch? I mean things
+> like parsing problems when 0-day just can't make sense out of the email
+> text, or when you can't figure out base tree/branch.
+>
+> 7. As far as I understand 0-day has some heuristics to figure out base
+> git repo/branch. How frequently do they fail? How much tuning and
+> maintenance does this require?
+>
+> 8. What are your major pain points? Or where time is going to? Major TODO=
+ items?
+>
+> 9. How many people are working on 0-day? Or taking into account the
+> project started long time ago, more relevant question is probably:
+> what is the estimation of engineer-years spent on 0-day? Are there any
+> major areas where the human time goes?
+>
+> Thanks in advance
 
-On Mon, Jul 25, 2022 at 10:20:58AM +0100, Will Deacon wrote:
-> On Mon, Jul 25, 2022 at 04:12:57PM +0800, kernel test robot wrote:
-> > =
+friendly ping
 
-> > =
-
-> > Greeting,
-> > =
-
-> > FYI, we noticed the following commit (built with clang-15):
-> > =
-
-> > commit: 9ae606bc74dd0e58d4de894e3c5cbb9d45599267 ("sched: Introduce tas=
-k_cpu_possible_mask() to limit fallback rq selection")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > =
-
-> > in testcase: rcutorture
-> > version: =
-
-> > with following parameters:
-> > =
-
-> > 	runtime: 300s
-> > 	test: cpuhotplug
-> > 	torture_type: trivial
-> > =
-
-> > test-description: rcutorture is rcutorture kernel module load/unload te=
-st.
-> > test-url: https://www.kernel.org/doc/Documentation/RCU/torture.txt
-> > =
-
-> > =
-
-> > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2=
- -m 16G
-> > =
-
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
-> > =
-
-> > =
-
-> > +----------------------------------------------------------------------=
----+------------+------------+
-> > |                                                                      =
-   | 304000390f | 9ae606bc74 |
-> > +----------------------------------------------------------------------=
----+------------+------------+
-> > | WARNING:at_kernel/rcu/rcutorture.c:#synchronize_rcu_trivial[rcutortur=
-e] | 120        | 120        |
-> > | RIP:synchronize_rcu_trivial[rcutorture]                              =
-   | 120        | 120        |
-> > | WARNING:at_kernel/rcu/update.c:#rcutorture_sched_setaffinity         =
-   | 120        | 120        |
-> > | RIP:rcutorture_sched_setaffinity                                     =
-   | 120        | 120        |
-> > | WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_stats_print[rcutortur=
-e] | 0          | 36         |
-> > | RIP:rcu_torture_stats_print[rcutorture]                              =
-   | 0          | 36         |
-> > +----------------------------------------------------------------------=
----+------------+------------+
-> > =
-
-> > =
-
-> > please be noted, since 9ae606bc74 is kind of old, we also tested on a l=
-atest
-> > mainline commit:
-> > commit 515f71412bb73ebd7f41f90e1684fc80b8730789
-> > Merge: 301c8949322fe cf5029d5dd7cb
-> > Author: Linus Torvalds <torvalds@linux-foundation.org>
-> > Date:   Sat Jul 23 10:22:26 2022 -0700
-> > =
-
-> > and confirmed the
-> >    WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_stats_print[rcutortu=
-re]
-> > still exists.
-> =
-
-> I'm not convinced by the bisection -- that commit should't have any effect
-> on x86.
-
-Thanks a lot for your information!
-we will do some further tests to see if below part could impact x86.
-will update you next week. thanks
-
-@@ -3124,9 +3124,7 @@ static int select_fallback_rq(int cpu, struct task_st=
-ruct *p)
-
-                /* Look for allowed, online CPU in same node. */
-                for_each_cpu(dest_cpu, nodemask) {
--                       if (!cpu_active(dest_cpu))
--                               continue;
--                       if (cpumask_test_cpu(dest_cpu, p->cpus_ptr))
-+                       if (is_cpu_allowed(p, dest_cpu))
-                                return dest_cpu;
-                }
-        }
-
-
-> =
-
-> Will
---===============5319213803709986313==--
+--===============8402994878259513516==--
 
