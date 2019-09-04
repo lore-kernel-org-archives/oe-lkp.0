@@ -1,152 +1,68 @@
-Content-Type: multipart/mixed; boundary="===============4461627613042932962=="
+Content-Type: multipart/mixed; boundary="===============3193636928883845228=="
 MIME-Version: 1.0
-From: Rong Chen <rong.a.chen@intel.com>
+From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] 3ae92b3782: xfstests.generic.269.fail
-Date: Wed, 04 Sep 2019 08:54:10 +0800
-Message-ID: <d288921c-af80-0623-60eb-ff8c24d92985@intel.com>
-In-Reply-To: <20190903132531.ojllcte3au7ipggd@MacBook-Pro-91.local>
+Subject: Re: [drm/mgag200] 90f479ae51: vm-scalability.median -18.8% regression
+Date: Wed, 04 Sep 2019 14:27:16 +0800
+Message-ID: <20190904062716.GC5541@shbuild999.sh.intel.com>
+In-Reply-To: <2e1b4d65-d477-f571-845d-fa0a670859af@suse.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4461627613042932962==
+--===============3193636928883845228==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi Thomas,
 
+On Wed, Aug 28, 2019 at 12:51:40PM +0200, Thomas Zimmermann wrote:
+> Hi
+> =
 
-On 9/3/19 9:25 PM, Josef Bacik wrote:
-> On Tue, Sep 03, 2019 at 04:06:33PM +0800, kernel test robot wrote:
->> FYI, we noticed the following commit (built with gcc-7):
->>
->> commit: 3ae92b3782182d282a92573abe95c96d34ca6e73 ("btrfs: change the min=
-imum global reserve size")
->> https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next=
-.git master
->>
->> in testcase: xfstests
->> with following parameters:
->>
->> 	disk: 4HDD
->> 	fs: btrfs
->> 	test: generic-group13
->>
->> test-description: xfstests is a regression test suite for xfs and other =
-files ystems.
->> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
->>
->>
->> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 =
--m 4G
->>
->> caused below changes (please refer to attached dmesg/kmsg for entire log=
-/backtrace):
->>
->>
-> It would help if you could capture generic/269.full, but this is likely a
-> problem with fsck that I fixed a few weeks ago where we're seeing nbytes =
-of an
-> inode is wrong, but there's an orphan item so it doesn't matter.  This pa=
-tch
-> just made it more likely for us to have a still being iput'ed inode after=
- a
-> transaction commit.  Thanks,
->
-> Josef
+> Am 28.08.19 um 11:37 schrieb Rong Chen:
+> > Hi Thomas,
+> > =
 
-Hi Josef,
+> > On 8/28/19 1:16 AM, Thomas Zimmermann wrote:
+> >> Hi
+> >>
+> >> Am 27.08.19 um 14:33 schrieb Chen, Rong A:
+> >>> Both patches have little impact on the performance from our side.
+> >> Thanks for testing. Too bad they doesn't solve the issue.
+> >>
+> >> There's another patch attached. Could you please tests this as well?
+> >> Thanks a lot!
+> >>
+> >> The patch comes from Daniel Vetter after discussing the problem on IRC.
+> >> The idea of the patch is that the old mgag200 code might display much
+> >> less frames that the generic code, because mgag200 only prints from
+> >> non-atomic context. If we simulate this with the generic code, we shou=
+ld
+> >> see roughly the original performance.
+> >>
+> >>
+> > =
 
-I enclose the generic/269.full file for your reference.
+> > It's cool, the patch "usecansleep.patch" can fix the issue.
+> =
 
-Best Regards,
-Rong Chen
+> Thank you for testing. But don't get too excited, because the patch
+> simulates a bug that was present in the original mgag200 code. A
+> significant number of frames are simply skipped. That is apparently the
+> reason why it's faster.
 
---===============4461627613042932962==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="269.full"
+Thanks for the detailed info, so the original code skips time-consuming
+work inside atomic context on purpose. Is there any space to optmise it?
+If 2 scheduled update worker are handled at almost same time, can one be
+skipped?
 
-YnRyZnMtcHJvZ3MgdjQuNy4zClNlZSBodHRwOi8vYnRyZnMud2lraS5rZXJuZWwub3JnIGZvciBt
-b3JlIGluZm9ybWF0aW9uLgoKTGFiZWw6ICAgICAgICAgICAgICAobnVsbCkKVVVJRDogICAgICAg
-ICAgICAgICAKTm9kZSBzaXplOiAgICAgICAgICAxNjM4NApTZWN0b3Igc2l6ZTogICAgICAgIDQw
-OTYKRmlsZXN5c3RlbSBzaXplOiAgICA1MTIuMDBNaUIKQmxvY2sgZ3JvdXAgcHJvZmlsZXM6CiAg
-RGF0YTogICAgICAgICAgICAgc2luZ2xlICAgICAgICAgICAgOC4wME1pQgogIE1ldGFkYXRhOiAg
-ICAgICAgIERVUCAgICAgICAgICAgICAgMzIuMDBNaUIKICBTeXN0ZW06ICAgICAgICAgICBEVVAg
-ICAgICAgICAgICAgICA4LjAwTWlCClNTRCBkZXRlY3RlZDogICAgICAgbm8KSW5jb21wYXQgZmVh
-dHVyZXM6ICBleHRyZWYsIHNraW5ueS1tZXRhZGF0YQpOdW1iZXIgb2YgZGV2aWNlczogIDEKRGV2
-aWNlczoKICAgSUQgICAgICAgIFNJWkUgIFBBVEgKICAgIDEgICA1MTIuMDBNaUIgIC9kZXYvdmRi
-Cgpmc3N0cmVzcyAtcDEyOCAtbjk5OTk5OTk5OSAtZiBzZXRhdHRyPTEgLWZmc3luYz0wIC1mc3lu
-Yz0wIC1mZmRhdGFzeW5jPTAgLWQgL2ZzL3NjcmF0Y2gvZnNzdHJlc3MuMjg1NApkZDogZXJyb3Ig
-d3JpdGluZyAnL2ZzL3NjcmF0Y2gvU1BBQ0VfQ09OU1VNRVInOiBObyBzcGFjZSBsZWZ0IG9uIGRl
-dmljZQozNCswIHJlY29yZHMgaW4KMzMrMCByZWNvcmRzIG91dApkZDogZmFpbGVkIHRvIG9wZW4g
-Jy9mcy9zY3JhdGNoL1NQQUNFX0NPTlNVTUVSJzogTm8gc3BhY2UgbGVmdCBvbiBkZXZpY2UKZGQ6
-IGZhaWxlZCB0byBvcGVuICcvZnMvc2NyYXRjaC9TUEFDRV9DT05TVU1FUic6IE5vIHNwYWNlIGxl
-ZnQgb24gZGV2aWNlCmRkOiBmYWlsZWQgdG8gb3BlbiAnL2ZzL3NjcmF0Y2gvU1BBQ0VfQ09OU1VN
-RVInOiBObyBzcGFjZSBsZWZ0IG9uIGRldmljZQpkZDogZmFpbGVkIHRvIG9wZW4gJy9mcy9zY3Jh
-dGNoL1NQQUNFX0NPTlNVTUVSJzogTm8gc3BhY2UgbGVmdCBvbiBkZXZpY2UKZGQ6IGZhaWxlZCB0
-byBvcGVuICcvZnMvc2NyYXRjaC9TUEFDRV9DT05TVU1FUic6IE5vIHNwYWNlIGxlZnQgb24gZGV2
-aWNlCmRkOiBmYWlsZWQgdG8gb3BlbiAnL2ZzL3NjcmF0Y2gvU1BBQ0VfQ09OU1VNRVInOiBObyBz
-cGFjZSBsZWZ0IG9uIGRldmljZQpkZDogZmFpbGVkIHRvIG9wZW4gJy9mcy9zY3JhdGNoL1NQQUNF
-X0NPTlNVTUVSJzogTm8gc3BhY2UgbGVmdCBvbiBkZXZpY2UKZGQ6IGZhaWxlZCB0byBvcGVuICcv
-ZnMvc2NyYXRjaC9TUEFDRV9DT05TVU1FUic6IE5vIHNwYWNlIGxlZnQgb24gZGV2aWNlCmRkOiBm
-YWlsZWQgdG8gb3BlbiAnL2ZzL3NjcmF0Y2gvU1BBQ0VfQ09OU1VNRVInOiBObyBzcGFjZSBsZWZ0
-IG9uIGRldmljZQpLaWxsaW5nIGZzc3RyZXNzIHByb2Nlc3MuLi4KX2NoZWNrX2J0cmZzX2ZpbGVz
-eXN0ZW06IGZpbGVzeXN0ZW0gb24gL2Rldi92ZGIgaXMgaW5jb25zaXN0ZW50CioqKiBmc2NrLmJ0
-cmZzIG91dHB1dCAqKioKY2hlY2tpbmcgZXh0ZW50cwpjaGVja2luZyBmcmVlIHNwYWNlIGNhY2hl
-CmNoZWNraW5nIGZzIHJvb3RzCnJvb3QgNSBpbm9kZSAxNTUxIGVycm9ycyA0MDAsIG5ieXRlcyB3
-cm9uZwpDaGVja2luZyBmaWxlc3lzdGVtIG9uIC9kZXYvdmRiClVVSUQ6IGY1ZWU4MTI5LWI0MzQt
-NDIxNy1hOGZiLWJhZTJiZjRjMDA2Mgpmb3VuZCA0NjE2MjczOTIgYnl0ZXMgdXNlZCBlcnIgaXMg
-MQp0b3RhbCBjc3VtIGJ5dGVzOiAyNjczNDgKdG90YWwgdHJlZSBieXRlczogOTcxNTcxMgp0b3Rh
-bCBmcyB0cmVlIGJ5dGVzOiA3NjAyMTc2CnRvdGFsIGV4dGVudCB0cmVlIGJ5dGVzOiAxNTQwMDk2
-CmJ0cmVlIHNwYWNlIHdhc3RlIGJ5dGVzOiAxNzEyNTcwCmZpbGUgZGF0YSBibG9ja3MgYWxsb2Nh
-dGVkOiAxMDEyODkxNjQ4CiByZWZlcmVuY2VkIDM5OTEwNjA0OAoqKiogZW5kIGZzY2suYnRyZnMg
-b3V0cHV0CioqKiBtb3VudCBvdXRwdXQgKioqCnJvb3RmcyBvbiAvIHR5cGUgcm9vdGZzIChydykK
-c3lzZnMgb24gL3N5cyB0eXBlIHN5c2ZzIChydyxub3N1aWQsbm9kZXYsbm9leGVjLHJlbGF0aW1l
-KQpwcm9jIG9uIC9wcm9jIHR5cGUgcHJvYyAocncsbm9zdWlkLG5vZGV2LG5vZXhlYyxyZWxhdGlt
-ZSkKZGV2dG1wZnMgb24gL2RldiB0eXBlIGRldnRtcGZzIChydyxub3N1aWQsc2l6ZT0xNzI5Mzcy
-ayxucl9pbm9kZXM9NDMyMzQzLG1vZGU9NzU1KQpzZWN1cml0eWZzIG9uIC9zeXMva2VybmVsL3Nl
-Y3VyaXR5IHR5cGUgc2VjdXJpdHlmcyAocncsbm9zdWlkLG5vZGV2LG5vZXhlYyxyZWxhdGltZSkK
-c2VsaW51eGZzIG9uIC9zeXMvZnMvc2VsaW51eCB0eXBlIHNlbGludXhmcyAocncscmVsYXRpbWUp
-CnRtcGZzIG9uIC9kZXYvc2htIHR5cGUgdG1wZnMgKHJ3LG5vc3VpZCxub2RldikKZGV2cHRzIG9u
-IC9kZXYvcHRzIHR5cGUgZGV2cHRzIChydyxub3N1aWQsbm9leGVjLHJlbGF0aW1lLGdpZD01LG1v
-ZGU9NjIwLHB0bXhtb2RlPTAwMCkKdG1wZnMgb24gL3J1biB0eXBlIHRtcGZzIChydyxub3N1aWQs
-bm9kZXYsbW9kZT03NTUpCnRtcGZzIG9uIC9ydW4vbG9jayB0eXBlIHRtcGZzIChydyxub3N1aWQs
-bm9kZXYsbm9leGVjLHJlbGF0aW1lLHNpemU9NTEyMGspCnRtcGZzIG9uIC9zeXMvZnMvY2dyb3Vw
-IHR5cGUgdG1wZnMgKHJvLG5vc3VpZCxub2Rldixub2V4ZWMsbW9kZT03NTUpCmNncm91cCBvbiAv
-c3lzL2ZzL2Nncm91cC9zeXN0ZW1kIHR5cGUgY2dyb3VwIChydyxub3N1aWQsbm9kZXYsbm9leGVj
-LHJlbGF0aW1lLHhhdHRyLHJlbGVhc2VfYWdlbnQ9L2xpYi9zeXN0ZW1kL3N5c3RlbWQtY2dyb3Vw
-cy1hZ2VudCxuYW1lPXN5c3RlbWQpCnBzdG9yZSBvbiAvc3lzL2ZzL3BzdG9yZSB0eXBlIHBzdG9y
-ZSAocncsbm9zdWlkLG5vZGV2LG5vZXhlYyxyZWxhdGltZSkKY2dyb3VwIG9uIC9zeXMvZnMvY2dy
-b3VwL2h1Z2V0bGIgdHlwZSBjZ3JvdXAgKHJ3LG5vc3VpZCxub2Rldixub2V4ZWMscmVsYXRpbWUs
-aHVnZXRsYikKY2dyb3VwIG9uIC9zeXMvZnMvY2dyb3VwL2NwdXNldCB0eXBlIGNncm91cCAocncs
-bm9zdWlkLG5vZGV2LG5vZXhlYyxyZWxhdGltZSxjcHVzZXQpCmNncm91cCBvbiAvc3lzL2ZzL2Nn
-cm91cC9waWRzIHR5cGUgY2dyb3VwIChydyxub3N1aWQsbm9kZXYsbm9leGVjLHJlbGF0aW1lLHBp
-ZHMpCmNncm91cCBvbiAvc3lzL2ZzL2Nncm91cC9jcHUsY3B1YWNjdCB0eXBlIGNncm91cCAocncs
-bm9zdWlkLG5vZGV2LG5vZXhlYyxyZWxhdGltZSxjcHUsY3B1YWNjdCkKY2dyb3VwIG9uIC9zeXMv
-ZnMvY2dyb3VwL21lbW9yeSB0eXBlIGNncm91cCAocncsbm9zdWlkLG5vZGV2LG5vZXhlYyxyZWxh
-dGltZSxtZW1vcnkpCmNncm91cCBvbiAvc3lzL2ZzL2Nncm91cC9ibGtpbyB0eXBlIGNncm91cCAo
-cncsbm9zdWlkLG5vZGV2LG5vZXhlYyxyZWxhdGltZSxibGtpbykKY2dyb3VwIG9uIC9zeXMvZnMv
-Y2dyb3VwL25ldF9jbHMgdHlwZSBjZ3JvdXAgKHJ3LG5vc3VpZCxub2Rldixub2V4ZWMscmVsYXRp
-bWUsbmV0X2NscykKY2dyb3VwIG9uIC9zeXMvZnMvY2dyb3VwL2RldmljZXMgdHlwZSBjZ3JvdXAg
-KHJ3LG5vc3VpZCxub2Rldixub2V4ZWMscmVsYXRpbWUsZGV2aWNlcykKY2dyb3VwIG9uIC9zeXMv
-ZnMvY2dyb3VwL2ZyZWV6ZXIgdHlwZSBjZ3JvdXAgKHJ3LG5vc3VpZCxub2Rldixub2V4ZWMscmVs
-YXRpbWUsZnJlZXplcikKY2dyb3VwIG9uIC9zeXMvZnMvY2dyb3VwL3BlcmZfZXZlbnQgdHlwZSBj
-Z3JvdXAgKHJ3LG5vc3VpZCxub2Rldixub2V4ZWMscmVsYXRpbWUscGVyZl9ldmVudCkKY2dyb3Vw
-IG9uIC9zeXMvZnMvY2dyb3VwL3JkbWEgdHlwZSBjZ3JvdXAgKHJ3LG5vc3VpZCxub2Rldixub2V4
-ZWMscmVsYXRpbWUscmRtYSkKc3lzdGVtZC0xIG9uIC9wcm9jL3N5cy9mcy9iaW5mbXRfbWlzYyB0
-eXBlIGF1dG9mcyAocncscmVsYXRpbWUsZmQ9MzAscGdycD0xLHRpbWVvdXQ9MCxtaW5wcm90bz01
-LG1heHByb3RvPTUsZGlyZWN0LHBpcGVfaW5vPTM4Mjg5KQpodWdldGxiZnMgb24gL2Rldi9odWdl
-cGFnZXMgdHlwZSBodWdldGxiZnMgKHJ3LHJlbGF0aW1lLHBhZ2VzaXplPTJNKQpkZWJ1Z2ZzIG9u
-IC9zeXMva2VybmVsL2RlYnVnIHR5cGUgZGVidWdmcyAocncscmVsYXRpbWUpCnN1bnJwYyBvbiAv
-cnVuL3JwY19waXBlZnMgdHlwZSBycGNfcGlwZWZzIChydyxyZWxhdGltZSkKbXF1ZXVlIG9uIC9k
-ZXYvbXF1ZXVlIHR5cGUgbXF1ZXVlIChydyxyZWxhdGltZSkKY29uZmlnZnMgb24gL3N5cy9rZXJu
-ZWwvY29uZmlnIHR5cGUgY29uZmlnZnMgKHJ3LHJlbGF0aW1lKQp0bXAgb24gL3RtcCB0eXBlIHRt
-cGZzIChydyxyZWxhdGltZSkKaW5uOi9yZXN1bHQgb24gL2lubi9yZXN1bHQgdHlwZSBuZnMgKHJ3
-LHJlbGF0aW1lLHZlcnM9Myxyc2l6ZT0xMDQ4NTc2LHdzaXplPTEwNDg1NzYsbmFtbGVuPTI1NSxo
-YXJkLHByb3RvPXRjcCx0aW1lbz02MDAscmV0cmFucz0yLHNlYz1zeXMsbW91bnRhZGRyPTE5Mi4x
-NjguMS4xLG1vdW50dmVycz0zLG1vdW50cG9ydD02MDYzMSxtb3VudHByb3RvPXVkcCxsb2NhbF9s
-b2NrPW5vbmUsYWRkcj0xOTIuMTY4LjEuMSkKKioqIGVuZCBtb3VudCBvdXRwdXQK
+Thanks,
+Feng
 
---===============4461627613042932962==--
+> =
+
+> Best regards
+> Thomas
+
+--===============3193636928883845228==--
 
