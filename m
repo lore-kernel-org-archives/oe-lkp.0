@@ -1,43 +1,70 @@
-Content-Type: multipart/mixed; boundary="===============1959489058793355812=="
+Content-Type: multipart/mixed; boundary="===============3089778434832988312=="
 MIME-Version: 1.0
 From: kernel test robot <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: [btrfs] 0096420adb: aim7.jobs-per-min 18.3% improvement
-Date: Thu, 12 Sep 2019 08:57:52 +0800
-Message-ID: <20190912005752.GV15734@shao2-debian>
+Subject: [xfs] 1aabb011bf: aim7.jobs-per-min -17.8% regression
+Date: Thu, 12 Sep 2019 08:58:27 +0800
+Message-ID: <20190912005827.GW15734@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1959489058793355812==
+--===============3089778434832988312==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 Greeting,
 
-FYI, we noticed a 18.3% improvement of aim7.jobs-per-min due to commit:
+FYI, we noticed a -17.8% regression of aim7.jobs-per-min due to commit:
 
 
-commit: 0096420adb036b143d6c42ad7c02a945b3e1119c ("btrfs: do not account gl=
-obal reserve in can_overcommit")
-https://github.com/kdave/btrfs-devel.git misc-next
+commit: 1aabb011bfba5a8942d3e0d0c84a4ac7cad277b1 ("xfs: deferred inode inac=
+tivation")
+https://kernel.googlesource.com/pub/scm/linux/kernel/git/djwong/xfs-linux.g=
+it rough-fixes
 
 in testcase: aim7
-on test machine: 192 threads Intel(R) Xeon(R) Platinum 9242 CPU @ 2.30GHz w=
-ith 192G memory
+on test machine: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz with =
+384G memory
 with following parameters:
 
-	disk: 1BRD_48G
-	fs: btrfs
-	test: disk_wrt
-	load: 1500
+	disk: 4BRD_12G
+	md: RAID0
+	fs: xfs
+	test: disk_rw
+	load: 3000
 	cpufreq_governor: performance
 
 test-description: AIM7 is a traditional UNIX system level benchmark suite w=
 hich is used to test and measure the performance of multiuser system.
 test-url: https://sourceforge.net/projects/aimbench/files/aim-suite7/
 
+In addition to that, the commit also has significant impact on the followin=
+g tests:
+
++------------------+-------------------------------------------------------=
+----------------+
+| testcase: change | aim7: aim7.jobs-per-min -35.7% regression             =
+                |
+| test machine     | 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz w=
+ith 384G memory |
+| test parameters  | cpufreq_governor=3Dperformance                        =
+                  |
+|                  | disk=3D4BRD_12G                                       =
+                  |
+|                  | fs=3Dxfs                                              =
+                  |
+|                  | load=3D3000                                           =
+                  |
+|                  | md=3DRAID0                                            =
+                  |
+|                  | test=3Ddisk_cp                                        =
+                  |
++------------------+-------------------------------------------------------=
+----------------+
 
 
+If you fix the issue, kindly add following tag
+Reported-by: kernel test robot <rong.a.chen@intel.com>
 
 
 Details are as below:
@@ -56,1443 +83,1404 @@ To reproduce:
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-compiler/cpufreq_governor/disk/fs/kconfig/load/rootfs/tbox_group/test/testc=
-ase:
-  gcc-7/performance/1BRD_48G/btrfs/x86_64-rhel-7.6/1500/debian-x86_64-2019-=
-05-14.cgz/lkp-csl-2ap2/disk_wrt/aim7
+compiler/cpufreq_governor/disk/fs/kconfig/load/md/rootfs/tbox_group/test/te=
+stcase:
+  gcc-7/performance/4BRD_12G/xfs/x86_64-rhel-7.6/3000/RAID0/debian-x86_64-2=
+019-05-14.cgz/lkp-ivb-ep01/disk_rw/aim7
 
 commit: =
 
-  426551f686 ("btrfs: use btrfs_try_granting_tickets in update_global_rsv")
-  0096420adb ("btrfs: do not account global reserve in can_overcommit")
+  d515962b00 ("xfs: pass around xfs_inode_ag_walk iget/irele helper functio=
+ns")
+  1aabb011bf ("xfs: deferred inode inactivation")
 
-426551f6866a369c 0096420adb036b143d6c42ad7c0 =
+d515962b00d64454 1aabb011bfba5a8942d3e0d0c84 =
 
 ---------------- --------------------------- =
 
-       fail:runs  %reproduction    fail:runs
-           |             |             |    =
-
-           :4           50%           2:4     dmesg.WARNING:at#for_ip_swapg=
-s_restore_regs_and_return_to_usermode/0x
-           :4           75%           3:4     dmesg.WARNING:stack_recursion
          %stddev     %change         %stddev
              \          |                \  =
 
-     28200 =C2=B1  3%     +18.3%      33348 =C2=B1  2%  aim7.jobs-per-min
-    319.55 =C2=B1  3%     -15.4%     270.21 =C2=B1  2%  aim7.time.elapsed_t=
-ime
-    319.55 =C2=B1  3%     -15.4%     270.21 =C2=B1  2%  aim7.time.elapsed_t=
-ime.max
-   2258511 =C2=B1 11%     -41.4%    1323971 =C2=B1  9%  aim7.time.involunta=
+    139763           -17.8%     114843        aim7.jobs-per-min
+    129.25           +21.6%     157.23        aim7.time.elapsed_time
+    129.25           +21.6%     157.23        aim7.time.elapsed_time.max
+     31367 =C2=B1  3%     -39.2%      19066 =C2=B1 11%  aim7.time.involunta=
 ry_context_switches
-    275841           -13.6%     238362        aim7.time.minor_page_faults
-     58858 =C2=B1  3%     -16.2%      49335 =C2=B1  3%  aim7.time.system_ti=
-me
-   3139592 =C2=B1  2%     -10.9%    2795903 =C2=B1  2%  aim7.time.voluntary=
-_context_switches
-      4.74           +23.1%       5.83 =C2=B1  5%  iostat.cpu.idle
-      4.16            +1.0        5.15 =C2=B1  6%  mpstat.cpu.all.idle%
-      0.00 =C2=B1 77%      +0.0        0.01 =C2=B1 17%  mpstat.cpu.all.iowa=
-it%
-      1344 =C2=B1 15%     +19.8%       1610 =C2=B1  6%  slabinfo.btrfs_orde=
-red_extent.active_objs
-      1344 =C2=B1 15%     +19.8%       1610 =C2=B1  6%  slabinfo.btrfs_orde=
-red_extent.num_objs
-     95.00            -1.6%      93.50        vmstat.cpu.sy
-    254.50 =C2=B1  2%     -11.5%     225.25 =C2=B1  2%  vmstat.procs.r
-  13087494 =C2=B1 33%    +160.2%   34058682 =C2=B1 72%  cpuidle.C1.time
-    180167 =C2=B1 56%    +399.7%     900240 =C2=B1115%  cpuidle.POLL.time
-     24359 =C2=B1 15%    +151.6%      61296 =C2=B1 49%  cpuidle.POLL.usage
-    119695 =C2=B1  3%     -12.0%     105338        meminfo.Active(file)
-    115327 =C2=B1  3%     -12.6%     100744        meminfo.Dirty
-     10759 =C2=B1  2%     +17.6%      12654 =C2=B1  2%  meminfo.max_used_kB
-      0.01 =C2=B1 34%      +0.0        0.04 =C2=B1 66%  turbostat.C1%
-      0.94 =C2=B1 49%      +0.6        1.52 =C2=B1 46%  turbostat.C6%
-      1.21 =C2=B1 27%     +43.3%       1.74 =C2=B1 31%  turbostat.CPU%c6
-  64911790 =C2=B1  3%     -15.6%   54761840 =C2=B1  2%  turbostat.IRQ
-      0.92 =C2=B1 21%    +104.9%       1.88 =C2=B1 37%  turbostat.Pkg%pc2
-    267.99            -1.4%     264.11        turbostat.PkgWatt
-     28691 =C2=B1  2%     -11.7%      25337 =C2=B1  2%  numa-meminfo.node0.=
-Dirty
-     29558 =C2=B1  2%     -11.3%      26229 =C2=B1  4%  numa-meminfo.node1.=
-Active(file)
-     28710 =C2=B1  2%     -12.1%      25222 =C2=B1  2%  numa-meminfo.node1.=
-Dirty
-     30247 =C2=B1  2%     -13.2%      26260        numa-meminfo.node2.Activ=
-e(file)
-     28855 =C2=B1  2%     -13.0%      25116 =C2=B1  2%  numa-meminfo.node2.=
-Dirty
-     29810 =C2=B1  3%     -10.1%      26799 =C2=B1  2%  numa-meminfo.node3.=
-Active(file)
-     28760 =C2=B1  3%     -12.0%      25301        numa-meminfo.node3.Dirty
-     29931 =C2=B1  3%     -12.0%      26348 =C2=B1  2%  proc-vmstat.nr_acti=
-ve_file
-     28787 =C2=B1  3%     -12.3%      25256 =C2=B1  2%  proc-vmstat.nr_dirty
-    432697 =C2=B1  5%     -10.8%     386012 =C2=B1 10%  proc-vmstat.nr_writ=
-ten
-     29931 =C2=B1  3%     -12.0%      26348 =C2=B1  2%  proc-vmstat.nr_zone=
-_active_file
-     29330 =C2=B1  3%     -12.3%      25709 =C2=B1  2%  proc-vmstat.nr_zone=
-_write_pending
-    201248 =C2=B1  2%     -18.1%     164914 =C2=B1  2%  proc-vmstat.numa_hi=
-nt_faults
-    153989 =C2=B1  2%     -19.9%     123355 =C2=B1  3%  proc-vmstat.numa_hi=
-nt_faults_local
-     25435 =C2=B1  2%      -7.0%      23649        proc-vmstat.numa_pages_m=
-igrated
-    212160 =C2=B1  7%     -16.7%     176683 =C2=B1  5%  proc-vmstat.numa_pt=
-e_updates
-   2740553            -2.6%    2669001        proc-vmstat.pgactivate
-   1366994 =C2=B1  2%     -13.8%    1177924        proc-vmstat.pgfault
-     25435 =C2=B1  2%      -7.0%      23649        proc-vmstat.pgmigrate_su=
-ccess
-   1730705 =C2=B1  5%     -10.8%    1543836 =C2=B1 10%  proc-vmstat.pgpgout
-      7150 =C2=B1  3%     -11.9%       6298 =C2=B1  3%  numa-vmstat.node0.n=
-r_dirty
-      7281 =C2=B1  2%     -11.5%       6441 =C2=B1  3%  numa-vmstat.node0.n=
-r_zone_write_pending
-      7373 =C2=B1  3%     -11.0%       6560 =C2=B1  5%  numa-vmstat.node1.n=
-r_active_file
-      7153 =C2=B1  4%     -11.8%       6306 =C2=B1  3%  numa-vmstat.node1.n=
-r_dirty
-      7373 =C2=B1  3%     -11.0%       6560 =C2=B1  5%  numa-vmstat.node1.n=
-r_zone_active_file
-      7313 =C2=B1  4%     -12.2%       6423 =C2=B1  2%  numa-vmstat.node1.n=
-r_zone_write_pending
-      7496 =C2=B1  2%     -12.3%       6577        numa-vmstat.node2.nr_act=
-ive_file
-      7143 =C2=B1  4%     -12.1%       6278 =C2=B1  2%  numa-vmstat.node2.n=
-r_dirty
-      7496 =C2=B1  2%     -12.3%       6577        numa-vmstat.node2.nr_zon=
-e_active_file
-      7251 =C2=B1  4%     -12.0%       6377 =C2=B1  2%  numa-vmstat.node2.n=
-r_zone_write_pending
-      7452 =C2=B1  3%     -10.2%       6695 =C2=B1  2%  numa-vmstat.node3.n=
-r_active_file
-      7170 =C2=B1  3%     -12.0%       6307 =C2=B1  2%  numa-vmstat.node3.n=
-r_dirty
-      7452 =C2=B1  3%     -10.2%       6695 =C2=B1  2%  numa-vmstat.node3.n=
-r_zone_active_file
-      7292 =C2=B1  4%     -12.2%       6404 =C2=B1  2%  numa-vmstat.node3.n=
-r_zone_write_pending
-     11.11            -1.4%      10.96        perf-stat.i.cpi
-      3815            -5.0%       3623        perf-stat.i.cpu-migrations
-      0.01 =C2=B1 66%      +0.0        0.02 =C2=B1 58%  perf-stat.i.dTLB-lo=
-ad-miss-rate%
-    693238 =C2=B1  8%     +15.2%     798500 =C2=B1  9%  perf-stat.i.dTLB-lo=
-ad-misses
- 1.079e+09 =C2=B1  2%     +14.2%  1.232e+09 =C2=B1  2%  perf-stat.i.dTLB-st=
-ores
-     94.53            +1.1       95.62        perf-stat.i.node-load-miss-ra=
-te%
-    617476 =C2=B1  3%     -25.4%     460892 =C2=B1  6%  perf-stat.i.node-lo=
-ads
-   6022550 =C2=B1  2%      +9.8%    6610829 =C2=B1  2%  perf-stat.i.node-st=
-ore-misses
-    198186 =C2=B1  2%      -4.5%     189325 =C2=B1  2%  perf-stat.i.node-st=
-ores
-     11.28            -1.3%      11.13        perf-stat.overall.cpi
-      0.01 =C2=B1  8%      +0.0        0.01 =C2=B1  9%  perf-stat.overall.d=
-TLB-load-miss-rate%
-      0.09            +1.3%       0.09        perf-stat.overall.ipc
-     94.61            +1.1       95.73        perf-stat.overall.node-load-m=
-iss-rate%
-      3802            -5.1%       3609        perf-stat.ps.cpu-migrations
-    691108 =C2=B1  8%     +15.2%     795955 =C2=B1  9%  perf-stat.ps.dTLB-l=
-oad-misses
- 1.076e+09 =C2=B1  2%     +14.1%  1.227e+09 =C2=B1  2%  perf-stat.ps.dTLB-s=
-tores
-    615361 =C2=B1  3%     -25.4%     459051 =C2=B1  6%  perf-stat.ps.node-l=
-oads
-   6001881 =C2=B1  2%      +9.7%    6583844 =C2=B1  2%  perf-stat.ps.node-s=
-tore-misses
-    197520 =C2=B1  2%      -4.5%     188572 =C2=B1  2%  perf-stat.ps.node-s=
-tores
- 1.608e+13 =C2=B1  3%     -15.1%  1.365e+13 =C2=B1  2%  perf-stat.total.ins=
-tructions
-    140405           -21.3%     110515        sched_debug.cfs_rq:/.exec_clo=
-ck.avg
-    143580           -21.0%     113460        sched_debug.cfs_rq:/.exec_clo=
-ck.max
-    135599           -21.7%     106144        sched_debug.cfs_rq:/.exec_clo=
-ck.min
-      8.16 =C2=B1 12%     +22.7%      10.01 =C2=B1 13%  sched_debug.cfs_rq:=
-/.load_avg.avg
-     23.68 =C2=B1 22%     +31.5%      31.13 =C2=B1 15%  sched_debug.cfs_rq:=
+      2862            -7.1%       2659        aim7.time.system_time
+    798.18            -5.9%     751.02        aim7.time.user_time
+   1049629           -21.6%     822793        aim7.time.voluntary_context_s=
+witches
+ 1.016e+09 =C2=B1 12%    +111.5%  2.149e+09 =C2=B1 11%  cpuidle.C6.time
+   1873251 =C2=B1  7%     +86.0%    3483843 =C2=B1 18%  cpuidle.C6.usage
+      2956 =C2=B1 10%     +25.2%       3701 =C2=B1 17%  cpuidle.POLL.usage
+     29.00           +15.7       44.70 =C2=B1  2%  mpstat.cpu.all.idle%
+     55.41           -12.2       43.21 =C2=B1  2%  mpstat.cpu.all.sys%
+     15.55            -3.5       12.07        mpstat.cpu.all.usr%
+     30.00           +51.2%      45.35 =C2=B1  2%  iostat.cpu.idle
+     54.65           -21.8%      42.72 =C2=B1  2%  iostat.cpu.system
+     15.34           -22.2%      11.93        iostat.cpu.user
+     42.06 =C2=B1 11%    +139.1%     100.59 =C2=B1  7%  iostat.md0.w/s
+    115553           +14.5%     132340 =C2=B1  3%  meminfo.AnonHugePages
+     95312           +20.4%     114787        meminfo.KReclaimable
+     95312           +20.4%     114787        meminfo.SReclaimable
+    261148           +13.4%     296269        meminfo.Slab
+     31512           -16.2%      26409 =C2=B1  2%  meminfo.max_used_kB
+      2740 =C2=B1 44%    +108.3%       5707 =C2=B1 11%  numa-vmstat.node0.n=
+r_shmem
+     10048 =C2=B1 35%     +81.5%      18236 =C2=B1 11%  numa-vmstat.node0.n=
+r_slab_reclaimable
+     16555 =C2=B1 52%     +74.7%      28924 =C2=B1 28%  numa-vmstat.node0.n=
+r_slab_unreclaimable
+      3417 =C2=B1 16%     -20.1%       2730 =C2=B1 20%  numa-vmstat.node1.n=
+r_mapped
+      4555 =C2=B1 27%     -66.3%       1533 =C2=B1 53%  numa-vmstat.node1.n=
+r_shmem
+     29.50           +52.5%      45.00 =C2=B1  2%  vmstat.cpu.id
+     54.25           -22.6%      42.00 =C2=B1  2%  vmstat.cpu.sy
+     15.00           -26.7%      11.00        vmstat.cpu.us
+     27.50           -22.7%      21.25 =C2=B1  2%  vmstat.procs.r
+     17205            -9.9%      15509        vmstat.system.cs
+     40194 =C2=B1 35%     +81.5%      72950 =C2=B1 11%  numa-meminfo.node0.=
+KReclaimable
+     40194 =C2=B1 35%     +81.5%      72950 =C2=B1 11%  numa-meminfo.node0.=
+SReclaimable
+     66241 =C2=B1 52%     +74.7%     115712 =C2=B1 28%  numa-meminfo.node0.=
+SUnreclaim
+     10965 =C2=B1 44%    +108.3%      22838 =C2=B1 11%  numa-meminfo.node0.=
+Shmem
+    106435 =C2=B1 44%     +77.3%     188663 =C2=B1 18%  numa-meminfo.node0.=
+Slab
+     13273 =C2=B1 15%     -18.7%      10793 =C2=B1 18%  numa-meminfo.node1.=
+Mapped
+     18226 =C2=B1 27%     -66.3%       6135 =C2=B1 53%  numa-meminfo.node1.=
+Shmem
+    346095            -2.0%     339002        proc-vmstat.nr_dirty
+    346482            -2.0%     339409        proc-vmstat.nr_inactive_file
+     23834           +20.4%      28691        proc-vmstat.nr_slab_reclaimab=
+le
+     41519            +9.2%      45351        proc-vmstat.nr_slab_unreclaim=
+able
+    346482            -2.0%     339409        proc-vmstat.nr_zone_inactive_=
+file
+    346479            -2.0%     339510        proc-vmstat.nr_zone_write_pen=
+ding
+    509175           +14.6%     583653        proc-vmstat.pgfault
+    871.00           -19.2%     703.50 =C2=B1  3%  turbostat.Avg_MHz
+     71.90           -15.1       56.80        turbostat.Busy%
+   1869906 =C2=B1  7%     +86.1%    3479825 =C2=B1 19%  turbostat.C6
+     19.42 =C2=B1 12%     +14.4       33.80 =C2=B1 11%  turbostat.C6%
+     22.63 =C2=B1  2%     +44.9%      32.79 =C2=B1  7%  turbostat.CPU%c1
+      4.42 =C2=B1 34%    +114.8%       9.50 =C2=B1 30%  turbostat.CPU%c6
+     47.42            -4.3%      45.40 =C2=B1  2%  turbostat.CorWatt
+  10614698           +20.8%   12819724        turbostat.IRQ
+     65.00 =C2=B1  3%      +3.8%      67.50        turbostat.PkgTmp
+     73.99            -2.8%      71.95        turbostat.PkgWatt
+     34.29            -4.1%      32.90        turbostat.RAMWatt
+     10450           +21.5%      12696        turbostat.SMI
+      2930 =C2=B1  5%    +309.5%      12001        slabinfo.dmaengine-unmap=
+-16.active_objs
+     73.00 =C2=B1  7%    +626.0%     530.00 =C2=B1  4%  slabinfo.dmaengine-=
+unmap-16.active_slabs
+      3088 =C2=B1  7%    +621.4%      22279 =C2=B1  4%  slabinfo.dmaengine-=
+unmap-16.num_objs
+     73.00 =C2=B1  7%    +626.0%     530.00 =C2=B1  4%  slabinfo.dmaengine-=
+unmap-16.num_slabs
+      2663 =C2=B1  3%     +28.7%       3427 =C2=B1  6%  slabinfo.kmalloc-12=
+8.active_objs
+      2663 =C2=B1  3%     +28.7%       3427 =C2=B1  6%  slabinfo.kmalloc-12=
+8.num_objs
+     19529          +129.5%      44820 =C2=B1  4%  slabinfo.kmalloc-16.acti=
+ve_objs
+     75.75          +141.9%     183.25 =C2=B1  4%  slabinfo.kmalloc-16.acti=
+ve_slabs
+     19529          +140.8%      47025 =C2=B1  4%  slabinfo.kmalloc-16.num_=
+objs
+     75.75          +141.9%     183.25 =C2=B1  4%  slabinfo.kmalloc-16.num_=
+slabs
+      2850 =C2=B1  3%     +19.0%       3391 =C2=B1  3%  slabinfo.kmalloc-2k=
+.active_objs
+      2905 =C2=B1  3%     +17.8%       3423 =C2=B1  3%  slabinfo.kmalloc-2k=
+.num_objs
+    769.75           +33.0%       1023 =C2=B1  3%  slabinfo.kmalloc-4k.acti=
+ve_objs
+    782.75           +34.1%       1049 =C2=B1  3%  slabinfo.kmalloc-4k.num_=
+objs
+      6379          +151.9%      16067        slabinfo.kmalloc-512.active_o=
+bjs
+    209.25          +187.8%     602.25        slabinfo.kmalloc-512.active_s=
+labs
+      6712          +187.4%      19289        slabinfo.kmalloc-512.num_objs
+    209.25          +187.8%     602.25        slabinfo.kmalloc-512.num_slabs
+    453.75           +41.7%     643.00        slabinfo.kmalloc-8k.active_ob=
+js
+    469.50           +49.6%     702.25        slabinfo.kmalloc-8k.num_objs
+    923.25 =C2=B1 14%     +22.9%       1135 =C2=B1  7%  slabinfo.task_group=
+.active_objs
+    923.25 =C2=B1 14%     +22.9%       1135 =C2=B1  7%  slabinfo.task_group=
+.num_objs
+      1201           +79.2%       2152 =C2=B1  2%  slabinfo.xfs_buf_item.ac=
+tive_objs
+      1201           +79.2%       2152 =C2=B1  2%  slabinfo.xfs_buf_item.nu=
+m_objs
+      1264           +51.1%       1909 =C2=B1 13%  slabinfo.xfs_efd_item.ac=
+tive_objs
+      1264           +51.1%       1909 =C2=B1 13%  slabinfo.xfs_efd_item.nu=
+m_objs
+      2437 =C2=B1  2%    +375.6%      11590        slabinfo.xfs_inode.activ=
+e_objs
+     84.25 =C2=B1  3%    +688.7%     664.50 =C2=B1  4%  slabinfo.xfs_inode.=
+active_slabs
+      2710 =C2=B1  3%    +685.2%      21283 =C2=B1  4%  slabinfo.xfs_inode.=
+num_objs
+     84.25 =C2=B1  3%    +688.7%     664.50 =C2=B1  4%  slabinfo.xfs_inode.=
+num_slabs
+     40593           -23.2%      31163 =C2=B1  2%  sched_debug.cfs_rq:/.exe=
+c_clock.avg
+     42413           -22.9%      32721 =C2=B1  2%  sched_debug.cfs_rq:/.exe=
+c_clock.max
+     40001           -23.7%      30528 =C2=B1  2%  sched_debug.cfs_rq:/.exe=
+c_clock.min
+     21776 =C2=B1 22%     +54.6%      33663 =C2=B1 23%  sched_debug.cfs_rq:=
+/.load.avg
+    131390 =C2=B1112%    +327.1%     561113 =C2=B1 52%  sched_debug.cfs_rq:=
+/.load.max
+     26684 =C2=B1 79%    +269.6%      98631 =C2=B1 45%  sched_debug.cfs_rq:=
+/.load.stddev
+    508.00 =C2=B1 37%    +133.3%       1185 =C2=B1 39%  sched_debug.cfs_rq:=
+/.load_avg.max
+      9.00 =C2=B1 17%     -44.4%       5.00 =C2=B1 33%  sched_debug.cfs_rq:=
+/.load_avg.min
+    120.95 =C2=B1 40%     +94.6%     235.39 =C2=B1 32%  sched_debug.cfs_rq:=
 /.load_avg.stddev
-  32836566           -25.8%   24380252        sched_debug.cfs_rq:/.min_vrun=
-time.avg
-  34142704           -26.6%   25069511        sched_debug.cfs_rq:/.min_vrun=
-time.max
-  30685932           -24.8%   23066314        sched_debug.cfs_rq:/.min_vrun=
-time.min
-    512098 =C2=B1  7%     -45.8%     277506 =C2=B1 12%  sched_debug.cfs_rq:=
-/.min_vruntime.stddev
-    511619 =C2=B1  7%     -45.8%     277245 =C2=B1 12%  sched_debug.cfs_rq:=
-/.spread0.stddev
-    807.86            -8.1%     742.26 =C2=B1  2%  sched_debug.cfs_rq:/.uti=
-l_est_enqueued.avg
-    367.99 =C2=B1  6%     -20.4%     292.83 =C2=B1  7%  sched_debug.cfs_rq:=
-/.util_est_enqueued.stddev
-     65938 =C2=B1  9%     -31.8%      45001 =C2=B1 18%  sched_debug.cpu.avg=
-_idle.min
-    192768           -13.9%     165966 =C2=B1  2%  sched_debug.cpu.clock.avg
-    192837           -13.9%     166030 =C2=B1  2%  sched_debug.cpu.clock.max
-    192685           -13.9%     165891 =C2=B1  2%  sched_debug.cpu.clock.min
-    192768           -13.9%     165966 =C2=B1  2%  sched_debug.cpu.clock_ta=
-sk.avg
-    192837           -13.9%     166030 =C2=B1  2%  sched_debug.cpu.clock_ta=
-sk.max
-    192685           -13.9%     165891 =C2=B1  2%  sched_debug.cpu.clock_ta=
-sk.min
-      8622           -10.6%       7707        sched_debug.cpu.curr->pid.max
-      1.16 =C2=B1  4%     -18.7%       0.95 =C2=B1  3%  sched_debug.cpu.nr_=
+   1315047           -37.2%     825488 =C2=B1  4%  sched_debug.cfs_rq:/.min=
+_vruntime.avg
+   1467409 =C2=B1  3%     -35.8%     941380 =C2=B1  2%  sched_debug.cfs_rq:=
+/.min_vruntime.max
+   1271354           -38.8%     777738 =C2=B1  4%  sched_debug.cfs_rq:/.min=
+_vruntime.min
+      0.62 =C2=B1  5%     -30.4%       0.43 =C2=B1 10%  sched_debug.cfs_rq:=
+/.nr_running.avg
+     35.08 =C2=B1  9%    +449.6%     192.83 =C2=B1 63%  sched_debug.cfs_rq:=
+/.runnable_load_avg.max
+     10.30          +221.3%      33.10 =C2=B1 54%  sched_debug.cfs_rq:/.run=
+nable_load_avg.stddev
+     20216 =C2=B1 22%     +48.6%      30046 =C2=B1 29%  sched_debug.cfs_rq:=
+/.runnable_weight.avg
+    120127 =C2=B1125%    +287.7%     465751 =C2=B1 60%  sched_debug.cfs_rq:=
+/.runnable_weight.max
+     25146 =C2=B1 87%    +234.5%      84116 =C2=B1 53%  sched_debug.cfs_rq:=
+/.runnable_weight.stddev
+     14472 =C2=B1135%    -101.5%    -211.35        sched_debug.cfs_rq:/.spr=
+ead0.avg
+    166817 =C2=B1 25%     -30.7%     115662 =C2=B1 20%  sched_debug.cfs_rq:=
+/.spread0.max
+    -28876           +66.0%     -47942        sched_debug.cfs_rq:/.spread0.=
+min
+    757.34 =C2=B1  2%     -27.9%     545.98 =C2=B1  4%  sched_debug.cfs_rq:=
+/.util_avg.avg
+      1299 =C2=B1 11%     -14.5%       1111        sched_debug.cfs_rq:/.uti=
+l_avg.max
+    397.33 =C2=B1 17%     -38.5%     244.17 =C2=B1 17%  sched_debug.cfs_rq:=
+/.util_avg.min
+    103.73 =C2=B1 13%     -38.5%      63.79 =C2=B1 13%  sched_debug.cfs_rq:=
+/.util_est_enqueued.avg
+    204770 =C2=B1  4%     -10.9%     182535 =C2=B1  3%  sched_debug.cpu.avg=
+_idle.stddev
+      1795 =C2=B1 10%     -27.6%       1300 =C2=B1 17%  sched_debug.cpu.cur=
+r->pid.avg
+      1336           +18.0%       1576 =C2=B1  5%  sched_debug.cpu.curr->pi=
+d.stddev
+      0.64 =C2=B1  5%     -28.8%       0.45 =C2=B1 10%  sched_debug.cpu.nr_=
 running.avg
-      3.04 =C2=B1  7%     -16.2%       2.55 =C2=B1  3%  sched_debug.cpu.nr_=
-running.max
-      0.52 =C2=B1  8%     -29.8%       0.37 =C2=B1  8%  sched_debug.cpu.nr_=
-running.stddev
-     19837           -18.3%      16216        sched_debug.cpu.nr_switches.a=
+     27275           -10.7%      24364        sched_debug.cpu.nr_switches.a=
 vg
-     32384 =C2=B1  2%     -17.3%      26785 =C2=B1  2%  sched_debug.cpu.nr_=
+     34560 =C2=B1  3%     +68.3%      58168 =C2=B1  4%  sched_debug.cpu.nr_=
 switches.max
-     17910           -20.4%      14262        sched_debug.cpu.nr_switches.m=
+     24872           -31.7%      16990        sched_debug.cpu.nr_switches.m=
 in
-    419.29 =C2=B1  3%     -35.4%     271.05 =C2=B1 10%  sched_debug.cpu.nr_=
-uninterruptible.max
-   -184.50           -25.7%    -137.10        sched_debug.cpu.nr_uninterrup=
-tible.min
-     79.55 =C2=B1  6%     -27.3%      57.81 =C2=B1  4%  sched_debug.cpu.nr_=
-uninterruptible.stddev
-     18526           -21.7%      14513        sched_debug.cpu.sched_count.a=
+      2128 =C2=B1  7%    +328.5%       9122 =C2=B1  2%  sched_debug.cpu.nr_=
+switches.stddev
+     25106           -11.7%      22178        sched_debug.cpu.sched_count.a=
 vg
-     25587 =C2=B1  7%     -22.2%      19900 =C2=B1  2%  sched_debug.cpu.sch=
+     27859 =C2=B1  2%     +89.0%      52655 =C2=B1  3%  sched_debug.cpu.sch=
 ed_count.max
-     17081           -21.9%      13343        sched_debug.cpu.sched_count.m=
+     23769           -32.1%      16139        sched_debug.cpu.sched_count.m=
 in
-      8402           -16.0%       7057        sched_debug.cpu.ttwu_count.avg
-     24742 =C2=B1 11%     -30.4%      17221 =C2=B1  5%  sched_debug.cpu.ttw=
-u_count.max
-      4030 =C2=B1  8%     -31.0%       2779 =C2=B1  2%  sched_debug.cpu.ttw=
-u_count.stddev
-    748.79           -20.4%     595.77        sched_debug.cpu.ttwu_local.avg
-    433.17           -18.1%     354.90 =C2=B1  2%  sched_debug.cpu.ttwu_loc=
-al.min
-    276.39 =C2=B1  9%     -16.6%     230.51 =C2=B1 10%  sched_debug.cpu.ttw=
+    874.04 =C2=B1 15%    +856.0%       8355        sched_debug.cpu.sched_co=
+unt.stddev
+     11954           -10.8%      10660        sched_debug.cpu.sched_goidle.=
+avg
+     13338 =C2=B1  2%     +93.1%      25761 =C2=B1  3%  sched_debug.cpu.sch=
+ed_goidle.max
+     11339           -32.5%       7653        sched_debug.cpu.sched_goidle.=
+min
+    420.12 =C2=B1 13%    +887.8%       4149        sched_debug.cpu.sched_go=
+idle.stddev
+     12641           -12.2%      11095        sched_debug.cpu.ttwu_count.avg
+     14696           +73.7%      25527        sched_debug.cpu.ttwu_count.max
+     12080           -33.3%       8056        sched_debug.cpu.ttwu_count.min
+    598.46 =C2=B1  9%    +580.7%       4073        sched_debug.cpu.ttwu_cou=
+nt.stddev
+    470.25 =C2=B1  2%     +23.9%     582.47 =C2=B1  3%  sched_debug.cpu.ttw=
+u_local.avg
+    883.75 =C2=B1 10%     +23.9%       1094 =C2=B1  9%  sched_debug.cpu.ttw=
+u_local.max
+     91.75 =C2=B1 12%     +68.5%     154.59 =C2=B1  7%  sched_debug.cpu.ttw=
 u_local.stddev
-    192684           -13.9%     165890 =C2=B1  2%  sched_debug.cpu_clk
-    188644           -14.2%     161850 =C2=B1  2%  sched_debug.ktime
-    193281           -13.8%     166554 =C2=B1  2%  sched_debug.sched_clk
-     35.53            -0.3       35.25        perf-profile.calltrace.cycles=
--pp.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_metadata.btrfs_buff=
-ered_write.btrfs_file_write_iter.new_sync_write
-     35.63            -0.3       35.36        perf-profile.calltrace.cycles=
--pp.btrfs_delalloc_reserve_metadata.btrfs_buffered_write.btrfs_file_write_i=
-ter.new_sync_write.vfs_write
-     98.57            -0.3       98.31        perf-profile.calltrace.cycles=
--pp.btrfs_buffered_write.btrfs_file_write_iter.new_sync_write.vfs_write.ksy=
-s_write
-     98.60            -0.3       98.34        perf-profile.calltrace.cycles=
--pp.btrfs_file_write_iter.new_sync_write.vfs_write.ksys_write.do_syscall_64
-     98.60            -0.3       98.35        perf-profile.calltrace.cycles=
--pp.new_sync_write.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_afte=
-r_hwframe
-     98.65            -0.3       98.39        perf-profile.calltrace.cycles=
--pp.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
-     98.64            -0.3       98.38        perf-profile.calltrace.cycles=
--pp.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
-     98.67            -0.2       98.42        perf-profile.calltrace.cycles=
--pp.entry_SYSCALL_64_after_hwframe.write
-     98.66            -0.2       98.42        perf-profile.calltrace.cycles=
--pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
-     98.69            -0.2       98.44        perf-profile.calltrace.cycles=
--pp.write
-     35.21            -0.2       34.98        perf-profile.calltrace.cycles=
--pp.native_queued_spin_lock_slowpath._raw_spin_lock.btrfs_reserve_metadata_=
-bytes.btrfs_delalloc_reserve_metadata.btrfs_buffered_write
-     35.28            -0.2       35.06        perf-profile.calltrace.cycles=
--pp._raw_spin_lock.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_meta=
-data.btrfs_buffered_write.btrfs_file_write_iter
-     27.41            +0.1       27.49        perf-profile.calltrace.cycles=
--pp.btrfs_dirty_pages.btrfs_buffered_write.btrfs_file_write_iter.new_sync_w=
-rite.vfs_write
-      0.59 =C2=B1  9%      +0.1        0.68 =C2=B1  4%  perf-profile.calltr=
-ace.cycles-pp.btrfs_tree_read_lock.btrfs_read_lock_root_node.btrfs_search_s=
-lot.btrfs_lookup_file_extent.btrfs_get_extent
-      0.61 =C2=B1  8%      +0.1        0.70 =C2=B1  4%  perf-profile.calltr=
-ace.cycles-pp.btrfs_read_lock_root_node.btrfs_search_slot.btrfs_lookup_file=
-_extent.btrfs_get_extent.btrfs_dirty_pages
-      0.67 =C2=B1  7%      +0.1        0.77 =C2=B1  4%  perf-profile.calltr=
-ace.cycles-pp.btrfs_lookup_file_extent.btrfs_get_extent.btrfs_dirty_pages.b=
-trfs_buffered_write.btrfs_file_write_iter
-      0.71 =C2=B1  7%      +0.1        0.82 =C2=B1  4%  perf-profile.calltr=
-ace.cycles-pp.btrfs_get_extent.btrfs_dirty_pages.btrfs_buffered_write.btrfs=
-_file_write_iter.new_sync_write
-      0.67 =C2=B1  8%      +0.1        0.77 =C2=B1  4%  perf-profile.calltr=
-ace.cycles-pp.btrfs_search_slot.btrfs_lookup_file_extent.btrfs_get_extent.b=
-trfs_dirty_pages.btrfs_buffered_write
-     97.52            -0.4       97.13        perf-profile.children.cycles-=
-pp._raw_spin_lock
-     97.65            -0.3       97.31        perf-profile.children.cycles-=
-pp.native_queued_spin_lock_slowpath
-     35.67            -0.3       35.39        perf-profile.children.cycles-=
-pp.btrfs_reserve_metadata_bytes
-     35.63            -0.3       35.36        perf-profile.children.cycles-=
-pp.btrfs_delalloc_reserve_metadata
-     98.57            -0.3       98.31        perf-profile.children.cycles-=
-pp.btrfs_buffered_write
-     98.60            -0.3       98.34        perf-profile.children.cycles-=
-pp.btrfs_file_write_iter
-     98.62            -0.3       98.36        perf-profile.children.cycles-=
-pp.new_sync_write
-     98.65            -0.2       98.40        perf-profile.children.cycles-=
-pp.vfs_write
-     98.66            -0.2       98.41        perf-profile.children.cycles-=
-pp.ksys_write
-     98.69            -0.2       98.45        perf-profile.children.cycles-=
-pp.write
-     99.53            -0.2       99.37        perf-profile.children.cycles-=
-pp.entry_SYSCALL_64_after_hwframe
-     99.53            -0.2       99.37        perf-profile.children.cycles-=
-pp.do_syscall_64
-      0.18 =C2=B1  2%      -0.1        0.12 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.can_overcommit
-      0.05            +0.0        0.06        perf-profile.children.cycles-=
-pp.set_extent_bit
-      0.06 =C2=B1  6%      +0.0        0.08 =C2=B1  5%  perf-profile.childr=
-en.cycles-pp.btrfs_check_data_free_space
-      0.06            +0.0        0.08 =C2=B1  6%  perf-profile.children.cy=
-cles-pp.btrfs_alloc_data_chunk_ondemand
-      0.14 =C2=B1  3%      +0.0        0.16 =C2=B1  2%  perf-profile.childr=
-en.cycles-pp.prepare_pages
-      0.03 =C2=B1100%      +0.0        0.06 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.btrfs_drop_pages
-      0.34 =C2=B1  9%      +0.1        0.40 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.prepare_to_wait_event
-      0.23 =C2=B1  4%      +0.1        0.30 =C2=B1  8%  perf-profile.childr=
-en.cycles-pp.osq_lock
-      0.38 =C2=B1  2%      +0.1        0.46 =C2=B1  6%  perf-profile.childr=
-en.cycles-pp.rwsem_optimistic_spin
-      0.42 =C2=B1  3%      +0.1        0.49 =C2=B1  5%  perf-profile.childr=
-en.cycles-pp.creat
-      0.42 =C2=B1  3%      +0.1        0.49 =C2=B1  5%  perf-profile.childr=
-en.cycles-pp.do_sys_open
-      0.41 =C2=B1  3%      +0.1        0.49 =C2=B1  5%  perf-profile.childr=
-en.cycles-pp.do_filp_open
-      0.41 =C2=B1  3%      +0.1        0.49 =C2=B1  5%  perf-profile.childr=
-en.cycles-pp.path_openat
-      0.38 =C2=B1  2%      +0.1        0.46 =C2=B1  7%  perf-profile.childr=
-en.cycles-pp.rwsem_down_write_slowpath
-     27.41            +0.1       27.49        perf-profile.children.cycles-=
-pp.btrfs_dirty_pages
-      0.59 =C2=B1  8%      +0.1        0.67 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp._raw_spin_lock_irqsave
-      0.60 =C2=B1  8%      +0.1        0.69 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.btrfs_tree_read_lock
-      0.62 =C2=B1  8%      +0.1        0.71 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.btrfs_read_lock_root_node
-      0.67 =C2=B1  7%      +0.1        0.77 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.btrfs_lookup_file_extent
-      0.68 =C2=B1  8%      +0.1        0.79 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.btrfs_search_slot
-      0.72 =C2=B1  7%      +0.1        0.82 =C2=B1  4%  perf-profile.childr=
-en.cycles-pp.btrfs_get_extent
-      0.33 =C2=B1 13%      +0.1        0.47 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.intel_idle
-      0.34 =C2=B1 14%      +0.1        0.48 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.cpuidle_enter
-      0.34 =C2=B1 14%      +0.1        0.48 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.cpuidle_enter_state
-      0.35 =C2=B1 13%      +0.1        0.49 =C2=B1 15%  perf-profile.childr=
-en.cycles-pp.start_secondary
-      0.35 =C2=B1 13%      +0.2        0.50 =C2=B1 14%  perf-profile.childr=
-en.cycles-pp.secondary_startup_64
-      0.35 =C2=B1 13%      +0.2        0.50 =C2=B1 14%  perf-profile.childr=
-en.cycles-pp.cpu_startup_entry
-      0.35 =C2=B1 13%      +0.2        0.50 =C2=B1 14%  perf-profile.childr=
-en.cycles-pp.do_idle
-     97.02            -0.4       96.61        perf-profile.self.cycles-pp.n=
-ative_queued_spin_lock_slowpath
-      0.08            -0.0        0.06        perf-profile.self.cycles-pp.c=
-an_overcommit
-      0.44            +0.0        0.49 =C2=B1  3%  perf-profile.self.cycles=
--pp._raw_spin_lock
-      0.00            +0.1        0.06        perf-profile.self.cycles-pp.b=
-trfs_drop_pages
-      0.23 =C2=B1  4%      +0.1        0.30 =C2=B1  8%  perf-profile.self.c=
-ycles-pp.osq_lock
-      0.33 =C2=B1 13%      +0.1        0.47 =C2=B1 15%  perf-profile.self.c=
-ycles-pp.intel_idle
-    106990 =C2=B1  6%     -14.5%      91529 =C2=B1  3%  softirqs.CPU0.TIMER
-    102783 =C2=B1  7%     -14.0%      88392 =C2=B1  3%  softirqs.CPU1.TIMER
-    105966 =C2=B1  6%     -12.1%      93171 =C2=B1  6%  softirqs.CPU10.TIMER
-    105264 =C2=B1  6%     -14.7%      89814 =C2=B1  3%  softirqs.CPU100.TIM=
-ER
-    105573 =C2=B1  6%     -14.4%      90416 =C2=B1  3%  softirqs.CPU101.TIM=
-ER
-    104858 =C2=B1  6%     -14.2%      89969 =C2=B1  3%  softirqs.CPU102.TIM=
-ER
-    104199 =C2=B1  6%     -15.0%      88552 =C2=B1  3%  softirqs.CPU103.TIM=
-ER
-    103939 =C2=B1  5%     -14.4%      88925 =C2=B1  3%  softirqs.CPU104.TIM=
-ER
-    104571 =C2=B1  6%     -15.2%      88727 =C2=B1  3%  softirqs.CPU105.TIM=
-ER
-    105349 =C2=B1  6%     -15.5%      89047 =C2=B1  2%  softirqs.CPU106.TIM=
-ER
-    105601 =C2=B1  6%     -15.6%      89162 =C2=B1  3%  softirqs.CPU107.TIM=
-ER
-    105737 =C2=B1  7%     -15.5%      89311 =C2=B1  3%  softirqs.CPU108.TIM=
-ER
-    103934 =C2=B1  6%     -14.7%      88606 =C2=B1  3%  softirqs.CPU109.TIM=
-ER
-    105775 =C2=B1  6%     -13.8%      91200 =C2=B1  3%  softirqs.CPU11.TIMER
-    104397 =C2=B1  6%     -14.6%      89103 =C2=B1  3%  softirqs.CPU110.TIM=
-ER
-    104606 =C2=B1  6%     -14.2%      89724 =C2=B1  4%  softirqs.CPU111.TIM=
-ER
-    105358 =C2=B1  6%     -15.2%      89379 =C2=B1  3%  softirqs.CPU112.TIM=
-ER
-    107242 =C2=B1  9%     -16.9%      89090 =C2=B1  2%  softirqs.CPU113.TIM=
-ER
-    104788 =C2=B1  6%     -14.8%      89259 =C2=B1  2%  softirqs.CPU114.TIM=
-ER
-    104166 =C2=B1  5%     -15.0%      88505 =C2=B1  2%  softirqs.CPU115.TIM=
-ER
-    104715 =C2=B1  6%     -14.2%      89804 =C2=B1  3%  softirqs.CPU116.TIM=
-ER
-    106727 =C2=B1  6%     -16.3%      89373 =C2=B1  3%  softirqs.CPU117.TIM=
-ER
-    105905 =C2=B1  6%     -16.0%      89005 =C2=B1  3%  softirqs.CPU118.TIM=
-ER
-    104713 =C2=B1  5%     -15.3%      88708 =C2=B1  3%  softirqs.CPU119.TIM=
-ER
-    105521 =C2=B1  6%     -14.7%      89978 =C2=B1  2%  softirqs.CPU12.TIMER
-    102077 =C2=B1  4%     -13.1%      88695 =C2=B1  3%  softirqs.CPU120.TIM=
-ER
-    103932 =C2=B1  6%     -14.5%      88882 =C2=B1  4%  softirqs.CPU121.TIM=
-ER
-    101870 =C2=B1  4%     -12.3%      89294 =C2=B1  4%  softirqs.CPU122.TIM=
-ER
-    101959 =C2=B1  4%     -11.7%      90050 =C2=B1  5%  softirqs.CPU123.TIM=
-ER
-    102891 =C2=B1  3%     -12.9%      89668 =C2=B1  4%  softirqs.CPU124.TIM=
-ER
-    102642 =C2=B1  4%     -12.9%      89432 =C2=B1  4%  softirqs.CPU125.TIM=
-ER
-    102788 =C2=B1  4%     -12.9%      89530 =C2=B1  4%  softirqs.CPU126.TIM=
-ER
-    102125 =C2=B1  4%     -12.1%      89726 =C2=B1  5%  softirqs.CPU127.TIM=
-ER
-    101647 =C2=B1  4%     -11.6%      89896 =C2=B1  5%  softirqs.CPU128.TIM=
-ER
-    101991 =C2=B1  4%     -13.0%      88774 =C2=B1  3%  softirqs.CPU129.TIM=
-ER
-    104798 =C2=B1  6%     -14.8%      89334 =C2=B1  2%  softirqs.CPU13.TIMER
-    102709 =C2=B1  3%     -13.1%      89293 =C2=B1  4%  softirqs.CPU130.TIM=
-ER
-    102587 =C2=B1  4%     -12.9%      89326 =C2=B1  4%  softirqs.CPU131.TIM=
-ER
-    102771 =C2=B1  4%     -12.6%      89821 =C2=B1  4%  softirqs.CPU132.TIM=
-ER
-    101972 =C2=B1  4%     -12.8%      88931 =C2=B1  4%  softirqs.CPU133.TIM=
-ER
-    101673 =C2=B1  3%     -12.6%      88909 =C2=B1  4%  softirqs.CPU134.TIM=
-ER
-    101759 =C2=B1  4%     -12.4%      89136 =C2=B1  4%  softirqs.CPU135.TIM=
-ER
-    102776 =C2=B1  4%     -12.9%      89555 =C2=B1  4%  softirqs.CPU136.TIM=
-ER
-    102623 =C2=B1  5%     -12.2%      90063 =C2=B1  4%  softirqs.CPU138.TIM=
-ER
-    101517 =C2=B1  4%     -12.6%      88776 =C2=B1  4%  softirqs.CPU139.TIM=
-ER
-    105965 =C2=B1  7%     -15.7%      89366 =C2=B1  2%  softirqs.CPU14.TIMER
-    101779 =C2=B1  4%     -12.5%      89053 =C2=B1  3%  softirqs.CPU140.TIM=
-ER
-    102067 =C2=B1  4%     -12.2%      89659 =C2=B1  4%  softirqs.CPU141.TIM=
-ER
-    102798 =C2=B1  5%     -12.7%      89735 =C2=B1  4%  softirqs.CPU142.TIM=
-ER
-    102255 =C2=B1  4%     -12.3%      89661 =C2=B1  4%  softirqs.CPU143.TIM=
-ER
-    103367 =C2=B1  4%     -13.9%      89016 =C2=B1  3%  softirqs.CPU144.TIM=
-ER
-    103150 =C2=B1  4%     -12.3%      90413 =C2=B1  4%  softirqs.CPU145.TIM=
-ER
-    103361 =C2=B1  3%     -13.4%      89534 =C2=B1  3%  softirqs.CPU146.TIM=
-ER
-    103269 =C2=B1  4%     -13.3%      89510 =C2=B1  4%  softirqs.CPU147.TIM=
-ER
-    103891 =C2=B1  4%     -13.3%      90089 =C2=B1  4%  softirqs.CPU148.TIM=
-ER
-    104148 =C2=B1  4%     -13.8%      89724 =C2=B1  3%  softirqs.CPU149.TIM=
-ER
-    105190 =C2=B1  6%     -14.3%      90165 =C2=B1  3%  softirqs.CPU15.TIMER
-    104098 =C2=B1  4%     -13.7%      89792 =C2=B1  3%  softirqs.CPU150.TIM=
-ER
-    103025 =C2=B1  4%     -13.7%      88875 =C2=B1  3%  softirqs.CPU151.TIM=
-ER
-    103185 =C2=B1  4%     -13.2%      89564 =C2=B1  3%  softirqs.CPU152.TIM=
-ER
-    104039 =C2=B1  4%     -13.4%      90090 =C2=B1  4%  softirqs.CPU153.TIM=
-ER
-    103637 =C2=B1  4%     -13.0%      90122 =C2=B1  3%  softirqs.CPU154.TIM=
-ER
-    103486 =C2=B1  4%     -13.3%      89742 =C2=B1  3%  softirqs.CPU155.TIM=
-ER
-    102733 =C2=B1  4%     -13.6%      88789 =C2=B1  3%  softirqs.CPU156.TIM=
-ER
-    103066 =C2=B1  4%     -13.3%      89331 =C2=B1  3%  softirqs.CPU157.TIM=
-ER
-    102799 =C2=B1  4%     -13.0%      89430 =C2=B1  3%  softirqs.CPU158.TIM=
-ER
-    104213 =C2=B1  4%     -13.3%      90319 =C2=B1  4%  softirqs.CPU159.TIM=
-ER
-    107936 =C2=B1  6%     -16.6%      90012 =C2=B1  3%  softirqs.CPU16.TIMER
-    103784 =C2=B1  4%     -13.7%      89614 =C2=B1  4%  softirqs.CPU160.TIM=
-ER
-    103963 =C2=B1  3%     -13.2%      90274 =C2=B1  4%  softirqs.CPU161.TIM=
-ER
-    103835 =C2=B1  3%     -13.7%      89608 =C2=B1  3%  softirqs.CPU162.TIM=
-ER
-    103540 =C2=B1  3%     -14.3%      88742 =C2=B1  3%  softirqs.CPU163.TIM=
-ER
-    103419 =C2=B1  4%     -13.7%      89261 =C2=B1  3%  softirqs.CPU164.TIM=
-ER
-    103967 =C2=B1  4%     -13.0%      90400 =C2=B1  4%  softirqs.CPU165.TIM=
-ER
-      8352 =C2=B1 34%     -32.4%       5643 =C2=B1  5%  softirqs.CPU166.RCU
-    103132 =C2=B1  5%     -12.8%      89893 =C2=B1  4%  softirqs.CPU166.TIM=
-ER
-    103426 =C2=B1  4%     -13.1%      89845 =C2=B1  4%  softirqs.CPU167.TIM=
-ER
-    109048 =C2=B1  4%     -14.5%      93248 =C2=B1  3%  softirqs.CPU168.TIM=
-ER
-    110554 =C2=B1  4%     -15.6%      93343 =C2=B1  3%  softirqs.CPU169.TIM=
-ER
-     11363 =C2=B1 62%     -43.0%       6482 =C2=B1  5%  softirqs.CPU17.RCU
-    121547 =C2=B1 27%     -25.8%      90215 =C2=B1  2%  softirqs.CPU17.TIMER
-    109063 =C2=B1  4%     -13.9%      93947 =C2=B1  3%  softirqs.CPU170.TIM=
-ER
-    108359 =C2=B1  3%     -13.2%      94013 =C2=B1  3%  softirqs.CPU171.TIM=
-ER
-    109620 =C2=B1  4%     -14.3%      93976 =C2=B1  3%  softirqs.CPU172.TIM=
-ER
-    109325 =C2=B1  3%     -13.8%      94210 =C2=B1  2%  softirqs.CPU173.TIM=
-ER
-    111187 =C2=B1  3%     -15.1%      94429 =C2=B1  3%  softirqs.CPU174.TIM=
-ER
-    124419 =C2=B1 18%     -24.7%      93727 =C2=B1  3%  softirqs.CPU175.TIM=
-ER
-    109671 =C2=B1  2%     -14.9%      93364 =C2=B1  3%  softirqs.CPU176.TIM=
-ER
-    108707 =C2=B1  3%     -13.7%      93817 =C2=B1  2%  softirqs.CPU177.TIM=
-ER
-    108700 =C2=B1  3%     -13.7%      93809 =C2=B1  3%  softirqs.CPU178.TIM=
-ER
-    109435 =C2=B1  3%     -14.2%      93872 =C2=B1  3%  softirqs.CPU179.TIM=
-ER
-      8155 =C2=B1 14%     -21.8%       6377 =C2=B1  4%  softirqs.CPU18.RCU
-    106852 =C2=B1  5%     -16.0%      89762 =C2=B1  2%  softirqs.CPU18.TIMER
-    109976 =C2=B1  3%     -14.3%      94237 =C2=B1  3%  softirqs.CPU180.TIM=
-ER
-    108138 =C2=B1  3%     -13.9%      93133 =C2=B1  3%  softirqs.CPU181.TIM=
-ER
-    108000 =C2=B1  3%     -13.8%      93097 =C2=B1  3%  softirqs.CPU182.TIM=
-ER
-    108330 =C2=B1  3%     -13.7%      93452 =C2=B1  2%  softirqs.CPU183.TIM=
-ER
-    109169 =C2=B1  3%     -13.8%      94094 =C2=B1  3%  softirqs.CPU184.TIM=
-ER
-    110704 =C2=B1  4%     -14.9%      94224 =C2=B1  3%  softirqs.CPU185.TIM=
-ER
-    109893 =C2=B1  3%     -14.6%      93825 =C2=B1  3%  softirqs.CPU186.TIM=
-ER
-    109112 =C2=B1  4%     -13.2%      94667 =C2=B1  2%  softirqs.CPU187.TIM=
-ER
-    108840 =C2=B1  3%     -14.0%      93606 =C2=B1  3%  softirqs.CPU188.TIM=
-ER
-    109071 =C2=B1  3%     -14.1%      93682 =C2=B1  3%  softirqs.CPU189.TIM=
-ER
-    104630 =C2=B1  6%     -14.1%      89853 =C2=B1  2%  softirqs.CPU19.TIMER
-    109646 =C2=B1  3%     -14.2%      94107 =C2=B1  3%  softirqs.CPU190.TIM=
-ER
-    112198 =C2=B1  2%     -15.3%      94991 =C2=B1  4%  softirqs.CPU191.TIM=
-ER
-    105022 =C2=B1  6%     -14.8%      89428 =C2=B1  3%  softirqs.CPU2.TIMER
-    105421 =C2=B1  6%     -14.8%      89782 =C2=B1  3%  softirqs.CPU20.TIMER
-    106244 =C2=B1  7%     -14.4%      90984 =C2=B1  2%  softirqs.CPU21.TIMER
-    105057 =C2=B1  6%     -14.4%      89911 =C2=B1  3%  softirqs.CPU22.TIMER
-    105186 =C2=B1  5%     -14.8%      89616 =C2=B1  3%  softirqs.CPU23.TIMER
-     12591 =C2=B1 44%     -49.7%       6338 =C2=B1  7%  softirqs.CPU24.RCU
-    105225 =C2=B1  6%     -14.9%      89583 =C2=B1  4%  softirqs.CPU24.TIMER
-    118018 =C2=B1 23%     -23.8%      89881 =C2=B1  4%  softirqs.CPU25.TIMER
-    102729 =C2=B1  3%     -12.9%      89512 =C2=B1  3%  softirqs.CPU26.TIMER
-    102630 =C2=B1  4%     -12.3%      90046 =C2=B1  4%  softirqs.CPU27.TIMER
-    103237 =C2=B1  4%     -11.8%      91022 =C2=B1  5%  softirqs.CPU28.TIMER
-    103231 =C2=B1  4%     -12.5%      90286 =C2=B1  4%  softirqs.CPU29.TIMER
-    104931 =C2=B1  6%     -14.4%      89807 =C2=B1  2%  softirqs.CPU3.TIMER
-    103513 =C2=B1  4%     -12.7%      90393 =C2=B1  4%  softirqs.CPU30.TIMER
-    103022 =C2=B1  4%     -11.9%      90799 =C2=B1  4%  softirqs.CPU31.TIMER
-    103254 =C2=B1  4%     -13.3%      89550 =C2=B1  4%  softirqs.CPU32.TIMER
-    102868 =C2=B1  4%     -12.5%      90046 =C2=B1  4%  softirqs.CPU33.TIMER
-    103456 =C2=B1  4%     -13.0%      90056 =C2=B1  3%  softirqs.CPU34.TIMER
-    103281 =C2=B1  4%     -12.8%      90068 =C2=B1  4%  softirqs.CPU35.TIMER
-    103255 =C2=B1  4%     -12.4%      90447 =C2=B1  4%  softirqs.CPU36.TIMER
-    102927 =C2=B1  4%     -13.0%      89551 =C2=B1  3%  softirqs.CPU37.TIMER
-    102188 =C2=B1  4%     -11.4%      90581 =C2=B1  4%  softirqs.CPU38.TIMER
-    102507 =C2=B1  4%     -12.9%      89257 =C2=B1  3%  softirqs.CPU39.TIMER
-    106326 =C2=B1  6%     -15.0%      90396 =C2=B1  3%  softirqs.CPU4.TIMER
-    102928 =C2=B1  4%     -11.9%      90675 =C2=B1  4%  softirqs.CPU40.TIMER
-    103776 =C2=B1  5%     -12.1%      91230 =C2=B1  5%  softirqs.CPU41.TIMER
-    103307 =C2=B1  4%     -12.4%      90473 =C2=B1  4%  softirqs.CPU42.TIMER
-    102151 =C2=B1  4%     -12.3%      89629 =C2=B1  3%  softirqs.CPU43.TIMER
-    103427 =C2=B1  5%     -11.8%      91195 =C2=B1  3%  softirqs.CPU44.TIMER
-    102922 =C2=B1  4%     -12.2%      90400 =C2=B1  3%  softirqs.CPU45.TIMER
-    103479 =C2=B1  4%     -12.3%      90743 =C2=B1  4%  softirqs.CPU46.TIMER
-    103087 =C2=B1  4%     -12.0%      90697 =C2=B1  5%  softirqs.CPU47.TIMER
-    103861 =C2=B1  4%     -13.4%      89977 =C2=B1  4%  softirqs.CPU48.TIMER
-    105856 =C2=B1  6%     -14.6%      90411 =C2=B1  2%  softirqs.CPU5.TIMER
-    103795 =C2=B1  4%     -13.2%      90138 =C2=B1  4%  softirqs.CPU50.TIMER
-    104110 =C2=B1  4%     -13.1%      90501 =C2=B1  4%  softirqs.CPU51.TIMER
-    105216 =C2=B1  4%     -14.0%      90512 =C2=B1  3%  softirqs.CPU52.TIMER
-    104823 =C2=B1  4%     -12.6%      91580 =C2=B1  4%  softirqs.CPU53.TIMER
-    106267 =C2=B1  2%     -15.1%      90179 =C2=B1  3%  softirqs.CPU54.TIMER
-    104174 =C2=B1  4%     -12.4%      91280 =C2=B1  2%  softirqs.CPU55.TIMER
-    104300 =C2=B1  3%     -14.0%      89732 =C2=B1  3%  softirqs.CPU56.TIMER
-    104373 =C2=B1  4%     -12.9%      90934 =C2=B1  3%  softirqs.CPU57.TIMER
-    104248 =C2=B1  4%     -13.3%      90343 =C2=B1  3%  softirqs.CPU58.TIMER
-    104205 =C2=B1  4%     -12.6%      91057 =C2=B1  3%  softirqs.CPU59.TIMER
-    106539 =C2=B1  6%     -13.9%      91729        softirqs.CPU6.TIMER
-    103163 =C2=B1  4%     -13.0%      89707 =C2=B1  3%  softirqs.CPU60.TIMER
-    103501 =C2=B1  4%     -12.6%      90420 =C2=B1  4%  softirqs.CPU61.TIMER
-    103820 =C2=B1  4%     -12.8%      90495 =C2=B1  3%  softirqs.CPU62.TIMER
-    104800 =C2=B1  4%     -12.6%      91566 =C2=B1  4%  softirqs.CPU63.TIMER
-    104582 =C2=B1  4%     -12.9%      91082 =C2=B1  3%  softirqs.CPU64.TIMER
-    104601 =C2=B1  4%     -13.3%      90703 =C2=B1  3%  softirqs.CPU65.TIMER
-    103339 =C2=B1  4%     -12.9%      89988 =C2=B1  3%  softirqs.CPU66.TIMER
-    104105 =C2=B1  3%     -13.9%      89659 =C2=B1  3%  softirqs.CPU67.TIMER
-    105036 =C2=B1  2%     -14.3%      90013 =C2=B1  3%  softirqs.CPU68.TIMER
-    104809 =C2=B1  3%     -13.6%      90589 =C2=B1  3%  softirqs.CPU69.TIMER
-    104761 =C2=B1  5%     -12.8%      91374 =C2=B1  3%  softirqs.CPU7.TIMER
-    105291 =C2=B1  2%     -13.6%      90953 =C2=B1  4%  softirqs.CPU70.TIMER
-    104241 =C2=B1  4%     -11.6%      92167 =C2=B1  3%  softirqs.CPU71.TIMER
-    108443 =C2=B1  3%     -12.4%      94961 =C2=B1  4%  softirqs.CPU72.TIMER
-    125085 =C2=B1 20%     -24.1%      94958 =C2=B1  3%  softirqs.CPU73.TIMER
-    109162 =C2=B1  3%     -13.5%      94476 =C2=B1  3%  softirqs.CPU75.TIMER
-    110431 =C2=B1  3%     -14.3%      94594 =C2=B1  2%  softirqs.CPU76.TIMER
-    110073 =C2=B1  3%     -13.4%      95277 =C2=B1  3%  softirqs.CPU77.TIMER
-    110349 =C2=B1  3%     -14.0%      94847 =C2=B1  3%  softirqs.CPU78.TIMER
-    111314           -15.0%      94625 =C2=B1  3%  softirqs.CPU79.TIMER
-    105558 =C2=B1  7%     -14.7%      90020 =C2=B1  3%  softirqs.CPU8.TIMER
-    109610 =C2=B1  3%     -13.4%      94868 =C2=B1  2%  softirqs.CPU80.TIMER
-    110865 =C2=B1  5%     -14.2%      95126 =C2=B1  3%  softirqs.CPU81.TIMER
-    109289 =C2=B1  3%     -13.8%      94249 =C2=B1  3%  softirqs.CPU82.TIMER
-    110000 =C2=B1  3%     -13.6%      95001 =C2=B1  3%  softirqs.CPU83.TIMER
-    109917 =C2=B1  3%     -13.9%      94686 =C2=B1  3%  softirqs.CPU84.TIMER
-    108751 =C2=B1  3%     -14.0%      93489 =C2=B1  3%  softirqs.CPU85.TIMER
-    109258 =C2=B1  4%     -14.1%      93840 =C2=B1  3%  softirqs.CPU87.TIMER
-    110311 =C2=B1  3%     -14.0%      94868 =C2=B1  3%  softirqs.CPU88.TIMER
-    110715 =C2=B1  3%     -14.2%      94942 =C2=B1  3%  softirqs.CPU89.TIMER
-    105782 =C2=B1  6%     -14.9%      90003 =C2=B1  2%  softirqs.CPU9.TIMER
-    110652 =C2=B1  3%     -14.3%      94810 =C2=B1  3%  softirqs.CPU90.TIMER
-    109169 =C2=B1  3%     -13.8%      94129 =C2=B1  3%  softirqs.CPU91.TIMER
-    109563 =C2=B1  3%     -14.0%      94276 =C2=B1  3%  softirqs.CPU92.TIMER
-    109832 =C2=B1  3%     -13.8%      94625 =C2=B1  3%  softirqs.CPU93.TIMER
-    110786 =C2=B1  3%     -14.4%      94833 =C2=B1  3%  softirqs.CPU94.TIMER
-    110757           -14.3%      94973 =C2=B1  3%  softirqs.CPU95.TIMER
-    104117 =C2=B1  6%     -14.5%      89029 =C2=B1  3%  softirqs.CPU96.TIMER
-    103952 =C2=B1  6%     -16.6%      86706 =C2=B1  3%  softirqs.CPU97.TIMER
-    106433 =C2=B1  4%     -14.2%      91372 =C2=B1  4%  softirqs.CPU98.TIMER
-    105102 =C2=B1  6%     -15.1%      89255 =C2=B1  3%  softirqs.CPU99.TIMER
-   1364078 =C2=B1  4%     -12.8%    1189977 =C2=B1  4%  softirqs.RCU
-  20301703 =C2=B1  4%     -13.7%   17520659 =C2=B1  3%  softirqs.TIMER
-    642.00 =C2=B1  3%     -15.4%     543.00 =C2=B1  2%  interrupts.9:IO-API=
-C.9-fasteoi.acpi
-    634290 =C2=B1  3%     -15.9%     533174 =C2=B1  2%  interrupts.CPU0.LOC=
-:Local_timer_interrupts
-      9908 =C2=B1  3%     -21.0%       7829 =C2=B1  9%  interrupts.CPU0.RES=
+ 3.867e+09           -14.4%  3.312e+09        perf-stat.i.branch-instructio=
+ns
+      2.08 =C2=B1  2%      -0.1        1.95 =C2=B1  3%  perf-stat.i.branch-=
+miss-rate%
+  55566907           -12.0%   48886699 =C2=B1  2%  perf-stat.i.branch-misses
+     26.51            -1.7       24.84 =C2=B1  2%  perf-stat.i.cache-miss-r=
+ate%
+  37534712           -23.4%   28761515        perf-stat.i.cache-misses
+ 1.407e+08           -16.4%  1.176e+08 =C2=B1  2%  perf-stat.i.cache-refere=
+nces
+     17417            -9.9%      15689        perf-stat.i.context-switches
+      2.05            -6.7%       1.91 =C2=B1  3%  perf-stat.i.cpi
+ 3.442e+10           -19.1%  2.784e+10 =C2=B1  4%  perf-stat.i.cpu-cycles
+      2461           -48.3%       1271        perf-stat.i.cpu-migrations
+    898.31            +4.4%     937.81 =C2=B1  4%  perf-stat.i.cycles-betwe=
+en-cache-misses
+ 1.176e+08 =C2=B1  9%     -22.4%   91285096 =C2=B1  2%  perf-stat.i.dTLB-lo=
+ad-misses
+ 6.032e+09           -14.2%  5.174e+09        perf-stat.i.dTLB-loads
+  17987322 =C2=B1  3%     -17.7%   14796811 =C2=B1  3%  perf-stat.i.dTLB-st=
+ore-misses
+ 4.184e+09           -15.1%  3.553e+09        perf-stat.i.dTLB-stores
+   6915996 =C2=B1  2%      -5.9%    6510336        perf-stat.i.iTLB-load-mi=
+sses
+   2586772 =C2=B1  8%     -18.9%    2098325 =C2=B1 13%  perf-stat.i.iTLB-lo=
+ads
+ 1.945e+10           -14.3%  1.667e+10        perf-stat.i.instructions
+      2785 =C2=B1  3%     -10.5%       2492        perf-stat.i.instructions=
+-per-iTLB-miss
+      0.55            +7.4%       0.59 =C2=B1  2%  perf-stat.i.ipc
+      3723            -5.1%       3534        perf-stat.i.minor-faults
+   2160613           -24.3%    1634850 =C2=B1  2%  perf-stat.i.node-load-mi=
+sses
+   4136129           -22.3%    3213515        perf-stat.i.node-loads
+     23.00            -1.2       21.79 =C2=B1  3%  perf-stat.i.node-store-m=
+iss-rate%
+   8687009           -31.6%    5940686 =C2=B1  2%  perf-stat.i.node-store-m=
+isses
+  29184014           -26.3%   21502342        perf-stat.i.node-stores
+      3723            -5.1%       3534        perf-stat.i.page-faults
+      7.23            -2.5%       7.05        perf-stat.overall.MPKI
+     26.68            -2.2       24.47        perf-stat.overall.cache-miss-=
+rate%
+      1.77            -5.7%       1.67 =C2=B1  2%  perf-stat.overall.cpi
+    917.20            +5.6%     968.21 =C2=B1  4%  perf-stat.overall.cycles=
+-between-cache-misses
+      2814 =C2=B1  2%      -9.0%       2560        perf-stat.overall.instru=
+ctions-per-iTLB-miss
+      0.57            +6.1%       0.60 =C2=B1  2%  perf-stat.overall.ipc
+     34.31            -0.6       33.71        perf-stat.overall.node-load-m=
+iss-rate%
+     22.94 =C2=B1  2%      -1.3       21.65        perf-stat.overall.node-s=
+tore-miss-rate%
+ 3.835e+09           -14.2%  3.291e+09        perf-stat.ps.branch-instructi=
+ons
+  55111206           -11.9%   48573654 =C2=B1  2%  perf-stat.ps.branch-miss=
+es
+  37224107           -23.2%   28577554        perf-stat.ps.cache-misses
+ 1.395e+08           -16.3%  1.168e+08 =C2=B1  2%  perf-stat.ps.cache-refer=
+ences
+     17274            -9.8%      15588        perf-stat.ps.context-switches
+ 3.414e+10           -19.0%  2.766e+10 =C2=B1  4%  perf-stat.ps.cpu-cycles
+      2441           -48.2%       1263        perf-stat.ps.cpu-migrations
+ 1.166e+08 =C2=B1  9%     -22.2%   90699316 =C2=B1  2%  perf-stat.ps.dTLB-l=
+oad-misses
+ 5.983e+09           -14.1%  5.141e+09        perf-stat.ps.dTLB-loads
+  17837008 =C2=B1  3%     -17.6%   14701867 =C2=B1  3%  perf-stat.ps.dTLB-s=
+tore-misses
+ 4.149e+09           -14.9%   3.53e+09        perf-stat.ps.dTLB-stores
+   6858348 =C2=B1  2%      -5.7%    6468604        perf-stat.ps.iTLB-load-m=
+isses
+   2565117 =C2=B1  8%     -18.7%    2084894 =C2=B1 13%  perf-stat.ps.iTLB-l=
+oads
+ 1.929e+10           -14.1%  1.656e+10        perf-stat.ps.instructions
+      3714            -5.4%       3513        perf-stat.ps.minor-faults
+   2142679           -24.2%    1624370 =C2=B1  2%  perf-stat.ps.node-load-m=
+isses
+   4101979           -22.2%    3192920        perf-stat.ps.node-loads
+   8614251           -31.5%    5902590 =C2=B1  2%  perf-stat.ps.node-store-=
+misses
+  28939527           -26.2%   21364553        perf-stat.ps.node-stores
+      3714            -5.4%       3513        perf-stat.ps.page-faults
+ 2.506e+12            +4.5%  2.619e+12        perf-stat.total.instructions
+    145.25 =C2=B1 16%     +54.9%     225.00 =C2=B1 18%  interrupts.39:IR-PC=
+I-MSI.524289-edge.eth0-TxRx-0
+    103.00 =C2=B1 49%   +1794.7%       1951 =C2=B1161%  interrupts.44:IR-PC=
+I-MSI.524294-edge.eth0-TxRx-5
+      1380 =C2=B1 11%     +21.4%       1676 =C2=B1  5%  interrupts.CPU0.CAL=
+:Function_call_interrupts
+    260369           +21.4%     316051        interrupts.CPU0.LOC:Local_tim=
+er_interrupts
+      2090 =C2=B1 11%     -32.7%       1407 =C2=B1  6%  interrupts.CPU0.RES=
 :Rescheduling_interrupts
-    642.00 =C2=B1  3%     -15.4%     543.00 =C2=B1  2%  interrupts.CPU1.9:I=
-O-APIC.9-fasteoi.acpi
-    634152 =C2=B1  3%     -16.0%     532695 =C2=B1  2%  interrupts.CPU1.LOC=
-:Local_timer_interrupts
-      8594 =C2=B1  4%     -28.5%       6148 =C2=B1  8%  interrupts.CPU1.RES=
+    259956           +21.7%     316451        interrupts.CPU1.LOC:Local_tim=
+er_interrupts
+    259976           +21.4%     315572        interrupts.CPU10.LOC:Local_ti=
+mer_interrupts
+      1869 =C2=B1 22%     -56.8%     808.50 =C2=B1 12%  interrupts.CPU10.RE=
+S:Rescheduling_interrupts
+      1382 =C2=B1  9%     +15.6%       1598 =C2=B1  7%  interrupts.CPU11.CA=
+L:Function_call_interrupts
+    260390           +21.4%     316071        interrupts.CPU11.LOC:Local_ti=
+mer_interrupts
+      1514 =C2=B1  7%     -45.4%     827.00 =C2=B1 31%  interrupts.CPU11.RE=
+S:Rescheduling_interrupts
+      1218 =C2=B1  6%     +36.8%       1665 =C2=B1 12%  interrupts.CPU12.CA=
+L:Function_call_interrupts
+    260198           +21.7%     316720        interrupts.CPU12.LOC:Local_ti=
+mer_interrupts
+      1484 =C2=B1  8%     -37.2%     932.50 =C2=B1 16%  interrupts.CPU12.RE=
+S:Rescheduling_interrupts
+      1309 =C2=B1 10%     +25.9%       1648 =C2=B1 11%  interrupts.CPU13.CA=
+L:Function_call_interrupts
+    260491           +21.6%     316752        interrupts.CPU13.LOC:Local_ti=
+mer_interrupts
+      1435 =C2=B1  7%     -35.7%     923.00 =C2=B1 23%  interrupts.CPU13.RE=
+S:Rescheduling_interrupts
+    260090           +21.6%     316365        interrupts.CPU14.LOC:Local_ti=
+mer_interrupts
+      2335 =C2=B1 33%     -60.6%     920.75 =C2=B1 57%  interrupts.CPU14.NM=
+I:Non-maskable_interrupts
+      2335 =C2=B1 33%     -60.6%     920.75 =C2=B1 57%  interrupts.CPU14.PM=
+I:Performance_monitoring_interrupts
+      1534 =C2=B1  7%     -43.3%     870.50 =C2=B1 27%  interrupts.CPU14.RE=
+S:Rescheduling_interrupts
+    260275           +21.2%     315386        interrupts.CPU15.LOC:Local_ti=
+mer_interrupts
+      1533 =C2=B1  7%     -40.2%     916.50 =C2=B1 28%  interrupts.CPU15.RE=
+S:Rescheduling_interrupts
+    259511           +21.3%     314731        interrupts.CPU16.LOC:Local_ti=
+mer_interrupts
+      1530 =C2=B1  6%     -47.6%     802.50 =C2=B1 13%  interrupts.CPU16.RE=
+S:Rescheduling_interrupts
+    260066           +21.7%     316545        interrupts.CPU17.LOC:Local_ti=
+mer_interrupts
+    260096           +21.0%     314637        interrupts.CPU18.LOC:Local_ti=
+mer_interrupts
+      1502 =C2=B1  8%     -48.9%     767.75 =C2=B1 18%  interrupts.CPU18.RE=
+S:Rescheduling_interrupts
+    260276           +21.4%     315940        interrupts.CPU19.LOC:Local_ti=
+mer_interrupts
+      1540 =C2=B1  7%     -33.4%       1025 =C2=B1 24%  interrupts.CPU19.RE=
+S:Rescheduling_interrupts
+    103.00 =C2=B1 49%   +1794.7%       1951 =C2=B1161%  interrupts.CPU2.44:=
+IR-PCI-MSI.524294-edge.eth0-TxRx-5
+    260077           +21.7%     316607        interrupts.CPU2.LOC:Local_tim=
+er_interrupts
+      1696 =C2=B1 22%     -49.0%     865.00 =C2=B1 17%  interrupts.CPU2.RES=
 :Rescheduling_interrupts
-    634314 =C2=B1  3%     -16.0%     532665 =C2=B1  2%  interrupts.CPU10.LO=
-C:Local_timer_interrupts
-      7552 =C2=B1  2%     -26.6%       5546 =C2=B1  7%  interrupts.CPU10.RE=
+    260201           +21.8%     316819        interrupts.CPU20.LOC:Local_ti=
+mer_interrupts
+    446.50 =C2=B1141%    +283.6%       1712 =C2=B1 32%  interrupts.CPU20.NM=
+I:Non-maskable_interrupts
+    446.50 =C2=B1141%    +283.6%       1712 =C2=B1 32%  interrupts.CPU20.PM=
+I:Performance_monitoring_interrupts
+    260321           +21.6%     316575        interrupts.CPU21.LOC:Local_ti=
+mer_interrupts
+    260161           +21.1%     315079        interrupts.CPU22.LOC:Local_ti=
+mer_interrupts
+      1533 =C2=B1  8%     -21.8%       1198 =C2=B1 23%  interrupts.CPU22.RE=
 S:Rescheduling_interrupts
-    634121 =C2=B1  3%     -16.0%     532791 =C2=B1  2%  interrupts.CPU100.L=
-OC:Local_timer_interrupts
-      7143 =C2=B1  4%     -25.3%       5339 =C2=B1  5%  interrupts.CPU100.R=
-ES:Rescheduling_interrupts
-    634106 =C2=B1  3%     -16.0%     532666 =C2=B1  2%  interrupts.CPU101.L=
-OC:Local_timer_interrupts
-      7195           -26.1%       5314 =C2=B1  7%  interrupts.CPU101.RES:Re=
-scheduling_interrupts
-    634045 =C2=B1  3%     -16.0%     532657 =C2=B1  2%  interrupts.CPU102.L=
-OC:Local_timer_interrupts
-      7314 =C2=B1  3%     -26.5%       5374 =C2=B1  8%  interrupts.CPU102.R=
-ES:Rescheduling_interrupts
-    634109 =C2=B1  3%     -16.0%     532704 =C2=B1  2%  interrupts.CPU103.L=
-OC:Local_timer_interrupts
-      7323 =C2=B1  2%     -26.5%       5379 =C2=B1  5%  interrupts.CPU103.R=
-ES:Rescheduling_interrupts
-    634076 =C2=B1  3%     -16.0%     532636 =C2=B1  2%  interrupts.CPU104.L=
-OC:Local_timer_interrupts
-      7446 =C2=B1  3%     -27.1%       5428 =C2=B1  7%  interrupts.CPU104.R=
-ES:Rescheduling_interrupts
-    634149 =C2=B1  3%     -16.0%     532646 =C2=B1  2%  interrupts.CPU105.L=
-OC:Local_timer_interrupts
-      7607 =C2=B1  4%     -29.9%       5330 =C2=B1  5%  interrupts.CPU105.R=
-ES:Rescheduling_interrupts
-    634052 =C2=B1  3%     -16.0%     532670 =C2=B1  2%  interrupts.CPU106.L=
-OC:Local_timer_interrupts
-      7434 =C2=B1  2%     -30.2%       5192 =C2=B1  6%  interrupts.CPU106.R=
-ES:Rescheduling_interrupts
-    634112 =C2=B1  3%     -16.0%     532729 =C2=B1  2%  interrupts.CPU107.L=
-OC:Local_timer_interrupts
-      7366 =C2=B1  3%     -27.0%       5375 =C2=B1  7%  interrupts.CPU107.R=
-ES:Rescheduling_interrupts
-    634231 =C2=B1  3%     -16.0%     532661 =C2=B1  2%  interrupts.CPU108.L=
-OC:Local_timer_interrupts
-      7430           -28.8%       5289 =C2=B1  4%  interrupts.CPU108.RES:Re=
-scheduling_interrupts
-    634134 =C2=B1  3%     -16.0%     532955 =C2=B1  2%  interrupts.CPU109.L=
-OC:Local_timer_interrupts
-      7248 =C2=B1  2%     -25.5%       5403 =C2=B1  7%  interrupts.CPU109.R=
-ES:Rescheduling_interrupts
-    634408 =C2=B1  3%     -15.9%     533749 =C2=B1  2%  interrupts.CPU11.LO=
-C:Local_timer_interrupts
-      7236           -25.0%       5428 =C2=B1  6%  interrupts.CPU11.RES:Res=
+      1356 =C2=B1 10%     +19.9%       1626 =C2=B1  4%  interrupts.CPU23.CA=
+L:Function_call_interrupts
+    259884           +21.6%     316144        interrupts.CPU23.LOC:Local_ti=
+mer_interrupts
+      1332 =C2=B1  5%     -43.3%     755.00        interrupts.CPU23.RES:Res=
 cheduling_interrupts
-    634240 =C2=B1  3%     -16.0%     532701 =C2=B1  2%  interrupts.CPU110.L=
-OC:Local_timer_interrupts
-      7368 =C2=B1  3%     -26.9%       5386 =C2=B1  6%  interrupts.CPU110.R=
-ES:Rescheduling_interrupts
-    634329 =C2=B1  3%     -16.0%     532986 =C2=B1  2%  interrupts.CPU111.L=
-OC:Local_timer_interrupts
-      7168 =C2=B1  3%     -24.3%       5424 =C2=B1  4%  interrupts.CPU111.R=
-ES:Rescheduling_interrupts
-    634186 =C2=B1  3%     -16.0%     532696 =C2=B1  2%  interrupts.CPU112.L=
-OC:Local_timer_interrupts
-      7112           -23.7%       5423 =C2=B1  5%  interrupts.CPU112.RES:Re=
-scheduling_interrupts
-    634122 =C2=B1  3%     -16.0%     532748 =C2=B1  2%  interrupts.CPU113.L=
-OC:Local_timer_interrupts
-      7465 =C2=B1  3%     -27.9%       5380 =C2=B1  6%  interrupts.CPU113.R=
-ES:Rescheduling_interrupts
-    634131 =C2=B1  3%     -16.0%     532685 =C2=B1  2%  interrupts.CPU114.L=
-OC:Local_timer_interrupts
-      7410           -26.5%       5446 =C2=B1  4%  interrupts.CPU114.RES:Re=
-scheduling_interrupts
-    634271 =C2=B1  3%     -16.0%     532746 =C2=B1  2%  interrupts.CPU115.L=
-OC:Local_timer_interrupts
-      7381 =C2=B1  3%     -28.1%       5308 =C2=B1  5%  interrupts.CPU115.R=
-ES:Rescheduling_interrupts
-    634124 =C2=B1  3%     -16.0%     532742 =C2=B1  2%  interrupts.CPU116.L=
-OC:Local_timer_interrupts
-      7330 =C2=B1  3%     -27.2%       5338 =C2=B1  6%  interrupts.CPU116.R=
-ES:Rescheduling_interrupts
-    634319 =C2=B1  3%     -16.0%     532644 =C2=B1  2%  interrupts.CPU117.L=
-OC:Local_timer_interrupts
-      7277 =C2=B1  2%     -24.8%       5473 =C2=B1  7%  interrupts.CPU117.R=
-ES:Rescheduling_interrupts
-    634275 =C2=B1  3%     -16.0%     532876 =C2=B1  2%  interrupts.CPU118.L=
-OC:Local_timer_interrupts
-      7494           -28.4%       5362 =C2=B1  7%  interrupts.CPU118.RES:Re=
-scheduling_interrupts
-    634120 =C2=B1  3%     -16.0%     532652 =C2=B1  2%  interrupts.CPU119.L=
-OC:Local_timer_interrupts
-      7238           -27.9%       5221 =C2=B1  7%  interrupts.CPU119.RES:Re=
-scheduling_interrupts
-    634095 =C2=B1  3%     -16.0%     532744 =C2=B1  2%  interrupts.CPU12.LO=
-C:Local_timer_interrupts
-      7158 =C2=B1  2%     -26.7%       5246 =C2=B1  3%  interrupts.CPU12.RE=
+    260225           +21.2%     315429        interrupts.CPU24.LOC:Local_ti=
+mer_interrupts
+      1388 =C2=B1  4%     -47.4%     730.25 =C2=B1 19%  interrupts.CPU24.RE=
 S:Rescheduling_interrupts
-    633975 =C2=B1  3%     -16.0%     532712 =C2=B1  2%  interrupts.CPU120.L=
-OC:Local_timer_interrupts
-      7439 =C2=B1  7%     -30.2%       5195 =C2=B1  4%  interrupts.CPU120.R=
-ES:Rescheduling_interrupts
-    634066 =C2=B1  3%     -16.0%     532710 =C2=B1  2%  interrupts.CPU121.L=
-OC:Local_timer_interrupts
-      7619 =C2=B1  5%     -31.0%       5258 =C2=B1  3%  interrupts.CPU121.R=
-ES:Rescheduling_interrupts
-    633982 =C2=B1  3%     -15.9%     533343 =C2=B1  2%  interrupts.CPU122.L=
-OC:Local_timer_interrupts
-      7422 =C2=B1  7%     -31.0%       5124 =C2=B1  5%  interrupts.CPU122.R=
-ES:Rescheduling_interrupts
-    633950 =C2=B1  3%     -15.9%     533224 =C2=B1  2%  interrupts.CPU123.L=
-OC:Local_timer_interrupts
-      7384 =C2=B1  9%     -28.8%       5259 =C2=B1  6%  interrupts.CPU123.R=
-ES:Rescheduling_interrupts
-    634068 =C2=B1  3%     -16.0%     532757 =C2=B1  2%  interrupts.CPU124.L=
-OC:Local_timer_interrupts
-      7410 =C2=B1  5%     -29.7%       5212 =C2=B1  4%  interrupts.CPU124.R=
-ES:Rescheduling_interrupts
-    634147 =C2=B1  3%     -16.0%     532745 =C2=B1  2%  interrupts.CPU125.L=
-OC:Local_timer_interrupts
-      7401 =C2=B1  8%     -30.5%       5142 =C2=B1  6%  interrupts.CPU125.R=
-ES:Rescheduling_interrupts
-    633921 =C2=B1  3%     -16.0%     532683 =C2=B1  2%  interrupts.CPU126.L=
-OC:Local_timer_interrupts
-      7431 =C2=B1  7%     -29.2%       5259 =C2=B1  4%  interrupts.CPU126.R=
-ES:Rescheduling_interrupts
-    633973 =C2=B1  3%     -16.0%     532755 =C2=B1  2%  interrupts.CPU127.L=
-OC:Local_timer_interrupts
-      7644 =C2=B1  8%     -31.3%       5253 =C2=B1  5%  interrupts.CPU127.R=
-ES:Rescheduling_interrupts
-    633956 =C2=B1  3%     -16.0%     532726 =C2=B1  2%  interrupts.CPU128.L=
-OC:Local_timer_interrupts
-      7344 =C2=B1  4%     -29.8%       5156 =C2=B1  5%  interrupts.CPU128.R=
-ES:Rescheduling_interrupts
-    633983 =C2=B1  3%     -16.0%     532681 =C2=B1  2%  interrupts.CPU129.L=
-OC:Local_timer_interrupts
-      7437 =C2=B1  6%     -29.1%       5273 =C2=B1  6%  interrupts.CPU129.R=
-ES:Rescheduling_interrupts
-    634191 =C2=B1  3%     -16.0%     532705 =C2=B1  2%  interrupts.CPU13.LO=
-C:Local_timer_interrupts
-      7427 =C2=B1  3%     -27.0%       5421 =C2=B1  7%  interrupts.CPU13.RE=
+    259779           +21.8%     316330        interrupts.CPU25.LOC:Local_ti=
+mer_interrupts
+      1468 =C2=B1  8%     -29.7%       1033 =C2=B1 31%  interrupts.CPU25.RE=
 S:Rescheduling_interrupts
-    634029 =C2=B1  3%     -16.1%     532066 =C2=B1  2%  interrupts.CPU130.L=
-OC:Local_timer_interrupts
-      7365 =C2=B1  9%     -31.0%       5084 =C2=B1  5%  interrupts.CPU130.R=
-ES:Rescheduling_interrupts
-    633961 =C2=B1  3%     -16.0%     532693 =C2=B1  2%  interrupts.CPU131.L=
-OC:Local_timer_interrupts
-      7485 =C2=B1  6%     -30.0%       5237 =C2=B1  6%  interrupts.CPU131.R=
-ES:Rescheduling_interrupts
-    633990 =C2=B1  3%     -15.9%     533190 =C2=B1  2%  interrupts.CPU132.L=
-OC:Local_timer_interrupts
-      7382 =C2=B1  8%     -29.8%       5181 =C2=B1  4%  interrupts.CPU132.R=
-ES:Rescheduling_interrupts
-    634112 =C2=B1  3%     -15.9%     533232 =C2=B1  2%  interrupts.CPU133.L=
-OC:Local_timer_interrupts
-      7486 =C2=B1  8%     -30.4%       5211 =C2=B1  4%  interrupts.CPU133.R=
-ES:Rescheduling_interrupts
-    633991 =C2=B1  3%     -15.9%     533323 =C2=B1  2%  interrupts.CPU134.L=
-OC:Local_timer_interrupts
-      7519 =C2=B1  6%     -29.1%       5330 =C2=B1  6%  interrupts.CPU134.R=
-ES:Rescheduling_interrupts
-    633976 =C2=B1  3%     -15.9%     533179 =C2=B1  2%  interrupts.CPU135.L=
-OC:Local_timer_interrupts
-      7454 =C2=B1  5%     -28.9%       5301 =C2=B1  4%  interrupts.CPU135.R=
-ES:Rescheduling_interrupts
-    634000 =C2=B1  3%     -15.9%     533238 =C2=B1  2%  interrupts.CPU136.L=
-OC:Local_timer_interrupts
-      7326 =C2=B1  6%     -29.1%       5196 =C2=B1  3%  interrupts.CPU136.R=
-ES:Rescheduling_interrupts
-    634099 =C2=B1  3%     -15.7%     534298 =C2=B1  3%  interrupts.CPU137.L=
-OC:Local_timer_interrupts
-      7410 =C2=B1  7%     -28.7%       5280 =C2=B1  6%  interrupts.CPU137.R=
-ES:Rescheduling_interrupts
-    633962 =C2=B1  3%     -15.9%     533226 =C2=B1  2%  interrupts.CPU138.L=
-OC:Local_timer_interrupts
-      7547 =C2=B1  9%     -30.4%       5254 =C2=B1  6%  interrupts.CPU138.R=
-ES:Rescheduling_interrupts
-    634018 =C2=B1  3%     -16.0%     532784 =C2=B1  2%  interrupts.CPU139.L=
-OC:Local_timer_interrupts
-      7491 =C2=B1  6%     -30.4%       5212 =C2=B1  6%  interrupts.CPU139.R=
-ES:Rescheduling_interrupts
-    634141 =C2=B1  3%     -16.0%     532878 =C2=B1  2%  interrupts.CPU14.LO=
-C:Local_timer_interrupts
-      7208 =C2=B1  2%     -25.8%       5346 =C2=B1  7%  interrupts.CPU14.RE=
+      1376 =C2=B1 11%     +22.5%       1687 =C2=B1 10%  interrupts.CPU26.CA=
+L:Function_call_interrupts
+    260128           +21.2%     315219        interrupts.CPU26.LOC:Local_ti=
+mer_interrupts
+    259346           +22.3%     317098        interrupts.CPU27.LOC:Local_ti=
+mer_interrupts
+      1465 =C2=B1  7%     -42.2%     846.25 =C2=B1 31%  interrupts.CPU27.RE=
 S:Rescheduling_interrupts
-    634110 =C2=B1  3%     -16.0%     532694 =C2=B1  2%  interrupts.CPU140.L=
-OC:Local_timer_interrupts
-      7305 =C2=B1  5%     -27.0%       5330 =C2=B1  4%  interrupts.CPU140.R=
-ES:Rescheduling_interrupts
-    634118 =C2=B1  3%     -15.9%     533348 =C2=B1  2%  interrupts.CPU141.L=
-OC:Local_timer_interrupts
-      7410 =C2=B1  9%     -29.9%       5194 =C2=B1  6%  interrupts.CPU141.R=
-ES:Rescheduling_interrupts
-    634014 =C2=B1  3%     -15.9%     533465 =C2=B1  2%  interrupts.CPU142.L=
-OC:Local_timer_interrupts
-      7531 =C2=B1  6%     -32.4%       5089 =C2=B1  5%  interrupts.CPU142.R=
-ES:Rescheduling_interrupts
-    634019 =C2=B1  3%     -16.0%     532744 =C2=B1  2%  interrupts.CPU143.L=
-OC:Local_timer_interrupts
-      7500 =C2=B1  5%     -31.0%       5175 =C2=B1  6%  interrupts.CPU143.R=
-ES:Rescheduling_interrupts
-    634152 =C2=B1  3%     -16.0%     532844 =C2=B1  2%  interrupts.CPU144.L=
-OC:Local_timer_interrupts
-      7171 =C2=B1 12%     -24.7%       5397 =C2=B1  8%  interrupts.CPU144.R=
-ES:Rescheduling_interrupts
-    634077 =C2=B1  3%     -15.9%     533014 =C2=B1  2%  interrupts.CPU145.L=
-OC:Local_timer_interrupts
-      7213 =C2=B1 11%     -25.7%       5363 =C2=B1 10%  interrupts.CPU145.R=
-ES:Rescheduling_interrupts
-    635125 =C2=B1  3%     -16.0%     533295 =C2=B1  2%  interrupts.CPU146.L=
-OC:Local_timer_interrupts
-      7122 =C2=B1 13%     -27.0%       5201 =C2=B1  8%  interrupts.CPU146.R=
-ES:Rescheduling_interrupts
-    634196 =C2=B1  3%     -16.0%     532855 =C2=B1  2%  interrupts.CPU147.L=
-OC:Local_timer_interrupts
-      7220 =C2=B1 12%     -26.1%       5333 =C2=B1  8%  interrupts.CPU147.R=
-ES:Rescheduling_interrupts
-    634068 =C2=B1  3%     -16.0%     532844 =C2=B1  2%  interrupts.CPU148.L=
-OC:Local_timer_interrupts
-      6993 =C2=B1 12%     -25.3%       5226 =C2=B1  9%  interrupts.CPU148.R=
-ES:Rescheduling_interrupts
-    634086 =C2=B1  3%     -16.0%     532719 =C2=B1  2%  interrupts.CPU149.L=
-OC:Local_timer_interrupts
-      7230 =C2=B1 10%     -25.7%       5375 =C2=B1  8%  interrupts.CPU149.R=
-ES:Rescheduling_interrupts
-    634249 =C2=B1  3%     -16.0%     532684 =C2=B1  2%  interrupts.CPU15.LO=
-C:Local_timer_interrupts
-      7375           -28.6%       5262 =C2=B1  7%  interrupts.CPU15.RES:Res=
-cheduling_interrupts
-    635061 =C2=B1  3%     -16.1%     532692 =C2=B1  2%  interrupts.CPU150.L=
-OC:Local_timer_interrupts
-      7180 =C2=B1  9%     -25.5%       5352 =C2=B1  8%  interrupts.CPU150.R=
-ES:Rescheduling_interrupts
-    634071 =C2=B1  3%     -16.0%     532807 =C2=B1  2%  interrupts.CPU151.L=
-OC:Local_timer_interrupts
-      7317 =C2=B1 11%     -27.4%       5310 =C2=B1  9%  interrupts.CPU151.R=
-ES:Rescheduling_interrupts
-    634044 =C2=B1  3%     -15.9%     533157 =C2=B1  2%  interrupts.CPU152.L=
-OC:Local_timer_interrupts
-      6988 =C2=B1  9%     -24.1%       5303 =C2=B1  9%  interrupts.CPU152.R=
-ES:Rescheduling_interrupts
-    634136 =C2=B1  3%     -15.9%     533146 =C2=B1  2%  interrupts.CPU153.L=
-OC:Local_timer_interrupts
-      7287 =C2=B1 11%     -25.5%       5430 =C2=B1  9%  interrupts.CPU153.R=
-ES:Rescheduling_interrupts
-    634389 =C2=B1  3%     -16.0%     533019 =C2=B1  2%  interrupts.CPU154.L=
-OC:Local_timer_interrupts
-      7120 =C2=B1 11%     -25.4%       5313 =C2=B1 10%  interrupts.CPU154.R=
-ES:Rescheduling_interrupts
-    634058 =C2=B1  3%     -16.0%     532925 =C2=B1  2%  interrupts.CPU155.L=
-OC:Local_timer_interrupts
-      7266 =C2=B1 13%     -27.2%       5292 =C2=B1  7%  interrupts.CPU155.R=
-ES:Rescheduling_interrupts
-    634059 =C2=B1  3%     -15.9%     533016 =C2=B1  2%  interrupts.CPU156.L=
-OC:Local_timer_interrupts
-      7124 =C2=B1 10%     -24.9%       5348 =C2=B1  7%  interrupts.CPU156.R=
-ES:Rescheduling_interrupts
-    634128 =C2=B1  3%     -15.9%     533083 =C2=B1  2%  interrupts.CPU157.L=
-OC:Local_timer_interrupts
-      7063 =C2=B1 11%     -26.8%       5172 =C2=B1  9%  interrupts.CPU157.R=
-ES:Rescheduling_interrupts
-    634087 =C2=B1  3%     -15.9%     533156 =C2=B1  2%  interrupts.CPU158.L=
-OC:Local_timer_interrupts
-      7132 =C2=B1 12%     -25.5%       5313 =C2=B1  8%  interrupts.CPU158.R=
-ES:Rescheduling_interrupts
-    634128 =C2=B1  3%     -16.0%     532919 =C2=B1  2%  interrupts.CPU159.L=
-OC:Local_timer_interrupts
-      7244 =C2=B1 11%     -26.7%       5309 =C2=B1 11%  interrupts.CPU159.R=
-ES:Rescheduling_interrupts
-    634462 =C2=B1  3%     -16.0%     532679 =C2=B1  2%  interrupts.CPU16.LO=
-C:Local_timer_interrupts
-      7357           -26.3%       5422 =C2=B1  8%  interrupts.CPU16.RES:Res=
-cheduling_interrupts
-    634159 =C2=B1  3%     -16.0%     532804 =C2=B1  2%  interrupts.CPU160.L=
-OC:Local_timer_interrupts
-      7101 =C2=B1 11%     -25.4%       5294 =C2=B1  8%  interrupts.CPU160.R=
-ES:Rescheduling_interrupts
-    634216 =C2=B1  3%     -16.0%     532870 =C2=B1  2%  interrupts.CPU161.L=
-OC:Local_timer_interrupts
-      7115 =C2=B1 10%     -25.6%       5294 =C2=B1 10%  interrupts.CPU161.R=
-ES:Rescheduling_interrupts
-    634367 =C2=B1  3%     -16.0%     532831 =C2=B1  2%  interrupts.CPU162.L=
-OC:Local_timer_interrupts
-      7255 =C2=B1 11%     -24.4%       5485 =C2=B1  8%  interrupts.CPU162.R=
-ES:Rescheduling_interrupts
-    634183 =C2=B1  3%     -16.0%     532842 =C2=B1  2%  interrupts.CPU163.L=
-OC:Local_timer_interrupts
-      7237 =C2=B1 10%     -27.1%       5278 =C2=B1  8%  interrupts.CPU163.R=
-ES:Rescheduling_interrupts
-    634205 =C2=B1  3%     -16.0%     532754 =C2=B1  2%  interrupts.CPU164.L=
-OC:Local_timer_interrupts
-      7309 =C2=B1  7%     -27.5%       5299 =C2=B1  9%  interrupts.CPU164.R=
-ES:Rescheduling_interrupts
-    634191 =C2=B1  3%     -15.9%     533112 =C2=B1  2%  interrupts.CPU165.L=
-OC:Local_timer_interrupts
-      7084 =C2=B1 10%     -24.2%       5371 =C2=B1 10%  interrupts.CPU165.R=
-ES:Rescheduling_interrupts
-    634194 =C2=B1  3%     -16.0%     532868 =C2=B1  2%  interrupts.CPU166.L=
-OC:Local_timer_interrupts
-      7308 =C2=B1 11%     -28.3%       5241 =C2=B1 11%  interrupts.CPU166.R=
-ES:Rescheduling_interrupts
-    634134 =C2=B1  3%     -16.0%     532956 =C2=B1  2%  interrupts.CPU167.L=
-OC:Local_timer_interrupts
-      7321 =C2=B1 11%     -27.8%       5286 =C2=B1  9%  interrupts.CPU167.R=
-ES:Rescheduling_interrupts
-    634549 =C2=B1  3%     -16.0%     532980 =C2=B1  2%  interrupts.CPU168.L=
-OC:Local_timer_interrupts
-      7161 =C2=B1  8%     -28.8%       5099 =C2=B1  4%  interrupts.CPU168.R=
-ES:Rescheduling_interrupts
-    634193 =C2=B1  3%     -16.0%     532979 =C2=B1  2%  interrupts.CPU169.L=
-OC:Local_timer_interrupts
-      7186 =C2=B1 10%     -28.4%       5144 =C2=B1  7%  interrupts.CPU169.R=
-ES:Rescheduling_interrupts
-    635042 =C2=B1  3%     -16.1%     532669 =C2=B1  2%  interrupts.CPU17.LO=
-C:Local_timer_interrupts
-      7442           -27.3%       5408 =C2=B1  5%  interrupts.CPU17.RES:Res=
-cheduling_interrupts
-    634137 =C2=B1  3%     -16.0%     532801 =C2=B1  2%  interrupts.CPU170.L=
-OC:Local_timer_interrupts
-      7329 =C2=B1  9%     -28.4%       5251 =C2=B1  5%  interrupts.CPU170.R=
-ES:Rescheduling_interrupts
-    634237 =C2=B1  3%     -16.0%     533026 =C2=B1  2%  interrupts.CPU171.L=
-OC:Local_timer_interrupts
-      7311 =C2=B1  8%     -29.5%       5155 =C2=B1  7%  interrupts.CPU171.R=
-ES:Rescheduling_interrupts
-    634216 =C2=B1  3%     -16.0%     532758 =C2=B1  2%  interrupts.CPU172.L=
-OC:Local_timer_interrupts
-      7249 =C2=B1  9%     -28.2%       5202 =C2=B1  6%  interrupts.CPU172.R=
-ES:Rescheduling_interrupts
-    634211 =C2=B1  3%     -16.0%     532822 =C2=B1  2%  interrupts.CPU173.L=
-OC:Local_timer_interrupts
-      7246 =C2=B1  6%     -27.7%       5238 =C2=B1  7%  interrupts.CPU173.R=
-ES:Rescheduling_interrupts
-    634351 =C2=B1  3%     -16.0%     532749 =C2=B1  2%  interrupts.CPU174.L=
-OC:Local_timer_interrupts
-      7297 =C2=B1  7%     -27.7%       5274 =C2=B1  8%  interrupts.CPU174.R=
-ES:Rescheduling_interrupts
-    635175 =C2=B1  3%     -16.1%     532816 =C2=B1  2%  interrupts.CPU175.L=
-OC:Local_timer_interrupts
-      7381 =C2=B1  8%     -28.1%       5303 =C2=B1  8%  interrupts.CPU175.R=
-ES:Rescheduling_interrupts
-    634315 =C2=B1  3%     -16.0%     532862 =C2=B1  2%  interrupts.CPU176.L=
-OC:Local_timer_interrupts
-      7328 =C2=B1  5%     -27.7%       5297 =C2=B1  6%  interrupts.CPU176.R=
-ES:Rescheduling_interrupts
-    634160 =C2=B1  3%     -16.0%     532881 =C2=B1  2%  interrupts.CPU177.L=
-OC:Local_timer_interrupts
-      7441 =C2=B1  7%     -29.4%       5250 =C2=B1  6%  interrupts.CPU177.R=
-ES:Rescheduling_interrupts
-    634148 =C2=B1  3%     -16.0%     532905 =C2=B1  2%  interrupts.CPU178.L=
-OC:Local_timer_interrupts
-      7172 =C2=B1  7%     -25.6%       5333 =C2=B1  8%  interrupts.CPU178.R=
-ES:Rescheduling_interrupts
-    634134 =C2=B1  3%     -16.0%     532871 =C2=B1  2%  interrupts.CPU179.L=
-OC:Local_timer_interrupts
-      7405 =C2=B1  9%     -28.7%       5281 =C2=B1  6%  interrupts.CPU179.R=
-ES:Rescheduling_interrupts
-    634239 =C2=B1  3%     -16.0%     532764 =C2=B1  2%  interrupts.CPU18.LO=
-C:Local_timer_interrupts
-      7155 =C2=B1  3%     -25.0%       5366 =C2=B1  6%  interrupts.CPU18.RE=
+    260225           +21.0%     314795        interrupts.CPU28.LOC:Local_ti=
+mer_interrupts
+      1459 =C2=B1  7%     -42.3%     842.00 =C2=B1 17%  interrupts.CPU28.RE=
 S:Rescheduling_interrupts
-    634130 =C2=B1  3%     -16.0%     532851 =C2=B1  2%  interrupts.CPU180.L=
-OC:Local_timer_interrupts
-      7197 =C2=B1  7%     -24.7%       5417 =C2=B1  6%  interrupts.CPU180.R=
-ES:Rescheduling_interrupts
-    634172 =C2=B1  3%     -16.0%     532763 =C2=B1  2%  interrupts.CPU181.L=
-OC:Local_timer_interrupts
-      7331 =C2=B1  7%     -26.1%       5420 =C2=B1  7%  interrupts.CPU181.R=
-ES:Rescheduling_interrupts
-    634250 =C2=B1  3%     -16.0%     532818 =C2=B1  2%  interrupts.CPU182.L=
-OC:Local_timer_interrupts
-      7351 =C2=B1  8%     -30.2%       5132 =C2=B1  7%  interrupts.CPU182.R=
-ES:Rescheduling_interrupts
-    634207 =C2=B1  3%     -16.0%     532963 =C2=B1  2%  interrupts.CPU183.L=
-OC:Local_timer_interrupts
-      7384 =C2=B1 10%     -31.3%       5076 =C2=B1  9%  interrupts.CPU183.R=
-ES:Rescheduling_interrupts
-    634167 =C2=B1  3%     -16.0%     532950 =C2=B1  2%  interrupts.CPU184.L=
-OC:Local_timer_interrupts
-      7327 =C2=B1 10%     -28.8%       5214 =C2=B1  7%  interrupts.CPU184.R=
-ES:Rescheduling_interrupts
-    634117 =C2=B1  3%     -15.9%     533074 =C2=B1  2%  interrupts.CPU185.L=
-OC:Local_timer_interrupts
-      7361 =C2=B1 10%     -28.6%       5259 =C2=B1  7%  interrupts.CPU185.R=
-ES:Rescheduling_interrupts
-    634153 =C2=B1  3%     -16.0%     532822 =C2=B1  2%  interrupts.CPU186.L=
-OC:Local_timer_interrupts
-      7247 =C2=B1  8%     -27.8%       5235 =C2=B1  7%  interrupts.CPU186.R=
-ES:Rescheduling_interrupts
-    634283 =C2=B1  3%     -16.0%     532964 =C2=B1  2%  interrupts.CPU187.L=
-OC:Local_timer_interrupts
-      7211 =C2=B1  9%     -26.7%       5285 =C2=B1  4%  interrupts.CPU187.R=
-ES:Rescheduling_interrupts
-    634375 =C2=B1  3%     -16.0%     532948 =C2=B1  2%  interrupts.CPU188.L=
-OC:Local_timer_interrupts
-      7320 =C2=B1  7%     -27.2%       5328 =C2=B1  6%  interrupts.CPU188.R=
-ES:Rescheduling_interrupts
-    634116 =C2=B1  3%     -16.0%     532828 =C2=B1  2%  interrupts.CPU189.L=
-OC:Local_timer_interrupts
-      7274 =C2=B1  7%     -27.6%       5264 =C2=B1  7%  interrupts.CPU189.R=
-ES:Rescheduling_interrupts
-    634131 =C2=B1  3%     -16.0%     532720 =C2=B1  2%  interrupts.CPU19.LO=
-C:Local_timer_interrupts
-      7327           -27.5%       5315 =C2=B1  8%  interrupts.CPU19.RES:Res=
-cheduling_interrupts
-    634357 =C2=B1  3%     -16.0%     532773 =C2=B1  2%  interrupts.CPU190.L=
-OC:Local_timer_interrupts
-      7330 =C2=B1 10%     -29.4%       5178 =C2=B1  7%  interrupts.CPU190.R=
-ES:Rescheduling_interrupts
-    634561 =C2=B1  3%     -16.0%     532886 =C2=B1  2%  interrupts.CPU191.L=
-OC:Local_timer_interrupts
-      7294 =C2=B1  9%     -29.0%       5180 =C2=B1  7%  interrupts.CPU191.R=
-ES:Rescheduling_interrupts
-    634356 =C2=B1  3%     -16.0%     532713 =C2=B1  2%  interrupts.CPU2.LOC=
-:Local_timer_interrupts
-      7538           -29.1%       5346 =C2=B1  8%  interrupts.CPU2.RES:Resc=
+    260085           +21.5%     316006        interrupts.CPU29.LOC:Local_ti=
+mer_interrupts
+      1379 =C2=B1  4%     -47.2%     727.75 =C2=B1 16%  interrupts.CPU29.RE=
+S:Rescheduling_interrupts
+    260259           +21.7%     316731        interrupts.CPU3.LOC:Local_tim=
+er_interrupts
+      1567 =C2=B1  9%     -39.8%     943.25 =C2=B1 30%  interrupts.CPU3.RES=
+:Rescheduling_interrupts
+    145.25 =C2=B1 16%     +54.9%     225.00 =C2=B1 18%  interrupts.CPU30.39=
+:IR-PCI-MSI.524289-edge.eth0-TxRx-0
+    260074           +21.1%     314955        interrupts.CPU30.LOC:Local_ti=
+mer_interrupts
+      1390 =C2=B1  4%     -50.9%     682.50 =C2=B1 14%  interrupts.CPU30.RE=
+S:Rescheduling_interrupts
+      1358 =C2=B1 11%     +18.5%       1609 =C2=B1 14%  interrupts.CPU31.CA=
+L:Function_call_interrupts
+    260132           +21.7%     316628        interrupts.CPU31.LOC:Local_ti=
+mer_interrupts
+      1392 =C2=B1 10%     -31.4%     955.75 =C2=B1 17%  interrupts.CPU31.RE=
+S:Rescheduling_interrupts
+      1360 =C2=B1 11%     +15.9%       1576 =C2=B1 11%  interrupts.CPU32.CA=
+L:Function_call_interrupts
+    260317           +20.9%     314826        interrupts.CPU32.LOC:Local_ti=
+mer_interrupts
+      1464 =C2=B1 11%     -45.5%     798.25 =C2=B1 18%  interrupts.CPU32.RE=
+S:Rescheduling_interrupts
+    260012           +21.4%     315686        interrupts.CPU33.LOC:Local_ti=
+mer_interrupts
+      1486 =C2=B1 10%     -48.4%     767.00 =C2=B1 14%  interrupts.CPU33.RE=
+S:Rescheduling_interrupts
+      1265 =C2=B1 18%     +25.0%       1582 =C2=B1 12%  interrupts.CPU34.CA=
+L:Function_call_interrupts
+    260359           +21.0%     315007        interrupts.CPU34.LOC:Local_ti=
+mer_interrupts
+      1603 =C2=B1 27%     -52.0%     770.00 =C2=B1 27%  interrupts.CPU34.RE=
+S:Rescheduling_interrupts
+      1390 =C2=B1  8%     +16.0%       1612 =C2=B1 10%  interrupts.CPU35.CA=
+L:Function_call_interrupts
+    260282           +21.7%     316652        interrupts.CPU35.LOC:Local_ti=
+mer_interrupts
+      1434 =C2=B1 11%     -42.3%     827.50 =C2=B1 14%  interrupts.CPU35.RE=
+S:Rescheduling_interrupts
+    260380           +20.8%     314555        interrupts.CPU36.LOC:Local_ti=
+mer_interrupts
+      1343 =C2=B1 10%     -38.3%     829.25 =C2=B1  9%  interrupts.CPU36.RE=
+S:Rescheduling_interrupts
+    260230           +21.1%     315199        interrupts.CPU37.LOC:Local_ti=
+mer_interrupts
+      1346 =C2=B1 12%     +21.2%       1631 =C2=B1 13%  interrupts.CPU38.CA=
+L:Function_call_interrupts
+    259976           +21.8%     316532        interrupts.CPU38.LOC:Local_ti=
+mer_interrupts
+      1481 =C2=B1  6%     -51.1%     724.25 =C2=B1  9%  interrupts.CPU38.RE=
+S:Rescheduling_interrupts
+    260061           +20.9%     314458        interrupts.CPU39.LOC:Local_ti=
+mer_interrupts
+      1436 =C2=B1  8%     -44.9%     791.00 =C2=B1 34%  interrupts.CPU39.RE=
+S:Rescheduling_interrupts
+      1359 =C2=B1 13%     +22.9%       1671 =C2=B1 12%  interrupts.CPU4.CAL=
+:Function_call_interrupts
+    260201           +21.7%     316705        interrupts.CPU4.LOC:Local_tim=
+er_interrupts
+      1668 =C2=B1 20%     -43.6%     941.00 =C2=B1 10%  interrupts.CPU4.RES=
+:Rescheduling_interrupts
+      1385 =C2=B1  9%     +12.1%       1552 =C2=B1  8%  interrupts.CPU5.CAL=
+:Function_call_interrupts
+    260181           +21.7%     316657        interrupts.CPU5.LOC:Local_tim=
+er_interrupts
+      1164 =C2=B1 55%     -74.2%     300.25 =C2=B1173%  interrupts.CPU5.NMI=
+:Non-maskable_interrupts
+      1164 =C2=B1 55%     -74.2%     300.25 =C2=B1173%  interrupts.CPU5.PMI=
+:Performance_monitoring_interrupts
+      1464 =C2=B1  9%     -42.8%     838.00 =C2=B1 15%  interrupts.CPU5.RES=
+:Rescheduling_interrupts
+    260255           +21.7%     316804        interrupts.CPU6.LOC:Local_tim=
+er_interrupts
+      1497 =C2=B1  6%     -50.5%     741.00 =C2=B1 19%  interrupts.CPU6.RES=
+:Rescheduling_interrupts
+      1372 =C2=B1  9%     +19.6%       1642 =C2=B1  4%  interrupts.CPU7.CAL=
+:Function_call_interrupts
+    259919           +21.5%     315765        interrupts.CPU7.LOC:Local_tim=
+er_interrupts
+      1481 =C2=B1 10%     -26.4%       1089 =C2=B1 29%  interrupts.CPU7.RES=
+:Rescheduling_interrupts
+      1339 =C2=B1 13%     +17.6%       1575 =C2=B1 11%  interrupts.CPU8.CAL=
+:Function_call_interrupts
+    260401           +21.6%     316700        interrupts.CPU8.LOC:Local_tim=
+er_interrupts
+      1861 =C2=B1 33%     -53.3%     869.50 =C2=B1 19%  interrupts.CPU8.RES=
+:Rescheduling_interrupts
+      1426 =C2=B1  6%     +18.8%       1695 =C2=B1  9%  interrupts.CPU9.CAL=
+:Function_call_interrupts
+    259391           +22.2%     316922        interrupts.CPU9.LOC:Local_tim=
+er_interrupts
+      1551           -18.5%       1264 =C2=B1  3%  interrupts.CPU9.NMI:Non-=
+maskable_interrupts
+      1551           -18.5%       1264 =C2=B1  3%  interrupts.CPU9.PMI:Perf=
+ormance_monitoring_interrupts
+      1646 =C2=B1 14%     -47.5%     864.75 =C2=B1  8%  interrupts.CPU9.RES=
+:Rescheduling_interrupts
+  10404571           +21.5%   12638118        interrupts.LOC:Local_timer_in=
+terrupts
+     61340 =C2=B1  2%     -39.7%      37011 =C2=B1  2%  interrupts.RES:Resc=
 heduling_interrupts
-    634133 =C2=B1  3%     -16.0%     532820 =C2=B1  2%  interrupts.CPU20.LO=
-C:Local_timer_interrupts
-      7587 =C2=B1  2%     -28.8%       5402 =C2=B1  5%  interrupts.CPU20.RE=
-S:Rescheduling_interrupts
-    634403 =C2=B1  3%     -15.9%     533653 =C2=B1  2%  interrupts.CPU21.LO=
-C:Local_timer_interrupts
-      7399 =C2=B1  2%     -26.4%       5444 =C2=B1  6%  interrupts.CPU21.RE=
-S:Rescheduling_interrupts
-    634133 =C2=B1  3%     -16.0%     532675 =C2=B1  2%  interrupts.CPU22.LO=
-C:Local_timer_interrupts
-      7293           -26.3%       5377 =C2=B1  6%  interrupts.CPU22.RES:Res=
-cheduling_interrupts
-    634112 =C2=B1  3%     -16.0%     532641 =C2=B1  2%  interrupts.CPU23.LO=
-C:Local_timer_interrupts
-      7315           -27.2%       5328 =C2=B1  6%  interrupts.CPU23.RES:Res=
-cheduling_interrupts
-    635686 =C2=B1  3%     -16.2%     532889 =C2=B1  2%  interrupts.CPU24.LO=
-C:Local_timer_interrupts
-      7730 =C2=B1  6%     -26.0%       5718 =C2=B1  6%  interrupts.CPU24.RE=
-S:Rescheduling_interrupts
-    635207 =C2=B1  3%     -16.0%     533270 =C2=B1  2%  interrupts.CPU25.LO=
-C:Local_timer_interrupts
-      7395 =C2=B1  6%     -28.8%       5263 =C2=B1  8%  interrupts.CPU25.RE=
-S:Rescheduling_interrupts
-    634047 =C2=B1  3%     -16.0%     532739 =C2=B1  2%  interrupts.CPU26.LO=
-C:Local_timer_interrupts
-      7425 =C2=B1  7%     -29.7%       5219 =C2=B1  6%  interrupts.CPU26.RE=
-S:Rescheduling_interrupts
-    634063 =C2=B1  3%     -15.9%     533315 =C2=B1  2%  interrupts.CPU27.LO=
-C:Local_timer_interrupts
-      7480 =C2=B1  9%     -29.7%       5261 =C2=B1  5%  interrupts.CPU27.RE=
-S:Rescheduling_interrupts
-    634083 =C2=B1  3%     -15.9%     533301 =C2=B1  2%  interrupts.CPU28.LO=
-C:Local_timer_interrupts
-      7524 =C2=B1  7%     -29.7%       5289 =C2=B1  5%  interrupts.CPU28.RE=
-S:Rescheduling_interrupts
-    633993 =C2=B1  3%     -16.0%     532726 =C2=B1  2%  interrupts.CPU29.LO=
-C:Local_timer_interrupts
-      7534 =C2=B1  5%     -32.0%       5124 =C2=B1  7%  interrupts.CPU29.RE=
-S:Rescheduling_interrupts
-    634137 =C2=B1  3%     -16.0%     532683 =C2=B1  2%  interrupts.CPU3.LOC=
-:Local_timer_interrupts
-      7310           -27.3%       5313 =C2=B1  7%  interrupts.CPU3.RES:Resc=
-heduling_interrupts
-    633978 =C2=B1  3%     -16.0%     532753 =C2=B1  2%  interrupts.CPU30.LO=
-C:Local_timer_interrupts
-      7355 =C2=B1  6%     -29.2%       5210 =C2=B1  5%  interrupts.CPU30.RE=
-S:Rescheduling_interrupts
-    634008 =C2=B1  3%     -16.0%     532735 =C2=B1  2%  interrupts.CPU31.LO=
-C:Local_timer_interrupts
-      7468 =C2=B1  5%     -29.3%       5283 =C2=B1  6%  interrupts.CPU31.RE=
-S:Rescheduling_interrupts
-    634000 =C2=B1  3%     -16.0%     532724 =C2=B1  2%  interrupts.CPU32.LO=
-C:Local_timer_interrupts
-      7611 =C2=B1  8%     -31.1%       5241 =C2=B1  4%  interrupts.CPU32.RE=
-S:Rescheduling_interrupts
-    633999 =C2=B1  3%     -15.9%     533277 =C2=B1  2%  interrupts.CPU33.LO=
-C:Local_timer_interrupts
-      7726 =C2=B1  6%     -32.6%       5206 =C2=B1  5%  interrupts.CPU33.RE=
-S:Rescheduling_interrupts
-    634054 =C2=B1  3%     -16.0%     532758 =C2=B1  2%  interrupts.CPU34.LO=
-C:Local_timer_interrupts
-      7284 =C2=B1  9%     -28.2%       5231 =C2=B1  5%  interrupts.CPU34.RE=
-S:Rescheduling_interrupts
-    633986 =C2=B1  3%     -16.0%     532696 =C2=B1  2%  interrupts.CPU35.LO=
-C:Local_timer_interrupts
-      7313 =C2=B1  7%     -29.1%       5181 =C2=B1  6%  interrupts.CPU35.RE=
-S:Rescheduling_interrupts
-    634075 =C2=B1  3%     -16.0%     532736 =C2=B1  2%  interrupts.CPU36.LO=
-C:Local_timer_interrupts
-      7391 =C2=B1  6%     -30.3%       5148 =C2=B1  7%  interrupts.CPU36.RE=
-S:Rescheduling_interrupts
-    634091 =C2=B1  3%     -16.0%     532757 =C2=B1  2%  interrupts.CPU37.LO=
-C:Local_timer_interrupts
-      7342 =C2=B1  5%     -27.5%       5321 =C2=B1  5%  interrupts.CPU37.RE=
-S:Rescheduling_interrupts
-    634060 =C2=B1  3%     -15.9%     533239 =C2=B1  2%  interrupts.CPU38.LO=
-C:Local_timer_interrupts
-      7459 =C2=B1  8%     -28.3%       5347 =C2=B1  8%  interrupts.CPU38.RE=
-S:Rescheduling_interrupts
-    633976 =C2=B1  3%     -15.9%     533234 =C2=B1  2%  interrupts.CPU39.LO=
-C:Local_timer_interrupts
-      7384 =C2=B1  8%     -28.7%       5263 =C2=B1  6%  interrupts.CPU39.RE=
-S:Rescheduling_interrupts
-    634096 =C2=B1  3%     -16.0%     532763 =C2=B1  2%  interrupts.CPU4.LOC=
-:Local_timer_interrupts
-      7222 =C2=B1  2%     -26.3%       5320 =C2=B1  5%  interrupts.CPU4.RES=
-:Rescheduling_interrupts
-    634079 =C2=B1  3%     -15.9%     533250 =C2=B1  2%  interrupts.CPU40.LO=
-C:Local_timer_interrupts
-      7381 =C2=B1  6%     -28.9%       5244 =C2=B1  6%  interrupts.CPU40.RE=
-S:Rescheduling_interrupts
-    634081 =C2=B1  3%     -16.0%     532769 =C2=B1  2%  interrupts.CPU41.LO=
-C:Local_timer_interrupts
-      7407 =C2=B1  5%     -29.4%       5230 =C2=B1  6%  interrupts.CPU41.RE=
-S:Rescheduling_interrupts
-    633977 =C2=B1  3%     -15.9%     533284 =C2=B1  2%  interrupts.CPU42.LO=
-C:Local_timer_interrupts
-      7344 =C2=B1  5%     -27.7%       5308 =C2=B1  4%  interrupts.CPU42.RE=
-S:Rescheduling_interrupts
-    633982 =C2=B1  3%     -16.0%     532725 =C2=B1  2%  interrupts.CPU43.LO=
-C:Local_timer_interrupts
-      7388 =C2=B1  8%     -28.8%       5258 =C2=B1  7%  interrupts.CPU43.RE=
-S:Rescheduling_interrupts
-    634132 =C2=B1  3%     -16.0%     532705 =C2=B1  2%  interrupts.CPU44.LO=
-C:Local_timer_interrupts
-      7408 =C2=B1  5%     -27.3%       5388 =C2=B1  7%  interrupts.CPU44.RE=
-S:Rescheduling_interrupts
-    634077 =C2=B1  3%     -16.0%     532717 =C2=B1  2%  interrupts.CPU45.LO=
-C:Local_timer_interrupts
-      7598 =C2=B1  7%     -30.9%       5252 =C2=B1  6%  interrupts.CPU45.RE=
-S:Rescheduling_interrupts
-    633959 =C2=B1  3%     -15.9%     533334 =C2=B1  2%  interrupts.CPU46.LO=
-C:Local_timer_interrupts
-      7429 =C2=B1  7%     -27.9%       5359 =C2=B1  5%  interrupts.CPU46.RE=
-S:Rescheduling_interrupts
-    634004 =C2=B1  3%     -16.0%     532726 =C2=B1  2%  interrupts.CPU47.LO=
-C:Local_timer_interrupts
-      7433 =C2=B1 10%     -30.0%       5207 =C2=B1  2%  interrupts.CPU47.RE=
-S:Rescheduling_interrupts
-    634082 =C2=B1  3%     -15.9%     532972 =C2=B1  2%  interrupts.CPU48.LO=
-C:Local_timer_interrupts
-      7515 =C2=B1 12%     -26.7%       5509 =C2=B1 11%  interrupts.CPU48.RE=
-S:Rescheduling_interrupts
-    634057 =C2=B1  3%     -15.8%     533744 =C2=B1  2%  interrupts.CPU49.LO=
-C:Local_timer_interrupts
-      7234 =C2=B1 10%     -25.3%       5403 =C2=B1  7%  interrupts.CPU49.RE=
-S:Rescheduling_interrupts
-    634086 =C2=B1  3%     -16.0%     532629 =C2=B1  2%  interrupts.CPU5.LOC=
-:Local_timer_interrupts
-      7390 =C2=B1  3%     -27.5%       5361 =C2=B1  7%  interrupts.CPU5.RES=
-:Rescheduling_interrupts
-    634105 =C2=B1  3%     -15.9%     533100 =C2=B1  2%  interrupts.CPU50.LO=
-C:Local_timer_interrupts
-      7201 =C2=B1 13%     -25.1%       5395 =C2=B1 10%  interrupts.CPU50.RE=
-S:Rescheduling_interrupts
-    634287 =C2=B1  3%     -16.0%     532940 =C2=B1  2%  interrupts.CPU51.LO=
-C:Local_timer_interrupts
-      7317 =C2=B1 14%     -26.2%       5402 =C2=B1 10%  interrupts.CPU51.RE=
-S:Rescheduling_interrupts
-    634129 =C2=B1  3%     -16.0%     532717 =C2=B1  2%  interrupts.CPU52.LO=
-C:Local_timer_interrupts
-      7046 =C2=B1 10%     -25.1%       5278 =C2=B1  8%  interrupts.CPU52.RE=
-S:Rescheduling_interrupts
-    634048 =C2=B1  3%     -16.0%     532721 =C2=B1  2%  interrupts.CPU53.LO=
-C:Local_timer_interrupts
-      7163 =C2=B1 12%     -26.3%       5277 =C2=B1  7%  interrupts.CPU53.RE=
-S:Rescheduling_interrupts
-    634378 =C2=B1  3%     -16.0%     532724 =C2=B1  2%  interrupts.CPU54.LO=
-C:Local_timer_interrupts
-      7253 =C2=B1 10%     -27.0%       5293 =C2=B1  8%  interrupts.CPU54.RE=
-S:Rescheduling_interrupts
-    634132 =C2=B1  3%     -15.8%     533627 =C2=B1  2%  interrupts.CPU55.LO=
-C:Local_timer_interrupts
-      7272 =C2=B1  8%     -25.8%       5397 =C2=B1  7%  interrupts.CPU55.RE=
-S:Rescheduling_interrupts
-    634421 =C2=B1  3%     -16.0%     532797 =C2=B1  2%  interrupts.CPU56.LO=
-C:Local_timer_interrupts
-      7338 =C2=B1 10%     -27.8%       5299 =C2=B1  9%  interrupts.CPU56.RE=
-S:Rescheduling_interrupts
-    634120 =C2=B1  3%     -15.9%     533237 =C2=B1  2%  interrupts.CPU57.LO=
-C:Local_timer_interrupts
-      7304 =C2=B1  9%     -26.6%       5359 =C2=B1  8%  interrupts.CPU57.RE=
-S:Rescheduling_interrupts
-    634083 =C2=B1  3%     -15.9%     532950 =C2=B1  2%  interrupts.CPU58.LO=
-C:Local_timer_interrupts
-      7216 =C2=B1 10%     -25.7%       5359 =C2=B1  8%  interrupts.CPU58.RE=
-S:Rescheduling_interrupts
-    634064 =C2=B1  3%     -15.9%     533077 =C2=B1  2%  interrupts.CPU59.LO=
-C:Local_timer_interrupts
-      7300 =C2=B1  9%     -26.6%       5356 =C2=B1  8%  interrupts.CPU59.RE=
-S:Rescheduling_interrupts
-    634059 =C2=B1  3%     -16.0%     532625 =C2=B1  2%  interrupts.CPU6.LOC=
-:Local_timer_interrupts
-      7290 =C2=B1  3%     -25.7%       5420 =C2=B1  6%  interrupts.CPU6.RES=
-:Rescheduling_interrupts
-    634099 =C2=B1  3%     -15.9%     533126 =C2=B1  2%  interrupts.CPU60.LO=
-C:Local_timer_interrupts
-      7316 =C2=B1 10%     -26.7%       5362 =C2=B1 10%  interrupts.CPU60.RE=
-S:Rescheduling_interrupts
-    634122 =C2=B1  3%     -15.9%     533131 =C2=B1  2%  interrupts.CPU61.LO=
-C:Local_timer_interrupts
-      7113 =C2=B1 10%     -24.7%       5355 =C2=B1 11%  interrupts.CPU61.RE=
-S:Rescheduling_interrupts
-    634065 =C2=B1  3%     -15.9%     533141 =C2=B1  2%  interrupts.CPU62.LO=
-C:Local_timer_interrupts
-      7179 =C2=B1 11%     -27.6%       5200 =C2=B1  9%  interrupts.CPU62.RE=
-S:Rescheduling_interrupts
-    634051 =C2=B1  3%     -15.9%     533113 =C2=B1  2%  interrupts.CPU63.LO=
-C:Local_timer_interrupts
-      7061 =C2=B1  9%     -25.5%       5259 =C2=B1  8%  interrupts.CPU63.RE=
-S:Rescheduling_interrupts
-    634171 =C2=B1  3%     -16.0%     532895 =C2=B1  2%  interrupts.CPU64.LO=
-C:Local_timer_interrupts
-      7283 =C2=B1 11%     -26.3%       5369 =C2=B1  9%  interrupts.CPU64.RE=
-S:Rescheduling_interrupts
-    634154 =C2=B1  3%     -16.0%     532778 =C2=B1  2%  interrupts.CPU65.LO=
-C:Local_timer_interrupts
-      7225 =C2=B1 11%     -25.7%       5369 =C2=B1 10%  interrupts.CPU65.RE=
-S:Rescheduling_interrupts
-    634161 =C2=B1  3%     -16.0%     532873 =C2=B1  2%  interrupts.CPU66.LO=
-C:Local_timer_interrupts
-      7149 =C2=B1 12%     -26.2%       5273 =C2=B1 12%  interrupts.CPU66.RE=
-S:Rescheduling_interrupts
-    634140 =C2=B1  3%     -16.0%     532774 =C2=B1  2%  interrupts.CPU67.LO=
-C:Local_timer_interrupts
-      7198 =C2=B1 12%     -24.9%       5405 =C2=B1  8%  interrupts.CPU67.RE=
-S:Rescheduling_interrupts
-    634164 =C2=B1  3%     -16.0%     532734 =C2=B1  2%  interrupts.CPU68.LO=
-C:Local_timer_interrupts
-      7316 =C2=B1 10%     -26.1%       5408 =C2=B1  8%  interrupts.CPU68.RE=
-S:Rescheduling_interrupts
-    634144 =C2=B1  3%     -16.0%     532765 =C2=B1  2%  interrupts.CPU69.LO=
-C:Local_timer_interrupts
-      7245 =C2=B1 11%     -24.6%       5463 =C2=B1  8%  interrupts.CPU69.RE=
-S:Rescheduling_interrupts
-    634095 =C2=B1  3%     -16.0%     532674 =C2=B1  2%  interrupts.CPU7.LOC=
-:Local_timer_interrupts
-      7516 =C2=B1  4%     -28.8%       5348 =C2=B1  5%  interrupts.CPU7.RES=
-:Rescheduling_interrupts
-    634163 =C2=B1  3%     -15.8%     533993 =C2=B1  2%  interrupts.CPU70.LO=
-C:Local_timer_interrupts
-      7191 =C2=B1 12%     -27.9%       5181 =C2=B1  8%  interrupts.CPU70.RE=
-S:Rescheduling_interrupts
-    634170 =C2=B1  3%     -16.0%     532959 =C2=B1  2%  interrupts.CPU71.LO=
-C:Local_timer_interrupts
-      7122 =C2=B1 12%     -26.8%       5215 =C2=B1 10%  interrupts.CPU71.RE=
-S:Rescheduling_interrupts
-    634311 =C2=B1  3%     -16.0%     532876 =C2=B1  2%  interrupts.CPU72.LO=
-C:Local_timer_interrupts
-      7669 =C2=B1  9%     -28.6%       5479 =C2=B1  6%  interrupts.CPU72.RE=
-S:Rescheduling_interrupts
-    635155 =C2=B1  3%     -16.1%     532973 =C2=B1  2%  interrupts.CPU73.LO=
-C:Local_timer_interrupts
-      7465 =C2=B1  9%     -29.7%       5249 =C2=B1  8%  interrupts.CPU73.RE=
-S:Rescheduling_interrupts
-    634490 =C2=B1  3%     -15.9%     533852 =C2=B1  2%  interrupts.CPU74.LO=
-C:Local_timer_interrupts
-      7396 =C2=B1  8%     -29.7%       5199 =C2=B1  3%  interrupts.CPU74.RE=
-S:Rescheduling_interrupts
-    634277 =C2=B1  3%     -16.0%     532935 =C2=B1  2%  interrupts.CPU75.LO=
-C:Local_timer_interrupts
-      7398 =C2=B1  7%     -29.4%       5223 =C2=B1  5%  interrupts.CPU75.RE=
-S:Rescheduling_interrupts
-    634280 =C2=B1  3%     -16.0%     532911 =C2=B1  2%  interrupts.CPU76.LO=
-C:Local_timer_interrupts
-      7365 =C2=B1  9%     -28.1%       5296 =C2=B1  6%  interrupts.CPU76.RE=
-S:Rescheduling_interrupts
-    634260 =C2=B1  3%     -16.0%     532884 =C2=B1  2%  interrupts.CPU77.LO=
-C:Local_timer_interrupts
-      7330 =C2=B1  7%     -30.1%       5125 =C2=B1  8%  interrupts.CPU77.RE=
-S:Rescheduling_interrupts
-    634264 =C2=B1  3%     -16.0%     532981 =C2=B1  2%  interrupts.CPU78.LO=
-C:Local_timer_interrupts
-      7482 =C2=B1  9%     -29.7%       5263 =C2=B1  7%  interrupts.CPU78.RE=
-S:Rescheduling_interrupts
-    634240 =C2=B1  3%     -16.0%     532999 =C2=B1  2%  interrupts.CPU79.LO=
-C:Local_timer_interrupts
-      7460 =C2=B1  7%     -29.6%       5251 =C2=B1  8%  interrupts.CPU79.RE=
-S:Rescheduling_interrupts
-    634191 =C2=B1  3%     -15.9%     533275 =C2=B1  2%  interrupts.CPU8.LOC=
-:Local_timer_interrupts
-      7201 =C2=B1  2%     -22.8%       5562 =C2=B1  4%  interrupts.CPU8.RES=
-:Rescheduling_interrupts
-    634193 =C2=B1  3%     -15.9%     533039 =C2=B1  2%  interrupts.CPU80.LO=
-C:Local_timer_interrupts
-      7418 =C2=B1  9%     -30.4%       5160 =C2=B1  9%  interrupts.CPU80.RE=
-S:Rescheduling_interrupts
-    634206 =C2=B1  3%     -16.0%     532986 =C2=B1  2%  interrupts.CPU81.LO=
-C:Local_timer_interrupts
-      7249 =C2=B1  9%     -27.7%       5240 =C2=B1  6%  interrupts.CPU81.RE=
-S:Rescheduling_interrupts
-    634248 =C2=B1  3%     -16.0%     532931 =C2=B1  2%  interrupts.CPU82.LO=
-C:Local_timer_interrupts
-      5456 =C2=B1 34%     +60.2%       8743        interrupts.CPU82.NMI:Non=
--maskable_interrupts
-      5456 =C2=B1 34%     +60.2%       8743        interrupts.CPU82.PMI:Per=
-formance_monitoring_interrupts
-      7401 =C2=B1  8%     -29.2%       5240 =C2=B1  7%  interrupts.CPU82.RE=
-S:Rescheduling_interrupts
-    634133 =C2=B1  3%     -15.8%     533998 =C2=B1  2%  interrupts.CPU83.LO=
-C:Local_timer_interrupts
-      7310 =C2=B1  8%     -30.2%       5101 =C2=B1  5%  interrupts.CPU83.RE=
-S:Rescheduling_interrupts
-    634164 =C2=B1  3%     -16.0%     532834 =C2=B1  2%  interrupts.CPU84.LO=
-C:Local_timer_interrupts
-      7204 =C2=B1 10%     -26.2%       5315 =C2=B1  8%  interrupts.CPU84.RE=
-S:Rescheduling_interrupts
-    634150 =C2=B1  3%     -16.0%     532774 =C2=B1  2%  interrupts.CPU85.LO=
-C:Local_timer_interrupts
-      7314 =C2=B1  7%     -28.5%       5232 =C2=B1  7%  interrupts.CPU85.RE=
-S:Rescheduling_interrupts
-    634258 =C2=B1  3%     -15.9%     533624 =C2=B1  2%  interrupts.CPU86.LO=
-C:Local_timer_interrupts
-      7204 =C2=B1  7%     -26.8%       5276 =C2=B1  5%  interrupts.CPU86.RE=
-S:Rescheduling_interrupts
-    634234 =C2=B1  3%     -16.0%     532968 =C2=B1  2%  interrupts.CPU87.LO=
-C:Local_timer_interrupts
-      7467 =C2=B1  7%     -28.8%       5318 =C2=B1  7%  interrupts.CPU87.RE=
-S:Rescheduling_interrupts
-    634211 =C2=B1  3%     -16.0%     532949 =C2=B1  2%  interrupts.CPU88.LO=
-C:Local_timer_interrupts
-      7230 =C2=B1  7%     -27.3%       5253 =C2=B1  6%  interrupts.CPU88.RE=
-S:Rescheduling_interrupts
-    634100 =C2=B1  3%     -16.0%     532763 =C2=B1  2%  interrupts.CPU89.LO=
-C:Local_timer_interrupts
-      7370 =C2=B1  8%     -28.6%       5259 =C2=B1  5%  interrupts.CPU89.RE=
-S:Rescheduling_interrupts
-    634536 =C2=B1  3%     -16.0%     532972 =C2=B1  2%  interrupts.CPU9.LOC=
-:Local_timer_interrupts
-      7332 =C2=B1  4%     -25.6%       5455 =C2=B1  5%  interrupts.CPU9.RES=
-:Rescheduling_interrupts
-    634176 =C2=B1  3%     -16.0%     532829 =C2=B1  2%  interrupts.CPU90.LO=
-C:Local_timer_interrupts
-      7471 =C2=B1  4%     -31.0%       5155 =C2=B1  3%  interrupts.CPU90.RE=
-S:Rescheduling_interrupts
-    634204 =C2=B1  3%     -16.0%     532913 =C2=B1  2%  interrupts.CPU91.LO=
-C:Local_timer_interrupts
-      7343 =C2=B1  6%     -30.0%       5142 =C2=B1  9%  interrupts.CPU91.RE=
-S:Rescheduling_interrupts
-    634200 =C2=B1  3%     -16.0%     532870 =C2=B1  2%  interrupts.CPU92.LO=
-C:Local_timer_interrupts
-      7430 =C2=B1  8%     -29.4%       5245 =C2=B1  7%  interrupts.CPU92.RE=
-S:Rescheduling_interrupts
-    634126 =C2=B1  3%     -16.0%     532785 =C2=B1  2%  interrupts.CPU93.LO=
-C:Local_timer_interrupts
-      7336 =C2=B1  5%     -29.9%       5143 =C2=B1  6%  interrupts.CPU93.RE=
-S:Rescheduling_interrupts
-    634192 =C2=B1  3%     -16.0%     532833 =C2=B1  2%  interrupts.CPU94.LO=
-C:Local_timer_interrupts
-      7059 =C2=B1  9%     -28.2%       5068 =C2=B1  6%  interrupts.CPU94.RE=
-S:Rescheduling_interrupts
-    634264 =C2=B1  3%     -16.0%     532983 =C2=B1  2%  interrupts.CPU95.LO=
-C:Local_timer_interrupts
-     10638 =C2=B1  5%     -25.0%       7977 =C2=B1  4%  interrupts.CPU95.RE=
-S:Rescheduling_interrupts
-    634082 =C2=B1  3%     -16.0%     532705 =C2=B1  2%  interrupts.CPU96.LO=
-C:Local_timer_interrupts
-      7252           -25.6%       5397 =C2=B1  7%  interrupts.CPU96.RES:Res=
-cheduling_interrupts
-    634167 =C2=B1  3%     -16.0%     532675 =C2=B1  2%  interrupts.CPU97.LO=
-C:Local_timer_interrupts
-      7384 =C2=B1  2%     -27.3%       5366 =C2=B1  9%  interrupts.CPU97.RE=
-S:Rescheduling_interrupts
-    634167 =C2=B1  3%     -16.0%     532722 =C2=B1  2%  interrupts.CPU98.LO=
-C:Local_timer_interrupts
-      7396 =C2=B1  2%     -24.8%       5561 =C2=B1  9%  interrupts.CPU98.RE=
-S:Rescheduling_interrupts
-    634129 =C2=B1  3%     -16.0%     532777 =C2=B1  2%  interrupts.CPU99.LO=
-C:Local_timer_interrupts
-      7354 =C2=B1  2%     -29.5%       5181 =C2=B1  8%  interrupts.CPU99.RE=
-S:Rescheduling_interrupts
- 1.218e+08 =C2=B1  3%     -16.0%  1.023e+08 =C2=B1  2%  interrupts.LOC:Loca=
-l_timer_interrupts
-    192.00          -100.0%       0.00        interrupts.MCP:Machine_check_=
-polls
-   1414991 =C2=B1  6%     -27.7%    1022722 =C2=B1  6%  interrupts.RES:Resc=
-heduling_interrupts
-    584.50 =C2=B1  6%     +21.0%     707.50 =C2=B1 10%  interrupts.TLB:TLB_=
+    265.00 =C2=B1  6%     +76.1%     466.75 =C2=B1 12%  interrupts.TLB:TLB_=
 shootdowns
+     21780 =C2=B1  3%     +34.1%      29206 =C2=B1  4%  softirqs.CPU0.RCU
+     19352 =C2=B1  2%     +14.7%      22198        softirqs.CPU0.SCHED
+     50306 =C2=B1  4%     +17.8%      59258 =C2=B1  8%  softirqs.CPU0.TIMER
+     23163 =C2=B1  8%     +21.3%      28089 =C2=B1  6%  softirqs.CPU1.RCU
+     16179           +20.8%      19547        softirqs.CPU1.SCHED
+     48867 =C2=B1  5%     +16.5%      56934 =C2=B1  3%  softirqs.CPU1.TIMER
+     21339 =C2=B1  2%     +31.5%      28064 =C2=B1  4%  softirqs.CPU10.RCU
+     15492 =C2=B1  2%     +21.8%      18872        softirqs.CPU10.SCHED
+     48447 =C2=B1  2%     +16.0%      56208 =C2=B1  2%  softirqs.CPU10.TIMER
+     21278 =C2=B1  5%     +31.9%      28067 =C2=B1  5%  softirqs.CPU11.RCU
+     15581           +20.5%      18770        softirqs.CPU11.SCHED
+     48567           +17.7%      57140 =C2=B1  4%  softirqs.CPU11.TIMER
+     22261 =C2=B1  3%     +36.5%      30385 =C2=B1  9%  softirqs.CPU12.RCU
+     15644           +20.3%      18824 =C2=B1  2%  softirqs.CPU12.SCHED
+     49536 =C2=B1  2%     +32.3%      65518 =C2=B1 21%  softirqs.CPU12.TIMER
+     21724 =C2=B1  2%     +27.9%      27794 =C2=B1  4%  softirqs.CPU13.RCU
+     15508           +21.1%      18776 =C2=B1  2%  softirqs.CPU13.SCHED
+     48945           +19.2%      58366 =C2=B1  4%  softirqs.CPU13.TIMER
+     21297 =C2=B1  3%     +35.0%      28761 =C2=B1  3%  softirqs.CPU14.RCU
+     15583           +23.0%      19162 =C2=B1  5%  softirqs.CPU14.SCHED
+     48772 =C2=B1  2%     +17.2%      57154 =C2=B1  4%  softirqs.CPU14.TIMER
+     21231 =C2=B1  3%     +35.4%      28746 =C2=B1  8%  softirqs.CPU15.RCU
+     15571           +21.9%      18985 =C2=B1  2%  softirqs.CPU15.SCHED
+     48486           +17.6%      57020 =C2=B1  3%  softirqs.CPU15.TIMER
+     21571 =C2=B1  7%     +31.7%      28415        softirqs.CPU16.RCU
+     15314           +23.3%      18884 =C2=B1  2%  softirqs.CPU16.SCHED
+     49988 =C2=B1  4%     +15.1%      57561 =C2=B1  3%  softirqs.CPU16.TIMER
+     21326 =C2=B1  4%     +31.0%      27927 =C2=B1  4%  softirqs.CPU17.RCU
+     15434           +22.8%      18960 =C2=B1  3%  softirqs.CPU17.SCHED
+     48588 =C2=B1  2%     +17.1%      56905 =C2=B1  2%  softirqs.CPU17.TIMER
+     21212 =C2=B1  2%     +31.8%      27968 =C2=B1  4%  softirqs.CPU18.RCU
+     15571           +20.9%      18827 =C2=B1  3%  softirqs.CPU18.SCHED
+     49151 =C2=B1  2%     +33.3%      65535 =C2=B1 15%  softirqs.CPU18.TIMER
+     21490 =C2=B1  4%     +27.9%      27490 =C2=B1  5%  softirqs.CPU19.RCU
+     15550           +20.6%      18747 =C2=B1  2%  softirqs.CPU19.SCHED
+     50252 =C2=B1  8%     +13.4%      57009 =C2=B1  2%  softirqs.CPU19.TIMER
+     23244 =C2=B1 11%     +32.3%      30747 =C2=B1  6%  softirqs.CPU2.RCU
+     15982           +30.8%      20905        softirqs.CPU2.SCHED
+     50703 =C2=B1  5%     +22.8%      62276 =C2=B1  4%  softirqs.CPU2.TIMER
+     21304 =C2=B1  2%     +45.9%      31089 =C2=B1  7%  softirqs.CPU20.RCU
+     15409 =C2=B1  2%     +23.2%      18988 =C2=B1  3%  softirqs.CPU20.SCHED
+     22317 =C2=B1  4%     +28.2%      28608 =C2=B1  5%  softirqs.CPU21.RCU
+     50492 =C2=B1  3%     +18.6%      59868 =C2=B1  8%  softirqs.CPU21.TIMER
+     21099 =C2=B1  4%     +32.6%      27983 =C2=B1  3%  softirqs.CPU22.RCU
+     15607           +21.3%      18935 =C2=B1  2%  softirqs.CPU22.SCHED
+     20953 =C2=B1  2%     +36.0%      28492 =C2=B1  6%  softirqs.CPU23.RCU
+     15463           +22.4%      18924 =C2=B1  6%  softirqs.CPU23.SCHED
+     49790 =C2=B1  2%     +17.2%      58355 =C2=B1  4%  softirqs.CPU23.TIMER
+     21424 =C2=B1  2%     +33.5%      28607 =C2=B1  4%  softirqs.CPU24.RCU
+     15603           +19.8%      18692        softirqs.CPU24.SCHED
+     49433 =C2=B1  4%     +18.7%      58682 =C2=B1  4%  softirqs.CPU24.TIMER
+     21527 =C2=B1  2%     +34.8%      29025 =C2=B1  4%  softirqs.CPU25.RCU
+     15413           +22.6%      18891 =C2=B1  2%  softirqs.CPU25.SCHED
+     48601 =C2=B1  2%     +17.9%      57281 =C2=B1  3%  softirqs.CPU25.TIMER
+     21284 =C2=B1  3%     +31.1%      27898 =C2=B1  2%  softirqs.CPU26.RCU
+     15979 =C2=B1  4%     +18.2%      18888        softirqs.CPU26.SCHED
+     50363 =C2=B1  3%     +12.6%      56721 =C2=B1  4%  softirqs.CPU26.TIMER
+     21307 =C2=B1  2%     +34.4%      28646 =C2=B1  5%  softirqs.CPU27.RCU
+     15342           +23.2%      18905 =C2=B1  3%  softirqs.CPU27.SCHED
+     48693 =C2=B1  3%     +19.5%      58194 =C2=B1  2%  softirqs.CPU27.TIMER
+     21278           +30.1%      27694 =C2=B1  3%  softirqs.CPU28.RCU
+     15623           +20.2%      18773        softirqs.CPU28.SCHED
+     49220 =C2=B1  2%     +14.4%      56308 =C2=B1  3%  softirqs.CPU28.TIMER
+     21511 =C2=B1  4%     +30.1%      27979 =C2=B1  5%  softirqs.CPU29.RCU
+     15816 =C2=B1  2%     +18.4%      18725        softirqs.CPU29.SCHED
+     48698           +17.7%      57323 =C2=B1  3%  softirqs.CPU29.TIMER
+     21335 =C2=B1  2%     +36.2%      29048 =C2=B1  6%  softirqs.CPU3.RCU
+     15763 =C2=B1  2%     +20.0%      18917        softirqs.CPU3.SCHED
+     21413 =C2=B1  2%     +32.4%      28350 =C2=B1  3%  softirqs.CPU30.RCU
+     15489 =C2=B1  2%     +21.6%      18831 =C2=B1  2%  softirqs.CPU30.SCHED
+     48627 =C2=B1  2%     +16.2%      56482 =C2=B1  2%  softirqs.CPU30.TIMER
+     21314 =C2=B1  4%     +32.2%      28181 =C2=B1  5%  softirqs.CPU31.RCU
+     15542           +21.2%      18844 =C2=B1  3%  softirqs.CPU31.SCHED
+     49740 =C2=B1  6%     +14.4%      56918 =C2=B1  3%  softirqs.CPU31.TIMER
+     19067 =C2=B1 11%     +19.3%      22739 =C2=B1  2%  softirqs.CPU32.RCU
+     15786 =C2=B1  3%     +19.3%      18839 =C2=B1  2%  softirqs.CPU32.SCHED
+     51277 =C2=B1  4%     +12.1%      57503 =C2=B1  4%  softirqs.CPU32.TIMER
+     17283 =C2=B1  3%     +28.4%      22185 =C2=B1  4%  softirqs.CPU33.RCU
+     15463 =C2=B1  2%     +20.5%      18635        softirqs.CPU33.SCHED
+     48637 =C2=B1  2%     +32.4%      64412 =C2=B1 18%  softirqs.CPU33.TIMER
+     17794 =C2=B1  3%     +29.8%      23103 =C2=B1  4%  softirqs.CPU34.RCU
+     15838           +19.2%      18886        softirqs.CPU34.SCHED
+     49140 =C2=B1  2%     +16.2%      57109 =C2=B1  4%  softirqs.CPU34.TIMER
+     17452 =C2=B1  2%     +28.5%      22432 =C2=B1  3%  softirqs.CPU35.RCU
+     15466           +19.9%      18543 =C2=B1  2%  softirqs.CPU35.SCHED
+     48547           +16.8%      56684 =C2=B1  3%  softirqs.CPU35.TIMER
+     17422 =C2=B1  4%     +36.2%      23721 =C2=B1  5%  softirqs.CPU36.RCU
+     15474           +22.9%      19016 =C2=B1  3%  softirqs.CPU36.SCHED
+     18024 =C2=B1  5%     +25.0%      22537 =C2=B1  3%  softirqs.CPU37.RCU
+     15591 =C2=B1  2%     +21.2%      18892 =C2=B1  2%  softirqs.CPU37.SCHED
+     49241 =C2=B1  2%     +15.7%      56982 =C2=B1  3%  softirqs.CPU37.TIMER
+     18270 =C2=B1  6%     +23.0%      22468 =C2=B1  2%  softirqs.CPU38.RCU
+     15698           +18.2%      18555 =C2=B1  2%  softirqs.CPU38.SCHED
+     17354 =C2=B1  2%     +29.0%      22393 =C2=B1  3%  softirqs.CPU39.RCU
+     15582           +18.3%      18430 =C2=B1  4%  softirqs.CPU39.SCHED
+     48135 =C2=B1  2%     +35.5%      65242 =C2=B1 18%  softirqs.CPU39.TIMER
+     21472           +30.6%      28049        softirqs.CPU4.RCU
+     15684           +20.5%      18896 =C2=B1  4%  softirqs.CPU4.SCHED
+     49567 =C2=B1  2%     +14.5%      56732 =C2=B1  4%  softirqs.CPU4.TIMER
+     21886           +33.1%      29122 =C2=B1  8%  softirqs.CPU5.RCU
+     15912 =C2=B1  4%     +19.3%      18983 =C2=B1  4%  softirqs.CPU5.SCHED
+     49334 =C2=B1  4%     +17.3%      57889 =C2=B1  4%  softirqs.CPU5.TIMER
+     22759 =C2=B1 12%     +28.1%      29150 =C2=B1  3%  softirqs.CPU6.RCU
+     15561           +23.0%      19144        softirqs.CPU6.SCHED
+     50896           +15.8%      58936 =C2=B1  3%  softirqs.CPU6.TIMER
+     21754 =C2=B1  5%     +26.8%      27588 =C2=B1  4%  softirqs.CPU7.RCU
+     15439           +22.1%      18851 =C2=B1  3%  softirqs.CPU7.SCHED
+     51023 =C2=B1  3%     +12.0%      57169 =C2=B1  4%  softirqs.CPU7.TIMER
+     21768 =C2=B1  3%     +28.9%      28061 =C2=B1  3%  softirqs.CPU8.RCU
+     15680           +24.5%      19522 =C2=B1  5%  softirqs.CPU8.SCHED
+     48977 =C2=B1  2%     +17.5%      57545 =C2=B1  3%  softirqs.CPU8.TIMER
+     20951           +32.1%      27683 =C2=B1  4%  softirqs.CPU9.RCU
+     15426           +20.8%      18638 =C2=B1  3%  softirqs.CPU9.SCHED
+     48306 =C2=B1  3%     +18.3%      57152 =C2=B1  3%  softirqs.CPU9.TIMER
+    834261 =C2=B1  2%     +31.2%    1094511 =C2=B1  3%  softirqs.RCU
+    629022           +20.9%     760517 =C2=B1  2%  softirqs.SCHED
+   2001302           +16.7%    2335824 =C2=B1  3%  softirqs.TIMER
+     63.72           -11.9       51.82        perf-profile.calltrace.cycles=
+-pp.write
+     54.54           -10.4       44.19 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.entry_SYSCALL_64_after_hwframe.write
+     54.05           -10.3       43.78 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+     45.97            -9.1       36.91 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+     44.57            -8.8       35.77 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.=
+write
+     38.87            -7.6       31.22 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.new_sync_write.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64=
+_after_hwframe
+     36.73            -7.1       29.68 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.xfs_file_buffered_aio_write.new_sync_write.vfs_write.ksys_write.do=
+_syscall_64
+     29.28            -5.2       24.09 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.iomap_file_buffered_write.xfs_file_buffered_aio_write.new_sync_wri=
+te.vfs_write.ksys_write
+     29.00            -5.1       23.86 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.iomap_apply.iomap_file_buffered_write.xfs_file_buffered_aio_write.=
+new_sync_write.vfs_write
+     21.42            -4.1       17.29 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.iomap_write_actor.iomap_apply.iomap_file_buffered_write.xfs_file_b=
+uffered_aio_write.new_sync_write
+      9.82            -2.0        7.84 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.iomap_write_begin.iomap_write_actor.iomap_apply.iomap_file_buffere=
+d_write.xfs_file_buffered_aio_write
+     10.19            -1.6        8.57 =C2=B1  4%  perf-profile.calltrace.c=
+ycles-pp.lseek64
+      3.70            -1.5        2.15 =C2=B1  4%  perf-profile.calltrace.c=
+ycles-pp.close
+      3.64            -1.5        2.13 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.entry_SYSCALL_64_after_hwframe.close
+      3.64            -1.5        2.13 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.close
+      3.62            -1.5        2.11 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.exit_to_usermode_loop.do_syscall_64.entry_SYSCALL_64_after_hwframe=
+.close
+      3.60            -1.5        2.10 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.__fput.task_work_run.exit_to_usermode_loop.do_syscall_64.entry_SYS=
+CALL_64_after_hwframe
+      3.60            -1.5        2.11 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.task_work_run.exit_to_usermode_loop.do_syscall_64.entry_SYSCALL_64=
+_after_hwframe.close
+      3.48            -1.5        1.99 =C2=B1  4%  perf-profile.calltrace.c=
+ycles-pp.dput.__fput.task_work_run.exit_to_usermode_loop.do_syscall_64
+      3.46            -1.5        1.98 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.__dentry_kill.dput.__fput.task_work_run.exit_to_usermode_loop
+      7.25 =C2=B1  2%      -1.5        5.77        perf-profile.calltrace.c=
+ycles-pp.grab_cache_page_write_begin.iomap_write_begin.iomap_write_actor.io=
+map_apply.iomap_file_buffered_write
+      6.93            -1.4        5.53        perf-profile.calltrace.cycles=
+-pp.pagecache_get_page.grab_cache_page_write_begin.iomap_write_begin.iomap_=
+write_actor.iomap_apply
+      4.82 =C2=B1  2%      -1.2        3.59 =C2=B1  4%  perf-profile.calltr=
+ace.cycles-pp.xfs_file_aio_write_checks.xfs_file_buffered_aio_write.new_syn=
+c_write.vfs_write.ksys_write
+      4.07 =C2=B1  2%      -0.9        3.16        perf-profile.calltrace.c=
+ycles-pp.iov_iter_copy_from_user_atomic.iomap_write_actor.iomap_apply.iomap=
+_file_buffered_write.xfs_file_buffered_aio_write
+      5.73            -0.8        4.89 =C2=B1  5%  perf-profile.calltrace.c=
+ycles-pp.entry_SYSCALL_64_after_hwframe.lseek64
+      3.46 =C2=B1  2%      -0.8        2.65        perf-profile.calltrace.c=
+ycles-pp.copyin.iov_iter_copy_from_user_atomic.iomap_write_actor.iomap_appl=
+y.iomap_file_buffered_write
+      5.57 =C2=B1  2%      -0.8        4.76 =C2=B1  7%  perf-profile.calltr=
+ace.cycles-pp.xfs_file_iomap_begin.iomap_apply.iomap_file_buffered_write.xf=
+s_file_buffered_aio_write.new_sync_write
+      4.54 =C2=B1  3%      -0.8        3.74 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.iomap_write_end.iomap_write_actor.iomap_apply.iomap_file_buff=
+ered_write.xfs_file_buffered_aio_write
+      3.36 =C2=B1  3%      -0.8        2.57 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.copy_user_enhanced_fast_string.copyin.iov_iter_copy_from_user=
+_atomic.iomap_write_actor.iomap_apply
+      4.53            -0.8        3.74 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.entry_SYSCALL_64.write
+      5.46            -0.8        4.69 =C2=B1  5%  perf-profile.calltrace.c=
+ycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.lseek64
+      2.63            -0.7        1.91 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.truncate_inode_pages_range.evict.__dentry_kill.dput.__fput
+      2.65            -0.7        1.93 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.evict.__dentry_kill.dput.__fput.task_work_run
+      2.48 =C2=B1  4%      -0.7        1.79 =C2=B1  8%  perf-profile.calltr=
+ace.cycles-pp.file_update_time.xfs_file_aio_write_checks.xfs_file_buffered_=
+aio_write.new_sync_write.vfs_write
+      3.72 =C2=B1  2%      -0.7        3.06 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.syscall_return_via_sysret.write
+      2.42 =C2=B1  4%      -0.6        1.83 =C2=B1  8%  perf-profile.calltr=
+ace.cycles-pp.security_file_permission.vfs_write.ksys_write.do_syscall_64.e=
+ntry_SYSCALL_64_after_hwframe
+      4.57 =C2=B1  3%      -0.6        3.98 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.xfs_file_iomap_begin_delay.xfs_file_iomap_begin.iomap_apply.i=
+omap_file_buffered_write.xfs_file_buffered_aio_write
+      2.68 =C2=B1  2%      -0.6        2.10        perf-profile.calltrace.c=
+ycles-pp.find_get_entry.pagecache_get_page.grab_cache_page_write_begin.ioma=
+p_write_begin.iomap_write_actor
+      1.69 =C2=B1  7%      -0.5        1.18 =C2=B1 10%  perf-profile.calltr=
+ace.cycles-pp.xfs_vn_update_time.file_update_time.xfs_file_aio_write_checks=
+.xfs_file_buffered_aio_write.new_sync_write
+      1.52 =C2=B1 17%      -0.5        1.03 =C2=B1 17%  perf-profile.calltr=
+ace.cycles-pp.xfs_file_write_iter.new_sync_write.vfs_write.ksys_write.do_sy=
+scall_64
+      1.93            -0.4        1.49 =C2=B1  4%  perf-profile.calltrace.c=
+ycles-pp.iomap_read_page_sync.iomap_write_begin.iomap_write_actor.iomap_app=
+ly.iomap_file_buffered_write
+      1.72 =C2=B1  6%      -0.4        1.30 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.iomap_set_page_dirty.iomap_write_end.iomap_write_actor.iomap_=
+apply.iomap_file_buffered_write
+      1.92 =C2=B1  2%      -0.4        1.51 =C2=B1  4%  perf-profile.calltr=
+ace.cycles-pp.add_to_page_cache_lru.pagecache_get_page.grab_cache_page_writ=
+e_begin.iomap_write_begin.iomap_write_actor
+      1.80 =C2=B1  5%      -0.4        1.40 =C2=B1  7%  perf-profile.calltr=
+ace.cycles-pp.selinux_file_permission.security_file_permission.vfs_write.ks=
+ys_write.do_syscall_64
+      1.19 =C2=B1  2%      -0.4        0.82 =C2=B1 12%  perf-profile.calltr=
+ace.cycles-pp.__xfs_trans_commit.xfs_vn_update_time.file_update_time.xfs_fi=
+le_aio_write_checks.xfs_file_buffered_aio_write
+      0.70 =C2=B1 24%      -0.4        0.33 =C2=B1104%  perf-profile.calltr=
+ace.cycles-pp.xfs_bmbt_to_iomap.xfs_file_iomap_begin_delay.xfs_file_iomap_b=
+egin.iomap_apply.iomap_file_buffered_write
+      1.13 =C2=B1  3%      -0.4        0.77 =C2=B1 13%  perf-profile.calltr=
+ace.cycles-pp.xfs_log_commit_cil.__xfs_trans_commit.xfs_vn_update_time.file=
+_update_time.xfs_file_aio_write_checks
+      1.45            -0.4        1.10 =C2=B1  4%  perf-profile.calltrace.c=
+ycles-pp.memset_erms.iomap_read_page_sync.iomap_write_begin.iomap_write_act=
+or.iomap_apply
+      1.84            -0.3        1.49 =C2=B1  5%  perf-profile.calltrace.c=
+ycles-pp.syscall_return_via_sysret.lseek64
+      2.22 =C2=B1  2%      -0.3        1.88 =C2=B1  4%  perf-profile.calltr=
+ace.cycles-pp.entry_SYSCALL_64.lseek64
+      1.12 =C2=B1  3%      -0.3        0.79 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.release_pages.__pagevec_release.truncate_inode_pages_range.ev=
+ict.__dentry_kill
+      1.14 =C2=B1  3%      -0.3        0.81 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.__pagevec_release.truncate_inode_pages_range.evict.__dentry_k=
+ill.dput
+      0.71 =C2=B1  2%      -0.3        0.40 =C2=B1 57%  perf-profile.calltr=
+ace.cycles-pp.pagevec_lru_move_fn.__lru_cache_add.add_to_page_cache_lru.pag=
+ecache_get_page.grab_cache_page_write_begin
+      1.11 =C2=B1  4%      -0.3        0.85 =C2=B1  7%  perf-profile.calltr=
+ace.cycles-pp.xas_load.find_get_entry.pagecache_get_page.grab_cache_page_wr=
+ite_begin.iomap_write_begin
+      1.34            -0.3        1.08 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.__alloc_pages_nodemask.pagecache_get_page.grab_cache_page_write_be=
+gin.iomap_write_begin.iomap_write_actor
+      1.06 =C2=B1  2%      -0.2        0.84 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.get_page_from_freelist.__alloc_pages_nodemask.pagecache_get_p=
+age.grab_cache_page_write_begin.iomap_write_begin
+      0.66 =C2=B1  3%      -0.2        0.43 =C2=B1 57%  perf-profile.calltr=
+ace.cycles-pp.disk_rw
+      1.08 =C2=B1  4%      -0.2        0.88 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.__add_to_page_cache_locked.add_to_page_cache_lru.pagecache_ge=
+t_page.grab_cache_page_write_begin.iomap_write_begin
+      0.76            -0.2        0.57 =C2=B1  5%  perf-profile.calltrace.c=
+ycles-pp.__lru_cache_add.add_to_page_cache_lru.pagecache_get_page.grab_cach=
+e_page_write_begin.iomap_write_begin
+      1.87 =C2=B1  3%      -0.2        1.68 =C2=B1  4%  perf-profile.calltr=
+ace.cycles-pp.iomap_set_range_uptodate.iomap_write_end.iomap_write_actor.io=
+map_apply.iomap_file_buffered_write
+      1.14 =C2=B1  6%      -0.2        0.95 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.xfs_ilock.xfs_file_iomap_begin_delay.xfs_file_iomap_begin.iom=
+ap_apply.iomap_file_buffered_write
+      0.94 =C2=B1  6%      -0.2        0.76 =C2=B1  4%  perf-profile.calltr=
+ace.cycles-pp.xfs_ilock.xfs_file_buffered_aio_write.new_sync_write.vfs_writ=
+e.ksys_write
+      0.78 =C2=B1  9%      -0.2        0.61 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.xfs_iext_lookup_extent.xfs_file_iomap_begin_delay.xfs_file_io=
+map_begin.iomap_apply.iomap_file_buffered_write
+      0.72 =C2=B1  7%      -0.2        0.56 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.xfs_break_layouts.xfs_file_aio_write_checks.xfs_file_buffered=
+_aio_write.new_sync_write.vfs_write
+      0.69 =C2=B1  6%      -0.2        0.53 =C2=B1  4%  perf-profile.calltr=
+ace.cycles-pp.__set_page_dirty.iomap_set_page_dirty.iomap_write_end.iomap_w=
+rite_actor.iomap_apply
+      0.94 =C2=B1  5%      -0.2        0.79 =C2=B1  7%  perf-profile.calltr=
+ace.cycles-pp.down_write.xfs_ilock.xfs_file_iomap_begin_delay.xfs_file_ioma=
+p_begin.iomap_apply
+      0.78 =C2=B1  6%      -0.2        0.62 =C2=B1  4%  perf-profile.calltr=
+ace.cycles-pp.down_write.xfs_ilock.xfs_file_buffered_aio_write.new_sync_wri=
+te.vfs_write
+      0.86 =C2=B1  2%      +0.4        1.23 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.xfs_create.xfs_generic_create.path_openat.do_filp_open.do_sys=
+_open
+      0.89 =C2=B1  2%      +0.4        1.25 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.xfs_generic_create.path_openat.do_filp_open.do_sys_open.do_sy=
+scall_64
+      1.59 =C2=B1  2%      +0.5        2.13 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.entry_SYSCALL_64_after_hwframe.creat
+      1.58 =C2=B1  2%      +0.5        2.13 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.creat
+      1.57            +0.5        2.12 =C2=B1  5%  perf-profile.calltrace.c=
+ycles-pp.do_sys_open.do_syscall_64.entry_SYSCALL_64_after_hwframe.creat
+      1.54 =C2=B1  2%      +0.6        2.09 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.path_openat.do_filp_open.do_sys_open.do_syscall_64.entry_SYSC=
+ALL_64_after_hwframe
+      1.61            +0.6        2.17 =C2=B1  5%  perf-profile.calltrace.c=
+ycles-pp.creat
+      1.54 =C2=B1  2%      +0.6        2.10 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.do_filp_open.do_sys_open.do_syscall_64.entry_SYSCALL_64_after=
+_hwframe.creat
+      0.00            +0.6        0.57 =C2=B1 10%  perf-profile.calltrace.c=
+ycles-pp.hrtimer_interrupt.smp_apic_timer_interrupt.apic_timer_interrupt.cp=
+uidle_enter_state.cpuidle_enter
+      0.00            +0.6        0.62 =C2=B1  5%  perf-profile.calltrace.c=
+ycles-pp.xfs_check_agi_freecount.xfs_dialloc_ag.xfs_dialloc.xfs_ialloc.xfs_=
+dir_ialloc
+      0.00            +0.7        0.69 =C2=B1  4%  perf-profile.calltrace.c=
+ycles-pp.xfs_dialloc_ag.xfs_dialloc.xfs_ialloc.xfs_dir_ialloc.xfs_create
+      0.00            +0.7        0.74 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.xfs_dialloc.xfs_ialloc.xfs_dir_ialloc.xfs_create.xfs_generic_create
+      0.00            +0.8        0.79 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.xfs_dir_ialloc.xfs_create.xfs_generic_create.path_openat.do_filp_o=
+pen
+      0.00            +0.8        0.79 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.xfs_ialloc.xfs_dir_ialloc.xfs_create.xfs_generic_create.path_openat
+      0.00            +1.1        1.08 =C2=B1  7%  perf-profile.calltrace.c=
+ycles-pp.smp_apic_timer_interrupt.apic_timer_interrupt.cpuidle_enter_state.=
+cpuidle_enter.do_idle
+      0.00            +1.1        1.15 =C2=B1  7%  perf-profile.calltrace.c=
+ycles-pp.apic_timer_interrupt.cpuidle_enter_state.cpuidle_enter.do_idle.cpu=
+_startup_entry
+     16.68 =C2=B1  2%     +11.8       28.47 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.intel_idle.cpuidle_enter_state.cpuidle_enter.do_idle.cpu_star=
+tup_entry
+     16.49 =C2=B1  4%     +12.5       29.02        perf-profile.calltrace.c=
+ycles-pp.cpuidle_enter_state.cpuidle_enter.do_idle.cpu_startup_entry.start_=
+secondary
+     16.51 =C2=B1  4%     +12.6       29.09        perf-profile.calltrace.c=
+ycles-pp.cpuidle_enter.do_idle.cpu_startup_entry.start_secondary.secondary_=
+startup_64
+     16.96 =C2=B1  4%     +12.9       29.88        perf-profile.calltrace.c=
+ycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64
+     16.96 =C2=B1  4%     +12.9       29.89        perf-profile.calltrace.c=
+ycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64
+     16.96 =C2=B1  4%     +12.9       29.89        perf-profile.calltrace.c=
+ycles-pp.start_secondary.secondary_startup_64
+     17.71           +13.0       30.74 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.secondary_startup_64
+     67.26           -12.2       55.10 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.entry_SYSCALL_64_after_hwframe
+     66.62           -12.1       54.57 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.do_syscall_64
+     64.32           -12.0       52.29        perf-profile.children.cycles-=
+pp.write
+     45.98            -9.1       36.93 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.ksys_write
+     44.63            -8.8       35.81 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.vfs_write
+     38.90            -7.7       31.25 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.new_sync_write
+     36.78            -7.1       29.72 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.xfs_file_buffered_aio_write
+     29.30            -5.2       24.10 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.iomap_file_buffered_write
+     29.06            -5.2       23.91 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.iomap_apply
+     21.54            -4.2       17.38 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.iomap_write_actor
+      9.86            -2.0        7.88 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.iomap_write_begin
+     10.49            -1.7        8.81 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.lseek64
+      3.70            -1.5        2.15 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.close
+      3.63            -1.5        2.12 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.exit_to_usermode_loop
+      3.60            -1.5        2.10 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.__fput
+      3.60            -1.5        2.11 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.task_work_run
+      3.48            -1.5        2.00 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.dput
+      7.29 =C2=B1  2%      -1.5        5.80        perf-profile.children.cy=
+cles-pp.grab_cache_page_write_begin
+      3.46            -1.5        1.98 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.__dentry_kill
+      6.98            -1.4        5.57        perf-profile.children.cycles-=
+pp.pagecache_get_page
+      4.87 =C2=B1  2%      -1.2        3.63 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.xfs_file_aio_write_checks
+      6.78            -1.1        5.67 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.entry_SYSCALL_64
+      6.23            -1.1        5.12 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.syscall_return_via_sysret
+      4.10 =C2=B1  2%      -0.9        3.17        perf-profile.children.cy=
+cles-pp.iov_iter_copy_from_user_atomic
+      3.49 =C2=B1  2%      -0.8        2.67        perf-profile.children.cy=
+cles-pp.copyin
+      5.63 =C2=B1  2%      -0.8        4.82 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.xfs_file_iomap_begin
+      4.58 =C2=B1  3%      -0.8        3.77 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.iomap_write_end
+      3.38 =C2=B1  2%      -0.8        2.59 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.copy_user_enhanced_fast_string
+      2.65            -0.7        1.93 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.evict
+      2.63            -0.7        1.92 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.truncate_inode_pages_range
+      2.50 =C2=B1  4%      -0.7        1.81 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.file_update_time
+      4.65 =C2=B1  3%      -0.6        4.04 =C2=B1 10%  perf-profile.childr=
+en.cycles-pp.xfs_file_iomap_begin_delay
+      2.44 =C2=B1  4%      -0.6        1.84 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.security_file_permission
+      2.71 =C2=B1  2%      -0.6        2.12        perf-profile.children.cy=
+cles-pp.find_get_entry
+      1.69 =C2=B1  7%      -0.5        1.18 =C2=B1 10%  perf-profile.childr=
+en.cycles-pp.xfs_vn_update_time
+      1.53 =C2=B1 17%      -0.5        1.04 =C2=B1 18%  perf-profile.childr=
+en.cycles-pp.xfs_file_write_iter
+      1.94            -0.4        1.50 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.iomap_read_page_sync
+      1.76 =C2=B1  6%      -0.4        1.33 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.iomap_set_page_dirty
+      1.20 =C2=B1  2%      -0.4        0.77 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp._raw_spin_lock
+      0.89            -0.4        0.46 =C2=B1  8%  perf-profile.children.cy=
+cles-pp.native_queued_spin_lock_slowpath
+      1.83 =C2=B1  5%      -0.4        1.42 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.selinux_file_permission
+      1.92 =C2=B1  2%      -0.4        1.52 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.add_to_page_cache_lru
+      2.17 =C2=B1  5%      -0.4        1.81 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.xfs_ilock
+      1.84            -0.4        1.48 =C2=B1 14%  perf-profile.children.cy=
+cles-pp.xfs_log_commit_cil
+      1.19 =C2=B1  3%      -0.3        0.85 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.release_pages
+      1.47            -0.3        1.13 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.memset_erms
+      1.81 =C2=B1  5%      -0.3        1.47 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.down_write
+      1.14 =C2=B1  3%      -0.3        0.81 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.__pagevec_release
+      1.34 =C2=B1  4%      -0.3        1.05 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.xas_load
+      1.36 =C2=B1  2%      -0.3        1.11 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.__alloc_pages_nodemask
+      2.25 =C2=B1  4%      -0.3        2.00 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.iomap_set_range_uptodate
+      1.08 =C2=B1  2%      -0.2        0.86 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.get_page_from_freelist
+      0.77            -0.2        0.57 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.__lru_cache_add
+      1.10 =C2=B1  4%      -0.2        0.90 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.__add_to_page_cache_locked
+      0.73            -0.2        0.53 =C2=B1  7%  perf-profile.children.cy=
+cles-pp.pagevec_lru_move_fn
+      1.35 =C2=B1  3%      -0.2        1.18 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.___might_sleep
+      0.80 =C2=B1  8%      -0.2        0.62 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.xfs_iext_lookup_extent
+      0.81 =C2=B1  4%      -0.2        0.63 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.__might_sleep
+      0.75 =C2=B1  7%      -0.2        0.58 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.xfs_break_layouts
+      0.62 =C2=B1  5%      -0.2        0.45 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.free_unref_page_list
+      0.70 =C2=B1  6%      -0.2        0.53 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.__set_page_dirty
+      0.56 =C2=B1  3%      -0.2        0.39 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.truncate_cleanup_page
+      0.59 =C2=B1  7%      -0.2        0.43 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.generic_write_checks
+      1.16 =C2=B1  5%      -0.2        1.00 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.xfs_iunlock
+      0.46 =C2=B1  4%      -0.1        0.32 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.__cancel_dirty_page
+      0.53 =C2=B1 10%      -0.1        0.39 =C2=B1 11%  perf-profile.childr=
+en.cycles-pp.xas_start
+      0.60 =C2=B1  5%      -0.1        0.46 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.delete_from_page_cache_batch
+      0.50 =C2=B1  5%      -0.1        0.36 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.__pagevec_lru_add_fn
+      0.72 =C2=B1 10%      -0.1        0.59 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.__x86_indirect_thunk_rax
+      0.44 =C2=B1  5%      -0.1        0.30 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.free_pcppages_bulk
+      0.78 =C2=B1  5%      -0.1        0.65 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.up_write
+      0.74 =C2=B1  3%      -0.1        0.61 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp._cond_resched
+      0.39 =C2=B1  8%      -0.1        0.27 =C2=B1 15%  perf-profile.childr=
+en.cycles-pp.__mod_lruvec_state
+      0.47 =C2=B1  2%      -0.1        0.35 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.current_time
+      0.71 =C2=B1  3%      -0.1        0.58 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.disk_rw
+      0.57 =C2=B1  8%      -0.1        0.46 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.xas_store
+      0.42 =C2=B1 13%      -0.1        0.30 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.xfs_trans_reserve
+      0.61 =C2=B1 15%      -0.1        0.49 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.__inode_security_revalidate
+      0.44 =C2=B1  4%      -0.1        0.33 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.account_page_dirtied
+      0.43 =C2=B1  5%      -0.1        0.33 =C2=B1 13%  perf-profile.childr=
+en.cycles-pp.iov_iter_advance
+      0.42 =C2=B1  3%      -0.1        0.33 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.__list_del_entry_valid
+      0.34 =C2=B1  6%      -0.1        0.24 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.account_page_cleaned
+      0.43 =C2=B1  9%      -0.1        0.35 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.xfs_break_leased_layouts
+      0.22 =C2=B1 11%      -0.1        0.14 =C2=B1 11%  perf-profile.childr=
+en.cycles-pp.xlog_grant_add_space
+      0.35 =C2=B1  5%      -0.1        0.27        perf-profile.children.cy=
+cles-pp.file_remove_privs
+      0.38 =C2=B1  9%      -0.1        0.30 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.file_modified
+      0.32 =C2=B1 15%      -0.1        0.24 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.generic_write_check_limits
+      0.35 =C2=B1  5%      -0.1        0.28 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.unlock_page
+      0.44 =C2=B1  6%      -0.1        0.36 =C2=B1 10%  perf-profile.childr=
+en.cycles-pp.__x64_sys_write
+      0.17 =C2=B1  4%      -0.1        0.11 =C2=B1 20%  perf-profile.childr=
+en.cycles-pp.__mod_memcg_state
+      0.24 =C2=B1  8%      -0.1        0.19 =C2=B1 14%  perf-profile.childr=
+en.cycles-pp.__x64_sys_lseek
+      0.11 =C2=B1 22%      -0.1        0.05 =C2=B1 70%  perf-profile.childr=
+en.cycles-pp.xfs_find_daxdev_for_inode
+      0.36 =C2=B1  4%      -0.1        0.31        perf-profile.children.cy=
+cles-pp.rcu_all_qs
+      0.24 =C2=B1  6%      -0.1        0.19 =C2=B1 15%  perf-profile.childr=
+en.cycles-pp.xfs_dir2_leafn_lookup_for_entry
+      0.12 =C2=B1  4%      -0.1        0.07 =C2=B1 17%  perf-profile.childr=
+en.cycles-pp.xfs_isilocked
+      0.23 =C2=B1 10%      -0.0        0.18 =C2=B1 12%  perf-profile.childr=
+en.cycles-pp.node_dirty_ok
+      0.16 =C2=B1 12%      -0.0        0.11 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.timespec64_trunc
+      0.18 =C2=B1  9%      -0.0        0.14 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.find_get_entries
+      0.18 =C2=B1  9%      -0.0        0.14 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.pagevec_lookup_entries
+      0.22 =C2=B1  5%      -0.0        0.17 =C2=B1 16%  perf-profile.childr=
+en.cycles-pp.percpu_counter_add_batch
+      0.16 =C2=B1  9%      -0.0        0.12 =C2=B1 15%  perf-profile.childr=
+en.cycles-pp.__xa_set_mark
+      0.30 =C2=B1  2%      -0.0        0.26 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.page_mapping
+      0.14 =C2=B1 15%      -0.0        0.10 =C2=B1 17%  perf-profile.childr=
+en.cycles-pp.wake_up_q
+      0.19 =C2=B1 12%      -0.0        0.15 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.fpregs_assert_state_consistent
+      0.18 =C2=B1  6%      -0.0        0.14 =C2=B1 10%  perf-profile.childr=
+en.cycles-pp.__mod_node_page_state
+      0.12 =C2=B1 15%      -0.0        0.08 =C2=B1 19%  perf-profile.childr=
+en.cycles-pp.unaccount_page_cache_page
+      0.22 =C2=B1  3%      -0.0        0.19 =C2=B1 10%  perf-profile.childr=
+en.cycles-pp.mem_cgroup_commit_charge
+      0.11 =C2=B1 10%      -0.0        0.08 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.ktime_get_coarse_real_ts64
+      0.08 =C2=B1  6%      -0.0        0.06 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.xfs_mod_fdblocks
+      0.08 =C2=B1  6%      -0.0        0.06 =C2=B1 14%  perf-profile.childr=
+en.cycles-pp.xfs_bmap_add_extent_hole_delay
+      0.07 =C2=B1 17%      -0.0        0.06 =C2=B1 15%  perf-profile.childr=
+en.cycles-pp.__mark_inode_dirty
+      0.09 =C2=B1  9%      +0.0        0.12 =C2=B1 14%  perf-profile.childr=
+en.cycles-pp.perf_mux_hrtimer_handler
+      0.03 =C2=B1100%      +0.1        0.08 =C2=B1 20%  perf-profile.childr=
+en.cycles-pp.run_timer_softirq
+      0.09 =C2=B1 28%      +0.1        0.14 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.rcu_core
+      0.06 =C2=B1 13%      +0.1        0.12 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.xfs_iunlink
+      0.00            +0.1        0.06 =C2=B1 20%  perf-profile.children.cy=
+cles-pp.__remove_hrtimer
+      0.04 =C2=B1 59%      +0.1        0.12 =C2=B1 16%  perf-profile.childr=
+en.cycles-pp.update_blocked_averages
+      0.05 =C2=B1 61%      +0.1        0.12 =C2=B1 22%  perf-profile.childr=
+en.cycles-pp.rebalance_domains
+      0.05 =C2=B1 58%      +0.1        0.12 =C2=B1 18%  perf-profile.childr=
+en.cycles-pp.run_rebalance_domains
+      0.00            +0.1        0.08 =C2=B1 27%  perf-profile.children.cy=
+cles-pp.rcu_sched_clock_irq
+      0.00            +0.1        0.08 =C2=B1 27%  perf-profile.children.cy=
+cles-pp.tick_nohz_next_event
+      0.00            +0.1        0.09 =C2=B1 20%  perf-profile.children.cy=
+cles-pp.irq_enter
+      0.00            +0.1        0.11 =C2=B1 21%  perf-profile.children.cy=
+cles-pp.tick_nohz_get_sleep_length
+      0.46 =C2=B1  6%      +0.1        0.58 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.rwsem_spin_on_owner
+      0.11 =C2=B1 17%      +0.1        0.23 =C2=B1 17%  perf-profile.childr=
+en.cycles-pp.ktime_get
+      0.12 =C2=B1 21%      +0.1        0.25 =C2=B1 23%  perf-profile.childr=
+en.cycles-pp.clockevents_program_event
+      0.00            +0.1        0.15 =C2=B1 72%  perf-profile.children.cy=
+cles-pp.xfs_verify_agino
+      0.04 =C2=B1 60%      +0.2        0.26 =C2=B1 71%  perf-profile.childr=
+en.cycles-pp.xfs_inobt_get_maxrecs
+      0.11 =C2=B1  4%      +0.2        0.34 =C2=B1 17%  perf-profile.childr=
+en.cycles-pp.menu_select
+      0.15 =C2=B1 42%      +0.3        0.41 =C2=B1 21%  perf-profile.childr=
+en.cycles-pp.osq_lock
+      0.26 =C2=B1 33%      +0.3        0.52 =C2=B1 11%  perf-profile.childr=
+en.cycles-pp.__softirqentry_text_start
+      0.64 =C2=B1 33%      +0.3        0.92 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.__hrtimer_run_queues
+      0.30 =C2=B1 29%      +0.3        0.59 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.irq_exit
+      0.76 =C2=B1 10%      +0.3        1.08 =C2=B1 12%  perf-profile.childr=
+en.cycles-pp.rwsem_down_write_slowpath
+      0.63 =C2=B1 12%      +0.4        0.99 =C2=B1 11%  perf-profile.childr=
+en.cycles-pp.rwsem_optimistic_spin
+      0.86 =C2=B1  2%      +0.4        1.23 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.xfs_create
+      0.89 =C2=B1  2%      +0.4        1.25 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.xfs_generic_create
+      0.34 =C2=B1  6%      +0.4        0.74 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.xfs_dialloc
+      0.28 =C2=B1  7%      +0.4        0.69 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.xfs_dialloc_ag
+      0.38 =C2=B1  6%      +0.4        0.79 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.xfs_dir_ialloc
+      0.38 =C2=B1  6%      +0.4        0.79 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.xfs_ialloc
+      0.12 =C2=B1 19%      +0.4        0.55 =C2=B1 68%  perf-profile.childr=
+en.cycles-pp.xfs_btree_get_rec
+      0.12 =C2=B1  7%      +0.4        0.55 =C2=B1 70%  perf-profile.childr=
+en.cycles-pp.xfs_btree_increment
+      0.10 =C2=B1 27%      +0.4        0.55 =C2=B1 70%  perf-profile.childr=
+en.cycles-pp.__xfs_btree_check_sblock
+      0.88 =C2=B1 27%      +0.5        1.33 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.hrtimer_interrupt
+      1.67            +0.5        2.20 =C2=B1  5%  perf-profile.children.cy=
+cles-pp.do_sys_open
+      1.61 =C2=B1  2%      +0.6        2.16 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.do_filp_open
+      1.61            +0.6        2.17 =C2=B1  5%  perf-profile.children.cy=
+cles-pp.creat
+      1.61 =C2=B1  2%      +0.6        2.16 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.path_openat
+      0.15 =C2=B1 23%      +0.6        0.76 =C2=B1 69%  perf-profile.childr=
+en.cycles-pp.xfs_btree_check_sblock
+      0.20 =C2=B1  6%      +0.7        0.89 =C2=B1 70%  perf-profile.childr=
+en.cycles-pp.xfs_inobt_get_rec
+      1.25 =C2=B1 27%      +0.8        2.07 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.smp_apic_timer_interrupt
+      1.36 =C2=B1 26%      +0.9        2.23 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.apic_timer_interrupt
+      0.41 =C2=B1  4%      +1.1        1.54 =C2=B1 68%  perf-profile.childr=
+en.cycles-pp.xfs_check_agi_freecount
+      0.06 =C2=B1 64%      +1.6        1.62 =C2=B1107%  perf-profile.childr=
+en.cycles-pp.worker_thread
+      0.06 =C2=B1 64%      +1.6        1.62 =C2=B1107%  perf-profile.childr=
+en.cycles-pp.process_one_work
+      0.07 =C2=B1 59%      +1.6        1.66 =C2=B1105%  perf-profile.childr=
+en.cycles-pp.kthread
+      0.07 =C2=B1 59%      +1.6        1.66 =C2=B1105%  perf-profile.childr=
+en.cycles-pp.ret_from_fork
+     16.80 =C2=B1  2%     +11.7       28.49 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.intel_idle
+     17.24           +12.7       29.90 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.cpuidle_enter_state
+     17.24           +12.7       29.91 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.cpuidle_enter
+     16.96 =C2=B1  4%     +12.9       29.89        perf-profile.children.cy=
+cles-pp.start_secondary
+     17.71           +13.0       30.74 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.do_idle
+     17.71           +13.0       30.74 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.secondary_startup_64
+     17.71           +13.0       30.74 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.cpu_startup_entry
+     11.21            -1.7        9.51 =C2=B1  3%  perf-profile.self.cycles=
+-pp.do_syscall_64
+      6.22            -1.1        5.11 =C2=B1  2%  perf-profile.self.cycles=
+-pp.syscall_return_via_sysret
+      6.11            -1.0        5.14 =C2=B1  3%  perf-profile.self.cycles=
+-pp.entry_SYSCALL_64
+      3.33 =C2=B1  3%      -0.8        2.53 =C2=B1  2%  perf-profile.self.c=
+ycles-pp.copy_user_enhanced_fast_string
+      1.47 =C2=B1 18%      -0.5        1.00 =C2=B1 18%  perf-profile.self.c=
+ycles-pp.xfs_file_write_iter
+      0.89            -0.4        0.46 =C2=B1  8%  perf-profile.self.cycles=
+-pp.native_queued_spin_lock_slowpath
+      1.10 =C2=B1  8%      -0.4        0.75 =C2=B1  6%  perf-profile.self.c=
+ycles-pp.xfs_file_buffered_aio_write
+      1.46            -0.3        1.11 =C2=B1  3%  perf-profile.self.cycles=
+-pp.memset_erms
+      1.53 =C2=B1  3%      -0.3        1.21 =C2=B1  2%  perf-profile.self.c=
+ycles-pp.find_get_entry
+      1.18 =C2=B1  5%      -0.3        0.87 =C2=B1  8%  perf-profile.self.c=
+ycles-pp.selinux_file_permission
+      2.19 =C2=B1  4%      -0.2        1.96 =C2=B1  3%  perf-profile.self.c=
+ycles-pp.iomap_set_range_uptodate
+      0.83 =C2=B1  5%      -0.2        0.65 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.iomap_apply
+      1.31 =C2=B1  3%      -0.2        1.13 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.___might_sleep
+      0.60 =C2=B1  6%      -0.2        0.42 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.security_file_permission
+      0.77 =C2=B1  9%      -0.2        0.60 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.xfs_iext_lookup_extent
+      0.81 =C2=B1  5%      -0.2        0.65 =C2=B1  6%  perf-profile.self.c=
+ycles-pp.xas_load
+      0.84 =C2=B1  6%      -0.2        0.69 =C2=B1  9%  perf-profile.self.c=
+ycles-pp.xfs_file_iomap_begin
+      0.72 =C2=B1  3%      -0.2        0.57 =C2=B1  4%  perf-profile.self.c=
+ycles-pp.write
+      0.71 =C2=B1  4%      -0.1        0.56 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.__might_sleep
+      0.49 =C2=B1 11%      -0.1        0.36 =C2=B1 11%  perf-profile.self.c=
+ycles-pp.xas_start
+      0.76 =C2=B1  3%      -0.1        0.63 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.down_write
+      0.66 =C2=B1  8%      -0.1        0.54 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.entry_SYSCALL_64_after_hwframe
+      0.72 =C2=B1  6%      -0.1        0.60 =C2=B1  4%  perf-profile.self.c=
+ycles-pp.up_write
+      0.65            -0.1        0.53 =C2=B1  4%  perf-profile.self.cycles=
+-pp.iomap_write_end
+      0.60 =C2=B1  8%      -0.1        0.48 =C2=B1  8%  perf-profile.self.c=
+ycles-pp.iov_iter_copy_from_user_atomic
+      0.58 =C2=B1  4%      -0.1        0.48 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.vfs_write
+      0.65 =C2=B1  3%      -0.1        0.55 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.iov_iter_fault_in_readable
+      0.52 =C2=B1  8%      -0.1        0.42 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.pagecache_get_page
+      0.41 =C2=B1  6%      -0.1        0.31 =C2=B1 11%  perf-profile.self.c=
+ycles-pp.iov_iter_advance
+      0.28 =C2=B1  6%      -0.1        0.18 =C2=B1 11%  perf-profile.self.c=
+ycles-pp.generic_write_checks
+      0.42 =C2=B1  3%      -0.1        0.32 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.__list_del_entry_valid
+      0.31 =C2=B1  9%      -0.1        0.22 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.free_pcppages_bulk
+      0.50 =C2=B1  4%      -0.1        0.41 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.disk_rw
+      0.29 =C2=B1  5%      -0.1        0.20 =C2=B1  9%  perf-profile.self.c=
+ycles-pp.__pagevec_lru_add_fn
+      0.22 =C2=B1 11%      -0.1        0.14 =C2=B1 11%  perf-profile.self.c=
+ycles-pp.xlog_grant_add_space
+      0.34 =C2=B1  5%      -0.1        0.27 =C2=B1  8%  perf-profile.self.c=
+ycles-pp.unlock_page
+      0.41 =C2=B1  8%      -0.1        0.33 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.xfs_break_leased_layouts
+      0.42 =C2=B1 13%      -0.1        0.34 =C2=B1 17%  perf-profile.self.c=
+ycles-pp.new_sync_write
+      0.33 =C2=B1  7%      -0.1        0.25 =C2=B1  2%  perf-profile.self.c=
+ycles-pp.file_remove_privs
+      0.36            -0.1        0.28 =C2=B1  7%  perf-profile.self.cycles=
+-pp.lseek64
+      0.30 =C2=B1 17%      -0.1        0.23 =C2=B1  4%  perf-profile.self.c=
+ycles-pp.generic_write_check_limits
+      0.23 =C2=B1  9%      -0.1        0.16 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.xfs_break_layouts
+      0.22 =C2=B1  8%      -0.1        0.15 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.__fdget_pos
+      0.33 =C2=B1 10%      -0.1        0.26 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.file_update_time
+      0.17 =C2=B1 13%      -0.1        0.10 =C2=B1 12%  perf-profile.self.c=
+ycles-pp.__mod_lruvec_state
+      0.40 =C2=B1  3%      -0.1        0.34 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.get_page_from_freelist
+      0.25 =C2=B1 10%      -0.1        0.19 =C2=B1  2%  perf-profile.self.c=
+ycles-pp.xas_store
+      0.43 =C2=B1  2%      -0.1        0.37 =C2=B1  9%  perf-profile.self.c=
+ycles-pp._raw_spin_lock
+      0.22 =C2=B1  3%      -0.1        0.17 =C2=B1 12%  perf-profile.self.c=
+ycles-pp.current_time
+      0.21 =C2=B1  8%      -0.1        0.16 =C2=B1 11%  perf-profile.self.c=
+ycles-pp.__x64_sys_lseek
+      0.21 =C2=B1 10%      -0.1        0.16 =C2=B1  8%  perf-profile.self.c=
+ycles-pp.release_pages
+      0.28 =C2=B1  9%      -0.1        0.22        perf-profile.self.cycles=
+-pp.rcu_all_qs
+      0.37 =C2=B1  7%      -0.1        0.32 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.__x64_sys_write
+      0.35 =C2=B1  6%      -0.1        0.30 =C2=B1  3%  perf-profile.self.c=
+ycles-pp._cond_resched
+      0.16 =C2=B1  5%      -0.0        0.11 =C2=B1 20%  perf-profile.self.c=
+ycles-pp.__mod_memcg_state
+      0.14 =C2=B1  5%      -0.0        0.09 =C2=B1  8%  perf-profile.self.c=
+ycles-pp.account_page_cleaned
+      0.07 =C2=B1 11%      -0.0        0.03 =C2=B1100%  perf-profile.self.c=
+ycles-pp.alloc_pages_current
+      0.22 =C2=B1  3%      -0.0        0.17 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.__add_to_page_cache_locked
+      0.21 =C2=B1 13%      -0.0        0.16 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.ksys_lseek
+      0.37 =C2=B1  5%      -0.0        0.33 =C2=B1  6%  perf-profile.self.c=
+ycles-pp.ksys_write
+      0.30 =C2=B1  4%      -0.0        0.26 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.page_mapping
+      0.18 =C2=B1 12%      -0.0        0.14 =C2=B1  8%  perf-profile.self.c=
+ycles-pp.xfs_log_commit_cil
+      0.14 =C2=B1 17%      -0.0        0.10 =C2=B1 15%  perf-profile.self.c=
+ycles-pp.account_page_dirtied
+      0.15 =C2=B1 10%      -0.0        0.11 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.find_get_entries
+      0.17 =C2=B1  6%      -0.0        0.13 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.__mod_node_page_state
+      0.11 =C2=B1  7%      -0.0        0.07 =C2=B1 17%  perf-profile.self.c=
+ycles-pp.xfs_isilocked
+      0.07 =C2=B1 14%      -0.0        0.03 =C2=B1100%  perf-profile.self.c=
+ycles-pp.__mark_inode_dirty
+      0.09 =C2=B1 12%      -0.0        0.05 =C2=B1 60%  perf-profile.self.c=
+ycles-pp.__cancel_dirty_page
+      0.09 =C2=B1 11%      -0.0        0.06 =C2=B1 58%  perf-profile.self.c=
+ycles-pp.__x86_indirect_thunk_r15
+      0.17 =C2=B1 13%      -0.0        0.14 =C2=B1  8%  perf-profile.self.c=
+ycles-pp.fpregs_assert_state_consistent
+      0.13 =C2=B1 11%      -0.0        0.09 =C2=B1 20%  perf-profile.self.c=
+ycles-pp.workingset_update_node
+      0.14 =C2=B1  7%      -0.0        0.11 =C2=B1  4%  perf-profile.self.c=
+ycles-pp.timespec64_trunc
+      0.11 =C2=B1  9%      -0.0        0.08 =C2=B1 19%  perf-profile.self.c=
+ycles-pp.truncate_inode_pages_range
+      0.10 =C2=B1 15%      -0.0        0.07 =C2=B1 12%  perf-profile.self.c=
+ycles-pp.iomap_read_page_sync
+      0.07 =C2=B1 12%      -0.0        0.04 =C2=B1 57%  perf-profile.self.c=
+ycles-pp.mem_cgroup_commit_charge
+      0.10 =C2=B1  8%      -0.0        0.07 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.ktime_get_coarse_real_ts64
+      0.09 =C2=B1  8%      -0.0        0.07 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.delete_from_page_cache_batch
+      0.09 =C2=B1  9%      -0.0        0.07 =C2=B1 16%  perf-profile.self.c=
+ycles-pp.xfs_dir3_data_entsize
+      0.11 =C2=B1  4%      -0.0        0.09 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.copyin
+      0.00            +0.1        0.11 =C2=B1 14%  perf-profile.self.cycles=
+-pp.cpuidle_enter_state
+      0.06 =C2=B1 58%      +0.1        0.16 =C2=B1 22%  perf-profile.self.c=
+ycles-pp.ktime_get
+      0.07 =C2=B1  5%      +0.1        0.19 =C2=B1 15%  perf-profile.self.c=
+ycles-pp.menu_select
+      0.45 =C2=B1  5%      +0.1        0.57 =C2=B1  6%  perf-profile.self.c=
+ycles-pp.rwsem_spin_on_owner
+      0.04 =C2=B1 60%      +0.2        0.22 =C2=B1 72%  perf-profile.self.c=
+ycles-pp.xfs_inobt_get_maxrecs
+      0.04 =C2=B1 58%      +0.2        0.29 =C2=B1 68%  perf-profile.self.c=
+ycles-pp.__xfs_btree_check_sblock
+      0.14 =C2=B1 36%      +0.3        0.41 =C2=B1 22%  perf-profile.self.c=
+ycles-pp.osq_lock
+     16.78 =C2=B1  2%     +11.7       28.46 =C2=B1  2%  perf-profile.self.c=
+ycles-pp.intel_idle
 
 
                                                                            =
@@ -1504,49 +1492,223 @@ shootdowns
                                                                            =
      =
 
-  35000 +-+------O-----------------------------------------O---------------=
+  160000 +-+---------------------------------------------------------------=
 -+   =
 
-        |          O       O   O O    O       O      O                     =
+  155000 +-+                +                                              =
  |   =
 
-  34000 +-O O          O                    O      O         O             =
+         |                  :                                    +         =
  |   =
 
-  33000 +-+          O       O      O                    O                 =
+  150000 +-+               ::                                    ::        =
  |   =
 
-        |       O        O        O                                        =
+  145000 +-+               : :                                  : :        =
  |   =
 
-  32000 O-+   O                         O O     O O    O                   =
+         |                :  :    .+.                           :  :     .+=
+.|   =
+
+  140000 +-+.+.++.+.+.+.+.+  +.+.+   +.+.+.++.+.+. .+.+.++.+. .+   +.++.+  =
  |   =
 
-  31000 +-+                                                                =
+  135000 +-+                                      +          +             =
  |   =
 
-        |                                                                  =
+  130000 +-+                                                               =
  |   =
 
-  30000 +-+                                            +.                  =
+         |                                                                 =
  |   =
 
-  29000 +-+   +.                      +.        +.    +  +. .+         .+. =
+  125000 +-+                                                               =
  |   =
 
-        |     : +  +.           .+    : +.+     : ++.+     +  + .+.++.+   +=
+  120000 +-+                                                               =
  |   =
 
-  28000 +-+  :   :+  +. .+.+.+.+  :  :     +   :               +           =
-:|   =
-
-  27000 +-+. :   +     +          +. :      +. :                           =
-:|   =
-
-        |   +                       +         +                            =
+         |                               O                                 =
  |   =
 
-  26000 +-+----------------------------------------------------------------=
+  115000 O-O O OO O O O O O OO O O O O O   O                               =
+ |   =
+
+  110000 +-+---------------------------------------------------------------=
+-+   =
+
+                                                                           =
+     =
+
+                                                                           =
+                                                                           =
+          =
+
+                              aim7.time.elapsed_time                       =
+     =
+
+                                                                           =
+     =
+
+  165 +-+------------------------------------------------------------------=
+-+   =
+
+  160 O-O O O O O O O O OO               O                                 =
+ |   =
+
+      |                    O O O O O O                                     =
+ |   =
+
+  155 +-+                              O                                   =
+ |   =
+
+  150 +-+                                                                  =
+ |   =
+
+      |                                                                    =
+ |   =
+
+  145 +-+                                                                  =
+ |   =
+
+  140 +-+                                                                  =
+ |   =
+
+  135 +-+                                                                  =
+ |   =
+
+      |.+. .+.+. .+.+.+.                    .+. .+.+.+.+.+.++.             =
+ |   =
+
+  130 +-+ +     +       +  +.+.+.+.+.+.+.+.+   +              +   +.+.+.+.+=
+.|   =
+
+  125 +-+               :  :                                   : :         =
+ |   =
+
+      |                  ::                                    : :         =
+ |   =
+
+  120 +-+                ::                                     +          =
+ |   =
+
+  115 +-+------------------------------------------------------------------=
+-+   =
+
+                                                                           =
+     =
+
+                                                                           =
+                                                                           =
+          =
+
+                            aim7.time.elapsed_time.max                     =
+     =
+
+                                                                           =
+     =
+
+  165 +-+------------------------------------------------------------------=
+-+   =
+
+  160 O-O O O O O O O O OO               O                                 =
+ |   =
+
+      |                    O O O O O O                                     =
+ |   =
+
+  155 +-+                              O                                   =
+ |   =
+
+  150 +-+                                                                  =
+ |   =
+
+      |                                                                    =
+ |   =
+
+  145 +-+                                                                  =
+ |   =
+
+  140 +-+                                                                  =
+ |   =
+
+  135 +-+                                                                  =
+ |   =
+
+      |.+. .+.+. .+.+.+.                    .+. .+.+.+.+.+.++.             =
+ |   =
+
+  130 +-+ +     +       +  +.+.+.+.+.+.+.+.+   +              +   +.+.+.+.+=
+.|   =
+
+  125 +-+               :  :                                   : :         =
+ |   =
+
+      |                  ::                                    : :         =
+ |   =
+
+  120 +-+                ::                                     +          =
+ |   =
+
+  115 +-+------------------------------------------------------------------=
+-+   =
+
+                                                                           =
+     =
+
+                                                                           =
+                                                                           =
+          =
+
+                         aim7.time.voluntary_context_switches              =
+     =
+
+                                                                           =
+     =
+
+   1.1e+06 +-+-------------------------------------------------------------=
+-+   =
+
+           |                                                               =
+ |   =
+
+  1.05e+06 +-+.++.+.+.+.++.+.+.+.++.+.+.+.+.++.+.+.+.++.+.+.+.++.+.+.+.++.+=
+.|   =
+
+           |                                                               =
+ |   =
+
+     1e+06 +-+                                                             =
+ |   =
+
+           |                                                               =
+ |   =
+
+    950000 +-+                                                             =
+ |   =
+
+           |                                                               =
+ |   =
+
+    900000 +-+                                                             =
+ |   =
+
+           |                                                               =
+ |   =
+
+    850000 O-+           O   O      O                                      =
+ |   =
+
+           | O OO O O O O  O   O OO   O O   O                              =
+ |   =
+
+    800000 +-+                            O                                =
+ |   =
+
+           |                                                               =
+ |   =
+
+    750000 +-+-------------------------------------------------------------=
 -+   =
 
                                                                            =
@@ -1557,6 +1719,1479 @@ shootdowns
 
 [*] bisect-good sample
 [O] bisect-bad  sample
+
+***************************************************************************=
+************************
+lkp-ivb-ep01: 40 threads Intel(R) Xeon(R) CPU E5-2690 v2 @ 3.00GHz with 384=
+G memory
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+compiler/cpufreq_governor/disk/fs/kconfig/load/md/rootfs/tbox_group/test/te=
+stcase:
+  gcc-7/performance/4BRD_12G/xfs/x86_64-rhel-7.6/3000/RAID0/debian-x86_64-2=
+019-05-14.cgz/lkp-ivb-ep01/disk_cp/aim7
+
+commit: =
+
+  d515962b00 ("xfs: pass around xfs_inode_ag_walk iget/irele helper functio=
+ns")
+  1aabb011bf ("xfs: deferred inode inactivation")
+
+d515962b00d64454 1aabb011bfba5a8942d3e0d0c84 =
+
+---------------- --------------------------- =
+
+         %stddev     %change         %stddev
+             \          |                \  =
+
+    204959           -35.7%     131770 =C2=B1  3%  aim7.jobs-per-min
+     88.12           +55.7%     137.19 =C2=B1  3%  aim7.time.elapsed_time
+     88.12           +55.7%     137.19 =C2=B1  3%  aim7.time.elapsed_time.m=
+ax
+     72330 =C2=B1  3%     +12.2%      81167 =C2=B1  4%  aim7.time.involunta=
+ry_context_switches
+    151188            +6.4%     160846 =C2=B1  2%  aim7.time.minor_page_fau=
+lts
+      2437           +33.6%       3257 =C2=B1  3%  aim7.time.system_time
+    305.87           +45.8%     446.05 =C2=B1  5%  aim7.time.user_time
+    737855           -13.0%     642174 =C2=B1  3%  aim7.time.voluntary_cont=
+ext_switches
+     22.63            +9.0       31.68        mpstat.cpu.all.idle%
+     68.59            -8.5       60.06        mpstat.cpu.all.sys%
+  61676265 =C2=B1 55%    +177.3%  1.711e+08 =C2=B1 18%  cpuidle.C1.time
+    612540 =C2=B1 47%    +231.9%    2032764 =C2=B1 14%  cpuidle.C1.usage
+ 5.694e+08 =C2=B1 13%    +157.5%  1.466e+09 =C2=B1  6%  cpuidle.C6.time
+    872994 =C2=B1  2%    +116.8%    1892610 =C2=B1  6%  cpuidle.C6.usage
+     23.75 =C2=B1  3%     +34.7%      32.00 =C2=B1  2%  vmstat.cpu.id
+     66.75           -11.6%      59.00        vmstat.cpu.sy
+      1534 =C2=B1 26%     +87.2%       2873 =C2=B1  8%  vmstat.io.bo
+     17277 =C2=B1  2%     -14.2%      14823        vmstat.system.cs
+     24.17           +34.6%      32.54        iostat.cpu.idle
+     67.23           -11.8%      59.31        iostat.cpu.system
+      8.60            -5.2%       8.15        iostat.cpu.user
+     46.02 =C2=B1  5%    +114.0%      98.46 =C2=B1  3%  iostat.md0.w/s
+      1601 =C2=B1 25%     +86.8%       2991 =C2=B1  7%  iostat.md0.wkB/s
+     81296 =C2=B1  2%     +47.8%     120146 =C2=B1  2%  meminfo.AnonHugePag=
+es
+     16049 =C2=B1  7%     -14.2%      13766        meminfo.Dirty
+     16741 =C2=B1  6%     -13.7%      14450 =C2=B1  2%  meminfo.Inactive(fi=
+le)
+     91250           +22.9%     112105        meminfo.KReclaimable
+    109853 =C2=B1  5%      -7.0%     102116 =C2=B1  8%  meminfo.PageTables
+     91250           +22.9%     112105        meminfo.SReclaimable
+     36157 =C2=B1  2%     -12.9%      31489 =C2=B1  4%  meminfo.Shmem
+    255575           +14.2%     291816        meminfo.Slab
+     27539           -34.1%      18158 =C2=B1  4%  meminfo.max_used_kB
+      2265           -45.2%       1241 =C2=B1  7%  turbostat.Avg_MHz
+     77.95            -8.8       69.19        turbostat.Busy%
+      2905           -38.3%       1793 =C2=B1  7%  turbostat.Bzy_MHz
+    608401 =C2=B1 47%    +233.6%    2029542 =C2=B1 15%  turbostat.C1
+      3.84 =C2=B1 73%      -3.2        0.68 =C2=B1  7%  turbostat.C3%
+    868860 =C2=B1  2%    +117.3%    1888276 =C2=B1  6%  turbostat.C6
+     15.87 =C2=B1 13%     +10.5       26.42 =C2=B1  2%  turbostat.C6%
+     14.37 =C2=B1  8%     +46.5%      21.05        turbostat.CPU%c1
+      6.78 =C2=B1 20%     +41.9%       9.62 =C2=B1  4%  turbostat.CPU%c6
+    121.47           -44.3%      67.72 =C2=B1  8%  turbostat.CorWatt
+   7419316           +52.0%   11279514 =C2=B1  4%  turbostat.IRQ
+      3.43 =C2=B1 19%     -31.4%       2.35 =C2=B1 19%  turbostat.Pkg%pc2
+     71.50            -4.0%      68.67        turbostat.PkgTmp
+    148.87           -36.5%      94.53 =C2=B1  6%  turbostat.PkgWatt
+     36.86            -5.5%      34.83        turbostat.RAMWatt
+      7146           +55.8%      11133 =C2=B1  3%  turbostat.SMI
+    623.50 =C2=B1105%    +220.2%       1996 =C2=B1 37%  numa-meminfo.node0.=
+Active(file)
+      8186 =C2=B1  3%     -17.1%       6789        numa-meminfo.node0.Dirty
+     15459 =C2=B1 10%     -26.0%      11435 =C2=B1  5%  numa-meminfo.node0.=
+Inactive
+      7151 =C2=B1 19%     -41.4%       4190 =C2=B1 21%  numa-meminfo.node0.=
+Inactive(anon)
+      8307 =C2=B1  3%     -12.8%       7245 =C2=B1  4%  numa-meminfo.node0.=
+Inactive(file)
+   1057156 =C2=B1 15%     +30.0%    1374548 =C2=B1  4%  numa-meminfo.node0.=
+MemUsed
+     27710 =C2=B1145%    +258.8%      99419 =C2=B1  8%  numa-meminfo.node0.=
+PageTables
+     65500 =C2=B1 45%     +93.9%     126976        numa-meminfo.node0.SUnre=
+claim
+    113557 =C2=B1 26%     +57.4%     178704 =C2=B1  6%  numa-meminfo.node0.=
+Slab
+      1849 =C2=B1 35%     -72.2%     513.33 =C2=B1141%  numa-meminfo.node1.=
+Active(file)
+      8087 =C2=B1  6%     -14.6%       6906        numa-meminfo.node1.Dirty
+      8654 =C2=B1  9%     -17.9%       7105 =C2=B1  7%  numa-meminfo.node1.=
+Inactive(file)
+     43179 =C2=B1 16%     +39.7%      60339 =C2=B1 13%  numa-meminfo.node1.=
+KReclaimable
+     38009 =C2=B1 50%     -89.6%       3961 =C2=B1  9%  numa-meminfo.node1.=
+KernelStack
+   1284978 =C2=B1 12%     -21.8%    1004429 =C2=B1  4%  numa-meminfo.node1.=
+MemUsed
+     81947 =C2=B1 54%     -96.7%       2695        numa-meminfo.node1.PageT=
+ables
+     43179 =C2=B1 16%     +39.7%      60339 =C2=B1 13%  numa-meminfo.node1.=
+SReclaimable
+    156.25 =C2=B1105%    +218.3%     497.33 =C2=B1 37%  numa-vmstat.node0.n=
+r_active_file
+  16205972 =C2=B1  2%     +14.6%   18577156        numa-vmstat.node0.nr_dir=
+tied
+      2062 =C2=B1  3%     -17.9%       1694 =C2=B1  3%  numa-vmstat.node0.n=
+r_dirty
+      1788 =C2=B1 19%     -41.2%       1051 =C2=B1 21%  numa-vmstat.node0.n=
+r_inactive_anon
+      2090 =C2=B1  7%     -13.2%       1814 =C2=B1  4%  numa-vmstat.node0.n=
+r_inactive_file
+      6975 =C2=B1145%    +255.1%      24766 =C2=B1  8%  numa-vmstat.node0.n=
+r_page_table_pages
+     16397 =C2=B1 45%     +93.3%      31699        numa-vmstat.node0.nr_sla=
+b_unreclaimable
+    156.25 =C2=B1105%    +218.3%     497.33 =C2=B1 37%  numa-vmstat.node0.n=
+r_zone_active_file
+      1788 =C2=B1 19%     -41.2%       1051 =C2=B1 21%  numa-vmstat.node0.n=
+r_zone_inactive_anon
+      2093 =C2=B1  7%     -13.2%       1816 =C2=B1  4%  numa-vmstat.node0.n=
+r_zone_inactive_file
+  16642980 =C2=B1  3%     +14.9%   19130375        numa-vmstat.node0.numa_h=
+it
+  16605490 =C2=B1  2%     +14.9%   19079593        numa-vmstat.node0.numa_l=
+ocal
+    461.25 =C2=B1 35%     -72.2%     128.33 =C2=B1141%  numa-vmstat.node1.n=
+r_active_file
+      2046           -15.2%       1735        numa-vmstat.node1.nr_dirty
+      2184 =C2=B1  5%     -18.2%       1786 =C2=B1  6%  numa-vmstat.node1.n=
+r_inactive_file
+     37823 =C2=B1 50%     -89.5%       3960 =C2=B1  9%  numa-vmstat.node1.n=
+r_kernel_stack
+     20375 =C2=B1 54%     -96.7%     672.67        numa-vmstat.node1.nr_pag=
+e_table_pages
+     10793 =C2=B1 16%     +39.7%      15083 =C2=B1 13%  numa-vmstat.node1.n=
+r_slab_reclaimable
+    461.25 =C2=B1 35%     -72.2%     128.33 =C2=B1141%  numa-vmstat.node1.n=
+r_zone_active_file
+      2183 =C2=B1  5%     -18.3%       1785 =C2=B1  6%  numa-vmstat.node1.n=
+r_zone_inactive_file
+     91478            -2.1%      89547        proc-vmstat.nr_active_anon
+    617.75            +1.5%     627.00        proc-vmstat.nr_active_file
+      4045 =C2=B1  2%     -15.8%       3405        proc-vmstat.nr_dirty
+      5069            -3.6%       4888        proc-vmstat.nr_inactive_anon
+      4217 =C2=B1  2%     -15.4%       3567        proc-vmstat.nr_inactive_=
+file
+     53612            -1.9%      52592        proc-vmstat.nr_kernel_stack
+      6369            -3.5%       6149        proc-vmstat.nr_mapped
+      9055 =C2=B1  2%     -13.1%       7871 =C2=B1  4%  proc-vmstat.nr_shmem
+     22808           +22.8%      28015        proc-vmstat.nr_slab_reclaimab=
+le
+     41043            +9.4%      44903        proc-vmstat.nr_slab_unreclaim=
+able
+     91478            -2.1%      89547        proc-vmstat.nr_zone_active_an=
+on
+    617.75            +1.5%     627.00        proc-vmstat.nr_zone_active_fi=
+le
+      5069            -3.6%       4888        proc-vmstat.nr_zone_inactive_=
+anon
+      4217 =C2=B1  2%     -15.4%       3567        proc-vmstat.nr_zone_inac=
+tive_file
+      3453 =C2=B1  2%      -8.4%       3163        proc-vmstat.nr_zone_writ=
+e_pending
+      1737 =C2=B1142%    +716.8%      14190 =C2=B1  3%  proc-vmstat.numa_hi=
+nt_faults
+      2731 =C2=B1113%    +389.5%      13370 =C2=B1  3%  proc-vmstat.numa_pa=
+ges_migrated
+      4460 =C2=B1  7%     -39.5%       2697 =C2=B1 14%  proc-vmstat.pgactiv=
+ate
+    402077           +31.0%     526544 =C2=B1  2%  proc-vmstat.pgfault
+      2731 =C2=B1113%    +389.5%      13370 =C2=B1  3%  proc-vmstat.pgmigra=
+te_success
+    139264 =C2=B1 25%    +188.9%     402269 =C2=B1 12%  proc-vmstat.pgpgout
+      2856          +360.5%      13152 =C2=B1  3%  slabinfo.dmaengine-unmap=
+-16.active_objs
+     77.75          +589.0%     535.67 =C2=B1  3%  slabinfo.dmaengine-unmap=
+-16.active_slabs
+      3292          +584.1%      22520 =C2=B1  3%  slabinfo.dmaengine-unmap=
+-16.num_objs
+     77.75          +589.0%     535.67 =C2=B1  3%  slabinfo.dmaengine-unmap=
+-16.num_slabs
+      2332 =C2=B1  7%     +39.7%       3257        slabinfo.kmalloc-128.act=
+ive_objs
+      2332 =C2=B1  7%     +39.7%       3257        slabinfo.kmalloc-128.num=
+_objs
+     19136          +126.1%      43271 =C2=B1  3%  slabinfo.kmalloc-16.acti=
+ve_objs
+     74.75          +139.5%     179.00 =C2=B1  3%  slabinfo.kmalloc-16.acti=
+ve_slabs
+     19136          +140.5%      46024 =C2=B1  3%  slabinfo.kmalloc-16.num_=
+objs
+     74.75          +139.5%     179.00 =C2=B1  3%  slabinfo.kmalloc-16.num_=
+slabs
+    741.00           +24.5%     922.67 =C2=B1  2%  slabinfo.kmalloc-4k.acti=
+ve_objs
+    751.25           +24.4%     934.67 =C2=B1  2%  slabinfo.kmalloc-4k.num_=
+objs
+      6130          +175.2%      16869 =C2=B1  2%  slabinfo.kmalloc-512.act=
+ive_objs
+    202.00          +207.8%     621.67 =C2=B1  2%  slabinfo.kmalloc-512.act=
+ive_slabs
+      6484          +207.0%      19906 =C2=B1  2%  slabinfo.kmalloc-512.num=
+_objs
+    202.00          +207.8%     621.67 =C2=B1  2%  slabinfo.kmalloc-512.num=
+_slabs
+    461.50 =C2=B1  2%     +43.6%     662.67        slabinfo.kmalloc-8k.acti=
+ve_objs
+    476.25 =C2=B1  2%     +54.5%     735.67        slabinfo.kmalloc-8k.num_=
+objs
+      1160           +72.2%       1998 =C2=B1  2%  slabinfo.xfs_buf_item.ac=
+tive_objs
+      1160           +72.2%       1998 =C2=B1  2%  slabinfo.xfs_buf_item.nu=
+m_objs
+      1186           +64.4%       1950        slabinfo.xfs_efd_item.active_=
+objs
+      1186           +64.4%       1950        slabinfo.xfs_efd_item.num_objs
+      2168          +487.1%      12729 =C2=B1  3%  slabinfo.xfs_inode.activ=
+e_objs
+     87.50          +676.8%     679.67 =C2=B1  4%  slabinfo.xfs_inode.activ=
+e_slabs
+      2819          +671.9%      21761 =C2=B1  4%  slabinfo.xfs_inode.num_o=
+bjs
+     87.50          +676.8%     679.67 =C2=B1  4%  slabinfo.xfs_inode.num_s=
+labs
+     13.63 =C2=B1  4%      -8.1%      12.53        perf-stat.i.MPKI
+  4.74e+09           -32.0%  3.224e+09 =C2=B1  4%  perf-stat.i.branch-instr=
+uctions
+  59710263           -29.8%   41920989 =C2=B1  3%  perf-stat.i.branch-misses
+  24239162 =C2=B1  2%     -29.6%   17056459 =C2=B1  6%  perf-stat.i.cache-m=
+isses
+ 2.448e+08           -32.9%  1.644e+08 =C2=B1  4%  perf-stat.i.cache-refere=
+nces
+     17563 =C2=B1  2%     -14.8%      14962        perf-stat.i.context-swit=
+ches
+      3.90 =C2=B1  2%     -22.0%       3.04 =C2=B1  3%  perf-stat.i.cpi
+ 9.031e+10           -45.5%  4.926e+10 =C2=B1  8%  perf-stat.i.cpu-cycles
+      3006           -59.5%       1218 =C2=B1  2%  perf-stat.i.cpu-migratio=
+ns
+      3432           -23.3%       2633        perf-stat.i.cycles-between-ca=
+che-misses
+      1.64 =C2=B1 12%      -0.4        1.25 =C2=B1  2%  perf-stat.i.dTLB-lo=
+ad-miss-rate%
+ 1.328e+08 =C2=B1 13%     -50.8%   65422884 =C2=B1  5%  perf-stat.i.dTLB-lo=
+ad-misses
+ 7.404e+09           -31.8%  5.052e+09 =C2=B1  4%  perf-stat.i.dTLB-loads
+  16794433 =C2=B1  5%     -37.4%   10521517 =C2=B1  3%  perf-stat.i.dTLB-st=
+ore-misses
+ 4.914e+09           -32.9%    3.3e+09 =C2=B1  4%  perf-stat.i.dTLB-stores
+     87.61            -3.8       83.84        perf-stat.i.iTLB-load-miss-ra=
+te%
+   7267620           -33.6%    4828701 =C2=B1  2%  perf-stat.i.iTLB-load-mi=
+sses
+ 2.391e+10           -31.8%   1.63e+10 =C2=B1  4%  perf-stat.i.instructions
+      0.28 =C2=B1  2%     +28.8%       0.36 =C2=B1  2%  perf-stat.i.ipc
+      4279           -14.3%       3669        perf-stat.i.minor-faults
+     45.88            +0.6       46.48        perf-stat.i.node-load-miss-ra=
+te%
+  13857418 =C2=B1  2%     -33.2%    9253829 =C2=B1  7%  perf-stat.i.node-lo=
+ad-misses
+  15830808 =C2=B1  2%     -33.8%   10483641 =C2=B1  7%  perf-stat.i.node-lo=
+ads
+   5925929           -28.2%    4252744 =C2=B1  5%  perf-stat.i.node-store-m=
+isses
+   7451625           -27.1%    5432276 =C2=B1  5%  perf-stat.i.node-stores
+      4279           -14.3%       3669        perf-stat.i.page-faults
+      1.26            +0.0        1.30        perf-stat.overall.branch-miss=
+-rate%
+      9.90            +0.5       10.37 =C2=B1  2%  perf-stat.overall.cache-=
+miss-rate%
+      3.78           -20.1%       3.02 =C2=B1  3%  perf-stat.overall.cpi
+      3726           -22.6%       2884        perf-stat.overall.cycles-betw=
+een-cache-misses
+      1.76 =C2=B1 12%      -0.5        1.28 =C2=B1  2%  perf-stat.overall.d=
+TLB-load-miss-rate%
+      0.34 =C2=B1  5%      -0.0        0.32        perf-stat.overall.dTLB-s=
+tore-miss-rate%
+     87.44            -3.8       83.60        perf-stat.overall.iTLB-load-m=
+iss-rate%
+      3290            +2.6%       3374        perf-stat.overall.instruction=
+s-per-iTLB-miss
+      0.26           +25.4%       0.33 =C2=B1  3%  perf-stat.overall.ipc
+ 4.685e+09           -31.7%  3.199e+09 =C2=B1  4%  perf-stat.ps.branch-inst=
+ructions
+  59020206           -29.5%   41606551 =C2=B1  3%  perf-stat.ps.branch-miss=
+es
+  23958401 =C2=B1  2%     -29.3%   16929391 =C2=B1  6%  perf-stat.ps.cache-=
+misses
+  2.42e+08           -32.6%  1.631e+08 =C2=B1  4%  perf-stat.ps.cache-refer=
+ences
+     17359 =C2=B1  2%     -14.5%      14848        perf-stat.ps.context-swi=
+tches
+ 8.926e+10           -45.2%   4.89e+10 =C2=B1  8%  perf-stat.ps.cpu-cycles
+      2971           -59.3%       1208 =C2=B1  2%  perf-stat.ps.cpu-migrati=
+ons
+ 1.313e+08 =C2=B1 13%     -50.5%   64933807 =C2=B1  5%  perf-stat.ps.dTLB-l=
+oad-misses
+ 7.318e+09           -31.5%  5.014e+09 =C2=B1  4%  perf-stat.ps.dTLB-loads
+  16598516 =C2=B1  5%     -37.1%   10442914 =C2=B1  3%  perf-stat.ps.dTLB-s=
+tore-misses
+ 4.857e+09           -32.6%  3.275e+09 =C2=B1  4%  perf-stat.ps.dTLB-stores
+   7182997           -33.3%    4792440 =C2=B1  2%  perf-stat.ps.iTLB-load-m=
+isses
+ 2.363e+10           -31.5%  1.618e+10 =C2=B1  4%  perf-stat.ps.instructions
+      4233           -14.0%       3642        perf-stat.ps.minor-faults
+  13695799 =C2=B1  2%     -32.9%    9184667 =C2=B1  7%  perf-stat.ps.node-l=
+oad-misses
+  15646175 =C2=B1  2%     -33.5%   10405160 =C2=B1  7%  perf-stat.ps.node-l=
+oads
+   5856803           -27.9%    4221222 =C2=B1  5%  perf-stat.ps.node-store-=
+misses
+   7364898           -26.8%    5392052 =C2=B1  5%  perf-stat.ps.node-stores
+      4233           -14.0%       3642        perf-stat.ps.page-faults
+ 2.091e+12            +6.2%  2.221e+12        perf-stat.total.instructions
+     21578           +80.2%      38887        sched_debug.cfs_rq:/.exec_clo=
+ck.avg
+     23353           +75.3%      40945 =C2=B1  2%  sched_debug.cfs_rq:/.exe=
+c_clock.max
+     21322           +79.5%      38269        sched_debug.cfs_rq:/.exec_clo=
+ck.min
+    304.37 =C2=B1  8%     +41.5%     430.55 =C2=B1 25%  sched_debug.cfs_rq:=
+/.exec_clock.stddev
+    632.50 =C2=B1 12%     +29.7%     820.11 =C2=B1 12%  sched_debug.cfs_rq:=
+/.load_avg.max
+    780200           +60.8%    1254863        sched_debug.cfs_rq:/.min_vrun=
+time.avg
+    872093           +58.1%    1378898 =C2=B1  3%  sched_debug.cfs_rq:/.min=
+_vruntime.max
+    762295           +57.2%    1198056        sched_debug.cfs_rq:/.min_vrun=
+time.min
+     17394 =C2=B1  5%     +57.7%      27431 =C2=B1 14%  sched_debug.cfs_rq:=
+/.min_vruntime.stddev
+      0.40 =C2=B1  5%     +15.0%       0.46 =C2=B1  8%  sched_debug.cfs_rq:=
+/.nr_running.stddev
+      0.13 =C2=B1 38%    +111.6%       0.28 =C2=B1 18%  sched_debug.cfs_rq:=
+/.nr_spread_over.avg
+      0.31 =C2=B1 29%     +63.8%       0.50 =C2=B1 13%  sched_debug.cfs_rq:=
+/.nr_spread_over.stddev
+     -1508          -590.1%       7393 =C2=B1 78%  sched_debug.cfs_rq:/.spr=
+ead0.avg
+    -19404          +154.1%     -49302        sched_debug.cfs_rq:/.spread0.=
+min
+     17422 =C2=B1  5%     +57.4%      27431 =C2=B1 14%  sched_debug.cfs_rq:=
+/.spread0.stddev
+    777.17           -15.3%     658.55 =C2=B1 11%  sched_debug.cfs_rq:/.uti=
+l_avg.avg
+      1497 =C2=B1  8%     -16.1%       1256 =C2=B1 15%  sched_debug.cfs_rq:=
+/.util_avg.max
+    123.49 =C2=B1 11%     -31.9%      84.04 =C2=B1 20%  sched_debug.cfs_rq:=
+/.util_est_enqueued.avg
+    473039 =C2=B1  7%     +37.9%     652433 =C2=B1  2%  sched_debug.cpu.avg=
+_idle.avg
+    236058 =C2=B1 12%     -18.6%     192130 =C2=B1  4%  sched_debug.cpu.avg=
+_idle.stddev
+     71615           +43.2%     102524        sched_debug.cpu.clock.avg
+     71626           +43.2%     102548        sched_debug.cpu.clock.max
+     71600           +43.2%     102498        sched_debug.cpu.clock.min
+      7.20 =C2=B1 22%    +102.5%      14.59 =C2=B1 12%  sched_debug.cpu.clo=
+ck.stddev
+     71615           +43.2%     102524        sched_debug.cpu.clock_task.avg
+     71626           +43.2%     102548        sched_debug.cpu.clock_task.max
+     71600           +43.2%     102498        sched_debug.cpu.clock_task.min
+      7.20 =C2=B1 22%    +102.5%      14.59 =C2=B1 12%  sched_debug.cpu.clo=
+ck_task.stddev
+      1820 =C2=B1 11%     -18.6%       1482 =C2=B1 14%  sched_debug.cpu.cur=
+r->pid.avg
+      3837 =C2=B1  8%     +37.7%       5283        sched_debug.cpu.curr->pi=
+d.max
+      0.00 =C2=B1  3%     +32.7%       0.00 =C2=B1 15%  sched_debug.cpu.nex=
+t_balance.stddev
+      0.42 =C2=B1  8%     +17.3%       0.49 =C2=B1  4%  sched_debug.cpu.nr_=
+running.stddev
+     14410 =C2=B1  2%     +63.7%      23596        sched_debug.cpu.nr_switc=
+hes.avg
+     20732          +148.7%      51565 =C2=B1  9%  sched_debug.cpu.nr_switc=
+hes.max
+     12235           +29.2%      15807 =C2=B1  2%  sched_debug.cpu.nr_switc=
+hes.min
+      1916 =C2=B1  5%    +373.8%       9082 =C2=B1  8%  sched_debug.cpu.nr_=
+switches.stddev
+     37.10           +17.6%      43.62 =C2=B1  4%  sched_debug.cpu.nr_unint=
+erruptible.avg
+    -42.25           -35.6%     -27.22        sched_debug.cpu.nr_uninterrup=
+tible.min
+     12279 =C2=B1  2%     +74.6%      21437        sched_debug.cpu.sched_co=
+unt.avg
+     14279 =C2=B1  2%    +231.0%      47258 =C2=B1 10%  sched_debug.cpu.sch=
+ed_count.max
+     11249 =C2=B1  2%     +31.0%      14739        sched_debug.cpu.sched_co=
+unt.min
+    621.89 =C2=B1 12%   +1268.2%       8508 =C2=B1 10%  sched_debug.cpu.sch=
+ed_count.stddev
+      5282 =C2=B1  3%     +80.1%       9514        sched_debug.cpu.sched_go=
+idle.avg
+      6253 =C2=B1  2%    +253.4%      22097 =C2=B1 10%  sched_debug.cpu.sch=
+ed_goidle.max
+      4834 =C2=B1  2%     +32.4%       6403        sched_debug.cpu.sched_go=
+idle.min
+    301.81 =C2=B1 13%   +1275.2%       4150 =C2=B1 10%  sched_debug.cpu.sch=
+ed_goidle.stddev
+      6298 =C2=B1  2%     +69.2%      10658        sched_debug.cpu.ttwu_cou=
+nt.avg
+      7777          +200.5%      23368 =C2=B1 10%  sched_debug.cpu.ttwu_cou=
+nt.max
+      5825 =C2=B1  3%     +23.6%       7199        sched_debug.cpu.ttwu_cou=
+nt.min
+    379.64 =C2=B1  7%   +1010.1%       4214 =C2=B1 11%  sched_debug.cpu.ttw=
+u_count.stddev
+    526.01           +69.8%     893.13 =C2=B1  2%  sched_debug.cpu.ttwu_loc=
+al.avg
+    773.75 =C2=B1  8%    +125.6%       1745 =C2=B1  9%  sched_debug.cpu.ttw=
+u_local.max
+    424.12           +40.9%     597.78 =C2=B1  3%  sched_debug.cpu.ttwu_loc=
+al.min
+     68.72 =C2=B1 10%    +219.5%     219.59 =C2=B1 10%  sched_debug.cpu.ttw=
+u_local.stddev
+     71601           +43.1%     102497        sched_debug.cpu_clk
+     68011           +45.4%      98899        sched_debug.ktime
+     71961           +42.9%     102856        sched_debug.sched_clk
+     13240 =C2=B1  4%     +36.2%      18033 =C2=B1  3%  softirqs.CPU0.RCU
+     12004 =C2=B1  3%     +24.9%      14997 =C2=B1  3%  softirqs.CPU0.SCHED
+     35478 =C2=B1  3%     +57.3%      55794        softirqs.CPU0.TIMER
+      9817 =C2=B1  7%     +18.1%      11592 =C2=B1  7%  softirqs.CPU1.SCHED
+     38872 =C2=B1  3%     +42.3%      55318        softirqs.CPU1.TIMER
+     13094 =C2=B1  5%     +33.8%      17518 =C2=B1  5%  softirqs.CPU10.RCU
+      8546 =C2=B1  8%     +35.4%      11568 =C2=B1  6%  softirqs.CPU10.SCHED
+     33896 =C2=B1  3%     +59.6%      54082 =C2=B1  2%  softirqs.CPU10.TIMER
+     12959 =C2=B1  4%     +33.4%      17288 =C2=B1  4%  softirqs.CPU11.RCU
+      8569           +32.8%      11380 =C2=B1  4%  softirqs.CPU11.SCHED
+     34467 =C2=B1  2%     +56.0%      53759        softirqs.CPU11.TIMER
+     14180 =C2=B1 12%     +52.6%      21643 =C2=B1  4%  softirqs.CPU12.RCU
+      8429 =C2=B1  3%     +36.6%      11515 =C2=B1  6%  softirqs.CPU12.SCHED
+     36338 =C2=B1  7%     +59.4%      57933 =C2=B1  6%  softirqs.CPU12.TIMER
+     13213 =C2=B1  5%     +33.5%      17641 =C2=B1  5%  softirqs.CPU13.RCU
+      8630           +33.2%      11498 =C2=B1  4%  softirqs.CPU13.SCHED
+     38830 =C2=B1 17%     +40.0%      54352        softirqs.CPU13.TIMER
+     12844           +39.2%      17877 =C2=B1  3%  softirqs.CPU14.RCU
+      8556           +37.5%      11765 =C2=B1  4%  softirqs.CPU14.SCHED
+     39110 =C2=B1 16%     +38.8%      54296 =C2=B1  3%  softirqs.CPU14.TIMER
+     13167 =C2=B1  4%     +35.0%      17771 =C2=B1  3%  softirqs.CPU15.RCU
+      8742           +29.3%      11303 =C2=B1  4%  softirqs.CPU15.SCHED
+     35002 =C2=B1  2%     +53.5%      53737        softirqs.CPU15.TIMER
+     13022           +35.7%      17668 =C2=B1  5%  softirqs.CPU16.RCU
+      8456 =C2=B1  2%     +37.4%      11616 =C2=B1  3%  softirqs.CPU16.SCHED
+     35793 =C2=B1  3%     +52.5%      54602 =C2=B1  2%  softirqs.CPU16.TIMER
+     13010 =C2=B1  2%     +36.1%      17702 =C2=B1 10%  softirqs.CPU17.RCU
+      8813 =C2=B1  4%     +26.7%      11168 =C2=B1  3%  softirqs.CPU17.SCHED
+     35279           +53.4%      54103        softirqs.CPU17.TIMER
+      8652 =C2=B1  2%     +29.9%      11243        softirqs.CPU18.SCHED
+     35157 =C2=B1  4%     +55.9%      54825 =C2=B1  5%  softirqs.CPU18.TIMER
+     13004           +44.6%      18807 =C2=B1 12%  softirqs.CPU19.RCU
+      8658           +28.9%      11159 =C2=B1  2%  softirqs.CPU19.SCHED
+     34629           +55.5%      53864        softirqs.CPU19.TIMER
+      8765 =C2=B1  7%     +35.4%      11871 =C2=B1  3%  softirqs.CPU2.SCHED
+     35122 =C2=B1  6%     +53.9%      54041 =C2=B1  2%  softirqs.CPU2.TIMER
+     12585           +54.3%      19421 =C2=B1 14%  softirqs.CPU20.RCU
+      8327 =C2=B1  2%     +40.1%      11666        softirqs.CPU20.SCHED
+     33760 =C2=B1  2%     +59.5%      53863 =C2=B1  2%  softirqs.CPU20.TIMER
+     12746 =C2=B1  2%     +45.1%      18498 =C2=B1 10%  softirqs.CPU21.RCU
+      8471 =C2=B1  4%     +41.3%      11968 =C2=B1  4%  softirqs.CPU21.SCHED
+     35143 =C2=B1  2%     +73.9%      61115 =C2=B1  7%  softirqs.CPU21.TIMER
+     13098           +34.9%      17671 =C2=B1  4%  softirqs.CPU22.RCU
+      8566           +30.3%      11165 =C2=B1  6%  softirqs.CPU22.SCHED
+     34415 =C2=B1  2%     +60.1%      55110        softirqs.CPU22.TIMER
+     13351 =C2=B1  5%     +31.5%      17556 =C2=B1  5%  softirqs.CPU23.RCU
+      9174 =C2=B1  8%     +26.7%      11622 =C2=B1  6%  softirqs.CPU23.SCHED
+     37855 =C2=B1 13%     +54.2%      58371 =C2=B1  4%  softirqs.CPU23.TIMER
+     13334 =C2=B1  4%     +35.3%      18035 =C2=B1  9%  softirqs.CPU24.RCU
+      9011 =C2=B1  9%     +28.1%      11546 =C2=B1 11%  softirqs.CPU24.SCHED
+     35153 =C2=B1  5%     +56.0%      54856        softirqs.CPU24.TIMER
+     13056           +35.1%      17633 =C2=B1  5%  softirqs.CPU25.RCU
+      8668           +31.9%      11435 =C2=B1  6%  softirqs.CPU25.SCHED
+     34832 =C2=B1  2%     +56.5%      54499        softirqs.CPU25.TIMER
+     13612 =C2=B1  6%     +31.1%      17846 =C2=B1  4%  softirqs.CPU26.RCU
+      8564           +33.0%      11392 =C2=B1  5%  softirqs.CPU26.SCHED
+     34752 =C2=B1  3%     +67.9%      58356 =C2=B1  9%  softirqs.CPU26.TIMER
+     13063           +38.7%      18123 =C2=B1  5%  softirqs.CPU27.RCU
+      8692           +24.6%      10831 =C2=B1  4%  softirqs.CPU27.SCHED
+     34964 =C2=B1  2%     +57.0%      54889        softirqs.CPU27.TIMER
+     12612           +37.8%      17376 =C2=B1  4%  softirqs.CPU28.RCU
+      8625 =C2=B1  2%     +34.5%      11605 =C2=B1  7%  softirqs.CPU28.SCHED
+     34376 =C2=B1  3%     +59.0%      54672        softirqs.CPU28.TIMER
+     12943 =C2=B1  4%     +33.9%      17333 =C2=B1  6%  softirqs.CPU29.RCU
+      8678 =C2=B1  2%     +28.6%      11158 =C2=B1  5%  softirqs.CPU29.SCHED
+     36977 =C2=B1 14%     +47.1%      54377        softirqs.CPU29.TIMER
+     12972           +42.8%      18526 =C2=B1 14%  softirqs.CPU3.RCU
+      9119 =C2=B1  5%     +25.9%      11481 =C2=B1  6%  softirqs.CPU3.SCHED
+     35879           +75.6%      63012 =C2=B1 17%  softirqs.CPU3.TIMER
+     12581           +39.8%      17591 =C2=B1  5%  softirqs.CPU30.RCU
+      8255           +31.4%      10844 =C2=B1  7%  softirqs.CPU30.SCHED
+     33406 =C2=B1  3%     +58.7%      53003 =C2=B1  3%  softirqs.CPU30.TIMER
+     13201 =C2=B1  5%     +32.6%      17503 =C2=B1  5%  softirqs.CPU31.RCU
+      8582           +30.9%      11232 =C2=B1  5%  softirqs.CPU31.SCHED
+     34045           +57.9%      53746        softirqs.CPU31.TIMER
+     10821 =C2=B1  8%     +37.8%      14913        softirqs.CPU32.RCU
+      8508 =C2=B1  3%     +37.7%      11712 =C2=B1  4%  softirqs.CPU32.SCHED
+     34901 =C2=B1  3%     +59.6%      55704 =C2=B1  3%  softirqs.CPU32.TIMER
+     10359           +34.3%      13912 =C2=B1  5%  softirqs.CPU33.RCU
+      8624           +29.3%      11149 =C2=B1  3%  softirqs.CPU33.SCHED
+     35940 =C2=B1  5%     +51.3%      54362 =C2=B1  2%  softirqs.CPU33.TIMER
+     10512 =C2=B1  2%     +36.5%      14346 =C2=B1  6%  softirqs.CPU34.RCU
+      8604           +28.7%      11077 =C2=B1  3%  softirqs.CPU34.SCHED
+     34636 =C2=B1  2%     +53.5%      53154 =C2=B1  3%  softirqs.CPU34.TIMER
+     10444 =C2=B1  2%     +35.0%      14100 =C2=B1  7%  softirqs.CPU35.RCU
+      8547           +27.7%      10915 =C2=B1  5%  softirqs.CPU35.SCHED
+     34476           +55.8%      53719        softirqs.CPU35.TIMER
+     10196 =C2=B1  2%     +44.4%      14724 =C2=B1  4%  softirqs.CPU36.RCU
+      8427 =C2=B1  2%     +34.3%      11321 =C2=B1  3%  softirqs.CPU36.SCHED
+     34764 =C2=B1  2%     +56.2%      54288 =C2=B1  3%  softirqs.CPU36.TIMER
+     10273 =C2=B1  2%     +33.6%      13728 =C2=B1  5%  softirqs.CPU37.RCU
+      8527 =C2=B1  2%     +27.6%      10885 =C2=B1  3%  softirqs.CPU37.SCHED
+     34727           +54.0%      53489        softirqs.CPU37.TIMER
+     10103 =C2=B1  2%     +44.2%      14571 =C2=B1  2%  softirqs.CPU38.RCU
+      8356 =C2=B1  2%     +37.1%      11454 =C2=B1  4%  softirqs.CPU38.SCHED
+     35884 =C2=B1  9%     +68.3%      60394 =C2=B1 12%  softirqs.CPU38.TIMER
+     10341 =C2=B1  3%     +32.3%      13681 =C2=B1  5%  softirqs.CPU39.RCU
+      8556           +27.0%      10868 =C2=B1  6%  softirqs.CPU39.SCHED
+     34267           +56.6%      53654        softirqs.CPU39.TIMER
+     13012           +35.5%      17627 =C2=B1  5%  softirqs.CPU4.RCU
+      8735 =C2=B1  2%     +27.5%      11142 =C2=B1  5%  softirqs.CPU4.SCHED
+     38127 =C2=B1 18%     +44.2%      54976        softirqs.CPU4.TIMER
+     12911           +35.8%      17529 =C2=B1  4%  softirqs.CPU5.RCU
+      8699           +38.2%      12025 =C2=B1 13%  softirqs.CPU5.SCHED
+     34819 =C2=B1  2%     +61.8%      56335 =C2=B1  2%  softirqs.CPU5.TIMER
+     12740 =C2=B1  2%     +35.8%      17297 =C2=B1  5%  softirqs.CPU6.RCU
+      8761 =C2=B1  2%     +27.0%      11124 =C2=B1  4%  softirqs.CPU6.SCHED
+     35057 =C2=B1  3%     +74.8%      61271 =C2=B1 16%  softirqs.CPU6.TIMER
+     12939           +36.1%      17608 =C2=B1  7%  softirqs.CPU7.RCU
+      8556 =C2=B1  2%     +28.7%      11015 =C2=B1  4%  softirqs.CPU7.SCHED
+     35488 =C2=B1  4%     +54.8%      54918        softirqs.CPU7.TIMER
+     12719 =C2=B1  2%     +37.1%      17432 =C2=B1  2%  softirqs.CPU8.RCU
+      8648           +32.3%      11438 =C2=B1  6%  softirqs.CPU8.SCHED
+     34507 =C2=B1  2%     +58.6%      54712        softirqs.CPU8.TIMER
+     12769 =C2=B1  3%     +35.1%      17249 =C2=B1  7%  softirqs.CPU9.RCU
+      8597 =C2=B1  3%     +33.3%      11461 =C2=B1  2%  softirqs.CPU9.SCHED
+     38857 =C2=B1 19%     +40.5%      54604        softirqs.CPU9.TIMER
+    503590           +36.6%     688115 =C2=B1  4%  softirqs.RCU
+    349541           +31.1%     458229 =C2=B1  4%  softirqs.SCHED
+   1420004           +56.1%    2216175        softirqs.TIMER
+     77.00 =C2=B1 51%   +3025.1%       2406 =C2=B1130%  interrupts.40:IR-PC=
+I-MSI.524290-edge.eth0-TxRx-1
+     77.00 =C2=B1 39%     +71.4%     132.00 =C2=B1 30%  interrupts.43:IR-PC=
+I-MSI.524293-edge.eth0-TxRx-4
+     54.75 =C2=B1  8%     +64.4%      90.00 =C2=B1 21%  interrupts.46:IR-PC=
+I-MSI.524296-edge.eth0-TxRx-7
+     38565           +40.0%      54002 =C2=B1  4%  interrupts.CAL:Function_=
+call_interrupts
+    983.50 =C2=B1  4%     +36.0%       1338 =C2=B1  8%  interrupts.CPU0.CAL=
+:Function_call_interrupts
+    177382           +55.8%     276400 =C2=B1  3%  interrupts.CPU0.LOC:Loca=
+l_timer_interrupts
+      4852 =C2=B1 66%     -87.6%     601.33 =C2=B1141%  interrupts.CPU0.NMI=
+:Non-maskable_interrupts
+      4852 =C2=B1 66%     -87.6%     601.33 =C2=B1141%  interrupts.CPU0.PMI=
+:Performance_monitoring_interrupts
+    177458           +55.6%     276134 =C2=B1  3%  interrupts.CPU1.LOC:Loca=
+l_timer_interrupts
+      2399 =C2=B1 34%     -39.3%       1456 =C2=B1  8%  interrupts.CPU1.RES=
+:Rescheduling_interrupts
+      1007           +38.4%       1394 =C2=B1  7%  interrupts.CPU10.CAL:Fun=
+ction_call_interrupts
+    175614 =C2=B1  2%     +57.4%     276332 =C2=B1  4%  interrupts.CPU10.LO=
+C:Local_timer_interrupts
+      4849 =C2=B1 33%     -54.8%       2193 =C2=B1 27%  interrupts.CPU10.NM=
+I:Non-maskable_interrupts
+      4849 =C2=B1 33%     -54.8%       2193 =C2=B1 27%  interrupts.CPU10.PM=
+I:Performance_monitoring_interrupts
+      2487 =C2=B1 31%     -33.4%       1655 =C2=B1 15%  interrupts.CPU10.RE=
+S:Rescheduling_interrupts
+      1005 =C2=B1  2%     +33.0%       1337 =C2=B1  3%  interrupts.CPU11.CA=
+L:Function_call_interrupts
+    177053           +56.1%     276460 =C2=B1  3%  interrupts.CPU11.LOC:Loc=
+al_timer_interrupts
+      3695 =C2=B1  9%     -52.1%       1768 =C2=B1  4%  interrupts.CPU11.NM=
+I:Non-maskable_interrupts
+      3695 =C2=B1  9%     -52.1%       1768 =C2=B1  4%  interrupts.CPU11.PM=
+I:Performance_monitoring_interrupts
+    972.00 =C2=B1  5%     +41.8%       1378 =C2=B1  2%  interrupts.CPU12.CA=
+L:Function_call_interrupts
+    175821 =C2=B1  2%     +57.2%     276353 =C2=B1  4%  interrupts.CPU12.LO=
+C:Local_timer_interrupts
+      1947 =C2=B1  5%     -23.8%       1483 =C2=B1 16%  interrupts.CPU12.RE=
+S:Rescheduling_interrupts
+    922.25 =C2=B1  6%     +42.0%       1309        interrupts.CPU13.CAL:Fun=
+ction_call_interrupts
+    176892           +55.9%     275829 =C2=B1  3%  interrupts.CPU13.LOC:Loc=
+al_timer_interrupts
+    979.25 =C2=B1  5%     +31.0%       1282 =C2=B1  4%  interrupts.CPU14.CA=
+L:Function_call_interrupts
+    176168 =C2=B1  2%     +56.8%     276178 =C2=B1  3%  interrupts.CPU14.LO=
+C:Local_timer_interrupts
+    955.75 =C2=B1  3%     +40.3%       1341 =C2=B1  6%  interrupts.CPU15.CA=
+L:Function_call_interrupts
+    176793 =C2=B1  2%     +56.1%     276062 =C2=B1  3%  interrupts.CPU15.LO=
+C:Local_timer_interrupts
+      1858 =C2=B1  4%     -19.4%       1497 =C2=B1 13%  interrupts.CPU15.RE=
+S:Rescheduling_interrupts
+    969.50 =C2=B1  3%     +35.7%       1315 =C2=B1  6%  interrupts.CPU16.CA=
+L:Function_call_interrupts
+    176054 =C2=B1  2%     +56.8%     276087 =C2=B1  3%  interrupts.CPU16.LO=
+C:Local_timer_interrupts
+      1927 =C2=B1  5%     -24.2%       1461 =C2=B1  8%  interrupts.CPU16.RE=
+S:Rescheduling_interrupts
+    937.25 =C2=B1  2%     +39.8%       1310 =C2=B1  9%  interrupts.CPU17.CA=
+L:Function_call_interrupts
+    176586 =C2=B1  2%     +55.6%     274709 =C2=B1  3%  interrupts.CPU17.LO=
+C:Local_timer_interrupts
+    972.00 =C2=B1  4%     +41.1%       1371 =C2=B1  9%  interrupts.CPU18.CA=
+L:Function_call_interrupts
+    175927 =C2=B1  2%     +56.9%     275969 =C2=B1  3%  interrupts.CPU18.LO=
+C:Local_timer_interrupts
+      2285 =C2=B1 18%     -42.0%       1325 =C2=B1  7%  interrupts.CPU18.RE=
+S:Rescheduling_interrupts
+    958.25 =C2=B1  4%     +37.9%       1321 =C2=B1  6%  interrupts.CPU19.CA=
+L:Function_call_interrupts
+    176354 =C2=B1  2%     +56.0%     275068 =C2=B1  4%  interrupts.CPU19.LO=
+C:Local_timer_interrupts
+      1007 =C2=B1  4%     +34.8%       1357 =C2=B1 11%  interrupts.CPU2.CAL=
+:Function_call_interrupts
+    176971           +56.1%     276231 =C2=B1  3%  interrupts.CPU2.LOC:Loca=
+l_timer_interrupts
+    948.00 =C2=B1  5%     +46.7%       1390 =C2=B1  6%  interrupts.CPU20.CA=
+L:Function_call_interrupts
+    176878           +56.1%     276171 =C2=B1  3%  interrupts.CPU20.LOC:Loc=
+al_timer_interrupts
+    970.25 =C2=B1  4%     +33.5%       1295 =C2=B1  3%  interrupts.CPU21.CA=
+L:Function_call_interrupts
+    177571           +55.5%     276093 =C2=B1  4%  interrupts.CPU21.LOC:Loc=
+al_timer_interrupts
+      1893           -34.6%       1237 =C2=B1  6%  interrupts.CPU21.RES:Res=
+cheduling_interrupts
+    963.50 =C2=B1  2%     +34.6%       1296 =C2=B1  2%  interrupts.CPU22.CA=
+L:Function_call_interrupts
+    176684           +56.3%     276201 =C2=B1  3%  interrupts.CPU22.LOC:Loc=
+al_timer_interrupts
+      1975 =C2=B1  2%     -35.7%       1270 =C2=B1 12%  interrupts.CPU22.RE=
+S:Rescheduling_interrupts
+    949.50 =C2=B1  3%     +32.7%       1260 =C2=B1  2%  interrupts.CPU23.CA=
+L:Function_call_interrupts
+    177742           +55.1%     275624 =C2=B1  3%  interrupts.CPU23.LOC:Loc=
+al_timer_interrupts
+      1937 =C2=B1  4%     -34.9%       1261 =C2=B1  9%  interrupts.CPU23.RE=
+S:Rescheduling_interrupts
+    968.75 =C2=B1  5%     +41.5%       1370 =C2=B1  7%  interrupts.CPU24.CA=
+L:Function_call_interrupts
+    176809           +56.1%     275962 =C2=B1  3%  interrupts.CPU24.LOC:Loc=
+al_timer_interrupts
+      1893           -30.5%       1316 =C2=B1 14%  interrupts.CPU24.RES:Res=
+cheduling_interrupts
+    949.00 =C2=B1  2%     +41.6%       1344 =C2=B1  4%  interrupts.CPU25.CA=
+L:Function_call_interrupts
+    177584           +55.4%     275974 =C2=B1  4%  interrupts.CPU25.LOC:Loc=
+al_timer_interrupts
+    922.50 =C2=B1  9%     +43.9%       1327 =C2=B1  4%  interrupts.CPU26.CA=
+L:Function_call_interrupts
+    177144           +55.9%     276093 =C2=B1  3%  interrupts.CPU26.LOC:Loc=
+al_timer_interrupts
+      4881 =C2=B1 35%     -76.1%       1165 =C2=B1141%  interrupts.CPU26.NM=
+I:Non-maskable_interrupts
+      4881 =C2=B1 35%     -76.1%       1165 =C2=B1141%  interrupts.CPU26.PM=
+I:Performance_monitoring_interrupts
+    961.75 =C2=B1  5%     +32.1%       1270 =C2=B1  7%  interrupts.CPU27.CA=
+L:Function_call_interrupts
+    177543           +55.6%     276207 =C2=B1  4%  interrupts.CPU27.LOC:Loc=
+al_timer_interrupts
+      1920           -39.2%       1167 =C2=B1  7%  interrupts.CPU27.RES:Res=
+cheduling_interrupts
+    948.25 =C2=B1  3%     +43.4%       1359 =C2=B1 10%  interrupts.CPU28.CA=
+L:Function_call_interrupts
+    176358 =C2=B1  2%     +56.6%     276170 =C2=B1  3%  interrupts.CPU28.LO=
+C:Local_timer_interrupts
+    926.25 =C2=B1  2%     +52.0%       1408 =C2=B1  3%  interrupts.CPU29.CA=
+L:Function_call_interrupts
+    177193           +56.0%     276457 =C2=B1  3%  interrupts.CPU29.LOC:Loc=
+al_timer_interrupts
+      1014 =C2=B1112%    +163.8%       2677 =C2=B1 24%  interrupts.CPU29.NM=
+I:Non-maskable_interrupts
+      1014 =C2=B1112%    +163.8%       2677 =C2=B1 24%  interrupts.CPU29.PM=
+I:Performance_monitoring_interrupts
+      1927 =C2=B1  2%     -30.8%       1334 =C2=B1  9%  interrupts.CPU29.RE=
+S:Rescheduling_interrupts
+    983.25 =C2=B1  4%     +43.7%       1413        interrupts.CPU3.CAL:Func=
+tion_call_interrupts
+    177682           +55.6%     276520 =C2=B1  3%  interrupts.CPU3.LOC:Loca=
+l_timer_interrupts
+      1974 =C2=B1  2%     -27.2%       1436 =C2=B1  9%  interrupts.CPU3.RES=
+:Rescheduling_interrupts
+    924.75 =C2=B1  2%     +54.0%       1424 =C2=B1  3%  interrupts.CPU30.CA=
+L:Function_call_interrupts
+    176131 =C2=B1  2%     +56.7%     276051 =C2=B1  3%  interrupts.CPU30.LO=
+C:Local_timer_interrupts
+      1888 =C2=B1  3%     -35.4%       1221        interrupts.CPU30.RES:Res=
+cheduling_interrupts
+    960.50 =C2=B1  4%     +42.4%       1367 =C2=B1  6%  interrupts.CPU31.CA=
+L:Function_call_interrupts
+    177002           +56.1%     276368 =C2=B1  3%  interrupts.CPU31.LOC:Loc=
+al_timer_interrupts
+      1939           -29.2%       1373 =C2=B1 14%  interrupts.CPU31.RES:Res=
+cheduling_interrupts
+     77.00 =C2=B1 51%   +3025.1%       2406 =C2=B1130%  interrupts.CPU32.40=
+:IR-PCI-MSI.524290-edge.eth0-TxRx-1
+    914.25 =C2=B1 14%     +51.8%       1388 =C2=B1  8%  interrupts.CPU32.CA=
+L:Function_call_interrupts
+    176087 =C2=B1  2%     +56.7%     276010 =C2=B1  3%  interrupts.CPU32.LO=
+C:Local_timer_interrupts
+      1947 =C2=B1  2%     -27.7%       1407 =C2=B1 11%  interrupts.CPU32.RE=
+S:Rescheduling_interrupts
+    994.25 =C2=B1  3%     +39.9%       1390 =C2=B1  5%  interrupts.CPU33.CA=
+L:Function_call_interrupts
+    176835           +56.1%     276100 =C2=B1  3%  interrupts.CPU33.LOC:Loc=
+al_timer_interrupts
+      1923 =C2=B1  2%     -32.0%       1308 =C2=B1 15%  interrupts.CPU33.RE=
+S:Rescheduling_interrupts
+    976.75 =C2=B1  3%     +43.2%       1398 =C2=B1  7%  interrupts.CPU34.CA=
+L:Function_call_interrupts
+    175901 =C2=B1  2%     +56.8%     275892 =C2=B1  3%  interrupts.CPU34.LO=
+C:Local_timer_interrupts
+      1920 =C2=B1  3%     -35.9%       1230 =C2=B1  6%  interrupts.CPU34.RE=
+S:Rescheduling_interrupts
+    995.75 =C2=B1  3%     +35.5%       1349 =C2=B1  2%  interrupts.CPU35.CA=
+L:Function_call_interrupts
+    176626           +56.4%     276218 =C2=B1  3%  interrupts.CPU35.LOC:Loc=
+al_timer_interrupts
+      2002 =C2=B1  6%     -34.0%       1322 =C2=B1  4%  interrupts.CPU35.RE=
+S:Rescheduling_interrupts
+    977.75 =C2=B1  3%     +41.3%       1381 =C2=B1  5%  interrupts.CPU36.CA=
+L:Function_call_interrupts
+    175681 =C2=B1  2%     +57.0%     275759 =C2=B1  3%  interrupts.CPU36.LO=
+C:Local_timer_interrupts
+      1944           -35.9%       1245 =C2=B1  3%  interrupts.CPU36.RES:Res=
+cheduling_interrupts
+    967.00 =C2=B1  5%     +42.5%       1378 =C2=B1  4%  interrupts.CPU37.CA=
+L:Function_call_interrupts
+    176570 =C2=B1  2%     +55.7%     274976 =C2=B1  3%  interrupts.CPU37.LO=
+C:Local_timer_interrupts
+      4719 =C2=B1 35%     -74.9%       1184 =C2=B1 67%  interrupts.CPU37.NM=
+I:Non-maskable_interrupts
+      4719 =C2=B1 35%     -74.9%       1184 =C2=B1 67%  interrupts.CPU37.PM=
+I:Performance_monitoring_interrupts
+      1897           -31.3%       1302 =C2=B1 13%  interrupts.CPU37.RES:Res=
+cheduling_interrupts
+     77.00 =C2=B1 39%     +71.4%     132.00 =C2=B1 30%  interrupts.CPU38.43=
+:IR-PCI-MSI.524293-edge.eth0-TxRx-4
+    953.50 =C2=B1  2%     +42.8%       1361        interrupts.CPU38.CAL:Fun=
+ction_call_interrupts
+    175461 =C2=B1  3%     +57.2%     275862 =C2=B1  4%  interrupts.CPU38.LO=
+C:Local_timer_interrupts
+      1919 =C2=B1  3%     -32.3%       1300 =C2=B1 10%  interrupts.CPU38.RE=
+S:Rescheduling_interrupts
+    977.75 =C2=B1  4%     +34.6%       1316 =C2=B1  6%  interrupts.CPU39.CA=
+L:Function_call_interrupts
+    176475 =C2=B1  2%     +56.5%     276208 =C2=B1  3%  interrupts.CPU39.LO=
+C:Local_timer_interrupts
+      1884           -33.0%       1263 =C2=B1  7%  interrupts.CPU39.RES:Res=
+cheduling_interrupts
+    897.00 =C2=B1 12%     +56.3%       1402 =C2=B1  8%  interrupts.CPU4.CAL=
+:Function_call_interrupts
+    176870           +56.2%     276260 =C2=B1  3%  interrupts.CPU4.LOC:Loca=
+l_timer_interrupts
+      2133 =C2=B1 10%     -36.2%       1361 =C2=B1 20%  interrupts.CPU4.RES=
+:Rescheduling_interrupts
+    995.00 =C2=B1  3%     +36.3%       1356 =C2=B1  5%  interrupts.CPU5.CAL=
+:Function_call_interrupts
+    177709           +55.3%     275932 =C2=B1  4%  interrupts.CPU5.LOC:Loca=
+l_timer_interrupts
+      5802 =C2=B1 33%     -62.7%       2163 =C2=B1 72%  interrupts.CPU5.NMI=
+:Non-maskable_interrupts
+      5802 =C2=B1 33%     -62.7%       2163 =C2=B1 72%  interrupts.CPU5.PMI=
+:Performance_monitoring_interrupts
+     54.75 =C2=B1  8%     +64.4%      90.00 =C2=B1 21%  interrupts.CPU6.46:=
+IR-PCI-MSI.524296-edge.eth0-TxRx-7
+    931.75 =C2=B1  3%     +46.4%       1364 =C2=B1  7%  interrupts.CPU6.CAL=
+:Function_call_interrupts
+    176814           +56.1%     275995 =C2=B1  3%  interrupts.CPU6.LOC:Loca=
+l_timer_interrupts
+      1.25 =C2=B1 66%  +1.4e+05%       1764 =C2=B1 77%  interrupts.CPU6.NMI=
+:Non-maskable_interrupts
+      1.25 =C2=B1 66%  +1.4e+05%       1764 =C2=B1 77%  interrupts.CPU6.PMI=
+:Performance_monitoring_interrupts
+      2020 =C2=B1  4%     -26.1%       1493 =C2=B1 21%  interrupts.CPU6.RES=
+:Rescheduling_interrupts
+    951.50 =C2=B1  3%     +42.3%       1353 =C2=B1  5%  interrupts.CPU7.CAL=
+:Function_call_interrupts
+    177433           +55.7%     276226 =C2=B1  4%  interrupts.CPU7.LOC:Loca=
+l_timer_interrupts
+      1961           -39.5%       1187 =C2=B1  2%  interrupts.CPU7.RES:Resc=
+heduling_interrupts
+    958.00 =C2=B1  4%     +46.1%       1400 =C2=B1  3%  interrupts.CPU8.CAL=
+:Function_call_interrupts
+    176160 =C2=B1  2%     +56.6%     275946 =C2=B1  3%  interrupts.CPU8.LOC=
+:Local_timer_interrupts
+      2051 =C2=B1  3%     -33.9%       1356 =C2=B1  5%  interrupts.CPU8.RES=
+:Rescheduling_interrupts
+      1045 =C2=B1  2%     +26.9%       1326 =C2=B1  6%  interrupts.CPU9.CAL=
+:Function_call_interrupts
+    177126           +55.9%     276223 =C2=B1  3%  interrupts.CPU9.LOC:Loca=
+l_timer_interrupts
+      4878 =C2=B1 34%     -63.5%       1780 =C2=B1 80%  interrupts.CPU9.NMI=
+:Non-maskable_interrupts
+      4878 =C2=B1 34%     -63.5%       1780 =C2=B1 80%  interrupts.CPU9.PMI=
+:Performance_monitoring_interrupts
+   7069159           +56.2%   11041322 =C2=B1  3%  interrupts.LOC:Local_tim=
+er_interrupts
+    118316 =C2=B1  7%     -46.4%      63378 =C2=B1 17%  interrupts.NMI:Non-=
+maskable_interrupts
+    118316 =C2=B1  7%     -46.4%      63378 =C2=B1 17%  interrupts.PMI:Perf=
+ormance_monitoring_interrupts
+     79699           -24.7%      60027 =C2=B1  2%  interrupts.RES:Reschedul=
+ing_interrupts
+    176.75 =C2=B1 10%     +71.8%     303.67 =C2=B1 10%  interrupts.TLB:TLB_=
+shootdowns
+     58.95           -15.1       43.86 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
+     59.10           -15.1       44.02 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.entry_SYSCALL_64_after_hwframe.read
+     54.72           -14.7       39.98 =C2=B1  4%  perf-profile.calltrace.c=
+ycles-pp.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
+     54.25           -14.7       39.52 =C2=B1  4%  perf-profile.calltrace.c=
+ycles-pp.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.re=
+ad
+     61.93           -14.6       47.29 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.read
+     45.30           -12.1       33.15 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.new_sync_read.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_af=
+ter_hwframe
+     38.88           -10.1       28.73 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.xfs_file_read_iter.new_sync_read.vfs_read.ksys_read.do_syscall_64
+     36.45 =C2=B1  2%      -9.5       26.96        perf-profile.calltrace.c=
+ycles-pp.xfs_file_buffered_aio_read.xfs_file_read_iter.new_sync_read.vfs_re=
+ad.ksys_read
+     20.84            -5.5       15.37 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.generic_file_read_iter.xfs_file_buffered_aio_read.xfs_file_read_it=
+er.new_sync_read.vfs_read
+      9.89 =C2=B1  4%      -3.2        6.69 =C2=B1  7%  perf-profile.calltr=
+ace.cycles-pp.touch_atime.generic_file_read_iter.xfs_file_buffered_aio_read=
+.xfs_file_read_iter.new_sync_read
+      9.80 =C2=B1  4%      -3.2        6.62 =C2=B1  8%  perf-profile.calltr=
+ace.cycles-pp.atime_needs_update.touch_atime.generic_file_read_iter.xfs_fil=
+e_buffered_aio_read.xfs_file_read_iter
+      9.55 =C2=B1  6%      -2.6        6.97 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.down_read.xfs_ilock.xfs_file_buffered_aio_read.xfs_file_read_=
+iter.new_sync_read
+      9.61 =C2=B1  7%      -2.6        7.04 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.xfs_ilock.xfs_file_buffered_aio_read.xfs_file_read_iter.new_s=
+ync_read.vfs_read
+      5.55 =C2=B1 10%      -1.7        3.83 =C2=B1 11%  perf-profile.calltr=
+ace.cycles-pp.security_file_permission.vfs_read.ksys_read.do_syscall_64.ent=
+ry_SYSCALL_64_after_hwframe
+      5.80 =C2=B1  5%      -1.5        4.32        perf-profile.calltrace.c=
+ycles-pp.up_read.xfs_iunlock.xfs_file_buffered_aio_read.xfs_file_read_iter.=
+new_sync_read
+      5.86 =C2=B1  5%      -1.4        4.41        perf-profile.calltrace.c=
+ycles-pp.xfs_iunlock.xfs_file_buffered_aio_read.xfs_file_read_iter.new_sync=
+_read.vfs_read
+      4.33 =C2=B1  4%      -1.4        2.96 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.selinux_file_permission.security_file_permission.vfs_read.ksy=
+s_read.do_syscall_64
+      2.97 =C2=B1  4%      -1.0        2.01        perf-profile.calltrace.c=
+ycles-pp.__inode_security_revalidate.selinux_file_permission.security_file_=
+permission.vfs_read.ksys_read
+      2.46 =C2=B1  3%      -0.5        2.00 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.iomap_write_end.iomap_write_actor.iomap_apply.iomap_file_buff=
+ered_write.xfs_file_buffered_aio_write
+      1.56 =C2=B1 21%      -0.4        1.20 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.fsnotify.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_af=
+ter_hwframe
+      2.08 =C2=B1  3%      -0.3        1.78 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.__fput.task_work_run.exit_to_usermode_loop.do_syscall_64.entr=
+y_SYSCALL_64_after_hwframe
+      2.14 =C2=B1  2%      -0.3        1.84 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.close
+      2.09 =C2=B1  3%      -0.3        1.79 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.task_work_run.exit_to_usermode_loop.do_syscall_64.entry_SYSCA=
+LL_64_after_hwframe.close
+      2.11 =C2=B1  3%      -0.3        1.81 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.entry_SYSCALL_64_after_hwframe.close
+      2.11 =C2=B1  2%      -0.3        1.81 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.close
+      2.09 =C2=B1  3%      -0.3        1.79 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.exit_to_usermode_loop.do_syscall_64.entry_SYSCALL_64_after_hw=
+frame.close
+      2.05 =C2=B1  3%      -0.3        1.75 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.__dentry_kill.dput.__fput.task_work_run.exit_to_usermode_loop
+      2.06 =C2=B1  3%      -0.3        1.77 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.dput.__fput.task_work_run.exit_to_usermode_loop.do_syscall_64
+      1.39 =C2=B1  3%      -0.3        1.10 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.iomap_set_page_dirty.iomap_write_end.iomap_write_actor.iomap_=
+apply.iomap_file_buffered_write
+      1.97 =C2=B1  6%      -0.3        1.70 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.osq_lock.rwsem_optimistic_spin.rwsem_down_write_slowpath.path=
+_openat.do_filp_open
+      2.28 =C2=B1  6%      -0.2        2.07 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.rwsem_down_write_slowpath.path_openat.do_filp_open.do_sys_ope=
+n.do_syscall_64
+      2.22 =C2=B1  6%      -0.2        2.03 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.rwsem_optimistic_spin.rwsem_down_write_slowpath.path_openat.d=
+o_filp_open.do_sys_open
+      0.59 =C2=B1  2%      +0.1        0.69 =C2=B1  5%  perf-profile.calltr=
+ace.cycles-pp.memset_erms.iomap_read_page_sync.iomap_write_begin.iomap_writ=
+e_actor.iomap_apply
+      0.87 =C2=B1  2%      +0.1        0.97 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.iomap_read_page_sync.iomap_write_begin.iomap_write_actor.ioma=
+p_apply.iomap_file_buffered_write
+      0.79 =C2=B1  5%      +0.1        0.89 =C2=B1  4%  perf-profile.calltr=
+ace.cycles-pp.find_get_entry.pagecache_get_page.grab_cache_page_write_begin=
+.iomap_write_begin.iomap_write_actor
+      1.19            +0.1        1.32        perf-profile.calltrace.cycles=
+-pp.syscall_return_via_sysret.write
+      1.15 =C2=B1  5%      +0.1        1.28        perf-profile.calltrace.c=
+ycles-pp.syscall_return_via_sysret.read
+      1.56 =C2=B1  2%      +0.2        1.72 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.evict.__dentry_kill.dput.__fput.task_work_run
+      1.55 =C2=B1  2%      +0.2        1.71 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.truncate_inode_pages_range.evict.__dentry_kill.dput.__fput
+      1.40 =C2=B1  3%      +0.2        1.59        perf-profile.calltrace.c=
+ycles-pp.entry_SYSCALL_64.read
+      1.38 =C2=B1  2%      +0.2        1.61        perf-profile.calltrace.c=
+ycles-pp.entry_SYSCALL_64.write
+      3.72 =C2=B1  2%      +0.3        3.97        perf-profile.calltrace.c=
+ycles-pp.pagecache_get_page.grab_cache_page_write_begin.iomap_write_begin.i=
+omap_write_actor.iomap_apply
+      3.86 =C2=B1  2%      +0.3        4.15        perf-profile.calltrace.c=
+ycles-pp.grab_cache_page_write_begin.iomap_write_begin.iomap_write_actor.io=
+map_apply.iomap_file_buffered_write
+      1.72 =C2=B1  2%      +0.4        2.12        perf-profile.calltrace.c=
+ycles-pp.xfs_file_iomap_begin_delay.xfs_file_iomap_begin.iomap_apply.iomap_=
+file_buffered_write.xfs_file_buffered_aio_write
+      2.90 =C2=B1  5%      +0.4        3.31 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.path_openat.do_filp_open.do_sys_open.do_syscall_64.entry_SYSC=
+ALL_64_after_hwframe
+      2.91 =C2=B1  5%      +0.4        3.31 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.do_filp_open.do_sys_open.do_syscall_64.entry_SYSCALL_64_after=
+_hwframe.creat
+      2.92 =C2=B1  5%      +0.4        3.33 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.entry_SYSCALL_64_after_hwframe.creat
+      2.92 =C2=B1  5%      +0.4        3.32 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.do_sys_open.do_syscall_64.entry_SYSCALL_64_after_hwframe.creat
+      2.92 =C2=B1  5%      +0.4        3.33 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.creat
+      2.94 =C2=B1  5%      +0.4        3.35 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.creat
+      5.01 =C2=B1  2%      +0.5        5.47        perf-profile.calltrace.c=
+ycles-pp.iomap_write_begin.iomap_write_actor.iomap_apply.iomap_file_buffere=
+d_write.xfs_file_buffered_aio_write
+      0.00            +0.6        0.58 =C2=B1  5%  perf-profile.calltrace.c=
+ycles-pp.xfs_dialloc.xfs_ialloc.xfs_dir_ialloc.xfs_create.xfs_generic_create
+      2.00 =C2=B1  2%      +0.6        2.59 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.xfs_file_iomap_begin.iomap_apply.iomap_file_buffered_write.xf=
+s_file_buffered_aio_write.new_sync_write
+      0.00            +0.6        0.62 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.xfs_vn_unlink.vfs_unlink.do_unlinkat.do_syscall_64.entry_SYSCALL_6=
+4_after_hwframe
+      0.00            +0.6        0.62 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.xfs_remove.xfs_vn_unlink.vfs_unlink.do_unlinkat.do_syscall_64
+      0.00            +0.6        0.63 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.xfs_ialloc.xfs_dir_ialloc.xfs_create.xfs_generic_create.path_openat
+      0.00            +0.6        0.63 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.xfs_dir_ialloc.xfs_create.xfs_generic_create.path_openat.do_filp_o=
+pen
+      0.00            +0.6        0.65 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.vfs_unlink.do_unlinkat.do_syscall_64.entry_SYSCALL_64_after_hwfram=
+e.unlink
+      0.77 =C2=B1  4%      +0.7        1.45 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.do_unlinkat.do_syscall_64.entry_SYSCALL_64_after_hwframe.unli=
+nk
+      0.78 =C2=B1  5%      +0.7        1.46 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.entry_SYSCALL_64_after_hwframe.unlink
+      0.78 =C2=B1  5%      +0.7        1.46 =C2=B1  3%  perf-profile.calltr=
+ace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.unlink
+      0.00            +0.7        0.70 =C2=B1  4%  perf-profile.calltrace.c=
+ycles-pp.rwsem_optimistic_spin.rwsem_down_write_slowpath.do_unlinkat.do_sys=
+call_64.entry_SYSCALL_64_after_hwframe
+      0.81 =C2=B1  5%      +0.7        1.51 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.unlink
+      0.00            +0.7        0.74 =C2=B1  3%  perf-profile.calltrace.c=
+ycles-pp.rwsem_down_write_slowpath.do_unlinkat.do_syscall_64.entry_SYSCALL_=
+64_after_hwframe.unlink
+     12.46 =C2=B1  2%      +0.8       13.22        perf-profile.calltrace.c=
+ycles-pp.iomap_file_buffered_write.xfs_file_buffered_aio_write.new_sync_wri=
+te.vfs_write.ksys_write
+     12.37 =C2=B1  2%      +0.8       13.13        perf-profile.calltrace.c=
+ycles-pp.iomap_apply.iomap_file_buffered_write.xfs_file_buffered_aio_write.=
+new_sync_write.vfs_write
+      0.13 =C2=B1173%      +0.9        1.02        perf-profile.calltrace.c=
+ycles-pp.xfs_generic_create.path_openat.do_filp_open.do_sys_open.do_syscall=
+_64
+      0.00            +1.0        1.00 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.xfs_create.xfs_generic_create.path_openat.do_filp_open.do_sys_open
+     15.73 =C2=B1  4%      +1.3       17.05        perf-profile.calltrace.c=
+ycles-pp.xfs_file_buffered_aio_write.new_sync_write.vfs_write.ksys_write.do=
+_syscall_64
+     22.72 =C2=B1  3%      +1.5       24.18        perf-profile.calltrace.c=
+ycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+     22.86 =C2=B1  3%      +1.5       24.35        perf-profile.calltrace.c=
+ycles-pp.entry_SYSCALL_64_after_hwframe.write
+     16.41 =C2=B1  3%      +1.5       17.94        perf-profile.calltrace.c=
+ycles-pp.new_sync_write.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64=
+_after_hwframe
+     18.33 =C2=B1  3%      +1.7       19.99        perf-profile.calltrace.c=
+ycles-pp.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.=
+write
+     18.75 =C2=B1  3%      +1.7       20.47        perf-profile.calltrace.c=
+ycles-pp.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+     25.76 =C2=B1  3%      +1.9       27.68        perf-profile.calltrace.c=
+ycles-pp.write
+      5.47 =C2=B1 15%     +10.7       16.19 =C2=B1  8%  perf-profile.calltr=
+ace.cycles-pp.intel_idle.cpuidle_enter_state.cpuidle_enter.do_idle.cpu_star=
+tup_entry
+      5.55 =C2=B1 15%     +11.2       16.79 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.cpuidle_enter_state.cpuidle_enter.do_idle.cpu_startup_entry.s=
+tart_secondary
+      5.56 =C2=B1 15%     +11.3       16.82 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.cpuidle_enter.do_idle.cpu_startup_entry.start_secondary.secon=
+dary_startup_64
+      5.89 =C2=B1 12%     +11.5       17.42 =C2=B1  8%  perf-profile.calltr=
+ace.cycles-pp.secondary_startup_64
+      5.69 =C2=B1 14%     +11.6       17.25 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64
+      5.69 =C2=B1 14%     +11.6       17.26 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.start_secondary.secondary_startup_64
+      5.69 =C2=B1 14%     +11.6       17.26 =C2=B1  9%  perf-profile.calltr=
+ace.cycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64
+     54.73           -14.7       40.00 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.ksys_read
+     54.28           -14.7       39.56 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.vfs_read
+     62.12           -14.6       47.49 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.read
+     87.70           -12.8       74.92 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.do_syscall_64
+     87.98           -12.8       75.22 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.entry_SYSCALL_64_after_hwframe
+     45.31           -12.1       33.16 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.new_sync_read
+     38.88           -10.1       28.74 =C2=B1  2%  perf-profile.children.cy=
+cles-pp.xfs_file_read_iter
+     36.47 =C2=B1  2%      -9.5       26.98        perf-profile.children.cy=
+cles-pp.xfs_file_buffered_aio_read
+     20.86            -5.5       15.39 =C2=B1  3%  perf-profile.children.cy=
+cles-pp.generic_file_read_iter
+      9.89 =C2=B1  4%      -3.2        6.70 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.touch_atime
+      9.80 =C2=B1  4%      -3.2        6.63 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.atime_needs_update
+      9.60 =C2=B1  6%      -2.6        7.02 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.down_read
+     10.44 =C2=B1  7%      -2.5        7.95 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.xfs_ilock
+      6.35 =C2=B1  9%      -1.7        4.67 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.security_file_permission
+      5.81 =C2=B1  5%      -1.5        4.34        perf-profile.children.cy=
+cles-pp.up_read
+      6.41 =C2=B1  5%      -1.5        4.93        perf-profile.children.cy=
+cles-pp.xfs_iunlock
+      4.94 =C2=B1  4%      -1.3        3.60 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.selinux_file_permission
+      3.17 =C2=B1  3%      -0.9        2.27        perf-profile.children.cy=
+cles-pp.__inode_security_revalidate
+      2.47 =C2=B1  3%      -0.5        2.02 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.iomap_write_end
+      1.75 =C2=B1 18%      -0.3        1.41 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.fsnotify
+      2.14 =C2=B1  2%      -0.3        1.84 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.close
+      2.09 =C2=B1  3%      -0.3        1.79 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.task_work_run
+      2.08 =C2=B1  3%      -0.3        1.79 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.__fput
+      2.06 =C2=B1  3%      -0.3        1.77 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.dput
+      2.10 =C2=B1  3%      -0.3        1.81 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.exit_to_usermode_loop
+      2.05 =C2=B1  3%      -0.3        1.76 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.__dentry_kill
+      1.40 =C2=B1  3%      -0.3        1.12 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.iomap_set_page_dirty
+      0.74 =C2=B1  7%      -0.2        0.53 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.rw_verify_area
+      0.34 =C2=B1  3%      -0.2        0.17 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.page_mapping
+      0.43 =C2=B1  9%      -0.1        0.36 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.up_write
+      0.22 =C2=B1  7%      -0.0        0.20 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.unlock_page
+      0.07            -0.0        0.06 =C2=B1  8%  perf-profile.children.cy=
+cles-pp.xfs_btree_lookup
+      0.10 =C2=B1  4%      +0.0        0.12 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.mem_cgroup_charge_statistics
+      0.09 =C2=B1  4%      +0.0        0.11        perf-profile.children.cy=
+cles-pp.workingset_update_node
+      0.07 =C2=B1 10%      +0.0        0.09 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.xfs_lookup
+      0.07 =C2=B1 14%      +0.0        0.10 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.xfs_vn_lookup
+      0.18 =C2=B1  7%      +0.0        0.21 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.mem_cgroup_commit_charge
+      0.13 =C2=B1  5%      +0.0        0.16        perf-profile.children.cy=
+cles-pp.xfs_dir2_leafn_lookup_for_entry
+      0.16            +0.0        0.19 =C2=B1  7%  perf-profile.children.cy=
+cles-pp.__x64_sys_read
+      0.07 =C2=B1  7%      +0.0        0.10 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.xfs_buf_item_format
+      0.66 =C2=B1  2%      +0.0        0.69        perf-profile.children.cy=
+cles-pp.down_write
+      0.17 =C2=B1  9%      +0.0        0.20 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.disk_cp
+      0.38 =C2=B1  2%      +0.0        0.41 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.xas_store
+      0.21 =C2=B1  3%      +0.0        0.25 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.rcu_all_qs
+      0.05 =C2=B1  8%      +0.0        0.09 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.unwind_next_frame
+      0.04 =C2=B1 57%      +0.0        0.08 =C2=B1 12%  perf-profile.childr=
+en.cycles-pp.kmem_cache_alloc
+      0.21 =C2=B1  3%      +0.0        0.25 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.__list_del_entry_valid
+      0.18 =C2=B1  4%      +0.0        0.22 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.xfs_dir3_data_check
+      0.18 =C2=B1  4%      +0.0        0.22 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.__xfs_dir3_data_check
+      0.35 =C2=B1  3%      +0.0        0.39 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.delete_from_page_cache_batch
+      0.44 =C2=B1  2%      +0.0        0.48 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp._cond_resched
+      0.03 =C2=B1100%      +0.0        0.07 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.kmem_zone_alloc
+      0.05 =C2=B1 58%      +0.1        0.10 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.xfs_get_extsz_hint
+      0.04 =C2=B1 57%      +0.1        0.09 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.perf_mux_hrtimer_handler
+      0.00            +0.1        0.05 =C2=B1  8%  perf-profile.children.cy=
+cles-pp.read_tsc
+      0.21 =C2=B1  6%      +0.1        0.27 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.xfs_da3_node_lookup_int
+      0.00            +0.1        0.06 =C2=B1  8%  perf-profile.children.cy=
+cles-pp.native_irq_return_iret
+      0.08 =C2=B1 10%      +0.1        0.14 =C2=B1 11%  perf-profile.childr=
+en.cycles-pp.stack_trace_save_tsk
+      0.11 =C2=B1  9%      +0.1        0.17 =C2=B1 20%  perf-profile.childr=
+en.cycles-pp.wait_for_xmitr
+      0.01 =C2=B1173%      +0.1        0.07 =C2=B1 17%  perf-profile.childr=
+en.cycles-pp.xlog_space_left
+      0.10 =C2=B1  9%      +0.1        0.15 =C2=B1 11%  perf-profile.childr=
+en.cycles-pp.__account_scheduler_latency
+      0.08 =C2=B1  5%      +0.1        0.14 =C2=B1 12%  perf-profile.childr=
+en.cycles-pp.arch_stack_walk
+      0.00            +0.1        0.06 =C2=B1 13%  perf-profile.children.cy=
+cles-pp.lapic_next_deadline
+      0.00            +0.1        0.06 =C2=B1 13%  perf-profile.children.cy=
+cles-pp.__remove_hrtimer
+      0.00            +0.1        0.06 =C2=B1 13%  perf-profile.children.cy=
+cles-pp.__update_load_avg_se
+      0.00            +0.1        0.06 =C2=B1 13%  perf-profile.children.cy=
+cles-pp.xfs_verify_ino
+      0.27 =C2=B1  5%      +0.1        0.33        perf-profile.children.cy=
+cles-pp.xfs_dir2_node_removename
+      0.11 =C2=B1  4%      +0.1        0.17 =C2=B1 19%  perf-profile.childr=
+en.cycles-pp.serial8250_console_putchar
+      0.06 =C2=B1 14%      +0.1        0.12 =C2=B1 11%  perf-profile.childr=
+en.cycles-pp.sched_ttwu_pending
+      0.11 =C2=B1  7%      +0.1        0.17 =C2=B1 20%  perf-profile.childr=
+en.cycles-pp.uart_console_write
+      0.45 =C2=B1  4%      +0.1        0.52 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.__might_sleep
+      0.28 =C2=B1  5%      +0.1        0.34 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.xfs_dir_removename
+      0.08 =C2=B1 58%      +0.1        0.14 =C2=B1 10%  perf-profile.childr=
+en.cycles-pp.xlog_ungrant_log_space
+      0.01 =C2=B1173%      +0.1        0.08        perf-profile.children.cy=
+cles-pp.xfs_iunlink
+      0.00            +0.1        0.07 =C2=B1 20%  perf-profile.children.cy=
+cles-pp.rcu_sched_clock_irq
+      0.12 =C2=B1 10%      +0.1        0.19 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.enqueue_entity
+      0.30 =C2=B1  4%      +0.1        0.38 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.__x86_indirect_thunk_rax
+      0.12 =C2=B1 10%      +0.1        0.20 =C2=B1 10%  perf-profile.childr=
+en.cycles-pp.enqueue_task_fair
+      0.10 =C2=B1 58%      +0.1        0.18 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.xfs_log_done
+      0.00            +0.1        0.08 =C2=B1 22%  perf-profile.children.cy=
+cles-pp.native_write_msr
+      0.00            +0.1        0.08 =C2=B1 12%  perf-profile.children.cy=
+cles-pp.xfs_agino_range
+      0.12 =C2=B1 10%      +0.1        0.20 =C2=B1 12%  perf-profile.childr=
+en.cycles-pp.ttwu_do_activate
+      0.12 =C2=B1 10%      +0.1        0.20 =C2=B1 12%  perf-profile.childr=
+en.cycles-pp.activate_task
+      0.12 =C2=B1  8%      +0.1        0.21 =C2=B1 20%  perf-profile.childr=
+en.cycles-pp.console_unlock
+      0.08 =C2=B1  8%      +0.1        0.17 =C2=B1 10%  perf-profile.childr=
+en.cycles-pp.update_load_avg
+      0.12 =C2=B1  8%      +0.1        0.21 =C2=B1 17%  perf-profile.childr=
+en.cycles-pp.irq_work_run_list
+      0.35 =C2=B1  8%      +0.1        0.44 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.xfs_file_iomap_end
+      0.00            +0.1        0.09 =C2=B1 50%  perf-profile.children.cy=
+cles-pp.xfs_inobt_get_maxrecs
+      0.11 =C2=B1 11%      +0.1        0.21 =C2=B1 19%  perf-profile.childr=
+en.cycles-pp.irq_work_interrupt
+      0.11 =C2=B1 11%      +0.1        0.21 =C2=B1 19%  perf-profile.childr=
+en.cycles-pp.smp_irq_work_interrupt
+      0.11 =C2=B1 11%      +0.1        0.21 =C2=B1 19%  perf-profile.childr=
+en.cycles-pp.irq_work_run
+      0.11 =C2=B1 11%      +0.1        0.21 =C2=B1 19%  perf-profile.childr=
+en.cycles-pp.printk
+      0.11 =C2=B1 11%      +0.1        0.21 =C2=B1 19%  perf-profile.childr=
+en.cycles-pp.vprintk_emit
+      0.04 =C2=B1 57%      +0.1        0.13 =C2=B1 25%  perf-profile.childr=
+en.cycles-pp.clockevents_program_event
+      0.60            +0.1        0.69 =C2=B1  4%  perf-profile.children.cy=
+cles-pp.memset_erms
+      0.88 =C2=B1  2%      +0.1        0.98 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.iomap_read_page_sync
+      0.14 =C2=B1  9%      +0.1        0.26 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.task_tick_fair
+      0.71 =C2=B1  2%      +0.1        0.82 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.___might_sleep
+      0.00            +0.1        0.12 =C2=B1 26%  perf-profile.children.cy=
+cles-pp.ktime_get
+      0.11 =C2=B1 61%      +0.1        0.24 =C2=B1 12%  perf-profile.childr=
+en.cycles-pp.xlog_grant_add_space
+      0.42 =C2=B1  8%      +0.1        0.55 =C2=B1 13%  perf-profile.childr=
+en.cycles-pp.xfs_file_write_iter
+      0.06 =C2=B1 11%      +0.1        0.20 =C2=B1 47%  perf-profile.childr=
+en.cycles-pp.xfs_btree_increment
+      0.10 =C2=B1 15%      +0.1        0.24 =C2=B1 24%  perf-profile.childr=
+en.cycles-pp.__softirqentry_text_start
+      0.06 =C2=B1  6%      +0.2        0.22 =C2=B1 35%  perf-profile.childr=
+en.cycles-pp.xfs_btree_get_rec
+      0.06 =C2=B1  7%      +0.2        0.22 =C2=B1 41%  perf-profile.childr=
+en.cycles-pp.__xfs_btree_check_sblock
+      1.56 =C2=B1  2%      +0.2        1.72 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.evict
+      0.17 =C2=B1  8%      +0.2        0.34 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.scheduler_tick
+      1.55 =C2=B1  2%      +0.2        1.71 =C2=B1  6%  perf-profile.childr=
+en.cycles-pp.truncate_inode_pages_range
+      0.11 =C2=B1 14%      +0.2        0.29 =C2=B1 25%  perf-profile.childr=
+en.cycles-pp.irq_exit
+      0.00            +0.2        0.18 =C2=B1 27%  perf-profile.children.cy=
+cles-pp.menu_select
+      0.43 =C2=B1  3%      +0.2        0.62 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.xfs_vn_unlink
+      0.43 =C2=B1  3%      +0.2        0.62 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.xfs_remove
+      0.23 =C2=B1 41%      +0.2        0.42 =C2=B1 11%  perf-profile.childr=
+en.cycles-pp.xfs_trans_reserve
+      0.21 =C2=B1 46%      +0.2        0.40 =C2=B1 11%  perf-profile.childr=
+en.cycles-pp.xfs_log_reserve
+      0.45 =C2=B1  2%      +0.2        0.65 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.vfs_unlink
+      0.34 =C2=B1  5%      +0.2        0.55 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.rwsem_spin_on_owner
+      0.08 =C2=B1  5%      +0.2        0.29 =C2=B1 42%  perf-profile.childr=
+en.cycles-pp.xfs_btree_check_sblock
+      0.28 =C2=B1 36%      +0.2        0.50 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.xfs_trans_alloc
+      0.26 =C2=B1  4%      +0.3        0.51        perf-profile.children.cy=
+cles-pp.update_process_times
+      0.26 =C2=B1  3%      +0.3        0.52 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.tick_sched_handle
+      0.10 =C2=B1  8%      +0.3        0.36 =C2=B1 36%  perf-profile.childr=
+en.cycles-pp.xfs_inobt_get_rec
+      2.49 =C2=B1  6%      +0.3        2.75 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.rwsem_optimistic_spin
+      3.88 =C2=B1  2%      +0.3        4.17        perf-profile.children.cy=
+cles-pp.grab_cache_page_write_begin
+      0.29 =C2=B1  3%      +0.3        0.59 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.tick_sched_timer
+      2.61 =C2=B1  2%      +0.3        2.94        perf-profile.children.cy=
+cles-pp.syscall_return_via_sysret
+      0.12 =C2=B1  8%      +0.4        0.52 =C2=B1  4%  perf-profile.childr=
+en.cycles-pp.xfs_dialloc_ag
+      3.00 =C2=B1  5%      +0.4        3.40 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.do_sys_open
+      2.97 =C2=B1  5%      +0.4        3.37 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.path_openat
+      2.97 =C2=B1  5%      +0.4        3.37 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.do_filp_open
+      0.20 =C2=B1  8%      +0.4        0.61 =C2=B1 37%  perf-profile.childr=
+en.cycles-pp.xfs_check_agi_freecount
+      1.75 =C2=B1  2%      +0.4        2.15        perf-profile.children.cy=
+cles-pp.xfs_file_iomap_begin_delay
+      2.94 =C2=B1  5%      +0.4        3.35 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.creat
+      0.15 =C2=B1 10%      +0.4        0.58 =C2=B1  5%  perf-profile.childr=
+en.cycles-pp.xfs_dialloc
+      0.39 =C2=B1  3%      +0.4        0.83 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.__hrtimer_run_queues
+      2.79 =C2=B1  2%      +0.4        3.23        perf-profile.children.cy=
+cles-pp.entry_SYSCALL_64
+      0.18 =C2=B1  7%      +0.4        0.63 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.xfs_ialloc
+      0.18 =C2=B1  7%      +0.5        0.63 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.xfs_dir_ialloc
+      5.03 =C2=B1  2%      +0.5        5.49        perf-profile.children.cy=
+cles-pp.iomap_write_begin
+      0.45 =C2=B1  7%      +0.6        1.00        perf-profile.children.cy=
+cles-pp.xfs_create
+      0.46 =C2=B1  7%      +0.6        1.02        perf-profile.children.cy=
+cles-pp.xfs_generic_create
+      0.50 =C2=B1  4%      +0.6        1.08 =C2=B1  3%  perf-profile.childr=
+en.cycles-pp.hrtimer_interrupt
+      2.02 =C2=B1  2%      +0.6        2.62        perf-profile.children.cy=
+cles-pp.xfs_file_iomap_begin
+      0.77 =C2=B1  4%      +0.7        1.45 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.do_unlinkat
+      0.81 =C2=B1  5%      +0.7        1.51 =C2=B1  2%  perf-profile.childr=
+en.cycles-pp.unlink
+     12.39 =C2=B1  2%      +0.8       13.15        perf-profile.children.cy=
+cles-pp.iomap_apply
+     12.46 =C2=B1  2%      +0.8       13.22        perf-profile.children.cy=
+cles-pp.iomap_file_buffered_write
+      0.64 =C2=B1  5%      +0.8        1.46 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.smp_apic_timer_interrupt
+      0.69 =C2=B1  4%      +0.9        1.56 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.apic_timer_interrupt
+     15.75 =C2=B1  4%      +1.3       17.07        perf-profile.children.cy=
+cles-pp.xfs_file_buffered_aio_write
+     16.43 =C2=B1  3%      +1.5       17.95        perf-profile.children.cy=
+cles-pp.new_sync_write
+     18.36 =C2=B1  3%      +1.7       20.02        perf-profile.children.cy=
+cles-pp.vfs_write
+     18.77 =C2=B1  3%      +1.7       20.48        perf-profile.children.cy=
+cles-pp.ksys_write
+     25.94 =C2=B1  3%      +2.0       27.92        perf-profile.children.cy=
+cles-pp.write
+      5.65 =C2=B1 12%     +10.7       16.35 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.intel_idle
+      5.75 =C2=B1 13%     +11.2       16.98 =C2=B1  7%  perf-profile.childr=
+en.cycles-pp.cpuidle_enter_state
+      5.75 =C2=B1 13%     +11.2       16.98 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.cpuidle_enter
+      5.89 =C2=B1 12%     +11.5       17.42 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.secondary_startup_64
+      5.89 =C2=B1 12%     +11.5       17.42 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.cpu_startup_entry
+      5.89 =C2=B1 12%     +11.5       17.42 =C2=B1  8%  perf-profile.childr=
+en.cycles-pp.do_idle
+      5.69 =C2=B1 14%     +11.6       17.26 =C2=B1  9%  perf-profile.childr=
+en.cycles-pp.start_secondary
+      9.36 =C2=B1  3%      -3.2        6.20 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.atime_needs_update
+      9.38 =C2=B1  6%      -2.6        6.74 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.down_read
+      7.04 =C2=B1  2%      -2.2        4.82 =C2=B1  3%  perf-profile.self.c=
+ycles-pp.generic_file_read_iter
+      6.34            -2.0        4.32 =C2=B1  6%  perf-profile.self.cycles=
+-pp.new_sync_read
+      5.76 =C2=B1  5%      -1.5        4.27        perf-profile.self.cycles=
+-pp.up_read
+      2.93 =C2=B1  4%      -1.0        1.96        perf-profile.self.cycles=
+-pp.__inode_security_revalidate
+      7.79            -0.6        7.14        perf-profile.self.cycles-pp.d=
+o_syscall_64
+      1.73 =C2=B1  6%      -0.5        1.27 =C2=B1  6%  perf-profile.self.c=
+ycles-pp.selinux_file_permission
+      1.73 =C2=B1 18%      -0.4        1.36 =C2=B1  8%  perf-profile.self.c=
+ycles-pp.fsnotify
+      0.72 =C2=B1  7%      -0.2        0.51 =C2=B1  9%  perf-profile.self.c=
+ycles-pp.rw_verify_area
+      0.34 =C2=B1  3%      -0.2        0.17 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.page_mapping
+      0.42 =C2=B1  4%      -0.1        0.30 =C2=B1  6%  perf-profile.self.c=
+ycles-pp.iomap_write_end
+      0.24 =C2=B1  6%      -0.1        0.16 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.iomap_set_page_dirty
+      0.16 =C2=B1 11%      -0.1        0.08 =C2=B1 20%  perf-profile.self.c=
+ycles-pp.rwsem_optimistic_spin
+      0.42 =C2=B1  8%      -0.1        0.34 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.up_write
+      0.33 =C2=B1  2%      -0.0        0.29 =C2=B1  2%  perf-profile.self.c=
+ycles-pp._raw_spin_lock
+      0.28 =C2=B1  5%      -0.0        0.24 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.iov_iter_copy_from_user_atomic
+      0.08            +0.0        0.10 =C2=B1  4%  perf-profile.self.cycles=
+-pp.workingset_update_node
+      0.05 =C2=B1  8%      +0.0        0.07 =C2=B1 17%  perf-profile.self.c=
+ycles-pp.__lock_text_start
+      0.14 =C2=B1  3%      +0.0        0.17 =C2=B1  2%  perf-profile.self.c=
+ycles-pp.__x64_sys_read
+      0.22            +0.0        0.25 =C2=B1  6%  perf-profile.self.cycles=
+-pp.read
+      0.16            +0.0        0.19 =C2=B1  9%  perf-profile.self.cycles=
+-pp.rcu_all_qs
+      0.18 =C2=B1  2%      +0.0        0.21 =C2=B1  7%  perf-profile.self.c=
+ycles-pp._cond_resched
+      0.11 =C2=B1  4%      +0.0        0.15 =C2=B1  9%  perf-profile.self.c=
+ycles-pp.xfs_file_aio_write_checks
+      0.32 =C2=B1  5%      +0.0        0.35        perf-profile.self.cycles=
+-pp.xfs_file_buffered_aio_write
+      0.14 =C2=B1  6%      +0.0        0.17 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.ksys_write
+      0.04 =C2=B1 57%      +0.0        0.08 =C2=B1  6%  perf-profile.self.c=
+ycles-pp.copyin
+      0.41 =C2=B1  4%      +0.0        0.45 =C2=B1  3%  perf-profile.self.c=
+ycles-pp.__might_sleep
+      0.20 =C2=B1  4%      +0.0        0.25 =C2=B1  3%  perf-profile.self.c=
+ycles-pp.__list_del_entry_valid
+      0.20 =C2=B1  7%      +0.0        0.25 =C2=B1  6%  perf-profile.self.c=
+ycles-pp.iomap_write_begin
+      0.03 =C2=B1100%      +0.1        0.08 =C2=B1 16%  perf-profile.self.c=
+ycles-pp.xfs_get_extsz_hint
+      0.00            +0.1        0.05 =C2=B1  8%  perf-profile.self.cycles=
+-pp.read_tsc
+      0.27 =C2=B1  6%      +0.1        0.32 =C2=B1  6%  perf-profile.self.c=
+ycles-pp.__x86_indirect_thunk_rax
+      0.17 =C2=B1 13%      +0.1        0.23 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.new_sync_write
+      0.00            +0.1        0.06 =C2=B1  8%  perf-profile.self.cycles=
+-pp.native_irq_return_iret
+      0.00            +0.1        0.06 =C2=B1 16%  perf-profile.self.cycles=
+-pp.memcpy_erms
+      0.01 =C2=B1173%      +0.1        0.07 =C2=B1 17%  perf-profile.self.c=
+ycles-pp.xlog_space_left
+      0.20 =C2=B1  4%      +0.1        0.26        perf-profile.self.cycles=
+-pp.write
+      0.10 =C2=B1 25%      +0.1        0.16 =C2=B1 18%  perf-profile.self.c=
+ycles-pp.xfs_log_commit_cil
+      0.08 =C2=B1 58%      +0.1        0.14 =C2=B1 10%  perf-profile.self.c=
+ycles-pp.xlog_ungrant_log_space
+      0.00            +0.1        0.07 =C2=B1 20%  perf-profile.self.cycles=
+-pp.update_load_avg
+      0.25 =C2=B1  4%      +0.1        0.32 =C2=B1  5%  perf-profile.self.c=
+ycles-pp.xfs_file_iomap_end
+      0.23 =C2=B1  9%      +0.1        0.30 =C2=B1  8%  perf-profile.self.c=
+ycles-pp.pagecache_get_page
+      0.00            +0.1        0.08 =C2=B1 30%  perf-profile.self.cycles=
+-pp.ktime_get
+      0.00            +0.1        0.08 =C2=B1 22%  perf-profile.self.cycles=
+-pp.native_write_msr
+      0.00            +0.1        0.08 =C2=B1 53%  perf-profile.self.cycles=
+-pp.xfs_inobt_get_maxrecs
+      0.59            +0.1        0.68 =C2=B1  4%  perf-profile.self.cycles=
+-pp.memset_erms
+      0.17 =C2=B1  9%      +0.1        0.26 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.xfs_iunlock
+      0.00            +0.1        0.09 =C2=B1 44%  perf-profile.self.cycles=
+-pp.menu_select
+      0.68 =C2=B1  2%      +0.1        0.79 =C2=B1  3%  perf-profile.self.c=
+ycles-pp.___might_sleep
+      0.40 =C2=B1 10%      +0.1        0.52 =C2=B1 13%  perf-profile.self.c=
+ycles-pp.xfs_file_write_iter
+      0.00            +0.1        0.12 =C2=B1 38%  perf-profile.self.cycles=
+-pp.__xfs_btree_check_sblock
+      0.11 =C2=B1 61%      +0.1        0.24 =C2=B1 12%  perf-profile.self.c=
+ycles-pp.xlog_grant_add_space
+      0.24 =C2=B1  7%      +0.2        0.40        perf-profile.self.cycles=
+-pp.xfs_file_iomap_begin
+      0.31 =C2=B1  6%      +0.2        0.53 =C2=B1  4%  perf-profile.self.c=
+ycles-pp.rwsem_spin_on_owner
+      0.32 =C2=B1 12%      +0.2        0.57        perf-profile.self.cycles=
+-pp.xfs_file_iomap_begin_delay
+      2.60 =C2=B1  2%      +0.3        2.94        perf-profile.self.cycles=
+-pp.syscall_return_via_sysret
+      2.52 =C2=B1  2%      +0.4        2.91        perf-profile.self.cycles=
+-pp.entry_SYSCALL_64
+      5.65 =C2=B1 12%     +10.7       16.34 =C2=B1  7%  perf-profile.self.c=
+ycles-pp.intel_idle
+
+
 
 
 
@@ -1572,15 +3207,15 @@ Thanks,
 Rong Chen
 
 
---===============1959489058793355812==
+--===============3089778434832988312==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment;
- filename="config-5.3.0-rc8-00133-g0096420adb036"
+ filename="config-5.3.0-rc7-00093-g1aabb011bfba5"
 
 IwojIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZpbGU7IERPIE5PVCBFRElULgojIExpbnV4L3g4
-Nl82NCA1LjMuMC1yYzggS2VybmVsIENvbmZpZ3VyYXRpb24KIwoKIwojIENvbXBpbGVyOiBnY2Mt
+Nl82NCA1LjMuMC1yYzcgS2VybmVsIENvbmZpZ3VyYXRpb24KIwoKIwojIENvbXBpbGVyOiBnY2Mt
 NyAoRGViaWFuIDcuNC4wLTExKSA3LjQuMAojCkNPTkZJR19DQ19JU19HQ0M9eQpDT05GSUdfR0ND
 X1ZFUlNJT049NzA0MDAKQ09ORklHX0NMQU5HX1ZFUlNJT049MApDT05GSUdfQ0NfQ0FOX0xJTks9
 eQpDT05GSUdfQ0NfSEFTX0FTTV9HT1RPPXkKQ09ORklHX0NDX0hBU19XQVJOX01BWUJFX1VOSU5J
@@ -5080,7 +6715,7 @@ cyBub3Qgc2V0CkNPTkZJR19VTldJTkRFUl9PUkM9eQojIENPTkZJR19VTldJTkRFUl9GUkFNRV9Q
 T0lOVEVSIGlzIG5vdCBzZXQKIyBDT05GSUdfVU5XSU5ERVJfR1VFU1MgaXMgbm90IHNldAojIGVu
 ZCBvZiBLZXJuZWwgaGFja2luZwo=
 
---===============1959489058793355812==
+--===============3089778434832988312==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -5088,66 +6723,76 @@ Content-Disposition: attachment; filename="job-script.ksh"
 
 IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0nYWltNycKCWV4cG9y
 dCB0ZXN0Y2FzZT0nYWltNycKCWV4cG9ydCBjYXRlZ29yeT0nYmVuY2htYXJrJwoJZXhwb3J0IGpv
-Yl9vcmlnaW49Jy9sa3AvbGtwLy5zcmMtMjAxOTA5MTAtMjIyMTI0L2FsbG90L2N5Y2xpYzpwMTps
-aW51eC1kZXZlbDpkZXZlbC1ob3VybHkvbGtwLWNzbC0yYXAyL2FpbTctZnMtMWJyZC55YW1sJwoJ
+Yl9vcmlnaW49Jy9sa3AvbGtwLy5zcmMtMjAxOTA5MDYtMTY0NzIxL2FsbG90L2N5Y2xpYzpwMTps
+aW51eC1kZXZlbDpkZXZlbC1ob3VybHkvbGtwLWl2Yi1lcDAxL2FpbTctZnMtcmFpZC55YW1sJwoJ
 ZXhwb3J0IHF1ZXVlX2NtZGxpbmVfa2V5cz0nYnJhbmNoCmNvbW1pdApxdWV1ZV9hdF9sZWFzdF9v
-bmNlJwoJZXhwb3J0IHF1ZXVlPSd2YWxpZGF0ZScKCWV4cG9ydCB0ZXN0Ym94PSdsa3AtY3NsLTJh
-cDInCglleHBvcnQgdGJveF9ncm91cD0nbGtwLWNzbC0yYXAyJwoJZXhwb3J0IHN1Ym1pdF9pZD0n
-NWQ3OGFmZDI2YjNjZTBiN2VhYmY5ZTIyJwoJZXhwb3J0IGpvYl9maWxlPScvbGtwL2pvYnMvc2No
-ZWR1bGVkL2xrcC1jc2wtMmFwMi9haW03LXBlcmZvcm1hbmNlLTFCUkRfNDhHLWJ0cmZzLTE1MDAt
-ZGlza193cnQtZGViaWFuLXg4Nl82NC0yMDE5LTIwMTkwOTExLTQ3MDgyLTFqNnBpc3QtMy55YW1s
-JwoJZXhwb3J0IGlkPScwMjUyZTFmODhlM2MwN2ZkNzkyMTdhODI1YmY3NDAyZDU3M2Y5NGE1JwoJ
+bmNlJwoJZXhwb3J0IHF1ZXVlPSd2YWxpZGF0ZScKCWV4cG9ydCB0ZXN0Ym94PSdsa3AtaXZiLWVw
+MDEnCglleHBvcnQgdGJveF9ncm91cD0nbGtwLWl2Yi1lcDAxJwoJZXhwb3J0IHN1Ym1pdF9pZD0n
+NWQ3OGRjOGU3NTMyMzIxYzc4NmE4MmMwJwoJZXhwb3J0IGpvYl9maWxlPScvbGtwL2pvYnMvc2No
+ZWR1bGVkL2xrcC1pdmItZXAwMS9haW03LXBlcmZvcm1hbmNlLTRCUkRfMTJHLXhmcy0zMDAwLVJB
+SUQwLWRpc2tfcnctZGViaWFuLXg4Nl82NC0yMC0yMDE5MDkxMS03Mjg4LTFheGhmNmgtMy55YW1s
+JwoJZXhwb3J0IGlkPSc1MjBlMDAwYjllOTY2MGU2YWE5ZjVmNTE2YjI2MWNkMGZiYWNiOGU5JwoJ
 ZXhwb3J0IHF1ZXVlcl92ZXJzaW9uPScvbGtwLXNyYycKCWV4cG9ydCBhcmNoPSd4ODZfNjQnCgll
-eHBvcnQgbW9kZWw9J0Nhc2NhZGUgTGFrZScKCWV4cG9ydCBucl9ub2RlPTQKCWV4cG9ydCBucl9j
-cHU9MTkyCglleHBvcnQgbWVtb3J5PScxOTJHJwoJZXhwb3J0IGhkZF9wYXJ0aXRpb25zPQoJZXhw
-b3J0IHNzZF9wYXJ0aXRpb25zPQoJZXhwb3J0IHJvb3Rmc19wYXJ0aXRpb249J0xBQkVMPUxLUC1S
-T09URlMnCglleHBvcnQga2VybmVsX2NtZGxpbmVfaHc9J2FjcGlfcnNkcD0weDY3ZjQ0MDE0JwoJ
-ZXhwb3J0IGJyYW5kPSdJbnRlbChSKSBYZW9uKFIpIFBsYXRpbnVtIDkyNDIgQ1BVIEAgMi4zMEdI
-eicKCWV4cG9ydCByb290ZnM9J2RlYmlhbi14ODZfNjQtMjAxOS0wNS0xNC5jZ3onCglleHBvcnQg
-Y29tbWl0PScwMDk2NDIwYWRiMDM2YjE0M2Q2YzQyYWQ3YzAyYTk0NWIzZTExMTljJwoJZXhwb3J0
-IG5lZWRfa2NvbmZpZ19odz0nQ09ORklHX0lHQj15JwoJZXhwb3J0IG5lZWRfa2NvbmZpZz0nQ09O
-RklHX0JMS19ERVZfUkFNPW0KQ09ORklHX0JMS19ERVY9eQpDT05GSUdfQkxPQ0s9eQpDT05GSUdf
-QlRSRlNfRlMnCglleHBvcnQga2NvbmZpZz0neDg2XzY0LXJoZWwtNy42JwoJZXhwb3J0IGNvbXBp
-bGVyPSdnY2MtNycKCWV4cG9ydCBlbnF1ZXVlX3RpbWU9JzIwMTktMDktMTEgMTY6Mjc6MDQgKzA4
-MDAnCglleHBvcnQgX2lkPSc1ZDc4YWZkYTZiM2NlMGI3ZWFiZjllMjMnCglleHBvcnQgX3J0PScv
-cmVzdWx0L2FpbTcvcGVyZm9ybWFuY2UtMUJSRF80OEctYnRyZnMtMTUwMC1kaXNrX3dydC9sa3At
-Y3NsLTJhcDIvZGViaWFuLXg4Nl82NC0yMDE5LTA1LTE0LmNnei94ODZfNjQtcmhlbC03LjYvZ2Nj
-LTcvMDA5NjQyMGFkYjAzNmIxNDNkNmM0MmFkN2MwMmE5NDViM2UxMTE5YycKCWV4cG9ydCB1c2Vy
-PSdsa3AnCglleHBvcnQgaGVhZF9jb21taXQ9JzljNWI0NTY0ODY2MjkwZTIwZDAzNTcyZWQ2NjEz
-ZmYwODhjOGRiMTAnCglleHBvcnQgYmFzZV9jb21taXQ9J2Y3NGMyYmI5ODc3NmUyZGU1MDhmNGQ2
-MDdjZDUxOTg3MzA2NTExOGUnCglleHBvcnQgYnJhbmNoPSdsaW51eC1kZXZlbC9kZXZlbC1ob3Vy
-bHktMjAxOTA5MTAwOCcKCWV4cG9ydCByZXN1bHRfcm9vdD0nL3Jlc3VsdC9haW03L3BlcmZvcm1h
-bmNlLTFCUkRfNDhHLWJ0cmZzLTE1MDAtZGlza193cnQvbGtwLWNzbC0yYXAyL2RlYmlhbi14ODZf
-NjQtMjAxOS0wNS0xNC5jZ3oveDg2XzY0LXJoZWwtNy42L2djYy03LzAwOTY0MjBhZGIwMzZiMTQz
-ZDZjNDJhZDdjMDJhOTQ1YjNlMTExOWMvMycKCWV4cG9ydCBzY2hlZHVsZXJfdmVyc2lvbj0nL2xr
-cC9sa3AvLnNyYy0yMDE5MDkxMS0xMTI2MzYnCglleHBvcnQgTEtQX1NFUlZFUj0naW5uJwoJZXhw
-b3J0IG1heF91cHRpbWU9Mjc3My4wOAoJZXhwb3J0IGluaXRyZD0nL29zaW1hZ2UvZGViaWFuL2Rl
-Ymlhbi14ODZfNjQtMjAxOS0wNS0xNC5jZ3onCglleHBvcnQgYm9vdGxvYWRlcl9hcHBlbmQ9J3Jv
-b3Q9L2Rldi9yYW0wCnVzZXI9bGtwCmpvYj0vbGtwL2pvYnMvc2NoZWR1bGVkL2xrcC1jc2wtMmFw
-Mi9haW03LXBlcmZvcm1hbmNlLTFCUkRfNDhHLWJ0cmZzLTE1MDAtZGlza193cnQtZGViaWFuLXg4
-Nl82NC0yMDE5LTIwMTkwOTExLTQ3MDgyLTFqNnBpc3QtMy55YW1sCkFSQ0g9eDg2XzY0Cmtjb25m
-aWc9eDg2XzY0LXJoZWwtNy42CmJyYW5jaD1saW51eC1kZXZlbC9kZXZlbC1ob3VybHktMjAxOTA5
-MTAwOApjb21taXQ9MDA5NjQyMGFkYjAzNmIxNDNkNmM0MmFkN2MwMmE5NDViM2UxMTE5YwpCT09U
-X0lNQUdFPS9wa2cvbGludXgveDg2XzY0LXJoZWwtNy42L2djYy03LzAwOTY0MjBhZGIwMzZiMTQz
-ZDZjNDJhZDdjMDJhOTQ1YjNlMTExOWMvdm1saW51ei01LjMuMC1yYzgtMDAxMzMtZzAwOTY0MjBh
-ZGIwMzYKYWNwaV9yc2RwPTB4NjdmNDQwMTQKbWF4X3VwdGltZT0yNzczClJFU1VMVF9ST09UPS9y
-ZXN1bHQvYWltNy9wZXJmb3JtYW5jZS0xQlJEXzQ4Ry1idHJmcy0xNTAwLWRpc2tfd3J0L2xrcC1j
-c2wtMmFwMi9kZWJpYW4teDg2XzY0LTIwMTktMDUtMTQuY2d6L3g4Nl82NC1yaGVsLTcuNi9nY2Mt
-Ny8wMDk2NDIwYWRiMDM2YjE0M2Q2YzQyYWQ3YzAyYTk0NWIzZTExMTljLzMKTEtQX1NFUlZFUj1p
-bm4KZGVidWcKYXBpYz1kZWJ1ZwpzeXNycV9hbHdheXNfZW5hYmxlZApyY3VwZGF0ZS5yY3VfY3B1
-X3N0YWxsX3RpbWVvdXQ9MTAwCm5ldC5pZm5hbWVzPTAKcHJpbnRrLmRldmttc2c9b24KcGFuaWM9
-LTEKc29mdGxvY2t1cF9wYW5pYz0xCm5taV93YXRjaGRvZz1wYW5pYwpvb3BzPXBhbmljCmxvYWRf
-cmFtZGlzaz0yCnByb21wdF9yYW1kaXNrPTAKZHJiZC5taW5vcl9jb3VudD04CnN5c3RlbWQubG9n
-X2xldmVsPWVycgppZ25vcmVfbG9nbGV2ZWwKY29uc29sZT10dHkwCmVhcmx5cHJpbnRrPXR0eVMw
-LDExNTIwMApjb25zb2xlPXR0eVMwLDExNTIwMAp2Z2E9bm9ybWFsCnJ3JwoJZXhwb3J0IG1vZHVs
-ZXNfaW5pdHJkPScvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuNi9nY2MtNy8wMDk2NDIwYWRiMDM2
-YjE0M2Q2YzQyYWQ3YzAyYTk0NWIzZTExMTljL21vZHVsZXMuY2d6JwoJZXhwb3J0IGJtX2luaXRy
-ZD0nL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3J1bi1pcGNvbmZp
-Z18yMDE4LTA0LTAzLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5j
-Z3ovbGtwXzIwMTktMDgtMDUuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0
-LTAzLmNnei9yc3luYy1yb290ZnNfMjAxOC0wNC0wMy5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
-eDg2XzY0LTIwMTgtMDQtMDMuY2d6L3BlcmZfMjAxOS0wOC0xMi5jZ3osL29zaW1hZ2UvcGtnL2Rl
-Ymlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovcGVyZi14ODZfNjQtZ2l0LTFfMjAxOS0wOS0wNi5j
+eHBvcnQgbW9kZWw9J0l2eSBCcmlkZ2UtRVAnCglleHBvcnQgbnJfbm9kZT0yCglleHBvcnQgbnJf
+Y3B1PTQwCglleHBvcnQgbWVtb3J5PSczODRHJwoJZXhwb3J0IGhkZF9wYXJ0aXRpb25zPScvZGV2
+L2Rpc2svYnktaWQvc2NzaS0zNmI4Y2EzYTBlNjUwZTEwMDIyODYyM2E0MGY5MzYzNDctcGFydDEg
+L2Rldi9kaXNrL2J5LWlkL3Njc2ktMzZiOGNhM2EwZTY1MGUxMDAyMjg2MjNhNDBmOTM2MzQ3LXBh
+cnQyIC9kZXYvZGlzay9ieS1pZC9zY3NpLTM2YjhjYTNhMGU2NTBlMTAwMjI4NjIzYTQwZjkzNjM0
+Ny1wYXJ0MyAvZGV2L2Rpc2svYnktaWQvc2NzaS0zNmI4Y2EzYTBlNjUwZTEwMDIyODYyM2E0MGY5
+MzYzNDctcGFydDQgL2Rldi9kaXNrL2J5LWlkL3Njc2ktMzZiOGNhM2EwZTY1MGUxMDAyMjg2MjNh
+NDBmOTM2MzQ3LXBhcnQ1IC9kZXYvZGlzay9ieS1pZC9zY3NpLTM2YjhjYTNhMGU2NTBlMTAwMjI4
+NjIzYTQwZjkzNjM0Ny1wYXJ0NiAvZGV2L2Rpc2svYnktaWQvc2NzaS0zNmI4Y2EzYTBlNjUwZTEw
+MDIyODYyM2E0MGY5MzYzNDctcGFydDcgL2Rldi9kaXNrL2J5LWlkL3Njc2ktMzZiOGNhM2EwZTY1
+MGUxMDAyMjg2MjNhNDBmOTM2MzQ3LXBhcnQ4JwoJZXhwb3J0IHN3YXBfcGFydGl0aW9ucz0KCWV4
+cG9ydCByb290ZnNfcGFydGl0aW9uPSdMQUJFTD1MS1AtUk9PVEZTJwoJZXhwb3J0IGJyYW5kPSdJ
+bnRlbChSKSBYZW9uKFIpIENQVSBFNS0yNjkwIHYyIEAgMy4wMEdIeicKCWV4cG9ydCBjb21taXQ9
+JzFhYWJiMDExYmZiYTVhODk0MmQzZTBkMGM4NGE0YWM3Y2FkMjc3YjEnCglleHBvcnQgcm9vdGZz
+PSdkZWJpYW4teDg2XzY0LTIwMTktMDUtMTQuY2d6JwoJZXhwb3J0IGtlcm5lbF9jbWRsaW5lX2h3
+PSdjbWE9MCcKCWV4cG9ydCBuZWVkX2tjb25maWdfaHc9J0NPTkZJR19JR0I9eQpDT05GSUdfTUVH
+QVJBSURfU0FTJwoJZXhwb3J0IG5lZWRfa2NvbmZpZz0nQ09ORklHX0JMS19ERVZfUkFNPW0KQ09O
+RklHX0JMS19ERVY9eQpDT05GSUdfQkxPQ0s9eQpDT05GSUdfTURfUkFJRDAKQ09ORklHX1hGU19G
+UycKCWV4cG9ydCBrY29uZmlnPSd4ODZfNjQtcmhlbC03LjYnCglleHBvcnQgY29tcGlsZXI9J2dj
+Yy03JwoJZXhwb3J0IGVucXVldWVfdGltZT0nMjAxOS0wOS0xMSAxOTozNzo1OSArMDgwMCcKCWV4
+cG9ydCBfaWQ9JzVkNzhkYzk3NzUzMjMyMWM3ODZhODJjMScKCWV4cG9ydCBfcnQ9Jy9yZXN1bHQv
+YWltNy9wZXJmb3JtYW5jZS00QlJEXzEyRy14ZnMtMzAwMC1SQUlEMC1kaXNrX3J3L2xrcC1pdmIt
+ZXAwMS9kZWJpYW4teDg2XzY0LTIwMTktMDUtMTQuY2d6L3g4Nl82NC1yaGVsLTcuNi9nY2MtNy8x
+YWFiYjAxMWJmYmE1YTg5NDJkM2UwZDBjODRhNGFjN2NhZDI3N2IxJwoJZXhwb3J0IHVzZXI9J2xr
+cCcKCWV4cG9ydCBoZWFkX2NvbW1pdD0nOWM1YjQ1NjQ4NjYyOTBlMjBkMDM1NzJlZDY2MTNmZjA4
+OGM4ZGIxMCcKCWV4cG9ydCBiYXNlX2NvbW1pdD0nZjc0YzJiYjk4Nzc2ZTJkZTUwOGY0ZDYwN2Nk
+NTE5ODczMDY1MTE4ZScKCWV4cG9ydCBicmFuY2g9J2xpbnV4LWRldmVsL2RldmVsLWhvdXJseS0y
+MDE5MDkxMDA4JwoJZXhwb3J0IHJlc3VsdF9yb290PScvcmVzdWx0L2FpbTcvcGVyZm9ybWFuY2Ut
+NEJSRF8xMkcteGZzLTMwMDAtUkFJRDAtZGlza19ydy9sa3AtaXZiLWVwMDEvZGViaWFuLXg4Nl82
+NC0yMDE5LTA1LTE0LmNnei94ODZfNjQtcmhlbC03LjYvZ2NjLTcvMWFhYmIwMTFiZmJhNWE4OTQy
+ZDNlMGQwYzg0YTRhYzdjYWQyNzdiMS8zJwoJZXhwb3J0IHNjaGVkdWxlcl92ZXJzaW9uPScvbGtw
+L2xrcC8uc3JjLTIwMTkwOTExLTExMjYzNicKCWV4cG9ydCBMS1BfU0VSVkVSPSdpbm4nCglleHBv
+cnQgbWF4X3VwdGltZT05NDkuNjgwMDAwMDAwMDAwMQoJZXhwb3J0IGluaXRyZD0nL29zaW1hZ2Uv
+ZGViaWFuL2RlYmlhbi14ODZfNjQtMjAxOS0wNS0xNC5jZ3onCglleHBvcnQgYm9vdGxvYWRlcl9h
+cHBlbmQ9J3Jvb3Q9L2Rldi9yYW0wCnVzZXI9bGtwCmpvYj0vbGtwL2pvYnMvc2NoZWR1bGVkL2xr
+cC1pdmItZXAwMS9haW03LXBlcmZvcm1hbmNlLTRCUkRfMTJHLXhmcy0zMDAwLVJBSUQwLWRpc2tf
+cnctZGViaWFuLXg4Nl82NC0yMC0yMDE5MDkxMS03Mjg4LTFheGhmNmgtMy55YW1sCkFSQ0g9eDg2
+XzY0Cmtjb25maWc9eDg2XzY0LXJoZWwtNy42CmJyYW5jaD1saW51eC1kZXZlbC9kZXZlbC1ob3Vy
+bHktMjAxOTA5MTAwOApjb21taXQ9MWFhYmIwMTFiZmJhNWE4OTQyZDNlMGQwYzg0YTRhYzdjYWQy
+NzdiMQpCT09UX0lNQUdFPS9wa2cvbGludXgveDg2XzY0LXJoZWwtNy42L2djYy03LzFhYWJiMDEx
+YmZiYTVhODk0MmQzZTBkMGM4NGE0YWM3Y2FkMjc3YjEvdm1saW51ei01LjMuMC1yYzctMDAwOTMt
+ZzFhYWJiMDExYmZiYTUKY21hPTAKbWF4X3VwdGltZT05NDkKUkVTVUxUX1JPT1Q9L3Jlc3VsdC9h
+aW03L3BlcmZvcm1hbmNlLTRCUkRfMTJHLXhmcy0zMDAwLVJBSUQwLWRpc2tfcncvbGtwLWl2Yi1l
+cDAxL2RlYmlhbi14ODZfNjQtMjAxOS0wNS0xNC5jZ3oveDg2XzY0LXJoZWwtNy42L2djYy03LzFh
+YWJiMDExYmZiYTVhODk0MmQzZTBkMGM4NGE0YWM3Y2FkMjc3YjEvMwpMS1BfU0VSVkVSPWlubgpk
+ZWJ1ZwphcGljPWRlYnVnCnN5c3JxX2Fsd2F5c19lbmFibGVkCnJjdXBkYXRlLnJjdV9jcHVfc3Rh
+bGxfdGltZW91dD0xMDAKbmV0LmlmbmFtZXM9MApwcmludGsuZGV2a21zZz1vbgpwYW5pYz0tMQpz
+b2Z0bG9ja3VwX3BhbmljPTEKbm1pX3dhdGNoZG9nPXBhbmljCm9vcHM9cGFuaWMKbG9hZF9yYW1k
+aXNrPTIKcHJvbXB0X3JhbWRpc2s9MApkcmJkLm1pbm9yX2NvdW50PTgKc3lzdGVtZC5sb2dfbGV2
+ZWw9ZXJyCmlnbm9yZV9sb2dsZXZlbApjb25zb2xlPXR0eTAKZWFybHlwcmludGs9dHR5UzAsMTE1
+MjAwCmNvbnNvbGU9dHR5UzAsMTE1MjAwCnZnYT1ub3JtYWwKcncnCglleHBvcnQgbW9kdWxlc19p
+bml0cmQ9Jy9wa2cvbGludXgveDg2XzY0LXJoZWwtNy42L2djYy03LzFhYWJiMDExYmZiYTVhODk0
+MmQzZTBkMGM4NGE0YWM3Y2FkMjc3YjEvbW9kdWxlcy5jZ3onCglleHBvcnQgYm1faW5pdHJkPScv
+b3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovcnVuLWlwY29uZmlnXzIw
+MTgtMDQtMDMuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9s
+a3BfMjAxOS0wOC0wNS5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMu
+Y2d6L3JzeW5jLXJvb3Rmc18yMDE4LTA0LTAzLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZf
+NjQtMjAxOC0wNC0wMy5jZ3ovcGVyZl8yMDE5LTA4LTEyLmNneiwvb3NpbWFnZS9wa2cvZGViaWFu
+LXg4Nl82NC0yMDE4LTA0LTAzLmNnei9wZXJmLXg4Nl82NC1naXQtMV8yMDE5LTA5LTA2LmNneiwv
+b3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovbWRfMjAxOS0wNi0yNi5j
 Z3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L2ZzXzIwMTktMDgt
 MjEuY2d6LC9vc2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L2FpbTcteDg2
 XzY0LV8yMDE5LTA4LTE4LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0w
@@ -5162,179 +6807,197 @@ Jy9vc2ltYWdlL3VzZXIvbGtwL2xrcC14ODZfNjQuY2d6JwoJZXhwb3J0IHNpdGU9J2lubicKCWV4
 cG9ydCBMS1BfQ0dJX1BPUlQ9ODAKCWV4cG9ydCBMS1BfQ0lGU19QT1JUPTEzOQoJZXhwb3J0IHJl
 cGVhdF90bz00CglleHBvcnQgc2NoZWR1bGVfbm90aWZ5X2FkZHJlc3M9CglleHBvcnQgcXVldWVf
 YXRfbGVhc3Rfb25jZT0xCglleHBvcnQga2VybmVsPScvcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcu
-Ni9nY2MtNy8wMDk2NDIwYWRiMDM2YjE0M2Q2YzQyYWQ3YzAyYTk0NWIzZTExMTljL3ZtbGludXot
-NS4zLjAtcmM4LTAwMTMzLWcwMDk2NDIwYWRiMDM2JwoJZXhwb3J0IGRlcXVldWVfdGltZT0nMjAx
-OS0wOS0xMSAxNjozNjoxNyArMDgwMCcKCWV4cG9ydCBqb2JfaW5pdHJkPScvbGtwL2pvYnMvc2No
-ZWR1bGVkL2xrcC1jc2wtMmFwMi9haW03LXBlcmZvcm1hbmNlLTFCUkRfNDhHLWJ0cmZzLTE1MDAt
-ZGlza193cnQtZGViaWFuLXg4Nl82NC0yMDE5LTIwMTkwOTExLTQ3MDgyLTFqNnBpc3QtMy5jZ3on
+Ni9nY2MtNy8xYWFiYjAxMWJmYmE1YTg5NDJkM2UwZDBjODRhNGFjN2NhZDI3N2IxL3ZtbGludXot
+NS4zLjAtcmM3LTAwMDkzLWcxYWFiYjAxMWJmYmE1JwoJZXhwb3J0IGRlcXVldWVfdGltZT0nMjAx
+OS0wOS0xMSAxOTo0Njo1NyArMDgwMCcKCWV4cG9ydCBqb2JfaW5pdHJkPScvbGtwL2pvYnMvc2No
+ZWR1bGVkL2xrcC1pdmItZXAwMS9haW03LXBlcmZvcm1hbmNlLTRCUkRfMTJHLXhmcy0zMDAwLVJB
+SUQwLWRpc2tfcnctZGViaWFuLXg4Nl82NC0yMC0yMDE5MDkxMS03Mjg4LTFheGhmNmgtMy5jZ3on
 CgoJWyAtbiAiJExLUF9TUkMiIF0gfHwKCWV4cG9ydCBMS1BfU1JDPS9sa3AvJHt1c2VyOi1sa3B9
 L3NyYwp9CgpydW5fam9iKCkKewoJZWNobyAkJCA+ICRUTVAvcnVuLWpvYi5waWQKCgkuICRMS1Bf
 U1JDL2xpYi9odHRwLnNoCgkuICRMS1BfU1JDL2xpYi9qb2Iuc2gKCS4gJExLUF9TUkMvbGliL2Vu
-di5zaAoKCWV4cG9ydF90b3BfZW52CgoJcnVuX3NldHVwIG5yX2JyZD0xIHJhbWRpc2tfc2l6ZT01
-MTUzOTYwNzU1MiAkTEtQX1NSQy9zZXR1cC9kaXNrCgoJcnVuX3NldHVwIGZzPSdidHJmcycgJExL
-UF9TUkMvc2V0dXAvZnMKCglydW5fc2V0dXAgJExLUF9TUkMvc2V0dXAvY3B1ZnJlcV9nb3Zlcm5v
-ciAncGVyZm9ybWFuY2UnCgoJcnVuX21vbml0b3IgZGVsYXk9MTUgJExLUF9TUkMvbW9uaXRvcnMv
-bm8tc3Rkb3V0L3dyYXBwZXIgcGVyZi1wcm9maWxlCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25p
-dG9ycy93cmFwcGVyIGttc2cKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL25vLXN0ZG91
-dC93cmFwcGVyIGJvb3QtdGltZQoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBl
-ciBpb3N0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgaGVhcnRiZWF0
-CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHZtc3RhdAoJcnVuX21vbml0
-b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBudW1hLW51bWFzdGF0CglydW5fbW9uaXRvciAk
-TEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIG51bWEtdm1zdGF0CglydW5fbW9uaXRvciAkTEtQX1NS
-Qy9tb25pdG9ycy93cmFwcGVyIG51bWEtbWVtaW5mbwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9u
-aXRvcnMvd3JhcHBlciBwcm9jLXZtc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMv
-d3JhcHBlciBwcm9jLXN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIg
-bWVtaW5mbwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBzbGFiaW5mbwoJ
-cnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBpbnRlcnJ1cHRzCglydW5fbW9u
-aXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGxvY2tfc3RhdAoJcnVuX21vbml0b3IgJExL
-UF9TUkMvbW9uaXRvcnMvd3JhcHBlciBsYXRlbmN5X3N0YXRzCglydW5fbW9uaXRvciAkTEtQX1NS
-Qy9tb25pdG9ycy93cmFwcGVyIHNvZnRpcnFzCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9y
-cy9vbmUtc2hvdC93cmFwcGVyIGJkaV9kZXZfbWFwcGluZwoJcnVuX21vbml0b3IgJExLUF9TUkMv
-bW9uaXRvcnMvd3JhcHBlciBkaXNrc3RhdHMKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3Jz
-L3dyYXBwZXIgbmZzc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBj
-cHVpZGxlCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGNwdWZyZXEtc3Rh
-dHMKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgdHVyYm9zdGF0CglydW5f
-bW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHNjaGVkX2RlYnVnCglydW5fbW9uaXRv
-ciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHBlcmYtc3RhdAoJcnVuX21vbml0b3IgJExLUF9T
-UkMvbW9uaXRvcnMvd3JhcHBlciBtcHN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3Jz
-L3dyYXBwZXIgb29tLWtpbGxlcgoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvcGxhaW4v
-d2F0Y2hkb2cKCglydW5fdGVzdCB0ZXN0PSdkaXNrX3dydCcgbG9hZD0xNTAwICRMS1BfU1JDL3Rl
-c3RzL3dyYXBwZXIgYWltNwp9CgpleHRyYWN0X3N0YXRzKCkKewoJZXhwb3J0IHN0YXRzX3BhcnRf
-YmVnaW49CglleHBvcnQgc3RhdHNfcGFydF9lbmQ9CgoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBw
-ZXJmLXByb2ZpbGUKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgYWltNwoJJExLUF9TUkMvc3RhdHMv
-d3JhcHBlciBrbXNnCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGJvb3QtdGltZQoJJExLUF9TUkMv
-c3RhdHMvd3JhcHBlciBpb3N0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgdm1zdGF0CgkkTEtQ
-X1NSQy9zdGF0cy93cmFwcGVyIG51bWEtbnVtYXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIg
-bnVtYS12bXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbnVtYS1tZW1pbmZvCgkkTEtQX1NS
-Qy9zdGF0cy93cmFwcGVyIHByb2Mtdm1zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG1lbWlu
-Zm8KCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc2xhYmluZm8KCSRMS1BfU1JDL3N0YXRzL3dyYXBw
-ZXIgaW50ZXJydXB0cwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBsb2NrX3N0YXQKCSRMS1BfU1JD
-L3N0YXRzL3dyYXBwZXIgbGF0ZW5jeV9zdGF0cwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBzb2Z0
-aXJxcwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBkaXNrc3RhdHMKCSRMS1BfU1JDL3N0YXRzL3dy
-YXBwZXIgbmZzc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBjcHVpZGxlCgkkTEtQX1NSQy9z
-dGF0cy93cmFwcGVyIHR1cmJvc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBzY2hlZF9kZWJ1
-ZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBwZXJmLXN0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBw
-ZXIgbXBzdGF0CgoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciB0aW1lIGFpbTcudGltZQoJJExLUF9T
-UkMvc3RhdHMvd3JhcHBlciBkbWVzZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBrbXNnCgkkTEtQ
-X1NSQy9zdGF0cy93cmFwcGVyIGxhc3Rfc3RhdGUKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc3Rk
-ZXJyCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHRpbWUKfQoKIiRAIgo=
+di5zaAoKCWV4cG9ydF90b3BfZW52CgoJcnVuX3NldHVwIG5yX2JyZD00IHJhbWRpc2tfc2l6ZT0x
+Mjg4NDkwMTg4OCAkTEtQX1NSQy9zZXR1cC9kaXNrCgoJcnVuX3NldHVwIHJhaWRfbGV2ZWw9J3Jh
+aWQwJyAkTEtQX1NSQy9zZXR1cC9tZAoKCXJ1bl9zZXR1cCBmcz0neGZzJyAkTEtQX1NSQy9zZXR1
+cC9mcwoKCXJ1bl9zZXR1cCAkTEtQX1NSQy9zZXR1cC9jcHVmcmVxX2dvdmVybm9yICdwZXJmb3Jt
+YW5jZScKCglydW5fbW9uaXRvciBkZWxheT0xNSAkTEtQX1NSQy9tb25pdG9ycy9uby1zdGRvdXQv
+d3JhcHBlciBwZXJmLXByb2ZpbGUKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBw
+ZXIga21zZwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvbm8tc3Rkb3V0L3dyYXBwZXIg
+Ym9vdC10aW1lCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGlvc3RhdAoJ
+cnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBoZWFydGJlYXQKCXJ1bl9tb25p
+dG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgdm1zdGF0CglydW5fbW9uaXRvciAkTEtQX1NS
+Qy9tb25pdG9ycy93cmFwcGVyIG51bWEtbnVtYXN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21v
+bml0b3JzL3dyYXBwZXIgbnVtYS12bXN0YXQKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3Jz
+L3dyYXBwZXIgbnVtYS1tZW1pbmZvCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFw
+cGVyIHByb2Mtdm1zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHBy
+b2Mtc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBtZW1pbmZvCgly
+dW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIHNsYWJpbmZvCglydW5fbW9uaXRv
+ciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGludGVycnVwdHMKCXJ1bl9tb25pdG9yICRMS1Bf
+U1JDL21vbml0b3JzL3dyYXBwZXIgbG9ja19zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25p
+dG9ycy93cmFwcGVyIGxhdGVuY3lfc3RhdHMKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3Jz
+L3dyYXBwZXIgc29mdGlycXMKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL29uZS1zaG90
+L3dyYXBwZXIgYmRpX2Rldl9tYXBwaW5nCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93
+cmFwcGVyIGRpc2tzdGF0cwoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBu
+ZnNzdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVyIGNwdWlkbGUKCXJ1
+bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgY3B1ZnJlcS1zdGF0cwoJcnVuX21v
+bml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciB0dXJib3N0YXQKCXJ1bl9tb25pdG9yICRM
+S1BfU1JDL21vbml0b3JzL3dyYXBwZXIgc2NoZWRfZGVidWcKCXJ1bl9tb25pdG9yICRMS1BfU1JD
+L21vbml0b3JzL3dyYXBwZXIgcGVyZi1zdGF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9y
+cy93cmFwcGVyIG1wc3RhdAoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvd3JhcHBlciBv
+b20ta2lsbGVyCglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy9wbGFpbi93YXRjaGRvZwoK
+CXJ1bl90ZXN0IHRlc3Q9J2Rpc2tfcncnIGxvYWQ9MzAwMCAkTEtQX1NSQy90ZXN0cy93cmFwcGVy
+IGFpbTcKfQoKZXh0cmFjdF9zdGF0cygpCnsKCWV4cG9ydCBzdGF0c19wYXJ0X2JlZ2luPQoJZXhw
+b3J0IHN0YXRzX3BhcnRfZW5kPQoKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgcGVyZi1wcm9maWxl
+CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGFpbTcKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIga21z
+ZwoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBib290LXRpbWUKCSRMS1BfU1JDL3N0YXRzL3dyYXBw
+ZXIgaW9zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHZtc3RhdAoJJExLUF9TUkMvc3RhdHMv
+d3JhcHBlciBudW1hLW51bWFzdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG51bWEtdm1zdGF0
+CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG51bWEtbWVtaW5mbwoJJExLUF9TUkMvc3RhdHMvd3Jh
+cHBlciBwcm9jLXZtc3RhdAoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBtZW1pbmZvCgkkTEtQX1NS
+Qy9zdGF0cy93cmFwcGVyIHNsYWJpbmZvCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGludGVycnVw
+dHMKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbG9ja19zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFw
+cGVyIGxhdGVuY3lfc3RhdHMKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc29mdGlycXMKCSRMS1Bf
+U1JDL3N0YXRzL3dyYXBwZXIgZGlza3N0YXRzCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG5mc3N0
+YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgY3B1aWRsZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBl
+ciB0dXJib3N0YXQKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgc2NoZWRfZGVidWcKCSRMS1BfU1JD
+L3N0YXRzL3dyYXBwZXIgcGVyZi1zdGF0CgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIG1wc3RhdAoK
+CSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgdGltZSBhaW03LnRpbWUKCSRMS1BfU1JDL3N0YXRzL3dy
+YXBwZXIgZG1lc2cKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIga21zZwoJJExLUF9TUkMvc3RhdHMv
+d3JhcHBlciBsYXN0X3N0YXRlCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIHN0ZGVycgoJJExLUF9T
+UkMvc3RhdHMvd3JhcHBlciB0aW1lCn0KCiIkQCIK
 
---===============1959489058793355812==
+--===============3089778434832988312==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="job.yaml"
 
-LS0tCgojISBqb2JzL2FpbTctZnMtMWJyZC55YW1sCnN1aXRlOiBhaW03CnRlc3RjYXNlOiBhaW03
-CmNhdGVnb3J5OiBiZW5jaG1hcmsKcGVyZi1wcm9maWxlOgogIGRlbGF5OiAxNQpkaXNrOiAxQlJE
-XzQ4RwpmczogYnRyZnMKYWltNzoKICB0ZXN0OiBkaXNrX3dydAogIGxvYWQ6IDE1MDAKam9iX29y
-aWdpbjogIi9sa3AvbGtwLy5zcmMtMjAxOTA5MTAtMjIyMTI0L2FsbG90L2N5Y2xpYzpwMTpsaW51
-eC1kZXZlbDpkZXZlbC1ob3VybHkvbGtwLWNzbC0yYXAyL2FpbTctZnMtMWJyZC55YW1sIgoKIyEg
-cXVldWUgb3B0aW9ucwpxdWV1ZV9jbWRsaW5lX2tleXM6Ci0gYnJhbmNoCi0gY29tbWl0Ci0gcXVl
-dWVfYXRfbGVhc3Rfb25jZQpxdWV1ZTogYmlzZWN0CnRlc3Rib3g6IGxrcC1jc2wtMmFwMgp0Ym94
-X2dyb3VwOiBsa3AtY3NsLTJhcDIKc3VibWl0X2lkOiA1ZDc4OWIwNjZiM2NlMGI1NGJiMmQ4NWEK
-am9iX2ZpbGU6ICIvbGtwL2pvYnMvc2NoZWR1bGVkL2xrcC1jc2wtMmFwMi9haW03LXBlcmZvcm1h
-bmNlLTFCUkRfNDhHLWJ0cmZzLTE1MDAtZGlza193cnQtZGViaWFuLXg4Nl82NC0yMDE5LTAtMjAx
-OTA5MTEtNDY0MTEtMWZpdGp3bC0wLnlhbWwiCmlkOiAyMjQ4Yzg0YmQ5NWFkMjRiYzQ5ZTg3YjIw
-YjBlNzk4MjRiYzY5MjVkCnF1ZXVlcl92ZXJzaW9uOiAiL2xrcC1zcmMiCmFyY2g6IHg4Nl82NAoK
-IyEgaG9zdHMvbGtwLWNzbC0yYXAyCm1vZGVsOiBDYXNjYWRlIExha2UKbnJfbm9kZTogNApucl9j
-cHU6IDE5MgptZW1vcnk6IDE5MkcKaGRkX3BhcnRpdGlvbnM6IApzc2RfcGFydGl0aW9uczogCnJv
-b3Rmc19wYXJ0aXRpb246IExBQkVMPUxLUC1ST09URlMKa2VybmVsX2NtZGxpbmVfaHc6IGFjcGlf
-cnNkcD0weDY3ZjQ0MDE0CmJyYW5kOiBJbnRlbChSKSBYZW9uKFIpIFBsYXRpbnVtIDkyNDIgQ1BV
-IEAgMi4zMEdIegpyb290ZnM6IGRlYmlhbi14ODZfNjQtMjAxOS0wNS0xNC5jZ3oKCiMhIGluY2x1
-ZGUvY2F0ZWdvcnkvYmVuY2htYXJrCmttc2c6IApib290LXRpbWU6IAppb3N0YXQ6IApoZWFydGJl
-YXQ6IAp2bXN0YXQ6IApudW1hLW51bWFzdGF0OiAKbnVtYS12bXN0YXQ6IApudW1hLW1lbWluZm86
-IApwcm9jLXZtc3RhdDogCnByb2Mtc3RhdDogCm1lbWluZm86IApzbGFiaW5mbzogCmludGVycnVw
-dHM6IApsb2NrX3N0YXQ6IApsYXRlbmN5X3N0YXRzOiAKc29mdGlycXM6IApiZGlfZGV2X21hcHBp
-bmc6IApkaXNrc3RhdHM6IApuZnNzdGF0OiAKY3B1aWRsZTogCmNwdWZyZXEtc3RhdHM6IAp0dXJi
-b3N0YXQ6IApzY2hlZF9kZWJ1ZzogCnBlcmYtc3RhdDogCm1wc3RhdDogCgojISBpbmNsdWRlL2Nh
-dGVnb3J5L0FMTApjcHVmcmVxX2dvdmVybm9yOiBwZXJmb3JtYW5jZQoKIyEgaW5jbHVkZS9xdWV1
-ZS9jeWNsaWMKY29tbWl0OiAnMDA5NjQyMGFkYjAzNmIxNDNkNmM0MmFkN2MwMmE5NDViM2UxMTE5
-YycKCiMhIGluY2x1ZGUvdGVzdGJveC9sa3AtY3NsLTJhcDIKbmVlZF9rY29uZmlnX2h3OiBDT05G
-SUdfSUdCPXkKCiMhIGluY2x1ZGUvZGlzay9ucl9icmQKbmVlZF9rY29uZmlnOgotIENPTkZJR19C
-TEtfREVWX1JBTT1tCi0gQ09ORklHX0JMS19ERVY9eQotIENPTkZJR19CTE9DSz15Ci0gQ09ORklH
-X0JUUkZTX0ZTCgojISBpbmNsdWRlL2ZzL09USEVSUwoKIyEgZGVmYXVsdCBwYXJhbXMKa2NvbmZp
-ZzogeDg2XzY0LXJoZWwtNy42CmNvbXBpbGVyOiBnY2MtNwplbnF1ZXVlX3RpbWU6IDIwMTktMDkt
-MTEgMTQ6NTk6MjIuNDQ1MDMyMzE0ICswODowMApfaWQ6IDVkNzg5YjA2NmIzY2UwYjU0YmIyZDg1
-YQpfcnQ6ICIvcmVzdWx0L2FpbTcvcGVyZm9ybWFuY2UtMUJSRF80OEctYnRyZnMtMTUwMC1kaXNr
-X3dydC9sa3AtY3NsLTJhcDIvZGViaWFuLXg4Nl82NC0yMDE5LTA1LTE0LmNnei94ODZfNjQtcmhl
-bC03LjYvZ2NjLTcvMDA5NjQyMGFkYjAzNmIxNDNkNmM0MmFkN2MwMmE5NDViM2UxMTE5YyIKCiMh
-IHNjaGVkdWxlIG9wdGlvbnMKdXNlcjogbGtwCmhlYWRfY29tbWl0OiA5YzViNDU2NDg2NjI5MGUy
-MGQwMzU3MmVkNjYxM2ZmMDg4YzhkYjEwCmJhc2VfY29tbWl0OiBmNzRjMmJiOTg3NzZlMmRlNTA4
-ZjRkNjA3Y2Q1MTk4NzMwNjUxMThlCmJyYW5jaDogbGludXgtZGV2ZWwvZGV2ZWwtaG91cmx5LTIw
-MTkwOTEwMDgKcmVzdWx0X3Jvb3Q6ICIvcmVzdWx0L2FpbTcvcGVyZm9ybWFuY2UtMUJSRF80OEct
-YnRyZnMtMTUwMC1kaXNrX3dydC9sa3AtY3NsLTJhcDIvZGViaWFuLXg4Nl82NC0yMDE5LTA1LTE0
-LmNnei94ODZfNjQtcmhlbC03LjYvZ2NjLTcvMDA5NjQyMGFkYjAzNmIxNDNkNmM0MmFkN2MwMmE5
-NDViM2UxMTE5Yy8wIgpzY2hlZHVsZXJfdmVyc2lvbjogIi9sa3AvbGtwLy5zcmMtMjAxOTA5MTEt
-MTEyNjM2IgpMS1BfU0VSVkVSOiBpbm4KbWF4X3VwdGltZTogMjc3My4wOAppbml0cmQ6ICIvb3Np
-bWFnZS9kZWJpYW4vZGViaWFuLXg4Nl82NC0yMDE5LTA1LTE0LmNneiIKYm9vdGxvYWRlcl9hcHBl
-bmQ6Ci0gcm9vdD0vZGV2L3JhbTAKLSB1c2VyPWxrcAotIGpvYj0vbGtwL2pvYnMvc2NoZWR1bGVk
-L2xrcC1jc2wtMmFwMi9haW03LXBlcmZvcm1hbmNlLTFCUkRfNDhHLWJ0cmZzLTE1MDAtZGlza193
-cnQtZGViaWFuLXg4Nl82NC0yMDE5LTAtMjAxOTA5MTEtNDY0MTEtMWZpdGp3bC0wLnlhbWwKLSBB
-UkNIPXg4Nl82NAotIGtjb25maWc9eDg2XzY0LXJoZWwtNy42Ci0gYnJhbmNoPWxpbnV4LWRldmVs
-L2RldmVsLWhvdXJseS0yMDE5MDkxMDA4Ci0gY29tbWl0PTAwOTY0MjBhZGIwMzZiMTQzZDZjNDJh
-ZDdjMDJhOTQ1YjNlMTExOWMKLSBCT09UX0lNQUdFPS9wa2cvbGludXgveDg2XzY0LXJoZWwtNy42
-L2djYy03LzAwOTY0MjBhZGIwMzZiMTQzZDZjNDJhZDdjMDJhOTQ1YjNlMTExOWMvdm1saW51ei01
-LjMuMC1yYzgtMDAxMzMtZzAwOTY0MjBhZGIwMzYKLSBhY3BpX3JzZHA9MHg2N2Y0NDAxNAotIG1h
-eF91cHRpbWU9Mjc3MwotIFJFU1VMVF9ST09UPS9yZXN1bHQvYWltNy9wZXJmb3JtYW5jZS0xQlJE
-XzQ4Ry1idHJmcy0xNTAwLWRpc2tfd3J0L2xrcC1jc2wtMmFwMi9kZWJpYW4teDg2XzY0LTIwMTkt
-MDUtMTQuY2d6L3g4Nl82NC1yaGVsLTcuNi9nY2MtNy8wMDk2NDIwYWRiMDM2YjE0M2Q2YzQyYWQ3
-YzAyYTk0NWIzZTExMTljLzAKLSBMS1BfU0VSVkVSPWlubgotIGRlYnVnCi0gYXBpYz1kZWJ1Zwot
-IHN5c3JxX2Fsd2F5c19lbmFibGVkCi0gcmN1cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0PTEw
-MAotIG5ldC5pZm5hbWVzPTAKLSBwcmludGsuZGV2a21zZz1vbgotIHBhbmljPS0xCi0gc29mdGxv
-Y2t1cF9wYW5pYz0xCi0gbm1pX3dhdGNoZG9nPXBhbmljCi0gb29wcz1wYW5pYwotIGxvYWRfcmFt
-ZGlzaz0yCi0gcHJvbXB0X3JhbWRpc2s9MAotIGRyYmQubWlub3JfY291bnQ9OAotIHN5c3RlbWQu
-bG9nX2xldmVsPWVycgotIGlnbm9yZV9sb2dsZXZlbAotIGNvbnNvbGU9dHR5MAotIGVhcmx5cHJp
-bnRrPXR0eVMwLDExNTIwMAotIGNvbnNvbGU9dHR5UzAsMTE1MjAwCi0gdmdhPW5vcm1hbAotIHJ3
-Cm1vZHVsZXNfaW5pdHJkOiAiL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjYvZ2NjLTcvMDA5NjQy
-MGFkYjAzNmIxNDNkNmM0MmFkN2MwMmE5NDViM2UxMTE5Yy9tb2R1bGVzLmNneiIKYm1faW5pdHJk
-OiAiL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3J1bi1pcGNvbmZp
-Z18yMDE4LTA0LTAzLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5j
-Z3ovbGtwXzIwMTktMDgtMDUuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0
-LTAzLmNnei9yc3luYy1yb290ZnNfMjAxOC0wNC0wMy5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
-eDg2XzY0LTIwMTgtMDQtMDMuY2d6L3BlcmZfMjAxOS0wOC0xMi5jZ3osL29zaW1hZ2UvcGtnL2Rl
-Ymlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovcGVyZi14ODZfNjQtZ2l0LTFfMjAxOS0wOS0wNi5j
-Z3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L2ZzXzIwMTktMDgt
-MjEuY2d6LC9vc2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L2FpbTcteDg2
-XzY0LV8yMDE5LTA4LTE4LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0w
-My5jZ3ovbXBzdGF0XzIwMTktMDgtMTIuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0y
-MDE4LTA0LTAzLmNnei92bXN0YXRfMjAxOS0wOC0xNy5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4t
-eDg2XzY0LTIwMTgtMDQtMDMuY2d6L3R1cmJvc3RhdF8yMDE5LTA4LTE3LmNneiwvb3NpbWFnZS9w
-a2cvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei90dXJib3N0YXQteDg2XzY0LTMuNy00XzIw
-MTktMDgtMTcuY2d6LC9vc2ltYWdlL3BrZy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L21w
-c3RhdC14ODZfNjQtZ2l0LTFfMjAxOS0wOC0yNC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2
-XzY0LTIwMTgtMDQtMDMuY2d6L2h3XzIwMTktMDgtMjEuY2d6Igpsa3BfaW5pdHJkOiAiL29zaW1h
-Z2UvdXNlci9sa3AvbGtwLXg4Nl82NC5jZ3oiCnNpdGU6IGlubgoKIyEgL2xrcC9sa3AvLnNyYy0y
-MDE5MDkxMC0yMjIxMjQvaW5jbHVkZS9zaXRlL2lubgpMS1BfQ0dJX1BPUlQ6IDgwCkxLUF9DSUZT
-X1BPUlQ6IDEzOQpvb20ta2lsbGVyOiAKd2F0Y2hkb2c6IAoKIyEgcnVudGltZSBzdGF0dXMKcmVw
-ZWF0X3RvOiAyCnNjaGVkdWxlX25vdGlmeV9hZGRyZXNzOiAKCiMhIHVzZXIgb3ZlcnJpZGVzCnF1
-ZXVlX2F0X2xlYXN0X29uY2U6IDAKa2VybmVsOiAiL3BrZy9saW51eC94ODZfNjQtcmhlbC03LjYv
-Z2NjLTcvMDA5NjQyMGFkYjAzNmIxNDNkNmM0MmFkN2MwMmE5NDViM2UxMTE5Yy92bWxpbnV6LTUu
-My4wLXJjOC0wMDEzMy1nMDA5NjQyMGFkYjAzNiIKZGVxdWV1ZV90aW1lOiAyMDE5LTA5LTExIDE1
-OjAxOjIzLjc3NDM1OTgwNyArMDg6MDAKCiMhIC9sa3AvbGtwLy5zcmMtMjAxOTA5MTEtMTEyNjM2
-L2luY2x1ZGUvc2l0ZS9pbm4Kam9iX3N0YXRlOiBmaW5pc2hlZApsb2FkYXZnOiA3NDYuNjAgNzU1
-LjUyIDM0OC4zNCAxLzEzNDQgMTI5MzIKc3RhcnRfdGltZTogJzE1NjgxODUzNjYnCmVuZF90aW1l
-OiAnMTU2ODE4NTY0OCcKdmVyc2lvbjogIi9sa3AvbGtwLy5zcmMtMjAxOTA5MTEtMTEyNzAzIgo=
+LS0tCgojISBqb2JzL2FpbTctZnMtcmFpZC55YW1sCnN1aXRlOiBhaW03CnRlc3RjYXNlOiBhaW03
+CmNhdGVnb3J5OiBiZW5jaG1hcmsKcGVyZi1wcm9maWxlOgogIGRlbGF5OiAxNQpkaXNrOiA0QlJE
+XzEyRwptZDogUkFJRDAKZnM6IHhmcwphaW03OgogIHRlc3Q6IGRpc2tfcncKICBsb2FkOiAzMDAw
+CmpvYl9vcmlnaW46ICIvbGtwL2xrcC8uc3JjLTIwMTkwOTA2LTE2NDcyMS9hbGxvdC9jeWNsaWM6
+cDE6bGludXgtZGV2ZWw6ZGV2ZWwtaG91cmx5L2xrcC1pdmItZXAwMS9haW03LWZzLXJhaWQueWFt
+bCIKCiMhIHF1ZXVlIG9wdGlvbnMKcXVldWVfY21kbGluZV9rZXlzOgotIGJyYW5jaAotIGNvbW1p
+dAotIHF1ZXVlX2F0X2xlYXN0X29uY2UKcXVldWU6IGJpc2VjdAp0ZXN0Ym94OiBsa3AtaXZiLWVw
+MDEKdGJveF9ncm91cDogbGtwLWl2Yi1lcDAxCnN1Ym1pdF9pZDogNWQ3OGM3NWU3NTMyMzIxYmVk
+NDc3NTRhCmpvYl9maWxlOiAiL2xrcC9qb2JzL3NjaGVkdWxlZC9sa3AtaXZiLWVwMDEvYWltNy1w
+ZXJmb3JtYW5jZS00QlJEXzEyRy14ZnMtMzAwMC1SQUlEMC1kaXNrX3J3LWRlYmlhbi14ODZfNjQt
+MjAxOS0yMDE5MDkxMS03MTQ5LTF0aXd4bmotMC55YW1sIgppZDogZDMwOGI3M2E1NzRhNDk4N2My
+MzZkNmYzNGQwYWMxMWU4ZTBjNDc4MwpxdWV1ZXJfdmVyc2lvbjogIi9sa3Atc3JjIgphcmNoOiB4
+ODZfNjQKCiMhIGhvc3RzL2xrcC1pdmItZXAwMQptb2RlbDogSXZ5IEJyaWRnZS1FUApucl9ub2Rl
+OiAyCm5yX2NwdTogNDAKbWVtb3J5OiAzODRHCmhkZF9wYXJ0aXRpb25zOiAiL2Rldi9kaXNrL2J5
+LWlkL3Njc2ktMzZiOGNhM2EwZTY1MGUxMDAyMjg2MjNhNDBmOTM2MzQ3LXBhcnQxIC9kZXYvZGlz
+ay9ieS1pZC9zY3NpLTM2YjhjYTNhMGU2NTBlMTAwMjI4NjIzYTQwZjkzNjM0Ny1wYXJ0MgogIC9k
+ZXYvZGlzay9ieS1pZC9zY3NpLTM2YjhjYTNhMGU2NTBlMTAwMjI4NjIzYTQwZjkzNjM0Ny1wYXJ0
+MyAvZGV2L2Rpc2svYnktaWQvc2NzaS0zNmI4Y2EzYTBlNjUwZTEwMDIyODYyM2E0MGY5MzYzNDct
+cGFydDQKICAvZGV2L2Rpc2svYnktaWQvc2NzaS0zNmI4Y2EzYTBlNjUwZTEwMDIyODYyM2E0MGY5
+MzYzNDctcGFydDUgL2Rldi9kaXNrL2J5LWlkL3Njc2ktMzZiOGNhM2EwZTY1MGUxMDAyMjg2MjNh
+NDBmOTM2MzQ3LXBhcnQ2CiAgL2Rldi9kaXNrL2J5LWlkL3Njc2ktMzZiOGNhM2EwZTY1MGUxMDAy
+Mjg2MjNhNDBmOTM2MzQ3LXBhcnQ3IC9kZXYvZGlzay9ieS1pZC9zY3NpLTM2YjhjYTNhMGU2NTBl
+MTAwMjI4NjIzYTQwZjkzNjM0Ny1wYXJ0OCIKc3dhcF9wYXJ0aXRpb25zOiAKcm9vdGZzX3BhcnRp
+dGlvbjogTEFCRUw9TEtQLVJPT1RGUwpicmFuZDogSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjY5
+MCB2MiBAIDMuMDBHSHoKCiMhIGluY2x1ZGUvY2F0ZWdvcnkvYmVuY2htYXJrCmttc2c6IApib290
+LXRpbWU6IAppb3N0YXQ6IApoZWFydGJlYXQ6IAp2bXN0YXQ6IApudW1hLW51bWFzdGF0OiAKbnVt
+YS12bXN0YXQ6IApudW1hLW1lbWluZm86IApwcm9jLXZtc3RhdDogCnByb2Mtc3RhdDogCm1lbWlu
+Zm86IApzbGFiaW5mbzogCmludGVycnVwdHM6IApsb2NrX3N0YXQ6IApsYXRlbmN5X3N0YXRzOiAK
+c29mdGlycXM6IApiZGlfZGV2X21hcHBpbmc6IApkaXNrc3RhdHM6IApuZnNzdGF0OiAKY3B1aWRs
+ZTogCmNwdWZyZXEtc3RhdHM6IAp0dXJib3N0YXQ6IApzY2hlZF9kZWJ1ZzogCnBlcmYtc3RhdDog
+Cm1wc3RhdDogCgojISBpbmNsdWRlL2NhdGVnb3J5L0FMTApjcHVmcmVxX2dvdmVybm9yOiBwZXJm
+b3JtYW5jZQoKIyEgaW5jbHVkZS9xdWV1ZS9jeWNsaWMKY29tbWl0OiAxYWFiYjAxMWJmYmE1YTg5
+NDJkM2UwZDBjODRhNGFjN2NhZDI3N2IxCgojISBpbmNsdWRlL3Rlc3Rib3gvbGtwLWl2Yi1lcDAx
+CnJvb3RmczogZGViaWFuLXg4Nl82NC0yMDE5LTA1LTE0LmNnegprZXJuZWxfY21kbGluZV9odzog
+Y21hPTAKbmVlZF9rY29uZmlnX2h3OgotIENPTkZJR19JR0I9eQotIENPTkZJR19NRUdBUkFJRF9T
+QVMKCiMhIGluY2x1ZGUvZGlzay9ucl9icmQKbmVlZF9rY29uZmlnOgotIENPTkZJR19CTEtfREVW
+X1JBTT1tCi0gQ09ORklHX0JMS19ERVY9eQotIENPTkZJR19CTE9DSz15Ci0gQ09ORklHX01EX1JB
+SUQwCi0gQ09ORklHX1hGU19GUwoKIyEgaW5jbHVkZS9tZC9yYWlkX2xldmVsCgojISBpbmNsdWRl
+L2ZzL09USEVSUwoKIyEgZGVmYXVsdCBwYXJhbXMKa2NvbmZpZzogeDg2XzY0LXJoZWwtNy42CmNv
+bXBpbGVyOiBnY2MtNwplbnF1ZXVlX3RpbWU6IDIwMTktMDktMTEgMTg6MDc6MzMuMDI0MDczODEy
+ICswODowMApfaWQ6IDVkNzhjNzVlNzUzMjMyMWJlZDQ3NzU0YQpfcnQ6ICIvcmVzdWx0L2FpbTcv
+cGVyZm9ybWFuY2UtNEJSRF8xMkcteGZzLTMwMDAtUkFJRDAtZGlza19ydy9sa3AtaXZiLWVwMDEv
+ZGViaWFuLXg4Nl82NC0yMDE5LTA1LTE0LmNnei94ODZfNjQtcmhlbC03LjYvZ2NjLTcvMWFhYmIw
+MTFiZmJhNWE4OTQyZDNlMGQwYzg0YTRhYzdjYWQyNzdiMSIKCiMhIHNjaGVkdWxlIG9wdGlvbnMK
+dXNlcjogbGtwCmhlYWRfY29tbWl0OiA5YzViNDU2NDg2NjI5MGUyMGQwMzU3MmVkNjYxM2ZmMDg4
+YzhkYjEwCmJhc2VfY29tbWl0OiBmNzRjMmJiOTg3NzZlMmRlNTA4ZjRkNjA3Y2Q1MTk4NzMwNjUx
+MThlCmJyYW5jaDogbGludXgtZGV2ZWwvZGV2ZWwtaG91cmx5LTIwMTkwOTEwMDgKcmVzdWx0X3Jv
+b3Q6ICIvcmVzdWx0L2FpbTcvcGVyZm9ybWFuY2UtNEJSRF8xMkcteGZzLTMwMDAtUkFJRDAtZGlz
+a19ydy9sa3AtaXZiLWVwMDEvZGViaWFuLXg4Nl82NC0yMDE5LTA1LTE0LmNnei94ODZfNjQtcmhl
+bC03LjYvZ2NjLTcvMWFhYmIwMTFiZmJhNWE4OTQyZDNlMGQwYzg0YTRhYzdjYWQyNzdiMS8wIgpz
+Y2hlZHVsZXJfdmVyc2lvbjogIi9sa3AvbGtwLy5zcmMtMjAxOTA5MTEtMTEyNjM2IgpMS1BfU0VS
+VkVSOiBpbm4KbWF4X3VwdGltZTogOTQ5LjY4MDAwMDAwMDAwMDEKaW5pdHJkOiAiL29zaW1hZ2Uv
+ZGViaWFuL2RlYmlhbi14ODZfNjQtMjAxOS0wNS0xNC5jZ3oiCmJvb3Rsb2FkZXJfYXBwZW5kOgot
+IHJvb3Q9L2Rldi9yYW0wCi0gdXNlcj1sa3AKLSBqb2I9L2xrcC9qb2JzL3NjaGVkdWxlZC9sa3At
+aXZiLWVwMDEvYWltNy1wZXJmb3JtYW5jZS00QlJEXzEyRy14ZnMtMzAwMC1SQUlEMC1kaXNrX3J3
+LWRlYmlhbi14ODZfNjQtMjAxOS0yMDE5MDkxMS03MTQ5LTF0aXd4bmotMC55YW1sCi0gQVJDSD14
+ODZfNjQKLSBrY29uZmlnPXg4Nl82NC1yaGVsLTcuNgotIGJyYW5jaD1saW51eC1kZXZlbC9kZXZl
+bC1ob3VybHktMjAxOTA5MTAwOAotIGNvbW1pdD0xYWFiYjAxMWJmYmE1YTg5NDJkM2UwZDBjODRh
+NGFjN2NhZDI3N2IxCi0gQk9PVF9JTUFHRT0vcGtnL2xpbnV4L3g4Nl82NC1yaGVsLTcuNi9nY2Mt
+Ny8xYWFiYjAxMWJmYmE1YTg5NDJkM2UwZDBjODRhNGFjN2NhZDI3N2IxL3ZtbGludXotNS4zLjAt
+cmM3LTAwMDkzLWcxYWFiYjAxMWJmYmE1Ci0gY21hPTAKLSBtYXhfdXB0aW1lPTk0OQotIFJFU1VM
+VF9ST09UPS9yZXN1bHQvYWltNy9wZXJmb3JtYW5jZS00QlJEXzEyRy14ZnMtMzAwMC1SQUlEMC1k
+aXNrX3J3L2xrcC1pdmItZXAwMS9kZWJpYW4teDg2XzY0LTIwMTktMDUtMTQuY2d6L3g4Nl82NC1y
+aGVsLTcuNi9nY2MtNy8xYWFiYjAxMWJmYmE1YTg5NDJkM2UwZDBjODRhNGFjN2NhZDI3N2IxLzAK
+LSBMS1BfU0VSVkVSPWlubgotIGRlYnVnCi0gYXBpYz1kZWJ1ZwotIHN5c3JxX2Fsd2F5c19lbmFi
+bGVkCi0gcmN1cGRhdGUucmN1X2NwdV9zdGFsbF90aW1lb3V0PTEwMAotIG5ldC5pZm5hbWVzPTAK
+LSBwcmludGsuZGV2a21zZz1vbgotIHBhbmljPS0xCi0gc29mdGxvY2t1cF9wYW5pYz0xCi0gbm1p
+X3dhdGNoZG9nPXBhbmljCi0gb29wcz1wYW5pYwotIGxvYWRfcmFtZGlzaz0yCi0gcHJvbXB0X3Jh
+bWRpc2s9MAotIGRyYmQubWlub3JfY291bnQ9OAotIHN5c3RlbWQubG9nX2xldmVsPWVycgotIGln
+bm9yZV9sb2dsZXZlbAotIGNvbnNvbGU9dHR5MAotIGVhcmx5cHJpbnRrPXR0eVMwLDExNTIwMAot
+IGNvbnNvbGU9dHR5UzAsMTE1MjAwCi0gdmdhPW5vcm1hbAotIHJ3Cm1vZHVsZXNfaW5pdHJkOiAi
+L3BrZy9saW51eC94ODZfNjQtcmhlbC03LjYvZ2NjLTcvMWFhYmIwMTFiZmJhNWE4OTQyZDNlMGQw
+Yzg0YTRhYzdjYWQyNzdiMS9tb2R1bGVzLmNneiIKYm1faW5pdHJkOiAiL29zaW1hZ2UvZGVwcy9k
+ZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L3J1bi1pcGNvbmZpZ18yMDE4LTA0LTAzLmNneiwv
+b3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ovbGtwXzIwMTktMDgtMDUu
+Y2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9yc3luYy1yb290
+ZnNfMjAxOC0wNC0wMy5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMu
+Y2d6L3BlcmZfMjAxOS0wOC0xMi5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZfNjQtMjAxOC0w
+NC0wMy5jZ3ovcGVyZi14ODZfNjQtZ2l0LTFfMjAxOS0wOS0wNi5jZ3osL29zaW1hZ2UvZGVwcy9k
+ZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L21kXzIwMTktMDYtMjYuY2d6LC9vc2ltYWdlL2Rl
+cHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9mc18yMDE5LTA4LTIxLmNneiwvb3NpbWFn
+ZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9haW03LXg4Nl82NC1fMjAxOS0wOC0x
+OC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4teDg2XzY0LTIwMTgtMDQtMDMuY2d6L21wc3RhdF8y
+MDE5LTA4LTEyLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi14ODZfNjQtMjAxOC0wNC0wMy5jZ3ov
+dm1zdGF0XzIwMTktMDgtMTcuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0
+LTAzLmNnei90dXJib3N0YXRfMjAxOS0wOC0xNy5jZ3osL29zaW1hZ2UvcGtnL2RlYmlhbi14ODZf
+NjQtMjAxOC0wNC0wMy5jZ3ovdHVyYm9zdGF0LXg4Nl82NC0zLjctNF8yMDE5LTA4LTE3LmNneiwv
+b3NpbWFnZS9wa2cvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAzLmNnei9tcHN0YXQteDg2XzY0LWdp
+dC0xXzIwMTktMDgtMjQuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLXg4Nl82NC0yMDE4LTA0LTAz
+LmNnei9od18yMDE5LTA4LTIxLmNneiIKbGtwX2luaXRyZDogIi9vc2ltYWdlL3VzZXIvbGtwL2xr
+cC14ODZfNjQuY2d6IgpzaXRlOiBpbm4KCiMhIC9sa3AvbGtwLy5zcmMtMjAxOTA5MTAtMTkyNjQ2
+L2luY2x1ZGUvc2l0ZS9pbm4KTEtQX0NHSV9QT1JUOiA4MApMS1BfQ0lGU19QT1JUOiAxMzkKb29t
+LWtpbGxlcjogCndhdGNoZG9nOiAKCiMhIHJ1bnRpbWUgc3RhdHVzCnJlcGVhdF90bzogMgpzY2hl
+ZHVsZV9ub3RpZnlfYWRkcmVzczogCgojISB1c2VyIG92ZXJyaWRlcwpxdWV1ZV9hdF9sZWFzdF9v
+bmNlOiAwCmtlcm5lbDogIi9wa2cvbGludXgveDg2XzY0LXJoZWwtNy42L2djYy03LzFhYWJiMDEx
+YmZiYTVhODk0MmQzZTBkMGM4NGE0YWM3Y2FkMjc3YjEvdm1saW51ei01LjMuMC1yYzctMDAwOTMt
+ZzFhYWJiMDExYmZiYTUiCmRlcXVldWVfdGltZTogMjAxOS0wOS0xMSAxOToyMjo1My4wNjU2OTc4
+NzQgKzA4OjAwCgojISAvbGtwL2xrcC8uc3JjLTIwMTkwOTExLTExMjYzNi9pbmNsdWRlL3NpdGUv
+aW5uCmpvYl9zdGF0ZTogZmluaXNoZWQKbG9hZGF2ZzogMjI0OS4xOSAxMDk5LjgwIDQyMy45MCAx
+LzQ1OCA4OTM4CnN0YXJ0X3RpbWU6ICcxNTY4MjAxMDM0JwplbmRfdGltZTogJzE1NjgyMDExOTMn
+CnZlcnNpb246ICIvbGtwL2xrcC8uc3JjLTIwMTkwOTExLTExMjcwMyIK
 
---===============1959489058793355812==
+--===============3089778434832988312==
 Content-Type: text/plain
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="reproduce.ksh"
 
-ICJtb2Rwcm9iZSIgIi1yIiAiYnJkIgogIm1vZHByb2JlIiAiYnJkIiAicmRfbnI9MSIgInJkX3Np
-emU9NTAzMzE2NDgiCmRtc2V0dXAgcmVtb3ZlX2FsbAp3aXBlZnMgLWEgLS1mb3JjZSAvZGV2L3Jh
-bTAKbWtmcyAtdCBidHJmcyAvZGV2L3JhbTAKbWtkaXIgLXAgL2ZzL3JhbTAKbW91bnQgLXQgYnRy
-ZnMgL2Rldi9yYW0wIC9mcy9yYW0wCgpmb3IgY3B1X2RpciBpbiAvc3lzL2RldmljZXMvc3lzdGVt
-L2NwdS9jcHVbMC05XSoKZG8KCW9ubGluZV9maWxlPSIkY3B1X2RpciIvb25saW5lCglbIC1mICIk
-b25saW5lX2ZpbGUiIF0gJiYgWyAiJChjYXQgIiRvbmxpbmVfZmlsZSIpIiAtZXEgMCBdICYmIGNv
-bnRpbnVlCgoJZmlsZT0iJGNwdV9kaXIiL2NwdWZyZXEvc2NhbGluZ19nb3Zlcm5vcgoJWyAtZiAi
-JGZpbGUiIF0gJiYgZWNobyAicGVyZm9ybWFuY2UiID4gIiRmaWxlIgpkb25lCgplY2hvICI1MDAg
-MzIwMDAgMTI4IDUxMiIgPiAvcHJvYy9zeXMva2VybmVsL3NlbQpjYXQgPiB3b3JrZmlsZSA8PEVP
-RgpGSUxFU0laRTogMU0KUE9PTFNJWkU6IDEwTQoxMCBkaXNrX3dydApFT0YKZWNobyAiL2ZzL3Jh
-bTAiID4gY29uZmlnCgoJKAoJCWVjaG8gbGtwLWNzbC0yYXAyCgkJZWNobyBkaXNrX3dydAoKCQll
-Y2hvIDEKCQllY2hvIDE1MDAKCQllY2hvIDIKCQllY2hvIDE1MDAKCQllY2hvIDEKCSkgfCAuL211
-bHRpdGFzayAtdCAmCg==
+ICJtb2Rwcm9iZSIgIi1yIiAiYnJkIgogIm1vZHByb2JlIiAiYnJkIiAicmRfbnI9NCIgInJkX3Np
+emU9MTI1ODI5MTIiCiAibWRhZG0iICItcSIgIi0tc3RvcCIgIi9kZXYvbWQwIgogImRtc2V0dXAi
+ICJyZW1vdmVfYWxsIgogIndpcGVmcyIgIi1hIiAiLS1mb3JjZSIgIi9kZXYvcmFtMCIKICJ3aXBl
+ZnMiICItYSIgIi0tZm9yY2UiICIvZGV2L3JhbTEiCiAid2lwZWZzIiAiLWEiICItLWZvcmNlIiAi
+L2Rldi9yYW0yIgogIndpcGVmcyIgIi1hIiAiLS1mb3JjZSIgIi9kZXYvcmFtMyIKICJtZGFkbSIg
+Ii1xIiAiLS1jcmVhdGUiICIvZGV2L21kMCIgIi0tY2h1bms9MjU2IiAiLS1sZXZlbD1yYWlkMCIg
+Ii0tcmFpZC1kZXZpY2VzPTQiICItLWZvcmNlIiAiLS1hc3N1bWUtY2xlYW4iICIvZGV2L3JhbTAi
+ICIvZGV2L3JhbTEiICIvZGV2L3JhbTIiICIvZGV2L3JhbTMiCndpcGVmcyAtYSAtLWZvcmNlIC9k
+ZXYvbWQwCm1rZnMgLXQgeGZzIC9kZXYvbWQwCm1rZGlyIC1wIC9mcy9tZDAKbW91bnQgLXQgeGZz
+IC1vIGlub2RlNjQgL2Rldi9tZDAgL2ZzL21kMAoKZm9yIGNwdV9kaXIgaW4gL3N5cy9kZXZpY2Vz
+L3N5c3RlbS9jcHUvY3B1WzAtOV0qCmRvCglvbmxpbmVfZmlsZT0iJGNwdV9kaXIiL29ubGluZQoJ
+WyAtZiAiJG9ubGluZV9maWxlIiBdICYmIFsgIiQoY2F0ICIkb25saW5lX2ZpbGUiKSIgLWVxIDAg
+XSAmJiBjb250aW51ZQoKCWZpbGU9IiRjcHVfZGlyIi9jcHVmcmVxL3NjYWxpbmdfZ292ZXJub3IK
+CVsgLWYgIiRmaWxlIiBdICYmIGVjaG8gInBlcmZvcm1hbmNlIiA+ICIkZmlsZSIKZG9uZQoKZWNo
+byAiNTAwIDMyMDAwIDEyOCA1MTIiID4gL3Byb2Mvc3lzL2tlcm5lbC9zZW0KY2F0ID4gd29ya2Zp
+bGUgPDxFT0YKRklMRVNJWkU6IDFNClBPT0xTSVpFOiAxME0KMTAgZGlza19ydwpFT0YKZWNobyAi
+L2ZzL21kMCIgPiBjb25maWcKCgkoCgkJZWNobyBsa3AtaXZiLWVwMDEKCQllY2hvIGRpc2tfcncK
+CgkJZWNobyAxCgkJZWNobyAzMDAwCgkJZWNobyAyCgkJZWNobyAzMDAwCgkJZWNobyAxCgkpIHwg
+Li9tdWx0aXRhc2sgLXQgJgo=
 
---===============1959489058793355812==--
+--===============3089778434832988312==--
 
