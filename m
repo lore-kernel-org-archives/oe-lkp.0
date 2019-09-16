@@ -1,64 +1,30 @@
-Content-Type: multipart/mixed; boundary="===============3503148777949461297=="
+Content-Type: multipart/mixed; boundary="===============2196885776982002320=="
 MIME-Version: 1.0
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: 266a9a8b41: WARNING:possible_recursive_locking_detected
-Date: Mon, 16 Sep 2019 04:03:55 +0100
-Message-ID: <20190916030355.GZ1131@ZenIV.linux.org.uk>
-In-Reply-To: <20190916025827.GY1131@ZenIV.linux.org.uk>
+Date: Sun, 15 Sep 2019 20:44:05 -0700
+Message-ID: <CAHk-=wii2apAb9WHCaOt8vnQjk8yXAHnMEC6im0f0YiEF4PwOA@mail.gmail.com>
+In-Reply-To: <20190916030355.GZ1131@ZenIV.linux.org.uk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3503148777949461297==
+--===============2196885776982002320==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 16, 2019 at 03:58:27AM +0100, Al Viro wrote:
-> On Mon, Sep 16, 2019 at 10:04:34AM +0800, kernel test robot wrote:
-> > FYI, we noticed the following commit (built with gcc-7):
-> > =
+On Sun, Sep 15, 2019 at 8:04 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>
+> Perhaps lockref_get_nested(struct lockref *lockref, unsigned int subclass=
+)?
+> With s/spin_lock/spin_lock_nested/ in the body...
 
-> > commit: 266a9a8b41803281e192151ae99779a7d50fc391 ("[PATCH] Re: Possible=
- FS race condition between iterate_dir and d_alloc_parallel")
-> > url: https://github.com/0day-ci/linux/commits/Al-Viro/Re-Possible-FS-ra=
-ce-condition-between-iterate_dir-and-d_alloc_parallel/20190915-052109
-> > =
+Sure. Under the usual CONFIG_DEBUG_LOCK_ALLOC, with the non-debug case
+just turning into a regular lockref_get().
 
-> > =
+Sounds fine to me.
 
-> > in testcase: rcutorture
-> > with following parameters:
-> > =
+             Linus
 
-> > 	runtime: 300s
-> > 	test: default
-> > 	torture_type: srcu
-> > =
-
-> > test-description: rcutorture is rcutorture kernel module load/unload te=
-st.
-> > test-url: https://www.kernel.org/doc/Documentation/RCU/torture.txt
-> > =
-
-> > =
-
-> > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2=
- -m 4G
-> > =
-
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
-> =
-
-> False positive; dget() on child while holding ->d_lock on parent is OK.
-> We could turn that into explicit spin_lock_nested() on child + increment =
-of
-> ->d_count under that, but this is a pointless pessimization.  Not sure
-> what's the best way to tell lockdep to STFU here, but in this case it
-> really ought to - locking order is correct.
-
-Perhaps lockref_get_nested(struct lockref *lockref, unsigned int subclass)?
-With s/spin_lock/spin_lock_nested/ in the body...
-
---===============3503148777949461297==--
+--===============2196885776982002320==--
 
