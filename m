@@ -1,163 +1,83 @@
-Content-Type: multipart/mixed; boundary="===============6480231722979507474=="
+Content-Type: multipart/mixed; boundary="===============7343842361882856784=="
 MIME-Version: 1.0
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/mgag200] 90f479ae51: vm-scalability.median -18.8% regression
-Date: Tue, 17 Sep 2019 10:48:14 +0200
-Message-ID: <60ae9ffa-88e0-1219-ee6a-269495055df2@suse.de>
-In-Reply-To: <20190916090652.GK5541@shbuild999.sh.intel.com>
+Subject: Re: 266a9a8b41: WARNING:possible_recursive_locking_detected
+Date: Tue, 17 Sep 2019 16:59:53 +0800
+Message-ID: <a452f311-67f7-3937-cc1e-8126f847d299@intel.com>
+In-Reply-To: <20190916172945.GB1131@ZenIV.linux.org.uk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6480231722979507474==
+--===============7343842361882856784==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi
 
-Am 16.09.19 um 11:06 schrieb Feng Tang:
-> Hi Thomas,
-> =
 
-> On Mon, Sep 09, 2019 at 04:12:37PM +0200, Thomas Zimmermann wrote:
->> Hi
->>
->> Am 04.09.19 um 08:27 schrieb Feng Tang:
->>> Hi Thomas,
+On 9/17/19 1:29 AM, Al Viro wrote:
+> On Mon, Sep 16, 2019 at 06:16:06PM +0100, Al Viro wrote:
+>> On Sun, Sep 15, 2019 at 08:44:05PM -0700, Linus Torvalds wrote:
+>>> On Sun, Sep 15, 2019 at 8:04 PM Al Viro <viro@zeniv.linux.org.uk> wro=
+te:
+>>>> Perhaps lockref_get_nested(struct lockref *lockref, unsigned int subcl=
+ass)?
+>>>> With s/spin_lock/spin_lock_nested/ in the body...
+>>> Sure. Under the usual CONFIG_DEBUG_LOCK_ALLOC, with the non-debug case
+>>> just turning into a regular lockref_get().
 >>>
->>> On Wed, Aug 28, 2019 at 12:51:40PM +0200, Thomas Zimmermann wrote:
->>>> Hi
->>>>
->>>> Am 28.08.19 um 11:37 schrieb Rong Chen:
->>>>> Hi Thomas,
->>>>>
->>>>> On 8/28/19 1:16 AM, Thomas Zimmermann wrote:
->>>>>> Hi
->>>>>>
->>>>>> Am 27.08.19 um 14:33 schrieb Chen, Rong A:
->>>>>>> Both patches have little impact on the performance from our side.
->>>>>> Thanks for testing. Too bad they doesn't solve the issue.
->>>>>>
->>>>>> There's another patch attached. Could you please tests this as well?
->>>>>> Thanks a lot!
->>>>>>
->>>>>> The patch comes from Daniel Vetter after discussing the problem on I=
-RC.
->>>>>> The idea of the patch is that the old mgag200 code might display much
->>>>>> less frames that the generic code, because mgag200 only prints from
->>>>>> non-atomic context. If we simulate this with the generic code, we sh=
-ould
->>>>>> see roughly the original performance.
->>>>>>
->>>>>>
->>>>>
->>>>> It's cool, the patch "usecansleep.patch" can fix the issue.
->>>>
->>>> Thank you for testing. But don't get too excited, because the patch
->>>> simulates a bug that was present in the original mgag200 code. A
->>>> significant number of frames are simply skipped. That is apparently the
->>>> reason why it's faster.
->>>
->>> Thanks for the detailed info, so the original code skips time-consuming
->>> work inside atomic context on purpose. Is there any space to optmise it?
->>> If 2 scheduled update worker are handled at almost same time, can one be
->>> skipped?
->>
->> We discussed ideas on IRC and decided that screen updates could be
->> synchronized with vblank intervals. This may give some rate limiting to
->> the output.
->>
->> If you like, you could try the patch set at [1]. It adds the respective
->> code to console and mgag200.
-> =
+>>> Sounds fine to me.
+>> Done and force-pushed into vfs.git#fixes
+> BTW, folks, I would really appreciate more people _testing_ that thing;
+> it survives the local beating, but...
 
-> I just tried the 2 patches, no obvious change (comparing to the
-> 18.8% regression), both in overall benchmark and micro-profiling.
-> =
+Hi,
 
-> 90f479ae51afa45e 04a0983095feaee022cdd65e3e4 =
+0day tested vfs.git#fixes and found that the problem no longer exists.
 
-> ---------------- --------------------------- =
+Best Regards,
+Rong Chen
 
->      37236 =C2=B1  3%      +2.5%      38167 =C2=B1  3%  vm-scalability.me=
-dian
->       0.15 =C2=B1 24%     -25.1%       0.11 =C2=B1 23%  vm-scalability.me=
-dian_stddev
->       0.15 =C2=B1 23%     -25.1%       0.11 =C2=B1 22%  vm-scalability.st=
-ddev
->   12767318 =C2=B1  4%      +2.5%   13089177 =C2=B1  3%  vm-scalability.th=
-roughput
-
-Thank you for testing. I wish we'd seen at least some improvement.
-
-Best regards
-Thomas
-
-> Thanks,
-> Feng
-> =
-
->>
->> Best regards
->> Thomas
->>
->> [1]
->> https://lists.freedesktop.org/archives/dri-devel/2019-September/234850.h=
-tml
->>
->>>
->>> Thanks,
->>> Feng
->>>
->>>>
->>>> Best regards
->>>> Thomas
->>
->> -- =
-
->> Thomas Zimmermann
->> Graphics Driver Developer
->> SUSE Linux GmbH, Maxfeldstrasse 5, 90409 Nuernberg, Germany
->> GF: Felix Imend=C3=B6rffer, Mary Higgins, Sri Rasiah
->> HRB 21284 (AG N=C3=BCrnberg)
->>
-> =
-
-> =
-
-> =
-
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel(a)lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/dri-devel
-> =
-
-
--- =
-
-Thomas Zimmermann
-Graphics Driver Developer
-SUSE Linux GmbH, Maxfeldstrasse 5, 90409 Nuernberg, Germany
-GF: Felix Imend=C3=B6rffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG N=C3=BCrnberg)
-
-
---===============6480231722979507474==
-Content-Type: application/pgp-signature
+--===============7343842361882856784==
+Content-Type: text/html
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
+Content-Disposition: attachment; filename="attachment.html"
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRRXpCQUVCQ0FBZEZpRUVjaGY3ckl6cHoy
-TkVvV2psYUEzQkhWTUxlaU1GQWwyQW5jNEFDZ2tRYUEzQkhWTUwKZWlPU3JnZ0F0TFBMclhHa3Zx
-cWsrMnhyWGp0dm1PaC8wdTM1MXU3QWNXMnJDUUNoL21JQ1VHMVRaWXhhdVltKwp4ZW5SdmtSZHNk
-NDhMenpsaGpIL0VSQXdLMkc1NlVFM2ROTHRxU3d5SG5sczRlYUJ4alA0YUdqM2dRVHZ3N3VOCmZP
-QXhjTmJSRm1DbnBXb3c0L2NCWGtMMnc1dExvMmNXN1R3VWRoYld4UkF2aWVIZTd3elR2UjBUSEpz
-ZFdobUgKV0tTRG9NRTh2NU0yOHZ1MXFxMkszMVR6M08wYm13QnljRUp0QjdkdXNXRVRIMmFnR0VB
-QjBpWDV2bEMrVUZxdwo1NzUvcnBXSVZPeVI5TFIrS2N1U3dndXQxd1ZyYnZwVXR6U3d0NnJiaUtw
-MmJpeTU3NFhyaXIvMFpxTmphbEJ5CjNlcUw0YWdsNmtFSC9OVmhJU2N4SU9CWGFrUDBpdz09Cj15
-bXV1Ci0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
+PGh0bWw+CiAgPGhlYWQ+CiAgICA8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVR5cGUiIGNvbnRl
+bnQ9InRleHQvaHRtbDsgY2hhcnNldD1VVEYtOCI+CiAgPC9oZWFkPgogIDxib2R5IHNtYXJ0dGVt
+cGxhdGVpbnNlcnRlZD0idHJ1ZSI+CiAgICA8YnI+CiAgICA8YnI+CiAgICA8ZGl2IGNsYXNzPSJt
+b3otY2l0ZS1wcmVmaXgiPk9uIDkvMTcvMTkgMToyOSBBTSwgQWwgVmlybyB3cm90ZTo8YnI+CiAg
+ICA8L2Rpdj4KICAgIDxibG9ja3F1b3RlIHR5cGU9ImNpdGUiCiAgICAgIGNpdGU9Im1pZDoyMDE5
+MDkxNjE3Mjk0NS5HQjExMzFAWmVuSVYubGludXgub3JnLnVrIj4KICAgICAgPHByZSBjbGFzcz0i
+bW96LXF1b3RlLXByZSIgd3JhcD0iIj5PbiBNb24sIFNlcCAxNiwgMjAxOSBhdCAwNjoxNjowNlBN
+ICswMTAwLCBBbCBWaXJvIHdyb3RlOgo8L3ByZT4KICAgICAgPGJsb2NrcXVvdGUgdHlwZT0iY2l0
+ZSI+CiAgICAgICAgPHByZSBjbGFzcz0ibW96LXF1b3RlLXByZSIgd3JhcD0iIj5PbiBTdW4sIFNl
+cCAxNSwgMjAxOSBhdCAwODo0NDowNVBNIC0wNzAwLCBMaW51cyBUb3J2YWxkcyB3cm90ZToKPC9w
+cmU+CiAgICAgICAgPGJsb2NrcXVvdGUgdHlwZT0iY2l0ZSI+CiAgICAgICAgICA8cHJlIGNsYXNz
+PSJtb3otcXVvdGUtcHJlIiB3cmFwPSIiPk9uIFN1biwgU2VwIDE1LCAyMDE5IGF0IDg6MDQgUE0g
+QWwgVmlybyA8YSBjbGFzcz0ibW96LXR4dC1saW5rLXJmYzIzOTZFIiBocmVmPSJtYWlsdG86dmly
+b0B6ZW5pdi5saW51eC5vcmcudWsiPiZsdDt2aXJvQHplbml2LmxpbnV4Lm9yZy51ayZndDs8L2E+
+IHdyb3RlOgo8L3ByZT4KICAgICAgICAgIDxibG9ja3F1b3RlIHR5cGU9ImNpdGUiPgogICAgICAg
+ICAgICA8cHJlIGNsYXNzPSJtb3otcXVvdGUtcHJlIiB3cmFwPSIiPgpQZXJoYXBzIGxvY2tyZWZf
+Z2V0X25lc3RlZChzdHJ1Y3QgbG9ja3JlZiAqbG9ja3JlZiwgdW5zaWduZWQgaW50IHN1YmNsYXNz
+KT8KV2l0aCBzL3NwaW5fbG9jay9zcGluX2xvY2tfbmVzdGVkLyBpbiB0aGUgYm9keS4uLgo8L3By
+ZT4KICAgICAgICAgIDwvYmxvY2txdW90ZT4KICAgICAgICAgIDxwcmUgY2xhc3M9Im1vei1xdW90
+ZS1wcmUiIHdyYXA9IiI+ClN1cmUuIFVuZGVyIHRoZSB1c3VhbCBDT05GSUdfREVCVUdfTE9DS19B
+TExPQywgd2l0aCB0aGUgbm9uLWRlYnVnIGNhc2UKanVzdCB0dXJuaW5nIGludG8gYSByZWd1bGFy
+IGxvY2tyZWZfZ2V0KCkuCgpTb3VuZHMgZmluZSB0byBtZS4KPC9wcmU+CiAgICAgICAgPC9ibG9j
+a3F1b3RlPgogICAgICAgIDxwcmUgY2xhc3M9Im1vei1xdW90ZS1wcmUiIHdyYXA9IiI+CkRvbmUg
+YW5kIGZvcmNlLXB1c2hlZCBpbnRvIHZmcy5naXQjZml4ZXMKPC9wcmU+CiAgICAgIDwvYmxvY2tx
+dW90ZT4KICAgICAgPHByZSBjbGFzcz0ibW96LXF1b3RlLXByZSIgd3JhcD0iIj4KQlRXLCBmb2xr
+cywgSSB3b3VsZCByZWFsbHkgYXBwcmVjaWF0ZSBtb3JlIHBlb3BsZSBfdGVzdGluZ18gdGhhdCB0
+aGluZzsKaXQgc3Vydml2ZXMgdGhlIGxvY2FsIGJlYXRpbmcsIGJ1dC4uLgo8L3ByZT4KICAgIDwv
+YmxvY2txdW90ZT4KICAgIDxicj4KICAgIEhpLDxicj4KICAgIDxicj4KICAgIDBkYXkgdGVzdGVk
+IHZmcy5naXQjZml4ZXMgYW5kIGZvdW5kIHRoYXQgPHNwYW4gaWQ9IndfMzYiIGNsYXNzPSIiPjwv
+c3Bhbj48c3BhbgogICAgICBpZD0id18zNyI+dGhlIDwvc3Bhbj48c3BhbiBpZD0id18zOCIgY2xh
+c3M9IiI+cHJvYmxlbSA8L3NwYW4+PHNwYW4KICAgICAgaWQ9IndfMzkiIGNsYXNzPSIiPm5vIDwv
+c3Bhbj48c3BhbiBpZD0id180MCIgY2xhc3M9IiI+bG9uZ2VyIDwvc3Bhbj48c3BhbgogICAgICBp
+ZD0id180MSIgY2xhc3M9IiI+ZXhpc3RzPC9zcGFuPi4gPGJyPgogICAgPGJyPgogICAgQmVzdCBS
+ZWdhcmRzLDxicj4KICAgIFJvbmcgQ2hlbjxicj4KICA8L2JvZHk+CjwvaHRtbD4K
 
---===============6480231722979507474==--
+--===============7343842361882856784==--
 
