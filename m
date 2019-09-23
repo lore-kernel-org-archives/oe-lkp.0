@@ -1,111 +1,70 @@
-Content-Type: multipart/mixed; boundary="===============0834224343050022154=="
+Content-Type: multipart/mixed; boundary="===============0398848410203365985=="
 MIME-Version: 1.0
-From: Liu Yiding <yidingx.liu@intel.com>
+From: Richard Palethorpe <rpalethorpe@suse.de>
 To: lkp@lists.01.org
-Subject: Re: Fwd: Re: [ipv6] d5382fef70: kernel_selftests.net.fib_tests.sh.fail
-Date: Mon, 23 Sep 2019 15:03:05 +0800
-Message-ID: <c75dba57-892a-4e2e-c5a8-c71b7efc61cb@intel.com>
-In-Reply-To: <650534ed-b9ee-f23c-4e20-952bf4461e66@cn.fujitsu.com>
+Subject: Re: [LTP] 12abeb544d: ltp.read_all_dev.fail
+Date: Mon, 23 Sep 2019 10:11:40 +0200
+Message-ID: <871rw7l9dv.fsf@rpws.prws.suse.cz>
+In-Reply-To: <20190923003846.GB15734@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0834224343050022154==
+--===============0398848410203365985==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Sorry for delay.
+Hello,
 
+kernel test robot <rong.a.chen@intel.com> writes:
 
-> On Wed, Sep 11, 2019 at 05:51:21PM +0800, kernel test robot wrote:
->> FYI, we noticed the following commit (built with gcc-7):
->>
->> commit: d5382fef70ce273608d6fc652c24f075de3737ef ("ipv6: Stop sending =
-
->> in-kernel notifications for each nexthop")
->> https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.=
-git =
-
->> master
->>
->> in testcase: kernel_selftests
->> with following parameters:
->>
->> group: kselftests-02
->>
->> test-description: The kernel contains a set of "self tests" under the =
-
->> tools/testing/selftests/ directory. These are intended to be small =
-
->> unit tests to exercise individual code paths in the kernel.
->> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
->>
->>
->> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz =
-
->> with 16G memory
->>
->> caused below changes (please refer to attached dmesg/kmsg for entire =
-
->> log/backtrace):
->>
->>
->> If you fix the issue, kindly add following tag
->> Reported-by: kernel test robot <rong.a.chen@intel.com>
->>
->>
->> # selftests: net: fib_tests.sh
+> FYI, we noticed the following commit (built with gcc-7):
 >
-> ...
+> commit: 12abeb544d548f55f56323fc6e5e6c0fb74f58e1 ("horrible test hack")
+> https://kernel.googlesource.com/pub/scm/linux/kernel/git/luto/linux.git r=
+andom/kill-it
 >
->> # Tests passed: 137
->> # Tests failed: 12
->> not ok 13 selftests: net: fib_tests.sh
+> in testcase: ltp
+> with following parameters:
 >
-> Thanks for the report, but I can't reproduce this. Used your attached
-> config and booted a kernel with the HEAD you mentioned:
-
-
-I'm sorry that this report is invalid, i can't reproduce this error on =
-
-other testing env.
-
-In LKP testing env, this error only happened when we run cmd `make =
-
-run_tests -C net`,
-
-fib_tests.sh is passed when we run it alone.
-
-
-So it is something wrong with LKP testing env.
-
-
-Thanks for your response, we will find out the problem of LKP testsing =
-
-env and do double check last time when we
-
-get a bisect report.
-
-
+> 	disk: 1HDD
+> 	fs: ext4
+> 	test: fs-02
 >
-> $ uname -r
-> 5.2.0-rc5-01201-gd5382fef70ce
->
-> $ ./fib_tests.sh
-> ...
-> Tests passed: 150
-> Tests failed: 0
->
-> Also tested: net, net-next, master
->
-> All look fine. Plus, I'm pretty sure I ran this test before initially
-> submitting the patchset.
->
-> Can you reliably reproduce these failures on current kernels or is this
-> some random failure you noticed while testing the mentioned commit?
->
-> Thanks
+> test-description: The LTP testsuite contains a collection of tools for te=
+sting the Linux kernel and related features.
+> test-url: http://linux-test-project.github.io/
 >
 >
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
+m 8G
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <rong.a.chen@intel.com>
+>
+> <<<test_start>>>
+> tag=3Dread_all_dev stime=3D1569106866
+> cmdline=3D"read_all -d /dev -p -q -r 10"
+> contacts=3D""
+> analysis=3Dexit
+> <<<test_output>>>
+> tst_test.c:1108: INFO: Timeout per run is 0h 05m 00s
+> Test timeouted, sending SIGKILL!
+> tst_test.c:1148: INFO: If you are running on slow machine, try exporting =
+LTP_TIMEOUT_MUL > 1
+> tst_test.c:1149: BROK: Test killed! (timeout?)
 
---===============0834224343050022154==--
+So perhaps this is caused by reads of /dev/random hanging? At any rate,
+I suppose this is intended to deliberately break something, so we can
+ignore it.
+
+--
+Thank you,
+Richard.
+
+--===============0398848410203365985==--
 
