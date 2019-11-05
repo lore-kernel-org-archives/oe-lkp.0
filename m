@@ -1,54 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============1091627554063027541=="
+Content-Type: multipart/mixed; boundary="===============4251797609443343629=="
 MIME-Version: 1.0
-From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+From: Bart Van Assche <bvanassche@acm.org>
 To: lkp@lists.01.org
-Subject: Re: [sctp] 327fecdaf3: BUG:kernel_NULL_pointer_dereference, address
-Date: Mon, 04 Nov 2019 11:49:09 -0300
-Message-ID: <20191104144909.GA15842@localhost.localdomain>
-In-Reply-To: <CAFRmqq6vNg5sBYp7voT4SoVR+i+L8fDqUUZOF68cRdcKkQcZmw@mail.gmail.com>
+Subject: Re: [scsi] 74eb6c22dc: suspend_stress.fail
+Date: Mon, 04 Nov 2019 19:52:59 -0800
+Message-ID: <824c5a0b-a31a-b0a2-b14a-ab6edd294d07@acm.org>
+In-Reply-To: <20191104085021.GF13369@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1091627554063027541==
+--===============4251797609443343629==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 04, 2019 at 10:14:00PM +0800, Wei Zhao wrote:
-> On 11/4/19, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
-> > On Mon, Nov 04, 2019 at 04:46:35PM +0800, kernel test robot wrote:
-> >> [   35.312661] BUG: kernel NULL pointer dereference, address:
-> >> 00000000000005d8
-> >> [   35.316225] #PF: supervisor read access in kernel mode
-> >> [   35.319178] #PF: error_code(0x0000) - not-present page
-> >> [   35.322078] PGD 800000021b569067 P4D 800000021b569067 PUD 21b688067=
- PMD
-> >> 0
-> >> [   35.325629] Oops: 0000 [#1] SMP PTI
-> >> [   35.327965] CPU: 0 PID: 3148 Comm: trinity-c5 Not tainted
-> >> 5.4.0-rc3-01107-g327fecdaf39ab #12
-> >> [   35.332863] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), =
-BIOS
-> >> 1.10.2-1 04/01/2014
-> >> [   35.337932] RIP: 0010:sctp_packet_transmit+0x767/0x822
-> >
-> > Right, as asoc can be NULL by then. (per the check on it a few lines
-> > before the change here).
+On 2019-11-04 00:50, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-7):
 > =
 
-> Yes, apologize for missing the NULL check (Actually I realized some
-> further check is need to correctly identify the first in flight
-> packet, as outstanding_bytes has already been increased by this first
-> in flight packet itself before getting into sctp_packet_transmit).
+> commit: 74eb6c22dc70e395b333c9ca579855cd88db8845 ("[RFC PATCH V3 2/2] scs=
+i: core: don't limit per-LUN queue depth for SSD")
+> url: https://github.com/0day-ci/linux/commits/Ming-Lei/scsi-core-avoid-ho=
+st-wide-host_busy-counter-for-scsi_mq/20191009-015827
+> base: https://git.kernel.org/cgit/linux/kernel/git/jejb/scsi.git for-next
 > =
 
-> Anyway, I think I do not need further action, as the patch is anyway
-> not going to be merged, the 0day robot picks up the patch from the
-> mail list directly instead of git repo, right?
+> in testcase: suspend_stress
+> with following parameters:
+> =
 
-That's my understanding as well. I double checked and the patch wasn't
-applied by Dave, so we're good.
+> 	mode: freeze
+> 	iterations: 10
 
-Thanks,
-Marcelo
---===============1091627554063027541==--
+Hi Ming,
+
+This is the second report by the build robot that this patch causes the
+suspend_stress test to fail. I assume that that means that that test
+failure is not a coincidence. The previous report (Oct-22) is available
+at https://lore.kernel.org/linux-scsi/20191023003027.GD12647(a)shao2-debian=
+/.
+
+Bart.
+--===============4251797609443343629==--
 
