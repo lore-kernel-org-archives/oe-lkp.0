@@ -1,51 +1,132 @@
-Content-Type: multipart/mixed; boundary="===============8654844544016701466=="
+Content-Type: multipart/mixed; boundary="===============8657443454502900467=="
 MIME-Version: 1.0
-From: Josh Boyer <jwboyer@redhat.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [acpi] 41fa1ee9c6: kexec fails on v4.9
-Date: Wed, 06 Nov 2019 09:29:56 -0500
-Message-ID: <CANyg3HiyuHMu+nOKsk5Npa8pXTOYOZoDC7eQ5WrVvTUewtdaoA@mail.gmail.com>
-In-Reply-To: <1738888c-f29b-65a8-f241-f3de691f8754@intel.com>
+Subject: Re: [KVM] 671ddc700f: kvm-unit-tests.vmx.fail
+Date: Wed, 06 Nov 2019 22:45:48 +0800
+Message-ID: <20191106144548.GA32541@xsang-OptiPlex-9020>
+In-Reply-To: <CALMp9eQv4Qbx-6r5cxDXcari5jKNx6_tb9rgJa8X43ftVEOSbw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8654844544016701466==
+--===============8657443454502900467==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 6, 2019 at 4:16 AM Rong Chen <rong.a.chen@intel.com> wrote:
->
-> FYI, we noticed the following commit (built with gcc-7):
->
-> commit: 41fa1ee9c6d687afb05760dd349f361855f1d7f5 ("acpi: Ignore
-> acpi_rsdp kernel param when the kernel has been locked down")
-> url: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git mast=
-er
+On Wed, Oct 30, 2019 at 09:56:16AM -0700, Jim Mattson wrote:
+> On Wed, Oct 30, 2019 at 7:16 AM kernel test robot <oliver.sang@intel.co=
+m> wrote:
+> >
+> > FYI, we noticed the following commit (built with gcc-7):
+> >
+> > commit: 671ddc700fd08b94967b1e2a937020e30c838609 ("KVM: nVMX: Don't lea=
+k L1 MMIO regions to L2")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> >
+> > in testcase: kvm-unit-tests
+> > with following parameters:
+> >
+> >         ucode: 0x27
+> >
+> >
+> >
+> > on test machine: 8 threads Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz with=
+ 8G memory
+> >
+> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
+g/backtrace):
+> >
+> >
+> >
+> >
+> > If you fix the issue, kindly add following tag
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> >
+> > 2019-10-29 16:17:51 ./run_tests.sh
+> >  [32mPASS [0m apic-split (53 tests)
+> >  [32mPASS [0m ioapic-split (19 tests)
+> >  [32mPASS [0m apic (53 tests)
+> >  [32mPASS [0m ioapic (19 tests)
+> >  [32mPASS [0m smptest (1 tests)
+> >  [32mPASS [0m smptest3 (1 tests)
+> >  [32mPASS [0m vmexit_cpuid
+> >  [32mPASS [0m vmexit_vmcall
+> >  [32mPASS [0m vmexit_mov_from_cr8
+> >  [32mPASS [0m vmexit_mov_to_cr8
+> >  [32mPASS [0m vmexit_inl_pmtimer
+> >  [32mPASS [0m vmexit_ipi
+> >  [32mPASS [0m vmexit_ipi_halt
+> >  [32mPASS [0m vmexit_ple_round_robin
+> >  [32mPASS [0m vmexit_tscdeadline
+> >  [32mPASS [0m vmexit_tscdeadline_immed
+> >  [32mPASS [0m access
+> >  [33mSKIP [0m smap (0 tests)
+> >  [33mSKIP [0m pku (0 tests)
+> >  [32mPASS [0m asyncpf (1 tests)
+> >  [32mPASS [0m emulator (125 tests, 2 skipped)
+> >  [32mPASS [0m eventinj (13 tests)
+> >  [32mPASS [0m hypercall (2 tests)
+> >  [32mPASS [0m idt_test (4 tests)
+> >  [32mPASS [0m memory (8 tests)
+> >  [32mPASS [0m msr (12 tests)
+> >  [32mPASS [0m pmu (67 tests)
+> >  [31mFAIL [0m vmware_backdoors (11 tests, 5 unexpected failures)
+> >  [32mPASS [0m port80
+> >  [32mPASS [0m realmode
+> >  [32mPASS [0m s3
+> >  [32mPASS [0m sieve
+> >  [32mPASS [0m syscall (2 tests)
+> >  [32mPASS [0m tsc (3 tests)
+> >  [32mPASS [0m tsc_adjust (5 tests)
+> >  [32mPASS [0m xsave (17 tests)
+> >  [32mPASS [0m rmap_chain
+> >  [33mSKIP [0m svm (0 tests)
+> >  [33mSKIP [0m taskswitch (i386 only)
+> >  [33mSKIP [0m taskswitch2 (i386 only)
+> >  [32mPASS [0m kvmclock_test
+> >  [32mPASS [0m pcid (3 tests)
+> >  [32mPASS [0m rdpru (1 tests)
+> >  [32mPASS [0m umip (21 tests)
+> >  [31mFAIL [0m vmx (timeout; duration=3D90s)
+> >  [33mSKIP [0m ept (0 tests)
+> >  [33mSKIP [0m vmx_eoi_bitmap_ioapic_scan (1 tests, 1 skipped)
+> >  [33mSKIP [0m vmx_hlt_with_rvi_test (1 tests, 1 skipped)
+> >  [33mSKIP [0m vmx_apicv_test (2 tests, 2 skipped)
+> >  [32mPASS [0m vmx_apic_passthrough_thread (8 tests)
+> >  [32mPASS [0m vmx_init_signal_test (8 tests)
+> >  [32mPASS [0m vmx_vmcs_shadow_test (142218 tests)
+> >  [32mPASS [0m debug (11 tests)
+> >  [32mPASS [0m hyperv_synic (1 tests)
+> >  [33mSKIP [0m hyperv_connections (1 tests, 1 skipped)
+> >  [32mPASS [0m hyperv_stimer (12 tests)
+> >  [32mPASS [0m hyperv_clock
+> >  [32mPASS [0m intel_iommu (11 tests)
+> >
+> >
+> >
+> > To reproduce:
+> >
+> >         git clone https://github.com/intel/lkp-tests.git
+> >         cd lkp-tests
+> >         bin/lkp install job.yaml  # job file is attached in this email
+> >         bin/lkp run     job.yaml
+> >
+> >
+> >
+> > Thanks,
+> > Oliver Sang
+> =
 
-I originally wrote that patch 5 years ago.  It's been carried along
-and modified by others over the years until it was merged recently.
-I've long since stopped kernel development, so if there is an issue it
-likely needs to be resolved by someone more familiar with the current
-state of the code.
+> It's unclear to me what the delta is, but I do see that the 'vmx'
+> suite has failed. That is to be expected if you're getting your
+> kvm-unit-tests from the 'master' branch of the kvm-unit-tests repo.
+> You will need commit 591b5b54bba1 ("x86: Skip APIC-access address
+> tests beyond mapped RAM"), which is in the 'next' branch of the
+> kvm-unit-tests repo, but which has not yet made it to the 'master'
+> branch.
 
-josh
+Thanks for information! We will wait for master upgrade to update our test =
+binary.
 
->
->
-> in testcase: boot
->
->
-> on test machine: Intel(R) Xeon(R) CPU @ 2.20GHz with 192G memory
->
-> caused below changes (please refer to attached dmesg/kmsg for entire
-> log/backtrace):
->
-> We use the latest kexec and notice that kexec fails to boot kernel v5.2
-> when the first kernel is v4.9,
-> there's no problem if first kernel is v4.20.
->
-> Thanks,
-> Rong Chen
-
---===============8654844544016701466==--
+--===============8657443454502900467==--
 
