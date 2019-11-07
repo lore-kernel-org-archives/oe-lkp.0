@@ -1,53 +1,30 @@
-Content-Type: multipart/mixed; boundary="===============6534532552249664609=="
+Content-Type: multipart/mixed; boundary="===============5006557965644499721=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [sched] 10e7071b2f: BUG:kernel_NULL_pointer_dereference, address
-Date: Thu, 07 Nov 2019 15:46:39 +0100
-Message-ID: <20191107144639.GB4114@hirez.programming.kicks-ass.net>
-In-Reply-To: <d94e549d-04de-5b23-c4e0-6c161ec8213e@arm.com>
+Subject: Re: [pipe] d60337eff1: phoronix-test-suite.noise-level.0.activity_level 144.0% improvement
+Date: Thu, 07 Nov 2019 08:51:50 -0800
+Message-ID: <CAHk-=wiJ+jaT5Ev-wCg7iGNNO_JFUyMDcat0KDdA2b_+n_cZCQ@mail.gmail.com>
+In-Reply-To: <20191107090306.GV29418@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6534532552249664609==
+--===============5006557965644499721==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 07, 2019 at 01:51:47PM +0000, Valentin Schneider wrote:
-> Using that, the fail is on:
-> =
+On Thu, Nov 7, 2019 at 1:03 AM lkp report check <rong.a.chen@intel.com> w=
+rote:
+>
+> FYI, we noticed a 144.0% improvement of phoronix-test-suite.noise-level.0=
+.activity_level due to commit:
+>
+> commit: d60337eff18a3c587832ab8053a567f1da9710d2 ("[RFC PATCH 04/11] pipe=
+: Use head and tail pointers for the ring, not cursor and length [ver #3]")
 
-> 	if (need_pull_dl_task(rq, prev)) {
-> =
+That sounds nice, but is odd. That commit really shouldn't change
+anything noticeable. David, any idea?
 
-> Which is most likely explained by the above call ending up doing a =
-
-> =
-
->   dl_prio(prev->prio);
-> =
-
-> which doesn't play well with =
-
-> =
-
->   class->pick_next_task(rq, NULL, NULL);
-> =
-
-> =
-
-> Now, this is no longer an issue (I think) with the rest of Peter's series,
-> since the above deref is gone with
-> =
-
-> 67692435c411 ("sched: Rework pick_next_task() slow-path")
-> =
-
-> It would be interesting to know whether LKP found this on a mainline kern=
-el
-> and bisected it down, or if it stumbled on this while bisecting something
-> else.
-
-That seems pausible indeed.
---===============6534532552249664609==--
+               Linus
+--===============5006557965644499721==--
 
