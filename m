@@ -1,57 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============0046404874989968719=="
+Content-Type: multipart/mixed; boundary="===============3805906446832388303=="
 MIME-Version: 1.0
-From: Bart Van Assche <bvanassche@acm.org>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [scsi] 74eb6c22dc: suspend_stress.fail
-Date: Wed, 13 Nov 2019 09:00:29 -0800
-Message-ID: <cb814a0c-c636-e9f4-654a-3f21bd0db646@acm.org>
-In-Reply-To: <20191105061150.GA17084@ming.t460p>
+Subject: Re: [LTP] [xfs] 73e5fff98b: kmsg.dev/zero:Can't_open_blockdev
+Date: Thu, 14 Nov 2019 08:44:01 +0800
+Message-ID: <d0db75cc-440d-6de8-f6d2-ddf399a3bdb7@intel.com>
+In-Reply-To: <975334005.11814790.1573625805426.JavaMail.zimbra@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0046404874989968719==
+--===============3805906446832388303==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 11/4/19 10:11 PM, Ming Lei wrote:
-> On Mon, Nov 04, 2019 at 07:52:59PM -0800, Bart Van Assche wrote:
->> On 2019-11-04 00:50, kernel test robot wrote:
->>> FYI, we noticed the following commit (built with gcc-7):
->>>
->>> commit: 74eb6c22dc70e395b333c9ca579855cd88db8845 ("[RFC PATCH V3 2/2] s=
-csi: core: don't limit per-LUN queue depth for SSD")
->>> url: https://github.com/0day-ci/linux/commits/Ming-Lei/scsi-core-avoid-=
-host-wide-host_busy-counter-for-scsi_mq/20191009-015827
->>> base: https://git.kernel.org/cgit/linux/kernel/git/jejb/scsi.git for-ne=
-xt
->>>
->>> in testcase: suspend_stress
->>> with following parameters:
->>>
->>> 	mode: freeze
->>> 	iterations: 10
+
+
+On 11/13/19 2:16 PM, Jan Stancek wrote:
+>
+> ----- Original Message -----
+>>>>> # mount -t xfs /dev/zero /mnt/xfs
+>>> Assuming that is what is being done ...
+>> Arrrh, of course, a difference between get_tree_bdev() and
+>> mount_bdev() is that get_tree_bdev() prints this message when
+>> blkdev_get_by_path() fails whereas mount_bdev() doesn't.
 >>
->> Hi Ming,
+>> Both however do return an error in this case so the behaviour
+>> is the same.
 >>
->> This is the second report by the build robot that this patch causes the
->> suspend_stress test to fail. I assume that that means that that test
->> failure is not a coincidence. The previous report (Oct-22) is available
->> at https://lore.kernel.org/linux-scsi/20191023003027.GD12647(a)shao2-deb=
-ian/.
-> =
+>> So I'm calling this not a problem with the subject patch.
+>>
+>> What needs to be done to resolve this in ltp I don't know?
+> I think that's question for kernel test robot, which has this extra
+> check built on top. ltp itself doesn't treat this extra message as FAIL.
+>
+> Jan
+>
 
-> Yeah, it should be one real issue, and there are other issues too. I will=
- work
-> out a new version for addressing all.
+Hi all,
 
-Hi Ming,
+Thanks for your help, kernel test robot bisected automatically for new =
 
-Have you already made any progress? I'm asking because the v5.5 merge =
+error:
 
-window is expected to open soon (this weekend).
+ =C2=A0=C2=A0 kern=C2=A0 :err=C2=A0=C2=A0 : [=C2=A0 135.993912] /dev/zero: =
+Can't open blockdev
 
-Thanks,
+Please ignore the report if it's not a problem.
 
-Bart.
---===============0046404874989968719==--
+Best Regards,
+Rong Chen
+--===============3805906446832388303==--
 
