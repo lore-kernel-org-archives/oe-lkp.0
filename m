@@ -1,50 +1,73 @@
-Content-Type: multipart/mixed; boundary="===============6348318335196034642=="
+Content-Type: multipart/mixed; boundary="===============8768054511731940466=="
 MIME-Version: 1.0
 From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [scsi] 9393c8de62: Initramfs_unpacking_failed
-Date: Sun, 17 Nov 2019 19:54:07 +0800
-Message-ID: <20191117115407.GA9578@xsang-OptiPlex-9020>
-In-Reply-To: <yq1v9rtvlv8.fsf@oracle.com>
+Subject: Re: [mm/lru] [confidence: ] dab70bdf66: BUG:sleeping_function_called_from_invalid_context_at_mm/filemap.c
+Date: Mon, 18 Nov 2019 13:19:41 +0800
+Message-ID: <20191118051940.GA14693@xsang-OptiPlex-9020>
+In-Reply-To: <12d94aec-e0b8-f70f-0b01-de484eeb9286@linux.alibaba.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6348318335196034642==
+--===============8768054511731940466==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Nov 08, 2019 at 09:12:27PM -0500, Martin K. Petersen wrote:
+On Tue, Nov 12, 2019 at 02:05:27PM +0800, Alex Shi wrote:
+> hi Oliver,
 > =
 
-> Michael,
+> Did you find this error happens on other situations?
 > =
 
-> >>> [    1.278970] Trying to unpack rootfs image as initramfs...
-> >>> [    4.011404] Initramfs unpacking failed: broken padding
+
+Hi Alex, sorry for late. for commit dab70bdf66 we double confirmed the issue
+is reproducable in our system (with default gcc 7).
+However, when we want to do more manual check, we found your repo was rebas=
+ed,
+right? there is no dab70bdf66 any longer, and we found a similar commit
+63c496b29f, but not sure whether it's meaningful to test upon it. have you
+rewritten the patch and do you have a commit want us to check? Thanks
+
+> Thanks
+> Alex
+> =
+
+> =E5=9C=A8 2019/11/11 =E4=B8=8B=E5=8D=887:38, Alex Shi =E5=86=99=E9=81=93:
+> > Hi Oliver,
+> > =
+
+> > Thanks for report!
+> > =
+
+> > I have no gcc-7 version. so I tried the gcc 6.5 with your attached conf=
+ig and there is nothing failed except no rootfs for my image.
+> > =
+
+> > Did you try the gcc 6 or other version for this issue?
+> > =
+
+> > And there is another boot failure on 80e0cd52a0? Is there are a bug on =
+that?
+> > =
+
+> > Thanks!
+> > Alex
+> > =
+
+> > =
+
+> > =E5=9C=A8 2019/11/5 =E4=B8=8B=E5=8D=882:50, kernel test robot =E5=86=99=
+=E9=81=93:
+> >> FYI, we noticed the following commit (built with gcc-7):
 > >>
-> >> Was this test failure unrelated to commit 9393c8de62?
-> >
-> > Seems to be unrelated - a m68k kernel with that commit included, SCSI
-> > core included but low-level driver built as a module(*)  boots into
-> > the initramfs just fine.
-> >
-> > (*) well-known emulator bug.
-> =
-
-> I'm scratching my head too. I have tested a variety of systems and all
-> of them boot and work fine.
-
-sorry, it's our fault. the kernel built automatically seems broken at some =
-stage.
-After we recomplied the kernel, the issue gone. Sorry for any inconvenience.
-
-> =
-
-> -- =
-
-> Martin K. Petersen	Oracle Linux Engineering
-> _______________________________________________
-> LKP mailing list -- lkp(a)lists.01.org
-> To unsubscribe send an email to lkp-leave(a)lists.01.org
---===============6348318335196034642==--
+> >> commit: dab70bdf6650e91a5ec88e1ade261c708620f4d0 ("mm/lru: only change=
+ the lru_lock iff page's lruvec is different")
+> >> https://github.com/alexshi/linux.git lru_lock
+> >>
+> >> in testcase: boot
+> >>
+> >> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp =
+2 -m 8G
+--===============8768054511731940466==--
 
