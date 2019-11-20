@@ -1,54 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============8623183181721722202=="
+Content-Type: multipart/mixed; boundary="===============5275790108591454549=="
 MIME-Version: 1.0
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [Input] 9290ec3cea: suspend_stress.fail
-Date: Fri, 15 Nov 2019 11:29:40 -0800
-Message-ID: <20191115192940.GT13374@dtor-ws>
-In-Reply-To: <20191114094424.GF6910@shao2-debian>
+Subject: Re: [perf] a0ab2bff12: stderr.Error_opening, size=#Permission_denied
+Date: Wed, 20 Nov 2019 08:59:22 +0200
+Message-ID: <874kyzdodx.fsf@ashishki-desk.ger.corp.intel.com>
+In-Reply-To: <20191120061330.GA1549@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8623183181721722202==
+--===============5275790108591454549==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 14, 2019 at 05:44:25PM +0800, kernel test robot wrote:
+kernel test robot <oliver.sang@intel.com> writes:
+
 > FYI, we noticed the following commit (built with gcc-7):
-> =
-
-> commit: 9290ec3cea1dd9d312d1230825a75c798b670ea1 ("[PATCH v5 01/48] Input=
-: introduce input_mt_report_slot_inactive")
-> url: https://github.com/0day-ci/linux/commits/Jiada-Wang/atmel_mxt_ts-mis=
-c/20191108-190609
-> base: https://git.kernel.org/cgit/linux/kernel/git/xen/tip.git linux-next
-> =
-
-> in testcase: suspend_stress
+>
+> commit: a0ab2bff124063e988fe6e754bef8de83d8df1ce ("perf: Allow using AUX =
+data in perf samples")
+> https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git perf/cgroup
+>
+> in testcase: perf_event_tests
 > with following parameters:
-> =
-
-> 	mode: mem
-> 	iterations: 10
-> =
-
-> =
-
-> =
-
-> on test machine: 8 threads KabyLake-r with 8G memory
-> =
-
+>
+> 	paranoid: disallow_raw_tracepoint
+> 	ucode: 0x27
+>
+> test-description: The Perf Event Testsuite.
+> test-url: https://github.com/deater/perf_event_tests
+>
+>
+> on test machine: 8 threads Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz with 8=
+G memory
+>
 > caused below changes (please refer to attached dmesg/kmsg for entire log/=
 backtrace):
 
-Is this reproducing reliably? I do not see dmesg attached so it is
-unclear what input device(s) are connected to the system...
+How do I interpret this? Can you point to the place that's failing?
 
-Thanks.
-
--- =
-
-Dmitry
---===============8623183181721722202==--
+Thanks,
+--
+Alex
+--===============5275790108591454549==--
 
