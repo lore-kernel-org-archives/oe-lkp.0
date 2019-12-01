@@ -1,162 +1,301 @@
-Content-Type: multipart/mixed; boundary="===============1702844505987508839=="
+Content-Type: multipart/mixed; boundary="===============1372076622515887075=="
 MIME-Version: 1.0
 From: Ingo Molnar <mingo@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [x86/mm/pat] 8d04a5f97a: phoronix-test-suite.glmark2.0.score -23.7% regression
-Date: Sun, 01 Dec 2019 11:46:24 +0100
-Message-ID: <20191201104624.GA51279@gmail.com>
-In-Reply-To: <CAHk-=wh--xwpatv_Rcp3WtCPQtg-RVoXYQj8O+1TSw8os7Jtvw@mail.gmail.com>
+Subject: [PATCH] x86/pat: Fix off-by-one bugs in interval tree search
+Date: Sun, 01 Dec 2019 15:49:47 +0100
+Message-ID: <20191201144947.GA4167@gmail.com>
+In-Reply-To: <20191201104624.GA51279@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1702844505987508839==
+--===============1372076622515887075==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 
-* Linus Torvalds <torvalds@linux-foundation.org> wrote:
+* Ingo Molnar <mingo@kernel.org> wrote:
 
-> On Sat, Nov 30, 2019 at 2:09 PM Mariusz Ceier <mceier@gmail.com> wrote:
-> >
-> > Contents of /sys/kernel/debug/x86/pat_memtype_list on master
-> > (32ef9553635ab1236c33951a8bd9b5af1c3b1646) where performance is
-> > degraded:
-> =
+> * Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
-> Diff between good and bad case:
-> =
+> > But the final difference is a real difference where it used to be WC,
+> > and is now UC-:
+> > =
 
->     @@ -1,8 +1,8 @@
->      PAT memtype list:
->      write-back @ 0x55ba4000-0x55ba5000
->      write-back @ 0x5e88c000-0x5e8b5000
->     -write-back @ 0x5e8b4000-0x5e8b8000
->      write-back @ 0x5e8b4000-0x5e8b5000
->     +write-back @ 0x5e8b4000-0x5e8b8000
->      write-back @ 0x5e8b7000-0x5e8bb000
->      write-back @ 0x5e8ba000-0x5e8bc000
->      write-back @ 0x5e8bb000-0x5e8be000
->     @@ -21,15 +21,15 @@
->      uncached-minus @ 0xec260000-0xec264000
->      uncached-minus @ 0xec300000-0xec320000
->      uncached-minus @ 0xec326000-0xec327000
->     -uncached-minus @ 0xf0000000-0xf0001000
->      uncached-minus @ 0xf0000000-0xf8000000
->     +uncached-minus @ 0xf0000000-0xf0001000
->      uncached-minus @ 0xfdc43000-0xfdc44000
->      uncached-minus @ 0xfe000000-0xfe001000
->      uncached-minus @ 0xfed00000-0xfed01000
->      uncached-minus @ 0xfed10000-0xfed16000
->      uncached-minus @ 0xfed90000-0xfed91000
->     -write-combining @ 0x2000000000-0x2100000000
->     -write-combining @ 0x2000000000-0x2100000000
->     +uncached-minus @ 0x2000000000-0x2100000000
->     +uncached-minus @ 0x2000000000-0x2100000000
->      uncached-minus @ 0x2100000000-0x2100001000
->      uncached-minus @ 0x2100001000-0x2100002000
->      uncached-minus @ 0x2ffff10000-0x2ffff20000
-> =
+> >     -write-combining @ 0x2000000000-0x2100000000
+> >     -write-combining @ 0x2000000000-0x2100000000
+> >     +uncached-minus @ 0x2000000000-0x2100000000
+> >     +uncached-minus @ 0x2000000000-0x2100000000
+> > =
 
-> the first two differences are just trivial ordering differences for
-> overlapping ranges (starting at 0x5e8b4000 and 0xf0000000)
-> respectively.
-> =
+> > which certainly could easily explain the huge performance degradation.
 
-> But the final difference is a real difference where it used to be WC,
-> and is now UC-:
-> =
+> It's not an unconditional regression, as both Boris and me tried to =
 
->     -write-combining @ 0x2000000000-0x2100000000
->     -write-combining @ 0x2000000000-0x2100000000
->     +uncached-minus @ 0x2000000000-0x2100000000
->     +uncached-minus @ 0x2000000000-0x2100000000
-> =
+> reproduce it on different systems that do ioremap_wc() as well and didn't =
 
-> which certainly could easily explain the huge performance degradation.
+> measure a slowdown, but something about the memory layout probably =
 
-Indeed, as two days ago I speculated to Kenneth R. Crudup who reported a =
+> triggers the tree management bug.
 
-similar slowdown on i915:
+Ok, I think I found at least one bug in the new PAT code, the conversion =
 
-> * Ingo Molnar <mingo@kernel.org> wrote:
-> > > * Kenneth R. Crudup <kenny@panix.com> wrote:
-> > >
-> > > > As soon as the i915 driver module is loaded, it takes over the =
+of memtype_check_conflict() is buggy I think:
 
-> > > > EFI framebuffer on my machine (HP Spectre X360 with Intel UHD620 =
+   8d04a5f97a5f: ("x86/mm/pat: Convert the PAT tree to a generic interval t=
+ree")
 
-> > > > Graphics) and the subsequent text (as well as any VTs) is =
+        dprintk("Overlap at 0x%Lx-0x%Lx\n", match->start, match->end);
+        found_type =3D match->type;
+ =
 
-> > > > rendered much more slowly. I don't know if the i915/DRM guys need =
+-       node =3D rb_next(&match->rb);
+-       while (node) {
+-               match =3D rb_entry(node, struct memtype, rb);
+-
+-               if (match->start >=3D end) /* Checked all possible matches =
+*/
+-                       goto success;
+-
+-               if (is_node_overlap(match, start, end) &&
+-                   match->type !=3D found_type) {
++       match =3D memtype_interval_iter_next(match, start, end);
++       while (match) {
++               if (match->type !=3D found_type)
+                        goto failure;
+-               }
+ =
 
-> > > > to do anything to their code to take advantage of this change to =
+-               node =3D rb_next(&match->rb);
++               match =3D memtype_interval_iter_next(match, start, end);
+        }
 
-> > > > the PATs, but reverting this change (after the associated =
 
-> > > > subseqent commits) has fixed that issue for me.
-> > > >
-> > > > Let me know if you need any further info.
-> > >
-> > > This is almost certainly the PAT bits being wrong in the =
+Note how the '>=3D end' condition to end the interval check, got converted =
 
-> > > pagetables, i.e. an x86 bug, not a GPU driver bug.
-> > >
-> > >
-> > > Davidlohr, any idea what's going on? The interval tree conversion went
-> > > bad. The slowdown symptoms are consistent with perhaps the framebuffer
-> > > not getting WC mapped, but uncacheable mapped:
-> > >
-> > >                ptr =3D io_mapping_map_wc(&i915_vm_to_ggtt(vma->vm)->i=
-omap,
-> > >                                         vma->node.start,
-> > >                                         vma->node.size);
-> > > =
+into:
 
-> > > Which is a wrapper around ioremap_wc().
-> > > =
++       match =3D memtype_interval_iter_next(match, start, end);
 
-> > > To debug this it would be useful to do a before/after comparison of t=
-he
-> > > kernel pagetables:
-> > > =
+This is subtly off by one, because the interval trees interfaces require =
 
-> > >  - before: git checkout 8d04a5f97a^1
-> > >  - after:  git checkout 8d04a5f97a
+closed interval parameters:
 
-And yesterday:
+  include/linux/interval_tree_generic.h
 
-> [...]
->
-> There's another similar bugreport of a -20% GL performance drop, from =
+ /*                                                                        =
+    \
+  * Iterate over intervals intersecting [start;last]                       =
+    \
+  *                                                                        =
+    \
+  * Note that a node's interval intersects [start;last] iff:               =
+    \
+  *   Cond1: ITSTART(node) <=3D last                                       =
+      \
+  * and                                                                    =
+    \
+  *   Cond2: start <=3D ITLAST(node)                                       =
+      \
+  */                                                                       =
+    \
 
-> the ktest automated benchmark suite:
->
->     https://lkml.kernel.org/r/20191127005312.GD20422(a)shao2-debian
->
-> My shot-in-the-dark hypothesis is that perhaps we somehow fail to find =
+  ...
 
-> a newly mapped memtype and leave a key ioremap_wc() area uncached, =
+                if (ITSTART(node) <=3D last) {            /* Cond1 */      =
+     \
+                        if (start <=3D ITLAST(node))      /* Cond2 */      =
+     \
+                                return node;    /* node is leftmost match *=
+/  \
 
-> instead of write-combining?
->
-> The order of magnitude of the slowdown would be roughly consistent with =
+[start;last] is a closed interval (note that '<=3D last' check) - while the =
 
-> that, in GPU limited workloads - it would be more marked in 3D scenes =
+PAT 'end' parameter is 1 byte beyond the end of the range, because =
 
-> with a lot of vertices or perhaps a lot of texture changes.
->
-> But this is really just a random guess.
+ioremap() and the other mapping APIs usually use the [start,end) =
 
-It's not an unconditional regression, as both Boris and me tried to =
+half-open interval, derived from 'size'.
 
-reproduce it on different systems that do ioremap_wc() as well and didn't =
+This is what ioremap() does for example:
 
-measure a slowdown, but something about the memory layout probably =
+        /*
+         * Mappings have to be page-aligned
+         */
+        offset =3D phys_addr & ~PAGE_MASK;
+        phys_addr &=3D PHYSICAL_PAGE_MASK;
+        size =3D PAGE_ALIGN(last_addr+1) - phys_addr;
 
-triggers the tree management bug.
+        retval =3D reserve_memtype(phys_addr, (u64)phys_addr + size,
+                                                pcm, &new_pcm);
+
+
+phys_addr+size will be on a page boundary, after the last byte of the =
+
+mapped interval.
+
+So the correct parameter to use in the interval tree searches is not =
+
+'end' but 'end-1'.
+
+This could have relevance if conflicting PAT ranges are exactly adjacent, =
+
+for example a future WC region is followed immediately by an already =
+
+mapped UC- region - in this case memtype_check_conflict() would =
+
+incorrectly deny the WC memtype region and downgrade the memtype to UC-.
+
+BTW., rather annoyingly this downgrading is done silently in =
+
+memtype_check_insert():
+
+int memtype_check_insert(struct memtype *new,
+                         enum page_cache_mode *ret_type)
+{
+        int err =3D 0;
+
+        err =3D memtype_check_conflict(new->start, new->end, new->type, ret=
+_type);
+        if (err)
+                return err;
+
+        if (ret_type)
+                new->type =3D *ret_type;
+
+        memtype_interval_insert(new, &memtype_rbroot);
+        return 0;
+}
+
+
+So on such a conflict we'd just silently get UC- in *ret_type, and write =
+
+it into the new region, never the wiser ...
+
+So assuming that the patch below fixes the primary bug the diagnostics =
+
+side of ioremap() cache attribute downgrades would be another thing to =
+
+fix.
+
+Anyway, I checked all the interval-tree iterations, and most of them are =
+
+off by one - but I think the one related to memtype_check_conflict() is =
+
+the one causing this particular performance regression.
+
+The only correct interval-tree searches were these two:
+
+arch/x86/mm/pat_interval.c:     match =3D memtype_interval_iter_first(&memt=
+ype_rbroot, 0, ULONG_MAX);
+arch/x86/mm/pat_interval.c:             match =3D memtype_interval_iter_nex=
+t(match, 0, ULONG_MAX);
+
+The ULONG_MAX was hiding the off-by-one in plain sight. :-)
+
+So it would be nice if everyone who is seeing this bug could test the =
+
+patch below against Linus's latest tree - does it fix the regression?
+
+If not then please send the before/after dump of =
+
+/sys/kernel/debug/x86/pat_memtype_list - and even if it works please send =
+
+the dumps so we can double check it all.
+
+Note that the bug was benign in the sense of implementing a too strict =
+
+cache attribute conflict policy and downgrading cache attributes - so =
+
+AFAICS the worst outcome of this bug would be a performance regression.
+
+Patch is only lightly tested, so take care. (Patch is emphatically not =
+
+signed off yet, because I spent most of the day on this and I don't yet =
+
+trust my fix - all of the affected sites need to be reviewed more =
+
+carefully.)
 
 Thanks,
 
 	Ingo
---===============1702844505987508839==--
+
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D>
+From: Ingo Molnar <mingo@kernel.org>
+Date: Sun, 1 Dec 2019 15:25:50 +0100
+Subject: [PATCH] x86/pat: Fix off-by-one bugs in interval tree search
+
+NOT-Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ arch/x86/mm/pat_interval.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/mm/pat_interval.c b/arch/x86/mm/pat_interval.c
+index 47a1bf30748f..6855362eaf21 100644
+--- a/arch/x86/mm/pat_interval.c
++++ b/arch/x86/mm/pat_interval.c
+@@ -56,7 +56,7 @@ static struct memtype *memtype_match(u64 start, u64 end, =
+int match_type)
+ {
+ 	struct memtype *match;
+ =
+
+-	match =3D memtype_interval_iter_first(&memtype_rbroot, start, end);
++	match =3D memtype_interval_iter_first(&memtype_rbroot, start, end-1);
+ 	while (match !=3D NULL && match->start < end) {
+ 		if ((match_type =3D=3D MEMTYPE_EXACT_MATCH) &&
+ 		    (match->start =3D=3D start) && (match->end =3D=3D end))
+@@ -66,7 +66,7 @@ static struct memtype *memtype_match(u64 start, u64 end, =
+int match_type)
+ 		    (match->start < start) && (match->end =3D=3D end))
+ 			return match;
+ =
+
+-		match =3D memtype_interval_iter_next(match, start, end);
++		match =3D memtype_interval_iter_next(match, start, end-1);
+ 	}
+ =
+
+ 	return NULL; /* Returns NULL if there is no match */
+@@ -79,7 +79,7 @@ static int memtype_check_conflict(u64 start, u64 end,
+ 	struct memtype *match;
+ 	enum page_cache_mode found_type =3D reqtype;
+ =
+
+-	match =3D memtype_interval_iter_first(&memtype_rbroot, start, end);
++	match =3D memtype_interval_iter_first(&memtype_rbroot, start, end-1);
+ 	if (match =3D=3D NULL)
+ 		goto success;
+ =
+
+@@ -89,12 +89,12 @@ static int memtype_check_conflict(u64 start, u64 end,
+ 	dprintk("Overlap at 0x%Lx-0x%Lx\n", match->start, match->end);
+ 	found_type =3D match->type;
+ =
+
+-	match =3D memtype_interval_iter_next(match, start, end);
++	match =3D memtype_interval_iter_next(match, start, end-1);
+ 	while (match) {
+ 		if (match->type !=3D found_type)
+ 			goto failure;
+ =
+
+-		match =3D memtype_interval_iter_next(match, start, end);
++		match =3D memtype_interval_iter_next(match, start, end-1);
+ 	}
+ success:
+ 	if (newtype)
+@@ -160,7 +160,7 @@ struct memtype *memtype_erase(u64 start, u64 end)
+ struct memtype *memtype_lookup(u64 addr)
+ {
+ 	return memtype_interval_iter_first(&memtype_rbroot, addr,
+-					   addr + PAGE_SIZE);
++					   addr + PAGE_SIZE-1);
+ }
+ =
+
+ #if defined(CONFIG_DEBUG_FS)
+--===============1372076622515887075==--
 
