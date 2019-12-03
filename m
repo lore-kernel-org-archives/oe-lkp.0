@@ -1,141 +1,288 @@
-Content-Type: multipart/mixed; boundary="===============2169916473514316272=="
+Content-Type: multipart/mixed; boundary="===============6663621882657121782=="
 MIME-Version: 1.0
-From: Saravana Kannan <saravanak@google.com>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: 5e6669387e ("of/platform: Pause/resume sync state during init .."): [ 3.192726] WARNING: CPU: 1 PID: 1 at drivers/base/core.c:688 device_links_supplier_sync_state_resume
-Date: Mon, 02 Dec 2019 13:19:22 -0800
-Message-ID: <CAGETcx9r0u=-WSnQ2ZS1KmZSVQqKwvpnhO-w41=jk8iF6BdALA@mail.gmail.com>
-In-Reply-To: <20191201150015.GC18573@shao2-debian>
+Subject: Re: [refcount] d2d337b185: WARNING:at_lib/refcount.c:#refcount_warn_saturate
+Date: Tue, 03 Dec 2019 16:01:46 +0800
+Message-ID: <92d23f27-5ed0-5765-a9e3-9bc9fbd3768d@intel.com>
+In-Reply-To: <CAKv+Gu8VinMc8nv=W2-8c-HP7d6i_TV2weOZu9R8PiiHDtHRFA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2169916473514316272==
+--===============6663621882657121782==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Dec 1, 2019 at 7:00 AM kernel test robot <lkp@intel.com> wrote:
->
-> Greetings,
->
-> 0day kernel testing robot got the below dmesg and the first bad commit is
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->
-> commit 5e6669387e2287f25f09fd0abd279dae104cfa7e
-> Author:     Saravana Kannan <saravanak@google.com>
-> AuthorDate: Wed Sep 4 14:11:24 2019 -0700
-> Commit:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CommitDate: Fri Oct 4 17:30:19 2019 +0200
->
->     of/platform: Pause/resume sync state during init and of_platform_popu=
-late()
->
->     When all the top level devices are populated from DT during kernel
->     init, the supplier devices could be added and probed before the
->     consumer devices are added and linked to the suppliers. To avoid the
->     sync_state() callback from being called prematurely, pause the
->     sync_state() callbacks before populating the devices and resume them
->     at late_initcall_sync().
->
->     Similarly, when children devices are populated from a module using
->     of_platform_populate(), there could be supplier-consumer dependencies
->     between the children devices that are populated. To avoid the same
->     problem with sync_state() being called prematurely, pause and resume
->     sync_state() callbacks across of_platform_populate().
->
->     Signed-off-by: Saravana Kannan <saravanak@google.com>
->     Link: https://lore.kernel.org/r/20190904211126.47518-6-saravanak(a)go=
-ogle.com
->     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->
-> fc5a251d0f  driver core: Add sync_state driver/bus callback
-> 5e6669387e  of/platform: Pause/resume sync state during init and of_platf=
-orm_populate()
-> 81b6b96475  Merge branch 'master' of git://git.kernel.org/pub/scm/linux/k=
-ernel/git/torvalds/linux; tag 'dma-mapping-5.5' of git://git.infradead.org/=
-users/hch/dma-mapping
-> +------------------------------------------------------------------------=
--+------------+------------+------------+
-> |                                                                        =
- | fc5a251d0f | 5e6669387e | 81b6b96475 |
-> +------------------------------------------------------------------------=
--+------------+------------+------------+
-> | boot_successes                                                         =
- | 30         | 0          | 0          |
-> | boot_failures                                                          =
- | 1          | 11         | 22         |
-> | Oops:#[##]                                                             =
- | 1          |            |            |
-> | EIP:unmap_vmas                                                         =
- | 1          |            |            |
-> | PANIC:double_fault                                                     =
- | 1          |            |            |
-> | Kernel_panic-not_syncing:Fatal_exception                               =
- | 1          |            |            |
-> | WARNING:at_drivers/base/core.c:#device_links_supplier_sync_state_resume=
- | 0          | 11         | 22         |
-> | EIP:device_links_supplier_sync_state_resume                            =
- | 0          | 11         | 22         |
-> +------------------------------------------------------------------------=
--+------------+------------+------------+
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> [    3.186107] OF: /testcase-data/phandle-tests/consumer-b: #phandle-cell=
-s =3D 2 found -1
-> [    3.188595] platform testcase-data:testcase-device2: IRQ index 0 not f=
-ound
-> [    3.191047] ### dt-test ### end of unittest - 199 passed, 0 failed
-> [    3.191932] ------------[ cut here ]------------
-> [    3.192571] Unmatched sync_state pause/resume!
-> [    3.192726] WARNING: CPU: 1 PID: 1 at drivers/base/core.c:688 device_l=
-inks_supplier_sync_state_resume+0x27/0xc0
-> [    3.195084] Modules linked in:
-> [    3.195494] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G                T =
-5.4.0-rc1-00005-g5e6669387e228 #1
-> [    3.196674] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.10.2-1 04/01/2014
-> [    3.197693] EIP: device_links_supplier_sync_state_resume+0x27/0xc0
-> [    3.198680] Code: 00 00 00 3e 8d 74 26 00 57 56 31 d2 53 b8 a0 d0 d9 c=
-1 e8 6c b6 38 00 a1 e4 d0 d9 c1 85 c0 75 13 68 84 ba c4 c1 e8 29 30 b1 ff <=
-0f> 0b 58 eb 7f 8d 74 26 00 83 e8 01 85 c0 a3 e4 d0 d9 c1 75 6f 8b
-> [    3.201560] EAX: 00000022 EBX: 00000000 ECX: 00000000 EDX: 00000000
-> [    3.202466] ESI: 000001ab EDI: c02c7f80 EBP: c1e87d27 ESP: c02c7f20
-> [    3.203301] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010=
-282
-> [    3.204258] CR0: 80050033 CR2: bfa1bf98 CR3: 01f28000 CR4: 00140690
-> [    3.205022] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> [    3.205919] DR6: fffe0ff0 DR7: 00000400
-> [    3.206529] Call Trace:
-> [    3.207011]  ? of_platform_sync_state_init+0x13/0x16
-> [    3.207719]  ? do_one_initcall+0xda/0x260
-> [    3.208247]  ? kernel_init_freeable+0x110/0x197
-> [    3.208906]  ? rest_init+0x120/0x120
-> [    3.209369]  ? kernel_init+0xa/0x100
-> [    3.209775]  ? ret_from_fork+0x19/0x24
-> [    3.210283] ---[ end trace 81d0f2d2ee65199b ]---
-> [    3.210955] ALSA device list:
 
-Rob/Frank,
 
-This seems to be an issue with the unit test code not properly
-cleaning up the state after it's done.
+On 12/2/19 5:43 PM, Ard Biesheuvel wrote:
+> On Sun, 1 Dec 2019 at 16:49, kernel test robot <rong.a.chen@intel.com> =
+wrote:
+>> FYI, we noticed the following commit (built with gcc-7):
+>>
+>> commit: d2d337b185bd2abff262f3cf7de0080b3888e41c ("[RESEND PATCH v4 08/1=
+0] refcount: Consolidate implementations of refcount_t")
+>> url: https://github.com/0day-ci/linux/commits/Will-Deacon/Rework-REFCOUN=
+T_FULL-using-atomic_fetch_-operations/20191124-052413
+>>
+>>
+>> in testcase: ocfs2test
+>> with following parameters:
+>>
+>>          disk: 1SSD
+>>          test: test-mkfs
+>>
+>>
+>>
+>> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 =
+-m 8G
+>>
+>> caused below changes (please refer to attached dmesg/kmsg for entire log=
+/backtrace):
+>>
+>>
+>> +-----------------------------------------------------------------------=
+------+------------+------------+
+>> |                                                                       =
+      | 2ab80bd4ae | d2d337b185 |
+>> +-----------------------------------------------------------------------=
+------+------------+------------+
+>> | boot_successes                                                        =
+      | 0          | 0          |
+>> | boot_failures                                                         =
+      | 24         | 24         |
+> So we went from a success rate of 0 out of 24 to 0 out of 24 by
+> applying that patch. How on earth is that a result that justifies
+> spamming everybody?
 
-Specifically, unittest_data_add() setting up of_root on systems where
-there's no device tree (of_root =3D=3D NULL). It doesn't clean up of_root
-after the tests are done. This affects the of_have_populated_dt() API
-that in turn affects calls to
-device_links_supplier_sync_state_pause/resume(). I think unittests
-shouldn't affect the of_have_populated_dt() API.
+Hi Ard,
 
-I was looking into writing a unittest patch to fix this, but I don't
-know enough about the FDT parsing code to make sure I don't leak any
-memory or free stuff that's in use. I'm not sure I can simply set
-of_root =3D NULL if it was NULL before the unittest started. Let me know
-how I should proceed or if you plan to write up a patch for this.
+These failures were triggered by ocfs2test test, and all tests were =
 
-Thanks,
-Saravana
---===============2169916473514316272==--
+failed include parent commit "2ab80bd4ae".
+
+>
+>> | BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/rw=
+sem.c | 24         | 24         |
+>> | stack_segment:#[##]                                                   =
+      | 6          | 6          |
+>> | RIP:__kmalloc                                                         =
+      | 8          | 6          |
+>> | Kernel_panic-not_syncing:Fatal_exception                              =
+      | 14         | 11         |
+>> | kernel_BUG_at_mm/slub.c                                               =
+      | 9          | 4          |
+>> | invalid_opcode:#[##]                                                  =
+      | 9          | 4          |
+>> | RIP:kfree                                                             =
+      | 9          | 4          |
+>> | RIP:native_safe_halt                                                  =
+      | 4          | 1          |
+>> | Kernel_panic-not_syncing:Fatal_exception_in_interrupt                 =
+      | 6          | 2          |
+>> | BUG:unable_to_handle_page_fault_for_address                           =
+      | 5          | 1          |
+>> | Oops:#[##]                                                            =
+      | 5          | 1          |
+>> | RIP:kmem_cache_alloc_trace                                            =
+      | 3          | 3          |
+>> | RIP:idr_get_free                                                      =
+      | 1          |            |
+>> | RIP:console_unlock                                                    =
+      | 1          |            |
+>> | WARNING:at_lib/refcount.c:#refcount_warn_saturate                     =
+      | 0          | 9          |
+>> | RIP:refcount_warn_saturate                                            =
+      | 0          | 9          |
+
+The difference is that commit "d2d337b185" introduces new errors. e.g. =
+
+RIP:refcount_warn_saturate
+In addition,=C2=A0 you can get the dmesg file in previous report email.
+
+Please feel free to contact us if you need more information, and please =
+
+forgive us if we got something
+wrong.
+
+Best Regards,
+Rong Chen
+
+>> | general_protection_fault:#[##]                                        =
+      | 0          | 2          |
+>> | RIP:lru_cache_add_active_or_unevictable                               =
+      | 0          | 1          |
+>> +-----------------------------------------------------------------------=
+------+------------+------------+
+>>
+>>
+>> If you fix the issue, kindly add following tag
+>> Reported-by: kernel test robot <rong.a.chen@intel.com>
+>>
+>>
+>> [   93.421220] BUG: sleeping function called from invalid context at ker=
+nel/locking/rwsem.c:1533
+>> [   93.423478] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 24=
+64, name: mount.ocfs2
+>> [   93.425258] CPU: 1 PID: 2464 Comm: mount.ocfs2 Not tainted 5.4.0-rc3-=
+00012-gd2d337b185bd2 #1
+>> [   93.428185] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BI=
+OS 1.10.2-1 04/01/2014
+>> [   93.430982] Call Trace:
+>> [   93.432691]  dump_stack+0x5c/0x7b
+>> [   93.434089]  ___might_sleep+0x102/0x120
+>> [   93.435629]  down_write+0x1c/0x50
+>> [   93.436962]  configfs_depend_item+0x3a/0xb0
+>> [   93.438580]  o2hb_region_pin+0xf9/0x180 [ocfs2_nodemanager]
+>> [   93.440630]  ? inode_doinit_with_dentry+0x250/0x4e0
+>> [   93.441860]  o2hb_register_callback+0xc6/0x2a0 [ocfs2_nodemanager]
+>> [   93.443298]  dlm_join_domain+0xbd/0x790 [ocfs2_dlm]
+>> [   93.444491]  ? debugfs_create_dir+0xc4/0x100
+>> [   93.445635]  ? dlm_alloc_ctxt+0x42f/0x560 [ocfs2_dlm]
+>> [   93.446905]  dlm_register_domain+0x31f/0x440 [ocfs2_dlm]
+>> [   93.448188]  ? _cond_resched+0x19/0x30
+>> [   93.449248]  o2cb_cluster_connect+0x132/0x2c0 [ocfs2_stack_o2cb]
+>> [   93.450701]  ocfs2_cluster_connect+0x14b/0x220 [ocfs2_stackglue]
+>> [   93.452151]  ocfs2_dlm_init+0x2e9/0x4b0 [ocfs2]
+>> [   93.453379]  ? ocfs2_init_node_maps+0x50/0x50 [ocfs2]
+>> [   93.454700]  ocfs2_fill_super+0xcf4/0x12a0 [ocfs2]
+>> [   93.455952]  ? ocfs2_initialize_super+0x1030/0x1030 [ocfs2]
+>> [   93.457484]  mount_bdev+0x173/0x1b0
+>> [   93.458543]  legacy_get_tree+0x27/0x40
+>> [   93.459615]  vfs_get_tree+0x25/0xc0
+>> [   93.460650]  do_mount+0x715/0x9a0
+>> [   93.461697]  ksys_mount+0x80/0xd0
+>> [   93.462728]  __x64_sys_mount+0x21/0x30
+>> [   93.463802]  do_syscall_64+0x5b/0x1d0
+>> [   93.464867]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>> [   93.466224] RIP: 0033:0x7feaa42ee48a
+>> [   93.467282] Code: 48 8b 0d 11 fa 2a 00 f7 d8 64 89 01 48 83 c8 ff c3 =
+66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 =
+<48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d de f9 2a 00 f7 d8 64 89 01 48
+>> [   93.472861] RSP: 002b:00007ffec903d4e8 EFLAGS: 00000206 ORIG_RAX: 000=
+00000000000a5
+>> [   93.475973] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fea=
+a42ee48a
+>> [   93.479041] RDX: 0000562b43aae3ee RSI: 0000562b444af0b0 RDI: 0000562b=
+444af310
+>> [   93.481956] RBP: 00007ffec903d690 R08: 0000562b444af2b0 R09: 00000000=
+00000020
+>> [   93.485084] R10: 0000000000000000 R11: 0000000000000206 R12: 00007ffe=
+c903d580
+>> [   93.488128] R13: 0000000000000000 R14: 0000562b444b0000 R15: 00007ffe=
+c903d500
+>> [   93.494821] o2dlm: Joining domain 58A89FF3B793441A83C86B6A7816B4AF
+>> [   93.494822] (
+>> [   93.499229] 1
+>> [   93.501238] ) 1 nodes
+>> [   93.509977] JBD2: Ignoring recovery information on journal
+>> [   93.518913] ocfs2: Mounting device (8,0) on (node 1, slot 0) with ord=
+ered data mode.
+>> [   94.541086] mount /dev/sda /mnt/ocfs2 /dev/sda          16515072     =
+ 243712    16271360   2% /mnt/ocfs2
+>> [   94.541090]
+>> [   94.546474] OK
+>> [   94.546476]
+>> [   94.550726] create testdir /mnt/ocfs2/20191130_125727
+>> [   94.550729]
+>> [   94.713069] create 15890 files .
+>> [   94.713072]
+>> [   94.717547]
+>> [   98.760820] o2dlm: Leaving domain 58A89FF3B793441A83C86B6A7816B4AF
+>> [   98.828610] blk_update_request: I/O error, dev fd0, sector 0 op 0x0:(=
+READ) flags 0x0 phys_seg 1 prio class 0
+>> [   98.830929] floppy: error 10 while reading block 0
+>> [   99.561301] ocfs2: Unmounting device (8,0) on (node 1)
+>> [   99.563700] ------------[ cut here ]------------
+>> [   99.566425] refcount_t: underflow; use-after-free.
+>> [   99.569213] WARNING: CPU: 1 PID: 2531 at lib/refcount.c:28 refcount_w=
+arn_saturate+0x8d/0xf0
+>> [   99.574231] Modules linked in: ocfs2_stack_o2cb ocfs2_dlm ocfs2 ocfs2=
+_nodemanager ocfs2_stackglue jbd2 sr_mod intel_rapl_msr cdrom ata_generic p=
+ata_acpi intel_rapl_common crct10dif_pclmul crc32_pclmul crc32c_intel ghash=
+_clmulni_intel sd_mod sg bochs_drm ppdev drm_vram_helper ttm drm_kms_helper=
+ snd_pcm syscopyarea ata_piix sysfillrect aesni_intel sysimgblt snd_timer f=
+b_sys_fops crypto_simd libata drm cryptd glue_helper snd soundcore pcspkr j=
+oydev serio_raw virtio_scsi i2c_piix4 floppy parport_pc parport ip_tables
+>> [   99.593419] CPU: 1 PID: 2531 Comm: umount Tainted: G        W        =
+ 5.4.0-rc3-00012-gd2d337b185bd2 #1
+>> [   99.597311] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BI=
+OS 1.10.2-1 04/01/2014
+>> [   99.604305] RIP: 0010:refcount_warn_saturate+0x8d/0xf0
+>> [   99.607073] Code: 05 ce 6f 37 01 01 e8 32 a0 c1 ff 0f 0b c3 80 3d c1 =
+6f 37 01 00 75 ad 48 c7 c7 e0 9f 73 a5 c6 05 b1 6f 37 01 01 e8 13 a0 c1 ff =
+<0f> 0b c3 80 3d a5 6f 37 01 00 75 8e 48 c7 c7 60 9f 73 a5 c6 05 95
+>> [   99.612363] RSP: 0018:ffffa895c0457e20 EFLAGS: 00010282
+>> [   99.613931] RAX: 0000000000000000 RBX: ffff8d07e654e000 RCX: 00000000=
+00000000
+>> [   99.615800] RDX: ffff8d083fd27640 RSI: ffff8d083fd17778 RDI: ffff8d08=
+3fd17778
+>> [   99.617687] RBP: ffff8d07db479000 R08: 000000000000050a R09: 00000000=
+00aaaaaa
+>> [   99.619574] R10: ffffa895c0457c48 R11: ffff8d0817a4cf20 R12: ffffa895=
+c0457e34
+>> [   99.621486] R13: ffff8d07e654e240 R14: ffff8d07e654e0c8 R15: 00000000=
+00000000
+>> [   99.623382] FS:  00007f39e9509e40(0000) GS:ffff8d083fd00000(0000) knl=
+GS:0000000000000000
+>> [   99.625452] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> [   99.627106] CR2: 00000000004216d0 CR3: 00000001d2bfe000 CR4: 00000000=
+000406e0
+>> [   99.628995] Call Trace:
+>> [   99.630127]  ocfs2_dismount_volume+0x32a/0x3e0 [ocfs2]
+>> [   99.631667]  generic_shutdown_super+0x6c/0x120
+>> [   99.633102]  kill_block_super+0x21/0x50
+>> [   99.634424]  deactivate_locked_super+0x3f/0x70
+>> [   99.635843]  cleanup_mnt+0xb8/0x150
+>> [   99.637130]  task_work_run+0xa3/0xe0
+>> [   99.638407]  exit_to_usermode_loop+0xeb/0xf0
+>> [   99.639827]  do_syscall_64+0x1a7/0x1d0
+>> [   99.641185]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>> [   99.643068] RIP: 0033:0x7f39e8dedd77
+>> [   99.644352] Code: 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 =
+00 00 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 =
+<48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d f1 00 2b 00 f7 d8 64 89 01 48
+>> [   99.649122] RSP: 002b:00007fffc63b9bf8 EFLAGS: 00000246 ORIG_RAX: 000=
+00000000000a6
+>> [   99.651318] RAX: 0000000000000000 RBX: 0000557e0db2e080 RCX: 00007f39=
+e8dedd77
+>> [   99.653282] RDX: 0000000000000001 RSI: 0000000000000000 RDI: 0000557e=
+0db2e260
+>> [   99.655401] RBP: 0000557e0db2e260 R08: 0000557e0db2f600 R09: 00000000=
+00000015
+>> [   99.657366] R10: 00000000000006b4 R11: 0000000000000246 R12: 00007f39=
+e92efe64
+>> [   99.659581] R13: 0000000000000000 R14: 0000000000000000 R15: 00007fff=
+c63b9e80
+>> [   99.661503] ---[ end trace eed33931ffa30ed0 ]---
+>>
+>>
+>> To reproduce:
+>>
+>>          # build kernel
+>>          cd linux
+>>          cp config-5.4.0-rc3-00012-gd2d337b185bd2 .config
+>>          make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 olddefconfig prepa=
+re modules_prepare bzImage modules
+>>          make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 INSTALL_MOD_PATH=
+=3D<mod-install-dir> modules_install
+>>          cd <mod-install-dir>
+>>          find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
+>>
+>>
+>>          git clone https://github.com/intel/lkp-tests.git
+>>          cd lkp-tests
+>>          bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-scrip=
+t is attached in this email
+>>
+>>
+>>
+>> Thanks,
+>> Rong Chen
+>>
+> _______________________________________________
+> LKP mailing list -- lkp(a)lists.01.org
+> To unsubscribe send an email to lkp-leave(a)lists.01.org
+
+--===============6663621882657121782==--
 
