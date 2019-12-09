@@ -1,26 +1,37 @@
-Content-Type: multipart/mixed; boundary="===============0890503380548197456=="
+Content-Type: multipart/mixed; boundary="===============5127520353743768314=="
 MIME-Version: 1.0
-From: Christoph Hellwig <hch@lst.de>
+From: Michal Hocko <mhocko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [block] f216fdd77b: BUG:kernel_reboot-without-warning_in_boot_stage
-Date: Mon, 09 Dec 2019 09:36:37 +0100
-Message-ID: <20191209083637.GA15038@lst.de>
-In-Reply-To: <a67a0920-472f-7f86-299a-097bc2986a1c@intel.com>
+Subject: Re: [pipe] 3c0edea9b2: lmbench3.PIPE.bandwidth.MB/sec -17.0% regression
+Date: Mon, 09 Dec 2019 09:55:59 +0100
+Message-ID: <20191209085559.GA5868@dhcp22.suse.cz>
+In-Reply-To: <20191208153949.GJ32275@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0890503380548197456==
+--===============5127520353743768314==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Dec 09, 2019 at 04:08:56PM +0800, Rong Chen wrote:
-> Hi Christoph,
->
-> Kernel boot failed in early stage with commit "f216fdd77b":
+On Sun 08-12-19 23:39:49, kernel test robot wrote:
+> Greeting,
+> =
 
-Well, this config (plus enabling virtio for real) boots just fine for
-me.  There is nothing in your dmesgs, which makes me assume the boot
-stage means really early?  Nothing touched in this commit is involved
-in the very early boot path, though.
---===============0890503380548197456==--
+> FYI, we noticed a -17.0% regression of lmbench3.PIPE.bandwidth.MB/sec due=
+ to commit:
+> =
+
+> =
+
+> commit: 3c0edea9b29f9be6c093f236f762202b30ac9431 ("pipe: Remove sync on w=
+ake_ups")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+Huh. How can something like that can even can get merged? No changelog,
+no s-o-b?
+-- =
+
+Michal Hocko
+SUSE Labs
+--===============5127520353743768314==--
 
