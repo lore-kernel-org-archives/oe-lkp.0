@@ -1,34 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============4397109480180499711=="
+Content-Type: multipart/mixed; boundary="===============4141805330141417271=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Andi Kleen <ak@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [perf/x86] 81ec3f3c4c: will-it-scale.per_process_ops -5.5% regression
-Date: Wed, 05 Feb 2020 13:58:04 +0100
-Message-ID: <20200205125804.GM14879@hirez.programming.kicks-ass.net>
-In-Reply-To: <20200205123216.GO12867@shao2-debian>
+Subject: Re: [perf x86] b77491648e: will-it-scale.per_process_ops -2.1% regression
+Date: Wed, 05 Feb 2020 12:47:06 -0800
+Message-ID: <87tv44danp.fsf@linux.intel.com>
+In-Reply-To: <20200205123110.GN12867@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4397109480180499711==
+--===============4141805330141417271==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 05, 2020 at 08:32:16PM +0800, kernel test robot wrote:
+kernel test robot <rong.a.chen@intel.com> writes:
+
 > Greeting,
-> =
-
-> FYI, we noticed a -5.5% regression of will-it-scale.per_process_ops due t=
+>
+> FYI, we noticed a -2.1% regression of will-it-scale.per_process_ops due t=
 o commit:
-> =
+>
+>
+> commit: b77491648e6eb2f26b6edf5eaea859adc17f4dcc ("perf x86: Infrastructu=
+re for exposing an Uncore unit to PMON mapping")
+> https://github.com/0day-ci/linux/commits/roman-sudarikov-linux-intel-com/=
+perf-x86-Exposing-IO-stack-to-IO-PMON-mapping-through-sysfs/20200118-075508
 
-> =
+Seems to be spurious bisect. I don't think that commit could change
+anything performance related.
 
-> commit: 81ec3f3c4c4d78f2d3b6689c9816bfbdf7417dbb ("perf/x86: Add check_pe=
-riod PMU callback")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> =
-
-
-I'm fairly sure this bisect/result is bogus.
---===============4397109480180499711==--
+-Andi
+--===============4141805330141417271==--
 
