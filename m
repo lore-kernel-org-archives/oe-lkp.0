@@ -1,163 +1,121 @@
-Content-Type: multipart/mixed; boundary="===============7329785490884571428=="
+Content-Type: multipart/mixed; boundary="===============6718367601554003078=="
 MIME-Version: 1.0
-From: Liang, Kan <kan.liang@linux.intel.com>
+From: Tom Zanussi <zanussi@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [perf x86] b77491648e: will-it-scale.per_process_ops -2.1% regression
-Date: Wed, 12 Feb 2020 10:15:41 -0500
-Message-ID: <c92cd67f-c2bd-7c5b-7668-7a2d64d2f8c5@linux.intel.com>
-In-Reply-To: <782f409a-ff90-831c-56a0-abb3c31ab8d8@intel.com>
+Subject: Re: [tracing] 9fe41efaca: BUG:unable_to_handle_page_fault_for_address
+Date: Wed, 12 Feb 2020 09:59:04 -0600
+Message-ID: <1581523144.8740.8.camel@kernel.org>
+In-Reply-To: <20200212113444.GS12867@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7329785490884571428==
+--===============6718367601554003078==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi,
 
+On Wed, 2020-02-12 at 19:34 +0800, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-7):
+> =
 
-On 2/12/2020 5:56 AM, Chen, Rong A wrote:
+> commit: 9fe41efaca08416657efa8731c0d47ccb6a3f3eb ("tracing: Add synth
+> event generation test module")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git
+> master
+> =
+
+> in testcase: rcuperf
+> with following parameters:
+> =
+
+> 	runtime: 300s
+> 	perf_type: rcu
 > =
 
 > =
 
-> On 2/6/2020 4:47 AM, Andi Kleen wrote:
->> kernel test robot <rong.a.chen@intel.com> writes:
->>
->>> Greeting,
->>>
->>> FYI, we noticed a -2.1% regression of will-it-scale.per_process_ops =
-
->>> due to commit:
->>>
->>>
->>> commit: b77491648e6eb2f26b6edf5eaea859adc17f4dcc ("perf x86: =
-
->>> Infrastructure for exposing an Uncore unit to PMON mapping")
->>> https://github.com/0day-ci/linux/commits/roman-sudarikov-linux-intel-co=
-m/perf-x86-Exposing-IO-stack-to-IO-PMON-mapping-through-sysfs/20200118-0755=
-08 =
-
->>>
->> Seems to be spurious bisect. I don't think that commit could change
->> anything performance related.
 > =
 
-> Hi Andi,
+> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2
+> -m 8G
 > =
 
-> I commented out some lines in arch/x86/events/intel/uncore.c and =
 
-> will-it-scale.per_process_ops increased.
-> =
+I think the below patch should fix this, but I'm not able to build and
+test on a 32-bit system at the moment - my system needs an update to be
+able to run the qemu lkp-tests and my real 32-bit system is also having
+problems of its own.  I'll verify that this actually works on the lkp-
+tests once I get to the point of being able to test this on i386.
 
-> commit:
->  =C2=A0 v5.4
->  =C2=A0 b77491648e ("perf x86: Infrastructure for exposing an Uncore unit=
- to =
+Thanks,
 
-> PMON mapping")
->  =C2=A0 f33fe1b258 ("test")
-> =
+Tom
 
-> =
 
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 v5.4=
-=C2=A0 b77491648e6eb2f26b6edf5eae =
+Subject: [PATCH] tracing: Remove bogus 64-bit synth_event_trace() vararg
+ assumption
 
-> f33fe1b258b2a4b2fc97600b2b=C2=A0 testcase/testparams/testbox
-> ----------------=C2=A0 -------------------------- -----------------------=
---- =
+The vararg code in synth_event_trace() assumed the args were 64 bit
+which is not the case on 32 bit systems.  Just use long which should
+work on every system, and remove the u64 casts from the synth event
+test module.
 
-> ---------------------------
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 change=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %std=
-dev=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 change %stddev
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- \=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- \=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | \
->  =C2=A0=C2=A0=C2=A0=C2=A0 47983=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 47004 47647 =
+Reported-by: kernel test robot <rong.a.chen@intel.com>
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+---
+ kernel/trace/synth_event_gen_test.c | 4 ++--
+ kernel/trace/trace_events_hist.c    | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-> will-it-scale/performance-process-100%-signal1-ucode=3D0xb000038/lkp-bdw-=
-ep6
->  =C2=A0=C2=A0=C2=A0=C2=A0 47983=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 47004 47647=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 GEO-M=
-EAN =
+diff --git a/kernel/trace/synth_event_gen_test.c b/kernel/trace/synth_event=
+_gen_test.c
+index 4aefe003cb7c..2a7465569a43 100644
+--- a/kernel/trace/synth_event_gen_test.c
++++ b/kernel/trace/synth_event_gen_test.c
+@@ -424,11 +424,11 @@ static int __init test_trace_synth_event(void)
+ 	/* Trace some bogus values just for testing */
+ 	ret =3D synth_event_trace(create_synth_test, 7,	/* number of values */
+ 				444,			/* next_pid_field */
+-				(u64)"clackers",	/* next_comm_field */
++				"clackers",		/* next_comm_field */
+ 				1000000,		/* ts_ns */
+ 				1000,			/* ts_ms */
+ 				smp_processor_id(),	/* cpu */
+-				(u64)"Thneed",		/* my_string_field */
++				"Thneed",		/* my_string_field */
+ 				999);			/* my_int_field */
+ 	return ret;
+ }
+diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_h=
+ist.c
+index 2fcb755e900a..e65276c3c9d1 100644
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -1883,12 +1883,12 @@ int synth_event_trace(struct trace_event_file *file=
+, unsigned int n_vals, ...)
+ =
 
-> will-it-scale.per_process_ops
-> =
+ 	va_start(args, n_vals);
+ 	for (i =3D 0, n_u64 =3D 0; i < state.event->n_fields; i++) {
+-		u64 val;
++		long val;
+ =
 
-> diff --git a/arch/x86/events/intel/uncore.c =
+-		val =3D va_arg(args, u64);
++		val =3D va_arg(args, long);
+ =
 
-> b/arch/x86/events/intel/uncore.c
-> index 55201bfde2c84c..0dc9c455423d99 100644
-> --- a/arch/x86/events/intel/uncore.c
-> +++ b/arch/x86/events/intel/uncore.c
-> @@ -887,7 +887,7 @@ static int uncore_pmu_register(struct =
+ 		if (state.event->fields[i]->is_string) {
+-			char *str_val =3D (char *)(long)val;
++			char *str_val =3D (char *)val;
+ 			char *str_field =3D (char *)&state.entry->fields[n_u64];
+ =
 
-> intel_uncore_pmu *pmu)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 pmu->pmu.attr_groups =3D pmu->type->attr_groups;
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
-> =
+ 			strscpy(str_field, str_val, STR_VAR_LEN_MAX);
+-- =
 
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pmu->pmu.attr_update =3D attr_updat=
-e;
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 // pmu->pmu.attr_update =3D attr_up=
-date;
-> =
+2.14.1
 
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (pmu->type->num_boxes =3D=
-=3D 1) {
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 if (strlen(pmu->type->name) > 0)
-> @@ -903,7 +903,7 @@ static int uncore_pmu_register(struct =
-
-> intel_uncore_pmu *pmu)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Exposing mapping of U=
-ncore units to corresponding Uncore PMUs
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * through /sys/devices/=
-uncore_<type>_<idx>/mapping
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 uncore_platform_mapping(pmu->type);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 // uncore_platform_mapping(pmu->typ=
-e);
-
-The patch is for SKX uncore. The test machine looks like a BDX.
-So the mapping_group should always be invisible.
-The attr_update should not update.
-I think there should be no performance impact.
-
-static void uncore_platform_mapping(struct intel_uncore_type *t)
-{
-	if (t->get_topology && t->set_mapping &&
-	    !t->get_topology(t, max_dies) && !t->set_mapping(t, max_dies))
-		mapping_group.is_visible =3D NULL;
-	else
-		mapping_group.is_visible =3D not_visible;
-}
-
-Kan
-
-> =
-
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D perf_pmu_register(&pm=
-u->pmu, pmu->name, -1);
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!ret)
-> =
-
-> Best Regards,
-> Rong Chen
-> =
-
->>
->> -Andi
->> _______________________________________________
->> LKP mailing list -- lkp(a)lists.01.org
->> To unsubscribe send an email to lkp-leave(a)lists.01.org
->=20
---===============7329785490884571428==--
+--===============6718367601554003078==--
 
