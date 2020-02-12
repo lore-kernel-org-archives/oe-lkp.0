@@ -1,60 +1,23 @@
-Content-Type: multipart/mixed; boundary="===============6718367601554003078=="
+Content-Type: multipart/mixed; boundary="===============7448675991738127084=="
 MIME-Version: 1.0
-From: Tom Zanussi <zanussi@kernel.org>
+From: Steven Rostedt <rostedt@goodmis.org>
 To: lkp@lists.01.org
-Subject: Re: [tracing] 9fe41efaca: BUG:unable_to_handle_page_fault_for_address
-Date: Wed, 12 Feb 2020 09:59:04 -0600
-Message-ID: <1581523144.8740.8.camel@kernel.org>
-In-Reply-To: <20200212113444.GS12867@shao2-debian>
+Subject: [PATCH] tracing: Remove bogus 64-bit synth_event_trace() vararg assumption
+Date: Wed, 12 Feb 2020 14:50:26 -0500
+Message-ID: <20200212145026.0cbaa86b@gandalf.local.home>
+In-Reply-To: <1581523144.8740.8.camel@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6718367601554003078==
+--===============7448675991738127084==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
 
-On Wed, 2020-02-12 at 19:34 +0800, kernel test robot wrote:
-> FYI, we noticed the following commit (built with gcc-7):
-> =
+From: Tom Zanussi <zanussi@kernel.org>
 
-> commit: 9fe41efaca08416657efa8731c0d47ccb6a3f3eb ("tracing: Add synth
-> event generation test module")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git
-> master
-> =
-
-> in testcase: rcuperf
-> with following parameters:
-> =
-
-> 	runtime: 300s
-> 	perf_type: rcu
-> =
-
-> =
-
-> =
-
-> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2
-> -m 8G
-> =
-
-
-I think the below patch should fix this, but I'm not able to build and
-test on a 32-bit system at the moment - my system needs an update to be
-able to run the qemu lkp-tests and my real 32-bit system is also having
-problems of its own.  I'll verify that this actually works on the lkp-
-tests once I get to the point of being able to test this on i386.
-
-Thanks,
-
-Tom
-
-
-Subject: [PATCH] tracing: Remove bogus 64-bit synth_event_trace() vararg
- assumption
+[ Tom, please send patches normally, and not embedded in a reply.
+Otherwise it will not be picked up by my patchwork, and may be lost. ]
 
 The vararg code in synth_event_trace() assumed the args were 64 bit
 which is not the case on 32 bit systems.  Just use long which should
@@ -116,6 +79,5 @@ index 2fcb755e900a..e65276c3c9d1 100644
 -- =
 
 2.14.1
-
---===============6718367601554003078==--
+--===============7448675991738127084==--
 
