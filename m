@@ -1,47 +1,99 @@
-Content-Type: multipart/mixed; boundary="===============8597529946291143751=="
+Content-Type: multipart/mixed; boundary="===============1543838016261351755=="
 MIME-Version: 1.0
-From: Will Deacon <will@kernel.org>
+From: Jann Horn <jannh@google.com>
 To: lkp@lists.01.org
 Subject: Re: [kernel] 247f5d7caa: will-it-scale.per_process_ops 9.6% improvement
-Date: Fri, 21 Feb 2020 16:00:54 +0000
-Message-ID: <20200221160053.GA19330@willie-the-truck>
-In-Reply-To: <CAG48ez0N9rTEtrA1TrL07r5Om_yK-10XO2XtsWOn3Nde0PXsZA@mail.gmail.com>
+Date: Fri, 21 Feb 2020 17:29:10 +0100
+Message-ID: <CAG48ez0iUi6Qag4M2Y7=SfgJy5nET61NDB=aJ1yDS=GFJ--LZA@mail.gmail.com>
+In-Reply-To: <20200221115542.GL14493@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8597529946291143751==
+--===============1543838016261351755==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 21, 2020 at 04:55:42PM +0100, Jann Horn wrote:
-> On Fri, Feb 21, 2020 at 12:56 PM kernel test robot
-> <rong.a.chen@intel.com> wrote:
-> > FYI, we noticed a 9.6% improvement of will-it-scale.per_process_ops due=
- to commit:
-> >
-> >
-> > commit: 247f5d7caa443d0ea5f1992aeda875e679e9bd35 ("kernel-hacking: Make=
- DEBUG_{LIST,PLIST,SG,NOTIFIERS} non-debug options")
-> > https://git.kernel.org/cgit/linux/kernel/git/will/linux.git debug-list
-> =
+On Fri, Feb 21, 2020 at 12:56 PM kernel test robot
+<rong.a.chen@intel.com> wrote:
+[...]
+>                             will-it-scale.per_process_ops
+>
+>   83000 +----------------------------------------------------------------=
+---+
+>   82000 |-+                                        O O      O O          =
+   |
+>         |    O O O    O     O  O O      O O O                      O     =
+   |
+>   81000 |-O        O    O O        O O         O O      O O      O   O   =
+ O |
+>   80000 |-+                                                            O =
+   |
+>         |                                                                =
+   |
+>   79000 |-+                                                              =
+   |
+>   78000 |-+                                                              =
+   |
+>   77000 |-+                                                              =
+   |
+>         |                                                                =
+   |
+>   76000 |-+                                                              =
+   |
+>   75000 |-+                                                              =
+   |
+>         |.      .+.             .+.      .+.+..     .+..                 =
+   |
+>   74000 |-+..+.+   +..+.+.+.+..+   +.+..+      +.+.+    +.+.+.+..+.+     =
+   |
+>   73000 +----------------------------------------------------------------=
+---+
+>
+>
+>                                 will-it-scale.workload
+>
+>   1.32e+06 +-------------------------------------------------------------=
+---+
+>            |   O  O O   O      O   O        O O                          =
+   |
+>    1.3e+06 |-O        O   O O    O   O O O        O        O     O O     =
+ O |
+>   1.28e+06 |-+                                  O        O            O O=
+   |
+>            |                                                             =
+   |
+>   1.26e+06 |-+                                                           =
+   |
+>            |                                                             =
+   |
+>   1.24e+06 |-+                                                           =
+   |
+>            |                                                             =
+   |
+>   1.22e+06 |-+                                                           =
+   |
+>    1.2e+06 |-+                                                           =
+   |
+>            |                                                             =
+   |
+>   1.18e+06 |.+.+..+.+.+. .+.+..+.+.+.+.+.+..+.+.+.+.+.+..+.+. .+. .+     =
+   |
+>            |            +                                    +   +       =
+   |
+>   1.16e+06 +-------------------------------------------------------------=
+---+
+>
+>
+> [*] bisect-good sample
+> [O] bisect-bad  sample
 
-> I'm guessing this might mean that the test bot had the DEBUG_LIST
-> stuff enabled in its Kconfig, whereas after the rename, the default is
-> used, which is off?
+Some comments on the report format:
 
-I thought that at first, but scrolling down in the logs of the report
-I got totally confused by the softirqs and interrupts stuff.
-
-> This seems a bit problematic if people had DEBUG_LIST enabled in their
-> old kernel config and then try to reuse that config for a new kernel.
-> I wonder whether it'd be acceptable to keep the options under their
-> old names and let them "select" the new ones, or whether we have to
-> choose between "keep the old bad name" and "discard people's old
-> config flags".
-
-I can keep DEBUG_LIST kicking around and have the options default to that.
-Once I've finished updated lkdtm, I'll post this all out to the list.
-
-Will
---===============8597529946291143751==--
+"O" appears in the graphs, but not "*". Is "+" supposed to be the
+"bisect-good sample"? Also, what do "per_process_ops" and "workload"
+mean - are higher numbers better or worse? And what does "bisect-good"
+and "bisect-bad" even mean in the context of a performance
+*improvement* - is the "good" commit the newer one and the "bad" one
+the older one?
+--===============1543838016261351755==--
 
