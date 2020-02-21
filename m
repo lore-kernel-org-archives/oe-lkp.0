@@ -1,99 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============1543838016261351755=="
+Content-Type: multipart/mixed; boundary="===============8054102516795491432=="
 MIME-Version: 1.0
-From: Jann Horn <jannh@google.com>
+From: Kleen, Andi <andi.kleen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [kernel] 247f5d7caa: will-it-scale.per_process_ops 9.6% improvement
-Date: Fri, 21 Feb 2020 17:29:10 +0100
-Message-ID: <CAG48ez0iUi6Qag4M2Y7=SfgJy5nET61NDB=aJ1yDS=GFJ--LZA@mail.gmail.com>
-In-Reply-To: <20200221115542.GL14493@shao2-debian>
+Subject: Re: [perf/x86] 81ec3f3c4c: will-it-scale.per_process_ops -5.5% regression
+Date: Fri, 21 Feb 2020 18:05:02 +0000
+Message-ID: <E8ECBC65D0B2554DAD44EBE43059B3740F1EAC@ORSMSX110.amr.corp.intel.com>
+In-Reply-To: <20200221080325.GA67807@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1543838016261351755==
+--===============8054102516795491432==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 21, 2020 at 12:56 PM kernel test robot
-<rong.a.chen@intel.com> wrote:
-[...]
->                             will-it-scale.per_process_ops
->
->   83000 +----------------------------------------------------------------=
----+
->   82000 |-+                                        O O      O O          =
-   |
->         |    O O O    O     O  O O      O O O                      O     =
-   |
->   81000 |-O        O    O O        O O         O O      O O      O   O   =
- O |
->   80000 |-+                                                            O =
-   |
->         |                                                                =
-   |
->   79000 |-+                                                              =
-   |
->   78000 |-+                                                              =
-   |
->   77000 |-+                                                              =
-   |
->         |                                                                =
-   |
->   76000 |-+                                                              =
-   |
->   75000 |-+                                                              =
-   |
->         |.      .+.             .+.      .+.+..     .+..                 =
-   |
->   74000 |-+..+.+   +..+.+.+.+..+   +.+..+      +.+.+    +.+.+.+..+.+     =
-   |
->   73000 +----------------------------------------------------------------=
----+
->
->
->                                 will-it-scale.workload
->
->   1.32e+06 +-------------------------------------------------------------=
----+
->            |   O  O O   O      O   O        O O                          =
-   |
->    1.3e+06 |-O        O   O O    O   O O O        O        O     O O     =
- O |
->   1.28e+06 |-+                                  O        O            O O=
-   |
->            |                                                             =
-   |
->   1.26e+06 |-+                                                           =
-   |
->            |                                                             =
-   |
->   1.24e+06 |-+                                                           =
-   |
->            |                                                             =
-   |
->   1.22e+06 |-+                                                           =
-   |
->    1.2e+06 |-+                                                           =
-   |
->            |                                                             =
-   |
->   1.18e+06 |.+.+..+.+.+. .+.+..+.+.+.+.+.+..+.+.+.+.+.+..+.+. .+. .+     =
-   |
->            |            +                                    +   +       =
-   |
->   1.16e+06 +-------------------------------------------------------------=
----+
->
->
-> [*] bisect-good sample
-> [O] bisect-bad  sample
 
-Some comments on the report format:
 
-"O" appears in the graphs, but not "*". Is "+" supposed to be the
-"bisect-good sample"? Also, what do "per_process_ops" and "workload"
-mean - are higher numbers better or worse? And what does "bisect-good"
-and "bisect-bad" even mean in the context of a performance
-*improvement* - is the "good" commit the newer one and the "bad" one
-the older one?
---===============1543838016261351755==--
+>So likely, this commit changes the layout of the kernel text
+>and data, =
+
+
+It should be only data here. text changes all the time anyways,
+but data tends to be more stable.
+
+> which may trigger some cacheline level change. From
+>the system map of the 2 kernels, a big trunk of symbol's address
+>changes which follow the global "pmu",
+
+I wonder if it's the effect Andrew predicted a long time ago from
+using __read_mostly. If all the __read_mostlies are moved somewhere
+else the remaining read/write variables will get more sensitive to false sh=
+aring.
+
+A simple experiment would be to add a __cacheline_aligned to align it,
+and then add
+
+____cacheline_aligned char dummy[0]; =
+
+
+at the end to pad it to 64bytes.
+
+Or hopefully Jiri can figure it out from the C2C data.
+
+>btw, we've seen similar case that an irrelevant commit changes
+>the benchmark, like a hugetlb patch improves pagefault test on
+>a platform that never uses hugetlb https://lkml.org/lkml/2020/1/14/150
+
+Yes we've had similar problems with the data segment before.
+
+-Andi
+
+--===============8054102516795491432==--
 
