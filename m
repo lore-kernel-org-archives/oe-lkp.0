@@ -1,52 +1,73 @@
-Content-Type: multipart/mixed; boundary="===============5091204496985224907=="
+Content-Type: multipart/mixed; boundary="===============4448744585419756210=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [perf/x86] 81ec3f3c4c: will-it-scale.per_process_ops -5.5% regression
-Date: Mon, 24 Feb 2020 09:58:09 +0800
-Message-ID: <87lfosd9vy.fsf@yhuang-dev.intel.com>
+Date: Mon, 24 Feb 2020 10:19:15 +0800
+Message-ID: <20200224021915.GC5061@shbuild999.sh.intel.com>
 In-Reply-To: <CAHk-=whi87NNOnNXJ6CvyyedmhnS8dZA2YkQQSajvBArH5XOeA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5091204496985224907==
+--===============4448744585419756210==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+On Sun, Feb 23, 2020 at 05:06:33PM -0800, Linus Torvalds wrote:
+ =
 
-> On Sun, Feb 23, 2020 at 4:33 PM Feng Tang <feng.tang@intel.com> wrote:
->>
->> From the perf c2c data, and the source code checking, the conflicts
->> only happens for root_user.__count, and root_user.sigpending, as
->> all running tasks are accessing this global data for get/put and
->> other operations.
->
-> That's odd.
->
-> Why? Because those two would be guaranteed to be in the same cacheline
-> _after_ you've aligned that user_struct.
->
-> So if it were a false sharing issue between those two, it would
-> actually get _worse_ with alignment. Those two fields are basically
-> next to each other.
->
-> But maybe it was straddling a cacheline before, and it caused two
-> cache accesses each time?
->
-> I find this as confusing as you do.
->
-> If it's sigpending vs the __refcount, then we almost always change
-> them together. sigpending gets incremented by __sigqueue_alloc() -
-> which also does a "get_uid()", and then we decrement it in
-> __sigqueue_free() - which also does a "free_uid().
->
+> >      ffffffff8225b580 d types__ptrace
+> >      ffffffff8225b5c0 D root_user
+> >      ffffffff8225b680 D init_user_ns
+> =
 
-One way to verify this is to change the layout of user_struct (or
-root_user) to make __count and sigpending fields to be in 2 separate
-cache lines explicitly.
+> I'm assuming this is after the alignment patch (since that's 64-byte
+> aligned there).
+> =
 
-Best Regards,
-Huang, Ying
---===============5091204496985224907==--
+> What was it without the alignment?
+
+For 5.0-rc6: =
+
+	ffffffff8225b4c0 d types__ptrace
+	ffffffff8225b4e0 D root_user
+	ffffffff8225b580 D init_user_ns
+
+For 5.0-rc6 + 81ec3f3c4c4
+	ffffffff8225b580 d types__ptrace
+	ffffffff8225b5a0 D root_user
+	ffffffff8225b640 D init_user_ns
+
+The sigpending and __count are in the same cachline.
+
+> =
+
+> > No, it's not the biggest, I tried another machine 'Xeon Phi(TM) CPU 729=
+5',
+> > which has 72C/288T, and the regression is not seen. This is the part
+> > confusing me :)
+> =
+
+> Hmm.
+> =
+
+> Humor me - what  happens if you turn off SMT on that Cascade Lake
+> system?  Maybe it's about the thread ID bit in the L1? Although again,
+> I'd have expected things to get _worse_ if it's the two fields that
+> are now in the same cachline thanks to alignment.
+
+I'll try it and report back.
+ =
+
+> The Xeon Phi is the small-core setup, right? They may be slow enough
+> to not show the issue as clearly despite having more cores. And it
+> wouldn't show effects of some out-of-order speculative cache accesses.
+
+Yes, seems the Xeon Phi is using 72 Silvermont cores. And the less bigger
+platform I tested was a 2 sockets 48C/96T Cascadelake platform which
+doesn't reproduce the regression.
+
+Thanks,
+Feng
+--===============4448744585419756210==--
 
