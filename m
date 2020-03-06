@@ -1,58 +1,84 @@
-Content-Type: multipart/mixed; boundary="===============0466680155821569567=="
+Content-Type: multipart/mixed; boundary="===============7589572837788836042=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Rafael J. Wysocki <rafael@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [sched/numa] 6499b1b2dd: phoronix-test-suite.aom-av1.0.frames_per_second -25.0% regression
-Date: Fri, 06 Mar 2020 09:06:08 +0000
-Message-ID: <20200306090608.GS3818@techsingularity.net>
-In-Reply-To: <20200306023551.GE9382@xsang-OptiPlex-9020>
+Subject: Re: [cpufreq] 909c0e9cc1: fwq.fwq.med 210.0% improvement
+Date: Fri, 06 Mar 2020 10:54:42 +0100
+Message-ID: <CAJZ5v0g3f1Rf0HFLH+hWkbW6q0_E1RjhX2AeUxa_DHfJRQj7Qw@mail.gmail.com>
+In-Reply-To: <87zhcuyxce.fsf@yhuang-dev.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0466680155821569567==
+--===============7589572837788836042==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 06, 2020 at 10:35:51AM +0800, kernel test robot wrote:
-> Greeting,
-> =
+On Fri, Mar 6, 2020 at 4:29 AM Huang, Ying <ying.huang@intel.com> wrote:
+>
+> Hi, Rafael,
+>
+> "Rafael J. Wysocki" <rafael@kernel.org> writes:
+>
+> > On Thu, Mar 5, 2020 at 9:18 AM Rong Chen <rong.a.chen@intel.com> wrot=
+e:
+> >>
+> >>
+> >>
+> >> On 3/5/20 3:50 PM, Rafael J. Wysocki wrote:
+> >> > On 3/5/2020 2:35 AM, kernel test robot wrote:
+> >> >> Greeting,
+> >> >>
+> >> >> FYI, we noticed a 210.0% improvement of fwq.fwq.med due to commit:
+> >> >
+> >> > Well, that sounds impressive. :-)
+> >> >
+> >> >
+> >> >>
+> >> >> commit: 909c0e9cc11ba39fa5a660583b25c2431cf54deb ("cpufreq:
+> >> >> intel_pstate: Use passive mode by default without HWP")
+> >> >> https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git
+> >> >> intel_pstate-passive
+> >> >>
+> >> >> in testcase: fwq
+> >> >> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz
+> >> >> with 48G memory
+> >> >> with following parameters:
+> >> >>
+> >> >>     nr_task: 100%
+> >> >>     samples: 100000ss
+> >> >>     iterations: 18x
+> >> >>     cpufreq_governor: powersave
+> >> >
+> >> > The governor should be schedutil, though, unless it is explicitly set
+> >> > to powersave in the test environment.
+> >> >
+> >> > Is that the case?
+> >> >
+> >> >
+> >>
+> >> Hi Rafael,
+> >>
+> >> Yes, we set to powersave for this test.
+> >
+> > I wonder why this is done?  Is there any particular technical reason
+> > for doing that?
+>
+> fwq is a noise benchmark to measure the hardware and software noise
+> level.  More information could be found in the following document.
+>
+> https://asc.llnl.gov/sequoia/benchmarks/FTQ_summary_v1.1.pdf
+>
+> In 0day, to measure the noise introduced by power management, we will
+> run fwq with the performance and powersave governors.  Do you think this
+> is reasonable?  Or we should use some other governors?
 
-> FYI, we noticed a -25.0% regression of phoronix-test-suite.aom-av1.0.fram=
-es_per_second due to commit:
-> =
+I think that the schedutil governor should be tested too if present.
 
-> =
-
-> commit: 6499b1b2dd1b8d404a16b9fbbf1af6b9b3c1d83d ("sched/numa: Replace ru=
-nnable_load_avg by load_avg")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> =
-
-> in testcase: phoronix-test-suite
-> on test machine: 16 threads Intel(R) Xeon(R) CPU X5570 @ 2.93GHz with 48G=
- memory
-> with following parameters:
-> =
-
-> 	test: aom-av1-1.2.0
-> 	cpufreq_governor: performance
-> 	ucode: 0x1d
-> =
-
-> test-description: The Phoronix Test Suite is the most comprehensive testi=
-ng and benchmarking platform available that provides an extensible framewor=
-k for which new tests can be easily added.
-> test-url: http://www.phoronix-test-suite.com/
-> =
-
-
-The middle of this series is not safe for bisection from a performance
-perspective. It needs to be determined if the series is ok only after
-all the patches are applied.
-
--- =
-
-Mel Gorman
-SUSE Labs
---===============0466680155821569567==--
+Also note that for the intel_pstate driver "powersave" may mean
+different things depending on the current operation mode of the
+driver.  If scaling_driver is "intel_pstate", then "powersave" is the
+driver's built-in algorithm.  If scaling_driver is "intel_cpufreq",
+though, "powersave" means running at the minimum frequency all the
+time.
+--===============7589572837788836042==--
 
