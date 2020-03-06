@@ -1,84 +1,90 @@
-Content-Type: multipart/mixed; boundary="===============7589572837788836042=="
+Content-Type: multipart/mixed; boundary="===============7108670775162405682=="
 MIME-Version: 1.0
-From: Rafael J. Wysocki <rafael@kernel.org>
+From: Sang, Oliver <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [cpufreq] 909c0e9cc1: fwq.fwq.med 210.0% improvement
-Date: Fri, 06 Mar 2020 10:54:42 +0100
-Message-ID: <CAJZ5v0g3f1Rf0HFLH+hWkbW6q0_E1RjhX2AeUxa_DHfJRQj7Qw@mail.gmail.com>
-In-Reply-To: <87zhcuyxce.fsf@yhuang-dev.intel.com>
+Subject: Re: [sched/numa] 6499b1b2dd: phoronix-test-suite.aom-av1.0.frames_per_second -25.0% regression
+Date: Fri, 06 Mar 2020 14:22:29 +0000
+Message-ID: <F09C421E5D2EBE40AFD7EEA977444DDC4D5D6DC7@SHSMSX103.ccr.corp.intel.com>
+In-Reply-To: <20200306072827.14452-1-hdanton@sina.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7589572837788836042==
+--===============7108670775162405682==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 6, 2020 at 4:29 AM Huang, Ying <ying.huang@intel.com> wrote:
->
-> Hi, Rafael,
->
-> "Rafael J. Wysocki" <rafael@kernel.org> writes:
->
-> > On Thu, Mar 5, 2020 at 9:18 AM Rong Chen <rong.a.chen@intel.com> wrot=
-e:
-> >>
-> >>
-> >>
-> >> On 3/5/20 3:50 PM, Rafael J. Wysocki wrote:
-> >> > On 3/5/2020 2:35 AM, kernel test robot wrote:
-> >> >> Greeting,
-> >> >>
-> >> >> FYI, we noticed a 210.0% improvement of fwq.fwq.med due to commit:
-> >> >
-> >> > Well, that sounds impressive. :-)
-> >> >
-> >> >
-> >> >>
-> >> >> commit: 909c0e9cc11ba39fa5a660583b25c2431cf54deb ("cpufreq:
-> >> >> intel_pstate: Use passive mode by default without HWP")
-> >> >> https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git
-> >> >> intel_pstate-passive
-> >> >>
-> >> >> in testcase: fwq
-> >> >> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz
-> >> >> with 48G memory
-> >> >> with following parameters:
-> >> >>
-> >> >>     nr_task: 100%
-> >> >>     samples: 100000ss
-> >> >>     iterations: 18x
-> >> >>     cpufreq_governor: powersave
-> >> >
-> >> > The governor should be schedutil, though, unless it is explicitly set
-> >> > to powersave in the test environment.
-> >> >
-> >> > Is that the case?
-> >> >
-> >> >
-> >>
-> >> Hi Rafael,
-> >>
-> >> Yes, we set to powersave for this test.
+> -----Original Message-----
+> From: Hillf Danton <hdanton@sina.com>
+> Sent: Friday, March 6, 2020 3:28 PM
+> To: Sang, Oliver <oliver.sang@intel.com>
+> Cc: Vincent Guittot <vincent.guittot@linaro.org>; Ingo Molnar
+> <mingo@kernel.org>; Mel Gorman <mgorman@techsingularity.net>; Peter
+> Zijlstra <a.p.zijlstra@chello.nl>; Juri Lelli <juri.lelli@redhat.com>=
+; Valentin
+> Schneider <valentin.schneider@arm.com>; Phil Auld <pauld@redhat.com>;=
+ Hillf
+> Danton <hdanton@sina.com>; LKML <linux-kernel@vger.kernel.org>; Andrew
+> Morton <akpm@linux-foundation.org>; Stephen Rothwell
+> <sfr@canb.auug.org.au>; lkp(a)lists.01.org
+> Subject: Re: [sched/numa] 6499b1b2dd: phoronix-test-suite.aom-
+> av1.0.frames_per_second -25.0% regression
+> =
+
+> =
+
+> On Fri, 6 Mar 2020 10:35:51 +0800 from kernel test robot
+> <oliver.sang@intel.com>
 > >
-> > I wonder why this is done?  Is there any particular technical reason
-> > for doing that?
->
-> fwq is a noise benchmark to measure the hardware and software noise
-> level.  More information could be found in the following document.
->
-> https://asc.llnl.gov/sequoia/benchmarks/FTQ_summary_v1.1.pdf
->
-> In 0day, to measure the noise introduced by power management, we will
-> run fwq with the performance and powersave governors.  Do you think this
-> is reasonable?  Or we should use some other governors?
+> > Greeting,
+> >
+> > FYI, we noticed a -25.0% regression of phoronix-test-suite.aom-
+> av1.0.frames_per_second due to commit:
+> >
+> >
+> > commit: 6499b1b2dd1b8d404a16b9fbbf1af6b9b3c1d83d ("sched/numa:
+> Replace
+> > runnable_load_avg by load_avg")
+> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git
+> > master
+> >
+> Hi Oliver
+> =
 
-I think that the schedutil governor should be tested too if present.
+> Thanks for your report.
+> =
 
-Also note that for the intel_pstate driver "powersave" may mean
-different things depending on the current operation mode of the
-driver.  If scaling_driver is "intel_pstate", then "powersave" is the
-driver's built-in algorithm.  If scaling_driver is "intel_cpufreq",
-though, "powersave" means running at the minimum frequency all the
-time.
---===============7589572837788836042==--
+> It's fixed in fb86f5b21192 ("sched/numa: Use similar logic to the load ba=
+lancer
+> for moving between domains with spare capacity") and if you're curious, s=
+ee the
+> force of that cure using the following diff.
+> =
+
+> Hillf
+
+Thanks a lot for information!
+
+> --
+> =
+
+> =
+
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -1594,11 +1594,6 @@ static bool load_too_imbalanced(long src
+>  	long orig_src_load, orig_dst_load;
+>  	long src_capacity, dst_capacity;
+> =
+
+> -
+> -	/* If dst node has spare capacity, there is no real load imbalance */
+> -	if (env->dst_stats.node_type =3D=3D node_has_spare)
+> -		return false;
+> -
+>  	/*
+>  	 * The load is corrected for the CPU capacity available on each node.
+>  	 *
+> --
+
+--===============7108670775162405682==--
 
