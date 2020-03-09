@@ -1,99 +1,92 @@
-Content-Type: multipart/mixed; boundary="===============2898254615109202021=="
+Content-Type: multipart/mixed; boundary="===============3632783781957680946=="
 MIME-Version: 1.0
-From: Thierry Reding <thierry.reding@gmail.com>
+From: Jeff Layton <jlayton@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [futex] 8019ad13ef: will-it-scale.per_process_ops -97.8% regression
-Date: Wed, 11 Mar 2020 09:20:00 +0100
-Message-ID: <20200311082000.GA724@ulmo>
-In-Reply-To: <87h7yy90ve.fsf@nanos.tec.linutronix.de>
+Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
+Date: Mon, 09 Mar 2020 15:53:19 -0400
+Message-ID: <3358ab2ca14f51ec36202c9957453c32cba81fad.camel@kernel.org>
+In-Reply-To: <1bfba96b4bf0d3ca9a18a2bced3ef3a2a7b44dad.camel@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2898254615109202021==
+--===============3632783781957680946==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Mar 08, 2020 at 07:07:17PM +0100, Thomas Gleixner wrote:
-> Linus Torvalds <torvalds@linux-foundation.org> writes:
+On Mon, 2020-03-09 at 15:09 -0400, Jeff Layton wrote:
+> On Mon, 2020-03-09 at 13:22 -0400, Jeff Layton wrote:
+> > On Mon, 2020-03-09 at 08:52 -0700, Linus Torvalds wrote:
+> > > On Mon, Mar 9, 2020 at 7:36 AM Jeff Layton <jlayton@kernel.org> wro=
+te:
+> > > > On Sun, 2020-03-08 at 22:03 +0800, kernel test robot wrote:
+> > > > > FYI, we noticed a -96.6% regression of will-it-scale.per_process_=
+ops due to commit:
+> > > > =
+
+> > > > This is not completely unexpected as we're banging on the global
+> > > > blocked_lock_lock now for every unlock. This test just thrashes file
+> > > > locks and unlocks without doing anything in between, so the workload
+> > > > looks pretty artificial [1].
+> > > > =
+
+> > > > It would be nice to avoid the global lock in this codepath, but it
+> > > > doesn't look simple to do. I'll keep thinking about it, but for now=
+ I'm
+> > > > inclined to ignore this result unless we see a problem in more real=
+istic
+> > > > workloads.
+> > > =
+
+> > > That is a _huge_ regression, though.
+> > > =
+
+> > > What about something like the attached? Wouldn't that work? And make
+> > > the code actually match the old comment about wow "fl_blocker" being
+> > > NULL being special.
+> > > =
+
+> > > The old code seemed to not know about things like memory ordering eit=
+her.
+> > > =
+
+> > > Patch is entirely untested, but aims to have that "smp_store_release()
+> > > means I'm done and not going to touch it any more", making that
+> > > smp_load_acquire() test hopefully be valid as per the comment..
+> > =
+
+> > Yeah, something along those lines maybe. I don't think we can use
+> > fl_blocker that way though, as the wait_event_interruptible is waiting
+> > on it to go to NULL, and the wake_up happens before fl_blocker is
+> > cleared.
+> > =
+
+> > Maybe we need to mix in some sort of FL_BLOCK_ACTIVE flag and use that
+> > instead of testing for !fl_blocker to see whether we can avoid the
+> > blocked_lock_lock?
+> >   =
+
 > =
 
-> > [ Just a re-send without html crud that makes all the lists unhappy.
-> > I'm still on the road, the flight I was supposed to be on yesterday
-> > got cancelled.. ]
-> >
-> > I do note that the futex hashing seems to be broken by that commit. Or
-> > at least it's questionable.  It keeps hashing on "both.word",  and
-> > doesn't use the u64 field at all for hashing.
-> >
-> > Maybe I'm mis-reading it - I didn't apply the patch, I just looked at
-> > the patch and my source base separately.
-> >
-> > But the 98% regression sure says something went wrong ;)
+> How about something like this instead? (untested other than for
+> compilation)
 > =
 
-> Right you are. The pointer needs to be the starting point as it moved
-> ahead of word, which means it starts at word and hashes word and
-> offset and an extra u32 beyond the end of the key.
+> Basically, this just switches the waiters over to wait for
+> fl_blocked_member to go empty. That still happens before the wakeup, so
+> it should be ok to wait on that.
 > =
 
-> Thanks,
-> =
+> I think we can also eliminate the lockless list_empty check in
+> locks_delete_block, as the fl_blocker check should be sufficient now.
 
->         tglx
-> ----
-> diff --git a/kernel/futex.c b/kernel/futex.c
-> index e14f7cd45dbd..9f3251349f65 100644
-> --- a/kernel/futex.c
-> +++ b/kernel/futex.c
-> @@ -385,8 +385,8 @@ static inline int hb_waiters_pending(struct futex_has=
-h_bucket *hb)
->   */
->  static struct futex_hash_bucket *hash_futex(union futex_key *key)
->  {
-> -	u32 hash =3D jhash2((u32*)&key->both.word,
-> -			  (sizeof(key->both.word)+sizeof(key->both.ptr))/4,
-> +	u32 hash =3D jhash2((u32*)&key->both.ptr,
-> +			  (sizeof(key->both.ptr) + sizeof(key->both.word)) / 4,
->  			  key->both.offset);
->  	return &futex_queues[hash & (futex_hashsize - 1)];
->  }
+Actually, no -- we need to keep that check in. The rest should work
+though. I'll do some testing with it and see if the perf issue goes
+away.
 
-I was running into an issue with sshfs mounts and git bisect pointed to
-the "futex: Fix inode life-time issue" commit as being the culprit. The
-issue I was seeing is that an sshfs mount would succeed, but trying to
-then access the mount ("ls -l /mnt" would be enough) would cause a soft
-lock-up.
+Thanks,
+-- =
 
-Applying this fix on top of next-20200310 fixes the issue for me, so:
+Jeff Layton <jlayton@kernel.org>
 
-Tested-by: Thierry Reding <treding@nvidia.com>
-
-I still need that fix on next-20200311, but it'll probably show up in
-linux-next sometime soon.
-
-Thierry
-
---===============2898254615109202021==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
-
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRSXpCQUFCQ0FBZEZpRUVpT3JEQ0FGSnpQ
-ZkFqY2lmM1NPczEzOCtzNkVGQWw1b255d0FDZ2tRM1NPczEzOCsKczZFOTh4QUFqQjVVbTE5N0U5
-SkZ5aFp0UzZNRFF0WlBaZ3JGY2Fhc2F2aFVQdzloMTlobEVEaS9hZjlvR3JMTQpoSmQwS3Z5bWt3
-L2NrWm1wTUdDamkrKzhyTkE4RFUxYlBybUxyNVFJRlM0aUNESlFWVFd5eG5kcUZtdVAwYWlGClps
-VDhyaThteTV5NWtmWHRiZjAvQ1NNTVV0MGExU1RIVksrUVc1ZkZSNXpVK29XSlNReWE2U1pXclF2
-MHFZN1QKbGZkYjJNS0E4Uml1cjJFWWpaSDlEZHR0OTdBd0xVNnpZVW8yNjc5RVR5c1lYemdROFIr
-QXhYNGZZaUMrWjBjWgp2aXNYeHhoNkJLMk9MaGgrRFMyUnplYXhjNStiUTRmcHpBUFM5Q0NFdGNE
-WjNISGhOSDZRbVUzUWs0VWtyRVYyCktDaGFSdytEUUJWZ21UVFhPbllNVURXaTczZGRMZFk3b0lj
-OEZZMUNEcDhZSkluTzdFRk9MelBJQjhUekxiL3YKYUdQbVVYOGxYRlB2aHVJeXUzVDNQNVJrL0VI
-N2hoY1NQZ00wMWV3QVEyWE9OcThKL000VlRCU3g2aWpRaUl2Ugo2NUk5cXdhRHNVTGVRa1czeXVj
-MkJZMDMrM3dPM2xNWjRmSkRIK2NMV2NzQnZyczJiZEZDVSt1a1Y2Rk0wcldvCktRSDZVQzdOSytW
-TUhQSVhheHF0VEo5ZkJ1VVBtNVdDeE45eDlpMUIwK0Z0NUloYlZRVGdDYXp5R05sTFpvUGsKMFhW
-Tk9PcitJeHo2czloeGJLTXd3MjNPWlk2WWZMRCt2cGxKMlVoNlBVeWh0bzNOUENFWFZlVjRzZ0F2
-aGxCVwpZakp0OFZJWUxwbmpTYzJKbnRYLzlFVWJ2c0R6ZnVLazV0ZUpLZHJpcGV1UXlvZGhXUXM9
-Cj0zekplCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
-
---===============2898254615109202021==--
+--===============3632783781957680946==--
 
