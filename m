@@ -1,56 +1,98 @@
-Content-Type: multipart/mixed; boundary="===============1456669085055795369=="
+Content-Type: multipart/mixed; boundary="===============2087551211101457323=="
 MIME-Version: 1.0
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [futex] 8019ad13ef: will-it-scale.per_process_ops -97.8% regression
-Date: Sun, 08 Mar 2020 19:07:17 +0100
-Message-ID: <87h7yy90ve.fsf@nanos.tec.linutronix.de>
-In-Reply-To: <CAHk-=whrpL8pbKLg3_s3+bxv6kbPnzbSP8dQkZ+Rv=jAT3aoKw@mail.gmail.com>
+Subject: Re: [cpufreq] 909c0e9cc1: fwq.fwq.med 210.0% improvement
+Date: Mon, 09 Mar 2020 09:17:02 +0800
+Message-ID: <87imjez5rl.fsf@yhuang-dev.intel.com>
+In-Reply-To: <CAJZ5v0g3f1Rf0HFLH+hWkbW6q0_E1RjhX2AeUxa_DHfJRQj7Qw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1456669085055795369==
+--===============2087551211101457323==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+"Rafael J. Wysocki" <rafael@kernel.org> writes:
 
-> [ Just a re-send without html crud that makes all the lists unhappy.
-> I'm still on the road, the flight I was supposed to be on yesterday
-> got cancelled.. ]
+> On Fri, Mar 6, 2020 at 4:29 AM Huang, Ying <ying.huang@intel.com> wrote:
+>>
+>> Hi, Rafael,
+>>
+>> "Rafael J. Wysocki" <rafael@kernel.org> writes:
+>>
+>> > On Thu, Mar 5, 2020 at 9:18 AM Rong Chen <rong.a.chen@intel.com> wro=
+te:
+>> >>
+>> >>
+>> >>
+>> >> On 3/5/20 3:50 PM, Rafael J. Wysocki wrote:
+>> >> > On 3/5/2020 2:35 AM, kernel test robot wrote:
+>> >> >> Greeting,
+>> >> >>
+>> >> >> FYI, we noticed a 210.0% improvement of fwq.fwq.med due to commit:
+>> >> >
+>> >> > Well, that sounds impressive. :-)
+>> >> >
+>> >> >
+>> >> >>
+>> >> >> commit: 909c0e9cc11ba39fa5a660583b25c2431cf54deb ("cpufreq:
+>> >> >> intel_pstate: Use passive mode by default without HWP")
+>> >> >> https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git
+>> >> >> intel_pstate-passive
+>> >> >>
+>> >> >> in testcase: fwq
+>> >> >> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz
+>> >> >> with 48G memory
+>> >> >> with following parameters:
+>> >> >>
+>> >> >>     nr_task: 100%
+>> >> >>     samples: 100000ss
+>> >> >>     iterations: 18x
+>> >> >>     cpufreq_governor: powersave
+>> >> >
+>> >> > The governor should be schedutil, though, unless it is explicitly s=
+et
+>> >> > to powersave in the test environment.
+>> >> >
+>> >> > Is that the case?
+>> >> >
+>> >> >
+>> >>
+>> >> Hi Rafael,
+>> >>
+>> >> Yes, we set to powersave for this test.
+>> >
+>> > I wonder why this is done?  Is there any particular technical reason
+>> > for doing that?
+>>
+>> fwq is a noise benchmark to measure the hardware and software noise
+>> level.  More information could be found in the following document.
+>>
+>> https://asc.llnl.gov/sequoia/benchmarks/FTQ_summary_v1.1.pdf
+>>
+>> In 0day, to measure the noise introduced by power management, we will
+>> run fwq with the performance and powersave governors.  Do you think this
+>> is reasonable?  Or we should use some other governors?
 >
-> I do note that the futex hashing seems to be broken by that commit. Or
-> at least it's questionable.  It keeps hashing on "both.word",  and
-> doesn't use the u64 field at all for hashing.
+> I think that the schedutil governor should be tested too if present.
 >
-> Maybe I'm mis-reading it - I didn't apply the patch, I just looked at
-> the patch and my source base separately.
->
-> But the 98% regression sure says something went wrong ;)
+> Also note that for the intel_pstate driver "powersave" may mean
+> different things depending on the current operation mode of the
+> driver.  If scaling_driver is "intel_pstate", then "powersave" is the
+> driver's built-in algorithm.  If scaling_driver is "intel_cpufreq",
+> though, "powersave" means running at the minimum frequency all the
+> time.
 
-Right you are. The pointer needs to be the starting point as it moved
-ahead of word, which means it starts at word and hashes word and
-offset and an extra u32 beyond the end of the key.
+Thanks for your guidance.  We will test schedutil governor in the future
+too.
 
-Thanks,
+As for powersave, should we stop testing it?  Or just pay attention to
+the possible issue you pointed out?
 
-        tglx
-----
-diff --git a/kernel/futex.c b/kernel/futex.c
-index e14f7cd45dbd..9f3251349f65 100644
---- a/kernel/futex.c
-+++ b/kernel/futex.c
-@@ -385,8 +385,8 @@ static inline int hb_waiters_pending(struct futex_hash_=
-bucket *hb)
-  */
- static struct futex_hash_bucket *hash_futex(union futex_key *key)
- {
--	u32 hash =3D jhash2((u32*)&key->both.word,
--			  (sizeof(key->both.word)+sizeof(key->both.ptr))/4,
-+	u32 hash =3D jhash2((u32*)&key->both.ptr,
-+			  (sizeof(key->both.ptr) + sizeof(key->both.word)) / 4,
- 			  key->both.offset);
- 	return &futex_queues[hash & (futex_hashsize - 1)];
- }
---===============1456669085055795369==--
+Should we add ondemand governor?
+
+Best Regards,
+Huang, Ying
+--===============2087551211101457323==--
 
