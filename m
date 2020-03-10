@@ -1,275 +1,382 @@
-Content-Type: multipart/mixed; boundary="===============4371522314092234089=="
+Content-Type: multipart/mixed; boundary="===============2510366919606799387=="
 MIME-Version: 1.0
-From: Marco Elver <elver@google.com>
+From: Jeff Layton <jlayton@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: fbc2d237ab ("kcsan: Make KCSAN compatible with lockdep"): [ 5.453598] WARNING: CPU: 0 PID: 5 at kernel/softirq.c:169 __local_bh_enable_ip
-Date: Tue, 10 Mar 2020 13:12:12 +0100
-Message-ID: <CANpmjNPbn0X4OdTaquL-Hq4adA0mJLva0CET+yh7E3XTCWX4pA@mail.gmail.com>
-In-Reply-To: <20200310082655.GZ5972@shao2-debian>
+Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
+Date: Tue, 10 Mar 2020 08:52:09 -0400
+Message-ID: <923487db2c9396c79f8e8dd4f846b2b1762635c8.camel@kernel.org>
+In-Reply-To: <ed73fb5d-ddd5-fefd-67ae-2d786e68544a@huawei.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4371522314092234089==
+--===============2510366919606799387==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 10 Mar 2020 at 09:27, kernel test robot <lkp@intel.com> wrote:
->
-> Greetings,
->
-> 0day kernel testing robot got the below dmesg and the first bad commit is
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
->
-> commit fbc2d237ab2f9012de5ea3ac27cc726d0bb20681
-> Author:     Marco Elver <elver@google.com>
-> AuthorDate: Wed Jan 15 17:25:12 2020 +0100
-> Commit:     Paul E. McKenney <paulmck@kernel.org>
-> CommitDate: Fri Feb 7 11:27:41 2020 -0800
->
->     kcsan: Make KCSAN compatible with lockdep
->
->     We must avoid any recursion into lockdep if KCSAN is enabled on utili=
-ties
->     used by lockdep. One manifestation of this is corruption of lockdep's
->     IRQ trace state (if TRACE_IRQFLAGS), resulting in spurious warnings
->     (see below).  This commit fixes this by:
->
->     1. Using raw_local_irq{save,restore} in kcsan_setup_watchpoint().
->     2. Disabling lockdep in kcsan_report().
->
->     Tested with:
->
->       CONFIG_LOCKDEP=3Dy
->       CONFIG_DEBUG_LOCKDEP=3Dy
->       CONFIG_TRACE_IRQFLAGS=3Dy
->
->     This fix eliminates spurious warnings such as the following one:
->
->         WARNING: CPU: 0 PID: 2 at kernel/locking/lockdep.c:4406 check_fla=
-gs.part.0+0x101/0x220
->         Modules linked in:
->         CPU: 0 PID: 2 Comm: kthreadd Not tainted 5.5.0-rc1+ #11
->         Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.=
-0-1 04/01/2014
->         RIP: 0010:check_flags.part.0+0x101/0x220
->         <snip>
->         Call Trace:
->          lock_is_held_type+0x69/0x150
->          freezer_fork+0x20b/0x370
->          cgroup_post_fork+0x2c9/0x5c0
->          copy_process+0x2675/0x3b40
->          _do_fork+0xbe/0xa30
->          ? _raw_spin_unlock_irqrestore+0x40/0x50
->          ? match_held_lock+0x56/0x250
->          ? kthread_park+0xf0/0xf0
->          kernel_thread+0xa6/0xd0
->          ? kthread_park+0xf0/0xf0
->          kthreadd+0x321/0x3d0
->          ? kthread_create_on_cpu+0x130/0x130
->          ret_from_fork+0x3a/0x50
->         irq event stamp: 64
->         hardirqs last  enabled at (63): [<ffffffff9a7995d0>] _raw_spin_un=
-lock_irqrestore+0x40/0x50
->         hardirqs last disabled at (64): [<ffffffff992a96d2>] kcsan_setup_=
-watchpoint+0x92/0x460
->         softirqs last  enabled at (32): [<ffffffff990489b8>] fpu__copy+0x=
-e8/0x470
->         softirqs last disabled at (30): [<ffffffff99048939>] fpu__copy+0x=
-69/0x470
->
->     Reported-by: Qian Cai <cai@lca.pw>
->     Signed-off-by: Marco Elver <elver@google.com>
->     Acked-by: Alexander Potapenko <glider@google.com>
->     Tested-by: Qian Cai <cai@lca.pw>
->     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
->
-> 5e250abcb1  kcsan: Rate-limit reporting per data races
-> fbc2d237ab  kcsan: Make KCSAN compatible with lockdep
-> +-----------------------------------------------------+------------+-----=
--------+
-> |                                                     | 5e250abcb1 | fbc2=
-d237ab |
-> +-----------------------------------------------------+------------+-----=
--------+
-> | boot_successes                                      | 38         | 3   =
-       |
-> | boot_failures                                       | 11         | 18  =
-       |
-> | slot:BUG:kernel_hang_in_boot_stage                  | 1          |     =
-       |
-> | WARNING:at(____ptrval____)for_ip_interrupt_entry/0x | 5          |     =
-       |
-> | WARNING:at#for_ip_interrupt_entry/0x                | 5          |     =
-       |
-> | WARNING:at_kernel/softirq.c:#__local_bh_enable_ip   | 0          | 18  =
-       |
-> | RIP:__local_bh_enable_ip                            | 0          | 18  =
-       |
-> | WARNING:at_kernel/fork.c:#copy_process              | 0          | 8   =
-       |
-> | RIP:copy_process                                    | 0          | 8   =
-       |
-> +-----------------------------------------------------+------------+-----=
--------+
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> [    5.450300] KCSAN: watching read, size: 4, addr: ffffffff82941e34 [slo=
-t: 1, encoded: 8ffff82941e34]
-> [    5.451096] ------------[ cut here ]------------
-> [    5.451496] IRQs not enabled as expected
-> [    5.451856] KCSAN: watching read, size: 8, addr: ffffffff8433e2b8 [slo=
-t: 62, encoded: 10ffff8433e2b8]
-> [    5.452700] KCSAN: watching write, size: 1, addr: ffffffff8433e500 [sl=
-ot: 62, encoded: 8002ffff8433e500]
-> [    5.453598] WARNING: CPU: 0 PID: 5 at kernel/softirq.c:169 __local_bh_=
-enable_ip+0x99/0xd0
-> [    5.454485] Modules linked in:
-> [    5.454768] CPU: 0 PID: 5 Comm: kworker/u2:0 Not tainted 5.5.0-rc1-000=
-92-gfbc2d237ab2f9 #1
-> [    5.455499] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.12.0-1 04/01/2014
-> [    5.456193] Workqueue: events_unbound call_usermodehelper_exec_work
-> [    5.456797] RIP: 0010:__local_bh_enable_ip+0x99/0xd0
-> [    5.457220] Code: fb 5b 5d c3 8b 80 68 07 00 00 85 c0 75 b7 80 3d 0f 9=
-1 87 01 00 75 ae 48 c7 c7 2f 57 4f 82 c6 05 ff 90 87 01 01 e8 37 7c ff ff <=
-0f> 0b eb 97 48 89 ef e8 fb a0 05 00 eb a5 66 8b 05 32 57 79 01 66
-> [    5.457693] RSP: 0000:ffff888236e9bb20 EFLAGS: 00010282
-> [    5.457693] RAX: 0000000000000000 RBX: 0000000000000200 RCX: 000000000=
-0000000
-> [    5.457693] RDX: 0000000000000000 RSI: ffff888236e9b9e0 RDI: ffff88823=
-6e9b9e0
-> [    5.457693] RBP: ffffffff81038538 R08: 0000000000000000 R09: 000088823=
-6e9b9e0
-> [    5.457693] R10: 0000000000000001 R11: 0000888236e9b9e7 R12: ffff88823=
-6f925c0
-> [    5.457693] R13: ffff888236f92600 R14: ffff888236e962c0 R15: 000000000=
-0800100
-> [    5.457693] FS:  0000000000000000(0000) GS:ffffffff8284e000(0000) knlG=
-S:0000000000000000
-> [    5.457693] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    5.457693] CR2: 0000000000000000 CR3: 0000000002822001 CR4: 000000000=
-01606b0
-> [    5.457693] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
-0000000
-> [    5.457693] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 000000000=
-0000400
-> [    5.457693] Call Trace:
-> [    5.457693]  fpu__copy+0xe9/0x390
-> [    5.457693]  copy_process+0x29b/0x2bc0
-> [    5.457693]  ? rb_insert_color+0x108/0x390
-> [    5.457693] KCSAN: watching read, size: 8, addr: ffffffff8281c878 [slo=
-t: 28, encoded: 10ffff8281c878]
-> [    5.457693]  _do_fork+0xa9/0x7c0
-> [    5.457693]  ? __lock_acquire+0x241/0x13e0
-> [    5.457693]  ? mark_held_locks+0x49/0x70
-> [    5.457693]  ? umh_complete+0x50/0x50
-> [    5.457693]  kernel_thread+0x9e/0xd0
-> [    5.457693]  ? umh_complete+0x50/0x50
-> [    5.457693]  call_usermodehelper_exec_work+0x8e/0x120
-> [    5.457693]  ? rcu_read_lock_sched_held+0x41/0x90
-> [    5.457693]  process_one_work+0x468/0x9e0
-> [    5.457693]  worker_thread+0x83/0x610
-> [    5.457693]  ? rescuer_thread+0x590/0x590
-> [    5.457693]  kthread+0x1b4/0x1d0
-> [    5.457693]  ? kthread_create_worker_on_cpu+0xa0/0xa0
-> [    5.457693]  ret_from_fork+0x24/0x30
-> [    5.457693] irq event stamp: 219
-> [    5.457693] hardirqs last  enabled at (218): [<ffffffff81118f31>] cons=
-ole_unlock+0x761/0x870
-> [    5.457693] hardirqs last disabled at (219): [<ffffffff8100260e>] trac=
-e_hardirqs_off_thunk+0x1a/0x1c
-> [    5.457693] softirqs last  enabled at (80): [<ffffffff81038538>] fpu__=
-copy+0xd8/0x390
-> [    5.457693] softirqs last disabled at (195): [<ffffffff810384c3>] fpu_=
-_copy+0x63/0x390
-> [    5.457693] ---[ end trace 3e3648b70f09208e ]---
-> [    5.457693] KCSAN: watching write, size: 8, addr: ffff888236e9b7c0 [sl=
-ot: 27, encoded: 8010888236e9b7c0]
+On Tue, 2020-03-10 at 11:24 +0800, yangerkun wrote:
+> On 2020/3/10 6:11, Jeff Layton wrote:
+> > On Tue, 2020-03-10 at 08:42 +1100, NeilBrown wrote:
+> > > On Mon, Mar 09 2020, Jeff Layton wrote:
+> > > =
 
-Thanks for this. However, the random config this is using has
-CONFIG_KCSAN_DEBUG=3Dy.
+> > > > On Mon, 2020-03-09 at 13:22 -0400, Jeff Layton wrote:
+> > > > > On Mon, 2020-03-09 at 08:52 -0700, Linus Torvalds wrote:
+> > > > > > On Mon, Mar 9, 2020 at 7:36 AM Jeff Layton <jlayton@kernel.or=
+g> wrote:
+> > > > > > > On Sun, 2020-03-08 at 22:03 +0800, kernel test robot wrote:
+> > > > > > > > FYI, we noticed a -96.6% regression of will-it-scale.per_pr=
+ocess_ops due to commit:
+> > > > > > > =
 
-It also has LOCKDEP=3Dy, and the warning above is generated by a lockdep
-assertion. I'm not surprised, because CONFIG_KCSAN_DEBUG=3Dy just prints
-information about every set up watchpoint, and calling printk from
-some locations to show this information then causes the assertion to
-fail (without KCSAN_DEBUG no warnings are generated). KCSAN_DEBUG
-should only be used by KCSAN developers.
+> > > > > > > This is not completely unexpected as we're banging on the glo=
+bal
+> > > > > > > blocked_lock_lock now for every unlock. This test just thrash=
+es file
+> > > > > > > locks and unlocks without doing anything in between, so the w=
+orkload
+> > > > > > > looks pretty artificial [1].
+> > > > > > > =
 
-There are 4 options:
+> > > > > > > It would be nice to avoid the global lock in this codepath, b=
+ut it
+> > > > > > > doesn't look simple to do. I'll keep thinking about it, but f=
+or now I'm
+> > > > > > > inclined to ignore this result unless we see a problem in mor=
+e realistic
+> > > > > > > workloads.
+> > > > > > =
 
-1. Do nothing, and just beware that KCSAN_DEBUG is not to be used
-except by KCSAN developers. It's quite obvious if it's enabled,
-because the console also gets spammed with information about
-watchpoints. The main purpose so far has been to debug watchpoint
-encoding.
+> > > > > > That is a _huge_ regression, though.
+> > > > > > =
 
-2. Remove the KCSAN_DEBUG option entirely.
+> > > > > > What about something like the attached? Wouldn't that work? And=
+ make
+> > > > > > the code actually match the old comment about wow "fl_blocker" =
+being
+> > > > > > NULL being special.
+> > > > > > =
 
-3. Make this work with lockdep. I don't think this is valuable, since
-I never expected this option to work with such config combinations
-(and chasing this up might be a deep rabbit hole without real
-benefit).
+> > > > > > The old code seemed to not know about things like memory orderi=
+ng either.
+> > > > > > =
 
-4. Guard the option so that test robots never enable it. Is there an
-option that can be used for this?
+> > > > > > Patch is entirely untested, but aims to have that "smp_store_re=
+lease()
+> > > > > > means I'm done and not going to touch it any more", making that
+> > > > > > smp_load_acquire() test hopefully be valid as per the comment..
+> > > > > =
 
-My preference is 1 (or 2, if necessary).  AFAIK there is no option for
-4 (CONFIG_COMPILE_TEST doesn't apply).
+> > > > > Yeah, something along those lines maybe. I don't think we can use
+> > > > > fl_blocker that way though, as the wait_event_interruptible is wa=
+iting
+> > > > > on it to go to NULL, and the wake_up happens before fl_blocker is
+> > > > > cleared.
+> > > > > =
 
-Thanks,
--- Marco
+> > > > > Maybe we need to mix in some sort of FL_BLOCK_ACTIVE flag and use=
+ that
+> > > > > instead of testing for !fl_blocker to see whether we can avoid the
+> > > > > blocked_lock_lock?
+> > > > >    =
 
->                                                           # HH:MM RESULT =
-GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
-> git bisect start 770fbb32d34e5d6298cc2be590c9d2fd6069aa17 f8788d86ab28f61=
-f7b46eb6be375f8a726783636 --
-> git bisect good 9d80285654d339544828950e079e62d41891ff2d  # 16:31  G     =
-10     0    7  15  Merge remote-tracking branch 'i2c/i2c/for-next'
-> git bisect good 16ec05acd66e5c80698c2f5e50723e580d270b73  # 16:39  G     =
-10     0    0   3  Merge remote-tracking branch 'edac/edac-for-next'
-> git bisect  bad 077d565f8a071c9ade174052bd2724d70091664b  # 16:39  B     =
- 0    13   30   0  Merge remote-tracking branch 'slave-dma/next'
-> git bisect  bad 9a4bc229bd283d7da3f56ad065031d59fc16dd33  # 16:39  B     =
- 0    13   29   0  Merge remote-tracking branch 'usb/usb-next'
-> git bisect  bad 491c6161c2addc6e601f592a0c68af9b75f7f16b  # 16:39  B     =
- 0    11   27   0  Merge remote-tracking branch 'workqueues/for-next'
-> git bisect  bad 072396bd132d5914605599bb8acc01175e6d5623  # 16:39  B     =
- 1     9    0   1  Merge remote-tracking branch 'kvms390/next'
-> git bisect  bad aad0c7255f300b15beb0f1b9b9e92db47b814ffa  # 17:00  B     =
- 0     1   17   0  Merge remote-tracking branch 'rcu/rcu/next'
-> git bisect good b5e91fead597a4eca629e0d2dcf767d49b79acb3  # 17:55  G     =
-11     0   11  11  Merge branches 'doc.2020.02.27a', 'fixes.2020.02.27a', '=
-kfree_rcu.2020.02.20a', 'locktorture.2020.02.20a', 'ovld.2020.02.20a', 'rcu=
--tasks.2020.02.20a', 'srcu.2020.02.20a' and 'torture.2020.02.20a' into HEAD
-> git bisect good c53e3e7401f6faca431fdf435181e54a130f4eb0  # 18:40  G     =
-11     0   11  18  tools/memory-model: Use "-unroll 0" to keep --hw runs fi=
-nite
-> git bisect  bad 218a10d2260b9fca4142e38d254f844db75e0856  # 18:56  B     =
- 0     1   21   4  kcsan, trace: Make KCSAN compatible with tracing
-> git bisect  bad d18f1a33e4a37a8f41bfd431250337fdb3ba23cc  # 19:17  B     =
- 0     2   18   0  kcsan: Clarify Kconfig option KCSAN_IGNORE_ATOMICS
-> git bisect  bad 3c1b8e31ace831ff6dc9f6e9ad51bc8b574a032c  # 19:39  B     =
- 0     1   17   0  include/linux: Add instrumented.h infrastructure
-> git bisect good f7f8c8ae79d181daeb10932581cb341612c0404a  # 20:00  G     =
-11     0    3   4  kcsan: Show full access type in report
-> git bisect  bad fbc2d237ab2f9012de5ea3ac27cc726d0bb20681  # 20:23  B     =
- 0     1   17   0  kcsan: Make KCSAN compatible with lockdep
-> git bisect good 5e250abcb18a9db7331c635e305ac842d4ffccd4  # 20:43  G     =
-11     0    1   1  kcsan: Rate-limit reporting per data races
-> # first bad commit: [fbc2d237ab2f9012de5ea3ac27cc726d0bb20681] kcsan: Mak=
-e KCSAN compatible with lockdep
-> git bisect good 5e250abcb18a9db7331c635e305ac842d4ffccd4  # 20:55  G     =
-36     0    6   9  kcsan: Rate-limit reporting per data races
-> # extra tests with debug options
-> git bisect good fbc2d237ab2f9012de5ea3ac27cc726d0bb20681  # 21:20  G     =
-12     0    0   0  kcsan: Make KCSAN compatible with lockdep
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org
---===============4371522314092234089==--
+> > > > =
+
+> > > > How about something like this instead? (untested other than for
+> > > > compilation)
+> > > > =
+
+> > > > Basically, this just switches the waiters over to wait for
+> > > > fl_blocked_member to go empty. That still happens before the wakeup=
+, so
+> > > > it should be ok to wait on that.
+> > > > =
+
+> > > > I think we can also eliminate the lockless list_empty check in
+> > > > locks_delete_block, as the fl_blocker check should be sufficient no=
+w.
+> > > > -- =
+
+> > > > Jeff Layton <jlayton@kernel.org>
+> > > >  From c179d779c9b72838ed9996a65d686d86679d1639 Mon Sep 17 00:00:00 =
+2001
+> > > > From: Linus Torvalds <torvalds@linux-foundation.org>
+> > > > Date: Mon, 9 Mar 2020 14:35:43 -0400
+> > > > Subject: [PATCH] locks: reinstate locks_delete_lock optimization
+> > > > =
+
+> > > > ...by using smp_load_acquire and smp_store_release to close the race
+> > > > window.
+> > > > =
+
+> > > > [ jlayton: wait on the fl_blocked_requests list to go empty instead=
+ of
+> > > > 	   the fl_blocker pointer to clear. Remove the list_empty check
+> > > > 	   from locks_delete_lock shortcut. ]
+> > > =
+
+> > > Why do you think it is OK to remove that list_empty check?  I don't
+> > > think it is.  There might be locked requests that need to be woken up.
+> > > =
+
+> > > As the problem here is a use-after-free due to a race, one option wou=
+ld
+> > > be to use rcu_free() on the file_lock, and hold rcu_read_lock() around
+> > > test/use.
+> > > =
+
+> > > Another option is to use a different lock.  The fl_wait contains a
+> > > spinlock, and we have wake_up_locked() which is provided for exactly
+> > > these sorts of situations where the wake_up call can race with a thre=
+ad
+> > > waking up.
+> > > =
+
+> > > So my compile-tested-only proposal is below.
+> > > I can probably a proper change-log entry if you think the patch is a
+> > > good way to go.
+> > > =
+
+> > > NeilBrown
+> > > =
+
+> > > =
+
+> > > diff --git a/fs/locks.c b/fs/locks.c
+> > > index 426b55d333d5..8aa04d5ac8b3 100644
+> > > --- a/fs/locks.c
+> > > +++ b/fs/locks.c
+> > > @@ -735,11 +735,13 @@ static void __locks_wake_up_blocks(struct file_=
+lock *blocker)
+> > >   =
+
+> > >   		waiter =3D list_first_entry(&blocker->fl_blocked_requests,
+> > >   					  struct file_lock, fl_blocked_member);
+> > > +		spin_lock(&waiter->fl_wait.lock);
+> > >   		__locks_delete_block(waiter);
+> > >   		if (waiter->fl_lmops && waiter->fl_lmops->lm_notify)
+> > >   			waiter->fl_lmops->lm_notify(waiter);
+> > >   		else
+> > > -			wake_up(&waiter->fl_wait);
+> > > +			wake_up_locked(&waiter->fl_wait);
+> > > +		spin_unlock(&waiter->fl_wait.lock);
+> > >   	}
+> > >   }
+> > >   =
+
+> > > @@ -753,6 +755,31 @@ int locks_delete_block(struct file_lock *waiter)
+> > >   {
+> > >   	int status =3D -ENOENT;
+> > >   =
+
+> > > +	/*
+> > > +	 * If fl_blocker is NULL, it won't be set again as this thread
+> > > +	 * "owns" the lock and is the only one that might try to claim
+> > > +	 * the lock.  So it is safe to test fl_blocker locklessly.
+> > > +	 * Also if fl_blocker is NULL, this waiter is not listed on
+> > > +	 * fl_blocked_requests for some lock, so no other request can
+> > > +	 * be added to the list of fl_blocked_requests for this
+> > > +	 * request.  So if fl_blocker is NULL, it is safe to
+> > > +	 * locklessly check if fl_blocked_requests is empty.  If both
+> > > +	 * of these checks succeed, there is no need to take the lock.
+> > > +	 * However, some other thread might have only *just* set
+> > > +	 * fl_blocker to NULL and it about to send a wakeup on
+> > > +	 * fl_wait, so we mustn't return too soon or we might free waiter
+> > > +	 * before that wakeup can be sent.  So take the fl_wait.lock
+> > > +	 * to serialize with the wakeup in __locks_wake_up_blocks().
+> > > +	 */
+> > > +	if (waiter->fl_blocker =3D=3D NULL) {
+> > > +		spin_lock(&waiter->fl_wait.lock);
+> > > +		if (waiter->fl_blocker =3D=3D NULL &&
+> > > +		    list_empty(&waiter->fl_blocked_requests)) {
+> > > +			spin_unlock(&waiter->fl_wait.lock);
+> > > +			return status;
+> > > +		}
+> > > +		spin_unlock(&waiter->fl_wait.lock);
+> > > +	}
+> > >   	spin_lock(&blocked_lock_lock);
+> > >   	if (waiter->fl_blocker)
+> > >   		status =3D 0;
+> > > =
+
+> > =
+
+> > Looks good on a cursory check, and I'm inclined to go with this since
+> > it's less fiddly for people to backport.
+> > =
+
+> > One other difference to note -- we are holding the fl_wait lock when
+> > calling lm_notify, but I don't think it will matter to any of the
+> > existing lm_notify functions.
+> > =
+
+> > If you want to clean up the changelog and resend that would be great.
+> > =
+
+> > Thanks,
+> > =
+
+> Something others. I think there is no need to call locks_delete_block =
+
+> for all case in function like flock_lock_inode_wait. What we should do =
+
+> as the patch '16306a61d3b7 ("fs/locks: always delete_block after =
+
+> waiting.")' describes is that we need call locks_delete_block not only =
+
+> for error equal to -ERESTARTSYS(please point out if I am wrong). And =
+
+> this patch may fix the regression too since simple lock that success or =
+
+> unlock will not try to acquire blocked_lock_lock.
+> =
+
+> =
+
+
+Nice! This looks like it would work too, and it's a simpler fix.
+
+I'd be inclined to add a WARN_ON_ONCE(fl->fl_blocker) after the if
+statements to make sure we never exit with one still queued. Also, I
+think we can do a similar optimization in __break_lease.
+
+There are some other callers of locks_delete_block:
+
+cifs_posix_lock_set: already only calls it in these cases
+
+nlmsvc_unlink_block: I think we need to call this in most cases, and
+they're not going to be high-performance codepaths in general
+
+nfsd4 callback handling: Several calls here, most need to always be
+called. find_blocked_lock could be reworked to take the
+blocked_lock_lock only once (I'll do that in a separate patch).
+
+How about something like this (
+
+----------------------8<---------------------
+
+From: yangerkun <yangerkun@huawei.com>
+
+[PATCH] filelock: fix regression in unlock performance
+
+'6d390e4b5d48 ("locks: fix a potential use-after-free problem when
+wakeup a waiter")' introduces a regression since we will acquire
+blocked_lock_lock every time locks_delete_block is called.
+
+In many cases we can just avoid calling locks_delete_block at all,
+when we know that the wait was awoken by the condition becoming true.
+Change several callers of locks_delete_block to only call it when
+waking up due to signal or other error condition.
+
+[ jlayton: add similar optimization to __break_lease, reword changelog,
+	   add WARN_ON_ONCE calls ]
+
+Fixes: 16306a61d3b7 ("fs/locks: always delete_block after waiting.")
+Fixes: 6d390e4b5d48 ("locks: fix a potential use-after-free problem when wa=
+keup a waiter")
+Signed-off-by: yangerkun <yangerkun@huawei.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+---
+ fs/locks.c | 29 ++++++++++++++++++++++-------
+ 1 file changed, 22 insertions(+), 7 deletions(-)
+
+diff --git a/fs/locks.c b/fs/locks.c
+index 426b55d333d5..b88a5b11c464 100644
+--- a/fs/locks.c
++++ b/fs/locks.c
+@@ -1354,7 +1354,10 @@ static int posix_lock_inode_wait(struct inode *inode=
+, struct file_lock *fl)
+ 		if (error)
+ 			break;
+ 	}
+-	locks_delete_block(fl);
++	if (error)
++		locks_delete_block(fl);
++	WARN_ON_ONCE(fl->fl_blocker);
++
+ 	return error;
+ }
+ =
+
+@@ -1447,7 +1450,9 @@ int locks_mandatory_area(struct inode *inode, struct =
+file *filp, loff_t start,
+ =
+
+ 		break;
+ 	}
+-	locks_delete_block(&fl);
++	if (error)
++		locks_delete_block(&fl);
++	WARN_ON_ONCE(fl.fl_blocker);
+ =
+
+ 	return error;
+ }
+@@ -1638,23 +1643,28 @@ int __break_lease(struct inode *inode, unsigned int=
+ mode, unsigned int type)
+ =
+
+ 	locks_dispose_list(&dispose);
+ 	error =3D wait_event_interruptible_timeout(new_fl->fl_wait,
+-						!new_fl->fl_blocker, break_time);
++						 !new_fl->fl_blocker,
++						 break_time);
+ =
+
+ 	percpu_down_read(&file_rwsem);
+ 	spin_lock(&ctx->flc_lock);
+ 	trace_break_lease_unblock(inode, new_fl);
+-	locks_delete_block(new_fl);
+ 	if (error >=3D 0) {
+ 		/*
+ 		 * Wait for the next conflicting lease that has not been
+ 		 * broken yet
+ 		 */
+-		if (error =3D=3D 0)
++		if (error =3D=3D 0) {
++			locks_delete_block(new_fl);
+ 			time_out_leases(inode, &dispose);
++		}
+ 		if (any_leases_conflict(inode, new_fl))
+ 			goto restart;
+ 		error =3D 0;
++	} else {
++		locks_delete_block(new_fl);
+ 	}
++	WARN_ON_ONCE(fl->fl_blocker);
+ out:
+ 	spin_unlock(&ctx->flc_lock);
+ 	percpu_up_read(&file_rwsem);
+@@ -2126,7 +2136,10 @@ static int flock_lock_inode_wait(struct inode *inode=
+, struct file_lock *fl)
+ 		if (error)
+ 			break;
+ 	}
+-	locks_delete_block(fl);
++	if (error)
++		locks_delete_block(fl);
++	WARN_ON_ONCE(fl->fl_blocker);
++
+ 	return error;
+ }
+ =
+
+@@ -2403,7 +2416,9 @@ static int do_lock_file_wait(struct file *filp, unsig=
+ned int cmd,
+ 		if (error)
+ 			break;
+ 	}
+-	locks_delete_block(fl);
++	if (error)
++		locks_delete_block(fl);
++	WARN_ON_ONCE(fl->fl_blocker);
+ =
+
+ 	return error;
+ }
+-- =
+
+2.24.1
+
+
+--===============2510366919606799387==--
 
