@@ -1,40 +1,132 @@
-Content-Type: multipart/mixed; boundary="===============6141008731317418713=="
+Content-Type: multipart/mixed; boundary="===============7150925184350387283=="
 MIME-Version: 1.0
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Huang, Ying <ying.huang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [futex] 8019ad13ef: will-it-scale.per_process_ops -97.8% regression
-Date: Mon, 09 Mar 2020 10:34:48 +0100
-Message-ID: <87y2s97txj.fsf@nanos.tec.linutronix.de>
-In-Reply-To: <20200309085123.GE12561@hirez.programming.kicks-ass.net>
+Subject: Re: [cpufreq] 909c0e9cc1: fwq.fwq.med 210.0% improvement
+Date: Tue, 10 Mar 2020 17:09:54 +0800
+Message-ID: <8736agy3rx.fsf@yhuang-dev.intel.com>
+In-Reply-To: <CAJZ5v0hdAnN-mu8b9g19cM8AqYGXDbs1qVxLu-qE-3P6fP1=XA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6141008731317418713==
+--===============7150925184350387283==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Peter Zijlstra <peterz@infradead.org> writes:
-> On Sun, Mar 08, 2020 at 07:07:17PM +0100, Thomas Gleixner wrote:
->>  static struct futex_hash_bucket *hash_futex(union futex_key *key)
->>  {
->> -	u32 hash =3D jhash2((u32*)&key->both.word,
->> -			  (sizeof(key->both.word)+sizeof(key->both.ptr))/4,
->> +	u32 hash =3D jhash2((u32*)&key->both.ptr,
->> +			  (sizeof(key->both.ptr) + sizeof(key->both.word)) / 4,
->>  			  key->both.offset);
->>  	return &futex_queues[hash & (futex_hashsize - 1)];
->>  }
->
-> Groan... I've gotta ask, why isn't that written like:
->
-> 	u32 hash =3D jhash2((u32 *)key,
-> 			  offsetof(typeof(*key), offset) / 4
-> 			  key->both.offset);
->
-> Or better yet:
->
-> 	u32 hash =3D jhash((u32 *)key, sizeof(*key) / 4, 0);
+"Rafael J. Wysocki" <rafael@kernel.org> writes:
 
-Histerical raisins :)
---===============6141008731317418713==--
+> On Mon, Mar 9, 2020 at 2:17 AM Huang, Ying <ying.huang@intel.com> wrote:
+>>
+>> "Rafael J. Wysocki" <rafael@kernel.org> writes:
+>>
+>> > On Fri, Mar 6, 2020 at 4:29 AM Huang, Ying <ying.huang@intel.com> wr=
+ote:
+>> >>
+>> >> Hi, Rafael,
+>> >>
+>> >> "Rafael J. Wysocki" <rafael@kernel.org> writes:
+>> >>
+>> >> > On Thu, Mar 5, 2020 at 9:18 AM Rong Chen <rong.a.chen@intel.com> =
+wrote:
+>> >> >>
+>> >> >>
+>> >> >>
+>> >> >> On 3/5/20 3:50 PM, Rafael J. Wysocki wrote:
+>> >> >> > On 3/5/2020 2:35 AM, kernel test robot wrote:
+>> >> >> >> Greeting,
+>> >> >> >>
+>> >> >> >> FYI, we noticed a 210.0% improvement of fwq.fwq.med due to comm=
+it:
+>> >> >> >
+>> >> >> > Well, that sounds impressive. :-)
+>> >> >> >
+>> >> >> >
+>> >> >> >>
+>> >> >> >> commit: 909c0e9cc11ba39fa5a660583b25c2431cf54deb ("cpufreq:
+>> >> >> >> intel_pstate: Use passive mode by default without HWP")
+>> >> >> >> https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git
+>> >> >> >> intel_pstate-passive
+>> >> >> >>
+>> >> >> >> in testcase: fwq
+>> >> >> >> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10G=
+Hz
+>> >> >> >> with 48G memory
+>> >> >> >> with following parameters:
+>> >> >> >>
+>> >> >> >>     nr_task: 100%
+>> >> >> >>     samples: 100000ss
+>> >> >> >>     iterations: 18x
+>> >> >> >>     cpufreq_governor: powersave
+>> >> >> >
+>> >> >> > The governor should be schedutil, though, unless it is explicitl=
+y set
+>> >> >> > to powersave in the test environment.
+>> >> >> >
+>> >> >> > Is that the case?
+>> >> >> >
+>> >> >> >
+>> >> >>
+>> >> >> Hi Rafael,
+>> >> >>
+>> >> >> Yes, we set to powersave for this test.
+>> >> >
+>> >> > I wonder why this is done?  Is there any particular technical reason
+>> >> > for doing that?
+>> >>
+>> >> fwq is a noise benchmark to measure the hardware and software noise
+>> >> level.  More information could be found in the following document.
+>> >>
+>> >> https://asc.llnl.gov/sequoia/benchmarks/FTQ_summary_v1.1.pdf
+>> >>
+>> >> In 0day, to measure the noise introduced by power management, we will
+>> >> run fwq with the performance and powersave governors.  Do you think t=
+his
+>> >> is reasonable?  Or we should use some other governors?
+>> >
+>> > I think that the schedutil governor should be tested too if present.
+>> >
+>> > Also note that for the intel_pstate driver "powersave" may mean
+>> > different things depending on the current operation mode of the
+>> > driver.  If scaling_driver is "intel_pstate", then "powersave" is the
+>> > driver's built-in algorithm.  If scaling_driver is "intel_cpufreq",
+>> > though, "powersave" means running at the minimum frequency all the
+>> > time.
+>>
+>> Thanks for your guidance.  We will test schedutil governor in the future
+>> too.
+>>
+>> As for powersave, should we stop testing it?
+>
+> You cannot stop testing it, because it is the default governor
+> algorithm for intel_pstate working in the active mode.
+>
+>>  Or just pay attention to the possible issue you pointed out?
+>
+> Yes, please!
+>
+> Basically, I would recommend to test the following configurations by defa=
+ult:
+>
+> (1) scaling_driver =3D intel_pstate + scaling_governor =3D powersave
+>
+> (2) scaling_driver =3D intel_cpufreq + scaling_governor =3D schedutil
+>
+> The other ones are kind of less interesting.
+>
+> [Note that in order to switch over from intel_pstate to intel_cpufreq,
+> you need to write "passive" into
+> /sys/devices/system/cpu/intel_pstate/status and if that write fails,
+> configuration (2) is not available and may be skipped.]
+>
+>> Should we add ondemand governor?
+>
+> Not necessarily, maybe as a reference only if you have spare cycles.
+
+Got it!  Thanks a lot for your information!
+
+Best Regards,
+Huang, Ying
+
+> Thanks!
+--===============7150925184350387283==--
 
