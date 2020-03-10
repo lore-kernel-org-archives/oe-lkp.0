@@ -1,65 +1,45 @@
-Content-Type: multipart/mixed; boundary="===============0320006916938869201=="
+Content-Type: multipart/mixed; boundary="===============0351703515831474557=="
 MIME-Version: 1.0
-From: Jeff Layton <jlayton@kernel.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
-Date: Mon, 09 Mar 2020 13:22:28 -0400
-Message-ID: <34355c4fe6c3968b1f619c60d5ff2ca11a313096.camel@kernel.org>
-In-Reply-To: <CAHk-=whGK712fPqmQ3FSHxqe3Aqny4bEeWEvfaytLeLV2+ijCQ@mail.gmail.com>
+Date: Tue, 10 Mar 2020 15:31:10 -0700
+Message-ID: <CAHk-=whUgeZGcs5YAfZa07BYKNDCNO=xr4wT6JLATJTpX0bjGg@mail.gmail.com>
+In-Reply-To: <0066a9f150a55c13fcc750f6e657deae4ebdef97.camel@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0320006916938869201==
+--===============0351703515831474557==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2020-03-09 at 08:52 -0700, Linus Torvalds wrote:
-> On Mon, Mar 9, 2020 at 7:36 AM Jeff Layton <jlayton@kernel.org> wrote:
-> > On Sun, 2020-03-08 at 22:03 +0800, kernel test robot wrote:
-> > > FYI, we noticed a -96.6% regression of will-it-scale.per_process_ops =
-due to commit:
-> > =
+On Tue, Mar 10, 2020 at 3:07 PM Jeff Layton <jlayton@kernel.org> wrote:
+>
+> Given that, and the fact that Neil pointed out that yangerkun's latest
+> patch would reintroduce the original race, I'm leaning back toward the
+> patch Neil sent yesterday. It relies solely on spinlocks, and so doesn't
+> have the subtle memory-ordering requirements of the others.
 
-> > This is not completely unexpected as we're banging on the global
-> > blocked_lock_lock now for every unlock. This test just thrashes file
-> > locks and unlocks without doing anything in between, so the workload
-> > looks pretty artificial [1].
-> > =
+It has subtle locking changes, though.
 
-> > It would be nice to avoid the global lock in this codepath, but it
-> > doesn't look simple to do. I'll keep thinking about it, but for now I'm
-> > inclined to ignore this result unless we see a problem in more realistic
-> > workloads.
-> =
+It now calls the "->lm_notify()" callback with the wait queue spinlock held.
 
-> That is a _huge_ regression, though.
-> =
+is that ok? It's not obvious. Those functions take other spinlocks,
+and wake up other things. See for example nlmsvc_notify_blocked()..
+Yes, it was called under the blocked_lock_lock spinlock before too,
+but now there's an _additional_ spinlock, and it must not call
+"wake_up(&waiter->fl_wait))" in the callback, for example, because it
+already holds the lock on that wait queue.
 
-> What about something like the attached? Wouldn't that work? And make
-> the code actually match the old comment about wow "fl_blocker" being
-> NULL being special.
-> =
+Maybe that is never done. I don't know the callbacks.
 
-> The old code seemed to not know about things like memory ordering either.
-> =
+I was really hoping that the simple memory ordering of using that
+smp_store_release -> smp_load_acquire using fl_blocker would be
+sufficient. That's a particularly simple and efficient ordering.
 
-> Patch is entirely untested, but aims to have that "smp_store_release()
-> means I'm done and not going to touch it any more", making that
-> smp_load_acquire() test hopefully be valid as per the comment..
+Oh well. If you want to go that spinlock way, it needs to document why
+it's safe to do a callback under it.
 
-Yeah, something along those lines maybe. I don't think we can use
-fl_blocker that way though, as the wait_event_interruptible is waiting
-on it to go to NULL, and the wake_up happens before fl_blocker is
-cleared.
-
-Maybe we need to mix in some sort of FL_BLOCK_ACTIVE flag and use that
-instead of testing for !fl_blocker to see whether we can avoid the
-blocked_lock_lock?
-  =
-
--- =
-
-Jeff Layton <jlayton@kernel.org>
-
---===============0320006916938869201==--
+                  Linus
+--===============0351703515831474557==--
 
