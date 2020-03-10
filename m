@@ -1,408 +1,334 @@
-Content-Type: multipart/mixed; boundary="===============7035504561256192920=="
+Content-Type: multipart/mixed; boundary="===============1444068873759357988=="
 MIME-Version: 1.0
 From: kernel test robot <rong.a.chen@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
-Date: Tue, 10 Mar 2020 15:52:52 +0800
-Message-ID: <20200310075252.GX5972@shao2-debian>
-In-Reply-To: <926c589a579e28a349c84c9fca9fa5d5eadc6203.camel@kernel.org>
+Date: Tue, 10 Mar 2020 15:54:36 +0800
+Message-ID: <20200310075436.GY5972@shao2-debian>
+In-Reply-To: <ed73fb5d-ddd5-fefd-67ae-2d786e68544a@huawei.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7035504561256192920==
+--===============1444068873759357988==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 09, 2020 at 05:58:14PM -0400, Jeff Layton wrote:
-> On Tue, 2020-03-10 at 08:42 +1100, NeilBrown wrote:
-> > On Mon, Mar 09 2020, Jeff Layton wrote:
-> > =
+On Tue, Mar 10, 2020 at 11:24:50AM +0800, yangerkun wrote:
+> On 2020/3/10 6:11, Jeff Layton wrote:
+> > On Tue, 2020-03-10 at 08:42 +1100, NeilBrown wrote:
+> > > On Mon, Mar 09 2020, Jeff Layton wrote:
+> > > =
 
-> > > On Mon, 2020-03-09 at 13:22 -0400, Jeff Layton wrote:
-> > > > On Mon, 2020-03-09 at 08:52 -0700, Linus Torvalds wrote:
-> > > > > On Mon, Mar 9, 2020 at 7:36 AM Jeff Layton <jlayton@kernel.org>=
- wrote:
-> > > > > > On Sun, 2020-03-08 at 22:03 +0800, kernel test robot wrote:
-> > > > > > > FYI, we noticed a -96.6% regression of will-it-scale.per_proc=
-ess_ops due to commit:
+> > > > On Mon, 2020-03-09 at 13:22 -0400, Jeff Layton wrote:
+> > > > > On Mon, 2020-03-09 at 08:52 -0700, Linus Torvalds wrote:
+> > > > > > On Mon, Mar 9, 2020 at 7:36 AM Jeff Layton <jlayton@kernel.or=
+g> wrote:
+> > > > > > > On Sun, 2020-03-08 at 22:03 +0800, kernel test robot wrote:
+> > > > > > > > FYI, we noticed a -96.6% regression of will-it-scale.per_pr=
+ocess_ops due to commit:
+> > > > > > > =
+
+> > > > > > > This is not completely unexpected as we're banging on the glo=
+bal
+> > > > > > > blocked_lock_lock now for every unlock. This test just thrash=
+es file
+> > > > > > > locks and unlocks without doing anything in between, so the w=
+orkload
+> > > > > > > looks pretty artificial [1].
+> > > > > > > =
+
+> > > > > > > It would be nice to avoid the global lock in this codepath, b=
+ut it
+> > > > > > > doesn't look simple to do. I'll keep thinking about it, but f=
+or now I'm
+> > > > > > > inclined to ignore this result unless we see a problem in mor=
+e realistic
+> > > > > > > workloads.
 > > > > > > =
 
-> > > > > > This is not completely unexpected as we're banging on the global
-> > > > > > blocked_lock_lock now for every unlock. This test just thrashes=
- file
-> > > > > > locks and unlocks without doing anything in between, so the wor=
-kload
-> > > > > > looks pretty artificial [1].
+> > > > > > That is a _huge_ regression, though.
 > > > > > > =
 
-> > > > > > It would be nice to avoid the global lock in this codepath, but=
- it
-> > > > > > doesn't look simple to do. I'll keep thinking about it, but for=
- now I'm
-> > > > > > inclined to ignore this result unless we see a problem in more =
-realistic
-> > > > > > workloads.
+> > > > > > What about something like the attached? Wouldn't that work? And=
+ make
+> > > > > > the code actually match the old comment about wow "fl_blocker" =
+being
+> > > > > > NULL being special.
+> > > > > > =
+
+> > > > > > The old code seemed to not know about things like memory orderi=
+ng either.
+> > > > > > =
+
+> > > > > > Patch is entirely untested, but aims to have that "smp_store_re=
+lease()
+> > > > > > means I'm done and not going to touch it any more", making that
+> > > > > > smp_load_acquire() test hopefully be valid as per the comment..
 > > > > > =
 
-> > > > > That is a _huge_ regression, though.
+> > > > > Yeah, something along those lines maybe. I don't think we can use
+> > > > > fl_blocker that way though, as the wait_event_interruptible is wa=
+iting
+> > > > > on it to go to NULL, and the wake_up happens before fl_blocker is
+> > > > > cleared.
 > > > > > =
 
-> > > > > What about something like the attached? Wouldn't that work? And m=
-ake
-> > > > > the code actually match the old comment about wow "fl_blocker" be=
-ing
-> > > > > NULL being special.
-> > > > > =
-
-> > > > > The old code seemed to not know about things like memory ordering=
- either.
-> > > > > =
-
-> > > > > Patch is entirely untested, but aims to have that "smp_store_rele=
-ase()
-> > > > > means I'm done and not going to touch it any more", making that
-> > > > > smp_load_acquire() test hopefully be valid as per the comment..
+> > > > > Maybe we need to mix in some sort of FL_BLOCK_ACTIVE flag and use=
+ that
+> > > > > instead of testing for !fl_blocker to see whether we can avoid the
+> > > > > blocked_lock_lock?
 > > > > =
 
-> > > > Yeah, something along those lines maybe. I don't think we can use
-> > > > fl_blocker that way though, as the wait_event_interruptible is wait=
-ing
-> > > > on it to go to NULL, and the wake_up happens before fl_blocker is
-> > > > cleared.
+> > > > How about something like this instead? (untested other than for
+> > > > compilation)
 > > > > =
 
-> > > > Maybe we need to mix in some sort of FL_BLOCK_ACTIVE flag and use t=
-hat
-> > > > instead of testing for !fl_blocker to see whether we can avoid the
-> > > > blocked_lock_lock?
-> > > >   =
+> > > > Basically, this just switches the waiters over to wait for
+> > > > fl_blocked_member to go empty. That still happens before the wakeup=
+, so
+> > > > it should be ok to wait on that.
+> > > > =
+
+> > > > I think we can also eliminate the lockless list_empty check in
+> > > > locks_delete_block, as the fl_blocker check should be sufficient no=
+w.
+> > > > -- =
+
+> > > > Jeff Layton <jlayton@kernel.org>
+> > > >  From c179d779c9b72838ed9996a65d686d86679d1639 Mon Sep 17 00:00:00 =
+2001
+> > > > From: Linus Torvalds <torvalds@linux-foundation.org>
+> > > > Date: Mon, 9 Mar 2020 14:35:43 -0400
+> > > > Subject: [PATCH] locks: reinstate locks_delete_lock optimization
+> > > > =
+
+> > > > ...by using smp_load_acquire and smp_store_release to close the race
+> > > > window.
+> > > > =
+
+> > > > [ jlayton: wait on the fl_blocked_requests list to go empty instead=
+ of
+> > > > 	   the fl_blocker pointer to clear. Remove the list_empty check
+> > > > 	   from locks_delete_lock shortcut. ]
+> > > =
+
+> > > Why do you think it is OK to remove that list_empty check?  I don't
+> > > think it is.  There might be locked requests that need to be woken up.
+> > > =
+
+> > > As the problem here is a use-after-free due to a race, one option wou=
+ld
+> > > be to use rcu_free() on the file_lock, and hold rcu_read_lock() around
+> > > test/use.
+> > > =
+
+> > > Another option is to use a different lock.  The fl_wait contains a
+> > > spinlock, and we have wake_up_locked() which is provided for exactly
+> > > these sorts of situations where the wake_up call can race with a thre=
+ad
+> > > waking up.
+> > > =
+
+> > > So my compile-tested-only proposal is below.
+> > > I can probably a proper change-log entry if you think the patch is a
+> > > good way to go.
+> > > =
+
+> > > NeilBrown
+> > > =
 
 > > > =
 
-> > > How about something like this instead? (untested other than for
-> > > compilation)
+> > > diff --git a/fs/locks.c b/fs/locks.c
+> > > index 426b55d333d5..8aa04d5ac8b3 100644
+> > > --- a/fs/locks.c
+> > > +++ b/fs/locks.c
+> > > @@ -735,11 +735,13 @@ static void __locks_wake_up_blocks(struct file_=
+lock *blocker)
+> > >   		waiter =3D list_first_entry(&blocker->fl_blocked_requests,
+> > >   					  struct file_lock, fl_blocked_member);
+> > > +		spin_lock(&waiter->fl_wait.lock);
+> > >   		__locks_delete_block(waiter);
+> > >   		if (waiter->fl_lmops && waiter->fl_lmops->lm_notify)
+> > >   			waiter->fl_lmops->lm_notify(waiter);
+> > >   		else
+> > > -			wake_up(&waiter->fl_wait);
+> > > +			wake_up_locked(&waiter->fl_wait);
+> > > +		spin_unlock(&waiter->fl_wait.lock);
+> > >   	}
+> > >   }
+> > > @@ -753,6 +755,31 @@ int locks_delete_block(struct file_lock *waiter)
+> > >   {
+> > >   	int status =3D -ENOENT;
+> > > +	/*
+> > > +	 * If fl_blocker is NULL, it won't be set again as this thread
+> > > +	 * "owns" the lock and is the only one that might try to claim
+> > > +	 * the lock.  So it is safe to test fl_blocker locklessly.
+> > > +	 * Also if fl_blocker is NULL, this waiter is not listed on
+> > > +	 * fl_blocked_requests for some lock, so no other request can
+> > > +	 * be added to the list of fl_blocked_requests for this
+> > > +	 * request.  So if fl_blocker is NULL, it is safe to
+> > > +	 * locklessly check if fl_blocked_requests is empty.  If both
+> > > +	 * of these checks succeed, there is no need to take the lock.
+> > > +	 * However, some other thread might have only *just* set
+> > > +	 * fl_blocker to NULL and it about to send a wakeup on
+> > > +	 * fl_wait, so we mustn't return too soon or we might free waiter
+> > > +	 * before that wakeup can be sent.  So take the fl_wait.lock
+> > > +	 * to serialize with the wakeup in __locks_wake_up_blocks().
+> > > +	 */
+> > > +	if (waiter->fl_blocker =3D=3D NULL) {
+> > > +		spin_lock(&waiter->fl_wait.lock);
+> > > +		if (waiter->fl_blocker =3D=3D NULL &&
+> > > +		    list_empty(&waiter->fl_blocked_requests)) {
+> > > +			spin_unlock(&waiter->fl_wait.lock);
+> > > +			return status;
+> > > +		}
+> > > +		spin_unlock(&waiter->fl_wait.lock);
+> > > +	}
+> > >   	spin_lock(&blocked_lock_lock);
+> > >   	if (waiter->fl_blocker)
+> > >   		status =3D 0;
 > > > =
 
-> > > Basically, this just switches the waiters over to wait for
-> > > fl_blocked_member to go empty. That still happens before the wakeup, =
-so
-> > > it should be ok to wait on that.
-> > > =
-
-> > > I think we can also eliminate the lockless list_empty check in
-> > > locks_delete_block, as the fl_blocker check should be sufficient now.
-> > > -- =
-
-> > > Jeff Layton <jlayton@kernel.org>
-> > > From c179d779c9b72838ed9996a65d686d86679d1639 Mon Sep 17 00:00:00 2001
-> > > From: Linus Torvalds <torvalds@linux-foundation.org>
-> > > Date: Mon, 9 Mar 2020 14:35:43 -0400
-> > > Subject: [PATCH] locks: reinstate locks_delete_lock optimization
-> > > =
-
-> > > ...by using smp_load_acquire and smp_store_release to close the race
-> > > window.
-> > > =
-
-> > > [ jlayton: wait on the fl_blocked_requests list to go empty instead of
-> > > 	   the fl_blocker pointer to clear. Remove the list_empty check
-> > > 	   from locks_delete_lock shortcut. ]
 > > =
 
-> > Why do you think it is OK to remove that list_empty check?  I don't
-> > think it is.  There might be locked requests that need to be woken up.
+> > Looks good on a cursory check, and I'm inclined to go with this since
+> > it's less fiddly for people to backport.
 > > =
 
-> =
-
-> Temporary braino. We definitely cannot remove that check.
-> =
-
-> > As the problem here is a use-after-free due to a race, one option would
-> > be to use rcu_free() on the file_lock, and hold rcu_read_lock() around
-> > test/use.
+> > One other difference to note -- we are holding the fl_wait lock when
+> > calling lm_notify, but I don't think it will matter to any of the
+> > existing lm_notify functions.
 > > =
 
-> =
-
-> Yeah, I was considering this too, but Linus' approach seemed simpler.
-> =
-
-> > Another option is to use a different lock.  The fl_wait contains a
-> > spinlock, and we have wake_up_locked() which is provided for exactly
-> > these sorts of situations where the wake_up call can race with a thread
-> > waking up.
+> > If you want to clean up the changelog and resend that would be great.
 > > =
 
-> > So my compile-tested-only proposal is below.
-> > I can probably a proper change-log entry if you think the patch is a
-> > good way to go.
+> > Thanks,
 > > =
 
-> > NeilBrown
-> > =
-
-> > =
-
-> > diff --git a/fs/locks.c b/fs/locks.c
-> > index 426b55d333d5..8aa04d5ac8b3 100644
-> > --- a/fs/locks.c
-> > +++ b/fs/locks.c
-> > @@ -735,11 +735,13 @@ static void __locks_wake_up_blocks(struct file_lo=
-ck *blocker)
-> >  =
-
-> >  		waiter =3D list_first_entry(&blocker->fl_blocked_requests,
-> >  					  struct file_lock, fl_blocked_member);
-> > +		spin_lock(&waiter->fl_wait.lock);
-> >  		__locks_delete_block(waiter);
-> >  		if (waiter->fl_lmops && waiter->fl_lmops->lm_notify)
-> >  			waiter->fl_lmops->lm_notify(waiter);
-> >  		else
-> > -			wake_up(&waiter->fl_wait);
-> > +			wake_up_locked(&waiter->fl_wait);
-> > +		spin_unlock(&waiter->fl_wait.lock);
-> >  	}
-> >  }
-> >  =
-
-> > @@ -753,6 +755,31 @@ int locks_delete_block(struct file_lock *waiter)
-> >  {
-> >  	int status =3D -ENOENT;
-> >  =
-
-> > +	/*
-> > +	 * If fl_blocker is NULL, it won't be set again as this thread
-> > +	 * "owns" the lock and is the only one that might try to claim
-> > +	 * the lock.  So it is safe to test fl_blocker locklessly.
-> > +	 * Also if fl_blocker is NULL, this waiter is not listed on
-> > +	 * fl_blocked_requests for some lock, so no other request can
-> > +	 * be added to the list of fl_blocked_requests for this
-> > +	 * request.  So if fl_blocker is NULL, it is safe to
-> > +	 * locklessly check if fl_blocked_requests is empty.  If both
-> > +	 * of these checks succeed, there is no need to take the lock.
-> > +	 * However, some other thread might have only *just* set
-> > +	 * fl_blocker to NULL and it about to send a wakeup on
-> > +	 * fl_wait, so we mustn't return too soon or we might free waiter
-> > +	 * before that wakeup can be sent.  So take the fl_wait.lock
-> > +	 * to serialize with the wakeup in __locks_wake_up_blocks().
-> > +	 */
-> > +	if (waiter->fl_blocker =3D=3D NULL) {
-> > +		spin_lock(&waiter->fl_wait.lock);
-> > +		if (waiter->fl_blocker =3D=3D NULL &&
-> > +		    list_empty(&waiter->fl_blocked_requests)) {
-> > +			spin_unlock(&waiter->fl_wait.lock);
-> > +			return status;
-> > +		}
-> > +		spin_unlock(&waiter->fl_wait.lock);
-> > +	}
-> >  	spin_lock(&blocked_lock_lock);
-> >  	if (waiter->fl_blocker)
-> >  		status =3D 0;
+> Something others. I think there is no need to call locks_delete_block for
+> all case in function like flock_lock_inode_wait. What we should do as the
+> patch '16306a61d3b7 ("fs/locks: always delete_block after waiting.")'
+> describes is that we need call locks_delete_block not only for error equal
+> to -ERESTARTSYS(please point out if I am wrong). And this patch may fix t=
+he
+> regression too since simple lock that success or unlock will not try to
+> acquire blocked_lock_lock.
 > =
 
-> Yeah, this is simpler for me to prove to myself that it's correct, and I
-> like that it touches less code, tbh. I'll give it a try here in a bit
-> and see if it also fixes up the perf regression.
 > =
 
-> FWIW, here's the variant of Linus' patch I've been testing. It seems to
-> fix the performance regression too.
 > =
 
-> --------------8<---------------
+> From 40a0604199e9810d0380f90c403bbd4300075cad Mon Sep 17 00:00:00 2001
+> From: yangerkun <yangerkun@huawei.com>
+> Date: Tue, 10 Mar 2020 10:12:57 +0800
+> Subject: [PATCH] fs/locks: fix the regression in flocks
 > =
 
-> [PATCH] locks: reinstate locks_delete_lock optimization
+> '6d390e4b5d48 ("locks: fix a potential use-after-free problem when
+> wakeup a waiter")' introduce a regression since we will acquire
+> blocked_lock_lock everytime we lock or unlock. Actually, what patch
+> '16306a61d3b7 ("fs/locks: always delete_block after waiting.")' want to
+> do is that we should wakeup waiter not only for error equals to
+> -ERESTARTSYS, some other error code like -ENOMEM return from
+> flock_lock_inode need be treated the same as the file_lock may block other
+> flock too(flock a -> conflict with others and begin to wait -> flock b
+> conflict with a and wait for a -> someone wakeup flock a then
+> flock_lock_inode return -ENOMEM). Fix this regression by check error.
 > =
 
-> There is measurable performance impact in some synthetic tests in commit
-> 6d390e4b5d48 (locks: fix a potential use-after-free problem when wakeup
-> a waiter).  Fix the race condition instead by clearing the fl_blocker
-> pointer after the wakeup and by using smp_load_acquire and
-> smp_store_release to handle the access.
-> =
-
-> This means that we can no longer use the clearing of fl_blocker clearing
-> as the wait condition, so switch over to checking whether the
-> fl_blocked_member list is empty.
-> =
-
-> [ jlayton: wait on the fl_blocked_requests list to go empty instead of
-> 	   the fl_blocker pointer to clear. ]
-> =
-
-> Cc: yangerkun <yangerkun@huawei.com>
-> Fixes: 6d390e4b5d48 (locks: fix a potential use-after-free problem when w=
-akeup a waiter)
-> Signed-off-by: Jeff Layton <jlayton@kernel.org>
+> Fixes: 16306a61d3b7 ("fs/locks: always delete_block after waiting.")
+> Fixes: 6d390e4b5d48 ("locks: fix a potential use-after-free problem when
+> wakeup a waiter")
+> Signed-off-by: yangerkun <yangerkun@huawei.com>
 > ---
->  fs/cifs/file.c |  3 ++-
->  fs/locks.c     | 43 +++++++++++++++++++++++++++++++++++++------
->  2 files changed, 39 insertions(+), 7 deletions(-)
+>  fs/locks.c | 14 ++++++++++----
+>  1 file changed, 10 insertions(+), 4 deletions(-)
 > =
 
-> diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-> index 3b942ecdd4be..8f9d849a0012 100644
-> --- a/fs/cifs/file.c
-> +++ b/fs/cifs/file.c
-> @@ -1169,7 +1169,8 @@ cifs_posix_lock_set(struct file *file, struct file_=
-lock *flock)
->  	rc =3D posix_lock_file(file, flock, NULL);
->  	up_write(&cinode->lock_sem);
->  	if (rc =3D=3D FILE_LOCK_DEFERRED) {
-> -		rc =3D wait_event_interruptible(flock->fl_wait, !flock->fl_blocker);
-> +		rc =3D wait_event_interruptible(flock->fl_wait,
-> +					list_empty(&flock->fl_blocked_member));
->  		if (!rc)
->  			goto try_again;
->  		locks_delete_block(flock);
 > diff --git a/fs/locks.c b/fs/locks.c
-> index 426b55d333d5..e78d37c73df5 100644
+> index 426b55d333d5..403ed2230dd4 100644
 > --- a/fs/locks.c
 > +++ b/fs/locks.c
-> @@ -725,7 +725,6 @@ static void __locks_delete_block(struct file_lock *wa=
-iter)
->  {
->  	locks_delete_global_blocked(waiter);
->  	list_del_init(&waiter->fl_blocked_member);
-> -	waiter->fl_blocker =3D NULL;
->  }
->  =
-
->  static void __locks_wake_up_blocks(struct file_lock *blocker)
-> @@ -740,6 +739,12 @@ static void __locks_wake_up_blocks(struct file_lock =
-*blocker)
->  			waiter->fl_lmops->lm_notify(waiter);
->  		else
->  			wake_up(&waiter->fl_wait);
-> +
-> +		/*
-> +		 * Tell the world we're done with it - see comment at
-> +		 * top of locks_delete_block().
-> +		 */
-> +		smp_store_release(&waiter->fl_blocker, NULL);
->  	}
->  }
->  =
-
-> @@ -753,11 +758,32 @@ int locks_delete_block(struct file_lock *waiter)
->  {
->  	int status =3D -ENOENT;
->  =
-
-> +	/*
-> +	 * If fl_blocker is NULL, it won't be set again as this thread
-> +	 * "owns" the lock and is the only one that might try to claim
-> +	 * the lock.  So it is safe to test fl_blocker locklessly.
-> +	 * Also if fl_blocker is NULL, this waiter is not listed on
-> +	 * fl_blocked_requests for some lock, so no other request can
-> +	 * be added to the list of fl_blocked_requests for this
-> +	 * request.  So if fl_blocker is NULL, it is safe to
-> +	 * locklessly check if fl_blocked_requests is empty.  If both
-> +	 * of these checks succeed, there is no need to take the lock.
-> +	 */
-> +	if (!smp_load_acquire(&waiter->fl_blocker) &&
-> +	    list_empty(&waiter->fl_blocked_requests))
-> +		return status;
-> +
->  	spin_lock(&blocked_lock_lock);
->  	if (waiter->fl_blocker)
->  		status =3D 0;
->  	__locks_wake_up_blocks(waiter);
->  	__locks_delete_block(waiter);
-> +
-> +	/*
-> +	 * Tell the world we're done with it - see comment at top
-> +	 * of this function
-> +	 */
-> +	smp_store_release(&waiter->fl_blocker, NULL);
->  	spin_unlock(&blocked_lock_lock);
->  	return status;
->  }
-> @@ -1350,7 +1376,8 @@ static int posix_lock_inode_wait(struct inode *inod=
-e, struct file_lock *fl)
->  		error =3D posix_lock_inode(inode, fl, NULL);
->  		if (error !=3D FILE_LOCK_DEFERRED)
->  			break;
-> -		error =3D wait_event_interruptible(fl->fl_wait, !fl->fl_blocker);
-> +		error =3D wait_event_interruptible(fl->fl_wait,
-> +					list_empty(&fl->fl_blocked_member));
+> @@ -1354,7 +1354,9 @@ static int posix_lock_inode_wait(struct inode *inod=
+e,
+> struct file_lock *fl)
 >  		if (error)
 >  			break;
 >  	}
-> @@ -1435,7 +1462,8 @@ int locks_mandatory_area(struct inode *inode, struc=
-t file *filp, loff_t start,
->  		error =3D posix_lock_inode(inode, &fl, NULL);
->  		if (error !=3D FILE_LOCK_DEFERRED)
->  			break;
-> -		error =3D wait_event_interruptible(fl.fl_wait, !fl.fl_blocker);
-> +		error =3D wait_event_interruptible(fl.fl_wait,
-> +					list_empty(&fl.fl_blocked_member));
->  		if (!error) {
->  			/*
->  			 * If we've been sleeping someone might have
-> @@ -1638,7 +1666,8 @@ int __break_lease(struct inode *inode, unsigned int=
- mode, unsigned int type)
->  =
-
->  	locks_dispose_list(&dispose);
->  	error =3D wait_event_interruptible_timeout(new_fl->fl_wait,
-> -						!new_fl->fl_blocker, break_time);
-> +					list_empty(&new_fl->fl_blocked_member),
-> +					break_time);
->  =
-
->  	percpu_down_read(&file_rwsem);
->  	spin_lock(&ctx->flc_lock);
-> @@ -2122,7 +2151,8 @@ static int flock_lock_inode_wait(struct inode *inod=
-e, struct file_lock *fl)
->  		error =3D flock_lock_inode(inode, fl);
->  		if (error !=3D FILE_LOCK_DEFERRED)
->  			break;
-> -		error =3D wait_event_interruptible(fl->fl_wait, !fl->fl_blocker);
-> +		error =3D wait_event_interruptible(fl->fl_wait,
-> +				list_empty(&fl->fl_blocked_member));
->  		if (error)
->  			break;
->  	}
-> @@ -2399,7 +2429,8 @@ static int do_lock_file_wait(struct file *filp, uns=
-igned int cmd,
->  		error =3D vfs_lock_file(filp, cmd, fl, NULL);
->  		if (error !=3D FILE_LOCK_DEFERRED)
->  			break;
-> -		error =3D wait_event_interruptible(fl->fl_wait, !fl->fl_blocker);
-> +		error =3D wait_event_interruptible(fl->fl_wait,
-> +					list_empty(&fl->fl_blocked_member));
->  		if (error)
->  			break;
->  	}
-> -- =
-
-> 2.24.1
+> -	locks_delete_block(fl);
+> +	if (error)
+> +		locks_delete_block(fl);
+> +
+>  	return error;
+>  }
 > =
 
+> @@ -1447,7 +1449,8 @@ int locks_mandatory_area(struct inode *inode, struct
+> file *filp, loff_t start,
+> =
+
+>  		break;
+>  	}
+> -	locks_delete_block(&fl);
+> +	if (error)
+> +		locks_delete_block(&fl);
+> =
+
+>  	return error;
+>  }
+> @@ -2126,7 +2129,9 @@ static int flock_lock_inode_wait(struct inode *inod=
+e,
+> struct file_lock *fl)
+>  		if (error)
+>  			break;
+>  	}
+> -	locks_delete_block(fl);
+> +	if (error)
+> +		locks_delete_block(fl);
+> +
+>  	return error;
+>  }
+> =
+
+> @@ -2403,7 +2408,8 @@ static int do_lock_file_wait(struct file *filp,
+> unsigned int cmd,
+>  		if (error)
+>  			break;
+>  	}
+> -	locks_delete_block(fl);
+> +	if (error)
+> +		locks_delete_block(fl);
+> =
+
+>  	return error;
+>  }
+> -- =
+
+> 2.17.2
 > =
 
 
 Hi,
 
 We tested the above patch, the result of will-it-scale.per_process_ops
-increased to 67207.
+increased to 62404.
 
-0a68ff5e2e7cf226  6d390e4b5d48ec03bb87e63cf0  bac15fc9e87397da379af89a33  t=
+0a68ff5e2e7cf226  6d390e4b5d48ec03bb87e63cf0  a3f09d0d818584c84780e6753e  t=
 estcase/testparams/testbox
 ----------------  --------------------------  --------------------------  -=
 --------------------------
          %stddev      change         %stddev      change         %stddev
              \          |                \          |                \  =
 
-     66597 =C2=B1  3%       -97%       2260                       67207 =C2=
-=B1  3%  will-it-scale/performance-process-100%-lock1-ucode=3D0x11/lkp-knm01
-     66597             -97%       2260                       67207        G=
+     66597 =C2=B1  3%       -97%       2260              -6%      62404 =C2=
+=B1  6%  will-it-scale/performance-process-100%-lock1-ucode=3D0x11/lkp-knm01
+     66597             -97%       2260              -6%      62404        G=
 EO-MEAN will-it-scale.per_process_ops
 
 Best Regards,
 Rong Chen
---===============7035504561256192920==--
+--===============1444068873759357988==--
 
