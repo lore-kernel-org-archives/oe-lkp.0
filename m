@@ -1,99 +1,275 @@
-Content-Type: multipart/mixed; boundary="===============0590645435105321846=="
+Content-Type: multipart/mixed; boundary="===============4371522314092234089=="
 MIME-Version: 1.0
-From: Jessica Yu <jeyu@kernel.org>
+From: Marco Elver <elver@google.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v3 1/2] modpost: rework and consolidate logging interface
-Date: Tue, 10 Mar 2020 12:32:00 +0100
-Message-ID: <20200310113158.GA4865@linux-8ccs.fritz.box>
-In-Reply-To: <CAK7LNAQqMGSkX4Coe+f49SbXT_jkG_Mm4XZ3EJei0_K7SEaLhg@mail.gmail.com>
+Subject: Re: fbc2d237ab ("kcsan: Make KCSAN compatible with lockdep"): [ 5.453598] WARNING: CPU: 0 PID: 5 at kernel/softirq.c:169 __local_bh_enable_ip
+Date: Tue, 10 Mar 2020 13:12:12 +0100
+Message-ID: <CANpmjNPbn0X4OdTaquL-Hq4adA0mJLva0CET+yh7E3XTCWX4pA@mail.gmail.com>
+In-Reply-To: <20200310082655.GZ5972@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0590645435105321846==
+--===============4371522314092234089==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-+++ Masahiro Yamada [09/03/20 20:03 +0900]:
->On Mon, Mar 9, 2020 at 7:58 PM Jessica Yu <jeyu@kernel.org> wrote:
->>
->> +++ Masahiro Yamada [09/03/20 19:49 +0900]:
->> >On Mon, Mar 9, 2020 at 7:39 PM Jessica Yu <jeyu@kernel.org> wrote:
->> >>
->> >> Ah, sorry, I mean the kbuild 0-day bot errors. I am just realizing
->> >> the 0-day bot emails are not CC'd to lkml. Here is the error I got
->> >> from the bot:
->> >>
->> >> ---
->> >>
->> >> I love your patch! Yet something to improve:
->> >>
->> >> [auto build test ERROR on linus/master]
->> >> [also build test ERROR on v5.6-rc4 next-20200306]
->> >> [if your patch is applied to the wrong git tree, please drop us a not=
-e to help
->> >> improve the system. BTW, we also suggest to use '--base' option to sp=
-ecify the
->> >> base tree in git format-patch, please see https://stackoverflow.com/a=
-/37406982]
->> >>
->> >> url:    https://github.com/0day-ci/linux/commits/Jessica-Yu/modpost-r=
-ework-and-consolidate-logging-interface/20200307-052346
->> >> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linu=
-x.git 30fe0d07fd7b27d41d9b31a224052cc4e910947a
->> >> config: sh-randconfig-a001-20200306 (attached as .config)
->> >> compiler: sh4-linux-gcc (GCC) 7.5.0
->> >> reproduce:
->> >>         wget https://raw.githubusercontent.com/intel/lkp-tests/master=
-/sbin/make.cross -O ~/bin/make.cross
->> >>         chmod +x ~/bin/make.cross
->> >>         # save the attached .config to linux build tree
->> >>         GCC_VERSION=3D7.5.0 make.cross ARCH=3Dsh
->> >>
->> >> If you fix the issue, kindly add following tag
->> >> Reported-by: kbuild test robot <lkp@intel.com>
->> >>
->> >> All errors (new ones prefixed by >>):
->> >>
->> >> >> ERROR: modpost: "adc_single" [arch/sh/boards/mach-hp6xx/hp6xx_apm.=
-ko] undefined!
->> >
->> >
->> >Indeed, this one is odd.
->> >I have no idea...
->>
->> I've pushed the patches to a branch to let the kbuild bot run through its
->> build tests again, and if I have extra time today I will try to
->> reproduce this and let you know the results.
->>
->> Thanks,
->>
->> Jessica
+On Tue, 10 Mar 2020 at 09:27, kernel test robot <lkp@intel.com> wrote:
 >
+> Greetings,
 >
->Ah, Now I see.
+> 0day kernel testing robot got the below dmesg and the first bad commit is
 >
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
 >
->Because you added "modpost:" prefix.
+> commit fbc2d237ab2f9012de5ea3ac27cc726d0bb20681
+> Author:     Marco Elver <elver@google.com>
+> AuthorDate: Wed Jan 15 17:25:12 2020 +0100
+> Commit:     Paul E. McKenney <paulmck@kernel.org>
+> CommitDate: Fri Feb 7 11:27:41 2020 -0800
 >
+>     kcsan: Make KCSAN compatible with lockdep
 >
+>     We must avoid any recursion into lockdep if KCSAN is enabled on utili=
+ties
+>     used by lockdep. One manifestation of this is corruption of lockdep's
+>     IRQ trace state (if TRACE_IRQFLAGS), resulting in spurious warnings
+>     (see below).  This commit fixes this by:
 >
->The previous error message:
+>     1. Using raw_local_irq{save,restore} in kcsan_setup_watchpoint().
+>     2. Disabling lockdep in kcsan_report().
 >
->ERROR: "adc_single" [arch/sh/boards/mach-hp6xx/hp6xx_apm.ko] undefined!
+>     Tested with:
 >
+>       CONFIG_LOCKDEP=3Dy
+>       CONFIG_DEBUG_LOCKDEP=3Dy
+>       CONFIG_TRACE_IRQFLAGS=3Dy
 >
->The new error message:
+>     This fix eliminates spurious warnings such as the following one:
 >
->ERROR: modpost: "adc_single" [arch/sh/boards/mach-hp6xx/hp6xx_apm.ko] unde=
-fined!
+>         WARNING: CPU: 0 PID: 2 at kernel/locking/lockdep.c:4406 check_fla=
+gs.part.0+0x101/0x220
+>         Modules linked in:
+>         CPU: 0 PID: 2 Comm: kthreadd Not tainted 5.5.0-rc1+ #11
+>         Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.=
+0-1 04/01/2014
+>         RIP: 0010:check_flags.part.0+0x101/0x220
+>         <snip>
+>         Call Trace:
+>          lock_is_held_type+0x69/0x150
+>          freezer_fork+0x20b/0x370
+>          cgroup_post_fork+0x2c9/0x5c0
+>          copy_process+0x2675/0x3b40
+>          _do_fork+0xbe/0xa30
+>          ? _raw_spin_unlock_irqrestore+0x40/0x50
+>          ? match_held_lock+0x56/0x250
+>          ? kthread_park+0xf0/0xf0
+>          kernel_thread+0xa6/0xd0
+>          ? kthread_park+0xf0/0xf0
+>          kthreadd+0x321/0x3d0
+>          ? kthread_create_on_cpu+0x130/0x130
+>          ret_from_fork+0x3a/0x50
+>         irq event stamp: 64
+>         hardirqs last  enabled at (63): [<ffffffff9a7995d0>] _raw_spin_un=
+lock_irqrestore+0x40/0x50
+>         hardirqs last disabled at (64): [<ffffffff992a96d2>] kcsan_setup_=
+watchpoint+0x92/0x460
+>         softirqs last  enabled at (32): [<ffffffff990489b8>] fpu__copy+0x=
+e8/0x470
+>         softirqs last disabled at (30): [<ffffffff99048939>] fpu__copy+0x=
+69/0x470
 >
+>     Reported-by: Qian Cai <cai@lca.pw>
+>     Signed-off-by: Marco Elver <elver@google.com>
+>     Acked-by: Alexander Potapenko <glider@google.com>
+>     Tested-by: Qian Cai <cai@lca.pw>
+>     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 >
+> 5e250abcb1  kcsan: Rate-limit reporting per data races
+> fbc2d237ab  kcsan: Make KCSAN compatible with lockdep
+> +-----------------------------------------------------+------------+-----=
+-------+
+> |                                                     | 5e250abcb1 | fbc2=
+d237ab |
+> +-----------------------------------------------------+------------+-----=
+-------+
+> | boot_successes                                      | 38         | 3   =
+       |
+> | boot_failures                                       | 11         | 18  =
+       |
+> | slot:BUG:kernel_hang_in_boot_stage                  | 1          |     =
+       |
+> | WARNING:at(____ptrval____)for_ip_interrupt_entry/0x | 5          |     =
+       |
+> | WARNING:at#for_ip_interrupt_entry/0x                | 5          |     =
+       |
+> | WARNING:at_kernel/softirq.c:#__local_bh_enable_ip   | 0          | 18  =
+       |
+> | RIP:__local_bh_enable_ip                            | 0          | 18  =
+       |
+> | WARNING:at_kernel/fork.c:#copy_process              | 0          | 8   =
+       |
+> | RIP:copy_process                                    | 0          | 8   =
+       |
+> +-----------------------------------------------------+------------+-----=
+-------+
 >
->So, the bot assumed it was a new error.
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> [    5.450300] KCSAN: watching read, size: 4, addr: ffffffff82941e34 [slo=
+t: 1, encoded: 8ffff82941e34]
+> [    5.451096] ------------[ cut here ]------------
+> [    5.451496] IRQs not enabled as expected
+> [    5.451856] KCSAN: watching read, size: 8, addr: ffffffff8433e2b8 [slo=
+t: 62, encoded: 10ffff8433e2b8]
+> [    5.452700] KCSAN: watching write, size: 1, addr: ffffffff8433e500 [sl=
+ot: 62, encoded: 8002ffff8433e500]
+> [    5.453598] WARNING: CPU: 0 PID: 5 at kernel/softirq.c:169 __local_bh_=
+enable_ip+0x99/0xd0
+> [    5.454485] Modules linked in:
+> [    5.454768] CPU: 0 PID: 5 Comm: kworker/u2:0 Not tainted 5.5.0-rc1-000=
+92-gfbc2d237ab2f9 #1
+> [    5.455499] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.12.0-1 04/01/2014
+> [    5.456193] Workqueue: events_unbound call_usermodehelper_exec_work
+> [    5.456797] RIP: 0010:__local_bh_enable_ip+0x99/0xd0
+> [    5.457220] Code: fb 5b 5d c3 8b 80 68 07 00 00 85 c0 75 b7 80 3d 0f 9=
+1 87 01 00 75 ae 48 c7 c7 2f 57 4f 82 c6 05 ff 90 87 01 01 e8 37 7c ff ff <=
+0f> 0b eb 97 48 89 ef e8 fb a0 05 00 eb a5 66 8b 05 32 57 79 01 66
+> [    5.457693] RSP: 0000:ffff888236e9bb20 EFLAGS: 00010282
+> [    5.457693] RAX: 0000000000000000 RBX: 0000000000000200 RCX: 000000000=
+0000000
+> [    5.457693] RDX: 0000000000000000 RSI: ffff888236e9b9e0 RDI: ffff88823=
+6e9b9e0
+> [    5.457693] RBP: ffffffff81038538 R08: 0000000000000000 R09: 000088823=
+6e9b9e0
+> [    5.457693] R10: 0000000000000001 R11: 0000888236e9b9e7 R12: ffff88823=
+6f925c0
+> [    5.457693] R13: ffff888236f92600 R14: ffff888236e962c0 R15: 000000000=
+0800100
+> [    5.457693] FS:  0000000000000000(0000) GS:ffffffff8284e000(0000) knlG=
+S:0000000000000000
+> [    5.457693] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    5.457693] CR2: 0000000000000000 CR3: 0000000002822001 CR4: 000000000=
+01606b0
+> [    5.457693] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
+0000000
+> [    5.457693] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 000000000=
+0000400
+> [    5.457693] Call Trace:
+> [    5.457693]  fpu__copy+0xe9/0x390
+> [    5.457693]  copy_process+0x29b/0x2bc0
+> [    5.457693]  ? rb_insert_color+0x108/0x390
+> [    5.457693] KCSAN: watching read, size: 8, addr: ffffffff8281c878 [slo=
+t: 28, encoded: 10ffff8281c878]
+> [    5.457693]  _do_fork+0xa9/0x7c0
+> [    5.457693]  ? __lock_acquire+0x241/0x13e0
+> [    5.457693]  ? mark_held_locks+0x49/0x70
+> [    5.457693]  ? umh_complete+0x50/0x50
+> [    5.457693]  kernel_thread+0x9e/0xd0
+> [    5.457693]  ? umh_complete+0x50/0x50
+> [    5.457693]  call_usermodehelper_exec_work+0x8e/0x120
+> [    5.457693]  ? rcu_read_lock_sched_held+0x41/0x90
+> [    5.457693]  process_one_work+0x468/0x9e0
+> [    5.457693]  worker_thread+0x83/0x610
+> [    5.457693]  ? rescuer_thread+0x590/0x590
+> [    5.457693]  kthread+0x1b4/0x1d0
+> [    5.457693]  ? kthread_create_worker_on_cpu+0xa0/0xa0
+> [    5.457693]  ret_from_fork+0x24/0x30
+> [    5.457693] irq event stamp: 219
+> [    5.457693] hardirqs last  enabled at (218): [<ffffffff81118f31>] cons=
+ole_unlock+0x761/0x870
+> [    5.457693] hardirqs last disabled at (219): [<ffffffff8100260e>] trac=
+e_hardirqs_off_thunk+0x1a/0x1c
+> [    5.457693] softirqs last  enabled at (80): [<ffffffff81038538>] fpu__=
+copy+0xd8/0x390
+> [    5.457693] softirqs last disabled at (195): [<ffffffff810384c3>] fpu_=
+_copy+0x63/0x390
+> [    5.457693] ---[ end trace 3e3648b70f09208e ]---
+> [    5.457693] KCSAN: watching write, size: 8, addr: ffff888236e9b7c0 [sl=
+ot: 27, encoded: 8010888236e9b7c0]
 
-Nice catch! Hm, I suppose we need to let the LKP folks know about the
-change in error message. CC'd LKP mailing list.
+Thanks for this. However, the random config this is using has
+CONFIG_KCSAN_DEBUG=3Dy.
 
-Jessica
---===============0590645435105321846==--
+It also has LOCKDEP=3Dy, and the warning above is generated by a lockdep
+assertion. I'm not surprised, because CONFIG_KCSAN_DEBUG=3Dy just prints
+information about every set up watchpoint, and calling printk from
+some locations to show this information then causes the assertion to
+fail (without KCSAN_DEBUG no warnings are generated). KCSAN_DEBUG
+should only be used by KCSAN developers.
+
+There are 4 options:
+
+1. Do nothing, and just beware that KCSAN_DEBUG is not to be used
+except by KCSAN developers. It's quite obvious if it's enabled,
+because the console also gets spammed with information about
+watchpoints. The main purpose so far has been to debug watchpoint
+encoding.
+
+2. Remove the KCSAN_DEBUG option entirely.
+
+3. Make this work with lockdep. I don't think this is valuable, since
+I never expected this option to work with such config combinations
+(and chasing this up might be a deep rabbit hole without real
+benefit).
+
+4. Guard the option so that test robots never enable it. Is there an
+option that can be used for this?
+
+My preference is 1 (or 2, if necessary).  AFAIK there is no option for
+4 (CONFIG_COMPILE_TEST doesn't apply).
+
+Thanks,
+-- Marco
+
+>                                                           # HH:MM RESULT =
+GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
+> git bisect start 770fbb32d34e5d6298cc2be590c9d2fd6069aa17 f8788d86ab28f61=
+f7b46eb6be375f8a726783636 --
+> git bisect good 9d80285654d339544828950e079e62d41891ff2d  # 16:31  G     =
+10     0    7  15  Merge remote-tracking branch 'i2c/i2c/for-next'
+> git bisect good 16ec05acd66e5c80698c2f5e50723e580d270b73  # 16:39  G     =
+10     0    0   3  Merge remote-tracking branch 'edac/edac-for-next'
+> git bisect  bad 077d565f8a071c9ade174052bd2724d70091664b  # 16:39  B     =
+ 0    13   30   0  Merge remote-tracking branch 'slave-dma/next'
+> git bisect  bad 9a4bc229bd283d7da3f56ad065031d59fc16dd33  # 16:39  B     =
+ 0    13   29   0  Merge remote-tracking branch 'usb/usb-next'
+> git bisect  bad 491c6161c2addc6e601f592a0c68af9b75f7f16b  # 16:39  B     =
+ 0    11   27   0  Merge remote-tracking branch 'workqueues/for-next'
+> git bisect  bad 072396bd132d5914605599bb8acc01175e6d5623  # 16:39  B     =
+ 1     9    0   1  Merge remote-tracking branch 'kvms390/next'
+> git bisect  bad aad0c7255f300b15beb0f1b9b9e92db47b814ffa  # 17:00  B     =
+ 0     1   17   0  Merge remote-tracking branch 'rcu/rcu/next'
+> git bisect good b5e91fead597a4eca629e0d2dcf767d49b79acb3  # 17:55  G     =
+11     0   11  11  Merge branches 'doc.2020.02.27a', 'fixes.2020.02.27a', '=
+kfree_rcu.2020.02.20a', 'locktorture.2020.02.20a', 'ovld.2020.02.20a', 'rcu=
+-tasks.2020.02.20a', 'srcu.2020.02.20a' and 'torture.2020.02.20a' into HEAD
+> git bisect good c53e3e7401f6faca431fdf435181e54a130f4eb0  # 18:40  G     =
+11     0   11  18  tools/memory-model: Use "-unroll 0" to keep --hw runs fi=
+nite
+> git bisect  bad 218a10d2260b9fca4142e38d254f844db75e0856  # 18:56  B     =
+ 0     1   21   4  kcsan, trace: Make KCSAN compatible with tracing
+> git bisect  bad d18f1a33e4a37a8f41bfd431250337fdb3ba23cc  # 19:17  B     =
+ 0     2   18   0  kcsan: Clarify Kconfig option KCSAN_IGNORE_ATOMICS
+> git bisect  bad 3c1b8e31ace831ff6dc9f6e9ad51bc8b574a032c  # 19:39  B     =
+ 0     1   17   0  include/linux: Add instrumented.h infrastructure
+> git bisect good f7f8c8ae79d181daeb10932581cb341612c0404a  # 20:00  G     =
+11     0    3   4  kcsan: Show full access type in report
+> git bisect  bad fbc2d237ab2f9012de5ea3ac27cc726d0bb20681  # 20:23  B     =
+ 0     1   17   0  kcsan: Make KCSAN compatible with lockdep
+> git bisect good 5e250abcb18a9db7331c635e305ac842d4ffccd4  # 20:43  G     =
+11     0    1   1  kcsan: Rate-limit reporting per data races
+> # first bad commit: [fbc2d237ab2f9012de5ea3ac27cc726d0bb20681] kcsan: Mak=
+e KCSAN compatible with lockdep
+> git bisect good 5e250abcb18a9db7331c635e305ac842d4ffccd4  # 20:55  G     =
+36     0    6   9  kcsan: Rate-limit reporting per data races
+> # extra tests with debug options
+> git bisect good fbc2d237ab2f9012de5ea3ac27cc726d0bb20681  # 21:20  G     =
+12     0    0   0  kcsan: Make KCSAN compatible with lockdep
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org
+--===============4371522314092234089==--
 
