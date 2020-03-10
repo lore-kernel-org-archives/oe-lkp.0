@@ -1,132 +1,99 @@
-Content-Type: multipart/mixed; boundary="===============7150925184350387283=="
+Content-Type: multipart/mixed; boundary="===============0590645435105321846=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Jessica Yu <jeyu@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [cpufreq] 909c0e9cc1: fwq.fwq.med 210.0% improvement
-Date: Tue, 10 Mar 2020 17:09:54 +0800
-Message-ID: <8736agy3rx.fsf@yhuang-dev.intel.com>
-In-Reply-To: <CAJZ5v0hdAnN-mu8b9g19cM8AqYGXDbs1qVxLu-qE-3P6fP1=XA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] modpost: rework and consolidate logging interface
+Date: Tue, 10 Mar 2020 12:32:00 +0100
+Message-ID: <20200310113158.GA4865@linux-8ccs.fritz.box>
+In-Reply-To: <CAK7LNAQqMGSkX4Coe+f49SbXT_jkG_Mm4XZ3EJei0_K7SEaLhg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7150925184350387283==
+--===============0590645435105321846==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-"Rafael J. Wysocki" <rafael@kernel.org> writes:
-
-> On Mon, Mar 9, 2020 at 2:17 AM Huang, Ying <ying.huang@intel.com> wrote:
++++ Masahiro Yamada [09/03/20 20:03 +0900]:
+>On Mon, Mar 9, 2020 at 7:58 PM Jessica Yu <jeyu@kernel.org> wrote:
 >>
->> "Rafael J. Wysocki" <rafael@kernel.org> writes:
->>
->> > On Fri, Mar 6, 2020 at 4:29 AM Huang, Ying <ying.huang@intel.com> wr=
-ote:
+>> +++ Masahiro Yamada [09/03/20 19:49 +0900]:
+>> >On Mon, Mar 9, 2020 at 7:39 PM Jessica Yu <jeyu@kernel.org> wrote:
 >> >>
->> >> Hi, Rafael,
+>> >> Ah, sorry, I mean the kbuild 0-day bot errors. I am just realizing
+>> >> the 0-day bot emails are not CC'd to lkml. Here is the error I got
+>> >> from the bot:
 >> >>
->> >> "Rafael J. Wysocki" <rafael@kernel.org> writes:
+>> >> ---
 >> >>
->> >> > On Thu, Mar 5, 2020 at 9:18 AM Rong Chen <rong.a.chen@intel.com> =
-wrote:
->> >> >>
->> >> >>
->> >> >>
->> >> >> On 3/5/20 3:50 PM, Rafael J. Wysocki wrote:
->> >> >> > On 3/5/2020 2:35 AM, kernel test robot wrote:
->> >> >> >> Greeting,
->> >> >> >>
->> >> >> >> FYI, we noticed a 210.0% improvement of fwq.fwq.med due to comm=
-it:
->> >> >> >
->> >> >> > Well, that sounds impressive. :-)
->> >> >> >
->> >> >> >
->> >> >> >>
->> >> >> >> commit: 909c0e9cc11ba39fa5a660583b25c2431cf54deb ("cpufreq:
->> >> >> >> intel_pstate: Use passive mode by default without HWP")
->> >> >> >> https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git
->> >> >> >> intel_pstate-passive
->> >> >> >>
->> >> >> >> in testcase: fwq
->> >> >> >> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10G=
-Hz
->> >> >> >> with 48G memory
->> >> >> >> with following parameters:
->> >> >> >>
->> >> >> >>     nr_task: 100%
->> >> >> >>     samples: 100000ss
->> >> >> >>     iterations: 18x
->> >> >> >>     cpufreq_governor: powersave
->> >> >> >
->> >> >> > The governor should be schedutil, though, unless it is explicitl=
-y set
->> >> >> > to powersave in the test environment.
->> >> >> >
->> >> >> > Is that the case?
->> >> >> >
->> >> >> >
->> >> >>
->> >> >> Hi Rafael,
->> >> >>
->> >> >> Yes, we set to powersave for this test.
->> >> >
->> >> > I wonder why this is done?  Is there any particular technical reason
->> >> > for doing that?
+>> >> I love your patch! Yet something to improve:
 >> >>
->> >> fwq is a noise benchmark to measure the hardware and software noise
->> >> level.  More information could be found in the following document.
+>> >> [auto build test ERROR on linus/master]
+>> >> [also build test ERROR on v5.6-rc4 next-20200306]
+>> >> [if your patch is applied to the wrong git tree, please drop us a not=
+e to help
+>> >> improve the system. BTW, we also suggest to use '--base' option to sp=
+ecify the
+>> >> base tree in git format-patch, please see https://stackoverflow.com/a=
+/37406982]
 >> >>
->> >> https://asc.llnl.gov/sequoia/benchmarks/FTQ_summary_v1.1.pdf
+>> >> url:    https://github.com/0day-ci/linux/commits/Jessica-Yu/modpost-r=
+ework-and-consolidate-logging-interface/20200307-052346
+>> >> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linu=
+x.git 30fe0d07fd7b27d41d9b31a224052cc4e910947a
+>> >> config: sh-randconfig-a001-20200306 (attached as .config)
+>> >> compiler: sh4-linux-gcc (GCC) 7.5.0
+>> >> reproduce:
+>> >>         wget https://raw.githubusercontent.com/intel/lkp-tests/master=
+/sbin/make.cross -O ~/bin/make.cross
+>> >>         chmod +x ~/bin/make.cross
+>> >>         # save the attached .config to linux build tree
+>> >>         GCC_VERSION=3D7.5.0 make.cross ARCH=3Dsh
 >> >>
->> >> In 0day, to measure the noise introduced by power management, we will
->> >> run fwq with the performance and powersave governors.  Do you think t=
-his
->> >> is reasonable?  Or we should use some other governors?
+>> >> If you fix the issue, kindly add following tag
+>> >> Reported-by: kbuild test robot <lkp@intel.com>
+>> >>
+>> >> All errors (new ones prefixed by >>):
+>> >>
+>> >> >> ERROR: modpost: "adc_single" [arch/sh/boards/mach-hp6xx/hp6xx_apm.=
+ko] undefined!
 >> >
->> > I think that the schedutil governor should be tested too if present.
 >> >
->> > Also note that for the intel_pstate driver "powersave" may mean
->> > different things depending on the current operation mode of the
->> > driver.  If scaling_driver is "intel_pstate", then "powersave" is the
->> > driver's built-in algorithm.  If scaling_driver is "intel_cpufreq",
->> > though, "powersave" means running at the minimum frequency all the
->> > time.
+>> >Indeed, this one is odd.
+>> >I have no idea...
 >>
->> Thanks for your guidance.  We will test schedutil governor in the future
->> too.
+>> I've pushed the patches to a branch to let the kbuild bot run through its
+>> build tests again, and if I have extra time today I will try to
+>> reproduce this and let you know the results.
 >>
->> As for powersave, should we stop testing it?
+>> Thanks,
+>>
+>> Jessica
 >
-> You cannot stop testing it, because it is the default governor
-> algorithm for intel_pstate working in the active mode.
 >
->>  Or just pay attention to the possible issue you pointed out?
+>Ah, Now I see.
 >
-> Yes, please!
 >
-> Basically, I would recommend to test the following configurations by defa=
-ult:
+>Because you added "modpost:" prefix.
 >
-> (1) scaling_driver =3D intel_pstate + scaling_governor =3D powersave
 >
-> (2) scaling_driver =3D intel_cpufreq + scaling_governor =3D schedutil
 >
-> The other ones are kind of less interesting.
+>The previous error message:
 >
-> [Note that in order to switch over from intel_pstate to intel_cpufreq,
-> you need to write "passive" into
-> /sys/devices/system/cpu/intel_pstate/status and if that write fails,
-> configuration (2) is not available and may be skipped.]
+>ERROR: "adc_single" [arch/sh/boards/mach-hp6xx/hp6xx_apm.ko] undefined!
 >
->> Should we add ondemand governor?
 >
-> Not necessarily, maybe as a reference only if you have spare cycles.
+>The new error message:
+>
+>ERROR: modpost: "adc_single" [arch/sh/boards/mach-hp6xx/hp6xx_apm.ko] unde=
+fined!
+>
+>
+>
+>So, the bot assumed it was a new error.
 
-Got it!  Thanks a lot for your information!
+Nice catch! Hm, I suppose we need to let the LKP folks know about the
+change in error message. CC'd LKP mailing list.
 
-Best Regards,
-Huang, Ying
-
-> Thanks!
---===============7150925184350387283==--
+Jessica
+--===============0590645435105321846==--
 
