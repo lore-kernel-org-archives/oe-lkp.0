@@ -1,92 +1,107 @@
-Content-Type: multipart/mixed; boundary="===============3632783781957680946=="
+Content-Type: multipart/mixed; boundary="===============1160800885152872587=="
 MIME-Version: 1.0
 From: Jeff Layton <jlayton@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
-Date: Mon, 09 Mar 2020 15:53:19 -0400
-Message-ID: <3358ab2ca14f51ec36202c9957453c32cba81fad.camel@kernel.org>
-In-Reply-To: <1bfba96b4bf0d3ca9a18a2bced3ef3a2a7b44dad.camel@kernel.org>
+Date: Wed, 11 Mar 2020 07:52:23 -0500
+Message-ID: <9ff6eee403d293dd069935ca6979f72131fe5217.camel@kernel.org>
+In-Reply-To: <f9db707f-74ef-9439-1aec-e1ce8234888e@huawei.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3632783781957680946==
+--===============1160800885152872587==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2020-03-09 at 15:09 -0400, Jeff Layton wrote:
-> On Mon, 2020-03-09 at 13:22 -0400, Jeff Layton wrote:
-> > On Mon, 2020-03-09 at 08:52 -0700, Linus Torvalds wrote:
-> > > On Mon, Mar 9, 2020 at 7:36 AM Jeff Layton <jlayton@kernel.org> wro=
-te:
-> > > > On Sun, 2020-03-08 at 22:03 +0800, kernel test robot wrote:
-> > > > > FYI, we noticed a -96.6% regression of will-it-scale.per_process_=
-ops due to commit:
-> > > > =
+On Wed, 2020-03-11 at 09:57 +0800, yangerkun wrote:
 
-> > > > This is not completely unexpected as we're banging on the global
-> > > > blocked_lock_lock now for every unlock. This test just thrashes file
-> > > > locks and unlocks without doing anything in between, so the workload
-> > > > looks pretty artificial [1].
-> > > > =
+[snip]
 
-> > > > It would be nice to avoid the global lock in this codepath, but it
-> > > > doesn't look simple to do. I'll keep thinking about it, but for now=
- I'm
-> > > > inclined to ignore this result unless we see a problem in more real=
-istic
-> > > > workloads.
-> > > =
+> =
 
-> > > That is a _huge_ regression, though.
-> > > =
-
-> > > What about something like the attached? Wouldn't that work? And make
-> > > the code actually match the old comment about wow "fl_blocker" being
-> > > NULL being special.
-> > > =
-
-> > > The old code seemed to not know about things like memory ordering eit=
-her.
-> > > =
-
-> > > Patch is entirely untested, but aims to have that "smp_store_release()
-> > > means I'm done and not going to touch it any more", making that
-> > > smp_load_acquire() test hopefully be valid as per the comment..
+> On 2020/3/11 5:01, NeilBrown wrote:
 > > =
 
-> > Yeah, something along those lines maybe. I don't think we can use
-> > fl_blocker that way though, as the wait_event_interruptible is waiting
-> > on it to go to NULL, and the wake_up happens before fl_blocker is
-> > cleared.
+> > I think this patch contains an assumption which is not justified.  It
+> > assumes that if a wait_event completes without error, then the wake_up()
+> > must have happened.  I don't think that is correct.
 > > =
 
-> > Maybe we need to mix in some sort of FL_BLOCK_ACTIVE flag and use that
-> > instead of testing for !fl_blocker to see whether we can avoid the
-> > blocked_lock_lock?
-> >   =
+> > In the patch that caused the recent regression, the race described
+> > involved a signal arriving just as __locks_wake_up_blocks() was being
+> > called on another thread.
+> > So the waiting process was woken by a signal *after* ->fl_blocker was s=
+et
+> > to NULL, and *before* the wake_up().  If wait_event_interruptible()
+> > finds that the condition is true, it will report success whether there
+> > was a signal or not.
+> Neil and Jeff, Hi,
+> =
+
+> But after this, like in flock_lock_inode_wait, we will go another =
+
+> flock_lock_inode. And the flock_lock_inode it may return =
+
+> -ENOMEM/-ENOENT/-EAGAIN/0.
+> =
+
+> - 0: If there is a try lock, it means that we have call =
+
+> locks_move_blocks, and fl->fl_blocked_requests will be NULL, no need to =
+
+> wake up at all. If there is a unlock, no one call wait for me, no need =
+
+> to wake up too.
+> =
+
+> - ENOENT: means we are doing unlock, no one will wait for me, no need to =
+
+> wake up.
+> =
+
+> - ENOMEM: since last time we go through flock_lock_inode someone may =
+
+> wait for me, so for this error, we need to wake up them.
+> =
+
+> - EAGAIN: since we has go through flock_lock_inode before, these may =
+
+> never happen because FL_SLEEP will not lose.
+> =
+
+> So the assumption may be ok and for some error case we need to wake up =
+
+> someone may wait for me before(the reason for the patch "cifs: call =
+
+> locks_delete_block for all error case in cifs_posix_lock_set"). If I am =
+
+> wrong, please point out!
+> =
 
 > =
 
-> How about something like this instead? (untested other than for
-> compilation)
-> =
 
-> Basically, this just switches the waiters over to wait for
-> fl_blocked_member to go empty. That still happens before the wakeup, so
-> it should be ok to wait on that.
-> =
+That's the basic dilemma. We need to know whether we'll need to delete
+the block before taking the blocked_lock_lock.
 
-> I think we can also eliminate the lockless list_empty check in
-> locks_delete_block, as the fl_blocker check should be sufficient now.
+Your most recent patch used the return code from the wait to determine
+this, but that's not 100% reliable (as Neil pointed out). Could we try
+to do this by doing the delete only when we get certain error codes?
+Maybe, but that's a bit fragile-sounding.
 
-Actually, no -- we need to keep that check in. The rest should work
-though. I'll do some testing with it and see if the perf issue goes
-away.
+Neil's most recent patch used presence on the fl_blocked_requests list
+to determine whether to take the lock, but that relied on some very
+subtle memory ordering. We could of course do that, but that's a bit
+brittle too.
 
-Thanks,
+That's the main reason I'm leaning toward the patch Neil sent
+originally and that uses the fl_wait.lock. The existing alternate lock
+managers (nfsd and lockd) don't use fl_wait at all, so I don't think
+doing that will cause any issues.
+
 -- =
 
 Jeff Layton <jlayton@kernel.org>
 
---===============3632783781957680946==--
+--===============1160800885152872587==--
 
