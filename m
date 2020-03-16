@@ -1,174 +1,254 @@
-Content-Type: multipart/mixed; boundary="===============3238892038761320794=="
+Content-Type: multipart/mixed; boundary="===============6844390487460073938=="
 MIME-Version: 1.0
-From: Chen, Rong A <rong.a.chen@intel.com>
+From: Jeff Layton <jlayton@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [scsi] 618b4d07a4: xfstests.generic.484.fail
-Date: Tue, 17 Mar 2020 15:41:26 +0800
-Message-ID: <531bbf4b-221c-5d42-e04f-6b15b6d27e35@intel.com>
-In-Reply-To: <1584368247.14250.17.camel@mtksdccf07>
+Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
+Date: Mon, 16 Mar 2020 07:07:24 -0400
+Message-ID: <ce48ed9e48eda3c0f27d2f417314bd00cb1a68db.camel@kernel.org>
+In-Reply-To: <87pndcsxc6.fsf@notabene.neil.brown.name>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3238892038761320794==
+--===============6844390487460073938==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Mon, 2020-03-16 at 16:06 +1100, NeilBrown wrote:
+
+[...]
+
+> No, we really do need fl_blocked_requests to be empty.
+> After fl_blocker is cleared, the owner might check for other blockers
+> and might queue behind them leaving the blocked requests in place.
+> Or it might have to detach all those blocked requests and wake them up
+> so they can go and fend for themselves.
+> =
+
+> I think the worse-case scenario could go something like that.
+> Process A get a lock - Al
+> Process B tries to get a conflicting lock and blocks Bl -> Al
+> Process C tries to get a conflicting lock and blocks on B:
+>    Cl -> Bl -> Al
+> =
+
+> At much the same time that C goes to attach Cl to Bl, A
+> calls unlock and B get signaled.
+> =
+
+> So A is calling locks_wake_up_blocks(Al) - which takes blocked_lock_lock.
+> C is calling  locks_insert_block(Bl, Cl) - which also takes the lock
+> B is calling  locks_delete_block(Bl)  which might not take the lock.
+> =
+
+> Assume C gets the lock first.
+> =
+
+> Before C calls locks_insert_block, Bl->fl_blocked_requests is empty.
+> After A finishes in locks_wake_up_blocks, Bl->fl_blocker is NULL
+> =
+
+> If B sees that fl_blocker is NULL, we need it to see that
+> fl_blocked_requests is no longer empty, so that it takes the lock and
+> cleans up fl_blocked_requests.
+> =
+
+> If the list_empty test on fl_blocked_request goes after the fl_blocker
+> test, the memory barriers we have should assure that.  I had thought
+> that it would need an extra barrier, but as a spinlock places the change
+> to fl_blocked_requests *before* the change to fl_blocker, I no longer
+> think that is needed.
+
+Got it. I was thinking all of the waiters of a blocker would already be
+awoken once fl_blocker was set to NULL, but you're correct and they
+aren't. How about this?
+
+-----------------8<------------------
+
+>From f40e865842ae84a9d465ca9edb66f0985c1587d4 Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Mon, 9 Mar 2020 14:35:43 -0400
+Subject: [PATCH] locks: reinstate locks_delete_block optimization
+
+There is measurable performance impact in some synthetic tests due to
+commit 6d390e4b5d48 (locks: fix a potential use-after-free problem when
+wakeup a waiter). Fix the race condition instead by clearing the
+fl_blocker pointer after the wake_up, using explicit acquire/release
+semantics.
+
+This does mean that we can no longer use the clearing of fl_blocker as
+the wait condition, so switch the waiters over to checking whether the
+fl_blocked_member list_head is empty.
+
+Cc: yangerkun <yangerkun@huawei.com>
+Cc: NeilBrown <neilb@suse.de>
+Fixes: 6d390e4b5d48 (locks: fix a potential use-after-free problem when wak=
+eup a waiter)
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+---
+ fs/cifs/file.c |  3 ++-
+ fs/locks.c     | 41 +++++++++++++++++++++++++++++++++++------
+ 2 files changed, 37 insertions(+), 7 deletions(-)
+
+diff --git a/fs/cifs/file.c b/fs/cifs/file.c
+index 3b942ecdd4be..8f9d849a0012 100644
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -1169,7 +1169,8 @@ cifs_posix_lock_set(struct file *file, struct file_lo=
+ck *flock)
+ 	rc =3D posix_lock_file(file, flock, NULL);
+ 	up_write(&cinode->lock_sem);
+ 	if (rc =3D=3D FILE_LOCK_DEFERRED) {
+-		rc =3D wait_event_interruptible(flock->fl_wait, !flock->fl_blocker);
++		rc =3D wait_event_interruptible(flock->fl_wait,
++					list_empty(&flock->fl_blocked_member));
+ 		if (!rc)
+ 			goto try_again;
+ 		locks_delete_block(flock);
+diff --git a/fs/locks.c b/fs/locks.c
+index 426b55d333d5..eaf754ecdaa8 100644
+--- a/fs/locks.c
++++ b/fs/locks.c
+@@ -725,7 +725,6 @@ static void __locks_delete_block(struct file_lock *wait=
+er)
+ {
+ 	locks_delete_global_blocked(waiter);
+ 	list_del_init(&waiter->fl_blocked_member);
+-	waiter->fl_blocker =3D NULL;
+ }
+ =
+
+ static void __locks_wake_up_blocks(struct file_lock *blocker)
+@@ -740,6 +739,12 @@ static void __locks_wake_up_blocks(struct file_lock *b=
+locker)
+ 			waiter->fl_lmops->lm_notify(waiter);
+ 		else
+ 			wake_up(&waiter->fl_wait);
++
++		/*
++		 * Tell the world we're done with it - see comment at
++		 * top of locks_delete_block().
++		 */
++		smp_store_release(&waiter->fl_blocker, NULL);
+ 	}
+ }
+ =
+
+@@ -753,11 +758,30 @@ int locks_delete_block(struct file_lock *waiter)
+ {
+ 	int status =3D -ENOENT;
+ =
+
++	/*
++	 * If fl_blocker is NULL, it won't be set again as this thread "owns"
++	 * the lock and is the only one that might try to claim the lock.
++	 * Because fl_blocker is explicitly set last during a delete, it's
++	 * safe to locklessly test to see if it's NULL. If it is, then we know
++	 * that no new locks can be inserted into its fl_blocked_requests list,
++	 * and we can therefore avoid doing anything further as long as that
++	 * list is empty.
++	 */
++	if (!smp_load_acquire(&waiter->fl_blocker) &&
++	    list_empty(&waiter->fl_blocked_requests))
++		return status;
++
+ 	spin_lock(&blocked_lock_lock);
+ 	if (waiter->fl_blocker)
+ 		status =3D 0;
+ 	__locks_wake_up_blocks(waiter);
+ 	__locks_delete_block(waiter);
++
++	/*
++	 * Tell the world we're done with it - see comment at top
++	 * of this function
++	 */
++	smp_store_release(&waiter->fl_blocker, NULL);
+ 	spin_unlock(&blocked_lock_lock);
+ 	return status;
+ }
+@@ -1350,7 +1374,8 @@ static int posix_lock_inode_wait(struct inode *inode,=
+ struct file_lock *fl)
+ 		error =3D posix_lock_inode(inode, fl, NULL);
+ 		if (error !=3D FILE_LOCK_DEFERRED)
+ 			break;
+-		error =3D wait_event_interruptible(fl->fl_wait, !fl->fl_blocker);
++		error =3D wait_event_interruptible(fl->fl_wait,
++					list_empty(&fl->fl_blocked_member));
+ 		if (error)
+ 			break;
+ 	}
+@@ -1435,7 +1460,8 @@ int locks_mandatory_area(struct inode *inode, struct =
+file *filp, loff_t start,
+ 		error =3D posix_lock_inode(inode, &fl, NULL);
+ 		if (error !=3D FILE_LOCK_DEFERRED)
+ 			break;
+-		error =3D wait_event_interruptible(fl.fl_wait, !fl.fl_blocker);
++		error =3D wait_event_interruptible(fl.fl_wait,
++					list_empty(&fl.fl_blocked_member));
+ 		if (!error) {
+ 			/*
+ 			 * If we've been sleeping someone might have
+@@ -1638,7 +1664,8 @@ int __break_lease(struct inode *inode, unsigned int m=
+ode, unsigned int type)
+ =
+
+ 	locks_dispose_list(&dispose);
+ 	error =3D wait_event_interruptible_timeout(new_fl->fl_wait,
+-						!new_fl->fl_blocker, break_time);
++					list_empty(&new_fl->fl_blocked_member),
++					break_time);
+ =
+
+ 	percpu_down_read(&file_rwsem);
+ 	spin_lock(&ctx->flc_lock);
+@@ -2122,7 +2149,8 @@ static int flock_lock_inode_wait(struct inode *inode,=
+ struct file_lock *fl)
+ 		error =3D flock_lock_inode(inode, fl);
+ 		if (error !=3D FILE_LOCK_DEFERRED)
+ 			break;
+-		error =3D wait_event_interruptible(fl->fl_wait, !fl->fl_blocker);
++		error =3D wait_event_interruptible(fl->fl_wait,
++				list_empty(&fl->fl_blocked_member));
+ 		if (error)
+ 			break;
+ 	}
+@@ -2399,7 +2427,8 @@ static int do_lock_file_wait(struct file *filp, unsig=
+ned int cmd,
+ 		error =3D vfs_lock_file(filp, cmd, fl, NULL);
+ 		if (error !=3D FILE_LOCK_DEFERRED)
+ 			break;
+-		error =3D wait_event_interruptible(fl->fl_wait, !fl->fl_blocker);
++		error =3D wait_event_interruptible(fl->fl_wait,
++					list_empty(&fl->fl_blocked_member));
+ 		if (error)
+ 			break;
+ 	}
+-- =
+
+2.24.1
 
 
-On 3/16/2020 10:17 PM, Stanley Chu wrote:
-> Hi,
->
-> On Mon, 2020-03-16 at 21:41 +0800, kernel test robot wrote:
->> FYI, we noticed the following commit (built with gcc-7):
->>
->> commit: 618b4d07a4420ca9f01837f183ce7b1ac0b31307 ("scsi: ufs: ufs-mediat=
-ek: fix TX LCC disabling timing")
->> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->>
-> The modified file in above commit is /drivers/scsi/ufs/ufs-mediatek.c
-> which shall not be built according to the kernel configuration used by
-> the robot.
->
-> Could this possibly be a false alarm?
->
-> Thanks,
-> Stanley Chu
+--===============6844390487460073938==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
 
-Hi Stanley,
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRSkhCQUFCQ0FBeEZpRUVTOERYc2tSeHNx
+R0U2dlhUQUE1b1FSbFdnaFVGQWw1dlhld1RIR3BzWVhsMGIyNUEKYTJWeWJtVnNMbTl5WndBS0NS
+QUFEbWhCR1ZhQ0ZSNmFELzkvUWZ6Z1haSDAyRkF6dTYzRklMbVByUFovdCtsVApRUDhKZWV3ajFv
+NC81dmFhSVpmZE9mempJVDRtd2xnRWpuWUZoMDN0NTFJVWp6QkhJMjgxSkQ4RHk3bDJJdGxaCklr
+Uk41b2FJNUlKR2ZmM1pUSUU2Wlkyc3lHUkJ2dkk0ZHpCNUVlYmtCNlovYmZ5VE05Tmxtb1Y5YTR1
+Unh0d3IKUTdzdDZtRHVTWVY4M01EZFRsaHFRek1GTWZGL1IxalVlWndtMW1SSkljUGZ2MUhXaEhY
+VDdJbEpQY0tBZ2tFegpkbFlad1BMWmRvSXloOCtMSEpTMGhNZHgvU2R4RXowY3JOTEJ5OUV3SnQw
+eTBSNjNOUHJPbE16Ym1xT0xJZVQ3Ck9UUnlzK095R2dBYzlEakZXTHhCZE1ueitBUkErYnhZWEdn
+SmxRSEcvemxHTmxMVGhYaEVHempSbW9VRXFoUDQKYzFqSnlleXN5dWNkK3lCQWRudVN0TG9nN2Iw
+L0hyT1JlVzJXNVR0Z2hKeTh4ZkZGVk5Fc1pBbHVraXZXeFZQMgpvMVRaZmNwdTE5aXlSRGVFLzNo
+WFRjVHBibklkMHdqS0h5U3RnL25QT2RNWHNxR1daWjEyNXhqYmJsa2VNRHY4CmJtdTZrOXZrN1hH
+a0VRUzFaMVZ1TzhQdjlmaW9DYzI4VFBxYWtlZWMwTCtKNXJQa1VxVmVMbEphNDI3RVEzZ1AKbzRV
+MnU0VHJ1ZFQ4Q3k4MXR5RFBSWmtFUmdTQUsycnVQaUJTRm8yQmtqNDR0ZjlOc3krRmw5VDNjc2li
+dXVucwplRW5UcHpSOVFGSHRFYWpzVlJTWFVRMW5yZ20vMEdCVlE1MVpSWllXTEtNL3hiQnhZOUZE
+c1hnOVJXY3Q5cWlFCmNESjdJdUFmbDhrQ3dRPT0KPXVNUE4KLS0tLS1FTkQgUEdQIFNJR05BVFVS
+RS0tLS0tCg==
 
-Sorry for the inconvenience, it's a false positive, the =
-
-xfstests.generic.484 test
-didn't run successfully in the parent commit.
-
-Best Regards,
-Rong Chen
-
-
->
->
->> in testcase: xfstests
->> with following parameters:
->>
->> 	disk: 4HDD
->> 	fs: xfs
->> 	test: generic-group11
->>
->> test-description: xfstests is a regression test suite for xfs and other =
-files ystems.
->> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
->>
->>
->> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 =
--m 8G
->>
->> caused below changes (please refer to attached dmesg/kmsg for entire log=
-/backtrace):
->>
->>
->>
->>
->> If you fix the issue, kindly add following tag
->> Reported-by: kernel test robot <rong.a.chen@intel.com>
->>
->> 2020-03-16 18:33:34 export TEST_DIR=3D/fs/vda
->> 2020-03-16 18:33:34 export TEST_DEV=3D/dev/vda
->> 2020-03-16 18:33:34 export FSTYP=3Dxfs
->> 2020-03-16 18:33:34 export SCRATCH_MNT=3D/fs/scratch
->> 2020-03-16 18:33:34 mkdir /fs/scratch -p
->> 2020-03-16 18:33:34 export SCRATCH_DEV=3D/dev/vdd
->> 2020-03-16 18:33:34 export SCRATCH_LOGDEV=3D/dev/vdb
->> meta-data=3D/dev/vda               isize=3D512    agcount=3D4, agsize=3D=
-16777216 blks
->>           =3D                       sectsz=3D512   attr=3D2, projid32bit=
-=3D1
->>           =3D                       crc=3D1        finobt=3D1, sparse=3D=
-0, rmapbt=3D0, reflink=3D1
->> data     =3D                       bsize=3D4096   blocks=3D67108864, ima=
-xpct=3D25
->>           =3D                       sunit=3D0      swidth=3D0 blks
->> naming   =3Dversion 2              bsize=3D4096   ascii-ci=3D0 ftype=3D1
->> log      =3Dinternal log           bsize=3D4096   blocks=3D32768, versio=
-n=3D2
->>           =3D                       sectsz=3D512   sunit=3D0 blks, lazy-=
-count=3D1
->> realtime =3Dnone                   extsz=3D4096   blocks=3D0, rtextents=
-=3D0
->> 2020-03-16 18:33:35 export MKFS_OPTIONS=3D-mreflink=3D1
->> 2020-03-16 18:33:35 sed "s:^:generic/:" //lkp/benchmarks/xfstests/tests/=
-generic-group11
->> 2020-03-16 18:33:35 ./check generic/015 generic/056 generic/092 generic/=
-124 generic/160 generic/192 generic/222 generic/254 generic/287 generic/319=
- generic/350 generic/381 generic/416 generic/446 generic/484 generic/519 ge=
-neric/550 generic/580
->> FSTYP         -- xfs (debug)
->> PLATFORM      -- Linux/x86_64 vm-snb-15 5.6.0-rc1-00021-g618b4d07a4420 #=
-1 SMP Mon Mar 16 17:42:08 CST 2020
->> MKFS_OPTIONS  -- -f -mreflink=3D1 /dev/vdd
->> MOUNT_OPTIONS -- /dev/vdd /fs/scratch
->>
->> generic/015	 2s
->> generic/056	 3s
->> generic/092	 2s
->> generic/124	 5s
->> generic/160	 2s
->> generic/192	 7s
->> generic/222	 5s
->> generic/254	 4s
->> generic/287	 4s
->> generic/319	 2s
->> generic/350	 2s
->> generic/381	 2s
->> generic/416	 157s
->> generic/446	 9s
->> generic/484	- output mismatch (see /lkp/benchmarks/xfstests/results//gen=
-eric/484.out.bad)
->>      --- tests/generic/484.out	2020-03-05 16:38:54.000000000 +0800
->>      +++ /lkp/benchmarks/xfstests/results//generic/484.out.bad	2020-03-1=
-6 18:37:07.484545261 +0800
->>      @@ -1,2 +1,3 @@
->>       QA output created by 484
->>      +record lock is not preserved across execve(2)
->>       Silence is golden
->>      ...
->>      (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/484.out /lkp/b=
-enchmarks/xfstests/results//generic/484.out.bad'  to see the entire diff)
->> generic/519	 2s
->> generic/550	[not run] xfs_io set_encpolicy  support is missing
->> generic/580	[not run] xfs_io set_encpolicy  support is missing
->> Ran: generic/015 generic/056 generic/092 generic/124 generic/160 generic=
-/192 generic/222 generic/254 generic/287 generic/319 generic/350 generic/38=
-1 generic/416 generic/446 generic/484 generic/519 generic/550 generic/580
->> Not run: generic/550 generic/580
->> Failures: generic/484
->> Failed 1 of 18 tests
->>
->>
->>
->>
->> To reproduce:
->>
->>          # build kernel
->> 	cd linux
->> 	cp config-5.6.0-rc1-00021-g618b4d07a4420 .config
->> 	make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 olddefconfig prepare modul=
-es_prepare bzImage modules
->> 	make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 INSTALL_MOD_PATH=3D<mod-in=
-stall-dir> modules_install
->> 	cd <mod-install-dir>
->> 	find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
->>
->>
->>          git clone https://github.com/intel/lkp-tests.git
->>          cd lkp-tests
->>          bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-scrip=
-t is attached in this email
->>
->>
->>
->> Thanks,
->> Rong Chen
->>
-
---===============3238892038761320794==--
+--===============6844390487460073938==--
 
