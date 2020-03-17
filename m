@@ -1,122 +1,114 @@
-Content-Type: multipart/mixed; boundary="===============6631010109344557005=="
+Content-Type: multipart/mixed; boundary="===============0678397941160162841=="
 MIME-Version: 1.0
 From: Jeff Layton <jlayton@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
-Date: Tue, 17 Mar 2020 11:59:24 -0400
-Message-ID: <46d2c16f48f1fd4ad28a85099c59ae95a9997740.camel@kernel.org>
-In-Reply-To: <87k13jsyum.fsf@notabene.neil.brown.name>
+Date: Tue, 17 Mar 2020 12:07:15 -0400
+Message-ID: <61d6b91e9387969f5dfaba192aee366cc9b310f0.camel@kernel.org>
+In-Reply-To: <6df79609-90eb-2f59-7e86-3532ac309a7a@huawei.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6631010109344557005==
+--===============0678397941160162841==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2020-03-17 at 09:45 +1100, NeilBrown wrote:
-> > +
-> > +	/*
-> > +	 * Tell the world we're done with it - see comment at top
-> > +	 * of this function
+On Tue, 2020-03-17 at 22:05 +0800, yangerkun wrote:
 > =
 
-> This comment might be misleading.  The world doesn't care.
-> Only this thread cares where ->fl_blocker is NULL.  We need the release
-> semantics when some *other* thread sets fl_blocker to NULL, not when
-> this thread does.
-> I don't think we need to spell that out and I'm not against using
-> store_release here, but locks_delete_block cannot race with itself, so
-> referring to the comment at the top of this function is misleading.
+> On 2020/3/17 9:41, yangerkun wrote:
+> > =
+
+> > On 2020/3/17 1:26, Linus Torvalds wrote:
+> > > On Mon, Mar 16, 2020 at 4:07 AM Jeff Layton <jlayton@kernel.org> wr=
+ote:
+> > > > =
+
+> > > > +       /*
+> > > > +        * If fl_blocker is NULL, it won't be set again as this =
+
+> > > > thread "owns"
+> > > > +        * the lock and is the only one that might try to claim the =
+
+> > > > lock.
+> > > > +        * Because fl_blocker is explicitly set last during a delet=
+e, =
+
+> > > > it's
+> > > > +        * safe to locklessly test to see if it's NULL. If it is, =
+
+> > > > then we know
+> > > > +        * that no new locks can be inserted into its =
+
+> > > > fl_blocked_requests list,
+> > > > +        * and we can therefore avoid doing anything further as lon=
+g =
+
+> > > > as that
+> > > > +        * list is empty.
+> > > > +        */
+> > > > +       if (!smp_load_acquire(&waiter->fl_blocker) &&
+> > > > +           list_empty(&waiter->fl_blocked_requests))
+> > > > +               return status;
+> > > =
+
+> > > Ack. This looks sane to me now.
+> > > =
+
+> > > yangerkun - how did you find the original problem?\
+> > =
+
+> > While try to fix CVE-2019-19769, add some log in __locks_wake_up_blocks =
+
+> > help me to rebuild the problem soon. This help me to discern the proble=
+m =
+
+> > soon.
+> > =
+
+> > > Would you mind using whatever stress test that caused commit
+> > > 6d390e4b5d48 ("locks: fix a potential use-after-free problem when
+> > > wakeup a waiter") with this patch? And if you did it analytically,
+> > > you're a champ and should look at this patch too!
+> > =
+
+> > I will try to understand this patch, and if it's looks good to me, will =
+
+> > do the performance test!
 > =
 
-> So:
->   Reviewed-by: NeilBrown <neilb@suse.de>
+> This patch looks good to me, with this patch, the bug '6d390e4b5d48 =
+
+> ("locks: fix a potential use-after-free problem when wakeup a waiter")' =
+
+> describes won't happen again. Actually, I find that syzkaller has report =
+
+> this bug before[1], and the log of it can help us to reproduce it with =
+
+> some latency in __locks_wake_up_blocks!
 > =
 
-> but I'm not totally happy with the comments.
+> Also, some ltp testcases describes in [2] pass too with the patch!
 > =
 
+> For performance test, I have try to understand will-it-scale/lkp, but it =
+
+> seem a little complex to me, and may need some more time. So, Rong Chen, =
+
+> can you help to do this? Or the results may come a little later...
 > =
 
+> Thanks,
+> ----
+> [1] https://syzkaller.appspot.com/bug?extid=3D922689db06e57b69c240
+> [2] https://lkml.org/lkml/2020/3/11/578
 
-Thanks Neil. We can clean up the comments before merge. How about this
-revision to the earlier patch? I took the liberty of poaching your your
-proposed verbiage:
+Thanks yangerkun. Let me know if you want to add your Reviewed-by tag.
 
-------------------8<---------------------
-
->From c9fbfae0ab615e20de0bdf1ae7b27591d602f577 Mon Sep 17 00:00:00 2001
-From: Jeff Layton <jlayton@kernel.org>
-Date: Mon, 16 Mar 2020 18:57:47 -0400
-Subject: [PATCH] SQUASH: update with Neil's comments
-
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- fs/locks.c | 31 ++++++++++++++++++++++---------
- 1 file changed, 22 insertions(+), 9 deletions(-)
-
-diff --git a/fs/locks.c b/fs/locks.c
-index eaf754ecdaa8..e74075b0e8ec 100644
---- a/fs/locks.c
-+++ b/fs/locks.c
-@@ -741,8 +741,9 @@ static void __locks_wake_up_blocks(struct file_lock *bl=
-ocker)
- 			wake_up(&waiter->fl_wait);
- =
-
- 		/*
--		 * Tell the world we're done with it - see comment at
--		 * top of locks_delete_block().
-+		 * The setting of fl_blocker to NULL marks the official "done"
-+		 * point in deleting a block. Paired with acquire at the top
-+		 * of locks_delete_block().
- 		 */
- 		smp_store_release(&waiter->fl_blocker, NULL);
- 	}
-@@ -761,11 +762,23 @@ int locks_delete_block(struct file_lock *waiter)
- 	/*
- 	 * If fl_blocker is NULL, it won't be set again as this thread "owns"
- 	 * the lock and is the only one that might try to claim the lock.
--	 * Because fl_blocker is explicitly set last during a delete, it's
--	 * safe to locklessly test to see if it's NULL. If it is, then we know
--	 * that no new locks can be inserted into its fl_blocked_requests list,
--	 * and we can therefore avoid doing anything further as long as that
--	 * list is empty.
-+	 *
-+	 * We use acquire/release to manage fl_blocker so that we can
-+	 * optimize away taking the blocked_lock_lock in many cases.
-+	 *
-+	 * The smp_load_acquire guarantees two things:
-+	 *
-+	 * 1/ that fl_blocked_requests can be tested locklessly. If something
-+	 * was recently added to that list it must have been in a locked region
-+	 * *before* the locked region when fl_blocker was set to NULL.
-+	 *
-+	 * 2/ that no other thread is accessing 'waiter', so it is safe to free
-+	 * it.  __locks_wake_up_blocks is careful not to touch waiter after
-+	 * fl_blocker is released.
-+	 *
-+	 * If a lockless check of fl_blocker shows it to be NULL, we know that
-+	 * no new locks can be inserted into its fl_blocked_requests list, and
-+	 * can avoid doing anything further if the list is empty.
- 	 */
- 	if (!smp_load_acquire(&waiter->fl_blocker) &&
- 	    list_empty(&waiter->fl_blocked_requests))
-@@ -778,8 +791,8 @@ int locks_delete_block(struct file_lock *waiter)
- 	__locks_delete_block(waiter);
- =
-
- 	/*
--	 * Tell the world we're done with it - see comment at top
--	 * of this function
-+	 * The setting of fl_blocker to NULL marks the official "done" point in
-+	 * deleting a block. Paired with acquire at the top of this function.
- 	 */
- 	smp_store_release(&waiter->fl_blocker, NULL);
- 	spin_unlock(&blocked_lock_lock);
+Cheers,
 -- =
 
-2.24.1
+Jeff Layton <jlayton@kernel.org>
 
---===============6631010109344557005==--
+--===============0678397941160162841==--
 
