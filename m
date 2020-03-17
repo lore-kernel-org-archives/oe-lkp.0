@@ -1,114 +1,225 @@
-Content-Type: multipart/mixed; boundary="===============0678397941160162841=="
+Content-Type: multipart/mixed; boundary="===============4214871962354423653=="
 MIME-Version: 1.0
-From: Jeff Layton <jlayton@kernel.org>
+From: Waiman Long <longman@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
-Date: Tue, 17 Mar 2020 12:07:15 -0400
-Message-ID: <61d6b91e9387969f5dfaba192aee366cc9b310f0.camel@kernel.org>
-In-Reply-To: <6df79609-90eb-2f59-7e86-3532ac309a7a@huawei.com>
+Subject: Re: 86a030855c ("KEYS: Don't write out to userspace while holding .."): [ 133.268003] WARNING: CPU: 0 PID: 935 at mm/page_alloc.c:4713 __alloc_pages_nodemask
+Date: Tue, 17 Mar 2020 14:16:05 -0400
+Message-ID: <6056e62e-e533-689a-0d02-1530136eeb27@redhat.com>
+In-Reply-To: <20200317083507.GH11705@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0678397941160162841==
+--===============4214871962354423653==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2020-03-17 at 22:05 +0800, yangerkun wrote:
-> =
+On 3/17/20 4:35 AM, kernel test robot wrote:
+> Greetings,
+>
+> 0day kernel testing robot got the below dmesg and the first bad commit is
+>
+> git://git.infradead.org/users/jjs/linux-tpmdd master
+>
+> commit 86a030855ce6af96f745be6abbf968f9d46506ea
+> Author:     Waiman Long <longman@redhat.com>
+> AuthorDate: Fri Mar 13 11:21:00 2020 -0400
+> Commit:     Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+> CommitDate: Mon Mar 16 15:45:40 2020 +0200
+>
+>     KEYS: Don't write out to userspace while holding key semaphore
+>     =
 
-> On 2020/3/17 9:41, yangerkun wrote:
-> > =
+>     A lockdep circular locking dependency report was seen when running a
+>     keyutils test:
+>     =
 
-> > On 2020/3/17 1:26, Linus Torvalds wrote:
-> > > On Mon, Mar 16, 2020 at 4:07 AM Jeff Layton <jlayton@kernel.org> wr=
-ote:
-> > > > =
+>     [12537.027242] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>     [12537.059309] WARNING: possible circular locking dependency detected
+>     [12537.088148] 4.18.0-147.7.1.el8_1.x86_64+debug #1 Tainted: G OE    =
+--------- -  -
+>     [12537.125253] ------------------------------------------------------
+>     [12537.153189] keyctl/25598 is trying to acquire lock:
+>     [12537.175087] 000000007c39f96c (&mm->mmap_sem){++++}, at: __might_fa=
+ult+0xc4/0x1b0
+>     [12537.208365]
+>     [12537.208365] but task is already holding lock:
+>     [12537.234507] 000000003de5b58d (&type->lock_class){++++}, at: keyctl=
+_read_key+0x15a/0x220
+>     [12537.270476]
+>     [12537.270476] which lock already depends on the new lock.
+>     [12537.270476]
+>     [12537.307209]
+>     [12537.307209] the existing dependency chain (in reverse order) is:
+>     [12537.340754]
+>     [12537.340754] -> #3 (&type->lock_class){++++}:
+>     [12537.367434]        down_write+0x4d/0x110
+>     [12537.385202]        __key_link_begin+0x87/0x280
+>     [12537.405232]        request_key_and_link+0x483/0xf70
+>     [12537.427221]        request_key+0x3c/0x80
+>     [12537.444839]        dns_query+0x1db/0x5a5 [dns_resolver]
+>     [12537.468445]        dns_resolve_server_name_to_ip+0x1e1/0x4d0 [cifs]
+>     [12537.496731]        cifs_reconnect+0xe04/0x2500 [cifs]
+>     [12537.519418]        cifs_readv_from_socket+0x461/0x690 [cifs]
+>     [12537.546263]        cifs_read_from_socket+0xa0/0xe0 [cifs]
+>     [12537.573551]        cifs_demultiplex_thread+0x311/0x2db0 [cifs]
+>     [12537.601045]        kthread+0x30c/0x3d0
+>     [12537.617906]        ret_from_fork+0x3a/0x50
+>     [12537.636225]
+>     [12537.636225] -> #2 (root_key_user.cons_lock){+.+.}:
+>     [12537.664525]        __mutex_lock+0x105/0x11f0
+>     [12537.683734]        request_key_and_link+0x35a/0xf70
+>     [12537.705640]        request_key+0x3c/0x80
+>     [12537.723304]        dns_query+0x1db/0x5a5 [dns_resolver]
+>     [12537.746773]        dns_resolve_server_name_to_ip+0x1e1/0x4d0 [cifs]
+>     [12537.775607]        cifs_reconnect+0xe04/0x2500 [cifs]
+>     [12537.798322]        cifs_readv_from_socket+0x461/0x690 [cifs]
+>     [12537.823369]        cifs_read_from_socket+0xa0/0xe0 [cifs]
+>     [12537.847262]        cifs_demultiplex_thread+0x311/0x2db0 [cifs]
+>     [12537.873477]        kthread+0x30c/0x3d0
+>     [12537.890281]        ret_from_fork+0x3a/0x50
+>     [12537.908649]
+>     [12537.908649] -> #1 (&tcp_ses->srv_mutex){+.+.}:
+>     [12537.935225]        __mutex_lock+0x105/0x11f0
+>     [12537.954450]        cifs_call_async+0x102/0x7f0 [cifs]
+>     [12537.977250]        smb2_async_readv+0x6c3/0xc90 [cifs]
+>     [12538.000659]        cifs_readpages+0x120a/0x1e50 [cifs]
+>     [12538.023920]        read_pages+0xf5/0x560
+>     [12538.041583]        __do_page_cache_readahead+0x41d/0x4b0
+>     [12538.067047]        ondemand_readahead+0x44c/0xc10
+>     [12538.092069]        filemap_fault+0xec1/0x1830
+>     [12538.111637]        __do_fault+0x82/0x260
+>     [12538.129216]        do_fault+0x419/0xfb0
+>     [12538.146390]        __handle_mm_fault+0x862/0xdf0
+>     [12538.167408]        handle_mm_fault+0x154/0x550
+>     [12538.187401]        __do_page_fault+0x42f/0xa60
+>     [12538.207395]        do_page_fault+0x38/0x5e0
+>     [12538.225777]        page_fault+0x1e/0x30
+>     [12538.243010]
+>     [12538.243010] -> #0 (&mm->mmap_sem){++++}:
+>     [12538.267875]        lock_acquire+0x14c/0x420
+>     [12538.286848]        __might_fault+0x119/0x1b0
+>     [12538.306006]        keyring_read_iterator+0x7e/0x170
+>     [12538.327936]        assoc_array_subtree_iterate+0x97/0x280
+>     [12538.352154]        keyring_read+0xe9/0x110
+>     [12538.370558]        keyctl_read_key+0x1b9/0x220
+>     [12538.391470]        do_syscall_64+0xa5/0x4b0
+>     [12538.410511]        entry_SYSCALL_64_after_hwframe+0x6a/0xdf
+>     [12538.435535]
+>     [12538.435535] other info that might help us debug this:
+>     [12538.435535]
+>     [12538.472829] Chain exists of:
+>     [12538.472829]   &mm->mmap_sem --> root_key_user.cons_lock --> &type-=
+>lock_class
+>     [12538.472829]
+>     [12538.524820]  Possible unsafe locking scenario:
+>     [12538.524820]
+>     [12538.551431]        CPU0                    CPU1
+>     [12538.572654]        ----                    ----
+>     [12538.595865]   lock(&type->lock_class);
+>     [12538.613737]                                lock(root_key_user.cons=
+_lock);
+>     [12538.644234]                                lock(&type->lock_class);
+>     [12538.672410]   lock(&mm->mmap_sem);
+>     [12538.687758]
+>     [12538.687758]  *** DEADLOCK ***
+>     [12538.687758]
+>     [12538.714455] 1 lock held by keyctl/25598:
+>     [12538.732097]  #0: 000000003de5b58d (&type->lock_class){++++}, at: k=
+eyctl_read_key+0x15a/0x220
+>     [12538.770573]
+>     [12538.770573] stack backtrace:
+>     [12538.790136] CPU: 2 PID: 25598 Comm: keyctl Kdump: loaded Tainted: G
+>     [12538.844855] Hardware name: HP ProLiant DL360 Gen9/ProLiant DL360 G=
+en9, BIOS P89 12/27/2015
+>     [12538.881963] Call Trace:
+>     [12538.892897]  dump_stack+0x9a/0xf0
+>     [12538.907908]  print_circular_bug.isra.25.cold.50+0x1bc/0x279
+>     [12538.932891]  ? save_trace+0xd6/0x250
+>     [12538.948979]  check_prev_add.constprop.32+0xc36/0x14f0
+>     [12538.971643]  ? keyring_compare_object+0x104/0x190
+>     [12538.992738]  ? check_usage+0x550/0x550
+>     [12539.009845]  ? sched_clock+0x5/0x10
+>     [12539.025484]  ? sched_clock_cpu+0x18/0x1e0
+>     [12539.043555]  __lock_acquire+0x1f12/0x38d0
+>     [12539.061551]  ? trace_hardirqs_on+0x10/0x10
+>     [12539.080554]  lock_acquire+0x14c/0x420
+>     [12539.100330]  ? __might_fault+0xc4/0x1b0
+>     [12539.119079]  __might_fault+0x119/0x1b0
+>     [12539.135869]  ? __might_fault+0xc4/0x1b0
+>     [12539.153234]  keyring_read_iterator+0x7e/0x170
+>     [12539.172787]  ? keyring_read+0x110/0x110
+>     [12539.190059]  assoc_array_subtree_iterate+0x97/0x280
+>     [12539.211526]  keyring_read+0xe9/0x110
+>     [12539.227561]  ? keyring_gc_check_iterator+0xc0/0xc0
+>     [12539.249076]  keyctl_read_key+0x1b9/0x220
+>     [12539.266660]  do_syscall_64+0xa5/0x4b0
+>     [12539.283091]  entry_SYSCALL_64_after_hwframe+0x6a/0xdf
+>     =
 
-> > > > +       /*
-> > > > +        * If fl_blocker is NULL, it won't be set again as this =
+>     One way to prevent this deadlock scenario from happening is to not
+>     allow writing to userspace while holding the key semaphore. Instead,
+>     an internal buffer is allocated for getting the keys out from the
+>     read method first before copying them out to userspace without holding
+>     the lock.
+>     =
 
-> > > > thread "owns"
-> > > > +        * the lock and is the only one that might try to claim the =
+>     That requires taking out the __user modifier from the read methods as
+>     well as additional changes to not use any userspace write helpers.
+>     =
 
-> > > > lock.
-> > > > +        * Because fl_blocker is explicitly set last during a delet=
-e, =
+>     Fixes: ^1da177e4c3f4 ("Linux-2.6.12-rc2")
+>     Cc: stable(a)vger.kernel.org
+>     Signed-off-by: Waiman Long <longman@redhat.com>
+>     Reviewed-by: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+>     Signed-off-by: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+>
+> 2e356101e7  KEYS: reaching the keys quotas correctly
+> 86a030855c  KEYS: Don't write out to userspace while holding key semaphore
+> +------------------------------------------------------------------------=
+--------+------------+------------+
+> |                                                                        =
+        | 2e356101e7 | 86a030855c |
+> +------------------------------------------------------------------------=
+--------+------------+------------+
+> | boot_successes                                                         =
+        | 146        | 48         |
+> | boot_failures                                                          =
+        | 23         | 10         |
+> | BUG:kernel_hang_in_early-boot_stage,last_printk:early_console_in_setup_=
+code    | 21         | 3          |
+> | BUG:kernel_hang_in_test_stage                                          =
+        | 1          |            |
+> | BUG:kernel_timeout_in_early-boot_stage,last_printk:early_console_in_set=
+up_code | 1          |            |
+> | WARNING:at_mm/page_alloc.c:#__alloc_pages_nodemask                     =
+        | 0          | 7          |
+> | RIP:__alloc_pages_nodemask                                             =
+        | 0          | 7          |
+> +------------------------------------------------------------------------=
+--------+------------+------------+
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> [child0:847] mbind (274:[32BIT]) returned ENOSYS, marking as inactive.
+> [child1:935] sgetmask (68:[32BIT]) returned ENOSYS, marking as inactive.
+> [child0:1043] migrate_pages (294:[32BIT]) returned ENOSYS, marking as ina=
+ctive.
+> [child0:1043] mq_timedreceive (280:[32BIT]) returned ENOSYS, marking as i=
+nactive.
+> [  133.267552] ------------[ cut here ]------------
+> [  133.268003] WARNING: CPU: 0 PID: 935 at mm/page_alloc.c:4713 __alloc_p=
+ages_nodemask+0x2e/0x178
 
-> > > > it's
-> > > > +        * safe to locklessly test to see if it's NULL. If it is, =
-
-> > > > then we know
-> > > > +        * that no new locks can be inserted into its =
-
-> > > > fl_blocked_requests list,
-> > > > +        * and we can therefore avoid doing anything further as lon=
-g =
-
-> > > > as that
-> > > > +        * list is empty.
-> > > > +        */
-> > > > +       if (!smp_load_acquire(&waiter->fl_blocker) &&
-> > > > +           list_empty(&waiter->fl_blocked_requests))
-> > > > +               return status;
-> > > =
-
-> > > Ack. This looks sane to me now.
-> > > =
-
-> > > yangerkun - how did you find the original problem?\
-> > =
-
-> > While try to fix CVE-2019-19769, add some log in __locks_wake_up_blocks =
-
-> > help me to rebuild the problem soon. This help me to discern the proble=
-m =
-
-> > soon.
-> > =
-
-> > > Would you mind using whatever stress test that caused commit
-> > > 6d390e4b5d48 ("locks: fix a potential use-after-free problem when
-> > > wakeup a waiter") with this patch? And if you did it analytically,
-> > > you're a champ and should look at this patch too!
-> > =
-
-> > I will try to understand this patch, and if it's looks good to me, will =
-
-> > do the performance test!
-> =
-
-> This patch looks good to me, with this patch, the bug '6d390e4b5d48 =
-
-> ("locks: fix a potential use-after-free problem when wakeup a waiter")' =
-
-> describes won't happen again. Actually, I find that syzkaller has report =
-
-> this bug before[1], and the log of it can help us to reproduce it with =
-
-> some latency in __locks_wake_up_blocks!
-> =
-
-> Also, some ltp testcases describes in [2] pass too with the patch!
-> =
-
-> For performance test, I have try to understand will-it-scale/lkp, but it =
-
-> seem a little complex to me, and may need some more time. So, Rong Chen, =
-
-> can you help to do this? Or the results may come a little later...
-> =
-
-> Thanks,
-> ----
-> [1] https://syzkaller.appspot.com/bug?extid=3D922689db06e57b69c240
-> [2] https://lkml.org/lkml/2020/3/11/578
-
-Thanks yangerkun. Let me know if you want to add your Reviewed-by tag.
+That warning happens when the memory request is larger than
+2^(MAX_ORDER-1) pages. That can certainly happen with this patch alone.
+However, by adding the later patch, this warning should not happen.
 
 Cheers,
--- =
+Longman
 
-Jeff Layton <jlayton@kernel.org>
 
---===============0678397941160162841==--
+--===============4214871962354423653==--
 
