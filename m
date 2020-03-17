@@ -1,225 +1,158 @@
-Content-Type: multipart/mixed; boundary="===============4214871962354423653=="
+Content-Type: multipart/mixed; boundary="===============3706185162372308616=="
 MIME-Version: 1.0
-From: Waiman Long <longman@redhat.com>
+From: NeilBrown <neilb@suse.de>
 To: lkp@lists.01.org
-Subject: Re: 86a030855c ("KEYS: Don't write out to userspace while holding .."): [ 133.268003] WARNING: CPU: 0 PID: 935 at mm/page_alloc.c:4713 __alloc_pages_nodemask
-Date: Tue, 17 Mar 2020 14:16:05 -0400
-Message-ID: <6056e62e-e533-689a-0d02-1530136eeb27@redhat.com>
-In-Reply-To: <20200317083507.GH11705@shao2-debian>
+Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
+Date: Wed, 18 Mar 2020 08:27:40 +1100
+Message-ID: <878sjysmcz.fsf@notabene.neil.brown.name>
+In-Reply-To: <46d2c16f48f1fd4ad28a85099c59ae95a9997740.camel@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4214871962354423653==
+--===============3706185162372308616==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 3/17/20 4:35 AM, kernel test robot wrote:
-> Greetings,
+On Tue, Mar 17 2020, Jeff Layton wrote:
+
+> On Tue, 2020-03-17 at 09:45 +1100, NeilBrown wrote:
+>> > +
+>> > +	/*
+>> > +	 * Tell the world we're done with it - see comment at top
+>> > +	 * of this function
+>> =
+
+>> This comment might be misleading.  The world doesn't care.
+>> Only this thread cares where ->fl_blocker is NULL.  We need the release
+>> semantics when some *other* thread sets fl_blocker to NULL, not when
+>> this thread does.
+>> I don't think we need to spell that out and I'm not against using
+>> store_release here, but locks_delete_block cannot race with itself, so
+>> referring to the comment at the top of this function is misleading.
+>> =
+
+>> So:
+>>   Reviewed-by: NeilBrown <neilb@suse.de>
+>> =
+
+>> but I'm not totally happy with the comments.
+>> =
+
+>> =
+
 >
-> 0day kernel testing robot got the below dmesg and the first bad commit is
+> Thanks Neil. We can clean up the comments before merge. How about this
+> revision to the earlier patch? I took the liberty of poaching your your
+> proposed verbiage:
+
+Thanks.  I'm happy with that.
+
+(Well.... actually I hate the use of the word "official" unless there is
+a well defined office holder being blamed.  But the word has come to
+mean something vaguer in common usage and there is probably no point
+fighting it.  In this case "formal" is close but less personally
+annoying, but I'm not sure the word is needed at all).
+
+Thanks,
+NeilBrown
+
+
 >
-> git://git.infradead.org/users/jjs/linux-tpmdd master
+> ------------------8<---------------------
 >
-> commit 86a030855ce6af96f745be6abbf968f9d46506ea
-> Author:     Waiman Long <longman@redhat.com>
-> AuthorDate: Fri Mar 13 11:21:00 2020 -0400
-> Commit:     Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-> CommitDate: Mon Mar 16 15:45:40 2020 +0200
+> From c9fbfae0ab615e20de0bdf1ae7b27591d602f577 Mon Sep 17 00:00:00 2001
+> From: Jeff Layton <jlayton@kernel.org>
+> Date: Mon, 16 Mar 2020 18:57:47 -0400
+> Subject: [PATCH] SQUASH: update with Neil's comments
 >
->     KEYS: Don't write out to userspace while holding key semaphore
->     =
-
->     A lockdep circular locking dependency report was seen when running a
->     keyutils test:
->     =
-
->     [12537.027242] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->     [12537.059309] WARNING: possible circular locking dependency detected
->     [12537.088148] 4.18.0-147.7.1.el8_1.x86_64+debug #1 Tainted: G OE    =
---------- -  -
->     [12537.125253] ------------------------------------------------------
->     [12537.153189] keyctl/25598 is trying to acquire lock:
->     [12537.175087] 000000007c39f96c (&mm->mmap_sem){++++}, at: __might_fa=
-ult+0xc4/0x1b0
->     [12537.208365]
->     [12537.208365] but task is already holding lock:
->     [12537.234507] 000000003de5b58d (&type->lock_class){++++}, at: keyctl=
-_read_key+0x15a/0x220
->     [12537.270476]
->     [12537.270476] which lock already depends on the new lock.
->     [12537.270476]
->     [12537.307209]
->     [12537.307209] the existing dependency chain (in reverse order) is:
->     [12537.340754]
->     [12537.340754] -> #3 (&type->lock_class){++++}:
->     [12537.367434]        down_write+0x4d/0x110
->     [12537.385202]        __key_link_begin+0x87/0x280
->     [12537.405232]        request_key_and_link+0x483/0xf70
->     [12537.427221]        request_key+0x3c/0x80
->     [12537.444839]        dns_query+0x1db/0x5a5 [dns_resolver]
->     [12537.468445]        dns_resolve_server_name_to_ip+0x1e1/0x4d0 [cifs]
->     [12537.496731]        cifs_reconnect+0xe04/0x2500 [cifs]
->     [12537.519418]        cifs_readv_from_socket+0x461/0x690 [cifs]
->     [12537.546263]        cifs_read_from_socket+0xa0/0xe0 [cifs]
->     [12537.573551]        cifs_demultiplex_thread+0x311/0x2db0 [cifs]
->     [12537.601045]        kthread+0x30c/0x3d0
->     [12537.617906]        ret_from_fork+0x3a/0x50
->     [12537.636225]
->     [12537.636225] -> #2 (root_key_user.cons_lock){+.+.}:
->     [12537.664525]        __mutex_lock+0x105/0x11f0
->     [12537.683734]        request_key_and_link+0x35a/0xf70
->     [12537.705640]        request_key+0x3c/0x80
->     [12537.723304]        dns_query+0x1db/0x5a5 [dns_resolver]
->     [12537.746773]        dns_resolve_server_name_to_ip+0x1e1/0x4d0 [cifs]
->     [12537.775607]        cifs_reconnect+0xe04/0x2500 [cifs]
->     [12537.798322]        cifs_readv_from_socket+0x461/0x690 [cifs]
->     [12537.823369]        cifs_read_from_socket+0xa0/0xe0 [cifs]
->     [12537.847262]        cifs_demultiplex_thread+0x311/0x2db0 [cifs]
->     [12537.873477]        kthread+0x30c/0x3d0
->     [12537.890281]        ret_from_fork+0x3a/0x50
->     [12537.908649]
->     [12537.908649] -> #1 (&tcp_ses->srv_mutex){+.+.}:
->     [12537.935225]        __mutex_lock+0x105/0x11f0
->     [12537.954450]        cifs_call_async+0x102/0x7f0 [cifs]
->     [12537.977250]        smb2_async_readv+0x6c3/0xc90 [cifs]
->     [12538.000659]        cifs_readpages+0x120a/0x1e50 [cifs]
->     [12538.023920]        read_pages+0xf5/0x560
->     [12538.041583]        __do_page_cache_readahead+0x41d/0x4b0
->     [12538.067047]        ondemand_readahead+0x44c/0xc10
->     [12538.092069]        filemap_fault+0xec1/0x1830
->     [12538.111637]        __do_fault+0x82/0x260
->     [12538.129216]        do_fault+0x419/0xfb0
->     [12538.146390]        __handle_mm_fault+0x862/0xdf0
->     [12538.167408]        handle_mm_fault+0x154/0x550
->     [12538.187401]        __do_page_fault+0x42f/0xa60
->     [12538.207395]        do_page_fault+0x38/0x5e0
->     [12538.225777]        page_fault+0x1e/0x30
->     [12538.243010]
->     [12538.243010] -> #0 (&mm->mmap_sem){++++}:
->     [12538.267875]        lock_acquire+0x14c/0x420
->     [12538.286848]        __might_fault+0x119/0x1b0
->     [12538.306006]        keyring_read_iterator+0x7e/0x170
->     [12538.327936]        assoc_array_subtree_iterate+0x97/0x280
->     [12538.352154]        keyring_read+0xe9/0x110
->     [12538.370558]        keyctl_read_key+0x1b9/0x220
->     [12538.391470]        do_syscall_64+0xa5/0x4b0
->     [12538.410511]        entry_SYSCALL_64_after_hwframe+0x6a/0xdf
->     [12538.435535]
->     [12538.435535] other info that might help us debug this:
->     [12538.435535]
->     [12538.472829] Chain exists of:
->     [12538.472829]   &mm->mmap_sem --> root_key_user.cons_lock --> &type-=
->lock_class
->     [12538.472829]
->     [12538.524820]  Possible unsafe locking scenario:
->     [12538.524820]
->     [12538.551431]        CPU0                    CPU1
->     [12538.572654]        ----                    ----
->     [12538.595865]   lock(&type->lock_class);
->     [12538.613737]                                lock(root_key_user.cons=
-_lock);
->     [12538.644234]                                lock(&type->lock_class);
->     [12538.672410]   lock(&mm->mmap_sem);
->     [12538.687758]
->     [12538.687758]  *** DEADLOCK ***
->     [12538.687758]
->     [12538.714455] 1 lock held by keyctl/25598:
->     [12538.732097]  #0: 000000003de5b58d (&type->lock_class){++++}, at: k=
-eyctl_read_key+0x15a/0x220
->     [12538.770573]
->     [12538.770573] stack backtrace:
->     [12538.790136] CPU: 2 PID: 25598 Comm: keyctl Kdump: loaded Tainted: G
->     [12538.844855] Hardware name: HP ProLiant DL360 Gen9/ProLiant DL360 G=
-en9, BIOS P89 12/27/2015
->     [12538.881963] Call Trace:
->     [12538.892897]  dump_stack+0x9a/0xf0
->     [12538.907908]  print_circular_bug.isra.25.cold.50+0x1bc/0x279
->     [12538.932891]  ? save_trace+0xd6/0x250
->     [12538.948979]  check_prev_add.constprop.32+0xc36/0x14f0
->     [12538.971643]  ? keyring_compare_object+0x104/0x190
->     [12538.992738]  ? check_usage+0x550/0x550
->     [12539.009845]  ? sched_clock+0x5/0x10
->     [12539.025484]  ? sched_clock_cpu+0x18/0x1e0
->     [12539.043555]  __lock_acquire+0x1f12/0x38d0
->     [12539.061551]  ? trace_hardirqs_on+0x10/0x10
->     [12539.080554]  lock_acquire+0x14c/0x420
->     [12539.100330]  ? __might_fault+0xc4/0x1b0
->     [12539.119079]  __might_fault+0x119/0x1b0
->     [12539.135869]  ? __might_fault+0xc4/0x1b0
->     [12539.153234]  keyring_read_iterator+0x7e/0x170
->     [12539.172787]  ? keyring_read+0x110/0x110
->     [12539.190059]  assoc_array_subtree_iterate+0x97/0x280
->     [12539.211526]  keyring_read+0xe9/0x110
->     [12539.227561]  ? keyring_gc_check_iterator+0xc0/0xc0
->     [12539.249076]  keyctl_read_key+0x1b9/0x220
->     [12539.266660]  do_syscall_64+0xa5/0x4b0
->     [12539.283091]  entry_SYSCALL_64_after_hwframe+0x6a/0xdf
->     =
-
->     One way to prevent this deadlock scenario from happening is to not
->     allow writing to userspace while holding the key semaphore. Instead,
->     an internal buffer is allocated for getting the keys out from the
->     read method first before copying them out to userspace without holding
->     the lock.
->     =
-
->     That requires taking out the __user modifier from the read methods as
->     well as additional changes to not use any userspace write helpers.
->     =
-
->     Fixes: ^1da177e4c3f4 ("Linux-2.6.12-rc2")
->     Cc: stable(a)vger.kernel.org
->     Signed-off-by: Waiman Long <longman@redhat.com>
->     Reviewed-by: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
->     Signed-off-by: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+> Signed-off-by: Jeff Layton <jlayton@kernel.org>
+> ---
+>  fs/locks.c | 31 ++++++++++++++++++++++---------
+>  1 file changed, 22 insertions(+), 9 deletions(-)
 >
-> 2e356101e7  KEYS: reaching the keys quotas correctly
-> 86a030855c  KEYS: Don't write out to userspace while holding key semaphore
-> +------------------------------------------------------------------------=
---------+------------+------------+
-> |                                                                        =
-        | 2e356101e7 | 86a030855c |
-> +------------------------------------------------------------------------=
---------+------------+------------+
-> | boot_successes                                                         =
-        | 146        | 48         |
-> | boot_failures                                                          =
-        | 23         | 10         |
-> | BUG:kernel_hang_in_early-boot_stage,last_printk:early_console_in_setup_=
-code    | 21         | 3          |
-> | BUG:kernel_hang_in_test_stage                                          =
-        | 1          |            |
-> | BUG:kernel_timeout_in_early-boot_stage,last_printk:early_console_in_set=
-up_code | 1          |            |
-> | WARNING:at_mm/page_alloc.c:#__alloc_pages_nodemask                     =
-        | 0          | 7          |
-> | RIP:__alloc_pages_nodemask                                             =
-        | 0          | 7          |
-> +------------------------------------------------------------------------=
---------+------------+------------+
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> [child0:847] mbind (274:[32BIT]) returned ENOSYS, marking as inactive.
-> [child1:935] sgetmask (68:[32BIT]) returned ENOSYS, marking as inactive.
-> [child0:1043] migrate_pages (294:[32BIT]) returned ENOSYS, marking as ina=
-ctive.
-> [child0:1043] mq_timedreceive (280:[32BIT]) returned ENOSYS, marking as i=
-nactive.
-> [  133.267552] ------------[ cut here ]------------
-> [  133.268003] WARNING: CPU: 0 PID: 935 at mm/page_alloc.c:4713 __alloc_p=
-ages_nodemask+0x2e/0x178
+> diff --git a/fs/locks.c b/fs/locks.c
+> index eaf754ecdaa8..e74075b0e8ec 100644
+> --- a/fs/locks.c
+> +++ b/fs/locks.c
+> @@ -741,8 +741,9 @@ static void __locks_wake_up_blocks(struct file_lock *=
+blocker)
+>  			wake_up(&waiter->fl_wait);
+>  =
 
-That warning happens when the memory request is larger than
-2^(MAX_ORDER-1) pages. That can certainly happen with this patch alone.
-However, by adding the later patch, this warning should not happen.
+>  		/*
+> -		 * Tell the world we're done with it - see comment at
+> -		 * top of locks_delete_block().
+> +		 * The setting of fl_blocker to NULL marks the official "done"
+> +		 * point in deleting a block. Paired with acquire at the top
+> +		 * of locks_delete_block().
+>  		 */
+>  		smp_store_release(&waiter->fl_blocker, NULL);
+>  	}
+> @@ -761,11 +762,23 @@ int locks_delete_block(struct file_lock *waiter)
+>  	/*
+>  	 * If fl_blocker is NULL, it won't be set again as this thread "owns"
+>  	 * the lock and is the only one that might try to claim the lock.
+> -	 * Because fl_blocker is explicitly set last during a delete, it's
+> -	 * safe to locklessly test to see if it's NULL. If it is, then we know
+> -	 * that no new locks can be inserted into its fl_blocked_requests list,
+> -	 * and we can therefore avoid doing anything further as long as that
+> -	 * list is empty.
+> +	 *
+> +	 * We use acquire/release to manage fl_blocker so that we can
+> +	 * optimize away taking the blocked_lock_lock in many cases.
+> +	 *
+> +	 * The smp_load_acquire guarantees two things:
+> +	 *
+> +	 * 1/ that fl_blocked_requests can be tested locklessly. If something
+> +	 * was recently added to that list it must have been in a locked region
+> +	 * *before* the locked region when fl_blocker was set to NULL.
+> +	 *
+> +	 * 2/ that no other thread is accessing 'waiter', so it is safe to free
+> +	 * it.  __locks_wake_up_blocks is careful not to touch waiter after
+> +	 * fl_blocker is released.
+> +	 *
+> +	 * If a lockless check of fl_blocker shows it to be NULL, we know that
+> +	 * no new locks can be inserted into its fl_blocked_requests list, and
+> +	 * can avoid doing anything further if the list is empty.
+>  	 */
+>  	if (!smp_load_acquire(&waiter->fl_blocker) &&
+>  	    list_empty(&waiter->fl_blocked_requests))
+> @@ -778,8 +791,8 @@ int locks_delete_block(struct file_lock *waiter)
+>  	__locks_delete_block(waiter);
+>  =
 
-Cheers,
-Longman
+>  	/*
+> -	 * Tell the world we're done with it - see comment at top
+> -	 * of this function
+> +	 * The setting of fl_blocker to NULL marks the official "done" point in
+> +	 * deleting a block. Paired with acquire at the top of this function.
+>  	 */
+>  	smp_store_release(&waiter->fl_blocker, NULL);
+>  	spin_unlock(&blocked_lock_lock);
+> -- =
 
+> 2.24.1
 
---===============4214871962354423653==--
+--===============3706185162372308616==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRSXpCQUVCQ0FBZEZpRUVHOFlwNjlPUTJI
+QjdYMGw2T2V5ZTNWWmlnYmtGQWw1eFFNd0FDZ2tRT2V5ZTNWWmkKZ2JrbHl3Ly9iRnRDeDNOT2FD
+STIybDF4UXBhS3Z0TEJZMTF6dkxMaVNFTXZpZjFxdmEyTzBLVERjdHpJY3BpOQpYaWJhbUtEMVlt
+RGFPaTBrN1kyNjdOd3FBZE1qeUZTS3QvZDdwU1VFTFVCZmRyK3grZDQ4dHZGL3grUVQrSHEwCnh0
+K1BwNlcyUCthelVzd2hoajRFV0VHaGh0SWVnR0hmdjFjNkdmQkM4TmFyZ1B0YWVhM1VsOXVva3Iv
+Ym9ZYTEKZDBPaUVPeGFFMHJBcDA0WVFlTVlpZHRFZ2h1U2dCMmc2U1JWbDYrZVZoTFl5TmErdnNr
+NVR4U1NaMkU1UGYyUApGdVNzSC9KUllRdWNtaTJyZmtaMnJ1MmtXdmJRSUtnalZhTERaa3JVaDNT
+QW5SK3ZZNlMrYkhEcjlxZVIzYmxzCjE1RU16c0ppYm5FSkh4VjJYdzduQWJSS0FjRDZ3NUhOSjZ4
+dERYVXdsbzhMZFAxWTVER2x1NnZXNzZzVExZam0KMG9GV0t2KzhobDNoMk5DamNLK0Zhb2h3RDRD
+M3VYMFpsVjBRVzF0K1NURGo0a21JcGJ2TlZ4ZHBzOEZrVGdBZwppdTVxVWYxcW9ZUzlYSXRlZ0Nw
+OUFEYUtUdWw0RVBzMGNqZXZxR3JESGZDU2l1amJ3MHhXWUlWV1ZUSGRvVGdBCkZSM0JabXRFNFhF
+NDR3a0Q1TjJ6MFJQMzUxeW5QNm1KcXV6Y0NPVjYvbnp1bGdtLy9ORVA2NHBmWmpXeU1pQWIKVGdT
+QlBQQ1lnWUdPd09WZUN4ajN1aUpmLytRTW85TEpYQU9zV2k1Qk1ya3pBRGlyRDcwdHUrUW1sQUN6
+L1ExeApDQmhWRXdpMFYrYUJMbmkwdW5ieDBQREJQcWppTHBpRHhEQXAxWTRReEtTV1pwbWdicTg9
+Cj1WQ1M2Ci0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ==
+--===============3706185162372308616==--
 
