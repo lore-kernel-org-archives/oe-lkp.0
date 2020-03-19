@@ -1,40 +1,32 @@
-Content-Type: multipart/mixed; boundary="===============8119739640021854225=="
+Content-Type: multipart/mixed; boundary="===============2161520594117895650=="
 MIME-Version: 1.0
-From: Jeff Layton <jlayton@kernel.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [locks] 6d390e4b5d: will-it-scale.per_process_ops -96.6% regression
-Date: Thu, 19 Mar 2020 15:24:36 -0400
-Message-ID: <7c10010c3d7745857ee1fba8eb06e7fe047eaa13.camel@kernel.org>
-In-Reply-To: <CAHk-=wj=UEVBObnZNtSnvX_9afJ3XHBSuXACPbriCBkCUGTHmA@mail.gmail.com>
+Date: Thu, 19 Mar 2020 12:35:14 -0700
+Message-ID: <CAHk-=whAWFw5vZB-krqUteHuAYCYypKG6683WEydOynBizpixQ@mail.gmail.com>
+In-Reply-To: <7c10010c3d7745857ee1fba8eb06e7fe047eaa13.camel@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8119739640021854225==
+--===============2161520594117895650==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2020-03-19 at 12:23 -0700, Linus Torvalds wrote:
-> On Thu, Mar 19, 2020 at 10:52 AM Jeff Layton <jlayton@kernel.org> wrote:
-> > Yangerkun gave me his Reviewed-by and I sent you the most recent version
-> > of the patch yesterday (cc'ing the relevant mailing lists). I left you
-> > as author as the original patch was yours.
-> > =
+On Thu, Mar 19, 2020 at 12:24 PM Jeff Layton <jlayton@kernel.org> wrote:
+>
+> >
+> > If you have other things, send me a pull request, otherwise just let
+> > me know and I'll apply the patch directly.
+>
+> That's it for now.
 
-> > Let me know if you'd prefer I send a pull request instead.
-> =
+Lol. You confused me with your question of whether I wanted a pull
+request or not.
 
-> Is that patch the only thing you have pending?
-> =
+I had already applied the patch as dcf23ac3e846 ("locks: reinstate
+locks_delete_block optimization") yesterday ;)
 
-> If you have other things, send me a pull request, otherwise just let
-> me know and I'll apply the patch directly.
-
-That's it for now.
-
-Thanks,
--- =
-
-Jeff Layton <jlayton@kernel.org>
-
---===============8119739640021854225==--
+            Linus
+--===============2161520594117895650==--
 
