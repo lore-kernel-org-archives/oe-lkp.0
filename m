@@ -1,13 +1,13 @@
-Content-Type: multipart/mixed; boundary="===============5016842540048681262=="
+Content-Type: multipart/mixed; boundary="===============6328522309722514787=="
 MIME-Version: 1.0
 From: gregkh@linuxfoundation.org
 To: lkp@lists.01.org
-Subject: Patch "x86/mm: split vmalloc_sync_all()" has been added to the 5.5-stable tree
-Date: Mon, 23 Mar 2020 15:55:13 +0100
-Message-ID: <1584975313245237@kroah.com>
+Subject: Patch "x86/mm: split vmalloc_sync_all()" has been added to the 4.4-stable tree
+Date: Mon, 23 Mar 2020 15:57:34 +0100
+Message-ID: <15849754542159@kroah.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5016842540048681262==
+--===============6328522309722514787==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -17,13 +17,13 @@ This is a note to let you know that I've just added the patch titled
 
     x86/mm: split vmalloc_sync_all()
 
-to the 5.5-stable tree which can be found at:
+to the 4.4-stable tree which can be found at:
     http://www.kernel.org/git/?p=3Dlinux/kernel/git/stable/stable-queue.git=
 ;a=3Dsummary
 
 The filename of the patch is:
      x86-mm-split-vmalloc_sync_all.patch
-and it can be found in the queue-5.5 subdirectory.
+and it can be found in the queue-4.4 subdirectory.
 
 If you, or anyone else, feels it should not be added to the stable tree,
 please let <stable@vger.kernel.org> know about it.
@@ -96,7 +96,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/arch/x86/mm/fault.c
 +++ b/arch/x86/mm/fault.c
-@@ -189,7 +189,7 @@ static inline pmd_t *vmalloc_sync_one(pg
+@@ -228,7 +228,7 @@ static inline pmd_t *vmalloc_sync_one(pg
  	return pmd_k;
  }
  =
@@ -107,7 +107,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	unsigned long address;
  =
 
-@@ -216,6 +216,16 @@ void vmalloc_sync_all(void)
+@@ -255,6 +255,16 @@ void vmalloc_sync_all(void)
  	}
  }
  =
@@ -125,7 +125,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  /*
   * 32-bit:
   *
-@@ -318,11 +328,23 @@ out:
+@@ -349,11 +359,23 @@ out:
  =
 
  #else /* CONFIG_X86_64: */
@@ -138,7 +138,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +	 * 64-bit mappings might allocate new p4d/pud pages
 +	 * that need to be propagated to all tasks' PGDs.
 +	 */
- 	sync_global_pgds(VMALLOC_START & PGDIR_MASK, VMALLOC_END);
+ 	sync_global_pgds(VMALLOC_START & PGDIR_MASK, VMALLOC_END, 0);
  }
  =
 
@@ -155,7 +155,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
   *
 --- a/drivers/acpi/apei/ghes.c
 +++ b/drivers/acpi/apei/ghes.c
-@@ -171,7 +171,7 @@ int ghes_estatus_pool_init(int num_ghes)
+@@ -229,7 +229,7 @@ static int ghes_estatus_pool_expand(unsi
  	 * New allocation must be visible in all pgd before it can be found by
  	 * an NMI allocating from the pool.
  	 */
@@ -163,11 +163,11 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +	vmalloc_sync_mappings();
  =
 
- 	rc =3D gen_pool_add(ghes_estatus_pool, addr, PAGE_ALIGN(len), -1);
- 	if (rc)
+ 	return gen_pool_add(ghes_estatus_pool, addr, PAGE_ALIGN(len), -1);
+ }
 --- a/include/linux/vmalloc.h
 +++ b/include/linux/vmalloc.h
-@@ -139,8 +139,9 @@ extern int remap_vmalloc_range_partial(s
+@@ -92,8 +92,9 @@ extern int remap_vmalloc_range_partial(s
  =
 
  extern int remap_vmalloc_range(struct vm_area_struct *vma, void *addr,
@@ -183,7 +183,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
   */
 --- a/kernel/notifier.c
 +++ b/kernel/notifier.c
-@@ -519,7 +519,7 @@ NOKPROBE_SYMBOL(notify_die);
+@@ -552,7 +552,7 @@ NOKPROBE_SYMBOL(notify_die);
  =
 
  int register_die_notifier(struct notifier_block *nb)
@@ -195,7 +195,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  EXPORT_SYMBOL_GPL(register_die_notifier);
 --- a/mm/nommu.c
 +++ b/mm/nommu.c
-@@ -370,10 +370,14 @@ void vm_unmap_aliases(void)
+@@ -472,10 +472,14 @@ void vm_unmap_aliases(void)
  EXPORT_SYMBOL_GPL(vm_unmap_aliases);
  =
 
@@ -217,7 +217,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/mm/vmalloc.c
 +++ b/mm/vmalloc.c
-@@ -1287,7 +1287,7 @@ static bool __purge_vmap_area_lazy(unsig
+@@ -1681,7 +1681,7 @@ void *__vmalloc_node_range(unsigned long
  	 * First make sure the mappings are removed from all page-tables
  	 * before they are freed.
  	 */
@@ -226,8 +226,8 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  =
 
  	/*
- 	 * TODO: to calculate a flush range without looping.
-@@ -3120,16 +3120,19 @@ int remap_vmalloc_range(struct vm_area_s
+ 	 * In this function, newly allocated vm_struct has VM_UNINITIALIZED
+@@ -2218,16 +2218,19 @@ int remap_vmalloc_range(struct vm_area_s
  EXPORT_SYMBOL(remap_vmalloc_range);
  =
 
@@ -252,12 +252,12 @@ ose
 +}
  =
 
- static int f(pte_t *pte, unsigned long addr, void *data)
+ static int f(pte_t *pte, pgtable_t table, unsigned long addr, void *data)
  {
 
 
 Patches currently in stable-queue which might be from jroedel(a)suse.de are
 
-queue-5.5/x86-mm-split-vmalloc_sync_all.patch
---===============5016842540048681262==--
+queue-4.4/x86-mm-split-vmalloc_sync_all.patch
+--===============6328522309722514787==--
 
