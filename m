@@ -1,105 +1,48 @@
-Content-Type: multipart/mixed; boundary="===============1711519332146096919=="
+Content-Type: multipart/mixed; boundary="===============4387508211452722864=="
 MIME-Version: 1.0
-From: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [ext4] b1b4705d54: filebench.sum_bytes_mb/s -20.2% regression
-Date: Wed, 25 Mar 2020 13:50:09 +0800
-Message-ID: <49a59199-53af-206f-d07c-5c8c45f498b3@linux.intel.com>
-In-Reply-To: <7ec6b078-7b09-fb87-8ad2-a328e96c5bf9@linux.intel.com>
+Subject: Re: [cpufreq] 06c4d00466: will-it-scale.per_process_ops -53.4% regression
+Date: Wed, 25 Mar 2020 15:50:44 +0800
+Message-ID: <43a4189a-7153-18e8-4657-4a4400002c05@intel.com>
+In-Reply-To: <CAHp75VeeKZLeZ8E3Py7LECN54SPFHaRgkxrMzBYQWXM8x+4JhA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1711519332146096919==
+--===============4387508211452722864==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-ping...
-The issue still exists in v5.6-rc7.
 
-On 3/4/2020 4:15 PM, Xing Zhengjun wrote:
-> Hi Matthew,
-> =
 
->  =C2=A0We test it in v5.6-rc4, the issue still exist, do you have time to =
-
-> take a look at this? Thanks.
-> =
-
-> On 1/8/2020 10:31 AM, Rong Chen wrote:
+On 3/24/20 6:24 PM, Andy Shevchenko wrote:
+> On Tue, Mar 24, 2020 at 8:02 AM kernel test robot <rong.a.chen@intel.co=
+m> wrote:
+>> Greeting,
 >>
+>> FYI, we noticed a -53.4% regression of will-it-scale.per_process_ops due=
+ to commit:
+>> commit: 06c4d00466eb374841bc84c39af19b3161ff6917 ("[patch 09/22] cpufreq=
+: Convert to new X86 CPU match macros")
+>> url: https://github.com/0day-ci/linux/commits/Thomas-Gleixner/x86-device=
+table-Move-x86-specific-macro-out-of-generic-code/20200321-031729
+>> base: https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git l=
+inux-next
 >>
->> On 1/8/20 1:28 AM, Jan Kara wrote:
->>> On Tue 07-01-20 11:57:08, Theodore Y. Ts'o wrote:
->>>> On Tue, Jan 07, 2020 at 02:41:06PM +0100, Jan Kara wrote:
->>>>> Hello,
->>>>>
->>>>> On Tue 24-12-19 08:59:15, kernel test robot wrote:
->>>>>> FYI, we noticed a -20.2% regression of filebench.sum_bytes_mb/s =
+>> in testcase: will-it-scale
+>> on test machine: 4 threads Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz with =
+8G memory
+>> with following parameters:
+>
+> drivers/cpufreq/speedstep-centrino.c change missed the terminator,
+> perhaps it's a culprit, because I don't believe removing dups and
+> reordering lines may affect this.
+> Can you restore terminator there and re-test?
+>
 
->>>>>> due to commit:
->>>>>>
->>>>>>
->>>>>> commit: b1b4705d54abedfd69dcdf42779c521aa1e0fbd3 ("ext4: introduce =
+I have retested with the change, but it has no effect on the performance.
 
->>>>>> direct I/O read using iomap infrastructure")
->>>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git =
-
->>>>>> master
->>>>>>
->>>>>> in testcase: filebench
->>>>>> on test machine: 8 threads Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz =
-
->>>>>> with 8G memory
->>>>>> with following parameters:
->>>>>>
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0disk: 1HDD
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0fs: ext4
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0test: fivestreamreaddirect.f
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0cpufreq_governor: performance
->>>>>> =C2=A0=C2=A0=C2=A0=C2=A0ucode: 0x27
->>>>> I was trying to reproduce this but I failed with my test VM. I had =
-
->>>>> SATA SSD
->>>>> as a backing store though so maybe that's what makes a difference. =
-
->>>>> Maybe
->>>>> the new code results in somewhat more seeks because the five =
-
->>>>> threads which
->>>>> compete in submitting sequential IO end up being more interleaved?
->>>> A "-20.2% regression" should be read as a "20.2% performance
->>>> improvement" is zero-day kernel speak.
->>> Are you sure? I can see:
->>>
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 58.30 =C2=B1=C2=A0 2%=C2=A0=C2=A0=C2=A0=
-=C2=A0 -20.2%=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 46.53=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 filebench.sum_bytes_mb/s
->>>
->>> which implies to me previously the throughput was 58 MB/s and after the
->>> commit it was 46 MB/s?
->>>
->>> Anyway, in my testing that commit made no difference in that benchmark
->>> whasoever (getting around 97 MB/s for each thread before and after the
->>> commit).
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Honza
->>
->> We're sorry for the misunderstanding, "-20.2%" means the change of =
-
->> filebench.sum_bytes_mb/s,
->> "regression" means the explanation of this change from LKP.
->>
->> Best Regards,
->> Rong Chen
->> _______________________________________________
->> LKP mailing list -- lkp(a)lists.01.org
->> To unsubscribe send an email to lkp-leave(a)lists.01.org
-> =
-
-
--- =
-
-Zhengjun Xing
---===============1711519332146096919==--
+Best Regards,
+Rong Chen
+--===============4387508211452722864==--
 
