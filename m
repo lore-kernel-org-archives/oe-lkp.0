@@ -1,310 +1,262 @@
-Content-Type: multipart/mixed; boundary="===============8186906885431097560=="
+Content-Type: multipart/mixed; boundary="===============6308209197586842095=="
 MIME-Version: 1.0
-From: Filipe Manana <fdmanana@suse.com>
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 To: lkp@lists.01.org
-Subject: Re: [Btrfs] 8e7f04c76d: xfstests.btrfs.061.fail
-Date: Sat, 28 Mar 2020 14:09:54 +0000
-Message-ID: <4b182262-a81c-cdc9-e906-b90433a14a87@suse.com>
-In-Reply-To: <20200328132936.GD11705@shao2-debian>
+Subject: Re: 10055da814 ("drm: Set final_kfree in drm_dev_alloc"): [ 24.948283] WARNING: CPU: 0 PID: 1 at drivers/gpu/drm/drm_managed.c:119 drmm_add_final_kfree
+Date: Sat, 28 Mar 2020 17:19:12 +0100
+Message-ID: <CAKMK7uE9=vQibi6cKYmaL8JGqmDPxY4E_tLv9j+bLos1y=_eRg@mail.gmail.com>
+In-Reply-To: <20200328130312.GZ11705@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8186906885431097560==
+--===============6308209197586842095==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Sat, Mar 28, 2020 at 2:03 PM kernel test robot <lkp@intel.com> wrote:
+>
+> Greetings,
+>
+> 0day kernel testing robot got the below dmesg and the first bad commit is
+>
+> https://github.com/0day-ci/linux/commits/UPDATE-20200326-045230/Daniel-Ve=
+tter/drm_device-managed-resources-v5/20200324-045436
 
+This link 404s
 
-On 28/03/20 13:29, kernel test robot wrote:
-> FYI, we noticed the following commit (built with gcc-7):
-> =
+> commit 10055da8145261ac5f8f0edff56581bb81935505
 
-> commit: 8e7f04c76ddb99524994d2d8cd45cb7f6464726d ("Btrfs: simplify inline=
- extent handling when doing reflinks")
-> https://github.com/kdave/btrfs-devel.git misc-next
-> =
+And I have no idea where this commit is from. And I need to know the
+exact line that triggers the WARNING becomes there's 3 different ones
+in that function.
+-Daniel
 
-> in testcase: xfstests
-> with following parameters:
-> =
-
-> 	disk: 6HDD
-> 	fs: btrfs
-> 	test: btrfs-group00
-> =
-
-> test-description: xfstests is a regression test suite for xfs and other f=
-iles ystems.
-> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
-> =
-
-> =
-
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
-m 8G
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> =
-
-> =
-
+> Author:     Daniel Vetter <daniel.vetter@ffwll.ch>
+> AuthorDate: Mon Mar 23 15:49:03 2020 +0100
+> Commit:     0day robot <lkp@intel.com>
+> CommitDate: Thu Mar 26 04:52:32 2020 +0800
+>
+>     drm: Set final_kfree in drm_dev_alloc
+>
+>     I also did a full review of all callers, and only the xen driver
+>     forgot to call drm_dev_put in the failure path. Fix that up too.
+>
+>     v2: I noticed that xen has a drm_driver.release hook, and uses
+>     drm_dev_alloc(). We need to remove the kfree from
+>     xen_drm_drv_release().
+>
+>     bochs also has a release hook, but leaked the drm_device ever since
+>
+>     commit 0a6659bdc5e8221da99eebb176fd9591435e38de
+>     Author: Gerd Hoffmann <kraxel@redhat.com>
+>     Date:   Tue Dec 17 18:04:46 2013 +0100
+>
+>         drm/bochs: new driver
+>
+>     This patch here fixes that leak.
+>
+>     Same for virtio, started leaking with
+>
+>     commit b1df3a2b24a917f8853d43fe9683c0e360d2c33a
+>     Author: Gerd Hoffmann <kraxel@redhat.com>
+>     Date:   Tue Feb 11 14:58:04 2020 +0100
+>
+>         drm/virtio: add drm_driver.release callback.
+>
+>     Acked-by: Gerd Hoffmann <kraxel@redhat.com>
+>     Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+>     Acked-by: Sam Ravnborg <sam@ravnborg.org>
+>     Reviewed-by: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.=
+com>
+>     Cc: Gerd Hoffmann <kraxel@redhat.com>
+>     Cc: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
+>     Cc: xen-devel(a)lists.xenproject.org
+>     Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+>     Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+>     Cc: Maxime Ripard <mripard@kernel.org>
+>     Cc: Thomas Zimmermann <tzimmermann@suse.de>
+>     Cc: David Airlie <airlied@linux.ie>
+>     Cc: Daniel Vetter <daniel@ffwll.ch>
+>     Cc: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
+>     Cc: xen-devel(a)lists.xenproject.org
+>
+> 5745edda57  drm: add managed resources tied to drm_device
+> 10055da814  drm: Set final_kfree in drm_dev_alloc
+> 7defb09658  drm: Add docs for managed resources
+> +----------------------------------------------------------------+-------=
+-----+------------+------------+
+> |                                                                | 5745ed=
+da57 | 10055da814 | 7defb09658 |
+> +----------------------------------------------------------------+-------=
+-----+------------+------------+
+> | boot_successes                                                 | 32    =
+     | 0          | 0          |
+> | boot_failures                                                  | 1     =
+     | 11         | 2          |
+> | BUG:kernel_hang_in_test_stage                                  | 1     =
+     |            |            |
+> | WARNING:at_drivers/gpu/drm/drm_managed.c:#drmm_add_final_kfree | 0     =
+     | 11         | 2          |
+> | RIP:drmm_add_final_kfree                                       | 0     =
+     | 11         | 2          |
+> | WARNING:possible_circular_locking_dependency_detected          | 0     =
+     | 1          |            |
+> +----------------------------------------------------------------+-------=
+-----+------------+------------+
+>
 > If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <rong.a.chen@intel.com>
-> =
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> [   24.852398] Hangcheck: starting hangcheck timer 0.9.1 (tick is 180 sec=
+onds, margin is 60 seconds).
+> [   24.903568] [drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
+> [   24.916624] [drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
+> [   24.935488] [drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
+> [   24.947773] ------------[ cut here ]------------
+> [   24.948283] WARNING: CPU: 0 PID: 1 at drivers/gpu/drm/drm_managed.c:11=
+9 drmm_add_final_kfree+0x34/0x40
+> [   24.948283] Modules linked in:
+> [   24.948283] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G                T =
+5.6.0-rc7-01663-g10055da814526 #1
+> [   24.948283] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.12.0-1 04/01/2014
+> [   24.948283] RIP: 0010:drmm_add_final_kfree+0x34/0x40
+> [   24.948283] Code: 49 89 f4 48 83 7b 30 00 74 02 0f 0b 4c 39 e3 73 02 0=
+f 0b 4c 89 e7 e8 eb 91 97 ff 48 8d 93 00 10 00 00 4c 01 e0 48 39 c2 72 02 <=
+0f> 0b 4c 89 63 30 5b 41 5c 5d c3 90 55 48 89 e5 41 56 41 55 41 54
+> [   24.948283] RSP: 0018:ffffac76c003bc38 EFLAGS: 00010246
+> [   24.948283] RAX: ffff9c5c7375e000 RBX: ffff9c5c7375d000 RCX: 000000000=
+0000000
+> [   24.948283] RDX: ffff9c5c7375e000 RSI: ffff9c5c7375d000 RDI: 000000008=
+0000000
+> [   24.948283] RBP: ffffac76c003bc48 R08: 0000000000000001 R09: 000000000=
+0000000
+> [   24.948283] R10: 0000000000000000 R11: 0000000000000000 R12: ffff9c5c7=
+375d000
+> [   24.948283] R13: ffff9c5c76a0e0b0 R14: ffffffffa0a96580 R15: ffffffffa=
+0a96520
+> [   24.948283] FS:  0000000000000000(0000) GS:ffff9c5c77a00000(0000) knlG=
+S:0000000000000000
+> [   24.948283] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   24.948283] CR2: 00007f9c456b2480 CR3: 0000000227480000 CR4: 000000000=
+00006b0
+> [   24.948283] Call Trace:
+> [   24.948283]  drm_dev_alloc+0x61/0x70
+> [   24.948283]  bochs_pci_probe+0x8a/0x160
+> [   24.948283]  pci_device_probe+0xbd/0x160
+> [   24.948283]  really_probe+0x1cd/0x460
+> [   24.948283]  ? rdinit_setup+0x74/0x74
+> [   24.948283]  driver_probe_device+0xe4/0x130
+> [   24.948283]  device_driver_attach+0x3d/0x60
+> [   24.948283]  __driver_attach+0x11b/0x130
+> [   24.948283]  ? device_driver_attach+0x60/0x60
+> [   24.948283]  bus_for_each_dev+0x56/0xa0
+> [   24.948283]  driver_attach+0x1d/0x20
+> [   24.948283]  bus_add_driver+0x122/0x200
+> [   24.948283]  driver_register+0xa1/0xe0
+> [   24.948283]  __pci_register_driver+0x6d/0x80
+> [   24.948283]  ? vkms_init+0x2c4/0x2c4
+> [   24.948283]  bochs_init+0x52/0x73
+> [   24.948283]  do_one_initcall+0x101/0x2d0
+> [   24.948283]  ? init+0x3c/0x3c
+> [   24.948283]  ? do_one_initcall+0x6/0x2d0
+> [   24.948283]  kernel_init_freeable+0x1c2/0x2c3
+> [   24.948283]  ? rest_init+0x220/0x220
+> [   24.948283]  kernel_init+0x9/0xf0
+> [   24.948283]  ret_from_fork+0x24/0x30
+> [   24.948283] irq event stamp: 436112
+> [   24.948283] hardirqs last  enabled at (436111): [<ffffffff9e0d2242>] _=
+_kmalloc_track_caller+0x132/0x290
+> [   24.948283] hardirqs last disabled at (436112): [<ffffffff9de01ee8>] t=
+race_hardirqs_off_thunk+0x1a/0x1c
+> [   24.948283] softirqs last  enabled at (436106): [<ffffffff9fa003d7>] _=
+_do_softirq+0x3d7/0x412
+> [   24.948283] softirqs last disabled at (436099): [<ffffffff9df0b1ca>] i=
+rq_exit+0x4a/0xc0
+> [   24.948283] ---[ end trace 68c132b95971b4a5 ]---
+> [   25.336891] [drm] Found bochs VGA, ID 0xb0c0.
+>
+>                                                           # HH:MM RESULT =
+GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
+> git bisect start 5eb10aa0823a556bd94c0b1bebe26d8fa152f619 16fbf79b0f83bc7=
+52cee8589279f1ebfe57b3b6e --
+> git bisect  bad 0ace0054e6b0fb3897ae4544287dd29157bd9a23  # 18:12  B     =
+ 0     3   19   0  Merge 'linux-review/Martin-KaFai-Lau/bpf-Add-bpf_sk_stor=
+age-support-to-bpf_tcp_ca/20200321-035231' into devel-hourly-2020032619
+> git bisect good 8df10e20fb6ab8494c206757b40fd0129972a31a  # 19:26  G     =
+10     0    1   1  Merge 'linux-review/Heiko-Carstens/s390-removal-of-hiber=
+nate-support/20200324-053325' into devel-hourly-2020032619
+> git bisect  bad 9a12ccc493ff7b6fca5b64bcc1045f2104b38193  # 19:56  B     =
+ 0     1   17   0  Merge 'linux-review/Cezary-Rojewski/acpi-Add-NHLT-table-=
+signature/20200321-044951' into devel-hourly-2020032619
+> git bisect  bad 85649f426116a4b565685c2adebd087d487e86e7  # 20:28  B     =
+ 0     1   17   0  Merge 'linux-review/Chao-Yu/f2fs-clean-up-dic-tpages-ass=
+ignment/20200326-063609' into devel-hourly-2020032619
+> git bisect  bad b2b597d6fdebc14917f667159bd2da5f46f91fe7  # 21:25  B     =
+ 0     3   19   0  Merge 'vfs/next.uaccess-4' into devel-hourly-2020032619
+> git bisect  bad 5ba411db952603c3d236f30480e226d603f8ef09  # 22:26  B     =
+ 0     2   18   0  Merge 'djwong-xfs/repair-fsfile-metadata' into devel-hou=
+rly-2020032619
+> git bisect  bad fcdc1b980318fd30bca9fbc2eed9afaafa4dc354  # 23:07  B     =
+ 0     3   19   0  Merge 'linux-review/UPDATE-20200326-045230/Daniel-Vetter=
+/drm_device-managed-resources-v5/20200324-045436' into devel-hourly-2020032=
+619
+> git bisect good 3f78c2e4a3afc298f330c54f29ee10c4dda78519  # 23:57  G     =
+10     0    0   0  Merge 'linux-review/Kees-Cook/Optionally-randomize-kerne=
+l-stack-offset-each-syscall/20200326-045102' into devel-hourly-2020032619
+> git bisect good 8c2670ae74735aac2489236d74c1b6b1cb9d68ff  # 00:43  G     =
+10     0    0   0  Merge 'linux-review/Yue-Hu/drivers-block-zram-zram_drv-c=
+-remove-WARN_ON_ONCE-in-free_block_bdev/20200323-185723' into devel-hourly-=
+2020032619
+> git bisect good 08e467f2b085876026d8e48afee1ed4d53f0edf9  # 01:40  G     =
+10     0    0   0  Merge 'linux-review/Pablo-Neira-Ayuso/netfilter-nft_fwd_=
+netdev-validate-family-and-chain-type/20200325-185403' into devel-hourly-20=
+20032619
+> git bisect good 93159e12353c2a47e5576d642845a91fa00530bf  # 02:15  G     =
+10     0    1   1  drm/i915/gem: Avoid gem_context->mutex for simple vma lo=
+okup
+> git bisect good 29bc37f74ebbfd05c3c89efacdd4e09a362bc8ff  # 02:54  G     =
+10     0    0   0  Merge remote-tracking branch 'drm/drm-next' into drm-tip
+> git bisect good ca394b76cc984614bb79bf83415377d2bf4278fb  # 03:28  G     =
+11     0    0   0  Merge remote-tracking branch 'takashi/for-next' into drm=
+-tip
+> git bisect  bad e08f58984044bc0dcc8d25884e00f335f271b632  # 04:01  B     =
+ 0     4   20   0  drm/vkms: Use drmm_add_final_kfree
+> git bisect good 19f102d485b9f5e03677f73133d9922e2650686f  # 05:14  G     =
+10     0    0   0  Revert "drm/i915: Don't select BROKEN"
+> git bisect  bad 10055da8145261ac5f8f0edff56581bb81935505  # 06:04  B     =
+ 0     1   17   0  drm: Set final_kfree in drm_dev_alloc
+> git bisect good 256fb2eb782a5b175b1d14641b7ba747efd19e7a  # 08:24  G     =
+10     0    1   1  Merge remote-tracking branch 'drm-intel/topic/core-for-C=
+I' into drm-tip
+> git bisect good 6636876ca19c973c30a35b953ac0fa409065c7bd  # 09:28  G     =
+10     0    1   1  mm/sl[uo]b: export __kmalloc_track(_node)_caller
+> git bisect good 5745edda57538c3b1da74b2bd1ef0a81f3a987ec  # 10:20  G     =
+10     0    0   0  drm: add managed resources tied to drm_device
+> # first bad commit: [10055da8145261ac5f8f0edff56581bb81935505] drm: Set f=
+inal_kfree in drm_dev_alloc
+> git bisect good 5745edda57538c3b1da74b2bd1ef0a81f3a987ec  # 10:24  G     =
+30     0    0   0  drm: add managed resources tied to drm_device
+> # extra tests with debug options
+> git bisect good 10055da8145261ac5f8f0edff56581bb81935505  # 10:58  G     =
+10     0    0   0  drm: Set final_kfree in drm_dev_alloc
+> # extra tests on head commit of linux-review/UPDATE-20200326-045230/Danie=
+l-Vetter/drm_device-managed-resources-v5/20200324-045436
+> git bisect  bad 7defb09658f57febb56551b057c53ce6151d234c  # 11:18  B     =
+ 0     2   18   0  drm: Add docs for managed resources
+> # bad: [7defb09658f57febb56551b057c53ce6151d234c] drm: Add docs for manag=
+ed resources
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org
 
-> 2020-03-28 03:51:45 export TEST_DIR=3D/fs/vda
-> 2020-03-28 03:51:45 export TEST_DEV=3D/dev/vda
-> 2020-03-28 03:51:45 export FSTYP=3Dbtrfs
-> 2020-03-28 03:51:45 export SCRATCH_MNT=3D/fs/scratch
-> 2020-03-28 03:51:45 mkdir /fs/scratch -p
-> 2020-03-28 03:51:45 export SCRATCH_DEV_POOL=3D"/dev/vdb /dev/vdc /dev/vdd=
- /dev/vde /dev/vdf"
-> 2020-03-28 03:51:45 sed "s:^:btrfs/:" //lkp/benchmarks/xfstests/tests/btr=
-fs-group00
-> 2020-03-28 03:51:45 ./check btrfs/001 btrfs/004 btrfs/007 btrfs/010 btrfs=
-/013 btrfs/016 btrfs/019 btrfs/022 btrfs/025 btrfs/028 btrfs/031 btrfs/034 =
-btrfs/037 btrfs/040 btrfs/043 btrfs/046 btrfs/049 btrfs/052 btrfs/055 btrfs=
-/058 btrfs/061 btrfs/064 btrfs/067 btrfs/071 btrfs/074 btrfs/077 btrfs/080 =
-btrfs/083 btrfs/086 btrfs/089 btrfs/092 btrfs/095 btrfs/098 btrfs/101 btrfs=
-/104 btrfs/107 btrfs/110 btrfs/113 btrfs/116 btrfs/119 btrfs/122 btrfs/125 =
-btrfs/128 btrfs/131 btrfs/134 btrfs/137 btrfs/140 btrfs/143 btrfs/146 btrfs=
-/149 btrfs/152 btrfs/155 btrfs/158 btrfs/161 btrfs/164 btrfs/167 btrfs/170 =
-btrfs/173 btrfs/176 btrfs/179 btrfs/182 btrfs/185 btrfs/188 btrfs/191 btrfs=
-/194 btrfs/197 btrfs/200 btrfs/203 btrfs/206
-> btrfs/206 - unknown test, ignored
-> FSTYP         -- btrfs
-> PLATFORM      -- Linux/x86_64 vm-snb-45 5.6.0-rc5-00168-g8e7f04c76ddb9 #1=
- SMP Fri Mar 27 16:10:31 CST 2020
-> MKFS_OPTIONS  -- /dev/vdb
-> MOUNT_OPTIONS -- /dev/vdb /fs/scratch
-> =
 
-> btrfs/001	 69s
-> btrfs/004	 170s
-> btrfs/007	 2s
-> btrfs/010	 151s
-> btrfs/013	 11s
-> btrfs/016	 2s
-> btrfs/019	 0s
-> btrfs/022	 5s
-> btrfs/025	 1s
-> btrfs/028	 31s
-> btrfs/031	 1s
-> btrfs/034	 8s
-> btrfs/037	 1s
-> btrfs/040	 1s
-> btrfs/043	 1s
-> btrfs/046	 18s
-> btrfs/049	 6s
-> btrfs/052	 17s
-> btrfs/055	 2s
-> btrfs/058	 3s
-> btrfs/061	_check_dmesg: something found in dmesg (see /lkp/benchmarks/xfs=
-tests/results//btrfs/061.dmesg)
 
-False alarm...
-See the dmesg:
+-- =
 
-[ 1161.496493] nfs: server inn not responding, still trying
-[ 1203.479795] ------------[ cut here ]------------
-[ 1203.481138] NETDEV WATCHDOG: eth0 (e1000): transmit queue 0 timed out
-[ 1203.487166] WARNING: CPU: 0 PID: 0 at
-/kbuild/src/consumer/net/sched/sch_generic.c:443 dev_watchdog+0x278/0x280
-[ 1203.489163] Modules linked in: dm_flakey btrfs blake2b_generic xor
-zstd_decompress zstd_compress raid6_pq libcrc32c dm_mod intel_rapl_msr
-intel_rapl_common crct10dif_pclmul crc32_pclmul crc32c_intel
-ghash_clmulni_intel sr_mod cdrom sg ppdev aesni_intel snd_pcm
-crypto_simd cryptd snd_timer ata_generic pata_acpi glue_helper snd
-joydev soundcore bochs_drm drm_vram_helper drm_ttm_helper ttm
-drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops drm
-serio_raw ata_piix pcspkr libata i2c_piix4 parport_pc parport floppy
-ip_tables
-[ 1203.499420] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
-5.6.0-rc5-00168-g8e7f04c76ddb9 #1
-[ 1203.501320] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS 1.12.0-1 04/01/2014
-[ 1203.503424] RIP: 0010:dev_watchdog+0x278/0x280
-[ 1203.504859] Code: 0d 45 b5 0e 7a eb 8d 4c 89 ef c6 05 e0 68 ee 00 01
-e8 0c 27 fb ff 89 d9 48 89 c2 4c 89 ee 48 c7 c7 e0 b6 9f 86 e8 78 30 77
-ff <0f> 0b e9 6c ff ff ff 90 66 66 66 66 90 41 57 41 56 49 89 d6 41 55
-[ 1203.508961] RSP: 0018:ffffb525c0003e70 EFLAGS: 00010286
-[ 1203.510597] RAX: 0000000000000000 RBX: 0000000000000000 RCX:
-000000000000083f
-[ 1203.512440] RDX: 0000000000000001 RSI: 00000000000000f6 RDI:
-000000000000083f
-[ 1203.514321] RBP: ffff977697f3439c R08: 0000000000000821 R09:
-0000000000aaaaaa
-[ 1203.516172] R10: ffffb525c0003ef8 R11: ffff97769741e360 R12:
-ffff977664320080
-[ 1203.518305] R13: ffff977697f34000 R14: ffff977697f34440 R15:
-0000000000000001
-[ 1203.519447] FS:  0000000000000000(0000) GS:ffff9776bfc00000(0000)
-knlGS:0000000000000000
-[ 1203.520637] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1203.521677] CR2: 0000000001be4000 CR3: 00000001d78b2000 CR4:
-00000000000406f0
-[ 1203.522819] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-0000000000000000
-[ 1203.523958] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-0000000000000400
-[ 1203.525101] Call Trace:
-[ 1203.526434]  <IRQ>
-[ 1203.527747]  ? pfifo_fast_enqueue+0x150/0x150
-[ 1203.529398]  call_timer_fn+0x2d/0x140
-[ 1203.530703]  run_timer_softirq+0x46f/0x4b0
-[ 1203.532007]  ? tick_sched_timer+0x37/0x70
-[ 1203.533642]  __do_softirq+0xe3/0x2f8
-[ 1203.535075]  irq_exit+0xd5/0xe0
-[ 1203.536346]  smp_apic_timer_interrupt+0x74/0x140
-[ 1203.537484]  apic_timer_interrupt+0xf/0x20
-[ 1203.538441]  </IRQ>
-[ 1203.539241] RIP: 0010:native_safe_halt+0xe/0x10
-[ 1203.540217] Code: eb bd cc cc cc cc cc cc cc cc cc cc e9 07 00 00 00
-0f 00 2d c6 70 55 00 f4 c3 66 90 e9 07 00 00 00 0f 00 2d b6 70 55 00 fb
-f4 <c3> cc 66 66 66 66 90 41 55 41 54 55 53 e8 f0 16 67 ff 65 8b 2d b9
-[ 1203.542919] RSP: 0018:ffffffff86c03e88 EFLAGS: 00000246 ORIG_RAX:
-ffffffffffffff13
-[ 1203.544154] RAX: ffffffff860b3770 RBX: 0000000000000000 RCX:
-0000000000000001
-[ 1203.545376] RDX: 0000000000000000 RSI: 0000000000000083 RDI:
-0000000000000000
-[ 1203.546584] RBP: 0000000000000000 R08: 00000135342b2839 R09:
-0000000000000000
-[ 1203.547785] R10: 000000000000000f R11: 000000000025bf59 R12:
-ffffffffffffffff
-[ 1203.548984] R13: 0000000000000000 R14: 0000000000000000 R15:
-0000000000000000
-[ 1203.550201]  ? __cpuidle_text_start+0x8/0x8
-[ 1203.551591]  default_idle+0x1c/0x160
-[ 1203.552662]  do_idle+0x1c6/0x280
-[ 1203.553969]  cpu_startup_entry+0x19/0x20
-[ 1203.555825]  start_kernel+0x4e3/0x505
-[ 1203.558004]  secondary_startup_64+0xb6/0xc0
-[ 1203.559269] ---[ end trace 747474b4f525ae2e ]---
-
-This fails due to some unrelated nfs timeout.
-Thanks.
-
-> =
-
-> btrfs/064	 644s
-> btrfs/067	 122s
-> btrfs/071	 19s
-> btrfs/074	 43s
-> btrfs/077	 1s
-> btrfs/080	 54s
-> btrfs/083	 1s
-> btrfs/086	 36s
-> btrfs/089	 15s
-> btrfs/092	 36s
-> btrfs/095	 19s
-> btrfs/098	 17s
-> btrfs/101	 209s
-> btrfs/104	 2s
-> btrfs/107	 1s
-> btrfs/110	 1s
-> btrfs/113	 0s
-> btrfs/116	[not run] FITRIM not supported on /fs/scratch
-> btrfs/119	 1s
-> btrfs/122	 15s
-> btrfs/125	 17s
-> btrfs/128	 1s
-> btrfs/131	 2s
-> btrfs/134	 1s
-> btrfs/137	 1s
-> btrfs/140	 2s
-> btrfs/143	 1s
-> btrfs/146	 3s
-> btrfs/149	 1s
-> btrfs/152	 3s
-> btrfs/155	 1s
-> btrfs/158	 1s
-> btrfs/161	 1s
-> btrfs/164	 2s
-> btrfs/167	 1s
-> btrfs/170	 1s
-> btrfs/173	 1s
-> btrfs/176	 2s
-> btrfs/179	 133s
-> btrfs/182	 3s
-> btrfs/185	 1s
-> btrfs/188	 1s
-> btrfs/191	 1s
-> btrfs/194	 22s
-> btrfs/197	- output mismatch (see /lkp/benchmarks/xfstests/results//btrfs/=
-197.out.bad)
->     --- tests/btrfs/197.out	2020-03-05 16:38:54.000000000 +0800
->     +++ /lkp/benchmarks/xfstests/results//btrfs/197.out.bad	2020-03-28 04=
-:34:05.170608651 +0800
->     @@ -3,23 +3,19 @@
->      Label: none  uuid: <UUID>
->      	Total devices <NUM> FS bytes used <SIZE>
->      	devid <DEVID> size <SIZE> used <SIZE> path SCRATCH_DEV
->     -	*** Some devices missing
->      =
-
->      raid5
->      Label: none  uuid: <UUID>
->     ...
->     (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/197.out /lkp/bench=
-marks/xfstests/results//btrfs/197.out.bad'  to see the entire diff)
-> btrfs/200	 1s
-> btrfs/203	 1s
-> Ran: btrfs/001 btrfs/004 btrfs/007 btrfs/010 btrfs/013 btrfs/016 btrfs/01=
-9 btrfs/022 btrfs/025 btrfs/028 btrfs/031 btrfs/034 btrfs/037 btrfs/040 btr=
-fs/043 btrfs/046 btrfs/049 btrfs/052 btrfs/055 btrfs/058 btrfs/061 btrfs/06=
-4 btrfs/067 btrfs/071 btrfs/074 btrfs/077 btrfs/080 btrfs/083 btrfs/086 btr=
-fs/089 btrfs/092 btrfs/095 btrfs/098 btrfs/101 btrfs/104 btrfs/107 btrfs/11=
-0 btrfs/113 btrfs/116 btrfs/119 btrfs/122 btrfs/125 btrfs/128 btrfs/131 btr=
-fs/134 btrfs/137 btrfs/140 btrfs/143 btrfs/146 btrfs/149 btrfs/152 btrfs/15=
-5 btrfs/158 btrfs/161 btrfs/164 btrfs/167 btrfs/170 btrfs/173 btrfs/176 btr=
-fs/179 btrfs/182 btrfs/185 btrfs/188 btrfs/191 btrfs/194 btrfs/197 btrfs/20=
-0 btrfs/203
-> Not run: btrfs/116
-> Failures: btrfs/061 btrfs/197
-> Failed 2 of 68 tests
-> =
-
-> =
-
-> =
-
-> =
-
-> To reproduce:
-> =
-
->         # build kernel
-> 	cd linux
-> 	cp config-5.6.0-rc5-00168-g8e7f04c76ddb9 .config
-> 	make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 olddefconfig prepare module=
-s_prepare bzImage modules
-> 	make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 INSTALL_MOD_PATH=3D<mod-ins=
-tall-dir> modules_install
-> 	cd <mod-install-dir>
-> 	find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
-> =
-
-> =
-
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-script =
-is attached in this email
-> =
-
-> =
-
-> =
-
-> Thanks,
-> Rong Chen
->=20
---===============8186906885431097560==--
+Daniel Vetter
+Software Engineer, Intel Corporation
++41 (0) 79 365 57 48 - http://blog.ffwll.ch
+--===============6308209197586842095==--
 
