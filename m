@@ -1,262 +1,59 @@
-Content-Type: multipart/mixed; boundary="===============6308209197586842095=="
+Content-Type: multipart/mixed; boundary="===============5123988688376754638=="
 MIME-Version: 1.0
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: Kees Cook <keescook@chromium.org>
 To: lkp@lists.01.org
-Subject: Re: 10055da814 ("drm: Set final_kfree in drm_dev_alloc"): [ 24.948283] WARNING: CPU: 0 PID: 1 at drivers/gpu/drm/drm_managed.c:119 drmm_add_final_kfree
-Date: Sat, 28 Mar 2020 17:19:12 +0100
-Message-ID: <CAKMK7uE9=vQibi6cKYmaL8JGqmDPxY4E_tLv9j+bLos1y=_eRg@mail.gmail.com>
-In-Reply-To: <20200328130312.GZ11705@shao2-debian>
+Subject: Re: [x86/entry] 8c5045f89b: will-it-scale.per_process_ops -12.9% regression
+Date: Sat, 28 Mar 2020 15:19:28 -0700
+Message-ID: <202003281505.0F481D3@keescook>
+In-Reply-To: <20200327074002.GV11705@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6308209197586842095==
+--===============5123988688376754638==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Mar 28, 2020 at 2:03 PM kernel test robot <lkp@intel.com> wrote:
->
-> Greetings,
->
-> 0day kernel testing robot got the below dmesg and the first bad commit is
->
-> https://github.com/0day-ci/linux/commits/UPDATE-20200326-045230/Daniel-Ve=
-tter/drm_device-managed-resources-v5/20200324-045436
+On Fri, Mar 27, 2020 at 03:40:02PM +0800, kernel test robot wrote:
+> Greeting,
+> =
 
-This link 404s
+> FYI, we noticed a -12.9% regression of will-it-scale.per_process_ops due =
+to commit:
+> =
 
-> commit 10055da8145261ac5f8f0edff56581bb81935505
+> =
 
-And I have no idea where this commit is from. And I need to know the
-exact line that triggers the WARNING becomes there's 3 different ones
-in that function.
--Daniel
+> commit: 8c5045f89b181a4412b698cafc9dc257192a3a65 ("x86/entry: Enable rand=
+om_kstack_offset support")
+> https://git.kernel.org/cgit/linux/kernel/git/kees/linux.git kspp/stack/of=
+fset/agnostic/v1
+> =
 
-> Author:     Daniel Vetter <daniel.vetter@ffwll.ch>
-> AuthorDate: Mon Mar 23 15:49:03 2020 +0100
-> Commit:     0day robot <lkp@intel.com>
-> CommitDate: Thu Mar 26 04:52:32 2020 +0800
->
->     drm: Set final_kfree in drm_dev_alloc
->
->     I also did a full review of all callers, and only the xen driver
->     forgot to call drm_dev_put in the failure path. Fix that up too.
->
->     v2: I noticed that xen has a drm_driver.release hook, and uses
->     drm_dev_alloc(). We need to remove the kfree from
->     xen_drm_drv_release().
->
->     bochs also has a release hook, but leaked the drm_device ever since
->
->     commit 0a6659bdc5e8221da99eebb176fd9591435e38de
->     Author: Gerd Hoffmann <kraxel@redhat.com>
->     Date:   Tue Dec 17 18:04:46 2013 +0100
->
->         drm/bochs: new driver
->
->     This patch here fixes that leak.
->
->     Same for virtio, started leaking with
->
->     commit b1df3a2b24a917f8853d43fe9683c0e360d2c33a
->     Author: Gerd Hoffmann <kraxel@redhat.com>
->     Date:   Tue Feb 11 14:58:04 2020 +0100
->
->         drm/virtio: add drm_driver.release callback.
->
->     Acked-by: Gerd Hoffmann <kraxel@redhat.com>
->     Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
->     Acked-by: Sam Ravnborg <sam@ravnborg.org>
->     Reviewed-by: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.=
-com>
->     Cc: Gerd Hoffmann <kraxel@redhat.com>
->     Cc: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
->     Cc: xen-devel(a)lists.xenproject.org
->     Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
->     Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
->     Cc: Maxime Ripard <mripard@kernel.org>
->     Cc: Thomas Zimmermann <tzimmermann@suse.de>
->     Cc: David Airlie <airlied@linux.ie>
->     Cc: Daniel Vetter <daniel@ffwll.ch>
->     Cc: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
->     Cc: xen-devel(a)lists.xenproject.org
->
-> 5745edda57  drm: add managed resources tied to drm_device
-> 10055da814  drm: Set final_kfree in drm_dev_alloc
-> 7defb09658  drm: Add docs for managed resources
-> +----------------------------------------------------------------+-------=
------+------------+------------+
-> |                                                                | 5745ed=
-da57 | 10055da814 | 7defb09658 |
-> +----------------------------------------------------------------+-------=
------+------------+------------+
-> | boot_successes                                                 | 32    =
-     | 0          | 0          |
-> | boot_failures                                                  | 1     =
-     | 11         | 2          |
-> | BUG:kernel_hang_in_test_stage                                  | 1     =
-     |            |            |
-> | WARNING:at_drivers/gpu/drm/drm_managed.c:#drmm_add_final_kfree | 0     =
-     | 11         | 2          |
-> | RIP:drmm_add_final_kfree                                       | 0     =
-     | 11         | 2          |
-> | WARNING:possible_circular_locking_dependency_detected          | 0     =
-     | 1          |            |
-> +----------------------------------------------------------------+-------=
------+------------+------------+
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> [   24.852398] Hangcheck: starting hangcheck timer 0.9.1 (tick is 180 sec=
-onds, margin is 60 seconds).
-> [   24.903568] [drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
-> [   24.916624] [drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
-> [   24.935488] [drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
-> [   24.947773] ------------[ cut here ]------------
-> [   24.948283] WARNING: CPU: 0 PID: 1 at drivers/gpu/drm/drm_managed.c:11=
-9 drmm_add_final_kfree+0x34/0x40
-> [   24.948283] Modules linked in:
-> [   24.948283] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G                T =
-5.6.0-rc7-01663-g10055da814526 #1
-> [   24.948283] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.12.0-1 04/01/2014
-> [   24.948283] RIP: 0010:drmm_add_final_kfree+0x34/0x40
-> [   24.948283] Code: 49 89 f4 48 83 7b 30 00 74 02 0f 0b 4c 39 e3 73 02 0=
-f 0b 4c 89 e7 e8 eb 91 97 ff 48 8d 93 00 10 00 00 4c 01 e0 48 39 c2 72 02 <=
-0f> 0b 4c 89 63 30 5b 41 5c 5d c3 90 55 48 89 e5 41 56 41 55 41 54
-> [   24.948283] RSP: 0018:ffffac76c003bc38 EFLAGS: 00010246
-> [   24.948283] RAX: ffff9c5c7375e000 RBX: ffff9c5c7375d000 RCX: 000000000=
-0000000
-> [   24.948283] RDX: ffff9c5c7375e000 RSI: ffff9c5c7375d000 RDI: 000000008=
-0000000
-> [   24.948283] RBP: ffffac76c003bc48 R08: 0000000000000001 R09: 000000000=
-0000000
-> [   24.948283] R10: 0000000000000000 R11: 0000000000000000 R12: ffff9c5c7=
-375d000
-> [   24.948283] R13: ffff9c5c76a0e0b0 R14: ffffffffa0a96580 R15: ffffffffa=
-0a96520
-> [   24.948283] FS:  0000000000000000(0000) GS:ffff9c5c77a00000(0000) knlG=
-S:0000000000000000
-> [   24.948283] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   24.948283] CR2: 00007f9c456b2480 CR3: 0000000227480000 CR4: 000000000=
-00006b0
-> [   24.948283] Call Trace:
-> [   24.948283]  drm_dev_alloc+0x61/0x70
-> [   24.948283]  bochs_pci_probe+0x8a/0x160
-> [   24.948283]  pci_device_probe+0xbd/0x160
-> [   24.948283]  really_probe+0x1cd/0x460
-> [   24.948283]  ? rdinit_setup+0x74/0x74
-> [   24.948283]  driver_probe_device+0xe4/0x130
-> [   24.948283]  device_driver_attach+0x3d/0x60
-> [   24.948283]  __driver_attach+0x11b/0x130
-> [   24.948283]  ? device_driver_attach+0x60/0x60
-> [   24.948283]  bus_for_each_dev+0x56/0xa0
-> [   24.948283]  driver_attach+0x1d/0x20
-> [   24.948283]  bus_add_driver+0x122/0x200
-> [   24.948283]  driver_register+0xa1/0xe0
-> [   24.948283]  __pci_register_driver+0x6d/0x80
-> [   24.948283]  ? vkms_init+0x2c4/0x2c4
-> [   24.948283]  bochs_init+0x52/0x73
-> [   24.948283]  do_one_initcall+0x101/0x2d0
-> [   24.948283]  ? init+0x3c/0x3c
-> [   24.948283]  ? do_one_initcall+0x6/0x2d0
-> [   24.948283]  kernel_init_freeable+0x1c2/0x2c3
-> [   24.948283]  ? rest_init+0x220/0x220
-> [   24.948283]  kernel_init+0x9/0xf0
-> [   24.948283]  ret_from_fork+0x24/0x30
-> [   24.948283] irq event stamp: 436112
-> [   24.948283] hardirqs last  enabled at (436111): [<ffffffff9e0d2242>] _=
-_kmalloc_track_caller+0x132/0x290
-> [   24.948283] hardirqs last disabled at (436112): [<ffffffff9de01ee8>] t=
-race_hardirqs_off_thunk+0x1a/0x1c
-> [   24.948283] softirqs last  enabled at (436106): [<ffffffff9fa003d7>] _=
-_do_softirq+0x3d7/0x412
-> [   24.948283] softirqs last disabled at (436099): [<ffffffff9df0b1ca>] i=
-rq_exit+0x4a/0xc0
-> [   24.948283] ---[ end trace 68c132b95971b4a5 ]---
-> [   25.336891] [drm] Found bochs VGA, ID 0xb0c0.
->
->                                                           # HH:MM RESULT =
-GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
-> git bisect start 5eb10aa0823a556bd94c0b1bebe26d8fa152f619 16fbf79b0f83bc7=
-52cee8589279f1ebfe57b3b6e --
-> git bisect  bad 0ace0054e6b0fb3897ae4544287dd29157bd9a23  # 18:12  B     =
- 0     3   19   0  Merge 'linux-review/Martin-KaFai-Lau/bpf-Add-bpf_sk_stor=
-age-support-to-bpf_tcp_ca/20200321-035231' into devel-hourly-2020032619
-> git bisect good 8df10e20fb6ab8494c206757b40fd0129972a31a  # 19:26  G     =
-10     0    1   1  Merge 'linux-review/Heiko-Carstens/s390-removal-of-hiber=
-nate-support/20200324-053325' into devel-hourly-2020032619
-> git bisect  bad 9a12ccc493ff7b6fca5b64bcc1045f2104b38193  # 19:56  B     =
- 0     1   17   0  Merge 'linux-review/Cezary-Rojewski/acpi-Add-NHLT-table-=
-signature/20200321-044951' into devel-hourly-2020032619
-> git bisect  bad 85649f426116a4b565685c2adebd087d487e86e7  # 20:28  B     =
- 0     1   17   0  Merge 'linux-review/Chao-Yu/f2fs-clean-up-dic-tpages-ass=
-ignment/20200326-063609' into devel-hourly-2020032619
-> git bisect  bad b2b597d6fdebc14917f667159bd2da5f46f91fe7  # 21:25  B     =
- 0     3   19   0  Merge 'vfs/next.uaccess-4' into devel-hourly-2020032619
-> git bisect  bad 5ba411db952603c3d236f30480e226d603f8ef09  # 22:26  B     =
- 0     2   18   0  Merge 'djwong-xfs/repair-fsfile-metadata' into devel-hou=
-rly-2020032619
-> git bisect  bad fcdc1b980318fd30bca9fbc2eed9afaafa4dc354  # 23:07  B     =
- 0     3   19   0  Merge 'linux-review/UPDATE-20200326-045230/Daniel-Vetter=
-/drm_device-managed-resources-v5/20200324-045436' into devel-hourly-2020032=
-619
-> git bisect good 3f78c2e4a3afc298f330c54f29ee10c4dda78519  # 23:57  G     =
-10     0    0   0  Merge 'linux-review/Kees-Cook/Optionally-randomize-kerne=
-l-stack-offset-each-syscall/20200326-045102' into devel-hourly-2020032619
-> git bisect good 8c2670ae74735aac2489236d74c1b6b1cb9d68ff  # 00:43  G     =
-10     0    0   0  Merge 'linux-review/Yue-Hu/drivers-block-zram-zram_drv-c=
--remove-WARN_ON_ONCE-in-free_block_bdev/20200323-185723' into devel-hourly-=
-2020032619
-> git bisect good 08e467f2b085876026d8e48afee1ed4d53f0edf9  # 01:40  G     =
-10     0    0   0  Merge 'linux-review/Pablo-Neira-Ayuso/netfilter-nft_fwd_=
-netdev-validate-family-and-chain-type/20200325-185403' into devel-hourly-20=
-20032619
-> git bisect good 93159e12353c2a47e5576d642845a91fa00530bf  # 02:15  G     =
-10     0    1   1  drm/i915/gem: Avoid gem_context->mutex for simple vma lo=
-okup
-> git bisect good 29bc37f74ebbfd05c3c89efacdd4e09a362bc8ff  # 02:54  G     =
-10     0    0   0  Merge remote-tracking branch 'drm/drm-next' into drm-tip
-> git bisect good ca394b76cc984614bb79bf83415377d2bf4278fb  # 03:28  G     =
-11     0    0   0  Merge remote-tracking branch 'takashi/for-next' into drm=
--tip
-> git bisect  bad e08f58984044bc0dcc8d25884e00f335f271b632  # 04:01  B     =
- 0     4   20   0  drm/vkms: Use drmm_add_final_kfree
-> git bisect good 19f102d485b9f5e03677f73133d9922e2650686f  # 05:14  G     =
-10     0    0   0  Revert "drm/i915: Don't select BROKEN"
-> git bisect  bad 10055da8145261ac5f8f0edff56581bb81935505  # 06:04  B     =
- 0     1   17   0  drm: Set final_kfree in drm_dev_alloc
-> git bisect good 256fb2eb782a5b175b1d14641b7ba747efd19e7a  # 08:24  G     =
-10     0    1   1  Merge remote-tracking branch 'drm-intel/topic/core-for-C=
-I' into drm-tip
-> git bisect good 6636876ca19c973c30a35b953ac0fa409065c7bd  # 09:28  G     =
-10     0    1   1  mm/sl[uo]b: export __kmalloc_track(_node)_caller
-> git bisect good 5745edda57538c3b1da74b2bd1ef0a81f3a987ec  # 10:20  G     =
-10     0    0   0  drm: add managed resources tied to drm_device
-> # first bad commit: [10055da8145261ac5f8f0edff56581bb81935505] drm: Set f=
-inal_kfree in drm_dev_alloc
-> git bisect good 5745edda57538c3b1da74b2bd1ef0a81f3a987ec  # 10:24  G     =
-30     0    0   0  drm: add managed resources tied to drm_device
-> # extra tests with debug options
-> git bisect good 10055da8145261ac5f8f0edff56581bb81935505  # 10:58  G     =
-10     0    0   0  drm: Set final_kfree in drm_dev_alloc
-> # extra tests on head commit of linux-review/UPDATE-20200326-045230/Danie=
-l-Vetter/drm_device-managed-resources-v5/20200324-045436
-> git bisect  bad 7defb09658f57febb56551b057c53ce6151d234c  # 11:18  B     =
- 0     2   18   0  drm: Add docs for managed resources
-> # bad: [7defb09658f57febb56551b057c53ce6151d234c] drm: Add docs for manag=
-ed resources
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org
+> in testcase: will-it-scale
+> on test machine: 288 threads Intel(R) Xeon Phi(TM) CPU 7295 @ 1.50GHz wit=
+h 80G memory
+> with following parameters:
+> =
 
+> 	nr_task: 100%
+> 	mode: process
+> 	test: lseek1
+> 	cpufreq_governor: performance
+> 	ucode: 0x11
+> =
 
+> test-description: Will It Scale takes a testcase and runs it from 1 throu=
+gh to n parallel copies to see if the testcase will scale. It builds both a=
+ process and threads based test in order to see any differences between the=
+ two.
+> test-url: https://github.com/antonblanchard/will-it-scale
+
+Whoa. I'll take a closer look. I fail to understand how this could be
+happening. In this CONFIG the changes are a NOP. And that would be
+true for both process and thread. O_o
 
 -- =
 
-Daniel Vetter
-Software Engineer, Intel Corporation
-+41 (0) 79 365 57 48 - http://blog.ffwll.ch
---===============6308209197586842095==--
+Kees Cook
+--===============5123988688376754638==--
 
