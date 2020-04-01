@@ -1,61 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============8499146116841989327=="
+Content-Type: multipart/mixed; boundary="===============8270295084191374094=="
 MIME-Version: 1.0
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: [sched/fair] 3c29e651e1: hackbench.throughput -15.2% regression
-Date: Wed, 01 Apr 2020 16:10:46 +0530
-Message-ID: <20200401104046.5f3aou6fvyw4x3ej@vireshk-i7>
-In-Reply-To: <20200205122902.GL12867@shao2-debian>
+Subject: Re: [PATCH] workqueue: Don't double assign worker->sleeping
+Date: Wed, 01 Apr 2020 15:03:46 +0200
+Message-ID: <20200401130346.e7cdsqgxppa6ohje@linutronix.de>
+In-Reply-To: <CAJhGHyBS9Z=x-X2Bxzbic2sfqj=STqr+K8Tgu1UfYMQDm6MtBg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8499146116841989327==
+--===============8270295084191374094==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On 2020-04-01 11:44:06 [+0800], Lai Jiangshan wrote:
+> On Wed, Apr 1, 2020 at 11:22 AM Lai Jiangshan <jiangshanlai@gmail.com> =
+wrote:
+> >
+> > Hello
+Hi Lai,
 
-Sorry for getting back to this after a long time :(
-
-On 05-02-20, 20:29, kernel test robot wrote:
-> Greeting,
+=E2=80=A6
+> > 2) wq_worker_running() can be interrupted(async-page-faulted in virtual=
+ machine)
+> > and nr_running would be decreased twice.
 > =
 
-> FYI, we noticed a -15.2% regression of hackbench.throughput due to commit:
+> would be *increased* twice
 > =
 
-> =
+> I just saw the V2 patch, this issue is not listed, but need to be fixed t=
+oo.
 
-> commit: 3c29e651e16dd3b3179cfb2d055ee9538e37515c ("sched/fair: Fall back =
-to sched-idle CPU if idle CPU isn't found")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> =
+| void wq_worker_running(struct task_struct *task)
+| {
+|         struct worker *worker =3D kthread_data(task);
+| =
 
-> in testcase: hackbench
-> on test machine: 16 threads Intel(R) Xeon(R) E-2278G CPU @ 3.40GHz with 3=
-2G memory
-> with following parameters:
-> =
+|         if (!worker->sleeping)
+|                 return;
+|         if (!(worker->flags & WORKER_NOT_RUNNING))
+|                 atomic_inc(&worker->pool->nr_running);
+*0
+|         worker->sleeping =3D 0;
+*1
+| }
 
-> 	nr_threads: 100%
-> 	mode: threads
-> 	ipc: pipe
-> 	cpufreq_governor: performance
-> 	ucode: 0xca
+So an interrupt
+- before *0, the preempting caller drop early in wq_worker_sleeping(), only=
+ one
+  atomic_inc()
 
-I tried following command on my x86 box, skylake, 8 CPUs =
+- after *1, the preempting task will invoke wq_worker_sleeping() and do
+  dec() + inc().
 
+What did I miss here?
 
-"/usr/bin/hackbench" "-g" "8" "--threads" "--pipe" "-l" "30000" "-s" "100"
-
-And hackbench mostly reports values from 29.4 to 30.7, with and without my
-patches. I used intel_pstate=3Dpassive in command line and chose performance
-governor by default.
-
-I don't see any issues here in hackbench numbers because of my patches.
-
--- =
-
-viresh
---===============8499146116841989327==--
+Sebastian
+--===============8270295084191374094==--
 
