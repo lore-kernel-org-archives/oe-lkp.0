@@ -1,33 +1,27 @@
-Content-Type: multipart/mixed; boundary="===============8199855372733492182=="
+Content-Type: multipart/mixed; boundary="===============3612775488117554090=="
 MIME-Version: 1.0
-From: Giovanni Gherdovich <ggherdovich@suse.cz>
+From: Philip Li <philip.li@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86, sched] 1567c3e346: vm-scalability.median -15.8% regression
-Date: Thu, 16 Apr 2020 08:20:59 +0200
-Message-ID: <1587018059.32139.22.camel@suse.cz>
-In-Reply-To: <a5b0b58d-54a9-0f06-c822-3087346a0ae8@linux.intel.com>
+Subject: [0-Day CI notification] the service will be scheduled down from 4/17 to 4/20
+Date: Fri, 17 Apr 2020 09:24:31 +0800
+Message-ID: <20200417012431.GA27206@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8199855372733492182==
+--===============3612775488117554090==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2020-04-16 at 14:10 +0800, Xing Zhengjun wrote:
-> Hi Giovanni,
-> =
-
->    1567c3e346("x86, sched: Add support for frequency invariance") has =
-
-> been merged into Linux mainline v5.7-rc1 now. Do you have time to take a =
-
-> look at this? Thanks.
-> =
+Hi all, this is Philip who maintains the 0-Day CI test service.
+Thanks for anyone who subscribes to the service. We will have a
+regular lab clean up due to 2019-nCoV (from 4/17 5 PM to 4/20 5
+PM). =
 
 
-Apologies, this slipped under my radar. I'm on it, thanks.
+Sorry for any inconvenience caused by this, we will recover the
+service to be online as early as possible.
 
+Thanks
 
-Giovanni Gherdovich
---===============8199855372733492182==--
+--===============3612775488117554090==--
 
