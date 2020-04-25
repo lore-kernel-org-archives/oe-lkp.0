@@ -1,50 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============0096404101544676195=="
+Content-Type: multipart/mixed; boundary="===============6515643596729007045=="
 MIME-Version: 1.0
-From: Chen, Rong A <rong.a.chen@intel.com>
+From: Borislav Petkov <bp@suse.de>
 To: lkp@lists.01.org
-Subject: Re: ddeb155090 ("kernfs: handle multiple namespace tags"): [ 125.094839] BUG: KASAN: use-after-free in sysfs_kill_sb
-Date: Sat, 25 Apr 2020 19:58:03 +0800
-Message-ID: <1df5581d-396f-d613-1c31-8a8e338dd305@intel.com>
-In-Reply-To: <20200425113014.nwwvmdnqiblibhmk@wittgenstein>
+Subject: Re: [x86/mce] 1de08dccd3: will-it-scale.per_process_ops -14.1% regression
+Date: Sat, 25 Apr 2020 15:01:36 +0200
+Message-ID: <20200425130136.GA28245@zn.tnic>
+In-Reply-To: <20200425114414.GU26573@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0096404101544676195==
+--===============6515643596729007045==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Sat, Apr 25, 2020 at 07:44:14PM +0800, kernel test robot wrote:
+> Greeting,
+> =
 
+> FYI, we noticed a -14.1% regression of will-it-scale.per_process_ops due =
+to commit:
+> =
 
-On 4/25/2020 7:30 PM, Christian Brauner wrote:
-> On Sat, Apr 25, 2020 at 07:17:50PM +0800, kernel test robot wrote:
->> Greetings,
->>
->> 0day kernel testing robot got the below dmesg and the first bad commit is
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/brauner/linux.git loopfs=
-_v1
->>
->> commit ddeb155090598eeea4a577770cb7984e20952682
-> Hey thanks for testing this but this is on an old version of this
-> patchset:
-> commit c5f9b6dbba5567579a6eb646cf39bdc31ed36849
-> would be the current hash.
-> If you're interested in testing this patchset I'd recommend you add the
-> https://git.kernel.org/pub/scm/linux/kernel/git/brauner/linux.git loopfs
-> branch. This will always point to the branch that is going to be sent
-> out for review and I'm only pushing this to kernel.org if it's in good
-> enough shape.
-> The other <topic>_v<nr> branches will either point to earlier versions
-> and are usually created when on-list review has shown that I need to
-> roll a new version. :)
->
-> Christian
+> =
 
-Hi Christian,
+> commit: 1de08dccd383482a3e88845d3554094d338f5ff9 ("x86/mce: Add a struct =
+mce.kflags field")
 
-Thanks for your detail explanation, we'll ignore the wip branches in future.
+I don't see how a struct mce member addition will cause any performance
+regression. Please check your test case.
 
-Best Regards,
-Rong Chen
---===============0096404101544676195==--
+Thx.
+
+-- =
+
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH, GF: Felix Imend=C3=B6rffer, HRB 36809=
+, AG N=C3=BCrnberg
+--===============6515643596729007045==--
 
