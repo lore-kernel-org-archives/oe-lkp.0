@@ -1,32 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============8673616824025362871=="
+Content-Type: multipart/mixed; boundary="===============3703168154210001618=="
 MIME-Version: 1.0
-From: Matthew Wilcox <willy@infradead.org>
+From: Cyril Hrubis <chrubis@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [mm] b79980a586: WARNING:at_kernel/locking/lockdep.c:#__lock_acquire
-Date: Tue, 28 Apr 2020 04:07:17 -0700
-Message-ID: <20200428110717.GI29705@bombadil.infradead.org>
-In-Reply-To: <20200428085431.GE5770@shao2-debian>
+Subject: Re: [LTP] [fs] ce436509a8: ltp.openat203.fail
+Date: Tue, 28 Apr 2020 17:30:22 +0200
+Message-ID: <20200428153022.GC4244@yuki.lan>
+In-Reply-To: <20200428005126.6wncibudt6ohghvc@yavin.dot.cyphar.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8673616824025362871==
+--===============3703168154210001618==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 28, 2020 at 04:54:31PM +0800, kernel test robot wrote:
-> Greeting,
+Hi!
+> > > commit: ce436509a8e109330c56bb4d8ec87d258788f5f4 ("[PATCH v4 2/3] fs:=
+ openat2: Extend open_how to allow userspace-selected fds")
+> > > url: https://github.com/0day-ci/linux/commits/Josh-Triplett/Support-u=
+serspace-selected-fds/20200414-102939
+> > > base: https://git.kernel.org/cgit/linux/kernel/git/shuah/linux-kselft=
+est.git next
+> > =
+
+> > This commit adds fd parameter to the how structure where LTP test was
+> > previously passing garbage, which obviously causes the difference in
+> > errno.
+> > =
+
+> > This could be safely ignored for now, if the patch gets merged the test
+> > needs to be updated.
 > =
 
-> FYI, we noticed the following commit (built with gcc-7):
-> =
+> It wouldn't be a bad idea to switch the test to figure out the ksize of
+> the struct, so that you only add bad padding after that. But then again,
+> this would be a bit ugly -- having CHECK_FIELDS would make this simpler.
 
-> commit: b79980a586f5a910ee92b360e55e2aabf33981ff ("mm: Move pt_mm within =
-struct page")
-> git://git.infradead.org/users/willy/linux-dax.git pt_mm
+Any pointers how can be the size figured out without relying on the
+E2BIG we are testing for? Does the kernel export it somewhere?
 
-Yup, fixed it last night.  Thanks!  Please retest f84e7ad725bf (the current
-head of the pt_mm branch)
+-- =
 
-
---===============8673616824025362871==--
+Cyril Hrubis
+chrubis(a)suse.cz
+--===============3703168154210001618==--
 
