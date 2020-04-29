@@ -1,119 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============1881888550593868817=="
+Content-Type: multipart/mixed; boundary="===============4122905711323664944=="
 MIME-Version: 1.0
-From: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+From: Chen, Rong A <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] 8d47a0d8f7: fio.write_bw_MBps -28.6% regression
-Date: Mon, 13 Apr 2020 08:20:04 +0000
-Message-ID: <5816c503-e4d3-0b8b-4e89-a817d0b57851@linux.intel.com>
-In-Reply-To: <20200410101406.GI5920@suse.cz>
+Subject: Re: [mm/debug] fa6726c1e7: kernel_BUG_at_include/linux/mm.h
+Date: Wed, 29 Apr 2020 20:52:25 +0800
+Message-ID: <07ea0efd-0145-eaaf-c628-e48957154a2c@intel.com>
+In-Reply-To: <b62c66c8-1550-087f-f5d2-b33a18bb0edc@arm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1881888550593868817==
+--===============4122905711323664944==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-This regression happened on "lkp-hsw-ep2", but =E2=80=9Clkp-hsw-ep2=E2=80=
-=9D has been =
-
-removed from the LKP tbox, so we retest the regression on another tbox =
-
-=E2=80=9Clkp-hsw-ep4=E2=80=9D, their hardware is almost the same, "72 threa=
-ds Intel(R) =
-
-Xeon(R) CPU E5-2699 v3 @ 2.30GHz with 256G memory". The test result is =
-
-in the attached file compare.txt. The regression is -6.7% for v5.6, the =
-
-origin regression is -8.9%, it is not serious as it test on =
-
-"lkp-hsw-ep2" before.
 
 
-On 4/10/2020 6:14 PM, David Sterba wrote:
-> On Fri, Apr 10, 2020 at 02:44:55PM +0800, Qu Wenruo wrote:
->> On 2020/4/10 =E4=B8=8B=E5=8D=882:34, Xing Zhengjun wrote:
->>> Hi Wenruo,
+On 4/29/2020 11:28 AM, Anshuman Khandual wrote:
+>
+> On 04/28/2020 02:51 PM, Catalin Marinas wrote:
+>> On Tue, Apr 28, 2020 at 04:41:11AM -0400, Qian Cai wrote:
+>>> On Apr 28, 2020, at 1:54 AM, Anshuman Khandual <Anshuman.Khandual@arm=
+.com> wrote:
+>>>> That is true. There is a slight change in the rules, making it explici=
+t yes
+>>>> only when both ARCH_HAS_DEBUG_VM_PGTABLE and DEBUG_VM are enabled.
+>>>>
+>>>> +config DEBUG_VM_PGTABLE
+>>>> +    bool "Debug arch page table for semantics compliance"
+>>>> +    depends on MMU
+>>>> +    depends on !IA64 && !ARM
+>>>> +    depends on ARCH_HAS_DEBUG_VM_PGTABLE || EXPERT
+>>>> +    default y if ARCH_HAS_DEBUG_VM_PGTABLE && DEBUG_VM
+>>>> +    help
+>>>>
+>>>> The default is really irrelevant as the config option can be set expli=
+citly.
+>>> That could also explain. Since not long time ago, it was only =E2=80=9C=
+default
+>>> y if DEBUG_VM=E2=80=9D, that caused the robot saved a .config with
+>>> DEBUG_VM_PGTABLE=3Dy by default.
 >>>
->>>  =C2=A0=C2=A0 We test it in v5.6, the issue still exist, do you have ti=
-me to take a
->>> look at this? Thanks.
+>>> Even though you changed the rule recently, it has no effect as the
+>>> robot could =E2=80=9Cmake oldconfig=E2=80=9D from the saved config for =
+each linux-next
+>>> tree execution and the breakage will go on.
+>> I'm not entirely sure that's the case. This report still points at the
+>> old commit fa6726c1e7 which has:
 >>
->> This is expected.
+>> +       depends on ARCH_HAS_DEBUG_VM_PGTABLE || EXPERT
+>> +       default n if !ARCH_HAS_DEBUG_VM_PGTABLE
+>> +       default y if DEBUG_VM
 >>
->> The extra check brings new overhead mostly equal to another CRC32 run.
->>
->> We believe it's worthy, as our read time tree checker has exposed quite
->> some bit flip corruption.
-> =
+>> In -next we now have commit 647d9a0de34c and subsequently modified by
+>> commit 0a8646638865. So hopefully with the latest -next tree we won't
+>> see this report.
+> Could some one from LKP test framework, please confirm if this still caus=
+es
+> above problem on the latest linux-next by default ?
 
-> The test probably runs on a PMEM device so there's no slowdown from the
-> actual IO and the in-memory checks are measurable, though 28% is a lot,
-> I'd expect something like 5-10% at most.
-> =
+Hi,
 
+The .config is a rand config, the problem is still exist if run "make =
 
--- =
+oldconfig" for the config
+with commit 0a8646638865.
 
-Zhengjun Xing
+$ grep -e CONFIG_MMU=3D -e CONFIG_EXPERT=3D -e =
 
---===============1881888550593868817==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="compare.txt"
+CONFIG_ARCH_HAS_DEBUG_VM_PGTABLE=3D -e CONFIG_DEBUG_VM=3D .config
+CONFIG_EXPERT=3Dy
+CONFIG_MMU=3Dy
+CONFIG_DEBUG_VM=3Dy
 
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KdGJveF9ncm91cC90ZXN0Y2FzZS9yb290
-ZnMva2NvbmZpZy9jb21waWxlci9kZWJ1Zy1zZXR1cC9kaXNrL2ZzL3J1bnRpbWUvbnJfdGFzay90
-aW1lX2Jhc2VkL3J3L2JzL2lvZW5naW5lL3Rlc3Rfc2l6ZS9jcHVmcmVxX2dvdmVybm9yL3Vjb2Rl
-OgogIGxrcC1oc3ctZXA0L2Zpby1iYXNpYy9kZWJpYW4teDg2XzY0LTIwMTkxMTE0LmNnei94ODZf
-NjQtcmhlbC03LjYvZ2NjLTcvdGVzdC8ycG1lbS9idHJmcy8yMDBzLzUwJS90Yi9yYW5kd3JpdGUv
-NGsvbGliYWlvLzEwMEcvcGVyZm9ybWFuY2UvMHg0MwoKY29tbWl0OiAKICBmZjJhYzEwN2ZhZTI0
-NDBiNjg3N2M2MTVjMGFjNzg4ZDJhMTA2ZWQ3CiAgOGQ0N2EwZDhmNzk0NzQyMmRkMzU5YWM4ZTQ2
-MjY4N2Y4MWE3YTEzNwogIHY1LjYKCmZmMmFjMTA3ZmFlMjQ0MGIgOGQ0N2EwZDhmNzk0NzQyMmRk
-MzU5YWM4ZTQ2ICAgICAgICAgICAgICAgICAgICAgICAgdjUuNiAKLS0tLS0tLS0tLS0tLS0tLSAt
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tIAog
-ICAgICAgICAlc3RkZGV2ICAgICAlY2hhbmdlICAgICAgICAgJXN0ZGRldiAgICAgJWNoYW5nZSAg
-ICAgICAgICVzdGRkZXYKICAgICAgICAgICAgIFwgICAgICAgICAgfCAgICAgICAgICAgICAgICBc
-ICAgICAgICAgIHwgICAgICAgICAgICAgICAgXCAgCiAgICAgIDAuNDQgwrEgIDclICAgICAgLTAu
-MSAgICAgICAgMC4zMiDCsSAgNCUgICAgICAtMC4xICAgICAgICAwLjM2IMKxIDEwJSAgZmlvLmxh
-dGVuY3lfMTAwMG1zJQogICAgICAwLjE2IMKxIDExJSAgICAgIC0wLjEgICAgICAgIDAuMDMgwrEg
-MjUlICAgICAgLTAuMSAgICAgICAgMC4wMiDCsSAgOCUgIGZpby5sYXRlbmN5XzEwMG1zJQogICAg
-ICA1LjU5IMKxICAzJSAgICAgIC0wLjAgICAgICAgIDUuNTkgwrEgIDklICAgICAgKzUuNyAgICAg
-ICAxMS4yNiDCsSAxNSUgIGZpby5sYXRlbmN5XzEwbXMlCiAgICAgMzguMjUgICAgICAgICAgICAr
-MS43ICAgICAgIDM5LjkyIMKxICAzJSAgICAgICs0LjcgICAgICAgNDIuOTcgICAgICAgIGZpby5s
-YXRlbmN5XzIwbXMlCiAgICAgIDAuMjkgwrEgIDQlICAgICAgLTAuMSAgICAgICAgMC4xNiDCsSAg
-MiUgICAgICAtMC4yICAgICAgICAwLjA2IMKxIDE0JSAgZmlvLmxhdGVuY3lfMjUwbXMlCiAgICAg
-IDAuNTggwrEgMTclICAgICAgKzAuMSAgICAgICAgMC42NiDCsSAxMCUgICAgICAtMC41ICAgICAg
-ICAwLjA4IMKxICA2JSAgZmlvLmxhdGVuY3lfMjUwdXMlCiAgICAgIDAuMTcgwrEgNDMlICAgICAg
-KzAuMSAgICAgICAgMC4yNCDCsSAzNCUgICAgICArMC4yICAgICAgICAwLjQwIMKxIDMwJSAgZmlv
-LmxhdGVuY3lfMm1zJQogICAgIDQ0LjI0ICAgICAgICAgICAgLTQuMyAgICAgICAzOS45NSAgICAg
-ICAgICAgIC00LjIgICAgICAgMzkuOTkgwrEgIDMlICBmaW8ubGF0ZW5jeV80bXMlCiAgICAgIDAu
-MDMgwrEgIDQlICAgICAgKzAuMiAgICAgICAgMC4xOSDCsSAgMyUgICAgICArMC4xICAgICAgICAw
-LjE2IMKxIDEwJSAgZmlvLmxhdGVuY3lfNTAwbXMlCiAgICAgIDguNTYgwrEgIDQlICAgICAgKzIu
-NyAgICAgICAxMS4zMCDCsSAgOCUgICAgICAtNi4yICAgICAgICAyLjM1IMKxICA1JSAgZmlvLmxh
-dGVuY3lfNTBtcyUKICAgICAgMC4wMyDCsSAyNCUgICAgICArMC4yICAgICAgICAwLjI4ICAgICAg
-ICAgICAgKzAuNCAgICAgICAgMC40NSDCsSAgMiUgIGZpby5sYXRlbmN5Xzc1MG1zJQogICAgICAw
-LjExIMKxIDM4JSAgICAgIC0wLjAgICAgICAgIDAuMTAgwrEgMzElICAgICAgKzAuMyAgICAgICAg
-MC40MSDCsSAzMyUgIGZpby5sYXRlbmN5Xzc1MHVzJQogIDEzNjgyNzEzICAgICAgICAgICAgLTku
-MCUgICAxMjQ1NzExOCAgICAgICAgICAgIC02LjclICAgMTI3NjQ4MjcgICAgICAgIGZpby53b3Jr
-bG9hZAogICAgMjY2LjM2ICAgICAgICAgICAgLTguOSUgICAgIDI0Mi43MCAgICAgICAgICAgIC02
-LjUlICAgICAyNDguOTkgICAgICAgIGZpby53cml0ZV9id19NQnBzCiAgMTk5NjY2MzQgICAgICAg
-ICAgICArMy4xJSAgIDIwNTc4MzA0ICAgICAgICAgICAgLTkuMiUgICAxODEzMTYyNiAgICAgICAg
-ZmlvLndyaXRlX2NsYXRfOTAlX3VzCiAgMjE5NzY0MDUgICAgICAgICAgICArMy4yJSAgIDIyNjc1
-NDU2ICAgICAgICAgICAtMTIuMyUgICAxOTI2NzU4NCAgICAgICAgZmlvLndyaXRlX2NsYXRfOTUl
-X3VzCiAgOTI3OTg5NzYgwrEgIDUlICAgICsxMjQuMSUgICAyLjA4ZSswOCDCsSAgMyUgICAgKzM3
-NS4zJSAgNC40MTFlKzA4IMKxICAyJSAgZmlvLndyaXRlX2NsYXRfOTklX3VzCiAgMTYzNTMzMDQg
-ICAgICAgICAgICArOS43JSAgIDE3OTQyOTQyICAgICAgICAgICAgKzcuMCUgICAxNzUwMDc4OSAg
-ICAgICAgZmlvLndyaXRlX2NsYXRfbWVhbl91cwogIDc2ODI4NzMyICAgICAgICAgICAgKzAuNCUg
-ICA3NzEzMjkxMSAgICAgICAgICAgICs2LjklICAgODIxMzU0MjQgwrEgIDIlICBmaW8ud3JpdGVf
-Y2xhdF9zdGRkZXYKICAgICA2ODE4OCAgICAgICAgICAgIC04LjklICAgICAgNjIxMzEgICAgICAg
-ICAgICAtNi41JSAgICAgIDYzNzQwICAgICAgICBmaW8ud3JpdGVfaW9wcwogICAgNTIzNDA2ICAg
-ICAgICAgICAgKzkuNyUgICAgIDU3NDQwMCAgICAgICAgICAgICs3LjAlICAgICA1NjAyNjAgICAg
-ICAgIGZpby53cml0ZV9zbGF0X21lYW5fdXMKICAxMzY0OTkxOSAgICAgICAgICAgIC0zLjglICAg
-MTMxMzM0NzEgICAgICAgICAgICArNy45JSAgIDE0NzI5NzAzICAgICAgICBmaW8ud3JpdGVfc2xh
-dF9zdGRkZXYKCg==
+should we disable DEBUG_VM_PGTABLE by default?
 
---===============1881888550593868817==--
+Best Regards,
+Rong Chen
+--===============4122905711323664944==--
 
