@@ -1,62 +1,49 @@
-Content-Type: multipart/mixed; boundary="===============5483634244778782295=="
+Content-Type: multipart/mixed; boundary="===============0034151610972371583=="
 MIME-Version: 1.0
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Steven Rostedt <rostedt@goodmis.org>
 To: lkp@lists.01.org
-Subject: Re: [selftests/bpf] da43712a72: kernel-selftests.bpf.make_fail
-Date: Wed, 13 May 2020 12:26:34 +0200
-Message-ID: <20200513102634.GC871114@kroah.com>
-In-Reply-To: <20200513095835.GD102436@dhcp-12-153.nay.redhat.com>
+Subject: Re: [tracing] 06e0a548ba: WARNING:at_kernel/trace/ring_buffer.c:#ring_buffer_iter_peek
+Date: Wed, 13 May 2020 09:29:22 -0400
+Message-ID: <20200513092922.6d79f6ee@gandalf.local.home>
+In-Reply-To: <20200513091906.GA12720@tuxmaker.boeblingen.de.ibm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5483634244778782295==
+--===============0034151610972371583==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 13, 2020 at 05:58:35PM +0800, Hangbin Liu wrote:
+On Wed, 13 May 2020 11:19:06 +0200
+Sven Schnelle <svens@linux.ibm.com> wrote:
+
+> Did you had a chance to look into this? I can easily reproduce this both =
+on x86
+> and s390 by doing:
 > =
 
-> Thanks test bot catch the issue.
-> On Wed, May 13, 2020 at 03:44:18PM +0800, kernel test robot wrote:
-> > Greeting,
-> > =
-
-> > FYI, we noticed the following commit (built with gcc-7):
-> > =
-
-> > commit: 77bb53cb094828a31cd3c5b402899810f63073c1 ("selftests/bpf: Fix p=
-erf_buffer test on systems w/ offline CPUs")
-> > https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git=
- linux-5.4.y
+> cd /sys/kernel/tracing
+> cat /dev/zero >/dev/null & # generate some load
+> echo function >current_tracer
+> # wait a few seconds to fill the buffer
+> cat trace
 > =
 
-> The author for this commit is Andrii(cc'd).
+> Usually it will print the warn after a few seconds.
 > =
 
-> Mine is f1c3656c6d9c ("selftests/bpf: Skip perf hw events test if the set=
-up disabled it")
-> > prog_tests/stacktrace_build_id_nmi.c:55:3: error: label =E2=80=98cleanu=
-p=E2=80=99 used but not defined
-> >    goto cleanup;
-> >    ^~~~
-> =
+> I haven't digged through all the ring buffer code yet, so i thought i mig=
+ht ask
+> whether you have an idea what's going on.
 
-> Hi Greg, we are missing a depend commit
-> dde53c1b763b ("selftests/bpf: Convert few more selftest to skeletons").
-> =
+Can you send me the config for where you can reproduce it on x86?
 
-> So either we need backport this patch, or if you like, we can also fix it=
- by
-> changing 'goto cleanup;' to 'goto close_prog;'. So which one do you prefe=
-r?
+The iterator now doesn't stop the ring buffer when it iterates, and is
+doing so over a live buffer (but should be able to handle it). It's
+triggering something I thought wasn't suppose to happen (which must be
+happening).
 
-I don't know, I have no context here at all, sorry.
+Perhaps with your config I'd be able to reproduce it.
 
-What stable kernel tree is failing, what patch needs to be changed, what
-patch caused this, and so on...
-
-confused,
-
-greg k-h
---===============5483634244778782295==--
+-- Steve
+--===============0034151610972371583==--
 
