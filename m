@@ -1,128 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============2834181610487914526=="
+Content-Type: multipart/mixed; boundary="===============6446454042056825475=="
 MIME-Version: 1.0
-From: Andrii Nakryiko <andriin@fb.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [selftests/bpf] da43712a72: kernel-selftests.bpf.make_fail
-Date: Thu, 14 May 2020 11:38:27 -0700
-Message-ID: <e5221ecb-04ad-bc77-d66f-b438c1a8b5c7@fb.com>
-In-Reply-To: <20200514103017.GA1829391@kroah.com>
+Subject: Re: [sched/fair] 0b0695f2b3: phoronix-test-suite.compress-gzip.0.seconds 19.8% regression
+Date: Fri, 15 May 2020 09:43:39 +0800
+Message-ID: <20200515014339.GA9854@xsang-OptiPlex-9020>
+In-Reply-To: <CAKfTPtB3jQWd52FTyKNk5w8mmoDnu+jwYgkFBOiOKjb_BjxqTw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2834181610487914526==
+--===============6446454042056825475==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 5/14/20 3:30 AM, Greg Kroah-Hartman wrote:
-> On Thu, May 14, 2020 at 11:14:20AM +0800, Hangbin Liu wrote:
->> On Wed, May 13, 2020 at 12:26:34PM +0200, Greg Kroah-Hartman wrote:
->>> On Wed, May 13, 2020 at 05:58:35PM +0800, Hangbin Liu wrote:
->>>>
->>>> Thanks test bot catch the issue.
->>>> On Wed, May 13, 2020 at 03:44:18PM +0800, kernel test robot wrote:
->>>>> Greeting,
->>>>>
->>>>> FYI, we noticed the following commit (built with gcc-7):
->>>>>
->>>>> commit: 77bb53cb094828a31cd3c5b402899810f63073c1 ("selftests/bpf: Fix=
- perf_buffer test on systems w/ offline CPUs")
->>>>> https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.g=
-it linux-5.4.y
->>>>
->>>> The author for this commit is Andrii(cc'd).
->>>>
->>>> Mine is f1c3656c6d9c ("selftests/bpf: Skip perf hw events test if the =
-setup disabled it")
->>>>> prog_tests/stacktrace_build_id_nmi.c:55:3: error: label =E2=80=98clea=
-nup=E2=80=99 used but not defined
->>>>>     goto cleanup;
->>>>>     ^~~~
->>>>
->>>> Hi Greg, we are missing a depend commit
->>>> dde53c1b763b ("selftests/bpf: Convert few more selftest to skeletons").
->>>>
->>>> So either we need backport this patch, or if you like, we can also fix=
- it by
->>>> changing 'goto cleanup;' to 'goto close_prog;'. So which one do you pr=
-efer?
-
-Hi, sorry for late reply, missed emails earlier.
-
-The above "selftest to skeletons" commit will need some more after that, =
-
-it's going to be a pretty big back-port, so I think just fixing it up =
-
-would be ok.
-
->>>
->>> I don't know, I have no context here at all, sorry.
->>>
->>> What stable kernel tree is failing, what patch needs to be changed, what
->>> patch caused this, and so on...
->>>
->>> confused,
->>
->> Oh, sorry, I should reply the full email. I will forward the full messag=
-e in
->> the bellow. For your questions:
->>
->> the stable kernel tree is linux-5.4.y,
->> my patch is da43712a7262 ("selftests/bpf: Skip perf hw events test if the
->> setup disabled it")[1].
->>
->> The reason is we are lacking upstream commit
->> dde53c1b763b ("selftests/bpf: Convert few more selftest to skeletons").
->>
->> This will call build warning
->> prog_tests/stacktrace_build_id_nmi.c:55:3: error: label =E2=80=98cleanup=
-=E2=80=99 used but not defined
->>     goto cleanup;
->>     ^~~~
->>
->> To fix it, I think the easiest way is change the "goto cleanup" to "goto
->> close_prog".
+On Thu, May 14, 2020 at 07:09:35PM +0200, Vincent Guittot wrote:
+> Hi Oliver,
 > =
 
-> Ok, can you send a patch for this, documenting all of the above so I
-> know what's going on?
+> On Thu, 14 May 2020 at 16:05, kernel test robot <oliver.sang@intel.com>=
+ wrote:
+> >
+> > Hi Vincent Guittot,
+> >
+> > Below report FYI.
+> > Last year, we actually reported an improvement "[sched/fair] 0b0695f2b3:
+> > vm-scalability.median 3.1% improvement" on link [1].
+> > but now we found the regression on pts.compress-gzip.
+> > This seems align with what showed in "[v4,00/10] sched/fair: rework the=
+ CFS
+> > load balance" (link [2]), where showed the reworked load balance could =
+have
+> > both positive and negative effect for different test suites.
 > =
 
->> For the other error:
->>
->> prog_tests/perf_buffer.c: In function =E2=80=98test_perf_buffer=E2=80=99:
->> prog_tests/perf_buffer.c:39:8: warning: implicit declaration of function=
- =E2=80=98parse_cpu_mask_file=E2=80=99 [-Wimplicit-function-declaration]
->>    err =3D parse_cpu_mask_file("/sys/devices/system/cpu/online",
->>          ^~~~~~~~~~~~~~~~~~~
->> ../lib.mk:138: recipe for target '/usr/src/perf_selftests-x86_64-rhel-7.=
-6-kselftests-da43712a7262891317883d4b3a909fb18dac4b1d/tools/testing/selftes=
-ts/bpf/test_progs' failed
->> make: *** [/usr/src/perf_selftests-x86_64-rhel-7.6-kselftests-da43712a72=
-62891317883d4b3a909fb18dac4b1d/tools/testing/selftests/bpf/test_progs] Erro=
-r 1
->> make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-7.6-kselfte=
-sts-da43712a7262891317883d4b3a909fb18dac4b1d/tools/testing/selftests/bpf'
->>
->> I think Andrii may like help.
+> We have tried to run  all possible use cases but it's impossible to
+> covers all so there were a possibility that one that is not covered,
+> would regressed.
 > =
 
-> That looks like a bug, we should revert the offending patch, right?
+> > And also from link [3], the patch set risks regressions.
+> >
+> > We also confirmed this regression on another platform
+> > (Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz with 8G memory),
+> > below is the data (lower is better).
+> > v5.4    4.1
+> > fcf0553db6f4c79387864f6e4ab4a891601f395e    4.01
+> > 0b0695f2b34a4afa3f6e9aa1ff0e5336d8dad912    4.89
+> > v5.5    5.18
+> > v5.6    4.62
+> > v5.7-rc2    4.53
+> > v5.7-rc3    4.59
+> >
+> > It seems there are some recovery on latest kernels, but not fully back.
+> > We were just wondering whether you could share some lights the further =
+works
+> > on the load balance after patch set [2] which could cause the performan=
+ce
+> > change?
+> > And whether you have plan to refine the load balance algorithm further?
+> =
 
-6803ee25f0ea ("libbpf: Extract and generalize CPU mask parsing logic") =
+> I'm going to have a look at your regression to understand what is
+> going wrong and how it can be fixed
 
-added parse_cpu_mask_file() function, so back-porting that commit should =
-
-solve this? It should be straightforward and shouldn't bring any more =
-
-dependent commits.
+Thanks a lot!
 
 > =
 
-> thanks,
-> =
-
-> greg k-h
+> Thanks
+> Vincent
 >=20
-
---===============2834181610487914526==--
+--===============6446454042056825475==--
 
