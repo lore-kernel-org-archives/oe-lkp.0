@@ -1,153 +1,132 @@
-Content-Type: multipart/mixed; boundary="===============6971643188894582787=="
+Content-Type: multipart/mixed; boundary="===============1378372798136089270=="
 MIME-Version: 1.0
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Marco Elver <elver@google.com>
 To: lkp@lists.01.org
-Subject: Re: [e1000e] e86e383f28: suspend-stress.fail
-Date: Sat, 23 May 2020 20:20:37 +0800
-Message-ID: <5A1631F8-259E-4897-BE52-0F5DB406E44F@canonical.com>
-In-Reply-To: <20200521052753.GB12456@shao2-debian>
+Subject: Re: [rcu] 2f08469563: BUG:kernel_reboot-without-warning_in_boot_stage
+Date: Mon, 18 May 2020 20:05:13 +0200
+Message-ID: <20200518180513.GA114619@google.com>
+In-Reply-To: <CAKwvOd=Gi2z_NjRfpTigCCcV5kUWU7Bm7h1eHLeQ6DZCmrsR8w@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6971643188894582787==
+--===============1378372798136089270==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-[+Cc intel-wired-lan]
+On Mon, 18 May 2020, 'Nick Desaulniers' via kasan-dev wrote:
 
-> On May 21, 2020, at 13:27, kernel test robot <rong.a.chen@intel.com> wr=
-ote:
+> On Mon, May 18, 2020 at 7:34 AM Marco Elver <elver@google.com> wrote:
+> >
+> > On Mon, 18 May 2020 at 14:44, Marco Elver <elver@google.com> wrote:
+> > >
+> > > [+Cc clang-built-linux FYI]
+> > >
+> > > On Mon, 18 May 2020 at 12:11, Marco Elver <elver@google.com> wrote:
+> > > >
+> > > > On Sun, 17 May 2020 at 05:47, Paul E. McKenney <paulmck@kernel.or=
+g> wrote:
+> > > > >
+> > > > > On Sun, May 17, 2020 at 09:17:32AM +0800, kernel test robot wrote:
+> > > > > > Greeting,
+> > > > > >
+> > > > > > FYI, we noticed the following commit (built with clang-11):
+> > > > > >
+> > > > > > commit: 2f08469563550d15cb08a60898d3549720600eee ("rcu: Mark rc=
+u_state.ncpus to detect concurrent writes")
+> > > > > > https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.=
+git dev.2020.05.14c
+> > > > > >
+> > > > > > in testcase: boot
+> > > > > >
+> > > > > > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridg=
+e -smp 2 -m 8G
+> > > > > >
+> > > > > > caused below changes (please refer to attached dmesg/kmsg for e=
+ntire log/backtrace):
+> > > > > >
+> > > > > >
+> > > > > >
+> > > > > >
+> > > > > > If you fix the issue, kindly add following tag
+> > > > > > Reported-by: kernel test robot <rong.a.chen@intel.com>
+> > > > > >
+> > > > > >
+> > > > > > [    0.054943] BRK [0x05204000, 0x05204fff] PGTABLE
+> > > > > > [    0.061181] BRK [0x05205000, 0x05205fff] PGTABLE
+> > > > > > [    0.062403] BRK [0x05206000, 0x05206fff] PGTABLE
+> > > > > > [    0.065200] RAMDISK: [mem 0x7a247000-0x7fffffff]
+> > > > > > [    0.067344] ACPI: Early table checksum verification disabled
+> > > > > > BUG: kernel reboot-without-warning in boot stage
+> > > > >
+> > > > > I am having some difficulty believing that this commit is at faul=
+t given
+> > > > > that the .config does not list CONFIG_KCSAN=3Dy, but CCing Marco =
+Elver
+> > > > > for his thoughts.  Especially given that I have never built with =
+clang-11.
+> > > > >
+> > > > > But this does invoke ASSERT_EXCLUSIVE_WRITER() in early boot from
+> > > > > rcu_init().  Might clang-11 have objections to early use of this =
+macro?
+> > > >
+> > > > The macro is a noop without KCSAN. I think the bisection went wrong.
+> > > >
+> > > > I am able to reproduce a reboot-without-warning when building with
+> > > > Clang 11 and the provided config. I did a bisect, starting with v5.6
+> > > > (good), and found this:
+> > > > - Since v5.6, first bad commit is
+> > > > 20e2aa812620439d010a3f78ba4e05bc0b3e2861 (Merge tag
+> > > > 'perf-urgent-2020-04-12' of
+> > > > git://git.kernel.org/pub/scm/linux/kernel//git/tip/tip)
+> > > > - The actual commit that introduced the problem is
+> > > > 2b3b76b5ec67568da4bb475d3ce8a92ef494b5de (perf/x86/intel/uncore: Add
+> > > > Ice Lake server uncore support) -- reverting it fixes the problem.
+> >
+> > Some more clues:
+> >
+> > 1. I should have noticed that this uses CONFIG_KASAN=3Dy.
 > =
 
-> Greeting,
+> Thanks for the report, testing, and bisection.  I don't see any
+> smoking gun in the code.
+> https://godbolt.org/z/qbK26r
+
+My guess is data layout and maybe some interaction with KASAN. I also
+played around with leaving icx_mmio_uncores empty, meaning none of the
+data it refers to end up in the data section (presumably because
+optimized out), which resulted in making the bug disappear as well.
+
+> >
+> > 2. Something about function icx_uncore_mmio_init(). Making it a noop
+> > also makes the issue go away.
+> >
+> > 3. Leaving icx_uncore_mmio_init() a noop but removing the 'static'
+> > from icx_mmio_uncores also presents the issue. So this seems to be
+> > something about how/where icx_mmio_uncores is allocated.
 > =
 
-> FYI, we noticed the following commit (built with gcc-7):
-> =
+> Can you share the disassembly of icx_uncore_mmio_init() in the given
+> configuration?
 
-> commit: e86e383f2854234129c66e90f84ac2c74b2b1828 ("e1000e: Warn if disabl=
-ing ULP failed")
-> https://git.kernel.org/cgit/linux/kernel/git/jkirsher/next-queue.git dev-=
-queue
+ffffffff8102c097 <icx_uncore_mmio_init>:
+ffffffff8102c097:	e8 b4 52 bd 01       	callq  ffffffff82c01350 <__fentry__>
+ffffffff8102c09c:	48 c7 c7 e0 55 c3 83 	mov    $0xffffffff83c355e0,%rdi
+ffffffff8102c0a3:	e8 69 9a 3b 00       	callq  ffffffff813e5b11 <__asan_sto=
+re8>
+ffffffff8102c0a8:	48 c7 05 2d 95 c0 02 	movq   $0xffffffff83c388e0,0x2c0952=
+d(%rip)        # ffffffff83c355e0 <uncore_mmio_uncores>
+ffffffff8102c0af:	e0 88 c3 83 =
 
-kern  :warn  : [  240.884667] e1000e 0000:00:19.0 eth0: Failed to disable U=
-LP
-kern  :info  : [  241.896122] asix 2-3:1.0 eth1: link up, 100Mbps, full-dup=
-lex, lpa 0xC1E1
-kern  :err   : [  242.269348] e1000e 0000:00:19.0 eth0: Hardware Error
-kern  :info  : [  242.772702] e1000e 0000:00:19.0: pci_pm_resume+0x0/0x80 r=
-eturned 0 after 2985422 usecs
+ffffffff8102c0b3:	c3                   	retq   =
 
-So the patch does catch issues previously ignored.
 
-I wonder what's the next move, maybe increase the ULP timeout again?
+The problem still happens if we add a __no_sanitize_address (or even
+KASAN_SANITIZE :=3D n) here. I think this function is a red herring: you
+can make this function be empty, but as long as icx_mmio_uncores and its
+dependencies are added to the data section somewhere, does the bug
+appear.
 
-Kai-Heng
-
-> =
-
-> in testcase: suspend-stress
-> with following parameters:
-> =
-
-> 	mode: mem
-> 	iterations: 10
-> =
-
-> =
-
-> =
-
-> on test machine: 4 threads Broadwell with 8G memory
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> =
-
-> =
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <rong.a.chen@intel.com>
-> =
-
-> SUSPEND RESUME TEST STARTED
-> Suspend to mem 1/10:
-> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
-tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
-led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
-854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
-uspending-1/10 -O /dev/null
-> Done
-> Sleep for 10 seconds
-> Suspend to mem 2/10:
-> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
-tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
-led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
-854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
-uspending-2/10 -O /dev/null
-> Done
-> Sleep for 10 seconds
-> Suspend to mem 3/10:
-> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
-tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
-led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
-854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
-uspending-3/10 -O /dev/null
-> Done
-> Sleep for 10 seconds
-> Suspend to mem 4/10:
-> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
-tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
-led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
-854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
-uspending-4/10 -O /dev/null
-> Done
-> Sleep for 10 seconds
-> Suspend to mem 5/10:
-> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
-tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
-led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
-854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
-uspending-5/10 -O /dev/null
-> Done
-> Sleep for 10 seconds
-> Suspend to mem 6/10:
-> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
-tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
-led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
-854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
-uspending-6/10 -O /dev/null
-> Failed
-> =
-
-> =
-
-> =
-
-> To reproduce:
-> =
-
->        git clone https://github.com/intel/lkp-tests.git
->        cd lkp-tests
->        bin/lkp install job.yaml  # job file is attached in this email
->        bin/lkp run     job.yaml
-> =
-
-> =
-
-> =
-
-> Thanks,
-> Rong Chen
-> =
-
-> <config-5.7.0-rc4-01618-ge86e383f28542><job-script.txt><kmsg.xz><suspend-=
-stress.txt><job.yaml>
-
---===============6971643188894582787==--
+Thanks,
+-- Marco
+--===============1378372798136089270==--
 
