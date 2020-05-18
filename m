@@ -1,122 +1,94 @@
-Content-Type: multipart/mixed; boundary="===============9156470240007079593=="
+Content-Type: multipart/mixed; boundary="===============1905542712518172630=="
 MIME-Version: 1.0
-From: Oliver Sang <oliver.sang@intel.com>
+From: Marco Elver <elver@google.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/fair] 0b0695f2b3: phoronix-test-suite.compress-gzip.0.seconds 19.8% regression
-Date: Thu, 21 May 2020 16:38:15 +0800
-Message-ID: <20200521083815.GA19280@xsang-OptiPlex-9020>
-In-Reply-To: <CAKfTPtCnnCcoN8m+qcPZNhO_RjkwRwiPT4Qq1qYRqTPn8Z_prQ@mail.gmail.com>
+Subject: Re: [rcu] 2f08469563: BUG:kernel_reboot-without-warning_in_boot_stage
+Date: Mon, 18 May 2020 16:34:07 +0200
+Message-ID: <CANpmjNPcOHAE5d=gaD327HqxTBegf75qeN_pjoszahdk6_i5=Q@mail.gmail.com>
+In-Reply-To: <CANpmjNMx0+=Cac=WvHuzKb2zJvgNVvVxjo_W1wYWztywxDKeCQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9156470240007079593==
+--===============1905542712518172630==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 20, 2020 at 03:04:48PM +0200, Vincent Guittot wrote:
-> On Thu, 14 May 2020 at 19:09, Vincent Guittot
-> <vincent.guittot@linaro.org> wrote:
+On Mon, 18 May 2020 at 14:44, Marco Elver <elver@google.com> wrote:
+>
+> [+Cc clang-built-linux FYI]
+>
+> On Mon, 18 May 2020 at 12:11, Marco Elver <elver@google.com> wrote:
 > >
-> > Hi Oliver,
-> >
-> > On Thu, 14 May 2020 at 16:05, kernel test robot <oliver.sang@intel.co=
-m> wrote:
+> > On Sun, 17 May 2020 at 05:47, Paul E. McKenney <paulmck@kernel.org> w=
+rote:
 > > >
-> > > Hi Vincent Guittot,
+> > > On Sun, May 17, 2020 at 09:17:32AM +0800, kernel test robot wrote:
+> > > > Greeting,
+> > > >
+> > > > FYI, we noticed the following commit (built with clang-11):
+> > > >
+> > > > commit: 2f08469563550d15cb08a60898d3549720600eee ("rcu: Mark rcu_st=
+ate.ncpus to detect concurrent writes")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git =
+dev.2020.05.14c
+> > > >
+> > > > in testcase: boot
+> > > >
+> > > > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -s=
+mp 2 -m 8G
+> > > >
+> > > > caused below changes (please refer to attached dmesg/kmsg for entir=
+e log/backtrace):
+> > > >
+> > > >
+> > > >
+> > > >
+> > > > If you fix the issue, kindly add following tag
+> > > > Reported-by: kernel test robot <rong.a.chen@intel.com>
+> > > >
+> > > >
+> > > > [    0.054943] BRK [0x05204000, 0x05204fff] PGTABLE
+> > > > [    0.061181] BRK [0x05205000, 0x05205fff] PGTABLE
+> > > > [    0.062403] BRK [0x05206000, 0x05206fff] PGTABLE
+> > > > [    0.065200] RAMDISK: [mem 0x7a247000-0x7fffffff]
+> > > > [    0.067344] ACPI: Early table checksum verification disabled
+> > > > BUG: kernel reboot-without-warning in boot stage
 > > >
-> > > Below report FYI.
-> > > Last year, we actually reported an improvement "[sched/fair] 0b0695f2=
-b3:
-> > > vm-scalability.median 3.1% improvement" on link [1].
-> > > but now we found the regression on pts.compress-gzip.
-> > > This seems align with what showed in "[v4,00/10] sched/fair: rework t=
-he CFS
-> > > load balance" (link [2]), where showed the reworked load balance coul=
-d have
-> > > both positive and negative effect for different test suites.
-> >
-> > We have tried to run  all possible use cases but it's impossible to
-> > covers all so there were a possibility that one that is not covered,
-> > would regressed.
-> >
-> > > And also from link [3], the patch set risks regressions.
+> > > I am having some difficulty believing that this commit is at fault gi=
+ven
+> > > that the .config does not list CONFIG_KCSAN=3Dy, but CCing Marco Elver
+> > > for his thoughts.  Especially given that I have never built with clan=
+g-11.
 > > >
-> > > We also confirmed this regression on another platform
-> > > (Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz with 8G memory),
-> > > below is the data (lower is better).
-> > > v5.4    4.1
-> > > fcf0553db6f4c79387864f6e4ab4a891601f395e    4.01
-> > > 0b0695f2b34a4afa3f6e9aa1ff0e5336d8dad912    4.89
-> > > v5.5    5.18
-> > > v5.6    4.62
-> > > v5.7-rc2    4.53
-> > > v5.7-rc3    4.59
-> > >
-> > > It seems there are some recovery on latest kernels, but not fully bac=
-k.
-> > > We were just wondering whether you could share some lights the furthe=
-r works
-> > > on the load balance after patch set [2] which could cause the perform=
-ance
-> > > change?
-> > > And whether you have plan to refine the load balance algorithm furthe=
-r?
+> > > But this does invoke ASSERT_EXCLUSIVE_WRITER() in early boot from
+> > > rcu_init().  Might clang-11 have objections to early use of this macr=
+o?
 > >
-> > I'm going to have a look at your regression to understand what is
-> > going wrong and how it can be fixed
-> =
-
-> I have run the benchmark on my local setups to try to reproduce the
-> regression and I don't see the regression. But my setups are different
-> from your so it might be a problem specific to yours
-
-Hi Vincent, which OS are you using? We found the regression on Clear OS,
-but it cannot reproduce on Debian.
-On https://www.phoronix.com/scan.php?page=3Darticle&item=3Dmac-win-linux201=
-8&num=3D5
-it was mentioned that -
-Gzip compression is much faster out-of-the-box on Clear Linux due to it exp=
-loiting
-multi-threading capabilities compared to the other operating systems Gzip s=
-upport. =
-
-
-> =
-
-> After analysing the benchmark, it doesn't overload the system and is
-> mainly based on 1 main gzip thread with few others waking up and
-> sleeping around.
-> =
-
-> I thought that scheduler could be too aggressive when trying to
-> balance the threads on your system, which could generate more task
-> migrations and impact the performance. But this doesn't seem to be the
-> case because perf-stat.i.cpu-migrations is -8%. On the other side, the
-> context switch is +16% and more interestingly idle state C1E and C6
-> usages increase more than 50%. I don't know if we can rely or this
-> value or not but I wonder if it could be that threads are now spread
-> on different CPUs which generates idle time on the busy CPUs but the
-> added time to enter/leave these states hurts the performance.
-> =
-
-> Could you make some traces of both kernels ? Tracing sched events
-> should be enough to understand the behavior
-> =
-
-> Regards,
-> Vincent
-> =
-
+> > The macro is a noop without KCSAN. I think the bisection went wrong.
 > >
-> > Thanks
-> > Vincent
-> >
-> > > thanks
-> > >
-> > > [1] https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org/thread/SA=
-NC7QLYZKUNMM6O7UNR3OAQAKS5BESE/
-> > > [2] https://lore.kernel.org/patchwork/cover/1141687/
-> > > [3] https://www.phoronix.com/scan.php?page=3Dnews_item&px=3DLinux-5.5=
--Scheduler
---===============9156470240007079593==--
+> > I am able to reproduce a reboot-without-warning when building with
+> > Clang 11 and the provided config. I did a bisect, starting with v5.6
+> > (good), and found this:
+> > - Since v5.6, first bad commit is
+> > 20e2aa812620439d010a3f78ba4e05bc0b3e2861 (Merge tag
+> > 'perf-urgent-2020-04-12' of
+> > git://git.kernel.org/pub/scm/linux/kernel//git/tip/tip)
+> > - The actual commit that introduced the problem is
+> > 2b3b76b5ec67568da4bb475d3ce8a92ef494b5de (perf/x86/intel/uncore: Add
+> > Ice Lake server uncore support) -- reverting it fixes the problem.
+
+Some more clues:
+
+1. I should have noticed that this uses CONFIG_KASAN=3Dy.
+
+2. Something about function icx_uncore_mmio_init(). Making it a noop
+also makes the issue go away.
+
+3. Leaving icx_uncore_mmio_init() a noop but removing the 'static'
+from icx_mmio_uncores also presents the issue. So this seems to be
+something about how/where icx_mmio_uncores is allocated.
+
+Thanks,
+-- Marco
+--===============1905542712518172630==--
 
