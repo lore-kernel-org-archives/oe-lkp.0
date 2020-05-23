@@ -1,205 +1,153 @@
-Content-Type: multipart/mixed; boundary="===============4964253394585174530=="
+Content-Type: multipart/mixed; boundary="===============6971643188894582787=="
 MIME-Version: 1.0
-From: Tomasz Figa <tfiga@chromium.org>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 To: lkp@lists.01.org
-Subject: Re: 6fe12cdbcf ("i2c: core: support bus regulator controlling in .."): BUG: sleeping function called from invalid context at kernel/locking/mutex.c:935
-Date: Fri, 22 May 2020 02:09:29 +0200
-Message-ID: <CAAFQd5C20_iOMaXOF+4MoUAVyzVR4VfD1iiPhFaHkCv16srebg@mail.gmail.com>
-In-Reply-To: <5ec71528.qSD3ljogzEHcLRXO%lkp@intel.com>
+Subject: Re: [e1000e] e86e383f28: suspend-stress.fail
+Date: Sat, 23 May 2020 20:20:37 +0800
+Message-ID: <5A1631F8-259E-4897-BE52-0F5DB406E44F@canonical.com>
+In-Reply-To: <20200521052753.GB12456@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4964253394585174530==
+--===============6971643188894582787==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 22, 2020 at 1:57 AM kernel test robot <lkp@intel.com> wrote:
->
-> Greetings,
->
-> 0day kernel testing robot got the below dmesg and the first bad commit is
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
->
-> commit 6fe12cdbcfe35ad4726a619a9546822d34fc934c
-> Author:     Bibby Hsieh <bibby.hsieh@mediatek.com>
-> AuthorDate: Tue May 19 15:27:29 2020 +0800
-> Commit:     Wolfram Sang <wsa@kernel.org>
-> CommitDate: Wed May 20 15:25:55 2020 +0200
->
->     i2c: core: support bus regulator controlling in adapter
->
->     Although in the most platforms, the bus power of i2c
->     are alway on, some platforms disable the i2c bus power
->     in order to meet low power request.
->
->     We get and enable bulk regulator in i2c adapter device.
->
->     Signed-off-by: Bibby Hsieh <bibby.hsieh@mediatek.com>
->     Reviewed-by: Tomasz Figa <tfiga@chromium.org>
->     Signed-off-by: Wolfram Sang <wsa@kernel.org>
->
-> 6aab46bc52  dt-binding: i2c: add bus-supply property
-> 6fe12cdbcf  i2c: core: support bus regulator controlling in adapter
-> +------------------------------------------------------------------------=
------+------------+------------+
-> |                                                                        =
-     | 6aab46bc52 | 6fe12cdbcf |
-> +------------------------------------------------------------------------=
------+------------+------------+
-> | boot_successes                                                         =
-     | 33         | 0          |
-> | boot_failures                                                          =
-     | 2          | 16         |
-> | WARNING:at_lib/kobject_uevent.c:#add_uevent_var                        =
-     | 1          |            |
-> | EIP:add_uevent_var                                                     =
-     | 1          |            |
-> | BUG:kernel_hang_in_boot_stage                                          =
-     | 1          |            |
-> | BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/mut=
-ex.c | 0          | 16         |
-> +------------------------------------------------------------------------=
------+------------+------------+
->
+[+Cc intel-wired-lan]
+
+> On May 21, 2020, at 13:27, kernel test robot <rong.a.chen@intel.com> wr=
+ote:
+> =
+
+> Greeting,
+> =
+
+> FYI, we noticed the following commit (built with gcc-7):
+> =
+
+> commit: e86e383f2854234129c66e90f84ac2c74b2b1828 ("e1000e: Warn if disabl=
+ing ULP failed")
+> https://git.kernel.org/cgit/linux/kernel/git/jkirsher/next-queue.git dev-=
+queue
+
+kern  :warn  : [  240.884667] e1000e 0000:00:19.0 eth0: Failed to disable U=
+LP
+kern  :info  : [  241.896122] asix 2-3:1.0 eth1: link up, 100Mbps, full-dup=
+lex, lpa 0xC1E1
+kern  :err   : [  242.269348] e1000e 0000:00:19.0 eth0: Hardware Error
+kern  :info  : [  242.772702] e1000e 0000:00:19.0: pci_pm_resume+0x0/0x80 r=
+eturned 0 after 2985422 usecs
+
+So the patch does catch issues previously ignored.
+
+I wonder what's the next move, maybe increase the ULP timeout again?
+
+Kai-Heng
+
+> =
+
+> in testcase: suspend-stress
+> with following parameters:
+> =
+
+> 	mode: mem
+> 	iterations: 10
+> =
+
+> =
+
+> =
+
+> on test machine: 4 threads Broadwell with 8G memory
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
+
+> =
+
+> =
+
+> =
+
 > If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> [  105.730065] ### dt-test ### EXPECT / : OF: overlay: WARNING: memory le=
-ak will occur if overlay removed, property: /testcase-data/overlay-node/tes=
-t-bus/i2c-test-bus/test-unittest13/status
-> [  105.730071] ### dt-test ### EXPECT \ : i2c i2c-1: Added multiplexed i2=
-c bus 3
-> [  105.747587] i2c i2c-3: supply bus not found, using dummy regulator
-> [  105.754529] i2c i2c-1: Added multiplexed i2c bus 3
-> [  105.756092] ### dt-test ### EXPECT / : i2c i2c-1: Added multiplexed i2=
-c bus 3
-> [  105.773831] BUG: sleeping function called from invalid context at kern=
-el/locking/mutex.c:935
-> [  105.777468] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 189=
-, name: kworker/0:2
-> [  105.778995] 2 locks held by kworker/0:2/189:
-> [  105.779775]  #0: f48249a4 ((wq_completion)rcu_gp){+.+.}-{0:0}, at: pro=
-cess_one_work+0x3ac/0x1050
-> [  105.781743]  #1: f4145f34 ((work_completion)(&sdp->work)){+.+.}-{0:0},=
- at: process_one_work+0x3ac/0x1050
-> [  105.783485] Preemption disabled at:
-> [  105.783509] [<cdbb653d>] srcu_invoke_callbacks+0x14d/0x280
-> [  105.785397] CPU: 0 PID: 189 Comm: kworker/0:2 Not tainted 5.7.0-rc1-00=
-058-g6fe12cdbcfe35 #1
-> [  105.786961] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.12.0-1 04/01/2014
-> [  105.788608] Workqueue: rcu_gp srcu_invoke_callbacks
-> [  105.789777] Call Trace:
-> [  105.790308]  dump_stack+0x32/0x4a
-> [  105.790914]  ___might_sleep+0x3dc/0x4b0
-> [  105.791659]  ? srcu_invoke_callbacks+0x14d/0x280
-> [  105.792574]  ? srcu_invoke_callbacks+0x14d/0x280
-> [  105.793677]  ? srcu_invoke_callbacks+0x14d/0x280
-> [  105.794480]  __might_sleep+0x10e/0x210
-> [  105.795186]  __mutex_lock+0x34/0x12f0
-> [  105.795838]  ? mark_held_locks+0xb3/0x100
-> [  105.796561]  ? _raw_spin_unlock_irqrestore+0x13b/0x190
-> [  105.797694]  ? _raw_spin_unlock_irqrestore+0x13b/0x190
-> [  105.798653]  ? lockdep_hardirqs_on+0x1bb/0x420
-> [  105.799462]  mutex_lock_nested+0x41/0x60
-> [  105.800155]  ? regulator_put+0x25/0x70
-> [  105.800839]  regulator_put+0x25/0x70
-> [  105.801641]  devm_regulator_release+0x1d/0x30
-> [  105.802415]  release_nodes+0x326/0x500
-> [  105.803126]  devres_release_all+0xb9/0x130
-> [  105.803873]  device_release+0x25/0x1b0
+> Reported-by: kernel test robot <rong.a.chen@intel.com>
+> =
 
-This is entirely my guess for now, but isn't it suspicious that
-device_release() has been called with interrupts disabled?
+> SUSPEND RESUME TEST STARTED
+> Suspend to mem 1/10:
+> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
+tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
+led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
+854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
+uspending-1/10 -O /dev/null
+> Done
+> Sleep for 10 seconds
+> Suspend to mem 2/10:
+> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
+tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
+led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
+854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
+uspending-2/10 -O /dev/null
+> Done
+> Sleep for 10 seconds
+> Suspend to mem 3/10:
+> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
+tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
+led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
+854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
+uspending-3/10 -O /dev/null
+> Done
+> Sleep for 10 seconds
+> Suspend to mem 4/10:
+> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
+tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
+led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
+854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
+uspending-4/10 -O /dev/null
+> Done
+> Sleep for 10 seconds
+> Suspend to mem 5/10:
+> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
+tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
+led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
+854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
+uspending-5/10 -O /dev/null
+> Done
+> Sleep for 10 seconds
+> Suspend to mem 6/10:
+> /usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 ht=
+tp://inn:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/lkp/jobs/schedu=
+led/lkp-bdw-nuc1/suspend-stress-10-mem-debian-x86_64-20180403.cgz-e86e383f2=
+854234129c66e90f84ac2c74b2b1828-20200517-66267-13fgkna-8.yaml&job_state=3Ds=
+uspending-6/10 -O /dev/null
+> Failed
+> =
 
-Is it possible that something else introduced a bug that causes
-device_release() to be called in an atomic context and it only
-triggered with this patch, because the affected struct device now has
-a mutex lock in the release path?
+> =
 
-> [  105.804548]  ? srcu_invoke_callbacks+0xfa/0x280
-> [  105.805591]  kobject_put+0x33e/0x800
-> [  105.806244]  ? refcount_dec_not_one+0x107/0x2f0
-> [  105.807050]  ? srcu_invoke_callbacks+0x14d/0x280
-> [  105.807918]  __device_link_free_srcu+0x79/0xe0
-> [  105.808685]  srcu_invoke_callbacks+0x160/0x280
-> [  105.809729]  process_one_work+0x594/0x1050
-> [  105.810535]  ? process_one_work+0x3ac/0x1050
-> [  105.811314]  ? _raw_spin_lock_irq+0x56/0xe0
-> [  105.812113]  worker_thread+0x4a3/0xc00
-> [  105.812823]  kthread+0x31f/0x3b0
-> [  105.813537]  ? rescuer_thread+0x720/0x720
-> [  105.814227]  ? kthread_bind+0x30/0x30
-> [  105.814920]  ret_from_fork+0x19/0x24
-> [  105.866663] ### dt-test ### EXPECT \ : GPIO line <<int>> (line-B-input=
-) hogged as input
-> [  105.868134] ### dt-test ### EXPECT \ : GPIO line <<int>> (line-A-input=
-) hogged as input
-> [  105.870372] GPIO line 509 (line-B-input) hogged as input
-> [  105.872524] GPIO line 503 (line-A-input) hogged as input
-> [  105.874446] ### dt-test ### EXPECT / : GPIO line <<int>> (line-A-input=
-) hogged as input
->
->                                                           # HH:MM RESULT =
-GOOD BAD GOOD_BUT_DIRTY DIRTY_NOT_BAD
-> git bisect start d0edf98c01ebe0790295cf888a2976d2d04377b1 b9bbe6ed63b2b9f=
-2c9ee5cbd0f2c946a2723f4ce --
-> git bisect  bad 4fde3f7c56e653e1d62102a4a77534f4bfec9689  # 07:04  B     =
- 0    17   33   0  Merge 'linux-review/Anson-Huang/ARM-dts-imx-Make-tempmon=
--node-as-child-of-anatop-node/20200520-230948' into devel-hourly-2020052107
-> git bisect  bad e8344c6f4e6b7a7318fa46dd6fd5418f3e36d010  # 07:04  B     =
- 0    17   33   0  Merge 'linux-review/Gabriel-Krisman-Bertazi/iscsi-Fix-de=
-adlock-on-recovery-path-during-GFP_IO-reclaim/20200520-220836' into devel-h=
-ourly-2020052107
-> git bisect good 6332b5a106b02909b3ac673832d1e36a901d81fa  # 07:04  G     =
-11     0    0   0  Merge 'stericsson/ux500-dts' into devel-hourly-2020052107
-> git bisect  bad 05c599fa08c02ea883075d05cc544f5e133dad15  # 07:04  B     =
- 0    11   27   0  Merge 'ras/edac-misc' into devel-hourly-2020052107
-> git bisect good 25ef63dabd6b9567bd3d7870c5e8595b6b87c678  # 07:05  G     =
-11     0    0   0  Merge 'linux-review/Maulik-Shah/arm64-dts-qcom-sc7180-Co=
-rrect-the-pdc-interrupt-ranges/20200518-202257' into devel-hourly-2020052107
-> git bisect good 0db2ae8dfea89b3541eb5ffb6e0aed13d921b277  # 07:05  G     =
-11     0    0   0  Merge 'linux-review/Geert-Uytterhoeven/ARM-dts-r9a06g032=
--Correct-GIC-compatible-value-order/20200519-204708' into devel-hourly-2020=
-052107
-> git bisect good aeee233deb1c06fcf7630402c1f15208aa3d723a  # 07:05  G     =
-11     0    0   0  Merge 'linux-review/Lubomir-Rintel/media-marvell-ccic-Ad=
-d-support-for-runtime-PM/20200521-053250' into devel-hourly-2020052107
-> git bisect  bad 6872daa8abed0e8bd8447d56cfca80c4d29d6243  # 07:05  B     =
- 0    10   27   1  Merge 'linux-review/Dinghao-Liu/i2c-imx-lpi2c-fix-runtim=
-e-pm-imbalance-on-error/20200521-033738' into devel-hourly-2020052107
-> git bisect good f23da43a58d09dc6ea58837a45374e15de36537e  # 07:05  G     =
-10     0    0   1  Merge branch 'i2c/for-current' into i2c/for-next
-> git bisect good fadb47fca1f132c123395bca26c69007e816988f  # 07:05  G     =
-11     0    0   0  Merge branch 'i2c/for-5.8' into i2c/for-next
-> git bisect  bad 4f118a7e4686062bd4df4a37e24c22cd71495b5f  # 07:05  B     =
- 0    11   27   0  Merge tag 'for-5.8-i2c' of git://git.kernel.org/pub/scm/=
-linux/kernel/git/tegra/linux into i2c/for-5.8
-> git bisect good c73178b93754edd8449dccd3faf05baafd4d3f0e  # 07:05  G     =
-11     0    0   0  i2c: tegra: Add support for the VI I2C on Tegra210
-> git bisect good 6aab46bc52a8f579879d491c9d8062e03caa5c61  # 07:05  G     =
-30     0    0   3  dt-binding: i2c: add bus-supply property
-> git bisect  bad f89c326dcaa0cb8c3af7764e75eeed4e3f3c879a  # 07:05  B     =
- 0    15   31   0  Merge branch 'i2c/for-current-fixed' into i2c/for-5.8
-> git bisect  bad 6fe12cdbcfe35ad4726a619a9546822d34fc934c  # 07:05  B     =
- 0    15   45   0  i2c: core: support bus regulator controlling in adapter
-> # first bad commit: [6fe12cdbcfe35ad4726a619a9546822d34fc934c] i2c: core:=
- support bus regulator controlling in adapter
-> git bisect good 6aab46bc52a8f579879d491c9d8062e03caa5c61  # 07:06  G     =
-30     0    0   3  dt-binding: i2c: add bus-supply property
-> # extra tests with debug options
-> git bisect  bad 6fe12cdbcfe35ad4726a619a9546822d34fc934c  # 07:06  B     =
- 0    14   30   0  i2c: core: support bus regulator controlling in adapter
-> # extra tests on revert first bad commit
-> git bisect good 3788bb973ab542fcf623106a1cef5d8b1e237f7c  # 07:56  G     =
-10     0    0   0  Revert "i2c: core: support bus regulator controlling in =
-adapter"
-> # good: [3788bb973ab542fcf623106a1cef5d8b1e237f7c] Revert "i2c: core: sup=
-port bus regulator controlling in adapter"
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org
---===============4964253394585174530==--
+> =
+
+> To reproduce:
+> =
+
+>        git clone https://github.com/intel/lkp-tests.git
+>        cd lkp-tests
+>        bin/lkp install job.yaml  # job file is attached in this email
+>        bin/lkp run     job.yaml
+> =
+
+> =
+
+> =
+
+> Thanks,
+> Rong Chen
+> =
+
+> <config-5.7.0-rc4-01618-ge86e383f28542><job-script.txt><kmsg.xz><suspend-=
+stress.txt><job.yaml>
+
+--===============6971643188894582787==--
 
