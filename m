@@ -1,60 +1,71 @@
-Content-Type: multipart/mixed; boundary="===============7666527499930700343=="
+Content-Type: multipart/mixed; boundary="===============6886959287633035220=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [smp] b2a02fc43a: suspend-stress.fail
-Date: Thu, 11 Jun 2020 18:10:22 +0200
-Message-ID: <20200611161022.GL2531@hirez.programming.kicks-ass.net>
-In-Reply-To: <CADjb_WSLpKrkt-Oq_3krGBp8ZLjVZ4caUAd0d0s1_6s1tOHdHQ@mail.gmail.com>
+Subject: Re: [gup] 17839856fd: stress-ng.vm-splice.ops_per_sec 2158.6% improvement
+Date: Thu, 11 Jun 2020 13:24:09 -0700
+Message-ID: <CAHk-=whCjhBgJv0z6JoOKMyfnBp0WhH6oa=ayuRRLtgJxOkd5Q@mail.gmail.com>
+In-Reply-To: <20200611040453.GK12456@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7666527499930700343==
+--===============6886959287633035220==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 11, 2020 at 04:24:53PM +0800, Chen Yu wrote:
-> Hi Peter,
-> On Wed, Jun 10, 2020 at 5:52 PM Peter Zijlstra <peterz@infradead.org> w=
-rote:
-> >
-> > On Wed, Jun 10, 2020 at 04:35:02PM +0800, kernel test robot wrote:
-> > > Greeting,
-> > >
-> > > FYI, we noticed the following commit (built with gcc-9):
-> > >
-> > > commit: b2a02fc43a1f40ef4eb2fb2b06357382608d4d84 ("smp: Optimize send=
-_call_function_single_ipi()")
-> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > >
-> > > in testcase: suspend-stress
-> > > with following parameters:
-> > >
-> > >       mode: freeze
-> > >       iterations: 10
-> > >
-> > >
-> > >
-> > > on test machine: 2 threads Broxton with 4G memory
-> > >
-> > > caused below changes (please refer to attached dmesg/kmsg for entire =
-log/backtrace):
-> > >
-> > >
-> > > If you fix the issue, kindly add following tag
-> > > Reported-by: kernel test robot <rong.a.chen@intel.com>
-> > >
-> > >
-> > > the result of this commit:
-> > >
-> > > test started
-> >
-> > No dmesg output? No splat?
-> This issue was only found on one of the test machines from lkp team.
->  I've borrowed that machine and will try to narrow down and give feedback=
- later.
+On Wed, Jun 10, 2020 at 9:05 PM kernel test robot <rong.a.chen@intel.com>=
+ wrote:
+>
+> FYI, we noticed a 2158.6% improvement of stress-ng.vm-splice.ops_per_sec =
+due to commit:
+>
+> commit: 17839856fd588f4ab6b789f482ed3ffd7c403e1f ("gup: document and work=
+ around "COW can break either way" issue")
 
-Thanks! One thing to maybe try is hotplug tests. Suspend does hotplugs,
-and it might be easier to debug hotplug than it is to debug suspend.
---===============7666527499930700343==--
+Well, that is amusing, and seeing improvements is always nice, but
+somehow I think the test is broken.
+
+I can't see why you'd ever see an improvement from that commit, and if
+you do see one, not one by a factor of 20x.
+
+> In addition to that, the commit also has significant impact on the follow=
+ing tests:
+>
+> | testcase: change | stress-ng: stress-ng.vm-splice.ops_per_sec 372.8% im=
+provement        |
+> | testcase: change | stress-ng: stress-ng.vm-splice.ops_per_sec 2052.7% i=
+mprovement       |
+
+Ok, so it's affecting other runs of the same test, and the smaller
+("only" 378%) improvement seems to be just from using fewer threads.
+
+So maybe forcing the COW ends up avoiding some very specific cache
+thrashing case.
+
+> To reproduce:
+>
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+
+Is there some place where you'd actually _see_ what
+"stress-ng.vm-splice.ops_per_sec" actually means and does?
+
+Yeah, I can go and find the actual stress-ng git repo, and take a
+look. I kind of did. But the step from your "to reproduce" to actually
+figuring out what is going on is pretty big.
+
+It would be nice to know what it actually does - do you have a
+database of descriptions for the different tests and how to run them
+individually or anything like that?
+
+IOW, rather than the above "just run all fo the lkp scripts",
+something like how to run the actual individual test would be good.
+
+IOW how do those yaml files translate into _actually_ running the
+'stress-ng' program?
+
+                Linus
+--===============6886959287633035220==--
 
