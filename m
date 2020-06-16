@@ -1,246 +1,79 @@
-Content-Type: multipart/mixed; boundary="===============8110513963987089521=="
+Content-Type: multipart/mixed; boundary="===============4667716396457875461=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Andy Lutomirski <luto@amacapital.net>
 To: lkp@lists.01.org
-Subject: Re: [sched/core] 2ebb177175: will-it-scale.per_thread_ops -3.7% regression
-Date: Tue, 16 Jun 2020 13:33:20 +0100
-Message-ID: <20200616123320.GH3183@techsingularity.net>
-In-Reply-To: <20200616073908.GG5653@shao2-debian>
+Subject: Re: [x86/entry] 2bbc68f837: ltp.ptrace08.fail
+Date: Tue, 16 Jun 2020 06:22:10 -0700
+Message-ID: <8E41B15F-D567-4C52-94E9-367015480345@amacapital.net>
+In-Reply-To: <87y2onbdtb.fsf@nanos.tec.linutronix.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8110513963987089521==
+--===============4667716396457875461==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 16, 2020 at 03:39:08PM +0800, kernel test robot wrote:
+
+> On Jun 16, 2020, at 1:44 AM, Thomas Gleixner <tglx@linutronix.de> wrote:
 > =
 
-> FYI, we noticed a -3.7% regression of will-it-scale.per_thread_ops due to=
- commit:
+> =EF=BB=BFkernel test robot <rong.a.chen@intel.com> writes:
+>> FYI, we noticed the following commit (built with gcc-9):
+>> =
+
+>> commit: 2bbc68f8373c0631ebf137f376fbea00e8086be7 ("x86/entry: Convert De=
+bug exception to IDTENTRY_DB")
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 > =
 
+> Is the head of linux.git exposing the same problem or is this an
+> intermittent failure, which only affects bisectability?
 
-Thanks.
+It sure looks deterministic:
+
+ptrace08.c:62: BROK: Cannot find address of kernel symbol "do_debug"
 
 > =
 
-> commit: 2ebb17717550607bcd85fb8cf7d24ac870e9d762 ("sched/core: Offload wa=
-kee task activation if it the wakee is descheduling")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> Thanks,
 > =
 
-> in testcase: will-it-scale
-> on test machine: 8 threads Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz with =
-16G memory
-> with following parameters:
-> =
+>        tglx
 
-> <SNIP>
-> =
+--===============4667716396457875461==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
 
-> In addition to that, the commit also has significant impact on the follow=
-ing tests:
-> =
-
-> +------------------+-----------------------------------------------------=
----------------------+
-> | testcase: change | lmbench3: lmbench3.AF_UNIX.sock.stream.bandwidth.MB/=
-sec 5.1% improvement |
-> | test machine     | 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz wit=
-h 48G memory         |
-> | test parameters  | cpufreq_governor=3Dperformance                      =
-                       |
-> |                  | mode=3Ddevelopment                                  =
-                       |
-> |                  | nr_threads=3D50%                                    =
-                       |
-> |                  | test=3DUNIX                                         =
-                       |
-> |                  | test_memory_size=3D50%                              =
-                       |
-> |                  | ucode=3D0x7000019                                   =
-                       |
-> +------------------+-----------------------------------------------------=
----------------------+
-> | testcase: change | vm-scalability: vm-scalability.throughput 4.6% impro=
-vement               |
-> | test machine     | 16 threads Intel(R) Xeon(R) E-2278G CPU @ 3.40GHz wi=
-th 32G memory        |
-> | test parameters  | cpufreq_governor=3Dperformance                      =
-                       |
-> |                  | runtime=3D300s                                      =
-                       |
-> |                  | size=3D2T                                           =
-                       |
-> |                  | test=3Dshm-pread-seq-mt                             =
-                       |
-> |                  | ucode=3D0xca                                        =
-                       |
-> +------------------+-----------------------------------------------------=
----------------------+
-> =
-
-
-This is telling me that there are both wins and losses due to the
-patch. That is not entirely unexpected given the nature of the patch and
-how it impacts timings.
-
-> c6e7bd7afaeb3af5 2ebb17717550607bcd85fb8cf7d =
-
-> ---------------- --------------------------- =
-
->        fail:runs  %reproduction    fail:runs
->            |             |             |    =
-
->            :4           25%           1:4     dmesg.RIP:find_vma
->           1:4          -25%            :4     dmesg.RIP:loop
->            :4           25%           1:4     dmesg.RIP:poll_idle
->            :4           25%           1:4     dmesg.RIP:release_pages
->            :4           25%           1:4     kmsg.a562403>]usb_hcd_irq
->           1:4          -25%            :4     kmsg.a9be0b>]usb_hcd_irq
->            :4           25%           1:4     kmsg.c867d3b>]usb_hcd_irq
->            :4           25%           1:4     kmsg.e2bf9>]usb_hcd_irq
->           1:4          -25%            :4     kmsg.e6afaad>]usb_hcd_irq
->           1:4          -25%            :4     kmsg.ef22>]usb_hcd_irq
->          %stddev     %change         %stddev
->              \          |                \  =
-
->    1564377            -3.7%    1506585        will-it-scale.per_thread_ops
->   12515025            -3.7%   12052684        will-it-scale.workload
-
-What is the variability here? The stddev is blank.
-
->       7295 =C2=B1 18%     +32.3%       9651 =C2=B1  3%  slabinfo.kmalloc-=
-32.active_objs
->       7295 =C2=B1 18%     +32.3%       9651 =C2=B1  3%  slabinfo.kmalloc-=
-32.num_objs
->      52712 =C2=B1167%     -99.8%     122.25 =C2=B1  9%  softirqs.CPU7.NET=
-_RX
->     167833 =C2=B1 37%     -96.0%       6770 =C2=B1 70%  softirqs.NET_RX
-
-This is curious, why was there a storm of network traffic during the
-baseline run? It may not matter but I find it interesting that there was
-different background traffic during the two tests.
-
->       8.17            -6.2        1.95 =C2=B1  2%  mpstat.cpu.all.idle%
->       0.05 =C2=B1 39%      -0.0        0.00 =C2=B1 92%  mpstat.cpu.all.so=
-ft%
->      36.39            +4.6       40.97        mpstat.cpu.all.usr%
->      54.75            +2.3%      56.00        vmstat.cpu.sy
->      36.00           +11.8%      40.25        vmstat.cpu.us
->     879009            +9.8%     964967        vmstat.system.cs
->      80622          +438.9%     434480        vmstat.system.in
->    8567964 =C2=B1 11%     -24.3%    6482942 =C2=B1  4%  cpuidle.C1.time
->    7399663 =C2=B1 10%     -46.7%    3944245 =C2=B1  5%  cpuidle.C1.usage
->    4762729 =C2=B1 15%     -76.7%    1108338 =C2=B1  4%  cpuidle.C1E.time
->    2825633 =C2=B1 12%     -92.5%     213227 =C2=B1 11%  cpuidle.C1E.usage
->    1392828 =C2=B1 18%     -89.8%     142380 =C2=B1 13%  cpuidle.C3.usage
->    9138464 =C2=B1 19%     -39.7%    5510711 =C2=B1 12%  cpuidle.C6.time
->   49832321           -80.0%    9988732 =C2=B1  5%  cpuidle.POLL.time
->   67398769 =C2=B1  2%     -89.1%    7335934 =C2=B1  6%  cpuidle.POLL.usage
-
-This generally indicates that CPUs are spending less time in C-states
-and more likely to be active. In itself, this is not a bad thing.
-
->   18365719           -91.7%    1533497 =C2=B1  4%  interrupts.RES:Resched=
-uling_interrupts
->     103.25 =C2=B1  5%    +159.1%     267.50 =C2=B1  5%  interrupts.TLB:TL=
-B_shootdowns
->      13.47 =C2=B1  3%     -19.3%      10.86 =C2=B1  3%  perf-stat.i.MPKI
->  1.746e+09            +1.9%  1.779e+09        perf-stat.i.branch-instruct=
-ions
->   47675183            +1.8%   48541350        perf-stat.i.branch-misses
->  1.145e+08 =C2=B1  3%     -18.3%   93535517 =C2=B1  3%  perf-stat.i.cache=
--references
->     885445            +9.7%     971331        perf-stat.i.context-switches
->       3.43            -1.1%       3.39        perf-stat.i.cpi
->  2.155e+09            +3.4%  2.228e+09        perf-stat.i.dTLB-loads
->   1.73e+09            +5.6%  1.827e+09        perf-stat.i.dTLB-stores
->    5869850 =C2=B1  5%     -16.5%    4900813        perf-stat.i.iTLB-load-=
-misses
->     786437 =C2=B1 13%     -30.9%     543649 =C2=B1 16%  perf-stat.i.iTLB-=
-loads
->  8.535e+09            +1.3%  8.642e+09        perf-stat.i.instructions
->       1492 =C2=B1  4%     +20.6%       1798        perf-stat.i.instructio=
-ns-per-iTLB-miss
->       0.29            +1.1%       0.30        perf-stat.i.ipc
->     720.16            +3.2%     742.92        perf-stat.i.metric.M/sec
->      13.41 =C2=B1  3%     -19.3%      10.82 =C2=B1  3%  perf-stat.overall=
-.MPKI
->       3.42            -1.1%       3.39        perf-stat.overall.cpi
->       1457 =C2=B1  4%     +21.0%       1763        perf-stat.overall.inst=
-ructions-per-iTLB-miss
->       0.29            +1.1%       0.30        perf-stat.overall.ipc
->     205548            +5.0%     215927        perf-stat.overall.path-leng=
-th
->   1.74e+09            +1.9%  1.773e+09        perf-stat.ps.branch-instruc=
-tions
->   47519673            +1.8%   48383718        perf-stat.ps.branch-misses
->  1.141e+08 =C2=B1  3%     -18.3%   93221019 =C2=B1  3%  perf-stat.ps.cach=
-e-references
->     882476            +9.7%     968061        perf-stat.ps.context-switch=
-es
->  2.148e+09            +3.4%  2.221e+09        perf-stat.ps.dTLB-loads
->  1.724e+09            +5.6%  1.821e+09        perf-stat.ps.dTLB-stores
->    5850190 =C2=B1  5%     -16.5%    4884334        perf-stat.ps.iTLB-load=
--misses
->     783812 =C2=B1 13%     -30.9%     541830 =C2=B1 16%  perf-stat.ps.iTLB=
--loads
->  8.507e+09            +1.3%  8.614e+09        perf-stat.ps.instructions
->  2.572e+12            +1.2%  2.602e+12        perf-stat.total.instructions
-
-I'm not getting much out of this. I was hoping to see something on
-dcache hit/miss rates but only cache-references are mentioned. I think
-what is happening is that the threads are staying active to contend on a
-shared mutex more and incurring more cache misses as a result.
-
->       8.95 =C2=B1  2%      -6.5        2.50 =C2=B1  3%  perf-profile.call=
-trace.cycles-pp.try_to_wake_up.wake_up_q.futex_wake.do_futex.__x64_sys_futex
->       9.15 =C2=B1  2%      -6.4        2.79 =C2=B1  3%  perf-profile.call=
-trace.cycles-pp.wake_up_q.futex_wake.do_futex.__x64_sys_futex.do_syscall_64
-
-Less time spend in try_to_wake_up which is not surprising given the
-patch is meant to avoid spinning in that path.
-
->      22.31            -4.6       17.69        perf-profile.calltrace.cycl=
-es-pp.do_futex.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe=
-.__lll_unlock_wake
->      21.97            -4.6       17.37        perf-profile.calltrace.cycl=
-es-pp.futex_wake.do_futex.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_af=
-ter_hwframe
->      40.70            -4.6       36.13        perf-profile.calltrace.cycl=
-es-pp.__lll_unlock_wake
->      23.13            -4.6       18.56        perf-profile.calltrace.cycl=
-es-pp.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe.__lll_un=
-lock_wake
->      30.54            -4.5       26.03        perf-profile.calltrace.cycl=
-es-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__lll_unlock_wake
->      31.06            -4.5       26.59        perf-profile.calltrace.cycl=
-es-pp.entry_SYSCALL_64_after_hwframe.__lll_unlock_wake
->       2.81 =C2=B1  5%      -2.4        0.40 =C2=B1 58%  perf-profile.call=
-trace.cycles-pp.menu_select.do_idle.cpu_startup_entry.start_secondary.secon=
-dary_startup_64
->       3.15 =C2=B1 10%      -1.9        1.28 =C2=B1 10%  perf-profile.call=
-trace.cycles-pp.cpuidle_enter.do_idle.cpu_startup_entry.start_secondary.sec=
-ondary_startup_64
->       3.11 =C2=B1 10%      -1.8        1.26 =C2=B1 10%  perf-profile.call=
-trace.cycles-pp.cpuidle_enter_state.cpuidle_enter.do_idle.cpu_startup_entry=
-.start_secondary
-
-Less going into idle, generally good.
-
-Overall, I do not think there is something worth digging into here.
-Two other reports showed performance gains and the data for this profile
-shows that the threads are likely spending more time being active so
-they can contend on the mutex more aggressively. Having multiple threads
-contend on the same mutex in a loop looks like an anti-pattern and I do
-not think we want to artificially starve/stall threads just to make that
-particular figure look good.
-
--- =
-
-Mel Gorman
-SUSE Labs
---===============8110513963987089521==--
+PGh0bWw+PGhlYWQ+PG1ldGEgaHR0cC1lcXVpdj0iY29udGVudC10eXBlIiBjb250ZW50PSJ0ZXh0
+L2h0bWw7IGNoYXJzZXQ9dXRmLTgiPjwvaGVhZD48Ym9keSBkaXI9ImF1dG8iPjxicj48ZGl2IGRp
+cj0ibHRyIj48YmxvY2txdW90ZSB0eXBlPSJjaXRlIj5PbiBKdW4gMTYsIDIwMjAsIGF0IDE6NDQg
+QU0sIFRob21hcyBHbGVpeG5lciAmbHQ7dGdseEBsaW51dHJvbml4LmRlJmd0OyB3cm90ZTo8YnI+
+PGJyPjwvYmxvY2txdW90ZT48L2Rpdj48YmxvY2txdW90ZSB0eXBlPSJjaXRlIj48ZGl2IGRpcj0i
+bHRyIj7vu788c3Bhbj5rZXJuZWwgdGVzdCByb2JvdCAmbHQ7cm9uZy5hLmNoZW5AaW50ZWwuY29t
+Jmd0OyB3cml0ZXM6PC9zcGFuPjxicj48YmxvY2txdW90ZSB0eXBlPSJjaXRlIj48c3Bhbj5GWUks
+IHdlIG5vdGljZWQgdGhlIGZvbGxvd2luZyBjb21taXQgKGJ1aWx0IHdpdGggZ2NjLTkpOjwvc3Bh
+bj48YnI+PC9ibG9ja3F1b3RlPjxibG9ja3F1b3RlIHR5cGU9ImNpdGUiPjxzcGFuPjwvc3Bhbj48
+YnI+PC9ibG9ja3F1b3RlPjxibG9ja3F1b3RlIHR5cGU9ImNpdGUiPjxzcGFuPmNvbW1pdDogMmJi
+YzY4ZjgzNzNjMDYzMWViZjEzN2YzNzZmYmVhMDBlODA4NmJlNyAoIng4Ni9lbnRyeTogQ29udmVy
+dCBEZWJ1ZyBleGNlcHRpb24gdG8gSURURU5UUllfREIiKTwvc3Bhbj48YnI+PC9ibG9ja3F1b3Rl
+PjxibG9ja3F1b3RlIHR5cGU9ImNpdGUiPjxzcGFuPmh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvY2dp
+dC9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdCBtYXN0ZXI8L3NwYW4+PGJyPjwv
+YmxvY2txdW90ZT48c3Bhbj48L3NwYW4+PGJyPjxzcGFuPklzIHRoZSBoZWFkIG9mIGxpbnV4Lmdp
+dCBleHBvc2luZyB0aGUgc2FtZSBwcm9ibGVtIG9yIGlzIHRoaXMgYW48L3NwYW4+PGJyPjxzcGFu
+PmludGVybWl0dGVudCBmYWlsdXJlLCB3aGljaCBvbmx5IGFmZmVjdHMgYmlzZWN0YWJpbGl0eT88
+L3NwYW4+PGJyPjwvZGl2PjwvYmxvY2txdW90ZT48ZGl2Pjxicj48L2Rpdj48ZGl2Pkl0IHN1cmUg
+bG9va3MgZGV0ZXJtaW5pc3RpYzo8L2Rpdj48ZGl2Pjxicj48L2Rpdj48c3BhbiBzdHlsZT0iLXdl
+YmtpdC10ZXh0LXNpemUtYWRqdXN0OiBhdXRvOyBjYXJldC1jb2xvcjogcmdiKDAsIDAsIDApOyBj
+b2xvcjogcmdiKDAsIDAsIDApOyBiYWNrZ3JvdW5kLWNvbG9yOiByZ2IoMjU1LCAyNTUsIDI1NSk7
+Ij5wdHJhY2UwOC5jOjYyOiBCUk9LOiBDYW5ub3QgZmluZCBhZGRyZXNzIG9mIGtlcm5lbCBzeW1i
+b2wgImRvX2RlYnVnIjwvc3Bhbj48ZGl2Pjxmb250IGNvbG9yPSIjMDAwMDAwIj48c3BhbiBzdHls
+ZT0iY2FyZXQtY29sb3I6IHJnYigwLCAwLCAwKTsgLXdlYmtpdC10ZXh0LXNpemUtYWRqdXN0OiBh
+dXRvOyBiYWNrZ3JvdW5kLWNvbG9yOiByZ2IoMjU1LCAyNTUsIDI1NSk7Ij48YnI+PC9zcGFuPjwv
+Zm9udD48YmxvY2txdW90ZSB0eXBlPSJjaXRlIj48ZGl2IGRpcj0ibHRyIj48c3Bhbj48L3NwYW4+
+PGJyPjxzcGFuPlRoYW5rcyw8L3NwYW4+PGJyPjxzcGFuPjwvc3Bhbj48YnI+PHNwYW4+ICZuYnNw
+OyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO3RnbHg8L3NwYW4+PGJyPjwvZGl2
+PjwvYmxvY2txdW90ZT48L2Rpdj48L2JvZHk+PC9odG1sPg==
+--===============4667716396457875461==--
 
