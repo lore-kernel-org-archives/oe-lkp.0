@@ -1,222 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============3219728443842264004=="
+Content-Type: multipart/mixed; boundary="===============9120003026009965425=="
 MIME-Version: 1.0
-From: Johannes Weiner <hannes@cmpxchg.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: [mm] 1431d4d11a: vm-scalability.throughput -11.5% regression
-Date: Tue, 16 Jun 2020 10:45:29 -0400
-Message-ID: <20200616144529.GA616830@cmpxchg.org>
-In-Reply-To: <20200616075750.GM5653@shao2-debian>
+Subject: Re: [x86/entry] 2bbc68f837: ltp.ptrace08.fail
+Date: Tue, 16 Jun 2020 16:57:07 +0200
+Message-ID: <87ftav2h4s.fsf@nanos.tec.linutronix.de>
+In-Reply-To: <8E41B15F-D567-4C52-94E9-367015480345@amacapital.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3219728443842264004==
+--===============9120003026009965425==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 16, 2020 at 03:57:50PM +0800, kernel test robot wrote:
-> Greeting,
-> =
+Andy Lutomirski <luto@amacapital.net> writes:
+>> On Jun 16, 2020, at 1:44 AM, Thomas Gleixner <tglx@linutronix.de> wrot=
+e:
+>> =
 
-> FYI, we noticed a -11.5% regression of vm-scalability.throughput due to c=
-ommit:
-> =
+>> =EF=BB=BFkernel test robot <rong.a.chen@intel.com> writes:
+>>> FYI, we noticed the following commit (built with gcc-9):
+>>> =
 
-> =
+>>> commit: 2bbc68f8373c0631ebf137f376fbea00e8086be7 ("x86/entry: Convert D=
+ebug exception to IDTENTRY_DB")
+>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>> =
 
-> commit: 1431d4d11abb265e79cd44bed2f5ea93f1bcc57b ("mm: base LRU balancing=
- on an explicit cost model")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>> Is the head of linux.git exposing the same problem or is this an
+>> intermittent failure, which only affects bisectability?
+>
+> It sure looks deterministic:
+>
+> ptrace08.c:62: BROK: Cannot find address of kernel symbol "do_debug"
 
-That's a really curious result.
+Hahahaha. But not only LTP, also LKP-tests makes assumptions:
 
-An bit of an increase in system time is expected in the series as a
-whole:
+  monitors/irq_exception_noise:[ "$exception" -eq "1" ] && export ftrace_fi=
+lters=3D'__do_page_fault do_divide_error do_overflow do_bounds do_invalid_o=
+p do_device_not_available do_double_fault do_coprocessor_segment_overrun do=
+_invalid_TSS do_segment_not_present do_spurious_interrupt_bug do_coprocesso=
+r_error do_alignment_check do_simd_coprocessor_error do_debug do_stack_segm=
+ent do_general_protection'
 
-1. When thrashing is detected in the file cache, it intentionally
-makes more effort to find reclaimable anon pages than before - in an
-effort to converge on a stable state that has *neither* page reclaim
-nor refault IO.
+stable-api-nonsense.rst comes to my mind.
 
-2. There are a couple of XXX about unrealized lock batching
-opportunities. Those weren't/aren't expected to have too much of a
-practical impact, and require a bit more infrastructure work that
-would have interferred with other ongoing work in the area.
+Thanks,
 
-However, this patch in particular doesn't add any locked sections (it
-adds a function call to an existing one, I guess?), and the workload
-is doing streaming mmapped IO and shouldn't experience any thrashing.
+        tglx
 
-In addition, we shouldn't even scan anon pages - from below:
-
-> swap_partitions: =
-
-> rootfs_partition: "/dev/disk/by-id/wwn-0x5000c50067b47753-part1"
-
-Does that mean that no swap space (not even a file) is configured?
-
-> in testcase: vm-scalability
-> on test machine: 160 threads Intel(R) Xeon(R) CPU E7-8890 v4 @ 2.20GHz wi=
-th 256G memory
-> with following parameters:
-> =
-
-> 	runtime: 300s
-> 	test: lru-file-mmap-read
-> 	cpufreq_governor: performance
-> 	ucode: 0xb000038
-> =
-
-> test-description: The motivation behind this suite is to exercise functio=
-ns and regions of the mm/ of the Linux kernel which are of interest to us.
-> test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability=
-.git/
-> =
-
-> =
-
-> =
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <rong.a.chen@intel.com>
-> =
-
-> =
-
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
-> =
-
-> =
-
-> To reproduce:
-> =
-
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp install job.yaml  # job file is attached in this email
->         bin/lkp run     job.yaml
-> =
-
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/rootfs/runtime/tbox_group/test/testcase=
-/ucode:
->   gcc-9/performance/x86_64-rhel-7.6/debian-x86_64-20191114.cgz/300s/lkp-b=
-dw-ex2/lru-file-mmap-read/vm-scalability/0xb000038
-> =
-
-> commit: =
-
->   a4fe1631f3 ("mm: vmscan: drop unnecessary div0 avoidance rounding in ge=
-t_scan_count()")
->   1431d4d11a ("mm: base LRU balancing on an explicit cost model")
-> =
-
-> a4fe1631f313f75c 1431d4d11abb265e79cd44bed2f =
-
-> ---------------- --------------------------- =
-
->          %stddev     %change         %stddev
->              \          |                \  =
-
->       0.23 =C2=B1  2%     +11.7%       0.26        vm-scalability.free_ti=
-me
-
-What's free_time?
-
->     103991           -11.6%      91935        vm-scalability.median
->   20717269           -11.5%   18336098        vm-scalability.throughput
->     376.47            +8.3%     407.78        vm-scalability.time.elapsed=
-_time
->     376.47            +8.3%     407.78        vm-scalability.time.elapsed=
-_time.max
->     392226            +7.2%     420612        vm-scalability.time.involun=
-tary_context_switches
->      11731            +4.4%      12247        vm-scalability.time.percent=
-_of_cpu_this_job_got
->      41005           +14.5%      46936        vm-scalability.time.system_=
-time
->       3156            -4.8%       3005        vm-scalability.time.user_ti=
-me
->   52662860 =C2=B1  5%     -14.0%   45266760 =C2=B1  5%  meminfo.DirectMap=
-2M
->       4.43            -0.5        3.90 =C2=B1  2%  mpstat.cpu.all.usr%
->       1442 =C2=B1  5%     -14.9%       1227 =C2=B1 10%  slabinfo.kmalloc-=
-rcl-96.active_objs
->       1442 =C2=B1  5%     -14.9%       1227 =C2=B1 10%  slabinfo.kmalloc-=
-rcl-96.num_objs
->      37.50 =C2=B1  2%      -7.3%      34.75        vmstat.cpu.id
->      57.25            +5.2%      60.25        vmstat.cpu.sy
->      54428 =C2=B1 60%     -96.5%       1895 =C2=B1173%  numa-meminfo.node=
-1.AnonHugePages
->     116516 =C2=B1 48%     -88.2%      13709 =C2=B1 26%  numa-meminfo.node=
-1.AnonPages
->     132303 =C2=B1 84%     -88.9%      14731 =C2=B1 61%  numa-meminfo.node=
-3.Inactive(anon)
-
-These counters capture present state, not history. Are these averages
-or snapshots? If snapshots, when are they taken during the test?
-
->     311.75 =C2=B1  8%     +16.0%     361.75 =C2=B1  2%  numa-vmstat.node0=
-.nr_isolated_file
->      29136 =C2=B1 48%     -88.4%       3367 =C2=B1 24%  numa-vmstat.node1=
-.nr_anon_pages
->   35935841 =C2=B1  6%     -17.0%   29839972 =C2=B1  6%  numa-vmstat.node2=
-.numa_foreign
->      33046 =C2=B1 84%     -89.1%       3595 =C2=B1 61%  numa-vmstat.node3=
-.nr_inactive_anon
->      33046 =C2=B1 84%     -89.1%       3596 =C2=B1 61%  numa-vmstat.node3=
-.nr_zone_inactive_anon
->      21.43 =C2=B1 15%     +79.4%      38.44 =C2=B1 54%  sched_debug.cfs_r=
-q:/.load_avg.avg
->      95.92 =C2=B1  9%     +96.7%     188.64 =C2=B1 67%  sched_debug.cfs_r=
-q:/.load_avg.stddev
->      36.18 =C2=B1  7%     +13.6%      41.10 =C2=B1  4%  sched_debug.cfs_r=
-q:/.nr_spread_over.avg
->    1075687 =C2=B1102%    +233.3%    3585792 =C2=B1 70%  sched_debug.cfs_r=
-q:/.spread0.avg
->    2865813 =C2=B1 41%     +87.3%    5367329 =C2=B1 42%  sched_debug.cfs_r=
-q:/.spread0.max
->   -6253423           -61.1%   -2430118        sched_debug.cfs_rq:/.spread=
-0.min
->     351.68 =C2=B1  8%     -14.8%     299.58 =C2=B1  6%  sched_debug.cpu.s=
-ched_goidle.avg
->       9441 =C2=B1 11%     -21.9%       7376 =C2=B1  7%  sched_debug.cpu.s=
-ched_goidle.max
->      54.46 =C2=B1  5%     -19.5%      43.82 =C2=B1  6%  sched_debug.cpu.s=
-ched_goidle.min
->     873.06 =C2=B1  8%     -19.2%     705.36 =C2=B1  4%  sched_debug.cpu.s=
-ched_goidle.stddev
->     898.25 =C2=B1 10%     -15.5%     759.25 =C2=B1 12%  proc-vmstat.kswap=
-d_low_wmark_hit_quickly
->     108483            +4.0%     112790        proc-vmstat.nr_active_anon
->       1006 =C2=B1  4%      +9.3%       1099 =C2=B1  2%  proc-vmstat.nr_is=
-olated_file
->   72985192            +4.5%   76275208        proc-vmstat.nr_mapped
->     634868            +5.0%     666703 =C2=B1  2%  proc-vmstat.nr_page_ta=
-ble_pages
->     106506            +3.6%     110328        proc-vmstat.nr_shmem
->     108486            +4.0%     112792        proc-vmstat.nr_zone_active_=
-anon
->       7453 =C2=B1 42%     +67.4%      12474 =C2=B1 12%  proc-vmstat.numa_=
-hint_faults
->       1597 =C2=B1  5%      -8.8%       1457 =C2=B1  6%  proc-vmstat.pageo=
-utrun
->      55272            +3.6%      57288        proc-vmstat.pgactivate
->  1.603e+09            -2.7%   1.56e+09        proc-vmstat.pgscan_direct
->  2.935e+08 =C2=B1  3%     +13.1%   3.32e+08 =C2=B1  2%  proc-vmstat.pgsca=
-n_kswapd
-
-More scan activity. The patch can affect the scan ratio between anon
-and file, so this only makes sense when there is swap space configured
-and anon pages are actually scanned.
-
-Would it be possible to capture deltas of the new pgscan_anon &
-pgscan_file vmstat counters? As well as the workingset_* ones?
-
-Thanks!
---===============3219728443842264004==--
+--===============9120003026009965425==--
 
