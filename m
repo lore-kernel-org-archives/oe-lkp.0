@@ -1,55 +1,35 @@
-Content-Type: multipart/mixed; boundary="===============7684004800134006313=="
+Content-Type: multipart/mixed; boundary="===============3452633316486340753=="
 MIME-Version: 1.0
-From: Quentin Perret <qperret@google.com>
+From: Vlastimil Babka <vbabka@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [cpufreq] d83f959b5e: kmsg.cpufreq:cpufreq_online:Failed_to_initialize_policy_for_cpu:#(-#)
-Date: Tue, 23 Jun 2020 10:25:36 +0100
-Message-ID: <20200623092536.GA52234@google.com>
-In-Reply-To: <20200622005457.GI5535@shao2-debian>
+Subject: Re: [mm, slab/slub] 7b39adbb1b: WARNING:at_mm/slab.h:#kmem_cache_free
+Date: Tue, 23 Jun 2020 13:35:21 +0200
+Message-ID: <d6e6b64c-2870-1fbb-bca2-a27732af1ec3@suse.cz>
+In-Reply-To: <20200623090213.GW5535@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7684004800134006313==
+--===============3452633316486340753==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-Thanks for the report.
-
-On Monday 22 Jun 2020 at 08:54:57 (+0800), kernel test robot wrote:
+On 6/23/20 11:02 AM, kernel test robot wrote:
 > Greeting,
 > =
 
-> FYI, we noticed the following commit (built with gcc-9):
+> FYI, we noticed the following commit (built with gcc-6):
 > =
 
-> commit: d83f959b5e7a6378a4afbff23de2a2d064d95749 ("[PATCH 2/2] cpufreq: S=
-pecify default governor on command line")
-> url: https://github.com/0day-ci/linux/commits/Quentin-Perret/cpufreq-Spec=
-ify-the-default-governor-on-command-line/20200616-005920
-> base: https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git li=
-nux-next
+> commit: 7b39adbb1b1d3e73df9066a8d1e93a83c18d7730 ("mm, slab/slub: improve=
+ error reporting and overhead of cache_from_obj()")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > =
 
-> in testcase: kernel-selftests
-> with following parameters:
+> in testcase: boot
 > =
 
-> 	group: kselftests-x86
-> 	ucode: 0xdc
-> =
-
-> test-description: The kernel contains a set of "self tests" under the too=
-ls/testing/selftests/ directory. These are intended to be small unit tests =
-to exercise individual code paths in the kernel.
-> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
-> =
-
-> =
-
-> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 1=
-6G memory
+> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m =
+16G
 > =
 
 > caused below changes (please refer to attached dmesg/kmsg for entire log/=
@@ -58,6 +38,26 @@ backtrace):
 
 > =
 
+> +--------------------------------------------------------+------------+--=
+----------+
+> |                                                        | 5a2a0a5f04 | 7=
+b39adbb1b |
+> +--------------------------------------------------------+------------+--=
+----------+
+> | boot_successes                                         | 4          | 0=
+          |
+> | boot_failures                                          | 4          | 8=
+          |
+> | WARNING:at_kernel/trace/trace.c:#trace_find_next_entry | 4          | 4=
+          |
+> | EIP:trace_find_next_entry                              | 4          | 4=
+          |
+> | WARNING:at_mm/slab.h:#kmem_cache_free                  | 0          | 8=
+          |
+> | EIP:kmem_cache_free                                    | 0          | 8=
+          |
+> +--------------------------------------------------------+------------+--=
+----------+
 > =
 
 > =
@@ -68,33 +68,85 @@ backtrace):
 
 > =
 
+> [    3.251054] WARNING: CPU: 0 PID: 8 at mm/slab.h:298 kmem_cache_free+0x=
+5/0x170
+
+So this is due to the latest fixups.
+
+Roman suggested VM_WARN_ON_ONCE(!(flags & SLAB_DEBUG_FLAGS)); which trigger=
+ed here.
+For Kees, the cache_from_obj() is again shared between SLAB and SLUB and is
+testing kmem_cache_debug_flags(s, SLAB_CONSISTENCY_CHECKS).
+
+However under CONFIG_SLAB, SLAB_DEBUG_FLAGS doesn't include SLAB_CONSISTENC=
+Y_CHECKS.
+
+I think I'll need to move the VM_WARN_ON_ONCE() under #ifdef CONFIG_SLUB ?
+
+> [    3.251054] Modules linked in:
+> [    3.251054] CPU: 0 PID: 8 Comm: kdevtmpfs Not tainted 5.8.0-rc1-00277-=
+g7b39adbb1b1d3 #1
+> [    3.251054] EIP: kmem_cache_free+0x5/0x170
+> [    3.251054] Code: 9f 8c 89 f8 e8 cc 58 fd ff 0f 0b 8d 78 ff e9 77 ff f=
+f ff e8 2d d3 90 00 8d b4 26 00 00 00 00 8d b6 00 00 00 00 66 66 66 66 90 <=
+0f> 0b 85 c0 0f 84 a6 00 00 00 8b 0d 64 50 b7 8c 85 c9 0f 84 33 01
+> [    3.251054] EAX: 80090780 EBX: 802b4000 ECX: 00000000 EDX: 802b4000
+> [    3.251054] ESI: 802b4000 EDI: 80305e04 EBP: 80305df4 ESP: 80305dec
+> [    3.251054] DS: 007b ES: 007b FS: 0000 GS: 00e0 SS: 0068 EFLAGS: 00010=
+246
+> [    3.251054] CR0: 80050033 CR2: ffffffff CR3: 0ceb2000 CR4: 000406b0
+> [    3.251054] Call Trace:
+> [    3.251054]  ? putname+0x5c/0x60
+> [    3.251054]  filename_lookup+0xde/0x1a0
+> [    3.251054]  ? rcu_read_lock_sched_held+0x20/0x50
+> [    3.251054]  ? strncpy_from_user+0x21/0x1a0
+> [    3.251054]  user_path_at_empty+0x2a/0x40
+> [    3.251054]  do_mount+0x5d/0x9b0
+> [    3.251054]  devtmpfsd+0x69/0x2c0
+> [    3.251054]  ? sched_clock_cpu+0x44/0xc0
+> [    3.251054]  ? _raw_spin_unlock_irqrestore+0x2a/0x72
+> [    3.251054]  ? trace_hardirqs_on+0xbf/0x270
+> [    3.251054]  ? __kthread_parkme+0x5a/0x80
+> [    3.251054]  kthread+0xf0/0x120
+> [    3.251054]  ? public_dev_mount+0x40/0x40
+> [    3.251054]  ? kthread_create_worker_on_cpu+0x20/0x20
+> [    3.251054]  ret_from_fork+0x19/0x30
+> [    3.251054] irq event stamp: 41
+> [    3.251054] hardirqs last  enabled at (41): [<8ba11885>] set_root+0x95=
+/0x190
+> [    3.251054] hardirqs last disabled at (40): [<8ba11856>] set_root+0x66=
+/0x190
+> [    3.251054] softirqs last  enabled at (0): [<8b87027b>] copy_process+0=
+x3eb/0x15b0
+> [    3.251054] softirqs last disabled at (0): [<00000000>] 0x0
+> [    3.251054] ---[ end trace e72be312a52f9020 ]---
 > =
 
-> [    8.715369] intel_pstate: Intel P-state driver initializing
-> [    8.721146] cpufreq: cpufreq_online: Failed to initialize policy for c=
-pu: 0 (-61)
-> [    8.728900] cpufreq: cpufreq_online: Failed to initialize policy for c=
-pu: 1 (-61)
-> [    8.736615] cpufreq: cpufreq_online: Failed to initialize policy for c=
-pu: 2 (-61)
-> [    8.744400] cpufreq: cpufreq_online: Failed to initialize policy for c=
-pu: 3 (-61)
-> [    8.752222] cpufreq: cpufreq_online: Failed to initialize policy for c=
-pu: 4 (-61)
-> [    8.760010] cpufreq: cpufreq_online: Failed to initialize policy for c=
-pu: 5 (-61)
-> [    8.768077] cpufreq: cpufreq_online: Failed to initialize policy for c=
-pu: 6 (-61)
-> [    8.775891] cpufreq: cpufreq_online: Failed to initialize policy for c=
-pu: 7 (-61)
+> =
 
-That, I think, is because of the issue I reported here:
+> To reproduce:
+> =
 
-    https://lore.kernel.org/lkml/20200615174141.GA235811(a)google.com/
+>         # build kernel
+> 	cd linux
+> 	cp config-5.8.0-rc1-00277-g7b39adbb1b1d3 .config
+> 	make HOSTCC=3Dgcc-6 CC=3Dgcc-6 ARCH=3Di386 olddefconfig prepare modules_=
+prepare bzImage
+> =
 
-The v2 (to be posted shortly) will address this.
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp qemu -k <bzImage> job-script # job-script is attached in =
+this email
+> =
 
-Thanks,
-Quentin
---===============7684004800134006313==--
+> =
+
+> =
+
+> Thanks,
+> Rong Chen
+>=20
+
+--===============3452633316486340753==--
 
