@@ -1,60 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============8302078660798121886=="
+Content-Type: multipart/mixed; boundary="===============7077953738524869031=="
 MIME-Version: 1.0
-From: Stephen Rothwell <sfr@canb.auug.org.au>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 To: lkp@lists.01.org
-Subject: Re: Add a branch to the zero day tests
-Date: Fri, 21 Aug 2020 02:01:52 +1000
-Message-ID: <20200821020152.5822a5cb@canb.auug.org.au>
-In-Reply-To: <01808cc0-cfe0-9010-b8a4-79b74b51de67@intel.com>
+Subject: Re: [PATCH nf] netfilter: nft_compat: remove flush counter optimization
+Date: Mon, 10 Aug 2020 13:03:51 +0200
+Message-ID: <20200810110351.GA1613@salvia>
+In-Reply-To: <20200809182801.9315-1-fw@strlen.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8302078660798121886==
+--===============7077953738524869031==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Rong A,
-
-On Thu, 20 Aug 2020 18:41:19 +0800 "Chen, Rong A" <rong.a.chen@intel.com>=
- wrote:
->
-> On 8/20/2020 2:58 PM, Stephen Rothwell wrote:
-> >
-> > I was wondering if I could get a branch of my tree added to the zero
-> > day test service, please?
-> >
-> > Just branch "test" of
-> > https://git.kernel.org/pub/scm/linux/kernel/git/sfr/linux.git
-> >
-> > It should not be updating very often.
-> >
-> > Success reports as well as failures would be nice, if possible.
+On Sun, Aug 09, 2020 at 08:28:01PM +0200, Florian Westphal wrote:
+> WARNING: CPU: 1 PID: 16059 at lib/refcount.c:31 refcount_warn_saturate+0x=
+df/0xf
+> [..]
+>  __nft_mt_tg_destroy+0x42/0x50 [nft_compat]
+>  nft_target_destroy+0x63/0x80 [nft_compat]
+>  nf_tables_expr_destroy+0x1b/0x30 [nf_tables]
+>  nf_tables_rule_destroy+0x3a/0x70 [nf_tables]
+>  nf_tables_exit_net+0x186/0x3d0 [nf_tables]
 > =
 
-> We have added the tree into our CI system.
+> Happens when a compat expr is destoyed from abort path.
+> There is no functional impact; after this work queue is flushed
+> unconditionally if its pending.
+> =
 
-Thank you.
+> This removes the waitcount optimization.  Test of repeated
+> iptables-restore of a ~60k kubernetes ruleset doesn't indicate
+> a slowdown.  In case the counter is needed after all for some workloads
+> we can revert this and increment the refcount for the
+> !=3D NFT_PREPARE_TRANS case to avoid the increment/decrement imbalance.
+> =
 
--- =
+> While at it, also flush for match case, this was an oversight
+> in the original patch.
 
-Cheers,
-Stephen Rothwell
-
---===============8302078660798121886==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.sig"
-
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRRXpCQUVCQ0FBZEZpRUVOSUM5NmdpWjgx
-dFdkTGdLQVZCQzgwbFgwR3dGQWw4K25uQUFDZ2tRQVZCQzgwbFgKMEd5eHV3Zi9Wa0JkMGV2dHd1
-TGU1cWFMblgwaUpmNXFzbGRPcE1LQUtTUE81NjRscHp2cXdzZFdwejFJdEZKRQppM1F2bjVNZVU3
-Yjk4elFud3BjQWF2QXVMZmRlT3J2dSszWFpGOEpqOUhzUDdwRnV1bXlycnZmODE0enVja0JLClBI
-NTdSbXRMNHVHR044dFlPK2p5ZTcydXAyTUNoMTJxQmFtQjJPRlJOLzhFQ3cxVnNXNjlDQVRnMzVt
-Sk1xc0YKTStIRTRCOGhnL0o2aUY4WUJ4S0l5V0xxbURFQkZsVGQxNWE1UGlVejJDVXY0N05FRnJr
-T0c5Sm0zYzhJU3dNcwozZ3JjdVhGeDVEUzhHTng2dkNhSy9PMFFCcHR4RGVXSTVvWlpZLyt5UW5G
-Uk1hWTB3RnkwYlFVbWlONVR0R1crCmhyZXZhVXI2SHZPZ20zYy9FMkNJYnJNTUJxaG8zQT09Cj03
-UnpuCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
-
---===============8302078660798121886==--
+Applied, thanks.
+--===============7077953738524869031==--
 
