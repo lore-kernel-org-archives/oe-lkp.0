@@ -1,53 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============6337691801677683277=="
+Content-Type: multipart/mixed; boundary="===============2536776085916759457=="
 MIME-Version: 1.0
-From: Andy Lutomirski <luto@kernel.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [LTP] [x86/entry] 2bbc68f837: ltp.ptrace08.fail
-Date: Fri, 14 Aug 2020 09:42:11 -0700
-Message-ID: <CALCETrUZO7ifrQPKks=LuUoTcPcM7nE_TjaCXWpwMm8TOZLzDg@mail.gmail.com>
-In-Reply-To: <20200814145823.GA13646@yuki.lan>
+Subject: Re: [mm] 3e38e0aaca: WARNING:at_mm/memcontrol.c:#mem_cgroup_alloc
+Date: Fri, 14 Aug 2020 10:00:44 -0700
+Message-ID: <CAHk-=wj8oc=wCvqcMdpKM8cceEYmicpf++rNDWC_5A6qYDP9QQ@mail.gmail.com>
+In-Reply-To: <20200814141327.GJ7488@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6337691801677683277==
+--===============2536776085916759457==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 14, 2020 at 7:58 AM Cyril Hrubis <chrubis@suse.cz> wrote:
+On Fri, Aug 14, 2020 at 7:14 AM kernel test robot <lkp@intel.com> wrote:
 >
-> Hi!
-> > > do_debug is a bit of a red herring here.  ptrace should not be able to
-> > > put a breakpoint on a kernel address, period.  I would just pick a
-> > > fixed address that's in the kernel text range or even just in the
-> > > pre-KASLR text range and make sure it gets rejected.  Maybe try a few
-> > > different addresses for good measure.
-> >
-> > I've looked at the code and it seems like this would be a bit more
-> > complicated since the breakpoint is set by an accident in a race and the
-> > call still fails. Which is why the test triggers the breakpoint and
-> > causes infinite loop in the kernel...
-> >
-> > I guess that we could instead read back the address with
-> > PTRACE_PEEKUSER, so something as:
-> >
-> >
-> > break_addr =3D ptrace(PTRACE_PEEKUSER, child_pid,
-> >                     (void *)offsetof(struct user, u_debugreg[0]),
-> >                     NULL);
-> >
-> > if (break_addr =3D=3D kernel_addr)
-> >       tst_res(TFAIL, "ptrace() set break on a kernel address");
+> FYI, we noticed the following commit (built with gcc-9):
 >
-> So this works actually nicely, even better than the original code.
+> commit: 3e38e0aaca9eafb12b1c4b731d1c10975cbe7974 ("mm: memcg: charge memc=
+g percpu memory to the parent cgroup")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 >
-> Any hints on how to select a fixed address in the kernel range as you
-> pointed out in one of the previous emails? I guess that this would end
-> up as a per-architecture mess of ifdefs if we wanted to hardcode it.
 >
+> in testcase: boot
+>
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
+m 8G
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
 
-It's fundamentally architecture dependent.  Sane architectures like
-s390x don't even have this concept.
+This should have already been fixed by commit 9f457179244a ("mm:
+memcontrol: fix warning when allocating the root cgroup").
 
---Andy
---===============6337691801677683277==--
+But I forget what the syntax is to report that to the kernel test
+robot. Would it be possible for lkp automatically look for "Fixes:"
+tags, perhaps?
+
+                 Linus
+--===============2536776085916759457==--
 
