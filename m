@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============4061302671557787683=="
+Content-Type: multipart/mixed; boundary="===============2598679451869319689=="
 MIME-Version: 1.0
 From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/mce] 1de08dccd3: will-it-scale.per_process_ops -14.1% regression
-Date: Wed, 19 Aug 2020 11:15:50 +0800
-Message-ID: <20200819031550.GA59663@shbuild999.sh.intel.com>
+Date: Wed, 19 Aug 2020 11:04:02 +0800
+Message-ID: <20200819030402.GA7840@feng-iot>
 In-Reply-To: <149e0cfb5b7e48dfb9bea966c7741336@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4061302671557787683==
+--===============2598679451869319689==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -33,5 +33,5 @@ complted operations for 300 seconds.
 
 Thanks,
 Feng
---===============4061302671557787683==--
+--===============2598679451869319689==--
 
