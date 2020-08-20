@@ -1,53 +1,89 @@
-Content-Type: multipart/mixed; boundary="===============1646794451237025995=="
+Content-Type: multipart/mixed; boundary="===============0853284586293447046=="
 MIME-Version: 1.0
-From: Rong Chen <rong.a.chen@intel.com>
+From: Saravana Kannan <saravanak@google.com>
 To: lkp@lists.01.org
-Subject: Re: [clk] a2499eff4b: BUG:kernel_NULL_pointer_dereference, address
-Date: Thu, 20 Aug 2020 13:03:27 +0800
-Message-ID: <be4c9098-98a2-e9c0-b787-57fa7d7da24f@intel.com>
-In-Reply-To: <159780681339.334488.10402512224012716827@swboyd.mtv.corp.google.com>
+Subject: Re: [driver core] e2ae9bcc4a: unixbench.score -2.2% regression
+Date: Wed, 19 Aug 2020 22:07:53 -0700
+Message-ID: <CAGETcx9mctL_51Cgq9rWQuQhPpRixfqCt8fp4jyH0MP-Eg4p=w@mail.gmail.com>
+In-Reply-To: <20200819070530.GJ18179@shao2-debian>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1646794451237025995==
+--===============0853284586293447046==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Wed, Aug 19, 2020 at 12:06 AM kernel test robot
+<rong.a.chen@intel.com> wrote:
+>
+> Greeting,
+>
+> FYI, we noticed a -2.2% regression of unixbench.score due to commit:
+>
+>
+> commit: e2ae9bcc4aaacda04edb75c4eea93384719efaa5 ("driver core: Add suppo=
+rt for linking devices during device addition")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>
+>
+> in testcase: unixbench
+> on test machine: 96 threads Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz with=
+ 192G memory
+> with following parameters:
+>
+>         runtime: 300s
+>         nr_task: 1
+>         test: syscall
+>         cpufreq_governor: performance
+>         ucode: 0x5002f01
+>
+> test-description: UnixBench is the original BYTE UNIX benchmark suite aim=
+s to test performance of Unix-like system.
+> test-url: https://github.com/kdlucas/byte-unixbench
+>
+> In addition to that, the commit also has significant impact on the follow=
+ing tests:
+>
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <rong.a.chen@intel.com>
+>
+>
+> Details are as below:
+> -------------------------------------------------------------------------=
+------------------------->
+>
+>
+> To reproduce:
+>
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp install job.yaml  # job file is attached in this email
+>         bin/lkp run     job.yaml
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test/=
+testcase/ucode:
+>   gcc-9/performance/x86_64-rhel-8.3/1/debian-10.4-x86_64-20200603.cgz/300=
+s/lkp-csl-2sp8/syscall/unixbench/0x5002f01
+>
+> commit:
+>   372a67c0c5 ("driver core: Add fwnode_to_dev() to look up device from fw=
+node")
+>   e2ae9bcc4a ("driver core: Add support for linking devices during device=
+ addition")
 
+I'm ignoring this report for the following reasons:
+1. These commits are almost a year old.
+2. Code added by these commits have been changed quite a bit since
+them to make them faster.
+3. And most importantly, this code is effectively a NOP in a system
+without devicetree firmware. I'm fairly certain this x86 Xeon system
+isn't running off a DT firmware :)
 
-On 8/19/20 11:13 AM, Stephen Boyd wrote:
-> Quoting kernel test robot (2020-08-11 01:49:44)
->> Greeting,
->>
->> FYI, we noticed the following commit (built with gcc-9):
->>
->> commit: a2499eff4b30a85d56e4466e6ca4746c72a347c6 ("[PATCH v2] clk: samsu=
-ng: Keep top BPLL mux on Exynos542x enabled")
->> url: https://github.com/0day-ci/linux/commits/Marek-Szyprowski/clk-samsu=
-ng-Keep-top-BPLL-mux-on-Exynos542x-enabled/20200807-213239
->> base: https://git.kernel.org/cgit/linux/kernel/git/clk/linux.git clk-next
->>
->> in testcase: trinity
->> with following parameters:
->>
->>          runtime: 300s
->>
->> test-description: Trinity is a linux system call fuzz tester.
->> test-url: http://codemonkey.org.uk/projects/trinity/
->>
->>
->> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m=
- 16G
-> Cool robot. But this doesn't look related to the patch at all?
-
-Hi Stephen,
-
-Sorry for the inconvenience, you are right, we run more times
-on the parent commit and can reproduce the error too.
-
-Best Regards,
-Rong Chen
-
-
---===============1646794451237025995==--
+-Saravana
+--===============0853284586293447046==--
 
