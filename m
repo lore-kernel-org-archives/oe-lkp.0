@@ -1,55 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============2125723244216906736=="
+Content-Type: multipart/mixed; boundary="===============1646794451237025995=="
 MIME-Version: 1.0
-From: Theodore Y. Ts'o <tytso@mit.edu>
+From: Rong Chen <rong.a.chen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [ext4] d3b6f23f71: stress-ng.fiemap.ops_per_sec -60.5% regression
-Date: Wed, 19 Aug 2020 13:49:24 -0400
-Message-ID: <20200819174924.GB5561@mit.edu>
-In-Reply-To: <b29f6c18-f9c7-7e43-5b13-b5724fbf8d1a@linux.intel.com>
+Subject: Re: [clk] a2499eff4b: BUG:kernel_NULL_pointer_dereference, address
+Date: Thu, 20 Aug 2020 13:03:27 +0800
+Message-ID: <be4c9098-98a2-e9c0-b787-57fa7d7da24f@intel.com>
+In-Reply-To: <159780681339.334488.10402512224012716827@swboyd.mtv.corp.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2125723244216906736==
+--===============1646794451237025995==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Looking at what the stress-ng fiemap workload is doing, and
-it's.... interesting.
 
-It is running 4 processes which are calling FIEMAP on a particular
-file in a loop, with a 25ms sleep every 64 times.  And then there is a
-fifth process which is randomly writing to the file and calling
-punch_hole to random offsets in the file.
 
-So this is quite different from what Ritesh has been benchmarking
-which is fiemap in isolation, as opposed to fiemap racing against a 3
-other fiemap processes plus a process which is actively modifying the
-file.
+On 8/19/20 11:13 AM, Stephen Boyd wrote:
+> Quoting kernel test robot (2020-08-11 01:49:44)
+>> Greeting,
+>>
+>> FYI, we noticed the following commit (built with gcc-9):
+>>
+>> commit: a2499eff4b30a85d56e4466e6ca4746c72a347c6 ("[PATCH v2] clk: samsu=
+ng: Keep top BPLL mux on Exynos542x enabled")
+>> url: https://github.com/0day-ci/linux/commits/Marek-Szyprowski/clk-samsu=
+ng-Keep-top-BPLL-mux-on-Exynos542x-enabled/20200807-213239
+>> base: https://git.kernel.org/cgit/linux/kernel/git/clk/linux.git clk-next
+>>
+>> in testcase: trinity
+>> with following parameters:
+>>
+>>          runtime: 300s
+>>
+>> test-description: Trinity is a linux system call fuzz tester.
+>> test-url: http://codemonkey.org.uk/projects/trinity/
+>>
+>>
+>> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m=
+ 16G
+> Cool robot. But this doesn't look related to the patch at all?
 
-In the original code, if I remember correctly, we were using a shared
-reader/writer lock to look at the extent tree blocks directly, but we
-hold the i_data_sem rw_sempahore for the duration of the fiemap call.
+Hi Stephen,
 
-In the new code, we're going through the extent_status cache, which is
-grabbing the rw_spinlock each time we do a lookup in the extents
-status tree.  So this is a much finer-grained locking and that is
-probably the explanation for the increased time for running fiemap in
-the contended case.
+Sorry for the inconvenience, you are right, we run more times
+on the parent commit and can reproduce the error too.
 
-If this theory is correct, we would probably get back the performance
-by wrapping the calls to iomap_fiemap() with {up,down}_read(&ei->i_data_sem)
-in ext4_fiemap().
+Best Regards,
+Rong Chen
 
-That being said, however ---- it's clear what real-life workload cares
-about FIEMAP performance, especially with multiple threads all calling
-FIEMAP racing against a file which is being actively modified.  Having
-stress-ng do this to find potential kernel bugs is a great thing, so I
-understand why stress-ng might be doing this as a QA tool.  Why we
-should care about stress-ng as a performance benchmark, at least in
-this case, is much less clear to me.
 
-Cheers,
-
-					- Ted
---===============2125723244216906736==--
+--===============1646794451237025995==--
 
