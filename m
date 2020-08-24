@@ -1,139 +1,27 @@
-Content-Type: multipart/mixed; boundary="===============7458191064572458256=="
+Content-Type: multipart/mixed; boundary="===============0124670985073101897=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Luck, Tony <tony.luck@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/mce] 1de08dccd3: will-it-scale.per_process_ops -14.1% regression
-Date: Mon, 24 Aug 2020 23:33:00 +0800
-Message-ID: <20200824153300.GA56944@shbuild999.sh.intel.com>
-In-Reply-To: <20200824151425.GF4794@zn.tnic>
+Date: Mon, 24 Aug 2020 15:38:53 +0000
+Message-ID: <6e996ad05e434a6fb13f069ee72b876b@intel.com>
+In-Reply-To: <20200824153300.GA56944@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7458191064572458256==
+--===============0124670985073101897==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 24, 2020 at 05:14:25PM +0200, Borislav Petkov wrote:
-> On Fri, Aug 21, 2020 at 10:02:59AM +0800, Feng Tang wrote:
-> >   1de08dccd383 x86/mce: Add a struct mce.kflags field
-> >   9554bfe403bd x86/mce: Convert the CEC to use the MCE notifier
-> > =
+> Yes, that's what we suspected. And I just did another try to force the
+> percpu mce structure aligned. And the regression seems to be gone (reduced
+> from 14.1% to 2%), which further proved it.
 
-> > And strange thing is after using gcc9 and debian10 rootfs, with same co=
-mmits
-> > the regression turns to a improvement,
-> =
+I wonder whether it would be useful for bisection of performance issues
+for you to change the global definition of DEFINE_PER_CPU() to make
+all per CPU definitions aligned. Just like you switch compiler flags to make
+all functions aligned.
 
-> How so?
- =
-
-My understanding is microbenchmark like will-it-scale is sensitive to the
-alignments (text/data), we've found other simliar cases that with this 0day=
-'s
-update (compiler, kernel config, rootfs), some other reported regression
-can not be reproduced.
-
-> > though the trend keeps, that if we
-> > changes the kflags from __u64 to __u32, the performance will be no chan=
-ge.
-> > =
-
-> > Following is the comparing of regression, I also attached the perf-prof=
-ile
-> > for old and new commit (let me know if you need more data)
-> > =
-
-> > =
-
-> > 9554bfe403bdfc08 1de08dccd383482a3e88845d355 =
-
-> > ---------------- --------------------------- =
-
-> >          %stddev     %change         %stddev
-> >              \          |                \  =
-
-> >     192362           -15.1%     163343        will-it-scale.287.process=
-es
-> >       0.91            +0.2%       0.92        will-it-scale.287.process=
-es_idle
-> >     669.67           -15.1%     568.50        will-it-scale.per_process=
-_ops
-> =
-
-> This is the data from your previous measurement:
-> =
-
-> 9554bfe403bdfc08 1de08dccd383482a3e88845d355
-> ---------------- ---------------------------
->          %stddev     %change         %stddev
->              \          |                \
->     668.00           -14.1%     573.75        will-it-scale.per_process_o=
-ps
-> =
-
-> If I'm reading it correctly, commit
-> =
-
-> 1de08dccd383 ("x86/mce: Add a struct mce.kflags field")
-> =
-
-> is still the slower one vs
->
-> 9554bfe403bd ("x86/mce: Convert the CEC to use the MCE notifier")
-> =
-
-> Or am I misreading it?
-
-Your reading is correct. With the original kernel (built back in April)
-and old rootfs, the regression persists, just a small drift between 14.1%
-and 15.1% (which is normal for will-it-scale), while the 15.1% was just
-retested last week.
-
-> =
-
-> In any case, this really looks like what Tony said: this enlargement of
-> struct mce pushes some variable into a cacheline-misaligned placement,
-> causing it to bounce.
-
-Yes, that's what we suspected. And I just did another try to force the
-percpu mce structure aligned. And the regression seems to be gone (reduced
-from 14.1% to 2%), which further proved it.
-
-patch is:
-
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 43b1519..2c020ef 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -95,7 +95,7 @@ struct mca_config mca_cfg __read_mostly =3D {
- 	.monarch_timeout =3D -1
- };
- =
-
--static DEFINE_PER_CPU(struct mce, mces_seen);
-+static DEFINE_PER_CPU_ALIGNED(struct mce, mces_seen);
- static unsigned long mce_need_notify;
- static int cpu_missing;
- =
-
-@@ -148,7 +148,7 @@ void mce_setup(struct mce *m)
- 	m->microcode =3D boot_cpu_data.microcode;
- }
- =
-
--DEFINE_PER_CPU(struct mce, injectm);
-+DEFINE_PER_CPU_ALIGNED(struct mce, injectm);
- EXPORT_PER_CPU_SYMBOL_GPL(injectm);
- =
-
-> The $ 10^6 question is, which variable is that...
-
-:)  Right, this is what I'm doing right now. Some test job is queued on
-the test box, and it may needs some iterations of new patch. Hopefully we
-can isolate some specific variable given some luck. =
-
-
-Thanks,
-Feng
---===============7458191064572458256==--
+-Tony
+--===============0124670985073101897==--
 
