@@ -1,46 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============4499842799267589472=="
+Content-Type: multipart/mixed; boundary="===============7339565856871669410=="
 MIME-Version: 1.0
-From: Rong Chen <rong.a.chen@intel.com>
+From: Mike Kravetz <mike.kravetz@oracle.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] c566586818: BUG:kernel_hang_in_early-boot_stage, last_printk:Probing_EDD(edd=off_to_disable)...ok
-Date: Thu, 27 Aug 2020 17:16:47 +0800
-Message-ID: <120c99ce-6439-2945-e990-588c42a9e582@intel.com>
-In-Reply-To: <20200826173010.GD24545@gaia>
+Subject: Re: [drm/mgag200] 913ec479bb: vm-scalability.throughput 26.2% improvement
+Date: Thu, 27 Aug 2020 07:56:26 -0700
+Message-ID: <99c7683c-f428-378d-2b19-ef51270a5d8e@oracle.com>
+In-Reply-To: <76926ade-15fb-75a3-17aa-a2b5a68471c8@suse.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4499842799267589472==
+--===============7339565856871669410==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On 8/27/20 2:16 AM, Thomas Zimmermann wrote:
+> Hi
+> =
 
+> Am 26.08.20 um 10:58 schrieb kernel test robot:
+>> Greeting,
+>>
+>> FYI, we noticed a 26.2% improvement of vm-scalability.throughput due to =
+commit:
+> =
 
-On 8/27/20 1:30 AM, Catalin Marinas wrote:
-> On Tue, Aug 25, 2020 at 11:02:40PM -0400, Qian Cai wrote:
->> On Aug 25, 2020, at 8:44 PM, Rong Chen <rong.a.chen@intel.com> wrote:
->>> I rebuilt the kernel on commit c566586818 but the error changed to
->>> "RIP: 0010:clear_page_orig+0x12/0x40", and the error can be
->>> reproduced on parent commit:
->> Catalin, any thought? Sounds like those early kmemleak allocations
->> cause some sort of memory corruption?
-> I can't immediately see how but Rong implies that the error also happens
-> on the parent commit. Does it mean the bisection isn't entirely right?
->
+> I guess this resolves the once-measured performance penalty of similar
+> magnitude. But do we really understand these tests? When I sent out
+> patches to resolve the problem, nothing changed. And suddenly the
+> performance is back to normal.
+> =
 
-Hi Catalin,
+> Best regards
+> Thomas
+> =
 
-The original bisection is for "BUG:kernel_hang_in_early-boot_stage" =
+>>
+>>
+>> commit: 913ec479bb5cc27f99f24d5fd111b3ef29a4deb9 ("drm/mgag200: Replace =
+VRAM helpers with SHMEM helpers")
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>
+>>
+>> in testcase: vm-scalability
+>> on test machine: 288 threads Intel(R) Xeon Phi(TM) CPU 7295 @ 1.50GHz wi=
+th 80G memory
+>> with following parameters:
+>>
+>> 	runtime: 300s
+>> 	size: 8T
+>> 	test: anon-cow-seq-hugetlb
+>> 	cpufreq_governor: performance
+>> 	ucode: 0x11
 
-which locate to commit c566586818,
-and the boot will go on and meet the error "RIP: =
+Hello Thomas,
 
-0010:clear_page_orig+0x12/0x40" if we set
-CONFIG_DEBUG_KMEMLEAK_MEM_POOL_SIZE=3D400, but the error shouldn't cause =
+Did drm changes really impact anon-cow-seq-hugetlb performance?
 
-by commit c566586818
-because we can reproduce the error on parent commit.
+My change c0d0381ade79 ("hugetlbfs: use i_mmap_rwsem for more pmd sharing
+synchronization") caused a -33.4% regression of anon-cow-seq-hugetlb.  A
+recent change 34ae204f185 (hugetlbfs: remove call to huge_pte_alloc without
+i_mmap_rwsem) was tested by Zhengjun Xing and improved performance by 20
+something percent.  That seems in line with this report/improvement.
 
-Best Regards,
-Rong Chen
---===============4499842799267589472==--
+Perhaps the tooling is not always accurate in determining the commit which
+causes the performance changes?
+Perhaps I am misreading information in the reports?
+-- =
+
+Mike Kravetz
+--===============7339565856871669410==--
 
