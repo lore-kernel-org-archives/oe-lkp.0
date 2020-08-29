@@ -1,90 +1,115 @@
-Content-Type: multipart/mixed; boundary="===============5031702508059836741=="
+Content-Type: multipart/mixed; boundary="===============4702431388737411292=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@suse.de>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [x86/mce] 1de08dccd3: will-it-scale.per_process_ops -14.1% regression
-Date: Fri, 28 Aug 2020 19:48:39 +0200
-Message-ID: <20200828174839.GD19448@zn.tnic>
-In-Reply-To: <20200825062305.GA83850@shbuild999.sh.intel.com>
+Subject: Re: [drm/mgag200] 913ec479bb: vm-scalability.throughput 26.2% improvement
+Date: Sat, 29 Aug 2020 20:06:04 +0200
+Message-ID: <f9664139-e28c-ba8e-b4e4-d505baf9069a@suse.de>
+In-Reply-To: <99c7683c-f428-378d-2b19-ef51270a5d8e@oracle.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5031702508059836741==
+--===============4702431388737411292==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 25, 2020 at 02:23:05PM +0800, Feng Tang wrote:
-> Also one good news is, we seem to identify the 2 key percpu variables
-> out of the list mentioned in previous email:  =
+Hi
 
-> 	'arch_freq_scale'
-> 	'tsc_adjust'
+Am 27.08.20 um 16:56 schrieb Mike Kravetz:
+> On 8/27/20 2:16 AM, Thomas Zimmermann wrote:
+>> Hi
+>>
+>> Am 26.08.20 um 10:58 schrieb kernel test robot:
+>>> Greeting,
+>>>
+>>> FYI, we noticed a 26.2% improvement of vm-scalability.throughput due to=
+ commit:
+>>
+>> I guess this resolves the once-measured performance penalty of similar
+>> magnitude. But do we really understand these tests? When I sent out
+>> patches to resolve the problem, nothing changed. And suddenly the
+>> performance is back to normal.
+>>
+>> Best regards
+>> Thomas
+>>
+>>>
+>>>
+>>> commit: 913ec479bb5cc27f99f24d5fd111b3ef29a4deb9 ("drm/mgag200: Replace=
+ VRAM helpers with SHMEM helpers")
+>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>>
+>>>
+>>> in testcase: vm-scalability
+>>> on test machine: 288 threads Intel(R) Xeon Phi(TM) CPU 7295 @ 1.50GHz w=
+ith 80G memory
+>>> with following parameters:
+>>>
+>>> 	runtime: 300s
+>>> 	size: 8T
+>>> 	test: anon-cow-seq-hugetlb
+>>> 	cpufreq_governor: performance
+>>> 	ucode: 0x11
 > =
 
-> These 2 variables are accessed in 2 hot call stacks (for this 288 CPU
-> Xeon Phi platform):
+> Hello Thomas,
 > =
 
->   - arch_freq_scale is accessed in scheduler tick =
-
-> 	  arch_scale_freq_tick+0xaf/0xc0
-> 	  scheduler_tick+0x39/0x100
-> 	  update_process_times+0x3c/0x50
-> 	  tick_sched_handle+0x22/0x60
-> 	  tick_sched_timer+0x37/0x70
-> 	  __hrtimer_run_queues+0xfc/0x2a0
-> 	  hrtimer_interrupt+0x122/0x270
-> 	  smp_apic_timer_interrupt+0x6a/0x150
-> 	  apic_timer_interrupt+0xf/0x20
+> Did drm changes really impact anon-cow-seq-hugetlb performance?
 > =
 
->   - tsc_adjust is accessed in idle entrance
-> 	  tsc_verify_tsc_adjust+0xeb/0xf0
-> 	  arch_cpu_idle_enter+0xc/0x20
-> 	  do_idle+0x91/0x280
-> 	  cpu_startup_entry+0x19/0x20
-> 	  start_kernel+0x4f4/0x516
-> 	  secondary_startup_64+0xb6/0xc0
+> My change c0d0381ade79 ("hugetlbfs: use i_mmap_rwsem for more pmd sharing
+> synchronization") caused a -33.4% regression of anon-cow-seq-hugetlb.  A
+> recent change 34ae204f185 (hugetlbfs: remove call to huge_pte_alloc witho=
+ut
+> i_mmap_rwsem) was tested by Zhengjun Xing and improved performance by 20
+> something percent.  That seems in line with this report/improvement.
+
+Some of DRM's memory management might be affected by hugetable changes.
+While I cannot really point to a specific location, it's not impossible
+that there's a connection.
+
 > =
 
-> From systemmap file, for bad kernel these 2 sit in one cache line, while
-> for good kernel they sit in 2 separate cache lines.
+> Perhaps the tooling is not always accurate in determining the commit which
+> causes the performance changes?
+> Perhaps I am misreading information in the reports?
 > =
 
-> It also explains why it turns from a regression to an improvement with
-> updated gcc/kconfig, as the cache line sharing situation is reversed.
-> =
 
-> The direct patch I can think of is to make 'tsc_adjust' cache aligned
-> to separate these 2 'hot' variables. How do you think?
-> =
+>From what I remember, some of these tests print to the console, which
+has always been slow, and has generally been a bad idea for performance
+tests. I guess these tests are not very accurate.
 
-> --- a/arch/x86/kernel/tsc_sync.c
-> +++ b/arch/x86/kernel/tsc_sync.c
-> @@ -29,7 +29,7 @@ struct tsc_adjust {
->  	bool		warned;
->  };
->  =
-
-> -static DEFINE_PER_CPU(struct tsc_adjust, tsc_adjust);
-> +static DEFINE_PER_CPU_ALIGNED(struct tsc_adjust, tsc_adjust);
-
-So why don't you define both variables with DEFINE_PER_CPU_ALIGNED and
-check if all your bad measurements go away this way?
-
-You'd also need to check whether there's no detrimental effect from
-this change on other, i.e., !KNL platforms, and I think there won't
-be because both variables will be in separate cachelines then and all
-should be good.
-
-Hmm?
+Best regards
+Thomas
 
 -- =
 
-Regards/Gruss,
-    Boris.
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
+(HRB 36809, AG N=C3=BCrnberg)
+Gesch=C3=A4ftsf=C3=BChrer: Felix Imend=C3=B6rffer
 
-SUSE Software Solutions Germany GmbH, GF: Felix Imend=C3=B6rffer, HRB 36809=
-, AG N=C3=BCrnberg
---===============5031702508059836741==--
+
+--===============4702431388737411292==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="signature.asc"
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRRklCQUVCQ0FBeUZpRUVjaGY3ckl6cHoy
+TkVvV2psYUEzQkhWTUxlaU1GQWw5S21ROFVISFI2YVcxdFpYSnQKWVc1dVFITjFjMlV1WkdVQUNn
+a1FhQTNCSFZNTGVpTVlxZ2YrSUxNV1ZnSFNuTXg1YjB2dlljdmpNN1R1TG5qOApGL2hLMkd4RDNz
+UDAxWkkyUi8rU3dvUEZKT3BibDRycTJrcTdrL0J4cUJnTk5tdXlSMjlpWlFXcGNtR2VIVzZ1ClEv
+enpSc2FNU2xrMVBuTzFoYVBxQWxVNVhRVVQxZFRuOXpyMUpVRDFVczkyVURKc2RKbW05Wlp4OHBa
+Tlk0TXAKbEo2am5oTnhxckNnR2ljYzJ0OGdCRUpleGxtYUVlcWwyR2poUFluY0pHeWJkSCtVOVpD
+Y1doUUkvaS9aUGMveAp3UWlxNlpDNm5PMHV1b1ZPd090YUtvSlN0eFk5aDdrZWYxd3dpSzE5clUx
+YmJFU3dyTWRCNXFFTWFTMG1rUnhCCnY4UFNWY2NTeUgyMk1KdmxQZnV3SmtmQTJPMFVDT3lpRzVZ
+bGsvSHVkL1F5WGFzZmtGcCtoZ3phc3c9PQo9djIxWQotLS0tLUVORCBQR1AgU0lHTkFUVVJFLS0t
+LS0K
+
+--===============4702431388737411292==--
 
