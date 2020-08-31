@@ -1,111 +1,67 @@
-Content-Type: multipart/mixed; boundary="===============6854440688731215180=="
+Content-Type: multipart/mixed; boundary="===============8504719638043023489=="
 MIME-Version: 1.0
 From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/mce] 1de08dccd3: will-it-scale.per_process_ops -14.1% regression
-Date: Mon, 31 Aug 2020 10:16:38 +0800
-Message-ID: <20200831021638.GB65971@shbuild999.sh.intel.com>
-In-Reply-To: <20200828174839.GD19448@zn.tnic>
+Subject: Re: [drm/mgag200] 913ec479bb: vm-scalability.throughput 26.2% improvement
+Date: Mon, 31 Aug 2020 14:11:26 +0800
+Message-ID: <20200831061126.GC65971@shbuild999.sh.intel.com>
+In-Reply-To: <f9664139-e28c-ba8e-b4e4-d505baf9069a@suse.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6854440688731215180==
+--===============8504719638043023489==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 28, 2020 at 07:48:39PM +0200, Borislav Petkov wrote:
-> On Tue, Aug 25, 2020 at 02:23:05PM +0800, Feng Tang wrote:
-> > Also one good news is, we seem to identify the 2 key percpu variables
-> > out of the list mentioned in previous email:  =
-
-> > 	'arch_freq_scale'
-> > 	'tsc_adjust'
+On Sat, Aug 29, 2020 at 08:06:04PM +0200, Thomas Zimmermann wrote:
+> > Hello Thomas,
 > > =
 
-> > These 2 variables are accessed in 2 hot call stacks (for this 288 CPU
-> > Xeon Phi platform):
-> > =
-
-> >   - arch_freq_scale is accessed in scheduler tick =
-
-> > 	  arch_scale_freq_tick+0xaf/0xc0
-> > 	  scheduler_tick+0x39/0x100
-> > 	  update_process_times+0x3c/0x50
-> > 	  tick_sched_handle+0x22/0x60
-> > 	  tick_sched_timer+0x37/0x70
-> > 	  __hrtimer_run_queues+0xfc/0x2a0
-> > 	  hrtimer_interrupt+0x122/0x270
-> > 	  smp_apic_timer_interrupt+0x6a/0x150
-> > 	  apic_timer_interrupt+0xf/0x20
-> > =
-
-> >   - tsc_adjust is accessed in idle entrance
-> > 	  tsc_verify_tsc_adjust+0xeb/0xf0
-> > 	  arch_cpu_idle_enter+0xc/0x20
-> > 	  do_idle+0x91/0x280
-> > 	  cpu_startup_entry+0x19/0x20
-> > 	  start_kernel+0x4f4/0x516
-> > 	  secondary_startup_64+0xb6/0xc0
-> > =
-
-> > From systemmap file, for bad kernel these 2 sit in one cache line, while
-> > for good kernel they sit in 2 separate cache lines.
-> > =
-
-> > It also explains why it turns from a regression to an improvement with
-> > updated gcc/kconfig, as the cache line sharing situation is reversed.
-> > =
-
-> > The direct patch I can think of is to make 'tsc_adjust' cache aligned
-> > to separate these 2 'hot' variables. How do you think?
-> > =
-
-> > --- a/arch/x86/kernel/tsc_sync.c
-> > +++ b/arch/x86/kernel/tsc_sync.c
-> > @@ -29,7 +29,7 @@ struct tsc_adjust {
-> >  	bool		warned;
-> >  };
-> >  =
-
-> > -static DEFINE_PER_CPU(struct tsc_adjust, tsc_adjust);
-> > +static DEFINE_PER_CPU_ALIGNED(struct tsc_adjust, tsc_adjust);
+> > Did drm changes really impact anon-cow-seq-hugetlb performance?
+> >
+> > My change c0d0381ade79 ("hugetlbfs: use i_mmap_rwsem for more pmd shari=
+ng
+> > synchronization") caused a -33.4% regression of anon-cow-seq-hugetlb.  A
+> > recent change 34ae204f185 (hugetlbfs: remove call to huge_pte_alloc wit=
+hout
+> > i_mmap_rwsem) was tested by Zhengjun Xing and improved performance by 20
+> > something percent.  That seems in line with this report/improvement.
 > =
 
-> So why don't you define both variables with DEFINE_PER_CPU_ALIGNED and
-> check if all your bad measurements go away this way?
+> Some of DRM's memory management might be affected by hugetable changes.
+> While I cannot really point to a specific location, it's not impossible
+> that there's a connection.
+> =
 
-For 'arch_freq_scale', there are other percpu variables in the same
-smpboot.c: 'arch_prev_aperf' and 'arch_prev_mperf', and in hot path
-arch_scale_freq_tick(), these 3 variables are all accessed, so I didn't =
+> > =
 
-touch it. Or maybe we can align the first of these 3 variables, so
-that they sit in one cacheline.
+> > Perhaps the tooling is not always accurate in determining the commit wh=
+ich
+> > causes the performance changes?
+> > Perhaps I am misreading information in the reports?
+> > =
 
-> You'd also need to check whether there's no detrimental effect from
-> this change on other, i.e., !KNL platforms, and I think there won't
-> be because both variables will be in separate cachelines then and all
-> should be good.
+> =
 
-Yes, these kind of changes should be verified on other platforms.
+> From what I remember, some of these tests print to the console, which
+> has always been slow, and has generally been a bad idea for performance
+> tests. I guess these tests are not very accurate.
 
-One thing still puzzles me, that the 2 variables are per-cpu things, and
-there is no case of many CPU contending, why the cacheline layout matters?
-I doubt it is due to the contention of the same cache set, and am trying
-to find some way to test it.
+Yes, I also think that's the reason for this improvement. The test box is
+using mgag200 driver, while the vm-scalability test case itself will print
+many messages to the gfx console. If commit 913ec479bb "drm/mgag200: Replace
+VRAM helpers with SHMEM helpers" improves the console handling, then it
+will impact the final score of the test case.
+
+Last time we met similar case that a console write slowdown triggers a
+regression is discussed here:  =
+
+https://lore.kernel.org/lkml/20190729095155.GP22106(a)shao2-debian/
 
 Thanks,
 Feng
 
-> Hmm?
-> =
-
-> -- =
-
-> Regards/Gruss,
->     Boris.
-> =
-
-> SUSE Software Solutions Germany GmbH, GF: Felix Imend=C3=B6rffer, HRB 368=
-09, AG N=C3=BCrnberg
---===============6854440688731215180==--
+> Best regards
+> Thomas
+--===============8504719638043023489==--
 
