@@ -1,55 +1,83 @@
-Content-Type: multipart/mixed; boundary="===============2591306383355059078=="
+Content-Type: multipart/mixed; boundary="===============5167097378887651099=="
 MIME-Version: 1.0
-From: Johannes Berg <johannes@sipsolutions.net>
+From: Kees Cook <keescook@chromium.org>
 To: lkp@lists.01.org
-Subject: Re: [mac80211_hwsim] 8cafe19852: hwsim.fst_ap_config_default.fail
-Date: Tue, 08 Sep 2020 20:41:08 +0200
-Message-ID: <12f9c1c504053f9119a0965ce468aa1da195421b.camel@sipsolutions.net>
-In-Reply-To: <4b20df478e8e9a1e36dfa92b3c510022@adapt-ip.com>
+Subject: Re: [ptrace] 201766a20e: kernel_selftests.seccomp.make_fail
+Date: Tue, 08 Sep 2020 16:31:12 -0700
+Message-ID: <202009081629.4A31845@keescook>
+In-Reply-To: <20190805094719.GA1693@altlinux.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2591306383355059078==
+--===============5167097378887651099==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2020-09-08 at 11:00 -0700, Thomas Pedersen wrote:
-> - LKML
-> =
-
-> On 2020-09-06 01:49, kernel test robot wrote:
-> > Greeting,
+On Mon, Aug 05, 2019 at 12:47:19PM +0300, Dmitry V. Levin wrote:
+> On Mon, Jul 29, 2019 at 05:35:30PM +0800, kernel test robot wrote:
+> > FYI, we noticed the following commit (built with gcc-7):
 > > =
 
-> > FYI, we noticed the following commit (built with gcc-9):
+> > commit: 201766a20e30f982ccfe36bebfad9602c3ff574a ("ptrace: add PTRACE_G=
+ET_SYSCALL_INFO request")
+> > https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux=
+.git master
 > > =
 
-> > commit: 8cafe19852d95d6494cbd8c1ae24dbd621588a91 ("[PATCH v2 21/22]
-> > mac80211_hwsim: indicate support for S1G")
-> > url:
-> > https://github.com/0day-ci/linux/commits/Thomas-Pedersen/add-support-fo=
-r-S1G-association/20200901-045826
-> > base:
-> > https://git.kernel.org/cgit/linux/kernel/git/jberg/mac80211-next.git
-> > master
+> > in testcase: kernel_selftests
+> > with following parameters:
+> > =
+
+> > 	group: kselftests-02
+> > =
+
+> > test-description: The kernel contains a set of "self tests" under the t=
+ools/testing/selftests/ directory. These are intended to be small unit test=
+s to exercise individual code paths in the kernel.
+> > test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
 > =
 
-> This is really cool. Thanks Rong (?).
+> The URL above also says: "Tests are intended to be run after building,
+> installing and booting a kernel".
 > =
 
-> I'll move the "fix TSF timestamp write to S1G beacon" patch before the =
+> Please build selftests with installed kernel headers corresponding to the
+> installed kernel.
+> =
 
-> one which actually exposes S1G to hwsim.
+> Alternatively, tools/testing/selftests/lib.mk could be extended
+> to include uapi headers from the kernel tree into CPPFLAGS, e.g.
+> =
 
-Yeah, I was thinking we should do that anyway.
+> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib=
+.mk
+> index 1c8a1963d03f..b5f4f0fb8eeb 100644
+> --- a/tools/testing/selftests/lib.mk
+> +++ b/tools/testing/selftests/lib.mk
+> @@ -10,6 +10,9 @@ ifeq (0,$(MAKELEVEL))
+>  endif
+>  selfdir =3D $(realpath $(dir $(filter %/lib.mk,$(MAKEFILE_LIST))))
+>  =
 
-If those two small things (ARRAY_SIZE & patch reordering) are the only
-changes, I guess I can do that.
+> +uapi_dir =3D $(realpath $(selfdir)/../../../include/uapi)
+> +CPPFLAGS +=3D -I$(uapi_dir)
+> +
+>  # The following are built by lib.mk common compile rules.
+>  # TEST_CUSTOM_PROGS should be used by tests that require
+>  # custom build rule and prevent common build rule use.
 
-Unless you want to look at the reordering of the nl80211 bands, but you
-seemed to say it won't really matter.
+*thread necromancy*
 
-johannes
+I think this is fixed in the selftest tree itself now (though
+differently), in that it depends on having build the headers first.
 
---===============2591306383355059078==--
+Anyway, please let me know if this is still a problem, and I'll take
+another look (and hopefully I also won't lose the thread for a year...)
+
+Thanks!
+
+-- =
+
+Kees Cook
+--===============5167097378887651099==--
 
