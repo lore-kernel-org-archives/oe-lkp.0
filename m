@@ -1,35 +1,45 @@
-Content-Type: multipart/mixed; boundary="===============3756221534911933172=="
+Content-Type: multipart/mixed; boundary="===============8908271154643711904=="
 MIME-Version: 1.0
-From: Jens Axboe <axboe@kernel.dk>
+From: An, Tedd <tedd.an@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [iov_iter] 9bd0e337c6: will-it-scale.per_process_ops -4.8% regression
-Date: Thu, 03 Dec 2020 10:50:03 -0700
-Message-ID: <8124ce0d-c934-0771-5e34-cf5ea030fc08@kernel.dk>
-In-Reply-To: <CAHk-=wif1iGLiqcsx1YdLS4tN01JuH-MV_oem0duHqskhDTY9A@mail.gmail.com>
+Subject: LKP with bluetooth-next
+Date: Thu, 03 Dec 2020 21:09:27 +0000
+Message-ID: <0430DD4D-97F3-42BA-898E-9FF20FD23A9F@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3756221534911933172==
+--===============8908271154643711904==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 12/3/20 10:47 AM, Linus Torvalds wrote:
-> On Wed, Dec 2, 2020 at 10:31 PM kernel test robot <oliver.sang@intel.co=
-m> wrote:
->>
->> FYI, we noticed a -4.8% regression of will-it-scale.per_process_ops due =
-to commit:
-> =
+Hi =
 
-> Ok, I guess that's bigger than expected, but the profile data does
-> show how bad the indirect branches are.
 
-It's also in the same range (3-6%) as the microbenchmarks I ran and posted.
-So at least there's correlation there too.
+I am working on Linux Bluetooth and I have a question about the service.
+For your background, the tree we are working is =
 
--- =
+https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git
+And the mailing list is linux-bluetooth(a)vger.kernel.org
 
-Jens Axboe
+We had received the test result with the patches in our mailing list once i=
+n a while, but we don't receive the test result for all the relevant patche=
+s.
+I just wonder if the 0-Day test runs all the patches in the mailing list an=
+d send out the email regardless of the result or it only sends the failed p=
+atches.
 
---===============3756221534911933172==--
+We prefer to receive the result for all patches even if it success so we ca=
+n confirm it.
+
+If it is only run per request without monitoring the patches from the maili=
+ng list, I would like to trigger the 0-Day test manually.
+How can I do that and is there any specific format?
+
+Thanks for your support in advance.
+
+Regards,
+Tedd
+
+
+--===============8908271154643711904==--
 
