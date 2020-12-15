@@ -1,105 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============3266804738786930115=="
+Content-Type: multipart/mixed; boundary="===============7778394224507925134=="
 MIME-Version: 1.0
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: Fwd: [linux-next:master 12558/13205] drivers/thermal/intel/int340x_thermal/processor_thermal_rapl.c:96:50: sparse: sparse: cast removes address space '__iomem' of expression
-Date: Mon, 14 Dec 2020 22:57:15 -0800
-Message-ID: <ff9922f1ca72c62d31e138c6e876700de6da9be5.camel@linux.intel.com>
-In-Reply-To: <20201215064421.GA25351@chenyu-office.sh.intel.com>
+Subject: Re: [sched/hotplug] 2558aacff8: will-it-scale.per_thread_ops -1.6% regression
+Date: Tue, 15 Dec 2020 09:37:32 +0100
+Message-ID: <20201215083732.GC3040@hirez.programming.kicks-ass.net>
+In-Reply-To: <33c543f8-97c9-cb18-a2f8-a90b8a5769cc@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3266804738786930115==
+--===============7778394224507925134==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2020-12-15 at 14:44 +0800, Chen Yu wrote:
-> Hi lkp experts,
-> On Mon, Dec 14, 2020 at 11:02:11PM +0800, Zhang Rui wrote:
-> > On Mon, 2020-12-14 at 15:44 +0800, Chen Yu wrote:
-> > > On Sun, Dec 13, 2020 at 11:32:50PM -0800, Srinivas Pandruvada
-> > > wrote:
-> > > > On Mon, 2020-12-14 at 15:33 +0800, Chen Yu wrote:
-> > > > > On Sun, Dec 13, 2020 at 02:28:03PM -0800, Srinivas Pandruvada
-> > > > > wrote:
-> > > > > > =
-
-> > > > > > -------- Forwarded Message --------
-> > > > > > From: kernel test robot <lkp@intel.com>
-> > > > > > To: Srinivas Pandruvada <
-> > > > > > srinivas.pandruvada(a)linux.intel.com>
-> > > > > > =
-
-> > > > > > "sparse warnings: (new ones prefixed by >>)"
-> > > > > > > > drivers/thermal/intel/int340x_thermal/processor_thermal
-> > > > > > > > _rap
-> > > > > > > > l.c:
-> > > > > > > > 96:5
-> > > > > > > > 0: sparse: sparse: cast removes address space '__iomem'
-> > > > > > > > of
-> > > > > > > > expression
-> > > > > > =
-
-> > > > > > =C2=A0 =
-
-> > > > > > =C2=A0=C2=A0 100=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 rapl_mmio_priv.reg_unit =3D (u64)proc_priv-
-> > > > > > > mmio_base
-> > > > > > +
-> > > > > > rapl_regs->reg_unit;
-> > > > > > =
-
-> > > > > =
-
-> > > > > The reason for this warning is because proc_priv->mmio_base
-> > > > > is of
-> > > > > __iomem
-> > > > > attribute that can be used by sparse to detect if there is
-> > > > > ilegal
-> > > > > access(only
-> > > > > device memory region is legal). Removing this attribute would
-> > > > > cause
-> > > > > potential
-> > > > > problems. A clean fix would be changing
-> > > > > rapl_mmio_priv.reg_unit
-> > > > > to
-> > > > > void *__iomem
-> > > > > and remove the (u64) cast, but that would also involve
-> > > > > changes in
-> > > > > struct rapl_if_priv
-> > > > > and struct reg_action. What do you think, Rui?
-> > > =
-
-> > > And if within this code we know it is a safe cast, the following
-> > > change
-> > > might help to prevent parse from complaining:
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0rapl_mmio_priv.reg_unit =
-=3D (u64)proc_priv->mmio_base +
-> > > rapl_regs->reg_unit;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0rapl_mmio_priv.reg_unit =
-=3D (u64 __force)proc_priv-
-> > > >mmio_base +
-> > > rapl_regs->reg_unit;
-> > > =C2=A0
-> > we can check with LKP team tomorrow.
+On Tue, Dec 15, 2020 at 01:35:46PM +0800, Xing Zhengjun wrote:
+> On 12/11/2020 12:14 AM, Peter Zijlstra wrote:
+> > On Thu, Dec 10, 2020 at 04:18:59PM +0800, kernel test robot wrote:
+> > > FYI, we noticed a -1.6% regression of will-it-scale.per_thread_ops du=
+e to commit:
+> > > commit: 2558aacff8586699bcd248b406febb28b0a25de2 ("sched/hotplug: Ens=
+ure only per-cpu kthreads run during hotplug")
 > > =
 
-> It looks like we could not reproduce this sparse issue locally, but
-> it should be a valid report. May I know how we can verify in
-> lkp that a fix works(suppose we propose a patch)?
-With 0.6.3 version of sparse this issue can be reproduced.
-
-Thanks,
-Srinivas
-
-
+> > Mooo, weird but whatever. Does the below help at all?
 > =
 
-> thanks,
-> Chenyu
-> > thanks,
-> > rui
+> I test the patch
 
+Thanks!
 
---===============3266804738786930115==--
+> , the regression reduced to -0.6%.
+> =
+
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> tbox_group/testcase/rootfs/kconfig/compiler/nr_task/mode/test/cpufreq_gov=
+ernor/ucode:
+> =
+
+> lkp-cpl-4sp1/will-it-scale/debian-10.4-x86_64-20200603.cgz/x86_64-rhel-8.=
+3/gcc-9/100%/thread/sched_yield/performance/0x700001e
+> =
+
+> commit:
+>   565790d28b1e33ee2f77bad5348b99f6dfc366fd
+>   2558aacff8586699bcd248b406febb28b0a25de2
+>   4b26139b8db627a55043183614a32b0aba799d27 (this test patch)
+> =
+
+> 565790d28b1e33ee 2558aacff8586699bcd248b406f 4b26139b8db627a55043183614a
+> ---------------- --------------------------- ---------------------------
+>          %stddev     %change         %stddev     %change         %stddev
+>              \          |                \          |                \
+>  4.011e+08            -1.6%  3.945e+08            -0.6%  3.989e+08 will-i=
+t-scale.144.threads
+>    2785455            -1.6%    2739520            -0.6%    2769967 will-i=
+t-scale.per_thread_ops
+>  4.011e+08            -1.6%  3.945e+08            -0.6%  3.989e+08 will-i=
+t-scale.workload
+
+Well, that's better. But I'm rather confused now, because with this new
+patch, the actual hot paths are identical, so I've no idea what is
+actually causing the regression :/
+
+The above numbers don't seem to have variance, how sure are we the
+results are stable? The thing is, when I tried reproducing this locally,
+I was mostly looking at noise.
+
+> > ---
+> >   kernel/sched/core.c  | 40 +++++++++++++++-------------------------
+> >   kernel/sched/sched.h | 13 +++++--------
+> >   2 files changed, 20 insertions(+), 33 deletions(-)
+
+Anyway, let me queue this in sched/urgent, it's simpler code and has
+less regression.
+--===============7778394224507925134==--
 
