@@ -1,17 +1,21 @@
-Content-Type: multipart/mixed; boundary="===============6623999393372714289=="
+Content-Type: multipart/mixed; boundary="===============4670166600897558511=="
 MIME-Version: 1.0
 From: Lecopzer Chen <lecopzer.chen@mediatek.com>
 To: lkp@lists.01.org
 Subject: Re: [PATCH] kernel/watchdog_hld.c: Fix access percpu in preemptible context
-Date: Sat, 19 Dec 2020 23:02:14 +0800
-Message-ID: <20201219150214.16854-1-lecopzer.chen@mediatek.com>
+Date: Sat, 19 Dec 2020 23:04:06 +0800
+Message-ID: <20201219150406.16925-1-lecopzer.chen@mediatek.com>
 In-Reply-To: <20201219135917.GA26344@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6623999393372714289==
+--===============4670166600897558511==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+
+
+Thanks a lot, I'll try to fix this in anthoer way(patch v2) to avoid
+regreesion other than arm64
 
 BRs,
 Lecopzer
@@ -45,5 +49,5 @@ backtrace):
 > If you fix the issue, kindly add following tag
 > Reported-by: kernel test robot <oliver.sang@intel.com>
 >=20
---===============6623999393372714289==--
+--===============4670166600897558511==--
 
