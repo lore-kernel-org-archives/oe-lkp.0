@@ -1,35 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============7511704217346106735=="
+Content-Type: multipart/mixed; boundary="===============7656825169563311470=="
 MIME-Version: 1.0
 From: Al Viro <viro@zeniv.linux.org.uk>
 To: lkp@lists.01.org
 Subject: Re: [x86] d55564cfc2: will-it-scale.per_thread_ops -5.8% regression
-Date: Thu, 07 Jan 2021 18:55:59 +0000
-Message-ID: <20210107185559.GI3579531@ZenIV.linux.org.uk>
-In-Reply-To: <20210107184058.GH3579531@ZenIV.linux.org.uk>
+Date: Thu, 07 Jan 2021 18:58:16 +0000
+Message-ID: <20210107185816.GJ3579531@ZenIV.linux.org.uk>
+In-Reply-To: <CAHk-=wiZaFRt9hGen9=eOr7LA+Q8o5f980eGEvtxBD6+os7nqA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7511704217346106735==
+--===============7656825169563311470==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 07, 2021 at 06:40:58PM +0000, Al Viro wrote:
-> do_sys_poll(): do the wholesale copyout
+On Thu, Jan 07, 2021 at 10:47:07AM -0800, Linus Torvalds wrote:
+> On Thu, Jan 7, 2021 at 10:34 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> >
+> > I'm not sure it's the best approach, TBH.  How about simply
+> >         for (walk =3D head; walk; ufds +=3D walk->len, walk =3D walk->n=
+ext) {
+> >                 if (copy_to_user(ufds, walk->entries,
+> >                                  walk->len * sizeof(struct pollfd))
+> >                         goto out_fds;
+> >         }
+> > in there?  It's both simpler (obviously matches the copyin side) and
+> > might very well be faster...
 > =
 
-> Don't bother with patching up just one field - 16 bits out of each 64.
-> The amount of memory traffic is not going to be greater (might be
-> smaller, actually) and the loop in copy_to_user() is optimized for
-> bulk copy.
+> I started doing that, but ..  Nope.
+> =
 
-	BTW, considering the access pattern, I would expect it to be
-considerably cheaper in a lot of cases; basically, we have a copy
-of userland array of 64bit values, then we do a non-trivial amount
-of work and modify 16 bits out of each 64.  Then we want that
-propagated back to the original array.  I suspect that copying just
-those 16bit fields out is going to cost more that a bulk copy of
-the entire thing, and not just on s390 and similar oddball cases.
+> It's not copying the whole entry. It's literally just modifying one
+> 16-bit word in each entry.
+> =
 
-	Comments?
---===============7511704217346106735==--
+> Now, the "whole entry" is just 8 bytes, so it's possible that it would
+> actually be faster to do a copy of the whole thing rather than write
+> just the 16 bits. But I got very nervous about it, because I could
+> easily see some threaded app actually changing the 'fd' (or the
+> 'event' field) in place (ie writing -1 to it as they close and re-use
+> it)
+
+Point...  Pity, that.
+--===============7656825169563311470==--
 
