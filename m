@@ -1,197 +1,134 @@
-Content-Type: multipart/mixed; boundary="===============4888908951279595942=="
+Content-Type: multipart/mixed; boundary="===============0916882215342503839=="
 MIME-Version: 1.0
-From: Xing, Zhengjun <zhengjun.xing@intel.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [percpu_ref] 2b0d3d3e4f: reaim.jobs_per_min -18.4% regression
-Date: Tue, 19 Jan 2021 11:01:32 +0800
-Message-ID: <0a3f09f3-6712-a66f-8a9a-fb31b9d1a564@intel.com>
-In-Reply-To: <20210111095854.GA4155851@T590>
+Subject: Re: [x86/mce] 7bb39313cd: netperf.Throughput_tps -4.5% regression
+Date: Mon, 18 Jan 2021 20:27:21 -0800
+Message-ID: <20210119042721.GA12664@paulmck-ThinkPad-P72>
+In-Reply-To: <20210116160921.GA101665@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4888908951279595942==
+--===============0916882215342503839==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Sun, Jan 17, 2021 at 12:09:21AM +0800, Feng Tang wrote:
+> On Sat, Jan 16, 2021 at 07:34:26AM -0800, Paul E. McKenney wrote:
+> > On Sat, Jan 16, 2021 at 11:52:51AM +0800, Feng Tang wrote:
+> > > Hi Boris,
+> > > =
+
+> > > On Tue, Jan 12, 2021 at 03:14:38PM +0100, Borislav Petkov wrote:
+> > > > On Tue, Jan 12, 2021 at 10:21:09PM +0800, kernel test robot wrote:
+> > > > > =
+
+> > > > > Greeting,
+> > > > > =
+
+> > > > > FYI, we noticed a -4.5% regression of netperf.Throughput_tps due =
+to commit:
+> > > > > =
+
+> > > > > =
+
+> > > > > commit: 7bb39313cd6239e7eb95198950a02b4ad2a08316 ("x86/mce: Make =
+mce_timed_out() identify holdout CPUs")
+> > > > > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git ras/core
+> > > > > =
+
+> > > > > =
+
+> > > > > in testcase: netperf
+> > > > > on test machine: 192 threads Intel(R) Xeon(R) Platinum 9242 CPU @=
+ 2.30GHz with 192G memory
+> > > > > with following parameters:
+> > > > > =
+
+> > > > > 	ip: ipv4
+> > > > > 	runtime: 300s
+> > > > > 	nr_threads: 16
+> > > > > 	cluster: cs-localhost
+> > > > > 	test: TCP_CRR
+> > > > > 	cpufreq_governor: performance
+> > > > > 	ucode: 0x5003003
+> > > > > =
+
+> > > > > test-description: Netperf is a benchmark that can be use to measu=
+re various aspect of networking performance.
+> > > > > test-url: http://www.netperf.org/netperf/
+> > > > =
+
+> > > > I'm very very sceptical this thing benchmarks #MC exception handler
+> > > > performance. Because the code this patch adds gets run only during =
+a MCE
+> > > > exception.
+> > > > =
+
+> > > > So unless I'm missing something obvious please check your setup.
+> > > =
+
+> > > We've tracked some similar strange kernel performance changes, like
+> > > another mce related one [1]. For many of them, the root cause is
+> > > the patch changes the code or data alignment/address of other
+> > > components, as could be seen from System.map file.
+> > > =
+
+> > > We added debug patch trying to force data sections of each .o be
+> > > aligned (isolating components), and run the test 3 times, and
+> > > the regression is gone.
+> > > =
+
+> > >          %stddev     %change         %stddev
+> > >              \          |                \  =
+
+> > >     263059            -0.2%     262523        netperf.Throughput_tota=
+l_tps
+> > >      16441            -0.2%      16407        netperf.Throughput_tps
+> > > =
+
+> > > So the -4.5% is likely to be caused by data address change. =
+
+> > > =
+
+> > > But still there is something I don't understand, that the patch
+> > > introduces a new cpumask 'mce_missing_cpus', which is 1024B, and
+> > > from the System.map, all data following it get a 1024B offset,
+> > > without changing the cacheline alignment situation.
+> > > =
+
+> > > 2 original system map files are attached in case people want
+> > > to check.
+> > > =
+
+> > > [1]. https://lore.kernel.org/lkml/20200425114414.GU26573(a)shao2-debi=
+an/
+> > =
+
+> > One possibility is that the data-address changes put more stress on the
+> > TLB, for example, if that region of memory is not covered by a huge
+> > TLB entry.  If this is the case, is there a convenient way to define
+> > mce_missing_cpus so as to get it out of the way?
+> =
+
+> Yes! I also tried some experiment for dTLB, by adding 3 more cpumask_t
+> right after 'mce_missing_cpus', so that the total offset will be 4KB.
+> I expected the regression could be gone, but it turns out to have =
+
+> a +2.4% improvement.
+>  =
+
+>      16741            -4.5%      15980            +2.4%      17149       =
+ netperf.Throughput_tps
+> =
+
+> Which is still kind of out of our control :) =
 
 
-On 1/11/2021 5:58 PM, Ming Lei wrote:
-> On Sun, Jan 10, 2021 at 10:32:47PM +0800, kernel test robot wrote:
->> Greeting,
->>
->> FYI, we noticed a -18.4% regression of reaim.jobs_per_min due to commit:
->>
->>
->> commit: 2b0d3d3e4fcfb19d10f9a82910b8f0f05c56ee3e ("percpu_ref: reduce me=
-mory footprint of percpu_ref in fast path")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->>
->>
->> in testcase: reaim
->> on test machine: 192 threads Intel(R) Xeon(R) Platinum 9242 CPU @ 2.30GH=
-z with 192G memory
->> with following parameters:
->>
->> 	runtime: 300s
->> 	nr_task: 100%
->> 	test: short
->> 	cpufreq_governor: performance
->> 	ucode: 0x5002f01
->>
->> test-description: REAIM is an updated and improved version of AIM 7 benc=
-hmark.
->> test-url: https://sourceforge.net/projects/re-aim-7/
->>
->> In addition to that, the commit also has significant impact on the follo=
-wing tests:
->>
->> +------------------+----------------------------------------------------=
------------------------+
->> | testcase: change | vm-scalability: vm-scalability.throughput -2.8% reg=
-ression                |
->> | test machine     | 192 threads Intel(R) Xeon(R) Platinum 9242 CPU @ 2.=
-30GHz with 192G memory |
->> | test parameters  | cpufreq_governor=3Dperformance                     =
-                         |
->> |                  | runtime=3D300s                                     =
-                         |
->> |                  | test=3Dlru-file-mmap-read-rand                     =
-                         |
->> |                  | ucode=3D0x5003003                                  =
-                         |
->> +------------------+----------------------------------------------------=
------------------------+
->> | testcase: change | will-it-scale: will-it-scale.per_process_ops 14.5% =
-improvement            |
->> | test machine     | 144 threads Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50G=
-Hz with 512G memory    |
->> | test parameters  | cpufreq_governor=3Dperformance                     =
-                         |
->> |                  | mode=3Dprocess                                     =
-                         |
->> |                  | nr_task=3D50%                                      =
-                         |
->> |                  | test=3Dpage_fault2                                 =
-                         |
->> |                  | ucode=3D0x16                                       =
-                         |
->> +------------------+----------------------------------------------------=
------------------------+
->> | testcase: change | will-it-scale: will-it-scale.per_process_ops -13.0%=
- regression            |
->> | test machine     | 104 threads Skylake with 192G memory               =
-                       |
->> | test parameters  | cpufreq_governor=3Dperformance                     =
-                         |
->> |                  | mode=3Dprocess                                     =
-                         |
->> |                  | nr_task=3D50%                                      =
-                         |
->> |                  | test=3Dmalloc1                                     =
-                         |
->> |                  | ucode=3D0x2006906                                  =
-                         |
->> +------------------+----------------------------------------------------=
------------------------+
->> | testcase: change | vm-scalability: vm-scalability.throughput -2.3% reg=
-ression                |
->> | test machine     | 96 threads Intel(R) Xeon(R) CPU @ 2.30GHz with 128G=
- memory                |
->> | test parameters  | cpufreq_governor=3Dperformance                     =
-                         |
->> |                  | runtime=3D300s                                     =
-                         |
->> |                  | test=3Dlru-file-mmap-read-rand                     =
-                         |
->> |                  | ucode=3D0x5002f01                                  =
-                         |
->> +------------------+----------------------------------------------------=
------------------------+
->> | testcase: change | fio-basic: fio.read_iops -4.8% regression          =
-                       |
->> | test machine     | 192 threads Intel(R) Xeon(R) Platinum 9242 CPU @ 2.=
-30GHz with 192G memory |
->> | test parameters  | bs=3D4k                                            =
-                         |
->> |                  | cpufreq_governor=3Dperformance                     =
-                         |
->> |                  | disk=3D2pmem                                       =
-                         |
->> |                  | fs=3Dxfs                                           =
-                         |
->> |                  | ioengine=3Dlibaio                                  =
-                         |
->> |                  | nr_task=3D50%                                      =
-                         |
->> |                  | runtime=3D200s                                     =
-                         |
->> |                  | rw=3Drandread                                      =
-                         |
->> |                  | test_size=3D200G                                   =
-                         |
->> |                  | time_based=3Dtb                                    =
-                         |
->> |                  | ucode=3D0x5002f01                                  =
-                         |
->> +------------------+----------------------------------------------------=
------------------------+
->> | testcase: change | stress-ng: stress-ng.stackmmap.ops_per_sec -45.4% r=
-egression              |
->> | test machine     | 96 threads Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz=
- with 256G memory      |
->> | test parameters  | class=3Dmemory                                     =
-                         |
->> |                  | cpufreq_governor=3Dperformance                     =
-                         |
->> |                  | disk=3D1HDD                                        =
-                         |
->> |                  | nr_threads=3D100%                                  =
-                         |
->> |                  | testtime=3D10s                                     =
-                         |
->> |                  | ucode=3D0x5002f01                                  =
-                         |
->> +------------------+----------------------------------------------------=
------------------------+
-> Just run a quick test of the last two on 2b0d3d3e4fcf ("percpu_ref: reduc=
-e memory footprint of
-> percpu_ref in fast path) and cf785af19319 ("block: warn if !__GFP_DIRECT_=
-RECLAIM in bio_crypt_set_ctx()").
->
-> Not see difference in the two kernel(fio on null_blk with 224 hw queues,
-> and 'stress-ng --stackmmap-ops') on one 224 cores, dual sockets system.
->
-> BTW this patch itself doesn't touch fast path code, so it is supposed to
-> not affect performance.
->
-> Can you double check if the test itself is good?
-I re-test the "fio-basic: fio.read_iops -4.8% regression"=C2=A0 for more th=
-an =
+I bet that the results vary depending on the type of CPU, and also on
+the kernel address-space layout, which of course also varies based on
+the Kconfig options.  Let's see how the maintainers would like to proceed.
 
-5 times, the average regression is -2.3%.
-For "stress_ng", normally, it tests a lot of cases one by one. Command=C2=
-=A0 =
-
-'stress-ng --stackmmap-ops' only test=C2=A0 "stackmmap" case.
-I also tried only test "stackmmap" case, the regression is -7.8%.
-
-But for here, it mainly reports "reaim.jobs_per_min -18.4% regression", =
-
-I re-test=C2=A0 "reaim" case, the result is almost the same.
->
-> Note: cf785af19319 is 2b0d3d3e4fcf^
->
->
->
-> Thanks,
-> Ming
-> _______________________________________________
-> LKP mailing list -- lkp(a)lists.01.org
-> To unsubscribe send an email to lkp-leave(a)lists.01.org
-
--- =
-
-Zhengjun Xing
-
---===============4888908951279595942==--
+							Thanx, Paul
+--===============0916882215342503839==--
 
