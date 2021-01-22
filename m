@@ -1,269 +1,86 @@
-Content-Type: multipart/mixed; boundary="===============1094003829529996331=="
+Content-Type: multipart/mixed; boundary="===============7717508572769890009=="
 MIME-Version: 1.0
-From: Xing, Zhengjun <zhengjun.xing@intel.com>
+From: Li, Philip <philip.li@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/i915] 04ff178484: phoronix-test-suite.supertuxkart.1024x768.Fullscreen.Ultimate.1.GranParadisoIsland.frames_per_second -30.4% regression
-Date: Fri, 22 Jan 2021 11:35:33 +0800
-Message-ID: <84fda94a-7c98-06fe-95a4-7107521446fd@intel.com>
-In-Reply-To: <SA2PR11MB49694B1464470425AF44AAAB9DA19@SA2PR11MB4969.namprd11.prod.outlook.com>
+Subject: [0-Day CI notification] the service will be paused from Friday Jan 22, 5 PM CST to Sunday Jan 24, 3 PM CST (GMT+8)
+Date: Fri, 22 Jan 2021 04:52:44 +0000
+Message-ID: <e58bf70fcff54595b29828daf13b497e@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1094003829529996331==
+--===============7717508572769890009==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi all, this is Philip who maintains the 0-Day CI test service. Thanks for
+
+anyone who subscribes to the service. We will have a lab power construction
+
+this weekend, thus need to pause the service for about 2 days, from
+
+Friday Jan 22, 5 PM CST to Sunday Jan 24, 3 PM CST (GMT+8).
 
 
-On 1/21/2021 10:18 PM, Chiou, Cooper wrote:
-> I run =E2=80=9Cphoronix-test-suite run supertuxkart-1.5.2=E2=80=9D on my =
-CML Ubuntu 18.04.5 LTS device, and compared the fps between patch and origi=
-nal upstream, there is no any fps performance drop issue.
->
->          5.10.0-rc3 upstream /  5.10.0-rc3+patch
-> fps     12.586326           /  12.687711
-We have tested it before, the fps is 35.32 and 24.59=C2=A0 for the followin=
-g =
 
-two commits, but your test result is about 12 fps,=C2=A0 is it reasonable?=
-=C2=A0 I =
+Sorry for any inconvenience caused by this, we will recover the
 
-guess something in your setup drop both performances for the two tests =
-
-you have run.
-
-commit:
-   400d4953f1 ("drm/i915/pll: Centralize PLL_ENABLE register lookup")
-   04ff178484 ("drm/i915: Enable WaProgramMgsrForCorrectSliceSpecificMmioRe=
-ads for Gen9")
-
-400d4953f1f434d5 04ff1784840f5f954a656c7e879
----------------- ---------------------------
-          %stddev     %change         %stddev
-              \          |                \
-      35.32           -30.4%      24.59        phoronix-test-suite.supertux=
-kart.1024x768.Fullscreen.Ultimate.1.GranParadisoIsland.frames_per_second
-       3638 =C2=B1 15%     -39.2%       2211 =C2=B1  4%  phoronix-test-suit=
-e.time.involuntary_context_switches
-      32.00           -30.5%      22.25        phoronix-test-suite.time.per=
-cent_of_cpu_this_job_got
-
->
-> Best Regards,
-> Cooper
-> +886-2-6622-1166
->
-> -----Original Message-----
-> From: kernel test robot <rong.a.chen@intel.com>
-> Sent: Monday, September 21, 2020 5:22 PM
-> To: Chiou, Cooper <cooper.chiou@intel.com>
-> Cc: intel-gfx(a)lists.freedesktop.org; Chiou, Cooper <cooper.chiou@inte=
-l.com>; Tseng, William <william.tseng@intel.com>; Nikula, Jani <jani.niku=
-la@intel.com>; Chris Wilson <chris@chris-wilson.co.uk>; lkp <lkp@inte=
-l.com>; Ville Syrj=C3=A4l=C3=A4 <ville.syrjala@linux.intel.com>; Vivi, Ro=
-drigo <rodrigo.vivi@intel.com>; Tvrtko Ursulin <tvrtko.ursulin@linux.in=
-tel.com>; Lee, Shawn C <shawn.c.lee@intel.com>; LKML <linux-kernel@vger=
-.kernel.org>; lkp(a)lists.01.org; Huang, Ying <ying.huang@intel.com>; Tan=
-g, Feng <feng.tang@intel.com>; Xing, Zhengjun <zhengjun.xing@intel.com>=
-; Chen, Guobing <guobing.chen@intel.com>; Chen, Ming A <ming.a.chen@int=
-el.com>; Du, Frank <frank.du@intel.com>; Fan, Shuhua <shuhua.fan@intel.=
-com>; Guo, Wangyang <wangyang.guo@intel.com>; Huang, Wenhuan <wenhuan.hua=
-ng@intel.com>; Ji, Jessica <jessica.ji@intel.com>; Kang, Shan <shan.kan=
-g@intel.com>; Li, Guangli <guangli.li@intel.com>; Li, Tiejun <tiejun.li=
-@intel.com>; Ma, Yu <yu.ma@intel.com>; Mi, Dapeng1 <dapeng1.mi@intel.=
-com>; Sun, Jiebin <jiebin.sun@intel.com>; Xie, Gengxin <gengxin.xie@int=
-el.com>; Zhao, Fan <fan.zhao@intel.com>
-> Subject: [drm/i915] 04ff178484: phoronix-test-suite.supertuxkart.1024x768=
-.Fullscreen.Ultimate.1.GranParadisoIsland.frames_per_second -30.4% regressi=
-on
->
-> Greeting,
->
-> FYI, we noticed a -30.4% regression of phoronix-test-suite.supertuxkart.1=
-024x768.Fullscreen.Ultimate.1.GranParadisoIsland.frames_per_second due to c=
-ommit:
->
->
-> commit: 04ff1784840f5f954a656c7e8795c76467e29128 ("[Intel-gfx] [PATCH] dr=
-m/i915: Enable WaProgramMgsrForCorrectSliceSpecificMmioReads for Gen9")
-> url: https://github.com/0day-ci/linux/commits/Cooper-Chiou/drm-i915-Enabl=
-e-WaProgramMgsrForCorrectSliceSpecificMmioReads-for-Gen9/20200917-021540
-> base: git://anongit.freedesktop.org/drm-intel for-linux-next
->
-> in testcase: phoronix-test-suite
-> on test machine: 4 threads Intel(R) Core(TM) i7-7567U CPU @ 3.50GHz with =
-32G memory with following parameters:
->
-> 	need_x: true
-> 	test: supertuxkart-1.5.2
-> 	option_a: Fullscreen
-> 	option_b: Ultimate
-> 	option_c: 1
-> 	option_d: Gran Paradiso Island [Approximately 275k triangles; advanced g=
-raphics]
-> 	cpufreq_governor: performance
-> 	ucode: 0xd6
->
-> test-description: The Phoronix Test Suite is the most comprehensive testi=
-ng and benchmarking platform available that provides an extensible framewor=
-k for which new tests can be easily added.
-> test-url: http://www.phoronix-test-suite.com/
->
->
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <rong.a.chen@intel.com>
->
->
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
->
->
-> To reproduce:
->
->          git clone https://github.com/intel/lkp-tests.git
->          cd lkp-tests
->          bin/lkp install job.yaml  # job file is attached in this email
->          bin/lkp run     job.yaml
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/need_x/option_a/option_b/option_c/optio=
-n_d/rootfs/tbox_group/test/testcase/ucode:
->    gcc-9/performance/x86_64-rhel-8.3/true/Fullscreen/Ultimate/1/Gran Para=
-diso Island [Approximately 275k triangles; advanced graphics]/debian-x86_64=
--phoronix/lkp-kbl-nuc1/supertuxkart-1.5.2/phoronix-test-suite/0xd6
->
-> commit:
->    400d4953f1 ("drm/i915/pll: Centralize PLL_ENABLE register lookup")
->    04ff178484 ("drm/i915: Enable WaProgramMgsrForCorrectSliceSpecificMmio=
-Reads for Gen9")
->
-> 400d4953f1f434d5 04ff1784840f5f954a656c7e879
-> ---------------- ---------------------------
->           %stddev     %change         %stddev
->               \          |                \
->       35.32           -30.4%      24.59        phoronix-test-suite.supert=
-uxkart.1024x768.Fullscreen.Ultimate.1.GranParadisoIsland.frames_per_second
->        3638 =C2=B1 15%     -39.2%       2211 =C2=B1  4%  phoronix-test-su=
-ite.time.involuntary_context_switches
->       32.00           -30.5%      22.25        phoronix-test-suite.time.p=
-ercent_of_cpu_this_job_got
->
->
->                                                                          =
-        =
-
->                                                                          =
-        =
-
->                                                                          =
-        =
-
->    36 +------------------------------------------------------------------=
-----+
->       |.+.+..+.+.+.+..+.+.+.+.+..+.+.+.+..+.+.+.+.+..+.+.+.+.+..+   +.+..=
-+.+.|
->    34 |-+                                                                =
-    |
->       |                                                                  =
-    |
->       |                                                                  =
-    |
->    32 |-+                                                                =
-    |
->       |                                                                  =
-    |
->    30 |-+                                                                =
-    |
->       |                                                                  =
-    |
->    28 |-+                                                                =
-    |
->       |                                                                  =
-    |
->       |                                                                  =
-    |
->    26 |-+                                                                =
-    |
->       | O O  O O O O  O O O O O  O O O O  O O O O O  O O                 =
-    |
->    24 +------------------------------------------------------------------=
-----+
->                                                                          =
-        =
-
->                                                                          =
-                                                                           =
-             =
-
->                phoronix-test-suite.time.percent_of_cpu_this_job_got
->                                                                          =
-        =
-
->    32 +------------------------------------------------------------------=
-----+
->       |               +       +.              +      +   +.+.+.          =
-    |
->    30 |-+                                                                =
-    |
->       |                                                                  =
-    |
->       |                                                                  =
-    |
->    28 |-+                                                                =
-    |
->       |                                                                  =
-    |
->    26 |-+                                                                =
-    |
->       |                                                                  =
-    |
->    24 |-+                                                                =
-    |
->       |                                   O       O                      =
-    |
->       |                                                                  =
-    |
->    22 |-O O  O O   O  O O O O O  O O O O    O O O    O O                 =
-    |
->       |          O                                                       =
-    |
->    20 +------------------------------------------------------------------=
-----+
->                                                                          =
-        =
-
->                                                                          =
-        =
-
-> [*] bisect-good sample
-> [O] bisect-bad  sample
->
->
->
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
->
->
-> Thanks,
-> Rong Chen
->
-> _______________________________________________
-> LKP mailing list -- lkp(a)lists.01.org
-> To unsubscribe send an email to lkp-leave(a)lists.01.org
-
--- =
-
-Zhengjun Xing
+service to be online as early as possible.
 
 
---===============1094003829529996331==--
+
+Thanks
+
+--===============7717508572769890009==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
+
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+CjxoZWFkPgo8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVR5cGUiIGNv
+bnRlbnQ9InRleHQvaHRtbDsgY2hhcnNldD11cy1hc2NpaSI+CjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPgo8c3R5bGU+
+PCEtLQovKiBGb250IERlZmluaXRpb25zICovCkBmb250LWZhY2UKCXtmb250LWZhbWlseTpTaW1T
+dW47CglwYW5vc2UtMToyIDEgNiAwIDMgMSAxIDEgMSAxO30KQGZvbnQtZmFjZQoJe2ZvbnQtZmFt
+aWx5OiJDYW1icmlhIE1hdGgiOwoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9CkBmb250
+LWZhY2UKCXtmb250LWZhbWlseTpDb25zb2xhczsKCXBhbm9zZS0xOjIgMTEgNiA5IDIgMiA0IDMg
+MiA0O30KQGZvbnQtZmFjZQoJe2ZvbnQtZmFtaWx5OiJcQFNpbVN1biI7CglwYW5vc2UtMToyIDEg
+NiAwIDMgMSAxIDEgMSAxO30KLyogU3R5bGUgRGVmaW5pdGlvbnMgKi8KcC5Nc29QbGFpblRleHQs
+IGxpLk1zb1BsYWluVGV4dCwgZGl2Lk1zb1BsYWluVGV4dAoJe21zby1zdHlsZS1wcmlvcml0eTo5
+OTsKCW1zby1zdHlsZS1saW5rOiJQbGFpbiBUZXh0IENoYXIiOwoJbWFyZ2luOjBpbjsKCWZvbnQt
+c2l6ZTo5LjBwdDsKCWZvbnQtZmFtaWx5OkNvbnNvbGFzO30Kc3Bhbi5FbWFpbFN0eWxlMTcKCXtt
+c28tc3R5bGUtdHlwZTpwZXJzb25hbC1jb21wb3NlOwoJZm9udC1mYW1pbHk6IkFyaWFsIixzYW5z
+LXNlcmlmOwoJY29sb3I6d2luZG93dGV4dDsKCWZvbnQtd2VpZ2h0Om5vcm1hbDsKCWZvbnQtc3R5
+bGU6bm9ybWFsOwoJdGV4dC1kZWNvcmF0aW9uOm5vbmUgbm9uZTt9CnNwYW4uUGxhaW5UZXh0Q2hh
+cgoJe21zby1zdHlsZS1uYW1lOiJQbGFpbiBUZXh0IENoYXIiOwoJbXNvLXN0eWxlLXByaW9yaXR5
+Ojk5OwoJbXNvLXN0eWxlLWxpbms6IlBsYWluIFRleHQiOwoJZm9udC1mYW1pbHk6Q29uc29sYXM7
+fQouTXNvQ2hwRGVmYXVsdAoJe21zby1zdHlsZS10eXBlOmV4cG9ydC1vbmx5OwoJZm9udC1mYW1p
+bHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7fQpAcGFnZSBXb3JkU2VjdGlvbjEKCXtzaXplOjguNWlu
+IDExLjBpbjsKCW1hcmdpbjoxLjBpbiAxLjBpbiAxLjBpbiAxLjBpbjt9CmRpdi5Xb3JkU2VjdGlv
+bjEKCXtwYWdlOldvcmRTZWN0aW9uMTt9Ci0tPjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4
+bWw+CjxvOnNoYXBlZGVmYXVsdHMgdjpleHQ9ImVkaXQiIHNwaWRtYXg9IjEwMjYiIC8+CjwveG1s
+PjwhW2VuZGlmXS0tPjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPgo8bzpzaGFwZWxheW91dCB2OmV4
+dD0iZWRpdCI+CjxvOmlkbWFwIHY6ZXh0PSJlZGl0IiBkYXRhPSIxIiAvPgo8L286c2hhcGVsYXlv
+dXQ+PC94bWw+PCFbZW5kaWZdLS0+CjwvaGVhZD4KPGJvZHkgbGFuZz0iRU4tVVMiIGxpbms9IiMw
+NTYzQzEiIHZsaW5rPSIjOTU0RjcyIiBzdHlsZT0id29yZC13cmFwOmJyZWFrLXdvcmQiPgo8ZGl2
+IGNsYXNzPSJXb3JkU2VjdGlvbjEiPgo8cCBjbGFzcz0iTXNvUGxhaW5UZXh0Ij5IaSBhbGwsIHRo
+aXMgaXMgUGhpbGlwIHdobyBtYWludGFpbnMgdGhlIDAtRGF5IENJIHRlc3Qgc2VydmljZS4gVGhh
+bmtzIGZvcjxvOnA+PC9vOnA+PC9wPgo8cCBjbGFzcz0iTXNvUGxhaW5UZXh0Ij5hbnlvbmUgd2hv
+IHN1YnNjcmliZXMgdG8gdGhlIHNlcnZpY2UuIFdlIHdpbGwgaGF2ZSBhIGxhYiBwb3dlciBjb25z
+dHJ1Y3Rpb248bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb1BsYWluVGV4dCI+dGhpcyB3ZWVr
+ZW5kLCB0aHVzIG5lZWQgdG8gcGF1c2UgdGhlIHNlcnZpY2UgZm9yIGFib3V0IDIgZGF5cywgZnJv
+bTxvOnA+PC9vOnA+PC9wPgo8cCBjbGFzcz0iTXNvUGxhaW5UZXh0Ij5GcmlkYXkgSmFuIDIyLCA1
+IFBNIENTVCB0byBTdW5kYXkgSmFuIDI0LCAzIFBNIENTVCAoR01UJiM0Mzs4KS48bzpwPjwvbzpw
+PjwvcD4KPHAgY2xhc3M9Ik1zb1BsYWluVGV4dCI+PG86cD4mbmJzcDs8L286cD48L3A+CjxwIGNs
+YXNzPSJNc29QbGFpblRleHQiPlNvcnJ5IGZvciBhbnkgaW5jb252ZW5pZW5jZSBjYXVzZWQgYnkg
+dGhpcywgd2Ugd2lsbCByZWNvdmVyIHRoZTxvOnA+PC9vOnA+PC9wPgo8cCBjbGFzcz0iTXNvUGxh
+aW5UZXh0Ij5zZXJ2aWNlIHRvIGJlIG9ubGluZSBhcyBlYXJseSBhcyBwb3NzaWJsZS48bzpwPjwv
+bzpwPjwvcD4KPHAgY2xhc3M9Ik1zb1BsYWluVGV4dCI+PG86cD4mbmJzcDs8L286cD48L3A+Cjxw
+IGNsYXNzPSJNc29QbGFpblRleHQiPlRoYW5rczxvOnA+PC9vOnA+PC9wPgo8L2Rpdj4KPC9ib2R5
+Pgo8L2h0bWw+Cg==
+
+--===============7717508572769890009==--
 
