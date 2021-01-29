@@ -1,57 +1,81 @@
-Content-Type: multipart/mixed; boundary="===============1361660390552110907=="
+Content-Type: multipart/mixed; boundary="===============1145154700769589433=="
 MIME-Version: 1.0
-From: Oliver Sang <oliver.sang@intel.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [binfmt_elf] d97e11e25d: ltp.DS000.fail
-Date: Fri, 29 Jan 2021 16:05:58 +0800
-Message-ID: <20210129080557.GB13077@xsang-OptiPlex-9020>
-In-Reply-To: <CAMuHMdUFsRSCDJeML+0i17ig6oFr+-cz660xyhkhkfg2UtPTzQ@mail.gmail.com>
+Subject: Re: [workqueue] d5bff968ea: WARNING:at_kernel/workqueue.c:#process_one_work
+Date: Fri, 29 Jan 2021 07:11:24 -0800
+Message-ID: <20210129151124.GB2743@paulmck-ThinkPad-P72>
+In-Reply-To: <bfb8370e-43e4-7f72-a71f-8481eb66f6ed@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1361660390552110907==
+--===============1145154700769589433==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jan 26, 2021 at 09:03:26AM +0100, Geert Uytterhoeven wrote:
-> Hi Oliver,
+On Fri, Jan 29, 2021 at 02:20:18PM +0800, Xing Zhengjun wrote:
 > =
-
-> On Tue, Jan 26, 2021 at 6:35 AM kernel test robot <oliver.sang@intel.co=
-m> wrote:
-> > FYI, we noticed the following commit (built with gcc-9):
-> >
-> > commit: d97e11e25dd226c44257284f95494bb06d1ebf5a ("[PATCH v2] binfmt_el=
-f: Fix fill_prstatus() call in fill_note_info()")
-> > url: https://github.com/0day-ci/linux/commits/Geert-Uytterhoeven/binfmt=
-_elf-Fix-fill_prstatus-call-in-fill_note_info/20210106-155236
-> > base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git e=
-71ba9452f0b5b2e8dc8aa5445198cd9214a6a62
-> =
-
-> My patch (which you applied on top of v5.11-rc2) is a build fix for
-> a commit that is not part of v5.11-rc2.  Hence the test run is invalid.
-
-sorry for false report. we've fixed the problem. Thanks
 
 > =
 
-> Gr{oetje,eeting}s,
-> =
+> On 1/29/2021 2:08 AM, Paul E. McKenney wrote:
+> > On Thu, Jan 28, 2021 at 05:09:05PM +0800, Hillf Danton wrote:
+> > > On Thu, 28 Jan 2021 15:52:40 +0800 Xing Zhengjun wrote:
+> > =
 
->                         Geert
-> =
+> > [ . . . ]
+> > =
 
-> -- =
+> > > > I test the patch 4 times, no warning appears in the kernel log.
+> > > =
 
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert(a)linux-=
-m68k.org
-> =
+> > > Thank you so much Zhengjun!
+> > > =
 
-> In personal conversations with technical people, I call myself a hacker. =
-But
-> when I'm talking to journalists I just say "programmer" or something like=
- that.
->                                 -- Linus Torvalds
---===============1361660390552110907==--
+> > > And the overall brain dump so far is
+> > > =
+
+> > > 1/ before and after d5bff968ea, changing the allowed ptr at online ti=
+me
+> > > is the key to quiesce the warning in process_one_work().
+> > > =
+
+> > > 2/ marking pcpu before changing aptr in rebind_workers() is mandatory=
+ in
+> > > regards to cutting the risk of triggering such a warning.
+> > > =
+
+> > > 3/ we canot maintain such an order without quiescing the 508 warning =
+for
+> > > kworkers. And we have a couple of excuses to do so, a) the number of
+> > > allowed CPUs is no longer checked in is_per_cpu_kthread() instead of
+> > > PF_NO_SETAFFINITY, b) there is always a followup act to change the ap=
+tr
+> > > in order to fix the number of aCPUs.
+> > > =
+
+> > > 4/ same order is maintained also at rescue time.
+> > =
+
+> > Just out of curiosity, does this test still fail on current mainline?
+> > =
+
+> > 							Thanx, Paul
+> > =
+
+> I test mainline v5.11-rc5, it has no issue. The issue is only for d5bff96=
+8ea
+> which is in
+> https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git
+> dev.2021.01.11b.
+
+Got it, and that commit is long gone from the -rcu dev branch, having
+been replaced by a series of commits from Valentin, Lai Jiangshan, and
+Peter Zijlstra that are close to those in v5.11-rc5.  Which I will drop
+when I port to v5.12-rc1.
+
+Thank you very much!
+
+							Thanx, Paul
+--===============1145154700769589433==--
 
