@@ -1,118 +1,84 @@
-Content-Type: multipart/mixed; boundary="===============1034500942132359474=="
+Content-Type: multipart/mixed; boundary="===============4020780632485363538=="
 MIME-Version: 1.0
-From: John Ogness <john.ogness@linutronix.de>
+From: Roman Gushchin <guro@fb.com>
 To: lkp@lists.01.org
-Subject: Re: [printk] b031a684bf: INFO:rcu_tasks_detected_stalls_on_tasks
-Date: Thu, 04 Feb 2021 22:38:02 +0106
-Message-ID: <878s83h63x.fsf@jogness.linutronix.de>
-In-Reply-To: <8735yev1dn.fsf@jogness.linutronix.de>
+Subject: Re: [mm] 10befea91b: hackbench.throughput -62.4% regression
+Date: Thu, 04 Feb 2021 17:04:57 -0800
+Message-ID: <20210205010457.GB2053809@carbon.dhcp.thefacebook.com>
+In-Reply-To: <8ce56447-b416-4750-eeb3-0d5bb92e007d@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1034500942132359474==
+--===============4020780632485363538==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2021-01-22, kernel test robot <oliver.sang@intel.com> wrote:
-> FYI, we noticed the following commit (built with gcc-9):
->
-> commit: b031a684bfd01d633c79d281bd0cf11c2f834ada ("printk: remove logbuf_=
-lock writer-protection of ringbuffer")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+On Thu, Feb 04, 2021 at 01:19:47PM +0800, Xing Zhengjun wrote:
+> =
 
-So I finally tracked down the problem. And yes, it is a problem with the
-ringbuffer. And it turns out this is the same problem reported here [0].
+> =
 
-If message sizes average larger than expected (more than 32 characters),
-the data_ring will wrap before the desc_ring. Once the data_ring wraps,
-it will start invalidating descriptors. These invalid descriptors hang
-around until they are eventually recycled (when the desc_ring
-wraps). Readers do not care about invalid descriptors, but they still
-have to iterate past them. If the average message size is much larger
-than 32 characters, then there will be many invalid descriptors
-preceeding the valid descriptors.
+> On 2/3/2021 10:49 AM, Roman Gushchin wrote:
+> > On Tue, Feb 02, 2021 at 04:18:27PM +0800, Xing, Zhengjun wrote:
+> > > On 1/14/2021 11:18 AM, Roman Gushchin wrote:
+> > > > On Thu, Jan 14, 2021 at 10:51:51AM +0800, kernel test robot wrote:
+> > > > > Greeting,
+> > > > > =
 
-For this particular LKP report, the RCU stalls started happening as the
-number of invalid descriptors approached 17000. The reason this causes a
-problem is because of the function prb_first_valid_seq(). It starts at
-the oldest descriptor and searches to find the oldest _valid_
-descriptor. In this case, it had to iterate past 17000 descriptors every
-time.
+> > > > > FYI, we noticed a -62.4% regression of hackbench.throughput due t=
+o commit:
+> > > > Hi!
+> > > > =
 
-prb_first_valid_seq() is used in devkmsg_read() and in
-devkmsg_poll(). And worse, it is called with local interrupts disabled
-and logbuf_lock locked.
+> > > > Commit "mm: memcg/slab: optimize objcg stock draining" (currently o=
+nly in the mm tree,
+> > > > so no stable hash) should improve the hackbench regression.
+> > > The commit has been merged into Linux mainline :
+> > >  =C2=A03de7d4f25a7438f09fef4e71ef111f1805cd8e7c ("mm: memcg/slab: opt=
+imize objcg
+> > > stock draining")
+> > > I test the regression still existed.
+> > Hm, so in your setup it's about the same with and without this commit?
+> > =
 
-The solution is to avoid using prb_first_valid_seq() if possible. And
-indeed, in both of these cases it is a simple change:
+> > It's strange because I've received a letter stating a 45.2% improvement=
+ recently:
+> > https://lkml.org/lkml/2021/1/27/83
+> =
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index c8847ee571f0..76e8df20fdf9 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -736,9 +736,9 @@ static ssize_t devkmsg_read(struct file *file, char __u=
-ser *buf,
- 		logbuf_lock_irq();
- 	}
- =
+> They are different test cases, 45.2% improvement test case run in "thread=
+" mode, -62.4% regression test case run in "process" mode.
 
--	if (user->seq < prb_first_valid_seq(prb)) {
-+	if (r->info->seq !=3D user->seq) {
- 		/* our last seen message is gone, return error and reset */
--		user->seq =3D prb_first_valid_seq(prb);
-+		user->seq =3D r->info->seq;
- 		ret =3D -EPIPE;
- 		logbuf_unlock_irq();
- 		goto out;
-@@ -813,6 +813,7 @@ static loff_t devkmsg_llseek(struct file *file, loff_t =
-offset, int whence)
- static __poll_t devkmsg_poll(struct file *file, poll_table *wait)
- {
- 	struct devkmsg_user *user =3D file->private_data;
-+	struct printk_info info;
- 	__poll_t ret =3D 0;
- =
+Thank you for the clarification!
 
- 	if (!user)
-@@ -821,9 +822,9 @@ static __poll_t devkmsg_poll(struct file *file, poll_ta=
-ble *wait)
- 	poll_wait(file, &log_wait, wait);
- =
+> From 286e04b8ed7a0427 to 3de7d4f25a7438f09fef4e71ef1 there are two regres=
+sions for process mode :
+> 1) 286e04b8ed7a0427 to 10befea91b61c4e2c2d1df06a2e  (-62.4% regression)
+> 2) 10befea91b61c4e2c2d1df06a2e to d3921cb8be29ce5668c64e23ffd (-22.3% reg=
+ression)
+> =
 
- 	logbuf_lock_irq();
--	if (prb_read_valid(prb, user->seq, NULL)) {
-+	if (prb_read_valid_info(prb, user->seq, &info, NULL)) {
- 		/* return error when data has vanished underneath us */
--		if (user->seq < prb_first_valid_seq(prb))
-+		if (info.seq !=3D user->seq)
- 			ret =3D EPOLLIN|EPOLLRDNORM|EPOLLERR|EPOLLPRI;
- 		else
- 			ret =3D EPOLLIN|EPOLLRDNORM;
+> 3de7d4f25a7438f09fef4e71ef111f1805cd8e7c only fix the regression 2) , so =
+the value of "hackbench.throughput" for 3de7d4f25a7438f09fef4e71ef1(71824) =
+and 10befea91b61c4e2c2d1df06a2e (72220) is very closed.
 
-Once logbuf_lock and safe buffer usage is removed, this efficiency
-wouldn't matter to the kernel anyway. But I am glad we hit it while it
-still mattered because we should not be carelessly wasting CPU cycles
-for any task.
+Ok, it seems that 1) is caused by switching to per-object accounting/stats =
+of slab memory.
+I don't now anything about 2). There are 38326 commits in between. Do you k=
+now which commits
+are causing it?
+I believe that 3de7d4f25a74 partially fixes regression 1).
 
-Interestingly enough, LTP reported a problem with this code back in July
-2020. The "invalid descriptor issue" was clearly stated [1] and Petr
-even made a suggestion [2] which is nearly identical to how I propose to
-fix it here.
+I'll take a look what we can do here.
 
-prb_first_valid_seq() is used unnecessarily in some syslog and devkmsg
-locations as well. And prb_first_valid_seq() itself can also be slightly
-improved.
+Some regression could be unavoidable: we're doing more precise accounting, =
+but it requires
+more work. As a compensation we're getting major benefits like saving over =
+40% of
+the slab memory and having less fragmentation.
 
-I am preparing a patch against linux-next for this. And although the
-current situation is not pretty, I do not think it needs to be rushed
-for 5.11. It is an inefficiency that occurs if the average message size
-greatly exceeds 32 bytes and the ringbuffer is being blasted by new
-messages and userspace is reading the ringbuffer.
+But hopefully we can make it smaller.
 
-John Ogness
-
-[0] https://lkml.kernel.org/r/20210122235238.655049-1-elavila(a)google.com
-[1] https://lkml.kernel.org/r/874kqhm1v8.fsf(a)jogness.linutronix.de
-[2] https://lkml.kernel.org/r/20200709105906.GC11164(a)alley
---===============1034500942132359474==--
+Thanks!
+--===============4020780632485363538==--
 
