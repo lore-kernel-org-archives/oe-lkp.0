@@ -1,89 +1,326 @@
-Content-Type: multipart/mixed; boundary="===============2512000767307570019=="
+Content-Type: multipart/mixed; boundary="===============2376496582104690992=="
 MIME-Version: 1.0
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Joe Jin <joe.jin@oracle.com>
 To: lkp@lists.01.org
-Subject: Re: [blk] 394534b2c5: fsmark.files_per_sec -44.7% regression
-Date: Mon, 08 Feb 2021 11:35:49 +0100
-Message-ID: <20210208103549.ybguxqxv7vfmkfde@linutronix.de>
-In-Reply-To: <5bf5b060-23d3-1a1b-2ab4-09942639e6ce@intel.com>
+Subject: Re: [vdpa_sim_net] 79991caf52: net/ipv4/ipmr.c:#RCU-list_traversed_in_non-reader_section
+Date: Mon, 08 Feb 2021 08:10:21 -0800
+Message-ID: <ebd163a2-c8a8-2cb5-b46f-b0e5346c6685@oracle.com>
+In-Reply-To: <3f5124a2-6dab-6bf0-1e40-417962a45d10@oracle.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2512000767307570019==
+--===============2376496582104690992==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2021-02-07 14:11:07 [+0800], Xing, Zhengjun wrote:
-> =
+On 2/7/21 12:15 PM, Dongli Zhang wrote:
+> Is it possible that the issue is not due to this change?
 
-> I find that the blk branch has been re-based recently (re-based from
-> v5.11-rc4 to v5.11-rc5).
-> I re-test the updated branch, the regression now is -3.4%
+Looks this issue does not related your change, from dmesg output, when issu=
+e occurred, virtio was not loaded:
 
-Thank you, this looks much better now.
+[=C2=A0 502.508450] ------------[ cut here ]------------
+[=C2=A0 502.511859] WARNING: CPU: 0 PID: 1 at drivers/gpu/drm/vkms/vkms_crt=
+c.c:21 vkms_vblank_simulate+0x22a/0x240
+[=C2=A0 502.524018] Modules linked in:
+[=C2=A0 502.539642] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.11.0-rc4-00=
+008-g79991caf5202 #1
 
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> tbox_group/testcase/rootfs/kconfig/compiler/iterations/nr_threads/disk/fs=
-/filesize/test_size/sync_method/nr_directories/nr_files_per_directory/cpufr=
-eq_governor/ucode:
-> lkp-csl-2sp7/fsmark/debian-10.4-x86_64-20200603.cgz/x86_64-rhel-8.3/gcc-9=
-/1x/32t/1SSD/f2fs/9B/400M/fsyncBeforeClose/16d/256fpd/performance/0x5003003
-> =
+>
+> This change is just to call different API to allocate memory, which is
+> equivalent to kzalloc()+vzalloc().
+>
+> Before the change:
+>
+> try kzalloc(sizeof(*vs), GFP_KERNEL | __GFP_NOWARN | __GFP_RETRY_MAYFAIL);
+>
+> ... and then below if the former is failed.
+>
+> vzalloc(sizeof(*vs));
+>
+>
+> After the change:
+>
+> try kmalloc_node(size, FP_KERNEL|GFP_ZERO|__GFP_NOWARN|__GFP_NORETRY, nod=
+e);
+>
+> ... and then below if the former is failed
+>
+> __vmalloc_node(size, 1, GFP_KERNEL|GFP_ZERO, node, __builtin_return_addre=
+ss(0));
+>
+>
+> The below is the first WARNING in uploaded dmesg. I assume it was called =
+before
+> to open /dev/vhost-scsi.
+>
+> Will this test try to open /dev/vhost-scsi?
+>
+> [    5.095515] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [    5.095515] WARNING: suspicious RCU usage
+> [    5.095515] 5.11.0-rc4-00008-g79991caf5202 #1 Not tainted
+> [    5.095534] -----------------------------
+> [    5.096041] security/smack/smack_lsm.c:351 RCU-list traversed in non-r=
+eader
+> section!!
+> [    5.096982]
+> [    5.096982] other info that might help us debug this:
+> [    5.096982]
+> [    5.097953]
+> [    5.097953] rcu_scheduler_active =3D 1, debug_locks =3D 1
+> [    5.098739] no locks held by kthreadd/2.
+> [    5.099237]
+> [    5.099237] stack backtrace:
+> [    5.099537] CPU: 0 PID: 2 Comm: kthreadd Not tainted
+> 5.11.0-rc4-00008-g79991caf5202 #1
+> [    5.100470] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> 1.12.0-1 04/01/2014
+> [    5.101442] Call Trace:
+> [    5.101807]  dump_stack+0x15f/0x1bf
+> [    5.102298]  smack_cred_prepare+0x400/0x420
+> [    5.102840]  ? security_prepare_creds+0xd4/0x120
+> [    5.103441]  security_prepare_creds+0x84/0x120
+> [    5.103515]  prepare_creds+0x3f1/0x580
+> [    5.103515]  copy_creds+0x65/0x480
+> [    5.103515]  copy_process+0x7b4/0x3600
+> [    5.103515]  ? check_prev_add+0xa40/0xa40
+> [    5.103515]  ? lockdep_enabled+0xd/0x60
+> [    5.103515]  ? lock_is_held_type+0x1a/0x100
+> [    5.103515]  ? __cleanup_sighand+0xc0/0xc0
+> [    5.103515]  ? lockdep_unlock+0x39/0x160
+> [    5.103515]  kernel_clone+0x165/0xd20
+> [    5.103515]  ? copy_init_mm+0x20/0x20
+> [    5.103515]  ? pvclock_clocksource_read+0xd9/0x1a0
+> [    5.103515]  ? sched_clock_local+0x99/0xc0
+> [    5.103515]  ? kthread_insert_work_sanity_check+0xc0/0xc0
+> [    5.103515]  kernel_thread+0xba/0x100
+> [    5.103515]  ? __ia32_sys_clone3+0x40/0x40
+> [    5.103515]  ? kthread_insert_work_sanity_check+0xc0/0xc0
+> [    5.103515]  ? do_raw_spin_unlock+0xa9/0x160
+> [    5.103515]  kthreadd+0x68f/0x7a0
+> [    5.103515]  ? kthread_create_on_cpu+0x160/0x160
+> [    5.103515]  ? lockdep_hardirqs_on+0x77/0x100
+> [    5.103515]  ? _raw_spin_unlock_irq+0x24/0x60
+> [    5.103515]  ? kthread_create_on_cpu+0x160/0x160
+> [    5.103515]  ret_from_fork+0x22/0x30
+>
+> Thank you very much!
+>
+> Dongli Zhang
+>
+>
+> On 2/6/21 7:03 PM, kernel test robot wrote:
+>> Greeting,
+>>
+>> FYI, we noticed the following commit (built with gcc-9):
+>>
+>> commit: 79991caf5202c7989928be534727805f8f68bb8d ("vdpa_sim_net: Add sup=
+port for user supported devices")
+>> https://urldefense.com/v3/__https://git.kernel.org/cgit/linux/kernel/git=
+/torvalds/linux.git__;!!GqivPVa7Brio!LfgrgVVtPAjwjqTZX8yANgsix4f3cJmAA_CcMe=
+CVymh5XYcamWdR9dnbIQA-p61PJtI$  Dongli-Zhang/vhost-scsi-alloc-vhost_scsi-wi=
+th-kvzalloc-to-avoid-delay/20210129-191605
+>>
+>>
+>> in testcase: trinity
+>> version: trinity-static-x86_64-x86_64-f93256fb_2019-08-28
+>> with following parameters:
+>>
+>> 	runtime: 300s
+>>
+>> test-description: Trinity is a linux system call fuzz tester.
+>> test-url: https://urldefense.com/v3/__http://codemonkey.org.uk/projects/=
+trinity/__;!!GqivPVa7Brio!LfgrgVVtPAjwjqTZX8yANgsix4f3cJmAA_CcMeCVymh5XYcam=
+WdR9dnbIQA-6Y4x88c$ =
 
-> commit:
-> =C2=A0 cb9615f3ffb846160084d36783c6820845a97ce3 (blk-mq: Always complete =
-remote completions requests in softirq)
-> =C2=A0 54c06aefd2ea984866db5c24fdc4d1be0a14f221=C2=A0(blk-mq: Use llist_h=
-ead for blk_cpu_done)
-> =
+>>
+>>
+>> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 =
+-m 8G
+>>
+>> caused below changes (please refer to attached dmesg/kmsg for entire log=
+/backtrace):
+>>
+>>
+>> +-----------------------------------------------------------------------=
+--+------------+------------+
+>> |                                                                       =
+  | 39502d042a | 79991caf52 |
+>> +-----------------------------------------------------------------------=
+--+------------+------------+
+>> | boot_successes                                                        =
+  | 0          | 0          |
+>> | boot_failures                                                         =
+  | 62         | 57         |
+>> | WARNING:suspicious_RCU_usage                                          =
+  | 62         | 57         |
+>> | security/smack/smack_lsm.c:#RCU-list_traversed_in_non-reader_section  =
+  | 62         | 57         |
+>> | security/smack/smack_access.c:#RCU-list_traversed_in_non-reader_sectio=
+n | 62         | 57         |
+>> | BUG:workqueue_lockup-pool                                             =
+  | 33         | 40         |
+>> | BUG:kernel_hang_in_boot_stage                                         =
+  | 6          | 2          |
+>> | net/mac80211/util.c:#RCU-list_traversed_in_non-reader_section         =
+  | 23         | 15         |
+>> | WARNING:SOFTIRQ-safe->SOFTIRQ-unsafe_lock_order_detected              =
+  | 18         |            |
+>> | WARNING:inconsistent_lock_state                                       =
+  | 5          |            |
+>> | inconsistent{SOFTIRQ-ON-W}->{IN-SOFTIRQ-W}usage                       =
+  | 5          |            |
+>> | calltrace:asm_call_irq_on_stack                                       =
+  | 2          |            |
+>> | RIP:lock_acquire                                                      =
+  | 2          |            |
+>> | RIP:check_kcov_mode                                                   =
+  | 1          |            |
+>> | RIP:native_safe_halt                                                  =
+  | 2          |            |
+>> | INFO:rcu_sched_self-detected_stall_on_CPU                             =
+  | 2          |            |
+>> | RIP:clear_page_rep                                                    =
+  | 1          |            |
+>> | WARNING:at_drivers/gpu/drm/vkms/vkms_crtc.c:#vkms_vblank_simulate     =
+  | 9          | 7          |
+>> | RIP:vkms_vblank_simulate                                              =
+  | 9          | 7          |
+>> | RIP:__slab_alloc                                                      =
+  | 3          | 3          |
+>> | RIP:__do_softirq                                                      =
+  | 2          |            |
+>> | RIP:console_unlock                                                    =
+  | 6          | 3          |
+>> | invoked_oom-killer:gfp_mask=3D0x                                      =
+    | 1          |            |
+>> | Mem-Info                                                              =
+  | 1          |            |
+>> | RIP:vprintk_emit                                                      =
+  | 1          |            |
+>> | RIP:__asan_load4                                                      =
+  | 1          |            |
+>> | kernel_BUG_at_kernel/sched/core.c                                     =
+  | 0          | 1          |
+>> | invalid_opcode:#[##]                                                  =
+  | 0          | 1          |
+>> | RIP:sched_cpu_dying                                                   =
+  | 0          | 1          |
+>> | WARNING:possible_circular_locking_dependency_detected                 =
+  | 0          | 1          |
+>> | Kernel_panic-not_syncing:Fatal_exception                              =
+  | 0          | 1          |
+>> | net/ipv4/ipmr.c:#RCU-list_traversed_in_non-reader_section             =
+  | 0          | 8          |
+>> | RIP:arch_local_irq_restore                                            =
+  | 0          | 1          |
+>> | RIP:idr_get_free                                                      =
+  | 0          | 1          |
+>> | net/ipv6/ip6mr.c:#RCU-list_traversed_in_non-reader_section            =
+  | 0          | 2          |
+>> +-----------------------------------------------------------------------=
+--+------------+------------+
+>>
+>>
+>> If you fix the issue, kindly add following tag
+>> Reported-by: kernel test robot <oliver.sang@intel.com>
+>>
+>>
+>> [  890.196279] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> [  890.212608] WARNING: suspicious RCU usage
+>> [  890.228281] 5.11.0-rc4-00008-g79991caf5202 #1 Tainted: G        W
+>> [  890.244087] -----------------------------
+>> [  890.259417] net/ipv4/ipmr.c:138 RCU-list traversed in non-reader sect=
+ion!!
+>> [  890.275043]
+>> [  890.275043] other info that might help us debug this:
+>> [  890.275043]
+>> [  890.318497]
+>> [  890.318497] rcu_scheduler_active =3D 2, debug_locks =3D 1
+>> [  890.346089] 2 locks held by trinity-c1/2476:
+>> [  890.360897]  #0: ffff888149d6f400 (&f->f_pos_lock){+.+.}-{3:3}, at: _=
+_fdget_pos+0xc0/0xe0
+>> [  890.375165]  #1: ffff8881cabfd5c8 (&p->lock){+.+.}-{3:3}, at: seq_rea=
+d_iter+0xa0/0x9c0
+>> [  890.389706]
+>> [  890.389706] stack backtrace:
+>> [  890.416375] CPU: 1 PID: 2476 Comm: trinity-c1 Tainted: G        W    =
+     5.11.0-rc4-00008-g79991caf5202 #1
+>> [  890.430706] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BI=
+OS 1.12.0-1 04/01/2014
+>> [  890.444971] Call Trace:
+>> [  890.458554]  dump_stack+0x15f/0x1bf
+>> [  890.471996]  ipmr_get_table+0x140/0x160
+>> [  890.485328]  ipmr_vif_seq_start+0x4d/0xe0
+>> [  890.498620]  seq_read_iter+0x1b2/0x9c0
+>> [  890.511469]  ? kvm_sched_clock_read+0x14/0x40
+>> [  890.524008]  ? sched_clock+0x1b/0x40
+>> [  890.536095]  ? iov_iter_init+0x7c/0xa0
+>> [  890.548028]  seq_read+0x2fd/0x3e0
+>> [  890.559948]  ? seq_hlist_next_percpu+0x140/0x140
+>> [  890.572204]  ? should_fail+0x78/0x2a0
+>> [  890.584189]  ? write_comp_data+0x2a/0xa0
+>> [  890.596235]  ? __sanitizer_cov_trace_pc+0x1d/0x60
+>> [  890.608134]  ? seq_hlist_next_percpu+0x140/0x140
+>> [  890.620042]  proc_reg_read+0x14e/0x180
+>> [  890.631585]  do_iter_read+0x397/0x420
+>> [  890.642843]  vfs_readv+0xf5/0x160
+>> [  890.653833]  ? vfs_iter_read+0x80/0x80
+>> [  890.664229]  ? __fdget_pos+0xc0/0xe0
+>> [  890.674236]  ? pvclock_clocksource_read+0xd9/0x1a0
+>> [  890.684259]  ? kvm_sched_clock_read+0x14/0x40
+>> [  890.693852]  ? sched_clock+0x1b/0x40
+>> [  890.702898]  ? sched_clock_cpu+0x18/0x120
+>> [  890.711648]  ? write_comp_data+0x2a/0xa0
+>> [  890.720243]  ? __sanitizer_cov_trace_pc+0x1d/0x60
+>> [  890.729290]  do_readv+0x111/0x260
+>> [  890.738205]  ? vfs_readv+0x160/0x160
+>> [  890.747154]  ? lockdep_hardirqs_on+0x77/0x100
+>> [  890.756100]  ? syscall_enter_from_user_mode+0x8a/0x100
+>> [  890.765126]  do_syscall_64+0x34/0x80
+>> [  890.773795]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>> [  890.782630] RIP: 0033:0x453b29
+>> [  890.791189] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 =
+48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 =
+<48> 3d 01 f0 ff ff 0f 83 3b 84 00 00 c3 66 2e 0f 1f 84 00 00 00 00
+>> [  890.810866] RSP: 002b:00007ffcda44fb18 EFLAGS: 00000246 ORIG_RAX: 000=
+0000000000013
+>> [  890.820764] RAX: ffffffffffffffda RBX: 0000000000000013 RCX: 00000000=
+00453b29
+>> [  890.830792] RDX: 000000000000009a RSI: 0000000001de1c00 RDI: 00000000=
+000000b9
+>> [  890.840626] RBP: 00007ffcda44fbc0 R08: 722c279d69ffc468 R09: 00000000=
+00000400
+>> [  890.850366] R10: 0098d82a42c63c22 R11: 0000000000000246 R12: 00000000=
+00000002
+>> [  890.860001] R13: 00007f042ae6f058 R14: 00000000010a2830 R15: 00007f04=
+2ae6f000
+>>
+>>
+>>
+>> To reproduce:
+>>
+>>         # build kernel
+>> 	cd linux
+>> 	cp config-5.11.0-rc4-00008-g79991caf5202 .config
+>> 	make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Dx86_64 olddefconfig prepare modul=
+es_prepare bzImage
+>>
+>>         git clone https://urldefense.com/v3/__https://github.com/intel/l=
+kp-tests.git__;!!GqivPVa7Brio!LfgrgVVtPAjwjqTZX8yANgsix4f3cJmAA_CcMeCVymh5X=
+YcamWdR9dnbIQA-Qkr9TyI$ =
 
-> cb9615f3ffb84616 54c06aefd2ea984866db5c24fdc
-> ---------------- ---------------------------
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev=C2=A0=C2=A0=C2=
-=A0=C2=A0 %change=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-\=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> =C2=A0=C2=A0=C2=A0=C2=A0 30450=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 -3.4%=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 29417=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 fsmark.files_per_sec
+>>         cd lkp-tests
+>>         bin/lkp qemu -k <bzImage> job-script # job-script is attached in=
+ this email
+>>
+>>
+>>
+>> Thanks,
+>> Oliver Sang
+>>
 
-So for my understanding: the 3.4% regression is from commit
-cb9615f3ffb846160084d36783c6820845a97ce3 to commit
-54c06aefd2ea984866db5c24fdc4d1be0a14f221 ?
-
-There is no comparison from v5.11-rc5 against the last head (or a commit
-in between)?
-
-I would have expected a regression in cb9615f3ffb84616 since it changes
-the behaviour in your case (NUMA + single queue device). The second
-patch (54c06aefd2e) is just an optimisation of the former.
-
-Disabling remote queue completion (by setting
-/sys/devices/*/block/*/queue/rq_affinity from 1 to 0) should mostly
-accomplish what the first patch does here in your case or by using the
-patch below.
-
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index f21d922ecfaf0..13338870d7846 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -647,6 +647,8 @@ static inline bool blk_mq_complete_need_ipi(struct requ=
-est *rq)
- {
- 	int cpu =3D raw_smp_processor_id();
- =
-
-+	return false;
-+
- 	if (!IS_ENABLED(CONFIG_SMP) ||
-  		!test_bit(QUEUE_FLAG_SAME_COMP, &rq->q->queue_flags))
-  			return false;
-
-
-Sebastian
---===============2512000767307570019==--
+--===============2376496582104690992==--
 
