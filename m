@@ -1,37 +1,63 @@
-Content-Type: multipart/mixed; boundary="===============1464174083415651324=="
+Content-Type: multipart/mixed; boundary="===============6698935695468993968=="
 MIME-Version: 1.0
-From: John Ogness <john.ogness@linutronix.de>
+From: Michael S. Tsirkin <mst@redhat.com>
 To: lkp@lists.01.org
-Subject: fix verification
-Date: Mon, 08 Feb 2021 10:35:27 +0106
-Message-ID: <87czxaoqko.fsf@jogness.linutronix.de>
+Subject: Re: [vdpa_sim_net] 79991caf52: net/ipv4/ipmr.c:#RCU-list_traversed_in_non-reader_section
+Date: Mon, 08 Feb 2021 04:57:20 -0500
+Message-ID: <20210208045641-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20210207030330.GB17282@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1464174083415651324==
+--===============6698935695468993968==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hello LKP Project,
+On Sun, Feb 07, 2021 at 11:03:30AM +0800, kernel test robot wrote:
+> =
 
-Thank you for your valuable and excellent work!
+> Greeting,
+> =
 
-You recently detected a problem:
+> FYI, we noticed the following commit (built with gcc-9):
+> =
 
-https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org/thread/STZF3OODVA5K=
-OG447JR2AJJXREWIPRXD/
+> commit: 79991caf5202c7989928be534727805f8f68bb8d ("vdpa_sim_net: Add supp=
+ort for user supported devices")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git Dongli-Zh=
+ang/vhost-scsi-alloc-vhost_scsi-with-kvzalloc-to-avoid-delay/20210129-191605
+> =
 
-We have posted a patch to fix the issue:
+> =
 
-https://lkml.kernel.org/r/20210205141728.18117-1-john.ogness(a)linutronix.de
+> in testcase: trinity
+> version: trinity-static-x86_64-x86_64-f93256fb_2019-08-28
+> with following parameters:
+> =
 
-Using a local lkp installation I can verify the problem is fixed. But we
-would like to know if there possibilities to verify fixes using the LKP
-test robot? Or is there any way to check that the test robot sees the
-problem is fixed?
+> 	runtime: 300s
+> =
 
-Thanks.
+> test-description: Trinity is a linux system call fuzz tester.
+> test-url: http://codemonkey.org.uk/projects/trinity/
+> =
 
-John Ogness
---===============1464174083415651324==--
+> =
+
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
+m 8G
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
+
+
+Parav want to take a look?
+
+-- =
+
+MST
+
+--===============6698935695468993968==--
 
