@@ -1,68 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============5535837801926989607=="
+Content-Type: multipart/mixed; boundary="===============2812389622769620974=="
 MIME-Version: 1.0
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: d28296d248: stress-ng.sigsegv.ops_per_sec -82.7% regression
-Date: Wed, 24 Feb 2021 12:50:21 -0600
-Message-ID: <m17dmxl2qa.fsf@fess.ebiederm.org>
+Date: Wed, 24 Feb 2021 11:10:43 -0800
+Message-ID: <CAHk-=wh3wVpx97e=n2D98W+PSDWUkQrX3O+c7n7MGRbn_k9JMg@mail.gmail.com>
 In-Reply-To: <20210224183828.j6uut6sholeo2fzh@example.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5535837801926989607==
+--===============2812389622769620974==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Alexey Gladkov <gladkov.alexey@gmail.com> writes:
-
-> On Wed, Feb 24, 2021 at 10:54:17AM -0600, Eric W. Biederman wrote:
->> kernel test robot <oliver.sang@intel.com> writes:
->> =
-
->> > Greeting,
->> >
->> > FYI, we noticed a -82.7% regression of stress-ng.sigsegv.ops_per_sec d=
-ue to commit:
->> >
->> >
->> > commit: d28296d2484fa11e94dff65e93eb25802a443d47 ("[PATCH v7 5/7] Reim=
-plement RLIMIT_SIGPENDING on top of ucounts")
->> > url: https://github.com/0day-ci/linux/commits/Alexey-Gladkov/Count-rli=
-mits-in-each-user-namespace/20210222-175836
->> > base: https://git.kernel.org/cgit/linux/kernel/git/shuah/linux-kselfte=
-st.git next
->> >
->> > in testcase: stress-ng
->> > on test machine: 48 threads Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz =
-with 112G memory
->> > with following parameters:
->> >
->> > 	nr_threads: 100%
->> > 	disk: 1HDD
->> > 	testtime: 60s
->> > 	class: interrupt
->> > 	test: sigsegv
->> > 	cpufreq_governor: performance
->> > 	ucode: 0x42e
->> >
->> >
->> > In addition to that, the commit also has significant impact on the
->> > following tests:
->> =
-
->> Thank you.  Now we have a sense of where we need to test the performance
->> of these changes carefully.
+On Wed, Feb 24, 2021 at 10:38 AM Alexey Gladkov
+<gladkov.alexey@gmail.com> wrote:
 >
 > One of the reasons for this is that I rolled back the patch that changed
 > the ucounts.count type to atomic_t. Now get_ucounts() is forced to use a
 > spin_lock to increase the reference count.
 
-Which given the hickups with getting a working version seems justified.
+Yeah, that definitely should be an atomic type, since the extended use
+of ucounts clearly puts way too much pressure on that ucount lock.
 
-Now we can add incremental patches on top to improve the performance.
+I remember complaining about one version of that patch, but my
+complaint wasabout it changing semantics of the saturation logic (and
+I think it was also wrong because it still kept the spinlock for
+get_ucounts(), so it didn't even take advantage of the atomic
+refcount).
 
+Side note: I don't think a refcount_t" is necessarily the right thing
+to do, since the ucount reference counter does its own saturation
+logic, and the refcount_t version is imho not great.
 
-Eric
+So it probably just needs to use an atomic_t, and do the saturation
+thing manually.
 
---===============5535837801926989607==--
+Side note: look at try_get_page(). That one actually does refcounting
+with overflow protection better than refcount_t, in my opinion. But I
+am obviously biased, since I wrote it ;)
+
+See commits
+
+    88b1a17dfc3e mm: add 'try_get_page()' helper function
+    f958d7b528b1 mm: make page ref count overflow check tighter and
+more explicit
+
+with that "page->_recount" being just a regular atomic_t.
+
+            Linus
+--===============2812389622769620974==--
 
