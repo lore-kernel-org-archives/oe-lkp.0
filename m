@@ -1,948 +1,1032 @@
-Content-Type: multipart/mixed; boundary="===============1441379174312111864=="
+Content-Type: multipart/mixed; boundary="===============3451344987829505223=="
 MIME-Version: 1.0
-From: Jin, Yao <yao.jin@linux.intel.com>
+From: Eric Dumazet <edumazet@google.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/i915/gt] 8c3b1ba0e7: perf-sanity-tests.Parse_event_definition_strings.fail
-Date: Thu, 25 Feb 2021 16:06:23 +0800
-Message-ID: <cabd8692-07ca-13c8-efb5-e088b4547f80@linux.intel.com>
-In-Reply-To: <20210224074841.GD6114@xsang-OptiPlex-9020>
+Subject: Re: [tcp] 9d9b1ee0b2: packetdrill.packetdrill/gtests/net/tcp/user_timeout/user-timeout-probe_ipv4-mapped-v6.fail
+Date: Thu, 25 Feb 2021 10:23:26 +0100
+Message-ID: <CANn89iJx5eFnTqgsa_cqan6xKesFfwaaWRbj=BJMvizvOsSR1w@mail.gmail.com>
+In-Reply-To: <20210225082118.GA22949@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1441379174312111864==
+--===============3451344987829505223==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Chris, Arnaldo, Jiri,
+On Thu, Feb 25, 2021 at 9:06 AM Oliver Sang <oliver.sang@intel.com> wrote:
+>
+> Hi, Neal,
+>
+> On Wed, Feb 24, 2021 at 10:13:02PM +0800, Oliver Sang wrote:
+> > Hi, Neal,
+> >
+> > On Fri, Feb 19, 2021 at 09:52:04AM -0500, Neal Cardwell wrote:
+> > > On Thu, Feb 18, 2021 at 8:33 PM kernel test robot <oliver.sang@inte=
+l.com> wrote:
+> > > >
+> > > >
+> > > > Greeting,
+> > > >
+> > > > FYI, we noticed the following commit (built with gcc-9):
+> > > >
+> > > > commit: 9d9b1ee0b2d1c9e02b2338c4a4b0a062d2d3edac ("tcp: fix TCP_USE=
+R_TIMEOUT with zero window")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git mas=
+ter
+> > >
+> > > I have pushed to the packetdrill repo a commit that should fix this t=
+est:
+> > >
+> > > 094da3bc77e5 (HEAD, packetdrill/master) net-test: update TCP tests for
+> > > USER_TIMEOUT ZWP fix
+> > > https://github.com/google/packetdrill/commit/094da3bc77e518d820ebc0ef=
+8b94a5b4cf707a39
+> > >
+> > > Can someone please pull that commit into the repo used by the test
+> > > bot, if needed? (Or does it automatically use the latest packetdrill
+> > > master branch?)
+> >
+> > We updated our tool to use this latest packetdrill. seems improved, but=
+ not totally fix.
+> >
+> > before upgrading, we have:
+> > b889c7c8c02ebb0b 9d9b1ee0b2d1c9e02b2338c4a4b
+> > ---------------- ---------------------------
+> >        fail:runs  %reproduction    fail:runs
+> >            |             |             |
+> >            :6          100%           6:6     packetdrill.packetdrill/g=
+tests/net/tcp/user_timeout/user-timeout-probe_ipv4-mapped-v6.fail
+> >            :6          100%           6:6     packetdrill.packetdrill/g=
+tests/net/tcp/user_timeout/user-timeout-probe_ipv4.fail
+> >
+> > after upgrading, we have:
+> > b889c7c8c02ebb0b 9d9b1ee0b2d1c9e02b2338c4a4b
+> > ---------------- ---------------------------
+> >        fail:runs  %reproduction    fail:runs
+> >            |             |             |
+> >            :6          100%           5:6     packetdrill.packetdrill/g=
+tests/net/tcp/user_timeout/user-timeout-probe_ipv4-mapped-v6.fail
+> >            :6          100%           3:6     packetdrill.packetdrill/g=
+tests/net/tcp/user_timeout/user-timeout-probe_ipv4.fail
+> >
+> >
+> > attached kmsg.xz and packetdrill from one run where both tests failed.
+>
+> here is an update. we did't re-test parent with latest packetdrill yester=
+day,
+> so above results about b889c7c8c02ebb0b are still from old version packet=
+drill.
+>
+> today, we did further tests based on latest packetdrill, and found the te=
+sts
+> always failed upon b889c7c8c02ebb0b. not sure if a kernel before your com=
+mit
+> (9d9b1ee0b2d1c9e02b2338c4a4b) is still valid to run latest packetdrill?)
 
-We observe the parsing error for "software/xxx/" on some platforms.
+Well, the packetdrill test was relying on old kernel behavior (not
+very precise USER_TIMEOUT implementation),
+and the test had comments explaining this (
+https://github.com/google/packetdrill/commit/094da3bc77e518d820ebc0ef8b94a5=
+b4cf707a39
 
-For example,
+So old packetdrill test only pass on old kernels.
 
-# perf stat -e software/r1a/ -a -- sleep 1
-event syntax error: 'software/r1a/'
-                      \___ parser error
-Run 'perf list' for a list of valid events
+Really the new packetdrill test is now checking the behavior of recent kern=
+els
+and making sure future kernels won't regress.
 
-  Usage: perf stat [<options>] [<command>]
 
-     -e, --event <event>   event selector. use 'perf list' to list availabl=
-e events
 
-And perf test is failed too.
-
-# perf test 6 -vv
+>
+> attached kmsg and test log from latest packetdrill upon parent commit FYI.
+>
+>
+> >
+> >
+> > >
+> > > thanks,
+> > > neal
+>
+>
+> > Running packetdrill/tests/bsd/fast_retransmit/fr-4pkt-sack-bsd.pkt ...
+> > 2021-02-24 08:46:09 packetdrill/packetdrill --tolerance_usecs=3D40000 p=
+acketdrill/tests/bsd/fast_retransmit/fr-4pkt-sack-bsd.pkt
+> > packetdrill/tests/bsd/fast_retransmit/fr-4pkt-sack-bsd.pkt:25: error ha=
+ndling packet: live packet payload: expected 1000 bytes vs actual 2000 bytes
+> > packetdrill/tests/bsd/fast_retransmit/fr-4pkt-sack-bsd.pkt failed
+> > Running packetdrill/tests/linux/fast_retransmit/fr-4pkt-sack-linux.pkt =
 ...
-running test 4 'software/r1a/'failed to parse event 'software/r1a/', err 1,=
- str 'parser error'
-event syntax error: 'software/r1a/'
-                      \___ parser error
-
-running test 4 'software/r0x1a/'failed to parse event 'software/r0x1a/', er=
-r 1, str 'parser error'
-event syntax error: 'software/r0x1a/'
-                      \___ parser error
-...
-
-The issue should be the conflict between event "i915/software-gt-awake-time=
-/" and pmu "software".
-
-# perf list | grep i915/software
-   i915/software-gt-awake-time/                       [Kernel PMU event]
-
-Perf supports the event format as "prefix-xxx-suffix", so the "software" st=
-ring in =
-
-"software-gt-awake-time" is added to perf_pmu_events_list as PMU_EVENT_SYMB=
-OL_PREFIX. When parsing =
-
-the string such as "software/xxx/", it=E2=80=99s parsed as PMU_EVENT_SYMBOL=
-_PREFIX for "software", then it =
-
-would error out in next processing.
-
-So the easy way is to rename "software-gt-awake-time" to "gt-awake-time", r=
-ight? Otherwise we have =
-
-to hardcode something in perf tool.
-
-What do you think of this issue and the solution?
-
-BTW, as the robot reported, it's related to the commit 8c3b1ba0e7ea ("drm/i=
-915/gt: Track the overall =
-
-awake/busy time").
-
-Thanks
-Jin Yao
-
-On 2/24/2021 3:48 PM, kernel test robot wrote:
-> =
-
-> Greeting,
-> =
-
-> FYI, we noticed the following commit (built with gcc-9):
-> =
-
-> commit: 8c3b1ba0e7ea9a80b0ee4b4445ea59c806787813 ("drm/i915/gt: Track the=
- overall awake/busy time")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> =
-
-> =
-
-> in testcase: perf-sanity-tests
-> version:
-> with following parameters:
-> =
-
-> 	perf_compiler: gcc
-> 	ucode: 0xe2
-> =
-
-> =
-
-> =
-
-> on test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz with 3=
-2G memory
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> =
-
-> =
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
-
-> please be noted this was reported on last December
-> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org/thread/ZPLGWG47V7=
-CIZIL3TEP3E7NBT6E5C3XA/
-> =
-
-> since already merged into mainline and the issue still exist on current m=
-aster HEAD,
-> report again.
-> =
-
-> =
-
-> 2020-12-24 12:50:16 make ARCH=3D EXTRA_CFLAGS=3D-fno-omit-frame-pointer -=
-fsanitize=3Dundefined -fsanitize=3Daddress -C /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-8c3b1ba0e7ea9a80b0ee4b4445ea59c806787813/tools/perf
-> make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba=
-0e7ea9a80b0ee4b4445ea59c806787813/tools/perf'
->    BUILD:   Doing 'make =1B[33m-j4=1B[m' parallel build
->    HOSTCC   fixdep.o
->    HOSTLD   fixdep-in.o
->    LINK     fixdep
-> diff -u tools/include/uapi/drm/i915_drm.h include/uapi/drm/i915_drm.h
-> diff -u tools/arch/x86/lib/memcpy_64.S arch/x86/lib/memcpy_64.S
-> diff -u tools/arch/x86/lib/memset_64.S arch/x86/lib/memset_64.S
-> =
-
-> Auto-detecting system features:
-> ...                         dwarf: [ =1B[32mon=1B[m  ]
-> ...            dwarf_getlocations: [ =1B[32mon=1B[m  ]
-> ...                         glibc: [ =1B[32mon=1B[m  ]
-> ...                        libbfd: [ =1B[32mon=1B[m  ]
-> ...                libbfd-buildid: [ =1B[32mon=1B[m  ]
-> ...                        libcap: [ =1B[32mon=1B[m  ]
-> ...                        libelf: [ =1B[32mon=1B[m  ]
-> ...                       libnuma: [ =1B[32mon=1B[m  ]
-> ...        numa_num_possible_cpus: [ =1B[32mon=1B[m  ]
-> ...                       libperl: [ =1B[32mon=1B[m  ]
-> ...                     libpython: [ =1B[32mon=1B[m  ]
-> ...                     libcrypto: [ =1B[32mon=1B[m  ]
-> ...                     libunwind: [ =1B[32mon=1B[m  ]
-> ...            libdw-dwarf-unwind: [ =1B[32mon=1B[m  ]
-> ...                          zlib: [ =1B[32mon=1B[m  ]
-> ...                          lzma: [ =1B[32mon=1B[m  ]
-> ...                     get_cpuid: [ =1B[32mon=1B[m  ]
-> ...                           bpf: [ =1B[32mon=1B[m  ]
-> ...                        libaio: [ =1B[32mon=1B[m  ]
-> ...                       libzstd: [ =1B[32mon=1B[m  ]
-> ...        disassembler-four-args: [ =1B[32mon=1B[m  ]
-> =
-
->    CC       fd/array.o
->    CC       exec-cmd.o
->    CC       event-parse.o
->    CC       core.o
->    LD       fd/libapi-in.o
->    CC       fs/fs.o
->    CC       cpumap.o
->    CC       help.o
->    CC       fs/tracing_path.o
->    CC       fs/cgroup.o
->    LD       fs/libapi-in.o
->    CC       cpu.o
->    CC       threadmap.o
->    CC       debug.o
->    CC       pager.o
->    CC       str_error_r.o
->    LD       libapi-in.o
->    AR       libapi.a
->    CC       parse-options.o
->    CC       event-plugin.o
->    CC       evsel.o
->    CC       trace-seq.o
->    CC       parse-filter.o
->    CC       evlist.o
->    CC       mmap.o
->    CC       parse-utils.o
->    CC       kbuffer-parse.o
->    CC       zalloc.o
->    CC       tep_strerror.o
->    CC       event-parse-api.o
->    CC       xyarray.o
->    LD       libtraceevent-in.o
->    LINK     libtraceevent.a
->    CC       lib.o
->    GEN      bpf_helper_defs.h
->    MKDIR    staticobjs/
->    CC       staticobjs/libbpf.o
->    LD       libperf-in.o
->    AR       libperf.a
->    GEN      common-cmds.h
->    CC       run-command.o
->    CC       sigchain.o
->    CC       subcmd-config.o
->    LD       libsubcmd-in.o
->    MKDIR    staticobjs/
->    AR       libsubcmd.a
->    CC       staticobjs/bpf.o
->    CC       staticobjs/nlattr.o
->    CC       staticobjs/btf.o
->    HOSTCC   pmu-events/json.o
->    HOSTCC   pmu-events/jsmn.o
->    HOSTCC   pmu-events/jevents.o
->    HOSTLD   pmu-events/jevents-in.o
->    CC       plugin_jbd2.o
->    LD       plugin_jbd2-in.o
->    CC       plugin_hrtimer.o
->    LD       plugin_hrtimer-in.o
->    CC       plugin_kmem.o
->    LD       plugin_kmem-in.o
->    CC       plugin_kvm.o
->    LD       plugin_kvm-in.o
->    CC       staticobjs/libbpf_errno.o
->    CC       plugin_mac80211.o
->    CC       staticobjs/str_error.o
->    CC       staticobjs/netlink.o
->    LD       plugin_mac80211-in.o
->    CC       plugin_sched_switch.o
->    LD       plugin_sched_switch-in.o
->    CC       plugin_function.o
->    CC       staticobjs/bpf_prog_linfo.o
->    LD       plugin_function-in.o
->    CC       plugin_futex.o
->    CC       staticobjs/libbpf_probes.o
->    LD       plugin_futex-in.o
->    CC       plugin_xen.o
->    CC       staticobjs/xsk.o
->    LD       plugin_xen-in.o
->    CC       plugin_scsi.o
->    CC       staticobjs/hashmap.o
->    LD       plugin_scsi-in.o
->    CC       plugin_tlb.o
->    CC       plugin_cfg80211.o
->    CC       jvmti/libjvmti.o
->    LD       plugin_cfg80211-in.o
->    GEN      perf-archive
->    LD       plugin_tlb-in.o
->    LINK     plugin_jbd2.so
->    GEN      perf-with-kcore
->    CC       jvmti/jvmti_agent.o
->    CC       staticobjs/btf_dump.o
->    LINK     plugin_hrtimer.so
->    LINK     plugin_kmem.so
->    LINK     plugin_kvm.so
->    LINK     plugin_mac80211.so
->    CC       staticobjs/ringbuf.o
->    LINK     plugin_sched_switch.so
->    LINK     plugin_function.so
->    LINK     plugin_futex.so
->    LINK     plugin_xen.so
->    LD       staticobjs/libbpf-in.o
->    LINK     libbpf.a
->    LINK     plugin_scsi.so
->    CC       jvmti/libstring.o
->    LINK     plugin_cfg80211.so
->    CC       builtin-bench.o
->    LINK     plugin_tlb.so
->    GEN      libtraceevent-dynamic-list
->    CC       jvmti/libctype.o
->    CC       builtin-annotate.o
->    CC       builtin-config.o
->    LD       jvmti/jvmti-in.o
->    CC       builtin-diff.o
->    LINK     pmu-events/jevents
->    CC       builtin-evlist.o
->    CC       builtin-ftrace.o
->    LINK     libperf-jvmti.so
->    CC       builtin-help.o
->    CC       builtin-sched.o
->    CC       builtin-buildid-list.o
->    CC       builtin-buildid-cache.o
->    CC       builtin-kallsyms.o
->    CC       builtin-list.o
->    CC       builtin-record.o
->    CC       builtin-report.o
->    CC       builtin-stat.o
->    CC       builtin-timechart.o
->    CC       builtin-top.o
->    CC       builtin-script.o
->    CC       builtin-kmem.o
->    CC       builtin-lock.o
->    CC       builtin-kvm.o
->    CC       builtin-inject.o
->    CC       builtin-mem.o
->    CC       builtin-data.o
->    CC       builtin-version.o
->    CC       builtin-c2c.o
->    CC       builtin-trace.o
->    CC       builtin-probe.o
->    CC       bench/sched-messaging.o
->    CC       bench/sched-pipe.o
->    CC       bench/syscall.o
->    CC       bench/mem-functions.o
->    CC       bench/futex-hash.o
->    CC       bench/futex-wake.o
->    CC       bench/futex-wake-parallel.o
->    CC       bench/futex-requeue.o
->    CC       bench/futex-lock-pi.o
->    CC       tests/builtin-test.o
->    CC       bench/epoll-wait.o
->    CC       bench/epoll-ctl.o
->    CC       tests/parse-events.o
->    CC       util/annotate.o
->    CC       bench/synthesize.o
->    CC       bench/kallsyms-parse.o
->    CC       bench/find-bit-bench.o
->    CC       bench/inject-buildid.o
->    CC       bench/mem-memcpy-x86-64-asm.o
->    CC       bench/mem-memset-x86-64-asm.o
->    CC       bench/numa.o
->    CC       tests/dso-data.o
->    CC       tests/attr.o
->    CC       tests/vmlinux-kallsyms.o
->    LD       bench/perf-in.o
->    CC       arch/common.o
->    CC       tests/openat-syscall.o
->    CC       arch/x86/util/header.o
->    CC       tests/openat-syscall-all-cpus.o
->    CC       arch/x86/util/tsc.o
->    CC       arch/x86/util/pmu.o
->    CC       tests/openat-syscall-tp-fields.o
->    CC       arch/x86/util/kvm-stat.o
->    CC       tests/mmap-basic.o
->    CC       arch/x86/util/perf_regs.o
->    CC       arch/x86/util/topdown.o
->    CC       tests/perf-record.o
->    CC       arch/x86/util/machine.o
->    CC       arch/x86/tests/regs_load.o
->    CC       arch/x86/tests/dwarf-unwind.o
->    CC       util/block-info.o
->    CC       arch/x86/tests/arch-tests.o
->    CC       arch/x86/util/event.o
->    CC       arch/x86/tests/rdpmc.o
->    CC       tests/evsel-roundtrip-name.o
->    CC       arch/x86/util/dwarf-regs.o
->    CC       arch/x86/util/unwind-libunwind.o
->    CC       arch/x86/tests/perf-time-to-tsc.o
->    CC       arch/x86/util/auxtrace.o
->    CC       tests/evsel-tp-sched.o
->    CC       arch/x86/util/archinsn.o
->    CC       tests/fdarray.o
->    CC       arch/x86/tests/insn-x86.o
->    CC       arch/x86/util/intel-pt.o
->    CC       arch/x86/tests/intel-pt-pkt-decoder-test.o
->    CC       tests/pmu.o
->    CC       arch/x86/tests/bp-modify.o
->    CC       util/block-range.o
->    CC       tests/pmu-events.o
->    LD       arch/x86/tests/perf-in.o
->    CC       tests/hists_common.o
->    CC       tests/hists_link.o
->    CC       util/build-id.o
->    CC       ui/setup.o
->    CC       tests/hists_filter.o
->    CC       arch/x86/util/intel-bts.o
->    CC       ui/helpline.o
->    CC       ui/progress.o
->    CC       ui/util.o
->    CC       ui/hist.o
->    CC       tests/hists_output.o
->    CC       util/cacheline.o
->    CC       util/config.o
->    LD       arch/x86/util/perf-in.o
->    LD       arch/x86/perf-in.o
->    LD       arch/perf-in.o
->    CC       tests/hists_cumulate.o
->    CC       util/copyfile.o
->    CC       util/ctype.o
->    CC       util/db-export.o
->    CC       tests/python-use.o
->    CC       tests/bp_signal.o
->    CC       tests/bp_signal_overflow.o
->    CC       tests/bp_account.o
->    CC       tests/wp.o
->    CC       tests/task-exit.o
->    CC       tests/sw-clock.o
->    CC       tests/mmap-thread-lookup.o
->    CC       util/env.o
->    CC       scripts/perl/Perf-Trace-Util/Context.o
->    CC       tests/thread-maps-share.o
->    CC       util/event.o
->    CC       tests/switch-tracking.o
->    LD       scripts/perl/Perf-Trace-Util/perf-in.o
->    CC       scripts/python/Perf-Trace-Util/Context.o
->    LD       scripts/python/Perf-Trace-Util/perf-in.o
->    LD       scripts/perf-in.o
->    CC       trace/beauty/clone.o
->    CC       tests/keep-tracking.o
->    CC       trace/beauty/fcntl.o
->    CC       tests/code-reading.o
->    CC       trace/beauty/flock.o
->    CC       util/evlist.o
->    CC       trace/beauty/fsmount.o
->    CC       trace/beauty/fspick.o
->    CC       trace/beauty/ioctl.o
->    CC       trace/beauty/kcmp.o
->    CC       trace/beauty/mount_flags.o
->    CC       trace/beauty/move_mount.o
->    CC       trace/beauty/pkey_alloc.o
->    CC       tests/sample-parsing.o
->    CC       trace/beauty/arch_prctl.o
->    CC       trace/beauty/prctl.o
->    CC       trace/beauty/renameat.o
->    CC       trace/beauty/sockaddr.o
->    CC       trace/beauty/socket.o
->    CC       trace/beauty/statx.o
->    CC       tests/parse-no-sample-id-all.o
->    CC       trace/beauty/sync_file_range.o
->    CC       tests/kmod-path.o
->    CC       trace/beauty/tracepoints/x86_irq_vectors.o
->    CC       trace/beauty/tracepoints/x86_msr.o
->    LD       trace/beauty/tracepoints/perf-in.o
->    LD       trace/beauty/perf-in.o
->    CC       perf.o
->    CC       tests/thread-map.o
->    CC       tests/llvm.o
->    CC       tests/bpf.o
->    CC       util/sideband_evlist.o
->    CC       util/evsel.o
->    CC       util/evsel_fprintf.o
->    CC       tests/topology.o
->    CC       tests/mem.o
->    CC       tests/cpumap.o
->    CC       tests/stat.o
->    CC       tests/event_update.o
->    CC       ui/stdio/hist.o
->    CC       util/perf_event_attr_fprintf.o
->    CC       tests/event-times.o
->    CC       tests/expr.o
->    CC       util/evswitch.o
->    CC       tests/backward-ring-buffer.o
->    CC       util/find_bit.o
->    CC       tests/sdt.o
->    CC       util/get_current_dir_name.o
->    CC       util/kallsyms.o
->    CC       tests/is_printable_array.o
->    CC       tests/bitmap.o
->    CC       util/levenshtein.o
->    CC       ui/browser.o
->    CC       tests/perf-hooks.o
->    CC       tests/clang.o
->    CC       util/llvm-utils.o
->    CC       tests/unit_number__scnprintf.o
->    CC       tests/mem2node.o
->    CC       tests/maps.o
->    CC       util/mmap.o
->    CC       tests/time-utils-test.o
->    CC       util/memswap.o
->    CC       ui/browsers/annotate.o
->    BISON    util/parse-events-bison.c
->    CC       util/perf_regs.o
->    CC       util/path.o
->    CC       tests/genelf.o
->    CC       ui/browsers/hists.o
->    CC       tests/api-io.o
->    CC       tests/demangle-java-test.o
->    CC       tests/pfm.o
->    CC       tests/parse-metric.o
->    CC       util/print_binary.o
->    CC       util/rlimit.o
->    CC       tests/pe-file-parsing.o
->    CC       util/argv_split.o
->    CC       tests/expand-cgroup.o
->    CC       ui/browsers/map.o
->    CC       util/rbtree.o
->    CC       ui/browsers/scripts.o
->    CC       tests/dwarf-unwind.o
->    CC       ui/browsers/header.o
->    CC       tests/llvm-src-base.o
->    CC       tests/llvm-src-kbuild.o
->    CC       tests/llvm-src-prologue.o
->    CC       tests/llvm-src-relocation.o
->    CC       ui/browsers/res_sample.o
->    LD       tests/perf-in.o
->    CC       util/libstring.o
->    CC       util/bitmap.o
->    CC       util/hweight.o
->    CC       util/smt.o
->    CC       ui/tui/setup.o
->    CC       util/strbuf.o
->    CC       util/string.o
->    CC       ui/tui/util.o
->    CC       util/strlist.o
->    CC       util/strfilter.o
->    CC       ui/tui/helpline.o
->    CC       util/top.o
->    CC       ui/tui/progress.o
->    LD       ui/tui/perf-in.o
->    CC       util/usage.o
->    CC       util/dso.o
->    CC       util/dsos.o
->    CC       util/symbol.o
->    CC       util/symbol_fprintf.o
->    CC       util/color.o
->    CC       util/color_config.o
->    CC       util/metricgroup.o
->    CC       util/header.o
->    CC       util/callchain.o
->    CC       util/values.o
->    CC       util/debug.o
->    CC       util/fncache.o
->    CC       util/machine.o
->    CC       util/map.o
->    CC       util/pstack.o
->    CC       util/session.o
->    CC       util/sample-raw.o
->    CC       util/s390-sample-raw.o
->    CC       util/syscalltbl.o
->    CC       util/ordered-events.o
->    CC       util/namespaces.o
->    LD       ui/browsers/perf-in.o
->    LD       ui/perf-in.o
->    CC       util/comm.o
->    CC       util/thread.o
->    CC       util/thread_map.o
->    CC       util/trace-event-parse.o
->    CC       util/parse-events-bison.o
->    BISON    util/pmu-bison.c
->    CC       util/trace-event-read.o
->    CC       util/trace-event-info.o
->    GEN      python/perf.so
->    CC       util/trace-event-scripting.o
->    CC       util/trace-event.o
->    CC       util/svghelper.o
->    CC       util/sort.o
->    CC       util/hist.o
->    CC       util/util.o
->    CC       util/cpumap.o
->    CC       util/affinity.o
->    CC       util/cputopo.o
->    CC       util/cgroup.o
->    CC       util/target.o
->    CC       util/rblist.o
->    CC       util/intlist.o
->    CC       util/vdso.o
->    CC       util/counts.o
->    CC       util/stat.o
->    CC       util/stat-shadow.o
->    CC       util/stat-display.o
->    CC       util/perf_api_probe.o
->    CC       util/record.o
->    CC       util/srcline.o
->    CC       util/srccode.o
->    CC       util/synthetic-events.o
->    CC       util/data.o
->    CC       util/tsc.o
->    CC       util/cloexec.o
->    CC       util/call-path.o
->    CC       util/rwsem.o
->    CC       util/thread-stack.o
->    CC       util/spark.o
->    CC       util/topdown.o
->    CC       util/stream.o
->    CC       util/auxtrace.o
->    CC       util/intel-pt-decoder/intel-pt-pkt-decoder.o
->    GEN      util/intel-pt-decoder/inat-tables.c
->    CC       util/intel-pt-decoder/intel-pt-log.o
->    CC       util/intel-pt-decoder/intel-pt-decoder.o
->    CC       util/arm-spe-decoder/arm-spe-pkt-decoder.o
->    CC       util/arm-spe-decoder/arm-spe-decoder.o
->    LD       util/arm-spe-decoder/perf-in.o
->    CC       util/scripting-engines/trace-event-perl.o
->    GEN      pmu-events/pmu-events.c
->    CC       pmu-events/pmu-events.o
->    CC       util/scripting-engines/trace-event-python.o
->    CC       util/intel-pt.o
->    LD       pmu-events/pmu-events-in.o
->    CC       util/intel-bts.o
->    CC       util/arm-spe.o
->    CC       util/intel-pt-decoder/intel-pt-insn-decoder.o
->    LD       util/scripting-engines/perf-in.o
->    CC       util/s390-cpumsf.o
->    CC       util/parse-branch-options.o
->    CC       util/dump-insn.o
->    CC       util/parse-regs-options.o
->    CC       util/parse-sublevel-options.o
->    CC       util/term.o
->    CC       util/help-unknown-cmd.o
->    CC       util/mem-events.o
->    CC       util/vsprintf.o
->    LD       util/intel-pt-decoder/perf-in.o
->    CC       util/units.o
->    CC       util/time-utils.o
->    BISON    util/expr-bison.c
->    CC       util/branch.o
->    CC       util/mem2node.o
->    CC       util/clockid.o
->    CC       util/bpf-loader.o
->    CC       util/bpf_map.o
->    CC       util/bpf-prologue.o
->    CC       util/symbol-elf.o
->    CC       util/probe-file.o
->    CC       util/probe-event.o
->    CC       util/probe-finder.o
->    CC       util/dwarf-aux.o
->    CC       util/dwarf-regs.o
->    CC       util/unwind-libunwind-local.o
->    CC       util/unwind-libunwind.o
->    CC       util/data-convert-bt.o
->    CC       util/zlib.o
->    CC       util/lzma.o
->    CC       util/zstd.o
->    CC       util/cap.o
->    CC       util/demangle-java.o
->    CC       util/demangle-rust.o
->    CC       util/jitdump.o
->    CC       util/genelf.o
->    CC       util/genelf_debug.o
->    CC       util/perf-hooks.o
->    CC       util/bpf-event.o
->    FLEX     util/parse-events-flex.c
->    FLEX     util/pmu-flex.c
->    CC       util/pmu-bison.o
->    FLEX     util/expr-flex.c
->    CC       util/expr-bison.o
->    CC       util/expr.o
->    CC       util/parse-events.o
->    CC       util/parse-events-flex.o
->    CC       util/pmu.o
->    CC       util/pmu-flex.o
->    CC       util/expr-flex.o
->    LD       util/perf-in.o
->    LD       perf-in.o
->    LINK     perf
-> make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf'
-> 2020-12-24 12:51:30 cd /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0e7=
-ea9a80b0ee4b4445ea59c806787813/tools/perf
-> 2020-12-24 12:51:30 mkdir -p /pkg
-> 2020-12-24 12:51:30 mkdir -p /kbuild/obj/consumer/x86_64-rhel-8.3
-> 2020-12-24 12:51:30 cp /pkg/linux/x86_64-rhel-8.3/gcc-9/8c3b1ba0e7ea9a80b=
-0ee4b4445ea59c806787813/vmlinux.xz /tmp
-> 2020-12-24 12:51:31 unxz -k /tmp/vmlinux.xz
-> 2020-12-24 12:51:35 cp /tmp/vmlinux /kbuild/obj/consumer/x86_64-rhel-8.3
-> ignored_by_lkp: BPF filter
-> ignored_by_lkp: LLVM search and compile
-> ignored_by_lkp: Add vfs_getname probe to get syscall args filenames
-> ignored_by_lkp: Use vfs_getname probe to get syscall args filenames
-> ignored_by_lkp: Check open filename arg using perf trace + vfs_getname
-> ignored_by_lkp: builtin clang support
-> 2020-12-24 12:51:35 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 1
->   1: vmlinux symtab matches kallsyms                                 : Ok
-> 2020-12-24 12:51:36 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 2
->   2: Detect openat syscall event                                     : Ok
-> 2020-12-24 12:51:36 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 3
->   3: Detect openat syscall event on all cpus                         : Ok
-> 2020-12-24 12:51:36 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 4
->   4: Read samples using the mmap interface                           : FA=
-ILED!
-> 2020-12-24 12:51:36 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 5
->   5: Test data source output                                         : Ok
-> 2020-12-24 12:51:36 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 6
->   6: Parse event definition strings                                  : FA=
-ILED!
-> 2020-12-24 12:51:37 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 7
->   7: Simple expression parser                                        : Ok
-> 2020-12-24 12:51:38 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 8
->   8: PERF_RECORD_* events & perf_sample fields                       : Ok
-> 2020-12-24 12:51:40 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 9
->   9: Parse perf pmu format                                           : Ok
-> 2020-12-24 12:51:40 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 10
-> 10: PMU events                                                      :
-> 10.1: PMU event table sanity                                        : Ok
-> 10.2: PMU event map aliases                                         : Ok
-> 10.3: Parsing of PMU event table metrics                            : Ski=
-p (some metrics failed)
-> 10.4: Parsing of PMU event table metrics with fake PMUs             : Ok
-> 2020-12-24 12:51:42 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 11
-> 11: DSO data read                                                   : Ok
-> 2020-12-24 12:51:42 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 12
-> 12: DSO data cache                                                  : Ok
-> 2020-12-24 12:51:42 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 13
-> 13: DSO data reopen                                                 : Ok
-> 2020-12-24 12:51:42 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 14
-> 14: Roundtrip evsel->name                                           : Ok
-> 2020-12-24 12:51:42 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 15
-> 15: Parse sched tracepoints fields                                  : Ok
-> 2020-12-24 12:51:42 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 16
-> 16: syscalls:sys_enter_openat event fields                          : Ok
-> 2020-12-24 12:51:42 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 17
-> 17: Setup struct perf_event_attr                                    : Ok
-> 2020-12-24 12:51:56 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 18
-> 18: Match and link multiple hists                                   : Ok
-> 2020-12-24 12:51:56 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 19
-> 19: 'import perf' in python                                         : FAI=
-LED!
-> 2020-12-24 12:51:56 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 20
-> 20: Breakpoint overflow signal handler                              : Ok
-> 2020-12-24 12:51:56 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 21
-> 21: Breakpoint overflow sampling                                    : Ok
-> 2020-12-24 12:51:57 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 22
-> 22: Breakpoint accounting                                           : Ok
-> 2020-12-24 12:51:57 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 23
-> 23: Watchpoint                                                      :
-> 23.1: Read Only Watchpoint                                          : Skip
-> 23.2: Write Only Watchpoint                                         : Ok
-> 23.3: Read / Write Watchpoint                                       : Ok
-> 23.4: Modify Watchpoint                                             : Ok
-> 2020-12-24 12:51:57 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 24
-> 24: Number of exit events of a simple workload                      : FAI=
-LED!
-> 2020-12-24 12:51:57 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 25
-> 25: Software clock events period values                             : FAI=
-LED!
-> 2020-12-24 12:51:57 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 26
-> 26: Object code reading                                             : FAI=
-LED!
-> 2020-12-24 12:52:00 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 27
-> 27: Sample parsing                                                  : Ok
-> 2020-12-24 12:52:00 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 28
-> 28: Use a dummy software event to keep tracking                     : FAI=
-LED!
-> 2020-12-24 12:52:00 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 29
-> 29: Parse with no sample_id_all bit set                             : Ok
-> 2020-12-24 12:52:00 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 30
-> 30: Filter hist entries                                             : Ok
-> 2020-12-24 12:52:00 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 31
-> 31: Lookup mmap thread                                              : FAI=
-LED!
-> 2020-12-24 12:52:01 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 32
-> 32: Share thread maps                                               : Ok
-> 2020-12-24 12:52:01 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 33
-> 33: Sort output of hist entries                                     : Ok
-> 2020-12-24 12:52:01 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 34
-> 34: Cumulate child hist entries                                     : Ok
-> 2020-12-24 12:52:01 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 35
-> 35: Track with sched_switch                                         : FAI=
-LED!
-> 2020-12-24 12:52:01 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 36
-> 36: Filter fds with revents mask in a fdarray                       : Ok
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 37
-> 37: Add fd to a fdarray, making it autogrow                         : Ok
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 38
-> 38: kmod_path__parse                                                : Ok
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 39
-> 39: Thread map                                                      : Ok
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 41
-> 41: Session topology                                                : FAI=
-LED!
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 43
-> 43: Synthesize thread map                                           : FAI=
-LED!
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 44
-> 44: Remove thread map                                               : FAI=
-LED!
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 45
-> 45: Synthesize cpu map                                              : Ok
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 46
-> 46: Synthesize stat config                                          : Ok
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 47
-> 47: Synthesize stat                                                 : Ok
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 48
-> 48: Synthesize stat round                                           : Ok
-> 2020-12-24 12:52:02 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 49
-> 49: Synthesize attr update                                          : FAI=
-LED!
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 50
-> 50: Event times                                                     : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 51
-> 51: Read backward ring buffer                                       : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 52
-> 52: Print cpu map                                                   : FAI=
-LED!
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 53
-> 53: Merge cpu map                                                   : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 54
-> 54: Probe SDT events                                                : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 55
-> 55: is_printable_array                                              : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 56
-> 56: Print bitmap                                                    : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 57
-> 57: perf hooks                                                      : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 59
-> 59: unit_number__scnprintf                                          : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 60
-> 60: mem2node                                                        : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 61
-> 61: time utils                                                      : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 62
-> 62: Test jit_write_elf                                              : Ok
-> 2020-12-24 12:52:03 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 63
-> 63: Test libpfm4 support                                            : Ski=
-p (not compiled in)
-> 2020-12-24 12:52:04 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 64
-> 64: Test api io                                                     : Ok
-> 2020-12-24 12:52:04 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 65
-> 65: maps__merge_in                                                  : FAI=
-LED!
-> 2020-12-24 12:52:04 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 66
-> 66: Demangle Java                                                   : Ok
-> 2020-12-24 12:52:04 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 67
-> 67: Parse and process metrics                                       : Ok
-> 2020-12-24 12:52:04 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 68
-> 68: PE file support                                                 : FAI=
-LED!
-> 2020-12-24 12:52:04 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 69
-> 69: Event expansion for cgroups                                     : Ok
-> 2020-12-24 12:52:04 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 70
-> 70: x86 rdpmc                                                       : Ok
-> 2020-12-24 12:52:04 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 71
-> 71: Convert perf time to TSC                                        : FAI=
-LED!
-> 2020-12-24 12:52:04 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 72
-> 72: DWARF unwind                                                    : FAI=
-LED!
-> 2020-12-24 12:52:05 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 73
-> 73: x86 instruction decoder - new instructions                      : Ok
-> 2020-12-24 12:52:05 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 74
-> 74: Intel PT packet decoder                                         : Ok
-> 2020-12-24 12:52:05 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 75
-> 75: x86 bp modify                                                   : Ok
-> 2020-12-24 12:52:05 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 76
-> 76: probe libc's inet_pton & backtrace it with ping                 : Ok
-> 2020-12-24 12:52:07 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 77
-> 77: Check Arm CoreSight trace data recording and synthesized samples: Skip
-> 2020-12-24 12:52:07 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 78
-> 78: build id cache operations                                       : FAI=
-LED!
-> 2020-12-24 12:52:08 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-8c3b1ba0=
-e7ea9a80b0ee4b4445ea59c806787813/tools/perf/perf test 81
-> 81: Zstd perf.data compression/decompression                        : FAI=
-LED!
-> =
-
-> =
-
-> =
-
-> To reproduce:
-> =
-
->          git clone https://github.com/intel/lkp-tests.git
->          cd lkp-tests
->          bin/lkp install                job.yaml  # job file is attached =
-in this email
->          bin/lkp split-job --compatible job.yaml
->          bin/lkp run                    compatible-job.yaml
-> =
-
-> =
-
-> =
-
-> Thanks,
-> Oliver Sang
->=20
---===============1441379174312111864==--
+> > 2021-02-24 08:46:10 packetdrill/packetdrill --tolerance_usecs=3D40000 p=
+acketdrill/tests/linux/fast_retransmit/fr-4pkt-sack-linux.pkt
+> > packetdrill/tests/linux/fast_retransmit/fr-4pkt-sack-linux.pkt pass
+> > Running packetdrill/tests/linux/packetdrill/socket_err.pkt ...
+> > 2021-02-24 08:46:10 packetdrill/packetdrill --tolerance_usecs=3D40000 p=
+acketdrill/tests/linux/packetdrill/socket_err.pkt
+> > packetdrill/tests/linux/packetdrill/socket_err.pkt:6: runtime error in =
+socket call: Expected non-negative result but got -1 with errno 93 (Protoco=
+l not supported)
+> > packetdrill/tests/linux/packetdrill/socket_err.pkt failed
+> > Running packetdrill/tests/linux/packetdrill/socket_wrong_err.pkt ...
+> > 2021-02-24 08:46:10 packetdrill/packetdrill --tolerance_usecs=3D40000 p=
+acketdrill/tests/linux/packetdrill/socket_wrong_err.pkt
+> > packetdrill/tests/linux/packetdrill/socket_wrong_err.pkt:4: runtime err=
+or in socket call: Expected result -99 but got -1 with errno 93 (Protocol n=
+ot supported)
+> > packetdrill/tests/linux/packetdrill/socket_wrong_err.pkt failed
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-acce=
+pt.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-acce=
+pt.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-conn=
+ect.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-read=
+.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-read=
+.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-writ=
+e.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/close/close-local-clos=
+e-then-remote-fin.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/close/close-local-clos=
+e-then-remote-fin.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/close/close-on-syn-sen=
+t.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/close/close-remote-fin=
+-then-close.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/close/close-remote-fin=
+-then-close.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/cwnd_moderation/cwnd-m=
+oderation-disorder-no-moderation.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/cwnd_moderation/cwnd-m=
+oderation-ecn-enter-cwr-no-moderation-700.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/cwnd_moderation/cwnd-m=
+oderation-ecn-enter-cwr-no-moderation-700.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ecn/ecn-uses-ect0.pkt =
+(ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-large.=
+pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-large.=
+pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-retran=
+s.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-small.=
+pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-small.=
+pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-subseq=
+uent.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_in_edge.pk=
+t (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_in_edge.pk=
+t (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_out_edge.p=
+kt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_out_edge_d=
+efault_notsent_lowat.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_out_edge_d=
+efault_notsent_lowat.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_out_edge_n=
+otsent_lowat.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/fastopen/server/client=
+-ack-dropped-then-recovery-ms-timestamps.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/fastopen/server/client=
+-ack-dropped-then-recovery-ms-timestamps.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/gro/gro-mss-option.pkt=
+ (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/inq/client.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/inq/client.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/inq/server.pkt (ipv4-m=
+apped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ioctl/ioctl-siocinq-fi=
+n.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ioctl/ioctl-siocinq-fi=
+n.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/limited_transmit/limit=
+ed-transmit-no-sack.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/limited_transmit/limit=
+ed-transmit-sack.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/md5/md5-only-on-client=
+-ack.pkt (ipv4)]
+> > stdout:
+> > /proc/net/tcp:   1: 0200A8C0:1F90 00000000:0000 0A 00000000:00000000 00=
+:00000000 00000000     0        0 54376 2 00000000533bbe98 100 0 0 10 1
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mss/mss-setsockopt-tcp=
+_maxseg-client.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/nagle/https_client.pkt=
+ (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-route-refres=
+h-ip-tos.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-acce=
+pt.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-conn=
+ect.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-writ=
+e.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/close/close-local-clos=
+e-then-remote-fin.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/close/close-on-syn-sen=
+t.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/cwnd_moderation/cwnd-m=
+oderation-disorder-no-moderation.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/cwnd_moderation/cwnd-m=
+oderation-ecn-enter-cwr-no-moderation-700.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ecn/ecn-uses-ect0.pkt =
+(ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-retran=
+s.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-small.=
+pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-subseq=
+uent.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_out_edge.p=
+kt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_out_edge_d=
+efault_notsent_lowat.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_out_edge_n=
+otsent_lowat.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/gro/gro-mss-option.pkt=
+ (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/inq/client.pkt (ipv4-m=
+apped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/inq/server.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/limited_transmit/limit=
+ed-transmit-no-sack.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/limited_transmit/limit=
+ed-transmit-sack.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/md5/md5-only-on-client=
+-ack.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > /proc/net/tcp6:   1: 0000000000000000FFFF00000200A8C0:1F90 000000000000=
+00000000000000000000:0000 0A 00000000:00000000 00:00000000 00000000     0  =
+      0 57703 2 00000000b5e42e7e 100 0 0 10 1
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mss/mss-getsockopt-tcp=
+_maxseg-server.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mss/mss-getsockopt-tcp=
+_maxseg-server.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mss/mss-setsockopt-tcp=
+_maxseg-client.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mss/mss-setsockopt-tcp=
+_maxseg-server.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/nagle/https_client.pkt=
+ (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/nagle/sockopt_cork_nod=
+elay.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/notsent_lowat/notsent-=
+lowat-default.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/notsent_lowat/notsent-=
+lowat-setsockopt.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/notsent_lowat/notsent-=
+lowat-sysctl.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-shift-sacked=
+-2-6-8-3-9-nofack.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-shift-sacked=
+-7-3-4-8-9-fack.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-shift-sacked=
+-7-5-6-8-9-fack.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sendfile/sendfile-simp=
+le.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rd-c=
+lose.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-conn=
+ect.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-writ=
+e.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/close/close-remote-fin=
+-then-close.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ecn/ecn-uses-ect0.pkt =
+(ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-retran=
+s.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_in_edge.pk=
+t (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_out_edge_n=
+otsent_lowat.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/gro/gro-mss-option.pkt=
+ (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ioctl/ioctl-siocinq-fi=
+n.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/limited_transmit/limit=
+ed-transmit-sack.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mss/mss-getsockopt-tcp=
+_maxseg-server.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mss/mss-setsockopt-tcp=
+_maxseg-server.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/nagle/https_client.pkt=
+ (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/nagle/sendmsg_msg_more=
+.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/nagle/sockopt_cork_nod=
+elay.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/notsent_lowat/notsent-=
+lowat-setsockopt.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/notsent_lowat/notsent-=
+lowat-sysctl.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-shift-sacked=
+-2-6-8-3-9-nofack.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-shift-sacked=
+-7-5-6-8-9-fack.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rd-w=
+r-close.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rdwr=
+-send-queue-ack-close.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/tcp_info/tcp-info-rwnd=
+-limited.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/tcp_info/tcp-info-sndb=
+uf-limited.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/blocking/blocking-read=
+.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/cwnd_moderation/cwnd-m=
+oderation-disorder-no-moderation.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-subseq=
+uent.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/fastopen/server/client=
+-ack-dropped-then-recovery-ms-timestamps.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/limited_transmit/limit=
+ed-transmit-no-sack.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mss/mss-setsockopt-tcp=
+_maxseg-client.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mtu_probe/basic-v4.pkt=
+ (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/nagle/sendmsg_msg_more=
+.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/nagle/sockopt_cork_nod=
+elay.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/notsent_lowat/notsent-=
+lowat-setsockopt.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-route-refres=
+h-ip-tos.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-shift-sacked=
+-2-6-8-3-9-nofack.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-shift-sacked=
+-7-5-6-8-9-fack.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rdwr=
+-close.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-wr-c=
+lose.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/syscall_bad_arg/syscal=
+l-invalid-buf-ptr.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ts_recent/invalid_ack.=
+pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/basic.pkt (ip=
+v4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/close/close-on-syn-sen=
+t.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/epoll/epoll_out_edge.p=
+kt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/md5/md5-only-on-client=
+-ack.pkt (ipv6)]
+> > stdout:
+> > /proc/net/tcp6:   1: 7BFA3DFD00007DD10000000000000000:1F90 000000000000=
+00000000000000000000:0000 0A 00000000:00000000 00:00000000 00000000     0  =
+      0 55408 2 00000000ce767bbd 100 0 0 10 1
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mtu_probe/basic-v4.pkt=
+ (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/nagle/sendmsg_msg_more=
+.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/notsent_lowat/notsent-=
+lowat-default.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-shift-sacked=
+-7-3-4-8-9-fack.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rd-w=
+r-close.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rdwr=
+-close.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rdwr=
+-send-queue-ack-close.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rdwr=
+-write-queue-close.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-wr-c=
+lose.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/syscall_bad_arg/fastop=
+en-invalid-buf-ptr.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/syscall_bad_arg/sendms=
+g-empty-iov.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/tcp_info/tcp-info-last=
+_data_recv.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/tcp_info/tcp-info-sndb=
+uf-limited.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/timestamping/client-on=
+ly-last-byte.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ts_recent/reset_tsval.=
+pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ts_recent/reset_tsval.=
+pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/batch.pkt (ip=
+v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/eor/no-coalesce-large.=
+pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mss/mss-setsockopt-tcp=
+_maxseg-server.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/notsent_lowat/notsent-=
+lowat-default.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-route-refres=
+h-ip-tos.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sendfile/sendfile-simp=
+le.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rd-c=
+lose.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rd-w=
+r-close.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rdwr=
+-send-queue-ack-close.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rdwr=
+-write-queue-close.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/splice/tcp_splice_loop=
+_test.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/syscall_bad_arg/fastop=
+en-invalid-buf-ptr.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/syscall_bad_arg/sendms=
+g-empty-iov.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/syscall_bad_arg/syscal=
+l-invalid-buf-ptr.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/tcp_info/tcp-info-last=
+_data_recv.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/tcp_info/tcp-info-rwnd=
+-limited.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/tcp_info/tcp-info-sndb=
+uf-limited.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/timestamping/client-on=
+ly-last-byte.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/timestamping/partial.p=
+kt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/timestamping/server.pk=
+t (ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/timestamping/server.pk=
+t (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ts_recent/fin_tsval.pk=
+t (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ts_recent/invalid_ack.=
+pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/user_timeout/user-time=
+out-probe.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/validate/validate-esta=
+blished-no-flags.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/validate/validate-esta=
+blished-no-flags.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/basic.pkt (ip=
+v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/batch.pkt (ip=
+v4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/client.pkt (i=
+pv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/closed.pkt (i=
+pv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/closed.pkt (i=
+pv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/epoll_edge.pk=
+t (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/epoll_exclusi=
+ve.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/epoll_exclusi=
+ve.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/epoll_oneshot=
+.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/fastopen-clie=
+nt.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/fastopen-clie=
+nt.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/fastopen-serv=
+er.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/maxfrags.pkt =
+(ipv6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/small.pkt (ip=
+v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/inq/server.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/notsent_lowat/notsent-=
+lowat-sysctl.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sendfile/sendfile-simp=
+le.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rdwr=
+-close.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-wr-c=
+lose.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/syscall_bad_arg/fastop=
+en-invalid-buf-ptr.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/syscall_bad_arg/syscal=
+l-invalid-buf-ptr.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/tcp_info/tcp-info-rwnd=
+-limited.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/timestamping/partial.p=
+kt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/timestamping/server.pk=
+t (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ts_recent/fin_tsval.pk=
+t (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ts_recent/reset_tsval.=
+pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/user_timeout/user_time=
+out.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/user_timeout/user_time=
+out.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/basic.pkt (ip=
+v4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/client.pkt (i=
+pv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/closed.pkt (i=
+pv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/epoll_edge.pk=
+t (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/epoll_oneshot=
+.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/fastopen-clie=
+nt.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/fastopen-serv=
+er.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/small.pkt (ip=
+v4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/mtu_probe/basic-v6.pkt=
+ (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rd-c=
+lose.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/splice/tcp_splice_loop=
+_test.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/syscall_bad_arg/sendms=
+g-empty-iov.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/timestamping/client-on=
+ly-last-byte.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ts_recent/fin_tsval.pk=
+t (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/validate/validate-esta=
+blished-no-flags.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/client.pkt (i=
+pv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/epoll_exclusi=
+ve.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/fastopen-serv=
+er.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/maxfrags.pkt =
+(ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/sack/sack-shift-sacked=
+-7-3-4-8-9-fack.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/tcp_info/tcp-info-last=
+_data_recv.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/ts_recent/invalid_ack.=
+pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/user_timeout/user-time=
+out-probe.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/batch.pkt (ip=
+v4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/epoll_oneshot=
+.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/small.pkt (ip=
+v4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/shutdown/shutdown-rdwr=
+-write-queue-close.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/timestamping/partial.p=
+kt (ipv6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/user_timeout/user_time=
+out.pkt (ipv4-mapped-v6)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/maxfrags.pkt =
+(ipv4)]
+> > stdout:
+> > stderr:
+> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/user_timeout/user-time=
+out-probe.pkt (ipv4)]
+> > stdout:
+> > stderr:
+> > OK   [/lkp/benchmarks/packetdrill/gtests/net/tcp/zerocopy/epoll_edge.pk=
+t (ipv4)]
+> > stdout:
+> > stderr:
+> > KILL [/lkp/benchmarks/packetdrill/gtests/net/tcp/splice/tcp_splice_loop=
+_test.pkt (ipv6)]
+> > stdout:
+> > stderr:
+> > Ran  222 tests:  194 passing,   27 failing,    1 timed out (180.71 sec)=
+: tcp
+>
+--===============3451344987829505223==--
 
