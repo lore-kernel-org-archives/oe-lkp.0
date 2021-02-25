@@ -1,188 +1,82 @@
-Content-Type: multipart/mixed; boundary="===============5274231928909203839=="
+Content-Type: multipart/mixed; boundary="===============1606845253689498867=="
 MIME-Version: 1.0
-From: Jiri Olsa <jolsa@redhat.com>
+From: Alexey Gladkov <gladkov.alexey@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [drm/i915/gt] 8c3b1ba0e7: perf-sanity-tests.Parse_event_definition_strings.fail
-Date: Thu, 25 Feb 2021 20:03:24 +0100
-Message-ID: <YDf0fP8XmnTrkIT8@krava>
-In-Reply-To: <YDfxgfi5DBDMFgwu@krava>
+Subject: Re: d28296d248: stress-ng.sigsegv.ops_per_sec -82.7% regression
+Date: Thu, 25 Feb 2021 21:36:57 +0100
+Message-ID: <20210225203657.mjhaqnj5vszna5xw@example.org>
+In-Reply-To: <m17dmxl2qa.fsf@fess.ebiederm.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5274231928909203839==
+--===============1606845253689498867==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 25, 2021 at 07:50:46PM +0100, Jiri Olsa wrote:
-> On Thu, Feb 25, 2021 at 07:16:44PM +0100, Jiri Olsa wrote:
-> > On Thu, Feb 25, 2021 at 02:33:57PM +0100, Jiri Olsa wrote:
-> > > On Thu, Feb 25, 2021 at 04:06:23PM +0800, Jin, Yao wrote:
-> > > > Hi Chris, Arnaldo, Jiri,
-> > > > =
-
-> > > > We observe the parsing error for "software/xxx/" on some platforms.
-> > > > =
-
-> > > > For example,
-> > > > =
-
-> > > > # perf stat -e software/r1a/ -a -- sleep 1
-> > > > event syntax error: 'software/r1a/'
-> > > >                      \___ parser error
-> > > > Run 'perf list' for a list of valid events
-> > > > =
-
-> > > >  Usage: perf stat [<options>] [<command>]
-> > > > =
-
-> > > >     -e, --event <event>   event selector. use 'perf list' to list a=
-vailable events
-> > > > =
-
-> > > > And perf test is failed too.
-> > > > =
-
-> > > > # perf test 6 -vv
-> > > > ...
-> > > > running test 4 'software/r1a/'failed to parse event 'software/r1a/'=
-, err 1, str 'parser error'
-> > > > event syntax error: 'software/r1a/'
-> > > >                      \___ parser error
-> > > > =
-
-> > > > running test 4 'software/r0x1a/'failed to parse event 'software/r0x=
-1a/', err 1, str 'parser error'
-> > > > event syntax error: 'software/r0x1a/'
-> > > >                      \___ parser error
-> > > > ...
-> > > > =
-
-> > > > The issue should be the conflict between event "i915/software-gt-aw=
-ake-time/" and pmu "software".
-> > > > =
-
-> > > > # perf list | grep i915/software
-> > > >   i915/software-gt-awake-time/                       [Kernel PMU ev=
-ent]
-> > > > =
-
-> > > > Perf supports the event format as "prefix-xxx-suffix", so the "soft=
-ware"
-> > > > string in "software-gt-awake-time" is added to perf_pmu_events_list=
- as
-> > > > PMU_EVENT_SYMBOL_PREFIX. When parsing the string such as "software/=
-xxx/",
-> > > > it=E2=80=99s parsed as PMU_EVENT_SYMBOL_PREFIX for "software", then=
- it would error
-> > > > out in next processing.
-> > > > =
-
-> > > > So the easy way is to rename "software-gt-awake-time" to "gt-awake-=
-time",
-> > > > right? Otherwise we have to hardcode something in perf tool.
-> > > > =
-
-> > > > What do you think of this issue and the solution?
-> > > > =
-
-> > > > BTW, as the robot reported, it's related to the commit 8c3b1ba0e7ea
-> > > > ("drm/i915/gt: Track the overall awake/busy time").
-> > > =
-
-> > > yes, I think you're right.. I'll try to reproduce and check on this
-> > > =
-
-> > > I'm still not clear why is that parsing fail if those 2 events are
-> > > distinguished by - and / ... but yep, we are asking for trouble in
-> > > here ;-)
-> > > =
-
-> > > I think we could either prioritaze one or add extra check when we
-> > > add prefix-xxx-suffix events and do not add ones that have conflict..
-> > > that seems like best solution to me now
-> > =
-
-> > would patch below work for you?
-> > =
-
-> > jirka
+On Wed, Feb 24, 2021 at 12:50:21PM -0600, Eric W. Biederman wrote:
+> Alexey Gladkov <gladkov.alexey@gmail.com> writes:
 > =
 
-> and now with more fixes after I ran tests ;-)
+> > On Wed, Feb 24, 2021 at 10:54:17AM -0600, Eric W. Biederman wrote:
+> >> kernel test robot <oliver.sang@intel.com> writes:
+> >> =
+
+> >> > Greeting,
+> >> >
+> >> > FYI, we noticed a -82.7% regression of stress-ng.sigsegv.ops_per_sec=
+ due to commit:
+> >> >
+> >> >
+> >> > commit: d28296d2484fa11e94dff65e93eb25802a443d47 ("[PATCH v7 5/7] Re=
+implement RLIMIT_SIGPENDING on top of ucounts")
+> >> > url: https://github.com/0day-ci/linux/commits/Alexey-Gladkov/Count-r=
+limits-in-each-user-namespace/20210222-175836
+> >> > base: https://git.kernel.org/cgit/linux/kernel/git/shuah/linux-kself=
+test.git next
+> >> >
+> >> > in testcase: stress-ng
+> >> > on test machine: 48 threads Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GH=
+z with 112G memory
+> >> > with following parameters:
+> >> >
+> >> > 	nr_threads: 100%
+> >> > 	disk: 1HDD
+> >> > 	testtime: 60s
+> >> > 	class: interrupt
+> >> > 	test: sigsegv
+> >> > 	cpufreq_governor: performance
+> >> > 	ucode: 0x42e
+> >> >
+> >> >
+> >> > In addition to that, the commit also has significant impact on the
+> >> > following tests:
+> >> =
+
+> >> Thank you.  Now we have a sense of where we need to test the performan=
+ce
+> >> of these changes carefully.
+> >
+> > One of the reasons for this is that I rolled back the patch that changed
+> > the ucounts.count type to atomic_t. Now get_ucounts() is forced to use a
+> > spin_lock to increase the reference count.
 > =
 
-> we should perhaps add also same check for non '-' aliases, I'll check
+> Which given the hickups with getting a working version seems justified.
+> =
 
-and one more version ;-)
+> Now we can add incremental patches on top to improve the performance.
 
-jirka
+I'm not sure that get_ucounts() should be used in __sigqueue_alloc() [1].
+I tried removing it and running KASAN tests that were failing before. So
+far, I have not found any problems.
 
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/legion/linux.git/tree/k=
+ernel/signal.c?h=3Dpatchset/per-userspace-rlimit/v7.1&id=3D2d4a2e2be7db42c9=
+5acb98abfc2a9b370ddd0604#n428
 
----
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 42c84adeb2fb..d9e795056d15 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -2028,30 +2028,49 @@ static void perf_pmu__parse_init(void)
- 		perf_pmu_events_list_num =3D -1;
- 		return;
- 	}
--	perf_pmu_events_list =3D malloc(sizeof(struct perf_pmu_event_symbol) * le=
-n);
-+	perf_pmu_events_list =3D zalloc(sizeof(struct perf_pmu_event_symbol) * le=
-n);
- 	if (!perf_pmu_events_list)
- 		return;
--	perf_pmu_events_list_num =3D len;
- =
+-- =
 
- 	len =3D 0;
- 	pmu =3D NULL;
- 	while ((pmu =3D perf_pmu__scan(pmu)) !=3D NULL) {
- 		list_for_each_entry(alias, &pmu->aliases, list) {
- 			struct perf_pmu_event_symbol *p =3D perf_pmu_events_list + len;
--			char *tmp =3D strchr(alias->name, '-');
-+			char *prefix =3D strdup(alias->name);
-+			char *tmp =3D strchr(prefix, '-');
-+
-+			if (tmp !=3D NULL)
-+				*tmp =3D 0;
-+
-+			/*
-+			 * Skip any prefix that conflicts with pmu name,
-+			 * otherwise the event parser gets confused.
-+			 */
-+			if (perf_pmu__find(prefix)) {
-+				pr_debug2("perf_pmu__parse_init: skipping conflicting alias '%s'\n",
-+					  alias->name);
-+				free(prefix);
-+				continue;
-+			}
- =
+Rgrds, legion
 
- 			if (tmp !=3D NULL) {
--				SET_SYMBOL(strndup(alias->name, tmp - alias->name),
--						PMU_EVENT_SYMBOL_PREFIX);
-+				SET_SYMBOL(prefix, PMU_EVENT_SYMBOL_PREFIX);
- 				p++;
- 				SET_SYMBOL(strdup(++tmp), PMU_EVENT_SYMBOL_SUFFIX);
- 				len +=3D 2;
- 			} else {
--				SET_SYMBOL(strdup(alias->name), PMU_EVENT_SYMBOL);
-+				SET_SYMBOL(prefix, PMU_EVENT_SYMBOL);
- 				len++;
- 			}
- 		}
- 	}
-+
-+	/* unlikely, but still.. */
-+	if (!len)
-+		goto err;
-+	perf_pmu_events_list_num =3D len;
-+
- 	qsort(perf_pmu_events_list, len,
- 		sizeof(struct perf_pmu_event_symbol), comp_pmu);
-=20
-
---===============5274231928909203839==--
+--===============1606845253689498867==--
 
