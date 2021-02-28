@@ -1,71 +1,105 @@
-Content-Type: multipart/mixed; boundary="===============7695511981584525009=="
+Content-Type: multipart/mixed; boundary="===============1194310155438840931=="
 MIME-Version: 1.0
-From: Chaitanya Kulkarni <Chaitanya.Kulkarni@wdc.com>
+From: Jiri Olsa <jolsa@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [blktrace] c055908abe: WARNING:at_kernel/trace/trace.c:#create_trace_option_files
-Date: Sat, 27 Feb 2021 19:51:14 +0000
-Message-ID: <
- <BYAPR04MB49650C1C244E99AB1FFC590E869C9@BYAPR04MB4965.namprd04.prod.outlook.com>>
-In-Reply-To: <20210227094916.701a8a50@oasis.local.home>
+Subject: Re: [drm/i915/gt] 8c3b1ba0e7: perf-sanity-tests.Parse_event_definition_strings.fail
+Date: Sun, 28 Feb 2021 10:33:52 +0100
+Message-ID: <YDtjgCcP9mLBcu/y@krava>
+In-Reply-To: <YDodJb4CXDT8VemG@krava>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7695511981584525009==
+--===============1194310155438840931==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2/27/21 06:49, Steven Rostedt wrote:
-> On Sat, 27 Feb 2021 19:44:40 +0800
-> kernel test robot <oliver.sang@intel.com> wrote:
->
->> [   20.216017] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:8370 creat=
-e_trace_option_files (kbuild/src/consumer/kernel/trace/trace.c:8370 (discri=
-minator 1)) =
+On Sat, Feb 27, 2021 at 11:21:25AM +0100, Jiri Olsa wrote:
+> On Fri, Feb 26, 2021 at 08:41:26AM +0800, Jin, Yao wrote:
+> =
 
->> [   20.218480] Modules linked in:
->> [   20.219395] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.11.0-09341-gc=
-055908abe0d #1
->> [   20.221182] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BI=
-OS 1.12.0-1 04/01/2014
->> [   20.224540] EIP: create_trace_option_files (kbuild/src/consumer/kerne=
-l/trace/trace.c:8370 (discriminator 1)) =
+> SNIP
+> =
 
->> [ 20.225816] Code: d5 01 83 15 2c b7 08 d5 00 83 c0 01 39 c8 0f 84 c7 00=
- 00 00 8b 14 c7 39 72 44 75 df 83 05 10 b7 08 d5 01 83 15 14 b7 08 d5 00 <0=
-f> 0b 83 05 18 b7 08 d5 01 83 15 1c b7 08 d5 00 83 05 20 b7 08 d5
-> Looks to be from this:
->
->> +static struct tracer blk_tracer_ext __read_mostly =3D {
->> +	.name		=3D "blkext",
->> +	.init		=3D blk_tracer_init,
->> +	.reset		=3D blk_tracer_reset,
->> +	.start		=3D blk_tracer_start,
->> +	.stop		=3D blk_tracer_stop,
->> +	.print_header	=3D blk_tracer_print_header,
->> +	.print_line	=3D blk_tracer_print_line_ext,
->> +	.flags		=3D &blk_tracer_flags,
->                           ^^^
->
-> As blk_tracer already registers those flags, when it gets registered as
-> a tracer, and flag names can not be duplicated.
->
-> I could fix the infrastructure to detect the same set of flags being
-> registered by two different tracers, but in the mean time, it may still
-> work to use the blk_trace_flags from blk_tracer, and keep .flags NULL
-> here.
->
-> -- Steve
-Thanks for the reply Steve. This is still under currently discussion and
-I'm still
-waiting formore people to reply on this approach, if we end up having
-this as
-a part of final implementation we may need to fix that.
+> > > +				SET_SYMBOL(prefix, PMU_EVENT_SYMBOL);
+> > >   				len++;
+> > >   			}
+> > >   		}
+> > >   	}
+> > > +
+> > > +	/* unlikely, but still.. */
+> > > +	if (!len)
+> > > +		goto err;
+> > > +	perf_pmu_events_list_num =3D len;
+> > > +
+> > >   	qsort(perf_pmu_events_list, len,
+> > >   		sizeof(struct perf_pmu_event_symbol), comp_pmu);
+> > > =
 
->
->> +	.set_flag	=3D blk_tracer_set_flag,
->> +};
->> +
+> > =
+
+> > Thanks so much for the patch! It works with my tests.
+> > =
+
+> > # ./perf test 6
+> >  6: Parse event definition strings                                  : Ok
+> > =
+
+> > # ./perf stat -e software/r1a/ -a -- sleep 1
+> > =
+
+> >  Performance counter stats for 'system wide':
+> > =
+
+> >    <not supported>      software/r1a/
+> > =
+
+> >        1.000940433 seconds time elapsed
+> > =
+
+> > In theory, do we also need to check suffix as well? I think returning
+> > PMU_EVENT_SYMBOL_SUFFIX may also confuse the parser. But yes, we don't =
+have
+> > this case now.
+> =
+
+> yep, let's wait for use case ;-) you can't have suffix
+> without prefix, and that's the one failing, so I think
+> we are fine
+
+actualy this one seems to work as well, could you plz check
+
+thanks,
+jirka
 
 
---===============7695511981584525009==--
+---
+diff --git a/tools/perf/util/parse-events.y b/tools/perf/util/parse-events.y
+index d5b6aff82f21..d57ac86ce7ca 100644
+--- a/tools/perf/util/parse-events.y
++++ b/tools/perf/util/parse-events.y
+@@ -89,6 +89,7 @@ static void inc_group_count(struct list_head *list,
+ %type <str> PE_EVENT_NAME
+ %type <str> PE_PMU_EVENT_PRE PE_PMU_EVENT_SUF PE_KERNEL_PMU_EVENT PE_PMU_E=
+VENT_FAKE
+ %type <str> PE_DRV_CFG_TERM
++%type <str> event_pmu_name
+ %destructor { free ($$); } <str>
+ %type <term> event_term
+ %destructor { parse_events_term__delete ($$); } <term>
+@@ -272,8 +273,11 @@ event_def: event_pmu |
+ 	   event_legacy_raw sep_dc |
+ 	   event_bpf_file
+ =
+
++event_pmu_name:
++PE_NAME | PE_PMU_EVENT_PRE
++
+ event_pmu:
+-PE_NAME opt_pmu_config
++event_pmu_name opt_pmu_config
+ {
+ 	struct parse_events_state *parse_state =3D _parse_state;
+ 	struct parse_events_error *error =3D parse_state->error;
+
+--===============1194310155438840931==--
 
