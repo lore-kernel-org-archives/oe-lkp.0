@@ -1,54 +1,81 @@
-Content-Type: multipart/mixed; boundary="===============8131287158281002312=="
+Content-Type: multipart/mixed; boundary="===============4352974534994676981=="
 MIME-Version: 1.0
-From: Steven Rostedt <rostedt@goodmis.org>
+From: John Wood <john.wood@gmx.com>
 To: lkp@lists.01.org
-Subject: Re: [x86, build] 6dafca9780: WARNING:at_arch/x86/kernel/ftrace.c:#ftrace_verify_code
-Date: Tue, 02 Mar 2021 10:58:27 -0500
-Message-ID: <20210302105827.3403656c@gandalf.local.home>
-In-Reply-To: <YD4DM6uAETid7j4l@hirez.programming.kicks-ass.net>
+Subject: Re: [security/brute] cfe92ab6a3: WARNING:inconsistent_lock_state
+Date: Tue, 02 Mar 2021 19:39:20 +0100
+Message-ID: <20210302183920.GB3049@ubuntu>
+In-Reply-To: <20210302054941.GA23892@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8131287158281002312==
+--===============4352974534994676981==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2 Mar 2021 10:19:47 +0100
-Peter Zijlstra <peterz@infradead.org> wrote:
+On Tue, Mar 02, 2021 at 01:49:41PM +0800, kernel test robot wrote:
+>
+>
+> Greeting,
+>
+> FYI, we noticed the following commit (built with gcc-9):
+>
+> commit: cfe92ab6a3ea700c08ba673b46822d51f38d6b40 ("[PATCH v5 2/8] securit=
+y/brute: Define a LSM and manage statistical data")
+> url: https://github.com/0day-ci/linux/commits/John-Wood/Fork-brute-force-=
+attack-mitigation/20210228-022911
+> base: https://git.kernel.org/cgit/linux/kernel/git/shuah/linux-kselftest.=
+git next
+>
+> in testcase: trinity
+> version: trinity-static-i386-x86_64-f93256fb_2019-08-28
+> with following parameters:
+>
+> 	group: ["group-00", "group-01", "group-02", "group-03", "group-04"]
+>
+> test-description: Trinity is a linux system call fuzz tester.
+> test-url: http://codemonkey.org.uk/projects/trinity/
+>
+>
+> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m =
+8G
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+> +------------------------------------------------------------------------=
+-+------------+------------+
+> |                                                                        =
+ | 1d53b7aac6 | cfe92ab6a3 |
+> +------------------------------------------------------------------------=
+-+------------+------------+
+> | WARNING:inconsistent_lock_state                                        =
+ | 0          | 6          |
+> | inconsistent{IN-SOFTIRQ-W}->{SOFTIRQ-ON-W}usage                        =
+ | 0          | 6          |
+> +------------------------------------------------------------------------=
+-+------------+------------+
+>
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+>
+>
+> [  116.852721] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [  116.853120] WARNING: inconsistent lock state
+> [  116.853120] 5.11.0-rc7-00013-gcfe92ab6a3ea #1 Tainted: G S
+> [  116.853120] --------------------------------
+>
+> [...]
 
-> On Mon, Mar 01, 2021 at 08:15:26PM -0500, Steven Rostedt wrote:
-> > diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
-> > index 7edbd5ee5ed4..e8afc765e00a 100644
-> > --- a/arch/x86/kernel/ftrace.c
-> > +++ b/arch/x86/kernel/ftrace.c
-> > @@ -36,6 +36,7 @@
-> >  #ifdef CONFIG_DYNAMIC_FTRACE
-> >  =
+Thanks for the report. I will work on this for the next version.
 
-> >  static int ftrace_poke_late =3D 0;
-> > +static const char p6_nop[] =3D { P6_NOP5 };  =
+> Thanks,
+> Oliver Sang
 
-> =
-
-> I don't understand this approach, why not simply rewrite all the nops at
-> boot and not worry about it when modifying the code later?
-
-That was one of the suggestions I made in the first reply. But it's more
-complex than that. Because the CC_USING_NOP_MCOUNT was added for other
-architectures (currently only s390 and parisc uses it), it simply skips the
-process of initializing the mcount/fentry into nops if the compiler had
-already done it.
-
-But because x86 is the only architecture daft enough to have different nops
-with different "performance" depending on what hardware it's booted on, it's
-a bit "special".
-
-If we have to convert nops at boot up in case the compiler gets it wrong,
-than why bother having the compiler try in the first place?
-
-In other words, the only changes I see is the one I just made, or we rip
-out CC_USING_NOP_MCOUNT for x86 completely.
-
--- Steve
---===============8131287158281002312==--
+Thanks,
+John Wood
+--===============4352974534994676981==--
 
