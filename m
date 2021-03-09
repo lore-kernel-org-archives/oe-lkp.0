@@ -1,29 +1,34 @@
-Content-Type: multipart/mixed; boundary="===============1891718844440790183=="
+Content-Type: multipart/mixed; boundary="===============3508027754701369072=="
 MIME-Version: 1.0
-From: hch@lst.de
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [block] 52f019d43c: ndctl.test-libndctl.fail
-Date: Mon, 08 Mar 2021 08:09:15 +0100
-Message-ID: <20210308070915.GA32695@lst.de>
-In-Reply-To: <6f40b1f53c029788e20fe175618d8772e36d648c.camel@intel.com>
+Subject: Re: [sched] ef72661e28: WARNING:at_arch/x86/kernel/static_call.c:#__static_call_validate
+Date: Tue, 09 Mar 2021 14:58:39 +0100
+Message-ID: <YEd/D0CRDIQ/eb9F@hirez.programming.kicks-ass.net>
+In-Reply-To: <20210309133746.GA17567@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1891718844440790183==
+--===============3508027754701369072==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Mar 06, 2021 at 08:33:04PM +0000, Williams, Dan J wrote:
-> Yes, it looks like my unit test checks for exactly the behavior you
-> changed. It was convenient to test that the device could be switched
-> back to rw via BLKROSET, but I don't require that. The new behaviour of
-> letting the disk->ro take precedence makes more sense to me, so I'll
-> update the test for the new behaviour.
+On Tue, Mar 09, 2021 at 09:37:47PM +0800, kernel test robot wrote:
 > =
 
-> I.e. I don't think regressing a unit test counts as a userspace
-> regression.
+> Greeting,
+> =
 
-Ok, thanks for the confirmation.
---===============1891718844440790183==--
+> FYI, we noticed the following commit (built with gcc-9):
+> =
+
+> commit: ef72661e28c64ad610f89acc2832ec67b27ba438 ("sched: Harden PREEMPT_=
+DYNAMIC")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+Should be fixed by:
+
+https://lkml.kernel.org/r/161459376868.20312.9858096297457613530.tip-bot2(a=
+)tip-bot2
+--===============3508027754701369072==--
 
