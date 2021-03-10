@@ -1,64 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============7987296122471771574=="
+Content-Type: multipart/mixed; boundary="===============3918902624584909227=="
 MIME-Version: 1.0
-From: Yu, Gareth <gareth.yu@intel.com>
+From: Christoph Lameter <cl@gentwo.de>
 To: lkp@lists.01.org
-Subject: LKP setup
-Date: Wed, 10 Mar 2021 02:49:30 +0000
-Message-ID: <PH0PR11MB512876D32603249438AC5D84E0919@PH0PR11MB5128.namprd11.prod.outlook.com>
+Subject: Re: [mm, slub] 8ff60eb052: stress-ng.rawpkt.ops_per_sec -47.9% regression
+Date: Wed, 10 Mar 2021 07:59:51 +0100
+Message-ID: <alpine.DEB.2.22.394.2103100757530.128125@gentwo.de>
+In-Reply-To: <CAHk-=wh+RFzJqa51aO2zgGFhgV7=WjTs82B2wFfCMEHPs4B49g@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7987296122471771574==
+--===============3918902624584909227==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hello,
+On Tue, 9 Mar 2021, Linus Torvalds wrote:
 
-  I am working for CCG CCE Chrome team. Wanna to setup a LKP like system fo=
-r ChomeOS. Can someone provide how to do?
+> So when you wrote:
+>
+>     However, the current code accidentally stops looking at the partial l=
+ist
+>     completely in that case.  Especially on kernels without CONFIG_NUMA s=
+et,
+>     this means that get_partial() fails and new_slab_objects() falls back=
+ to
+>     new_slab(), allocating new pages.  This could lead to an unnecessary
+>     increase in memory fragmentation.
+>
+> it really looks like this might well have been very intentional
+> indeed. Or at least very beneficial for _some_ loads.
+>
+> Comments?
 
-Thanks,
-Gareth
+Yes the thought was that adding an additional page when contention is
+there on the page objects will increase possible concurrency while
+avoiding locks and increase the ability to allocate / free concurrently
+from a multitude of objects.
 
---===============7987296122471771574==
-Content-Type: text/html
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.htm"
-
-PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
-bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
-YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
-cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
-VFIvUkVDLWh0bWw0MCI+CjxoZWFkPgo8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVR5cGUiIGNv
-bnRlbnQ9InRleHQvaHRtbDsgY2hhcnNldD11cy1hc2NpaSI+CjxtZXRhIG5hbWU9IkdlbmVyYXRv
-ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPgo8c3R5bGU+
-PCEtLQovKiBGb250IERlZmluaXRpb25zICovCkBmb250LWZhY2UKCXtmb250LWZhbWlseTpQTWlu
-Z0xpVTsKCXBhbm9zZS0xOjIgMSA2IDEgMCAxIDEgMSAxIDE7fQpAZm9udC1mYWNlCgl7Zm9udC1m
-YW1pbHk6IkNhbWJyaWEgTWF0aCI7CglwYW5vc2UtMToyIDQgNSAzIDUgNCA2IDMgMiA0O30KQGZv
-bnQtZmFjZQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7CglwYW5vc2UtMToyIDE1IDUgMiAyIDIgNCAz
-IDIgNDt9CkBmb250LWZhY2UKCXtmb250LWZhbWlseToiXEBQTWluZ0xpVSI7CglwYW5vc2UtMToy
-IDEgNiAxIDAgMSAxIDEgMSAxO30KLyogU3R5bGUgRGVmaW5pdGlvbnMgKi8KcC5Nc29Ob3JtYWws
-IGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbAoJe21hcmdpbjowaW47Cglmb250LXNpemU6MTEu
-MHB0OwoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7fQpzcGFuLkVtYWlsU3R5bGUx
-NwoJe21zby1zdHlsZS10eXBlOnBlcnNvbmFsLWNvbXBvc2U7Cglmb250LWZhbWlseToiQ2FsaWJy
-aSIsc2Fucy1zZXJpZjsKCWNvbG9yOndpbmRvd3RleHQ7fQouTXNvQ2hwRGVmYXVsdAoJe21zby1z
-dHlsZS10eXBlOmV4cG9ydC1vbmx5OwoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7
-fQpAcGFnZSBXb3JkU2VjdGlvbjEKCXtzaXplOjguNWluIDExLjBpbjsKCW1hcmdpbjoxLjBpbiAx
-LjBpbiAxLjBpbiAxLjBpbjt9CmRpdi5Xb3JkU2VjdGlvbjEKCXtwYWdlOldvcmRTZWN0aW9uMTt9
-Ci0tPjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+CjxvOnNoYXBlZGVmYXVsdHMgdjpl
-eHQ9ImVkaXQiIHNwaWRtYXg9IjEwMjYiIC8+CjwveG1sPjwhW2VuZGlmXS0tPjwhLS1baWYgZ3Rl
-IG1zbyA5XT48eG1sPgo8bzpzaGFwZWxheW91dCB2OmV4dD0iZWRpdCI+CjxvOmlkbWFwIHY6ZXh0
-PSJlZGl0IiBkYXRhPSIxIiAvPgo8L286c2hhcGVsYXlvdXQ+PC94bWw+PCFbZW5kaWZdLS0+Cjwv
-aGVhZD4KPGJvZHkgbGFuZz0iRU4tVVMiIGxpbms9IiMwNTYzQzEiIHZsaW5rPSIjOTU0RjcyIiBz
-dHlsZT0id29yZC13cmFwOmJyZWFrLXdvcmQiPgo8ZGl2IGNsYXNzPSJXb3JkU2VjdGlvbjEiPgo8
-cCBjbGFzcz0iTXNvTm9ybWFsIj5IZWxsbyw8bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb05v
-cm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPiZuYnNwOyBJ
-IGFtIHdvcmtpbmcgZm9yIENDRyBDQ0UgQ2hyb21lIHRlYW0uIFdhbm5hIHRvIHNldHVwIGEgTEtQ
-IGxpa2Ugc3lzdGVtIGZvciBDaG9tZU9TLiBDYW4gc29tZW9uZSBwcm92aWRlIGhvdyB0byBkbz88
-bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+
-CjxwIGNsYXNzPSJNc29Ob3JtYWwiPlRoYW5rcyw8bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1z
-b05vcm1hbCI+R2FyZXRoPG86cD48L286cD48L3A+CjwvZGl2Pgo8L2JvZHk+CjwvaHRtbD4K
-
---===============7987296122471771574==--
+--===============3918902624584909227==--
 
