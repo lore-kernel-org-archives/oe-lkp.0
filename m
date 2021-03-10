@@ -1,71 +1,64 @@
-Content-Type: multipart/mixed; boundary="===============5747612434305369276=="
+Content-Type: multipart/mixed; boundary="===============7987296122471771574=="
 MIME-Version: 1.0
-From: Huang Jianan <huangjianan@oppo.com>
+From: Yu, Gareth <gareth.yu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [LTP] [f2fs] 02eb84b96b: ltp.swapon03.fail
-Date: Wed, 10 Mar 2021 10:32:29 +0800
-Message-ID: <c84bf5c9-501e-6c25-1728-a7c6281093fd@oppo.com>
-In-Reply-To: <20210309040144.GH3479805@casper.infradead.org>
+Subject: LKP setup
+Date: Wed, 10 Mar 2021 02:49:30 +0000
+Message-ID: <PH0PR11MB512876D32603249438AC5D84E0919@PH0PR11MB5128.namprd11.prod.outlook.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5747612434305369276==
+--===============7987296122471771574==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Richard,
+Hello,
 
-On 2021/3/9 12:01, Matthew Wilcox wrote:
-> On Tue, Mar 09, 2021 at 10:23:35AM +0800, Weichao Guo wrote:
->> Hi Richard,
->>
->> On 2021/3/8 19:53, Richard Palethorpe wrote:
->>> Hello,
->>>
->>>> kern  :err   : [  187.461914] F2FS-fs (sda1): Swapfile does not align =
-to section
->>>> commit 02eb84b96bc1b382dd138bf60724edbefe77b025
->>>> Author: huangjianan(a)oppo.com <huangjianan@oppo.com>
->>>> Date:   Mon Mar 1 12:58:44 2021 +0800
->>>>       f2fs: check if swapfile is section-alligned
->>>>       If the swapfile isn't created by pin and fallocate, it can't be
->>>>       guaranteed section-aligned, so it may be selected by f2fs gc. Wh=
-en
->>>>       gc_pin_file_threshold is reached, the address of swapfile may ch=
-ange,
->>>>       but won't be synchronized to swap_extent, so swap will write to =
-wrong
->>>>       address, which will cause data corruption.
->>>>       Signed-off-by: Huang Jianan <huangjianan@oppo.com>
->>>>       Signed-off-by: Guo Weichao <guoweichao@oppo.com>
->>>>       Reviewed-by: Chao Yu <yuchao0@huawei.com>
->>>>       Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
->>> The test uses fallocate to preallocate the swap file and writes zeros to
->>> it. I'm not sure what pin refers to?
->> 'pin' refers to pinned file feature in F2FS, the LBA(Logical Block Addre=
-ss)
->> of a file is fixed after pinned. Without this operation before fallocate,
->> the LBA may not align with section(F2FS GC unit), some LBA of the file m=
-ay
->> be changed by F2FS GC in some extreme cases.
->>
->> For this test case, how about pin the swap file before fallocate for F2F=
-S as
->> following:
->>
->> ioctl(fd, F2FS_IOC_SET_PIN_FILE, true);
-> No special ioctl should be needed.  f2fs_swap_activate() should pin the
-> file, just like it converts inline inodes and disables compression.
+  I am working for CCG CCE Chrome team. Wanna to setup a LKP like system fo=
+r ChomeOS. Can someone provide how to do?
 
-Now f2fs_swap_activate() will pin the file. The problem is that when =
+Thanks,
+Gareth
 
-f2fs_swap_activate()
+--===============7987296122471771574==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
 
-is executed, the file has been created and may not be section-aligned.
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+CjxoZWFkPgo8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVR5cGUiIGNv
+bnRlbnQ9InRleHQvaHRtbDsgY2hhcnNldD11cy1hc2NpaSI+CjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPgo8c3R5bGU+
+PCEtLQovKiBGb250IERlZmluaXRpb25zICovCkBmb250LWZhY2UKCXtmb250LWZhbWlseTpQTWlu
+Z0xpVTsKCXBhbm9zZS0xOjIgMSA2IDEgMCAxIDEgMSAxIDE7fQpAZm9udC1mYWNlCgl7Zm9udC1m
+YW1pbHk6IkNhbWJyaWEgTWF0aCI7CglwYW5vc2UtMToyIDQgNSAzIDUgNCA2IDMgMiA0O30KQGZv
+bnQtZmFjZQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7CglwYW5vc2UtMToyIDE1IDUgMiAyIDIgNCAz
+IDIgNDt9CkBmb250LWZhY2UKCXtmb250LWZhbWlseToiXEBQTWluZ0xpVSI7CglwYW5vc2UtMToy
+IDEgNiAxIDAgMSAxIDEgMSAxO30KLyogU3R5bGUgRGVmaW5pdGlvbnMgKi8KcC5Nc29Ob3JtYWws
+IGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbAoJe21hcmdpbjowaW47Cglmb250LXNpemU6MTEu
+MHB0OwoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7fQpzcGFuLkVtYWlsU3R5bGUx
+NwoJe21zby1zdHlsZS10eXBlOnBlcnNvbmFsLWNvbXBvc2U7Cglmb250LWZhbWlseToiQ2FsaWJy
+aSIsc2Fucy1zZXJpZjsKCWNvbG9yOndpbmRvd3RleHQ7fQouTXNvQ2hwRGVmYXVsdAoJe21zby1z
+dHlsZS10eXBlOmV4cG9ydC1vbmx5OwoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7
+fQpAcGFnZSBXb3JkU2VjdGlvbjEKCXtzaXplOjguNWluIDExLjBpbjsKCW1hcmdpbjoxLjBpbiAx
+LjBpbiAxLjBpbiAxLjBpbjt9CmRpdi5Xb3JkU2VjdGlvbjEKCXtwYWdlOldvcmRTZWN0aW9uMTt9
+Ci0tPjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+CjxvOnNoYXBlZGVmYXVsdHMgdjpl
+eHQ9ImVkaXQiIHNwaWRtYXg9IjEwMjYiIC8+CjwveG1sPjwhW2VuZGlmXS0tPjwhLS1baWYgZ3Rl
+IG1zbyA5XT48eG1sPgo8bzpzaGFwZWxheW91dCB2OmV4dD0iZWRpdCI+CjxvOmlkbWFwIHY6ZXh0
+PSJlZGl0IiBkYXRhPSIxIiAvPgo8L286c2hhcGVsYXlvdXQ+PC94bWw+PCFbZW5kaWZdLS0+Cjwv
+aGVhZD4KPGJvZHkgbGFuZz0iRU4tVVMiIGxpbms9IiMwNTYzQzEiIHZsaW5rPSIjOTU0RjcyIiBz
+dHlsZT0id29yZC13cmFwOmJyZWFrLXdvcmQiPgo8ZGl2IGNsYXNzPSJXb3JkU2VjdGlvbjEiPgo8
+cCBjbGFzcz0iTXNvTm9ybWFsIj5IZWxsbyw8bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb05v
+cm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPiZuYnNwOyBJ
+IGFtIHdvcmtpbmcgZm9yIENDRyBDQ0UgQ2hyb21lIHRlYW0uIFdhbm5hIHRvIHNldHVwIGEgTEtQ
+IGxpa2Ugc3lzdGVtIGZvciBDaG9tZU9TLiBDYW4gc29tZW9uZSBwcm92aWRlIGhvdyB0byBkbz88
+bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+
+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPlRoYW5rcyw8bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1z
+b05vcm1hbCI+R2FyZXRoPG86cD48L286cD48L3A+CjwvZGl2Pgo8L2JvZHk+CjwvaHRtbD4K
 
-So I think it would be better to consider aligning the swapfile during =
-
-f2fs_swap_activate()?
-
---===============5747612434305369276==--
+--===============7987296122471771574==--
 
