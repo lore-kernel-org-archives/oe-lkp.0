@@ -1,95 +1,77 @@
-Content-Type: multipart/mixed; boundary="===============0926004962609564769=="
+Content-Type: multipart/mixed; boundary="===============0609659373879040340=="
 MIME-Version: 1.0
-From: Oliver Sang <oliver.sang@intel.com>
+From: Si, Beibei <beibei.si@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/highmem] 61b205f579: WARNING:at_mm/highmem.c:#__kmap_local_sched_out
-Date: Fri, 12 Mar 2021 14:27:55 +0800
-Message-ID: <20210312062755.GA5022@xsang-OptiPlex-9020>
-In-Reply-To: <20210311160220.GS3014244@iweiny-DESK2.sc.intel.com>
+Subject: 0-DAY CI LINUX KERNEL PERFORMANCE REPORT (V5.11)
+Date: Fri, 12 Mar 2021 08:12:15 +0000
+Message-ID: <b138ee684508477d9ad0934077ca19f5@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0926004962609564769==
+--===============0609659373879040340==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Ira,
+Hi all,
 
-On Thu, Mar 11, 2021 at 08:02:20AM -0800, Ira Weiny wrote:
-> On Tue, Mar 09, 2021 at 08:53:04PM +0000, Chaitanya Kulkarni wrote:
-> > Ira,
-> > =
+0-Day CI Linux Kernel Performance Report (v5.11) has updated. Welcome your =
+feedback.
 
-> > On 3/4/21 00:23, kernel test robot wrote:
-> > > Greeting,
-> > >
-> > > FYI, we noticed the following commit (built with gcc-9):
-> > >
-> > > commit: 61b205f579911a11f0b576f73275eca2aed0d108 ("mm/highmem: Conver=
-t memcpy_[to|from]_page() to kmap_local_page()")
-> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > >
-> > >
-> > > in testcase: trinity
-> > > version: trinity-static-i386-x86_64-f93256fb_2019-08-28
-> > > with following parameters:
-> > >
-> > > 	runtime: 300s
-> > >
-> > > test-description: Trinity is a linux system call fuzz tester.
-> > > test-url: http://codemonkey.org.uk/projects/trinity/
-> > >
-> > >
-> > > on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2=
- -m 8G
-> > >
-> > > caused below changes (please refer to attached dmesg/kmsg for entire =
-log/backtrace):
-> > =
+Here=E2=80=99s the link: https://01.org/lkp/blogs/carel/2021/0-day-ci-linux=
+-kernel-performance-report-v5.11-0
 
-> > Is the fix for this been posted yet ?
-> =
+BR
+Carel
 
-> No.  I've been unable to reproduce it yet.
 
-just FYI
-the issue does not always happen but the rate on 61b205f579 is not low,
-while we didn't observe it happen on parent commit.
+--===============0609659373879040340==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
 
-bb90d4bc7b6a536b 61b205f579911a11f0b576f7327
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :38          16%           6:38    dmesg.EIP:__kmap_local_sched_=
-in
-           :38          16%           6:38    dmesg.EIP:__kmap_local_sched_=
-out
-           :38          16%           6:38    dmesg.WARNING:at_mm/highmem.c=
-:#__kmap_local_sched_in
-           :38          16%           6:38    dmesg.WARNING:at_mm/highmem.c=
-:#__kmap_local_sched_out
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6ZHQ9InV1aWQ6QzJGNDEwMTAtNjVC
+My0xMWQxLUEyOUYtMDBBQTAwQzE0ODgyIiB4bWxuczptPSJodHRwOi8vc2NoZW1hcy5taWNyb3Nv
+ZnQuY29tL29mZmljZS8yMDA0LzEyL29tbWwiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy9UUi9S
+RUMtaHRtbDQwIj4NCjxoZWFkPg0KPG1ldGEgaHR0cC1lcXVpdj0iQ29udGVudC1UeXBlIiBjb250
+ZW50PSJ0ZXh0L2h0bWw7IGNoYXJzZXQ9dXRmLTgiPg0KPG1ldGEgbmFtZT0iR2VuZXJhdG9yIiBj
+b250ZW50PSJNaWNyb3NvZnQgV29yZCAxNSAoZmlsdGVyZWQgbWVkaXVtKSI+DQo8c3R5bGU+PCEt
+LQ0KLyogRm9udCBEZWZpbml0aW9ucyAqLw0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseToiQ2Ft
+YnJpYSBNYXRoIjsNCglwYW5vc2UtMToyIDQgNSAzIDUgNCA2IDMgMiA0O30NCkBmb250LWZhY2UN
+Cgl7Zm9udC1mYW1pbHk6562J57q/Ow0KCXBhbm9zZS0xOjIgMSA2IDAgMyAxIDEgMSAxIDE7fQ0K
+QGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpDYWxpYnJpOw0KCXBhbm9zZS0xOjIgMTUgNSAyIDIg
+MiA0IDMgMiA0O30NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6IlxA562J57q/IjsNCglwYW5v
+c2UtMToyIDEgNiAwIDMgMSAxIDEgMSAxO30NCi8qIFN0eWxlIERlZmluaXRpb25zICovDQpwLk1z
+b05vcm1hbCwgbGkuTXNvTm9ybWFsLCBkaXYuTXNvTm9ybWFsDQoJe21hcmdpbjowaW47DQoJZm9u
+dC1zaXplOjExLjBwdDsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjt9DQphOmxp
+bmssIHNwYW4uTXNvSHlwZXJsaW5rDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCgljb2xvcjoj
+MDU2M0MxOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0Kc3Bhbi5FbWFpbFN0eWxlMTcN
+Cgl7bXNvLXN0eWxlLXR5cGU6cGVyc29uYWwtY29tcG9zZTsNCglmb250LWZhbWlseToiQ2FsaWJy
+aSIsc2Fucy1zZXJpZjsNCgljb2xvcjp3aW5kb3d0ZXh0O30NCi5Nc29DaHBEZWZhdWx0DQoJe21z
+by1zdHlsZS10eXBlOmV4cG9ydC1vbmx5Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJpIixzYW5zLXNl
+cmlmO30NCkBwYWdlIFdvcmRTZWN0aW9uMQ0KCXtzaXplOjguNWluIDExLjBpbjsNCgltYXJnaW46
+MS4waW4gMS4yNWluIDEuMGluIDEuMjVpbjt9DQpkaXYuV29yZFNlY3Rpb24xDQoJe3BhZ2U6V29y
+ZFNlY3Rpb24xO30NCi0tPjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+DQo8bzpzaGFw
+ZWRlZmF1bHRzIHY6ZXh0PSJlZGl0IiBzcGlkbWF4PSIxMDI2IiAvPg0KPC94bWw+PCFbZW5kaWZd
+LS0+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+DQo8bzpzaGFwZWxheW91dCB2OmV4dD0iZWRpdCI+
+DQo8bzppZG1hcCB2OmV4dD0iZWRpdCIgZGF0YT0iMSIgLz4NCjwvbzpzaGFwZWxheW91dD48L3ht
+bD48IVtlbmRpZl0tLT4NCjwvaGVhZD4NCjxib2R5IGxhbmc9IkVOLVVTIiBsaW5rPSIjMDU2M0Mx
+IiB2bGluaz0iIzk1NEY3MiIgc3R5bGU9IndvcmQtd3JhcDpicmVhay13b3JkIj4NCjxkaXYgY2xh
+c3M9IldvcmRTZWN0aW9uMSI+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5IaSBhbGwsPG86cD48L286
+cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxwIGNs
+YXNzPSJNc29Ob3JtYWwiPjAtRGF5IENJIExpbnV4IEtlcm5lbCBQZXJmb3JtYW5jZSBSZXBvcnQg
+KHY1LjExKSBoYXMgdXBkYXRlZC4gV2VsY29tZSB5b3VyIGZlZWRiYWNrLjxvOnA+PC9vOnA+PC9w
+Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8cCBjbGFzcz0i
+TXNvTm9ybWFsIj5IZXJl4oCZcyB0aGUgbGluazogPGEgaHJlZj0iaHR0cHM6Ly8wMS5vcmcvbGtw
+L2Jsb2dzL2NhcmVsLzIwMjEvMC1kYXktY2ktbGludXgta2VybmVsLXBlcmZvcm1hbmNlLXJlcG9y
+dC12NS4xMS0wIj4NCmh0dHBzOi8vMDEub3JnL2xrcC9ibG9ncy9jYXJlbC8yMDIxLzAtZGF5LWNp
+LWxpbnV4LWtlcm5lbC1wZXJmb3JtYW5jZS1yZXBvcnQtdjUuMTEtMDwvYT48bzpwPjwvbzpwPjwv
+cD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPHAgY2xhc3M9
+Ik1zb05vcm1hbCI+QlI8bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPkNhcmVs
+PG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwv
+cD4NCjwvZGl2Pg0KPC9ib2R5Pg0KPC9odG1sPg0K
 
-also please permit me to quote our internal analysis by Zhengjun (cced)
-(Thanks a lot, Zhengjun)
-
-"the commit has the potential to cause the issue.
-It replaces " kmap_atomic" to " kmap_local_page".
-
-Most of the two API is the same, except for " kmap_atomic" disable preempti=
-on and cannot sleep.
-I check the issue happened when there is a preemption,  in FBC " kmap_local=
-_page",
-the  preemption is enabled,  the issue may happen."
-"
-
-> =
-
-> Ira
-> =
-
-> > =
-
-> > (asking since I didn't see the fix and my mailer is dropping emails from
-> >  lkml).
---===============0926004962609564769==--
+--===============0609659373879040340==--
 
