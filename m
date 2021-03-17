@@ -1,166 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============1890992862910146617=="
+Content-Type: multipart/mixed; boundary="===============8544800394512532494=="
 MIME-Version: 1.0
-From: Sumit Garg <sumit.garg@linaro.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] objtool, static_call: Don't emit static_call_site for .exit.text
-Date: Wed, 17 Mar 2021 19:07:07 +0530
-Message-ID: <CAFA6WYNr8SR=20LKJD0+AyrVXLY2CqQPqRE_60EestYv9L5AcA@mail.gmail.com>
-In-Reply-To: <YFH6BR61b5GK8ITo@hirez.programming.kicks-ass.net>
+Subject: Re: [mm/highmem] 61b205f579: WARNING:at_mm/highmem.c:#__kmap_local_sched_out
+Date: Wed, 17 Mar 2021 14:44:41 +0100
+Message-ID: <87blbhzygm.fsf@nanos.tec.linutronix.de>
+In-Reply-To: <20210316073756.GQ3014244@iweiny-DESK2.sc.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1890992862910146617==
+--===============8544800394512532494==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 17 Mar 2021 at 18:16, Peter Zijlstra <peterz@infradead.org> wrote:
+On Tue, Mar 16 2021 at 00:37, Ira Weiny wrote:
 >
-> On Wed, Mar 17, 2021 at 05:25:48PM +0530, Sumit Garg wrote:
-> > Thanks Peter for this fix. It does work for me on qemu for x86. Can
-> > you turn this into a proper fix patch? BTW, feel free to add:
+> I think I see the issue.  I think this is an invalid configuration.
 >
-> Per the below, the original patch ought to be fixed as well, to not use
-> static_call() in __exit.
+> 00:26:43 > grep DEBUG_KMAP config-5.11.0-rc7-00002-g61b205f57991 =
 
-Okay, fair enough.
-
-Jarkko,
-
-Can you please incorporate the following change to the original patch as we=
-ll?
-
-diff --git a/security/keys/trusted-keys/trusted_core.c
-b/security/keys/trusted-keys/trusted_core.c
-index ec3a066a4b42..bef52d1ebe5e 100644
---- a/security/keys/trusted-keys/trusted_core.c
-+++ b/security/keys/trusted-keys/trusted_core.c
-@@ -41,7 +41,7 @@ DEFINE_STATIC_CALL_NULL(trusted_key_unseal,
-                        *trusted_key_sources[0].ops->unseal);
- DEFINE_STATIC_CALL_NULL(trusted_key_get_random,
-                        *trusted_key_sources[0].ops->get_random);
--DEFINE_STATIC_CALL_NULL(trusted_key_exit, *trusted_key_sources[0].ops->exi=
-t);
-+static void (*trusted_key_exit)(void);
- static unsigned char migratable;
-
- enum {
-@@ -328,8 +328,7 @@ static int __init init_trusted(void)
-                                   trusted_key_sources[i].ops->unseal);
-                static_call_update(trusted_key_get_random,
-                                   trusted_key_sources[i].ops->get_random);
--               static_call_update(trusted_key_exit,
--                                  trusted_key_sources[i].ops->exit);
-+               trusted_key_exit =3D trusted_key_sources[i].ops->exit;
-                migratable =3D trusted_key_sources[i].ops->migratable;
-
-                ret =3D static_call(trusted_key_init)();
-@@ -349,7 +348,8 @@ static int __init init_trusted(void)
-
- static void __exit cleanup_trusted(void)
- {
--       static_call(trusted_key_exit)();
-+       if (trusted_key_exit)
-+               trusted_key_exit();
- }
-
- late_initcall(init_trusted);
-
--Sumit
-
+> CONFIG_DEBUG_KMAP_LOCAL=3Dy
+> CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP=3Dy
 >
-> ---
-> Subject: objtool,static_call: Don't emit static_call_site for .exit.text
-> From: Peter Zijlstra <peterz@infradead.org>
-> Date: Wed Mar 17 13:35:05 CET 2021
+> 00:26:48 > grep DEBUG_HIGHMEM config-5.11.0-rc7-00002-g61b205f57991 =
+
+> # CONFIG_DEBUG_HIGHMEM is not set
+
+No. It's valid so you can test that crap on 64bit.
+
+> DEBUG_KMAP_LOCAL causes guard pages to be added to the kmap_ctrl array.  =
+But
+> DEBUG_HIGHMEM is used in __kmap_local_sched_out() to check the guard page=
+s.
 >
-> Functions marked __exit are (somewhat surprisingly) discarded at
-> runtime when built-in. This means that static_call(), when used in
-> __exit functions, will generate static_call_site entries that point
-> into reclaimed space.
+> DEBUG_HIGHMEM is supposed to select DEBUG_KMAP_LOCAL...  but apparently t=
+hat
+> did not happen when this configuration was made.
 >
-> Simply skip such sites and emit a WARN about it. By not emitting a
-> static_call_site the site will remain pointed at the trampoline, which
-> is also maintained, so things will work as expected, albeit with the
-> extra indirection.
->
-> The WARN is so that people are aware of this; and arguably it simply
-> isn't a good idea to use static_call() in __exit code anyway, since
-> module unload is never a performance critical path.
->
-> Reported-by: Sumit Garg <sumit.garg@linaro.org>
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> Tested-by: Sumit Garg <sumit.garg@linaro.org>
-> ---
->  tools/objtool/check.c |   32 ++++++++++++++++++++------------
->  1 file changed, 20 insertions(+), 12 deletions(-)
->
-> --- a/tools/objtool/check.c
-> +++ b/tools/objtool/check.c
-> @@ -850,6 +850,22 @@ static int add_ignore_alternatives(struc
->         return 0;
->  }
->
-> +static inline void static_call_add(struct instruction *insn,
-> +                                  struct objtool_file *file)
-> +{
-> +       if (!insn->call_dest->static_call_tramp)
-> +               return;
-> +
-> +       if (!strcmp(insn->sec->name, ".exit.text")) {
-> +               WARN_FUNC("static_call in .exit.text, skipping inline pat=
-ching",
-> +                         insn->sec, insn->offset);
-> +               return;
-> +       }
-> +
-> +       list_add_tail(&insn->static_call_node,
-> +                     &file->static_call_list);
-> +}
-> +
->  /*
->   * Find the destination instructions for all jumps.
->   */
-> @@ -888,10 +904,7 @@ static int add_jump_destinations(struct
->                 } else if (insn->func) {
->                         /* internal or external sibling call (with reloc)=
- */
->                         insn->call_dest =3D reloc->sym;
-> -                       if (insn->call_dest->static_call_tramp) {
-> -                               list_add_tail(&insn->static_call_node,
-> -                                             &file->static_call_list);
-> -                       }
-> +                       static_call_add(insn, file);
+> I still have not hit this condition in my testing.  Could you ensure that
+> DEBUG_HIGMEM is set and rerun the test to see if I am correct?
+
+Why? The whole point of CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP is to allow
+testing of this kmap_local/atomic stuff w/o HIGHMEM, e.g. on 64 bit.
+
+> Thomas wouldn't the following enable checks make more sense?  Or perhaps =
+be
+> more consistent with the processing of kmap_ctrl?
+
+Neither nor. It's simply required to make DEBUG_KMAP_LOCAL=3Dy &&
+HIGHMEM=3Dn case work.
+
+Please add:
+Fixes: 0e91a0c6984c ("mm/highmem: Provide CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP=
+")
+
+which should have contained exactly that change:
+
+> -               if (IS_ENABLED(CONFIG_DEBUG_HIGHMEM) && !(i & 0x01)) {
+> +               if (IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL) && !(i & 0x01)) {
+>                         WARN_ON_ONCE(!pte_none(pteval));
 >                         continue;
->                 } else if (reloc->sym->sec->idx) {
->                         dest_sec =3D reloc->sym->sec;
-> @@ -950,10 +963,7 @@ static int add_jump_destinations(struct
->
->                                 /* internal sibling call (without reloc) =
-*/
->                                 insn->call_dest =3D insn->jump_dest->func;
-> -                               if (insn->call_dest->static_call_tramp) {
-> -                                       list_add_tail(&insn->static_call_=
-node,
-> -                                                     &file->static_call_=
-list);
-> -                               }
-> +                               static_call_add(insn, file);
->                         }
 >                 }
->         }
-> @@ -2746,10 +2756,8 @@ static int validate_branch(struct objtoo
->                         if (dead_end_function(file, insn->call_dest))
->                                 return 0;
->
-> -                       if (insn->type =3D=3D INSN_CALL && insn->call_des=
-t->static_call_tramp) {
-> -                               list_add_tail(&insn->static_call_node,
-> -                                             &file->static_call_list);
-> -                       }
-> +                       if (insn->type =3D=3D INSN_CALL)
-> +                               static_call_add(insn, file);
->
->                         break;
->
---===============1890992862910146617==--
+> @@ -654,7 +654,7 @@ void __kmap_local_sched_in(void)
+>                 int idx;
+>  =
+
+>                 /* With debug all even slots are unmapped and act as guar=
+d */
+> -               if (IS_ENABLED(CONFIG_DEBUG_HIGHMEM) && !(i & 0x01)) {
+> +               if (IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL) && !(i & 0x01)) {
+>                         WARN_ON_ONCE(!pte_none(pteval));
+>                         continue;
+>                 }
+
+Thanks,
+
+        tglx
+--===============8544800394512532494==--
 
