@@ -1,203 +1,152 @@
-Content-Type: multipart/mixed; boundary="===============0507903609570000983=="
+Content-Type: multipart/mixed; boundary="===============2424279663821401933=="
 MIME-Version: 1.0
-From: David Rientjes <rientjes@google.com>
+From: Jarkko Sakkinen <jarkko@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [selftests] e48d82b67a: BUG_TestSlub_RZ_alloc(Not_tainted):Redzone_overwritten
-Date: Wed, 17 Mar 2021 11:53:25 -0700
-Message-ID: <a3f6261b-22b-89f1-ec24-7516f0fa1d4c@google.com>
-In-Reply-To: <a389a8fb-2043-3b13-5180-e1f87e4d4a66@suse.cz>
+Subject: Re: [KEYS] 4a00e5e212: WARNING:at_arch/x86/kernel/static_call.c:#__static_call_validate
+Date: Wed, 17 Mar 2021 23:00:41 +0200
+Message-ID: <YFJt+eRHG6K/hwGu@kernel.org>
+In-Reply-To: <CAFA6WYNs-rQLUGPMwc-p0q_KRvR16rm-x55gDqw828c7-C1qeA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0507903609570000983==
+--===============2424279663821401933==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 17 Mar 2021, Vlastimil Babka wrote:
+On Wed, Mar 17, 2021 at 05:25:48PM +0530, Sumit Garg wrote:
+> On Wed, 17 Mar 2021 at 14:32, Peter Zijlstra <peterz@infradead.org> wro=
+te:
+> >
+> > On Wed, Mar 17, 2021 at 09:59:32AM +0100, Peter Zijlstra wrote:
+> > > diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+> > > index 5e5388a38e2a..6fef1155e73a 100644
+> > > --- a/tools/objtool/check.c
+> > > +++ b/tools/objtool/check.c
+> > > @@ -850,6 +850,21 @@ static int add_ignore_alternatives(struct objtoo=
+l_file *file)
+> > >       return 0;
+> > >  }
+> > >
+> > > +static inline void static_call_add(struct instruction *insn,
+> > > +                                struct objtool_file *file)
+> > > +{
+> > > +     if (!strcmp(insn->sec->name, ".exit.text")) {
+> > > +             WARN_FUNC("static_call in .exit.text, skipping inline p=
+aching",
+> > > +                       insn->sec, insn->offset);
+> > > +             return;
+> > > +     }
+> >
+> > Duh, that needs to be in the below condition... /me goes fetch more
+> > wake-up juice :/
+> >
+> > > +     if (insn->call_dest->static_call_tramp) {
+> > > +             list_add_tail(&insn->static_call_node,
+> > > +                           &file->static_call_list);
+> > > +     }
+> > > +}
+> >
+> > ---
+> >  tools/objtool/check.c | 32 ++++++++++++++++++++------------
+> >  1 file changed, 20 insertions(+), 12 deletions(-)
+> >
+> =
 
-> > Greeting,
-> > =
+> Thanks Peter for this fix. It does work for me on qemu for x86. Can
+> you turn this into a proper fix patch? BTW, feel free to add:
+> =
 
-> > FYI, we noticed the following commit (built with gcc-9):
-> > =
+> Tested-by: Sumit Garg <sumit.garg@linaro.org>
 
-> > commit: e48d82b67a2b760eedf7b95ca15f41267496386c ("[PATCH 1/2] selftest=
-s: add a kselftest for SLUB debugging functionality")
-> > url: https://github.com/0day-ci/linux/commits/glittao-gmail-com/selftes=
-ts-add-a-kselftest-for-SLUB-debugging-functionality/20210316-204257
-> > base: https://git.kernel.org/cgit/linux/kernel/git/shuah/linux-kselftes=
-t.git next
-> > =
+Peter, if possible, please also CC the proper fix to me, I'll ack the fix.
+Relevant for keyring.
 
-> > in testcase: trinity
-> > version: trinity-static-i386-x86_64-f93256fb_2019-08-28
-> > with following parameters:
-> > =
+Thanks!
 
-> > 	group: group-04
-> > =
+/Jarkko
 
-> > test-description: Trinity is a linux system call fuzz tester.
-> > test-url: http://codemonkey.org.uk/projects/trinity/
-> > =
-
-> > =
-
-> > on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -=
-m 8G
-> > =
-
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
-> > =
-
-> > =
-
-> > +----------------------------------------------------------------------=
------------------------------------------+-----------+------------+
-> > |                                                                      =
-                                         | v5.12-rc2 | e48d82b67a |
-> > +----------------------------------------------------------------------=
------------------------------------------+-----------+------------+
-> > | BUG_TestSlub_RZ_alloc(Not_tainted):Redzone_overwritten               =
-                                         | 0         | 69         |
-> > | INFO:0x(ptrval)-0x(ptrval)@offset=3D#.First_byte#instead_of          =
-                                           | 0         | 69         |
-> > | INFO:Allocated_in_resiliency_test_age=3D#cpu=3D#pid=3D               =
-                                               | 0         | 69         |
-> > | INFO:Slab0x(ptrval)objects=3D#used=3D#fp=3D0x(ptrval)flags=3D        =
-                                                 | 0         | 69         |
-> > | INFO:Object0x(ptrval)@offset=3D#fp=3D0x(ptrval)                      =
-                                             | 0         | 69         |
-> > | BUG_TestSlub_next_ptr_free(Tainted:G_B):Freechain_corrupt            =
-                                         | 0         | 69         |
-> > | INFO:Freed_in_resiliency_test_age=3D#cpu=3D#pid=3D                   =
-                                               | 0         | 69         |
-> > | BUG_TestSlub_next_ptr_free(Tainted:G_B):Wrong_object_count.Counter_is=
-#but_counted_were                        | 0         | 69         |
-> > | BUG_TestSlub_next_ptr_free(Tainted:G_B):Redzone_overwritten          =
-                                         | 0         | 69         |
-> > | BUG_TestSlub_next_ptr_free(Tainted:G_B):Objects_remaining_in_TestSlub=
-_next_ptr_free_on__kmem_cache_shutdown() | 0         | 69         |
-> > | INFO:Object0x(ptrval)@offset=3D                                      =
-                                           | 0         | 69         |
-> > | BUG_TestSlub_1th_word_free(Tainted:G_B):Poison_overwritten           =
-                                         | 0         | 69         |
-> > | BUG_TestSlub_50th_word_free(Tainted:G_B):Poison_overwritten          =
-                                         | 0         | 69         |
-> > | BUG_TestSlub_RZ_free(Tainted:G_B):Redzone_overwritten                =
-                                         | 0         | 69         |
-> > +----------------------------------------------------------------------=
------------------------------------------+-----------+------------+
-> > =
-
-> > =
-
-> > If you fix the issue, kindly add following tag
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > =
-
-> > =
-
-> > =
-
-> > [   22.154049] random: get_random_u32 called from __kmem_cache_create+0=
-x23/0x3e0 with crng_init=3D0 =
-
-> > [   22.154070] random: get_random_u32 called from cache_random_seq_crea=
-te+0x7c/0x140 with crng_init=3D0 =
-
-> > [   22.154167] random: get_random_u32 called from allocate_slab+0x155/0=
-x5e0 with crng_init=3D0 =
-
-> > [   22.154690] test_slub: 1. kmem_cache: Clobber Redzone 0x12->0x(ptrva=
-l)
-> > [   22.164499] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > [   22.166629] BUG TestSlub_RZ_alloc (Not tainted): Redzone overwritten
-> > [   22.168179] --------------------------------------------------------=
----------------------
-> > [   22.168179]
-> > [   22.168372] Disabling lock debugging due to kernel taint
-> > [   22.168372] INFO: 0x(ptrval)-0x(ptrval) @offset=3D1064. First byte 0=
-x12 instead of 0xcc
-> > [   22.168372] INFO: Allocated in resiliency_test+0x47/0x1be age=3D3 cp=
-u=3D0 pid=3D1 =
-
-> > [   22.168372] __slab_alloc+0x57/0x80 =
-
-> > [   22.168372] kmem_cache_alloc (kbuild/src/consumer/mm/slub.c:2871 kbu=
-ild/src/consumer/mm/slub.c:2915 kbuild/src/consumer/mm/slub.c:2920) =
-
-> > [   22.168372] resiliency_test (kbuild/src/consumer/lib/test_slub.c:34 =
-kbuild/src/consumer/lib/test_slub.c:107) =
-
-> > [   22.168372] test_slub_init (kbuild/src/consumer/lib/test_slub.c:124) =
-
-> > [   22.168372] do_one_initcall (kbuild/src/consumer/init/main.c:1226) =
-
-> > [   22.168372] kernel_init_freeable (kbuild/src/consumer/init/main.c:12=
-98 kbuild/src/consumer/init/main.c:1315 kbuild/src/consumer/init/main.c:133=
-5 kbuild/src/consumer/init/main.c:1537) =
-
-> > [   22.168372] kernel_init (kbuild/src/consumer/init/main.c:1426) =
-
-> > [   22.168372] ret_from_fork (kbuild/src/consumer/arch/x86/entry/entry_=
-32.S:856) =
-
-> > [   22.168372] INFO: Slab 0x(ptrval) objects=3D16 used=3D1 fp=3D0x(ptrv=
-al) flags=3D0x40000201
-> > [   22.168372] INFO: Object 0x(ptrval) @offset=3D1000 fp=3D0x(ptrval)
-> > [   22.168372]
-> > [   22.168372] Redzone (ptrval): cc cc cc cc cc cc cc cc               =
-           ........
-> > [   22.168372] Object (ptrval): 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b =
-6b 6b 6b  kkkkkkkkkkkkkkkk
-> > [   22.168372] Object (ptrval): 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b =
-6b 6b a5  kkkkkkkkkkkkkkk.
-> > [   22.168372] Redzone (ptrval): 12 cc cc cc                           =
-           ....
-> > [   22.168372] Padding (ptrval): 5a 5a 5a 5a 5a 5a 5a 5a               =
-           ZZZZZZZZ
-> > [   22.168372] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G    B           =
-  5.12.0-rc2-00001-ge48d82b67a2b #1
-> > [   22.168372] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), B=
-IOS 1.12.0-1 04/01/2014
-> > [   22.168372] Call Trace:
-> > [   22.168372] dump_stack (kbuild/src/consumer/lib/dump_stack.c:122) =
-
-> > [   22.168372] print_trailer (kbuild/src/consumer/mm/slub.c:737) =
-
-> > [   22.168372] check_bytes_and_report.cold (kbuild/src/consumer/mm/slub=
-.c:807) =
-
-> > [   22.168372] check_object (kbuild/src/consumer/mm/slub.c:914) =
-
-> > [   22.168372] validate_slab (kbuild/src/consumer/mm/slub.c:4635) =
 
 > =
 
-> Hm but in this case the output means the tested functionality (slub debug=
-ging)
-> is working as intended. So what can we do? Indicate/teach somehow to the =
-bot
-> that this is OK? Does kselftest have some support for this? Or silence the
-> validation output for testing purposes? (I would prefer not to)
+> -Sumit
 > =
 
-
-Unless you're familiar with everything that CONFIG_TEST_SLUB does, maybe =
-
-this could be inferred as an actual issue that the test has uncovered that =
-
-is unexpected?
-
-I don't have a good way of silencing the check_bytes_and_report() output =
-
-other than a big hammer: implement {disable,enable}_slub_warnings() that =
-
-the resiliency test could call into before triggering these checks.
---===============0507903609570000983==--
+> > diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+> > index 5e5388a38e2a..70cfd8bf95fd 100644
+> > --- a/tools/objtool/check.c
+> > +++ b/tools/objtool/check.c
+> > @@ -850,6 +850,22 @@ static int add_ignore_alternatives(struct objtool_=
+file *file)
+> >         return 0;
+> >  }
+> >
+> > +static inline void static_call_add(struct instruction *insn,
+> > +                                  struct objtool_file *file)
+> > +{
+> > +       if (!insn->call_dest->static_call_tramp)
+> > +               return;
+> > +
+> > +       if (!strcmp(insn->sec->name, ".exit.text")) {
+> > +               WARN_FUNC("static_call in .exit.text, skipping inline p=
+aching",
+> > +                         insn->sec, insn->offset);
+> > +               return;
+> > +       }
+> > +
+> > +       list_add_tail(&insn->static_call_node,
+> > +                     &file->static_call_list);
+> > +}
+> > +
+> >  /*
+> >   * Find the destination instructions for all jumps.
+> >   */
+> > @@ -888,10 +904,7 @@ static int add_jump_destinations(struct objtool_fi=
+le *file)
+> >                 } else if (insn->func) {
+> >                         /* internal or external sibling call (with relo=
+c) */
+> >                         insn->call_dest =3D reloc->sym;
+> > -                       if (insn->call_dest->static_call_tramp) {
+> > -                               list_add_tail(&insn->static_call_node,
+> > -                                             &file->static_call_list);
+> > -                       }
+> > +                       static_call_add(insn, file);
+> >                         continue;
+> >                 } else if (reloc->sym->sec->idx) {
+> >                         dest_sec =3D reloc->sym->sec;
+> > @@ -950,10 +963,7 @@ static int add_jump_destinations(struct objtool_fi=
+le *file)
+> >
+> >                                 /* internal sibling call (without reloc=
+) */
+> >                                 insn->call_dest =3D insn->jump_dest->fu=
+nc;
+> > -                               if (insn->call_dest->static_call_tramp)=
+ {
+> > -                                       list_add_tail(&insn->static_cal=
+l_node,
+> > -                                                     &file->static_cal=
+l_list);
+> > -                               }
+> > +                               static_call_add(insn, file);
+> >                         }
+> >                 }
+> >         }
+> > @@ -2746,10 +2756,8 @@ static int validate_branch(struct objtool_file *=
+file, struct symbol *func,
+> >                         if (dead_end_function(file, insn->call_dest))
+> >                                 return 0;
+> >
+> > -                       if (insn->type =3D=3D INSN_CALL && insn->call_d=
+est->static_call_tramp) {
+> > -                               list_add_tail(&insn->static_call_node,
+> > -                                             &file->static_call_list);
+> > -                       }
+> > +                       if (insn->type =3D=3D INSN_CALL)
+> > +                               static_call_add(insn, file);
+> >
+> >                         break;
+> >
+>=20
+--===============2424279663821401933==--
 
