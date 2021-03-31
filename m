@@ -1,185 +1,199 @@
-Content-Type: multipart/mixed; boundary="===============5245816151197410934=="
+Content-Type: multipart/mixed; boundary="===============7642709734728754649=="
 MIME-Version: 1.0
-From: Jens Axboe <axboe@kernel.dk>
+From: Mike Rapoport <rppt@linux.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [block] 4c95131e3c: kernel_BUG_at_block/bio.c
-Date: Wed, 31 Mar 2021 08:55:55 -0600
-Message-ID: <8540963a-a408-64e8-cebe-095e4835e7b8@kernel.dk>
-In-Reply-To: <20210331081330.GB32402@xsang-OptiPlex-9020>
+Subject: Re: [mm] 81a779a1a4: will-it-scale.per_thread_ops -4.2% regression
+Date: Wed, 31 Mar 2021 20:03:30 +0300
+Message-ID: <YGSrYs9bNtwlegE7@linux.ibm.com>
+In-Reply-To: <20210325064720.GB13061@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5245816151197410934==
+--===============7642709734728754649==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 3/31/21 2:13 AM, kernel test robot wrote:
+Hi Oliver,
+
+
+On Thu, Mar 25, 2021 at 02:47:20PM +0800, Oliver Sang wrote:
+> Hi Mike,
 > =
 
+> On Sun, Mar 21, 2021 at 01:01:28PM +0200, Mike Rapoport wrote:
+> > Hi Oliver,
+> > =
+
+> > On Fri, Mar 19, 2021 at 08:51:38PM +0800, Oliver Sang wrote:
+> > > Hi Hike,
+> > > =
+
+> > > On Fri, Mar 12, 2021 at 06:56:01AM +0200, Mike Rapoport wrote:
+> > > > Hello,
+> > > > =
+
+> > > > On Wed, Mar 10, 2021 at 09:54:26AM +0800, kernel test robot wrote:
+> > > > > =
+
+> > > > > Greeting,
+> > > > > =
+
+> > > > > FYI, we noticed a -4.2% regression of will-it-scale.per_thread_op=
+s due to commit:
+> > > > > =
+
+> > > > > =
+
+> > > > > commit: 81a779a1a49c8644fd8dc994815a9aa379d10825 ("mm: introduce =
+memfd_secret system call to create "secret" memory areas")
+> > > > > https://git.kernel.org/cgit/linux/kernel/git/rppt/linux.git memfd=
+-secret/v18
+> > > > > =
+
+> > > > > =
+
+> > > > > in testcase: will-it-scale
+> > > > > on test machine: 192 threads Intel(R) Xeon(R) Platinum 9242 CPU @=
+ 2.30GHz with 192G memory
+> > > > > with following parameters:
+> > > > > =
+
+> > > > > 	nr_task: 100%
+> > > > > 	mode: thread
+> > > > > 	test: futex1
+> > > > > 	cpufreq_governor: performance
+> > > > > 	ucode: 0x5003006
+> > > > > =
+
+> > > > > test-description: Will It Scale takes a testcase and runs it from=
+ 1 through to n parallel copies to see if the testcase will scale. It build=
+s both a process and threads based test in order to see any differences bet=
+ween the two.
+> > > > > test-url: https://github.com/antonblanchard/will-it-scale
+> > > > > =
+
+> > > > > =
+
+> > > > > =
+
+> > > > > If you fix the issue, kindly add following tag
+> > > > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > =
+
+> > > > Can you please test the following patch on top of commit: 81a779a1a=
+49c
+> > > > ("mm: introduce memfd_secret system call to create "secret" memory =
+areas")
+> > > > to see if it performs better:
+> > > =
+
+> > > it performs a little better but still has -3.7% regression:
+> > > =
+
+> > > * e9be99d574c74 (linux-devel/fixup-81a779a1a49c) fix-81a779a1a49c-perf
+> > > * 81a779a1a49c8 mm: introduce memfd_secret system call to create "sec=
+ret" memory areas
+> > > * 043463bfe80b8 set_memory: allow querying whether set_direct_map_*()=
+ is actually enabled
+> > =
+
+> > Can you please retest with the below patch instead of the previous one:
 > =
 
-> Greeting,
-> =
+> by below patch, the regression reduced to around -1.7%
+> (please be noted, according to our experience, will-it-scale is normally =
+sensitive
+> to code change as well as test environment, so, at least currently, we do=
+n't report
+> will-it-scale performance changes if it's less than 3%)
 
-> FYI, we noticed the following commit (built with gcc-9):
-> =
+I've pushed yet another fix to my tree at kernel.org:
 
-> commit: 4c95131e3cb8bbb08c3b370b4ae3611874b48be0 ("block: enable use of b=
-io allocation cache")
-> https://git.kernel.org/cgit/linux/kernel/git/axboe/linux-block.git io_uri=
-ng-bio-cache
-> =
+https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git  memfd-secre=
+t/v18.5
 
-> =
+This is based on the current mmotm (v5.12-rc5-mmots-2021-03-30-23-07), the
+patch is below for if you prefer to apply it to the older version.
 
-> in testcase: ocfs2test
-> version: ocfs2test-x86_64-d802bf7-1_20210329
-> with following parameters:
-> =
+I'd really appreciate if you could test it as well.
 
-> 	disk: 1HDD
-> 	test: test-reserve_space
-> 	ucode: 0x21
-> =
+diff --git a/include/linux/secretmem.h b/include/linux/secretmem.h
+index 907a6734059c..0fd19452a57e 100644
+--- a/include/linux/secretmem.h
++++ b/include/linux/secretmem.h
+@@ -4,8 +4,32 @@
+ =
 
-> =
+ #ifdef CONFIG_SECRETMEM
+ =
 
-> =
++extern const struct address_space_operations secretmem_aops;
++
++static inline bool page_is_secretmem(struct page *page)
++{
++	struct address_space *mapping;
++
++	/*
++	 * Using page_mapping() is quite slow because of the actual call
++	 * isntruction and repeated compound_head(page) inside the
++	 * page_mapping() function.
++	 * We know that secretmem pages are not compound and LRU so we can
++	 * save a couple of cycles here.
++	 */
++	if (PageCompound(page) || !PageLRU(page))
++		return false;
++
++	mapping =3D (struct address_space *)
++		((unsigned long)page->mapping & ~PAGE_MAPPING_FLAGS);
++
++	if (mapping !=3D page->mapping)
++		return false;
++
++	return page->mapping->a_ops =3D=3D &secretmem_aops;
++}
++
+ bool vma_is_secretmem(struct vm_area_struct *vma);
+-bool page_is_secretmem(struct page *page);
+ bool secretmem_active(void);
+ =
 
-> on test machine: 8 threads Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz with =
-16G memory
-> =
+ #else
+diff --git a/mm/secretmem.c b/mm/secretmem.c
+index 3b1ba3991964..0bcd15e1b549 100644
+--- a/mm/secretmem.c
++++ b/mm/secretmem.c
+@@ -151,22 +151,12 @@ static void secretmem_freepage(struct page *page)
+ 	clear_highpage(page);
+ }
+ =
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
+-static const struct address_space_operations secretmem_aops =3D {
++const struct address_space_operations secretmem_aops =3D {
+ 	.freepage	=3D secretmem_freepage,
+ 	.migratepage	=3D secretmem_migratepage,
+ 	.isolate_page	=3D secretmem_isolate_page,
+ };
+ =
 
-> =
+-bool page_is_secretmem(struct page *page)
+-{
+-	struct address_space *mapping =3D page_mapping(page);
+-
+-	if (!mapping)
+-		return false;
+-
+-	return mapping->a_ops =3D=3D &secretmem_aops;
+-}
+-
+ static struct vfsmount *secretmem_mnt;
+ =
 
-> =
+ static struct file *secretmem_file_create(unsigned long flags)
 
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
-
-> =
-
-> [   47.859997] kernel BUG at block/bio.c:628!
-> [   47.860086] invalid opcode: 0000 [#1] SMP PTI
-> [   47.860167] CPU: 5 PID: 5042 Comm: mkfs.ocfs2 Not tainted 5.12.0-rc5-0=
-0060-g4c95131e3cb8 #1
-> [   47.860317] Hardware name:  /DZ77BH-55K, BIOS BHZ7710H.86A.0097.2012.1=
-228.1346 12/28/2012
-> [   47.860445] RIP: 0010:__bio_put (kbuild/src/consumer/block/bio.c:628 k=
-build/src/consumer/block/bio.c:623) =
-
-> [ 47.860514] Code: 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 f6 47 14 =
-40 74 0f 8b 47 64 85 c0 74 0e f0 ff 4f 64 0f 94 c0 c3 b8 01 00 00 00 c3 <0f=
-> 0b 66 66 2e 0f 1f 84 00 00 00 00 00 66 66 2e 0f 1f 84 00 00 00
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->    7:	00 00 00 =
-
->    a:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->    f:	f6 47 14 40          	testb  $0x40,0x14(%rdi)
->   13:	74 0f                	je     0x24
->   15:	8b 47 64             	mov    0x64(%rdi),%eax
->   18:	85 c0                	test   %eax,%eax
->   1a:	74 0e                	je     0x2a
->   1c:	f0 ff 4f 64          	lock decl 0x64(%rdi)
->   20:	0f 94 c0             	sete   %al
->   23:	c3                   	retq   =
-
->   24:	b8 01 00 00 00       	mov    $0x1,%eax
->   29:	c3                   	retq   =
-
->   2a:*	0f 0b                	ud2    		<-- trapping instruction
->   2c:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
->   33:	00 00 00 00 =
-
->   37:	66                   	data16
->   38:	66                   	data16
->   39:	2e                   	cs
->   3a:	0f                   	.byte 0xf
->   3b:	1f                   	(bad)  =
-
->   3c:	84 00                	test   %al,(%rax)
-> 	...
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:	0f 0b                	ud2    =
-
->    2:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
->    9:	00 00 00 00 =
-
->    d:	66                   	data16
->    e:	66                   	data16
->    f:	2e                   	cs
->   10:	0f                   	.byte 0xf
->   11:	1f                   	(bad)  =
-
->   12:	84 00                	test   %al,(%rax)
-> 	...
-> [   47.860801] RSP: 0018:ffffc9000d42fc88 EFLAGS: 00010246
-> [   47.860885] RAX: 0000000000000000 RBX: ffffc9000d42fe80 RCX: 000000000=
-0000002
-> [   47.860998] RDX: ffff88841a9a4f00 RSI: ffff88841a9a4f00 RDI: ffff88841=
-b721318
-> [   47.861109] RBP: ffff88841b721318 R08: ffff88841b721318 R09: 000000000=
-002ab30
-> [   47.861221] R10: 00000000000002c8 R11: ffff88841f36a144 R12: ffff88841=
-b721318
-> [   47.861352] R13: ffffffff81395875 R14: 00000000ffffffff R15: ffff88841=
-a9a4f00
-> [   47.861464] FS:  00007f5c66517280(0000) GS:ffff88841f340000(0000) knlG=
-S:0000000000000000
-> [   47.861590] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   47.861681] CR2: 000055d13280c000 CR3: 0000000414e82006 CR4: 000000000=
-01706e0
-> [   47.861793] Call Trace:
-> [   47.861836] bio_put (kbuild/src/consumer/block/bio.c:646) =
-
-> [   47.861888] __blkdev_direct_IO (kbuild/src/consumer/fs/block_dev.c:508=
-) =
-
-> [   47.861959] generic_file_direct_write (kbuild/src/consumer/mm/filemap.=
-c:3473) =
-
-> [   47.862037] __generic_file_write_iter (kbuild/src/consumer/mm/filemap.=
-c:3661) =
-
-> [   47.862113] blkdev_write_iter (kbuild/src/consumer/fs/block_dev.c:1719=
- kbuild/src/consumer/fs/block_dev.c:1693) =
-
-> [   47.862181] new_sync_write (kbuild/src/consumer/fs/read_write.c:519 (d=
-iscriminator 1)) =
-
-> [   47.862265] vfs_write (kbuild/src/consumer/fs/read_write.c:605) =
-
-> [   47.862322] ksys_pwrite64 (kbuild/src/consumer/include/linux/file.h:45=
- kbuild/src/consumer/fs/read_write.c:713) =
-
-> [   47.862381] do_syscall_64 (kbuild/src/consumer/arch/x86/entry/common.c=
-:46) =
-
-> [   47.862443] entry_SYSCALL_64_after_hwframe (kbuild/src/consumer/arch/x=
-86/entry/entry_64.S:112) =
-
-> [   47.862526] RIP: 0033:0x7f5c66692a37
-> [ 47.862586] Code: ff ff eb b6 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 =
-00 48 8d 05 c9 7c 0d 00 49 89 ca 8b 00 85 c0 75 10 b8 12 00 00 00 0f 05 <48=
-> 3d 00 f0 ff ff 77 59 c3 41 55 49 89 cd 41 54 49 89 d4 55 48 89
-
-Thanks for the report, I've fixed this up in the current branch and
-pushed a new one out.
 
 -- =
 
-Jens Axboe
-
---===============5245816151197410934==--
+Sincerely yours,
+Mike.
+--===============7642709734728754649==--
 
