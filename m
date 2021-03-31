@@ -1,199 +1,124 @@
-Content-Type: multipart/mixed; boundary="===============7642709734728754649=="
+Content-Type: multipart/mixed; boundary="===============0964149376003728730=="
 MIME-Version: 1.0
-From: Mike Rapoport <rppt@linux.ibm.com>
+From: Yang Shi <shy828301@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] 81a779a1a4: will-it-scale.per_thread_ops -4.2% regression
-Date: Wed, 31 Mar 2021 20:03:30 +0300
-Message-ID: <YGSrYs9bNtwlegE7@linux.ibm.com>
-In-Reply-To: <20210325064720.GB13061@xsang-OptiPlex-9020>
+Subject: Re: [PATCH mmotm] mm: vmscan: fix shrinker_rwsem in free_shrinker_info()
+Date: Wed, 31 Mar 2021 11:06:39 -0700
+Message-ID: <CAHbLzkqDAOUjhV0-M-Mv6z7yKHk-WmuHHwJse4vvo82nJscTcA@mail.gmail.com>
+In-Reply-To: <CALvZod7PQ3=1nDUKVo33o5GGh-feGNM2LyekSys-U2-kOYbrTA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7642709734728754649==
+--===============0964149376003728730==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Oliver,
+On Wed, Mar 31, 2021 at 6:54 AM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Tue, Mar 30, 2021 at 4:44 PM Hugh Dickins <hughd@google.com> wrote:
+> >
+> > Lockdep warns mm/vmscan.c: suspicious rcu_dereference_protected() usage!
+> > when free_shrinker_info() is called from mem_cgroup_css_free(): there it
+> > is called with no locking, whereas alloc_shrinker_info() calls it with
+> > down_write of shrinker_rwsem - which seems appropriate.  Rearrange that
+> > so free_shrinker_info() can manage the shrinker_rwsem for itself.
+> >
+> > Link: https://lkml.kernel.org/r/20210317140615.GB28839(a)xsang-OptiPlex=
+-9020
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > Signed-off-by: Hugh Dickins <hughd@google.com>
+> > Cc: Yang Shi <shy828301@gmail.com>
+> > ---
+> > Sorry, I've made no attempt to work out precisely where in the series
+> > the locking went missing, nor tried to fit this in as a fix on top of
+> > mm-vmscan-add-shrinker_info_protected-helper.patch
+> > which Oliver reported (and which you notated in mmotm's "series" file).
+> > This patch just adds the fix to the end of the series, after
+> > mm-vmscan-shrink-deferred-objects-proportional-to-priority.patch
+>
+> The patch "mm: vmscan: add shrinker_info_protected() helper" replaces
+> rcu_dereference_protected(shrinker_info, true) with
+> rcu_dereference_protected(shrinker_info,
+> lockdep_is_held(&shrinker_rwsem)).
+>
+> I think we don't really need shrinker_rwsem in free_shrinker_info()
+> which is called from css_free(). The bits of the map have already been
+> 'reparented' in css_offline. I think we can remove
+> lockdep_is_held(&shrinker_rwsem) for free_shrinker_info().
 
+Thanks, Hugh and Shakeel. I missed the report.
 
-On Thu, Mar 25, 2021 at 02:47:20PM +0800, Oliver Sang wrote:
-> Hi Mike,
-> =
+I think Shakeel is correct, shrinker_rwsem is not required in css_free
+path so Shakeel's proposal should be able to fix it. I prepared a
+patch:
 
-> On Sun, Mar 21, 2021 at 01:01:28PM +0200, Mike Rapoport wrote:
-> > Hi Oliver,
-> > =
-
-> > On Fri, Mar 19, 2021 at 08:51:38PM +0800, Oliver Sang wrote:
-> > > Hi Hike,
-> > > =
-
-> > > On Fri, Mar 12, 2021 at 06:56:01AM +0200, Mike Rapoport wrote:
-> > > > Hello,
-> > > > =
-
-> > > > On Wed, Mar 10, 2021 at 09:54:26AM +0800, kernel test robot wrote:
-> > > > > =
-
-> > > > > Greeting,
-> > > > > =
-
-> > > > > FYI, we noticed a -4.2% regression of will-it-scale.per_thread_op=
-s due to commit:
-> > > > > =
-
-> > > > > =
-
-> > > > > commit: 81a779a1a49c8644fd8dc994815a9aa379d10825 ("mm: introduce =
-memfd_secret system call to create "secret" memory areas")
-> > > > > https://git.kernel.org/cgit/linux/kernel/git/rppt/linux.git memfd=
--secret/v18
-> > > > > =
-
-> > > > > =
-
-> > > > > in testcase: will-it-scale
-> > > > > on test machine: 192 threads Intel(R) Xeon(R) Platinum 9242 CPU @=
- 2.30GHz with 192G memory
-> > > > > with following parameters:
-> > > > > =
-
-> > > > > 	nr_task: 100%
-> > > > > 	mode: thread
-> > > > > 	test: futex1
-> > > > > 	cpufreq_governor: performance
-> > > > > 	ucode: 0x5003006
-> > > > > =
-
-> > > > > test-description: Will It Scale takes a testcase and runs it from=
- 1 through to n parallel copies to see if the testcase will scale. It build=
-s both a process and threads based test in order to see any differences bet=
-ween the two.
-> > > > > test-url: https://github.com/antonblanchard/will-it-scale
-> > > > > =
-
-> > > > > =
-
-> > > > > =
-
-> > > > > If you fix the issue, kindly add following tag
-> > > > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > =
-
-> > > > Can you please test the following patch on top of commit: 81a779a1a=
-49c
-> > > > ("mm: introduce memfd_secret system call to create "secret" memory =
-areas")
-> > > > to see if it performs better:
-> > > =
-
-> > > it performs a little better but still has -3.7% regression:
-> > > =
-
-> > > * e9be99d574c74 (linux-devel/fixup-81a779a1a49c) fix-81a779a1a49c-perf
-> > > * 81a779a1a49c8 mm: introduce memfd_secret system call to create "sec=
-ret" memory areas
-> > > * 043463bfe80b8 set_memory: allow querying whether set_direct_map_*()=
- is actually enabled
-> > =
-
-> > Can you please retest with the below patch instead of the previous one:
-> =
-
-> by below patch, the regression reduced to around -1.7%
-> (please be noted, according to our experience, will-it-scale is normally =
-sensitive
-> to code change as well as test environment, so, at least currently, we do=
-n't report
-> will-it-scale performance changes if it's less than 3%)
-
-I've pushed yet another fix to my tree at kernel.org:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git  memfd-secre=
-t/v18.5
-
-This is based on the current mmotm (v5.12-rc5-mmots-2021-03-30-23-07), the
-patch is below for if you prefer to apply it to the older version.
-
-I'd really appreciate if you could test it as well.
-
-diff --git a/include/linux/secretmem.h b/include/linux/secretmem.h
-index 907a6734059c..0fd19452a57e 100644
---- a/include/linux/secretmem.h
-+++ b/include/linux/secretmem.h
-@@ -4,8 +4,32 @@
- =
-
- #ifdef CONFIG_SECRETMEM
- =
-
-+extern const struct address_space_operations secretmem_aops;
-+
-+static inline bool page_is_secretmem(struct page *page)
-+{
-+	struct address_space *mapping;
-+
-+	/*
-+	 * Using page_mapping() is quite slow because of the actual call
-+	 * isntruction and repeated compound_head(page) inside the
-+	 * page_mapping() function.
-+	 * We know that secretmem pages are not compound and LRU so we can
-+	 * save a couple of cycles here.
-+	 */
-+	if (PageCompound(page) || !PageLRU(page))
-+		return false;
-+
-+	mapping =3D (struct address_space *)
-+		((unsigned long)page->mapping & ~PAGE_MAPPING_FLAGS);
-+
-+	if (mapping !=3D page->mapping)
-+		return false;
-+
-+	return page->mapping->a_ops =3D=3D &secretmem_aops;
-+}
-+
- bool vma_is_secretmem(struct vm_area_struct *vma);
--bool page_is_secretmem(struct page *page);
- bool secretmem_active(void);
- =
-
- #else
-diff --git a/mm/secretmem.c b/mm/secretmem.c
-index 3b1ba3991964..0bcd15e1b549 100644
---- a/mm/secretmem.c
-+++ b/mm/secretmem.c
-@@ -151,22 +151,12 @@ static void secretmem_freepage(struct page *page)
- 	clear_highpage(page);
- }
- =
-
--static const struct address_space_operations secretmem_aops =3D {
-+const struct address_space_operations secretmem_aops =3D {
- 	.freepage	=3D secretmem_freepage,
- 	.migratepage	=3D secretmem_migratepage,
- 	.isolate_page	=3D secretmem_isolate_page,
- };
- =
-
--bool page_is_secretmem(struct page *page)
--{
--	struct address_space *mapping =3D page_mapping(page);
--
--	if (!mapping)
--		return false;
--
--	return mapping->a_ops =3D=3D &secretmem_aops;
--}
--
- static struct vfsmount *secretmem_mnt;
- =
-
- static struct file *secretmem_file_create(unsigned long flags)
-
-
--- =
-
-Sincerely yours,
-Mike.
---===============7642709734728754649==--
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 64bf07cc20f2..7348c26d4cac 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -251,7 +251,12 @@ void free_shrinker_info(struct mem_cgroup *memcg)
+        for_each_node(nid) {
+                pn =3D memcg->nodeinfo[nid];
+-               info =3D shrinker_info_protected(memcg, nid);
++               /*
++                * Don't use shrinker_info_protected() helper since
++                * free_shrinker_info() could be called by css_free()
++                * without holding shrinker_rwsem.
++                */
++               info =3D rcu_dereference_protected(pn->shrinker_info, true);
+                kvfree(info);
+                rcu_assign_pointer(pn->shrinker_info, NULL);
+        }
+>
+> >
+> >  mm/vmscan.c |   10 ++++++----
+> >  1 file changed, 6 insertions(+), 4 deletions(-)
+> >
+> > --- mmotm/mm/vmscan.c   2021-03-28 17:26:54.935553064 -0700
+> > +++ linux/mm/vmscan.c   2021-03-30 15:55:13.374459559 -0700
+> > @@ -249,18 +249,20 @@ void free_shrinker_info(struct mem_cgrou
+> >         struct shrinker_info *info;
+> >         int nid;
+> >
+> > +       down_write(&shrinker_rwsem);
+> >         for_each_node(nid) {
+> >                 pn =3D memcg->nodeinfo[nid];
+> >                 info =3D shrinker_info_protected(memcg, nid);
+> >                 kvfree(info);
+> >                 rcu_assign_pointer(pn->shrinker_info, NULL);
+> >         }
+> > +       up_write(&shrinker_rwsem);
+> >  }
+> >
+> >  int alloc_shrinker_info(struct mem_cgroup *memcg)
+> >  {
+> >         struct shrinker_info *info;
+> > -       int nid, size, ret =3D 0;
+> > +       int nid, size;
+> >         int map_size, defer_size =3D 0;
+> >
+> >         down_write(&shrinker_rwsem);
+> > @@ -270,9 +272,9 @@ int alloc_shrinker_info(struct mem_cgrou
+> >         for_each_node(nid) {
+> >                 info =3D kvzalloc_node(sizeof(*info) + size, GFP_KERNEL=
+, nid);
+> >                 if (!info) {
+> > +                       up_write(&shrinker_rwsem);
+> >                         free_shrinker_info(memcg);
+> > -                       ret =3D -ENOMEM;
+> > -                       break;
+> > +                       return -ENOMEM;
+> >                 }
+> >                 info->nr_deferred =3D (atomic_long_t *)(info + 1);
+> >                 info->map =3D (void *)info->nr_deferred + defer_size;
+> > @@ -280,7 +282,7 @@ int alloc_shrinker_info(struct mem_cgrou
+> >         }
+> >         up_write(&shrinker_rwsem);
+> >
+> > -       return ret;
+> > +       return 0;
+> >  }
+> >
+> >  static inline bool need_expand(int nr_max)
+--===============0964149376003728730==--
 
