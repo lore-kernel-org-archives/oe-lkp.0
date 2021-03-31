@@ -1,87 +1,89 @@
-Content-Type: multipart/mixed; boundary="===============0738114022953340395=="
+Content-Type: multipart/mixed; boundary="===============7976023401174334472=="
 MIME-Version: 1.0
-From: Hugh Dickins <hughd@google.com>
+From: jim.cromie@gmail.com
 To: lkp@lists.01.org
-Subject: [PATCH mmotm] mm: vmscan: fix shrinker_rwsem in free_shrinker_info()
-Date: Tue, 30 Mar 2021 16:44:05 -0700
-Message-ID: <alpine.LSU.2.11.2103301640240.2584@eggly.anvils>
+Subject: Re: patch testing service here ?
+Date: Tue, 30 Mar 2021 21:25:00 -0600
+Message-ID: <CAJfuBxwyyC2rU5OJfUf5kLfna2L6W16FN4=av71N+ULz9AUhsA@mail.gmail.com>
+In-Reply-To: <63a0f254-5364-f4a7-ee24-05c8188e57bd@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0738114022953340395==
+--===============7976023401174334472==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Lockdep warns mm/vmscan.c: suspicious rcu_dereference_protected() usage!
-when free_shrinker_info() is called from mem_cgroup_css_free(): there it
-is called with no locking, whereas alloc_shrinker_info() calls it with
-down_write of shrinker_rwsem - which seems appropriate.  Rearrange that
-so free_shrinker_info() can manage the shrinker_rwsem for itself.
+On Mon, Mar 29, 2021 at 8:38 PM Rong Chen <rong.a.chen@intel.com> wrote:
 
-Link: https://lkml.kernel.org/r/20210317140615.GB28839(a)xsang-OptiPlex-9020
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Hugh Dickins <hughd@google.com>
-Cc: Yang Shi <shy828301@gmail.com>
----
-Sorry, I've made no attempt to work out precisely where in the series
-the locking went missing, nor tried to fit this in as a fix on top of
-mm-vmscan-add-shrinker_info_protected-helper.patch
-which Oliver reported (and which you notated in mmotm's "series" file).
-This patch just adds the fix to the end of the series, after
-mm-vmscan-shrink-deferred-objects-proportional-to-priority.patch
+> Hi Jim,
+>
+> On 3/30/21 3:31 AM, jim.cromie(a)gmail.com wrote:
+> >
+> > https://github.com/jimc/linux.git /lkp-test/dyndbg-diet
+> I have added your tree to our watch list, and we will send a build
+> complete report to you if any branch updated.
+>
+>
+nice, thanks for this jumpstart.
+Ive started seeing some reports on obsolete branches,
+I will either scrub them, or wait (and get a single review of old errors ;-)
+or tweak & pull-req my shiny new entry to allow only lkp-test/ topic.
 
- mm/vmscan.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+I presume .* on FAQ page is a regex, not a glob-exp
+I'll look at copious examples for ideas
 
---- mmotm/mm/vmscan.c	2021-03-28 17:26:54.935553064 -0700
-+++ linux/mm/vmscan.c	2021-03-30 15:55:13.374459559 -0700
-@@ -249,18 +249,20 @@ void free_shrinker_info(struct mem_cgrou
- 	struct shrinker_info *info;
- 	int nid;
- =
 
-+	down_write(&shrinker_rwsem);
- 	for_each_node(nid) {
- 		pn =3D memcg->nodeinfo[nid];
- 		info =3D shrinker_info_protected(memcg, nid);
- 		kvfree(info);
- 		rcu_assign_pointer(pn->shrinker_info, NULL);
- 	}
-+	up_write(&shrinker_rwsem);
- }
- =
+>
+> Don't worry, we have several default config files include
+> "CONFIG_DYNAMIC_DEBUG=3Dy".
+>
+> yay!
 
- int alloc_shrinker_info(struct mem_cgroup *memcg)
- {
- 	struct shrinker_info *info;
--	int nid, size, ret =3D 0;
-+	int nid, size;
- 	int map_size, defer_size =3D 0;
- =
 
- 	down_write(&shrinker_rwsem);
-@@ -270,9 +272,9 @@ int alloc_shrinker_info(struct mem_cgrou
- 	for_each_node(nid) {
- 		info =3D kvzalloc_node(sizeof(*info) + size, GFP_KERNEL, nid);
- 		if (!info) {
-+			up_write(&shrinker_rwsem);
- 			free_shrinker_info(memcg);
--			ret =3D -ENOMEM;
--			break;
-+			return -ENOMEM;
- 		}
- 		info->nr_deferred =3D (atomic_long_t *)(info + 1);
- 		info->map =3D (void *)info->nr_deferred + defer_size;
-@@ -280,7 +282,7 @@ int alloc_shrinker_info(struct mem_cgrou
- 	}
- 	up_write(&shrinker_rwsem);
- =
+> Best Regards,
+> Rong Chen
+>
 
--	return ret;
-+	return 0;
- }
- =
+Rong++
+thank you
 
- static inline bool need_expand(int nr_max)
---===============0738114022953340395==--
+--===============7976023401174334472==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
+
+PGRpdiBkaXI9Imx0ciI+PGRpdiBkaXI9Imx0ciI+PGJyPjwvZGl2Pjxicj48ZGl2IGNsYXNzPSJn
+bWFpbF9xdW90ZSI+PGRpdiBkaXI9Imx0ciIgY2xhc3M9ImdtYWlsX2F0dHIiPk9uIE1vbiwgTWFy
+IDI5LCAyMDIxIGF0IDg6MzggUE0gUm9uZyBDaGVuICZsdDs8YSBocmVmPSJtYWlsdG86cm9uZy5h
+LmNoZW5AaW50ZWwuY29tIj5yb25nLmEuY2hlbkBpbnRlbC5jb208L2E+Jmd0OyB3cm90ZTo8YnI+
+PC9kaXY+PGJsb2NrcXVvdGUgY2xhc3M9ImdtYWlsX3F1b3RlIiBzdHlsZT0ibWFyZ2luOjBweCAw
+cHggMHB4IDAuOGV4O2JvcmRlci1sZWZ0OjFweCBzb2xpZCByZ2IoMjA0LDIwNCwyMDQpO3BhZGRp
+bmctbGVmdDoxZXgiPkhpIEppbSw8YnI+Cjxicj4KT24gMy8zMC8yMSAzOjMxIEFNLCA8YSBocmVm
+PSJtYWlsdG86amltLmNyb21pZUBnbWFpbC5jb20iIHRhcmdldD0iX2JsYW5rIj5qaW0uY3JvbWll
+QGdtYWlsLmNvbTwvYT4gd3JvdGU6PGJyPgomZ3Q7PGJyPgomZ3Q7IDxhIGhyZWY9Imh0dHBzOi8v
+Z2l0aHViLmNvbS9qaW1jL2xpbnV4LmdpdCIgcmVsPSJub3JlZmVycmVyIiB0YXJnZXQ9Il9ibGFu
+ayI+aHR0cHM6Ly9naXRodWIuY29tL2ppbWMvbGludXguZ2l0PC9hPiAvbGtwLXRlc3QvZHluZGJn
+LWRpZXQ8YnI+CkkgaGF2ZSBhZGRlZCB5b3VyIHRyZWUgdG8gb3VyIHdhdGNoIGxpc3QsIGFuZCB3
+ZSB3aWxsIHNlbmQgYSBidWlsZCA8YnI+CmNvbXBsZXRlIHJlcG9ydCB0byB5b3UgaWYgYW55IGJy
+YW5jaCB1cGRhdGVkLjxicj4KPGJyPjwvYmxvY2txdW90ZT48ZGl2Pjxicj48L2Rpdj48ZGl2Pm5p
+Y2UsIHRoYW5rcyBmb3IgdGhpcyBqdW1wc3RhcnQuPC9kaXY+PGRpdj5JdmUgc3RhcnRlZCBzZWVp
+bmcgc29tZSByZXBvcnRzIG9uIG9ic29sZXRlIGJyYW5jaGVzLDwvZGl2PjxkaXY+SSB3aWxsIGVp
+dGhlciBzY3J1YiB0aGVtLCBvciB3YWl0IChhbmQgZ2V0IGEgc2luZ2xlIHJldmlldyBvZiBvbGQg
+ZXJyb3JzIDstKTwvZGl2PjxkaXY+b3IgdHdlYWsgJmFtcDsgcHVsbC1yZXEgbXkgc2hpbnkgbmV3
+IGVudHJ5IHRvIGFsbG93IG9ubHkgbGtwLXRlc3QvIHRvcGljLsKgwqA8L2Rpdj48ZGl2Pjxicj48
+L2Rpdj48ZGl2PkkgcHJlc3VtZSAuKiBvbiBGQVEgcGFnZSBpcyBhIHJlZ2V4LCBub3QgYSBnbG9i
+LWV4cDwvZGl2PjxkaXY+SSYjMzk7bGwgbG9vayBhdCBjb3Bpb3VzIGV4YW1wbGVzIGZvciBpZGVh
+czwvZGl2PjxkaXY+wqA8L2Rpdj48YmxvY2txdW90ZSBjbGFzcz0iZ21haWxfcXVvdGUiIHN0eWxl
+PSJtYXJnaW46MHB4IDBweCAwcHggMC44ZXg7Ym9yZGVyLWxlZnQ6MXB4IHNvbGlkIHJnYigyMDQs
+MjA0LDIwNCk7cGFkZGluZy1sZWZ0OjFleCI+Cgo8YnI+CkRvbiYjMzk7dCB3b3JyeSwgd2UgaGF2
+ZSBzZXZlcmFsIGRlZmF1bHQgY29uZmlnIGZpbGVzIGluY2x1ZGUgPGJyPgomcXVvdDtDT05GSUdf
+RFlOQU1JQ19ERUJVRz15JnF1b3Q7Ljxicj4KPGJyPjwvYmxvY2txdW90ZT48ZGl2PnlheSE8L2Rp
+dj48ZGl2PsKgPC9kaXY+PGJsb2NrcXVvdGUgY2xhc3M9ImdtYWlsX3F1b3RlIiBzdHlsZT0ibWFy
+Z2luOjBweCAwcHggMHB4IDAuOGV4O2JvcmRlci1sZWZ0OjFweCBzb2xpZCByZ2IoMjA0LDIwNCwy
+MDQpO3BhZGRpbmctbGVmdDoxZXgiPgpCZXN0IFJlZ2FyZHMsPGJyPgpSb25nIENoZW48YnI+Cjwv
+YmxvY2txdW90ZT48ZGl2Pjxicj48L2Rpdj48ZGl2PlJvbmcrKzwvZGl2PjxkaXY+dGhhbmsgeW91
+wqA8L2Rpdj48L2Rpdj48L2Rpdj4K
+
+--===============7976023401174334472==--
 
