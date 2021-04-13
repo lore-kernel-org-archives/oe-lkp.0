@@ -1,148 +1,249 @@
-Content-Type: multipart/mixed; boundary="===============6708628433820782201=="
+Content-Type: multipart/mixed; boundary="===============3762354210286701115=="
 MIME-Version: 1.0
 From: Yu Zhao <yuzhao@google.com>
 To: lkp@lists.01.org
-Subject: [PATCH v2 06/16] mm, x86: support the access bit on non-leaf PMD entries
-Date: Tue, 13 Apr 2021 00:56:23 -0600
-Message-ID: <20210413065633.2782273-7-yuzhao@google.com>
+Subject: [PATCH v2 07/16] mm/vmscan.c: refactor shrink_node()
+Date: Tue, 13 Apr 2021 00:56:24 -0600
+Message-ID: <20210413065633.2782273-8-yuzhao@google.com>
 In-Reply-To: <20210413065633.2782273-1-yuzhao@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6708628433820782201==
+--===============3762354210286701115==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Some architectures support the accessed bit on non-leaf PMD entries
-(parents) in addition to leaf PTE entries (children) where pages are
-mapped, e.g., x86_64 sets the accessed bit on a parent when using it
-as part of linear-address translation [1]. Page table walkers who are
-interested in the accessed bit on children can take advantage of this:
-they do not need to search the children when the accessed bit is not
-set on a parent, given that they have previously cleared the accessed
-bit on this parent.
-
-[1]: Intel 64 and IA-32 Architectures Software Developer's Manual
-     Volume 3 (October 2019), section 4.8
+Heuristics that determine scan balance between anon and file LRUs are
+rather independent. Move them into a separate function to improve
+readability.
 
 Signed-off-by: Yu Zhao <yuzhao@google.com>
 ---
- arch/Kconfig                   | 9 +++++++++
- arch/x86/Kconfig               | 1 +
- arch/x86/include/asm/pgtable.h | 2 +-
- arch/x86/mm/pgtable.c          | 5 ++++-
- include/linux/pgtable.h        | 4 ++--
- 5 files changed, 17 insertions(+), 4 deletions(-)
+ mm/vmscan.c | 186 +++++++++++++++++++++++++++-------------------------
+ 1 file changed, 98 insertions(+), 88 deletions(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index ecfd3520b676..cbd7f66734ee 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -782,6 +782,15 @@ config HAVE_ARCH_TRANSPARENT_HUGEPAGE
- config HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
- 	bool
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 562e87cbd7a1..1a24d2e0a4cb 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -2224,6 +2224,103 @@ enum scan_balance {
+ 	SCAN_FILE,
+ };
  =
 
-+config HAVE_ARCH_PARENT_PMD_YOUNG
-+	bool
-+	depends on PGTABLE_LEVELS > 2
-+	help
-+	  Architectures that select this are able to set the accessed bit on
-+	  non-leaf PMD entries in addition to leaf PTE entries where pages are
-+	  mapped. For them, page table walkers that clear the accessed bit may
-+	  stop at non-leaf PMD entries when they do not see the accessed bit.
++static void prepare_scan_count(pg_data_t *pgdat, struct scan_control *sc)
++{
++	unsigned long file;
++	struct lruvec *target_lruvec;
 +
- config HAVE_ARCH_HUGE_VMAP
- 	bool
- =
-
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 2792879d398e..b5972eb82337 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -163,6 +163,7 @@ config X86
- 	select HAVE_ARCH_TRACEHOOK
- 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE
- 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD if X86_64
-+	select HAVE_ARCH_PARENT_PMD_YOUNG	if X86_64
- 	select HAVE_ARCH_USERFAULTFD_WP         if X86_64 && USERFAULTFD
- 	select HAVE_ARCH_VMAP_STACK		if X86_64
- 	select HAVE_ARCH_WITHIN_STACK_FRAMES
-diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-index a02c67291cfc..a6b5cfe1fc5a 100644
---- a/arch/x86/include/asm/pgtable.h
-+++ b/arch/x86/include/asm/pgtable.h
-@@ -846,7 +846,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
- =
-
- static inline int pmd_bad(pmd_t pmd)
- {
--	return (pmd_flags(pmd) & ~_PAGE_USER) !=3D _KERNPG_TABLE;
-+	return ((pmd_flags(pmd) | _PAGE_ACCESSED) & ~_PAGE_USER) !=3D _KERNPG_TAB=
-LE;
- }
- =
-
- static inline unsigned long pages_to_mb(unsigned long npg)
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index f6a9e2e36642..1c27e6f43f80 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -550,7 +550,7 @@ int ptep_test_and_clear_young(struct vm_area_struct *vm=
-a,
- 	return ret;
- }
- =
-
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-+#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HAVE_ARCH_PAREN=
-T_PMD_YOUNG)
- int pmdp_test_and_clear_young(struct vm_area_struct *vma,
- 			      unsigned long addr, pmd_t *pmdp)
- {
-@@ -562,6 +562,9 @@ int pmdp_test_and_clear_young(struct vm_area_struct *vm=
-a,
- =
-
- 	return ret;
- }
-+#endif
++	target_lruvec =3D mem_cgroup_lruvec(sc->target_mem_cgroup, pgdat);
 +
-+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
- int pudp_test_and_clear_young(struct vm_area_struct *vma,
- 			      unsigned long addr, pud_t *pudp)
- {
-diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
-index 5e772392a379..08dd9b8c055a 100644
---- a/include/linux/pgtable.h
-+++ b/include/linux/pgtable.h
-@@ -193,7 +193,7 @@ static inline int ptep_test_and_clear_young(struct vm_a=
-rea_struct *vma,
- #endif
++	/*
++	 * Determine the scan balance between anon and file LRUs.
++	 */
++	spin_lock_irq(&target_lruvec->lru_lock);
++	sc->anon_cost =3D target_lruvec->anon_cost;
++	sc->file_cost =3D target_lruvec->file_cost;
++	spin_unlock_irq(&target_lruvec->lru_lock);
++
++	/*
++	 * Target desirable inactive:active list ratios for the anon
++	 * and file LRU lists.
++	 */
++	if (!sc->force_deactivate) {
++		unsigned long refaults;
++
++		refaults =3D lruvec_page_state(target_lruvec,
++				WORKINGSET_ACTIVATE_ANON);
++		if (refaults !=3D target_lruvec->refaults[0] ||
++			inactive_is_low(target_lruvec, LRU_INACTIVE_ANON))
++			sc->may_deactivate |=3D DEACTIVATE_ANON;
++		else
++			sc->may_deactivate &=3D ~DEACTIVATE_ANON;
++
++		/*
++		 * When refaults are being observed, it means a new
++		 * workingset is being established. Deactivate to get
++		 * rid of any stale active pages quickly.
++		 */
++		refaults =3D lruvec_page_state(target_lruvec,
++				WORKINGSET_ACTIVATE_FILE);
++		if (refaults !=3D target_lruvec->refaults[1] ||
++		    inactive_is_low(target_lruvec, LRU_INACTIVE_FILE))
++			sc->may_deactivate |=3D DEACTIVATE_FILE;
++		else
++			sc->may_deactivate &=3D ~DEACTIVATE_FILE;
++	} else
++		sc->may_deactivate =3D DEACTIVATE_ANON | DEACTIVATE_FILE;
++
++	/*
++	 * If we have plenty of inactive file pages that aren't
++	 * thrashing, try to reclaim those first before touching
++	 * anonymous pages.
++	 */
++	file =3D lruvec_page_state(target_lruvec, NR_INACTIVE_FILE);
++	if (file >> sc->priority && !(sc->may_deactivate & DEACTIVATE_FILE))
++		sc->cache_trim_mode =3D 1;
++	else
++		sc->cache_trim_mode =3D 0;
++
++	/*
++	 * Prevent the reclaimer from falling into the cache trap: as
++	 * cache pages start out inactive, every cache fault will tip
++	 * the scan balance towards the file LRU.  And as the file LRU
++	 * shrinks, so does the window for rotation from references.
++	 * This means we have a runaway feedback loop where a tiny
++	 * thrashing file LRU becomes infinitely more attractive than
++	 * anon pages.  Try to detect this based on file LRU size.
++	 */
++	if (!cgroup_reclaim(sc)) {
++		unsigned long total_high_wmark =3D 0;
++		unsigned long free, anon;
++		int z;
++
++		free =3D sum_zone_node_page_state(pgdat->node_id, NR_FREE_PAGES);
++		file =3D node_page_state(pgdat, NR_ACTIVE_FILE) +
++			   node_page_state(pgdat, NR_INACTIVE_FILE);
++
++		for (z =3D 0; z < MAX_NR_ZONES; z++) {
++			struct zone *zone =3D &pgdat->node_zones[z];
++
++			if (!managed_zone(zone))
++				continue;
++
++			total_high_wmark +=3D high_wmark_pages(zone);
++		}
++
++		/*
++		 * Consider anon: if that's low too, this isn't a
++		 * runaway file reclaim problem, but rather just
++		 * extreme pressure. Reclaim as per usual then.
++		 */
++		anon =3D node_page_state(pgdat, NR_INACTIVE_ANON);
++
++		sc->file_is_tiny =3D
++			file + free <=3D total_high_wmark &&
++			!(sc->may_deactivate & DEACTIVATE_ANON) &&
++			anon >> sc->priority;
++	}
++}
++
+ /*
+  * Determine how aggressively the anon and file LRU lists should be
+  * scanned.  The relative value of each set of LRU lists is determined
+@@ -2669,7 +2766,6 @@ static void shrink_node(pg_data_t *pgdat, struct scan=
+_control *sc)
+ 	unsigned long nr_reclaimed, nr_scanned;
+ 	struct lruvec *target_lruvec;
+ 	bool reclaimable =3D false;
+-	unsigned long file;
  =
 
- #ifndef __HAVE_ARCH_PMDP_TEST_AND_CLEAR_YOUNG
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-+#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HAVE_ARCH_PAREN=
-T_PMD_YOUNG)
- static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
- 					    unsigned long address,
- 					    pmd_t *pmdp)
-@@ -214,7 +214,7 @@ static inline int pmdp_test_and_clear_young(struct vm_a=
-rea_struct *vma,
- 	BUILD_BUG();
- 	return 0;
- }
--#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-+#endif /* CONFIG_TRANSPARENT_HUGEPAGE || CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG=
- */
- #endif
+ 	target_lruvec =3D mem_cgroup_lruvec(sc->target_mem_cgroup, pgdat);
  =
 
- #ifndef __HAVE_ARCH_PTEP_CLEAR_YOUNG_FLUSH
+@@ -2679,93 +2775,7 @@ static void shrink_node(pg_data_t *pgdat, struct sca=
+n_control *sc)
+ 	nr_reclaimed =3D sc->nr_reclaimed;
+ 	nr_scanned =3D sc->nr_scanned;
+ =
+
+-	/*
+-	 * Determine the scan balance between anon and file LRUs.
+-	 */
+-	spin_lock_irq(&target_lruvec->lru_lock);
+-	sc->anon_cost =3D target_lruvec->anon_cost;
+-	sc->file_cost =3D target_lruvec->file_cost;
+-	spin_unlock_irq(&target_lruvec->lru_lock);
+-
+-	/*
+-	 * Target desirable inactive:active list ratios for the anon
+-	 * and file LRU lists.
+-	 */
+-	if (!sc->force_deactivate) {
+-		unsigned long refaults;
+-
+-		refaults =3D lruvec_page_state(target_lruvec,
+-				WORKINGSET_ACTIVATE_ANON);
+-		if (refaults !=3D target_lruvec->refaults[0] ||
+-			inactive_is_low(target_lruvec, LRU_INACTIVE_ANON))
+-			sc->may_deactivate |=3D DEACTIVATE_ANON;
+-		else
+-			sc->may_deactivate &=3D ~DEACTIVATE_ANON;
+-
+-		/*
+-		 * When refaults are being observed, it means a new
+-		 * workingset is being established. Deactivate to get
+-		 * rid of any stale active pages quickly.
+-		 */
+-		refaults =3D lruvec_page_state(target_lruvec,
+-				WORKINGSET_ACTIVATE_FILE);
+-		if (refaults !=3D target_lruvec->refaults[1] ||
+-		    inactive_is_low(target_lruvec, LRU_INACTIVE_FILE))
+-			sc->may_deactivate |=3D DEACTIVATE_FILE;
+-		else
+-			sc->may_deactivate &=3D ~DEACTIVATE_FILE;
+-	} else
+-		sc->may_deactivate =3D DEACTIVATE_ANON | DEACTIVATE_FILE;
+-
+-	/*
+-	 * If we have plenty of inactive file pages that aren't
+-	 * thrashing, try to reclaim those first before touching
+-	 * anonymous pages.
+-	 */
+-	file =3D lruvec_page_state(target_lruvec, NR_INACTIVE_FILE);
+-	if (file >> sc->priority && !(sc->may_deactivate & DEACTIVATE_FILE))
+-		sc->cache_trim_mode =3D 1;
+-	else
+-		sc->cache_trim_mode =3D 0;
+-
+-	/*
+-	 * Prevent the reclaimer from falling into the cache trap: as
+-	 * cache pages start out inactive, every cache fault will tip
+-	 * the scan balance towards the file LRU.  And as the file LRU
+-	 * shrinks, so does the window for rotation from references.
+-	 * This means we have a runaway feedback loop where a tiny
+-	 * thrashing file LRU becomes infinitely more attractive than
+-	 * anon pages.  Try to detect this based on file LRU size.
+-	 */
+-	if (!cgroup_reclaim(sc)) {
+-		unsigned long total_high_wmark =3D 0;
+-		unsigned long free, anon;
+-		int z;
+-
+-		free =3D sum_zone_node_page_state(pgdat->node_id, NR_FREE_PAGES);
+-		file =3D node_page_state(pgdat, NR_ACTIVE_FILE) +
+-			   node_page_state(pgdat, NR_INACTIVE_FILE);
+-
+-		for (z =3D 0; z < MAX_NR_ZONES; z++) {
+-			struct zone *zone =3D &pgdat->node_zones[z];
+-			if (!managed_zone(zone))
+-				continue;
+-
+-			total_high_wmark +=3D high_wmark_pages(zone);
+-		}
+-
+-		/*
+-		 * Consider anon: if that's low too, this isn't a
+-		 * runaway file reclaim problem, but rather just
+-		 * extreme pressure. Reclaim as per usual then.
+-		 */
+-		anon =3D node_page_state(pgdat, NR_INACTIVE_ANON);
+-
+-		sc->file_is_tiny =3D
+-			file + free <=3D total_high_wmark &&
+-			!(sc->may_deactivate & DEACTIVATE_ANON) &&
+-			anon >> sc->priority;
+-	}
++	prepare_scan_count(pgdat, sc);
+ =
+
+ 	shrink_node_memcgs(pgdat, sc);
+ =
+
 -- =
 
 2.31.1.295.g9ea45b61b8-goog
 
---===============6708628433820782201==--
+--===============3762354210286701115==--
 
