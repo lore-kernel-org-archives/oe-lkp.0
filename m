@@ -1,113 +1,148 @@
-Content-Type: multipart/mixed; boundary="===============1579379777242497902=="
+Content-Type: multipart/mixed; boundary="===============6708628433820782201=="
 MIME-Version: 1.0
 From: Yu Zhao <yuzhao@google.com>
 To: lkp@lists.01.org
-Subject: [PATCH v2 05/16] mm/swap.c: export activate_page()
-Date: Tue, 13 Apr 2021 00:56:22 -0600
-Message-ID: <20210413065633.2782273-6-yuzhao@google.com>
+Subject: [PATCH v2 06/16] mm, x86: support the access bit on non-leaf PMD entries
+Date: Tue, 13 Apr 2021 00:56:23 -0600
+Message-ID: <20210413065633.2782273-7-yuzhao@google.com>
 In-Reply-To: <20210413065633.2782273-1-yuzhao@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1579379777242497902==
+--===============6708628433820782201==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-activate_page() is needed to activate pages that are already on lru or
-queued in lru_pvecs.lru_add. The exported function is a merger between
-the existing activate_page() and __lru_cache_activate_page().
+Some architectures support the accessed bit on non-leaf PMD entries
+(parents) in addition to leaf PTE entries (children) where pages are
+mapped, e.g., x86_64 sets the accessed bit on a parent when using it
+as part of linear-address translation [1]. Page table walkers who are
+interested in the accessed bit on children can take advantage of this:
+they do not need to search the children when the accessed bit is not
+set on a parent, given that they have previously cleared the accessed
+bit on this parent.
+
+[1]: Intel 64 and IA-32 Architectures Software Developer's Manual
+     Volume 3 (October 2019), section 4.8
 
 Signed-off-by: Yu Zhao <yuzhao@google.com>
 ---
- include/linux/swap.h |  1 +
- mm/swap.c            | 28 +++++++++++++++-------------
- 2 files changed, 16 insertions(+), 13 deletions(-)
+ arch/Kconfig                   | 9 +++++++++
+ arch/x86/Kconfig               | 1 +
+ arch/x86/include/asm/pgtable.h | 2 +-
+ arch/x86/mm/pgtable.c          | 5 ++++-
+ include/linux/pgtable.h        | 4 ++--
+ 5 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 4cc6ec3bf0ab..de2bbbf181ba 100644
---- a/include/linux/swap.h
-+++ b/include/linux/swap.h
-@@ -344,6 +344,7 @@ extern void lru_add_drain_cpu(int cpu);
- extern void lru_add_drain_cpu_zone(struct zone *zone);
- extern void lru_add_drain_all(void);
- extern void rotate_reclaimable_page(struct page *page);
-+extern void activate_page(struct page *page);
- extern void deactivate_file_page(struct page *page);
- extern void deactivate_page(struct page *page);
- extern void mark_page_lazyfree(struct page *page);
-diff --git a/mm/swap.c b/mm/swap.c
-index 31b844d4ed94..f20ed56ebbbf 100644
---- a/mm/swap.c
-+++ b/mm/swap.c
-@@ -334,7 +334,7 @@ static bool need_activate_page_drain(int cpu)
- 	return pagevec_count(&per_cpu(lru_pvecs.activate_page, cpu)) !=3D 0;
+diff --git a/arch/Kconfig b/arch/Kconfig
+index ecfd3520b676..cbd7f66734ee 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -782,6 +782,15 @@ config HAVE_ARCH_TRANSPARENT_HUGEPAGE
+ config HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
+ 	bool
+ =
+
++config HAVE_ARCH_PARENT_PMD_YOUNG
++	bool
++	depends on PGTABLE_LEVELS > 2
++	help
++	  Architectures that select this are able to set the accessed bit on
++	  non-leaf PMD entries in addition to leaf PTE entries where pages are
++	  mapped. For them, page table walkers that clear the accessed bit may
++	  stop at non-leaf PMD entries when they do not see the accessed bit.
++
+ config HAVE_ARCH_HUGE_VMAP
+ 	bool
+ =
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 2792879d398e..b5972eb82337 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -163,6 +163,7 @@ config X86
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD if X86_64
++	select HAVE_ARCH_PARENT_PMD_YOUNG	if X86_64
+ 	select HAVE_ARCH_USERFAULTFD_WP         if X86_64 && USERFAULTFD
+ 	select HAVE_ARCH_VMAP_STACK		if X86_64
+ 	select HAVE_ARCH_WITHIN_STACK_FRAMES
+diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
+index a02c67291cfc..a6b5cfe1fc5a 100644
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -846,7 +846,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+ =
+
+ static inline int pmd_bad(pmd_t pmd)
+ {
+-	return (pmd_flags(pmd) & ~_PAGE_USER) !=3D _KERNPG_TABLE;
++	return ((pmd_flags(pmd) | _PAGE_ACCESSED) & ~_PAGE_USER) !=3D _KERNPG_TAB=
+LE;
  }
  =
 
--static void activate_page(struct page *page)
-+static void activate_page_on_lru(struct page *page)
- {
- 	page =3D compound_head(page);
- 	if (PageLRU(page) && !PageActive(page) && !PageUnevictable(page)) {
-@@ -354,7 +354,7 @@ static inline void activate_page_drain(int cpu)
- {
+ static inline unsigned long pages_to_mb(unsigned long npg)
+diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
+index f6a9e2e36642..1c27e6f43f80 100644
+--- a/arch/x86/mm/pgtable.c
++++ b/arch/x86/mm/pgtable.c
+@@ -550,7 +550,7 @@ int ptep_test_and_clear_young(struct vm_area_struct *vm=
+a,
+ 	return ret;
  }
  =
 
--static void activate_page(struct page *page)
-+static void activate_page_on_lru(struct page *page)
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HAVE_ARCH_PAREN=
+T_PMD_YOUNG)
+ int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ 			      unsigned long addr, pmd_t *pmdp)
  {
- 	struct lruvec *lruvec;
+@@ -562,6 +562,9 @@ int pmdp_test_and_clear_young(struct vm_area_struct *vm=
+a,
  =
 
-@@ -368,11 +368,22 @@ static void activate_page(struct page *page)
+ 	return ret;
  }
++#endif
++
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ int pudp_test_and_clear_young(struct vm_area_struct *vma,
+ 			      unsigned long addr, pud_t *pudp)
+ {
+diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
+index 5e772392a379..08dd9b8c055a 100644
+--- a/include/linux/pgtable.h
++++ b/include/linux/pgtable.h
+@@ -193,7 +193,7 @@ static inline int ptep_test_and_clear_young(struct vm_a=
+rea_struct *vma,
  #endif
  =
 
--static void __lru_cache_activate_page(struct page *page)
-+/*
-+ * If the page is on the LRU, queue it for activation via
-+ * lru_pvecs.activate_page. Otherwise, assume the page is on a
-+ * pagevec, mark it active and it'll be moved to the active
-+ * LRU on the next drain.
-+ */
-+void activate_page(struct page *page)
- {
- 	struct pagevec *pvec;
- 	int i;
+ #ifndef __HAVE_ARCH_PMDP_TEST_AND_CLEAR_YOUNG
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HAVE_ARCH_PAREN=
+T_PMD_YOUNG)
+ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ 					    unsigned long address,
+ 					    pmd_t *pmdp)
+@@ -214,7 +214,7 @@ static inline int pmdp_test_and_clear_young(struct vm_a=
+rea_struct *vma,
+ 	BUILD_BUG();
+ 	return 0;
+ }
+-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
++#endif /* CONFIG_TRANSPARENT_HUGEPAGE || CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG=
+ */
+ #endif
  =
 
-+	if (PageLRU(page)) {
-+		activate_page_on_lru(page);
-+		return;
-+	}
-+
- 	local_lock(&lru_pvecs.lock);
- 	pvec =3D this_cpu_ptr(&lru_pvecs.lru_add);
- =
-
-@@ -421,16 +432,7 @@ void mark_page_accessed(struct page *page)
- 		 * evictable page accessed has no effect.
- 		 */
- 	} else if (!PageActive(page)) {
--		/*
--		 * If the page is on the LRU, queue it for activation via
--		 * lru_pvecs.activate_page. Otherwise, assume the page is on a
--		 * pagevec, mark it active and it'll be moved to the active
--		 * LRU on the next drain.
--		 */
--		if (PageLRU(page))
--			activate_page(page);
--		else
--			__lru_cache_activate_page(page);
-+		activate_page(page);
- 		ClearPageReferenced(page);
- 		workingset_activation(page);
- 	}
+ #ifndef __HAVE_ARCH_PTEP_CLEAR_YOUNG_FLUSH
 -- =
 
 2.31.1.295.g9ea45b61b8-goog
 
---===============1579379777242497902==--
+--===============6708628433820782201==--
 
