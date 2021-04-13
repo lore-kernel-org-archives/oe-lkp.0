@@ -1,70 +1,113 @@
-Content-Type: multipart/mixed; boundary="===============1631282556905246568=="
+Content-Type: multipart/mixed; boundary="===============1579379777242497902=="
 MIME-Version: 1.0
 From: Yu Zhao <yuzhao@google.com>
 To: lkp@lists.01.org
-Subject: [PATCH v2 04/16] include/linux/cgroup.h: export cgroup_mutex
-Date: Tue, 13 Apr 2021 00:56:21 -0600
-Message-ID: <20210413065633.2782273-5-yuzhao@google.com>
+Subject: [PATCH v2 05/16] mm/swap.c: export activate_page()
+Date: Tue, 13 Apr 2021 00:56:22 -0600
+Message-ID: <20210413065633.2782273-6-yuzhao@google.com>
 In-Reply-To: <20210413065633.2782273-1-yuzhao@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1631282556905246568==
+--===============1579379777242497902==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-cgroup_mutex is needed to synchronize with memcg creations.
+activate_page() is needed to activate pages that are already on lru or
+queued in lru_pvecs.lru_add. The exported function is a merger between
+the existing activate_page() and __lru_cache_activate_page().
 
 Signed-off-by: Yu Zhao <yuzhao@google.com>
 ---
- include/linux/cgroup.h | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ include/linux/swap.h |  1 +
+ mm/swap.c            | 28 +++++++++++++++-------------
+ 2 files changed, 16 insertions(+), 13 deletions(-)
 
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index 4f2f79de083e..bd5744360cfa 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -432,6 +432,18 @@ static inline void cgroup_put(struct cgroup *cgrp)
- 	css_put(&cgrp->self);
+diff --git a/include/linux/swap.h b/include/linux/swap.h
+index 4cc6ec3bf0ab..de2bbbf181ba 100644
+--- a/include/linux/swap.h
++++ b/include/linux/swap.h
+@@ -344,6 +344,7 @@ extern void lru_add_drain_cpu(int cpu);
+ extern void lru_add_drain_cpu_zone(struct zone *zone);
+ extern void lru_add_drain_all(void);
+ extern void rotate_reclaimable_page(struct page *page);
++extern void activate_page(struct page *page);
+ extern void deactivate_file_page(struct page *page);
+ extern void deactivate_page(struct page *page);
+ extern void mark_page_lazyfree(struct page *page);
+diff --git a/mm/swap.c b/mm/swap.c
+index 31b844d4ed94..f20ed56ebbbf 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -334,7 +334,7 @@ static bool need_activate_page_drain(int cpu)
+ 	return pagevec_count(&per_cpu(lru_pvecs.activate_page, cpu)) !=3D 0;
  }
  =
 
-+extern struct mutex cgroup_mutex;
+-static void activate_page(struct page *page)
++static void activate_page_on_lru(struct page *page)
+ {
+ 	page =3D compound_head(page);
+ 	if (PageLRU(page) && !PageActive(page) && !PageUnevictable(page)) {
+@@ -354,7 +354,7 @@ static inline void activate_page_drain(int cpu)
+ {
+ }
+ =
+
+-static void activate_page(struct page *page)
++static void activate_page_on_lru(struct page *page)
+ {
+ 	struct lruvec *lruvec;
+ =
+
+@@ -368,11 +368,22 @@ static void activate_page(struct page *page)
+ }
+ #endif
+ =
+
+-static void __lru_cache_activate_page(struct page *page)
++/*
++ * If the page is on the LRU, queue it for activation via
++ * lru_pvecs.activate_page. Otherwise, assume the page is on a
++ * pagevec, mark it active and it'll be moved to the active
++ * LRU on the next drain.
++ */
++void activate_page(struct page *page)
+ {
+ 	struct pagevec *pvec;
+ 	int i;
+ =
+
++	if (PageLRU(page)) {
++		activate_page_on_lru(page);
++		return;
++	}
 +
-+static inline void cgroup_lock(void)
-+{
-+	mutex_lock(&cgroup_mutex);
-+}
-+
-+static inline void cgroup_unlock(void)
-+{
-+	mutex_unlock(&cgroup_mutex);
-+}
-+
- /**
-  * task_css_set_check - obtain a task's css_set with extra access conditio=
-ns
-  * @task: the task to obtain css_set for
-@@ -446,7 +458,6 @@ static inline void cgroup_put(struct cgroup *cgrp)
-  * as locks used during the cgroup_subsys::attach() methods.
-  */
- #ifdef CONFIG_PROVE_RCU
--extern struct mutex cgroup_mutex;
- extern spinlock_t css_set_lock;
- #define task_css_set_check(task, __c)					\
- 	rcu_dereference_check((task)->cgroups,				\
-@@ -704,6 +715,8 @@ struct cgroup;
- static inline u64 cgroup_id(const struct cgroup *cgrp) { return 1; }
- static inline void css_get(struct cgroup_subsys_state *css) {}
- static inline void css_put(struct cgroup_subsys_state *css) {}
-+static inline void cgroup_lock(void) {}
-+static inline void cgroup_unlock(void) {}
- static inline int cgroup_attach_task_all(struct task_struct *from,
- 					 struct task_struct *t) { return 0; }
- static inline int cgroupstats_build(struct cgroupstats *stats,
+ 	local_lock(&lru_pvecs.lock);
+ 	pvec =3D this_cpu_ptr(&lru_pvecs.lru_add);
+ =
+
+@@ -421,16 +432,7 @@ void mark_page_accessed(struct page *page)
+ 		 * evictable page accessed has no effect.
+ 		 */
+ 	} else if (!PageActive(page)) {
+-		/*
+-		 * If the page is on the LRU, queue it for activation via
+-		 * lru_pvecs.activate_page. Otherwise, assume the page is on a
+-		 * pagevec, mark it active and it'll be moved to the active
+-		 * LRU on the next drain.
+-		 */
+-		if (PageLRU(page))
+-			activate_page(page);
+-		else
+-			__lru_cache_activate_page(page);
++		activate_page(page);
+ 		ClearPageReferenced(page);
+ 		workingset_activation(page);
+ 	}
 -- =
 
 2.31.1.295.g9ea45b61b8-goog
 
---===============1631282556905246568==--
+--===============1579379777242497902==--
 
