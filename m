@@ -1,26 +1,71 @@
-Content-Type: multipart/mixed; boundary="===============2912812213856939424=="
+Content-Type: multipart/mixed; boundary="===============4855722882554811791=="
 MIME-Version: 1.0
-From: Andi Kleen <ak@linux.intel.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v2 00/16] Multigenerational LRU Framework
-Date: Wed, 14 Apr 2021 08:51:30 -0700
-Message-ID: <20210414155130.GU3762101@tassilo.jf.intel.com>
-In-Reply-To: <CAOUHufafMcaG8sOS=1YMy2P_6p0R1FzP16bCwpUau7g1-PybBQ@mail.gmail.com>
+Subject: Re: [sched/fair] 38ac256d1c: stress-ng.vm-segv.ops_per_sec -13.8% regression
+Date: Wed, 21 Apr 2021 11:20:22 +0800
+Message-ID: <20210421032022.GA13430@xsang-OptiPlex-9020>
+In-Reply-To: <87im4on5u5.mognet@arm.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2912812213856939424==
+--===============4855722882554811791==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
->    2) It will not scan PTE tables under non-leaf PMD entries that do not
->    =C2=A0 =C2=A0have the accessed bit set, when
->    =C2=A0 =C2=A0CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG=3Dy.
+hi, Valentin Schneider,
 
-This assumes  that workloads have reasonable locality. Could there
-be a worst case where only one or two pages in each PTE are used,
-so this PTE skipping trick doesn't work?
+On Wed, Apr 14, 2021 at 06:17:38PM +0100, Valentin Schneider wrote:
+> On 14/04/21 13:21, kernel test robot wrote:
+> > Greeting,
+> >
+> > FYI, we noticed a -13.8% regression of stress-ng.vm-segv.ops_per_sec du=
+e to commit:
+> >
+> >
+> > commit: 38ac256d1c3e6b5155071ed7ba87db50a40a4b58 ("[PATCH v5 1/3] sched=
+/fair: Ignore percpu threads for imbalance pulls")
+> > url: https://github.com/0day-ci/linux/commits/Valentin-Schneider/sched-=
+fair-load-balance-vs-capacity-margins/20210408-060830
+> > base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 0a2b65c0=
+3e9b47493e1442bf9c84badc60d9bffb
+> >
+> > in testcase: stress-ng
+> > on test machine: 96 threads Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz wi=
+th 192G memory
+> > with following parameters:
+> >
+> >       nr_threads: 10%
+> >       disk: 1HDD
+> >       testtime: 60s
+> >       fs: ext4
+> >       class: os
+> >       test: vm-segv
+> >       cpufreq_governor: performance
+> >       ucode: 0x5003006
+> >
+> >
+> =
 
--Andi
---===============2912812213856939424==--
+> That's almost exactly the same result as [1], which is somewhat annoying
+> for me because I wasn't able to reproduce those results back then. Save
+> from scrounging the exact same machine to try this out, I'm not sure what=
+'s
+> the best way forward. I guess I can re-run the workload on whatever
+> machines I have and try to spot any potentially problematic pattern in the
+> trace...
+
+what's the machine model you used upon which the regression cannot be repro=
+duced?
+we could check if we have similar model then re-check on the our machine.
+
+BTW, we supplied perf data in original report, not sure if they are helpful?
+or do you have suggestion which kind of data will be more helpful to you?
+we will continuously improve our report based on suggestions from community.
+Thanks a lot!
+
+> =
+
+> [1]: http://lore.kernel.org/r/20210223023004.GB25487(a)xsang-OptiPlex-9020
+--===============4855722882554811791==--
 
