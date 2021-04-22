@@ -1,81 +1,158 @@
-Content-Type: multipart/mixed; boundary="===============2902017138658883508=="
+Content-Type: multipart/mixed; boundary="===============3812154858569263139=="
 MIME-Version: 1.0
-From: Shakeel Butt <shakeelb@google.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [page-reclaim] Re: [PATCH v2 00/16] Multigenerational LRU Framework
-Date: Wed, 14 Apr 2021 08:58:56 -0700
-Message-ID: <CALvZod5jbmw5KPoxpwam212LzH0NJm_JXJ1uiUX2v1LvbRLB_Q@mail.gmail.com>
-In-Reply-To: <93308ea276cfe7997c29ce7132516e830e8fec40.camel@surriel.com>
+Subject: Re: [null_blk] de3510e52b: blktests.block.014.fail
+Date: Thu, 22 Apr 2021 11:29:59 +0800
+Message-ID: <20210422032959.GA31382@xsang-OptiPlex-9020>
+In-Reply-To: <BL0PR04MB651491ED14D710890187B3D1E7759@BL0PR04MB6514.namprd04.prod.outlook.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2902017138658883508==
+--===============3812154858569263139==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 14, 2021 at 6:52 AM Rik van Riel <riel@surriel.com> wrote:
->
-> On Wed, 2021-04-14 at 16:27 +0800, Huang, Ying wrote:
-> > Yu Zhao <yuzhao@google.com> writes:
-> >
-> > > On Wed, Apr 14, 2021 at 12:15 AM Huang, Ying <ying.huang@intel.com>
-> > > wrote:
-> > > >
-> > > NUMA Optimization
-> > > -----------------
-> > > Support NUMA policies and per-node RSS counters.
-> > >
-> > > We only can move forward one step at a time. Fair?
-> >
-> > You don't need to implement that now definitely.  But we can discuss
-> > the
-> > possible solution now.
->
-> That was my intention, too. I want to make sure we don't
-> end up "painting ourselves into a corner" by moving in some
-> direction we have no way to get out of.
->
-> The patch set looks promising, but we need some plan to
-> avoid the worst case behaviors that forced us into rmap
-> based scanning initially.
->
-> > Note that it's possible that only some processes are bound to some
-> > NUMA
-> > nodes, while other processes aren't bound.
->
-> For workloads like PostgresQL or Oracle, it is common
-> to have maybe 70% of memory in a large shared memory
-> segment, spread between all the NUMA nodes, and mapped
-> into hundreds, if not thousands, of processes in the
-> system.
->
-> Now imagine we have an 8 node system, and memory
-> pressure in the DMA32 zone of node 0.
->
-> How will the current VM behave?
->
-> Wha
-> t will the virtual scanning need to do?
->
-> If we can come up with a solution to make virtual
-> scanning scale for that kind of workload, great.
->
-> If not ... if it turns out most of the benefits of
-> the multigeneratinal LRU framework come from sorting
-> the pages into multiple LRUs, and from being able
-> to easily reclaim unmapped pages before having to
-> scan mapped ones, could it be an idea to implement
-> that first, independently from virtual scanning?
->
-> I am all for improving
-> our page reclaim system, I
-> just want to make sure we don't revisit the old traps
-> that forced us where we are today :)
->
+hi, Damien Le Moal,
 
-One potential idea is to take the hybrid 'of rmap and virtual
-scanning' approach. If the number of pages that are targeted to be
-scanned is below some threshold, do rmap otherwise virtual scanning. I
-think we can experimentally find good value for that threshold.
---===============2902017138658883508==--
+On Wed, Apr 07, 2021 at 12:29:11PM +0000, Damien Le Moal wrote:
+> On 2021/04/07 18:02, kernel test robot wrote:
+> > =
+
+> > =
+
+> > Greeting,
+> > =
+
+> > FYI, we noticed the following commit (built with gcc-9):
+> > =
+
+> > commit: de3510e52b0a398261271455562458003b8eea62 ("null_blk: fix comman=
+d timeout completion handling")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > =
+
+> > =
+
+> > in testcase: blktests
+> > version: blktests-x86_64-a210761-1_20210124
+> > with following parameters:
+> > =
+
+> > 	disk: 1SSD
+> > 	test: nvme-group-00
+> > 	ucode: 0x11
+> > =
+
+> > =
+
+> > =
+
+> > on test machine: 288 threads Intel(R) Xeon Phi(TM) CPU 7295 @ 1.50GHz w=
+ith 80G memory
+> > =
+
+> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
+g/backtrace):
+> > =
+
+> > =
+
+> > =
+
+> > If you fix the issue, kindly add following tag
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > =
+
+> > =
+
+> > block/014 (run null-blk with blk-mq and timeout injection configured)
+> > block/014 (run null-blk with blk-mq and timeout injection configured) [=
+failed]
+> >     runtime  ...  71.624s
+> >     --- tests/block/014.out     2021-01-24 06:04:08.000000000 +0000
+> >     +++ /mnt/nvme-group-00/nodev/block/014.out.bad      2021-04-06 09:2=
+1:25.133971868 +0000
+> >     @@ -1,2 +1,377 @@
+> >      Running block/014
+> >     +dd: error reading '/dev/nullb0': Connection timed out
+> >     +dd: error reading '/dev/nullb0': Connection timed out
+> >     +dd: error reading '/dev/nullb0': Connection timed out
+> >     +dd: error reading '/dev/nullb0': Connection timed out
+> >     +dd: error reading '/dev/nullb0': Connection timed out
+> >     +dd: error reading '/dev/nullb0': Connection timed out
+> >     ...
+> >     (Run 'diff -u tests/block/014.out /mnt/nvme-group-00/nodev/block/01=
+4.out.bad' to see the entire diff)
+> =
+
+> This is not a kernel bug. It is a problem with blktest. Before my patch, =
+the
+> timeout error was not propagated back to the user. It is now and causes d=
+d to
+> fail. blktest seeing dd failing reports the test as failed. On the kernel=
+ side,
+> all is good, the reqs are completed as expected.
+> =
+
+> Note that the timeout error is reported back as is, using BLK_STS_TIMEOUT=
+ which
+> becomes ETIMEDOUT, hence the "Connection timed out" error message. May be=
+ we
+> should use the more traditional EIO ? Jens ?
+> =
+
+> In any case, I will send a patch to fix blktest block/014.
+
+Thanks for information!
+we checked the latest blktest repo (https://github.com/osandov/blktests)
+but didn't find the fix. did we miss something?
+
+when patch upstreamed, we could retest and confirm the fix. Thanks
+
+> =
+
+> =
+
+> > =
+
+> > =
+
+> > =
+
+> > To reproduce:
+> > =
+
+> >         git clone https://github.com/intel/lkp-tests.git
+> >         cd lkp-tests
+> >         bin/lkp install                job.yaml  # job file is attached=
+ in this email
+> >         bin/lkp split-job --compatible job.yaml
+> >         bin/lkp run                    compatible-job.yaml
+> > =
+
+> > =
+
+> > =
+
+> > ---
+> > 0DAY/LKP+ Test Infrastructure                   Open Source Technology =
+Center
+> > https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel Cor=
+poration
+> > =
+
+> > Thanks,
+> > Oliver Sang
+> > =
+
+> =
+
+> =
+
+> -- =
+
+> Damien Le Moal
+> Western Digital Research
+--===============3812154858569263139==--
 
