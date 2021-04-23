@@ -1,217 +1,115 @@
-Content-Type: multipart/mixed; boundary="===============4933647879898774613=="
+Content-Type: multipart/mixed; boundary="===============1758241116385340861=="
 MIME-Version: 1.0
-From: Alexey Gladkov <legion@kernel.org>
+From: Matthew Wilcox <willy@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: 08ed4efad6: stress-ng.sigsegv.ops_per_sec -41.9% regression
-Date: Fri, 23 Apr 2021 09:44:31 +0200
-Message-ID: <20210423074431.7ob6aqasome2zjbk@example.org>
-In-Reply-To: <20210423024722.GA13968@xsang-OptiPlex-9020>
+Subject: Re: [mm/writeback] e5dbd33218: will-it-scale.per_process_ops -3.8% regression
+Date: Fri, 23 Apr 2021 13:47:53 +0100
+Message-ID: <20210423124753.GA235567@casper.infradead.org>
+In-Reply-To: <20210423054601.GC13944@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4933647879898774613==
+--===============1758241116385340861==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 23, 2021 at 10:47:22AM +0800, Oliver Sang wrote:
-> hi, Eric,
-> =
+On Fri, Apr 23, 2021 at 01:46:01PM +0800, kernel test robot wrote:
+> FYI, we noticed a -3.8% regression of will-it-scale.per_process_ops due t=
+o commit:
+> commit: e5dbd33218bd8d87ab69f730ab90aed5fab7eb26 ("mm/writeback: Add wait=
+_on_page_writeback_killable")
 
-> On Thu, Apr 08, 2021 at 01:44:43PM -0500, Eric W. Biederman wrote:
-> > Linus Torvalds <torvalds@linux-foundation.org> writes:
-> > =
+That commit just adds a function.  It doesn't add any callers.  It must
+just be moving something around ...
 
-> > > On Thu, Apr 8, 2021 at 1:32 AM kernel test robot <oliver.sang@intel=
-.com> wrote:
-> > >>
-> > >> FYI, we noticed a -41.9% regression of stress-ng.sigsegv.ops_per_sec=
- due to commit
-> > >> 08ed4efad684 ("[PATCH v10 6/9] Reimplement RLIMIT_SIGPENDING on top =
-of ucounts")
-> > >
-> > > Ouch.
-> > =
+> 39f985c8f667c80a e5dbd33218bd8d87ab69f730ab9 =
 
-> > We were cautiously optimistic when no test problems showed up from
-> > the last posting that there was nothing to look at here.
-> > =
+> ---------------- --------------------------- =
 
-> > Unfortunately it looks like the bots just missed the last posting. =
+>          %stddev     %change         %stddev
+>              \          |                \  =
 
-> =
-
-> this report is upon v10. do you have newer version which hope bot test?
-
-Yes. I posted a new version of this patch set. I would be very grateful if
-you could test it.
-
-https://lore.kernel.org/lkml/cover.1619094428.git.legion(a)kernel.org/
-
-> please be noted, sorry to say, due to various reasons, it will be a
-> big challenge for us to capture each version of a patch set.
-> =
-
-> e.g. we didn't make out a similar performance regression for
-> v8/v9 version of this one..
-> =
-
-> > =
-
-> > So it seems we are finally pretty much at correct code in need
-> > of performance tuning.
-> > =
-
-> > > I *think* this test may be testing "send so many signals that it
-> > > triggers the signal queue overflow case".
-> > >
-> > > And I *think* that the performance degradation may be due to lots of
-> > > unnecessary allocations, because ity looks like that commit changes
-> > > __sigqueue_alloc() to do
-> > >
-> > >         struct sigqueue *q =3D kmem_cache_alloc(sigqueue_cachep, flag=
-s);
-> > >
-> > > *before* checking the signal limit, and then if the signal limit was
-> > > exceeded, it will just be free'd instead.
-> > >
-> > > The old code would check the signal count against RLIMIT_SIGPENDING
-> > > *first*, and if there were m ore pending signals then it wouldn't do
-> > > anything at all (including not incrementing that expensive atomic
-> > > count).
-> > =
-
-> > This is an interesting test in a lot of ways as it is testing the
-> > synchronous signal delivery path caused by an exception.  The test
-> > is either executing *ptr =3D 0 (where ptr points to a read-only page)
-> > or it executes an x86 instruction that is excessively long.
-> > =
-
-> > I have found the code but I haven't figured out how it is being
-> > called yet.  The core loop is just:
-> > 	for(;;) {
-> > 		sigaction(SIGSEGV, &action, NULL);
-> > 		sigaction(SIGILL, &action, NULL);
-> > 		sigaction(SIGBUS, &action, NULL);
-> > =
-
-> > 		ret =3D sigsetjmp(jmp_env, 1);
-> > 		if (done())
-> >                 	break;
-> > 		if (ret) {
-> >                 	/* verify signal */
-> >                 } else {
-> >                 	*ptr =3D 0;
-> >                 }
-> > 	}
-> > =
-
-> > Code like that fundamentally can not be multi-threaded.  So the only way
-> > the sigpending limit is being hit is if there are more processes running
-> > that code simultaneously than the size of the limit.
-> > =
-
-> > Further it looks like stress-ng pushes RLIMIT_SIGPENDING as high as it
-> > will go before the test starts.
-> > =
-
-> > =
-
-> > > Also, the old code was very careful to only do the "get_user()" for
-> > > the *first* signal it added to the queue, and do the "put_user()" for
-> > > when removing the last signal. Exactly because those atomics are very
-> > > expensive.
-> > >
-> > > The new code just does a lot of these atomics unconditionally.
-> > =
-
-> > Yes. That seems a likely culprit.
-> > =
-
-> > > I dunno. The profile data in there is a bit hard to read, but there's
-> > > a lot more cachee misses, and a *lot* of node crossers:
-> > >
-> > >>    5961544          +190.4%   17314361        perf-stat.i.cache-miss=
+>    9359770            -3.8%    9001769        will-it-scale.16.processes
+>     584985            -3.8%     562610        will-it-scale.per_process_o=
+ps
+>    9359770            -3.8%    9001769        will-it-scale.workload
+>      15996            -1.2%      15811        proc-vmstat.nr_kernel_stack
+>      23577 =C2=B1 10%     +18.5%      27937 =C2=B1  7%  softirqs.CPU48.SC=
+HED
+>       5183 =C2=B1 41%     +47.2%       7630 =C2=B1  7%  interrupts.CPU1.N=
+MI:Non-maskable_interrupts
+>       5183 =C2=B1 41%     +47.2%       7630 =C2=B1  7%  interrupts.CPU1.P=
+MI:Performance_monitoring_interrupts
+>      54.33 =C2=B1 12%     +18.4%      64.33 =C2=B1  7%  perf-sched.wait_a=
+nd_delay.count.schedule_hrtimeout_range_clock.poll_schedule_timeout.constpr=
+op.0.do_sys_poll
+>     153.34 =C2=B1 24%     -45.9%      83.00 =C2=B1 25%  perf-sched.wait_a=
+nd_delay.max.ms.schedule_timeout.rcu_gp_kthread.kthread.ret_from_fork
+>     153.33 =C2=B1 24%     -45.9%      82.99 =C2=B1 25%  perf-sched.wait_t=
+ime.max.ms.schedule_timeout.rcu_gp_kthread.kthread.ret_from_fork
+>  2.424e+10            -3.8%  2.332e+10        perf-stat.i.branch-instruct=
+ions
+>       0.47            +3.7%       0.48        perf-stat.i.cpi
+>  2.529e+10            -4.0%  2.428e+10        perf-stat.i.dTLB-loads
+>   1.15e+10            -3.8%  1.106e+10        perf-stat.i.dTLB-stores
+>   54249733            -4.8%   51627939        perf-stat.i.iTLB-load-misses
+>  1.004e+11            -3.8%  9.661e+10        perf-stat.i.instructions
+>       2.15            -3.6%       2.07        perf-stat.i.ipc
+>     693.66            -3.9%     666.70        perf-stat.i.metric.M/sec
+>       0.46            +3.7%       0.48        perf-stat.overall.cpi
+>       2.15            -3.6%       2.08        perf-stat.overall.ipc
+>  2.416e+10            -3.8%  2.324e+10        perf-stat.ps.branch-instruc=
+tions
+>   2.52e+10            -4.0%  2.419e+10        perf-stat.ps.dTLB-loads
+>  1.146e+10            -3.8%  1.102e+10        perf-stat.ps.dTLB-stores
+>   54065825            -4.8%   51454019        perf-stat.ps.iTLB-load-miss=
 es
-> > >>   22107466          +119.2%   48457656        perf-stat.i.cache-refe=
-rences
-> > >>     163292 =C4=85  3%   +4582.0%    7645410        perf-stat.i.node-=
-load-misses
-> > >>     227388 =C4=85  2%   +3708.8%    8660824        perf-stat.i.node-=
-loads
-> > >
-> > > and (probably as a result) average instruction costs have gone up eno=
-rmously:
-> > >
-> > >>       3.47           +66.8%       5.79        perf-stat.overall.cpi
-> > >>      22849           -65.6%       7866        perf-stat.overall.cycl=
-es-between-cache-misses
-> > >
-> > > and it does seem to be at least partly about "put_ucounts()":
-> > >
-> > >>       0.00            +4.5        4.46        perf-profile.calltrace=
-.cycles-pp.put_ucounts.__sigqueue_free.get_signal.arch_do_signal_or_restart=
-.exit_to_user_mode_prepare
-> > >
-> > > and a lot of "get_ucounts()".
-> > >
-> > > But it may also be that the new "get sigpending" is just *so* much
-> > > more expensive than it used to be.
-> > =
+>  1.001e+11            -3.8%  9.628e+10        perf-stat.ps.instructions
+>  3.025e+13            -3.9%  2.908e+13        perf-stat.total.instructions
+>       0.89 =C2=B1 14%      -0.1        0.77 =C2=B1 11%  perf-profile.call=
+trace.cycles-pp.atime_needs_update.touch_atime.shmem_mmap.mmap_region.do_mm=
+ap
+>       0.14 =C2=B1 13%      -0.1        0.04 =C2=B1 71%  perf-profile.chil=
+dren.cycles-pp.common_mmap
+>       0.61 =C2=B1 12%      -0.1        0.52 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.common_file_perm
+>       0.21 =C2=B1  8%      -0.0        0.17 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.vma_set_page_prot
+>       0.12 =C2=B1  8%      -0.0        0.09 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.blocking_notifier_call_chain
+>       0.12 =C2=B1 14%      -0.0        0.09 =C2=B1 15%  perf-profile.chil=
+dren.cycles-pp.get_mmap_base
+>       0.09 =C2=B1  8%      -0.0        0.07 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.vm_pgprot_modify
+>       0.13 =C2=B1 15%      +0.1        0.19 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.cap_capable
+>       0.03 =C2=B1102%      +0.1        0.12 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.munmap(a)plt
+>       0.14 =C2=B1 13%      +0.1        0.24 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.testcase
+>       0.33 =C2=B1 10%      -0.1        0.23 =C2=B1 10%  perf-profile.self=
+.cycles-pp.cap_vm_enough_memory
+>       0.13 =C2=B1 11%      -0.1        0.03 =C2=B1100%  perf-profile.self=
+.cycles-pp.common_mmap
+>       0.48 =C2=B1 12%      -0.1        0.41 =C2=B1 12%  perf-profile.self=
+.cycles-pp.common_file_perm
+>       0.49 =C2=B1 12%      -0.1        0.43 =C2=B1 13%  perf-profile.self=
+.cycles-pp.vm_area_alloc
+>       0.12 =C2=B1  8%      -0.0        0.09 =C2=B1 12%  perf-profile.self=
+.cycles-pp.blocking_notifier_call_chain
+>       0.12 =C2=B1 13%      -0.0        0.09 =C2=B1 14%  perf-profile.self=
+.cycles-pp.get_mmap_base
+>       0.11 =C2=B1  8%      +0.0        0.16 =C2=B1 10%  perf-profile.self=
+.cycles-pp.__x64_sys_munmap
+>       0.11 =C2=B1 14%      +0.1        0.18 =C2=B1  8%  perf-profile.self=
+.cycles-pp.cap_capable
+>       0.12 =C2=B1 11%      +0.1        0.20 =C2=B1  6%  perf-profile.self=
+.cycles-pp.testcase
+>       0.01 =C2=B1223%      +0.1        0.11 =C2=B1 13%  perf-profile.self=
+.cycles-pp.munmap(a)plt
 
-> > That too is possible.
-> > =
-
-> > That node-load-misses number does look like something is bouncing back
-> > and forth between the nodes a lot more.  So I suspect stress-ng is
-> > running multiple copies of the sigsegv test in different processes at
-> > once.
-> > =
-
-> > =
-
-> > =
-
-> > That really suggests cache line ping pong from get_ucounts and
-> > incrementing sigpending.
-> > =
-
-> > It surprises me that obtaining the cache lines exclusively is
-> > the dominant cost on this code path but obtaining two cache lines
-> > exclusively instead of one cache cache line exclusively is consistent
-> > with a causing the exception delivery to take nearly twice as long.
-> > =
-
-> > For the optimization we only care about the leaf count so with a little
-> > care we can restore the optimization.  So that is probably the thing
-> > to do here.  The fewer changes to worry about the less likely to find
-> > surprises.
-> > =
-
-> > =
-
-> > =
-
-> > That said for this specific case there is a lot of potential room for
-> > improvement.  As this is a per thread signal the code update sigpending
-> > in commit_cred and never worry about needing to pin the struct
-> > user_struct or struct ucounts.  As this is a synchronous signal we could
-> > skip the sigpending increment, skip the signal queue entirely, and
-> > deliver the signal to user-space immediately.  The removal of all cache
-> > ping pongs might make it worth it.
-> > =
-
-> > There is also Thomas Gleixner's recent optimization to cache one
-> > sigqueue entry per task to give more predictable behavior.  That
-> > would remove the cost of the allocation.
-> > =
-
-> > Eric
-> =
-
-
--- =
-
-Rgrds, legion
-
---===============4933647879898774613==--
+I'm struggling to see anything in that that says anything other than
+"we did 3-4% less work".  Maybe someone else has something useful to
+say about it?
+--===============1758241116385340861==--
 
