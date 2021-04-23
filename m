@@ -1,181 +1,198 @@
-Content-Type: multipart/mixed; boundary="===============5140551880095982457=="
+Content-Type: multipart/mixed; boundary="===============2680129836363449600=="
 MIME-Version: 1.0
-From: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [clocksource] 6c52b5f3cf: stress-ng.opcode.ops_per_sec -14.4% regression
-Date: Fri, 23 Apr 2021 10:15:56 +0800
-Message-ID: <d3a01227-cec5-2670-5525-36a418c5f4a0@linux.intel.com>
-In-Reply-To: <20210422142454.GD975577@paulmck-ThinkPad-P17-Gen-1>
+Subject: Re: 08ed4efad6: stress-ng.sigsegv.ops_per_sec -41.9% regression
+Date: Fri, 23 Apr 2021 10:47:22 +0800
+Message-ID: <20210423024722.GA13968@xsang-OptiPlex-9020>
+In-Reply-To: <m1im4wmx9g.fsf@fess.ebiederm.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5140551880095982457==
+--===============2680129836363449600==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+hi, Eric,
 
-
-On 4/22/2021 10:24 PM, Paul E. McKenney wrote:
-> On Thu, Apr 22, 2021 at 03:41:26PM +0800, Feng Tang wrote:
->> Hi Paul,
->>
->> On Thu, Apr 22, 2021 at 02:58:27PM +0800, Xing Zhengjun wrote:
->>>
->>>
->>> On 4/21/2021 9:42 PM, Paul E. McKenney wrote:
->>>> On Wed, Apr 21, 2021 at 02:07:19PM +0800, Xing, Zhengjun wrote:
->>>>>
->>>>> On 4/20/2021 10:05 PM, Paul E. McKenney wrote:
->>>>>> On Tue, Apr 20, 2021 at 06:43:31AM -0700, Paul E. McKenney wrote:
->>>>>>> On Tue, Apr 20, 2021 at 02:49:34PM +0800, kernel test robot wrote:
->>>>>>>> Greeting,
->>>>>>>>
->>>>>>>> FYI, we noticed a -14.4% regression of stress-ng.opcode.ops_per_se=
-c due to commit:
->>>>>>>>
->>>>>>>>
->>>>>>>> commit: 6c52b5f3cfefd6e429efc4413fd25e3c394e959f ("clocksource: Re=
-duce WATCHDOG_THRESHOLD")
->>>>>>>> https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git=
- dev.2021.04.13a
->>>>>>>>
->>>>>>>>
->>>>>>>> in testcase: stress-ng
->>>>>>>> on test machine: 96 threads Intel(R) Xeon(R) Gold 6252 CPU @ 2.10G=
-Hz with 192G memory
->>>>>>>> with following parameters:
->>>>>>>>
->>>>>>>> 	nr_threads: 10%
->>>>>>>> 	disk: 1HDD
->>>>>>>> 	testtime: 60s
->>>>>>>> 	fs: ext4
->>>>>>>> 	class: os
->>>>>>>> 	test: opcode
->>>>>>>> 	cpufreq_governor: performance
->>>>>>>> 	ucode: 0x5003006
->>>>>>> Hmmm...  I will try a less-aggressive reduction.  Thank you for tes=
-ting!
->>>>>> But wait...  This code is only running twice per second.  It is very
->>>>>> hard to believe that a clock-read retry twice per second is worth 2%=
- of
->>>>>> performance, let alone 14.4%.
->>>>>>
->>>>>> Is something else perhaps going on here?
->>>>>>
->>>>>> For example, did this run enable any of the new diagnositic clocksou=
-rce.*
->>>>>> kernel parameters?
->>>>>>
->>>>>> 								Thanx, Paul
->>>>> I attached the kernel log, the following logs are related with the
->>>>> clocksource.
->>>>> [=C2=A0=C2=A0=C2=A0 3.453206] clocksource: timekeeping watchdog on CP=
-U1: Marking
->>>>> clocksource 'tsc-early' as unstable because the skew is too large:
->>>>> [=C2=A0=C2=A0=C2=A0 3.455197] clocksource:=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 'hpet' wd_now: 288fcc0
->>>>> wd_last: 1a8b333 mask: ffffffff
->>>>> [=C2=A0=C2=A0=C2=A0 3.455199] clocksource:=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 'tsc-early' cs_now:
->>>>> 1def309ebfdee cs_last: 1def2bd70d92c mask: ffffffffffffffff
->>>>> [=C2=A0=C2=A0=C2=A0 3.455201] clocksource:=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 No current clocksource.
->>>>> [=C2=A0=C2=A0=C2=A0 3.457197] tsc: Marking TSC unstable due to clocks=
-ource watchdog
->>>>>
->>>>> 6c52b5f3cf reduced WATCHDOG_THRESHOLD, then in clocksource_watchdog, =
-the
->>>>> warning logs are print, the TSC is marked as unstable.
->>>>> /* Check the deviation from the watchdog clocksource. */
->>>> Aha, so this system really does have an unstable TSC!  Which means that
->>>> the patch is operating as designed.
->>>>
->>>> Or are you saying that this is a false positive?
->>>>
->>>> 							Thanx, Paul
->>>
->>> It happened during boot and before TSC calibration
->>> (tsc_refine_calibration_work()), so on some machines "abs(cs_nsec - wd_=
-nsec)
->>>> WATCHDOG_THRESHOLD", WATCHDOG_THRESHOLD is set too small at that time.
->>> After TSC calibrated, abs(cs_nsec - wd_nsec) should be very small,
->>> WATCHDOG_THRESHOLD for here is ok. So I suggest increasing the
->>> WATCHDOG_THRESHOLD before TSC calibration, for example, the clocks be s=
-kewed
->>> by more than 1% to be marked unstable.
+On Thu, Apr 08, 2021 at 01:44:43PM -0500, Eric W. Biederman wrote:
+> Linus Torvalds <torvalds@linux-foundation.org> writes:
 > =
 
-> This is common code, so we do need an architecture-independent way to
-> handle this.
+> > On Thu, Apr 8, 2021 at 1:32 AM kernel test robot <oliver.sang@intel.c=
+om> wrote:
+> >>
+> >> FYI, we noticed a -41.9% regression of stress-ng.sigsegv.ops_per_sec d=
+ue to commit
+> >> 08ed4efad684 ("[PATCH v10 6/9] Reimplement RLIMIT_SIGPENDING on top of=
+ ucounts")
+> >
+> > Ouch.
 > =
 
->> As Zhengjun measuered, this is a Cascade Lake platform, and it has 2
->> times calibration of tsc, the first one of early quick calibration gives
->> 2100 MHz, while the later accurate calibration gives 2095 MHz, so there
->> is about 2.5/1000 deviation for the first number, which just exceeds the
->> 1/1000 threshold you set :)
+> We were cautiously optimistic when no test problems showed up from
+> the last posting that there was nothing to look at here.
 > =
 
-> Even my 2/1000 initial try would have caused this, then.  ;-)
-> =
+> Unfortunately it looks like the bots just missed the last posting. =
 
-> But even 1/1000 deviation would cause any number of applications some
-> severe heartburn, so I am not at all happy with the thought of globally
-> increasing to (say) 3/1000.
-> =
 
->> Following is the tsc freq info from kernel log
->>
->> [    0.000000] DMI: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86=
-B.02.01.0008.031920191559 03/19/2019
->> [    0.000000] tsc: Detected 2100.000 MHz processor
->> ...
->> [   13.859982] tsc: Refined TSC clocksource calibration: 2095.077 MHz
-> =
+this report is upon v10. do you have newer version which hope bot test?
 
-> So what are our options?
-> =
+please be noted, sorry to say, due to various reasons, it will be a
+big challenge for us to capture each version of a patch set.
 
-> 1.	Clear CLOCK_SOURCE_MUST_VERIFY from tsc-early.
-> =
-
-> 2.	#1, but add tsc-early into the watchdog list and set
-> 	CLOCK_SOURCE_MUST_VERIFY once it is better calibrated.
-> =
-
-> 3.	Add a field to struct clocksource that, if non-zero, gives
-> 	the maximum drift in nanoseconds per half second (AKA
-> 	WATCHDOG_INTERVAL).  If zero, the WATCHDOG_MAX_SKEW value
-> 	is used.  Set this to (say) 150,000ns for tsc-early.
-> =
-
-> 4.	As noted earlier, increase WATCHDOG_MAX_SKEW to 150 microseconds,
-> 	which again is not a good approach given the real-world needs
-> 	of real-world applications.
-> =
-
-> 5.	Your ideas here.
-How about set two watchdog thresholds, one for before =
-
-calibration(1/100), the other for after calibration(1/1000)? For =
-
-example, u64 watchdog_thresholds[2].
+e.g. we didn't make out a similar performance regression for
+v8/v9 version of this one..
 
 > =
 
-> All in all, I am glad that I made the patch that decreases
-> WATCHDOG_MAX_SKEW be separate and at the end of the series.  ;-)
+> So it seems we are finally pretty much at correct code in need
+> of performance tuning.
 > =
 
-> 							Thanx, Paul
+> > I *think* this test may be testing "send so many signals that it
+> > triggers the signal queue overflow case".
+> >
+> > And I *think* that the performance degradation may be due to lots of
+> > unnecessary allocations, because ity looks like that commit changes
+> > __sigqueue_alloc() to do
+> >
+> >         struct sigqueue *q =3D kmem_cache_alloc(sigqueue_cachep, flags);
+> >
+> > *before* checking the signal limit, and then if the signal limit was
+> > exceeded, it will just be free'd instead.
+> >
+> > The old code would check the signal count against RLIMIT_SIGPENDING
+> > *first*, and if there were m ore pending signals then it wouldn't do
+> > anything at all (including not incrementing that expensive atomic
+> > count).
 > =
 
+> This is an interesting test in a lot of ways as it is testing the
+> synchronous signal delivery path caused by an exception.  The test
+> is either executing *ptr =3D 0 (where ptr points to a read-only page)
+> or it executes an x86 instruction that is excessively long.
+> =
 
--- =
+> I have found the code but I haven't figured out how it is being
+> called yet.  The core loop is just:
+> 	for(;;) {
+> 		sigaction(SIGSEGV, &action, NULL);
+> 		sigaction(SIGILL, &action, NULL);
+> 		sigaction(SIGBUS, &action, NULL);
+> =
 
-Zhengjun Xing
---===============5140551880095982457==--
+> 		ret =3D sigsetjmp(jmp_env, 1);
+> 		if (done())
+>                 	break;
+> 		if (ret) {
+>                 	/* verify signal */
+>                 } else {
+>                 	*ptr =3D 0;
+>                 }
+> 	}
+> =
+
+> Code like that fundamentally can not be multi-threaded.  So the only way
+> the sigpending limit is being hit is if there are more processes running
+> that code simultaneously than the size of the limit.
+> =
+
+> Further it looks like stress-ng pushes RLIMIT_SIGPENDING as high as it
+> will go before the test starts.
+> =
+
+> =
+
+> > Also, the old code was very careful to only do the "get_user()" for
+> > the *first* signal it added to the queue, and do the "put_user()" for
+> > when removing the last signal. Exactly because those atomics are very
+> > expensive.
+> >
+> > The new code just does a lot of these atomics unconditionally.
+> =
+
+> Yes. That seems a likely culprit.
+> =
+
+> > I dunno. The profile data in there is a bit hard to read, but there's
+> > a lot more cachee misses, and a *lot* of node crossers:
+> >
+> >>    5961544          +190.4%   17314361        perf-stat.i.cache-misses
+> >>   22107466          +119.2%   48457656        perf-stat.i.cache-refere=
+nces
+> >>     163292 =C4=85  3%   +4582.0%    7645410        perf-stat.i.node-lo=
+ad-misses
+> >>     227388 =C4=85  2%   +3708.8%    8660824        perf-stat.i.node-lo=
+ads
+> >
+> > and (probably as a result) average instruction costs have gone up enorm=
+ously:
+> >
+> >>       3.47           +66.8%       5.79        perf-stat.overall.cpi
+> >>      22849           -65.6%       7866        perf-stat.overall.cycles=
+-between-cache-misses
+> >
+> > and it does seem to be at least partly about "put_ucounts()":
+> >
+> >>       0.00            +4.5        4.46        perf-profile.calltrace.c=
+ycles-pp.put_ucounts.__sigqueue_free.get_signal.arch_do_signal_or_restart.e=
+xit_to_user_mode_prepare
+> >
+> > and a lot of "get_ucounts()".
+> >
+> > But it may also be that the new "get sigpending" is just *so* much
+> > more expensive than it used to be.
+> =
+
+> That too is possible.
+> =
+
+> That node-load-misses number does look like something is bouncing back
+> and forth between the nodes a lot more.  So I suspect stress-ng is
+> running multiple copies of the sigsegv test in different processes at
+> once.
+> =
+
+> =
+
+> =
+
+> That really suggests cache line ping pong from get_ucounts and
+> incrementing sigpending.
+> =
+
+> It surprises me that obtaining the cache lines exclusively is
+> the dominant cost on this code path but obtaining two cache lines
+> exclusively instead of one cache cache line exclusively is consistent
+> with a causing the exception delivery to take nearly twice as long.
+> =
+
+> For the optimization we only care about the leaf count so with a little
+> care we can restore the optimization.  So that is probably the thing
+> to do here.  The fewer changes to worry about the less likely to find
+> surprises.
+> =
+
+> =
+
+> =
+
+> That said for this specific case there is a lot of potential room for
+> improvement.  As this is a per thread signal the code update sigpending
+> in commit_cred and never worry about needing to pin the struct
+> user_struct or struct ucounts.  As this is a synchronous signal we could
+> skip the sigpending increment, skip the signal queue entirely, and
+> deliver the signal to user-space immediately.  The removal of all cache
+> ping pongs might make it worth it.
+> =
+
+> There is also Thomas Gleixner's recent optimization to cache one
+> sigqueue entry per task to give more predictable behavior.  That
+> would remove the cost of the allocation.
+> =
+
+> Eric
+--===============2680129836363449600==--
 
