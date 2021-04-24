@@ -1,183 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============7452849054905055952=="
+Content-Type: multipart/mixed; boundary="===============7949701077387115575=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Yu Zhao <yuzhao@google.com>
 To: lkp@lists.01.org
-Subject: Re: [clocksource] 6c52b5f3cf: stress-ng.opcode.ops_per_sec -14.4% regression
-Date: Fri, 23 Apr 2021 16:39:54 -0700
-Message-ID: <20210423233954.GA3200520@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20210423211444.GO975577@paulmck-ThinkPad-P17-Gen-1>
+Subject: Re: [PATCH v2 00/16] Multigenerational LRU Framework
+Date: Fri, 23 Apr 2021 20:33:17 -0600
+Message-ID: <CAOUHufZY62nDZiPvFH_SuMLN-4Nxhr0HeOo06RWdTcE9QbhhXg@mail.gmail.com>
+In-Reply-To: <20210415095708.GA6874@lespinasse.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7452849054905055952==
+--===============7949701077387115575==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 23, 2021 at 02:14:44PM -0700, Paul E. McKenney wrote:
-> On Fri, Apr 23, 2021 at 09:14:49PM +0200, Thomas Gleixner wrote:
-> > On Thu, Apr 22 2021 at 07:24, Paul E. McKenney wrote:
-> > > On Thu, Apr 22, 2021 at 03:41:26PM +0800, Feng Tang wrote:
-> > > So what are our options?
-> > >
-> > > 1.	Clear CLOCK_SOURCE_MUST_VERIFY from tsc-early.
-> > >
-> > > 2.	#1, but add tsc-early into the watchdog list and set
-> > > 	CLOCK_SOURCE_MUST_VERIFY once it is better calibrated.
-> > >
-> > > 3.	Add a field to struct clocksource that, if non-zero, gives
-> > > 	the maximum drift in nanoseconds per half second (AKA
-> > > 	WATCHDOG_INTERVAL).  If zero, the WATCHDOG_MAX_SKEW value
-> > > 	is used.  Set this to (say) 150,000ns for tsc-early.
-> > >
-> > > 4.	As noted earlier, increase WATCHDOG_MAX_SKEW to 150 microseconds,
-> > > 	which again is not a good approach given the real-world needs
-> > > 	of real-world applications.
-> > >
-> > > 5.	Your ideas here.
-> > =
+On Sun, Apr 18, 2021 at 12:48 AM Michel Lespinasse
+<michel@lespinasse.org> wrote:
+> On Thu, Apr 15, 2021 at 01:13:13AM -0600, Yu Zhao wrote:
+> > Page table scanning doesn't replace the existing rmap walk. It is
+> > complementary and only happens when it is likely that most of the
+> > pages on a system under pressure have been referenced, i.e., out of
+> > *inactive* pages, by definition of the existing implementation. Under
+> > such a condition, scanning *active* pages one by one with the rmap is
+> > likely to cost more than scanning them all at once via page tables.
+> > When we evict *inactive* pages, we still use the rmap and share a
+> > common path with the existing code.
+> >
+> > Page table scanning falls back to the rmap walk if the page tables of
+> > a process are apparently sparse, i.e., rss < size of the page tables.
+>
+> Could you expand a bit more as to how page table scanning and rmap
+> scanning coexist ? Say, there is some memory pressure and you want to
+> identify good candidate pages to recaim. You could scan processes with
+> the page table scanning method, or you could scan the lru list through
+> the rmap method. How do you mix the two - when you use the lru/rmap
+> method, won't you encounter both pages that are mapped in "dense"
+> processes where scanning page tables would have been better, and pages
+> that are mapped in "sparse" processes where you are happy to be using
+> rmap, and even pges that are mapped into both types of processes at
+> once ?  Or, can you change the lru/rmap scan so that it will efficiently
+> skip over all dense processes when you use it ?
 
-> > #3 or add a flag to the clocksource which says 'frequency is guesswork'=
- and
-> > increase the threshold based on that.
-> > =
+Hi Michel,
 
-> > If that flag is still set max_drift is !=3D 0 after 20 seconds yell.
-> =
+Sorry for the late reply. I was out of town and am still catching up on ema=
+ils.
 
-> I made it 60 seconds based on recent experience with large systems,
-> but sounds good!
-> =
+That's a great question. Currently the page table scanning isn't smart
+enough to know where dense regions are. My plan was to improve it
+gradually but it seems it couldn't wait because people have major
+concerns over this.
 
-> And the calls to clocksource_unregister(&clocksource_tsc_early) mean
-> that it is not necessary to actually clear the .max_drift field, if
-> I understand correctly.
-> =
+At the moment, the page table scanning decides if a process is worthy
+by checking its RSS against the size of its page tables. This can only
+avoid extremely sparse regions, meaning the page table scanning will
+scan regions that ideally should be covered by the rmap, for some
+worse case scenarios. My next step is to add a bloom filter so it can
+quickly determine dense regions and target them only.
 
-> It looks to me that init_tsc_clocksource() is invoked at device_initcall()
-> time, and that it either immediately unregisters clocksource_tsc_early
-> (known TSC frequency), or schedules a delayed work to make
-> tsc_refine_calibration_work() do the calibration and the unregister.
-> =
+Given what I just said, the rmap is unlikely to encounter dense
+regions, and that's why the perf profile shows its cpu usage drops
+from ~30% to ~5%.
 
-> Please see below for an untested patch.
+Now the question is how we build the bloom filter. A simple answer is
+to let the rmap do the legwork, i.e., when it encounters dense
+regions, add them to the filter. Of course this means we'll have to
+use the rmap more than we do now, which is not ideal for some
+workloads but necessary to avoid worst case scenarios.
 
-And after a bit of testing, with two of the N bugs fixed...
-
-							Thanx, Paul
-
-------------------------------------------------------------------------
-
-commit e85f58eefb8e4803a3a6a0c68e5bdd82ccf2b039
-Author: Paul E. McKenney <paulmck@kernel.org>
-Date:   Fri Apr 23 15:53:55 2021 -0700
-
-    clocksource: Forgive tsc_early pre-calibration drift
-    =
-
-    Because the x86 tsc_early clocksource is given a quick and semi-accurate
-    calibration (by design!), it might have drift rates well in excess of
-    the 0.1% limit that is in the process of being adopted.
-    =
-
-    Therefore, add a max_drift field to the clocksource structure that, when
-    non-zero, specifies the maximum allowable drift rate in nanoseconds over
-    a half-second period.  The tsc_early clocksource initializes this to fi=
-ve
-    miliseconds, which corresponds to the 1% drift rate limit suggested by
-    Xing Zhengjun.  This max_drift field is intended only for early boot,
-    so clocksource_watchdog() splats if it encounters a non-zero value in
-    this field more than 60 seconds after boot, inspired by a suggestion by
-    Thomas Gleixner.
-    =
-
-    Cc: John Stultz <john.stultz@linaro.org>
-    Cc: Thomas Gleixner <tglx@linutronix.de>
-    Cc: Stephen Boyd <sboyd@kernel.org>
-    Cc: Jonathan Corbet <corbet@lwn.net>
-    Cc: Mark Rutland <Mark.Rutland@arm.com>
-    Cc: Marc Zyngier <maz@kernel.org>
-    Cc: Andi Kleen <ak@linux.intel.com>
-    Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-    Cc: Feng Tang <feng.tang@intel.com>
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-
-diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index 56289170753c..7192b8950322 100644
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -1127,6 +1127,7 @@ static int tsc_cs_enable(struct clocksource *cs)
- static struct clocksource clocksource_tsc_early =3D {
- 	.name			=3D "tsc-early",
- 	.rating			=3D 299,
-+	.max_drift		=3D 5 * NSEC_PER_MSEC,
- 	.read			=3D read_tsc,
- 	.mask			=3D CLOCKSOURCE_MASK(64),
- 	.flags			=3D CLOCK_SOURCE_IS_CONTINUOUS |
-diff --git a/include/linux/clocksource.h b/include/linux/clocksource.h
-index 83a3ebff7456..07d25a158d7a 100644
---- a/include/linux/clocksource.h
-+++ b/include/linux/clocksource.h
-@@ -42,6 +42,10 @@ struct module;
-  * @shift:		Cycle to nanosecond divisor (power of two)
-  * @max_idle_ns:	Maximum idle time permitted by the clocksource (nsecs)
-  * @maxadj:		Maximum adjustment value to mult (~11%)
-+ * @max_drift:		Maximum drift rate in nanoseconds per half second.
-+ *			Zero says to use default WATCHDOG_THRESHOLD.
-+ *			A non-zero value for ->max_drift more than 60 seconds after boot
-+ *			will result in a splat.
-  * @archdata:		Optional arch-specific data
-  * @max_cycles:		Maximum safe cycle value which won't overflow on
-  *			multiplication
-@@ -93,6 +97,7 @@ struct clocksource {
- 	u32			shift;
- 	u64			max_idle_ns;
- 	u32			maxadj;
-+	u32			max_drift;
- #ifdef CONFIG_ARCH_CLOCKSOURCE_DATA
- 	struct arch_clocksource_data archdata;
- #endif
-diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
-index a1f90e2b1039..001a9ed1edf3 100644
---- a/kernel/time/clocksource.c
-+++ b/kernel/time/clocksource.c
-@@ -126,6 +126,7 @@ static void __clocksource_change_rating(struct clocksou=
-rce *cs, int rating);
-  */
- #define WATCHDOG_INTERVAL (HZ >> 1)
- #define WATCHDOG_THRESHOLD (200 * NSEC_PER_USEC)
-+#define WATCHDOG_SYNC_FORGIVENESS (HZ * 60UL)
- =
-
- /*
-  * Maximum permissible delay between two readouts of the watchdog
-@@ -377,6 +378,7 @@ static void clocksource_watchdog(struct timer_list *unu=
-sed)
- 	int next_cpu, reset_pending;
- 	int64_t wd_nsec, cs_nsec;
- 	struct clocksource *cs;
-+	u32 md;
- =
-
- 	spin_lock(&watchdog_lock);
- 	if (!watchdog_running)
-@@ -423,7 +425,13 @@ static void clocksource_watchdog(struct timer_list *un=
-used)
- 			continue;
- =
-
- 		/* Check the deviation from the watchdog clocksource. */
--		if (abs(cs_nsec - wd_nsec) > WATCHDOG_THRESHOLD) {
-+		if (!cs->max_drift) {
-+			md =3D WATCHDOG_MAX_SKEW;
-+		} else {
-+			WARN_ON_ONCE(time_after(jiffies, WATCHDOG_SYNC_FORGIVENESS));
-+			md =3D cs->max_drift;
-+		}
-+		if (abs(cs_nsec - wd_nsec) > md) {
- 			pr_warn("timekeeping watchdog on CPU%d: Marking clocksource '%s' as uns=
-table because the skew is too large:\n",
- 				smp_processor_id(), cs->name);
- 			pr_warn("                      '%s' wd_now: %llx wd_last: %llx mask: %l=
-lx\n",
---===============7452849054905055952==--
+Does it make sense?
+--===============7949701077387115575==--
 
