@@ -1,422 +1,401 @@
-Content-Type: multipart/mixed; boundary="===============4943381960548375444=="
+Content-Type: multipart/mixed; boundary="===============0956683970645376658=="
 MIME-Version: 1.0
-From: Yu Zhao <yuzhao@google.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v2 00/16] Multigenerational LRU Framework
-Date: Sat, 24 Apr 2021 15:21:35 -0600
-Message-ID: <CAOUHufZCYGpWhrFepG=2EdXg_-inzFtFH8+pTbvbtpx2K=Lepg@mail.gmail.com>
-In-Reply-To: <20210415013617.GU1990290@dread.disaster.area>
+Subject: Re: [drm/i915/dp] 4a8d79901d: WARNING:at_drivers/gpu/drm/i915/display/intel_display_power.c:#assert_can_disable_lcpll[i915]
+Date: Sun, 25 Apr 2021 08:56:17 +0800
+Message-ID: <20210425005610.GA5251@xsang-OptiPlex-9020>
+In-Reply-To: <3f97d13aab87ca8023f6607b419e3c0f3249871a.camel@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4943381960548375444==
+--===============0956683970645376658==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 14, 2021 at 7:36 PM Dave Chinner <david@fromorbit.com> wrote:
->
-> On Wed, Apr 14, 2021 at 01:16:52AM -0600, Yu Zhao wrote:
-> > On Tue, Apr 13, 2021 at 10:50 PM Dave Chinner <david@fromorbit.com> w=
-rote:
-> > > On Tue, Apr 13, 2021 at 09:40:12PM -0600, Yu Zhao wrote:
-> > > > On Tue, Apr 13, 2021 at 5:14 PM Dave Chinner <david@fromorbit.com=
-> wrote:
-> > > > > Profiles would be interesting, because it sounds to me like recla=
-im
-> > > > > *might* be batching page cache removal better (e.g. fewer, larger
-> > > > > batches) and so spending less time contending on the mapping tree
-> > > > > lock...
-> > > > >
-> > > > > IOWs, I suspect this result might actually be a result of less lo=
-ck
-> > > > > contention due to a change in batch processing characteristics of
-> > > > > the new algorithm rather than it being a "better" algorithm...
-> > > >
-> > > > I appreciate the profile. But there is no batching in
-> > > > __remove_mapping() -- it locks the mapping for each page, and
-> > > > therefore the lock contention penalizes the mainline and this patch=
-set
-> > > > equally. It looks worse on your system because the four kswapd thre=
-ads
-> > > > from different nodes were working on the same file.
-> > >
-> > > I think you misunderstand exactly what I mean by "batching" here.
-> > > I'm not talking about doing multiple pieces of work under a single
-> > > lock. What I mean is that the overall amount of work done in a
-> > > single reclaim scan (i.e a "reclaim batch") is packaged differently.
-> > >
-> > > We already batch up page reclaim via building a page list and then
-> > > passing it to shrink_page_list() to process the batch of pages in a
-> > > single pass. Each page in this page list batch then calls
-> > > remove_mapping() to pull the page form the LRU, we have a run of
-> > > contention between the foreground read() thread and the background
-> > > kswapd.
-> > >
-> > > If the size or nature of the pages in the batch passed to
-> > > shrink_page_list() changes, then the amount of time a reclaim batch
-> > > is going to put pressure on the mapping tree lock will also change.
-> > > That's the "change in batching behaviour" I'm referring to here. I
-> > > haven't read through the patchset to determine if you change the
-> > > shrink_page_list() algorithm, but it likely changes what is passed
-> > > to be reclaimed and that in turn changes the locking patterns that
-> > > fall out of shrink_page_list...
-> >
-> > Ok, if we are talking about the size of the batch passed to
-> > shrink_page_list(), both the mainline and this patchset cap it at
-> > SWAP_CLUSTER_MAX, which is 32. There are corner cases, but when
-> > running fio/io_uring, it's safe to say both use 32.
->
-> You're still looking at micro-scale behaviour, not the larger-scale
-> batching effects. Are we passing SWAP_CLUSTER_MAX groups of pages to
-> shrinker_page_list() at a different rate?
->
-> When I say "batch of work" when talking about the page cache cycling
-> *500 thousand pages a second* through the cache, I'm not talking
-> about batches of 32 pages. I'm talking about the entire batch of
-> work kswapd does in an invocation cycle.
->
-> Is it scanning 100k pages 10 times a second? or 10k pages a hundred
-> times a second? How long does a batch take to run? how long does is
-> sleep between processing batches? Is there any change in these
-> metrics as a result of the multi-gen LRU patches?
+hi, Lyude Paul,
 
-Hi Dave,
+On Fri, Apr 09, 2021 at 04:30:55PM -0400, Lyude Paul wrote:
+> Could you retest this against the latest drm-tip? I pushed something that=
+ I
+> think might fix this
 
-Sorry for the late reply. Still catching up on emails.
+sorry for late.
+we tested on the tip for drm-tip several days ago, confirmed the issue was =
+gone.
 
-Well, it doesn't really work that way. Yes, I agree that batching
-theoretically can have effects on the performance but the patchset
-doesn't change anything in this respect. The number of pages to
-reclaim is determined by a common code path shared between the
-existing implementation and this patchset. Specifically, ksawpd sets
-"sc->nr_to_reclaim" based on the high watermark, and passes "sc" down
-to both code path:
+the test commit is:
+commit 0d733c1e940857595e3f647dd59bf98c126806c4
+Author:     Ville Syrj<C3><A4>l<C3><A4> <ville.syrjala@linux.intel.com>
+AuthorDate: Wed Apr 21 02:02:02 2021 +0300
+Commit:     Ville Syrj<C3><A4>l<C3><A4> <ville.syrjala@linux.intel.com>
+CommitDate: Wed Apr 21 02:02:02 2021 +0300
 
- static void shrink_lruvec(struct lruvec *lruvec, struct scan_control *sc)
- {
-<snipped>
-+ if (lru_gen_enabled()) {
-+ shrink_lru_gens(lruvec, sc);
-+ return;
-+ }
-<snipped>
+    drm-tip: 2021y-04m-20d-23h-01m-26s UTC integration manifest
 
-And there isn't really any new algorithm. It's just the old plain LRU.
-The improvement is purely from a feedback loop that helps avoid
-unnecessary activations and deactivations. By activations, I mean the
-following work done in the buffered io read path:
-  generic_file_read_iter()
-    filemap_read()
-      mark_page_accessed()
-        activate_page()
-Simply put, on the second accessed, the current implementation
-unconditionally moves a page from the inactive lru to the active lru,
-if it's not already there.
+on repo:
+git://anongit.freedesktop.org/drm/drm-tip
+branch: drm-tip
 
-And by deactivations, I mean the following work done in kswapd:
-  kswapd_shrink_node()
-    shrink_node()
-      shrink_node_memcgs()
-        shrink_lruvec()
-          shrink_active_list()
-i.e., kswapd moves activated pages back to the inactive list before it
-can evict them.
+> =
 
-For random accesses, every page is equal and none is active. But how
-can we tell? The refault rates, i.e., evicted and then accessed again,
-for all pages are the same, no matter how many times they have been
-accessed. This is exactly how the feedback loop works.
+> On Thu, 2021-03-25 at 21:53 +0800, Oliver Sang wrote:
+> > Hi, Lyude,
+> > =
 
-> Basically, we're looking at how access to the mapping lock is
-> changing the contention profile, and whether that is signficant or
-> not. I suspect it is, because when you have highly contended locks
-> and you do something external that reduces unrelated lock
-> contention, it's because that external thing is taking more time to
-> do and so there's less time to spend hitting locks hard...
->
-> As such, I don't think this test is a good measure of the multi-gen
-> LRU patches at all - performance is dominated by the severity of
-> lock contention external to the LRU scanning algorithm, and it's
-> hard to infer anything through suck lock contention....
+> > On Tue, Mar 23, 2021 at 01:27:29PM -0400, Lyude Paul wrote:
+> > > BTW Oliver - I'm still happy to look at this issue, I just need the e=
+xtra
+> > > logs I
+> > > mentioned below in order to figure out what's going on here
+> > =
 
-The lock contention you saw earlier is because of the four nodes
-system you used -- each node has a kswapd thread but there is only one
-file. The four kswapd threads keep banging on the same mapping lock.
-This can be easily fixed if we just run the same test with a single
-node *or* with multiple files.
+> > I enabled "drm.debug=3D0x16 log_buf_len=3D5M" and got attached kmsg.xz =
+for
+> > 4a8d79901d.
+> > hope it's useful.
+> > =
 
-Here is what I got (it's basically what I've attached in the previous email=
-).
+> > > =
 
-Before the patchset:
+> > > On Thu, 2021-03-18 at 13:16 -0400, Lyude Paul wrote:
+> > > > Well this is surprising, because I had been pretty sure we had asked
+> > > > someone
+> > > > at
+> > > > Intel to test that this patch worked on samus and they had said tha=
+t it
+> > > > did. =
 
-kswapd
-# Children      Self  Symbol
-# ........  ........  .......................................
-   100.00%     0.00%  kswapd
-    99.90%     0.01%  balance_pgdat
-    99.86%     0.05%  shrink_node
-    98.00%     0.19%  shrink_lruvec
-    91.13%     0.10%  shrink_inactive_list
-    75.67%     5.97%  shrink_page_list
-    57.65%     2.59%  __remove_mapping
-    45.99%     0.27%  __delete_from_page_cache
-    42.88%     0.88%  page_cache_delete
-    39.05%     1.04%  xas_store
-    37.71%    37.67%  xas_create
-    12.62%    11.79%  isolate_lru_pages
-     8.52%     0.98%  free_unref_page_list
-     7.38%     0.61%  free_unref_page_commit
-     6.68%     1.78%  free_pcppages_bulk
-     6.53%     0.83%  ***shrink_active_list***
-     6.45%     3.21%  _raw_spin_lock_irqsave
-     4.82%     4.60%  __free_one_page
-     4.58%     4.21%  unlock_page
-     3.62%     3.55%  native_queued_spin_lock_slowpath
-     2.49%     0.71%  unaccount_page_cache_page
-     2.46%     0.81%  workingset_eviction
-     2.14%     0.33%  __mod_lruvec_state
-     1.97%     1.88%  xas_clear_mark
-     1.73%     0.26%  __mod_lruvec_page_state
-     1.71%     1.06%  move_pages_to_lru
-     1.66%     1.62%  workingset_age_nonresident
-     1.60%     0.85%  __mod_memcg_lruvec_state
-     1.58%     0.02%  shrink_slab
-     1.49%     0.13%  mem_cgroup_uncharge_list
-     1.45%     0.06%  do_shrink_slab
-     1.37%     1.32%  page_mapping
-     1.06%     0.76%  count_shadow_nodes
+> > > > =
 
-io_uring
-# Children      Self  Symbol
-# ........  ........  ........................................
-    99.22%     0.00%  do_syscall_64
-    94.48%     0.22%  __io_queue_sqe
-    94.09%     0.31%  io_issue_sqe
-    93.33%     0.62%  io_read
-    88.57%     0.93%  blkdev_read_iter
-    87.80%     0.15%  io_iter_do_read
-    87.57%     0.16%  generic_file_read_iter
-    87.35%     1.08%  filemap_read
-    82.44%     0.01%  __x64_sys_io_uring_enter
-    82.34%     0.01%  __do_sys_io_uring_enter
-    82.09%     0.47%  io_submit_sqes
-    79.50%     0.08%  io_queue_sqe
-    71.47%     1.08%  filemap_get_pages
-    53.08%     0.35%  ondemand_readahead
-    51.74%     1.49%  page_cache_ra_unbounded
-    49.92%     0.13%  page_cache_sync_ra
-    21.26%     0.63%  add_to_page_cache_lru
-    17.08%     0.02%  task_work_run
-    16.98%     0.03%  exit_to_user_mode_prepare
-    16.94%    10.52%  __add_to_page_cache_locked
-    16.94%     0.06%  tctx_task_work
-    16.79%     0.19%  syscall_exit_to_user_mode
-    16.41%     2.61%  filemap_get_read_batch
-    16.08%    15.72%  xas_load
-    15.99%     0.15%  read_pages
-    15.87%     0.13%  blkdev_readahead
-    15.72%     0.56%  mpage_readahead
-    15.58%     0.09%  io_req_task_submit
-    15.37%     0.07%  __io_req_task_submit
-    12.14%     0.15%  copy_page_to_iter
-    12.03%     0.03%  ***__page_cache_alloc***
-    11.98%     0.14%  alloc_pages_current
-    11.66%     0.30%  __alloc_pages_nodemask
-    11.28%    11.05%  _copy_to_iter
-    11.06%     3.16%  get_page_from_freelist
-    10.53%     0.10%  submit_bio
-    10.27%     0.21%  submit_bio_noacct
-     8.30%     0.51%  blk_mq_submit_bio
-     7.73%     7.62%  clear_page_erms
-     3.68%     1.02%  do_mpage_readpage
-     3.33%     0.01%  page_cache_async_ra
-     3.25%     0.01%  blk_flush_plug_list
-     3.24%     0.06%  blk_mq_flush_plug_list
-     3.18%     0.01%  blk_mq_sched_insert_requests
-     3.15%     0.13%  blk_mq_try_issue_list_directly
-     2.84%     0.15%  __blk_mq_try_issue_directly
-     2.69%     0.58%  nvme_queue_rq
-     2.54%     1.05%  blk_attempt_plug_merge
-     2.53%     0.44%  ***mark_page_accessed***
-     2.36%     0.12%  rw_verify_area
-     2.16%     0.09%  mpage_alloc
-     2.10%     0.27%  lru_cache_add
-     1.81%     0.27%  security_file_permission
-     1.75%     0.87%  __pagevec_lru_add
-     1.70%     0.63%  _raw_spin_lock_irq
-     1.53%     0.40%  xa_get_order
-     1.52%     0.15%  __blk_mq_alloc_request
-     1.50%     0.65%  workingset_refault
-     1.50%     0.07%  activate_page
-     1.48%     0.29%  io_submit_flush_completions
-     1.46%     0.32%  bio_alloc_bioset
-     1.42%     0.15%  xa_load
-     1.40%     0.16%  pagevec_lru_move_fn
-     1.39%     0.06%  blk_finish_plug
-     1.35%     0.28%  submit_bio_checks
-     1.26%     0.02%  asm_common_interrupt
-     1.25%     0.01%  common_interrupt
-     1.21%     1.21%  native_queued_spin_lock_slowpath
-     1.18%     0.10%  mempool_alloc
-     1.17%     0.00%  __common_interrupt
-     1.14%     0.03%  handle_edge_irq
-     1.08%     0.87%  apparmor_file_permission
-     1.03%     0.19%  __mod_lruvec_state
-     1.02%     0.65%  blk_rq_merge_ok
-     1.01%     0.94%  xas_start
+> > > > Is there any way you can get me the kernel messages from this failu=
+re with
+> > > > drm.debug=3D0x16 log_buf_len=3D5M added to the kernel commandline? =
+It's hard
+> > > > to
+> > > > see
+> > > > what's actually going on here that's causing this issue to still re=
+occur.
+> > > > =
 
-After the patchset:
+> > > > Also adding Tomi P Sarvela onto this thread, since they were the on=
+es who
+> > > > originally tested this
+> > > > =
 
-kswapd
-# Children      Self  Symbol
-# ........  ........  ........................................
-   100.00%     0.00%  kswapd
-    99.92%     0.11%  balance_pgdat
-    99.32%     0.03%  shrink_node
-    97.25%     0.32%  shrink_lruvec
-    96.80%     0.09%  evict_lru_gen_pages
-    77.82%     6.28%  shrink_page_list
-    61.61%     2.76%  __remove_mapping
-    50.28%     0.33%  __delete_from_page_cache
-    46.63%     1.08%  page_cache_delete
-    42.20%     1.16%  xas_store
-    40.71%    40.67%  xas_create
-    12.54%     7.76%  isolate_lru_gen_pages
-     6.42%     3.19%  _raw_spin_lock_irqsave
-     6.15%     0.91%  free_unref_page_list
-     5.62%     5.45%  unlock_page
-     5.05%     0.59%  free_unref_page_commit
-     4.35%     2.04%  lru_gen_update_size
-     4.31%     1.41%  free_pcppages_bulk
-     3.43%     3.36%  native_queued_spin_lock_slowpath
-     3.38%     0.59%  __mod_lruvec_state
-     2.97%     0.78%  unaccount_page_cache_page
-     2.82%     2.52%  __free_one_page
-     2.33%     1.18%  __mod_memcg_lruvec_state
-     2.28%     2.17%  xas_clear_mark
-     2.13%     0.30%  __mod_lruvec_page_state
-     1.88%     0.04%  shrink_slab
-     1.82%     1.78%  workingset_eviction
-     1.74%     0.06%  do_shrink_slab
-     1.70%     0.15%  mem_cgroup_uncharge_list
-     1.39%     1.01%  count_shadow_nodes
-     1.22%     1.18%  __mod_memcg_state.part.0
-     1.16%     1.11%  page_mapping
-     1.02%     0.98%  xas_init_marks
+> > > > On Thu, 2021-03-18 at 10:13 +0800, Oliver Sang wrote:
+> > > > > Hi Lyude, sorry for later.
+> > > > > =
 
-io_uring
-# Children      Self  Symbol
-# ........  ........  ........................................
-    99.19%     0.01%  entry_SYSCALL_64_after_hwframe
-    99.16%     0.00%  do_syscall_64
-    94.78%     0.18%  __io_queue_sqe
-    94.41%     0.25%  io_issue_sqe
-    93.60%     0.48%  io_read
-    89.35%     0.96%  blkdev_read_iter
-    88.44%     0.12%  io_iter_do_read
-    88.25%     0.16%  generic_file_read_iter
-    88.00%     1.20%  filemap_read
-    84.01%     0.01%  __x64_sys_io_uring_enter
-    83.91%     0.01%  __do_sys_io_uring_enter
-    83.74%     0.37%  io_submit_sqes
-    81.28%     0.07%  io_queue_sqe
-    74.65%     0.96%  filemap_get_pages
-    55.92%     0.35%  ondemand_readahead
-    54.57%     1.34%  page_cache_ra_unbounded
-    51.57%     0.12%  page_cache_sync_ra
-    24.14%     0.51%  add_to_page_cache_lru
-    19.04%    11.51%  __add_to_page_cache_locked
-    18.48%     0.13%  read_pages
-    18.42%     0.18%  blkdev_readahead
-    18.20%     0.55%  mpage_readahead
-    16.81%     2.31%  filemap_get_read_batch
-    16.37%    14.83%  xas_load
-    15.40%     0.02%  task_work_run
-    15.38%     0.03%  exit_to_user_mode_prepare
-    15.31%     0.05%  tctx_task_work
-    15.14%     0.15%  syscall_exit_to_user_mode
-    14.05%     0.04%  io_req_task_submit
-    13.86%     0.05%  __io_req_task_submit
-    12.92%     0.12%  submit_bio
-    11.40%     0.13%  copy_page_to_iter
-    10.65%     9.61%  _copy_to_iter
-     9.45%     0.03%  ***__page_cache_alloc***
-     9.42%     0.16%  submit_bio_noacct
-     9.40%     0.11%  alloc_pages_current
-     9.11%     0.30%  __alloc_pages_nodemask
-     8.53%     1.81%  get_page_from_freelist
-     8.38%     0.10%  asm_common_interrupt
-     8.26%     0.06%  common_interrupt
-     7.75%     0.05%  __common_interrupt
-     7.62%     0.44%  blk_mq_submit_bio
-     7.56%     0.20%  handle_edge_irq
-     6.45%     5.90%  clear_page_erms
-     5.25%     0.10%  handle_irq_event
-     4.88%     0.19%  nvme_irq
-     4.83%     0.07%  __handle_irq_event_percpu
-     4.73%     0.52%  nvme_process_cq
-     4.52%     0.01%  page_cache_async_ra
-     4.00%     0.04%  nvme_pci_complete_rq
-     3.82%     0.04%  nvme_complete_rq
-     3.76%     1.11%  do_mpage_readpage
-     3.74%     0.06%  blk_mq_end_request
-     3.03%     0.01%  blk_flush_plug_list
-     3.02%     0.06%  blk_mq_flush_plug_list
-     2.96%     0.01%  blk_mq_sched_insert_requests
-     2.94%     0.10%  blk_mq_try_issue_list_directly
-     2.89%     0.00%  __irqentry_text_start
-     2.71%     0.41%  psi_task_change
-     2.67%     0.21%  lru_cache_add
-     2.65%     0.14%  __blk_mq_try_issue_directly
-     2.53%     0.54%  nvme_queue_rq
-     2.43%     0.17%  blk_update_request
-     2.42%     0.58%  __pagevec_lru_add
-     2.29%     1.42%  psi_group_change
-     2.22%     0.85%  blk_attempt_plug_merge
-     2.14%     0.04%  bio_endio
-     2.13%     0.11%  rw_verify_area
-     2.08%     0.18%  mpage_end_io
-     2.01%     0.08%  mpage_alloc
-     1.71%     0.56%  _raw_spin_lock_irq
-     1.65%     0.98%  workingset_refault
-     1.65%     0.09%  psi_memstall_leave
-     1.64%     0.20%  security_file_permission
-     1.61%     1.59%  _raw_spin_lock
-     1.58%     0.08%  psi_memstall_enter
-     1.44%     0.37%  xa_get_order
-     1.43%     0.13%  __blk_mq_alloc_request
-     1.37%     0.26%  io_submit_flush_completions
-     1.36%     0.14%  xa_load
-     1.34%     0.31%  bio_alloc_bioset
-     1.31%     0.26%  submit_bio_checks
-     1.29%     0.04%  blk_finish_plug
-     1.28%     1.27%  native_queued_spin_lock_slowpath
-     1.24%     0.19%  page_endio
-     1.13%     0.10%  unlock_page
-     1.09%     0.99%  read_tsc
-     1.07%     0.74%  lru_gen_addition
-     1.03%     0.09%  mempool_alloc
-     1.02%     0.13%  wake_up_page_bit
-     1.02%     0.92%  xas_start
-     1.01%     0.78%  apparmor_file_permission
+> > > > > before we send out the report, we also tested fe7d52bccab6, the i=
+ssue
+> > > > > still
+> > > > > exists on it.
+> > > > > attached one kmsg-fe7d52bccab6.xz FYI.
+> > > > > =
 
-By comparing the two sets, we can clearly see what's changed:
+> > > > > we also tested on latest v5.12-rc3, also exists.
+> > > > > attached kmsg-v5.12-rc3.xz FYI.
+> > > > > =
 
-Before the patchset:
-     6.53%     0.83%  ***shrink_active_list***
-    12.03%     0.03%  ***__page_cache_alloc***
-     2.53%     0.44%  ***mark_page_accessed***
+> > > > > =
 
-After the patchset:
-     9.45%     0.03%  ***__page_cache_alloc***
-(There are shrink_active_list() or mark_page_accessed() since we don't
-activate and deactivate pages anymore, for this test case.)
+> > > > > =
 
-Hopefully this is clear enough. But I do see where your skepticism
-comes from and I don't want to dismiss it out of hand. So if you have
-any other benchmarks, I'd be happy to try them. What do you think?
+> > > > > On Fri, Feb 05, 2021 at 02:53:11PM -0500, Lyude Paul wrote:
+> > > > > > Am I right in assuming this is likely a very delayed test resul=
+t from
+> > > > > > before:
+> > > > > > =
 
-Thanks.
---===============4943381960548375444==--
+> > > > > > fe7d52bccab6 ("drm/i915/dp: Don't use DPCD backlights that need=
+ PWM
+> > > > > > enable/disable")
+> > > > > > =
+
+> > > > > > Made it into the kernel? I see that there's a PWM being left on=
+, which
+> > > > > > was
+> > > > > > the
+> > > > > > same issue we were seeing on fi-bdw-samus
+> > > > > > =
+
+> > > > > > On Thu, 2021-02-04 at 17:02 +0800, kernel test robot wrote:
+> > > > > > > =
+
+> > > > > > > Greeting,
+> > > > > > > =
+
+> > > > > > > FYI, we noticed the following commit (built with gcc-9):
+> > > > > > > =
+
+> > > > > > > commit: 4a8d79901d5bed0812d272c372aa40282937b50f ("drm/i915/d=
+p:
+> > > > > > > Enable
+> > > > > > > Intel's
+> > > > > > > HDR backlight interface (only SDR for now)")
+> > > > > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.=
+git=C2=A0mas
+> > > > > > > ter
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > in testcase: suspend-stress
+> > > > > > > version: =
+
+> > > > > > > with following parameters:
+> > > > > > > =
+
+> > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mode: freeze
+> > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iterations: 10
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > on test machine: 4 threads Broadwell-Y with 8G memory
+> > > > > > > =
+
+> > > > > > > caused below changes (please refer to attached dmesg/kmsg for=
+ entire
+> > > > > > > log/backtrace):
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > If you fix the issue, kindly add following tag
+> > > > > > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.137894] -----------=
+-[ cut here ]------------
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.137897] CPU PWM1 en=
+abled
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.137930] WARNING: CP=
+U: 3 PID: 575 at
+> > > > > > > drivers/gpu/drm/i915/display/intel_display_power.c:4902
+> > > > > > > assert_can_disable_lcpll+0x335/0x3c0 [i915]
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138084] Modules lin=
+ked in: sd_mod t10_pi sg
+> > > > > > > x86_pkg_temp_thermal intel_powerclamp i915 hid_rmi rmi_core
+> > > > > > > hid_multitouch
+> > > > > > > coretemp intel_ra
+> > > > > > > pl_msr crct10dif_pclmul wmi_bmof crc32_pclmul intel_gtt crc32=
+c_intel
+> > > > > > > ghash_clmulni_intel rapl drm_kms_helper intel_cstate ahci lib=
+ahci
+> > > > > > > serio_raw
+> > > > > > > mei_me proces
+> > > > > > > sor_thermal_device intel_uncore processor_thermal_rfim syscop=
+yarea
+> > > > > > > sysfillrect
+> > > > > > > intel_soc_dts_iosf sysimgblt intel_pch_thermal hid_sensor_cus=
+tom
+> > > > > > > fb_sys_fops
+> > > > > > > li
+> > > > > > > bata bcma processor_thermal_mbox joydev mei drm
+> > > > > > > processor_thermal_rapl
+> > > > > > > intel_rapl_common int340x_thermal_zone i2c_hid ideapad_laptop
+> > > > > > > sparse_keymap
+> > > > > > > wmi rfkill
+> > > > > > > video int3400_thermal acpi_thermal_rel i2c_designware_platform
+> > > > > > > dw_dmac
+> > > > > > > i2c_designware_core acpi_pad ip_tables
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138148] CPU: 3 PID:=
+ 575 Comm: kworker/u8:6
+> > > > > > > Tainted:
+> > > > > > > G=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 W I=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 5.11.0-rc2-00745-g4a8d79901d5b #1
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138153] Hardware na=
+me: LENOVO 80HE/VIUU4, BIOS
+> > > > > > > A6CN38WW
+> > > > > > > 09/30/2014
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138155] Workqueue: =
+events_unbound
+> > > > > > > async_run_entry_fn
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138161] RIP:
+> > > > > > > 0010:assert_can_disable_lcpll+0x335/0x3c0
+> > > > > > > [i915]
+> > > > > > > kern=C2=A0 :info=C2=A0 : [=C2=A0=C2=A0 21.138263] ahci 0000:0=
+0:1f.2:
+> > > > > > > pci_pm_suspend_late+0x0/0x40
+> > > > > > > returned 0 after 0 usecs
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138296] Code: c0 75=
+ 22 e8 8d 61 cb ff e9 f3 fd
+> > > > > > > ff
+> > > > > > > ff
+> > > > > > > e8
+> > > > > > > fd bc 6a c1 0f 0b e9 0c fd ff ff e8 f1 bc 6a c1 0f 0b e9 05 f=
+e ff ff
+> > > > > > > e8
+> > > > > > > e5
+> > > > > > > bc
+> > > > > > > 6a c1 <0f> 0b e9 cf fd ff ff e8 d9 bc 6a c1 0f 0b e9 a2 fd ff=
+ ff e8
+> > > > > > > cd
+> > > > > > > bc
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138300] RSP: 0018:f=
+fffc900006f3d58 EFLAGS:
+> > > > > > > 00010282
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138304] RAX: 000000=
+0000000000 RBX:
+> > > > > > > ffff8881451002e8
+> > > > > > > RCX:
+> > > > > > > 0000000000000027
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138307] RDX: 000000=
+0000000027 RSI:
+> > > > > > > 0000000000000002
+> > > > > > > RDI:
+> > > > > > > ffff888249397cf8
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138310] RBP: ffff88=
+8145100000 R08:
+> > > > > > > ffff888249397cf0
+> > > > > > > R09:
+> > > > > > > ffffc900006f3cf0
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138313] R10: 000000=
+0000000001 R11:
+> > > > > > > 3030302035313969
+> > > > > > > R12:
+> > > > > > > ffff8881451007f0
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138316] R13: ffff88=
+8145106c60 R14:
+> > > > > > > 0000000000000002
+> > > > > > > R15:
+> > > > > > > 0000000000000000
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138319] FS:=C2=A0 0=
+000000000000000(0000)
+> > > > > > > GS:ffff888249380000(0000) knlGS:0000000000000000
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138322] CS:=C2=A0 0=
+010 DS: 0000 ES: 0000 CR0:
+> > > > > > > 0000000080050033
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138325] CR2: 000055=
+7c22ec68a0 CR3:
+> > > > > > > 0000000004c0a003
+> > > > > > > CR4:
+> > > > > > > 00000000003706e0
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138329] Call Trace:
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138334]=C2=A0 hsw_d=
+isable_lcpll+0x22/0x280 [i915]
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138479]=C2=A0 i915_=
+drm_suspend_late+0x5e/0x100
+> > > > > > > [i915]
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138578]=C2=A0 ? pci=
+_pm_poweroff_late+0x40/0x40
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138582]=C2=A0 dpm_r=
+un_callback+0x4c/0x140
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138590]=C2=A0 __dev=
+ice_suspend_late+0x98/0x1a0
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138596]=C2=A0 async=
+_suspend_late+0x1b/0xa0
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138602]=C2=A0 async=
+_run_entry_fn+0x39/0x160
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138608]=C2=A0 proce=
+ss_one_work+0x1ed/0x3c0
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138612]=C2=A0 worke=
+r_thread+0x50/0x3c0
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138617]=C2=A0 ? pro=
+cess_one_work+0x3c0/0x3c0
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138620]=C2=A0 kthre=
+ad+0x116/0x160
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138626]=C2=A0 ? kth=
+read_park+0xa0/0xa0
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138631]=C2=A0 ret_f=
+rom_fork+0x22/0x30
+> > > > > > > kern=C2=A0 :warn=C2=A0 : [=C2=A0=C2=A0 21.138640] ---[ end tr=
+ace a93fe4d40a5a37bb ]---
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > To reproduce:
+> > > > > > > =
+
+> > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 git clone https://=
+github.com/intel/lkp-tests.git
+> > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 cd lkp-tests
+> > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bin/lkp install jo=
+b.yaml=C2=A0 # job file is attached in this
+> > > > > > > email
+> > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bin/lkp run=C2=A0=
+=C2=A0=C2=A0=C2=A0 job.yaml
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > =
+
+> > > > > > > Thanks,
+> > > > > > > Oliver Sang
+> > > > > > > =
+
+> > > > > > =
+
+> > > > > > -- =
+
+> > > > > > Sincerely,
+> > > > > > =C2=A0=C2=A0 Lyude Paul (she/her)
+> > > > > > =C2=A0=C2=A0 Software Engineer at Red Hat
+> > > > > > =C2=A0=C2=A0 =
+
+> > > > > > Note: I deal with a lot of emails and have a lot of bugs on my =
+plate.
+> > > > > > If
+> > > > > > you've
+> > > > > > asked me a question, are waiting for a review/merge on a patch,=
+ etc.
+> > > > > > and I
+> > > > > > haven't responded in a while, please feel free to send me anoth=
+er
+> > > > > > email to
+> > > > > > check
+> > > > > > on my status. I don't bite!
+> > > > > > =
+
+> > > > =
+
+> > > =
+
+> > > -- =
+
+> > > Sincerely,
+> > > =C2=A0=C2=A0 Lyude Paul (she/her)
+> > > =C2=A0=C2=A0 Software Engineer at Red Hat
+> > > =C2=A0=C2=A0 =
+
+> > > Note: I deal with a lot of emails and have a lot of bugs on my plate.=
+ If
+> > > you've
+> > > asked me a question, are waiting for a review/merge on a patch, etc. =
+and I
+> > > haven't responded in a while, please feel free to send me another ema=
+il to
+> > > check
+> > > on my status. I don't bite!
+> > > =
+
+> =
+
+> -- =
+
+> Sincerely,
+>    Lyude Paul (she/her)
+>    Software Engineer at Red Hat
+>    =
+
+> Note: I deal with a lot of emails and have a lot of bugs on my plate. If =
+you've
+> asked me a question, are waiting for a review/merge on a patch, etc. and I
+> haven't responded in a while, please feel free to send me another email t=
+o check
+> on my status. I don't bite!
+>=20
+--===============0956683970645376658==--
 
