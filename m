@@ -1,111 +1,73 @@
-Content-Type: multipart/mixed; boundary="===============7599652289230996935=="
+Content-Type: multipart/mixed; boundary="===============0193924284280211438=="
 MIME-Version: 1.0
-From: Konstantin Kharlamov <hi-angel@yandex.ru>
+From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v2 00/16] Multigenerational LRU Framework
-Date: Fri, 30 Apr 2021 09:37:58 +0300
-Message-ID: <8ce5be3df2137e975d7333024b6120b71b214617.camel@yandex.ru>
-In-Reply-To: <140226722f2032c86301fbd326d91baefe3d7d23.camel@yandex.ru>
+Subject: Re: [clocksource] 6c52b5f3cf: stress-ng.opcode.ops_per_sec -14.4% regression
+Date: Mon, 26 Apr 2021 23:12:49 +0800
+Message-ID: <20210426151249.GA89018@shbuild999.sh.intel.com>
+In-Reply-To: <87fszdt8sk.ffs@nanos.tec.linutronix.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7599652289230996935==
+--===============0193924284280211438==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Btw, I noticed a fun thing, an improvement. I don't know yet if it can be
-attributed to 5.12 (which I didn't try alone yet) or to the LRU patchset, b=
-ut
-I'd assume the latter, because 5.12 seems didn't to have had anything
-interesting regarding memory performance=C2=B9.
+On Mon, Apr 26, 2021 at 04:33:31PM +0200, Thomas Gleixner wrote:
+> On Mon, Apr 26 2021 at 22:05, Feng Tang wrote:
+> > On Mon, Apr 26, 2021 at 08:39:25PM +0800, Thomas Gleixner wrote:
+> >> On Sat, Apr 24 2021 at 20:29, Feng Tang wrote:
+> >> > On Fri, Apr 23, 2021 at 07:02:54AM -0700, Paul E. McKenney wrote:
+> >> > And I'm eager to know if there is any real case of an unreliable tsc
+> >> > on the 'large numbers' of x86 system which complies with our cpu fea=
+ture
+> >> > check. And if there is, my 2/2 definitely should be dropped.   =
 
-I usually have Skype running in background for work purposes, which is only=
- used
-2-3 times in a week. So one would expect it to be one the first victims to
-memory reclaim. Unfortunately, I never seen this to actually happen (till n=
-ow,
-that is): all skypeforlinux processes routinely have 0 bytes in SWAP, and t=
-he
-only circumstances under which its processes can get into SWAP is after
-experiencing many SWAP-storms. It was so hard for the kernel to move these
-unused processes to SWAP that at some point I even tried to research if the=
-re
-are any odd flags a userspace may have set on a process to keep it in RAM, =
-just
-in case that's what happens to Skype (A: no, that wasn't the case, running =
-Skype
-in a memory limited cgroup makes it swap. It's just that kernel decision we=
-re
-lacking for some reason).
+> >> =
 
-So, anyway, I am delighted to see now that while testing this patchset, and
-without encountering even a single SWAP-storm yet, skypeforlinux are one of=
- the
-processes residing in SWAP!!
-
-     =CE=BB smem -kc "name user pid pss swap" | grep skype    =
-
-    skypeforlinux            constantine  1151    60.0K     7.5M =
-
-    skypeforlinux            constantine  1215   195.0K     8.1M =
-
-    skypeforlinux            constantine  1149   706.0K     7.5M =
-
-    skypeforlinux            constantine  1148   743.0K     7.3M =
-
-    skypeforlinux            constantine  1307     1.4M     8.0M =
-
-    skypeforlinux            constantine  1213     2.1M    46.1M =
-
-    skypeforlinux            constantine  1206    14.0M    10.8M =
-
-    skypeforlinux            constantine   818    38.5M    34.3M =
-
-    skypeforlinux            constantine  1242   103.2M    46.8M =
-
-
-!!!
-
-1: https://kernelnewbies.org/Linux_5.12#Memory_management
-
-On Fri, 2021-04-30 at 02:46 +0300, Konstantin Kharlamov wrote:
-> In case you need it yet, this series is:
+> >> Nothing prevents BIOS tinkerers from trying to be 'smart'. My most
+> >> recent encounter (3 month ago) was on a laptop where TSC drifted off on
+> >> CPU0 very slowly, but was caught due to the TSC_ADJUST check in idle.
+> >
+> > Thanks for sharing the info! So this laptop can still work with the
+> > tsc_adjust check and restore, without triggering the 'unstable' alarm.
+> >
+> > Why are those BIOSes playing the trick? Maybe some other OS has hard li=
+mit
+> > for SMI's maxim handling time, so they try to hide the time?
 > =
 
-> Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+> Years ago someone admitted that it was the attempt to hide the
+> (substantial) time wasted in SMIs from being detectable via tracing, but
+> obviously that backfired because TSC got out of sync.
 > =
 
-> My success story: I have Archlinux with 8G RAM + zswap + swap. While deve=
-loping,
-> I have lots of apps opened such as multiple LSP-servers for different lan=
-gs,
-> chats, two browsers, etc=E2=80=A6 Usually, my system gets quickly to a po=
-int of SWAP-
-> storms, where I have to kill LSP-servers, restart browsers to free memory=
-, etc,
-> otherwise the system lags heavily and is barely usable.
+> Since then this has mostly vanished but for some reasons it's coming
+> back every now and then. Rarely, but it happens still.
+ =
+
+I see now.
+
+> >> I'm still thinking about a solution to avoid that extra timer and the
+> >> watchdog for these systems, but haven't found anything which I don't
+> >> hate with a passion yet.
+> >
+> > I see. So should I hold my two patches (tsc_adjust timer and tsc watchd=
+og
+> > check lifting) for a while?
 > =
 
-> 1.5 day ago I migrated from 5.11.15 kernel to 5.12 + the LRU patchset, an=
-d I
-> started up by opening lots of apps to create memory pressure, and worked =
-for a
-> day like this. Till now I had *not a single SWAP-storm*, and mind you I g=
-ot 3.4G
-> in SWAP. I was never getting to the point of 3G in SWAP before without a =
-single
-> SWAP-storm.
+> I have them on my list anyway, but yes we want to avoid the timer
+> because that's what the HPC / NOHZ full people are going to complain
+> about anyway.
+
+Got it. Thanks for the clarification!
+
+- Feng
+
+> Thanks,
 > =
 
-> Right now my gf on Fedora 33 also suffers from SWAP-storms on her old Mac=
-book
-> 2013 with 4G RAM + zswap + swap, I think the next week I'll build for her=
- 5.12 +
-> LRU patchset as well. Will see how it goes, I expect it will improve her
-> experience by a lot too.
-> =
-
-> P.S.: upon replying please keep me CCed, I'm not subscribed to the list
-
---===============7599652289230996935==--
+>         tglx
+--===============0193924284280211438==--
 
