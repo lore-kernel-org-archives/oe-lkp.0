@@ -1,123 +1,59 @@
-Content-Type: multipart/mixed; boundary="===============8354654132768259382=="
+Content-Type: multipart/mixed; boundary="===============7739253843478069501=="
 MIME-Version: 1.0
-From: Gao Xiang <xiang@kernel.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: [LTP] [f2fs] 02eb84b96b: ltp.swapon03.fail
-Date: Fri, 30 Apr 2021 09:48:23 +0800
-Message-ID: <20210430014823.GA3132@hsiangkao-HP-ZHAN-66-Pro-G1>
-In-Reply-To: <cf28837a-9558-b00c-bca3-601a70b752ea@oppo.com>
+Subject: Re: [clocksource] 6c52b5f3cf: stress-ng.opcode.ops_per_sec -14.4% regression
+Date: Mon, 26 Apr 2021 16:33:31 +0200
+Message-ID: <87fszdt8sk.ffs@nanos.tec.linutronix.de>
+In-Reply-To: <20210426140512.GA23119@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8354654132768259382==
+--===============7739253843478069501==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 29, 2021 at 09:08:42PM +0800, Weichao Guo wrote:
-> =
+On Mon, Apr 26 2021 at 22:05, Feng Tang wrote:
+> On Mon, Apr 26, 2021 at 08:39:25PM +0800, Thomas Gleixner wrote:
+>> On Sat, Apr 24 2021 at 20:29, Feng Tang wrote:
+>> > On Fri, Apr 23, 2021 at 07:02:54AM -0700, Paul E. McKenney wrote:
+>> > And I'm eager to know if there is any real case of an unreliable tsc
+>> > on the 'large numbers' of x86 system which complies with our cpu featu=
+re
+>> > check. And if there is, my 2/2 definitely should be dropped.   =
 
-> On 2021/3/23 17:04, Chao Yu wrote:
-> > On 2021/3/11 4:49, Jaegeuk Kim wrote:
-> > > On 03/10, Huang Jianan wrote:
-> > > > Hi Richard,
-> > > > =
+>> =
 
-> > > > On 2021/3/9 12:01, Matthew Wilcox wrote:
-> > > > > On Tue, Mar 09, 2021 at 10:23:35AM +0800, Weichao Guo wrote:
-> > > > > > Hi Richard,
-> > > > > > =
+>> Nothing prevents BIOS tinkerers from trying to be 'smart'. My most
+>> recent encounter (3 month ago) was on a laptop where TSC drifted off on
+>> CPU0 very slowly, but was caught due to the TSC_ADJUST check in idle.
+>
+> Thanks for sharing the info! So this laptop can still work with the
+> tsc_adjust check and restore, without triggering the 'unstable' alarm.
+>
+> Why are those BIOSes playing the trick? Maybe some other OS has hard limit
+> for SMI's maxim handling time, so they try to hide the time?
 
-> > > > > > On 2021/3/8 19:53, Richard Palethorpe wrote:
-> > > > > > > Hello,
-> > > > > > > =
+Years ago someone admitted that it was the attempt to hide the
+(substantial) time wasted in SMIs from being detectable via tracing, but
+obviously that backfired because TSC got out of sync.
 
-> > > > > > > > kern  :err   : [  187.461914] F2FS-fs (sda1):
-> > > > > > > > Swapfile does not align to section
-> > > > > > > > commit 02eb84b96bc1b382dd138bf60724edbefe77b025
-> > > > > > > > Author: huangjianan(a)oppo.com <huangjianan@oppo.com>
-> > > > > > > > Date:   Mon Mar 1 12:58:44 2021 +0800
-> > > > > > > >        f2fs: check if swapfile is section-alligned
-> > > > > > > >        If the swapfile isn't created by pin and
-> > > > > > > > fallocate, it can't be
-> > > > > > > >        guaranteed section-aligned, so it may be
-> > > > > > > > selected by f2fs gc. When
-> > > > > > > >        gc_pin_file_threshold is reached, the
-> > > > > > > > address of swapfile may change,
-> > > > > > > >        but won't be synchronized to swap_extent,
-> > > > > > > > so swap will write to wrong
-> > > > > > > >        address, which will cause data corruption.
-> > > > > > > >        Signed-off-by: Huang Jianan <huangjianan@oppo.com>
-> > > > > > > >        Signed-off-by: Guo Weichao <guoweichao@oppo.com>
-> > > > > > > >        Reviewed-by: Chao Yu <yuchao0@huawei.com>
-> > > > > > > >        Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-> > > > > > > The test uses fallocate to preallocate the swap file
-> > > > > > > and writes zeros to
-> > > > > > > it. I'm not sure what pin refers to?
-> > > > > > 'pin' refers to pinned file feature in F2FS, the
-> > > > > > LBA(Logical Block Address)
-> > > > > > of a file is fixed after pinned. Without this operation
-> > > > > > before fallocate,
-> > > > > > the LBA may not align with section(F2FS GC unit), some
-> > > > > > LBA of the file may
-> > > > > > be changed by F2FS GC in some extreme cases.
-> > > > > > =
+Since then this has mostly vanished but for some reasons it's coming
+back every now and then. Rarely, but it happens still.
 
-> > > > > > For this test case, how about pin the swap file before
-> > > > > > fallocate for F2FS as
-> > > > > > following:
-> > > > > > =
+>> I'm still thinking about a solution to avoid that extra timer and the
+>> watchdog for these systems, but haven't found anything which I don't
+>> hate with a passion yet.
+>
+> I see. So should I hold my two patches (tsc_adjust timer and tsc watchdog
+> check lifting) for a while?
 
-> > > > > > ioctl(fd, F2FS_IOC_SET_PIN_FILE, true);
-> > > > > No special ioctl should be needed.  f2fs_swap_activate()
-> > > > > should pin the
-> > > > > file, just like it converts inline inodes and disables compressio=
-n.
-> > > > =
-
-> > > > Now f2fs_swap_activate() will pin the file. The problem is that when
-> > > > f2fs_swap_activate()
-> > > > =
-
-> > > > is executed, the file has been created and may not be section-align=
-ed.
-> > > > =
-
-> > > > So I think it would be better to consider aligning the swapfile dur=
-ing
-> > > > f2fs_swap_activate()?
-> > > =
-
-> > > Does it make sense to reallocate blocks like
-> > > in f2fs_swap_activate(),
-> > >     set_inode_flag(inode, FI_PIN_FILE);
-> > >     truncate_pagecache(inode, 0);
-> > >     f2fs_truncate_blocks(inode, 0, true);
-> > =
-
-> > It will corrupt swap header info while relocating whole swapfile...
-> How about back up the header page, and recover it after expand_inode_data=
-()
-> ?
-
-That sounds somewhat hacky, since I don't think fs should take care of swap
-detailed format.
-
-My premature suggesttion, how about
- a) for non-pinned files, f2fs_swap_activate() pins the file and move
-    (reallocate) pre-fallocated data blocks if needed;
- b) for already pinned files and not section-aligned when
-    f2fs_swap_activate(), just reject it.
-
-I think it would pass the test since pinned operation is f2fs-specific only.
-Or am I still missing something?
+I have them on my list anyway, but yes we want to avoid the timer
+because that's what the HPC / NOHZ full people are going to complain
+about anyway.
 
 Thanks,
-Gao Xiang
 
-> > =
-
-> > >     expand_inode_data();
-> > > .
-> > >=20
---===============8354654132768259382==--
+        tglx
+--===============7739253843478069501==--
 
