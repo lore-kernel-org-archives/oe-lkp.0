@@ -1,155 +1,124 @@
-Content-Type: multipart/mixed; boundary="===============5308548519567098263=="
+Content-Type: multipart/mixed; boundary="===============6003874419898384901=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Xing Zhengjun <zhengjun.xing@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [genirq] cbe16f35be: will-it-scale.per_thread_ops -5.2% regression
-Date: Wed, 28 Apr 2021 16:08:19 +0800
-Message-ID: <20210428080819.GB53821@shbuild999.sh.intel.com>
-In-Reply-To: <d392cc91241641df865217d82368eba8@hisilicon.com>
+Subject: Re: [mm/vunmap] e47110e905: WARNING:at_mm/vmalloc.c:#__vunmap
+Date: Wed, 28 Apr 2021 16:32:28 +0800
+Message-ID: <4b0fd107-5509-3d2a-1151-335f9296f8e5@linux.intel.com>
+In-Reply-To: <CAHk-=wg8iAG6bBB+zdoZvZx1XYmyAXrWL0gPs_eTrTt+tXN0Tw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5308548519567098263==
+--===============6003874419898384901==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Barry,
+Hi Linus,
 
-On Wed, Apr 28, 2021 at 07:01:35AM +0000, Song Bao Hua (Barry Song) wrote:
+On 4/24/2021 1:18 AM, Linus Torvalds wrote:
+> On Thu, Apr 22, 2021 at 11:15 PM kernel test robot
+> <oliver.sang@intel.com> wrote:
+>>
+>> commit: e47110e90584a22e9980510b00d0dfad3a83354e ("mm/vunmap: add cond_r=
+esched() in vunmap_pmd_range")
 > =
 
+> Funky. That commit doesn't seem to have anything to do with the oops.
 > =
 
-> > -----Original Message-----
-> > From: Feng Tang [mailto:feng.tang(a)intel.com]
-> > Sent: Wednesday, April 28, 2021 5:08 PM
-> > To: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: kernel test robot <oliver.sang@intel.com>; Song Bao Hua (Barry So=
-ng)
-> > <song.bao.hua@hisilicon.com>; Ingo Molnar <mingo@kernel.org>; LKML
-> > <linux-kernel@vger.kernel.org>; lkp(a)lists.01.org; lkp(a)intel.com;
-> > ying.huang(a)intel.com; zhengjun.xing(a)intel.com; x86(a)kernel.org
-> > Subject: Re: [genirq] cbe16f35be: will-it-scale.per_thread_ops -5.2%
-> > regression
-> > =
-
-> > Hi Thomas,
-> > =
-
-> > On Tue, Apr 27, 2021 at 01:42:12PM +0200, Thomas Gleixner wrote:
-> > > Folks,
-> > >
-> > > On Tue, Apr 27 2021 at 17:00, kernel test robot wrote:
-> > >
-> > > > Greeting,
-> > > >
-> > > > FYI, we noticed a -5.2% regression of will-it-scale.per_thread_ops =
-due to
-> > commit:
-> > > >
-> > > > commit: cbe16f35bee6880becca6f20d2ebf6b457148552 ("genirq: Add
-> > > > IRQF_NO_AUTOEN for request_irq/nmi()")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git
-> > > > master
-> > >
-> > > this is the second report in the last week which makes not a lot of s=
-ense.
-> > > And this oneis makes absolutely no sense at all.
-> > >
-> > > This commit affects request_irq() and the related variants and has
-> > > exactly ZERO influence on anything related to that test case simply
-> > > because.
-> > >
-> > > I seriously have to ask the question whether this test infrastructure
-> > > is actually measuring what it claims to measure.
-> > >
-> > > As this commit clearly _cannot_ have the 'measured' side effect, this
-> > > points to some serious issue in the tests or the test infrastructure
-> > > itself.
-> > =
-
-> > 0day has reported about 20 similar cases that the bisected commit has n=
-othing
-> > to do with the benchmark case, and we were very confused too back then.=
- And
-> > our debug showed many of them changed the code alignment of kernel data=
- or text
-> > of other modules which is relevant with the benchmark, though some case=
-s are
-> > not well explained yet. Following are links of some explained cases.
-> > =
-
-> > https://lore.kernel.org/lkml/20200305062138.GI5972(a)shao2-debian/
-> > https://lore.kernel.org/lkml/20200330011254.GA14393(a)feng-iot/
-> > https://lore.kernel.org/lkml/20201102091543.GM31092(a)shao2-debian/
-> > =
-
-> > And to debug code alignment case, one debug patch to force all function=
- address
-> > aligned to 32 bytes was merged in v5.9
-> > =
-
-> > 09c60546f04f ./Makefile: add debug option to enable function aligned on=
- 32 bytes
-> > =
-
-> > =
-
-> > For this particular case, the commit changes the code size of
-> > request_threaded_irq(), and many following functions' alignment are cha=
-nged.
-> > =
-
+> The oops is odd too:
 > =
 
-> If so, the performance impact of code change would be random.
-
-Right, I heard 0day team has enabled the force_func_align_32B for some
-kernel build to filter the case.
-
-> > So I extended the debug patch to force 64 bytes aligned, then this comm=
-it will
-> > cause _no_ performance change for the same test case on same platform.
-> > =
-
-> > diff --git a/Makefile b/Makefile
-> > =
-
-> >  ifdef CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_32B
-> > -KBUILD_CFLAGS +=3D -falign-functions=3D32
-> > +KBUILD_CFLAGS +=3D -falign-functions=3D64
-> >  endif
-> > =
-
-> > Though I don't know the detail of how exactly this code alignment affec=
-ts the
-> > case.
+>> [  198.731223] WARNING: CPU: 0 PID: 1948 at mm/vmalloc.c:2247 __vunmap (=
+kbuild/src/consumer/mm/vmalloc.c:2247 (discriminator 1))
 > =
 
-> Guess it is related with icache.
-
-Possibly, and sometime iTLB also.
-
-> But it is still an irrelevant problem.
-Yes, the commit itself has no problem. And my personal thought
-is no further action is needed. =
-
-
-Thanks,
-Feng
-
-> > =
-
-> > Thanks,
-> > Feng
-> > =
-
-> > > Thanks,
-> > >
-> > >         tglx
+> That's the warning for an unaligned vunmap():
 > =
 
-> Thanks
-> Barry
---===============5308548519567098263==--
+>    2247          if (WARN(!PAGE_ALIGNED(addr), "Trying to vfree() bad
+> address (%p)\n",
+>    2248                          addr))
+>    2249                  return;
+> =
+
+>> [  198.744933] Call Trace:
+>> [  198.745229] free_module (kbuild/src/consumer/kernel/module.c:2251)
+> =
+
+>    2248          /* This may be empty, but that's OK */
+>    2249          module_arch_freeing_init(mod);
+>    2250          module_memfree(mod->init_layout.base);
+
+We add debug code to print logs when mod->init_layout.base is NULL, =
+
+after more than 100 times test, we find that when mod->init_layout.base =
+
+is NULL, no align warning happened. From the descriptions of vfree, if =
+
+@addr is NULL, no operation is performed. So when the warning happened, =
+
+the mod->init_layout.base is not a NULL.
+
+void vfree(const void *addr)
+{
+	BUG_ON(in_nmi());
+
+	kmemleak_free(addr);
+
+	might_sleep_if(!in_interrupt());
+
+	if (!addr)
+		return;
+
+	__vfree(addr);
+}
+
+static void __vfree(const void *addr)
+{
+	if (unlikely(in_interrupt()))
+		__vfree_deferred(addr);
+	else
+		__vunmap(addr, 1);
+}
+
+
+>    2251          kfree(mod->args);
+> =
+
+> That's the "module_memfree()" - the return address points to the
+> return point, which is the next line.
+> =
+
+> And as far as I can tell, the only thing that assigns anything but
+> NULL to that init_layout.base is
+> =
+
+>                  ptr =3D module_alloc(mod->init_layout.size);
+> =
+
+> which uses __vmalloc_node_range() for the allocation.
+> =
+
+> So absolutely nothing in this report makes sense to me. I suspect it's
+> some odd memory corruption.
+> =
+
+> Oliver - how reliable is that bisection?
+> =
+
+> Does anybody else see what might be up?
+> =
+
+>              Linus
+> _______________________________________________
+> LKP mailing list -- lkp(a)lists.01.org
+> To unsubscribe send an email to lkp-leave(a)lists.01.org
+> =
+
+
+-- =
+
+Zhengjun Xing
+--===============6003874419898384901==--
 
