@@ -1,106 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============5235028111509200226=="
+Content-Type: multipart/mixed; boundary="===============7700942180316560473=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Philip Li <philip.li@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [clocksource] 6c52b5f3cf: stress-ng.opcode.ops_per_sec -14.4% regression
-Date: Sun, 25 Apr 2021 12:15:09 -0700
-Message-ID: <20210425191509.GV975577@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20210425031437.GA38485@shbuild999.sh.intel.com>
+Subject: Re: [genirq] cbe16f35be: will-it-scale.per_thread_ops -5.2% regression
+Date: Wed, 28 Apr 2021 23:23:39 +0800
+Message-ID: <20210428152339.GA2282261@pl-dbox>
+In-Reply-To: <87o8dyn5xr.ffs@nanos.tec.linutronix.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5235028111509200226==
+--===============7700942180316560473==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Apr 25, 2021 at 11:14:37AM +0800, Feng Tang wrote:
-> On Sun, Apr 25, 2021 at 10:14:38AM +0800, Feng Tang wrote:
-> > On Sat, Apr 24, 2021 at 10:53:22AM -0700, Paul E. McKenney wrote:
-> > > And if your 2/2 goes in, those who still distrust TSC will simply
-> > > revert it.  In their defense, their distrust was built up over a very
-> > > long period of time for very good reasons.
-> > > =
+On Wed, Apr 28, 2021 at 10:56:16AM +0200, Thomas Gleixner wrote:
+> On Wed, Apr 28 2021 at 16:08, Feng Tang wrote:
+> > On Wed, Apr 28, 2021 at 07:01:35AM +0000, Song Bao Hua (Barry Song) wro=
+te:
+> >
+> >> But it is still an irrelevant problem.
+> > Yes, the commit itself has no problem. And my personal thought
+> > is no further action is needed. =
 
-> > > > > This last sentence is not a theoretical statement.  In the past, =
-I have
-> > > > > suggested using the existing "tsc=3Dreliable" kernel boot paramet=
-er,
-> > > > > which disables watchdogs on TSC, similar to your patch 2/2 above.
-> > > > > The discussion was short and that boot parameter was not set.  An=
-d the
-> > > > > discussion motivated to my current clocksource series.  ;-)
-> > > > > =
+> =
 
-> > > > > I therefore suspect that someone will want a "tsc=3Dunreliable" b=
-oot
-> > > > > parameter (or similar) to go with your patch 2/2.
-> > > >  =
+> The commit does not need any further action, but this testing stuff
+Sorry Thomas for confusion and trouble caused by this. We will take it
+seriously to refine the report process for this category (alignment or
+cache behavior) of performance change, to avoid meaningless ones.
 
-> > > > Possibly :)
-> > > > =
+Thanks
 
-> > > > But I wonder if tsc is disabled on that 'large system', what will be
-> > > > used instead? HPET is known to be much slower for clocksource, as s=
-hown
-> > > > in this regression report :) not mentioning the 'acpi_pm' timer. =
+> really needs further action because we can't differentiate between real
+> regressions and these bogus reports anymore.
+> =
 
-> > > =
+> Thanks,
+> =
 
-> > > Indeed, the default switch to HPET often causes the system to be taken
-> > > out of service due to the resulting performance shortfall.  There is
-> > > of course some automated recovery, and no, I am not familiar with the
-> > > details, but I suspect that a simple reboot is an early recovery step.
-> > > However, if the problem were to persist, the system would of course be
-> > > considered to be permanently broken.
-> > =
-
-> > Thanks for the info, if a sever is taken out of service just because
-> > of a false alarm of tsc, then it's a big waste!
-> > =
-
-> > > > Again, I want to know the real tsc unstable case. I have spent lots
-> > > > of time searching these info from git logs and mail archives before
-> > > > writing the patches.
-> > > =
-
-> > > So do I, which is why I put together this patch series.  My employer =
-has
-> > > a fairly strict upstream-first for things like this which are annoyan=
-ces
-> > > that are likely hiding other bugs, but which are not causing signific=
-ant
-> > > outages, which was of course the motivation for the fault-injection
-> > > patches.
-> > > =
-
-> > > As I said earlier, it would have been very helpful to you for a patch
-> > > series like this to have been applied many years ago.  If it had been,
-> > > we would already have the failure-rate data that you requested.  And =
-of
-> > > course if that failure-rate data indicated that TSC was reliable, the=
-re
-> > > would be far fewer people still distrusting TSC.
-> >  =
-
-> > Yes, if they can share the detailed info (like what's the 'watchdog')
-> > and debug info, it can enable people to debug and root cause the
-> > problem to be a false alarm or a real silicon platform. Personally, for
-> > newer platforms I tend to trust tsc much more than other clocksources.
->  =
-
-> I understand people may 'distrust' tsc, after seeing that 'tsc unstable'
-> cases. But for 'newer platforms', if the unstable was judged by hpet,
-> acpi_pm_timer or the software 'refined-jiffies', then it could possibly
-> be just a false alarm, and that's not too difficult to be root caused.
-> And if there is a real evidence of a broken tsc case, then the distrust
-> is not just in impression from old days :) =
-
-
-Agreed!
-
-And I am hoping that my patch series can provide more clarity in the
-future.
-
-							Thanx, Paul
---===============5235028111509200226==--
+>         tglx
+> _______________________________________________
+> LKP mailing list -- lkp(a)lists.01.org
+> To unsubscribe send an email to lkp-leave(a)lists.01.org
+--===============7700942180316560473==--
 
