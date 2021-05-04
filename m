@@ -1,101 +1,92 @@
-Content-Type: multipart/mixed; boundary="===============9032978437936243607=="
+Content-Type: multipart/mixed; boundary="===============5812102902103820366=="
 MIME-Version: 1.0
-From: Jessica Yu <jeyu@kernel.org>
+From: Andrea Arcangeli <aarcange@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/vunmap] e47110e905: WARNING:at_mm/vmalloc.c:#__vunmap
-Date: Mon, 03 May 2021 16:43:05 +0200
-Message-ID: <YJAL+cxa3p2q5zOu@gunter>
-In-Reply-To: <CAHk-=wh62h6XXgKqhHnb=LTrmbMcVsV8GhXJvEoceTyHKtdBJA@mail.gmail.com>
+Subject: Re: [mm] 09bc0443e9: will-it-scale.per_thread_ops -7.2% regression
+Date: Mon, 03 May 2021 21:10:14 -0400
+Message-ID: <YJCe9omGbKAGPwmK@redhat.com>
+In-Reply-To: <YI9RIp3AaAsWxAUL@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9032978437936243607==
+--===============5812102902103820366==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-+++ Linus Torvalds [29/04/21 10:31 -0700]:
->[ Backgroudn for Jessica:
->
->    https://lore.kernel.org/lkml/20210423063227.GA17429(a)xsang-OptiPlex-9=
-020/
->
->  with some more emails in this thread ]
->
->On Thu, Apr 29, 2021 at 12:36 AM Oliver Sang <oliver.sang@intel.com> wro=
-te:
->> >
->> > Oh, that's interesting. So only 12 out of 74 runs saw that __vunmap
->> > warning, but if I understand your table correctly, there were some
->> > _other_ issues in there?
->>
->> yes, there are.
->
->Yeah, so it really does look like the commit you bisected to changes
->timing - and thus just exposes an existing problem.
->
->And it's likely a race condition, and it exposes the existing problem
->not just in a new place, but much *MORE*.
->
->The fact that you see something like
->
->    Trying to vfree() bad address (0000000070935066)
->
->means that clearly something has corrupted the the module data in
->'struct module *'. Because that should have been a core_layout.base
->pointer that was allocated with moodule_alloc(), which is just a
->vmalloc wrapper on x86-64.
->
->The allocations in the module handling are somewhat odd (putting it
->mildly), with that 'struct module *' actually being a pointer *into*
->the module allocation itself, so I suspect there's some race with
->del_module() or something, and the reason you bisect to that commit
->e47110e90584a22e9980510b00d0dfad3a83354e is that the added
->cond_schedule() in the vfree path now exposes exactly that race of two
->things trying to free the same module at the same time.
->
->This all *should* be serialized by various subtle things
->
-> - MODULE_STATE_UNFORMED means that modules are bypassed
->
-> - the actual allocation/freeing functions use module_mutex to serialize
->
-> - some lookup functions use RCU to look up a module but should then
->only look at things like the symbol arrays etc.
->
->but if somehow del_module() can race with do_init_module() creating a
->module halfway and then doing free_module() (or perhaps multiple
->module loads of the same module racing and aborting), then I can see
->one freeing the underlying module data, and the other one seeing
->corrupt 'struct module *' as a result.
+On Sun, May 02, 2021 at 09:25:54PM -0400, Andrea Arcangeli wrote:
+> =3D=3D=3D pin_fast will-it-scale follows =3D=3D=3D
+> =
 
-The situation is bizarre to me. From the call trace:
+> In addition, to see a related scalability increase, I added a pin_fast
+> testcase to will-it-scale that I'm submitting here to Anton (CC'ed).
+> =
 
-[  198.744933] Call Trace:
-[  198.745229] free_module (kbuild/src/consumer/kernel/module.c:2251)
-[  198.745629] do_init_module (kbuild/src/consumer/kernel/module.c:3705)
-[  198.746054] ? rcu_read_lock_bh_held (kbuild/src/consumer/kernel/rcu/upda=
-te.c:131)
-[  198.746576] load_module (kbuild/src/consumer/kernel/module.c:3968)
+> To run it in lkp-test you only have to add the attached patch on top
+> of your patch and then call "pin_fast" instead of "mmap2" in the
+> invocation, like below:
+> =
 
-This tells me that we were in the middle of loading a module and hit one of=
- the
-error conditions in do_init_module() - either the kmalloc() call failed or =
-the
-module init function returned an error and now we've landed in the error pa=
-th
-of do_init_module(), hence the call to free_module().
+> # for i in `seq 3`; do python3 runtest.py pin_fast 295 thread `nproc`; do=
+ne
+> =
 
-But if we failed here, this also means the module never made it to the LIVE
-state - it was COMING, then immediately GOING. There is a liveness check in
-delete_module(), so any calls to delete_module() on this module should have
-returned -EBUSY. So module removal operations should not even be touching t=
-his
-module. Multiple module loads of the same name should have blocked while
-waiting for this module to finish loading or fail loading.
+> I recommend to add this to lkp-test since I think it's much more
+> interesting than mmap2 and will show huge differences. Ideally we
+> should add a both FOLL_WRITE test too later.
+> =
 
-Sorry I could not be more immediately helpful here, I will have to
-stare at the error report a bit more and chew through some possible
-race scenarios and get back to you on this..
+> This is aa.git main branch commit 918037878bcf:
+> =
 
---===============9032978437936243607==--
+> tasks,processes,processes_idle,threads,threads_idle,linear
+> 0,0,100,0,100,0
+> 256,0,0.00,1196513,0.19,0
+> tasks,processes,processes_idle,threads,threads_idle,linear
+> 0,0,100,0,100,0
+> 256,0,0.00,1194664,0.19,0
+> tasks,processes,processes_idle,threads,threads_idle,linear
+> 0,0,100,0,100,0
+> 256,0,0.00,1193194,0.19,0
+> =
+
+> This is mainline, upstream commit 18a3c5f7abfd:
+> =
+
+> tasks,processes,processes_idle,threads,threads_idle,linear
+> 0,0,100,0,100,0
+> 256,0,0.00,25641,0.17,0
+> tasks,processes,processes_idle,threads,threads_idle,linear
+> 0,0,100,0,100,0
+> 256,0,0.00,25652,0.16,0
+> tasks,processes,processes_idle,threads,threads_idle,linear
+> 0,0,100,0,100,0
+> 256,0,0.00,25559,0.16,0
+
+I now verified that the 4668% increase in scalability as expected is
+thanks to this very patch:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/andrea/aa.git/commit/?id=3D=
+5a9bd1dce03d0a7c55c5f81992bc06fc6630f78d
+
+"mm: gup: allow FOLL_PIN to scale in SMP"
+
+And the patch you flagged as regression:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/andrea/aa.git/commit/?id=3D=
+d2f271ca96b42cafd701d445f11af0d2ef993772
+
+changes nothing in performance, it retains the 4668% improvement in
+SMP scalability of FOLL_PIN compared upstream, and it changes nothing
+for all other tests, but it saves 64bit per vma of RAM, it packs the
+structure.
+
+All results matches what I described in the commit headers.
+
+I'll document the 4668% improvement in SMP scalability of FOLL_PIN in
+the first patch commit header now for the next rebase.
+
+Thanks,
+Andrea
+
+--===============5812102902103820366==--
 
