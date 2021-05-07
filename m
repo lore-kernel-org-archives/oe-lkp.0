@@ -1,44 +1,59 @@
-Content-Type: multipart/mixed; boundary="===============6740433342451163180=="
+Content-Type: multipart/mixed; boundary="===============4346185439563531871=="
 MIME-Version: 1.0
-From: Roman Gushchin <guro@fb.com>
+From: Dennis Zhou <dennis@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [percpu] ace7e70901: aim9.sync_disk_rw.ops_per_sec -2.3% regression
-Date: Fri, 07 May 2021 10:52:22 -0700
-Message-ID: <YJV+Vn9eGfIlxDQE@carbon.dhcp.thefacebook.com>
-In-Reply-To: <20210507030606.GA27263@xsang-OptiPlex-9020>
+Date: Fri, 07 May 2021 19:08:03 +0000
+Message-ID: <YJWQE8AFjyYpsLYA@google.com>
+In-Reply-To: <YJV+Vn9eGfIlxDQE@carbon.dhcp.thefacebook.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6740433342451163180==
+--===============4346185439563531871==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 07, 2021 at 11:06:06AM +0800, Oliver Sang wrote:
-> hi Roman,
->  =
+On Fri, May 07, 2021 at 10:52:22AM -0700, Roman Gushchin wrote:
+> On Fri, May 07, 2021 at 11:06:06AM +0800, Oliver Sang wrote:
+> > hi Roman,
+> >  =
 
-> On Thu, May 06, 2021 at 12:54:59AM +0000, Roman Gushchin wrote:
-> > Ping
+> > On Thu, May 06, 2021 at 12:54:59AM +0000, Roman Gushchin wrote:
+> > > Ping
+> > =
+
+> > sorry for late.
+> > =
+
+> > the new patch makes the performance a little better but still has
+> > 1.9% regression comparing to
+> > f183324133 ("percpu: implement partial chunk depopulation")
 > =
 
-> sorry for late.
+> Hi Oliver!
 > =
 
-> the new patch makes the performance a little better but still has
-> 1.9% regression comparing to
-> f183324133 ("percpu: implement partial chunk depopulation")
+> Thank you for testing it!
+> =
 
-Hi Oliver!
+> Btw, can you, please, confirm that the regression is coming specifically
+> from ace7e70901 ("percpu: use reclaim threshold instead of running for ev=
+ery page")?
+> I do see *some* regression in my setup, but the data is very noisy, so I'=
+m not sure
+> I can confirm it.
+> =
 
-Thank you for testing it!
+> Thanks!
 
-Btw, can you, please, confirm that the regression is coming specifically
-from ace7e70901 ("percpu: use reclaim threshold instead of running for ever=
-y page")?
-I do see *some* regression in my setup, but the data is very noisy, so I'm =
-not sure
-I can confirm it.
+Thanks Oliver and Roman. If this is the case, I'll drop the final patch
+and just merge up to f183324133 ("percpu: implement partial chunk
+depopulation") into for-next as this is v5.14 anyway.
 
-Thanks!
---===============6740433342451163180==--
+Oliver, is there a way to trigger the kernel test robot for a specific
+test?
+
+Thanks,
+Dennis
+--===============4346185439563531871==--
 
