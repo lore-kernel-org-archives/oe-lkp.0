@@ -1,115 +1,93 @@
-Content-Type: multipart/mixed; boundary="===============0853780413458123940=="
+Content-Type: multipart/mixed; boundary="===============5176479747367973078=="
 MIME-Version: 1.0
-From: Dennis Zhou <dennis@kernel.org>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [percpu] ace7e70901: aim9.sync_disk_rw.ops_per_sec -2.3% regression
-Date: Tue, 11 May 2021 01:27:06 +0000
-Message-ID: <YJndaqy7AbBYnjPh@google.com>
-In-Reply-To: <YJnaQcgZaC8qJhOB@carbon.DHCP.thefacebook.com>
+Date: Tue, 11 May 2021 10:13:06 +0800
+Message-ID: <20210511021306.GA8539@xsang-OptiPlex-9020>
+In-Reply-To: <YJV+Vn9eGfIlxDQE@carbon.dhcp.thefacebook.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0853780413458123940==
+--===============5176479747367973078==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 10, 2021 at 06:13:37PM -0700, Roman Gushchin wrote:
-> On Tue, May 11, 2021 at 12:44:18AM +0000, Dennis Zhou wrote:
-> > On Mon, May 10, 2021 at 05:34:38PM -0700, Roman Gushchin wrote:
-> > > On Fri, May 07, 2021 at 07:08:03PM +0000, Dennis Zhou wrote:
-> > > > On Fri, May 07, 2021 at 10:52:22AM -0700, Roman Gushchin wrote:
-> > > > > On Fri, May 07, 2021 at 11:06:06AM +0800, Oliver Sang wrote:
-> > > > > > hi Roman,
-> > > > > >  =
+Hi Roman,
 
-> > > > > > On Thu, May 06, 2021 at 12:54:59AM +0000, Roman Gushchin wrote:
-> > > > > > > Ping
-> > > > > > =
+On Fri, May 07, 2021 at 10:52:22AM -0700, Roman Gushchin wrote:
+> On Fri, May 07, 2021 at 11:06:06AM +0800, Oliver Sang wrote:
+> > hi Roman,
+> >  =
 
-> > > > > > sorry for late.
-> > > > > > =
-
-> > > > > > the new patch makes the performance a little better but still h=
-as
-> > > > > > 1.9% regression comparing to
-> > > > > > f183324133 ("percpu: implement partial chunk depopulation")
-> > > > > =
-
-> > > > > Hi Oliver!
-> > > > > =
-
-> > > > > Thank you for testing it!
-> > > > > =
-
-> > > > > Btw, can you, please, confirm that the regression is coming speci=
-fically
-> > > > > from ace7e70901 ("percpu: use reclaim threshold instead of runnin=
-g for every page")?
-> > > > > I do see *some* regression in my setup, but the data is very nois=
-y, so I'm not sure
-> > > > > I can confirm it.
-> > > > > =
-
-> > > > > Thanks!
-> > > > =
-
-> > > > Thanks Oliver and Roman. If this is the case, I'll drop the final p=
-atch
-> > > > and just merge up to f183324133 ("percpu: implement partial chunk
-> > > > depopulation") into for-next as this is v5.14 anyway.
-> > > =
-
-> > > I doubt it's a good idea. I reran the test with some debug added and =
-it looks
-> > > like it doesn't  trigger any depopulation at all. Everything else loo=
-ked sane
-> > > too.
-> > > =
-
+> > On Thu, May 06, 2021 at 12:54:59AM +0000, Roman Gushchin wrote:
+> > > Ping
 > > =
 
-> > Well that's awkward...
+> > sorry for late.
 > > =
 
-> > > Dropping a reasonable patch doing a good thing without any understand=
-inding how
-> > > it affects (or even can affect in theory) some benchmark sounds like =
-a bad idea.
-> > > We'll never learn this. It could be that the regression is caused my =
-some
-> > > tiny alignment difference or something like this, so any other change=
- can
-> > > trigger it too (I can be totally wrong here, but I don't have any bet=
-ter
-> > > explanation either).
-> > > =
-
-> > =
-
-> > So I'm not 100% thrilled with the final patch anyway. Particularly the
-> > lock dancing I'd rather figure something out a little cleaner. I'm going
-> > to take some time later this week and sort it out. If I can't think of
-> > anthing better I'll just reapply the final patch.
-> > =
-
-> > I've currently merged everything up into the last patch for-5.14. Should
-> > at least give us some very preliminary testing.
+> > the new patch makes the performance a little better but still has
+> > 1.9% regression comparing to
+> > f183324133 ("percpu: implement partial chunk depopulation")
 > =
 
-> Sounds good to me!
+> Hi Oliver!
 > =
 
-> But if under final you mean the batching, I'd include my locking optimiza=
-tion
-> patch or something similar to it. We shouldn't grab and release the pcpu_=
-lock
-> many times for no reason.
+> Thank you for testing it!
+> =
 
-Yeah, I have that in mind + a few renamings in addition to the batching
-batch.
-
+> Btw, can you, please, confirm that the regression is coming specifically
+> from ace7e70901 ("percpu: use reclaim threshold instead of running for ev=
+ery page")?
+> I do see *some* regression in my setup, but the data is very noisy, so I'=
+m not sure
+> I can confirm it.
 > =
 
 > Thanks!
---===============0853780413458123940==--
+
+sorry for late. according to our tests, the answer seems be yes.
+let me explain our test a little, we found the KPI (here is aim9)
+droped, then an automatic bisection was triggered. the ace7e70901
+was finally recognized as the commit introduced the change.
+
+since it's a bisection result, we have test data for both parent
+and this commit. (BTW, we make sure the config for both kernels are
+same)
+
+for this bisect, we tested 6 times for both parent and ace7e70901,
+and the data is stable, as below:
+
+parent:
+f183324133ea535db4127f9fad3e19725ca88bf3/avg.json:  "aim9.sync_disk_rw.ops_=
+per_sec": 103531.76166666666,
+
+f183324133ea535db4127f9fad3e19725ca88bf3/matrix.json:  "aim9.sync_disk_rw.o=
+ps_per_sec": [
+f183324133ea535db4127f9fad3e19725ca88bf3/matrix.json-    103673.09,
+f183324133ea535db4127f9fad3e19725ca88bf3/matrix.json-    102188.39,
+f183324133ea535db4127f9fad3e19725ca88bf3/matrix.json-    104325.06,
+f183324133ea535db4127f9fad3e19725ca88bf3/matrix.json-    104038.4,
+f183324133ea535db4127f9fad3e19725ca88bf3/matrix.json-    102908.57,
+f183324133ea535db4127f9fad3e19725ca88bf3/matrix.json-    104057.06
+f183324133ea535db4127f9fad3e19725ca88bf3/matrix.json-  ],
+
+ace7e70901:
+ace7e7090137ee996757eb5eebc94439b0e2803a/avg.json:  "aim9.sync_disk_rw.ops_=
+per_sec": 101102.73857142858,
+
+ace7e7090137ee996757eb5eebc94439b0e2803a/matrix.json:  "aim9.sync_disk_rw.o=
+ps_per_sec": [
+ace7e7090137ee996757eb5eebc94439b0e2803a/matrix.json-    101193.43,
+ace7e7090137ee996757eb5eebc94439b0e2803a/matrix.json-    100689.98,
+ace7e7090137ee996757eb5eebc94439b0e2803a/matrix.json-    100988.63,
+ace7e7090137ee996757eb5eebc94439b0e2803a/matrix.json-    100732.64,
+ace7e7090137ee996757eb5eebc94439b0e2803a/matrix.json-    101389.69,
+ace7e7090137ee996757eb5eebc94439b0e2803a/matrix.json-    101662.74,
+ace7e7090137ee996757eb5eebc94439b0e2803a/matrix.json-    101062.06
+ace7e7090137ee996757eb5eebc94439b0e2803a/matrix.json-  ],
+
+--===============5176479747367973078==--
 
