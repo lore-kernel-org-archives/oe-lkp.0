@@ -1,318 +1,321 @@
-Content-Type: multipart/mixed; boundary="===============0437548807901423316=="
+Content-Type: multipart/mixed; boundary="===============1637574556238539969=="
 MIME-Version: 1.0
-From: Alistair Popple <apopple@nvidia.com>
+From: Xing Zhengjun <zhengjun.xing@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [kernel/resource] 56fd94919b: BUG:KASAN:use-after-free_in__region_intersects
-Date: Tue, 11 May 2021 18:28:15 +1000
-Message-ID: <1620740641.H8NWFiPkCk@nvdebian>
-In-Reply-To: <20210511072158.GF8539@xsang-OptiPlex-9020>
+Subject: Re: [mm] 09bc0443e9: will-it-scale.per_thread_ops -7.2% regression
+Date: Tue, 11 May 2021 16:43:27 +0800
+Message-ID: <4111dbd3-164a-2c67-04f2-cee2aa950b04@linux.intel.com>
+In-Reply-To: <YJntgmqN/CkXIxnD@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0437548807901423316==
+--===============1637574556238539969==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-I think I see the issue. For some reason when I split the original patch =
+Hi Andrea,
 
-series up I inverted the return code for __request_region_locked() but fail=
-ed =
-
-to do so in __request_free_mem_region(). Additionally hmm_test doesn't alwa=
-ys =
-
-check the return code from dmirror_allocate_chunk() which hides the more =
-
-obvious failure resulting in this one which I didn't see on my local setup.
-
-Will post fixes for both of these problems.
-
- - Alistair
-
-On Tuesday, 11 May 2021 5:21:58 PM AEST kernel test robot wrote:
-> Greeting,
+On 5/11/2021 10:35 AM, Andrea Arcangeli wrote:
+> Hi Xing,
 > =
 
-> FYI, we noticed the following commit (built with gcc-9):
+> On Tue, May 11, 2021 at 09:34:32AM +0800, Xing Zhengjun wrote:
+>> Hi Andrea,
+>>
+>> On 5/9/2021 7:12 AM, Andrea Arcangeli wrote:
+>>> On Sat, May 08, 2021 at 10:58:34AM +0800, Xing Zhengjun wrote:
+>>>> Hi Andrea,
+>>>>
+>>>>    =C2=A0=C2=A0=C2=A0 I re-test it more than 10 times, the regression =
+still exists.
+>>>
+>>> Probably I didn't measure it because for me they may have always
+>>> landed in the same cacheline even before the patch was applied.
+>>>
+>>> Ouch btw looking at flush_tlb_pending I also noticed I forgot to revert
+>>> 6ce64428d62026a10cb5d80138ff2f90cc21d367, that has to be added to the
+>>> pile of SMP unscalable upstream code to be reverted on my tree to
+>>> improve performance even more to the wp fault with uffd-wp.
+>>>
+>>>>    =C2=A0=C2=A0=C2=A0 0d2285c62210(mm: gup: pack has_pinned in MMF_HAS=
+_PINNED) removed
+>>>> "atomic_t has_pinned" from "struct mm_struct", it changed the "struct
+>>>> mm_struct" cache line layout (please see in the attached pahole dumped
+>>>> results), in its parent commit, "spinlock_t page_table_lock" and "stru=
+ct
+>>>> rw_semaphore mmap_lock" in two different cache line, but in
+>>>> 0d2285c62210, they may in the same cache line, "mm_struct" is widely
+>>>> used, it may have potential contention issue, so I apply the following
+>>>> patch change the layout, retest the regression is gone (very small, -0=
+.9%).
+>>>
+>>> Agreed, the accidental cacheline alignment change is the only thing
+>>> that could explain a performance difference, except it didn't make a
+>>> difference for me.
+>>>
+>>> I applied this, this should fix your issue and it is going to work
+>>> without depending on .config options (see all fields before mmap_lock,
+>>> they vary depending on config/arch).
+>>>
+>>> I'm not really sure the problem is the page_table_lock even, it may be
+>>> just false sharing on the fields at the top of the vma.
+>>>
+>>> The best I recommend to try also in addition of the below is to move
+>>> this line:
+>>>
+>>> +		struct rw_semaphore mmap_lock ____cacheline_aligned_in_smp;
+>>>
+>>> at the very end. so it gets 64 bytes alone and reduces all false
+>>> sharing to zero. That cacheline is heavily heavily contended during
+>>> the mmap test. so it may be worth wasting 64bytes per vma even...
+>>>
+>>> The below wastes in average not more than 32 bytes.
+>>>
+>>> >From 99a2452759bb5cfb2a77405d7db42968bf7e7509 Mon Sep 17 00:00:00 2001
+>>> From: Andrea Arcangeli <aarcange@redhat.com>
+>>> Date: Sat, 8 May 2021 18:54:34 -0400
+>>> Subject: [PATCH 1/1] mm: cacheline alignment for page_table_lock and mm=
+ap_lock
+>>>
+>>> It's important to keep the two fields in two different cachelines and
+>>> this will enforce it.
+>>>
+>>> The kernel test robot reported a per_thread_ops -7.2% regression for
+>>> the will-it-scale mmap2 threaded testcase when the two fields
+>>> accidentally landed in the same cacheline.
+>>>
+>>> Reported-by: kernel test robot <oliver.sang@intel.com>
+>>> Signed-off-by: Andrea Arcangeli <aarcange@redhat.com>
+>>> ---
+>>>    include/linux/mm_types.h | 2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+>>> index 7fc7a3320ad9..714b4c3e2a7c 100644
+>>> --- a/include/linux/mm_types.h
+>>> +++ b/include/linux/mm_types.h
+>>> @@ -456,7 +456,7 @@ struct mm_struct {
+>>>    		spinlock_t page_table_lock; /* Protects page tables and some
+>>>    					     * counters
+>>>    					     */
+>>> -		struct rw_semaphore mmap_lock;
+>>> +		struct rw_semaphore mmap_lock ____cacheline_aligned_in_smp;
+>>>    =
+
+>>>    		struct list_head mmlist; /* List of maybe swapped mm's.	These
+>>>    					  * are globally strung together off
+>>>
+>>
+>> I test the patch, the regression is gone and it gets +2.1% improvement.
 > =
 
-> commit: 56fd94919b8bfdbe162f78920b4ebc72b4ce2f39 ("kernel/resource: fix =
+> That's nice, thanks for running the tests so fast! Very interesting.
+> =
 
-locking in request_free_mem_region")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> So if we call above the test patch 1), I'd be now curious to know what
+> happens with patch 2) and patch 3) below if applied on top of patch
+> 1. (or on top of current aa.git main branch which already includes
+> patch 1 since yesterday)
+> =
+
+> this would be test patch 2)
+> =
+
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 714b4c3e2a7c..f463ca223cad 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -392,7 +392,8 @@ struct core_state {
+>   struct kioctx_table;
+>   struct mm_struct {
+>   	struct {
+> -		struct vm_area_struct *mmap;		/* list of VMAs */
+> +		struct rw_semaphore mmap_lock;
+> +		struct vm_area_struct *mmap ____cacheline_aligned_in_smp;		/* list of =
+VMAs */
+>   		struct rb_root mm_rb;
+>   		u64 vmacache_seqnum;                   /* per-thread vmacache */
+>   #ifdef CONFIG_MMU
+> @@ -456,7 +457,6 @@ struct mm_struct {
+>   		spinlock_t page_table_lock; /* Protects page tables and some
+>   					     * counters
+>   					     */
+> -		struct rw_semaphore mmap_lock ____cacheline_aligned_in_smp;
+>   =
+
+>   		struct list_head mmlist; /* List of maybe swapped mm's.	These
+>   					  * are globally strung together off
 > =
 
 > =
 
-> in testcase: trinity
-> version: trinity-x86_64-03f10b67-1_20210507
-> with following parameters:
 > =
 
->         number: 99999
->         group: group-01
+> this would be test patch 3)
 > =
 
-> test-description: Trinity is a linux system call fuzz tester.
-> test-url: http://codemonkey.org.uk/projects/trinity/
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 714b4c3e2a7c..dcafca22374e 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -392,7 +392,10 @@ struct core_state {
+>   struct kioctx_table;
+>   struct mm_struct {
+>   	struct {
+> -		struct vm_area_struct *mmap;		/* list of VMAs */
+> +		spinlock_t page_table_lock; /* Protects page tables and some
+> +					     * counters
+> +					     */
+> +		struct vm_area_struct *mmap ____cacheline_aligned_in_smp;		/* list of =
+VMAs */
+>   		struct rb_root mm_rb;
+>   		u64 vmacache_seqnum;                   /* per-thread vmacache */
+>   #ifdef CONFIG_MMU
+> @@ -453,10 +456,7 @@ struct mm_struct {
+>   #endif
+>   		int map_count;			/* number of VMAs */
+>   =
+
+> -		spinlock_t page_table_lock; /* Protects page tables and some
+> -					     * counters
+> -					     */
+> -		struct rw_semaphore mmap_lock ____cacheline_aligned_in_smp;
+> +		struct rw_semaphore mmap_lock;
+>   =
+
+>   		struct list_head mmlist; /* List of maybe swapped mm's.	These
+>   					  * are globally strung together off
 > =
 
 > =
 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
-m =
-
-16G
+> Test patch 3 is just in case, to verify the relation with the
+> page_table_lock. I don't expect a significant benefit, maybe the
+> regression will return in fact since mmap_lock will land back in the
+> previous cacheline as when the regression started happening.
 > =
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/
-backtrace):
+> My guess is the fastest will be test patch 2, but it costs in average
+> 32 bytes more than patch 1.
 > =
 
+> Unless patch 2 will be significantly better than patch 1, it's not
+> worth it and we can keep patch 1 which is quite nice separating the
+> two locks. Separating the two locks is the most important in general.
 > =
 
+> This is a pretty useful benchmark: in some important enterprise
+> production workloads the mmap_lock is the ultimate contention point,
+> because even when it's a read lock the cacheline keeps bouncing around.
 > =
 
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Thanks!
+> Andrea
 > =
 
-> =
 
-> [  148.514812] BUG: KASAN: use-after-free in __region_intersects (kbuild/
-src/consumer/kernel/resource.c:516)
-> [  148.515030] Read of size 8 at addr ffff8881238c7258 by task swapper/0/1
-> [  148.515030]
-> [  148.515030] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.12.0-11529-
-g56fd94919b8b #1
-> [  148.515030] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S =
+I test the patches, patch 1 gets 2.1% improvement, patch 2 gets 3.6% =
 
-1.12.0-1 04/01/2014
-> [  148.515030] Call Trace:
-> [  148.515030] dump_stack (kbuild/src/consumer/lib/dump_stack.c:122)
-> [  148.515030] print_address_description.cold+0x82/0x326
-> [  148.515030] ? __region_intersects (kbuild/src/consumer/kernel/resource=
-.c:
-516)
-> [  148.515030] kasan_report.cold (kbuild/src/consumer/mm/kasan/report.c:4=
-20 =
-
-kbuild/src/consumer/mm/kasan/report.c:436)
-> [  148.515030] ? lock_contended (kbuild/src/consumer/kernel/locking/
-lockdep.c:229 kbuild/src/consumer/kernel/locking/lockdep.c:5674 kbuild/src/
-consumer/kernel/locking/lockdep.c:5747)
-> [  148.515030] ? __region_intersects (kbuild/src/consumer/kernel/resource=
-.c:
-516)
-> [  148.515030] __region_intersects (kbuild/src/consumer/kernel/resource.c:
-516)
-> [  148.515030] __request_free_mem_region+0x11b/0x300
-> [  148.515030] ? test_stackinit_init (kbuild/src/consumer/lib/test_hmm.c:
-1114)
-> [  148.515030] dmirror_allocate_chunk (kbuild/src/consumer/lib/test_hmm.c:
-468)
-> [  148.515030] ? __sanitizer_cov_trace_pc (kbuild/src/consumer/kernel/
-kcov.c:197)
-> [  148.515030] ? kobject_get (kbuild/src/consumer/lib/kobject.c:662)
-> [  148.515030] ? __sanitizer_cov_trace_pc (kbuild/src/consumer/kernel/
-kcov.c:197)
-> [  148.515030] ? test_stackinit_init (kbuild/src/consumer/lib/test_hmm.c:
-1114)
-> [  148.515030] hmm_dmirror_init (kbuild/src/consumer/lib/test_hmm.c:1123)
-> [  148.515030] do_one_initcall (kbuild/src/consumer/init/main.c:1249)
-> [  148.515030] ? perf_trace_initcall_level (kbuild/src/consumer/init/main=
-.c:
-1240)
-> [  148.515030] ? rcu_read_lock_sched_held (kbuild/src/consumer/kernel/rcu/
-update.c:125)
-> [  148.515030] ? rcu_read_lock_bh_held (kbuild/src/consumer/kernel/rcu/
-update.c:120)
-> [  148.515030] ? __kasan_kmalloc (kbuild/src/consumer/mm/kasan/common.c:4=
-75 =
-
-kbuild/src/consumer/mm/kasan/common.c:516)
-> [  148.515030] ? write_comp_data (kbuild/src/consumer/kernel/kcov.c:218)
-> [  148.515030] ? __sanitizer_cov_trace_pc (kbuild/src/consumer/kernel/
-kcov.c:197)
-> [  148.515030] kernel_init_freeable (kbuild/src/consumer/init/main.c:1321 =
-
-kbuild/src/consumer/init/main.c:1338 kbuild/src/consumer/init/main.c:1358 =
-
-kbuild/src/consumer/init/main.c:1560)
-> [  148.515030] ? console_on_rootfs (kbuild/src/consumer/init/main.c:1526)
-> [  148.515030] ? tracer_hardirqs_on (kbuild/src/consumer/kernel/trace/
-trace_irqsoff.c:57 kbuild/src/consumer/kernel/trace/trace_irqsoff.c:610)
-> [  148.515030] ? mark_held_locks (kbuild/src/consumer/kernel/locking/
-lockdep.c:4069)
-> [  148.515030] ? rest_init (kbuild/src/consumer/init/main.c:1444)
-> [  148.515030] kernel_init (kbuild/src/consumer/init/main.c:1449)
-> [  148.515030] ret_from_fork (kbuild/src/consumer/arch/x86/entry/entry_64=
-.S:
-300)
-> [  148.515030]
-> [  148.515030] Allocated by task 1:
-> [  148.515030] kasan_save_stack (kbuild/src/consumer/mm/kasan/common.c:38)
-> [  148.515030] __kasan_kmalloc (kbuild/src/consumer/mm/kasan/common.c:46 =
-
-kbuild/src/consumer/mm/kasan/common.c:428 kbuild/src/consumer/mm/kasan/
-common.c:507 kbuild/src/consumer/mm/kasan/common.c:516)
-> [  148.515030] kmem_cache_alloc_trace (kbuild/src/consumer/mm/slub.c:2941)
-> [  148.515030] alloc_resource (kbuild/src/consumer/include/linux/slab.h:5=
-56 =
-
-kbuild/src/consumer/include/linux/slab.h:686 kbuild/src/consumer/kernel/
-resource.c:178)
-> [  148.515030] __request_free_mem_region+0x6a/0x300
-> [  148.515030] dmirror_allocate_chunk (kbuild/src/consumer/lib/test_hmm.c:
-468)
-> [  148.515030] hmm_dmirror_init (kbuild/src/consumer/lib/test_hmm.c:1123)
-> [  148.515030] do_one_initcall (kbuild/src/consumer/init/main.c:1249)
-> [  148.515030] kernel_init_freeable (kbuild/src/consumer/init/main.c:1321 =
-
-kbuild/src/consumer/init/main.c:1338 kbuild/src/consumer/init/main.c:1358 =
-
-kbuild/src/consumer/init/main.c:1560)
-> [  148.515030] kernel_init (kbuild/src/consumer/init/main.c:1449)
-> [  148.515030] ret_from_fork (kbuild/src/consumer/arch/x86/entry/entry_64=
-.S:
-300)
-> [  148.515030]
-> [  148.515030] Freed by task 1:
-> [  148.515030] kasan_save_stack (kbuild/src/consumer/mm/kasan/common.c:38)
-> [  148.515030] kasan_set_track (kbuild/src/consumer/mm/kasan/common.c:46)
-> [  148.515030] kasan_set_free_info (kbuild/src/consumer/mm/kasan/generic.=
-c:
-359)
-> [  148.515030] __kasan_slab_free (kbuild/src/consumer/mm/kasan/common.c:3=
-62 =
-
-kbuild/src/consumer/mm/kasan/common.c:368)
-> [  148.515030] slab_free_freelist_hook (kbuild/src/consumer/mm/slub.c:160=
-6)
-> [  148.515030] kfree (kbuild/src/consumer/mm/slub.c:3166 kbuild/src/
-consumer/mm/slub.c:4225)
-> [  148.515030] free_resource (kbuild/src/consumer/kernel/resource.c:162)
-> [  148.515030] __request_free_mem_region+0x161/0x300
-> [  148.515030] dmirror_allocate_chunk (kbuild/src/consumer/lib/test_hmm.c:
-468)
-> [  148.515030] hmm_dmirror_init (kbuild/src/consumer/lib/test_hmm.c:1123)
-> [  148.515030] do_one_initcall (kbuild/src/consumer/init/main.c:1249)
-> [  148.515030] kernel_init_freeable (kbuild/src/consumer/init/main.c:1321 =
-
-kbuild/src/consumer/init/main.c:1338 kbuild/src/consumer/init/main.c:1358 =
-
-kbuild/src/consumer/init/main.c:1560)
-> [  148.515030] kernel_init (kbuild/src/consumer/init/main.c:1449)
-> [  148.515030] ret_from_fork (kbuild/src/consumer/arch/x86/entry/entry_64=
-.S:
-300)
-> [  148.515030]
-> [  148.515030] The buggy address belongs to the object at ffff8881238c7240
-> [  148.515030]  which belongs to the cache kmalloc-64 of size 64
-> [  148.515030] The buggy address is located 24 bytes inside of
-> [  148.515030]  64-byte region [ffff8881238c7240, ffff8881238c7280)
-> [  148.515030] The buggy address belongs to the page:
-> [  148.515030] page:(____ptrval____) refcount:1 mapcount:0 mapping:
-0000000000000000 index:0xffff8881238c6440 pfn:0x1238c6
-> [  148.515030] head:(____ptrval____) order:1 compound_mapcount:0
-> [  148.515030] flags: 0x17ffffc0010200(slab|head|node=3D0|zone=3D2|
-lastcpupid=3D0x1fffff)
-> [  148.515030] raw: 0017ffffc0010200 ffff888100040d50 ffff888100040d50 =
-
-ffff88810004ce00
-> [  148.515030] raw: ffff8881238c6440 000000000010000f 00000001ffffffff =
-
-0000000000000000
-> [  148.515030] page dumped because: kasan: bad access detected
-> [  148.515030]
-> [  148.515030] Memory state around the buggy address:
-> [  148.515030]  ffff8881238c7100: fc fc fc fc fc fc fc fc fc fc fc fc fc =
-fc =
-
-fc fc
-> [  148.515030]  ffff8881238c7180: fc fc fc fc fc fc fc fc fc fc fc fc fc =
-fc =
-
-fc fc
-> [  148.515030] >ffff8881238c7200: fc fc fc fc fc fc fc fc fa fb fb fb fb =
-fb =
-
-fb fb
-> [  148.515030]                                                     ^
-> [  148.515030]  ffff8881238c7280: fc fc fc fc fc fc fc fc fc fc fc fc fc =
-fc =
-
-fc fc
-> [  148.515030]  ffff8881238c7300: fc fc fc fc fc fc fc fc fc fc fc fc fc =
-fc =
-
-fc fc
-> [  148.515030] =
+improvement, patch 3 gets -7.0% regression.
 
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [  148.515030] Disabling lock debugging due to kernel taint
-> [  148.690200] HMM test module loaded. This is only for testing HMM.
-> [  148.691899] test_free_pages: Testing with GFP_KERNEL
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+tbox_group/testcase/rootfs/kconfig/compiler/nr_task/mode/test/cpufreq_gover=
+nor/ucode/debug-setup:
+ =
+
+lkp-csl-2sp9/will-it-scale/debian-10.4-x86_64-20200603.cgz/x86_64-rhel-8.3/=
+gcc-9/100%/thread/mmap2/performance/0x5003006/test
+
+commit:
+   cf379a4e0005ff9a4e734901aab9eeafe28c4eb6
+   0d2285c622103f0314ced7485c3b5b43f870c2d3
+   4e1291d70e101e7e1064ca814288a003171d75c7  (patch1)
+   3d5791b79590c6d57b9a66be7d4ec33bfa5027fc  (patch2)
+   5f65daa0dc701eeae20d29b0521dd11becd50239  (patch3)
+
+cf379a4e0005ff9a 0d2285c622103f0314ced7485c3 4e1291d70e101e7e1064ca81428 =
+
+3d5791b79590c6d57b9a66be7d4 5f65daa0dc701eeae20d29b0521
+---------------- --------------------------- --------------------------- =
+
+--------------------------- ---------------------------
+          %stddev     %change         %stddev     %change =
+
+%stddev     %change         %stddev     %change         %stddev
+              \          |                \          |                \ =
+
+          |                \          |                \
+     204106 =C2=B1  2%      -5.6%     192733            +2.1%     208489 =
+
+        +3.6%     211498            -7.0%     189797 =C2=B1  2% =
+
+will-it-scale.88.threads
+       3.13 =C2=B1  2%     +25.1%       3.91 =C2=B1  2%      -1.3%       3.=
+08 =C2=B1 =
+
+3%      -1.8%       3.07           +25.9%       3.94 =C2=B1  2% =
+
+will-it-scale.88.threads_idle
+       2319 =C2=B1  2%      -5.6%       2189            +2.1%       2368 =
+
+        +3.6%       2403            -7.0%       2156 =C2=B1  2% =
+
+will-it-scale.per_thread_ops
+     204106 =C2=B1  2%      -5.6%     192733            +2.1%     208489 =
+
+        +3.6%     211498            -7.0%     189797 =C2=B1  2% =
+
+will-it-scale.workload
+
+
+
+
+>>
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> tbox_group/testcase/rootfs/kconfig/compiler/nr_task/mode/test/cpufreq_go=
+vernor/ucode/debug-setup:
+>>   =
+
+>> lkp-csl-2sp9/will-it-scale/debian-10.4-x86_64-20200603.cgz/x86_64-rhel-8=
+.3/gcc-9/100%/thread/mmap2/performance/0x5003006/test
+>>
+>> commit:
+>>     cf379a4e0005ff9a4e734901aab9eeafe28c4eb6
+>>     0d2285c622103f0314ced7485c3b5b43f870c2d3
+>>     4e1291d70e101e7e1064ca814288a003171d75c7  (test patch)
+>>
+>> cf379a4e0005ff9a 0d2285c622103f0314ced7485c3 4e1291d70e101e7e1064ca81428
+>> ---------------- --------------------------- ---------------------------
+>>            %stddev     %change         %stddev     %change         %stdd=
+ev
+>>                \          |                \          |                \
+>>       204106 =C2=B1  2%      -5.6%     192733            +2.1%     208489
+>>      will-it-scale.88.threads
+>>         3.13 =C2=B1  2%     +25.1%       3.91 =C2=B1  2%      -1.3%     =
+  3.08 =C2=B1
+>> 3%  will-it-scale.88.threads_idle
+>>         2319 =C2=B1  2%      -5.6%       2189            +2.1%       2368
+>>      will-it-scale.per_thread_ops
+>>       204106 =C2=B1  2%      -5.6%     192733            +2.1%     208489
+>>      will-it-scale.workload
+>>
+>>
+>>
+>> -- =
+
+>> Zhengjun Xing
+>>
 > =
 
-> Kboot worker: lkp-worker29
-> Elapsed time: 180
-> =
 
-> kvm=3D(
-> qemu-system-x86_64
-> -enable-kvm
-> -cpu SandyBridge
-> -kernel $kernel
-> -initrd initrd-vm-snb-123.cgz
-> -m 16384
-> -smp 2
-> -device e1000,netdev=3Dnet0
-> =
+-- =
 
-> =
-
-> To reproduce:
-> =
-
->         # build kernel
->         cd linux
->         cp config-5.12.0-11529-g56fd94919b8b .config
->         make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Dx86_64 olddefconfig prepare =
-
-modules_prepare bzImage
-> =
-
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script # job-script is attached in =
-
-this email
-> =
-
-> =
-
-> =
-
-> ---
-> 0DAY/LKP+ Test Infrastructure                   Open Source Technology =
-
-Center
-> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel =
-
-Corporation
-> =
-
-> Thanks,
-> Oliver Sang
-> =
-
-
-
-
-
---===============0437548807901423316==--
+Zhengjun Xing
+--===============1637574556238539969==--
 
