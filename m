@@ -1,123 +1,128 @@
-Content-Type: multipart/mixed; boundary="===============4203777702416678425=="
+Content-Type: multipart/mixed; boundary="===============6176235855434053598=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [clocksource] 388450c708: netperf.Throughput_tps -65.1% regression
-Date: Fri, 14 May 2021 15:43:14 +0800
-Message-ID: <20210514074314.GB5384@shbuild999.sh.intel.com>
-In-Reply-To: <20210513170707.GA975577@paulmck-ThinkPad-P17-Gen-1>
+Subject: Re: [entry] 47b8ff194c: will-it-scale.per_process_ops -3.0% regression
+Date: Fri, 14 May 2021 12:13:22 +0200
+Message-ID: <YJ5NQtTdQm29dO9p@hirez.programming.kicks-ass.net>
+In-Reply-To: <20210513231127.GA165500@lothringen>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4203777702416678425==
+--===============6176235855434053598==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Paul,
+On Fri, May 14, 2021 at 01:11:27AM +0200, Frederic Weisbecker wrote:
 
-On Thu, May 13, 2021 at 10:07:07AM -0700, Paul E. McKenney wrote:
-> On Thu, May 13, 2021 at 11:55:15PM +0800, kernel test robot wrote:
-> > =
-
-> > =
-
-> > Greeting,
-> > =
-
-> > FYI, we noticed a -65.1% regression of netperf.Throughput_tps due to co=
-mmit:
-> > =
-
-> > =
-
-> > commit: 388450c7081ded73432e2b7148c1bb9a0b039963 ("[PATCH v12 clocksour=
-ce 4/5] clocksource: Reduce clocksource-skew threshold for TSC")
-> > url: https://github.com/0day-ci/linux/commits/Paul-E-McKenney/Do-not-ma=
-rk-clocks-unstable-due-to-delays-for-v5-13/20210501-083404
-> > base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 2d036dfa=
-5f10df9782f5278fc591d79d283c1fad
-> > =
-
-> > in testcase: netperf
-> > on test machine: 96 threads 2 sockets Ice Lake with 256G memory
-> > with following parameters:
-> > =
-
-> > 	ip: ipv4
-> > 	runtime: 300s
-> > 	nr_threads: 25%
-> > 	cluster: cs-localhost
-> > 	test: UDP_RR
-> > 	cpufreq_governor: performance
-> > 	ucode: 0xb000280
-> > =
-
-> > test-description: Netperf is a benchmark that can be use to measure var=
-ious aspect of networking performance.
-> > test-url: http://www.netperf.org/netperf/
-> > =
-
-> > =
-
-> > =
-
-> > If you fix the issue, kindly add following tag
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > =
-
-> > =
-
-> > also as Feng Tang checked, this is a "unstable clocksource" case.
-> > attached dmesg FYI.
+> That sounds good, but two things:
 > =
 
-> Agreed, given the clock-skew event and the resulting switch to HPET,
-> performance regressions are expected behavior.
+> 1) Even if context tracking is not running, we still need to handle
+>    deferred wakeups on idle. But all user/guest/idle currently use the
+>    same function.
 > =
 
-> That dmesg output does demonstrate the value of Feng Tang's patch!
+> 2) Context tracking may be running even when full nohz is not. But here o=
+nly
+>    full nohz is concerned.
 > =
 
-> I don't see how to obtain the values of ->mult and ->shift that would
-> allow me to compute the delta.  So if you don't tell me otherwise, I
-> will assume that the skew itself was expected on this hardware, perhaps
-> somehow due to the tpm_tis_status warning immediately preceding the
-> clock-skew event.  If my assumption is incorrect, please let me know.
+> So the change should rather be as follows (completely untested!).
+> I rather put the static key check in tick.h in order not to involve
+> deep dependencies inside rcupdate.h (especially rcupdate.h -> tick.h -> s=
+ched.h)
 
-I run the case with the debug patch applied, the info is:
+Compiles and boots for me, 0day folks, could you please test this makes
+the reported regression go away?
 
-[   13.796429] clocksource: timekeeping watchdog on CPU19: Marking clocksou=
-rce 'tsc' as unstable because the skew is too large:
-[   13.797413] clocksource:                       'hpet' wd_nesc: 505192062=
- wd_now: 10657158 wd_last: fac6f97 mask: ffffffff
-[   13.797413] clocksource:                       'tsc' cs_nsec: 504008008 =
-cs_now: 3445570292aa5 cs_last: 344551f0cad6f mask: ffffffffffffffff
-[   13.797413] clocksource:                       'tsc' is current clocksou=
-rce.
-[   13.797413] tsc: Marking TSC unstable due to clocksource watchdog
-[   13.844513] clocksource: Checking clocksource tsc synchronization from C=
-PU 50 to CPUs 0-1,12,22,32-33,60,65.
-[   13.855080] clocksource: Switched to clocksource hpet
+> diff --git a/include/linux/entry-kvm.h b/include/linux/entry-kvm.h
+> index 8b2b1d68b954..136b8d97d8c0 100644
+> --- a/include/linux/entry-kvm.h
+> +++ b/include/linux/entry-kvm.h
+> @@ -3,6 +3,7 @@
+>  #define __LINUX_ENTRYKVM_H
+>  =
 
-So the delta is 1184 us (505192062 - 504008008), and I agree with
-you that it should be related with the tpm_tis_status warning stuff.
+>  #include <linux/entry-common.h>
+> +#include <linux/tick.h>
+>  =
 
-But this re-trigger my old concerns, that if the margins calculated
-for tsc, hpet are too small?
+>  /* Transfer to guest mode work */
+>  #ifdef CONFIG_KVM_XFER_TO_GUEST_WORK
+> @@ -57,7 +58,7 @@ int xfer_to_guest_mode_handle_work(struct kvm_vcpu *vcp=
+u);
+>  static inline void xfer_to_guest_mode_prepare(void)
+>  {
+>  	lockdep_assert_irqs_disabled();
+> -	rcu_nocb_flush_deferred_wakeup();
+> +	tick_nohz_user_enter_prepare();
+>  }
+>  =
 
-With current math algorithm, the 'uncertainty_margin' is
-calculated against the frequency, and those tsc/hpet/acpi_pm
-timer is multiple of MHz or GHz, which gives them to have margin of
-100 us. It works with normal systems. But in the wild world, there
-could be some sparkles due to some immature HW components, their
-firmwares or drivers etc, just like this case. =
+>  /**
+> diff --git a/include/linux/tick.h b/include/linux/tick.h
+> index 0bb80a7f05b9..bfd571f18cfd 100644
+> --- a/include/linux/tick.h
+> +++ b/include/linux/tick.h
+> @@ -11,6 +11,7 @@
+>  #include <linux/context_tracking_state.h>
+>  #include <linux/cpumask.h>
+>  #include <linux/sched.h>
+> +#include <linux/rcupdate.h>
+>  =
 
+>  #ifdef CONFIG_GENERIC_CLOCKEVENTS
+>  extern void __init tick_init(void);
+> @@ -304,4 +305,10 @@ static inline void tick_nohz_task_switch(void)
+>  		__tick_nohz_task_switch();
+>  }
+>  =
 
-Thanks,
-Feng
+> +static inline void tick_nohz_user_enter_prepare(void)
+> +{
+> +	if (tick_nohz_full_cpu(smp_processor_id()))
+> +		rcu_nocb_flush_deferred_wakeup();
+> +}
+> +
+>  #endif
+> diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+> index a0b3b04fb596..bf16395b9e13 100644
+> --- a/kernel/entry/common.c
+> +++ b/kernel/entry/common.c
+> @@ -5,6 +5,7 @@
+>  #include <linux/highmem.h>
+>  #include <linux/livepatch.h>
+>  #include <linux/audit.h>
+> +#include <linux/tick.h>
+>  =
 
+>  #include "common.h"
+>  =
 
-> 							Thanx, Paul
->=20
---===============4203777702416678425==--
+> @@ -186,7 +187,7 @@ static unsigned long exit_to_user_mode_loop(struct pt=
+_regs *regs,
+>  		local_irq_disable_exit_to_user();
+>  =
+
+>  		/* Check if any of the above work has queued a deferred wakeup */
+> -		rcu_nocb_flush_deferred_wakeup();
+> +		tick_nohz_user_enter_prepare();
+>  =
+
+>  		ti_work =3D READ_ONCE(current_thread_info()->flags);
+>  	}
+> @@ -202,7 +203,7 @@ static void exit_to_user_mode_prepare(struct pt_regs =
+*regs)
+>  	lockdep_assert_irqs_disabled();
+>  =
+
+>  	/* Flush pending rcuog wakeup before the last need_resched() check */
+> -	rcu_nocb_flush_deferred_wakeup();
+> +	tick_nohz_user_enter_prepare();
+>  =
+
+>  	if (unlikely(ti_work & EXIT_TO_USER_MODE_WORK))
+>  		ti_work =3D exit_to_user_mode_loop(regs, ti_work);
+--===============6176235855434053598==--
 
