@@ -1,128 +1,221 @@
-Content-Type: multipart/mixed; boundary="===============6176235855434053598=="
+Content-Type: multipart/mixed; boundary="===============6692925239471676829=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Luis Henriques <lhenriques@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [entry] 47b8ff194c: will-it-scale.per_process_ops -3.0% regression
-Date: Fri, 14 May 2021 12:13:22 +0200
-Message-ID: <YJ5NQtTdQm29dO9p@hirez.programming.kicks-ass.net>
-In-Reply-To: <20210513231127.GA165500@lothringen>
+Subject: Re: [vfs] 94a4dd06a6: xfstests.generic.263.fail
+Date: Fri, 14 May 2021 12:05:31 +0100
+Message-ID: <877dk1zibo.fsf@suse.de>
+In-Reply-To: <20210513135644.GE20142@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6176235855434053598==
+--===============6692925239471676829==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 14, 2021 at 01:11:27AM +0200, Frederic Weisbecker wrote:
+kernel test robot <oliver.sang@intel.com> writes:
 
-> That sounds good, but two things:
-> =
+> Greeting,
+>
+> FYI, we noticed the following commit (built with gcc-9):
+>
+> commit: 94a4dd06a6bbf3978b0bb1dddc2d8ec4e5bcad26 ("[PATCH v9] vfs: fix co=
+py_file_range regression in cross-fs copies")
+> url: https://github.com/0day-ci/linux/commits/Luis-Henriques/vfs-fix-copy=
+_file_range-regression-in-cross-fs-copies/20210510-170804
+> base: https://git.kernel.org/cgit/linux/kernel/git/viro/vfs.git for-next
+>
+> in testcase: xfstests
+> version: xfstests-x86_64-73c0871-1_20210401
+> with following parameters:
+>
+> 	disk: 4HDD
+> 	fs: xfs
+> 	test: generic-group-13
+> 	ucode: 0x21
+>
+> test-description: xfstests is a regression test suite for xfs and other f=
+iles ystems.
+> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
+>
+>
+> on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30=
+GHz with 8G memory
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+>
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+>
+> 2021-05-11 11:28:23 export TEST_DIR=3D/fs/sda1
+> 2021-05-11 11:28:23 export TEST_DEV=3D/dev/sda1
+> 2021-05-11 11:28:23 export FSTYP=3Dxfs
+> 2021-05-11 11:28:23 export SCRATCH_MNT=3D/fs/scratch
+> 2021-05-11 11:28:23 mkdir /fs/scratch -p
+> 2021-05-11 11:28:23 export SCRATCH_DEV=3D/dev/sda4
+> 2021-05-11 11:28:23 export SCRATCH_LOGDEV=3D/dev/sda2
+> 2021-05-11 11:28:23 sed "s:^:generic/:" //lkp/benchmarks/xfstests/tests/g=
+eneric-group-13
+> 2021-05-11 11:28:23 ./check generic/260 generic/261 generic/262 generic/2=
+63 generic/264 generic/265 generic/266 generic/267 generic/268 generic/269 =
+generic/270 generic/271 generic/272 generic/273 generic/274 generic/275 gen=
+eric/276 generic/277 generic/278 generic/279
+> FSTYP         -- xfs (debug)
+> PLATFORM      -- Linux/x86_64 lkp-ivb-d02 5.12.0-rc6-00061-g94a4dd06a6bb =
+#1 SMP Tue May 11 00:58:17 CST 2021
+> MKFS_OPTIONS  -- -f -bsize=3D4096 /dev/sda4
+> MOUNT_OPTIONS -- /dev/sda4 /fs/scratch
+>
+> generic/260	[not run] FITRIM not supported on /fs/scratch
+> generic/261	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/262	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/263	[failed, exit status 1]- output mismatch (see /lkp/benchmarks=
+/xfstests/results//generic/263.out.bad)
+>     --- tests/generic/263.out	2021-04-01 03:07:08.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//generic/263.out.bad	2021-05-11 =
+11:28:29.773460096 +0000
+>     @@ -1,3 +1,32 @@
+>      QA output created by 263
+>      fsx -N 10000 -o 8192 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z
+>     -fsx -N 10000 -o 128000 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z
+>     +Seed set to 1
+>     +main: filesystem does not support clone range, disabling!
+>     +main: filesystem does not support dedupe range, disabling!
+>     +skipping zero size read
+>     ...
+>     (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/263.out /lkp/ben=
+chmarks/xfstests/results//generic/263.out.bad'  to see the entire diff)
+> generic/264	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/265	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/266	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/267	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/268	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/269	 48s
+> generic/270	 61s
+> generic/271	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/272	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/273	 17s
+> generic/274	 14s
+> generic/275	 11s
+> generic/276	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/277	 3s
+> generic/278	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> generic/279	[not run] Reflink not supported by scratch filesystem type: x=
+fs
+> Ran: generic/260 generic/261 generic/262 generic/263 generic/264 generic/=
+265 generic/266 generic/267 generic/268 generic/269 generic/270 generic/271=
+ generic/272 generic/273 generic/274 generic/275 generic/276 generic/277 ge=
+neric/278 generic/279
+> Not run: generic/260 generic/261 generic/262 generic/264 generic/265 gene=
+ric/266 generic/267 generic/268 generic/271 generic/272 generic/276 generic=
+/278 generic/279
+> Failures: generic/263
+> Failed 1 of 20 tests
 
-> 1) Even if context tracking is not running, we still need to handle
->    deferred wakeups on idle. But all user/guest/idle currently use the
->    same function.
-> =
+OK, I see what's going on.  There are 2 issues: one with patch and another
+one with the test itself.
 
-> 2) Context tracking may be running even when full nohz is not. But here o=
-nly
->    full nohz is concerned.
-> =
+The CFR syscall should have been disabled in this test but it isn't
+because the test tries to copy 1 byte from a zero-sized file:
 
-> So the change should rather be as follows (completely untested!).
-> I rather put the static key check in tick.h in order not to involve
-> deep dependencies inside rcupdate.h (especially rcupdate.h -> tick.h -> s=
-ched.h)
+int
+test_copy_range(void)
+{
+	loff_t o1 =3D 0, o2 =3D 1;
 
-Compiles and boots for me, 0day folks, could you please test this makes
-the reported regression go away?
+	if (syscall(__NR_copy_file_range, fd, &o1, fd, &o2, 1, 0) =3D=3D -1 &&
+	    (errno =3D=3D ENOSYS || errno =3D=3D EOPNOTSUPP || errno =3D=3D ENOTTY=
+)) {
+		if (!quiet)
+			fprintf(stderr,
+				"main: filesystem does not support "
+				"copy range, disabling!\n");
+		return 0;
+	}
 
-> diff --git a/include/linux/entry-kvm.h b/include/linux/entry-kvm.h
-> index 8b2b1d68b954..136b8d97d8c0 100644
-> --- a/include/linux/entry-kvm.h
-> +++ b/include/linux/entry-kvm.h
-> @@ -3,6 +3,7 @@
->  #define __LINUX_ENTRYKVM_H
->  =
+	return 1;
+}
 
->  #include <linux/entry-common.h>
-> +#include <linux/tick.h>
->  =
+The syscall is doing an early '0' return because the file size is < len.
 
->  /* Transfer to guest mode work */
->  #ifdef CONFIG_KVM_XFER_TO_GUEST_WORK
-> @@ -57,7 +58,7 @@ int xfer_to_guest_mode_handle_work(struct kvm_vcpu *vcp=
-u);
->  static inline void xfer_to_guest_mode_prepare(void)
->  {
->  	lockdep_assert_irqs_disabled();
-> -	rcu_nocb_flush_deferred_wakeup();
-> +	tick_nohz_user_enter_prepare();
->  }
->  =
+Fixing the kernel should probably be as easy as removing the
+short-circuiting check in vfs_copy_file_range():
 
->  /**
-> diff --git a/include/linux/tick.h b/include/linux/tick.h
-> index 0bb80a7f05b9..bfd571f18cfd 100644
-> --- a/include/linux/tick.h
-> +++ b/include/linux/tick.h
-> @@ -11,6 +11,7 @@
->  #include <linux/context_tracking_state.h>
->  #include <linux/cpumask.h>
->  #include <linux/sched.h>
-> +#include <linux/rcupdate.h>
->  =
+	if (len =3D=3D 0)
+		return 0;
 
->  #ifdef CONFIG_GENERIC_CLOCKEVENTS
->  extern void __init tick_init(void);
-> @@ -304,4 +305,10 @@ static inline void tick_nohz_task_switch(void)
->  		__tick_nohz_task_switch();
->  }
->  =
+This will force the filesystems code to handle '0' size copies but will
+also make sure -EOPNOTSUPP is returned in this case.
 
-> +static inline void tick_nohz_user_enter_prepare(void)
-> +{
-> +	if (tick_nohz_full_cpu(smp_processor_id()))
-> +		rcu_nocb_flush_deferred_wakeup();
-> +}
-> +
->  #endif
-> diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-> index a0b3b04fb596..bf16395b9e13 100644
-> --- a/kernel/entry/common.c
-> +++ b/kernel/entry/common.c
-> @@ -5,6 +5,7 @@
->  #include <linux/highmem.h>
->  #include <linux/livepatch.h>
->  #include <linux/audit.h>
-> +#include <linux/tick.h>
->  =
+Alternatively, we could have something like:
 
->  #include "common.h"
->  =
+	if (len =3D=3D 0) {
+		if (file_out->f_op->copy_file_range)
+			return 0;
+		else
+			return -EOPNOTSUPP;
+	}
 
-> @@ -186,7 +187,7 @@ static unsigned long exit_to_user_mode_loop(struct pt=
-_regs *regs,
->  		local_irq_disable_exit_to_user();
->  =
+What do you guys think is the right thing to do?
 
->  		/* Check if any of the above work has queued a deferred wakeup */
-> -		rcu_nocb_flush_deferred_wakeup();
-> +		tick_nohz_user_enter_prepare();
->  =
+Additionally, the test should also be fixed with something as the patch
+bellow.  By making sure we have 1 byte to copy we also ensure the syscall
+will return -EOPNOTSUPP, even with the current version of the patch.
 
->  		ti_work =3D READ_ONCE(current_thread_info()->flags);
->  	}
-> @@ -202,7 +203,7 @@ static void exit_to_user_mode_prepare(struct pt_regs =
-*regs)
->  	lockdep_assert_irqs_disabled();
->  =
+Cheers,
+-- =
 
->  	/* Flush pending rcuog wakeup before the last need_resched() check */
-> -	rcu_nocb_flush_deferred_wakeup();
-> +	tick_nohz_user_enter_prepare();
->  =
+Luis
 
->  	if (unlikely(ti_work & EXIT_TO_USER_MODE_WORK))
->  		ti_work =3D exit_to_user_mode_loop(regs, ti_work);
---===============6176235855434053598==--
+diff --git a/ltp/fsx.c b/ltp/fsx.c
+index cd0bae55aeb8..97db594ae142 100644
+--- a/ltp/fsx.c
++++ b/ltp/fsx.c
+@@ -1596,6 +1596,10 @@ int
+ test_copy_range(void)
+ {
+ 	loff_t o1 =3D 0, o2 =3D 1;
++	int ret =3D 1;
++
++	/* Make sure we have 1 byte to copy */
++	ftruncate(fd, 1);
+ =
+
+ 	if (syscall(__NR_copy_file_range, fd, &o1, fd, &o2, 1, 0) =3D=3D -1 &&
+ 	    (errno =3D=3D ENOSYS || errno =3D=3D EOPNOTSUPP || errno =3D=3D ENOTT=
+Y)) {
+@@ -1603,10 +1607,13 @@ test_copy_range(void)
+ 			fprintf(stderr,
+ 				"main: filesystem does not support "
+ 				"copy range, disabling!\n");
+-		return 0;
++		ret =3D 0;
+ 	}
+ =
+
+-	return 1;
++	/* Restore file size */
++	ftruncate(fd, 0);
++
++	return ret;
+ }
+ =
+
+ void
+--===============6692925239471676829==--
 
