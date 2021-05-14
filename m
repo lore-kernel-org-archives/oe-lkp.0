@@ -1,221 +1,140 @@
-Content-Type: multipart/mixed; boundary="===============6692925239471676829=="
+Content-Type: multipart/mixed; boundary="===============4733538875710650594=="
 MIME-Version: 1.0
-From: Luis Henriques <lhenriques@suse.de>
+From: Paul E. McKenney <paulmck@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [vfs] 94a4dd06a6: xfstests.generic.263.fail
-Date: Fri, 14 May 2021 12:05:31 +0100
-Message-ID: <877dk1zibo.fsf@suse.de>
-In-Reply-To: <20210513135644.GE20142@xsang-OptiPlex-9020>
+Subject: Re: [clocksource] 388450c708: netperf.Throughput_tps -65.1% regression
+Date: Fri, 14 May 2021 10:49:08 -0700
+Message-ID: <20210514174908.GI975577@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20210514074314.GB5384@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6692925239471676829==
+--===============4733538875710650594==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-kernel test robot <oliver.sang@intel.com> writes:
+On Fri, May 14, 2021 at 03:43:14PM +0800, Feng Tang wrote:
+> Hi Paul,
+> =
 
-> Greeting,
->
-> FYI, we noticed the following commit (built with gcc-9):
->
-> commit: 94a4dd06a6bbf3978b0bb1dddc2d8ec4e5bcad26 ("[PATCH v9] vfs: fix co=
-py_file_range regression in cross-fs copies")
-> url: https://github.com/0day-ci/linux/commits/Luis-Henriques/vfs-fix-copy=
-_file_range-regression-in-cross-fs-copies/20210510-170804
-> base: https://git.kernel.org/cgit/linux/kernel/git/viro/vfs.git for-next
->
-> in testcase: xfstests
-> version: xfstests-x86_64-73c0871-1_20210401
-> with following parameters:
->
-> 	disk: 4HDD
-> 	fs: xfs
-> 	test: generic-group-13
-> 	ucode: 0x21
->
-> test-description: xfstests is a regression test suite for xfs and other f=
-iles ystems.
-> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
->
->
-> on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30=
-GHz with 8G memory
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
->
->
->
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
->
-> 2021-05-11 11:28:23 export TEST_DIR=3D/fs/sda1
-> 2021-05-11 11:28:23 export TEST_DEV=3D/dev/sda1
-> 2021-05-11 11:28:23 export FSTYP=3Dxfs
-> 2021-05-11 11:28:23 export SCRATCH_MNT=3D/fs/scratch
-> 2021-05-11 11:28:23 mkdir /fs/scratch -p
-> 2021-05-11 11:28:23 export SCRATCH_DEV=3D/dev/sda4
-> 2021-05-11 11:28:23 export SCRATCH_LOGDEV=3D/dev/sda2
-> 2021-05-11 11:28:23 sed "s:^:generic/:" //lkp/benchmarks/xfstests/tests/g=
-eneric-group-13
-> 2021-05-11 11:28:23 ./check generic/260 generic/261 generic/262 generic/2=
-63 generic/264 generic/265 generic/266 generic/267 generic/268 generic/269 =
-generic/270 generic/271 generic/272 generic/273 generic/274 generic/275 gen=
-eric/276 generic/277 generic/278 generic/279
-> FSTYP         -- xfs (debug)
-> PLATFORM      -- Linux/x86_64 lkp-ivb-d02 5.12.0-rc6-00061-g94a4dd06a6bb =
-#1 SMP Tue May 11 00:58:17 CST 2021
-> MKFS_OPTIONS  -- -f -bsize=3D4096 /dev/sda4
-> MOUNT_OPTIONS -- /dev/sda4 /fs/scratch
->
-> generic/260	[not run] FITRIM not supported on /fs/scratch
-> generic/261	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/262	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/263	[failed, exit status 1]- output mismatch (see /lkp/benchmarks=
-/xfstests/results//generic/263.out.bad)
->     --- tests/generic/263.out	2021-04-01 03:07:08.000000000 +0000
->     +++ /lkp/benchmarks/xfstests/results//generic/263.out.bad	2021-05-11 =
-11:28:29.773460096 +0000
->     @@ -1,3 +1,32 @@
->      QA output created by 263
->      fsx -N 10000 -o 8192 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z
->     -fsx -N 10000 -o 128000 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z
->     +Seed set to 1
->     +main: filesystem does not support clone range, disabling!
->     +main: filesystem does not support dedupe range, disabling!
->     +skipping zero size read
->     ...
->     (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/263.out /lkp/ben=
-chmarks/xfstests/results//generic/263.out.bad'  to see the entire diff)
-> generic/264	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/265	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/266	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/267	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/268	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/269	 48s
-> generic/270	 61s
-> generic/271	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/272	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/273	 17s
-> generic/274	 14s
-> generic/275	 11s
-> generic/276	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/277	 3s
-> generic/278	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> generic/279	[not run] Reflink not supported by scratch filesystem type: x=
-fs
-> Ran: generic/260 generic/261 generic/262 generic/263 generic/264 generic/=
-265 generic/266 generic/267 generic/268 generic/269 generic/270 generic/271=
- generic/272 generic/273 generic/274 generic/275 generic/276 generic/277 ge=
-neric/278 generic/279
-> Not run: generic/260 generic/261 generic/262 generic/264 generic/265 gene=
-ric/266 generic/267 generic/268 generic/271 generic/272 generic/276 generic=
-/278 generic/279
-> Failures: generic/263
-> Failed 1 of 20 tests
+> On Thu, May 13, 2021 at 10:07:07AM -0700, Paul E. McKenney wrote:
+> > On Thu, May 13, 2021 at 11:55:15PM +0800, kernel test robot wrote:
+> > > =
 
-OK, I see what's going on.  There are 2 issues: one with patch and another
-one with the test itself.
+> > > =
 
-The CFR syscall should have been disabled in this test but it isn't
-because the test tries to copy 1 byte from a zero-sized file:
+> > > Greeting,
+> > > =
 
-int
-test_copy_range(void)
-{
-	loff_t o1 =3D 0, o2 =3D 1;
+> > > FYI, we noticed a -65.1% regression of netperf.Throughput_tps due to =
+commit:
+> > > =
 
-	if (syscall(__NR_copy_file_range, fd, &o1, fd, &o2, 1, 0) =3D=3D -1 &&
-	    (errno =3D=3D ENOSYS || errno =3D=3D EOPNOTSUPP || errno =3D=3D ENOTTY=
-)) {
-		if (!quiet)
-			fprintf(stderr,
-				"main: filesystem does not support "
-				"copy range, disabling!\n");
-		return 0;
-	}
+> > > =
 
-	return 1;
-}
+> > > commit: 388450c7081ded73432e2b7148c1bb9a0b039963 ("[PATCH v12 clockso=
+urce 4/5] clocksource: Reduce clocksource-skew threshold for TSC")
+> > > url: https://github.com/0day-ci/linux/commits/Paul-E-McKenney/Do-not-=
+mark-clocks-unstable-due-to-delays-for-v5-13/20210501-083404
+> > > base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 2d036d=
+fa5f10df9782f5278fc591d79d283c1fad
+> > > =
 
-The syscall is doing an early '0' return because the file size is < len.
+> > > in testcase: netperf
+> > > on test machine: 96 threads 2 sockets Ice Lake with 256G memory
+> > > with following parameters:
+> > > =
 
-Fixing the kernel should probably be as easy as removing the
-short-circuiting check in vfs_copy_file_range():
+> > > 	ip: ipv4
+> > > 	runtime: 300s
+> > > 	nr_threads: 25%
+> > > 	cluster: cs-localhost
+> > > 	test: UDP_RR
+> > > 	cpufreq_governor: performance
+> > > 	ucode: 0xb000280
+> > > =
 
-	if (len =3D=3D 0)
-		return 0;
+> > > test-description: Netperf is a benchmark that can be use to measure v=
+arious aspect of networking performance.
+> > > test-url: http://www.netperf.org/netperf/
+> > > =
 
-This will force the filesystems code to handle '0' size copies but will
-also make sure -EOPNOTSUPP is returned in this case.
+> > > =
 
-Alternatively, we could have something like:
+> > > =
 
-	if (len =3D=3D 0) {
-		if (file_out->f_op->copy_file_range)
-			return 0;
-		else
-			return -EOPNOTSUPP;
-	}
+> > > If you fix the issue, kindly add following tag
+> > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > =
 
-What do you guys think is the right thing to do?
+> > > =
 
-Additionally, the test should also be fixed with something as the patch
-bellow.  By making sure we have 1 byte to copy we also ensure the syscall
-will return -EOPNOTSUPP, even with the current version of the patch.
+> > > also as Feng Tang checked, this is a "unstable clocksource" case.
+> > > attached dmesg FYI.
+> > =
 
-Cheers,
--- =
+> > Agreed, given the clock-skew event and the resulting switch to HPET,
+> > performance regressions are expected behavior.
+> > =
 
-Luis
+> > That dmesg output does demonstrate the value of Feng Tang's patch!
+> > =
 
-diff --git a/ltp/fsx.c b/ltp/fsx.c
-index cd0bae55aeb8..97db594ae142 100644
---- a/ltp/fsx.c
-+++ b/ltp/fsx.c
-@@ -1596,6 +1596,10 @@ int
- test_copy_range(void)
- {
- 	loff_t o1 =3D 0, o2 =3D 1;
-+	int ret =3D 1;
-+
-+	/* Make sure we have 1 byte to copy */
-+	ftruncate(fd, 1);
- =
+> > I don't see how to obtain the values of ->mult and ->shift that would
+> > allow me to compute the delta.  So if you don't tell me otherwise, I
+> > will assume that the skew itself was expected on this hardware, perhaps
+> > somehow due to the tpm_tis_status warning immediately preceding the
+> > clock-skew event.  If my assumption is incorrect, please let me know.
+> =
 
- 	if (syscall(__NR_copy_file_range, fd, &o1, fd, &o2, 1, 0) =3D=3D -1 &&
- 	    (errno =3D=3D ENOSYS || errno =3D=3D EOPNOTSUPP || errno =3D=3D ENOTT=
-Y)) {
-@@ -1603,10 +1607,13 @@ test_copy_range(void)
- 			fprintf(stderr,
- 				"main: filesystem does not support "
- 				"copy range, disabling!\n");
--		return 0;
-+		ret =3D 0;
- 	}
- =
+> I run the case with the debug patch applied, the info is:
+> =
 
--	return 1;
-+	/* Restore file size */
-+	ftruncate(fd, 0);
-+
-+	return ret;
- }
- =
+> [   13.796429] clocksource: timekeeping watchdog on CPU19: Marking clocks=
+ource 'tsc' as unstable because the skew is too large:
+> [   13.797413] clocksource:                       'hpet' wd_nesc: 5051920=
+62 wd_now: 10657158 wd_last: fac6f97 mask: ffffffff
+> [   13.797413] clocksource:                       'tsc' cs_nsec: 50400800=
+8 cs_now: 3445570292aa5 cs_last: 344551f0cad6f mask: ffffffffffffffff
+> [   13.797413] clocksource:                       'tsc' is current clocks=
+ource.
+> [   13.797413] tsc: Marking TSC unstable due to clocksource watchdog
+> [   13.844513] clocksource: Checking clocksource tsc synchronization from=
+ CPU 50 to CPUs 0-1,12,22,32-33,60,65.
+> [   13.855080] clocksource: Switched to clocksource hpet
+> =
 
- void
---===============6692925239471676829==--
+> So the delta is 1184 us (505192062 - 504008008), and I agree with
+> you that it should be related with the tpm_tis_status warning stuff.
+> =
+
+> But this re-trigger my old concerns, that if the margins calculated
+> for tsc, hpet are too small?
+
+If the error really did disturb either tsc or hpet, then we really
+do not have a false positive, and nothing should change (aside from
+perhaps documenting that TPM issues can disturb the clocks, or better
+yet treating that perturbation as a separate bug that should be fixed).
+But if this is yet another way to get a confused measurement, then it
+would be better to work out a way to reject the confusion and keep the
+tighter margins.  I cannot think right off of a way that this could
+cause measurement confusion, but you never know.
+
+So any thoughts on exactly how the tpm_tis_status warning might have
+resulted in the skew?
+
+> With current math algorithm, the 'uncertainty_margin' is
+> calculated against the frequency, and those tsc/hpet/acpi_pm
+> timer is multiple of MHz or GHz, which gives them to have margin of
+> 100 us. It works with normal systems. But in the wild world, there
+> could be some sparkles due to some immature HW components, their
+> firmwares or drivers etc, just like this case. =
+
+
+Isn't diagnosing issues from immature hardware, firmware, and drivers
+actually a benefit?  It would after all be quite unfortunate if some issue
+that was visible only due to clock skew were to escape into production.
+
+							Thanx, Paul
+--===============4733538875710650594==--
 
