@@ -1,108 +1,168 @@
-Content-Type: multipart/mixed; boundary="===============1795589441799262983=="
+Content-Type: multipart/mixed; boundary="===============0824776666484272625=="
 MIME-Version: 1.0
-From: Nadav Amit <namit@vmware.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [smp] a32a4d8a81: netperf.Throughput_tps -2.1% regression
-Date: Wed, 19 May 2021 19:31:16 +0000
-Message-ID: <CDFF26F9-A748-403C-86B2-4511DD6B1833@vmware.com>
-In-Reply-To: <20210519183839.GH21560@worktop.programming.kicks-ass.net>
+Subject: Re: [clocksource] 388450c708: netperf.Throughput_tps -65.1% regression
+Date: Sun, 16 May 2021 19:30:39 -0700
+Message-ID: <20210517023039.GE4441@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20210516063419.GA22111@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1795589441799262983==
+--===============0824776666484272625==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Sun, May 16, 2021 at 02:34:19PM +0800, Feng Tang wrote:
+> On Fri, May 14, 2021 at 10:49:08AM -0700, Paul E. McKenney wrote:
+> > On Fri, May 14, 2021 at 03:43:14PM +0800, Feng Tang wrote:
+> > > Hi Paul,
+> > > =
 
+> > > On Thu, May 13, 2021 at 10:07:07AM -0700, Paul E. McKenney wrote:
+> > > > On Thu, May 13, 2021 at 11:55:15PM +0800, kernel test robot wrote:
+> > > > > =
 
-> On May 19, 2021, at 11:38 AM, Peter Zijlstra <peterz@infradead.org> wro=
-te:
+> > > > > =
+
+> > > > > Greeting,
+> > > > > =
+
+> > > > > FYI, we noticed a -65.1% regression of netperf.Throughput_tps due=
+ to commit:
+> > > > > =
+
+> > > > > =
+
+> > > > > commit: 388450c7081ded73432e2b7148c1bb9a0b039963 ("[PATCH v12 clo=
+cksource 4/5] clocksource: Reduce clocksource-skew threshold for TSC")
+> > > > > url: https://github.com/0day-ci/linux/commits/Paul-E-McKenney/Do-=
+not-mark-clocks-unstable-due-to-delays-for-v5-13/20210501-083404
+> > > > > base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 2d=
+036dfa5f10df9782f5278fc591d79d283c1fad
+> > > > > =
+
+> > > > > in testcase: netperf
+> > > > > on test machine: 96 threads 2 sockets Ice Lake with 256G memory
+> > > > > with following parameters:
+> > > > > =
+
+> > > > > 	ip: ipv4
+> > > > > 	runtime: 300s
+> > > > > 	nr_threads: 25%
+> > > > > 	cluster: cs-localhost
+> > > > > 	test: UDP_RR
+> > > > > 	cpufreq_governor: performance
+> > > > > 	ucode: 0xb000280
+> > > > > =
+
+> > > > > test-description: Netperf is a benchmark that can be use to measu=
+re various aspect of networking performance.
+> > > > > test-url: http://www.netperf.org/netperf/
+> > > > > =
+
+> > > > > =
+
+> > > > > =
+
+> > > > > If you fix the issue, kindly add following tag
+> > > > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > > =
+
+> > > > > =
+
+> > > > > also as Feng Tang checked, this is a "unstable clocksource" case.
+> > > > > attached dmesg FYI.
+> > > > =
+
+> > > > Agreed, given the clock-skew event and the resulting switch to HPET,
+> > > > performance regressions are expected behavior.
+> > > > =
+
+> > > > That dmesg output does demonstrate the value of Feng Tang's patch!
+> > > > =
+
+> > > > I don't see how to obtain the values of ->mult and ->shift that wou=
+ld
+> > > > allow me to compute the delta.  So if you don't tell me otherwise, I
+> > > > will assume that the skew itself was expected on this hardware, per=
+haps
+> > > > somehow due to the tpm_tis_status warning immediately preceding the
+> > > > clock-skew event.  If my assumption is incorrect, please let me kno=
+w.
+> > > =
+
+> > > I run the case with the debug patch applied, the info is:
+> > > =
+
+> > > [   13.796429] clocksource: timekeeping watchdog on CPU19: Marking cl=
+ocksource 'tsc' as unstable because the skew is too large:
+> > > [   13.797413] clocksource:                       'hpet' wd_nesc: 505=
+192062 wd_now: 10657158 wd_last: fac6f97 mask: ffffffff
+> > > [   13.797413] clocksource:                       'tsc' cs_nsec: 5040=
+08008 cs_now: 3445570292aa5 cs_last: 344551f0cad6f mask: ffffffffffffffff
+> > > [   13.797413] clocksource:                       'tsc' is current cl=
+ocksource.
+> > > [   13.797413] tsc: Marking TSC unstable due to clocksource watchdog
+> > > [   13.844513] clocksource: Checking clocksource tsc synchronization =
+from CPU 50 to CPUs 0-1,12,22,32-33,60,65.
+> > > [   13.855080] clocksource: Switched to clocksource hpet
+> > > =
+
+> > > So the delta is 1184 us (505192062 - 504008008), and I agree with
+> > > you that it should be related with the tpm_tis_status warning stuff.
+> > > =
+
+> > > But this re-trigger my old concerns, that if the margins calculated
+> > > for tsc, hpet are too small?
+> > =
+
+> > If the error really did disturb either tsc or hpet, then we really
+> > do not have a false positive, and nothing should change (aside from
+> > perhaps documenting that TPM issues can disturb the clocks, or better
+> > yet treating that perturbation as a separate bug that should be fixed).
+> > But if this is yet another way to get a confused measurement, then it
+> > would be better to work out a way to reject the confusion and keep the
+> > tighter margins.  I cannot think right off of a way that this could
+> > cause measurement confusion, but you never know.
 > =
 
-> On Wed, May 19, 2021 at 06:17:35PM +0000, Nadav Amit wrote:
->>>     1287 =C2=B1 42%     +75.3%       2256 =C2=B1 14%  interrupts.CPU111=
-.CAL:Function_call_interrupts
->>>     1326 =C2=B1 43%     +71.0%       2267 =C2=B1 13%  interrupts.CPU119=
-.CAL:Function_call_interrupts
->>>     1300 =C2=B1 45%     +75.9%       2287 =C2=B1 37%  interrupts.CPU120=
-.CAL:Function_call_interrupts
->>>     1299 =C2=B1 45%     +60.1%       2081 =C2=B1 28%  interrupts.CPU128=
-.CAL:Function_call_interrupts
->>>     1305 =C2=B1 45%     +61.7%       2110 =C2=B1 29%  interrupts.CPU131=
-.CAL:Function_call_interrupts
->>>     1299 =C2=B1 45%     +61.8%       2102 =C2=B1 28%  interrupts.CPU139=
-.CAL:Function_call_interrupts
->>>    66.67 =C2=B1133%     -97.2%       1.83 =C2=B1155%  interrupts.CPU14.=
-TLB:TLB_shootdowns
->>>     1299 =C2=B1 45%    +107.8%       2700 =C2=B1 33%  interrupts.CPU142=
-.CAL:Function_call_interrupts
->>>   301.83 =C2=B1128%     -95.6%      13.17 =C2=B1140%  interrupts.CPU149=
-.RES:Rescheduling_interrupts
->>>   389.17 =C2=B1 89%     -73.5%     103.17 =C2=B1 35%  interrupts.CPU164=
-.NMI:Non-maskable_interrupts
->>>   389.17 =C2=B1 89%     -73.5%     103.17 =C2=B1 35%  interrupts.CPU164=
-.PMI:Performance_monitoring_interrupts
->>>     1299 =C2=B1 45%     +60.2%       2081 =C2=B1 28%  interrupts.CPU35.=
-CAL:Function_call_interrupts
->>>     1244 =C2=B1 50%     +66.8%       2076 =C2=B1 27%  interrupts.CPU45.=
-CAL:Function_call_interrupts
->>>     1300 =C2=B1 44%     +59.5%       2075 =C2=B1 28%  interrupts.CPU46.=
-CAL:Function_call_interrupts
->>>     1.50 =C2=B1 63%   +1422.2%      22.83 =C2=B1167%  interrupts.CPU47.=
-RES:Rescheduling_interrupts
->>>   467.33 =C2=B1 85%     -64.6%     165.67 =C2=B1 74%  interrupts.CPU58.=
-NMI:Non-maskable_interrupts
->>>   467.33 =C2=B1 85%     -64.6%     165.67 =C2=B1 74%  interrupts.CPU58.=
-PMI:Performance_monitoring_interrupts
->>>   306.67 =C2=B1 75%     -59.9%     122.83 =C2=B1 16%  interrupts.CPU68.=
-NMI:Non-maskable_interrupts
->>>   306.67 =C2=B1 75%     -59.9%     122.83 =C2=B1 16%  interrupts.CPU68.=
-PMI:Performance_monitoring_interrupts
->>>     1131 =C2=B1 27%     +61.2%       1822 =C2=B1 35%  interrupts.CPU85.=
-CAL:Function_call_interrupts
->>>     1180 =C2=B1 31%     +79.6%       2119 =C2=B1 24%  interrupts.CPU86.=
-CAL:Function_call_interrupts
->>> =
+> I have no doubt in the correctness of the measuring method, but was
+> just afraid some platforms which use to 'just work' will be caught :)
 
+Quite possibly.  On the other hand, there might also be some platforms
+on which applications have been behaving in subtle and strange ways,
+and this series might be very helpful in such cases.
+
+> > So any thoughts on exactly how the tpm_tis_status warning might have
+> > resulted in the skew?
 > =
 
-> It looks to be sending *waay* more call IPIs, did we mess up the mask or
-> loose an optimization somewhere?
+> The tpm error message has been reported before, and from google there
+> were some similar errors, we'll do some further check.
+
+Thnak you!
+
+> > > With current math algorithm, the 'uncertainty_margin' is
+> > > calculated against the frequency, and those tsc/hpet/acpi_pm
+> > > timer is multiple of MHz or GHz, which gives them to have margin of
+> > > 100 us. It works with normal systems. But in the wild world, there
+> > > could be some sparkles due to some immature HW components, their
+> > > firmwares or drivers etc, just like this case. =
+
+> > =
+
+> > Isn't diagnosing issues from immature hardware, firmware, and drivers
+> > actually a benefit?  It would after all be quite unfortunate if some is=
+sue
+> > that was visible only due to clock skew were to escape into production.
 > =
 
-> I'll go read the commit again=E2=80=A6
+> Yes, it surely will expose some mal-functional cases which haven't
+> been caught before.
 
-As you know, I did mess up by calling arch_send_call_function_single_ipi()
-instead of smp_call_function_single(), which could explain the extra IPIs.
-But that was resolved by your subsequent patch.
+Here is hoping!
 
-For me, what stands out is the time in C1 spent after the patch.
-
-I will try to reproduce the issue to figure it out, since so far I could
-not find an error in the code.
-
-
---===============1795589441799262983==
-Content-Type: application/pgp-signature
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="signature.asc"
-
-LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KCmlRSXpCQUVCQ0FBZEZpRUVTSkwzb3NsNVlt
-eC93OUkxSGFBcVNhYmFEMW9GQW1DbFo0TUFDZ2tRSGFBcVNhYmEKRDFxK3FRLzVBU1VuWkdGMlBp
-eTVmMStVTEFhMTlXdEJGV2dmNWpMNDM0YTFmaCt6LzZLTHBYajRIRk1MckNhTgoraTFHS1Q4a0Nm
-R2w3VWNJSlMzeGhkOHMwQTFGNTM5MEJKL1NJRVNTTTdNZTY0bzY3U3pzVW9oMDU3aUM2NkIvCllr
-ZVRBcmdtUEdqejlNQUFSeHhvWFJOUGRNd3g5ZGdEZnQ1TmdTNVU4WDJRZTFjK1J6TEtMWEd3bk5R
-QjZ3YUwKSDMwbkZtV0JkVERWTHhweTRGdk9EczhUSUs1a3l3Q1c5YS9rYjZycTZLSERGeW5CbkpW
-ZlI4SVpJRnBITXhRNApuSm1TTVZacWNZd2tMUVpMRldNUzh5eHVsL0QzcEdLeVc1bkdkSkZOYlNB
-bnFpa2hDdFVQYXR1UjNOQkNjUEJJClZVekIxWHFQY2JQTUcvWDQyUENwc1dTRFlnMmk1bXNiZDVm
-NStNYlo0YjBTMnowUnY0RjF5U3NXZCtMcFcvU2kKSzdFVDBNbnRzdXd1ZnRRMml0UE5KS292bld1
-OHluWHk4OWVpdzFTWWl1UzdubW5xT3JDMjNQK0kwbnlEa3RTZwpRaFV0MmdKajBWZ2lGYzl4a0NS
-UzA2djBIMmlPK0R0Ri8vWVQ0SHN6TUZKeHc4UzRjcWRBMDU5SXh0ZGtIMm55ClJtUjN4cXFsY2dn
-Z1hYWmg0ckZQTW9pSkplN294WGlGN3poWVdFUnhXelFMNGFrNFVEQ2tIb3JqVTAyYXg0R0wKT3ow
-SjBNamcyQWVJa0ZydHQrYUJoL2I1cWI4bEdSREE4T0pBS3hjYVhyOUY5eVludjNWTzh6WEc0UklX
-ZE5CbQpiTFRYVDJ3VFJNRmE4Q0tOZVZzQkErQ0hXUE1sNm9INnRPUzBxV0dKWnJrem5DVEREaDA9
-Cj14WFFCCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo=
-
---===============1795589441799262983==--
+							Thanx, Paul
+--===============0824776666484272625==--
 
