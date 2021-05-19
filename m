@@ -1,80 +1,151 @@
-Content-Type: multipart/mixed; boundary="===============2268509384453054974=="
+Content-Type: multipart/mixed; boundary="===============4595220348978831635=="
 MIME-Version: 1.0
-From: Si, Beibei <beibei.si@intel.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: 0-DAY CI LINUX KERNEL PERFORMANCE REPORT (V5.12)
-Date: Wed, 19 May 2021 03:05:39 +0000
-Message-ID: <27b5212106534d63b111964d0ccafc56@intel.com>
+Subject: Re: [entry] 47b8ff194c: will-it-scale.per_process_ops -3.0% regression
+Date: Wed, 19 May 2021 13:27:00 +0800
+Message-ID: <20210519052700.GC29704@xsang-OptiPlex-9020>
+In-Reply-To: <YJ5NQtTdQm29dO9p@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2268509384453054974==
+--===============4595220348978831635==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+hi, Peter Zijlstra,
 
-0-Day CI Linux Kernel Performance Report (v5.12) has updated. Welcome your =
-feedback.
+On Fri, May 14, 2021 at 12:13:22PM +0200, Peter Zijlstra wrote:
+> On Fri, May 14, 2021 at 01:11:27AM +0200, Frederic Weisbecker wrote:
+> =
 
-Here=E2=80=99s the link: https://01.org/lkp/blogs/carel/2021/0-day-ci-linux=
--kernel-performance-report-v5.12
+> > That sounds good, but two things:
+> > =
 
-Previous report can refer to:  https://01.org/group/3977/blogs
+> > 1) Even if context tracking is not running, we still need to handle
+> >    deferred wakeups on idle. But all user/guest/idle currently use the
+> >    same function.
+> > =
 
-BR
-Carel
+> > 2) Context tracking may be running even when full nohz is not. But here=
+ only
+> >    full nohz is concerned.
+> > =
 
---===============2268509384453054974==
-Content-Type: text/html
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.htm"
+> > So the change should rather be as follows (completely untested!).
+> > I rather put the static key check in tick.h in order not to involve
+> > deep dependencies inside rcupdate.h (especially rcupdate.h -> tick.h ->=
+ sched.h)
+> =
 
-PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
-bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
-YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
-cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
-VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
-Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
-ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
-PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
-IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
-YWNlDQoJe2ZvbnQtZmFtaWx5Ouetiee6vzsNCglwYW5vc2UtMToyIDEgNiAwIDMgMSAxIDEgMSAx
-O30NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6Q2FsaWJyaTsNCglwYW5vc2UtMToyIDE1IDUg
-MiAyIDIgNCAzIDIgNDt9DQpAZm9udC1mYWNlDQoJe2ZvbnQtZmFtaWx5OiJcQOetiee6vyI7DQoJ
-cGFub3NlLTE6MiAxIDYgMCAzIDEgMSAxIDEgMTt9DQovKiBTdHlsZSBEZWZpbml0aW9ucyAqLw0K
-cC5Nc29Ob3JtYWwsIGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbA0KCXttYXJnaW46MGluOw0K
-CWZvbnQtc2l6ZToxMS4wcHQ7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7fQ0K
-YTpsaW5rLCBzcGFuLk1zb0h5cGVybGluaw0KCXttc28tc3R5bGUtcHJpb3JpdHk6OTk7DQoJY29s
-b3I6IzA1NjNDMTsNCgl0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30NCnNwYW4uRW1haWxTdHls
-ZTE3DQoJe21zby1zdHlsZS10eXBlOnBlcnNvbmFsLWNvbXBvc2U7DQoJZm9udC1mYW1pbHk6IkNh
-bGlicmkiLHNhbnMtc2VyaWY7DQoJY29sb3I6d2luZG93dGV4dDt9DQouTXNvQ2hwRGVmYXVsdA0K
-CXttc28tc3R5bGUtdHlwZTpleHBvcnQtb25seTsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fu
-cy1zZXJpZjt9DQpAcGFnZSBXb3JkU2VjdGlvbjENCgl7c2l6ZTo4LjVpbiAxMS4waW47DQoJbWFy
-Z2luOjEuMGluIDEuMjVpbiAxLjBpbiAxLjI1aW47fQ0KZGl2LldvcmRTZWN0aW9uMQ0KCXtwYWdl
-OldvcmRTZWN0aW9uMTt9DQotLT48L3N0eWxlPjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPg0KPG86
-c2hhcGVkZWZhdWx0cyB2OmV4dD0iZWRpdCIgc3BpZG1heD0iMTAyNiIgLz4NCjwveG1sPjwhW2Vu
-ZGlmXS0tPjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPg0KPG86c2hhcGVsYXlvdXQgdjpleHQ9ImVk
-aXQiPg0KPG86aWRtYXAgdjpleHQ9ImVkaXQiIGRhdGE9IjEiIC8+DQo8L286c2hhcGVsYXlvdXQ+
-PC94bWw+PCFbZW5kaWZdLS0+DQo8L2hlYWQ+DQo8Ym9keSBsYW5nPSJFTi1VUyIgbGluaz0iIzA1
-NjNDMSIgdmxpbms9IiM5NTRGNzIiIHN0eWxlPSJ3b3JkLXdyYXA6YnJlYWstd29yZCI+DQo8ZGl2
-IGNsYXNzPSJXb3JkU2VjdGlvbjEiPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+SGkgYWxsLCA8bzpw
-PjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0K
-PHAgY2xhc3M9Ik1zb05vcm1hbCI+MC1EYXkgQ0kgTGludXggS2VybmVsIFBlcmZvcm1hbmNlIFJl
-cG9ydCAodjUuMTIpIGhhcyB1cGRhdGVkLiBXZWxjb21lIHlvdXIgZmVlZGJhY2suPG86cD48L286
-cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxwIGNs
-YXNzPSJNc29Ob3JtYWwiPkhlcmXigJlzIHRoZSBsaW5rOiA8YSBocmVmPSJodHRwczovLzAxLm9y
-Zy9sa3AvYmxvZ3MvY2FyZWwvMjAyMS8wLWRheS1jaS1saW51eC1rZXJuZWwtcGVyZm9ybWFuY2Ut
-cmVwb3J0LXY1LjEyIj4NCmh0dHBzOi8vMDEub3JnL2xrcC9ibG9ncy9jYXJlbC8yMDIxLzAtZGF5
-LWNpLWxpbnV4LWtlcm5lbC1wZXJmb3JtYW5jZS1yZXBvcnQtdjUuMTI8L2E+PG86cD48L286cD48
-L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxwIGNsYXNz
-PSJNc29Ob3JtYWwiPlByZXZpb3VzIHJlcG9ydCBjYW4gcmVmZXIgdG86ICZuYnNwOzxhIGhyZWY9
-Imh0dHBzOi8vMDEub3JnL2dyb3VwLzM5NzcvYmxvZ3MiPmh0dHBzOi8vMDEub3JnL2dyb3VwLzM5
-NzcvYmxvZ3M8L2E+PG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZu
-YnNwOzwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPkJSPG86cD48L286cD48L3A+DQo8
-cCBjbGFzcz0iTXNvTm9ybWFsIj5DYXJlbDxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8L2JvZHk+
-DQo8L2h0bWw+DQo=
+> Compiles and boots for me, 0day folks, could you please test this makes
+> the reported regression go away?
 
---===============2268509384453054974==--
+sorry for late.
+
+on which base should we apply below patch?
+we tried to apply upon 4ae7dc97f726e ("entry/kvm: Explicitly flush pending =
+rcuog
+wakeup before last rescheduling point") and v5.12, but both build failed li=
+ke below:
+
+ERROR: modpost: "tick_nohz_full_mask" [arch/x86/kvm/kvm.ko] undefined!
+
+or is there any particular kconfig need to enable?
+(the kconfig which we used to build 47b8ff194c is in original report
+which maybe you could help have a look what we may miss)
+
+Thanks
+
+> =
+
+> > diff --git a/include/linux/entry-kvm.h b/include/linux/entry-kvm.h
+> > index 8b2b1d68b954..136b8d97d8c0 100644
+> > --- a/include/linux/entry-kvm.h
+> > +++ b/include/linux/entry-kvm.h
+> > @@ -3,6 +3,7 @@
+> >  #define __LINUX_ENTRYKVM_H
+> >  =
+
+> >  #include <linux/entry-common.h>
+> > +#include <linux/tick.h>
+> >  =
+
+> >  /* Transfer to guest mode work */
+> >  #ifdef CONFIG_KVM_XFER_TO_GUEST_WORK
+> > @@ -57,7 +58,7 @@ int xfer_to_guest_mode_handle_work(struct kvm_vcpu *v=
+cpu);
+> >  static inline void xfer_to_guest_mode_prepare(void)
+> >  {
+> >  	lockdep_assert_irqs_disabled();
+> > -	rcu_nocb_flush_deferred_wakeup();
+> > +	tick_nohz_user_enter_prepare();
+> >  }
+> >  =
+
+> >  /**
+> > diff --git a/include/linux/tick.h b/include/linux/tick.h
+> > index 0bb80a7f05b9..bfd571f18cfd 100644
+> > --- a/include/linux/tick.h
+> > +++ b/include/linux/tick.h
+> > @@ -11,6 +11,7 @@
+> >  #include <linux/context_tracking_state.h>
+> >  #include <linux/cpumask.h>
+> >  #include <linux/sched.h>
+> > +#include <linux/rcupdate.h>
+> >  =
+
+> >  #ifdef CONFIG_GENERIC_CLOCKEVENTS
+> >  extern void __init tick_init(void);
+> > @@ -304,4 +305,10 @@ static inline void tick_nohz_task_switch(void)
+> >  		__tick_nohz_task_switch();
+> >  }
+> >  =
+
+> > +static inline void tick_nohz_user_enter_prepare(void)
+> > +{
+> > +	if (tick_nohz_full_cpu(smp_processor_id()))
+> > +		rcu_nocb_flush_deferred_wakeup();
+> > +}
+> > +
+> >  #endif
+> > diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+> > index a0b3b04fb596..bf16395b9e13 100644
+> > --- a/kernel/entry/common.c
+> > +++ b/kernel/entry/common.c
+> > @@ -5,6 +5,7 @@
+> >  #include <linux/highmem.h>
+> >  #include <linux/livepatch.h>
+> >  #include <linux/audit.h>
+> > +#include <linux/tick.h>
+> >  =
+
+> >  #include "common.h"
+> >  =
+
+> > @@ -186,7 +187,7 @@ static unsigned long exit_to_user_mode_loop(struct =
+pt_regs *regs,
+> >  		local_irq_disable_exit_to_user();
+> >  =
+
+> >  		/* Check if any of the above work has queued a deferred wakeup */
+> > -		rcu_nocb_flush_deferred_wakeup();
+> > +		tick_nohz_user_enter_prepare();
+> >  =
+
+> >  		ti_work =3D READ_ONCE(current_thread_info()->flags);
+> >  	}
+> > @@ -202,7 +203,7 @@ static void exit_to_user_mode_prepare(struct pt_reg=
+s *regs)
+> >  	lockdep_assert_irqs_disabled();
+> >  =
+
+> >  	/* Flush pending rcuog wakeup before the last need_resched() check */
+> > -	rcu_nocb_flush_deferred_wakeup();
+> > +	tick_nohz_user_enter_prepare();
+> >  =
+
+> >  	if (unlikely(ti_work & EXIT_TO_USER_MODE_WORK))
+> >  		ti_work =3D exit_to_user_mode_loop(regs, ti_work);
+--===============4595220348978831635==--
 
