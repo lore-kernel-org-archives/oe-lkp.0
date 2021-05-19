@@ -1,60 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============4605981600116317218=="
+Content-Type: multipart/mixed; boundary="===============2268509384453054974=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Si, Beibei <beibei.si@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [i915] b12d691ea5: kernel_BUG_at_mm/memory.c
-Date: Tue, 18 May 2021 16:58:31 -1000
-Message-ID: <CAHk-=whcr5M=4Mz2ydu4XtxTL_34WkXPnmFmA4f8r+ELXDC6hg@mail.gmail.com>
-In-Reply-To: <20210519024322.GA29704@xsang-OptiPlex-9020>
+Subject: 0-DAY CI LINUX KERNEL PERFORMANCE REPORT (V5.12)
+Date: Wed, 19 May 2021 03:05:39 +0000
+Message-ID: <27b5212106534d63b111964d0ccafc56@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4605981600116317218==
+--===============2268509384453054974==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 18, 2021 at 4:26 PM kernel test robot <oliver.sang@intel.com>=
- wrote:
->
-> commit: b12d691ea5e01db42ccf3b4207e57cb3ce7cfe91 ("i915: fix remap_io_sg =
-to verify the pgprot")
-> [...]
-> [  778.550996] kernel BUG at mm/memory.c:2183!
-> [  778.559015] RIP: 0010:remap_pfn_range_notrack (kbuild/src/consumer/mm/=
-memory.c:2183 kbuild/src/consumer/mm/memory.c:2211 kbuild/src/consumer/mm/m=
-emory.c:2233 kbuild/src/consumer/mm/memory.c:2255 kbuild/src/consumer/mm/me=
-mory.c:2311)
-> [  778.688951] remap_pfn_range (kbuild/src/consumer/mm/memory.c:2342)
-> [  778.692700] remap_io_sg (kbuild/src/consumer/drivers/gpu/drm/i915/i915=
-_mm.c:71) i915
+Hi all,
 
-Yeah, so that BUG_ON() checks that theer isn't any old mapping there.
+0-Day CI Linux Kernel Performance Report (v5.12) has updated. Welcome your =
+feedback.
 
-You can't just remap over an old one, but it does seem like that is
-exactly what commit b12d691ea5e0 ("i915: fix remap_io_sg to verify the
-pgprot") ends up doing.
+Here=E2=80=99s the link: https://01.org/lkp/blogs/carel/2021/0-day-ci-linux=
+-kernel-performance-report-v5.12
 
-So the code used to just do "apply_to_page_range()", which admittedly
-was odd too. But it didn't mind having old mappings and re-applying
-something over them.
+Previous report can refer to:  https://01.org/group/3977/blogs
 
-Converting it to use remap_pfn_range() does look better, but it kind
-of depends on it ever being done *once*. But the caller seems to very
-much remap the whole vmsa at fault time, so...
+BR
+Carel
 
-I don't know what the right thing to do here is, because I don't know
-the invalidation logic and when faults happen.
+--===============2268509384453054974==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
 
-I see that there is another thread about different issues on the
-intel-gfx list. Adding a few people to this kernel test robot thread
-too.
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
+Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
+PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
+IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
+YWNlDQoJe2ZvbnQtZmFtaWx5Ouetiee6vzsNCglwYW5vc2UtMToyIDEgNiAwIDMgMSAxIDEgMSAx
+O30NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6Q2FsaWJyaTsNCglwYW5vc2UtMToyIDE1IDUg
+MiAyIDIgNCAzIDIgNDt9DQpAZm9udC1mYWNlDQoJe2ZvbnQtZmFtaWx5OiJcQOetiee6vyI7DQoJ
+cGFub3NlLTE6MiAxIDYgMCAzIDEgMSAxIDEgMTt9DQovKiBTdHlsZSBEZWZpbml0aW9ucyAqLw0K
+cC5Nc29Ob3JtYWwsIGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbA0KCXttYXJnaW46MGluOw0K
+CWZvbnQtc2l6ZToxMS4wcHQ7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7fQ0K
+YTpsaW5rLCBzcGFuLk1zb0h5cGVybGluaw0KCXttc28tc3R5bGUtcHJpb3JpdHk6OTk7DQoJY29s
+b3I6IzA1NjNDMTsNCgl0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30NCnNwYW4uRW1haWxTdHls
+ZTE3DQoJe21zby1zdHlsZS10eXBlOnBlcnNvbmFsLWNvbXBvc2U7DQoJZm9udC1mYW1pbHk6IkNh
+bGlicmkiLHNhbnMtc2VyaWY7DQoJY29sb3I6d2luZG93dGV4dDt9DQouTXNvQ2hwRGVmYXVsdA0K
+CXttc28tc3R5bGUtdHlwZTpleHBvcnQtb25seTsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fu
+cy1zZXJpZjt9DQpAcGFnZSBXb3JkU2VjdGlvbjENCgl7c2l6ZTo4LjVpbiAxMS4waW47DQoJbWFy
+Z2luOjEuMGluIDEuMjVpbiAxLjBpbiAxLjI1aW47fQ0KZGl2LldvcmRTZWN0aW9uMQ0KCXtwYWdl
+OldvcmRTZWN0aW9uMTt9DQotLT48L3N0eWxlPjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPg0KPG86
+c2hhcGVkZWZhdWx0cyB2OmV4dD0iZWRpdCIgc3BpZG1heD0iMTAyNiIgLz4NCjwveG1sPjwhW2Vu
+ZGlmXS0tPjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPg0KPG86c2hhcGVsYXlvdXQgdjpleHQ9ImVk
+aXQiPg0KPG86aWRtYXAgdjpleHQ9ImVkaXQiIGRhdGE9IjEiIC8+DQo8L286c2hhcGVsYXlvdXQ+
+PC94bWw+PCFbZW5kaWZdLS0+DQo8L2hlYWQ+DQo8Ym9keSBsYW5nPSJFTi1VUyIgbGluaz0iIzA1
+NjNDMSIgdmxpbms9IiM5NTRGNzIiIHN0eWxlPSJ3b3JkLXdyYXA6YnJlYWstd29yZCI+DQo8ZGl2
+IGNsYXNzPSJXb3JkU2VjdGlvbjEiPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+SGkgYWxsLCA8bzpw
+PjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0K
+PHAgY2xhc3M9Ik1zb05vcm1hbCI+MC1EYXkgQ0kgTGludXggS2VybmVsIFBlcmZvcm1hbmNlIFJl
+cG9ydCAodjUuMTIpIGhhcyB1cGRhdGVkLiBXZWxjb21lIHlvdXIgZmVlZGJhY2suPG86cD48L286
+cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxwIGNs
+YXNzPSJNc29Ob3JtYWwiPkhlcmXigJlzIHRoZSBsaW5rOiA8YSBocmVmPSJodHRwczovLzAxLm9y
+Zy9sa3AvYmxvZ3MvY2FyZWwvMjAyMS8wLWRheS1jaS1saW51eC1rZXJuZWwtcGVyZm9ybWFuY2Ut
+cmVwb3J0LXY1LjEyIj4NCmh0dHBzOi8vMDEub3JnL2xrcC9ibG9ncy9jYXJlbC8yMDIxLzAtZGF5
+LWNpLWxpbnV4LWtlcm5lbC1wZXJmb3JtYW5jZS1yZXBvcnQtdjUuMTI8L2E+PG86cD48L286cD48
+L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxwIGNsYXNz
+PSJNc29Ob3JtYWwiPlByZXZpb3VzIHJlcG9ydCBjYW4gcmVmZXIgdG86ICZuYnNwOzxhIGhyZWY9
+Imh0dHBzOi8vMDEub3JnL2dyb3VwLzM5NzcvYmxvZ3MiPmh0dHBzOi8vMDEub3JnL2dyb3VwLzM5
+NzcvYmxvZ3M8L2E+PG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZu
+YnNwOzwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPkJSPG86cD48L286cD48L3A+DQo8
+cCBjbGFzcz0iTXNvTm9ybWFsIj5DYXJlbDxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8L2JvZHk+
+DQo8L2h0bWw+DQo=
 
-I'd be inclined to revert the commits as "not ready yet", but it would
-be better if somebody can go "yeah, this should be done properly like
-X".
-
-Anybody?
-
-            Linus
---===============4605981600116317218==--
+--===============2268509384453054974==--
 
