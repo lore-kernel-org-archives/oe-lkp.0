@@ -1,96 +1,196 @@
-Content-Type: multipart/mixed; boundary="===============5124596826577905023=="
+Content-Type: multipart/mixed; boundary="===============1510487709691426413=="
 MIME-Version: 1.0
 From: Yu Zhao <yuzhao@google.com>
 To: lkp@lists.01.org
-Subject: [PATCH v3 13/14] mm: multigenerational lru: Kconfig
-Date: Thu, 20 May 2021 00:53:54 -0600
-Message-ID: <20210520065355.2736558-14-yuzhao@google.com>
+Subject: [PATCH v3 14/14] mm: multigenerational lru: documentation
+Date: Thu, 20 May 2021 00:53:55 -0600
+Message-ID: <20210520065355.2736558-15-yuzhao@google.com>
 In-Reply-To: <20210520065355.2736558-1-yuzhao@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5124596826577905023==
+--===============1510487709691426413==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Add configuration options for the multigenerational lru.
+Add Documentation/vm/multigen_lru.rst.
 
 Signed-off-by: Yu Zhao <yuzhao@google.com>
 Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
 ---
- mm/Kconfig | 58 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+ Documentation/vm/index.rst        |   1 +
+ Documentation/vm/multigen_lru.rst | 143 ++++++++++++++++++++++++++++++
+ 2 files changed, 144 insertions(+)
+ create mode 100644 Documentation/vm/multigen_lru.rst
 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 02d44e3420f5..da125f145bc4 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -901,4 +901,62 @@ config KMAP_LOCAL
- # struct io_mapping based helper.  Selected by drivers that need them
- config IO_MAPPING
- 	bool
+diff --git a/Documentation/vm/index.rst b/Documentation/vm/index.rst
+index eff5fbd492d0..c353b3f55924 100644
+--- a/Documentation/vm/index.rst
++++ b/Documentation/vm/index.rst
+@@ -17,6 +17,7 @@ various features of the Linux memory management
+ =
+
+    swap_numa
+    zswap
++   multigen_lru
+ =
+
+ Kernel developers MM documentation
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+diff --git a/Documentation/vm/multigen_lru.rst b/Documentation/vm/multigen_=
+lru.rst
+new file mode 100644
+index 000000000000..a18416ed7e92
+--- /dev/null
++++ b/Documentation/vm/multigen_lru.rst
+@@ -0,0 +1,143 @@
++.. SPDX-License-Identifier: GPL-2.0
 +
-+# the multigenerational lru {
-+config LRU_GEN
-+	bool "Multigenerational LRU"
-+	depends on MMU
-+	help
-+	  A high performance LRU implementation to heavily overcommit workloads
-+	  that are not IO bound. See Documentation/vm/multigen_lru.rst for
-+	  details.
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++Multigenerational LRU
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 +
-+	  Warning: do not enable this option unless you plan to use it because
-+	  it introduces a small per-process and per-memcg and per-node memory
-+	  overhead.
++Quick Start
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++Build Options
++-------------
++:Required: Set ``CONFIG_LRU_GEN=3Dy``.
 +
-+config LRU_GEN_ENABLED
-+	bool "Turn on by default"
-+	depends on LRU_GEN
-+	help
-+	  The default value of /sys/kernel/mm/lru_gen/enabled is 0. This option
-+	  changes it to 1.
++:Optional: Set ``CONFIG_LRU_GEN_ENABLED=3Dy`` to turn the feature on by
++ default.
 +
-+	  Warning: the default value is the fast path. See
-+	  Documentation/static-keys.txt for details.
++:Optional: Change ``CONFIG_NR_LRU_GENS`` to a number ``X`` to support
++ a maximum of ``X`` generations.
 +
-+config LRU_GEN_STATS
-+	bool "Full stats for debugging"
-+	depends on LRU_GEN
-+	help
-+	  This option keeps full stats for each generation, which can be read
-+	  from /sys/kernel/debug/lru_gen_full.
++:Optional: Change ``CONFIG_TIERS_PER_GEN`` to a number ``Y`` to
++ support a maximum of ``Y`` tiers per generation.
 +
-+	  Warning: do not enable this option unless you plan to use it because
-+	  it introduces an additional small per-process and per-memcg and
-+	  per-node memory overhead.
++Runtime Options
++---------------
++:Required: Write ``1`` to ``/sys/kernel/mm/lru_gen/enable`` if the
++ feature was not turned on by default.
 +
-+config NR_LRU_GENS
-+	int "Max number of generations"
-+	depends on LRU_GEN
-+	range 4 31
-+	default 7
-+	help
-+	  This will use order_base_2(N+1) spare bits from page flags.
++:Optional: Change ``/sys/kernel/mm/lru_gen/spread`` to a number ``N``
++ to spread pages out across ``N+1`` generations. ``N`` should be less
++ than ``X``. Larger values make the background aging more aggressive.
 +
-+	  Warning: do not use numbers larger than necessary because each
-+	  generation introduces a small per-node and per-memcg memory overhead.
++:Optional: Read ``/sys/kernel/debug/lru_gen`` to verify the feature.
++ This file has the following output:
 +
-+config TIERS_PER_GEN
-+	int "Number of tiers per generation"
-+	depends on LRU_GEN
-+	range 2 5
-+	default 4
-+	help
-+	  This will use N-2 spare bits from page flags.
++::
 +
-+	  Larger values generally offer better protection to active pages under
-+	  heavy buffered I/O workloads.
-+# }
++  memcg  memcg_id  memcg_path
++    node  node_id
++      min_gen  birth_time  anon_size  file_size
++      ...
++      max_gen  birth_time  anon_size  file_size
 +
- endmenu
++Given a memcg and a node, ``min_gen`` is the oldest generation
++(number) and ``max_gen`` is the youngest. Birth time is in
++milliseconds. The sizes of anon and file types are in pages.
++
++Recipes
++-------
++:Android on ARMv8.1+: ``X=3D4``, ``Y=3D3`` and ``N=3D0``.
++
++:Android on pre-ARMv8.1 CPUs: Not recommended due to the lack of
++ ``ARM64_HW_AFDBM``.
++
++:Laptops and workstations running Chrome on x86_64: Use the default
++ values.
++
++:Working set estimation: Write ``+ memcg_id node_id gen [swappiness]``
++ to ``/sys/kernel/debug/lru_gen`` to account referenced pages to
++ generation ``max_gen`` and create the next generation ``max_gen+1``.
++ ``gen`` should be equal to ``max_gen``. A swap file and a non-zero
++ ``swappiness`` are required to scan anon type. If swapping is not
++ desired, set ``vm.swappiness`` to ``0``.
++
++:Proactive reclaim: Write ``- memcg_id node_id gen [swappiness]
++ [nr_to_reclaim]`` to ``/sys/kernel/debug/lru_gen`` to evict
++ generations less than or equal to ``gen``. ``gen`` should be less
++ than ``max_gen-1`` as ``max_gen`` and ``max_gen-1`` are active
++ generations and therefore protected from the eviction. Use
++ ``nr_to_reclaim`` to limit the number of pages to evict. Multiple
++ command lines are supported, so does concatenation with delimiters
++ ``,`` and ``;``.
++
++Framework
++=3D=3D=3D=3D=3D=3D=3D=3D=3D
++For each ``lruvec``, evictable pages are divided into multiple
++generations. The youngest generation number is stored in ``max_seq``
++for both anon and file types as they are aged on an equal footing. The
++oldest generation numbers are stored in ``min_seq[2]`` separately for
++anon and file types as clean file pages can be evicted regardless of
++swap and write-back constraints. These three variables are
++monotonically increasing. Generation numbers are truncated into
++``order_base_2(CONFIG_NR_LRU_GENS+1)`` bits in order to fit into
++``page->flags``. The sliding window technique is used to prevent
++truncated generation numbers from overlapping. Each truncated
++generation number is an index to an array of per-type and per-zone
++lists. Evictable pages are added to the per-zone lists indexed by
++``max_seq`` or ``min_seq[2]`` (modulo ``CONFIG_NR_LRU_GENS``),
++depending on their types.
++
++Each generation is then divided into multiple tiers. Tiers represent
++levels of usage from file descriptors only. Pages accessed N times via
++file descriptors belong to tier order_base_2(N). Each generation
++contains at most CONFIG_TIERS_PER_GEN tiers, and they require
++additional CONFIG_TIERS_PER_GEN-2 bits in page->flags. In contrast to
++moving across generations which requires the lru lock for the list
++operations, moving across tiers only involves an atomic operation on
++``page->flags`` and therefore has a negligible cost. A feedback loop
++modeled after the PID controller monitors the refault rates across all
++tiers and decides when to activate pages from which tiers in the
++reclaim path.
++
++The framework comprises two conceptually independent components: the
++aging and the eviction, which can be invoked separately from user
++space for the purpose of working set estimation and proactive reclaim.
++
++Aging
++-----
++The aging produces young generations. Given an ``lruvec``, the aging
++scans page tables for referenced pages of this ``lruvec``. Upon
++finding one, the aging updates its generation number to ``max_seq``.
++After each round of scan, the aging increments ``max_seq``.
++
++The aging maintains either a system-wide ``mm_struct`` list or
++per-memcg ``mm_struct`` lists, and it only scans page tables of
++processes that have been scheduled since the last scan.
++
++The aging is due when both of ``min_seq[2]`` reaches ``max_seq-1``,
++assuming both anon and file types are reclaimable.
++
++Eviction
++--------
++The eviction consumes old generations. Given an ``lruvec``, the
++eviction scans the pages on the per-zone lists indexed by either of
++``min_seq[2]``. It first tries to select a type based on the values of
++``min_seq[2]``. When anon and file types are both available from the
++same generation, it selects the one that has a lower refault rate.
++
++During a scan, the eviction sorts pages according to their new
++generation numbers, if the aging has found them referenced. It also
++moves pages from the tiers that have higher refault rates than tier 0
++to the next generation.
++
++When it finds all the per-zone lists of a selected type are empty, the
++eviction increments ``min_seq[2]`` indexed by this selected type.
++
++To-do List
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++KVM Optimization
++----------------
++Support shadow page table scanning.
++
++NUMA Optimization
++-----------------
++Optimize page table scan for NUMA.
 -- =
 
 2.31.1.751.gd2f1c929bd-goog
 
---===============5124596826577905023==--
+--===============1510487709691426413==--
 
