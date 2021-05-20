@@ -1,250 +1,172 @@
-Content-Type: multipart/mixed; boundary="===============5291282458423189695=="
+Content-Type: multipart/mixed; boundary="===============7904738820361933585=="
 MIME-Version: 1.0
 From: Yu Zhao <yuzhao@google.com>
 To: lkp@lists.01.org
-Subject: [PATCH v3 05/14] mm/vmscan.c: refactor shrink_node()
-Date: Thu, 20 May 2021 00:53:46 -0600
-Message-ID: <20210520065355.2736558-6-yuzhao@google.com>
+Subject: [PATCH v3 06/14] mm/workingset.c: refactor pack_shadow() and unpack_shadow()
+Date: Thu, 20 May 2021 00:53:47 -0600
+Message-ID: <20210520065355.2736558-7-yuzhao@google.com>
 In-Reply-To: <20210520065355.2736558-1-yuzhao@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5291282458423189695==
+--===============7904738820361933585==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Heuristics that determine scan balance between anon and file LRUs are
-rather independent. Move them into a separate function to improve
-readability.
+This patches moves the bucket order and PageWorkingset() out of
+pack_shadow() and unpack_shadow(). It has no merits on its own but
+makes the upcoming changes to mm/workingset.c less diffy.
 
 Signed-off-by: Yu Zhao <yuzhao@google.com>
 Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
 ---
- mm/vmscan.c | 186 +++++++++++++++++++++++++++-------------------------
- 1 file changed, 98 insertions(+), 88 deletions(-)
+ mm/workingset.c | 53 ++++++++++++++++++++-----------------------------
+ 1 file changed, 22 insertions(+), 31 deletions(-)
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 5199b9696bab..2339459c97d4 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -2421,6 +2421,103 @@ enum scan_balance {
- 	SCAN_FILE,
- };
+diff --git a/mm/workingset.c b/mm/workingset.c
+index b7cdeca5a76d..edb8aed2587e 100644
+--- a/mm/workingset.c
++++ b/mm/workingset.c
+@@ -168,9 +168,9 @@
+  * refault distance will immediately activate the refaulting page.
+  */
  =
 
-+static void prepare_scan_count(pg_data_t *pgdat, struct scan_control *sc)
-+{
-+	unsigned long file;
-+	struct lruvec *target_lruvec;
-+
-+	target_lruvec =3D mem_cgroup_lruvec(sc->target_mem_cgroup, pgdat);
-+
-+	/*
-+	 * Determine the scan balance between anon and file LRUs.
-+	 */
-+	spin_lock_irq(&target_lruvec->lru_lock);
-+	sc->anon_cost =3D target_lruvec->anon_cost;
-+	sc->file_cost =3D target_lruvec->file_cost;
-+	spin_unlock_irq(&target_lruvec->lru_lock);
-+
-+	/*
-+	 * Target desirable inactive:active list ratios for the anon
-+	 * and file LRU lists.
-+	 */
-+	if (!sc->force_deactivate) {
-+		unsigned long refaults;
-+
-+		refaults =3D lruvec_page_state(target_lruvec,
-+				WORKINGSET_ACTIVATE_ANON);
-+		if (refaults !=3D target_lruvec->refaults[0] ||
-+			inactive_is_low(target_lruvec, LRU_INACTIVE_ANON))
-+			sc->may_deactivate |=3D DEACTIVATE_ANON;
-+		else
-+			sc->may_deactivate &=3D ~DEACTIVATE_ANON;
-+
-+		/*
-+		 * When refaults are being observed, it means a new
-+		 * workingset is being established. Deactivate to get
-+		 * rid of any stale active pages quickly.
-+		 */
-+		refaults =3D lruvec_page_state(target_lruvec,
-+				WORKINGSET_ACTIVATE_FILE);
-+		if (refaults !=3D target_lruvec->refaults[1] ||
-+		    inactive_is_low(target_lruvec, LRU_INACTIVE_FILE))
-+			sc->may_deactivate |=3D DEACTIVATE_FILE;
-+		else
-+			sc->may_deactivate &=3D ~DEACTIVATE_FILE;
-+	} else
-+		sc->may_deactivate =3D DEACTIVATE_ANON | DEACTIVATE_FILE;
-+
-+	/*
-+	 * If we have plenty of inactive file pages that aren't
-+	 * thrashing, try to reclaim those first before touching
-+	 * anonymous pages.
-+	 */
-+	file =3D lruvec_page_state(target_lruvec, NR_INACTIVE_FILE);
-+	if (file >> sc->priority && !(sc->may_deactivate & DEACTIVATE_FILE))
-+		sc->cache_trim_mode =3D 1;
-+	else
-+		sc->cache_trim_mode =3D 0;
-+
-+	/*
-+	 * Prevent the reclaimer from falling into the cache trap: as
-+	 * cache pages start out inactive, every cache fault will tip
-+	 * the scan balance towards the file LRU.  And as the file LRU
-+	 * shrinks, so does the window for rotation from references.
-+	 * This means we have a runaway feedback loop where a tiny
-+	 * thrashing file LRU becomes infinitely more attractive than
-+	 * anon pages.  Try to detect this based on file LRU size.
-+	 */
-+	if (!cgroup_reclaim(sc)) {
-+		unsigned long total_high_wmark =3D 0;
-+		unsigned long free, anon;
-+		int z;
-+
-+		free =3D sum_zone_node_page_state(pgdat->node_id, NR_FREE_PAGES);
-+		file =3D node_page_state(pgdat, NR_ACTIVE_FILE) +
-+			   node_page_state(pgdat, NR_INACTIVE_FILE);
-+
-+		for (z =3D 0; z < MAX_NR_ZONES; z++) {
-+			struct zone *zone =3D &pgdat->node_zones[z];
-+
-+			if (!managed_zone(zone))
-+				continue;
-+
-+			total_high_wmark +=3D high_wmark_pages(zone);
-+		}
-+
-+		/*
-+		 * Consider anon: if that's low too, this isn't a
-+		 * runaway file reclaim problem, but rather just
-+		 * extreme pressure. Reclaim as per usual then.
-+		 */
-+		anon =3D node_page_state(pgdat, NR_INACTIVE_ANON);
-+
-+		sc->file_is_tiny =3D
-+			file + free <=3D total_high_wmark &&
-+			!(sc->may_deactivate & DEACTIVATE_ANON) &&
-+			anon >> sc->priority;
-+	}
-+}
-+
+-#define EVICTION_SHIFT	((BITS_PER_LONG - BITS_PER_XA_VALUE) +	\
+-			 1 + NODES_SHIFT + MEM_CGROUP_ID_SHIFT)
+-#define EVICTION_MASK	(~0UL >> EVICTION_SHIFT)
++#define EVICTION_SHIFT		(BITS_PER_XA_VALUE - MEM_CGROUP_ID_SHIFT - NODES_S=
+HIFT)
++#define EVICTION_MASK		(BIT(EVICTION_SHIFT) - 1)
++#define WORKINGSET_WIDTH	1
+ =
+
  /*
-  * Determine how aggressively the anon and file LRU lists should be
-  * scanned.  The relative value of each set of LRU lists is determined
-@@ -2866,7 +2963,6 @@ static void shrink_node(pg_data_t *pgdat, struct scan=
-_control *sc)
- 	unsigned long nr_reclaimed, nr_scanned;
- 	struct lruvec *target_lruvec;
- 	bool reclaimable =3D false;
--	unsigned long file;
+  * Eviction timestamps need to be able to cover the full range of
+@@ -182,36 +182,23 @@
+  */
+ static unsigned int bucket_order __read_mostly;
  =
 
- 	target_lruvec =3D mem_cgroup_lruvec(sc->target_mem_cgroup, pgdat);
+-static void *pack_shadow(int memcgid, pg_data_t *pgdat, unsigned long evic=
+tion,
+-			 bool workingset)
++static void *pack_shadow(int memcg_id, struct pglist_data *pgdat, unsigned=
+ long val)
+ {
+-	eviction >>=3D bucket_order;
+-	eviction &=3D EVICTION_MASK;
+-	eviction =3D (eviction << MEM_CGROUP_ID_SHIFT) | memcgid;
+-	eviction =3D (eviction << NODES_SHIFT) | pgdat->node_id;
+-	eviction =3D (eviction << 1) | workingset;
++	val =3D (val << MEM_CGROUP_ID_SHIFT) | memcg_id;
++	val =3D (val << NODES_SHIFT) | pgdat->node_id;
  =
 
-@@ -2876,93 +2972,7 @@ static void shrink_node(pg_data_t *pgdat, struct sca=
-n_control *sc)
- 	nr_reclaimed =3D sc->nr_reclaimed;
- 	nr_scanned =3D sc->nr_scanned;
+-	return xa_mk_value(eviction);
++	return xa_mk_value(val);
+ }
  =
 
--	/*
--	 * Determine the scan balance between anon and file LRUs.
--	 */
--	spin_lock_irq(&target_lruvec->lru_lock);
--	sc->anon_cost =3D target_lruvec->anon_cost;
--	sc->file_cost =3D target_lruvec->file_cost;
--	spin_unlock_irq(&target_lruvec->lru_lock);
--
--	/*
--	 * Target desirable inactive:active list ratios for the anon
--	 * and file LRU lists.
--	 */
--	if (!sc->force_deactivate) {
--		unsigned long refaults;
--
--		refaults =3D lruvec_page_state(target_lruvec,
--				WORKINGSET_ACTIVATE_ANON);
--		if (refaults !=3D target_lruvec->refaults[0] ||
--			inactive_is_low(target_lruvec, LRU_INACTIVE_ANON))
--			sc->may_deactivate |=3D DEACTIVATE_ANON;
--		else
--			sc->may_deactivate &=3D ~DEACTIVATE_ANON;
--
--		/*
--		 * When refaults are being observed, it means a new
--		 * workingset is being established. Deactivate to get
--		 * rid of any stale active pages quickly.
--		 */
--		refaults =3D lruvec_page_state(target_lruvec,
--				WORKINGSET_ACTIVATE_FILE);
--		if (refaults !=3D target_lruvec->refaults[1] ||
--		    inactive_is_low(target_lruvec, LRU_INACTIVE_FILE))
--			sc->may_deactivate |=3D DEACTIVATE_FILE;
--		else
--			sc->may_deactivate &=3D ~DEACTIVATE_FILE;
--	} else
--		sc->may_deactivate =3D DEACTIVATE_ANON | DEACTIVATE_FILE;
--
--	/*
--	 * If we have plenty of inactive file pages that aren't
--	 * thrashing, try to reclaim those first before touching
--	 * anonymous pages.
--	 */
--	file =3D lruvec_page_state(target_lruvec, NR_INACTIVE_FILE);
--	if (file >> sc->priority && !(sc->may_deactivate & DEACTIVATE_FILE))
--		sc->cache_trim_mode =3D 1;
--	else
--		sc->cache_trim_mode =3D 0;
--
--	/*
--	 * Prevent the reclaimer from falling into the cache trap: as
--	 * cache pages start out inactive, every cache fault will tip
--	 * the scan balance towards the file LRU.  And as the file LRU
--	 * shrinks, so does the window for rotation from references.
--	 * This means we have a runaway feedback loop where a tiny
--	 * thrashing file LRU becomes infinitely more attractive than
--	 * anon pages.  Try to detect this based on file LRU size.
--	 */
--	if (!cgroup_reclaim(sc)) {
--		unsigned long total_high_wmark =3D 0;
--		unsigned long free, anon;
--		int z;
--
--		free =3D sum_zone_node_page_state(pgdat->node_id, NR_FREE_PAGES);
--		file =3D node_page_state(pgdat, NR_ACTIVE_FILE) +
--			   node_page_state(pgdat, NR_INACTIVE_FILE);
--
--		for (z =3D 0; z < MAX_NR_ZONES; z++) {
--			struct zone *zone =3D &pgdat->node_zones[z];
--			if (!managed_zone(zone))
--				continue;
--
--			total_high_wmark +=3D high_wmark_pages(zone);
--		}
--
--		/*
--		 * Consider anon: if that's low too, this isn't a
--		 * runaway file reclaim problem, but rather just
--		 * extreme pressure. Reclaim as per usual then.
--		 */
--		anon =3D node_page_state(pgdat, NR_INACTIVE_ANON);
--
--		sc->file_is_tiny =3D
--			file + free <=3D total_high_wmark &&
--			!(sc->may_deactivate & DEACTIVATE_ANON) &&
--			anon >> sc->priority;
--	}
-+	prepare_scan_count(pgdat, sc);
+-static void unpack_shadow(void *shadow, int *memcgidp, pg_data_t **pgdat,
+-			  unsigned long *evictionp, bool *workingsetp)
++static unsigned long unpack_shadow(void *shadow, int *memcg_id, struct pgl=
+ist_data **pgdat)
+ {
+-	unsigned long entry =3D xa_to_value(shadow);
+-	int memcgid, nid;
+-	bool workingset;
++	unsigned long val =3D xa_to_value(shadow);
  =
 
- 	shrink_node_memcgs(pgdat, sc);
+-	workingset =3D entry & 1;
+-	entry >>=3D 1;
+-	nid =3D entry & ((1UL << NODES_SHIFT) - 1);
+-	entry >>=3D NODES_SHIFT;
+-	memcgid =3D entry & ((1UL << MEM_CGROUP_ID_SHIFT) - 1);
+-	entry >>=3D MEM_CGROUP_ID_SHIFT;
++	*pgdat =3D NODE_DATA(val & (BIT(NODES_SHIFT) - 1));
++	val >>=3D NODES_SHIFT;
++	*memcg_id =3D val & (BIT(MEM_CGROUP_ID_SHIFT) - 1);
  =
 
+-	*memcgidp =3D memcgid;
+-	*pgdat =3D NODE_DATA(nid);
+-	*evictionp =3D entry << bucket_order;
+-	*workingsetp =3D workingset;
++	return val >> MEM_CGROUP_ID_SHIFT;
+ }
+ =
+
+ /**
+@@ -266,8 +253,10 @@ void *workingset_eviction(struct page *page, struct me=
+m_cgroup *target_memcg)
+ 	/* XXX: target_memcg can be NULL, go through lruvec */
+ 	memcgid =3D mem_cgroup_id(lruvec_memcg(lruvec));
+ 	eviction =3D atomic_long_read(&lruvec->nonresident_age);
++	eviction >>=3D bucket_order;
++	eviction =3D (eviction << WORKINGSET_WIDTH) | PageWorkingset(page);
+ 	workingset_age_nonresident(lruvec, thp_nr_pages(page));
+-	return pack_shadow(memcgid, pgdat, eviction, PageWorkingset(page));
++	return pack_shadow(memcgid, pgdat, eviction);
+ }
+ =
+
+ /**
+@@ -294,7 +283,7 @@ void workingset_refault(struct page *page, void *shadow)
+ 	bool workingset;
+ 	int memcgid;
+ =
+
+-	unpack_shadow(shadow, &memcgid, &pgdat, &eviction, &workingset);
++	eviction =3D unpack_shadow(shadow, &memcgid, &pgdat);
+ =
+
+ 	rcu_read_lock();
+ 	/*
+@@ -318,6 +307,8 @@ void workingset_refault(struct page *page, void *shadow)
+ 		goto out;
+ 	eviction_lruvec =3D mem_cgroup_lruvec(eviction_memcg, pgdat);
+ 	refault =3D atomic_long_read(&eviction_lruvec->nonresident_age);
++	workingset =3D eviction & (BIT(WORKINGSET_WIDTH) - 1);
++	eviction =3D (eviction >> WORKINGSET_WIDTH) << bucket_order;
+ =
+
+ 	/*
+ 	 * Calculate the refault distance
+@@ -335,7 +326,7 @@ void workingset_refault(struct page *page, void *shadow)
+ 	 * longest time, so the occasional inappropriate activation
+ 	 * leading to pressure on the active list is not a problem.
+ 	 */
+-	refault_distance =3D (refault - eviction) & EVICTION_MASK;
++	refault_distance =3D (refault - eviction) & (EVICTION_MASK >> WORKINGSET_=
+WIDTH);
+ =
+
+ 	/*
+ 	 * The activation decision for this page is made at the level
+@@ -593,7 +584,7 @@ static int __init workingset_init(void)
+ 	unsigned int max_order;
+ 	int ret;
+ =
+
+-	BUILD_BUG_ON(BITS_PER_LONG < EVICTION_SHIFT);
++	BUILD_BUG_ON(EVICTION_SHIFT < WORKINGSET_WIDTH);
+ 	/*
+ 	 * Calculate the eviction bucket size to cover the longest
+ 	 * actionable refault distance, which is currently half of
+@@ -601,7 +592,7 @@ static int __init workingset_init(void)
+ 	 * some more pages@runtime, so keep working with up to
+ 	 * double the initial memory by using totalram_pages as-is.
+ 	 */
+-	timestamp_bits =3D BITS_PER_LONG - EVICTION_SHIFT;
++	timestamp_bits =3D EVICTION_SHIFT - WORKINGSET_WIDTH;
+ 	max_order =3D fls_long(totalram_pages() - 1);
+ 	if (max_order > timestamp_bits)
+ 		bucket_order =3D max_order - timestamp_bits;
 -- =
 
 2.31.1.751.gd2f1c929bd-goog
 
---===============5291282458423189695==--
+--===============7904738820361933585==--
 
