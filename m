@@ -1,71 +1,149 @@
-Content-Type: multipart/mixed; boundary="===============7684121142981457108=="
+Content-Type: multipart/mixed; boundary="===============4564819093824360605=="
 MIME-Version: 1.0
 From: Yu Zhao <yuzhao@google.com>
 To: lkp@lists.01.org
-Subject: [PATCH v3 03/14] include/linux/cgroup.h: export cgroup_mutex
-Date: Thu, 20 May 2021 00:53:44 -0600
-Message-ID: <20210520065355.2736558-4-yuzhao@google.com>
+Subject: [PATCH v3 04/14] mm, x86: support the access bit on non-leaf PMD entries
+Date: Thu, 20 May 2021 00:53:45 -0600
+Message-ID: <20210520065355.2736558-5-yuzhao@google.com>
 In-Reply-To: <20210520065355.2736558-1-yuzhao@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7684121142981457108==
+--===============4564819093824360605==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-cgroup_mutex is needed to synchronize with memcg creations.
+Some architectures support the accessed bit on non-leaf PMD entries
+(parents) in addition to leaf PTE entries (children) where pages are
+mapped, e.g., x86_64 sets the accessed bit on a parent when using it
+as part of linear-address translation [1]. Page table walkers who are
+interested in the accessed bit on children can take advantage of this:
+they do not need to search the children when the accessed bit is not
+set on a parent, given that they have previously cleared the accessed
+bit on this parent.
+
+[1]: Intel 64 and IA-32 Architectures Software Developer's Manual
+     Volume 3 (October 2019), section 4.8
 
 Signed-off-by: Yu Zhao <yuzhao@google.com>
 Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
 ---
- include/linux/cgroup.h | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ arch/Kconfig                   | 9 +++++++++
+ arch/x86/Kconfig               | 1 +
+ arch/x86/include/asm/pgtable.h | 2 +-
+ arch/x86/mm/pgtable.c          | 5 ++++-
+ include/linux/pgtable.h        | 4 ++--
+ 5 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index 4f2f79de083e..bd5744360cfa 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -432,6 +432,18 @@ static inline void cgroup_put(struct cgroup *cgrp)
- 	css_put(&cgrp->self);
+diff --git a/arch/Kconfig b/arch/Kconfig
+index c45b770d3579..e3812adc69f7 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -826,6 +826,15 @@ config HAVE_ARCH_TRANSPARENT_HUGEPAGE
+ config HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
+ 	bool
+ =
+
++config HAVE_ARCH_PARENT_PMD_YOUNG
++	bool
++	depends on PGTABLE_LEVELS > 2
++	help
++	  Architectures that select this are able to set the accessed bit on
++	  non-leaf PMD entries in addition to leaf PTE entries where pages are
++	  mapped. For them, page table walkers that clear the accessed bit may
++	  stop at non-leaf PMD entries if they do not see the accessed bit.
++
+ config HAVE_ARCH_HUGE_VMAP
+ 	bool
+ =
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 0045e1b44190..f619055c4537 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -170,6 +170,7 @@ config X86
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD if X86_64
++	select HAVE_ARCH_PARENT_PMD_YOUNG	if X86_64
+ 	select HAVE_ARCH_USERFAULTFD_WP         if X86_64 && USERFAULTFD
+ 	select HAVE_ARCH_USERFAULTFD_MINOR	if X86_64 && USERFAULTFD
+ 	select HAVE_ARCH_VMAP_STACK		if X86_64
+diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
+index b1099f2d9800..3a24d2af4e9b 100644
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -846,7 +846,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+ =
+
+ static inline int pmd_bad(pmd_t pmd)
+ {
+-	return (pmd_flags(pmd) & ~_PAGE_USER) !=3D _KERNPG_TABLE;
++	return ((pmd_flags(pmd) | _PAGE_ACCESSED) & ~_PAGE_USER) !=3D _KERNPG_TAB=
+LE;
  }
  =
 
-+extern struct mutex cgroup_mutex;
+ static inline unsigned long pages_to_mb(unsigned long npg)
+diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
+index d27cf69e811d..b968d6bd28b6 100644
+--- a/arch/x86/mm/pgtable.c
++++ b/arch/x86/mm/pgtable.c
+@@ -550,7 +550,7 @@ int ptep_test_and_clear_young(struct vm_area_struct *vm=
+a,
+ 	return ret;
+ }
+ =
+
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HAVE_ARCH_PAREN=
+T_PMD_YOUNG)
+ int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ 			      unsigned long addr, pmd_t *pmdp)
+ {
+@@ -562,6 +562,9 @@ int pmdp_test_and_clear_young(struct vm_area_struct *vm=
+a,
+ =
+
+ 	return ret;
+ }
++#endif
 +
-+static inline void cgroup_lock(void)
-+{
-+	mutex_lock(&cgroup_mutex);
-+}
-+
-+static inline void cgroup_unlock(void)
-+{
-+	mutex_unlock(&cgroup_mutex);
-+}
-+
- /**
-  * task_css_set_check - obtain a task's css_set with extra access conditio=
-ns
-  * @task: the task to obtain css_set for
-@@ -446,7 +458,6 @@ static inline void cgroup_put(struct cgroup *cgrp)
-  * as locks used during the cgroup_subsys::attach() methods.
-  */
- #ifdef CONFIG_PROVE_RCU
--extern struct mutex cgroup_mutex;
- extern spinlock_t css_set_lock;
- #define task_css_set_check(task, __c)					\
- 	rcu_dereference_check((task)->cgroups,				\
-@@ -704,6 +715,8 @@ struct cgroup;
- static inline u64 cgroup_id(const struct cgroup *cgrp) { return 1; }
- static inline void css_get(struct cgroup_subsys_state *css) {}
- static inline void css_put(struct cgroup_subsys_state *css) {}
-+static inline void cgroup_lock(void) {}
-+static inline void cgroup_unlock(void) {}
- static inline int cgroup_attach_task_all(struct task_struct *from,
- 					 struct task_struct *t) { return 0; }
- static inline int cgroupstats_build(struct cgroupstats *stats,
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ int pudp_test_and_clear_young(struct vm_area_struct *vma,
+ 			      unsigned long addr, pud_t *pudp)
+ {
+diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
+index 46b13780c2c8..94ecc1d277a2 100644
+--- a/include/linux/pgtable.h
++++ b/include/linux/pgtable.h
+@@ -193,7 +193,7 @@ static inline int ptep_test_and_clear_young(struct vm_a=
+rea_struct *vma,
+ #endif
+ =
+
+ #ifndef __HAVE_ARCH_PMDP_TEST_AND_CLEAR_YOUNG
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HAVE_ARCH_PAREN=
+T_PMD_YOUNG)
+ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ 					    unsigned long address,
+ 					    pmd_t *pmdp)
+@@ -214,7 +214,7 @@ static inline int pmdp_test_and_clear_young(struct vm_a=
+rea_struct *vma,
+ 	BUILD_BUG();
+ 	return 0;
+ }
+-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
++#endif /* CONFIG_TRANSPARENT_HUGEPAGE || CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG=
+ */
+ #endif
+ =
+
+ #ifndef __HAVE_ARCH_PTEP_CLEAR_YOUNG_FLUSH
 -- =
 
 2.31.1.751.gd2f1c929bd-goog
 
---===============7684121142981457108==--
+--===============4564819093824360605==--
 
