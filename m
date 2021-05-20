@@ -1,2513 +1,10617 @@
-Content-Type: multipart/mixed; boundary="===============7957196248979973763=="
+Content-Type: multipart/mixed; boundary="===============3925973463295849443=="
 MIME-Version: 1.0
-From: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+From: Andrea Arcangeli <aarcange@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [ext4] 05c2c00f37: aim7.jobs-per-min -11.8% regression
-Date: Thu, 20 May 2021 15:13:20 +0800
-Message-ID: <a8947cee-11f5-8d59-a3ff-1c516276592e@linux.intel.com>
-In-Reply-To: <20210227120804.GB22871@xsang-OptiPlex-9020>
+Subject: Re: [sched/fair] 69bc1b14c3: netperf.Throughput_Mbps -36.9% regression
+Date: Thu, 20 May 2021 14:47:05 -0400
+Message-ID: <YKauqT/n2QToJw8g@redhat.com>
+In-Reply-To: <20210520071739.GC14190@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7957196248979973763==
+--===============3925973463295849443==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jan,
+Hello,
 
- =C2=A0=C2=A0=C2=A0=C2=A0 Do you have time to look at this? The regression =
-still existed in =
+Thanks for the report.
 
-the latest Linux mainline v5.13-rc2.
- =C2=A0 =C2=A0=C2=A0 Thanks.
+I didn't find a >96 CPUs Intel system to run new benchmarks yet, but I
+played a bit more with this commit.
 
-On 2/27/2021 8:08 PM, kernel test robot wrote:
+I suspect it doesn't work well with too many threads per socket or
+maybe on large NUMA systems.
+
+wake_affine_idle decides when to invoke the sync behavior:
+
+	if (sync && cpu_rq(this_cpu)->nr_running =3D=3D 1)
+		return this_cpu;
+
+I didn't change the wake_affine_idle, my change only allows the above
+decision not to be lost or ignored, if the wakeup gets to the point of
+being able to use the above returned value.
+
+So if the "sync" behavior allowed by thee wake_affine_idle hurts
+performance, it may be that we need to decrease the scope of the above
+wake_affine_idle.
+
+It'd be interesting to try experimenting with this (untested) change
+for example (assuming the numa distance was <=3D30 ?):
+
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index 55a0a243e871..ee816349aa85 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -1483,6 +1483,7 @@ sd_init(struct sched_domain_topology_level *tl,
+ 				       SD_BALANCE_FORK |
+ 				       SD_WAKE_AFFINE);
+ 		}
++		sd->flags &=3D ~SD_WAKE_AFFINE;
+ =
+
+ #endif
+ 	} else {
+
+I'll add something like above despite it's untested to the commit to
+see if it helps...
+
+It'd also be interesting to know if there are some hosts where this
+actually helps (like I appear to have used for my benchmark) and to
+dump the scheduler domain and the per-cpu sd_llc_id/sd_llc_size to
+compare.
+
+With KVM it's also pretty strange the wake_affine_idle behavior only
+activates with a topology like:
+
+     -smp sockets=3D1,dies=3D4,threads=3D2
+
+If they're all cores and there's no SMT it apparently won't activate:
+
+     -smp sockets=3D1,dies=3D8,threads=3D1
+
+I'm afraid that something may be suboptimal somewhere, not related to
+the patch itself that fixes a correctness issue.
+
+Andrea
+
+On Thu, May 20, 2021 at 03:17:39PM +0800, kernel test robot wrote:
+> =
+
+> =
+
 > Greeting,
->
-> FYI, we noticed a -11.8% regression of aim7.jobs-per-min due to commit:
->
->
-> commit: 05c2c00f3769abb9e323fcaca70d2de0b48af7ba ("ext4: protect superblo=
-ck modifications with a buffer lock")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
->
-> in testcase: aim7
-> on test machine: 88 threads Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz wit=
-h 128G memory
+> =
+
+> FYI, we noticed a -36.9% regression of netperf.Throughput_Mbps due to com=
+mit:
+> =
+
+> =
+
+> commit: 69bc1b14c3d0ebfc25ebcb7647a21d659602a93a ("sched/fair: skip selec=
+t_idle_sibling() in presence of sync wakeups")
+> https://git.kernel.org/cgit/linux/kernel/git/andrea/aa.git master
+> =
+
+> =
+
+> in testcase: netperf
+> on test machine: 192 threads 4 sockets Intel(R) Xeon(R) Platinum 9242 CPU=
+ @ 2.30GHz with 192G memory
 > with following parameters:
->
-> 	disk: 4BRD_12G
-> 	md: RAID1
-> 	fs: ext4
-> 	test: creat-clo
-> 	load: 1000
+> =
+
+> 	ip: ipv4
+> 	runtime: 300s
+> 	nr_threads: 1
+> 	cluster: cs-localhost
+> 	send_size: 5K
+> 	test: TCP_SENDFILE
 > 	cpufreq_governor: performance
 > 	ucode: 0x5003006
->
-> test-description: AIM7 is a traditional UNIX system level benchmark suite=
- which is used to test and measure the performance of multiuser system.
-> test-url: https://sourceforge.net/projects/aimbench/files/aim-suite7/
->
+> =
+
+> test-description: Netperf is a benchmark that can be use to measure vario=
+us aspect of networking performance.
+> test-url: http://www.netperf.org/netperf/
+> =
+
 > In addition to that, the commit also has significant impact on the follow=
 ing tests:
->
+> =
+
 > +------------------+-----------------------------------------------------=
-----------------------+
-> | testcase: change | aim9: aim9.udp_test.ops_per_sec 2.1% improvement    =
-                      |
-> | test machine     | 256 threads Intel(R) Genuine Intel(R) CPU 0000 @ 1.3=
-0GHz with 112G memory |
-> | test parameters  | cpufreq_governor=3Dperformance                      =
-                        |
-> |                  | test=3Dall                                          =
-                        |
-> |                  | testtime=3D5s                                       =
-                        |
-> |                  | ucode=3D0xffff0190                                  =
-                        |
+---------------------------+
+> | testcase: change | stress-ng: stress-ng.sock.ops_per_sec -31.2% regress=
+ion                        |
+> | test machine     | 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU =
+@ 2.10GHz with 192G memory |
+> | test parameters  | class=3Dos                                          =
+                             |
+> |                  | cpufreq_governor=3Dperformance                      =
+                             |
+> |                  | disk=3D1HDD                                         =
+                             |
+> |                  | fs=3Dext4                                           =
+                             |
+> |                  | nr_threads=3D10%                                    =
+                             |
+> |                  | test=3Dsock                                         =
+                             |
+> |                  | testtime=3D60s                                      =
+                             |
+> |                  | ucode=3D0x5003006                                   =
+                             |
 > +------------------+-----------------------------------------------------=
-----------------------+
->
->
+---------------------------+
+> | testcase: change | stress-ng: stress-ng.pipe.ops_per_sec -21.5% regress=
+ion                        |
+> | test machine     | 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU =
+@ 2.10GHz with 192G memory |
+> | test parameters  | class=3Dos                                          =
+                             |
+> |                  | cpufreq_governor=3Dperformance                      =
+                             |
+> |                  | disk=3D1HDD                                         =
+                             |
+> |                  | fs=3Dext4                                           =
+                             |
+> |                  | nr_threads=3D10%                                    =
+                             |
+> |                  | test=3Dpipe                                         =
+                             |
+> |                  | testtime=3D60s                                      =
+                             |
+> |                  | ucode=3D0x5003006                                   =
+                             |
+> +------------------+-----------------------------------------------------=
+---------------------------+
+> | testcase: change | stress-ng: stress-ng.rawudp.ops_per_sec 15.5% improv=
+ement                      |
+> | test machine     | 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU =
+@ 2.10GHz with 192G memory |
+> | test parameters  | class=3Dos                                          =
+                             |
+> |                  | cpufreq_governor=3Dperformance                      =
+                             |
+> |                  | disk=3D1HDD                                         =
+                             |
+> |                  | fs=3Dext4                                           =
+                             |
+> |                  | nr_threads=3D10%                                    =
+                             |
+> |                  | test=3Drawudp                                       =
+                             |
+> |                  | testtime=3D60s                                      =
+                             |
+> |                  | ucode=3D0x5003006                                   =
+                             |
+> +------------------+-----------------------------------------------------=
+---------------------------+
+> =
+
+> =
+
 > If you fix the issue, kindly add following tag
 > Reported-by: kernel test robot <oliver.sang@intel.com>
->
->
+> =
+
+> =
+
 > Details are as below:
 > -------------------------------------------------------------------------=
 ------------------------->
->
->
+> =
+
+> =
+
 > To reproduce:
->
->          git clone https://github.com/intel/lkp-tests.git
->          cd lkp-tests
->          bin/lkp install                job.yaml  # job file is attached =
-in this email
->          bin/lkp split-job --compatible job.yaml
->          bin/lkp run                    compatible-job.yaml
->
+> =
+
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp install                job.yaml  # job file is attached i=
+n this email
+>         bin/lkp split-job --compatible job.yaml  # generate the yaml file=
+ for lkp run
+>         bin/lkp run                    generated-yaml-file
+> =
+
 > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/disk/fs/kconfig/load/md/rootfs/tbox_group/test/=
-testcase/ucode:
->    gcc-9/performance/4BRD_12G/ext4/x86_64-rhel-8.3/1000/RAID1/debian-10.4=
--x86_64-20200603.cgz/lkp-csl-2sp9/creat-clo/aim7/0x5003006
->
-> commit:
->    4392fbc4ba ("ext4: drop sync argument of ext4_commit_super()")
->    05c2c00f37 ("ext4: protect superblock modifications with a buffer lock=
-")
->
-> 4392fbc4bab57db3 05c2c00f3769abb9e323fcaca70
-> ---------------- ---------------------------
->           %stddev     %change         %stddev
->               \          |                \
->       13342           -11.8%      11771 =C2=B1  2%  aim7.jobs-per-min
->      449.81           +13.4%     510.10 =C2=B1  2%  aim7.time.elapsed_time
->      449.81           +13.4%     510.10 =C2=B1  2%  aim7.time.elapsed_tim=
-e.max
->     1246834 =C2=B1  2%     +13.8%    1418574 =C2=B1  3%  aim7.time.involu=
-ntary_context_switches
->      204562 =C2=B1  4%     +12.2%     229478 =C2=B1  3%  aim7.time.minor_=
-page_faults
->       35777           +12.9%      40390 =C2=B1  2%  aim7.time.system_time
->     6270530 =C2=B1  3%     +34.5%    8435526 =C2=B1  2%  aim7.time.volunt=
-ary_context_switches
->     8686688 =C2=B1 12%     +24.1%   10784294 =C2=B1  4%  cpuidle.C1E.usage
->        8.74            +4.5%       9.14        iostat.cpu.idle
->        0.02 =C2=B1 12%      -0.0        0.02 =C2=B1  9%  mpstat.cpu.all.i=
-owait%
->        6988 =C2=B1 11%     +43.1%       9999 =C2=B1  9%  numa-meminfo.nod=
-e0.Active(file)
->     1440589 =C2=B1  7%      +7.8%    1552890 =C2=B1  6%  numa-numastat.no=
-de1.numa_hit
->        1747 =C2=B1 11%     +43.0%       2499 =C2=B1  9%  numa-vmstat.node=
-0.nr_active_file
->        1747 =C2=B1 11%     +43.0%       2499 =C2=B1  9%  numa-vmstat.node=
-0.nr_zone_active_file
->      481.09           +12.6%     541.71 =C2=B1  2%  uptime.boot
->        5541           +10.8%       6140        uptime.idle
->       42743           -10.6%      38207        slabinfo.filp.active_objs
->        1430           -10.0%       1287        slabinfo.filp.active_slabs
->       45785           -10.0%      41214        slabinfo.filp.num_objs
->        1430           -10.0%       1287        slabinfo.filp.num_slabs
->       91.00            -1.1%      90.00        vmstat.cpu.sy
->        2850 =C2=B1  2%     +14.5%       3263        vmstat.io.bo
->       13739 =C2=B1  3%     +29.2%      17754 =C2=B1  2%  vmstat.memory.bu=
-ff
->       25822 =C2=B1  2%     +14.8%      29645        vmstat.system.cs
->      452981           +11.7%     505788 =C2=B1  3%  meminfo.Active
->      439264           +11.1%     488079 =C2=B1  3%  meminfo.Active(anon)
->       13715 =C2=B1  3%     +29.1%      17708 =C2=B1  2%  meminfo.Active(f=
-ile)
->       13713 =C2=B1  3%     +29.2%      17723 =C2=B1  2%  meminfo.Buffers
->      459294           +10.6%     507955 =C2=B1  3%  meminfo.Shmem
->      109825           +11.1%     121996 =C2=B1  3%  proc-vmstat.nr_active=
-_anon
->        3428 =C2=B1  3%     +29.1%       4426 =C2=B1  2%  proc-vmstat.nr_a=
-ctive_file
->        1427           +13.3%       1618 =C2=B1  2%  proc-vmstat.nr_dirtied
->      376669            +3.5%     389792        proc-vmstat.nr_file_pages
->      114820           +10.6%     126987 =C2=B1  3%  proc-vmstat.nr_shmem
->        1372           +15.1%       1579 =C2=B1  4%  proc-vmstat.nr_written
->      109825           +11.1%     121996 =C2=B1  3%  proc-vmstat.nr_zone_a=
-ctive_anon
->        3428 =C2=B1  3%     +29.1%       4426 =C2=B1  2%  proc-vmstat.nr_z=
-one_active_file
->      151153 =C2=B1  5%     +16.9%     176679 =C2=B1  3%  proc-vmstat.numa=
-_hint_faults
->      106816 =C2=B1  7%     +17.4%     125437 =C2=B1  4%  proc-vmstat.numa=
-_hint_faults_local
->     2915186            +5.4%    3071445        proc-vmstat.numa_hit
->     2835807            +5.4%    2988976        proc-vmstat.numa_local
->      129566 =C2=B1  2%      +7.4%     139212 =C2=B1  4%  proc-vmstat.pgac=
-tivate
->     4233617            +2.8%    4353951        proc-vmstat.pgalloc_normal
->     1622353           +12.0%    1816326        proc-vmstat.pgfault
->     3863258            +2.8%    3970690        proc-vmstat.pgfree
->     1290723 =C2=B1  3%     +29.8%    1675288 =C2=B1  2%  proc-vmstat.pgpg=
-out
->       86298           +10.3%      95227 =C2=B1  3%  proc-vmstat.pgreuse
->      189.67 =C2=B1  5%      -9.6%     171.45 =C2=B1  5%  sched_debug.cfs_=
-rq:/.load_avg.stddev
->    15090675           +13.9%   17181333        sched_debug.cfs_rq:/.min_v=
-runtime.avg
->    15410230           +14.0%   17563602        sched_debug.cfs_rq:/.min_v=
-runtime.max
->    14179241           +13.8%   16142220        sched_debug.cfs_rq:/.min_v=
-runtime.min
->      909405 =C2=B1  5%     +13.7%    1034081 =C2=B1  6%  sched_debug.cfs_=
-rq:/.spread0.avg
->     1229377 =C2=B1  4%     +15.2%    1416676 =C2=B1  3%  sched_debug.cfs_=
-rq:/.spread0.max
->      240213           +12.5%     270308        sched_debug.cpu.clock.avg
->      240225           +12.5%     270320        sched_debug.cpu.clock.max
->      240200           +12.5%     270295        sched_debug.cpu.clock.min
->      237580           +12.5%     267317        sched_debug.cpu.clock_task=
-.avg
->      237797           +12.5%     267523        sched_debug.cpu.clock_task=
-.max
->      232767           +12.8%     262508        sched_debug.cpu.clock_task=
-.min
->       64022 =C2=B1  2%     +31.4%      84141        sched_debug.cpu.nr_sw=
-itches.avg
->       77073           +28.8%      99292 =C2=B1  3%  sched_debug.cpu.nr_sw=
-itches.max
->       60980 =C2=B1  2%     +32.5%      80775        sched_debug.cpu.nr_sw=
-itches.min
->        1399 =C2=B1  8%     +23.7%       1731 =C2=B1  4%  sched_debug.cpu.=
-nr_uninterruptible.max
->      248.99 =C2=B1  6%     +21.4%     302.15 =C2=B1  9%  sched_debug.cpu.=
-nr_uninterruptible.stddev
->      240200           +12.5%     270295        sched_debug.cpu_clk
->      239703           +12.6%     269797        sched_debug.ktime
->      240543           +12.5%     270629        sched_debug.sched_clk
->   1.221e+10            -1.1%  1.208e+10        perf-stat.i.branch-instruc=
-tions
->        0.22 =C2=B1 23%      -0.0        0.17        perf-stat.i.branch-mi=
-ss-rate%
->    14793770            -6.0%   13912167        perf-stat.i.branch-misses
->       25953 =C2=B1  2%     +14.8%      29803        perf-stat.i.context-s=
-witches
->        4869           +13.6%       5530        perf-stat.i.cpu-migrations
->    1.64e+10            -1.3%   1.62e+10        perf-stat.i.dTLB-loads
->   1.075e+09            -9.9%  9.682e+08 =C2=B1  2%  perf-stat.i.dTLB-stor=
-es
->      430893 =C2=B1  2%     +11.6%     480826        perf-stat.i.iTLB-loads
->   6.072e+10            -1.1%  6.005e+10        perf-stat.i.instructions
->      338.69            -1.5%     333.53        perf-stat.i.metric.M/sec
->     6039682            -7.8%    5565765 =C2=B1  2%  perf-stat.i.node-stor=
-e-misses
->       96902 =C2=B1  2%      -4.0%      93045 =C2=B1  2%  perf-stat.i.node=
--stores
->        0.12            -0.0        0.12        perf-stat.overall.branch-m=
-iss-rate%
->   1.219e+10            -1.0%  1.206e+10        perf-stat.ps.branch-instru=
-ctions
->    14740466            -5.9%   13872099        perf-stat.ps.branch-misses
->       25873 =C2=B1  2%     +14.9%      29722        perf-stat.ps.context-=
-switches
->        4856           +13.6%       5517        perf-stat.ps.cpu-migrations
->   1.637e+10            -1.2%  1.617e+10        perf-stat.ps.dTLB-loads
->   1.072e+09            -9.9%  9.665e+08 =C2=B1  2%  perf-stat.ps.dTLB-sto=
-res
->      428747 =C2=B1  2%     +11.6%     478487        perf-stat.ps.iTLB-loa=
-ds
->   6.061e+10            -1.1%  5.996e+10        perf-stat.ps.instructions
->     6028729            -7.8%    5557348 =C2=B1  2%  perf-stat.ps.node-sto=
-re-misses
->       96841            -4.1%      92846 =C2=B1  3%  perf-stat.ps.node-sto=
-res
->   2.734e+13           +12.2%  3.066e+13 =C2=B1  2%  perf-stat.total.instr=
-uctions
->        1.54 =C2=B1 72%     -86.8%       0.20 =C2=B1221%  perf-sched.sch_d=
-elay.avg.ms.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec=
-_reschedule_ipi.[unknown]
->        0.17 =C2=B1 19%     -47.8%       0.09 =C2=B1 22%  perf-sched.sch_d=
-elay.avg.ms.preempt_schedule_common._cond_resched.__ext4_journal_get_write_=
-access.ext4_orphan_add.ext4_truncate
->        1.57 =C2=B1 11%     +18.6%       1.86 =C2=B1  5%  perf-sched.sch_d=
-elay.avg.ms.preempt_schedule_common._cond_resched.__getblk_gfp.__ext4_get_i=
-node_loc.ext4_get_inode_loc
->        1.45 =C2=B1 37%    +126.7%       3.29 =C2=B1 34%  perf-sched.sch_d=
-elay.avg.ms.preempt_schedule_common._cond_resched.kmem_cache_alloc.jbd2__jo=
-urnal_start.__ext4_journal_start_sb
->        0.59 =C2=B1 34%     +58.4%       0.93 =C2=B1 24%  perf-sched.sch_d=
-elay.avg.ms.preempt_schedule_common._cond_resched.stop_one_cpu.migrate_task=
-_to.task_numa_migrate
->        3.16 =C2=B1 68%     -80.8%       0.61 =C2=B1223%  perf-sched.sch_d=
-elay.max.ms.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec=
-_reschedule_ipi.[unknown]
->        8.52 =C2=B1 28%     +80.5%      15.38 =C2=B1 25%  perf-sched.sch_d=
-elay.max.ms.preempt_schedule_common._cond_resched.kmem_cache_alloc.__alloc_=
-file.alloc_empty_file
->      162500 =C2=B1  9%     +25.1%     203298 =C2=B1 10%  perf-sched.total=
-_wait_and_delay.count.ms
->      116.08 =C2=B1  9%     -21.7%      90.91 =C2=B1 13%  perf-sched.wait_=
-and_delay.avg.ms.preempt_schedule_common._cond_resched.__ext4_handle_dirty_=
-metadata.ext4_do_update_inode.ext4_mark_iloc_dirty
->      134.71 =C2=B1  9%     -24.4%     101.80 =C2=B1  7%  perf-sched.wait_=
-and_delay.avg.ms.preempt_schedule_common._cond_resched.__getblk_gfp.__ext4_=
-get_inode_loc.ext4_get_inode_loc
->      145.16 =C2=B1 21%     -42.0%      84.13 =C2=B1 46%  perf-sched.wait_=
-and_delay.avg.ms.preempt_schedule_common._cond_resched.__mutex_lock.isra.0
->      153.37 =C2=B1 30%     -68.2%      48.78 =C2=B1103%  perf-sched.wait_=
-and_delay.avg.ms.preempt_schedule_common._cond_resched.ext4_journal_check_s=
-tart.__ext4_journal_start_sb.ext4_truncate
->       10.19 =C2=B1  5%     -84.0%       1.62 =C2=B1223%  perf-sched.wait_=
-and_delay.avg.ms.preempt_schedule_common._cond_resched.stop_one_cpu.__set_c=
-pus_allowed_ptr.sched_setaffinity
->       76.08 =C2=B1 11%     -23.6%      58.16 =C2=B1 12%  perf-sched.wait_=
-and_delay.avg.ms.wait_transaction_locked.add_transaction_credits.start_this=
-_handle.jbd2__journal_start
->       69.33 =C2=B1 14%     +36.5%      94.67 =C2=B1 13%  perf-sched.wait_=
-and_delay.count.jbd2_journal_commit_transaction.kjournald2.kthread.ret_from=
-_fork
->      890.17 =C2=B1  5%     -30.8%     615.83 =C2=B1  4%  perf-sched.wait_=
-and_delay.count.preempt_schedule_common._cond_resched.__ext4_handle_dirty_m=
-etadata.ext4_do_update_inode.ext4_mark_iloc_dirty
->        3176 =C2=B1 15%     +43.3%       4551 =C2=B1 17%  perf-sched.wait_=
-and_delay.count.preempt_schedule_common._cond_resched.__ext4_mark_inode_dir=
-ty.ext4_dirty_inode.__mark_inode_dirty
->      349.17 =C2=B1  5%     -17.3%     288.83 =C2=B1  5%  perf-sched.wait_=
-and_delay.count.preempt_schedule_common._cond_resched.__getblk_gfp.__ext4_g=
-et_inode_loc.ext4_get_inode_loc
->      654.17 =C2=B1 73%    +108.3%       1362 =C2=B1 18%  perf-sched.wait_=
-and_delay.count.preempt_schedule_common._cond_resched.kmem_cache_alloc.star=
-t_this_handle.jbd2__journal_start
->      953.33 =C2=B1  3%     -84.6%     146.67 =C2=B1223%  perf-sched.wait_=
-and_delay.count.preempt_schedule_common._cond_resched.stop_one_cpu.__set_cp=
-us_allowed_ptr.sched_setaffinity
->       35615 =C2=B1 10%     +26.7%      45108 =C2=B1 10%  perf-sched.wait_=
-and_delay.count.schedule_preempt_disabled.__mutex_lock.isra.0.ext4_orphan_a=
-dd
->       54444 =C2=B1 15%     +44.7%      78784 =C2=B1 17%  perf-sched.wait_=
-and_delay.count.wait_transaction_locked.add_transaction_credits.start_this_=
-handle.jbd2__journal_start
->      749.81 =C2=B1  5%     -18.6%     610.38 =C2=B1  3%  perf-sched.wait_=
-and_delay.max.ms.preempt_schedule_common._cond_resched.__ext4_handle_dirty_=
-metadata.ext4_do_update_inode.ext4_mark_iloc_dirty
->      751.99 =C2=B1  7%     -21.6%     589.37 =C2=B1  5%  perf-sched.wait_=
-and_delay.max.ms.preempt_schedule_common._cond_resched.__getblk_gfp.__ext4_=
-get_inode_loc.ext4_get_inode_loc
->      545.93 =C2=B1 17%     -31.5%     374.21 =C2=B1 24%  perf-sched.wait_=
-and_delay.max.ms.preempt_schedule_common._cond_resched.__kmalloc.ext4_ext_r=
-emove_space.ext4_ext_truncate
->      619.18 =C2=B1 17%     -45.6%     337.10 =C2=B1 49%  perf-sched.wait_=
-and_delay.max.ms.preempt_schedule_common._cond_resched.__mutex_lock.isra.0
->      573.86 =C2=B1 20%     -64.0%     206.68 =C2=B1104%  perf-sched.wait_=
-and_delay.max.ms.preempt_schedule_common._cond_resched.ext4_journal_check_s=
-tart.__ext4_journal_start_sb.ext4_truncate
->        1067 =C2=B1 12%     -84.4%     166.83 =C2=B1223%  perf-sched.wait_=
-and_delay.max.ms.preempt_schedule_common._cond_resched.stop_one_cpu.__set_c=
-pus_allowed_ptr.sched_setaffinity
->      650.19 =C2=B1  8%     -13.1%     564.84 =C2=B1  3%  perf-sched.wait_=
-and_delay.max.ms.preempt_schedule_common._cond_resched.stop_one_cpu.migrate=
-_task_to.task_numa_migrate
->      676.68 =C2=B1  9%     -17.8%     556.38 =C2=B1  3%  perf-sched.wait_=
-and_delay.max.ms.preempt_schedule_common._cond_resched.wait_for_completion.=
-stop_two_cpus.migrate_swap
->      745.90 =C2=B1  4%     -18.2%     609.91 =C2=B1  2%  perf-sched.wait_=
-and_delay.max.ms.rwsem_down_write_slowpath.path_openat.do_filp_open.do_sys_=
-openat2
->      775.20 =C2=B1  6%     -18.9%     628.79        perf-sched.wait_and_d=
-elay.max.ms.schedule_preempt_disabled.__mutex_lock.isra.0.ext4_orphan_add
->      770.37 =C2=B1  6%     -18.9%     624.81        perf-sched.wait_and_d=
-elay.max.ms.schedule_preempt_disabled.__mutex_lock.isra.0.ext4_orphan_del
->      114.49 =C2=B1  9%     -22.1%      89.15 =C2=B1 13%  perf-sched.wait_=
-time.avg.ms.preempt_schedule_common._cond_resched.__ext4_handle_dirty_metad=
-ata.ext4_do_update_inode.ext4_mark_iloc_dirty
->      133.14 =C2=B1  9%     -24.9%      99.94 =C2=B1  7%  perf-sched.wait_=
-time.avg.ms.preempt_schedule_common._cond_resched.__getblk_gfp.__ext4_get_i=
-node_loc.ext4_get_inode_loc
->      142.91 =C2=B1 22%     -37.9%      88.74 =C2=B1 26%  perf-sched.wait_=
-time.avg.ms.preempt_schedule_common._cond_resched.__mutex_lock.isra.0
->      120.05 =C2=B1 39%     -61.7%      46.00 =C2=B1 96%  perf-sched.wait_=
-time.avg.ms.preempt_schedule_common._cond_resched.down_write.ext4_truncate.=
-ext4_setattr
->      151.19 =C2=B1 30%     -57.1%      64.88 =C2=B1 53%  perf-sched.wait_=
-time.avg.ms.preempt_schedule_common._cond_resched.ext4_journal_check_start.=
-__ext4_journal_start_sb.ext4_truncate
->        4.55 =C2=B1  4%     +12.8%       5.13 =C2=B1  3%  perf-sched.wait_=
-time.avg.ms.preempt_schedule_common._cond_resched.jbd2_journal_commit_trans=
-action.kjournald2.kthread
->       74.36 =C2=B1 11%     -24.3%      56.28 =C2=B1 13%  perf-sched.wait_=
-time.avg.ms.wait_transaction_locked.add_transaction_credits.start_this_hand=
-le.jbd2__journal_start
->      749.64 =C2=B1  5%     -18.6%     610.37 =C2=B1  3%  perf-sched.wait_=
-time.max.ms.preempt_schedule_common._cond_resched.__ext4_handle_dirty_metad=
-ata.ext4_do_update_inode.ext4_mark_iloc_dirty
->      751.98 =C2=B1  7%     -21.6%     589.37 =C2=B1  5%  perf-sched.wait_=
-time.max.ms.preempt_schedule_common._cond_resched.__getblk_gfp.__ext4_get_i=
-node_loc.ext4_get_inode_loc
->      545.92 =C2=B1 17%     -32.0%     371.40 =C2=B1 24%  perf-sched.wait_=
-time.max.ms.preempt_schedule_common._cond_resched.__kmalloc.ext4_ext_remove=
-_space.ext4_ext_truncate
->      619.17 =C2=B1 17%     -38.7%     379.32 =C2=B1 23%  perf-sched.wait_=
-time.max.ms.preempt_schedule_common._cond_resched.__mutex_lock.isra.0
->      571.69 =C2=B1 20%     -52.1%     273.60 =C2=B1 56%  perf-sched.wait_=
-time.max.ms.preempt_schedule_common._cond_resched.ext4_journal_check_start.=
-__ext4_journal_start_sb.ext4_truncate
->      650.17 =C2=B1  8%     -13.1%     564.83 =C2=B1  3%  perf-sched.wait_=
-time.max.ms.preempt_schedule_common._cond_resched.stop_one_cpu.migrate_task=
-_to.task_numa_migrate
->      676.67 =C2=B1  9%     -17.8%     556.37 =C2=B1  3%  perf-sched.wait_=
-time.max.ms.preempt_schedule_common._cond_resched.wait_for_completion.stop_=
-two_cpus.migrate_swap
->      745.40 =C2=B1  4%     -18.3%     609.29 =C2=B1  2%  perf-sched.wait_=
-time.max.ms.rwsem_down_write_slowpath.path_openat.do_filp_open.do_sys_opena=
-t2
->      769.37 =C2=B1  6%     -19.0%     622.87 =C2=B1  2%  perf-sched.wait_=
-time.max.ms.schedule_preempt_disabled.__mutex_lock.isra.0.ext4_orphan_add
->      769.35 =C2=B1  6%     -19.1%     622.61 =C2=B1  2%  perf-sched.wait_=
-time.max.ms.schedule_preempt_disabled.__mutex_lock.isra.0.ext4_orphan_del
->        0.59 =C2=B1  4%      -0.2        0.35 =C2=B1 70%  perf-profile.cal=
-ltrace.cycles-pp.ext4_ext_truncate.ext4_truncate.ext4_setattr.notify_change=
-.do_truncate
->        0.81 =C2=B1  3%      -0.1        0.70 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.ext4_reserve_inode_write
->        0.89 =C2=B1  3%      -0.1        0.78 =C2=B1  3%  perf-profile.chi=
-ldren.cycles-pp.__ext4_mark_inode_dirty
->        1.00 =C2=B1  2%      -0.1        0.89 =C2=B1  3%  perf-profile.chi=
-ldren.cycles-pp.ext4_mark_iloc_dirty
->        0.59 =C2=B1  4%      -0.1        0.52 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.ext4_ext_truncate
->        0.65 =C2=B1  2%      -0.1        0.59 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.ext4_do_update_inode
->        0.32 =C2=B1  2%      -0.0        0.28 =C2=B1  2%  perf-profile.chi=
-ldren.cycles-pp.__mutex_unlock_slowpath
->        0.35 =C2=B1  4%      -0.0        0.30 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.ext4_ext_remove_space
->        0.21 =C2=B1  3%      -0.0        0.17 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.__getblk_gfp
->        0.15 =C2=B1 13%      -0.0        0.11 =C2=B1 15%  perf-profile.chi=
-ldren.cycles-pp.run_ksoftirqd
->        0.18 =C2=B1  3%      -0.0        0.14 =C2=B1  5%  perf-profile.chi=
-ldren.cycles-pp.crc32c_pcl_intel_update
->        0.15 =C2=B1 11%      -0.0        0.12 =C2=B1 11%  perf-profile.chi=
-ldren.cycles-pp.smpboot_thread_fn
->        0.18 =C2=B1  2%      -0.0        0.15 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.__find_get_block
->        0.12 =C2=B1  4%      -0.0        0.09 =C2=B1  5%  perf-profile.chi=
-ldren.cycles-pp.mutex_unlock
->        0.15 =C2=B1  3%      -0.0        0.12 =C2=B1  5%  perf-profile.chi=
-ldren.cycles-pp.ext4_inode_csum_set
->        0.24 =C2=B1  3%      -0.0        0.21 =C2=B1  3%  perf-profile.chi=
-ldren.cycles-pp.__close
->        0.10 =C2=B1  9%      -0.0        0.08 =C2=B1 12%  perf-profile.chi=
-ldren.cycles-pp.osq_unlock
->        0.20 =C2=B1  3%      -0.0        0.18 =C2=B1  3%  perf-profile.chi=
-ldren.cycles-pp.exit_to_user_mode_prepare
->        0.14 =C2=B1  3%      -0.0        0.12 =C2=B1  3%  perf-profile.chi=
-ldren.cycles-pp.wake_up_q
->        0.10 =C2=B1  4%      -0.0        0.08 =C2=B1  5%  perf-profile.chi=
-ldren.cycles-pp.cap_inode_need_killpriv
->        0.12 =C2=B1  4%      -0.0        0.11 =C2=B1  6%  perf-profile.chi=
-ldren.cycles-pp.mutex_lock
->        0.08            -0.0        0.06 =C2=B1  7%  perf-profile.children=
-.cycles-pp.ext4_xattr_get
->        0.11            -0.0        0.09 =C2=B1  5%  perf-profile.children=
-.cycles-pp.dentry_needs_remove_privs
->        0.10            -0.0        0.08 =C2=B1  5%  perf-profile.children=
-.cycles-pp.__vfs_getxattr
->        0.11 =C2=B1  3%      -0.0        0.10 =C2=B1  3%  perf-profile.chi=
-ldren.cycles-pp.alloc_empty_file
->        0.11            -0.0        0.10 =C2=B1  4%  perf-profile.children=
-.cycles-pp.__alloc_file
->        0.18 =C2=B1  6%      +0.0        0.20 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.do_softirq_own_stack
->        0.19 =C2=B1  6%      +0.0        0.21 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.irq_exit_rcu
->        0.03 =C2=B1100%      +0.0        0.07 =C2=B1  7%  perf-profile.chi=
-ldren.cycles-pp.ktime_get_update_offsets_now
->        0.06 =C2=B1 45%      +0.0        0.10 =C2=B1 11%  perf-profile.chi=
-ldren.cycles-pp.ktime_get
->        0.69            +0.1        0.75        perf-profile.children.cycl=
-es-pp.mutex_spin_on_owner
->        0.35 =C2=B1  6%      +0.1        0.42 =C2=B1  6%  perf-profile.chi=
-ldren.cycles-pp.__hrtimer_run_queues
->        0.30 =C2=B1  5%      +0.1        0.38 =C2=B1  8%  perf-profile.chi=
-ldren.cycles-pp.tick_sched_timer
->        0.47 =C2=B1  7%      +0.1        0.57 =C2=B1  7%  perf-profile.chi=
-ldren.cycles-pp.hrtimer_interrupt
->        0.47 =C2=B1  7%      +0.1        0.58 =C2=B1  7%  perf-profile.chi=
-ldren.cycles-pp.__sysvec_apic_timer_interrupt
->        0.68 =C2=B1  6%      +0.1        0.80 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.asm_call_sysvec_on_stack
->        0.68 =C2=B1  6%      +0.1        0.81 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.sysvec_apic_timer_interrupt
->        0.72 =C2=B1  7%      +0.1        0.85 =C2=B1  4%  perf-profile.chi=
-ldren.cycles-pp.asm_sysvec_apic_timer_interrupt
->        0.24            -0.0        0.19 =C2=B1  3%  perf-profile.self.cyc=
-les-pp.ext4_reserve_inode_write
->        0.29 =C2=B1  4%      -0.0        0.24 =C2=B1  2%  perf-profile.sel=
-f.cycles-pp.ext4_mark_iloc_dirty
->        0.32 =C2=B1  3%      -0.0        0.27 =C2=B1  4%  perf-profile.sel=
-f.cycles-pp.__mutex_lock
->        0.07 =C2=B1  7%      -0.0        0.03 =C2=B1100%  perf-profile.sel=
-f.cycles-pp.ext4_inode_csum_set
->        0.12 =C2=B1  4%      -0.0        0.09 =C2=B1  5%  perf-profile.sel=
-f.cycles-pp.mutex_unlock
->        0.12 =C2=B1  5%      -0.0        0.10 =C2=B1  7%  perf-profile.sel=
-f.cycles-pp.mutex_lock
->        0.10 =C2=B1  6%      -0.0        0.08 =C2=B1 12%  perf-profile.sel=
-f.cycles-pp.osq_unlock
->        0.12            -0.0        0.10        perf-profile.self.cycles-p=
-p._raw_spin_lock
->        0.09 =C2=B1  7%      -0.0        0.07 =C2=B1  6%  perf-profile.sel=
-f.cycles-pp.__find_get_block
->        0.07 =C2=B1  5%      -0.0        0.05 =C2=B1  8%  perf-profile.sel=
-f.cycles-pp.ext4_xattr_get
->        0.09            -0.0        0.08 =C2=B1  6%  perf-profile.self.cyc=
-les-pp._raw_spin_lock_irqsave
->        0.05 =C2=B1 45%      +0.0        0.09 =C2=B1 12%  perf-profile.sel=
-f.cycles-pp.ktime_get
->        0.02 =C2=B1141%      +0.0        0.06        perf-profile.self.cyc=
-les-pp.ktime_get_update_offsets_now
->        0.68            +0.1        0.74 =C2=B1  2%  perf-profile.self.cyc=
-les-pp.mutex_spin_on_owner
->        0.02 =C2=B1141%      +0.1        0.08 =C2=B1  8%  perf-profile.sel=
-f.cycles-pp.ext4_orphan_add
->       20823 =C2=B1  2%     +14.2%      23775 =C2=B1  3%  softirqs.CPU0.SC=
-HED
->       17539 =C2=B1  2%     +22.4%      21460 =C2=B1  5%  softirqs.CPU1.SC=
-HED
->       17122           +19.9%      20527        softirqs.CPU10.SCHED
->       17055 =C2=B1  2%     +19.8%      20433        softirqs.CPU11.SCHED
->       16919           +21.4%      20538        softirqs.CPU12.SCHED
->       17013 =C2=B1  2%     +20.6%      20510 =C2=B1  2%  softirqs.CPU13.S=
-CHED
->       17119           +19.8%      20501        softirqs.CPU14.SCHED
->       17158           +19.1%      20431 =C2=B1  2%  softirqs.CPU15.SCHED
->       17223           +18.7%      20443        softirqs.CPU16.SCHED
->       16969 =C2=B1  2%     +19.7%      20305        softirqs.CPU17.SCHED
->       16997           +20.3%      20441        softirqs.CPU18.SCHED
->       17126           +19.1%      20399        softirqs.CPU19.SCHED
->       17544 =C2=B1  3%     +18.5%      20796 =C2=B1  5%  softirqs.CPU2.SC=
-HED
->       17207           +19.1%      20489        softirqs.CPU20.SCHED
->       17215           +17.4%      20219        softirqs.CPU21.SCHED
->       16574           +19.2%      19758 =C2=B1  3%  softirqs.CPU22.SCHED
->       16901 =C2=B1  2%     +17.7%      19893 =C2=B1  2%  softirqs.CPU23.S=
-CHED
->       16901 =C2=B1  3%     +19.4%      20180 =C2=B1  2%  softirqs.CPU24.S=
-CHED
->       16818           +19.5%      20099 =C2=B1  2%  softirqs.CPU25.SCHED
->       16892           +18.6%      20039        softirqs.CPU26.SCHED
->       16839           +20.0%      20205        softirqs.CPU27.SCHED
->       16926           +18.7%      20091        softirqs.CPU28.SCHED
->       16762 =C2=B1  2%     +20.1%      20125        softirqs.CPU29.SCHED
->       17050 =C2=B1  2%     +19.7%      20410 =C2=B1  2%  softirqs.CPU3.SC=
-HED
->       16961           +19.7%      20304 =C2=B1  2%  softirqs.CPU30.SCHED
->       17013           +19.0%      20238 =C2=B1  2%  softirqs.CPU31.SCHED
->       16836           +22.4%      20599 =C2=B1  3%  softirqs.CPU32.SCHED
->       17160           +17.5%      20164        softirqs.CPU33.SCHED
->       16658 =C2=B1  2%     +21.7%      20268 =C2=B1  2%  softirqs.CPU34.S=
-CHED
->       16980 =C2=B1  2%     +18.2%      20069 =C2=B1  3%  softirqs.CPU35.S=
-CHED
->       16720           +20.0%      20067 =C2=B1  2%  softirqs.CPU36.SCHED
->       17043           +19.3%      20338        softirqs.CPU37.SCHED
->       16935 =C2=B1  2%     +20.0%      20321        softirqs.CPU38.SCHED
->       17031           +19.5%      20349        softirqs.CPU39.SCHED
->       17457 =C2=B1  3%     +17.1%      20438        softirqs.CPU4.SCHED
->       16977           +20.1%      20393 =C2=B1  2%  softirqs.CPU40.SCHED
->       16873           +20.7%      20369        softirqs.CPU41.SCHED
->       17216 =C2=B1  2%     +17.6%      20238 =C2=B1  2%  softirqs.CPU42.S=
-CHED
->       17045 =C2=B1  2%     +19.3%      20342 =C2=B1  2%  softirqs.CPU43.S=
-CHED
->       16175 =C2=B1  3%     +20.4%      19473 =C2=B1  2%  softirqs.CPU44.S=
-CHED
->       16913 =C2=B1  2%     +18.6%      20051        softirqs.CPU45.SCHED
->       16989 =C2=B1  2%     +17.6%      19980        softirqs.CPU46.SCHED
->       16774 =C2=B1  2%     +18.9%      19949        softirqs.CPU47.SCHED
->       16922 =C2=B1  2%     +19.1%      20162        softirqs.CPU48.SCHED
->       16933 =C2=B1  3%     +19.8%      20286        softirqs.CPU49.SCHED
->       17135 =C2=B1  3%     +20.1%      20585        softirqs.CPU5.SCHED
->       16998 =C2=B1  2%     +16.8%      19847        softirqs.CPU50.SCHED
->       16815 =C2=B1  2%     +19.4%      20077        softirqs.CPU51.SCHED
->       16962           +18.6%      20111        softirqs.CPU52.SCHED
->       16853 =C2=B1  2%     +20.0%      20224        softirqs.CPU53.SCHED
->       17002           +19.5%      20320        softirqs.CPU54.SCHED
->       17025 =C2=B1  2%     +18.8%      20228 =C2=B1  2%  softirqs.CPU55.S=
-CHED
->       16851           +19.8%      20190        softirqs.CPU56.SCHED
->       17018           +18.3%      20132        softirqs.CPU57.SCHED
->       16949 =C2=B1  2%     +19.8%      20308 =C2=B1  2%  softirqs.CPU58.S=
-CHED
->       17189           +18.0%      20287        softirqs.CPU59.SCHED
->       16891           +19.2%      20135        softirqs.CPU6.SCHED
->       16989           +20.0%      20387        softirqs.CPU60.SCHED
->       17075           +17.7%      20102 =C2=B1  2%  softirqs.CPU61.SCHED
->       16938 =C2=B1  2%     +19.8%      20285        softirqs.CPU62.SCHED
->       16854 =C2=B1  2%     +19.2%      20094 =C2=B1  2%  softirqs.CPU63.S=
-CHED
->       17063           +18.5%      20216        softirqs.CPU64.SCHED
->       17048           +17.2%      19984        softirqs.CPU65.SCHED
->       16870           +19.4%      20138        softirqs.CPU66.SCHED
->       16817           +20.6%      20274 =C2=B1  2%  softirqs.CPU67.SCHED
->       16868 =C2=B1  2%     +20.1%      20256        softirqs.CPU68.SCHED
->       16890           +19.7%      20212 =C2=B1  2%  softirqs.CPU69.SCHED
->       16842           +20.2%      20252        softirqs.CPU7.SCHED
->       17011           +19.8%      20375        softirqs.CPU70.SCHED
->       17048           +20.1%      20478 =C2=B1  2%  softirqs.CPU71.SCHED
->       16881 =C2=B1  2%     +19.6%      20194        softirqs.CPU72.SCHED
->       16931           +19.9%      20294        softirqs.CPU73.SCHED
->       17102           +18.7%      20308        softirqs.CPU74.SCHED
->       16926 =C2=B1  2%     +19.4%      20206        softirqs.CPU75.SCHED
->       16757 =C2=B1  2%     +21.6%      20380 =C2=B1  2%  softirqs.CPU76.S=
-CHED
->       17052           +19.8%      20420        softirqs.CPU77.SCHED
->       16998           +19.8%      20368        softirqs.CPU78.SCHED
->       17209 =C2=B1  2%     +19.3%      20533        softirqs.CPU79.SCHED
->       17084 =C2=B1  2%     +18.6%      20260        softirqs.CPU8.SCHED
->       16973 =C2=B1  2%     +20.9%      20525 =C2=B1  2%  softirqs.CPU80.S=
-CHED
->       17198           +18.9%      20457 =C2=B1  2%  softirqs.CPU81.SCHED
->       16907 =C2=B1  2%     +20.8%      20419 =C2=B1  2%  softirqs.CPU82.S=
-CHED
->       17023           +19.3%      20316 =C2=B1  2%  softirqs.CPU83.SCHED
->       16935           +18.8%      20116 =C2=B1  2%  softirqs.CPU84.SCHED
->       17084           +18.8%      20297        softirqs.CPU85.SCHED
->       17086           +19.2%      20363        softirqs.CPU86.SCHED
->       16995 =C2=B1  3%     +19.7%      20350 =C2=B1  2%  softirqs.CPU87.S=
-CHED
->       17100 =C2=B1  2%     +19.4%      20420        softirqs.CPU9.SCHED
->     1498602           +19.3%    1788245        softirqs.SCHED
->       80372           +12.5%      90439 =C2=B1  2%  softirqs.TIMER
->      902.67           +13.6%       1025 =C2=B1  2%  interrupts.9:IO-APIC.=
-9-fasteoi.acpi
->     1556804 =C2=B1  4%     +35.0%    2102423 =C2=B1  3%  interrupts.CAL:F=
+> cluster/compiler/cpufreq_governor/ip/kconfig/nr_threads/rootfs/runtime/se=
+nd_size/tbox_group/test/testcase/ucode:
+>   cs-localhost/gcc-9/performance/ipv4/x86_64-rhel-8.3/1/debian-10.4-x86_6=
+4-20200603.cgz/300s/5K/lkp-csl-2ap3/TCP_SENDFILE/netperf/0x5003006
+> =
+
+> commit: =
+
+>   95507e764c ("x86/spectre/meltdown: avoid the vulnerability directory to=
+ weaken kernel security")
+>   69bc1b14c3 ("sched/fair: skip select_idle_sibling() in presence of sync=
+ wakeups")
+> =
+
+> 95507e764cfbae8c 69bc1b14c3d0ebfc25ebcb7647a =
+
+> ---------------- --------------------------- =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>      25179           -36.9%      15893 =C2=B1  7%  netperf.Throughput_Mbps
+>      25179           -36.9%      15893 =C2=B1  7%  netperf.Throughput_tot=
+al_Mbps
+>     257.15            +1.7%     261.58        netperf.time.system_time
+>      15.64           -41.6%       9.13 =C2=B1  6%  netperf.time.user_time
+>  1.844e+08           -36.9%  1.164e+08 =C2=B1  7%  netperf.workload
+>     105764 =C2=B1  5%     -26.6%      77585 =C2=B1  7%  vmstat.system.cs
+>       1.71 =C2=B1 20%      -0.6        1.15 =C2=B1  4%  mpstat.cpu.all.ir=
+q%
+>       0.06            -0.0        0.04 =C2=B1  2%  mpstat.cpu.all.usr%
+>     969.17 =C2=B1  2%      +7.9%       1045 =C2=B1  5%  slabinfo.file_loc=
+k_cache.active_objs
+>     969.17 =C2=B1  2%      +7.9%       1045 =C2=B1  5%  slabinfo.file_loc=
+k_cache.num_objs
+>       1042 =C2=B1  2%     +93.4%       2016 =C2=B1  4%  turbostat.Bzy_MHz
+>      81.45           +31.2%     106.84        turbostat.PkgWatt
+>   18872682 =C2=B1 57%     -41.7%   11012205 =C2=B1  5%  cpuidle.C1.usage
+>   43234819 =C2=B1178%     -92.3%    3318639 =C2=B1 49%  cpuidle.POLL.time
+>    2900874 =C2=B1 93%     -78.5%     624259 =C2=B1 57%  cpuidle.POLL.usage
+>     207291 =C2=B1  6%     -17.7%     170680 =C2=B1  4%  meminfo.Active
+>     207291 =C2=B1  6%     -17.7%     170680 =C2=B1  4%  meminfo.Active(an=
+on)
+>     237245 =C2=B1  5%     -16.0%     199239 =C2=B1  4%  meminfo.Shmem
+>     199721 =C2=B1  6%     -17.8%     164137 =C2=B1  5%  numa-meminfo.node=
+3.Active
+>     199721 =C2=B1  6%     -17.8%     164137 =C2=B1  5%  numa-meminfo.node=
+3.Active(anon)
+>     220559 =C2=B1  6%     -19.1%     178470 =C2=B1  3%  numa-meminfo.node=
+3.Shmem
+>      50087 =C2=B1  6%     -18.0%      41051 =C2=B1  5%  numa-vmstat.node3=
+.nr_active_anon
+>      55159 =C2=B1  6%     -19.1%      44629 =C2=B1  3%  numa-vmstat.node3=
+.nr_shmem
+>      50087 =C2=B1  6%     -18.0%      41051 =C2=B1  5%  numa-vmstat.node3=
+.nr_zone_active_anon
+>     164184 =C2=B1158%     -99.2%       1345 =C2=B1 95%  numa-numastat.nod=
+e2.local_node
+>     227159 =C2=B1102%     -61.2%      88044        numa-numastat.node2.nu=
+ma_hit
+>     172372 =C2=B1 11%     -24.6%     129918 =C2=B1  5%  numa-numastat.nod=
+e3.local_node
+>     259080 =C2=B1  7%     -16.4%     216635 =C2=B1  3%  numa-numastat.nod=
+e3.numa_hit
+>      51595 =C2=B1  6%     -17.5%      42565 =C2=B1  5%  proc-vmstat.nr_ac=
+tive_anon
+>     303439            -3.1%     293971        proc-vmstat.nr_file_pages
+>      59119 =C2=B1  5%     -16.0%      49651 =C2=B1  4%  proc-vmstat.nr_sh=
+mem
+>      51595 =C2=B1  6%     -17.5%      42565 =C2=B1  5%  proc-vmstat.nr_zo=
+ne_active_anon
+>    1351913            -2.0%    1324274        proc-vmstat.numa_hit
+>    1091715            -2.5%    1064104        proc-vmstat.numa_local
+>       5496 =C2=B1126%     -89.0%     605.33 =C2=B1 37%  proc-vmstat.numa_=
+pages_migrated
+>     133461 =C2=B1  6%     -18.1%     109360 =C2=B1  5%  proc-vmstat.pgact=
+ivate
+>    1425328            -1.9%    1397556        proc-vmstat.pgalloc_normal
+>       5496 =C2=B1126%     -89.0%     605.33 =C2=B1 37%  proc-vmstat.pgmig=
+rate_success
+>       0.01 =C2=B1 43%     -48.8%       0.01 =C2=B1  9%  perf-sched.sch_de=
+lay.avg.ms.schedule_timeout.kcompactd.kthread.ret_from_fork
+>       0.00 =C2=B1 20%     +71.4%       0.00        perf-sched.sch_delay.a=
+vg.ms.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+>       0.01 =C2=B1 14%     -23.8%       0.01 =C2=B1  8%  perf-sched.sch_de=
+lay.avg.ms.smpboot_thread_fn.kthread.ret_from_fork
+>       0.02 =C2=B1 37%     -49.2%       0.01 =C2=B1 27%  perf-sched.sch_de=
+lay.max.ms.preempt_schedule_common.__cond_resched.wait_for_completion.affin=
+e_move_task.__set_cpus_allowed_ptr
+>       0.00 =C2=B1 20%     +71.4%       0.00        perf-sched.total_sch_d=
+elay.average.ms
+>       5.79 =C2=B1  6%     +28.6%       7.44 =C2=B1  5%  perf-sched.total_=
+wait_and_delay.average.ms
+>     408489 =C2=B1  6%     -18.6%     332309 =C2=B1  5%  perf-sched.total_=
+wait_and_delay.count.ms
+>       5.79 =C2=B1  6%     +28.6%       7.44 =C2=B1  5%  perf-sched.total_=
+wait_time.average.ms
+>      68.34 =C2=B1  6%     +20.5%      82.31 =C2=B1  5%  perf-sched.wait_a=
+nd_delay.avg.ms.schedule_hrtimeout_range_clock.poll_schedule_timeout.constp=
+rop.0.do_sys_poll
+>       0.01 =C2=B1  9%     +44.4%       0.01 =C2=B1  4%  perf-sched.wait_a=
+nd_delay.avg.ms.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+>     271.00 =C2=B1  6%     -16.5%     226.17 =C2=B1  5%  perf-sched.wait_a=
+nd_delay.count.schedule_hrtimeout_range_clock.poll_schedule_timeout.constpr=
+op.0.do_sys_poll
+>     397331 =C2=B1  6%     -19.2%     321076 =C2=B1  5%  perf-sched.wait_a=
+nd_delay.count.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+>       1407 =C2=B1 29%     -28.3%       1009        perf-sched.wait_and_de=
+lay.max.ms.smpboot_thread_fn.kthread.ret_from_fork
+>      68.34 =C2=B1  6%     +20.5%      82.31 =C2=B1  5%  perf-sched.wait_t=
+ime.avg.ms.schedule_hrtimeout_range_clock.poll_schedule_timeout.constprop.0=
+.do_sys_poll
+>       0.01 =C2=B1 10%     +29.3%       0.01 =C2=B1  7%  perf-sched.wait_t=
+ime.avg.ms.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+>       0.03 =C2=B1 45%     +45.7%       0.04 =C2=B1 15%  perf-sched.wait_t=
+ime.max.ms.preempt_schedule_common.__cond_resched.__release_sock.release_so=
+ck.tcp_sendpage
+>       1407 =C2=B1 29%     -28.3%       1009        perf-sched.wait_time.m=
+ax.ms.smpboot_thread_fn.kthread.ret_from_fork
+>     195541           +17.7%     230207 =C2=B1 21%  interrupts.CAL:Functio=
+n_call_interrupts
+>     309.67 =C2=B1116%     -97.4%       8.00 =C2=B1142%  interrupts.CPU1.R=
+ES:Rescheduling_interrupts
+>     319.67 =C2=B1218%     -99.6%       1.33 =C2=B1103%  interrupts.CPU145=
+.RES:Rescheduling_interrupts
+>     115.00 =C2=B1209%     -98.8%       1.33 =C2=B1 70%  interrupts.CPU151=
+.RES:Rescheduling_interrupts
+>     107.50 =C2=B1 37%     -30.2%      75.00 =C2=B1 31%  interrupts.CPU171=
+.NMI:Non-maskable_interrupts
+>     107.50 =C2=B1 37%     -30.2%      75.00 =C2=B1 31%  interrupts.CPU171=
+.PMI:Performance_monitoring_interrupts
+>     106.33 =C2=B1 37%     -31.0%      73.33 =C2=B1 27%  interrupts.CPU176=
+.NMI:Non-maskable_interrupts
+>     106.33 =C2=B1 37%     -31.0%      73.33 =C2=B1 27%  interrupts.CPU176=
+.PMI:Performance_monitoring_interrupts
+>     107.67 =C2=B1 38%     -32.4%      72.83 =C2=B1 28%  interrupts.CPU178=
+.NMI:Non-maskable_interrupts
+>     107.67 =C2=B1 38%     -32.4%      72.83 =C2=B1 28%  interrupts.CPU178=
+.PMI:Performance_monitoring_interrupts
+>     400.83 =C2=B1201%     -98.8%       4.83 =C2=B1150%  interrupts.CPU19.=
+RES:Rescheduling_interrupts
+>     384.33 =C2=B1198%     -99.2%       3.17 =C2=B1103%  interrupts.CPU20.=
+RES:Rescheduling_interrupts
+>     922.67           +93.3%       1783 =C2=B1 65%  interrupts.CPU24.CAL:F=
 unction_call_interrupts
->       17978 =C2=B1  4%     +27.2%      22867 =C2=B1  8%  interrupts.CPU0.=
-CAL:Function_call_interrupts
->      902210           +13.5%    1024347 =C2=B1  2%  interrupts.CPU0.LOC:L=
-ocal_timer_interrupts
->        3865 =C2=B1  3%     +22.0%       4714 =C2=B1  3%  interrupts.CPU0.=
-RES:Rescheduling_interrupts
->      902.67           +13.6%       1025 =C2=B1  2%  interrupts.CPU1.9:IO-=
-APIC.9-fasteoi.acpi
->       17763 =C2=B1  7%     +27.9%      22718 =C2=B1  8%  interrupts.CPU1.=
-CAL:Function_call_interrupts
->      902064           +13.5%    1024088 =C2=B1  2%  interrupts.CPU1.LOC:L=
-ocal_timer_interrupts
->        3156 =C2=B1  3%     +22.8%       3874 =C2=B1  5%  interrupts.CPU1.=
-RES:Rescheduling_interrupts
->       16929 =C2=B1  5%     +27.5%      21592 =C2=B1  6%  interrupts.CPU10=
-.CAL:Function_call_interrupts
->      902163           +13.5%    1024115 =C2=B1  2%  interrupts.CPU10.LOC:=
-Local_timer_interrupts
->        3174 =C2=B1  4%     +20.5%       3825 =C2=B1  3%  interrupts.CPU10=
-.RES:Rescheduling_interrupts
->       17099 =C2=B1  4%     +25.8%      21503 =C2=B1  7%  interrupts.CPU11=
-.CAL:Function_call_interrupts
->      902105           +13.5%    1024101 =C2=B1  2%  interrupts.CPU11.LOC:=
-Local_timer_interrupts
->        3166 =C2=B1  3%     +22.1%       3865 =C2=B1  3%  interrupts.CPU11=
-.RES:Rescheduling_interrupts
->       16935 =C2=B1  5%     +27.2%      21542 =C2=B1  7%  interrupts.CPU12=
-.CAL:Function_call_interrupts
->      902122           +13.5%    1024089 =C2=B1  2%  interrupts.CPU12.LOC:=
-Local_timer_interrupts
->        3134 =C2=B1  4%     +22.4%       3837 =C2=B1  5%  interrupts.CPU12=
-.RES:Rescheduling_interrupts
->       17107 =C2=B1  5%     +25.2%      21414 =C2=B1  6%  interrupts.CPU13=
-.CAL:Function_call_interrupts
->      902138           +13.5%    1024071 =C2=B1  2%  interrupts.CPU13.LOC:=
-Local_timer_interrupts
->        3154 =C2=B1  4%     +21.3%       3825 =C2=B1  5%  interrupts.CPU13=
-.RES:Rescheduling_interrupts
->       16949 =C2=B1  4%     +28.0%      21692 =C2=B1  8%  interrupts.CPU14=
-.CAL:Function_call_interrupts
->      902142           +13.5%    1024014 =C2=B1  2%  interrupts.CPU14.LOC:=
-Local_timer_interrupts
->        3154 =C2=B1  2%     +20.8%       3809 =C2=B1  5%  interrupts.CPU14=
-.RES:Rescheduling_interrupts
->       16971 =C2=B1  6%     +26.5%      21460 =C2=B1  7%  interrupts.CPU15=
-.CAL:Function_call_interrupts
->      902125           +13.5%    1024008 =C2=B1  2%  interrupts.CPU15.LOC:=
-Local_timer_interrupts
->        3159 =C2=B1  3%     +21.7%       3847 =C2=B1  5%  interrupts.CPU15=
-.RES:Rescheduling_interrupts
->       16914 =C2=B1  4%     +26.9%      21469 =C2=B1  6%  interrupts.CPU16=
-.CAL:Function_call_interrupts
->      902263           +13.5%    1024072 =C2=B1  2%  interrupts.CPU16.LOC:=
-Local_timer_interrupts
->        3176 =C2=B1  4%     +20.6%       3831 =C2=B1  3%  interrupts.CPU16=
-.RES:Rescheduling_interrupts
->       16959 =C2=B1  5%     +27.7%      21659 =C2=B1  7%  interrupts.CPU17=
-.CAL:Function_call_interrupts
->      902131           +13.5%    1024076 =C2=B1  2%  interrupts.CPU17.LOC:=
-Local_timer_interrupts
->        3164 =C2=B1  3%     +21.1%       3834 =C2=B1  5%  interrupts.CPU17=
-.RES:Rescheduling_interrupts
->       16921 =C2=B1  5%     +27.9%      21647 =C2=B1  7%  interrupts.CPU18=
-.CAL:Function_call_interrupts
->      901992           +13.5%    1024059 =C2=B1  2%  interrupts.CPU18.LOC:=
-Local_timer_interrupts
->        3114 =C2=B1  3%     +23.7%       3851 =C2=B1  3%  interrupts.CPU18=
-.RES:Rescheduling_interrupts
->       16953 =C2=B1  5%     +27.8%      21669 =C2=B1  7%  interrupts.CPU19=
-.CAL:Function_call_interrupts
->      902113           +13.5%    1024021 =C2=B1  2%  interrupts.CPU19.LOC:=
-Local_timer_interrupts
->        3186 =C2=B1  2%     +20.8%       3850 =C2=B1  4%  interrupts.CPU19=
-.RES:Rescheduling_interrupts
->       17479 =C2=B1  5%     +32.7%      23186 =C2=B1  3%  interrupts.CPU2.=
-CAL:Function_call_interrupts
->      902148           +13.5%    1024034 =C2=B1  2%  interrupts.CPU2.LOC:L=
-ocal_timer_interrupts
->        3163 =C2=B1  3%     +21.2%       3835 =C2=B1  3%  interrupts.CPU2.=
-RES:Rescheduling_interrupts
->       16875 =C2=B1  5%     +27.8%      21575 =C2=B1  7%  interrupts.CPU20=
-.CAL:Function_call_interrupts
->      902126           +13.5%    1024077 =C2=B1  2%  interrupts.CPU20.LOC:=
-Local_timer_interrupts
->        3125 =C2=B1  3%     +23.9%       3874 =C2=B1  3%  interrupts.CPU20=
-.RES:Rescheduling_interrupts
->       16824 =C2=B1  4%     +27.8%      21502 =C2=B1  7%  interrupts.CPU21=
-.CAL:Function_call_interrupts
->      902123           +13.5%    1024032 =C2=B1  2%  interrupts.CPU21.LOC:=
-Local_timer_interrupts
->        3119 =C2=B1  2%     +23.8%       3861 =C2=B1  4%  interrupts.CPU21=
-.RES:Rescheduling_interrupts
->       18853 =C2=B1 10%     +42.1%      26784 =C2=B1  7%  interrupts.CPU22=
-.CAL:Function_call_interrupts
->      902129           +13.5%    1024053 =C2=B1  2%  interrupts.CPU22.LOC:=
-Local_timer_interrupts
->        3076 =C2=B1  2%     +15.9%       3564 =C2=B1  3%  interrupts.CPU22=
-.RES:Rescheduling_interrupts
->       18904 =C2=B1 10%     +41.5%      26758 =C2=B1  7%  interrupts.CPU23=
-.CAL:Function_call_interrupts
->      902141           +13.5%    1024100 =C2=B1  2%  interrupts.CPU23.LOC:=
-Local_timer_interrupts
->        3055 =C2=B1  2%     +13.8%       3478 =C2=B1  2%  interrupts.CPU23=
-.RES:Rescheduling_interrupts
->       18697 =C2=B1 10%     +42.0%      26548 =C2=B1  7%  interrupts.CPU24=
-.CAL:Function_call_interrupts
->      902132           +13.5%    1024051 =C2=B1  2%  interrupts.CPU24.LOC:=
-Local_timer_interrupts
->        2996 =C2=B1  3%     +15.3%       3454 =C2=B1  2%  interrupts.CPU24=
-.RES:Rescheduling_interrupts
->       18610 =C2=B1 10%     +42.4%      26498 =C2=B1  7%  interrupts.CPU25=
-.CAL:Function_call_interrupts
->      902099           +13.5%    1024078 =C2=B1  2%  interrupts.CPU25.LOC:=
-Local_timer_interrupts
->        3061 =C2=B1  3%     +15.4%       3531 =C2=B1  2%  interrupts.CPU25=
-.RES:Rescheduling_interrupts
->       18506 =C2=B1 10%     +42.8%      26417 =C2=B1  7%  interrupts.CPU26=
-.CAL:Function_call_interrupts
->      902116           +13.5%    1024074 =C2=B1  2%  interrupts.CPU26.LOC:=
-Local_timer_interrupts
->        3016 =C2=B1  3%     +15.6%       3488 =C2=B1  2%  interrupts.CPU26=
-.RES:Rescheduling_interrupts
->       18712 =C2=B1 11%     +40.1%      26212 =C2=B1  7%  interrupts.CPU27=
-.CAL:Function_call_interrupts
->      902131           +13.5%    1023984 =C2=B1  2%  interrupts.CPU27.LOC:=
-Local_timer_interrupts
->        3032 =C2=B1  3%     +16.4%       3528 =C2=B1  2%  interrupts.CPU27=
-.RES:Rescheduling_interrupts
->       18533 =C2=B1 10%     +41.4%      26214 =C2=B1  7%  interrupts.CPU28=
-.CAL:Function_call_interrupts
->      902108           +13.5%    1024107 =C2=B1  2%  interrupts.CPU28.LOC:=
-Local_timer_interrupts
->        3022 =C2=B1  2%     +17.1%       3539 =C2=B1  2%  interrupts.CPU28=
-.RES:Rescheduling_interrupts
->       18483 =C2=B1 10%     +41.9%      26234 =C2=B1  7%  interrupts.CPU29=
-.CAL:Function_call_interrupts
->      902262           +13.5%    1024052 =C2=B1  2%  interrupts.CPU29.LOC:=
-Local_timer_interrupts
->        3034           +16.4%       3533 =C2=B1  2%  interrupts.CPU29.RES:=
-Rescheduling_interrupts
->       17359 =C2=B1  5%     +29.3%      22454 =C2=B1  7%  interrupts.CPU3.=
-CAL:Function_call_interrupts
->      902230           +13.5%    1024080 =C2=B1  2%  interrupts.CPU3.LOC:L=
-ocal_timer_interrupts
->        3160 =C2=B1  4%     +22.2%       3863 =C2=B1  3%  interrupts.CPU3.=
-RES:Rescheduling_interrupts
->       18526 =C2=B1 10%     +42.2%      26340 =C2=B1  7%  interrupts.CPU30=
-.CAL:Function_call_interrupts
->      902146           +13.5%    1024088 =C2=B1  2%  interrupts.CPU30.LOC:=
-Local_timer_interrupts
->        3003           +16.6%       3503 =C2=B1  2%  interrupts.CPU30.RES:=
-Rescheduling_interrupts
->       18417 =C2=B1 10%     +42.1%      26162 =C2=B1  8%  interrupts.CPU31=
-.CAL:Function_call_interrupts
->      902108           +13.5%    1024056 =C2=B1  2%  interrupts.CPU31.LOC:=
-Local_timer_interrupts
->        2992 =C2=B1  3%     +17.2%       3506 =C2=B1  2%  interrupts.CPU31=
-.RES:Rescheduling_interrupts
->       18324 =C2=B1 10%     +41.6%      25944 =C2=B1  7%  interrupts.CPU32=
-.CAL:Function_call_interrupts
->      902092           +13.5%    1024078 =C2=B1  2%  interrupts.CPU32.LOC:=
-Local_timer_interrupts
->        3037 =C2=B1  3%     +15.2%       3498 =C2=B1  2%  interrupts.CPU32=
-.RES:Rescheduling_interrupts
->       18353 =C2=B1 11%     +42.0%      26057 =C2=B1  7%  interrupts.CPU33=
-.CAL:Function_call_interrupts
->      902085           +13.5%    1024101 =C2=B1  2%  interrupts.CPU33.LOC:=
-Local_timer_interrupts
->        3055 =C2=B1  4%     +14.6%       3502 =C2=B1  2%  interrupts.CPU33=
-.RES:Rescheduling_interrupts
->       18376 =C2=B1 10%     +41.2%      25953 =C2=B1  7%  interrupts.CPU34=
-.CAL:Function_call_interrupts
->      902095           +13.5%    1024078 =C2=B1  2%  interrupts.CPU34.LOC:=
-Local_timer_interrupts
->        3015 =C2=B1  2%     +14.4%       3448 =C2=B1  3%  interrupts.CPU34=
-.RES:Rescheduling_interrupts
->       18232 =C2=B1 10%     +42.5%      25986 =C2=B1  7%  interrupts.CPU35=
-.CAL:Function_call_interrupts
->      902197           +13.5%    1024042 =C2=B1  2%  interrupts.CPU35.LOC:=
-Local_timer_interrupts
->        2990 =C2=B1  3%     +16.6%       3487 =C2=B1  2%  interrupts.CPU35=
-.RES:Rescheduling_interrupts
->       18314 =C2=B1 10%     +41.9%      25991 =C2=B1  7%  interrupts.CPU36=
-.CAL:Function_call_interrupts
->      902046           +13.5%    1024078 =C2=B1  2%  interrupts.CPU36.LOC:=
-Local_timer_interrupts
->        3002 =C2=B1  2%     +15.9%       3479        interrupts.CPU36.RES:=
-Rescheduling_interrupts
->       18369 =C2=B1 10%     +40.6%      25829 =C2=B1  7%  interrupts.CPU37=
-.CAL:Function_call_interrupts
->      902117           +13.5%    1024026 =C2=B1  2%  interrupts.CPU37.LOC:=
-Local_timer_interrupts
->        2999 =C2=B1  2%     +16.4%       3490 =C2=B1  2%  interrupts.CPU37=
-.RES:Rescheduling_interrupts
->       18331 =C2=B1 10%     +41.5%      25932 =C2=B1  7%  interrupts.CPU38=
-.CAL:Function_call_interrupts
->      902118           +13.5%    1024085 =C2=B1  2%  interrupts.CPU38.LOC:=
-Local_timer_interrupts
->        2995 =C2=B1  3%     +16.0%       3474 =C2=B1  4%  interrupts.CPU38=
-.RES:Rescheduling_interrupts
->       18313 =C2=B1 10%     +41.6%      25935 =C2=B1  7%  interrupts.CPU39=
-.CAL:Function_call_interrupts
->      902082           +13.5%    1024103 =C2=B1  2%  interrupts.CPU39.LOC:=
-Local_timer_interrupts
->        2973 =C2=B1  2%     +18.1%       3510        interrupts.CPU39.RES:=
-Rescheduling_interrupts
->       18089 =C2=B1 10%     +20.9%      21864 =C2=B1  6%  interrupts.CPU4.=
-CAL:Function_call_interrupts
->      902120           +13.5%    1024041 =C2=B1  2%  interrupts.CPU4.LOC:L=
-ocal_timer_interrupts
->        3126 =C2=B1  2%     +22.9%       3842 =C2=B1  3%  interrupts.CPU4.=
-RES:Rescheduling_interrupts
->       18303 =C2=B1 10%     +42.3%      26045 =C2=B1  7%  interrupts.CPU40=
-.CAL:Function_call_interrupts
->      902120           +13.5%    1024097 =C2=B1  2%  interrupts.CPU40.LOC:=
-Local_timer_interrupts
->        3019 =C2=B1  2%     +14.7%       3462 =C2=B1  3%  interrupts.CPU40=
-.RES:Rescheduling_interrupts
->       18288 =C2=B1 10%     +42.8%      26107 =C2=B1  7%  interrupts.CPU41=
-.CAL:Function_call_interrupts
->      902064           +13.5%    1024075 =C2=B1  2%  interrupts.CPU41.LOC:=
-Local_timer_interrupts
->        2992           +16.6%       3489 =C2=B1  2%  interrupts.CPU41.RES:=
-Rescheduling_interrupts
->       18169 =C2=B1 10%     +43.3%      26042 =C2=B1  7%  interrupts.CPU42=
-.CAL:Function_call_interrupts
->      902151           +13.5%    1024091 =C2=B1  2%  interrupts.CPU42.LOC:=
-Local_timer_interrupts
->        3010 =C2=B1  2%     +16.7%       3512 =C2=B1  2%  interrupts.CPU42=
-.RES:Rescheduling_interrupts
->       18161 =C2=B1 11%     +42.4%      25871 =C2=B1  7%  interrupts.CPU43=
-.CAL:Function_call_interrupts
->      902074           +13.5%    1024076 =C2=B1  2%  interrupts.CPU43.LOC:=
-Local_timer_interrupts
->        2946 =C2=B1  2%     +18.1%       3478 =C2=B1  2%  interrupts.CPU43=
-.RES:Rescheduling_interrupts
->       16873 =C2=B1  4%     +26.9%      21415 =C2=B1  6%  interrupts.CPU44=
-.CAL:Function_call_interrupts
->      902175           +13.5%    1024065 =C2=B1  2%  interrupts.CPU44.LOC:=
-Local_timer_interrupts
->        3067 =C2=B1  4%     +21.2%       3719 =C2=B1  5%  interrupts.CPU44=
-.RES:Rescheduling_interrupts
->       16915 =C2=B1  5%     +28.3%      21704 =C2=B1  6%  interrupts.CPU45=
-.CAL:Function_call_interrupts
->      902101           +13.5%    1024072 =C2=B1  2%  interrupts.CPU45.LOC:=
-Local_timer_interrupts
->        3056 =C2=B1  3%     +22.2%       3734 =C2=B1  3%  interrupts.CPU45=
-.RES:Rescheduling_interrupts
->       16894 =C2=B1  4%     +27.6%      21553 =C2=B1  7%  interrupts.CPU46=
-.CAL:Function_call_interrupts
->      902132           +13.5%    1024049 =C2=B1  2%  interrupts.CPU46.LOC:=
-Local_timer_interrupts
->        3069 =C2=B1  2%     +22.9%       3773 =C2=B1  4%  interrupts.CPU46=
-.RES:Rescheduling_interrupts
->       16781 =C2=B1  5%     +27.6%      21408 =C2=B1  7%  interrupts.CPU47=
-.CAL:Function_call_interrupts
->      902147           +13.5%    1024088 =C2=B1  2%  interrupts.CPU47.LOC:=
-Local_timer_interrupts
->        3086 =C2=B1  3%     +20.9%       3732 =C2=B1  4%  interrupts.CPU47=
-.RES:Rescheduling_interrupts
->       16892 =C2=B1  5%     +27.3%      21496 =C2=B1  7%  interrupts.CPU48=
-.CAL:Function_call_interrupts
->      902150           +13.5%    1024084 =C2=B1  2%  interrupts.CPU48.LOC:=
-Local_timer_interrupts
->        3123 =C2=B1  4%     +19.1%       3721 =C2=B1  4%  interrupts.CPU48=
-.RES:Rescheduling_interrupts
->       16686 =C2=B1  4%     +27.9%      21340 =C2=B1  7%  interrupts.CPU49=
-.CAL:Function_call_interrupts
->      902113           +13.5%    1024070 =C2=B1  2%  interrupts.CPU49.LOC:=
-Local_timer_interrupts
->        3039 =C2=B1  4%     +22.8%       3733 =C2=B1  4%  interrupts.CPU49=
-.RES:Rescheduling_interrupts
->       17142 =C2=B1  5%     +29.2%      22150 =C2=B1  7%  interrupts.CPU5.=
-CAL:Function_call_interrupts
->      902296           +13.5%    1024251 =C2=B1  2%  interrupts.CPU5.LOC:L=
-ocal_timer_interrupts
->        3178 =C2=B1  3%     +21.7%       3866 =C2=B1  3%  interrupts.CPU5.=
-RES:Rescheduling_interrupts
->       16894 =C2=B1  4%     +27.4%      21529 =C2=B1  6%  interrupts.CPU50=
-.CAL:Function_call_interrupts
->      902077           +13.5%    1024082 =C2=B1  2%  interrupts.CPU50.LOC:=
-Local_timer_interrupts
->        3106 =C2=B1  4%     +21.0%       3759 =C2=B1  3%  interrupts.CPU50=
-.RES:Rescheduling_interrupts
->       16842 =C2=B1  4%     +28.0%      21565 =C2=B1  6%  interrupts.CPU51=
-.CAL:Function_call_interrupts
->      902143           +13.5%    1024096 =C2=B1  2%  interrupts.CPU51.LOC:=
-Local_timer_interrupts
->        3106 =C2=B1  3%     +20.1%       3730 =C2=B1  3%  interrupts.CPU51=
-.RES:Rescheduling_interrupts
->       16754 =C2=B1  5%     +28.8%      21571 =C2=B1  7%  interrupts.CPU52=
-.CAL:Function_call_interrupts
->      902098           +13.5%    1024069 =C2=B1  2%  interrupts.CPU52.LOC:=
-Local_timer_interrupts
->        3050 =C2=B1  2%     +21.8%       3715 =C2=B1  4%  interrupts.CPU52=
-.RES:Rescheduling_interrupts
->       16868 =C2=B1  5%     +27.3%      21481 =C2=B1  6%  interrupts.CPU53=
-.CAL:Function_call_interrupts
->      902150           +13.5%    1024062 =C2=B1  2%  interrupts.CPU53.LOC:=
-Local_timer_interrupts
->        3054 =C2=B1  3%     +22.1%       3729 =C2=B1  4%  interrupts.CPU53=
-.RES:Rescheduling_interrupts
->       16759 =C2=B1  5%     +27.2%      21311 =C2=B1  7%  interrupts.CPU54=
-.CAL:Function_call_interrupts
->      902146           +13.5%    1024081 =C2=B1  2%  interrupts.CPU54.LOC:=
-Local_timer_interrupts
->        3061 =C2=B1  4%     +23.5%       3780 =C2=B1  5%  interrupts.CPU54=
-.RES:Rescheduling_interrupts
->       16893 =C2=B1  4%     +26.4%      21358 =C2=B1  7%  interrupts.CPU55=
-.CAL:Function_call_interrupts
->      902113           +13.5%    1024081 =C2=B1  2%  interrupts.CPU55.LOC:=
-Local_timer_interrupts
->        3073 =C2=B1  3%     +21.8%       3742 =C2=B1  5%  interrupts.CPU55=
-.RES:Rescheduling_interrupts
->       16820 =C2=B1  4%     +26.6%      21288 =C2=B1  7%  interrupts.CPU56=
-.CAL:Function_call_interrupts
->      902136           +13.5%    1024085 =C2=B1  2%  interrupts.CPU56.LOC:=
-Local_timer_interrupts
->        3052 =C2=B1  4%     +22.3%       3734 =C2=B1  5%  interrupts.CPU56=
-.RES:Rescheduling_interrupts
->       16837 =C2=B1  4%     +26.6%      21324 =C2=B1  7%  interrupts.CPU57=
-.CAL:Function_call_interrupts
->      902135           +13.5%    1024226 =C2=B1  2%  interrupts.CPU57.LOC:=
-Local_timer_interrupts
->        3075 =C2=B1  3%     +21.1%       3723 =C2=B1  3%  interrupts.CPU57=
-.RES:Rescheduling_interrupts
->       16851 =C2=B1  5%     +26.7%      21359 =C2=B1  7%  interrupts.CPU58=
-.CAL:Function_call_interrupts
->      902145           +13.5%    1024084 =C2=B1  2%  interrupts.CPU58.LOC:=
-Local_timer_interrupts
->        3067 =C2=B1  3%     +22.0%       3742 =C2=B1  4%  interrupts.CPU58=
-.RES:Rescheduling_interrupts
->       16813 =C2=B1  4%     +27.8%      21480 =C2=B1  7%  interrupts.CPU59=
-.CAL:Function_call_interrupts
->      902135           +13.5%    1024105 =C2=B1  2%  interrupts.CPU59.LOC:=
-Local_timer_interrupts
->        3075 =C2=B1  3%     +23.1%       3784 =C2=B1  5%  interrupts.CPU59=
-.RES:Rescheduling_interrupts
->       17318 =C2=B1  4%     +25.8%      21778 =C2=B1  6%  interrupts.CPU6.=
-CAL:Function_call_interrupts
->      902058           +13.5%    1024091 =C2=B1  2%  interrupts.CPU6.LOC:L=
-ocal_timer_interrupts
->        3167 =C2=B1  4%     +22.1%       3866 =C2=B1  4%  interrupts.CPU6.=
-RES:Rescheduling_interrupts
->       16910 =C2=B1  4%     +26.7%      21430 =C2=B1  7%  interrupts.CPU60=
-.CAL:Function_call_interrupts
->      902154           +13.5%    1024028 =C2=B1  2%  interrupts.CPU60.LOC:=
-Local_timer_interrupts
->        3097 =C2=B1  3%     +21.4%       3760 =C2=B1  4%  interrupts.CPU60=
-.RES:Rescheduling_interrupts
->       16900 =C2=B1  4%     +27.5%      21555 =C2=B1  7%  interrupts.CPU61=
-.CAL:Function_call_interrupts
->      902139           +13.5%    1024089 =C2=B1  2%  interrupts.CPU61.LOC:=
-Local_timer_interrupts
->        3063 =C2=B1  4%     +22.0%       3738 =C2=B1  3%  interrupts.CPU61=
-.RES:Rescheduling_interrupts
->       16991 =C2=B1  4%     +26.0%      21414 =C2=B1  7%  interrupts.CPU62=
-.CAL:Function_call_interrupts
->      902132           +13.5%    1024089 =C2=B1  2%  interrupts.CPU62.LOC:=
-Local_timer_interrupts
->        3125 =C2=B1  3%     +19.7%       3742 =C2=B1  3%  interrupts.CPU62=
-.RES:Rescheduling_interrupts
->       16967 =C2=B1  5%     +26.9%      21537 =C2=B1  6%  interrupts.CPU63=
-.CAL:Function_call_interrupts
->      902111           +13.5%    1024071 =C2=B1  2%  interrupts.CPU63.LOC:=
-Local_timer_interrupts
->        3110 =C2=B1  3%     +22.1%       3799 =C2=B1  4%  interrupts.CPU63=
-.RES:Rescheduling_interrupts
->       16832 =C2=B1  4%     +28.1%      21557 =C2=B1  7%  interrupts.CPU64=
-.CAL:Function_call_interrupts
->      902165           +13.5%    1024037 =C2=B1  2%  interrupts.CPU64.LOC:=
-Local_timer_interrupts
->        3095 =C2=B1  3%     +22.5%       3791 =C2=B1  3%  interrupts.CPU64=
-.RES:Rescheduling_interrupts
->       16887 =C2=B1  5%     +27.7%      21563 =C2=B1  7%  interrupts.CPU65=
-.CAL:Function_call_interrupts
->      902159           +13.5%    1024083 =C2=B1  2%  interrupts.CPU65.LOC:=
-Local_timer_interrupts
->        3079 =C2=B1  4%     +23.5%       3802 =C2=B1  4%  interrupts.CPU65=
-.RES:Rescheduling_interrupts
->       18236 =C2=B1 10%     +43.5%      26177 =C2=B1  8%  interrupts.CPU66=
-.CAL:Function_call_interrupts
->      902097           +13.5%    1023991 =C2=B1  2%  interrupts.CPU66.LOC:=
-Local_timer_interrupts
->        2952 =C2=B1  3%     +16.0%       3423 =C2=B1  3%  interrupts.CPU66=
-.RES:Rescheduling_interrupts
->       18440 =C2=B1 11%     +41.6%      26117 =C2=B1  7%  interrupts.CPU67=
-.CAL:Function_call_interrupts
->      902050           +13.5%    1024090 =C2=B1  2%  interrupts.CPU67.LOC:=
-Local_timer_interrupts
->        2948 =C2=B1  2%     +16.8%       3443 =C2=B1  3%  interrupts.CPU67=
-.RES:Rescheduling_interrupts
->       18284 =C2=B1 10%     +43.0%      26148 =C2=B1  7%  interrupts.CPU68=
-.CAL:Function_call_interrupts
->      902119           +13.5%    1024096 =C2=B1  2%  interrupts.CPU68.LOC:=
-Local_timer_interrupts
->        2960 =C2=B1  2%     +17.7%       3485 =C2=B1  3%  interrupts.CPU68=
-.RES:Rescheduling_interrupts
->       18357 =C2=B1 10%     +42.0%      26070 =C2=B1  7%  interrupts.CPU69=
-.CAL:Function_call_interrupts
->      902096           +13.5%    1024089 =C2=B1  2%  interrupts.CPU69.LOC:=
-Local_timer_interrupts
->        2977           +16.1%       3455 =C2=B1  5%  interrupts.CPU69.RES:=
-Rescheduling_interrupts
->       16984 =C2=B1  5%     +28.6%      21843 =C2=B1  6%  interrupts.CPU7.=
-CAL:Function_call_interrupts
->      902119           +13.5%    1024116 =C2=B1  2%  interrupts.CPU7.LOC:L=
-ocal_timer_interrupts
->        3122 =C2=B1  2%     +22.8%       3835 =C2=B1  4%  interrupts.CPU7.=
-RES:Rescheduling_interrupts
->       18176 =C2=B1 10%     +43.4%      26056 =C2=B1  7%  interrupts.CPU70=
-.CAL:Function_call_interrupts
->      902106           +13.5%    1024063 =C2=B1  2%  interrupts.CPU70.LOC:=
-Local_timer_interrupts
->        2937 =C2=B1  2%     +18.5%       3479 =C2=B1  2%  interrupts.CPU70=
-.RES:Rescheduling_interrupts
->       18320 =C2=B1 10%     +42.2%      26047 =C2=B1  8%  interrupts.CPU71=
-.CAL:Function_call_interrupts
->      902142           +13.5%    1024123 =C2=B1  2%  interrupts.CPU71.LOC:=
-Local_timer_interrupts
->        2999 =C2=B1  3%     +16.3%       3487 =C2=B1  3%  interrupts.CPU71=
-.RES:Rescheduling_interrupts
->       18410 =C2=B1 10%     +42.0%      26143 =C2=B1  7%  interrupts.CPU72=
-.CAL:Function_call_interrupts
->      902129           +13.5%    1024094 =C2=B1  2%  interrupts.CPU72.LOC:=
-Local_timer_interrupts
->        2965 =C2=B1  3%     +17.6%       3488 =C2=B1  4%  interrupts.CPU72=
-.RES:Rescheduling_interrupts
->       18305 =C2=B1 10%     +42.5%      26085 =C2=B1  8%  interrupts.CPU73=
-.CAL:Function_call_interrupts
->      902133           +13.5%    1024041 =C2=B1  2%  interrupts.CPU73.LOC:=
-Local_timer_interrupts
->        2977 =C2=B1  3%     +16.6%       3471 =C2=B1  3%  interrupts.CPU73=
-.RES:Rescheduling_interrupts
->       18344 =C2=B1 10%     +42.6%      26152 =C2=B1  7%  interrupts.CPU74=
-.CAL:Function_call_interrupts
->      902128           +13.5%    1024065 =C2=B1  2%  interrupts.CPU74.LOC:=
-Local_timer_interrupts
->        3002 =C2=B1  2%     +17.0%       3511 =C2=B1  3%  interrupts.CPU74=
-.RES:Rescheduling_interrupts
->       18310 =C2=B1 10%     +41.9%      25976 =C2=B1  7%  interrupts.CPU75=
-.CAL:Function_call_interrupts
->      902143           +13.5%    1024072 =C2=B1  2%  interrupts.CPU75.LOC:=
-Local_timer_interrupts
->        2922 =C2=B1  3%     +18.5%       3463 =C2=B1  3%  interrupts.CPU75=
-.RES:Rescheduling_interrupts
->       18275 =C2=B1 10%     +41.6%      25883 =C2=B1  7%  interrupts.CPU76=
-.CAL:Function_call_interrupts
->      902099           +13.5%    1024098 =C2=B1  2%  interrupts.CPU76.LOC:=
-Local_timer_interrupts
->        2921 =C2=B1  4%     +18.3%       3457 =C2=B1  2%  interrupts.CPU76=
-.RES:Rescheduling_interrupts
->       18330 =C2=B1 10%     +42.1%      26054 =C2=B1  7%  interrupts.CPU77=
-.CAL:Function_call_interrupts
->      902158           +13.5%    1024103 =C2=B1  2%  interrupts.CPU77.LOC:=
-Local_timer_interrupts
->        2960 =C2=B1  3%     +16.4%       3447 =C2=B1  3%  interrupts.CPU77=
-.RES:Rescheduling_interrupts
->       18199 =C2=B1 10%     +43.9%      26183 =C2=B1  8%  interrupts.CPU78=
-.CAL:Function_call_interrupts
->      902127           +13.5%    1024113 =C2=B1  2%  interrupts.CPU78.LOC:=
-Local_timer_interrupts
->        2936 =C2=B1  3%     +17.8%       3460 =C2=B1  2%  interrupts.CPU78=
-.RES:Rescheduling_interrupts
->       18302 =C2=B1  9%     +42.2%      26018 =C2=B1  7%  interrupts.CPU79=
-.CAL:Function_call_interrupts
->      902128           +13.5%    1024093 =C2=B1  2%  interrupts.CPU79.LOC:=
-Local_timer_interrupts
->        2933 =C2=B1  3%     +16.1%       3406 =C2=B1  2%  interrupts.CPU79=
-.RES:Rescheduling_interrupts
->       17257 =C2=B1  4%     +26.1%      21766 =C2=B1  6%  interrupts.CPU8.=
-CAL:Function_call_interrupts
->      902064           +13.5%    1024249 =C2=B1  2%  interrupts.CPU8.LOC:L=
-ocal_timer_interrupts
->        3148 =C2=B1  4%     +22.8%       3867 =C2=B1  4%  interrupts.CPU8.=
-RES:Rescheduling_interrupts
->       18351 =C2=B1 10%     +41.6%      25983 =C2=B1  8%  interrupts.CPU80=
-.CAL:Function_call_interrupts
->      902119           +13.5%    1024104 =C2=B1  2%  interrupts.CPU80.LOC:=
-Local_timer_interrupts
->        2950 =C2=B1  2%     +15.0%       3393 =C2=B1  2%  interrupts.CPU80=
-.RES:Rescheduling_interrupts
->       18351 =C2=B1 10%     +42.5%      26147 =C2=B1  8%  interrupts.CPU81=
-.CAL:Function_call_interrupts
->      902138           +13.5%    1024087 =C2=B1  2%  interrupts.CPU81.LOC:=
-Local_timer_interrupts
->        2952 =C2=B1  2%     +16.0%       3424 =C2=B1  2%  interrupts.CPU81=
-.RES:Rescheduling_interrupts
->       18259 =C2=B1 10%     +42.4%      26004 =C2=B1  7%  interrupts.CPU82=
-.CAL:Function_call_interrupts
->      902149           +13.5%    1024272 =C2=B1  2%  interrupts.CPU82.LOC:=
-Local_timer_interrupts
->        2931 =C2=B1  2%     +17.0%       3429 =C2=B1  2%  interrupts.CPU82=
-.RES:Rescheduling_interrupts
->       18210 =C2=B1 10%     +42.8%      26012 =C2=B1  8%  interrupts.CPU83=
-.CAL:Function_call_interrupts
->      902111           +13.5%    1024099 =C2=B1  2%  interrupts.CPU83.LOC:=
-Local_timer_interrupts
->        2933 =C2=B1  2%     +16.6%       3419 =C2=B1  2%  interrupts.CPU83=
-.RES:Rescheduling_interrupts
->       18085 =C2=B1 10%     +44.2%      26086 =C2=B1  8%  interrupts.CPU84=
-.CAL:Function_call_interrupts
->      902118           +13.5%    1024109 =C2=B1  2%  interrupts.CPU84.LOC:=
-Local_timer_interrupts
->        2981 =C2=B1  2%     +13.9%       3396 =C2=B1  2%  interrupts.CPU84=
-.RES:Rescheduling_interrupts
->       18294 =C2=B1 10%     +43.0%      26167 =C2=B1  7%  interrupts.CPU85=
-.CAL:Function_call_interrupts
->      902135           +13.5%    1024098 =C2=B1  2%  interrupts.CPU85.LOC:=
-Local_timer_interrupts
->        2937 =C2=B1  2%     +16.8%       3430 =C2=B1  3%  interrupts.CPU85=
-.RES:Rescheduling_interrupts
->       18253 =C2=B1 10%     +42.7%      26056 =C2=B1  8%  interrupts.CPU86=
-.CAL:Function_call_interrupts
->      902302           +13.5%    1024102 =C2=B1  2%  interrupts.CPU86.LOC:=
-Local_timer_interrupts
->        2999 =C2=B1  2%     +13.5%       3403 =C2=B1  3%  interrupts.CPU86=
-.RES:Rescheduling_interrupts
->       18248 =C2=B1 10%     +41.5%      25817 =C2=B1  8%  interrupts.CPU87=
-.CAL:Function_call_interrupts
->      902127           +13.5%    1024064 =C2=B1  2%  interrupts.CPU87.LOC:=
-Local_timer_interrupts
->        2954 =C2=B1  2%     +14.3%       3377 =C2=B1  2%  interrupts.CPU87=
-.RES:Rescheduling_interrupts
->       16991 =C2=B1  4%     +26.9%      21557 =C2=B1  6%  interrupts.CPU9.=
-CAL:Function_call_interrupts
->      902162           +13.5%    1024110 =C2=B1  2%  interrupts.CPU9.LOC:L=
-ocal_timer_interrupts
->        3164 =C2=B1  3%     +22.5%       3876 =C2=B1  5%  interrupts.CPU9.=
-RES:Rescheduling_interrupts
->    79387471           +13.5%   90119618 =C2=B1  2%  interrupts.LOC:Local_=
-timer_interrupts
->      269188           +19.2%     320766 =C2=B1  2%  interrupts.RES:Resche=
-duling_interrupts
->
->
->                                                                          =
-        =
+>     108.00 =C2=B1 37%     -31.5%      74.00 =C2=B1 31%  interrupts.CPU82.=
+NMI:Non-maskable_interrupts
+>     108.00 =C2=B1 37%     -31.5%      74.00 =C2=B1 31%  interrupts.CPU82.=
+PMI:Performance_monitoring_interrupts
+>     108.00 =C2=B1 38%     -32.3%      73.17 =C2=B1 24%  interrupts.CPU86.=
+NMI:Non-maskable_interrupts
+>     108.00 =C2=B1 38%     -32.3%      73.17 =C2=B1 24%  interrupts.CPU86.=
+PMI:Performance_monitoring_interrupts
+>     263.83 =C2=B1  6%     -18.6%     214.83 =C2=B1  5%  interrupts.IWI:IR=
+Q_work_interrupts
+>      15414 =C2=B1 20%     -85.1%       2301 =C2=B1 40%  interrupts.RES:Re=
+scheduling_interrupts
+>      15.42 =C2=B1 45%     -58.1%       6.45 =C2=B1  5%  perf-stat.i.MPKI
+>   1.56e+09           -26.5%  1.147e+09 =C2=B1  4%  perf-stat.i.branch-ins=
+tructions
+>   32420024 =C2=B1 37%     -52.5%   15404145 =C2=B1  4%  perf-stat.i.branc=
+h-misses
+>       1.94 =C2=B1 29%     +74.3       76.28 =C2=B1 13%  perf-stat.i.cache=
+-miss-rate%
+>    2628444 =C2=B1 66%    +910.1%   26548755 =C2=B1 17%  perf-stat.i.cache=
+-misses
+>  1.211e+08 =C2=B1 45%     -69.2%   37250695 =C2=B1  9%  perf-stat.i.cache=
+-references
+>     106499 =C2=B1  5%     -26.7%      78099 =C2=B1  7%  perf-stat.i.conte=
+xt-switches
+>       8911 =C2=B1 63%     -86.3%       1217 =C2=B1124%  perf-stat.i.cycle=
+s-between-cache-misses
+>    1894481 =C2=B1 97%     -81.6%     348941 =C2=B1133%  perf-stat.i.dTLB-=
+load-misses
+>  2.339e+09           -28.4%  1.675e+09 =C2=B1  5%  perf-stat.i.dTLB-loads
+>  1.238e+09           -28.2%  8.885e+08 =C2=B1  5%  perf-stat.i.dTLB-stores
+>      82.43 =C2=B1  3%      -7.3       75.15        perf-stat.i.iTLB-load-=
+miss-rate%
+>   13835587           -25.8%   10265590 =C2=B1  5%  perf-stat.i.iTLB-load-=
+misses
+>  7.883e+09           -26.9%  5.761e+09 =C2=B1  4%  perf-stat.i.instructio=
+ns
+>     587.14            -2.3%     573.69        perf-stat.i.instructions-pe=
+r-iTLB-miss
+>       0.66 =C2=B1 16%     -22.7%       0.51 =C2=B1  8%  perf-stat.i.ipc
+>     647.50 =C2=B1 43%     -59.2%     264.27 =C2=B1  5%  perf-stat.i.metri=
+c.K/sec
+>      26.76           -27.8%      19.32 =C2=B1  4%  perf-stat.i.metric.M/s=
+ec
+>      89.85 =C2=B1  2%      +6.2       96.07 =C2=B1  2%  perf-stat.i.node-=
+load-miss-rate%
+>     179067 =C2=B1  8%   +4374.3%    8012103 =C2=B1 19%  perf-stat.i.node-=
+load-misses
+>      28176 =C2=B1 14%    +905.1%     283196 =C2=B1 56%  perf-stat.i.node-=
+loads
+>      81.44 =C2=B1 17%     +17.6       99.08        perf-stat.i.node-store=
+-miss-rate%
+>      62963 =C2=B1 12%   +2872.3%    1871419 =C2=B1 18%  perf-stat.i.node-=
+store-misses
+>      15.32 =C2=B1 44%     -57.9%       6.45 =C2=B1  5%  perf-stat.overall=
+.MPKI
+>       1.91 =C2=B1 30%     +70.5       72.40 =C2=B1 20%  perf-stat.overall=
+.cache-miss-rate%
+>       7541 =C2=B1 56%     -94.1%     441.96 =C2=B1 18%  perf-stat.overall=
+.cycles-between-cache-misses
+>      82.57 =C2=B1  3%      -7.2       75.38        perf-stat.overall.iTLB=
+-load-miss-rate%
+>       0.66 =C2=B1 16%     -22.6%       0.51 =C2=B1  7%  perf-stat.overall=
+.ipc
+>      86.27 =C2=B1  2%     +10.0       96.31 =C2=B1  2%  perf-stat.overall=
+.node-load-miss-rate%
+>      78.10 =C2=B1 16%     +21.4       99.47        perf-stat.overall.node=
+-store-miss-rate%
+>      12856           +16.2%      14939 =C2=B1  3%  perf-stat.overall.path=
+-length
+>  1.555e+09           -26.5%  1.143e+09 =C2=B1  4%  perf-stat.ps.branch-in=
+structions
+>   32311822 =C2=B1 37%     -52.5%   15357041 =C2=B1  4%  perf-stat.ps.bran=
+ch-misses
+>    2619562 =C2=B1 66%    +910.0%   26457912 =C2=B1 17%  perf-stat.ps.cach=
+e-misses
+>  1.207e+08 =C2=B1 45%     -69.2%   37131015 =C2=B1  9%  perf-stat.ps.cach=
+e-references
+>     106144 =C2=B1  5%     -26.7%      77843 =C2=B1  7%  perf-stat.ps.cont=
+ext-switches
+>    1888116 =C2=B1 97%     -81.6%     347791 =C2=B1133%  perf-stat.ps.dTLB=
+-load-misses
+>  2.331e+09           -28.4%   1.67e+09 =C2=B1  5%  perf-stat.ps.dTLB-loads
+>  1.234e+09           -28.2%  8.856e+08 =C2=B1  5%  perf-stat.ps.dTLB-stor=
+es
+>   13789808           -25.8%   10232082 =C2=B1  5%  perf-stat.ps.iTLB-load=
+-misses
+>  7.857e+09           -26.9%  5.742e+09 =C2=B1  4%  perf-stat.ps.instructi=
+ons
+>     178463 =C2=B1  9%   +4374.1%    7984687 =C2=B1 19%  perf-stat.ps.node=
+-load-misses
+>      28073 =C2=B1 14%    +905.3%     282228 =C2=B1 56%  perf-stat.ps.node=
+-loads
+>      62743 =C2=B1 12%   +2872.4%    1864995 =C2=B1 18%  perf-stat.ps.node=
+-store-misses
+>  2.371e+12           -26.8%  1.735e+12 =C2=B1  4%  perf-stat.total.instru=
+ctions
+>       2.52 =C2=B1 14%      -1.1        1.46 =C2=B1 17%  perf-profile.call=
+trace.cycles-pp._copy_to_iter.__skb_datagram_iter.skb_copy_datagram_iter.tc=
+p_recvmsg_locked.tcp_recvmsg
+>       4.30 =C2=B1 12%      -1.0        3.27 =C2=B1 22%  perf-profile.call=
+trace.cycles-pp.skb_copy_datagram_iter.tcp_recvmsg_locked.tcp_recvmsg.inet_=
+recvmsg.__sys_recvfrom
+>       4.27 =C2=B1 12%      -1.0        3.25 =C2=B1 22%  perf-profile.call=
+trace.cycles-pp.__skb_datagram_iter.skb_copy_datagram_iter.tcp_recvmsg_lock=
+ed.tcp_recvmsg.inet_recvmsg
+>       2.25 =C2=B1 14%      -1.0        1.28 =C2=B1 17%  perf-profile.call=
+trace.cycles-pp.copyout._copy_to_iter.__skb_datagram_iter.skb_copy_datagram=
+_iter.tcp_recvmsg_locked
+>       2.15 =C2=B1 14%      -0.9        1.23 =C2=B1 16%  perf-profile.call=
+trace.cycles-pp.copy_user_enhanced_fast_string.copyout._copy_to_iter.__skb_=
+datagram_iter.skb_copy_datagram_iter
+>       0.41 =C2=B1 72%      +0.6        1.00 =C2=B1 18%  perf-profile.call=
+trace.cycles-pp.tcp_current_mss.tcp_send_mss.do_tcp_sendpages.tcp_sendpage_=
+locked.tcp_sendpage
+>       1.21 =C2=B1 26%      +0.8        1.99 =C2=B1 19%  perf-profile.call=
+trace.cycles-pp.__ip_queue_xmit.__tcp_transmit_skb.tcp_write_xmit.__tcp_pus=
+h_pending_frames.tcp_rcv_established
+>       1.93 =C2=B1 14%      +0.9        2.84 =C2=B1 16%  perf-profile.call=
+trace.cycles-pp.__tcp_transmit_skb.tcp_write_xmit.__tcp_push_pending_frames=
+.tcp_rcv_established.tcp_v4_do_rcv
+>       0.95 =C2=B1 26%      +1.0        1.90 =C2=B1 27%  perf-profile.call=
+trace.cycles-pp.tcp_write_xmit.__tcp_push_pending_frames.tcp_rcv_establishe=
+d.tcp_v4_do_rcv.__release_sock
+>       0.95 =C2=B1 26%      +1.0        1.90 =C2=B1 27%  perf-profile.call=
+trace.cycles-pp.__tcp_push_pending_frames.tcp_rcv_established.tcp_v4_do_rcv=
+.__release_sock.release_sock
+>       0.81 =C2=B1 23%      +1.3        2.07 =C2=B1 26%  perf-profile.call=
+trace.cycles-pp.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.release_so=
+ck.tcp_sendpage
+>       0.82 =C2=B1 24%      +1.3        2.15 =C2=B1 26%  perf-profile.call=
+trace.cycles-pp.tcp_v4_do_rcv.__release_sock.release_sock.tcp_sendpage.inet=
+_sendpage
+>       4.08 =C2=B1 18%      +1.5        5.62 =C2=B1 18%  perf-profile.call=
+trace.cycles-pp.tcp_rcv_established.tcp_v4_do_rcv.tcp_v4_rcv.ip_protocol_de=
+liver_rcu.ip_local_deliver_finish
+>       4.09 =C2=B1 18%      +1.6        5.70 =C2=B1 18%  perf-profile.call=
+trace.cycles-pp.tcp_v4_do_rcv.tcp_v4_rcv.ip_protocol_deliver_rcu.ip_local_d=
+eliver_finish.ip_local_deliver
+>       1.33 =C2=B1 26%      +1.8        3.12 =C2=B1 24%  perf-profile.call=
+trace.cycles-pp.__release_sock.release_sock.tcp_sendpage.inet_sendpage.kern=
+el_sendpage
+>       1.75 =C2=B1 26%      +1.9        3.67 =C2=B1 24%  perf-profile.call=
+trace.cycles-pp.release_sock.tcp_sendpage.inet_sendpage.kernel_sendpage.soc=
+k_sendpage
+>       2.54 =C2=B1 14%      -1.1        1.47 =C2=B1 17%  perf-profile.chil=
+dren.cycles-pp._copy_to_iter
+>       4.30 =C2=B1 12%      -1.0        3.27 =C2=B1 22%  perf-profile.chil=
+dren.cycles-pp.skb_copy_datagram_iter
+>       4.29 =C2=B1 12%      -1.0        3.26 =C2=B1 22%  perf-profile.chil=
+dren.cycles-pp.__skb_datagram_iter
+>       2.25 =C2=B1 14%      -1.0        1.28 =C2=B1 17%  perf-profile.chil=
+dren.cycles-pp.copyout
+>       2.27 =C2=B1 14%      -1.0        1.31 =C2=B1 16%  perf-profile.chil=
+dren.cycles-pp.copy_user_enhanced_fast_string
+>       0.69 =C2=B1 96%      -0.6        0.12 =C2=B1 61%  perf-profile.chil=
+dren.cycles-pp.poll_idle
+>       1.16 =C2=B1 13%      -0.4        0.76 =C2=B1 24%  perf-profile.chil=
+dren.cycles-pp.__schedule
+>       0.55 =C2=B1 18%      -0.3        0.22 =C2=B1 22%  perf-profile.chil=
+dren.cycles-pp.schedule_idle
+>       0.29 =C2=B1 16%      -0.2        0.07 =C2=B1 47%  perf-profile.chil=
+dren.cycles-pp.pick_next_task_fair
+>       0.34 =C2=B1 38%      -0.2        0.14 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.enqueue_hrtimer
+>       0.31 =C2=B1 41%      -0.2        0.12 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.timerqueue_add
+>       0.56 =C2=B1 15%      -0.2        0.38 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.update_rq_clock
+>       0.21 =C2=B1 18%      -0.2        0.03 =C2=B1101%  perf-profile.chil=
+dren.cycles-pp.set_next_entity
+>       0.48 =C2=B1 14%      -0.1        0.37 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.get_next_timer_interrupt
+>       0.22 =C2=B1 38%      -0.1        0.11 =C2=B1 18%  perf-profile.chil=
+dren.cycles-pp.cpuidle_governor_latency_req
+>       0.21 =C2=B1 24%      -0.1        0.11 =C2=B1 24%  perf-profile.chil=
+dren.cycles-pp.update_load_avg
+>       0.14 =C2=B1 22%      -0.1        0.04 =C2=B1 72%  perf-profile.chil=
+dren.cycles-pp.menu_reflect
+>       0.16 =C2=B1 33%      -0.1        0.08 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.rb_insert_color
+>       0.17 =C2=B1 20%      -0.1        0.10 =C2=B1 48%  perf-profile.chil=
+dren.cycles-pp.__virt_addr_valid
+>       0.14 =C2=B1 18%      -0.1        0.07 =C2=B1 24%  perf-profile.chil=
+dren.cycles-pp.__netif_receive_skb_core
+>       0.09 =C2=B1 26%      -0.1        0.03 =C2=B1100%  perf-profile.chil=
+dren.cycles-pp.rcu_nocb_flush_deferred_wakeup
+>       0.18 =C2=B1  6%      -0.0        0.14 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.hrtimer_get_next_event
+>       0.06 =C2=B1 19%      +0.0        0.11 =C2=B1 29%  perf-profile.chil=
+dren.cycles-pp.kfree
+>       0.02 =C2=B1142%      +0.1        0.08 =C2=B1 21%  perf-profile.chil=
+dren.cycles-pp.kfree_skbmem
+>       0.00            +0.1        0.07 =C2=B1 25%  perf-profile.children.=
+cycles-pp.migrate_disable
+>       0.01 =C2=B1223%      +0.1        0.08 =C2=B1 26%  perf-profile.chil=
+dren.cycles-pp.ip_copy_addrs
+>       0.02 =C2=B1142%      +0.1        0.09 =C2=B1 24%  perf-profile.chil=
+dren.cycles-pp.perf_tp_event
+>       0.04 =C2=B1105%      +0.1        0.11 =C2=B1 25%  perf-profile.chil=
+dren.cycles-pp.perf_trace_sched_wakeup_template
+>       0.08 =C2=B1 13%      +0.1        0.17 =C2=B1 29%  perf-profile.chil=
+dren.cycles-pp.remove_wait_queue
+>       0.18 =C2=B1 17%      +0.1        0.27 =C2=B1 15%  perf-profile.chil=
+dren.cycles-pp.kmem_cache_free
+>       0.08 =C2=B1 22%      +0.1        0.18 =C2=B1 20%  perf-profile.chil=
+dren.cycles-pp.tick_nohz_idle_exit
+>       0.02 =C2=B1146%      +0.1        0.12 =C2=B1 28%  perf-profile.chil=
+dren.cycles-pp.ip_rcv_finish
+>       0.01 =C2=B1223%      +0.1        0.11 =C2=B1 29%  perf-profile.chil=
+dren.cycles-pp.ip_rcv_finish_core
+>       0.00            +0.1        0.11 =C2=B1 28%  perf-profile.children.=
+cycles-pp.llist_reverse_order
+>       0.01 =C2=B1223%      +0.2        0.17 =C2=B1 27%  perf-profile.chil=
+dren.cycles-pp.cpuacct_charge
+>       0.00            +0.2        0.17 =C2=B1 22%  perf-profile.children.=
+cycles-pp.flush_smp_call_function_queue
+>       0.04 =C2=B1 73%      +0.2        0.22 =C2=B1 46%  perf-profile.chil=
+dren.cycles-pp.__sk_dst_check
+>       0.12 =C2=B1 17%      +0.2        0.30 =C2=B1 18%  perf-profile.chil=
+dren.cycles-pp.sock_put
+>       0.00            +0.2        0.19 =C2=B1 33%  perf-profile.children.=
+cycles-pp.llist_add_batch
+>       0.00            +0.2        0.19 =C2=B1 33%  perf-profile.children.=
+cycles-pp.__smp_call_single_queue
+>       0.21 =C2=B1 24%      +0.2        0.41 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.__ksize
+>       0.59 =C2=B1 21%      +0.2        0.80 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.__alloc_skb
+>       0.72 =C2=B1 12%      +0.2        0.97 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp._raw_spin_lock_irqsave
+>       0.18 =C2=B1 35%      +0.3        0.45 =C2=B1 20%  perf-profile.chil=
+dren.cycles-pp.page_cache_pipe_buf_confirm
+>       0.00            +0.3        0.35 =C2=B1 23%  perf-profile.children.=
+cycles-pp.ttwu_queue_wakelist
+>       0.00            +0.4        0.42 =C2=B1 25%  perf-profile.children.=
+cycles-pp.sched_ttwu_pending
+>       0.16 =C2=B1 14%      +0.4        0.59 =C2=B1 18%  perf-profile.chil=
+dren.cycles-pp.__slab_free
+>       0.58 =C2=B1 27%      +0.5        1.05 =C2=B1 17%  perf-profile.chil=
+dren.cycles-pp.tcp_current_mss
+>       1.34 =C2=B1 15%      +0.6        1.90 =C2=B1 17%  perf-profile.chil=
+dren.cycles-pp.__kfree_skb
+>       0.00            +0.6        0.62 =C2=B1 24%  perf-profile.children.=
+cycles-pp.flush_smp_call_function_from_idle
+>       1.43 =C2=B1 14%      +0.9        2.29 =C2=B1 16%  perf-profile.chil=
+dren.cycles-pp.tcp_clean_rtx_queue
+>       1.69 =C2=B1 13%      +1.2        2.84 =C2=B1 18%  perf-profile.chil=
+dren.cycles-pp.tcp_ack
+>       1.60 =C2=B1 22%      +1.8        3.38 =C2=B1 23%  perf-profile.chil=
+dren.cycles-pp.__release_sock
+>       5.46 =C2=B1 14%      +2.6        8.07 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.tcp_rcv_established
+>       5.51 =C2=B1 14%      +2.8        8.29 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.tcp_v4_do_rcv
+>       2.26 =C2=B1 14%      -1.0        1.30 =C2=B1 16%  perf-profile.self=
+.cycles-pp.copy_user_enhanced_fast_string
+>       0.62 =C2=B1 85%      -0.5        0.11 =C2=B1 61%  perf-profile.self=
+.cycles-pp.poll_idle
+>       0.54 =C2=B1 16%      -0.2        0.33 =C2=B1  9%  perf-profile.self=
+.cycles-pp.do_idle
+>       0.21 =C2=B1 14%      -0.1        0.07 =C2=B1 48%  perf-profile.self=
+.cycles-pp.__schedule
+>       0.19 =C2=B1 13%      -0.1        0.09 =C2=B1 24%  perf-profile.self=
+.cycles-pp.update_rq_clock
+>       0.16 =C2=B1 46%      -0.1        0.07 =C2=B1 11%  perf-profile.self=
+.cycles-pp.scheduler_tick
+>       0.24 =C2=B1 20%      -0.1        0.15 =C2=B1  8%  perf-profile.self=
+.cycles-pp.hrtimer_interrupt
+>       0.88 =C2=B1  7%      -0.1        0.79 =C2=B1  4%  perf-profile.self=
+.cycles-pp.native_sched_clock
+>       0.16 =C2=B1 33%      -0.1        0.08 =C2=B1 12%  perf-profile.self=
+.cycles-pp.rb_insert_color
+>       0.20 =C2=B1 13%      -0.1        0.12 =C2=B1 29%  perf-profile.self=
+.cycles-pp._copy_to_iter
+>       0.16 =C2=B1 18%      -0.1        0.09 =C2=B1 46%  perf-profile.self=
+.cycles-pp.__virt_addr_valid
+>       0.14 =C2=B1 18%      -0.1        0.06 =C2=B1 23%  perf-profile.self=
+.cycles-pp.__netif_receive_skb_core
+>       0.17 =C2=B1 25%      -0.1        0.10 =C2=B1 12%  perf-profile.self=
+.cycles-pp.perf_mux_hrtimer_handler
+>       0.10 =C2=B1 19%      -0.1        0.03 =C2=B1102%  perf-profile.self=
+.cycles-pp.update_load_avg
+>       0.09 =C2=B1 23%      -0.1        0.04 =C2=B1 73%  perf-profile.self=
+.cycles-pp.touch_atime
+>       0.10 =C2=B1 21%      -0.1        0.05 =C2=B1 47%  perf-profile.self=
+.cycles-pp.irq_exit_rcu
+>       0.06 =C2=B1 19%      +0.0        0.11 =C2=B1 29%  perf-profile.self=
+.cycles-pp.kfree
+>       0.10 =C2=B1 17%      +0.0        0.15 =C2=B1 12%  perf-profile.self=
+.cycles-pp.kmem_cache_free
+>       0.01 =C2=B1223%      +0.1        0.07 =C2=B1 25%  perf-profile.self=
+.cycles-pp.ip_copy_addrs
+>       0.02 =C2=B1142%      +0.1        0.08 =C2=B1 21%  perf-profile.self=
+.cycles-pp.kfree_skbmem
+>       0.00            +0.1        0.07 =C2=B1 25%  perf-profile.self.cycl=
+es-pp.migrate_disable
+>       0.01 =C2=B1223%      +0.1        0.09 =C2=B1 27%  perf-profile.self=
+.cycles-pp.perf_tp_event
+>       0.00            +0.1        0.09 =C2=B1 37%  perf-profile.self.cycl=
+es-pp.sched_ttwu_pending
+>       0.01 =C2=B1223%      +0.1        0.10 =C2=B1 34%  perf-profile.self=
+.cycles-pp.tcp_add_backlog
+>       0.19 =C2=B1 19%      +0.1        0.28 =C2=B1  9%  perf-profile.self=
+.cycles-pp.__skb_clone
+>       0.07 =C2=B1 57%      +0.1        0.17 =C2=B1  9%  perf-profile.self=
+.cycles-pp.sock_def_readable
+>       0.04 =C2=B1 73%      +0.1        0.14 =C2=B1 18%  perf-profile.self=
+.cycles-pp.try_to_wake_up
+>       0.00            +0.1        0.10 =C2=B1 21%  perf-profile.self.cycl=
+es-pp.ttwu_queue_wakelist
+>       0.00            +0.1        0.10 =C2=B1 40%  perf-profile.self.cycl=
+es-pp.__wake_up_common
+>       0.00            +0.1        0.11 =C2=B1 28%  perf-profile.self.cycl=
+es-pp.ip_rcv_finish_core
+>       0.00            +0.1        0.11 =C2=B1 28%  perf-profile.self.cycl=
+es-pp.llist_reverse_order
+>       0.12 =C2=B1 19%      +0.1        0.25 =C2=B1 19%  perf-profile.self=
+.cycles-pp.__ip_queue_xmit
+>       0.01 =C2=B1223%      +0.2        0.17 =C2=B1 27%  perf-profile.self=
+.cycles-pp.cpuacct_charge
+>       0.12 =C2=B1 17%      +0.2        0.30 =C2=B1 18%  perf-profile.self=
+.cycles-pp.sock_put
+>       0.00            +0.2        0.18 =C2=B1 52%  perf-profile.self.cycl=
+es-pp.__sk_dst_check
+>       0.00            +0.2        0.19 =C2=B1 33%  perf-profile.self.cycl=
+es-pp.llist_add_batch
+>       0.00            +0.2        0.20 =C2=B1 35%  perf-profile.self.cycl=
+es-pp.tcp_v4_do_rcv
+>       0.21 =C2=B1 25%      +0.2        0.41 =C2=B1 13%  perf-profile.self=
+.cycles-pp.__ksize
+>       0.15 =C2=B1 13%      +0.2        0.40 =C2=B1 41%  perf-profile.self=
+.cycles-pp.tcp_ack
+>       0.71 =C2=B1 11%      +0.3        0.96 =C2=B1  9%  perf-profile.self=
+.cycles-pp._raw_spin_lock_irqsave
+>       0.45 =C2=B1 26%      +0.3        0.70 =C2=B1 23%  perf-profile.self=
+.cycles-pp.tick_nohz_next_event
+>       0.27 =C2=B1 14%      +0.3        0.53 =C2=B1 32%  perf-profile.self=
+.cycles-pp.tcp_v4_rcv
+>       0.17 =C2=B1 33%      +0.3        0.44 =C2=B1 19%  perf-profile.self=
+.cycles-pp.page_cache_pipe_buf_confirm
+>       0.23 =C2=B1 23%      +0.3        0.57 =C2=B1 20%  perf-profile.self=
+.cycles-pp.tcp_rcv_established
+>       0.19 =C2=B1 14%      +0.3        0.54 =C2=B1 17%  perf-profile.self=
+.cycles-pp.tcp_clean_rtx_queue
+>       0.42 =C2=B1 26%      +0.4        0.77 =C2=B1 33%  perf-profile.self=
+.cycles-pp.update_process_times
+>       0.16 =C2=B1 15%      +0.4        0.58 =C2=B1 16%  perf-profile.self=
+.cycles-pp.__slab_free
+>       0.19 =C2=B1 48%      +0.5        0.71 =C2=B1 22%  perf-profile.self=
+.cycles-pp.tcp_current_mss
+>      13869 =C2=B1 18%     -27.4%      10062 =C2=B1 10%  softirqs.CPU10.RCU
+>      13186 =C2=B1 17%     -27.3%       9580 =C2=B1 17%  softirqs.CPU101.R=
+CU
+>      12545 =C2=B1 15%     -24.9%       9419 =C2=B1 15%  softirqs.CPU103.R=
+CU
+>      12837 =C2=B1 18%     -24.8%       9652 =C2=B1 13%  softirqs.CPU104.R=
+CU
+>      13183 =C2=B1 16%     -25.7%       9793 =C2=B1 12%  softirqs.CPU105.R=
+CU
+>      13484 =C2=B1 15%     -26.9%       9863 =C2=B1 12%  softirqs.CPU107.R=
+CU
+>      13017 =C2=B1 18%     -25.8%       9660 =C2=B1 12%  softirqs.CPU108.R=
+CU
+>      14542 =C2=B1 23%     -25.8%      10789 =C2=B1  6%  softirqs.CPU11.RCU
+>      12569 =C2=B1 17%     -26.1%       9284 =C2=B1 10%  softirqs.CPU110.R=
+CU
+>      11620 =C2=B1 14%     -19.2%       9395 =C2=B1  9%  softirqs.CPU116.R=
+CU
+>      13139 =C2=B1 14%     -24.2%       9955 =C2=B1  7%  softirqs.CPU120.R=
+CU
+>      12147 =C2=B1 12%     -21.1%       9588 =C2=B1  6%  softirqs.CPU121.R=
+CU
+>      12914 =C2=B1 16%     -24.7%       9730 =C2=B1  8%  softirqs.CPU123.R=
+CU
+>      12837 =C2=B1 16%     -24.1%       9743 =C2=B1  6%  softirqs.CPU124.R=
+CU
+>      12889 =C2=B1 16%     -23.9%       9807 =C2=B1  7%  softirqs.CPU125.R=
+CU
+>      13089 =C2=B1 16%     -23.8%       9971 =C2=B1  9%  softirqs.CPU126.R=
+CU
+>      12755 =C2=B1 17%     -23.5%       9762 =C2=B1  7%  softirqs.CPU127.R=
+CU
+>      15395 =C2=B1 22%     -31.9%      10477 =C2=B1 11%  softirqs.CPU128.R=
+CU
+>      14932 =C2=B1 18%     -30.0%      10448 =C2=B1 11%  softirqs.CPU129.R=
+CU
+>      14160 =C2=B1 19%     -26.9%      10356 =C2=B1 12%  softirqs.CPU13.RCU
+>      15768 =C2=B1 21%     -33.2%      10528 =C2=B1 11%  softirqs.CPU130.R=
+CU
+>      15795 =C2=B1 20%     -33.5%      10509 =C2=B1 12%  softirqs.CPU131.R=
+CU
+>      14419 =C2=B1 14%     -26.6%      10588 =C2=B1 12%  softirqs.CPU132.R=
+CU
+>      15042 =C2=B1 18%     -32.3%      10183 =C2=B1 11%  softirqs.CPU133.R=
+CU
+>      15610 =C2=B1 22%     -34.4%      10246 =C2=B1 11%  softirqs.CPU134.R=
+CU
+>      14782 =C2=B1 16%     -31.2%      10166 =C2=B1 10%  softirqs.CPU135.R=
+CU
+>      15738 =C2=B1 22%     -33.3%      10505 =C2=B1 11%  softirqs.CPU136.R=
+CU
+>      15534 =C2=B1 21%     -32.7%      10459 =C2=B1 12%  softirqs.CPU137.R=
+CU
+>      12759 =C2=B1 10%     -22.3%       9913 =C2=B1 12%  softirqs.CPU138.R=
+CU
+>      15849 =C2=B1 22%     -34.3%      10411 =C2=B1 11%  softirqs.CPU139.R=
+CU
+>      65.17 =C2=B1 38%   +3849.6%       2573 =C2=B1168%  softirqs.CPU14.TI=
+MER
+>      15646 =C2=B1 23%     -33.1%      10464 =C2=B1 11%  softirqs.CPU140.R=
+CU
+>      14550 =C2=B1 14%     -29.2%      10306 =C2=B1 11%  softirqs.CPU141.R=
+CU
+>      15376 =C2=B1 20%     -34.1%      10132 =C2=B1 11%  softirqs.CPU142.R=
+CU
+>      15513 =C2=B1 22%     -33.6%      10301 =C2=B1 11%  softirqs.CPU143.R=
+CU
+>      15898 =C2=B1 19%     -30.8%      11005 =C2=B1 11%  softirqs.CPU144.R=
+CU
+>      14816 =C2=B1 14%     -29.0%      10521 =C2=B1 14%  softirqs.CPU146.R=
+CU
+>      15716 =C2=B1 18%     -30.7%      10890 =C2=B1 10%  softirqs.CPU147.R=
+CU
+>      15852 =C2=B1 18%     -31.4%      10876 =C2=B1 10%  softirqs.CPU148.R=
+CU
+>      16024 =C2=B1 18%     -30.8%      11096 =C2=B1 11%  softirqs.CPU149.R=
+CU
+>      16102 =C2=B1 19%     -32.5%      10864 =C2=B1 11%  softirqs.CPU150.R=
+CU
+>      15274 =C2=B1 17%     -29.4%      10790 =C2=B1 10%  softirqs.CPU151.R=
+CU
+>      15084 =C2=B1 16%     -28.4%      10796 =C2=B1  9%  softirqs.CPU152.R=
+CU
+>      15366 =C2=B1 19%     -30.2%      10718 =C2=B1 10%  softirqs.CPU153.R=
+CU
+>      15340 =C2=B1 20%     -30.7%      10628 =C2=B1 11%  softirqs.CPU154.R=
+CU
+>      15505 =C2=B1 20%     -30.6%      10767 =C2=B1 11%  softirqs.CPU155.R=
+CU
+>      15836 =C2=B1 18%     -31.2%      10895 =C2=B1 10%  softirqs.CPU156.R=
+CU
+>      13870 =C2=B1 17%     -24.9%      10421 =C2=B1 12%  softirqs.CPU157.R=
+CU
+>      14986 =C2=B1 12%     -29.6%      10545 =C2=B1 12%  softirqs.CPU159.R=
+CU
+>      11736 =C2=B1 16%     -20.2%       9367 =C2=B1 13%  softirqs.CPU170.R=
+CU
+>      14883 =C2=B1 22%     -30.8%      10294 =C2=B1 13%  softirqs.CPU176.R=
+CU
+>      14540 =C2=B1 20%     -26.9%      10635 =C2=B1 18%  softirqs.CPU177.R=
+CU
+>      15024 =C2=B1 22%     -28.0%      10819 =C2=B1  9%  softirqs.CPU178.R=
+CU
+>      15184 =C2=B1 22%     -30.9%      10484 =C2=B1 14%  softirqs.CPU179.R=
+CU
+>      13690 =C2=B1 18%     -28.3%       9811 =C2=B1 13%  softirqs.CPU180.R=
+CU
+>      14097 =C2=B1 19%     -29.6%       9921 =C2=B1 14%  softirqs.CPU181.R=
+CU
+>      14914 =C2=B1 22%     -31.5%      10211 =C2=B1 15%  softirqs.CPU182.R=
+CU
+>      14503 =C2=B1 17%     -29.3%      10248 =C2=B1 13%  softirqs.CPU183.R=
+CU
+>      15238 =C2=B1 22%     -29.3%      10770 =C2=B1 12%  softirqs.CPU184.R=
+CU
+>      15273 =C2=B1 22%     -31.5%      10466 =C2=B1 13%  softirqs.CPU185.R=
+CU
+>      15099 =C2=B1 22%     -30.5%      10494 =C2=B1 15%  softirqs.CPU187.R=
+CU
+>      15061 =C2=B1 22%     -35.4%       9724 =C2=B1 13%  softirqs.CPU188.R=
+CU
+>      14537 =C2=B1 20%     -31.4%       9975 =C2=B1 12%  softirqs.CPU189.R=
+CU
+>      15000 =C2=B1 22%     -30.0%      10492 =C2=B1 14%  softirqs.CPU190.R=
+CU
+>      15403 =C2=B1 21%     -26.1%      11387 =C2=B1 14%  softirqs.CPU191.R=
+CU
+>      13555 =C2=B1 12%     -23.6%      10354 =C2=B1  8%  softirqs.CPU24.RCU
+>      12496 =C2=B1 10%     -21.6%       9792 =C2=B1  6%  softirqs.CPU25.RCU
+>      12370 =C2=B1 11%     -18.0%      10140 =C2=B1  8%  softirqs.CPU26.RCU
+>      13345 =C2=B1 16%     -25.4%       9961 =C2=B1  8%  softirqs.CPU27.RCU
+>      13204 =C2=B1 15%     -23.2%      10142 =C2=B1  7%  softirqs.CPU28.RCU
+>      13279 =C2=B1 13%     -23.8%      10117 =C2=B1  6%  softirqs.CPU30.RCU
+>      13183 =C2=B1 15%     -22.4%      10234 =C2=B1  7%  softirqs.CPU31.RCU
+>      15741 =C2=B1 19%     -29.7%      11066 =C2=B1 11%  softirqs.CPU32.RCU
+>      15321 =C2=B1 16%     -28.0%      11033 =C2=B1 11%  softirqs.CPU33.RCU
+>      16116 =C2=B1 19%     -31.6%      11030 =C2=B1 12%  softirqs.CPU34.RCU
+>      16134 =C2=B1 18%     -31.0%      11137 =C2=B1 11%  softirqs.CPU35.RCU
+>      14820 =C2=B1 13%     -24.9%      11132 =C2=B1 11%  softirqs.CPU36.RCU
+>      15564 =C2=B1 15%     -30.2%      10869 =C2=B1 10%  softirqs.CPU37.RCU
+>      15976 =C2=B1 19%     -32.1%      10843 =C2=B1 10%  softirqs.CPU38.RCU
+>      15220 =C2=B1 15%     -29.5%      10732 =C2=B1  9%  softirqs.CPU39.RCU
+>      16081 =C2=B1 20%     -30.7%      11149 =C2=B1 11%  softirqs.CPU40.RCU
+>      15853 =C2=B1 19%     -30.8%      10976 =C2=B1 11%  softirqs.CPU41.RCU
+>      16102 =C2=B1 20%     -31.6%      11009 =C2=B1 11%  softirqs.CPU43.RCU
+>      16028 =C2=B1 19%     -32.8%      10772 =C2=B1  9%  softirqs.CPU44.RCU
+>      15620 =C2=B1 17%     -30.5%      10855 =C2=B1 10%  softirqs.CPU45.RCU
+>      15952 =C2=B1 19%     -33.7%      10579 =C2=B1  9%  softirqs.CPU46.RCU
+>      15885 =C2=B1 19%     -31.1%      10939 =C2=B1 11%  softirqs.CPU47.RCU
+>      16297 =C2=B1 17%     -28.8%      11607 =C2=B1  9%  softirqs.CPU48.RCU
+>      15109 =C2=B1 15%     -27.7%      10927 =C2=B1 12%  softirqs.CPU50.RCU
+>      16195 =C2=B1 16%     -31.2%      11148 =C2=B1 12%  softirqs.CPU51.RCU
+>      16132 =C2=B1 17%     -29.0%      11455 =C2=B1 10%  softirqs.CPU52.RCU
+>      16322 =C2=B1 17%     -29.6%      11496 =C2=B1  8%  softirqs.CPU53.RCU
+>      16309 =C2=B1 16%     -30.3%      11367 =C2=B1  9%  softirqs.CPU54.RCU
+>      15466 =C2=B1 17%     -27.3%      11244 =C2=B1 10%  softirqs.CPU55.RCU
+>      15292 =C2=B1 14%     -26.1%      11304 =C2=B1  9%  softirqs.CPU56.RCU
+>      15594 =C2=B1 17%     -28.1%      11206 =C2=B1  9%  softirqs.CPU57.RCU
+>      15615 =C2=B1 18%     -28.3%      11202 =C2=B1 10%  softirqs.CPU58.RCU
+>      15967 =C2=B1 19%     -33.6%      10597 =C2=B1 17%  softirqs.CPU59.RCU
+>      16179 =C2=B1 17%     -33.7%      10727 =C2=B1 13%  softirqs.CPU60.RCU
+>      14361 =C2=B1 14%     -23.2%      11025 =C2=B1 11%  softirqs.CPU61.RCU
+>      15070 =C2=B1 23%     -27.7%      10888 =C2=B1 11%  softirqs.CPU62.RCU
+>      15876 =C2=B1 18%     -30.8%      10991 =C2=B1 10%  softirqs.CPU63.RCU
+>      14481 =C2=B1 17%     -22.2%      11268 =C2=B1 13%  softirqs.CPU65.RCU
+>      14694 =C2=B1 18%     -23.3%      11270 =C2=B1 13%  softirqs.CPU66.RCU
+>      13503 =C2=B1 19%     -24.8%      10157 =C2=B1 10%  softirqs.CPU7.RCU
+>      14504 =C2=B1 18%     -22.2%      11282 =C2=B1 13%  softirqs.CPU70.RCU
+>      13810 =C2=B1 15%     -18.9%      11202 =C2=B1 12%  softirqs.CPU71.RCU
+>      12137 =C2=B1 16%     -20.5%       9645 =C2=B1 12%  softirqs.CPU74.RCU
+>      15213 =C2=B1 19%     -30.0%      10653 =C2=B1 12%  softirqs.CPU80.RCU
+>      14967 =C2=B1 19%     -28.9%      10643 =C2=B1 11%  softirqs.CPU81.RCU
+>      15467 =C2=B1 21%     -31.6%      10579 =C2=B1 12%  softirqs.CPU82.RCU
+>      15479 =C2=B1 21%     -30.2%      10800 =C2=B1 13%  softirqs.CPU83.RCU
+>      14112 =C2=B1 17%     -27.4%      10248 =C2=B1 12%  softirqs.CPU84.RCU
+>      14456 =C2=B1 19%     -29.0%      10270 =C2=B1 12%  softirqs.CPU85.RCU
+>      15360 =C2=B1 22%     -33.4%      10226 =C2=B1 15%  softirqs.CPU86.RCU
+>      14544 =C2=B1 17%     -26.6%      10669 =C2=B1 12%  softirqs.CPU87.RCU
+>      15377 =C2=B1 22%     -30.2%      10733 =C2=B1  9%  softirqs.CPU88.RCU
+>      15480 =C2=B1 22%     -31.0%      10687 =C2=B1 12%  softirqs.CPU89.RCU
+>      12947 =C2=B1 11%     -18.5%      10557 =C2=B1 11%  softirqs.CPU90.RCU
+>      15493 =C2=B1 21%     -31.7%      10579 =C2=B1 12%  softirqs.CPU91.RCU
+>      15424 =C2=B1 22%     -33.0%      10329 =C2=B1 13%  softirqs.CPU92.RCU
+>      15046 =C2=B1 20%     -30.9%      10394 =C2=B1 10%  softirqs.CPU93.RCU
+>      15586 =C2=B1 19%     -31.0%      10753 =C2=B1 11%  softirqs.CPU94.RCU
+>      15729 =C2=B1 20%     -32.3%      10650 =C2=B1 12%  softirqs.CPU95.RCU
+>      29416 =C2=B1 17%     +26.7%      37282 =C2=B1 13%  softirqs.CPU95.SC=
+HED
+>      12941 =C2=B1 17%     -24.5%       9766 =C2=B1 13%  softirqs.CPU97.RCU
+>      13192 =C2=B1 17%     -24.3%       9985 =C2=B1  8%  softirqs.CPU98.RCU
+>      12963 =C2=B1 17%     -27.8%       9356 =C2=B1 10%  softirqs.CPU99.RCU
+>   27368853           -31.5%   18754463 =C2=B1  7%  softirqs.NET_RX
+>    2713154 =C2=B1 17%     -26.0%    2008860 =C2=B1  7%  softirqs.RCU
+> =
 
->                                    aim7.jobs-per-min
->                                                                          =
-        =
-
->    14000 +---------------------------------------------------------------=
-----+
->          |        +                                                      =
-    |
->    13500 |-+     + +   ++   +  +.+  +   +                     +        .+=
-    |
->          |     .+   + +  : :: :  :  :: : :.+.       +    +    :     .++  =
-+ +.|
->          |. +.+      +   : : ::   : :: : +   ++.+. + +. + +  ::   .+     =
- +  |
->    13000 |-+              +  +    ::  +           +    +   + ::  +       =
-    |
->          |                         :                        +  : :       =
-    |
->    12500 |-+                       +                           ::        =
-    |
->          |                                                     ::        =
-    |
->    12000 |-+    O           O  O    O    O      O   O          +         =
-    |
->          | O       O O       O               O           O               =
-    |
->          |    O        O  O        O    O  O      O  O                   =
-    |
->    11500 |-+O                    O    O       O        O                 =
-    |
->          |        O     O                                                =
-    |
->    11000 +---------------------------------------------------------------=
-----+
->                                                                          =
-        =
+> =
 
 >                                                                          =
-        =
+       =
+
+>                                netperf.Throughput_Mbps                   =
+       =
+
+>                                                                          =
+       =
+
+>   28000 +----------------------------------------------------------------=
+---+   =
+
+>         |                                                                =
+   |   =
+
+>   26000 |-+        .+                                    .+ .+. +.       =
+ +.|   =
+
+>         |.++.+.++.+  +.+.++.+.++.+.++.+.++.++.+.++.+.++.+  +   +  +.++.+.=
++  |   =
+
+>   24000 |-+                                                              =
+   |   =
+
+>         |                                                                =
+   |   =
+
+>   22000 |-+                      O         O                             =
+   |   =
+
+>         |                                                                =
+   |   =
+
+>   20000 |-+                                                              =
+   |   =
+
+>         | O               O   O                                 O        =
+   |   =
+
+>   18000 |-+                                                              =
+   |   =
+
+>         |    O      O                                                    =
+   |   =
+
+>   16000 |-+O                                          O      O O         =
+   |   =
+
+>         |       O O  O O O  O  O   OO O OO  O O OO O    O OO             =
+   |   =
+
+>   14000 +----------------------------------------------------------------=
+---+   =
+
+>                                                                          =
+       =
+
+>                                                                          =
+       =
 
 > [*] bisect-good sample
 > [O] bisect-bad  sample
->
+> =
+
 > *************************************************************************=
 **************************
-> lkp-knl-f1: 256 threads Intel(R) Genuine Intel(R) CPU 0000 @ 1.30GHz with=
- 112G memory
+> lkp-csl-2sp5: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10G=
+Hz with 192G memory
 > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtim=
-e/ucode:
->    gcc-9/performance/x86_64-rhel-8.3/debian-10.4-x86_64-20200603.cgz/lkp-=
-knl-f1/all/aim9/5s/0xffff0190
->
-> commit:
->    4392fbc4ba ("ext4: drop sync argument of ext4_commit_super()")
->    05c2c00f37 ("ext4: protect superblock modifications with a buffer lock=
-")
->
-> 4392fbc4bab57db3 05c2c00f3769abb9e323fcaca70
-> ---------------- ---------------------------
->         fail:runs  %reproduction    fail:runs
->             |             |             |
->             :5           20%           1:6     dmesg.WARNING:missing_R10_=
-value_at__fsnotify_parent/0x
->            0:5            4%           0:6     perf-profile.children.cycl=
-es-pp.error_return
->            2:5            8%           2:6     perf-profile.self.cycles-p=
-p.error_entry
->           %stddev     %change         %stddev
->               \          |                \
->       74384            +3.4%      76883        aim9.dgram_pipe.ops_per_sec
->      121865            +2.6%     125020        aim9.disk_cp.ops_per_sec
->      198997            +1.9%     202688        aim9.disk_wrt.ops_per_sec
->       52029            -3.9%      49990        aim9.link_test.ops_per_sec
->       95645            +7.5%     102865        aim9.signal_test.ops_per_s=
-ec
->       80028            +5.0%      84023        aim9.stream_pipe.ops_per_s=
-ec
->      101888            +3.9%     105872        aim9.sync_disk_rw.ops_per_=
-sec
->       17794            +1.5%      18069        aim9.tcp_test.ops_per_sec
->       35329            +2.1%      36070        aim9.udp_test.ops_per_sec
->       84505            +1.3%      85562        proc-vmstat.pgactivate
->   1.037e+08            -6.0%   97479544 =C2=B1  6%  perf-stat.i.cache-ref=
-erences
->   1.034e+08            -6.0%   97161961 =C2=B1  6%  perf-stat.ps.cache-re=
-ferences
->      412.50 =C2=B1  3%     +25.8%     519.03 =C2=B1  9%  sched_debug.cfs_=
-rq:/.util_est_enqueued.max
->       45.99 =C2=B1 10%     +31.6%      60.51 =C2=B1 11%  sched_debug.cfs_=
-rq:/.util_est_enqueued.stddev
->       20873 =C2=B1 13%     -16.2%      17493 =C2=B1  6%  softirqs.CPU134.=
-RCU
->       10054 =C2=B1 56%     -81.3%       1880 =C2=B1126%  softirqs.CPU14.N=
-ET_RX
->        0.05 =C2=B1  6%     +45.0%       0.08 =C2=B1 28%  perf-sched.sch_d=
-elay.avg.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
->        0.04 =C2=B1  4%     +22.3%       0.05 =C2=B1 10%  perf-sched.sch_d=
-elay.avg.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_=
-epoll_wait
->        0.01 =C2=B1123%    +153.5%       0.04 =C2=B1 24%  perf-sched.sch_d=
-elay.avg.ms.schedule_timeout.wait_for_completion.__flush_work.lru_add_drain=
-_all
->        0.09 =C2=B1 18%     +82.9%       0.17 =C2=B1 52%  perf-sched.sch_d=
-elay.max.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_=
-epoll_wait
->        0.01 =C2=B1123%    +175.8%       0.04 =C2=B1 12%  perf-sched.sch_d=
-elay.max.ms.schedule_timeout.wait_for_completion.__flush_work.lru_add_drain=
-_all
->      141.15 =C2=B1 21%     -41.1%      83.12 =C2=B1 41%  perf-sched.wait_=
-and_delay.max.ms.schedule_timeout.rcu_gp_kthread.kthread.ret_from_fork
->        0.18 =C2=B1 40%     +70.5%       0.31 =C2=B1 41%  perf-sched.wait_=
-time.max.ms.preempt_schedule_common._cond_resched.dput.path_put.set_fs_pwd
->        0.23 =C2=B1 33%     +59.8%       0.37 =C2=B1 26%  perf-sched.wait_=
-time.max.ms.preempt_schedule_common._cond_resched.kmem_cache_alloc.getname_=
-flags.__x64_sys_unlink
->      141.12 =C2=B1 21%     -41.1%      83.09 =C2=B1 41%  perf-sched.wait_=
-time.max.ms.schedule_timeout.rcu_gp_kthread.kthread.ret_from_fork
->      305.60 =C2=B1 29%     -43.3%     173.17 =C2=B1 21%  interrupts.CPU11=
-4.NMI:Non-maskable_interrupts
->      305.60 =C2=B1 29%     -43.3%     173.17 =C2=B1 21%  interrupts.CPU11=
-4.PMI:Performance_monitoring_interrupts
->      335.00 =C2=B1 20%     -36.6%     212.33 =C2=B1 32%  interrupts.CPU23=
-9.NMI:Non-maskable_interrupts
->      335.00 =C2=B1 20%     -36.6%     212.33 =C2=B1 32%  interrupts.CPU23=
-9.PMI:Performance_monitoring_interrupts
->      314.80 =C2=B1 32%     -37.0%     198.33 =C2=B1 46%  interrupts.CPU25=
-1.NMI:Non-maskable_interrupts
->      314.80 =C2=B1 32%     -37.0%     198.33 =C2=B1 46%  interrupts.CPU25=
-1.PMI:Performance_monitoring_interrupts
->       23.20 =C2=B1 44%    +117.7%      50.50 =C2=B1 57%  interrupts.CPU53=
-.RES:Rescheduling_interrupts
->        1417 =C2=B1 10%     +24.6%       1766 =C2=B1 13%  interrupts.CPU6.=
-CAL:Function_call_interrupts
->       30.40 =C2=B1 59%    +198.8%      90.83 =C2=B1 23%  interrupts.CPU6.=
+> class/compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_gr=
+oup/test/testcase/testtime/ucode:
+>   os/gcc-9/performance/1HDD/ext4/x86_64-rhel-8.3/10%/debian-10.4-x86_64-2=
+0200603.cgz/lkp-csl-2sp5/sock/stress-ng/60s/0x5003006
+> =
+
+> commit: =
+
+>   95507e764c ("x86/spectre/meltdown: avoid the vulnerability directory to=
+ weaken kernel security")
+>   69bc1b14c3 ("sched/fair: skip select_idle_sibling() in presence of sync=
+ wakeups")
+> =
+
+> 95507e764cfbae8c 69bc1b14c3d0ebfc25ebcb7647a =
+
+> ---------------- --------------------------- =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>     670907           -31.2%     461273 =C2=B1  5%  stress-ng.sock.ops
+>      11181           -31.2%       7687 =C2=B1  5%  stress-ng.sock.ops_per=
+_sec
+>       1280            -1.5%       1260        stress-ng.time.percent_of_c=
+pu_this_job_got
+>      35.38           -28.5%      25.30 =C2=B1  5%  stress-ng.time.user_ti=
+me
+>   40160715           -16.6%   33483810 =C2=B1  5%  stress-ng.time.volunta=
+ry_context_switches
+>      13.50 =C2=B1  3%      -7.4%      12.49 =C2=B1  4%  boot-time.dhcp
+>       0.57            -0.1        0.44 =C2=B1  4%  mpstat.cpu.all.usr%
+>    1237944           -16.8%    1030040 =C2=B1  5%  vmstat.system.cs
+>     537.33 =C2=B1 16%     +53.2%     823.00 =C2=B1 20%  perf-sched.total_=
+wait_and_delay.count.ms
+>     182.00 =C2=B1 25%     +87.1%     340.50 =C2=B1 20%  perf-sched.wait_a=
+nd_delay.count.pipe_read.new_sync_read.vfs_read.ksys_read
+>       0.74 =C2=B1 29%    +210.6%       2.31 =C2=B1 62%  perf-sched.wait_a=
+nd_delay.max.ms.pipe_read.new_sync_read.vfs_read.ksys_read
+>    9549889           +43.7%   13720034 =C2=B1  8%  turbostat.C1
+>       0.61            +0.4        1.04 =C2=B1 12%  turbostat.C1%
+>      80.27           +22.9%      98.66 =C2=B1  2%  turbostat.RAMWatt
+>   37273879           +70.8%   63677420 =C2=B1 12%  cpuidle.C1.time
+>    9551699           +43.7%   13724212 =C2=B1  8%  cpuidle.C1.usage
+>   76051292           -28.8%   54182542 =C2=B1 11%  cpuidle.POLL.time
+>   30411406           -35.4%   19653579 =C2=B1 14%  cpuidle.POLL.usage
+>   20366998 =C2=B1  5%     -26.8%   14917519 =C2=B1 15%  numa-numastat.nod=
+e0.local_node
+>   20420544 =C2=B1  5%     -26.7%   14976213 =C2=B1 15%  numa-numastat.nod=
+e0.numa_hit
+>   21413774 =C2=B1  5%     -34.1%   14112023 =C2=B1 14%  numa-numastat.nod=
+e1.local_node
+>   21446770 =C2=B1  5%     -34.1%   14139861 =C2=B1 14%  numa-numastat.nod=
+e1.numa_hit
+>   11098690           -23.8%    8456190 =C2=B1 10%  numa-vmstat.node0.numa=
+_hit
+>   11043209           -24.0%    8395998 =C2=B1 10%  numa-vmstat.node0.numa=
+_local
+>   10623972           -32.8%    7141678 =C2=B1 10%  numa-vmstat.node1.numa=
+_hit
+>   10580987           -32.9%    7103490 =C2=B1 10%  numa-vmstat.node1.numa=
+_local
+>      23111            -2.9%      22432        proc-vmstat.nr_slab_reclaim=
+able
+>   41552075           -30.4%   28939903 =C2=B1  4%  proc-vmstat.numa_hit
+>   41465524           -30.4%   28853356 =C2=B1  4%  proc-vmstat.numa_local
+>  3.326e+08           -30.7%  2.305e+08 =C2=B1  4%  proc-vmstat.pgalloc_no=
+rmal
+>  3.324e+08           -30.7%  2.304e+08 =C2=B1  4%  proc-vmstat.pgfree
+>       6168           -10.7%       5508        slabinfo.dmaengine-unmap-16=
+.active_objs
+>       6171 =C2=B1  2%     -10.7%       5511        slabinfo.dmaengine-unm=
+ap-16.num_objs
+>       1548 =C2=B1  8%     +13.8%       1762 =C2=B1  6%  slabinfo.khugepag=
+ed_mm_slot.active_objs
+>       1548 =C2=B1  8%     +13.8%       1762 =C2=B1  6%  slabinfo.khugepag=
+ed_mm_slot.num_objs
+>       6219 =C2=B1  4%     +32.5%       8238 =C2=B1  4%  slabinfo.kmalloc-=
+1k.active_objs
+>       6256 =C2=B1  3%     +32.0%       8258 =C2=B1  4%  slabinfo.kmalloc-=
+1k.num_objs
+>       3045 =C2=B1  2%     +63.7%       4984 =C2=B1  8%  slabinfo.skbuff_f=
+clone_cache.active_objs
+>       3045 =C2=B1  2%     +63.7%       4984 =C2=B1  8%  slabinfo.skbuff_f=
+clone_cache.num_objs
+>       8352 =C2=B1  4%     -28.1%       6008 =C2=B1  5%  slabinfo.sock_ino=
+de_cache.active_objs
+>       8352 =C2=B1  4%     -28.1%       6008 =C2=B1  5%  slabinfo.sock_ino=
+de_cache.num_objs
+>     178836 =C2=B1  2%     -27.9%     128992 =C2=B1  8%  interrupts.CAL:Fu=
+nction_call_interrupts
+>       2155 =C2=B1  6%     -35.9%       1382 =C2=B1 37%  interrupts.CPU0.C=
+AL:Function_call_interrupts
+>     251.83 =C2=B1 17%     -52.3%     120.00 =C2=B1 30%  interrupts.CPU0.R=
+ES:Rescheduling_interrupts
+>       2323 =C2=B1 14%     -48.5%       1197 =C2=B1 39%  interrupts.CPU1.C=
+AL:Function_call_interrupts
+>       2461 =C2=B1 40%     -56.8%       1062 =C2=B1 45%  interrupts.CPU1.N=
+MI:Non-maskable_interrupts
+>       2461 =C2=B1 40%     -56.8%       1062 =C2=B1 45%  interrupts.CPU1.P=
+MI:Performance_monitoring_interrupts
+>     273.33 =C2=B1 19%     -61.5%     105.17 =C2=B1 48%  interrupts.CPU1.R=
+ES:Rescheduling_interrupts
+>      98.17 =C2=B1 36%     -40.7%      58.17 =C2=B1 35%  interrupts.CPU12.=
 RES:Rescheduling_interrupts
->        1260 =C2=B1  5%      +9.3%       1377 =C2=B1  7%  interrupts.CPU7.=
+>     229.33 =C2=B1 45%     -54.3%     104.83 =C2=B1 42%  interrupts.CPU2.R=
+ES:Rescheduling_interrupts
+>       1289 =C2=B1 26%     -39.9%     774.67 =C2=B1 20%  interrupts.CPU23.=
 CAL:Function_call_interrupts
->      253.40 =C2=B1 29%     +46.7%     371.83 =C2=B1 27%  interrupts.CPU90=
-.NMI:Non-maskable_interrupts
->      253.40 =C2=B1 29%     +46.7%     371.83 =C2=B1 27%  interrupts.CPU90=
-.PMI:Performance_monitoring_interrupts
->        1.07 =C2=B1  2%      -0.2        0.86 =C2=B1 24%  perf-profile.cal=
-ltrace.cycles-pp.irqtime_account_irq.irq_exit_rcu.sysvec_apic_timer_interru=
-pt.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state
->        0.75 =C2=B1  4%      +0.3        1.03 =C2=B1 34%  perf-profile.cal=
-ltrace.cycles-pp.timerqueue_add.enqueue_hrtimer.__hrtimer_run_queues.hrtime=
-r_interrupt.__sysvec_apic_timer_interrupt
->        0.90 =C2=B1  5%      +0.3        1.21 =C2=B1 33%  perf-profile.cal=
-ltrace.cycles-pp.enqueue_hrtimer.__hrtimer_run_queues.hrtimer_interrupt.__s=
-ysvec_apic_timer_interrupt.asm_call_sysvec_on_stack
->        2.40 =C2=B1  6%      +0.4        2.76 =C2=B1  9%  perf-profile.cal=
-ltrace.cycles-pp.clockevents_program_event.hrtimer_interrupt.__sysvec_apic_=
-timer_interrupt.asm_call_sysvec_on_stack.sysvec_apic_timer_interrupt
->        1.42 =C2=B1  7%      +0.4        1.84 =C2=B1 14%  perf-profile.cal=
-ltrace.cycles-pp.ktime_get.clockevents_program_event.hrtimer_interrupt.__sy=
-svec_apic_timer_interrupt.asm_call_sysvec_on_stack
->        0.33 =C2=B1  7%      -0.1        0.25 =C2=B1 11%  perf-profile.chi=
-ldren.cycles-pp.irq_work_needs_cpu
->        0.09 =C2=B1 13%      +0.0        0.11 =C2=B1  8%  perf-profile.chi=
-ldren.cycles-pp.hrtimer_run_queues
->        0.09 =C2=B1  9%      +0.0        0.12 =C2=B1 19%  perf-profile.chi=
-ldren.cycles-pp.__set_cpus_allowed_ptr
->        0.06 =C2=B1 12%      +0.0        0.09 =C2=B1 13%  perf-profile.chi=
-ldren.cycles-pp.irq_work_single
->        0.06 =C2=B1 12%      +0.0        0.09 =C2=B1 13%  perf-profile.chi=
-ldren.cycles-pp.asm_sysvec_irq_work
->        0.06 =C2=B1 12%      +0.0        0.09 =C2=B1 13%  perf-profile.chi=
-ldren.cycles-pp.sysvec_irq_work
->        0.06 =C2=B1 12%      +0.0        0.09 =C2=B1 13%  perf-profile.chi=
-ldren.cycles-pp.__sysvec_irq_work
->        0.06 =C2=B1 12%      +0.0        0.09 =C2=B1 13%  perf-profile.chi=
-ldren.cycles-pp.irq_work_run
->        0.11 =C2=B1  8%      +0.0        0.15 =C2=B1 22%  perf-profile.chi=
-ldren.cycles-pp.__x64_sys_sched_setaffinity
->        0.14 =C2=B1  5%      +0.1        0.19 =C2=B1 17%  perf-profile.chi=
-ldren.cycles-pp.irq_work_run_list
->        0.29 =C2=B1  6%      +0.1        0.39 =C2=B1 28%  perf-profile.chi=
-ldren.cycles-pp.rb_insert_color
->        0.77 =C2=B1  4%      +0.3        1.07 =C2=B1 34%  perf-profile.chi=
-ldren.cycles-pp.timerqueue_add
->        0.92 =C2=B1  5%      +0.3        1.23 =C2=B1 32%  perf-profile.chi=
-ldren.cycles-pp.enqueue_hrtimer
->        2.45 =C2=B1  6%      +0.4        2.82 =C2=B1  9%  perf-profile.chi=
-ldren.cycles-pp.clockevents_program_event
->        4.23 =C2=B1  2%      +0.4        4.61 =C2=B1  7%  perf-profile.chi=
-ldren.cycles-pp.scheduler_tick
->        0.97 =C2=B1  2%      -0.1        0.83 =C2=B1 15%  perf-profile.sel=
-f.cycles-pp.irqtime_account_irq
->        0.75 =C2=B1  4%      -0.1        0.67 =C2=B1  6%  perf-profile.sel=
-f.cycles-pp.__sysvec_apic_timer_interrupt
->        0.30 =C2=B1  8%      -0.1        0.23 =C2=B1 15%  perf-profile.sel=
-f.cycles-pp.irq_work_needs_cpu
->        0.19 =C2=B1  3%      +0.0        0.21 =C2=B1  6%  perf-profile.sel=
-f.cycles-pp.trigger_load_balance
->        0.09 =C2=B1 13%      +0.0        0.11 =C2=B1  8%  perf-profile.sel=
-f.cycles-pp.hrtimer_run_queues
->        0.02 =C2=B1122%      +0.0        0.06 =C2=B1 14%  perf-profile.sel=
-f.cycles-pp.io_serial_in
->        0.14 =C2=B1 11%      +0.0        0.19 =C2=B1 22%  perf-profile.sel=
-f.cycles-pp.tick_sched_handle
->        0.27 =C2=B1  4%      +0.1        0.37 =C2=B1 27%  perf-profile.sel=
-f.cycles-pp.rb_insert_color
->
->
->
->
->
+>     420.67 =C2=B1 16%     -66.0%     143.17 =C2=B1 53%  interrupts.CPU24.=
+RES:Rescheduling_interrupts
+>     345.00 =C2=B1 22%     -60.9%     135.00 =C2=B1 60%  interrupts.CPU25.=
+RES:Rescheduling_interrupts
+>       3146 =C2=B1 39%     -58.7%       1299 =C2=B1 46%  interrupts.CPU3.C=
+AL:Function_call_interrupts
+>     282.33 =C2=B1 29%     -73.4%      75.00 =C2=B1 66%  interrupts.CPU3.R=
+ES:Rescheduling_interrupts
+>     938.33 =C2=B1 36%     +94.0%       1820 =C2=B1 48%  interrupts.CPU44.=
+CAL:Function_call_interrupts
+>      61.50 =C2=B1 57%     +97.6%     121.50 =C2=B1 22%  interrupts.CPU44.=
+RES:Rescheduling_interrupts
+>     206.33 =C2=B1 39%     -67.4%      67.17 =C2=B1 53%  interrupts.CPU50.=
+RES:Rescheduling_interrupts
+>       2161 =C2=B1 23%     -44.7%       1196 =C2=B1 46%  interrupts.CPU51.=
+CAL:Function_call_interrupts
+>     199.67 =C2=B1 32%     -66.0%      67.83 =C2=B1 76%  interrupts.CPU51.=
+RES:Rescheduling_interrupts
+>       2004 =C2=B1 36%     -48.5%       1033 =C2=B1 25%  interrupts.CPU52.=
+CAL:Function_call_interrupts
+>       2637 =C2=B1 27%     -64.8%     928.83 =C2=B1 31%  interrupts.CPU55.=
+CAL:Function_call_interrupts
+>     187.50 =C2=B1 20%     -56.9%      80.83 =C2=B1 60%  interrupts.CPU55.=
+RES:Rescheduling_interrupts
+>     196.67 =C2=B1 41%     -60.5%      77.67 =C2=B1 45%  interrupts.CPU57.=
+RES:Rescheduling_interrupts
+>       2351 =C2=B1 26%     -64.2%     841.33 =C2=B1 32%  interrupts.CPU58.=
+CAL:Function_call_interrupts
+>     205.00 =C2=B1 16%     -82.8%      35.17 =C2=B1 85%  interrupts.CPU58.=
+RES:Rescheduling_interrupts
+>       2853 =C2=B1 36%     -69.8%     860.33 =C2=B1 32%  interrupts.CPU66.=
+CAL:Function_call_interrupts
+>     182.50 =C2=B1 29%     -69.9%      55.00 =C2=B1 85%  interrupts.CPU66.=
+RES:Rescheduling_interrupts
+>     172.33 =C2=B1 26%     -65.2%      60.00 =C2=B1 87%  interrupts.CPU68.=
+RES:Rescheduling_interrupts
+>       2091 =C2=B1 78%     -64.7%     737.83 =C2=B1 17%  interrupts.CPU71.=
+CAL:Function_call_interrupts
+>       2412 =C2=B1 62%     -51.5%       1169 =C2=B1 42%  interrupts.CPU75.=
+CAL:Function_call_interrupts
+>     263.83 =C2=B1 62%     -73.5%      69.83 =C2=B1 67%  interrupts.CPU75.=
+RES:Rescheduling_interrupts
+>     239.83 =C2=B1 24%     -50.6%     118.50 =C2=B1 58%  interrupts.CPU76.=
+RES:Rescheduling_interrupts
+>     189.17 =C2=B1 27%     -56.0%      83.17 =C2=B1 59%  interrupts.CPU79.=
+RES:Rescheduling_interrupts
+>       2176 =C2=B1 21%     -57.1%     934.83 =C2=B1 18%  interrupts.CPU84.=
+CAL:Function_call_interrupts
+>     170.83 =C2=B1 30%     -46.1%      92.00 =C2=B1 29%  interrupts.CPU84.=
+RES:Rescheduling_interrupts
+>       3452 =C2=B1 33%     -59.5%       1398 =C2=B1 27%  interrupts.CPU90.=
+CAL:Function_call_interrupts
+>     226.17 =C2=B1 15%     -54.2%     103.67 =C2=B1 59%  interrupts.CPU90.=
+RES:Rescheduling_interrupts
+>       2193 =C2=B1 29%     -56.0%     964.33 =C2=B1 48%  interrupts.CPU94.=
+CAL:Function_call_interrupts
+>      15346 =C2=B1  4%     -34.6%      10041 =C2=B1 16%  interrupts.RES:Re=
+scheduling_interrupts
+>      15101 =C2=B1 10%     -24.6%      11382 =C2=B1  6%  softirqs.CPU0.RCU
+>      15860 =C2=B1  7%      -9.1%      14423 =C2=B1  5%  softirqs.CPU0.SCH=
+ED
+>      15628 =C2=B1 16%     -26.4%      11509 =C2=B1  8%  softirqs.CPU1.RCU
+>    1004964 =C2=B1 12%     -46.0%     542535 =C2=B1 49%  softirqs.CPU25.NE=
+T_RX
+>      16005 =C2=B1  7%     -25.2%      11964 =C2=B1 13%  softirqs.CPU25.RCU
+>      14901 =C2=B1  3%     -15.0%      12668 =C2=B1 12%  softirqs.CPU25.SC=
+HED
+>     702552 =C2=B1 26%     -50.2%     349595 =C2=B1 27%  softirqs.CPU3.NET=
+_RX
+>      14002 =C2=B1 13%     -23.6%      10698 =C2=B1  5%  softirqs.CPU3.RCU
+>      13430 =C2=B1  9%     -16.7%      11193 =C2=B1  8%  softirqs.CPU3.SCH=
+ED
+>      11076 =C2=B1  5%     +11.4%      12343 =C2=B1  4%  softirqs.CPU32.SC=
+HED
+>     338869 =C2=B1 11%     +80.6%     612118 =C2=B1 27%  softirqs.CPU38.NE=
+T_RX
+>      11256           +12.0%      12609 =C2=B1  7%  softirqs.CPU38.SCHED
+>     180826 =C2=B1 63%    +114.5%     387839 =C2=B1 23%  softirqs.CPU43.NE=
+T_RX
+>      13275 =C2=B1  6%     -21.9%      10372 =C2=B1  3%  softirqs.CPU48.RCU
+>      13020 =C2=B1  6%     -14.0%      11198 =C2=B1  6%  softirqs.CPU48.SC=
+HED
+>      14505 =C2=B1 13%     -26.5%      10666 =C2=B1  9%  softirqs.CPU53.RCU
+>      12508 =C2=B1  7%     -11.8%      11039 =C2=B1  4%  softirqs.CPU6.SCH=
+ED
+>     687437 =C2=B1 18%     -45.8%     372274 =C2=B1 54%  softirqs.CPU61.NE=
+T_RX
+>      13479 =C2=B1  9%     -22.6%      10434 =C2=B1  4%  softirqs.CPU61.RCU
+>      13062 =C2=B1  4%     -15.0%      11102 =C2=B1  7%  softirqs.CPU61.SC=
+HED
+>      14382 =C2=B1 10%     -21.1%      11345 =C2=B1 16%  softirqs.CPU62.RCU
+>     769825 =C2=B1 20%     -51.4%     374028 =C2=B1 63%  softirqs.CPU63.NE=
+T_RX
+>      14313 =C2=B1 12%     -27.7%      10351 =C2=B1 18%  softirqs.CPU63.RCU
+>     784106 =C2=B1 39%     -52.9%     369013 =C2=B1 65%  softirqs.CPU68.NE=
+T_RX
+>      14689 =C2=B1  9%     -24.9%      11036 =C2=B1 13%  softirqs.CPU68.RCU
+>      14091 =C2=B1  8%     -17.4%      11634 =C2=B1 10%  softirqs.CPU69.RCU
+>      13215 =C2=B1  9%     -24.5%       9977 =C2=B1  7%  softirqs.CPU70.RCU
+>      12415 =C2=B1  7%     -16.2%      10406 =C2=B1  7%  softirqs.CPU70.SC=
+HED
+>     966397 =C2=B1 37%     -57.5%     410690 =C2=B1 39%  softirqs.CPU75.NE=
+T_RX
+>      15591 =C2=B1 17%     -32.6%      10515 =C2=B1  7%  softirqs.CPU75.RCU
+>      14781 =C2=B1 12%     -22.3%      11483 =C2=B1  9%  softirqs.CPU75.SC=
+HED
+>     896754 =C2=B1 29%     -55.3%     400868 =C2=B1 30%  softirqs.CPU79.NE=
+T_RX
+>      14746 =C2=B1 11%     -27.1%      10750 =C2=B1 10%  softirqs.CPU79.RCU
+>      14167 =C2=B1 11%     -18.3%      11575 =C2=B1  6%  softirqs.CPU79.SC=
+HED
+>     730187 =C2=B1 29%     -51.6%     353233 =C2=B1 38%  softirqs.CPU81.NE=
+T_RX
+>      13350 =C2=B1 10%     -24.9%      10029 =C2=B1 13%  softirqs.CPU81.RCU
+>      13282 =C2=B1  9%     -14.8%      11313 =C2=B1  8%  softirqs.CPU81.SC=
+HED
+>     804122 =C2=B1 27%     -61.5%     309763 =C2=B1 38%  softirqs.CPU83.NE=
+T_RX
+>      14049 =C2=B1 11%     -30.2%       9799 =C2=B1 14%  softirqs.CPU83.RCU
+>      13857 =C2=B1  9%     -20.1%      11066 =C2=B1  8%  softirqs.CPU83.SC=
+HED
+>      14157 =C2=B1  7%     -20.4%      11274 =C2=B1 12%  softirqs.CPU90.RCU
+>   54556310           -16.9%   45350531 =C2=B1  4%  softirqs.NET_RX
+>    1230209 =C2=B1  4%     -12.3%    1079289 =C2=B1  6%  softirqs.RCU
+>      21.38 =C2=B1  2%      -8.9%      19.48 =C2=B1  2%  perf-stat.i.MPKI
+>  7.905e+09           -25.3%  5.908e+09 =C2=B1  4%  perf-stat.i.branch-ins=
+tructions
+>   99045497           -14.9%   84278893 =C2=B1  5%  perf-stat.i.branch-mis=
+ses
+>       0.80 =C2=B1 36%     +36.0       36.77 =C2=B1 19%  perf-stat.i.cache=
+-miss-rate%
+>    2430896 =C2=B1  4%   +8513.4%  2.094e+08 =C2=B1 13%  perf-stat.i.cache=
+-misses
+>  8.486e+08           -31.0%  5.856e+08 =C2=B1  6%  perf-stat.i.cache-refe=
+rences
+>    1279313           -16.6%    1067542 =C2=B1  5%  perf-stat.i.context-sw=
+itches
+>       1.29 =C2=B1  2%     +28.7%       1.66 =C2=B1  5%  perf-stat.i.cpi
+>  4.938e+10            -2.2%  4.831e+10        perf-stat.i.cpu-cycles
+>      20979 =C2=B1  3%     -98.0%     416.55 =C2=B1 40%  perf-stat.i.cycle=
+s-between-cache-misses
+>  1.134e+10           -24.6%  8.548e+09 =C2=B1  4%  perf-stat.i.dTLB-loads
+>      41603 =C2=B1 14%     -28.8%      29621 =C2=B1  3%  perf-stat.i.dTLB-=
+store-misses
+>  6.443e+09           -24.9%  4.837e+09 =C2=B1  4%  perf-stat.i.dTLB-stores
+>   69808893           -11.2%   61980030 =C2=B1  6%  perf-stat.i.iTLB-load-=
+misses
+>   3.95e+10           -25.2%  2.953e+10 =C2=B1  4%  perf-stat.i.instructio=
+ns
+>     684.51 =C2=B1  3%     -15.7%     577.29 =C2=B1  2%  perf-stat.i.instr=
+uctions-per-iTLB-miss
+>       0.79           -22.7%       0.61 =C2=B1  4%  perf-stat.i.ipc
+>       0.51            -2.2%       0.50        perf-stat.i.metric.GHz
+>     112.25 =C2=B1  4%    +582.1%     765.62 =C2=B1 19%  perf-stat.i.metri=
+c.K/sec
+>     276.46           -25.0%     207.44 =C2=B1  4%  perf-stat.i.metric.M/s=
+ec
+>      84.34           +12.6       96.97        perf-stat.i.node-load-miss-=
+rate%
+>     497014 =C2=B1  3%  +16590.4%   82953737 =C2=B1 13%  perf-stat.i.node-=
+load-misses
+>      94633 =C2=B1  5%   +1488.4%    1503130 =C2=B1 11%  perf-stat.i.node-=
+loads
+>      88.17            +9.3       97.42        perf-stat.i.node-store-miss=
+-rate%
+>     426059         +3558.0%   15585332 =C2=B1 12%  perf-stat.i.node-store=
+-misses
+>      54282 =C2=B1  6%     -24.6%      40930 =C2=B1  5%  perf-stat.i.node-=
+stores
+>      21.49            -7.8%      19.81        perf-stat.overall.MPKI
+>       1.25            +0.2        1.43        perf-stat.overall.branch-mi=
+ss-rate%
+>       0.29 =C2=B1  4%     +36.0       36.24 =C2=B1 19%  perf-stat.overall=
+.cache-miss-rate%
+>       1.25           +31.1%       1.64 =C2=B1  4%  perf-stat.overall.cpi
+>      20346 =C2=B1  4%     -98.8%     235.43 =C2=B1 15%  perf-stat.overall=
+.cycles-between-cache-misses
+>     565.87           -15.7%     476.89 =C2=B1  2%  perf-stat.overall.inst=
+ructions-per-iTLB-miss
+>       0.80           -23.6%       0.61 =C2=B1  4%  perf-stat.overall.ipc
+>      84.00           +14.2       98.21        perf-stat.overall.node-load=
+-miss-rate%
+>      88.70           +11.0       99.73        perf-stat.overall.node-stor=
+e-miss-rate%
+>  7.779e+09           -25.3%  5.814e+09 =C2=B1  4%  perf-stat.ps.branch-in=
+structions
+>   97470462           -14.9%   82938203 =C2=B1  5%  perf-stat.ps.branch-mi=
+sses
+>    2392341 =C2=B1  4%   +8513.7%  2.061e+08 =C2=B1 13%  perf-stat.ps.cach=
+e-misses
+>  8.351e+08           -31.0%  5.763e+08 =C2=B1  6%  perf-stat.ps.cache-ref=
+erences
+>    1258956           -16.6%    1050569 =C2=B1  5%  perf-stat.ps.context-s=
+witches
+>  4.859e+10            -2.2%  4.754e+10        perf-stat.ps.cpu-cycles
+>  1.116e+10           -24.6%  8.412e+09 =C2=B1  4%  perf-stat.ps.dTLB-loads
+>      40956 =C2=B1 14%     -28.9%      29139 =C2=B1  3%  perf-stat.ps.dTLB=
+-store-misses
+>   6.34e+09           -24.9%   4.76e+09 =C2=B1  4%  perf-stat.ps.dTLB-stor=
+es
+>   68698200           -11.2%   60994527 =C2=B1  6%  perf-stat.ps.iTLB-load=
+-misses
+>  3.887e+10           -25.2%  2.906e+10 =C2=B1  4%  perf-stat.ps.instructi=
+ons
+>     489110 =C2=B1  3%  +16591.7%   81641002 =C2=B1 13%  perf-stat.ps.node=
+-load-misses
+>      93124 =C2=B1  5%   +1488.5%    1479317 =C2=B1 11%  perf-stat.ps.node=
+-loads
+>     419256         +3558.5%   15338657 =C2=B1 12%  perf-stat.ps.node-stor=
+e-misses
+>      53413 =C2=B1  6%     -24.6%      40257 =C2=B1  5%  perf-stat.ps.node=
+-stores
+>  2.463e+12           -25.5%  1.835e+12 =C2=B1  5%  perf-stat.total.instru=
+ctions
+>       4.84 =C2=B1  6%      -1.0        3.85 =C2=B1 14%  perf-profile.call=
+trace.cycles-pp.poll_idle.cpuidle_enter_state.cpuidle_enter.do_idle.cpu_sta=
+rtup_entry
+>       2.41 =C2=B1  7%      -0.8        1.64 =C2=B1 12%  perf-profile.call=
+trace.cycles-pp.__tcp_transmit_skb.tcp_write_xmit.__tcp_push_pending_frames=
+.tcp_sendmsg_locked.tcp_sendmsg
+>       2.31 =C2=B1  6%      -0.8        1.54 =C2=B1 12%  perf-profile.call=
+trace.cycles-pp.__ip_queue_xmit.__tcp_transmit_skb.tcp_write_xmit.__tcp_pus=
+h_pending_frames.tcp_sendmsg_locked
+>       2.14 =C2=B1  6%      -0.5        1.68 =C2=B1 10%  perf-profile.call=
+trace.cycles-pp.__x64_sys_ioctl.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       0.71 =C2=B1  6%      -0.4        0.28 =C2=B1100%  perf-profile.call=
+trace.cycles-pp.pick_next_task_fair.__schedule.schedule_idle.do_idle.cpu_st=
+artup_entry
+>       1.49 =C2=B1  6%      -0.4        1.13 =C2=B1 12%  perf-profile.call=
+trace.cycles-pp.schedule_idle.do_idle.cpu_startup_entry.start_secondary.sec=
+ondary_startup_64_no_verify
+>       1.44 =C2=B1  6%      -0.4        1.08 =C2=B1 13%  perf-profile.call=
+trace.cycles-pp.__schedule.schedule_idle.do_idle.cpu_startup_entry.start_se=
+condary
+>       1.58 =C2=B1  6%      -0.3        1.25 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp.do_vfs_ioctl.__x64_sys_ioctl.do_syscall_64.entry_SYSCALL_64=
+_after_hwframe
+>       0.68 =C2=B1  6%      -0.3        0.36 =C2=B1 70%  perf-profile.call=
+trace.cycles-pp.__entry_text_start
+>       1.48 =C2=B1  6%      -0.3        1.17 =C2=B1 10%  perf-profile.call=
+trace.cycles-pp.sock_ioctl.do_vfs_ioctl.__x64_sys_ioctl.do_syscall_64.entry=
+_SYSCALL_64_after_hwframe
+>       1.26 =C2=B1  6%      -0.3        0.99 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp.sock_do_ioctl.sock_ioctl.do_vfs_ioctl.__x64_sys_ioctl.do_sy=
+scall_64
+>       1.38 =C2=B1  5%      -0.3        1.12 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.lock_sock_nested.tcp_sendmsg.sock_sendmsg.__sys_sendto.__x6=
+4_sys_sendto
+>       1.18 =C2=B1  6%      -0.2        0.93 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp.inet_ioctl.sock_do_ioctl.sock_ioctl.do_vfs_ioctl.__x64_sys_=
+ioctl
+>       1.04 =C2=B1  6%      -0.2        0.81 =C2=B1  7%  perf-profile.call=
+trace.cycles-pp.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_af=
+ter_hwframe
+>       1.19 =C2=B1  6%      -0.2        0.98 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp._raw_spin_lock_bh.lock_sock_nested.tcp_sendmsg.sock_sendmsg=
+.__sys_sendto
+>       0.84 =C2=B1  6%      -0.2        0.65 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_sysc=
+all_64.entry_SYSCALL_64_after_hwframe
+>       0.94 =C2=B1  6%      -0.2        0.76 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp.tcp_ioctl.inet_ioctl.sock_do_ioctl.sock_ioctl.do_vfs_ioctl
+>       0.92 =C2=B1  6%      -0.2        0.76 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_bh.lock_soc=
+k_nested.tcp_sendmsg.sock_sendmsg
+>       0.78 =C2=B1  6%      -0.1        0.69 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.tcp_rcv_space_adjust.tcp_recvmsg_locked.tcp_recvmsg.inet_re=
+cvmsg.__sys_recvfrom
+>       0.86 =C2=B1  4%      +0.2        1.01 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.__kfree_skb.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg.__s=
+ys_recvfrom
+>       0.60 =C2=B1  5%      +0.2        0.84 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp.__release_sock.release_sock.tcp_recvmsg.inet_recvmsg.__sys_=
+recvfrom
+>       0.87 =C2=B1  5%      +0.2        1.12 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.release_sock.tcp_recvmsg.inet_recvmsg.__sys_recvfrom.__x64_=
+sys_recvfrom
+>       1.05 =C2=B1  6%      +0.3        1.30 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.skb_release_data.__kfree_skb.tcp_clean_rtx_queue.tcp_ack.tc=
+p_rcv_established
+>       1.11 =C2=B1  6%      +0.3        1.37 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.__kfree_skb.tcp_clean_rtx_queue.tcp_ack.tcp_rcv_established=
+.tcp_v4_do_rcv
+>       0.34 =C2=B1 70%      +0.4        0.71 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp.tcp_v4_do_rcv.__release_sock.release_sock.tcp_recvmsg.inet_=
+recvmsg
+>       1.98 =C2=B1  7%      +0.4        2.38 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.tcp_ack.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.re=
+lease_sock
+>       1.62 =C2=B1  7%      +0.4        2.07 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.tcp_clean_rtx_queue.tcp_ack.tcp_rcv_established.tcp_v4_do_r=
+cv.__release_sock
+>       5.16 =C2=B1  7%      +0.4        5.60 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.__ip_queue_xmit.__tcp_transmit_skb.tcp_write_xmit.__tcp_pus=
+h_pending_frames.tcp_rcv_established
+>       5.53 =C2=B1  7%      +0.5        6.05 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.__tcp_transmit_skb.tcp_write_xmit.__tcp_push_pending_frames=
+.tcp_rcv_established.tcp_v4_do_rcv
+>       6.06 =C2=B1  7%      +0.6        6.62 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.__tcp_push_pending_frames.tcp_rcv_established.tcp_v4_do_rcv=
+.__release_sock.release_sock
+>       6.03 =C2=B1  7%      +0.6        6.59 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.tcp_write_xmit.__tcp_push_pending_frames.tcp_rcv_establishe=
+d.tcp_v4_do_rcv.__release_sock
+>       0.09 =C2=B1223%      +0.6        0.66 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.release_so=
+ck.tcp_recvmsg
+>       0.00            +0.7        0.66 =C2=B1 13%  perf-profile.calltrace=
+.cycles-pp.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.release_sock.tc=
+p_recvmsg_locked
+>       0.00            +0.7        0.69 =C2=B1 14%  perf-profile.calltrace=
+.cycles-pp.tcp_v4_do_rcv.__release_sock.release_sock.tcp_recvmsg_locked.tcp=
+_recvmsg
+>       0.08 =C2=B1223%      +0.7        0.82 =C2=B1 14%  perf-profile.call=
+trace.cycles-pp.release_sock.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg.__=
+sys_recvfrom
+>       0.00            +0.8        0.81 =C2=B1 14%  perf-profile.calltrace=
+.cycles-pp.__release_sock.release_sock.tcp_recvmsg_locked.tcp_recvmsg.inet_=
+recvmsg
+>       7.09 =C2=B1  6%      +1.0        8.12 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.skb_copy_datagram_iter.tcp_recvmsg_locked.tcp_recvmsg.inet_=
+recvmsg.__sys_recvfrom
+>       7.04 =C2=B1  6%      +1.0        8.08 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.__skb_datagram_iter.skb_copy_datagram_iter.tcp_recvmsg_lock=
+ed.tcp_recvmsg.inet_recvmsg
+>       6.16 =C2=B1  6%      +1.0        7.20 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.release_so=
+ck.tcp_sendmsg
+>       6.22 =C2=B1  7%      +1.1        7.31 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.tcp_v4_do_rcv.__release_sock.release_sock.tcp_sendmsg.sock_=
+sendmsg
+>       5.59 =C2=B1  6%      +1.1        6.69 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp._copy_to_iter.__skb_datagram_iter.skb_copy_datagram_iter.tc=
+p_recvmsg_locked.tcp_recvmsg
+>       5.28 =C2=B1  6%      +1.2        6.46 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.copyout._copy_to_iter.__skb_datagram_iter.skb_copy_datagram=
+_iter.tcp_recvmsg_locked
+>       5.21 =C2=B1  6%      +1.2        6.40 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.copy_user_enhanced_fast_string.copyout._copy_to_iter.__skb_=
+datagram_iter.skb_copy_datagram_iter
+>       9.25 =C2=B1  6%      +1.3       10.54 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.__release_sock.release_sock.tcp_sendmsg.sock_sendmsg.__sys_=
+sendto
+>       9.87 =C2=B1  6%      +1.4       11.24 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.release_sock.tcp_sendmsg.sock_sendmsg.__sys_sendto.__x64_sy=
+s_sendto
+>      20.08 =C2=B1  5%      +1.5       21.61 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.__x64_sys_recvfrom.do_syscall_64.entry_SYSCALL_64_after_hwf=
+rame
+>      20.01 =C2=B1  5%      +1.5       21.55 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.__sys_recvfrom.__x64_sys_recvfrom.do_syscall_64.entry_SYSCA=
+LL_64_after_hwframe
+>       5.67 =C2=B1  6%      +1.6        7.26 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp._copy_from_iter_full.tcp_sendmsg_locked.tcp_sendmsg.sock_se=
+ndmsg.__sys_sendto
+>       4.78 =C2=B1  6%      +1.6        6.43 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.copyin._copy_from_iter_full.tcp_sendmsg_locked.tcp_sendmsg.=
+sock_sendmsg
+>       4.64 =C2=B1  6%      +1.7        6.32 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.copy_user_enhanced_fast_string.copyin._copy_from_iter_full.=
+tcp_sendmsg_locked.tcp_sendmsg
+>      17.48 =C2=B1  5%      +1.7       19.17 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg.__sys_recvfrom.=
+__x64_sys_recvfrom
+>      19.26 =C2=B1  5%      +1.7       20.97 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.inet_recvmsg.__sys_recvfrom.__x64_sys_recvfrom.do_syscall_6=
+4.entry_SYSCALL_64_after_hwframe
+>      19.14 =C2=B1  5%      +1.7       20.87 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.tcp_recvmsg.inet_recvmsg.__sys_recvfrom.__x64_sys_recvfrom.=
+do_syscall_64
+>      31.80 =C2=B1  6%      +2.3       34.08 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.__x64_sys_sendto.do_syscall_64.entry_SYSCALL_64_after_hwfra=
+me
+>      31.72 =C2=B1  6%      +2.3       34.01 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.__sys_sendto.__x64_sys_sendto.do_syscall_64.entry_SYSCALL_6=
+4_after_hwframe
+>      31.02 =C2=B1  6%      +2.5       33.47 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.sock_sendmsg.__sys_sendto.__x64_sys_sendto.do_syscall_64.en=
+try_SYSCALL_64_after_hwframe
+>      30.42 =C2=B1  6%      +2.6       32.99 =C2=B1  2%  perf-profile.call=
+trace.cycles-pp.tcp_sendmsg.sock_sendmsg.__sys_sendto.__x64_sys_sendto.do_s=
+yscall_64
+>       4.88 =C2=B1  6%      -1.0        3.87 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.poll_idle
+>       2.15 =C2=B1  6%      -0.5        1.68 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.__x64_sys_ioctl
+>       3.08 =C2=B1  5%      -0.5        2.61 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.__schedule
+>       1.76 =C2=B1  6%      -0.4        1.38 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.sock_ioctl
+>       2.34 =C2=B1  6%      -0.4        1.97 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.lock_sock_nested
+>       1.50 =C2=B1  6%      -0.4        1.14 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.schedule_idle
+>       1.59 =C2=B1  6%      -0.3        1.25 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.do_vfs_ioctl
+>       1.33 =C2=B1  6%      -0.3        1.04 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.sock_do_ioctl
+>       1.16 =C2=B1  7%      -0.3        0.88 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.syscall_return_via_sysret
+>       1.19 =C2=B1  6%      -0.3        0.94 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.inet_ioctl
+>       0.98 =C2=B1  7%      -0.2        0.73 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.ttwu_do_activate
+>       0.96 =C2=B1  7%      -0.2        0.72 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.enqueue_task_fair
+>       1.08 =C2=B1  6%      -0.2        0.84 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.syscall_exit_to_user_mode
+>       0.78 =C2=B1  6%      -0.2        0.56 =C2=B1 15%  perf-profile.chil=
+dren.cycles-pp.pick_next_task_fair
+>       0.88 =C2=B1  6%      -0.2        0.68 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.exit_to_user_mode_prepare
+>       0.97 =C2=B1  6%      -0.2        0.78 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.tcp_ioctl
+>       0.79 =C2=B1  8%      -0.2        0.60 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.enqueue_entity
+>       0.68 =C2=B1  6%      -0.2        0.51 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.__entry_text_start
+>       0.56 =C2=B1  6%      -0.2        0.39 =C2=B1 17%  perf-profile.chil=
+dren.cycles-pp.set_next_entity
+>       0.64 =C2=B1  7%      -0.1        0.50 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.aa_sk_perm
+>       0.63 =C2=B1  7%      -0.1        0.49 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.update_load_avg
+>       0.58 =C2=B1 10%      -0.1        0.45 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.__fget_light
+>       0.53 =C2=B1  9%      -0.1        0.40 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.sockfd_lookup_light
+>       0.52 =C2=B1  7%      -0.1        0.40 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.__might_sleep
+>       0.54 =C2=B1  7%      -0.1        0.42 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.update_rq_clock
+>       0.43 =C2=B1  6%      -0.1        0.34 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.task_work_run
+>       0.41 =C2=B1  7%      -0.1        0.32 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.__fput
+>       0.78 =C2=B1  5%      -0.1        0.69 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.tcp_rcv_space_adjust
+>       0.51 =C2=B1  6%      -0.1        0.42 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.lock_sock_fast
+>       0.23 =C2=B1  7%      -0.1        0.14 =C2=B1 19%  perf-profile.chil=
+dren.cycles-pp.check_preempt_curr
+>       0.87 =C2=B1  3%      -0.1        0.78 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.read_tsc
+>       0.24 =C2=B1  7%      -0.1        0.15 =C2=B1 19%  perf-profile.chil=
+dren.cycles-pp.ttwu_do_wakeup
+>       0.55 =C2=B1  6%      -0.1        0.47 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.sched_clock_cpu
+>       0.18 =C2=B1  9%      -0.1        0.10 =C2=B1 26%  perf-profile.chil=
+dren.cycles-pp.resched_curr
+>       0.50 =C2=B1  5%      -0.1        0.42 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.__x64_sys_connect
+>       0.50 =C2=B1  5%      -0.1        0.42 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.__sys_connect
+>       0.39 =C2=B1  3%      -0.1        0.32 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.irqtime_account_irq
+>       0.48 =C2=B1  5%      -0.1        0.41 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.__inet_stream_connect
+>       0.48 =C2=B1  5%      -0.1        0.41 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.inet_stream_connect
+>       0.21 =C2=B1 12%      -0.1        0.14 =C2=B1 23%  perf-profile.chil=
+dren.cycles-pp.select_idle_sibling
+>       0.40 =C2=B1  6%      -0.1        0.33 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.__might_fault
+>       0.45 =C2=B1  5%      -0.1        0.38 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.tcp_rcv_state_process
+>       0.51 =C2=B1  4%      -0.1        0.44 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.tcp_mstamp_refresh
+>       0.21 =C2=B1 13%      -0.1        0.15 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.rcu_do_batch
+>       0.24 =C2=B1 13%      -0.1        0.18 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.rcu_core
+>       0.26 =C2=B1  7%      -0.1        0.20 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.sock_close
+>       0.12 =C2=B1 17%      -0.1        0.06 =C2=B1 49%  perf-profile.chil=
+dren.cycles-pp.cpus_share_cache
+>       0.25 =C2=B1  7%      -0.1        0.19 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.__x64_sys_setsockopt
+>       0.25 =C2=B1  8%      -0.1        0.19 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.inet_release
+>       0.25 =C2=B1  7%      -0.1        0.19 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.__sys_setsockopt
+>       0.26 =C2=B1  6%      -0.1        0.20 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.__sock_release
+>       0.20 =C2=B1  6%      -0.1        0.15 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.__tcp_close
+>       0.22 =C2=B1  7%      -0.1        0.17 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.tcp_close
+>       0.20 =C2=B1  8%      -0.0        0.15 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.__update_load_avg_cfs_rq
+>       0.14 =C2=B1  9%      -0.0        0.09 =C2=B1 15%  perf-profile.chil=
+dren.cycles-pp.pick_next_entity
+>       0.20 =C2=B1  5%      -0.0        0.16 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.entry_SYSCALL_64_safe_stack
+>       0.18 =C2=B1  9%      -0.0        0.14 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.do_tcp_setsockopt
+>       0.19 =C2=B1  5%      -0.0        0.14 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.__put_user_nocheck_4
+>       0.13 =C2=B1  8%      -0.0        0.09 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.tcp_fin
+>       0.07 =C2=B1 11%      -0.0        0.03 =C2=B1 99%  perf-profile.chil=
+dren.cycles-pp.prep_new_page
+>       0.16 =C2=B1  9%      -0.0        0.12 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.switch_mm_irqs_off
+>       0.26 =C2=B1  4%      -0.0        0.22 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.tcp_v4_connect
+>       0.13 =C2=B1  8%      -0.0        0.09 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.do_sys_openat2
+>       0.08 =C2=B1 10%      -0.0        0.04 =C2=B1 71%  perf-profile.chil=
+dren.cycles-pp.alloc_empty_file
+>       0.13 =C2=B1  8%      -0.0        0.10 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.do_sys_open
+>       0.11 =C2=B1  9%      -0.0        0.07 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.path_openat
+>       0.27 =C2=B1  3%      -0.0        0.23 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.__x64_sys_shutdown
+>       0.27 =C2=B1  3%      -0.0        0.23 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.__sys_shutdown
+>       0.13 =C2=B1  8%      -0.0        0.10 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.__sk_mem_schedule
+>       0.21 =C2=B1  7%      -0.0        0.18 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.tcp_rcv_synsent_state_process
+>       0.11 =C2=B1  9%      -0.0        0.08 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.do_filp_open
+>       0.23 =C2=B1  5%      -0.0        0.19 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.kmem_cache_alloc_node
+>       0.13 =C2=B1  6%      -0.0        0.10 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.__sk_mem_raise_allocated
+>       0.10 =C2=B1 11%      -0.0        0.07 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.refill_obj_stock
+>       0.14 =C2=B1  7%      -0.0        0.11 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.__x64_sys_getsockopt
+>       0.13 =C2=B1  7%      -0.0        0.10 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.__sys_getsockopt
+>       0.19 =C2=B1  4%      -0.0        0.16 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.tcp_connect
+>       0.15 =C2=B1  6%      -0.0        0.12 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.rcu_eqs_exit
+>       0.13 =C2=B1  5%      -0.0        0.11 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.ip_rcv_core
+>       0.34 =C2=B1  4%      +0.0        0.36 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.tcp_queue_rcv
+>       0.07 =C2=B1 11%      +0.0        0.10 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.tcp_release_cb
+>       0.10 =C2=B1  9%      +0.0        0.13 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.perf_tp_event
+>       0.09 =C2=B1  8%      +0.0        0.12 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.skb_try_coalesce
+>       0.11 =C2=B1  6%      +0.0        0.14 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.tcp_try_coalesce
+>       0.16 =C2=B1  9%      +0.0        0.20 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.update_ts_time_stats
+>       0.15 =C2=B1  8%      +0.0        0.20 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.nr_iowait_cpu
+>       0.08 =C2=B1  8%      +0.1        0.14 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.available_idle_cpu
+>       0.07 =C2=B1 21%      +0.1        0.13 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.ip_copy_addrs
+>       0.34 =C2=B1  6%      +0.1        0.40 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.__cgroup_bpf_run_filter_skb
+>       0.17 =C2=B1  7%      +0.1        0.23 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.tcp_chrono_stop
+>       0.07 =C2=B1  9%      +0.1        0.14 =C2=B1 16%  perf-profile.chil=
+dren.cycles-pp.migrate_disable
+>       0.49 =C2=B1  5%      +0.1        0.55 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.tcp_data_queue
+>       0.33 =C2=B1  4%      +0.1        0.40 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.update_curr
+>       0.01 =C2=B1223%      +0.1        0.08 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.__put_compound_page
+>       0.65 =C2=B1  5%      +0.1        0.71 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.__free_pages_ok
+>       0.30 =C2=B1  9%      +0.1        0.37 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.tcp_add_backlog
+>       0.23 =C2=B1  5%      +0.1        0.31 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.ip_finish_output
+>       0.11 =C2=B1  8%      +0.1        0.19 =C2=B1 12%  perf-profile.chil=
+dren.cycles-pp.ipv4_dst_check
+>       0.28 =C2=B1 10%      +0.1        0.36 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.__skb_clone
+>       0.20 =C2=B1  7%      +0.1        0.29 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.remove_wait_queue
+>       0.58 =C2=B1  4%      +0.1        0.67 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.__tcp_send_ack
+>       0.00            +0.1        0.10 =C2=B1 28%  perf-profile.children.=
+cycles-pp.llist_reverse_order
+>       0.07 =C2=B1  7%      +0.1        0.17 =C2=B1 24%  perf-profile.chil=
+dren.cycles-pp.cpuacct_charge
+>       0.00            +0.1        0.12 =C2=B1 31%  perf-profile.children.=
+cycles-pp.__smp_call_single_queue
+>       0.00            +0.1        0.12 =C2=B1 31%  perf-profile.children.=
+cycles-pp.llist_add_batch
+>       1.22 =C2=B1  5%      +0.1        1.34 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.__alloc_skb
+>       0.83 =C2=B1  6%      +0.1        0.96 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp._raw_spin_lock_irqsave
+>       0.39 =C2=B1  7%      +0.1        0.53 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.__ksize
+>       1.11 =C2=B1  8%      +0.1        1.26 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.__inet_lookup_established
+>       0.00            +0.2        0.15 =C2=B1 28%  perf-profile.children.=
+cycles-pp.flush_smp_call_function_queue
+>       0.35 =C2=B1  4%      +0.2        0.56 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.__slab_free
+>       0.00            +0.2        0.25 =C2=B1 30%  perf-profile.children.=
+cycles-pp.ttwu_queue_wakelist
+>       2.49 =C2=B1  6%      +0.3        2.79 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.tcp_ack
+>       0.00            +0.3        0.32 =C2=B1 29%  perf-profile.children.=
+cycles-pp.sched_ttwu_pending
+>       1.81 =C2=B1  5%      +0.3        2.15 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.skb_release_data
+>       2.01 =C2=B1  6%      +0.4        2.36 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.tcp_clean_rtx_queue
+>       0.00            +0.5        0.51 =C2=B1 29%  perf-profile.children.=
+cycles-pp.flush_smp_call_function_from_idle
+>       2.58 =C2=B1  4%      +0.5        3.13 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.__kfree_skb
+>      12.40 =C2=B1  6%      +0.9       13.30        perf-profile.children.=
+cycles-pp.tcp_rcv_established
+>      12.98 =C2=B1  6%      +0.9       13.92        perf-profile.children.=
+cycles-pp.tcp_v4_do_rcv
+>       7.09 =C2=B1  6%      +1.0        8.12 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.skb_copy_datagram_iter
+>       7.06 =C2=B1  6%      +1.0        8.09 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.__skb_datagram_iter
+>       5.60 =C2=B1  6%      +1.1        6.70 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp._copy_to_iter
+>       5.29 =C2=B1  6%      +1.2        6.47 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.copyout
+>      20.09 =C2=B1  5%      +1.5       21.62 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.__x64_sys_recvfrom
+>      20.03 =C2=B1  5%      +1.5       21.57 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.__sys_recvfrom
+>       5.73 =C2=B1  6%      +1.6        7.35 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp._copy_from_iter_full
+>       4.79 =C2=B1  6%      +1.6        6.43 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.copyin
+>      17.49 =C2=B1  5%      +1.7       19.18 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.tcp_recvmsg_locked
+>      19.26 =C2=B1  5%      +1.7       20.97 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.inet_recvmsg
+>      10.89 =C2=B1  6%      +1.7       12.60 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.__release_sock
+>      19.16 =C2=B1  5%      +1.7       20.89 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.tcp_recvmsg
+>      11.87 =C2=B1  6%      +1.8       13.66 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.release_sock
+>      31.82 =C2=B1  6%      +2.3       34.10 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.__x64_sys_sendto
+>      31.74 =C2=B1  6%      +2.3       34.02 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.__sys_sendto
+>      31.04 =C2=B1  6%      +2.4       33.49 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.sock_sendmsg
+>      30.44 =C2=B1  6%      +2.6       33.01 =C2=B1  2%  perf-profile.chil=
+dren.cycles-pp.tcp_sendmsg
+>       9.99 =C2=B1  6%      +2.9       12.84 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.copy_user_enhanced_fast_string
+>       4.78 =C2=B1  6%      -1.0        3.79 =C2=B1 14%  perf-profile.self=
+.cycles-pp.poll_idle
+>       1.14 =C2=B1  6%      -0.3        0.87 =C2=B1  7%  perf-profile.self=
+.cycles-pp.syscall_return_via_sysret
+>       0.68 =C2=B1  6%      -0.2        0.51 =C2=B1  9%  perf-profile.self=
+.cycles-pp.__entry_text_start
+>       0.64 =C2=B1  7%      -0.2        0.47 =C2=B1 13%  perf-profile.self=
+.cycles-pp.__schedule
+>       0.57 =C2=B1  9%      -0.1        0.44 =C2=B1  7%  perf-profile.self=
+.cycles-pp.__fget_light
+>       0.35 =C2=B1  5%      -0.1        0.23 =C2=B1 21%  perf-profile.self=
+.cycles-pp.set_next_entity
+>       1.00 =C2=B1  5%      -0.1        0.89 =C2=B1  5%  perf-profile.self=
+.cycles-pp._raw_spin_lock
+>       0.39 =C2=B1  6%      -0.1        0.28 =C2=B1 16%  perf-profile.self=
+.cycles-pp.update_rq_clock
+>       0.46 =C2=B1  6%      -0.1        0.36 =C2=B1  8%  perf-profile.self=
+.cycles-pp.__might_sleep
+>       0.37 =C2=B1  8%      -0.1        0.27 =C2=B1 11%  perf-profile.self=
+.cycles-pp.enqueue_entity
+>       0.42 =C2=B1  7%      -0.1        0.33 =C2=B1  9%  perf-profile.self=
+.cycles-pp.aa_sk_perm
+>       0.18 =C2=B1  9%      -0.1        0.10 =C2=B1 26%  perf-profile.self=
+.cycles-pp.resched_curr
+>       0.83 =C2=B1  3%      -0.1        0.75 =C2=B1  6%  perf-profile.self=
+.cycles-pp.read_tsc
+>       0.30 =C2=B1  6%      -0.1        0.23 =C2=B1  9%  perf-profile.self=
+.cycles-pp.exit_to_user_mode_prepare
+>       0.26 =C2=B1  9%      -0.1        0.20 =C2=B1 15%  perf-profile.self=
+.cycles-pp.update_load_avg
+>       0.12 =C2=B1 17%      -0.1        0.06 =C2=B1 49%  perf-profile.self=
+.cycles-pp.cpus_share_cache
+>       0.22 =C2=B1  8%      -0.1        0.16 =C2=B1 15%  perf-profile.self=
+.cycles-pp.inet_ioctl
+>       0.18 =C2=B1  7%      -0.1        0.12 =C2=B1 21%  perf-profile.self=
+.cycles-pp.enqueue_task_fair
+>       0.19 =C2=B1  8%      -0.1        0.14 =C2=B1 11%  perf-profile.self=
+.cycles-pp.__update_load_avg_cfs_rq
+>       0.22 =C2=B1  7%      -0.1        0.17 =C2=B1 11%  perf-profile.self=
+.cycles-pp._copy_to_iter
+>       0.24 =C2=B1  6%      -0.0        0.19 =C2=B1 14%  perf-profile.self=
+.cycles-pp.sock_ioctl
+>       0.13 =C2=B1  6%      -0.0        0.08 =C2=B1 17%  perf-profile.self=
+.cycles-pp.pick_next_entity
+>       0.19 =C2=B1  5%      -0.0        0.14 =C2=B1  7%  perf-profile.self=
+.cycles-pp.__put_user_nocheck_4
+>       0.20 =C2=B1  5%      -0.0        0.16 =C2=B1  9%  perf-profile.self=
+.cycles-pp.entry_SYSCALL_64_safe_stack
+>       0.16 =C2=B1  9%      -0.0        0.12 =C2=B1 14%  perf-profile.self=
+.cycles-pp.switch_mm_irqs_off
+>       0.14 =C2=B1  5%      -0.0        0.10 =C2=B1 10%  perf-profile.self=
+.cycles-pp.lock_sock_nested
+>       0.13 =C2=B1 11%      -0.0        0.09 =C2=B1  5%  perf-profile.self=
+.cycles-pp.sockfd_lookup_light
+>       0.10 =C2=B1  7%      -0.0        0.07 =C2=B1 11%  perf-profile.self=
+.cycles-pp.__x64_sys_ioctl
+>       0.15 =C2=B1  6%      -0.0        0.12 =C2=B1  3%  perf-profile.self=
+.cycles-pp.kmem_cache_alloc_node
+>       0.12 =C2=B1  8%      -0.0        0.09 =C2=B1  9%  perf-profile.self=
+.cycles-pp.__sk_mem_raise_allocated
+>       0.09 =C2=B1 12%      -0.0        0.06 =C2=B1 14%  perf-profile.self=
+.cycles-pp.sock_do_ioctl
+>       0.13 =C2=B1  4%      -0.0        0.11 =C2=B1  8%  perf-profile.self=
+.cycles-pp.ip_rcv_core
+>       0.16 =C2=B1  8%      -0.0        0.13 =C2=B1  8%  perf-profile.self=
+.cycles-pp.tcp_recvmsg
+>       0.10 =C2=B1  6%      -0.0        0.07 =C2=B1 10%  perf-profile.self=
+.cycles-pp.irqtime_account_irq
+>       0.10 =C2=B1  6%      -0.0        0.08 =C2=B1  9%  perf-profile.self=
+.cycles-pp.tcp_send_mss
+>       0.10 =C2=B1  7%      -0.0        0.08 =C2=B1  7%  perf-profile.self=
+.cycles-pp.__x64_sys_sendto
+>       0.07 =C2=B1  7%      -0.0        0.05 =C2=B1  8%  perf-profile.self=
+.cycles-pp.tcp_update_recv_tstamps
+>       0.09 =C2=B1  8%      +0.0        0.12 =C2=B1  6%  perf-profile.self=
+.cycles-pp.skb_try_coalesce
+>       0.06 =C2=B1 11%      +0.0        0.10 =C2=B1  4%  perf-profile.self=
+.cycles-pp.tcp_release_cb
+>       0.16 =C2=B1  7%      +0.0        0.20 =C2=B1 10%  perf-profile.self=
+.cycles-pp.__free_pages_ok
+>       0.08 =C2=B1  8%      +0.0        0.12 =C2=B1 14%  perf-profile.self=
+.cycles-pp.perf_tp_event
+>       0.24 =C2=B1  8%      +0.0        0.29 =C2=B1  3%  perf-profile.self=
+.cycles-pp.__ip_queue_xmit
+>       0.15 =C2=B1  8%      +0.0        0.20 =C2=B1 10%  perf-profile.self=
+.cycles-pp.nr_iowait_cpu
+>       0.26 =C2=B1  7%      +0.0        0.31 =C2=B1  5%  perf-profile.self=
+.cycles-pp.__alloc_skb
+>       0.08 =C2=B1 11%      +0.0        0.13 =C2=B1 23%  perf-profile.self=
+.cycles-pp.__wake_up_common
+>       0.08 =C2=B1 10%      +0.1        0.14 =C2=B1  9%  perf-profile.self=
+.cycles-pp.available_idle_cpu
+>       0.07 =C2=B1 17%      +0.1        0.12 =C2=B1 15%  perf-profile.self=
+.cycles-pp.ip_copy_addrs
+>       0.21 =C2=B1 10%      +0.1        0.27 =C2=B1 10%  perf-profile.self=
+.cycles-pp.ipv4_mtu
+>       0.07 =C2=B1 10%      +0.1        0.13 =C2=B1 17%  perf-profile.self=
+.cycles-pp.migrate_disable
+>       0.11 =C2=B1  9%      +0.1        0.18 =C2=B1 12%  perf-profile.self=
+.cycles-pp.ipv4_dst_check
+>       0.11 =C2=B1  9%      +0.1        0.19 =C2=B1  5%  perf-profile.self=
+.cycles-pp.tcp_v4_do_rcv
+>       0.14 =C2=B1 10%      +0.1        0.22 =C2=B1 18%  perf-profile.self=
+.cycles-pp.try_to_wake_up
+>       0.11 =C2=B1 10%      +0.1        0.19 =C2=B1  9%  perf-profile.self=
+.cycles-pp.tcp_add_backlog
+>       0.23 =C2=B1  9%      +0.1        0.32 =C2=B1  6%  perf-profile.self=
+.cycles-pp.__skb_clone
+>       0.00            +0.1        0.09 =C2=B1 36%  perf-profile.self.cycl=
+es-pp.ttwu_queue_wakelist
+>       0.53 =C2=B1  8%      +0.1        0.62 =C2=B1  7%  perf-profile.self=
+.cycles-pp.skb_page_frag_refill
+>       0.00            +0.1        0.10 =C2=B1 25%  perf-profile.self.cycl=
+es-pp.llist_reverse_order
+>       0.64 =C2=B1  6%      +0.1        0.74 =C2=B1  3%  perf-profile.self=
+.cycles-pp.__tcp_transmit_skb
+>       0.00            +0.1        0.10 =C2=B1 27%  perf-profile.self.cycl=
+es-pp.sched_ttwu_pending
+>       0.32 =C2=B1  7%      +0.1        0.42 =C2=B1  7%  perf-profile.self=
+.cycles-pp.tcp_clean_rtx_queue
+>       0.07 =C2=B1  7%      +0.1        0.17 =C2=B1 24%  perf-profile.self=
+.cycles-pp.cpuacct_charge
+>       0.72 =C2=B1  7%      +0.1        0.83 =C2=B1  6%  perf-profile.self=
+.cycles-pp.tcp_recvmsg_locked
+>       0.72 =C2=B1  7%      +0.1        0.83 =C2=B1  2%  perf-profile.self=
+.cycles-pp._raw_spin_lock_irqsave
+>       0.00            +0.1        0.12 =C2=B1 31%  perf-profile.self.cycl=
+es-pp.llist_add_batch
+>       0.39 =C2=B1  7%      +0.1        0.53 =C2=B1  2%  perf-profile.self=
+.cycles-pp.__ksize
+>       1.01 =C2=B1  7%      +0.2        1.17 =C2=B1  4%  perf-profile.self=
+.cycles-pp.__inet_lookup_established
+>       0.56 =C2=B1  6%      +0.2        0.72 =C2=B1  5%  perf-profile.self=
+.cycles-pp.tcp_rcv_established
+>       0.34 =C2=B1  5%      +0.2        0.56 =C2=B1  8%  perf-profile.self=
+.cycles-pp.__slab_free
+>       0.58 =C2=B1  5%      +0.2        0.80 =C2=B1  7%  perf-profile.self=
+.cycles-pp.tcp_v4_rcv
+>       1.10 =C2=B1  6%      +0.2        1.33 =C2=B1  4%  perf-profile.self=
+.cycles-pp.skb_release_data
+>       2.85 =C2=B1  6%      +0.6        3.44 =C2=B1  4%  perf-profile.self=
+.cycles-pp.tcp_sendmsg_locked
+>       9.89 =C2=B1  6%      +2.8       12.73 =C2=B1  4%  perf-profile.self=
+.cycles-pp.copy_user_enhanced_fast_string
+> =
+
+> =
+
+> =
+
+> *************************************************************************=
+**************************
+> lkp-csl-2sp5: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10G=
+Hz with 192G memory
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> class/compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_gr=
+oup/test/testcase/testtime/ucode:
+>   os/gcc-9/performance/1HDD/ext4/x86_64-rhel-8.3/10%/debian-10.4-x86_64-2=
+0200603.cgz/lkp-csl-2sp5/pipe/stress-ng/60s/0x5003006
+> =
+
+> commit: =
+
+>   95507e764c ("x86/spectre/meltdown: avoid the vulnerability directory to=
+ weaken kernel security")
+>   69bc1b14c3 ("sched/fair: skip select_idle_sibling() in presence of sync=
+ wakeups")
+> =
+
+> 95507e764cfbae8c 69bc1b14c3d0ebfc25ebcb7647a =
+
+> ---------------- --------------------------- =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>  5.186e+08           -21.5%   4.07e+08 =C2=B1  7%  stress-ng.pipe.ops
+>    8643870           -21.5%    6782593 =C2=B1  7%  stress-ng.pipe.ops_per=
+_sec
+>     685.99           +10.1%     754.96 =C2=B1  2%  stress-ng.time.system_=
+time
+>     380.91           -19.5%     306.62 =C2=B1  6%  stress-ng.time.user_ti=
+me
+>       5.74            -1.1        4.64 =C2=B1  6%  mpstat.cpu.all.usr%
+>      81.03           +11.2%      90.09 =C2=B1  2%  turbostat.RAMWatt
+>      11.86            +9.7%      13.01 =C2=B1  2%  iostat.cpu.system
+>       6.14           -19.2%       4.96 =C2=B1  6%  iostat.cpu.user
+>       0.01 =C2=B1 23%     -69.2%       0.00 =C2=B1141%  perf-sched.sch_de=
+lay.avg.ms.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_6=
+4.entry_SYSCALL_64_after_hwframe
+>     543.83 =C2=B1 13%     +42.0%     772.33 =C2=B1 22%  perf-sched.total_=
+wait_and_delay.count.ms
+>       1.14 =C2=B1 46%     -63.8%       0.41 =C2=B1 82%  perf-sched.wait_a=
+nd_delay.max.ms.pipe_read.new_sync_read.vfs_read.ksys_read
+>       0.91 =C2=B1 32%     -60.2%       0.36 =C2=B1 71%  perf-sched.wait_t=
+ime.max.ms.pipe_read.new_sync_read.vfs_read.ksys_read
+>      13720 =C2=B1 43%     -46.0%       7407 =C2=B1 16%  softirqs.CPU12.SC=
+HED
+>      11413 =C2=B1 14%     -21.9%       8913 =C2=B1 11%  softirqs.CPU13.SC=
+HED
+>      14011 =C2=B1 16%     -25.9%      10381 =C2=B1  9%  softirqs.CPU3.SCH=
+ED
+>      12663 =C2=B1 21%     -25.3%       9459 =C2=B1 15%  softirqs.CPU32.SC=
+HED
+>       9888 =C2=B1  7%     -10.5%       8845 =C2=B1  6%  softirqs.CPU63.SC=
+HED
+>      10199 =C2=B1  6%     -10.4%       9142 =C2=B1  4%  softirqs.CPU75.SC=
+HED
+>      13603 =C2=B1115%    +449.3%      74724 =C2=B1 71%  interrupts.CPU15.=
+CAL:Function_call_interrupts
+>       4898 =C2=B1 21%     -66.3%       1650 =C2=B1104%  interrupts.CPU29.=
+NMI:Non-maskable_interrupts
+>       4898 =C2=B1 21%     -66.3%       1650 =C2=B1104%  interrupts.CPU29.=
+PMI:Performance_monitoring_interrupts
+>     111.67 =C2=B1 48%     -80.3%      22.00 =C2=B1 60%  interrupts.CPU29.=
+RES:Rescheduling_interrupts
+>       7553 =C2=B1148%    +620.0%      54387 =C2=B1124%  interrupts.CPU42.=
+CAL:Function_call_interrupts
+>     396.67 =C2=B1180%    +433.9%       2117 =C2=B1 81%  interrupts.CPU43.=
+NMI:Non-maskable_interrupts
+>     396.67 =C2=B1180%    +433.9%       2117 =C2=B1 81%  interrupts.CPU43.=
+PMI:Performance_monitoring_interrupts
+>       4369 =C2=B1168%    +997.3%      47942 =C2=B1 73%  interrupts.CPU44.=
+CAL:Function_call_interrupts
+>       2938 =C2=B1 43%     -82.8%     506.00 =C2=B1116%  interrupts.CPU50.=
+NMI:Non-maskable_interrupts
+>       2938 =C2=B1 43%     -82.8%     506.00 =C2=B1116%  interrupts.CPU50.=
+PMI:Performance_monitoring_interrupts
+>      72.33 =C2=B1 89%     -86.4%       9.83 =C2=B1100%  interrupts.CPU69.=
+RES:Rescheduling_interrupts
+>       3457 =C2=B1 46%     -67.0%       1139 =C2=B1116%  interrupts.CPU75.=
+NMI:Non-maskable_interrupts
+>       3457 =C2=B1 46%     -67.0%       1139 =C2=B1116%  interrupts.CPU75.=
+PMI:Performance_monitoring_interrupts
+>      20263 =C2=B1 65%     -65.8%       6926 =C2=B1132%  interrupts.CPU80.=
+CAL:Function_call_interrupts
+>       1011 =C2=B1110%   +1336.5%      14523 =C2=B1 93%  interrupts.CPU94.=
+CAL:Function_call_interrupts
+>     523.00 =C2=B1  7%   +5106.8%      27231 =C2=B1102%  interrupts.CPU95.=
+CAL:Function_call_interrupts
+>     104.50 =C2=B1 19%   +2713.7%       2940 =C2=B1 61%  interrupts.CPU95.=
+NMI:Non-maskable_interrupts
+>     104.50 =C2=B1 19%   +2713.7%       2940 =C2=B1 61%  interrupts.CPU95.=
+PMI:Performance_monitoring_interrupts
+>       2.83 =C2=B1 94%   +1847.1%      55.17 =C2=B1 97%  interrupts.CPU95.=
+RES:Rescheduling_interrupts
+>  1.771e+10           -20.7%  1.404e+10 =C2=B1  6%  perf-stat.i.branch-ins=
+tructions
+>   59095188           -23.4%   45240126 =C2=B1  4%  perf-stat.i.branch-mis=
+ses
+>       1.18 =C2=B1 24%     +34.7       35.87 =C2=B1 30%  perf-stat.i.cache=
+-miss-rate%
+>    2548600 =C2=B1  6%   +3757.3%   98308103 =C2=B1 24%  perf-stat.i.cache=
+-misses
+>  3.794e+08 =C2=B1  3%     -26.0%  2.807e+08 =C2=B1  6%  perf-stat.i.cache=
+-references
+>       0.67 =C2=B1  2%     +24.9%       0.84 =C2=B1  6%  perf-stat.i.cpi
+>     122.70            -5.3%     116.22 =C2=B1  3%  perf-stat.i.cpu-migrat=
+ions
+>      20781 =C2=B1  5%     -96.1%     804.88 =C2=B1 25%  perf-stat.i.cycle=
+s-between-cache-misses
+>  1.172e+10           -19.5%   9.43e+09 =C2=B1  6%  perf-stat.i.dTLB-loads
+>  8.687e+09           -20.7%  6.886e+09 =C2=B1  6%  perf-stat.i.dTLB-stores
+>      93.30            -2.0       91.26        perf-stat.i.iTLB-load-miss-=
+rate%
+>   30437798 =C2=B1  2%     -33.5%   20229664 =C2=B1  6%  perf-stat.i.iTLB-=
+load-misses
+>   7.98e+10           -20.7%  6.324e+10 =C2=B1  6%  perf-stat.i.instructio=
+ns
+>       2676 =C2=B1  2%     +18.3%       3166 =C2=B1  6%  perf-stat.i.instr=
+uctions-per-iTLB-miss
+>       1.55           -20.3%       1.24 =C2=B1  6%  perf-stat.i.ipc
+>      45.49 =C2=B1 11%   +1165.3%     575.63 =C2=B1 20%  perf-stat.i.metri=
+c.K/sec
+>     400.91           -20.4%     319.15 =C2=B1  6%  perf-stat.i.metric.M/s=
+ec
+>      85.67            +9.0       94.71        perf-stat.i.node-load-miss-=
+rate%
+>     391716 =C2=B1  6%   +8334.0%   33037455 =C2=B1 22%  perf-stat.i.node-=
+load-misses
+>      68189 =C2=B1 10%   +1968.3%    1410390 =C2=B1 28%  perf-stat.i.node-=
+loads
+>      93.89            +3.5       97.35        perf-stat.i.node-store-miss=
+-rate%
+>     282991 =C2=B1  5%   +6074.0%   17471998 =C2=B1 21%  perf-stat.i.node-=
+store-misses
+>       4.75 =C2=B1  3%      -6.7%       4.44        perf-stat.overall.MPKI
+>       0.67 =C2=B1  7%     +35.1       35.72 =C2=B1 30%  perf-stat.overall=
+.cache-miss-rate%
+>       0.63           +26.8%       0.80 =C2=B1  6%  perf-stat.overall.cpi
+>      19855 =C2=B1  6%     -97.3%     544.06 =C2=B1 24%  perf-stat.overall=
+.cycles-between-cache-misses
+>      95.05            -2.3       92.74        perf-stat.overall.iTLB-load=
+-miss-rate%
+>       2623 =C2=B1  2%     +19.4%       3132 =C2=B1  6%  perf-stat.overall=
+.instructions-per-iTLB-miss
+>       1.58           -20.8%       1.26 =C2=B1  6%  perf-stat.overall.ipc
+>      85.18           +10.8       95.96        perf-stat.overall.node-load=
+-miss-rate%
+>      93.53            +6.3       99.88        perf-stat.overall.node-stor=
+e-miss-rate%
+>  1.743e+10           -20.7%  1.382e+10 =C2=B1  6%  perf-stat.ps.branch-in=
+structions
+>   58163155           -23.4%   44524296 =C2=B1  4%  perf-stat.ps.branch-mi=
+sses
+>    2507676 =C2=B1  6%   +3760.4%   96806409 =C2=B1 24%  perf-stat.ps.cach=
+e-misses
+>  3.735e+08 =C2=B1  3%     -26.1%  2.762e+08 =C2=B1  6%  perf-stat.ps.cach=
+e-references
+>     120.94            -5.4%     114.40 =C2=B1  3%  perf-stat.ps.cpu-migra=
+tions
+>  1.153e+10           -19.5%   9.28e+09 =C2=B1  6%  perf-stat.ps.dTLB-loads
+>  8.551e+09           -20.8%  6.776e+09 =C2=B1  6%  perf-stat.ps.dTLB-stor=
+es
+>   29961939 =C2=B1  2%     -33.5%   19915864 =C2=B1  6%  perf-stat.ps.iTLB=
+-load-misses
+>  7.855e+10           -20.8%  6.224e+10 =C2=B1  6%  perf-stat.ps.instructi=
+ons
+>     385505 =C2=B1  6%   +8339.2%   32533587 =C2=B1 22%  perf-stat.ps.node=
+-load-misses
+>      67120 =C2=B1 10%   +1969.1%    1388781 =C2=B1 28%  perf-stat.ps.node=
+-loads
+>     278541 =C2=B1  5%   +6076.9%   17205225 =C2=B1 21%  perf-stat.ps.node=
+-store-misses
+>  4.966e+12           -21.1%  3.916e+12 =C2=B1  6%  perf-stat.total.instru=
+ctions
+>      43.02 =C2=B1 18%      -8.5       34.57 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.cpuidle_enter_state.cpuidle_enter.do_idle.cpu_startup_entry=
+.start_secondary
+>      43.14 =C2=B1 18%      -8.4       34.69 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.cpuidle_enter.do_idle.cpu_startup_entry.start_secondary.sec=
+ondary_startup_64_no_verify
+>      43.80 =C2=B1 17%      -8.1       35.70 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup=
+_64_no_verify
+>      43.81 =C2=B1 17%      -8.1       35.70 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64_no_v=
+erify
+>      43.81 =C2=B1 17%      -8.1       35.70 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.start_secondary.secondary_startup_64_no_verify
+>      41.59 =C2=B1 19%      -8.0       33.58 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.intel_idle.cpuidle_enter_state.cpuidle_enter.do_idle.cpu_st=
+artup_entry
+>      44.04 =C2=B1 17%      -7.7       36.32 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.secondary_startup_64_no_verify
+>       0.98 =C2=B1 15%      -0.3        0.71 =C2=B1 12%  perf-profile.call=
+trace.cycles-pp.security_file_permission.vfs_read.ksys_read.do_syscall_64.e=
+ntry_SYSCALL_64_after_hwframe
+>       1.20 =C2=B1 15%      +0.3        1.46 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.copy_user_enhanced_fast_string.copyin.copy_page_from_iter.p=
+ipe_write.new_sync_write
+>       2.74 =C2=B1 16%      +1.2        3.96 =C2=B1 10%  perf-profile.call=
+trace.cycles-pp.mutex_lock.pipe_write.new_sync_write.vfs_write.ksys_write
+>       2.91 =C2=B1 16%      +1.2        4.15 =C2=B1  7%  perf-profile.call=
+trace.cycles-pp.mutex_lock.pipe_read.new_sync_read.vfs_read.ksys_read
+>       0.00            +1.4        1.38 =C2=B1 30%  perf-profile.calltrace=
+.cycles-pp.mutex_spin_on_owner.__mutex_lock.pipe_read.new_sync_read.vfs_read
+>       0.69 =C2=B1 15%      +1.9        2.56 =C2=B1 23%  perf-profile.call=
+trace.cycles-pp.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_af=
+ter_hwframe
+>       0.00            +2.1        2.12 =C2=B1 29%  perf-profile.calltrace=
+.cycles-pp.syscall_exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_s=
+yscall_64.entry_SYSCALL_64_after_hwframe
+>       3.75 =C2=B1 13%      +2.9        6.63 =C2=B1 13%  perf-profile.call=
+trace.cycles-pp.mutex_unlock.pipe_write.new_sync_write.vfs_write.ksys_write
+>       0.38 =C2=B1 71%      +3.1        3.44 =C2=B1 29%  perf-profile.call=
+trace.cycles-pp.__mutex_lock.pipe_read.new_sync_read.vfs_read.ksys_read
+>      22.73 =C2=B1 14%      +4.3       27.04 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      21.79 =C2=B1 14%      +4.5       26.28 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwf=
+rame
+>      20.08 =C2=B1 14%      +4.8       24.91 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.new_sync_read.vfs_read.ksys_read.do_syscall_64.entry_SYSCAL=
+L_64_after_hwframe
+>      19.69 =C2=B1 14%      +4.9       24.58 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.pipe_read.new_sync_read.vfs_read.ksys_read.do_syscall_64
+>      52.98 =C2=B1 13%      +8.2       61.21 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.entry_SYSCALL_64_after_hwframe
+>      52.39 =C2=B1 13%      +8.3       60.72 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      41.79 =C2=B1 19%      -8.1       33.64 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.intel_idle
+>      43.81 =C2=B1 17%      -8.1       35.70 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.start_secondary
+>      43.34 =C2=B1 18%      -8.0       35.30 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.cpuidle_enter_state
+>      43.35 =C2=B1 18%      -8.0       35.30 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.cpuidle_enter
+>      44.04 =C2=B1 17%      -7.7       36.32 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.secondary_startup_64_no_verify
+>      44.04 =C2=B1 17%      -7.7       36.32 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.cpu_startup_entry
+>      44.04 =C2=B1 17%      -7.7       36.32 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.do_idle
+>       1.58 =C2=B1 14%      -0.4        1.19 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.security_file_permission
+>       0.98 =C2=B1 15%      -0.3        0.71 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.common_file_perm
+>       0.06 =C2=B1 51%      +0.0        0.10 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.tick_nohz_irq_exit
+>       0.03 =C2=B1 99%      +0.1        0.08 =C2=B1 25%  perf-profile.chil=
+dren.cycles-pp.free_unref_page
+>       0.04 =C2=B1101%      +0.1        0.10 =C2=B1 19%  perf-profile.chil=
+dren.cycles-pp.calc_global_load_tick
+>       0.02 =C2=B1141%      +0.1        0.10 =C2=B1 29%  perf-profile.chil=
+dren.cycles-pp.get_page_from_freelist
+>       0.03 =C2=B1 99%      +0.1        0.11 =C2=B1 27%  perf-profile.chil=
+dren.cycles-pp.__list_del_entry_valid
+>       0.00            +0.1        0.09 =C2=B1 33%  perf-profile.children.=
+cycles-pp.rmqueue
+>       0.07 =C2=B1 72%      +0.1        0.17 =C2=B1 20%  perf-profile.chil=
+dren.cycles-pp.timekeeping_max_deferment
+>       0.15 =C2=B1 36%      +0.1        0.26 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.tick_nohz_next_event
+>       0.18 =C2=B1 31%      +0.1        0.30 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.tick_nohz_get_sleep_length
+>       0.33 =C2=B1 27%      +0.1        0.46 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.menu_select
+>       0.15 =C2=B1 17%      +0.2        0.34 =C2=B1 31%  perf-profile.chil=
+dren.cycles-pp.__wake_up_common
+>       0.76 =C2=B1 15%      +1.9        2.62 =C2=B1 22%  perf-profile.chil=
+dren.cycles-pp.syscall_exit_to_user_mode
+>       0.20 =C2=B1 19%      +1.9        2.12 =C2=B1 29%  perf-profile.chil=
+dren.cycles-pp.syscall_exit_to_user_mode_prepare
+>       5.70 =C2=B1 16%      +2.5        8.16 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.mutex_lock
+>       5.55 =C2=B1 13%      +2.7        8.22 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.mutex_unlock
+>      22.75 =C2=B1 14%      +4.3       27.06 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.ksys_read
+>      21.81 =C2=B1 14%      +4.5       26.30 =C2=B1  5%  perf-profile.chil=
+dren.cycles-pp.vfs_read
+>      20.11 =C2=B1 14%      +4.8       24.95 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.new_sync_read
+>      19.75 =C2=B1 14%      +4.9       24.63 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.pipe_read
+>      53.10 =C2=B1 13%      +8.2       61.32 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.entry_SYSCALL_64_after_hwframe
+>      52.48 =C2=B1 13%      +8.3       60.81 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.do_syscall_64
+>      41.79 =C2=B1 19%      -8.1       33.64 =C2=B1  5%  perf-profile.self=
+.cycles-pp.intel_idle
+>       0.65 =C2=B1 15%      -0.2        0.44 =C2=B1 16%  perf-profile.self=
+.cycles-pp.common_file_perm
+>       0.69 =C2=B1 13%      -0.1        0.54 =C2=B1 11%  perf-profile.self=
+.cycles-pp.___might_sleep
+>       0.18 =C2=B1 13%      -0.0        0.14 =C2=B1 17%  perf-profile.self=
+.cycles-pp.ksys_write
+>       0.04 =C2=B1101%      +0.1        0.10 =C2=B1 19%  perf-profile.self=
+.cycles-pp.calc_global_load_tick
+>       0.04 =C2=B1 71%      +0.1        0.11 =C2=B1 30%  perf-profile.self=
+.cycles-pp.__wake_up_common
+>       0.03 =C2=B1 99%      +0.1        0.10 =C2=B1 31%  perf-profile.self=
+.cycles-pp.__list_del_entry_valid
+>       0.07 =C2=B1 72%      +0.1        0.17 =C2=B1 21%  perf-profile.self=
+.cycles-pp.timekeeping_max_deferment
+>       2.72 =C2=B1 15%      +0.6        3.33 =C2=B1  6%  perf-profile.self=
+.cycles-pp.pipe_read
+>       0.20 =C2=B1 21%      +1.9        2.11 =C2=B1 29%  perf-profile.self=
+.cycles-pp.syscall_exit_to_user_mode_prepare
+>       5.08 =C2=B1 16%      +2.6        7.66 =C2=B1  9%  perf-profile.self=
+.cycles-pp.mutex_lock
+>       5.49 =C2=B1 13%      +2.7        8.15 =C2=B1  8%  perf-profile.self=
+.cycles-pp.mutex_unlock
+> =
+
+> =
+
+> =
+
+> *************************************************************************=
+**************************
+> lkp-csl-2sp5: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10G=
+Hz with 192G memory
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> class/compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_gr=
+oup/test/testcase/testtime/ucode:
+>   os/gcc-9/performance/1HDD/ext4/x86_64-rhel-8.3/10%/debian-10.4-x86_64-2=
+0200603.cgz/lkp-csl-2sp5/rawudp/stress-ng/60s/0x5003006
+> =
+
+> commit: =
+
+>   95507e764c ("x86/spectre/meltdown: avoid the vulnerability directory to=
+ weaken kernel security")
+>   69bc1b14c3 ("sched/fair: skip select_idle_sibling() in presence of sync=
+ wakeups")
+> =
+
+> 95507e764cfbae8c 69bc1b14c3d0ebfc25ebcb7647a =
+
+> ---------------- --------------------------- =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>   52952986           +15.5%   61156255        stress-ng.rawudp.ops
+>     882545           +15.5%    1019266        stress-ng.rawudp.ops_per_sec
+>     780.33            -2.5%     760.50        stress-ng.time.percent_of_c=
+pu_this_job_got
+>      16.57 =C2=B1  6%     -52.4%       7.90 =C2=B1  2%  stress-ng.time.us=
+er_time
+>   21429312           +10.1%   23590752        stress-ng.time.voluntary_co=
+ntext_switches
+>       0.24 =C2=B1  4%      -0.1        0.16        mpstat.cpu.all.usr%
+>      70.67 =C2=B1 45%  +14298.1%      10174 =C2=B1135%  numa-meminfo.node=
+1.Unevictable
+>       0.00 =C2=B1107%    +973.1%       0.05 =C2=B1100%  perf-sched.wait_a=
+nd_delay.max.ms.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_sysc=
+all_64.entry_SYSCALL_64_after_hwframe
+>     661296           +10.1%     727813        vmstat.system.cs
+>     239929 =C2=B1 10%     +30.9%     314130 =C2=B1 14%  numa-numastat.nod=
+e0.local_node
+>     293506 =C2=B1  2%     +25.3%     367673 =C2=B1  8%  numa-numastat.nod=
+e0.numa_hit
+>      17.17 =C2=B1 47%  +14714.6%       2543 =C2=B1135%  numa-vmstat.node1=
+.nr_unevictable
+>      17.17 =C2=B1 47%  +14714.6%       2543 =C2=B1135%  numa-vmstat.node1=
+.nr_zone_unevictable
+>  3.574e+08 =C2=B1  6%     +20.0%  4.288e+08        cpuidle.C1.time
+>   10269271 =C2=B1  7%    +135.8%   24211512        cpuidle.C1.usage
+>   18692205 =C2=B1  5%     -57.7%    7910547 =C2=B1 24%  cpuidle.C1E.usage
+>      15014 =C2=B1  2%     +14.2%      17153 =C2=B1  3%  slabinfo.kmalloc-=
+512.active_objs
+>      15068 =C2=B1  2%     +14.3%      17219 =C2=B1  3%  slabinfo.kmalloc-=
+512.num_objs
+>      11936 =C2=B1  3%     -14.5%      10209 =C2=B1  4%  slabinfo.skbuff_h=
+ead_cache.active_objs
+>      12041 =C2=B1  3%     -14.1%      10339 =C2=B1  4%  slabinfo.skbuff_h=
+ead_cache.num_objs
+>   10265748 =C2=B1  7%    +135.8%   24208411        turbostat.C1
+>       5.83 =C2=B1  6%      +1.2        7.01        turbostat.C1%
+>   18691446 =C2=B1  5%     -57.7%    7909926 =C2=B1 24%  turbostat.C1E
+>      86.17            -1.3%      85.05        turbostat.RAMWatt
+>      30267            +3.1%      31198        proc-vmstat.nr_slab_reclaim=
+able
+>     641876           +13.7%     729554        proc-vmstat.numa_hit
+>     555250           +15.8%     643007        proc-vmstat.numa_local
+>    1568429           +18.0%    1850395        proc-vmstat.pgalloc_normal
+>    1424207           +19.8%    1706676        proc-vmstat.pgfree
+>      15884 =C2=B1 45%     +94.0%      30820 =C2=B1 26%  softirqs.CPU15.NE=
+T_RX
+>      18429 =C2=B1 41%     +98.5%      36576 =C2=B1 19%  softirqs.CPU17.NE=
+T_RX
+>      12611 =C2=B1 90%    +135.4%      29687 =C2=B1 26%  softirqs.CPU18.NE=
+T_RX
+>       5236 =C2=B1102%    +401.8%      26278 =C2=B1 46%  softirqs.CPU20.NE=
+T_RX
+>      10309 =C2=B1 28%    +234.1%      34439 =C2=B1 55%  softirqs.CPU5.NET=
+_RX
+>      13889 =C2=B1 21%    +105.8%      28585 =C2=B1 38%  softirqs.CPU6.NET=
+_RX
+>      15533 =C2=B1 53%    +139.6%      37219 =C2=B1 34%  softirqs.CPU60.NE=
+T_RX
+>      49765 =C2=B1 31%     -62.7%      18563 =C2=B1 65%  softirqs.CPU66.NE=
+T_RX
+>      63073 =C2=B1 30%     -44.3%      35118 =C2=B1 26%  softirqs.CPU78.NE=
+T_RX
+>      20584 =C2=B1 65%     +73.7%      35752 =C2=B1 26%  softirqs.CPU8.NET=
+_RX
+>    2946470           +15.5%    3404279        softirqs.NET_RX
+>      15.03 =C2=B1  2%     -26.9%      10.99 =C2=B1  5%  perf-stat.i.MPKI
+>  1.938e+09            +7.1%  2.075e+09        perf-stat.i.branch-instruct=
+ions
+>   21688905           +10.3%   23929262        perf-stat.i.branch-misses
+>      25.81 =C2=B1  3%      +2.8       28.66 =C2=B1  2%  perf-stat.i.cache=
+-miss-rate%
+>   37056984           -14.0%   31861422 =C2=B1  2%  perf-stat.i.cache-miss=
+es
+>   1.42e+08           -22.6%  1.099e+08        perf-stat.i.cache-references
+>     683390           +10.0%     751730        perf-stat.i.context-switches
+>       3.41            -6.0%       3.21        perf-stat.i.cpi
+>  3.256e+10            +1.1%  3.292e+10        perf-stat.i.cpu-cycles
+>     160253           -99.9%     146.32        perf-stat.i.cpu-migrations
+>     927.88 =C2=B1  2%     +16.6%       1081 =C2=B1  2%  perf-stat.i.cycle=
+s-between-cache-misses
+>  2.697e+09            +8.6%  2.929e+09        perf-stat.i.dTLB-loads
+>  1.476e+09           +11.2%  1.641e+09        perf-stat.i.dTLB-stores
+>      63.17            +3.3       66.52        perf-stat.i.iTLB-load-miss-=
+rate%
+>   10882806           +21.0%   13166642        perf-stat.i.iTLB-load-misses
+>    6189562            +3.5%    6404181        perf-stat.i.iTLB-loads
+>   9.47e+09            +7.5%  1.018e+10        perf-stat.i.instructions
+>     973.10           -10.2%     874.20        perf-stat.i.instructions-pe=
+r-iTLB-miss
+>       0.30            +6.6%       0.32        perf-stat.i.ipc
+>       0.34            +1.1%       0.34        perf-stat.i.metric.GHz
+>      65.11            +8.0%      70.34        perf-stat.i.metric.M/sec
+>      94.66            -1.1       93.54        perf-stat.i.node-load-miss-=
+rate%
+>   13565644            -5.2%   12861275 =C2=B1  2%  perf-stat.i.node-load-=
+misses
+>     617984 =C2=B1  2%     +20.4%     743758 =C2=B1  2%  perf-stat.i.node-=
+loads
+>    6160793 =C2=B1  2%     +22.7%    7556597 =C2=B1  2%  perf-stat.i.node-=
+store-misses
+>     150122 =C2=B1  4%     +37.8%     206868 =C2=B1  5%  perf-stat.i.node-=
+stores
+>      15.00           -28.0%      10.79        perf-stat.overall.MPKI
+>       1.12            +0.0        1.15        perf-stat.overall.branch-mi=
+ss-rate%
+>      26.10 =C2=B1  2%      +2.9       29.00 =C2=B1  2%  perf-stat.overall=
+.cache-miss-rate%
+>       3.44            -6.0%       3.23        perf-stat.overall.cpi
+>     878.77           +17.6%       1033 =C2=B1  2%  perf-stat.overall.cycl=
+es-between-cache-misses
+>       0.00 =C2=B1 10%      -0.0        0.00 =C2=B1 16%  perf-stat.overall=
+.dTLB-store-miss-rate%
+>      63.74            +3.5       67.28        perf-stat.overall.iTLB-load=
+-miss-rate%
+>     870.40           -11.2%     773.32        perf-stat.overall.instructi=
+ons-per-iTLB-miss
+>       0.29            +6.3%       0.31        perf-stat.overall.ipc
+>      95.64            -1.1       94.53        perf-stat.overall.node-load=
+-miss-rate%
+>  1.907e+09            +7.1%  2.042e+09        perf-stat.ps.branch-instruc=
+tions
+>   21344504           +10.3%   23547786        perf-stat.ps.branch-misses
+>   36465521           -14.0%   31352923 =C2=B1  2%  perf-stat.ps.cache-mis=
+ses
+>  1.398e+08           -22.6%  1.082e+08        perf-stat.ps.cache-referenc=
+es
+>     672487           +10.0%     739866        perf-stat.ps.context-switch=
+es
+>  3.204e+10            +1.1%   3.24e+10        perf-stat.ps.cpu-cycles
+>     157699           -99.9%     144.19        perf-stat.ps.cpu-migrations
+>  2.654e+09            +8.6%  2.883e+09        perf-stat.ps.dTLB-loads
+>  1.453e+09           +11.2%  1.615e+09        perf-stat.ps.dTLB-stores
+>   10709323           +21.0%   12959134        perf-stat.ps.iTLB-load-miss=
+es
+>    6090798            +3.5%    6302727        perf-stat.ps.iTLB-loads
+>  9.319e+09            +7.5%  1.002e+10        perf-stat.ps.instructions
+>   13349166            -5.2%   12656081 =C2=B1  2%  perf-stat.ps.node-load=
+-misses
+>     608141 =C2=B1  2%     +20.4%     732096 =C2=B1  2%  perf-stat.ps.node=
+-loads
+>    6062450 =C2=B1  2%     +22.6%    7435556 =C2=B1  2%  perf-stat.ps.node=
+-store-misses
+>     147772 =C2=B1  4%     +38.1%     204056 =C2=B1  5%  perf-stat.ps.node=
+-stores
+>  5.899e+11            +6.6%  6.286e+11        perf-stat.total.instructions
+>      73023           +77.8%     129856 =C2=B1  3%  interrupts.CAL:Functio=
+n_call_interrupts
+>     616.00 =C2=B1 17%     +47.1%     906.17 =C2=B1 18%  interrupts.CPU0.C=
+AL:Function_call_interrupts
+>     700.17 =C2=B1 12%    +246.9%       2429 =C2=B1 31%  interrupts.CPU1.C=
+AL:Function_call_interrupts
+>     597.50 =C2=B1  7%    +210.8%       1856 =C2=B1 33%  interrupts.CPU10.=
+CAL:Function_call_interrupts
+>     814.50 =C2=B1 45%    +123.1%       1817 =C2=B1 40%  interrupts.CPU11.=
+CAL:Function_call_interrupts
+>     649.17 =C2=B1 15%    +212.2%       2026 =C2=B1 83%  interrupts.CPU12.=
+CAL:Function_call_interrupts
+>     625.17 =C2=B1 14%    +202.4%       1890 =C2=B1 28%  interrupts.CPU13.=
+CAL:Function_call_interrupts
+>     701.33 =C2=B1 23%    +129.8%       1611 =C2=B1 34%  interrupts.CPU14.=
+CAL:Function_call_interrupts
+>     577.67 =C2=B1  7%    +249.3%       2017 =C2=B1 45%  interrupts.CPU15.=
+CAL:Function_call_interrupts
+>     641.33 =C2=B1 23%    +142.0%       1551 =C2=B1 39%  interrupts.CPU16.=
+CAL:Function_call_interrupts
+>     644.83 =C2=B1 12%    +172.6%       1757 =C2=B1 32%  interrupts.CPU17.=
+CAL:Function_call_interrupts
+>     727.33 =C2=B1 20%    +138.1%       1731 =C2=B1 11%  interrupts.CPU2.C=
+AL:Function_call_interrupts
+>     551.00 =C2=B1 12%    +118.0%       1201 =C2=B1 25%  interrupts.CPU21.=
+CAL:Function_call_interrupts
+>     536.00 =C2=B1  5%    +144.5%       1310 =C2=B1 23%  interrupts.CPU22.=
+CAL:Function_call_interrupts
+>     573.83 =C2=B1 10%    +129.9%       1319 =C2=B1 30%  interrupts.CPU23.=
+CAL:Function_call_interrupts
+>     830.50 =C2=B1 14%    +171.5%       2255 =C2=B1 48%  interrupts.CPU24.=
+CAL:Function_call_interrupts
+>     732.83 =C2=B1 17%     -31.1%     504.83 =C2=B1 37%  interrupts.CPU24.=
+RES:Rescheduling_interrupts
+>     786.83 =C2=B1 24%     -56.6%     341.17 =C2=B1 47%  interrupts.CPU25.=
+RES:Rescheduling_interrupts
+>     860.17 =C2=B1 22%     -65.5%     296.33 =C2=B1 36%  interrupts.CPU26.=
+RES:Rescheduling_interrupts
+>     992.17 =C2=B1 21%     +91.8%       1902 =C2=B1 38%  interrupts.CPU27.=
+CAL:Function_call_interrupts
+>     670.17 =C2=B1 26%     -55.1%     300.67 =C2=B1 33%  interrupts.CPU27.=
+RES:Rescheduling_interrupts
+>     702.17 =C2=B1  9%    +153.2%       1777 =C2=B1 36%  interrupts.CPU28.=
+CAL:Function_call_interrupts
+>     795.67 =C2=B1 21%     +55.2%       1234 =C2=B1 10%  interrupts.CPU29.=
+CAL:Function_call_interrupts
+>     439.17 =C2=B1 29%     -62.1%     166.33 =C2=B1 40%  interrupts.CPU3.R=
+ES:Rescheduling_interrupts
+>     788.50 =C2=B1 29%    +114.7%       1693 =C2=B1 31%  interrupts.CPU31.=
+CAL:Function_call_interrupts
+>     668.83 =C2=B1 22%     +97.8%       1323 =C2=B1 26%  interrupts.CPU33.=
+CAL:Function_call_interrupts
+>     694.33 =C2=B1 14%     +97.5%       1371 =C2=B1 32%  interrupts.CPU35.=
+CAL:Function_call_interrupts
+>     724.33 =C2=B1 17%     +77.9%       1288 =C2=B1 27%  interrupts.CPU36.=
+CAL:Function_call_interrupts
+>     358.17 =C2=B1 33%     -49.4%     181.17 =C2=B1 38%  interrupts.CPU36.=
+RES:Rescheduling_interrupts
+>     747.83 =C2=B1 36%    +144.2%       1826 =C2=B1 29%  interrupts.CPU37.=
+CAL:Function_call_interrupts
+>     636.50 =C2=B1 11%     +82.6%       1162 =C2=B1 10%  interrupts.CPU38.=
+CAL:Function_call_interrupts
+>     694.83 =C2=B1 17%    +105.6%       1428 =C2=B1 33%  interrupts.CPU40.=
+CAL:Function_call_interrupts
+>     716.50 =C2=B1 15%     +51.9%       1088 =C2=B1 18%  interrupts.CPU42.=
+CAL:Function_call_interrupts
+>     406.83 =C2=B1 29%     -48.8%     208.50 =C2=B1 53%  interrupts.CPU42.=
+RES:Rescheduling_interrupts
+>     702.50 =C2=B1 13%    +158.2%       1813 =C2=B1 40%  interrupts.CPU43.=
+CAL:Function_call_interrupts
+>     610.50 =C2=B1 24%    +127.2%       1386 =C2=B1 42%  interrupts.CPU44.=
+CAL:Function_call_interrupts
+>     660.17 =C2=B1 18%     +95.1%       1287 =C2=B1 46%  interrupts.CPU46.=
+CAL:Function_call_interrupts
+>     676.33 =C2=B1 17%     +90.9%       1291 =C2=B1 27%  interrupts.CPU47.=
+CAL:Function_call_interrupts
+>     576.00 =C2=B1 11%    +240.9%       1963 =C2=B1 31%  interrupts.CPU48.=
+CAL:Function_call_interrupts
+>     592.00 =C2=B1 58%     -63.9%     213.67 =C2=B1 27%  interrupts.CPU49.=
+RES:Rescheduling_interrupts
+>     768.50 =C2=B1 18%    +155.9%       1966 =C2=B1 56%  interrupts.CPU50.=
+CAL:Function_call_interrupts
+>     718.50 =C2=B1 19%    +133.3%       1676 =C2=B1 59%  interrupts.CPU51.=
+CAL:Function_call_interrupts
+>     674.50 =C2=B1 38%     -58.8%     278.17 =C2=B1 68%  interrupts.CPU51.=
+RES:Rescheduling_interrupts
+>     657.33 =C2=B1  5%    +146.6%       1621 =C2=B1 30%  interrupts.CPU52.=
+CAL:Function_call_interrupts
+>     568.33 =C2=B1 38%     -61.0%     221.83 =C2=B1 52%  interrupts.CPU52.=
+RES:Rescheduling_interrupts
+>     639.50 =C2=B1 30%     -67.6%     207.00 =C2=B1 75%  interrupts.CPU53.=
+RES:Rescheduling_interrupts
+>     727.00 =C2=B1 14%     +82.9%       1329 =C2=B1 11%  interrupts.CPU54.=
+CAL:Function_call_interrupts
+>     885.67 =C2=B1 32%     +95.0%       1727 =C2=B1 35%  interrupts.CPU54.=
+NMI:Non-maskable_interrupts
+>     885.67 =C2=B1 32%     +95.0%       1727 =C2=B1 35%  interrupts.CPU54.=
+PMI:Performance_monitoring_interrupts
+>     761.67 =C2=B1 28%     -79.5%     156.50 =C2=B1 61%  interrupts.CPU55.=
+RES:Rescheduling_interrupts
+>     706.00 =C2=B1 31%     +82.5%       1288 =C2=B1 42%  interrupts.CPU56.=
+CAL:Function_call_interrupts
+>     615.17 =C2=B1 56%     -73.0%     166.17 =C2=B1 60%  interrupts.CPU56.=
+RES:Rescheduling_interrupts
+>     506.33 =C2=B1 41%    +258.9%       1817 =C2=B1 78%  interrupts.CPU57.=
+NMI:Non-maskable_interrupts
+>     506.33 =C2=B1 41%    +258.9%       1817 =C2=B1 78%  interrupts.CPU57.=
+PMI:Performance_monitoring_interrupts
+>     698.17 =C2=B1 36%     -71.4%     199.33 =C2=B1 30%  interrupts.CPU57.=
+RES:Rescheduling_interrupts
+>     842.67 =C2=B1 26%     -82.3%     149.17 =C2=B1 71%  interrupts.CPU58.=
+RES:Rescheduling_interrupts
+>     570.50 =C2=B1 27%     -74.0%     148.17 =C2=B1 63%  interrupts.CPU59.=
+RES:Rescheduling_interrupts
+>     618.50 =C2=B1 18%    +110.5%       1302 =C2=B1 38%  interrupts.CPU6.C=
+AL:Function_call_interrupts
+>     749.67 =C2=B1 22%     -79.5%     153.67 =C2=B1 70%  interrupts.CPU60.=
+RES:Rescheduling_interrupts
+>     515.33 =C2=B1 22%     -75.6%     125.83 =C2=B1 58%  interrupts.CPU61.=
+RES:Rescheduling_interrupts
+>     641.50 =C2=B1 44%     -81.6%     118.00 =C2=B1 75%  interrupts.CPU62.=
+RES:Rescheduling_interrupts
+>     483.17 =C2=B1 37%     -70.5%     142.33 =C2=B1 79%  interrupts.CPU63.=
+RES:Rescheduling_interrupts
+>     593.17 =C2=B1 42%     -72.0%     166.00 =C2=B1 74%  interrupts.CPU64.=
+RES:Rescheduling_interrupts
+>     634.17 =C2=B1 40%     -77.0%     145.83 =C2=B1 51%  interrupts.CPU65.=
+RES:Rescheduling_interrupts
+>     620.67 =C2=B1 30%     -74.3%     159.67 =C2=B1 55%  interrupts.CPU67.=
+RES:Rescheduling_interrupts
+>     476.83 =C2=B1 25%     -78.7%     101.67 =C2=B1 59%  interrupts.CPU68.=
+RES:Rescheduling_interrupts
+>     527.83 =C2=B1 41%     -75.1%     131.50 =C2=B1 59%  interrupts.CPU69.=
+RES:Rescheduling_interrupts
+>     587.50 =C2=B1  7%    +153.7%       1490 =C2=B1 16%  interrupts.CPU7.C=
+AL:Function_call_interrupts
+>     545.00 =C2=B1 35%     -77.4%     123.00 =C2=B1 49%  interrupts.CPU70.=
+RES:Rescheduling_interrupts
+>     706.67 =C2=B1 18%     +50.5%       1063 =C2=B1 17%  interrupts.CPU71.=
+CAL:Function_call_interrupts
+>     621.00 =C2=B1 35%     -75.7%     151.00 =C2=B1 51%  interrupts.CPU71.=
+RES:Rescheduling_interrupts
+>     613.33 =C2=B1  7%    +177.2%       1700 =C2=B1 36%  interrupts.CPU72.=
+CAL:Function_call_interrupts
+>     698.67 =C2=B1 21%    +127.3%       1588 =C2=B1 44%  interrupts.CPU73.=
+CAL:Function_call_interrupts
+>     596.83 =C2=B1 38%     -58.1%     250.00 =C2=B1 38%  interrupts.CPU74.=
+RES:Rescheduling_interrupts
+>     887.67 =C2=B1  9%     +51.6%       1345 =C2=B1 25%  interrupts.CPU75.=
+CAL:Function_call_interrupts
+>     550.00 =C2=B1 15%     -54.9%     247.83 =C2=B1 31%  interrupts.CPU75.=
+RES:Rescheduling_interrupts
+>     789.67 =C2=B1 20%     +61.2%       1273 =C2=B1 20%  interrupts.CPU78.=
+CAL:Function_call_interrupts
+>     603.00 =C2=B1 21%     -60.5%     238.17 =C2=B1 31%  interrupts.CPU78.=
+RES:Rescheduling_interrupts
+>     831.33 =C2=B1 30%     -72.9%     225.33 =C2=B1 48%  interrupts.CPU79.=
+RES:Rescheduling_interrupts
+>     695.67 =C2=B1 38%    +141.2%       1677 =C2=B1 20%  interrupts.CPU8.C=
+AL:Function_call_interrupts
+>     740.00 =C2=B1 10%     -77.8%     164.33 =C2=B1 55%  interrupts.CPU80.=
+RES:Rescheduling_interrupts
+>     721.83 =C2=B1 20%     -77.2%     164.67 =C2=B1 59%  interrupts.CPU81.=
+RES:Rescheduling_interrupts
+>     492.17 =C2=B1 23%     -59.9%     197.33 =C2=B1 54%  interrupts.CPU82.=
+RES:Rescheduling_interrupts
+>     790.33 =C2=B1 25%     -81.3%     147.50 =C2=B1 37%  interrupts.CPU83.=
+RES:Rescheduling_interrupts
+>     629.17 =C2=B1 39%     -74.1%     163.17 =C2=B1 68%  interrupts.CPU84.=
+RES:Rescheduling_interrupts
+>     697.50 =C2=B1 28%     -83.7%     113.67 =C2=B1 53%  interrupts.CPU85.=
+RES:Rescheduling_interrupts
+>     603.83 =C2=B1 26%     -69.0%     187.00 =C2=B1 43%  interrupts.CPU86.=
+RES:Rescheduling_interrupts
+>     680.50 =C2=B1 21%     -73.2%     182.67 =C2=B1 70%  interrupts.CPU88.=
+RES:Rescheduling_interrupts
+>     616.17 =C2=B1 36%     -76.1%     147.33 =C2=B1 65%  interrupts.CPU89.=
+RES:Rescheduling_interrupts
+>     696.00 =C2=B1 17%    +136.9%       1649 =C2=B1 33%  interrupts.CPU9.C=
+AL:Function_call_interrupts
+>     533.83 =C2=B1 38%    +125.1%       1201 =C2=B1 23%  interrupts.CPU9.N=
+MI:Non-maskable_interrupts
+>     533.83 =C2=B1 38%    +125.1%       1201 =C2=B1 23%  interrupts.CPU9.P=
+MI:Performance_monitoring_interrupts
+>     572.83 =C2=B1 21%     -72.1%     159.83 =C2=B1 49%  interrupts.CPU90.=
+RES:Rescheduling_interrupts
+>       1755 =C2=B1 56%     -61.7%     672.17 =C2=B1 39%  interrupts.CPU91.=
+NMI:Non-maskable_interrupts
+>       1755 =C2=B1 56%     -61.7%     672.17 =C2=B1 39%  interrupts.CPU91.=
+PMI:Performance_monitoring_interrupts
+>     729.33 =C2=B1 42%     -80.1%     145.50 =C2=B1 38%  interrupts.CPU94.=
+RES:Rescheduling_interrupts
+>     686.50 =C2=B1 32%     -76.5%     161.67 =C2=B1 58%  interrupts.CPU95.=
+RES:Rescheduling_interrupts
+>      46530 =C2=B1  3%     -54.5%      21170 =C2=B1  5%  interrupts.RES:Re=
+scheduling_interrupts
+>       6.50 =C2=B1  4%      -1.5        4.97 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp.__wake_up_common_lock.sock_def_readable.__sock_queue_rcv_sk=
+b.raw_rcv_skb.raw_rcv
+>       7.45 =C2=B1  5%      -1.3        6.10 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp.sock_def_readable.__sock_queue_rcv_skb.raw_rcv_skb.raw_rcv.=
+raw_local_deliver
+>       3.15 =C2=B1  5%      -0.9        2.23 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.__w=
+ake_up_common_lock.sock_def_readable.__sock_queue_rcv_skb
+>       3.47 =C2=B1  5%      -0.9        2.58 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp._raw_spin_lock_irqsave.__wake_up_common_lock.sock_def_reada=
+ble.__sock_queue_rcv_skb.raw_rcv_skb
+>       2.64 =C2=B1  5%      -0.7        1.96 =C2=B1 10%  perf-profile.call=
+trace.cycles-pp.try_to_wake_up.autoremove_wake_function.__wake_up_common.__=
+wake_up_common_lock.sock_def_readable
+>       0.93 =C2=B1  5%      -0.7        0.27 =C2=B1100%  perf-profile.call=
+trace.cycles-pp.ttwu_do_activate.try_to_wake_up.autoremove_wake_function.__=
+wake_up_common.__wake_up_common_lock
+>       2.71 =C2=B1  5%      -0.6        2.07 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp.autoremove_wake_function.__wake_up_common.__wake_up_common_=
+lock.sock_def_readable.__sock_queue_rcv_skb
+>       2.95 =C2=B1  5%      -0.6        2.33 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp.__wake_up_common.__wake_up_common_lock.sock_def_readable.__=
+sock_queue_rcv_skb.raw_rcv_skb
+>       1.75 =C2=B1  5%      -0.5        1.25 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.__schedule.schedule.schedule_timeout.__skb_wait_for_more_pa=
+ckets.__skb_recv_datagram
+>       1.78 =C2=B1  6%      -0.5        1.29 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.schedule.schedule_timeout.__skb_wait_for_more_packets.__skb=
+_recv_datagram.skb_recv_datagram
+>       1.85 =C2=B1  6%      -0.4        1.49 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.schedule_timeout.__skb_wait_for_more_packets.__skb_recv_dat=
+agram.skb_recv_datagram.raw_recvmsg
+>       1.16 =C2=B1  5%      -0.2        0.95 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp.schedule_idle.do_idle.cpu_startup_entry.start_secondary.sec=
+ondary_startup_64_no_verify
+>       1.12 =C2=B1  5%      -0.2        0.92 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp.__schedule.schedule_idle.do_idle.cpu_startup_entry.start_se=
+condary
+>       0.65 =C2=B1  8%      +0.2        0.81 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp._raw_spin_lock_irqsave.__sock_queue_rcv_skb.raw_rcv_skb.raw=
+_rcv.raw_local_deliver
+>       0.83 =C2=B1  7%      +0.2        1.00 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp.skb_copy_datagram_iter.raw_recvmsg.inet_recvmsg.__sys_recvf=
+rom.__x64_sys_recvfrom
+>       0.81 =C2=B1  7%      +0.2        0.99 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp.__skb_datagram_iter.skb_copy_datagram_iter.raw_recvmsg.inet=
+_recvmsg.__sys_recvfrom
+>       0.68 =C2=B1  8%      +0.2        0.92 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.consume_skb.skb_free_datagram.raw_recvmsg.inet_recvmsg.__sy=
+s_recvfrom
+>       1.05 =C2=B1  7%      +0.4        1.41 =C2=B1  6%  perf-profile.call=
+trace.cycles-pp.skb_free_datagram.raw_recvmsg.inet_recvmsg.__sys_recvfrom._=
+_x64_sys_recvfrom
+>       0.00            +0.7        0.66 =C2=B1 11%  perf-profile.calltrace=
+.cycles-pp.flush_smp_call_function_from_idle.do_idle.cpu_startup_entry.star=
+t_secondary.secondary_startup_64_no_verify
+>       0.00            +0.8        0.76 =C2=B1  6%  perf-profile.calltrace=
+.cycles-pp.skb_release_data.consume_skb.skb_free_datagram.raw_recvmsg.inet_=
+recvmsg
+>       6.50 =C2=B1  4%      -1.5        4.98 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.__wake_up_common_lock
+>       7.45 =C2=B1  5%      -1.3        6.11 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.sock_def_readable
+>       2.91 =C2=B1  5%      -0.7        2.21 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.__schedule
+>       2.65 =C2=B1  5%      -0.7        1.97 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.try_to_wake_up
+>       2.72 =C2=B1  5%      -0.6        2.08 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.autoremove_wake_function
+>       2.95 =C2=B1  5%      -0.6        2.33 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.__wake_up_common
+>       1.79 =C2=B1  5%      -0.5        1.30 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.schedule
+>       1.86 =C2=B1  6%      -0.4        1.49 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.schedule_timeout
+>       0.93 =C2=B1  5%      -0.3        0.64 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.ttwu_do_activate
+>       0.69 =C2=B1  5%      -0.3        0.40 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.update_load_avg
+>       0.87 =C2=B1  4%      -0.3        0.61 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.enqueue_task_fair
+>       0.73 =C2=B1  4%      -0.2        0.50 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.enqueue_entity
+>       1.18 =C2=B1  5%      -0.2        0.96 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.schedule_idle
+>       0.38 =C2=B1  8%      -0.2        0.18 =C2=B1 15%  perf-profile.chil=
+dren.cycles-pp.__switch_to_asm
+>       0.29 =C2=B1  6%      -0.2        0.09 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.select_idle_sibling
+>       0.22 =C2=B1  7%      -0.2        0.03 =C2=B1 70%  perf-profile.chil=
+dren.cycles-pp.cpus_share_cache
+>       0.44 =C2=B1  6%      -0.2        0.27 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.set_next_entity
+>       0.58 =C2=B1  7%      -0.2        0.41 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.pick_next_task_fair
+>       0.21 =C2=B1  6%      -0.1        0.07 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.finish_task_switch
+>       0.31 =C2=B1  7%      -0.1        0.20 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.__switch_to
+>       0.34 =C2=B1  6%      -0.1        0.25 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.select_task_rq_fair
+>       0.16 =C2=B1  7%      -0.1        0.08 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.perf_tp_event
+>       0.38 =C2=B1  6%      -0.1        0.30 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.update_rq_clock
+>       0.19 =C2=B1  8%      -0.1        0.12 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.perf_trace_sched_wakeup_template
+>       0.13 =C2=B1  9%      -0.0        0.09 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.switch_mm_irqs_off
+>       0.09 =C2=B1  9%      -0.0        0.05 =C2=B1 48%  perf-profile.chil=
+dren.cycles-pp.resched_curr
+>       0.11 =C2=B1  6%      -0.0        0.08 =C2=B1 16%  perf-profile.chil=
+dren.cycles-pp.check_preempt_curr
+>       0.10 =C2=B1  3%      -0.0        0.07 =C2=B1 20%  perf-profile.chil=
+dren.cycles-pp.__fget_light
+>       0.12 =C2=B1  6%      -0.0        0.09 =C2=B1 15%  perf-profile.chil=
+dren.cycles-pp.ttwu_do_wakeup
+>       0.12 =C2=B1  5%      -0.0        0.10 =C2=B1 13%  perf-profile.chil=
+dren.cycles-pp.sockfd_lookup_light
+>       0.06 =C2=B1 11%      +0.0        0.07 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.apparmor_file_free_security
+>       0.19 =C2=B1  5%      +0.0        0.22 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.release_sock
+>       0.10 =C2=B1 12%      +0.0        0.13 =C2=B1 14%  perf-profile.chil=
+dren.cycles-pp.ip_idents_reserve
+>       0.19 =C2=B1  7%      +0.0        0.23 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.security_socket_post_create
+>       0.19 =C2=B1  7%      +0.0        0.23 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.apparmor_socket_post_create
+>       0.12 =C2=B1  7%      +0.1        0.20 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.nr_iowait_cpu
+>       0.12 =C2=B1  7%      +0.1        0.20 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.update_ts_time_stats
+>       0.31 =C2=B1  7%      +0.1        0.40 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.update_curr
+>       0.24 =C2=B1  8%      +0.1        0.33 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.prepare_to_wait_exclusive
+>       0.16 =C2=B1  6%      +0.1        0.26 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.tick_nohz_idle_exit
+>       0.39 =C2=B1  7%      +0.1        0.49 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp._copy_to_iter
+>       0.13 =C2=B1  6%      +0.1        0.24 =C2=B1 11%  perf-profile.chil=
+dren.cycles-pp.cpuacct_charge
+>       0.29 =C2=B1  6%      +0.1        0.41 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.copyout
+>       0.31 =C2=B1  8%      +0.1        0.42 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.__check_object_size
+>       0.29 =C2=B1  6%      +0.1        0.41 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.simple_copy_to_iter
+>       0.02 =C2=B1141%      +0.1        0.13 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.available_idle_cpu
+>       0.28 =C2=B1  6%      +0.1        0.40 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.copy_user_generic_unrolled
+>       0.61 =C2=B1  6%      +0.1        0.73 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.__slab_free
+>       0.58 =C2=B1  9%      +0.1        0.70 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.__skb_try_recv_datagram
+>       0.67 =C2=B1  8%      +0.1        0.81 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.kfree_skb
+>       0.00            +0.1        0.14 =C2=B1 15%  perf-profile.children.=
+cycles-pp.llist_reverse_order
+>       0.81 =C2=B1  7%      +0.2        0.99 =C2=B1  8%  perf-profile.chil=
+dren.cycles-pp.__skb_datagram_iter
+>       0.83 =C2=B1  7%      +0.2        1.00 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.skb_copy_datagram_iter
+>       0.00            +0.2        0.20 =C2=B1 20%  perf-profile.children.=
+cycles-pp.llist_add_batch
+>       0.00            +0.2        0.20 =C2=B1 19%  perf-profile.children.=
+cycles-pp.__smp_call_single_queue
+>       0.00            +0.2        0.20 =C2=B1 11%  perf-profile.children.=
+cycles-pp.flush_smp_call_function_queue
+>       0.69 =C2=B1  7%      +0.2        0.94 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.consume_skb
+>       0.00            +0.4        0.36 =C2=B1 12%  perf-profile.children.=
+cycles-pp.ttwu_queue_wakelist
+>       1.05 =C2=B1  7%      +0.4        1.42 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.skb_free_datagram
+>       0.68 =C2=B1  5%      +0.4        1.06 =C2=B1  6%  perf-profile.chil=
+dren.cycles-pp.skb_release_data
+>       0.00            +0.4        0.40 =C2=B1 13%  perf-profile.children.=
+cycles-pp.sched_ttwu_pending
+>       0.00            +0.7        0.67 =C2=B1 11%  perf-profile.children.=
+cycles-pp.flush_smp_call_function_from_idle
+>       0.71 =C2=B1  5%      -0.3        0.46 =C2=B1  7%  perf-profile.self=
+.cycles-pp.__schedule
+>       0.38 =C2=B1  7%      -0.2        0.18 =C2=B1 15%  perf-profile.self=
+.cycles-pp.__switch_to_asm
+>       0.22 =C2=B1  7%      -0.2        0.03 =C2=B1 70%  perf-profile.self=
+.cycles-pp.cpus_share_cache
+>       0.29 =C2=B1  8%      -0.2        0.12 =C2=B1 14%  perf-profile.self=
+.cycles-pp.update_load_avg
+>       0.45 =C2=B1  8%      -0.1        0.30 =C2=B1 19%  perf-profile.self=
+.cycles-pp.menu_select
+>       0.19 =C2=B1  5%      -0.1        0.06 =C2=B1  8%  perf-profile.self=
+.cycles-pp.finish_task_switch
+>       0.25 =C2=B1  7%      -0.1        0.15 =C2=B1 15%  perf-profile.self=
+.cycles-pp.set_next_entity
+>       0.15 =C2=B1  8%      -0.1        0.06 =C2=B1  7%  perf-profile.self=
+.cycles-pp.perf_tp_event
+>       0.32 =C2=B1  7%      -0.1        0.24 =C2=B1 12%  perf-profile.self=
+.cycles-pp.enqueue_entity
+>       0.28 =C2=B1  5%      -0.1        0.20 =C2=B1 17%  perf-profile.self=
+.cycles-pp.update_rq_clock
+>       0.09 =C2=B1 14%      -0.1        0.04 =C2=B1 71%  perf-profile.self=
+.cycles-pp.__skb_wait_for_more_packets
+>       0.11 =C2=B1 10%      -0.1        0.06 =C2=B1  8%  perf-profile.self=
+.cycles-pp.__sys_recvfrom
+>       0.09 =C2=B1 14%      -0.0        0.06 =C2=B1  8%  perf-profile.self=
+.cycles-pp.dequeue_entity
+>       0.09 =C2=B1  9%      -0.0        0.05 =C2=B1 48%  perf-profile.self=
+.cycles-pp.resched_curr
+>       0.11 =C2=B1 10%      -0.0        0.08 =C2=B1 13%  perf-profile.self=
+.cycles-pp.switch_mm_irqs_off
+>       0.15 =C2=B1  5%      -0.0        0.11 =C2=B1 12%  perf-profile.self=
+.cycles-pp.enqueue_task_fair
+>       0.07 =C2=B1 12%      -0.0        0.05 =C2=B1 47%  perf-profile.self=
+.cycles-pp.update_curr
+>       0.16 =C2=B1  4%      -0.0        0.14 =C2=B1  8%  perf-profile.self=
+.cycles-pp.__update_load_avg_cfs_rq
+>       0.06 =C2=B1 11%      +0.0        0.07 =C2=B1  6%  perf-profile.self=
+.cycles-pp.apparmor_file_free_security
+>       0.10 =C2=B1 12%      +0.0        0.13 =C2=B1 14%  perf-profile.self=
+.cycles-pp.ip_idents_reserve
+>       0.19 =C2=B1  7%      +0.0        0.23 =C2=B1  6%  perf-profile.self=
+.cycles-pp.apparmor_socket_post_create
+>       0.00            +0.1        0.06 =C2=B1 13%  perf-profile.self.cycl=
+es-pp.flush_smp_call_function_queue
+>       0.00            +0.1        0.07 =C2=B1 21%  perf-profile.self.cycl=
+es-pp.flush_smp_call_function_from_idle
+>       0.12 =C2=B1  4%      +0.1        0.19 =C2=B1  8%  perf-profile.self=
+.cycles-pp.nr_iowait_cpu
+>       0.11 =C2=B1  8%      +0.1        0.21 =C2=B1 11%  perf-profile.self=
+.cycles-pp.try_to_wake_up
+>       0.13 =C2=B1  6%      +0.1        0.24 =C2=B1 11%  perf-profile.self=
+.cycles-pp.cpuacct_charge
+>       0.17 =C2=B1 10%      +0.1        0.27 =C2=B1  7%  perf-profile.self=
+.cycles-pp.__check_object_size
+>       0.28 =C2=B1  5%      +0.1        0.39 =C2=B1  9%  perf-profile.self=
+.cycles-pp.__skb_clone
+>       0.02 =C2=B1141%      +0.1        0.13 =C2=B1  8%  perf-profile.self=
+.cycles-pp.available_idle_cpu
+>       0.07 =C2=B1 14%      +0.1        0.19 =C2=B1 11%  perf-profile.self=
+.cycles-pp.schedule_timeout
+>       0.27 =C2=B1  6%      +0.1        0.40 =C2=B1  9%  perf-profile.self=
+.cycles-pp.copy_user_generic_unrolled
+>       0.00            +0.1        0.14 =C2=B1 15%  perf-profile.self.cycl=
+es-pp.llist_reverse_order
+>       0.00            +0.1        0.14 =C2=B1  8%  perf-profile.self.cycl=
+es-pp.ttwu_queue_wakelist
+>       0.00            +0.2        0.15 =C2=B1 17%  perf-profile.self.cycl=
+es-pp.sched_ttwu_pending
+>       0.39 =C2=B1  6%      +0.2        0.54 =C2=B1  6%  perf-profile.self=
+.cycles-pp.raw_recvmsg
+>       0.55 =C2=B1  7%      +0.2        0.71 =C2=B1  9%  perf-profile.self=
+.cycles-pp.kmem_cache_free
+>       0.00            +0.2        0.19 =C2=B1 18%  perf-profile.self.cycl=
+es-pp.llist_add_batch
+>       1.59 =C2=B1  7%      +0.3        1.91 =C2=B1  7%  perf-profile.self=
+.cycles-pp._raw_spin_lock_irqsave
+>       0.68 =C2=B1  6%      +0.4        1.05 =C2=B1  6%  perf-profile.self=
+.cycles-pp.skb_release_data
+> =
+
+> =
+
+> =
+
+> =
+
+> =
+
 > Disclaimer:
 > Results have been estimated based on internal Intel analysis and are prov=
 ided
 > for informational purposes only. Any difference in system hardware or sof=
 tware
 > design or configuration may affect actual performance.
->
->
+> =
+
+> =
+
+> ---
+> 0DAY/LKP+ Test Infrastructure                   Open Source Technology Ce=
+nter
+> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel Corpo=
+ration
+> =
+
 > Thanks,
 > Oliver Sang
->
->
-> _______________________________________________
-> LKP mailing list -- lkp(a)lists.01.org
-> To unsubscribe send an email to lkp-leave(a)lists.01.org
-
--- =
-
-Zhengjun Xing
+> =
 
 
---===============7957196248979973763==
-Content-Type: text/html
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.htm"
+> #
+> # Automatically generated file; DO NOT EDIT.
+> # Linux/x86_64 5.13.0-rc2-AA Kernel Configuration
+> #
+> CONFIG_CC_VERSION_TEXT=3D"gcc-9 (Debian 9.3.0-22) 9.3.0"
+> CONFIG_CC_IS_GCC=3Dy
+> CONFIG_GCC_VERSION=3D90300
+> CONFIG_CLANG_VERSION=3D0
+> CONFIG_AS_IS_GNU=3Dy
+> CONFIG_AS_VERSION=3D23502
+> CONFIG_LD_IS_BFD=3Dy
+> CONFIG_LD_VERSION=3D23502
+> CONFIG_LLD_VERSION=3D0
+> CONFIG_CC_CAN_LINK=3Dy
+> CONFIG_CC_CAN_LINK_STATIC=3Dy
+> CONFIG_CC_HAS_ASM_GOTO=3Dy
+> CONFIG_CC_HAS_ASM_INLINE=3Dy
+> CONFIG_IRQ_WORK=3Dy
+> CONFIG_BUILDTIME_TABLE_SORT=3Dy
+> CONFIG_THREAD_INFO_IN_TASK=3Dy
+> =
 
-PGh0bWw+CiAgPGhlYWQ+CiAgICA8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVR5cGUiIGNvbnRl
-bnQ9InRleHQvaHRtbDsKICAgICAgY2hhcnNldD13aW5kb3dzLTEyNTIiPgogIDwvaGVhZD4KICA8
-Ym9keT4KICAgIEhpIEphbiw8YnI+CiAgICA8YnI+CiAgICCgoKCgIERvIHlvdSBoYXZlIHRpbWUg
-dG8gbG9vayBhdCB0aGlzPyBUaGUgcmVncmVzc2lvbiBzdGlsbCBleGlzdGVkCiAgICBpbiB0aGUg
-bGF0ZXN0IExpbnV4IG1haW5saW5lIHY1LjEzLXJjMi48YnI+CiAgICCgIKCgIFRoYW5rcy4gPGJy
-PgogICAgPGJyPgogICAgPGRpdiBjbGFzcz0ibW96LWNpdGUtcHJlZml4Ij5PbiAyLzI3LzIwMjEg
-ODowOCBQTSwga2VybmVsIHRlc3Qgcm9ib3QKICAgICAgd3JvdGU6PGJyPgogICAgPC9kaXY+CiAg
-ICA8YmxvY2txdW90ZSB0eXBlPSJjaXRlIgogICAgICBjaXRlPSJtaWQ6MjAyMTAyMjcxMjA4MDQu
-R0IyMjg3MUB4c2FuZy1PcHRpUGxleC05MDIwIj4KICAgICAgPHByZSBjbGFzcz0ibW96LXF1b3Rl
-LXByZSIgd3JhcD0iIj4KR3JlZXRpbmcsCgpGWUksIHdlIG5vdGljZWQgYSAtMTEuOCUgcmVncmVz
-c2lvbiBvZiBhaW03LmpvYnMtcGVyLW1pbiBkdWUgdG8gY29tbWl0OgoKCmNvbW1pdDogMDVjMmMw
-MGYzNzY5YWJiOWUzMjNmY2FjYTcwZDJkZTBiNDhhZjdiYSAoImV4dDQ6IHByb3RlY3Qgc3VwZXJi
-bG9jayBtb2RpZmljYXRpb25zIHdpdGggYSBidWZmZXIgbG9jayIpCjxhIGNsYXNzPSJtb3otdHh0
-LWxpbmstZnJlZXRleHQiIGhyZWY9Imh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvY2dpdC9saW51eC9r
-ZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdCI+aHR0cHM6Ly9naXQua2VybmVsLm9yZy9jZ2l0
-L2xpbnV4L2tlcm5lbC9naXQvdG9ydmFsZHMvbGludXguZ2l0PC9hPiBtYXN0ZXIKCgppbiB0ZXN0
-Y2FzZTogYWltNwpvbiB0ZXN0IG1hY2hpbmU6IDg4IHRocmVhZHMgSW50ZWwoUikgWGVvbihSKSBH
-b2xkIDYyMzhNIENQVSBAIDIuMTBHSHogd2l0aCAxMjhHIG1lbW9yeQp3aXRoIGZvbGxvd2luZyBw
-YXJhbWV0ZXJzOgoKCWRpc2s6IDRCUkRfMTJHCgltZDogUkFJRDEKCWZzOiBleHQ0Cgl0ZXN0OiBj
-cmVhdC1jbG8KCWxvYWQ6IDEwMDAKCWNwdWZyZXFfZ292ZXJub3I6IHBlcmZvcm1hbmNlCgl1Y29k
-ZTogMHg1MDAzMDA2Cgp0ZXN0LWRlc2NyaXB0aW9uOiBBSU03IGlzIGEgdHJhZGl0aW9uYWwgVU5J
-WCBzeXN0ZW0gbGV2ZWwgYmVuY2htYXJrIHN1aXRlIHdoaWNoIGlzIHVzZWQgdG8gdGVzdCBhbmQg
-bWVhc3VyZSB0aGUgcGVyZm9ybWFuY2Ugb2YgbXVsdGl1c2VyIHN5c3RlbS4KdGVzdC11cmw6IDxh
-IGNsYXNzPSJtb3otdHh0LWxpbmstZnJlZXRleHQiIGhyZWY9Imh0dHBzOi8vc291cmNlZm9yZ2Uu
-bmV0L3Byb2plY3RzL2FpbWJlbmNoL2ZpbGVzL2FpbS1zdWl0ZTcvIj5odHRwczovL3NvdXJjZWZv
-cmdlLm5ldC9wcm9qZWN0cy9haW1iZW5jaC9maWxlcy9haW0tc3VpdGU3LzwvYT4KCkluIGFkZGl0
-aW9uIHRvIHRoYXQsIHRoZSBjb21taXQgYWxzbyBoYXMgc2lnbmlmaWNhbnQgaW1wYWN0IG9uIHRo
-ZSBmb2xsb3dpbmcgdGVzdHM6CgorLS0tLS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LSsKfCB0ZXN0Y2FzZTogY2hhbmdlIHwgYWltOTogYWltOS51ZHBfdGVzdC5vcHNfcGVyX3NlYyAy
-LjElIGltcHJvdmVtZW50ICAgICAgICAgICAgICAgICAgICAgICAgICB8CnwgdGVzdCBtYWNoaW5l
-ICAgICB8IDI1NiB0aHJlYWRzIEludGVsKFIpIEdlbnVpbmUgSW50ZWwoUikgQ1BVIDAwMDAgQCAx
-LjMwR0h6IHdpdGggMTEyRyBtZW1vcnkgfAp8IHRlc3QgcGFyYW1ldGVycyAgfCBjcHVmcmVxX2dv
-dmVybm9yPXBlcmZvcm1hbmNlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIHwKfCAgICAgICAgICAgICAgICAgIHwgdGVzdD1hbGwgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8CnwgICAgICAg
-ICAgICAgICAgICB8IHRlc3R0aW1lPTVzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfAp8ICAgICAgICAgICAgICAgICAgfCB1Y29k
-ZT0weGZmZmYwMTkwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHwKKy0tLS0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCgoK
-SWYgeW91IGZpeCB0aGUgaXNzdWUsIGtpbmRseSBhZGQgZm9sbG93aW5nIHRhZwpSZXBvcnRlZC1i
-eToga2VybmVsIHRlc3Qgcm9ib3QgPGEgY2xhc3M9Im1vei10eHQtbGluay1yZmMyMzk2RSIgaHJl
-Zj0ibWFpbHRvOm9saXZlci5zYW5nQGludGVsLmNvbSI+Jmx0O29saXZlci5zYW5nQGludGVsLmNv
-bSZndDs8L2E+CgoKRGV0YWlscyBhcmUgYXMgYmVsb3c6Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tJmd0OwoKClRvIHJlcHJvZHVjZToKCiAgICAgICAgZ2l0IGNsb25l
-IDxhIGNsYXNzPSJtb3otdHh0LWxpbmstZnJlZXRleHQiIGhyZWY9Imh0dHBzOi8vZ2l0aHViLmNv
-bS9pbnRlbC9sa3AtdGVzdHMuZ2l0Ij5odHRwczovL2dpdGh1Yi5jb20vaW50ZWwvbGtwLXRlc3Rz
-LmdpdDwvYT4KICAgICAgICBjZCBsa3AtdGVzdHMKICAgICAgICBiaW4vbGtwIGluc3RhbGwgICAg
-ICAgICAgICAgICAgam9iLnlhbWwgICMgam9iIGZpbGUgaXMgYXR0YWNoZWQgaW4gdGhpcyBlbWFp
-bAogICAgICAgIGJpbi9sa3Agc3BsaXQtam9iIC0tY29tcGF0aWJsZSBqb2IueWFtbAogICAgICAg
-IGJpbi9sa3AgcnVuICAgICAgICAgICAgICAgICAgICBjb21wYXRpYmxlLWpvYi55YW1sCgo9PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjb21waWxlci9jcHVmcmVxX2dvdmVybm9yL2Rp
-c2svZnMva2NvbmZpZy9sb2FkL21kL3Jvb3Rmcy90Ym94X2dyb3VwL3Rlc3QvdGVzdGNhc2UvdWNv
-ZGU6CiAgZ2NjLTkvcGVyZm9ybWFuY2UvNEJSRF8xMkcvZXh0NC94ODZfNjQtcmhlbC04LjMvMTAw
-MC9SQUlEMS9kZWJpYW4tMTAuNC14ODZfNjQtMjAyMDA2MDMuY2d6L2xrcC1jc2wtMnNwOS9jcmVh
-dC1jbG8vYWltNy8weDUwMDMwMDYKCmNvbW1pdDogCiAgNDM5MmZiYzRiYSAoImV4dDQ6IGRyb3Ag
-c3luYyBhcmd1bWVudCBvZiBleHQ0X2NvbW1pdF9zdXBlcigpIikKICAwNWMyYzAwZjM3ICgiZXh0
-NDogcHJvdGVjdCBzdXBlcmJsb2NrIG1vZGlmaWNhdGlvbnMgd2l0aCBhIGJ1ZmZlciBsb2NrIikK
-CjQzOTJmYmM0YmFiNTdkYjMgMDVjMmMwMGYzNzY5YWJiOWUzMjNmY2FjYTcwIAotLS0tLS0tLS0t
-LS0tLS0tIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSAKICAgICAgICAgJXN0ZGRldiAgICAg
-JWNoYW5nZSAgICAgICAgICVzdGRkZXYKICAgICAgICAgICAgIFwgICAgICAgICAgfCAgICAgICAg
-ICAgICAgICBcICAKICAgICAxMzM0MiAgICAgICAgICAgLTExLjglICAgICAgMTE3NzEgsSAgMiUg
-IGFpbTcuam9icy1wZXItbWluCiAgICA0NDkuODEgICAgICAgICAgICsxMy40JSAgICAgNTEwLjEw
-ILEgIDIlICBhaW03LnRpbWUuZWxhcHNlZF90aW1lCiAgICA0NDkuODEgICAgICAgICAgICsxMy40
-JSAgICAgNTEwLjEwILEgIDIlICBhaW03LnRpbWUuZWxhcHNlZF90aW1lLm1heAogICAxMjQ2ODM0
-ILEgIDIlICAgICArMTMuOCUgICAgMTQxODU3NCCxICAzJSAgYWltNy50aW1lLmludm9sdW50YXJ5
-X2NvbnRleHRfc3dpdGNoZXMKICAgIDIwNDU2MiCxICA0JSAgICAgKzEyLjIlICAgICAyMjk0Nzgg
-sSAgMyUgIGFpbTcudGltZS5taW5vcl9wYWdlX2ZhdWx0cwogICAgIDM1Nzc3ICAgICAgICAgICAr
-MTIuOSUgICAgICA0MDM5MCCxICAyJSAgYWltNy50aW1lLnN5c3RlbV90aW1lCiAgIDYyNzA1MzAg
-sSAgMyUgICAgICszNC41JSAgICA4NDM1NTI2ILEgIDIlICBhaW03LnRpbWUudm9sdW50YXJ5X2Nv
-bnRleHRfc3dpdGNoZXMKICAgODY4NjY4OCCxIDEyJSAgICAgKzI0LjElICAgMTA3ODQyOTQgsSAg
-NCUgIGNwdWlkbGUuQzFFLnVzYWdlCiAgICAgIDguNzQgICAgICAgICAgICArNC41JSAgICAgICA5
-LjE0ICAgICAgICBpb3N0YXQuY3B1LmlkbGUKICAgICAgMC4wMiCxIDEyJSAgICAgIC0wLjAgICAg
-ICAgIDAuMDIgsSAgOSUgIG1wc3RhdC5jcHUuYWxsLmlvd2FpdCUKICAgICAgNjk4OCCxIDExJSAg
-ICAgKzQzLjElICAgICAgIDk5OTkgsSAgOSUgIG51bWEtbWVtaW5mby5ub2RlMC5BY3RpdmUoZmls
-ZSkKICAgMTQ0MDU4OSCxICA3JSAgICAgICs3LjglICAgIDE1NTI4OTAgsSAgNiUgIG51bWEtbnVt
-YXN0YXQubm9kZTEubnVtYV9oaXQKICAgICAgMTc0NyCxIDExJSAgICAgKzQzLjAlICAgICAgIDI0
-OTkgsSAgOSUgIG51bWEtdm1zdGF0Lm5vZGUwLm5yX2FjdGl2ZV9maWxlCiAgICAgIDE3NDcgsSAx
-MSUgICAgICs0My4wJSAgICAgICAyNDk5ILEgIDklICBudW1hLXZtc3RhdC5ub2RlMC5ucl96b25l
-X2FjdGl2ZV9maWxlCiAgICA0ODEuMDkgICAgICAgICAgICsxMi42JSAgICAgNTQxLjcxILEgIDIl
-ICB1cHRpbWUuYm9vdAogICAgICA1NTQxICAgICAgICAgICArMTAuOCUgICAgICAgNjE0MCAgICAg
-ICAgdXB0aW1lLmlkbGUKICAgICA0Mjc0MyAgICAgICAgICAgLTEwLjYlICAgICAgMzgyMDcgICAg
-ICAgIHNsYWJpbmZvLmZpbHAuYWN0aXZlX29ianMKICAgICAgMTQzMCAgICAgICAgICAgLTEwLjAl
-ICAgICAgIDEyODcgICAgICAgIHNsYWJpbmZvLmZpbHAuYWN0aXZlX3NsYWJzCiAgICAgNDU3ODUg
-ICAgICAgICAgIC0xMC4wJSAgICAgIDQxMjE0ICAgICAgICBzbGFiaW5mby5maWxwLm51bV9vYmpz
-CiAgICAgIDE0MzAgICAgICAgICAgIC0xMC4wJSAgICAgICAxMjg3ICAgICAgICBzbGFiaW5mby5m
-aWxwLm51bV9zbGFicwogICAgIDkxLjAwICAgICAgICAgICAgLTEuMSUgICAgICA5MC4wMCAgICAg
-ICAgdm1zdGF0LmNwdS5zeQogICAgICAyODUwILEgIDIlICAgICArMTQuNSUgICAgICAgMzI2MyAg
-ICAgICAgdm1zdGF0LmlvLmJvCiAgICAgMTM3MzkgsSAgMyUgICAgICsyOS4yJSAgICAgIDE3NzU0
-ILEgIDIlICB2bXN0YXQubWVtb3J5LmJ1ZmYKICAgICAyNTgyMiCxICAyJSAgICAgKzE0LjglICAg
-ICAgMjk2NDUgICAgICAgIHZtc3RhdC5zeXN0ZW0uY3MKICAgIDQ1Mjk4MSAgICAgICAgICAgKzEx
-LjclICAgICA1MDU3ODggsSAgMyUgIG1lbWluZm8uQWN0aXZlCiAgICA0MzkyNjQgICAgICAgICAg
-ICsxMS4xJSAgICAgNDg4MDc5ILEgIDMlICBtZW1pbmZvLkFjdGl2ZShhbm9uKQogICAgIDEzNzE1
-ILEgIDMlICAgICArMjkuMSUgICAgICAxNzcwOCCxICAyJSAgbWVtaW5mby5BY3RpdmUoZmlsZSkK
-ICAgICAxMzcxMyCxICAzJSAgICAgKzI5LjIlICAgICAgMTc3MjMgsSAgMiUgIG1lbWluZm8uQnVm
-ZmVycwogICAgNDU5Mjk0ICAgICAgICAgICArMTAuNiUgICAgIDUwNzk1NSCxICAzJSAgbWVtaW5m
-by5TaG1lbQogICAgMTA5ODI1ICAgICAgICAgICArMTEuMSUgICAgIDEyMTk5NiCxICAzJSAgcHJv
-Yy12bXN0YXQubnJfYWN0aXZlX2Fub24KICAgICAgMzQyOCCxICAzJSAgICAgKzI5LjElICAgICAg
-IDQ0MjYgsSAgMiUgIHByb2Mtdm1zdGF0Lm5yX2FjdGl2ZV9maWxlCiAgICAgIDE0MjcgICAgICAg
-ICAgICsxMy4zJSAgICAgICAxNjE4ILEgIDIlICBwcm9jLXZtc3RhdC5ucl9kaXJ0aWVkCiAgICAz
-NzY2NjkgICAgICAgICAgICArMy41JSAgICAgMzg5NzkyICAgICAgICBwcm9jLXZtc3RhdC5ucl9m
-aWxlX3BhZ2VzCiAgICAxMTQ4MjAgICAgICAgICAgICsxMC42JSAgICAgMTI2OTg3ILEgIDMlICBw
-cm9jLXZtc3RhdC5ucl9zaG1lbQogICAgICAxMzcyICAgICAgICAgICArMTUuMSUgICAgICAgMTU3
-OSCxICA0JSAgcHJvYy12bXN0YXQubnJfd3JpdHRlbgogICAgMTA5ODI1ICAgICAgICAgICArMTEu
-MSUgICAgIDEyMTk5NiCxICAzJSAgcHJvYy12bXN0YXQubnJfem9uZV9hY3RpdmVfYW5vbgogICAg
-ICAzNDI4ILEgIDMlICAgICArMjkuMSUgICAgICAgNDQyNiCxICAyJSAgcHJvYy12bXN0YXQubnJf
-em9uZV9hY3RpdmVfZmlsZQogICAgMTUxMTUzILEgIDUlICAgICArMTYuOSUgICAgIDE3NjY3OSCx
-ICAzJSAgcHJvYy12bXN0YXQubnVtYV9oaW50X2ZhdWx0cwogICAgMTA2ODE2ILEgIDclICAgICAr
-MTcuNCUgICAgIDEyNTQzNyCxICA0JSAgcHJvYy12bXN0YXQubnVtYV9oaW50X2ZhdWx0c19sb2Nh
-bAogICAyOTE1MTg2ICAgICAgICAgICAgKzUuNCUgICAgMzA3MTQ0NSAgICAgICAgcHJvYy12bXN0
-YXQubnVtYV9oaXQKICAgMjgzNTgwNyAgICAgICAgICAgICs1LjQlICAgIDI5ODg5NzYgICAgICAg
-IHByb2Mtdm1zdGF0Lm51bWFfbG9jYWwKICAgIDEyOTU2NiCxICAyJSAgICAgICs3LjQlICAgICAx
-MzkyMTIgsSAgNCUgIHByb2Mtdm1zdGF0LnBnYWN0aXZhdGUKICAgNDIzMzYxNyAgICAgICAgICAg
-ICsyLjglICAgIDQzNTM5NTEgICAgICAgIHByb2Mtdm1zdGF0LnBnYWxsb2Nfbm9ybWFsCiAgIDE2
-MjIzNTMgICAgICAgICAgICsxMi4wJSAgICAxODE2MzI2ICAgICAgICBwcm9jLXZtc3RhdC5wZ2Zh
-dWx0CiAgIDM4NjMyNTggICAgICAgICAgICArMi44JSAgICAzOTcwNjkwICAgICAgICBwcm9jLXZt
-c3RhdC5wZ2ZyZWUKICAgMTI5MDcyMyCxICAzJSAgICAgKzI5LjglICAgIDE2NzUyODggsSAgMiUg
-IHByb2Mtdm1zdGF0LnBncGdvdXQKICAgICA4NjI5OCAgICAgICAgICAgKzEwLjMlICAgICAgOTUy
-MjcgsSAgMyUgIHByb2Mtdm1zdGF0LnBncmV1c2UKICAgIDE4OS42NyCxICA1JSAgICAgIC05LjYl
-ICAgICAxNzEuNDUgsSAgNSUgIHNjaGVkX2RlYnVnLmNmc19ycTovLmxvYWRfYXZnLnN0ZGRldgog
-IDE1MDkwNjc1ICAgICAgICAgICArMTMuOSUgICAxNzE4MTMzMyAgICAgICAgc2NoZWRfZGVidWcu
-Y2ZzX3JxOi8ubWluX3ZydW50aW1lLmF2ZwogIDE1NDEwMjMwICAgICAgICAgICArMTQuMCUgICAx
-NzU2MzYwMiAgICAgICAgc2NoZWRfZGVidWcuY2ZzX3JxOi8ubWluX3ZydW50aW1lLm1heAogIDE0
-MTc5MjQxICAgICAgICAgICArMTMuOCUgICAxNjE0MjIyMCAgICAgICAgc2NoZWRfZGVidWcuY2Zz
-X3JxOi8ubWluX3ZydW50aW1lLm1pbgogICAgOTA5NDA1ILEgIDUlICAgICArMTMuNyUgICAgMTAz
-NDA4MSCxICA2JSAgc2NoZWRfZGVidWcuY2ZzX3JxOi8uc3ByZWFkMC5hdmcKICAgMTIyOTM3NyCx
-ICA0JSAgICAgKzE1LjIlICAgIDE0MTY2NzYgsSAgMyUgIHNjaGVkX2RlYnVnLmNmc19ycTovLnNw
-cmVhZDAubWF4CiAgICAyNDAyMTMgICAgICAgICAgICsxMi41JSAgICAgMjcwMzA4ICAgICAgICBz
-Y2hlZF9kZWJ1Zy5jcHUuY2xvY2suYXZnCiAgICAyNDAyMjUgICAgICAgICAgICsxMi41JSAgICAg
-MjcwMzIwICAgICAgICBzY2hlZF9kZWJ1Zy5jcHUuY2xvY2subWF4CiAgICAyNDAyMDAgICAgICAg
-ICAgICsxMi41JSAgICAgMjcwMjk1ICAgICAgICBzY2hlZF9kZWJ1Zy5jcHUuY2xvY2subWluCiAg
-ICAyMzc1ODAgICAgICAgICAgICsxMi41JSAgICAgMjY3MzE3ICAgICAgICBzY2hlZF9kZWJ1Zy5j
-cHUuY2xvY2tfdGFzay5hdmcKICAgIDIzNzc5NyAgICAgICAgICAgKzEyLjUlICAgICAyNjc1MjMg
-ICAgICAgIHNjaGVkX2RlYnVnLmNwdS5jbG9ja190YXNrLm1heAogICAgMjMyNzY3ICAgICAgICAg
-ICArMTIuOCUgICAgIDI2MjUwOCAgICAgICAgc2NoZWRfZGVidWcuY3B1LmNsb2NrX3Rhc2subWlu
-CiAgICAgNjQwMjIgsSAgMiUgICAgICszMS40JSAgICAgIDg0MTQxICAgICAgICBzY2hlZF9kZWJ1
-Zy5jcHUubnJfc3dpdGNoZXMuYXZnCiAgICAgNzcwNzMgICAgICAgICAgICsyOC44JSAgICAgIDk5
-MjkyILEgIDMlICBzY2hlZF9kZWJ1Zy5jcHUubnJfc3dpdGNoZXMubWF4CiAgICAgNjA5ODAgsSAg
-MiUgICAgICszMi41JSAgICAgIDgwNzc1ICAgICAgICBzY2hlZF9kZWJ1Zy5jcHUubnJfc3dpdGNo
-ZXMubWluCiAgICAgIDEzOTkgsSAgOCUgICAgICsyMy43JSAgICAgICAxNzMxILEgIDQlICBzY2hl
-ZF9kZWJ1Zy5jcHUubnJfdW5pbnRlcnJ1cHRpYmxlLm1heAogICAgMjQ4Ljk5ILEgIDYlICAgICAr
-MjEuNCUgICAgIDMwMi4xNSCxICA5JSAgc2NoZWRfZGVidWcuY3B1Lm5yX3VuaW50ZXJydXB0aWJs
-ZS5zdGRkZXYKICAgIDI0MDIwMCAgICAgICAgICAgKzEyLjUlICAgICAyNzAyOTUgICAgICAgIHNj
-aGVkX2RlYnVnLmNwdV9jbGsKICAgIDIzOTcwMyAgICAgICAgICAgKzEyLjYlICAgICAyNjk3OTcg
-ICAgICAgIHNjaGVkX2RlYnVnLmt0aW1lCiAgICAyNDA1NDMgICAgICAgICAgICsxMi41JSAgICAg
-MjcwNjI5ICAgICAgICBzY2hlZF9kZWJ1Zy5zY2hlZF9jbGsKIDEuMjIxZSsxMCAgICAgICAgICAg
-IC0xLjElICAxLjIwOGUrMTAgICAgICAgIHBlcmYtc3RhdC5pLmJyYW5jaC1pbnN0cnVjdGlvbnMK
-ICAgICAgMC4yMiCxIDIzJSAgICAgIC0wLjAgICAgICAgIDAuMTcgICAgICAgIHBlcmYtc3RhdC5p
-LmJyYW5jaC1taXNzLXJhdGUlCiAgMTQ3OTM3NzAgICAgICAgICAgICAtNi4wJSAgIDEzOTEyMTY3
-ICAgICAgICBwZXJmLXN0YXQuaS5icmFuY2gtbWlzc2VzCiAgICAgMjU5NTMgsSAgMiUgICAgICsx
-NC44JSAgICAgIDI5ODAzICAgICAgICBwZXJmLXN0YXQuaS5jb250ZXh0LXN3aXRjaGVzCiAgICAg
-IDQ4NjkgICAgICAgICAgICsxMy42JSAgICAgICA1NTMwICAgICAgICBwZXJmLXN0YXQuaS5jcHUt
-bWlncmF0aW9ucwogIDEuNjRlKzEwICAgICAgICAgICAgLTEuMyUgICAxLjYyZSsxMCAgICAgICAg
-cGVyZi1zdGF0LmkuZFRMQi1sb2FkcwogMS4wNzVlKzA5ICAgICAgICAgICAgLTkuOSUgIDkuNjgy
-ZSswOCCxICAyJSAgcGVyZi1zdGF0LmkuZFRMQi1zdG9yZXMKICAgIDQzMDg5MyCxICAyJSAgICAg
-KzExLjYlICAgICA0ODA4MjYgICAgICAgIHBlcmYtc3RhdC5pLmlUTEItbG9hZHMKIDYuMDcyZSsx
-MCAgICAgICAgICAgIC0xLjElICA2LjAwNWUrMTAgICAgICAgIHBlcmYtc3RhdC5pLmluc3RydWN0
-aW9ucwogICAgMzM4LjY5ICAgICAgICAgICAgLTEuNSUgICAgIDMzMy41MyAgICAgICAgcGVyZi1z
-dGF0LmkubWV0cmljLk0vc2VjCiAgIDYwMzk2ODIgICAgICAgICAgICAtNy44JSAgICA1NTY1NzY1
-ILEgIDIlICBwZXJmLXN0YXQuaS5ub2RlLXN0b3JlLW1pc3NlcwogICAgIDk2OTAyILEgIDIlICAg
-ICAgLTQuMCUgICAgICA5MzA0NSCxICAyJSAgcGVyZi1zdGF0Lmkubm9kZS1zdG9yZXMKICAgICAg
-MC4xMiAgICAgICAgICAgIC0wLjAgICAgICAgIDAuMTIgICAgICAgIHBlcmYtc3RhdC5vdmVyYWxs
-LmJyYW5jaC1taXNzLXJhdGUlCiAxLjIxOWUrMTAgICAgICAgICAgICAtMS4wJSAgMS4yMDZlKzEw
-ICAgICAgICBwZXJmLXN0YXQucHMuYnJhbmNoLWluc3RydWN0aW9ucwogIDE0NzQwNDY2ICAgICAg
-ICAgICAgLTUuOSUgICAxMzg3MjA5OSAgICAgICAgcGVyZi1zdGF0LnBzLmJyYW5jaC1taXNzZXMK
-ICAgICAyNTg3MyCxICAyJSAgICAgKzE0LjklICAgICAgMjk3MjIgICAgICAgIHBlcmYtc3RhdC5w
-cy5jb250ZXh0LXN3aXRjaGVzCiAgICAgIDQ4NTYgICAgICAgICAgICsxMy42JSAgICAgICA1NTE3
-ICAgICAgICBwZXJmLXN0YXQucHMuY3B1LW1pZ3JhdGlvbnMKIDEuNjM3ZSsxMCAgICAgICAgICAg
-IC0xLjIlICAxLjYxN2UrMTAgICAgICAgIHBlcmYtc3RhdC5wcy5kVExCLWxvYWRzCiAxLjA3MmUr
-MDkgICAgICAgICAgICAtOS45JSAgOS42NjVlKzA4ILEgIDIlICBwZXJmLXN0YXQucHMuZFRMQi1z
-dG9yZXMKICAgIDQyODc0NyCxICAyJSAgICAgKzExLjYlICAgICA0Nzg0ODcgICAgICAgIHBlcmYt
-c3RhdC5wcy5pVExCLWxvYWRzCiA2LjA2MWUrMTAgICAgICAgICAgICAtMS4xJSAgNS45OTZlKzEw
-ICAgICAgICBwZXJmLXN0YXQucHMuaW5zdHJ1Y3Rpb25zCiAgIDYwMjg3MjkgICAgICAgICAgICAt
-Ny44JSAgICA1NTU3MzQ4ILEgIDIlICBwZXJmLXN0YXQucHMubm9kZS1zdG9yZS1taXNzZXMKICAg
-ICA5Njg0MSAgICAgICAgICAgIC00LjElICAgICAgOTI4NDYgsSAgMyUgIHBlcmYtc3RhdC5wcy5u
-b2RlLXN0b3JlcwogMi43MzRlKzEzICAgICAgICAgICArMTIuMiUgIDMuMDY2ZSsxMyCxICAyJSAg
-cGVyZi1zdGF0LnRvdGFsLmluc3RydWN0aW9ucwogICAgICAxLjU0ILEgNzIlICAgICAtODYuOCUg
-ICAgICAgMC4yMCCxMjIxJSAgcGVyZi1zY2hlZC5zY2hfZGVsYXkuYXZnLm1zLmV4aXRfdG9fdXNl
-cl9tb2RlX3ByZXBhcmUuaXJxZW50cnlfZXhpdF90b191c2VyX21vZGUuYXNtX3N5c3ZlY19yZXNj
-aGVkdWxlX2lwaS5bdW5rbm93bl0KICAgICAgMC4xNyCxIDE5JSAgICAgLTQ3LjglICAgICAgIDAu
-MDkgsSAyMiUgIHBlcmYtc2NoZWQuc2NoX2RlbGF5LmF2Zy5tcy5wcmVlbXB0X3NjaGVkdWxlX2Nv
-bW1vbi5fY29uZF9yZXNjaGVkLl9fZXh0NF9qb3VybmFsX2dldF93cml0ZV9hY2Nlc3MuZXh0NF9v
-cnBoYW5fYWRkLmV4dDRfdHJ1bmNhdGUKICAgICAgMS41NyCxIDExJSAgICAgKzE4LjYlICAgICAg
-IDEuODYgsSAgNSUgIHBlcmYtc2NoZWQuc2NoX2RlbGF5LmF2Zy5tcy5wcmVlbXB0X3NjaGVkdWxl
-X2NvbW1vbi5fY29uZF9yZXNjaGVkLl9fZ2V0YmxrX2dmcC5fX2V4dDRfZ2V0X2lub2RlX2xvYy5l
-eHQ0X2dldF9pbm9kZV9sb2MKICAgICAgMS40NSCxIDM3JSAgICArMTI2LjclICAgICAgIDMuMjkg
-sSAzNCUgIHBlcmYtc2NoZWQuc2NoX2RlbGF5LmF2Zy5tcy5wcmVlbXB0X3NjaGVkdWxlX2NvbW1v
-bi5fY29uZF9yZXNjaGVkLmttZW1fY2FjaGVfYWxsb2MuamJkMl9fam91cm5hbF9zdGFydC5fX2V4
-dDRfam91cm5hbF9zdGFydF9zYgogICAgICAwLjU5ILEgMzQlICAgICArNTguNCUgICAgICAgMC45
-MyCxIDI0JSAgcGVyZi1zY2hlZC5zY2hfZGVsYXkuYXZnLm1zLnByZWVtcHRfc2NoZWR1bGVfY29t
-bW9uLl9jb25kX3Jlc2NoZWQuc3RvcF9vbmVfY3B1Lm1pZ3JhdGVfdGFza190by50YXNrX251bWFf
-bWlncmF0ZQogICAgICAzLjE2ILEgNjglICAgICAtODAuOCUgICAgICAgMC42MSCxMjIzJSAgcGVy
-Zi1zY2hlZC5zY2hfZGVsYXkubWF4Lm1zLmV4aXRfdG9fdXNlcl9tb2RlX3ByZXBhcmUuaXJxZW50
-cnlfZXhpdF90b191c2VyX21vZGUuYXNtX3N5c3ZlY19yZXNjaGVkdWxlX2lwaS5bdW5rbm93bl0K
-ICAgICAgOC41MiCxIDI4JSAgICAgKzgwLjUlICAgICAgMTUuMzggsSAyNSUgIHBlcmYtc2NoZWQu
-c2NoX2RlbGF5Lm1heC5tcy5wcmVlbXB0X3NjaGVkdWxlX2NvbW1vbi5fY29uZF9yZXNjaGVkLmtt
-ZW1fY2FjaGVfYWxsb2MuX19hbGxvY19maWxlLmFsbG9jX2VtcHR5X2ZpbGUKICAgIDE2MjUwMCCx
-ICA5JSAgICAgKzI1LjElICAgICAyMDMyOTggsSAxMCUgIHBlcmYtc2NoZWQudG90YWxfd2FpdF9h
-bmRfZGVsYXkuY291bnQubXMKICAgIDExNi4wOCCxICA5JSAgICAgLTIxLjclICAgICAgOTAuOTEg
-sSAxMyUgIHBlcmYtc2NoZWQud2FpdF9hbmRfZGVsYXkuYXZnLm1zLnByZWVtcHRfc2NoZWR1bGVf
-Y29tbW9uLl9jb25kX3Jlc2NoZWQuX19leHQ0X2hhbmRsZV9kaXJ0eV9tZXRhZGF0YS5leHQ0X2Rv
-X3VwZGF0ZV9pbm9kZS5leHQ0X21hcmtfaWxvY19kaXJ0eQogICAgMTM0LjcxILEgIDklICAgICAt
-MjQuNCUgICAgIDEwMS44MCCxICA3JSAgcGVyZi1zY2hlZC53YWl0X2FuZF9kZWxheS5hdmcubXMu
-cHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hlZC5fX2dldGJsa19nZnAuX19leHQ0
-X2dldF9pbm9kZV9sb2MuZXh0NF9nZXRfaW5vZGVfbG9jCiAgICAxNDUuMTYgsSAyMSUgICAgIC00
-Mi4wJSAgICAgIDg0LjEzILEgNDYlICBwZXJmLXNjaGVkLndhaXRfYW5kX2RlbGF5LmF2Zy5tcy5w
-cmVlbXB0X3NjaGVkdWxlX2NvbW1vbi5fY29uZF9yZXNjaGVkLl9fbXV0ZXhfbG9jay5pc3JhLjAK
-ICAgIDE1My4zNyCxIDMwJSAgICAgLTY4LjIlICAgICAgNDguNzggsTEwMyUgIHBlcmYtc2NoZWQu
-d2FpdF9hbmRfZGVsYXkuYXZnLm1zLnByZWVtcHRfc2NoZWR1bGVfY29tbW9uLl9jb25kX3Jlc2No
-ZWQuZXh0NF9qb3VybmFsX2NoZWNrX3N0YXJ0Ll9fZXh0NF9qb3VybmFsX3N0YXJ0X3NiLmV4dDRf
-dHJ1bmNhdGUKICAgICAxMC4xOSCxICA1JSAgICAgLTg0LjAlICAgICAgIDEuNjIgsTIyMyUgIHBl
-cmYtc2NoZWQud2FpdF9hbmRfZGVsYXkuYXZnLm1zLnByZWVtcHRfc2NoZWR1bGVfY29tbW9uLl9j
-b25kX3Jlc2NoZWQuc3RvcF9vbmVfY3B1Ll9fc2V0X2NwdXNfYWxsb3dlZF9wdHIuc2NoZWRfc2V0
-YWZmaW5pdHkKICAgICA3Ni4wOCCxIDExJSAgICAgLTIzLjYlICAgICAgNTguMTYgsSAxMiUgIHBl
-cmYtc2NoZWQud2FpdF9hbmRfZGVsYXkuYXZnLm1zLndhaXRfdHJhbnNhY3Rpb25fbG9ja2VkLmFk
-ZF90cmFuc2FjdGlvbl9jcmVkaXRzLnN0YXJ0X3RoaXNfaGFuZGxlLmpiZDJfX2pvdXJuYWxfc3Rh
-cnQKICAgICA2OS4zMyCxIDE0JSAgICAgKzM2LjUlICAgICAgOTQuNjcgsSAxMyUgIHBlcmYtc2No
-ZWQud2FpdF9hbmRfZGVsYXkuY291bnQuamJkMl9qb3VybmFsX2NvbW1pdF90cmFuc2FjdGlvbi5r
-am91cm5hbGQyLmt0aHJlYWQucmV0X2Zyb21fZm9yawogICAgODkwLjE3ILEgIDUlICAgICAtMzAu
-OCUgICAgIDYxNS44MyCxICA0JSAgcGVyZi1zY2hlZC53YWl0X2FuZF9kZWxheS5jb3VudC5wcmVl
-bXB0X3NjaGVkdWxlX2NvbW1vbi5fY29uZF9yZXNjaGVkLl9fZXh0NF9oYW5kbGVfZGlydHlfbWV0
-YWRhdGEuZXh0NF9kb191cGRhdGVfaW5vZGUuZXh0NF9tYXJrX2lsb2NfZGlydHkKICAgICAgMzE3
-NiCxIDE1JSAgICAgKzQzLjMlICAgICAgIDQ1NTEgsSAxNyUgIHBlcmYtc2NoZWQud2FpdF9hbmRf
-ZGVsYXkuY291bnQucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hlZC5fX2V4dDRf
-bWFya19pbm9kZV9kaXJ0eS5leHQ0X2RpcnR5X2lub2RlLl9fbWFya19pbm9kZV9kaXJ0eQogICAg
-MzQ5LjE3ILEgIDUlICAgICAtMTcuMyUgICAgIDI4OC44MyCxICA1JSAgcGVyZi1zY2hlZC53YWl0
-X2FuZF9kZWxheS5jb3VudC5wcmVlbXB0X3NjaGVkdWxlX2NvbW1vbi5fY29uZF9yZXNjaGVkLl9f
-Z2V0YmxrX2dmcC5fX2V4dDRfZ2V0X2lub2RlX2xvYy5leHQ0X2dldF9pbm9kZV9sb2MKICAgIDY1
-NC4xNyCxIDczJSAgICArMTA4LjMlICAgICAgIDEzNjIgsSAxOCUgIHBlcmYtc2NoZWQud2FpdF9h
-bmRfZGVsYXkuY291bnQucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hlZC5rbWVt
-X2NhY2hlX2FsbG9jLnN0YXJ0X3RoaXNfaGFuZGxlLmpiZDJfX2pvdXJuYWxfc3RhcnQKICAgIDk1
-My4zMyCxICAzJSAgICAgLTg0LjYlICAgICAxNDYuNjcgsTIyMyUgIHBlcmYtc2NoZWQud2FpdF9h
-bmRfZGVsYXkuY291bnQucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hlZC5zdG9w
-X29uZV9jcHUuX19zZXRfY3B1c19hbGxvd2VkX3B0ci5zY2hlZF9zZXRhZmZpbml0eQogICAgIDM1
-NjE1ILEgMTAlICAgICArMjYuNyUgICAgICA0NTEwOCCxIDEwJSAgcGVyZi1zY2hlZC53YWl0X2Fu
-ZF9kZWxheS5jb3VudC5zY2hlZHVsZV9wcmVlbXB0X2Rpc2FibGVkLl9fbXV0ZXhfbG9jay5pc3Jh
-LjAuZXh0NF9vcnBoYW5fYWRkCiAgICAgNTQ0NDQgsSAxNSUgICAgICs0NC43JSAgICAgIDc4Nzg0
-ILEgMTclICBwZXJmLXNjaGVkLndhaXRfYW5kX2RlbGF5LmNvdW50LndhaXRfdHJhbnNhY3Rpb25f
-bG9ja2VkLmFkZF90cmFuc2FjdGlvbl9jcmVkaXRzLnN0YXJ0X3RoaXNfaGFuZGxlLmpiZDJfX2pv
-dXJuYWxfc3RhcnQKICAgIDc0OS44MSCxICA1JSAgICAgLTE4LjYlICAgICA2MTAuMzggsSAgMyUg
-IHBlcmYtc2NoZWQud2FpdF9hbmRfZGVsYXkubWF4Lm1zLnByZWVtcHRfc2NoZWR1bGVfY29tbW9u
-Ll9jb25kX3Jlc2NoZWQuX19leHQ0X2hhbmRsZV9kaXJ0eV9tZXRhZGF0YS5leHQ0X2RvX3VwZGF0
-ZV9pbm9kZS5leHQ0X21hcmtfaWxvY19kaXJ0eQogICAgNzUxLjk5ILEgIDclICAgICAtMjEuNiUg
-ICAgIDU4OS4zNyCxICA1JSAgcGVyZi1zY2hlZC53YWl0X2FuZF9kZWxheS5tYXgubXMucHJlZW1w
-dF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hlZC5fX2dldGJsa19nZnAuX19leHQ0X2dldF9p
-bm9kZV9sb2MuZXh0NF9nZXRfaW5vZGVfbG9jCiAgICA1NDUuOTMgsSAxNyUgICAgIC0zMS41JSAg
-ICAgMzc0LjIxILEgMjQlICBwZXJmLXNjaGVkLndhaXRfYW5kX2RlbGF5Lm1heC5tcy5wcmVlbXB0
-X3NjaGVkdWxlX2NvbW1vbi5fY29uZF9yZXNjaGVkLl9fa21hbGxvYy5leHQ0X2V4dF9yZW1vdmVf
-c3BhY2UuZXh0NF9leHRfdHJ1bmNhdGUKICAgIDYxOS4xOCCxIDE3JSAgICAgLTQ1LjYlICAgICAz
-MzcuMTAgsSA0OSUgIHBlcmYtc2NoZWQud2FpdF9hbmRfZGVsYXkubWF4Lm1zLnByZWVtcHRfc2No
-ZWR1bGVfY29tbW9uLl9jb25kX3Jlc2NoZWQuX19tdXRleF9sb2NrLmlzcmEuMAogICAgNTczLjg2
-ILEgMjAlICAgICAtNjQuMCUgICAgIDIwNi42OCCxMTA0JSAgcGVyZi1zY2hlZC53YWl0X2FuZF9k
-ZWxheS5tYXgubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hlZC5leHQ0X2pv
-dXJuYWxfY2hlY2tfc3RhcnQuX19leHQ0X2pvdXJuYWxfc3RhcnRfc2IuZXh0NF90cnVuY2F0ZQog
-ICAgICAxMDY3ILEgMTIlICAgICAtODQuNCUgICAgIDE2Ni44MyCxMjIzJSAgcGVyZi1zY2hlZC53
-YWl0X2FuZF9kZWxheS5tYXgubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hl
-ZC5zdG9wX29uZV9jcHUuX19zZXRfY3B1c19hbGxvd2VkX3B0ci5zY2hlZF9zZXRhZmZpbml0eQog
-ICAgNjUwLjE5ILEgIDglICAgICAtMTMuMSUgICAgIDU2NC44NCCxICAzJSAgcGVyZi1zY2hlZC53
-YWl0X2FuZF9kZWxheS5tYXgubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hl
-ZC5zdG9wX29uZV9jcHUubWlncmF0ZV90YXNrX3RvLnRhc2tfbnVtYV9taWdyYXRlCiAgICA2NzYu
-NjggsSAgOSUgICAgIC0xNy44JSAgICAgNTU2LjM4ILEgIDMlICBwZXJmLXNjaGVkLndhaXRfYW5k
-X2RlbGF5Lm1heC5tcy5wcmVlbXB0X3NjaGVkdWxlX2NvbW1vbi5fY29uZF9yZXNjaGVkLndhaXRf
-Zm9yX2NvbXBsZXRpb24uc3RvcF90d29fY3B1cy5taWdyYXRlX3N3YXAKICAgIDc0NS45MCCxICA0
-JSAgICAgLTE4LjIlICAgICA2MDkuOTEgsSAgMiUgIHBlcmYtc2NoZWQud2FpdF9hbmRfZGVsYXku
-bWF4Lm1zLnJ3c2VtX2Rvd25fd3JpdGVfc2xvd3BhdGgucGF0aF9vcGVuYXQuZG9fZmlscF9vcGVu
-LmRvX3N5c19vcGVuYXQyCiAgICA3NzUuMjAgsSAgNiUgICAgIC0xOC45JSAgICAgNjI4Ljc5ICAg
-ICAgICBwZXJmLXNjaGVkLndhaXRfYW5kX2RlbGF5Lm1heC5tcy5zY2hlZHVsZV9wcmVlbXB0X2Rp
-c2FibGVkLl9fbXV0ZXhfbG9jay5pc3JhLjAuZXh0NF9vcnBoYW5fYWRkCiAgICA3NzAuMzcgsSAg
-NiUgICAgIC0xOC45JSAgICAgNjI0LjgxICAgICAgICBwZXJmLXNjaGVkLndhaXRfYW5kX2RlbGF5
-Lm1heC5tcy5zY2hlZHVsZV9wcmVlbXB0X2Rpc2FibGVkLl9fbXV0ZXhfbG9jay5pc3JhLjAuZXh0
-NF9vcnBoYW5fZGVsCiAgICAxMTQuNDkgsSAgOSUgICAgIC0yMi4xJSAgICAgIDg5LjE1ILEgMTMl
-ICBwZXJmLXNjaGVkLndhaXRfdGltZS5hdmcubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2Nv
-bmRfcmVzY2hlZC5fX2V4dDRfaGFuZGxlX2RpcnR5X21ldGFkYXRhLmV4dDRfZG9fdXBkYXRlX2lu
-b2RlLmV4dDRfbWFya19pbG9jX2RpcnR5CiAgICAxMzMuMTQgsSAgOSUgICAgIC0yNC45JSAgICAg
-IDk5Ljk0ILEgIDclICBwZXJmLXNjaGVkLndhaXRfdGltZS5hdmcubXMucHJlZW1wdF9zY2hlZHVs
-ZV9jb21tb24uX2NvbmRfcmVzY2hlZC5fX2dldGJsa19nZnAuX19leHQ0X2dldF9pbm9kZV9sb2Mu
-ZXh0NF9nZXRfaW5vZGVfbG9jCiAgICAxNDIuOTEgsSAyMiUgICAgIC0zNy45JSAgICAgIDg4Ljc0
-ILEgMjYlICBwZXJmLXNjaGVkLndhaXRfdGltZS5hdmcubXMucHJlZW1wdF9zY2hlZHVsZV9jb21t
-b24uX2NvbmRfcmVzY2hlZC5fX211dGV4X2xvY2suaXNyYS4wCiAgICAxMjAuMDUgsSAzOSUgICAg
-IC02MS43JSAgICAgIDQ2LjAwILEgOTYlICBwZXJmLXNjaGVkLndhaXRfdGltZS5hdmcubXMucHJl
-ZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hlZC5kb3duX3dyaXRlLmV4dDRfdHJ1bmNh
-dGUuZXh0NF9zZXRhdHRyCiAgICAxNTEuMTkgsSAzMCUgICAgIC01Ny4xJSAgICAgIDY0Ljg4ILEg
-NTMlICBwZXJmLXNjaGVkLndhaXRfdGltZS5hdmcubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24u
-X2NvbmRfcmVzY2hlZC5leHQ0X2pvdXJuYWxfY2hlY2tfc3RhcnQuX19leHQ0X2pvdXJuYWxfc3Rh
-cnRfc2IuZXh0NF90cnVuY2F0ZQogICAgICA0LjU1ILEgIDQlICAgICArMTIuOCUgICAgICAgNS4x
-MyCxICAzJSAgcGVyZi1zY2hlZC53YWl0X3RpbWUuYXZnLm1zLnByZWVtcHRfc2NoZWR1bGVfY29t
-bW9uLl9jb25kX3Jlc2NoZWQuamJkMl9qb3VybmFsX2NvbW1pdF90cmFuc2FjdGlvbi5ram91cm5h
-bGQyLmt0aHJlYWQKICAgICA3NC4zNiCxIDExJSAgICAgLTI0LjMlICAgICAgNTYuMjggsSAxMyUg
-IHBlcmYtc2NoZWQud2FpdF90aW1lLmF2Zy5tcy53YWl0X3RyYW5zYWN0aW9uX2xvY2tlZC5hZGRf
-dHJhbnNhY3Rpb25fY3JlZGl0cy5zdGFydF90aGlzX2hhbmRsZS5qYmQyX19qb3VybmFsX3N0YXJ0
-CiAgICA3NDkuNjQgsSAgNSUgICAgIC0xOC42JSAgICAgNjEwLjM3ILEgIDMlICBwZXJmLXNjaGVk
-LndhaXRfdGltZS5tYXgubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hlZC5f
-X2V4dDRfaGFuZGxlX2RpcnR5X21ldGFkYXRhLmV4dDRfZG9fdXBkYXRlX2lub2RlLmV4dDRfbWFy
-a19pbG9jX2RpcnR5CiAgICA3NTEuOTggsSAgNyUgICAgIC0yMS42JSAgICAgNTg5LjM3ILEgIDUl
-ICBwZXJmLXNjaGVkLndhaXRfdGltZS5tYXgubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2Nv
-bmRfcmVzY2hlZC5fX2dldGJsa19nZnAuX19leHQ0X2dldF9pbm9kZV9sb2MuZXh0NF9nZXRfaW5v
-ZGVfbG9jCiAgICA1NDUuOTIgsSAxNyUgICAgIC0zMi4wJSAgICAgMzcxLjQwILEgMjQlICBwZXJm
-LXNjaGVkLndhaXRfdGltZS5tYXgubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVz
-Y2hlZC5fX2ttYWxsb2MuZXh0NF9leHRfcmVtb3ZlX3NwYWNlLmV4dDRfZXh0X3RydW5jYXRlCiAg
-ICA2MTkuMTcgsSAxNyUgICAgIC0zOC43JSAgICAgMzc5LjMyILEgMjMlICBwZXJmLXNjaGVkLndh
-aXRfdGltZS5tYXgubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24uX2NvbmRfcmVzY2hlZC5fX211
-dGV4X2xvY2suaXNyYS4wCiAgICA1NzEuNjkgsSAyMCUgICAgIC01Mi4xJSAgICAgMjczLjYwILEg
-NTYlICBwZXJmLXNjaGVkLndhaXRfdGltZS5tYXgubXMucHJlZW1wdF9zY2hlZHVsZV9jb21tb24u
-X2NvbmRfcmVzY2hlZC5leHQ0X2pvdXJuYWxfY2hlY2tfc3RhcnQuX19leHQ0X2pvdXJuYWxfc3Rh
-cnRfc2IuZXh0NF90cnVuY2F0ZQogICAgNjUwLjE3ILEgIDglICAgICAtMTMuMSUgICAgIDU2NC44
-MyCxICAzJSAgcGVyZi1zY2hlZC53YWl0X3RpbWUubWF4Lm1zLnByZWVtcHRfc2NoZWR1bGVfY29t
-bW9uLl9jb25kX3Jlc2NoZWQuc3RvcF9vbmVfY3B1Lm1pZ3JhdGVfdGFza190by50YXNrX251bWFf
-bWlncmF0ZQogICAgNjc2LjY3ILEgIDklICAgICAtMTcuOCUgICAgIDU1Ni4zNyCxICAzJSAgcGVy
-Zi1zY2hlZC53YWl0X3RpbWUubWF4Lm1zLnByZWVtcHRfc2NoZWR1bGVfY29tbW9uLl9jb25kX3Jl
-c2NoZWQud2FpdF9mb3JfY29tcGxldGlvbi5zdG9wX3R3b19jcHVzLm1pZ3JhdGVfc3dhcAogICAg
-NzQ1LjQwILEgIDQlICAgICAtMTguMyUgICAgIDYwOS4yOSCxICAyJSAgcGVyZi1zY2hlZC53YWl0
-X3RpbWUubWF4Lm1zLnJ3c2VtX2Rvd25fd3JpdGVfc2xvd3BhdGgucGF0aF9vcGVuYXQuZG9fZmls
-cF9vcGVuLmRvX3N5c19vcGVuYXQyCiAgICA3NjkuMzcgsSAgNiUgICAgIC0xOS4wJSAgICAgNjIy
-Ljg3ILEgIDIlICBwZXJmLXNjaGVkLndhaXRfdGltZS5tYXgubXMuc2NoZWR1bGVfcHJlZW1wdF9k
-aXNhYmxlZC5fX211dGV4X2xvY2suaXNyYS4wLmV4dDRfb3JwaGFuX2FkZAogICAgNzY5LjM1ILEg
-IDYlICAgICAtMTkuMSUgICAgIDYyMi42MSCxICAyJSAgcGVyZi1zY2hlZC53YWl0X3RpbWUubWF4
-Lm1zLnNjaGVkdWxlX3ByZWVtcHRfZGlzYWJsZWQuX19tdXRleF9sb2NrLmlzcmEuMC5leHQ0X29y
-cGhhbl9kZWwKICAgICAgMC41OSCxICA0JSAgICAgIC0wLjIgICAgICAgIDAuMzUgsSA3MCUgIHBl
-cmYtcHJvZmlsZS5jYWxsdHJhY2UuY3ljbGVzLXBwLmV4dDRfZXh0X3RydW5jYXRlLmV4dDRfdHJ1
-bmNhdGUuZXh0NF9zZXRhdHRyLm5vdGlmeV9jaGFuZ2UuZG9fdHJ1bmNhdGUKICAgICAgMC44MSCx
-ICAzJSAgICAgIC0wLjEgICAgICAgIDAuNzAgsSAgNCUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5j
-eWNsZXMtcHAuZXh0NF9yZXNlcnZlX2lub2RlX3dyaXRlCiAgICAgIDAuODkgsSAgMyUgICAgICAt
-MC4xICAgICAgICAwLjc4ILEgIDMlICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLl9f
-ZXh0NF9tYXJrX2lub2RlX2RpcnR5CiAgICAgIDEuMDAgsSAgMiUgICAgICAtMC4xICAgICAgICAw
-Ljg5ILEgIDMlICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLmV4dDRfbWFya19pbG9j
-X2RpcnR5CiAgICAgIDAuNTkgsSAgNCUgICAgICAtMC4xICAgICAgICAwLjUyILEgIDQlICBwZXJm
-LXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLmV4dDRfZXh0X3RydW5jYXRlCiAgICAgIDAuNjUg
-sSAgMiUgICAgICAtMC4xICAgICAgICAwLjU5ILEgIDQlICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4u
-Y3ljbGVzLXBwLmV4dDRfZG9fdXBkYXRlX2lub2RlCiAgICAgIDAuMzIgsSAgMiUgICAgICAtMC4w
-ICAgICAgICAwLjI4ILEgIDIlICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLl9fbXV0
-ZXhfdW5sb2NrX3Nsb3dwYXRoCiAgICAgIDAuMzUgsSAgNCUgICAgICAtMC4wICAgICAgICAwLjMw
-ILEgIDQlICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLmV4dDRfZXh0X3JlbW92ZV9z
-cGFjZQogICAgICAwLjIxILEgIDMlICAgICAgLTAuMCAgICAgICAgMC4xNyCxICA0JSAgcGVyZi1w
-cm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5fX2dldGJsa19nZnAKICAgICAgMC4xNSCxIDEzJSAg
-ICAgIC0wLjAgICAgICAgIDAuMTEgsSAxNSUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMt
-cHAucnVuX2tzb2Z0aXJxZAogICAgICAwLjE4ILEgIDMlICAgICAgLTAuMCAgICAgICAgMC4xNCCx
-ICA1JSAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5jcmMzMmNfcGNsX2ludGVsX3Vw
-ZGF0ZQogICAgICAwLjE1ILEgMTElICAgICAgLTAuMCAgICAgICAgMC4xMiCxIDExJSAgcGVyZi1w
-cm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5zbXBib290X3RocmVhZF9mbgogICAgICAwLjE4ILEg
-IDIlICAgICAgLTAuMCAgICAgICAgMC4xNSCxICA0JSAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5
-Y2xlcy1wcC5fX2ZpbmRfZ2V0X2Jsb2NrCiAgICAgIDAuMTIgsSAgNCUgICAgICAtMC4wICAgICAg
-ICAwLjA5ILEgIDUlICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLm11dGV4X3VubG9j
-awogICAgICAwLjE1ILEgIDMlICAgICAgLTAuMCAgICAgICAgMC4xMiCxICA1JSAgcGVyZi1wcm9m
-aWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5leHQ0X2lub2RlX2NzdW1fc2V0CiAgICAgIDAuMjQgsSAg
-MyUgICAgICAtMC4wICAgICAgICAwLjIxILEgIDMlICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3lj
-bGVzLXBwLl9fY2xvc2UKICAgICAgMC4xMCCxICA5JSAgICAgIC0wLjAgICAgICAgIDAuMDggsSAx
-MiUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAub3NxX3VubG9jawogICAgICAwLjIw
-ILEgIDMlICAgICAgLTAuMCAgICAgICAgMC4xOCCxICAzJSAgcGVyZi1wcm9maWxlLmNoaWxkcmVu
-LmN5Y2xlcy1wcC5leGl0X3RvX3VzZXJfbW9kZV9wcmVwYXJlCiAgICAgIDAuMTQgsSAgMyUgICAg
-ICAtMC4wICAgICAgICAwLjEyILEgIDMlICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBw
-Lndha2VfdXBfcQogICAgICAwLjEwILEgIDQlICAgICAgLTAuMCAgICAgICAgMC4wOCCxICA1JSAg
-cGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5jYXBfaW5vZGVfbmVlZF9raWxscHJpdgog
-ICAgICAwLjEyILEgIDQlICAgICAgLTAuMCAgICAgICAgMC4xMSCxICA2JSAgcGVyZi1wcm9maWxl
-LmNoaWxkcmVuLmN5Y2xlcy1wcC5tdXRleF9sb2NrCiAgICAgIDAuMDggICAgICAgICAgICAtMC4w
-ICAgICAgICAwLjA2ILEgIDclICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLmV4dDRf
-eGF0dHJfZ2V0CiAgICAgIDAuMTEgICAgICAgICAgICAtMC4wICAgICAgICAwLjA5ILEgIDUlICBw
-ZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLmRlbnRyeV9uZWVkc19yZW1vdmVfcHJpdnMK
-ICAgICAgMC4xMCAgICAgICAgICAgIC0wLjAgICAgICAgIDAuMDggsSAgNSUgIHBlcmYtcHJvZmls
-ZS5jaGlsZHJlbi5jeWNsZXMtcHAuX192ZnNfZ2V0eGF0dHIKICAgICAgMC4xMSCxICAzJSAgICAg
-IC0wLjAgICAgICAgIDAuMTAgsSAgMyUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAu
-YWxsb2NfZW1wdHlfZmlsZQogICAgICAwLjExICAgICAgICAgICAgLTAuMCAgICAgICAgMC4xMCCx
-ICA0JSAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5fX2FsbG9jX2ZpbGUKICAgICAg
-MC4xOCCxICA2JSAgICAgICswLjAgICAgICAgIDAuMjAgsSAgNCUgIHBlcmYtcHJvZmlsZS5jaGls
-ZHJlbi5jeWNsZXMtcHAuZG9fc29mdGlycV9vd25fc3RhY2sKICAgICAgMC4xOSCxICA2JSAgICAg
-ICswLjAgICAgICAgIDAuMjEgsSAgNCUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAu
-aXJxX2V4aXRfcmN1CiAgICAgIDAuMDMgsTEwMCUgICAgICArMC4wICAgICAgICAwLjA3ILEgIDcl
-ICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLmt0aW1lX2dldF91cGRhdGVfb2Zmc2V0
-c19ub3cKICAgICAgMC4wNiCxIDQ1JSAgICAgICswLjAgICAgICAgIDAuMTAgsSAxMSUgIHBlcmYt
-cHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAua3RpbWVfZ2V0CiAgICAgIDAuNjkgICAgICAgICAg
-ICArMC4xICAgICAgICAwLjc1ICAgICAgICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBw
-Lm11dGV4X3NwaW5fb25fb3duZXIKICAgICAgMC4zNSCxICA2JSAgICAgICswLjEgICAgICAgIDAu
-NDIgsSAgNiUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAuX19ocnRpbWVyX3J1bl9x
-dWV1ZXMKICAgICAgMC4zMCCxICA1JSAgICAgICswLjEgICAgICAgIDAuMzggsSAgOCUgIHBlcmYt
-cHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAudGlja19zY2hlZF90aW1lcgogICAgICAwLjQ3ILEg
-IDclICAgICAgKzAuMSAgICAgICAgMC41NyCxICA3JSAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5
-Y2xlcy1wcC5ocnRpbWVyX2ludGVycnVwdAogICAgICAwLjQ3ILEgIDclICAgICAgKzAuMSAgICAg
-ICAgMC41OCCxICA3JSAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5fX3N5c3ZlY19h
-cGljX3RpbWVyX2ludGVycnVwdAogICAgICAwLjY4ILEgIDYlICAgICAgKzAuMSAgICAgICAgMC44
-MCCxICA0JSAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5hc21fY2FsbF9zeXN2ZWNf
-b25fc3RhY2sKICAgICAgMC42OCCxICA2JSAgICAgICswLjEgICAgICAgIDAuODEgsSAgNCUgIHBl
-cmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAuc3lzdmVjX2FwaWNfdGltZXJfaW50ZXJydXB0
-CiAgICAgIDAuNzIgsSAgNyUgICAgICArMC4xICAgICAgICAwLjg1ILEgIDQlICBwZXJmLXByb2Zp
-bGUuY2hpbGRyZW4uY3ljbGVzLXBwLmFzbV9zeXN2ZWNfYXBpY190aW1lcl9pbnRlcnJ1cHQKICAg
-ICAgMC4yNCAgICAgICAgICAgIC0wLjAgICAgICAgIDAuMTkgsSAgMyUgIHBlcmYtcHJvZmlsZS5z
-ZWxmLmN5Y2xlcy1wcC5leHQ0X3Jlc2VydmVfaW5vZGVfd3JpdGUKICAgICAgMC4yOSCxICA0JSAg
-ICAgIC0wLjAgICAgICAgIDAuMjQgsSAgMiUgIHBlcmYtcHJvZmlsZS5zZWxmLmN5Y2xlcy1wcC5l
-eHQ0X21hcmtfaWxvY19kaXJ0eQogICAgICAwLjMyILEgIDMlICAgICAgLTAuMCAgICAgICAgMC4y
-NyCxICA0JSAgcGVyZi1wcm9maWxlLnNlbGYuY3ljbGVzLXBwLl9fbXV0ZXhfbG9jawogICAgICAw
-LjA3ILEgIDclICAgICAgLTAuMCAgICAgICAgMC4wMyCxMTAwJSAgcGVyZi1wcm9maWxlLnNlbGYu
-Y3ljbGVzLXBwLmV4dDRfaW5vZGVfY3N1bV9zZXQKICAgICAgMC4xMiCxICA0JSAgICAgIC0wLjAg
-ICAgICAgIDAuMDkgsSAgNSUgIHBlcmYtcHJvZmlsZS5zZWxmLmN5Y2xlcy1wcC5tdXRleF91bmxv
-Y2sKICAgICAgMC4xMiCxICA1JSAgICAgIC0wLjAgICAgICAgIDAuMTAgsSAgNyUgIHBlcmYtcHJv
-ZmlsZS5zZWxmLmN5Y2xlcy1wcC5tdXRleF9sb2NrCiAgICAgIDAuMTAgsSAgNiUgICAgICAtMC4w
-ICAgICAgICAwLjA4ILEgMTIlICBwZXJmLXByb2ZpbGUuc2VsZi5jeWNsZXMtcHAub3NxX3VubG9j
-awogICAgICAwLjEyICAgICAgICAgICAgLTAuMCAgICAgICAgMC4xMCAgICAgICAgcGVyZi1wcm9m
-aWxlLnNlbGYuY3ljbGVzLXBwLl9yYXdfc3Bpbl9sb2NrCiAgICAgIDAuMDkgsSAgNyUgICAgICAt
-MC4wICAgICAgICAwLjA3ILEgIDYlICBwZXJmLXByb2ZpbGUuc2VsZi5jeWNsZXMtcHAuX19maW5k
-X2dldF9ibG9jawogICAgICAwLjA3ILEgIDUlICAgICAgLTAuMCAgICAgICAgMC4wNSCxICA4JSAg
-cGVyZi1wcm9maWxlLnNlbGYuY3ljbGVzLXBwLmV4dDRfeGF0dHJfZ2V0CiAgICAgIDAuMDkgICAg
-ICAgICAgICAtMC4wICAgICAgICAwLjA4ILEgIDYlICBwZXJmLXByb2ZpbGUuc2VsZi5jeWNsZXMt
-cHAuX3Jhd19zcGluX2xvY2tfaXJxc2F2ZQogICAgICAwLjA1ILEgNDUlICAgICAgKzAuMCAgICAg
-ICAgMC4wOSCxIDEyJSAgcGVyZi1wcm9maWxlLnNlbGYuY3ljbGVzLXBwLmt0aW1lX2dldAogICAg
-ICAwLjAyILExNDElICAgICAgKzAuMCAgICAgICAgMC4wNiAgICAgICAgcGVyZi1wcm9maWxlLnNl
-bGYuY3ljbGVzLXBwLmt0aW1lX2dldF91cGRhdGVfb2Zmc2V0c19ub3cKICAgICAgMC42OCAgICAg
-ICAgICAgICswLjEgICAgICAgIDAuNzQgsSAgMiUgIHBlcmYtcHJvZmlsZS5zZWxmLmN5Y2xlcy1w
-cC5tdXRleF9zcGluX29uX293bmVyCiAgICAgIDAuMDIgsTE0MSUgICAgICArMC4xICAgICAgICAw
-LjA4ILEgIDglICBwZXJmLXByb2ZpbGUuc2VsZi5jeWNsZXMtcHAuZXh0NF9vcnBoYW5fYWRkCiAg
-ICAgMjA4MjMgsSAgMiUgICAgICsxNC4yJSAgICAgIDIzNzc1ILEgIDMlICBzb2Z0aXJxcy5DUFUw
-LlNDSEVECiAgICAgMTc1MzkgsSAgMiUgICAgICsyMi40JSAgICAgIDIxNDYwILEgIDUlICBzb2Z0
-aXJxcy5DUFUxLlNDSEVECiAgICAgMTcxMjIgICAgICAgICAgICsxOS45JSAgICAgIDIwNTI3ICAg
-ICAgICBzb2Z0aXJxcy5DUFUxMC5TQ0hFRAogICAgIDE3MDU1ILEgIDIlICAgICArMTkuOCUgICAg
-ICAyMDQzMyAgICAgICAgc29mdGlycXMuQ1BVMTEuU0NIRUQKICAgICAxNjkxOSAgICAgICAgICAg
-KzIxLjQlICAgICAgMjA1MzggICAgICAgIHNvZnRpcnFzLkNQVTEyLlNDSEVECiAgICAgMTcwMTMg
-sSAgMiUgICAgICsyMC42JSAgICAgIDIwNTEwILEgIDIlICBzb2Z0aXJxcy5DUFUxMy5TQ0hFRAog
-ICAgIDE3MTE5ICAgICAgICAgICArMTkuOCUgICAgICAyMDUwMSAgICAgICAgc29mdGlycXMuQ1BV
-MTQuU0NIRUQKICAgICAxNzE1OCAgICAgICAgICAgKzE5LjElICAgICAgMjA0MzEgsSAgMiUgIHNv
-ZnRpcnFzLkNQVTE1LlNDSEVECiAgICAgMTcyMjMgICAgICAgICAgICsxOC43JSAgICAgIDIwNDQz
-ICAgICAgICBzb2Z0aXJxcy5DUFUxNi5TQ0hFRAogICAgIDE2OTY5ILEgIDIlICAgICArMTkuNyUg
-ICAgICAyMDMwNSAgICAgICAgc29mdGlycXMuQ1BVMTcuU0NIRUQKICAgICAxNjk5NyAgICAgICAg
-ICAgKzIwLjMlICAgICAgMjA0NDEgICAgICAgIHNvZnRpcnFzLkNQVTE4LlNDSEVECiAgICAgMTcx
-MjYgICAgICAgICAgICsxOS4xJSAgICAgIDIwMzk5ICAgICAgICBzb2Z0aXJxcy5DUFUxOS5TQ0hF
-RAogICAgIDE3NTQ0ILEgIDMlICAgICArMTguNSUgICAgICAyMDc5NiCxICA1JSAgc29mdGlycXMu
-Q1BVMi5TQ0hFRAogICAgIDE3MjA3ICAgICAgICAgICArMTkuMSUgICAgICAyMDQ4OSAgICAgICAg
-c29mdGlycXMuQ1BVMjAuU0NIRUQKICAgICAxNzIxNSAgICAgICAgICAgKzE3LjQlICAgICAgMjAy
-MTkgICAgICAgIHNvZnRpcnFzLkNQVTIxLlNDSEVECiAgICAgMTY1NzQgICAgICAgICAgICsxOS4y
-JSAgICAgIDE5NzU4ILEgIDMlICBzb2Z0aXJxcy5DUFUyMi5TQ0hFRAogICAgIDE2OTAxILEgIDIl
-ICAgICArMTcuNyUgICAgICAxOTg5MyCxICAyJSAgc29mdGlycXMuQ1BVMjMuU0NIRUQKICAgICAx
-NjkwMSCxICAzJSAgICAgKzE5LjQlICAgICAgMjAxODAgsSAgMiUgIHNvZnRpcnFzLkNQVTI0LlND
-SEVECiAgICAgMTY4MTggICAgICAgICAgICsxOS41JSAgICAgIDIwMDk5ILEgIDIlICBzb2Z0aXJx
-cy5DUFUyNS5TQ0hFRAogICAgIDE2ODkyICAgICAgICAgICArMTguNiUgICAgICAyMDAzOSAgICAg
-ICAgc29mdGlycXMuQ1BVMjYuU0NIRUQKICAgICAxNjgzOSAgICAgICAgICAgKzIwLjAlICAgICAg
-MjAyMDUgICAgICAgIHNvZnRpcnFzLkNQVTI3LlNDSEVECiAgICAgMTY5MjYgICAgICAgICAgICsx
-OC43JSAgICAgIDIwMDkxICAgICAgICBzb2Z0aXJxcy5DUFUyOC5TQ0hFRAogICAgIDE2NzYyILEg
-IDIlICAgICArMjAuMSUgICAgICAyMDEyNSAgICAgICAgc29mdGlycXMuQ1BVMjkuU0NIRUQKICAg
-ICAxNzA1MCCxICAyJSAgICAgKzE5LjclICAgICAgMjA0MTAgsSAgMiUgIHNvZnRpcnFzLkNQVTMu
-U0NIRUQKICAgICAxNjk2MSAgICAgICAgICAgKzE5LjclICAgICAgMjAzMDQgsSAgMiUgIHNvZnRp
-cnFzLkNQVTMwLlNDSEVECiAgICAgMTcwMTMgICAgICAgICAgICsxOS4wJSAgICAgIDIwMjM4ILEg
-IDIlICBzb2Z0aXJxcy5DUFUzMS5TQ0hFRAogICAgIDE2ODM2ICAgICAgICAgICArMjIuNCUgICAg
-ICAyMDU5OSCxICAzJSAgc29mdGlycXMuQ1BVMzIuU0NIRUQKICAgICAxNzE2MCAgICAgICAgICAg
-KzE3LjUlICAgICAgMjAxNjQgICAgICAgIHNvZnRpcnFzLkNQVTMzLlNDSEVECiAgICAgMTY2NTgg
-sSAgMiUgICAgICsyMS43JSAgICAgIDIwMjY4ILEgIDIlICBzb2Z0aXJxcy5DUFUzNC5TQ0hFRAog
-ICAgIDE2OTgwILEgIDIlICAgICArMTguMiUgICAgICAyMDA2OSCxICAzJSAgc29mdGlycXMuQ1BV
-MzUuU0NIRUQKICAgICAxNjcyMCAgICAgICAgICAgKzIwLjAlICAgICAgMjAwNjcgsSAgMiUgIHNv
-ZnRpcnFzLkNQVTM2LlNDSEVECiAgICAgMTcwNDMgICAgICAgICAgICsxOS4zJSAgICAgIDIwMzM4
-ICAgICAgICBzb2Z0aXJxcy5DUFUzNy5TQ0hFRAogICAgIDE2OTM1ILEgIDIlICAgICArMjAuMCUg
-ICAgICAyMDMyMSAgICAgICAgc29mdGlycXMuQ1BVMzguU0NIRUQKICAgICAxNzAzMSAgICAgICAg
-ICAgKzE5LjUlICAgICAgMjAzNDkgICAgICAgIHNvZnRpcnFzLkNQVTM5LlNDSEVECiAgICAgMTc0
-NTcgsSAgMyUgICAgICsxNy4xJSAgICAgIDIwNDM4ICAgICAgICBzb2Z0aXJxcy5DUFU0LlNDSEVE
-CiAgICAgMTY5NzcgICAgICAgICAgICsyMC4xJSAgICAgIDIwMzkzILEgIDIlICBzb2Z0aXJxcy5D
-UFU0MC5TQ0hFRAogICAgIDE2ODczICAgICAgICAgICArMjAuNyUgICAgICAyMDM2OSAgICAgICAg
-c29mdGlycXMuQ1BVNDEuU0NIRUQKICAgICAxNzIxNiCxICAyJSAgICAgKzE3LjYlICAgICAgMjAy
-MzggsSAgMiUgIHNvZnRpcnFzLkNQVTQyLlNDSEVECiAgICAgMTcwNDUgsSAgMiUgICAgICsxOS4z
-JSAgICAgIDIwMzQyILEgIDIlICBzb2Z0aXJxcy5DUFU0My5TQ0hFRAogICAgIDE2MTc1ILEgIDMl
-ICAgICArMjAuNCUgICAgICAxOTQ3MyCxICAyJSAgc29mdGlycXMuQ1BVNDQuU0NIRUQKICAgICAx
-NjkxMyCxICAyJSAgICAgKzE4LjYlICAgICAgMjAwNTEgICAgICAgIHNvZnRpcnFzLkNQVTQ1LlND
-SEVECiAgICAgMTY5ODkgsSAgMiUgICAgICsxNy42JSAgICAgIDE5OTgwICAgICAgICBzb2Z0aXJx
-cy5DUFU0Ni5TQ0hFRAogICAgIDE2Nzc0ILEgIDIlICAgICArMTguOSUgICAgICAxOTk0OSAgICAg
-ICAgc29mdGlycXMuQ1BVNDcuU0NIRUQKICAgICAxNjkyMiCxICAyJSAgICAgKzE5LjElICAgICAg
-MjAxNjIgICAgICAgIHNvZnRpcnFzLkNQVTQ4LlNDSEVECiAgICAgMTY5MzMgsSAgMyUgICAgICsx
-OS44JSAgICAgIDIwMjg2ICAgICAgICBzb2Z0aXJxcy5DUFU0OS5TQ0hFRAogICAgIDE3MTM1ILEg
-IDMlICAgICArMjAuMSUgICAgICAyMDU4NSAgICAgICAgc29mdGlycXMuQ1BVNS5TQ0hFRAogICAg
-IDE2OTk4ILEgIDIlICAgICArMTYuOCUgICAgICAxOTg0NyAgICAgICAgc29mdGlycXMuQ1BVNTAu
-U0NIRUQKICAgICAxNjgxNSCxICAyJSAgICAgKzE5LjQlICAgICAgMjAwNzcgICAgICAgIHNvZnRp
-cnFzLkNQVTUxLlNDSEVECiAgICAgMTY5NjIgICAgICAgICAgICsxOC42JSAgICAgIDIwMTExICAg
-ICAgICBzb2Z0aXJxcy5DUFU1Mi5TQ0hFRAogICAgIDE2ODUzILEgIDIlICAgICArMjAuMCUgICAg
-ICAyMDIyNCAgICAgICAgc29mdGlycXMuQ1BVNTMuU0NIRUQKICAgICAxNzAwMiAgICAgICAgICAg
-KzE5LjUlICAgICAgMjAzMjAgICAgICAgIHNvZnRpcnFzLkNQVTU0LlNDSEVECiAgICAgMTcwMjUg
-sSAgMiUgICAgICsxOC44JSAgICAgIDIwMjI4ILEgIDIlICBzb2Z0aXJxcy5DUFU1NS5TQ0hFRAog
-ICAgIDE2ODUxICAgICAgICAgICArMTkuOCUgICAgICAyMDE5MCAgICAgICAgc29mdGlycXMuQ1BV
-NTYuU0NIRUQKICAgICAxNzAxOCAgICAgICAgICAgKzE4LjMlICAgICAgMjAxMzIgICAgICAgIHNv
-ZnRpcnFzLkNQVTU3LlNDSEVECiAgICAgMTY5NDkgsSAgMiUgICAgICsxOS44JSAgICAgIDIwMzA4
-ILEgIDIlICBzb2Z0aXJxcy5DUFU1OC5TQ0hFRAogICAgIDE3MTg5ICAgICAgICAgICArMTguMCUg
-ICAgICAyMDI4NyAgICAgICAgc29mdGlycXMuQ1BVNTkuU0NIRUQKICAgICAxNjg5MSAgICAgICAg
-ICAgKzE5LjIlICAgICAgMjAxMzUgICAgICAgIHNvZnRpcnFzLkNQVTYuU0NIRUQKICAgICAxNjk4
-OSAgICAgICAgICAgKzIwLjAlICAgICAgMjAzODcgICAgICAgIHNvZnRpcnFzLkNQVTYwLlNDSEVE
-CiAgICAgMTcwNzUgICAgICAgICAgICsxNy43JSAgICAgIDIwMTAyILEgIDIlICBzb2Z0aXJxcy5D
-UFU2MS5TQ0hFRAogICAgIDE2OTM4ILEgIDIlICAgICArMTkuOCUgICAgICAyMDI4NSAgICAgICAg
-c29mdGlycXMuQ1BVNjIuU0NIRUQKICAgICAxNjg1NCCxICAyJSAgICAgKzE5LjIlICAgICAgMjAw
-OTQgsSAgMiUgIHNvZnRpcnFzLkNQVTYzLlNDSEVECiAgICAgMTcwNjMgICAgICAgICAgICsxOC41
-JSAgICAgIDIwMjE2ICAgICAgICBzb2Z0aXJxcy5DUFU2NC5TQ0hFRAogICAgIDE3MDQ4ICAgICAg
-ICAgICArMTcuMiUgICAgICAxOTk4NCAgICAgICAgc29mdGlycXMuQ1BVNjUuU0NIRUQKICAgICAx
-Njg3MCAgICAgICAgICAgKzE5LjQlICAgICAgMjAxMzggICAgICAgIHNvZnRpcnFzLkNQVTY2LlND
-SEVECiAgICAgMTY4MTcgICAgICAgICAgICsyMC42JSAgICAgIDIwMjc0ILEgIDIlICBzb2Z0aXJx
-cy5DUFU2Ny5TQ0hFRAogICAgIDE2ODY4ILEgIDIlICAgICArMjAuMSUgICAgICAyMDI1NiAgICAg
-ICAgc29mdGlycXMuQ1BVNjguU0NIRUQKICAgICAxNjg5MCAgICAgICAgICAgKzE5LjclICAgICAg
-MjAyMTIgsSAgMiUgIHNvZnRpcnFzLkNQVTY5LlNDSEVECiAgICAgMTY4NDIgICAgICAgICAgICsy
-MC4yJSAgICAgIDIwMjUyICAgICAgICBzb2Z0aXJxcy5DUFU3LlNDSEVECiAgICAgMTcwMTEgICAg
-ICAgICAgICsxOS44JSAgICAgIDIwMzc1ICAgICAgICBzb2Z0aXJxcy5DUFU3MC5TQ0hFRAogICAg
-IDE3MDQ4ICAgICAgICAgICArMjAuMSUgICAgICAyMDQ3OCCxICAyJSAgc29mdGlycXMuQ1BVNzEu
-U0NIRUQKICAgICAxNjg4MSCxICAyJSAgICAgKzE5LjYlICAgICAgMjAxOTQgICAgICAgIHNvZnRp
-cnFzLkNQVTcyLlNDSEVECiAgICAgMTY5MzEgICAgICAgICAgICsxOS45JSAgICAgIDIwMjk0ICAg
-ICAgICBzb2Z0aXJxcy5DUFU3My5TQ0hFRAogICAgIDE3MTAyICAgICAgICAgICArMTguNyUgICAg
-ICAyMDMwOCAgICAgICAgc29mdGlycXMuQ1BVNzQuU0NIRUQKICAgICAxNjkyNiCxICAyJSAgICAg
-KzE5LjQlICAgICAgMjAyMDYgICAgICAgIHNvZnRpcnFzLkNQVTc1LlNDSEVECiAgICAgMTY3NTcg
-sSAgMiUgICAgICsyMS42JSAgICAgIDIwMzgwILEgIDIlICBzb2Z0aXJxcy5DUFU3Ni5TQ0hFRAog
-ICAgIDE3MDUyICAgICAgICAgICArMTkuOCUgICAgICAyMDQyMCAgICAgICAgc29mdGlycXMuQ1BV
-NzcuU0NIRUQKICAgICAxNjk5OCAgICAgICAgICAgKzE5LjglICAgICAgMjAzNjggICAgICAgIHNv
-ZnRpcnFzLkNQVTc4LlNDSEVECiAgICAgMTcyMDkgsSAgMiUgICAgICsxOS4zJSAgICAgIDIwNTMz
-ICAgICAgICBzb2Z0aXJxcy5DUFU3OS5TQ0hFRAogICAgIDE3MDg0ILEgIDIlICAgICArMTguNiUg
-ICAgICAyMDI2MCAgICAgICAgc29mdGlycXMuQ1BVOC5TQ0hFRAogICAgIDE2OTczILEgIDIlICAg
-ICArMjAuOSUgICAgICAyMDUyNSCxICAyJSAgc29mdGlycXMuQ1BVODAuU0NIRUQKICAgICAxNzE5
-OCAgICAgICAgICAgKzE4LjklICAgICAgMjA0NTcgsSAgMiUgIHNvZnRpcnFzLkNQVTgxLlNDSEVE
-CiAgICAgMTY5MDcgsSAgMiUgICAgICsyMC44JSAgICAgIDIwNDE5ILEgIDIlICBzb2Z0aXJxcy5D
-UFU4Mi5TQ0hFRAogICAgIDE3MDIzICAgICAgICAgICArMTkuMyUgICAgICAyMDMxNiCxICAyJSAg
-c29mdGlycXMuQ1BVODMuU0NIRUQKICAgICAxNjkzNSAgICAgICAgICAgKzE4LjglICAgICAgMjAx
-MTYgsSAgMiUgIHNvZnRpcnFzLkNQVTg0LlNDSEVECiAgICAgMTcwODQgICAgICAgICAgICsxOC44
-JSAgICAgIDIwMjk3ICAgICAgICBzb2Z0aXJxcy5DUFU4NS5TQ0hFRAogICAgIDE3MDg2ICAgICAg
-ICAgICArMTkuMiUgICAgICAyMDM2MyAgICAgICAgc29mdGlycXMuQ1BVODYuU0NIRUQKICAgICAx
-Njk5NSCxICAzJSAgICAgKzE5LjclICAgICAgMjAzNTAgsSAgMiUgIHNvZnRpcnFzLkNQVTg3LlND
-SEVECiAgICAgMTcxMDAgsSAgMiUgICAgICsxOS40JSAgICAgIDIwNDIwICAgICAgICBzb2Z0aXJx
-cy5DUFU5LlNDSEVECiAgIDE0OTg2MDIgICAgICAgICAgICsxOS4zJSAgICAxNzg4MjQ1ICAgICAg
-ICBzb2Z0aXJxcy5TQ0hFRAogICAgIDgwMzcyICAgICAgICAgICArMTIuNSUgICAgICA5MDQzOSCx
-ICAyJSAgc29mdGlycXMuVElNRVIKICAgIDkwMi42NyAgICAgICAgICAgKzEzLjYlICAgICAgIDEw
-MjUgsSAgMiUgIGludGVycnVwdHMuOTpJTy1BUElDLjktZmFzdGVvaS5hY3BpCiAgIDE1NTY4MDQg
-sSAgNCUgICAgICszNS4wJSAgICAyMTAyNDIzILEgIDMlICBpbnRlcnJ1cHRzLkNBTDpGdW5jdGlv
-bl9jYWxsX2ludGVycnVwdHMKICAgICAxNzk3OCCxICA0JSAgICAgKzI3LjIlICAgICAgMjI4Njcg
-sSAgOCUgIGludGVycnVwdHMuQ1BVMC5DQUw6RnVuY3Rpb25fY2FsbF9pbnRlcnJ1cHRzCiAgICA5
-MDIyMTAgICAgICAgICAgICsxMy41JSAgICAxMDI0MzQ3ILEgIDIlICBpbnRlcnJ1cHRzLkNQVTAu
-TE9DOkxvY2FsX3RpbWVyX2ludGVycnVwdHMKICAgICAgMzg2NSCxICAzJSAgICAgKzIyLjAlICAg
-ICAgIDQ3MTQgsSAgMyUgIGludGVycnVwdHMuQ1BVMC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVw
-dHMKICAgIDkwMi42NyAgICAgICAgICAgKzEzLjYlICAgICAgIDEwMjUgsSAgMiUgIGludGVycnVw
-dHMuQ1BVMS45OklPLUFQSUMuOS1mYXN0ZW9pLmFjcGkKICAgICAxNzc2MyCxICA3JSAgICAgKzI3
-LjklICAgICAgMjI3MTggsSAgOCUgIGludGVycnVwdHMuQ1BVMS5DQUw6RnVuY3Rpb25fY2FsbF9p
-bnRlcnJ1cHRzCiAgICA5MDIwNjQgICAgICAgICAgICsxMy41JSAgICAxMDI0MDg4ILEgIDIlICBp
-bnRlcnJ1cHRzLkNQVTEuTE9DOkxvY2FsX3RpbWVyX2ludGVycnVwdHMKICAgICAgMzE1NiCxICAz
-JSAgICAgKzIyLjglICAgICAgIDM4NzQgsSAgNSUgIGludGVycnVwdHMuQ1BVMS5SRVM6UmVzY2hl
-ZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjkyOSCxICA1JSAgICAgKzI3LjUlICAgICAgMjE1OTIg
-sSAgNiUgIGludGVycnVwdHMuQ1BVMTAuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAg
-OTAyMTYzICAgICAgICAgICArMTMuNSUgICAgMTAyNDExNSCxICAyJSAgaW50ZXJydXB0cy5DUFUx
-MC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMTc0ILEgIDQlICAgICArMjAuNSUg
-ICAgICAgMzgyNSCxICAzJSAgaW50ZXJydXB0cy5DUFUxMC5SRVM6UmVzY2hlZHVsaW5nX2ludGVy
-cnVwdHMKICAgICAxNzA5OSCxICA0JSAgICAgKzI1LjglICAgICAgMjE1MDMgsSAgNyUgIGludGVy
-cnVwdHMuQ1BVMTEuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTA1ICAgICAg
-ICAgICArMTMuNSUgICAgMTAyNDEwMSCxICAyJSAgaW50ZXJydXB0cy5DUFUxMS5MT0M6TG9jYWxf
-dGltZXJfaW50ZXJydXB0cwogICAgICAzMTY2ILEgIDMlICAgICArMjIuMSUgICAgICAgMzg2NSCx
-ICAzJSAgaW50ZXJydXB0cy5DUFUxMS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAx
-NjkzNSCxICA1JSAgICAgKzI3LjIlICAgICAgMjE1NDIgsSAgNyUgIGludGVycnVwdHMuQ1BVMTIu
-Q0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTIyICAgICAgICAgICArMTMuNSUg
-ICAgMTAyNDA4OSCxICAyJSAgaW50ZXJydXB0cy5DUFUxMi5MT0M6TG9jYWxfdGltZXJfaW50ZXJy
-dXB0cwogICAgICAzMTM0ILEgIDQlICAgICArMjIuNCUgICAgICAgMzgzNyCxICA1JSAgaW50ZXJy
-dXB0cy5DUFUxMi5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNzEwNyCxICA1JSAg
-ICAgKzI1LjIlICAgICAgMjE0MTQgsSAgNiUgIGludGVycnVwdHMuQ1BVMTMuQ0FMOkZ1bmN0aW9u
-X2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTM4ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA3MSCx
-ICAyJSAgaW50ZXJydXB0cy5DUFUxMy5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAz
-MTU0ILEgIDQlICAgICArMjEuMyUgICAgICAgMzgyNSCxICA1JSAgaW50ZXJydXB0cy5DUFUxMy5S
-RVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjk0OSCxICA0JSAgICAgKzI4LjAlICAg
-ICAgMjE2OTIgsSAgOCUgIGludGVycnVwdHMuQ1BVMTQuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJy
-dXB0cwogICAgOTAyMTQyICAgICAgICAgICArMTMuNSUgICAgMTAyNDAxNCCxICAyJSAgaW50ZXJy
-dXB0cy5DUFUxNC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMTU0ILEgIDIlICAg
-ICArMjAuOCUgICAgICAgMzgwOSCxICA1JSAgaW50ZXJydXB0cy5DUFUxNC5SRVM6UmVzY2hlZHVs
-aW5nX2ludGVycnVwdHMKICAgICAxNjk3MSCxICA2JSAgICAgKzI2LjUlICAgICAgMjE0NjAgsSAg
-NyUgIGludGVycnVwdHMuQ1BVMTUuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAy
-MTI1ICAgICAgICAgICArMTMuNSUgICAgMTAyNDAwOCCxICAyJSAgaW50ZXJydXB0cy5DUFUxNS5M
-T0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMTU5ILEgIDMlICAgICArMjEuNyUgICAg
-ICAgMzg0NyCxICA1JSAgaW50ZXJydXB0cy5DUFUxNS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVw
-dHMKICAgICAxNjkxNCCxICA0JSAgICAgKzI2LjklICAgICAgMjE0NjkgsSAgNiUgIGludGVycnVw
-dHMuQ1BVMTYuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMjYzICAgICAgICAg
-ICArMTMuNSUgICAgMTAyNDA3MiCxICAyJSAgaW50ZXJydXB0cy5DUFUxNi5MT0M6TG9jYWxfdGlt
-ZXJfaW50ZXJydXB0cwogICAgICAzMTc2ILEgIDQlICAgICArMjAuNiUgICAgICAgMzgzMSCxICAz
-JSAgaW50ZXJydXB0cy5DUFUxNi5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjk1
-OSCxICA1JSAgICAgKzI3LjclICAgICAgMjE2NTkgsSAgNyUgIGludGVycnVwdHMuQ1BVMTcuQ0FM
-OkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTMxICAgICAgICAgICArMTMuNSUgICAg
-MTAyNDA3NiCxICAyJSAgaW50ZXJydXB0cy5DUFUxNy5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0
-cwogICAgICAzMTY0ILEgIDMlICAgICArMjEuMSUgICAgICAgMzgzNCCxICA1JSAgaW50ZXJydXB0
-cy5DUFUxNy5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjkyMSCxICA1JSAgICAg
-KzI3LjklICAgICAgMjE2NDcgsSAgNyUgIGludGVycnVwdHMuQ1BVMTguQ0FMOkZ1bmN0aW9uX2Nh
-bGxfaW50ZXJydXB0cwogICAgOTAxOTkyICAgICAgICAgICArMTMuNSUgICAgMTAyNDA1OSCxICAy
-JSAgaW50ZXJydXB0cy5DUFUxOC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMTE0
-ILEgIDMlICAgICArMjMuNyUgICAgICAgMzg1MSCxICAzJSAgaW50ZXJydXB0cy5DUFUxOC5SRVM6
-UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjk1MyCxICA1JSAgICAgKzI3LjglICAgICAg
-MjE2NjkgsSAgNyUgIGludGVycnVwdHMuQ1BVMTkuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0
-cwogICAgOTAyMTEzICAgICAgICAgICArMTMuNSUgICAgMTAyNDAyMSCxICAyJSAgaW50ZXJydXB0
-cy5DUFUxOS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMTg2ILEgIDIlICAgICAr
-MjAuOCUgICAgICAgMzg1MCCxICA0JSAgaW50ZXJydXB0cy5DUFUxOS5SRVM6UmVzY2hlZHVsaW5n
-X2ludGVycnVwdHMKICAgICAxNzQ3OSCxICA1JSAgICAgKzMyLjclICAgICAgMjMxODYgsSAgMyUg
-IGludGVycnVwdHMuQ1BVMi5DQUw6RnVuY3Rpb25fY2FsbF9pbnRlcnJ1cHRzCiAgICA5MDIxNDgg
-ICAgICAgICAgICsxMy41JSAgICAxMDI0MDM0ILEgIDIlICBpbnRlcnJ1cHRzLkNQVTIuTE9DOkxv
-Y2FsX3RpbWVyX2ludGVycnVwdHMKICAgICAgMzE2MyCxICAzJSAgICAgKzIxLjIlICAgICAgIDM4
-MzUgsSAgMyUgIGludGVycnVwdHMuQ1BVMi5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAg
-ICAxNjg3NSCxICA1JSAgICAgKzI3LjglICAgICAgMjE1NzUgsSAgNyUgIGludGVycnVwdHMuQ1BV
-MjAuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTI2ICAgICAgICAgICArMTMu
-NSUgICAgMTAyNDA3NyCxICAyJSAgaW50ZXJydXB0cy5DUFUyMC5MT0M6TG9jYWxfdGltZXJfaW50
-ZXJydXB0cwogICAgICAzMTI1ILEgIDMlICAgICArMjMuOSUgICAgICAgMzg3NCCxICAzJSAgaW50
-ZXJydXB0cy5DUFUyMC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjgyNCCxICA0
-JSAgICAgKzI3LjglICAgICAgMjE1MDIgsSAgNyUgIGludGVycnVwdHMuQ1BVMjEuQ0FMOkZ1bmN0
-aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTIzICAgICAgICAgICArMTMuNSUgICAgMTAyNDAz
-MiCxICAyJSAgaW50ZXJydXB0cy5DUFUyMS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAg
-ICAzMTE5ILEgIDIlICAgICArMjMuOCUgICAgICAgMzg2MSCxICA0JSAgaW50ZXJydXB0cy5DUFUy
-MS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODg1MyCxIDEwJSAgICAgKzQyLjEl
-ICAgICAgMjY3ODQgsSAgNyUgIGludGVycnVwdHMuQ1BVMjIuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50
-ZXJydXB0cwogICAgOTAyMTI5ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA1MyCxICAyJSAgaW50
-ZXJydXB0cy5DUFUyMi5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDc2ILEgIDIl
-ICAgICArMTUuOSUgICAgICAgMzU2NCCxICAzJSAgaW50ZXJydXB0cy5DUFUyMi5SRVM6UmVzY2hl
-ZHVsaW5nX2ludGVycnVwdHMKICAgICAxODkwNCCxIDEwJSAgICAgKzQxLjUlICAgICAgMjY3NTgg
-sSAgNyUgIGludGVycnVwdHMuQ1BVMjMuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAg
-OTAyMTQxICAgICAgICAgICArMTMuNSUgICAgMTAyNDEwMCCxICAyJSAgaW50ZXJydXB0cy5DUFUy
-My5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDU1ILEgIDIlICAgICArMTMuOCUg
-ICAgICAgMzQ3OCCxICAyJSAgaW50ZXJydXB0cy5DUFUyMy5SRVM6UmVzY2hlZHVsaW5nX2ludGVy
-cnVwdHMKICAgICAxODY5NyCxIDEwJSAgICAgKzQyLjAlICAgICAgMjY1NDggsSAgNyUgIGludGVy
-cnVwdHMuQ1BVMjQuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTMyICAgICAg
-ICAgICArMTMuNSUgICAgMTAyNDA1MSCxICAyJSAgaW50ZXJydXB0cy5DUFUyNC5MT0M6TG9jYWxf
-dGltZXJfaW50ZXJydXB0cwogICAgICAyOTk2ILEgIDMlICAgICArMTUuMyUgICAgICAgMzQ1NCCx
-ICAyJSAgaW50ZXJydXB0cy5DUFUyNC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAx
-ODYxMCCxIDEwJSAgICAgKzQyLjQlICAgICAgMjY0OTggsSAgNyUgIGludGVycnVwdHMuQ1BVMjUu
-Q0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDk5ICAgICAgICAgICArMTMuNSUg
-ICAgMTAyNDA3OCCxICAyJSAgaW50ZXJydXB0cy5DUFUyNS5MT0M6TG9jYWxfdGltZXJfaW50ZXJy
-dXB0cwogICAgICAzMDYxILEgIDMlICAgICArMTUuNCUgICAgICAgMzUzMSCxICAyJSAgaW50ZXJy
-dXB0cy5DUFUyNS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODUwNiCxIDEwJSAg
-ICAgKzQyLjglICAgICAgMjY0MTcgsSAgNyUgIGludGVycnVwdHMuQ1BVMjYuQ0FMOkZ1bmN0aW9u
-X2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTE2ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA3NCCx
-ICAyJSAgaW50ZXJydXB0cy5DUFUyNi5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAz
-MDE2ILEgIDMlICAgICArMTUuNiUgICAgICAgMzQ4OCCxICAyJSAgaW50ZXJydXB0cy5DUFUyNi5S
-RVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODcxMiCxIDExJSAgICAgKzQwLjElICAg
-ICAgMjYyMTIgsSAgNyUgIGludGVycnVwdHMuQ1BVMjcuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJy
-dXB0cwogICAgOTAyMTMxICAgICAgICAgICArMTMuNSUgICAgMTAyMzk4NCCxICAyJSAgaW50ZXJy
-dXB0cy5DUFUyNy5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDMyILEgIDMlICAg
-ICArMTYuNCUgICAgICAgMzUyOCCxICAyJSAgaW50ZXJydXB0cy5DUFUyNy5SRVM6UmVzY2hlZHVs
-aW5nX2ludGVycnVwdHMKICAgICAxODUzMyCxIDEwJSAgICAgKzQxLjQlICAgICAgMjYyMTQgsSAg
-NyUgIGludGVycnVwdHMuQ1BVMjguQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAy
-MTA4ICAgICAgICAgICArMTMuNSUgICAgMTAyNDEwNyCxICAyJSAgaW50ZXJydXB0cy5DUFUyOC5M
-T0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDIyILEgIDIlICAgICArMTcuMSUgICAg
-ICAgMzUzOSCxICAyJSAgaW50ZXJydXB0cy5DUFUyOC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVw
-dHMKICAgICAxODQ4MyCxIDEwJSAgICAgKzQxLjklICAgICAgMjYyMzQgsSAgNyUgIGludGVycnVw
-dHMuQ1BVMjkuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMjYyICAgICAgICAg
-ICArMTMuNSUgICAgMTAyNDA1MiCxICAyJSAgaW50ZXJydXB0cy5DUFUyOS5MT0M6TG9jYWxfdGlt
-ZXJfaW50ZXJydXB0cwogICAgICAzMDM0ICAgICAgICAgICArMTYuNCUgICAgICAgMzUzMyCxICAy
-JSAgaW50ZXJydXB0cy5DUFUyOS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNzM1
-OSCxICA1JSAgICAgKzI5LjMlICAgICAgMjI0NTQgsSAgNyUgIGludGVycnVwdHMuQ1BVMy5DQUw6
-RnVuY3Rpb25fY2FsbF9pbnRlcnJ1cHRzCiAgICA5MDIyMzAgICAgICAgICAgICsxMy41JSAgICAx
-MDI0MDgwILEgIDIlICBpbnRlcnJ1cHRzLkNQVTMuTE9DOkxvY2FsX3RpbWVyX2ludGVycnVwdHMK
-ICAgICAgMzE2MCCxICA0JSAgICAgKzIyLjIlICAgICAgIDM4NjMgsSAgMyUgIGludGVycnVwdHMu
-Q1BVMy5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODUyNiCxIDEwJSAgICAgKzQy
-LjIlICAgICAgMjYzNDAgsSAgNyUgIGludGVycnVwdHMuQ1BVMzAuQ0FMOkZ1bmN0aW9uX2NhbGxf
-aW50ZXJydXB0cwogICAgOTAyMTQ2ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA4OCCxICAyJSAg
-aW50ZXJydXB0cy5DUFUzMC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDAzICAg
-ICAgICAgICArMTYuNiUgICAgICAgMzUwMyCxICAyJSAgaW50ZXJydXB0cy5DUFUzMC5SRVM6UmVz
-Y2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODQxNyCxIDEwJSAgICAgKzQyLjElICAgICAgMjYx
-NjIgsSAgOCUgIGludGVycnVwdHMuQ1BVMzEuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwog
-ICAgOTAyMTA4ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA1NiCxICAyJSAgaW50ZXJydXB0cy5D
-UFUzMS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTkyILEgIDMlICAgICArMTcu
-MiUgICAgICAgMzUwNiCxICAyJSAgaW50ZXJydXB0cy5DUFUzMS5SRVM6UmVzY2hlZHVsaW5nX2lu
-dGVycnVwdHMKICAgICAxODMyNCCxIDEwJSAgICAgKzQxLjYlICAgICAgMjU5NDQgsSAgNyUgIGlu
-dGVycnVwdHMuQ1BVMzIuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDkyICAg
-ICAgICAgICArMTMuNSUgICAgMTAyNDA3OCCxICAyJSAgaW50ZXJydXB0cy5DUFUzMi5MT0M6TG9j
-YWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDM3ILEgIDMlICAgICArMTUuMiUgICAgICAgMzQ5
-OCCxICAyJSAgaW50ZXJydXB0cy5DUFUzMi5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAg
-ICAxODM1MyCxIDExJSAgICAgKzQyLjAlICAgICAgMjYwNTcgsSAgNyUgIGludGVycnVwdHMuQ1BV
-MzMuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDg1ICAgICAgICAgICArMTMu
-NSUgICAgMTAyNDEwMSCxICAyJSAgaW50ZXJydXB0cy5DUFUzMy5MT0M6TG9jYWxfdGltZXJfaW50
-ZXJydXB0cwogICAgICAzMDU1ILEgIDQlICAgICArMTQuNiUgICAgICAgMzUwMiCxICAyJSAgaW50
-ZXJydXB0cy5DUFUzMy5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODM3NiCxIDEw
-JSAgICAgKzQxLjIlICAgICAgMjU5NTMgsSAgNyUgIGludGVycnVwdHMuQ1BVMzQuQ0FMOkZ1bmN0
-aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDk1ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA3
-OCCxICAyJSAgaW50ZXJydXB0cy5DUFUzNC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAg
-ICAzMDE1ILEgIDIlICAgICArMTQuNCUgICAgICAgMzQ0OCCxICAzJSAgaW50ZXJydXB0cy5DUFUz
-NC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODIzMiCxIDEwJSAgICAgKzQyLjUl
-ICAgICAgMjU5ODYgsSAgNyUgIGludGVycnVwdHMuQ1BVMzUuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50
-ZXJydXB0cwogICAgOTAyMTk3ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA0MiCxICAyJSAgaW50
-ZXJydXB0cy5DUFUzNS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTkwILEgIDMl
-ICAgICArMTYuNiUgICAgICAgMzQ4NyCxICAyJSAgaW50ZXJydXB0cy5DUFUzNS5SRVM6UmVzY2hl
-ZHVsaW5nX2ludGVycnVwdHMKICAgICAxODMxNCCxIDEwJSAgICAgKzQxLjklICAgICAgMjU5OTEg
-sSAgNyUgIGludGVycnVwdHMuQ1BVMzYuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAg
-OTAyMDQ2ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA3OCCxICAyJSAgaW50ZXJydXB0cy5DUFUz
-Ni5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDAyILEgIDIlICAgICArMTUuOSUg
-ICAgICAgMzQ3OSAgICAgICAgaW50ZXJydXB0cy5DUFUzNi5SRVM6UmVzY2hlZHVsaW5nX2ludGVy
-cnVwdHMKICAgICAxODM2OSCxIDEwJSAgICAgKzQwLjYlICAgICAgMjU4MjkgsSAgNyUgIGludGVy
-cnVwdHMuQ1BVMzcuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTE3ICAgICAg
-ICAgICArMTMuNSUgICAgMTAyNDAyNiCxICAyJSAgaW50ZXJydXB0cy5DUFUzNy5MT0M6TG9jYWxf
-dGltZXJfaW50ZXJydXB0cwogICAgICAyOTk5ILEgIDIlICAgICArMTYuNCUgICAgICAgMzQ5MCCx
-ICAyJSAgaW50ZXJydXB0cy5DUFUzNy5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAx
-ODMzMSCxIDEwJSAgICAgKzQxLjUlICAgICAgMjU5MzIgsSAgNyUgIGludGVycnVwdHMuQ1BVMzgu
-Q0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTE4ICAgICAgICAgICArMTMuNSUg
-ICAgMTAyNDA4NSCxICAyJSAgaW50ZXJydXB0cy5DUFUzOC5MT0M6TG9jYWxfdGltZXJfaW50ZXJy
-dXB0cwogICAgICAyOTk1ILEgIDMlICAgICArMTYuMCUgICAgICAgMzQ3NCCxICA0JSAgaW50ZXJy
-dXB0cy5DUFUzOC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODMxMyCxIDEwJSAg
-ICAgKzQxLjYlICAgICAgMjU5MzUgsSAgNyUgIGludGVycnVwdHMuQ1BVMzkuQ0FMOkZ1bmN0aW9u
-X2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDgyICAgICAgICAgICArMTMuNSUgICAgMTAyNDEwMyCx
-ICAyJSAgaW50ZXJydXB0cy5DUFUzOS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAy
-OTczILEgIDIlICAgICArMTguMSUgICAgICAgMzUxMCAgICAgICAgaW50ZXJydXB0cy5DUFUzOS5S
-RVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODA4OSCxIDEwJSAgICAgKzIwLjklICAg
-ICAgMjE4NjQgsSAgNiUgIGludGVycnVwdHMuQ1BVNC5DQUw6RnVuY3Rpb25fY2FsbF9pbnRlcnJ1
-cHRzCiAgICA5MDIxMjAgICAgICAgICAgICsxMy41JSAgICAxMDI0MDQxILEgIDIlICBpbnRlcnJ1
-cHRzLkNQVTQuTE9DOkxvY2FsX3RpbWVyX2ludGVycnVwdHMKICAgICAgMzEyNiCxICAyJSAgICAg
-KzIyLjklICAgICAgIDM4NDIgsSAgMyUgIGludGVycnVwdHMuQ1BVNC5SRVM6UmVzY2hlZHVsaW5n
-X2ludGVycnVwdHMKICAgICAxODMwMyCxIDEwJSAgICAgKzQyLjMlICAgICAgMjYwNDUgsSAgNyUg
-IGludGVycnVwdHMuQ1BVNDAuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTIw
-ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA5NyCxICAyJSAgaW50ZXJydXB0cy5DUFU0MC5MT0M6
-TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDE5ILEgIDIlICAgICArMTQuNyUgICAgICAg
-MzQ2MiCxICAzJSAgaW50ZXJydXB0cy5DUFU0MC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMK
-ICAgICAxODI4OCCxIDEwJSAgICAgKzQyLjglICAgICAgMjYxMDcgsSAgNyUgIGludGVycnVwdHMu
-Q1BVNDEuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDY0ICAgICAgICAgICAr
-MTMuNSUgICAgMTAyNDA3NSCxICAyJSAgaW50ZXJydXB0cy5DUFU0MS5MT0M6TG9jYWxfdGltZXJf
-aW50ZXJydXB0cwogICAgICAyOTkyICAgICAgICAgICArMTYuNiUgICAgICAgMzQ4OSCxICAyJSAg
-aW50ZXJydXB0cy5DUFU0MS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODE2OSCx
-IDEwJSAgICAgKzQzLjMlICAgICAgMjYwNDIgsSAgNyUgIGludGVycnVwdHMuQ1BVNDIuQ0FMOkZ1
-bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTUxICAgICAgICAgICArMTMuNSUgICAgMTAy
-NDA5MSCxICAyJSAgaW50ZXJydXB0cy5DUFU0Mi5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwog
-ICAgICAzMDEwILEgIDIlICAgICArMTYuNyUgICAgICAgMzUxMiCxICAyJSAgaW50ZXJydXB0cy5D
-UFU0Mi5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODE2MSCxIDExJSAgICAgKzQy
-LjQlICAgICAgMjU4NzEgsSAgNyUgIGludGVycnVwdHMuQ1BVNDMuQ0FMOkZ1bmN0aW9uX2NhbGxf
-aW50ZXJydXB0cwogICAgOTAyMDc0ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA3NiCxICAyJSAg
-aW50ZXJydXB0cy5DUFU0My5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTQ2ILEg
-IDIlICAgICArMTguMSUgICAgICAgMzQ3OCCxICAyJSAgaW50ZXJydXB0cy5DUFU0My5SRVM6UmVz
-Y2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjg3MyCxICA0JSAgICAgKzI2LjklICAgICAgMjE0
-MTUgsSAgNiUgIGludGVycnVwdHMuQ1BVNDQuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwog
-ICAgOTAyMTc1ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA2NSCxICAyJSAgaW50ZXJydXB0cy5D
-UFU0NC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDY3ILEgIDQlICAgICArMjEu
-MiUgICAgICAgMzcxOSCxICA1JSAgaW50ZXJydXB0cy5DUFU0NC5SRVM6UmVzY2hlZHVsaW5nX2lu
-dGVycnVwdHMKICAgICAxNjkxNSCxICA1JSAgICAgKzI4LjMlICAgICAgMjE3MDQgsSAgNiUgIGlu
-dGVycnVwdHMuQ1BVNDUuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTAxICAg
-ICAgICAgICArMTMuNSUgICAgMTAyNDA3MiCxICAyJSAgaW50ZXJydXB0cy5DUFU0NS5MT0M6TG9j
-YWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDU2ILEgIDMlICAgICArMjIuMiUgICAgICAgMzcz
-NCCxICAzJSAgaW50ZXJydXB0cy5DUFU0NS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAg
-ICAxNjg5NCCxICA0JSAgICAgKzI3LjYlICAgICAgMjE1NTMgsSAgNyUgIGludGVycnVwdHMuQ1BV
-NDYuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTMyICAgICAgICAgICArMTMu
-NSUgICAgMTAyNDA0OSCxICAyJSAgaW50ZXJydXB0cy5DUFU0Ni5MT0M6TG9jYWxfdGltZXJfaW50
-ZXJydXB0cwogICAgICAzMDY5ILEgIDIlICAgICArMjIuOSUgICAgICAgMzc3MyCxICA0JSAgaW50
-ZXJydXB0cy5DUFU0Ni5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjc4MSCxICA1
-JSAgICAgKzI3LjYlICAgICAgMjE0MDggsSAgNyUgIGludGVycnVwdHMuQ1BVNDcuQ0FMOkZ1bmN0
-aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTQ3ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA4
-OCCxICAyJSAgaW50ZXJydXB0cy5DUFU0Ny5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAg
-ICAzMDg2ILEgIDMlICAgICArMjAuOSUgICAgICAgMzczMiCxICA0JSAgaW50ZXJydXB0cy5DUFU0
-Ny5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjg5MiCxICA1JSAgICAgKzI3LjMl
-ICAgICAgMjE0OTYgsSAgNyUgIGludGVycnVwdHMuQ1BVNDguQ0FMOkZ1bmN0aW9uX2NhbGxfaW50
-ZXJydXB0cwogICAgOTAyMTUwICAgICAgICAgICArMTMuNSUgICAgMTAyNDA4NCCxICAyJSAgaW50
-ZXJydXB0cy5DUFU0OC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMTIzILEgIDQl
-ICAgICArMTkuMSUgICAgICAgMzcyMSCxICA0JSAgaW50ZXJydXB0cy5DUFU0OC5SRVM6UmVzY2hl
-ZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjY4NiCxICA0JSAgICAgKzI3LjklICAgICAgMjEzNDAg
-sSAgNyUgIGludGVycnVwdHMuQ1BVNDkuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAg
-OTAyMTEzICAgICAgICAgICArMTMuNSUgICAgMTAyNDA3MCCxICAyJSAgaW50ZXJydXB0cy5DUFU0
-OS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDM5ILEgIDQlICAgICArMjIuOCUg
-ICAgICAgMzczMyCxICA0JSAgaW50ZXJydXB0cy5DUFU0OS5SRVM6UmVzY2hlZHVsaW5nX2ludGVy
-cnVwdHMKICAgICAxNzE0MiCxICA1JSAgICAgKzI5LjIlICAgICAgMjIxNTAgsSAgNyUgIGludGVy
-cnVwdHMuQ1BVNS5DQUw6RnVuY3Rpb25fY2FsbF9pbnRlcnJ1cHRzCiAgICA5MDIyOTYgICAgICAg
-ICAgICsxMy41JSAgICAxMDI0MjUxILEgIDIlICBpbnRlcnJ1cHRzLkNQVTUuTE9DOkxvY2FsX3Rp
-bWVyX2ludGVycnVwdHMKICAgICAgMzE3OCCxICAzJSAgICAgKzIxLjclICAgICAgIDM4NjYgsSAg
-MyUgIGludGVycnVwdHMuQ1BVNS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjg5
-NCCxICA0JSAgICAgKzI3LjQlICAgICAgMjE1MjkgsSAgNiUgIGludGVycnVwdHMuQ1BVNTAuQ0FM
-OkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDc3ICAgICAgICAgICArMTMuNSUgICAg
-MTAyNDA4MiCxICAyJSAgaW50ZXJydXB0cy5DUFU1MC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0
-cwogICAgICAzMTA2ILEgIDQlICAgICArMjEuMCUgICAgICAgMzc1OSCxICAzJSAgaW50ZXJydXB0
-cy5DUFU1MC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjg0MiCxICA0JSAgICAg
-KzI4LjAlICAgICAgMjE1NjUgsSAgNiUgIGludGVycnVwdHMuQ1BVNTEuQ0FMOkZ1bmN0aW9uX2Nh
-bGxfaW50ZXJydXB0cwogICAgOTAyMTQzICAgICAgICAgICArMTMuNSUgICAgMTAyNDA5NiCxICAy
-JSAgaW50ZXJydXB0cy5DUFU1MS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMTA2
-ILEgIDMlICAgICArMjAuMSUgICAgICAgMzczMCCxICAzJSAgaW50ZXJydXB0cy5DUFU1MS5SRVM6
-UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjc1NCCxICA1JSAgICAgKzI4LjglICAgICAg
-MjE1NzEgsSAgNyUgIGludGVycnVwdHMuQ1BVNTIuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0
-cwogICAgOTAyMDk4ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA2OSCxICAyJSAgaW50ZXJydXB0
-cy5DUFU1Mi5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDUwILEgIDIlICAgICAr
-MjEuOCUgICAgICAgMzcxNSCxICA0JSAgaW50ZXJydXB0cy5DUFU1Mi5SRVM6UmVzY2hlZHVsaW5n
-X2ludGVycnVwdHMKICAgICAxNjg2OCCxICA1JSAgICAgKzI3LjMlICAgICAgMjE0ODEgsSAgNiUg
-IGludGVycnVwdHMuQ1BVNTMuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTUw
-ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA2MiCxICAyJSAgaW50ZXJydXB0cy5DUFU1My5MT0M6
-TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDU0ILEgIDMlICAgICArMjIuMSUgICAgICAg
-MzcyOSCxICA0JSAgaW50ZXJydXB0cy5DUFU1My5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMK
-ICAgICAxNjc1OSCxICA1JSAgICAgKzI3LjIlICAgICAgMjEzMTEgsSAgNyUgIGludGVycnVwdHMu
-Q1BVNTQuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTQ2ICAgICAgICAgICAr
-MTMuNSUgICAgMTAyNDA4MSCxICAyJSAgaW50ZXJydXB0cy5DUFU1NC5MT0M6TG9jYWxfdGltZXJf
-aW50ZXJydXB0cwogICAgICAzMDYxILEgIDQlICAgICArMjMuNSUgICAgICAgMzc4MCCxICA1JSAg
-aW50ZXJydXB0cy5DUFU1NC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjg5MyCx
-ICA0JSAgICAgKzI2LjQlICAgICAgMjEzNTggsSAgNyUgIGludGVycnVwdHMuQ1BVNTUuQ0FMOkZ1
-bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTEzICAgICAgICAgICArMTMuNSUgICAgMTAy
-NDA4MSCxICAyJSAgaW50ZXJydXB0cy5DUFU1NS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwog
-ICAgICAzMDczILEgIDMlICAgICArMjEuOCUgICAgICAgMzc0MiCxICA1JSAgaW50ZXJydXB0cy5D
-UFU1NS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjgyMCCxICA0JSAgICAgKzI2
-LjYlICAgICAgMjEyODggsSAgNyUgIGludGVycnVwdHMuQ1BVNTYuQ0FMOkZ1bmN0aW9uX2NhbGxf
-aW50ZXJydXB0cwogICAgOTAyMTM2ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA4NSCxICAyJSAg
-aW50ZXJydXB0cy5DUFU1Ni5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDUyILEg
-IDQlICAgICArMjIuMyUgICAgICAgMzczNCCxICA1JSAgaW50ZXJydXB0cy5DUFU1Ni5SRVM6UmVz
-Y2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjgzNyCxICA0JSAgICAgKzI2LjYlICAgICAgMjEz
-MjQgsSAgNyUgIGludGVycnVwdHMuQ1BVNTcuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwog
-ICAgOTAyMTM1ICAgICAgICAgICArMTMuNSUgICAgMTAyNDIyNiCxICAyJSAgaW50ZXJydXB0cy5D
-UFU1Ny5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDc1ILEgIDMlICAgICArMjEu
-MSUgICAgICAgMzcyMyCxICAzJSAgaW50ZXJydXB0cy5DUFU1Ny5SRVM6UmVzY2hlZHVsaW5nX2lu
-dGVycnVwdHMKICAgICAxNjg1MSCxICA1JSAgICAgKzI2LjclICAgICAgMjEzNTkgsSAgNyUgIGlu
-dGVycnVwdHMuQ1BVNTguQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTQ1ICAg
-ICAgICAgICArMTMuNSUgICAgMTAyNDA4NCCxICAyJSAgaW50ZXJydXB0cy5DUFU1OC5MT0M6TG9j
-YWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDY3ILEgIDMlICAgICArMjIuMCUgICAgICAgMzc0
-MiCxICA0JSAgaW50ZXJydXB0cy5DUFU1OC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAg
-ICAxNjgxMyCxICA0JSAgICAgKzI3LjglICAgICAgMjE0ODAgsSAgNyUgIGludGVycnVwdHMuQ1BV
-NTkuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTM1ICAgICAgICAgICArMTMu
-NSUgICAgMTAyNDEwNSCxICAyJSAgaW50ZXJydXB0cy5DUFU1OS5MT0M6TG9jYWxfdGltZXJfaW50
-ZXJydXB0cwogICAgICAzMDc1ILEgIDMlICAgICArMjMuMSUgICAgICAgMzc4NCCxICA1JSAgaW50
-ZXJydXB0cy5DUFU1OS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNzMxOCCxICA0
-JSAgICAgKzI1LjglICAgICAgMjE3NzggsSAgNiUgIGludGVycnVwdHMuQ1BVNi5DQUw6RnVuY3Rp
-b25fY2FsbF9pbnRlcnJ1cHRzCiAgICA5MDIwNTggICAgICAgICAgICsxMy41JSAgICAxMDI0MDkx
-ILEgIDIlICBpbnRlcnJ1cHRzLkNQVTYuTE9DOkxvY2FsX3RpbWVyX2ludGVycnVwdHMKICAgICAg
-MzE2NyCxICA0JSAgICAgKzIyLjElICAgICAgIDM4NjYgsSAgNCUgIGludGVycnVwdHMuQ1BVNi5S
-RVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjkxMCCxICA0JSAgICAgKzI2LjclICAg
-ICAgMjE0MzAgsSAgNyUgIGludGVycnVwdHMuQ1BVNjAuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJy
-dXB0cwogICAgOTAyMTU0ICAgICAgICAgICArMTMuNSUgICAgMTAyNDAyOCCxICAyJSAgaW50ZXJy
-dXB0cy5DUFU2MC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDk3ILEgIDMlICAg
-ICArMjEuNCUgICAgICAgMzc2MCCxICA0JSAgaW50ZXJydXB0cy5DUFU2MC5SRVM6UmVzY2hlZHVs
-aW5nX2ludGVycnVwdHMKICAgICAxNjkwMCCxICA0JSAgICAgKzI3LjUlICAgICAgMjE1NTUgsSAg
-NyUgIGludGVycnVwdHMuQ1BVNjEuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAy
-MTM5ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA4OSCxICAyJSAgaW50ZXJydXB0cy5DUFU2MS5M
-T0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDYzILEgIDQlICAgICArMjIuMCUgICAg
-ICAgMzczOCCxICAzJSAgaW50ZXJydXB0cy5DUFU2MS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVw
-dHMKICAgICAxNjk5MSCxICA0JSAgICAgKzI2LjAlICAgICAgMjE0MTQgsSAgNyUgIGludGVycnVw
-dHMuQ1BVNjIuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTMyICAgICAgICAg
-ICArMTMuNSUgICAgMTAyNDA4OSCxICAyJSAgaW50ZXJydXB0cy5DUFU2Mi5MT0M6TG9jYWxfdGlt
-ZXJfaW50ZXJydXB0cwogICAgICAzMTI1ILEgIDMlICAgICArMTkuNyUgICAgICAgMzc0MiCxICAz
-JSAgaW50ZXJydXB0cy5DUFU2Mi5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjk2
-NyCxICA1JSAgICAgKzI2LjklICAgICAgMjE1MzcgsSAgNiUgIGludGVycnVwdHMuQ1BVNjMuQ0FM
-OkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTExICAgICAgICAgICArMTMuNSUgICAg
-MTAyNDA3MSCxICAyJSAgaW50ZXJydXB0cy5DUFU2My5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0
-cwogICAgICAzMTEwILEgIDMlICAgICArMjIuMSUgICAgICAgMzc5OSCxICA0JSAgaW50ZXJydXB0
-cy5DUFU2My5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjgzMiCxICA0JSAgICAg
-KzI4LjElICAgICAgMjE1NTcgsSAgNyUgIGludGVycnVwdHMuQ1BVNjQuQ0FMOkZ1bmN0aW9uX2Nh
-bGxfaW50ZXJydXB0cwogICAgOTAyMTY1ICAgICAgICAgICArMTMuNSUgICAgMTAyNDAzNyCxICAy
-JSAgaW50ZXJydXB0cy5DUFU2NC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDk1
-ILEgIDMlICAgICArMjIuNSUgICAgICAgMzc5MSCxICAzJSAgaW50ZXJydXB0cy5DUFU2NC5SRVM6
-UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjg4NyCxICA1JSAgICAgKzI3LjclICAgICAg
-MjE1NjMgsSAgNyUgIGludGVycnVwdHMuQ1BVNjUuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0
-cwogICAgOTAyMTU5ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA4MyCxICAyJSAgaW50ZXJydXB0
-cy5DUFU2NS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDc5ILEgIDQlICAgICAr
-MjMuNSUgICAgICAgMzgwMiCxICA0JSAgaW50ZXJydXB0cy5DUFU2NS5SRVM6UmVzY2hlZHVsaW5n
-X2ludGVycnVwdHMKICAgICAxODIzNiCxIDEwJSAgICAgKzQzLjUlICAgICAgMjYxNzcgsSAgOCUg
-IGludGVycnVwdHMuQ1BVNjYuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDk3
-ICAgICAgICAgICArMTMuNSUgICAgMTAyMzk5MSCxICAyJSAgaW50ZXJydXB0cy5DUFU2Ni5MT0M6
-TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTUyILEgIDMlICAgICArMTYuMCUgICAgICAg
-MzQyMyCxICAzJSAgaW50ZXJydXB0cy5DUFU2Ni5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMK
-ICAgICAxODQ0MCCxIDExJSAgICAgKzQxLjYlICAgICAgMjYxMTcgsSAgNyUgIGludGVycnVwdHMu
-Q1BVNjcuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDUwICAgICAgICAgICAr
-MTMuNSUgICAgMTAyNDA5MCCxICAyJSAgaW50ZXJydXB0cy5DUFU2Ny5MT0M6TG9jYWxfdGltZXJf
-aW50ZXJydXB0cwogICAgICAyOTQ4ILEgIDIlICAgICArMTYuOCUgICAgICAgMzQ0MyCxICAzJSAg
-aW50ZXJydXB0cy5DUFU2Ny5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODI4NCCx
-IDEwJSAgICAgKzQzLjAlICAgICAgMjYxNDggsSAgNyUgIGludGVycnVwdHMuQ1BVNjguQ0FMOkZ1
-bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTE5ICAgICAgICAgICArMTMuNSUgICAgMTAy
-NDA5NiCxICAyJSAgaW50ZXJydXB0cy5DUFU2OC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwog
-ICAgICAyOTYwILEgIDIlICAgICArMTcuNyUgICAgICAgMzQ4NSCxICAzJSAgaW50ZXJydXB0cy5D
-UFU2OC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODM1NyCxIDEwJSAgICAgKzQy
-LjAlICAgICAgMjYwNzAgsSAgNyUgIGludGVycnVwdHMuQ1BVNjkuQ0FMOkZ1bmN0aW9uX2NhbGxf
-aW50ZXJydXB0cwogICAgOTAyMDk2ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA4OSCxICAyJSAg
-aW50ZXJydXB0cy5DUFU2OS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTc3ICAg
-ICAgICAgICArMTYuMSUgICAgICAgMzQ1NSCxICA1JSAgaW50ZXJydXB0cy5DUFU2OS5SRVM6UmVz
-Y2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxNjk4NCCxICA1JSAgICAgKzI4LjYlICAgICAgMjE4
-NDMgsSAgNiUgIGludGVycnVwdHMuQ1BVNy5DQUw6RnVuY3Rpb25fY2FsbF9pbnRlcnJ1cHRzCiAg
-ICA5MDIxMTkgICAgICAgICAgICsxMy41JSAgICAxMDI0MTE2ILEgIDIlICBpbnRlcnJ1cHRzLkNQ
-VTcuTE9DOkxvY2FsX3RpbWVyX2ludGVycnVwdHMKICAgICAgMzEyMiCxICAyJSAgICAgKzIyLjgl
-ICAgICAgIDM4MzUgsSAgNCUgIGludGVycnVwdHMuQ1BVNy5SRVM6UmVzY2hlZHVsaW5nX2ludGVy
-cnVwdHMKICAgICAxODE3NiCxIDEwJSAgICAgKzQzLjQlICAgICAgMjYwNTYgsSAgNyUgIGludGVy
-cnVwdHMuQ1BVNzAuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTA2ICAgICAg
-ICAgICArMTMuNSUgICAgMTAyNDA2MyCxICAyJSAgaW50ZXJydXB0cy5DUFU3MC5MT0M6TG9jYWxf
-dGltZXJfaW50ZXJydXB0cwogICAgICAyOTM3ILEgIDIlICAgICArMTguNSUgICAgICAgMzQ3OSCx
-ICAyJSAgaW50ZXJydXB0cy5DUFU3MC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAx
-ODMyMCCxIDEwJSAgICAgKzQyLjIlICAgICAgMjYwNDcgsSAgOCUgIGludGVycnVwdHMuQ1BVNzEu
-Q0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTQyICAgICAgICAgICArMTMuNSUg
-ICAgMTAyNDEyMyCxICAyJSAgaW50ZXJydXB0cy5DUFU3MS5MT0M6TG9jYWxfdGltZXJfaW50ZXJy
-dXB0cwogICAgICAyOTk5ILEgIDMlICAgICArMTYuMyUgICAgICAgMzQ4NyCxICAzJSAgaW50ZXJy
-dXB0cy5DUFU3MS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODQxMCCxIDEwJSAg
-ICAgKzQyLjAlICAgICAgMjYxNDMgsSAgNyUgIGludGVycnVwdHMuQ1BVNzIuQ0FMOkZ1bmN0aW9u
-X2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTI5ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA5NCCx
-ICAyJSAgaW50ZXJydXB0cy5DUFU3Mi5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAy
-OTY1ILEgIDMlICAgICArMTcuNiUgICAgICAgMzQ4OCCxICA0JSAgaW50ZXJydXB0cy5DUFU3Mi5S
-RVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODMwNSCxIDEwJSAgICAgKzQyLjUlICAg
-ICAgMjYwODUgsSAgOCUgIGludGVycnVwdHMuQ1BVNzMuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJy
-dXB0cwogICAgOTAyMTMzICAgICAgICAgICArMTMuNSUgICAgMTAyNDA0MSCxICAyJSAgaW50ZXJy
-dXB0cy5DUFU3My5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTc3ILEgIDMlICAg
-ICArMTYuNiUgICAgICAgMzQ3MSCxICAzJSAgaW50ZXJydXB0cy5DUFU3My5SRVM6UmVzY2hlZHVs
-aW5nX2ludGVycnVwdHMKICAgICAxODM0NCCxIDEwJSAgICAgKzQyLjYlICAgICAgMjYxNTIgsSAg
-NyUgIGludGVycnVwdHMuQ1BVNzQuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAy
-MTI4ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA2NSCxICAyJSAgaW50ZXJydXB0cy5DUFU3NC5M
-T0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAzMDAyILEgIDIlICAgICArMTcuMCUgICAg
-ICAgMzUxMSCxICAzJSAgaW50ZXJydXB0cy5DUFU3NC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVw
-dHMKICAgICAxODMxMCCxIDEwJSAgICAgKzQxLjklICAgICAgMjU5NzYgsSAgNyUgIGludGVycnVw
-dHMuQ1BVNzUuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTQzICAgICAgICAg
-ICArMTMuNSUgICAgMTAyNDA3MiCxICAyJSAgaW50ZXJydXB0cy5DUFU3NS5MT0M6TG9jYWxfdGlt
-ZXJfaW50ZXJydXB0cwogICAgICAyOTIyILEgIDMlICAgICArMTguNSUgICAgICAgMzQ2MyCxICAz
-JSAgaW50ZXJydXB0cy5DUFU3NS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODI3
-NSCxIDEwJSAgICAgKzQxLjYlICAgICAgMjU4ODMgsSAgNyUgIGludGVycnVwdHMuQ1BVNzYuQ0FM
-OkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMDk5ICAgICAgICAgICArMTMuNSUgICAg
-MTAyNDA5OCCxICAyJSAgaW50ZXJydXB0cy5DUFU3Ni5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0
-cwogICAgICAyOTIxILEgIDQlICAgICArMTguMyUgICAgICAgMzQ1NyCxICAyJSAgaW50ZXJydXB0
-cy5DUFU3Ni5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODMzMCCxIDEwJSAgICAg
-KzQyLjElICAgICAgMjYwNTQgsSAgNyUgIGludGVycnVwdHMuQ1BVNzcuQ0FMOkZ1bmN0aW9uX2Nh
-bGxfaW50ZXJydXB0cwogICAgOTAyMTU4ICAgICAgICAgICArMTMuNSUgICAgMTAyNDEwMyCxICAy
-JSAgaW50ZXJydXB0cy5DUFU3Ny5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTYw
-ILEgIDMlICAgICArMTYuNCUgICAgICAgMzQ0NyCxICAzJSAgaW50ZXJydXB0cy5DUFU3Ny5SRVM6
-UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODE5OSCxIDEwJSAgICAgKzQzLjklICAgICAg
-MjYxODMgsSAgOCUgIGludGVycnVwdHMuQ1BVNzguQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0
-cwogICAgOTAyMTI3ICAgICAgICAgICArMTMuNSUgICAgMTAyNDExMyCxICAyJSAgaW50ZXJydXB0
-cy5DUFU3OC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTM2ILEgIDMlICAgICAr
-MTcuOCUgICAgICAgMzQ2MCCxICAyJSAgaW50ZXJydXB0cy5DUFU3OC5SRVM6UmVzY2hlZHVsaW5n
-X2ludGVycnVwdHMKICAgICAxODMwMiCxICA5JSAgICAgKzQyLjIlICAgICAgMjYwMTggsSAgNyUg
-IGludGVycnVwdHMuQ1BVNzkuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTI4
-ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA5MyCxICAyJSAgaW50ZXJydXB0cy5DUFU3OS5MT0M6
-TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTMzILEgIDMlICAgICArMTYuMSUgICAgICAg
-MzQwNiCxICAyJSAgaW50ZXJydXB0cy5DUFU3OS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMK
-ICAgICAxNzI1NyCxICA0JSAgICAgKzI2LjElICAgICAgMjE3NjYgsSAgNiUgIGludGVycnVwdHMu
-Q1BVOC5DQUw6RnVuY3Rpb25fY2FsbF9pbnRlcnJ1cHRzCiAgICA5MDIwNjQgICAgICAgICAgICsx
-My41JSAgICAxMDI0MjQ5ILEgIDIlICBpbnRlcnJ1cHRzLkNQVTguTE9DOkxvY2FsX3RpbWVyX2lu
-dGVycnVwdHMKICAgICAgMzE0OCCxICA0JSAgICAgKzIyLjglICAgICAgIDM4NjcgsSAgNCUgIGlu
-dGVycnVwdHMuQ1BVOC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODM1MSCxIDEw
-JSAgICAgKzQxLjYlICAgICAgMjU5ODMgsSAgOCUgIGludGVycnVwdHMuQ1BVODAuQ0FMOkZ1bmN0
-aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTE5ICAgICAgICAgICArMTMuNSUgICAgMTAyNDEw
-NCCxICAyJSAgaW50ZXJydXB0cy5DUFU4MC5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAg
-ICAyOTUwILEgIDIlICAgICArMTUuMCUgICAgICAgMzM5MyCxICAyJSAgaW50ZXJydXB0cy5DUFU4
-MC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODM1MSCxIDEwJSAgICAgKzQyLjUl
-ICAgICAgMjYxNDcgsSAgOCUgIGludGVycnVwdHMuQ1BVODEuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50
-ZXJydXB0cwogICAgOTAyMTM4ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA4NyCxICAyJSAgaW50
-ZXJydXB0cy5DUFU4MS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTUyILEgIDIl
-ICAgICArMTYuMCUgICAgICAgMzQyNCCxICAyJSAgaW50ZXJydXB0cy5DUFU4MS5SRVM6UmVzY2hl
-ZHVsaW5nX2ludGVycnVwdHMKICAgICAxODI1OSCxIDEwJSAgICAgKzQyLjQlICAgICAgMjYwMDQg
-sSAgNyUgIGludGVycnVwdHMuQ1BVODIuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAg
-OTAyMTQ5ICAgICAgICAgICArMTMuNSUgICAgMTAyNDI3MiCxICAyJSAgaW50ZXJydXB0cy5DUFU4
-Mi5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTMxILEgIDIlICAgICArMTcuMCUg
-ICAgICAgMzQyOSCxICAyJSAgaW50ZXJydXB0cy5DUFU4Mi5SRVM6UmVzY2hlZHVsaW5nX2ludGVy
-cnVwdHMKICAgICAxODIxMCCxIDEwJSAgICAgKzQyLjglICAgICAgMjYwMTIgsSAgOCUgIGludGVy
-cnVwdHMuQ1BVODMuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTExICAgICAg
-ICAgICArMTMuNSUgICAgMTAyNDA5OSCxICAyJSAgaW50ZXJydXB0cy5DUFU4My5MT0M6TG9jYWxf
-dGltZXJfaW50ZXJydXB0cwogICAgICAyOTMzILEgIDIlICAgICArMTYuNiUgICAgICAgMzQxOSCx
-ICAyJSAgaW50ZXJydXB0cy5DUFU4My5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAx
-ODA4NSCxIDEwJSAgICAgKzQ0LjIlICAgICAgMjYwODYgsSAgOCUgIGludGVycnVwdHMuQ1BVODQu
-Q0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTE4ICAgICAgICAgICArMTMuNSUg
-ICAgMTAyNDEwOSCxICAyJSAgaW50ZXJydXB0cy5DUFU4NC5MT0M6TG9jYWxfdGltZXJfaW50ZXJy
-dXB0cwogICAgICAyOTgxILEgIDIlICAgICArMTMuOSUgICAgICAgMzM5NiCxICAyJSAgaW50ZXJy
-dXB0cy5DUFU4NC5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODI5NCCxIDEwJSAg
-ICAgKzQzLjAlICAgICAgMjYxNjcgsSAgNyUgIGludGVycnVwdHMuQ1BVODUuQ0FMOkZ1bmN0aW9u
-X2NhbGxfaW50ZXJydXB0cwogICAgOTAyMTM1ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA5OCCx
-ICAyJSAgaW50ZXJydXB0cy5DUFU4NS5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAy
-OTM3ILEgIDIlICAgICArMTYuOCUgICAgICAgMzQzMCCxICAzJSAgaW50ZXJydXB0cy5DUFU4NS5S
-RVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAxODI1MyCxIDEwJSAgICAgKzQyLjclICAg
-ICAgMjYwNTYgsSAgOCUgIGludGVycnVwdHMuQ1BVODYuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJy
-dXB0cwogICAgOTAyMzAyICAgICAgICAgICArMTMuNSUgICAgMTAyNDEwMiCxICAyJSAgaW50ZXJy
-dXB0cy5DUFU4Ni5MT0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTk5ILEgIDIlICAg
-ICArMTMuNSUgICAgICAgMzQwMyCxICAzJSAgaW50ZXJydXB0cy5DUFU4Ni5SRVM6UmVzY2hlZHVs
-aW5nX2ludGVycnVwdHMKICAgICAxODI0OCCxIDEwJSAgICAgKzQxLjUlICAgICAgMjU4MTcgsSAg
-OCUgIGludGVycnVwdHMuQ1BVODcuQ0FMOkZ1bmN0aW9uX2NhbGxfaW50ZXJydXB0cwogICAgOTAy
-MTI3ICAgICAgICAgICArMTMuNSUgICAgMTAyNDA2NCCxICAyJSAgaW50ZXJydXB0cy5DUFU4Ny5M
-T0M6TG9jYWxfdGltZXJfaW50ZXJydXB0cwogICAgICAyOTU0ILEgIDIlICAgICArMTQuMyUgICAg
-ICAgMzM3NyCxICAyJSAgaW50ZXJydXB0cy5DUFU4Ny5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVw
-dHMKICAgICAxNjk5MSCxICA0JSAgICAgKzI2LjklICAgICAgMjE1NTcgsSAgNiUgIGludGVycnVw
-dHMuQ1BVOS5DQUw6RnVuY3Rpb25fY2FsbF9pbnRlcnJ1cHRzCiAgICA5MDIxNjIgICAgICAgICAg
-ICsxMy41JSAgICAxMDI0MTEwILEgIDIlICBpbnRlcnJ1cHRzLkNQVTkuTE9DOkxvY2FsX3RpbWVy
-X2ludGVycnVwdHMKICAgICAgMzE2NCCxICAzJSAgICAgKzIyLjUlICAgICAgIDM4NzYgsSAgNSUg
-IGludGVycnVwdHMuQ1BVOS5SRVM6UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICA3OTM4NzQ3MSAg
-ICAgICAgICAgKzEzLjUlICAgOTAxMTk2MTggsSAgMiUgIGludGVycnVwdHMuTE9DOkxvY2FsX3Rp
-bWVyX2ludGVycnVwdHMKICAgIDI2OTE4OCAgICAgICAgICAgKzE5LjIlICAgICAzMjA3NjYgsSAg
-MiUgIGludGVycnVwdHMuUkVTOlJlc2NoZWR1bGluZ19pbnRlcnJ1cHRzCgoKICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFpbTcuam9icy1w
-ZXItbWluICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAKICAxNDAwMCArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsgICAKICAgICAgICB8ICAgICAgICArICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAKICAxMzUw
-MCB8LSsgICAgICsgKyAgICsrICAgKyAgKy4rICArICAgKyAgICAgICAgICAgICAgICAgICAgICsg
-ICAgICAgIC4rICAgIHwgICAKICAgICAgICB8ICAgICAuKyAgICsgKyAgOiA6OiA6ICA6ICA6OiA6
-IDouKy4gICAgICAgKyAgICArICAgIDogICAgIC4rKyAgKyArLnwgICAKICAgICAgICB8LiArLisg
-ICAgICArICAgOiA6IDo6ICAgOiA6OiA6ICsgICArKy4rLiArICsuICsgKyAgOjogICAuKyAgICAg
-ICsgIHwgICAKICAxMzAwMCB8LSsgICAgICAgICAgICAgICsgICsgICAgOjogICsgICAgICAgICAg
-ICsgICAgKyAgICsgOjogICsgICAgICAgICAgIHwgICAKICAgICAgICB8ICAgICAgICAgICAgICAg
-ICAgICAgICAgIDogICAgICAgICAgICAgICAgICAgICAgICArICA6IDogICAgICAgICAgIHwgICAK
-ICAxMjUwMCB8LSsgICAgICAgICAgICAgICAgICAgICAgICsgICAgICAgICAgICAgICAgICAgICAg
-ICAgICA6OiAgICAgICAgICAgIHwgICAKICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICA6OiAgICAgICAgICAgIHwgICAKICAxMjAwMCB8
-LSsgICAgTyAgICAgICAgICAgTyAgTyAgICBPICAgIE8gICAgICBPICAgTyAgICAgICAgICArICAg
-ICAgICAgICAgIHwgICAKICAgICAgICB8IE8gICAgICAgTyBPICAgICAgIE8gICAgICAgICAgICAg
-ICBPICAgICAgICAgICBPICAgICAgICAgICAgICAgICAgIHwgICAKICAgICAgICB8ICAgIE8gICAg
-ICAgIE8gIE8gICAgICAgIE8gICAgTyAgTyAgICAgIE8gIE8gICAgICAgICAgICAgICAgICAgICAg
-IHwgICAKICAxMTUwMCB8LStPICAgICAgICAgICAgICAgICAgICBPICAgIE8gICAgICAgTyAgICAg
-ICAgTyAgICAgICAgICAgICAgICAgICAgIHwgICAKICAgICAgICB8ICAgICAgICBPICAgICBPICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAKICAx
-MTAwMCArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLSsgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAKWypdIGJpc2VjdC1nb29kIHNhbXBsZQpbT10gYmlzZWN0LWJhZCAgc2FtcGxl
-CgoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioKbGtwLWtubC1mMTog
-MjU2IHRocmVhZHMgSW50ZWwoUikgR2VudWluZSBJbnRlbChSKSBDUFUgMDAwMCBAIDEuMzBHSHog
-d2l0aCAxMTJHIG1lbW9yeQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjb21waWxl
-ci9jcHVmcmVxX2dvdmVybm9yL2tjb25maWcvcm9vdGZzL3Rib3hfZ3JvdXAvdGVzdC90ZXN0Y2Fz
-ZS90ZXN0dGltZS91Y29kZToKICBnY2MtOS9wZXJmb3JtYW5jZS94ODZfNjQtcmhlbC04LjMvZGVi
-aWFuLTEwLjQteDg2XzY0LTIwMjAwNjAzLmNnei9sa3Ata25sLWYxL2FsbC9haW05LzVzLzB4ZmZm
-ZjAxOTAKCmNvbW1pdDogCiAgNDM5MmZiYzRiYSAoImV4dDQ6IGRyb3Agc3luYyBhcmd1bWVudCBv
-ZiBleHQ0X2NvbW1pdF9zdXBlcigpIikKICAwNWMyYzAwZjM3ICgiZXh0NDogcHJvdGVjdCBzdXBl
-cmJsb2NrIG1vZGlmaWNhdGlvbnMgd2l0aCBhIGJ1ZmZlciBsb2NrIikKCjQzOTJmYmM0YmFiNTdk
-YjMgMDVjMmMwMGYzNzY5YWJiOWUzMjNmY2FjYTcwIAotLS0tLS0tLS0tLS0tLS0tIC0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLSAKICAgICAgIGZhaWw6cnVucyAgJXJlcHJvZHVjdGlvbiAgICBm
-YWlsOnJ1bnMKICAgICAgICAgICB8ICAgICAgICAgICAgIHwgICAgICAgICAgICAgfCAgICAKICAg
-ICAgICAgICA6NSAgICAgICAgICAgMjAlICAgICAgICAgICAxOjYgICAgIGRtZXNnLldBUk5JTkc6
-bWlzc2luZ19SMTBfdmFsdWVfYXRfX2Zzbm90aWZ5X3BhcmVudC8weAogICAgICAgICAgMDo1ICAg
-ICAgICAgICAgNCUgICAgICAgICAgIDA6NiAgICAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xl
-cy1wcC5lcnJvcl9yZXR1cm4KICAgICAgICAgIDI6NSAgICAgICAgICAgIDglICAgICAgICAgICAy
-OjYgICAgIHBlcmYtcHJvZmlsZS5zZWxmLmN5Y2xlcy1wcC5lcnJvcl9lbnRyeQogICAgICAgICAl
-c3RkZGV2ICAgICAlY2hhbmdlICAgICAgICAgJXN0ZGRldgogICAgICAgICAgICAgXCAgICAgICAg
-ICB8ICAgICAgICAgICAgICAgIFwgIAogICAgIDc0Mzg0ICAgICAgICAgICAgKzMuNCUgICAgICA3
-Njg4MyAgICAgICAgYWltOS5kZ3JhbV9waXBlLm9wc19wZXJfc2VjCiAgICAxMjE4NjUgICAgICAg
-ICAgICArMi42JSAgICAgMTI1MDIwICAgICAgICBhaW05LmRpc2tfY3Aub3BzX3Blcl9zZWMKICAg
-IDE5ODk5NyAgICAgICAgICAgICsxLjklICAgICAyMDI2ODggICAgICAgIGFpbTkuZGlza193cnQu
-b3BzX3Blcl9zZWMKICAgICA1MjAyOSAgICAgICAgICAgIC0zLjklICAgICAgNDk5OTAgICAgICAg
-IGFpbTkubGlua190ZXN0Lm9wc19wZXJfc2VjCiAgICAgOTU2NDUgICAgICAgICAgICArNy41JSAg
-ICAgMTAyODY1ICAgICAgICBhaW05LnNpZ25hbF90ZXN0Lm9wc19wZXJfc2VjCiAgICAgODAwMjgg
-ICAgICAgICAgICArNS4wJSAgICAgIDg0MDIzICAgICAgICBhaW05LnN0cmVhbV9waXBlLm9wc19w
-ZXJfc2VjCiAgICAxMDE4ODggICAgICAgICAgICArMy45JSAgICAgMTA1ODcyICAgICAgICBhaW05
-LnN5bmNfZGlza19ydy5vcHNfcGVyX3NlYwogICAgIDE3Nzk0ICAgICAgICAgICAgKzEuNSUgICAg
-ICAxODA2OSAgICAgICAgYWltOS50Y3BfdGVzdC5vcHNfcGVyX3NlYwogICAgIDM1MzI5ICAgICAg
-ICAgICAgKzIuMSUgICAgICAzNjA3MCAgICAgICAgYWltOS51ZHBfdGVzdC5vcHNfcGVyX3NlYwog
-ICAgIDg0NTA1ICAgICAgICAgICAgKzEuMyUgICAgICA4NTU2MiAgICAgICAgcHJvYy12bXN0YXQu
-cGdhY3RpdmF0ZQogMS4wMzdlKzA4ICAgICAgICAgICAgLTYuMCUgICA5NzQ3OTU0NCCxICA2JSAg
-cGVyZi1zdGF0LmkuY2FjaGUtcmVmZXJlbmNlcwogMS4wMzRlKzA4ICAgICAgICAgICAgLTYuMCUg
-ICA5NzE2MTk2MSCxICA2JSAgcGVyZi1zdGF0LnBzLmNhY2hlLXJlZmVyZW5jZXMKICAgIDQxMi41
-MCCxICAzJSAgICAgKzI1LjglICAgICA1MTkuMDMgsSAgOSUgIHNjaGVkX2RlYnVnLmNmc19ycTov
-LnV0aWxfZXN0X2VucXVldWVkLm1heAogICAgIDQ1Ljk5ILEgMTAlICAgICArMzEuNiUgICAgICA2
-MC41MSCxIDExJSAgc2NoZWRfZGVidWcuY2ZzX3JxOi8udXRpbF9lc3RfZW5xdWV1ZWQuc3RkZGV2
-CiAgICAgMjA4NzMgsSAxMyUgICAgIC0xNi4yJSAgICAgIDE3NDkzILEgIDYlICBzb2Z0aXJxcy5D
-UFUxMzQuUkNVCiAgICAgMTAwNTQgsSA1NiUgICAgIC04MS4zJSAgICAgICAxODgwILExMjYlICBz
-b2Z0aXJxcy5DUFUxNC5ORVRfUlgKICAgICAgMC4wNSCxICA2JSAgICAgKzQ1LjAlICAgICAgIDAu
-MDggsSAyOCUgIHBlcmYtc2NoZWQuc2NoX2RlbGF5LmF2Zy5tcy5kZXZrbXNnX3JlYWQudmZzX3Jl
-YWQua3N5c19yZWFkLmRvX3N5c2NhbGxfNjQKICAgICAgMC4wNCCxICA0JSAgICAgKzIyLjMlICAg
-ICAgIDAuMDUgsSAxMCUgIHBlcmYtc2NoZWQuc2NoX2RlbGF5LmF2Zy5tcy5zY2hlZHVsZV9ocnRp
-bWVvdXRfcmFuZ2VfY2xvY2suZXBfcG9sbC5kb19lcG9sbF93YWl0Ll9feDY0X3N5c19lcG9sbF93
-YWl0CiAgICAgIDAuMDEgsTEyMyUgICAgKzE1My41JSAgICAgICAwLjA0ILEgMjQlICBwZXJmLXNj
-aGVkLnNjaF9kZWxheS5hdmcubXMuc2NoZWR1bGVfdGltZW91dC53YWl0X2Zvcl9jb21wbGV0aW9u
-Ll9fZmx1c2hfd29yay5scnVfYWRkX2RyYWluX2FsbAogICAgICAwLjA5ILEgMTglICAgICArODIu
-OSUgICAgICAgMC4xNyCxIDUyJSAgcGVyZi1zY2hlZC5zY2hfZGVsYXkubWF4Lm1zLnNjaGVkdWxl
-X2hydGltZW91dF9yYW5nZV9jbG9jay5lcF9wb2xsLmRvX2Vwb2xsX3dhaXQuX194NjRfc3lzX2Vw
-b2xsX3dhaXQKICAgICAgMC4wMSCxMTIzJSAgICArMTc1LjglICAgICAgIDAuMDQgsSAxMiUgIHBl
-cmYtc2NoZWQuc2NoX2RlbGF5Lm1heC5tcy5zY2hlZHVsZV90aW1lb3V0LndhaXRfZm9yX2NvbXBs
-ZXRpb24uX19mbHVzaF93b3JrLmxydV9hZGRfZHJhaW5fYWxsCiAgICAxNDEuMTUgsSAyMSUgICAg
-IC00MS4xJSAgICAgIDgzLjEyILEgNDElICBwZXJmLXNjaGVkLndhaXRfYW5kX2RlbGF5Lm1heC5t
-cy5zY2hlZHVsZV90aW1lb3V0LnJjdV9ncF9rdGhyZWFkLmt0aHJlYWQucmV0X2Zyb21fZm9yawog
-ICAgICAwLjE4ILEgNDAlICAgICArNzAuNSUgICAgICAgMC4zMSCxIDQxJSAgcGVyZi1zY2hlZC53
-YWl0X3RpbWUubWF4Lm1zLnByZWVtcHRfc2NoZWR1bGVfY29tbW9uLl9jb25kX3Jlc2NoZWQuZHB1
-dC5wYXRoX3B1dC5zZXRfZnNfcHdkCiAgICAgIDAuMjMgsSAzMyUgICAgICs1OS44JSAgICAgICAw
-LjM3ILEgMjYlICBwZXJmLXNjaGVkLndhaXRfdGltZS5tYXgubXMucHJlZW1wdF9zY2hlZHVsZV9j
-b21tb24uX2NvbmRfcmVzY2hlZC5rbWVtX2NhY2hlX2FsbG9jLmdldG5hbWVfZmxhZ3MuX194NjRf
-c3lzX3VubGluawogICAgMTQxLjEyILEgMjElICAgICAtNDEuMSUgICAgICA4My4wOSCxIDQxJSAg
-cGVyZi1zY2hlZC53YWl0X3RpbWUubWF4Lm1zLnNjaGVkdWxlX3RpbWVvdXQucmN1X2dwX2t0aHJl
-YWQua3RocmVhZC5yZXRfZnJvbV9mb3JrCiAgICAzMDUuNjAgsSAyOSUgICAgIC00My4zJSAgICAg
-MTczLjE3ILEgMjElICBpbnRlcnJ1cHRzLkNQVTExNC5OTUk6Tm9uLW1hc2thYmxlX2ludGVycnVw
-dHMKICAgIDMwNS42MCCxIDI5JSAgICAgLTQzLjMlICAgICAxNzMuMTcgsSAyMSUgIGludGVycnVw
-dHMuQ1BVMTE0LlBNSTpQZXJmb3JtYW5jZV9tb25pdG9yaW5nX2ludGVycnVwdHMKICAgIDMzNS4w
-MCCxIDIwJSAgICAgLTM2LjYlICAgICAyMTIuMzMgsSAzMiUgIGludGVycnVwdHMuQ1BVMjM5Lk5N
-STpOb24tbWFza2FibGVfaW50ZXJydXB0cwogICAgMzM1LjAwILEgMjAlICAgICAtMzYuNiUgICAg
-IDIxMi4zMyCxIDMyJSAgaW50ZXJydXB0cy5DUFUyMzkuUE1JOlBlcmZvcm1hbmNlX21vbml0b3Jp
-bmdfaW50ZXJydXB0cwogICAgMzE0LjgwILEgMzIlICAgICAtMzcuMCUgICAgIDE5OC4zMyCxIDQ2
-JSAgaW50ZXJydXB0cy5DUFUyNTEuTk1JOk5vbi1tYXNrYWJsZV9pbnRlcnJ1cHRzCiAgICAzMTQu
-ODAgsSAzMiUgICAgIC0zNy4wJSAgICAgMTk4LjMzILEgNDYlICBpbnRlcnJ1cHRzLkNQVTI1MS5Q
-TUk6UGVyZm9ybWFuY2VfbW9uaXRvcmluZ19pbnRlcnJ1cHRzCiAgICAgMjMuMjAgsSA0NCUgICAg
-KzExNy43JSAgICAgIDUwLjUwILEgNTclICBpbnRlcnJ1cHRzLkNQVTUzLlJFUzpSZXNjaGVkdWxp
-bmdfaW50ZXJydXB0cwogICAgICAxNDE3ILEgMTAlICAgICArMjQuNiUgICAgICAgMTc2NiCxIDEz
-JSAgaW50ZXJydXB0cy5DUFU2LkNBTDpGdW5jdGlvbl9jYWxsX2ludGVycnVwdHMKICAgICAzMC40
-MCCxIDU5JSAgICArMTk4LjglICAgICAgOTAuODMgsSAyMyUgIGludGVycnVwdHMuQ1BVNi5SRVM6
-UmVzY2hlZHVsaW5nX2ludGVycnVwdHMKICAgICAgMTI2MCCxICA1JSAgICAgICs5LjMlICAgICAg
-IDEzNzcgsSAgNyUgIGludGVycnVwdHMuQ1BVNy5DQUw6RnVuY3Rpb25fY2FsbF9pbnRlcnJ1cHRz
-CiAgICAyNTMuNDAgsSAyOSUgICAgICs0Ni43JSAgICAgMzcxLjgzILEgMjclICBpbnRlcnJ1cHRz
-LkNQVTkwLk5NSTpOb24tbWFza2FibGVfaW50ZXJydXB0cwogICAgMjUzLjQwILEgMjklICAgICAr
-NDYuNyUgICAgIDM3MS44MyCxIDI3JSAgaW50ZXJydXB0cy5DUFU5MC5QTUk6UGVyZm9ybWFuY2Vf
-bW9uaXRvcmluZ19pbnRlcnJ1cHRzCiAgICAgIDEuMDcgsSAgMiUgICAgICAtMC4yICAgICAgICAw
-Ljg2ILEgMjQlICBwZXJmLXByb2ZpbGUuY2FsbHRyYWNlLmN5Y2xlcy1wcC5pcnF0aW1lX2FjY291
-bnRfaXJxLmlycV9leGl0X3JjdS5zeXN2ZWNfYXBpY190aW1lcl9pbnRlcnJ1cHQuYXNtX3N5c3Zl
-Y19hcGljX3RpbWVyX2ludGVycnVwdC5jcHVpZGxlX2VudGVyX3N0YXRlCiAgICAgIDAuNzUgsSAg
-NCUgICAgICArMC4zICAgICAgICAxLjAzILEgMzQlICBwZXJmLXByb2ZpbGUuY2FsbHRyYWNlLmN5
-Y2xlcy1wcC50aW1lcnF1ZXVlX2FkZC5lbnF1ZXVlX2hydGltZXIuX19ocnRpbWVyX3J1bl9xdWV1
-ZXMuaHJ0aW1lcl9pbnRlcnJ1cHQuX19zeXN2ZWNfYXBpY190aW1lcl9pbnRlcnJ1cHQKICAgICAg
-MC45MCCxICA1JSAgICAgICswLjMgICAgICAgIDEuMjEgsSAzMyUgIHBlcmYtcHJvZmlsZS5jYWxs
-dHJhY2UuY3ljbGVzLXBwLmVucXVldWVfaHJ0aW1lci5fX2hydGltZXJfcnVuX3F1ZXVlcy5ocnRp
-bWVyX2ludGVycnVwdC5fX3N5c3ZlY19hcGljX3RpbWVyX2ludGVycnVwdC5hc21fY2FsbF9zeXN2
-ZWNfb25fc3RhY2sKICAgICAgMi40MCCxICA2JSAgICAgICswLjQgICAgICAgIDIuNzYgsSAgOSUg
-IHBlcmYtcHJvZmlsZS5jYWxsdHJhY2UuY3ljbGVzLXBwLmNsb2NrZXZlbnRzX3Byb2dyYW1fZXZl
-bnQuaHJ0aW1lcl9pbnRlcnJ1cHQuX19zeXN2ZWNfYXBpY190aW1lcl9pbnRlcnJ1cHQuYXNtX2Nh
-bGxfc3lzdmVjX29uX3N0YWNrLnN5c3ZlY19hcGljX3RpbWVyX2ludGVycnVwdAogICAgICAxLjQy
-ILEgIDclICAgICAgKzAuNCAgICAgICAgMS44NCCxIDE0JSAgcGVyZi1wcm9maWxlLmNhbGx0cmFj
-ZS5jeWNsZXMtcHAua3RpbWVfZ2V0LmNsb2NrZXZlbnRzX3Byb2dyYW1fZXZlbnQuaHJ0aW1lcl9p
-bnRlcnJ1cHQuX19zeXN2ZWNfYXBpY190aW1lcl9pbnRlcnJ1cHQuYXNtX2NhbGxfc3lzdmVjX29u
-X3N0YWNrCiAgICAgIDAuMzMgsSAgNyUgICAgICAtMC4xICAgICAgICAwLjI1ILEgMTElICBwZXJm
-LXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLmlycV93b3JrX25lZWRzX2NwdQogICAgICAwLjA5
-ILEgMTMlICAgICAgKzAuMCAgICAgICAgMC4xMSCxICA4JSAgcGVyZi1wcm9maWxlLmNoaWxkcmVu
-LmN5Y2xlcy1wcC5ocnRpbWVyX3J1bl9xdWV1ZXMKICAgICAgMC4wOSCxICA5JSAgICAgICswLjAg
-ICAgICAgIDAuMTIgsSAxOSUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAuX19zZXRf
-Y3B1c19hbGxvd2VkX3B0cgogICAgICAwLjA2ILEgMTIlICAgICAgKzAuMCAgICAgICAgMC4wOSCx
-IDEzJSAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5pcnFfd29ya19zaW5nbGUKICAg
-ICAgMC4wNiCxIDEyJSAgICAgICswLjAgICAgICAgIDAuMDkgsSAxMyUgIHBlcmYtcHJvZmlsZS5j
-aGlsZHJlbi5jeWNsZXMtcHAuYXNtX3N5c3ZlY19pcnFfd29yawogICAgICAwLjA2ILEgMTIlICAg
-ICAgKzAuMCAgICAgICAgMC4wOSCxIDEzJSAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1w
-cC5zeXN2ZWNfaXJxX3dvcmsKICAgICAgMC4wNiCxIDEyJSAgICAgICswLjAgICAgICAgIDAuMDkg
-sSAxMyUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAuX19zeXN2ZWNfaXJxX3dvcmsK
-ICAgICAgMC4wNiCxIDEyJSAgICAgICswLjAgICAgICAgIDAuMDkgsSAxMyUgIHBlcmYtcHJvZmls
-ZS5jaGlsZHJlbi5jeWNsZXMtcHAuaXJxX3dvcmtfcnVuCiAgICAgIDAuMTEgsSAgOCUgICAgICAr
-MC4wICAgICAgICAwLjE1ILEgMjIlICBwZXJmLXByb2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLl9f
-eDY0X3N5c19zY2hlZF9zZXRhZmZpbml0eQogICAgICAwLjE0ILEgIDUlICAgICAgKzAuMSAgICAg
-ICAgMC4xOSCxIDE3JSAgcGVyZi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5pcnFfd29ya19y
-dW5fbGlzdAogICAgICAwLjI5ILEgIDYlICAgICAgKzAuMSAgICAgICAgMC4zOSCxIDI4JSAgcGVy
-Zi1wcm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5yYl9pbnNlcnRfY29sb3IKICAgICAgMC43NyCx
-ICA0JSAgICAgICswLjMgICAgICAgIDEuMDcgsSAzNCUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5j
-eWNsZXMtcHAudGltZXJxdWV1ZV9hZGQKICAgICAgMC45MiCxICA1JSAgICAgICswLjMgICAgICAg
-IDEuMjMgsSAzMiUgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAuZW5xdWV1ZV9ocnRp
-bWVyCiAgICAgIDIuNDUgsSAgNiUgICAgICArMC40ICAgICAgICAyLjgyILEgIDklICBwZXJmLXBy
-b2ZpbGUuY2hpbGRyZW4uY3ljbGVzLXBwLmNsb2NrZXZlbnRzX3Byb2dyYW1fZXZlbnQKICAgICAg
-NC4yMyCxICAyJSAgICAgICswLjQgICAgICAgIDQuNjEgsSAgNyUgIHBlcmYtcHJvZmlsZS5jaGls
-ZHJlbi5jeWNsZXMtcHAuc2NoZWR1bGVyX3RpY2sKICAgICAgMC45NyCxICAyJSAgICAgIC0wLjEg
-ICAgICAgIDAuODMgsSAxNSUgIHBlcmYtcHJvZmlsZS5zZWxmLmN5Y2xlcy1wcC5pcnF0aW1lX2Fj
-Y291bnRfaXJxCiAgICAgIDAuNzUgsSAgNCUgICAgICAtMC4xICAgICAgICAwLjY3ILEgIDYlICBw
-ZXJmLXByb2ZpbGUuc2VsZi5jeWNsZXMtcHAuX19zeXN2ZWNfYXBpY190aW1lcl9pbnRlcnJ1cHQK
-ICAgICAgMC4zMCCxICA4JSAgICAgIC0wLjEgICAgICAgIDAuMjMgsSAxNSUgIHBlcmYtcHJvZmls
-ZS5zZWxmLmN5Y2xlcy1wcC5pcnFfd29ya19uZWVkc19jcHUKICAgICAgMC4xOSCxICAzJSAgICAg
-ICswLjAgICAgICAgIDAuMjEgsSAgNiUgIHBlcmYtcHJvZmlsZS5zZWxmLmN5Y2xlcy1wcC50cmln
-Z2VyX2xvYWRfYmFsYW5jZQogICAgICAwLjA5ILEgMTMlICAgICAgKzAuMCAgICAgICAgMC4xMSCx
-ICA4JSAgcGVyZi1wcm9maWxlLnNlbGYuY3ljbGVzLXBwLmhydGltZXJfcnVuX3F1ZXVlcwogICAg
-ICAwLjAyILExMjIlICAgICAgKzAuMCAgICAgICAgMC4wNiCxIDE0JSAgcGVyZi1wcm9maWxlLnNl
-bGYuY3ljbGVzLXBwLmlvX3NlcmlhbF9pbgogICAgICAwLjE0ILEgMTElICAgICAgKzAuMCAgICAg
-ICAgMC4xOSCxIDIyJSAgcGVyZi1wcm9maWxlLnNlbGYuY3ljbGVzLXBwLnRpY2tfc2NoZWRfaGFu
-ZGxlCiAgICAgIDAuMjcgsSAgNCUgICAgICArMC4xICAgICAgICAwLjM3ILEgMjclICBwZXJmLXBy
-b2ZpbGUuc2VsZi5jeWNsZXMtcHAucmJfaW5zZXJ0X2NvbG9yCgoKCgoKRGlzY2xhaW1lcjoKUmVz
-dWx0cyBoYXZlIGJlZW4gZXN0aW1hdGVkIGJhc2VkIG9uIGludGVybmFsIEludGVsIGFuYWx5c2lz
-IGFuZCBhcmUgcHJvdmlkZWQKZm9yIGluZm9ybWF0aW9uYWwgcHVycG9zZXMgb25seS4gQW55IGRp
-ZmZlcmVuY2UgaW4gc3lzdGVtIGhhcmR3YXJlIG9yIHNvZnR3YXJlCmRlc2lnbiBvciBjb25maWd1
-cmF0aW9uIG1heSBhZmZlY3QgYWN0dWFsIHBlcmZvcm1hbmNlLgoKClRoYW5rcywKT2xpdmVyIFNh
-bmcKCjwvcHJlPgogICAgICA8YnI+CiAgICAgIDxmaWVsZHNldCBjbGFzcz0ibWltZUF0dGFjaG1l
-bnRIZWFkZXIiPjwvZmllbGRzZXQ+CiAgICAgIDxwcmUgY2xhc3M9Im1vei1xdW90ZS1wcmUiIHdy
-YXA9IiI+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTEtQ
-IG1haWxpbmcgbGlzdCAtLSA8YSBjbGFzcz0ibW96LXR4dC1saW5rLWFiYnJldmlhdGVkIiBocmVm
-PSJtYWlsdG86bGtwQGxpc3RzLjAxLm9yZyI+bGtwQGxpc3RzLjAxLm9yZzwvYT4KVG8gdW5zdWJz
-Y3JpYmUgc2VuZCBhbiBlbWFpbCB0byA8YSBjbGFzcz0ibW96LXR4dC1saW5rLWFiYnJldmlhdGVk
-IiBocmVmPSJtYWlsdG86bGtwLWxlYXZlQGxpc3RzLjAxLm9yZyI+bGtwLWxlYXZlQGxpc3RzLjAx
-Lm9yZzwvYT4KPC9wcmU+CiAgICA8L2Jsb2NrcXVvdGU+CiAgICA8YnI+CiAgICA8cHJlIGNsYXNz
-PSJtb3otc2lnbmF0dXJlIiBjb2xzPSI3MiI+LS0gClpoZW5nanVuIFhpbmc8L3ByZT4KICA8L2Jv
-ZHk+CjwvaHRtbD4K
+> #
+> # General setup
+> #
+> CONFIG_INIT_ENV_ARG_LIMIT=3D32
+> # CONFIG_COMPILE_TEST is not set
+> CONFIG_LOCALVERSION=3D""
+> CONFIG_LOCALVERSION_AUTO=3Dy
+> CONFIG_BUILD_SALT=3D""
+> CONFIG_HAVE_KERNEL_GZIP=3Dy
+> CONFIG_HAVE_KERNEL_BZIP2=3Dy
+> CONFIG_HAVE_KERNEL_LZMA=3Dy
+> CONFIG_HAVE_KERNEL_XZ=3Dy
+> CONFIG_HAVE_KERNEL_LZO=3Dy
+> CONFIG_HAVE_KERNEL_LZ4=3Dy
+> CONFIG_HAVE_KERNEL_ZSTD=3Dy
+> CONFIG_KERNEL_GZIP=3Dy
+> # CONFIG_KERNEL_BZIP2 is not set
+> # CONFIG_KERNEL_LZMA is not set
+> # CONFIG_KERNEL_XZ is not set
+> # CONFIG_KERNEL_LZO is not set
+> # CONFIG_KERNEL_LZ4 is not set
+> # CONFIG_KERNEL_ZSTD is not set
+> CONFIG_DEFAULT_INIT=3D""
+> CONFIG_DEFAULT_HOSTNAME=3D"(none)"
+> CONFIG_SWAP=3Dy
+> CONFIG_SYSVIPC=3Dy
+> CONFIG_SYSVIPC_SYSCTL=3Dy
+> CONFIG_POSIX_MQUEUE=3Dy
+> CONFIG_POSIX_MQUEUE_SYSCTL=3Dy
+> # CONFIG_WATCH_QUEUE is not set
+> CONFIG_CROSS_MEMORY_ATTACH=3Dy
+> # CONFIG_USELIB is not set
+> CONFIG_AUDIT=3Dy
+> CONFIG_HAVE_ARCH_AUDITSYSCALL=3Dy
+> CONFIG_AUDITSYSCALL=3Dy
+> =
 
---===============7957196248979973763==--
+> #
+> # IRQ subsystem
+> #
+> CONFIG_GENERIC_IRQ_PROBE=3Dy
+> CONFIG_GENERIC_IRQ_SHOW=3Dy
+> CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK=3Dy
+> CONFIG_GENERIC_PENDING_IRQ=3Dy
+> CONFIG_GENERIC_IRQ_MIGRATION=3Dy
+> CONFIG_GENERIC_IRQ_INJECTION=3Dy
+> CONFIG_HARDIRQS_SW_RESEND=3Dy
+> CONFIG_IRQ_DOMAIN=3Dy
+> CONFIG_IRQ_DOMAIN_HIERARCHY=3Dy
+> CONFIG_GENERIC_MSI_IRQ=3Dy
+> CONFIG_GENERIC_MSI_IRQ_DOMAIN=3Dy
+> CONFIG_IRQ_MSI_IOMMU=3Dy
+> CONFIG_GENERIC_IRQ_MATRIX_ALLOCATOR=3Dy
+> CONFIG_GENERIC_IRQ_RESERVATION_MODE=3Dy
+> CONFIG_IRQ_FORCED_THREADING=3Dy
+> CONFIG_SPARSE_IRQ=3Dy
+> # CONFIG_GENERIC_IRQ_DEBUGFS is not set
+> # end of IRQ subsystem
+> =
+
+> CONFIG_CLOCKSOURCE_WATCHDOG=3Dy
+> CONFIG_ARCH_CLOCKSOURCE_INIT=3Dy
+> CONFIG_CLOCKSOURCE_VALIDATE_LAST_CYCLE=3Dy
+> CONFIG_GENERIC_TIME_VSYSCALL=3Dy
+> CONFIG_GENERIC_CLOCKEVENTS=3Dy
+> CONFIG_GENERIC_CLOCKEVENTS_BROADCAST=3Dy
+> CONFIG_GENERIC_CLOCKEVENTS_MIN_ADJUST=3Dy
+> CONFIG_GENERIC_CMOS_UPDATE=3Dy
+> CONFIG_HAVE_POSIX_CPU_TIMERS_TASK_WORK=3Dy
+> CONFIG_POSIX_CPU_TIMERS_TASK_WORK=3Dy
+> =
+
+> #
+> # Timers subsystem
+> #
+> CONFIG_TICK_ONESHOT=3Dy
+> CONFIG_NO_HZ_COMMON=3Dy
+> # CONFIG_HZ_PERIODIC is not set
+> # CONFIG_NO_HZ_IDLE is not set
+> CONFIG_NO_HZ_FULL=3Dy
+> CONFIG_CONTEXT_TRACKING=3Dy
+> # CONFIG_CONTEXT_TRACKING_FORCE is not set
+> CONFIG_NO_HZ=3Dy
+> CONFIG_HIGH_RES_TIMERS=3Dy
+> # end of Timers subsystem
+> =
+
+> # CONFIG_PREEMPT_NONE is not set
+> CONFIG_PREEMPT_VOLUNTARY=3Dy
+> # CONFIG_PREEMPT is not set
+> CONFIG_PREEMPT_COUNT=3Dy
+> =
+
+> #
+> # CPU/Task time and stats accounting
+> #
+> CONFIG_VIRT_CPU_ACCOUNTING=3Dy
+> CONFIG_VIRT_CPU_ACCOUNTING_GEN=3Dy
+> CONFIG_IRQ_TIME_ACCOUNTING=3Dy
+> CONFIG_HAVE_SCHED_AVG_IRQ=3Dy
+> CONFIG_BSD_PROCESS_ACCT=3Dy
+> CONFIG_BSD_PROCESS_ACCT_V3=3Dy
+> CONFIG_TASKSTATS=3Dy
+> CONFIG_TASK_DELAY_ACCT=3Dy
+> CONFIG_TASK_XACCT=3Dy
+> CONFIG_TASK_IO_ACCOUNTING=3Dy
+> # CONFIG_PSI is not set
+> # end of CPU/Task time and stats accounting
+> =
+
+> CONFIG_CPU_ISOLATION=3Dy
+> =
+
+> #
+> # RCU Subsystem
+> #
+> CONFIG_TREE_RCU=3Dy
+> # CONFIG_RCU_EXPERT is not set
+> CONFIG_SRCU=3Dy
+> CONFIG_TREE_SRCU=3Dy
+> CONFIG_TASKS_RCU_GENERIC=3Dy
+> CONFIG_TASKS_RCU=3Dy
+> CONFIG_TASKS_RUDE_RCU=3Dy
+> CONFIG_TASKS_TRACE_RCU=3Dy
+> CONFIG_RCU_STALL_COMMON=3Dy
+> CONFIG_RCU_NEED_SEGCBLIST=3Dy
+> CONFIG_RCU_NOCB_CPU=3Dy
+> # end of RCU Subsystem
+> =
+
+> CONFIG_BUILD_BIN2C=3Dy
+> CONFIG_IKCONFIG=3Dy
+> CONFIG_IKCONFIG_PROC=3Dy
+> # CONFIG_IKHEADERS is not set
+> CONFIG_LOG_BUF_SHIFT=3D20
+> CONFIG_LOG_CPU_MAX_BUF_SHIFT=3D12
+> CONFIG_PRINTK_SAFE_LOG_BUF_SHIFT=3D13
+> CONFIG_HAVE_UNSTABLE_SCHED_CLOCK=3Dy
+> =
+
+> #
+> # Scheduler features
+> #
+> # CONFIG_UCLAMP_TASK is not set
+> # end of Scheduler features
+> =
+
+> CONFIG_ARCH_SUPPORTS_NUMA_BALANCING=3Dy
+> CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH=3Dy
+> CONFIG_CC_HAS_INT128=3Dy
+> CONFIG_ARCH_SUPPORTS_INT128=3Dy
+> CONFIG_NUMA_BALANCING=3Dy
+> CONFIG_NUMA_BALANCING_DEFAULT_ENABLED=3Dy
+> CONFIG_CGROUPS=3Dy
+> CONFIG_PAGE_COUNTER=3Dy
+> CONFIG_MEMCG=3Dy
+> CONFIG_MEMCG_SWAP=3Dy
+> CONFIG_MEMCG_KMEM=3Dy
+> CONFIG_BLK_CGROUP=3Dy
+> CONFIG_CGROUP_WRITEBACK=3Dy
+> CONFIG_CGROUP_SCHED=3Dy
+> CONFIG_FAIR_GROUP_SCHED=3Dy
+> CONFIG_CFS_BANDWIDTH=3Dy
+> CONFIG_RT_GROUP_SCHED=3Dy
+> CONFIG_CGROUP_PIDS=3Dy
+> CONFIG_CGROUP_RDMA=3Dy
+> CONFIG_CGROUP_FREEZER=3Dy
+> CONFIG_CGROUP_HUGETLB=3Dy
+> CONFIG_CPUSETS=3Dy
+> CONFIG_PROC_PID_CPUSET=3Dy
+> CONFIG_CGROUP_DEVICE=3Dy
+> CONFIG_CGROUP_CPUACCT=3Dy
+> CONFIG_CGROUP_PERF=3Dy
+> CONFIG_CGROUP_BPF=3Dy
+> # CONFIG_CGROUP_MISC is not set
+> # CONFIG_CGROUP_DEBUG is not set
+> CONFIG_SOCK_CGROUP_DATA=3Dy
+> CONFIG_NAMESPACES=3Dy
+> CONFIG_UTS_NS=3Dy
+> CONFIG_TIME_NS=3Dy
+> CONFIG_IPC_NS=3Dy
+> CONFIG_USER_NS=3Dy
+> CONFIG_PID_NS=3Dy
+> CONFIG_NET_NS=3Dy
+> # CONFIG_CHECKPOINT_RESTORE is not set
+> CONFIG_SCHED_AUTOGROUP=3Dy
+> # CONFIG_SYSFS_DEPRECATED is not set
+> CONFIG_RELAY=3Dy
+> CONFIG_BLK_DEV_INITRD=3Dy
+> CONFIG_INITRAMFS_SOURCE=3D""
+> CONFIG_RD_GZIP=3Dy
+> CONFIG_RD_BZIP2=3Dy
+> CONFIG_RD_LZMA=3Dy
+> CONFIG_RD_XZ=3Dy
+> CONFIG_RD_LZO=3Dy
+> CONFIG_RD_LZ4=3Dy
+> CONFIG_RD_ZSTD=3Dy
+> # CONFIG_BOOT_CONFIG is not set
+> CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=3Dy
+> # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
+> CONFIG_LD_ORPHAN_WARN=3Dy
+> CONFIG_SYSCTL=3Dy
+> CONFIG_HAVE_UID16=3Dy
+> CONFIG_SYSCTL_EXCEPTION_TRACE=3Dy
+> CONFIG_HAVE_PCSPKR_PLATFORM=3Dy
+> CONFIG_BPF=3Dy
+> # CONFIG_EXPERT is not set
+> CONFIG_UID16=3Dy
+> CONFIG_MULTIUSER=3Dy
+> CONFIG_SGETMASK_SYSCALL=3Dy
+> CONFIG_SYSFS_SYSCALL=3Dy
+> CONFIG_FHANDLE=3Dy
+> CONFIG_POSIX_TIMERS=3Dy
+> CONFIG_PRINTK=3Dy
+> CONFIG_PRINTK_NMI=3Dy
+> CONFIG_BUG=3Dy
+> CONFIG_ELF_CORE=3Dy
+> CONFIG_PCSPKR_PLATFORM=3Dy
+> CONFIG_BASE_FULL=3Dy
+> CONFIG_FUTEX=3Dy
+> CONFIG_FUTEX_PI=3Dy
+> CONFIG_EPOLL=3Dy
+> CONFIG_SIGNALFD=3Dy
+> CONFIG_TIMERFD=3Dy
+> CONFIG_EVENTFD=3Dy
+> CONFIG_SHMEM=3Dy
+> CONFIG_AIO=3Dy
+> CONFIG_IO_URING=3Dy
+> CONFIG_ADVISE_SYSCALLS=3Dy
+> CONFIG_HAVE_ARCH_USERFAULTFD_WP=3Dy
+> CONFIG_HAVE_ARCH_USERFAULTFD_MINOR=3Dy
+> CONFIG_MEMBARRIER=3Dy
+> CONFIG_KALLSYMS=3Dy
+> CONFIG_KALLSYMS_ALL=3Dy
+> CONFIG_KALLSYMS_ABSOLUTE_PERCPU=3Dy
+> CONFIG_KALLSYMS_BASE_RELATIVE=3Dy
+> # CONFIG_BPF_LSM is not set
+> CONFIG_BPF_SYSCALL=3Dy
+> CONFIG_ARCH_WANT_DEFAULT_BPF_JIT=3Dy
+> CONFIG_BPF_JIT_ALWAYS_ON=3Dy
+> CONFIG_BPF_JIT_DEFAULT_ON=3Dy
+> # CONFIG_BPF_PRELOAD is not set
+> CONFIG_USERFAULTFD=3Dy
+> CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE=3Dy
+> CONFIG_KCMP=3Dy
+> CONFIG_RSEQ=3Dy
+> # CONFIG_EMBEDDED is not set
+> CONFIG_HAVE_PERF_EVENTS=3Dy
+> =
+
+> #
+> # Kernel Performance Events And Counters
+> #
+> CONFIG_PERF_EVENTS=3Dy
+> # CONFIG_DEBUG_PERF_USE_VMALLOC is not set
+> # end of Kernel Performance Events And Counters
+> =
+
+> CONFIG_VM_EVENT_COUNTERS=3Dy
+> CONFIG_SLUB_DEBUG=3Dy
+> # CONFIG_COMPAT_BRK is not set
+> # CONFIG_SLAB is not set
+> CONFIG_SLUB=3Dy
+> CONFIG_SLAB_MERGE_DEFAULT=3Dy
+> CONFIG_SLAB_FREELIST_RANDOM=3Dy
+> # CONFIG_SLAB_FREELIST_HARDENED is not set
+> CONFIG_SHUFFLE_PAGE_ALLOCATOR=3Dy
+> CONFIG_SLUB_CPU_PARTIAL=3Dy
+> CONFIG_SYSTEM_DATA_VERIFICATION=3Dy
+> CONFIG_PROFILING=3Dy
+> CONFIG_TRACEPOINTS=3Dy
+> # end of General setup
+> =
+
+> CONFIG_64BIT=3Dy
+> CONFIG_X86_64=3Dy
+> CONFIG_X86=3Dy
+> CONFIG_INSTRUCTION_DECODER=3Dy
+> CONFIG_OUTPUT_FORMAT=3D"elf64-x86-64"
+> CONFIG_LOCKDEP_SUPPORT=3Dy
+> CONFIG_STACKTRACE_SUPPORT=3Dy
+> CONFIG_MMU=3Dy
+> CONFIG_ARCH_MMAP_RND_BITS_MIN=3D28
+> CONFIG_ARCH_MMAP_RND_BITS_MAX=3D32
+> CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN=3D8
+> CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX=3D16
+> CONFIG_GENERIC_ISA_DMA=3Dy
+> CONFIG_GENERIC_BUG=3Dy
+> CONFIG_GENERIC_BUG_RELATIVE_POINTERS=3Dy
+> CONFIG_ARCH_MAY_HAVE_PC_FDC=3Dy
+> CONFIG_GENERIC_CALIBRATE_DELAY=3Dy
+> CONFIG_ARCH_HAS_CPU_RELAX=3Dy
+> CONFIG_ARCH_HAS_FILTER_PGPROT=3Dy
+> CONFIG_HAVE_SETUP_PER_CPU_AREA=3Dy
+> CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK=3Dy
+> CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK=3Dy
+> CONFIG_ARCH_HIBERNATION_POSSIBLE=3Dy
+> CONFIG_ARCH_SUSPEND_POSSIBLE=3Dy
+> CONFIG_ARCH_WANT_GENERAL_HUGETLB=3Dy
+> CONFIG_ZONE_DMA32=3Dy
+> CONFIG_AUDIT_ARCH=3Dy
+> CONFIG_HAVE_INTEL_TXT=3Dy
+> CONFIG_X86_64_SMP=3Dy
+> CONFIG_ARCH_SUPPORTS_UPROBES=3Dy
+> CONFIG_FIX_EARLYCON_MEM=3Dy
+> CONFIG_DYNAMIC_PHYSICAL_MASK=3Dy
+> CONFIG_PGTABLE_LEVELS=3D5
+> CONFIG_CC_HAS_SANE_STACKPROTECTOR=3Dy
+> =
+
+> #
+> # Processor type and features
+> #
+> CONFIG_ZONE_DMA=3Dy
+> CONFIG_SMP=3Dy
+> CONFIG_X86_FEATURE_NAMES=3Dy
+> CONFIG_X86_X2APIC=3Dy
+> CONFIG_X86_MPPARSE=3Dy
+> # CONFIG_GOLDFISH is not set
+> CONFIG_RETPOLINE=3Dy
+> CONFIG_X86_CPU_RESCTRL=3Dy
+> CONFIG_X86_EXTENDED_PLATFORM=3Dy
+> # CONFIG_X86_NUMACHIP is not set
+> # CONFIG_X86_VSMP is not set
+> CONFIG_X86_UV=3Dy
+> # CONFIG_X86_GOLDFISH is not set
+> # CONFIG_X86_INTEL_MID is not set
+> CONFIG_X86_INTEL_LPSS=3Dy
+> CONFIG_X86_AMD_PLATFORM_DEVICE=3Dy
+> CONFIG_IOSF_MBI=3Dy
+> # CONFIG_IOSF_MBI_DEBUG is not set
+> CONFIG_X86_SUPPORTS_MEMORY_FAILURE=3Dy
+> # CONFIG_SCHED_OMIT_FRAME_POINTER is not set
+> CONFIG_HYPERVISOR_GUEST=3Dy
+> CONFIG_PARAVIRT=3Dy
+> # CONFIG_PARAVIRT_DEBUG is not set
+> CONFIG_PARAVIRT_SPINLOCKS=3Dy
+> CONFIG_X86_HV_CALLBACK_VECTOR=3Dy
+> CONFIG_XEN=3Dy
+> # CONFIG_XEN_PV is not set
+> CONFIG_XEN_PVHVM=3Dy
+> CONFIG_XEN_PVHVM_SMP=3Dy
+> CONFIG_XEN_PVHVM_GUEST=3Dy
+> CONFIG_XEN_SAVE_RESTORE=3Dy
+> # CONFIG_XEN_DEBUG_FS is not set
+> # CONFIG_XEN_PVH is not set
+> CONFIG_KVM_GUEST=3Dy
+> CONFIG_ARCH_CPUIDLE_HALTPOLL=3Dy
+> # CONFIG_PVH is not set
+> CONFIG_PARAVIRT_TIME_ACCOUNTING=3Dy
+> CONFIG_PARAVIRT_CLOCK=3Dy
+> # CONFIG_JAILHOUSE_GUEST is not set
+> # CONFIG_ACRN_GUEST is not set
+> # CONFIG_MK8 is not set
+> # CONFIG_MPSC is not set
+> # CONFIG_MCORE2 is not set
+> # CONFIG_MATOM is not set
+> CONFIG_GENERIC_CPU=3Dy
+> CONFIG_X86_INTERNODE_CACHE_SHIFT=3D6
+> CONFIG_X86_L1_CACHE_SHIFT=3D6
+> CONFIG_X86_TSC=3Dy
+> CONFIG_X86_CMPXCHG64=3Dy
+> CONFIG_X86_CMOV=3Dy
+> CONFIG_X86_MINIMUM_CPU_FAMILY=3D64
+> CONFIG_X86_DEBUGCTLMSR=3Dy
+> CONFIG_IA32_FEAT_CTL=3Dy
+> CONFIG_X86_VMX_FEATURE_NAMES=3Dy
+> CONFIG_CPU_SUP_INTEL=3Dy
+> CONFIG_CPU_SUP_AMD=3Dy
+> CONFIG_CPU_SUP_HYGON=3Dy
+> CONFIG_CPU_SUP_CENTAUR=3Dy
+> CONFIG_CPU_SUP_ZHAOXIN=3Dy
+> CONFIG_HPET_TIMER=3Dy
+> CONFIG_HPET_EMULATE_RTC=3Dy
+> CONFIG_DMI=3Dy
+> # CONFIG_GART_IOMMU is not set
+> CONFIG_MAXSMP=3Dy
+> CONFIG_NR_CPUS_RANGE_BEGIN=3D8192
+> CONFIG_NR_CPUS_RANGE_END=3D8192
+> CONFIG_NR_CPUS_DEFAULT=3D8192
+> CONFIG_NR_CPUS=3D8192
+> CONFIG_SCHED_SMT=3Dy
+> CONFIG_SCHED_MC=3Dy
+> CONFIG_SCHED_MC_PRIO=3Dy
+> CONFIG_X86_LOCAL_APIC=3Dy
+> CONFIG_X86_IO_APIC=3Dy
+> CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS=3Dy
+> CONFIG_X86_MCE=3Dy
+> CONFIG_X86_MCELOG_LEGACY=3Dy
+> CONFIG_X86_MCE_INTEL=3Dy
+> CONFIG_X86_MCE_AMD=3Dy
+> CONFIG_X86_MCE_THRESHOLD=3Dy
+> CONFIG_X86_MCE_INJECT=3Dm
+> =
+
+> #
+> # Performance monitoring
+> #
+> CONFIG_PERF_EVENTS_INTEL_UNCORE=3Dm
+> CONFIG_PERF_EVENTS_INTEL_RAPL=3Dm
+> CONFIG_PERF_EVENTS_INTEL_CSTATE=3Dm
+> CONFIG_PERF_EVENTS_AMD_POWER=3Dm
+> # end of Performance monitoring
+> =
+
+> CONFIG_X86_16BIT=3Dy
+> CONFIG_X86_ESPFIX64=3Dy
+> CONFIG_X86_VSYSCALL_EMULATION=3Dy
+> CONFIG_X86_IOPL_IOPERM=3Dy
+> CONFIG_I8K=3Dm
+> CONFIG_MICROCODE=3Dy
+> CONFIG_MICROCODE_INTEL=3Dy
+> CONFIG_MICROCODE_AMD=3Dy
+> CONFIG_MICROCODE_OLD_INTERFACE=3Dy
+> CONFIG_X86_MSR=3Dy
+> CONFIG_X86_CPUID=3Dy
+> CONFIG_X86_5LEVEL=3Dy
+> CONFIG_X86_DIRECT_GBPAGES=3Dy
+> # CONFIG_X86_CPA_STATISTICS is not set
+> CONFIG_AMD_MEM_ENCRYPT=3Dy
+> # CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT is not set
+> CONFIG_NUMA=3Dy
+> CONFIG_AMD_NUMA=3Dy
+> CONFIG_X86_64_ACPI_NUMA=3Dy
+> CONFIG_NUMA_EMU=3Dy
+> CONFIG_NODES_SHIFT=3D10
+> CONFIG_ARCH_SPARSEMEM_ENABLE=3Dy
+> CONFIG_ARCH_SPARSEMEM_DEFAULT=3Dy
+> CONFIG_ARCH_SELECT_MEMORY_MODEL=3Dy
+> # CONFIG_ARCH_MEMORY_PROBE is not set
+> CONFIG_ARCH_PROC_KCORE_TEXT=3Dy
+> CONFIG_ILLEGAL_POINTER_VALUE=3D0xdead000000000000
+> CONFIG_X86_PMEM_LEGACY_DEVICE=3Dy
+> CONFIG_X86_PMEM_LEGACY=3Dm
+> CONFIG_X86_CHECK_BIOS_CORRUPTION=3Dy
+> # CONFIG_X86_BOOTPARAM_MEMORY_CORRUPTION_CHECK is not set
+> CONFIG_X86_RESERVE_LOW=3D64
+> CONFIG_MTRR=3Dy
+> CONFIG_MTRR_SANITIZER=3Dy
+> CONFIG_MTRR_SANITIZER_ENABLE_DEFAULT=3D1
+> CONFIG_MTRR_SANITIZER_SPARE_REG_NR_DEFAULT=3D1
+> CONFIG_X86_PAT=3Dy
+> CONFIG_ARCH_USES_PG_UNCACHED=3Dy
+> CONFIG_ARCH_RANDOM=3Dy
+> CONFIG_X86_SMAP=3Dy
+> CONFIG_X86_UMIP=3Dy
+> CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS=3Dy
+> CONFIG_X86_INTEL_TSX_MODE_OFF=3Dy
+> # CONFIG_X86_INTEL_TSX_MODE_ON is not set
+> # CONFIG_X86_INTEL_TSX_MODE_AUTO is not set
+> # CONFIG_X86_SGX is not set
+> CONFIG_EFI=3Dy
+> CONFIG_EFI_STUB=3Dy
+> CONFIG_EFI_MIXED=3Dy
+> # CONFIG_HZ_100 is not set
+> # CONFIG_HZ_250 is not set
+> # CONFIG_HZ_300 is not set
+> CONFIG_HZ_1000=3Dy
+> CONFIG_HZ=3D1000
+> CONFIG_SCHED_HRTICK=3Dy
+> CONFIG_KEXEC=3Dy
+> CONFIG_KEXEC_FILE=3Dy
+> CONFIG_ARCH_HAS_KEXEC_PURGATORY=3Dy
+> # CONFIG_KEXEC_SIG is not set
+> CONFIG_CRASH_DUMP=3Dy
+> CONFIG_KEXEC_JUMP=3Dy
+> CONFIG_PHYSICAL_START=3D0x1000000
+> CONFIG_RELOCATABLE=3Dy
+> CONFIG_RANDOMIZE_BASE=3Dy
+> CONFIG_X86_NEED_RELOCS=3Dy
+> CONFIG_PHYSICAL_ALIGN=3D0x200000
+> CONFIG_DYNAMIC_MEMORY_LAYOUT=3Dy
+> CONFIG_RANDOMIZE_MEMORY=3Dy
+> CONFIG_RANDOMIZE_MEMORY_PHYSICAL_PADDING=3D0xa
+> CONFIG_HOTPLUG_CPU=3Dy
+> CONFIG_BOOTPARAM_HOTPLUG_CPU0=3Dy
+> # CONFIG_DEBUG_HOTPLUG_CPU0 is not set
+> # CONFIG_COMPAT_VDSO is not set
+> CONFIG_LEGACY_VSYSCALL_EMULATE=3Dy
+> # CONFIG_LEGACY_VSYSCALL_XONLY is not set
+> # CONFIG_LEGACY_VSYSCALL_NONE is not set
+> # CONFIG_CMDLINE_BOOL is not set
+> CONFIG_MODIFY_LDT_SYSCALL=3Dy
+> CONFIG_HAVE_LIVEPATCH=3Dy
+> CONFIG_LIVEPATCH=3Dy
+> # end of Processor type and features
+> =
+
+> CONFIG_ARCH_HAS_ADD_PAGES=3Dy
+> CONFIG_ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE=3Dy
+> CONFIG_USE_PERCPU_NUMA_NODE_ID=3Dy
+> =
+
+> #
+> # Power management and ACPI options
+> #
+> CONFIG_ARCH_HIBERNATION_HEADER=3Dy
+> CONFIG_SUSPEND=3Dy
+> CONFIG_SUSPEND_FREEZER=3Dy
+> CONFIG_HIBERNATE_CALLBACKS=3Dy
+> CONFIG_HIBERNATION=3Dy
+> CONFIG_HIBERNATION_SNAPSHOT_DEV=3Dy
+> CONFIG_PM_STD_PARTITION=3D""
+> CONFIG_PM_SLEEP=3Dy
+> CONFIG_PM_SLEEP_SMP=3Dy
+> # CONFIG_PM_AUTOSLEEP is not set
+> # CONFIG_PM_WAKELOCKS is not set
+> CONFIG_PM=3Dy
+> CONFIG_PM_DEBUG=3Dy
+> # CONFIG_PM_ADVANCED_DEBUG is not set
+> # CONFIG_PM_TEST_SUSPEND is not set
+> CONFIG_PM_SLEEP_DEBUG=3Dy
+> # CONFIG_PM_TRACE_RTC is not set
+> CONFIG_PM_CLK=3Dy
+> # CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
+> # CONFIG_ENERGY_MODEL is not set
+> CONFIG_ARCH_SUPPORTS_ACPI=3Dy
+> CONFIG_ACPI=3Dy
+> CONFIG_ACPI_LEGACY_TABLES_LOOKUP=3Dy
+> CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC=3Dy
+> CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT=3Dy
+> # CONFIG_ACPI_DEBUGGER is not set
+> CONFIG_ACPI_SPCR_TABLE=3Dy
+> # CONFIG_ACPI_FPDT is not set
+> CONFIG_ACPI_LPIT=3Dy
+> CONFIG_ACPI_SLEEP=3Dy
+> CONFIG_ACPI_REV_OVERRIDE_POSSIBLE=3Dy
+> CONFIG_ACPI_EC_DEBUGFS=3Dm
+> CONFIG_ACPI_AC=3Dy
+> CONFIG_ACPI_BATTERY=3Dy
+> CONFIG_ACPI_BUTTON=3Dy
+> CONFIG_ACPI_VIDEO=3Dm
+> CONFIG_ACPI_FAN=3Dy
+> CONFIG_ACPI_TAD=3Dm
+> CONFIG_ACPI_DOCK=3Dy
+> CONFIG_ACPI_CPU_FREQ_PSS=3Dy
+> CONFIG_ACPI_PROCESSOR_CSTATE=3Dy
+> CONFIG_ACPI_PROCESSOR_IDLE=3Dy
+> CONFIG_ACPI_CPPC_LIB=3Dy
+> CONFIG_ACPI_PROCESSOR=3Dy
+> CONFIG_ACPI_IPMI=3Dm
+> CONFIG_ACPI_HOTPLUG_CPU=3Dy
+> CONFIG_ACPI_PROCESSOR_AGGREGATOR=3Dm
+> CONFIG_ACPI_THERMAL=3Dy
+> CONFIG_ACPI_PLATFORM_PROFILE=3Dm
+> CONFIG_ARCH_HAS_ACPI_TABLE_UPGRADE=3Dy
+> CONFIG_ACPI_TABLE_UPGRADE=3Dy
+> # CONFIG_ACPI_DEBUG is not set
+> CONFIG_ACPI_PCI_SLOT=3Dy
+> CONFIG_ACPI_CONTAINER=3Dy
+> CONFIG_ACPI_HOTPLUG_MEMORY=3Dy
+> CONFIG_ACPI_HOTPLUG_IOAPIC=3Dy
+> CONFIG_ACPI_SBS=3Dm
+> CONFIG_ACPI_HED=3Dy
+> # CONFIG_ACPI_CUSTOM_METHOD is not set
+> CONFIG_ACPI_BGRT=3Dy
+> CONFIG_ACPI_NFIT=3Dm
+> # CONFIG_NFIT_SECURITY_DEBUG is not set
+> CONFIG_ACPI_NUMA=3Dy
+> # CONFIG_ACPI_HMAT is not set
+> CONFIG_HAVE_ACPI_APEI=3Dy
+> CONFIG_HAVE_ACPI_APEI_NMI=3Dy
+> CONFIG_ACPI_APEI=3Dy
+> CONFIG_ACPI_APEI_GHES=3Dy
+> CONFIG_ACPI_APEI_PCIEAER=3Dy
+> CONFIG_ACPI_APEI_MEMORY_FAILURE=3Dy
+> CONFIG_ACPI_APEI_EINJ=3Dm
+> CONFIG_ACPI_APEI_ERST_DEBUG=3Dy
+> # CONFIG_ACPI_DPTF is not set
+> CONFIG_ACPI_WATCHDOG=3Dy
+> CONFIG_ACPI_EXTLOG=3Dm
+> CONFIG_ACPI_ADXL=3Dy
+> # CONFIG_ACPI_CONFIGFS is not set
+> CONFIG_PMIC_OPREGION=3Dy
+> CONFIG_X86_PM_TIMER=3Dy
+> =
+
+> #
+> # CPU Frequency scaling
+> #
+> CONFIG_CPU_FREQ=3Dy
+> CONFIG_CPU_FREQ_GOV_ATTR_SET=3Dy
+> CONFIG_CPU_FREQ_GOV_COMMON=3Dy
+> CONFIG_CPU_FREQ_STAT=3Dy
+> CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=3Dy
+> # CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE is not set
+> # CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE is not set
+> # CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL is not set
+> CONFIG_CPU_FREQ_GOV_PERFORMANCE=3Dy
+> CONFIG_CPU_FREQ_GOV_POWERSAVE=3Dy
+> CONFIG_CPU_FREQ_GOV_USERSPACE=3Dy
+> CONFIG_CPU_FREQ_GOV_ONDEMAND=3Dy
+> CONFIG_CPU_FREQ_GOV_CONSERVATIVE=3Dy
+> CONFIG_CPU_FREQ_GOV_SCHEDUTIL=3Dy
+> =
+
+> #
+> # CPU frequency scaling drivers
+> #
+> CONFIG_X86_INTEL_PSTATE=3Dy
+> # CONFIG_X86_PCC_CPUFREQ is not set
+> CONFIG_X86_ACPI_CPUFREQ=3Dm
+> CONFIG_X86_ACPI_CPUFREQ_CPB=3Dy
+> CONFIG_X86_POWERNOW_K8=3Dm
+> CONFIG_X86_AMD_FREQ_SENSITIVITY=3Dm
+> # CONFIG_X86_SPEEDSTEP_CENTRINO is not set
+> CONFIG_X86_P4_CLOCKMOD=3Dm
+> =
+
+> #
+> # shared options
+> #
+> CONFIG_X86_SPEEDSTEP_LIB=3Dm
+> # end of CPU Frequency scaling
+> =
+
+> #
+> # CPU Idle
+> #
+> CONFIG_CPU_IDLE=3Dy
+> # CONFIG_CPU_IDLE_GOV_LADDER is not set
+> CONFIG_CPU_IDLE_GOV_MENU=3Dy
+> # CONFIG_CPU_IDLE_GOV_TEO is not set
+> # CONFIG_CPU_IDLE_GOV_HALTPOLL is not set
+> CONFIG_HALTPOLL_CPUIDLE=3Dy
+> # end of CPU Idle
+> =
+
+> CONFIG_INTEL_IDLE=3Dy
+> # end of Power management and ACPI options
+> =
+
+> #
+> # Bus options (PCI etc.)
+> #
+> CONFIG_PCI_DIRECT=3Dy
+> CONFIG_PCI_MMCONFIG=3Dy
+> CONFIG_PCI_XEN=3Dy
+> CONFIG_MMCONF_FAM10H=3Dy
+> CONFIG_ISA_DMA_API=3Dy
+> CONFIG_AMD_NB=3Dy
+> # CONFIG_X86_SYSFB is not set
+> # end of Bus options (PCI etc.)
+> =
+
+> #
+> # Binary Emulations
+> #
+> CONFIG_IA32_EMULATION=3Dy
+> # CONFIG_X86_X32 is not set
+> CONFIG_COMPAT_32=3Dy
+> CONFIG_COMPAT=3Dy
+> CONFIG_COMPAT_FOR_U64_ALIGNMENT=3Dy
+> CONFIG_SYSVIPC_COMPAT=3Dy
+> # end of Binary Emulations
+> =
+
+> #
+> # Firmware Drivers
+> #
+> CONFIG_EDD=3Dm
+> # CONFIG_EDD_OFF is not set
+> CONFIG_FIRMWARE_MEMMAP=3Dy
+> CONFIG_DMIID=3Dy
+> CONFIG_DMI_SYSFS=3Dy
+> CONFIG_DMI_SCAN_MACHINE_NON_EFI_FALLBACK=3Dy
+> # CONFIG_ISCSI_IBFT is not set
+> CONFIG_FW_CFG_SYSFS=3Dy
+> # CONFIG_FW_CFG_SYSFS_CMDLINE is not set
+> # CONFIG_GOOGLE_FIRMWARE is not set
+> =
+
+> #
+> # EFI (Extensible Firmware Interface) Support
+> #
+> CONFIG_EFI_VARS=3Dy
+> CONFIG_EFI_ESRT=3Dy
+> CONFIG_EFI_VARS_PSTORE=3Dy
+> CONFIG_EFI_VARS_PSTORE_DEFAULT_DISABLE=3Dy
+> CONFIG_EFI_RUNTIME_MAP=3Dy
+> # CONFIG_EFI_FAKE_MEMMAP is not set
+> CONFIG_EFI_RUNTIME_WRAPPERS=3Dy
+> CONFIG_EFI_GENERIC_STUB_INITRD_CMDLINE_LOADER=3Dy
+> # CONFIG_EFI_BOOTLOADER_CONTROL is not set
+> # CONFIG_EFI_CAPSULE_LOADER is not set
+> # CONFIG_EFI_TEST is not set
+> CONFIG_APPLE_PROPERTIES=3Dy
+> # CONFIG_RESET_ATTACK_MITIGATION is not set
+> # CONFIG_EFI_RCI2_TABLE is not set
+> # CONFIG_EFI_DISABLE_PCI_DMA is not set
+> # end of EFI (Extensible Firmware Interface) Support
+> =
+
+> CONFIG_UEFI_CPER=3Dy
+> CONFIG_UEFI_CPER_X86=3Dy
+> CONFIG_EFI_DEV_PATH_PARSER=3Dy
+> CONFIG_EFI_EARLYCON=3Dy
+> CONFIG_EFI_CUSTOM_SSDT_OVERLAYS=3Dy
+> =
+
+> #
+> # Tegra firmware driver
+> #
+> # end of Tegra firmware driver
+> # end of Firmware Drivers
+> =
+
+> CONFIG_HAVE_KVM=3Dy
+> CONFIG_HAVE_KVM_IRQCHIP=3Dy
+> CONFIG_HAVE_KVM_IRQFD=3Dy
+> CONFIG_HAVE_KVM_IRQ_ROUTING=3Dy
+> CONFIG_HAVE_KVM_EVENTFD=3Dy
+> CONFIG_KVM_MMIO=3Dy
+> CONFIG_KVM_ASYNC_PF=3Dy
+> CONFIG_HAVE_KVM_MSI=3Dy
+> CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT=3Dy
+> CONFIG_KVM_VFIO=3Dy
+> CONFIG_KVM_GENERIC_DIRTYLOG_READ_PROTECT=3Dy
+> CONFIG_KVM_COMPAT=3Dy
+> CONFIG_HAVE_KVM_IRQ_BYPASS=3Dy
+> CONFIG_HAVE_KVM_NO_POLL=3Dy
+> CONFIG_KVM_XFER_TO_GUEST_WORK=3Dy
+> CONFIG_VIRTUALIZATION=3Dy
+> CONFIG_KVM=3Dm
+> CONFIG_KVM_INTEL=3Dm
+> # CONFIG_KVM_AMD is not set
+> # CONFIG_KVM_XEN is not set
+> CONFIG_KVM_MMU_AUDIT=3Dy
+> CONFIG_AS_AVX512=3Dy
+> CONFIG_AS_SHA1_NI=3Dy
+> CONFIG_AS_SHA256_NI=3Dy
+> CONFIG_AS_TPAUSE=3Dy
+> =
+
+> #
+> # General architecture-dependent options
+> #
+> CONFIG_CRASH_CORE=3Dy
+> CONFIG_KEXEC_CORE=3Dy
+> CONFIG_HOTPLUG_SMT=3Dy
+> CONFIG_GENERIC_ENTRY=3Dy
+> CONFIG_KPROBES=3Dy
+> CONFIG_JUMP_LABEL=3Dy
+> # CONFIG_STATIC_KEYS_SELFTEST is not set
+> # CONFIG_STATIC_CALL_SELFTEST is not set
+> CONFIG_OPTPROBES=3Dy
+> CONFIG_KPROBES_ON_FTRACE=3Dy
+> CONFIG_UPROBES=3Dy
+> CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS=3Dy
+> CONFIG_ARCH_USE_BUILTIN_BSWAP=3Dy
+> CONFIG_KRETPROBES=3Dy
+> CONFIG_USER_RETURN_NOTIFIER=3Dy
+> CONFIG_HAVE_IOREMAP_PROT=3Dy
+> CONFIG_HAVE_KPROBES=3Dy
+> CONFIG_HAVE_KRETPROBES=3Dy
+> CONFIG_HAVE_OPTPROBES=3Dy
+> CONFIG_HAVE_KPROBES_ON_FTRACE=3Dy
+> CONFIG_HAVE_FUNCTION_ERROR_INJECTION=3Dy
+> CONFIG_HAVE_NMI=3Dy
+> CONFIG_HAVE_ARCH_TRACEHOOK=3Dy
+> CONFIG_HAVE_DMA_CONTIGUOUS=3Dy
+> CONFIG_GENERIC_SMP_IDLE_THREAD=3Dy
+> CONFIG_ARCH_HAS_FORTIFY_SOURCE=3Dy
+> CONFIG_ARCH_HAS_SET_MEMORY=3Dy
+> CONFIG_ARCH_HAS_SET_DIRECT_MAP=3Dy
+> CONFIG_HAVE_ARCH_THREAD_STRUCT_WHITELIST=3Dy
+> CONFIG_ARCH_WANTS_DYNAMIC_TASK_STRUCT=3Dy
+> CONFIG_HAVE_ASM_MODVERSIONS=3Dy
+> CONFIG_HAVE_REGS_AND_STACK_ACCESS_API=3Dy
+> CONFIG_HAVE_RSEQ=3Dy
+> CONFIG_HAVE_FUNCTION_ARG_ACCESS_API=3Dy
+> CONFIG_HAVE_HW_BREAKPOINT=3Dy
+> CONFIG_HAVE_MIXED_BREAKPOINTS_REGS=3Dy
+> CONFIG_HAVE_USER_RETURN_NOTIFIER=3Dy
+> CONFIG_HAVE_PERF_EVENTS_NMI=3Dy
+> CONFIG_HAVE_HARDLOCKUP_DETECTOR_PERF=3Dy
+> CONFIG_HAVE_PERF_REGS=3Dy
+> CONFIG_HAVE_PERF_USER_STACK_DUMP=3Dy
+> CONFIG_HAVE_ARCH_JUMP_LABEL=3Dy
+> CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE=3Dy
+> CONFIG_MMU_GATHER_TABLE_FREE=3Dy
+> CONFIG_MMU_GATHER_RCU_TABLE_FREE=3Dy
+> CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG=3Dy
+> CONFIG_HAVE_ALIGNED_STRUCT_PAGE=3Dy
+> CONFIG_HAVE_CMPXCHG_LOCAL=3Dy
+> CONFIG_HAVE_CMPXCHG_DOUBLE=3Dy
+> CONFIG_ARCH_WANT_COMPAT_IPC_PARSE_VERSION=3Dy
+> CONFIG_ARCH_WANT_OLD_COMPAT_IPC=3Dy
+> CONFIG_HAVE_ARCH_SECCOMP=3Dy
+> CONFIG_HAVE_ARCH_SECCOMP_FILTER=3Dy
+> CONFIG_SECCOMP=3Dy
+> CONFIG_SECCOMP_FILTER=3Dy
+> # CONFIG_SECCOMP_CACHE_DEBUG is not set
+> CONFIG_HAVE_ARCH_STACKLEAK=3Dy
+> CONFIG_HAVE_STACKPROTECTOR=3Dy
+> CONFIG_STACKPROTECTOR=3Dy
+> CONFIG_STACKPROTECTOR_STRONG=3Dy
+> CONFIG_ARCH_SUPPORTS_LTO_CLANG=3Dy
+> CONFIG_ARCH_SUPPORTS_LTO_CLANG_THIN=3Dy
+> CONFIG_LTO_NONE=3Dy
+> CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES=3Dy
+> CONFIG_HAVE_CONTEXT_TRACKING=3Dy
+> CONFIG_HAVE_CONTEXT_TRACKING_OFFSTACK=3Dy
+> CONFIG_HAVE_VIRT_CPU_ACCOUNTING_GEN=3Dy
+> CONFIG_HAVE_IRQ_TIME_ACCOUNTING=3Dy
+> CONFIG_HAVE_MOVE_PUD=3Dy
+> CONFIG_HAVE_MOVE_PMD=3Dy
+> CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE=3Dy
+> CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD=3Dy
+> CONFIG_HAVE_ARCH_HUGE_VMAP=3Dy
+> CONFIG_ARCH_WANT_HUGE_PMD_SHARE=3Dy
+> CONFIG_HAVE_ARCH_SOFT_DIRTY=3Dy
+> CONFIG_HAVE_MOD_ARCH_SPECIFIC=3Dy
+> CONFIG_MODULES_USE_ELF_RELA=3Dy
+> CONFIG_HAVE_IRQ_EXIT_ON_IRQ_STACK=3Dy
+> CONFIG_HAVE_SOFTIRQ_ON_OWN_STACK=3Dy
+> CONFIG_ARCH_HAS_ELF_RANDOMIZE=3Dy
+> CONFIG_HAVE_ARCH_MMAP_RND_BITS=3Dy
+> CONFIG_HAVE_EXIT_THREAD=3Dy
+> CONFIG_ARCH_MMAP_RND_BITS=3D28
+> CONFIG_HAVE_ARCH_MMAP_RND_COMPAT_BITS=3Dy
+> CONFIG_ARCH_MMAP_RND_COMPAT_BITS=3D8
+> CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES=3Dy
+> CONFIG_HAVE_STACK_VALIDATION=3Dy
+> CONFIG_HAVE_RELIABLE_STACKTRACE=3Dy
+> CONFIG_OLD_SIGSUSPEND3=3Dy
+> CONFIG_COMPAT_OLD_SIGACTION=3Dy
+> CONFIG_COMPAT_32BIT_TIME=3Dy
+> CONFIG_HAVE_ARCH_VMAP_STACK=3Dy
+> CONFIG_VMAP_STACK=3Dy
+> CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET=3Dy
+> # CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT is not set
+> CONFIG_ARCH_HAS_STRICT_KERNEL_RWX=3Dy
+> CONFIG_STRICT_KERNEL_RWX=3Dy
+> CONFIG_ARCH_HAS_STRICT_MODULE_RWX=3Dy
+> CONFIG_STRICT_MODULE_RWX=3Dy
+> CONFIG_HAVE_ARCH_PREL32_RELOCATIONS=3Dy
+> CONFIG_ARCH_USE_MEMREMAP_PROT=3Dy
+> # CONFIG_LOCK_EVENT_COUNTS is not set
+> CONFIG_ARCH_HAS_MEM_ENCRYPT=3Dy
+> CONFIG_HAVE_STATIC_CALL=3Dy
+> CONFIG_HAVE_STATIC_CALL_INLINE=3Dy
+> CONFIG_HAVE_PREEMPT_DYNAMIC=3Dy
+> CONFIG_ARCH_WANT_LD_ORPHAN_WARN=3Dy
+> CONFIG_ARCH_SUPPORTS_DEBUG_PAGEALLOC=3Dy
+> CONFIG_ARCH_HAS_ELFCORE_COMPAT=3Dy
+> =
+
+> #
+> # GCOV-based kernel profiling
+> #
+> # CONFIG_GCOV_KERNEL is not set
+> CONFIG_ARCH_HAS_GCOV_PROFILE_ALL=3Dy
+> # end of GCOV-based kernel profiling
+> =
+
+> CONFIG_HAVE_GCC_PLUGINS=3Dy
+> # end of General architecture-dependent options
+> =
+
+> CONFIG_RT_MUTEXES=3Dy
+> CONFIG_BASE_SMALL=3D0
+> CONFIG_MODULE_SIG_FORMAT=3Dy
+> CONFIG_MODULES=3Dy
+> CONFIG_MODULE_FORCE_LOAD=3Dy
+> CONFIG_MODULE_UNLOAD=3Dy
+> # CONFIG_MODULE_FORCE_UNLOAD is not set
+> # CONFIG_MODVERSIONS is not set
+> # CONFIG_MODULE_SRCVERSION_ALL is not set
+> CONFIG_MODULE_SIG=3Dy
+> # CONFIG_MODULE_SIG_FORCE is not set
+> CONFIG_MODULE_SIG_ALL=3Dy
+> # CONFIG_MODULE_SIG_SHA1 is not set
+> # CONFIG_MODULE_SIG_SHA224 is not set
+> CONFIG_MODULE_SIG_SHA256=3Dy
+> # CONFIG_MODULE_SIG_SHA384 is not set
+> # CONFIG_MODULE_SIG_SHA512 is not set
+> CONFIG_MODULE_SIG_HASH=3D"sha256"
+> CONFIG_MODULE_COMPRESS_NONE=3Dy
+> # CONFIG_MODULE_COMPRESS_GZIP is not set
+> # CONFIG_MODULE_COMPRESS_XZ is not set
+> # CONFIG_MODULE_COMPRESS_ZSTD is not set
+> # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
+> CONFIG_MODPROBE_PATH=3D"/sbin/modprobe"
+> CONFIG_MODULES_TREE_LOOKUP=3Dy
+> CONFIG_BLOCK=3Dy
+> CONFIG_BLK_SCSI_REQUEST=3Dy
+> CONFIG_BLK_CGROUP_RWSTAT=3Dy
+> CONFIG_BLK_DEV_BSG=3Dy
+> CONFIG_BLK_DEV_BSGLIB=3Dy
+> CONFIG_BLK_DEV_INTEGRITY=3Dy
+> CONFIG_BLK_DEV_INTEGRITY_T10=3Dm
+> CONFIG_BLK_DEV_ZONED=3Dy
+> CONFIG_BLK_DEV_THROTTLING=3Dy
+> # CONFIG_BLK_DEV_THROTTLING_LOW is not set
+> # CONFIG_BLK_CMDLINE_PARSER is not set
+> CONFIG_BLK_WBT=3Dy
+> # CONFIG_BLK_CGROUP_IOLATENCY is not set
+> # CONFIG_BLK_CGROUP_IOCOST is not set
+> CONFIG_BLK_WBT_MQ=3Dy
+> CONFIG_BLK_DEBUG_FS=3Dy
+> CONFIG_BLK_DEBUG_FS_ZONED=3Dy
+> # CONFIG_BLK_SED_OPAL is not set
+> # CONFIG_BLK_INLINE_ENCRYPTION is not set
+> =
+
+> #
+> # Partition Types
+> #
+> CONFIG_PARTITION_ADVANCED=3Dy
+> # CONFIG_ACORN_PARTITION is not set
+> # CONFIG_AIX_PARTITION is not set
+> CONFIG_OSF_PARTITION=3Dy
+> CONFIG_AMIGA_PARTITION=3Dy
+> # CONFIG_ATARI_PARTITION is not set
+> CONFIG_MAC_PARTITION=3Dy
+> CONFIG_MSDOS_PARTITION=3Dy
+> CONFIG_BSD_DISKLABEL=3Dy
+> CONFIG_MINIX_SUBPARTITION=3Dy
+> CONFIG_SOLARIS_X86_PARTITION=3Dy
+> CONFIG_UNIXWARE_DISKLABEL=3Dy
+> # CONFIG_LDM_PARTITION is not set
+> CONFIG_SGI_PARTITION=3Dy
+> # CONFIG_ULTRIX_PARTITION is not set
+> CONFIG_SUN_PARTITION=3Dy
+> CONFIG_KARMA_PARTITION=3Dy
+> CONFIG_EFI_PARTITION=3Dy
+> # CONFIG_SYSV68_PARTITION is not set
+> # CONFIG_CMDLINE_PARTITION is not set
+> # end of Partition Types
+> =
+
+> CONFIG_BLOCK_COMPAT=3Dy
+> CONFIG_BLK_MQ_PCI=3Dy
+> CONFIG_BLK_MQ_VIRTIO=3Dy
+> CONFIG_BLK_MQ_RDMA=3Dy
+> CONFIG_BLK_PM=3Dy
+> =
+
+> #
+> # IO Schedulers
+> #
+> CONFIG_MQ_IOSCHED_DEADLINE=3Dy
+> CONFIG_MQ_IOSCHED_KYBER=3Dy
+> CONFIG_IOSCHED_BFQ=3Dy
+> CONFIG_BFQ_GROUP_IOSCHED=3Dy
+> # CONFIG_BFQ_CGROUP_DEBUG is not set
+> # end of IO Schedulers
+> =
+
+> CONFIG_PREEMPT_NOTIFIERS=3Dy
+> CONFIG_PADATA=3Dy
+> CONFIG_ASN1=3Dy
+> CONFIG_INLINE_SPIN_UNLOCK_IRQ=3Dy
+> CONFIG_INLINE_READ_UNLOCK=3Dy
+> CONFIG_INLINE_READ_UNLOCK_IRQ=3Dy
+> CONFIG_INLINE_WRITE_UNLOCK=3Dy
+> CONFIG_INLINE_WRITE_UNLOCK_IRQ=3Dy
+> CONFIG_ARCH_SUPPORTS_ATOMIC_RMW=3Dy
+> CONFIG_MUTEX_SPIN_ON_OWNER=3Dy
+> CONFIG_RWSEM_SPIN_ON_OWNER=3Dy
+> CONFIG_LOCK_SPIN_ON_OWNER=3Dy
+> CONFIG_ARCH_USE_QUEUED_SPINLOCKS=3Dy
+> CONFIG_QUEUED_SPINLOCKS=3Dy
+> CONFIG_ARCH_USE_QUEUED_RWLOCKS=3Dy
+> CONFIG_QUEUED_RWLOCKS=3Dy
+> CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE=3Dy
+> CONFIG_ARCH_HAS_SYNC_CORE_BEFORE_USERMODE=3Dy
+> CONFIG_ARCH_HAS_SYSCALL_WRAPPER=3Dy
+> CONFIG_FREEZER=3Dy
+> =
+
+> #
+> # Executable file formats
+> #
+> CONFIG_BINFMT_ELF=3Dy
+> CONFIG_COMPAT_BINFMT_ELF=3Dy
+> CONFIG_ELFCORE=3Dy
+> CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS=3Dy
+> CONFIG_BINFMT_SCRIPT=3Dy
+> CONFIG_BINFMT_MISC=3Dm
+> CONFIG_COREDUMP=3Dy
+> # end of Executable file formats
+> =
+
+> #
+> # Memory Management options
+> #
+> CONFIG_SELECT_MEMORY_MODEL=3Dy
+> CONFIG_SPARSEMEM_MANUAL=3Dy
+> CONFIG_SPARSEMEM=3Dy
+> CONFIG_NEED_MULTIPLE_NODES=3Dy
+> CONFIG_SPARSEMEM_EXTREME=3Dy
+> CONFIG_SPARSEMEM_VMEMMAP_ENABLE=3Dy
+> CONFIG_SPARSEMEM_VMEMMAP=3Dy
+> CONFIG_HAVE_FAST_GUP=3Dy
+> CONFIG_NUMA_KEEP_MEMINFO=3Dy
+> CONFIG_MEMORY_ISOLATION=3Dy
+> CONFIG_HAVE_BOOTMEM_INFO_NODE=3Dy
+> CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG=3Dy
+> CONFIG_MEMORY_HOTPLUG=3Dy
+> CONFIG_MEMORY_HOTPLUG_SPARSE=3Dy
+> # CONFIG_MEMORY_HOTPLUG_DEFAULT_ONLINE is not set
+> CONFIG_ARCH_ENABLE_MEMORY_HOTREMOVE=3Dy
+> CONFIG_MEMORY_HOTREMOVE=3Dy
+> CONFIG_MHP_MEMMAP_ON_MEMORY=3Dy
+> CONFIG_SPLIT_PTLOCK_CPUS=3D4
+> CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK=3Dy
+> CONFIG_MEMORY_BALLOON=3Dy
+> CONFIG_BALLOON_COMPACTION=3Dy
+> CONFIG_COMPACTION=3Dy
+> CONFIG_PAGE_REPORTING=3Dy
+> CONFIG_MIGRATION=3Dy
+> CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION=3Dy
+> CONFIG_ARCH_ENABLE_THP_MIGRATION=3Dy
+> CONFIG_CONTIG_ALLOC=3Dy
+> CONFIG_PHYS_ADDR_T_64BIT=3Dy
+> CONFIG_VIRT_TO_BUS=3Dy
+> CONFIG_MMU_NOTIFIER=3Dy
+> CONFIG_KSM=3Dy
+> CONFIG_DEFAULT_MMAP_MIN_ADDR=3D4096
+> CONFIG_ARCH_SUPPORTS_MEMORY_FAILURE=3Dy
+> CONFIG_MEMORY_FAILURE=3Dy
+> CONFIG_HWPOISON_INJECT=3Dm
+> CONFIG_TRANSPARENT_HUGEPAGE=3Dy
+> CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=3Dy
+> # CONFIG_TRANSPARENT_HUGEPAGE_MADVISE is not set
+> CONFIG_ARCH_WANTS_THP_SWAP=3Dy
+> CONFIG_THP_SWAP=3Dy
+> CONFIG_CLEANCACHE=3Dy
+> CONFIG_FRONTSWAP=3Dy
+> CONFIG_CMA=3Dy
+> # CONFIG_CMA_DEBUG is not set
+> # CONFIG_CMA_DEBUGFS is not set
+> # CONFIG_CMA_SYSFS is not set
+> CONFIG_CMA_AREAS=3D19
+> CONFIG_ZSWAP=3Dy
+> # CONFIG_ZSWAP_COMPRESSOR_DEFAULT_DEFLATE is not set
+> CONFIG_ZSWAP_COMPRESSOR_DEFAULT_LZO=3Dy
+> # CONFIG_ZSWAP_COMPRESSOR_DEFAULT_842 is not set
+> # CONFIG_ZSWAP_COMPRESSOR_DEFAULT_LZ4 is not set
+> # CONFIG_ZSWAP_COMPRESSOR_DEFAULT_LZ4HC is not set
+> # CONFIG_ZSWAP_COMPRESSOR_DEFAULT_ZSTD is not set
+> CONFIG_ZSWAP_COMPRESSOR_DEFAULT=3D"lzo"
+> CONFIG_ZSWAP_ZPOOL_DEFAULT_ZBUD=3Dy
+> # CONFIG_ZSWAP_ZPOOL_DEFAULT_Z3FOLD is not set
+> # CONFIG_ZSWAP_ZPOOL_DEFAULT_ZSMALLOC is not set
+> CONFIG_ZSWAP_ZPOOL_DEFAULT=3D"zbud"
+> # CONFIG_ZSWAP_DEFAULT_ON is not set
+> CONFIG_ZPOOL=3Dy
+> CONFIG_ZBUD=3Dy
+> # CONFIG_Z3FOLD is not set
+> CONFIG_ZSMALLOC=3Dy
+> CONFIG_ZSMALLOC_STAT=3Dy
+> CONFIG_GENERIC_EARLY_IOREMAP=3Dy
+> CONFIG_DEFERRED_STRUCT_PAGE_INIT=3Dy
+> CONFIG_IDLE_PAGE_TRACKING=3Dy
+> CONFIG_ARCH_HAS_CACHE_LINE_SIZE=3Dy
+> CONFIG_ARCH_HAS_PTE_DEVMAP=3Dy
+> CONFIG_ZONE_DEVICE=3Dy
+> CONFIG_DEV_PAGEMAP_OPS=3Dy
+> CONFIG_HMM_MIRROR=3Dy
+> CONFIG_DEVICE_PRIVATE=3Dy
+> CONFIG_VMAP_PFN=3Dy
+> CONFIG_ARCH_USES_HIGH_VMA_FLAGS=3Dy
+> CONFIG_ARCH_HAS_PKEYS=3Dy
+> # CONFIG_PERCPU_STATS is not set
+> # CONFIG_GUP_TEST is not set
+> # CONFIG_READ_ONLY_THP_FOR_FS is not set
+> CONFIG_ARCH_HAS_PTE_SPECIAL=3Dy
+> CONFIG_IO_MAPPING=3Dy
+> # end of Memory Management options
+> =
+
+> CONFIG_NET=3Dy
+> CONFIG_COMPAT_NETLINK_MESSAGES=3Dy
+> CONFIG_NET_INGRESS=3Dy
+> CONFIG_NET_EGRESS=3Dy
+> CONFIG_SKB_EXTENSIONS=3Dy
+> =
+
+> #
+> # Networking options
+> #
+> CONFIG_PACKET=3Dy
+> CONFIG_PACKET_DIAG=3Dm
+> CONFIG_UNIX=3Dy
+> CONFIG_UNIX_SCM=3Dy
+> CONFIG_UNIX_DIAG=3Dm
+> CONFIG_TLS=3Dm
+> CONFIG_TLS_DEVICE=3Dy
+> # CONFIG_TLS_TOE is not set
+> CONFIG_XFRM=3Dy
+> CONFIG_XFRM_OFFLOAD=3Dy
+> CONFIG_XFRM_ALGO=3Dy
+> CONFIG_XFRM_USER=3Dy
+> # CONFIG_XFRM_USER_COMPAT is not set
+> # CONFIG_XFRM_INTERFACE is not set
+> CONFIG_XFRM_SUB_POLICY=3Dy
+> CONFIG_XFRM_MIGRATE=3Dy
+> CONFIG_XFRM_STATISTICS=3Dy
+> CONFIG_XFRM_AH=3Dm
+> CONFIG_XFRM_ESP=3Dm
+> CONFIG_XFRM_IPCOMP=3Dm
+> CONFIG_NET_KEY=3Dm
+> CONFIG_NET_KEY_MIGRATE=3Dy
+> # CONFIG_SMC is not set
+> CONFIG_XDP_SOCKETS=3Dy
+> # CONFIG_XDP_SOCKETS_DIAG is not set
+> CONFIG_INET=3Dy
+> CONFIG_IP_MULTICAST=3Dy
+> CONFIG_IP_ADVANCED_ROUTER=3Dy
+> CONFIG_IP_FIB_TRIE_STATS=3Dy
+> CONFIG_IP_MULTIPLE_TABLES=3Dy
+> CONFIG_IP_ROUTE_MULTIPATH=3Dy
+> CONFIG_IP_ROUTE_VERBOSE=3Dy
+> CONFIG_IP_ROUTE_CLASSID=3Dy
+> CONFIG_IP_PNP=3Dy
+> CONFIG_IP_PNP_DHCP=3Dy
+> # CONFIG_IP_PNP_BOOTP is not set
+> # CONFIG_IP_PNP_RARP is not set
+> CONFIG_NET_IPIP=3Dm
+> CONFIG_NET_IPGRE_DEMUX=3Dm
+> CONFIG_NET_IP_TUNNEL=3Dm
+> CONFIG_NET_IPGRE=3Dm
+> CONFIG_NET_IPGRE_BROADCAST=3Dy
+> CONFIG_IP_MROUTE_COMMON=3Dy
+> CONFIG_IP_MROUTE=3Dy
+> CONFIG_IP_MROUTE_MULTIPLE_TABLES=3Dy
+> CONFIG_IP_PIMSM_V1=3Dy
+> CONFIG_IP_PIMSM_V2=3Dy
+> CONFIG_SYN_COOKIES=3Dy
+> CONFIG_NET_IPVTI=3Dm
+> CONFIG_NET_UDP_TUNNEL=3Dm
+> # CONFIG_NET_FOU is not set
+> # CONFIG_NET_FOU_IP_TUNNELS is not set
+> CONFIG_INET_AH=3Dm
+> CONFIG_INET_ESP=3Dm
+> CONFIG_INET_ESP_OFFLOAD=3Dm
+> # CONFIG_INET_ESPINTCP is not set
+> CONFIG_INET_IPCOMP=3Dm
+> CONFIG_INET_XFRM_TUNNEL=3Dm
+> CONFIG_INET_TUNNEL=3Dm
+> CONFIG_INET_DIAG=3Dm
+> CONFIG_INET_TCP_DIAG=3Dm
+> CONFIG_INET_UDP_DIAG=3Dm
+> CONFIG_INET_RAW_DIAG=3Dm
+> # CONFIG_INET_DIAG_DESTROY is not set
+> CONFIG_TCP_CONG_ADVANCED=3Dy
+> CONFIG_TCP_CONG_BIC=3Dm
+> CONFIG_TCP_CONG_CUBIC=3Dy
+> CONFIG_TCP_CONG_WESTWOOD=3Dm
+> CONFIG_TCP_CONG_HTCP=3Dm
+> CONFIG_TCP_CONG_HSTCP=3Dm
+> CONFIG_TCP_CONG_HYBLA=3Dm
+> CONFIG_TCP_CONG_VEGAS=3Dm
+> CONFIG_TCP_CONG_NV=3Dm
+> CONFIG_TCP_CONG_SCALABLE=3Dm
+> CONFIG_TCP_CONG_LP=3Dm
+> CONFIG_TCP_CONG_VENO=3Dm
+> CONFIG_TCP_CONG_YEAH=3Dm
+> CONFIG_TCP_CONG_ILLINOIS=3Dm
+> CONFIG_TCP_CONG_DCTCP=3Dm
+> # CONFIG_TCP_CONG_CDG is not set
+> CONFIG_TCP_CONG_BBR=3Dm
+> CONFIG_DEFAULT_CUBIC=3Dy
+> # CONFIG_DEFAULT_RENO is not set
+> CONFIG_DEFAULT_TCP_CONG=3D"cubic"
+> CONFIG_TCP_MD5SIG=3Dy
+> CONFIG_IPV6=3Dy
+> CONFIG_IPV6_ROUTER_PREF=3Dy
+> CONFIG_IPV6_ROUTE_INFO=3Dy
+> CONFIG_IPV6_OPTIMISTIC_DAD=3Dy
+> CONFIG_INET6_AH=3Dm
+> CONFIG_INET6_ESP=3Dm
+> CONFIG_INET6_ESP_OFFLOAD=3Dm
+> # CONFIG_INET6_ESPINTCP is not set
+> CONFIG_INET6_IPCOMP=3Dm
+> CONFIG_IPV6_MIP6=3Dm
+> # CONFIG_IPV6_ILA is not set
+> CONFIG_INET6_XFRM_TUNNEL=3Dm
+> CONFIG_INET6_TUNNEL=3Dm
+> CONFIG_IPV6_VTI=3Dm
+> CONFIG_IPV6_SIT=3Dm
+> CONFIG_IPV6_SIT_6RD=3Dy
+> CONFIG_IPV6_NDISC_NODETYPE=3Dy
+> CONFIG_IPV6_TUNNEL=3Dm
+> CONFIG_IPV6_GRE=3Dm
+> CONFIG_IPV6_MULTIPLE_TABLES=3Dy
+> # CONFIG_IPV6_SUBTREES is not set
+> CONFIG_IPV6_MROUTE=3Dy
+> CONFIG_IPV6_MROUTE_MULTIPLE_TABLES=3Dy
+> CONFIG_IPV6_PIMSM_V2=3Dy
+> # CONFIG_IPV6_SEG6_LWTUNNEL is not set
+> # CONFIG_IPV6_SEG6_HMAC is not set
+> # CONFIG_IPV6_RPL_LWTUNNEL is not set
+> CONFIG_NETLABEL=3Dy
+> # CONFIG_MPTCP is not set
+> CONFIG_NETWORK_SECMARK=3Dy
+> CONFIG_NET_PTP_CLASSIFY=3Dy
+> CONFIG_NETWORK_PHY_TIMESTAMPING=3Dy
+> CONFIG_NETFILTER=3Dy
+> CONFIG_NETFILTER_ADVANCED=3Dy
+> CONFIG_BRIDGE_NETFILTER=3Dm
+> =
+
+> #
+> # Core Netfilter Configuration
+> #
+> CONFIG_NETFILTER_INGRESS=3Dy
+> CONFIG_NETFILTER_NETLINK=3Dm
+> CONFIG_NETFILTER_FAMILY_BRIDGE=3Dy
+> CONFIG_NETFILTER_FAMILY_ARP=3Dy
+> # CONFIG_NETFILTER_NETLINK_ACCT is not set
+> CONFIG_NETFILTER_NETLINK_QUEUE=3Dm
+> CONFIG_NETFILTER_NETLINK_LOG=3Dm
+> CONFIG_NETFILTER_NETLINK_OSF=3Dm
+> CONFIG_NF_CONNTRACK=3Dm
+> CONFIG_NF_LOG_SYSLOG=3Dm
+> CONFIG_NETFILTER_CONNCOUNT=3Dm
+> CONFIG_NF_CONNTRACK_MARK=3Dy
+> CONFIG_NF_CONNTRACK_SECMARK=3Dy
+> CONFIG_NF_CONNTRACK_ZONES=3Dy
+> CONFIG_NF_CONNTRACK_PROCFS=3Dy
+> CONFIG_NF_CONNTRACK_EVENTS=3Dy
+> CONFIG_NF_CONNTRACK_TIMEOUT=3Dy
+> CONFIG_NF_CONNTRACK_TIMESTAMP=3Dy
+> CONFIG_NF_CONNTRACK_LABELS=3Dy
+> CONFIG_NF_CT_PROTO_DCCP=3Dy
+> CONFIG_NF_CT_PROTO_GRE=3Dy
+> CONFIG_NF_CT_PROTO_SCTP=3Dy
+> CONFIG_NF_CT_PROTO_UDPLITE=3Dy
+> CONFIG_NF_CONNTRACK_AMANDA=3Dm
+> CONFIG_NF_CONNTRACK_FTP=3Dm
+> CONFIG_NF_CONNTRACK_H323=3Dm
+> CONFIG_NF_CONNTRACK_IRC=3Dm
+> CONFIG_NF_CONNTRACK_BROADCAST=3Dm
+> CONFIG_NF_CONNTRACK_NETBIOS_NS=3Dm
+> CONFIG_NF_CONNTRACK_SNMP=3Dm
+> CONFIG_NF_CONNTRACK_PPTP=3Dm
+> CONFIG_NF_CONNTRACK_SANE=3Dm
+> CONFIG_NF_CONNTRACK_SIP=3Dm
+> CONFIG_NF_CONNTRACK_TFTP=3Dm
+> CONFIG_NF_CT_NETLINK=3Dm
+> CONFIG_NF_CT_NETLINK_TIMEOUT=3Dm
+> CONFIG_NF_CT_NETLINK_HELPER=3Dm
+> CONFIG_NETFILTER_NETLINK_GLUE_CT=3Dy
+> CONFIG_NF_NAT=3Dm
+> CONFIG_NF_NAT_AMANDA=3Dm
+> CONFIG_NF_NAT_FTP=3Dm
+> CONFIG_NF_NAT_IRC=3Dm
+> CONFIG_NF_NAT_SIP=3Dm
+> CONFIG_NF_NAT_TFTP=3Dm
+> CONFIG_NF_NAT_REDIRECT=3Dy
+> CONFIG_NF_NAT_MASQUERADE=3Dy
+> CONFIG_NETFILTER_SYNPROXY=3Dm
+> CONFIG_NF_TABLES=3Dm
+> CONFIG_NF_TABLES_INET=3Dy
+> CONFIG_NF_TABLES_NETDEV=3Dy
+> CONFIG_NFT_NUMGEN=3Dm
+> CONFIG_NFT_CT=3Dm
+> CONFIG_NFT_COUNTER=3Dm
+> CONFIG_NFT_CONNLIMIT=3Dm
+> CONFIG_NFT_LOG=3Dm
+> CONFIG_NFT_LIMIT=3Dm
+> CONFIG_NFT_MASQ=3Dm
+> CONFIG_NFT_REDIR=3Dm
+> CONFIG_NFT_NAT=3Dm
+> # CONFIG_NFT_TUNNEL is not set
+> CONFIG_NFT_OBJREF=3Dm
+> CONFIG_NFT_QUEUE=3Dm
+> CONFIG_NFT_QUOTA=3Dm
+> CONFIG_NFT_REJECT=3Dm
+> CONFIG_NFT_REJECT_INET=3Dm
+> CONFIG_NFT_COMPAT=3Dm
+> CONFIG_NFT_HASH=3Dm
+> CONFIG_NFT_FIB=3Dm
+> CONFIG_NFT_FIB_INET=3Dm
+> # CONFIG_NFT_XFRM is not set
+> CONFIG_NFT_SOCKET=3Dm
+> # CONFIG_NFT_OSF is not set
+> # CONFIG_NFT_TPROXY is not set
+> # CONFIG_NFT_SYNPROXY is not set
+> CONFIG_NF_DUP_NETDEV=3Dm
+> CONFIG_NFT_DUP_NETDEV=3Dm
+> CONFIG_NFT_FWD_NETDEV=3Dm
+> CONFIG_NFT_FIB_NETDEV=3Dm
+> # CONFIG_NFT_REJECT_NETDEV is not set
+> # CONFIG_NF_FLOW_TABLE is not set
+> CONFIG_NETFILTER_XTABLES=3Dy
+> CONFIG_NETFILTER_XTABLES_COMPAT=3Dy
+> =
+
+> #
+> # Xtables combined modules
+> #
+> CONFIG_NETFILTER_XT_MARK=3Dm
+> CONFIG_NETFILTER_XT_CONNMARK=3Dm
+> CONFIG_NETFILTER_XT_SET=3Dm
+> =
+
+> #
+> # Xtables targets
+> #
+> CONFIG_NETFILTER_XT_TARGET_AUDIT=3Dm
+> CONFIG_NETFILTER_XT_TARGET_CHECKSUM=3Dm
+> CONFIG_NETFILTER_XT_TARGET_CLASSIFY=3Dm
+> CONFIG_NETFILTER_XT_TARGET_CONNMARK=3Dm
+> CONFIG_NETFILTER_XT_TARGET_CONNSECMARK=3Dm
+> CONFIG_NETFILTER_XT_TARGET_CT=3Dm
+> CONFIG_NETFILTER_XT_TARGET_DSCP=3Dm
+> CONFIG_NETFILTER_XT_TARGET_HL=3Dm
+> CONFIG_NETFILTER_XT_TARGET_HMARK=3Dm
+> CONFIG_NETFILTER_XT_TARGET_IDLETIMER=3Dm
+> # CONFIG_NETFILTER_XT_TARGET_LED is not set
+> CONFIG_NETFILTER_XT_TARGET_LOG=3Dm
+> CONFIG_NETFILTER_XT_TARGET_MARK=3Dm
+> CONFIG_NETFILTER_XT_NAT=3Dm
+> CONFIG_NETFILTER_XT_TARGET_NETMAP=3Dm
+> CONFIG_NETFILTER_XT_TARGET_NFLOG=3Dm
+> CONFIG_NETFILTER_XT_TARGET_NFQUEUE=3Dm
+> CONFIG_NETFILTER_XT_TARGET_NOTRACK=3Dm
+> CONFIG_NETFILTER_XT_TARGET_RATEEST=3Dm
+> CONFIG_NETFILTER_XT_TARGET_REDIRECT=3Dm
+> CONFIG_NETFILTER_XT_TARGET_MASQUERADE=3Dm
+> CONFIG_NETFILTER_XT_TARGET_TEE=3Dm
+> CONFIG_NETFILTER_XT_TARGET_TPROXY=3Dm
+> CONFIG_NETFILTER_XT_TARGET_TRACE=3Dm
+> CONFIG_NETFILTER_XT_TARGET_SECMARK=3Dm
+> CONFIG_NETFILTER_XT_TARGET_TCPMSS=3Dm
+> CONFIG_NETFILTER_XT_TARGET_TCPOPTSTRIP=3Dm
+> =
+
+> #
+> # Xtables matches
+> #
+> CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=3Dm
+> CONFIG_NETFILTER_XT_MATCH_BPF=3Dm
+> CONFIG_NETFILTER_XT_MATCH_CGROUP=3Dm
+> CONFIG_NETFILTER_XT_MATCH_CLUSTER=3Dm
+> CONFIG_NETFILTER_XT_MATCH_COMMENT=3Dm
+> CONFIG_NETFILTER_XT_MATCH_CONNBYTES=3Dm
+> CONFIG_NETFILTER_XT_MATCH_CONNLABEL=3Dm
+> CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=3Dm
+> CONFIG_NETFILTER_XT_MATCH_CONNMARK=3Dm
+> CONFIG_NETFILTER_XT_MATCH_CONNTRACK=3Dm
+> CONFIG_NETFILTER_XT_MATCH_CPU=3Dm
+> CONFIG_NETFILTER_XT_MATCH_DCCP=3Dm
+> CONFIG_NETFILTER_XT_MATCH_DEVGROUP=3Dm
+> CONFIG_NETFILTER_XT_MATCH_DSCP=3Dm
+> CONFIG_NETFILTER_XT_MATCH_ECN=3Dm
+> CONFIG_NETFILTER_XT_MATCH_ESP=3Dm
+> CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=3Dm
+> CONFIG_NETFILTER_XT_MATCH_HELPER=3Dm
+> CONFIG_NETFILTER_XT_MATCH_HL=3Dm
+> # CONFIG_NETFILTER_XT_MATCH_IPCOMP is not set
+> CONFIG_NETFILTER_XT_MATCH_IPRANGE=3Dm
+> CONFIG_NETFILTER_XT_MATCH_IPVS=3Dm
+> # CONFIG_NETFILTER_XT_MATCH_L2TP is not set
+> CONFIG_NETFILTER_XT_MATCH_LENGTH=3Dm
+> CONFIG_NETFILTER_XT_MATCH_LIMIT=3Dm
+> CONFIG_NETFILTER_XT_MATCH_MAC=3Dm
+> CONFIG_NETFILTER_XT_MATCH_MARK=3Dm
+> CONFIG_NETFILTER_XT_MATCH_MULTIPORT=3Dm
+> # CONFIG_NETFILTER_XT_MATCH_NFACCT is not set
+> CONFIG_NETFILTER_XT_MATCH_OSF=3Dm
+> CONFIG_NETFILTER_XT_MATCH_OWNER=3Dm
+> CONFIG_NETFILTER_XT_MATCH_POLICY=3Dm
+> CONFIG_NETFILTER_XT_MATCH_PHYSDEV=3Dm
+> CONFIG_NETFILTER_XT_MATCH_PKTTYPE=3Dm
+> CONFIG_NETFILTER_XT_MATCH_QUOTA=3Dm
+> CONFIG_NETFILTER_XT_MATCH_RATEEST=3Dm
+> CONFIG_NETFILTER_XT_MATCH_REALM=3Dm
+> CONFIG_NETFILTER_XT_MATCH_RECENT=3Dm
+> CONFIG_NETFILTER_XT_MATCH_SCTP=3Dm
+> CONFIG_NETFILTER_XT_MATCH_SOCKET=3Dm
+> CONFIG_NETFILTER_XT_MATCH_STATE=3Dm
+> CONFIG_NETFILTER_XT_MATCH_STATISTIC=3Dm
+> CONFIG_NETFILTER_XT_MATCH_STRING=3Dm
+> CONFIG_NETFILTER_XT_MATCH_TCPMSS=3Dm
+> # CONFIG_NETFILTER_XT_MATCH_TIME is not set
+> # CONFIG_NETFILTER_XT_MATCH_U32 is not set
+> # end of Core Netfilter Configuration
+> =
+
+> CONFIG_IP_SET=3Dm
+> CONFIG_IP_SET_MAX=3D256
+> CONFIG_IP_SET_BITMAP_IP=3Dm
+> CONFIG_IP_SET_BITMAP_IPMAC=3Dm
+> CONFIG_IP_SET_BITMAP_PORT=3Dm
+> CONFIG_IP_SET_HASH_IP=3Dm
+> CONFIG_IP_SET_HASH_IPMARK=3Dm
+> CONFIG_IP_SET_HASH_IPPORT=3Dm
+> CONFIG_IP_SET_HASH_IPPORTIP=3Dm
+> CONFIG_IP_SET_HASH_IPPORTNET=3Dm
+> CONFIG_IP_SET_HASH_IPMAC=3Dm
+> CONFIG_IP_SET_HASH_MAC=3Dm
+> CONFIG_IP_SET_HASH_NETPORTNET=3Dm
+> CONFIG_IP_SET_HASH_NET=3Dm
+> CONFIG_IP_SET_HASH_NETNET=3Dm
+> CONFIG_IP_SET_HASH_NETPORT=3Dm
+> CONFIG_IP_SET_HASH_NETIFACE=3Dm
+> CONFIG_IP_SET_LIST_SET=3Dm
+> CONFIG_IP_VS=3Dm
+> CONFIG_IP_VS_IPV6=3Dy
+> # CONFIG_IP_VS_DEBUG is not set
+> CONFIG_IP_VS_TAB_BITS=3D12
+> =
+
+> #
+> # IPVS transport protocol load balancing support
+> #
+> CONFIG_IP_VS_PROTO_TCP=3Dy
+> CONFIG_IP_VS_PROTO_UDP=3Dy
+> CONFIG_IP_VS_PROTO_AH_ESP=3Dy
+> CONFIG_IP_VS_PROTO_ESP=3Dy
+> CONFIG_IP_VS_PROTO_AH=3Dy
+> CONFIG_IP_VS_PROTO_SCTP=3Dy
+> =
+
+> #
+> # IPVS scheduler
+> #
+> CONFIG_IP_VS_RR=3Dm
+> CONFIG_IP_VS_WRR=3Dm
+> CONFIG_IP_VS_LC=3Dm
+> CONFIG_IP_VS_WLC=3Dm
+> CONFIG_IP_VS_FO=3Dm
+> CONFIG_IP_VS_OVF=3Dm
+> CONFIG_IP_VS_LBLC=3Dm
+> CONFIG_IP_VS_LBLCR=3Dm
+> CONFIG_IP_VS_DH=3Dm
+> CONFIG_IP_VS_SH=3Dm
+> # CONFIG_IP_VS_MH is not set
+> CONFIG_IP_VS_SED=3Dm
+> CONFIG_IP_VS_NQ=3Dm
+> # CONFIG_IP_VS_TWOS is not set
+> =
+
+> #
+> # IPVS SH scheduler
+> #
+> CONFIG_IP_VS_SH_TAB_BITS=3D8
+> =
+
+> #
+> # IPVS MH scheduler
+> #
+> CONFIG_IP_VS_MH_TAB_INDEX=3D12
+> =
+
+> #
+> # IPVS application helper
+> #
+> CONFIG_IP_VS_FTP=3Dm
+> CONFIG_IP_VS_NFCT=3Dy
+> CONFIG_IP_VS_PE_SIP=3Dm
+> =
+
+> #
+> # IP: Netfilter Configuration
+> #
+> CONFIG_NF_DEFRAG_IPV4=3Dm
+> CONFIG_NF_SOCKET_IPV4=3Dm
+> CONFIG_NF_TPROXY_IPV4=3Dm
+> CONFIG_NF_TABLES_IPV4=3Dy
+> CONFIG_NFT_REJECT_IPV4=3Dm
+> CONFIG_NFT_DUP_IPV4=3Dm
+> CONFIG_NFT_FIB_IPV4=3Dm
+> CONFIG_NF_TABLES_ARP=3Dy
+> CONFIG_NF_DUP_IPV4=3Dm
+> CONFIG_NF_LOG_ARP=3Dm
+> CONFIG_NF_LOG_IPV4=3Dm
+> CONFIG_NF_REJECT_IPV4=3Dm
+> CONFIG_NF_NAT_SNMP_BASIC=3Dm
+> CONFIG_NF_NAT_PPTP=3Dm
+> CONFIG_NF_NAT_H323=3Dm
+> CONFIG_IP_NF_IPTABLES=3Dm
+> CONFIG_IP_NF_MATCH_AH=3Dm
+> CONFIG_IP_NF_MATCH_ECN=3Dm
+> CONFIG_IP_NF_MATCH_RPFILTER=3Dm
+> CONFIG_IP_NF_MATCH_TTL=3Dm
+> CONFIG_IP_NF_FILTER=3Dm
+> CONFIG_IP_NF_TARGET_REJECT=3Dm
+> CONFIG_IP_NF_TARGET_SYNPROXY=3Dm
+> CONFIG_IP_NF_NAT=3Dm
+> CONFIG_IP_NF_TARGET_MASQUERADE=3Dm
+> CONFIG_IP_NF_TARGET_NETMAP=3Dm
+> CONFIG_IP_NF_TARGET_REDIRECT=3Dm
+> CONFIG_IP_NF_MANGLE=3Dm
+> # CONFIG_IP_NF_TARGET_CLUSTERIP is not set
+> CONFIG_IP_NF_TARGET_ECN=3Dm
+> CONFIG_IP_NF_TARGET_TTL=3Dm
+> CONFIG_IP_NF_RAW=3Dm
+> CONFIG_IP_NF_SECURITY=3Dm
+> CONFIG_IP_NF_ARPTABLES=3Dm
+> CONFIG_IP_NF_ARPFILTER=3Dm
+> CONFIG_IP_NF_ARP_MANGLE=3Dm
+> # end of IP: Netfilter Configuration
+> =
+
+> #
+> # IPv6: Netfilter Configuration
+> #
+> CONFIG_NF_SOCKET_IPV6=3Dm
+> CONFIG_NF_TPROXY_IPV6=3Dm
+> CONFIG_NF_TABLES_IPV6=3Dy
+> CONFIG_NFT_REJECT_IPV6=3Dm
+> CONFIG_NFT_DUP_IPV6=3Dm
+> CONFIG_NFT_FIB_IPV6=3Dm
+> CONFIG_NF_DUP_IPV6=3Dm
+> CONFIG_NF_REJECT_IPV6=3Dm
+> CONFIG_NF_LOG_IPV6=3Dm
+> CONFIG_IP6_NF_IPTABLES=3Dm
+> CONFIG_IP6_NF_MATCH_AH=3Dm
+> CONFIG_IP6_NF_MATCH_EUI64=3Dm
+> CONFIG_IP6_NF_MATCH_FRAG=3Dm
+> CONFIG_IP6_NF_MATCH_OPTS=3Dm
+> CONFIG_IP6_NF_MATCH_HL=3Dm
+> CONFIG_IP6_NF_MATCH_IPV6HEADER=3Dm
+> CONFIG_IP6_NF_MATCH_MH=3Dm
+> CONFIG_IP6_NF_MATCH_RPFILTER=3Dm
+> CONFIG_IP6_NF_MATCH_RT=3Dm
+> # CONFIG_IP6_NF_MATCH_SRH is not set
+> # CONFIG_IP6_NF_TARGET_HL is not set
+> CONFIG_IP6_NF_FILTER=3Dm
+> CONFIG_IP6_NF_TARGET_REJECT=3Dm
+> CONFIG_IP6_NF_TARGET_SYNPROXY=3Dm
+> CONFIG_IP6_NF_MANGLE=3Dm
+> CONFIG_IP6_NF_RAW=3Dm
+> CONFIG_IP6_NF_SECURITY=3Dm
+> CONFIG_IP6_NF_NAT=3Dm
+> CONFIG_IP6_NF_TARGET_MASQUERADE=3Dm
+> CONFIG_IP6_NF_TARGET_NPT=3Dm
+> # end of IPv6: Netfilter Configuration
+> =
+
+> CONFIG_NF_DEFRAG_IPV6=3Dm
+> CONFIG_NF_TABLES_BRIDGE=3Dm
+> # CONFIG_NFT_BRIDGE_META is not set
+> CONFIG_NFT_BRIDGE_REJECT=3Dm
+> # CONFIG_NF_CONNTRACK_BRIDGE is not set
+> CONFIG_BRIDGE_NF_EBTABLES=3Dm
+> CONFIG_BRIDGE_EBT_BROUTE=3Dm
+> CONFIG_BRIDGE_EBT_T_FILTER=3Dm
+> CONFIG_BRIDGE_EBT_T_NAT=3Dm
+> CONFIG_BRIDGE_EBT_802_3=3Dm
+> CONFIG_BRIDGE_EBT_AMONG=3Dm
+> CONFIG_BRIDGE_EBT_ARP=3Dm
+> CONFIG_BRIDGE_EBT_IP=3Dm
+> CONFIG_BRIDGE_EBT_IP6=3Dm
+> CONFIG_BRIDGE_EBT_LIMIT=3Dm
+> CONFIG_BRIDGE_EBT_MARK=3Dm
+> CONFIG_BRIDGE_EBT_PKTTYPE=3Dm
+> CONFIG_BRIDGE_EBT_STP=3Dm
+> CONFIG_BRIDGE_EBT_VLAN=3Dm
+> CONFIG_BRIDGE_EBT_ARPREPLY=3Dm
+> CONFIG_BRIDGE_EBT_DNAT=3Dm
+> CONFIG_BRIDGE_EBT_MARK_T=3Dm
+> CONFIG_BRIDGE_EBT_REDIRECT=3Dm
+> CONFIG_BRIDGE_EBT_SNAT=3Dm
+> CONFIG_BRIDGE_EBT_LOG=3Dm
+> CONFIG_BRIDGE_EBT_NFLOG=3Dm
+> # CONFIG_BPFILTER is not set
+> # CONFIG_IP_DCCP is not set
+> CONFIG_IP_SCTP=3Dm
+> # CONFIG_SCTP_DBG_OBJCNT is not set
+> # CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5 is not set
+> CONFIG_SCTP_DEFAULT_COOKIE_HMAC_SHA1=3Dy
+> # CONFIG_SCTP_DEFAULT_COOKIE_HMAC_NONE is not set
+> CONFIG_SCTP_COOKIE_HMAC_MD5=3Dy
+> CONFIG_SCTP_COOKIE_HMAC_SHA1=3Dy
+> CONFIG_INET_SCTP_DIAG=3Dm
+> # CONFIG_RDS is not set
+> CONFIG_TIPC=3Dm
+> # CONFIG_TIPC_MEDIA_IB is not set
+> CONFIG_TIPC_MEDIA_UDP=3Dy
+> CONFIG_TIPC_CRYPTO=3Dy
+> CONFIG_TIPC_DIAG=3Dm
+> CONFIG_ATM=3Dm
+> CONFIG_ATM_CLIP=3Dm
+> # CONFIG_ATM_CLIP_NO_ICMP is not set
+> CONFIG_ATM_LANE=3Dm
+> # CONFIG_ATM_MPOA is not set
+> CONFIG_ATM_BR2684=3Dm
+> # CONFIG_ATM_BR2684_IPFILTER is not set
+> CONFIG_L2TP=3Dm
+> CONFIG_L2TP_DEBUGFS=3Dm
+> CONFIG_L2TP_V3=3Dy
+> CONFIG_L2TP_IP=3Dm
+> CONFIG_L2TP_ETH=3Dm
+> CONFIG_STP=3Dm
+> CONFIG_GARP=3Dm
+> CONFIG_MRP=3Dm
+> CONFIG_BRIDGE=3Dm
+> CONFIG_BRIDGE_IGMP_SNOOPING=3Dy
+> CONFIG_BRIDGE_VLAN_FILTERING=3Dy
+> # CONFIG_BRIDGE_MRP is not set
+> # CONFIG_BRIDGE_CFM is not set
+> # CONFIG_NET_DSA is not set
+> CONFIG_VLAN_8021Q=3Dm
+> CONFIG_VLAN_8021Q_GVRP=3Dy
+> CONFIG_VLAN_8021Q_MVRP=3Dy
+> # CONFIG_DECNET is not set
+> CONFIG_LLC=3Dm
+> # CONFIG_LLC2 is not set
+> # CONFIG_ATALK is not set
+> # CONFIG_X25 is not set
+> # CONFIG_LAPB is not set
+> # CONFIG_PHONET is not set
+> CONFIG_6LOWPAN=3Dm
+> # CONFIG_6LOWPAN_DEBUGFS is not set
+> # CONFIG_6LOWPAN_NHC is not set
+> CONFIG_IEEE802154=3Dm
+> # CONFIG_IEEE802154_NL802154_EXPERIMENTAL is not set
+> CONFIG_IEEE802154_SOCKET=3Dm
+> CONFIG_IEEE802154_6LOWPAN=3Dm
+> CONFIG_MAC802154=3Dm
+> CONFIG_NET_SCHED=3Dy
+> =
+
+> #
+> # Queueing/Scheduling
+> #
+> CONFIG_NET_SCH_CBQ=3Dm
+> CONFIG_NET_SCH_HTB=3Dm
+> CONFIG_NET_SCH_HFSC=3Dm
+> CONFIG_NET_SCH_ATM=3Dm
+> CONFIG_NET_SCH_PRIO=3Dm
+> CONFIG_NET_SCH_MULTIQ=3Dm
+> CONFIG_NET_SCH_RED=3Dm
+> CONFIG_NET_SCH_SFB=3Dm
+> CONFIG_NET_SCH_SFQ=3Dm
+> CONFIG_NET_SCH_TEQL=3Dm
+> CONFIG_NET_SCH_TBF=3Dm
+> # CONFIG_NET_SCH_CBS is not set
+> # CONFIG_NET_SCH_ETF is not set
+> # CONFIG_NET_SCH_TAPRIO is not set
+> CONFIG_NET_SCH_GRED=3Dm
+> CONFIG_NET_SCH_DSMARK=3Dm
+> CONFIG_NET_SCH_NETEM=3Dm
+> CONFIG_NET_SCH_DRR=3Dm
+> CONFIG_NET_SCH_MQPRIO=3Dm
+> # CONFIG_NET_SCH_SKBPRIO is not set
+> CONFIG_NET_SCH_CHOKE=3Dm
+> CONFIG_NET_SCH_QFQ=3Dm
+> CONFIG_NET_SCH_CODEL=3Dm
+> CONFIG_NET_SCH_FQ_CODEL=3Dy
+> # CONFIG_NET_SCH_CAKE is not set
+> CONFIG_NET_SCH_FQ=3Dm
+> CONFIG_NET_SCH_HHF=3Dm
+> CONFIG_NET_SCH_PIE=3Dm
+> # CONFIG_NET_SCH_FQ_PIE is not set
+> CONFIG_NET_SCH_INGRESS=3Dm
+> CONFIG_NET_SCH_PLUG=3Dm
+> # CONFIG_NET_SCH_ETS is not set
+> CONFIG_NET_SCH_DEFAULT=3Dy
+> # CONFIG_DEFAULT_FQ is not set
+> # CONFIG_DEFAULT_CODEL is not set
+> CONFIG_DEFAULT_FQ_CODEL=3Dy
+> # CONFIG_DEFAULT_SFQ is not set
+> # CONFIG_DEFAULT_PFIFO_FAST is not set
+> CONFIG_DEFAULT_NET_SCH=3D"fq_codel"
+> =
+
+> #
+> # Classification
+> #
+> CONFIG_NET_CLS=3Dy
+> CONFIG_NET_CLS_BASIC=3Dm
+> CONFIG_NET_CLS_TCINDEX=3Dm
+> CONFIG_NET_CLS_ROUTE4=3Dm
+> CONFIG_NET_CLS_FW=3Dm
+> CONFIG_NET_CLS_U32=3Dm
+> CONFIG_CLS_U32_PERF=3Dy
+> CONFIG_CLS_U32_MARK=3Dy
+> CONFIG_NET_CLS_RSVP=3Dm
+> CONFIG_NET_CLS_RSVP6=3Dm
+> CONFIG_NET_CLS_FLOW=3Dm
+> CONFIG_NET_CLS_CGROUP=3Dy
+> CONFIG_NET_CLS_BPF=3Dm
+> CONFIG_NET_CLS_FLOWER=3Dm
+> CONFIG_NET_CLS_MATCHALL=3Dm
+> CONFIG_NET_EMATCH=3Dy
+> CONFIG_NET_EMATCH_STACK=3D32
+> CONFIG_NET_EMATCH_CMP=3Dm
+> CONFIG_NET_EMATCH_NBYTE=3Dm
+> CONFIG_NET_EMATCH_U32=3Dm
+> CONFIG_NET_EMATCH_META=3Dm
+> CONFIG_NET_EMATCH_TEXT=3Dm
+> # CONFIG_NET_EMATCH_CANID is not set
+> CONFIG_NET_EMATCH_IPSET=3Dm
+> # CONFIG_NET_EMATCH_IPT is not set
+> CONFIG_NET_CLS_ACT=3Dy
+> CONFIG_NET_ACT_POLICE=3Dm
+> CONFIG_NET_ACT_GACT=3Dm
+> CONFIG_GACT_PROB=3Dy
+> CONFIG_NET_ACT_MIRRED=3Dm
+> CONFIG_NET_ACT_SAMPLE=3Dm
+> # CONFIG_NET_ACT_IPT is not set
+> CONFIG_NET_ACT_NAT=3Dm
+> CONFIG_NET_ACT_PEDIT=3Dm
+> CONFIG_NET_ACT_SIMP=3Dm
+> CONFIG_NET_ACT_SKBEDIT=3Dm
+> CONFIG_NET_ACT_CSUM=3Dm
+> # CONFIG_NET_ACT_MPLS is not set
+> CONFIG_NET_ACT_VLAN=3Dm
+> CONFIG_NET_ACT_BPF=3Dm
+> # CONFIG_NET_ACT_CONNMARK is not set
+> # CONFIG_NET_ACT_CTINFO is not set
+> CONFIG_NET_ACT_SKBMOD=3Dm
+> # CONFIG_NET_ACT_IFE is not set
+> CONFIG_NET_ACT_TUNNEL_KEY=3Dm
+> # CONFIG_NET_ACT_GATE is not set
+> # CONFIG_NET_TC_SKB_EXT is not set
+> CONFIG_NET_SCH_FIFO=3Dy
+> CONFIG_DCB=3Dy
+> CONFIG_DNS_RESOLVER=3Dm
+> # CONFIG_BATMAN_ADV is not set
+> CONFIG_OPENVSWITCH=3Dm
+> CONFIG_OPENVSWITCH_GRE=3Dm
+> CONFIG_VSOCKETS=3Dm
+> CONFIG_VSOCKETS_DIAG=3Dm
+> CONFIG_VSOCKETS_LOOPBACK=3Dm
+> CONFIG_VMWARE_VMCI_VSOCKETS=3Dm
+> CONFIG_VIRTIO_VSOCKETS=3Dm
+> CONFIG_VIRTIO_VSOCKETS_COMMON=3Dm
+> CONFIG_HYPERV_VSOCKETS=3Dm
+> CONFIG_NETLINK_DIAG=3Dm
+> CONFIG_MPLS=3Dy
+> CONFIG_NET_MPLS_GSO=3Dy
+> CONFIG_MPLS_ROUTING=3Dm
+> CONFIG_MPLS_IPTUNNEL=3Dm
+> CONFIG_NET_NSH=3Dy
+> # CONFIG_HSR is not set
+> CONFIG_NET_SWITCHDEV=3Dy
+> CONFIG_NET_L3_MASTER_DEV=3Dy
+> # CONFIG_QRTR is not set
+> # CONFIG_NET_NCSI is not set
+> CONFIG_PCPU_DEV_REFCNT=3Dy
+> CONFIG_RPS=3Dy
+> CONFIG_RFS_ACCEL=3Dy
+> CONFIG_SOCK_RX_QUEUE_MAPPING=3Dy
+> CONFIG_XPS=3Dy
+> CONFIG_CGROUP_NET_PRIO=3Dy
+> CONFIG_CGROUP_NET_CLASSID=3Dy
+> CONFIG_NET_RX_BUSY_POLL=3Dy
+> CONFIG_BQL=3Dy
+> CONFIG_BPF_JIT=3Dy
+> CONFIG_BPF_STREAM_PARSER=3Dy
+> CONFIG_NET_FLOW_LIMIT=3Dy
+> =
+
+> #
+> # Network testing
+> #
+> CONFIG_NET_PKTGEN=3Dm
+> CONFIG_NET_DROP_MONITOR=3Dy
+> # end of Network testing
+> # end of Networking options
+> =
+
+> # CONFIG_HAMRADIO is not set
+> CONFIG_CAN=3Dm
+> CONFIG_CAN_RAW=3Dm
+> CONFIG_CAN_BCM=3Dm
+> CONFIG_CAN_GW=3Dm
+> # CONFIG_CAN_J1939 is not set
+> # CONFIG_CAN_ISOTP is not set
+> =
+
+> #
+> # CAN Device Drivers
+> #
+> CONFIG_CAN_VCAN=3Dm
+> # CONFIG_CAN_VXCAN is not set
+> CONFIG_CAN_SLCAN=3Dm
+> CONFIG_CAN_DEV=3Dm
+> CONFIG_CAN_CALC_BITTIMING=3Dy
+> # CONFIG_CAN_KVASER_PCIEFD is not set
+> CONFIG_CAN_C_CAN=3Dm
+> CONFIG_CAN_C_CAN_PLATFORM=3Dm
+> CONFIG_CAN_C_CAN_PCI=3Dm
+> CONFIG_CAN_CC770=3Dm
+> # CONFIG_CAN_CC770_ISA is not set
+> CONFIG_CAN_CC770_PLATFORM=3Dm
+> # CONFIG_CAN_IFI_CANFD is not set
+> # CONFIG_CAN_M_CAN is not set
+> # CONFIG_CAN_PEAK_PCIEFD is not set
+> CONFIG_CAN_SJA1000=3Dm
+> CONFIG_CAN_EMS_PCI=3Dm
+> # CONFIG_CAN_F81601 is not set
+> CONFIG_CAN_KVASER_PCI=3Dm
+> CONFIG_CAN_PEAK_PCI=3Dm
+> CONFIG_CAN_PEAK_PCIEC=3Dy
+> CONFIG_CAN_PLX_PCI=3Dm
+> # CONFIG_CAN_SJA1000_ISA is not set
+> CONFIG_CAN_SJA1000_PLATFORM=3Dm
+> CONFIG_CAN_SOFTING=3Dm
+> =
+
+> #
+> # CAN SPI interfaces
+> #
+> # CONFIG_CAN_HI311X is not set
+> # CONFIG_CAN_MCP251X is not set
+> # CONFIG_CAN_MCP251XFD is not set
+> # end of CAN SPI interfaces
+> =
+
+> #
+> # CAN USB interfaces
+> #
+> # CONFIG_CAN_8DEV_USB is not set
+> # CONFIG_CAN_EMS_USB is not set
+> # CONFIG_CAN_ESD_USB2 is not set
+> # CONFIG_CAN_ETAS_ES58X is not set
+> # CONFIG_CAN_GS_USB is not set
+> # CONFIG_CAN_KVASER_USB is not set
+> # CONFIG_CAN_MCBA_USB is not set
+> # CONFIG_CAN_PEAK_USB is not set
+> # CONFIG_CAN_UCAN is not set
+> # end of CAN USB interfaces
+> =
+
+> # CONFIG_CAN_DEBUG_DEVICES is not set
+> # end of CAN Device Drivers
+> =
+
+> CONFIG_BT=3Dm
+> CONFIG_BT_BREDR=3Dy
+> CONFIG_BT_RFCOMM=3Dm
+> CONFIG_BT_RFCOMM_TTY=3Dy
+> CONFIG_BT_BNEP=3Dm
+> CONFIG_BT_BNEP_MC_FILTER=3Dy
+> CONFIG_BT_BNEP_PROTO_FILTER=3Dy
+> CONFIG_BT_HIDP=3Dm
+> CONFIG_BT_HS=3Dy
+> CONFIG_BT_LE=3Dy
+> # CONFIG_BT_6LOWPAN is not set
+> # CONFIG_BT_LEDS is not set
+> # CONFIG_BT_MSFTEXT is not set
+> # CONFIG_BT_AOSPEXT is not set
+> CONFIG_BT_DEBUGFS=3Dy
+> # CONFIG_BT_SELFTEST is not set
+> =
+
+> #
+> # Bluetooth device drivers
+> #
+> # CONFIG_BT_HCIBTUSB is not set
+> # CONFIG_BT_HCIBTSDIO is not set
+> CONFIG_BT_HCIUART=3Dm
+> CONFIG_BT_HCIUART_H4=3Dy
+> CONFIG_BT_HCIUART_BCSP=3Dy
+> CONFIG_BT_HCIUART_ATH3K=3Dy
+> # CONFIG_BT_HCIUART_INTEL is not set
+> # CONFIG_BT_HCIUART_AG6XX is not set
+> # CONFIG_BT_HCIBCM203X is not set
+> # CONFIG_BT_HCIBPA10X is not set
+> # CONFIG_BT_HCIBFUSB is not set
+> CONFIG_BT_HCIVHCI=3Dm
+> CONFIG_BT_MRVL=3Dm
+> # CONFIG_BT_MRVL_SDIO is not set
+> # CONFIG_BT_MTKSDIO is not set
+> # CONFIG_BT_VIRTIO is not set
+> # end of Bluetooth device drivers
+> =
+
+> # CONFIG_AF_RXRPC is not set
+> # CONFIG_AF_KCM is not set
+> CONFIG_STREAM_PARSER=3Dy
+> CONFIG_FIB_RULES=3Dy
+> CONFIG_WIRELESS=3Dy
+> CONFIG_WEXT_CORE=3Dy
+> CONFIG_WEXT_PROC=3Dy
+> CONFIG_CFG80211=3Dm
+> # CONFIG_NL80211_TESTMODE is not set
+> # CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
+> CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=3Dy
+> CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=3Dy
+> CONFIG_CFG80211_DEFAULT_PS=3Dy
+> # CONFIG_CFG80211_DEBUGFS is not set
+> CONFIG_CFG80211_CRDA_SUPPORT=3Dy
+> CONFIG_CFG80211_WEXT=3Dy
+> CONFIG_MAC80211=3Dm
+> CONFIG_MAC80211_HAS_RC=3Dy
+> CONFIG_MAC80211_RC_MINSTREL=3Dy
+> CONFIG_MAC80211_RC_DEFAULT_MINSTREL=3Dy
+> CONFIG_MAC80211_RC_DEFAULT=3D"minstrel_ht"
+> CONFIG_MAC80211_MESH=3Dy
+> CONFIG_MAC80211_LEDS=3Dy
+> CONFIG_MAC80211_DEBUGFS=3Dy
+> # CONFIG_MAC80211_MESSAGE_TRACING is not set
+> # CONFIG_MAC80211_DEBUG_MENU is not set
+> CONFIG_MAC80211_STA_HASH_MAX_SIZE=3D0
+> CONFIG_RFKILL=3Dm
+> CONFIG_RFKILL_LEDS=3Dy
+> CONFIG_RFKILL_INPUT=3Dy
+> # CONFIG_RFKILL_GPIO is not set
+> CONFIG_NET_9P=3Dy
+> CONFIG_NET_9P_VIRTIO=3Dy
+> # CONFIG_NET_9P_XEN is not set
+> # CONFIG_NET_9P_RDMA is not set
+> # CONFIG_NET_9P_DEBUG is not set
+> # CONFIG_CAIF is not set
+> CONFIG_CEPH_LIB=3Dm
+> # CONFIG_CEPH_LIB_PRETTYDEBUG is not set
+> CONFIG_CEPH_LIB_USE_DNS_RESOLVER=3Dy
+> # CONFIG_NFC is not set
+> CONFIG_PSAMPLE=3Dm
+> # CONFIG_NET_IFE is not set
+> CONFIG_LWTUNNEL=3Dy
+> CONFIG_LWTUNNEL_BPF=3Dy
+> CONFIG_DST_CACHE=3Dy
+> CONFIG_GRO_CELLS=3Dy
+> CONFIG_SOCK_VALIDATE_XMIT=3Dy
+> CONFIG_NET_SELFTESTS=3Dy
+> CONFIG_NET_SOCK_MSG=3Dy
+> CONFIG_NET_DEVLINK=3Dy
+> CONFIG_PAGE_POOL=3Dy
+> CONFIG_FAILOVER=3Dm
+> CONFIG_ETHTOOL_NETLINK=3Dy
+> CONFIG_HAVE_EBPF_JIT=3Dy
+> =
+
+> #
+> # Device Drivers
+> #
+> CONFIG_HAVE_EISA=3Dy
+> # CONFIG_EISA is not set
+> CONFIG_HAVE_PCI=3Dy
+> CONFIG_PCI=3Dy
+> CONFIG_PCI_DOMAINS=3Dy
+> CONFIG_PCIEPORTBUS=3Dy
+> CONFIG_HOTPLUG_PCI_PCIE=3Dy
+> CONFIG_PCIEAER=3Dy
+> CONFIG_PCIEAER_INJECT=3Dm
+> CONFIG_PCIE_ECRC=3Dy
+> CONFIG_PCIEASPM=3Dy
+> CONFIG_PCIEASPM_DEFAULT=3Dy
+> # CONFIG_PCIEASPM_POWERSAVE is not set
+> # CONFIG_PCIEASPM_POWER_SUPERSAVE is not set
+> # CONFIG_PCIEASPM_PERFORMANCE is not set
+> CONFIG_PCIE_PME=3Dy
+> CONFIG_PCIE_DPC=3Dy
+> # CONFIG_PCIE_PTM is not set
+> # CONFIG_PCIE_EDR is not set
+> CONFIG_PCI_MSI=3Dy
+> CONFIG_PCI_MSI_IRQ_DOMAIN=3Dy
+> CONFIG_PCI_QUIRKS=3Dy
+> # CONFIG_PCI_DEBUG is not set
+> # CONFIG_PCI_REALLOC_ENABLE_AUTO is not set
+> CONFIG_PCI_STUB=3Dy
+> CONFIG_PCI_PF_STUB=3Dm
+> # CONFIG_XEN_PCIDEV_FRONTEND is not set
+> CONFIG_PCI_ATS=3Dy
+> CONFIG_PCI_LOCKLESS_CONFIG=3Dy
+> CONFIG_PCI_IOV=3Dy
+> CONFIG_PCI_PRI=3Dy
+> CONFIG_PCI_PASID=3Dy
+> # CONFIG_PCI_P2PDMA is not set
+> CONFIG_PCI_LABEL=3Dy
+> CONFIG_PCI_HYPERV=3Dm
+> CONFIG_HOTPLUG_PCI=3Dy
+> CONFIG_HOTPLUG_PCI_ACPI=3Dy
+> CONFIG_HOTPLUG_PCI_ACPI_IBM=3Dm
+> # CONFIG_HOTPLUG_PCI_CPCI is not set
+> CONFIG_HOTPLUG_PCI_SHPC=3Dy
+> =
+
+> #
+> # PCI controller drivers
+> #
+> CONFIG_VMD=3Dy
+> CONFIG_PCI_HYPERV_INTERFACE=3Dm
+> =
+
+> #
+> # DesignWare PCI Core Support
+> #
+> # CONFIG_PCIE_DW_PLAT_HOST is not set
+> # CONFIG_PCI_MESON is not set
+> # end of DesignWare PCI Core Support
+> =
+
+> #
+> # Mobiveil PCIe Core Support
+> #
+> # end of Mobiveil PCIe Core Support
+> =
+
+> #
+> # Cadence PCIe controllers support
+> #
+> # end of Cadence PCIe controllers support
+> # end of PCI controller drivers
+> =
+
+> #
+> # PCI Endpoint
+> #
+> # CONFIG_PCI_ENDPOINT is not set
+> # end of PCI Endpoint
+> =
+
+> #
+> # PCI switch controller drivers
+> #
+> # CONFIG_PCI_SW_SWITCHTEC is not set
+> # end of PCI switch controller drivers
+> =
+
+> # CONFIG_CXL_BUS is not set
+> # CONFIG_PCCARD is not set
+> # CONFIG_RAPIDIO is not set
+> =
+
+> #
+> # Generic Driver Options
+> #
+> # CONFIG_UEVENT_HELPER is not set
+> CONFIG_DEVTMPFS=3Dy
+> CONFIG_DEVTMPFS_MOUNT=3Dy
+> CONFIG_STANDALONE=3Dy
+> CONFIG_PREVENT_FIRMWARE_BUILD=3Dy
+> =
+
+> #
+> # Firmware loader
+> #
+> CONFIG_FW_LOADER=3Dy
+> CONFIG_FW_LOADER_PAGED_BUF=3Dy
+> CONFIG_EXTRA_FIRMWARE=3D""
+> CONFIG_FW_LOADER_USER_HELPER=3Dy
+> # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
+> # CONFIG_FW_LOADER_COMPRESS is not set
+> CONFIG_FW_CACHE=3Dy
+> # end of Firmware loader
+> =
+
+> CONFIG_ALLOW_DEV_COREDUMP=3Dy
+> # CONFIG_DEBUG_DRIVER is not set
+> # CONFIG_DEBUG_DEVRES is not set
+> # CONFIG_DEBUG_TEST_DRIVER_REMOVE is not set
+> # CONFIG_PM_QOS_KUNIT_TEST is not set
+> # CONFIG_TEST_ASYNC_DRIVER_PROBE is not set
+> # CONFIG_DRIVER_PE_KUNIT_TEST is not set
+> CONFIG_SYS_HYPERVISOR=3Dy
+> CONFIG_GENERIC_CPU_AUTOPROBE=3Dy
+> CONFIG_GENERIC_CPU_VULNERABILITIES=3Dy
+> CONFIG_REGMAP=3Dy
+> CONFIG_REGMAP_I2C=3Dm
+> CONFIG_REGMAP_SPI=3Dm
+> CONFIG_DMA_SHARED_BUFFER=3Dy
+> # CONFIG_DMA_FENCE_TRACE is not set
+> # end of Generic Driver Options
+> =
+
+> #
+> # Bus devices
+> #
+> # CONFIG_MHI_BUS is not set
+> # end of Bus devices
+> =
+
+> CONFIG_CONNECTOR=3Dy
+> CONFIG_PROC_EVENTS=3Dy
+> # CONFIG_GNSS is not set
+> # CONFIG_MTD is not set
+> # CONFIG_OF is not set
+> CONFIG_ARCH_MIGHT_HAVE_PC_PARPORT=3Dy
+> CONFIG_PARPORT=3Dm
+> CONFIG_PARPORT_PC=3Dm
+> CONFIG_PARPORT_SERIAL=3Dm
+> # CONFIG_PARPORT_PC_FIFO is not set
+> # CONFIG_PARPORT_PC_SUPERIO is not set
+> # CONFIG_PARPORT_AX88796 is not set
+> CONFIG_PARPORT_1284=3Dy
+> CONFIG_PNP=3Dy
+> # CONFIG_PNP_DEBUG_MESSAGES is not set
+> =
+
+> #
+> # Protocols
+> #
+> CONFIG_PNPACPI=3Dy
+> CONFIG_BLK_DEV=3Dy
+> CONFIG_BLK_DEV_NULL_BLK=3Dm
+> CONFIG_BLK_DEV_NULL_BLK_FAULT_INJECTION=3Dy
+> # CONFIG_BLK_DEV_FD is not set
+> CONFIG_CDROM=3Dm
+> # CONFIG_PARIDE is not set
+> # CONFIG_BLK_DEV_PCIESSD_MTIP32XX is not set
+> # CONFIG_ZRAM is not set
+> CONFIG_BLK_DEV_LOOP=3Dm
+> CONFIG_BLK_DEV_LOOP_MIN_COUNT=3D0
+> # CONFIG_BLK_DEV_CRYPTOLOOP is not set
+> # CONFIG_BLK_DEV_DRBD is not set
+> CONFIG_BLK_DEV_NBD=3Dm
+> # CONFIG_BLK_DEV_SX8 is not set
+> CONFIG_BLK_DEV_RAM=3Dm
+> CONFIG_BLK_DEV_RAM_COUNT=3D16
+> CONFIG_BLK_DEV_RAM_SIZE=3D16384
+> CONFIG_CDROM_PKTCDVD=3Dm
+> CONFIG_CDROM_PKTCDVD_BUFFERS=3D8
+> # CONFIG_CDROM_PKTCDVD_WCACHE is not set
+> # CONFIG_ATA_OVER_ETH is not set
+> CONFIG_XEN_BLKDEV_FRONTEND=3Dm
+> CONFIG_VIRTIO_BLK=3Dm
+> CONFIG_BLK_DEV_RBD=3Dm
+> # CONFIG_BLK_DEV_RSXX is not set
+> =
+
+> #
+> # NVME Support
+> #
+> CONFIG_NVME_CORE=3Dm
+> CONFIG_BLK_DEV_NVME=3Dm
+> CONFIG_NVME_MULTIPATH=3Dy
+> # CONFIG_NVME_HWMON is not set
+> CONFIG_NVME_FABRICS=3Dm
+> # CONFIG_NVME_RDMA is not set
+> CONFIG_NVME_FC=3Dm
+> # CONFIG_NVME_TCP is not set
+> CONFIG_NVME_TARGET=3Dm
+> # CONFIG_NVME_TARGET_PASSTHRU is not set
+> CONFIG_NVME_TARGET_LOOP=3Dm
+> # CONFIG_NVME_TARGET_RDMA is not set
+> CONFIG_NVME_TARGET_FC=3Dm
+> CONFIG_NVME_TARGET_FCLOOP=3Dm
+> # CONFIG_NVME_TARGET_TCP is not set
+> # end of NVME Support
+> =
+
+> #
+> # Misc devices
+> #
+> CONFIG_SENSORS_LIS3LV02D=3Dm
+> # CONFIG_AD525X_DPOT is not set
+> # CONFIG_DUMMY_IRQ is not set
+> # CONFIG_IBM_ASM is not set
+> # CONFIG_PHANTOM is not set
+> CONFIG_TIFM_CORE=3Dm
+> CONFIG_TIFM_7XX1=3Dm
+> # CONFIG_ICS932S401 is not set
+> CONFIG_ENCLOSURE_SERVICES=3Dm
+> CONFIG_SGI_XP=3Dm
+> CONFIG_HP_ILO=3Dm
+> CONFIG_SGI_GRU=3Dm
+> # CONFIG_SGI_GRU_DEBUG is not set
+> CONFIG_APDS9802ALS=3Dm
+> CONFIG_ISL29003=3Dm
+> CONFIG_ISL29020=3Dm
+> CONFIG_SENSORS_TSL2550=3Dm
+> CONFIG_SENSORS_BH1770=3Dm
+> CONFIG_SENSORS_APDS990X=3Dm
+> # CONFIG_HMC6352 is not set
+> # CONFIG_DS1682 is not set
+> CONFIG_VMWARE_BALLOON=3Dm
+> # CONFIG_LATTICE_ECP3_CONFIG is not set
+> # CONFIG_SRAM is not set
+> # CONFIG_DW_XDATA_PCIE is not set
+> # CONFIG_PCI_ENDPOINT_TEST is not set
+> # CONFIG_XILINX_SDFEC is not set
+> CONFIG_MISC_RTSX=3Dm
+> # CONFIG_C2PORT is not set
+> =
+
+> #
+> # EEPROM support
+> #
+> # CONFIG_EEPROM_AT24 is not set
+> # CONFIG_EEPROM_AT25 is not set
+> CONFIG_EEPROM_LEGACY=3Dm
+> CONFIG_EEPROM_MAX6875=3Dm
+> CONFIG_EEPROM_93CX6=3Dm
+> # CONFIG_EEPROM_93XX46 is not set
+> # CONFIG_EEPROM_IDT_89HPESX is not set
+> # CONFIG_EEPROM_EE1004 is not set
+> # end of EEPROM support
+> =
+
+> CONFIG_CB710_CORE=3Dm
+> # CONFIG_CB710_DEBUG is not set
+> CONFIG_CB710_DEBUG_ASSUMPTIONS=3Dy
+> =
+
+> #
+> # Texas Instruments shared transport line discipline
+> #
+> # CONFIG_TI_ST is not set
+> # end of Texas Instruments shared transport line discipline
+> =
+
+> CONFIG_SENSORS_LIS3_I2C=3Dm
+> CONFIG_ALTERA_STAPL=3Dm
+> CONFIG_INTEL_MEI=3Dm
+> CONFIG_INTEL_MEI_ME=3Dm
+> # CONFIG_INTEL_MEI_TXE is not set
+> # CONFIG_INTEL_MEI_HDCP is not set
+> CONFIG_VMWARE_VMCI=3Dm
+> # CONFIG_GENWQE is not set
+> # CONFIG_ECHO is not set
+> # CONFIG_BCM_VK is not set
+> # CONFIG_MISC_ALCOR_PCI is not set
+> CONFIG_MISC_RTSX_PCI=3Dm
+> # CONFIG_MISC_RTSX_USB is not set
+> # CONFIG_HABANA_AI is not set
+> # CONFIG_UACCE is not set
+> CONFIG_PVPANIC=3Dy
+> # CONFIG_PVPANIC_MMIO is not set
+> # CONFIG_PVPANIC_PCI is not set
+> # end of Misc devices
+> =
+
+> CONFIG_HAVE_IDE=3Dy
+> # CONFIG_IDE is not set
+> =
+
+> #
+> # SCSI device support
+> #
+> CONFIG_SCSI_MOD=3Dy
+> CONFIG_RAID_ATTRS=3Dm
+> CONFIG_SCSI=3Dy
+> CONFIG_SCSI_DMA=3Dy
+> CONFIG_SCSI_NETLINK=3Dy
+> CONFIG_SCSI_PROC_FS=3Dy
+> =
+
+> #
+> # SCSI support type (disk, tape, CD-ROM)
+> #
+> CONFIG_BLK_DEV_SD=3Dm
+> CONFIG_CHR_DEV_ST=3Dm
+> CONFIG_BLK_DEV_SR=3Dm
+> CONFIG_CHR_DEV_SG=3Dm
+> CONFIG_CHR_DEV_SCH=3Dm
+> CONFIG_SCSI_ENCLOSURE=3Dm
+> CONFIG_SCSI_CONSTANTS=3Dy
+> CONFIG_SCSI_LOGGING=3Dy
+> CONFIG_SCSI_SCAN_ASYNC=3Dy
+> =
+
+> #
+> # SCSI Transports
+> #
+> CONFIG_SCSI_SPI_ATTRS=3Dm
+> CONFIG_SCSI_FC_ATTRS=3Dm
+> CONFIG_SCSI_ISCSI_ATTRS=3Dm
+> CONFIG_SCSI_SAS_ATTRS=3Dm
+> CONFIG_SCSI_SAS_LIBSAS=3Dm
+> CONFIG_SCSI_SAS_ATA=3Dy
+> CONFIG_SCSI_SAS_HOST_SMP=3Dy
+> CONFIG_SCSI_SRP_ATTRS=3Dm
+> # end of SCSI Transports
+> =
+
+> CONFIG_SCSI_LOWLEVEL=3Dy
+> # CONFIG_ISCSI_TCP is not set
+> # CONFIG_ISCSI_BOOT_SYSFS is not set
+> # CONFIG_SCSI_CXGB3_ISCSI is not set
+> # CONFIG_SCSI_CXGB4_ISCSI is not set
+> # CONFIG_SCSI_BNX2_ISCSI is not set
+> # CONFIG_BE2ISCSI is not set
+> # CONFIG_BLK_DEV_3W_XXXX_RAID is not set
+> # CONFIG_SCSI_HPSA is not set
+> # CONFIG_SCSI_3W_9XXX is not set
+> # CONFIG_SCSI_3W_SAS is not set
+> # CONFIG_SCSI_ACARD is not set
+> # CONFIG_SCSI_AACRAID is not set
+> # CONFIG_SCSI_AIC7XXX is not set
+> # CONFIG_SCSI_AIC79XX is not set
+> # CONFIG_SCSI_AIC94XX is not set
+> # CONFIG_SCSI_MVSAS is not set
+> # CONFIG_SCSI_MVUMI is not set
+> # CONFIG_SCSI_DPT_I2O is not set
+> # CONFIG_SCSI_ADVANSYS is not set
+> # CONFIG_SCSI_ARCMSR is not set
+> # CONFIG_SCSI_ESAS2R is not set
+> # CONFIG_MEGARAID_NEWGEN is not set
+> # CONFIG_MEGARAID_LEGACY is not set
+> # CONFIG_MEGARAID_SAS is not set
+> CONFIG_SCSI_MPT3SAS=3Dm
+> CONFIG_SCSI_MPT2SAS_MAX_SGE=3D128
+> CONFIG_SCSI_MPT3SAS_MAX_SGE=3D128
+> # CONFIG_SCSI_MPT2SAS is not set
+> # CONFIG_SCSI_SMARTPQI is not set
+> # CONFIG_SCSI_UFSHCD is not set
+> # CONFIG_SCSI_HPTIOP is not set
+> # CONFIG_SCSI_BUSLOGIC is not set
+> # CONFIG_SCSI_MYRB is not set
+> # CONFIG_SCSI_MYRS is not set
+> # CONFIG_VMWARE_PVSCSI is not set
+> # CONFIG_XEN_SCSI_FRONTEND is not set
+> CONFIG_HYPERV_STORAGE=3Dm
+> # CONFIG_LIBFC is not set
+> # CONFIG_SCSI_SNIC is not set
+> # CONFIG_SCSI_DMX3191D is not set
+> # CONFIG_SCSI_FDOMAIN_PCI is not set
+> CONFIG_SCSI_ISCI=3Dm
+> # CONFIG_SCSI_IPS is not set
+> # CONFIG_SCSI_INITIO is not set
+> # CONFIG_SCSI_INIA100 is not set
+> # CONFIG_SCSI_PPA is not set
+> # CONFIG_SCSI_IMM is not set
+> # CONFIG_SCSI_STEX is not set
+> # CONFIG_SCSI_SYM53C8XX_2 is not set
+> # CONFIG_SCSI_IPR is not set
+> # CONFIG_SCSI_QLOGIC_1280 is not set
+> # CONFIG_SCSI_QLA_FC is not set
+> # CONFIG_SCSI_QLA_ISCSI is not set
+> # CONFIG_SCSI_LPFC is not set
+> # CONFIG_SCSI_DC395x is not set
+> # CONFIG_SCSI_AM53C974 is not set
+> # CONFIG_SCSI_WD719X is not set
+> CONFIG_SCSI_DEBUG=3Dm
+> # CONFIG_SCSI_PMCRAID is not set
+> # CONFIG_SCSI_PM8001 is not set
+> # CONFIG_SCSI_BFA_FC is not set
+> # CONFIG_SCSI_VIRTIO is not set
+> # CONFIG_SCSI_CHELSIO_FCOE is not set
+> CONFIG_SCSI_DH=3Dy
+> CONFIG_SCSI_DH_RDAC=3Dy
+> CONFIG_SCSI_DH_HP_SW=3Dy
+> CONFIG_SCSI_DH_EMC=3Dy
+> CONFIG_SCSI_DH_ALUA=3Dy
+> # end of SCSI device support
+> =
+
+> CONFIG_ATA=3Dm
+> CONFIG_SATA_HOST=3Dy
+> CONFIG_PATA_TIMINGS=3Dy
+> CONFIG_ATA_VERBOSE_ERROR=3Dy
+> CONFIG_ATA_FORCE=3Dy
+> CONFIG_ATA_ACPI=3Dy
+> # CONFIG_SATA_ZPODD is not set
+> CONFIG_SATA_PMP=3Dy
+> =
+
+> #
+> # Controllers with non-SFF native interface
+> #
+> CONFIG_SATA_AHCI=3Dm
+> CONFIG_SATA_MOBILE_LPM_POLICY=3D0
+> CONFIG_SATA_AHCI_PLATFORM=3Dm
+> # CONFIG_SATA_INIC162X is not set
+> # CONFIG_SATA_ACARD_AHCI is not set
+> # CONFIG_SATA_SIL24 is not set
+> CONFIG_ATA_SFF=3Dy
+> =
+
+> #
+> # SFF controllers with custom DMA interface
+> #
+> # CONFIG_PDC_ADMA is not set
+> # CONFIG_SATA_QSTOR is not set
+> # CONFIG_SATA_SX4 is not set
+> CONFIG_ATA_BMDMA=3Dy
+> =
+
+> #
+> # SATA SFF controllers with BMDMA
+> #
+> CONFIG_ATA_PIIX=3Dm
+> # CONFIG_SATA_DWC is not set
+> # CONFIG_SATA_MV is not set
+> # CONFIG_SATA_NV is not set
+> # CONFIG_SATA_PROMISE is not set
+> # CONFIG_SATA_SIL is not set
+> # CONFIG_SATA_SIS is not set
+> # CONFIG_SATA_SVW is not set
+> # CONFIG_SATA_ULI is not set
+> # CONFIG_SATA_VIA is not set
+> # CONFIG_SATA_VITESSE is not set
+> =
+
+> #
+> # PATA SFF controllers with BMDMA
+> #
+> # CONFIG_PATA_ALI is not set
+> # CONFIG_PATA_AMD is not set
+> # CONFIG_PATA_ARTOP is not set
+> # CONFIG_PATA_ATIIXP is not set
+> # CONFIG_PATA_ATP867X is not set
+> # CONFIG_PATA_CMD64X is not set
+> # CONFIG_PATA_CYPRESS is not set
+> # CONFIG_PATA_EFAR is not set
+> # CONFIG_PATA_HPT366 is not set
+> # CONFIG_PATA_HPT37X is not set
+> # CONFIG_PATA_HPT3X2N is not set
+> # CONFIG_PATA_HPT3X3 is not set
+> # CONFIG_PATA_IT8213 is not set
+> # CONFIG_PATA_IT821X is not set
+> # CONFIG_PATA_JMICRON is not set
+> # CONFIG_PATA_MARVELL is not set
+> # CONFIG_PATA_NETCELL is not set
+> # CONFIG_PATA_NINJA32 is not set
+> # CONFIG_PATA_NS87415 is not set
+> # CONFIG_PATA_OLDPIIX is not set
+> # CONFIG_PATA_OPTIDMA is not set
+> # CONFIG_PATA_PDC2027X is not set
+> # CONFIG_PATA_PDC_OLD is not set
+> # CONFIG_PATA_RADISYS is not set
+> # CONFIG_PATA_RDC is not set
+> # CONFIG_PATA_SCH is not set
+> # CONFIG_PATA_SERVERWORKS is not set
+> # CONFIG_PATA_SIL680 is not set
+> # CONFIG_PATA_SIS is not set
+> # CONFIG_PATA_TOSHIBA is not set
+> # CONFIG_PATA_TRIFLEX is not set
+> # CONFIG_PATA_VIA is not set
+> # CONFIG_PATA_WINBOND is not set
+> =
+
+> #
+> # PIO-only SFF controllers
+> #
+> # CONFIG_PATA_CMD640_PCI is not set
+> # CONFIG_PATA_MPIIX is not set
+> # CONFIG_PATA_NS87410 is not set
+> # CONFIG_PATA_OPTI is not set
+> # CONFIG_PATA_RZ1000 is not set
+> =
+
+> #
+> # Generic fallback / legacy drivers
+> #
+> # CONFIG_PATA_ACPI is not set
+> CONFIG_ATA_GENERIC=3Dm
+> # CONFIG_PATA_LEGACY is not set
+> CONFIG_MD=3Dy
+> CONFIG_BLK_DEV_MD=3Dy
+> CONFIG_MD_AUTODETECT=3Dy
+> CONFIG_MD_LINEAR=3Dm
+> CONFIG_MD_RAID0=3Dm
+> CONFIG_MD_RAID1=3Dm
+> CONFIG_MD_RAID10=3Dm
+> CONFIG_MD_RAID456=3Dm
+> CONFIG_MD_MULTIPATH=3Dm
+> CONFIG_MD_FAULTY=3Dm
+> CONFIG_MD_CLUSTER=3Dm
+> # CONFIG_BCACHE is not set
+> CONFIG_BLK_DEV_DM_BUILTIN=3Dy
+> CONFIG_BLK_DEV_DM=3Dm
+> CONFIG_DM_DEBUG=3Dy
+> CONFIG_DM_BUFIO=3Dm
+> # CONFIG_DM_DEBUG_BLOCK_MANAGER_LOCKING is not set
+> CONFIG_DM_BIO_PRISON=3Dm
+> CONFIG_DM_PERSISTENT_DATA=3Dm
+> # CONFIG_DM_UNSTRIPED is not set
+> CONFIG_DM_CRYPT=3Dm
+> CONFIG_DM_SNAPSHOT=3Dm
+> CONFIG_DM_THIN_PROVISIONING=3Dm
+> CONFIG_DM_CACHE=3Dm
+> CONFIG_DM_CACHE_SMQ=3Dm
+> CONFIG_DM_WRITECACHE=3Dm
+> # CONFIG_DM_EBS is not set
+> CONFIG_DM_ERA=3Dm
+> # CONFIG_DM_CLONE is not set
+> CONFIG_DM_MIRROR=3Dm
+> CONFIG_DM_LOG_USERSPACE=3Dm
+> CONFIG_DM_RAID=3Dm
+> CONFIG_DM_ZERO=3Dm
+> CONFIG_DM_MULTIPATH=3Dm
+> CONFIG_DM_MULTIPATH_QL=3Dm
+> CONFIG_DM_MULTIPATH_ST=3Dm
+> # CONFIG_DM_MULTIPATH_HST is not set
+> # CONFIG_DM_MULTIPATH_IOA is not set
+> CONFIG_DM_DELAY=3Dm
+> # CONFIG_DM_DUST is not set
+> CONFIG_DM_UEVENT=3Dy
+> CONFIG_DM_FLAKEY=3Dm
+> CONFIG_DM_VERITY=3Dm
+> # CONFIG_DM_VERITY_VERIFY_ROOTHASH_SIG is not set
+> # CONFIG_DM_VERITY_FEC is not set
+> CONFIG_DM_SWITCH=3Dm
+> CONFIG_DM_LOG_WRITES=3Dm
+> CONFIG_DM_INTEGRITY=3Dm
+> # CONFIG_DM_ZONED is not set
+> CONFIG_TARGET_CORE=3Dm
+> CONFIG_TCM_IBLOCK=3Dm
+> CONFIG_TCM_FILEIO=3Dm
+> CONFIG_TCM_PSCSI=3Dm
+> CONFIG_TCM_USER2=3Dm
+> CONFIG_LOOPBACK_TARGET=3Dm
+> CONFIG_ISCSI_TARGET=3Dm
+> # CONFIG_SBP_TARGET is not set
+> # CONFIG_FUSION is not set
+> =
+
+> #
+> # IEEE 1394 (FireWire) support
+> #
+> CONFIG_FIREWIRE=3Dm
+> CONFIG_FIREWIRE_OHCI=3Dm
+> CONFIG_FIREWIRE_SBP2=3Dm
+> CONFIG_FIREWIRE_NET=3Dm
+> # CONFIG_FIREWIRE_NOSY is not set
+> # end of IEEE 1394 (FireWire) support
+> =
+
+> CONFIG_MACINTOSH_DRIVERS=3Dy
+> CONFIG_MAC_EMUMOUSEBTN=3Dy
+> CONFIG_NETDEVICES=3Dy
+> CONFIG_MII=3Dy
+> CONFIG_NET_CORE=3Dy
+> # CONFIG_BONDING is not set
+> # CONFIG_DUMMY is not set
+> # CONFIG_WIREGUARD is not set
+> # CONFIG_EQUALIZER is not set
+> # CONFIG_NET_FC is not set
+> # CONFIG_IFB is not set
+> # CONFIG_NET_TEAM is not set
+> # CONFIG_MACVLAN is not set
+> # CONFIG_IPVLAN is not set
+> # CONFIG_VXLAN is not set
+> # CONFIG_GENEVE is not set
+> # CONFIG_BAREUDP is not set
+> # CONFIG_GTP is not set
+> # CONFIG_MACSEC is not set
+> CONFIG_NETCONSOLE=3Dm
+> CONFIG_NETCONSOLE_DYNAMIC=3Dy
+> CONFIG_NETPOLL=3Dy
+> CONFIG_NET_POLL_CONTROLLER=3Dy
+> CONFIG_TUN=3Dm
+> # CONFIG_TUN_VNET_CROSS_LE is not set
+> CONFIG_VETH=3Dm
+> CONFIG_VIRTIO_NET=3Dm
+> # CONFIG_NLMON is not set
+> # CONFIG_NET_VRF is not set
+> # CONFIG_VSOCKMON is not set
+> # CONFIG_ARCNET is not set
+> CONFIG_ATM_DRIVERS=3Dy
+> # CONFIG_ATM_DUMMY is not set
+> # CONFIG_ATM_TCP is not set
+> # CONFIG_ATM_LANAI is not set
+> # CONFIG_ATM_ENI is not set
+> # CONFIG_ATM_FIRESTREAM is not set
+> # CONFIG_ATM_ZATM is not set
+> # CONFIG_ATM_NICSTAR is not set
+> # CONFIG_ATM_IDT77252 is not set
+> # CONFIG_ATM_AMBASSADOR is not set
+> # CONFIG_ATM_HORIZON is not set
+> # CONFIG_ATM_IA is not set
+> # CONFIG_ATM_FORE200E is not set
+> # CONFIG_ATM_HE is not set
+> # CONFIG_ATM_SOLOS is not set
+> CONFIG_ETHERNET=3Dy
+> CONFIG_MDIO=3Dy
+> CONFIG_NET_VENDOR_3COM=3Dy
+> # CONFIG_VORTEX is not set
+> # CONFIG_TYPHOON is not set
+> CONFIG_NET_VENDOR_ADAPTEC=3Dy
+> # CONFIG_ADAPTEC_STARFIRE is not set
+> CONFIG_NET_VENDOR_AGERE=3Dy
+> # CONFIG_ET131X is not set
+> CONFIG_NET_VENDOR_ALACRITECH=3Dy
+> # CONFIG_SLICOSS is not set
+> CONFIG_NET_VENDOR_ALTEON=3Dy
+> # CONFIG_ACENIC is not set
+> # CONFIG_ALTERA_TSE is not set
+> CONFIG_NET_VENDOR_AMAZON=3Dy
+> # CONFIG_ENA_ETHERNET is not set
+> CONFIG_NET_VENDOR_AMD=3Dy
+> # CONFIG_AMD8111_ETH is not set
+> # CONFIG_PCNET32 is not set
+> # CONFIG_AMD_XGBE is not set
+> CONFIG_NET_VENDOR_AQUANTIA=3Dy
+> # CONFIG_AQTION is not set
+> CONFIG_NET_VENDOR_ARC=3Dy
+> CONFIG_NET_VENDOR_ATHEROS=3Dy
+> # CONFIG_ATL2 is not set
+> # CONFIG_ATL1 is not set
+> # CONFIG_ATL1E is not set
+> # CONFIG_ATL1C is not set
+> # CONFIG_ALX is not set
+> CONFIG_NET_VENDOR_BROADCOM=3Dy
+> # CONFIG_B44 is not set
+> # CONFIG_BCMGENET is not set
+> # CONFIG_BNX2 is not set
+> # CONFIG_CNIC is not set
+> # CONFIG_TIGON3 is not set
+> # CONFIG_BNX2X is not set
+> # CONFIG_SYSTEMPORT is not set
+> # CONFIG_BNXT is not set
+> CONFIG_NET_VENDOR_BROCADE=3Dy
+> # CONFIG_BNA is not set
+> CONFIG_NET_VENDOR_CADENCE=3Dy
+> # CONFIG_MACB is not set
+> CONFIG_NET_VENDOR_CAVIUM=3Dy
+> # CONFIG_THUNDER_NIC_PF is not set
+> # CONFIG_THUNDER_NIC_VF is not set
+> # CONFIG_THUNDER_NIC_BGX is not set
+> # CONFIG_THUNDER_NIC_RGX is not set
+> CONFIG_CAVIUM_PTP=3Dy
+> # CONFIG_LIQUIDIO is not set
+> # CONFIG_LIQUIDIO_VF is not set
+> CONFIG_NET_VENDOR_CHELSIO=3Dy
+> # CONFIG_CHELSIO_T1 is not set
+> # CONFIG_CHELSIO_T3 is not set
+> # CONFIG_CHELSIO_T4 is not set
+> # CONFIG_CHELSIO_T4VF is not set
+> CONFIG_NET_VENDOR_CISCO=3Dy
+> # CONFIG_ENIC is not set
+> CONFIG_NET_VENDOR_CORTINA=3Dy
+> # CONFIG_CX_ECAT is not set
+> # CONFIG_DNET is not set
+> CONFIG_NET_VENDOR_DEC=3Dy
+> # CONFIG_NET_TULIP is not set
+> CONFIG_NET_VENDOR_DLINK=3Dy
+> # CONFIG_DL2K is not set
+> # CONFIG_SUNDANCE is not set
+> CONFIG_NET_VENDOR_EMULEX=3Dy
+> # CONFIG_BE2NET is not set
+> CONFIG_NET_VENDOR_EZCHIP=3Dy
+> CONFIG_NET_VENDOR_GOOGLE=3Dy
+> # CONFIG_GVE is not set
+> CONFIG_NET_VENDOR_HUAWEI=3Dy
+> # CONFIG_HINIC is not set
+> CONFIG_NET_VENDOR_I825XX=3Dy
+> CONFIG_NET_VENDOR_INTEL=3Dy
+> # CONFIG_E100 is not set
+> CONFIG_E1000=3Dy
+> CONFIG_E1000E=3Dy
+> CONFIG_E1000E_HWTS=3Dy
+> CONFIG_IGB=3Dy
+> CONFIG_IGB_HWMON=3Dy
+> # CONFIG_IGBVF is not set
+> # CONFIG_IXGB is not set
+> CONFIG_IXGBE=3Dy
+> CONFIG_IXGBE_HWMON=3Dy
+> # CONFIG_IXGBE_DCB is not set
+> CONFIG_IXGBE_IPSEC=3Dy
+> # CONFIG_IXGBEVF is not set
+> CONFIG_I40E=3Dy
+> # CONFIG_I40E_DCB is not set
+> # CONFIG_I40EVF is not set
+> # CONFIG_ICE is not set
+> # CONFIG_FM10K is not set
+> CONFIG_IGC=3Dy
+> CONFIG_NET_VENDOR_MICROSOFT=3Dy
+> # CONFIG_MICROSOFT_MANA is not set
+> # CONFIG_JME is not set
+> CONFIG_NET_VENDOR_MARVELL=3Dy
+> # CONFIG_MVMDIO is not set
+> # CONFIG_SKGE is not set
+> # CONFIG_SKY2 is not set
+> # CONFIG_PRESTERA is not set
+> CONFIG_NET_VENDOR_MELLANOX=3Dy
+> # CONFIG_MLX4_EN is not set
+> # CONFIG_MLX5_CORE is not set
+> # CONFIG_MLXSW_CORE is not set
+> # CONFIG_MLXFW is not set
+> CONFIG_NET_VENDOR_MICREL=3Dy
+> # CONFIG_KS8842 is not set
+> # CONFIG_KS8851 is not set
+> # CONFIG_KS8851_MLL is not set
+> # CONFIG_KSZ884X_PCI is not set
+> CONFIG_NET_VENDOR_MICROCHIP=3Dy
+> # CONFIG_ENC28J60 is not set
+> # CONFIG_ENCX24J600 is not set
+> # CONFIG_LAN743X is not set
+> CONFIG_NET_VENDOR_MICROSEMI=3Dy
+> CONFIG_NET_VENDOR_MYRI=3Dy
+> # CONFIG_MYRI10GE is not set
+> # CONFIG_FEALNX is not set
+> CONFIG_NET_VENDOR_NATSEMI=3Dy
+> # CONFIG_NATSEMI is not set
+> # CONFIG_NS83820 is not set
+> CONFIG_NET_VENDOR_NETERION=3Dy
+> # CONFIG_S2IO is not set
+> # CONFIG_VXGE is not set
+> CONFIG_NET_VENDOR_NETRONOME=3Dy
+> # CONFIG_NFP is not set
+> CONFIG_NET_VENDOR_NI=3Dy
+> # CONFIG_NI_XGE_MANAGEMENT_ENET is not set
+> CONFIG_NET_VENDOR_8390=3Dy
+> # CONFIG_NE2K_PCI is not set
+> CONFIG_NET_VENDOR_NVIDIA=3Dy
+> # CONFIG_FORCEDETH is not set
+> CONFIG_NET_VENDOR_OKI=3Dy
+> # CONFIG_ETHOC is not set
+> CONFIG_NET_VENDOR_PACKET_ENGINES=3Dy
+> # CONFIG_HAMACHI is not set
+> # CONFIG_YELLOWFIN is not set
+> CONFIG_NET_VENDOR_PENSANDO=3Dy
+> # CONFIG_IONIC is not set
+> CONFIG_NET_VENDOR_QLOGIC=3Dy
+> # CONFIG_QLA3XXX is not set
+> # CONFIG_QLCNIC is not set
+> # CONFIG_NETXEN_NIC is not set
+> # CONFIG_QED is not set
+> CONFIG_NET_VENDOR_QUALCOMM=3Dy
+> # CONFIG_QCOM_EMAC is not set
+> # CONFIG_RMNET is not set
+> CONFIG_NET_VENDOR_RDC=3Dy
+> # CONFIG_R6040 is not set
+> CONFIG_NET_VENDOR_REALTEK=3Dy
+> # CONFIG_ATP is not set
+> # CONFIG_8139CP is not set
+> # CONFIG_8139TOO is not set
+> CONFIG_R8169=3Dy
+> CONFIG_NET_VENDOR_RENESAS=3Dy
+> CONFIG_NET_VENDOR_ROCKER=3Dy
+> # CONFIG_ROCKER is not set
+> CONFIG_NET_VENDOR_SAMSUNG=3Dy
+> # CONFIG_SXGBE_ETH is not set
+> CONFIG_NET_VENDOR_SEEQ=3Dy
+> CONFIG_NET_VENDOR_SOLARFLARE=3Dy
+> # CONFIG_SFC is not set
+> # CONFIG_SFC_FALCON is not set
+> CONFIG_NET_VENDOR_SILAN=3Dy
+> # CONFIG_SC92031 is not set
+> CONFIG_NET_VENDOR_SIS=3Dy
+> # CONFIG_SIS900 is not set
+> # CONFIG_SIS190 is not set
+> CONFIG_NET_VENDOR_SMSC=3Dy
+> # CONFIG_EPIC100 is not set
+> # CONFIG_SMSC911X is not set
+> # CONFIG_SMSC9420 is not set
+> CONFIG_NET_VENDOR_SOCIONEXT=3Dy
+> CONFIG_NET_VENDOR_STMICRO=3Dy
+> # CONFIG_STMMAC_ETH is not set
+> CONFIG_NET_VENDOR_SUN=3Dy
+> # CONFIG_HAPPYMEAL is not set
+> # CONFIG_SUNGEM is not set
+> # CONFIG_CASSINI is not set
+> # CONFIG_NIU is not set
+> CONFIG_NET_VENDOR_SYNOPSYS=3Dy
+> # CONFIG_DWC_XLGMAC is not set
+> CONFIG_NET_VENDOR_TEHUTI=3Dy
+> # CONFIG_TEHUTI is not set
+> CONFIG_NET_VENDOR_TI=3Dy
+> # CONFIG_TI_CPSW_PHY_SEL is not set
+> # CONFIG_TLAN is not set
+> CONFIG_NET_VENDOR_VIA=3Dy
+> # CONFIG_VIA_RHINE is not set
+> # CONFIG_VIA_VELOCITY is not set
+> CONFIG_NET_VENDOR_WIZNET=3Dy
+> # CONFIG_WIZNET_W5100 is not set
+> # CONFIG_WIZNET_W5300 is not set
+> CONFIG_NET_VENDOR_XILINX=3Dy
+> # CONFIG_XILINX_EMACLITE is not set
+> # CONFIG_XILINX_AXI_EMAC is not set
+> # CONFIG_XILINX_LL_TEMAC is not set
+> # CONFIG_FDDI is not set
+> # CONFIG_HIPPI is not set
+> # CONFIG_NET_SB1000 is not set
+> CONFIG_PHYLIB=3Dy
+> # CONFIG_LED_TRIGGER_PHY is not set
+> # CONFIG_FIXED_PHY is not set
+> =
+
+> #
+> # MII PHY device drivers
+> #
+> # CONFIG_AMD_PHY is not set
+> # CONFIG_ADIN_PHY is not set
+> # CONFIG_AQUANTIA_PHY is not set
+> # CONFIG_AX88796B_PHY is not set
+> # CONFIG_BROADCOM_PHY is not set
+> # CONFIG_BCM54140_PHY is not set
+> # CONFIG_BCM7XXX_PHY is not set
+> # CONFIG_BCM84881_PHY is not set
+> # CONFIG_BCM87XX_PHY is not set
+> # CONFIG_CICADA_PHY is not set
+> # CONFIG_CORTINA_PHY is not set
+> # CONFIG_DAVICOM_PHY is not set
+> # CONFIG_ICPLUS_PHY is not set
+> # CONFIG_LXT_PHY is not set
+> # CONFIG_INTEL_XWAY_PHY is not set
+> # CONFIG_LSI_ET1011C_PHY is not set
+> # CONFIG_MARVELL_PHY is not set
+> # CONFIG_MARVELL_10G_PHY is not set
+> # CONFIG_MARVELL_88X2222_PHY is not set
+> # CONFIG_MICREL_PHY is not set
+> # CONFIG_MICROCHIP_PHY is not set
+> # CONFIG_MICROCHIP_T1_PHY is not set
+> # CONFIG_MICROSEMI_PHY is not set
+> # CONFIG_NATIONAL_PHY is not set
+> # CONFIG_NXP_C45_TJA11XX_PHY is not set
+> # CONFIG_NXP_TJA11XX_PHY is not set
+> # CONFIG_QSEMI_PHY is not set
+> CONFIG_REALTEK_PHY=3Dy
+> # CONFIG_RENESAS_PHY is not set
+> # CONFIG_ROCKCHIP_PHY is not set
+> # CONFIG_SMSC_PHY is not set
+> # CONFIG_STE10XP is not set
+> # CONFIG_TERANETICS_PHY is not set
+> # CONFIG_DP83822_PHY is not set
+> # CONFIG_DP83TC811_PHY is not set
+> # CONFIG_DP83848_PHY is not set
+> # CONFIG_DP83867_PHY is not set
+> # CONFIG_DP83869_PHY is not set
+> # CONFIG_VITESSE_PHY is not set
+> # CONFIG_XILINX_GMII2RGMII is not set
+> # CONFIG_MICREL_KS8995MA is not set
+> CONFIG_MDIO_DEVICE=3Dy
+> CONFIG_MDIO_BUS=3Dy
+> CONFIG_MDIO_DEVRES=3Dy
+> # CONFIG_MDIO_BITBANG is not set
+> # CONFIG_MDIO_BCM_UNIMAC is not set
+> # CONFIG_MDIO_MVUSB is not set
+> # CONFIG_MDIO_MSCC_MIIM is not set
+> # CONFIG_MDIO_THUNDER is not set
+> =
+
+> #
+> # MDIO Multiplexers
+> #
+> =
+
+> #
+> # PCS device drivers
+> #
+> # CONFIG_PCS_XPCS is not set
+> # end of PCS device drivers
+> =
+
+> # CONFIG_PLIP is not set
+> # CONFIG_PPP is not set
+> # CONFIG_SLIP is not set
+> CONFIG_USB_NET_DRIVERS=3Dy
+> # CONFIG_USB_CATC is not set
+> # CONFIG_USB_KAWETH is not set
+> # CONFIG_USB_PEGASUS is not set
+> # CONFIG_USB_RTL8150 is not set
+> CONFIG_USB_RTL8152=3Dy
+> # CONFIG_USB_LAN78XX is not set
+> CONFIG_USB_USBNET=3Dy
+> CONFIG_USB_NET_AX8817X=3Dy
+> CONFIG_USB_NET_AX88179_178A=3Dy
+> # CONFIG_USB_NET_CDCETHER is not set
+> # CONFIG_USB_NET_CDC_EEM is not set
+> # CONFIG_USB_NET_CDC_NCM is not set
+> # CONFIG_USB_NET_HUAWEI_CDC_NCM is not set
+> # CONFIG_USB_NET_CDC_MBIM is not set
+> # CONFIG_USB_NET_DM9601 is not set
+> # CONFIG_USB_NET_SR9700 is not set
+> # CONFIG_USB_NET_SR9800 is not set
+> # CONFIG_USB_NET_SMSC75XX is not set
+> # CONFIG_USB_NET_SMSC95XX is not set
+> # CONFIG_USB_NET_GL620A is not set
+> # CONFIG_USB_NET_NET1080 is not set
+> # CONFIG_USB_NET_PLUSB is not set
+> # CONFIG_USB_NET_MCS7830 is not set
+> # CONFIG_USB_NET_RNDIS_HOST is not set
+> # CONFIG_USB_NET_CDC_SUBSET is not set
+> # CONFIG_USB_NET_ZAURUS is not set
+> # CONFIG_USB_NET_CX82310_ETH is not set
+> # CONFIG_USB_NET_KALMIA is not set
+> # CONFIG_USB_NET_QMI_WWAN is not set
+> # CONFIG_USB_HSO is not set
+> # CONFIG_USB_NET_INT51X1 is not set
+> # CONFIG_USB_IPHETH is not set
+> # CONFIG_USB_SIERRA_NET is not set
+> # CONFIG_USB_NET_CH9200 is not set
+> # CONFIG_USB_NET_AQC111 is not set
+> CONFIG_WLAN=3Dy
+> CONFIG_WLAN_VENDOR_ADMTEK=3Dy
+> # CONFIG_ADM8211 is not set
+> CONFIG_WLAN_VENDOR_ATH=3Dy
+> # CONFIG_ATH_DEBUG is not set
+> # CONFIG_ATH5K is not set
+> # CONFIG_ATH5K_PCI is not set
+> # CONFIG_ATH9K is not set
+> # CONFIG_ATH9K_HTC is not set
+> # CONFIG_CARL9170 is not set
+> # CONFIG_ATH6KL is not set
+> # CONFIG_AR5523 is not set
+> # CONFIG_WIL6210 is not set
+> # CONFIG_ATH10K is not set
+> # CONFIG_WCN36XX is not set
+> # CONFIG_ATH11K is not set
+> CONFIG_WLAN_VENDOR_ATMEL=3Dy
+> # CONFIG_ATMEL is not set
+> # CONFIG_AT76C50X_USB is not set
+> CONFIG_WLAN_VENDOR_BROADCOM=3Dy
+> # CONFIG_B43 is not set
+> # CONFIG_B43LEGACY is not set
+> # CONFIG_BRCMSMAC is not set
+> # CONFIG_BRCMFMAC is not set
+> CONFIG_WLAN_VENDOR_CISCO=3Dy
+> # CONFIG_AIRO is not set
+> CONFIG_WLAN_VENDOR_INTEL=3Dy
+> # CONFIG_IPW2100 is not set
+> # CONFIG_IPW2200 is not set
+> # CONFIG_IWL4965 is not set
+> # CONFIG_IWL3945 is not set
+> # CONFIG_IWLWIFI is not set
+> CONFIG_WLAN_VENDOR_INTERSIL=3Dy
+> # CONFIG_HOSTAP is not set
+> # CONFIG_HERMES is not set
+> # CONFIG_P54_COMMON is not set
+> # CONFIG_PRISM54 is not set
+> CONFIG_WLAN_VENDOR_MARVELL=3Dy
+> # CONFIG_LIBERTAS is not set
+> # CONFIG_LIBERTAS_THINFIRM is not set
+> # CONFIG_MWIFIEX is not set
+> # CONFIG_MWL8K is not set
+> CONFIG_WLAN_VENDOR_MEDIATEK=3Dy
+> # CONFIG_MT7601U is not set
+> # CONFIG_MT76x0U is not set
+> # CONFIG_MT76x0E is not set
+> # CONFIG_MT76x2E is not set
+> # CONFIG_MT76x2U is not set
+> # CONFIG_MT7603E is not set
+> # CONFIG_MT7615E is not set
+> # CONFIG_MT7663U is not set
+> # CONFIG_MT7663S is not set
+> # CONFIG_MT7915E is not set
+> # CONFIG_MT7921E is not set
+> CONFIG_WLAN_VENDOR_MICROCHIP=3Dy
+> # CONFIG_WILC1000_SDIO is not set
+> # CONFIG_WILC1000_SPI is not set
+> CONFIG_WLAN_VENDOR_RALINK=3Dy
+> # CONFIG_RT2X00 is not set
+> CONFIG_WLAN_VENDOR_REALTEK=3Dy
+> # CONFIG_RTL8180 is not set
+> # CONFIG_RTL8187 is not set
+> CONFIG_RTL_CARDS=3Dm
+> # CONFIG_RTL8192CE is not set
+> # CONFIG_RTL8192SE is not set
+> # CONFIG_RTL8192DE is not set
+> # CONFIG_RTL8723AE is not set
+> # CONFIG_RTL8723BE is not set
+> # CONFIG_RTL8188EE is not set
+> # CONFIG_RTL8192EE is not set
+> # CONFIG_RTL8821AE is not set
+> # CONFIG_RTL8192CU is not set
+> # CONFIG_RTL8XXXU is not set
+> # CONFIG_RTW88 is not set
+> CONFIG_WLAN_VENDOR_RSI=3Dy
+> # CONFIG_RSI_91X is not set
+> CONFIG_WLAN_VENDOR_ST=3Dy
+> # CONFIG_CW1200 is not set
+> CONFIG_WLAN_VENDOR_TI=3Dy
+> # CONFIG_WL1251 is not set
+> # CONFIG_WL12XX is not set
+> # CONFIG_WL18XX is not set
+> # CONFIG_WLCORE is not set
+> CONFIG_WLAN_VENDOR_ZYDAS=3Dy
+> # CONFIG_USB_ZD1201 is not set
+> # CONFIG_ZD1211RW is not set
+> CONFIG_WLAN_VENDOR_QUANTENNA=3Dy
+> # CONFIG_QTNFMAC_PCIE is not set
+> CONFIG_MAC80211_HWSIM=3Dm
+> # CONFIG_USB_NET_RNDIS_WLAN is not set
+> # CONFIG_VIRT_WIFI is not set
+> # CONFIG_WAN is not set
+> CONFIG_IEEE802154_DRIVERS=3Dm
+> # CONFIG_IEEE802154_FAKELB is not set
+> # CONFIG_IEEE802154_AT86RF230 is not set
+> # CONFIG_IEEE802154_MRF24J40 is not set
+> # CONFIG_IEEE802154_CC2520 is not set
+> # CONFIG_IEEE802154_ATUSB is not set
+> # CONFIG_IEEE802154_ADF7242 is not set
+> # CONFIG_IEEE802154_CA8210 is not set
+> # CONFIG_IEEE802154_MCR20A is not set
+> # CONFIG_IEEE802154_HWSIM is not set
+> # CONFIG_WWAN is not set
+> CONFIG_XEN_NETDEV_FRONTEND=3Dy
+> # CONFIG_VMXNET3 is not set
+> # CONFIG_FUJITSU_ES is not set
+> # CONFIG_HYPERV_NET is not set
+> CONFIG_NETDEVSIM=3Dm
+> CONFIG_NET_FAILOVER=3Dm
+> # CONFIG_ISDN is not set
+> # CONFIG_NVM is not set
+> =
+
+> #
+> # Input device support
+> #
+> CONFIG_INPUT=3Dy
+> CONFIG_INPUT_LEDS=3Dy
+> CONFIG_INPUT_FF_MEMLESS=3Dm
+> CONFIG_INPUT_SPARSEKMAP=3Dm
+> # CONFIG_INPUT_MATRIXKMAP is not set
+> =
+
+> #
+> # Userland interfaces
+> #
+> CONFIG_INPUT_MOUSEDEV=3Dy
+> # CONFIG_INPUT_MOUSEDEV_PSAUX is not set
+> CONFIG_INPUT_MOUSEDEV_SCREEN_X=3D1024
+> CONFIG_INPUT_MOUSEDEV_SCREEN_Y=3D768
+> CONFIG_INPUT_JOYDEV=3Dm
+> CONFIG_INPUT_EVDEV=3Dy
+> # CONFIG_INPUT_EVBUG is not set
+> =
+
+> #
+> # Input Device Drivers
+> #
+> CONFIG_INPUT_KEYBOARD=3Dy
+> # CONFIG_KEYBOARD_ADP5588 is not set
+> # CONFIG_KEYBOARD_ADP5589 is not set
+> # CONFIG_KEYBOARD_APPLESPI is not set
+> CONFIG_KEYBOARD_ATKBD=3Dy
+> # CONFIG_KEYBOARD_QT1050 is not set
+> # CONFIG_KEYBOARD_QT1070 is not set
+> # CONFIG_KEYBOARD_QT2160 is not set
+> # CONFIG_KEYBOARD_DLINK_DIR685 is not set
+> # CONFIG_KEYBOARD_LKKBD is not set
+> # CONFIG_KEYBOARD_GPIO is not set
+> # CONFIG_KEYBOARD_GPIO_POLLED is not set
+> # CONFIG_KEYBOARD_TCA6416 is not set
+> # CONFIG_KEYBOARD_TCA8418 is not set
+> # CONFIG_KEYBOARD_MATRIX is not set
+> # CONFIG_KEYBOARD_LM8323 is not set
+> # CONFIG_KEYBOARD_LM8333 is not set
+> # CONFIG_KEYBOARD_MAX7359 is not set
+> # CONFIG_KEYBOARD_MCS is not set
+> # CONFIG_KEYBOARD_MPR121 is not set
+> # CONFIG_KEYBOARD_NEWTON is not set
+> # CONFIG_KEYBOARD_OPENCORES is not set
+> # CONFIG_KEYBOARD_SAMSUNG is not set
+> # CONFIG_KEYBOARD_STOWAWAY is not set
+> # CONFIG_KEYBOARD_SUNKBD is not set
+> # CONFIG_KEYBOARD_TM2_TOUCHKEY is not set
+> # CONFIG_KEYBOARD_XTKBD is not set
+> CONFIG_INPUT_MOUSE=3Dy
+> CONFIG_MOUSE_PS2=3Dy
+> CONFIG_MOUSE_PS2_ALPS=3Dy
+> CONFIG_MOUSE_PS2_BYD=3Dy
+> CONFIG_MOUSE_PS2_LOGIPS2PP=3Dy
+> CONFIG_MOUSE_PS2_SYNAPTICS=3Dy
+> CONFIG_MOUSE_PS2_SYNAPTICS_SMBUS=3Dy
+> CONFIG_MOUSE_PS2_CYPRESS=3Dy
+> CONFIG_MOUSE_PS2_LIFEBOOK=3Dy
+> CONFIG_MOUSE_PS2_TRACKPOINT=3Dy
+> CONFIG_MOUSE_PS2_ELANTECH=3Dy
+> CONFIG_MOUSE_PS2_ELANTECH_SMBUS=3Dy
+> CONFIG_MOUSE_PS2_SENTELIC=3Dy
+> # CONFIG_MOUSE_PS2_TOUCHKIT is not set
+> CONFIG_MOUSE_PS2_FOCALTECH=3Dy
+> CONFIG_MOUSE_PS2_VMMOUSE=3Dy
+> CONFIG_MOUSE_PS2_SMBUS=3Dy
+> CONFIG_MOUSE_SERIAL=3Dm
+> # CONFIG_MOUSE_APPLETOUCH is not set
+> # CONFIG_MOUSE_BCM5974 is not set
+> CONFIG_MOUSE_CYAPA=3Dm
+> CONFIG_MOUSE_ELAN_I2C=3Dm
+> CONFIG_MOUSE_ELAN_I2C_I2C=3Dy
+> CONFIG_MOUSE_ELAN_I2C_SMBUS=3Dy
+> CONFIG_MOUSE_VSXXXAA=3Dm
+> # CONFIG_MOUSE_GPIO is not set
+> CONFIG_MOUSE_SYNAPTICS_I2C=3Dm
+> # CONFIG_MOUSE_SYNAPTICS_USB is not set
+> # CONFIG_INPUT_JOYSTICK is not set
+> # CONFIG_INPUT_TABLET is not set
+> # CONFIG_INPUT_TOUCHSCREEN is not set
+> # CONFIG_INPUT_MISC is not set
+> CONFIG_RMI4_CORE=3Dm
+> CONFIG_RMI4_I2C=3Dm
+> CONFIG_RMI4_SPI=3Dm
+> CONFIG_RMI4_SMB=3Dm
+> CONFIG_RMI4_F03=3Dy
+> CONFIG_RMI4_F03_SERIO=3Dm
+> CONFIG_RMI4_2D_SENSOR=3Dy
+> CONFIG_RMI4_F11=3Dy
+> CONFIG_RMI4_F12=3Dy
+> CONFIG_RMI4_F30=3Dy
+> CONFIG_RMI4_F34=3Dy
+> # CONFIG_RMI4_F3A is not set
+> # CONFIG_RMI4_F54 is not set
+> CONFIG_RMI4_F55=3Dy
+> =
+
+> #
+> # Hardware I/O ports
+> #
+> CONFIG_SERIO=3Dy
+> CONFIG_ARCH_MIGHT_HAVE_PC_SERIO=3Dy
+> CONFIG_SERIO_I8042=3Dy
+> CONFIG_SERIO_SERPORT=3Dy
+> # CONFIG_SERIO_CT82C710 is not set
+> # CONFIG_SERIO_PARKBD is not set
+> # CONFIG_SERIO_PCIPS2 is not set
+> CONFIG_SERIO_LIBPS2=3Dy
+> CONFIG_SERIO_RAW=3Dm
+> CONFIG_SERIO_ALTERA_PS2=3Dm
+> # CONFIG_SERIO_PS2MULT is not set
+> CONFIG_SERIO_ARC_PS2=3Dm
+> CONFIG_HYPERV_KEYBOARD=3Dm
+> # CONFIG_SERIO_GPIO_PS2 is not set
+> # CONFIG_USERIO is not set
+> # CONFIG_GAMEPORT is not set
+> # end of Hardware I/O ports
+> # end of Input device support
+> =
+
+> #
+> # Character devices
+> #
+> CONFIG_TTY=3Dy
+> CONFIG_VT=3Dy
+> CONFIG_CONSOLE_TRANSLATIONS=3Dy
+> CONFIG_VT_CONSOLE=3Dy
+> CONFIG_VT_CONSOLE_SLEEP=3Dy
+> CONFIG_HW_CONSOLE=3Dy
+> CONFIG_VT_HW_CONSOLE_BINDING=3Dy
+> CONFIG_UNIX98_PTYS=3Dy
+> # CONFIG_LEGACY_PTYS is not set
+> CONFIG_LDISC_AUTOLOAD=3Dy
+> =
+
+> #
+> # Serial drivers
+> #
+> CONFIG_SERIAL_EARLYCON=3Dy
+> CONFIG_SERIAL_8250=3Dy
+> # CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
+> CONFIG_SERIAL_8250_PNP=3Dy
+> # CONFIG_SERIAL_8250_16550A_VARIANTS is not set
+> # CONFIG_SERIAL_8250_FINTEK is not set
+> CONFIG_SERIAL_8250_CONSOLE=3Dy
+> CONFIG_SERIAL_8250_DMA=3Dy
+> CONFIG_SERIAL_8250_PCI=3Dy
+> CONFIG_SERIAL_8250_EXAR=3Dy
+> CONFIG_SERIAL_8250_NR_UARTS=3D64
+> CONFIG_SERIAL_8250_RUNTIME_UARTS=3D4
+> CONFIG_SERIAL_8250_EXTENDED=3Dy
+> CONFIG_SERIAL_8250_MANY_PORTS=3Dy
+> CONFIG_SERIAL_8250_SHARE_IRQ=3Dy
+> # CONFIG_SERIAL_8250_DETECT_IRQ is not set
+> CONFIG_SERIAL_8250_RSA=3Dy
+> CONFIG_SERIAL_8250_DWLIB=3Dy
+> CONFIG_SERIAL_8250_DW=3Dy
+> # CONFIG_SERIAL_8250_RT288X is not set
+> CONFIG_SERIAL_8250_LPSS=3Dy
+> CONFIG_SERIAL_8250_MID=3Dy
+> =
+
+> #
+> # Non-8250 serial port support
+> #
+> # CONFIG_SERIAL_MAX3100 is not set
+> # CONFIG_SERIAL_MAX310X is not set
+> # CONFIG_SERIAL_UARTLITE is not set
+> CONFIG_SERIAL_CORE=3Dy
+> CONFIG_SERIAL_CORE_CONSOLE=3Dy
+> CONFIG_SERIAL_JSM=3Dm
+> # CONFIG_SERIAL_LANTIQ is not set
+> # CONFIG_SERIAL_SCCNXP is not set
+> # CONFIG_SERIAL_SC16IS7XX is not set
+> # CONFIG_SERIAL_BCM63XX is not set
+> # CONFIG_SERIAL_ALTERA_JTAGUART is not set
+> # CONFIG_SERIAL_ALTERA_UART is not set
+> CONFIG_SERIAL_ARC=3Dm
+> CONFIG_SERIAL_ARC_NR_PORTS=3D1
+> # CONFIG_SERIAL_RP2 is not set
+> # CONFIG_SERIAL_FSL_LPUART is not set
+> # CONFIG_SERIAL_FSL_LINFLEXUART is not set
+> # CONFIG_SERIAL_SPRD is not set
+> # end of Serial drivers
+> =
+
+> CONFIG_SERIAL_MCTRL_GPIO=3Dy
+> CONFIG_SERIAL_NONSTANDARD=3Dy
+> # CONFIG_MOXA_INTELLIO is not set
+> # CONFIG_MOXA_SMARTIO is not set
+> CONFIG_SYNCLINK_GT=3Dm
+> CONFIG_N_HDLC=3Dm
+> CONFIG_N_GSM=3Dm
+> CONFIG_NOZOMI=3Dm
+> # CONFIG_NULL_TTY is not set
+> CONFIG_HVC_DRIVER=3Dy
+> CONFIG_HVC_IRQ=3Dy
+> CONFIG_HVC_XEN=3Dy
+> CONFIG_HVC_XEN_FRONTEND=3Dy
+> # CONFIG_SERIAL_DEV_BUS is not set
+> CONFIG_PRINTER=3Dm
+> # CONFIG_LP_CONSOLE is not set
+> CONFIG_PPDEV=3Dm
+> CONFIG_VIRTIO_CONSOLE=3Dm
+> CONFIG_IPMI_HANDLER=3Dm
+> CONFIG_IPMI_DMI_DECODE=3Dy
+> CONFIG_IPMI_PLAT_DATA=3Dy
+> CONFIG_IPMI_PANIC_EVENT=3Dy
+> CONFIG_IPMI_PANIC_STRING=3Dy
+> CONFIG_IPMI_DEVICE_INTERFACE=3Dm
+> CONFIG_IPMI_SI=3Dm
+> CONFIG_IPMI_SSIF=3Dm
+> CONFIG_IPMI_WATCHDOG=3Dm
+> CONFIG_IPMI_POWEROFF=3Dm
+> CONFIG_HW_RANDOM=3Dy
+> CONFIG_HW_RANDOM_TIMERIOMEM=3Dm
+> CONFIG_HW_RANDOM_INTEL=3Dm
+> CONFIG_HW_RANDOM_AMD=3Dm
+> # CONFIG_HW_RANDOM_BA431 is not set
+> CONFIG_HW_RANDOM_VIA=3Dm
+> CONFIG_HW_RANDOM_VIRTIO=3Dy
+> # CONFIG_HW_RANDOM_XIPHERA is not set
+> # CONFIG_APPLICOM is not set
+> # CONFIG_MWAVE is not set
+> CONFIG_DEVMEM=3Dy
+> CONFIG_NVRAM=3Dy
+> CONFIG_RAW_DRIVER=3Dy
+> CONFIG_MAX_RAW_DEVS=3D8192
+> CONFIG_DEVPORT=3Dy
+> CONFIG_HPET=3Dy
+> CONFIG_HPET_MMAP=3Dy
+> # CONFIG_HPET_MMAP_DEFAULT is not set
+> CONFIG_HANGCHECK_TIMER=3Dm
+> CONFIG_UV_MMTIMER=3Dm
+> CONFIG_TCG_TPM=3Dy
+> CONFIG_HW_RANDOM_TPM=3Dy
+> CONFIG_TCG_TIS_CORE=3Dy
+> CONFIG_TCG_TIS=3Dy
+> # CONFIG_TCG_TIS_SPI is not set
+> # CONFIG_TCG_TIS_I2C_CR50 is not set
+> CONFIG_TCG_TIS_I2C_ATMEL=3Dm
+> CONFIG_TCG_TIS_I2C_INFINEON=3Dm
+> CONFIG_TCG_TIS_I2C_NUVOTON=3Dm
+> CONFIG_TCG_NSC=3Dm
+> CONFIG_TCG_ATMEL=3Dm
+> CONFIG_TCG_INFINEON=3Dm
+> # CONFIG_TCG_XEN is not set
+> CONFIG_TCG_CRB=3Dy
+> # CONFIG_TCG_VTPM_PROXY is not set
+> CONFIG_TCG_TIS_ST33ZP24=3Dm
+> CONFIG_TCG_TIS_ST33ZP24_I2C=3Dm
+> # CONFIG_TCG_TIS_ST33ZP24_SPI is not set
+> CONFIG_TELCLOCK=3Dm
+> # CONFIG_XILLYBUS is not set
+> # end of Character devices
+> =
+
+> # CONFIG_RANDOM_TRUST_CPU is not set
+> # CONFIG_RANDOM_TRUST_BOOTLOADER is not set
+> =
+
+> #
+> # I2C support
+> #
+> CONFIG_I2C=3Dy
+> CONFIG_ACPI_I2C_OPREGION=3Dy
+> CONFIG_I2C_BOARDINFO=3Dy
+> CONFIG_I2C_COMPAT=3Dy
+> CONFIG_I2C_CHARDEV=3Dm
+> CONFIG_I2C_MUX=3Dm
+> =
+
+> #
+> # Multiplexer I2C Chip support
+> #
+> # CONFIG_I2C_MUX_GPIO is not set
+> # CONFIG_I2C_MUX_LTC4306 is not set
+> # CONFIG_I2C_MUX_PCA9541 is not set
+> # CONFIG_I2C_MUX_PCA954x is not set
+> # CONFIG_I2C_MUX_REG is not set
+> CONFIG_I2C_MUX_MLXCPLD=3Dm
+> # end of Multiplexer I2C Chip support
+> =
+
+> CONFIG_I2C_HELPER_AUTO=3Dy
+> CONFIG_I2C_SMBUS=3Dy
+> CONFIG_I2C_ALGOBIT=3Dy
+> CONFIG_I2C_ALGOPCA=3Dm
+> =
+
+> #
+> # I2C Hardware Bus support
+> #
+> =
+
+> #
+> # PC SMBus host controller drivers
+> #
+> # CONFIG_I2C_ALI1535 is not set
+> # CONFIG_I2C_ALI1563 is not set
+> # CONFIG_I2C_ALI15X3 is not set
+> CONFIG_I2C_AMD756=3Dm
+> CONFIG_I2C_AMD756_S4882=3Dm
+> CONFIG_I2C_AMD8111=3Dm
+> # CONFIG_I2C_AMD_MP2 is not set
+> CONFIG_I2C_I801=3Dy
+> CONFIG_I2C_ISCH=3Dm
+> CONFIG_I2C_ISMT=3Dm
+> CONFIG_I2C_PIIX4=3Dm
+> CONFIG_I2C_NFORCE2=3Dm
+> CONFIG_I2C_NFORCE2_S4985=3Dm
+> # CONFIG_I2C_NVIDIA_GPU is not set
+> # CONFIG_I2C_SIS5595 is not set
+> # CONFIG_I2C_SIS630 is not set
+> CONFIG_I2C_SIS96X=3Dm
+> CONFIG_I2C_VIA=3Dm
+> CONFIG_I2C_VIAPRO=3Dm
+> =
+
+> #
+> # ACPI drivers
+> #
+> CONFIG_I2C_SCMI=3Dm
+> =
+
+> #
+> # I2C system bus drivers (mostly embedded / system-on-chip)
+> #
+> # CONFIG_I2C_CBUS_GPIO is not set
+> CONFIG_I2C_DESIGNWARE_CORE=3Dm
+> # CONFIG_I2C_DESIGNWARE_SLAVE is not set
+> CONFIG_I2C_DESIGNWARE_PLATFORM=3Dm
+> CONFIG_I2C_DESIGNWARE_BAYTRAIL=3Dy
+> # CONFIG_I2C_DESIGNWARE_PCI is not set
+> # CONFIG_I2C_EMEV2 is not set
+> # CONFIG_I2C_GPIO is not set
+> # CONFIG_I2C_OCORES is not set
+> CONFIG_I2C_PCA_PLATFORM=3Dm
+> CONFIG_I2C_SIMTEC=3Dm
+> # CONFIG_I2C_XILINX is not set
+> =
+
+> #
+> # External I2C/SMBus adapter drivers
+> #
+> # CONFIG_I2C_DIOLAN_U2C is not set
+> # CONFIG_I2C_CP2615 is not set
+> CONFIG_I2C_PARPORT=3Dm
+> # CONFIG_I2C_ROBOTFUZZ_OSIF is not set
+> # CONFIG_I2C_TAOS_EVM is not set
+> # CONFIG_I2C_TINY_USB is not set
+> =
+
+> #
+> # Other I2C/SMBus bus drivers
+> #
+> CONFIG_I2C_MLXCPLD=3Dm
+> # end of I2C Hardware Bus support
+> =
+
+> CONFIG_I2C_STUB=3Dm
+> # CONFIG_I2C_SLAVE is not set
+> # CONFIG_I2C_DEBUG_CORE is not set
+> # CONFIG_I2C_DEBUG_ALGO is not set
+> # CONFIG_I2C_DEBUG_BUS is not set
+> # end of I2C support
+> =
+
+> # CONFIG_I3C is not set
+> CONFIG_SPI=3Dy
+> # CONFIG_SPI_DEBUG is not set
+> CONFIG_SPI_MASTER=3Dy
+> # CONFIG_SPI_MEM is not set
+> =
+
+> #
+> # SPI Master Controller Drivers
+> #
+> # CONFIG_SPI_ALTERA is not set
+> # CONFIG_SPI_ALTERA_CORE is not set
+> # CONFIG_SPI_AXI_SPI_ENGINE is not set
+> # CONFIG_SPI_BITBANG is not set
+> # CONFIG_SPI_BUTTERFLY is not set
+> # CONFIG_SPI_CADENCE is not set
+> # CONFIG_SPI_DESIGNWARE is not set
+> # CONFIG_SPI_NXP_FLEXSPI is not set
+> # CONFIG_SPI_GPIO is not set
+> # CONFIG_SPI_LM70_LLP is not set
+> # CONFIG_SPI_LANTIQ_SSC is not set
+> # CONFIG_SPI_OC_TINY is not set
+> # CONFIG_SPI_PXA2XX is not set
+> # CONFIG_SPI_ROCKCHIP is not set
+> # CONFIG_SPI_SC18IS602 is not set
+> # CONFIG_SPI_SIFIVE is not set
+> # CONFIG_SPI_MXIC is not set
+> # CONFIG_SPI_XCOMM is not set
+> # CONFIG_SPI_XILINX is not set
+> # CONFIG_SPI_ZYNQMP_GQSPI is not set
+> # CONFIG_SPI_AMD is not set
+> =
+
+> #
+> # SPI Multiplexer support
+> #
+> # CONFIG_SPI_MUX is not set
+> =
+
+> #
+> # SPI Protocol Masters
+> #
+> # CONFIG_SPI_SPIDEV is not set
+> # CONFIG_SPI_LOOPBACK_TEST is not set
+> # CONFIG_SPI_TLE62X0 is not set
+> # CONFIG_SPI_SLAVE is not set
+> CONFIG_SPI_DYNAMIC=3Dy
+> # CONFIG_SPMI is not set
+> # CONFIG_HSI is not set
+> CONFIG_PPS=3Dy
+> # CONFIG_PPS_DEBUG is not set
+> =
+
+> #
+> # PPS clients support
+> #
+> # CONFIG_PPS_CLIENT_KTIMER is not set
+> CONFIG_PPS_CLIENT_LDISC=3Dm
+> CONFIG_PPS_CLIENT_PARPORT=3Dm
+> CONFIG_PPS_CLIENT_GPIO=3Dm
+> =
+
+> #
+> # PPS generators support
+> #
+> =
+
+> #
+> # PTP clock support
+> #
+> CONFIG_PTP_1588_CLOCK=3Dy
+> # CONFIG_DP83640_PHY is not set
+> # CONFIG_PTP_1588_CLOCK_INES is not set
+> CONFIG_PTP_1588_CLOCK_KVM=3Dm
+> # CONFIG_PTP_1588_CLOCK_IDT82P33 is not set
+> # CONFIG_PTP_1588_CLOCK_IDTCM is not set
+> # CONFIG_PTP_1588_CLOCK_VMW is not set
+> # CONFIG_PTP_1588_CLOCK_OCP is not set
+> # end of PTP clock support
+> =
+
+> CONFIG_PINCTRL=3Dy
+> CONFIG_PINMUX=3Dy
+> CONFIG_PINCONF=3Dy
+> CONFIG_GENERIC_PINCONF=3Dy
+> # CONFIG_DEBUG_PINCTRL is not set
+> CONFIG_PINCTRL_AMD=3Dm
+> # CONFIG_PINCTRL_MCP23S08 is not set
+> # CONFIG_PINCTRL_SX150X is not set
+> CONFIG_PINCTRL_BAYTRAIL=3Dy
+> # CONFIG_PINCTRL_CHERRYVIEW is not set
+> # CONFIG_PINCTRL_LYNXPOINT is not set
+> CONFIG_PINCTRL_INTEL=3Dy
+> # CONFIG_PINCTRL_ALDERLAKE is not set
+> CONFIG_PINCTRL_BROXTON=3Dm
+> CONFIG_PINCTRL_CANNONLAKE=3Dm
+> CONFIG_PINCTRL_CEDARFORK=3Dm
+> CONFIG_PINCTRL_DENVERTON=3Dm
+> # CONFIG_PINCTRL_ELKHARTLAKE is not set
+> # CONFIG_PINCTRL_EMMITSBURG is not set
+> CONFIG_PINCTRL_GEMINILAKE=3Dm
+> # CONFIG_PINCTRL_ICELAKE is not set
+> # CONFIG_PINCTRL_JASPERLAKE is not set
+> # CONFIG_PINCTRL_LAKEFIELD is not set
+> CONFIG_PINCTRL_LEWISBURG=3Dm
+> CONFIG_PINCTRL_SUNRISEPOINT=3Dm
+> # CONFIG_PINCTRL_TIGERLAKE is not set
+> =
+
+> #
+> # Renesas pinctrl drivers
+> #
+> # end of Renesas pinctrl drivers
+> =
+
+> CONFIG_GPIOLIB=3Dy
+> CONFIG_GPIOLIB_FASTPATH_LIMIT=3D512
+> CONFIG_GPIO_ACPI=3Dy
+> CONFIG_GPIOLIB_IRQCHIP=3Dy
+> # CONFIG_DEBUG_GPIO is not set
+> CONFIG_GPIO_CDEV=3Dy
+> CONFIG_GPIO_CDEV_V1=3Dy
+> CONFIG_GPIO_GENERIC=3Dm
+> =
+
+> #
+> # Memory mapped GPIO drivers
+> #
+> CONFIG_GPIO_AMDPT=3Dm
+> # CONFIG_GPIO_DWAPB is not set
+> # CONFIG_GPIO_EXAR is not set
+> # CONFIG_GPIO_GENERIC_PLATFORM is not set
+> CONFIG_GPIO_ICH=3Dm
+> # CONFIG_GPIO_MB86S7X is not set
+> # CONFIG_GPIO_VX855 is not set
+> # CONFIG_GPIO_AMD_FCH is not set
+> # end of Memory mapped GPIO drivers
+> =
+
+> #
+> # Port-mapped I/O GPIO drivers
+> #
+> # CONFIG_GPIO_F7188X is not set
+> # CONFIG_GPIO_IT87 is not set
+> # CONFIG_GPIO_SCH is not set
+> # CONFIG_GPIO_SCH311X is not set
+> # CONFIG_GPIO_WINBOND is not set
+> # CONFIG_GPIO_WS16C48 is not set
+> # end of Port-mapped I/O GPIO drivers
+> =
+
+> #
+> # I2C GPIO expanders
+> #
+> # CONFIG_GPIO_ADP5588 is not set
+> # CONFIG_GPIO_MAX7300 is not set
+> # CONFIG_GPIO_MAX732X is not set
+> # CONFIG_GPIO_PCA953X is not set
+> # CONFIG_GPIO_PCA9570 is not set
+> # CONFIG_GPIO_PCF857X is not set
+> # CONFIG_GPIO_TPIC2810 is not set
+> # end of I2C GPIO expanders
+> =
+
+> #
+> # MFD GPIO expanders
+> #
+> # end of MFD GPIO expanders
+> =
+
+> #
+> # PCI GPIO expanders
+> #
+> # CONFIG_GPIO_AMD8111 is not set
+> # CONFIG_GPIO_BT8XX is not set
+> # CONFIG_GPIO_ML_IOH is not set
+> # CONFIG_GPIO_PCI_IDIO_16 is not set
+> # CONFIG_GPIO_PCIE_IDIO_24 is not set
+> # CONFIG_GPIO_RDC321X is not set
+> # end of PCI GPIO expanders
+> =
+
+> #
+> # SPI GPIO expanders
+> #
+> # CONFIG_GPIO_MAX3191X is not set
+> # CONFIG_GPIO_MAX7301 is not set
+> # CONFIG_GPIO_MC33880 is not set
+> # CONFIG_GPIO_PISOSR is not set
+> # CONFIG_GPIO_XRA1403 is not set
+> # end of SPI GPIO expanders
+> =
+
+> #
+> # USB GPIO expanders
+> #
+> # end of USB GPIO expanders
+> =
+
+> #
+> # Virtual GPIO drivers
+> #
+> # CONFIG_GPIO_AGGREGATOR is not set
+> # CONFIG_GPIO_MOCKUP is not set
+> # end of Virtual GPIO drivers
+> =
+
+> # CONFIG_W1 is not set
+> CONFIG_POWER_RESET=3Dy
+> # CONFIG_POWER_RESET_RESTART is not set
+> CONFIG_POWER_SUPPLY=3Dy
+> # CONFIG_POWER_SUPPLY_DEBUG is not set
+> CONFIG_POWER_SUPPLY_HWMON=3Dy
+> # CONFIG_PDA_POWER is not set
+> # CONFIG_TEST_POWER is not set
+> # CONFIG_CHARGER_ADP5061 is not set
+> # CONFIG_BATTERY_CW2015 is not set
+> # CONFIG_BATTERY_DS2780 is not set
+> # CONFIG_BATTERY_DS2781 is not set
+> # CONFIG_BATTERY_DS2782 is not set
+> # CONFIG_BATTERY_SBS is not set
+> # CONFIG_CHARGER_SBS is not set
+> # CONFIG_MANAGER_SBS is not set
+> # CONFIG_BATTERY_BQ27XXX is not set
+> # CONFIG_BATTERY_MAX17040 is not set
+> # CONFIG_BATTERY_MAX17042 is not set
+> # CONFIG_CHARGER_MAX8903 is not set
+> # CONFIG_CHARGER_LP8727 is not set
+> # CONFIG_CHARGER_GPIO is not set
+> # CONFIG_CHARGER_LT3651 is not set
+> # CONFIG_CHARGER_LTC4162L is not set
+> # CONFIG_CHARGER_BQ2415X is not set
+> # CONFIG_CHARGER_BQ24257 is not set
+> # CONFIG_CHARGER_BQ24735 is not set
+> # CONFIG_CHARGER_BQ2515X is not set
+> # CONFIG_CHARGER_BQ25890 is not set
+> # CONFIG_CHARGER_BQ25980 is not set
+> # CONFIG_CHARGER_BQ256XX is not set
+> CONFIG_CHARGER_SMB347=3Dm
+> # CONFIG_BATTERY_GAUGE_LTC2941 is not set
+> # CONFIG_BATTERY_GOLDFISH is not set
+> # CONFIG_CHARGER_RT9455 is not set
+> # CONFIG_CHARGER_BD99954 is not set
+> CONFIG_HWMON=3Dy
+> CONFIG_HWMON_VID=3Dm
+> # CONFIG_HWMON_DEBUG_CHIP is not set
+> =
+
+> #
+> # Native drivers
+> #
+> CONFIG_SENSORS_ABITUGURU=3Dm
+> CONFIG_SENSORS_ABITUGURU3=3Dm
+> # CONFIG_SENSORS_AD7314 is not set
+> CONFIG_SENSORS_AD7414=3Dm
+> CONFIG_SENSORS_AD7418=3Dm
+> CONFIG_SENSORS_ADM1021=3Dm
+> CONFIG_SENSORS_ADM1025=3Dm
+> CONFIG_SENSORS_ADM1026=3Dm
+> CONFIG_SENSORS_ADM1029=3Dm
+> CONFIG_SENSORS_ADM1031=3Dm
+> # CONFIG_SENSORS_ADM1177 is not set
+> CONFIG_SENSORS_ADM9240=3Dm
+> CONFIG_SENSORS_ADT7X10=3Dm
+> # CONFIG_SENSORS_ADT7310 is not set
+> CONFIG_SENSORS_ADT7410=3Dm
+> CONFIG_SENSORS_ADT7411=3Dm
+> CONFIG_SENSORS_ADT7462=3Dm
+> CONFIG_SENSORS_ADT7470=3Dm
+> CONFIG_SENSORS_ADT7475=3Dm
+> # CONFIG_SENSORS_AHT10 is not set
+> # CONFIG_SENSORS_AS370 is not set
+> CONFIG_SENSORS_ASC7621=3Dm
+> # CONFIG_SENSORS_AXI_FAN_CONTROL is not set
+> CONFIG_SENSORS_K8TEMP=3Dm
+> CONFIG_SENSORS_K10TEMP=3Dm
+> CONFIG_SENSORS_FAM15H_POWER=3Dm
+> CONFIG_SENSORS_APPLESMC=3Dm
+> CONFIG_SENSORS_ASB100=3Dm
+> # CONFIG_SENSORS_ASPEED is not set
+> CONFIG_SENSORS_ATXP1=3Dm
+> # CONFIG_SENSORS_CORSAIR_CPRO is not set
+> # CONFIG_SENSORS_CORSAIR_PSU is not set
+> # CONFIG_SENSORS_DRIVETEMP is not set
+> CONFIG_SENSORS_DS620=3Dm
+> CONFIG_SENSORS_DS1621=3Dm
+> CONFIG_SENSORS_DELL_SMM=3Dm
+> CONFIG_SENSORS_I5K_AMB=3Dm
+> CONFIG_SENSORS_F71805F=3Dm
+> CONFIG_SENSORS_F71882FG=3Dm
+> CONFIG_SENSORS_F75375S=3Dm
+> CONFIG_SENSORS_FSCHMD=3Dm
+> # CONFIG_SENSORS_FTSTEUTATES is not set
+> CONFIG_SENSORS_GL518SM=3Dm
+> CONFIG_SENSORS_GL520SM=3Dm
+> CONFIG_SENSORS_G760A=3Dm
+> # CONFIG_SENSORS_G762 is not set
+> # CONFIG_SENSORS_HIH6130 is not set
+> CONFIG_SENSORS_IBMAEM=3Dm
+> CONFIG_SENSORS_IBMPEX=3Dm
+> CONFIG_SENSORS_I5500=3Dm
+> CONFIG_SENSORS_CORETEMP=3Dm
+> CONFIG_SENSORS_IT87=3Dm
+> CONFIG_SENSORS_JC42=3Dm
+> # CONFIG_SENSORS_POWR1220 is not set
+> CONFIG_SENSORS_LINEAGE=3Dm
+> # CONFIG_SENSORS_LTC2945 is not set
+> # CONFIG_SENSORS_LTC2947_I2C is not set
+> # CONFIG_SENSORS_LTC2947_SPI is not set
+> # CONFIG_SENSORS_LTC2990 is not set
+> # CONFIG_SENSORS_LTC2992 is not set
+> CONFIG_SENSORS_LTC4151=3Dm
+> CONFIG_SENSORS_LTC4215=3Dm
+> # CONFIG_SENSORS_LTC4222 is not set
+> CONFIG_SENSORS_LTC4245=3Dm
+> # CONFIG_SENSORS_LTC4260 is not set
+> CONFIG_SENSORS_LTC4261=3Dm
+> # CONFIG_SENSORS_MAX1111 is not set
+> # CONFIG_SENSORS_MAX127 is not set
+> CONFIG_SENSORS_MAX16065=3Dm
+> CONFIG_SENSORS_MAX1619=3Dm
+> CONFIG_SENSORS_MAX1668=3Dm
+> CONFIG_SENSORS_MAX197=3Dm
+> # CONFIG_SENSORS_MAX31722 is not set
+> # CONFIG_SENSORS_MAX31730 is not set
+> # CONFIG_SENSORS_MAX6621 is not set
+> CONFIG_SENSORS_MAX6639=3Dm
+> CONFIG_SENSORS_MAX6642=3Dm
+> CONFIG_SENSORS_MAX6650=3Dm
+> CONFIG_SENSORS_MAX6697=3Dm
+> # CONFIG_SENSORS_MAX31790 is not set
+> CONFIG_SENSORS_MCP3021=3Dm
+> # CONFIG_SENSORS_MLXREG_FAN is not set
+> # CONFIG_SENSORS_TC654 is not set
+> # CONFIG_SENSORS_TPS23861 is not set
+> # CONFIG_SENSORS_MR75203 is not set
+> # CONFIG_SENSORS_ADCXX is not set
+> CONFIG_SENSORS_LM63=3Dm
+> # CONFIG_SENSORS_LM70 is not set
+> CONFIG_SENSORS_LM73=3Dm
+> CONFIG_SENSORS_LM75=3Dm
+> CONFIG_SENSORS_LM77=3Dm
+> CONFIG_SENSORS_LM78=3Dm
+> CONFIG_SENSORS_LM80=3Dm
+> CONFIG_SENSORS_LM83=3Dm
+> CONFIG_SENSORS_LM85=3Dm
+> CONFIG_SENSORS_LM87=3Dm
+> CONFIG_SENSORS_LM90=3Dm
+> CONFIG_SENSORS_LM92=3Dm
+> CONFIG_SENSORS_LM93=3Dm
+> CONFIG_SENSORS_LM95234=3Dm
+> CONFIG_SENSORS_LM95241=3Dm
+> CONFIG_SENSORS_LM95245=3Dm
+> CONFIG_SENSORS_PC87360=3Dm
+> CONFIG_SENSORS_PC87427=3Dm
+> CONFIG_SENSORS_NTC_THERMISTOR=3Dm
+> # CONFIG_SENSORS_NCT6683 is not set
+> CONFIG_SENSORS_NCT6775=3Dm
+> # CONFIG_SENSORS_NCT7802 is not set
+> # CONFIG_SENSORS_NCT7904 is not set
+> # CONFIG_SENSORS_NPCM7XX is not set
+> # CONFIG_SENSORS_NZXT_KRAKEN2 is not set
+> CONFIG_SENSORS_PCF8591=3Dm
+> CONFIG_PMBUS=3Dm
+> CONFIG_SENSORS_PMBUS=3Dm
+> # CONFIG_SENSORS_ADM1266 is not set
+> CONFIG_SENSORS_ADM1275=3Dm
+> # CONFIG_SENSORS_BEL_PFE is not set
+> # CONFIG_SENSORS_BPA_RS600 is not set
+> # CONFIG_SENSORS_FSP_3Y is not set
+> # CONFIG_SENSORS_IBM_CFFPS is not set
+> # CONFIG_SENSORS_INSPUR_IPSPS is not set
+> # CONFIG_SENSORS_IR35221 is not set
+> # CONFIG_SENSORS_IR36021 is not set
+> # CONFIG_SENSORS_IR38064 is not set
+> # CONFIG_SENSORS_IRPS5401 is not set
+> # CONFIG_SENSORS_ISL68137 is not set
+> CONFIG_SENSORS_LM25066=3Dm
+> CONFIG_SENSORS_LTC2978=3Dm
+> # CONFIG_SENSORS_LTC3815 is not set
+> # CONFIG_SENSORS_MAX15301 is not set
+> CONFIG_SENSORS_MAX16064=3Dm
+> # CONFIG_SENSORS_MAX16601 is not set
+> # CONFIG_SENSORS_MAX20730 is not set
+> # CONFIG_SENSORS_MAX20751 is not set
+> # CONFIG_SENSORS_MAX31785 is not set
+> CONFIG_SENSORS_MAX34440=3Dm
+> CONFIG_SENSORS_MAX8688=3Dm
+> # CONFIG_SENSORS_MP2975 is not set
+> # CONFIG_SENSORS_PM6764TR is not set
+> # CONFIG_SENSORS_PXE1610 is not set
+> # CONFIG_SENSORS_Q54SJ108A2 is not set
+> # CONFIG_SENSORS_STPDDC60 is not set
+> # CONFIG_SENSORS_TPS40422 is not set
+> # CONFIG_SENSORS_TPS53679 is not set
+> CONFIG_SENSORS_UCD9000=3Dm
+> CONFIG_SENSORS_UCD9200=3Dm
+> # CONFIG_SENSORS_XDPE122 is not set
+> CONFIG_SENSORS_ZL6100=3Dm
+> # CONFIG_SENSORS_SBTSI is not set
+> CONFIG_SENSORS_SHT15=3Dm
+> CONFIG_SENSORS_SHT21=3Dm
+> # CONFIG_SENSORS_SHT3x is not set
+> # CONFIG_SENSORS_SHTC1 is not set
+> CONFIG_SENSORS_SIS5595=3Dm
+> CONFIG_SENSORS_DME1737=3Dm
+> CONFIG_SENSORS_EMC1403=3Dm
+> # CONFIG_SENSORS_EMC2103 is not set
+> CONFIG_SENSORS_EMC6W201=3Dm
+> CONFIG_SENSORS_SMSC47M1=3Dm
+> CONFIG_SENSORS_SMSC47M192=3Dm
+> CONFIG_SENSORS_SMSC47B397=3Dm
+> CONFIG_SENSORS_SCH56XX_COMMON=3Dm
+> CONFIG_SENSORS_SCH5627=3Dm
+> CONFIG_SENSORS_SCH5636=3Dm
+> # CONFIG_SENSORS_STTS751 is not set
+> # CONFIG_SENSORS_SMM665 is not set
+> # CONFIG_SENSORS_ADC128D818 is not set
+> CONFIG_SENSORS_ADS7828=3Dm
+> # CONFIG_SENSORS_ADS7871 is not set
+> CONFIG_SENSORS_AMC6821=3Dm
+> CONFIG_SENSORS_INA209=3Dm
+> CONFIG_SENSORS_INA2XX=3Dm
+> # CONFIG_SENSORS_INA3221 is not set
+> # CONFIG_SENSORS_TC74 is not set
+> CONFIG_SENSORS_THMC50=3Dm
+> CONFIG_SENSORS_TMP102=3Dm
+> # CONFIG_SENSORS_TMP103 is not set
+> # CONFIG_SENSORS_TMP108 is not set
+> CONFIG_SENSORS_TMP401=3Dm
+> CONFIG_SENSORS_TMP421=3Dm
+> # CONFIG_SENSORS_TMP513 is not set
+> CONFIG_SENSORS_VIA_CPUTEMP=3Dm
+> CONFIG_SENSORS_VIA686A=3Dm
+> CONFIG_SENSORS_VT1211=3Dm
+> CONFIG_SENSORS_VT8231=3Dm
+> # CONFIG_SENSORS_W83773G is not set
+> CONFIG_SENSORS_W83781D=3Dm
+> CONFIG_SENSORS_W83791D=3Dm
+> CONFIG_SENSORS_W83792D=3Dm
+> CONFIG_SENSORS_W83793=3Dm
+> CONFIG_SENSORS_W83795=3Dm
+> # CONFIG_SENSORS_W83795_FANCTRL is not set
+> CONFIG_SENSORS_W83L785TS=3Dm
+> CONFIG_SENSORS_W83L786NG=3Dm
+> CONFIG_SENSORS_W83627HF=3Dm
+> CONFIG_SENSORS_W83627EHF=3Dm
+> # CONFIG_SENSORS_XGENE is not set
+> =
+
+> #
+> # ACPI drivers
+> #
+> CONFIG_SENSORS_ACPI_POWER=3Dm
+> CONFIG_SENSORS_ATK0110=3Dm
+> CONFIG_THERMAL=3Dy
+> # CONFIG_THERMAL_NETLINK is not set
+> # CONFIG_THERMAL_STATISTICS is not set
+> CONFIG_THERMAL_EMERGENCY_POWEROFF_DELAY_MS=3D0
+> CONFIG_THERMAL_HWMON=3Dy
+> CONFIG_THERMAL_WRITABLE_TRIPS=3Dy
+> CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE=3Dy
+> # CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE is not set
+> # CONFIG_THERMAL_DEFAULT_GOV_USER_SPACE is not set
+> CONFIG_THERMAL_GOV_FAIR_SHARE=3Dy
+> CONFIG_THERMAL_GOV_STEP_WISE=3Dy
+> CONFIG_THERMAL_GOV_BANG_BANG=3Dy
+> CONFIG_THERMAL_GOV_USER_SPACE=3Dy
+> # CONFIG_THERMAL_EMULATION is not set
+> =
+
+> #
+> # Intel thermal drivers
+> #
+> CONFIG_INTEL_POWERCLAMP=3Dm
+> CONFIG_X86_THERMAL_VECTOR=3Dy
+> CONFIG_X86_PKG_TEMP_THERMAL=3Dm
+> CONFIG_INTEL_SOC_DTS_IOSF_CORE=3Dm
+> # CONFIG_INTEL_SOC_DTS_THERMAL is not set
+> =
+
+> #
+> # ACPI INT340X thermal drivers
+> #
+> CONFIG_INT340X_THERMAL=3Dm
+> CONFIG_ACPI_THERMAL_REL=3Dm
+> # CONFIG_INT3406_THERMAL is not set
+> CONFIG_PROC_THERMAL_MMIO_RAPL=3Dm
+> # end of ACPI INT340X thermal drivers
+> =
+
+> CONFIG_INTEL_PCH_THERMAL=3Dm
+> # CONFIG_INTEL_TCC_COOLING is not set
+> # end of Intel thermal drivers
+> =
+
+> CONFIG_WATCHDOG=3Dy
+> CONFIG_WATCHDOG_CORE=3Dy
+> # CONFIG_WATCHDOG_NOWAYOUT is not set
+> CONFIG_WATCHDOG_HANDLE_BOOT_ENABLED=3Dy
+> CONFIG_WATCHDOG_OPEN_TIMEOUT=3D0
+> CONFIG_WATCHDOG_SYSFS=3Dy
+> =
+
+> #
+> # Watchdog Pretimeout Governors
+> #
+> # CONFIG_WATCHDOG_PRETIMEOUT_GOV is not set
+> =
+
+> #
+> # Watchdog Device Drivers
+> #
+> CONFIG_SOFT_WATCHDOG=3Dm
+> CONFIG_WDAT_WDT=3Dm
+> # CONFIG_XILINX_WATCHDOG is not set
+> # CONFIG_ZIIRAVE_WATCHDOG is not set
+> # CONFIG_MLX_WDT is not set
+> # CONFIG_CADENCE_WATCHDOG is not set
+> # CONFIG_DW_WATCHDOG is not set
+> # CONFIG_MAX63XX_WATCHDOG is not set
+> # CONFIG_ACQUIRE_WDT is not set
+> # CONFIG_ADVANTECH_WDT is not set
+> CONFIG_ALIM1535_WDT=3Dm
+> CONFIG_ALIM7101_WDT=3Dm
+> # CONFIG_EBC_C384_WDT is not set
+> CONFIG_F71808E_WDT=3Dm
+> CONFIG_SP5100_TCO=3Dm
+> CONFIG_SBC_FITPC2_WATCHDOG=3Dm
+> # CONFIG_EUROTECH_WDT is not set
+> CONFIG_IB700_WDT=3Dm
+> CONFIG_IBMASR=3Dm
+> # CONFIG_WAFER_WDT is not set
+> CONFIG_I6300ESB_WDT=3Dy
+> CONFIG_IE6XX_WDT=3Dm
+> CONFIG_ITCO_WDT=3Dy
+> CONFIG_ITCO_VENDOR_SUPPORT=3Dy
+> CONFIG_IT8712F_WDT=3Dm
+> CONFIG_IT87_WDT=3Dm
+> CONFIG_HP_WATCHDOG=3Dm
+> CONFIG_HPWDT_NMI_DECODING=3Dy
+> # CONFIG_SC1200_WDT is not set
+> # CONFIG_PC87413_WDT is not set
+> CONFIG_NV_TCO=3Dm
+> # CONFIG_60XX_WDT is not set
+> # CONFIG_CPU5_WDT is not set
+> CONFIG_SMSC_SCH311X_WDT=3Dm
+> # CONFIG_SMSC37B787_WDT is not set
+> # CONFIG_TQMX86_WDT is not set
+> CONFIG_VIA_WDT=3Dm
+> CONFIG_W83627HF_WDT=3Dm
+> CONFIG_W83877F_WDT=3Dm
+> CONFIG_W83977F_WDT=3Dm
+> CONFIG_MACHZ_WDT=3Dm
+> # CONFIG_SBC_EPX_C3_WATCHDOG is not set
+> CONFIG_INTEL_MEI_WDT=3Dm
+> # CONFIG_NI903X_WDT is not set
+> # CONFIG_NIC7018_WDT is not set
+> # CONFIG_MEN_A21_WDT is not set
+> CONFIG_XEN_WDT=3Dm
+> =
+
+> #
+> # PCI-based Watchdog Cards
+> #
+> CONFIG_PCIPCWATCHDOG=3Dm
+> CONFIG_WDTPCI=3Dm
+> =
+
+> #
+> # USB-based Watchdog Cards
+> #
+> # CONFIG_USBPCWATCHDOG is not set
+> CONFIG_SSB_POSSIBLE=3Dy
+> # CONFIG_SSB is not set
+> CONFIG_BCMA_POSSIBLE=3Dy
+> CONFIG_BCMA=3Dm
+> CONFIG_BCMA_HOST_PCI_POSSIBLE=3Dy
+> CONFIG_BCMA_HOST_PCI=3Dy
+> # CONFIG_BCMA_HOST_SOC is not set
+> CONFIG_BCMA_DRIVER_PCI=3Dy
+> CONFIG_BCMA_DRIVER_GMAC_CMN=3Dy
+> CONFIG_BCMA_DRIVER_GPIO=3Dy
+> # CONFIG_BCMA_DEBUG is not set
+> =
+
+> #
+> # Multifunction device drivers
+> #
+> CONFIG_MFD_CORE=3Dy
+> # CONFIG_MFD_AS3711 is not set
+> # CONFIG_PMIC_ADP5520 is not set
+> # CONFIG_MFD_AAT2870_CORE is not set
+> # CONFIG_MFD_BCM590XX is not set
+> # CONFIG_MFD_BD9571MWV is not set
+> # CONFIG_MFD_AXP20X_I2C is not set
+> # CONFIG_MFD_MADERA is not set
+> # CONFIG_PMIC_DA903X is not set
+> # CONFIG_MFD_DA9052_SPI is not set
+> # CONFIG_MFD_DA9052_I2C is not set
+> # CONFIG_MFD_DA9055 is not set
+> # CONFIG_MFD_DA9062 is not set
+> # CONFIG_MFD_DA9063 is not set
+> # CONFIG_MFD_DA9150 is not set
+> # CONFIG_MFD_DLN2 is not set
+> # CONFIG_MFD_MC13XXX_SPI is not set
+> # CONFIG_MFD_MC13XXX_I2C is not set
+> # CONFIG_MFD_MP2629 is not set
+> # CONFIG_HTC_PASIC3 is not set
+> # CONFIG_HTC_I2CPLD is not set
+> # CONFIG_MFD_INTEL_QUARK_I2C_GPIO is not set
+> CONFIG_LPC_ICH=3Dy
+> CONFIG_LPC_SCH=3Dm
+> # CONFIG_INTEL_SOC_PMIC_CHTDC_TI is not set
+> CONFIG_MFD_INTEL_LPSS=3Dy
+> CONFIG_MFD_INTEL_LPSS_ACPI=3Dy
+> CONFIG_MFD_INTEL_LPSS_PCI=3Dy
+> # CONFIG_MFD_INTEL_PMC_BXT is not set
+> # CONFIG_MFD_INTEL_PMT is not set
+> # CONFIG_MFD_IQS62X is not set
+> # CONFIG_MFD_JANZ_CMODIO is not set
+> # CONFIG_MFD_KEMPLD is not set
+> # CONFIG_MFD_88PM800 is not set
+> # CONFIG_MFD_88PM805 is not set
+> # CONFIG_MFD_88PM860X is not set
+> # CONFIG_MFD_MAX14577 is not set
+> # CONFIG_MFD_MAX77693 is not set
+> # CONFIG_MFD_MAX77843 is not set
+> # CONFIG_MFD_MAX8907 is not set
+> # CONFIG_MFD_MAX8925 is not set
+> # CONFIG_MFD_MAX8997 is not set
+> # CONFIG_MFD_MAX8998 is not set
+> # CONFIG_MFD_MT6360 is not set
+> # CONFIG_MFD_MT6397 is not set
+> # CONFIG_MFD_MENF21BMC is not set
+> # CONFIG_EZX_PCAP is not set
+> # CONFIG_MFD_VIPERBOARD is not set
+> # CONFIG_MFD_RETU is not set
+> # CONFIG_MFD_PCF50633 is not set
+> # CONFIG_MFD_RDC321X is not set
+> # CONFIG_MFD_RT5033 is not set
+> # CONFIG_MFD_RC5T583 is not set
+> # CONFIG_MFD_SEC_CORE is not set
+> # CONFIG_MFD_SI476X_CORE is not set
+> CONFIG_MFD_SM501=3Dm
+> CONFIG_MFD_SM501_GPIO=3Dy
+> # CONFIG_MFD_SKY81452 is not set
+> # CONFIG_MFD_SYSCON is not set
+> # CONFIG_MFD_TI_AM335X_TSCADC is not set
+> # CONFIG_MFD_LP3943 is not set
+> # CONFIG_MFD_LP8788 is not set
+> # CONFIG_MFD_TI_LMU is not set
+> # CONFIG_MFD_PALMAS is not set
+> # CONFIG_TPS6105X is not set
+> # CONFIG_TPS65010 is not set
+> # CONFIG_TPS6507X is not set
+> # CONFIG_MFD_TPS65086 is not set
+> # CONFIG_MFD_TPS65090 is not set
+> # CONFIG_MFD_TI_LP873X is not set
+> # CONFIG_MFD_TPS6586X is not set
+> # CONFIG_MFD_TPS65910 is not set
+> # CONFIG_MFD_TPS65912_I2C is not set
+> # CONFIG_MFD_TPS65912_SPI is not set
+> # CONFIG_MFD_TPS80031 is not set
+> # CONFIG_TWL4030_CORE is not set
+> # CONFIG_TWL6040_CORE is not set
+> # CONFIG_MFD_WL1273_CORE is not set
+> # CONFIG_MFD_LM3533 is not set
+> # CONFIG_MFD_TQMX86 is not set
+> CONFIG_MFD_VX855=3Dm
+> # CONFIG_MFD_ARIZONA_I2C is not set
+> # CONFIG_MFD_ARIZONA_SPI is not set
+> # CONFIG_MFD_WM8400 is not set
+> # CONFIG_MFD_WM831X_I2C is not set
+> # CONFIG_MFD_WM831X_SPI is not set
+> # CONFIG_MFD_WM8350_I2C is not set
+> # CONFIG_MFD_WM8994 is not set
+> # CONFIG_MFD_ATC260X_I2C is not set
+> # CONFIG_MFD_INTEL_M10_BMC is not set
+> # end of Multifunction device drivers
+> =
+
+> # CONFIG_REGULATOR is not set
+> CONFIG_RC_CORE=3Dm
+> CONFIG_RC_MAP=3Dm
+> CONFIG_LIRC=3Dy
+> CONFIG_RC_DECODERS=3Dy
+> CONFIG_IR_NEC_DECODER=3Dm
+> CONFIG_IR_RC5_DECODER=3Dm
+> CONFIG_IR_RC6_DECODER=3Dm
+> CONFIG_IR_JVC_DECODER=3Dm
+> CONFIG_IR_SONY_DECODER=3Dm
+> CONFIG_IR_SANYO_DECODER=3Dm
+> # CONFIG_IR_SHARP_DECODER is not set
+> CONFIG_IR_MCE_KBD_DECODER=3Dm
+> # CONFIG_IR_XMP_DECODER is not set
+> CONFIG_IR_IMON_DECODER=3Dm
+> # CONFIG_IR_RCMM_DECODER is not set
+> CONFIG_RC_DEVICES=3Dy
+> # CONFIG_RC_ATI_REMOTE is not set
+> CONFIG_IR_ENE=3Dm
+> # CONFIG_IR_IMON is not set
+> # CONFIG_IR_IMON_RAW is not set
+> # CONFIG_IR_MCEUSB is not set
+> CONFIG_IR_ITE_CIR=3Dm
+> CONFIG_IR_FINTEK=3Dm
+> CONFIG_IR_NUVOTON=3Dm
+> # CONFIG_IR_REDRAT3 is not set
+> # CONFIG_IR_STREAMZAP is not set
+> CONFIG_IR_WINBOND_CIR=3Dm
+> # CONFIG_IR_IGORPLUGUSB is not set
+> # CONFIG_IR_IGUANA is not set
+> # CONFIG_IR_TTUSBIR is not set
+> # CONFIG_RC_LOOPBACK is not set
+> CONFIG_IR_SERIAL=3Dm
+> CONFIG_IR_SERIAL_TRANSMITTER=3Dy
+> CONFIG_IR_SIR=3Dm
+> # CONFIG_RC_XBOX_DVD is not set
+> # CONFIG_IR_TOY is not set
+> CONFIG_MEDIA_CEC_SUPPORT=3Dy
+> # CONFIG_CEC_CH7322 is not set
+> # CONFIG_CEC_SECO is not set
+> # CONFIG_USB_PULSE8_CEC is not set
+> # CONFIG_USB_RAINSHADOW_CEC is not set
+> CONFIG_MEDIA_SUPPORT=3Dm
+> # CONFIG_MEDIA_SUPPORT_FILTER is not set
+> # CONFIG_MEDIA_SUBDRV_AUTOSELECT is not set
+> =
+
+> #
+> # Media device types
+> #
+> CONFIG_MEDIA_CAMERA_SUPPORT=3Dy
+> CONFIG_MEDIA_ANALOG_TV_SUPPORT=3Dy
+> CONFIG_MEDIA_DIGITAL_TV_SUPPORT=3Dy
+> CONFIG_MEDIA_RADIO_SUPPORT=3Dy
+> CONFIG_MEDIA_SDR_SUPPORT=3Dy
+> CONFIG_MEDIA_PLATFORM_SUPPORT=3Dy
+> CONFIG_MEDIA_TEST_SUPPORT=3Dy
+> # end of Media device types
+> =
+
+> #
+> # Media core support
+> #
+> CONFIG_VIDEO_DEV=3Dm
+> CONFIG_MEDIA_CONTROLLER=3Dy
+> CONFIG_DVB_CORE=3Dm
+> # end of Media core support
+> =
+
+> #
+> # Video4Linux options
+> #
+> CONFIG_VIDEO_V4L2=3Dm
+> CONFIG_VIDEO_V4L2_I2C=3Dy
+> CONFIG_VIDEO_V4L2_SUBDEV_API=3Dy
+> # CONFIG_VIDEO_ADV_DEBUG is not set
+> # CONFIG_VIDEO_FIXED_MINOR_RANGES is not set
+> # end of Video4Linux options
+> =
+
+> #
+> # Media controller options
+> #
+> # CONFIG_MEDIA_CONTROLLER_DVB is not set
+> # end of Media controller options
+> =
+
+> #
+> # Digital TV options
+> #
+> # CONFIG_DVB_MMAP is not set
+> CONFIG_DVB_NET=3Dy
+> CONFIG_DVB_MAX_ADAPTERS=3D16
+> CONFIG_DVB_DYNAMIC_MINORS=3Dy
+> # CONFIG_DVB_DEMUX_SECTION_LOSS_LOG is not set
+> # CONFIG_DVB_ULE_DEBUG is not set
+> # end of Digital TV options
+> =
+
+> #
+> # Media drivers
+> #
+> # CONFIG_MEDIA_USB_SUPPORT is not set
+> # CONFIG_MEDIA_PCI_SUPPORT is not set
+> CONFIG_RADIO_ADAPTERS=3Dy
+> # CONFIG_RADIO_SI470X is not set
+> # CONFIG_RADIO_SI4713 is not set
+> # CONFIG_USB_MR800 is not set
+> # CONFIG_USB_DSBR is not set
+> # CONFIG_RADIO_MAXIRADIO is not set
+> # CONFIG_RADIO_SHARK is not set
+> # CONFIG_RADIO_SHARK2 is not set
+> # CONFIG_USB_KEENE is not set
+> # CONFIG_USB_RAREMONO is not set
+> # CONFIG_USB_MA901 is not set
+> # CONFIG_RADIO_TEA5764 is not set
+> # CONFIG_RADIO_SAA7706H is not set
+> # CONFIG_RADIO_TEF6862 is not set
+> # CONFIG_RADIO_WL1273 is not set
+> CONFIG_VIDEOBUF2_CORE=3Dm
+> CONFIG_VIDEOBUF2_V4L2=3Dm
+> CONFIG_VIDEOBUF2_MEMOPS=3Dm
+> CONFIG_VIDEOBUF2_VMALLOC=3Dm
+> # CONFIG_V4L_PLATFORM_DRIVERS is not set
+> # CONFIG_V4L_MEM2MEM_DRIVERS is not set
+> # CONFIG_DVB_PLATFORM_DRIVERS is not set
+> # CONFIG_SDR_PLATFORM_DRIVERS is not set
+> =
+
+> #
+> # MMC/SDIO DVB adapters
+> #
+> # CONFIG_SMS_SDIO_DRV is not set
+> # CONFIG_V4L_TEST_DRIVERS is not set
+> # CONFIG_DVB_TEST_DRIVERS is not set
+> =
+
+> #
+> # FireWire (IEEE 1394) Adapters
+> #
+> # CONFIG_DVB_FIREDTV is not set
+> # end of Media drivers
+> =
+
+> #
+> # Media ancillary drivers
+> #
+> CONFIG_MEDIA_ATTACH=3Dy
+> CONFIG_VIDEO_IR_I2C=3Dm
+> =
+
+> #
+> # Audio decoders, processors and mixers
+> #
+> # CONFIG_VIDEO_TVAUDIO is not set
+> # CONFIG_VIDEO_TDA7432 is not set
+> # CONFIG_VIDEO_TDA9840 is not set
+> # CONFIG_VIDEO_TEA6415C is not set
+> # CONFIG_VIDEO_TEA6420 is not set
+> # CONFIG_VIDEO_MSP3400 is not set
+> # CONFIG_VIDEO_CS3308 is not set
+> # CONFIG_VIDEO_CS5345 is not set
+> # CONFIG_VIDEO_CS53L32A is not set
+> # CONFIG_VIDEO_TLV320AIC23B is not set
+> # CONFIG_VIDEO_UDA1342 is not set
+> # CONFIG_VIDEO_WM8775 is not set
+> # CONFIG_VIDEO_WM8739 is not set
+> # CONFIG_VIDEO_VP27SMPX is not set
+> # CONFIG_VIDEO_SONY_BTF_MPX is not set
+> # end of Audio decoders, processors and mixers
+> =
+
+> #
+> # RDS decoders
+> #
+> # CONFIG_VIDEO_SAA6588 is not set
+> # end of RDS decoders
+> =
+
+> #
+> # Video decoders
+> #
+> # CONFIG_VIDEO_ADV7180 is not set
+> # CONFIG_VIDEO_ADV7183 is not set
+> # CONFIG_VIDEO_ADV7604 is not set
+> # CONFIG_VIDEO_ADV7842 is not set
+> # CONFIG_VIDEO_BT819 is not set
+> # CONFIG_VIDEO_BT856 is not set
+> # CONFIG_VIDEO_BT866 is not set
+> # CONFIG_VIDEO_KS0127 is not set
+> # CONFIG_VIDEO_ML86V7667 is not set
+> # CONFIG_VIDEO_SAA7110 is not set
+> # CONFIG_VIDEO_SAA711X is not set
+> # CONFIG_VIDEO_TC358743 is not set
+> # CONFIG_VIDEO_TVP514X is not set
+> # CONFIG_VIDEO_TVP5150 is not set
+> # CONFIG_VIDEO_TVP7002 is not set
+> # CONFIG_VIDEO_TW2804 is not set
+> # CONFIG_VIDEO_TW9903 is not set
+> # CONFIG_VIDEO_TW9906 is not set
+> # CONFIG_VIDEO_TW9910 is not set
+> # CONFIG_VIDEO_VPX3220 is not set
+> =
+
+> #
+> # Video and audio decoders
+> #
+> # CONFIG_VIDEO_SAA717X is not set
+> # CONFIG_VIDEO_CX25840 is not set
+> # end of Video decoders
+> =
+
+> #
+> # Video encoders
+> #
+> # CONFIG_VIDEO_SAA7127 is not set
+> # CONFIG_VIDEO_SAA7185 is not set
+> # CONFIG_VIDEO_ADV7170 is not set
+> # CONFIG_VIDEO_ADV7175 is not set
+> # CONFIG_VIDEO_ADV7343 is not set
+> # CONFIG_VIDEO_ADV7393 is not set
+> # CONFIG_VIDEO_ADV7511 is not set
+> # CONFIG_VIDEO_AD9389B is not set
+> # CONFIG_VIDEO_AK881X is not set
+> # CONFIG_VIDEO_THS8200 is not set
+> # end of Video encoders
+> =
+
+> #
+> # Video improvement chips
+> #
+> # CONFIG_VIDEO_UPD64031A is not set
+> # CONFIG_VIDEO_UPD64083 is not set
+> # end of Video improvement chips
+> =
+
+> #
+> # Audio/Video compression chips
+> #
+> # CONFIG_VIDEO_SAA6752HS is not set
+> # end of Audio/Video compression chips
+> =
+
+> #
+> # SDR tuner chips
+> #
+> # CONFIG_SDR_MAX2175 is not set
+> # end of SDR tuner chips
+> =
+
+> #
+> # Miscellaneous helper chips
+> #
+> # CONFIG_VIDEO_THS7303 is not set
+> # CONFIG_VIDEO_M52790 is not set
+> # CONFIG_VIDEO_I2C is not set
+> # CONFIG_VIDEO_ST_MIPID02 is not set
+> # end of Miscellaneous helper chips
+> =
+
+> #
+> # Camera sensor devices
+> #
+> # CONFIG_VIDEO_HI556 is not set
+> # CONFIG_VIDEO_IMX214 is not set
+> # CONFIG_VIDEO_IMX219 is not set
+> # CONFIG_VIDEO_IMX258 is not set
+> # CONFIG_VIDEO_IMX274 is not set
+> # CONFIG_VIDEO_IMX290 is not set
+> # CONFIG_VIDEO_IMX319 is not set
+> # CONFIG_VIDEO_IMX355 is not set
+> # CONFIG_VIDEO_OV02A10 is not set
+> # CONFIG_VIDEO_OV2640 is not set
+> # CONFIG_VIDEO_OV2659 is not set
+> # CONFIG_VIDEO_OV2680 is not set
+> # CONFIG_VIDEO_OV2685 is not set
+> # CONFIG_VIDEO_OV2740 is not set
+> # CONFIG_VIDEO_OV5647 is not set
+> # CONFIG_VIDEO_OV5648 is not set
+> # CONFIG_VIDEO_OV6650 is not set
+> # CONFIG_VIDEO_OV5670 is not set
+> # CONFIG_VIDEO_OV5675 is not set
+> # CONFIG_VIDEO_OV5695 is not set
+> # CONFIG_VIDEO_OV7251 is not set
+> # CONFIG_VIDEO_OV772X is not set
+> # CONFIG_VIDEO_OV7640 is not set
+> # CONFIG_VIDEO_OV7670 is not set
+> # CONFIG_VIDEO_OV7740 is not set
+> # CONFIG_VIDEO_OV8856 is not set
+> # CONFIG_VIDEO_OV8865 is not set
+> # CONFIG_VIDEO_OV9640 is not set
+> # CONFIG_VIDEO_OV9650 is not set
+> # CONFIG_VIDEO_OV9734 is not set
+> # CONFIG_VIDEO_OV13858 is not set
+> # CONFIG_VIDEO_VS6624 is not set
+> # CONFIG_VIDEO_MT9M001 is not set
+> # CONFIG_VIDEO_MT9M032 is not set
+> # CONFIG_VIDEO_MT9M111 is not set
+> # CONFIG_VIDEO_MT9P031 is not set
+> # CONFIG_VIDEO_MT9T001 is not set
+> # CONFIG_VIDEO_MT9T112 is not set
+> # CONFIG_VIDEO_MT9V011 is not set
+> # CONFIG_VIDEO_MT9V032 is not set
+> # CONFIG_VIDEO_MT9V111 is not set
+> # CONFIG_VIDEO_SR030PC30 is not set
+> # CONFIG_VIDEO_NOON010PC30 is not set
+> # CONFIG_VIDEO_M5MOLS is not set
+> # CONFIG_VIDEO_RDACM20 is not set
+> # CONFIG_VIDEO_RDACM21 is not set
+> # CONFIG_VIDEO_RJ54N1 is not set
+> # CONFIG_VIDEO_S5K6AA is not set
+> # CONFIG_VIDEO_S5K6A3 is not set
+> # CONFIG_VIDEO_S5K4ECGX is not set
+> # CONFIG_VIDEO_S5K5BAF is not set
+> # CONFIG_VIDEO_CCS is not set
+> # CONFIG_VIDEO_ET8EK8 is not set
+> # CONFIG_VIDEO_S5C73M3 is not set
+> # end of Camera sensor devices
+> =
+
+> #
+> # Lens drivers
+> #
+> # CONFIG_VIDEO_AD5820 is not set
+> # CONFIG_VIDEO_AK7375 is not set
+> # CONFIG_VIDEO_DW9714 is not set
+> # CONFIG_VIDEO_DW9768 is not set
+> # CONFIG_VIDEO_DW9807_VCM is not set
+> # end of Lens drivers
+> =
+
+> #
+> # Flash devices
+> #
+> # CONFIG_VIDEO_ADP1653 is not set
+> # CONFIG_VIDEO_LM3560 is not set
+> # CONFIG_VIDEO_LM3646 is not set
+> # end of Flash devices
+> =
+
+> #
+> # SPI helper chips
+> #
+> # CONFIG_VIDEO_GS1662 is not set
+> # end of SPI helper chips
+> =
+
+> #
+> # Media SPI Adapters
+> #
+> CONFIG_CXD2880_SPI_DRV=3Dm
+> # end of Media SPI Adapters
+> =
+
+> CONFIG_MEDIA_TUNER=3Dm
+> =
+
+> #
+> # Customize TV tuners
+> #
+> CONFIG_MEDIA_TUNER_SIMPLE=3Dm
+> CONFIG_MEDIA_TUNER_TDA18250=3Dm
+> CONFIG_MEDIA_TUNER_TDA8290=3Dm
+> CONFIG_MEDIA_TUNER_TDA827X=3Dm
+> CONFIG_MEDIA_TUNER_TDA18271=3Dm
+> CONFIG_MEDIA_TUNER_TDA9887=3Dm
+> CONFIG_MEDIA_TUNER_TEA5761=3Dm
+> CONFIG_MEDIA_TUNER_TEA5767=3Dm
+> CONFIG_MEDIA_TUNER_MSI001=3Dm
+> CONFIG_MEDIA_TUNER_MT20XX=3Dm
+> CONFIG_MEDIA_TUNER_MT2060=3Dm
+> CONFIG_MEDIA_TUNER_MT2063=3Dm
+> CONFIG_MEDIA_TUNER_MT2266=3Dm
+> CONFIG_MEDIA_TUNER_MT2131=3Dm
+> CONFIG_MEDIA_TUNER_QT1010=3Dm
+> CONFIG_MEDIA_TUNER_XC2028=3Dm
+> CONFIG_MEDIA_TUNER_XC5000=3Dm
+> CONFIG_MEDIA_TUNER_XC4000=3Dm
+> CONFIG_MEDIA_TUNER_MXL5005S=3Dm
+> CONFIG_MEDIA_TUNER_MXL5007T=3Dm
+> CONFIG_MEDIA_TUNER_MC44S803=3Dm
+> CONFIG_MEDIA_TUNER_MAX2165=3Dm
+> CONFIG_MEDIA_TUNER_TDA18218=3Dm
+> CONFIG_MEDIA_TUNER_FC0011=3Dm
+> CONFIG_MEDIA_TUNER_FC0012=3Dm
+> CONFIG_MEDIA_TUNER_FC0013=3Dm
+> CONFIG_MEDIA_TUNER_TDA18212=3Dm
+> CONFIG_MEDIA_TUNER_E4000=3Dm
+> CONFIG_MEDIA_TUNER_FC2580=3Dm
+> CONFIG_MEDIA_TUNER_M88RS6000T=3Dm
+> CONFIG_MEDIA_TUNER_TUA9001=3Dm
+> CONFIG_MEDIA_TUNER_SI2157=3Dm
+> CONFIG_MEDIA_TUNER_IT913X=3Dm
+> CONFIG_MEDIA_TUNER_R820T=3Dm
+> CONFIG_MEDIA_TUNER_MXL301RF=3Dm
+> CONFIG_MEDIA_TUNER_QM1D1C0042=3Dm
+> CONFIG_MEDIA_TUNER_QM1D1B0004=3Dm
+> # end of Customize TV tuners
+> =
+
+> #
+> # Customise DVB Frontends
+> #
+> =
+
+> #
+> # Multistandard (satellite) frontends
+> #
+> CONFIG_DVB_STB0899=3Dm
+> CONFIG_DVB_STB6100=3Dm
+> CONFIG_DVB_STV090x=3Dm
+> CONFIG_DVB_STV0910=3Dm
+> CONFIG_DVB_STV6110x=3Dm
+> CONFIG_DVB_STV6111=3Dm
+> CONFIG_DVB_MXL5XX=3Dm
+> CONFIG_DVB_M88DS3103=3Dm
+> =
+
+> #
+> # Multistandard (cable + terrestrial) frontends
+> #
+> CONFIG_DVB_DRXK=3Dm
+> CONFIG_DVB_TDA18271C2DD=3Dm
+> CONFIG_DVB_SI2165=3Dm
+> CONFIG_DVB_MN88472=3Dm
+> CONFIG_DVB_MN88473=3Dm
+> =
+
+> #
+> # DVB-S (satellite) frontends
+> #
+> CONFIG_DVB_CX24110=3Dm
+> CONFIG_DVB_CX24123=3Dm
+> CONFIG_DVB_MT312=3Dm
+> CONFIG_DVB_ZL10036=3Dm
+> CONFIG_DVB_ZL10039=3Dm
+> CONFIG_DVB_S5H1420=3Dm
+> CONFIG_DVB_STV0288=3Dm
+> CONFIG_DVB_STB6000=3Dm
+> CONFIG_DVB_STV0299=3Dm
+> CONFIG_DVB_STV6110=3Dm
+> CONFIG_DVB_STV0900=3Dm
+> CONFIG_DVB_TDA8083=3Dm
+> CONFIG_DVB_TDA10086=3Dm
+> CONFIG_DVB_TDA8261=3Dm
+> CONFIG_DVB_VES1X93=3Dm
+> CONFIG_DVB_TUNER_ITD1000=3Dm
+> CONFIG_DVB_TUNER_CX24113=3Dm
+> CONFIG_DVB_TDA826X=3Dm
+> CONFIG_DVB_TUA6100=3Dm
+> CONFIG_DVB_CX24116=3Dm
+> CONFIG_DVB_CX24117=3Dm
+> CONFIG_DVB_CX24120=3Dm
+> CONFIG_DVB_SI21XX=3Dm
+> CONFIG_DVB_TS2020=3Dm
+> CONFIG_DVB_DS3000=3Dm
+> CONFIG_DVB_MB86A16=3Dm
+> CONFIG_DVB_TDA10071=3Dm
+> =
+
+> #
+> # DVB-T (terrestrial) frontends
+> #
+> CONFIG_DVB_SP8870=3Dm
+> CONFIG_DVB_SP887X=3Dm
+> CONFIG_DVB_CX22700=3Dm
+> CONFIG_DVB_CX22702=3Dm
+> CONFIG_DVB_S5H1432=3Dm
+> CONFIG_DVB_DRXD=3Dm
+> CONFIG_DVB_L64781=3Dm
+> CONFIG_DVB_TDA1004X=3Dm
+> CONFIG_DVB_NXT6000=3Dm
+> CONFIG_DVB_MT352=3Dm
+> CONFIG_DVB_ZL10353=3Dm
+> CONFIG_DVB_DIB3000MB=3Dm
+> CONFIG_DVB_DIB3000MC=3Dm
+> CONFIG_DVB_DIB7000M=3Dm
+> CONFIG_DVB_DIB7000P=3Dm
+> CONFIG_DVB_DIB9000=3Dm
+> CONFIG_DVB_TDA10048=3Dm
+> CONFIG_DVB_AF9013=3Dm
+> CONFIG_DVB_EC100=3Dm
+> CONFIG_DVB_STV0367=3Dm
+> CONFIG_DVB_CXD2820R=3Dm
+> CONFIG_DVB_CXD2841ER=3Dm
+> CONFIG_DVB_RTL2830=3Dm
+> CONFIG_DVB_RTL2832=3Dm
+> CONFIG_DVB_RTL2832_SDR=3Dm
+> CONFIG_DVB_SI2168=3Dm
+> CONFIG_DVB_ZD1301_DEMOD=3Dm
+> CONFIG_DVB_CXD2880=3Dm
+> =
+
+> #
+> # DVB-C (cable) frontends
+> #
+> CONFIG_DVB_VES1820=3Dm
+> CONFIG_DVB_TDA10021=3Dm
+> CONFIG_DVB_TDA10023=3Dm
+> CONFIG_DVB_STV0297=3Dm
+> =
+
+> #
+> # ATSC (North American/Korean Terrestrial/Cable DTV) frontends
+> #
+> CONFIG_DVB_NXT200X=3Dm
+> CONFIG_DVB_OR51211=3Dm
+> CONFIG_DVB_OR51132=3Dm
+> CONFIG_DVB_BCM3510=3Dm
+> CONFIG_DVB_LGDT330X=3Dm
+> CONFIG_DVB_LGDT3305=3Dm
+> CONFIG_DVB_LGDT3306A=3Dm
+> CONFIG_DVB_LG2160=3Dm
+> CONFIG_DVB_S5H1409=3Dm
+> CONFIG_DVB_AU8522=3Dm
+> CONFIG_DVB_AU8522_DTV=3Dm
+> CONFIG_DVB_AU8522_V4L=3Dm
+> CONFIG_DVB_S5H1411=3Dm
+> CONFIG_DVB_MXL692=3Dm
+> =
+
+> #
+> # ISDB-T (terrestrial) frontends
+> #
+> CONFIG_DVB_S921=3Dm
+> CONFIG_DVB_DIB8000=3Dm
+> CONFIG_DVB_MB86A20S=3Dm
+> =
+
+> #
+> # ISDB-S (satellite) & ISDB-T (terrestrial) frontends
+> #
+> CONFIG_DVB_TC90522=3Dm
+> CONFIG_DVB_MN88443X=3Dm
+> =
+
+> #
+> # Digital terrestrial only tuners/PLL
+> #
+> CONFIG_DVB_PLL=3Dm
+> CONFIG_DVB_TUNER_DIB0070=3Dm
+> CONFIG_DVB_TUNER_DIB0090=3Dm
+> =
+
+> #
+> # SEC control devices for DVB-S
+> #
+> CONFIG_DVB_DRX39XYJ=3Dm
+> CONFIG_DVB_LNBH25=3Dm
+> CONFIG_DVB_LNBH29=3Dm
+> CONFIG_DVB_LNBP21=3Dm
+> CONFIG_DVB_LNBP22=3Dm
+> CONFIG_DVB_ISL6405=3Dm
+> CONFIG_DVB_ISL6421=3Dm
+> CONFIG_DVB_ISL6423=3Dm
+> CONFIG_DVB_A8293=3Dm
+> CONFIG_DVB_LGS8GL5=3Dm
+> CONFIG_DVB_LGS8GXX=3Dm
+> CONFIG_DVB_ATBM8830=3Dm
+> CONFIG_DVB_TDA665x=3Dm
+> CONFIG_DVB_IX2505V=3Dm
+> CONFIG_DVB_M88RS2000=3Dm
+> CONFIG_DVB_AF9033=3Dm
+> CONFIG_DVB_HORUS3A=3Dm
+> CONFIG_DVB_ASCOT2E=3Dm
+> CONFIG_DVB_HELENE=3Dm
+> =
+
+> #
+> # Common Interface (EN50221) controller drivers
+> #
+> CONFIG_DVB_CXD2099=3Dm
+> CONFIG_DVB_SP2=3Dm
+> # end of Customise DVB Frontends
+> =
+
+> #
+> # Tools to develop new frontends
+> #
+> # CONFIG_DVB_DUMMY_FE is not set
+> # end of Media ancillary drivers
+> =
+
+> #
+> # Graphics support
+> #
+> # CONFIG_AGP is not set
+> CONFIG_INTEL_GTT=3Dm
+> CONFIG_VGA_ARB=3Dy
+> CONFIG_VGA_ARB_MAX_GPUS=3D64
+> CONFIG_VGA_SWITCHEROO=3Dy
+> CONFIG_DRM=3Dm
+> CONFIG_DRM_MIPI_DSI=3Dy
+> CONFIG_DRM_DP_AUX_CHARDEV=3Dy
+> # CONFIG_DRM_DEBUG_SELFTEST is not set
+> CONFIG_DRM_KMS_HELPER=3Dm
+> CONFIG_DRM_KMS_FB_HELPER=3Dy
+> CONFIG_DRM_FBDEV_EMULATION=3Dy
+> CONFIG_DRM_FBDEV_OVERALLOC=3D100
+> CONFIG_DRM_LOAD_EDID_FIRMWARE=3Dy
+> # CONFIG_DRM_DP_CEC is not set
+> CONFIG_DRM_TTM=3Dm
+> CONFIG_DRM_VRAM_HELPER=3Dm
+> CONFIG_DRM_TTM_HELPER=3Dm
+> CONFIG_DRM_GEM_SHMEM_HELPER=3Dy
+> =
+
+> #
+> # I2C encoder or helper chips
+> #
+> CONFIG_DRM_I2C_CH7006=3Dm
+> CONFIG_DRM_I2C_SIL164=3Dm
+> # CONFIG_DRM_I2C_NXP_TDA998X is not set
+> # CONFIG_DRM_I2C_NXP_TDA9950 is not set
+> # end of I2C encoder or helper chips
+> =
+
+> #
+> # ARM devices
+> #
+> # end of ARM devices
+> =
+
+> # CONFIG_DRM_RADEON is not set
+> # CONFIG_DRM_AMDGPU is not set
+> # CONFIG_DRM_NOUVEAU is not set
+> CONFIG_DRM_I915=3Dm
+> CONFIG_DRM_I915_FORCE_PROBE=3D""
+> CONFIG_DRM_I915_CAPTURE_ERROR=3Dy
+> CONFIG_DRM_I915_COMPRESS_ERROR=3Dy
+> CONFIG_DRM_I915_USERPTR=3Dy
+> CONFIG_DRM_I915_GVT=3Dy
+> CONFIG_DRM_I915_GVT_KVMGT=3Dm
+> CONFIG_DRM_I915_REQUEST_TIMEOUT=3D20000
+> CONFIG_DRM_I915_FENCE_TIMEOUT=3D10000
+> CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND=3D250
+> CONFIG_DRM_I915_HEARTBEAT_INTERVAL=3D2500
+> CONFIG_DRM_I915_PREEMPT_TIMEOUT=3D640
+> CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=3D8000
+> CONFIG_DRM_I915_STOP_TIMEOUT=3D100
+> CONFIG_DRM_I915_TIMESLICE_DURATION=3D1
+> # CONFIG_DRM_VGEM is not set
+> # CONFIG_DRM_VKMS is not set
+> # CONFIG_DRM_VMWGFX is not set
+> CONFIG_DRM_GMA500=3Dm
+> # CONFIG_DRM_UDL is not set
+> CONFIG_DRM_AST=3Dm
+> CONFIG_DRM_MGAG200=3Dm
+> CONFIG_DRM_QXL=3Dm
+> CONFIG_DRM_BOCHS=3Dm
+> CONFIG_DRM_VIRTIO_GPU=3Dm
+> CONFIG_DRM_PANEL=3Dy
+> =
+
+> #
+> # Display Panels
+> #
+> # CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN is not set
+> # end of Display Panels
+> =
+
+> CONFIG_DRM_BRIDGE=3Dy
+> CONFIG_DRM_PANEL_BRIDGE=3Dy
+> =
+
+> #
+> # Display Interface Bridges
+> #
+> # CONFIG_DRM_ANALOGIX_ANX78XX is not set
+> # end of Display Interface Bridges
+> =
+
+> # CONFIG_DRM_ETNAVIV is not set
+> CONFIG_DRM_CIRRUS_QEMU=3Dm
+> # CONFIG_DRM_GM12U320 is not set
+> # CONFIG_TINYDRM_HX8357D is not set
+> # CONFIG_TINYDRM_ILI9225 is not set
+> # CONFIG_TINYDRM_ILI9341 is not set
+> # CONFIG_TINYDRM_ILI9486 is not set
+> # CONFIG_TINYDRM_MI0283QT is not set
+> # CONFIG_TINYDRM_REPAPER is not set
+> # CONFIG_TINYDRM_ST7586 is not set
+> # CONFIG_TINYDRM_ST7735R is not set
+> # CONFIG_DRM_XEN_FRONTEND is not set
+> # CONFIG_DRM_VBOXVIDEO is not set
+> # CONFIG_DRM_GUD is not set
+> # CONFIG_DRM_LEGACY is not set
+> CONFIG_DRM_PANEL_ORIENTATION_QUIRKS=3Dy
+> =
+
+> #
+> # Frame buffer Devices
+> #
+> CONFIG_FB_CMDLINE=3Dy
+> CONFIG_FB_NOTIFY=3Dy
+> CONFIG_FB=3Dy
+> # CONFIG_FIRMWARE_EDID is not set
+> CONFIG_FB_BOOT_VESA_SUPPORT=3Dy
+> CONFIG_FB_CFB_FILLRECT=3Dy
+> CONFIG_FB_CFB_COPYAREA=3Dy
+> CONFIG_FB_CFB_IMAGEBLIT=3Dy
+> CONFIG_FB_SYS_FILLRECT=3Dm
+> CONFIG_FB_SYS_COPYAREA=3Dm
+> CONFIG_FB_SYS_IMAGEBLIT=3Dm
+> # CONFIG_FB_FOREIGN_ENDIAN is not set
+> CONFIG_FB_SYS_FOPS=3Dm
+> CONFIG_FB_DEFERRED_IO=3Dy
+> # CONFIG_FB_MODE_HELPERS is not set
+> CONFIG_FB_TILEBLITTING=3Dy
+> =
+
+> #
+> # Frame buffer hardware drivers
+> #
+> # CONFIG_FB_CIRRUS is not set
+> # CONFIG_FB_PM2 is not set
+> # CONFIG_FB_CYBER2000 is not set
+> # CONFIG_FB_ARC is not set
+> # CONFIG_FB_ASILIANT is not set
+> # CONFIG_FB_IMSTT is not set
+> # CONFIG_FB_VGA16 is not set
+> # CONFIG_FB_UVESA is not set
+> CONFIG_FB_VESA=3Dy
+> CONFIG_FB_EFI=3Dy
+> # CONFIG_FB_N411 is not set
+> # CONFIG_FB_HGA is not set
+> # CONFIG_FB_OPENCORES is not set
+> # CONFIG_FB_S1D13XXX is not set
+> # CONFIG_FB_NVIDIA is not set
+> # CONFIG_FB_RIVA is not set
+> # CONFIG_FB_I740 is not set
+> # CONFIG_FB_LE80578 is not set
+> # CONFIG_FB_MATROX is not set
+> # CONFIG_FB_RADEON is not set
+> # CONFIG_FB_ATY128 is not set
+> # CONFIG_FB_ATY is not set
+> # CONFIG_FB_S3 is not set
+> # CONFIG_FB_SAVAGE is not set
+> # CONFIG_FB_SIS is not set
+> # CONFIG_FB_VIA is not set
+> # CONFIG_FB_NEOMAGIC is not set
+> # CONFIG_FB_KYRO is not set
+> # CONFIG_FB_3DFX is not set
+> # CONFIG_FB_VOODOO1 is not set
+> # CONFIG_FB_VT8623 is not set
+> # CONFIG_FB_TRIDENT is not set
+> # CONFIG_FB_ARK is not set
+> # CONFIG_FB_PM3 is not set
+> # CONFIG_FB_CARMINE is not set
+> # CONFIG_FB_SM501 is not set
+> # CONFIG_FB_SMSCUFX is not set
+> # CONFIG_FB_UDL is not set
+> # CONFIG_FB_IBM_GXT4500 is not set
+> # CONFIG_FB_VIRTUAL is not set
+> # CONFIG_XEN_FBDEV_FRONTEND is not set
+> # CONFIG_FB_METRONOME is not set
+> # CONFIG_FB_MB862XX is not set
+> CONFIG_FB_HYPERV=3Dm
+> # CONFIG_FB_SIMPLE is not set
+> # CONFIG_FB_SM712 is not set
+> # end of Frame buffer Devices
+> =
+
+> #
+> # Backlight & LCD device support
+> #
+> CONFIG_LCD_CLASS_DEVICE=3Dm
+> # CONFIG_LCD_L4F00242T03 is not set
+> # CONFIG_LCD_LMS283GF05 is not set
+> # CONFIG_LCD_LTV350QV is not set
+> # CONFIG_LCD_ILI922X is not set
+> # CONFIG_LCD_ILI9320 is not set
+> # CONFIG_LCD_TDO24M is not set
+> # CONFIG_LCD_VGG2432A4 is not set
+> CONFIG_LCD_PLATFORM=3Dm
+> # CONFIG_LCD_AMS369FG06 is not set
+> # CONFIG_LCD_LMS501KF03 is not set
+> # CONFIG_LCD_HX8357 is not set
+> # CONFIG_LCD_OTM3225A is not set
+> CONFIG_BACKLIGHT_CLASS_DEVICE=3Dy
+> # CONFIG_BACKLIGHT_KTD253 is not set
+> # CONFIG_BACKLIGHT_PWM is not set
+> CONFIG_BACKLIGHT_APPLE=3Dm
+> # CONFIG_BACKLIGHT_QCOM_WLED is not set
+> # CONFIG_BACKLIGHT_SAHARA is not set
+> # CONFIG_BACKLIGHT_ADP8860 is not set
+> # CONFIG_BACKLIGHT_ADP8870 is not set
+> # CONFIG_BACKLIGHT_LM3630A is not set
+> # CONFIG_BACKLIGHT_LM3639 is not set
+> CONFIG_BACKLIGHT_LP855X=3Dm
+> # CONFIG_BACKLIGHT_GPIO is not set
+> # CONFIG_BACKLIGHT_LV5207LP is not set
+> # CONFIG_BACKLIGHT_BD6107 is not set
+> # CONFIG_BACKLIGHT_ARCXCNN is not set
+> # end of Backlight & LCD device support
+> =
+
+> CONFIG_HDMI=3Dy
+> =
+
+> #
+> # Console display driver support
+> #
+> CONFIG_VGA_CONSOLE=3Dy
+> CONFIG_DUMMY_CONSOLE=3Dy
+> CONFIG_DUMMY_CONSOLE_COLUMNS=3D80
+> CONFIG_DUMMY_CONSOLE_ROWS=3D25
+> CONFIG_FRAMEBUFFER_CONSOLE=3Dy
+> CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=3Dy
+> CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=3Dy
+> # CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER is not set
+> # end of Console display driver support
+> =
+
+> CONFIG_LOGO=3Dy
+> # CONFIG_LOGO_LINUX_MONO is not set
+> # CONFIG_LOGO_LINUX_VGA16 is not set
+> CONFIG_LOGO_LINUX_CLUT224=3Dy
+> # end of Graphics support
+> =
+
+> # CONFIG_SOUND is not set
+> =
+
+> #
+> # HID support
+> #
+> CONFIG_HID=3Dy
+> CONFIG_HID_BATTERY_STRENGTH=3Dy
+> CONFIG_HIDRAW=3Dy
+> CONFIG_UHID=3Dm
+> CONFIG_HID_GENERIC=3Dy
+> =
+
+> #
+> # Special HID drivers
+> #
+> CONFIG_HID_A4TECH=3Dm
+> # CONFIG_HID_ACCUTOUCH is not set
+> CONFIG_HID_ACRUX=3Dm
+> # CONFIG_HID_ACRUX_FF is not set
+> CONFIG_HID_APPLE=3Dm
+> # CONFIG_HID_APPLEIR is not set
+> CONFIG_HID_ASUS=3Dm
+> CONFIG_HID_AUREAL=3Dm
+> CONFIG_HID_BELKIN=3Dm
+> # CONFIG_HID_BETOP_FF is not set
+> # CONFIG_HID_BIGBEN_FF is not set
+> CONFIG_HID_CHERRY=3Dm
+> CONFIG_HID_CHICONY=3Dm
+> # CONFIG_HID_CORSAIR is not set
+> # CONFIG_HID_COUGAR is not set
+> # CONFIG_HID_MACALLY is not set
+> CONFIG_HID_CMEDIA=3Dm
+> # CONFIG_HID_CP2112 is not set
+> # CONFIG_HID_CREATIVE_SB0540 is not set
+> CONFIG_HID_CYPRESS=3Dm
+> CONFIG_HID_DRAGONRISE=3Dm
+> # CONFIG_DRAGONRISE_FF is not set
+> # CONFIG_HID_EMS_FF is not set
+> # CONFIG_HID_ELAN is not set
+> CONFIG_HID_ELECOM=3Dm
+> # CONFIG_HID_ELO is not set
+> CONFIG_HID_EZKEY=3Dm
+> # CONFIG_HID_FT260 is not set
+> CONFIG_HID_GEMBIRD=3Dm
+> CONFIG_HID_GFRM=3Dm
+> # CONFIG_HID_GLORIOUS is not set
+> # CONFIG_HID_HOLTEK is not set
+> # CONFIG_HID_VIVALDI is not set
+> # CONFIG_HID_GT683R is not set
+> CONFIG_HID_KEYTOUCH=3Dm
+> CONFIG_HID_KYE=3Dm
+> # CONFIG_HID_UCLOGIC is not set
+> CONFIG_HID_WALTOP=3Dm
+> # CONFIG_HID_VIEWSONIC is not set
+> CONFIG_HID_GYRATION=3Dm
+> CONFIG_HID_ICADE=3Dm
+> CONFIG_HID_ITE=3Dm
+> CONFIG_HID_JABRA=3Dm
+> CONFIG_HID_TWINHAN=3Dm
+> CONFIG_HID_KENSINGTON=3Dm
+> CONFIG_HID_LCPOWER=3Dm
+> CONFIG_HID_LED=3Dm
+> CONFIG_HID_LENOVO=3Dm
+> CONFIG_HID_LOGITECH=3Dm
+> CONFIG_HID_LOGITECH_DJ=3Dm
+> CONFIG_HID_LOGITECH_HIDPP=3Dm
+> # CONFIG_LOGITECH_FF is not set
+> # CONFIG_LOGIRUMBLEPAD2_FF is not set
+> # CONFIG_LOGIG940_FF is not set
+> # CONFIG_LOGIWHEELS_FF is not set
+> CONFIG_HID_MAGICMOUSE=3Dy
+> # CONFIG_HID_MALTRON is not set
+> # CONFIG_HID_MAYFLASH is not set
+> # CONFIG_HID_REDRAGON is not set
+> CONFIG_HID_MICROSOFT=3Dm
+> CONFIG_HID_MONTEREY=3Dm
+> CONFIG_HID_MULTITOUCH=3Dm
+> CONFIG_HID_NTI=3Dm
+> # CONFIG_HID_NTRIG is not set
+> CONFIG_HID_ORTEK=3Dm
+> CONFIG_HID_PANTHERLORD=3Dm
+> # CONFIG_PANTHERLORD_FF is not set
+> # CONFIG_HID_PENMOUNT is not set
+> CONFIG_HID_PETALYNX=3Dm
+> CONFIG_HID_PICOLCD=3Dm
+> CONFIG_HID_PICOLCD_FB=3Dy
+> CONFIG_HID_PICOLCD_BACKLIGHT=3Dy
+> CONFIG_HID_PICOLCD_LCD=3Dy
+> CONFIG_HID_PICOLCD_LEDS=3Dy
+> CONFIG_HID_PICOLCD_CIR=3Dy
+> CONFIG_HID_PLANTRONICS=3Dm
+> # CONFIG_HID_PLAYSTATION is not set
+> CONFIG_HID_PRIMAX=3Dm
+> # CONFIG_HID_RETRODE is not set
+> # CONFIG_HID_ROCCAT is not set
+> CONFIG_HID_SAITEK=3Dm
+> CONFIG_HID_SAMSUNG=3Dm
+> # CONFIG_HID_SONY is not set
+> CONFIG_HID_SPEEDLINK=3Dm
+> # CONFIG_HID_STEAM is not set
+> CONFIG_HID_STEELSERIES=3Dm
+> CONFIG_HID_SUNPLUS=3Dm
+> CONFIG_HID_RMI=3Dm
+> CONFIG_HID_GREENASIA=3Dm
+> # CONFIG_GREENASIA_FF is not set
+> CONFIG_HID_HYPERV_MOUSE=3Dm
+> CONFIG_HID_SMARTJOYPLUS=3Dm
+> # CONFIG_SMARTJOYPLUS_FF is not set
+> CONFIG_HID_TIVO=3Dm
+> CONFIG_HID_TOPSEED=3Dm
+> CONFIG_HID_THINGM=3Dm
+> CONFIG_HID_THRUSTMASTER=3Dm
+> # CONFIG_THRUSTMASTER_FF is not set
+> # CONFIG_HID_UDRAW_PS3 is not set
+> # CONFIG_HID_U2FZERO is not set
+> # CONFIG_HID_WACOM is not set
+> CONFIG_HID_WIIMOTE=3Dm
+> CONFIG_HID_XINMO=3Dm
+> CONFIG_HID_ZEROPLUS=3Dm
+> # CONFIG_ZEROPLUS_FF is not set
+> CONFIG_HID_ZYDACRON=3Dm
+> CONFIG_HID_SENSOR_HUB=3Dy
+> CONFIG_HID_SENSOR_CUSTOM_SENSOR=3Dm
+> CONFIG_HID_ALPS=3Dm
+> # CONFIG_HID_MCP2221 is not set
+> # end of Special HID drivers
+> =
+
+> #
+> # USB HID support
+> #
+> CONFIG_USB_HID=3Dy
+> # CONFIG_HID_PID is not set
+> # CONFIG_USB_HIDDEV is not set
+> # end of USB HID support
+> =
+
+> #
+> # I2C HID support
+> #
+> # CONFIG_I2C_HID_ACPI is not set
+> # end of I2C HID support
+> =
+
+> #
+> # Intel ISH HID support
+> #
+> CONFIG_INTEL_ISH_HID=3Dm
+> # CONFIG_INTEL_ISH_FIRMWARE_DOWNLOADER is not set
+> # end of Intel ISH HID support
+> =
+
+> #
+> # AMD SFH HID Support
+> #
+> # CONFIG_AMD_SFH_HID is not set
+> # end of AMD SFH HID Support
+> # end of HID support
+> =
+
+> CONFIG_USB_OHCI_LITTLE_ENDIAN=3Dy
+> CONFIG_USB_SUPPORT=3Dy
+> CONFIG_USB_COMMON=3Dy
+> # CONFIG_USB_LED_TRIG is not set
+> # CONFIG_USB_ULPI_BUS is not set
+> # CONFIG_USB_CONN_GPIO is not set
+> CONFIG_USB_ARCH_HAS_HCD=3Dy
+> CONFIG_USB=3Dy
+> CONFIG_USB_PCI=3Dy
+> CONFIG_USB_ANNOUNCE_NEW_DEVICES=3Dy
+> =
+
+> #
+> # Miscellaneous USB options
+> #
+> CONFIG_USB_DEFAULT_PERSIST=3Dy
+> # CONFIG_USB_FEW_INIT_RETRIES is not set
+> # CONFIG_USB_DYNAMIC_MINORS is not set
+> # CONFIG_USB_OTG is not set
+> # CONFIG_USB_OTG_PRODUCTLIST is not set
+> CONFIG_USB_LEDS_TRIGGER_USBPORT=3Dy
+> CONFIG_USB_AUTOSUSPEND_DELAY=3D2
+> CONFIG_USB_MON=3Dy
+> =
+
+> #
+> # USB Host Controller Drivers
+> #
+> # CONFIG_USB_C67X00_HCD is not set
+> CONFIG_USB_XHCI_HCD=3Dy
+> # CONFIG_USB_XHCI_DBGCAP is not set
+> CONFIG_USB_XHCI_PCI=3Dy
+> # CONFIG_USB_XHCI_PCI_RENESAS is not set
+> # CONFIG_USB_XHCI_PLATFORM is not set
+> CONFIG_USB_EHCI_HCD=3Dy
+> CONFIG_USB_EHCI_ROOT_HUB_TT=3Dy
+> CONFIG_USB_EHCI_TT_NEWSCHED=3Dy
+> CONFIG_USB_EHCI_PCI=3Dy
+> # CONFIG_USB_EHCI_FSL is not set
+> # CONFIG_USB_EHCI_HCD_PLATFORM is not set
+> # CONFIG_USB_OXU210HP_HCD is not set
+> # CONFIG_USB_ISP116X_HCD is not set
+> # CONFIG_USB_FOTG210_HCD is not set
+> # CONFIG_USB_MAX3421_HCD is not set
+> CONFIG_USB_OHCI_HCD=3Dy
+> CONFIG_USB_OHCI_HCD_PCI=3Dy
+> # CONFIG_USB_OHCI_HCD_PLATFORM is not set
+> CONFIG_USB_UHCI_HCD=3Dy
+> # CONFIG_USB_SL811_HCD is not set
+> # CONFIG_USB_R8A66597_HCD is not set
+> # CONFIG_USB_HCD_BCMA is not set
+> # CONFIG_USB_HCD_TEST_MODE is not set
+> =
+
+> #
+> # USB Device Class drivers
+> #
+> # CONFIG_USB_ACM is not set
+> # CONFIG_USB_PRINTER is not set
+> # CONFIG_USB_WDM is not set
+> # CONFIG_USB_TMC is not set
+> =
+
+> #
+> # NOTE: USB_STORAGE depends on SCSI but BLK_DEV_SD may
+> #
+> =
+
+> #
+> # also be needed; see USB_STORAGE Help for more info
+> #
+> CONFIG_USB_STORAGE=3Dm
+> # CONFIG_USB_STORAGE_DEBUG is not set
+> # CONFIG_USB_STORAGE_REALTEK is not set
+> # CONFIG_USB_STORAGE_DATAFAB is not set
+> # CONFIG_USB_STORAGE_FREECOM is not set
+> # CONFIG_USB_STORAGE_ISD200 is not set
+> # CONFIG_USB_STORAGE_USBAT is not set
+> # CONFIG_USB_STORAGE_SDDR09 is not set
+> # CONFIG_USB_STORAGE_SDDR55 is not set
+> # CONFIG_USB_STORAGE_JUMPSHOT is not set
+> # CONFIG_USB_STORAGE_ALAUDA is not set
+> # CONFIG_USB_STORAGE_ONETOUCH is not set
+> # CONFIG_USB_STORAGE_KARMA is not set
+> # CONFIG_USB_STORAGE_CYPRESS_ATACB is not set
+> # CONFIG_USB_STORAGE_ENE_UB6250 is not set
+> # CONFIG_USB_UAS is not set
+> =
+
+> #
+> # USB Imaging devices
+> #
+> # CONFIG_USB_MDC800 is not set
+> # CONFIG_USB_MICROTEK is not set
+> # CONFIG_USBIP_CORE is not set
+> # CONFIG_USB_CDNS_SUPPORT is not set
+> # CONFIG_USB_MUSB_HDRC is not set
+> # CONFIG_USB_DWC3 is not set
+> # CONFIG_USB_DWC2 is not set
+> # CONFIG_USB_CHIPIDEA is not set
+> # CONFIG_USB_ISP1760 is not set
+> =
+
+> #
+> # USB port drivers
+> #
+> # CONFIG_USB_USS720 is not set
+> CONFIG_USB_SERIAL=3Dm
+> CONFIG_USB_SERIAL_GENERIC=3Dy
+> # CONFIG_USB_SERIAL_SIMPLE is not set
+> # CONFIG_USB_SERIAL_AIRCABLE is not set
+> # CONFIG_USB_SERIAL_ARK3116 is not set
+> # CONFIG_USB_SERIAL_BELKIN is not set
+> # CONFIG_USB_SERIAL_CH341 is not set
+> # CONFIG_USB_SERIAL_WHITEHEAT is not set
+> # CONFIG_USB_SERIAL_DIGI_ACCELEPORT is not set
+> # CONFIG_USB_SERIAL_CP210X is not set
+> # CONFIG_USB_SERIAL_CYPRESS_M8 is not set
+> # CONFIG_USB_SERIAL_EMPEG is not set
+> # CONFIG_USB_SERIAL_FTDI_SIO is not set
+> # CONFIG_USB_SERIAL_VISOR is not set
+> # CONFIG_USB_SERIAL_IPAQ is not set
+> # CONFIG_USB_SERIAL_IR is not set
+> # CONFIG_USB_SERIAL_EDGEPORT is not set
+> # CONFIG_USB_SERIAL_EDGEPORT_TI is not set
+> # CONFIG_USB_SERIAL_F81232 is not set
+> # CONFIG_USB_SERIAL_F8153X is not set
+> # CONFIG_USB_SERIAL_GARMIN is not set
+> # CONFIG_USB_SERIAL_IPW is not set
+> # CONFIG_USB_SERIAL_IUU is not set
+> # CONFIG_USB_SERIAL_KEYSPAN_PDA is not set
+> # CONFIG_USB_SERIAL_KEYSPAN is not set
+> # CONFIG_USB_SERIAL_KLSI is not set
+> # CONFIG_USB_SERIAL_KOBIL_SCT is not set
+> # CONFIG_USB_SERIAL_MCT_U232 is not set
+> # CONFIG_USB_SERIAL_METRO is not set
+> # CONFIG_USB_SERIAL_MOS7720 is not set
+> # CONFIG_USB_SERIAL_MOS7840 is not set
+> # CONFIG_USB_SERIAL_MXUPORT is not set
+> # CONFIG_USB_SERIAL_NAVMAN is not set
+> # CONFIG_USB_SERIAL_PL2303 is not set
+> # CONFIG_USB_SERIAL_OTI6858 is not set
+> # CONFIG_USB_SERIAL_QCAUX is not set
+> # CONFIG_USB_SERIAL_QUALCOMM is not set
+> # CONFIG_USB_SERIAL_SPCP8X5 is not set
+> # CONFIG_USB_SERIAL_SAFE is not set
+> # CONFIG_USB_SERIAL_SIERRAWIRELESS is not set
+> # CONFIG_USB_SERIAL_SYMBOL is not set
+> # CONFIG_USB_SERIAL_TI is not set
+> # CONFIG_USB_SERIAL_CYBERJACK is not set
+> # CONFIG_USB_SERIAL_OPTION is not set
+> # CONFIG_USB_SERIAL_OMNINET is not set
+> # CONFIG_USB_SERIAL_OPTICON is not set
+> # CONFIG_USB_SERIAL_XSENS_MT is not set
+> # CONFIG_USB_SERIAL_WISHBONE is not set
+> # CONFIG_USB_SERIAL_SSU100 is not set
+> # CONFIG_USB_SERIAL_QT2 is not set
+> # CONFIG_USB_SERIAL_UPD78F0730 is not set
+> # CONFIG_USB_SERIAL_XR is not set
+> CONFIG_USB_SERIAL_DEBUG=3Dm
+> =
+
+> #
+> # USB Miscellaneous drivers
+> #
+> # CONFIG_USB_EMI62 is not set
+> # CONFIG_USB_EMI26 is not set
+> # CONFIG_USB_ADUTUX is not set
+> # CONFIG_USB_SEVSEG is not set
+> # CONFIG_USB_LEGOTOWER is not set
+> # CONFIG_USB_LCD is not set
+> # CONFIG_USB_CYPRESS_CY7C63 is not set
+> # CONFIG_USB_CYTHERM is not set
+> # CONFIG_USB_IDMOUSE is not set
+> # CONFIG_USB_FTDI_ELAN is not set
+> # CONFIG_USB_APPLEDISPLAY is not set
+> # CONFIG_APPLE_MFI_FASTCHARGE is not set
+> # CONFIG_USB_SISUSBVGA is not set
+> # CONFIG_USB_LD is not set
+> # CONFIG_USB_TRANCEVIBRATOR is not set
+> # CONFIG_USB_IOWARRIOR is not set
+> # CONFIG_USB_TEST is not set
+> # CONFIG_USB_EHSET_TEST_FIXTURE is not set
+> # CONFIG_USB_ISIGHTFW is not set
+> # CONFIG_USB_YUREX is not set
+> # CONFIG_USB_EZUSB_FX2 is not set
+> # CONFIG_USB_HUB_USB251XB is not set
+> # CONFIG_USB_HSIC_USB3503 is not set
+> # CONFIG_USB_HSIC_USB4604 is not set
+> # CONFIG_USB_LINK_LAYER_TEST is not set
+> # CONFIG_USB_CHAOSKEY is not set
+> # CONFIG_USB_ATM is not set
+> =
+
+> #
+> # USB Physical Layer drivers
+> #
+> # CONFIG_NOP_USB_XCEIV is not set
+> # CONFIG_USB_GPIO_VBUS is not set
+> # CONFIG_USB_ISP1301 is not set
+> # end of USB Physical Layer drivers
+> =
+
+> # CONFIG_USB_GADGET is not set
+> CONFIG_TYPEC=3Dy
+> # CONFIG_TYPEC_TCPM is not set
+> CONFIG_TYPEC_UCSI=3Dy
+> # CONFIG_UCSI_CCG is not set
+> CONFIG_UCSI_ACPI=3Dy
+> # CONFIG_TYPEC_TPS6598X is not set
+> # CONFIG_TYPEC_STUSB160X is not set
+> =
+
+> #
+> # USB Type-C Multiplexer/DeMultiplexer Switch support
+> #
+> # CONFIG_TYPEC_MUX_PI3USB30532 is not set
+> # end of USB Type-C Multiplexer/DeMultiplexer Switch support
+> =
+
+> #
+> # USB Type-C Alternate Mode drivers
+> #
+> # CONFIG_TYPEC_DP_ALTMODE is not set
+> # end of USB Type-C Alternate Mode drivers
+> =
+
+> # CONFIG_USB_ROLE_SWITCH is not set
+> CONFIG_MMC=3Dm
+> CONFIG_MMC_BLOCK=3Dm
+> CONFIG_MMC_BLOCK_MINORS=3D8
+> CONFIG_SDIO_UART=3Dm
+> # CONFIG_MMC_TEST is not set
+> =
+
+> #
+> # MMC/SD/SDIO Host Controller Drivers
+> #
+> # CONFIG_MMC_DEBUG is not set
+> CONFIG_MMC_SDHCI=3Dm
+> CONFIG_MMC_SDHCI_IO_ACCESSORS=3Dy
+> CONFIG_MMC_SDHCI_PCI=3Dm
+> CONFIG_MMC_RICOH_MMC=3Dy
+> CONFIG_MMC_SDHCI_ACPI=3Dm
+> CONFIG_MMC_SDHCI_PLTFM=3Dm
+> # CONFIG_MMC_SDHCI_F_SDH30 is not set
+> # CONFIG_MMC_WBSD is not set
+> # CONFIG_MMC_TIFM_SD is not set
+> # CONFIG_MMC_SPI is not set
+> # CONFIG_MMC_CB710 is not set
+> # CONFIG_MMC_VIA_SDMMC is not set
+> # CONFIG_MMC_VUB300 is not set
+> # CONFIG_MMC_USHC is not set
+> # CONFIG_MMC_USDHI6ROL0 is not set
+> # CONFIG_MMC_REALTEK_PCI is not set
+> CONFIG_MMC_CQHCI=3Dm
+> # CONFIG_MMC_HSQ is not set
+> # CONFIG_MMC_TOSHIBA_PCI is not set
+> # CONFIG_MMC_MTK is not set
+> # CONFIG_MMC_SDHCI_XENON is not set
+> # CONFIG_MEMSTICK is not set
+> CONFIG_NEW_LEDS=3Dy
+> CONFIG_LEDS_CLASS=3Dy
+> # CONFIG_LEDS_CLASS_FLASH is not set
+> # CONFIG_LEDS_CLASS_MULTICOLOR is not set
+> # CONFIG_LEDS_BRIGHTNESS_HW_CHANGED is not set
+> =
+
+> #
+> # LED drivers
+> #
+> # CONFIG_LEDS_APU is not set
+> CONFIG_LEDS_LM3530=3Dm
+> # CONFIG_LEDS_LM3532 is not set
+> # CONFIG_LEDS_LM3642 is not set
+> # CONFIG_LEDS_PCA9532 is not set
+> # CONFIG_LEDS_GPIO is not set
+> CONFIG_LEDS_LP3944=3Dm
+> # CONFIG_LEDS_LP3952 is not set
+> # CONFIG_LEDS_LP50XX is not set
+> CONFIG_LEDS_CLEVO_MAIL=3Dm
+> # CONFIG_LEDS_PCA955X is not set
+> # CONFIG_LEDS_PCA963X is not set
+> # CONFIG_LEDS_DAC124S085 is not set
+> # CONFIG_LEDS_PWM is not set
+> # CONFIG_LEDS_BD2802 is not set
+> CONFIG_LEDS_INTEL_SS4200=3Dm
+> # CONFIG_LEDS_TCA6507 is not set
+> # CONFIG_LEDS_TLC591XX is not set
+> # CONFIG_LEDS_LM355x is not set
+> =
+
+> #
+> # LED driver for blink(1) USB RGB LED is under Special HID drivers (HID_T=
+HINGM)
+> #
+> CONFIG_LEDS_BLINKM=3Dm
+> CONFIG_LEDS_MLXCPLD=3Dm
+> # CONFIG_LEDS_MLXREG is not set
+> # CONFIG_LEDS_USER is not set
+> # CONFIG_LEDS_NIC78BX is not set
+> # CONFIG_LEDS_TI_LMU_COMMON is not set
+> =
+
+> #
+> # Flash and Torch LED drivers
+> #
+> =
+
+> #
+> # LED Triggers
+> #
+> CONFIG_LEDS_TRIGGERS=3Dy
+> CONFIG_LEDS_TRIGGER_TIMER=3Dm
+> CONFIG_LEDS_TRIGGER_ONESHOT=3Dm
+> # CONFIG_LEDS_TRIGGER_DISK is not set
+> CONFIG_LEDS_TRIGGER_HEARTBEAT=3Dm
+> CONFIG_LEDS_TRIGGER_BACKLIGHT=3Dm
+> # CONFIG_LEDS_TRIGGER_CPU is not set
+> # CONFIG_LEDS_TRIGGER_ACTIVITY is not set
+> CONFIG_LEDS_TRIGGER_GPIO=3Dm
+> CONFIG_LEDS_TRIGGER_DEFAULT_ON=3Dm
+> =
+
+> #
+> # iptables trigger is under Netfilter config (LED target)
+> #
+> CONFIG_LEDS_TRIGGER_TRANSIENT=3Dm
+> CONFIG_LEDS_TRIGGER_CAMERA=3Dm
+> # CONFIG_LEDS_TRIGGER_PANIC is not set
+> # CONFIG_LEDS_TRIGGER_NETDEV is not set
+> # CONFIG_LEDS_TRIGGER_PATTERN is not set
+> CONFIG_LEDS_TRIGGER_AUDIO=3Dm
+> # CONFIG_LEDS_TRIGGER_TTY is not set
+> # CONFIG_ACCESSIBILITY is not set
+> CONFIG_INFINIBAND=3Dm
+> CONFIG_INFINIBAND_USER_MAD=3Dm
+> CONFIG_INFINIBAND_USER_ACCESS=3Dm
+> CONFIG_INFINIBAND_USER_MEM=3Dy
+> CONFIG_INFINIBAND_ON_DEMAND_PAGING=3Dy
+> CONFIG_INFINIBAND_ADDR_TRANS=3Dy
+> CONFIG_INFINIBAND_ADDR_TRANS_CONFIGFS=3Dy
+> CONFIG_INFINIBAND_VIRT_DMA=3Dy
+> # CONFIG_INFINIBAND_MTHCA is not set
+> # CONFIG_INFINIBAND_EFA is not set
+> # CONFIG_INFINIBAND_I40IW is not set
+> # CONFIG_MLX4_INFINIBAND is not set
+> # CONFIG_INFINIBAND_OCRDMA is not set
+> # CONFIG_INFINIBAND_USNIC is not set
+> # CONFIG_INFINIBAND_RDMAVT is not set
+> CONFIG_RDMA_RXE=3Dm
+> CONFIG_RDMA_SIW=3Dm
+> CONFIG_INFINIBAND_IPOIB=3Dm
+> # CONFIG_INFINIBAND_IPOIB_CM is not set
+> CONFIG_INFINIBAND_IPOIB_DEBUG=3Dy
+> # CONFIG_INFINIBAND_IPOIB_DEBUG_DATA is not set
+> CONFIG_INFINIBAND_SRP=3Dm
+> CONFIG_INFINIBAND_SRPT=3Dm
+> # CONFIG_INFINIBAND_ISER is not set
+> # CONFIG_INFINIBAND_ISERT is not set
+> # CONFIG_INFINIBAND_RTRS_CLIENT is not set
+> # CONFIG_INFINIBAND_RTRS_SERVER is not set
+> # CONFIG_INFINIBAND_OPA_VNIC is not set
+> CONFIG_EDAC_ATOMIC_SCRUB=3Dy
+> CONFIG_EDAC_SUPPORT=3Dy
+> CONFIG_EDAC=3Dy
+> CONFIG_EDAC_LEGACY_SYSFS=3Dy
+> # CONFIG_EDAC_DEBUG is not set
+> CONFIG_EDAC_DECODE_MCE=3Dm
+> CONFIG_EDAC_GHES=3Dy
+> CONFIG_EDAC_AMD64=3Dm
+> CONFIG_EDAC_E752X=3Dm
+> CONFIG_EDAC_I82975X=3Dm
+> CONFIG_EDAC_I3000=3Dm
+> CONFIG_EDAC_I3200=3Dm
+> CONFIG_EDAC_IE31200=3Dm
+> CONFIG_EDAC_X38=3Dm
+> CONFIG_EDAC_I5400=3Dm
+> CONFIG_EDAC_I7CORE=3Dm
+> CONFIG_EDAC_I5000=3Dm
+> CONFIG_EDAC_I5100=3Dm
+> CONFIG_EDAC_I7300=3Dm
+> CONFIG_EDAC_SBRIDGE=3Dm
+> CONFIG_EDAC_SKX=3Dm
+> # CONFIG_EDAC_I10NM is not set
+> CONFIG_EDAC_PND2=3Dm
+> # CONFIG_EDAC_IGEN6 is not set
+> CONFIG_RTC_LIB=3Dy
+> CONFIG_RTC_MC146818_LIB=3Dy
+> CONFIG_RTC_CLASS=3Dy
+> CONFIG_RTC_HCTOSYS=3Dy
+> CONFIG_RTC_HCTOSYS_DEVICE=3D"rtc0"
+> # CONFIG_RTC_SYSTOHC is not set
+> # CONFIG_RTC_DEBUG is not set
+> CONFIG_RTC_NVMEM=3Dy
+> =
+
+> #
+> # RTC interfaces
+> #
+> CONFIG_RTC_INTF_SYSFS=3Dy
+> CONFIG_RTC_INTF_PROC=3Dy
+> CONFIG_RTC_INTF_DEV=3Dy
+> # CONFIG_RTC_INTF_DEV_UIE_EMUL is not set
+> # CONFIG_RTC_DRV_TEST is not set
+> =
+
+> #
+> # I2C RTC drivers
+> #
+> # CONFIG_RTC_DRV_ABB5ZES3 is not set
+> # CONFIG_RTC_DRV_ABEOZ9 is not set
+> # CONFIG_RTC_DRV_ABX80X is not set
+> CONFIG_RTC_DRV_DS1307=3Dm
+> # CONFIG_RTC_DRV_DS1307_CENTURY is not set
+> CONFIG_RTC_DRV_DS1374=3Dm
+> # CONFIG_RTC_DRV_DS1374_WDT is not set
+> CONFIG_RTC_DRV_DS1672=3Dm
+> CONFIG_RTC_DRV_MAX6900=3Dm
+> CONFIG_RTC_DRV_RS5C372=3Dm
+> CONFIG_RTC_DRV_ISL1208=3Dm
+> CONFIG_RTC_DRV_ISL12022=3Dm
+> CONFIG_RTC_DRV_X1205=3Dm
+> CONFIG_RTC_DRV_PCF8523=3Dm
+> # CONFIG_RTC_DRV_PCF85063 is not set
+> # CONFIG_RTC_DRV_PCF85363 is not set
+> CONFIG_RTC_DRV_PCF8563=3Dm
+> CONFIG_RTC_DRV_PCF8583=3Dm
+> CONFIG_RTC_DRV_M41T80=3Dm
+> CONFIG_RTC_DRV_M41T80_WDT=3Dy
+> CONFIG_RTC_DRV_BQ32K=3Dm
+> # CONFIG_RTC_DRV_S35390A is not set
+> CONFIG_RTC_DRV_FM3130=3Dm
+> # CONFIG_RTC_DRV_RX8010 is not set
+> CONFIG_RTC_DRV_RX8581=3Dm
+> CONFIG_RTC_DRV_RX8025=3Dm
+> CONFIG_RTC_DRV_EM3027=3Dm
+> # CONFIG_RTC_DRV_RV3028 is not set
+> # CONFIG_RTC_DRV_RV3032 is not set
+> # CONFIG_RTC_DRV_RV8803 is not set
+> # CONFIG_RTC_DRV_SD3078 is not set
+> =
+
+> #
+> # SPI RTC drivers
+> #
+> # CONFIG_RTC_DRV_M41T93 is not set
+> # CONFIG_RTC_DRV_M41T94 is not set
+> # CONFIG_RTC_DRV_DS1302 is not set
+> # CONFIG_RTC_DRV_DS1305 is not set
+> # CONFIG_RTC_DRV_DS1343 is not set
+> # CONFIG_RTC_DRV_DS1347 is not set
+> # CONFIG_RTC_DRV_DS1390 is not set
+> # CONFIG_RTC_DRV_MAX6916 is not set
+> # CONFIG_RTC_DRV_R9701 is not set
+> CONFIG_RTC_DRV_RX4581=3Dm
+> # CONFIG_RTC_DRV_RS5C348 is not set
+> # CONFIG_RTC_DRV_MAX6902 is not set
+> # CONFIG_RTC_DRV_PCF2123 is not set
+> # CONFIG_RTC_DRV_MCP795 is not set
+> CONFIG_RTC_I2C_AND_SPI=3Dy
+> =
+
+> #
+> # SPI and I2C RTC drivers
+> #
+> CONFIG_RTC_DRV_DS3232=3Dm
+> CONFIG_RTC_DRV_DS3232_HWMON=3Dy
+> # CONFIG_RTC_DRV_PCF2127 is not set
+> CONFIG_RTC_DRV_RV3029C2=3Dm
+> # CONFIG_RTC_DRV_RV3029_HWMON is not set
+> # CONFIG_RTC_DRV_RX6110 is not set
+> =
+
+> #
+> # Platform RTC drivers
+> #
+> CONFIG_RTC_DRV_CMOS=3Dy
+> CONFIG_RTC_DRV_DS1286=3Dm
+> CONFIG_RTC_DRV_DS1511=3Dm
+> CONFIG_RTC_DRV_DS1553=3Dm
+> # CONFIG_RTC_DRV_DS1685_FAMILY is not set
+> CONFIG_RTC_DRV_DS1742=3Dm
+> CONFIG_RTC_DRV_DS2404=3Dm
+> CONFIG_RTC_DRV_STK17TA8=3Dm
+> # CONFIG_RTC_DRV_M48T86 is not set
+> CONFIG_RTC_DRV_M48T35=3Dm
+> CONFIG_RTC_DRV_M48T59=3Dm
+> CONFIG_RTC_DRV_MSM6242=3Dm
+> CONFIG_RTC_DRV_BQ4802=3Dm
+> CONFIG_RTC_DRV_RP5C01=3Dm
+> CONFIG_RTC_DRV_V3020=3Dm
+> =
+
+> #
+> # on-CPU RTC drivers
+> #
+> # CONFIG_RTC_DRV_FTRTC010 is not set
+> =
+
+> #
+> # HID Sensor RTC drivers
+> #
+> # CONFIG_RTC_DRV_GOLDFISH is not set
+> CONFIG_DMADEVICES=3Dy
+> # CONFIG_DMADEVICES_DEBUG is not set
+> =
+
+> #
+> # DMA Devices
+> #
+> CONFIG_DMA_ENGINE=3Dy
+> CONFIG_DMA_VIRTUAL_CHANNELS=3Dy
+> CONFIG_DMA_ACPI=3Dy
+> # CONFIG_ALTERA_MSGDMA is not set
+> CONFIG_INTEL_IDMA64=3Dm
+> # CONFIG_INTEL_IDXD is not set
+> CONFIG_INTEL_IOATDMA=3Dm
+> # CONFIG_PLX_DMA is not set
+> # CONFIG_XILINX_ZYNQMP_DPDMA is not set
+> # CONFIG_QCOM_HIDMA_MGMT is not set
+> # CONFIG_QCOM_HIDMA is not set
+> CONFIG_DW_DMAC_CORE=3Dy
+> CONFIG_DW_DMAC=3Dm
+> CONFIG_DW_DMAC_PCI=3Dy
+> # CONFIG_DW_EDMA is not set
+> # CONFIG_DW_EDMA_PCIE is not set
+> CONFIG_HSU_DMA=3Dy
+> # CONFIG_SF_PDMA is not set
+> # CONFIG_INTEL_LDMA is not set
+> =
+
+> #
+> # DMA Clients
+> #
+> CONFIG_ASYNC_TX_DMA=3Dy
+> CONFIG_DMATEST=3Dm
+> CONFIG_DMA_ENGINE_RAID=3Dy
+> =
+
+> #
+> # DMABUF options
+> #
+> CONFIG_SYNC_FILE=3Dy
+> # CONFIG_SW_SYNC is not set
+> # CONFIG_UDMABUF is not set
+> # CONFIG_DMABUF_MOVE_NOTIFY is not set
+> # CONFIG_DMABUF_DEBUG is not set
+> # CONFIG_DMABUF_SELFTESTS is not set
+> # CONFIG_DMABUF_HEAPS is not set
+> # end of DMABUF options
+> =
+
+> CONFIG_DCA=3Dm
+> # CONFIG_AUXDISPLAY is not set
+> # CONFIG_PANEL is not set
+> CONFIG_UIO=3Dm
+> CONFIG_UIO_CIF=3Dm
+> CONFIG_UIO_PDRV_GENIRQ=3Dm
+> # CONFIG_UIO_DMEM_GENIRQ is not set
+> CONFIG_UIO_AEC=3Dm
+> CONFIG_UIO_SERCOS3=3Dm
+> CONFIG_UIO_PCI_GENERIC=3Dm
+> # CONFIG_UIO_NETX is not set
+> # CONFIG_UIO_PRUSS is not set
+> # CONFIG_UIO_MF624 is not set
+> CONFIG_UIO_HV_GENERIC=3Dm
+> CONFIG_VFIO_IOMMU_TYPE1=3Dm
+> CONFIG_VFIO_VIRQFD=3Dm
+> CONFIG_VFIO=3Dm
+> CONFIG_VFIO_NOIOMMU=3Dy
+> CONFIG_VFIO_PCI=3Dm
+> # CONFIG_VFIO_PCI_VGA is not set
+> CONFIG_VFIO_PCI_MMAP=3Dy
+> CONFIG_VFIO_PCI_INTX=3Dy
+> # CONFIG_VFIO_PCI_IGD is not set
+> CONFIG_VFIO_MDEV=3Dm
+> CONFIG_VFIO_MDEV_DEVICE=3Dm
+> CONFIG_IRQ_BYPASS_MANAGER=3Dm
+> # CONFIG_VIRT_DRIVERS is not set
+> CONFIG_VIRTIO=3Dy
+> CONFIG_ARCH_HAS_RESTRICTED_VIRTIO_MEMORY_ACCESS=3Dy
+> CONFIG_VIRTIO_PCI_LIB=3Dy
+> CONFIG_VIRTIO_MENU=3Dy
+> CONFIG_VIRTIO_PCI=3Dy
+> CONFIG_VIRTIO_PCI_LEGACY=3Dy
+> # CONFIG_VIRTIO_PMEM is not set
+> CONFIG_VIRTIO_BALLOON=3Dm
+> CONFIG_VIRTIO_MEM=3Dm
+> CONFIG_VIRTIO_INPUT=3Dm
+> # CONFIG_VIRTIO_MMIO is not set
+> CONFIG_VIRTIO_DMA_SHARED_BUFFER=3Dm
+> # CONFIG_VDPA is not set
+> CONFIG_VHOST_IOTLB=3Dm
+> CONFIG_VHOST=3Dm
+> CONFIG_VHOST_MENU=3Dy
+> CONFIG_VHOST_NET=3Dm
+> # CONFIG_VHOST_SCSI is not set
+> CONFIG_VHOST_VSOCK=3Dm
+> # CONFIG_VHOST_CROSS_ENDIAN_LEGACY is not set
+> =
+
+> #
+> # Microsoft Hyper-V guest support
+> #
+> CONFIG_HYPERV=3Dm
+> CONFIG_HYPERV_TIMER=3Dy
+> CONFIG_HYPERV_UTILS=3Dm
+> CONFIG_HYPERV_BALLOON=3Dm
+> # end of Microsoft Hyper-V guest support
+> =
+
+> #
+> # Xen driver support
+> #
+> # CONFIG_XEN_BALLOON is not set
+> CONFIG_XEN_DEV_EVTCHN=3Dm
+> # CONFIG_XEN_BACKEND is not set
+> CONFIG_XENFS=3Dm
+> CONFIG_XEN_COMPAT_XENFS=3Dy
+> CONFIG_XEN_SYS_HYPERVISOR=3Dy
+> CONFIG_XEN_XENBUS_FRONTEND=3Dy
+> # CONFIG_XEN_GNTDEV is not set
+> # CONFIG_XEN_GRANT_DEV_ALLOC is not set
+> # CONFIG_XEN_GRANT_DMA_ALLOC is not set
+> CONFIG_SWIOTLB_XEN=3Dy
+> # CONFIG_XEN_PVCALLS_FRONTEND is not set
+> CONFIG_XEN_PRIVCMD=3Dm
+> CONFIG_XEN_EFI=3Dy
+> CONFIG_XEN_AUTO_XLATE=3Dy
+> CONFIG_XEN_ACPI=3Dy
+> # CONFIG_XEN_UNPOPULATED_ALLOC is not set
+> # end of Xen driver support
+> =
+
+> # CONFIG_GREYBUS is not set
+> # CONFIG_COMEDI is not set
+> # CONFIG_STAGING is not set
+> CONFIG_X86_PLATFORM_DEVICES=3Dy
+> CONFIG_ACPI_WMI=3Dm
+> CONFIG_WMI_BMOF=3Dm
+> # CONFIG_HUAWEI_WMI is not set
+> # CONFIG_UV_SYSFS is not set
+> # CONFIG_INTEL_WMI_SBL_FW_UPDATE is not set
+> CONFIG_INTEL_WMI_THUNDERBOLT=3Dm
+> CONFIG_MXM_WMI=3Dm
+> # CONFIG_PEAQ_WMI is not set
+> # CONFIG_XIAOMI_WMI is not set
+> # CONFIG_GIGABYTE_WMI is not set
+> CONFIG_ACERHDF=3Dm
+> # CONFIG_ACER_WIRELESS is not set
+> CONFIG_ACER_WMI=3Dm
+> # CONFIG_AMD_PMC is not set
+> # CONFIG_ADV_SWBUTTON is not set
+> CONFIG_APPLE_GMUX=3Dm
+> CONFIG_ASUS_LAPTOP=3Dm
+> # CONFIG_ASUS_WIRELESS is not set
+> CONFIG_ASUS_WMI=3Dm
+> CONFIG_ASUS_NB_WMI=3Dm
+> CONFIG_EEEPC_LAPTOP=3Dm
+> CONFIG_EEEPC_WMI=3Dm
+> # CONFIG_X86_PLATFORM_DRIVERS_DELL is not set
+> CONFIG_AMILO_RFKILL=3Dm
+> CONFIG_FUJITSU_LAPTOP=3Dm
+> CONFIG_FUJITSU_TABLET=3Dm
+> # CONFIG_GPD_POCKET_FAN is not set
+> CONFIG_HP_ACCEL=3Dm
+> CONFIG_HP_WIRELESS=3Dm
+> CONFIG_HP_WMI=3Dm
+> # CONFIG_IBM_RTL is not set
+> CONFIG_IDEAPAD_LAPTOP=3Dm
+> CONFIG_SENSORS_HDAPS=3Dm
+> CONFIG_THINKPAD_ACPI=3Dm
+> # CONFIG_THINKPAD_ACPI_DEBUGFACILITIES is not set
+> # CONFIG_THINKPAD_ACPI_DEBUG is not set
+> # CONFIG_THINKPAD_ACPI_UNSAFE_LEDS is not set
+> CONFIG_THINKPAD_ACPI_VIDEO=3Dy
+> CONFIG_THINKPAD_ACPI_HOTKEY_POLL=3Dy
+> # CONFIG_INTEL_ATOMISP2_PM is not set
+> CONFIG_INTEL_HID_EVENT=3Dm
+> # CONFIG_INTEL_INT0002_VGPIO is not set
+> # CONFIG_INTEL_MENLOW is not set
+> CONFIG_INTEL_OAKTRAIL=3Dm
+> CONFIG_INTEL_VBTN=3Dm
+> CONFIG_MSI_LAPTOP=3Dm
+> CONFIG_MSI_WMI=3Dm
+> # CONFIG_PCENGINES_APU2 is not set
+> CONFIG_SAMSUNG_LAPTOP=3Dm
+> CONFIG_SAMSUNG_Q10=3Dm
+> CONFIG_TOSHIBA_BT_RFKILL=3Dm
+> # CONFIG_TOSHIBA_HAPS is not set
+> # CONFIG_TOSHIBA_WMI is not set
+> CONFIG_ACPI_CMPC=3Dm
+> CONFIG_COMPAL_LAPTOP=3Dm
+> # CONFIG_LG_LAPTOP is not set
+> CONFIG_PANASONIC_LAPTOP=3Dm
+> CONFIG_SONY_LAPTOP=3Dm
+> CONFIG_SONYPI_COMPAT=3Dy
+> # CONFIG_SYSTEM76_ACPI is not set
+> CONFIG_TOPSTAR_LAPTOP=3Dm
+> # CONFIG_I2C_MULTI_INSTANTIATE is not set
+> CONFIG_MLX_PLATFORM=3Dm
+> CONFIG_INTEL_IPS=3Dm
+> CONFIG_INTEL_RST=3Dm
+> # CONFIG_INTEL_SMARTCONNECT is not set
+> =
+
+> #
+> # Intel Speed Select Technology interface support
+> #
+> # CONFIG_INTEL_SPEED_SELECT_INTERFACE is not set
+> # end of Intel Speed Select Technology interface support
+> =
+
+> CONFIG_INTEL_TURBO_MAX_3=3Dy
+> # CONFIG_INTEL_UNCORE_FREQ_CONTROL is not set
+> CONFIG_INTEL_PMC_CORE=3Dm
+> # CONFIG_INTEL_PUNIT_IPC is not set
+> # CONFIG_INTEL_SCU_PCI is not set
+> # CONFIG_INTEL_SCU_PLATFORM is not set
+> CONFIG_PMC_ATOM=3Dy
+> # CONFIG_CHROME_PLATFORMS is not set
+> CONFIG_MELLANOX_PLATFORM=3Dy
+> CONFIG_MLXREG_HOTPLUG=3Dm
+> # CONFIG_MLXREG_IO is not set
+> CONFIG_SURFACE_PLATFORMS=3Dy
+> # CONFIG_SURFACE3_WMI is not set
+> # CONFIG_SURFACE_3_POWER_OPREGION is not set
+> # CONFIG_SURFACE_GPE is not set
+> # CONFIG_SURFACE_HOTPLUG is not set
+> # CONFIG_SURFACE_PRO3_BUTTON is not set
+> CONFIG_HAVE_CLK=3Dy
+> CONFIG_CLKDEV_LOOKUP=3Dy
+> CONFIG_HAVE_CLK_PREPARE=3Dy
+> CONFIG_COMMON_CLK=3Dy
+> # CONFIG_COMMON_CLK_MAX9485 is not set
+> # CONFIG_COMMON_CLK_SI5341 is not set
+> # CONFIG_COMMON_CLK_SI5351 is not set
+> # CONFIG_COMMON_CLK_SI544 is not set
+> # CONFIG_COMMON_CLK_CDCE706 is not set
+> # CONFIG_COMMON_CLK_CS2000_CP is not set
+> # CONFIG_COMMON_CLK_PWM is not set
+> # CONFIG_XILINX_VCU is not set
+> CONFIG_HWSPINLOCK=3Dy
+> =
+
+> #
+> # Clock Source drivers
+> #
+> CONFIG_CLKEVT_I8253=3Dy
+> CONFIG_I8253_LOCK=3Dy
+> CONFIG_CLKBLD_I8253=3Dy
+> # end of Clock Source drivers
+> =
+
+> CONFIG_MAILBOX=3Dy
+> CONFIG_PCC=3Dy
+> # CONFIG_ALTERA_MBOX is not set
+> CONFIG_IOMMU_IOVA=3Dy
+> CONFIG_IOASID=3Dy
+> CONFIG_IOMMU_API=3Dy
+> CONFIG_IOMMU_SUPPORT=3Dy
+> =
+
+> #
+> # Generic IOMMU Pagetable Support
+> #
+> CONFIG_IOMMU_IO_PGTABLE=3Dy
+> # end of Generic IOMMU Pagetable Support
+> =
+
+> # CONFIG_IOMMU_DEBUGFS is not set
+> # CONFIG_IOMMU_DEFAULT_PASSTHROUGH is not set
+> CONFIG_IOMMU_DMA=3Dy
+> CONFIG_AMD_IOMMU=3Dy
+> CONFIG_AMD_IOMMU_V2=3Dm
+> CONFIG_DMAR_TABLE=3Dy
+> CONFIG_INTEL_IOMMU=3Dy
+> # CONFIG_INTEL_IOMMU_SVM is not set
+> # CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
+> CONFIG_INTEL_IOMMU_FLOPPY_WA=3Dy
+> # CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON is not set
+> CONFIG_IRQ_REMAP=3Dy
+> CONFIG_HYPERV_IOMMU=3Dy
+> =
+
+> #
+> # Remoteproc drivers
+> #
+> # CONFIG_REMOTEPROC is not set
+> # end of Remoteproc drivers
+> =
+
+> #
+> # Rpmsg drivers
+> #
+> # CONFIG_RPMSG_QCOM_GLINK_RPM is not set
+> # CONFIG_RPMSG_VIRTIO is not set
+> # end of Rpmsg drivers
+> =
+
+> # CONFIG_SOUNDWIRE is not set
+> =
+
+> #
+> # SOC (System On Chip) specific Drivers
+> #
+> =
+
+> #
+> # Amlogic SoC drivers
+> #
+> # end of Amlogic SoC drivers
+> =
+
+> #
+> # Broadcom SoC drivers
+> #
+> # end of Broadcom SoC drivers
+> =
+
+> #
+> # NXP/Freescale QorIQ SoC drivers
+> #
+> # end of NXP/Freescale QorIQ SoC drivers
+> =
+
+> #
+> # i.MX SoC drivers
+> #
+> # end of i.MX SoC drivers
+> =
+
+> #
+> # Enable LiteX SoC Builder specific drivers
+> #
+> # end of Enable LiteX SoC Builder specific drivers
+> =
+
+> #
+> # Qualcomm SoC drivers
+> #
+> # end of Qualcomm SoC drivers
+> =
+
+> # CONFIG_SOC_TI is not set
+> =
+
+> #
+> # Xilinx SoC drivers
+> #
+> # end of Xilinx SoC drivers
+> # end of SOC (System On Chip) specific Drivers
+> =
+
+> # CONFIG_PM_DEVFREQ is not set
+> # CONFIG_EXTCON is not set
+> # CONFIG_MEMORY is not set
+> # CONFIG_IIO is not set
+> CONFIG_NTB=3Dm
+> # CONFIG_NTB_MSI is not set
+> # CONFIG_NTB_AMD is not set
+> # CONFIG_NTB_IDT is not set
+> # CONFIG_NTB_INTEL is not set
+> # CONFIG_NTB_EPF is not set
+> # CONFIG_NTB_SWITCHTEC is not set
+> # CONFIG_NTB_PINGPONG is not set
+> # CONFIG_NTB_TOOL is not set
+> # CONFIG_NTB_PERF is not set
+> # CONFIG_NTB_TRANSPORT is not set
+> # CONFIG_VME_BUS is not set
+> CONFIG_PWM=3Dy
+> CONFIG_PWM_SYSFS=3Dy
+> # CONFIG_PWM_DEBUG is not set
+> # CONFIG_PWM_DWC is not set
+> CONFIG_PWM_LPSS=3Dm
+> CONFIG_PWM_LPSS_PCI=3Dm
+> CONFIG_PWM_LPSS_PLATFORM=3Dm
+> # CONFIG_PWM_PCA9685 is not set
+> =
+
+> #
+> # IRQ chip support
+> #
+> # end of IRQ chip support
+> =
+
+> # CONFIG_IPACK_BUS is not set
+> # CONFIG_RESET_CONTROLLER is not set
+> =
+
+> #
+> # PHY Subsystem
+> #
+> # CONFIG_GENERIC_PHY is not set
+> # CONFIG_USB_LGM_PHY is not set
+> # CONFIG_BCM_KONA_USB2_PHY is not set
+> # CONFIG_PHY_PXA_28NM_HSIC is not set
+> # CONFIG_PHY_PXA_28NM_USB2 is not set
+> # CONFIG_PHY_INTEL_LGM_EMMC is not set
+> # end of PHY Subsystem
+> =
+
+> CONFIG_POWERCAP=3Dy
+> CONFIG_INTEL_RAPL_CORE=3Dm
+> CONFIG_INTEL_RAPL=3Dm
+> # CONFIG_IDLE_INJECT is not set
+> # CONFIG_DTPM is not set
+> # CONFIG_MCB is not set
+> =
+
+> #
+> # Performance monitor support
+> #
+> # end of Performance monitor support
+> =
+
+> CONFIG_RAS=3Dy
+> # CONFIG_RAS_CEC is not set
+> # CONFIG_USB4 is not set
+> =
+
+> #
+> # Android
+> #
+> # CONFIG_ANDROID is not set
+> # end of Android
+> =
+
+> CONFIG_LIBNVDIMM=3Dm
+> CONFIG_BLK_DEV_PMEM=3Dm
+> CONFIG_ND_BLK=3Dm
+> CONFIG_ND_CLAIM=3Dy
+> CONFIG_ND_BTT=3Dm
+> CONFIG_BTT=3Dy
+> CONFIG_ND_PFN=3Dm
+> CONFIG_NVDIMM_PFN=3Dy
+> CONFIG_NVDIMM_DAX=3Dy
+> CONFIG_NVDIMM_KEYS=3Dy
+> CONFIG_DAX_DRIVER=3Dy
+> CONFIG_DAX=3Dy
+> CONFIG_DEV_DAX=3Dm
+> CONFIG_DEV_DAX_PMEM=3Dm
+> CONFIG_DEV_DAX_KMEM=3Dm
+> CONFIG_DEV_DAX_PMEM_COMPAT=3Dm
+> CONFIG_NVMEM=3Dy
+> CONFIG_NVMEM_SYSFS=3Dy
+> # CONFIG_NVMEM_RMEM is not set
+> =
+
+> #
+> # HW tracing support
+> #
+> CONFIG_STM=3Dm
+> # CONFIG_STM_PROTO_BASIC is not set
+> # CONFIG_STM_PROTO_SYS_T is not set
+> CONFIG_STM_DUMMY=3Dm
+> CONFIG_STM_SOURCE_CONSOLE=3Dm
+> CONFIG_STM_SOURCE_HEARTBEAT=3Dm
+> CONFIG_STM_SOURCE_FTRACE=3Dm
+> CONFIG_INTEL_TH=3Dm
+> CONFIG_INTEL_TH_PCI=3Dm
+> CONFIG_INTEL_TH_ACPI=3Dm
+> CONFIG_INTEL_TH_GTH=3Dm
+> CONFIG_INTEL_TH_STH=3Dm
+> CONFIG_INTEL_TH_MSU=3Dm
+> CONFIG_INTEL_TH_PTI=3Dm
+> # CONFIG_INTEL_TH_DEBUG is not set
+> # end of HW tracing support
+> =
+
+> # CONFIG_FPGA is not set
+> # CONFIG_TEE is not set
+> # CONFIG_UNISYS_VISORBUS is not set
+> # CONFIG_SIOX is not set
+> # CONFIG_SLIMBUS is not set
+> # CONFIG_INTERCONNECT is not set
+> # CONFIG_COUNTER is not set
+> # CONFIG_MOST is not set
+> # end of Device Drivers
+> =
+
+> #
+> # File systems
+> #
+> CONFIG_DCACHE_WORD_ACCESS=3Dy
+> # CONFIG_VALIDATE_FS_PARSER is not set
+> CONFIG_FS_IOMAP=3Dy
+> CONFIG_EXT2_FS=3Dm
+> CONFIG_EXT2_FS_XATTR=3Dy
+> CONFIG_EXT2_FS_POSIX_ACL=3Dy
+> CONFIG_EXT2_FS_SECURITY=3Dy
+> # CONFIG_EXT3_FS is not set
+> CONFIG_EXT4_FS=3Dy
+> CONFIG_EXT4_FS_POSIX_ACL=3Dy
+> CONFIG_EXT4_FS_SECURITY=3Dy
+> # CONFIG_EXT4_DEBUG is not set
+> CONFIG_EXT4_KUNIT_TESTS=3Dm
+> CONFIG_JBD2=3Dy
+> # CONFIG_JBD2_DEBUG is not set
+> CONFIG_FS_MBCACHE=3Dy
+> # CONFIG_REISERFS_FS is not set
+> # CONFIG_JFS_FS is not set
+> CONFIG_XFS_FS=3Dm
+> CONFIG_XFS_SUPPORT_V4=3Dy
+> CONFIG_XFS_QUOTA=3Dy
+> CONFIG_XFS_POSIX_ACL=3Dy
+> CONFIG_XFS_RT=3Dy
+> CONFIG_XFS_ONLINE_SCRUB=3Dy
+> CONFIG_XFS_ONLINE_REPAIR=3Dy
+> CONFIG_XFS_DEBUG=3Dy
+> CONFIG_XFS_ASSERT_FATAL=3Dy
+> CONFIG_GFS2_FS=3Dm
+> CONFIG_GFS2_FS_LOCKING_DLM=3Dy
+> CONFIG_OCFS2_FS=3Dm
+> CONFIG_OCFS2_FS_O2CB=3Dm
+> CONFIG_OCFS2_FS_USERSPACE_CLUSTER=3Dm
+> CONFIG_OCFS2_FS_STATS=3Dy
+> CONFIG_OCFS2_DEBUG_MASKLOG=3Dy
+> # CONFIG_OCFS2_DEBUG_FS is not set
+> CONFIG_BTRFS_FS=3Dm
+> CONFIG_BTRFS_FS_POSIX_ACL=3Dy
+> # CONFIG_BTRFS_FS_CHECK_INTEGRITY is not set
+> # CONFIG_BTRFS_FS_RUN_SANITY_TESTS is not set
+> # CONFIG_BTRFS_DEBUG is not set
+> # CONFIG_BTRFS_ASSERT is not set
+> # CONFIG_BTRFS_FS_REF_VERIFY is not set
+> # CONFIG_NILFS2_FS is not set
+> CONFIG_F2FS_FS=3Dm
+> CONFIG_F2FS_STAT_FS=3Dy
+> CONFIG_F2FS_FS_XATTR=3Dy
+> CONFIG_F2FS_FS_POSIX_ACL=3Dy
+> CONFIG_F2FS_FS_SECURITY=3Dy
+> # CONFIG_F2FS_CHECK_FS is not set
+> # CONFIG_F2FS_FAULT_INJECTION is not set
+> # CONFIG_F2FS_FS_COMPRESSION is not set
+> # CONFIG_ZONEFS_FS is not set
+> CONFIG_FS_DAX=3Dy
+> CONFIG_FS_DAX_PMD=3Dy
+> CONFIG_FS_POSIX_ACL=3Dy
+> CONFIG_EXPORTFS=3Dy
+> CONFIG_EXPORTFS_BLOCK_OPS=3Dy
+> CONFIG_FILE_LOCKING=3Dy
+> CONFIG_MANDATORY_FILE_LOCKING=3Dy
+> CONFIG_FS_ENCRYPTION=3Dy
+> CONFIG_FS_ENCRYPTION_ALGS=3Dy
+> # CONFIG_FS_VERITY is not set
+> CONFIG_FSNOTIFY=3Dy
+> CONFIG_DNOTIFY=3Dy
+> CONFIG_INOTIFY_USER=3Dy
+> CONFIG_FANOTIFY=3Dy
+> CONFIG_FANOTIFY_ACCESS_PERMISSIONS=3Dy
+> CONFIG_QUOTA=3Dy
+> CONFIG_QUOTA_NETLINK_INTERFACE=3Dy
+> CONFIG_PRINT_QUOTA_WARNING=3Dy
+> # CONFIG_QUOTA_DEBUG is not set
+> CONFIG_QUOTA_TREE=3Dy
+> # CONFIG_QFMT_V1 is not set
+> CONFIG_QFMT_V2=3Dy
+> CONFIG_QUOTACTL=3Dy
+> CONFIG_AUTOFS4_FS=3Dy
+> CONFIG_AUTOFS_FS=3Dy
+> CONFIG_FUSE_FS=3Dm
+> CONFIG_CUSE=3Dm
+> # CONFIG_VIRTIO_FS is not set
+> CONFIG_OVERLAY_FS=3Dm
+> # CONFIG_OVERLAY_FS_REDIRECT_DIR is not set
+> # CONFIG_OVERLAY_FS_REDIRECT_ALWAYS_FOLLOW is not set
+> # CONFIG_OVERLAY_FS_INDEX is not set
+> # CONFIG_OVERLAY_FS_XINO_AUTO is not set
+> # CONFIG_OVERLAY_FS_METACOPY is not set
+> =
+
+> #
+> # Caches
+> #
+> CONFIG_NETFS_SUPPORT=3Dm
+> # CONFIG_NETFS_STATS is not set
+> CONFIG_FSCACHE=3Dm
+> CONFIG_FSCACHE_STATS=3Dy
+> # CONFIG_FSCACHE_HISTOGRAM is not set
+> # CONFIG_FSCACHE_DEBUG is not set
+> # CONFIG_FSCACHE_OBJECT_LIST is not set
+> CONFIG_CACHEFILES=3Dm
+> # CONFIG_CACHEFILES_DEBUG is not set
+> # CONFIG_CACHEFILES_HISTOGRAM is not set
+> # end of Caches
+> =
+
+> #
+> # CD-ROM/DVD Filesystems
+> #
+> CONFIG_ISO9660_FS=3Dm
+> CONFIG_JOLIET=3Dy
+> CONFIG_ZISOFS=3Dy
+> CONFIG_UDF_FS=3Dm
+> # end of CD-ROM/DVD Filesystems
+> =
+
+> #
+> # DOS/FAT/EXFAT/NT Filesystems
+> #
+> CONFIG_FAT_FS=3Dm
+> CONFIG_MSDOS_FS=3Dm
+> CONFIG_VFAT_FS=3Dm
+> CONFIG_FAT_DEFAULT_CODEPAGE=3D437
+> CONFIG_FAT_DEFAULT_IOCHARSET=3D"ascii"
+> # CONFIG_FAT_DEFAULT_UTF8 is not set
+> # CONFIG_EXFAT_FS is not set
+> # CONFIG_NTFS_FS is not set
+> # end of DOS/FAT/EXFAT/NT Filesystems
+> =
+
+> #
+> # Pseudo filesystems
+> #
+> CONFIG_PROC_FS=3Dy
+> CONFIG_PROC_KCORE=3Dy
+> CONFIG_PROC_VMCORE=3Dy
+> CONFIG_PROC_VMCORE_DEVICE_DUMP=3Dy
+> CONFIG_PROC_SYSCTL=3Dy
+> CONFIG_PROC_PAGE_MONITOR=3Dy
+> CONFIG_PROC_CHILDREN=3Dy
+> CONFIG_PROC_PID_ARCH_STATUS=3Dy
+> CONFIG_PROC_CPU_RESCTRL=3Dy
+> CONFIG_KERNFS=3Dy
+> CONFIG_SYSFS=3Dy
+> CONFIG_TMPFS=3Dy
+> CONFIG_TMPFS_POSIX_ACL=3Dy
+> CONFIG_TMPFS_XATTR=3Dy
+> # CONFIG_TMPFS_INODE64 is not set
+> CONFIG_HUGETLBFS=3Dy
+> CONFIG_HUGETLB_PAGE=3Dy
+> CONFIG_MEMFD_CREATE=3Dy
+> CONFIG_ARCH_HAS_GIGANTIC_PAGE=3Dy
+> CONFIG_CONFIGFS_FS=3Dy
+> CONFIG_EFIVAR_FS=3Dy
+> # end of Pseudo filesystems
+> =
+
+> CONFIG_MISC_FILESYSTEMS=3Dy
+> # CONFIG_ORANGEFS_FS is not set
+> # CONFIG_ADFS_FS is not set
+> # CONFIG_AFFS_FS is not set
+> # CONFIG_ECRYPT_FS is not set
+> # CONFIG_HFS_FS is not set
+> # CONFIG_HFSPLUS_FS is not set
+> # CONFIG_BEFS_FS is not set
+> # CONFIG_BFS_FS is not set
+> # CONFIG_EFS_FS is not set
+> CONFIG_CRAMFS=3Dm
+> CONFIG_CRAMFS_BLOCKDEV=3Dy
+> CONFIG_SQUASHFS=3Dm
+> # CONFIG_SQUASHFS_FILE_CACHE is not set
+> CONFIG_SQUASHFS_FILE_DIRECT=3Dy
+> # CONFIG_SQUASHFS_DECOMP_SINGLE is not set
+> # CONFIG_SQUASHFS_DECOMP_MULTI is not set
+> CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=3Dy
+> CONFIG_SQUASHFS_XATTR=3Dy
+> CONFIG_SQUASHFS_ZLIB=3Dy
+> # CONFIG_SQUASHFS_LZ4 is not set
+> CONFIG_SQUASHFS_LZO=3Dy
+> CONFIG_SQUASHFS_XZ=3Dy
+> # CONFIG_SQUASHFS_ZSTD is not set
+> # CONFIG_SQUASHFS_4K_DEVBLK_SIZE is not set
+> # CONFIG_SQUASHFS_EMBEDDED is not set
+> CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE=3D3
+> # CONFIG_VXFS_FS is not set
+> CONFIG_MINIX_FS=3Dm
+> # CONFIG_OMFS_FS is not set
+> # CONFIG_HPFS_FS is not set
+> # CONFIG_QNX4FS_FS is not set
+> # CONFIG_QNX6FS_FS is not set
+> # CONFIG_ROMFS_FS is not set
+> CONFIG_PSTORE=3Dy
+> CONFIG_PSTORE_DEFAULT_KMSG_BYTES=3D10240
+> CONFIG_PSTORE_DEFLATE_COMPRESS=3Dy
+> # CONFIG_PSTORE_LZO_COMPRESS is not set
+> # CONFIG_PSTORE_LZ4_COMPRESS is not set
+> # CONFIG_PSTORE_LZ4HC_COMPRESS is not set
+> # CONFIG_PSTORE_842_COMPRESS is not set
+> # CONFIG_PSTORE_ZSTD_COMPRESS is not set
+> CONFIG_PSTORE_COMPRESS=3Dy
+> CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT=3Dy
+> CONFIG_PSTORE_COMPRESS_DEFAULT=3D"deflate"
+> # CONFIG_PSTORE_CONSOLE is not set
+> # CONFIG_PSTORE_PMSG is not set
+> # CONFIG_PSTORE_FTRACE is not set
+> CONFIG_PSTORE_RAM=3Dm
+> # CONFIG_PSTORE_BLK is not set
+> # CONFIG_SYSV_FS is not set
+> # CONFIG_UFS_FS is not set
+> # CONFIG_EROFS_FS is not set
+> CONFIG_NETWORK_FILESYSTEMS=3Dy
+> CONFIG_NFS_FS=3Dy
+> # CONFIG_NFS_V2 is not set
+> CONFIG_NFS_V3=3Dy
+> CONFIG_NFS_V3_ACL=3Dy
+> CONFIG_NFS_V4=3Dm
+> # CONFIG_NFS_SWAP is not set
+> CONFIG_NFS_V4_1=3Dy
+> CONFIG_NFS_V4_2=3Dy
+> CONFIG_PNFS_FILE_LAYOUT=3Dm
+> CONFIG_PNFS_BLOCK=3Dm
+> CONFIG_PNFS_FLEXFILE_LAYOUT=3Dm
+> CONFIG_NFS_V4_1_IMPLEMENTATION_ID_DOMAIN=3D"kernel.org"
+> # CONFIG_NFS_V4_1_MIGRATION is not set
+> CONFIG_NFS_V4_SECURITY_LABEL=3Dy
+> CONFIG_ROOT_NFS=3Dy
+> # CONFIG_NFS_USE_LEGACY_DNS is not set
+> CONFIG_NFS_USE_KERNEL_DNS=3Dy
+> CONFIG_NFS_DEBUG=3Dy
+> CONFIG_NFS_DISABLE_UDP_SUPPORT=3Dy
+> # CONFIG_NFS_V4_2_READ_PLUS is not set
+> CONFIG_NFSD=3Dm
+> CONFIG_NFSD_V2_ACL=3Dy
+> CONFIG_NFSD_V3=3Dy
+> CONFIG_NFSD_V3_ACL=3Dy
+> CONFIG_NFSD_V4=3Dy
+> CONFIG_NFSD_PNFS=3Dy
+> # CONFIG_NFSD_BLOCKLAYOUT is not set
+> CONFIG_NFSD_SCSILAYOUT=3Dy
+> # CONFIG_NFSD_FLEXFILELAYOUT is not set
+> # CONFIG_NFSD_V4_2_INTER_SSC is not set
+> CONFIG_NFSD_V4_SECURITY_LABEL=3Dy
+> CONFIG_GRACE_PERIOD=3Dy
+> CONFIG_LOCKD=3Dy
+> CONFIG_LOCKD_V4=3Dy
+> CONFIG_NFS_ACL_SUPPORT=3Dy
+> CONFIG_NFS_COMMON=3Dy
+> CONFIG_NFS_V4_2_SSC_HELPER=3Dy
+> CONFIG_SUNRPC=3Dy
+> CONFIG_SUNRPC_GSS=3Dm
+> CONFIG_SUNRPC_BACKCHANNEL=3Dy
+> CONFIG_RPCSEC_GSS_KRB5=3Dm
+> # CONFIG_SUNRPC_DISABLE_INSECURE_ENCTYPES is not set
+> CONFIG_SUNRPC_DEBUG=3Dy
+> CONFIG_SUNRPC_XPRT_RDMA=3Dm
+> CONFIG_CEPH_FS=3Dm
+> # CONFIG_CEPH_FSCACHE is not set
+> CONFIG_CEPH_FS_POSIX_ACL=3Dy
+> # CONFIG_CEPH_FS_SECURITY_LABEL is not set
+> CONFIG_CIFS=3Dm
+> # CONFIG_CIFS_STATS2 is not set
+> CONFIG_CIFS_ALLOW_INSECURE_LEGACY=3Dy
+> CONFIG_CIFS_WEAK_PW_HASH=3Dy
+> CONFIG_CIFS_UPCALL=3Dy
+> CONFIG_CIFS_XATTR=3Dy
+> CONFIG_CIFS_POSIX=3Dy
+> CONFIG_CIFS_DEBUG=3Dy
+> # CONFIG_CIFS_DEBUG2 is not set
+> # CONFIG_CIFS_DEBUG_DUMP_KEYS is not set
+> CONFIG_CIFS_DFS_UPCALL=3Dy
+> # CONFIG_CIFS_SWN_UPCALL is not set
+> # CONFIG_CIFS_SMB_DIRECT is not set
+> # CONFIG_CIFS_FSCACHE is not set
+> # CONFIG_CODA_FS is not set
+> # CONFIG_AFS_FS is not set
+> # CONFIG_9P_FS is not set
+> CONFIG_NLS=3Dy
+> CONFIG_NLS_DEFAULT=3D"utf8"
+> CONFIG_NLS_CODEPAGE_437=3Dy
+> CONFIG_NLS_CODEPAGE_737=3Dm
+> CONFIG_NLS_CODEPAGE_775=3Dm
+> CONFIG_NLS_CODEPAGE_850=3Dm
+> CONFIG_NLS_CODEPAGE_852=3Dm
+> CONFIG_NLS_CODEPAGE_855=3Dm
+> CONFIG_NLS_CODEPAGE_857=3Dm
+> CONFIG_NLS_CODEPAGE_860=3Dm
+> CONFIG_NLS_CODEPAGE_861=3Dm
+> CONFIG_NLS_CODEPAGE_862=3Dm
+> CONFIG_NLS_CODEPAGE_863=3Dm
+> CONFIG_NLS_CODEPAGE_864=3Dm
+> CONFIG_NLS_CODEPAGE_865=3Dm
+> CONFIG_NLS_CODEPAGE_866=3Dm
+> CONFIG_NLS_CODEPAGE_869=3Dm
+> CONFIG_NLS_CODEPAGE_936=3Dm
+> CONFIG_NLS_CODEPAGE_950=3Dm
+> CONFIG_NLS_CODEPAGE_932=3Dm
+> CONFIG_NLS_CODEPAGE_949=3Dm
+> CONFIG_NLS_CODEPAGE_874=3Dm
+> CONFIG_NLS_ISO8859_8=3Dm
+> CONFIG_NLS_CODEPAGE_1250=3Dm
+> CONFIG_NLS_CODEPAGE_1251=3Dm
+> CONFIG_NLS_ASCII=3Dy
+> CONFIG_NLS_ISO8859_1=3Dm
+> CONFIG_NLS_ISO8859_2=3Dm
+> CONFIG_NLS_ISO8859_3=3Dm
+> CONFIG_NLS_ISO8859_4=3Dm
+> CONFIG_NLS_ISO8859_5=3Dm
+> CONFIG_NLS_ISO8859_6=3Dm
+> CONFIG_NLS_ISO8859_7=3Dm
+> CONFIG_NLS_ISO8859_9=3Dm
+> CONFIG_NLS_ISO8859_13=3Dm
+> CONFIG_NLS_ISO8859_14=3Dm
+> CONFIG_NLS_ISO8859_15=3Dm
+> CONFIG_NLS_KOI8_R=3Dm
+> CONFIG_NLS_KOI8_U=3Dm
+> CONFIG_NLS_MAC_ROMAN=3Dm
+> CONFIG_NLS_MAC_CELTIC=3Dm
+> CONFIG_NLS_MAC_CENTEURO=3Dm
+> CONFIG_NLS_MAC_CROATIAN=3Dm
+> CONFIG_NLS_MAC_CYRILLIC=3Dm
+> CONFIG_NLS_MAC_GAELIC=3Dm
+> CONFIG_NLS_MAC_GREEK=3Dm
+> CONFIG_NLS_MAC_ICELAND=3Dm
+> CONFIG_NLS_MAC_INUIT=3Dm
+> CONFIG_NLS_MAC_ROMANIAN=3Dm
+> CONFIG_NLS_MAC_TURKISH=3Dm
+> CONFIG_NLS_UTF8=3Dm
+> CONFIG_DLM=3Dm
+> CONFIG_DLM_DEBUG=3Dy
+> # CONFIG_UNICODE is not set
+> CONFIG_IO_WQ=3Dy
+> # end of File systems
+> =
+
+> #
+> # Security options
+> #
+> CONFIG_KEYS=3Dy
+> # CONFIG_KEYS_REQUEST_CACHE is not set
+> CONFIG_PERSISTENT_KEYRINGS=3Dy
+> CONFIG_TRUSTED_KEYS=3Dy
+> CONFIG_ENCRYPTED_KEYS=3Dy
+> # CONFIG_KEY_DH_OPERATIONS is not set
+> # CONFIG_SECURITY_DMESG_RESTRICT is not set
+> CONFIG_SECURITY=3Dy
+> CONFIG_SECURITY_WRITABLE_HOOKS=3Dy
+> CONFIG_SECURITYFS=3Dy
+> CONFIG_SECURITY_NETWORK=3Dy
+> CONFIG_PAGE_TABLE_ISOLATION=3Dy
+> # CONFIG_SECURITY_INFINIBAND is not set
+> CONFIG_SECURITY_NETWORK_XFRM=3Dy
+> CONFIG_SECURITY_PATH=3Dy
+> CONFIG_INTEL_TXT=3Dy
+> CONFIG_LSM_MMAP_MIN_ADDR=3D65535
+> CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR=3Dy
+> CONFIG_HARDENED_USERCOPY=3Dy
+> CONFIG_HARDENED_USERCOPY_FALLBACK=3Dy
+> CONFIG_FORTIFY_SOURCE=3Dy
+> # CONFIG_STATIC_USERMODEHELPER is not set
+> CONFIG_SECURITY_SELINUX=3Dy
+> CONFIG_SECURITY_SELINUX_BOOTPARAM=3Dy
+> CONFIG_SECURITY_SELINUX_DISABLE=3Dy
+> CONFIG_SECURITY_SELINUX_DEVELOP=3Dy
+> CONFIG_SECURITY_SELINUX_AVC_STATS=3Dy
+> CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE=3D1
+> CONFIG_SECURITY_SELINUX_SIDTAB_HASH_BITS=3D9
+> CONFIG_SECURITY_SELINUX_SID2STR_CACHE_SIZE=3D256
+> # CONFIG_SECURITY_SMACK is not set
+> # CONFIG_SECURITY_TOMOYO is not set
+> CONFIG_SECURITY_APPARMOR=3Dy
+> CONFIG_SECURITY_APPARMOR_HASH=3Dy
+> CONFIG_SECURITY_APPARMOR_HASH_DEFAULT=3Dy
+> # CONFIG_SECURITY_APPARMOR_DEBUG is not set
+> # CONFIG_SECURITY_APPARMOR_KUNIT_TEST is not set
+> # CONFIG_SECURITY_LOADPIN is not set
+> CONFIG_SECURITY_YAMA=3Dy
+> # CONFIG_SECURITY_SAFESETID is not set
+> # CONFIG_SECURITY_LOCKDOWN_LSM is not set
+> # CONFIG_SECURITY_LANDLOCK is not set
+> CONFIG_INTEGRITY=3Dy
+> CONFIG_INTEGRITY_SIGNATURE=3Dy
+> CONFIG_INTEGRITY_ASYMMETRIC_KEYS=3Dy
+> CONFIG_INTEGRITY_TRUSTED_KEYRING=3Dy
+> # CONFIG_INTEGRITY_PLATFORM_KEYRING is not set
+> CONFIG_INTEGRITY_AUDIT=3Dy
+> CONFIG_IMA=3Dy
+> CONFIG_IMA_MEASURE_PCR_IDX=3D10
+> CONFIG_IMA_LSM_RULES=3Dy
+> # CONFIG_IMA_TEMPLATE is not set
+> CONFIG_IMA_NG_TEMPLATE=3Dy
+> # CONFIG_IMA_SIG_TEMPLATE is not set
+> CONFIG_IMA_DEFAULT_TEMPLATE=3D"ima-ng"
+> CONFIG_IMA_DEFAULT_HASH_SHA1=3Dy
+> # CONFIG_IMA_DEFAULT_HASH_SHA256 is not set
+> CONFIG_IMA_DEFAULT_HASH=3D"sha1"
+> # CONFIG_IMA_WRITE_POLICY is not set
+> # CONFIG_IMA_READ_POLICY is not set
+> CONFIG_IMA_APPRAISE=3Dy
+> # CONFIG_IMA_ARCH_POLICY is not set
+> # CONFIG_IMA_APPRAISE_BUILD_POLICY is not set
+> CONFIG_IMA_APPRAISE_BOOTPARAM=3Dy
+> # CONFIG_IMA_APPRAISE_MODSIG is not set
+> CONFIG_IMA_TRUSTED_KEYRING=3Dy
+> # CONFIG_IMA_BLACKLIST_KEYRING is not set
+> # CONFIG_IMA_LOAD_X509 is not set
+> CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS=3Dy
+> CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS=3Dy
+> # CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
+> CONFIG_EVM=3Dy
+> CONFIG_EVM_ATTR_FSUUID=3Dy
+> # CONFIG_EVM_ADD_XATTRS is not set
+> # CONFIG_EVM_LOAD_X509 is not set
+> CONFIG_DEFAULT_SECURITY_SELINUX=3Dy
+> # CONFIG_DEFAULT_SECURITY_APPARMOR is not set
+> # CONFIG_DEFAULT_SECURITY_DAC is not set
+> CONFIG_LSM=3D"landlock,lockdown,yama,loadpin,safesetid,integrity,selinux,=
+smack,tomoyo,apparmor,bpf"
+> =
+
+> #
+> # Kernel hardening options
+> #
+> =
+
+> #
+> # Memory initialization
+> #
+> CONFIG_INIT_STACK_NONE=3Dy
+> # CONFIG_INIT_ON_ALLOC_DEFAULT_ON is not set
+> # CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
+> # end of Memory initialization
+> # end of Kernel hardening options
+> # end of Security options
+> =
+
+> CONFIG_XOR_BLOCKS=3Dm
+> CONFIG_ASYNC_CORE=3Dm
+> CONFIG_ASYNC_MEMCPY=3Dm
+> CONFIG_ASYNC_XOR=3Dm
+> CONFIG_ASYNC_PQ=3Dm
+> CONFIG_ASYNC_RAID6_RECOV=3Dm
+> CONFIG_CRYPTO=3Dy
+> =
+
+> #
+> # Crypto core or helper
+> #
+> CONFIG_CRYPTO_ALGAPI=3Dy
+> CONFIG_CRYPTO_ALGAPI2=3Dy
+> CONFIG_CRYPTO_AEAD=3Dy
+> CONFIG_CRYPTO_AEAD2=3Dy
+> CONFIG_CRYPTO_SKCIPHER=3Dy
+> CONFIG_CRYPTO_SKCIPHER2=3Dy
+> CONFIG_CRYPTO_HASH=3Dy
+> CONFIG_CRYPTO_HASH2=3Dy
+> CONFIG_CRYPTO_RNG=3Dy
+> CONFIG_CRYPTO_RNG2=3Dy
+> CONFIG_CRYPTO_RNG_DEFAULT=3Dy
+> CONFIG_CRYPTO_AKCIPHER2=3Dy
+> CONFIG_CRYPTO_AKCIPHER=3Dy
+> CONFIG_CRYPTO_KPP2=3Dy
+> CONFIG_CRYPTO_KPP=3Dm
+> CONFIG_CRYPTO_ACOMP2=3Dy
+> CONFIG_CRYPTO_MANAGER=3Dy
+> CONFIG_CRYPTO_MANAGER2=3Dy
+> CONFIG_CRYPTO_USER=3Dm
+> CONFIG_CRYPTO_MANAGER_DISABLE_TESTS=3Dy
+> CONFIG_CRYPTO_GF128MUL=3Dy
+> CONFIG_CRYPTO_NULL=3Dy
+> CONFIG_CRYPTO_NULL2=3Dy
+> CONFIG_CRYPTO_PCRYPT=3Dm
+> CONFIG_CRYPTO_CRYPTD=3Dy
+> CONFIG_CRYPTO_AUTHENC=3Dm
+> CONFIG_CRYPTO_TEST=3Dm
+> CONFIG_CRYPTO_SIMD=3Dy
+> =
+
+> #
+> # Public-key cryptography
+> #
+> CONFIG_CRYPTO_RSA=3Dy
+> CONFIG_CRYPTO_DH=3Dm
+> CONFIG_CRYPTO_ECC=3Dm
+> CONFIG_CRYPTO_ECDH=3Dm
+> # CONFIG_CRYPTO_ECDSA is not set
+> # CONFIG_CRYPTO_ECRDSA is not set
+> # CONFIG_CRYPTO_SM2 is not set
+> # CONFIG_CRYPTO_CURVE25519 is not set
+> # CONFIG_CRYPTO_CURVE25519_X86 is not set
+> =
+
+> #
+> # Authenticated Encryption with Associated Data
+> #
+> CONFIG_CRYPTO_CCM=3Dm
+> CONFIG_CRYPTO_GCM=3Dy
+> CONFIG_CRYPTO_CHACHA20POLY1305=3Dm
+> # CONFIG_CRYPTO_AEGIS128 is not set
+> # CONFIG_CRYPTO_AEGIS128_AESNI_SSE2 is not set
+> CONFIG_CRYPTO_SEQIV=3Dy
+> CONFIG_CRYPTO_ECHAINIV=3Dm
+> =
+
+> #
+> # Block modes
+> #
+> CONFIG_CRYPTO_CBC=3Dy
+> CONFIG_CRYPTO_CFB=3Dy
+> CONFIG_CRYPTO_CTR=3Dy
+> CONFIG_CRYPTO_CTS=3Dm
+> CONFIG_CRYPTO_ECB=3Dy
+> CONFIG_CRYPTO_LRW=3Dm
+> # CONFIG_CRYPTO_OFB is not set
+> CONFIG_CRYPTO_PCBC=3Dm
+> CONFIG_CRYPTO_XTS=3Dm
+> # CONFIG_CRYPTO_KEYWRAP is not set
+> # CONFIG_CRYPTO_NHPOLY1305_SSE2 is not set
+> # CONFIG_CRYPTO_NHPOLY1305_AVX2 is not set
+> # CONFIG_CRYPTO_ADIANTUM is not set
+> CONFIG_CRYPTO_ESSIV=3Dm
+> =
+
+> #
+> # Hash modes
+> #
+> CONFIG_CRYPTO_CMAC=3Dm
+> CONFIG_CRYPTO_HMAC=3Dy
+> CONFIG_CRYPTO_XCBC=3Dm
+> CONFIG_CRYPTO_VMAC=3Dm
+> =
+
+> #
+> # Digest
+> #
+> CONFIG_CRYPTO_CRC32C=3Dy
+> CONFIG_CRYPTO_CRC32C_INTEL=3Dm
+> CONFIG_CRYPTO_CRC32=3Dm
+> CONFIG_CRYPTO_CRC32_PCLMUL=3Dm
+> CONFIG_CRYPTO_XXHASH=3Dm
+> CONFIG_CRYPTO_BLAKE2B=3Dm
+> # CONFIG_CRYPTO_BLAKE2S is not set
+> # CONFIG_CRYPTO_BLAKE2S_X86 is not set
+> CONFIG_CRYPTO_CRCT10DIF=3Dy
+> CONFIG_CRYPTO_CRCT10DIF_PCLMUL=3Dm
+> CONFIG_CRYPTO_GHASH=3Dy
+> CONFIG_CRYPTO_POLY1305=3Dm
+> CONFIG_CRYPTO_POLY1305_X86_64=3Dm
+> CONFIG_CRYPTO_MD4=3Dm
+> CONFIG_CRYPTO_MD5=3Dy
+> CONFIG_CRYPTO_MICHAEL_MIC=3Dm
+> CONFIG_CRYPTO_RMD160=3Dm
+> CONFIG_CRYPTO_SHA1=3Dy
+> CONFIG_CRYPTO_SHA1_SSSE3=3Dy
+> CONFIG_CRYPTO_SHA256_SSSE3=3Dy
+> CONFIG_CRYPTO_SHA512_SSSE3=3Dm
+> CONFIG_CRYPTO_SHA256=3Dy
+> CONFIG_CRYPTO_SHA512=3Dm
+> CONFIG_CRYPTO_SHA3=3Dm
+> # CONFIG_CRYPTO_SM3 is not set
+> # CONFIG_CRYPTO_STREEBOG is not set
+> CONFIG_CRYPTO_WP512=3Dm
+> CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL=3Dm
+> =
+
+> #
+> # Ciphers
+> #
+> CONFIG_CRYPTO_AES=3Dy
+> # CONFIG_CRYPTO_AES_TI is not set
+> CONFIG_CRYPTO_AES_NI_INTEL=3Dy
+> CONFIG_CRYPTO_ANUBIS=3Dm
+> CONFIG_CRYPTO_ARC4=3Dm
+> CONFIG_CRYPTO_BLOWFISH=3Dm
+> CONFIG_CRYPTO_BLOWFISH_COMMON=3Dm
+> CONFIG_CRYPTO_BLOWFISH_X86_64=3Dm
+> CONFIG_CRYPTO_CAMELLIA=3Dm
+> CONFIG_CRYPTO_CAMELLIA_X86_64=3Dm
+> CONFIG_CRYPTO_CAMELLIA_AESNI_AVX_X86_64=3Dm
+> CONFIG_CRYPTO_CAMELLIA_AESNI_AVX2_X86_64=3Dm
+> CONFIG_CRYPTO_CAST_COMMON=3Dm
+> CONFIG_CRYPTO_CAST5=3Dm
+> CONFIG_CRYPTO_CAST5_AVX_X86_64=3Dm
+> CONFIG_CRYPTO_CAST6=3Dm
+> CONFIG_CRYPTO_CAST6_AVX_X86_64=3Dm
+> CONFIG_CRYPTO_DES=3Dm
+> CONFIG_CRYPTO_DES3_EDE_X86_64=3Dm
+> CONFIG_CRYPTO_FCRYPT=3Dm
+> CONFIG_CRYPTO_KHAZAD=3Dm
+> CONFIG_CRYPTO_CHACHA20=3Dm
+> CONFIG_CRYPTO_CHACHA20_X86_64=3Dm
+> CONFIG_CRYPTO_SEED=3Dm
+> CONFIG_CRYPTO_SERPENT=3Dm
+> CONFIG_CRYPTO_SERPENT_SSE2_X86_64=3Dm
+> CONFIG_CRYPTO_SERPENT_AVX_X86_64=3Dm
+> CONFIG_CRYPTO_SERPENT_AVX2_X86_64=3Dm
+> # CONFIG_CRYPTO_SM4 is not set
+> CONFIG_CRYPTO_TEA=3Dm
+> CONFIG_CRYPTO_TWOFISH=3Dm
+> CONFIG_CRYPTO_TWOFISH_COMMON=3Dm
+> CONFIG_CRYPTO_TWOFISH_X86_64=3Dm
+> CONFIG_CRYPTO_TWOFISH_X86_64_3WAY=3Dm
+> CONFIG_CRYPTO_TWOFISH_AVX_X86_64=3Dm
+> =
+
+> #
+> # Compression
+> #
+> CONFIG_CRYPTO_DEFLATE=3Dy
+> CONFIG_CRYPTO_LZO=3Dy
+> # CONFIG_CRYPTO_842 is not set
+> # CONFIG_CRYPTO_LZ4 is not set
+> # CONFIG_CRYPTO_LZ4HC is not set
+> # CONFIG_CRYPTO_ZSTD is not set
+> =
+
+> #
+> # Random Number Generation
+> #
+> CONFIG_CRYPTO_ANSI_CPRNG=3Dm
+> CONFIG_CRYPTO_DRBG_MENU=3Dy
+> CONFIG_CRYPTO_DRBG_HMAC=3Dy
+> CONFIG_CRYPTO_DRBG_HASH=3Dy
+> CONFIG_CRYPTO_DRBG_CTR=3Dy
+> CONFIG_CRYPTO_DRBG=3Dy
+> CONFIG_CRYPTO_JITTERENTROPY=3Dy
+> CONFIG_CRYPTO_USER_API=3Dy
+> CONFIG_CRYPTO_USER_API_HASH=3Dy
+> CONFIG_CRYPTO_USER_API_SKCIPHER=3Dy
+> CONFIG_CRYPTO_USER_API_RNG=3Dy
+> # CONFIG_CRYPTO_USER_API_RNG_CAVP is not set
+> CONFIG_CRYPTO_USER_API_AEAD=3Dy
+> CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE=3Dy
+> # CONFIG_CRYPTO_STATS is not set
+> CONFIG_CRYPTO_HASH_INFO=3Dy
+> =
+
+> #
+> # Crypto library routines
+> #
+> CONFIG_CRYPTO_LIB_AES=3Dy
+> CONFIG_CRYPTO_LIB_ARC4=3Dm
+> # CONFIG_CRYPTO_LIB_BLAKE2S is not set
+> CONFIG_CRYPTO_ARCH_HAVE_LIB_CHACHA=3Dm
+> CONFIG_CRYPTO_LIB_CHACHA_GENERIC=3Dm
+> # CONFIG_CRYPTO_LIB_CHACHA is not set
+> # CONFIG_CRYPTO_LIB_CURVE25519 is not set
+> CONFIG_CRYPTO_LIB_DES=3Dm
+> CONFIG_CRYPTO_LIB_POLY1305_RSIZE=3D11
+> CONFIG_CRYPTO_ARCH_HAVE_LIB_POLY1305=3Dm
+> CONFIG_CRYPTO_LIB_POLY1305_GENERIC=3Dm
+> # CONFIG_CRYPTO_LIB_POLY1305 is not set
+> # CONFIG_CRYPTO_LIB_CHACHA20POLY1305 is not set
+> CONFIG_CRYPTO_LIB_SHA256=3Dy
+> CONFIG_CRYPTO_HW=3Dy
+> CONFIG_CRYPTO_DEV_PADLOCK=3Dm
+> CONFIG_CRYPTO_DEV_PADLOCK_AES=3Dm
+> CONFIG_CRYPTO_DEV_PADLOCK_SHA=3Dm
+> # CONFIG_CRYPTO_DEV_ATMEL_ECC is not set
+> # CONFIG_CRYPTO_DEV_ATMEL_SHA204A is not set
+> CONFIG_CRYPTO_DEV_CCP=3Dy
+> CONFIG_CRYPTO_DEV_CCP_DD=3Dm
+> CONFIG_CRYPTO_DEV_SP_CCP=3Dy
+> CONFIG_CRYPTO_DEV_CCP_CRYPTO=3Dm
+> CONFIG_CRYPTO_DEV_SP_PSP=3Dy
+> # CONFIG_CRYPTO_DEV_CCP_DEBUGFS is not set
+> CONFIG_CRYPTO_DEV_QAT=3Dm
+> CONFIG_CRYPTO_DEV_QAT_DH895xCC=3Dm
+> CONFIG_CRYPTO_DEV_QAT_C3XXX=3Dm
+> CONFIG_CRYPTO_DEV_QAT_C62X=3Dm
+> # CONFIG_CRYPTO_DEV_QAT_4XXX is not set
+> CONFIG_CRYPTO_DEV_QAT_DH895xCCVF=3Dm
+> CONFIG_CRYPTO_DEV_QAT_C3XXXVF=3Dm
+> CONFIG_CRYPTO_DEV_QAT_C62XVF=3Dm
+> CONFIG_CRYPTO_DEV_NITROX=3Dm
+> CONFIG_CRYPTO_DEV_NITROX_CNN55XX=3Dm
+> # CONFIG_CRYPTO_DEV_VIRTIO is not set
+> # CONFIG_CRYPTO_DEV_SAFEXCEL is not set
+> # CONFIG_CRYPTO_DEV_AMLOGIC_GXL is not set
+> CONFIG_ASYMMETRIC_KEY_TYPE=3Dy
+> CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE=3Dy
+> # CONFIG_ASYMMETRIC_TPM_KEY_SUBTYPE is not set
+> CONFIG_X509_CERTIFICATE_PARSER=3Dy
+> # CONFIG_PKCS8_PRIVATE_KEY_PARSER is not set
+> CONFIG_PKCS7_MESSAGE_PARSER=3Dy
+> # CONFIG_PKCS7_TEST_KEY is not set
+> CONFIG_SIGNED_PE_FILE_VERIFICATION=3Dy
+> =
+
+> #
+> # Certificates for signature checking
+> #
+> CONFIG_MODULE_SIG_KEY=3D"certs/signing_key.pem"
+> CONFIG_SYSTEM_TRUSTED_KEYRING=3Dy
+> CONFIG_SYSTEM_TRUSTED_KEYS=3D""
+> # CONFIG_SYSTEM_EXTRA_CERTIFICATE is not set
+> # CONFIG_SECONDARY_TRUSTED_KEYRING is not set
+> CONFIG_SYSTEM_BLACKLIST_KEYRING=3Dy
+> CONFIG_SYSTEM_BLACKLIST_HASH_LIST=3D""
+> # CONFIG_SYSTEM_REVOCATION_LIST is not set
+> # end of Certificates for signature checking
+> =
+
+> CONFIG_BINARY_PRINTF=3Dy
+> =
+
+> #
+> # Library routines
+> #
+> CONFIG_RAID6_PQ=3Dm
+> CONFIG_RAID6_PQ_BENCHMARK=3Dy
+> # CONFIG_PACKING is not set
+> CONFIG_BITREVERSE=3Dy
+> CONFIG_GENERIC_STRNCPY_FROM_USER=3Dy
+> CONFIG_GENERIC_STRNLEN_USER=3Dy
+> CONFIG_GENERIC_NET_UTILS=3Dy
+> CONFIG_GENERIC_FIND_FIRST_BIT=3Dy
+> CONFIG_CORDIC=3Dm
+> # CONFIG_PRIME_NUMBERS is not set
+> CONFIG_RATIONAL=3Dy
+> CONFIG_GENERIC_PCI_IOMAP=3Dy
+> CONFIG_GENERIC_IOMAP=3Dy
+> CONFIG_ARCH_USE_CMPXCHG_LOCKREF=3Dy
+> CONFIG_ARCH_HAS_FAST_MULTIPLIER=3Dy
+> CONFIG_ARCH_USE_SYM_ANNOTATIONS=3Dy
+> CONFIG_CRC_CCITT=3Dy
+> CONFIG_CRC16=3Dy
+> CONFIG_CRC_T10DIF=3Dy
+> CONFIG_CRC_ITU_T=3Dm
+> CONFIG_CRC32=3Dy
+> # CONFIG_CRC32_SELFTEST is not set
+> CONFIG_CRC32_SLICEBY8=3Dy
+> # CONFIG_CRC32_SLICEBY4 is not set
+> # CONFIG_CRC32_SARWATE is not set
+> # CONFIG_CRC32_BIT is not set
+> # CONFIG_CRC64 is not set
+> # CONFIG_CRC4 is not set
+> CONFIG_CRC7=3Dm
+> CONFIG_LIBCRC32C=3Dm
+> CONFIG_CRC8=3Dm
+> CONFIG_XXHASH=3Dy
+> # CONFIG_RANDOM32_SELFTEST is not set
+> CONFIG_ZLIB_INFLATE=3Dy
+> CONFIG_ZLIB_DEFLATE=3Dy
+> CONFIG_LZO_COMPRESS=3Dy
+> CONFIG_LZO_DECOMPRESS=3Dy
+> CONFIG_LZ4_DECOMPRESS=3Dy
+> CONFIG_ZSTD_COMPRESS=3Dm
+> CONFIG_ZSTD_DECOMPRESS=3Dy
+> CONFIG_XZ_DEC=3Dy
+> CONFIG_XZ_DEC_X86=3Dy
+> CONFIG_XZ_DEC_POWERPC=3Dy
+> CONFIG_XZ_DEC_IA64=3Dy
+> CONFIG_XZ_DEC_ARM=3Dy
+> CONFIG_XZ_DEC_ARMTHUMB=3Dy
+> CONFIG_XZ_DEC_SPARC=3Dy
+> CONFIG_XZ_DEC_BCJ=3Dy
+> # CONFIG_XZ_DEC_TEST is not set
+> CONFIG_DECOMPRESS_GZIP=3Dy
+> CONFIG_DECOMPRESS_BZIP2=3Dy
+> CONFIG_DECOMPRESS_LZMA=3Dy
+> CONFIG_DECOMPRESS_XZ=3Dy
+> CONFIG_DECOMPRESS_LZO=3Dy
+> CONFIG_DECOMPRESS_LZ4=3Dy
+> CONFIG_DECOMPRESS_ZSTD=3Dy
+> CONFIG_GENERIC_ALLOCATOR=3Dy
+> CONFIG_REED_SOLOMON=3Dm
+> CONFIG_REED_SOLOMON_ENC8=3Dy
+> CONFIG_REED_SOLOMON_DEC8=3Dy
+> CONFIG_TEXTSEARCH=3Dy
+> CONFIG_TEXTSEARCH_KMP=3Dm
+> CONFIG_TEXTSEARCH_BM=3Dm
+> CONFIG_TEXTSEARCH_FSM=3Dm
+> CONFIG_INTERVAL_TREE=3Dy
+> CONFIG_XARRAY_MULTI=3Dy
+> CONFIG_ASSOCIATIVE_ARRAY=3Dy
+> CONFIG_HAS_IOMEM=3Dy
+> CONFIG_HAS_IOPORT_MAP=3Dy
+> CONFIG_HAS_DMA=3Dy
+> CONFIG_DMA_OPS=3Dy
+> CONFIG_NEED_SG_DMA_LENGTH=3Dy
+> CONFIG_NEED_DMA_MAP_STATE=3Dy
+> CONFIG_ARCH_DMA_ADDR_T_64BIT=3Dy
+> CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED=3Dy
+> CONFIG_SWIOTLB=3Dy
+> CONFIG_DMA_COHERENT_POOL=3Dy
+> CONFIG_DMA_CMA=3Dy
+> # CONFIG_DMA_PERNUMA_CMA is not set
+> =
+
+> #
+> # Default contiguous memory area size:
+> #
+> CONFIG_CMA_SIZE_MBYTES=3D200
+> CONFIG_CMA_SIZE_SEL_MBYTES=3Dy
+> # CONFIG_CMA_SIZE_SEL_PERCENTAGE is not set
+> # CONFIG_CMA_SIZE_SEL_MIN is not set
+> # CONFIG_CMA_SIZE_SEL_MAX is not set
+> CONFIG_CMA_ALIGNMENT=3D8
+> # CONFIG_DMA_API_DEBUG is not set
+> # CONFIG_DMA_MAP_BENCHMARK is not set
+> CONFIG_SGL_ALLOC=3Dy
+> CONFIG_CHECK_SIGNATURE=3Dy
+> CONFIG_CPUMASK_OFFSTACK=3Dy
+> CONFIG_CPU_RMAP=3Dy
+> CONFIG_DQL=3Dy
+> CONFIG_GLOB=3Dy
+> # CONFIG_GLOB_SELFTEST is not set
+> CONFIG_NLATTR=3Dy
+> CONFIG_CLZ_TAB=3Dy
+> CONFIG_IRQ_POLL=3Dy
+> CONFIG_MPILIB=3Dy
+> CONFIG_SIGNATURE=3Dy
+> CONFIG_DIMLIB=3Dy
+> CONFIG_OID_REGISTRY=3Dy
+> CONFIG_UCS2_STRING=3Dy
+> CONFIG_HAVE_GENERIC_VDSO=3Dy
+> CONFIG_GENERIC_GETTIMEOFDAY=3Dy
+> CONFIG_GENERIC_VDSO_TIME_NS=3Dy
+> CONFIG_FONT_SUPPORT=3Dy
+> # CONFIG_FONTS is not set
+> CONFIG_FONT_8x8=3Dy
+> CONFIG_FONT_8x16=3Dy
+> CONFIG_SG_POOL=3Dy
+> CONFIG_ARCH_HAS_PMEM_API=3Dy
+> CONFIG_MEMREGION=3Dy
+> CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=3Dy
+> CONFIG_ARCH_HAS_COPY_MC=3Dy
+> CONFIG_ARCH_STACKWALK=3Dy
+> CONFIG_SBITMAP=3Dy
+> # CONFIG_STRING_SELFTEST is not set
+> # end of Library routines
+> =
+
+> CONFIG_ASN1_ENCODER=3Dy
+> =
+
+> #
+> # Kernel hacking
+> #
+> =
+
+> #
+> # printk and dmesg options
+> #
+> CONFIG_PRINTK_TIME=3Dy
+> # CONFIG_PRINTK_CALLER is not set
+> CONFIG_CONSOLE_LOGLEVEL_DEFAULT=3D7
+> CONFIG_CONSOLE_LOGLEVEL_QUIET=3D4
+> CONFIG_MESSAGE_LOGLEVEL_DEFAULT=3D4
+> CONFIG_BOOT_PRINTK_DELAY=3Dy
+> CONFIG_DYNAMIC_DEBUG=3Dy
+> CONFIG_DYNAMIC_DEBUG_CORE=3Dy
+> CONFIG_SYMBOLIC_ERRNAME=3Dy
+> CONFIG_DEBUG_BUGVERBOSE=3Dy
+> # end of printk and dmesg options
+> =
+
+> #
+> # Compile-time checks and compiler options
+> #
+> CONFIG_DEBUG_INFO=3Dy
+> CONFIG_DEBUG_INFO_REDUCED=3Dy
+> # CONFIG_DEBUG_INFO_COMPRESSED is not set
+> # CONFIG_DEBUG_INFO_SPLIT is not set
+> # CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT is not set
+> CONFIG_DEBUG_INFO_DWARF4=3Dy
+> # CONFIG_DEBUG_INFO_DWARF5 is not set
+> CONFIG_PAHOLE_HAS_SPLIT_BTF=3Dy
+> # CONFIG_GDB_SCRIPTS is not set
+> CONFIG_FRAME_WARN=3D2048
+> CONFIG_STRIP_ASM_SYMS=3Dy
+> # CONFIG_READABLE_ASM is not set
+> # CONFIG_HEADERS_INSTALL is not set
+> CONFIG_DEBUG_SECTION_MISMATCH=3Dy
+> CONFIG_SECTION_MISMATCH_WARN_ONLY=3Dy
+> CONFIG_STACK_VALIDATION=3Dy
+> # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
+> # end of Compile-time checks and compiler options
+> =
+
+> #
+> # Generic Kernel Debugging Instruments
+> #
+> CONFIG_MAGIC_SYSRQ=3Dy
+> CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=3D0x1
+> CONFIG_MAGIC_SYSRQ_SERIAL=3Dy
+> CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE=3D""
+> CONFIG_DEBUG_FS=3Dy
+> CONFIG_DEBUG_FS_ALLOW_ALL=3Dy
+> # CONFIG_DEBUG_FS_DISALLOW_MOUNT is not set
+> # CONFIG_DEBUG_FS_ALLOW_NONE is not set
+> CONFIG_HAVE_ARCH_KGDB=3Dy
+> # CONFIG_KGDB is not set
+> CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=3Dy
+> # CONFIG_UBSAN is not set
+> CONFIG_HAVE_ARCH_KCSAN=3Dy
+> # end of Generic Kernel Debugging Instruments
+> =
+
+> CONFIG_DEBUG_KERNEL=3Dy
+> CONFIG_DEBUG_MISC=3Dy
+> =
+
+> #
+> # Memory Debugging
+> #
+> # CONFIG_PAGE_EXTENSION is not set
+> # CONFIG_DEBUG_PAGEALLOC is not set
+> # CONFIG_PAGE_OWNER is not set
+> # CONFIG_PAGE_POISONING is not set
+> # CONFIG_DEBUG_PAGE_REF is not set
+> # CONFIG_DEBUG_RODATA_TEST is not set
+> CONFIG_ARCH_HAS_DEBUG_WX=3Dy
+> # CONFIG_DEBUG_WX is not set
+> CONFIG_GENERIC_PTDUMP=3Dy
+> # CONFIG_PTDUMP_DEBUGFS is not set
+> # CONFIG_DEBUG_OBJECTS is not set
+> # CONFIG_SLUB_DEBUG_ON is not set
+> # CONFIG_SLUB_STATS is not set
+> CONFIG_HAVE_DEBUG_KMEMLEAK=3Dy
+> # CONFIG_DEBUG_KMEMLEAK is not set
+> # CONFIG_DEBUG_STACK_USAGE is not set
+> # CONFIG_SCHED_STACK_END_CHECK is not set
+> CONFIG_ARCH_HAS_DEBUG_VM_PGTABLE=3Dy
+> # CONFIG_DEBUG_VM is not set
+> # CONFIG_DEBUG_VM_PGTABLE is not set
+> CONFIG_ARCH_HAS_DEBUG_VIRTUAL=3Dy
+> # CONFIG_DEBUG_VIRTUAL is not set
+> CONFIG_DEBUG_MEMORY_INIT=3Dy
+> # CONFIG_DEBUG_PER_CPU_MAPS is not set
+> CONFIG_HAVE_ARCH_KASAN=3Dy
+> CONFIG_HAVE_ARCH_KASAN_VMALLOC=3Dy
+> CONFIG_CC_HAS_KASAN_GENERIC=3Dy
+> CONFIG_CC_HAS_WORKING_NOSANITIZE_ADDRESS=3Dy
+> # CONFIG_KASAN is not set
+> CONFIG_HAVE_ARCH_KFENCE=3Dy
+> # CONFIG_KFENCE is not set
+> # end of Memory Debugging
+> =
+
+> CONFIG_DEBUG_SHIRQ=3Dy
+> =
+
+> #
+> # Debug Oops, Lockups and Hangs
+> #
+> CONFIG_PANIC_ON_OOPS=3Dy
+> CONFIG_PANIC_ON_OOPS_VALUE=3D1
+> CONFIG_PANIC_TIMEOUT=3D0
+> CONFIG_LOCKUP_DETECTOR=3Dy
+> CONFIG_SOFTLOCKUP_DETECTOR=3Dy
+> # CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
+> CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE=3D0
+> CONFIG_HARDLOCKUP_DETECTOR_PERF=3Dy
+> CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=3Dy
+> CONFIG_HARDLOCKUP_DETECTOR=3Dy
+> CONFIG_BOOTPARAM_HARDLOCKUP_PANIC=3Dy
+> CONFIG_BOOTPARAM_HARDLOCKUP_PANIC_VALUE=3D1
+> # CONFIG_DETECT_HUNG_TASK is not set
+> # CONFIG_WQ_WATCHDOG is not set
+> # CONFIG_TEST_LOCKUP is not set
+> # end of Debug Oops, Lockups and Hangs
+> =
+
+> #
+> # Scheduler Debugging
+> #
+> CONFIG_SCHED_DEBUG=3Dy
+> CONFIG_SCHED_INFO=3Dy
+> CONFIG_SCHEDSTATS=3Dy
+> # end of Scheduler Debugging
+> =
+
+> # CONFIG_DEBUG_TIMEKEEPING is not set
+> =
+
+> #
+> # Lock Debugging (spinlocks, mutexes, etc...)
+> #
+> CONFIG_LOCK_DEBUGGING_SUPPORT=3Dy
+> # CONFIG_PROVE_LOCKING is not set
+> # CONFIG_LOCK_STAT is not set
+> # CONFIG_DEBUG_RT_MUTEXES is not set
+> # CONFIG_DEBUG_SPINLOCK is not set
+> # CONFIG_DEBUG_MUTEXES is not set
+> # CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
+> # CONFIG_DEBUG_RWSEMS is not set
+> # CONFIG_DEBUG_LOCK_ALLOC is not set
+> CONFIG_DEBUG_ATOMIC_SLEEP=3Dy
+> # CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
+> CONFIG_LOCK_TORTURE_TEST=3Dm
+> # CONFIG_WW_MUTEX_SELFTEST is not set
+> # CONFIG_SCF_TORTURE_TEST is not set
+> # CONFIG_CSD_LOCK_WAIT_DEBUG is not set
+> # end of Lock Debugging (spinlocks, mutexes, etc...)
+> =
+
+> # CONFIG_DEBUG_IRQFLAGS is not set
+> CONFIG_STACKTRACE=3Dy
+> # CONFIG_WARN_ALL_UNSEEDED_RANDOM is not set
+> # CONFIG_DEBUG_KOBJECT is not set
+> =
+
+> #
+> # Debug kernel data structures
+> #
+> CONFIG_DEBUG_LIST=3Dy
+> # CONFIG_DEBUG_PLIST is not set
+> # CONFIG_DEBUG_SG is not set
+> # CONFIG_DEBUG_NOTIFIERS is not set
+> CONFIG_BUG_ON_DATA_CORRUPTION=3Dy
+> # end of Debug kernel data structures
+> =
+
+> # CONFIG_DEBUG_CREDENTIALS is not set
+> =
+
+> #
+> # RCU Debugging
+> #
+> CONFIG_TORTURE_TEST=3Dm
+> CONFIG_RCU_SCALE_TEST=3Dm
+> CONFIG_RCU_TORTURE_TEST=3Dm
+> # CONFIG_RCU_REF_SCALE_TEST is not set
+> CONFIG_RCU_CPU_STALL_TIMEOUT=3D60
+> # CONFIG_RCU_TRACE is not set
+> # CONFIG_RCU_EQS_DEBUG is not set
+> # end of RCU Debugging
+> =
+
+> # CONFIG_DEBUG_WQ_FORCE_RR_CPU is not set
+> # CONFIG_DEBUG_BLOCK_EXT_DEVT is not set
+> # CONFIG_CPU_HOTPLUG_STATE_CONTROL is not set
+> CONFIG_LATENCYTOP=3Dy
+> CONFIG_USER_STACKTRACE_SUPPORT=3Dy
+> CONFIG_NOP_TRACER=3Dy
+> CONFIG_HAVE_FUNCTION_TRACER=3Dy
+> CONFIG_HAVE_FUNCTION_GRAPH_TRACER=3Dy
+> CONFIG_HAVE_DYNAMIC_FTRACE=3Dy
+> CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS=3Dy
+> CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS=3Dy
+> CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS=3Dy
+> CONFIG_HAVE_FTRACE_MCOUNT_RECORD=3Dy
+> CONFIG_HAVE_SYSCALL_TRACEPOINTS=3Dy
+> CONFIG_HAVE_FENTRY=3Dy
+> CONFIG_HAVE_OBJTOOL_MCOUNT=3Dy
+> CONFIG_HAVE_C_RECORDMCOUNT=3Dy
+> CONFIG_TRACER_MAX_TRACE=3Dy
+> CONFIG_TRACE_CLOCK=3Dy
+> CONFIG_RING_BUFFER=3Dy
+> CONFIG_EVENT_TRACING=3Dy
+> CONFIG_CONTEXT_SWITCH_TRACER=3Dy
+> CONFIG_TRACING=3Dy
+> CONFIG_GENERIC_TRACER=3Dy
+> CONFIG_TRACING_SUPPORT=3Dy
+> CONFIG_FTRACE=3Dy
+> # CONFIG_BOOTTIME_TRACING is not set
+> CONFIG_FUNCTION_TRACER=3Dy
+> CONFIG_FUNCTION_GRAPH_TRACER=3Dy
+> CONFIG_DYNAMIC_FTRACE=3Dy
+> CONFIG_DYNAMIC_FTRACE_WITH_REGS=3Dy
+> CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS=3Dy
+> CONFIG_FUNCTION_PROFILER=3Dy
+> CONFIG_STACK_TRACER=3Dy
+> # CONFIG_IRQSOFF_TRACER is not set
+> CONFIG_SCHED_TRACER=3Dy
+> CONFIG_HWLAT_TRACER=3Dy
+> # CONFIG_MMIOTRACE is not set
+> CONFIG_FTRACE_SYSCALLS=3Dy
+> CONFIG_TRACER_SNAPSHOT=3Dy
+> # CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP is not set
+> CONFIG_BRANCH_PROFILE_NONE=3Dy
+> # CONFIG_PROFILE_ANNOTATED_BRANCHES is not set
+> CONFIG_BLK_DEV_IO_TRACE=3Dy
+> CONFIG_KPROBE_EVENTS=3Dy
+> # CONFIG_KPROBE_EVENTS_ON_NOTRACE is not set
+> CONFIG_UPROBE_EVENTS=3Dy
+> CONFIG_BPF_EVENTS=3Dy
+> CONFIG_DYNAMIC_EVENTS=3Dy
+> CONFIG_PROBE_EVENTS=3Dy
+> # CONFIG_BPF_KPROBE_OVERRIDE is not set
+> CONFIG_FTRACE_MCOUNT_RECORD=3Dy
+> CONFIG_FTRACE_MCOUNT_USE_CC=3Dy
+> CONFIG_TRACING_MAP=3Dy
+> CONFIG_SYNTH_EVENTS=3Dy
+> CONFIG_HIST_TRIGGERS=3Dy
+> # CONFIG_TRACE_EVENT_INJECT is not set
+> # CONFIG_TRACEPOINT_BENCHMARK is not set
+> CONFIG_RING_BUFFER_BENCHMARK=3Dm
+> # CONFIG_TRACE_EVAL_MAP_FILE is not set
+> # CONFIG_FTRACE_RECORD_RECURSION is not set
+> # CONFIG_FTRACE_STARTUP_TEST is not set
+> # CONFIG_RING_BUFFER_STARTUP_TEST is not set
+> # CONFIG_RING_BUFFER_VALIDATE_TIME_DELTAS is not set
+> # CONFIG_PREEMPTIRQ_DELAY_TEST is not set
+> # CONFIG_SYNTH_EVENT_GEN_TEST is not set
+> # CONFIG_KPROBE_EVENT_GEN_TEST is not set
+> # CONFIG_HIST_TRIGGERS_DEBUG is not set
+> CONFIG_PROVIDE_OHCI1394_DMA_INIT=3Dy
+> # CONFIG_SAMPLES is not set
+> CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=3Dy
+> CONFIG_STRICT_DEVMEM=3Dy
+> # CONFIG_IO_STRICT_DEVMEM is not set
+> =
+
+> #
+> # x86 Debugging
+> #
+> CONFIG_TRACE_IRQFLAGS_SUPPORT=3Dy
+> CONFIG_TRACE_IRQFLAGS_NMI_SUPPORT=3Dy
+> CONFIG_EARLY_PRINTK_USB=3Dy
+> CONFIG_X86_VERBOSE_BOOTUP=3Dy
+> CONFIG_EARLY_PRINTK=3Dy
+> CONFIG_EARLY_PRINTK_DBGP=3Dy
+> CONFIG_EARLY_PRINTK_USB_XDBC=3Dy
+> # CONFIG_EFI_PGT_DUMP is not set
+> # CONFIG_DEBUG_TLBFLUSH is not set
+> CONFIG_HAVE_MMIOTRACE_SUPPORT=3Dy
+> CONFIG_X86_DECODER_SELFTEST=3Dy
+> CONFIG_IO_DELAY_0X80=3Dy
+> # CONFIG_IO_DELAY_0XED is not set
+> # CONFIG_IO_DELAY_UDELAY is not set
+> # CONFIG_IO_DELAY_NONE is not set
+> CONFIG_DEBUG_BOOT_PARAMS=3Dy
+> # CONFIG_CPA_DEBUG is not set
+> # CONFIG_DEBUG_ENTRY is not set
+> # CONFIG_DEBUG_NMI_SELFTEST is not set
+> # CONFIG_X86_DEBUG_FPU is not set
+> # CONFIG_PUNIT_ATOM_DEBUG is not set
+> CONFIG_UNWINDER_ORC=3Dy
+> # CONFIG_UNWINDER_FRAME_POINTER is not set
+> # end of x86 Debugging
+> =
+
+> #
+> # Kernel Testing and Coverage
+> #
+> CONFIG_KUNIT=3Dy
+> # CONFIG_KUNIT_DEBUGFS is not set
+> CONFIG_KUNIT_TEST=3Dm
+> CONFIG_KUNIT_EXAMPLE_TEST=3Dm
+> # CONFIG_KUNIT_ALL_TESTS is not set
+> # CONFIG_NOTIFIER_ERROR_INJECTION is not set
+> CONFIG_FUNCTION_ERROR_INJECTION=3Dy
+> CONFIG_FAULT_INJECTION=3Dy
+> # CONFIG_FAILSLAB is not set
+> # CONFIG_FAIL_PAGE_ALLOC is not set
+> # CONFIG_FAULT_INJECTION_USERCOPY is not set
+> CONFIG_FAIL_MAKE_REQUEST=3Dy
+> # CONFIG_FAIL_IO_TIMEOUT is not set
+> # CONFIG_FAIL_FUTEX is not set
+> CONFIG_FAULT_INJECTION_DEBUG_FS=3Dy
+> # CONFIG_FAIL_FUNCTION is not set
+> # CONFIG_FAIL_MMC_REQUEST is not set
+> CONFIG_ARCH_HAS_KCOV=3Dy
+> CONFIG_CC_HAS_SANCOV_TRACE_PC=3Dy
+> # CONFIG_KCOV is not set
+> CONFIG_RUNTIME_TESTING_MENU=3Dy
+> # CONFIG_LKDTM is not set
+> # CONFIG_TEST_LIST_SORT is not set
+> # CONFIG_TEST_MIN_HEAP is not set
+> # CONFIG_TEST_SORT is not set
+> # CONFIG_TEST_DIV64 is not set
+> # CONFIG_KPROBES_SANITY_TEST is not set
+> # CONFIG_BACKTRACE_SELF_TEST is not set
+> # CONFIG_RBTREE_TEST is not set
+> # CONFIG_REED_SOLOMON_TEST is not set
+> # CONFIG_INTERVAL_TREE_TEST is not set
+> # CONFIG_PERCPU_TEST is not set
+> CONFIG_ATOMIC64_SELFTEST=3Dy
+> # CONFIG_ASYNC_RAID6_TEST is not set
+> # CONFIG_TEST_HEXDUMP is not set
+> # CONFIG_TEST_STRING_HELPERS is not set
+> # CONFIG_TEST_STRSCPY is not set
+> # CONFIG_TEST_KSTRTOX is not set
+> # CONFIG_TEST_PRINTF is not set
+> # CONFIG_TEST_BITMAP is not set
+> # CONFIG_TEST_UUID is not set
+> # CONFIG_TEST_XARRAY is not set
+> # CONFIG_TEST_OVERFLOW is not set
+> # CONFIG_TEST_RHASHTABLE is not set
+> # CONFIG_TEST_HASH is not set
+> # CONFIG_TEST_IDA is not set
+> # CONFIG_TEST_LKM is not set
+> # CONFIG_TEST_BITOPS is not set
+> # CONFIG_TEST_VMALLOC is not set
+> # CONFIG_TEST_USER_COPY is not set
+> CONFIG_TEST_BPF=3Dm
+> # CONFIG_TEST_BLACKHOLE_DEV is not set
+> # CONFIG_FIND_BIT_BENCHMARK is not set
+> # CONFIG_TEST_FIRMWARE is not set
+> # CONFIG_TEST_SYSCTL is not set
+> # CONFIG_BITFIELD_KUNIT is not set
+> # CONFIG_RESOURCE_KUNIT_TEST is not set
+> CONFIG_SYSCTL_KUNIT_TEST=3Dm
+> CONFIG_LIST_KUNIT_TEST=3Dm
+> # CONFIG_LINEAR_RANGES_TEST is not set
+> # CONFIG_CMDLINE_KUNIT_TEST is not set
+> # CONFIG_BITS_TEST is not set
+> # CONFIG_TEST_UDELAY is not set
+> # CONFIG_TEST_STATIC_KEYS is not set
+> # CONFIG_TEST_KMOD is not set
+> # CONFIG_TEST_MEMCAT_P is not set
+> # CONFIG_TEST_LIVEPATCH is not set
+> # CONFIG_TEST_STACKINIT is not set
+> # CONFIG_TEST_MEMINIT is not set
+> # CONFIG_TEST_HMM is not set
+> # CONFIG_TEST_FREE_PAGES is not set
+> # CONFIG_TEST_FPU is not set
+> CONFIG_ARCH_USE_MEMTEST=3Dy
+> # CONFIG_MEMTEST is not set
+> # CONFIG_HYPERV_TESTING is not set
+> # end of Kernel Testing and Coverage
+> # end of Kernel hacking
+
+> #!/bin/sh
+> =
+
+> export_top_env()
+> {
+> 	export suite=3D'netperf'
+> 	export testcase=3D'netperf'
+> 	export category=3D'benchmark'
+> 	export disable_latency_stats=3D1
+> 	export set_nic_irq_affinity=3D1
+> 	export ip=3D'ipv4'
+> 	export runtime=3D300
+> 	export nr_threads=3D1
+> 	export cluster=3D'cs-localhost'
+> 	export job_origin=3D'netperf-small-threads.yaml'
+> 	export queue_cmdline_keys=3D'branch
+> commit
+> queue_at_least_once'
+> 	export queue=3D'validate'
+> 	export testbox=3D'lkp-csl-2ap3'
+> 	export tbox_group=3D'lkp-csl-2ap3'
+> 	export kconfig=3D'x86_64-rhel-8.3'
+> 	export submit_id=3D'60a46126a166acfd4978c19d'
+> 	export job_file=3D'/lkp/jobs/scheduled/lkp-csl-2ap3/netperf-cs-localhost=
+-performance-ipv4-1-300s-5K-TCP_SENDFILE-ucode=3D0x5003006-monitor=3D6cca9a=
+40-debian-10.4-x86_64-20200603.cgz-69-20210519-64841-1k3i4q8-4.yaml'
+> 	export id=3D'aab2b1e70f1288aa98cdc44dedfbe93583a729de'
+> 	export queuer_version=3D'/lkp-src'
+> 	export model=3D'Cascade Lake'
+> 	export nr_node=3D4
+> 	export nr_cpu=3D192
+> 	export memory=3D'192G'
+> 	export ssd_partitions=3D
+> 	export rootfs_partition=3D'LABEL=3DLKP-ROOTFS'
+> 	export kernel_cmdline_hw=3D'acpi_rsdp=3D0x67f44014'
+> 	export brand=3D'Intel(R) Xeon(R) Platinum 9242 CPU @ 2.30GHz'
+> 	export commit=3D'69bc1b14c3d0ebfc25ebcb7647a21d659602a93a'
+> 	export need_kconfig_hw=3D'CONFIG_IGB=3Dy
+> CONFIG_BLK_DEV_NVME'
+> 	export ucode=3D'0x5003006'
+> 	export enqueue_time=3D'2021-05-19 08:51:50 +0800'
+> 	export _id=3D'60a4612aa166acfd4978c19e'
+> 	export _rt=3D'/result/netperf/cs-localhost-performance-ipv4-1-300s-5K-TC=
+P_SENDFILE-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2ap3/debian-10.4-x8=
+6_64-20200603.cgz/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb7647a21d65960=
+2a93a'
+> 	export user=3D'lkp'
+> 	export compiler=3D'gcc-9'
+> 	export LKP_SERVER=3D'internal-lkp-server'
+> 	export head_commit=3D'd51c1bd768e5539909e9c10e0c917f1ae6b2f1a5'
+> 	export base_commit=3D'd07f6ca923ea0927a1024dfccafc5b53b61cfecc'
+> 	export branch=3D'aa/master'
+> 	export rootfs=3D'debian-10.4-x86_64-20200603.cgz'
+> 	export monitor_sha=3D'6cca9a40'
+> 	export result_root=3D'/result/netperf/cs-localhost-performance-ipv4-1-30=
+0s-5K-TCP_SENDFILE-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2ap3/debian=
+-10.4-x86_64-20200603.cgz/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb7647a=
+21d659602a93a/3'
+> 	export scheduler_version=3D'/lkp/lkp/.src-20210513-171754'
+> 	export arch=3D'x86_64'
+> 	export max_uptime=3D2100
+> 	export initrd=3D'/osimage/debian/debian-10.4-x86_64-20200603.cgz'
+> 	export bootloader_append=3D'root=3D/dev/ram0
+> user=3Dlkp
+> job=3D/lkp/jobs/scheduled/lkp-csl-2ap3/netperf-cs-localhost-performance-i=
+pv4-1-300s-5K-TCP_SENDFILE-ucode=3D0x5003006-monitor=3D6cca9a40-debian-10.4=
+-x86_64-20200603.cgz-69-20210519-64841-1k3i4q8-4.yaml
+> ARCH=3Dx86_64
+> kconfig=3Dx86_64-rhel-8.3
+> branch=3Daa/master
+> commit=3D69bc1b14c3d0ebfc25ebcb7647a21d659602a93a
+> BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb7647a=
+21d659602a93a/vmlinuz-5.13.0-rc2-AA-00032-g69bc1b14c3d0
+> acpi_rsdp=3D0x67f44014
+> max_uptime=3D2100
+> RESULT_ROOT=3D/result/netperf/cs-localhost-performance-ipv4-1-300s-5K-TCP=
+_SENDFILE-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2ap3/debian-10.4-x86=
+_64-20200603.cgz/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb7647a21d659602=
+a93a/3
+> LKP_SERVER=3Dinternal-lkp-server
+> nokaslr
+> selinux=3D0
+> debug
+> apic=3Ddebug
+> sysrq_always_enabled
+> rcupdate.rcu_cpu_stall_timeout=3D100
+> net.ifnames=3D0
+> printk.devkmsg=3Don
+> panic=3D-1
+> softlockup_panic=3D1
+> nmi_watchdog=3Dpanic
+> oops=3Dpanic
+> load_ramdisk=3D2
+> prompt_ramdisk=3D0
+> drbd.minor_count=3D8
+> systemd.log_level=3Derr
+> ignore_loglevel
+> console=3Dtty0
+> earlyprintk=3DttyS0,115200
+> console=3DttyS0,115200
+> vga=3Dnormal
+> rw'
+> 	export modules_initrd=3D'/pkg/linux/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0eb=
+fc25ebcb7647a21d659602a93a/modules.cgz'
+> 	export bm_initrd=3D'/osimage/deps/debian-10.4-x86_64-20200603.cgz/run-ip=
+config_20200608.cgz,/osimage/deps/debian-10.4-x86_64-20200603.cgz/lkp_20201=
+211.cgz,/osimage/deps/debian-10.4-x86_64-20200603.cgz/rsync-rootfs_20200608=
+.cgz,/osimage/deps/debian-10.4-x86_64-20200603.cgz/netperf_20210507.cgz,/os=
+image/pkg/debian-10.4-x86_64-20200603.cgz/netperf-x86_64-2.7-0_20210507.cgz=
+,/osimage/deps/debian-10.4-x86_64-20200603.cgz/mpstat_20200714.cgz,/osimage=
+/deps/debian-10.4-x86_64-20200603.cgz/turbostat_20200721.cgz,/osimage/pkg/d=
+ebian-10.4-x86_64-20200603.cgz/turbostat-x86_64-3.7-4_20200721.cgz,/osimage=
+/deps/debian-10.4-x86_64-20200603.cgz/perf_20201126.cgz,/osimage/pkg/debian=
+-10.4-x86_64-20200603.cgz/perf-x86_64-a48b0872e694-1_20210507.cgz,/osimage/=
+pkg/debian-10.4-x86_64-20200603.cgz/sar-x86_64-34c92ae-1_20200702.cgz,/osim=
+age/deps/debian-10.4-x86_64-20200603.cgz/hw_20200715.cgz'
+> 	export ucode_initrd=3D'/osimage/ucode/intel-ucode-20210222.cgz'
+> 	export lkp_initrd=3D'/osimage/user/lkp/lkp-x86_64.cgz'
+> 	export site=3D'inn'
+> 	export LKP_CGI_PORT=3D80
+> 	export LKP_CIFS_PORT=3D139
+> 	export last_kernel=3D'5.13.0-rc2'
+> 	export repeat_to=3D6
+> 	export queue_at_least_once=3D1
+> 	export kernel=3D'/pkg/linux/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb=
+7647a21d659602a93a/vmlinuz-5.13.0-rc2-AA-00032-g69bc1b14c3d0'
+> 	export dequeue_time=3D'2021-05-19 09:02:48 +0800'
+> 	export node_roles=3D'server client'
+> 	export job_initrd=3D'/lkp/jobs/scheduled/lkp-csl-2ap3/netperf-cs-localho=
+st-performance-ipv4-1-300s-5K-TCP_SENDFILE-ucode=3D0x5003006-monitor=3D6cca=
+9a40-debian-10.4-x86_64-20200603.cgz-69-20210519-64841-1k3i4q8-4.cgz'
+> =
+
+> 	[ -n "$LKP_SRC" ] ||
+> 	export LKP_SRC=3D/lkp/${user:-lkp}/src
+> }
+> =
+
+> run_job()
+> {
+> 	echo $$ > $TMP/run-job.pid
+> =
+
+> 	. $LKP_SRC/lib/http.sh
+> 	. $LKP_SRC/lib/job.sh
+> 	. $LKP_SRC/lib/env.sh
+> =
+
+> 	export_top_env
+> =
+
+> 	run_setup $LKP_SRC/setup/cpufreq_governor 'performance'
+> =
+
+> 	run_monitor $LKP_SRC/monitors/wrapper kmsg
+> 	run_monitor $LKP_SRC/monitors/no-stdout/wrapper boot-time
+> 	run_monitor $LKP_SRC/monitors/wrapper uptime
+> 	run_monitor $LKP_SRC/monitors/wrapper iostat
+> 	run_monitor $LKP_SRC/monitors/wrapper heartbeat
+> 	run_monitor $LKP_SRC/monitors/wrapper vmstat
+> 	run_monitor $LKP_SRC/monitors/wrapper numa-numastat
+> 	run_monitor $LKP_SRC/monitors/wrapper numa-vmstat
+> 	run_monitor $LKP_SRC/monitors/wrapper numa-meminfo
+> 	run_monitor $LKP_SRC/monitors/wrapper proc-vmstat
+> 	run_monitor $LKP_SRC/monitors/wrapper proc-stat
+> 	run_monitor $LKP_SRC/monitors/wrapper meminfo
+> 	run_monitor $LKP_SRC/monitors/wrapper slabinfo
+> 	run_monitor $LKP_SRC/monitors/wrapper interrupts
+> 	run_monitor $LKP_SRC/monitors/wrapper lock_stat
+> 	run_monitor lite_mode=3D1 $LKP_SRC/monitors/wrapper perf-sched
+> 	run_monitor $LKP_SRC/monitors/wrapper softirqs
+> 	run_monitor $LKP_SRC/monitors/one-shot/wrapper bdi_dev_mapping
+> 	run_monitor $LKP_SRC/monitors/wrapper diskstats
+> 	run_monitor $LKP_SRC/monitors/wrapper nfsstat
+> 	run_monitor $LKP_SRC/monitors/wrapper cpuidle
+> 	run_monitor $LKP_SRC/monitors/wrapper cpufreq-stats
+> 	run_monitor $LKP_SRC/monitors/wrapper turbostat
+> 	run_monitor $LKP_SRC/monitors/wrapper sched_debug
+> 	run_monitor $LKP_SRC/monitors/wrapper perf-stat
+> 	run_monitor $LKP_SRC/monitors/wrapper mpstat
+> 	run_monitor $LKP_SRC/monitors/no-stdout/wrapper perf-profile
+> 	run_monitor $LKP_SRC/monitors/wrapper oom-killer
+> 	run_monitor $LKP_SRC/monitors/plain/watchdog
+> =
+
+> 	if role server
+> 	then
+> 		start_daemon $LKP_SRC/daemon/netserver
+> 	fi
+> =
+
+> 	if role client
+> 	then
+> 		run_test send_size=3D'5K' test=3D'TCP_SENDFILE' $LKP_SRC/tests/wrapper =
+netperf
+> 	fi
+> }
+> =
+
+> extract_stats()
+> {
+> 	export stats_part_begin=3D
+> 	export stats_part_end=3D
+> =
+
+> 	env send_size=3D'5K' test=3D'TCP_SENDFILE' $LKP_SRC/stats/wrapper netperf
+> 	$LKP_SRC/stats/wrapper kmsg
+> 	$LKP_SRC/stats/wrapper boot-time
+> 	$LKP_SRC/stats/wrapper uptime
+> 	$LKP_SRC/stats/wrapper iostat
+> 	$LKP_SRC/stats/wrapper vmstat
+> 	$LKP_SRC/stats/wrapper numa-numastat
+> 	$LKP_SRC/stats/wrapper numa-vmstat
+> 	$LKP_SRC/stats/wrapper numa-meminfo
+> 	$LKP_SRC/stats/wrapper proc-vmstat
+> 	$LKP_SRC/stats/wrapper meminfo
+> 	$LKP_SRC/stats/wrapper slabinfo
+> 	$LKP_SRC/stats/wrapper interrupts
+> 	$LKP_SRC/stats/wrapper lock_stat
+> 	env lite_mode=3D1 $LKP_SRC/stats/wrapper perf-sched
+> 	$LKP_SRC/stats/wrapper softirqs
+> 	$LKP_SRC/stats/wrapper diskstats
+> 	$LKP_SRC/stats/wrapper nfsstat
+> 	$LKP_SRC/stats/wrapper cpuidle
+> 	$LKP_SRC/stats/wrapper turbostat
+> 	$LKP_SRC/stats/wrapper sched_debug
+> 	$LKP_SRC/stats/wrapper perf-stat
+> 	$LKP_SRC/stats/wrapper mpstat
+> 	$LKP_SRC/stats/wrapper perf-profile
+> =
+
+> 	$LKP_SRC/stats/wrapper time netperf.time
+> 	$LKP_SRC/stats/wrapper dmesg
+> 	$LKP_SRC/stats/wrapper kmsg
+> 	$LKP_SRC/stats/wrapper last_state
+> 	$LKP_SRC/stats/wrapper stderr
+> 	$LKP_SRC/stats/wrapper time
+> }
+> =
+
+> "$@"
+
+> ---
+> =
+
+> #! jobs/netperf-small-threads.yaml
+> suite: netperf
+> testcase: netperf
+> category: benchmark
+> =
+
+> # upto 90% CPU cycles may be used by latency stats
+> disable_latency_stats: 1
+> set_nic_irq_affinity: 1
+> ip: ipv4
+> runtime: 300s
+> nr_threads: 1
+> cluster: cs-localhost
+> if role server:
+>   netserver: =
+
+> if role client:
+>   netperf:
+>     send_size: 5K
+>     test: TCP_SENDFILE
+> job_origin: netperf-small-threads.yaml
+> =
+
+> #! queue options
+> queue_cmdline_keys:
+> - branch
+> - commit
+> - queue_at_least_once
+> queue: bisect
+> testbox: lkp-csl-2ap3
+> tbox_group: lkp-csl-2ap3
+> kconfig: x86_64-rhel-8.3
+> submit_id: 60a443d0a166acf7c9c61a44
+> job_file: "/lkp/jobs/scheduled/lkp-csl-2ap3/netperf-cs-localhost-performa=
+nce-ipv4-1-300s-5K-TCP_SENDFILE-ucode=3D0x5003006-monitor=3D6cca9a40-debian=
+-10.4-x86_64-20200603.cgz-69-20210519-63433-1b0k21r-1.yaml"
+> id: 74cea31b1ef8a17a54b3de478dbc525e2355340e
+> queuer_version: "/lkp-src"
+> =
+
+> #! hosts/lkp-csl-2ap3
+> model: Cascade Lake
+> nr_node: 4
+> nr_cpu: 192
+> memory: 192G
+> ssd_partitions: =
+
+> rootfs_partition: LABEL=3DLKP-ROOTFS
+> kernel_cmdline_hw: acpi_rsdp=3D0x67f44014
+> brand: Intel(R) Xeon(R) Platinum 9242 CPU @ 2.30GHz
+> =
+
+> #! include/category/benchmark
+> kmsg: =
+
+> boot-time: =
+
+> uptime: =
+
+> iostat: =
+
+> heartbeat: =
+
+> vmstat: =
+
+> numa-numastat: =
+
+> numa-vmstat: =
+
+> numa-meminfo: =
+
+> proc-vmstat: =
+
+> proc-stat: =
+
+> meminfo: =
+
+> slabinfo: =
+
+> interrupts: =
+
+> lock_stat: =
+
+> perf-sched:
+>   lite_mode: 1
+> softirqs: =
+
+> bdi_dev_mapping: =
+
+> diskstats: =
+
+> nfsstat: =
+
+> cpuidle: =
+
+> cpufreq-stats: =
+
+> turbostat: =
+
+> sched_debug: =
+
+> perf-stat: =
+
+> mpstat: =
+
+> perf-profile: =
+
+> =
+
+> #! include/category/ALL
+> cpufreq_governor: performance
+> =
+
+> #! include/queue/cyclic
+> commit: 69bc1b14c3d0ebfc25ebcb7647a21d659602a93a
+> =
+
+> #! include/testbox/lkp-csl-2ap3
+> need_kconfig_hw:
+> - CONFIG_IGB=3Dy
+> - CONFIG_BLK_DEV_NVME
+> ucode: '0x5003006'
+> enqueue_time: 2021-05-19 06:46:40.343967776 +08:00
+> _id: 60a443d5a166acf7c9c61a45
+> _rt: "/result/netperf/cs-localhost-performance-ipv4-1-300s-5K-TCP_SENDFIL=
+E-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2ap3/debian-10.4-x86_64-2020=
+0603.cgz/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb7647a21d659602a93a"
+> =
+
+> #! schedule options
+> user: lkp
+> compiler: gcc-9
+> LKP_SERVER: internal-lkp-server
+> head_commit: d51c1bd768e5539909e9c10e0c917f1ae6b2f1a5
+> base_commit: d07f6ca923ea0927a1024dfccafc5b53b61cfecc
+> branch: linux-devel/devel-hourly-20210517-200737
+> rootfs: debian-10.4-x86_64-20200603.cgz
+> monitor_sha: 6cca9a40
+> result_root: "/result/netperf/cs-localhost-performance-ipv4-1-300s-5K-TCP=
+_SENDFILE-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2ap3/debian-10.4-x86=
+_64-20200603.cgz/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb7647a21d659602=
+a93a/0"
+> scheduler_version: "/lkp/lkp/.src-20210513-171754"
+> arch: x86_64
+> max_uptime: 2100
+> initrd: "/osimage/debian/debian-10.4-x86_64-20200603.cgz"
+> bootloader_append:
+> - root=3D/dev/ram0
+> - user=3Dlkp
+> - job=3D/lkp/jobs/scheduled/lkp-csl-2ap3/netperf-cs-localhost-performance=
+-ipv4-1-300s-5K-TCP_SENDFILE-ucode=3D0x5003006-monitor=3D6cca9a40-debian-10=
+.4-x86_64-20200603.cgz-69-20210519-63433-1b0k21r-1.yaml
+> - ARCH=3Dx86_64
+> - kconfig=3Dx86_64-rhel-8.3
+> - branch=3Dlinux-devel/devel-hourly-20210517-200737
+> - commit=3D69bc1b14c3d0ebfc25ebcb7647a21d659602a93a
+> - BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb764=
+7a21d659602a93a/vmlinuz-5.13.0-rc2-AA-00032-g69bc1b14c3d0
+> - acpi_rsdp=3D0x67f44014
+> - max_uptime=3D2100
+> - RESULT_ROOT=3D/result/netperf/cs-localhost-performance-ipv4-1-300s-5K-T=
+CP_SENDFILE-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2ap3/debian-10.4-x=
+86_64-20200603.cgz/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb7647a21d6596=
+02a93a/0
+> - LKP_SERVER=3Dinternal-lkp-server
+> - nokaslr
+> - selinux=3D0
+> - debug
+> - apic=3Ddebug
+> - sysrq_always_enabled
+> - rcupdate.rcu_cpu_stall_timeout=3D100
+> - net.ifnames=3D0
+> - printk.devkmsg=3Don
+> - panic=3D-1
+> - softlockup_panic=3D1
+> - nmi_watchdog=3Dpanic
+> - oops=3Dpanic
+> - load_ramdisk=3D2
+> - prompt_ramdisk=3D0
+> - drbd.minor_count=3D8
+> - systemd.log_level=3Derr
+> - ignore_loglevel
+> - console=3Dtty0
+> - earlyprintk=3DttyS0,115200
+> - console=3DttyS0,115200
+> - vga=3Dnormal
+> - rw
+> modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb7=
+647a21d659602a93a/modules.cgz"
+> bm_initrd: "/osimage/deps/debian-10.4-x86_64-20200603.cgz/run-ipconfig_20=
+200608.cgz,/osimage/deps/debian-10.4-x86_64-20200603.cgz/lkp_20201211.cgz,/=
+osimage/deps/debian-10.4-x86_64-20200603.cgz/rsync-rootfs_20200608.cgz,/osi=
+mage/deps/debian-10.4-x86_64-20200603.cgz/netperf_20210507.cgz,/osimage/pkg=
+/debian-10.4-x86_64-20200603.cgz/netperf-x86_64-2.7-0_20210507.cgz,/osimage=
+/deps/debian-10.4-x86_64-20200603.cgz/mpstat_20200714.cgz,/osimage/deps/deb=
+ian-10.4-x86_64-20200603.cgz/turbostat_20200721.cgz,/osimage/pkg/debian-10.=
+4-x86_64-20200603.cgz/turbostat-x86_64-3.7-4_20200721.cgz,/osimage/deps/deb=
+ian-10.4-x86_64-20200603.cgz/perf_20201126.cgz,/osimage/pkg/debian-10.4-x86=
+_64-20200603.cgz/perf-x86_64-a48b0872e694-1_20210507.cgz,/osimage/pkg/debia=
+n-10.4-x86_64-20200603.cgz/sar-x86_64-34c92ae-1_20200702.cgz,/osimage/deps/=
+debian-10.4-x86_64-20200603.cgz/hw_20200715.cgz"
+> ucode_initrd: "/osimage/ucode/intel-ucode-20210222.cgz"
+> lkp_initrd: "/osimage/user/lkp/lkp-x86_64.cgz"
+> site: inn
+> =
+
+> #! /lkp/lkp/.src-20210513-171754/include/site/inn
+> LKP_CGI_PORT: 80
+> LKP_CIFS_PORT: 139
+> oom-killer: =
+
+> watchdog: =
+
+> =
+
+> #! runtime status
+> last_kernel: 5.13.0-rc2-00225-gbb9589211cfa
+> repeat_to: 3
+> =
+
+> #! user overrides
+> queue_at_least_once: 0
+> kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-9/69bc1b14c3d0ebfc25ebcb7647a21d6=
+59602a93a/vmlinuz-5.13.0-rc2-AA-00032-g69bc1b14c3d0"
+> dequeue_time: 2021-05-19 06:52:06.995544135 +08:00
+> job_state: finished
+> loadavg: 1.48 1.17 0.56 1/1344 12945
+> start_time: '1621378384'
+> end_time: '1621378685'
+> version: "/lkp/lkp/.src-20210513-171829:3289bb95:d4b01c2df"
+
+> =
+
+> for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*
+> do
+> 	online_file=3D"$cpu_dir"/online
+> 	[ -f "$online_file" ] && [ "$(cat "$online_file")" -eq 0 ] && continue
+> =
+
+> 	file=3D"$cpu_dir"/cpufreq/scaling_governor
+> 	[ -f "$file" ] && echo "performance" > "$file"
+> done
+> =
+
+> netserver -4 -D
+> netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 5K  &
+> wait
+
+--===============3925973463295849443==--
 
