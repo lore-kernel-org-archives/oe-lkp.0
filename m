@@ -1,508 +1,96 @@
-Content-Type: multipart/mixed; boundary="===============5014906458781731755=="
+Content-Type: multipart/mixed; boundary="===============5124596826577905023=="
 MIME-Version: 1.0
 From: Yu Zhao <yuzhao@google.com>
 To: lkp@lists.01.org
-Subject: [PATCH v3 12/14] mm: multigenerational lru: user interface
-Date: Thu, 20 May 2021 00:53:53 -0600
-Message-ID: <20210520065355.2736558-13-yuzhao@google.com>
+Subject: [PATCH v3 13/14] mm: multigenerational lru: Kconfig
+Date: Thu, 20 May 2021 00:53:54 -0600
+Message-ID: <20210520065355.2736558-14-yuzhao@google.com>
 In-Reply-To: <20210520065355.2736558-1-yuzhao@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5014906458781731755==
+--===============5124596826577905023==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Add a sysfs file /sys/kernel/mm/lru_gen/enabled to enable and disable
-the multigenerational lru at runtime.
-
-Add a sysfs file /sys/kernel/mm/lru_gen/spread to optionally spread
-pages out across more than three generations. More generations make
-the background aging more aggressive.
-
-Add a debugfs file /sys/kernel/debug/lru_gen to monitor the
-multigenerational lru and trigger the aging and the eviction. This
-file has the following output:
-  memcg  memcg_id  memcg_path
-    node  node_id
-      min_gen  birth_time  anon_size  file_size
-      ...
-      max_gen  birth_time  anon_size  file_size
-
-Given a memcg and a node, "min_gen" is the oldest generation (number)
-and "max_gen" is the youngest. Birth time is in milliseconds. The
-sizes of anon and file types are in pages.
-
-This file takes the following input:
-  + memcg_id node_id gen [swappiness]
-  - memcg_id node_id gen [swappiness] [nr_to_reclaim]
-
-The first command line accounts referenced pages to generation
-"max_gen" and creates the next generation "max_gen"+1. In this case,
-"gen" should be equal to "max_gen". A swap file and a non-zero
-"swappiness" are required to scan anon type. If swapping is not
-desired, set vm.swappiness to 0. The second command line evicts
-generations less than or equal to "gen". In this case, "gen" should be
-less than "max_gen"-1 as "max_gen" and "max_gen"-1 are active
-generations and therefore protected from the eviction. Use
-"nr_to_reclaim" to limit the number of pages to evict. Multiple
-command lines are supported, so does concatenation with delimiters ","
-and ";".
+Add configuration options for the multigenerational lru.
 
 Signed-off-by: Yu Zhao <yuzhao@google.com>
 Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
 ---
- mm/vmscan.c | 403 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 403 insertions(+)
+ mm/Kconfig | 58 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 2f86dcc04c56..ff2deec24c64 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -52,6 +52,8 @@
- #include <linux/memory.h>
- #include <linux/pagewalk.h>
- #include <linux/shmem_fs.h>
-+#include <linux/ctype.h>
-+#include <linux/debugfs.h>
- =
-
- #include <asm/tlbflush.h>
- #include <asm/div64.h>
-@@ -4678,6 +4680,401 @@ static void lru_gen_stop_kswapd(int nid)
- 	kvfree(pgdat->mm_walk_args);
- }
- =
-
-+/*************************************************************************=
-*****
-+ *                          sysfs interface
-+ *************************************************************************=
-*****/
-+
-+static ssize_t show_lru_gen_spread(struct kobject *kobj, struct kobj_attri=
-bute *attr,
-+				   char *buf)
-+{
-+	return sprintf(buf, "%d\n", READ_ONCE(lru_gen_spread));
-+}
-+
-+static ssize_t store_lru_gen_spread(struct kobject *kobj, struct kobj_attr=
-ibute *attr,
-+				    const char *buf, size_t len)
-+{
-+	int spread;
-+
-+	if (kstrtoint(buf, 10, &spread) || spread >=3D MAX_NR_GENS)
-+		return -EINVAL;
-+
-+	WRITE_ONCE(lru_gen_spread, spread);
-+
-+	return len;
-+}
-+
-+static struct kobj_attribute lru_gen_spread_attr =3D __ATTR(
-+	spread, 0644, show_lru_gen_spread, store_lru_gen_spread
-+);
-+
-+static ssize_t show_lru_gen_enabled(struct kobject *kobj, struct kobj_attr=
-ibute *attr,
-+				    char *buf)
-+{
-+	return snprintf(buf, PAGE_SIZE, "%d\n", lru_gen_enabled());
-+}
-+
-+static ssize_t store_lru_gen_enabled(struct kobject *kobj, struct kobj_att=
-ribute *attr,
-+				     const char *buf, size_t len)
-+{
-+	int enable;
-+
-+	if (kstrtoint(buf, 10, &enable))
-+		return -EINVAL;
-+
-+	lru_gen_set_state(enable, true, false);
-+
-+	return len;
-+}
-+
-+static struct kobj_attribute lru_gen_enabled_attr =3D __ATTR(
-+	enabled, 0644, show_lru_gen_enabled, store_lru_gen_enabled
-+);
-+
-+static struct attribute *lru_gen_attrs[] =3D {
-+	&lru_gen_spread_attr.attr,
-+	&lru_gen_enabled_attr.attr,
-+	NULL
-+};
-+
-+static struct attribute_group lru_gen_attr_group =3D {
-+	.name =3D "lru_gen",
-+	.attrs =3D lru_gen_attrs,
-+};
-+
-+/*************************************************************************=
-*****
-+ *                          debugfs interface
-+ *************************************************************************=
-*****/
-+
-+static void *lru_gen_seq_start(struct seq_file *m, loff_t *pos)
-+{
-+	struct mem_cgroup *memcg;
-+	loff_t nr_to_skip =3D *pos;
-+
-+	m->private =3D kzalloc(PATH_MAX, GFP_KERNEL);
-+	if (!m->private)
-+		return ERR_PTR(-ENOMEM);
-+
-+	memcg =3D mem_cgroup_iter(NULL, NULL, NULL);
-+	do {
-+		int nid;
-+
-+		for_each_node_state(nid, N_MEMORY) {
-+			if (!nr_to_skip--)
-+				return mem_cgroup_lruvec(memcg, NODE_DATA(nid));
-+		}
-+	} while ((memcg =3D mem_cgroup_iter(NULL, memcg, NULL)));
-+
-+	return NULL;
-+}
-+
-+static void lru_gen_seq_stop(struct seq_file *m, void *v)
-+{
-+	if (!IS_ERR_OR_NULL(v))
-+		mem_cgroup_iter_break(NULL, lruvec_memcg(v));
-+
-+	kfree(m->private);
-+	m->private =3D NULL;
-+}
-+
-+static void *lru_gen_seq_next(struct seq_file *m, void *v, loff_t *pos)
-+{
-+	int nid =3D lruvec_pgdat(v)->node_id;
-+	struct mem_cgroup *memcg =3D lruvec_memcg(v);
-+
-+	++*pos;
-+
-+	nid =3D next_memory_node(nid);
-+	if (nid =3D=3D MAX_NUMNODES) {
-+		memcg =3D mem_cgroup_iter(NULL, memcg, NULL);
-+		if (!memcg)
-+			return NULL;
-+
-+		nid =3D first_memory_node;
-+	}
-+
-+	return mem_cgroup_lruvec(memcg, NODE_DATA(nid));
-+}
-+
-+static void lru_gen_seq_show_full(struct seq_file *m, struct lruvec *lruve=
-c,
-+				  unsigned long max_seq, unsigned long *min_seq,
-+				  unsigned long seq)
-+{
-+	int i;
-+	int type, tier;
-+	int hist =3D hist_from_seq_or_gen(seq);
-+	struct lrugen *lrugen =3D &lruvec->evictable;
-+	int nid =3D lruvec_pgdat(lruvec)->node_id;
-+	struct mem_cgroup *memcg =3D lruvec_memcg(lruvec);
-+	struct lru_gen_mm_list *mm_list =3D get_mm_list(memcg);
-+
-+	for (tier =3D 0; tier < MAX_NR_TIERS; tier++) {
-+		seq_printf(m, "            %10d", tier);
-+		for (type =3D 0; type < ANON_AND_FILE; type++) {
-+			unsigned long n[3] =3D {};
-+
-+			if (seq =3D=3D max_seq) {
-+				n[0] =3D READ_ONCE(lrugen->avg_refaulted[type][tier]);
-+				n[1] =3D READ_ONCE(lrugen->avg_total[type][tier]);
-+
-+				seq_printf(m, " %10luR %10luT %10lu ", n[0], n[1], n[2]);
-+			} else if (seq =3D=3D min_seq[type] || NR_STAT_GENS > 1) {
-+				n[0] =3D atomic_long_read(&lrugen->refaulted[hist][type][tier]);
-+				n[1] =3D atomic_long_read(&lrugen->evicted[hist][type][tier]);
-+				if (tier)
-+					n[2] =3D READ_ONCE(lrugen->activated[hist][type][tier - 1]);
-+
-+				seq_printf(m, " %10lur %10lue %10lua", n[0], n[1], n[2]);
-+			} else
-+				seq_puts(m, "          0           0           0 ");
-+		}
-+		seq_putc(m, '\n');
-+	}
-+
-+	seq_puts(m, "                      ");
-+	for (i =3D 0; i < NR_MM_STATS; i++) {
-+		if (seq =3D=3D max_seq && NR_STAT_GENS =3D=3D 1)
-+			seq_printf(m, " %10lu%c", READ_ONCE(mm_list->nodes[nid].stats[hist][i]),
-+				   toupper(MM_STAT_CODES[i]));
-+		else if (seq !=3D max_seq && NR_STAT_GENS > 1)
-+			seq_printf(m, " %10lu%c", READ_ONCE(mm_list->nodes[nid].stats[hist][i]),
-+				   MM_STAT_CODES[i]);
-+		else
-+			seq_puts(m, "          0 ");
-+	}
-+	seq_putc(m, '\n');
-+}
-+
-+static int lru_gen_seq_show(struct seq_file *m, void *v)
-+{
-+	unsigned long seq;
-+	bool full =3D !debugfs_real_fops(m->file)->write;
-+	struct lruvec *lruvec =3D v;
-+	struct lrugen *lrugen =3D &lruvec->evictable;
-+	int nid =3D lruvec_pgdat(lruvec)->node_id;
-+	struct mem_cgroup *memcg =3D lruvec_memcg(lruvec);
-+	DEFINE_MAX_SEQ();
-+	DEFINE_MIN_SEQ();
-+
-+	if (nid =3D=3D first_memory_node) {
-+#ifdef CONFIG_MEMCG
-+		if (memcg)
-+			cgroup_path(memcg->css.cgroup, m->private, PATH_MAX);
-+#endif
-+		seq_printf(m, "memcg %5hu %s\n", mem_cgroup_id(memcg), (char *)m->privat=
-e);
-+	}
-+
-+	seq_printf(m, " node %5d\n", nid);
-+
-+	seq =3D full ? (max_seq < MAX_NR_GENS ? 0 : max_seq - MAX_NR_GENS + 1) :
-+		     min(min_seq[0], min_seq[1]);
-+
-+	for (; seq <=3D max_seq; seq++) {
-+		int gen, type, zone;
-+		unsigned int msecs;
-+
-+		gen =3D lru_gen_from_seq(seq);
-+		msecs =3D jiffies_to_msecs(jiffies - READ_ONCE(lrugen->timestamps[gen]));
-+
-+		seq_printf(m, " %10lu %10u", seq, msecs);
-+
-+		for (type =3D 0; type < ANON_AND_FILE; type++) {
-+			long size =3D 0;
-+
-+			if (seq < min_seq[type]) {
-+				seq_puts(m, "         -0 ");
-+				continue;
-+			}
-+
-+			for (zone =3D 0; zone < MAX_NR_ZONES; zone++)
-+				size +=3D READ_ONCE(lrugen->sizes[gen][type][zone]);
-+
-+			seq_printf(m, " %10lu ", max(size, 0L));
-+		}
-+
-+		seq_putc(m, '\n');
-+
-+		if (full)
-+			lru_gen_seq_show_full(m, lruvec, max_seq, min_seq, seq);
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct seq_operations lru_gen_seq_ops =3D {
-+	.start =3D lru_gen_seq_start,
-+	.stop =3D lru_gen_seq_stop,
-+	.next =3D lru_gen_seq_next,
-+	.show =3D lru_gen_seq_show,
-+};
-+
-+static int advance_max_seq(struct lruvec *lruvec, unsigned long seq, int s=
-wappiness)
-+{
-+	struct scan_control sc =3D {
-+		.target_mem_cgroup =3D lruvec_memcg(lruvec),
-+	};
-+	DEFINE_MAX_SEQ();
-+
-+	if (seq =3D=3D max_seq)
-+		walk_mm_list(lruvec, max_seq, &sc, swappiness, NULL);
-+
-+	return seq > max_seq ? -EINVAL : 0;
-+}
-+
-+static int advance_min_seq(struct lruvec *lruvec, unsigned long seq, int s=
-wappiness,
-+			   unsigned long nr_to_reclaim)
-+{
-+	struct blk_plug plug;
-+	int err =3D -EINTR;
-+	long nr_to_scan =3D LONG_MAX;
-+	struct scan_control sc =3D {
-+		.nr_to_reclaim =3D nr_to_reclaim,
-+		.target_mem_cgroup =3D lruvec_memcg(lruvec),
-+		.may_writepage =3D 1,
-+		.may_unmap =3D 1,
-+		.may_swap =3D 1,
-+		.reclaim_idx =3D MAX_NR_ZONES - 1,
-+		.gfp_mask =3D GFP_KERNEL,
-+	};
-+	DEFINE_MAX_SEQ();
-+
-+	if (seq >=3D max_seq - 1)
-+		return -EINVAL;
-+
-+	blk_start_plug(&plug);
-+
-+	while (!signal_pending(current)) {
-+		DEFINE_MIN_SEQ();
-+
-+		if (seq < min(min_seq[!swappiness], min_seq[swappiness < 200]) ||
-+		    !evict_pages(lruvec, &sc, swappiness, &nr_to_scan)) {
-+			err =3D 0;
-+			break;
-+		}
-+
-+		cond_resched();
-+	}
-+
-+	blk_finish_plug(&plug);
-+
-+	return err;
-+}
-+
-+static int advance_seq(char cmd, int memcg_id, int nid, unsigned long seq,
-+		       int swappiness, unsigned long nr_to_reclaim)
-+{
-+	struct lruvec *lruvec;
-+	int err =3D -EINVAL;
-+	struct mem_cgroup *memcg =3D NULL;
-+
-+	if (!mem_cgroup_disabled()) {
-+		rcu_read_lock();
-+		memcg =3D mem_cgroup_from_id(memcg_id);
-+#ifdef CONFIG_MEMCG
-+		if (memcg && !css_tryget(&memcg->css))
-+			memcg =3D NULL;
-+#endif
-+		rcu_read_unlock();
-+
-+		if (!memcg)
-+			goto done;
-+	}
-+	if (memcg_id !=3D mem_cgroup_id(memcg))
-+		goto done;
-+
-+	if (nid < 0 || nid >=3D MAX_NUMNODES || !node_state(nid, N_MEMORY))
-+		goto done;
-+
-+	lruvec =3D mem_cgroup_lruvec(memcg, NODE_DATA(nid));
-+
-+	if (swappiness =3D=3D -1)
-+		swappiness =3D get_swappiness(lruvec);
-+	else if (swappiness > 200U)
-+		goto done;
-+
-+	switch (cmd) {
-+	case '+':
-+		err =3D advance_max_seq(lruvec, seq, swappiness);
-+		break;
-+	case '-':
-+		err =3D advance_min_seq(lruvec, seq, swappiness, nr_to_reclaim);
-+		break;
-+	}
-+done:
-+	mem_cgroup_put(memcg);
-+
-+	return err;
-+}
-+
-+static ssize_t lru_gen_seq_write(struct file *file, const char __user *src,
-+				 size_t len, loff_t *pos)
-+{
-+	void *buf;
-+	char *cur, *next;
-+	int err =3D 0;
-+
-+	buf =3D kvmalloc(len + 1, GFP_USER);
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	if (copy_from_user(buf, src, len)) {
-+		kvfree(buf);
-+		return -EFAULT;
-+	}
-+
-+	next =3D buf;
-+	next[len] =3D '\0';
-+
-+	while ((cur =3D strsep(&next, ",;\n"))) {
-+		int n;
-+		int end;
-+		char cmd;
-+		unsigned int memcg_id;
-+		unsigned int nid;
-+		unsigned long seq;
-+		unsigned int swappiness =3D -1;
-+		unsigned long nr_to_reclaim =3D -1;
-+
-+		cur =3D skip_spaces(cur);
-+		if (!*cur)
-+			continue;
-+
-+		n =3D sscanf(cur, "%c %u %u %lu %n %u %n %lu %n", &cmd, &memcg_id, &nid,
-+			   &seq, &end, &swappiness, &end, &nr_to_reclaim, &end);
-+		if (n < 4 || cur[end]) {
-+			err =3D -EINVAL;
-+			break;
-+		}
-+
-+		err =3D advance_seq(cmd, memcg_id, nid, seq, swappiness, nr_to_reclaim);
-+		if (err)
-+			break;
-+	}
-+
-+	kvfree(buf);
-+
-+	return err ? : len;
-+}
-+
-+static int lru_gen_seq_open(struct inode *inode, struct file *file)
-+{
-+	return seq_open(file, &lru_gen_seq_ops);
-+}
-+
-+static const struct file_operations lru_gen_rw_fops =3D {
-+	.open =3D lru_gen_seq_open,
-+	.read =3D seq_read,
-+	.write =3D lru_gen_seq_write,
-+	.llseek =3D seq_lseek,
-+	.release =3D seq_release,
-+};
-+
-+static const struct file_operations lru_gen_ro_fops =3D {
-+	.open =3D lru_gen_seq_open,
-+	.read =3D seq_read,
-+	.llseek =3D seq_lseek,
-+	.release =3D seq_release,
-+};
-+
- /*************************************************************************=
-*****
-  *                          initialization
-  *************************************************************************=
-*****/
-@@ -4718,6 +5115,12 @@ static int __init init_lru_gen(void)
- 	if (hotplug_memory_notifier(lru_gen_online_mem, 0))
- 		pr_err("lru_gen: failed to subscribe hotplug notifications\n");
- =
-
-+	if (sysfs_create_group(mm_kobj, &lru_gen_attr_group))
-+		pr_err("lru_gen: failed to create sysfs group\n");
-+
-+	debugfs_create_file("lru_gen", 0644, NULL, NULL, &lru_gen_rw_fops);
-+	debugfs_create_file("lru_gen_full", 0444, NULL, NULL, &lru_gen_ro_fops);
-+
- 	return 0;
- };
- /*
+diff --git a/mm/Kconfig b/mm/Kconfig
+index 02d44e3420f5..da125f145bc4 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -901,4 +901,62 @@ config KMAP_LOCAL
+ # struct io_mapping based helper.  Selected by drivers that need them
+ config IO_MAPPING
+ 	bool
++
++# the multigenerational lru {
++config LRU_GEN
++	bool "Multigenerational LRU"
++	depends on MMU
++	help
++	  A high performance LRU implementation to heavily overcommit workloads
++	  that are not IO bound. See Documentation/vm/multigen_lru.rst for
++	  details.
++
++	  Warning: do not enable this option unless you plan to use it because
++	  it introduces a small per-process and per-memcg and per-node memory
++	  overhead.
++
++config LRU_GEN_ENABLED
++	bool "Turn on by default"
++	depends on LRU_GEN
++	help
++	  The default value of /sys/kernel/mm/lru_gen/enabled is 0. This option
++	  changes it to 1.
++
++	  Warning: the default value is the fast path. See
++	  Documentation/static-keys.txt for details.
++
++config LRU_GEN_STATS
++	bool "Full stats for debugging"
++	depends on LRU_GEN
++	help
++	  This option keeps full stats for each generation, which can be read
++	  from /sys/kernel/debug/lru_gen_full.
++
++	  Warning: do not enable this option unless you plan to use it because
++	  it introduces an additional small per-process and per-memcg and
++	  per-node memory overhead.
++
++config NR_LRU_GENS
++	int "Max number of generations"
++	depends on LRU_GEN
++	range 4 31
++	default 7
++	help
++	  This will use order_base_2(N+1) spare bits from page flags.
++
++	  Warning: do not use numbers larger than necessary because each
++	  generation introduces a small per-node and per-memcg memory overhead.
++
++config TIERS_PER_GEN
++	int "Number of tiers per generation"
++	depends on LRU_GEN
++	range 2 5
++	default 4
++	help
++	  This will use N-2 spare bits from page flags.
++
++	  Larger values generally offer better protection to active pages under
++	  heavy buffered I/O workloads.
++# }
++
+ endmenu
 -- =
 
 2.31.1.751.gd2f1c929bd-goog
 
---===============5014906458781731755==--
+--===============5124596826577905023==--
 
