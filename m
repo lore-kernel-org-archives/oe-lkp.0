@@ -1,19 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============2543535461707753256=="
+Content-Type: multipart/mixed; boundary="===============4790652170302284434=="
 MIME-Version: 1.0
 From: Paul E. McKenney <paulmck@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [clocksource] 8901ecc231: stress-ng.lockbus.ops_per_sec -9.5% regression
-Date: Fri, 21 May 2021 06:56:17 -0700
-Message-ID: <20210521135617.GT4441@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20210521083322.GG25531@xsang-OptiPlex-9020>
+Subject: Re: [clocksource] df29d3cd5a: stress-ng.clock.ops_per_sec 4.5% improvement
+Date: Fri, 21 May 2021 06:58:15 -0700
+Message-ID: <20210521135815.GU4441@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20210521084405.GH25531@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2543535461707753256==
+--===============4790652170302284434==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 21, 2021 at 04:33:22PM +0800, kernel test robot wrote:
+On Fri, May 21, 2021 at 04:44:05PM +0800, kernel test robot wrote:
 > =
 
 > =
@@ -21,14 +21,14 @@ On Fri, May 21, 2021 at 04:33:22PM +0800, kernel test robot wrote:
 > Greeting,
 > =
 
-> FYI, we noticed a -9.5% regression of stress-ng.lockbus.ops_per_sec due t=
-o commit:
+> FYI, we noticed a 4.5% improvement of stress-ng.clock.ops_per_sec due to =
+commit:
 > =
 
 > =
 
-> commit: 8901ecc2315b850f35a7b8c1b73b12388b72aa78 ("clocksource: Retry clo=
-ck read if long delays detected")
+> commit: df29d3cd5ad4d400767caa199ec7c0ecbab10fc8 ("clocksource: Limit num=
+ber of CPUs checked for clock synchronization")
 > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > =
 
@@ -36,49 +36,23 @@ ck read if long delays detected")
 
 > in testcase: stress-ng
 > on test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.=
-10GHz with 192G memory
+10GHz with 512G memory
 > with following parameters:
 > =
 
 > 	nr_threads: 100%
 > 	disk: 1HDD
 > 	testtime: 60s
-> 	class: memory
-> 	test: lockbus
+> 	class: interrupt
+> 	test: clock
 > 	cpufreq_governor: performance
 > 	ucode: 0x5003006
-> =
 
-> =
-
-> please be noted below in dmesg.xz (attached)
-> [   28.110351]
-> [   28.302357] hrtimer: interrupt took 1878423 ns
-> [   29.690760] clocksource: timekeeping watchdog on CPU53: hpet read-back=
- delay of 169583ns, attempt 4, marking unstable
-> [   29.860306] tsc: Marking TSC unstable due to clocksource watchdog
-> [   30.559390] TSC found unstable after boot, most likely due to broken B=
-IOS. Use 'tsc=3Dunstable'.
-> [   30.726282] sched_clock: Marking unstable (30052964508, 499342225)<-(3=
-0915547410, -363240730)
-> [   31.620401] clocksource: Switched to clocksource hpet
-
-If I am reading the dmesg correctly, there were many interrupts that
-prevented a good clock read.  This sound to me like a bug that the
-clocksource watchdog located, but please let me know if this is not
-the case.
-
-There are also the later "perf: interrupt took too long" messages.
-
-Either way, please let me know!
+And I am assuming that this improvement is simply the other side of
+the degradation from the other report.  Again, either way, please
+let me know!
 
 							Thanx, Paul
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
-
-> =
 
 > Details are as below:
 > -------------------------------------------------------------------------=
@@ -105,1021 +79,359 @@ n this email
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 > class/compiler/cpufreq_governor/disk/kconfig/nr_threads/rootfs/tbox_group=
 /test/testcase/testtime/ucode:
->   memory/gcc-9/performance/1HDD/x86_64-rhel-8.3/100%/debian-10.4-x86_64-2=
-0200603.cgz/lkp-csl-2sp5/lockbus/stress-ng/60s/0x5003006
+>   interrupt/gcc-9/performance/1HDD/x86_64-rhel-8.3/100%/debian-10.4-x86_6=
+4-20200603.cgz/lkp-csl-2sp7/clock/stress-ng/60s/0x5003006
 > =
 
 > commit: =
 
->   v5.13-rc1
->   8901ecc231 ("clocksource: Retry clock read if long delays detected")
+>   b509a98006 ("clocksource: Check per-CPU clock synchronization when mark=
+ed unstable")
+>   df29d3cd5a ("clocksource: Limit number of CPUs checked for clock synchr=
+onization")
 > =
 
->        v5.13-rc1 8901ecc2315b850f35a7b8c1b73 =
+> b509a9800648b24a df29d3cd5ad4d400767caa199ec =
 
 > ---------------- --------------------------- =
 
 >          %stddev     %change         %stddev
 >              \          |                \  =
 
->     248755            -9.5%     225157        stress-ng.lockbus.ops
->       4136            -9.5%       3742        stress-ng.lockbus.ops_per_s=
-ec
->       6580 =C2=B1  5%     +28.7%       8470        stress-ng.time.percent=
-_of_cpu_this_job_got
->     200.39 =C2=B1  7%     +61.5%     323.71 =C2=B1  7%  stress-ng.time.sy=
-stem_time
->       3892 =C2=B1  5%     +27.1%       4946        stress-ng.time.user_ti=
-me
->      13.38            -6.7%      12.48 =C2=B1  5%  boot-time.dhcp
->     208168 =C2=B1 14%    +676.6%    1616642 =C2=B1 24%  cpuidle.POLL.time
->     674.50 =C2=B1 12%     -17.4%     557.33 =C2=B1 10%  interrupts.CPU95.=
-CAL:Function_call_interrupts
->     170270 =C2=B1  7%     +22.1%     207860 =C2=B1  6%  softirqs.RCU
->     225.06            +1.3%     227.89        turbostat.PkgWatt
->      61.83 =C2=B1  6%     +28.0%      79.17        vmstat.cpu.us
->      28.52 =C2=B1 13%     -61.1%      11.10 =C2=B1  6%  iostat.cpu.system
->      63.82 =C2=B1  5%     +27.6%      81.41        iostat.cpu.user
->      16.30 =C2=B1 21%     -15.5        0.83 =C2=B1 42%  mpstat.cpu.all.ir=
-q%
->      57.65 =C2=B1  7%     +17.1       74.73        mpstat.cpu.all.usr%
->       0.00 =C2=B1 75%    +286.7%       0.01 =C2=B1 35%  perf-sched.sch_de=
-lay.avg.ms.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_6=
-4.entry_SYSCALL_64_after_hwframe
->       0.01 =C2=B1 14%    +140.0%       0.02 =C2=B1 13%  perf-sched.sch_de=
-lay.avg.ms.schedule_hrtimeout_range_clock.poll_schedule_timeout.constprop.0=
-.do_select
->       0.00 =C2=B1 72%    +255.0%       0.01 =C2=B1  5%  perf-sched.sch_de=
-lay.max.ms.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_6=
-4.entry_SYSCALL_64_after_hwframe
->       0.01 =C2=B1  6%    +180.0%       0.02 =C2=B1 60%  perf-sched.sch_de=
-lay.max.ms.schedule_hrtimeout_range_clock.poll_schedule_timeout.constprop.0=
-.do_select
->       9.00 =C2=B1 30%     -48.1%       4.67 =C2=B1 45%  perf-sched.wait_a=
-nd_delay.count.do_task_dead.do_exit.do_group_exit.__x64_sys_exit_group.do_s=
-yscall_64
->     550561            +5.5%     580618        proc-vmstat.nr_file_pages
->     307417           +10.0%     338160 =C2=B1  2%  proc-vmstat.nr_mapped
->       2993            +8.4%       3246        proc-vmstat.nr_page_table_p=
-ages
->     303607            +9.9%     333614 =C2=B1  3%  proc-vmstat.nr_shmem
->     694035            +3.0%     714653        proc-vmstat.numa_hit
->     607455            +3.4%     628114        proc-vmstat.numa_local
->     513499            +5.4%     541036        proc-vmstat.pgfault
->       4823 =C2=B1  4%     +47.7%       7124 =C2=B1  4%  proc-vmstat.pgreu=
-se
->     839921 =C2=B1  8%     +13.1%     950002 =C2=B1  4%  numa-meminfo.node=
-0.Inactive
->     839800 =C2=B1  8%     +13.1%     949852 =C2=B1  4%  numa-meminfo.node=
-0.Inactive(anon)
->      53189 =C2=B1  8%      +9.2%      58066 =C2=B1  6%  numa-meminfo.node=
-0.KReclaimable
->     629217 =C2=B1  3%     +12.2%     705752 =C2=B1  2%  numa-meminfo.node=
-0.Mapped
->       7941 =C2=B1 24%     +21.9%       9680 =C2=B1  3%  numa-meminfo.node=
-0.PageTables
->      53189 =C2=B1  8%      +9.2%      58066 =C2=B1  6%  numa-meminfo.node=
-0.SReclaimable
->     599179 =C2=B1  4%     +12.7%     675027 =C2=B1  3%  numa-meminfo.node=
-0.Shmem
->     605295 =C2=B1  3%     +12.5%     680806 =C2=B1  2%  numa-meminfo.node=
-1.Mapped
->     622631 =C2=B1  3%     +11.1%     691846 =C2=B1  2%  numa-meminfo.node=
-1.Shmem
->     193696 =C2=B1  8%     +19.0%     230483 =C2=B1  3%  numa-vmstat.node0=
-.nr_inactive_anon
->     142337 =C2=B1  2%     +19.5%     170125 =C2=B1  2%  numa-vmstat.node0=
-.nr_mapped
->       1868 =C2=B1 25%     +25.7%       2348 =C2=B1  3%  numa-vmstat.node0=
-.nr_page_table_pages
->     136818 =C2=B1  2%     +18.9%     162611 =C2=B1  2%  numa-vmstat.node0=
-.nr_shmem
->      13219 =C2=B1  8%      +9.5%      14473 =C2=B1  6%  numa-vmstat.node0=
-.nr_slab_reclaimable
->     193666 =C2=B1  8%     +19.0%     230467 =C2=B1  3%  numa-vmstat.node0=
-.nr_zone_inactive_anon
->    1132156 =C2=B1 12%     +11.2%    1258864 =C2=B1  5%  numa-vmstat.node0=
-.numa_hit
->     143857           +15.9%     166725        numa-vmstat.node1.nr_file_p=
-ages
->     135723 =C2=B1  3%     +20.1%     163039        numa-vmstat.node1.nr_m=
-apped
->     142136           +17.3%     166704        numa-vmstat.node1.nr_shmem
->       5.12 =C2=B1 20%     -68.1%       1.63 =C2=B1 24%  perf-stat.i.MPKI
->  7.441e+08 =C2=B1 11%     +61.5%  1.202e+09 =C2=B1  8%  perf-stat.i.branc=
-h-instructions
->       2.27 =C2=B1  7%      -1.3        0.94 =C2=B1  8%  perf-stat.i.branc=
-h-miss-rate%
->   26460369 =C2=B1 13%     -46.8%   14082434 =C2=B1  6%  perf-stat.i.branc=
-h-misses
->    2567959 =C2=B1 10%     -27.7%    1857035 =C2=B1  5%  perf-stat.i.cache=
--misses
->       2820 =C2=B1  7%     -14.3%       2416 =C2=B1  2%  perf-stat.i.conte=
-xt-switches
->     303.17 =C2=B1  9%     -83.0%      51.67 =C2=B1 11%  perf-stat.i.cpi
->     129563 =C2=B1  5%     -16.9%     107705        perf-stat.i.cpu-clock
->     190.21 =C2=B1  4%     -18.4%     155.23 =C2=B1  2%  perf-stat.i.cpu-m=
-igrations
->     298667 =C2=B1  8%     -29.0%     212034 =C2=B1  4%  perf-stat.i.cycle=
-s-between-cache-misses
->       0.20 =C2=B1  9%      +0.1        0.26 =C2=B1 11%  perf-stat.i.dTLB-=
-store-miss-rate%
->  3.276e+08 =C2=B1 11%     -41.6%  1.913e+08 =C2=B1  3%  perf-stat.i.dTLB-=
-stores
->      77.27 =C2=B1  3%      +7.3       84.53        perf-stat.i.iTLB-load-=
-miss-rate%
->     560579 =C2=B1 19%     -46.9%     297416 =C2=B1 10%  perf-stat.i.iTLB-=
-loads
->  3.622e+09 =C2=B1 11%     +52.4%   5.52e+09 =C2=B1  8%  perf-stat.i.instr=
-uctions
->       3174 =C2=B1  8%    +134.9%       7456 =C2=B1  4%  perf-stat.i.instr=
-uctions-per-iTLB-miss
->       0.26 =C2=B1 11%     -49.4%       0.13 =C2=B1  7%  perf-stat.i.ipc
->      89.57 =C2=B1 12%     -53.7%      41.43 =C2=B1  7%  perf-stat.i.major=
--faults
->       1.77 =C2=B1  6%     +32.7%       2.35        perf-stat.i.metric.GHz
->      14.33 =C2=B1 11%     +45.7%      20.88 =C2=B1  8%  perf-stat.i.metri=
-c.M/sec
->       5011 =C2=B1  6%     -34.8%       3265 =C2=B1  4%  perf-stat.i.minor=
--faults
->      73.21 =C2=B1  3%      +9.3       82.54        perf-stat.i.node-load-=
-miss-rate%
->     121230 =C2=B1  8%     -34.7%      79105 =C2=B1  3%  perf-stat.i.node-=
-loads
->      50.05 =C2=B1 11%     +25.9       75.94 =C2=B1  3%  perf-stat.i.node-=
-store-miss-rate%
->     365780 =C2=B1 12%     -50.4%     181434 =C2=B1  5%  perf-stat.i.node-=
-stores
->       5100 =C2=B1  6%     -35.2%       3306 =C2=B1  4%  perf-stat.i.page-=
-faults
->     129586 =C2=B1  5%     -16.9%     107712        perf-stat.i.task-clock
->       4.80 =C2=B1 24%     -72.4%       1.33 =C2=B1 20%  perf-stat.overall=
-.MPKI
->       2.74 =C2=B1  8%      -2.2        0.57 =C2=B1  8%  perf-stat.overall=
-.branch-miss-rate%
->     213.44 =C2=B1 11%     -75.3%      52.81 =C2=B1 12%  perf-stat.overall=
-.cpi
->     259389 =C2=B1 11%     -21.7%     203189 =C2=B1  3%  perf-stat.overall=
-.cycles-between-cache-misses
->      80.09 =C2=B1  2%      +5.0       85.10        perf-stat.overall.iTLB=
--load-miss-rate%
->       2124 =C2=B1  7%    +238.2%       7184 =C2=B1  4%  perf-stat.overall=
-.instructions-per-iTLB-miss
->       0.00 =C2=B1 11%    +304.5%       0.02 =C2=B1 11%  perf-stat.overall=
-.ipc
->      72.33 =C2=B1  3%     +10.3       82.64        perf-stat.overall.node=
--load-miss-rate%
->      35.64 =C2=B1 16%     +29.0       64.68 =C2=B1  2%  perf-stat.overall=
-.node-store-miss-rate%
->  1.982e+08 =C2=B1 11%    +393.9%  9.789e+08 =C2=B1 10%  perf-stat.ps.bran=
-ch-instructions
->     783739 =C2=B1  6%     +45.5%    1140674 =C2=B1  6%  perf-stat.ps.cach=
-e-misses
->   2.27e+08 =C2=B1 10%    +170.4%  6.138e+08 =C2=B1  9%  perf-stat.ps.dTLB=
--loads
->     451286 =C2=B1 10%     +36.6%     616231 =C2=B1  8%  perf-stat.ps.iTLB=
--load-misses
->  9.571e+08 =C2=B1 11%    +363.0%  4.432e+09 =C2=B1 10%  perf-stat.ps.inst=
-ructions
->      17.47 =C2=B1 14%     -29.4%      12.33        perf-stat.ps.major-fau=
-lts
->       1452 =C2=B1  5%     +24.8%       1812 =C2=B1  5%  perf-stat.ps.mino=
-r-faults
->      94781 =C2=B1  7%    +130.4%     218412 =C2=B1  7%  perf-stat.ps.node=
--load-misses
->      36077 =C2=B1  5%     +26.9%      45791 =C2=B1  5%  perf-stat.ps.node=
--loads
->      45982 =C2=B1 21%    +163.9%     121369 =C2=B1  7%  perf-stat.ps.node=
--store-misses
->      82536 =C2=B1 12%     -20.0%      66048        perf-stat.ps.node-stor=
+>     114360            +4.5%     119554        stress-ng.clock.ops_per_sec
+>      27349 =C2=B1 89%     -90.9%       2477 =C2=B1  4%  stress-ng.time.fi=
+le_system_inputs
+>   11510358            +4.6%   12034522        stress-ng.time.voluntary_co=
+ntext_switches
+>  1.807e+08            +2.4%  1.851e+08        interrupts.CAL:Function_cal=
+l_interrupts
+>       0.00 =C2=B1 53%      -0.0        0.00 =C2=B1 46%  mpstat.cpu.all.io=
+wait%
+>       2024 =C2=B1  7%     -32.1%       1375 =C2=B1  7%  slabinfo.dmaengin=
+e-unmap-16.active_objs
+>       2024 =C2=B1  7%     -32.1%       1375 =C2=B1  7%  slabinfo.dmaengin=
+e-unmap-16.num_objs
+>      43640 =C2=B1 13%     -23.3%      33491 =C2=B1  7%  meminfo.Active
+>      10027 =C2=B1 82%     -96.9%     306.00 =C2=B1 29%  meminfo.Active(fi=
+le)
+>     752.67 =C2=B1 98%     -98.7%       9.67 =C2=B1 30%  meminfo.Buffers
+>       2506 =C2=B1 82%     -97.0%      76.33 =C2=B1 29%  proc-vmstat.nr_ac=
+tive_file
+>       2506 =C2=B1 82%     -97.0%      76.33 =C2=B1 29%  proc-vmstat.nr_zo=
+ne_active_file
+>      14176 =C2=B1 82%     -90.7%       1323 =C2=B1 13%  proc-vmstat.pgpgin
+>     217.33 =C2=B1 82%     -90.9%      19.83 =C2=B1 14%  vmstat.io.bi
+>     753.17 =C2=B1 98%     -98.7%       9.67 =C2=B1 30%  vmstat.memory.buff
+>     356471            +4.0%     370646        vmstat.system.cs
+>       1.02 =C2=B1 30%    +128.4%       2.34 =C2=B1 28%  perf-sched.wait_a=
+nd_delay.avg.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_=
+sys_epoll_wait
+>       3.74 =C2=B1 33%    +201.5%      11.28 =C2=B1 26%  perf-sched.wait_a=
+nd_delay.max.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_=
+sys_epoll_wait
+>       1.02 =C2=B1 30%    +128.8%       2.33 =C2=B1 28%  perf-sched.wait_t=
+ime.avg.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_e=
+poll_wait
+>       3.74 =C2=B1 33%    +201.1%      11.25 =C2=B1 26%  perf-sched.wait_t=
+ime.max.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_e=
+poll_wait
+>  6.048e+09            +2.2%   6.18e+09        perf-stat.i.branch-instruct=
+ions
+>   69934017            +2.7%   71856066        perf-stat.i.branch-misses
+>      26.91            -0.6       26.30        perf-stat.i.cache-miss-rate%
+>   53135032            -2.4%   51884388        perf-stat.i.cache-misses
+>     366423            +4.5%     382812        perf-stat.i.context-switches
+>       9.45            -2.6%       9.20        perf-stat.i.cpi
+>       4686            +2.5%       4804        perf-stat.i.cycles-between-=
+cache-misses
+>  6.913e+09            +2.9%   7.11e+09        perf-stat.i.dTLB-loads
+>  2.371e+09            +3.8%  2.461e+09        perf-stat.i.dTLB-stores
+>  2.612e+10            +2.7%  2.683e+10        perf-stat.i.instructions
+>     161.64            +2.7%     166.00        perf-stat.i.metric.M/sec
+>   22851223            +3.2%   23572316        perf-stat.i.node-load-misses
+>    9794183            +3.9%   10176496        perf-stat.i.node-store-miss=
 es
->       1469 =C2=B1  5%     +24.2%       1824 =C2=B1  5%  perf-stat.ps.page=
--faults
->   4.04e+10 =C2=B1  8%    +567.9%  2.698e+11 =C2=B1  9%  perf-stat.total.i=
-nstructions
->      39.23 =C2=B1  6%     -23.6       15.65 =C2=B1 27%  perf-profile.call=
-trace.cycles-pp.tick_sched_handle.tick_sched_timer.__hrtimer_run_queues.hrt=
-imer_interrupt.__sysvec_apic_timer_interrupt
->      38.89 =C2=B1  6%     -23.3       15.56 =C2=B1 27%  perf-profile.call=
-trace.cycles-pp.update_process_times.tick_sched_handle.tick_sched_timer.__h=
-rtimer_run_queues.hrtimer_interrupt
->      40.52 =C2=B1  6%     -20.9       19.65 =C2=B1 26%  perf-profile.call=
-trace.cycles-pp.tick_sched_timer.__hrtimer_run_queues.hrtimer_interrupt.__s=
-ysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt
->      47.38 =C2=B1  4%     -17.4       29.94 =C2=B1  9%  perf-profile.call=
-trace.cycles-pp.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_=
-interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
->      30.70 =C2=B1  7%     -16.7       14.02 =C2=B1 27%  perf-profile.call=
-trace.cycles-pp.scheduler_tick.update_process_times.tick_sched_handle.tick_=
-sched_timer.__hrtimer_run_queues
->      21.38 =C2=B1  7%     -14.2        7.16 =C2=B1 30%  perf-profile.call=
-trace.cycles-pp.task_tick_fair.scheduler_tick.update_process_times.tick_sch=
-ed_handle.tick_sched_timer
->       5.98 =C2=B1 28%      -5.3        0.63 =C2=B1 12%  perf-profile.call=
-trace.cycles-pp.perf_event_task_tick.scheduler_tick.update_process_times.ti=
-ck_sched_handle.tick_sched_timer
->       6.22 =C2=B1 12%      -3.9        2.27 =C2=B1 31%  perf-profile.call=
-trace.cycles-pp.update_load_avg.task_tick_fair.scheduler_tick.update_proces=
-s_times.tick_sched_handle
->       5.58 =C2=B1 14%      -3.9        1.71 =C2=B1 28%  perf-profile.call=
-trace.cycles-pp.update_curr.task_tick_fair.scheduler_tick.update_process_ti=
-mes.tick_sched_handle
->       4.50 =C2=B1 10%      -3.0        1.51 =C2=B1 31%  perf-profile.call=
-trace.cycles-pp.hrtimer_active.task_tick_fair.scheduler_tick.update_process=
-_times.tick_sched_handle
->       2.50 =C2=B1 14%      -2.2        0.31 =C2=B1100%  perf-profile.call=
-trace.cycles-pp.trigger_load_balance.update_process_times.tick_sched_handle=
-.tick_sched_timer.__hrtimer_run_queues
->       2.43 =C2=B1  8%      -2.1        0.35 =C2=B1107%  perf-profile.call=
-trace.cycles-pp.rcu_sched_clock_irq.update_process_times.tick_sched_handle.=
-tick_sched_timer.__hrtimer_run_queues
->       1.97 =C2=B1  8%      -1.4        0.59 =C2=B1 54%  perf-profile.call=
-trace.cycles-pp.update_cfs_group.task_tick_fair.scheduler_tick.update_proce=
-ss_times.tick_sched_handle
->       1.78 =C2=B1 13%      -1.3        0.47 =C2=B1 80%  perf-profile.call=
-trace.cycles-pp.__update_load_avg_cfs_rq.update_load_avg.task_tick_fair.sch=
-eduler_tick.update_process_times
->       1.77 =C2=B1 15%      -1.1        0.69 =C2=B1 55%  perf-profile.call=
-trace.cycles-pp.__update_load_avg_se.update_load_avg.task_tick_fair.schedul=
-er_tick.update_process_times
->       2.21 =C2=B1 12%      -0.9        1.33 =C2=B1 14%  perf-profile.call=
-trace.cycles-pp.entry_SYSCALL_64_after_hwframe
->       2.21 =C2=B1 12%      -0.9        1.33 =C2=B1 14%  perf-profile.call=
-trace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe
->       2.85 =C2=B1  7%      -0.8        2.00 =C2=B1 10%  perf-profile.call=
-trace.cycles-pp.load_balance.rebalance_domains.__softirqentry_text_start.ir=
-q_exit_rcu.sysvec_apic_timer_interrupt
->       3.54 =C2=B1  6%      -0.8        2.70 =C2=B1  9%  perf-profile.call=
-trace.cycles-pp.rebalance_domains.__softirqentry_text_start.irq_exit_rcu.sy=
-svec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
->       1.60 =C2=B1 10%      -0.6        0.96 =C2=B1 12%  perf-profile.call=
-trace.cycles-pp.execve
->       1.59 =C2=B1 10%      -0.6        0.96 =C2=B1 12%  perf-profile.call=
-trace.cycles-pp.entry_SYSCALL_64_after_hwframe.execve
->       1.59 =C2=B1 10%      -0.6        0.96 =C2=B1 12%  perf-profile.call=
-trace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.execve
->       1.95 =C2=B1  8%      -0.6        1.31 =C2=B1  9%  perf-profile.call=
-trace.cycles-pp.find_busiest_group.load_balance.rebalance_domains.__softirq=
-entry_text_start.irq_exit_rcu
->       1.59 =C2=B1 11%      -0.6        0.96 =C2=B1 12%  perf-profile.call=
-trace.cycles-pp.do_execveat_common.__x64_sys_execve.do_syscall_64.entry_SYS=
-CALL_64_after_hwframe.execve
->       1.59 =C2=B1 10%      -0.6        0.96 =C2=B1 12%  perf-profile.call=
-trace.cycles-pp.__x64_sys_execve.do_syscall_64.entry_SYSCALL_64_after_hwfra=
-me.execve
->       1.63 =C2=B1 13%      -0.6        1.02 =C2=B1 16%  perf-profile.call=
-trace.cycles-pp.update_sd_lb_stats.find_busiest_group.load_balance.rebalanc=
-e_domains.__softirqentry_text_start
->       1.31 =C2=B1 10%      -0.5        0.79 =C2=B1 13%  perf-profile.call=
-trace.cycles-pp.bprm_execve.do_execveat_common.__x64_sys_execve.do_syscall_=
-64.entry_SYSCALL_64_after_hwframe
->       0.81 =C2=B1 24%      -0.5        0.29 =C2=B1100%  perf-profile.call=
-trace.cycles-pp.worker_thread.kthread.ret_from_fork
->       1.19 =C2=B1 10%      -0.5        0.70 =C2=B1 13%  perf-profile.call=
-trace.cycles-pp.exec_binprm.bprm_execve.do_execveat_common.__x64_sys_execve=
-.do_syscall_64
->       1.15 =C2=B1 10%      -0.5        0.67 =C2=B1 13%  perf-profile.call=
-trace.cycles-pp.load_elf_binary.exec_binprm.bprm_execve.do_execveat_common.=
-__x64_sys_execve
->       0.86 =C2=B1  9%      -0.4        0.41 =C2=B1 71%  perf-profile.call=
-trace.cycles-pp.__handle_mm_fault.handle_mm_fault.do_user_addr_fault.exc_pa=
-ge_fault.asm_exc_page_fault
->       1.13 =C2=B1  8%      -0.4        0.77 =C2=B1 12%  perf-profile.call=
-trace.cycles-pp.asm_exc_page_fault
->       1.20 =C2=B1  5%      -0.4        0.85 =C2=B1 16%  perf-profile.call=
-trace.cycles-pp.smpboot_thread_fn.kthread.ret_from_fork
->       0.74 =C2=B1  8%      -0.3        0.39 =C2=B1 72%  perf-profile.call=
-trace.cycles-pp.__x64_sys_exit_group.do_syscall_64.entry_SYSCALL_64_after_h=
-wframe
->       0.74 =C2=B1  8%      -0.3        0.39 =C2=B1 72%  perf-profile.call=
-trace.cycles-pp.do_group_exit.__x64_sys_exit_group.do_syscall_64.entry_SYSC=
-ALL_64_after_hwframe
->       0.74 =C2=B1  8%      -0.3        0.39 =C2=B1 72%  perf-profile.call=
-trace.cycles-pp.do_exit.do_group_exit.__x64_sys_exit_group.do_syscall_64.en=
-try_SYSCALL_64_after_hwframe
->       1.08 =C2=B1  8%      -0.3        0.74 =C2=B1 13%  perf-profile.call=
-trace.cycles-pp.exc_page_fault.asm_exc_page_fault
->       1.07 =C2=B1  9%      -0.3        0.73 =C2=B1 13%  perf-profile.call=
-trace.cycles-pp.do_user_addr_fault.exc_page_fault.asm_exc_page_fault
->       0.91 =C2=B1  9%      -0.3        0.61 =C2=B1 14%  perf-profile.call=
-trace.cycles-pp.handle_mm_fault.do_user_addr_fault.exc_page_fault.asm_exc_p=
-age_fault
->       0.92 =C2=B1 11%      -0.3        0.62 =C2=B1 13%  perf-profile.call=
-trace.cycles-pp.__libc_fork
->       0.78 =C2=B1 16%      -0.3        0.51 =C2=B1 46%  perf-profile.call=
-trace.cycles-pp.asm_sysvec_apic_timer_interrupt.update_sd_lb_stats.find_bus=
-iest_group.load_balance.rebalance_domains
->       1.11 =C2=B1 15%      +0.5        1.64 =C2=B1 11%  perf-profile.call=
-trace.cycles-pp.read
->       1.09 =C2=B1 15%      +0.5        1.62 =C2=B1 11%  perf-profile.call=
-trace.cycles-pp.entry_SYSCALL_64_after_hwframe.read
->       1.09 =C2=B1 15%      +0.5        1.62 =C2=B1 11%  perf-profile.call=
-trace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
->       1.07 =C2=B1 15%      +0.5        1.60 =C2=B1 11%  perf-profile.call=
-trace.cycles-pp.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwf=
-rame.read
->       1.08 =C2=B1 15%      +0.5        1.61 =C2=B1 11%  perf-profile.call=
-trace.cycles-pp.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
->       0.97 =C2=B1 18%      +0.6        1.54 =C2=B1 12%  perf-profile.call=
-trace.cycles-pp.new_sync_read.vfs_read.ksys_read.do_syscall_64.entry_SYSCAL=
+>       7.45            -2.7%       7.24        perf-stat.overall.MPKI
+>      27.37            -0.6       26.74        perf-stat.overall.cache-mis=
+s-rate%
+>       9.74            -2.7%       9.48        perf-stat.overall.cpi
+>       1240 =C2=B1  3%      +5.9%       1313 =C2=B1  2%  perf-stat.overall=
+.instructions-per-iTLB-miss
+>       0.10            +2.7%       0.11        perf-stat.overall.ipc
+>  5.959e+09            +2.2%  6.088e+09        perf-stat.ps.branch-instruc=
+tions
+>   68700080            +2.8%   70597822        perf-stat.ps.branch-misses
+>   52442864            -2.4%   51206685        perf-stat.ps.cache-misses
+>     361424            +4.5%     377658        perf-stat.ps.context-switch=
+es
+>  6.812e+09            +2.9%  7.007e+09        perf-stat.ps.dTLB-loads
+>  2.337e+09            +3.8%  2.426e+09        perf-stat.ps.dTLB-stores
+>  2.573e+10            +2.7%  2.643e+10        perf-stat.ps.instructions
+>   22537158            +3.2%   23252556        perf-stat.ps.node-load-miss=
+es
+>    9660122            +3.9%   10039431        perf-stat.ps.node-store-mis=
+ses
+>  1.628e+12            +2.8%  1.673e+12        perf-stat.total.instructions
+>      29.42            -0.9       28.53        perf-profile.calltrace.cycl=
+es-pp.release_posix_timer.__x64_sys_timer_delete.do_syscall_64.entry_SYSCAL=
 L_64_after_hwframe
->       0.17 =C2=B1141%      +0.6        0.77 =C2=B1 21%  perf-profile.call=
-trace.cycles-pp.__irqentry_text_end
->       0.59 =C2=B1 45%      +0.7        1.33 =C2=B1 11%  perf-profile.call=
-trace.cycles-pp.seq_read_iter.new_sync_read.vfs_read.ksys_read.do_syscall_64
->       0.50 =C2=B1 45%      +0.8        1.25 =C2=B1 12%  perf-profile.call=
-trace.cycles-pp.show_stat.seq_read_iter.new_sync_read.vfs_read.ksys_read
->       0.77 =C2=B1 19%      +0.8        1.56 =C2=B1 31%  perf-profile.call=
-trace.cycles-pp.rcu_core.__softirqentry_text_start.irq_exit_rcu.sysvec_apic=
-_timer_interrupt.asm_sysvec_apic_timer_interrupt
->       0.00            +3.4        3.37 =C2=B1 20%  perf-profile.calltrace=
-.cycles-pp.read_hpet.ktime_get.tick_sched_timer.__hrtimer_run_queues.hrtime=
-r_interrupt
->       0.00            +3.7        3.67 =C2=B1 21%  perf-profile.calltrace=
-.cycles-pp.ktime_get.tick_sched_timer.__hrtimer_run_queues.hrtimer_interrup=
-t.__sysvec_apic_timer_interrupt
->      76.25 =C2=B1  2%      +4.6       80.88 =C2=B1  2%  perf-profile.call=
-trace.cycles-pp.asm_sysvec_apic_timer_interrupt
->       0.00            +4.7        4.65 =C2=B1 23%  perf-profile.calltrace=
-.cycles-pp.read_hpet.ktime_get.sched_clock_tick.scheduler_tick.update_proce=
-ss_times
->       0.00            +5.2        5.18 =C2=B1 25%  perf-profile.calltrace=
-.cycles-pp.ktime_get.sched_clock_tick.scheduler_tick.update_process_times.t=
-ick_sched_handle
->       0.00            +5.3        5.29 =C2=B1 25%  perf-profile.calltrace=
-.cycles-pp.sched_clock_tick.scheduler_tick.update_process_times.tick_sched_=
-handle.tick_sched_timer
->       3.85 =C2=B1 19%      +5.4        9.24 =C2=B1 26%  perf-profile.call=
-trace.cycles-pp.perf_mux_hrtimer_handler.__hrtimer_run_queues.hrtimer_inter=
-rupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt
->       1.11 =C2=B1 11%      +7.7        8.77 =C2=B1 25%  perf-profile.call=
-trace.cycles-pp.ktime_get.perf_mux_hrtimer_handler.__hrtimer_run_queues.hrt=
-imer_interrupt.__sysvec_apic_timer_interrupt
->       0.00            +8.2        8.16 =C2=B1 25%  perf-profile.calltrace=
-.cycles-pp.read_hpet.ktime_get.perf_mux_hrtimer_handler.__hrtimer_run_queue=
-s.hrtimer_interrupt
->      66.60 =C2=B1  3%     +11.5       78.13 =C2=B1  3%  perf-profile.call=
-trace.cycles-pp.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
->       3.32 =C2=B1  8%     +12.4       15.75 =C2=B1 20%  perf-profile.call=
-trace.cycles-pp.ktime_get_update_offsets_now.hrtimer_interrupt.__sysvec_api=
-c_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interru=
-pt
->      59.52 =C2=B1  3%     +12.8       72.32 =C2=B1  5%  perf-profile.call=
-trace.cycles-pp.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.a=
-sm_sysvec_apic_timer_interrupt
->      59.20 =C2=B1  3%     +13.0       72.23 =C2=B1  5%  perf-profile.call=
-trace.cycles-pp.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic=
-_timer_interrupt.asm_sysvec_apic_timer_interrupt
->       0.00           +14.6       14.64 =C2=B1 21%  perf-profile.calltrace=
-.cycles-pp.read_hpet.ktime_get_update_offsets_now.hrtimer_interrupt.__sysve=
-c_apic_timer_interrupt.sysvec_apic_timer_interrupt
->       6.36 =C2=B1 12%     +19.2       25.58 =C2=B1  6%  perf-profile.call=
-trace.cycles-pp.clockevents_program_event.hrtimer_interrupt.__sysvec_apic_t=
-imer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
->       0.00           +20.6       20.55 =C2=B1  6%  perf-profile.calltrace=
-.cycles-pp.read_hpet.ktime_get.clockevents_program_event.hrtimer_interrupt.=
-__sysvec_apic_timer_interrupt
->       1.27 =C2=B1 25%     +21.2       22.46 =C2=B1  5%  perf-profile.call=
-trace.cycles-pp.ktime_get.clockevents_program_event.hrtimer_interrupt.__sys=
-vec_apic_timer_interrupt.sysvec_apic_timer_interrupt
->      44.12 =C2=B1  5%     -26.6       17.57 =C2=B1 25%  perf-profile.chil=
-dren.cycles-pp.tick_sched_handle
->      43.72 =C2=B1  5%     -26.3       17.47 =C2=B1 25%  perf-profile.chil=
-dren.cycles-pp.update_process_times
->      45.65 =C2=B1  6%     -23.5       22.13 =C2=B1 23%  perf-profile.chil=
-dren.cycles-pp.tick_sched_timer
->      53.67 =C2=B1  3%     -20.2       33.48 =C2=B1  8%  perf-profile.chil=
-dren.cycles-pp.__hrtimer_run_queues
->      34.46 =C2=B1  7%     -18.8       15.70 =C2=B1 25%  perf-profile.chil=
-dren.cycles-pp.scheduler_tick
->      23.76 =C2=B1  6%     -15.8        7.95 =C2=B1 28%  perf-profile.chil=
-dren.cycles-pp.task_tick_fair
->      11.74 =C2=B1 42%      -7.5        4.26 =C2=B1 77%  perf-profile.chil=
-dren.cycles-pp.asm_exc_nmi
->       6.25 =C2=B1 21%      -5.5        0.72 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.perf_event_task_tick
->       7.19 =C2=B1 11%      -4.4        2.77 =C2=B1 25%  perf-profile.chil=
-dren.cycles-pp.update_load_avg
->       6.06 =C2=B1  9%      -4.0        2.11 =C2=B1 23%  perf-profile.chil=
-dren.cycles-pp.update_curr
->       4.70 =C2=B1 16%      -3.8        0.86 =C2=B1 44%  perf-profile.chil=
-dren.cycles-pp.ghes_notify_nmi
->       4.97 =C2=B1  9%      -3.3        1.66 =C2=B1 29%  perf-profile.chil=
-dren.cycles-pp.hrtimer_active
->       3.57 =C2=B1 21%      -3.3        0.28 =C2=B1 32%  perf-profile.chil=
-dren.cycles-pp.__intel_pmu_enable_all
->       2.84 =C2=B1 14%      -2.3        0.58 =C2=B1 20%  perf-profile.chil=
-dren.cycles-pp.trigger_load_balance
->       2.79 =C2=B1  8%      -2.1        0.65 =C2=B1 34%  perf-profile.chil=
-dren.cycles-pp.rcu_sched_clock_irq
->       3.22 =C2=B1  7%      -2.1        1.12 =C2=B1 50%  perf-profile.chil=
-dren.cycles-pp.native_sched_clock
->       8.93 =C2=B1  7%      -1.9        7.03 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.entry_SYSCALL_64_after_hwframe
->       8.92 =C2=B1  7%      -1.9        7.02 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.do_syscall_64
->       2.35 =C2=B1  8%      -1.7        0.69 =C2=B1 21%  perf-profile.chil=
-dren.cycles-pp.irqtime_account_irq
->       2.19 =C2=B1  8%      -1.5        0.73 =C2=B1 31%  perf-profile.chil=
-dren.cycles-pp.update_cfs_group
->       1.78 =C2=B1  6%      -1.3        0.44 =C2=B1  9%  perf-profile.chil=
-dren.cycles-pp._raw_spin_lock
->       1.59 =C2=B1 15%      -1.3        0.28 =C2=B1 17%  perf-profile.chil=
-dren.cycles-pp.update_rq_clock
->       2.09 =C2=B1 12%      -1.3        0.82 =C2=B1 25%  perf-profile.chil=
-dren.cycles-pp.__update_load_avg_cfs_rq
->       1.35 =C2=B1 25%      -1.3        0.09 =C2=B1 73%  perf-profile.chil=
-dren.cycles-pp.nmi_handle
->       4.19 =C2=B1  5%      -1.2        3.02 =C2=B1  9%  perf-profile.chil=
-dren.cycles-pp.rebalance_domains
->       2.08 =C2=B1 14%      -1.1        0.95 =C2=B1 26%  perf-profile.chil=
-dren.cycles-pp.__update_load_avg_se
->       3.36 =C2=B1  7%      -1.1        2.27 =C2=B1  9%  perf-profile.chil=
-dren.cycles-pp.load_balance
->       1.61 =C2=B1  8%      -1.0        0.56 =C2=B1 50%  perf-profile.chil=
-dren.cycles-pp.native_flush_tlb_one_user
->       1.26 =C2=B1 23%      -1.0        0.24 =C2=B1 30%  perf-profile.chil=
-dren.cycles-pp.arch_scale_freq_tick
->       1.36 =C2=B1 41%      -1.0        0.40 =C2=B1 67%  perf-profile.chil=
-dren.cycles-pp.paranoid_entry
->       1.18 =C2=B1 10%      -0.9        0.25 =C2=B1 17%  perf-profile.chil=
-dren.cycles-pp.sched_clock_cpu
->       1.07 =C2=B1 10%      -0.9        0.19 =C2=B1 60%  perf-profile.chil=
-dren.cycles-pp.exc_nmi
->       1.13 =C2=B1 34%      -0.8        0.29 =C2=B1 70%  perf-profile.chil=
-dren.cycles-pp.repeat_nmi
->       2.29 =C2=B1  8%      -0.8        1.47 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.find_busiest_group
->       2.16 =C2=B1  9%      -0.8        1.37 =C2=B1  9%  perf-profile.chil=
-dren.cycles-pp.update_sd_lb_stats
->       0.92 =C2=B1 24%      -0.7        0.18 =C2=B1 30%  perf-profile.chil=
-dren.cycles-pp.sync_regs
->       1.09 =C2=B1 10%      -0.7        0.35 =C2=B1  7%  perf-profile.chil=
-dren.cycles-pp.hrtimer_update_next_event
->       1.70 =C2=B1 11%      -0.7        0.97 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.__x64_sys_execve
->       1.70 =C2=B1 11%      -0.7        0.97 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.do_execveat_common
->       0.93 =C2=B1  7%      -0.7        0.26 =C2=B1  8%  perf-profile.chil=
-dren.cycles-pp.__remove_hrtimer
->       1.60 =C2=B1 10%      -0.6        0.96 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.execve
->       0.77 =C2=B1 15%      -0.6        0.15 =C2=B1 30%  perf-profile.chil=
-dren.cycles-pp.update_irq_load_avg
->       0.93 =C2=B1 11%      -0.6        0.32 =C2=B1 31%  perf-profile.chil=
-dren.cycles-pp.acpi_os_read_memory
->       1.40 =C2=B1 10%      -0.6        0.80 =C2=B1 13%  perf-profile.chil=
-dren.cycles-pp.bprm_execve
->       2.13 =C2=B1  4%      -0.6        1.57 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.asm_exc_page_fault
->       1.27 =C2=B1 10%      -0.6        0.71 =C2=B1 13%  perf-profile.chil=
-dren.cycles-pp.exec_binprm
->       2.00 =C2=B1  4%      -0.5        1.46 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.exc_page_fault
->       1.22 =C2=B1 10%      -0.5        0.68 =C2=B1 13%  perf-profile.chil=
-dren.cycles-pp.load_elf_binary
->       2.00 =C2=B1  4%      -0.5        1.45 =C2=B1  9%  perf-profile.chil=
-dren.cycles-pp.do_user_addr_fault
->       1.72 =C2=B1  4%      -0.5        1.20 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.handle_mm_fault
->       0.87 =C2=B1 12%      -0.5        0.36 =C2=B1 31%  perf-profile.chil=
-dren.cycles-pp.reweight_entity
->       1.62 =C2=B1  4%      -0.5        1.12 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.__handle_mm_fault
->       0.69 =C2=B1 29%      -0.5        0.19 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.native_irq_return_iret
->       0.79 =C2=B1  8%      -0.5        0.29 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.enqueue_hrtimer
->       0.74 =C2=B1 13%      -0.5        0.25 =C2=B1 31%  perf-profile.chil=
-dren.cycles-pp.update_min_vruntime
->       0.68 =C2=B1  8%      -0.5        0.19 =C2=B1  6%  perf-profile.chil=
-dren.cycles-pp.timerqueue_del
->       0.83 =C2=B1  7%      -0.5        0.38 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp._raw_spin_lock_irq
->       0.71 =C2=B1 43%      -0.4        0.27 =C2=B1 76%  perf-profile.chil=
-dren.cycles-pp.first_nmi
->       1.17 =C2=B1  9%      -0.4        0.73 =C2=B1 14%  perf-profile.chil=
-dren.cycles-pp.exit_mmap
->       1.17 =C2=B1  9%      -0.4        0.74 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.mmput
->       0.68 =C2=B1  9%      -0.4        0.24 =C2=B1  9%  perf-profile.chil=
-dren.cycles-pp.timerqueue_add
->       0.55 =C2=B1 17%      -0.4        0.14 =C2=B1 28%  perf-profile.chil=
-dren.cycles-pp.account_user_time
->       1.05 =C2=B1  4%      -0.4        0.67 =C2=B1 19%  perf-profile.chil=
-dren.cycles-pp._raw_spin_lock_irqsave
->       0.83 =C2=B1  6%      -0.4        0.48 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.do_filp_open
->       0.56 =C2=B1 11%      -0.4        0.20 =C2=B1  8%  perf-profile.chil=
-dren.cycles-pp.__hrtimer_next_event_base
->       0.82 =C2=B1  6%      -0.3        0.47 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.path_openat
->       1.20 =C2=B1  4%      -0.3        0.85 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.smpboot_thread_fn
->       0.84 =C2=B1  5%      -0.3        0.50 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.do_sys_open
->       0.83 =C2=B1  5%      -0.3        0.49 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.do_sys_openat2
->       0.49 =C2=B1 12%      -0.3        0.18 =C2=B1  8%  perf-profile.chil=
-dren.cycles-pp.__hrtimer_get_next_event
->       0.92 =C2=B1 10%      -0.3        0.63 =C2=B1 14%  perf-profile.chil=
-dren.cycles-pp.__libc_fork
->       1.08 =C2=B1  7%      -0.3        0.78 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.finish_task_switch
->       0.65 =C2=B1 12%      -0.3        0.35 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.begin_new_exec
->       0.81 =C2=B1 23%      -0.3        0.52 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.worker_thread
->       0.37 =C2=B1  9%      -0.3        0.09 =C2=B1 49%  perf-profile.chil=
-dren.cycles-pp.default_do_nmi
->       0.59 =C2=B1 14%      -0.3        0.31 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.vm_mmap_pgoff
->       0.56 =C2=B1 15%      -0.3        0.29 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.do_mmap
->       0.68 =C2=B1 11%      -0.3        0.43 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.copy_process
->       0.33 =C2=B1 15%      -0.3        0.08 =C2=B1 38%  perf-profile.chil=
-dren.cycles-pp.ghes_copy_tofrom_phys
->       0.71 =C2=B1 26%      -0.3        0.46 =C2=B1 13%  perf-profile.chil=
-dren.cycles-pp.process_one_work
->       0.71 =C2=B1 11%      -0.2        0.46 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.__do_sys_clone
->       0.71 =C2=B1 11%      -0.2        0.46 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.kernel_clone
->       0.83 =C2=B1  5%      -0.2        0.59 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.do_fault
->       0.64 =C2=B1 10%      -0.2        0.40 =C2=B1 20%  perf-profile.chil=
-dren.cycles-pp.try_to_wake_up
->       0.28 =C2=B1  8%      -0.2        0.03 =C2=B1100%  perf-profile.chil=
-dren.cycles-pp.rb_erase
->       0.50 =C2=B1 15%      -0.2        0.27 =C2=B1 13%  perf-profile.chil=
-dren.cycles-pp.mmap_region
->       0.30 =C2=B1 10%      -0.2        0.07 =C2=B1 23%  perf-profile.chil=
-dren.cycles-pp.run_posix_cpu_timers
->       0.58 =C2=B1  9%      -0.2        0.36 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.unmap_vmas
->       0.30 =C2=B1  8%      -0.2        0.08 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.tick_program_event
->       0.33 =C2=B1  6%      -0.2        0.12 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.hrtimer_forward
->       0.25 =C2=B1 20%      -0.2        0.03 =C2=B1100%  perf-profile.chil=
-dren.cycles-pp.account_process_tick
->       0.46 =C2=B1 15%      -0.2        0.24 =C2=B1  7%  perf-profile.chil=
-dren.cycles-pp.ksys_mmap_pgoff
->       0.46 =C2=B1  8%      -0.2        0.25 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.kmem_cache_alloc
->       0.75 =C2=B1  8%      -0.2        0.55 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.__x64_sys_exit_group
->       0.75 =C2=B1  8%      -0.2        0.55 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.do_group_exit
->       0.75 =C2=B1  8%      -0.2        0.55 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.do_exit
->       0.33 =C2=B1 16%      -0.2        0.14 =C2=B1 66%  perf-profile.chil=
-dren.cycles-pp.intel_pmu_handle_irq
->       0.28 =C2=B1  7%      -0.2        0.09 =C2=B1 51%  perf-profile.chil=
-dren.cycles-pp.__native_set_fixmap
->       0.49 =C2=B1  9%      -0.2        0.29 =C2=B1  8%  perf-profile.chil=
-dren.cycles-pp.__alloc_pages
->       0.47 =C2=B1 10%      -0.2        0.28 =C2=B1 20%  perf-profile.chil=
-dren.cycles-pp.dup_mm
->       0.42 =C2=B1  9%      -0.2        0.23 =C2=B1 20%  perf-profile.chil=
-dren.cycles-pp.walk_component
->       0.51 =C2=B1 10%      -0.2        0.33 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.unmap_page_range
->       0.27 =C2=B1 12%      -0.2        0.09 =C2=B1 54%  perf-profile.chil=
-dren.cycles-pp.calc_global_load_tick
->       0.44 =C2=B1 11%      -0.2        0.26 =C2=B1 20%  perf-profile.chil=
-dren.cycles-pp.dup_mmap
->       0.41 =C2=B1  9%      -0.2        0.24 =C2=B1 20%  perf-profile.chil=
-dren.cycles-pp.link_path_walk
->       0.23 =C2=B1 38%      -0.2        0.06 =C2=B1118%  perf-profile.chil=
-dren.cycles-pp.intel_bts_disable_local
->       0.61 =C2=B1  6%      -0.2        0.45 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.run_ksoftirqd
->       0.47 =C2=B1  9%      -0.2        0.30 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.zap_pte_range
->       0.33 =C2=B1 14%      -0.2        0.16 =C2=B1 22%  perf-profile.chil=
-dren.cycles-pp.__calc_delta
->       0.22 =C2=B1 36%      -0.2        0.06 =C2=B1119%  perf-profile.chil=
-dren.cycles-pp.__intel_pmu_disable_all
->       0.55 =C2=B1  6%      -0.2        0.39 =C2=B1 13%  perf-profile.chil=
-dren.cycles-pp.filemap_map_pages
->       0.31 =C2=B1 12%      -0.2        0.15 =C2=B1 28%  perf-profile.chil=
-dren.cycles-pp.__accumulate_pelt_segments
->       0.40 =C2=B1  9%      -0.1        0.26 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.setlocale
->       0.20 =C2=B1 16%      -0.1        0.06 =C2=B1 46%  perf-profile.chil=
-dren.cycles-pp.sched_slice
->       0.17 =C2=B1  7%      -0.1        0.04 =C2=B1 75%  perf-profile.chil=
-dren.cycles-pp.perf_trace_sched_stat_runtime
->       0.33 =C2=B1  7%      -0.1        0.20 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.get_page_from_freelist
->       0.16 =C2=B1 16%      -0.1        0.04 =C2=B1104%  perf-profile.chil=
-dren.cycles-pp.native_set_fixmap
->       0.33 =C2=B1 14%      -0.1        0.20 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.free_pgtables
->       0.16 =C2=B1 21%      -0.1        0.04 =C2=B1 72%  perf-profile.chil=
-dren.cycles-pp.schedule_idle
->       0.19 =C2=B1 38%      -0.1        0.07 =C2=B1 18%  perf-profile.chil=
-dren.cycles-pp.__poll
->       0.32 =C2=B1 16%      -0.1        0.20 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.syscall_exit_to_user_mode
->       0.30 =C2=B1 15%      -0.1        0.19 =C2=B1 19%  perf-profile.chil=
-dren.cycles-pp.call_timer_fn
->       0.19 =C2=B1  9%      -0.1        0.08 =C2=B1  6%  perf-profile.chil=
-dren.cycles-pp.rb_insert_color
->       0.29 =C2=B1  9%      -0.1        0.18 =C2=B1 21%  perf-profile.chil=
-dren.cycles-pp.alloc_pages_vma
->       0.22 =C2=B1  6%      -0.1        0.11 =C2=B1 27%  perf-profile.chil=
-dren.cycles-pp.filename_lookup
->       0.24 =C2=B1 19%      -0.1        0.13 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.__do_munmap
->       0.27 =C2=B1 10%      -0.1        0.17 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.__open64_nocancel
->       0.14 =C2=B1 34%      -0.1        0.03 =C2=B1108%  perf-profile.chil=
-dren.cycles-pp.__evlist__enable
->       0.21 =C2=B1  7%      -0.1        0.11 =C2=B1 24%  perf-profile.chil=
-dren.cycles-pp.path_lookupat
->       0.30 =C2=B1  4%      -0.1        0.21 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.next_uptodate_page
->       0.18 =C2=B1  7%      -0.1        0.08 =C2=B1 24%  perf-profile.chil=
-dren.cycles-pp.__do_sys_newstat
->       0.19 =C2=B1  4%      -0.1        0.10 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.step_into
->       0.31 =C2=B1  4%      -0.1        0.21 =C2=B1 19%  perf-profile.chil=
-dren.cycles-pp.wp_page_copy
->       0.17 =C2=B1  6%      -0.1        0.08 =C2=B1 24%  perf-profile.chil=
-dren.cycles-pp.vfs_statx
->       0.19 =C2=B1 12%      -0.1        0.10 =C2=B1 18%  perf-profile.chil=
-dren.cycles-pp.elf_map
->       0.14 =C2=B1 34%      -0.1        0.06 =C2=B1 46%  perf-profile.chil=
-dren.cycles-pp.do_sys_poll
->       0.17 =C2=B1  8%      -0.1        0.09 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.dput
->       0.20 =C2=B1 15%      -0.1        0.12 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.__split_vma
->       0.14 =C2=B1 34%      -0.1        0.06 =C2=B1 47%  perf-profile.chil=
-dren.cycles-pp.__x64_sys_poll
->       0.15 =C2=B1 13%      -0.1        0.07 =C2=B1 19%  perf-profile.chil=
-dren.cycles-pp.vma_interval_tree_insert
->       0.17 =C2=B1 20%      -0.1        0.09 =C2=B1 31%  perf-profile.chil=
-dren.cycles-pp.enqueue_task_fair
->       0.17 =C2=B1 23%      -0.1        0.09 =C2=B1 31%  perf-profile.chil=
-dren.cycles-pp.ttwu_do_activate
->       0.17 =C2=B1 30%      -0.1        0.09 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.__pagevec_lru_add
->       0.15 =C2=B1 20%      -0.1        0.07 =C2=B1 21%  perf-profile.chil=
-dren.cycles-pp.vma_link
->       0.21 =C2=B1 15%      -0.1        0.13 =C2=B1 14%  perf-profile.chil=
-dren.cycles-pp.do_anonymous_page
->       0.18 =C2=B1 23%      -0.1        0.10 =C2=B1 25%  perf-profile.chil=
-dren.cycles-pp.proc_reg_read_iter
->       0.17 =C2=B1 13%      -0.1        0.09 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.__alloc_file
->       0.17 =C2=B1 11%      -0.1        0.10 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.alloc_empty_file
->       0.20 =C2=B1 12%      -0.1        0.13 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.tlb_finish_mmu
->       0.19 =C2=B1 12%      -0.1        0.12 =C2=B1 17%  perf-profile.chil=
-dren.cycles-pp.tlb_flush_mmu
->       0.17 =C2=B1 14%      -0.1        0.09 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.__mmap
->       0.26 =C2=B1  8%      -0.1        0.19 =C2=B1 18%  perf-profile.chil=
-dren.cycles-pp.write
->       0.32 =C2=B1  8%      -0.1        0.24 =C2=B1 14%  perf-profile.chil=
-dren.cycles-pp.kmem_cache_free
->       0.20 =C2=B1 22%      -0.1        0.13 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.release_pages
->       0.16 =C2=B1 17%      -0.1        0.09 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.copy_strings
->       0.17 =C2=B1 14%      -0.1        0.09 =C2=B1 14%  perf-profile.chil=
-dren.cycles-pp.__vma_adjust
->       0.31 =C2=B1 10%      -0.1        0.24 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.cpumask_next_and
->       0.16 =C2=B1 15%      -0.1        0.09 =C2=B1 22%  perf-profile.chil=
-dren.cycles-pp.do_mprotect_pkey
->       0.10 =C2=B1  9%      -0.1        0.03 =C2=B1101%  perf-profile.chil=
-dren.cycles-pp.get_obj_cgroup_from_current
->       0.09 =C2=B1 14%      -0.1        0.03 =C2=B1100%  perf-profile.chil=
-dren.cycles-pp.__xstat64
->       0.17 =C2=B1 13%      -0.1        0.10 =C2=B1 21%  perf-profile.chil=
-dren.cycles-pp.__x64_sys_mprotect
->       0.13 =C2=B1 10%      -0.1        0.07 =C2=B1 18%  perf-profile.chil=
-dren.cycles-pp.rmqueue
->       0.14 =C2=B1 11%      -0.1        0.08 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.do_open
->       0.16 =C2=B1  6%      -0.1        0.10 =C2=B1 23%  perf-profile.chil=
-dren.cycles-pp.__lookup_slow
->       0.16 =C2=B1  7%      -0.1        0.10 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.prep_new_page
->       0.15 =C2=B1 13%      -0.1        0.09 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.unlink_anon_vmas
->       0.14 =C2=B1 12%      -0.1        0.09 =C2=B1 14%  perf-profile.chil=
-dren.cycles-pp.lookup_fast
->       0.15 =C2=B1 15%      -0.1        0.09 =C2=B1 21%  perf-profile.chil=
-dren.cycles-pp.mprotect_fixup
->       0.11 =C2=B1 19%      -0.1        0.06 =C2=B1 50%  perf-profile.chil=
-dren.cycles-pp.__get_user_pages_remote
->       0.10 =C2=B1 11%      -0.1        0.04 =C2=B1 75%  perf-profile.chil=
-dren.cycles-pp.anon_vma_fork
->       0.09 =C2=B1  9%      -0.1        0.03 =C2=B1 70%  perf-profile.chil=
-dren.cycles-pp.__get_free_pages
->       0.08 =C2=B1 31%      -0.1        0.03 =C2=B1 99%  perf-profile.chil=
-dren.cycles-pp.strnlen_user
->       0.08 =C2=B1 12%      -0.1        0.03 =C2=B1 99%  perf-profile.chil=
-dren.cycles-pp.page_counter_try_charge
->       0.14 =C2=B1 21%      -0.1        0.08 =C2=B1 21%  perf-profile.chil=
-dren.cycles-pp.unlink_file_vma
->       0.11 =C2=B1 17%      -0.1        0.06 =C2=B1 50%  perf-profile.chil=
-dren.cycles-pp.__get_user_pages
->       0.17 =C2=B1  7%      -0.1        0.11 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.___might_sleep
->       0.10 =C2=B1 15%      -0.1        0.05 =C2=B1 46%  perf-profile.chil=
-dren.cycles-pp.remove_vma
->       0.09 =C2=B1 18%      -0.1        0.04 =C2=B1 71%  perf-profile.chil=
-dren.cycles-pp.mutex_lock
->       0.18 =C2=B1 11%      -0.1        0.12 =C2=B1 15%  perf-profile.chil=
-dren.cycles-pp.page_remove_rmap
->       0.17 =C2=B1 10%      -0.1        0.12 =C2=B1 13%  perf-profile.chil=
-dren.cycles-pp.select_task_rq_fair
->       0.08 =C2=B1 14%      -0.1        0.03 =C2=B1100%  perf-profile.chil=
-dren.cycles-pp.__check_object_size
->       0.10 =C2=B1 22%      -0.0        0.05 =C2=B1 46%  perf-profile.chil=
-dren.cycles-pp.unmap_region
->       0.09 =C2=B1  5%      -0.0        0.04 =C2=B1 71%  perf-profile.chil=
-dren.cycles-pp.getname_flags
->       0.13 =C2=B1  5%      -0.0        0.08 =C2=B1 20%  perf-profile.chil=
-dren.cycles-pp.d_alloc_parallel
->       0.10 =C2=B1 14%      -0.0        0.06 =C2=B1 19%  perf-profile.chil=
-dren.cycles-pp.do_open_execat
->       0.09 =C2=B1  8%      -0.0        0.04 =C2=B1 73%  perf-profile.chil=
-dren.cycles-pp.__pte_alloc
->       0.15 =C2=B1 12%      -0.0        0.10 =C2=B1 19%  perf-profile.chil=
-dren.cycles-pp.vmstat_update
->       0.10 =C2=B1 10%      -0.0        0.05 =C2=B1 46%  perf-profile.chil=
+>      29.55            -0.9       28.68        perf-profile.calltrace.cycl=
+es-pp.__x64_sys_timer_delete.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      10.29            -0.5        9.83 =C2=B1  2%  perf-profile.calltrace=
+.cycles-pp._raw_spin_unlock_irqrestore.release_posix_timer.__x64_sys_timer_=
+delete.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      20.82            -0.4       20.38        perf-profile.calltrace.cycl=
+es-pp._raw_spin_lock.do_timer_create.__x64_sys_timer_create.do_syscall_64.e=
+ntry_SYSCALL_64_after_hwframe
+>      18.82            -0.4       18.39        perf-profile.calltrace.cycl=
+es-pp._raw_spin_lock_irqsave.release_posix_timer.__x64_sys_timer_delete.do_=
+syscall_64.entry_SYSCALL_64_after_hwframe
+>      21.26            -0.4       20.84        perf-profile.calltrace.cycl=
+es-pp.do_timer_create.__x64_sys_timer_create.do_syscall_64.entry_SYSCALL_64=
+_after_hwframe
+>      21.29            -0.4       20.87        perf-profile.calltrace.cycl=
+es-pp.__x64_sys_timer_create.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      18.73            -0.4       18.31        perf-profile.calltrace.cycl=
+es-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.release_posix=
+_timer.__x64_sys_timer_delete.do_syscall_64
+>      20.59            -0.4       20.18        perf-profile.calltrace.cycl=
+es-pp.native_queued_spin_lock_slowpath._raw_spin_lock.do_timer_create.__x64=
+_sys_timer_create.do_syscall_64
+>       9.40            -0.4        9.02        perf-profile.calltrace.cycl=
+es-pp.sysvec_call_function.asm_sysvec_call_function._raw_spin_unlock_irqres=
+tore.release_posix_timer.__x64_sys_timer_delete
+>       9.56            -0.4        9.18        perf-profile.calltrace.cycl=
+es-pp.asm_sysvec_call_function._raw_spin_unlock_irqrestore.release_posix_ti=
+mer.__x64_sys_timer_delete.do_syscall_64
+>       9.37            -0.4        8.98        perf-profile.calltrace.cycl=
+es-pp.__sysvec_call_function.sysvec_call_function.asm_sysvec_call_function.=
+_raw_spin_unlock_irqrestore.release_posix_timer
+>      11.25            -0.3       10.94        perf-profile.calltrace.cycl=
+es-pp.flush_smp_call_function_queue.__sysvec_call_function.sysvec_call_func=
+tion.asm_sysvec_call_function._raw_spin_unlock_irqrestore
+>       1.33 =C2=B1  2%      -0.1        1.24        perf-profile.calltrace=
+.cycles-pp.ktime_get_real_ts64.posix_get_realtime_timespec.__x64_sys_clock_=
+gettime.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       1.19            -0.1        1.11        perf-profile.calltrace.cycl=
+es-pp.ktime_get_ts64.posix_get_monotonic_timespec.__x64_sys_clock_gettime.d=
+o_syscall_64.entry_SYSCALL_64_after_hwframe
+>       1.21            -0.1        1.13        perf-profile.calltrace.cycl=
+es-pp.posix_get_monotonic_timespec.__x64_sys_clock_gettime.do_syscall_64.en=
+try_SYSCALL_64_after_hwframe
+>       0.86            -0.0        0.82        perf-profile.calltrace.cycl=
+es-pp.ktime_get_with_offset.posix_get_boottime_timespec.__x64_sys_clock_get=
+time.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       0.88            -0.0        0.84        perf-profile.calltrace.cycl=
+es-pp.posix_get_boottime_timespec.__x64_sys_clock_gettime.do_syscall_64.ent=
+ry_SYSCALL_64_after_hwframe
+>       0.71            -0.0        0.67 =C2=B1  2%  perf-profile.calltrace=
+.cycles-pp.asm_sysvec_call_function.ktime_get_with_offset.posix_get_tai_tim=
+espec.__x64_sys_clock_gettime.do_syscall_64
+>       0.69 =C2=B1  2%      -0.0        0.65        perf-profile.calltrace=
+.cycles-pp.flush_smp_call_function_queue.__sysvec_call_function.sysvec_call=
+_function.asm_sysvec_call_function.ktime_get_with_offset
+>       0.69            -0.0        0.66 =C2=B1  2%  perf-profile.calltrace=
+.cycles-pp.sysvec_call_function.asm_sysvec_call_function.ktime_get_with_off=
+set.posix_get_tai_timespec.__x64_sys_clock_gettime
+>       0.63            +0.0        0.66        perf-profile.calltrace.cycl=
+es-pp.common_timer_get.do_timer_gettime.__x64_sys_timer_gettime.do_syscall_=
+64.entry_SYSCALL_64_after_hwframe
+>       0.95            +0.0        0.99        perf-profile.calltrace.cycl=
+es-pp.__sysvec_call_function.sysvec_call_function.asm_sysvec_call_function.=
+llist_add_batch.smp_call_function_many_cond
+>       0.94            +0.0        0.99        perf-profile.calltrace.cycl=
+es-pp.flush_smp_call_function_queue.__sysvec_call_function.sysvec_call_func=
+tion.asm_sysvec_call_function.llist_add_batch
+>       0.97            +0.0        1.02        perf-profile.calltrace.cycl=
+es-pp.asm_sysvec_call_function.llist_add_batch.smp_call_function_many_cond.=
+on_each_cpu_cond_mask.clock_was_set
+>       0.95            +0.0        1.00        perf-profile.calltrace.cycl=
+es-pp.sysvec_call_function.asm_sysvec_call_function.llist_add_batch.smp_cal=
+l_function_many_cond.on_each_cpu_cond_mask
+>       1.14            +0.1        1.19        perf-profile.calltrace.cycl=
+es-pp.default_send_IPI_mask_sequence_phys.smp_call_function_many_cond.on_ea=
+ch_cpu_cond_mask.clock_was_set.timekeeping_inject_offset
+>       1.19            +0.1        1.24        perf-profile.calltrace.cycl=
+es-pp.do_timer_gettime.__x64_sys_timer_gettime.do_syscall_64.entry_SYSCALL_=
+64_after_hwframe
+>       1.23            +0.1        1.29        perf-profile.calltrace.cycl=
+es-pp.__x64_sys_timer_gettime.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       2.74            +0.1        2.81        perf-profile.calltrace.cycl=
+es-pp.ktime_get.clockevents_program_event.retrigger_next_event.flush_smp_ca=
+ll_function_queue.__sysvec_call_function
+>       0.62 =C2=B1  3%      +0.1        0.69 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.do_open.path_openat.do_filp_open.do_sys_openat2.do_sys_open
+>       0.85 =C2=B1  2%      +0.1        0.94 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.do_filp_open.do_sys_openat2.do_sys_open.do_syscall_64.entry=
+_SYSCALL_64_after_hwframe
+>       0.85 =C2=B1  2%      +0.1        0.94 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.path_openat.do_filp_open.do_sys_openat2.do_sys_open.do_sysc=
+all_64
+>       0.90 =C2=B1  3%      +0.1        1.00 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.do_=
+adjtimex.__do_sys_clock_adjtime.do_syscall_64
+>       0.94 =C2=B1  2%      +0.1        1.03 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.do_sys_open.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       0.92 =C2=B1  2%      +0.1        1.02 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp._raw_spin_lock_irqsave.do_adjtimex.__do_sys_clock_adjtime.d=
+o_syscall_64.entry_SYSCALL_64_after_hwframe
+>       0.94 =C2=B1  2%      +0.1        1.03 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.do_sys_openat2.do_sys_open.do_syscall_64.entry_SYSCALL_64_a=
+fter_hwframe
+>       2.49            +0.1        2.58        perf-profile.calltrace.cycl=
+es-pp.llist_add_batch.smp_call_function_many_cond.on_each_cpu_cond_mask.clo=
+ck_was_set.timekeeping_inject_offset
+>      19.32            +0.2       19.54        perf-profile.calltrace.cycl=
+es-pp.timekeeping_inject_offset.do_adjtimex.__do_sys_clock_adjtime.do_sysca=
+ll_64.entry_SYSCALL_64_after_hwframe
+>      21.84            +0.3       22.18        perf-profile.calltrace.cycl=
+es-pp.do_adjtimex.__do_sys_clock_adjtime.do_syscall_64.entry_SYSCALL_64_aft=
+er_hwframe
+>      22.02            +0.3       22.36        perf-profile.calltrace.cycl=
+es-pp.__do_sys_clock_adjtime.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       2.69 =C2=B1  3%      +0.4        3.14 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.flush_smp_call_function_queue.__sysvec_call_function.sysvec=
+_call_function.asm_sysvec_call_function.osq_lock
+>       2.71 =C2=B1  3%      +0.4        3.15 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.sysvec_call_function.asm_sysvec_call_function.osq_lock.__mu=
+tex_lock.i40e_ptp_gettimex
+>       2.69 =C2=B1  3%      +0.4        3.14 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.__sysvec_call_function.sysvec_call_function.asm_sysvec_call=
+_function.osq_lock.__mutex_lock
+>       2.75 =C2=B1  3%      +0.5        3.20 =C2=B1  4%  perf-profile.call=
+trace.cycles-pp.asm_sysvec_call_function.osq_lock.__mutex_lock.i40e_ptp_get=
+timex.pc_clock_gettime
+>       3.47            +0.5        3.92 =C2=B1  6%  perf-profile.calltrace=
+.cycles-pp.clockevents_program_event.retrigger_next_event.flush_smp_call_fu=
+nction_queue.__sysvec_call_function.sysvec_call_function
+>       0.09 =C2=B1223%      +0.5        0.55 =C2=B1  5%  perf-profile.call=
+trace.cycles-pp.do_dentry_open.do_open.path_openat.do_filp_open.do_sys_open=
+at2
+>      14.21            +0.7       14.88 =C2=B1  2%  perf-profile.calltrace=
+.cycles-pp.__x64_sys_clock_gettime.do_syscall_64.entry_SYSCALL_64_after_hwf=
+rame
+>       5.68 =C2=B1  2%      +0.9        6.60 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.osq_lock.__mutex_lock.i40e_ptp_gettimex.pc_clock_gettime.__=
+x64_sys_clock_gettime
+>       6.09 =C2=B1  2%      +1.0        7.05 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.__mutex_lock.i40e_ptp_gettimex.pc_clock_gettime.__x64_sys_c=
+lock_gettime.do_syscall_64
+>       6.52 =C2=B1  2%      +1.0        7.50 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.i40e_ptp_gettimex.pc_clock_gettime.__x64_sys_clock_gettime.=
+do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       6.59 =C2=B1  2%      +1.0        7.57 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.pc_clock_gettime.__x64_sys_clock_gettime.do_syscall_64.entr=
+y_SYSCALL_64_after_hwframe
+>      29.42            -0.9       28.53        perf-profile.children.cycle=
+s-pp.release_posix_timer
+>      29.55            -0.9       28.68        perf-profile.children.cycle=
+s-pp.__x64_sys_timer_delete
+>      41.94            -0.6       41.29        perf-profile.children.cycle=
+s-pp.native_queued_spin_lock_slowpath
+>      21.27            -0.4       20.84        perf-profile.children.cycle=
+s-pp.do_timer_create
+>      21.29            -0.4       20.87        perf-profile.children.cycle=
+s-pp.__x64_sys_timer_create
+>      21.39            -0.4       20.99        perf-profile.children.cycle=
+s-pp._raw_spin_lock
+>      15.00            -0.4       14.64        perf-profile.children.cycle=
+s-pp._raw_spin_unlock_irqrestore
+>       2.38            -0.1        2.27        perf-profile.children.cycle=
+s-pp.ktime_get_with_offset
+>       1.90 =C2=B1  2%      -0.1        1.79        perf-profile.children.=
+cycles-pp.ktime_get_real_ts64
+>       1.21            -0.1        1.13        perf-profile.children.cycle=
+s-pp.posix_get_monotonic_timespec
+>       1.20            -0.1        1.12        perf-profile.children.cycle=
+s-pp.ktime_get_ts64
+>       0.88            -0.0        0.84        perf-profile.children.cycle=
+s-pp.posix_get_boottime_timespec
+>       0.33            -0.0        0.31        perf-profile.children.cycle=
+s-pp.poll_idle
+>       0.37            +0.0        0.39        perf-profile.children.cycle=
+s-pp.syscall_exit_to_user_mode
+>       0.28            +0.0        0.29        perf-profile.children.cycle=
+s-pp.hrtimer_update_next_event
+>       0.21 =C2=B1  2%      +0.0        0.23 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.syscall_enter_from_user_mode
+>       0.30            +0.0        0.33        perf-profile.children.cycle=
+s-pp._copy_to_user
+>       0.17 =C2=B1  3%      +0.0        0.19        perf-profile.children.=
+cycles-pp.__lock_timer
+>       0.31 =C2=B1  2%      +0.0        0.33 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.mutex_spin_on_owner
+>       0.63            +0.0        0.65        perf-profile.children.cycle=
+s-pp.__default_send_IPI_dest_field
+>       0.04 =C2=B1 45%      +0.0        0.07 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.__legitimize_path
+>       0.63            +0.0        0.66        perf-profile.children.cycle=
+s-pp.common_timer_get
+>       1.12            +0.0        1.17        perf-profile.children.cycle=
+s-pp.llist_reverse_order
+>       1.36            +0.1        1.41        perf-profile.children.cycle=
+s-pp.lapic_next_deadline
+>       1.16            +0.1        1.21        perf-profile.children.cycle=
+s-pp.default_send_IPI_mask_sequence_phys
+>       0.49 =C2=B1  3%      +0.1        0.55 =C2=B1  5%  perf-profile.chil=
 dren.cycles-pp.do_dentry_open
->       0.13 =C2=B1 14%      -0.0        0.08 =C2=B1 17%  perf-profile.chil=
-dren.cycles-pp.select_idle_sibling
->       0.12 =C2=B1 22%      -0.0        0.08 =C2=B1 21%  perf-profile.chil=
-dren.cycles-pp.__cgroup_account_cputime_field
->       0.08 =C2=B1  8%      -0.0        0.04 =C2=B1 71%  perf-profile.chil=
-dren.cycles-pp.__dentry_kill
->       0.07 =C2=B1 12%      -0.0        0.03 =C2=B1100%  perf-profile.chil=
-dren.cycles-pp.__memcg_kmem_charge_page
->       0.10 =C2=B1 17%      -0.0        0.05 =C2=B1 48%  perf-profile.chil=
-dren.cycles-pp.lru_add_drain
->       0.11 =C2=B1 14%      -0.0        0.07 =C2=B1 14%  perf-profile.chil=
-dren.cycles-pp.open64
->       0.08 =C2=B1 14%      -0.0        0.04 =C2=B1 71%  perf-profile.chil=
-dren.cycles-pp.__mod_memcg_lruvec_state
->       0.13 =C2=B1  8%      -0.0        0.09 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.clear_page_erms
->       0.11 =C2=B1 13%      -0.0        0.07 =C2=B1 21%  perf-profile.chil=
-dren.cycles-pp.get_arg_page
->       0.13 =C2=B1  8%      -0.0        0.08 =C2=B1 24%  perf-profile.chil=
-dren.cycles-pp.__wake_up_common_lock
->       0.08 =C2=B1 13%      -0.0        0.04 =C2=B1 72%  perf-profile.chil=
-dren.cycles-pp.lru_add_drain_cpu
->       0.12 =C2=B1 12%      -0.0        0.08 =C2=B1 14%  perf-profile.chil=
-dren.cycles-pp.__fput
->       0.11 =C2=B1 15%      -0.0        0.07 =C2=B1 16%  perf-profile.chil=
-dren.cycles-pp.__clear_user
->       0.07 =C2=B1 10%      -0.0        0.03 =C2=B1100%  perf-profile.chil=
-dren.cycles-pp.__d_alloc
->       0.09 =C2=B1 12%      -0.0        0.05 =C2=B1 47%  perf-profile.chil=
-dren.cycles-pp.obj_cgroup_charge_pages
->       0.13 =C2=B1 11%      -0.0        0.09 =C2=B1 20%  perf-profile.chil=
-dren.cycles-pp._dl_addr
->       0.10 =C2=B1  7%      -0.0        0.06 =C2=B1 17%  perf-profile.chil=
-dren.cycles-pp.__mod_lruvec_page_state
->       0.13 =C2=B1 16%      -0.0        0.09 =C2=B1 22%  perf-profile.chil=
-dren.cycles-pp.perf_event_mmap
->       0.09 =C2=B1  6%      -0.0        0.05 =C2=B1 50%  perf-profile.chil=
-dren.cycles-pp.___perf_sw_event
->       0.10 =C2=B1  9%      -0.0        0.07 =C2=B1 14%  perf-profile.chil=
-dren.cycles-pp.pte_alloc_one
->       0.09 =C2=B1 27%      -0.0        0.05 =C2=B1 50%  perf-profile.chil=
-dren.cycles-pp.vm_area_dup
->       0.09 =C2=B1 20%      -0.0        0.06 =C2=B1 13%  perf-profile.chil=
-dren.cycles-pp.down_write
->       0.09 =C2=B1 14%      -0.0        0.06 =C2=B1 18%  perf-profile.chil=
-dren.cycles-pp.malloc
->       0.09 =C2=B1 10%      -0.0        0.06 =C2=B1  9%  perf-profile.chil=
-dren.cycles-pp.sum_zone_numa_state
->       0.10 =C2=B1 13%      -0.0        0.07 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.sysfs_kf_seq_show
->       0.10 =C2=B1 15%      -0.0        0.07 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.dev_attr_show
->       0.08 =C2=B1 10%      -0.0        0.06 =C2=B1  8%  perf-profile.chil=
-dren.cycles-pp.__might_sleep
->       0.09 =C2=B1 11%      -0.0        0.06 =C2=B1 17%  perf-profile.chil=
-dren.cycles-pp.__perf_sw_event
->       0.07 =C2=B1 45%      +0.0        0.11 =C2=B1 13%  perf-profile.chil=
-dren.cycles-pp.seq_put_decimal_ull_width
->       0.04 =C2=B1 71%      +0.1        0.09 =C2=B1 25%  perf-profile.chil=
-dren.cycles-pp.ksoftirqd_running
->       0.00            +0.1        0.06 =C2=B1 13%  perf-profile.children.=
-cycles-pp.num_to_str
->       0.48 =C2=B1  8%      +0.3        0.77 =C2=B1 21%  perf-profile.chil=
-dren.cycles-pp.__irqentry_text_end
->       0.07 =C2=B1 14%      +0.3        0.39 =C2=B1 10%  perf-profile.chil=
-dren.cycles-pp.get_cpu_idle_time_us
->       0.07 =C2=B1 14%      +0.3        0.39 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.get_idle_time
->       0.00            +0.4        0.42 =C2=B1 11%  perf-profile.children.=
-cycles-pp.get_cpu_iowait_time_us
->       0.00            +0.4        0.42 =C2=B1 11%  perf-profile.children.=
-cycles-pp.get_iowait_time
->       0.00            +0.5        0.47 =C2=B1 21%  perf-profile.children.=
-cycles-pp.sched_clock_local
->       1.39 =C2=B1 17%      +0.5        1.87 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.ksys_read
->       1.33 =C2=B1 16%      +0.5        1.82 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.vfs_read
->       1.11 =C2=B1 15%      +0.5        1.64 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.read
->       1.03 =C2=B1 18%      +0.5        1.57 =C2=B1 12%  perf-profile.chil=
-dren.cycles-pp.new_sync_read
->       0.93 =C2=B1 17%      +0.6        1.49 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.seq_read_iter
->       0.55 =C2=B1 23%      +0.7        1.26 =C2=B1 11%  perf-profile.chil=
-dren.cycles-pp.show_stat
->       1.00 =C2=B1 16%      +0.9        1.86 =C2=B1 29%  perf-profile.chil=
-dren.cycles-pp.rcu_core
->       4.49 =C2=B1 21%      +5.7       10.15 =C2=B1 26%  perf-profile.chil=
-dren.cycles-pp.perf_mux_hrtimer_handler
->       0.00            +6.0        5.98 =C2=B1 22%  perf-profile.children.=
-cycles-pp.sched_clock_tick
->      85.42 =C2=B1  2%      +6.4       91.85 =C2=B1  3%  perf-profile.chil=
-dren.cycles-pp.asm_sysvec_apic_timer_interrupt
->      75.45 =C2=B1  2%     +11.3       86.74 =C2=B1  2%  perf-profile.chil=
-dren.cycles-pp.sysvec_apic_timer_interrupt
->      67.36 =C2=B1  2%     +13.1       80.42 =C2=B1  4%  perf-profile.chil=
-dren.cycles-pp.__sysvec_apic_timer_interrupt
->      67.01 =C2=B1  2%     +13.3       80.31 =C2=B1  4%  perf-profile.chil=
-dren.cycles-pp.hrtimer_interrupt
->       3.66 =C2=B1  8%     +13.8       17.51 =C2=B1 19%  perf-profile.chil=
-dren.cycles-pp.ktime_get_update_offsets_now
->       6.67 =C2=B1 10%     +21.5       28.15 =C2=B1  6%  perf-profile.chil=
-dren.cycles-pp.clockevents_program_event
->       3.16 =C2=B1 11%     +42.0       45.11 =C2=B1  3%  perf-profile.chil=
-dren.cycles-pp.ktime_get
->       0.00           +57.3       57.25 =C2=B1  5%  perf-profile.children.=
-cycles-pp.read_hpet
->      11.64 =C2=B1 42%      -7.4        4.24 =C2=B1 77%  perf-profile.self=
-.cycles-pp.asm_exc_nmi
->       4.70 =C2=B1 16%      -3.8        0.86 =C2=B1 44%  perf-profile.self=
-.cycles-pp.ghes_notify_nmi
->       3.68 =C2=B1 14%      -3.1        0.57 =C2=B1  8%  perf-profile.self=
-.cycles-pp.perf_event_task_tick
->       2.82 =C2=B1 22%      -2.6        0.25 =C2=B1 27%  perf-profile.self=
-.cycles-pp.__intel_pmu_enable_all
->       4.08 =C2=B1 16%      -2.5        1.55 =C2=B1 30%  perf-profile.self=
-.cycles-pp.hrtimer_active
->       3.57 =C2=B1  9%      -2.2        1.41 =C2=B1 24%  perf-profile.self=
-.cycles-pp.update_curr
->       3.10 =C2=B1  8%      -1.9        1.16 =C2=B1 19%  perf-profile.self=
-.cycles-pp.ktime_get_update_offsets_now
->       2.93 =C2=B1  5%      -1.8        1.09 =C2=B1 49%  perf-profile.self=
-.cycles-pp.native_sched_clock
->       2.35 =C2=B1 13%      -1.6        0.71 =C2=B1 30%  perf-profile.self=
-.cycles-pp.task_tick_fair
->       2.12 =C2=B1 18%      -1.6        0.52 =C2=B1 21%  perf-profile.self=
-.cycles-pp.trigger_load_balance
->       2.16 =C2=B1 11%      -1.6        0.59 =C2=B1 33%  perf-profile.self=
-.cycles-pp.rcu_sched_clock_irq
->       1.71 =C2=B1 21%      -1.5        0.21 =C2=B1 22%  perf-profile.self=
-.cycles-pp.update_process_times
->       2.31 =C2=B1 10%      -1.3        0.98 =C2=B1 23%  perf-profile.self=
-.cycles-pp.update_load_avg
->       1.35 =C2=B1 25%      -1.3        0.09 =C2=B1 73%  perf-profile.self=
-.cycles-pp.nmi_handle
->       1.75 =C2=B1 15%      -1.1        0.68 =C2=B1 33%  perf-profile.self=
-.cycles-pp.update_cfs_group
->       1.61 =C2=B1  8%      -1.0        0.56 =C2=B1 50%  perf-profile.self=
-.cycles-pp.native_flush_tlb_one_user
->       1.36 =C2=B1 41%      -1.0        0.40 =C2=B1 67%  perf-profile.self=
-.cycles-pp.paranoid_entry
->       1.05 =C2=B1 10%      -0.9        0.19 =C2=B1 60%  perf-profile.self=
-.cycles-pp.exc_nmi
->       1.18 =C2=B1  8%      -0.8        0.34 =C2=B1 11%  perf-profile.self=
-.cycles-pp._raw_spin_lock
->       1.13 =C2=B1 34%      -0.8        0.29 =C2=B1 70%  perf-profile.self=
-.cycles-pp.repeat_nmi
->       1.25 =C2=B1 14%      -0.8        0.49 =C2=B1 16%  perf-profile.self=
-.cycles-pp.irqtime_account_irq
->       0.89 =C2=B1 25%      -0.7        0.18 =C2=B1 29%  perf-profile.self=
-.cycles-pp.sync_regs
->       1.38 =C2=B1 14%      -0.7        0.68 =C2=B1 29%  perf-profile.self=
-.cycles-pp.__update_load_avg_cfs_rq
->       0.83 =C2=B1 20%      -0.6        0.21 =C2=B1 31%  perf-profile.self=
-.cycles-pp.arch_scale_freq_tick
->       0.93 =C2=B1 11%      -0.6        0.32 =C2=B1 31%  perf-profile.self=
-.cycles-pp.acpi_os_read_memory
->       1.34 =C2=B1 15%      -0.6        0.77 =C2=B1 29%  perf-profile.self=
-.cycles-pp.__update_load_avg_se
->       0.68 =C2=B1 29%      -0.5        0.15 =C2=B1 10%  perf-profile.self=
-.cycles-pp.native_irq_return_iret
->       0.71 =C2=B1 43%      -0.4        0.27 =C2=B1 76%  perf-profile.self=
-.cycles-pp.first_nmi
->       0.58 =C2=B1  8%      -0.4        0.15 =C2=B1 21%  perf-profile.self=
-.cycles-pp.scheduler_tick
->       0.62 =C2=B1 15%      -0.4        0.23 =C2=B1 10%  perf-profile.self=
-.cycles-pp.__hrtimer_run_queues
->       0.51 =C2=B1 16%      -0.4        0.12 =C2=B1 12%  perf-profile.self=
-.cycles-pp.update_irq_load_avg
->       0.56 =C2=B1 13%      -0.3        0.22 =C2=B1 32%  perf-profile.self=
-.cycles-pp.update_min_vruntime
->       0.68 =C2=B1 21%      -0.3        0.37 =C2=B1  8%  perf-profile.self=
-.cycles-pp._raw_spin_lock_irqsave
->       0.37 =C2=B1  9%      -0.3        0.09 =C2=B1 49%  perf-profile.self=
-.cycles-pp.default_do_nmi
->       0.89 =C2=B1  8%      -0.3        0.61 =C2=B1  8%  perf-profile.self=
-.cycles-pp.update_sd_lb_stats
->       0.36 =C2=B1 15%      -0.3        0.10 =C2=B1 21%  perf-profile.self=
-.cycles-pp.tick_sched_timer
->       0.33 =C2=B1 15%      -0.3        0.08 =C2=B1 38%  perf-profile.self=
-.cycles-pp.ghes_copy_tofrom_phys
->       0.53 =C2=B1 11%      -0.2        0.28 =C2=B1 34%  perf-profile.self=
-.cycles-pp.reweight_entity
->       0.54 =C2=B1  9%      -0.2        0.32 =C2=B1  6%  perf-profile.self=
-.cycles-pp._raw_spin_lock_irq
->       0.26 =C2=B1 18%      -0.2        0.05 =C2=B1 76%  perf-profile.self=
-.cycles-pp.account_user_time
->       0.33 =C2=B1 15%      -0.2        0.12 =C2=B1 21%  perf-profile.self=
-.cycles-pp.perf_mux_hrtimer_handler
->       0.33 =C2=B1 16%      -0.2        0.14 =C2=B1 66%  perf-profile.self=
-.cycles-pp.intel_pmu_handle_irq
->       0.28 =C2=B1  7%      -0.2        0.09 =C2=B1 51%  perf-profile.self=
-.cycles-pp.__native_set_fixmap
->       0.36 =C2=B1 13%      -0.2        0.17 =C2=B1  7%  perf-profile.self=
-.cycles-pp.__hrtimer_next_event_base
->       0.33 =C2=B1  9%      -0.2        0.15 =C2=B1  4%  perf-profile.self=
-.cycles-pp.timerqueue_add
->       0.23 =C2=B1 38%      -0.2        0.06 =C2=B1118%  perf-profile.self=
-.cycles-pp.intel_bts_disable_local
->       0.26 =C2=B1 23%      -0.2        0.09 =C2=B1 11%  perf-profile.self=
-.cycles-pp.__sysvec_apic_timer_interrupt
->       0.19 =C2=B1 21%      -0.2        0.03 =C2=B1101%  perf-profile.self=
-.cycles-pp.account_process_tick
->       0.21 =C2=B1 35%      -0.2        0.06 =C2=B1119%  perf-profile.self=
-.cycles-pp.__intel_pmu_disable_all
->       0.22 =C2=B1 12%      -0.1        0.09 =C2=B1 55%  perf-profile.self=
-.cycles-pp.calc_global_load_tick
->       0.23 =C2=B1 10%      -0.1        0.10 =C2=B1  7%  perf-profile.self=
-.cycles-pp.hrtimer_forward
->       0.16 =C2=B1 16%      -0.1        0.04 =C2=B1104%  perf-profile.self=
-.cycles-pp.native_set_fixmap
->       0.19 =C2=B1 14%      -0.1        0.07 =C2=B1 21%  perf-profile.self=
-.cycles-pp.tick_program_event
->       0.18 =C2=B1  8%      -0.1        0.07 =C2=B1 25%  perf-profile.self=
-.cycles-pp.run_posix_cpu_timers
->       0.18 =C2=B1 13%      -0.1        0.07 =C2=B1 15%  perf-profile.self=
-.cycles-pp.__remove_hrtimer
->       0.20 =C2=B1 15%      -0.1        0.09 =C2=B1 13%  perf-profile.self=
-.cycles-pp.__hrtimer_get_next_event
->       0.26 =C2=B1 13%      -0.1        0.16 =C2=B1 22%  perf-profile.self=
-.cycles-pp.__calc_delta
->       0.13 =C2=B1 15%      -0.1        0.03 =C2=B1100%  perf-profile.self=
-.cycles-pp.sched_slice
->       0.21 =C2=B1 13%      -0.1        0.12 =C2=B1  5%  perf-profile.self=
-.cycles-pp._raw_spin_unlock_irqrestore
->       0.12 =C2=B1 16%      -0.1        0.04 =C2=B1 75%  perf-profile.self=
-.cycles-pp.perf_trace_sched_stat_runtime
->       0.17 =C2=B1  9%      -0.1        0.10 =C2=B1 11%  perf-profile.self=
-.cycles-pp.timerqueue_del
->       0.19 =C2=B1 14%      -0.1        0.13 =C2=B1 32%  perf-profile.self=
-.cycles-pp.__accumulate_pelt_segments
->       0.12 =C2=B1 15%      -0.1        0.07 =C2=B1 11%  perf-profile.self=
-.cycles-pp.rb_insert_color
->       0.09 =C2=B1 11%      -0.0        0.05 =C2=B1 47%  perf-profile.self=
-.cycles-pp.kmem_cache_alloc
->       0.04 =C2=B1 71%      +0.0        0.07 =C2=B1 10%  perf-profile.self=
-.cycles-pp.rcu_nocb_flush_deferred_wakeup
->       0.03 =C2=B1 70%      +0.0        0.07 =C2=B1 26%  perf-profile.self=
-.cycles-pp.update_group_capacity
->       0.00            +0.1        0.07 =C2=B1 18%  perf-profile.self.cycl=
-es-pp.ksoftirqd_running
->       0.14 =C2=B1 13%      +0.1        0.22 =C2=B1 10%  perf-profile.self=
-.cycles-pp.exit_to_user_mode_prepare
->       0.05 =C2=B1 45%      +0.1        0.14 =C2=B1  9%  perf-profile.self=
-.cycles-pp.run_rebalance_domains
->       0.17 =C2=B1 19%      +0.1        0.29 =C2=B1 10%  perf-profile.self=
-.cycles-pp.irq_exit_rcu
->       0.02 =C2=B1141%      +0.2        0.17 =C2=B1 32%  perf-profile.self=
-.cycles-pp.rcu_core
->       0.24 =C2=B1 20%      +0.2        0.45 =C2=B1 14%  perf-profile.self=
-.cycles-pp.idle_cpu
->       0.00            +0.2        0.25 =C2=B1 21%  perf-profile.self.cycl=
-es-pp.sched_clock_local
->       0.32 =C2=B1  7%      +0.3        0.63 =C2=B1 10%  perf-profile.self=
-.cycles-pp.__irqentry_text_end
->       0.14 =C2=B1 16%      +0.3        0.49 =C2=B1 14%  perf-profile.self=
-.cycles-pp.__softirqentry_text_start
->       2.15 =C2=B1 12%      +1.5        3.64 =C2=B1  5%  perf-profile.self=
-.cycles-pp.ktime_get
->       0.00           +54.2       54.23 =C2=B1  8%  perf-profile.self.cycl=
-es-pp.read_hpet
+>       1.19            +0.1        1.24        perf-profile.children.cycle=
+s-pp.do_timer_gettime
+>       1.24            +0.1        1.29        perf-profile.children.cycle=
+s-pp.__x64_sys_timer_gettime
+>       0.62 =C2=B1  3%      +0.1        0.69 =C2=B1  4%  perf-profile.chil=
+dren.cycles-pp.do_open
+>       0.85 =C2=B1  2%      +0.1        0.94 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.do_filp_open
+>       0.85 =C2=B1  2%      +0.1        0.94 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.path_openat
+>       0.94 =C2=B1  2%      +0.1        1.04 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.do_sys_open
+>       0.94 =C2=B1  2%      +0.1        1.03 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.do_sys_openat2
+>       2.50            +0.1        2.61        perf-profile.children.cycle=
+s-pp.llist_add_batch
+>      19.33            +0.2       19.54        perf-profile.children.cycle=
+s-pp.timekeeping_inject_offset
+>       8.95            +0.2        9.17        perf-profile.children.cycle=
+s-pp.ktime_get
+>       7.83            +0.2        8.08        perf-profile.children.cycle=
+s-pp.clockevents_program_event
+>      21.85            +0.3       22.18        perf-profile.children.cycle=
+s-pp.do_adjtimex
+>      22.02            +0.4       22.37        perf-profile.children.cycle=
+s-pp.__do_sys_clock_adjtime
+>      14.21            +0.7       14.88 =C2=B1  2%  perf-profile.children.=
+cycles-pp.__x64_sys_clock_gettime
+>       5.71 =C2=B1  2%      +0.9        6.64 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.osq_lock
+>       6.09 =C2=B1  2%      +1.0        7.05 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.__mutex_lock
+>       6.52 =C2=B1  2%      +1.0        7.50 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.i40e_ptp_gettimex
+>       6.59 =C2=B1  2%      +1.0        7.57 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.pc_clock_gettime
+>      33.43            -0.6       32.85        perf-profile.self.cycles-pp=
+.native_queued_spin_lock_slowpath
+>       1.02 =C2=B1  2%      -0.1        0.96        perf-profile.self.cycl=
+es-pp.ktime_get_real_ts64
+>       0.65            -0.0        0.60        perf-profile.self.cycles-pp=
+.ktime_get_ts64
+>       0.62            -0.0        0.60        perf-profile.self.cycles-pp=
+.ktime_get_coarse_real_ts64
+>       0.63            +0.0        0.65        perf-profile.self.cycles-pp=
+.__default_send_IPI_dest_field
+>       0.59            +0.0        0.62        perf-profile.self.cycles-pp=
+.flush_smp_call_function_queue
+>       1.12            +0.0        1.17        perf-profile.self.cycles-pp=
+.llist_reverse_order
+>       1.36            +0.0        1.41        perf-profile.self.cycles-pp=
+.lapic_next_deadline
+>       1.49            +0.1        1.54        perf-profile.self.cycles-pp=
+.llist_add_batch
+>       8.74            +0.2        8.95        perf-profile.self.cycles-pp=
+.ktime_get
+>       2.84 =C2=B1  2%      +0.5        3.32 =C2=B1  4%  perf-profile.self=
+.cycles-pp.osq_lock
 > =
 
 > =
@@ -1127,229 +439,55 @@ es-pp.read_hpet
 >                                                                          =
        =
 
->                              stress-ng.time.user_time                    =
+>                              stress-ng.clock.ops_per_sec                 =
        =
 
 >                                                                          =
        =
 
->   5200 +-----------------------------------------------------------------=
+>   126000 +---------------------------------------------------------------=
 ---+   =
 
->        |                     OO  O O         O    O   O  O  O            =
+>   124000 |-O   O  O                                                      =
    |   =
 
->   5000 |-+OO OO OO  O  O O  O   O     O  OO O  OO  O O    O  O OO O      =
+>          |   O                                                           =
    |   =
 
->   4800 |O+         O  O   O         O  O               O                 =
+>   122000 |-+                                                             =
    |   =
 
->        |                                                                 =
+>   120000 |-+        O O O O O  O   O O O O  O O O O O    O   O           =
    |   =
 
->   4600 |-+                                                               =
+>          |                       O                    O    O   O         =
    |   =
 
->   4400 |-+                                                               =
+>   118000 |-+                                                             =
    |   =
 
->        |                                                                 =
+>   116000 |-+                                                             =
    |   =
 
->   4200 |-+                            +  +     +  +      +      +  +.    =
-+  |   =
+>   114000 |-+                                                     +.+.. .+=
+.+.|   =
 
->   4000 |-+             +.    +  ++   ::  :+   ::  :  +  + :.+   :  : +   =
-:  |   =
-
->        |     +   +.    : +   : :  :  :: :  :  :: : :+ ++  + :  : : : :  :=
- : |   =
-
->   3800 |:.+ + :.+  + .+   : : ::  : +  ::  : +  :: +         :.+ ::   :.+=
- ::|   =
-
->   3600 |++ +  +     +     +.+ +    +   :    +   :            +    :   +  =
-  :|   =
-
->        |                               +        +                 +      =
-  +|   =
-
->   3400 +-----------------------------------------------------------------=
----+   =
-
->                                                                          =
-       =
-
->                                                                          =
-                                                                           =
-            =
-
->                     stress-ng.time.percent_of_cpu_this_job_got           =
-       =
-
->                                                                          =
-       =
-
->   9000 +-----------------------------------------------------------------=
----+   =
-
->        |                                                                 =
+>          |                                                       :    +  =
    |   =
 
->   8500 |-+   OO     O  O    OOO OO O  O  O  OO    O   O  OO O            =
+>   112000 |-+                                                    :        =
    |   =
 
->        |  OO    OO O  O  OO         O     O    OO  O O       O OO O      =
+>   110000 |-+  .+..+.+.+.+. .+..+   +. .+.+.. .+.+.+.+.+..+. .+. :        =
    |   =
 
->        |O                              O               O                 =
+>          |.+.+            +     : :  +      +              +   +         =
    |   =
 
->   8000 |-+                                                               =
+>   108000 |-+                    : :                                      =
    |   =
 
->        |                                                                 =
-   |   =
-
->   7500 |-+                                                               =
-   |   =
-
->        |                                                                 =
-   |   =
-
->   7000 |-+                            +  +     +  +             +  +     =
-+  |   =
-
->        |               +.    +       ::  ::   ::  :     .+      :  :+    =
-:  |   =
-
->        |     +   +.    : +   :  ++   :: : +   :: : :.+++  +.+  : : : +  :=
- : |   =
-
->   6500 |:.+ + :.+  +  +   :  ::+  + +  ::  + +  :: +         :.+ ::   :.+=
- ::|   =
-
->        |+  +  +     :+    +.: +    +   :    +   :            +    :   +  =
-  :|   =
-
->   6000 +-----------------------------------------------------------------=
----+   =
-
->                                                                          =
-       =
-
->                                                                          =
-                                                                           =
-            =
-
->                                 stress-ng.lockbus.ops                    =
-       =
-
->                                                                          =
-       =
-
->   250000 +---------------------------------------------------------------=
----+   =
-
->          |  ++         +.++.+++.++.+  +++  +  ++.+  ++  ++  +  +.++  +  +=
-+.+|   =
-
->   245000 |-+                                                             =
-   |   =
-
->          |                                                               =
-   |   =
-
->          |                                                               =
-   |   =
-
->   240000 |-+                                                             =
-   |   =
-
->          |                                                               =
-   |   =
-
->   235000 |-+                                                             =
-   |   =
-
->          |                              O                                =
-   |   =
-
->   230000 |-+ O              O         O          O   O                   =
-   |   =
-
->          |O       O    O  O            O       O    O   O  O             =
-   |   =
-
->          |          O    O                O  O                 O         =
-   |   =
-
->   225000 |-+O  OO  O  O      O  OO  O      O           O      O  OO      =
-   |   =
-
->          |                    O    O          O   O      O  O            =
-   |   =
-
->   220000 +---------------------------------------------------------------=
----+   =
-
->                                                                          =
-       =
-
->                                                                          =
-                                                                           =
-            =
-
->                            stress-ng.lockbus.ops_per_sec                 =
-       =
-
->                                                                          =
-       =
-
->   4150 +-----------------------------------------------------------------=
----+   =
-
->   4100 |-+                    +.+  ++       ++     +   +.+   +.+      +.+=
-   |   =
-
->        |                                                                 =
-   |   =
-
->   4050 |-+                                                               =
-   |   =
-
->   4000 |-+                                                               =
-   |   =
-
->        |                                                                 =
-   |   =
-
->   3950 |-+                                                               =
-   |   =
-
->   3900 |-+                                                               =
-   |   =
-
->   3850 |-+                O            O                                 =
-   |   =
-
->        |O  O    O                   O           O    O                   =
-   |   =
-
->   3800 |-+         O  O  O            O        O   O      O              =
-   |   =
-
->   3750 |-+             O                 OO O          O       O         =
-   |   =
-
->        |  O  OO  O  O       O   O                     O     OO  O O      =
-   |   =
-
->   3700 |-+                   OO  O O         O    O      O               =
-   |   =
-
->   3650 +-----------------------------------------------------------------=
+>   106000 +---------------------------------------------------------------=
 ---+   =
 
 >                                                                          =
@@ -8626,32 +7764,33 @@ smack,tomoyo,apparmor,bpf"
 > 	export category=3D'benchmark'
 > 	export nr_threads=3D96
 > 	export testtime=3D60
-> 	export job_origin=3D'stress-ng-class-memory.yaml'
+> 	export job_origin=3D'stress-ng-class-interrupt.yaml'
 > 	export queue_cmdline_keys=3D'branch
 > commit
 > queue_at_least_once'
 > 	export queue=3D'validate'
-> 	export testbox=3D'lkp-csl-2sp5'
-> 	export tbox_group=3D'lkp-csl-2sp5'
+> 	export testbox=3D'lkp-csl-2sp7'
+> 	export tbox_group=3D'lkp-csl-2sp7'
 > 	export kconfig=3D'x86_64-rhel-8.3'
-> 	export submit_id=3D'60a7230981675d191e595ff9'
-> 	export job_file=3D'/lkp/jobs/scheduled/lkp-csl-2sp5/stress-ng-memory-per=
-formance-1HDD-100%-lockbus-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debian-=
-10.4-x86_64-20200603.cgz-8901ecc2315b-20210521-6430-aj7vwc-5.yaml'
-> 	export id=3D'a713b1724deab7f3b5edb83225a1ae970c283771'
+> 	export submit_id=3D'60a6843cb8491b23fdcb3c99'
+> 	export job_file=3D'/lkp/jobs/scheduled/lkp-csl-2sp7/stress-ng-interrupt-=
+performance-1HDD-100%-clock-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debian=
+-10.4-x86_64-20200603.cgz-df29d3cd5ad-20210520-9213-14psuqv-5.yaml'
+> 	export id=3D'14a5abe9cc781b442f36bb4a16ff85ca7550d51b'
 > 	export queuer_version=3D'/lkp-src'
 > 	export model=3D'Cascade Lake'
 > 	export nr_node=3D2
 > 	export nr_cpu=3D96
-> 	export memory=3D'192G'
+> 	export memory=3D'512G'
 > 	export nr_hdd_partitions=3D1
 > 	export nr_ssd_partitions=3D1
-> 	export hdd_partitions=3D'/dev/disk/by-id/ata-ST1000NM0011_Z1N2QGYK-part5'
+> 	export hdd_partitions=3D'/dev/disk/by-id/ata-ST1000NM0055-1V410C_ZBS1K5E=
+0-part1'
 > 	export ssd_partitions=3D'/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL420=
-4006P800RGN-part1'
+4000G800RGN-part1'
 > 	export swap_partitions=3D
-> 	export rootfs_partition=3D'/dev/disk/by-id/ata-ST1000NM0011_Z1N2QGYK-par=
-t3'
+> 	export rootfs_partition=3D'/dev/disk/by-id/ata-ST1000NM0055-1V410C_ZBS1K=
+5E0-part2'
 > 	export brand=3D'Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz'
 > 	export need_kconfig=3D'CONFIG_BLK_DEV_SD
 > CONFIG_SCSI
@@ -8661,47 +7800,46 @@ t3'
 > CONFIG_ATA
 > CONFIG_PCI=3Dy
 > CONFIG_SECURITY_APPARMOR=3Dy'
-> 	export commit=3D'8901ecc2315b850f35a7b8c1b73b12388b72aa78'
+> 	export commit=3D'df29d3cd5ad4d400767caa199ec7c0ecbab10fc8'
+> 	export ucode=3D'0x5003006'
 > 	export need_kconfig_hw=3D'CONFIG_I40E=3Dy
 > CONFIG_SATA_AHCI'
-> 	export ucode=3D'0x5003006'
-> 	export bisect_dmesg=3Dtrue
-> 	export enqueue_time=3D'2021-05-21 11:03:37 +0800'
-> 	export _id=3D'60a7230f81675d191e595ffb'
-> 	export _rt=3D'/result/stress-ng/memory-performance-1HDD-100%-lockbus-60s=
--ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp5/debian-10.4-x86_64-20200=
-603.cgz/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c1b73b12388b72aa78'
+> 	export enqueue_time=3D'2021-05-20 23:46:04 +0800'
+> 	export _id=3D'60a6843fb8491b23fdcb3c9b'
+> 	export _rt=3D'/result/stress-ng/interrupt-performance-1HDD-100%-clock-60=
+s-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp7/debian-10.4-x86_64-2020=
+0603.cgz/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa199ec7c0ecbab10fc8'
 > 	export user=3D'lkp'
 > 	export compiler=3D'gcc-9'
 > 	export LKP_SERVER=3D'internal-lkp-server'
-> 	export head_commit=3D'56e4bb8f044e9b807b43c095ced8b1efc77ccf11'
+> 	export head_commit=3D'e2773a65f795daa73a2cce80bbc7c85b7cbc77b4'
 > 	export base_commit=3D'd07f6ca923ea0927a1024dfccafc5b53b61cfecc'
 > 	export branch=3D'linux-next/master'
 > 	export rootfs=3D'debian-10.4-x86_64-20200603.cgz'
 > 	export monitor_sha=3D'6cca9a40'
-> 	export result_root=3D'/result/stress-ng/memory-performance-1HDD-100%-loc=
-kbus-60s-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp5/debian-10.4-x86_=
-64-20200603.cgz/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c1b73b12388b72a=
-a78/3'
+> 	export result_root=3D'/result/stress-ng/interrupt-performance-1HDD-100%-=
+clock-60s-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp7/debian-10.4-x86=
+_64-20200603.cgz/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa199ec7c0ecbab1=
+0fc8/3'
 > 	export scheduler_version=3D'/lkp/lkp/.src-20210519-183212'
 > 	export arch=3D'x86_64'
 > 	export max_uptime=3D2100
 > 	export initrd=3D'/osimage/debian/debian-10.4-x86_64-20200603.cgz'
 > 	export bootloader_append=3D'root=3D/dev/ram0
 > user=3Dlkp
-> job=3D/lkp/jobs/scheduled/lkp-csl-2sp5/stress-ng-memory-performance-1HDD-=
-100%-lockbus-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debian-10.4-x86_64-20=
-200603.cgz-8901ecc2315b-20210521-6430-aj7vwc-5.yaml
+> job=3D/lkp/jobs/scheduled/lkp-csl-2sp7/stress-ng-interrupt-performance-1H=
+DD-100%-clock-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debian-10.4-x86_64-2=
+0200603.cgz-df29d3cd5ad-20210520-9213-14psuqv-5.yaml
 > ARCH=3Dx86_64
 > kconfig=3Dx86_64-rhel-8.3
 > branch=3Dlinux-next/master
-> commit=3D8901ecc2315b850f35a7b8c1b73b12388b72aa78
-> BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c1b73=
-b12388b72aa78/vmlinuz-5.13.0-rc1-00001-g8901ecc2315b
+> commit=3Ddf29d3cd5ad4d400767caa199ec7c0ecbab10fc8
+> BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa199ec=
+7c0ecbab10fc8/vmlinuz-5.13.0-rc1-00003-gdf29d3cd5ad4
 > max_uptime=3D2100
-> RESULT_ROOT=3D/result/stress-ng/memory-performance-1HDD-100%-lockbus-60s-=
-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp5/debian-10.4-x86_64-202006=
-03.cgz/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c1b73b12388b72aa78/3
+> RESULT_ROOT=3D/result/stress-ng/interrupt-performance-1HDD-100%-clock-60s=
+-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp7/debian-10.4-x86_64-20200=
+603.cgz/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa199ec7c0ecbab10fc8/3
 > LKP_SERVER=3Dinternal-lkp-server
 > nokaslr
 > selinux=3D0
@@ -8725,8 +7863,8 @@ ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp5/debian-10.4-x86_64-202006=
 > console=3DttyS0,115200
 > vga=3Dnormal
 > rw'
-> 	export modules_initrd=3D'/pkg/linux/x86_64-rhel-8.3/gcc-9/8901ecc2315b85=
-0f35a7b8c1b73b12388b72aa78/modules.cgz'
+> 	export modules_initrd=3D'/pkg/linux/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d4=
+00767caa199ec7c0ecbab10fc8/modules.cgz'
 > 	export bm_initrd=3D'/osimage/deps/debian-10.4-x86_64-20200603.cgz/run-ip=
 config_20200608.cgz,/osimage/deps/debian-10.4-x86_64-20200603.cgz/lkp_20201=
 211.cgz,/osimage/deps/debian-10.4-x86_64-20200603.cgz/rsync-rootfs_20200608=
@@ -8744,15 +7882,15 @@ image/pkg/debian-10.4-x86_64-20200603.cgz/sar-x86_64-34c92ae-1_20200702.cgz=
 > 	export site=3D'inn'
 > 	export LKP_CGI_PORT=3D80
 > 	export LKP_CIFS_PORT=3D139
-> 	export last_kernel=3D'5.13.0-rc2-02552-g56e4bb8f044e'
+> 	export last_kernel=3D'5.13.0-rc2-AA-02384-ga6fe76c36656'
 > 	export repeat_to=3D6
 > 	export queue_at_least_once=3D1
-> 	export kernel=3D'/pkg/linux/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8=
-c1b73b12388b72aa78/vmlinuz-5.13.0-rc1-00001-g8901ecc2315b'
-> 	export dequeue_time=3D'2021-05-21 11:05:25 +0800'
-> 	export job_initrd=3D'/lkp/jobs/scheduled/lkp-csl-2sp5/stress-ng-memory-p=
-erformance-1HDD-100%-lockbus-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debia=
-n-10.4-x86_64-20200603.cgz-8901ecc2315b-20210521-6430-aj7vwc-5.cgz'
+> 	export kernel=3D'/pkg/linux/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa=
+199ec7c0ecbab10fc8/vmlinuz-5.13.0-rc1-00003-gdf29d3cd5ad4'
+> 	export dequeue_time=3D'2021-05-20 23:47:12 +0800'
+> 	export job_initrd=3D'/lkp/jobs/scheduled/lkp-csl-2sp7/stress-ng-interrup=
+t-performance-1HDD-100%-clock-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debi=
+an-10.4-x86_64-20200603.cgz-df29d3cd5ad-20210520-9213-14psuqv-5.cgz'
 > =
 
 > 	[ -n "$LKP_SRC" ] ||
@@ -8779,7 +7917,6 @@ n-10.4-x86_64-20200603.cgz-8901ecc2315b-20210521-6430-aj7vwc-5.cgz'
 > 	run_setup $LKP_SRC/setup/cpufreq_governor 'performance'
 > =
 
-> 	run_monitor ignored=3D1 $LKP_SRC/monitors/wrapper oom-killer
 > 	run_monitor $LKP_SRC/monitors/wrapper kmsg
 > 	run_monitor $LKP_SRC/monitors/no-stdout/wrapper boot-time
 > 	run_monitor $LKP_SRC/monitors/wrapper uptime
@@ -8807,11 +7944,14 @@ n-10.4-x86_64-20200603.cgz-8901ecc2315b-20210521-6430-aj7vwc-5.cgz'
 > 	run_monitor $LKP_SRC/monitors/wrapper perf-stat
 > 	run_monitor $LKP_SRC/monitors/wrapper mpstat
 > 	run_monitor $LKP_SRC/monitors/no-stdout/wrapper perf-profile
+> 	run_monitor pmeter_server=3D'lkp-nhm-dp1' pmeter_device=3D'yokogawa-wt31=
+0' $LKP_SRC/monitors/wrapper pmeter
+> 	run_monitor $LKP_SRC/monitors/wrapper oom-killer
 > 	run_monitor $LKP_SRC/monitors/plain/watchdog
 > =
 
-> 	run_test class=3D'memory' test=3D'lockbus' $LKP_SRC/tests/wrapper stress=
--ng
+> 	run_test class=3D'interrupt' test=3D'clock' $LKP_SRC/tests/wrapper stres=
+s-ng
 > }
 > =
 
@@ -8821,7 +7961,7 @@ n-10.4-x86_64-20200603.cgz-8901ecc2315b-20210521-6430-aj7vwc-5.cgz'
 > 	export stats_part_end=3D
 > =
 
-> 	env class=3D'memory' test=3D'lockbus' $LKP_SRC/stats/wrapper stress-ng
+> 	env class=3D'interrupt' test=3D'clock' $LKP_SRC/stats/wrapper stress-ng
 > 	$LKP_SRC/stats/wrapper kmsg
 > 	$LKP_SRC/stats/wrapper boot-time
 > 	$LKP_SRC/stats/wrapper uptime
@@ -8845,6 +7985,8 @@ n-10.4-x86_64-20200603.cgz-8901ecc2315b-20210521-6430-aj7vwc-5.cgz'
 > 	$LKP_SRC/stats/wrapper perf-stat
 > 	$LKP_SRC/stats/wrapper mpstat
 > 	$LKP_SRC/stats/wrapper perf-profile
+> 	env pmeter_server=3D'lkp-nhm-dp1' pmeter_device=3D'yokogawa-wt310' $LKP_=
+SRC/stats/wrapper pmeter
 > =
 
 > 	$LKP_SRC/stats/wrapper time stress-ng.time
@@ -8861,19 +8003,17 @@ n-10.4-x86_64-20200603.cgz-8901ecc2315b-20210521-6430-aj7vwc-5.cgz'
 > ---
 > =
 
-> #! jobs/stress-ng-class-memory.yaml
+> #! jobs/stress-ng-class-interrupt.yaml
 > suite: stress-ng
 > testcase: stress-ng
 > category: benchmark
 > nr_threads: 100%
 > disk: 1HDD
 > testtime: 60s
-> oom-killer:
->   ignored: 1
 > stress-ng:
->   class: memory
->   test: lockbus
-> job_origin: stress-ng-class-memory.yaml
+>   class: interrupt
+>   test: clock
+> job_origin: stress-ng-class-interrupt.yaml
 > =
 
 > #! queue options
@@ -8882,30 +8022,30 @@ n-10.4-x86_64-20200603.cgz-8901ecc2315b-20210521-6430-aj7vwc-5.cgz'
 > - commit
 > - queue_at_least_once
 > queue: bisect
-> testbox: lkp-csl-2sp5
-> tbox_group: lkp-csl-2sp5
+> testbox: lkp-csl-2sp7
+> tbox_group: lkp-csl-2sp7
 > kconfig: x86_64-rhel-8.3
-> submit_id: 60a7207181675d16e1a490a4
-> job_file: "/lkp/jobs/scheduled/lkp-csl-2sp5/stress-ng-memory-performance-=
-1HDD-100%-lockbus-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debian-10.4-x86_=
-64-20200603.cgz-8901ecc2315b-20210521-5857-5ykb4u-0.yaml"
-> id: 2705b72a6c78874a36ff26ea5a9a5d413bea5f96
+> submit_id: 60a66ffbb8491b17c689e07a
+> job_file: "/lkp/jobs/scheduled/lkp-csl-2sp7/stress-ng-interrupt-performan=
+ce-1HDD-100%-clock-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debian-10.4-x86=
+_64-20200603.cgz-df29d3cd5ad-20210520-6086-15an9kx-1.yaml"
+> id: 623f637500d1ed51cc911c2401812fa8c6a95738
 > queuer_version: "/lkp-src"
 > =
 
-> #! hosts/lkp-csl-2sp5
+> #! hosts/lkp-csl-2sp7
 > model: Cascade Lake
 > nr_node: 2
 > nr_cpu: 96
-> memory: 192G
+> memory: 512G
 > nr_hdd_partitions: 1
 > nr_ssd_partitions: 1
-> hdd_partitions: "/dev/disk/by-id/ata-ST1000NM0011_Z1N2QGYK-part5"
-> ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204006P800R=
+> hdd_partitions: "/dev/disk/by-id/ata-ST1000NM0055-1V410C_ZBS1K5E0-part1"
+> ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204000G800R=
 GN-part1"
 > swap_partitions: =
 
-> rootfs_partition: "/dev/disk/by-id/ata-ST1000NM0011_Z1N2QGYK-part3"
+> rootfs_partition: "/dev/disk/by-id/ata-ST1000NM0055-1V410C_ZBS1K5E0-part2"
 > brand: Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz
 > =
 
@@ -8986,34 +8126,36 @@ GN-part1"
 > =
 
 > #! include/queue/cyclic
-> commit: 8901ecc2315b850f35a7b8c1b73b12388b72aa78
+> commit: df29d3cd5ad4d400767caa199ec7c0ecbab10fc8
 > =
 
-> #! include/testbox/lkp-csl-2sp5
+> #! include/testbox/lkp-csl-2sp7
+> ucode: '0x5003006'
 > need_kconfig_hw:
 > - CONFIG_I40E=3Dy
 > - CONFIG_SATA_AHCI
-> ucode: '0x5003006'
-> bisect_dmesg: true
-> enqueue_time: 2021-05-21 10:52:33.151589141 +08:00
-> _id: 60a7207181675d16e1a490a4
-> _rt: "/result/stress-ng/memory-performance-1HDD-100%-lockbus-60s-ucode=3D=
-0x5003006-monitor=3D6cca9a40/lkp-csl-2sp5/debian-10.4-x86_64-20200603.cgz/x=
-86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c1b73b12388b72aa78"
+> pmeter:
+>   pmeter_server: lkp-nhm-dp1
+>   pmeter_device: yokogawa-wt310
+> enqueue_time: 2021-05-20 22:19:39.601074688 +08:00
+> _id: 60a67005b8491b17c689e07b
+> _rt: "/result/stress-ng/interrupt-performance-1HDD-100%-clock-60s-ucode=
+=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp7/debian-10.4-x86_64-20200603.cg=
+z/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa199ec7c0ecbab10fc8"
 > =
 
 > #! schedule options
 > user: lkp
 > compiler: gcc-9
 > LKP_SERVER: internal-lkp-server
-> head_commit: 56e4bb8f044e9b807b43c095ced8b1efc77ccf11
+> head_commit: e2773a65f795daa73a2cce80bbc7c85b7cbc77b4
 > base_commit: d07f6ca923ea0927a1024dfccafc5b53b61cfecc
-> branch: linux-devel/devel-hourly-20210521-040858
+> branch: linux-devel/devel-hourly-20210520-160907
 > rootfs: debian-10.4-x86_64-20200603.cgz
 > monitor_sha: 6cca9a40
-> result_root: "/result/stress-ng/memory-performance-1HDD-100%-lockbus-60s-=
-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp5/debian-10.4-x86_64-202006=
-03.cgz/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c1b73b12388b72aa78/0"
+> result_root: "/result/stress-ng/interrupt-performance-1HDD-100%-clock-60s=
+-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp7/debian-10.4-x86_64-20200=
+603.cgz/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa199ec7c0ecbab10fc8/0"
 > scheduler_version: "/lkp/lkp/.src-20210519-183212"
 > arch: x86_64
 > max_uptime: 2100
@@ -9021,19 +8163,19 @@ ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp5/debian-10.4-x86_64-202006=
 > bootloader_append:
 > - root=3D/dev/ram0
 > - user=3Dlkp
-> - job=3D/lkp/jobs/scheduled/lkp-csl-2sp5/stress-ng-memory-performance-1HD=
-D-100%-lockbus-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debian-10.4-x86_64-=
-20200603.cgz-8901ecc2315b-20210521-5857-5ykb4u-0.yaml
+> - job=3D/lkp/jobs/scheduled/lkp-csl-2sp7/stress-ng-interrupt-performance-=
+1HDD-100%-clock-60s-ucode=3D0x5003006-monitor=3D6cca9a40-debian-10.4-x86_64=
+-20200603.cgz-df29d3cd5ad-20210520-6086-15an9kx-1.yaml
 > - ARCH=3Dx86_64
 > - kconfig=3Dx86_64-rhel-8.3
-> - branch=3Dlinux-devel/devel-hourly-20210521-040858
-> - commit=3D8901ecc2315b850f35a7b8c1b73b12388b72aa78
-> - BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c1b=
-73b12388b72aa78/vmlinuz-5.13.0-rc1-00001-g8901ecc2315b
+> - branch=3Dlinux-devel/devel-hourly-20210520-160907
+> - commit=3Ddf29d3cd5ad4d400767caa199ec7c0ecbab10fc8
+> - BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa199=
+ec7c0ecbab10fc8/vmlinuz-5.13.0-rc1-00003-gdf29d3cd5ad4
 > - max_uptime=3D2100
-> - RESULT_ROOT=3D/result/stress-ng/memory-performance-1HDD-100%-lockbus-60=
-s-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp5/debian-10.4-x86_64-2020=
-0603.cgz/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c1b73b12388b72aa78/0
+> - RESULT_ROOT=3D/result/stress-ng/interrupt-performance-1HDD-100%-clock-6=
+0s-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp7/debian-10.4-x86_64-202=
+00603.cgz/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa199ec7c0ecbab10fc8/0
 > - LKP_SERVER=3Dinternal-lkp-server
 > - nokaslr
 > - selinux=3D0
@@ -9057,8 +8199,8 @@ s-ucode=3D0x5003006-monitor=3D6cca9a40/lkp-csl-2sp5/debian-10.4-x86_64-2020=
 > - console=3DttyS0,115200
 > - vga=3Dnormal
 > - rw
-> modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c=
-1b73b12388b72aa78/modules.cgz"
+> modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa1=
+99ec7c0ecbab10fc8/modules.cgz"
 > bm_initrd: "/osimage/deps/debian-10.4-x86_64-20200603.cgz/run-ipconfig_20=
 200608.cgz,/osimage/deps/debian-10.4-x86_64-20200603.cgz/lkp_20201211.cgz,/=
 osimage/deps/debian-10.4-x86_64-20200603.cgz/rsync-rootfs_20200608.cgz,/osi=
@@ -9079,6 +8221,8 @@ ps/debian-10.4-x86_64-20200603.cgz/perf_20201126.cgz,/osimage/pkg/debian-10=
 > #! /lkp/lkp/.src-20210519-183212/include/site/inn
 > LKP_CGI_PORT: 80
 > LKP_CIFS_PORT: 139
+> oom-killer: =
+
 > watchdog: =
 
 > =
@@ -9090,13 +8234,13 @@ ps/debian-10.4-x86_64-20200603.cgz/perf_20201126.cgz,/osimage/pkg/debian-10=
 
 > #! user overrides
 > queue_at_least_once: 0
-> kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-9/8901ecc2315b850f35a7b8c1b73b123=
-88b72aa78/vmlinuz-5.13.0-rc1-00001-g8901ecc2315b"
-> dequeue_time: 2021-05-21 10:54:34.916513208 +08:00
+> kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-9/df29d3cd5ad4d400767caa199ec7c0e=
+cbab10fc8/vmlinuz-5.13.0-rc1-00003-gdf29d3cd5ad4"
+> dequeue_time: 2021-05-20 22:20:23.636477898 +08:00
 > job_state: finished
-> loadavg: 62.86 19.44 6.77 1/878 3592
-> start_time: '1621565720'
-> end_time: '1621565782'
+> loadavg: 51.73 17.06 6.01 1/903 4543
+> start_time: '1621520470'
+> end_time: '1621520532'
 > version: "/lkp/lkp/.src-20210519-183246:dae55264-dirty:b6d608ba2"
 
 > =
@@ -9112,9 +8256,10 @@ ps/debian-10.4-x86_64-20200603.cgz/perf_20201126.cgz,/osimage/pkg/debian-10=
 > done
 > =
 
->  "stress-ng" "--timeout" "60" "--times" "--verify" "--metrics-brief" "--l=
-ockbus" "96"
+>  "mkdir" "-p" "/mnt/stress-ng"
+>  "mount" "/dev/sda1" "/mnt/stress-ng"
+>  "stress-ng" "--timeout" "60" "--times" "--verify" "--metrics-brief" "--c=
+lock" "96"
 
-
---===============2543535461707753256==--
+--===============4790652170302284434==--
 
