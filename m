@@ -1,69 +1,64 @@
-Content-Type: multipart/mixed; boundary="===============2240809378713486754=="
+Content-Type: multipart/mixed; boundary="===============6714251735860712627=="
 MIME-Version: 1.0
-From: Jan Kara <jack@suse.cz>
+From: Andrea Arcangeli <aarcange@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [ext4] 05c2c00f37: aim7.jobs-per-min -11.8% regression
-Date: Mon, 31 May 2021 18:57:46 +0200
-Message-ID: <20210531165746.GA2610@quack2.suse.cz>
-In-Reply-To: <20210525092205.GA4112@quack2.suse.cz>
+Subject: Re: [mm] 9cdbf239b5: vm-scalability.throughput -12.4% regression
+Date: Sun, 23 May 2021 21:53:06 -0400
+Message-ID: <YKsHAnDB5+ppOVVS@redhat.com>
+In-Reply-To: <20210523150802.GB18821@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2240809378713486754==
+--===============6714251735860712627==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue 25-05-21 11:22:05, Jan Kara wrote:
-> On Fri 21-05-21 12:42:16, Theodore Y. Ts'o wrote:
-> > On Fri, May 21, 2021 at 11:27:30AM +0200, Jan Kara wrote:
-> > > =
-
-> > > OK, thanks for testing. So the orphan code is indeed the likely cause=
- of
-> > > this regression but I probably did not guess correctly what is the
-> > > contention point there. Then I guess I need to reproduce and do more
-> > > digging why the contention happens...
-> > =
-
-> > Hmm... what if we only recalculate the superblock checksum when we do
-> > a commit, via the callback function from the jbd2 layer to file
-> > system?
+On Sun, May 23, 2021 at 11:08:02PM +0800, kernel test robot wrote:
 > =
 
-> I actually have to check whether the regression is there because of the
-> additional locking of the buffer_head (because that's the only thing that
-> was added to that code in fact, adding some atomic instructions, bouncing
-> another cacheline) or because of the checksum computation that moved from
-> ext4_handle_dirty_super() closer to actual superblock update under those
-> locks.
+> =
 
-So I did a few experiments on my test machine. I saw the biggest regression
-for creat_clo workload for 7 threads. The results look like:
+> Greeting,
+> =
 
-                         orig                   patched                hack=
-1                  hack2
-Hmean     creat_clo-7    36458.33 (   0.00%)    23836.55 * -34.62%*    3260=
-8.70 * -10.56%*    37300.18 (   2.31%)
+> FYI, we noticed a -12.4% regression of vm-scalability.throughput due to c=
+ommit:
+> =
 
-where hack1 means I've removed the lock_buffer() calls from orphan handling
-code and hack2 means I've additionally moved checksum recalculation from
-under orphan lock. Take the numbers with a grain of salt as they are rather
-variable and this is just an average of 5 runs but the tendency is pretty
-clear. Both these changes contribute to the regression significantly,
-additional locking of the buffer head contributes somewhat more.
+> =
 
-I will see how various variants of reducing the contention look like (e.g.
-if just using bh lock for everything helps at all). But honestly I don't
-want to jump through too big hoops just for this workload - the orphan list
-contention is pretty pathological here and if we seriously care about
-workload like this we should rather revive the patchset with hashed orphan
-list I wrote couple years back... That was able to give like 3x speedup to
-workloads like this.
+> commit: 9cdbf239b521b2d95a3d5e6ca461a105e8547254 ("mm: COW: restore full =
+accuracy in page reuse")
+> https://git.kernel.org/cgit/linux/kernel/git/andrea/aa.git mapcount_desha=
+re
 
-								Honza
--- =
+This is an artifact of how I ordered the patches.
 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
---===============2240809378713486754==--
+The lost performance is completely restored in "mm: COW: skip the page
+lock in the COW copy path".
+
+776ac3f81e0b mm: COW: skip the page lock in the COW copy path
+3b8f05426b5a mm: COW: restore full accuracy in page reuse
+
+You should benchmark the effect of both commits applied at the same
+time, that is meaningful.
+
+I'll try to invert the order and see if there aren't too many rejects
+in applying the optimization first, and the revert second.
+
+In other words you should benchmark aa34a616511f vs 776ac3f81e0b, then
+you won't measure any regression.
+
+776ac3f81e0b mm: COW: skip the page lock in the COW copy path
+3b8f05426b5a mm: COW: restore full accuracy in page reuse
+aa34a616511f mm: gup: FOLL_UNSHARE: optimize mmu notifier
+
+The good thing is after 776ac3f81e0b the same scalability boosts
+applied to 4k pages is applied to 2M pages too, upstream 2M pages are
+still slow.
+
+Thanks,
+Andrea
+
+--===============6714251735860712627==--
 
