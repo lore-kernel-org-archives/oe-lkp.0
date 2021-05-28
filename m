@@ -1,80 +1,33 @@
-Content-Type: multipart/mixed; boundary="===============7359570971128704118=="
+Content-Type: multipart/mixed; boundary="===============3260333852549216425=="
 MIME-Version: 1.0
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Andi Kleen <ak@linux.intel.com>
 To: lkp@lists.01.org
 Subject: Re: [clocksource] 8901ecc231: stress-ng.lockbus.ops_per_sec -9.5% regression
-Date: Thu, 27 May 2021 14:05:24 -0700
-Message-ID: <20210527210524.GE4397@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <YK/zHMPSZSKrmXC6@casper.infradead.org>
+Date: Thu, 27 May 2021 17:58:53 -0700
+Message-ID: <7bda8e6a-2179-b431-973b-d074cd8d93db@linux.intel.com>
+In-Reply-To: <20210527210524.GE4397@paulmck-ThinkPad-P17-Gen-1>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7359570971128704118==
+--===============3260333852549216425==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 27, 2021 at 08:29:32PM +0100, Matthew Wilcox wrote:
-> On Thu, May 27, 2021 at 12:19:23PM -0700, Paul E. McKenney wrote:
-> > On Thu, May 27, 2021 at 12:01:23PM -0700, Andi Kleen wrote:
-> > > =
 
-> > > >      Nevertheless, it is quite possible that real-world use will re=
-sult in
-> > > >      some situation requiring that high-stress workloads run on har=
-dware
-> > > >      not designed to accommodate them, and also requiring that the =
-kernel
-> > > >      refrain from marking clocksources unstable.
-> > > >      Therefore, provide an out-of-tree patch that reacts to this si=
-tuation
-> > > =
+> Only those cloud provides making heavy use of the aforementioned "poorly
+> designed" hardware, correct?
 
-> > > out-of-tree means it will not be submitted?
-> > > =
+If any such hardware is deployed in non homeopathic quantities, we =
 
-> > > I think it would make sense upstream, but perhaps guarded with some o=
-ption.
-> > =
+probably need to support it out of the box. So far I'm not seeing any =
 
-> > The reason I do not intend to immediately upstream this patch is that
-> > it increases the probability that a real clocksource read-latency issue
-> > will be ignored, for example, during hardware bringup.  Furthermore,
-> > the only known need from it comes from hardware that is, in the words
-> > of the stress-ng man page, "poorly designed".  And the timing of this
-> > email thread leads me to believe that such hardware is not easy to obta=
-in.
-> =
+evidence that it does not.
 
-> I think you're placing a little too much weight on the documentation
-> here.  It seems that a continuous stream of locked operations executed
-> in userspace on a single CPU can cause this problem to occur.  If that's
-> true all the way out to one guest in a hypervisor can cause problems
-> for the hypervisor itself, I think cloud providers everywhere are
-> going to want this patch?
+That would argue for including the patch in the patch series.
 
-Only those cloud provides making heavy use of the aforementioned "poorly
-designed" hardware, correct?
+Especially since stress-ng is somewhat popular for system testing.
 
-							Thanx, Paul
 
-> > My thought is therefore to keep this patch out of tree for now.
-> > If it becomes clear that long-latency clocksource reads really are
-> > a significant issue in their own right (as opposed to merely being a
-> > symptom of a hardware or firmware bug), then this patch is available to
-> > immediately respond to that issue.
-> > =
 
-> > And there would then be strong evidence in favor of me biting the bulle=
-t,
-> > adding the complexity and the additional option (with your Suggested-by=
-),
-> > and getting that upstream and into -stable.
-> > =
-
-> > Seem reasonable?
-> > =
-
-> > 							Thanx, Paul
-> >=20
---===============7359570971128704118==--
+--===============3260333852549216425==--
 
