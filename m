@@ -1,33 +1,27 @@
-Content-Type: multipart/mixed; boundary="===============3260333852549216425=="
+Content-Type: multipart/mixed; boundary="===============5721158601781217733=="
 MIME-Version: 1.0
-From: Andi Kleen <ak@linux.intel.com>
+From: Steven Rostedt <rostedt@goodmis.org>
 To: lkp@lists.01.org
-Subject: Re: [clocksource] 8901ecc231: stress-ng.lockbus.ops_per_sec -9.5% regression
-Date: Thu, 27 May 2021 17:58:53 -0700
-Message-ID: <7bda8e6a-2179-b431-973b-d074cd8d93db@linux.intel.com>
-In-Reply-To: <20210527210524.GE4397@paulmck-ThinkPad-P17-Gen-1>
+Subject: Re: [irqflags] 21db66c4ff: will-it-scale.per_process_ops -4.5% regression
+Date: Thu, 27 May 2021 20:59:51 -0400
+Message-ID: <20210527205951.2490d75b@oasis.local.home>
+In-Reply-To: <20210525070354.GD7744@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3260333852549216425==
+--===============5721158601781217733==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Tue, 25 May 2021 15:03:54 +0800
+kernel test robot <oliver.sang@intel.com> wrote:
 
-> Only those cloud provides making heavy use of the aforementioned "poorly
-> designed" hardware, correct?
+> FYI, we noticed a -4.5% regression of will-it-scale.per_process_ops due t=
+o commit:
 
-If any such hardware is deployed in non homeopathic quantities, we =
+As Mark explained, your patch was not a nop. And the 0day bot just
+showed you why we didn't do it the way you suggested.
 
-probably need to support it out of the box. So far I'm not seeing any =
-
-evidence that it does not.
-
-That would argue for including the patch in the patch series.
-
-Especially since stress-ng is somewhat popular for system testing.
-
-
-
---===============3260333852549216425==--
+-- Steve
+--===============5721158601781217733==--
 
