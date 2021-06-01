@@ -1,100 +1,110 @@
-Content-Type: multipart/mixed; boundary="===============4114372680979370762=="
+Content-Type: multipart/mixed; boundary="===============5889602224301196185=="
 MIME-Version: 1.0
-From: Minchan Kim <minchan@kernel.org>
+From: Paul E. McKenney <paulmck@kernel.org>
 To: lkp@lists.01.org
-Subject: [PATCH v2] mm: fs: invalidate bh_lrus for only cold path
-Date: Tue, 01 Jun 2021 07:54:25 -0700
-Message-ID: <20210601145425.1396981-1-minchan@kernel.org>
+Subject: Re: [clocksource] 8901ecc231: stress-ng.lockbus.ops_per_sec -9.5% regression
+Date: Tue, 01 Jun 2021 10:10:01 -0700
+Message-ID: <20210601171001.GN4397@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <7bda8e6a-2179-b431-973b-d074cd8d93db@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4114372680979370762==
+--===============5889602224301196185==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-kernel test robot reported the regression of fio.write_iops[1]
-with [2].
+On Thu, May 27, 2021 at 05:58:53PM -0700, Andi Kleen wrote:
+> =
 
-Since lru_add_drain is called frequently, invalidate bh_lrus
-there could increase bh_lrus cache miss ratio, which needs
-more IO in the end.
+> > Only those cloud provides making heavy use of the aforementioned "poorly
+> > designed" hardware, correct?
+> =
 
-This patch moves the bh_lrus invalidation from the hot path(
-e.g., zap_page_range, pagevec_release) to cold path(i.e.,
-lru_add_drain_all, lru_cache_disable).
+> If any such hardware is deployed in non homeopathic quantities, we probab=
+ly
+> need to support it out of the box. So far I'm not seeing any evidence that
+> it does not.
+> =
 
-[1] https://lore.kernel.org/lkml/20210520083144.GD14190(a)xsang-OptiPlex-90=
-20/
-[2] 8cc621d2f45d, mm: fs: invalidate BH LRU during page migration
-Cc: "Xing, Zhengjun" <zhengjun.xing@intel.com>
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Reviewed-by: Chris Goldsworthy <cgoldswo@codeaurora.org>
-Signed-off-by: Minchan Kim <minchan@kernel.org>
----
-* from v1 - https://lore.kernel.org/lkml/YK0oQ76zX0uVZCwQ(a)google.com/
-  * add Reviewed-by - cgoldswo
+> That would argue for including the patch in the patch series.
+> =
 
- mm/swap.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+> Especially since stress-ng is somewhat popular for system testing.
 
-diff --git a/mm/swap.c b/mm/swap.c
-index 1958d5feb148..3e25d99a9dbb 100644
---- a/mm/swap.c
-+++ b/mm/swap.c
-@@ -642,7 +642,6 @@ void lru_add_drain_cpu(int cpu)
- 		pagevec_lru_move_fn(pvec, lru_lazyfree_fn);
- =
+Except that different use cases need different out-of-the-box settings.
+In addition, there is a range of consequences for undesired settings
+across these use cases.  Fortunately, the various distros and other kernel
+delivery mechanisms act as different boxes, and can provide their chosen
+out-of-box setting.
 
- 	activate_page_drain(cpu);
--	invalidate_bh_lrus_cpu(cpu);
- }
- =
+Of course, it would be better to avoid adding an additional setting.
+But as we will see when considering the following use cases and
+corresponding consequences, that setting needs to be to mark the
+clocksource unstable if that clocksource exhibits persistent read delays,
+that is, as the v15 series does -without- the out-of-tree patch.
 
- /**
-@@ -725,6 +724,17 @@ void lru_add_drain(void)
- 	local_unlock(&lru_pvecs.lock);
- }
- =
+To see this, consider the following use cases:
 
-+static void lru_add_and_bh_lrus_drain(void)
-+{
-+	int cpu;
-+
-+	local_lock(&lru_pvecs.lock);
-+	cpu =3D smp_processor_id();
-+	lru_add_drain_cpu(cpu);
-+	local_unlock(&lru_pvecs.lock);
-+	invalidate_bh_lrus_cpu(cpu);
-+}
-+
- void lru_add_drain_cpu_zone(struct zone *zone)
- {
- 	local_lock(&lru_pvecs.lock);
-@@ -739,7 +749,7 @@ static DEFINE_PER_CPU(struct work_struct, lru_add_drain=
-_work);
- =
+o	Bringup testing for new silicon, firmware, and clock drivers.
+	In this case, it is critically important that any serious problem
+	be unmistakably flagged.  After all, these activities are all
+	too often carried out under severe time pressure, which means
+	that subtle messages are likely to be ignored.  If there is a
+	hardware, firmware, or driver issue that results in persistent
+	delays, this issue must not be ignored.  Hence the absolute need
+	to mark the clocksource unstable in this case, in order to avoid
+	releasing hardware, firmware, and clock-driver bugs into the wild.
 
- static void lru_add_drain_per_cpu(struct work_struct *dummy)
- {
--	lru_add_drain();
-+	lru_add_and_bh_lrus_drain();
- }
- =
+o	System test for new hardware, including multisocket hardware
+	such as that denigrated by stress-ng.  Although this use case
+	might prefer that clocksource read delays be ignored (as they
+	would be with my out-of-tree patch [1]), there are a number of
+	good-and-sufficient ways to deal with the current state of the
+	v15 series [2], including marking the TSC stable, specifying HPET
+	at boot time, or simply ignoring the fact that the clocksource
+	gets marked unstable.
 
- /*
-@@ -880,7 +890,7 @@ void lru_cache_disable(void)
- 	 */
- 	__lru_add_drain_all(true);
- #else
--	lru_add_drain();
-+	lru_add_and_bh_lrus_drain();
- #endif
- }
- =
+o	Applications running in production that suffer from stress-ng-like
+	properties.  Such applications might well prefer that high-speed
+	fine-grained clocksources not be marked unstable, but the
+	workarounds for system test apply here as well.
 
--- =
+	Furthermore, such applications are likely to perform better
+	on a single-socket system than on a larger and more expensive
+	multi-socket system.  Thus, marking clocksources unstable
+	would be a good hint that adjustments would be helpful, whether
+	these adjustments be confining such applications to lower-cost
+	hardware on which they are likely to perform better, or reading
+	a certain book [3] and applying its lessons in order to adjust
+	the application to improve performance and scalability and to
+	reduce the interference with clocksources.
 
-2.31.1.818.g46aad6cb9e-goog
+o	Scalable applications running in production, as in those that do
+	not suffer from stress-ng-like properties.  Any such applications
+	that are sensitive to clock skew in excess of 100 microseconds
+	really want the v15 series without the extra patch.  After all,
+	if there is a problem with clock-related hardware, firmware,
+	or device-driver bugs, it is far better to have that problem
+	unambiguously diagnosed than to have to wade through strange
+	and misleading application problems caused by clock skew.
 
---===============4114372680979370762==--
+	And please note that this is not a theoretical problem.
+	After all, an earlier version of this series already spotted a
+	very real problem that was addressed by an upgrade.
+
+So if there is only a single out-of-the box option, it really does need
+to be that provided by v15 of the patch series.  There are already
+settings that can be used in the use cases that care, but if these
+prove inadequate, again, I can add another setting via a new patch,
+perhaps based on my out-of-tree patch.
+
+							Thanx, Paul
+
+[1]	https://lore.kernel.org/lkml/20210527182959.GA437082(a)paulmck-ThinkPad=
+-P17-Gen-1/
+[2]	https://lore.kernel.org/lkml/20210527190042.GA438700(a)paulmck-ThinkPad=
+-P17-Gen-1/
+[3]	https://mirrors.edge.kernel.org/pub/linux/kernel/people/paulmck/perfboo=
+k/perfbook.html
+--===============5889602224301196185==--
 
