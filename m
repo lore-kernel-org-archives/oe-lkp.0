@@ -1,179 +1,221 @@
-Content-Type: multipart/mixed; boundary="===============7489234438852629337=="
+Content-Type: multipart/mixed; boundary="===============2430056813136226178=="
 MIME-Version: 1.0
-From: Marc Zyngier <maz@kernel.org>
+From: Minchan Kim <minchan@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [irqdomain] 2cb09c90a4: suspend-stress.fail
-Date: Wed, 02 Jun 2021 17:24:04 +0100
-Message-ID: <871r9k1bh7.wl-maz@kernel.org>
-In-Reply-To: <9f9acc2f1bd9710b7a1a48bf0a179c34760a48bb.camel@intel.com>
+Subject: Re: [PATCH v2] mm: fs: invalidate bh_lrus for only cold path
+Date: Wed, 02 Jun 2021 15:45:55 -0700
+Message-ID: <YLgKI4CdGDKOCDHU@google.com>
+In-Reply-To: <20210601161540.9f449314965bd94c84725481@linux-foundation.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7489234438852629337==
+--===============2430056813136226178==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Rui,
-
-On Wed, 02 Jun 2021 09:25:31 +0100,
-Zhang Rui <rui.zhang@intel.com> wrote:
+On Tue, Jun 01, 2021 at 04:15:40PM -0700, Andrew Morton wrote:
+> On Tue,  1 Jun 2021 07:54:25 -0700 Minchan Kim <minchan@kernel.org> wro=
+te:
 > =
 
-> On Wed, 2021-06-02 at 08:55 +0100, Marc Zyngier wrote:
-> > Hi Oliver,
+> > kernel test robot reported the regression of fio.write_iops[1]
+> > with [2].
 > > =
 
-> > On Wed, 02 Jun 2021 08:12:31 +0100,
-> > kernel test robot <oliver.sang@intel.com> wrote:
-> > > =
+> > Since lru_add_drain is called frequently, invalidate bh_lrus
+> > there could increase bh_lrus cache miss ratio, which needs
+> > more IO in the end.
+> > =
 
-> > > Greeting,
-> > > =
-
-> > > FYI, we noticed the following commit (built with gcc-9):
-> > > =
-
-> > > commit: 2cb09c90a4cde464dbfe78a57a9c128625c31122 ("irqdomain:
-> > > Introduce irq_resolve_mapping()")
-> > > https://git.kernel.org/cgit/linux/kernel/git/maz/arm-platforms.git
-> > > irq/generic_handle_irq_domain
-
-[...]
-
-> >
-> > Can you give a few more details about the failure mode? Did you
-> > expect
-> > the network interface to show up earlier?
+> > This patch moves the bh_lrus invalidation from the hot path(
+> > e.g., zap_page_range, pagevec_release) to cold path(i.e.,
+> > lru_add_drain_all, lru_cache_disable).
 > =
 
-> TBH, we don't know if this is caused by the network failure or not.
-> It is a remote machine that I need to take some time to verify this.
+> This code is starting to hurt my brain.
 > =
 
-> >  How repeatable is this
-> > issue?
+> What are the locking/context rules for invalidate_bh_lrus_cpu()? =
+
+
+
+> AFAICT it offers no protection against two CPUs concurrently running
+> __invalidate_bh_lrus() against the same bh_lru.
+
+The lru_add_drain_per_cpu will run on per-cpu since it's per-cpu work
+and invalidate_bh_lrus_cpu will run under bh_lru_lock so I couldn't
+imagine that race can happen.
+
 > =
 
-> It seems to be intermittent but relatively easy to reproduce.
-> Here is what I did.
-> 1. run 10 suspend iterations after boot
-> 2. reboot and repeat step 1 by 10 times.
+> So when CONFIG_SMP=3Dy, invalidate_bh_lrus_cpu() must always and only be
+> run on the cpu which owns the bh_lru.  In which case why does it have
+> the `cpu' arg?
+
+I just wanted to express both lru_add_drain_cpu and invalidate_bh_lrus_cpu
+in lru_add_and_bh_lrus_drain run in the same cpu but look like a bad idea
+since it makes people confused. Let me remove the cpu argument from
+invalidate_bh_lrus_cpu.
+
 > =
 
-> The test is done on three different machines, an old Ivybridge laptop,
-> a skylake laptop and a kabylake laptop.
+> Your new lru_add_and_bh_lrus_drain() follows these rules by calling
+> invalidate_bh_lrus_cpu() from a per-cpu worker or when CONFIG_SMP=3Dn.
+> =
 
-Let's just say that I very little idea of what these names represent,
-but I do have an *old* laptop around (i7-2760QM), on which I was able
-to reproduce something.
+> I think.  It's all as clear as mud and undocumented.  Could you please
+> take a look at this?  Comment the locking/context rules thoroughly and
+> check that they are being followed?  Not forgetting cpu hotplug...  See if
+> there's a way of simplifying/clarifying the code?
+> =
 
-I have the strong feeling that something in the resume path is tearing
-down a live mapping while the interrupt is being looked up, which
-would be an interesting bug on its own. But it should be pretty cheap
-to work around that. Could you try the hack below on top of the
-offending commit? It did fix the resume issue for me:
+> The fact that swap.c has those #ifdef CONFIG_SMPs in there is a hint
+> that we're doing something wrong (or poorly) in there.  Perhaps that's
+> unavoidable because of all the fancy footwork in __lru_add_drain_all().
+> =
 
-<quote>
-maz(a)hina:~$ sudo dmesg| grep "ACPI: Low-level resume complete"| wc -l
-20
-</quote>
 
-Thanks,
+Hopefully, this is better.
 
-	M.
+>From 8d58e7ade3ed6c080995dec1395b1e130b3d16b3 Mon Sep 17 00:00:00 2001
+From: Minchan Kim <minchan@kernel.org>
+Date: Tue, 25 May 2021 08:19:17 -0700
+Subject: [PATCH] mm: fs: invalidate bh_lrus for only cold path
 
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index 189f559fb26c..5b7de0647ea7 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -402,8 +402,15 @@ static inline unsigned int irq_create_mapping(struct i=
-rq_domain *host,
- 	return irq_create_mapping_affinity(host, hwirq, NULL);
+kernel test robot reported the regression of fio.write_iops[1]
+with [2].
+
+Since lru_add_drain is called frequently, invalidate bh_lrus
+there could increase bh_lrus cache miss ratio, which needs
+more IO in the end.
+
+This patch moves the bh_lrus invalidation from the hot path(
+e.g., zap_page_range, pagevec_release) to cold path(i.e.,
+lru_add_drain_all, lru_cache_disable).
+
+[1] https://lore.kernel.org/lkml/20210520083144.GD14190(a)xsang-OptiPlex-90=
+20/
+[2] 8cc621d2f45d, mm: fs: invalidate BH LRU during page migration
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Minchan Kim <minchan@kernel.org>
+---
+ fs/buffer.c                 |  8 ++++++--
+ include/linux/buffer_head.h |  4 ++--
+ mm/swap.c                   | 19 ++++++++++++++++---
+ 3 files changed, 24 insertions(+), 7 deletions(-)
+
+diff --git a/fs/buffer.c b/fs/buffer.c
+index 673cfbef9eec..bdaffed39030 100644
+--- a/fs/buffer.c
++++ b/fs/buffer.c
+@@ -1487,12 +1487,16 @@ void invalidate_bh_lrus(void)
+ }
+ EXPORT_SYMBOL_GPL(invalidate_bh_lrus);
+ =
+
+-void invalidate_bh_lrus_cpu(int cpu)
++/*
++ * It's called from workqueue context so we need a bh_lru_lock to close
++ * the race with preemption/irq.
++ */
++void invalidate_bh_lrus_cpu(void)
+ {
+ 	struct bh_lru *b;
+ =
+
+ 	bh_lru_lock();
+-	b =3D per_cpu_ptr(&bh_lrus, cpu);
++	b =3D this_cpu_ptr(&bh_lrus);
+ 	__invalidate_bh_lrus(b);
+ 	bh_lru_unlock();
+ }
+diff --git a/include/linux/buffer_head.h b/include/linux/buffer_head.h
+index e7e99da31349..b04d34bab124 100644
+--- a/include/linux/buffer_head.h
++++ b/include/linux/buffer_head.h
+@@ -194,7 +194,7 @@ void __breadahead_gfp(struct block_device *, sector_t b=
+lock, unsigned int size,
+ struct buffer_head *__bread_gfp(struct block_device *,
+ 				sector_t block, unsigned size, gfp_t gfp);
+ void invalidate_bh_lrus(void);
+-void invalidate_bh_lrus_cpu(int cpu);
++void invalidate_bh_lrus_cpu(void);
+ bool has_bh_in_lru(int cpu, void *dummy);
+ struct buffer_head *alloc_buffer_head(gfp_t gfp_flags);
+ void free_buffer_head(struct buffer_head * bh);
+@@ -408,7 +408,7 @@ static inline int inode_has_buffers(struct inode *inode=
+) { return 0; }
+ static inline void invalidate_inode_buffers(struct inode *inode) {}
+ static inline int remove_inode_buffers(struct inode *inode) { return 1; }
+ static inline int sync_mapping_buffers(struct address_space *mapping) { re=
+turn 0; }
+-static inline void invalidate_bh_lrus_cpu(int cpu) {}
++static inline void invalidate_bh_lrus_cpu(void) {}
+ static inline bool has_bh_in_lru(int cpu, void *dummy) { return 0; }
+ #define buffer_heads_over_limit 0
+ =
+
+diff --git a/mm/swap.c b/mm/swap.c
+index 1958d5feb148..4d9ec3c3c5a9 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -642,7 +642,6 @@ void lru_add_drain_cpu(int cpu)
+ 		pagevec_lru_move_fn(pvec, lru_lazyfree_fn);
+ =
+
+ 	activate_page_drain(cpu);
+-	invalidate_bh_lrus_cpu(cpu);
  }
  =
 
--extern struct irq_desc *irq_resolve_mapping(struct irq_domain *domain,
--					    irq_hw_number_t hwirq);
-+extern struct irq_desc *__irq_resolve_mapping(struct irq_domain *domain,
-+					      irq_hw_number_t hwirq,
-+					      unsigned int *irq);
-+
-+static inline struct irq_desc *irq_resolve_mapping(struct irq_domain *doma=
-in,
-+						   irq_hw_number_t hwirq)
+ /**
+@@ -725,6 +724,20 @@ void lru_add_drain(void)
+ 	local_unlock(&lru_pvecs.lock);
+ }
+ =
+
++/*
++ * It's called from per-cpu workqueue context in SMP case so
++ * lru_add_drain_cpu and invalidate_bh_lrus_cpu should run on
++ * the same cpu. It shouldn't be a problem in !SMP case since
++ * the core is only one and the locks will disable preemption.
++ */
++static void lru_add_and_bh_lrus_drain(void)
 +{
-+	return __irq_resolve_mapping(domain, hwirq, NULL);
++	local_lock(&lru_pvecs.lock);
++	lru_add_drain_cpu(smp_processor_id());
++	local_unlock(&lru_pvecs.lock);
++	invalidate_bh_lrus_cpu();
 +}
- =
-
- /**
-  * irq_find_mapping() - Find a linux irq from a hw irq number.
-@@ -413,12 +420,12 @@ extern struct irq_desc *irq_resolve_mapping(struct ir=
-q_domain *domain,
- static inline unsigned int irq_find_mapping(struct irq_domain *domain,
- 					    irq_hw_number_t hwirq)
- {
--	struct irq_desc *desc =3D irq_resolve_mapping(domain, hwirq);
-+	unsigned int irq;
- =
-
--	if (unlikely(!desc))
--		return 0;
-+	if (__irq_resolve_mapping(domain, hwirq, &irq))
-+		return irq;
- =
-
--	return irq_desc_get_irq(desc);
-+	return 0;
- }
- =
-
- static inline unsigned int irq_linear_revmap(struct irq_domain *domain,
-diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
-index 13a3021e9370..012d6bf456aa 100644
---- a/kernel/irq/irqdomain.c
-+++ b/kernel/irq/irqdomain.c
-@@ -879,11 +879,13 @@ EXPORT_SYMBOL_GPL(irq_dispose_mapping);
-  * irq_resolve_mapping() - Find a linux irq from a hw irq number.
-  * @domain: domain owning this hardware interrupt
-  * @hwirq: hardware irq number in that domain space
-+ * @irq: optional pointer to return the Linux irq if required
-  *
-  * Returns the interrupt descriptor.
-  */
--struct irq_desc *irq_resolve_mapping(struct irq_domain *domain,
--				     irq_hw_number_t hwirq)
-+struct irq_desc *__irq_resolve_mapping(struct irq_domain *domain,
-+				       irq_hw_number_t hwirq,
-+				       unsigned int *irq)
- {
- 	struct irq_desc *desc =3D NULL;
- 	struct irq_data *data;
-@@ -911,12 +913,16 @@ struct irq_desc *irq_resolve_mapping(struct irq_domai=
-n *domain,
- 	else
- 		data =3D radix_tree_lookup(&domain->revmap_tree, hwirq);
- =
-
--	if (likely(data))
-+	if (likely(data)) {
- 		desc =3D irq_data_to_desc(data);
-+		if (irq)
-+			*irq =3D data->irq;
-+	}
 +
- 	rcu_read_unlock();
- 	return desc;
- }
--EXPORT_SYMBOL_GPL(irq_resolve_mapping);
-+EXPORT_SYMBOL_GPL(__irq_resolve_mapping);
+ void lru_add_drain_cpu_zone(struct zone *zone)
+ {
+ 	local_lock(&lru_pvecs.lock);
+@@ -739,7 +752,7 @@ static DEFINE_PER_CPU(struct work_struct, lru_add_drain=
+_work);
  =
 
- /**
-  * irq_domain_xlate_onecell() - Generic xlate for direct one cell bindings
+ static void lru_add_drain_per_cpu(struct work_struct *dummy)
+ {
+-	lru_add_drain();
++	lru_add_and_bh_lrus_drain();
+ }
+ =
+
+ /*
+@@ -880,7 +893,7 @@ void lru_cache_disable(void)
+ 	 */
+ 	__lru_add_drain_all(true);
+ #else
+-	lru_add_drain();
++	lru_add_and_bh_lrus_drain();
+ #endif
+ }
+ =
 
 -- =
 
-Without deviation from the norm, progress is not possible.
---===============7489234438852629337==--
+2.32.0.rc0.204.g9fa02ecfa5-goog
+
+--===============2430056813136226178==--
 
