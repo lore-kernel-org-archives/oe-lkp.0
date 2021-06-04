@@ -1,52 +1,78 @@
-Content-Type: multipart/mixed; boundary="===============3908832954924015671=="
+Content-Type: multipart/mixed; boundary="===============5747694284487743941=="
 MIME-Version: 1.0
-From: Liu, Yujie <yujie.liu@intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [x86/fpu] 190757bfda: invalid_opcode:#[##]
-Date: Wed, 16 Jun 2021 05:47:40 +0000
-Message-ID: <SJ0PR11MB5598223F5322B9CD5816FBADFB0F9@SJ0PR11MB5598.namprd11.prod.outlook.com>
-In-Reply-To: <226b1ab3-89de-28b0-186b-bab2c2c4042c@intel.com>
+Subject: Re: [mm/gup] 57efa1fe59: will-it-scale.per_thread_ops -9.2% regression
+Date: Fri, 04 Jun 2021 10:57:44 -0700
+Message-ID: <CAHk-=wg=LX1WKioiA_Cn-5hp6Hce_kTZg23uksSjNWgV_Ofj1Q@mail.gmail.com>
+In-Reply-To: <20210604075220.GA40621@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3908832954924015671==
+--===============5747694284487743941==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Dave,
+On Fri, Jun 4, 2021 at 12:52 AM Feng Tang <feng.tang@intel.com> wrote:
+>
+> On Fri, Jun 04, 2021 at 03:04:11PM +0800, Feng Tang wrote:
+> > >
+> > > The perf data doesn't even mention any of the GUP paths, and on the
+> > > pure fork path the biggest impact would be:
+> > >
+> > >  (a) maybe "struct mm_struct" changed in size or had a different cach=
+e layout
+> >
+> > Yes, this seems to be the cause of the regression.
+> >
+> > The test case is many thread are doing map/unmap at the same time,
+> > so the process's rw_semaphore 'mmap_lock' is highly contended.
+> >
+> > Before the patch (with 0day's kconfig), the mmap_lock is separated
+> > into 2 cachelines, the 'count' is in one line, and the other members
+> > sit in the next line, so it luckily avoid some cache bouncing. After
+> > the patch, the 'mmap_lock' is pushed into one cacheline, which may
+> > cause the regression.
 
-> -----Original Message-----
-> From: Dave Hansen <dave.hansen@intel.com>
-> Sent: Monday, June 14, 2021 11:37 PM
-> To: Sang, Oliver <oliver.sang@intel.com>; Dave Hansen <dave.hansen@li=
-nux.intel.com>
-> Cc: lkp(a)lists.01.org; lkp <lkp@intel.com>
-> Subject: [LKP] Re: [x86/fpu] 190757bfda: invalid_opcode:#[##]
-> =
+Ok, thanks for following up on this.
 
-> On 6/14/21 8:32 AM, kernel test robot wrote:
-> > =3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:	48 89 85 b0 23 00 00 	mov    %rax,0x23b0(%rbp)
-> >    7:	66 8c c0             	mov    %es,%ax
-> >    a:	66 89 85 a0 23 00 00 	mov    %ax,0x23a0(%rbp)
-> >   11:	66 8c d8             	mov    %ds,%ax
-> >   14:	8b 4d 2c             	mov    0x2c(%rbp),%ecx
-> >   17:	66 89 85 a2 23 00 00 	mov    %ax,0x23a2(%rbp)
-> >   1e:	81 e1 00 00 20 00    	and    $0x200000,%ecx
-> >   24:	0f 85 c4 00 00 00    	jne    0xee
-> >   2a:*	0f 01 ee             	rdpkru 		<-- trapping instruction
-> >   2d:	89 85 14 24 00 00    	mov    %eax,0x2414(%rbp)
-> >   33:	b9 15 00 00 00       	mov    $0x15,%ecx
-> >   38:	48 89 df             	mov    %rbx,%rdi
-> >   3b:	48                   	rex.W
-> >   3c:	c7                   	.byte 0xc7
-> >   3d:	43                   	rex.XB
-> >   3e:	e8                   	.byte 0xe8
-> =
+> We've tried some patch, which can restore the regerssion. As the
+> newly added member 'write_protect_seq' is 4 bytes long, and putting
+> it into an existing 4 bytes long hole can restore the regeression,
+> while not affecting most of other member's alignment. Please review
+> the following patch, thanks!
 
-> In case it saves anyone 10 seconds of looking, this appears to just be a =
-regular old missed feature check.  Totally untested patch attached.
+The patch looks fine to me.
 
-We have tested the patch and it can fix the issue. Thanks.
---===============3908832954924015671==--
+At the same time, I do wonder if maybe it would be worth exploring if
+it's a good idea to perhaps move the 'mmap_sem' thing instead.
+
+Or at least add a big comment. It's not clear to me exactly _which_
+other fields are the ones that are so hot that the contention on
+mmap_sem then causes even more cacheline bouncing.
+
+For example, is it either
+
+ (a) we *want* the mmap_sem to be in the first 128-byte region,
+because then when we get the mmap_sem, the other fields in that same
+cacheline are hot
+
+OR
+
+ (b) we do *not* want mmap_sem to be in the *second* 128-byte region,
+because there is something *else* in that region that is touched
+independently of mmap_sem that is very very hot and now you get even
+more bouncing?
+
+but I can't tell which one it is.
+
+It would be great to have a comment in the code - and in the commit
+message - about exactly which fields are the criticial ones. Because I
+doubt it is 'write_protect_seq' itself that matters at all.
+
+If it's "mmap_sem should be close to other commonly used fields",
+maybe we should just move mmap_sem upwards in the structure?
+
+              Linus
+--===============5747694284487743941==--
 
