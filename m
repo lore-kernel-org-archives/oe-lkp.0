@@ -1,177 +1,188 @@
-Content-Type: multipart/mixed; boundary="===============4637268349070180865=="
+Content-Type: multipart/mixed; boundary="===============6593714322365026502=="
 MIME-Version: 1.0
-From: Liu, Yujie <yujie.liu@intel.com>
+From: John Hubbard <jhubbard@nvidia.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/mremap] ecf8443e51: vm-scalability.throughput -29.4% regression
-Date: Thu, 17 Jun 2021 02:38:29 +0000
-Message-ID: <SJ0PR11MB5598DC21AC79E6D8D5F485FDFB0E9@SJ0PR11MB5598.namprd11.prod.outlook.com>
-In-Reply-To: <a815a022-cf3e-fe4b-ee23-191523ed1980@linux.ibm.com>
+Subject: Re: [mm/gup] 57efa1fe59: will-it-scale.per_thread_ops -9.2% regression
+Date: Fri, 04 Jun 2021 10:58:14 -0700
+Message-ID: <f35ae155-d73c-eca4-b950-58589a76addc@nvidia.com>
+In-Reply-To: <20210604075220.GA40621@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4637268349070180865==
+--===============6593714322365026502==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-> -----Original Message-----
-> From: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-> Sent: Tuesday, June 15, 2021 12:09 AM
-> To: Sang, Oliver <oliver.sang@intel.com>
-> Cc: lkp <lkp@intel.com>; LKML <linux-kernel@vger.kernel.org>; lkp(a)l=
-ists.01.org; linux-mm(a)kvack.org; akpm(a)linux-foundation.org;
-> mpe(a)ellerman.id.au; linuxppc-dev(a)lists.ozlabs.org; kaleshsingh(a)goog=
-le.com; npiggin(a)gmail.com; joel(a)joelfernandes.org; Christophe
-> Leroy <christophe.leroy@csgroup.eu>; Linus Torvalds <torvalds@linux-f=
-oundation.org>; Kirill A . Shutemov <kirill@shutemov.name>
-> Subject: [LKP] Re: [mm/mremap] ecf8443e51: vm-scalability.throughput -29.=
-4% regression
+On 6/4/21 12:52 AM, Feng Tang wrote:
+...
+>>> The perf data doesn't even mention any of the GUP paths, and on the
+>>> pure fork path the biggest impact would be:
+>>>
+>>>   (a) maybe "struct mm_struct" changed in size or had a different cache=
+ layout
+>>
+>> Yes, this seems to be the cause of the regression.
+>>
+>> The test case is many thread are doing map/unmap at the same time,
+>> so the process's rw_semaphore 'mmap_lock' is highly contended.
+>>
+>> Before the patch (with 0day's kconfig), the mmap_lock is separated
+>> into 2 cachelines, the 'count' is in one line, and the other members
+>> sit in the next line, so it luckily avoid some cache bouncing. After
+
+Wow! That's quite a fortunate layout to land on by accident. Almost
+makes me wonder if mmap_lock should be designed to do that, but it's
+probably even better to just keep working on having a less contended
+mmap_lock.
+
+I *suppose* it's worth trying to keep this fragile layout in place,
+but it is a landmine for anyone who touches mm_struct. And the struct
+is so large already that I'm not sure a comment warning would even
+be noticed. Anyway...
+
+>> the patch, the 'mmap_lock' is pushed into one cacheline, which may
+>> cause the regression.
+>>
+>> Below is the pahole info:
+>>
+>> - before the patch
+>>
+>> 	spinlock_t         page_table_lock;      /*   116     4 */
+>> 	struct rw_semaphore mmap_lock;           /*   120    40 */
+>> 	/* --- cacheline 2 boundary (128 bytes) was 32 bytes ago --- */
+>> 	struct list_head   mmlist;               /*   160    16 */
+>> 	long unsigned int  hiwater_rss;          /*   176     8 */
+>>
+>> - after the patch
+>>
+>> 	spinlock_t         page_table_lock;      /*   124     4 */
+>> 	/* --- cacheline 2 boundary (128 bytes) --- */
+>> 	struct rw_semaphore mmap_lock;           /*   128    40 */
+>> 	struct list_head   mmlist;               /*   168    16 */
+>> 	long unsigned int  hiwater_rss;          /*   184     8 */
+>>
+>> perf c2c log can also confirm this.
+>   =
+
+> We've tried some patch, which can restore the regerssion. As the
+> newly added member 'write_protect_seq' is 4 bytes long, and putting
+> it into an existing 4 bytes long hole can restore the regeression,
+> while not affecting most of other member's alignment. Please review
+> the following patch, thanks!
 > =
 
-> On 6/14/21 8:25 PM, kernel test robot wrote:
-> >
-> >
-> > Greeting,
-> >
-> > FYI, we noticed a -29.4% regression of vm-scalability.throughput due to=
- commit:
-> >
-> >
-> > commit: ecf8443e51a862b261313c2319ab4e4aed9e6b7e ("[PATCH v7 02/11]
-> > mm/mremap: Fix race between MOVE_PUD mremap and pageout")
-> > url:
-> > https://github.com/0day-ci/linux/commits/Aneesh-Kumar-K-V/Speedup-mrem
-> > ap-on-ppc64/20210607-135424
-> > base: https://git.kernel.org/cgit/linux/kernel/git/powerpc/linux.git
-> > next
-> >
-> >
+
+So, this is a neat little solution, if we agree that it's worth "fixing".
+
+I'm definitely on the fence, but leaning toward, "go for it", because
+I like the "no cache effect" result of using up the hole.
+
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+
+thanks,
+-- =
+
+John Hubbard
+NVIDIA
+
+> - Feng
 > =
 
-> We dropped that approach and is now using https://lore.kernel.org/linux-m=
-m/20210610083549.386085-1-aneesh.kumar(a)linux.ibm.com
+>  From 85ddc2c3d0f2bdcbad4edc5c392c7bc90bb1667e Mon Sep 17 00:00:00 2001
+> From: Feng Tang <feng.tang@intel.com>
+> Date: Fri, 4 Jun 2021 15:20:57 +0800
+> Subject: [PATCH RFC] mm: relocate 'write_protect_seq' in struct mm_struct
 > =
 
+> Before commit 57efa1fe5957 ("mm/gup: prevent gup_fast from
+> racing with COW during fork), on 64bits system, the hot member
+> rw_semaphore 'mmap_lock' of 'mm_struct' could be separated into
+> 2 cachelines, that its member 'count' sits in one cacheline while
+> all other members in next cacheline, this naturally reduces some
+> cache bouncing, and with the commit, the 'mmap_lock' is pushed
+> into one cacheline, as shown in the pahole info:
 > =
 
-> Instead of pud lock we are now using rmap lock with mremap.
+>   - before the commit
 > =
 
-> Can you check with that series?
+> 	spinlock_t         page_table_lock;      /*   116     4 */
+> 	struct rw_semaphore mmap_lock;           /*   120    40 */
+> 	/* --- cacheline 2 boundary (128 bytes) was 32 bytes ago --- */
+> 	struct list_head   mmlist;               /*   160    16 */
+> 	long unsigned int  hiwater_rss;          /*   176     8 */
+> =
 
-Hi Aneesh,
+>   - after the commit
+> =
 
-Could you please specify the base commit of the patch series? =
+> 	spinlock_t         page_table_lock;      /*   124     4 */
+> 	/* --- cacheline 2 boundary (128 bytes) --- */
+> 	struct rw_semaphore mmap_lock;           /*   128    40 */
+> 	struct list_head   mmlist;               /*   168    16 */
+> 	long unsigned int  hiwater_rss;          /*   184     8 */
+> =
 
+> and it causes one 9.2% regression for 'mmap1' case of will-it-scale
+> benchmark[1], as in the case 'mmap_lock' is highly contented (occupies
+> 90%+ cpu cycles).
+> =
 
-We have applied new patch series(rmap lock with mremap) on commit 027f55e87=
-c30 (tty: hvc: udbg_hvc: retry putc on -EAGAIN), and it shows no regression=
- after patch.
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D                          =
+> Though relayouting a structure could be a double-edged sword, as it
+> helps some case, but may hurt other cases. So one solution is the
+> newly added 'seqcount_t' is 4 bytes long (when CONFIG_DEBUG_LOCK_ALLOC=3D=
+n),
+> placing it into an existing 4 bytes hole in 'mm_struct' will not
+> affect most of other members's alignment, while restoring the
+> regression.
+> =
 
-compiler/cpufreq_governor/kconfig/nr_ssd/nr_task/rootfs/runtime/tbox_group/=
-test/testcase/thp_defrag/thp_enabled/uco
-de:                                                                        =
-                                        =
+> [1]. https://lore.kernel.org/lkml/20210525031636.GB7744(a)xsang-OptiPlex-=
+9020/
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Signed-off-by: Feng Tang <feng.tang@intel.com>
+> ---
+>   include/linux/mm_types.h | 15 ++++++++-------
+>   1 file changed, 8 insertions(+), 7 deletions(-)
+> =
 
-  gcc-9/performance/x86_64-rhel-8.3/1/8/debian-10.4-x86_64-20200603.cgz/300=
-/lkp-csl-2ap1/swap-w-seq-mt/vm-scalabili
-ty/always/never/0x4003006                                                  =
-                                        =
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 5aacc1c..5b55f88 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -445,13 +445,6 @@ struct mm_struct {
+>   		 */
+>   		atomic_t has_pinned;
+>   =
 
-                                                                           =
-                                        =
+> -		/**
+> -		 * @write_protect_seq: Locked when any thread is write
+> -		 * protecting pages mapped by this mm to enforce a later COW,
+> -		 * for instance during page table copying for fork().
+> -		 */
+> -		seqcount_t write_protect_seq;
+> -
+>   #ifdef CONFIG_MMU
+>   		atomic_long_t pgtables_bytes;	/* PTE page table pages */
+>   #endif
+> @@ -480,7 +473,15 @@ struct mm_struct {
+>   		unsigned long stack_vm;	   /* VM_STACK */
+>   		unsigned long def_flags;
+>   =
 
-commit:                                                                    =
-                                        =
+> +		/**
+> +		 * @write_protect_seq: Locked when any thread is write
+> +		 * protecting pages mapped by this mm to enforce a later COW,
+> +		 * for instance during page table copying for fork().
+> +		 */
+> +		seqcount_t write_protect_seq;
+> +
+>   		spinlock_t arg_lock; /* protect the below fields */
+> +
+>   		unsigned long start_code, end_code, start_data, end_data;
+>   		unsigned long start_brk, brk, start_stack;
+>   		unsigned long arg_start, arg_end, env_start, env_end;
+>=20
 
-  027f55e87c30 (tty: hvc: udbg_hvc: retry putc on -EAGAIN)        <---  pat=
-ch's base commit      =
-
-  ecf8443e51a8 (mm/mremap: Fix race between MOVE_PUD mremap and pageout)   =
-   <---  first bad commit  =
-
-  57da7477067d  (fixup)    <---  apply patch on 027f55e87c30
-                                                                           =
-                                        =
-
-027f55e87c309427 ecf8443e51a862b261313c2319a 57da7477067dbe29247484eda0e   =
-                                        =
-
----------------- --------------------------- ---------------------------   =
-                                        =
-
-         %stddev     %change         %stddev     %change         %stddev   =
-                           =
-
-             \          |                \          |                \     =
-                           =
-
-    371814 =C2=B1  3%     -29.1%     263582 =C2=B1  3%      -0.1%     37128=
-6 =C2=B1  2%  vm-scalability.median       =
-
-
-
-We also tried to apply patches on commit ecf8443e51a8 (mm/mremap: Fix race =
-between MOVE_PUD mremap and pageout), and the regression increased to  -33.=
-9%
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D                          =
-
-compiler/cpufreq_governor/kconfig/nr_ssd/nr_task/rootfs/runtime/tbox_group/=
-test/testcase/thp_defrag/thp_enabled/uco
-de:                                                                        =
-                                        =
-
-  gcc-9/performance/x86_64-rhel-8.3/1/8/debian-10.4-x86_64-20200603.cgz/300=
-/lkp-csl-2ap1/swap-w-seq-mt/vm-scalabili
-ty/always/never/0x4003006                                                  =
-                                        =
-
-                                                                           =
-                                        =
-
-commit:                                                                    =
-                                        =
-
-  5f80ee2fc08b (mm/mremap: Fix race between MOVE_PUD mremap and pageout)   =
-   <--- first bad commit's parent                                          =
-                   =
-
-  ecf8443e51a8 (mm/mremap: Fix race between MOVE_PMD mremap and pageout)   =
- <--- first bad commit                                                     =
-       =
-
-  8ae369d45894 (fixup)      <--- apply patch on ecf8443e51a8
-                                                                           =
-                                        =
-
-5f80ee2fc08b3613 ecf8443e51a862b261313c2319a 8ae369d4589492c7f7198cd742d   =
-                                        =
-
----------------- --------------------------- ---------------------------   =
-                                        =
-
-          %stddev     %change         %stddev     %change         %stddev  =
-                                         =
-
-              \          |                \          |                \    =
-                                         =
-
-     373210           -29.4%     263582 =C2=B1  3%     -33.9%     246626 =
-=C2=B1  2%  vm-scalability.median                    =
-
-
-Thanks =
-
-
-> -aneesh
-> _______________________________________________
-> LKP mailing list -- lkp(a)lists.01.org
-> To unsubscribe send an email to lkp-leave(a)lists.01.org
---===============4637268349070180865==--
+--===============6593714322365026502==--
 
