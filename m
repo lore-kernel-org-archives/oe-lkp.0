@@ -1,130 +1,166 @@
-Content-Type: multipart/mixed; boundary="===============2106072039996508547=="
+Content-Type: multipart/mixed; boundary="===============0658597109248841155=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Xing Zhengjun <zhengjun.xing@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] mm: relocate 'write_protect_seq' in struct mm_struct
-Date: Mon, 14 Jun 2021 11:27:39 +0800
-Message-ID: <20210614032738.GA72794@shbuild999.sh.intel.com>
-In-Reply-To: <20210611170917.GW1002214@nvidia.com>
+Subject: Re: [mm/gup] 57efa1fe59: will-it-scale.per_thread_ops -9.2% regression
+Date: Fri, 04 Jun 2021 16:37:53 +0800
+Message-ID: <2a1977e1-4fd1-065a-214f-51c6b40cc3d2@linux.intel.com>
+In-Reply-To: <CAHk-=whTEC_GVYu=WfvUagNvHdoTALEDg8uqK3V6aMDwg2KMRA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2106072039996508547==
+--===============0658597109248841155==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jason,
+Hi Linus,
 
-On Fri, Jun 11, 2021 at 02:09:17PM -0300, Jason Gunthorpe wrote:
-> On Fri, Jun 11, 2021 at 09:54:42AM +0800, Feng Tang wrote:
-> > 0day robot reported a 9.2% regression for will-it-scale mmap1 test
-> > case[1], caused by commit 57efa1fe5957 ("mm/gup: prevent gup_fast
-> > from racing with COW during fork").
-> > =
+On 5/25/2021 11:11 AM, Linus Torvalds wrote:
+> On Mon, May 24, 2021 at 5:00 PM kernel test robot <oliver.sang@intel.co=
+m> wrote:
+>> FYI, we noticed a -9.2% regression of will-it-scale.per_thread_ops due t=
+o commit:
+>> commit: 57efa1fe5957694fa541c9062de0a127f0b9acb0 ("mm/gup: prevent gup_f=
+ast from racing with COW during fork")
+> Hmm. This looks like one of those "random fluctuations" things.
+>
+> It would be good to hear if other test-cases also bisect to the same
+> thing, but this report already says:
+>
+>> In addition to that, the commit also has significant impact on the follo=
+wing tests:
+>>
+>> +------------------+----------------------------------------------------=
+-----------------------------+
+>> | testcase: change | will-it-scale: will-it-scale.per_thread_ops 3.7% im=
+provement                    |
+> which does kind of reinforce that "this benchmark gives unstable numbers".
+>
+> The perf data doesn't even mention any of the GUP paths, and on the
+> pure fork path the biggest impact would be:
+>
+>   (a) maybe "struct mm_struct" changed in size or had a different cache l=
+ayout
+I move "write_protect_seq" to the tail of the "struct mm_struct", the =
 
-> > Further debug shows the regression is due to that commit changes
-> > the offset of hot fields 'mmap_lock' inside structure 'mm_struct',
-> > thus some cache alignment changes.
-> > =
+regression reduced to -3.6%. The regression should relate to the cache =
 
-> > From the perf data, the contention for 'mmap_lock' is very severe
-> > and takes around 95% cpu cycles, and it is a rw_semaphore
-> > =
+layout.
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+tbox_group/testcase/rootfs/kconfig/compiler/nr_task/mode/test/cpufreq_gover=
+nor/ucode:
+lkp-icl-2sp1/will-it-scale/debian-10.4-x86_64-20200603.cgz/x86_64-rhel-8.3/=
+gcc-9/50%/thread/mmap1/performance/0xb000280
 
-> >         struct rw_semaphore {
-> >                 atomic_long_t count;	/* 8 bytes */
-> >                 atomic_long_t owner;	/* 8 bytes */
-> >                 struct optimistic_spin_queue osq; /* spinner MCS lock */
-> >                 ...
-> > =
+commit:
+ =C2=A0 c28b1fc70390df32e29991eedd52bd86e7aba080
+ =C2=A0 57efa1fe5957694fa541c9062de0a127f0b9acb0
+ =C2=A0 f6a9c27882d51ff551e15522992d3725c342372d=C2=A0 (the test patch)
 
-> > Before commit 57efa1fe5957 adds the 'write_protect_seq', it
-> > happens to have a very optimal cache alignment layout, as
-> > Linus explained:
-> > =
+c28b1fc70390df32 57efa1fe5957694fa541c9062de f6a9c27882d51ff551e15522992
+---------------- --------------------------- ---------------------------
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev=C2=A0=C2=A0=C2=A0=
+=C2=A0 %change=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 %stddev=C2=
+=A0=C2=A0=C2=A0=C2=A0 %change %stddev
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | \
+ =C2=A0=C2=A0=C2=A0 341938=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 -9.0%=C2=A0=C2=A0=C2=A0=C2=A0 311218 =C2=B1=C2=A0 2%=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 -3.6% 329513=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 =
 
-> >  "and before the addition of the 'write_protect_seq' field, the
-> >   mmap_sem was at offset 120 in 'struct mm_struct'.
-> > =
+will-it-scale.48.threads
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 7123=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 -9.0%=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 6483 =
+=C2=B1=C2=A0 2%=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -3.6% 6864=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 =
 
-> >   Which meant that count and owner were in two different cachelines,
-> >   and then when you have contention and spend time in
-> >   rwsem_down_write_slowpath(), this is probably *exactly* the kind
-> >   of layout you want.
-> > =
+will-it-scale.per_thread_ops
+ =C2=A0=C2=A0=C2=A0 341938=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 -9.0%=C2=A0=C2=A0=C2=A0=C2=A0 311218 =C2=B1=C2=A0 2%=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 -3.6% 329513=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 =
 
-> >   Because first the rwsem_write_trylock() will do a cmpxchg on the
-> >   first cacheline (for the optimistic fast-path), and then in the
-> >   case of contention, rwsem_down_write_slowpath() will just access
-> >   the second cacheline.
-> > =
+will-it-scale.workload
 
-> >   Which is probably just optimal for a load that spends a lot of
-> >   time contended - new waiters touch that first cacheline, and then
-> >   they queue themselves up on the second cacheline."
-> > =
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 915f4f100383..34bb2a01806c 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -447,13 +447,6 @@ struct mm_struct {
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 */
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 atomic_t has_pinned;
 
-> > After the commit, the rw_semaphore is at offset 128, which means
-> > the 'count' and 'owner' fields are now in the same cacheline,
-> > and causes more cache bouncing.
-> > =
+-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 /**
+-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 * @write_protect_seq: Locked when any thread is write
+-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 * protecting pages mapped by this mm to enforce a later =
 
-> > Currently there are 3 "#ifdef CONFIG_XXX" before 'mmap_lock' which
-> > will affect its offset:
-> > =
+COW,
+-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 * for instance during page table copying for fork().
+-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 */
+-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 seqcount_t write_protect_seq;
+-
+ =C2=A0#ifdef CONFIG_MMU
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 atomic_long_t pgtables_bytes;=C2=A0=C2=A0 /* PTE page ta=
+ble pages */
+ =C2=A0#endif
+@@ -564,6 +557,12 @@ struct mm_struct {
+ =C2=A0#ifdef CONFIG_IOMMU_SUPPORT
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 u32 pasid;
+ =C2=A0#endif
++=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 /**
++=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 * @write_protect_seq: Locked when any thread is wr=
+ite
++=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 * protecting pages mapped by this mm to enforce a =
 
-> >   CONFIG_MMU
-> >   CONFIG_MEMBARRIER
-> >   CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES
-> > =
+later COW,
++=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 * for instance during page table copying for fork(=
+).
++=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 */
++=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 seqcount_t write_protect_seq;
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 } __randomize_layout;
 
-> > The layout above is on 64 bits system with 0day's default kernel
-> > config (similar to RHEL-8.3's config), in which all these 3 options
-> > are 'y'. And the layout can vary with different kernel configs.
-> > =
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /*
 
-> > Relayouting a structure is usually a double-edged sword, as sometimes
-> > it can helps one case, but hurt other cases. For this case, one
-> > solution is, as the newly added 'write_protect_seq' is a 4 bytes long
-> > seqcount_t (when CONFIG_DEBUG_LOCK_ALLOC=3Dn), placing it into an
-> > existing 4 bytes hole in 'mm_struct' will not change other fields'
-> > alignment, while restoring the regression. =
+>
+>   (b) two added (nonatomic) increment operations in the fork path due
+> to the seqcount
+>
+> and I'm not seeing what would cause that 9% change. Obviously cache
+> placement has done it before.
+>
+> If somebody else sees something that I'm missing, please holler. But
+> I'll ignore this as "noise" otherwise.
+>
+>              Linus
+> _______________________________________________
+> LKP mailing list -- lkp(a)lists.01.org
+> To unsubscribe send an email to lkp-leave(a)lists.01.org
 
-> > =
+-- =
 
-> > [1]. https://lore.kernel.org/lkml/20210525031636.GB7744(a)xsang-OptiPle=
-x-9020/
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > Signed-off-by: Feng Tang <feng.tang@intel.com>
-> > Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-> > Cc: Jason Gunthorpe <jgg@nvidia.com>
-> > Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> > Cc: Peter Xu <peterx@redhat.com>
-> > ---
-> >  include/linux/mm_types.h | 27 ++++++++++++++++++++-------
-> >  1 file changed, 20 insertions(+), 7 deletions(-)
-> =
+Zhengjun Xing
 
-> It seems Ok to me, but didn't we earlier add the has_pinned which
-> would have changed the layout too? Are we chasing performance delta's
-> nobody cares about?
-
-Good point! I checked my email folder for 0day's reports, and haven't
-found a report related with Peter's commit 008cfe4418b3 ("mm: Introduce
-mm_struct.has_pinned) which adds 'has_pinned' field. =
-
-
-Will run the same test for it and report back.
-
-> Still it is mechanically fine, so:
-> =
-
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Thanks for the review!
-
-- Feng
-
-> Jason
---===============2106072039996508547==--
+--===============0658597109248841155==--
 
