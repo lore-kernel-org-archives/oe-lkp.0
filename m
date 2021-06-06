@@ -1,104 +1,86 @@
-Content-Type: multipart/mixed; boundary="===============0064705713818769384=="
+Content-Type: multipart/mixed; boundary="===============4383749229509110301=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
 Subject: Re: [mm/gup] 57efa1fe59: will-it-scale.per_thread_ops -9.2% regression
-Date: Fri, 04 Jun 2021 15:04:11 +0800
-Message-ID: <20210604070411.GA8221@shbuild999.sh.intel.com>
-In-Reply-To: <CAHk-=whTEC_GVYu=WfvUagNvHdoTALEDg8uqK3V6aMDwg2KMRA@mail.gmail.com>
+Date: Sun, 06 Jun 2021 12:20:46 -0700
+Message-ID: <CAHk-=whoqV=cX5VC80mmR9rr+Z+yQ6fiQZm36Fb-izsanHg23w@mail.gmail.com>
+In-Reply-To: <20210606101623.GA48020@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0064705713818769384==
+--===============4383749229509110301==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Linus,
+[ Adding Waiman Long to the participants, because this seems to be a
+very specific cacheline alignment behavior of rwsems, maybe Waiman has
+some comments ]
 
-Sorry for the late response.
+On Sun, Jun 6, 2021 at 3:16 AM Feng Tang <feng.tang@intel.com> wrote:
+>
+> * perf-c2c: The hotspots(HITM) for 2 kernels are different due to the
+>   data structure change
+>
+>   - old kernel
+>
+>     - first cacheline
+>         mmap_lock->count (75%)
+>         mm->mapcount (14%)
+>
+>     - second cacheline
+>         mmap_lock->owner (97%)
+>
+>   - new kernel
+>
+>     mainly in the cacheline of 'mmap_lock'
+>
+>     mmap_lock->count (~2%)
+>     mmap_lock->owner (95%)
 
-On Mon, May 24, 2021 at 05:11:37PM -1000, Linus Torvalds wrote:
-> On Mon, May 24, 2021 at 5:00 PM kernel test robot <oliver.sang@intel.co=
-m> wrote:
-> >
-> > FYI, we noticed a -9.2% regression of will-it-scale.per_thread_ops due =
-to commit:
-> > commit: 57efa1fe5957694fa541c9062de0a127f0b9acb0 ("mm/gup: prevent gup_=
-fast from racing with COW during fork")
-> =
+Oooh.
 
-> Hmm. This looks like one of those "random fluctuations" things.
-> =
+It looks like pretty much all the contention is on mmap_lock, and the
+difference is that the old kernel just _happened_ to split the
+mmap_lock rwsem at *exactly* the right place.
 
-> It would be good to hear if other test-cases also bisect to the same
-> thing, but this report already says:
-> =
+The rw_semaphore structure looks like this:
 
-> > In addition to that, the commit also has significant impact on the foll=
-owing tests:
-> >
-> > +------------------+---------------------------------------------------=
-------------------------------+
-> > | testcase: change | will-it-scale: will-it-scale.per_thread_ops 3.7% i=
-mprovement                    |
-> =
+        struct rw_semaphore {
+                atomic_long_t count;
+                atomic_long_t owner;
+                struct optimistic_spin_queue osq; /* spinner MCS lock */
+                ...
 
-> which does kind of reinforce that "this benchmark gives unstable numbers".
-> =
+and before the addition of the 'write_protect_seq' field, the mmap_sem
+was at offset 120 in 'struct mm_struct'.
 
-> The perf data doesn't even mention any of the GUP paths, and on the
-> pure fork path the biggest impact would be:
-> =
+Which meant that count and owner were in two different cachelines, and
+then when you have contention and spend time in
+rwsem_down_write_slowpath(), this is probably *exactly* the kind of
+layout you want.
 
->  (a) maybe "struct mm_struct" changed in size or had a different cache la=
-yout
+Because first the rwsem_write_trylock() will do a cmpxchg on the first
+cacheline (for the optimistic fast-path), and then in the case of
+contention, rwsem_down_write_slowpath() will just access the second
+cacheline.
 
-Yes, this seems to be the cause of the regression.
+Which is probably just optimal for a load that spends a lot of time
+contended - new waiters touch that first cacheline, and then they
+queue themselves up on the second cacheline. Waiman, does that sound
+believable?
 
-The test case is many thread are doing map/unmap at the same time,
-so the process's rw_semaphore 'mmap_lock' is highly contended.
+Anyway, I'm certainly ok with the patch that just moves
+'write_protect_seq' down, it might be worth commenting about how this
+is about some very special cache layout of the mmap_sem part of the
+structure.
 
-Before the patch (with 0day's kconfig), the mmap_lock is separated
-into 2 cachelines, the 'count' is in one line, and the other members
-sit in the next line, so it luckily avoid some cache bouncing. After
-the patch, the 'mmap_lock' is pushed into one cacheline, which may
-cause the regression.
+That said, this means that it all is very subtle dependent on a lot of
+kernel config options, and I'm not sure how relevant the exact kernel
+options are that the test robot has been using. But even if this is
+just a "kernel test robot reports", I think it's an interesting case
+and worth a comment for when this happens next time...
 
-Below is the pahole info:
-
-- before the patch
-
-	spinlock_t         page_table_lock;      /*   116     4 */
-	struct rw_semaphore mmap_lock;           /*   120    40 */
-	/* --- cacheline 2 boundary (128 bytes) was 32 bytes ago --- */
-	struct list_head   mmlist;               /*   160    16 */
-	long unsigned int  hiwater_rss;          /*   176     8 */
-
-- after the patch
-
-	spinlock_t         page_table_lock;      /*   124     4 */
-	/* --- cacheline 2 boundary (128 bytes) --- */
-	struct rw_semaphore mmap_lock;           /*   128    40 */
-	struct list_head   mmlist;               /*   168    16 */
-	long unsigned int  hiwater_rss;          /*   184     8 */
-
-perf c2c log can also confirm this.
-
-Thanks,
-Feng
-
->  (b) two added (nonatomic) increment operations in the fork path due
-> to the seqcount
-> =
-
-> and I'm not seeing what would cause that 9% change. Obviously cache
-> placement has done it before.
-> =
-
-> If somebody else sees something that I'm missing, please holler. But
-> I'll ignore this as "noise" otherwise.
-> =
-
->             Linus
---===============0064705713818769384==--
+                Linus
+--===============4383749229509110301==--
 
