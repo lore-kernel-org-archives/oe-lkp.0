@@ -1,114 +1,128 @@
-Content-Type: multipart/mixed; boundary="===============3536742280980652924=="
+Content-Type: multipart/mixed; boundary="===============3953226654733825764=="
 MIME-Version: 1.0
-From: Jason Gunthorpe <jgg@nvidia.com>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] mm: relocate 'write_protect_seq' in struct mm_struct
-Date: Fri, 11 Jun 2021 14:09:17 -0300
-Message-ID: <20210611170917.GW1002214@nvidia.com>
-In-Reply-To: <1623376482-92265-1-git-send-email-feng.tang@intel.com>
+Subject: Re: [init/initramfs.c] e7cb072eb9: invoked_oom-killer:gfp_mask=0x
+Date: Fri, 11 Jun 2021 23:08:25 +0200
+Message-ID: <729130e8-1e2e-ba79-5c4a-5156ac6d64be@rasmusvillemoes.dk>
+In-Reply-To: <20210611152959.GA29971@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3536742280980652924==
+--===============3953226654733825764==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 11, 2021 at 09:54:42AM +0800, Feng Tang wrote:
-> 0day robot reported a 9.2% regression for will-it-scale mmap1 test
-> case[1], caused by commit 57efa1fe5957 ("mm/gup: prevent gup_fast
-> from racing with COW during fork").
+On 11/06/2021 17.29, Oliver Sang wrote:
+> hi Rasmus,
 > =
 
-> Further debug shows the regression is due to that commit changes
-> the offset of hot fields 'mmap_lock' inside structure 'mm_struct',
-> thus some cache alignment changes.
+> On Fri, Jun 11, 2021 at 11:20:18AM +0200, Rasmus Villemoes wrote:
+>> OK. It's really odd that providing the VM with _more_ memory makes it
+>> fail (other then the obvious failure in the other direction when there's
+>> simply not enough memory for the unpacked initramfs itself). But
+>> unfortunately that also sounds like I won't be able to reproduce with
+>> the HW I have.
+>>
+>>>> As an extra data point, what happens if you add initramfs_async=3D0 to=
+ the
+>>>> command line?
+>>>
+>>> yes, we tested this before sending out the report. the issue gone
+>>> if initramfs_async=3D0 is added.
+>>
+>> Hm. Sounds like some initcall after rootfs_initcall time must
+>> allocate/hog a lot of memory, perhaps with some heuristic depending on
+>> how much is available.
+>>
+>> Can you try with initcall_debug=3D1? I think that should produce a lot of
+>> output, hopefully that would make it possible to see which initcalls
+>> have been done just prior to (or while) the initramfs unpacking hits ENO=
+MEM.
 > =
 
-> From the perf data, the contention for 'mmap_lock' is very severe
-> and takes around 95% cpu cycles, and it is a rw_semaphore
+> thanks a lot for guidance!
 > =
 
->         struct rw_semaphore {
->                 atomic_long_t count;	/* 8 bytes */
->                 atomic_long_t owner;	/* 8 bytes */
->                 struct optimistic_spin_queue osq; /* spinner MCS lock */
->                 ...
+> by several jobs with initcall_debug=3D1, the oom happens consistently aft=
+er
+> "calling  panel_init_module"
 > =
 
-> Before commit 57efa1fe5957 adds the 'write_protect_seq', it
-> happens to have a very optimal cache alignment layout, as
-> Linus explained:
-> =
+> below is an example, and detail dmesg.xz attached:
 
->  "and before the addition of the 'write_protect_seq' field, the
->   mmap_sem was at offset 120 in 'struct mm_struct'.
-> =
+Interesting. Well, I'm not sure panel_init_module has anything to do
+with it; there is an almost five second gap until the OOM hits. So my
+_guess_ is that we're just hitting
 
->   Which meant that count and owner were in two different cachelines,
->   and then when you have contention and spend time in
->   rwsem_down_write_slowpath(), this is probably *exactly* the kind
->   of layout you want.
-> =
+panel_init_module ->
+parport_register_driver (macro wrapper for __parport_register_driver) ->
+get_lowlevel_driver ->
+request_module ->
+...
+wait_for_initramfs
 
->   Because first the rwsem_write_trylock() will do a cmpxchg on the
->   first cacheline (for the optimistic fast-path), and then in the
->   case of contention, rwsem_down_write_slowpath() will just access
->   the second cacheline.
-> =
+which is why there's no more output from PID1. But just in case, can you
+try disabling CONFIG_PARPORT_PANEL and see if you still hit the OOM?
 
->   Which is probably just optimal for a load that spends a lot of
->   time contended - new waiters touch that first cacheline, and then
->   they queue themselves up on the second cacheline."
-> =
+It's not clear where all the memory goes. Is there any way to print some
+memory statistics after each initcall?
 
-> After the commit, the rw_semaphore is at offset 128, which means
-> the 'count' and 'owner' fields are now in the same cacheline,
-> and causes more cache bouncing.
-> =
+You said that it was consistent, so perhaps something like this ugly
+hack could be used to "bisect" to see which other initcall(s) we have a
+bad interaction with:
 
-> Currently there are 3 "#ifdef CONFIG_XXX" before 'mmap_lock' which
-> will affect its offset:
-> =
+diff --git a/init/initramfs.c b/init/initramfs.c
+index af27abc59643..2386057f1faa 100644
+--- a/init/initramfs.c
++++ b/init/initramfs.c
+@@ -732,3 +732,19 @@ static int __init populate_rootfs(void)
+        return 0;
+ }
+ rootfs_initcall(populate_rootfs);
++
++static unsigned count;
++static int __init hack_setup(char *str)
++{
++       count =3D simple_strtoul(str, NULL, 0);
++       return 1;
++}
++__setup("hack=3D", hack_setup);
++
++void hack(void)
++{
++       if (!initramfs_cookie || !count)
++               return;
++       if (!--count)
++               wait_for_initramfs();
++}
+diff --git a/init/main.c b/init/main.c
+index e9c42a183e33..a96367080011 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1236,6 +1236,7 @@ static inline void
+do_trace_initcall_finish(initcall_t fn, int ret)
+ }
+ #endif /* !TRACEPOINTS_ENABLED */
 
->   CONFIG_MMU
->   CONFIG_MEMBARRIER
->   CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES
-> =
++extern void hack(void);
+ int __init_or_module do_one_initcall(initcall_t fn)
+ {
+        int count =3D preempt_count();
+@@ -1248,6 +1249,7 @@ int __init_or_module do_one_initcall(initcall_t fn)
+        do_trace_initcall_start(fn);
+        ret =3D fn();
+        do_trace_initcall_finish(fn, ret);
++       hack();
 
-> The layout above is on 64 bits system with 0day's default kernel
-> config (similar to RHEL-8.3's config), in which all these 3 options
-> are 'y'. And the layout can vary with different kernel configs.
-> =
+        msgbuf[0] =3D 0;
 
-> Relayouting a structure is usually a double-edged sword, as sometimes
-> it can helps one case, but hurt other cases. For this case, one
-> solution is, as the newly added 'write_protect_seq' is a 4 bytes long
-> seqcount_t (when CONFIG_DEBUG_LOCK_ALLOC=3Dn), placing it into an
-> existing 4 bytes hole in 'mm_struct' will not change other fields'
-> alignment, while restoring the regression. =
+(compile-tested only). By my count, there are 322 initcalls from
+populate_rootfs() to panel_init_module() inclusive. Booting with hack=3D1
+should be equivalent to initramfs_async=3D0 and hence succeed, and
+hack=3D322 should make you see the above behaviour.
 
-> =
 
-> [1]. https://lore.kernel.org/lkml/20210525031636.GB7744(a)xsang-OptiPlex-=
-9020/
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Feng Tang <feng.tang@intel.com>
-> Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-> Cc: Jason Gunthorpe <jgg@nvidia.com>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Peter Xu <peterx@redhat.com>
-> ---
->  include/linux/mm_types.h | 27 ++++++++++++++++++++-------
->  1 file changed, 20 insertions(+), 7 deletions(-)
-
-It seems Ok to me, but didn't we earlier add the has_pinned which
-would have changed the layout too? Are we chasing performance delta's
-nobody cares about?
-
-Still it is mechanically fine, so:
-
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason
---===============3536742280980652924==--
+Rasmus
+--===============3953226654733825764==--
 
