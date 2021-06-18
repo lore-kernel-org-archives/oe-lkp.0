@@ -1,176 +1,247 @@
-Content-Type: multipart/mixed; boundary="===============6776868809189383140=="
+Content-Type: multipart/mixed; boundary="===============5044728952389024377=="
 MIME-Version: 1.0
-From: Liu, Yujie <yujie.liu@intel.com>
+From: Minchan Kim <minchan@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [mm, slub] 212a680451: BUG:sleeping_function_called_from_invalid_context_at_mm/page_alloc.c
-Date: Fri, 18 Jun 2021 08:59:42 +0000
-Message-ID: <SJ0PR11MB55983FA2B4C2992763588B82FB0D9@SJ0PR11MB5598.namprd11.prod.outlook.com>
-In-Reply-To: <9facfd79-8265-a541-42bb-7f9ad3bf3c41@suse.cz>
+Subject: Re: [PATCH v2] mm: fs: invalidate bh_lrus for only cold path
+Date: Fri, 18 Jun 2021 15:05:02 -0700
+Message-ID: <YM0YjgpBpSqnrWQH@google.com>
+In-Reply-To: <e126cd8c99440b100c61c4a792aeccd0@codeaurora.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6776868809189383140==
+--===============5044728952389024377==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-> On 6/15/21 4:54 PM, kernel test robot wrote:
-> >
-> >
-> > Greeting,
-> >
-> > FYI, we noticed the following commit (built with gcc-9):
-> >
-> > commit: 212a68045198b7e882652e923283d56e423dac7c ("mm, slub: move disab=
-ling/enabling irqs to ___slab_alloc()")
-> > https://git.kernel.org/cgit/linux/kernel/git/vbabka/linux.git slub-loca=
-l-lock-v2r2
-> =
+On Wed, Jun 09, 2021 at 01:52:46PM -0700, Chris Goldsworthy wrote:
+> On 2021-06-02 15:45, Minchan Kim wrote:
+> > On Tue, Jun 01, 2021 at 04:15:40PM -0700, Andrew Morton wrote:
+> > > On Tue,  1 Jun 2021 07:54:25 -0700 Minchan Kim <minchan@kernel.org>
+> > > wrote:
+> > > =
 
-> Nice, I wonder if you found the branch because I posted a link here [1] o=
-r the
-> robot tries everything?
-> =
+> > > > kernel test robot reported the regression of fio.write_iops[1]
+> > > > with [2].
+> > > >
+> > > > Since lru_add_drain is called frequently, invalidate bh_lrus
+> > > > there could increase bh_lrus cache miss ratio, which needs
+> > > > more IO in the end.
+> > > >
+> > > > This patch moves the bh_lrus invalidation from the hot path(
+> > > > e.g., zap_page_range, pagevec_release) to cold path(i.e.,
+> > > > lru_add_drain_all, lru_cache_disable).
+> > > =
 
-> In any case this bug should be fixed by slub-local-lock-v2r3 that I linke=
-d here
-> [2]. Is there a way to have the bot explicitly verify it?
-> =
+> > > This code is starting to hurt my brain.
+> > > =
 
-> Thanks!
-> =
+> > > What are the locking/context rules for invalidate_bh_lrus_cpu()?
+> > =
 
-> [1] https://lore.kernel.org/lkml/7be07579-d7fd-d9b7-0c86-a8bf7fc094fc(a)s=
-use.cz/
-> [2] https://lore.kernel.org/lkml/0edf0478-17ed-4120-22e1-b61ad9bddeec(a)s=
-use.cz/
-> =
+> > =
 
- =
+> > > AFAICT it offers no protection against two CPUs concurrently running
+> > > __invalidate_bh_lrus() against the same bh_lru.
+> > =
 
-Hi Vlastimil,
+> > The lru_add_drain_per_cpu will run on per-cpu since it's per-cpu work
+> > and invalidate_bh_lrus_cpu will run under bh_lru_lock so I couldn't
+> > imagine that race can happen.
+> > =
 
-We have verified the counterpart commit (03c72b2b6541) and head commit (f93=
-38c1399c9) of slub-local-lock-v2r3, and the issue is gone on this branch.
+> > > =
 
-Thanks
+> > > So when CONFIG_SMP=3Dy, invalidate_bh_lrus_cpu() must always and only=
+ be
+> > > run on the cpu which owns the bh_lru.  In which case why does it have
+> > > the `cpu' arg?
+> > =
 
-> > in testcase: xfstests
-> > version: xfstests-x86_64-820b5e3-1_20210609
-> > with following parameters:
-> >
-> > 	disk: 4HDD
-> > 	fs: xfs
-> > 	test: xfs-reflink-15
-> > 	ucode: 0x28
-> >
-> > test-description: xfstests is a regression test suite for xfs and other=
- files ystems.
-> > test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
-> >
-> >
-> > on test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790 v3 @ 3.6=
-0GHz with 6G memory
-> >
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
-> >
-> >
-> >
-> > If you fix the issue, kindly add following tag
+> > I just wanted to express both lru_add_drain_cpu and
+> > invalidate_bh_lrus_cpu
+> > in lru_add_and_bh_lrus_drain run in the same cpu but look like a bad
+> > idea
+> > since it makes people confused. Let me remove the cpu argument from
+> > invalidate_bh_lrus_cpu.
+> > =
+
+> > > =
+
+> > > Your new lru_add_and_bh_lrus_drain() follows these rules by calling
+> > > invalidate_bh_lrus_cpu() from a per-cpu worker or when CONFIG_SMP=3Dn.
+> > > =
+
+> > > I think.  It's all as clear as mud and undocumented.  Could you please
+> > > take a look at this?  Comment the locking/context rules thoroughly and
+> > > check that they are being followed?  Not forgetting cpu hotplug...
+> > > See if
+> > > there's a way of simplifying/clarifying the code?
+> > > =
+
+> > > The fact that swap.c has those #ifdef CONFIG_SMPs in there is a hint
+> > > that we're doing something wrong (or poorly) in there.  Perhaps that's
+> > > unavoidable because of all the fancy footwork in
+> > > __lru_add_drain_all().
+> > > =
+
+> > =
+
+> > Hopefully, this is better.
+> > =
+
+> > From 8d58e7ade3ed6c080995dec1395b1e130b3d16b3 Mon Sep 17 00:00:00 2001
+> > From: Minchan Kim <minchan@kernel.org>
+> > Date: Tue, 25 May 2021 08:19:17 -0700
+> > Subject: [PATCH] mm: fs: invalidate bh_lrus for only cold path
+> > =
+
+> > kernel test robot reported the regression of fio.write_iops[1]
+> > with [2].
+> > =
+
+> > Since lru_add_drain is called frequently, invalidate bh_lrus
+> > there could increase bh_lrus cache miss ratio, which needs
+> > more IO in the end.
+> > =
+
+> > This patch moves the bh_lrus invalidation from the hot path(
+> > e.g., zap_page_range, pagevec_release) to cold path(i.e.,
+> > lru_add_drain_all, lru_cache_disable).
+> > =
+
+> > [1]
+> > https://lore.kernel.org/lkml/20210520083144.GD14190(a)xsang-OptiPlex-90=
+20/
+> > [2] 8cc621d2f45d, mm: fs: invalidate BH LRU during page migration
 > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> >
-> >
-> > [    1.901338] BUG: sleeping function called from invalid context at mm=
-/page_alloc.c:4992
-> > [    1.902316] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1=
-, name: swapper/0
-> > [    1.903315] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-rc5-000=
-12-g212a68045198 #1
-> > [    1.904314] Hardware name: Dell Inc. OptiPlex 9020/03CPWF, BIOS A11 =
-04/01/2015
-> > [    1.904314] Call Trace:
-> > [    1.904314] dump_stack (kbuild/src/consumer/lib/dump_stack.c:122)
-> > [    1.904314] ___might_sleep.cold (kbuild/src/consumer/kernel/sched/co=
-re.c:8339 kbuild/src/consumer/kernel/sched/core.c:8296)
-> > [    1.904314] __alloc_pages (kbuild/src/consumer/mm/page_alloc.c:4992 =
-kbuild/src/consumer/mm/page_alloc.c:5189)
-> > [    1.904314] allocate_slab (kbuild/src/consumer/mm/slub.c:1625 kbuild=
-/src/consumer/mm/slub.c:1765)
-> > [    1.904314] ___slab_alloc (kbuild/src/consumer/mm/slub.c:2707)
-> > [    1.904314] ? kprobe_add_ksym_blacklist (kbuild/src/consumer/include=
-/linux/slab.h:556 kbuild/src/consumer/kernel/kprobes.c:2239)
-> > [    1.904314] ? __schedule (kbuild/src/consumer/kernel/sched/core.c:51=
-55)
-> > [    1.904314] ? task_rq_lock (kbuild/src/consumer/include/linux/sched.=
-h:1993 kbuild/src/consumer/kernel/sched/core.c:241)
-> > [    1.904314] ? kallsyms_lookup_size_offset (kbuild/src/consumer/kerne=
-l/kallsyms.c:298)
-> > [    1.904314] ? kprobe_add_ksym_blacklist (kbuild/src/consumer/include=
-/linux/slab.h:556 kbuild/src/consumer/kernel/kprobes.c:2239)
-> > [    1.904314] kmem_cache_alloc_trace (kbuild/src/consumer/mm/slub.c:27=
-78 kbuild/src/consumer/mm/slub.c:2861
-> kbuild/src/consumer/mm/slub.c:2903 kbuild/src/consumer/mm/slub.c:2920)
-> > [    1.904314] ? asm_exc_device_not_available (kbuild/src/consumer/arch=
-/x86/include/asm/idtentry.h:558)
-> > [    1.904314] kprobe_add_ksym_blacklist (kbuild/src/consumer/include/l=
-inux/slab.h:556 kbuild/src/consumer/kernel/kprobes.c:2239)
-> > [    1.904314] ? init_optprobes (kbuild/src/consumer/kernel/kprobes.c:2=
-477)
-> > [    1.904314] init_kprobes (kbuild/src/consumer/kernel/kprobes.c:2328 =
-kbuild/src/consumer/kernel/kprobes.c:2485)
-> > [    1.904314] ? init_optprobes (kbuild/src/consumer/kernel/kprobes.c:2=
-477)
-> > [    1.904314] do_one_initcall (kbuild/src/consumer/init/main.c:1249)
-> > [    1.904314] kernel_init_freeable (kbuild/src/consumer/init/main.c:13=
-66 kbuild/src/consumer/init/main.c:1549)
-> > [    1.904314] ? rest_init (kbuild/src/consumer/init/main.c:1444)
-> > [    1.904314] kernel_init (kbuild/src/consumer/init/main.c:1449)
-> > [    1.904314] ret_from_fork (kbuild/src/consumer/arch/x86/entry/entry_=
-64.S:300)
-> > [    1.905783] NMI watchdog: Enabled. Permanently consumes one hw-PMU c=
-ounter.
-> > [    1.906371] smp: Bringing up secondary CPUs ...
-> > [    1.907365] x86: Booting SMP configuration:
-> > [    1.908316] .... node  #0, CPUs:      #1
-> > [    0.513590] masked ExtINT on CPU#1
-> > [    1.916583]  #2
-> > [    0.513590] masked ExtINT on CPU#2
-> > [    1.922146]  #3
-> > [    0.513590] masked ExtINT on CPU#3
-> > [    1.927696]  #4
-> > [    0.513590] masked ExtINT on CPU#4
-> > [    1.933377] MDS CPU bug present and SMT on, data leak possible. See =
-https://www.kernel.org/doc/html/latest/admin-guide/hw-
-> vuln/mds.html for more details.
-> > [    1.934387]  #5
-> > [    0.513590] masked ExtINT on CPU#5
-> > [    1.940689]  #6
-> > [    0.513590] masked ExtINT on CPU#6
-> > [    1.946342]  #7
-> > [    0.513590] masked ExtINT on CPU#7
-> > [    1.951788] smp: Brought up 1 node, 8 CPUs
-> > [    1.952315] smpboot: Max logical packages: 1
-> > [    1.953315] smpboot: Total of 8 processors activated (57463.07 BogoM=
-IPS)
-> > [    1.958469] node 0 deferred pages initialised in 3ms
-> > [    1.963511] devtmpfs: initialized
-> > [    1.964346] x86/mm: Memory block size: 128MB
-> > [    1.966400] PM: Registering ACPI NVS region [mem 0xd160c000-0xd1612f=
-ff] (28672 bytes)
-> > [    1.967316] PM: Registering ACPI NVS region [mem 0xda71c000-0xda7fff=
-ff] (933888 bytes)
-> > [    1.969316] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xfff=
-fffff, max_idle_ns: 1911260446275000 ns
-> > [    1.970317] futex hash table entries: 2048 (order: 5, 131072 bytes, =
-linear)
-> > [    1.972770] pinctrl core: initialized pinctrl subsystem
-> > [    1.973416] NET: Registered protocol family 16
-> > [    1.974467] DMA: preallocated 1024 KiB GFP_KERNEL pool for atomic al=
-locations
-> > [    1.981319] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA pool for a=
-tomic allocations
-> > [    1.982318] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA32 pool for=
- atomic allocations
+> > Signed-off-by: Minchan Kim <minchan@kernel.org>
+> > ---
+> >  fs/buffer.c                 |  8 ++++++--
+> >  include/linux/buffer_head.h |  4 ++--
+> >  mm/swap.c                   | 19 ++++++++++++++++---
+> >  3 files changed, 24 insertions(+), 7 deletions(-)
+> > =
 
---===============6776868809189383140==--
+> > diff --git a/fs/buffer.c b/fs/buffer.c
+> > index 673cfbef9eec..bdaffed39030 100644
+> > --- a/fs/buffer.c
+> > +++ b/fs/buffer.c
+> > @@ -1487,12 +1487,16 @@ void invalidate_bh_lrus(void)
+> >  }
+> >  EXPORT_SYMBOL_GPL(invalidate_bh_lrus);
+> > =
+
+> > -void invalidate_bh_lrus_cpu(int cpu)
+> > +/*
+> > + * It's called from workqueue context so we need a bh_lru_lock to close
+> > + * the race with preemption/irq.
+> > + */
+> > +void invalidate_bh_lrus_cpu(void)
+> >  {
+> >  	struct bh_lru *b;
+> > =
+
+> >  	bh_lru_lock();
+> > -	b =3D per_cpu_ptr(&bh_lrus, cpu);
+> > +	b =3D this_cpu_ptr(&bh_lrus);
+> >  	__invalidate_bh_lrus(b);
+> >  	bh_lru_unlock();
+> >  }
+> > diff --git a/include/linux/buffer_head.h b/include/linux/buffer_head.h
+> > index e7e99da31349..b04d34bab124 100644
+> > --- a/include/linux/buffer_head.h
+> > +++ b/include/linux/buffer_head.h
+> > @@ -194,7 +194,7 @@ void __breadahead_gfp(struct block_device *,
+> > sector_t block, unsigned int size,
+> >  struct buffer_head *__bread_gfp(struct block_device *,
+> >  				sector_t block, unsigned size, gfp_t gfp);
+> >  void invalidate_bh_lrus(void);
+> > -void invalidate_bh_lrus_cpu(int cpu);
+> > +void invalidate_bh_lrus_cpu(void);
+> >  bool has_bh_in_lru(int cpu, void *dummy);
+> >  struct buffer_head *alloc_buffer_head(gfp_t gfp_flags);
+> >  void free_buffer_head(struct buffer_head * bh);
+> > @@ -408,7 +408,7 @@ static inline int inode_has_buffers(struct inode
+> > *inode) { return 0; }
+> >  static inline void invalidate_inode_buffers(struct inode *inode) {}
+> >  static inline int remove_inode_buffers(struct inode *inode) { return 1;
+> > }
+> >  static inline int sync_mapping_buffers(struct address_space *mapping)
+> > { return 0; }
+> > -static inline void invalidate_bh_lrus_cpu(int cpu) {}
+> > +static inline void invalidate_bh_lrus_cpu(void) {}
+> >  static inline bool has_bh_in_lru(int cpu, void *dummy) { return 0; }
+> >  #define buffer_heads_over_limit 0
+> > =
+
+> > diff --git a/mm/swap.c b/mm/swap.c
+> > index 1958d5feb148..4d9ec3c3c5a9 100644
+> > --- a/mm/swap.c
+> > +++ b/mm/swap.c
+> > @@ -642,7 +642,6 @@ void lru_add_drain_cpu(int cpu)
+> >  		pagevec_lru_move_fn(pvec, lru_lazyfree_fn);
+> > =
+
+> >  	activate_page_drain(cpu);
+> > -	invalidate_bh_lrus_cpu(cpu);
+> >  }
+> > =
+
+> >  /**
+> > @@ -725,6 +724,20 @@ void lru_add_drain(void)
+> >  	local_unlock(&lru_pvecs.lock);
+> >  }
+> > =
+
+> > +/*
+> > + * It's called from per-cpu workqueue context in SMP case so
+> > + * lru_add_drain_cpu and invalidate_bh_lrus_cpu should run on
+> > + * the same cpu. It shouldn't be a problem in !SMP case since
+> > + * the core is only one and the locks will disable preemption.
+> > + */
+> > +static void lru_add_and_bh_lrus_drain(void)
+> > +{
+> > +	local_lock(&lru_pvecs.lock);
+> > +	lru_add_drain_cpu(smp_processor_id());
+> > +	local_unlock(&lru_pvecs.lock);
+> > +	invalidate_bh_lrus_cpu();
+> > +}
+> > +
+> >  void lru_add_drain_cpu_zone(struct zone *zone)
+> >  {
+> >  	local_lock(&lru_pvecs.lock);
+> > @@ -739,7 +752,7 @@ static DEFINE_PER_CPU(struct work_struct,
+> > lru_add_drain_work);
+> > =
+
+> >  static void lru_add_drain_per_cpu(struct work_struct *dummy)
+> >  {
+> > -	lru_add_drain();
+> > +	lru_add_and_bh_lrus_drain();
+> >  }
+> > =
+
+> >  /*
+> > @@ -880,7 +893,7 @@ void lru_cache_disable(void)
+> >  	 */
+> >  	__lru_add_drain_all(true);
+> >  #else
+> > -	lru_add_drain();
+> > +	lru_add_and_bh_lrus_drain();
+> >  #endif
+> >  }
+> =
+
+> Hi Minchan,
+> =
+
+> This looks good to me.  Feel free to add:
+> =
+
+> Reviewed-by: Chris Goldsworthy <cgoldswo@codeaurora.org>
+
+Thanks for the review, Chris.
+
+Andrew, could you take a look?
+--===============5044728952389024377==--
 
