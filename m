@@ -1,257 +1,71 @@
-Content-Type: multipart/mixed; boundary="===============0712046615800600117=="
+Content-Type: multipart/mixed; boundary="===============1079118748921676998=="
 MIME-Version: 1.0
-From: Luis Henriques <lhenriques@suse.de>
+From: Alex Davies <giomedyshmujo@mail.fr>
 To: lkp@lists.01.org
-Subject: Re: [vfs] 94a4dd06a6: xfstests.generic.263.fail
-Date: Wed, 30 Jun 2021 17:06:27 +0100
-Message-ID: <YNyWgxlX4xoQ8itu@suse.de>
-In-Reply-To: <CAOQ4uxgde72YDADffihj1P-Kse_P6zkhrjBb1DhwVUC+yRJooQ@mail.gmail.com>
+Subject: ergonomic chair
+Date: Wed, 23 Jun 2021 15:55:25 +0200
+Message-ID: <6a8101df82b79c43ec4e1fa44ac3821e@webstaurantstore.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0712046615800600117==
+--===============1079118748921676998==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 30, 2021 at 06:46:22PM +0300, Amir Goldstein wrote:
-> On Fri, May 14, 2021 at 2:03 PM Luis Henriques <lhenriques@suse.de> wro=
-te:
-> >
-> > kernel test robot <oliver.sang@intel.com> writes:
-> >
-> > > Greeting,
-> > >
-> > > FYI, we noticed the following commit (built with gcc-9):
-> > >
-> > > commit: 94a4dd06a6bbf3978b0bb1dddc2d8ec4e5bcad26 ("[PATCH v9] vfs: fi=
-x copy_file_range regression in cross-fs copies")
-> > > url: https://github.com/0day-ci/linux/commits/Luis-Henriques/vfs-fix-=
-copy_file_range-regression-in-cross-fs-copies/20210510-170804
-> > > base: https://git.kernel.org/cgit/linux/kernel/git/viro/vfs.git for-n=
-ext
-> > >
-> > > in testcase: xfstests
-> > > version: xfstests-x86_64-73c0871-1_20210401
-> > > with following parameters:
-> > >
-> > >       disk: 4HDD
-> > >       fs: xfs
-> > >       test: generic-group-13
-> > >       ucode: 0x21
-> > >
-> > > test-description: xfstests is a regression test suite for xfs and oth=
-er files ystems.
-> > > test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
-> > >
-> > >
-> > > on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ =
-3.30GHz with 8G memory
-> > >
-> > > caused below changes (please refer to attached dmesg/kmsg for entire =
-log/backtrace):
-> > >
-> > >
-> > >
-> > >
-> > > If you fix the issue, kindly add following tag
-> > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > >
-> > > 2021-05-11 11:28:23 export TEST_DIR=3D/fs/sda1
-> > > 2021-05-11 11:28:23 export TEST_DEV=3D/dev/sda1
-> > > 2021-05-11 11:28:23 export FSTYP=3Dxfs
-> > > 2021-05-11 11:28:23 export SCRATCH_MNT=3D/fs/scratch
-> > > 2021-05-11 11:28:23 mkdir /fs/scratch -p
-> > > 2021-05-11 11:28:23 export SCRATCH_DEV=3D/dev/sda4
-> > > 2021-05-11 11:28:23 export SCRATCH_LOGDEV=3D/dev/sda2
-> > > 2021-05-11 11:28:23 sed "s:^:generic/:" //lkp/benchmarks/xfstests/tes=
-ts/generic-group-13
-> > > 2021-05-11 11:28:23 ./check generic/260 generic/261 generic/262 gener=
-ic/263 generic/264 generic/265 generic/266 generic/267 generic/268 generic/=
-269 generic/270 generic/271 generic/272 generic/273 generic/274 generic/275=
- generic/276 generic/277 generic/278 generic/279
-> > > FSTYP         -- xfs (debug)
-> > > PLATFORM      -- Linux/x86_64 lkp-ivb-d02 5.12.0-rc6-00061-g94a4dd06a=
-6bb #1 SMP Tue May 11 00:58:17 CST 2021
-> > > MKFS_OPTIONS  -- -f -bsize=3D4096 /dev/sda4
-> > > MOUNT_OPTIONS -- /dev/sda4 /fs/scratch
-> > >
-> > > generic/260   [not run] FITRIM not supported on /fs/scratch
-> > > generic/261   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/262   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/263   [failed, exit status 1]- output mismatch (see /lkp/benc=
-hmarks/xfstests/results//generic/263.out.bad)
-> > >     --- tests/generic/263.out 2021-04-01 03:07:08.000000000 +0000
-> > >     +++ /lkp/benchmarks/xfstests/results//generic/263.out.bad 2021-05=
--11 11:28:29.773460096 +0000
-> > >     @@ -1,3 +1,32 @@
-> > >      QA output created by 263
-> > >      fsx -N 10000 -o 8192 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z
-> > >     -fsx -N 10000 -o 128000 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z
-> > >     +Seed set to 1
-> > >     +main: filesystem does not support clone range, disabling!
-> > >     +main: filesystem does not support dedupe range, disabling!
-> > >     +skipping zero size read
-> > >     ...
-> > >     (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/263.out /lkp=
-/benchmarks/xfstests/results//generic/263.out.bad'  to see the entire diff)
-> > > generic/264   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/265   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/266   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/267   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/268   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/269    48s
-> > > generic/270    61s
-> > > generic/271   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/272   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/273    17s
-> > > generic/274    14s
-> > > generic/275    11s
-> > > generic/276   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/277    3s
-> > > generic/278   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > generic/279   [not run] Reflink not supported by scratch filesystem t=
-ype: xfs
-> > > Ran: generic/260 generic/261 generic/262 generic/263 generic/264 gene=
-ric/265 generic/266 generic/267 generic/268 generic/269 generic/270 generic=
-/271 generic/272 generic/273 generic/274 generic/275 generic/276 generic/27=
-7 generic/278 generic/279
-> > > Not run: generic/260 generic/261 generic/262 generic/264 generic/265 =
-generic/266 generic/267 generic/268 generic/271 generic/272 generic/276 gen=
-eric/278 generic/279
-> > > Failures: generic/263
-> > > Failed 1 of 20 tests
-> >
-> > OK, I see what's going on.  There are 2 issues: one with patch and anot=
-her
-> > one with the test itself.
-> >
-> > The CFR syscall should have been disabled in this test but it isn't
-> > because the test tries to copy 1 byte from a zero-sized file:
-> >
-> > int
-> > test_copy_range(void)
-> > {
-> >         loff_t o1 =3D 0, o2 =3D 1;
-> >
-> >         if (syscall(__NR_copy_file_range, fd, &o1, fd, &o2, 1, 0) =3D=
-=3D -1 &&
-> >             (errno =3D=3D ENOSYS || errno =3D=3D EOPNOTSUPP || errno =
-=3D=3D ENOTTY)) {
-> >                 if (!quiet)
-> >                         fprintf(stderr,
-> >                                 "main: filesystem does not support "
-> >                                 "copy range, disabling!\n");
-> >                 return 0;
-> >         }
-> >
-> >         return 1;
-> > }
-> >
-> > The syscall is doing an early '0' return because the file size is < len.
-> >
-> > Fixing the kernel should probably be as easy as removing the
-> > short-circuiting check in vfs_copy_file_range():
-> >
-> >         if (len =3D=3D 0)
-> >                 return 0;
-> >
-> > This will force the filesystems code to handle '0' size copies but will
-> > also make sure -EOPNOTSUPP is returned in this case.
-> >
-> =
 
-> Sorry for the late reply.
-> The solution above is correct.
-> That is aligned with the behavior of vfs_clone_file_range().
-> Need to call into the filesystem method also with 0 length
-> in order to learn about CFR support of this filesystem instance.
+--===============1079118748921676998==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
 
-Yep, this makes sense (I've seen you're detailed explanation in the other
-thread -- thanks!).  I'll send out v11 in a sec.
+PGh0bWw+CjxoZWFkPgo8L2hlYWQ+Cjxib2R5Pgo8c3BhbiBzdHlsZT0iZGlzcGxheTogYmxvY2s7
+IHRleHQtYWxpZ246IGxlZnQ7Ij48c3BhbiBzdHlsZT0iZGlzcGxheToKYmxvY2s7IHRleHQtYWxp
+Z246IGxlZnQ7Ij5IaSw8YnIgLz48YnIgLz5Ib3cgYXJlIHlvdT88YnIgLz5UaGlzIG1vbnRoIGlz
+Cm91ciBjb21wYW55J3MgYW5uaXZlcnNhcnkgY2VsZWJyYXRpb24uIE91ciBjb21wYW55IHNwZWNp
+YWxseSByZWxlYXNlCmZvbGxvd2luZyBjb21wdXRlciBjaGFpcnMgd2l0aCBwZXJmb3JtYW5jZSBh
+bmQgcHJlZmVyZW50aWFsIHByaWNlcy48YnIKLz5QbGVhc2UgcmVmZXIgdG8gdGhlIGZvbGxvd2lu
+ZyBkZXRhaWxlZCBwcm9kdWN0IGluZm9ybWF0aW9uPGJyIC8+PGJyCi8+VGhpcyBjaGFpciBpcyBh
+IHN0eWxpc2ggYWRkaXRpb24gdG8geW91ciBnYW1pbmcgc3RhdGlvbiBvciBhCm9uZS1vZi1hLWtp
+bmQgYWRkaXRpb24gdG8geW91ciBvZmZpY2UuPGJyIC8+T3VyIGNoYXJpcyBhcmUgcHJvZHVjZWQg
+dG8KZXhhY3RpbmcgcXVhbGl0eSBzdGFuZGFyZHMgaW4gb3JkZXIgdG8gcHJvdmlkZSBvdXIgY2xp
+ZW50cyB3aXRoIHRoZSBiZXN0IGluCmVsZWdhbmNlIGFuZCByZWxheGF0aW9uLjxiciAvPkl0IGNh
+biBiZWNvbWUgeW91ciBnby10byBzZWF0IGZvciB3b3JraW5nIGFuZApyZXN0aW5nIGFzIHdlbGwu
+PGJyIC8+PGJyIC8+U3BlY2lmaWNhdGlvbnM6PGJyIC8+QXJ0aWZpY2lhbCBsZWF0aGVyLApzcG9u
+Z2UsIG55bG9uLCBhbmQgaXJvbiBhcmUgYW1vbmcgdGhlIG1hdGVyaWFscyB1c2VkLjxiciAvPkRp
+bWVuc2lvbnM6CjI3LjIiIChXKSB4IDIxLjI2IiAoRCkgeCA0OC44MiItNTIuOTciIChIKTxiciAv
+PjE5LjciIChMKSB4IDE0LjgiIChXKQpTZWF0YmFzZSAoVyk8YnIgLz4xNS4xIiBXaGVlbGJhc2Ug
+RGlhbWV0ZXI8YnIgLz5UaGUgbWF4aW11bSB3ZWlnaHQgY2FwYWNpdHkKaXMgMzAwIHBvdW5kcy48
+YnIgLz48YnIgLz5QcmljZXMgZGV0YWlsczo8YnIgLz48L3NwYW4+PC9zcGFuPjxzcGFuCnN0eWxl
+PSJkaXNwbGF5OiBibG9jazsgdGV4dC1hbGlnbjogbGVmdDsiPjEtMTAgdW5pdHMgYXQgY29zdCBv
+ZiAxODUuNTAKZWFjaC48YnIgLz4xMSB0byA1MCB1bml0cyBhdCBhIGNvc3Qgb2YgMTc1LjUwIGVh
+Y2g8YnIgLz41MS0xMDAgdW5pdHMgYXQgYQpjb3N0IG9mIDE2NS41MCBlYWNoPGJyIC8+dSZuYnNw
+OyAmbmJzcDsgJm5ic3A7cyZuYnNwOyAmbmJzcDsKJm5ic3A7ZDwvc3Bhbj48c3BhbiBzdHlsZT0i
+ZGlzcGxheTogYmxvY2s7IHRleHQtYWxpZ246IGxlZnQ7Ij48YnIgLz5EbyB5b3UKbmVlZCB0byBw
+bGFjZSBhbiBvcmRlciB0b2RheT8gSWYgc28sIHBsZWFzZSBpbmZvcm0gdXMgdGhlIHNwZWNpZmlj
+IGRlbGl2ZXJ5CmFkZHJlc3MuPGJyIC8+V2Ugd2lsbCBhcnJhbmdlIGxvZ2lzdGljcyBmb3IgeW91
+IGFzIHNvb24gYXMgcG9zc2libGUuIElmIHlvdQpoYXZlIGFueSBxdWVzdGlvbnMsIHBsZWFzZSBj
+b25zdWx0Ljwvc3Bhbj4KPHA+PGltZyBzcmM9Imh0dHBzOi8vaS5lYmF5aW1nLmNvbS9pbWFnZXMv
+Zy9iMzhBQU9Td05zTmdzRTVoL3MtbDE2MDAuanBnIgphbHQ9IiIgd2lkdGg9IjQ1MCIgaGVpZ2h0
+PSI0NTAiIC8+PGltZwpzcmM9Imh0dHBzOi8vaS5lYmF5aW1nLmNvbS9pbWFnZXMvZy9BSTBBQU9T
+d0lwVmdzRTVqL3MtbDE2MDAuanBnIiBhbHQ9IiIKd2lkdGg9IjQ1MCIgaGVpZ2h0PSI0NTAiIC8+
+PC9wPgo8cD48aW1nIHNyYz0iaHR0cHM6Ly9pLmViYXlpbWcuY29tL2ltYWdlcy9nL1lMNEFBT1N3
+SjV4Z3NFNXQvcy1sMTYwMC5qcGciCmFsdD0iIiB3aWR0aD0iNDUwIiBoZWlnaHQ9IjQ1MCIgLz48
+aW1nCnNyYz0iaHR0cHM6Ly9pLmViYXlpbWcuY29tL2ltYWdlcy9nL0lkZ0FBT1N3QnhKZ3NFNXEv
+cy1sMTYwMC5qcGciIGFsdD0iIgp3aWR0aD0iNDUwIiBoZWlnaHQ9IjQ1MCIgLz48L3A+CjxwPjxp
+bWcgc3JjPSJodHRwczovL2kuZWJheWltZy5jb20vaW1hZ2VzL2cvRmVzQUFPU3cxR0Znc0U1ci9z
+LWwxNjAwLmpwZyIKYWx0PSIiIHdpZHRoPSI0NTAiIGhlaWdodD0iNDUwIiAvPjxpbWcKc3JjPSJo
+dHRwczovL2kuZWJheWltZy5jb20vaW1hZ2VzL2cvan5ZQUFPU3dTOWxnc0U1dS9zLWwxNjAwLmpw
+ZyIgYWx0PSIiCndpZHRoPSI0NTAiIGhlaWdodD0iNDUwIiAvPjwvcD4KPHA+PGltZyBzcmM9Imh0
+dHBzOi8vaS5lYmF5aW1nLmNvbS9pbWFnZXMvZy9ncWdBQU9Td2U4VmdzRTV4L3MtbDE2MDAuanBn
+IgphbHQ9IiIgd2lkdGg9IjQ1MCIgaGVpZ2h0PSI0NTAiIC8+PGltZwpzcmM9Imh0dHBzOi8vaS5l
+YmF5aW1nLmNvbS9pbWFnZXMvZy9IZWdBQU9Td2NBZGdzRTU1L3MtbDE2MDAuanBnIiBhbHQ9IiIK
+d2lkdGg9IjQ1MCIgaGVpZ2h0PSI0NTAiIC8+PC9wPgo8cD5EbyB5b3UgbmVlZCB0byBwbGFjZSBh
+biBvcmRlciB0b2RheT8gSWYgc28sIHBsZWFzZSBpbmZvcm0gdXMgdGhlCnNwZWNpZmljIGRlbGl2
+ZXJ5IGFkZHJlc3MuPGJyIC8+V2Ugd2lsbCBhcnJhbmdlIGxvZ2lzdGljcyBmb3IgeW91IGFzIHNv
+b24KYXMgcG9zc2libGUuIElmIHlvdSBoYXZlIGFueSBxdWVzdGlvbnMsIHBsZWFzZSBjb25zdWx0
+LjxiciAvPjxicgovPlRoYW5rcyw8YnIgLz5BbGV4IERhdmllczxiciAvPjxiciAvPjwvcD4KPC9i
+b2R5Pgo8L2h0bWw+Cg==
 
-Cheers,
---
-Lu=C3=ADs
-
-> > Alternatively, we could have something like:
-> >
-> >         if (len =3D=3D 0) {
-> >                 if (file_out->f_op->copy_file_range)
-> >                         return 0;
-> >                 else
-> >                         return -EOPNOTSUPP;
-> >         }
-> >
-> =
-
-> This does not catch the case of a filesystem driver that has
-> CFR method but a filesystem instance does not support CFR.
-> For example, overlayfs with ext4 as upper fs.
-> =
-
-> > What do you guys think is the right thing to do?
-> >
-> > Additionally, the test should also be fixed with something as the patch
-> > bellow.  By making sure we have 1 byte to copy we also ensure the sysca=
-ll
-> > will return -EOPNOTSUPP, even with the current version of the patch.
-> >
-> =
-
-> I don't think that the test should be fixed.
-> =
-
-> Thanks,
-> Amir.
-> =
-
-> > Cheers,
-> > --
-> > Luis
-> >
-> > diff --git a/ltp/fsx.c b/ltp/fsx.c
-> > index cd0bae55aeb8..97db594ae142 100644
-> > --- a/ltp/fsx.c
-> > +++ b/ltp/fsx.c
-> > @@ -1596,6 +1596,10 @@ int
-> >  test_copy_range(void)
-> >  {
-> >         loff_t o1 =3D 0, o2 =3D 1;
-> > +       int ret =3D 1;
-> > +
-> > +       /* Make sure we have 1 byte to copy */
-> > +       ftruncate(fd, 1);
-> >
-> >         if (syscall(__NR_copy_file_range, fd, &o1, fd, &o2, 1, 0) =3D=
-=3D -1 &&
-> >             (errno =3D=3D ENOSYS || errno =3D=3D EOPNOTSUPP || errno =
-=3D=3D ENOTTY)) {
-> > @@ -1603,10 +1607,13 @@ test_copy_range(void)
-> >                         fprintf(stderr,
-> >                                 "main: filesystem does not support "
-> >                                 "copy range, disabling!\n");
-> > -               return 0;
-> > +               ret =3D 0;
-> >         }
-> >
-> > -       return 1;
-> > +       /* Restore file size */
-> > +       ftruncate(fd, 0);
-> > +
-> > +       return ret;
-> >  }
-> >
-> >  void
---===============0712046615800600117==--
+--===============1079118748921676998==--
 
