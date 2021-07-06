@@ -1,185 +1,78 @@
-Content-Type: multipart/mixed; boundary="===============0809882931160663345=="
+Content-Type: multipart/mixed; boundary="===============0555518527582537318=="
 MIME-Version: 1.0
-From: Vincent Guittot <vincent.guittot@linaro.org>
+From: Christoph Hellwig <hch@lst.de>
 To: lkp@lists.01.org
-Subject: Re: [sched/fair] 1c35b07e6d: RIP:native_queued_spin_lock_slowpath
-Date: Tue, 06 Jul 2021 11:08:54 +0200
-Message-ID: <CAKfTPtBnEmMFwCWD3sGP=vrbG8tkLncKbjStYLN+od3z0K=RrA@mail.gmail.com>
-In-Reply-To: <20210706085652.GF2022171@shao2-debian>
+Subject: Re: [ide] b7fb14d3ac: EIP:ioread32_rep
+Date: Tue, 06 Jul 2021 16:36:47 +0200
+Message-ID: <20210706143647.GA28289@lst.de>
+In-Reply-To: <CAHk-=wj_Gfqkdp+K3iCiqMjAZQK_BrRWDs2eOS_BAw=bB=CdRw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0809882931160663345==
+--===============0555518527582537318==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Rong
+On Mon, Jul 05, 2021 at 01:00:09PM -0700, Linus Torvalds wrote:
+> It might perhaps be worth adding some kind of
+> =
 
-On Tue, 6 Jul 2021 at 10:56, kernel test robot <rong.a.chen@intel.com> wr=
-ote:
->
-> Greeting,
->
-> FYI, we noticed the following commit (built with gcc-9):
->
-> commit: 1c35b07e6d3986474e5635be566e7bc79d97c64d ("sched/fair: Ensure _su=
-m and _avg values stay consistent")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>      WARN_ON_ONCE(offset & 511);
+> =
 
-I don't think this commit is the real culprit as it mainly replaces a
-sub by a mul whereas the dmesg mentioned spinlock deadlock . Have you
-bisect the problem down to this commit or you faced the problem while
-testing latest master branch ?
+> in the callchain somewhere for that ata_queued_cmd(). But at that
+> point I no longer know the code.
 
->
->
-> in testcase: ltp
-> version: ltp-x86_64-14c1f76-1_20210703
-> with following parameters:
->
->         disk: 1HDD
->         fs: ext4
->         test: dio-01
->         ucode: 0xe2
->
-> test-description: The LTP testsuite contains a collection of tools for te=
-sting the Linux kernel and related features.
-> test-url: http://linux-test-project.github.io/
->
->
-> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 2=
-8G memory
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
->
->
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <rong.a.chen@intel.com>
->
->
-> [  160.446205]
-> [  160.451594] <<<test_output>>>
-> [  160.451595]
-> [  178.116525] ------------[ cut here ]------------
-> [  203.592757] NMI watchdog: Watchdog detected hard LOCKUP on cpu 3
-> [  203.592758] Modules linked in: dm_mod btrfs blake2b_generic xor zstd_c=
-ompress raid6_pq libcrc32c ipmi_devintf ipmi_msghandler sd_mod t10_pi sg in=
-tel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp corete=
-mp i915 kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel =
-ghash_clmulni_intel mei_wdt intel_gtt drm_kms_helper ahci rapl syscopyarea =
-libahci sysfillrect intel_cstate sysimgblt mei_me fb_sys_fops wmi_bmof drm =
-intel_uncore libata mei joydev intel_pch_thermal wmi video intel_pmc_core a=
-cpi_pad ip_tables
-> [  203.592770] CPU: 3 PID: 3103 Comm: diotest6 Tainted: G          I     =
-  5.13.0-rc6-00076-g1c35b07e6d39 #1
-> [  203.592770] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIOS 1.2.8 =
-01/26/2016
-> [  203.592771] RIP: 0010:native_queued_spin_lock_slowpath (kbuild/src/con=
-sumer/kernel/locking/qspinlock.c:382 kbuild/src/consumer/kernel/locking/qsp=
-inlock.c:315)
-> [ 203.592771] Code: 6c f0 0f ba 2f 08 0f 92 c0 0f b6 c0 c1 e0 08 89 c2 8b=
- 07 30 e4 09 d0 a9 00 01 ff ff 75 46 85 c0 74 0e 8b 07 84 c0 74 08 f3 90 <8=
-b> 07 84 c0 75 f8 b8 01 00 00 00 66 89 07 c3 8b 37 b8 00 02 00 00
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   6c                      insb   (%dx),%es:(%rdi)
->    1:   f0 0f ba 2f 08          lock btsl $0x8,(%rdi)
->    6:   0f 92 c0                setb   %al
->    9:   0f b6 c0                movzbl %al,%eax
->    c:   c1 e0 08                shl    $0x8,%eax
->    f:   89 c2                   mov    %eax,%edx
->   11:   8b 07                   mov    (%rdi),%eax
->   13:   30 e4                   xor    %ah,%ah
->   15:   09 d0                   or     %edx,%eax
->   17:   a9 00 01 ff ff          test   $0xffff0100,%eax
->   1c:   75 46                   jne    0x64
->   1e:   85 c0                   test   %eax,%eax
->   20:   74 0e                   je     0x30
->   22:   8b 07                   mov    (%rdi),%eax
->   24:   84 c0                   test   %al,%al
->   26:   74 08                   je     0x30
->   28:   f3 90                   pause
->   2a:*  8b 07                   mov    (%rdi),%eax              <-- trapp=
-ing instruction
->   2c:   84 c0                   test   %al,%al
->   2e:   75 f8                   jne    0x28
->   30:   b8 01 00 00 00          mov    $0x1,%eax
->   35:   66 89 07                mov    %ax,(%rdi)
->   38:   c3                      retq
->   39:   8b 37                   mov    (%rdi),%esi
->   3b:   b8 00 02 00 00          mov    $0x200,%eax
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   8b 07                   mov    (%rdi),%eax
->    2:   84 c0                   test   %al,%al
->    4:   75 f8                   jne    0xfffffffffffffffe
->    6:   b8 01 00 00 00          mov    $0x1,%eax
->    b:   66 89 07                mov    %ax,(%rdi)
->    e:   c3                      retq
->    f:   8b 37                   mov    (%rdi),%esi
->   11:   b8 00 02 00 00          mov    $0x200,%eax
-> [  203.592772] RSP: 0018:ffffc90001f032d8 EFLAGS: 00000002
-> [  203.592773] RAX: 0000000000000101 RBX: ffff88810d4a0000 RCX: ffff88875=
-9cc0000
-> [  203.592773] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88875=
-9ceba80
-> [  203.592774] RBP: ffffc90001f032e8 R08: ffff888759ceb420 R09: ffff88875=
-9ceb420
-> [  203.592774] R10: ffff88810cc01500 R11: 0000000000000000 R12: ffff88875=
-9ceba80
-> [  203.592774] R13: 0000000000000000 R14: 0000000000000087 R15: ffff88810=
-d4a0c8c
-> [  203.592775] FS:  00007fc252ae2740(0000) GS:ffff888759cc0000(0000) knlG=
-S:0000000000000000
-> [  203.592775] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  203.592776] CR2: 00007fa0a4d577f8 CR3: 000000074d22a005 CR4: 000000000=
-03706e0
-> [  203.592776] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
-0000000
-> [  203.592776] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 000000000=
-0000400
-> [  203.592777] Call Trace:
-> [  203.592777] _raw_spin_lock (kbuild/src/consumer/arch/x86/include/asm/p=
-aravirt.h:585 kbuild/src/consumer/arch/x86/include/asm/qspinlock.h:51 kbuil=
-d/src/consumer/include/asm-generic/qspinlock.h:85 kbuild/src/consumer/inclu=
-de/linux/spinlock.h:183 kbuild/src/consumer/include/linux/spinlock_api_smp.=
-h:143 kbuild/src/consumer/kernel/locking/spinlock.c:151)
-> [  203.592777] raw_spin_rq_lock_nested (kbuild/src/consumer/arch/x86/incl=
-ude/asm/preempt.h:85 kbuild/src/consumer/kernel/sched/core.c:462)
-> [  203.592778] try_to_wake_up (kbuild/src/consumer/kernel/sched/sched.h:1=
-536 kbuild/src/consumer/kernel/sched/sched.h:1611 kbuild/src/consumer/kerne=
-l/sched/core.c:3555 kbuild/src/consumer/kernel/sched/core.c:3835)
-> [  203.592778] __queue_work (kbuild/src/consumer/arch/x86/include/asm/par=
-avirt.h:590 kbuild/src/consumer/arch/x86/include/asm/qspinlock.h:56 kbuild/=
-src/consumer/include/linux/spinlock.h:212 kbuild/src/consumer/include/linux=
-/spinlock_api_smp.h:151 kbuild/src/consumer/kernel/workqueue.c:1501)
-> [  203.592778] queue_work_on (kbuild/src/consumer/kernel/workqueue.c:1526)
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp install                job.yaml  # job file is attached i=
-n this email
->         bin/lkp split-job --compatible job.yaml  # generate the yaml file=
- for lkp run
->         bin/lkp run                    generated-yaml-file
->
->
->
-> ---
-> 0DAY/LKP+ Test Infrastructure                   Open Source Technology Ce=
-nter
-> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel Corpo=
-ration
->
-> Thanks,
-> Rong Chen
->
---===============0809882931160663345==--
+Yeah, there's usually a huge offset into the page.  The otherwise
+similar ATAPI code actually has checks to chunk it up and not cross
+page boundaries, and copying that over fixes the problem.  The testbot
+config then crashes in an infiband driver, but disabling that driver
+entirely makes it boot fine:
+
+diff --git a/drivers/ata/libata-sff.c b/drivers/ata/libata-sff.c
+index ae7189d1a568..018f021c45a3 100644
+--- a/drivers/ata/libata-sff.c
++++ b/drivers/ata/libata-sff.c
+@@ -651,7 +651,7 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
+ 	int do_write =3D (qc->tf.flags & ATA_TFLAG_WRITE);
+ 	struct ata_port *ap =3D qc->ap;
+ 	struct page *page;
+-	unsigned int offset;
++	unsigned int offset, count;
+ 	unsigned char *buf;
+ =
+
+ 	if (!qc->cursg) {
+@@ -670,16 +670,22 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
+ =
+
+ 	DPRINTK("data %s\n", qc->tf.flags & ATA_TFLAG_WRITE ? "write" : "read");
+ =
+
++	/* don't overrun current sg */
++	count =3D min(qc->cursg->length - qc->cursg_ofs, qc->sect_size);
++
++	/* don't cross page boundaries */
++	count =3D min(count, (unsigned int)PAGE_SIZE - offset);
++
+ 	/* do the actual data transfer */
+ 	buf =3D kmap_atomic(page);
+-	ap->ops->sff_data_xfer(qc, buf + offset, qc->sect_size, do_write);
++	ap->ops->sff_data_xfer(qc, buf + offset, count, do_write);
+ 	kunmap_atomic(buf);
+ =
+
+ 	if (!do_write && !PageSlab(page))
+ 		flush_dcache_page(page);
+ =
+
+-	qc->curbytes +=3D qc->sect_size;
+-	qc->cursg_ofs +=3D qc->sect_size;
++	qc->curbytes +=3D count;
++	qc->cursg_ofs +=3D count;
+ =
+
+ 	if (qc->cursg_ofs =3D=3D qc->cursg->length) {
+ 		qc->cursg =3D sg_next(qc->cursg);
+--===============0555518527582537318==--
 
