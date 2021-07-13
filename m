@@ -1,42 +1,32 @@
-Content-Type: multipart/mixed; boundary="===============5326642018591138885=="
+Content-Type: multipart/mixed; boundary="===============4956060307882279410=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Matthew Wilcox <willy@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [mm/page_alloc] 44042b4498: WARNING:possible_recursive_locking_detected
-Date: Tue, 27 Jul 2021 15:35:38 +0100
-Message-ID: <20210727143538.GB3809@techsingularity.net>
-In-Reply-To: <20210727143136.GA27400@xsang-OptiPlex-9020>
+Subject: Re: [mm/vmalloc] 5c1f4e690e: BUG:sleeping_function_called_from_invalid_context_at_mm/page_alloc.c
+Date: Tue, 13 Jul 2021 19:26:53 +0100
+Message-ID: <YO3a7erVd2yXdaAK@casper.infradead.org>
+In-Reply-To: <CAHk-=wiDif7SvA5DOWj9ssDuYHC4ujUFPd7ad-ydhY-WMLb-kQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5326642018591138885==
+--===============4956060307882279410==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 27, 2021 at 10:31:36PM +0800, kernel test robot wrote:
+On Tue, Jul 13, 2021 at 11:19:29AM -0700, Linus Torvalds wrote:
+> Does anybody see what the problem is there?
 > =
 
+> There's an odd report _after_ the warning:
 > =
 
-> Greeting,
-> =
+> [  131.345319] raw_local_irq_restore() called with IRQs enabled
+> [  131.366561] RIP: 0010:warn_bogus_irq_restore+0x1d/0x20
+> [  131.433334]  __alloc_pages_bulk+0xbb8/0xf20
 
-> FYI, we noticed the following commit (built with gcc-9):
-> =
+That's the key -- __alloc_pages_bulk has interrupts disabled and then
+page_owner allocates memory for the stack dump.  Mel has a fix; I think
+we're just waiting for it to hit your tree.
 
-> commit: 44042b4498728f4376e84bae1ac8016d146d850b ("mm/page_alloc: allow h=
-igh-order pages to be stored on the per-cpu lists")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> =
-
-
-Does this warning happen after 187ad460b841 ("mm/page_alloc: avoid page
-allocator recursion with pagesets.lock held")? I ask because I see the
-stack_depot_save in the warning.
-
--- =
-
-Mel Gorman
-SUSE Labs
---===============5326642018591138885==--
+--===============4956060307882279410==--
 
