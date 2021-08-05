@@ -1,52 +1,42 @@
-Content-Type: multipart/mixed; boundary="===============5428410862331913478=="
+Content-Type: multipart/mixed; boundary="===============7402867878112279528=="
 MIME-Version: 1.0
-From: Chao Gao <chao.gao@intel.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [clocksource] 8901ecc231: stress-ng.lockbus.ops_per_sec -9.5% regression
-Date: Thu, 05 Aug 2021 13:39:40 +0800
-Message-ID: <20210805053938.GA12593@gao-cwp>
-In-Reply-To: <20210805040349.GD4397@paulmck-ThinkPad-P17-Gen-1>
+Date: Thu, 05 Aug 2021 08:33:10 -0700
+Message-ID: <20210805153310.GF4397@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <a8d99be8-da3f-6c8e-cdbb-efd239ff3f14@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5428410862331913478==
+--===============7402867878112279528==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-[snip]
->> This patch works well; no false-positive (marking TSC unstable) in a
->> 10hr stress test.
->
->Very good, thank you!  May I add your Tested-by?
+On Wed, Aug 04, 2021 at 09:34:13PM -0700, Andi Kleen wrote:
+> =
 
-sure.
-Tested-by: Chao Gao <chao.gao@intel.com>
+> > My current thought is that if more than (say) 100 consecutive attempts
+> > to read the clocksource get hit with excessive delays, it is time to at
+> > least do a WARN_ON(), and maybe also time to disable the clocksource
+> > due to skew.  The reason is that if reading the clocksource -always-
+> > sees excessive delays, perhaps the clock driver or hardware is to blame.
+> > =
 
->
->I expect that I will need to modify the patch a bit more to check for
->a system where it is -never- able to get a good fine-grained read from
->the clock.
+> > Thoughts?
+> =
 
-Agreed.
+> On TDX this would be fatal because we don't have a usable fallback source
+> =
 
->And it might be that your test run ended up in that state.
+> (just jiffies). Better try as hard as possible.
 
-Not that case judging from kernel logs. Coarse-grained check happened 6475
-times in 43k seconds (by grep "coarse-grained skew check" in kernel logs).
-So, still many checks were fine-grained.
+At some point, won't the system's suffering in silence become quite the
+disservice to its users?
 
->
->My current thought is that if more than (say) 100 consecutive attempts
->to read the clocksource get hit with excessive delays, it is time to at
->least do a WARN_ON(), and maybe also time to disable the clocksource
->due to skew.  The reason is that if reading the clocksource -always-
->sees excessive delays, perhaps the clock driver or hardware is to blame.
->
->Thoughts?
+One alternative would be to give a warning splat, but avoid reporting
+skew.  Unless there is the traditional 62.5ms of skew, of course.
 
-It makes sense to me.
-
-Thanks
-Chao
---===============5428410862331913478==--
+							Thanx, Paul
+--===============7402867878112279528==--
 
