@@ -1,71 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============9131685271079905441=="
+Content-Type: multipart/mixed; boundary="===============7665993152793980218=="
 MIME-Version: 1.0
-From: Du, Julie <julie.du@intel.com>
+From: Michal Koutný <mkoutny@suse.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/tdx] e2f278db42: WARNING:at_net/sched/sch_generic.c:#dev_watchdog
-Date: Tue, 17 Aug 2021 06:48:30 +0000
-Message-ID: <BN9PR11MB53214ECF6A3E866D0B1CBAC08FFE9@BN9PR11MB5321.namprd11.prod.outlook.com>
-In-Reply-To: <0e530745-c23d-0839-3f0f-8696aa0db818@linux.intel.com>
+Subject: Re: [mm] 2d146aa3aa: vm-scalability.throughput -36.4% regression
+Date: Tue, 17 Aug 2021 18:47:37 +0200
+Message-ID: <20210817164737.GA23342@blackbody.suse.cz>
+In-Reply-To: <20210817024500.GC72770@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9131685271079905441==
+--===============7665993152793980218==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-+ Hongyu who tests TDX feature. =
+On Tue, Aug 17, 2021 at 10:45:00AM +0800, Feng Tang <feng.tang@intel.com>=
+ wrote:
+> Initially from the perf-c2c data, the in-cacheline hotspots are only
+> 0x0, and 0x10, and if we extends to 2 cachelines, there is one more
+> offset 0x54 (css.flags), but still I can't figure out which member
+> inside the 128 bytes range is written frequenty.
 
+Is it certain that perf-c2c reported offsets are the cacheline of the
+first bytes of struct cgroup_subsys_state? (Yeah, it looks to me so,
+given what code accesses those and your padding fixing it. I'm just
+raising it in case there was anything non-obvious.)
 
------Original Message-----
-From: Andi Kleen <ak@linux.intel.com> =
+> =
 
-Sent: Tuesday, August 17, 2021 10:53 AM
-To: Sang, Oliver <oliver.sang@intel.com>
-Cc: lkp(a)lists.01.org; lkp <lkp@intel.com>
-Subject: [LKP] Re: [x86/tdx] e2f278db42: WARNING:at_net/sched/sch_generic.c=
-:#dev_watchdog
+> /* pah info for cgroup_subsys_state */
+> struct cgroup_subsys_state {
+> 	struct cgroup *            cgroup;               /*     0     8 */
+> 	struct cgroup_subsys *     ss;                   /*     8     8 */
+> 	struct percpu_ref          refcnt;               /*    16    16 */
+> 	struct list_head           sibling;              /*    32    16 */
+> 	struct list_head           children;             /*    48    16 */
+> 	/* --- cacheline 1 boundary (64 bytes) --- */
+> 	struct list_head           rstat_css_node;       /*    64    16 */
+> 	int                        id;                   /*    80     4 */
+> 	unsigned int               flags;                /*    84     4 */
+> 	u64                        serial_nr;            /*    88     8 */
+> 	atomic_t                   online_cnt;           /*    96     4 */
+> =
 
+> 	/* XXX 4 bytes hole, try to pack */
+> =
 
-> e2f278db42:
-> 2021-08-16 14:44:02
-> 2021-08-16 14:55:41
-> 2021-08-16 15:01:56
-> 2021-08-16 15:10:24
-> 2021-08-16 15:15:59
-> 2021-08-16 15:22:01
->
->
-> by checking all dmesg for 12 runs of parent and 12 runs of e2f278db42, =
+> 	struct work_struct         destroy_work;         /*   104    32 */
+> 	/* --- cacheline 2 boundary (128 bytes) was 8 bytes ago --- */
+> =
 
-> we confirmed the phenomenon are similar.
+> Since the test run implies this is cacheline related, and I'm not very
+> familiar with the mem_cgroup code, the original perf-c2c log is attached
+> which may give more hints.
 
+As noted by Johannes, even in atomic mode, the refcnt would have the
+atomic part elsewhere. The other members shouldn't be written frequently
+unless there are some intense modifications of the cgroup tree in
+parallel.
+Does the benchmark create lots of memory cgroups in such a fashion?
 
-That's mysterious. The patch should really be a nop.
-
-I just looked through it again and I don't see anything that could be a non=
- nop on non TDX or AMD SEV.
-
-The patch should apply/work on its own. Do you see the problem too if you a=
-pply it on an otherwise booting kernel.
-
->
-> attached one dmesg for 0cc1e5f476 and one for e2f278db42 FYI
->
->
-> BTW, is there a simple way to decide the test runs in 'non TDX system' =
-
-> or not?
-
-TDX is a future CPU feature, not in any systems that you run. It also needs=
- special setup both on the host and the guest. BTW it also changes behavior=
- on AMD SEV enabled systems, but I assume you don't have one of those eithe=
-r.
-
-
--Andi
-
-_______________________________________________
-LKP mailing list -- lkp(a)lists.01.org
-To unsubscribe send an email to lkp-leave(a)lists.01.org
---===============9131685271079905441==--
+Regards,
+Michal
+--===============7665993152793980218==--
 
