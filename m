@@ -1,20 +1,30 @@
-Content-Type: multipart/mixed; boundary="===============5323703384414798851=="
+Content-Type: multipart/mixed; boundary="===============7772603422613372218=="
 MIME-Version: 1.0
 From: Colin Ian King <colin.king@canonical.com>
 To: lkp@lists.01.org
 Subject: Re: [pipe] 3b844826b6: stress-ng.sigio.ops_per_sec -99.3% regression
-Date: Tue, 24 Aug 2021 19:42:05 +0100
-Message-ID: <066f6c17-95a9-ba37-83d5-f0ee0d98bac8@canonical.com>
+Date: Tue, 24 Aug 2021 21:57:56 +0100
+Message-ID: <2cad6e66-e255-f52e-706e-100728503a04@canonical.com>
 In-Reply-To: <CAHk-=wiKAg5QtrQOtvKNwkRUn0b2xufO54GPhUoTWxBgDzXWNA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5323703384414798851==
+--===============7772603422613372218==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 On 24/08/2021 18:32, Linus Torvalds wrote:
 > [ Added Colin King, as this looks to be related to stress-sigio.c ]
+
+FYI, I've pushed a fix that fixes my assumption that SIGIO occurs on
+each write down the pipe. The fix now drains the input size and I've set
+the read/write buffers to be the same size.
+
+This will affect the bogo-ops rates for this stressor, so it will mess
+up any on-going metrics folks may be using.
+
+Colin
+
 > =
 
 > On Tue, Aug 24, 2021 at 9:22 AM Linus Torvalds
@@ -93,15 +103,6 @@ ession:
 > user space expected (perhaps not _intentionally_) that SIGIO would
 > happen over and over again when you add new data, even if the pipe
 > already had data.
-
-yep, that's basically the underlying assumption I made with this rather
-naive test. I'll re-work it sometime this week once I can formally
-verify this is what is happening.
-
-Thanks Linus for the insight.
-
-Colin
-
 > =
 
 > So then commit 1b6b26ae7053 ("pipe: fix and clarify pipe write wakeup
@@ -135,5 +136,5 @@ Colin
 >                       Linus
 >=20
 
---===============5323703384414798851==--
+--===============7772603422613372218==--
 
