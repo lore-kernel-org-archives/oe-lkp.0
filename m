@@ -1,30 +1,48 @@
-Content-Type: multipart/mixed; boundary="===============0309890464615738217=="
+Content-Type: multipart/mixed; boundary="===============8605154095002303675=="
 MIME-Version: 1.0
-From: Andi Kleen <ak@linux.intel.com>
+From: Ning, Hongyu <hongyu.ning@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/tdx] e2f278db42: WARNING:at_net/sched/sch_generic.c:#dev_watchdog
-Date: Tue, 24 Aug 2021 17:09:34 -0700
-Message-ID: <1dc27c53-a8f2-a1e0-945d-9ee862daadc3@linux.intel.com>
-In-Reply-To: <PH0PR11MB5593FB5ED4B8C5F5DB034B01EDC59@PH0PR11MB5593.namprd11.prod.outlook.com>
+Date: Wed, 25 Aug 2021 02:52:21 +0000
+Message-ID: <PH0PR11MB5593D266B708513C32718F6EEDC69@PH0PR11MB5593.namprd11.prod.outlook.com>
+In-Reply-To: <1dc27c53-a8f2-a1e0-945d-9ee862daadc3@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0309890464615738217==
+--===============8605154095002303675==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+
+Andi, Oliver,
+
+This patch fix the original issue on my side, everything looks fine now.
+
+-=3D Hongyu
+
+-----Original Message-----
+From: Andi Kleen <ak@linux.intel.com> =
+
+Sent: Wednesday, August 25, 2021 8:10 AM
+To: Ning, Hongyu <hongyu.ning@intel.com>; Du, Julie <julie.du@intel.com=
+>; Sang, Oliver <oliver.sang@intel.com>
+Cc: lkp(a)lists.01.org; lkp <lkp@intel.com>; Lai, Yi1 <yi1.lai@intel.co=
+m>
+Subject: Re: [LKP] Re: [x86/tdx] e2f278db42: WARNING:at_net/sched/sch_gener=
+ic.c:#dev_watchdog
 
 
 On 8/24/2021 1:50 AM, Ning, Hongyu wrote:
 > Oliver,
 >
-> Though not exactly the same issue reproduced on my side, there are indeed=
- some strange behaviors regarding netdev introduced by commit e2f278db42: x=
-86/tdx: Implement ioremap_shared for x86
+> Though not exactly the same issue reproduced on my side, there are =
+
+> indeed some strange behaviors regarding netdev introduced by commit =
+
+> e2f278db42: x86/tdx: Implement ioremap_shared for x86
 
 
-I found the bug now. ioremap_shared was using write combining instead of =
-
-uncached, which can explain the strange effects.
+I found the bug now. ioremap_shared was using write combining instead of un=
+cached, which can explain the strange effects.
 
 
 Can you please check if this patch fixes it?
@@ -99,22 +117,5 @@ her.
 > LKP mailing list -- lkp(a)lists.01.org
 > To unsubscribe send an email to lkp-leave(a)lists.01.org
 
---===============0309890464615738217==
-Content-Type: text/plain
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="ioremap-uc.ksh"
-
-ZGlmZiAtLWdpdCBhL2FyY2gveDg2L21tL2lvcmVtYXAuYyBiL2FyY2gveDg2L21tL2lvcmVtYXAu
-YwppbmRleCBkOTExZWU4ZDI0OGEuLmQzYTU3YjhlZmFkOCAxMDA2NDQKLS0tIGEvYXJjaC94ODYv
-bW0vaW9yZW1hcC5jCisrKyBiL2FyY2gveDg2L21tL2lvcmVtYXAuYwpAQCAtNDIyLDcgKzQyMiw3
-IEBAIEVYUE9SVF9TWU1CT0woaW9yZW1hcF93Yyk7CiAgKi8KIHZvaWQgX19pb21lbSAqaW9yZW1h
-cF9zaGFyZWQocmVzb3VyY2Vfc2l6ZV90IHBoeXNfYWRkciwgdW5zaWduZWQgbG9uZyBzaXplKQog
-ewotCXJldHVybiBfX2lvcmVtYXBfY2FsbGVyKHBoeXNfYWRkciwgc2l6ZSwgX1BBR0VfQ0FDSEVf
-TU9ERV9XQywKKwlyZXR1cm4gX19pb3JlbWFwX2NhbGxlcihwaHlzX2FkZHIsIHNpemUsIF9QQUdF
-X0NBQ0hFX01PREVfVUNfTUlOVVMsCiAJCQlfX2J1aWx0aW5fcmV0dXJuX2FkZHJlc3MoMCksIGZh
-bHNlLAogCQkJcHJvdF9ndWVzdF9oYXMoUEFUVFJfR1VFU1RfU0hBUkVEX01BUFBJTkdfSU5JVCkp
-OwogfQo=
-
---===============0309890464615738217==--
+--===============8605154095002303675==--
 
