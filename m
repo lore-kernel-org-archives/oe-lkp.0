@@ -1,189 +1,141 @@
-Content-Type: multipart/mixed; boundary="===============3889905631713056789=="
+Content-Type: multipart/mixed; boundary="===============4149369000049124218=="
 MIME-Version: 1.0
-From: Marco Elver <elver@google.com>
+From: Barry Song <21cnbao@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] f9ce0be71d: BUG:KCSAN:data-race_in_next_uptodate_page/next_uptodate_page
-Date: Tue, 31 Aug 2021 17:47:37 +0200
-Message-ID: <YS5PGac+2NTGFlwa@elver.google.com>
-In-Reply-To: <20210831140749.GA31886@willie-the-truck>
+Subject: Re: [PCI/MSI] a4fc4cf388: dmesg.genirq:Flags_mismatch_irq##(mei_me)vs.#(xhci_hcd)
+Date: Wed, 01 Sep 2021 09:36:45 +1200
+Message-ID: <CAGsJ_4y45TyWibu0cOLbopO_k3RbwxQe0C2yp8v4=fF7etMOTg@mail.gmail.com>
+In-Reply-To: <1132a536516f15ab6b338ab868ec3705@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3889905631713056789==
+--===============4149369000049124218==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 31, 2021 at 03:07PM +0100, Will Deacon wrote:
-> On Tue, Aug 31, 2021 at 03:38:17PM +0200, Marco Elver wrote:
-> > On Tue, 31 Aug 2021 at 15:13, Will Deacon <will@kernel.org> wrote:
-> > > > > [  184.717904][ T1873] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> > > > > [  184.718938][ T1873] BUG: KCSAN: data-race in next_uptodate_pag=
-e / unlock_page
-> > > > > [  184.719828][ T1873]
-> > > > > [  184.720103][ T1873] write (marked) to 0xffffea00050f37c0 of 8 =
-bytes by task 1872 on cpu 1:
-> > > > > [  184.721024][ T1873]  unlock_page+0x102/0x1b0
-> > > > > [  184.721533][ T1873]  filemap_map_pages+0x6c6/0x890
-> > > > > [  184.722102][ T1873]  handle_mm_fault+0x179c/0x27f0
-> > > > > [  184.722672][ T1873]  do_user_addr_fault+0x3fb/0x830
-> > > > > [  184.723263][ T1873]  exc_page_fault+0xc3/0x1a0
-> > > > > [  184.723845][ T1873]  asm_exc_page_fault+0x1e/0x30
-> > > > > [  184.724427][ T1873]
-> > > > > [  184.724720][ T1873] read to 0xffffea00050f37c0 of 8 bytes by t=
-ask 1873 on cpu 0:
-> > > > > [  184.725575][ T1873]  next_uptodate_page+0x456/0x830
-> > > > > [  184.726161][ T1873]  filemap_map_pages+0x728/0x890
-> > > > > [  184.726747][ T1873]  handle_mm_fault+0x179c/0x27f0
-> > > > > [  184.727332][ T1873]  do_user_addr_fault+0x3fb/0x830
-> > > > > [  184.727905][ T1873]  exc_page_fault+0xc3/0x1a0
-> > > > > [  184.728440][ T1873]  asm_exc_page_fault+0x1e/0x30
-> > > > > [  184.729027][ T1873]
-> > > > > [  184.729313][ T1873] Reported by Kernel Concurrency Sanitizer o=
-n:
-> > > > > [  184.730019][ T1873] CPU: 0 PID: 1873 Comm: systemd-udevd Not t=
-ainted 5.11.0-rc4-00001-gf9ce0be71d1f #1
-> > > > > [  184.731103][ T1873] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> > > >
-> > > > Line annotation would be helpful.
-[...]
-> > Thoughts?
-> =
+On Tue, Aug 31, 2021 at 8:08 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On 2021-08-31 02:21, Barry Song wrote:
+> > On Mon, Aug 30, 2021 at 2:38 AM kernel test robot
+> > <oliver.sang@intel.com> wrote:
+> >>
+> >>
+> >>
+> >> Greeting,
+> >>
+> >> FYI, we noticed the following commit (built with gcc-9):
+> >>
+> >> commit: a4fc4cf388319ea957ffbdab5073bdd267de9082 ("[PATCH v3 3/3]
+> >> PCI/MSI: remove msi_attrib.default_irq in msi_desc")
+> >> url:
+> >> https://github.com/0day-ci/linux/commits/Barry-Song/PCI-MSI-Clarify-th=
+e-IRQ-sysfs-ABI-for-PCI-devices/20210825-183018
+> >> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git
+> >> 6e764bcd1cf72a2846c0e53d3975a09b242c04c9
+> >>
+> >> in testcase: kernel-selftests
+> >> version: kernel-selftests-x86_64-ebaa603b-1_20210825
+> >> with following parameters:
+> >>
+> >>         group: pidfd
+> >>         ucode: 0xe2
+> >>
+> >> test-description: The kernel contains a set of "self tests" under the
+> >> tools/testing/selftests/ directory. These are intended to be small
+> >> unit tests to exercise individual code paths in the kernel.
+> >> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+> >>
+> >>
+> >> on test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz
+> >> with 32G memory
+> >>
+> >> caused below changes (please refer to attached dmesg/kmsg for entire
+> >> log/backtrace):
+> >>
+> >>
+> >>
+> >> If you fix the issue, kindly add following tag
+> >> Reported-by: kernel test robot <oliver.sang@intel.com>
+> >>
+> >>
+> >>
+> >> [  179.602028][   T34] genirq: Flags mismatch irq 16. 00002000
+> >> (mei_me) vs. 00000000 (xhci_hcd)
+> >> [  179.614073][   T34] CPU: 2 PID: 34 Comm: kworker/u8:2 Not tainted
+> >> 5.14.0-rc7-00014-ga4fc4cf38831 #1
+> >> [  179.623225][   T34] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT,
+> >> BIOS 1.8.1 12/05/2017
+> >> [  179.631432][   T34] Workqueue: events_unbound async_run_entry_fn
+> >> [  179.637543][   T34] Call Trace:
+> >> [  179.640789][   T34]  dump_stack_lvl+0x45/0x59
+> >> [  179.645253][   T34]  __setup_irq.cold+0x50/0xd4
+> >> [  179.649893][   T34]  ? mei_me_pg_exit_sync+0x480/0x480 [mei_me]
+> >> [  179.655923][   T34]  request_threaded_irq+0x10c/0x180
+> >> [  179.661073][   T34]  ? mei_me_irq_quick_handler+0x240/0x240
+> >> [mei_me]
+> >> [  179.667528][   T34]  mei_me_probe+0x131/0x300 [mei_me]
+> >> [  179.672767][   T34]  local_pci_probe+0x42/0x80
+> >> [  179.677313][   T34]  pci_device_probe+0x107/0x1c0
+> >> [  179.682118][   T34]  really_probe+0xb6/0x380
+> >> [  179.687094][   T34]  __driver_probe_device+0xfe/0x180
+> >> [  179.692242][   T34]  driver_probe_device+0x1e/0xc0
+> >> [  179.697133][   T34]  __driver_attach_async_helper+0x2b/0x80
+> >> [  179.702802][   T34]  async_run_entry_fn+0x30/0x140
+> >> [  179.707693][   T34]  process_one_work+0x274/0x5c0
+> >> [  179.712503][   T34]  worker_thread+0x50/0x3c0
+> >> [  179.716959][   T34]  ? process_one_work+0x5c0/0x5c0
+> >> [  179.721936][   T34]  kthread+0x14f/0x180
+> >> [  179.725958][   T34]  ? set_kthread_struct+0x40/0x40
+> >> [  179.730935][   T34]  ret_from_fork+0x22/0x30
+> >> [  179.735699][   T34] mei_me 0000:00:16.0: request_threaded_irq
+> >> failure. irq =3D 16
+> >> [  179.743125][   T34] mei_me 0000:00:16.0: initialization failed.
+> >> [  179.749399][   T34] mei_me: probe of 0000:00:16.0 failed with error
+> >> -16
+> >>
+> >>
+> >
+> > it seems there is a direct reference to pdev->irq.
+> > Hi Oliver, would you try if the below patch can fix the problem:
+> >
+> > diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
+> > index c3393b383e59..a45a2d4257a6 100644
+> > --- a/drivers/misc/mei/pci-me.c
+> > +++ b/drivers/misc/mei/pci-me.c
+> > @@ -216,7 +216,7 @@ static int mei_me_probe(struct pci_dev *pdev,
+> > const struct pci_device_id *ent)
+> >
+> >         pci_enable_msi(pdev);
+> >
+> > -       hw->irq =3D pdev->irq;
+> > +       hw->irq =3D pci_irq_vector(pdev, 0);
+> >
+> >          /* request and enable interrupt */
+> >         irqflags =3D pci_dev_msi_enabled(pdev) ? IRQF_ONESHOT :
+> > IRQF_SHARED;
+> >
+>
+> Ah! one victim, 3000 to go! :D
+>
 
-> I wasn't complaining about the report! It's more that without line numbers
-> we're struggling a bit to figure out where the race is. All the page-flag
-> tests on the reader side should be using test_bit(), but the report above
-> doesn't seem to think that the read is marked. Given your series adding
-> CONFIG_KCSAN_PERMISSIVE and the fact that you try to triage these things,=
- I
-> thought maybe you've seen this before and might be able to point at the r=
-ace
-> (which is hopefully benign, but it's annoying when you can't spot it!).
+yep.
 
-Hmm, I was sure I could find it in either closed or still open syzbot
-reports, but sadly I couldn't find anything. :-/
+> That's exactly the kind of stuff I was mentioning when we
+> discussed this patch. Exposing the MSI vector as the INTx
+> IRQ has led to all sorts of broken drivers.
 
-The next best thing was to take the same kernel version, same Clang
-version, and same config in the hopes the generated functions of
-interest are identical. If I take the report and symbolize it with what
-I've built, I get:
+I guess drivers should depend on int pci_irq_vector(struct pci_dev
+*dev, unsigned int nr)
+rather than hardcodely use pdev->irq.
 
-| =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-| BUG: KCSAN: data-race in next_uptodate_page / unlock_page
-|
-| write (marked) to 0xffffea00050f37c0 of 8 bytes by task 1872 on cpu 1:
-|  instrument_atomic_write include/linux/instrumented.h:87 [inline]
-|  clear_bit_unlock_is_negative_byte include/asm-generic/bitops/instrumente=
-d-lock.h:74 [inline]
-|  unlock_page+0x102/0x1b0 mm/filemap.c:1465
-|  filemap_map_pages+0x6c6/0x890 mm/filemap.c:3057
-|  do_fault_around mm/memory.c:3904 [inline]
-|  do_read_fault mm/memory.c:3918 [inline]
-|  do_fault mm/memory.c:4051 [inline]
-|  handle_pte_fault mm/memory.c:4302 [inline]
-|  __handle_mm_fault mm/memory.c:4437 [inline]
-|  handle_mm_fault+0x179c/0x27f0 mm/memory.c:4535
-|  do_user_addr_fault+0x3fb/0x830 arch/x86/mm/fault.c:1393
-|  handle_page_fault arch/x86/mm/fault.c:1450 [inline]
-|  exc_page_fault+0xc3/0x1a0 arch/x86/mm/fault.c:1506
-|  asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:580
-|
-| read to 0xffffea00050f37c0 of 8 bytes by task 1873 on cpu 0:
-|  PagePoisoned include/linux/page-flags.h:204 [inline]
-|  PageReadahead include/linux/page-flags.h:382 [inline]
-|  next_uptodate_page+0x456/0x830 mm/filemap.c:2975
-|  next_map_page mm/filemap.c:3010 [inline]
-|  filemap_map_pages+0x728/0x890 mm/filemap.c:3066
-|  do_fault_around mm/memory.c:3904 [inline]
-|  do_read_fault mm/memory.c:3918 [inline]
-|  do_fault mm/memory.c:4051 [inline]
-|  handle_pte_fault mm/memory.c:4302 [inline]
-|  __handle_mm_fault mm/memory.c:4437 [inline]
-|  handle_mm_fault+0x179c/0x27f0 mm/memory.c:4535
-|  do_user_addr_fault+0x3fb/0x830 arch/x86/mm/fault.c:1393
-|  handle_page_fault arch/x86/mm/fault.c:1450 [inline]
-|  exc_page_fault+0xc3/0x1a0 arch/x86/mm/fault.c:1506
-|  asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:580
-|
-| Reported by Kernel Concurrency Sanitizer on:
-| CPU: 0 PID: 1873 Comm: systemd-udevd Not tainted 5.11.0-rc4-00001-gf9ce0b=
-e71d1f #1
-| =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+pci_irq_vector() supports all cases(intx, msi, msi-x)
 
-And looking at the preprocessed source, this makes sense, because
-PageReadahead clearly includes a call to PagePoisoned with the given
-config.
+>
+>          M.
+> --
+> Jazz is not dead. It just smells funny...
 
-My guess is that the below patch would be appropriate here?
-
-(LKP folks: I'd still like bots to enable CONFIG_KCSAN_PERMISSIVE=3Dy,
- just to keep the volume of reports down for now.)
-
-Thanks,
--- Marco
-
------- >8 ------
-
-From: Marco Elver <elver@google.com>
-Date: Tue, 31 Aug 2021 17:27:27 +0200
-Subject: [PATCH] mm: fix data race in PagePoisoned()
-
-PagePoisoned() accesses page->flags which can be updated concurrently:
-
-  | BUG: KCSAN: data-race in next_uptodate_page / unlock_page
-  |
-  | write (marked) to 0xffffea00050f37c0 of 8 bytes by task 1872 on cpu 1:
-  |  instrument_atomic_write           include/linux/instrumented.h:87 [inl=
-ine]
-  |  clear_bit_unlock_is_negative_byte include/asm-generic/bitops/instrumen=
-ted-lock.h:74 [inline]
-  |  unlock_page+0x102/0x1b0           mm/filemap.c:1465
-  |  filemap_map_pages+0x6c6/0x890     mm/filemap.c:3057
-  |  ...
-  | read to 0xffffea00050f37c0 of 8 bytes by task 1873 on cpu 0:
-  |  PagePoisoned                   include/linux/page-flags.h:204 [inline]
-  |  PageReadahead                  include/linux/page-flags.h:382 [inline]
-  |  next_uptodate_page+0x456/0x830 mm/filemap.c:2975
-  |  ...
-  | CPU: 0 PID: 1873 Comm: systemd-udevd Not tainted 5.11.0-rc4-00001-gf9ce=
-0be71d1f #1
-
-To avoid the compiler tearing or otherwise optimizing the access, use
-READ_ONCE() to access flags.
-
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Marco Elver <elver@google.com>
----
- include/linux/page-flags.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index a68af80649a4..70bf0ec29ee3 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -236,7 +236,7 @@ static __always_inline int PageCompound(struct page *pa=
-ge)
- #define	PAGE_POISON_PATTERN	-1l
- static inline int PagePoisoned(const struct page *page)
- {
--	return page->flags =3D=3D PAGE_POISON_PATTERN;
-+	return READ_ONCE(page->flags) =3D=3D PAGE_POISON_PATTERN;
- }
- =
-
- #ifdef CONFIG_DEBUG_VM
--- =
-
-2.33.0.259.gc128427fd7-goog
-
---===============3889905631713056789==--
+Thanks
+barry
+--===============4149369000049124218==--
 
