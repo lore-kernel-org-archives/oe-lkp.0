@@ -1,83 +1,167 @@
-Content-Type: multipart/mixed; boundary="===============7790475807006527469=="
+Content-Type: multipart/mixed; boundary="===============3388148874430372540=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Marc Zyngier <maz@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [mm] 2d146aa3aa: vm-scalability.throughput -36.4% regression
-Date: Tue, 31 Aug 2021 14:30:36 +0800
-Message-ID: <20210831063036.GA46357@shbuild999.sh.intel.com>
-In-Reply-To: <YSzwWIeapkzNElwV@blackbook>
+Subject: Re: [PCI/MSI] a4fc4cf388: dmesg.genirq:Flags_mismatch_irq##(mei_me)vs.#(xhci_hcd)
+Date: Tue, 31 Aug 2021 09:08:06 +0100
+Message-ID: <1132a536516f15ab6b338ab868ec3705@kernel.org>
+In-Reply-To: <CAGsJ_4yYwjuWsEeK3CvnOhc10mbBNYWXqxqp+mR5587R2FD3gQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7790475807006527469==
+--===============3388148874430372540==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Michal,
+On 2021-08-31 02:21, Barry Song wrote:
+> On Mon, Aug 30, 2021 at 2:38 AM kernel test robot =
 
-On Mon, Aug 30, 2021 at 04:51:04PM +0200, Michal Koutn?? wrote:
-> Hello Feng.
+> <oliver.sang@intel.com> wrote:
+>> =
+
+>> =
+
+>> =
+
+>> Greeting,
+>> =
+
+>> FYI, we noticed the following commit (built with gcc-9):
+>> =
+
+>> commit: a4fc4cf388319ea957ffbdab5073bdd267de9082 ("[PATCH v3 3/3] =
+
+>> PCI/MSI: remove msi_attrib.default_irq in msi_desc")
+>> url: =
+
+>> https://github.com/0day-ci/linux/commits/Barry-Song/PCI-MSI-Clarify-the-=
+IRQ-sysfs-ABI-for-PCI-devices/20210825-183018
+>> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git =
+
+>> 6e764bcd1cf72a2846c0e53d3975a09b242c04c9
+>> =
+
+>> in testcase: kernel-selftests
+>> version: kernel-selftests-x86_64-ebaa603b-1_20210825
+>> with following parameters:
+>> =
+
+>>         group: pidfd
+>>         ucode: 0xe2
+>> =
+
+>> test-description: The kernel contains a set of "self tests" under the =
+
+>> tools/testing/selftests/ directory. These are intended to be small =
+
+>> unit tests to exercise individual code paths in the kernel.
+>> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+>> =
+
+>> =
+
+>> on test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz =
+
+>> with 32G memory
+>> =
+
+>> caused below changes (please refer to attached dmesg/kmsg for entire =
+
+>> log/backtrace):
+>> =
+
+>> =
+
+>> =
+
+>> If you fix the issue, kindly add following tag
+>> Reported-by: kernel test robot <oliver.sang@intel.com>
+>> =
+
+>> =
+
+>> =
+
+>> [  179.602028][   T34] genirq: Flags mismatch irq 16. 00002000 =
+
+>> (mei_me) vs. 00000000 (xhci_hcd)
+>> [  179.614073][   T34] CPU: 2 PID: 34 Comm: kworker/u8:2 Not tainted =
+
+>> 5.14.0-rc7-00014-ga4fc4cf38831 #1
+>> [  179.623225][   T34] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, =
+
+>> BIOS 1.8.1 12/05/2017
+>> [  179.631432][   T34] Workqueue: events_unbound async_run_entry_fn
+>> [  179.637543][   T34] Call Trace:
+>> [  179.640789][   T34]  dump_stack_lvl+0x45/0x59
+>> [  179.645253][   T34]  __setup_irq.cold+0x50/0xd4
+>> [  179.649893][   T34]  ? mei_me_pg_exit_sync+0x480/0x480 [mei_me]
+>> [  179.655923][   T34]  request_threaded_irq+0x10c/0x180
+>> [  179.661073][   T34]  ? mei_me_irq_quick_handler+0x240/0x240 =
+
+>> [mei_me]
+>> [  179.667528][   T34]  mei_me_probe+0x131/0x300 [mei_me]
+>> [  179.672767][   T34]  local_pci_probe+0x42/0x80
+>> [  179.677313][   T34]  pci_device_probe+0x107/0x1c0
+>> [  179.682118][   T34]  really_probe+0xb6/0x380
+>> [  179.687094][   T34]  __driver_probe_device+0xfe/0x180
+>> [  179.692242][   T34]  driver_probe_device+0x1e/0xc0
+>> [  179.697133][   T34]  __driver_attach_async_helper+0x2b/0x80
+>> [  179.702802][   T34]  async_run_entry_fn+0x30/0x140
+>> [  179.707693][   T34]  process_one_work+0x274/0x5c0
+>> [  179.712503][   T34]  worker_thread+0x50/0x3c0
+>> [  179.716959][   T34]  ? process_one_work+0x5c0/0x5c0
+>> [  179.721936][   T34]  kthread+0x14f/0x180
+>> [  179.725958][   T34]  ? set_kthread_struct+0x40/0x40
+>> [  179.730935][   T34]  ret_from_fork+0x22/0x30
+>> [  179.735699][   T34] mei_me 0000:00:16.0: request_threaded_irq =
+
+>> failure. irq =3D 16
+>> [  179.743125][   T34] mei_me 0000:00:16.0: initialization failed.
+>> [  179.749399][   T34] mei_me: probe of 0000:00:16.0 failed with error =
+
+>> -16
+>> =
+
+>> =
+
 > =
 
-> On Wed, Aug 18, 2021 at 10:30:04AM +0800, Feng Tang <feng.tang@intel.co=
-m> wrote:
-> > As Shakeel also mentioned, this 0day's vm-scalability doesn't involve
-> > any explicit mem_cgroup configurations.
+> it seems there is a direct reference to pdev->irq.
+> Hi Oliver, would you try if the below patch can fix the problem:
 > =
 
-> If it all happens inside root memcg, there should be no accesses to the
-> 0x10 offset since the root memcg is excluded from refcounting. (Unless
-> the modified cacheline is a =CE=BCarch artifact. Actually, for the lack of
-> other ideas, I was thinking about similar cause even for non-root memcgs
-> since the percpu refcounting is implemented via a segment register.)
-
-Thought I haven't checked the exact memcg that the perf-c2c hot spots
-pointed to, I don't think it's the root memcg. From debug, in the test
-run, the OS has created about 50 memcgs before vm-scalability test run,
-mostly by systemd-servces, and during the test there is no more new
-memcg created.
-
-> Is this still relevant? (You refer to it as 0day's vm-scalability
-> issue.)
+> diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
+> index c3393b383e59..a45a2d4257a6 100644
+> --- a/drivers/misc/mei/pci-me.c
+> +++ b/drivers/misc/mei/pci-me.c
+> @@ -216,7 +216,7 @@ static int mei_me_probe(struct pci_dev *pdev,
+> const struct pci_device_id *ent)
 > =
 
-> By some rough estimates there could be ~10 cgroup_subsys_sets per 10 MiB
-> of workload, so the 128B padding gives 1e-4 relative overhead (but
-> presumably less in most cases). I also think it acceptable (size-wise).
+>         pci_enable_msi(pdev);
 > =
 
-> Out of curiosity, have you measured impact of reshuffling the refcnt
-> member into the middle of the cgroup_subsys_state (keeping it distant
-> both from .cgroup and .parent)?
+> -       hw->irq =3D pdev->irq;
+> +       hw->irq =3D pci_irq_vector(pdev, 0);
+> =
 
-Yes, I tried many re-arrangement of the members of cgroup_subsys_state,
-and even close members of memcg, but there were no obvious changes.
-What can recover the regresion is adding 128 bytes padding in the css,
-no matter at the start, end or in the middle.
+>          /* request and enable interrupt */
+>         irqflags =3D pci_dev_msi_enabled(pdev) ? IRQF_ONESHOT : =
+
+> IRQF_SHARED;
+> =
 
 
-Some finding is, this could be related with HW cache prefetcher.
+Ah! one victim, 3000 to go! :D
 
->From this article =
+That's exactly the kind of stuff I was mentioning when we
+discussed this patch. Exposing the MSI vector as the INTx
+IRQ has led to all sorts of broken drivers.
 
-https://software.intel.com/content/www/us/en/develop/articles/disclosure-of=
--hw-prefetcher-control-on-some-intel-processors.html
+         M.
+-- =
 
-There are four bits controlling different types of prefetcher, on the
-testbox (CascadeLake AP platform), they are all enabled by default. =
-
-When we disable the "L2 hardware prefetcher" (bit 0), the permance
-for commit 2d146aa3aa8 is almost the same as its parent commit.
-
-So it seems to be affected about HW cache prefechter's policy, the
-test's access pattern changes the HW prefetcher policy, which in
-turn affect the performance.
-
-Also the test shows the regression is platform dependent, that regression
-could be seen on Cascade Lake AP (36%) and SP (20%), but not on a
-Icelake SP 2S platform.
-
-Thanks,
-Feng
---===============7790475807006527469==--
+Jazz is not dead. It just smells funny...
+--===============3388148874430372540==--
 
