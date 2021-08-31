@@ -1,1572 +1,668 @@
-Content-Type: multipart/mixed; boundary="===============4910109701518700164=="
+Content-Type: multipart/mixed; boundary="===============5032057007832142053=="
 MIME-Version: 1.0
-From: Song Liu <songliubraving@fb.com>
+From: kernel test robot <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [selftests/bpf] 8dff2c1958: BUG:using_smp_processor_id()in_preemptible
-Date: Tue, 31 Aug 2021 04:45:49 +0000
-Message-ID: <59223446-251F-41A4-87ED-A37A181262CC@fb.com>
-In-Reply-To: <20210831013015.GA4286@xsang-OptiPlex-9020>
+Subject: [ext4] 21175ca434: mdadm-selftests.enchmarks/mdadm-selftests/tests/01r1fail.fail
+Date: Tue, 31 Aug 2021 13:26:17 +0800
+Message-ID: <20210831052617.GE4286@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4910109701518700164==
+--===============5032057007832142053==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 
 
-> On Aug 30, 2021, at 6:30 PM, kernel test robot <oliver.sang@intel.com> =
-wrote:
-> =
-
-> =
-
-> =
-
-> Greeting,
-> =
-
-> FYI, we noticed the following commit (built with gcc-9):
-> =
-
-> commit: 8dff2c1958c234e90dff289a2034217b293985e4 ("[PATCH bpf-next 3/3] s=
-elftests/bpf: add test for bpf_get_branch_trace")
-> url: https://github.com/0day-ci/linux/commits/Song-Liu/bpf-introduce-bpf_=
-get_branch_trace/20210824-140315
-> base: https://git.kernel.org/cgit/linux/kernel/git/bpf/bpf-next.git master
-> =
-
-> in testcase: kernel-selftests
-> version: kernel-selftests-x86_64-ebaa603b-1_20210825
-> with following parameters:
-> =
-
-> 	group: bpf
-> 	ucode: 0xde
-> =
-
-> test-description: The kernel contains a set of "self tests" under the too=
-ls/testing/selftests/ directory. These are intended to be small unit tests =
-to exercise individual code paths in the kernel.
-> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
-> =
-
-> =
-
-> on test machine: 4 threads 1 sockets Intel(R) Core(TM) i7-7567U CPU @ 3.5=
-0GHz with 32G memory
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> =
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
-
-> =
-
-> kern  :err   : [  136.592584] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-
-hmm... I guess we need to move the call to after migrate_disable(). =
-
-
-
-> kern :warn : [  136.593280] caller is intel_pmu_snapshot_branch_stack (ar=
-ch/x86/events/intel/lbr.c:1868) =
-
-> kern  :warn  : [  136.593811] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.594609] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.595501] Call Trace:
-> kern :warn : [  136.595776] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.596136] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.596565] intel_pmu_snapshot_branch_stack (arch/x86/eve=
-nts/intel/lbr.c:1868) =
-
-> kern :warn : [  136.597024] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.597434] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.597968] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.598331] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.598832] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.599172] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.599575] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.599962] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.600293] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.600711] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.601122] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.601481] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.601880] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.602239] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.602639] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.603034] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.603403] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.603740] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.604111] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.604560] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.605018] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.605455] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.605903] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.606268] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.607706] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.608350] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.609058] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.609656] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.610260] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.610920] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :err   : [  136.611581] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-> kern :warn : [  136.612259] caller is intel_pmu_lbr_disable_all (arch/x86=
-/events/intel/lbr.c:780) =
-
-> kern  :warn  : [  136.612817] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.613653] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.614642] Call Trace:
-> kern :warn : [  136.614904] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.615293] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.615759] intel_pmu_lbr_disable_all (arch/x86/events/in=
-tel/lbr.c:780) =
-
-> kern :warn : [  136.616221] intel_pmu_snapshot_branch_stack (arch/x86/eve=
-nts/intel/lbr.c:1871) =
-
-> kern :warn : [  136.616705] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.617068] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.617528] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.617923] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.618367] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.618692] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.619054] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.619418] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.619819] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.620237] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.620581] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.620976] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.621354] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.621695] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.622150] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.622491] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.622849] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.623262] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.623605] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.624072] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.624531] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.624930] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.625417] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.625835] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.627326] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.628018] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.628623] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.629262] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.629847] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.630469] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :err   : [  136.631171] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-> kern :warn : [  136.631873] caller is intel_pmu_lbr_disable_all (arch/x86=
-/events/intel/lbr.c:764 arch/x86/events/intel/lbr.c:782 arch/x86/events/int=
-el/lbr.c:778) =
-
-> kern  :warn  : [  136.632412] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.633255] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.634100] Call Trace:
-> kern :warn : [  136.634348] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.634741] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.635190] intel_pmu_lbr_disable_all (arch/x86/events/in=
-tel/lbr.c:764 arch/x86/events/intel/lbr.c:782 arch/x86/events/intel/lbr.c:7=
-78) =
-
-> kern :warn : [  136.635611] intel_pmu_snapshot_branch_stack (arch/x86/eve=
-nts/intel/lbr.c:1871) =
-
-> kern :warn : [  136.636065] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.636466] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.636981] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.637347] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.637863] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.638206] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.638582] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.638944] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.639273] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.639656] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.640054] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.640412] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.640810] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.641169] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.641568] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.641963] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.642343] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.642718] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.643075] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.643575] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.644033] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.644437] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.644884] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.645231] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.646685] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.647304] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.647966] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.648588] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.649246] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.649869] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :err   : [  136.650512] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-> kern :warn : [  136.651226] caller is intel_pmu_lbr_read (arch/x86/events=
-/intel/lbr.c:1003) =
-
-> kern  :warn  : [  136.651691] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.652530] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.653440] Call Trace:
-> kern :warn : [  136.653762] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.654133] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.654603] intel_pmu_lbr_read (arch/x86/events/intel/lbr=
-.c:1003) =
-
-> kern :warn : [  136.654966] intel_pmu_snapshot_branch_stack (arch/x86/eve=
-nts/intel/lbr.c:1873) =
-
-> kern :warn : [  136.655408] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.655754] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.656180] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.656562] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.656992] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.657332] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.657695] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.658040] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.658422] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.658856] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.659272] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.659613] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.660049] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.660406] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.660805] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.661220] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.661560] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.661919] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.662298] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.662746] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.663205] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.663605] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.664051] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.664383] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.665964] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.666650] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.667271] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.667893] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.668517] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.669104] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :err   : [  136.669728] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-> kern :warn : [  136.670431] caller is intel_pmu_lbr_read (arch/x86/events=
-/intel/lbr.c:764 arch/x86/events/intel/lbr.c:1011) =
-
-> kern  :warn  : [  136.670867] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.671765] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.672649] Call Trace:
-> kern :warn : [  136.672912] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.673301] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.673765] intel_pmu_lbr_read (arch/x86/events/intel/lbr=
-.c:764 arch/x86/events/intel/lbr.c:1011) =
-
-> kern :warn : [  136.674149] intel_pmu_snapshot_branch_stack (arch/x86/eve=
-nts/intel/lbr.c:1873) =
-
-> kern :warn : [  136.674604] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.674968] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.675448] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.675865] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.676331] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.676672] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.677067] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.677413] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.677799] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.678234] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.678597] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.678991] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.679388] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.679747] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.680146] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.680505] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.680863] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.681240] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.681582] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.682043] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.682503] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.682903] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.683388] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.683771] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.685257] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.685878] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.686512] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.687152] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.687739] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.688399] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :err   : [  136.689060] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-> kern :warn : [  136.689760] caller is intel_pmu_snapshot_branch_stack (ar=
-ch/x86/events/intel/lbr.c:1872) =
-
-> kern  :warn  : [  136.690329] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.691130] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.691976] Call Trace:
-> kern :warn : [  136.692257] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.692645] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.693130] intel_pmu_snapshot_branch_stack (arch/x86/eve=
-nts/intel/lbr.c:1872) =
-
-> kern :warn : [  136.693629] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.694029] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.694472] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.694889] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.695319] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.695693] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.696090] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.696436] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.696782] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.697181] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.697543] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.697937] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.698368] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.698762] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.699161] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.699556] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.699914] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.700291] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.700667] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.701133] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.701629] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.702029] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.702478] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.702824] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.704386] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.705038] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.705625] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.706267] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.706836] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.707496] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :err   : [  136.708104] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-> kern :warn : [  136.708822] caller is intel_pmu_snapshot_branch_stack (ar=
-ch/x86/events/intel/lbr.c:1875) =
-
-> kern  :warn  : [  136.709398] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.710237] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.711142] Call Trace:
-> kern :warn : [  136.711429] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.711838] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.712273] intel_pmu_snapshot_branch_stack (arch/x86/eve=
-nts/intel/lbr.c:1875) =
-
-> kern :warn : [  136.712764] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.713127] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.713572] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.713953] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.714418] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.714794] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.715214] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.715539] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.715887] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.716307] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.716651] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.717008] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.717407] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.717766] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.718179] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.718549] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.718906] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.719264] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.719623] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.720089] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.720585] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.721058] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.721489] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.721854] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.723348] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.724036] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.724625] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.725212] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.725798] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.726457] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :err   : [  136.727118] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-> kern :warn : [  136.727822] caller is intel_pmu_lbr_enable_all (arch/x86/=
-events/intel/lbr.c:772) =
-
-> kern  :warn  : [  136.728317] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.729158] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.730037] Call Trace:
-> kern :warn : [  136.730301] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.730671] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.731121] intel_pmu_lbr_enable_all (arch/x86/events/int=
-el/lbr.c:772) =
-
-> kern :warn : [  136.731586] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.731987] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.732467] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.732884] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.733335] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.733656] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.734076] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.734401] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.734750] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.735204] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.735549] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.735906] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.736306] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.736665] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.737077] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.737416] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.737847] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.738204] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.738581] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.739031] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.739490] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.739921] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.740400] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.740784] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.742236] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.742870] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.743514] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.744099] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.744723] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.745328] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :err   : [  136.746006] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-> kern :warn : [  136.746743] caller is intel_pmu_lbr_enable_all (arch/x86/=
-events/intel/lbr.c:764 arch/x86/events/intel/lbr.c:774 arch/x86/events/inte=
-l/lbr.c:770) =
-
-> kern  :warn  : [  136.747218] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.748040] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.749026] Call Trace:
-> kern :warn : [  136.749274] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.749627] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.750131] intel_pmu_lbr_enable_all (arch/x86/events/int=
-el/lbr.c:764 arch/x86/events/intel/lbr.c:774 arch/x86/events/intel/lbr.c:77=
-0) =
-
-> kern :warn : [  136.750538] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.750938] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.751416] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.751797] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.752281] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.752604] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.752966] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.753311] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.753658] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.754091] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.754453] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.754846] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.755245] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.755589] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.756007] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.756349] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.756795] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.757153] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.757511] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.758011] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.758471] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.758871] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.759319] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.759666] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.761174] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.761776] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.762436] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.763021] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.763680] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.764266] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :err   : [  136.764875] BUG: using smp_processor_id() in preemptibl=
-e [00000000] code: test_progs/5262
-> kern :warn : [  136.765626] caller is intel_pmu_lbr_enable_all (arch/x86/=
-events/intel/lbr.c:190 arch/x86/events/intel/lbr.c:775 arch/x86/events/inte=
-l/lbr.c:770) =
-
-> kern  :warn  : [  136.766173] CPU: 1 PID: 5262 Comm: test_progs Tainted: =
-G        W  OE     5.14.0-rc5-01207-g8dff2c1958c2 #1
-> kern  :warn  : [  136.767068] Hardware name: Intel Corporation NUC7i7BNH/=
-NUC7i7BNB, BIOS BNKBL357.86A.0067.2018.0814.1500 08/14/2018
-> kern  :warn  : [  136.767986] Call Trace:
-> kern :warn : [  136.768248] dump_stack_lvl (lib/dump_stack.c:106) =
-
-> kern :warn : [  136.768620] check_preemption_disabled (lib/smp_processor_=
-id.c:49) =
-
-> kern :warn : [  136.769141] intel_pmu_lbr_enable_all (arch/x86/events/int=
-el/lbr.c:190 arch/x86/events/intel/lbr.c:775 arch/x86/events/intel/lbr.c:77=
-0) =
-
-> kern :warn : [  136.769570] __bpf_prog_enter (kernel/bpf/trampoline.c:577=
-) =
-
-> kern :warn : [  136.769933] bpf_trampoline_6442562768_0+0x3b/0x1000 =
-
-> kern :warn : [  136.770407] bpf_fexit_loop_test1 (net/bpf/test_run.c:236) =
-
-> kern :warn : [  136.770790] bpf_prog_test_run_tracing (net/bpf/test_run.c=
-:308) =
-
-> kern :warn : [  136.771237] __sys_bpf (kernel/bpf/syscall.c:3307 kernel/b=
-pf/syscall.c:4605) =
-
-> kern :warn : [  136.771594] ? __sys_bpf (kernel/bpf/syscall.c:4629) =
-
-> kern :warn : [  136.771957] __x64_sys_bpf (kernel/bpf/syscall.c:4689) =
-
-> kern :warn : [  136.772322] do_syscall_64 (arch/x86/entry/common.c:50 arc=
-h/x86/entry/common.c:80) =
-
-> kern :warn : [  136.772688] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.773087] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.773463] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.773803] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.774202] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.774563] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.774961] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.775320] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.775678] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.776035] ? do_syscall_64 (arch/x86/entry/common.c:87) =
-
-> kern :warn : [  136.776424] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.776962] ? asm_sysvec_apic_timer_interrupt (arch/x86/i=
-nclude/asm/idtentry.h:638) =
-
-> kern :warn : [  136.777458] ? lockdep_hardirqs_on (kernel/locking/lockdep=
-.c:4344) =
-
-> kern :warn : [  136.777858] entry_SYSCALL_64_after_hwframe (arch/x86/entr=
-y/entry_64.S:113) =
-
-> kern  :warn  : [  136.778327] RIP: 0033:0x7f0fcbd69f59
-> kern :warn : [ 136.778655] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
-f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
-4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 07 6f 0c 00 f7 d8 64 89 01=
- 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->   0:	00 c3                	add    %al,%bl
->   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   9:	00 00 00 =
-
->   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
->  11:	48 89 f8             	mov    %rdi,%rax
->  14:	48 89 f7             	mov    %rsi,%rdi
->  17:	48 89 d6             	mov    %rdx,%rsi
->  1a:	48 89 ca             	mov    %rcx,%rdx
->  1d:	4d 89 c2             	mov    %r8,%r10
->  20:	4d 89 c8             	mov    %r9,%r8
->  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->  28:	0f 05                	syscall =
-
->  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping=
- instruction
->  30:	73 01                	jae    0x33
->  32:	c3                   	retq   =
-
->  33:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f41
->  3a:	f7 d8                	neg    %eax
->  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->  3f:	48                   	rex.W
-> =
-
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->   6:	73 01                	jae    0x9
->   8:	c3                   	retq   =
-
->   9:	48 8b 0d 07 6f 0c 00 	mov    0xc6f07(%rip),%rcx        # 0xc6f17
->  10:	f7 d8                	neg    %eax
->  12:	64 89 01             	mov    %eax,%fs:(%rcx)
->  15:	48                   	rex.W
-> kern  :warn  : [  136.780125] RSP: 002b:00007ffd572256a8 EFLAGS: 00000202=
- ORIG_RAX: 0000000000000141
-> kern  :warn  : [  136.780727] RAX: ffffffffffffffda RBX: 0000000000000000=
- RCX: 00007f0fcbd69f59
-> kern  :warn  : [  136.781313] RDX: 0000000000000080 RSI: 00007ffd57225700=
- RDI: 000000000000000a
-> kern  :warn  : [  136.781899] RBP: 00007ffd572256c0 R08: 0000000000000000=
- R09: 00007ffd57225700
-> kern  :warn  : [  136.782535] R10: 0000000000000000 R11: 0000000000000202=
- R12: 0000562a6e61ddb0
-> kern  :warn  : [  136.783177] R13: 00007ffd57225a20 R14: 0000000000000000=
- R15: 0000000000000000
-> kern  :info  : [  138.164543] perf: interrupt took too long (3153 > 3143)=
-, lowering kernel.perf_event_max_sample_rate to 63000
-> kern  :info  : [  138.165345] perf: interrupt took too long (3153 > 3143)=
-, lowering kernel.perf_event_max_sample_rate to 63000
-> kern  :info  : [  138.166457] perf: interrupt took too long (3945 > 3941)=
-, lowering kernel.perf_event_max_sample_rate to 50000
-> kern  :info  : [  138.168213] perf: interrupt took too long (4932 > 4931)=
-, lowering kernel.perf_event_max_sample_rate to 40000
-> user  :notice: [  139.355105] # run_tests_skb_less:FAIL:ipv6-frag nhoff=
-=3D0/14 thoff=3D0/62 addr_proto=3D0x0/0x86dd is_frag=3D0/1 is_first_frag=3D=
-0/1 is_encap=3D0/0 ip_proto=3D0x0/0x6 n_proto=3D0x0/0xdd86 flow_label=3D0x0=
-/0x0 sport=3D0/80 dport=3D0/8080
-> =
-
-> user  :notice: [  139.359537] # run_tests_skb_less:FAIL:ipv6-frag bpf_map=
-_delete_elem -2
-> =
-
-> user  :notice: [  139.362850] # test_skb_less_link_create:PASS:bpf_link__=
-destroy 0 nsec
-> =
-
-> user  :notice: [  139.364974] # #46 flow_dissector:FAIL
-> =
-
-> user  :notice: [  139.367223] # #47 flow_dissector_load_bytes:OK
-> =
-
-> user  :notice: [  139.370893] # #48/1 flow_dissector_reattach/flow dissec=
-tor prog attach, prog attach (init_net):OK
-> =
-
-> user  :notice: [  139.375234] # #48/2 flow_dissector_reattach/flow dissec=
-tor link create, link create (init_net):OK
-> =
-
-> user  :notice: [  139.379842] # #48/3 flow_dissector_reattach/flow dissec=
-tor prog attach, link create (init_net):OK
-> =
-
-> user  :notice: [  139.382497] # #48/4 flow_dissector_reattach/flow dissec=
-tor link create, prog attach (init_net):OK
-> =
-
-> user  :notice: [  139.385061] # #48/5 flow_dissector_reattach/flow dissec=
-tor link create, prog detach (init_net):OK
-> =
-
-> user  :notice: [  139.387717] # #48/6 flow_dissector_reattach/flow dissec=
-tor prog attach, detach, query (init_net):OK
-> =
-
-> user  :notice: [  139.390353] # #48/7 flow_dissector_reattach/flow dissec=
-tor link create, close, query (init_net):OK
-> =
-
-> user  :notice: [  139.392961] # #48/8 flow_dissector_reattach/flow dissec=
-tor link update no old prog (init_net):OK
-> =
-
-> user  :notice: [  139.395690] # #48/9 flow_dissector_reattach/flow dissec=
-tor link update with replace old prog (init_net):OK
-> =
-
-> user  :notice: [  139.398424] # #48/10 flow_dissector_reattach/flow disse=
-ctor link update with same prog (init_net):OK
-> =
-
-> user  :notice: [  139.401090] # #48/11 flow_dissector_reattach/flow disse=
-ctor link update invalid opts (init_net):OK
-> =
-
-> user  :notice: [  139.403722] # #48/12 flow_dissector_reattach/flow disse=
-ctor link update invalid prog (init_net):OK
-> =
-
-> user  :notice: [  139.406231] # #48/13 flow_dissector_reattach/flow disse=
-ctor link update netns gone (init_net):OK
-> =
-
-> user  :notice: [  139.408610] # #48/14 flow_dissector_reattach/flow disse=
-ctor link get info (init_net):OK
-> =
-
-> user  :notice: [  139.411035] # #48/15 flow_dissector_reattach/flow disse=
-ctor prog attach, prog attach:OK
-> =
-
-> user  :notice: [  139.413359] # #48/16 flow_dissector_reattach/flow disse=
-ctor link create, link create:OK
-> =
-
-> user  :notice: [  139.415751] # #48/17 flow_dissector_reattach/flow disse=
-ctor prog attach, link create:OK
-> =
-
-> user  :notice: [  139.417999] # #48/18 flow_dissector_reattach/flow disse=
-ctor link create, prog attach:OK
-> =
-
-> user  :notice: [  139.420432] # #48/19 flow_dissector_reattach/flow disse=
-ctor link create, prog detach:OK
-> =
-
-> user  :notice: [  139.422821] # #48/20 flow_dissector_reattach/flow disse=
-ctor prog attach, detach, query:OK
-> =
-
-> user  :notice: [  139.425174] # #48/21 flow_dissector_reattach/flow disse=
-ctor link create, close, query:OK
-> =
-
-> user  :notice: [  139.427447] # #48/22 flow_dissector_reattach/flow disse=
-ctor link update no old prog:OK
-> =
-
-> user  :notice: [  139.430055] # #48/23 flow_dissector_reattach/flow disse=
-ctor link update with replace old prog:OK
-> =
-
-> user  :notice: [  139.432549] # #48/24 flow_dissector_reattach/flow disse=
-ctor link update with same prog:OK
-> =
-
-> user  :notice: [  139.434965] # #48/25 flow_dissector_reattach/flow disse=
-ctor link update invalid opts:OK
-> =
-
-> user  :notice: [  139.437261] # #48/26 flow_dissector_reattach/flow disse=
-ctor link update invalid prog:OK
-> =
-
-> user  :notice: [  139.439471] # #48/27 flow_dissector_reattach/flow disse=
-ctor link update netns gone:OK
-> =
-
-> user  :notice: [  139.441628] # #48/28 flow_dissector_reattach/flow disse=
-ctor link get info:OK
-> =
-
-> user  :notice: [  139.443097] # #48 flow_dissector_reattach:OK
-> =
-
-> user  :notice: [  139.444238] # #49/1 for_each/hash_map:OK
-> =
-
-> user  :notice: [  139.445375] # #49/2 for_each/array_map:OK
-> =
-
-> user  :notice: [  139.446309] # #49 for_each:OK
-> =
-
-> user  :notice: [  139.448091] # test_get_branch_trace:PASS:get_branch_tra=
-ce__open_and_load 0 nsec
-> =
-
-> user  :notice: [  139.449839] # test_get_branch_trace:PASS:kallsyms_find =
-0 nsec
-> =
-
-> =
-
-> =
-
-> To reproduce:
-> =
-
->        git clone https://github.com/intel/lkp-tests.git
->        cd lkp-tests
->        bin/lkp install                job.yaml  # job file is attached in=
- this email
->        bin/lkp split-job --compatible job.yaml  # generate the yaml file =
-for lkp run
->        bin/lkp run                    generated-yaml-file
-> =
-
-> =
-
-> =
-
-> ---
-> 0DAY/LKP+ Test Infrastructure                   Open Source Technology Ce=
-nter
-> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org        Intel Corp=
-oration
-> =
-
-> Thanks,
-> Oliver Sang
-> =
-
-> <config-5.14.0-rc5-01207-g8dff2c1958c2><job-script.txt><kmsg.xz><kernel-s=
-elftests.txt><job.yaml><reproduce.txt>
-
---===============4910109701518700164==--
+Greeting,
+
+FYI, we noticed the following commit (built with gcc-9):
+
+commit: 21175ca434c5d49509b73cf473618b01b0b85437 ("ext4: make prefetch_bloc=
+k_bitmaps default")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+
+in testcase: mdadm-selftests
+version: mdadm-selftests-x86_64-5d518de-1_20201008
+with following parameters:
+
+	disk: 1HDD
+	test_prefix: 01r1
+	ucode: 0x21
+
+
+
+on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GH=
+z with 8G memory
+
+caused below changes (please refer to attached dmesg/kmsg for entire log/ba=
+cktrace):
+
+
+
+
+If you fix the issue, kindly add following tag
+Reported-by: kernel test robot <oliver.sang@intel.com>
+
+2021-04-26 16:59:25 mkdir -p /var/tmp
+2021-04-26 16:59:25 mke2fs -t ext3 -b 4096 -J size=3D4 -q /dev/sda2
+2021-04-26 17:00:21 mount -t ext3 /dev/sda2 /var/tmp
+sed -e 's/{DEFAULT_METADATA}/1.2/g' \
+-e 's,{MAP_PATH},/run/mdadm/map,g'  mdadm.8.in > mdadm.8
+/usr/bin/install -D -m 644 mdadm.8 /usr/share/man/man8/mdadm.8
+/usr/bin/install -D -m 644 mdmon.8 /usr/share/man/man8/mdmon.8
+/usr/bin/install -D -m 644 md.4 /usr/share/man/man4/md.4
+/usr/bin/install -D -m 644 mdadm.conf.5 /usr/share/man/man5/mdadm.conf.5
+/usr/bin/install -D -m 644 udev-md-raid-creating.rules /lib/udev/rules.d/01=
+-md-raid-creating.rules
+/usr/bin/install -D -m 644 udev-md-raid-arrays.rules /lib/udev/rules.d/63-m=
+d-raid-arrays.rules
+/usr/bin/install -D -m 644 udev-md-raid-assembly.rules /lib/udev/rules.d/64=
+-md-raid-assembly.rules
+/usr/bin/install -D -m 644 udev-md-clustered-confirm-device.rules /lib/udev=
+/rules.d/69-md-clustered-confirm-device.rules
+/usr/bin/install -D  -m 755 mdadm /sbin/mdadm
+/usr/bin/install -D  -m 755 mdmon /sbin/mdmon
+Testing on linux-5.12.0-rc4-00017-g21175ca434c5 kernel
+/lkp/benchmarks/mdadm-selftests/tests/01r1fail... FAILED - see /var/tmp/01r=
+1fail.log and /var/tmp/fail01r1fail.log for details
+
+
+
+To reproduce:
+
+        git clone https://github.com/intel/lkp-tests.git
+        cd lkp-tests
+        bin/lkp install                job.yaml  # job file is attached in =
+this email
+        bin/lkp split-job --compatible job.yaml  # generate the yaml file f=
+or lkp run
+        bin/lkp run                    generated-yaml-file
+
+
+
+---
+0DAY/LKP+ Test Infrastructure                   Open Source Technology Cent=
+er
+https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel Corpora=
+tion
+
+Thanks,
+Oliver Sang
+
+
+--===============5032057007832142053==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="job-script.ksh"
+
+IyEvYmluL3NoCgpleHBvcnRfdG9wX2VudigpCnsKCWV4cG9ydCBzdWl0ZT0nbWRhZG0tc2VsZnRl
+c3RzJwoJZXhwb3J0IHRlc3RjYXNlPSdtZGFkbS1zZWxmdGVzdHMnCglleHBvcnQgY2F0ZWdvcnk9
+J2Z1bmN0aW9uYWwnCglleHBvcnQgbmVlZF9tZW1vcnk9JzFHJwoJZXhwb3J0IG5lZWRfbW9kdWxl
+cz10cnVlCglleHBvcnQgam9iX29yaWdpbj0nbWRhZG0tc2VsZnRlc3RzLnlhbWwnCglleHBvcnQg
+cXVldWVfY21kbGluZV9rZXlzPSdicmFuY2gKY29tbWl0CnF1ZXVlX2F0X2xlYXN0X29uY2UnCgll
+eHBvcnQgcXVldWU9J3ZhbGlkYXRlJwoJZXhwb3J0IHRlc3Rib3g9J2xrcC1pdmItZDA0JwoJZXhw
+b3J0IHRib3hfZ3JvdXA9J2xrcC1pdmItZDA0JwoJZXhwb3J0IGtjb25maWc9J3g4Nl82NC1yaGVs
+LTguMycKCWV4cG9ydCBzdWJtaXRfaWQ9JzYwODZmMTJlYWNhMWE2NDBkNGMzNWIwYScKCWV4cG9y
+dCBqb2JfZmlsZT0nL2xrcC9qb2JzL3NjaGVkdWxlZC9sa3AtaXZiLWQwNC9tZGFkbS1zZWxmdGVz
+dHMtMUhERC0wMXIxLXVjb2RlPTB4MjEtZGViaWFuLTEwLjQteDg2XzY0LTIwMjAwNjAzLmNnei0y
+MTE3NWNhNDM0YzVkNDk1MDliNzNjZjQ3MzYxOGIwMWIwYjg1NDM3LTIwMjEwNDI3LTgyMTMyLTl3
+d3F3Ny0yMS55YW1sJwoJZXhwb3J0IGlkPSc2ODAxMDNmZmQwNjEzMjNhMDY1MTJiMmEzNDM3OGE4
+OWMwYzhkMzM1JwoJZXhwb3J0IHF1ZXVlcl92ZXJzaW9uPScvbGtwLXNyYycKCWV4cG9ydCBtb2Rl
+bD0nSXZ5IEJyaWRnZScKCWV4cG9ydCBucl9ub2RlPTEKCWV4cG9ydCBucl9jcHU9NAoJZXhwb3J0
+IG1lbW9yeT0nOEcnCglleHBvcnQgbnJfc3NkX3BhcnRpdGlvbnM9MQoJZXhwb3J0IG5yX2hkZF9w
+YXJ0aXRpb25zPTQKCWV4cG9ydCBzc2RfcGFydGl0aW9ucz0nL2Rldi9kaXNrL2J5LWlkL2F0YS1J
+TlRFTF9TU0RTQzJLQjI0MEc4X0JUWUY4MzY2MDZVUTI0MEFHTi1wYXJ0MScKCWV4cG9ydCBoZGRf
+cGFydGl0aW9ucz0nL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0QyMEVaUlgtMDBEOFBCMF9XRC1X
+Q0M0TTBLVFQ2TkstcGFydDIgL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0QyMEVaUlgtMDBEOFBC
+MF9XRC1XQ0M0TTBLVFQ2TkstcGFydDMgL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0QyMEVaUlgt
+MDBEOFBCMF9XRC1XQ0M0TTBLVFQ2TkstcGFydDQgL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0Qy
+MEVaUlgtMDBEOFBCMF9XRC1XQ0M0TTBLVFQ2TkstcGFydDUnCglleHBvcnQgcm9vdGZzX3BhcnRp
+dGlvbj0nL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0QyMEVaUlgtMDBEOFBCMF9XRC1XQ0M0TTBL
+VFQ2TkstcGFydDEnCglleHBvcnQgYnJhbmQ9J0ludGVsKFIpIENvcmUoVE0pIGkzLTMyMjAgQ1BV
+IEAgMy4zMEdIeicKCWV4cG9ydCBuZWVkX2tjb25maWc9J0NPTkZJR19CTEtfREVWX1NECkNPTkZJ
+R19TQ1NJCkNPTkZJR19CTE9DSz15CkNPTkZJR19TQVRBX0FIQ0kKQ09ORklHX1NBVEFfQUhDSV9Q
+TEFURk9STQpDT05GSUdfQVRBCkNPTkZJR19QQ0k9eQpDT05GSUdfTUQ9eQpDT05GSUdfQkxLX0RF
+Vl9NRApDT05GSUdfTURfTElORUFSCkNPTkZJR19NRF9SQUlEMApDT05GSUdfTURfUkFJRDEKQ09O
+RklHX01EX1JBSUQxMApDT05GSUdfTURfUkFJRDQ1NgpDT05GSUdfTURfTVVMVElQQVRICkNPTkZJ
+R19CTEtfREVWX0xPT1AnCglleHBvcnQgY29tbWl0PScyMTE3NWNhNDM0YzVkNDk1MDliNzNjZjQ3
+MzYxOGIwMWIwYjg1NDM3JwoJZXhwb3J0IG5ldGNvbnNvbGVfcG9ydD02Njc2CglleHBvcnQgdWNv
+ZGU9JzB4MjEnCglleHBvcnQgbmVlZF9rY29uZmlnX2h3PSdDT05GSUdfUjgxNjk9eQpDT05GSUdf
+U0FUQV9BSENJCkNPTkZJR19EUk1fSTkxNScKCWV4cG9ydCBiaXNlY3RfZG1lc2c9dHJ1ZQoJZXhw
+b3J0IGVucXVldWVfdGltZT0nMjAyMS0wNC0yNyAwMDo1ODoyMiArMDgwMCcKCWV4cG9ydCBfaWQ9
+JzYwODZmMTJlYWNhMWE2NDBkNGMzNWIwYScKCWV4cG9ydCBfcnQ9Jy9yZXN1bHQvbWRhZG0tc2Vs
+ZnRlc3RzLzFIREQtMDFyMS11Y29kZT0weDIxL2xrcC1pdmItZDA0L2RlYmlhbi0xMC40LXg4Nl82
+NC0yMDIwMDYwMy5jZ3oveDg2XzY0LXJoZWwtOC4zL2djYy05LzIxMTc1Y2E0MzRjNWQ0OTUwOWI3
+M2NmNDczNjE4YjAxYjBiODU0MzcnCglleHBvcnQgdXNlcj0nbGtwJwoJZXhwb3J0IGNvbXBpbGVy
+PSdnY2MtOScKCWV4cG9ydCBMS1BfU0VSVkVSPSdpbnRlcm5hbC1sa3Atc2VydmVyJwoJZXhwb3J0
+IGhlYWRfY29tbWl0PSdhODY4NjQ5ZjMwZDQ3MDdmNjA4YmE3OWRkZGE4ZjYyOGZhMzUwZmUzJwoJ
+ZXhwb3J0IGJhc2VfY29tbWl0PSdiZjA1YmYxNmM3NmJiNDRhYjUxNTYyMjNlMWU1OGUyNmRmZTMw
+YTg4JwoJZXhwb3J0IGJyYW5jaD0nbGludXgtbmV4dC9tYXN0ZXInCglleHBvcnQgcm9vdGZzPSdk
+ZWJpYW4tMTAuNC14ODZfNjQtMjAyMDA2MDMuY2d6JwoJZXhwb3J0IHJlc3VsdF9yb290PScvcmVz
+dWx0L21kYWRtLXNlbGZ0ZXN0cy8xSERELTAxcjEtdWNvZGU9MHgyMS9sa3AtaXZiLWQwNC9kZWJp
+YW4tMTAuNC14ODZfNjQtMjAyMDA2MDMuY2d6L3g4Nl82NC1yaGVsLTguMy9nY2MtOS8yMTE3NWNh
+NDM0YzVkNDk1MDliNzNjZjQ3MzYxOGIwMWIwYjg1NDM3LzIxJwoJZXhwb3J0IHNjaGVkdWxlcl92
+ZXJzaW9uPScvbGtwL2xrcC8uc3JjLTIwMjEwNDI1LTE0MjMwNycKCWV4cG9ydCBhcmNoPSd4ODZf
+NjQnCglleHBvcnQgbWF4X3VwdGltZT0yMTAwCglleHBvcnQgaW5pdHJkPScvb3NpbWFnZS9kZWJp
+YW4vZGViaWFuLTEwLjQteDg2XzY0LTIwMjAwNjAzLmNneicKCWV4cG9ydCBib290bG9hZGVyX2Fw
+cGVuZD0ncm9vdD0vZGV2L3JhbTAKdXNlcj1sa3AKam9iPS9sa3Avam9icy9zY2hlZHVsZWQvbGtw
+LWl2Yi1kMDQvbWRhZG0tc2VsZnRlc3RzLTFIREQtMDFyMS11Y29kZT0weDIxLWRlYmlhbi0xMC40
+LXg4Nl82NC0yMDIwMDYwMy5jZ3otMjExNzVjYTQzNGM1ZDQ5NTA5YjczY2Y0NzM2MThiMDFiMGI4
+NTQzNy0yMDIxMDQyNy04MjEzMi05d3dxdzctMjEueWFtbApBUkNIPXg4Nl82NAprY29uZmlnPXg4
+Nl82NC1yaGVsLTguMwpicmFuY2g9bGludXgtbmV4dC9tYXN0ZXIKY29tbWl0PTIxMTc1Y2E0MzRj
+NWQ0OTUwOWI3M2NmNDczNjE4YjAxYjBiODU0MzcKQk9PVF9JTUFHRT0vcGtnL2xpbnV4L3g4Nl82
+NC1yaGVsLTguMy9nY2MtOS8yMTE3NWNhNDM0YzVkNDk1MDliNzNjZjQ3MzYxOGIwMWIwYjg1NDM3
+L3ZtbGludXotNS4xMi4wLXJjNC0wMDAxNy1nMjExNzVjYTQzNGM1Cm1heF91cHRpbWU9MjEwMApS
+RVNVTFRfUk9PVD0vcmVzdWx0L21kYWRtLXNlbGZ0ZXN0cy8xSERELTAxcjEtdWNvZGU9MHgyMS9s
+a3AtaXZiLWQwNC9kZWJpYW4tMTAuNC14ODZfNjQtMjAyMDA2MDMuY2d6L3g4Nl82NC1yaGVsLTgu
+My9nY2MtOS8yMTE3NWNhNDM0YzVkNDk1MDliNzNjZjQ3MzYxOGIwMWIwYjg1NDM3LzIxCkxLUF9T
+RVJWRVI9aW50ZXJuYWwtbGtwLXNlcnZlcgpub2thc2xyCnNlbGludXg9MApkZWJ1ZwphcGljPWRl
+YnVnCnN5c3JxX2Fsd2F5c19lbmFibGVkCnJjdXBkYXRlLnJjdV9jcHVfc3RhbGxfdGltZW91dD0x
+MDAKbmV0LmlmbmFtZXM9MApwcmludGsuZGV2a21zZz1vbgpwYW5pYz0tMQpzb2Z0bG9ja3VwX3Bh
+bmljPTEKbm1pX3dhdGNoZG9nPXBhbmljCm9vcHM9cGFuaWMKbG9hZF9yYW1kaXNrPTIKcHJvbXB0
+X3JhbWRpc2s9MApkcmJkLm1pbm9yX2NvdW50PTgKc3lzdGVtZC5sb2dfbGV2ZWw9ZXJyCmlnbm9y
+ZV9sb2dsZXZlbApjb25zb2xlPXR0eTAKZWFybHlwcmludGs9dHR5UzAsMTE1MjAwCmNvbnNvbGU9
+dHR5UzAsMTE1MjAwCnZnYT1ub3JtYWwKcncnCglleHBvcnQgbW9kdWxlc19pbml0cmQ9Jy9wa2cv
+bGludXgveDg2XzY0LXJoZWwtOC4zL2djYy05LzIxMTc1Y2E0MzRjNWQ0OTUwOWI3M2NmNDczNjE4
+YjAxYjBiODU0MzcvbW9kdWxlcy5jZ3onCglleHBvcnQgYm1faW5pdHJkPScvb3NpbWFnZS9kZXBz
+L2RlYmlhbi0xMC40LXg4Nl82NC0yMDIwMDYwMy5jZ3ovcnVuLWlwY29uZmlnXzIwMjAwNjA4LmNn
+eiwvb3NpbWFnZS9kZXBzL2RlYmlhbi0xMC40LXg4Nl82NC0yMDIwMDYwMy5jZ3ovbGtwXzIwMjAx
+MjExLmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi0xMC40LXg4Nl82NC0yMDIwMDYwMy5jZ3ovcnN5
+bmMtcm9vdGZzXzIwMjAwNjA4LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi0xMC40LXg4Nl82NC0y
+MDIwMDYwMy5jZ3ovbWRhZG0tc2VsZnRlc3RzXzIwMjAxMDA4LmNneiwvb3NpbWFnZS9wa2cvZGVi
+aWFuLTEwLjQteDg2XzY0LTIwMjAwNjAzLmNnei9tZGFkbS1zZWxmdGVzdHMteDg2XzY0LTVkNTE4
+ZGUtMV8yMDIwMTAwOC5jZ3osL29zaW1hZ2UvZGVwcy9kZWJpYW4tMTAuNC14ODZfNjQtMjAyMDA2
+MDMuY2d6L2h3XzIwMjAwNzE1LmNneicKCWV4cG9ydCB1Y29kZV9pbml0cmQ9Jy9vc2ltYWdlL3Vj
+b2RlL2ludGVsLXVjb2RlLTIwMjEwMjIyLmNneicKCWV4cG9ydCBsa3BfaW5pdHJkPScvb3NpbWFn
+ZS91c2VyL2xrcC9sa3AteDg2XzY0LmNneicKCWV4cG9ydCBzaXRlPSdpbm4nCglleHBvcnQgTEtQ
+X0NHSV9QT1JUPTgwCglleHBvcnQgTEtQX0NJRlNfUE9SVD0xMzkKCWV4cG9ydCBsYXN0X2tlcm5l
+bD0nNC4yMC4wJwoJZXhwb3J0IHF1ZXVlX2F0X2xlYXN0X29uY2U9MQoJZXhwb3J0IHJlcGVhdF90
+bz0yMgoJZXhwb3J0IGtlcm5lbD0nL3BrZy9saW51eC94ODZfNjQtcmhlbC04LjMvZ2NjLTkvMjEx
+NzVjYTQzNGM1ZDQ5NTA5YjczY2Y0NzM2MThiMDFiMGI4NTQzNy92bWxpbnV6LTUuMTIuMC1yYzQt
+MDAwMTctZzIxMTc1Y2E0MzRjNScKCWV4cG9ydCBkZXF1ZXVlX3RpbWU9JzIwMjEtMDQtMjcgMDA6
+NTg6NDEgKzA4MDAnCglleHBvcnQgam9iX2luaXRyZD0nL2xrcC9qb2JzL3NjaGVkdWxlZC9sa3At
+aXZiLWQwNC9tZGFkbS1zZWxmdGVzdHMtMUhERC0wMXIxLXVjb2RlPTB4MjEtZGViaWFuLTEwLjQt
+eDg2XzY0LTIwMjAwNjAzLmNnei0yMTE3NWNhNDM0YzVkNDk1MDliNzNjZjQ3MzYxOGIwMWIwYjg1
+NDM3LTIwMjEwNDI3LTgyMTMyLTl3d3F3Ny0yMS5jZ3onCgoJWyAtbiAiJExLUF9TUkMiIF0gfHwK
+CWV4cG9ydCBMS1BfU1JDPS9sa3AvJHt1c2VyOi1sa3B9L3NyYwp9CgpydW5fam9iKCkKewoJZWNo
+byAkJCA+ICRUTVAvcnVuLWpvYi5waWQKCgkuICRMS1BfU1JDL2xpYi9odHRwLnNoCgkuICRMS1Bf
+U1JDL2xpYi9qb2Iuc2gKCS4gJExLUF9TUkMvbGliL2Vudi5zaAoKCWV4cG9ydF90b3BfZW52CgoJ
+cnVuX3NldHVwIG5yX2hkZD0xICRMS1BfU1JDL3NldHVwL2Rpc2sKCglydW5fbW9uaXRvciAkTEtQ
+X1NSQy9tb25pdG9ycy93cmFwcGVyIGttc2cKCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3Jz
+L3dyYXBwZXIgaGVhcnRiZWF0CglydW5fbW9uaXRvciAkTEtQX1NSQy9tb25pdG9ycy93cmFwcGVy
+IG1lbWluZm8KCXJ1bl9tb25pdG9yICRMS1BfU1JDL21vbml0b3JzL3dyYXBwZXIgb29tLWtpbGxl
+cgoJcnVuX21vbml0b3IgJExLUF9TUkMvbW9uaXRvcnMvcGxhaW4vd2F0Y2hkb2cKCglydW5fdGVz
+dCB0ZXN0X3ByZWZpeD0nMDFyMScgJExLUF9TUkMvdGVzdHMvd3JhcHBlciBtZGFkbS1zZWxmdGVz
+dHMKfQoKZXh0cmFjdF9zdGF0cygpCnsKCWV4cG9ydCBzdGF0c19wYXJ0X2JlZ2luPQoJZXhwb3J0
+IHN0YXRzX3BhcnRfZW5kPQoKCWVudiB0ZXN0X3ByZWZpeD0nMDFyMScgJExLUF9TUkMvc3RhdHMv
+d3JhcHBlciBtZGFkbS1zZWxmdGVzdHMKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIga21zZwoJJExL
+UF9TUkMvc3RhdHMvd3JhcHBlciBtZW1pbmZvCgoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciB0aW1l
+IG1kYWRtLXNlbGZ0ZXN0cy50aW1lCgkkTEtQX1NSQy9zdGF0cy93cmFwcGVyIGRtZXNnCgkkTEtQ
+X1NSQy9zdGF0cy93cmFwcGVyIGttc2cKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIgbGFzdF9zdGF0
+ZQoJJExLUF9TUkMvc3RhdHMvd3JhcHBlciBzdGRlcnIKCSRMS1BfU1JDL3N0YXRzL3dyYXBwZXIg
+dGltZQp9CgoiJEAiCg==
+
+--===============5032057007832142053==
+Content-Type: application/x-xz
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="kmsg.xz"
+
+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
+Po65qLHEZ/sCAAAAAARZWg==
+--===============5032057007832142053==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="mdadm-selftests.ksh"
+
+MjAyMS0wNC0yNiAxNjo1OToyNSBta2RpciAtcCAvdmFyL3RtcAoyMDIxLTA0LTI2IDE2OjU5OjI1
+IG1rZTJmcyAtdCBleHQzIC1iIDQwOTYgLUogc2l6ZT00IC1xIC9kZXYvc2RhMgoyMDIxLTA0LTI2
+IDE3OjAwOjIxIG1vdW50IC10IGV4dDMgL2Rldi9zZGEyIC92YXIvdG1wCnNlZCAtZSAncy97REVG
+QVVMVF9NRVRBREFUQX0vMS4yL2cnIFwKLWUgJ3Mse01BUF9QQVRIfSwvcnVuL21kYWRtL21hcCxn
+JyAgbWRhZG0uOC5pbiA+IG1kYWRtLjgKL3Vzci9iaW4vaW5zdGFsbCAtRCAtbSA2NDQgbWRhZG0u
+OCAvdXNyL3NoYXJlL21hbi9tYW44L21kYWRtLjgKL3Vzci9iaW4vaW5zdGFsbCAtRCAtbSA2NDQg
+bWRtb24uOCAvdXNyL3NoYXJlL21hbi9tYW44L21kbW9uLjgKL3Vzci9iaW4vaW5zdGFsbCAtRCAt
+bSA2NDQgbWQuNCAvdXNyL3NoYXJlL21hbi9tYW40L21kLjQKL3Vzci9iaW4vaW5zdGFsbCAtRCAt
+bSA2NDQgbWRhZG0uY29uZi41IC91c3Ivc2hhcmUvbWFuL21hbjUvbWRhZG0uY29uZi41Ci91c3Iv
+YmluL2luc3RhbGwgLUQgLW0gNjQ0IHVkZXYtbWQtcmFpZC1jcmVhdGluZy5ydWxlcyAvbGliL3Vk
+ZXYvcnVsZXMuZC8wMS1tZC1yYWlkLWNyZWF0aW5nLnJ1bGVzCi91c3IvYmluL2luc3RhbGwgLUQg
+LW0gNjQ0IHVkZXYtbWQtcmFpZC1hcnJheXMucnVsZXMgL2xpYi91ZGV2L3J1bGVzLmQvNjMtbWQt
+cmFpZC1hcnJheXMucnVsZXMKL3Vzci9iaW4vaW5zdGFsbCAtRCAtbSA2NDQgdWRldi1tZC1yYWlk
+LWFzc2VtYmx5LnJ1bGVzIC9saWIvdWRldi9ydWxlcy5kLzY0LW1kLXJhaWQtYXNzZW1ibHkucnVs
+ZXMKL3Vzci9iaW4vaW5zdGFsbCAtRCAtbSA2NDQgdWRldi1tZC1jbHVzdGVyZWQtY29uZmlybS1k
+ZXZpY2UucnVsZXMgL2xpYi91ZGV2L3J1bGVzLmQvNjktbWQtY2x1c3RlcmVkLWNvbmZpcm0tZGV2
+aWNlLnJ1bGVzCi91c3IvYmluL2luc3RhbGwgLUQgIC1tIDc1NSBtZGFkbSAvc2Jpbi9tZGFkbQov
+dXNyL2Jpbi9pbnN0YWxsIC1EICAtbSA3NTUgbWRtb24gL3NiaW4vbWRtb24KVGVzdGluZyBvbiBs
+aW51eC01LjEyLjAtcmM0LTAwMDE3LWcyMTE3NWNhNDM0YzUga2VybmVsCi9sa3AvYmVuY2htYXJr
+cy9tZGFkbS1zZWxmdGVzdHMvdGVzdHMvMDFyMWZhaWwuLi4gRkFJTEVEIC0gc2VlIC92YXIvdG1w
+LzAxcjFmYWlsLmxvZyBhbmQgL3Zhci90bXAvZmFpbDAxcjFmYWlsLmxvZyBmb3IgZGV0YWlscwo=
+
+--===============5032057007832142053==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="job.yaml"
+
+LS0tCgojISBqb2JzL21kYWRtLXNlbGZ0ZXN0cy55YW1sCnN1aXRlOiBtZGFkbS1zZWxmdGVzdHMK
+dGVzdGNhc2U6IG1kYWRtLXNlbGZ0ZXN0cwpjYXRlZ29yeTogZnVuY3Rpb25hbApuZWVkX21lbW9y
+eTogMUcKbmVlZF9tb2R1bGVzOiB0cnVlCmRpc2s6IDFIREQKbWRhZG0tc2VsZnRlc3RzOgogIHRl
+c3RfcHJlZml4OiAwMXIxCmpvYl9vcmlnaW46IG1kYWRtLXNlbGZ0ZXN0cy55YW1sCgojISBxdWV1
+ZSBvcHRpb25zCnF1ZXVlX2NtZGxpbmVfa2V5czoKLSBicmFuY2gKLSBjb21taXQKcXVldWU6IGJp
+c2VjdAp0ZXN0Ym94OiBsa3AtaXZiLWQwNAp0Ym94X2dyb3VwOiBsa3AtaXZiLWQwNAprY29uZmln
+OiB4ODZfNjQtcmhlbC04LjMKc3VibWl0X2lkOiA2MDgxNzI3NTIyM2NiNWNkZmM3Nzg3NzEKam9i
+X2ZpbGU6ICIvbGtwL2pvYnMvc2NoZWR1bGVkL2xrcC1pdmItZDA0L21kYWRtLXNlbGZ0ZXN0cy0x
+SERELTAxcjEtdWNvZGU9MHgyMS1kZWJpYW4tMTAuNC14ODZfNjQtMjAyMDA2MDMuY2d6LTIxMTc1
+Y2E0MzRjNWQ0OTUwOWI3M2NmNDczNjE4YjAxYjBiODU0MzctMjAyMTA0MjItNTI3MzItbGJqM3V5
+LTAueWFtbCIKaWQ6IGJjODEwOWQzMTA4ODY0YTczMGE3NzQ4ODkwMGEwYzlmOTQ0MWVmOGYKcXVl
+dWVyX3ZlcnNpb246ICIvbGtwLXNyYyIKCiMhIGhvc3RzL2xrcC1pdmItZDA0Cm1vZGVsOiBJdnkg
+QnJpZGdlCm5yX25vZGU6IDEKbnJfY3B1OiA0Cm1lbW9yeTogOEcKbnJfc3NkX3BhcnRpdGlvbnM6
+IDEKbnJfaGRkX3BhcnRpdGlvbnM6IDQKc3NkX3BhcnRpdGlvbnM6ICIvZGV2L2Rpc2svYnktaWQv
+YXRhLUlOVEVMX1NTRFNDMktCMjQwRzhfQlRZRjgzNjYwNlVRMjQwQUdOLXBhcnQxIgpoZGRfcGFy
+dGl0aW9uczogIi9kZXYvZGlzay9ieS1pZC9hdGEtV0RDX1dEMjBFWlJYLTAwRDhQQjBfV0QtV0ND
+NE0wS1RUNk5LLXBhcnQyIC9kZXYvZGlzay9ieS1pZC9hdGEtV0RDX1dEMjBFWlJYLTAwRDhQQjBf
+V0QtV0NDNE0wS1RUNk5LLXBhcnQzCiAgL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0QyMEVaUlgt
+MDBEOFBCMF9XRC1XQ0M0TTBLVFQ2TkstcGFydDQgL2Rldi9kaXNrL2J5LWlkL2F0YS1XRENfV0Qy
+MEVaUlgtMDBEOFBCMF9XRC1XQ0M0TTBLVFQ2TkstcGFydDUiCnJvb3Rmc19wYXJ0aXRpb246ICIv
+ZGV2L2Rpc2svYnktaWQvYXRhLVdEQ19XRDIwRVpSWC0wMEQ4UEIwX1dELVdDQzRNMEtUVDZOSy1w
+YXJ0MSIKYnJhbmQ6IEludGVsKFIpIENvcmUoVE0pIGkzLTMyMjAgQ1BVIEAgMy4zMEdIegoKIyEg
+aW5jbHVkZS9jYXRlZ29yeS9mdW5jdGlvbmFsCmttc2c6IApoZWFydGJlYXQ6IAptZW1pbmZvOiAK
+CiMhIGluY2x1ZGUvZGlzay9ucl9oZGQKbmVlZF9rY29uZmlnOgotIENPTkZJR19CTEtfREVWX1NE
+Ci0gQ09ORklHX1NDU0kKLSBDT05GSUdfQkxPQ0s9eQotIENPTkZJR19TQVRBX0FIQ0kKLSBDT05G
+SUdfU0FUQV9BSENJX1BMQVRGT1JNCi0gQ09ORklHX0FUQQotIENPTkZJR19QQ0k9eQotIENPTkZJ
+R19NRD15Ci0gQ09ORklHX0JMS19ERVZfTUQKLSBDT05GSUdfTURfTElORUFSCi0gQ09ORklHX01E
+X1JBSUQwCi0gQ09ORklHX01EX1JBSUQxCi0gQ09ORklHX01EX1JBSUQxMAotIENPTkZJR19NRF9S
+QUlENDU2Ci0gQ09ORklHX01EX01VTFRJUEFUSAotIENPTkZJR19CTEtfREVWX0xPT1AKCiMhIGlu
+Y2x1ZGUvbWRhZG0tc2VsZnRlc3RzCgojISBpbmNsdWRlL3F1ZXVlL2N5Y2xpYwpjb21taXQ6IDIx
+MTc1Y2E0MzRjNWQ0OTUwOWI3M2NmNDczNjE4YjAxYjBiODU0MzcKCiMhIGluY2x1ZGUvdGVzdGJv
+eC9sa3AtaXZiLWQwNApuZXRjb25zb2xlX3BvcnQ6IDY2NzYKdWNvZGU6ICcweDIxJwpuZWVkX2tj
+b25maWdfaHc6Ci0gQ09ORklHX1I4MTY5PXkKLSBDT05GSUdfU0FUQV9BSENJCmJpc2VjdF9kbWVz
+ZzogdHJ1ZQplbnF1ZXVlX3RpbWU6IDIwMjEtMDQtMjIgMjA6NTY6MjEuNjQxMzg1MDY5ICswODow
+MApfaWQ6IDYwODE3Mjc1MjIzY2I1Y2RmYzc3ODc3MQpfcnQ6ICIvcmVzdWx0L21kYWRtLXNlbGZ0
+ZXN0cy8xSERELTAxcjEtdWNvZGU9MHgyMS9sa3AtaXZiLWQwNC9kZWJpYW4tMTAuNC14ODZfNjQt
+MjAyMDA2MDMuY2d6L3g4Nl82NC1yaGVsLTguMy9nY2MtOS8yMTE3NWNhNDM0YzVkNDk1MDliNzNj
+ZjQ3MzYxOGIwMWIwYjg1NDM3IgoKIyEgc2NoZWR1bGUgb3B0aW9ucwp1c2VyOiBsa3AKY29tcGls
+ZXI6IGdjYy05CkxLUF9TRVJWRVI6IGludGVybmFsLWxrcC1zZXJ2ZXIKaGVhZF9jb21taXQ6IDNh
+OTEzNzcxYTRkNDkxOWM2ZjM3MmM5ZjYzMGExMjk0YjNmNzkzZDYKYmFzZV9jb21taXQ6IGJmMDVi
+ZjE2Yzc2YmI0NGFiNTE1NjIyM2UxZTU4ZTI2ZGZlMzBhODgKYnJhbmNoOiBsaW51eC1kZXZlbC9k
+ZXZlbC1ob3VybHktMjAyMTA0MjItMDAyNTQyCnJvb3RmczogZGViaWFuLTEwLjQteDg2XzY0LTIw
+MjAwNjAzLmNnegpyZXN1bHRfcm9vdDogIi9yZXN1bHQvbWRhZG0tc2VsZnRlc3RzLzFIREQtMDFy
+MS11Y29kZT0weDIxL2xrcC1pdmItZDA0L2RlYmlhbi0xMC40LXg4Nl82NC0yMDIwMDYwMy5jZ3ov
+eDg2XzY0LXJoZWwtOC4zL2djYy05LzIxMTc1Y2E0MzRjNWQ0OTUwOWI3M2NmNDczNjE4YjAxYjBi
+ODU0MzcvMCIKc2NoZWR1bGVyX3ZlcnNpb246ICIvbGtwL2xrcC8uc3JjLTIwMjEwNDIyLTE1Mzcy
+NyIKYXJjaDogeDg2XzY0Cm1heF91cHRpbWU6IDIxMDAKaW5pdHJkOiAiL29zaW1hZ2UvZGViaWFu
+L2RlYmlhbi0xMC40LXg4Nl82NC0yMDIwMDYwMy5jZ3oiCmJvb3Rsb2FkZXJfYXBwZW5kOgotIHJv
+b3Q9L2Rldi9yYW0wCi0gdXNlcj1sa3AKLSBqb2I9L2xrcC9qb2JzL3NjaGVkdWxlZC9sa3AtaXZi
+LWQwNC9tZGFkbS1zZWxmdGVzdHMtMUhERC0wMXIxLXVjb2RlPTB4MjEtZGViaWFuLTEwLjQteDg2
+XzY0LTIwMjAwNjAzLmNnei0yMTE3NWNhNDM0YzVkNDk1MDliNzNjZjQ3MzYxOGIwMWIwYjg1NDM3
+LTIwMjEwNDIyLTUyNzMyLWxiajN1eS0wLnlhbWwKLSBBUkNIPXg4Nl82NAotIGtjb25maWc9eDg2
+XzY0LXJoZWwtOC4zCi0gYnJhbmNoPWxpbnV4LWRldmVsL2RldmVsLWhvdXJseS0yMDIxMDQyMi0w
+MDI1NDIKLSBjb21taXQ9MjExNzVjYTQzNGM1ZDQ5NTA5YjczY2Y0NzM2MThiMDFiMGI4NTQzNwot
+IEJPT1RfSU1BR0U9L3BrZy9saW51eC94ODZfNjQtcmhlbC04LjMvZ2NjLTkvMjExNzVjYTQzNGM1
+ZDQ5NTA5YjczY2Y0NzM2MThiMDFiMGI4NTQzNy92bWxpbnV6LTUuMTIuMC1yYzQtMDAwMTctZzIx
+MTc1Y2E0MzRjNQotIG1heF91cHRpbWU9MjEwMAotIFJFU1VMVF9ST09UPS9yZXN1bHQvbWRhZG0t
+c2VsZnRlc3RzLzFIREQtMDFyMS11Y29kZT0weDIxL2xrcC1pdmItZDA0L2RlYmlhbi0xMC40LXg4
+Nl82NC0yMDIwMDYwMy5jZ3oveDg2XzY0LXJoZWwtOC4zL2djYy05LzIxMTc1Y2E0MzRjNWQ0OTUw
+OWI3M2NmNDczNjE4YjAxYjBiODU0MzcvMAotIExLUF9TRVJWRVI9aW50ZXJuYWwtbGtwLXNlcnZl
+cgotIG5va2FzbHIKLSBzZWxpbnV4PTAKLSBkZWJ1ZwotIGFwaWM9ZGVidWcKLSBzeXNycV9hbHdh
+eXNfZW5hYmxlZAotIHJjdXBkYXRlLnJjdV9jcHVfc3RhbGxfdGltZW91dD0xMDAKLSBuZXQuaWZu
+YW1lcz0wCi0gcHJpbnRrLmRldmttc2c9b24KLSBwYW5pYz0tMQotIHNvZnRsb2NrdXBfcGFuaWM9
+MQotIG5taV93YXRjaGRvZz1wYW5pYwotIG9vcHM9cGFuaWMKLSBsb2FkX3JhbWRpc2s9MgotIHBy
+b21wdF9yYW1kaXNrPTAKLSBkcmJkLm1pbm9yX2NvdW50PTgKLSBzeXN0ZW1kLmxvZ19sZXZlbD1l
+cnIKLSBpZ25vcmVfbG9nbGV2ZWwKLSBjb25zb2xlPXR0eTAKLSBlYXJseXByaW50az10dHlTMCwx
+MTUyMDAKLSBjb25zb2xlPXR0eVMwLDExNTIwMAotIHZnYT1ub3JtYWwKLSBydwptb2R1bGVzX2lu
+aXRyZDogIi9wa2cvbGludXgveDg2XzY0LXJoZWwtOC4zL2djYy05LzIxMTc1Y2E0MzRjNWQ0OTUw
+OWI3M2NmNDczNjE4YjAxYjBiODU0MzcvbW9kdWxlcy5jZ3oiCmJtX2luaXRyZDogIi9vc2ltYWdl
+L2RlcHMvZGViaWFuLTEwLjQteDg2XzY0LTIwMjAwNjAzLmNnei9ydW4taXBjb25maWdfMjAyMDA2
+MDguY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLTEwLjQteDg2XzY0LTIwMjAwNjAzLmNnei9sa3Bf
+MjAyMDEyMTEuY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLTEwLjQteDg2XzY0LTIwMjAwNjAzLmNn
+ei9yc3luYy1yb290ZnNfMjAyMDA2MDguY2d6LC9vc2ltYWdlL2RlcHMvZGViaWFuLTEwLjQteDg2
+XzY0LTIwMjAwNjAzLmNnei9tZGFkbS1zZWxmdGVzdHNfMjAyMDEwMDguY2d6LC9vc2ltYWdlL3Br
+Zy9kZWJpYW4tMTAuNC14ODZfNjQtMjAyMDA2MDMuY2d6L21kYWRtLXNlbGZ0ZXN0cy14ODZfNjQt
+NWQ1MThkZS0xXzIwMjAxMDA4LmNneiwvb3NpbWFnZS9kZXBzL2RlYmlhbi0xMC40LXg4Nl82NC0y
+MDIwMDYwMy5jZ3ovaHdfMjAyMDA3MTUuY2d6Igp1Y29kZV9pbml0cmQ6ICIvb3NpbWFnZS91Y29k
+ZS9pbnRlbC11Y29kZS0yMDIxMDIyMi5jZ3oiCmxrcF9pbml0cmQ6ICIvb3NpbWFnZS91c2VyL2xr
+cC9sa3AteDg2XzY0LmNneiIKc2l0ZTogaW5uCgojISAvbGtwL2xrcC8uc3JjLTIwMjEwNDIxLTIx
+NTE0NS9pbmNsdWRlL3NpdGUvaW5uCkxLUF9DR0lfUE9SVDogODAKTEtQX0NJRlNfUE9SVDogMTM5
+Cm9vbS1raWxsZXI6IAp3YXRjaGRvZzogCgojISBydW50aW1lIHN0YXR1cwpsYXN0X2tlcm5lbDog
+NC4yMC4wCgojISB1c2VyIG92ZXJyaWRlcwprZXJuZWw6ICIvcGtnL2xpbnV4L3g4Nl82NC1yaGVs
+LTguMy9nY2MtOS8yMTE3NWNhNDM0YzVkNDk1MDliNzNjZjQ3MzYxOGIwMWIwYjg1NDM3L3ZtbGlu
+dXotNS4xMi4wLXJjNC0wMDAxNy1nMjExNzVjYTQzNGM1IgpkZXF1ZXVlX3RpbWU6IDIwMjEtMDQt
+MjIgMjA6NTk6MTAuMjY5ODgzOTg3ICswODowMAoKIyEgL2xrcC9sa3AvLnNyYy0yMDIxMDQyMi0x
+NTM3MjcvaW5jbHVkZS9zaXRlL2lubgpqb2Jfc3RhdGU6IGZpbmlzaGVkCmxvYWRhdmc6IDEuOTAg
+MC43MCAwLjI2IDEvMTU0IDEzMjAKc3RhcnRfdGltZTogJzE2MTkwOTYzOTUnCmVuZF90aW1lOiAn
+MTYxOTA5NjQ3NycKdmVyc2lvbjogIi9sa3AvbGtwLy5zcmMtMjAyMTA0MjItMTUzNzU5OmY4NzA5
+MDIxLWRpcnR5OjAwNDJlMjE4Yy1kaXJ0eSIK
+
+--===============5032057007832142053==
+Content-Type: text/plain
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="reproduce.ksh"
+
+bWtkaXIgLXAgL3Zhci90bXAKbWtlMmZzIC10IGV4dDMgLWIgNDA5NiAtSiBzaXplPTQgLXEgL2Rl
+di9zZGEyCm1vdW50IC10IGV4dDMgL2Rldi9zZGEyIC92YXIvdG1wCg==
+
+--===============5032057007832142053==--
 
