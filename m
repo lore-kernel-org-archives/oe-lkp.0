@@ -1,84 +1,200 @@
-Content-Type: multipart/mixed; boundary="===============5311200495523172369=="
+Content-Type: multipart/mixed; boundary="===============6582706073946676364=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Winkler, Tomas <tomas.winkler@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] 2d146aa3aa: vm-scalability.throughput -36.4% regression
-Date: Thu, 02 Sep 2021 21:39:24 +0800
-Message-ID: <20210902133924.GA72811@shbuild999.sh.intel.com>
-In-Reply-To: <20210902105306.GC17119@blackbody.suse.cz>
+Subject: Re: [PCI/MSI] a4fc4cf388: dmesg.genirq:Flags_mismatch_irq##(mei_me)vs.#(xhci_hcd)
+Date: Thu, 02 Sep 2021 19:34:35 +0000
+Message-ID: <8ab95f7f784448038d7777c45f1f2d55@intel.com>
+In-Reply-To: <CAGsJ_4zwRdR2QuoR0K0_J86w0=t=mFh=tAKRuP1+Tx8aLn4kKw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5311200495523172369==
+--===============6582706073946676364==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 02, 2021 at 12:53:06PM +0200, Michal Koutn?? wrote:
-> Hi.
+> dmesg.genirq:Flags_mismatch_irq##(mei_me)vs.#(xhci_hcd)
 > =
 
-> On Thu, Sep 02, 2021 at 11:46:28AM +0800, Feng Tang <feng.tang@intel.co=
-m> wrote:
-> > > Narrowing it down to a single prefetcher seems good enough to me. The
-> > > behavior of the prefetchers is fairly complicated and hard to predict=
-, so I
-> > > doubt you'll ever get a 100% step by step explanation.
->  =
-
-> My layman explanation with the available information is that the
-> prefetcher somehow behaves as if it marked the offending cacheline as
-> modified (even though reading only) therefore slowing down the remote rea=
-der.
-
-But this can't explain the test that adding 128 bytes before css->cgroup
-can restore/improve the performance.
- =
-
-> On Thu, Sep 02, 2021 at 09:35:58AM +0800, Feng Tang <feng.tang@intel.co=
-m> wrote:
-> > @@ -139,10 +139,21 @@ struct cgroup_subsys_state {
-> >       /* PI: the cgroup that this css is attached to */
-> >       struct cgroup *cgroup;
+> On Tue, Aug 31, 2021 at 1:21 PM Barry Song <21cnbao@gmail.com> wrote:
 > >
-> > +     struct cgroup_subsys_state *parent;
-> > +
-> >       /* PI: the cgroup subsystem that this css is attached to */
-> >       struct cgroup_subsys *ss;
+> > On Mon, Aug 30, 2021 at 2:38 AM kernel test robot
+> <oliver.sang@intel.com> wrote:
+> > >
+> > >
+> > >
+> > > Greeting,
+> > >
+> > > FYI, we noticed the following commit (built with gcc-9):
+> > >
+> > > commit: a4fc4cf388319ea957ffbdab5073bdd267de9082 ("[PATCH v3 3/3]
+> > > PCI/MSI: remove msi_attrib.default_irq in msi_desc")
+> > > url:
+> > > https://github.com/0day-ci/linux/commits/Barry-Song/PCI-MSI-Clarify-
+> > > the-IRQ-sysfs-ABI-for-PCI-devices/20210825-183018
+> > > base:
+> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git
+> > > 6e764bcd1cf72a2846c0e53d3975a09b242c04c9
+> > >
+> > > in testcase: kernel-selftests
+> > > version: kernel-selftests-x86_64-ebaa603b-1_20210825
+> > > with following parameters:
+> > >
+> > >         group: pidfd
+> > >         ucode: 0xe2
+> > >
+> > > test-description: The kernel contains a set of "self tests" under the
+> tools/testing/selftests/ directory. These are intended to be small unit t=
+ests
+> to exercise individual code paths in the kernel.
+> > > test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+> > >
+> > >
+> > > on test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz
+> > > with 32G memory
+> > >
+> > > caused below changes (please refer to attached dmesg/kmsg for entire
+> log/backtrace):
+> > >
+> > >
+> > >
+> > > If you fix the issue, kindly add following tag
+> > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > >
+> > >
+> > >
+> > > [  179.602028][   T34] genirq: Flags mismatch irq 16. 00002000 (mei_m=
+e) vs.
+> 00000000 (xhci_hcd)
+> > > [  179.614073][   T34] CPU: 2 PID: 34 Comm: kworker/u8:2 Not tainted
+> 5.14.0-rc7-00014-ga4fc4cf38831 #1
+> > > [  179.623225][   T34] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT,
+> BIOS 1.8.1 12/05/2017
+> > > [  179.631432][   T34] Workqueue: events_unbound async_run_entry_fn
+> > > [  179.637543][   T34] Call Trace:
+> > > [  179.640789][   T34]  dump_stack_lvl+0x45/0x59
+> > > [  179.645253][   T34]  __setup_irq.cold+0x50/0xd4
+> > > [  179.649893][   T34]  ? mei_me_pg_exit_sync+0x480/0x480 [mei_me]
+> > > [  179.655923][   T34]  request_threaded_irq+0x10c/0x180
+> > > [  179.661073][   T34]  ? mei_me_irq_quick_handler+0x240/0x240
+> [mei_me]
+> > > [  179.667528][   T34]  mei_me_probe+0x131/0x300 [mei_me]
+> > > [  179.672767][   T34]  local_pci_probe+0x42/0x80
+> > > [  179.677313][   T34]  pci_device_probe+0x107/0x1c0
+> > > [  179.682118][   T34]  really_probe+0xb6/0x380
+> > > [  179.687094][   T34]  __driver_probe_device+0xfe/0x180
+> > > [  179.692242][   T34]  driver_probe_device+0x1e/0xc0
+> > > [  179.697133][   T34]  __driver_attach_async_helper+0x2b/0x80
+> > > [  179.702802][   T34]  async_run_entry_fn+0x30/0x140
+> > > [  179.707693][   T34]  process_one_work+0x274/0x5c0
+> > > [  179.712503][   T34]  worker_thread+0x50/0x3c0
+> > > [  179.716959][   T34]  ? process_one_work+0x5c0/0x5c0
+> > > [  179.721936][   T34]  kthread+0x14f/0x180
+> > > [  179.725958][   T34]  ? set_kthread_struct+0x40/0x40
+> > > [  179.730935][   T34]  ret_from_fork+0x22/0x30
+> > > [  179.735699][   T34] mei_me 0000:00:16.0: request_threaded_irq fail=
+ure.
+> irq =3D 16
+> > > [  179.743125][   T34] mei_me 0000:00:16.0: initialization failed.
+> > > [  179.749399][   T34] mei_me: probe of 0000:00:16.0 failed with erro=
+r -16
+> > >
+> > >
+> >
+> > it seems there is a direct reference to pdev->irq.
+> > Hi Oliver, would you try if the below patch can fix the problem:
 > =
 
-> Hm, an interesting move; be mindful of commit b8b1a2e5eca6 ("cgroup:
-> move cgroup_subsys_state parent field for cache locality"). It might be
-> a regression for systems with cpuacct root css present. (That is likely
-> a big amount nowadays, that may be the reason why you don't see full
-> recovery?  For future, we may at least guard cpuacct_charge() with
-> cgroup_subsys_enabled() static branch.)
-
-Goot catch! =
-
-
-Acutally I also tested only moving 'destroy_work' and 'destroy_rwork'
-('parent' is not touched with the cost of 8 bytes more padding), which
-has simliar effect that restore to about 15% regression. =
-
-
-> > [snip]
-> > Yes, I'm afriad so, given that the policy/algorithm used by perfetcher
-> > keeps changing from generation to generation.
+> + Tomas
 > =
 
-> Exactly. I'm afraid of relayouting the structure with each new
-> generation. A robust solution is putting all frequently accessed members
-> into individual cache-lines + separating them with one more cache line? :=
--/
+> sorry. after second looking, drivers/misc/mei/pci-me.c has many places us=
+ing
+> pdev->irq directly. We really need this driver's maintainers to address t=
+he
+> problem.
 
-Yes, this is hard. Even for my debug patch, we can only say it works
-as restoring the regression partly, but not knowing the exact reason.
-
-Thansk,
-Feng
+Will look at that. =
 
 > =
 
-> Michal
---===============5311200495523172369==--
+> On the other hand, "struct mei_me_hw *hw" seems to be totally not used in
+> this driver except here:
+> 164 static int mei_me_probe(struct pci_dev *pdev, const struct
+> pci_device_id *ent)
+> 165 {
+> 166         const struct mei_cfg *cfg;
+> 167         struct mei_device *dev;
+> 168         struct mei_me_hw *hw;
+> 169         unsigned int irqflags;
+> 170         int err;
+> .....
+> 219         hw->irq =3D pdev->irq;
+> ...
+> =
+
+> this looks wrong. maybe we can leverage hw->irq in other places such as
+> shutdown, suspend, resume.
+
+We need this, usage will follow.
+> =
+
+> Thanks
+> barry
+> =
+
+> =
+
+> >
+> > diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
+> > index c3393b383e59..a45a2d4257a6 100644
+> > --- a/drivers/misc/mei/pci-me.c
+> > +++ b/drivers/misc/mei/pci-me.c
+> > @@ -216,7 +216,7 @@ static int mei_me_probe(struct pci_dev *pdev,
+> > const struct pci_device_id *ent)
+> >
+> >         pci_enable_msi(pdev);
+> >
+> > -       hw->irq =3D pdev->irq;
+> > +       hw->irq =3D pci_irq_vector(pdev, 0);
+> >
+> >          /* request and enable interrupt */
+> >         irqflags =3D pci_dev_msi_enabled(pdev) ? IRQF_ONESHOT :
+> > IRQF_SHARED;
+> >
+> >
+> > I don't have any hardware to test.
+
+
+Hard to believe, MEI is on every Intel client platform :)
+
+> >
+> > >
+> > > To reproduce:
+> > >
+> > >         git clone https://github.com/intel/lkp-tests.git
+> > >         cd lkp-tests
+> > >         bin/lkp install                job.yaml  # job file is attach=
+ed in this email
+> > >         bin/lkp split-job --compatible job.yaml  # generate the yaml =
+file for
+> lkp run
+> > >         bin/lkp run                    generated-yaml-file
+> > >
+> > >
+> > >
+> > > ---
+> > > 0DAY/LKP+ Test Infrastructure                   Open Source Technolog=
+y Center
+> > > https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel C=
+orporation
+> > >
+> > > Thanks,
+> > > Oliver Sang
+> > >
+> >
+> > Thanks
+> > barry
+
+--===============6582706073946676364==--
 
