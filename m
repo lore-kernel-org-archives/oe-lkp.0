@@ -1,43 +1,158 @@
-Content-Type: multipart/mixed; boundary="===============5828454078241204861=="
+Content-Type: multipart/mixed; boundary="===============8006149363951037382=="
 MIME-Version: 1.0
-From: Theodore Ts'o <tytso@mit.edu>
+From: Nathan Chancellor <nathan@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [ext4] 05c2c00f37: aim7.jobs-per-min -11.8% regression
-Date: Fri, 03 Sep 2021 08:32:21 -0400
-Message-ID: <YTIV1SozOGwT/DQw@mit.edu>
-In-Reply-To: <8ac28fce-0cfb-cc4d-1a3d-2f104ff46767@linux.intel.com>
+Subject: Re: [vmlinux.lds.h] d4c6399900: BUG:unable_to_handle_page_fault_for_address
+Date: Fri, 03 Sep 2021 11:51:04 -0700
+Message-ID: <YTJumKboBddccDUJ@Ryzen-9-3900X.localdomain>
+In-Reply-To: <20210903053159.GA29784@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5828454078241204861==
+--===============8006149363951037382==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 03, 2021 at 01:28:25PM +0800, Xing Zhengjun wrote:
-> Hi Jan,
+On Fri, Sep 03, 2021 at 01:31:59PM +0800, kernel test robot wrote:
 > =
 
->      Do you have time to look at this? I re-test it in v5.13 and v5.14, t=
-he
-> regression still existed. Thanks.
+> =
 
-> > So as we chatted on today's call probably the best option is to leave t=
-he
-> > code as is for now and instead work on moving away from orphan list
-> > altogether. I'll revive my patches to do that.
+> Greeting,
+> =
 
-The orphan_file feature has landed in for the 5.15 merge window.  When
-enabled, it provides multiple blocks to store the set of orphaned
-inodes, which provides parallelism for parallel truncate and unlink
-operations.
+> FYI, we noticed the following commit (built with gcc-9):
+> =
 
-It requires a development version of e2fsprogs to use, and so the
-zero-day bot won't be able to test it for a little while.
+> commit: d4c6399900364facd84c9e35ce1540b6046c345f ("vmlinux.lds.h: Avoid o=
+rphan section with !SMP")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> =
+
+> =
+
+> in testcase: trinity
+> version: trinity-x86_64-03f10b67-1_20210401
+> with following parameters:
+> =
+
+> 	runtime: 300s
+> =
+
+> test-description: Trinity is a linux system call fuzz tester.
+> test-url: http://codemonkey.org.uk/projects/trinity/
+> =
+
+> =
+
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
+m 16G
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
+
+> =
+
+> =
+
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> =
+
+> =
+
+> [  103.254262] BUG: unable to handle page fault for address: ffffffffbb44=
+3040
+> [  103.255486] #PF: supervisor write access in kernel mode
+> [  103.256427] #PF: error_code(0x0002) - not-present page
+> [  103.257362] PGD 2cec37067 P4D 2cec37067 PUD 2cec38063 PMD 100235063 PT=
+E 800ffffd2f9bc062
+> [  103.258757] Oops: 0002 [#1] KASAN PTI
+> [  103.259355] CPU: 0 PID: 1 Comm: swapper Not tainted 5.13.0-rc2+ #1
+> [  103.260390] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.12.0-1 04/01/2014
+> [  103.261811] RIP: 0010:kvm_guest_apic_eoi_write+0x12/0x90
+> [  103.262740] Code: 00 48 c7 c7 28 8d b1 ba e8 2b b5 60 00 eb cc 66 0f 1=
+f 84 00 00 00 00 00 53 be 08 00 00 00 48 c7 c7 40 30 44 bb e8 ee b8 60 00 <=
+48> 0f ba 35 95 d0 59 05 00 72 4e 48 c7 c0 80 fc 7f b9 48 ba 00 00
+> [  103.265736] RSP: 0018:ffffc90000007fc8 EFLAGS: 00010046
+> [  103.266640] RAX: 0000000000000001 RBX: ffffffffb97ffa40 RCX: ffffffffb=
+5ea5fa2
+> [  103.267869] RDX: 0000000000000001 RSI: 0000000000000008 RDI: ffffffffb=
+b443040
+> [  103.269087] RBP: 0000000000000000 R08: 0000000000000001 R09: fffffbfff=
+7688609
+> [  103.270329] R10: ffffffffbb443047 R11: fffffbfff7688608 R12: 000000000=
+0000000
+> [  103.271490] R13: 0000000000000000 R14: 0000000000000000 R15: 000000000=
+0000000
+> [  103.272646] FS:  0000000000000000(0000) GS:ffffffffb9a7f000(0000) knlG=
+S:0000000000000000
+> [  103.273993] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  103.274963] CR2: ffffffffbb443040 CR3: 00000002cec34000 CR4: 000000000=
+00406b0
+> [  103.276150] Call Trace:
+> [  103.276564]  <IRQ>
+> [  103.276913]  __sysvec_apic_timer_interrupt+0x62/0x370
+> [  103.277781]  sysvec_apic_timer_interrupt+0x62/0x80
+> [  103.278602]  </IRQ>
+> [  103.278984]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+> [  103.279890] RIP: 0010:call_rcu+0xc/0x150
+> [  103.280559] Code: c7 c7 e0 db 05 ba e8 d3 23 33 02 85 c0 75 cc eb 9f 6=
+6 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 b8 00 00 00 00 00 fc ff df 55 53 <=
+48> 89 fb 48 83 c7 08 48 89 fa 48 c1 ea 03 48 83 ec 08 80 3c 02 00
+> [  103.283542] RSP: 0018:ffffc9000001fdb8 EFLAGS: 00000246
+> [  103.284404] RAX: dffffc0000000000 RBX: fffff52000003fc6 RCX: 1ffffffff=
+75653d5
+> [  103.285532] RDX: 1ffff92000003fdd RSI: ffffffffb60b1810 RDI: ffffc9000=
+001fe80
+> [  103.286712] RBP: ffffc9000001fe80 R08: ffffc9000001fe60 R09: 000000000=
+0000000
+> [  103.287888] R10: 0000000000000001 R11: ffffc9000001fe90 R12: ffffc9000=
+001fe60
+> [  103.289058] R13: 0000000000000000 R14: dffffc0000000000 R15: 000000000=
+0000000
+> [  103.290290]  ? rcu_tasks_pregp_step+0x10/0x10
+> [  103.291029]  __wait_rcu_gp+0x160/0x440
+> [  103.291650]  rcu_barrier+0x83/0xc0
+> [  103.292234]  ? poll_state_synchronize_rcu+0x10/0x10
+> [  103.293040]  ? synchronize_rcu+0x80/0x80
+> [  103.293720]  ? lockdep_hardirqs_on_prepare+0x26b/0x3e0
+> [  103.294554]  ? trace_hardirqs_on+0x3d/0x1d0
+> [  103.295279]  ? _vdso_data+0xf80/0xf80
+> [  103.295919]  ? _vdso_data+0xf80/0xf80
+> [  103.296525]  ? free_kernel_image_pages+0xd/0x30
+> [  103.297307]  ? rest_init+0x18e/0x18e
+> [  103.297937]  kernel_init+0x20/0x112
+> [  103.298537]  ret_from_fork+0x22/0x30
+> [  103.299197] Modules linked in:
+> [  103.299740] CR2: ffffffffbb443040
+> [  103.300304] ---[ end trace 733607da50d3f759 ]---
+> =
+
+> =
+
+> To reproduce:
+> =
+
+>         =
+
+> =
+
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp qemu -k <bzImage> job-script # job-script is attached in =
+this email
+
+Hi,
+
+This command mentions a bzImage but there is not one attached here nor
+is the configuration file attached or linked anywhere so I am not really
+able to investigate this without either of those :)
 
 Cheers,
-
-						- Ted
-
-
---===============5828454078241204861==--
+Nathan
+--===============8006149363951037382==--
 
