@@ -1,68 +1,32 @@
-Content-Type: multipart/mixed; boundary="===============7434732597676593944=="
+Content-Type: multipart/mixed; boundary="===============5741023636024692421=="
 MIME-Version: 1.0
-From: Chen Yu <yu.c.chen@intel.com>
+From: Cyril Hrubis <chrubis@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [mm/migrate] 9eeb73028c: stress-ng.memhotplug.ops_per_sec -53.8% regression
-Date: Mon, 06 Sep 2021 14:09:08 +0800
-Message-ID: <20210906060908.GA17483@chenyu5-mobl1>
-In-Reply-To: <87lf4ai6u3.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Subject: Re: [LTP] [xattr] 6e21a50861: ltp.setxattr02.fail
+Date: Mon, 06 Sep 2021 10:12:12 +0200
+Message-ID: <YTXNXOKbrl17Lx+s@yuki>
+In-Reply-To: <20210905134541.GD15026@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7434732597676593944==
+--===============5741023636024692421==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 06, 2021 at 01:57:56PM +0800, Huang, Ying wrote:
-> Dave Hansen <dave.hansen@intel.com> writes:
-> =
+Hi!
+> commit: 6e21a5086100cebefd21a3058a9e1160668f84fa ("xattr: Allow user.* xa=
+ttr on symlink and special files")
+> https://github.com/rhvgoyal/linux user-xattr-symlink-v3
 
-> > On 9/5/21 6:53 PM, Huang, Ying wrote:
-> >>> in testcase: stress-ng
-> >>> on test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU =
-@ 2.10GHz with 192G memory
-> >>> with following parameters:
-> >>>
-> >>> 	nr_threads: 10%
-> >>> 	disk: 1HDD
-> >>> 	testtime: 60s
-> >>> 	fs: ext4
-> >>> 	class: os
-> >>> 	test: memhotplug
-> >>> 	cpufreq_governor: performance
-> >>> 	ucode: 0x5003006
-> >>>
-> >> Because we added some operations during online/offline CPU, it's
-> >> expected that the performance of online/offline CPU will decrease.  In
-> >> most cases, the performance of CPU hotplug isn't a big problem.  But
-> >> then I remembers that the performance of the CPU hotplug may influence
-> >> suspend/resume performance :-(
-> >> =
+The test that fails is a test that asserts that you can't add extended
+attributes to a block or char device and it's obvious why this fails.
 
-> >> It appears that it is easy and reasonable to enclose the added
-> >> operations inside #ifdef CONFIG_NUMA.  Is this sufficient to restore t=
-he
-> >> performance of suspend/resume?
-> >
-> > It's "memhotplug", not CPUs, right?
-> =
+Feel free to ignore this failure, we will have to fix the tests once/if
+this patchset gets accepted upstream.
 
-> Yes.  Thanks for pointing that out!
-> =
+-- =
 
-> We will update node_demotion[] in CPU hotplug too.  Because the status
-> that whether a node has CPU may change after CPU hotplug.  And CPU
-> online/offline performance may be relevant for suspend/resume.
->
-Rui and I took a look at the default kernel config, it seems that CONFIG_NU=
-MA is
-enabled on laptops on some distributions. Maybe a runtime detecting flag in=
-dicating
-that whether this system has enabled NUMA (static key eg) would be an optio=
-n too, so as
-not to enable node_demotion[] on non-NUMA laptops/desktops.
-
-thanks,
-Chenyu
---===============7434732597676593944==--
+Cyril Hrubis
+chrubis(a)suse.cz
+--===============5741023636024692421==--
 
