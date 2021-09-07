@@ -1,68 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============8999932129925210868=="
+Content-Type: multipart/mixed; boundary="===============7062873557941065834=="
 MIME-Version: 1.0
-From: John Hubbard <jhubbard@nvidia.com>
+From: Roman Gushchin <guro@fb.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/gup] 9857a17f20: kernel_BUG_at_include/linux/pagemap.h
-Date: Tue, 07 Sep 2021 12:10:51 -0700
-Message-ID: <513d8734-7156-f3b6-b149-4d2cd83b5742@nvidia.com>
-In-Reply-To: <CAHk-=wh=4TJ3yN0+qpzDPJcH3KFkVsHcHO1FJjKHjaPTx8UCdQ@mail.gmail.com>
+Subject: Re: [memcg] 0f12156dff: will-it-scale.per_process_ops -33.6% regression
+Date: Tue, 07 Sep 2021 12:42:01 -0700
+Message-ID: <YTfAiaIbxM0CqEnj@carbon.dhcp.thefacebook.com>
+In-Reply-To: <CALvZod4=uY=5Zp_GCzjjMzCbs16856dR85SBWv-dpNc4kBrO+Q@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8999932129925210868==
+--===============7062873557941065834==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 9/7/21 11:14 AM, Linus Torvalds wrote:
-> On Tue, Sep 7, 2021 at 8:20 AM kernel test robot <oliver.sang@intel.com=
-> wrote:
->>
->> FYI, we noticed the following commit (built with clang-14):
->>
->> commit: 9857a17f206f ("mm/gup: remove try_get_page(), call try_get_compo=
-und_head() directly")
->> caused below changes (please refer to attached dmesg/kmsg for entire log=
-/backtrace):
->>
->> [  143.908513][ T3260] kernel BUG at include/linux/pagemap.h:223!
+On Tue, Sep 07, 2021 at 10:48:06AM -0700, Shakeel Butt wrote:
+> On Tue, Sep 7, 2021 at 10:31 AM Roman Gushchin <guro@fb.com> wrote:
+> >
+> > On Tue, Sep 07, 2021 at 07:14:45AM -1000, Tejun Heo wrote:
+> > > Hello,
+> > >
+> > > On Tue, Sep 07, 2021 at 10:11:21AM -0700, Roman Gushchin wrote:
+> > > > There are two polar cases:
+> > > > 1) a big number of relatively short-living allocations, which lifet=
+ime is well
+> > > >    bounded (e.g. by a lifetime of a task),
+> > > > 2) a relatively small number of long-living allocations, which life=
+time
+> > > >    is potentially indefinite (e.g. struct mount).
+> > > >
+> > > > We can't use the same approach for both cases, otherwise we'll run =
+into either
+> > > > performance or garbage collection problems (which also lead to perf=
+ormance
+> > > > problems, but delayed).
+> > >
+> > > Wouldn't a front cache which expires after some seconds catch both ca=
+ses?
+> >
+> > I'm not sure. For the second case we need to pack allocations from diff=
+erent
+> > tasks/cgroups into a small number of shared pages. It means the front c=
+ache
+> > should be really small/non-existing. For the first case we likely need a
+> > substantial cache. Maybe we can do something really smart with scatteri=
+ng
+> > the cache over multiple pages, but I really doubt.
 > =
 
-> Ahh, well, yes.
-> =
+> I think we need to prototype this to sensibly evaluate. Let me know if
+> you want to take a stab at this otherwise I can try.
 
-> That commit is clearly buggy, in that the try_get_compound_head() code
-> really doesn't work at all for us.
-> =
+If you have time and are ready to jump in, please, go on. Otherwise I can s=
+tart
+working on it in few weeks. In any case, I'm happy to help with discussions=
+, code
+reviews & whatever else I can do.
 
-> __page_cache_add_speculative() is not at all the same as
-> try_get_page(), and I should have caught on to this as I applied it. I
-> just read the explanation, and it sounded believable, but it was
-> entirely wrong.
-> =
-
-> try_get_page() is literally about that "page ref overflow" case, but
-> try_get_compound_head() uses page_cache_add_speculative() which has
-> different logic and has those extra "this only works in RCU context"
-> logic.
-> =
-
-> So that commit was completely bogus, and the "lack of maintenance" was
-> not lack of maintenance at all, it was all about entirely different
-> semantics.
-> =
-
-> Reverted.
-> =
-
->                   Linus
-
-Apologies for the bug! There is a lesson in here, somewhere...
-
-
-thanks,
--- =
-
-John Hubbard
-NVIDIA
---===============8999932129925210868==--
+Thanks!
+--===============7062873557941065834==--
 
