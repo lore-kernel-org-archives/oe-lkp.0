@@ -1,61 +1,155 @@
-Content-Type: multipart/mixed; boundary="===============7062873557941065834=="
+Content-Type: multipart/mixed; boundary="===============4376128258332781679=="
 MIME-Version: 1.0
-From: Roman Gushchin <guro@fb.com>
+From: Minchan Kim <minchan@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [memcg] 0f12156dff: will-it-scale.per_process_ops -33.6% regression
-Date: Tue, 07 Sep 2021 12:42:01 -0700
-Message-ID: <YTfAiaIbxM0CqEnj@carbon.dhcp.thefacebook.com>
-In-Reply-To: <CALvZod4=uY=5Zp_GCzjjMzCbs16856dR85SBWv-dpNc4kBrO+Q@mail.gmail.com>
+Subject: [PATCH v3] mm: fs: invalidate bh_lrus for only cold path
+Date: Tue, 07 Sep 2021 14:23:47 -0700
+Message-ID: <20210907212347.1977686-1-minchan@kernel.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7062873557941065834==
+--===============4376128258332781679==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 07, 2021 at 10:48:06AM -0700, Shakeel Butt wrote:
-> On Tue, Sep 7, 2021 at 10:31 AM Roman Gushchin <guro@fb.com> wrote:
-> >
-> > On Tue, Sep 07, 2021 at 07:14:45AM -1000, Tejun Heo wrote:
-> > > Hello,
-> > >
-> > > On Tue, Sep 07, 2021 at 10:11:21AM -0700, Roman Gushchin wrote:
-> > > > There are two polar cases:
-> > > > 1) a big number of relatively short-living allocations, which lifet=
-ime is well
-> > > >    bounded (e.g. by a lifetime of a task),
-> > > > 2) a relatively small number of long-living allocations, which life=
-time
-> > > >    is potentially indefinite (e.g. struct mount).
-> > > >
-> > > > We can't use the same approach for both cases, otherwise we'll run =
-into either
-> > > > performance or garbage collection problems (which also lead to perf=
-ormance
-> > > > problems, but delayed).
-> > >
-> > > Wouldn't a front cache which expires after some seconds catch both ca=
-ses?
-> >
-> > I'm not sure. For the second case we need to pack allocations from diff=
-erent
-> > tasks/cgroups into a small number of shared pages. It means the front c=
-ache
-> > should be really small/non-existing. For the first case we likely need a
-> > substantial cache. Maybe we can do something really smart with scatteri=
-ng
-> > the cache over multiple pages, but I really doubt.
-> =
+kernel test robot reported the regression of fio.write_iops[1]
+with [2].
 
-> I think we need to prototype this to sensibly evaluate. Let me know if
-> you want to take a stab at this otherwise I can try.
+Since lru_add_drain is called frequently, invalidate bh_lrus
+there could increase bh_lrus cache miss ratio, which needs
+more IO in the end.
 
-If you have time and are ready to jump in, please, go on. Otherwise I can s=
-tart
-working on it in few weeks. In any case, I'm happy to help with discussions=
-, code
-reviews & whatever else I can do.
+This patch moves the bh_lrus invalidation from the hot path(
+e.g., zap_page_range, pagevec_release) to cold path(i.e.,
+lru_add_drain_all, lru_cache_disable).
 
-Thanks!
---===============7062873557941065834==--
+[1] https://lore.kernel.org/lkml/20210520083144.GD14190(a)xsang-OptiPlex-90=
+20/
+[2] 8cc621d2f45d, mm: fs: invalidate BH LRU during page migration
+Reviewed-by: Chris Goldsworthy <cgoldswo@codeaurora.org>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Minchan Kim <minchan@kernel.org>
+---
+* v2: https://lore.kernel.org/lkml/20210601145425.1396981-1-minchan(a)kerne=
+l.org/
+* v1: https://lore.kernel.org/lkml/YK0oQ76zX0uVZCwQ(a)google.com/
+ fs/buffer.c                 |  8 ++++++--
+ include/linux/buffer_head.h |  4 ++--
+ mm/swap.c                   | 19 ++++++++++++++++---
+ 3 files changed, 24 insertions(+), 7 deletions(-)
+
+diff --git a/fs/buffer.c b/fs/buffer.c
+index ab7573d72dd7..c615387aedca 100644
+--- a/fs/buffer.c
++++ b/fs/buffer.c
+@@ -1425,12 +1425,16 @@ void invalidate_bh_lrus(void)
+ }
+ EXPORT_SYMBOL_GPL(invalidate_bh_lrus);
+ =
+
+-void invalidate_bh_lrus_cpu(int cpu)
++/*
++ * It's called from workqueue context so we need a bh_lru_lock to close
++ * the race with preemption/irq.
++ */
++void invalidate_bh_lrus_cpu(void)
+ {
+ 	struct bh_lru *b;
+ =
+
+ 	bh_lru_lock();
+-	b =3D per_cpu_ptr(&bh_lrus, cpu);
++	b =3D this_cpu_ptr(&bh_lrus);
+ 	__invalidate_bh_lrus(b);
+ 	bh_lru_unlock();
+ }
+diff --git a/include/linux/buffer_head.h b/include/linux/buffer_head.h
+index 6486d3c19463..36f33685c8c0 100644
+--- a/include/linux/buffer_head.h
++++ b/include/linux/buffer_head.h
+@@ -194,7 +194,7 @@ void __breadahead_gfp(struct block_device *, sector_t b=
+lock, unsigned int size,
+ struct buffer_head *__bread_gfp(struct block_device *,
+ 				sector_t block, unsigned size, gfp_t gfp);
+ void invalidate_bh_lrus(void);
+-void invalidate_bh_lrus_cpu(int cpu);
++void invalidate_bh_lrus_cpu(void);
+ bool has_bh_in_lru(int cpu, void *dummy);
+ struct buffer_head *alloc_buffer_head(gfp_t gfp_flags);
+ void free_buffer_head(struct buffer_head * bh);
+@@ -408,7 +408,7 @@ static inline int inode_has_buffers(struct inode *inode=
+) { return 0; }
+ static inline void invalidate_inode_buffers(struct inode *inode) {}
+ static inline int remove_inode_buffers(struct inode *inode) { return 1; }
+ static inline int sync_mapping_buffers(struct address_space *mapping) { re=
+turn 0; }
+-static inline void invalidate_bh_lrus_cpu(int cpu) {}
++static inline void invalidate_bh_lrus_cpu(void) {}
+ static inline bool has_bh_in_lru(int cpu, void *dummy) { return false; }
+ #define buffer_heads_over_limit 0
+ =
+
+diff --git a/mm/swap.c b/mm/swap.c
+index 897200d27dd0..af3cad4e5378 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -620,7 +620,6 @@ void lru_add_drain_cpu(int cpu)
+ 		pagevec_lru_move_fn(pvec, lru_lazyfree_fn);
+ =
+
+ 	activate_page_drain(cpu);
+-	invalidate_bh_lrus_cpu(cpu);
+ }
+ =
+
+ /**
+@@ -703,6 +702,20 @@ void lru_add_drain(void)
+ 	local_unlock(&lru_pvecs.lock);
+ }
+ =
+
++/*
++ * It's called from per-cpu workqueue context in SMP case so
++ * lru_add_drain_cpu and invalidate_bh_lrus_cpu should run on
++ * the same cpu. It shouldn't be a problem in !SMP case since
++ * the core is only one and the locks will disable preemption.
++ */
++static void lru_add_and_bh_lrus_drain(void)
++{
++	local_lock(&lru_pvecs.lock);
++	lru_add_drain_cpu(smp_processor_id());
++	local_unlock(&lru_pvecs.lock);
++	invalidate_bh_lrus_cpu();
++}
++
+ void lru_add_drain_cpu_zone(struct zone *zone)
+ {
+ 	local_lock(&lru_pvecs.lock);
+@@ -717,7 +730,7 @@ static DEFINE_PER_CPU(struct work_struct, lru_add_drain=
+_work);
+ =
+
+ static void lru_add_drain_per_cpu(struct work_struct *dummy)
+ {
+-	lru_add_drain();
++	lru_add_and_bh_lrus_drain();
+ }
+ =
+
+ /*
+@@ -858,7 +871,7 @@ void lru_cache_disable(void)
+ 	 */
+ 	__lru_add_drain_all(true);
+ #else
+-	lru_add_drain();
++	lru_add_and_bh_lrus_drain();
+ #endif
+ }
+ =
+
+-- =
+
+2.33.0.309.g3052b89438-goog
+
+--===============4376128258332781679==--
 
