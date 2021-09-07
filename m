@@ -1,72 +1,51 @@
-Content-Type: multipart/mixed; boundary="===============8112512693174233300=="
+Content-Type: multipart/mixed; boundary="===============3342089260919190626=="
 MIME-Version: 1.0
 From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [memcg] 0f12156dff: will-it-scale.per_process_ops -33.6% regression
-Date: Tue, 07 Sep 2021 10:52:17 -0700
-Message-ID: <CAHk-=wgW3dYJyh6S_U5ot_0Q-OU0-vrS=L8Uky4+Y5fZXeLcKw@mail.gmail.com>
-In-Reply-To: <CALvZod5Q_K=xLpBWTLgg38X_w23HVSyqW2_Jnz7p=JR+kDD_-w@mail.gmail.com>
+Subject: Re: [mm/gup] 9857a17f20: kernel_BUG_at_include/linux/pagemap.h
+Date: Tue, 07 Sep 2021 11:14:56 -0700
+Message-ID: <CAHk-=wh=4TJ3yN0+qpzDPJcH3KFkVsHcHO1FJjKHjaPTx8UCdQ@mail.gmail.com>
+In-Reply-To: <20210907153736.GF17617@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8112512693174233300==
+--===============3342089260919190626==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 7, 2021 at 9:49 AM Shakeel Butt <shakeelb@google.com> wrote:
+On Tue, Sep 7, 2021 at 8:20 AM kernel test robot <oliver.sang@intel.com> =
+wrote:
 >
-> On Tue, Sep 7, 2021 at 9:40 AM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > We are worried about them. I'm considering reverting several of them
-> > because I think the problems are
-> >
-> >  (a) big
-> >
-> >  (b) nontrivial
-> >
-> > and the patches clearly weren't ready and people weren't aware of this =
-issue.
+> FYI, we noticed the following commit (built with clang-14):
 >
-> Sounds good to me. Please let me know which patches you are planning
-> to revert. I will work on the followup to make those acceptable.
+> commit: 9857a17f206f ("mm/gup: remove try_get_page(), call try_get_compou=
+nd_head() directly")
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+> [  143.908513][ T3260] kernel BUG at include/linux/pagemap.h:223!
 
-The one that looks clear-cut is the one in this thread:
+Ahh, well, yes.
 
-    0f12156dff28 memcg: enable accounting for file lock caches
+That commit is clearly buggy, in that the try_get_compound_head() code
+really doesn't work at all for us.
 
-which seems to result in regressions on multiple machines and just be
-very bad for anything that uses file locking. I'm not entirely sure
-how much that would show up in real life, but I can most definitely
-imagine it being a problem on a real load.
+__page_cache_add_speculative() is not at all the same as
+try_get_page(), and I should have caught on to this as I applied it. I
+just read the explanation, and it sounded believable, but it was
+entirely wrong.
 
-There's a few other regression reports I've seen, like
+try_get_page() is literally about that "page ref overflow" case, but
+try_get_compound_head() uses page_cache_add_speculative() which has
+different logic and has those extra "this only works in RCU context"
+logic.
 
-    5387c90490f7 mm/memcg: improve refill_obj_stock() performance
+So that commit was completely bogus, and the "lack of maintenance" was
+not lack of maintenance at all, it was all about entirely different
+semantics.
 
-but that one had mixed reports (it improved another benchmark), and it
-looks like Minchan has a fix for the regression already.
+Reverted.
 
-And
-
-    aa48e47e3906 memcg: infrastructure to flush memcg stats
-    b65584344415 memcg: enable accounting for pollfd and select bits arrays
-
-were reported as a regression in -mm, but not in mainline yet.
-
-I assume (but didn't check) that aa48e47e3906 is a bigger deal to revert.
-
-So _right_now_ my plan is to revert the two obvious cases:
-
-    0f12156dff28 memcg: enable accounting for file lock caches
-    b65584344415 memcg: enable accounting for pollfd and select bits arrays
-
-on the assumption that the memcg accounting code needs some work to
-make it less of a performance hog.
-
-Does anybody have other commits they want to highlight (or other
-comments) about this?
-
-              Linus
---===============8112512693174233300==--
+                 Linus
+--===============3342089260919190626==--
 
