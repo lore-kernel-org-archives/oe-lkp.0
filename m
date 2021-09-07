@@ -1,47 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============4021957666523254159=="
+Content-Type: multipart/mixed; boundary="===============8112512693174233300=="
 MIME-Version: 1.0
-From: Vivek Goyal <vgoyal@redhat.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: Re: [LTP] [xattr] 6e21a50861: ltp.setxattr02.fail
-Date: Tue, 07 Sep 2021 13:52:22 -0400
-Message-ID: <YTem1rCPHsgoohkp@redhat.com>
-In-Reply-To: <YTXNXOKbrl17Lx+s@yuki>
+Subject: Re: [memcg] 0f12156dff: will-it-scale.per_process_ops -33.6% regression
+Date: Tue, 07 Sep 2021 10:52:17 -0700
+Message-ID: <CAHk-=wgW3dYJyh6S_U5ot_0Q-OU0-vrS=L8Uky4+Y5fZXeLcKw@mail.gmail.com>
+In-Reply-To: <CALvZod5Q_K=xLpBWTLgg38X_w23HVSyqW2_Jnz7p=JR+kDD_-w@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4021957666523254159==
+--===============8112512693174233300==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 06, 2021 at 10:12:12AM +0200, Cyril Hrubis wrote:
-> Hi!
-> > commit: 6e21a5086100cebefd21a3058a9e1160668f84fa ("xattr: Allow user.* =
-xattr on symlink and special files")
-> > https://github.com/rhvgoyal/linux user-xattr-symlink-v3
-> =
+On Tue, Sep 7, 2021 at 9:49 AM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Tue, Sep 7, 2021 at 9:40 AM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > We are worried about them. I'm considering reverting several of them
+> > because I think the problems are
+> >
+> >  (a) big
+> >
+> >  (b) nontrivial
+> >
+> > and the patches clearly weren't ready and people weren't aware of this =
+issue.
+>
+> Sounds good to me. Please let me know which patches you are planning
+> to revert. I will work on the followup to make those acceptable.
 
-> The test that fails is a test that asserts that you can't add extended
-> attributes to a block or char device and it's obvious why this fails.
-> =
+The one that looks clear-cut is the one in this thread:
 
-> Feel free to ignore this failure, we will have to fix the tests once/if
-> this patchset gets accepted upstream.
+    0f12156dff28 memcg: enable accounting for file lock caches
 
-Yes, if patches get accepted, test will have to be fixed. I fixed
-xfstest too in the same patch series.
+which seems to result in regressions on multiple machines and just be
+very bad for anything that uses file locking. I'm not entirely sure
+how much that would show up in real life, but I can most definitely
+imagine it being a problem on a real load.
 
-But at the moment it looks like there is resistance to the idea of
-allowing user.* xattrs on symlinks and special files.
+There's a few other regression reports I've seen, like
 
-Vivek
+    5387c90490f7 mm/memcg: improve refill_obj_stock() performance
 
-> =
+but that one had mixed reports (it improved another benchmark), and it
+looks like Minchan has a fix for the regression already.
 
-> -- =
+And
 
-> Cyril Hrubis
-> chrubis(a)suse.cz
->=20
+    aa48e47e3906 memcg: infrastructure to flush memcg stats
+    b65584344415 memcg: enable accounting for pollfd and select bits arrays
 
---===============4021957666523254159==--
+were reported as a regression in -mm, but not in mainline yet.
+
+I assume (but didn't check) that aa48e47e3906 is a bigger deal to revert.
+
+So _right_now_ my plan is to revert the two obvious cases:
+
+    0f12156dff28 memcg: enable accounting for file lock caches
+    b65584344415 memcg: enable accounting for pollfd and select bits arrays
+
+on the assumption that the memcg accounting code needs some work to
+make it less of a performance hog.
+
+Does anybody have other commits they want to highlight (or other
+comments) about this?
+
+              Linus
+--===============8112512693174233300==--
 
