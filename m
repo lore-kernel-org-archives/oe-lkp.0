@@ -1,51 +1,70 @@
-Content-Type: multipart/mixed; boundary="===============3342089260919190626=="
+Content-Type: multipart/mixed; boundary="===============5095957063826747205=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Shakeel Butt <shakeelb@google.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/gup] 9857a17f20: kernel_BUG_at_include/linux/pagemap.h
-Date: Tue, 07 Sep 2021 11:14:56 -0700
-Message-ID: <CAHk-=wh=4TJ3yN0+qpzDPJcH3KFkVsHcHO1FJjKHjaPTx8UCdQ@mail.gmail.com>
-In-Reply-To: <20210907153736.GF17617@xsang-OptiPlex-9020>
+Subject: Re: [memcg] 0f12156dff: will-it-scale.per_process_ops -33.6% regression
+Date: Tue, 07 Sep 2021 11:19:26 -0700
+Message-ID: <CALvZod5bjVzvgMQ0QoLSVY+JYZmPHaK-0PX6a6kJ_78UAEdX+Q@mail.gmail.com>
+In-Reply-To: <CAHk-=wgW3dYJyh6S_U5ot_0Q-OU0-vrS=L8Uky4+Y5fZXeLcKw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3342089260919190626==
+--===============5095957063826747205==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 7, 2021 at 8:20 AM kernel test robot <oliver.sang@intel.com> =
-wrote:
+On Tue, Sep 7, 2021 at 10:54 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> FYI, we noticed the following commit (built with clang-14):
+> On Tue, Sep 7, 2021 at 9:49 AM Shakeel Butt <shakeelb@google.com> wrote:
+> >
+> > On Tue, Sep 7, 2021 at 9:40 AM Linus Torvalds
+> > <torvalds@linux-foundation.org> wrote:
+> > >
+> > > We are worried about them. I'm considering reverting several of them
+> > > because I think the problems are
+> > >
+> > >  (a) big
+> > >
+> > >  (b) nontrivial
+> > >
+> > > and the patches clearly weren't ready and people weren't aware of thi=
+s issue.
+> >
+> > Sounds good to me. Please let me know which patches you are planning
+> > to revert. I will work on the followup to make those acceptable.
 >
-> commit: 9857a17f206f ("mm/gup: remove try_get_page(), call try_get_compou=
-nd_head() directly")
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
+> The one that looks clear-cut is the one in this thread:
 >
-> [  143.908513][ T3260] kernel BUG at include/linux/pagemap.h:223!
+>     0f12156dff28 memcg: enable accounting for file lock caches
+>
+> which seems to result in regressions on multiple machines and just be
+> very bad for anything that uses file locking. I'm not entirely sure
+> how much that would show up in real life, but I can most definitely
+> imagine it being a problem on a real load.
+>
+> There's a few other regression reports I've seen, like
+>
+>     5387c90490f7 mm/memcg: improve refill_obj_stock() performance
+>
+> but that one had mixed reports (it improved another benchmark), and it
+> looks like Minchan has a fix for the regression already.
+>
+> And
+>
+>     aa48e47e3906 memcg: infrastructure to flush memcg stats
+>     b65584344415 memcg: enable accounting for pollfd and select bits arra=
+ys
+>
+> were reported as a regression in -mm, but not in mainline yet.
+>
+> I assume (but didn't check) that aa48e47e3906 is a bigger deal to revert.
+>
 
-Ahh, well, yes.
+I am suspecting aa48e47e3906 might be similar to [1]. I am testing that the=
+ory.
 
-That commit is clearly buggy, in that the try_get_compound_head() code
-really doesn't work at all for us.
-
-__page_cache_add_speculative() is not at all the same as
-try_get_page(), and I should have caught on to this as I applied it. I
-just read the explanation, and it sounded believable, but it was
-entirely wrong.
-
-try_get_page() is literally about that "page ref overflow" case, but
-try_get_compound_head() uses page_cache_add_speculative() which has
-different logic and has those extra "this only works in RCU context"
-logic.
-
-So that commit was completely bogus, and the "lack of maintenance" was
-not lack of maintenance at all, it was all about entirely different
-semantics.
-
-Reverted.
-
-                 Linus
---===============3342089260919190626==--
+[1] https://lore.kernel.org/all/20210811031734.GA5193(a)xsang-OptiPlex-9020=
+/T/#u
+--===============5095957063826747205==--
 
