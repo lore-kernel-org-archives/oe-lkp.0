@@ -1,81 +1,103 @@
-Content-Type: multipart/mixed; boundary="===============5650503712909208476=="
+Content-Type: multipart/mixed; boundary="===============3007231923480949266=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
-Subject: /proc/$pid/chan kernel address exposures (was Re: [proc/wchan] 30a3a19273: leaking-addresses.proc.wchan./proc/bus/input/devices:B:KEY=1000000000007ff980000000007fffebeffdfffeffffffffffffffffffffe)
-Date: Thu, 23 Sep 2021 18:01:51 -0700
-Message-ID: <202109231746.7B4C306CEC@keescook>
-In-Reply-To: <d15378c8-8702-47ba-65b7-450f728793ed@gmx.de>
+Subject: Re: [memcg] 45208c9105: aim7.jobs-per-min -14.0% regression
+Date: Fri, 10 Sep 2021 09:08:42 +0800
+Message-ID: <20210910010842.GA94434@shbuild999.sh.intel.com>
+In-Reply-To: <CALvZod6M_sySPM1KaWzb=tkLxXJksVDrSheckXaiBpMC3cNeqw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5650503712909208476==
+--===============3007231923480949266==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 03, 2021 at 07:25:36PM +0100, Helge Deller wrote:
-> On 1/3/21 3:27 PM, kernel test robot wrote:
-> > FYI, we noticed the following commit (built with gcc-9):
+On Thu, Sep 09, 2021 at 05:43:40PM -0700, Shakeel Butt wrote:
+> On Mon, Sep 6, 2021 at 8:30 PM Feng Tang <feng.tang@intel.com> wrote:
 > >
-> > commit: 30a3a192730a997bc4afff5765254175b6fb64f3 ("[PATCH] proc/wchan: =
-Use printk format instead of lookup_symbol_name()")
-> > url: https://github.com/0day-ci/linux/commits/Helge-Deller/proc-wchan-U=
-se-printk-format-instead-of-lookup_symbol_name/20201218-010048
-> > base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git 0=
-9162bc32c880a791c6c0668ce0745cf7958f576
+> > Hi Shakeel,
 > >
-> > in testcase: leaking-addresses
-> > version: leaking-addresses-x86_64-4f19048-1_20201111
+> > On Sun, Sep 05, 2021 at 03:15:46PM -0700, Shakeel Butt wrote:
+> > > On Sun, Sep 5, 2021 at 5:27 AM kernel test robot <oliver.sang@intel=
+.com> wrote:
 > > [...]
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
+> > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > compiler/cpufreq_governor/disk/fs/kconfig/load/rootfs/tbox_group/te=
+st/testcase/ucode:
+> > > >   gcc-9/performance/1BRD_48G/xfs/x86_64-rhel-8.3/3000/debian-10.4-x=
+86_64-20200603.cgz/lkp-icl-2sp2/disk_rr/aim7/0xd000280
+> > > >
+> > > > commit:
+> > > >   3c28c7680e ("memcg: switch lruvec stats to rstat")
+> > > >   45208c9105 ("memcg: infrastructure to flush memcg stats")
+> > >
+> > > I am looking into this. I was hoping we have resolution for [1] as
+> > > these patches touch similar data structures.
+> > >
+> > > [1] https://lore.kernel.org/all/20210811031734.GA5193(a)xsang-OptiPle=
+x-9020/T/#u
+> >
+> > I tried 2 debug methods for that 36.4% vm-scalability regression:
+> >
+> > 1. Disable the HW cache prefetcher, no effect on this case
+> > 2. relayout and add padding to 'struct cgroup_subsys_state', reduce
+> >    the regression to 3.1%
+> >
 > =
 
-> I don't see anything wrong with the wchan patch (30a3a192730a997bc4afff57=
-65254175b6fb64f3),
-> or that it could have leaked anything.
+> Thanks Feng but it seems like the issue for this commit is different.
+> Rearranging the layout didn't help. Actually the cause of slowdown is
+> the call to queue_work() inside __mod_memcg_lruvec_state().
 > =
 
-> Maybe the kernel test robot picked up the wchan patch by mistake ?
->
-> > [...]
-> > [2 wchan] 0xffffc9000000003c
-       ^^^^^
+> At the moment, queue_work() is called after 32 updates. I changed it
+> to 128 and the slowdown of will-it-scale:page_fault[1|2|3] halved
+> (from around 10% to 5%). I am unable to run reaim or
+> will-it-scale:fallocate2 as I was getting weird errors.
+> =
 
-As the root cause of a kernel address exposure, Jann pointed out[2]
-commit 152c432b128c, which I've tracked to here, only to discover this
-regression was, indeed, reported. :(
+> Feng, is it possible for you to run these benchmarks with the change
+> (basically changing MEMCG_CHARGE_BATCH to 128 in the if condition
+> before queue_work() inside __mod_memcg_lruvec_state())?
 
-So, we have a few things:
+When I checked this, I tried different changes, including this batch
+number change :), but it didn't recover the regression (the regression
+is slightly reduced to about 12%)
 
-1) wchan has been reporting "0" in the default x86 config (ORC unwinder)
-   for 4 years now.
+Please check if my patch is what you want to test:
 
-2) non-x86 or non-ORC, wchan has been leaking raw kernel addresses since
-   commit 152c432b128c (v5.12).
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 4d8c9af..a50a69a 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -682,7 +682,8 @@ void __mod_memcg_lruvec_state(struct lruvec *lruvec, en=
+um node_stat_item idx,
+ =
 
-3) the output of scripts/leaking_addresses.pl is hard to read. :)
+ 	/* Update lruvec */
+ 	__this_cpu_add(pn->lruvec_stats_percpu->state[idx], val);
+-	if (!(__this_cpu_inc_return(stats_flush_threshold) % MEMCG_CHARGE_BATCH))
++//	if (!(__this_cpu_inc_return(stats_flush_threshold) % MEMCG_CHARGE_BATCH=
+))
++	if (!(__this_cpu_inc_return(stats_flush_threshold) % 128))
+ 		queue_work(system_unbound_wq, &stats_flush_work);
+ }
 
-We can fix 1 and 2 with:
-   https://lore.kernel.org/lkml/20210923233105.4045080-1-keescook(a)chromiu=
-m.org/
-(though that will need a Cc: stable now...)
+Thanks,
+Feng
 
-If we don't do that, we still need to revert 152c432b128c in v5.12 and
-later.
+ =
 
-We should likely make leaking_addresses.pl a little more readable while
-we're at it.
 
--Kees
+> For the formal patch/fix, I will write down a better explanation on
+> what should be the batch size.
+> =
 
-[1] https://lore.kernel.org/lkml/20210921193249.el476vlhg5k6lfcq(a)shells.g=
-nugeneration.com/
-[2] https://lore.kernel.org/lkml/CAG48ez2zC=3D+PuNgezH53HBPZ8CXU5H=3DvkWx7n=
-Js60G8RXt3w0Q(a)mail.gmail.com/
-
--- =
-
-Kees Cook
---===============5650503712909208476==--
+> thanks,
+> Shakeel
+--===============3007231923480949266==--
 
