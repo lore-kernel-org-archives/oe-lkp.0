@@ -1,153 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============0195871113491132539=="
+Content-Type: multipart/mixed; boundary="===============7404350568379671058=="
 MIME-Version: 1.0
 From: Masami Hiramatsu <mhiramat@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [init] 40caa127f3: kernel_BUG_at_arch/x86/mm/physaddr.c
-Date: Mon, 13 Sep 2021 09:19:31 +0900
-Message-ID: <20210913091931.534edc0f13d8937267a75450@kernel.org>
+Subject: [PATCH] bootconfig: Fix to check the xbc_node is used before free it
+Date: Mon, 13 Sep 2021 09:56:45 +0900
+Message-ID: <163149460533.291098.7342418455457691240.stgit@devnote2>
 In-Reply-To: <20210912140820.GD25450@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0195871113491132539==
+--===============7404350568379671058==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Fix to check the xbc_node is used before calling memblock_free()
+because passing NULL to phys_addr() will cause a panic.
+This will happen if user doesn't pass any bootconfig to the
+kernel, because kernel will call xbc_destroy_all() after
+booting.
 
-Oops, sorry this is my mistake that I mixed kfree() behevior and memblock_f=
-ree() behevior.
-(memblock_free() is NOT NULL safe)
+Fixes: 40caa127f3c7 ("init: bootconfig: Remove all bootconfig data when the=
+ init memory is removed")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+---
+ lib/bootconfig.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Let me fix that soon.
+diff --git a/lib/bootconfig.c b/lib/bootconfig.c
+index f8419cff1147..4f8849706ef6 100644
+--- a/lib/bootconfig.c
++++ b/lib/bootconfig.c
+@@ -792,7 +792,8 @@ void __init xbc_destroy_all(void)
+ 	xbc_data =3D NULL;
+ 	xbc_data_size =3D 0;
+ 	xbc_node_num =3D 0;
+-	memblock_free(__pa(xbc_nodes), sizeof(struct xbc_node) * XBC_NODE_MAX);
++	if (xbc_nodes)
++		memblock_free(__pa(xbc_nodes), sizeof(struct xbc_node) * XBC_NODE_MAX);
+ 	xbc_nodes =3D NULL;
+ 	brace_index =3D 0;
+ }
 
-Thank you,
-
-On Sun, 12 Sep 2021 22:08:20 +0800
-kernel test robot <oliver.sang@intel.com> wrote:
-
-> =
-
-> =
-
-> Greeting,
-> =
-
-> FYI, we noticed the following commit (built with clang-14):
-> =
-
-> commit: 40caa127f3c7279c75cb0c9684559fa314ee3a66 ("init: bootconfig: Remo=
-ve all bootconfig data when the init memory is removed")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> =
-
-> =
-
-> in testcase: boot
-> =
-
-> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m =
-4G
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> =
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
-
-> =
-
-> =
-
-> [   17.504659][    T1] ------------[ cut here ]------------
-> [   17.505585][    T1] kernel BUG at arch/x86/mm/physaddr.c:76!
-> [   17.506561][    T1] invalid opcode: 0000 [#1] SMP
-> [   17.507339][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.14.0-r=
-c2-00062-g40caa127f3c7 #1 00c78f7b688292d34ec614a62bcd66d7bca8c06c
-> [   17.509340][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.12.0-1 04/01/2014
-> [   17.510823][    T1] EIP: __phys_addr+0x48/0x80
-> [   17.511538][    T1] Code: 1d 16 00 84 80 12 f8 c2 80 12 f8 c2 89 f1 c1=
- e9 89 f1 c1 e9 29 89 f8 e8 29 89 f8 e8 39 f0 75 2a 39 f0 75 2a 5d c3 0f 0b=
- 5d c3 <0f> 0b c2 e8 6c 69 c2 e8 6c 69 68 10 c0 28 68 10 c0 28 6a 00 0f 0b
-> [   17.514699][    T1] EAX: 00000000 EBX: c1d19f90 ECX: 00000000 EDX: c10=
-878dc
-> [   17.515909][    T1] ESI: 40000000 EDI: 00000000 EBP: c016ff90 ESP: c01=
-6ff88
-> [   17.517114][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAG=
-S: 00010207
-> [   17.518380][    T1] CR0: 80050033 CR2: 00000000 CR3: 02895000 CR4: 000=
-40690
-> [   17.519575][    T1] Call Trace:
-> [   17.520137][    T1]  xbc_destroy_all+0x22/0x3b
-> [   17.520863][    T1]  kernel_init+0x1c/0x180
-> [   17.521533][    T1]  ret_from_fork+0x19/0x24
-> [   17.522233][    T1] Modules linked in:
-> [   17.522923][    T1] ---[ end trace a86c2af2528aa089 ]---
-> [   17.523863][    T1] EIP: __phys_addr+0x48/0x80
-> [   17.524612][    T1] Code: 1d 16 00 84 80 12 f8 c2 80 12 f8 c2 89 f1 c1=
- e9 89 f1 c1 e9 29 89 f8 e8 29 89 f8 e8 39 f0 75 2a 39 f0 75 2a 5d c3 0f 0b=
- 5d c3 <0f> 0b c2 e8 6c 69 c2 e8 6c 69 68 10 c0 28 68 10 c0 28 6a 00 0f 0b
-> [   17.527796][    T1] EAX: 00000000 EBX: c1d19f90 ECX: 00000000 EDX: c10=
-878dc
-> [   17.528969][    T1] ESI: 40000000 EDI: 00000000 EBP: c016ff90 ESP: c01=
-6ff88
-> [   17.530128][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAG=
-S: 00010207
-> [   17.531302][    T1] CR0: 80050033 CR2: 00000000 CR3: 02895000 CR4: 000=
-40690
-> [   17.532427][    T1] Kernel panic - not syncing: Fatal exception
-> [   17.533500][    T1] Kernel Offset: disabled
-> =
-
-> =
-
-> =
-
-> =
-
-> To reproduce:
-> =
-
->         # build kernel
-> 	cd linux
-> 	cp config-5.14.0-rc2-00062-g40caa127f3c7 .config
-> 	make HOSTCC=3Dclang-14 CC=3Dclang-14 ARCH=3Di386 olddefconfig prepare mo=
-dules_prepare bzImage
-> =
-
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> job-script # job-script is attached in =
-this email
-> =
-
-> =
-
-> =
-
-> ---
-> 0DAY/LKP+ Test Infrastructure                   Open Source Technology Ce=
-nter
-> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel Corpo=
-ration
-> =
-
-> Thanks,
-> Oliver Sang
-> =
-
-
-
--- =
-
-Masami Hiramatsu <mhiramat@kernel.org>
---===============0195871113491132539==--
+--===============7404350568379671058==--
 
