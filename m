@@ -1,164 +1,84 @@
-Content-Type: multipart/mixed; boundary="===============7965361658488943461=="
+Content-Type: multipart/mixed; boundary="===============0979366453382151427=="
 MIME-Version: 1.0
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: Vlastimil Babka <vbabka@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [driver core] bd1e336aa8: WARNING:at_lib/refcount.c:#refcount_warn_saturate
-Date: Tue, 14 Sep 2021 17:03:13 +0300
-Message-ID: <YUCrobcWISfeOWxy@kuha.fi.intel.com>
-In-Reply-To: <20210912161001.GJ25450@xsang-OptiPlex-9020>
+Subject: Re: [PATCH] bootconfig: Fix to check the xbc_node is used before free it
+Date: Tue, 14 Sep 2021 18:08:06 +0200
+Message-ID: <61ab2d0c-3313-aaab-514c-e15b7aa054a0@suse.cz>
+In-Reply-To: <163149460533.291098.7342418455457691240.stgit@devnote2>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7965361658488943461==
+--===============0979366453382151427==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 13, 2021 at 12:10:01AM +0800, kernel test robot wrote:
+
+On 9/13/21 02:56, Masami Hiramatsu wrote:
+> Fix to check the xbc_node is used before calling memblock_free()
+> because passing NULL to phys_addr() will cause a panic.
+> This will happen if user doesn't pass any bootconfig to the
+> kernel, because kernel will call xbc_destroy_all() after
+> booting.
 > =
 
-> =
-
-> Greeting,
-> =
-
-> FYI, we noticed the following commit (built with gcc-9):
-> =
-
-> commit: bd1e336aa8535a99f339e2d66a611984262221ce ("driver core: platform:=
- Remove platform_device_add_properties()")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> =
-
-> =
-
-> in testcase: kernel-selftests
-> version: kernel-selftests-x86_64-d0cba0d1-1_20210907
-> with following parameters:
-> =
-
-> 	group: group-01
-> 	ucode: 0xe2
-> =
-
-> test-description: The kernel contains a set of "self tests" under the too=
-ls/testing/selftests/ directory. These are intended to be small unit tests =
-to exercise individual code paths in the kernel.
-> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
-> =
-
-> =
-
-> on test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz with 3=
-2G memory
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> =
-
-> If you fix the issue, kindly add following tag
+> Fixes: 40caa127f3c7 ("init: bootconfig: Remove all bootconfig data when t=
+he init memory is removed")
 > Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
+> Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 
-> =
+FTR, I got a different issue with 5.15-rc1, bisected to 40caa127f3c7 and
+this patch fixed it for me, so:
 
-> =
+Tested-by: Vlastimil Babka <vbabka@suse.cz>
 
-> [  375.495537][T18669] ------------[ cut here ]------------
-> [  375.500874][T18669] refcount_t: underflow; use-after-free.
-> [  375.506401][T18669] WARNING: CPU: 3 PID: 18669 at lib/refcount.c:28 re=
-fcount_warn_saturate+0xa6/0x100
-> [  375.515762][T18669] Modules linked in: gpio_mockup(-) btrfs blake2b_ge=
-neric xor zstd_compress raid6_pq libcrc32c ipmi_devintf ipmi_msghandler sd_=
-mod t10_pi sg intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_p=
-owerclamp coretemp crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni=
-_intel rapl intel_cstate i915 mei_wdt wmi_bmof intel_uncore ahci libahci me=
-i_me intel_gtt libata i2c_i801 ttm mei intel_pch_thermal i2c_smbus wmi vide=
-o intel_pmc_core acpi_pad ip_tables [last unloaded: preemptirq_delay_test]
-> [  375.561538][T18669] CPU: 3 PID: 18669 Comm: modprobe Not tainted 5.14.=
-0-rc5-00035-gbd1e336aa853 #1
-> [  375.570537][T18669] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIO=
-S 1.8.1 12/05/2017
-> [  375.578649][T18669] RIP: 0010:refcount_warn_saturate+0xa6/0x100
-> [  375.584588][T18669] Code: 05 ac 60 f4 01 01 e8 9a 86 7c 00 0f 0b c3 80=
- 3d 9a 60 f4 01 00 75 95 48 c7 c7 08 59 83 82 c6 05 8a 60 f4 01 01 e8 7b 86=
- 7c 00 <0f> 0b c3 80 3d 79 60 f4 01 00 0f 85 72 ff ff ff 48 c7 c7 60 59 83
-> [  375.604089][T18669] RSP: 0018:ffffc90000dc7df8 EFLAGS: 00010282
-> [  375.610027][T18669] RAX: 0000000000000000 RBX: ffff8888153a4040 RCX: 0=
-000000000000002
-> [  375.617880][T18669] RDX: 0000000000000001 RSI: ffffffff8123838f RDI: f=
-fffffff8123838f
-> [  375.625744][T18669] RBP: ffff8881c249d810 R08: 0000000000000001 R09: 0=
-000000000000001
-> [  375.633592][T18669] R10: 0000000000000001 R11: 0000000000000001 R12: 0=
-000000000000001
-> [  375.641466][T18669] R13: ffff8888153a4000 R14: 0000000000000000 R15: 0=
-000000000000000
-> [  375.649317][T18669] FS:  00007f82e999a480(0000) GS:ffff8887c8580000(00=
-00) knlGS:0000000000000000
-> [  375.658127][T18669] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  375.664589][T18669] CR2: 00007ffe84be8b38 CR3: 00000008165f8005 CR4: 0=
-0000000003706e0
-> [  375.672490][T18669] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0=
-000000000000000
-> [  375.680356][T18669] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0=
-000000000000400
-> [  375.688214][T18669] Call Trace:
-> [  375.691373][T18669]  software_node_notify+0xaf/0x140
-> [  375.696381][T18669]  device_platform_notify+0x2c/0x80
-> [  375.701488][T18669]  device_del+0x1c7/0x440
-> [  375.705694][T18669]  platform_device_del+0x13/0x80
-> [  375.711121][T18669]  platform_device_unregister+0x1c/0x40
-> [  375.716540][T18669]  gpio_mockup_exit+0x2b/0x3d1 [gpio_mockup]
-> [  375.722396][T18669]  __x64_sys_delete_module+0x143/0x280
-> [  375.727744][T18669]  ? syscall_enter_from_user_mode+0x21/0x80
-> [  375.733512][T18669]  ? lockdep_hardirqs_on+0x79/0x100
-> [  375.738584][T18669]  do_syscall_64+0x5c/0x80
-> [  375.742884][T18669]  ? asm_exc_page_fault+0x1e/0x30
-> [  375.747781][T18669]  ? asm_exc_page_fault+0x8/0x30
-> [  375.752603][T18669]  ? lockdep_hardirqs_on+0x79/0x100
-> [  375.757673][T18669]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  375.763462][T18669] RIP: 0033:0x7f82e9abadd7
-> [  375.767749][T18669] Code: 73 01 c3 48 8b 0d b9 10 0c 00 f7 d8 64 89 01=
- 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 b8 b0 00 00 00=
- 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 89 10 0c 00 f7 d8 64 89 01 48
-> [  375.787252][T18669] RSP: 002b:00007ffe84beab38 EFLAGS: 00000206 ORIG_R=
-AX: 00000000000000b0
-> [  375.795543][T18669] RAX: ffffffffffffffda RBX: 00005607a92de100 RCX: 0=
-0007f82e9abadd7
-> [  375.803428][T18669] RDX: 0000000000000000 RSI: 0000000000000800 RDI: 0=
-0005607a92de168
-> [  375.811292][T18669] RBP: 00005607a92de168 R08: 00007ffe84be9ae1 R09: 0=
-000000000000000
-> [  375.819142][T18669] R10: 00007f82e9b2cae0 R11: 0000000000000206 R12: 0=
-000000000000000
-> [  375.826993][T18669] R13: 0000000000000000 R14: 00005607a92de168 R15: 0=
-0005607a92de210
-> [  375.834852][T18669] irq event stamp: 11203
-> [  375.838975][T18669] hardirqs last  enabled at (11213): [<ffffffff81238=
-c70>] console_unlock+0x330/0x540
-> [  375.848319][T18669] hardirqs last disabled at (11222): [<ffffffff81238=
-d10>] console_unlock+0x3d0/0x540
-> [  375.857649][T18669] softirqs last  enabled at (11160): [<ffffffff82200=
-331>] __do_softirq+0x331/0x494
-> [  375.866803][T18669] softirqs last disabled at (11155): [<ffffffff811a0=
-81e>] irq_exit_rcu+0x11e/0x140
-> [  375.875961][T18669] ---[ end trace d5655f8d61e2815a ]---
+The panic I was getting:
 
-There is a fix for this already, just hasn't been picked yet:
-
-https://lore.kernel.org/lkml/20210716101602.1891-1-laurentiu.tudor(a)nxp.co=
-m/
-
-
-thanks,
-
--- =
-
-heikki
---===============7965361658488943461==--
+ general protection fault, probably for non-canonical address 0x343479726f6=
+d657d: 0000 [#1] SMP NOPTI
+ CPU: 10 PID: 446 Comm: udevadm Tainted: G            E     5.15.0-rc1-1.g8=
+787773-default+ #43 openSUSE Tumbleweed (unreleased) d96e60462206b52b95b55e=
+a8102fc1a7d9e8ae9a
+ Hardware name: Gigabyte Technology Co., Ltd. X470 AORUS ULTRA GAMING/X470 =
+AORUS ULTRA GAMING-CF, BIOS F60h 02/04/2021
+ RIP: 0010:rb_next+0x14/0x50
+ Code: 89 c1 89 c6 89 c7 41 89 c0 c3 66 66 2e 0f 1f 84 00 00 00 00 00 90 48=
+ 8b 17 48 39 d7 74 43 48 8b 47 08 48 85 c0 74 23 49 89 c0 <48> 8b 40 10 48 =
+85 c0 75 f4 4c 89 c0 31 d2 89 d7 41 89 d0 c3 48 3b
+ RSP: 0018:ffffa63741053e00 EFLAGS: 00010202
+ RAX: 343479726f6d656d RBX: ffffa63741053e90 RCX: 0000000000000000
+ RDX: ffff94fd4eb37f18 RSI: 0000000000000000 RDI: ffff94fd4ebf7e18
+ RBP: 0000000000000000 R08: 343479726f6d656d R09: 0000000000000000
+ R10: ffffffff89f58b50 R11: 0000000000000000 R12: ffff94f64a7c3f00
+ R13: ffff94f640e3b300 R14: ffff94fd4ebf7e00 R15: 0000000000000007
+ FS:  00007fd358530180(0000) GS:ffff94fd4ea80000(0000) knlGS:00000000000000=
+00
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000564bfee24028 CR3: 000000013055c000 CR4: 00000000003506e0
+ Call Trace:
+  kernfs_fop_readdir+0x12d/0x260
+  iterate_dir+0x196/0x1e0
+  __x64_sys_getdents64+0x80/0x120
+  ? compat_fillonedir+0x160/0x160
+  ? syscall_exit_to_user_mode+0x18/0x40
+  do_syscall_64+0x5c/0x90
+  ? syscall_exit_to_user_mode+0x18/0x40
+  ? syscall_exit_to_user_mode+0x18/0x40
+  ? do_syscall_64+0x69/0x90
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7fd358f04947
+ Code: 00 00 0f 05 eb b7 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 f3 0f 1e fa=
+ b8 ff ff ff 7f 48 39 c2 48 0f 47 d0 b8 d9 00 00 00 0f 05 <48> 3d 00 f0 ff =
+ff 77 01 c3 48 8b 15 f9 a4 0f 00 f7 d8 64 89 02 48
+ RSP: 002b:00007fffc0b3ba78 EFLAGS: 00000293 ORIG_RAX: 00000000000000d9
+ RAX: ffffffffffffffda RBX: 0000564bfedac480 RCX: 00007fd358f04947
+ RDX: 0000000000008000 RSI: 0000564bfedac4b0 RDI: 0000000000000004
+ RBP: 0000564bfedac4b0 R08: 0000000000000030 R09: 00007fd358fffa60
+ R10: 0000564bfedb44b0 R11: 0000000000000293 R12: fffffffffffffeb0
+ R13: 0000564bfedac484 R14: 0000000000000000 R15: 00007fffc0b3bb70
+ Modules linked in: btrfs(E) blake2b_generic(E) libcrc32c(E) crc32c_intel(E=
+) xor(E) raid6_pq(E) sg(E) dm_multipath(E) dm_mod(E) scsi_dh_rdac(E) scsi_d=
+h_emc(E) scsi_dh_alua(E) msr(E) efivarfs(E)
+ ---[ end trace 011b3d281b92632a ]---
+--===============0979366453382151427==--
 
