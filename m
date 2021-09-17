@@ -1,173 +1,71 @@
-Content-Type: multipart/mixed; boundary="===============1289524548643253195=="
+Content-Type: multipart/mixed; boundary="===============4094547076991363473=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Jan Kara <jack@suse.cz>
 To: lkp@lists.01.org
-Subject: Re: [mm/migrate] 9eeb73028c: stress-ng.memhotplug.ops_per_sec -53.8% regression
-Date: Fri, 17 Sep 2021 11:14:59 +0800
-Message-ID: <87a6kbq4ek.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <20210905135932.GE15026@xsang-OptiPlex-9020>
+Subject: Re: [LTP] [mm/page] ab19939a6a: ltp.msync04.fail
+Date: Fri, 17 Sep 2021 14:13:31 +0200
+Message-ID: <20210917121331.GA14905@quack2.suse.cz>
+In-Reply-To: <YT8HqsXsHFeMdDxS@yuki>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1289524548643253195==
+--===============4094547076991363473==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Oliver,
+On Mon 13-09-21 10:11:22, Cyril Hrubis wrote:
+> Hi!
+> > FYI, we noticed the following commit (built with gcc-9):
+> > =
 
-kernel test robot <oliver.sang@intel.com> writes:
+> > commit: ab19939a6a5010cba4e9cb04dd8bee03c72edcbd ("mm/page-writeback: F=
+ix performance when BDI's share of ratio is 0.")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > =
 
-> Greeting,
->
-> FYI, we noticed a -53.8% regression of stress-ng.memhotplug.ops_per_sec d=
-ue to commit:
->
->
-> commit: 9eeb73028cfb54eb06efe87c50cc014d3f1ff43e ("[patch 174/212] mm/mig=
-rate: update node demotion order on hotplug events")
-> url: https://github.com/0day-ci/linux/commits/Andrew-Morton/ia64-fix-typo=
--in-a-comment/20210903-065028
->
->
-> in testcase: stress-ng
-> on test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.=
-10GHz with 192G memory
-> with following parameters:
->
-> 	nr_threads: 10%
-> 	disk: 1HDD
-> 	testtime: 60s
-> 	fs: ext4
-> 	class: os
-> 	test: memhotplug
-> 	cpufreq_governor: performance
-> 	ucode: 0x5003006
->
+> > =
 
-Can you help to test whether the following patch can recover the
-regression?
+> > in testcase: ltp
+> > version: ltp-x86_64-14c1f76-1_20210907
+> > with following parameters:
+> > =
 
-Best Regards,
-Huang, Ying
+> > 	disk: 1HDD
+> > 	fs: xfs
+> > 	test: syscalls-03
+> > 	ucode: 0xe2
+> > =
 
-----------------------------8<--------------------------------------
->From 5d3e18a9f083954584932a20233ef489d9398342 Mon Sep 17 00:00:00 2001
-From: Huang Ying <ying.huang@intel.com>
-Date: Thu, 16 Sep 2021 16:51:44 +0800
-Subject: [PATCH] mm/migrate: recover hotplug performance regression
+> > test-description: The LTP testsuite contains a collection of tools for =
+testing the Linux kernel and related features.
+> > test-url: http://linux-test-project.github.io/
+> =
 
-0-Day kernel test robot reported a -53.8% performance regression for
-stress-ng memhotplug test case.  This patch is to recover the
-regression via avoid updating the demotion order if not necessary.
+> The msync04 test formats a device with a diffrent filesystems, for each
+> filesystem it maps a file, writes to the mapped page and the checks a
+> dirty bit in /proc/kpageflags before and after msync() on that page.
+> =
 
-Refer: https://lore.kernel.org/lkml/20210905135932.GE15026(a)xsang-OptiPlex=
--9020/
-Fixes: 884a6e5d1f93 ("mm/migrate: update node demotion order on hotplug eve=
-nts")
-Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Cc: Yang Shi <shy828301@gmail.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Wei Xu <weixugc@google.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Dan Williams <dan.j.williams@intel.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Greg Thelen <gthelen@google.com>
-Cc: Keith Busch <kbusch@kernel.org>
----
- mm/migrate.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
+> This seems to be broken after this patch for ntfs over FUSE and it looks
+> like the page does not have a dirty bit set right after it has been
+> written to.
+> =
 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 77d107a4577f..20d803707497 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -1145,6 +1145,8 @@ static int __unmap_and_move(struct page *page, struct=
- page *newpage,
- static int node_demotion[MAX_NUMNODES] __read_mostly =3D
- 	{[0 ...  MAX_NUMNODES - 1] =3D NUMA_NO_NODE};
- =
+> Also I guess that we should increase the number of the pages we dirty or
+> attempt to retry since a single page may be flushed to the storage if we
+> are unlucky and the process is preempted between the write and the
+> initial check for the dirty bit.
 
-+static bool node_demotion_disabled __read_mostly;
-+
- /**
-  * next_demotion_node() - Get the next node in the demotion path
-  * @node: The starting node to lookup the next node
-@@ -1158,6 +1160,8 @@ int next_demotion_node(int node)
- {
- 	int target;
- =
+Yes, I agree. The most likely explanation I see for this is that the
+identified commit results in waking flush worker earlier so it may now
+succeed in cleaning the page before get_dirty_bit() in the LTP testcase
+manages to see it. This is a principial race in this testcase, you can
+perhaps make it less likely but not completely fix it AFAICT.
 
-+	if (node_demotion_disabled)
-+		return NUMA_NO_NODE;
- 	/*
- 	 * node_demotion[] is updated without excluding this
- 	 * function from running.  RCU doesn't provide any
-@@ -3198,13 +3202,26 @@ static void __set_migration_target_nodes(void)
- 		goto again;
- }
- =
-
-+static int nr_node_has_cpu;
-+static int nr_node_has_mem;
-+
-+static void check_set_migration_target_nodes(void)
-+{
-+	if (num_node_state(N_MEMORY) !=3D nr_node_has_mem ||
-+	    num_node_state(N_CPU) !=3D nr_node_has_cpu) {
-+		__set_migration_target_nodes();
-+		nr_node_has_mem =3D num_node_state(N_MEMORY);
-+		nr_node_has_cpu =3D num_node_state(N_CPU);
-+	}
-+}
-+
- /*
-  * For callers that do not hold get_online_mems() already.
-  */
- static void set_migration_target_nodes(void)
- {
- 	get_online_mems();
--	__set_migration_target_nodes();
-+	check_set_migration_target_nodes();
- 	put_online_mems();
- }
- =
-
-@@ -3249,7 +3266,7 @@ static int __meminit migrate_on_reclaim_callback(stru=
-ct notifier_block *self,
- 		 * will leave migration disabled until the offline
- 		 * completes and the MEM_OFFLINE case below runs.
- 		 */
--		disable_all_migrate_targets();
-+		node_demotion_disabled =3D true;
- 		break;
- 	case MEM_OFFLINE:
- 	case MEM_ONLINE:
-@@ -3257,14 +3274,15 @@ static int __meminit migrate_on_reclaim_callback(st=
-ruct notifier_block *self,
- 		 * Recalculate the target nodes once the node
- 		 * reaches its final state (online or offline).
- 		 */
--		__set_migration_target_nodes();
-+		check_set_migration_target_nodes();
-+		node_demotion_disabled =3D false;
- 		break;
- 	case MEM_CANCEL_OFFLINE:
- 		/*
- 		 * MEM_GOING_OFFLINE disabled all the migration
- 		 * targets.  Reenable them.
- 		 */
--		__set_migration_target_nodes();
-+		node_demotion_disabled =3D false;
- 		break;
- 	case MEM_GOING_ONLINE:
- 	case MEM_CANCEL_ONLINE:
+								Honza
 -- =
 
-2.30.2
-
---===============1289524548643253195==--
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
+--===============4094547076991363473==--
 
