@@ -1,68 +1,67 @@
-Content-Type: multipart/mixed; boundary="===============8549208471597013664=="
+Content-Type: multipart/mixed; boundary="===============6984262914217261607=="
 MIME-Version: 1.0
-From: Shakeel Butt <shakeelb@google.com>
+From: Greg KH <gregkh@linuxfoundation.org>
 To: lkp@lists.01.org
-Subject: Re: [memcg] 45208c9105: aim7.jobs-per-min -14.0% regression
-Date: Thu, 09 Sep 2021 21:17:54 -0700
-Message-ID: <CALvZod79NnB=CG_sr5ZYLStageb-9W8c5uss22=p2tGJNsFmKQ@mail.gmail.com>
-In-Reply-To: <20210910023415.GB94434@shbuild999.sh.intel.com>
+Subject: Re: [driver core] eedc73d4f3: BUG:kernel_reboot-without-warning_in_boot_stage
+Date: Thu, 30 Sep 2021 08:23:26 +0200
+Message-ID: <YVVX3ir2DHg0FUxF@kroah.com>
+In-Reply-To: <20210930055944.GA29843@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8549208471597013664==
+--===============6984262914217261607==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 9, 2021 at 7:34 PM Feng Tang <feng.tang@intel.com> wrote:
->
-> On Thu, Sep 09, 2021 at 06:19:06PM -0700, Shakeel Butt wrote:
-> [...]
-> > > > > > I am looking into this. I was hoping we have resolution for [1]=
- as
-> > > > > > these patches touch similar data structures.
-> > > > > >
-> > > > > > [1] https://lore.kernel.org/all/20210811031734.GA5193(a)xsang-O=
-ptiPlex-9020/T/#u
-> > > > >
-> > > > > I tried 2 debug methods for that 36.4% vm-scalability regression:
-> > > > >
-> > > > > 1. Disable the HW cache prefetcher, no effect on this case
-> > > > > 2. relayout and add padding to 'struct cgroup_subsys_state', redu=
-ce
-> > > > >    the regression to 3.1%
-> > > > >
-> > > >
-> > > > Thanks Feng but it seems like the issue for this commit is differen=
-t.
-> > > > Rearranging the layout didn't help. Actually the cause of slowdown =
-is
-> > > > the call to queue_work() inside __mod_memcg_lruvec_state().
-> > > >
-> > > > At the moment, queue_work() is called after 32 updates. I changed it
-> > > > to 128 and the slowdown of will-it-scale:page_fault[1|2|3] halved
-> > > > (from around 10% to 5%). I am unable to run reaim or
-> > > > will-it-scale:fallocate2 as I was getting weird errors.
-> > > >
-> > > > Feng, is it possible for you to run these benchmarks with the change
-> > > > (basically changing MEMCG_CHARGE_BATCH to 128 in the if condition
-> > > > before queue_work() inside __mod_memcg_lruvec_state())?
-> > >
-> > > When I checked this, I tried different changes, including this batch
-> > > number change :), but it didn't recover the regression (the regression
-> > > is slightly reduced to about 12%)
-> [...]
-> >
-> > Another change we can try is to remove this specific queue_work()
-> > altogether because this is the only significant change for the
-> > workload. That will give us the base performance number. If that also
-> > has regression then there are more issues to debug. Thanks a lot for
-> > your help.
->
-> I just tested with patch removing the queue_work() in __mod_memcg_lruvec_=
-state(),
-> and the regression is gone.
+On Thu, Sep 30, 2021 at 01:59:44PM +0800, Oliver Sang wrote:
+> Hi, Greg KH,
+> =
 
-Thanks again for confirming this. I will follow this lead and see how
-to improve this.
---===============8549208471597013664==--
+> On Wed, Sep 29, 2021 at 05:13:55PM +0200, Greg KH wrote:
+> > On Wed, Sep 29, 2021 at 11:02:40PM +0800, kernel test robot wrote:
+> > > =
+
+> > > =
+
+> > > Greeting,
+> > > =
+
+> > > FYI, we noticed the following commit (built with gcc-9):
+> > > =
+
+> > > commit: eedc73d4f330cf7a8d18d64f327837ae9a00d003 ("[PATCH] driver cor=
+e: Switch to using the new API kobj_to_dev()")
+> > > url: https://github.com/0day-ci/linux/commits/Yang-Li/driver-core-Swi=
+tch-to-using-the-new-API-kobj_to_dev/20210929-102216
+> > > base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git=
+ 5816b3e6577eaa676ceb00a848f0fd65fe2adc29
+> > =
+
+> > There is no such commit in my tree, or anywhere else I can see, so I
+> > have no idea what is happening here :(
+> > =
+
+> =
+
+> this report was sent to Yang Li, who is the patch author.
+> https://lore.kernel.org/lkml/1614590004-69592-1-git-send-email-yang.lee(a=
+)linux.alibaba.com/
+> =
+
+> since Yang sent the patch to you, so our Rot automatically add you in
+> the Cc list.
+
+That patch was sent back on March 1.  And was instantly rejected for the
+obvious reason it was never tested :)
+
+Why is 0-day running on such old changes now?
+
+And it is not obvious that this is being run on an email submission at
+all, where would I have found that information in this response?  I see
+a git id that points to a kernel tree.  No email link at all.
+
+thanks,
+
+greg k-h
+--===============6984262914217261607==--
 
