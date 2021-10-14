@@ -1,141 +1,130 @@
-Content-Type: multipart/mixed; boundary="===============8103310189782363786=="
+Content-Type: multipart/mixed; boundary="===============1539970219260252916=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Florian Fainelli <f.fainelli@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [sched.h] 317419b91e: perf-sanity-tests.Parse_sched_tracepoints_fields.fail
-Date: Thu, 14 Oct 2021 09:14:21 -0700
-Message-ID: <202110140910.295E856@keescook>
-In-Reply-To: <CALOAHbAhT1bTAThrmA1zYE5q8shR4dxZf5fqcq_9wVrV+XwVEQ@mail.gmail.com>
+Subject: Re: [PM] bfcc1e67ff: kernel-selftests.breakpoints.step_after_suspend_test.fail
+Date: Thu, 14 Oct 2021 09:26:09 -0700
+Message-ID: <51c0a15f-1941-f161-dcec-a7a9acc726f2@gmail.com>
+In-Reply-To: <20211014075731.GB18719@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8103310189782363786==
+--===============1539970219260252916==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 14, 2021 at 10:40:04PM +0800, Yafang Shao wrote:
-> On Thu, Oct 14, 2021 at 9:50 PM Mathieu Desnoyers
-> <mathieu.desnoyers@efficios.com> wrote:
-> >
-> > ----- On Oct 14, 2021, at 9:11 AM, Yafang Shao laoar.shao(a)gmail.com w=
-rote:
-> >
-> > > On Thu, Oct 14, 2021 at 9:09 PM Mathieu Desnoyers
-> > > <mathieu.desnoyers@efficios.com> wrote:
-> > >>
-> > >> ----- On Oct 14, 2021, at 9:05 AM, Yafang Shao laoar.shao(a)gmail.co=
-m wrote:
-> > >> [...]
-> > >> >> If it happens that this ABI break is noticed by more than an in-t=
-ree test
-> > >> >> program, then
-> > >> >> the kernel's ABI rules will require that this trace field size st=
-ays unchanged.
-> > >> >> This brings
-> > >> >> up once more the whole topic of "Tracepoints ABI" which has been =
-discussed
-> > >> >> repeatedly in
-> > >> >> the past.
-> > >> >>
-> > >> >
-> > >> > I will check if any other in-tree tools depends on TASK_COMM_LEN.
-> > >>
-> > >> That's a start, but given this is a userspace ABI, out-of-tree userl=
-and
-> > >> tools which depend of this to be fixed-size are also relevant.
-> > >>
-> > >
-> > > TASK_COMM_LEN isn't defined in include/uapi/ directory, so it seems
-> > > that it isn't the uerspace ABI?
-> >
-> > One case where this 16 bytes size is expected by userspace is prctl(2) =
-PR_GET_NAME
-> > and PR_SET_NAME.
-> >
+On 10/14/21 12:57 AM, kernel test robot wrote:
 > =
-
-> the prctl(2) man page says that:
-> : PR_SET_NAME
-> :        If the length of the string, including the terminating
-> :        null byte, exceeds 16 bytes, the string is silently truncated.
-> : PR_GET_NAME
-> :         The buffer should allow space for up to 16 bytes
-> :          the returned string will be null-terminated.
-> =
-
-> As the string returned to user space is null-terminated, extending
-> task comm won't break the prctl(2) user code.
-
-If userspace was:
-
-	char comm[16];
-	int important_values;
-
-	...
-
-	prctl(PR_GET_NAME, pid, comm);
-
-the kernel will clobber "important_values", so prctl() must enforce the
-old size (and terminate it correctly). It's not okay for us to expect
-that userspace get recompiled -- old binaries must continue to work
-correctly on kernel kernels.
-
-        case PR_GET_NAME:
-                get_task_comm(comm, me);
-                if (copy_to_user((char __user *)arg2, comm, sizeof(comm)))
-                        return -EFAULT;
-                break;
-
-This looks like it needs to be explicitly NUL terminated at 16 as well.
-
-I'd say we need a TASK_COMM_LEN_V1 to use in all the old hard-coded
-places.
-
--Kees
 
 > =
 
-> > The other case I am referring to is with ftrace and perf:
-> >
-> > mount -t tracefs nodev /sys/kernel/tracing
-> > cat /sys/kernel/tracing/events/sched/sched_switch/format
-> >
-> > name: sched_switch
-> > ID: 314
-> > format:
-> > [...]
-> >         field:char prev_comm[16];       offset:8;       size:16;       =
- signed:1;
-> > [...]
-> >         field:char next_comm[16];       offset:40;      size:16;       =
- signed:1;
-> >
-> > Both of those fields expose a fixed-size of 16 bytes.
-> >
-> > AFAIK Steven's intent was that by parsing this file, trace viewers coul=
-d adapt to
-> > changes in the event field layout. Unfortunately, there have been cases=
- where
-> > trace viewers had a hard expectation on the field layout. Hopefully tho=
-se have
-> > all been fixed a while ago.
-> >
+> Greeting,
 > =
 
-> I don't have a clear idea what will happen to trace viewers if we
-> extend task comm.
+> FYI, we noticed the following commit (built with gcc-9):
 > =
 
-> Steven, do you have any suggestions ?
+> commit: bfcc1e67ff1e4aa8bfe2ca57f99390fc284c799d ("PM: sleep: Do not assu=
+me that "mem" is always present")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > =
 
-> -- =
+> =
 
-> Thanks
-> Yafang
+> in testcase: kernel-selftests
+> version: kernel-selftests-x86_64-c8c9111a-1_20210929
+> with following parameters:
+> =
+
+> 	group: group-00
+> 	ucode: 0x11
+> =
+
+> test-description: The kernel contains a set of "self tests" under the too=
+ls/testing/selftests/ directory. These are intended to be small unit tests =
+to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+> =
+
+> =
+
+> on test machine: 288 threads 2 sockets Intel(R) Xeon Phi(TM) CPU 7295 @ 1=
+.50GHz with 80G memory
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
+
+> =
+
+> =
+
+> =
+
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+
+Thanks for your report. Assuming that the code responsible for
+registering the suspend operations is drivers/acpi/sleep.c for your
+platform, and that acpi_sleep_suspend_setup() iterated over all possible
+sleep states, your platform must somehow be returning that ACPI_STATE_S3
+is not a supported state somehow?
+
+Rafael have you ever encountered something like that?
+
+> =
+
+> =
+
+> TAP version 13
+> 1..2
+> # selftests: breakpoints: step_after_suspend_test
+> # TAP version 13
+> # Bail out! Failed to enter Suspend state
+> # # Totals: pass:0 fail:0 xfail:0 xpass:0 skip:0 error:0
+> not ok 1 selftests: breakpoints: step_after_suspend_test # exit=3D1
+> =
+
+> =
+
+> =
+
+> To reproduce:
+> =
+
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         sudo bin/lkp install job.yaml           # job file is attached in=
+ this email
+>         bin/lkp split-job --compatible job.yaml # generate the yaml file =
+for lkp run
+>         sudo bin/lkp run generated-yaml-file
+> =
+
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+> =
+
+> =
+
+> =
+
+> ---
+> 0DAY/LKP+ Test Infrastructure                   Open Source Technology Ce=
+nter
+> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel Corpo=
+ration
+> =
+
+> Thanks,
+> Oliver Sang
+> =
+
+
 
 -- =
 
-Kees Cook
---===============8103310189782363786==--
+Florian
+--===============1539970219260252916==--
 
