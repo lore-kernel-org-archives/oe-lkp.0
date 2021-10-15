@@ -1,75 +1,147 @@
-Content-Type: multipart/mixed; boundary="===============5625870916538764504=="
+Content-Type: multipart/mixed; boundary="===============4147098811884728543=="
 MIME-Version: 1.0
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Yafang Shao <laoar.shao@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [PM] bfcc1e67ff: kernel-selftests.breakpoints.step_after_suspend_test.fail
-Date: Thu, 14 Oct 2021 14:55:42 -0700
-Message-ID: <6755cf07-fa5a-cbb7-c076-57c162a08c99@gmail.com>
-In-Reply-To: <e526de16-5efd-6474-20e1-3f96a2e3c524@intel.com>
+Subject: Re: [sched.h] 317419b91e: perf-sanity-tests.Parse_sched_tracepoints_fields.fail
+Date: Fri, 15 Oct 2021 10:05:56 +0800
+Message-ID: <CALOAHbAQ06+G776+7WqWBag+Q1gO5M+Qg3axYd4=Tpbzx1i=tg@mail.gmail.com>
+In-Reply-To: <202110140910.295E856@keescook>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5625870916538764504==
+--===============4147098811884728543==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 10/14/21 12:23 PM, Rafael J. Wysocki wrote:
-> On 10/14/2021 6:26 PM, Florian Fainelli wrote:
->> On 10/14/21 12:57 AM, kernel test robot wrote:
->>>
->>> Greeting,
->>>
->>> FYI, we noticed the following commit (built with gcc-9):
->>>
->>> commit: bfcc1e67ff1e4aa8bfe2ca57f99390fc284c799d ("PM: sleep: Do not
->>> assume that "mem" is always present")
->>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->>>
->>>
->>> in testcase: kernel-selftests
->>> version: kernel-selftests-x86_64-c8c9111a-1_20210929
->>> with following parameters:
->>>
->>> =C2=A0=C2=A0=C2=A0=C2=A0group: group-00
->>> =C2=A0=C2=A0=C2=A0=C2=A0ucode: 0x11
->>>
->>> test-description: The kernel contains a set of "self tests" under the
->>> tools/testing/selftests/ directory. These are intended to be small
->>> unit tests to exercise individual code paths in the kernel.
->>> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
->>>
->>>
->>> on test machine: 288 threads 2 sockets Intel(R) Xeon Phi(TM) CPU 7295
->>> @ 1.50GHz with 80G memory
->>>
->>> caused below changes (please refer to attached dmesg/kmsg for entire
->>> log/backtrace):
->>>
->>>
->>>
->>>
->>> If you fix the issue, kindly add following tag
->>> Reported-by: kernel test robot <oliver.sang@intel.com>
->> Thanks for your report. Assuming that the code responsible for
->> registering the suspend operations is drivers/acpi/sleep.c for your
->> platform, and that acpi_sleep_suspend_setup() iterated over all possible
->> sleep states, your platform must somehow be returning that ACPI_STATE_S3
->> is not a supported state somehow?
->>
->> Rafael have you ever encountered something like that?
-> =
+On Fri, Oct 15, 2021 at 12:14 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> On Thu, Oct 14, 2021 at 10:40:04PM +0800, Yafang Shao wrote:
+> > On Thu, Oct 14, 2021 at 9:50 PM Mathieu Desnoyers
+> > <mathieu.desnoyers@efficios.com> wrote:
+> > >
+> > > ----- On Oct 14, 2021, at 9:11 AM, Yafang Shao laoar.shao(a)gmail.com=
+ wrote:
+> > >
+> > > > On Thu, Oct 14, 2021 at 9:09 PM Mathieu Desnoyers
+> > > > <mathieu.desnoyers@efficios.com> wrote:
+> > > >>
+> > > >> ----- On Oct 14, 2021, at 9:05 AM, Yafang Shao laoar.shao(a)gmail.=
+com wrote:
+> > > >> [...]
+> > > >> >> If it happens that this ABI break is noticed by more than an in=
+-tree test
+> > > >> >> program, then
+> > > >> >> the kernel's ABI rules will require that this trace field size =
+stays unchanged.
+> > > >> >> This brings
+> > > >> >> up once more the whole topic of "Tracepoints ABI" which has bee=
+n discussed
+> > > >> >> repeatedly in
+> > > >> >> the past.
+> > > >> >>
+> > > >> >
+> > > >> > I will check if any other in-tree tools depends on TASK_COMM_LEN.
+> > > >>
+> > > >> That's a start, but given this is a userspace ABI, out-of-tree use=
+rland
+> > > >> tools which depend of this to be fixed-size are also relevant.
+> > > >>
+> > > >
+> > > > TASK_COMM_LEN isn't defined in include/uapi/ directory, so it seems
+> > > > that it isn't the uerspace ABI?
+> > >
+> > > One case where this 16 bytes size is expected by userspace is prctl(2=
+) PR_GET_NAME
+> > > and PR_SET_NAME.
+> > >
+> >
+> > the prctl(2) man page says that:
+> > : PR_SET_NAME
+> > :        If the length of the string, including the terminating
+> > :        null byte, exceeds 16 bytes, the string is silently truncated.
+> > : PR_GET_NAME
+> > :         The buffer should allow space for up to 16 bytes
+> > :          the returned string will be null-terminated.
+> >
+> > As the string returned to user space is null-terminated, extending
+> > task comm won't break the prctl(2) user code.
+>
+> If userspace was:
+>
+>         char comm[16];
+>         int important_values;
+>
+>         ...
+>
+>         prctl(PR_GET_NAME, pid, comm);
+>
+> the kernel will clobber "important_values", so prctl() must enforce the
+> old size (and terminate it correctly). It's not okay for us to expect
+> that userspace get recompiled -- old binaries must continue to work
+> correctly on kernel kernels.
+>
+>         case PR_GET_NAME:
+>                 get_task_comm(comm, me);
+>                 if (copy_to_user((char __user *)arg2, comm, sizeof(comm)))
+>                         return -EFAULT;
+>                 break;
+>
+> This looks like it needs to be explicitly NUL terminated at 16 as well.
+>
 
-> Yes, there are systems with ACPI that don't support S3.
+Right. After replacing strncpy with strscpy_pad() in
+__get_task_comm(), the string will be NUL terminated.
 
-OK and do you know what happens when we enter suspend with "mem" in
-those cases? Do we immediately return because ultimately the firmware
-does not support ACPI S3?
+> I'd say we need a TASK_COMM_LEN_V1 to use in all the old hard-coded
+> places.
+>
 
-I will rework
-tools/testing/selftests/breakpoints/step_after_suspend_test.c not to
-assume that "mem" is always available, since it may not be.
+Sure, it will be easy to grep then.
+
+> >
+> > > The other case I am referring to is with ftrace and perf:
+> > >
+> > > mount -t tracefs nodev /sys/kernel/tracing
+> > > cat /sys/kernel/tracing/events/sched/sched_switch/format
+> > >
+> > > name: sched_switch
+> > > ID: 314
+> > > format:
+> > > [...]
+> > >         field:char prev_comm[16];       offset:8;       size:16;     =
+   signed:1;
+> > > [...]
+> > >         field:char next_comm[16];       offset:40;      size:16;     =
+   signed:1;
+> > >
+> > > Both of those fields expose a fixed-size of 16 bytes.
+> > >
+> > > AFAIK Steven's intent was that by parsing this file, trace viewers co=
+uld adapt to
+> > > changes in the event field layout. Unfortunately, there have been cas=
+es where
+> > > trace viewers had a hard expectation on the field layout. Hopefully t=
+hose have
+> > > all been fixed a while ago.
+> > >
+> >
+> > I don't have a clear idea what will happen to trace viewers if we
+> > extend task comm.
+> >
+> > Steven, do you have any suggestions ?
+> >
+> > --
+> > Thanks
+> > Yafang
+>
+> --
+> Kees Cook
+
+
+
 -- =
 
-Florian
---===============5625870916538764504==--
+Thanks
+Yafang
+--===============4147098811884728543==--
 
