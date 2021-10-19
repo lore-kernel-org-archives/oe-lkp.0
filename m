@@ -1,138 +1,100 @@
-Content-Type: multipart/mixed; boundary="===============3533481787527411856=="
+Content-Type: multipart/mixed; boundary="===============5971679235362586677=="
 MIME-Version: 1.0
-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [sched.h] 317419b91e: perf-sanity-tests.Parse_sched_tracepoints_fields.fail
-Date: Tue, 19 Oct 2021 13:51:27 -0300
-Message-ID: <YW73j66QbG9i0MV+@kernel.org>
-In-Reply-To: <1529739526.13983.1634215325995.JavaMail.zimbra@efficios.com>
+Subject: Re: [PM] bfcc1e67ff: kernel-selftests.breakpoints.step_after_suspend_test.fail
+Date: Tue, 19 Oct 2021 20:53:50 +0200
+Message-ID: <d36f79b4-472c-4852-7370-a011f9f556ce@intel.com>
+In-Reply-To: <20aedfba-14e3-3677-d21a-b87610095445@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3533481787527411856==
+--===============5971679235362586677==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Em Thu, Oct 14, 2021 at 08:42:05AM -0400, Mathieu Desnoyers escreveu:
-> ----- On Oct 14, 2021, at 5:24 AM, Yafang Shao laoar.shao(a)gmail.com wro=
-te:
-> > On Thu, Oct 14, 2021 at 3:08 PM kernel test robot <oliver.sang@intel.=
-com> wrote:
-> > That issue is caused by another hardcode 16 ...
+On 10/15/2021 9:40 PM, Florian Fainelli wrote:
+> On 10/15/21 11:45 AM, Rafael J. Wysocki wrote:
+>> On 10/14/2021 11:55 PM, Florian Fainelli wrote:
+>>> On 10/14/21 12:23 PM, Rafael J. Wysocki wrote:
+>>>> On 10/14/2021 6:26 PM, Florian Fainelli wrote:
+>>>>> On 10/14/21 12:57 AM, kernel test robot wrote:
+>>>>>> Greeting,
+>>>>>>
+>>>>>> FYI, we noticed the following commit (built with gcc-9):
+>>>>>>
+>>>>>> commit: bfcc1e67ff1e4aa8bfe2ca57f99390fc284c799d ("PM: sleep: Do not
+>>>>>> assume that "mem" is always present")
+>>>>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git
+>>>>>> master
+>>>>>>
+>>>>>>
+>>>>>> in testcase: kernel-selftests
+>>>>>> version: kernel-selftests-x86_64-c8c9111a-1_20210929
+>>>>>> with following parameters:
+>>>>>>
+>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0group: group-00
+>>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ucode: 0x11
+>>>>>>
+>>>>>> test-description: The kernel contains a set of "self tests" under the
+>>>>>> tools/testing/selftests/ directory. These are intended to be small
+>>>>>> unit tests to exercise individual code paths in the kernel.
+>>>>>> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+>>>>>>
+>>>>>>
+>>>>>> on test machine: 288 threads 2 sockets Intel(R) Xeon Phi(TM) CPU 7295
+>>>>>> @ 1.50GHz with 80G memory
+>>>>>>
+>>>>>> caused below changes (please refer to attached dmesg/kmsg for entire
+>>>>>> log/backtrace):
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> If you fix the issue, kindly add following tag
+>>>>>> Reported-by: kernel test robot <oliver.sang@intel.com>
+>>>>> Thanks for your report. Assuming that the code responsible for
+>>>>> registering the suspend operations is drivers/acpi/sleep.c for your
+>>>>> platform, and that acpi_sleep_suspend_setup() iterated over all
+>>>>> possible
+>>>>> sleep states, your platform must somehow be returning that
+>>>>> ACPI_STATE_S3
+>>>>> is not a supported state somehow?
+>>>>>
+>>>>> Rafael have you ever encountered something like that?
+>>>> Yes, there are systems with ACPI that don't support S3.
+>>> OK and do you know what happens when we enter suspend with "mem" in
+>>> those cases? Do we immediately return because ultimately the firmware
+>>> does not support ACPI S3?
+>> "mem" should not be present in the list of available strings then, so it
+>> should be rejected right away.
+> Well yes, that was the purpose of the patch I submitted, but assuming
+> that we did provide "mem" as one of the possible standby modes even
+> though that was wrong (before patch), and the test was trying to enter
+> ACPI S3 standby, what would have happened, would the ACPI firmware honor
+> the request but return an error, or would it actually enter ACPI S3?
+>
+> In any case, I will change the test to check that this is a supported
+> standby mode before trying it.
 
-> > Seems we should make some change as below,
+Unfortunately, I will need to revert bfcc1e67ff1e4aa8bfe2, because it =
 
-> > diff --git a/tools/perf/tests/evsel-tp-sched.c
-> > b/tools/perf/tests/evsel-tp-sched.c
-> > index f9e34bd26cf3..401a737b1d85 100644
-> > --- a/tools/perf/tests/evsel-tp-sched.c
-> > +++ b/tools/perf/tests/evsel-tp-sched.c
-> > @@ -42,7 +42,7 @@ int test__perf_evsel__tp_sched_test(struct test
-> > *test __maybe_unused, int subtes
-> >                return -1;
-> >        }
+breaks user space compatibility and that's got caught properly by the test.
 
-> > -       if (evsel__test_field(evsel, "prev_comm", 16, false))
-> > +       if (evsel__test_field(evsel, "prev_comm", TASK_COMM_LEN, false))
-> =
+What happens is that "mem" is a "pointer" to a secondary list of =
 
-> tools/perf/tests/* contains userspace test programs. This means it gets t=
-he
-> TASK_COMM_LEN from the uapi. The fix you propose won't do any good here.
+possible states and that generally is "s2idle shallow deep" and if =
 
-That specific test is just checking if the parsing is being done as
-expected, i.e. we know beforehand that COMMs have 16 bytes, so the test
-expects that.
+s2idle is the only available option, it will be just "s2idle".
 
-Now that it can have a different size, then the test should accept the
-two sizes as possible and pass if it is 16 or 24.
+This list is there in /sys/power/mem_sleep.
 
-Like in this patch:
+It was done this way, because some variants of user space expect "mem" =
 
-diff --git a/tools/perf/tests/evsel-tp-sched.c b/tools/perf/tests/evsel-tp-=
-sched.c
-index f9e34bd26cf33536..182328f3f7f70e0e 100644
---- a/tools/perf/tests/evsel-tp-sched.c
-+++ b/tools/perf/tests/evsel-tp-sched.c
-@@ -5,7 +5,7 @@
- #include "tests.h"
- #include "debug.h"
- =
+to be always present and don't recognize "freeze" properly.
 
--static int evsel__test_field(struct evsel *evsel, const char *name, int si=
-ze, bool should_be_signed)
-+static int evsel__test_field_alt(struct evsel *evsel, const char *name, in=
-t size, int alternate_size, bool should_be_signed)
- {
- 	struct tep_format_field *field =3D evsel__field(evsel, name);
- 	int is_signed;
-@@ -23,15 +23,23 @@ static int evsel__test_field(struct evsel *evsel, const=
- char *name, int size, bo
- 		ret =3D -1;
- 	}
- =
+Sorry for the confusion.
 
--	if (field->size !=3D size) {
--		pr_debug("%s: \"%s\" size (%d) should be %d!\n",
-+	if (field->size !=3D size && field->size !=3D alternate_size) {
-+		pr_debug("%s: \"%s\" size (%d) should be %d",
- 			 evsel->name, name, field->size, size);
-+		if (alternate_size > 0)
-+			pr_debug(" or %d", alternate_size);
-+		pr_debug("!\n");
- 		ret =3D -1;
- 	}
- =
 
- 	return ret;
- }
- =
-
-+static int evsel__test_field(struct evsel *evsel, const char *name, int si=
-ze, bool should_be_signed)
-+{
-+	return evsel__test_field_alt(evsel, name, size, -1, should_be_signed);
-+}
-+
- int test__perf_evsel__tp_sched_test(struct test *test __maybe_unused, int =
-subtest __maybe_unused)
- {
- 	struct evsel *evsel =3D evsel__newtp("sched", "sched_switch");
-@@ -42,7 +50,7 @@ int test__perf_evsel__tp_sched_test(struct test *test __m=
-aybe_unused, int subtes
- 		return -1;
- 	}
- =
-
--	if (evsel__test_field(evsel, "prev_comm", 16, false))
-+	if (evsel__test_field_alt(evsel, "prev_comm", 16, 24, false))
- 		ret =3D -1;
- =
-
- 	if (evsel__test_field(evsel, "prev_pid", 4, true))
-@@ -54,7 +62,7 @@ int test__perf_evsel__tp_sched_test(struct test *test __m=
-aybe_unused, int subtes
- 	if (evsel__test_field(evsel, "prev_state", sizeof(long), true))
- 		ret =3D -1;
- =
-
--	if (evsel__test_field(evsel, "next_comm", 16, false))
-+	if (evsel__test_field_alt(evsel, "next_comm", 16, 24, false))
- 		ret =3D -1;
- =
-
- 	if (evsel__test_field(evsel, "next_pid", 4, true))
-@@ -72,7 +80,7 @@ int test__perf_evsel__tp_sched_test(struct test *test __m=
-aybe_unused, int subtes
- 		return -1;
- 	}
- =
-
--	if (evsel__test_field(evsel, "comm", 16, false))
-+	if (evsel__test_field_alt(evsel, "comm", 16, 24, false))
- 		ret =3D -1;
- =
-
- 	if (evsel__test_field(evsel, "pid", 4, true))
---===============3533481787527411856==--
+--===============5971679235362586677==--
 
