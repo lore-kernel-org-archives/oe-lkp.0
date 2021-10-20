@@ -1,286 +1,69 @@
-Content-Type: multipart/mixed; boundary="===============1384328964192249649=="
+Content-Type: multipart/mixed; boundary="===============4502237087170094821=="
 MIME-Version: 1.0
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: David Hildenbrand <david@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [PM] bfcc1e67ff: kernel-selftests.breakpoints.step_after_suspend_test.fail
-Date: Thu, 21 Oct 2021 12:19:07 -0700
-Message-ID: <df8f421a-0deb-19c4-27f3-9d50bea1eee4@gmail.com>
-In-Reply-To: <CAJZ5v0h7XHS1c3=WztFhDUYc8tLzRDn7Dwy-yNd3WC4qs4i_eg@mail.gmail.com>
+Subject: Re: [mm] 6128b3af2a: UBSAN:shift-out-of-bounds_in(null)
+Date: Wed, 20 Oct 2021 09:22:52 +0200
+Message-ID: <99b496b7-c465-eac3-d7ad-18a615fe94a7@redhat.com>
+In-Reply-To: <87wnm9ovz2.fsf@disp2133>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1384328964192249649==
+--===============4502237087170094821==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 10/20/21 11:48 AM, Rafael J. Wysocki wrote:
->   On Wed, Oct 20, 2021 at 8:17 PM Florian Fainelli <f.fainelli@gmail.co=
-m> wrote:
+On 19.10.21 17:49, Eric W. Biederman wrote:
+> kernel test robot <oliver.sang@intel.com> writes:
+> =
+
+>> Greeting,
 >>
->> On 10/20/21 9:00 AM, Rafael J. Wysocki wrote:
->>> On Wed, Oct 20, 2021 at 5:34 PM Florian Fainelli <f.fainelli@gmail.co=
-m> wrote:
->>>>
->>>>
->>>>
->>>> On 10/20/2021 6:49 AM, Rafael J. Wysocki wrote:
->>>>> On Tue, Oct 19, 2021 at 9:04 PM Florian Fainelli <f.fainelli@gmail.=
-com> wrote:
->>>>>>
->>>>>> On 10/19/21 11:53 AM, Rafael J. Wysocki wrote:
->>>>>>> On 10/15/2021 9:40 PM, Florian Fainelli wrote:
->>>>>>>> On 10/15/21 11:45 AM, Rafael J. Wysocki wrote:
->>>>>>>>> On 10/14/2021 11:55 PM, Florian Fainelli wrote:
->>>>>>>>>> On 10/14/21 12:23 PM, Rafael J. Wysocki wrote:
->>>>>>>>>>> On 10/14/2021 6:26 PM, Florian Fainelli wrote:
->>>>>>>>>>>> On 10/14/21 12:57 AM, kernel test robot wrote:
->>>>>>>>>>>>> Greeting,
->>>>>>>>>>>>>
->>>>>>>>>>>>> FYI, we noticed the following commit (built with gcc-9):
->>>>>>>>>>>>>
->>>>>>>>>>>>> commit: bfcc1e67ff1e4aa8bfe2ca57f99390fc284c799d ("PM: sleep:=
- Do not
->>>>>>>>>>>>> assume that "mem" is always present")
->>>>>>>>>>>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.=
-git
->>>>>>>>>>>>> master
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> in testcase: kernel-selftests
->>>>>>>>>>>>> version: kernel-selftests-x86_64-c8c9111a-1_20210929
->>>>>>>>>>>>> with following parameters:
->>>>>>>>>>>>>
->>>>>>>>>>>>>        group: group-00
->>>>>>>>>>>>>        ucode: 0x11
->>>>>>>>>>>>>
->>>>>>>>>>>>> test-description: The kernel contains a set of "self tests" u=
-nder
->>>>>>>>>>>>> the
->>>>>>>>>>>>> tools/testing/selftests/ directory. These are intended to be =
-small
->>>>>>>>>>>>> unit tests to exercise individual code paths in the kernel.
->>>>>>>>>>>>> test-url: https://www.kernel.org/doc/Documentation/kselftest.=
-txt
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> on test machine: 288 threads 2 sockets Intel(R) Xeon Phi(TM) =
-CPU
->>>>>>>>>>>>> 7295
->>>>>>>>>>>>> @ 1.50GHz with 80G memory
->>>>>>>>>>>>>
->>>>>>>>>>>>> caused below changes (please refer to attached dmesg/kmsg for=
- entire
->>>>>>>>>>>>> log/backtrace):
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> If you fix the issue, kindly add following tag
->>>>>>>>>>>>> Reported-by: kernel test robot <oliver.sang@intel.com>
->>>>>>>>>>>> Thanks for your report. Assuming that the code responsible for
->>>>>>>>>>>> registering the suspend operations is drivers/acpi/sleep.c for=
- your
->>>>>>>>>>>> platform, and that acpi_sleep_suspend_setup() iterated over all
->>>>>>>>>>>> possible
->>>>>>>>>>>> sleep states, your platform must somehow be returning that
->>>>>>>>>>>> ACPI_STATE_S3
->>>>>>>>>>>> is not a supported state somehow?
->>>>>>>>>>>>
->>>>>>>>>>>> Rafael have you ever encountered something like that?
->>>>>>>>>>> Yes, there are systems with ACPI that don't support S3.
->>>>>>>>>> OK and do you know what happens when we enter suspend with "mem"=
- in
->>>>>>>>>> those cases? Do we immediately return because ultimately the fir=
-mware
->>>>>>>>>> does not support ACPI S3?
->>>>>>>>> "mem" should not be present in the list of available strings then=
-, so it
->>>>>>>>> should be rejected right away.
->>>>>>>> Well yes, that was the purpose of the patch I submitted, but assum=
-ing
->>>>>>>> that we did provide "mem" as one of the possible standby modes even
->>>>>>>> though that was wrong (before patch), and the test was trying to e=
-nter
->>>>>>>> ACPI S3 standby, what would have happened, would the ACPI firmware=
- honor
->>>>>>>> the request but return an error, or would it actually enter ACPI S=
-3?
->>>>>>>>
->>>>>>>> In any case, I will change the test to check that this is a suppor=
-ted
->>>>>>>> standby mode before trying it.
->>>>>>>
->>>>>>> Unfortunately, I will need to revert bfcc1e67ff1e4aa8bfe2, because =
-it
->>>>>>> breaks user space compatibility and that's got caught properly by t=
-he test.
->>>>>>
->>>>>> Reverting my commit will break powerpc and other ARM/ARM64 platforms
->>>>>> where mem is not supported (via PSCI),
->>>>>
->>>>> It won't break anything, although the things that didn't work before
->>>>> will still not work after it.
->>>>>
->>>>> And "mem" is always supported even if there are no suspend_ops at all,
->>>>> in which case it becomes an alternative way to trigger s2idle.
->>>>>
->>>>> So, on the affected systems, what's there in /sys/power/?  Is
->>>>> mem_sleep present?  If so, what's in it?
->>>>
->>>> With 4.9 which is what I used initially:
->>>>
->>>> # cat /sys/power/state
->>>> freeze standby
->>>> # cat /sys/power/
->>>> pm_async           pm_print_times     pm_wakeup_irq      wakeup_count
->>>> pm_freeze_timeout  pm_test            state
->>>>
->>>> With a newer kernel without my patch:
->>>>
->>>> # cat /sys/power/state
->>>> freeze standby mem
->>>> # cat /sys/power/mem_sleep
->>>> s2idle shallow [deep]
->>>
->>> OK, so the "deep" and "shallow" suspend variants appear to be
->>> supported.  What's the problem with advertising "mem" then?
+>> FYI, we noticed the following commit (built with clang-14):
 >>
->> s2idle and shallow are, but deep is not.
+>> commit: 6128b3af2a5e42386aa7faf37609b57f39fb7d00 ("mm: ignore MAP_DENYWR=
+ITE in ksys_mmap_pgoff()")
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 > =
 
-> Why is it there in mem_sleep, then?  It should not be there if
-> valid_state() returns 'false' for it.
-
-The suspend_ops that is registered has a ->valid that will return false
-for the PM_SUSPEND_MEM case, yet we ignore that and we still populate
-valide_state[PM]
-
+> I believe this failure is misattributed.  Perhaps your reproducer
+> only intermittently reproduces the problem?
 > =
 
-> mem_sleep_states[PM_SUSPEND_MEM] is only set by suspend_set_ops() if
-> valid_state(PM_SUSPEND_MEM) is 'true'.
-
-That is true, but pm_states[PM_SUSPEND_MEM] was (before my patch that
-is) unconditionally present. And for the same reason that you expect
-user-space to find the string "mem" in /sys/power/state, we expected not
-to find it, if PM_SUSPEND_MEM is not supported.
-
+> The change in question only contains
 > =
 
->>>
->>>> # cat /sys/power/
->>>> mem_sleep          pm_freeze_timeout  pm_wakeup_irq      wakeup_count
->>>> pm_async           pm_print_times     state
->>>> pm_debug_messages  pm_test            suspend_stats/
->>>>
->>>>
->>>>>
->>>>>> I have a change pending for PSCI
->>>>>> that will actually check that SYSTEM_SUSPEND is supported before
->>>>>> unconditionally making use of it.
->>>>>>
->>>>>>>
->>>>>>> What happens is that "mem" is a "pointer" to a secondary list of
->>>>>>> possible states and that generally is "s2idle shallow deep" and if
->>>>>>> s2idle is the only available option, it will be just "s2idle".
->>>>>>>
->>>>>>> This list is there in /sys/power/mem_sleep.
->>>>>>>
->>>>>>> It was done this way, because some variants of user space expect "m=
-em"
->>>>>>> to be always present and don't recognize "freeze" properly.
->>>>>>>
->>>>>>> Sorry for the confusion.
->>>>>>
->>>>>> So how do we all get our cookie here? Should we just slap an #ifndef
->>>>>> CONFIG_ACPI in order to allow platforms that do not have "mem" to not
->>>>>> have it?
->>>>>
->>>>> Certainly not.
->>>>>
->>>>> I've just hacked my test-bed system with ACPI so it does not register
->>>>> any suspend_ops at all and I have "freeze mem disk" in
->>>>> /sys/power/state and "s2idle" in /sys/power/mem_sleep.  Writing "mem"
->>>>> to /sys/power/state causes s2idle to be carried out.
->>>>>
->>>>> Since this is the expected behavior, I'm not sure what the problem is.
->>>>
->>>> The problem is advertising "mem" in /sys/power/state when the state is
->>>> not actually supported by the platform firmware here, whether that
->>>> translates into the form of s2idle or not. It is not supported, and it
->>>> should not be there IMHO.
->>>
->>> Well, it is there, because some user space expects it to be there on
->>> systems supporting any kind of system-wide suspend, including s2idle.
->>> Like it or not.
->>
->> But that was not the case before 406e79385f32 ("PM / sleep: System sleep
->> state selection interface rework") and clearly nobody complained about
->> that, did they?
+> 	flags &=3D ~MAP_DENYWRITE
 > =
 
-> Yes, it was and yes, they did.  Changes like that are not made without a =
-reason.
+> After all of the other users of MAP_DENYWRITE had been removed from the
+> kernel.  So I don't see how it could possibly be responsible for the
+> reported shift out of bounds problem.
 > =
 
->>>
->>> If it is not there, the utilities in question assume that system-wide
->>> suspend is not supported at all.
->>
->> What utilities do depend on that? That selftest that does not even check
->> that "mem" is actually present in /sys/power/state and just fails its
->> test if it is not, yes it's not great, but that can be fixed.
-> =
+> Eric
 
-> Various GUI-based things like KDE, GNOME and similar plus the Chrome
-> user space IIRC.
-
-OK.
-
-> =
-
->>>
->>>> I was late to the game in identifying that,
->>>> but the 4.9 kernel makes sense to me.
->>>>
->>>> Similarly, if you take arch/powerpc/sysdev/fsl_pmc.c only
->>>> PM_SUSPEND_STANDBY is valid, so advertising mem would be wrong if we
->>>> don't look at what ->valid tells us.
->>>
->>> Again: "mem" appears in /sys/power/state if the system supports any
->>> kind of system-wide suspend (because of the expectations of user space
->>> mentioned above) and mem_sleep decides what it really means.
->>>
->>> And this is documented too (see Documentation/admin-guide/pm/sleep-stat=
-es.html).
->>
->> The documentation just states that if the kernel supports *any* suspend
->> state, then /sys/power/state will be present and likewise for
->> /sys/power/mem_sleep, it does not say what the contents will be and that
->> "mem" would always be present in there.
-> =
-
-> It doesn't say so directly, but it kind of wouldn't make sense to have
-> "mem_sleep" without "mem" in "state" and it implies that "mem_sleep"
-> is not empty if it is present.  Ergo "mem" is present in "state" if
-> "mem_sleep" is present which is the case if (at least) s2idle is
-> supported.  That is always the case if CONFIG_SUSPEND is set which
-> follows from the suspend-to-idle description.
-> =
-
-> Anyway, I'm still not sure what the problem really is.  Commit
-> 406e79385f32 still allows user space to only trigger transitions to
-> s2idle and other states explicitly reported as valid by the platform.
-> =
+Thanks for looking into this Eric while I spent the last couple of days
+in bed feeling miserable. :)
 
 
-The problem from my perspective is still that "mem" is present even with
-PM_SUSPEND_PM not being valid for the said platform, and this is just
-confusing my/our user-space here as well as our users. This was not like
-that back in the 4.9 kernel, but it changed later, therefore it also
-constitutes an user-space regression from my angle.
+So we get 9 new instances of "UBSAN:shift-out-of-bounds_in(null)" (NULL
+pointer dereference) on 6128b3af2a compared to 6128b3af2a^ (8d0920bde5),
+apparently inside ksys_mmap_pgoff() on 32bit.
+
+As we're dealing with a fuzzer, is there any reproducer as sometimes
+provided by syzkaller? The report itself is not very helpful when
+judging if that patch is actually responsible for what we're seeing.
+
+I agree with Eric that it's rather unlikely that when we stop masking
+off a bit that's ignored throughout the kernel, that we suddenly trigger
+a NULL pointer de-reference. But I learned that everything is possible ;)
+
 -- =
 
-Florian
---===============1384328964192249649==--
+Thanks,
+
+David / dhildenb
+
+--===============4502237087170094821==--
 
