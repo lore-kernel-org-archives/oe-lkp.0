@@ -1,181 +1,202 @@
-Content-Type: multipart/mixed; boundary="===============3180042861833074051=="
+Content-Type: multipart/mixed; boundary="===============1089485089002132050=="
 MIME-Version: 1.0
-From: Oliver Sang <oliver.sang@intel.com>
+From: Rafael J. Wysocki <rafael@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [vmlinux.lds.h] d4c6399900: BUG:unable_to_handle_page_fault_for_address
-Date: Fri, 22 Oct 2021 16:22:43 +0800
-Message-ID: <20211022082243.GB23206@xsang-OptiPlex-9020>
-In-Reply-To: <YTJumKboBddccDUJ@Ryzen-9-3900X.localdomain>
+Subject: Re: [PM] bfcc1e67ff: kernel-selftests.breakpoints.step_after_suspend_test.fail
+Date: Fri, 22 Oct 2021 16:00:31 +0200
+Message-ID: <CAJZ5v0hiUMVpahuUyN3XryU+qx8wxonR+MBb489w1ReMWSzTjQ@mail.gmail.com>
+In-Reply-To: <df8f421a-0deb-19c4-27f3-9d50bea1eee4@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3180042861833074051==
+--===============1089485089002132050==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-hi Nathan Chancellor,
+On Thu, Oct 21, 2021 at 9:19 PM Florian Fainelli <f.fainelli@gmail.com> w=
+rote:
+>
+> On 10/20/21 11:48 AM, Rafael J. Wysocki wrote:
+> >   On Wed, Oct 20, 2021 at 8:17 PM Florian Fainelli <f.fainelli@gmail.=
+com> wrote:
+> >>
+> >> On 10/20/21 9:00 AM, Rafael J. Wysocki wrote:
 
-On Fri, Sep 03, 2021 at 11:51:04AM -0700, Nathan Chancellor wrote:
-> On Fri, Sep 03, 2021 at 01:31:59PM +0800, kernel test robot wrote:
-> > =
+[cut]
 
-> > =
+> >>>> With a newer kernel without my patch:
+> >>>>
+> >>>> # cat /sys/power/state
+> >>>> freeze standby mem
+> >>>> # cat /sys/power/mem_sleep
+> >>>> s2idle shallow [deep]
+> >>>
+> >>> OK, so the "deep" and "shallow" suspend variants appear to be
+> >>> supported.  What's the problem with advertising "mem" then?
+> >>
+> >> s2idle and shallow are, but deep is not.
+> >
+> > Why is it there in mem_sleep, then?  It should not be there if
+> > valid_state() returns 'false' for it.
+>
+> The suspend_ops that is registered has a ->valid that will return false
+> for the PM_SUSPEND_MEM case, yet we ignore that and we still populate
+> valide_state[PM]
 
-> > Greeting,
-> > =
+I guess you mean "we still populate pm_states[PM_SUSPEND_MEM]".
+Otherwise I'm not sure what you mean. :-)
 
-> > FYI, we noticed the following commit (built with gcc-9):
-> > =
+Yes, we do, but this doesn't explain why "deep" is present in
+"mem_sleep" in that case, because mem_sleep_states[PM_SUSPEND_MEM] is
+only populated by suspend_set_ops() and that does take ->valid() into
+account.
 
-> > commit: d4c6399900364facd84c9e35ce1540b6046c345f ("vmlinux.lds.h: Avoid=
- orphan section with !SMP")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > =
+> >
+> > mem_sleep_states[PM_SUSPEND_MEM] is only set by suspend_set_ops() if
+> > valid_state(PM_SUSPEND_MEM) is 'true'.
+>
+> That is true, but pm_states[PM_SUSPEND_MEM] was (before my patch that
+> is) unconditionally present. And for the same reason that you expect
+> user-space to find the string "mem" in /sys/power/state, we expected not
+> to find it, if PM_SUSPEND_MEM is not supported.
+>
+> >
+> >>>
+> >>>> # cat /sys/power/
+> >>>> mem_sleep          pm_freeze_timeout  pm_wakeup_irq      wakeup_count
+> >>>> pm_async           pm_print_times     state
+> >>>> pm_debug_messages  pm_test            suspend_stats/
+> >>>>
+> >>>>
+> >>>>>
+> >>>>>> I have a change pending for PSCI
+> >>>>>> that will actually check that SYSTEM_SUSPEND is supported before
+> >>>>>> unconditionally making use of it.
+> >>>>>>
+> >>>>>>>
+> >>>>>>> What happens is that "mem" is a "pointer" to a secondary list of
+> >>>>>>> possible states and that generally is "s2idle shallow deep" and if
+> >>>>>>> s2idle is the only available option, it will be just "s2idle".
+> >>>>>>>
+> >>>>>>> This list is there in /sys/power/mem_sleep.
+> >>>>>>>
+> >>>>>>> It was done this way, because some variants of user space expect =
+"mem"
+> >>>>>>> to be always present and don't recognize "freeze" properly.
+> >>>>>>>
+> >>>>>>> Sorry for the confusion.
+> >>>>>>
+> >>>>>> So how do we all get our cookie here? Should we just slap an #ifnd=
+ef
+> >>>>>> CONFIG_ACPI in order to allow platforms that do not have "mem" to =
+not
+> >>>>>> have it?
+> >>>>>
+> >>>>> Certainly not.
+> >>>>>
+> >>>>> I've just hacked my test-bed system with ACPI so it does not regist=
+er
+> >>>>> any suspend_ops at all and I have "freeze mem disk" in
+> >>>>> /sys/power/state and "s2idle" in /sys/power/mem_sleep.  Writing "me=
+m"
+> >>>>> to /sys/power/state causes s2idle to be carried out.
+> >>>>>
+> >>>>> Since this is the expected behavior, I'm not sure what the problem =
+is.
+> >>>>
+> >>>> The problem is advertising "mem" in /sys/power/state when the state =
+is
+> >>>> not actually supported by the platform firmware here, whether that
+> >>>> translates into the form of s2idle or not. It is not supported, and =
+it
+> >>>> should not be there IMHO.
+> >>>
+> >>> Well, it is there, because some user space expects it to be there on
+> >>> systems supporting any kind of system-wide suspend, including s2idle.
+> >>> Like it or not.
+> >>
+> >> But that was not the case before 406e79385f32 ("PM / sleep: System sle=
+ep
+> >> state selection interface rework") and clearly nobody complained about
+> >> that, did they?
+> >
+> > Yes, it was and yes, they did.  Changes like that are not made without =
+a reason.
+> >
+> >>>
+> >>> If it is not there, the utilities in question assume that system-wide
+> >>> suspend is not supported at all.
+> >>
+> >> What utilities do depend on that? That selftest that does not even che=
+ck
+> >> that "mem" is actually present in /sys/power/state and just fails its
+> >> test if it is not, yes it's not great, but that can be fixed.
+> >
+> > Various GUI-based things like KDE, GNOME and similar plus the Chrome
+> > user space IIRC.
+>
+> OK.
+>
+> >
+> >>>
+> >>>> I was late to the game in identifying that,
+> >>>> but the 4.9 kernel makes sense to me.
+> >>>>
+> >>>> Similarly, if you take arch/powerpc/sysdev/fsl_pmc.c only
+> >>>> PM_SUSPEND_STANDBY is valid, so advertising mem would be wrong if we
+> >>>> don't look at what ->valid tells us.
+> >>>
+> >>> Again: "mem" appears in /sys/power/state if the system supports any
+> >>> kind of system-wide suspend (because of the expectations of user space
+> >>> mentioned above) and mem_sleep decides what it really means.
+> >>>
+> >>> And this is documented too (see Documentation/admin-guide/pm/sleep-st=
+ates.html).
+> >>
+> >> The documentation just states that if the kernel supports *any* suspend
+> >> state, then /sys/power/state will be present and likewise for
+> >> /sys/power/mem_sleep, it does not say what the contents will be and th=
+at
+> >> "mem" would always be present in there.
+> >
+> > It doesn't say so directly, but it kind of wouldn't make sense to have
+> > "mem_sleep" without "mem" in "state" and it implies that "mem_sleep"
+> > is not empty if it is present.  Ergo "mem" is present in "state" if
+> > "mem_sleep" is present which is the case if (at least) s2idle is
+> > supported.  That is always the case if CONFIG_SUSPEND is set which
+> > follows from the suspend-to-idle description.
+> >
+> > Anyway, I'm still not sure what the problem really is.  Commit
+> > 406e79385f32 still allows user space to only trigger transitions to
+> > s2idle and other states explicitly reported as valid by the platform.
+> >
+>
+> The problem from my perspective is still that "mem" is present even with
+> PM_SUSPEND_PM not being valid for the said platform, and this is just
+> confusing my/our user-space here as well as our users.
 
-> > =
+The "mem" string in /sys/power/state simply doesn't correspond to
+PM_SUSPEND_MEM now, but PM_SUSPEND_MEM is just a number it has never
+been well defined which state exactly is to be represented by it
+(except for the ACPI case, but that's irrelevant here).
 
-> > in testcase: trinity
-> > version: trinity-x86_64-03f10b67-1_20210401
-> > with following parameters:
-> > =
+You are effectively saying something like "if my suspend_ops->valid()
+returns 'false' for PM_SUSPEND_MEM, then the "mem" string should not
+be there in /sys/power/state", but I don't really see why this matters
+to user space and how, so please explain that to me.  What does it do
+differently depending on whether or not "mem" is present?
 
-> > 	runtime: 300s
-> > =
+The only case in which it may matter that I can imagine is if some
+functionality is lost when "mem" is present in /sys/power/state, but
+quite frankly I have no idea what functionality that may be.
 
-> > test-description: Trinity is a linux system call fuzz tester.
-> > test-url: http://codemonkey.org.uk/projects/trinity/
-> > =
+> This was not like
+> that back in the 4.9 kernel, but it changed later, therefore it also
+> constitutes an user-space regression from my angle.
 
-> > =
-
-> > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2=
- -m 16G
-> > =
-
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
-> > =
-
-> > =
-
-> > =
-
-> > If you fix the issue, kindly add following tag
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > =
-
-> > =
-
-> > [  103.254262] BUG: unable to handle page fault for address: ffffffffbb=
-443040
-> > [  103.255486] #PF: supervisor write access in kernel mode
-> > [  103.256427] #PF: error_code(0x0002) - not-present page
-> > [  103.257362] PGD 2cec37067 P4D 2cec37067 PUD 2cec38063 PMD 100235063 =
-PTE 800ffffd2f9bc062
-> > [  103.258757] Oops: 0002 [#1] KASAN PTI
-> > [  103.259355] CPU: 0 PID: 1 Comm: swapper Not tainted 5.13.0-rc2+ #1
-> > [  103.260390] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), B=
-IOS 1.12.0-1 04/01/2014
-> > [  103.261811] RIP: 0010:kvm_guest_apic_eoi_write+0x12/0x90
-> > [  103.262740] Code: 00 48 c7 c7 28 8d b1 ba e8 2b b5 60 00 eb cc 66 0f=
- 1f 84 00 00 00 00 00 53 be 08 00 00 00 48 c7 c7 40 30 44 bb e8 ee b8 60 00=
- <48> 0f ba 35 95 d0 59 05 00 72 4e 48 c7 c0 80 fc 7f b9 48 ba 00 00
-> > [  103.265736] RSP: 0018:ffffc90000007fc8 EFLAGS: 00010046
-> > [  103.266640] RAX: 0000000000000001 RBX: ffffffffb97ffa40 RCX: fffffff=
-fb5ea5fa2
-> > [  103.267869] RDX: 0000000000000001 RSI: 0000000000000008 RDI: fffffff=
-fbb443040
-> > [  103.269087] RBP: 0000000000000000 R08: 0000000000000001 R09: fffffbf=
-ff7688609
-> > [  103.270329] R10: ffffffffbb443047 R11: fffffbfff7688608 R12: 0000000=
-000000000
-> > [  103.271490] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000=
-000000000
-> > [  103.272646] FS:  0000000000000000(0000) GS:ffffffffb9a7f000(0000) kn=
-lGS:0000000000000000
-> > [  103.273993] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [  103.274963] CR2: ffffffffbb443040 CR3: 00000002cec34000 CR4: 0000000=
-0000406b0
-> > [  103.276150] Call Trace:
-> > [  103.276564]  <IRQ>
-> > [  103.276913]  __sysvec_apic_timer_interrupt+0x62/0x370
-> > [  103.277781]  sysvec_apic_timer_interrupt+0x62/0x80
-> > [  103.278602]  </IRQ>
-> > [  103.278984]  asm_sysvec_apic_timer_interrupt+0x12/0x20
-> > [  103.279890] RIP: 0010:call_rcu+0xc/0x150
-> > [  103.280559] Code: c7 c7 e0 db 05 ba e8 d3 23 33 02 85 c0 75 cc eb 9f=
- 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 b8 00 00 00 00 00 fc ff df 55 53=
- <48> 89 fb 48 83 c7 08 48 89 fa 48 c1 ea 03 48 83 ec 08 80 3c 02 00
-> > [  103.283542] RSP: 0018:ffffc9000001fdb8 EFLAGS: 00000246
-> > [  103.284404] RAX: dffffc0000000000 RBX: fffff52000003fc6 RCX: 1ffffff=
-ff75653d5
-> > [  103.285532] RDX: 1ffff92000003fdd RSI: ffffffffb60b1810 RDI: ffffc90=
-00001fe80
-> > [  103.286712] RBP: ffffc9000001fe80 R08: ffffc9000001fe60 R09: 0000000=
-000000000
-> > [  103.287888] R10: 0000000000000001 R11: ffffc9000001fe90 R12: ffffc90=
-00001fe60
-> > [  103.289058] R13: 0000000000000000 R14: dffffc0000000000 R15: 0000000=
-000000000
-> > [  103.290290]  ? rcu_tasks_pregp_step+0x10/0x10
-> > [  103.291029]  __wait_rcu_gp+0x160/0x440
-> > [  103.291650]  rcu_barrier+0x83/0xc0
-> > [  103.292234]  ? poll_state_synchronize_rcu+0x10/0x10
-> > [  103.293040]  ? synchronize_rcu+0x80/0x80
-> > [  103.293720]  ? lockdep_hardirqs_on_prepare+0x26b/0x3e0
-> > [  103.294554]  ? trace_hardirqs_on+0x3d/0x1d0
-> > [  103.295279]  ? _vdso_data+0xf80/0xf80
-> > [  103.295919]  ? _vdso_data+0xf80/0xf80
-> > [  103.296525]  ? free_kernel_image_pages+0xd/0x30
-> > [  103.297307]  ? rest_init+0x18e/0x18e
-> > [  103.297937]  kernel_init+0x20/0x112
-> > [  103.298537]  ret_from_fork+0x22/0x30
-> > [  103.299197] Modules linked in:
-> > [  103.299740] CR2: ffffffffbb443040
-> > [  103.300304] ---[ end trace 733607da50d3f759 ]---
-> > =
-
-> > =
-
-> > To reproduce:
-> > =
-
-> >         =
-
-> > =
-
-> >         git clone https://github.com/intel/lkp-tests.git
-> >         cd lkp-tests
-> >         bin/lkp qemu -k <bzImage> job-script # job-script is attached i=
-n this email
-> =
-
-> Hi,
-> =
-
-> This command mentions a bzImage but there is not one attached here nor
-> is the configuration file attached or linked anywhere so I am not really
-> able to investigate this without either of those :)
-
-sorry for late.
-
-the original report was based on a randconfig.
-unfortunately, one env issue caused we lost that config and related kernel
-images.
-and there is maybe other issues which caused we didn't attach that config
-in original report as we usually do.
-
-in brief, we cannot reproduce this issue now. sorry for inconvenience.
-
-and what you mentioned that there is no bzImage should be caused by same
-issue which caused no config attached. normally we supply the reproducer
-about how to build bzImage based on attached config.
-
-we are updating our code to avoid such issues in the future.
-
-> =
-
-> Cheers,
-> Nathan
---===============3180042861833074051==--
+The best I can offer as a remedy would be an explicit opt-out
+mechanism, say in the form of a kernel command line option, for
+systems that cannot cope with the new sysfs interface behavior, but I
+need to be convinced that they really cannot cope with it.
+--===============1089485089002132050==--
 
