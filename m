@@ -1,271 +1,227 @@
-Content-Type: multipart/mixed; boundary="===============5686312423718512636=="
+Content-Type: multipart/mixed; boundary="===============6392546466352100127=="
 MIME-Version: 1.0
-From: David Hildenbrand <david@redhat.com>
+From: Masami Hiramatsu <mhiramat@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [mm] 6128b3af2a: UBSAN:shift-out-of-bounds_in(null)
-Date: Wed, 20 Oct 2021 18:43:35 +0200
-Message-ID: <7feaada9-7cc0-cb37-83ba-4e23d8ba3ade@redhat.com>
-In-Reply-To: <20211020141341.GA22721@xsang-OptiPlex-9020>
+Subject: Re: [tracing/selftests] cfece71411: kernel-selftests.ftrace.event_trigger_-_test_inter-event_histogram_trigger_onchange_action.fail
+Date: Fri, 29 Oct 2021 21:00:56 +0900
+Message-ID: <20211029210056.6cd7796aea59cec3e9c1d7da@kernel.org>
+In-Reply-To: <20211029064818.GG737@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5686312423718512636==
+--===============6392546466352100127==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 20.10.21 16:13, Oliver Sang wrote:
-> Hi, David, Hi, Eric,
-> =
+Hi,
 
-> On Wed, Oct 20, 2021 at 09:22:52AM +0200, David Hildenbrand wrote:
->> On 19.10.21 17:49, Eric W. Biederman wrote:
->>> kernel test robot <oliver.sang@intel.com> writes:
->>>
->>>> Greeting,
->>>>
->>>> FYI, we noticed the following commit (built with clang-14):
->>>>
->>>> commit: 6128b3af2a5e42386aa7faf37609b57f39fb7d00 ("mm: ignore MAP_DENY=
-WRITE in ksys_mmap_pgoff()")
->>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->>>
->>> I believe this failure is misattributed.  Perhaps your reproducer
->>> only intermittently reproduces the problem?
-> =
+On Fri, 29 Oct 2021 14:48:18 +0800
+kernel test robot <oliver.sang@intel.com> wrote:
 
-> yes, we only reproduce the problem intermittently, those 9 instances are
-> out of 115 runs.
-> 8d0920bde5eb8ec7 6128b3af2a5e42386aa7faf3760
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :115          8%           9:115   dmesg.UBSAN:shift-out-of-bo=
-unds_in(null)    <--
 > =
 
 > =
 
->>>
->>> The change in question only contains
->>>
->>> 	flags &=3D ~MAP_DENYWRITE
->>>
->>> After all of the other users of MAP_DENYWRITE had been removed from the
->>> kernel.  So I don't see how it could possibly be responsible for the
->>> reported shift out of bounds problem.
->>>
->>> Eric
+> Greeting,
+> =
+
+> FYI, we noticed the following commit (built with gcc-9):
+> =
+
+> commit: cfece71411dbca5dc5e1fa2d9ce5a3f38e55d4fe ("[PATCH v4 7/8] tracing=
+/selftests: Add tests for hist trigger expression parsing")
+> url: https://github.com/0day-ci/linux/commits/Kalesh-Singh/tracing-Extend=
+-histogram-triggers-expression-parsing/20211026-042529
+> =
+
+> =
+
+> in testcase: kernel-selftests
+> version: kernel-selftests-x86_64-c8c9111a-1_20210929
+> with following parameters:
+> =
+
+> 	group: ftrace
+> 	ucode: 0xe2
+> =
+
+> test-description: The kernel contains a set of "self tests" under the too=
+ls/testing/selftests/ directory. These are intended to be small unit tests =
+to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+
+Thanks! This issue has been found and will be fixed next version.
+
+BTW, I have some questions about this bot;
+
+> =
+
+> =
+
+> on test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz with 3=
+2G memory
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
+
+> =
+
+> =
+
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> =
+
+> =
+
+> =
+
+> TAP version 13
+> 1..1
+> # selftests: ftrace: ftracetest
+> # =3D=3D=3D Ftrace unit tests =3D=3D=3D
+> # [1] Basic trace file check	[PASS]
+> ...
+> <<< [1] - [67] have same results as parent, i.e. both PASS or both FAIL >=
 >>
->> Thanks for looking into this Eric while I spent the last couple of days
->> in bed feeling miserable. :)
->>
->>
->> So we get 9 new instances of "UBSAN:shift-out-of-bounds_in(null)" (NULL
->> pointer dereference) on 6128b3af2a compared to 6128b3af2a^ (8d0920bde5),
->> apparently inside ksys_mmap_pgoff() on 32bit.
->>
->> As we're dealing with a fuzzer, is there any reproducer as sometimes
->> provided by syzkaller? The report itself is not very helpful when
->> judging if that patch is actually responsible for what we're seeing.
->>
->> I agree with Eric that it's rather unlikely that when we stop masking
->> off a bit that's ignored throughout the kernel, that we suddenly trigger
->> a NULL pointer de-reference. But I learned that everything is possible ;)
+
+At first, I guess the robot just checks the "[number]" instead
+of the test description, but the ftracetest doesn't fix the "[number]"
+for each test, Thus, it can be different when updated it.
+So if you compare the result, please check the descriptions too.
+
+> ...
+> # [67] event trigger - test multiple actions on hist trigger	[PASS]
+> =
+
+> >>> [68] - [72] can PASS on parent
+> # [68] event trigger - test inter-event histogram trigger onchange action=
+	[FAIL]
+> # [69] event trigger - test inter-event histogram trigger onmatch action	=
+[FAIL]
+> # [70] event trigger - test inter-event histogram trigger onmatch-onmax a=
+ction	[FAIL]
+> # [71] event trigger - test inter-event histogram trigger onmax action	[F=
+AIL]
+> # [72] event trigger - test inter-event histogram trigger snapshot action=
+	[FAIL]
+> =
+
+> >>> [73] fail on parent, too
+> # [73] event trigger - test inter-event histogram trigger eprobe on synth=
+etic event	[FAIL]
+> =
+
+> >>> [74] - [92] can PASS on parent
+> # [74] event trigger - test synthetic event create remove	[FAIL]
+> # [75] event trigger - test inter-event histogram trigger trace action wi=
+th dynamic string param	[FAIL]
+> # [76] event trigger - test synthetic_events syntax parser	[FAIL]
+> # [77] event trigger - test synthetic_events syntax parser errors	[FAIL]
+> # [78] event trigger - test inter-event histogram trigger trace action	[F=
+AIL]
+> # [79] event trigger - test event enable/disable trigger	[FAIL]
+> # [80] event trigger - test trigger filter	[FAIL]
+> # [81] event trigger - test histogram expression parsing	[FAIL]
+> # [82] event trigger - test histogram modifiers	[FAIL]
+> # [83] event trigger - test histogram parser errors	[FAIL]
+> # [84] event trigger - test histogram trigger	[FAIL]
+> # [85] event trigger - test multiple histogram triggers	[FAIL]
+> # [86] event trigger - test snapshot-trigger	[FAIL]
+> # [87] event trigger - test stacktrace-trigger	[FAIL]
+> # [88] trace_marker trigger - test histogram trigger	[FAIL]
+> # [89] trace_marker trigger - test snapshot trigger	[FAIL]
+> # [90] trace_marker trigger - test histogram with synthetic event against=
+ kernel event	[FAIL]
+> # [91] trace_marker trigger - test histogram with synthetic event	[FAIL]
+> # [92] event trigger - test traceon/off trigger	[FAIL]
+> # [93] (instance)  Basic test for tracers	[PASS]
+> ...
+> <<< [93] - [112] have same results as parent, all PASS >>>
+> ...
+> # [112] (instance)  trace_marker trigger - test histogram trigger	[PASS]
+> =
+
+> >>> parent has no [113]
+> # [113] (instance)  trace_marker trigger - test snapshot trigger	[PASS]
+
+And next, some patch series may *ADD* new testcases if the series add
+a new feature, so if you find the difference which is not in the
+parent commit but it is passed, please ignore that.
+
+> # tac: failed to create temporary file in '/tmp/ftracetest-dir.o54lNh': N=
+o such file or directory
+> # tac: failed to create temporary file in '/tmp/ftracetest-dir.o54lNh': N=
+o such file or directory
+> # tac: failed to create temporary file in '/tmp/ftracetest-dir.o54lNh': N=
+o such file or directory
+> # tac: failed to create temporary file in '/tmp/ftracetest-dir.o54lNh': N=
+o such file or directory
+
+And if you find this kind of new error message like above, please report it.
+This is more important for us.
+
+> # =
+
+> # =
+
+> # # of passed:  85
+> # # of failed:  26
+> # # of unresolved:  1
+> # # of untested:  0
+> # # of unsupported:  0
+> # # of xfailed:  1
+> # # of undefined(test bug):  0
+> not ok 1 selftests: ftrace: ftracetest # exit=3D1
+
+Also, please configure your running environment correctly so that all
+ftracetest passes. If you unsure how to do, please ask me.
+
+Thank you,
+
 > =
 
 > =
 
-> now we run parent 200 more times, the "UBSAN:shift-out-of-bounds_in(null)=
-" (1)
-> still cannot be reproduced on parent:
-> 8d0920bde5eb8ec7 6128b3af2a5e42386aa7faf3760
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->             |             |             |
->          45:315        -11%           9:115   dmesg.BUG:kernel_NULL_point=
-er_dereference,address
->            :315          3%           8:115   dmesg.BUG:unable_to_handle_=
-page_fault_for_address
->          45:315         -9%          17:115   dmesg.EIP:__ubsan_handle_sh=
-ift_out_of_bounds <--(2)
->          45:315         -9%          17:115   dmesg.Kernel_panic-not_sync=
-ing:Fatal_exception
->          45:315         -9%          17:115   dmesg.Oops:#[##]
->            :315          3%           9:115   dmesg.UBSAN:shift-out-of-bo=
-unds_in(null)  <--(1)
->          45:315         -9%          17:115   dmesg.boot_failures
+> =
+
+> To reproduce:
+> =
+
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         sudo bin/lkp install job.yaml           # job file is attached in=
+ this email
+>         bin/lkp split-job --compatible job.yaml # generate the yaml file =
+for lkp run
+>         sudo bin/lkp run generated-yaml-file
+> =
+
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
 > =
 
 > =
 
-> however, from above (2), we found parent dmesg (attached) has similar
-> Call Trace, which just does't have "UBSAN:shift-out-of-bounds_in(null)"
-> things:
-> [  272.487295][ T7295] BUG: kernel NULL pointer dereference, address: 000=
-0000c
-> [  272.488078][ T7295] #PF: supervisor read access in kernel mode
-> [  272.488673][ T7295] #PF: error_code(0x0000) - not-present page
-> [  272.489266][ T7295] *pde =3D 00000000
-> [  272.489751][ T7295] Oops: 0000 [#1] SMP
-> [  272.490165][ T7295] CPU: 1 PID: 7295 Comm: trinity-c2 Not tainted 5.14=
-.0-00005-g8d0920bde5eb #1
-> [  272.491122][ T7295] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.12.0-1 04/01/2014
-> [  272.492067][ T7295] EIP: __ubsan_handle_shift_out_of_bounds+0xe/0x350
-> [  272.492760][ T7295] Code: 05 90 a6 c2 00 68 2a 54 00 68 2a 54 bd 4e 00=
- 8d bd 4e 00 8d 00 00 66 90 00 00 66 90 57 56 83 ec 57 56 83 ec 89 c7 8b 48=
- 89 c7 <8b> 48 8d\
->  b4 26 00 8d b4 26 00 75 b4 64 8b 75 b4 64 8b ca 83 bb 1c
-> [  272.494890][ T7295] EAX: 00000000 EBX: c5d6cf38 ECX: 00000031 EDX: 000=
-00000
-> [  272.495686][ T7295] ESI: f138eb71 EDI: 00000000 EBP: f5a23f3c ESP: f5a=
-23ec8
-> [  272.496532][ T7295] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAG=
-S: 00010292
-> [  272.497383][ T7295] CR0: 80050033 CR2: 0000000c CR3: 3528d000 CR4: 000=
-406d0
-> [  272.498152][ T7295] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 000=
-00000
-> [  272.498897][ T7295] DR6: fffe0ff0 DR7: 00000400
-> [  272.499411][ T7295] Call Trace:
-> [  272.499827][ T7295]  ? __lock_acquire+0x955/0xb80
-> [  272.500361][ T7295]  ? rcu_lock_acquire+0x30/0x30
-> [  272.500875][ T7295]  ? rcu_read_lock_sched_held+0x31/0x70
-> [  272.501500][ T7295]  ksys_mmap_pgoff+0x1fd/0x290
-> [  272.501990][ T7295]  __ia32_sys_mmap_pgoff+0x1c/0x30
-> [  272.502512][ T7295]  do_int80_syscall_32+0x39/0x80
-> [  272.503101][ T7295]  entry_INT80_32+0x10d/0x10d
-> [  272.503624][ T7295] EIP: 0xb7f71a02
-> [  272.504029][ T7295] Code: 95 01 00 05 25 36 02 00 83 ec 14 8d 80 e8 99=
- ff ff 50 6a 02 e8 1f ff 00 00 c7 04 24 7f 00 00 00 e8 7e 87 01 00 66 90 90=
- cd 80 <c3> 8d b6 00 00 00 00 8d bc 27 00 00 00 00 8b 1c 24 c3 8d b6 00 00
-> [  272.506044][ T7295] EAX: ffffffda EBX: 00000000 ECX: 00000000 EDX: f13=
-8eb71
-> [  272.506825][ T7295] ESI: c5d6cf38 EDI: ffffffff EBP: 00000000 ESP: bfc=
-a54d8
-> [  272.507592][ T7295] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAG=
-S: 00000296
-> [  272.508417][ T7295] Modules linked in: aesni_intel crypto_simd qemu_fw=
-_cfg autofs4
-> [  272.509201][ T7295] CR2: 000000000000000c
-> [  272.509704][ T7295] ---[ end trace 97b48cc676da14f9 ]---
-> [  272.510293][ T7295] EIP: __ubsan_handle_shift_out_of_bounds+0xe/0x350
-> [  272.511023][ T7295] Code: 05 90 a6 c2 00 68 2a 54 00 68 2a 54 bd 4e 00=
- 8d bd 4e 00 8d 00 00 66 90 00 00 66 90 57 56 83 ec 57 56 83 ec 89 c7 8b 48=
- 89 c7 <8b> 48 8d b4 26 00 8d b4 26 00 75 b4 64 8b 75 b4 64 8b ca 83 bb 1c
-> [  272.513169][ T7295] EAX: 00000000 EBX: c5d6cf38 ECX: 00000031 EDX: 000=
-00000
-> [  272.513979][ T7295] ESI: f138eb71 EDI: 00000000 EBP: f5a23f3c ESP: f5a=
-23ec8
-> [  272.514800][ T7295] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAG=
-S: 00010292
-> [  272.515974][ T7295] CR0: 80050033 CR2: 0000000c CR3: 3528d000 CR4: 000=
-406d0
-> [  272.516787][ T7295] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 000=
-00000
-> [  272.517619][ T7295] DR6: fffe0ff0 DR7: 00000400
-> [  272.518105][ T7295] Kernel panic - not syncing: Fatal exception
-> [  272.519566][ T7295] Kernel Offset: disabled
 > =
 
+> ---
+> 0DAY/LKP+ Test Infrastructure                   Open Source Technology Ce=
+nter
+> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel Corpo=
+ration
 > =
 
-> as contrast, in fbc:
-> [  126.758570][ T3293] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [  126.758949][ T3293] UBSAN: shift-out-of-bounds in (null):0:0
-> [  126.759174][ T3293] BUG: kernel NULL pointer dereference, address: 000=
-00000
-> [  126.759447][ T3293] #PF: supervisor read access in kernel mode
-> [  126.759676][ T3293] #PF: error_code(0x0000) - not-present page
-> [  126.759905][ T3293] *pde =3D 00000000
-> [  126.760047][ T3293] Oops: 0000 [#1] SMP
-> [  126.760205][ T3293] CPU: 1 PID: 3293 Comm: trinity-c4 Not tainted 5.14=
-.0-00006-g6128b3af2a5e #1
-> [  126.760541][ T3293] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.12.0-1 04/01/2014
-> [  126.760890][ T3293] EIP: __ubsan_handle_shift_out_of_bounds+0x88/0x350
-> [  126.761147][ T3293] Code: 00 83 c4 04 7f 23 47 04 7f 23 47 04 ff 37 68=
- ef ff 37 68 ef e3 77 d0 d7 e3 77 d0 d7 00 8b 45 f0 00 8b 45 f0 c4 14 66 83=
- c4 14 <66> 83 66
-> 83 3f 00 66 83 3f 00 00 00 66 83 00 00 66 83 b9 01 00 00
-> [  126.761889][ T3293] EAX: 00000000 EBX: f345b500 ECX: 00000027 EDX: eba=
-9ce40
-> [  126.762159][ T3293] ESI: 00000046 EDI: 00000000 EBP: f3575f40 ESP: f35=
-75ecc
-> [  126.762428][ T3293] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAG=
-S: 00010286
-> [  126.762718][ T3293] CR0: 80050033 CR2: 00000000 CR3: 33464000 CR4: 000=
-406d0
-> [  126.762989][ T3293] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 000=
-00000
-> [  126.763259][ T3293] DR6: fffe0ff0 DR7: 00000400
-> [  126.763436][ T3293] Call Trace:
-> [  126.763562][ T3293]  ? rcu_lock_acquire+0x30/0x30
-> [  126.763749][ T3293]  ? rcu_read_lock_sched_held+0x31/0x70
-> [  126.763960][ T3293]  ksys_mmap_pgoff+0x1fc/0x290
-> [  126.764146][ T3293]  __ia32_sys_mmap_pgoff+0x1c/0x30
-> [  126.764343][ T3293]  do_int80_syscall_32+0x39/0x80
-> [  126.764532][ T3293]  entry_INT80_32+0x10d/0x10d
-> [  126.764709][ T3293] EIP: 0xb7fbda02
-> [  126.764848][ T3293] Code: 95 01 00 05 25 36 02 00 83 ec 14 8d 80 e8 99=
- ff ff 50 6a 02 e8 1f ff 00 00 c7 04 24 7f 00 00 00 e8 7e 87 01 00 66 90 90=
- cd 80 <c3> 8d b6
-> 00 00 00 00 8d bc 27 00 00 00 00 8b 1c 24 c3 8d b6 00 00
-> [  126.765591][ T3293] EAX: ffffffda EBX: 00000000 ECX: 00001000 EDX: 55d=
-d7eb6
-> [  126.765859][ T3293] ESI: f0bd6374 EDI: ffffffff EBP: 00000000 ESP: bf9=
-964d8
-> [  126.766129][ T3293] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAG=
-S: 00000296
-> [  126.766419][ T3293] Modules linked in: aesni_intel crypto_simd qemu_fw=
-_cfg autofs4
-> [  126.766715][ T3293] CR2: 0000000000000000
-> [  126.766894][ T3293] ---[ end trace e6000e119f0dc7f3 ]---
-> [  126.767105][ T3293] EIP: __ubsan_handle_shift_out_of_bounds+0x88/0x350
-> [  126.767361][ T3293] Code: 00 83 c4 04 7f 23 47 04 7f 23 47 04 ff 37 68=
- ef ff 37 68 ef e3 77 d0 d7 e3 77 d0 d7 00 8b 45 f0 00 8b 45 f0 c4 14 66 83=
- c4 14 <66> 83 66
-> +83 3f 00 66 83 3f 00 00 00 66 83 00 00 66 83 b9 01 00 00
-> [  126.768112][ T3293] EAX: 00000000 EBX: f345b500 ECX: 00000027 EDX: eba=
-9ce40
-> [  126.768384][ T3293] ESI: 00000046 EDI: 00000000 EBP: f3575f40 ESP: f35=
-75ecc
-> [  126.768657][ T3293] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAG=
-S: 00010286
-> [  126.768947][ T3293] CR0: 80050033 CR2: 00000000 CR3: 33464000 CR4: 000=
-406d0
-> [  126.769223][ T3293] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 000=
-00000
-> [  126.769496][ T3293] DR6: fffe0ff0 DR7: 00000400
-> [  126.769680][ T3293] Kernel panic - not syncing: Fatal exception
-> [  126.769946][ T3293] Kernel Offset: disabled
+> Thanks,
+> Oliver Sang
 > =
 
-> =
-
-> basically, we just based on the diff to report out, but maybe need your e=
-ducation
-> if this "UBSAN:shift-out-of-bounds_in(null)" diff really matter in this c=
-ase.
-
-The triggering code sequences are "ksys_mmap_pgoff+0x1fd/0x290" vs.
-"ksys_mmap_pgoff+0x1fc/0x290", so my gut feeling is that we're dealing
-with the same issue.
-
-But I don't have an fully satisfactory explanation why we're getting
-more often "address: 00000000" with that commit instead of via the
-parent "address: 0000000c". Maybe simply because of changed code layout
-"garbage" we're using to address is now "different garbage" :)
 
 
 -- =
 
-Thanks,
-
-David / dhildenb
-
---===============5686312423718512636==--
+Masami Hiramatsu <mhiramat@kernel.org>
+--===============6392546466352100127==--
 
