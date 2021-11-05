@@ -1,142 +1,81 @@
-Content-Type: multipart/mixed; boundary="===============4367176922787297816=="
+Content-Type: multipart/mixed; boundary="===============3713767951248499097=="
 MIME-Version: 1.0
-From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+From: Si, Beibei <beibei.si@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/page_alloc] 5541e53659: BUG:spinlock_bad_magic_on_CPU
-Date: Thu, 04 Nov 2021 17:39:44 +0100
-Message-ID: <3190fc080138108c189626e22676aaae80b72414.camel@redhat.com>
-In-Reply-To: <20211104143809.GB6499@xsang-OptiPlex-9020>
+Subject: 0-DAY CI LINUX KERNEL PERFORMANCE REPORT (V5.15)
+Date: Fri, 05 Nov 2021 03:50:16 +0000
+Message-ID: <ff3d2fccd4d84a62a7597c9f09c7cf33@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4367176922787297816==
+--===============3713767951248499097==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2021-11-04 at 22:38 +0800, kernel test robot wrote:
-> =
+Hi all,
 
-> Greeting,
-> =
+0-Day CI Linux Kernel Performance Report (v5.15) has updated. Welcome your =
+feedback.
 
-> FYI, we noticed the following commit (built with gcc-9):
-> =
+Here=E2=80=99s the link: https://01.org/lkp/blogs/carel/2021/0-day-ci-linux=
+-kernel-performance-report-v5.15
 
-> commit: 5541e5365954069e4c7b649831c0e41bc9e5e081 ("[PATCH v2 2/3] mm/page=
-_alloc: Convert per-cpu lists' local locks to per-cpu spin locks")
-> url: https://github.com/0day-ci/linux/commits/Nicolas-Saenz-Julienne/mm-p=
-age_alloc-Remote-per-cpu-page-list-drain-support/20211104-010825
-> base: https://github.com/hnaz/linux-mm master
-> patch link: https://lore.kernel.org/lkml/20211103170512.2745765-3-nsaenzj=
-u(a)redhat.com
-> =
+Previous report can refer to:  https://01.org/group/3977/blogs
 
-> in testcase: boot
-> =
-
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
-m 16G
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> +--------------------------------------------+------------+------------+
-> >                                            | 69c421f2b4 | 5541e53659 |
-> +--------------------------------------------+------------+------------+
-> > boot_successes                             | 11         | 0          |
-> > boot_failures                              | 0          | 11         |
-> > BUG:spinlock_bad_magic_on_CPU              | 0          | 11         |
-> > BUG:using_smp_processor_id()in_preemptible | 0          | 11         |
-> +--------------------------------------------+------------+------------+
-> =
-
-> =
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
-
-> =
-
-> [    0.161872][    T0] BUG: spinlock bad magic on CPU#0, swapper/0
-> [    0.162248][    T0]  lock: 0xeb24bef0, .magic: 00000000, .owner: swapp=
-er/0, .owner_cpu: 0
-> [    0.162767][    T0] CPU: 0 PID: 0 Comm: swapper Not tainted 5.15.0-rc7=
--mm1-00437-g5541e5365954 #1
-> [    0.163325][    T0] Call Trace:
-> [ 0.163524][ T0] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 4)) =
-
-> [ 0.163802][ T0] dump_stack (lib/dump_stack.c:114) =
-
-> [ 0.164050][ T0] spin_bug (kernel/locking/spinlock_debug.c:70 kernel/lock=
-ing/spinlock_debug.c:77) =
-
-> [ 0.164296][ T0] do_raw_spin_unlock (arch/x86/include/asm/atomic.h:29 inc=
-lude/linux/atomic/atomic-instrumented.h:28 include/asm-generic/qspinlock.h:=
-28 kernel/locking/spinlock_debug.c:100 kernel/locking/spinlock_debug.c:140) =
-
-> [ 0.164624][ T0] _raw_spin_unlock_irqrestore (include/linux/spinlock_api_=
-smp.h:160 kernel/locking/spinlock.c:194) =
-
-> [ 0.164971][ T0] free_unref_page (include/linux/spinlock.h:423 mm/page_al=
-loc.c:3400) =
-
-> [ 0.165253][ T0] free_the_page (mm/page_alloc.c:699) =
-
-> [ 0.165521][ T0] __free_pages (mm/page_alloc.c:5453) =
-
-> [ 0.165785][ T0] add_highpages_with_active_regions (include/linux/mm.h:25=
-11 arch/x86/mm/init_32.c:416) =
-
-> [ 0.166179][ T0] set_highmem_pages_init (arch/x86/mm/highmem_32.c:30) =
-
-> [ 0.166501][ T0] mem_init (arch/x86/mm/init_32.c:749 (discriminator 2)) =
-
-> [ 0.166749][ T0] start_kernel (init/main.c:842 init/main.c:988) =
-
-> [ 0.167026][ T0] ? early_idt_handler_common (arch/x86/kernel/head_32.S:41=
-7) =
-
-> [ 0.167369][ T0] i386_start_kernel (arch/x86/kernel/head32.c:57) =
-
-> [ 0.167662][ T0] startup_32_smp (arch/x86/kernel/head_32.S:328) =
+BR
+Carel
 
 
-I did test this with lock debugging enabled, but I somehow missed this stack
-trace. Here's the fix:
+--===============3713767951248499097==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 7dbdab100461..c8964e28aa59 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -6853,6 +6853,7 @@ static void per_cpu_pages_init(struct per_cpu_pages *=
-pcp, struct per_cpu_zonesta
-        pcp->high =3D BOOT_PAGESET_HIGH;
-        pcp->batch =3D BOOT_PAGESET_BATCH;
-        pcp->free_factor =3D 0;
-+       spin_lock_init(&pcp->lock);
- }
- =
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
+Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
+PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
+IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
+YWNlDQoJe2ZvbnQtZmFtaWx5OkRlbmdYaWFuOw0KCXBhbm9zZS0xOjIgMSA2IDAgMyAxIDEgMSAx
+IDE7fQ0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpDYWxpYnJpOw0KCXBhbm9zZS0xOjIgMTUg
+NSAyIDIgMiA0IDMgMiA0O30NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6IlxA562J57q/IjsN
+CglwYW5vc2UtMToyIDEgNiAwIDMgMSAxIDEgMSAxO30NCi8qIFN0eWxlIERlZmluaXRpb25zICov
+DQpwLk1zb05vcm1hbCwgbGkuTXNvTm9ybWFsLCBkaXYuTXNvTm9ybWFsDQoJe21hcmdpbjowaW47
+DQoJZm9udC1zaXplOjExLjBwdDsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjt9
+DQphOmxpbmssIHNwYW4uTXNvSHlwZXJsaW5rDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCglj
+b2xvcjojMDU2M0MxOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0Kc3Bhbi5FbWFpbFN0
+eWxlMTcNCgl7bXNvLXN0eWxlLXR5cGU6cGVyc29uYWwtY29tcG9zZTsNCglmb250LWZhbWlseToi
+Q2FsaWJyaSIsc2Fucy1zZXJpZjsNCgljb2xvcjp3aW5kb3d0ZXh0O30NCi5Nc29DaHBEZWZhdWx0
+DQoJe21zby1zdHlsZS10eXBlOmV4cG9ydC1vbmx5Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJpIixz
+YW5zLXNlcmlmO30NCkBwYWdlIFdvcmRTZWN0aW9uMQ0KCXtzaXplOjguNWluIDExLjBpbjsNCglt
+YXJnaW46MS4waW4gMS4yNWluIDEuMGluIDEuMjVpbjt9DQpkaXYuV29yZFNlY3Rpb24xDQoJe3Bh
+Z2U6V29yZFNlY3Rpb24xO30NCi0tPjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+DQo8
+bzpzaGFwZWRlZmF1bHRzIHY6ZXh0PSJlZGl0IiBzcGlkbWF4PSIxMDI2IiAvPg0KPC94bWw+PCFb
+ZW5kaWZdLS0+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+DQo8bzpzaGFwZWxheW91dCB2OmV4dD0i
+ZWRpdCI+DQo8bzppZG1hcCB2OmV4dD0iZWRpdCIgZGF0YT0iMSIgLz4NCjwvbzpzaGFwZWxheW91
+dD48L3htbD48IVtlbmRpZl0tLT4NCjwvaGVhZD4NCjxib2R5IGxhbmc9IkVOLVVTIiBsaW5rPSIj
+MDU2M0MxIiB2bGluaz0iIzk1NEY3MiIgc3R5bGU9IndvcmQtd3JhcDpicmVhay13b3JkIj4NCjxk
+aXYgY2xhc3M9IldvcmRTZWN0aW9uMSI+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5IaSBhbGwsIDxv
+OnA+PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+
+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj4wLURheSBDSSBMaW51eCBLZXJuZWwgUGVyZm9ybWFuY2Ug
+UmVwb3J0ICh2NS4xNSkgaGFzIHVwZGF0ZWQuIFdlbGNvbWUgeW91ciBmZWVkYmFjay48bzpwPjwv
+bzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPHAg
+Y2xhc3M9Ik1zb05vcm1hbCI+SGVyZeKAmXMgdGhlIGxpbms6IDxhIGhyZWY9Imh0dHBzOi8vMDEu
+b3JnL2xrcC9ibG9ncy9jYXJlbC8yMDIxLzAtZGF5LWNpLWxpbnV4LWtlcm5lbC1wZXJmb3JtYW5j
+ZS1yZXBvcnQtdjUuMTUiPg0KaHR0cHM6Ly8wMS5vcmcvbGtwL2Jsb2dzL2NhcmVsLzIwMjEvMC1k
+YXktY2ktbGludXgta2VybmVsLXBlcmZvcm1hbmNlLXJlcG9ydC12NS4xNTwvYT48bzpwPjwvbzpw
+PjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPHAgY2xh
+c3M9Ik1zb05vcm1hbCI+UHJldmlvdXMgcmVwb3J0IGNhbiByZWZlciB0bzogJm5ic3A7PGEgaHJl
+Zj0iaHR0cHM6Ly8wMS5vcmcvZ3JvdXAvMzk3Ny9ibG9ncyI+aHR0cHM6Ly8wMS5vcmcvZ3JvdXAv
+Mzk3Ny9ibG9nczwvYT48bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+
+Jm5ic3A7PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+QlI8bzpwPjwvbzpwPjwvcD4N
+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPkNhcmVsPG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNv
+Tm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjwvZGl2Pg0KPC9ib2R5Pg0KPC9odG1sPg0K
 
- static void __zone_set_pageset_high_and_batch(struct zone *zone, unsigned =
-long high,
-@@ -6902,7 +6903,6 @@ void __meminit setup_zone_pageset(struct zone *zone)
-                struct per_cpu_zonestat *pzstats;
- =
-
-                pcp =3D per_cpu_ptr(zone->per_cpu_pageset, cpu);
--               spin_lock_init(&pcp->lock);
-                pzstats =3D per_cpu_ptr(zone->per_cpu_zonestats, cpu);
-                per_cpu_pages_init(pcp, pzstats);
-        }
-
--- =
-
-Nicol=C3=A1s S=C3=A1enz
-
---===============4367176922787297816==--
+--===============3713767951248499097==--
 
