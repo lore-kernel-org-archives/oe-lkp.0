@@ -1,105 +1,67 @@
-Content-Type: multipart/mixed; boundary="===============8108455400074691137=="
+Content-Type: multipart/mixed; boundary="===============7826851892218221310=="
 MIME-Version: 1.0
-From: Nadav Amit <namit@vmware.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
 To: lkp@lists.01.org
-Subject: Re: [x86/mm/tlb] 2f4305b19f: will-it-scale.per_thread_ops 23.3% improvement
-Date: Sun, 07 Nov 2021 21:47:46 +0000
-Message-ID: <7030ECD9-B2A8-4483-AEC1-549C14D5558B@vmware.com>
-In-Reply-To: <20211107142859.GB13541@xsang-OptiPlex-9020>
+Subject: [PATCH] powercap/drivers/dtpm_cpu: Fix suspend failure and kernel warning
+Date: Mon, 08 Nov 2021 07:23:44 +0100
+Message-ID: <20211108062345.273855-1-daniel.lezcano@linaro.org>
+In-Reply-To: <20211107095001.GC11442@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8108455400074691137==
+--===============7826851892218221310==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+When the ENERGY_MODEL and DTPM_CPU are enabled but actually without
+any energy model, at cpu hotplug time, the dead cpuhp callback fails
+leading to the warning.
 
+Actually, the check could be simplified and we only do an action if
+the dtpm cpu is enabled, otherwise we bail out without error.
 
-> On Nov 7, 2021, at 6:28 AM, kernel test robot <oliver.sang@intel.com> w=
-rote:
-> =
+Fixes: 7a89d7eacf8e ("powercap/drivers/dtpm: Simplify the dtpm table")
+Reported-by: Kenneth R. Crudup <kenny@panix.com>
+Tested-by: Kenneth R. Crudup <kenny@panix.com>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Cc: lkp(a)lists.01.org
+Cc: lkp(a)intel.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+---
+ drivers/powercap/dtpm_cpu.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-> =
+diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
+index 69eb5101b5c7..477042199d90 100644
+--- a/drivers/powercap/dtpm_cpu.c
++++ b/drivers/powercap/dtpm_cpu.c
+@@ -166,16 +166,13 @@ static struct dtpm_ops dtpm_ops =3D {
+ =
 
-> =
+ static int cpuhp_dtpm_cpu_offline(unsigned int cpu)
+ {
+-	struct em_perf_domain *pd;
+ 	struct dtpm_cpu *dtpm_cpu;
+ =
 
-> Greeting,
-> =
+-	pd =3D em_cpu_get(cpu);
+-	if (!pd)
+-		return -EINVAL;
+-
+ 	dtpm_cpu =3D per_cpu(dtpm_per_cpu, cpu);
++	if (dtpm_cpu)
++		dtpm_update_power(&dtpm_cpu->dtpm);
+ =
 
-> FYI, we noticed a 23.3% improvement of will-it-scale.per_thread_ops due t=
-o commit:
-> =
+-	return dtpm_update_power(&dtpm_cpu->dtpm);
++	return 0;
+ }
+ =
 
-> =
+ static int cpuhp_dtpm_cpu_online(unsigned int cpu)
+-- =
 
-> commit: 2f4305b19fe6a2a261d76c21856c5598f7d878fe ("x86/mm/tlb: Privatize =
-cpu_tlbstate")
-> https://nam04.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fgit.k=
-ernel.org%2Fcgit%2Flinux%2Fkernel%2Fgit%2Ftorvalds%2Flinux.git&amp;data=3D0=
-4%7C01%7Cnamit%40vmware.com%7Cfb2bd9a47e794ec3898508d9a1faf794%7Cb39138ca3c=
-ee4b4aa4d6cd83d9dd62f0%7C0%7C0%7C637718921590793957%7CUnknown%7CTWFpbGZsb3d=
-8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&=
-amp;sdata=3Dcw6sFeT6qAQSSaG7nCIWm19Yi9RPZqyr2bQPwSBuzzs%3D&amp;reserved=3D0=
- master
-> =
+2.25.1
 
->                           will-it-scale.per_thread_ops                   =
-      =
-
-> =
-
->  4000 +------------------------------------------------------------------=
---+   =
-
->       |                                                                  =
-  |   =
-
->  3500 |-O   O   O O O O O O O O O O O O OO O O O O O O O O O O O O O O O =
-O |   =
-
->  3000 |-+                            .+.  .+.                            =
-  |   =
-
->       |.+.+.+.+.+.+   +.+.+.+.+.+.+.+   ++   +.+.+.+.+.+.+.+.+.+.+.+     =
-  |   =
-
->  2500 |-+         :   :                                                  =
-  |   =
-
->       |           :   :                                                  =
-  |   =
-
->  2000 |-+          : :                                                   =
-  |   =
-
->       |            : :                                                   =
-  |   =
-
->  1500 |-+          : :                                                   =
-  |   =
-
->  1000 |-+          : :                                                   =
-  |   =
-
->       |            : :                                                   =
-  |   =
-
->   500 |-+           :                                                    =
-  |   =
-
->       |             :                                                    =
-  |   =
-
->     0 +------------------------------------------------------------------=
---+   =
-
-
-Am I to understand that the following commit somehow reverted the performan=
-ce
-improvement of this patch? The graph shows it as a =E2=80=9Cspike=E2=80=9D,=
- no?
-
-
-
---===============8108455400074691137==--
+--===============7826851892218221310==--
 
