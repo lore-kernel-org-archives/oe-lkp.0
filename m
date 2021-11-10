@@ -1,142 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============0031476524521185184=="
+Content-Type: multipart/mixed; boundary="===============4242722203275373663=="
 MIME-Version: 1.0
-From: Mickaël Salaün <mic@digikod.net>
+From: Rafael J. Wysocki <rafael@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [fs] a0918006f9: netperf.Throughput_tps -11.6% regression
-Date: Wed, 10 Nov 2021 09:52:51 +0100
-Message-ID: <95966337-b36e-f45e-6b16-f433bcb90c4d@digikod.net>
-In-Reply-To: <202111090920.4958E610D1@keescook>
+Subject: Re: [PATCH] powercap/drivers/dtpm_cpu: Fix suspend failure and kernel warning
+Date: Wed, 10 Nov 2021 21:19:15 +0100
+Message-ID: <CAJZ5v0hYFiGa4MwiEx6czRPdEZmxWS7Wom5DKD2VueoDn+r3oA@mail.gmail.com>
+In-Reply-To: <20211108062345.273855-1-daniel.lezcano@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0031476524521185184==
+--===============4242722203275373663==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Mon, Nov 8, 2021 at 7:24 AM Daniel Lezcano <daniel.lezcano@linaro.org>=
+ wrote:
+>
+> When the ENERGY_MODEL and DTPM_CPU are enabled but actually without
+> any energy model, at cpu hotplug time, the dead cpuhp callback fails
+> leading to the warning.
+>
+> Actually, the check could be simplified and we only do an action if
+> the dtpm cpu is enabled, otherwise we bail out without error.
+>
+> Fixes: 7a89d7eacf8e ("powercap/drivers/dtpm: Simplify the dtpm table")
+> Reported-by: Kenneth R. Crudup <kenny@panix.com>
+> Tested-by: Kenneth R. Crudup <kenny@panix.com>
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Cc: lkp(a)lists.01.org
+> Cc: lkp(a)intel.com
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> ---
+>  drivers/powercap/dtpm_cpu.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
+> index 69eb5101b5c7..477042199d90 100644
+> --- a/drivers/powercap/dtpm_cpu.c
+> +++ b/drivers/powercap/dtpm_cpu.c
+> @@ -166,16 +166,13 @@ static struct dtpm_ops dtpm_ops =3D {
+>
+>  static int cpuhp_dtpm_cpu_offline(unsigned int cpu)
+>  {
+> -       struct em_perf_domain *pd;
+>         struct dtpm_cpu *dtpm_cpu;
+>
+> -       pd =3D em_cpu_get(cpu);
+> -       if (!pd)
+> -               return -EINVAL;
+> -
+>         dtpm_cpu =3D per_cpu(dtpm_per_cpu, cpu);
+> +       if (dtpm_cpu)
+> +               dtpm_update_power(&dtpm_cpu->dtpm);
+>
+> -       return dtpm_update_power(&dtpm_cpu->dtpm);
+> +       return 0;
+>  }
+>
+>  static int cpuhp_dtpm_cpu_online(unsigned int cpu)
+> --
 
-On 09/11/2021 18:21, Kees Cook wrote:
-> On Fri, Nov 05, 2021 at 02:41:59PM +0800, kernel test robot wrote:
->>
->>
->> Greeting,
->>
->> FYI, we noticed a -11.6% regression of netperf.Throughput_tps due to com=
-mit:
->>
->>
->> commit: a0918006f9284b77397ae4f163f055c3e0f987b2 ("[PATCH v15 1/3] fs: A=
-dd trusted_for(2) syscall implementation and related sysctl")
->> url: https://github.com/0day-ci/linux/commits/Micka-l-Sala-n/Add-trusted=
-_for-2-was-O_MAYEXEC/20211013-032533
->> patch link: https://lore.kernel.org/kernel-hardening/20211012192410.2356=
-090-2-mic(a)digikod.net
->>
->> in testcase: netperf
->> on test machine: 192 threads 4 sockets Intel(R) Xeon(R) Platinum 9242 CP=
-U @ 2.30GHz with 192G memory
->> with following parameters:
->>
->> 	ip: ipv4
->> 	runtime: 300s
->> 	nr_threads: 16
->> 	cluster: cs-localhost
->> 	test: TCP_CRR
->> 	cpufreq_governor: performance
->> 	ucode: 0x5003006
->>
->> test-description: Netperf is a benchmark that can be use to measure vari=
-ous aspect of networking performance.
->> test-url: http://www.netperf.org/netperf/
->>
->>
->> please be noted we made out some further analysis/tests, as Fengwei ment=
-ioned:
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
->> Here is my investigation result of this regression:
->>
->> If I add patch to make sure the kernel function address and data address=
- is
->> almost same even with this patch, there is almost no performance delta(0=
-.1%)
->> w/o the patch.
->>
->> And if I only make sure function address same w/o the patch, the perform=
-ance
->> delta is about 5.1%.
->>
->> So suppose this regression is triggered by different function and data a=
-ddress.
->> We don't know why the different address could bring such kind of regress=
-ion yet
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
->>
->>
->> we also tested on other platforms.
->> on a Cooper Lake (Intel(R) Xeon(R) Gold 5318H CPU @ 2.50GHz with 128G me=
-mory),
->> we also observed regression but the gap is smaller:
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> cluster/compiler/cpufreq_governor/ip/kconfig/nr_threads/rootfs/runtime/t=
-box_group/test/testcase/ucode:
->>   cs-localhost/gcc-9/performance/ipv4/x86_64-rhel-8.3/16/debian-10.4-x86=
-_64-20200603.cgz/300s/lkp-cpl-4sp1/TCP_CRR/netperf/0x700001e
->>
->> commit:
->>   v5.15-rc4
->>   a0918006f9284b77397ae4f163f055c3e0f987b2
->>
->>        v5.15-rc4 a0918006f9284b77397ae4f163f
->> ---------------- ---------------------------
->>          %stddev     %change         %stddev
->>              \          |                \
->>     333492            -5.7%     314346 =C2=B1  2%  netperf.Throughput_to=
-tal_tps
->>      20843            -4.5%      19896        netperf.Throughput_tps
->>
->>
->> but no regression on a 96 threads 2 sockets Ice Lake with 256G memory:
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> cluster/compiler/cpufreq_governor/ip/kconfig/nr_threads/rootfs/runtime/t=
-box_group/test/testcase/ucode:
->>   cs-localhost/gcc-9/performance/ipv4/x86_64-rhel-8.3/16/debian-10.4-x86=
-_64-20200603.cgz/300s/lkp-icl-2sp1/TCP_CRR/netperf/0xb000280
->>
->> commit:
->>   v5.15-rc4
->>   a0918006f9284b77397ae4f163f055c3e0f987b2
->>
->>        v5.15-rc4 a0918006f9284b77397ae4f163f
->> ---------------- ---------------------------
->>          %stddev     %change         %stddev
->>              \          |                \
->>     555600            -0.1%     555305        netperf.Throughput_total_t=
-ps
->>      34725            -0.1%      34706        netperf.Throughput_tps
->>
->>
->> Fengwei also helped review these results and commented:
->> I suppose these three CPUs have different cache policy. It also could be
->> related with netperf throughput testing.
-> =
-
-> Does moving the syscall implementation somewhere else change things?
-> That's a _huge_ performance change for something that isn't even called.
-> What's going on here?
-
-This regression doesn't make sense. I guess this is the result of a
-flaky netperf test, maybe because the test machine was overloaded at
-that time.
---===============0031476524521185184==--
+Applied as 5.16-rc material, thanks!
+--===============4242722203275373663==--
 
