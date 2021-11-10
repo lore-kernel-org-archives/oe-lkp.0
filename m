@@ -1,141 +1,59 @@
-Content-Type: multipart/mixed; boundary="===============6777560906064085064=="
+Content-Type: multipart/mixed; boundary="===============3637411319513384435=="
 MIME-Version: 1.0
-From: Kyle Huey <me@kylehuey.com>
+From: Yin Fengwei <fengwei.yin@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 1/2] signal: Don't always set SA_IMMUTABLE for forced signals
-Date: Thu, 18 Nov 2021 17:13:52 -0800
-Message-ID: <CAP045Aose7Lg_OE0-MijGBg27gWo+Sk3hbxuN3AtQ8OPC9w9+w@mail.gmail.com>
-In-Reply-To: <877dd5qfw5.fsf_-_@email.froward.int.ebiederm.org>
+Subject: Re: [fs] a0918006f9: netperf.Throughput_tps -11.6% regression
+Date: Wed, 10 Nov 2021 09:54:27 +0800
+Message-ID: <129a2714-bad3-6f91-d841-51121bcc6e8d@intel.com>
+In-Reply-To: <202111090920.4958E610D1@keescook>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6777560906064085064==
+--===============3637411319513384435==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 18, 2021 at 2:05 PM Eric W. Biederman <ebiederm@xmission.com>=
- wrote:
->
->
-> Recently to prevent issues with SECCOMP_RET_KILL and similar signals
-> being changed before they are delivered SA_IMMUTABLE was added.
->
-> Unfortunately this broke debuggers[1][2] which reasonably expect to be
-> able to trap synchronous SIGTRAP and SIGSEGV even when the target
-> process is not configured to handle those signals.
->
-> Update force_sig_to_task to support both the case when we can
-> allow the debugger to intercept and possibly ignore the
-> signal and the case when it is not safe to let userspace
-> known about the signal until the process has exited.
+Hi Kees,
 
-s/known/know/
+On 11/10/21 1:21 AM, Kees Cook wrote:
+>>     555600            -0.1%     555305        netperf.Throughput_total_t=
+ps
+>>      34725            -0.1%      34706        netperf.Throughput_tps
+>>
+>>
+>> Fengwei also helped review these results and commented:
+>> I suppose these three CPUs have different cache policy. It also could be
+>> related with netperf throughput testing.
+> Does moving the syscall implementation somewhere else change things?
+> That's a _huge_ performance change for something that isn't even called.
+> What's going on here?
 
->
-> Reported-by: Kyle Huey <me@kylehuey.com>
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Cc: stable(a)vger.kernel.org
-> [1] https://lkml.kernel.org/r/CAP045AoMY4xf8aC_4QU_-j7obuEPYgTcnQQP3Yxk=
-=3D2X90jtpjw(a)mail.gmail.com
-> [2] https://lkml.kernel.org/r/20211117150258.GB5403(a)xsang-OptiPlex-902
+We just tried to do trick change to make sure the new function doesn't
+make other kernel function address changed. But didn't try to move around
+the new function even it's not called. We could try to move it around to
+see the impact to netperf throughput.
 
-This link doesn't work.
 
-> Fixes: 00b06da29cf9 ("signal: Add SA_IMMUTABLE to ensure forced siganls d=
-o not get changed")
-> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> ---
->  kernel/signal.c | 23 ++++++++++++++++-------
->  1 file changed, 16 insertions(+), 7 deletions(-)
->
-> diff --git a/kernel/signal.c b/kernel/signal.c
-> index 7c4b7ae714d4..02058c983bd6 100644
-> --- a/kernel/signal.c
-> +++ b/kernel/signal.c
-> @@ -1298,6 +1298,12 @@ int do_send_sig_info(int sig, struct kernel_siginf=
-o *info, struct task_struct *p
->         return ret;
->  }
->
-> +enum sig_handler {
-> +       HANDLER_CURRENT, /* If reachable use the current handler */
-> +       HANDLER_SIG_DFL, /* Always use SIG_DFL handler semantics */
-> +       HANDLER_EXIT,    /* Only visible as the proces exit code */
-> +};
-> +
->  /*
->   * Force a signal that the process can't ignore: if necessary
->   * we unblock the signal and change any SIG_IGN to SIG_DFL.
-> @@ -1310,7 +1316,8 @@ int do_send_sig_info(int sig, struct kernel_siginfo=
- *info, struct task_struct *p
->   * that is why we also clear SIGNAL_UNKILLABLE.
->   */
->  static int
-> -force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *=
-t, bool sigdfl)
-> +force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *=
-t,
-> +       enum sig_handler handler)
->  {
->         unsigned long int flags;
->         int ret, blocked, ignored;
-> @@ -1321,9 +1328,10 @@ force_sig_info_to_task(struct kernel_siginfo *info=
-, struct task_struct *t, bool
->         action =3D &t->sighand->action[sig-1];
->         ignored =3D action->sa.sa_handler =3D=3D SIG_IGN;
->         blocked =3D sigismember(&t->blocked, sig);
-> -       if (blocked || ignored || sigdfl) {
-> +       if (blocked || ignored || (handler !=3D HANDLER_CURRENT)) {
->                 action->sa.sa_handler =3D SIG_DFL;
-> -               action->sa.sa_flags |=3D SA_IMMUTABLE;
-> +               if (handler =3D=3D HANDLER_EXIT)
-> +                       action->sa.sa_flags |=3D SA_IMMUTABLE;
->                 if (blocked) {
->                         sigdelset(&t->blocked, sig);
->                         recalc_sigpending_and_wake(t);
-> @@ -1343,7 +1351,7 @@ force_sig_info_to_task(struct kernel_siginfo *info,=
- struct task_struct *t, bool
->
->  int force_sig_info(struct kernel_siginfo *info)
->  {
-> -       return force_sig_info_to_task(info, current, false);
-> +       return force_sig_info_to_task(info, current, HANDLER_CURRENT);
->  }
->
->  /*
-> @@ -1660,7 +1668,7 @@ void force_fatal_sig(int sig)
->         info.si_code =3D SI_KERNEL;
->         info.si_pid =3D 0;
->         info.si_uid =3D 0;
-> -       force_sig_info_to_task(&info, current, true);
-> +       force_sig_info_to_task(&info, current, HANDLER_SIG_DFL);
->  }
->
->  /*
-> @@ -1693,7 +1701,7 @@ int force_sig_fault_to_task(int sig, int code, void=
- __user *addr
->         info.si_flags =3D flags;
->         info.si_isr =3D isr;
->  #endif
-> -       return force_sig_info_to_task(&info, t, false);
-> +       return force_sig_info_to_task(&info, t, HANDLER_CURRENT);
->  }
->
->  int force_sig_fault(int sig, int code, void __user *addr
-> @@ -1813,7 +1821,8 @@ int force_sig_seccomp(int syscall, int reason, bool=
- force_coredump)
->         info.si_errno =3D reason;
->         info.si_arch =3D syscall_get_arch(current);
->         info.si_syscall =3D syscall;
-> -       return force_sig_info_to_task(&info, current, force_coredump);
-> +       return force_sig_info_to_task(&info, current,
-> +               force_coredump ? HANDLER_EXIT : HANDLER_CURRENT);
->  }
->
->  /* For the crazy architectures that include trap information in
-> --
-> 2.20.1
+We tried the original patch (without change to make sure no kernel function
+address patch) on other box. As report, the regression are different on
+different CPUs like:
+       -11.6% vs -5.7% vs 0.1%
 
-- Kyle
---===============6777560906064085064==--
+So my guess is that the different CPUs on these test box have different
+cache policies which cause different performance impact when kernel
+functions/data address are different. =
+
+
+Yes. This is strange. We don't know exact reason. Need deeper investigation
+on this.
+
+
+Regards
+Yin, Fengwei
+
+> =
+
+> -Kees
+>=20
+--===============3637411319513384435==--
 
