@@ -1,131 +1,256 @@
-Content-Type: multipart/mixed; boundary="===============8062137176718963733=="
+Content-Type: multipart/mixed; boundary="===============0052707283602361212=="
 MIME-Version: 1.0
-From: Carel Si <beibei.si@intel.com>
+From: Hans de Goede <hdegoede@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [rcu] 7a7becb4d0: BUG:sleeping_function_called_from_invalid_context_at_include/linux/sched/mm.h
-Date: Wed, 17 Nov 2021 13:07:35 +0800
-Message-ID: <20211117050734.GA25417@linux.intel.com>
-In-Reply-To: <20211116102841.GQ641268@paulmck-ThinkPad-P17-Gen-1>
+Subject: Re: [device property] 995fe757ec: BUG:kernel_NULL_pointer_dereference, address
+Date: Wed, 17 Nov 2021 12:54:51 +0100
+Message-ID: <e465d9b9-4d95-72a0-7a34-6893ddd78daa@redhat.com>
+In-Reply-To: <606a6bf2-e971-ddfe-74b0-cbc2b76935ba@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8062137176718963733==
+--===============0052707283602361212==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Paul,
+Hi,
 
-On Tue, Nov 16, 2021 at 02:28:41AM -0800, Paul E. McKenney wrote:
-> On Tue, Nov 16, 2021 at 02:59:30PM +0800, Carel Si wrote:
-> > Hi Paul,
-> > =
-
-> > On Fri, Nov 12, 2021 at 03:31:09AM -0800, Paul E. McKenney wrote:
-> > > On Fri, Nov 12, 2021 at 04:06:20PM +0800, kernel test robot wrote:
-> > > > =
-
-> > > > =
-
-> > > > Greeting,
-> > > > =
-
-> > > > FYI, we noticed the following commit (built with gcc-9):
-> > > > =
-
-> > > > commit: 7a7becb4d01e99471523ac38adf3ed64f8be092e ("rcu-tasks:  Crea=
-te per-CPU callback lists")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git =
-dev.2021.11.01a
-> > > > =
-
-> > > > in testcase: boot
-> > > > =
-
-> > > > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -s=
-mp 2 -m 16G
-> > > > =
-
-> > > > caused below changes (please refer to attached dmesg/kmsg for entir=
-e log/backtrace):
-> > > > =
-
-> > > > =
-
-> > > > +------------------------------------------------------------------=
--------------+------------+------------+
-> > > > |                                                                  =
-             | f62a1317c8 | 7a7becb4d0 |
-> > > > +------------------------------------------------------------------=
--------------+------------+------------+
-> > > > | boot_successes                                                   =
-             | 19         | 0          |
-> > > > | boot_failures                                                    =
-             | 0          | 19         |
-> > > > | BUG:sleeping_function_called_from_invalid_context_at_include/linu=
-x/sched/mm.h | 0          | 19         |
-> > > > +------------------------------------------------------------------=
--------------+------------+------------+
-> > > =
-
-> > > I have the following fixup patch in -rcu that addresses this problem
-> > > for me:  cafffee599ad ("fixup! rcu-tasks:  Create per-CPU callback li=
-sts").
-> > > Does it fix things for you?
-> > =
-
-> > We have tested your fixup patch cafffee599 ("fixup! rcu-tasks:  Create =
-per-CPU =
-
-> > callback lists"), it can fix the issue, thanks!
+On 11/17/21 01:10, Daniel Scally wrote:
+> Hi Hans, Andy
 > =
 
-> Very good, and thank you for testing it!  May I apply your Tested-by
-> to the resulting combined commit?
+> On 16/11/2021 16:59, Andy Shevchenko wrote:
+>> On Tue, Nov 16, 2021 at 03:55:00PM +0100, Hans de Goede wrote:
+>>> On 11/16/21 08:41, kernel test robot wrote:
+>>>> FYI, we noticed the following commit (built with gcc-9):
+>>>>
+>>>> commit: 995fe757ecaeac44e023458af64d27655f9dbf73 ("[PATCH] device prop=
+erty: Check fwnode->secondary when finding properties")
+>>>> url: https://github.com/0day-ci/linux/commits/Daniel-Scally/device-pro=
+perty-Check-fwnode-secondary-when-finding-properties/20211114-044259
+>>>> base: https://git.kernel.org/cgit/linux/kernel/git/gregkh/driver-core.=
+git b5013d084e03e82ceeab4db8ae8ceeaebe76b0eb
+>>>> patch link: https://lore.kernel.org/lkml/20211113204141.520924-1-djrsc=
+ally(a)gmail.com
+>>>>
+>>>> in testcase: boot
+>>>>
+>>>> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 =
+-m 4G
+>>>>
+>>>> caused below changes (please refer to attached dmesg/kmsg for entire l=
+og/backtrace):
+>>>>
+>>>>
+>>>> +---------------------------------------------+------------+----------=
+--+
+>>>> |                                             | b5013d084e | 995fe757e=
+c |
+>>>> +---------------------------------------------+------------+----------=
+--+
+>>>> | boot_successes                              | 23         | 0        =
+  |
+>>>> | boot_failures                               | 0          | 22       =
+  |
+>>>> | BUG:kernel_NULL_pointer_dereference,address | 0          | 22       =
+  |
+>>>> | Oops:#[##]                                  | 0          | 22       =
+  |
+>>>> | EIP:fwnode_property_get_reference_args      | 0          | 22       =
+  |
+>>>> | Kernel_panic-not_syncing:Fatal_exception    | 0          | 22       =
+  |
+>>>> +---------------------------------------------+------------+----------=
+--+
+>>>>
+>>>>
+>>>> If you fix the issue, kindly add following tag
+>>>> Reported-by: kernel test robot <oliver.sang@intel.com>
+>>> Ok, so this patch likely needs a v2 which changes the if to this:
+>>>
+>>>         if (ret =3D=3D -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+>>>             !IS_ERR_OR_NULL(fwnode->secondary))
+>>>                 ret =3D fwnode_call_int_op(fwnode->secondary, get_refer=
+ence_args,
+>>>                                          prop, nargs_prop, nargs, index=
+, args);
+>>>
+>>>
+>>> So that we check fwnode before dereferencing it, note this also changes=
+ the
+>>> (ret < 0) check to (ret =3D=3D -EINVAL), this makes the secondary node =
+handling
+>>> identical to fwnode_property_read_int_array() and
+>>> fwnode_property_read_string_array()
+>>>
+>>> Danny, can you send a v2 with this change please?
+>> Hmm... So, you are suggesting that we need to check it only for EINVAL a=
+nd
+>> ENOENT in this case the one that brings us to the NULL pointer dereferen=
+ce.
+>> But I don't understand what's the difference here.
 > =
 
-> 04855da2a8a1 ("rcu-tasks:  Create per-CPU callback lists")
 > =
 
-
-Sure, pls use "kernel test robot" name shown as below. Thanks!
-
-Tested-by: kernel test robot <beibei.si@intel.com>
-
-> 							Thanx, Paul
+> Sticking point; the ACPI version of .get_reference_args() returns
+> -ENOENT (converted from -EINVAL [1]) if the property you ask for doesn't
+> exist against that fwnode, which unless I'm missing something means this
+> won't work in our use case. This confused me for a while because we
+> definitely call fwnode_property_read_int_array() in sensor driver probes
+> through v4l2_fwnode_endpoint_alloc_parse(), but it turns out the ACPI
+> version of _that_ operation has no matching conversion of the error
+> code, so when that fails to find the property it sends back -EINVAL and
+> so the form that exists in fwnode_property_read_int_array() currently
+> works fine.
 > =
 
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D
-> > compiler/kconfig/rootfs/sleep/tbox_group/testcase:
-> >   gcc-9/x86_64-rhel-8.3-func/debian-i386-20191205.cgz/1/vm-snb/boot
-> > =
+> =
 
-> > commit: =
+> We could align them all to if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
+> !IS_ERR_OR_NULL(fwnode->secondary)). This is probably my preferred
+> option, because I can't really see why we'd only want to do the
+> secondary check on -EINVAL anyway - but maybe I miss something here.
+> Alternatively we can take Hans suggestion so they all match the existing
+> code, but this means we have to handle that conversion first - I
+> couldn't see from a cursory look that any of the direct callers check
+> the value of the return beyond "is it 0?", but of course it could be
+> done somewhere in calls to the fwnode->ops->get_reference_args()
+> callback instead.
+> =
 
-> >   f62a1317c8 ("EXP i915/gem/dmabuf: add <asm/smp.h> to fix build error"=
-) >parent
-> >   7a7becb4d0 ("rcu-tasks:  Create per-CPU callback lists")             =
-  >fbc
-> >   cafffee599 ("fixup! rcu-tasks:  Create per-CPU callback lists")      =
-  >fix
-> > =
+> =
 
-> > f62a1317c8c77960 7a7becb4d01e99471523ac38adf cafffee599ad1f69cc4c242948=
-4 =
+> Thoughts?
 
-> > ---------------- --------------------------- --------------------------=
-- =
+I missed that just checking for -EINVAL will not work for the ipu3 case
+(I did not test) in that case I think using "ret < 0" as check instead
+is probably fine for this patch.
 
-> >        fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
-> >            |             |             |             |             |    =
+As for modifying the existing 2 code paths, IMHO it does make sense =
 
-> >            :6          100%           6:6            0%            :6  =
-   dmesg.BUG:sleeping_function_called_from_invalid_context_at_include/linux=
-/sched/mm.h
-> > =
+to try and preserve the error code (and not try the secondary fwnode)
+when the error is an error other then the one indicating the property
+is not there.
 
-> >=20
---===============8062137176718963733==--
+So keeping those as -EINVAL is probably best and maybe for the
+the fwnode_find_reference instead of (ret < 0) use:
+(ret =3D=3D -EINVAL || ret =3D=3D -ENOENT)  ?
+
+Regards,
+
+Hans
+
+
+>>>> [   17.327851][    T7] BUG: kernel NULL pointer dereference, address: =
+00000000
+>>>> [   17.329758][    T7] #PF: supervisor read access in kernel mode
+>>>> [   17.331371][    T7] #PF: error_code(0x0000) - not-present page
+>>>> [   17.332992][    T7] *pde =3D 00000000
+>>>> [   17.334107][    T7] Oops: 0000 [#1] PREEMPT
+>>>> [   17.335310][    T7] CPU: 0 PID: 7 Comm: kworker/u2:0 Tainted: G S  =
+              5.15.0-11191-g995fe757ecae #1
+>>>> [   17.338036][    T7] Hardware name: QEMU Standard PC (i440FX + PIIX,=
+ 1996), BIOS 1.12.0-1 04/01/2014
+>>>> [   17.340544][    T7] Workqueue: events_unbound deferred_probe_work_f=
+unc
+>>>> [ 17.342291][ T7] EIP: fwnode_property_get_reference_args (drivers/bas=
+e/property.c:486 (discriminator 1)) =
+
+>>>> [ 17.344051][ T7] Code: 8b 45 0c 50 8b 45 08 50 89 d8 89 55 f4 ff d6 8=
+3 c4 0c 89 c6 85 c0 78 55 8d 65 f8 89 f0 5b 5e 5d c3 8d 74 26 00 be fa ff f=
+f ff <8b> 03 85 c0 74 e8 3d 00 f0 ff ff 77 e1 8b 58 04 85 db 74 37 8b 5b
+>>>> All code
+>>>> =3D=3D=3D=3D=3D=3D=3D=3D
+>>>>    0:	8b 45 0c             	mov    0xc(%rbp),%eax
+>>>>    3:	50                   	push   %rax
+>>>>    4:	8b 45 08             	mov    0x8(%rbp),%eax
+>>>>    7:	50                   	push   %rax
+>>>>    8:	89 d8                	mov    %ebx,%eax
+>>>>    a:	89 55 f4             	mov    %edx,-0xc(%rbp)
+>>>>    d:	ff d6                	callq  *%rsi
+>>>>    f:	83 c4 0c             	add    $0xc,%esp
+>>>>   12:	89 c6                	mov    %eax,%esi
+>>>>   14:	85 c0                	test   %eax,%eax
+>>>>   16:	78 55                	js     0x6d
+>>>>   18:	8d 65 f8             	lea    -0x8(%rbp),%esp
+>>>>   1b:	89 f0                	mov    %esi,%eax
+>>>>   1d:	5b                   	pop    %rbx
+>>>>   1e:	5e                   	pop    %rsi
+>>>>   1f:	5d                   	pop    %rbp
+>>>>   20:	c3                   	retq   =
+
+>>>>   21:	8d 74 26 00          	lea    0x0(%rsi,%riz,1),%esi
+>>>>   25:	be fa ff ff ff       	mov    $0xfffffffa,%esi
+>>>>   2a:*	8b 03                	mov    (%rbx),%eax		<-- trapping instruct=
+ion
+>>>>   2c:	85 c0                	test   %eax,%eax
+>>>>   2e:	74 e8                	je     0x18
+>>>>   30:	3d 00 f0 ff ff       	cmp    $0xfffff000,%eax
+>>>>   35:	77 e1                	ja     0x18
+>>>>   37:	8b 58 04             	mov    0x4(%rax),%ebx
+>>>>   3a:	85 db                	test   %ebx,%ebx
+>>>>   3c:	74 37                	je     0x75
+>>>>   3e:	8b                   	.byte 0x8b
+>>>>   3f:	5b                   	pop    %rbx
+>>>>
+>>>> Code starting with the faulting instruction
+>>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>>>    0:	8b 03                	mov    (%rbx),%eax
+>>>>    2:	85 c0                	test   %eax,%eax
+>>>>    4:	74 e8                	je     0xffffffffffffffee
+>>>>    6:	3d 00 f0 ff ff       	cmp    $0xfffff000,%eax
+>>>>    b:	77 e1                	ja     0xffffffffffffffee
+>>>>    d:	8b 58 04             	mov    0x4(%rax),%ebx
+>>>>   10:	85 db                	test   %ebx,%ebx
+>>>>   12:	74 37                	je     0x4b
+>>>>   14:	8b                   	.byte 0x8b
+>>>>   15:	5b                   	pop    %rbx
+>>>> [   17.350847][    T7] EAX: 00000000 EBX: 00000000 ECX: 00000000 EDX: =
+c37cd6d8
+>>>> [   17.352783][    T7] ESI: ffffffea EDI: f5b5a400 EBP: c4cffd24 ESP: =
+c4cffd14
+>>>> [   17.354673][    T7] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EF=
+LAGS: 00010246
+>>>> [   17.362075][    T7] CR0: 80050033 CR2: 00000000 CR3: 04206000 CR4: =
+00000690
+>>>> [   17.363993][    T7] Call Trace:
+>>>> [ 17.365018][ T7] fwnode_find_reference (drivers/base/property.c:514) =
+
+>>>> [ 17.366430][ T7] ? __this_cpu_preempt_check (lib/smp_processor_id.c:6=
+7) =
+
+>>>> [ 17.367825][ T7] ? lockdep_init_map_type (kernel/locking/lockdep.c:48=
+13) =
+
+>>>> [ 17.369325][ T7] ? phylink_run_resolve+0x20/0x20 =
+
+>>>> [ 17.370897][ T7] ? init_timer_key (kernel/time/timer.c:818) =
+
+>>>> [ 17.372228][ T7] fwnode_get_phy_node (drivers/net/phy/phy_device.c:29=
+86) =
+
+>>>> [ 17.373574][ T7] phylink_fwnode_phy_connect (drivers/net/phy/phylink.=
+c:1180 drivers/net/phy/phylink.c:1166) =
+
+>>>> [ 17.375014][ T7] phylink_of_phy_connect (drivers/net/phy/phylink.c:11=
+52) =
+
+>>>> [ 17.376373][ T7] dsa_slave_create (net/dsa/slave.c:1889 net/dsa/slave=
+.c:2036) =
+
+>>>> [ 17.377765][ T7] dsa_tree_setup_switches (net/dsa/dsa2.c:477 net/dsa/=
+dsa2.c:977) =
+
+>>>> [ 17.379282][ T7] dsa_register_switch (net/dsa/dsa2.c:1065 net/dsa/dsa=
+2.c:1565 net/dsa/dsa2.c:1579) =
+
+>>>> [ 17.380762][ T7] dsa_loop_drv_probe (drivers/net/dsa/dsa_loop.c:333) =
+
+>>>> [ 17.382137][ T7] mdio_probe (drivers/net/phy/mdio_device.c:157) =
+
+>=20
+
+--===============0052707283602361212==--
 
