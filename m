@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============2126472582738151821=="
+Content-Type: multipart/mixed; boundary="===============2390762676864338334=="
 MIME-Version: 1.0
 From: Eric W. Biederman <ebiederm@xmission.com>
 To: lkp@lists.01.org
-Subject: [PATCH 1/2] signal: Don't always set SA_IMMUTABLE for forced signals
-Date: Thu, 18 Nov 2021 16:04:58 -0600
-Message-ID: <877dd5qfw5.fsf_-_@email.froward.int.ebiederm.org>
+Subject: [PATCH 2/2] signal: Replace force_fatal_sig with force_exit_sig when in doubt
+Date: Thu, 18 Nov 2021 16:05:31 -0600
+Message-ID: <871r3dqfv8.fsf_-_@email.froward.int.ebiederm.org>
 In-Reply-To: <87h7c9qg7p.fsf_-_@email.froward.int.ebiederm.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2126472582738151821==
+--===============2390762676864338334==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -17,120 +17,268 @@ Content-Transfer-Encoding: quoted-printable
 Recently to prevent issues with SECCOMP_RET_KILL and similar signals
 being changed before they are delivered SA_IMMUTABLE was added.
 
-Unfortunately this broke debuggers[1][2] which reasonably expect to be
-able to trap synchronous SIGTRAP and SIGSEGV even when the target
-process is not configured to handle those signals.
+Unfortunately this broke debuggers[1][2] which reasonably expect
+to be able to trap synchronous SIGTRAP and SIGSEGV even when
+the target process is not configured to handle those signals.
 
-Update force_sig_to_task to support both the case when we can
-allow the debugger to intercept and possibly ignore the
-signal and the case when it is not safe to let userspace
-known about the signal until the process has exited.
+Add force_exit_sig and use it instead of force_fatal_sig where
+historically the code has directly called do_exit.  This has the
+implementation benefits of going through the signal exit path
+(including generating core dumps) without the danger of allowing
+userspace to ignore or change these signals.
+
+This avoids userspace regressions as older kernels exited with do_exit
+which debuggers also can not intercept.
+
+In the future is should be possible to improve the quality of
+implementation of the kernel by changing some of these force_exit_sig
+calls to force_fatal_sig.  That can be done where it matters on
+a case-by-case basis with careful analysis.
 
 Reported-by: Kyle Huey <me@kylehuey.com>
 Reported-by: kernel test robot <oliver.sang@intel.com>
-Cc: stable(a)vger.kernel.org
 [1] https://lkml.kernel.org/r/CAP045AoMY4xf8aC_4QU_-j7obuEPYgTcnQQP3Yxk=3D2=
 X90jtpjw(a)mail.gmail.com
 [2] https://lkml.kernel.org/r/20211117150258.GB5403(a)xsang-OptiPlex-902
 Fixes: 00b06da29cf9 ("signal: Add SA_IMMUTABLE to ensure forced siganls do =
 not get changed")
+Fixes: a3616a3c0272 ("signal/m68k: Use force_sigsegv(SIGSEGV) in fpsp040_di=
+e")
+Fixes: 83a1f27ad773 ("signal/powerpc: On swapcontext failure force SIGSEGV")
+Fixes: 9bc508cf0791 ("signal/s390: Use force_sigsegv in default_trap_handle=
+r")
+Fixes: 086ec444f866 ("signal/sparc32: In setup_rt_frame and setup_fram use =
+force_fatal_sig")
+Fixes: c317d306d550 ("signal/sparc32: Exit with a fatal signal when try_to_=
+clear_window_buffer fails")
+Fixes: 695dd0d634df ("signal/x86: In emulate_vsyscall force a signal instea=
+d of calling do_exit")
+Fixes: 1fbd60df8a85 ("signal/vm86_32: Properly send SIGSEGV when the vm86 s=
+tate cannot be saved.")
+Fixes: 941edc5bf174 ("exit/syscall_user_dispatch: Send ordinary signals on =
+failure")
 Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 ---
- kernel/signal.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ arch/m68k/kernel/traps.c              |  2 +-
+ arch/powerpc/kernel/signal_32.c       |  2 +-
+ arch/powerpc/kernel/signal_64.c       |  4 ++--
+ arch/s390/kernel/traps.c              |  2 +-
+ arch/sparc/kernel/signal_32.c         |  4 ++--
+ arch/sparc/kernel/windows.c           |  2 +-
+ arch/x86/entry/vsyscall/vsyscall_64.c |  2 +-
+ arch/x86/kernel/vm86_32.c             |  2 +-
+ include/linux/sched/signal.h          |  1 +
+ kernel/entry/syscall_user_dispatch.c  |  4 ++--
+ kernel/signal.c                       | 13 +++++++++++++
+ 11 files changed, 26 insertions(+), 12 deletions(-)
 
+diff --git a/arch/m68k/kernel/traps.c b/arch/m68k/kernel/traps.c
+index 99058a6da956..34d6458340b0 100644
+--- a/arch/m68k/kernel/traps.c
++++ b/arch/m68k/kernel/traps.c
+@@ -1145,7 +1145,7 @@ asmlinkage void set_esp0(unsigned long ssp)
+  */
+ asmlinkage void fpsp040_die(void)
+ {
+-	force_fatal_sig(SIGSEGV);
++	force_exit_sig(SIGSEGV);
+ }
+ =
+
+ #ifdef CONFIG_M68KFPU_EMU
+diff --git a/arch/powerpc/kernel/signal_32.c b/arch/powerpc/kernel/signal_3=
+2.c
+index 00a9c9cd6d42..3e053e2fd6b6 100644
+--- a/arch/powerpc/kernel/signal_32.c
++++ b/arch/powerpc/kernel/signal_32.c
+@@ -1063,7 +1063,7 @@ SYSCALL_DEFINE3(swapcontext, struct ucontext __user *=
+, old_ctx,
+ 	 * We kill the task with a SIGSEGV in this situation.
+ 	 */
+ 	if (do_setcontext(new_ctx, regs, 0)) {
+-		force_fatal_sig(SIGSEGV);
++		force_exit_sig(SIGSEGV);
+ 		return -EFAULT;
+ 	}
+ =
+
+diff --git a/arch/powerpc/kernel/signal_64.c b/arch/powerpc/kernel/signal_6=
+4.c
+index ef518535d436..d1e1fc0acbea 100644
+--- a/arch/powerpc/kernel/signal_64.c
++++ b/arch/powerpc/kernel/signal_64.c
+@@ -704,7 +704,7 @@ SYSCALL_DEFINE3(swapcontext, struct ucontext __user *, =
+old_ctx,
+ 	 */
+ =
+
+ 	if (__get_user_sigset(&set, &new_ctx->uc_sigmask)) {
+-		force_fatal_sig(SIGSEGV);
++		force_exit_sig(SIGSEGV);
+ 		return -EFAULT;
+ 	}
+ 	set_current_blocked(&set);
+@@ -713,7 +713,7 @@ SYSCALL_DEFINE3(swapcontext, struct ucontext __user *, =
+old_ctx,
+ 		return -EFAULT;
+ 	if (__unsafe_restore_sigcontext(current, NULL, 0, &new_ctx->uc_mcontext))=
+ {
+ 		user_read_access_end();
+-		force_fatal_sig(SIGSEGV);
++		force_exit_sig(SIGSEGV);
+ 		return -EFAULT;
+ 	}
+ 	user_read_access_end();
+diff --git a/arch/s390/kernel/traps.c b/arch/s390/kernel/traps.c
+index 035705c9f23e..2b780786fc68 100644
+--- a/arch/s390/kernel/traps.c
++++ b/arch/s390/kernel/traps.c
+@@ -84,7 +84,7 @@ static void default_trap_handler(struct pt_regs *regs)
+ {
+ 	if (user_mode(regs)) {
+ 		report_user_fault(regs, SIGSEGV, 0);
+-		force_fatal_sig(SIGSEGV);
++		force_exit_sig(SIGSEGV);
+ 	} else
+ 		die(regs, "Unknown program exception");
+ }
+diff --git a/arch/sparc/kernel/signal_32.c b/arch/sparc/kernel/signal_32.c
+index cd677bc564a7..ffab16369bea 100644
+--- a/arch/sparc/kernel/signal_32.c
++++ b/arch/sparc/kernel/signal_32.c
+@@ -244,7 +244,7 @@ static int setup_frame(struct ksignal *ksig, struct pt_=
+regs *regs,
+ 		get_sigframe(ksig, regs, sigframe_size);
+ =
+
+ 	if (invalid_frame_pointer(sf, sigframe_size)) {
+-		force_fatal_sig(SIGILL);
++		force_exit_sig(SIGILL);
+ 		return -EINVAL;
+ 	}
+ =
+
+@@ -336,7 +336,7 @@ static int setup_rt_frame(struct ksignal *ksig, struct =
+pt_regs *regs,
+ 	sf =3D (struct rt_signal_frame __user *)
+ 		get_sigframe(ksig, regs, sigframe_size);
+ 	if (invalid_frame_pointer(sf, sigframe_size)) {
+-		force_fatal_sig(SIGILL);
++		force_exit_sig(SIGILL);
+ 		return -EINVAL;
+ 	}
+ =
+
+diff --git a/arch/sparc/kernel/windows.c b/arch/sparc/kernel/windows.c
+index bbbd40cc6b28..8f20862ccc83 100644
+--- a/arch/sparc/kernel/windows.c
++++ b/arch/sparc/kernel/windows.c
+@@ -122,7 +122,7 @@ void try_to_clear_window_buffer(struct pt_regs *regs, i=
+nt who)
+ 		if ((sp & 7) ||
+ 		    copy_to_user((char __user *) sp, &tp->reg_window[window],
+ 				 sizeof(struct reg_window32))) {
+-			force_fatal_sig(SIGILL);
++			force_exit_sig(SIGILL);
+ 			return;
+ 		}
+ 	}
+diff --git a/arch/x86/entry/vsyscall/vsyscall_64.c b/arch/x86/entry/vsyscal=
+l/vsyscall_64.c
+index 0b6b277ee050..fd2ee9408e91 100644
+--- a/arch/x86/entry/vsyscall/vsyscall_64.c
++++ b/arch/x86/entry/vsyscall/vsyscall_64.c
+@@ -226,7 +226,7 @@ bool emulate_vsyscall(unsigned long error_code,
+ 	if ((!tmp && regs->orig_ax !=3D syscall_nr) || regs->ip !=3D address) {
+ 		warn_bad_vsyscall(KERN_DEBUG, regs,
+ 				  "seccomp tried to change syscall nr or ip");
+-		force_fatal_sig(SIGSYS);
++		force_exit_sig(SIGSYS);
+ 		return true;
+ 	}
+ 	regs->orig_ax =3D -1;
+diff --git a/arch/x86/kernel/vm86_32.c b/arch/x86/kernel/vm86_32.c
+index cce1c89cb7df..c21bcd668284 100644
+--- a/arch/x86/kernel/vm86_32.c
++++ b/arch/x86/kernel/vm86_32.c
+@@ -160,7 +160,7 @@ void save_v86_state(struct kernel_vm86_regs *regs, int =
+retval)
+ 	user_access_end();
+ Efault:
+ 	pr_alert("could not access userspace vm86 info\n");
+-	force_fatal_sig(SIGSEGV);
++	force_exit_sig(SIGSEGV);
+ 	goto exit_vm86;
+ }
+ =
+
+diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
+index 23505394ef70..33a50642cf41 100644
+--- a/include/linux/sched/signal.h
++++ b/include/linux/sched/signal.h
+@@ -352,6 +352,7 @@ extern __must_check bool do_notify_parent(struct task_s=
+truct *, int);
+ extern void __wake_up_parent(struct task_struct *p, struct task_struct *pa=
+rent);
+ extern void force_sig(int);
+ extern void force_fatal_sig(int);
++extern void force_exit_sig(int);
+ extern int send_sig(int, struct task_struct *, int);
+ extern int zap_other_threads(struct task_struct *p);
+ extern struct sigqueue *sigqueue_alloc(void);
+diff --git a/kernel/entry/syscall_user_dispatch.c b/kernel/entry/syscall_us=
+er_dispatch.c
+index 4508201847d2..0b6379adff6b 100644
+--- a/kernel/entry/syscall_user_dispatch.c
++++ b/kernel/entry/syscall_user_dispatch.c
+@@ -48,7 +48,7 @@ bool syscall_user_dispatch(struct pt_regs *regs)
+ 		 * the selector is loaded by userspace.
+ 		 */
+ 		if (unlikely(__get_user(state, sd->selector))) {
+-			force_fatal_sig(SIGSEGV);
++			force_exit_sig(SIGSEGV);
+ 			return true;
+ 		}
+ =
+
+@@ -56,7 +56,7 @@ bool syscall_user_dispatch(struct pt_regs *regs)
+ 			return false;
+ =
+
+ 		if (state !=3D SYSCALL_DISPATCH_FILTER_BLOCK) {
+-			force_fatal_sig(SIGSYS);
++			force_exit_sig(SIGSYS);
+ 			return true;
+ 		}
+ 	}
 diff --git a/kernel/signal.c b/kernel/signal.c
-index 7c4b7ae714d4..02058c983bd6 100644
+index 02058c983bd6..fe7ba05145d4 100644
 --- a/kernel/signal.c
 +++ b/kernel/signal.c
-@@ -1298,6 +1298,12 @@ int do_send_sig_info(int sig, struct kernel_siginfo =
-*info, struct task_struct *p
- 	return ret;
+@@ -1671,6 +1671,19 @@ void force_fatal_sig(int sig)
+ 	force_sig_info_to_task(&info, current, HANDLER_SIG_DFL);
  }
  =
 
-+enum sig_handler {
-+	HANDLER_CURRENT, /* If reachable use the current handler */
-+	HANDLER_SIG_DFL, /* Always use SIG_DFL handler semantics */
-+	HANDLER_EXIT,	 /* Only visible as the proces exit code */
-+};
++void force_exit_sig(int sig)
++{
++	struct kernel_siginfo info;
++
++	clear_siginfo(&info);
++	info.si_signo =3D sig;
++	info.si_errno =3D 0;
++	info.si_code =3D SI_KERNEL;
++	info.si_pid =3D 0;
++	info.si_uid =3D 0;
++	force_sig_info_to_task(&info, current, HANDLER_EXIT);
++}
 +
  /*
-  * Force a signal that the process can't ignore: if necessary
-  * we unblock the signal and change any SIG_IGN to SIG_DFL.
-@@ -1310,7 +1316,8 @@ int do_send_sig_info(int sig, struct kernel_siginfo *=
-info, struct task_struct *p
-  * that is why we also clear SIGNAL_UNKILLABLE.
-  */
- static int
--force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *t,=
- bool sigdfl)
-+force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *t,
-+	enum sig_handler handler)
- {
- 	unsigned long int flags;
- 	int ret, blocked, ignored;
-@@ -1321,9 +1328,10 @@ force_sig_info_to_task(struct kernel_siginfo *info, =
-struct task_struct *t, bool
- 	action =3D &t->sighand->action[sig-1];
- 	ignored =3D action->sa.sa_handler =3D=3D SIG_IGN;
- 	blocked =3D sigismember(&t->blocked, sig);
--	if (blocked || ignored || sigdfl) {
-+	if (blocked || ignored || (handler !=3D HANDLER_CURRENT)) {
- 		action->sa.sa_handler =3D SIG_DFL;
--		action->sa.sa_flags |=3D SA_IMMUTABLE;
-+		if (handler =3D=3D HANDLER_EXIT)
-+			action->sa.sa_flags |=3D SA_IMMUTABLE;
- 		if (blocked) {
- 			sigdelset(&t->blocked, sig);
- 			recalc_sigpending_and_wake(t);
-@@ -1343,7 +1351,7 @@ force_sig_info_to_task(struct kernel_siginfo *info, s=
-truct task_struct *t, bool
- =
-
- int force_sig_info(struct kernel_siginfo *info)
- {
--	return force_sig_info_to_task(info, current, false);
-+	return force_sig_info_to_task(info, current, HANDLER_CURRENT);
- }
- =
-
- /*
-@@ -1660,7 +1668,7 @@ void force_fatal_sig(int sig)
- 	info.si_code =3D SI_KERNEL;
- 	info.si_pid =3D 0;
- 	info.si_uid =3D 0;
--	force_sig_info_to_task(&info, current, true);
-+	force_sig_info_to_task(&info, current, HANDLER_SIG_DFL);
- }
- =
-
- /*
-@@ -1693,7 +1701,7 @@ int force_sig_fault_to_task(int sig, int code, void _=
-_user *addr
- 	info.si_flags =3D flags;
- 	info.si_isr =3D isr;
- #endif
--	return force_sig_info_to_task(&info, t, false);
-+	return force_sig_info_to_task(&info, t, HANDLER_CURRENT);
- }
- =
-
- int force_sig_fault(int sig, int code, void __user *addr
-@@ -1813,7 +1821,8 @@ int force_sig_seccomp(int syscall, int reason, bool f=
-orce_coredump)
- 	info.si_errno =3D reason;
- 	info.si_arch =3D syscall_get_arch(current);
- 	info.si_syscall =3D syscall;
--	return force_sig_info_to_task(&info, current, force_coredump);
-+	return force_sig_info_to_task(&info, current,
-+		force_coredump ? HANDLER_EXIT : HANDLER_CURRENT);
- }
- =
-
- /* For the crazy architectures that include trap information in
+  * When things go south during signal handling, we
+  * will force a SIGSEGV. And if the signal that caused
 -- =
 
 2.20.1
---===============2126472582738151821==--
+
+--===============2390762676864338334==--
 
