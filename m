@@ -1,75 +1,141 @@
-Content-Type: multipart/mixed; boundary="===============1799049766847052948=="
+Content-Type: multipart/mixed; boundary="===============6777560906064085064=="
 MIME-Version: 1.0
 From: Kyle Huey <me@kylehuey.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 0/2] SA_IMMUTABLE fixes
-Date: Thu, 18 Nov 2021 17:12:23 -0800
-Message-ID: <CAP045Ap=1U07er7Y2XO9wmiRtKLoKL4u8zek48ROU668=G9D3A@mail.gmail.com>
-In-Reply-To: <87h7c9qg7p.fsf_-_@email.froward.int.ebiederm.org>
+Subject: Re: [PATCH 1/2] signal: Don't always set SA_IMMUTABLE for forced signals
+Date: Thu, 18 Nov 2021 17:13:52 -0800
+Message-ID: <CAP045Aose7Lg_OE0-MijGBg27gWo+Sk3hbxuN3AtQ8OPC9w9+w@mail.gmail.com>
+In-Reply-To: <877dd5qfw5.fsf_-_@email.froward.int.ebiederm.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1799049766847052948==
+--===============6777560906064085064==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 18, 2021 at 1:58 PM Eric W. Biederman <ebiederm@xmission.com>=
+On Thu, Nov 18, 2021 at 2:05 PM Eric W. Biederman <ebiederm@xmission.com>=
  wrote:
 >
 >
-> SA_IMMUTABLE fixed issues with force_sig_seccomp and the introduction
-> for force_sig_fatal where the exit previously could not be interrupted
-> but now it can.  Unfortunately it added that behavior to all force_sig
-> functions under the right conditions which debuggers usage of SIG_TRAP
-> and debuggers handling of SIGSEGV.
+> Recently to prevent issues with SECCOMP_RET_KILL and similar signals
+> being changed before they are delivered SA_IMMUTABLE was added.
 >
-> Solve that by limiting SA_IMMUTABLE to just the cases that historically
-> debuggers have not been able to intercept.
+> Unfortunately this broke debuggers[1][2] which reasonably expect to be
+> able to trap synchronous SIGTRAP and SIGSEGV even when the target
+> process is not configured to handle those signals.
 >
-> The first patch changes force_sig_info_to_task to take a flag
-> that requests which behavior is desired.
->
-> The second patch adds force_exit_sig which replaces force_fatal_sig
-> in the cases where historically userspace would only find out about
-> the ``signal'' after the process has exited.
->
-> The first one with the hunk changing force_fatal_sig removed should be
-> suitable for backporting to v5.15. v5.15 does not implement
-> force_fatal_sig.
->
-> This should be enough to fix the regressions.
->
-> Kyle if you can double check me that I have properly fixed these issues
-> that would be appreciated.
->
-> Any other review or suggestions to improve the names would be
-> appreciated.  I think I have named things reasonably well but I am very
-> close to the code so it is easy for me to miss things.
->
-> Eric W. Biederman (2):
->       signal: Don't always set SA_IMMUTABLE for forced signals
->       signal: Replace force_fatal_sig with force_exit_sig when in doubt
->
->  arch/m68k/kernel/traps.c              |  2 +-
->  arch/powerpc/kernel/signal_32.c       |  2 +-
->  arch/powerpc/kernel/signal_64.c       |  4 ++--
->  arch/s390/kernel/traps.c              |  2 +-
->  arch/sparc/kernel/signal_32.c         |  4 ++--
->  arch/sparc/kernel/windows.c           |  2 +-
->  arch/x86/entry/vsyscall/vsyscall_64.c |  2 +-
->  arch/x86/kernel/vm86_32.c             |  2 +-
->  include/linux/sched/signal.h          |  1 +
->  kernel/entry/syscall_user_dispatch.c  |  4 ++--
->  kernel/signal.c                       | 36 ++++++++++++++++++++++++++++-=
-------
->  11 files changed, 42 insertions(+), 19 deletions(-)
->
-> Eric
+> Update force_sig_to_task to support both the case when we can
+> allow the debugger to intercept and possibly ignore the
+> signal and the case when it is not safe to let userspace
+> known about the signal until the process has exited.
 
-rr's test suite passes with both diffs applied
+s/known/know/
 
-Tested-by: Kyle Huey <khuey@kylehuey.com>
+>
+> Reported-by: Kyle Huey <me@kylehuey.com>
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Cc: stable(a)vger.kernel.org
+> [1] https://lkml.kernel.org/r/CAP045AoMY4xf8aC_4QU_-j7obuEPYgTcnQQP3Yxk=
+=3D2X90jtpjw(a)mail.gmail.com
+> [2] https://lkml.kernel.org/r/20211117150258.GB5403(a)xsang-OptiPlex-902
+
+This link doesn't work.
+
+> Fixes: 00b06da29cf9 ("signal: Add SA_IMMUTABLE to ensure forced siganls d=
+o not get changed")
+> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+> ---
+>  kernel/signal.c | 23 ++++++++++++++++-------
+>  1 file changed, 16 insertions(+), 7 deletions(-)
+>
+> diff --git a/kernel/signal.c b/kernel/signal.c
+> index 7c4b7ae714d4..02058c983bd6 100644
+> --- a/kernel/signal.c
+> +++ b/kernel/signal.c
+> @@ -1298,6 +1298,12 @@ int do_send_sig_info(int sig, struct kernel_siginf=
+o *info, struct task_struct *p
+>         return ret;
+>  }
+>
+> +enum sig_handler {
+> +       HANDLER_CURRENT, /* If reachable use the current handler */
+> +       HANDLER_SIG_DFL, /* Always use SIG_DFL handler semantics */
+> +       HANDLER_EXIT,    /* Only visible as the proces exit code */
+> +};
+> +
+>  /*
+>   * Force a signal that the process can't ignore: if necessary
+>   * we unblock the signal and change any SIG_IGN to SIG_DFL.
+> @@ -1310,7 +1316,8 @@ int do_send_sig_info(int sig, struct kernel_siginfo=
+ *info, struct task_struct *p
+>   * that is why we also clear SIGNAL_UNKILLABLE.
+>   */
+>  static int
+> -force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *=
+t, bool sigdfl)
+> +force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *=
+t,
+> +       enum sig_handler handler)
+>  {
+>         unsigned long int flags;
+>         int ret, blocked, ignored;
+> @@ -1321,9 +1328,10 @@ force_sig_info_to_task(struct kernel_siginfo *info=
+, struct task_struct *t, bool
+>         action =3D &t->sighand->action[sig-1];
+>         ignored =3D action->sa.sa_handler =3D=3D SIG_IGN;
+>         blocked =3D sigismember(&t->blocked, sig);
+> -       if (blocked || ignored || sigdfl) {
+> +       if (blocked || ignored || (handler !=3D HANDLER_CURRENT)) {
+>                 action->sa.sa_handler =3D SIG_DFL;
+> -               action->sa.sa_flags |=3D SA_IMMUTABLE;
+> +               if (handler =3D=3D HANDLER_EXIT)
+> +                       action->sa.sa_flags |=3D SA_IMMUTABLE;
+>                 if (blocked) {
+>                         sigdelset(&t->blocked, sig);
+>                         recalc_sigpending_and_wake(t);
+> @@ -1343,7 +1351,7 @@ force_sig_info_to_task(struct kernel_siginfo *info,=
+ struct task_struct *t, bool
+>
+>  int force_sig_info(struct kernel_siginfo *info)
+>  {
+> -       return force_sig_info_to_task(info, current, false);
+> +       return force_sig_info_to_task(info, current, HANDLER_CURRENT);
+>  }
+>
+>  /*
+> @@ -1660,7 +1668,7 @@ void force_fatal_sig(int sig)
+>         info.si_code =3D SI_KERNEL;
+>         info.si_pid =3D 0;
+>         info.si_uid =3D 0;
+> -       force_sig_info_to_task(&info, current, true);
+> +       force_sig_info_to_task(&info, current, HANDLER_SIG_DFL);
+>  }
+>
+>  /*
+> @@ -1693,7 +1701,7 @@ int force_sig_fault_to_task(int sig, int code, void=
+ __user *addr
+>         info.si_flags =3D flags;
+>         info.si_isr =3D isr;
+>  #endif
+> -       return force_sig_info_to_task(&info, t, false);
+> +       return force_sig_info_to_task(&info, t, HANDLER_CURRENT);
+>  }
+>
+>  int force_sig_fault(int sig, int code, void __user *addr
+> @@ -1813,7 +1821,8 @@ int force_sig_seccomp(int syscall, int reason, bool=
+ force_coredump)
+>         info.si_errno =3D reason;
+>         info.si_arch =3D syscall_get_arch(current);
+>         info.si_syscall =3D syscall;
+> -       return force_sig_info_to_task(&info, current, force_coredump);
+> +       return force_sig_info_to_task(&info, current,
+> +               force_coredump ? HANDLER_EXIT : HANDLER_CURRENT);
+>  }
+>
+>  /* For the crazy architectures that include trap information in
+> --
+> 2.20.1
 
 - Kyle
---===============1799049766847052948==--
+--===============6777560906064085064==--
 
