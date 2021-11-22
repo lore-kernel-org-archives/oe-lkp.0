@@ -1,86 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============1716938611847942776=="
+Content-Type: multipart/mixed; boundary="===============8767915567948182899=="
 MIME-Version: 1.0
-From: Li Zhijian <zhijianx.li@intel.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 To: lkp@lists.01.org
 Subject: Re: [net, neigh] 7482e3841d: BUG:unable_to_handle_page_fault_for_address
-Date: Mon, 22 Nov 2021 16:52:04 +0800
-Message-ID: <d697a36a-e6a9-f658-d5d7-267f30721b43@intel.com>
-In-Reply-To: <20211118062316.GB12388@xsang-OptiPlex-9020>
+Date: Mon, 22 Nov 2021 16:04:22 +0100
+Message-ID: <caa07511-5400-6f54-2ca0-f5993e689375@iogearbox.net>
+In-Reply-To: <d697a36a-e6a9-f658-d5d7-267f30721b43@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1716938611847942776==
+--===============8767915567948182899==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On 11/22/21 9:52 AM, Li Zhijian wrote:
+> On 18/11/2021 14:23, Oliver Sang wrote:
+>> On Fri, Nov 05, 2021 at 12:21:20PM +0100, Daniel Borkmann wrote:
+>>> Hey Oliver,
+>>>
+>>>>> To reproduce:
+>>>>>
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # build kernel
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0cd linux
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0cp config-5.15.0-rc4-01167-g7482e3841d5=
+2 .config
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Di=
+386 olddefconfig prepare modules_prepare bzImage
+>>>>>
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 git clone http=
+s://github.com/intel/lkp-tests.git
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 cd lkp-tests
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bin/lkp qemu -=
+k <bzImage> job-script # job-script is attached in this email
+>>>>>
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # if come acro=
+ss any failure that blocks the test,
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # please remov=
+e ~/.lkp and /lkp dir to run from a clean state.
+>>> I ran the test multiple times, but it seems I cannot reproduce. Would b=
+e good if you could
+>>> double check below whether it looks / passes as expected or if I'm doin=
+g something wrong:
+> =
 
+> Sorry to late reply, we missed the modules before. Please try following i=
+nstruction again.
+> =
 
-On 18/11/2021 14:23, Oliver Sang wrote:
-> Hi Daniel,
->
-> On Fri, Nov 05, 2021 at 12:21:20PM +0100, Daniel Borkmann wrote:
->> Hey Oliver,
->>
->>>> To reproduce:
->>>>
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # build kernel
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0cd linux
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0cp config-5.15.0-rc4-01167-g7482e3841d52 .con=
-fig
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Di386 ol=
-ddefconfig prepare modules_prepare bzImage
->>>>
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 git clone https://gi=
-thub.com/intel/lkp-tests.git
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 cd lkp-tests
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bin/lkp qemu -k <bzI=
-mage> job-script # job-script is attached in this email
->>>>
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # if come across any=
- failure that blocks the test,
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # please remove ~/.l=
-kp and /lkp dir to run from a clean state.
->> I ran the test multiple times, but it seems I cannot reproduce. Would be=
- good if you could
->> double check below whether it looks / passes as expected or if I'm doing=
- something wrong:
+> # make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Di386 olddefconfig prepare modules=
+_prepare bzImage
 
-Sorry to late reply, we missed the modules before. Please try following ins=
-truction again.
+Should have been:
 
-# make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Di386 olddefconfig prepare modules_p=
-repare bzImage
-# make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Di386 INSTALL_MOD_PATH=3D<mod-instal=
-l-dir> modules_install
-# cd <mod-install-dir>
-# find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
-# bin/lkp qemu -k <bzImage> -m modules.cgz job-script
+make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Di386 olddefconfig prepare modules_pre=
+pare bzImage modules
 
-Thanks
-Zhijian
+> # make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Di386 INSTALL_MOD_PATH=3D<mod-inst=
+all-dir> modules_install
+> # cd <mod-install-dir>
+> # find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
+> # bin/lkp qemu -k <bzImage> -m modules.cgz job-script
 
+This helped and I was able to repro, thanks so much!
 
+Sent the fix here:
 
+   https://lore.kernel.org/netdev/20211122150151.16447-1-daniel(a)iogearbox=
+.net/
 
-> sorry about this, we tried above reproducer locally but failed to reprodu=
-ce
-> either. we are under investigation of this issue.
->
-> at the same time, we double confirmed by queuing more jobs to our auto-te=
-st
-> framework, it still reproduced in a persistent way. Just FYI
-> 2c611ad97a82b512 7482e3841d520a368426ac19672
-> ---------------- ---------------------------
->         fail:runs  %reproduction    fail:runs
->             |             |             |
->             :59          98%          58:58    dmesg.BUG:unable_to_handle=
-_page_fault_for_address
->             :59          98%          58:58    dmesg.Kernel_panic-not_syn=
-cing:Fatal_exception_in_interrupt
->             :59          98%          58:58    dmesg.Oops:#[##]
-> _______________________________________________
-> LKP mailing list -- lkp(a)lists.01.org
-> To unsubscribe send an email to lkp-leave(a)lists.01.org
-
---===============1716938611847942776==--
+Thanks everyone!
+Daniel
+--===============8767915567948182899==--
 
