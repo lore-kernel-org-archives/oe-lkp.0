@@ -1,211 +1,64 @@
-Content-Type: multipart/mixed; boundary="===============6503352129569974319=="
+Content-Type: multipart/mixed; boundary="===============2997990666887530574=="
 MIME-Version: 1.0
-From: Alexey Gladkov <legion@kernel.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: [PATCH v2 2/2] ucounts: Move rlimit max values from ucounts max
-Date: Mon, 29 Nov 2021 21:37:26 +0100
-Message-ID: <24c87e225c7950bf2ea1ff4b4a8f237348808241.1638218242.git.legion@kernel.org>
-In-Reply-To: <cover.1638218242.git.legion@kernel.org>
+Subject: Re: [ramfs] 0858d7da8a: canonical_address#:#[##]
+Date: Thu, 25 Nov 2021 10:03:33 -0800
+Message-ID: <CAHk-=widXZyzRiEzmYuG-bLVtNsptxt4TqAhy75Tbio-V_9oNQ@mail.gmail.com>
+In-Reply-To: <20211125140816.GC3109@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6503352129569974319==
+--===============2997990666887530574==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Since the semantics of maximum rlimit values are different, they need to
-be separated from ucount_max. This will prevent the error of using
-inc_count/dec_ucount for rlimit parameters.
+On Thu, Nov 25, 2021 at 6:08 AM kernel test robot <oliver.sang@intel.com>=
+ wrote:
+> FYI, we noticed the following commit (built with clang-14):
+>
+> commit: 0858d7da8a09e440fb192a0239d20249a2d16af8 ("ramfs: fix mount sourc=
+e show for ramfs")
 
-This patch also renames the functions to emphasize the lack of
-connection between rlimit_max and ucount_max.
+Funky. That commit seems to have nothing to do with the oops:
 
-v2:
-- Fix the array-index-out-of-bounds that was found by the lkp project.
+> [  806.257788][  T204] /dev/root: Can't open blockdev
+> [  806.259101][  T204] general protection fault, probably for non-canonic=
+al address 0xdffffc0000000003: 0000 [#1] SMP KASAN
+> [  806.263082][  T204] KASAN: null-ptr-deref in range [0x0000000000000018=
+-0x000000000000001f]
 
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Alexey Gladkov <legion@kernel.org>
----
- include/linux/user_namespace.h | 17 ++++++++++++-----
- kernel/fork.c                  | 10 +++++-----
- kernel/ucount.c                | 10 +++-------
- kernel/user_namespace.c        | 10 +++++-----
- 4 files changed, 25 insertions(+), 22 deletions(-)
+Not a very helpful error message,a nd the KASAN comment makes little sense,=
+ but
 
-diff --git a/include/linux/user_namespace.h b/include/linux/user_namespace.h
-index 33a4240e6a6f..812b6935f4a3 100644
---- a/include/linux/user_namespace.h
-+++ b/include/linux/user_namespace.h
-@@ -58,10 +58,11 @@ enum ucount_type {
- 	UCOUNT_RLIMIT_MSGQUEUE,
- 	UCOUNT_RLIMIT_SIGPENDING,
- 	UCOUNT_RLIMIT_MEMLOCK,
--	UCOUNT_COUNTS,
-+	UCOUNT_ALL_COUNTS,
- };
- =
+> [ 806.267540][ T204] RIP: 0010:ntfs_update_mftmirr (kbuild/src/consumer/f=
+s/ntfs3/fsntfs.c:834)
 
--#define MAX_PER_NAMESPACE_UCOUNTS UCOUNT_RLIMIT_NPROC
-+#define UCOUNT_COUNTS UCOUNT_RLIMIT_NPROC
-+#define RLIMIT_COUNTS UCOUNT_ALL_COUNTS - UCOUNT_COUNTS + 1
- =
+That's
 
- struct user_namespace {
- 	struct uid_gid_map	uid_map;
-@@ -99,6 +100,7 @@ struct user_namespace {
- #endif
- 	struct ucounts		*ucounts;
- 	long ucount_max[UCOUNT_COUNTS];
-+	long rlimit_max[RLIMIT_COUNTS];
- } __randomize_layout;
- =
+        u32 blocksize =3D sb->s_blocksize;
 
- struct ucounts {
-@@ -106,7 +108,7 @@ struct ucounts {
- 	struct user_namespace *ns;
- 	kuid_t uid;
- 	atomic_t count;
--	atomic_long_t ucount[UCOUNT_COUNTS];
-+	atomic_long_t ucount[UCOUNT_ALL_COUNTS];
- };
- =
+and presumably with KASAN you end up getting hat odd 0xdffffc0000000003 thi=
+ng.
 
- extern struct user_namespace init_user_ns;
-@@ -131,10 +133,15 @@ long inc_rlimit_get_ucounts(struct ucounts *ucounts, =
-enum ucount_type type);
- void dec_rlimit_put_ucounts(struct ucounts *ucounts, enum ucount_type type=
-);
- bool is_ucounts_overlimit(struct ucounts *ucounts, enum ucount_type type, =
-unsigned long max);
- =
+Anyway, looks like sb is NULL, and the code is
 
--static inline void set_rlimit_ucount_max(struct user_namespace *ns,
-+static inline long get_userns_rlimit_max(struct user_namespace *ns, enum u=
-count_type type)
-+{
-+	return READ_ONCE(ns->rlimit_max[type - UCOUNT_COUNTS]);
-+}
-+
-+static inline void set_userns_rlimit_max(struct user_namespace *ns,
- 		enum ucount_type type, unsigned long max)
- {
--	ns->ucount_max[type] =3D max <=3D LONG_MAX ? max : LONG_MAX;
-+	ns->rlimit_max[type - UCOUNT_COUNTS] =3D max <=3D LONG_MAX ? max : LONG_M=
-AX;
- }
- =
+  int ntfs_update_mftmirr(struct ntfs_sb_info *sbi, int wait)
+  {
+        int err;
+        struct super_block *sb =3D sbi->sb;
+        u32 blocksize =3D sb->s_blocksize;
+        sector_t block1, block2;
 
- #ifdef CONFIG_USER_NS
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 3244cc56b697..365819458030 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -836,13 +836,13 @@ void __init fork_init(void)
- 	init_task.signal->rlim[RLIMIT_SIGPENDING] =3D
- 		init_task.signal->rlim[RLIMIT_NPROC];
- =
+although I have no idea how sbi->sb could be NULL.
 
--	for (i =3D 0; i < MAX_PER_NAMESPACE_UCOUNTS; i++)
-+	for (i =3D 0; i < UCOUNT_COUNTS; i++)
- 		init_user_ns.ucount_max[i] =3D max_threads/2;
- =
+Konstantin? See
 
--	set_rlimit_ucount_max(&init_user_ns, UCOUNT_RLIMIT_NPROC,      RLIM_INFIN=
-ITY);
--	set_rlimit_ucount_max(&init_user_ns, UCOUNT_RLIMIT_MSGQUEUE,   RLIM_INFIN=
-ITY);
--	set_rlimit_ucount_max(&init_user_ns, UCOUNT_RLIMIT_SIGPENDING, RLIM_INFIN=
-ITY);
--	set_rlimit_ucount_max(&init_user_ns, UCOUNT_RLIMIT_MEMLOCK,    RLIM_INFIN=
-ITY);
-+	set_userns_rlimit_max(&init_user_ns, UCOUNT_RLIMIT_NPROC,      RLIM_INFIN=
-ITY);
-+	set_userns_rlimit_max(&init_user_ns, UCOUNT_RLIMIT_MSGQUEUE,   RLIM_INFIN=
-ITY);
-+	set_userns_rlimit_max(&init_user_ns, UCOUNT_RLIMIT_SIGPENDING, RLIM_INFIN=
-ITY);
-+	set_userns_rlimit_max(&init_user_ns, UCOUNT_RLIMIT_MEMLOCK,    RLIM_INFIN=
-ITY);
- =
+    https://lore.kernel.org/lkml/20211125140816.GC3109(a)xsang-OptiPlex-902=
+0/
 
- #ifdef CONFIG_VMAP_STACK
- 	cpuhp_setup_state(CPUHP_BP_PREPARE_DYN, "fork:vm_stack_cache",
-diff --git a/kernel/ucount.c b/kernel/ucount.c
-index 7b32c356ebc5..ffffcfae8474 100644
---- a/kernel/ucount.c
-+++ b/kernel/ucount.c
-@@ -87,10 +87,6 @@ static struct ctl_table user_table[] =3D {
- 	UCOUNT_ENTRY("max_fanotify_groups"),
- 	UCOUNT_ENTRY("max_fanotify_marks"),
- #endif
--	{ },
--	{ },
--	{ },
--	{ },
- 	{ }
- };
- #endif /* CONFIG_SYSCTL */
-@@ -273,7 +269,7 @@ long inc_rlimit_ucounts(struct ucounts *ucounts, enum u=
-count_type type, long v)
- 			ret =3D LONG_MAX;
- 		else if (iter =3D=3D ucounts)
- 			ret =3D new;
--		max =3D READ_ONCE(iter->ns->ucount_max[type]);
-+		max =3D get_userns_rlimit_max(iter->ns, type);
- 	}
- 	return ret;
- }
-@@ -322,7 +318,7 @@ long inc_rlimit_get_ucounts(struct ucounts *ucounts, en=
-um ucount_type type)
- 			goto unwind;
- 		if (iter =3D=3D ucounts)
- 			ret =3D new;
--		max =3D READ_ONCE(iter->ns->ucount_max[type]);
-+		max =3D get_userns_rlimit_max(iter->ns, type);
- 		/*
- 		 * Grab an extra ucount reference for the caller when
- 		 * the rlimit count was previously 0.
-@@ -350,7 +346,7 @@ bool is_ucounts_overlimit(struct ucounts *ucounts, enum=
- ucount_type type, unsign
- 	for (iter =3D ucounts; iter; iter =3D iter->ns->ucounts) {
- 		if (get_ucounts_value(iter, type) > max)
- 			return true;
--		max =3D READ_ONCE(iter->ns->ucount_max[type]);
-+		max =3D get_userns_rlimit_max(iter->ns, type);
- 	}
- 	return false;
- }
-diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
-index 6b2e3ca7ee99..b9f6729b4e5f 100644
---- a/kernel/user_namespace.c
-+++ b/kernel/user_namespace.c
-@@ -119,13 +119,13 @@ int create_user_ns(struct cred *new)
- 	ns->owner =3D owner;
- 	ns->group =3D group;
- 	INIT_WORK(&ns->work, free_user_ns);
--	for (i =3D 0; i < MAX_PER_NAMESPACE_UCOUNTS; i++) {
-+	for (i =3D 0; i < UCOUNT_COUNTS; i++) {
- 		ns->ucount_max[i] =3D INT_MAX;
- 	}
--	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC));
--	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MSGQUEUE, rlimit(RLIMIT_MSGQUEUE)=
-);
--	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_SIGPENDING, rlimit(RLIMIT_SIGPEND=
-ING));
--	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK));
-+	set_userns_rlimit_max(ns, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC));
-+	set_userns_rlimit_max(ns, UCOUNT_RLIMIT_MSGQUEUE, rlimit(RLIMIT_MSGQUEUE)=
-);
-+	set_userns_rlimit_max(ns, UCOUNT_RLIMIT_SIGPENDING, rlimit(RLIMIT_SIGPEND=
-ING));
-+	set_userns_rlimit_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK));
- 	ns->ucounts =3D ucounts;
- =
+for the full thing.
 
- 	/* Inherit USERNS_SETGROUPS_ALLOWED from our parent */
--- =
-
-2.33.0
-
---===============6503352129569974319==--
+             Linus
+--===============2997990666887530574==--
 
