@@ -1,107 +1,125 @@
-Content-Type: multipart/mixed; boundary="===============8834490113451624165=="
+Content-Type: multipart/mixed; boundary="===============6731411888637787575=="
 MIME-Version: 1.0
-From: yangerkun <yangerkun@huawei.com>
+From: Daniel Vetter <daniel@ffwll.ch>
 To: lkp@lists.01.org
-Subject: Re: [ramfs] 0858d7da8a: canonical_address#:#[##]
-Date: Fri, 26 Nov 2021 09:54:56 +0800
-Message-ID: <68587446-fb74-b411-ba19-dd52395567c9@huawei.com>
-In-Reply-To: <CAHk-=widXZyzRiEzmYuG-bLVtNsptxt4TqAhy75Tbio-V_9oNQ@mail.gmail.com>
+Subject: Re: [PATCH] drm: fix error found in some cases after the patch d1af5cd86997
+Date: Tue, 30 Nov 2021 09:38:11 +0100
+Message-ID: <YaXi803g7iv9MxWR@phenom.ffwll.local>
+In-Reply-To: <YaUpsaP7hng6zpFh@gineta.localdomain>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8834490113451624165==
+--===============6731411888637787575==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Cc ntfs3:
-
-Maybe it's a problem like this:
-
-do_new_mount
-   fs_context_for_mount
-     alloc_fs_context
-       ntfs_init_fs_context
-         sbi =3D kzalloc(sizeof(struct ntfs_sb_info), GFP_NOFS);
-         fc->s_fs_info =3D sbi;
-   vfs_get_tree
-     ntfs_fs_get_tree
-       get_tree_bdev
-         blkdev_get_by_path  // return error and sbi->sb will be NULL
-   put_fs_context
-     ntfs_fs_free
-       put_ntfs
-         ntfs_update_mftmirr
-           struct super_block *sb =3D sbi->sb; // NULL
-           u32 blocksize =3D sb->s_blocksize; // BOOM
-
-It's actually a ntfs3 bug which may be introduced by:
-
-610f8f5a7baf fs/ntfs3: Use new api for mounting
-
-
-On 2021/11/26 2:03, Linus Torvalds wrote:
-> On Thu, Nov 25, 2021 at 6:08 AM kernel test robot <oliver.sang@intel.co=
-m> wrote:
->> FYI, we noticed the following commit (built with clang-14):
->>
->> commit: 0858d7da8a09e440fb192a0239d20249a2d16af8 ("ramfs: fix mount sour=
-ce show for ramfs")
+On Mon, Nov 29, 2021 at 08:27:45PM +0100, Claudio Suarez wrote:
+> The patch d1af5cd86997 ("drm: get rid of DRM_DEBUG_* log
+> calls in drm core, files drm_a*.c") fails when the drm_device
+> cannot be found in the parameter plane_state. Fix it.
 > =
 
-> Funky. That commit seems to have nothing to do with the oops:
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Fixes: d1af5cd86997 ("drm: get rid of DRM_DEBUG_* log calls in drm core, =
+files drm_a*.c")
+> Signed-off-by: Claudio Suarez <cssk@net-c.es>
+> ---
+>  drivers/gpu/drm/drm_atomic_helper.c | 12 +++++-------
+>  1 file changed, 5 insertions(+), 7 deletions(-)
 > =
 
->> [  806.257788][  T204] /dev/root: Can't open blockdev
->> [  806.259101][  T204] general protection fault, probably for non-canoni=
-cal address 0xdffffc0000000003: 0000 [#1] SMP KASAN
->> [  806.263082][  T204] KASAN: null-ptr-deref in range [0x000000000000001=
-8-0x000000000000001f]
+> diff --git a/drivers/gpu/drm/drm_atomic_helper.c b/drivers/gpu/drm/drm_at=
+omic_helper.c
+> index aef2fbd676e5..8bd4472d7949 100644
+> --- a/drivers/gpu/drm/drm_atomic_helper.c
+> +++ b/drivers/gpu/drm/drm_atomic_helper.c
+> @@ -312,7 +312,7 @@ update_connector_routing(struct drm_atomic_state *sta=
+te,
+>  =
+
+>  	if (!new_connector_state->crtc) {
+>  		drm_dbg_atomic(connector->dev, "Disabling [CONNECTOR:%d:%s]\n",
+> -				connector->base.id, connector->name);
+> +			       connector->base.id, connector->name);
+
+Can you pls split this checkpatch fix out?
+
+>  =
+
+>  		set_best_encoder(state, new_connector_state, NULL);
+>  =
+
+> @@ -805,6 +805,7 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
+ane_state *plane_state,
+>  					bool can_update_disabled)
+>  {
+>  	struct drm_framebuffer *fb =3D plane_state->fb;
+> +	struct drm_device *dev =3D plane_state->plane ? plane_state->plane->dev=
+ : NULL;
+
+For real drivers plane_state->plane really should never be NULL, and
+looking at the test report we blow up in an selftest. I think the right
+fix here is to make the selftest more robust and also mock a drm_plane
+(with a NULL plane->dev pointer, that should be fine).
+
+Can you pls spin that and test it with the selftests enabled in the
+config?
+
+Thanks, Daniel
+
+>  	struct drm_rect *src =3D &plane_state->src;
+>  	struct drm_rect *dst =3D &plane_state->dst;
+>  	unsigned int rotation =3D plane_state->rotation;
+> @@ -828,8 +829,7 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
+ane_state *plane_state,
+>  	}
+>  =
+
+>  	if (!crtc_state->enable && !can_update_disabled) {
+> -		drm_dbg_kms(plane_state->crtc->dev,
+> -			       "Cannot update plane of a disabled CRTC.\n");
+> +		drm_dbg_kms(dev, "Cannot update plane of a disabled CRTC.\n");
+>  		return -EINVAL;
+>  	}
+>  =
+
+> @@ -839,8 +839,7 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
+ane_state *plane_state,
+>  	hscale =3D drm_rect_calc_hscale(src, dst, min_scale, max_scale);
+>  	vscale =3D drm_rect_calc_vscale(src, dst, min_scale, max_scale);
+>  	if (hscale < 0 || vscale < 0) {
+> -		drm_dbg_kms(plane_state->crtc->dev,
+> -			       "Invalid scaling of plane\n");
+> +		drm_dbg_kms(dev, "Invalid scaling of plane\n");
+>  		drm_rect_debug_print("src: ", &plane_state->src, true);
+>  		drm_rect_debug_print("dst: ", &plane_state->dst, false);
+>  		return -ERANGE;
+> @@ -864,8 +863,7 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
+ane_state *plane_state,
+>  		return 0;
+>  =
+
+>  	if (!can_position && !drm_rect_equals(dst, &clip)) {
+> -		drm_dbg_kms(plane_state->crtc->dev,
+> -			       "Plane must cover entire CRTC\n");
+> +		drm_dbg_kms(dev, "Plane must cover entire CRTC\n");
+>  		drm_rect_debug_print("dst: ", dst, false);
+>  		drm_rect_debug_print("clip: ", &clip, false);
+>  		return -EINVAL;
+> -- =
+
+> 2.33.0
 > =
 
-> Not a very helpful error message,a nd the KASAN comment makes little sens=
-e, but
 > =
 
->> [ 806.267540][ T204] RIP: 0010:ntfs_update_mftmirr (kbuild/src/consumer/=
-fs/ntfs3/fsntfs.c:834)
 > =
 
-> That's
-> =
 
->          u32 blocksize =3D sb->s_blocksize;
-> =
+-- =
 
-> and presumably with KASAN you end up getting hat odd 0xdffffc0000000003 t=
-hing.
-> =
-
-> Anyway, looks like sb is NULL, and the code is
-> =
-
->    int ntfs_update_mftmirr(struct ntfs_sb_info *sbi, int wait)
->    {
->          int err;
->          struct super_block *sb =3D sbi->sb;
->          u32 blocksize =3D sb->s_blocksize;
->          sector_t block1, block2;
-> =
-
-> although I have no idea how sbi->sb could be NULL.
-> =
-
-> Konstantin? See
-> =
-
->      https://lore.kernel.org/lkml/20211125140816.GC3109(a)xsang-OptiPlex-=
-9020/
-> =
-
-> for the full thing.
-> =
-
->               Linus
-> .
->=20
---===============8834490113451624165==--
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
+--===============6731411888637787575==--
 
