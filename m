@@ -1,45 +1,86 @@
-Content-Type: multipart/mixed; boundary="===============4581281860872541688=="
+Content-Type: multipart/mixed; boundary="===============3798354138339638048=="
 MIME-Version: 1.0
-From: Nadav Amit <namit@vmware.com>
+From: Stephan Müller <smueller@chronox.de>
 To: lkp@lists.01.org
-Subject: Re: [hugetlbfs] a4a118f2ee: will-it-scale.per_thread_ops -14.9% regression
-Date: Sat, 04 Dec 2021 07:40:51 +0000
-Message-ID: <0E0E1D43-4C8F-4581-B156-AEB4A1754A72@vmware.com>
-In-Reply-To: <20211203020952.GB5881@xsang-OptiPlex-9020>
+Subject: Re: [security] d3b04a4398: WARNING:at_crypto/kdf_sp800108.c:#crypto_kdf108_init
+Date: Sun, 05 Dec 2021 11:21:56 +0100
+Message-ID: <3438006.aCxCBeP46V@positron.chronox.de>
+In-Reply-To: <20211130080419.GC29514@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4581281860872541688==
+--===============3798354138339638048==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Am Dienstag, 30. November 2021, 09:04:19 CET schrieb kernel test robot:
 
-> On Dec 2, 2021, at 6:09 PM, kernel test robot <oliver.sang@intel.com> w=
-rote:
+Hi,
+
+...
 > =
 
 > =
 
+> +------------------------------------------------------+------------+----=
+---
+> -----+
+> |                                                      | d792134423 |
+> |                                                      | d3b04a4398 |
 > =
 
-> Greeting,
+> +------------------------------------------------------+------------+----=
+---
+> -----+
+> | boot_successes                                       | 14         | 0  =
+   =
+
+> |     | boot_failures                                        | 0         =
+ |
+> | 16         | WARNING:at_crypto/kdf_sp800108.c:#crypto_kdf108_init | 0  =
+  =
+
+> |      | 16         | EIP:crypto_kdf108_init                              =
+
+> | | 0          | 16         |
+> +------------------------------------------------------+------------+----=
+---
+> -----+
 > =
 
-> FYI, we noticed a -14.9% regression of will-it-scale.per_thread_ops due t=
-o commit:
+> =
+
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
 > =
 
 > =
 
-> commit: a4a118f2eead1d6c49e00765de89878288d4b890 ("hugetlbfs: flush TLBs =
-correctly after huge_pmd_unshare=E2=80=9D)
+> [ 18.648980][ T1] WARNING: CPU: 0 PID: 1 at crypto/kdf_sp800108.c:138
+> crypto_kdf108_init (crypto/kdf_sp800108.c:136) [   18.649900][    T1]
+> Modules linked in:
 
-This could have been expected.
+The issue is that the self-test fails for 16 out of 30 times, i.e. it is ki=
+nd =
 
-To have a better solution (batching), we need a different way to
-determine whether PMDs are shared, instead of the page-count of
-the PMD.
+of random when it happens or not.
+
+I am unable to reproduce it with i386 and clang-13. I can also not reproduc=
+e =
+
+it with GCC.
+
+Nor do I see an obvious issue in the code that points to either uninitizliz=
+ed =
+
+memory or otherwise could affect the test result.
+
+I keep trying with Clang-14
 
 
---===============4581281860872541688==--
+Ciao
+Stephan
+
+
+--===============3798354138339638048==--
 
