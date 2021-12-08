@@ -1,64 +1,102 @@
-Content-Type: multipart/mixed; boundary="===============2722746692871368447=="
+Content-Type: multipart/mixed; boundary="===============5478522703224546604=="
 MIME-Version: 1.0
-From: Dave Hansen <dave.hansen@intel.com>
+From: Yin Fengwei <fengwei.yin@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/signal] 3aac3ebea0: will-it-scale.per_thread_ops -11.9% regression
-Date: Tue, 07 Dec 2021 15:14:38 -0800
-Message-ID: <bbc24579-b6ee-37cb-4bbf-10e3476537e0@intel.com>
-In-Reply-To: <20211207012128.GA16074@xsang-OptiPlex-9020>
+Date: Wed, 08 Dec 2021 08:59:13 +0800
+Message-ID: <5bcb714f-371f-2f8d-cdf6-1736e3ae0aea@intel.com>
+In-Reply-To: <9F5B9EA8-B876-487E-AD1C-87A791154F17@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2722746692871368447==
+--===============5478522703224546604==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 12/6/21 5:21 PM, kernel test robot wrote:
+
+
+On 12/8/2021 6:17 AM, Bae, Chang Seok wrote:
+> On Dec 7, 2021, at 12:36, Thomas Gleixner <tglx@linutronix.de> wrote:
+>> On Tue, Dec 07 2021 at 18:49, Chang Seok Bae wrote:
+>>> On Dec 7, 2021, at 05:38, Thomas Gleixner <tglx@linutronix.de> wrote:
+>>>>
+>>>> Does that use sigaltstack() ?
+>>>
+>>> FWIW, I was also wondering about this with:
+>>>
+>>> $ git clone https://github.com/antonblanchard/will-it-scale.git
+>>> $ cd will-it-scale/
+>>> $ git grep sigaltstack
+>>> $
+>>>
+>>> But, the test seems to use python via runtest.py. And the python code h=
+as
+>>> sigaltstack():
+>>>    https://github.com/python/cpython/blob/main/Modules/faulthandler.c#L=
+454
+>>
+>> But how does that affect the test written in C? Mysterious!
 > =
 
-> 1bdda24c4af64cd2 3aac3ebea08f2d342364f827c89 =
+> Indeed, I can only see the sigaltstack() trace via the python script. =
 
-> ---------------- --------------------------- =
+> =
 
->          %stddev     %change         %stddev
->              \          |                \  =
+> $ strace -f python3.7 ./runtest.py signal1 1>out 2>err
+> $ grep -r sigaltstack err
+> sigaltstack({ss_sp=3D0xe13f50, ss_flags=3D0, ss_size=3D16384}, {ss_sp=3DN=
+ULL,
+> ss_flags=3DSS_DISABLE, ss_size=3D0}) =3D 0
+> =E2=80=A6
+> =
 
->     980404 =C2=B1  3%     -10.2%     880436 =C2=B1  2%  will-it-scale.16.=
-threads
->      61274 =C2=B1  3%     -10.2%      55027 =C2=B1  2%  will-it-scale.per=
-_thread_ops
->     980404 =C2=B1  3%     -10.2%     880436 =C2=B1  2%  will-it-scale.wor=
-kload
->    9745749 =C2=B1 18%     +26.8%   12356608 =C2=B1  4%  meminfo.DirectMap=
-2M
+> $ strace -f ./signal1_processes 1>out 2>err
+> $ grep -r sigaltstack err
+> $ strace -f ./signal1_threads 1>out 2>err
+> $ grep -r sigaltstack err
+> $
 
-Something else funky is going on here.  Why would there all of a sudden
-be so many more 2M pages in the direct map?  I also see gunk like
-interrupts on the network card going up.  I can certainly see that
-happening if something else on the network was messing around.
+Here is what I got:
 
-Granted, this was seen across several systems, but it's really odd.  I
-guess I'll go try to dig up one of the actual ones where this was seen.
+>From the strace output, we could see:
+[pid 3171703] rt_sigreturn({mask=3D[]})   =3D 0
 
-I tried on a smaller Skylake system and I don't see any regression at
-all or any interesting delta in a perf profile.
 
-Oliver or Chang, could you try to reproduce this by hand on one of the
-suspect systems?  Build:
+Code in kernel:
+SYSCALL_DEFINE0(rt_sigreturn)
+  restore_altstack
+    do_sigaltstack
+      sigaltstack_lock
 
-  1bdda24c4a ("signal: Add an optional check for altstack size")
 
-then run will-it-scale by hand.  Then build:
+And this matches the perf callstack in the report:
 
-  3aac3ebea0 ("x86/signal: Implement sigaltstack size validation")
+      0.00            +6.3        6.33 =C2=B1  8%  perf-profile.calltrace.c=
+ycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irq.do_sigaltstack=
+.restore_altstack.__x64_sys_rt_sigreturn
 
-and run it again.  Also, do we see any higher core-count regressions?
-These all seem to happen with:
+The rt_sigreturn was set as signal action restorer by libc during sigaction=
+ call. Thanks.
 
-	mode=3Dthread
-	nr_task=3D16
+Regards
+Yin, Fengwei      =
 
-That's really odd to see that for these systems with probably ~50 cores
-each.  I'd expect to see it get worse at higher core counts.
---===============2722746692871368447==--
+
+> =
+
+> I don=E2=80=99t get how this syscall could contribute 11% degradation in =
+this test.
+> =
+
+> BTW, the current code rejects the reported instruction here:
+> =
+
+> $ python3.7 ./runtest.py signal1 295 thread 16
+> Usage: runtest.py <testcase>
+> =
+
+> Thanks,
+> Chang
+>=20
+--===============5478522703224546604==--
 
