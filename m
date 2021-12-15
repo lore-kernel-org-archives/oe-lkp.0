@@ -1,73 +1,36 @@
-Content-Type: multipart/mixed; boundary="===============5020155400105841524=="
+Content-Type: multipart/mixed; boundary="===============2055609106902215648=="
 MIME-Version: 1.0
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: Borislav Petkov <bp@suse.de>
 To: lkp@lists.01.org
-Subject: Re: [selftests/kselftest/runner.sh] 3226b4a464: kernel-selftests.cpu-hotplug.cpu-on-off-test.sh.fail
-Date: Wed, 15 Dec 2021 09:59:11 +0000
-Message-ID: <20211215095911.GK6207@e120937-lin>
-In-Reply-To: <20211213052044.GA1334@xsang-OptiPlex-9020>
+Subject: Re: [x86/mm/64] f154f29085: BUG:kernel_reboot-without-warning_in_boot_stage
+Date: Wed, 15 Dec 2021 11:05:30 +0100
+Message-ID: <Ybm96seTxl+pWjTX@zn.tnic>
+In-Reply-To: <20211215070012.GA26582@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5020155400105841524==
+--===============2055609106902215648==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Dec 13, 2021 at 01:20:44PM +0800, kernel test robot wrote:
-> =
+On Wed, Dec 15, 2021 at 03:00:13PM +0800, Carel Si wrote:
+> We have verified by hand, still can reproduce this issue.
 
-> =
+Ok, please give details how exactly you reproduce: host, guest, kernel
+versions, configs, machine types, i.e., /proc/cpuinfo, dmesg, etc. I'd
+like to see if I can find a similar machine here.
 
-> Greeting,
-> =
+Also, would it be possible to upload your vmlinuz somewhere so that I
+can download it for testing?
 
-> FYI, we noticed the following commit (built with gcc-9):
-> =
+Thx.
 
+-- =
 
-Hi,
+Regards/Gruss,
+    Boris.
 
-> commit: 3226b4a4648c6562c642947cee8b90335df911f5 ("[PATCH] selftests/ksel=
-ftest/runner.sh: Add optional command parameters in settings")
-> url: https://github.com/0day-ci/linux/commits/Cristian-Marussi/selftests-=
-kselftest-runner-sh-Add-optional-command-parameters-in-settings/20211202-22=
-2205
-> base: https://git.kernel.org/cgit/linux/kernel/git/shuah/linux-kselftest.=
-git next
-> patch link: https://lore.kernel.org/linux-kselftest/20211202142056.17386-=
-1-cristian.marussi(a)arm.com
-> =
-
-> in testcase: kernel-selftests
-> version: kernel-selftests-x86_64-99d09ee9-1_20211206
-> with following parameters:
-> =
-
-> 	group: group-01
-> 	ucode: 0xde
-> =
-
-> test-description: The kernel contains a set of "self tests" under the too=
-ls/testing/selftests/ directory. These are intended to be small unit tests =
-to exercise individual code paths in the kernel.
-> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
-> =
-
-> =
-
-
-This commit was under discussion/not acked nor fully reviewed, not ready
-for upstream queuing really.
-
-Indeed I posted today a V2 that take a different approach:
-
-https://lore.kernel.org/linux-kselftest/20211215095340.50717-1-cristian.mar=
-ussi(a)arm.com/T/#u
-
-and should solve also the issue mentioned in this report.
-
-Thanks,
-Cristian
-
---===============5020155400105841524==--
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG N=C3=BCr=
+nberg
+--===============2055609106902215648==--
 
