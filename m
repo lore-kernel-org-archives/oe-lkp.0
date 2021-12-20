@@ -1,96 +1,117 @@
-Content-Type: multipart/mixed; boundary="===============8369919479186562891=="
+Content-Type: multipart/mixed; boundary="===============4790694853198716697=="
 MIME-Version: 1.0
-From: Daniel Vetter <daniel@ffwll.ch>
+From: Borislav Petkov <bp@alien8.de>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v2] drm: fix error found in some cases after the patch d1af5cd86997
-Date: Mon, 20 Dec 2021 10:18:38 +0100
-Message-ID: <YcBKbn/9oqD2taCk@phenom.ffwll.local>
-In-Reply-To: <YaiXEARd8z2C463h@gineta.localdomain>
+Subject: [PATCH] x86/mm: Prevent early boot triple-faults with instrumentation
+Date: Mon, 20 Dec 2021 12:00:06 +0100
+Message-ID: <YcBiNqhYrxBPZphJ@zn.tnic>
+In-Reply-To: <Yb2/QCOExDEsj47w@zn.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8369919479186562891==
+--===============4790694853198716697==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 02, 2021 at 10:51:12AM +0100, Claudio Suarez wrote:
-> The patch d1af5cd86997 ("drm: get rid of DRM_DEBUG_* log
-> calls in drm core, files drm_a*.c") fails when the drm_device
-> cannot be found in the parameter plane_state->crtc.
-> Fix it using plane_state->plane.
-> =
+From: Borislav Petkov <bp@suse.de>
 
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Fixes: d1af5cd86997 ("drm: get rid of DRM_DEBUG_* log calls in drm core, =
-files drm_a*.c")
-> Signed-off-by: Claudio Suarez <cssk@net-c.es>
+Commit in Fixes added a global TLB flush on the early boot path, after
+the kernel switches off of the trampoline page table.
 
-Sorry I missed these two patches, but both applied now, thanks.
--Daniel
+Compiler profiling options add additional measurement code
+which needs to be initialized prior to use. The global flush in
+x86_64_start_kernel() happens before those initializations can happen,
+leading to accessing invalid memory.
 
-> ---
->  drivers/gpu/drm/drm_atomic_helper.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> =
+The second issue this fixes is with KASAN: for a similar reason,
+kasan_early_init() needs to have happened before KASAN-instrumented
+functions are called.
 
-> diff --git a/drivers/gpu/drm/drm_atomic_helper.c b/drivers/gpu/drm/drm_at=
-omic_helper.c
-> index aef2fbd676e5..a7a05e1e26bb 100644
-> --- a/drivers/gpu/drm/drm_atomic_helper.c
-> +++ b/drivers/gpu/drm/drm_atomic_helper.c
-> @@ -828,8 +828,8 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
-ane_state *plane_state,
->  	}
->  =
+Therefore, reorder the flush to happen after the KASAN early init
+and prevent the compilers from adding profiling instrumentation to
+native_write_cr4().
 
->  	if (!crtc_state->enable && !can_update_disabled) {
-> -		drm_dbg_kms(plane_state->crtc->dev,
-> -			       "Cannot update plane of a disabled CRTC.\n");
-> +		drm_dbg_kms(plane_state->plane->dev,
-> +			    "Cannot update plane of a disabled CRTC.\n");
->  		return -EINVAL;
->  	}
->  =
+Fixes: f154f290855b ("x86/mm/64: Flush global TLB on boot and AP bringup")
+Reported-by: "J. Bruce Fields" <bfields@fieldses.org>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211209144141.GC25654(a)xsang-OptiPlex-9020
+---
+ arch/x86/kernel/cpu/common.c |  2 +-
+ arch/x86/kernel/head64.c     | 16 ++++++++++++++--
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
-> @@ -839,8 +839,8 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
-ane_state *plane_state,
->  	hscale =3D drm_rect_calc_hscale(src, dst, min_scale, max_scale);
->  	vscale =3D drm_rect_calc_vscale(src, dst, min_scale, max_scale);
->  	if (hscale < 0 || vscale < 0) {
-> -		drm_dbg_kms(plane_state->crtc->dev,
-> -			       "Invalid scaling of plane\n");
-> +		drm_dbg_kms(plane_state->plane->dev,
-> +			    "Invalid scaling of plane\n");
->  		drm_rect_debug_print("src: ", &plane_state->src, true);
->  		drm_rect_debug_print("dst: ", &plane_state->dst, false);
->  		return -ERANGE;
-> @@ -864,8 +864,8 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
-ane_state *plane_state,
->  		return 0;
->  =
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 0083464de5e3..79b3d67addcc 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -384,7 +384,7 @@ void native_write_cr0(unsigned long val)
+ }
+ EXPORT_SYMBOL(native_write_cr0);
+ =
 
->  	if (!can_position && !drm_rect_equals(dst, &clip)) {
-> -		drm_dbg_kms(plane_state->crtc->dev,
-> -			       "Plane must cover entire CRTC\n");
-> +		drm_dbg_kms(plane_state->plane->dev,
-> +			    "Plane must cover entire CRTC\n");
->  		drm_rect_debug_print("dst: ", dst, false);
->  		drm_rect_debug_print("clip: ", &clip, false);
->  		return -EINVAL;
-> -- =
+-void native_write_cr4(unsigned long val)
++void __no_profile native_write_cr4(unsigned long val)
+ {
+ 	unsigned long bits_changed =3D 0;
+ =
 
-> 2.33.0
-> =
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index 75acb6027a87..f5e80a8377ad 100644
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -483,10 +483,12 @@ asmlinkage __visible void __init x86_64_start_kernel(=
+char * real_mode_data)
+ 	/* Kill off the identity-map trampoline */
+ 	reset_early_page_tables();
+ =
 
-> =
+-	__native_tlb_flush_global(native_read_cr4());
+-
+ 	clear_bss();
+ =
 
-> =
++	/*
++	 * This needs to happen *before* kasan_early_init() because latter maps s=
+tuff
++	 * into that page.
++	 */
+ 	clear_page(init_top_pgt);
+ =
 
+ 	/*
+@@ -498,6 +500,16 @@ asmlinkage __visible void __init x86_64_start_kernel(c=
+har * real_mode_data)
+ =
+
+ 	kasan_early_init();
+ =
+
++	/*
++	 * Flush global TLB entries which could be left over from the trampoline =
+page
++	 * table.
++	 *
++	 * This needs to happen *after* kasan_early_init() as KASAN-enabled .conf=
+igs
++	 * instrument native_write_cr4() so KASAN must be initialized for that
++	 * instrumentation to work.
++	 */
++	__native_tlb_flush_global(this_cpu_read(cpu_tlbstate.cr4));
++
+ 	idt_setup_early_handler();
+ =
+
+ 	copy_bootdata(__va(real_mode_data));
+-- =
+
+2.29.2
 
 -- =
 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
---===============8369919479186562891==--
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
+--===============4790694853198716697==--
 
