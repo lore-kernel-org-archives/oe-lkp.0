@@ -1,45 +1,96 @@
-Content-Type: multipart/mixed; boundary="===============8490398733501557276=="
+Content-Type: multipart/mixed; boundary="===============8369919479186562891=="
 MIME-Version: 1.0
-From: Yin Fengwei <fengwei.yin@intel.com>
+From: Daniel Vetter <daniel@ffwll.ch>
 To: lkp@lists.01.org
-Subject: Re: [x86/mm/64] f154f29085: BUG:kernel_reboot-without-warning_in_boot_stage - clang KCOV?
-Date: Mon, 20 Dec 2021 09:51:08 +0800
-Message-ID: <5f5d8258-d468-c37c-e480-b4fb9a3eb91b@intel.com>
-In-Reply-To: <Yb2/nqfzu3VYo+bG@zn.tnic>
+Subject: Re: [PATCH v2] drm: fix error found in some cases after the patch d1af5cd86997
+Date: Mon, 20 Dec 2021 10:18:38 +0100
+Message-ID: <YcBKbn/9oqD2taCk@phenom.ffwll.local>
+In-Reply-To: <YaiXEARd8z2C463h@gineta.localdomain>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8490398733501557276==
+--===============8369919479186562891==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-
-
-On 12/18/21 7:01 PM, Borislav Petkov wrote:
-> On Sat, Dec 18, 2021 at 06:39:46PM +0800, Yin Fengwei wrote:
->> Thanks a lot for sharing this. Lessons learnt here. Will follow this
->> rule exactly in the future.
+On Thu, Dec 02, 2021 at 10:51:12AM +0100, Claudio Suarez wrote:
+> The patch d1af5cd86997 ("drm: get rid of DRM_DEBUG_* log
+> calls in drm core, files drm_a*.c") fails when the drm_device
+> cannot be found in the parameter plane_state->crtc.
+> Fix it using plane_state->plane.
 > =
 
-> Thanks. And for the future, please trim your reply like I just did. :)
-Sure. Thanks.
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Fixes: d1af5cd86997 ("drm: get rid of DRM_DEBUG_* log calls in drm core, =
+files drm_a*.c")
+> Signed-off-by: Claudio Suarez <cssk@net-c.es>
+
+Sorry I missed these two patches, but both applied now, thanks.
+-Daniel
+
+> ---
+>  drivers/gpu/drm/drm_atomic_helper.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> =
+
+> diff --git a/drivers/gpu/drm/drm_atomic_helper.c b/drivers/gpu/drm/drm_at=
+omic_helper.c
+> index aef2fbd676e5..a7a05e1e26bb 100644
+> --- a/drivers/gpu/drm/drm_atomic_helper.c
+> +++ b/drivers/gpu/drm/drm_atomic_helper.c
+> @@ -828,8 +828,8 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
+ane_state *plane_state,
+>  	}
+>  =
+
+>  	if (!crtc_state->enable && !can_update_disabled) {
+> -		drm_dbg_kms(plane_state->crtc->dev,
+> -			       "Cannot update plane of a disabled CRTC.\n");
+> +		drm_dbg_kms(plane_state->plane->dev,
+> +			    "Cannot update plane of a disabled CRTC.\n");
+>  		return -EINVAL;
+>  	}
+>  =
+
+> @@ -839,8 +839,8 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
+ane_state *plane_state,
+>  	hscale =3D drm_rect_calc_hscale(src, dst, min_scale, max_scale);
+>  	vscale =3D drm_rect_calc_vscale(src, dst, min_scale, max_scale);
+>  	if (hscale < 0 || vscale < 0) {
+> -		drm_dbg_kms(plane_state->crtc->dev,
+> -			       "Invalid scaling of plane\n");
+> +		drm_dbg_kms(plane_state->plane->dev,
+> +			    "Invalid scaling of plane\n");
+>  		drm_rect_debug_print("src: ", &plane_state->src, true);
+>  		drm_rect_debug_print("dst: ", &plane_state->dst, false);
+>  		return -ERANGE;
+> @@ -864,8 +864,8 @@ int drm_atomic_helper_check_plane_state(struct drm_pl=
+ane_state *plane_state,
+>  		return 0;
+>  =
+
+>  	if (!can_position && !drm_rect_equals(dst, &clip)) {
+> -		drm_dbg_kms(plane_state->crtc->dev,
+> -			       "Plane must cover entire CRTC\n");
+> +		drm_dbg_kms(plane_state->plane->dev,
+> +			    "Plane must cover entire CRTC\n");
+>  		drm_rect_debug_print("dst: ", dst, false);
+>  		drm_rect_debug_print("clip: ", &clip, false);
+>  		return -EINVAL;
+> -- =
+
+> 2.33.0
+> =
 
 > =
 
->> I tried this fix and it works fine in my local env. Will test it also
->> in our test box once we back to office. Thanks.
 > =
 
-> Good, much appreciated.
-It's our pleasure. Carel will send out the official test report on our
-test box.
 
-Regards
-Yin, Fengwei
+-- =
 
-> =
-
-> Thx.
->=20
---===============8490398733501557276==--
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
+--===============8369919479186562891==--
 
