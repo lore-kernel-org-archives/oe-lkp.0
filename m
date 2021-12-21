@@ -1,45 +1,49 @@
-Content-Type: multipart/mixed; boundary="===============8294546731259688504=="
+Content-Type: multipart/mixed; boundary="===============1395954148181248542=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@suse.de>
+From: Claudio Suarez <cssk@net-c.es>
 To: lkp@lists.01.org
-Subject: Re: [x86/mm/64] f154f29085: BUG:kernel_reboot-without-warning_in_boot_stage - clang KCOV?
-Date: Tue, 21 Dec 2021 16:22:19 +0100
-Message-ID: <YcHxKzB3WPurKlZ9@zn.tnic>
-In-Reply-To: <CANpmjNO4hs1B9eDY9edGGOXY45a8smdtYfYfbDRnGWSYch4wGg@mail.gmail.com>
+Subject: Re: [PATCH v2] drm: fix error found in some cases after the patch d1af5cd86997
+Date: Tue, 21 Dec 2021 23:55:26 +0100
+Message-ID: <YcJbXva93zJJBGbE@gineta.localdomain>
+In-Reply-To: <YcC5Qxnj8PvqnS6f@phenom.ffwll.local>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8294546731259688504==
+--===============1395954148181248542==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 21, 2021 at 04:10:31PM +0100, Marco Elver wrote:
-> Also double-check the Makefile-based solution: the Makefiles in both
-> directories already contain various KCOV_INSTRUMENT/K*SAN_SANITIZE :=3D
-> n, so perhaps adding GCOV_PROFILE or GCOV_PROFILE_whicheverfile.o :=3D n
-> may be more appropriate should the functions that should not be
-> instrumented be a moving target, and prone to breakage again in
-> future.
+On Mon, Dec 20, 2021 at 06:11:31PM +0100, Daniel Vetter wrote:
+> On Mon, Dec 20, 2021 at 10:18:38AM +0100, Daniel Vetter wrote:
+> > On Thu, Dec 02, 2021 at 10:51:12AM +0100, Claudio Suarez wrote:
+> > > The patch d1af5cd86997 ("drm: get rid of DRM_DEBUG_* log
+> > > calls in drm core, files drm_a*.c") fails when the drm_device
+> > > cannot be found in the parameter plane_state->crtc.
+> > > Fix it using plane_state->plane.
+> > > =
 
-Yeah, I asked whether we should exclude the whole ...cpu/common.c from
-profiling - it has mostly init code so it probably doesn't matter
-for coverage but no one said anything so I left it to the function
-annotation.
+> > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > Fixes: d1af5cd86997 ("drm: get rid of DRM_DEBUG_* log calls in drm co=
+re, files drm_a*.c")
+> =
 
-And also, I'm still waiting on clang folks to chime in on the New Pass
-Manager and whether there's a bug in clang there so that we won't need
-the __no_profile annotation at all. I mean, gcc is fine with that config
-so unless clang is doing more profiling gunk than gcc and requires that
-__llvm_gcov_init constructor... see Nathan's mail upthread.
+> My scrip complained about the fixes line, so I fixed it. I guess you've
+> used the sha1 from your tree, not from upstream?
 
-Thx.
+Yes, my bad, sorry. Thanks for the advice.
 
--- =
+> Please always use
+> upstream sha1 when referencing commits.
+> =
 
-Regards/Gruss,
-    Boris.
+> Anyway patches are now pushed.
 
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG N=C3=BCr=
-nberg
---===============8294546731259688504==--
+Thank you!
+
+Best regards.
+Claudio Suarez.
+
+
+
+--===============1395954148181248542==--
 
