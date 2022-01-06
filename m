@@ -1,40 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============3579764304045269858=="
+Content-Type: multipart/mixed; boundary="===============0898685593131017430=="
 MIME-Version: 1.0
-From: Borislav Petkov <bp@alien8.de>
+From: Yin Fengwei <fengwei.yin@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/mm/64] f154f29085: BUG:kernel_reboot-without-warning_in_boot_stage - clang KCOV?
-Date: Wed, 05 Jan 2022 16:21:15 +0100
-Message-ID: <YdW3a3dUfi5pBaiH@zn.tnic>
-In-Reply-To: <fa2f7d50-5226-726d-a9ad-2c42cb5c4054@intel.com>
+Date: Thu, 06 Jan 2022 14:56:51 +0800
+Message-ID: <0736f5f9-b38f-27e9-58da-b71a596c498e@intel.com>
+In-Reply-To: <YdW3a3dUfi5pBaiH@zn.tnic>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3579764304045269858==
+--===============0898685593131017430==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 05, 2022 at 08:47:28PM +0800, Yin Fengwei wrote:
-> it's better that clang restore its behavior to clang-12.
+Hi Boris,
 
-Probably, but I'm not gonna hold my breath - folks are likely very
-busy...
+On 1/5/22 11:21 PM, Borislav Petkov wrote:
+> ... yap, and because fixing it this way is easy, I've already queued the
+> __no_profile solution:
+> =
 
-> Or people need to use __no_profile annotation if want to add function
-> before GCOV/KASAN is initialized.
+> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?h=3Dx=
+86/mm&id=3Db64dfcde1ca9cb82e38e573753f0c0db8fb841c2
+This fixing is good to me.
 
-... yap, and because fixing it this way is easy, I've already queued the
-__no_profile solution:
+Just a little concern: if people need to add function in the future,
+if he/she is not using clang-14, it's possible that he/she misses the
+__no_profile and triggers this kind of issue again.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?h=3Dx86=
-/mm&id=3Db64dfcde1ca9cb82e38e573753f0c0db8fb841c2
+It may not be a big problem (we will capture it in our test. :)). Thanks.
 
-Thanks.
 
--- =
+Regards
+Yin, Fengwei
 
-Regards/Gruss,
-    Boris.
+> =
 
-https://people.kernel.org/tglx/notes-about-netiquette
---===============3579764304045269858==--
+> Thanks.
+--===============0898685593131017430==--
 
