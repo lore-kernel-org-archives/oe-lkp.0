@@ -1,56 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============2925550614812725517=="
+Content-Type: multipart/mixed; boundary="===============2307445694976086024=="
 MIME-Version: 1.0
-From: Eric Biggers <ebiggers@kernel.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: [LTP] [f2fs] a1e09b03e6: ltp.ADSP024.fail
-Date: Fri, 07 Jan 2022 14:49:02 -0800
-Message-ID: <YdjDXiXYjQMJnr/c@sol.localdomain>
-In-Reply-To: <20211226132851.GC34518@xsang-OptiPlex-9020>
+Subject: Re: [genirq/msi] 495c66aca3: BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/mutex.c
+Date: Mon, 10 Jan 2022 21:43:36 +0100
+Message-ID: <87fspvqq2v.ffs@tglx>
+In-Reply-To: <da2cd97c-bd64-ebbd-549b-259ca56e3023@gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2925550614812725517==
+--===============2307445694976086024==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Dec 26, 2021 at 09:28:52PM +0800, kernel test robot wrote:
-> =
+On Tue, Dec 28 2021 at 20:25, Heiner Kallweit wrote:
+> On 28.12.2021 19:40, Thomas Gleixner wrote:
+>>  	if (jumbo_max)
+>>  		netdev_info(dev, "jumbo features [frames: %d bytes, tx checksumming: =
+%s]\n",
+>
+> Thanks for the patch, I'll submit it with your SoB.
 
-> =
+Thank you!
 
-> Greeting,
-> =
+> Apart from pci_irq_vector() incl. underlying msi_get_virq(), are there
+> more functions that must not be called from atomic context any longer?
 
-> FYI, we noticed the following commit (built with gcc-9):
-> =
+I don't think so. The allocation/free functions were always restricted
+to preemptible context.
 
-> commit: a1e09b03e6f5c1d713c88259909137c0fd264ede ("f2fs: use iomap for di=
-rect I/O")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> =
+> Maybe the new constraint should be added to kernel-doc of affected
+> functions?
 
-> in testcase: ltp
-> version: ltp-x86_64-14c1f76-1_20211221
-> with following parameters:
-> =
+Probably.
 
-> 	disk: 1HDD
-> 	fs: f2fs
-> 	test: ltp-aiodio.part2
-> 	ucode: 0x21
-> =
+Thanks,
 
-
-This is caused by an f2fs bug where it exposes DIO-allocated blocks to users
-before they have been initialized.  This test actually fails both before and
-after my commit "f2fs: use iomap for direct I/O".  It is nondeterministic, =
-which
-is why it may have appeared to be a regression.
-
-I'll start a separate discussion on linux-f2fs-devel about this, since this
-thread has too many irrelevant mailing lists and this has been discussed be=
-fore.
-
-- Eric
---===============2925550614812725517==--
+        tglx
+--===============2307445694976086024==--
 
