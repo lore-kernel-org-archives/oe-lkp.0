@@ -1,61 +1,82 @@
-Content-Type: multipart/mixed; boundary="===============6253864690207907838=="
+Content-Type: multipart/mixed; boundary="===============2061153237436448082=="
 MIME-Version: 1.0
-From: Sean Christopherson <seanjc@google.com>
+From: Si, Beibei <beibei.si@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/entry_32] aa93e2ad74: BUG:soft_lockup-CPU##stuck_for#s![systemd-logind:#]
-Date: Wed, 12 Jan 2022 01:28:58 +0000
-Message-ID: <Yd4u2rVVSdpEpwwM@google.com>
-In-Reply-To: <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
+Subject: 0-DAY CI LINUX KERNEL PERFORMANCE REPORT (V5.16)
+Date: Wed, 12 Jan 2022 05:15:01 +0000
+Message-ID: <417b7023644947f1aad9ae4f5de10894@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6253864690207907838==
+--===============2061153237436448082==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jan 11, 2022, Peter Zijlstra wrote:
-> On Thu, Jan 06, 2022 at 04:35:23PM +0800, kernel test robot wrote:
-> > =
+Hi all,
 
-> > =
+0-Day CI Linux Kernel Performance Report (v5.16) has updated. Welcome your =
+feedback.
 
-> > Greeting,
-> > =
+Here=E2=80=99s the link: https://01.org/lkp/blogs/carel/2022/0-day-ci-linux=
+-kernel-performance-report-v5.16
 
-> > FYI, we noticed the following commit (built with clang-14):
-> > =
+Previous report can refer to:  https://01.org/group/3977/blogs
 
-> > commit: aa93e2ad7464ffb90155a5ffdde963816f86d5dc ("x86/entry_32: Remove=
- .fixup usage")
-> > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/core
-> > =
+BR
+Carel
 
-> > in testcase: kernel-selftests
-> > version: =
 
-> > with following parameters:
-> > =
+--===============2061153237436448082==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
 
-> > 	group: x86
-> > =
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
+Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
+PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
+IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
+YWNlDQoJe2ZvbnQtZmFtaWx5OkRlbmdYaWFuOw0KCXBhbm9zZS0xOjIgMSA2IDAgMyAxIDEgMSAx
+IDE7fQ0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpDYWxpYnJpOw0KCXBhbm9zZS0xOjIgMTUg
+NSAyIDIgMiA0IDMgMiA0O30NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6IlxARGVuZ1hpYW4i
+Ow0KCXBhbm9zZS0xOjIgMSA2IDAgMyAxIDEgMSAxIDE7fQ0KLyogU3R5bGUgRGVmaW5pdGlvbnMg
+Ki8NCnAuTXNvTm9ybWFsLCBsaS5Nc29Ob3JtYWwsIGRpdi5Nc29Ob3JtYWwNCgl7bWFyZ2luOjBp
+bjsNCglmb250LXNpemU6MTEuMHB0Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJpIixzYW5zLXNlcmlm
+O30NCmE6bGluaywgc3Bhbi5Nc29IeXBlcmxpbmsNCgl7bXNvLXN0eWxlLXByaW9yaXR5Ojk5Ow0K
+CWNvbG9yOiMwNTYzQzE7DQoJdGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZTt9DQpzcGFuLkVtYWls
+U3R5bGUxNw0KCXttc28tc3R5bGUtdHlwZTpwZXJzb25hbC1jb21wb3NlOw0KCWZvbnQtZmFtaWx5
+OiJDYWxpYnJpIixzYW5zLXNlcmlmOw0KCWNvbG9yOndpbmRvd3RleHQ7fQ0KLk1zb0NocERlZmF1
+bHQNCgl7bXNvLXN0eWxlLXR5cGU6ZXhwb3J0LW9ubHk7DQoJZm9udC1mYW1pbHk6IkNhbGlicmki
+LHNhbnMtc2VyaWY7fQ0KQHBhZ2UgV29yZFNlY3Rpb24xDQoJe3NpemU6OC41aW4gMTEuMGluOw0K
+CW1hcmdpbjoxLjBpbiAxLjI1aW4gMS4waW4gMS4yNWluO30NCmRpdi5Xb3JkU2VjdGlvbjENCgl7
+cGFnZTpXb3JkU2VjdGlvbjE7fQ0KLS0+PC9zdHlsZT48IS0tW2lmIGd0ZSBtc28gOV0+PHhtbD4N
+CjxvOnNoYXBlZGVmYXVsdHMgdjpleHQ9ImVkaXQiIHNwaWRtYXg9IjEwMjYiIC8+DQo8L3htbD48
+IVtlbmRpZl0tLT48IS0tW2lmIGd0ZSBtc28gOV0+PHhtbD4NCjxvOnNoYXBlbGF5b3V0IHY6ZXh0
+PSJlZGl0Ij4NCjxvOmlkbWFwIHY6ZXh0PSJlZGl0IiBkYXRhPSIxIiAvPg0KPC9vOnNoYXBlbGF5
+b3V0PjwveG1sPjwhW2VuZGlmXS0tPg0KPC9oZWFkPg0KPGJvZHkgbGFuZz0iRU4tVVMiIGxpbms9
+IiMwNTYzQzEiIHZsaW5rPSIjOTU0RjcyIiBzdHlsZT0id29yZC13cmFwOmJyZWFrLXdvcmQiPg0K
+PGRpdiBjbGFzcz0iV29yZFNlY3Rpb24xIj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPkhpIGFsbCwg
+PG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwv
+cD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjAtRGF5IENJIExpbnV4IEtlcm5lbCBQZXJmb3JtYW5j
+ZSBSZXBvcnQgKHY1LjE2KSBoYXMgdXBkYXRlZC4gV2VsY29tZSB5b3VyIGZlZWRiYWNrLjxvOnA+
+PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8
+cCBjbGFzcz0iTXNvTm9ybWFsIj5IZXJl4oCZcyB0aGUgbGluazogPGEgaHJlZj0iaHR0cHM6Ly8w
+MS5vcmcvbGtwL2Jsb2dzL2NhcmVsLzIwMjIvMC1kYXktY2ktbGludXgta2VybmVsLXBlcmZvcm1h
+bmNlLXJlcG9ydC12NS4xNiI+DQpodHRwczovLzAxLm9yZy9sa3AvYmxvZ3MvY2FyZWwvMjAyMi8w
+LWRheS1jaS1saW51eC1rZXJuZWwtcGVyZm9ybWFuY2UtcmVwb3J0LXY1LjE2PC9hPjxvOnA+PC9v
+OnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8cCBj
+bGFzcz0iTXNvTm9ybWFsIj5QcmV2aW91cyByZXBvcnQgY2FuIHJlZmVyIHRvOiAmbmJzcDs8YSBo
+cmVmPSJodHRwczovLzAxLm9yZy9ncm91cC8zOTc3L2Jsb2dzIj5odHRwczovLzAxLm9yZy9ncm91
+cC8zOTc3L2Jsb2dzPC9hPjxvOnA+PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86
+cD4mbmJzcDs8L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5CUjxvOnA+PC9vOnA+PC9w
+Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+Q2FyZWw8bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJN
+c29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9kaXY+DQo8L2JvZHk+DQo8L2h0bWw+
+DQo=
 
-> =
-
-> It would be very useful if this thing would also say which of the many
-> x86 selftests fails... it appears to be: ldt_gdt_32.
-> =
-
-> The below fixes it, but I'm still not entirely sure what the actual
-> problem is, although Andy did find a bug in that the exception handler
-> should do: *(ss:esp) =3D 0, adding ss-base (using insn_get_seg_base())
-> doesn't seem to cure things.
-
-Because I was curious...
-
-The issue is that PARANOID_EXIT_TO_KERNEL_MODE in the handle_exception_retu=
-rn
-path overwrites the entry stack data with the task stack data, restoring th=
-e "bad"
-segment value.
---===============6253864690207907838==--
+--===============2061153237436448082==--
 
