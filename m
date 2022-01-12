@@ -1,172 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============1027468899068300737=="
+Content-Type: multipart/mixed; boundary="===============6253864690207907838=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Sean Christopherson <seanjc@google.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/entry_32] aa93e2ad74: BUG:soft_lockup-CPU##stuck_for#s![systemd-logind:#]
-Date: Tue, 11 Jan 2022 12:11:14 +0100
-Message-ID: <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
-In-Reply-To: <20220106083523.GB32167@xsang-OptiPlex-9020>
+Date: Wed, 12 Jan 2022 01:28:58 +0000
+Message-ID: <Yd4u2rVVSdpEpwwM@google.com>
+In-Reply-To: <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1027468899068300737==
+--===============6253864690207907838==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 06, 2022 at 04:35:23PM +0800, kernel test robot wrote:
-> =
+On Tue, Jan 11, 2022, Peter Zijlstra wrote:
+> On Thu, Jan 06, 2022 at 04:35:23PM +0800, kernel test robot wrote:
+> > =
+
+> > =
+
+> > Greeting,
+> > =
+
+> > FYI, we noticed the following commit (built with clang-14):
+> > =
+
+> > commit: aa93e2ad7464ffb90155a5ffdde963816f86d5dc ("x86/entry_32: Remove=
+ .fixup usage")
+> > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/core
+> > =
+
+> > in testcase: kernel-selftests
+> > version: =
+
+> > with following parameters:
+> > =
+
+> > 	group: x86
+> > =
 
 > =
 
-> Greeting,
+> It would be very useful if this thing would also say which of the many
+> x86 selftests fails... it appears to be: ldt_gdt_32.
 > =
 
-> FYI, we noticed the following commit (built with clang-14):
-> =
+> The below fixes it, but I'm still not entirely sure what the actual
+> problem is, although Andy did find a bug in that the exception handler
+> should do: *(ss:esp) =3D 0, adding ss-base (using insn_get_seg_base())
+> doesn't seem to cure things.
 
-> commit: aa93e2ad7464ffb90155a5ffdde963816f86d5dc ("x86/entry_32: Remove .=
-fixup usage")
-> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/core
-> =
+Because I was curious...
 
-> in testcase: kernel-selftests
-> version: =
-
-> with following parameters:
-> =
-
-> 	group: x86
-> =
-
-
-It would be very useful if this thing would also say which of the many
-x86 selftests fails... it appears to be: ldt_gdt_32.
-
-The below fixes it, but I'm still not entirely sure what the actual
-problem is, although Andy did find a bug in that the exception handler
-should do: *(ss:esp) =3D 0, adding ss-base (using insn_get_seg_base())
-doesn't seem to cure things.
-
-The below simply emulates the pop instruction and relies on the nested
-RESTORE_REGS to actually set the segment register. The testcase now
-successfully completes again.
-
----
- arch/x86/entry/entry_32.S                  | 13 +++++++++----
- arch/x86/include/asm/extable_fixup_types.h |  5 ++++-
- arch/x86/lib/insn-eval.c                   |  5 +++++
- arch/x86/mm/extable.c                      | 17 +++--------------
- 4 files changed, 21 insertions(+), 19 deletions(-)
-
-diff --git a/arch/x86/entry/entry_32.S b/arch/x86/entry/entry_32.S
-index e0a95d8a6553..fff7f2a08ff5 100644
---- a/arch/x86/entry/entry_32.S
-+++ b/arch/x86/entry/entry_32.S
-@@ -268,11 +268,16 @@
- 1:	popl	%ds
- 2:	popl	%es
- 3:	popl	%fs
--	addl	$(4 + \pop), %esp	/* pop the unused "gs" slot */
-+4:	addl	$(4 + \pop), %esp	/* pop the unused "gs" slot */
- 	IRET_FRAME
--	_ASM_EXTABLE_TYPE(1b, 1b, EX_TYPE_POP_ZERO)
--	_ASM_EXTABLE_TYPE(2b, 2b, EX_TYPE_POP_ZERO)
--	_ASM_EXTABLE_TYPE(3b, 3b, EX_TYPE_POP_ZERO)
-+
-+	/*
-+	 * There is no _ASM_EXTABLE_TYPE_REG() for ASM, however since this is
-+	 * ASM the registers are known and we can trivially hard-code them.
-+	 */
-+	_ASM_EXTABLE_TYPE(1b, 2b, EX_TYPE_POP_ZERO|EX_DATA_REG(8))
-+	_ASM_EXTABLE_TYPE(2b, 3b, EX_TYPE_POP_ZERO|EX_DATA_REG(9))
-+	_ASM_EXTABLE_TYPE(3b, 4b, EX_TYPE_POP_ZERO|EX_DATA_REG(10))
- .endm
- =
-
- .macro RESTORE_ALL_NMI cr3_reg:req pop=3D0
-diff --git a/arch/x86/include/asm/extable_fixup_types.h b/arch/x86/include/=
-asm/extable_fixup_types.h
-index b5ab333e064a..81eedabc1ea1 100644
---- a/arch/x86/include/asm/extable_fixup_types.h
-+++ b/arch/x86/include/asm/extable_fixup_types.h
-@@ -16,6 +16,7 @@
- #define EX_DATA_FLAG_SHIFT		12
- #define EX_DATA_IMM_SHIFT		16
- =
-
-+#define EX_DATA_REG(reg)		((reg) << EX_DATA_REG_SHIFT)
- #define EX_DATA_FLAG(flag)		((flag) << EX_DATA_FLAG_SHIFT)
- #define EX_DATA_IMM(imm)		((imm) << EX_DATA_IMM_SHIFT)
- =
-
-@@ -41,7 +42,9 @@
- #define	EX_TYPE_RDMSR_IN_MCE		13
- #define	EX_TYPE_DEFAULT_MCE_SAFE	14
- #define	EX_TYPE_FAULT_MCE_SAFE		15
--#define	EX_TYPE_POP_ZERO		16
-+
-+#define	EX_TYPE_POP_REG			16 /* reg :=3D (long)imm */
-+#define EX_TYPE_POP_ZERO		(EX_TYPE_POP_REG | EX_DATA_IMM(0))
- =
-
- #define	EX_TYPE_IMM_REG			17 /* reg :=3D (long)imm */
- #define	EX_TYPE_EFAULT_REG		(EX_TYPE_IMM_REG | EX_DATA_IMM(-EFAULT))
-diff --git a/arch/x86/lib/insn-eval.c b/arch/x86/lib/insn-eval.c
-index 666b9c5672a2..b781d324211b 100644
---- a/arch/x86/lib/insn-eval.c
-+++ b/arch/x86/lib/insn-eval.c
-@@ -428,6 +428,11 @@ static const int pt_regoff[] =3D {
- 	offsetof(struct pt_regs, r13),
- 	offsetof(struct pt_regs, r14),
- 	offsetof(struct pt_regs, r15),
-+#else
-+	offsetof(struct pt_regs, ds),
-+	offsetof(struct pt_regs, es),
-+	offsetof(struct pt_regs, fs),
-+	offsetof(struct pt_regs, gs),
- #endif
- };
- =
-
-diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
-index 41eaa648349e..dba2197c05c3 100644
---- a/arch/x86/mm/extable.c
-+++ b/arch/x86/mm/extable.c
-@@ -126,18 +126,6 @@ static bool ex_handler_clear_fs(const struct exception=
-_table_entry *fixup,
- 	return ex_handler_default(fixup, regs);
- }
- =
-
--static bool ex_handler_pop_zero(const struct exception_table_entry *fixup,
--				struct pt_regs *regs)
--{
--	/*
--	 * Typically used for when "pop %seg" traps, in which case we'll clear
--	 * the stack slot and re-try the instruction, which will then succeed
--	 * to pop zero.
--	 */
--	*((unsigned long *)regs->sp) =3D 0;
--	return ex_handler_default(fixup, regs);
--}
--
- static bool ex_handler_imm_reg(const struct exception_table_entry *fixup,
- 			       struct pt_regs *regs, int reg, int imm)
- {
-@@ -218,8 +206,9 @@ int fixup_exception(struct pt_regs *regs, int trapnr, u=
-nsigned long error_code,
- 	case EX_TYPE_RDMSR_IN_MCE:
- 		ex_handler_msr_mce(regs, false);
- 		break;
--	case EX_TYPE_POP_ZERO:
--		return ex_handler_pop_zero(e, regs);
-+	case EX_TYPE_POP_REG:
-+		regs->sp +=3D sizeof(long);
-+		fallthrough;
- 	case EX_TYPE_IMM_REG:
- 		return ex_handler_imm_reg(e, regs, reg, imm);
- 	case EX_TYPE_FAULT_SGX:
-
-
---===============1027468899068300737==--
+The issue is that PARANOID_EXIT_TO_KERNEL_MODE in the handle_exception_retu=
+rn
+path overwrites the entry stack data with the task stack data, restoring th=
+e "bad"
+segment value.
+--===============6253864690207907838==--
 
