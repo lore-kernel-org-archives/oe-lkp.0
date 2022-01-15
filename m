@@ -1,77 +1,104 @@
-Content-Type: multipart/mixed; boundary="===============5929783769705030713=="
+Content-Type: multipart/mixed; boundary="===============4671895081695059198=="
 MIME-Version: 1.0
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Borislav Petkov <bp@alien8.de>
 To: lkp@lists.01.org
-Subject: Re: [ucounts] 59ec71575a: will-it-scale.per_process_ops -10.3% regression
-Date: Fri, 14 Jan 2022 18:07:39 -0600
-Message-ID: <87y23hkgj8.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <20220113021704.GA18396@xsang-OptiPlex-9020>
+Subject: Re: [PATCH] x86/entry_32: Fix segment exceptions
+Date: Sat, 15 Jan 2022 09:13:24 +0100
+Message-ID: <YeKCJHju0owRVFoT@zn.tnic>
+In-Reply-To: <760ea801-8394-4e0c-9ec3-23e36e436551@www.fastmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5929783769705030713==
+--===============4671895081695059198==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Oliver Sang <oliver.sang@intel.com> writes:
+On Fri, Jan 14, 2022 at 03:48:31PM -0800, Andy Lutomirski wrote:
+> Acked-by: Andy Lutomirski <luto@kernel.org>
 
-> Hi Eric,
->
-> On Wed, Jan 12, 2022 at 01:08:23PM -0600, Eric W. Biederman wrote:
->> kernel test robot <oliver.sang@intel.com> writes:
->> =
+I actually did this new version:
 
->> > Greeting,
->> >
->> > FYI, we noticed a -10.3% regression of will-it-scale.per_process_ops d=
-ue to commit:
->> =
+---
+From: Borislav Petkov <bp@suse.de>
+Subject: [PATCH] x86/entry_32: Remove GS from the pt_regs offsets and fixup=
+ regs
 
->> =
+Document how GS (and its stack slot) on 32-bit are used.
 
->> I am having a bit of a challenge reading this report.  Does the -10.3%
->> mean that will-it-scale.per_process_ops is performing 70873 operations
->> per second instead of 78995 aka -10.3% fewer operations per second?
->
-> yes
->
->> =
+Fixes: 9cdbeec40968 ("x86/entry_32: Fix segment exceptions")
+Signed-off-by: Borislav Petkov <bp@suse.de>
+---
+ arch/x86/entry/entry_32.S                  | 4 +++-
+ arch/x86/include/asm/extable_fixup_types.h | 5 +++--
+ arch/x86/lib/insn-eval.c                   | 5 ++++-
+ 3 files changed, 10 insertions(+), 4 deletions(-)
 
->> The per-profile.self-cycles-pp.do_dec_rlimits_put_ucounts now takes +2.6
->> more cycles, and perf-profile.self.cycles.pp.inc_rlimit_get_ucounts now
->> takes +3.8 more cycles.
->> =
+diff --git a/arch/x86/entry/entry_32.S b/arch/x86/entry/entry_32.S
+index a7ec22b1d06c..addc3966ee20 100644
+--- a/arch/x86/entry/entry_32.S
++++ b/arch/x86/entry/entry_32.S
+@@ -20,7 +20,9 @@
+  *	1C(%esp) - %ds
+  *	20(%esp) - %es
+  *	24(%esp) - %fs
+- *	28(%esp) - unused -- was %gs on old stackprotector kernels
++ *	28(%esp) - unused -- was %gs on old stackprotector kernels. %gs is unus=
+ed in
++ *	kernel mode in 32-bit and holds the user value. When handling exception=
+s, the
++ *	C-exception handler address is pushed into the GS-slot on the stack.
+  *	2C(%esp) - orig_eax
+  *	30(%esp) - %eip
+  *	34(%esp) - %cs
+diff --git a/arch/x86/include/asm/extable_fixup_types.h b/arch/x86/include/=
+asm/extable_fixup_types.h
+index 503622627400..0aa5f4d3234f 100644
+--- a/arch/x86/include/asm/extable_fixup_types.h
++++ b/arch/x86/include/asm/extable_fixup_types.h
+@@ -20,11 +20,12 @@
+ #define EX_DATA_FLAG(flag)		((flag) << EX_DATA_FLAG_SHIFT)
+ #define EX_DATA_IMM(imm)		((imm) << EX_DATA_IMM_SHIFT)
+ =
 
->> Which if I read this correctly is a regression report about two
->> functions taking 3 or 4 cycles more after the code was rearranged inside
->> of them.
->> =
+-/* segment regs */
++#ifdef CONFIG_X86_32
++/* segment regs, valid only for 32-bit code, see pt_regoff */
+ #define EX_REG_DS			EX_DATA_REG(8)
+ #define EX_REG_ES			EX_DATA_REG(9)
+ #define EX_REG_FS			EX_DATA_REG(10)
+-#define EX_REG_GS			EX_DATA_REG(11)
++#endif
+ =
 
->> Is that correct?  Is this a regression report saying those two functions
->> are taking a few cycles more which leads to
->> will-it-scale.per_process_ops not being able to perform as many
->> operations per second?
->
-> yes
->
->> =
+ /* flags */
+ #define EX_FLAG_CLEAR_AX		EX_DATA_FLAG(1)
+diff --git a/arch/x86/lib/insn-eval.c b/arch/x86/lib/insn-eval.c
+index b781d324211b..cfc4d13b7d5b 100644
+--- a/arch/x86/lib/insn-eval.c
++++ b/arch/x86/lib/insn-eval.c
+@@ -432,7 +432,10 @@ static const int pt_regoff[] =3D {
+ 	offsetof(struct pt_regs, ds),
+ 	offsetof(struct pt_regs, es),
+ 	offsetof(struct pt_regs, fs),
+-	offsetof(struct pt_regs, gs),
++	/*
++	 * Can't use that one, see top of entry_32.S
++	 * offsetof(struct pt_regs, gs),
++	 */
+ #endif
+ };
+ =
 
->> Given the change in the commit mentioned I think this is all down to a
->> bug fix causing the code to be rearranged and a compiler optimizations.
->> =
+-- =
 
->> I don't see much room to do anything about this.
->
-> got it. this is a bug fix. Thanks for explanation!
+2.29.2
 
-The big surprise is that we haven't seen performance regressions up
-until this point as the ucount rlimit work was merged.
 
-Unless we can spot something very silly that the compiler is doing
-with code generation (and those 3 or 4 cycles suggests it is possible
-the compiler is being silly) it is going to take some reorganizing
-to improve the performance.
+-- =
 
-Eric
---===============5929783769705030713==--
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
+--===============4671895081695059198==--
 
