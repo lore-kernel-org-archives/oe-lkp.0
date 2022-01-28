@@ -1,108 +1,160 @@
-Content-Type: multipart/mixed; boundary="===============5320923466111577119=="
+Content-Type: multipart/mixed; boundary="===============0343911914404813941=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v3 00/13] module: core code clean up
-Date: Fri, 28 Jan 2022 13:23:08 +0000
-Message-ID: <20220128132321.529594-1-atomlin@redhat.com>
+Subject: [RFC PATCH v3 01/13] module: Move all into module/
+Date: Fri, 28 Jan 2022 13:23:09 +0000
+Message-ID: <20220128132321.529594-2-atomlin@redhat.com>
+In-Reply-To: <20220128132321.529594-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5320923466111577119==
+--===============0343911914404813941==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Luis,
+No functional changes.
 
-[Note: Cc'd live-patching for feedback on livepatch specific changes]
+This patch moves all module related code into a separate directory,
+modifies each file name and creates a new Makefile. Note: this effort
+is in preparation to refactor core module code.
 
-Firstly, apologies for the delay.
-
-As per your suggestion [1], this is an attempt to refactor and split
-optional code out of core module support code into separate components.
-This version is based on branch mcgrof/modules-next since a97ac8cb24a3/or
-modules-5.17-rc1. Please let me know your thoughts.
-
-Changes since v1 [2]:
-
-  - Moved module version support code into a new file
-
-Changes since v2 [3]:
-
- - Move module decompress support to a separate file
- - Make check_modinfo_livepatch() generic (Petr Mladek)
- - Remove filename from each newly created file (Luis Chamberlain)
- - Addressed some (i.e. --ignore=3DASSIGN_IN_IF,AVOID_BUG was used)
-   minor scripts/checkpatch.pl concerns e.g., use strscpy over
-   strlcpy and missing a blank line after declarations (Allen)
-
-[1]: https://lore.kernel.org/lkml/YbEZ4HgSYQEPuRmS(a)bombadil.infradead.org/
-[2]: https://lore.kernel.org/lkml/20211228213041.1356334-1-atomlin(a)redhat=
-.com/
-[3]: https://lore.kernel.org/lkml/20220106234319.2067842-1-atomlin(a)redhat=
-.com/
-
-
-Aaron Tomlin (13):
-  module: Move all into module/
-  module: Simple refactor in preparation for split
-  module: Move livepatch support to a separate file
-  module: Move latched RB-tree support to a separate file
-  module: Move arch strict rwx support to a separate file
-  module: Move strict rwx support to a separate file
-  module: Move extra signature support out of core code
-  module: Move kmemleak support to a separate file
-  module: Move kallsyms support into a separate file
-  module: Move procfs support into a separate file
-  module: Move sysfs support into a separate file
-  module: Move kdb_modules list out of core code
-  module: Move version support into a separate file
-
- MAINTAINERS                                   |    2 +-
- include/linux/module.h                        |   92 +-
- kernel/Makefile                               |    5 +-
- kernel/debug/kdb/kdb_main.c                   |    5 +
- kernel/module-internal.h                      |   50 -
- kernel/module/Makefile                        |   18 +
- kernel/module/arch_strict_rwx.c               |   44 +
- kernel/module/debug_kmemleak.c                |   30 +
- .../decompress.c}                             |    2 +-
- kernel/module/internal.h                      |  202 ++
- kernel/module/kallsyms.c                      |  502 +++++
- kernel/module/livepatch.c                     |   74 +
- kernel/{module.c =3D> module/main.c}            | 1879 +----------------
- kernel/module/procfs.c                        |  142 ++
- .../signature.c}                              |    0
- kernel/module/signing.c                       |  120 ++
- kernel/module/strict_rwx.c                    |   83 +
- kernel/module/sysfs.c                         |  425 ++++
- kernel/module/tree_lookup.c                   |  108 +
- kernel/module/version.c                       |  110 +
- kernel/module_signing.c                       |   45 -
- 21 files changed, 2032 insertions(+), 1906 deletions(-)
- delete mode 100644 kernel/module-internal.h
+Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+---
+ MAINTAINERS                                         | 2 +-
+ kernel/Makefile                                     | 5 +----
+ kernel/module/Makefile                              | 9 +++++++++
+ kernel/{module_decompress.c =3D> module/decompress.c} | 2 +-
+ kernel/{module-internal.h =3D> module/internal.h}     | 0
+ kernel/{module.c =3D> module/main.c}                  | 2 +-
+ kernel/{module_signature.c =3D> module/signature.c}   | 0
+ kernel/{module_signing.c =3D> module/signing.c}       | 2 +-
+ 8 files changed, 14 insertions(+), 8 deletions(-)
  create mode 100644 kernel/module/Makefile
- create mode 100644 kernel/module/arch_strict_rwx.c
- create mode 100644 kernel/module/debug_kmemleak.c
  rename kernel/{module_decompress.c =3D> module/decompress.c} (99%)
- create mode 100644 kernel/module/internal.h
- create mode 100644 kernel/module/kallsyms.c
- create mode 100644 kernel/module/livepatch.c
- rename kernel/{module.c =3D> module/main.c} (63%)
- create mode 100644 kernel/module/procfs.c
+ rename kernel/{module-internal.h =3D> module/internal.h} (100%)
+ rename kernel/{module.c =3D> module/main.c} (99%)
  rename kernel/{module_signature.c =3D> module/signature.c} (100%)
- create mode 100644 kernel/module/signing.c
- create mode 100644 kernel/module/strict_rwx.c
- create mode 100644 kernel/module/sysfs.c
- create mode 100644 kernel/module/tree_lookup.c
- create mode 100644 kernel/module/version.c
- delete mode 100644 kernel/module_signing.c
+ rename kernel/{module_signing.c =3D> module/signing.c} (97%)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index acd112c42255..a98f4700acb7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12976,7 +12976,7 @@ L:	linux-kernel(a)vger.kernel.org
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git modu=
+les-next
+ F:	include/linux/module.h
+-F:	kernel/module.c
++F:	kernel/module/main.c
+ =
 
-base-commit: a97ac8cb24a3c3ad74794adb83717ef1605d1b47
+ MONOLITHIC POWER SYSTEM PMIC DRIVER
+ M:	Saravanan Sekar <sravanhome@gmail.com>
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 56f4ee97f328..3a6380975c57 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -53,6 +53,7 @@ obj-y +=3D rcu/
+ obj-y +=3D livepatch/
+ obj-y +=3D dma/
+ obj-y +=3D entry/
++obj-y +=3D module/
+ =
+
+ obj-$(CONFIG_KCMP) +=3D kcmp.o
+ obj-$(CONFIG_FREEZER) +=3D freezer.o
+@@ -66,10 +67,6 @@ ifneq ($(CONFIG_SMP),y)
+ obj-y +=3D up.o
+ endif
+ obj-$(CONFIG_UID16) +=3D uid16.o
+-obj-$(CONFIG_MODULES) +=3D module.o
+-obj-$(CONFIG_MODULE_DECOMPRESS) +=3D module_decompress.o
+-obj-$(CONFIG_MODULE_SIG) +=3D module_signing.o
+-obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D module_signature.o
+ obj-$(CONFIG_KALLSYMS) +=3D kallsyms.o
+ obj-$(CONFIG_BSD_PROCESS_ACCT) +=3D acct.o
+ obj-$(CONFIG_CRASH_CORE) +=3D crash_core.o
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+new file mode 100644
+index 000000000000..2902fc7d0ef1
+--- /dev/null
++++ b/kernel/module/Makefile
+@@ -0,0 +1,9 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Makefile for linux kernel module support
++#
++
++obj-$(CONFIG_MODULES) +=3D main.o
++obj-$(CONFIG_MODULE_DECOMPRESS) +=3D decompress.o
++obj-$(CONFIG_MODULE_SIG) +=3D signing.o
++obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D signature.o
+diff --git a/kernel/module_decompress.c b/kernel/module/decompress.c
+similarity index 99%
+rename from kernel/module_decompress.c
+rename to kernel/module/decompress.c
+index b01c69c2ff99..c153fd8a4444 100644
+--- a/kernel/module_decompress.c
++++ b/kernel/module/decompress.c
+@@ -12,7 +12,7 @@
+ #include <linux/sysfs.h>
+ #include <linux/vmalloc.h>
+ =
+
+-#include "module-internal.h"
++#include "internal.h"
+ =
+
+ static int module_extend_max_pages(struct load_info *info, unsigned int ex=
+tent)
+ {
+diff --git a/kernel/module-internal.h b/kernel/module/internal.h
+similarity index 100%
+rename from kernel/module-internal.h
+rename to kernel/module/internal.h
+diff --git a/kernel/module.c b/kernel/module/main.c
+similarity index 99%
+rename from kernel/module.c
+rename to kernel/module/main.c
+index 387ee77bdbd6..d8c6269af6cf 100644
+--- a/kernel/module.c
++++ b/kernel/module/main.c
+@@ -58,7 +58,7 @@
+ #include <linux/dynamic_debug.h>
+ #include <linux/audit.h>
+ #include <uapi/linux/module.h>
+-#include "module-internal.h"
++#include "internal.h"
+ =
+
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/module.h>
+diff --git a/kernel/module_signature.c b/kernel/module/signature.c
+similarity index 100%
+rename from kernel/module_signature.c
+rename to kernel/module/signature.c
+diff --git a/kernel/module_signing.c b/kernel/module/signing.c
+similarity index 97%
+rename from kernel/module_signing.c
+rename to kernel/module/signing.c
+index 8723ae70ea1f..8aeb6d2ee94b 100644
+--- a/kernel/module_signing.c
++++ b/kernel/module/signing.c
+@@ -12,7 +12,7 @@
+ #include <linux/string.h>
+ #include <linux/verification.h>
+ #include <crypto/public_key.h>
+-#include "module-internal.h"
++#include "internal.h"
+ =
+
+ /*
+  * Verify the signature on a module.
 -- =
 
 2.34.1
 
---===============5320923466111577119==--
+--===============0343911914404813941==--
 
