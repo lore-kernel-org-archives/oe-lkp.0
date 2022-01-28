@@ -1,429 +1,108 @@
-Content-Type: multipart/mixed; boundary="===============4414677968596318883=="
+Content-Type: multipart/mixed; boundary="===============5320923466111577119=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v3 13/13] module: Move version support into a separate file
-Date: Fri, 28 Jan 2022 12:50:46 +0000
-Message-ID: <20220128125046.497173-14-atomlin@redhat.com>
-In-Reply-To: <20220128125046.497173-1-atomlin@redhat.com>
+Subject: [RFC PATCH v3 00/13] module: core code clean up
+Date: Fri, 28 Jan 2022 13:23:08 +0000
+Message-ID: <20220128132321.529594-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4414677968596318883==
+--===============5320923466111577119==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-No functional change.
+Hi Luis,
 
-This patch migrates module version support out of core code into
-kernel/module/version.c. In addition simple code refactoring to
-make this possible.
+[Note: Cc'd live-patching for feedback on livepatch specific changes]
 
-Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
----
- kernel/module/Makefile   |   1 +
- kernel/module/internal.h |  51 +++++++++++++
- kernel/module/main.c     | 150 +--------------------------------------
- kernel/module/version.c  | 110 ++++++++++++++++++++++++++++
- 4 files changed, 164 insertions(+), 148 deletions(-)
+Firstly, apologies for the delay.
+
+As per your suggestion [1], this is an attempt to refactor and split
+optional code out of core module support code into separate components.
+This version is based on branch mcgrof/modules-next since a97ac8cb24a3/or
+modules-5.17-rc1. Please let me know your thoughts.
+
+Changes since v1 [2]:
+
+  - Moved module version support code into a new file
+
+Changes since v2 [3]:
+
+ - Move module decompress support to a separate file
+ - Make check_modinfo_livepatch() generic (Petr Mladek)
+ - Remove filename from each newly created file (Luis Chamberlain)
+ - Addressed some (i.e. --ignore=3DASSIGN_IN_IF,AVOID_BUG was used)
+   minor scripts/checkpatch.pl concerns e.g., use strscpy over
+   strlcpy and missing a blank line after declarations (Allen)
+
+[1]: https://lore.kernel.org/lkml/YbEZ4HgSYQEPuRmS(a)bombadil.infradead.org/
+[2]: https://lore.kernel.org/lkml/20211228213041.1356334-1-atomlin(a)redhat=
+.com/
+[3]: https://lore.kernel.org/lkml/20220106234319.2067842-1-atomlin(a)redhat=
+.com/
+
+
+Aaron Tomlin (13):
+  module: Move all into module/
+  module: Simple refactor in preparation for split
+  module: Move livepatch support to a separate file
+  module: Move latched RB-tree support to a separate file
+  module: Move arch strict rwx support to a separate file
+  module: Move strict rwx support to a separate file
+  module: Move extra signature support out of core code
+  module: Move kmemleak support to a separate file
+  module: Move kallsyms support into a separate file
+  module: Move procfs support into a separate file
+  module: Move sysfs support into a separate file
+  module: Move kdb_modules list out of core code
+  module: Move version support into a separate file
+
+ MAINTAINERS                                   |    2 +-
+ include/linux/module.h                        |   92 +-
+ kernel/Makefile                               |    5 +-
+ kernel/debug/kdb/kdb_main.c                   |    5 +
+ kernel/module-internal.h                      |   50 -
+ kernel/module/Makefile                        |   18 +
+ kernel/module/arch_strict_rwx.c               |   44 +
+ kernel/module/debug_kmemleak.c                |   30 +
+ .../decompress.c}                             |    2 +-
+ kernel/module/internal.h                      |  202 ++
+ kernel/module/kallsyms.c                      |  502 +++++
+ kernel/module/livepatch.c                     |   74 +
+ kernel/{module.c =3D> module/main.c}            | 1879 +----------------
+ kernel/module/procfs.c                        |  142 ++
+ .../signature.c}                              |    0
+ kernel/module/signing.c                       |  120 ++
+ kernel/module/strict_rwx.c                    |   83 +
+ kernel/module/sysfs.c                         |  425 ++++
+ kernel/module/tree_lookup.c                   |  108 +
+ kernel/module/version.c                       |  110 +
+ kernel/module_signing.c                       |   45 -
+ 21 files changed, 2032 insertions(+), 1906 deletions(-)
+ delete mode 100644 kernel/module-internal.h
+ create mode 100644 kernel/module/Makefile
+ create mode 100644 kernel/module/arch_strict_rwx.c
+ create mode 100644 kernel/module/debug_kmemleak.c
+ rename kernel/{module_decompress.c =3D> module/decompress.c} (99%)
+ create mode 100644 kernel/module/internal.h
+ create mode 100644 kernel/module/kallsyms.c
+ create mode 100644 kernel/module/livepatch.c
+ rename kernel/{module.c =3D> module/main.c} (63%)
+ create mode 100644 kernel/module/procfs.c
+ rename kernel/{module_signature.c =3D> module/signature.c} (100%)
+ create mode 100644 kernel/module/signing.c
+ create mode 100644 kernel/module/strict_rwx.c
+ create mode 100644 kernel/module/sysfs.c
+ create mode 100644 kernel/module/tree_lookup.c
  create mode 100644 kernel/module/version.c
+ delete mode 100644 kernel/module_signing.c
 
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index 44b9b4924d71..8b88ae28e714 100644
---- a/kernel/module/Makefile
-+++ b/kernel/module/Makefile
-@@ -15,3 +15,4 @@ obj-$(CONFIG_DEBUG_KMEMLEAK) +=3D debug_kmemleak.o
- obj-$(CONFIG_KALLSYMS) +=3D kallsyms.o
- obj-$(CONFIG_PROC_FS) +=3D procfs.o
- obj-$(CONFIG_SYSFS) +=3D sysfs.o
-+obj-$(CONFIG_MODVERSIONS) +=3D version.o
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 4b7ed172eaca..b684743c2c44 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -59,7 +59,31 @@ struct load_info {
- 	} index;
- };
- =
 
-+struct symsearch {
-+	const struct kernel_symbol *start, *stop;
-+	const s32 *crcs;
-+	enum mod_license {
-+		NOT_GPL_ONLY,
-+		GPL_ONLY,
-+	} license;
-+};
-+
-+struct find_symbol_arg {
-+	/* Input */
-+	const char *name;
-+	bool gplok;
-+	bool warn;
-+
-+	/* Output */
-+	struct module *owner;
-+	const s32 *crc;
-+	const struct kernel_symbol *sym;
-+	enum mod_license license;
-+};
-+
- extern int mod_verify_sig(const void *mod, struct load_info *info);
-+extern int try_to_force_load(struct module *mod, const char *reason);
-+extern bool find_symbol(struct find_symbol_arg *fsa);
- extern struct module *find_module_all(const char *name, size_t len, bool e=
-ven_unformed);
- extern unsigned long kernel_symbol_value(const struct kernel_symbol *sym);
- extern int cmp_name(const void *name, const void *sym);
-@@ -150,3 +174,30 @@ static inline void module_remove_modinfo_attrs(struct =
-module *mod, int end) { }
- static inline void del_usage_links(struct module *mod) { }
- static inline void init_param_lock(struct module *mod) { }
- #endif /* CONFIG_SYSFS */
-+
-+#ifdef CONFIG_MODVERSIONS
-+extern int check_version(const struct load_info *info,
-+			 const char *symname, struct module *mod, const s32 *crc);
-+extern int check_modstruct_version(const struct load_info *info, struct mo=
-dule *mod);
-+extern int same_magic(const char *amagic, const char *bmagic, bool has_crc=
-s);
-+#else /* !CONFIG_MODVERSIONS */
-+static inline int check_version(const struct load_info *info,
-+				const char *symname,
-+				struct module *mod,
-+				const s32 *crc)
-+{
-+	return 1;
-+}
-+
-+static inline int check_modstruct_version(const struct load_info *info,
-+					  struct module *mod)
-+{
-+	return 1;
-+}
-+
-+static inline int same_magic(const char *amagic, const char *bmagic,
-+			    bool has_crcs)
-+{
-+	return strcmp(amagic, bmagic) =3D=3D 0;
-+}
-+#endif /* CONFIG_MODVERSIONS */
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 1f16e67f687f..0a1bd11d2a6e 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -231,28 +231,6 @@ static __maybe_unused void *any_section_objs(const str=
-uct load_info *info,
- #define symversion(base, idx) ((base !=3D NULL) ? ((base) + (idx)) : NULL)
- #endif
- =
-
--struct symsearch {
--	const struct kernel_symbol *start, *stop;
--	const s32 *crcs;
--	enum mod_license {
--		NOT_GPL_ONLY,
--		GPL_ONLY,
--	} license;
--};
--
--struct find_symbol_arg {
--	/* Input */
--	const char *name;
--	bool gplok;
--	bool warn;
--
--	/* Output */
--	struct module *owner;
--	const s32 *crc;
--	const struct kernel_symbol *sym;
--	enum mod_license license;
--};
--
- static bool check_exported_symbol(const struct symsearch *syms,
- 				  struct module *owner,
- 				  unsigned int symnum, void *data)
-@@ -323,7 +301,7 @@ static bool find_exported_symbol_in_section(const struc=
-t symsearch *syms,
-  * Find an exported symbol and return it, along with, (optional) crc and
-  * (optional) module which owns it.  Needs preempt disabled or module_mute=
-x.
-  */
--static bool find_symbol(struct find_symbol_arg *fsa)
-+bool find_symbol(struct find_symbol_arg *fsa)
- {
- 	static const struct symsearch arr[] =3D {
- 		{ __start___ksymtab, __stop___ksymtab, __start___kcrctab,
-@@ -997,7 +975,7 @@ size_t modinfo_attrs_count =3D ARRAY_SIZE(modinfo_attrs=
-);
- =
-
- static const char vermagic[] =3D VERMAGIC_STRING;
- =
-
--static int try_to_force_load(struct module *mod, const char *reason)
-+int try_to_force_load(struct module *mod, const char *reason)
- {
- #ifdef CONFIG_MODULE_FORCE_LOAD
- 	if (!test_taint(TAINT_FORCED_MODULE))
-@@ -1009,115 +987,6 @@ static int try_to_force_load(struct module *mod, con=
-st char *reason)
- #endif
- }
- =
-
--#ifdef CONFIG_MODVERSIONS
--
--static u32 resolve_rel_crc(const s32 *crc)
--{
--	return *(u32 *)((void *)crc + *crc);
--}
--
--static int check_version(const struct load_info *info,
--			 const char *symname,
--			 struct module *mod,
--			 const s32 *crc)
--{
--	Elf_Shdr *sechdrs =3D info->sechdrs;
--	unsigned int versindex =3D info->index.vers;
--	unsigned int i, num_versions;
--	struct modversion_info *versions;
--
--	/* Exporting module didn't supply crcs?  OK, we're already tainted. */
--	if (!crc)
--		return 1;
--
--	/* No versions at all?  modprobe --force does this. */
--	if (versindex =3D=3D 0)
--		return try_to_force_load(mod, symname) =3D=3D 0;
--
--	versions =3D (void *) sechdrs[versindex].sh_addr;
--	num_versions =3D sechdrs[versindex].sh_size
--		/ sizeof(struct modversion_info);
--
--	for (i =3D 0; i < num_versions; i++) {
--		u32 crcval;
--
--		if (strcmp(versions[i].name, symname) !=3D 0)
--			continue;
--
--		if (IS_ENABLED(CONFIG_MODULE_REL_CRCS))
--			crcval =3D resolve_rel_crc(crc);
--		else
--			crcval =3D *crc;
--		if (versions[i].crc =3D=3D crcval)
--			return 1;
--		pr_debug("Found checksum %X vs module %lX\n",
--			 crcval, versions[i].crc);
--		goto bad_version;
--	}
--
--	/* Broken toolchain. Warn once, then let it go.. */
--	pr_warn_once("%s: no symbol version for %s\n", info->name, symname);
--	return 1;
--
--bad_version:
--	pr_warn("%s: disagrees about version of symbol %s\n",
--	       info->name, symname);
--	return 0;
--}
--
--static inline int check_modstruct_version(const struct load_info *info,
--					  struct module *mod)
--{
--	struct find_symbol_arg fsa =3D {
--		.name	=3D "module_layout",
--		.gplok	=3D true,
--	};
--
--	/*
--	 * Since this should be found in kernel (which can't be removed), no
--	 * locking is necessary -- use preempt_disable() to placate lockdep.
--	 */
--	preempt_disable();
--	if (!find_symbol(&fsa)) {
--		preempt_enable();
--		BUG();
--	}
--	preempt_enable();
--	return check_version(info, "module_layout", mod, fsa.crc);
--}
--
--/* First part is kernel version, which we ignore if module has crcs. */
--static inline int same_magic(const char *amagic, const char *bmagic,
--			     bool has_crcs)
--{
--	if (has_crcs) {
--		amagic +=3D strcspn(amagic, " ");
--		bmagic +=3D strcspn(bmagic, " ");
--	}
--	return strcmp(amagic, bmagic) =3D=3D 0;
--}
--#else
--static inline int check_version(const struct load_info *info,
--				const char *symname,
--				struct module *mod,
--				const s32 *crc)
--{
--	return 1;
--}
--
--static inline int check_modstruct_version(const struct load_info *info,
--					  struct module *mod)
--{
--	return 1;
--}
--
--static inline int same_magic(const char *amagic, const char *bmagic,
--			     bool has_crcs)
--{
--	return strcmp(amagic, bmagic) =3D=3D 0;
--}
--#endif /* CONFIG_MODVERSIONS */
--
- static char *get_modinfo(const struct load_info *info, const char *tag);
- static char *get_next_modinfo(const struct load_info *info, const char *ta=
-g,
- 			      char *prev);
-@@ -3229,18 +3098,3 @@ void print_modules(void)
- 		pr_cont(" [last unloaded: %s]", last_unloaded_module);
- 	pr_cont("\n");
- }
--
--#ifdef CONFIG_MODVERSIONS
--/*
-- * Generate the signature for all relevant module structures here.
-- * If these change, we don't want to try to parse the module.
-- */
--void module_layout(struct module *mod,
--		   struct modversion_info *ver,
--		   struct kernel_param *kp,
--		   struct kernel_symbol *ks,
--		   struct tracepoint * const *tp)
--{
--}
--EXPORT_SYMBOL(module_layout);
--#endif
-diff --git a/kernel/module/version.c b/kernel/module/version.c
-new file mode 100644
-index 000000000000..6a2c9ae1c5c5
---- /dev/null
-+++ b/kernel/module/version.c
-@@ -0,0 +1,110 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Module version support
-+ *
-+ * Copyright (C) 2008 Rusty Russell
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/string.h>
-+#include <linux/printk.h>
-+#include "internal.h"
-+
-+/*
-+ * Generate the signature for all relevant module structures here.
-+ * If these change, we don't want to try to parse the module.
-+ */
-+void module_layout(struct module *mod,
-+		   struct modversion_info *ver,
-+		   struct kernel_param *kp,
-+		   struct kernel_symbol *ks,
-+		   struct tracepoint * const *tp)
-+{
-+}
-+EXPORT_SYMBOL(module_layout);
-+
-+static u32 resolve_rel_crc(const s32 *crc)
-+{
-+	return *(u32 *)((void *)crc + *crc);
-+}
-+
-+int check_version(const struct load_info *info,
-+			 const char *symname,
-+			 struct module *mod,
-+			 const s32 *crc)
-+{
-+	Elf_Shdr *sechdrs =3D info->sechdrs;
-+	unsigned int versindex =3D info->index.vers;
-+	unsigned int i, num_versions;
-+	struct modversion_info *versions;
-+
-+	/* Exporting module didn't supply crcs?  OK, we're already tainted. */
-+	if (!crc)
-+		return 1;
-+
-+	/* No versions at all?  modprobe --force does this. */
-+	if (versindex =3D=3D 0)
-+		return try_to_force_load(mod, symname) =3D=3D 0;
-+
-+	versions =3D (void *) sechdrs[versindex].sh_addr;
-+	num_versions =3D sechdrs[versindex].sh_size
-+		/ sizeof(struct modversion_info);
-+
-+	for (i =3D 0; i < num_versions; i++) {
-+		u32 crcval;
-+
-+		if (strcmp(versions[i].name, symname) !=3D 0)
-+			continue;
-+
-+		if (IS_ENABLED(CONFIG_MODULE_REL_CRCS))
-+			crcval =3D resolve_rel_crc(crc);
-+		else
-+			crcval =3D *crc;
-+		if (versions[i].crc =3D=3D crcval)
-+			return 1;
-+		pr_debug("Found checksum %X vs module %lX\n",
-+			 crcval, versions[i].crc);
-+		goto bad_version;
-+	}
-+
-+	/* Broken toolchain. Warn once, then let it go.. */
-+	pr_warn_once("%s: no symbol version for %s\n", info->name, symname);
-+	return 1;
-+
-+bad_version:
-+	pr_warn("%s: disagrees about version of symbol %s\n",
-+	       info->name, symname);
-+	return 0;
-+}
-+
-+inline int check_modstruct_version(const struct load_info *info,
-+					  struct module *mod)
-+{
-+	struct find_symbol_arg fsa =3D {
-+		.name	=3D "module_layout",
-+		.gplok	=3D true,
-+	};
-+
-+	/*
-+	 * Since this should be found in kernel (which can't be removed), no
-+	 * locking is necessary -- use preempt_disable() to placate lockdep.
-+	 */
-+	preempt_disable();
-+	if (!find_symbol(&fsa)) {
-+		preempt_enable();
-+		BUG();
-+	}
-+	preempt_enable();
-+	return check_version(info, "module_layout", mod, fsa.crc);
-+}
-+
-+/* First part is kernel version, which we ignore if module has crcs. */
-+inline int same_magic(const char *amagic, const char *bmagic,
-+			     bool has_crcs)
-+{
-+	if (has_crcs) {
-+		amagic +=3D strcspn(amagic, " ");
-+		bmagic +=3D strcspn(bmagic, " ");
-+	}
-+	return strcmp(amagic, bmagic) =3D=3D 0;
-+}
+base-commit: a97ac8cb24a3c3ad74794adb83717ef1605d1b47
 -- =
 
 2.34.1
 
---===============4414677968596318883==--
+--===============5320923466111577119==--
 
