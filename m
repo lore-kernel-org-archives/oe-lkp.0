@@ -1,1211 +1,1021 @@
-Content-Type: multipart/mixed; boundary="===============6961400456096472127=="
+Content-Type: multipart/mixed; boundary="===============0689150176245670248=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v3 09/13] module: Move kallsyms support into a separate file
-Date: Fri, 28 Jan 2022 12:50:42 +0000
-Message-ID: <20220128125046.497173-10-atomlin@redhat.com>
+Subject: [RFC PATCH v3 11/13] module: Move sysfs support into a separate file
+Date: Fri, 28 Jan 2022 12:50:44 +0000
+Message-ID: <20220128125046.497173-12-atomlin@redhat.com>
 In-Reply-To: <20220128125046.497173-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6961400456096472127==
+--===============0689150176245670248==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 No functional change.
 
-This patch migrates kallsyms code out of core module
-code kernel/module/kallsyms.c
+This patch migrates module sysfs support out of core code into
+kernel/module/sysfs.c. In addition simple code refactoring to
+make this possible.
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
  kernel/module/Makefile   |   1 +
- kernel/module/internal.h |  27 ++
- kernel/module/kallsyms.c | 502 +++++++++++++++++++++++++++++++++++++
- kernel/module/main.c     | 516 +--------------------------------------
- 4 files changed, 534 insertions(+), 512 deletions(-)
- create mode 100644 kernel/module/kallsyms.c
+ kernel/module/internal.h |  24 ++
+ kernel/module/main.c     | 458 +--------------------------------------
+ kernel/module/sysfs.c    | 425 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 453 insertions(+), 455 deletions(-)
+ create mode 100644 kernel/module/sysfs.c
 
 diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index 3901f0713f22..5fb2a7fec743 100644
+index f821903e2c5d..44b9b4924d71 100644
 --- a/kernel/module/Makefile
 +++ b/kernel/module/Makefile
-@@ -12,3 +12,4 @@ obj-$(CONFIG_MODULES_TREE_LOOKUP) +=3D tree_lookup.o
- obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) +=3D arch_strict_rwx.o
- obj-$(CONFIG_STRICT_MODULE_RWX) +=3D strict_rwx.o
+@@ -14,3 +14,4 @@ obj-$(CONFIG_STRICT_MODULE_RWX) +=3D strict_rwx.o
  obj-$(CONFIG_DEBUG_KMEMLEAK) +=3D debug_kmemleak.o
-+obj-$(CONFIG_KALLSYMS) +=3D kallsyms.o
+ obj-$(CONFIG_KALLSYMS) +=3D kallsyms.o
+ obj-$(CONFIG_PROC_FS) +=3D procfs.o
++obj-$(CONFIG_SYSFS) +=3D sysfs.o
 diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index cebae885f119..024514f3d16a 100644
+index 9deb690082fd..4b7ed172eaca 100644
 --- a/kernel/module/internal.h
 +++ b/kernel/module/internal.h
-@@ -57,6 +57,11 @@ struct load_info {
+@@ -23,6 +23,9 @@
+ extern struct mutex module_mutex;
+ extern struct list_head modules;
+ =
+
++extern struct module_attribute *modinfo_attrs[];
++extern size_t modinfo_attrs_count =3D ARRAY_SIZE(modinfo_attrs);
++
+ /* Provided by the linker */
+ extern const struct kernel_symbol __start___ksymtab[];
+ extern const struct kernel_symbol __stop___ksymtab[];
+@@ -126,3 +129,24 @@ static inline char *find_kallsyms_symbol(struct module=
+ *mod, unsigned long addr,
+ 	return NULL;
+ }
+ #endif /* CONFIG_KALLSYMS */
++
++#ifdef CONFIG_SYSFS
++extern int mod_sysfs_setup(struct module *mod, const struct load_info *inf=
+o,
++			   struct kernel_param *kparam, unsigned int num_params);
++extern void mod_sysfs_fini(struct module *mod);
++extern void module_remove_modinfo_attrs(struct module *mod, int end);
++extern void del_usage_links(struct module *mod);
++extern void init_param_lock(struct module *mod);
++#else /* !CONFIG_SYSFS */
++static int mod_sysfs_setup(struct module *mod,
++			   const struct load_info *info,
++			   struct kernel_param *kparam,
++			   unsigned int num_params)
++{
++	return 0;
++}
++static inline void mod_sysfs_fini(struct module *mod) { }
++static inline void module_remove_modinfo_attrs(struct module *mod, int end=
+) { }
++static inline void del_usage_links(struct module *mod) { }
++static inline void init_param_lock(struct module *mod) { }
++#endif /* CONFIG_SYSFS */
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 78389be0eb5f..574cba3e0418 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -13,9 +13,7 @@
+ #include <linux/trace_events.h>
+ #include <linux/init.h>
+ #include <linux/kallsyms.h>
+-#include <linux/file.h>
+ #include <linux/fs.h>
+-#include <linux/sysfs.h>
+ #include <linux/kernel.h>
+ #include <linux/kernel_read_file.h>
+ #include <linux/slab.h>
+@@ -985,7 +983,7 @@ static ssize_t show_taint(struct module_attribute *matt=
+r,
+ static struct module_attribute modinfo_taint =3D
+ 	__ATTR(taint, 0444, show_taint, NULL);
+ =
+
+-static struct module_attribute *modinfo_attrs[] =3D {
++struct module_attribute *modinfo_attrs[] =3D {
+ 	&module_uevent,
+ 	&modinfo_version,
+ 	&modinfo_srcversion,
+@@ -999,6 +997,8 @@ static struct module_attribute *modinfo_attrs[] =3D {
+ 	NULL,
  };
  =
 
- extern int mod_verify_sig(const void *mod, struct load_info *info);
-+extern struct module *find_module_all(const char *name, size_t len, bool e=
-ven_unformed);
-+extern unsigned long kernel_symbol_value(const struct kernel_symbol *sym);
-+extern int cmp_name(const void *name, const void *sym);
-+extern long get_offset(struct module *mod, unsigned int *size, Elf_Shdr *s=
-echdr,
-+		       unsigned int section);
++size_t modinfo_attrs_count =3D ARRAY_SIZE(modinfo_attrs);
++
+ static const char vermagic[] =3D VERMAGIC_STRING;
  =
 
- #ifdef CONFIG_LIVEPATCH
- extern int copy_module_elf(struct module *mod, struct load_info *info);
-@@ -98,3 +103,25 @@ extern void kmemleak_load_module(const struct module *m=
-od, const struct load_inf
- static inline void __maybe_unused kmemleak_load_module(const struct module=
- *mod,
- 						       const struct load_info *info) { }
- #endif /* CONFIG_DEBUG_KMEMLEAK */
-+
-+#ifdef CONFIG_KALLSYMS
-+#ifdef CONFIG_STACKTRACE_BUILD_ID
-+extern void init_build_id(struct module *mod, const struct load_info *info=
-);
-+#else /* !CONFIG_STACKTRACE_BUILD_ID */
-+static inline void init_build_id(struct module *mod, const struct load_inf=
-o *info) { }
-+
-+#endif
-+extern void layout_symtab(struct module *mod, struct load_info *info);
-+extern void add_kallsyms(struct module *mod, const struct load_info *info);
-+extern bool sect_empty(const Elf_Shdr *sect);
-+extern const char *find_kallsyms_symbol(struct module *mod, unsigned long =
-addr,
-+					unsigned long *size, unsigned long *offset);
-+#else /* !CONFIG_KALLSYMS */
-+static inline void layout_symtab(struct module *mod, struct load_info *inf=
-o) { }
-+static inline void add_kallsyms(struct module *mod, const struct load_info=
- *info) { }
-+static inline char *find_kallsyms_symbol(struct module *mod, unsigned long=
- addr,
-+					 unsigned long *size, unsigned long *offset)
-+{
-+	return NULL;
-+}
-+#endif /* CONFIG_KALLSYMS */
-diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-new file mode 100644
-index 000000000000..ed28f6310701
---- /dev/null
-+++ b/kernel/module/kallsyms.c
-@@ -0,0 +1,502 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Module kallsyms support
-+ *
-+ * Copyright (C) 2010 Rusty Russell
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kallsyms.h>
-+#include <linux/buildid.h>
-+#include <linux/bsearch.h>
-+#include "internal.h"
-+
-+/* Lookup exported symbol in given range of kernel_symbols */
-+static const struct kernel_symbol *lookup_exported_symbol(const char *name,
-+							  const struct kernel_symbol *start,
-+							  const struct kernel_symbol *stop)
-+{
-+	return bsearch(name, start, stop - start,
-+			sizeof(struct kernel_symbol), cmp_name);
-+}
-+
-+static int is_exported(const char *name, unsigned long value,
-+		       const struct module *mod)
-+{
-+	const struct kernel_symbol *ks;
-+
-+	if (!mod)
-+		ks =3D lookup_exported_symbol(name, __start___ksymtab, __stop___ksymtab);
-+	else
-+		ks =3D lookup_exported_symbol(name, mod->syms, mod->syms + mod->num_syms=
-);
-+
-+	return ks !=3D NULL && kernel_symbol_value(ks) =3D=3D value;
-+}
-+
-+/* As per nm */
-+static char elf_type(const Elf_Sym *sym, const struct load_info *info)
-+{
-+	const Elf_Shdr *sechdrs =3D info->sechdrs;
-+
-+	if (ELF_ST_BIND(sym->st_info) =3D=3D STB_WEAK) {
-+		if (ELF_ST_TYPE(sym->st_info) =3D=3D STT_OBJECT)
-+			return 'v';
-+		else
-+			return 'w';
-+	}
-+	if (sym->st_shndx =3D=3D SHN_UNDEF)
-+		return 'U';
-+	if (sym->st_shndx =3D=3D SHN_ABS || sym->st_shndx =3D=3D info->index.pcpu)
-+		return 'a';
-+	if (sym->st_shndx >=3D SHN_LORESERVE)
-+		return '?';
-+	if (sechdrs[sym->st_shndx].sh_flags & SHF_EXECINSTR)
-+		return 't';
-+	if (sechdrs[sym->st_shndx].sh_flags & SHF_ALLOC
-+	    && sechdrs[sym->st_shndx].sh_type !=3D SHT_NOBITS) {
-+		if (!(sechdrs[sym->st_shndx].sh_flags & SHF_WRITE))
-+			return 'r';
-+		else if (sechdrs[sym->st_shndx].sh_flags & ARCH_SHF_SMALL)
-+			return 'g';
-+		else
-+			return 'd';
-+	}
-+	if (sechdrs[sym->st_shndx].sh_type =3D=3D SHT_NOBITS) {
-+		if (sechdrs[sym->st_shndx].sh_flags & ARCH_SHF_SMALL)
-+			return 's';
-+		else
-+			return 'b';
-+	}
-+	if (strstarts(info->secstrings + sechdrs[sym->st_shndx].sh_name,
-+		      ".debug")) {
-+		return 'n';
-+	}
-+	return '?';
-+}
-+
-+static bool is_core_symbol(const Elf_Sym *src, const Elf_Shdr *sechdrs,
-+			unsigned int shnum, unsigned int pcpundx)
-+{
-+	const Elf_Shdr *sec;
-+
-+	if (src->st_shndx =3D=3D SHN_UNDEF
-+	    || src->st_shndx >=3D shnum
-+	    || !src->st_name)
-+		return false;
-+
-+#ifdef CONFIG_KALLSYMS_ALL
-+	if (src->st_shndx =3D=3D pcpundx)
-+		return true;
-+#endif
-+
-+	sec =3D sechdrs + src->st_shndx;
-+	if (!(sec->sh_flags & SHF_ALLOC)
-+#ifndef CONFIG_KALLSYMS_ALL
-+	    || !(sec->sh_flags & SHF_EXECINSTR)
-+#endif
-+	    || (sec->sh_entsize & INIT_OFFSET_MASK))
-+		return false;
-+
-+	return true;
-+}
-+
-+/*
-+ * We only allocate and copy the strings needed by the parts of symtab
-+ * we keep.  This is simple, but has the effect of making multiple
-+ * copies of duplicates.  We could be more sophisticated, see
-+ * linux-kernel thread starting with
-+ * <73defb5e4bca04a6431392cc341112b1@localhost>.
-+ */
-+void layout_symtab(struct module *mod, struct load_info *info)
-+{
-+	Elf_Shdr *symsect =3D info->sechdrs + info->index.sym;
-+	Elf_Shdr *strsect =3D info->sechdrs + info->index.str;
-+	const Elf_Sym *src;
-+	unsigned int i, nsrc, ndst, strtab_size =3D 0;
-+
-+	/* Put symbol section at end of init part of module. */
-+	symsect->sh_flags |=3D SHF_ALLOC;
-+	symsect->sh_entsize =3D get_offset(mod, &mod->init_layout.size, symsect,
-+					 info->index.sym) | INIT_OFFSET_MASK;
-+	pr_debug("\t%s\n", info->secstrings + symsect->sh_name);
-+
-+	src =3D (void *)info->hdr + symsect->sh_offset;
-+	nsrc =3D symsect->sh_size / sizeof(*src);
-+
-+	/* Compute total space required for the core symbols' strtab. */
-+	for (ndst =3D i =3D 0; i < nsrc; i++) {
-+		if (i =3D=3D 0 || is_livepatch_module(mod) ||
-+		    is_core_symbol(src+i, info->sechdrs, info->hdr->e_shnum,
-+				   info->index.pcpu)) {
-+			strtab_size +=3D strlen(&info->strtab[src[i].st_name])+1;
-+			ndst++;
-+		}
-+	}
-+
-+	/* Append room for core symbols at end of core part. */
-+	info->symoffs =3D ALIGN(mod->core_layout.size, symsect->sh_addralign ?: 1=
-);
-+	info->stroffs =3D mod->core_layout.size =3D info->symoffs + ndst * sizeof=
-(Elf_Sym);
-+	mod->core_layout.size +=3D strtab_size;
-+	info->core_typeoffs =3D mod->core_layout.size;
-+	mod->core_layout.size +=3D ndst * sizeof(char);
-+	mod->core_layout.size =3D debug_align(mod->core_layout.size);
-+
-+	/* Put string table section at end of init part of module. */
-+	strsect->sh_flags |=3D SHF_ALLOC;
-+	strsect->sh_entsize =3D get_offset(mod, &mod->init_layout.size, strsect,
-+					 info->index.str) | INIT_OFFSET_MASK;
-+	pr_debug("\t%s\n", info->secstrings + strsect->sh_name);
-+
-+	/* We'll tack temporary mod_kallsyms on the end. */
-+	mod->init_layout.size =3D ALIGN(mod->init_layout.size,
-+				      __alignof__(struct mod_kallsyms));
-+	info->mod_kallsyms_init_off =3D mod->init_layout.size;
-+	mod->init_layout.size +=3D sizeof(struct mod_kallsyms);
-+	info->init_typeoffs =3D mod->init_layout.size;
-+	mod->init_layout.size +=3D nsrc * sizeof(char);
-+	mod->init_layout.size =3D debug_align(mod->init_layout.size);
-+}
-+
-+/*
-+ * We use the full symtab and strtab which layout_symtab arranged to
-+ * be appended to the init section.  Later we switch to the cut-down
-+ * core-only ones.
-+ */
-+void add_kallsyms(struct module *mod, const struct load_info *info)
-+{
-+	unsigned int i, ndst;
-+	const Elf_Sym *src;
-+	Elf_Sym *dst;
-+	char *s;
-+	Elf_Shdr *symsec =3D &info->sechdrs[info->index.sym];
-+
-+	/* Set up to point into init section. */
-+	mod->kallsyms =3D mod->init_layout.base + info->mod_kallsyms_init_off;
-+
-+	mod->kallsyms->symtab =3D (void *)symsec->sh_addr;
-+	mod->kallsyms->num_symtab =3D symsec->sh_size / sizeof(Elf_Sym);
-+	/* Make sure we get permanent strtab: don't use info->strtab. */
-+	mod->kallsyms->strtab =3D (void *)info->sechdrs[info->index.str].sh_addr;
-+	mod->kallsyms->typetab =3D mod->init_layout.base + info->init_typeoffs;
-+
-+	/*
-+	 * Now populate the cut down core kallsyms for after init
-+	 * and set types up while we still have access to sections.
-+	 */
-+	mod->core_kallsyms.symtab =3D dst =3D mod->core_layout.base + info->symof=
-fs;
-+	mod->core_kallsyms.strtab =3D s =3D mod->core_layout.base + info->stroffs;
-+	mod->core_kallsyms.typetab =3D mod->core_layout.base + info->core_typeoff=
-s;
-+	src =3D mod->kallsyms->symtab;
-+	for (ndst =3D i =3D 0; i < mod->kallsyms->num_symtab; i++) {
-+		mod->kallsyms->typetab[i] =3D elf_type(src + i, info);
-+		if (i =3D=3D 0 || is_livepatch_module(mod) ||
-+		    is_core_symbol(src+i, info->sechdrs, info->hdr->e_shnum,
-+				   info->index.pcpu)) {
-+			mod->core_kallsyms.typetab[ndst] =3D
-+			    mod->kallsyms->typetab[i];
-+			dst[ndst] =3D src[i];
-+			dst[ndst++].st_name =3D s - mod->core_kallsyms.strtab;
-+			s +=3D strscpy(s, &mod->kallsyms->strtab[src[i].st_name],
-+				     KSYM_NAME_LEN) + 1;
-+		}
-+	}
-+	mod->core_kallsyms.num_symtab =3D ndst;
-+}
-+
-+inline bool sect_empty(const Elf_Shdr *sect)
-+{
-+	return !(sect->sh_flags & SHF_ALLOC) || sect->sh_size =3D=3D 0;
-+}
-+
-+#ifdef CONFIG_STACKTRACE_BUILD_ID
-+void init_build_id(struct module *mod, const struct load_info *info)
-+{
-+	const Elf_Shdr *sechdr;
-+	unsigned int i;
-+
-+	for (i =3D 0; i < info->hdr->e_shnum; i++) {
-+		sechdr =3D &info->sechdrs[i];
-+		if (!sect_empty(sechdr) && sechdr->sh_type =3D=3D SHT_NOTE &&
-+		    !build_id_parse_buf((void *)sechdr->sh_addr, mod->build_id,
-+					sechdr->sh_size))
-+			break;
-+	}
-+}
-+#endif
-+
-+/*
-+ * This ignores the intensely annoying "mapping symbols" found
-+ * in ARM ELF files: $a, $t and $d.
-+ */
-+static inline int is_arm_mapping_symbol(const char *str)
-+{
-+	if (str[0] =3D=3D '.' && str[1] =3D=3D 'L')
-+		return true;
-+	return str[0] =3D=3D '$' && strchr("axtd", str[1])
-+	       && (str[2] =3D=3D '\0' || str[2] =3D=3D '.');
-+}
-+
-+static const char *kallsyms_symbol_name(struct mod_kallsyms *kallsyms, uns=
-igned int symnum)
-+{
-+	return kallsyms->strtab + kallsyms->symtab[symnum].st_name;
-+}
-+
-+/*
-+ * Given a module and address, find the corresponding symbol and return it=
-s name
-+ * while providing its size and offset if needed.
-+ */
-+const char *find_kallsyms_symbol(struct module *mod,
-+					unsigned long addr,
-+					unsigned long *size,
-+					unsigned long *offset)
-+{
-+	unsigned int i, best =3D 0;
-+	unsigned long nextval, bestval;
-+	struct mod_kallsyms *kallsyms =3D rcu_dereference_sched(mod->kallsyms);
-+
-+	/* At worse, next value is at end of module */
-+	if (within_module_init(addr, mod))
-+		nextval =3D (unsigned long)mod->init_layout.base+mod->init_layout.text_s=
-ize;
-+	else
-+		nextval =3D (unsigned long)mod->core_layout.base+mod->core_layout.text_s=
-ize;
-+
-+	bestval =3D kallsyms_symbol_value(&kallsyms->symtab[best]);
-+
-+	/*
-+	 * Scan for closest preceding symbol, and next symbol. (ELF
-+	 * starts real symbols at 1).
-+	 */
-+	for (i =3D 1; i < kallsyms->num_symtab; i++) {
-+		const Elf_Sym *sym =3D &kallsyms->symtab[i];
-+		unsigned long thisval =3D kallsyms_symbol_value(sym);
-+
-+		if (sym->st_shndx =3D=3D SHN_UNDEF)
-+			continue;
-+
-+		/*
-+		 * We ignore unnamed symbols: they're uninformative
-+		 * and inserted at a whim.
-+		 */
-+		if (*kallsyms_symbol_name(kallsyms, i) =3D=3D '\0'
-+		    || is_arm_mapping_symbol(kallsyms_symbol_name(kallsyms, i)))
-+			continue;
-+
-+		if (thisval <=3D addr && thisval > bestval) {
-+			best =3D i;
-+			bestval =3D thisval;
-+		}
-+		if (thisval > addr && thisval < nextval)
-+			nextval =3D thisval;
-+	}
-+
-+	if (!best)
-+		return NULL;
-+
-+	if (size)
-+		*size =3D nextval - bestval;
-+	if (offset)
-+		*offset =3D addr - bestval;
-+
-+	return kallsyms_symbol_name(kallsyms, best);
-+}
-+
-+void * __weak dereference_module_function_descriptor(struct module *mod,
-+						     void *ptr)
-+{
-+	return ptr;
-+}
-+
-+/*
-+ * For kallsyms to ask for address resolution.  NULL means not found.  Car=
-eful
-+ * not to lock to avoid deadlock on oopses, simply disable preemption.
-+ */
-+const char *module_address_lookup(unsigned long addr,
-+			    unsigned long *size,
-+			    unsigned long *offset,
-+			    char **modname,
-+			    const unsigned char **modbuildid,
-+			    char *namebuf)
-+{
-+	const char *ret =3D NULL;
-+	struct module *mod;
-+
-+	preempt_disable();
-+	mod =3D __module_address(addr);
-+	if (mod) {
-+		if (modname)
-+			*modname =3D mod->name;
-+		if (modbuildid) {
-+#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
-+			*modbuildid =3D mod->build_id;
-+#else
-+			*modbuildid =3D NULL;
-+#endif
-+		}
-+
-+		ret =3D find_kallsyms_symbol(mod, addr, size, offset);
-+	}
-+	/* Make a copy in here where it's safe */
-+	if (ret) {
-+		strncpy(namebuf, ret, KSYM_NAME_LEN - 1);
-+		ret =3D namebuf;
-+	}
-+	preempt_enable();
-+
-+	return ret;
-+}
-+
-+int lookup_module_symbol_name(unsigned long addr, char *symname)
-+{
-+	struct module *mod;
-+
-+	preempt_disable();
-+	list_for_each_entry_rcu(mod, &modules, list) {
-+		if (mod->state =3D=3D MODULE_STATE_UNFORMED)
-+			continue;
-+		if (within_module(addr, mod)) {
-+			const char *sym;
-+
-+			sym =3D find_kallsyms_symbol(mod, addr, NULL, NULL);
-+			if (!sym)
-+				goto out;
-+
-+			strscpy(symname, sym, KSYM_NAME_LEN);
-+			preempt_enable();
-+			return 0;
-+		}
-+	}
-+out:
-+	preempt_enable();
-+	return -ERANGE;
-+}
-+
-+int lookup_module_symbol_attrs(unsigned long addr, unsigned long *size,
-+			unsigned long *offset, char *modname, char *name)
-+{
-+	struct module *mod;
-+
-+	preempt_disable();
-+	list_for_each_entry_rcu(mod, &modules, list) {
-+		if (mod->state =3D=3D MODULE_STATE_UNFORMED)
-+			continue;
-+		if (within_module(addr, mod)) {
-+			const char *sym;
-+
-+			sym =3D find_kallsyms_symbol(mod, addr, size, offset);
-+			if (!sym)
-+				goto out;
-+			if (modname)
-+				strscpy(modname, mod->name, MODULE_NAME_LEN);
-+			if (name)
-+				strscpy(name, sym, KSYM_NAME_LEN);
-+			preempt_enable();
-+			return 0;
-+		}
-+	}
-+out:
-+	preempt_enable();
-+	return -ERANGE;
-+}
-+
-+int module_get_kallsym(unsigned int symnum, unsigned long *value, char *ty=
-pe,
-+			char *name, char *module_name, int *exported)
-+{
-+	struct module *mod;
-+
-+	preempt_disable();
-+	list_for_each_entry_rcu(mod, &modules, list) {
-+		struct mod_kallsyms *kallsyms;
-+
-+		if (mod->state =3D=3D MODULE_STATE_UNFORMED)
-+			continue;
-+		kallsyms =3D rcu_dereference_sched(mod->kallsyms);
-+		if (symnum < kallsyms->num_symtab) {
-+			const Elf_Sym *sym =3D &kallsyms->symtab[symnum];
-+
-+			*value =3D kallsyms_symbol_value(sym);
-+			*type =3D kallsyms->typetab[symnum];
-+			strscpy(name, kallsyms_symbol_name(kallsyms, symnum), KSYM_NAME_LEN);
-+			strscpy(module_name, mod->name, MODULE_NAME_LEN);
-+			*exported =3D is_exported(name, *value, mod);
-+			preempt_enable();
-+			return 0;
-+		}
-+		symnum -=3D kallsyms->num_symtab;
-+	}
-+	preempt_enable();
-+	return -ERANGE;
-+}
-+
-+/* Given a module and name of symbol, find and return the symbol's value */
-+static unsigned long find_kallsyms_symbol_value(struct module *mod, const =
-char *name)
-+{
-+	unsigned int i;
-+	struct mod_kallsyms *kallsyms =3D rcu_dereference_sched(mod->kallsyms);
-+
-+	for (i =3D 0; i < kallsyms->num_symtab; i++) {
-+		const Elf_Sym *sym =3D &kallsyms->symtab[i];
-+
-+		if (strcmp(name, kallsyms_symbol_name(kallsyms, i)) =3D=3D 0 &&
-+		    sym->st_shndx !=3D SHN_UNDEF)
-+			return kallsyms_symbol_value(sym);
-+	}
-+	return 0;
-+}
-+
-+/* Look for this name: can be of form module:name. */
-+unsigned long module_kallsyms_lookup_name(const char *name)
-+{
-+	struct module *mod;
-+	char *colon;
-+	unsigned long ret =3D 0;
-+
-+	/* Don't lock: we're in enough trouble already. */
-+	preempt_disable();
-+	if ((colon =3D strnchr(name, MODULE_NAME_LEN, ':')) !=3D NULL) {
-+		if ((mod =3D find_module_all(name, colon - name, false)) !=3D NULL)
-+			ret =3D find_kallsyms_symbol_value(mod, colon+1);
-+	} else {
-+		list_for_each_entry_rcu(mod, &modules, list) {
-+			if (mod->state =3D=3D MODULE_STATE_UNFORMED)
-+				continue;
-+			if ((ret =3D find_kallsyms_symbol_value(mod, name)) !=3D 0)
-+				break;
-+		}
-+	}
-+	preempt_enable();
-+	return ret;
-+}
-+
-+#ifdef CONFIG_LIVEPATCH
-+int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
-+					     struct module *, unsigned long),
-+				   void *data)
-+{
-+	struct module *mod;
-+	unsigned int i;
-+	int ret =3D 0;
-+
-+	mutex_lock(&module_mutex);
-+	list_for_each_entry(mod, &modules, list) {
-+		/* We hold module_mutex: no need for rcu_dereference_sched */
-+		struct mod_kallsyms *kallsyms =3D mod->kallsyms;
-+
-+		if (mod->state =3D=3D MODULE_STATE_UNFORMED)
-+			continue;
-+		for (i =3D 0; i < kallsyms->num_symtab; i++) {
-+			const Elf_Sym *sym =3D &kallsyms->symtab[i];
-+
-+			if (sym->st_shndx =3D=3D SHN_UNDEF)
-+				continue;
-+
-+			ret =3D fn(data, kallsyms_symbol_name(kallsyms, i),
-+				 mod, kallsyms_symbol_value(sym));
-+			if (ret !=3D 0)
-+				goto out;
-+		}
-+	}
-+out:
-+	mutex_unlock(&module_mutex);
-+	return ret;
-+}
-+#endif /* CONFIG_LIVEPATCH */
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 6fb1c885d9c2..054f34de4e6c 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -275,7 +275,7 @@ static bool check_exported_symbol(const struct symsearc=
-h *syms,
- 	return true;
- }
- =
-
--static unsigned long kernel_symbol_value(const struct kernel_symbol *sym)
-+unsigned long kernel_symbol_value(const struct kernel_symbol *sym)
- {
- #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
- 	return (unsigned long)offset_to_ptr(&sym->value_offset);
-@@ -304,7 +304,7 @@ static const char *kernel_symbol_namespace(const struct=
- kernel_symbol *sym)
- #endif
- }
- =
-
--static int cmp_name(const void *name, const void *sym)
-+int cmp_name(const void *name, const void *sym)
- {
- 	return strcmp(name, kernel_symbol_name(sym));
- }
-@@ -374,7 +374,7 @@ static bool find_symbol(struct find_symbol_arg *fsa)
-  * Search for module by name: must hold module_mutex (or preempt disabled
-  * for read-only access).
-  */
--static struct module *find_module_all(const char *name, size_t len,
-+struct module *find_module_all(const char *name, size_t len,
- 				      bool even_unformed)
- {
- 	struct module *mod;
-@@ -1281,13 +1281,6 @@ resolve_symbol_wait(struct module *mod,
+ static int try_to_force_load(struct module *mod, const char *reason)
+@@ -1249,458 +1249,6 @@ resolve_symbol_wait(struct module *mod,
  	return ksym;
  }
  =
 
--#ifdef CONFIG_KALLSYMS
--static inline bool sect_empty(const Elf_Shdr *sect)
--{
--	return !(sect->sh_flags & SHF_ALLOC) || sect->sh_size =3D=3D 0;
--}
--#endif
--
- /*
-  * /sys/module/foo/sections stuff
-  * J. Corbet <corbet@lwn.net>
-@@ -2012,7 +2005,7 @@ unsigned int __weak arch_mod_section_prepend(struct m=
-odule *mod,
- }
- =
-
- /* Update size with this section: return offset. */
--static long get_offset(struct module *mod, unsigned int *size,
-+long get_offset(struct module *mod, unsigned int *size,
- 		       Elf_Shdr *sechdr, unsigned int section)
- {
- 	long ret;
-@@ -2214,228 +2207,6 @@ static void free_modinfo(struct module *mod)
- 	}
- }
- =
-
--#ifdef CONFIG_KALLSYMS
--
--/* Lookup exported symbol in given range of kernel_symbols */
--static const struct kernel_symbol *lookup_exported_symbol(const char *name,
--							  const struct kernel_symbol *start,
--							  const struct kernel_symbol *stop)
--{
--	return bsearch(name, start, stop - start,
--			sizeof(struct kernel_symbol), cmp_name);
--}
--
--static int is_exported(const char *name, unsigned long value,
--		       const struct module *mod)
--{
--	const struct kernel_symbol *ks;
--	if (!mod)
--		ks =3D lookup_exported_symbol(name, __start___ksymtab, __stop___ksymtab);
--	else
--		ks =3D lookup_exported_symbol(name, mod->syms, mod->syms + mod->num_syms=
-);
--
--	return ks !=3D NULL && kernel_symbol_value(ks) =3D=3D value;
--}
--
--/* As per nm */
--static char elf_type(const Elf_Sym *sym, const struct load_info *info)
--{
--	const Elf_Shdr *sechdrs =3D info->sechdrs;
--
--	if (ELF_ST_BIND(sym->st_info) =3D=3D STB_WEAK) {
--		if (ELF_ST_TYPE(sym->st_info) =3D=3D STT_OBJECT)
--			return 'v';
--		else
--			return 'w';
--	}
--	if (sym->st_shndx =3D=3D SHN_UNDEF)
--		return 'U';
--	if (sym->st_shndx =3D=3D SHN_ABS || sym->st_shndx =3D=3D info->index.pcpu)
--		return 'a';
--	if (sym->st_shndx >=3D SHN_LORESERVE)
--		return '?';
--	if (sechdrs[sym->st_shndx].sh_flags & SHF_EXECINSTR)
--		return 't';
--	if (sechdrs[sym->st_shndx].sh_flags & SHF_ALLOC
--	    && sechdrs[sym->st_shndx].sh_type !=3D SHT_NOBITS) {
--		if (!(sechdrs[sym->st_shndx].sh_flags & SHF_WRITE))
--			return 'r';
--		else if (sechdrs[sym->st_shndx].sh_flags & ARCH_SHF_SMALL)
--			return 'g';
--		else
--			return 'd';
--	}
--	if (sechdrs[sym->st_shndx].sh_type =3D=3D SHT_NOBITS) {
--		if (sechdrs[sym->st_shndx].sh_flags & ARCH_SHF_SMALL)
--			return 's';
--		else
--			return 'b';
--	}
--	if (strstarts(info->secstrings + sechdrs[sym->st_shndx].sh_name,
--		      ".debug")) {
--		return 'n';
--	}
--	return '?';
--}
--
--static bool is_core_symbol(const Elf_Sym *src, const Elf_Shdr *sechdrs,
--			unsigned int shnum, unsigned int pcpundx)
--{
--	const Elf_Shdr *sec;
--
--	if (src->st_shndx =3D=3D SHN_UNDEF
--	    || src->st_shndx >=3D shnum
--	    || !src->st_name)
--		return false;
--
--#ifdef CONFIG_KALLSYMS_ALL
--	if (src->st_shndx =3D=3D pcpundx)
--		return true;
--#endif
--
--	sec =3D sechdrs + src->st_shndx;
--	if (!(sec->sh_flags & SHF_ALLOC)
--#ifndef CONFIG_KALLSYMS_ALL
--	    || !(sec->sh_flags & SHF_EXECINSTR)
--#endif
--	    || (sec->sh_entsize & INIT_OFFSET_MASK))
--		return false;
--
--	return true;
--}
--
 -/*
-- * We only allocate and copy the strings needed by the parts of symtab
-- * we keep.  This is simple, but has the effect of making multiple
-- * copies of duplicates.  We could be more sophisticated, see
-- * linux-kernel thread starting with
-- * <73defb5e4bca04a6431392cc341112b1@localhost>.
+- * /sys/module/foo/sections stuff
+- * J. Corbet <corbet@lwn.net>
 - */
--static void layout_symtab(struct module *mod, struct load_info *info)
+-#ifdef CONFIG_SYSFS
+-
+-#ifdef CONFIG_KALLSYMS
+-struct module_sect_attr {
+-	struct bin_attribute battr;
+-	unsigned long address;
+-};
+-
+-struct module_sect_attrs {
+-	struct attribute_group grp;
+-	unsigned int nsections;
+-	struct module_sect_attr attrs[];
+-};
+-
+-static ssize_t module_sect_read(struct file *file, struct kobject *kobj,
+-				struct bin_attribute *battr,
+-				char *buf, loff_t pos, size_t count)
 -{
--	Elf_Shdr *symsect =3D info->sechdrs + info->index.sym;
--	Elf_Shdr *strsect =3D info->sechdrs + info->index.str;
--	const Elf_Sym *src;
--	unsigned int i, nsrc, ndst, strtab_size =3D 0;
+-	struct module_sect_attr *sattr =3D
+-		container_of(battr, struct module_sect_attr, battr);
+-	char bounce[MODULE_SECT_READ_SIZE + 1];
+-	size_t wrote;
 -
--	/* Put symbol section at end of init part of module. */
--	symsect->sh_flags |=3D SHF_ALLOC;
--	symsect->sh_entsize =3D get_offset(mod, &mod->init_layout.size, symsect,
--					 info->index.sym) | INIT_OFFSET_MASK;
--	pr_debug("\t%s\n", info->secstrings + symsect->sh_name);
--
--	src =3D (void *)info->hdr + symsect->sh_offset;
--	nsrc =3D symsect->sh_size / sizeof(*src);
--
--	/* Compute total space required for the core symbols' strtab. */
--	for (ndst =3D i =3D 0; i < nsrc; i++) {
--		if (i =3D=3D 0 || is_livepatch_module(mod) ||
--		    is_core_symbol(src+i, info->sechdrs, info->hdr->e_shnum,
--				   info->index.pcpu)) {
--			strtab_size +=3D strlen(&info->strtab[src[i].st_name])+1;
--			ndst++;
--		}
--	}
--
--	/* Append room for core symbols at end of core part. */
--	info->symoffs =3D ALIGN(mod->core_layout.size, symsect->sh_addralign ?: 1=
-);
--	info->stroffs =3D mod->core_layout.size =3D info->symoffs + ndst * sizeof=
-(Elf_Sym);
--	mod->core_layout.size +=3D strtab_size;
--	info->core_typeoffs =3D mod->core_layout.size;
--	mod->core_layout.size +=3D ndst * sizeof(char);
--	mod->core_layout.size =3D debug_align(mod->core_layout.size);
--
--	/* Put string table section at end of init part of module. */
--	strsect->sh_flags |=3D SHF_ALLOC;
--	strsect->sh_entsize =3D get_offset(mod, &mod->init_layout.size, strsect,
--					 info->index.str) | INIT_OFFSET_MASK;
--	pr_debug("\t%s\n", info->secstrings + strsect->sh_name);
--
--	/* We'll tack temporary mod_kallsyms on the end. */
--	mod->init_layout.size =3D ALIGN(mod->init_layout.size,
--				      __alignof__(struct mod_kallsyms));
--	info->mod_kallsyms_init_off =3D mod->init_layout.size;
--	mod->init_layout.size +=3D sizeof(struct mod_kallsyms);
--	info->init_typeoffs =3D mod->init_layout.size;
--	mod->init_layout.size +=3D nsrc * sizeof(char);
--	mod->init_layout.size =3D debug_align(mod->init_layout.size);
--}
--
--/*
-- * We use the full symtab and strtab which layout_symtab arranged to
-- * be appended to the init section.  Later we switch to the cut-down
-- * core-only ones.
-- */
--static void add_kallsyms(struct module *mod, const struct load_info *info)
--{
--	unsigned int i, ndst;
--	const Elf_Sym *src;
--	Elf_Sym *dst;
--	char *s;
--	Elf_Shdr *symsec =3D &info->sechdrs[info->index.sym];
--
--	/* Set up to point into init section. */
--	mod->kallsyms =3D mod->init_layout.base + info->mod_kallsyms_init_off;
--
--	mod->kallsyms->symtab =3D (void *)symsec->sh_addr;
--	mod->kallsyms->num_symtab =3D symsec->sh_size / sizeof(Elf_Sym);
--	/* Make sure we get permanent strtab: don't use info->strtab. */
--	mod->kallsyms->strtab =3D (void *)info->sechdrs[info->index.str].sh_addr;
--	mod->kallsyms->typetab =3D mod->init_layout.base + info->init_typeoffs;
+-	if (pos !=3D 0)
+-		return -EINVAL;
 -
 -	/*
--	 * Now populate the cut down core kallsyms for after init
--	 * and set types up while we still have access to sections.
+-	 * Since we're a binary read handler, we must account for the
+-	 * trailing NUL byte that sprintf will write: if "buf" is
+-	 * too small to hold the NUL, or the NUL is exactly the last
+-	 * byte, the read will look like it got truncated by one byte.
+-	 * Since there is no way to ask sprintf nicely to not write
+-	 * the NUL, we have to use a bounce buffer.
 -	 */
--	mod->core_kallsyms.symtab =3D dst =3D mod->core_layout.base + info->symof=
-fs;
--	mod->core_kallsyms.strtab =3D s =3D mod->core_layout.base + info->stroffs;
--	mod->core_kallsyms.typetab =3D mod->core_layout.base + info->core_typeoff=
-s;
--	src =3D mod->kallsyms->symtab;
--	for (ndst =3D i =3D 0; i < mod->kallsyms->num_symtab; i++) {
--		mod->kallsyms->typetab[i] =3D elf_type(src + i, info);
--		if (i =3D=3D 0 || is_livepatch_module(mod) ||
--		    is_core_symbol(src+i, info->sechdrs, info->hdr->e_shnum,
--				   info->index.pcpu)) {
--			mod->core_kallsyms.typetab[ndst] =3D
--			    mod->kallsyms->typetab[i];
--			dst[ndst] =3D src[i];
--			dst[ndst++].st_name =3D s - mod->core_kallsyms.strtab;
--			s +=3D strlcpy(s, &mod->kallsyms->strtab[src[i].st_name],
--				     KSYM_NAME_LEN) + 1;
--		}
--	}
--	mod->core_kallsyms.num_symtab =3D ndst;
+-	wrote =3D scnprintf(bounce, sizeof(bounce), "0x%px\n",
+-			 kallsyms_show_value(file->f_cred)
+-				? (void *)sattr->address : NULL);
+-	count =3D min(count, wrote);
+-	memcpy(buf, bounce, count);
+-
+-	return count;
 -}
--#else
--static inline void layout_symtab(struct module *mod, struct load_info *inf=
+-
+-static void free_sect_attrs(struct module_sect_attrs *sect_attrs)
+-{
+-	unsigned int section;
+-
+-	for (section =3D 0; section < sect_attrs->nsections; section++)
+-		kfree(sect_attrs->attrs[section].battr.attr.name);
+-	kfree(sect_attrs);
+-}
+-
+-static void add_sect_attrs(struct module *mod, const struct load_info *inf=
 o)
+-{
+-	unsigned int nloaded =3D 0, i, size[2];
+-	struct module_sect_attrs *sect_attrs;
+-	struct module_sect_attr *sattr;
+-	struct bin_attribute **gattr;
+-
+-	/* Count loaded sections and allocate structures */
+-	for (i =3D 0; i < info->hdr->e_shnum; i++)
+-		if (!sect_empty(&info->sechdrs[i]))
+-			nloaded++;
+-	size[0] =3D ALIGN(struct_size(sect_attrs, attrs, nloaded),
+-			sizeof(sect_attrs->grp.bin_attrs[0]));
+-	size[1] =3D (nloaded + 1) * sizeof(sect_attrs->grp.bin_attrs[0]);
+-	sect_attrs =3D kzalloc(size[0] + size[1], GFP_KERNEL);
+-	if (sect_attrs =3D=3D NULL)
+-		return;
+-
+-	/* Setup section attributes. */
+-	sect_attrs->grp.name =3D "sections";
+-	sect_attrs->grp.bin_attrs =3D (void *)sect_attrs + size[0];
+-
+-	sect_attrs->nsections =3D 0;
+-	sattr =3D &sect_attrs->attrs[0];
+-	gattr =3D &sect_attrs->grp.bin_attrs[0];
+-	for (i =3D 0; i < info->hdr->e_shnum; i++) {
+-		Elf_Shdr *sec =3D &info->sechdrs[i];
+-		if (sect_empty(sec))
+-			continue;
+-		sysfs_bin_attr_init(&sattr->battr);
+-		sattr->address =3D sec->sh_addr;
+-		sattr->battr.attr.name =3D
+-			kstrdup(info->secstrings + sec->sh_name, GFP_KERNEL);
+-		if (sattr->battr.attr.name =3D=3D NULL)
+-			goto out;
+-		sect_attrs->nsections++;
+-		sattr->battr.read =3D module_sect_read;
+-		sattr->battr.size =3D MODULE_SECT_READ_SIZE;
+-		sattr->battr.attr.mode =3D 0400;
+-		*(gattr++) =3D &(sattr++)->battr;
+-	}
+-	*gattr =3D NULL;
+-
+-	if (sysfs_create_group(&mod->mkobj.kobj, &sect_attrs->grp))
+-		goto out;
+-
+-	mod->sect_attrs =3D sect_attrs;
+-	return;
+-  out:
+-	free_sect_attrs(sect_attrs);
+-}
+-
+-static void remove_sect_attrs(struct module *mod)
+-{
+-	if (mod->sect_attrs) {
+-		sysfs_remove_group(&mod->mkobj.kobj,
+-				   &mod->sect_attrs->grp);
+-		/*
+-		 * We are positive that no one is using any sect attrs
+-		 * at this point.  Deallocate immediately.
+-		 */
+-		free_sect_attrs(mod->sect_attrs);
+-		mod->sect_attrs =3D NULL;
+-	}
+-}
+-
+-/*
+- * /sys/module/foo/notes/.section.name gives contents of SHT_NOTE sections.
+- */
+-
+-struct module_notes_attrs {
+-	struct kobject *dir;
+-	unsigned int notes;
+-	struct bin_attribute attrs[];
+-};
+-
+-static ssize_t module_notes_read(struct file *filp, struct kobject *kobj,
+-				 struct bin_attribute *bin_attr,
+-				 char *buf, loff_t pos, size_t count)
+-{
+-	/*
+-	 * The caller checked the pos and count against our size.
+-	 */
+-	memcpy(buf, bin_attr->private + pos, count);
+-	return count;
+-}
+-
+-static void free_notes_attrs(struct module_notes_attrs *notes_attrs,
+-			     unsigned int i)
+-{
+-	if (notes_attrs->dir) {
+-		while (i-- > 0)
+-			sysfs_remove_bin_file(notes_attrs->dir,
+-					      &notes_attrs->attrs[i]);
+-		kobject_put(notes_attrs->dir);
+-	}
+-	kfree(notes_attrs);
+-}
+-
+-static void add_notes_attrs(struct module *mod, const struct load_info *in=
+fo)
+-{
+-	unsigned int notes, loaded, i;
+-	struct module_notes_attrs *notes_attrs;
+-	struct bin_attribute *nattr;
+-
+-	/* failed to create section attributes, so can't create notes */
+-	if (!mod->sect_attrs)
+-		return;
+-
+-	/* Count notes sections and allocate structures.  */
+-	notes =3D 0;
+-	for (i =3D 0; i < info->hdr->e_shnum; i++)
+-		if (!sect_empty(&info->sechdrs[i]) &&
+-		    (info->sechdrs[i].sh_type =3D=3D SHT_NOTE))
+-			++notes;
+-
+-	if (notes =3D=3D 0)
+-		return;
+-
+-	notes_attrs =3D kzalloc(struct_size(notes_attrs, attrs, notes),
+-			      GFP_KERNEL);
+-	if (notes_attrs =3D=3D NULL)
+-		return;
+-
+-	notes_attrs->notes =3D notes;
+-	nattr =3D &notes_attrs->attrs[0];
+-	for (loaded =3D i =3D 0; i < info->hdr->e_shnum; ++i) {
+-		if (sect_empty(&info->sechdrs[i]))
+-			continue;
+-		if (info->sechdrs[i].sh_type =3D=3D SHT_NOTE) {
+-			sysfs_bin_attr_init(nattr);
+-			nattr->attr.name =3D mod->sect_attrs->attrs[loaded].battr.attr.name;
+-			nattr->attr.mode =3D S_IRUGO;
+-			nattr->size =3D info->sechdrs[i].sh_size;
+-			nattr->private =3D (void *) info->sechdrs[i].sh_addr;
+-			nattr->read =3D module_notes_read;
+-			++nattr;
+-		}
+-		++loaded;
+-	}
+-
+-	notes_attrs->dir =3D kobject_create_and_add("notes", &mod->mkobj.kobj);
+-	if (!notes_attrs->dir)
+-		goto out;
+-
+-	for (i =3D 0; i < notes; ++i)
+-		if (sysfs_create_bin_file(notes_attrs->dir,
+-					  &notes_attrs->attrs[i]))
+-			goto out;
+-
+-	mod->notes_attrs =3D notes_attrs;
+-	return;
+-
+-  out:
+-	free_notes_attrs(notes_attrs, i);
+-}
+-
+-static void remove_notes_attrs(struct module *mod)
+-{
+-	if (mod->notes_attrs)
+-		free_notes_attrs(mod->notes_attrs, mod->notes_attrs->notes);
+-}
+-
+-#else
+-
+-static inline void add_sect_attrs(struct module *mod,
+-				  const struct load_info *info)
 -{
 -}
 -
--static void add_kallsyms(struct module *mod, const struct load_info *info)
+-static inline void remove_sect_attrs(struct module *mod)
+-{
+-}
+-
+-static inline void add_notes_attrs(struct module *mod,
+-				   const struct load_info *info)
+-{
+-}
+-
+-static inline void remove_notes_attrs(struct module *mod)
 -{
 -}
 -#endif /* CONFIG_KALLSYMS */
 -
--#if IS_ENABLED(CONFIG_KALLSYMS) && IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
--static void init_build_id(struct module *mod, const struct load_info *info)
+-static void del_usage_links(struct module *mod)
 -{
--	const Elf_Shdr *sechdr;
--	unsigned int i;
+-#ifdef CONFIG_MODULE_UNLOAD
+-	struct module_use *use;
 -
--	for (i =3D 0; i < info->hdr->e_shnum; i++) {
--		sechdr =3D &info->sechdrs[i];
--		if (!sect_empty(sechdr) && sechdr->sh_type =3D=3D SHT_NOTE &&
--		    !build_id_parse_buf((void *)sechdr->sh_addr, mod->build_id,
--					sechdr->sh_size))
+-	mutex_lock(&module_mutex);
+-	list_for_each_entry(use, &mod->target_list, target_list)
+-		sysfs_remove_link(use->target->holders_dir, mod->name);
+-	mutex_unlock(&module_mutex);
+-#endif
+-}
+-
+-static int add_usage_links(struct module *mod)
+-{
+-	int ret =3D 0;
+-#ifdef CONFIG_MODULE_UNLOAD
+-	struct module_use *use;
+-
+-	mutex_lock(&module_mutex);
+-	list_for_each_entry(use, &mod->target_list, target_list) {
+-		ret =3D sysfs_create_link(use->target->holders_dir,
+-					&mod->mkobj.kobj, mod->name);
+-		if (ret)
 -			break;
 -	}
--}
--#else
--static void init_build_id(struct module *mod, const struct load_info *info)
--{
--}
+-	mutex_unlock(&module_mutex);
+-	if (ret)
+-		del_usage_links(mod);
 -#endif
--
- static void dynamic_debug_setup(struct module *mod, struct _ddebug *debug,=
- unsigned int num)
- {
- 	if (!debug)
-@@ -3761,285 +3532,6 @@ static inline int within(unsigned long addr, void *=
-start, unsigned long size)
- 	return ((void *)addr >=3D start && (void *)addr < start + size);
- }
- =
-
--#ifdef CONFIG_KALLSYMS
--/*
-- * This ignores the intensely annoying "mapping symbols" found
-- * in ARM ELF files: $a, $t and $d.
-- */
--static inline int is_arm_mapping_symbol(const char *str)
--{
--	if (str[0] =3D=3D '.' && str[1] =3D=3D 'L')
--		return true;
--	return str[0] =3D=3D '$' && strchr("axtd", str[1])
--	       && (str[2] =3D=3D '\0' || str[2] =3D=3D '.');
--}
--
--static const char *kallsyms_symbol_name(struct mod_kallsyms *kallsyms, uns=
-igned int symnum)
--{
--	return kallsyms->strtab + kallsyms->symtab[symnum].st_name;
--}
--
--/*
-- * Given a module and address, find the corresponding symbol and return it=
-s name
-- * while providing its size and offset if needed.
-- */
--static const char *find_kallsyms_symbol(struct module *mod,
--					unsigned long addr,
--					unsigned long *size,
--					unsigned long *offset)
--{
--	unsigned int i, best =3D 0;
--	unsigned long nextval, bestval;
--	struct mod_kallsyms *kallsyms =3D rcu_dereference_sched(mod->kallsyms);
--
--	/* At worse, next value is at end of module */
--	if (within_module_init(addr, mod))
--		nextval =3D (unsigned long)mod->init_layout.base+mod->init_layout.text_s=
-ize;
--	else
--		nextval =3D (unsigned long)mod->core_layout.base+mod->core_layout.text_s=
-ize;
--
--	bestval =3D kallsyms_symbol_value(&kallsyms->symtab[best]);
--
--	/*
--	 * Scan for closest preceding symbol, and next symbol. (ELF
--	 * starts real symbols at 1).
--	 */
--	for (i =3D 1; i < kallsyms->num_symtab; i++) {
--		const Elf_Sym *sym =3D &kallsyms->symtab[i];
--		unsigned long thisval =3D kallsyms_symbol_value(sym);
--
--		if (sym->st_shndx =3D=3D SHN_UNDEF)
--			continue;
--
--		/*
--		 * We ignore unnamed symbols: they're uninformative
--		 * and inserted at a whim.
--		 */
--		if (*kallsyms_symbol_name(kallsyms, i) =3D=3D '\0'
--		    || is_arm_mapping_symbol(kallsyms_symbol_name(kallsyms, i)))
--			continue;
--
--		if (thisval <=3D addr && thisval > bestval) {
--			best =3D i;
--			bestval =3D thisval;
--		}
--		if (thisval > addr && thisval < nextval)
--			nextval =3D thisval;
--	}
--
--	if (!best)
--		return NULL;
--
--	if (size)
--		*size =3D nextval - bestval;
--	if (offset)
--		*offset =3D addr - bestval;
--
--	return kallsyms_symbol_name(kallsyms, best);
--}
--
--void * __weak dereference_module_function_descriptor(struct module *mod,
--						     void *ptr)
--{
--	return ptr;
--}
--
--/*
-- * For kallsyms to ask for address resolution.  NULL means not found.  Car=
-eful
-- * not to lock to avoid deadlock on oopses, simply disable preemption.
-- */
--const char *module_address_lookup(unsigned long addr,
--			    unsigned long *size,
--			    unsigned long *offset,
--			    char **modname,
--			    const unsigned char **modbuildid,
--			    char *namebuf)
--{
--	const char *ret =3D NULL;
--	struct module *mod;
--
--	preempt_disable();
--	mod =3D __module_address(addr);
--	if (mod) {
--		if (modname)
--			*modname =3D mod->name;
--		if (modbuildid) {
--#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
--			*modbuildid =3D mod->build_id;
--#else
--			*modbuildid =3D NULL;
--#endif
--		}
--
--		ret =3D find_kallsyms_symbol(mod, addr, size, offset);
--	}
--	/* Make a copy in here where it's safe */
--	if (ret) {
--		strncpy(namebuf, ret, KSYM_NAME_LEN - 1);
--		ret =3D namebuf;
--	}
--	preempt_enable();
--
 -	return ret;
 -}
 -
--int lookup_module_symbol_name(unsigned long addr, char *symname)
+-static void module_remove_modinfo_attrs(struct module *mod, int end);
+-
+-static int module_add_modinfo_attrs(struct module *mod)
 -{
--	struct module *mod;
+-	struct module_attribute *attr;
+-	struct module_attribute *temp_attr;
+-	int error =3D 0;
+-	int i;
 -
--	preempt_disable();
--	list_for_each_entry_rcu(mod, &modules, list) {
--		if (mod->state =3D=3D MODULE_STATE_UNFORMED)
--			continue;
--		if (within_module(addr, mod)) {
--			const char *sym;
+-	mod->modinfo_attrs =3D kzalloc((sizeof(struct module_attribute) *
+-					(ARRAY_SIZE(modinfo_attrs) + 1)),
+-					GFP_KERNEL);
+-	if (!mod->modinfo_attrs)
+-		return -ENOMEM;
 -
--			sym =3D find_kallsyms_symbol(mod, addr, NULL, NULL);
--			if (!sym)
--				goto out;
--
--			strlcpy(symname, sym, KSYM_NAME_LEN);
--			preempt_enable();
--			return 0;
+-	temp_attr =3D mod->modinfo_attrs;
+-	for (i =3D 0; (attr =3D modinfo_attrs[i]); i++) {
+-		if (!attr->test || attr->test(mod)) {
+-			memcpy(temp_attr, attr, sizeof(*temp_attr));
+-			sysfs_attr_init(&temp_attr->attr);
+-			error =3D sysfs_create_file(&mod->mkobj.kobj,
+-					&temp_attr->attr);
+-			if (error)
+-				goto error_out;
+-			++temp_attr;
 -		}
 -	}
+-
+-	return 0;
+-
+-error_out:
+-	if (i > 0)
+-		module_remove_modinfo_attrs(mod, --i);
+-	else
+-		kfree(mod->modinfo_attrs);
+-	return error;
+-}
+-
+-static void module_remove_modinfo_attrs(struct module *mod, int end)
+-{
+-	struct module_attribute *attr;
+-	int i;
+-
+-	for (i =3D 0; (attr =3D &mod->modinfo_attrs[i]); i++) {
+-		if (end >=3D 0 && i > end)
+-			break;
+-		/* pick a field to test for end of list */
+-		if (!attr->attr.name)
+-			break;
+-		sysfs_remove_file(&mod->mkobj.kobj, &attr->attr);
+-		if (attr->free)
+-			attr->free(mod);
+-	}
+-	kfree(mod->modinfo_attrs);
+-}
+-
+-static void mod_kobject_put(struct module *mod)
+-{
+-	DECLARE_COMPLETION_ONSTACK(c);
+-	mod->mkobj.kobj_completion =3D &c;
+-	kobject_put(&mod->mkobj.kobj);
+-	wait_for_completion(&c);
+-}
+-
+-static int mod_sysfs_init(struct module *mod)
+-{
+-	int err;
+-	struct kobject *kobj;
+-
+-	if (!module_sysfs_initialized) {
+-		pr_err("%s: module sysfs not initialized\n", mod->name);
+-		err =3D -EINVAL;
+-		goto out;
+-	}
+-
+-	kobj =3D kset_find_obj(module_kset, mod->name);
+-	if (kobj) {
+-		pr_err("%s: module is already loaded\n", mod->name);
+-		kobject_put(kobj);
+-		err =3D -EINVAL;
+-		goto out;
+-	}
+-
+-	mod->mkobj.mod =3D mod;
+-
+-	memset(&mod->mkobj.kobj, 0, sizeof(mod->mkobj.kobj));
+-	mod->mkobj.kobj.kset =3D module_kset;
+-	err =3D kobject_init_and_add(&mod->mkobj.kobj, &module_ktype, NULL,
+-				   "%s", mod->name);
+-	if (err)
+-		mod_kobject_put(mod);
+-
 -out:
--	preempt_enable();
--	return -ERANGE;
+-	return err;
 -}
 -
--int lookup_module_symbol_attrs(unsigned long addr, unsigned long *size,
--			unsigned long *offset, char *modname, char *name)
+-static int mod_sysfs_setup(struct module *mod,
+-			   const struct load_info *info,
+-			   struct kernel_param *kparam,
+-			   unsigned int num_params)
 -{
--	struct module *mod;
+-	int err;
 -
--	preempt_disable();
--	list_for_each_entry_rcu(mod, &modules, list) {
--		if (mod->state =3D=3D MODULE_STATE_UNFORMED)
--			continue;
--		if (within_module(addr, mod)) {
--			const char *sym;
+-	err =3D mod_sysfs_init(mod);
+-	if (err)
+-		goto out;
 -
--			sym =3D find_kallsyms_symbol(mod, addr, size, offset);
--			if (!sym)
--				goto out;
--			if (modname)
--				strlcpy(modname, mod->name, MODULE_NAME_LEN);
--			if (name)
--				strlcpy(name, sym, KSYM_NAME_LEN);
--			preempt_enable();
--			return 0;
--		}
+-	mod->holders_dir =3D kobject_create_and_add("holders", &mod->mkobj.kobj);
+-	if (!mod->holders_dir) {
+-		err =3D -ENOMEM;
+-		goto out_unreg;
 -	}
+-
+-	err =3D module_param_sysfs_setup(mod, kparam, num_params);
+-	if (err)
+-		goto out_unreg_holders;
+-
+-	err =3D module_add_modinfo_attrs(mod);
+-	if (err)
+-		goto out_unreg_param;
+-
+-	err =3D add_usage_links(mod);
+-	if (err)
+-		goto out_unreg_modinfo_attrs;
+-
+-	add_sect_attrs(mod, info);
+-	add_notes_attrs(mod, info);
+-
+-	return 0;
+-
+-out_unreg_modinfo_attrs:
+-	module_remove_modinfo_attrs(mod, -1);
+-out_unreg_param:
+-	module_param_sysfs_remove(mod);
+-out_unreg_holders:
+-	kobject_put(mod->holders_dir);
+-out_unreg:
+-	mod_kobject_put(mod);
 -out:
--	preempt_enable();
--	return -ERANGE;
+-	return err;
 -}
 -
--int module_get_kallsym(unsigned int symnum, unsigned long *value, char *ty=
-pe,
--			char *name, char *module_name, int *exported)
+-static void mod_sysfs_fini(struct module *mod)
 -{
--	struct module *mod;
--
--	preempt_disable();
--	list_for_each_entry_rcu(mod, &modules, list) {
--		struct mod_kallsyms *kallsyms;
--
--		if (mod->state =3D=3D MODULE_STATE_UNFORMED)
--			continue;
--		kallsyms =3D rcu_dereference_sched(mod->kallsyms);
--		if (symnum < kallsyms->num_symtab) {
--			const Elf_Sym *sym =3D &kallsyms->symtab[symnum];
--
--			*value =3D kallsyms_symbol_value(sym);
--			*type =3D kallsyms->typetab[symnum];
--			strlcpy(name, kallsyms_symbol_name(kallsyms, symnum), KSYM_NAME_LEN);
--			strlcpy(module_name, mod->name, MODULE_NAME_LEN);
--			*exported =3D is_exported(name, *value, mod);
--			preempt_enable();
--			return 0;
--		}
--		symnum -=3D kallsyms->num_symtab;
--	}
--	preempt_enable();
--	return -ERANGE;
+-	remove_notes_attrs(mod);
+-	remove_sect_attrs(mod);
+-	mod_kobject_put(mod);
 -}
 -
--/* Given a module and name of symbol, find and return the symbol's value */
--static unsigned long find_kallsyms_symbol_value(struct module *mod, const =
-char *name)
+-static void init_param_lock(struct module *mod)
 -{
--	unsigned int i;
--	struct mod_kallsyms *kallsyms =3D rcu_dereference_sched(mod->kallsyms);
+-	mutex_init(&mod->param_lock);
+-}
+-#else /* !CONFIG_SYSFS */
 -
--	for (i =3D 0; i < kallsyms->num_symtab; i++) {
--		const Elf_Sym *sym =3D &kallsyms->symtab[i];
--
--		if (strcmp(name, kallsyms_symbol_name(kallsyms, i)) =3D=3D 0 &&
--		    sym->st_shndx !=3D SHN_UNDEF)
--			return kallsyms_symbol_value(sym);
--	}
+-static int mod_sysfs_setup(struct module *mod,
+-			   const struct load_info *info,
+-			   struct kernel_param *kparam,
+-			   unsigned int num_params)
+-{
 -	return 0;
 -}
 -
--/* Look for this name: can be of form module:name. */
--unsigned long module_kallsyms_lookup_name(const char *name)
+-static void mod_sysfs_fini(struct module *mod)
 -{
--	struct module *mod;
--	char *colon;
--	unsigned long ret =3D 0;
--
--	/* Don't lock: we're in enough trouble already. */
--	preempt_disable();
--	if ((colon =3D strnchr(name, MODULE_NAME_LEN, ':')) !=3D NULL) {
--		if ((mod =3D find_module_all(name, colon - name, false)) !=3D NULL)
--			ret =3D find_kallsyms_symbol_value(mod, colon+1);
--	} else {
--		list_for_each_entry_rcu(mod, &modules, list) {
--			if (mod->state =3D=3D MODULE_STATE_UNFORMED)
--				continue;
--			if ((ret =3D find_kallsyms_symbol_value(mod, name)) !=3D 0)
--				break;
--		}
--	}
--	preempt_enable();
--	return ret;
 -}
 -
--#ifdef CONFIG_LIVEPATCH
--int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
--					     struct module *, unsigned long),
--				   void *data)
+-static void module_remove_modinfo_attrs(struct module *mod, int end)
 -{
--	struct module *mod;
--	unsigned int i;
--	int ret =3D 0;
--
--	mutex_lock(&module_mutex);
--	list_for_each_entry(mod, &modules, list) {
--		/* We hold module_mutex: no need for rcu_dereference_sched */
--		struct mod_kallsyms *kallsyms =3D mod->kallsyms;
--
--		if (mod->state =3D=3D MODULE_STATE_UNFORMED)
--			continue;
--		for (i =3D 0; i < kallsyms->num_symtab; i++) {
--			const Elf_Sym *sym =3D &kallsyms->symtab[i];
--
--			if (sym->st_shndx =3D=3D SHN_UNDEF)
--				continue;
--
--			ret =3D fn(data, kallsyms_symbol_name(kallsyms, i),
--				 mod, kallsyms_symbol_value(sym));
--			if (ret !=3D 0)
--				goto out;
--		}
--	}
--out:
--	mutex_unlock(&module_mutex);
--	return ret;
 -}
--#endif /* CONFIG_LIVEPATCH */
--#endif /* CONFIG_KALLSYMS */
 -
- static void cfi_init(struct module *mod)
+-static void del_usage_links(struct module *mod)
+-{
+-}
+-
+-static void init_param_lock(struct module *mod)
+-{
+-}
+-#endif /* CONFIG_SYSFS */
+-
+ static void mod_sysfs_teardown(struct module *mod)
  {
- #ifdef CONFIG_CFI_CLANG
+ 	del_usage_links(mod);
+diff --git a/kernel/module/sysfs.c b/kernel/module/sysfs.c
+new file mode 100644
+index 000000000000..f5c72c567e71
+--- /dev/null
++++ b/kernel/module/sysfs.c
+@@ -0,0 +1,425 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Module sysfs support
++ *
++ * Copyright (C) 2008 Rusty Russell
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/fs.h>
++#include <linux/sysfs.h>
++#include <linux/slab.h>
++#include <linux/kallsyms.h>
++#include <linux/mutex.h>
++#include "internal.h"
++
++/*
++ * /sys/module/foo/sections stuff
++ * J. Corbet <corbet@lwn.net>
++ */
++#ifdef CONFIG_KALLSYMS
++struct module_sect_attr {
++	struct bin_attribute battr;
++	unsigned long address;
++};
++
++struct module_sect_attrs {
++	struct attribute_group grp;
++	unsigned int nsections;
++	struct module_sect_attr attrs[];
++};
++
++static ssize_t module_sect_read(struct file *file, struct kobject *kobj,
++				struct bin_attribute *battr,
++				char *buf, loff_t pos, size_t count)
++{
++	struct module_sect_attr *sattr =3D
++		container_of(battr, struct module_sect_attr, battr);
++	char bounce[MODULE_SECT_READ_SIZE + 1];
++	size_t wrote;
++
++	if (pos !=3D 0)
++		return -EINVAL;
++
++	/*
++	 * Since we're a binary read handler, we must account for the
++	 * trailing NUL byte that sprintf will write: if "buf" is
++	 * too small to hold the NUL, or the NUL is exactly the last
++	 * byte, the read will look like it got truncated by one byte.
++	 * Since there is no way to ask sprintf nicely to not write
++	 * the NUL, we have to use a bounce buffer.
++	 */
++	wrote =3D scnprintf(bounce, sizeof(bounce), "0x%px\n",
++			 kallsyms_show_value(file->f_cred)
++				? (void *)sattr->address : NULL);
++	count =3D min(count, wrote);
++	memcpy(buf, bounce, count);
++
++	return count;
++}
++
++static void free_sect_attrs(struct module_sect_attrs *sect_attrs)
++{
++	unsigned int section;
++
++	for (section =3D 0; section < sect_attrs->nsections; section++)
++		kfree(sect_attrs->attrs[section].battr.attr.name);
++	kfree(sect_attrs);
++}
++
++static void add_sect_attrs(struct module *mod, const struct load_info *inf=
+o)
++{
++	unsigned int nloaded =3D 0, i, size[2];
++	struct module_sect_attrs *sect_attrs;
++	struct module_sect_attr *sattr;
++	struct bin_attribute **gattr;
++
++	/* Count loaded sections and allocate structures */
++	for (i =3D 0; i < info->hdr->e_shnum; i++)
++		if (!sect_empty(&info->sechdrs[i]))
++			nloaded++;
++	size[0] =3D ALIGN(struct_size(sect_attrs, attrs, nloaded),
++			sizeof(sect_attrs->grp.bin_attrs[0]));
++	size[1] =3D (nloaded + 1) * sizeof(sect_attrs->grp.bin_attrs[0]);
++	sect_attrs =3D kzalloc(size[0] + size[1], GFP_KERNEL);
++	if (sect_attrs =3D=3D NULL)
++		return;
++
++	/* Setup section attributes. */
++	sect_attrs->grp.name =3D "sections";
++	sect_attrs->grp.bin_attrs =3D (void *)sect_attrs + size[0];
++
++	sect_attrs->nsections =3D 0;
++	sattr =3D &sect_attrs->attrs[0];
++	gattr =3D &sect_attrs->grp.bin_attrs[0];
++	for (i =3D 0; i < info->hdr->e_shnum; i++) {
++		Elf_Shdr *sec =3D &info->sechdrs[i];
++
++		if (sect_empty(sec))
++			continue;
++		sysfs_bin_attr_init(&sattr->battr);
++		sattr->address =3D sec->sh_addr;
++		sattr->battr.attr.name =3D
++			kstrdup(info->secstrings + sec->sh_name, GFP_KERNEL);
++		if (sattr->battr.attr.name =3D=3D NULL)
++			goto out;
++		sect_attrs->nsections++;
++		sattr->battr.read =3D module_sect_read;
++		sattr->battr.size =3D MODULE_SECT_READ_SIZE;
++		sattr->battr.attr.mode =3D 0400;
++		*(gattr++) =3D &(sattr++)->battr;
++	}
++	*gattr =3D NULL;
++
++	if (sysfs_create_group(&mod->mkobj.kobj, &sect_attrs->grp))
++		goto out;
++
++	mod->sect_attrs =3D sect_attrs;
++	return;
++out:
++	free_sect_attrs(sect_attrs);
++}
++
++static void remove_sect_attrs(struct module *mod)
++{
++	if (mod->sect_attrs) {
++		sysfs_remove_group(&mod->mkobj.kobj,
++				   &mod->sect_attrs->grp);
++		/*
++		 * We are positive that no one is using any sect attrs
++		 * at this point.  Deallocate immediately.
++		 */
++		free_sect_attrs(mod->sect_attrs);
++		mod->sect_attrs =3D NULL;
++	}
++}
++
++/*
++ * /sys/module/foo/notes/.section.name gives contents of SHT_NOTE sections.
++ */
++
++struct module_notes_attrs {
++	struct kobject *dir;
++	unsigned int notes;
++	struct bin_attribute attrs[];
++};
++
++static ssize_t module_notes_read(struct file *filp, struct kobject *kobj,
++				 struct bin_attribute *bin_attr,
++				 char *buf, loff_t pos, size_t count)
++{
++	/*
++	 * The caller checked the pos and count against our size.
++	 */
++	memcpy(buf, bin_attr->private + pos, count);
++	return count;
++}
++
++static void free_notes_attrs(struct module_notes_attrs *notes_attrs,
++			     unsigned int i)
++{
++	if (notes_attrs->dir) {
++		while (i-- > 0)
++			sysfs_remove_bin_file(notes_attrs->dir,
++					      &notes_attrs->attrs[i]);
++		kobject_put(notes_attrs->dir);
++	}
++	kfree(notes_attrs);
++}
++
++static void add_notes_attrs(struct module *mod, const struct load_info *in=
+fo)
++{
++	unsigned int notes, loaded, i;
++	struct module_notes_attrs *notes_attrs;
++	struct bin_attribute *nattr;
++
++	/* failed to create section attributes, so can't create notes */
++	if (!mod->sect_attrs)
++		return;
++
++	/* Count notes sections and allocate structures.  */
++	notes =3D 0;
++	for (i =3D 0; i < info->hdr->e_shnum; i++)
++		if (!sect_empty(&info->sechdrs[i]) &&
++		    (info->sechdrs[i].sh_type =3D=3D SHT_NOTE))
++			++notes;
++
++	if (notes =3D=3D 0)
++		return;
++
++	notes_attrs =3D kzalloc(struct_size(notes_attrs, attrs, notes),
++			      GFP_KERNEL);
++	if (notes_attrs =3D=3D NULL)
++		return;
++
++	notes_attrs->notes =3D notes;
++	nattr =3D &notes_attrs->attrs[0];
++	for (loaded =3D i =3D 0; i < info->hdr->e_shnum; ++i) {
++		if (sect_empty(&info->sechdrs[i]))
++			continue;
++		if (info->sechdrs[i].sh_type =3D=3D SHT_NOTE) {
++			sysfs_bin_attr_init(nattr);
++			nattr->attr.name =3D mod->sect_attrs->attrs[loaded].battr.attr.name;
++			nattr->attr.mode =3D 0444;
++			nattr->size =3D info->sechdrs[i].sh_size;
++			nattr->private =3D (void *) info->sechdrs[i].sh_addr;
++			nattr->read =3D module_notes_read;
++			++nattr;
++		}
++		++loaded;
++	}
++
++	notes_attrs->dir =3D kobject_create_and_add("notes", &mod->mkobj.kobj);
++	if (!notes_attrs->dir)
++		goto out;
++
++	for (i =3D 0; i < notes; ++i)
++		if (sysfs_create_bin_file(notes_attrs->dir,
++					  &notes_attrs->attrs[i]))
++			goto out;
++
++	mod->notes_attrs =3D notes_attrs;
++	return;
++
++out:
++	free_notes_attrs(notes_attrs, i);
++}
++
++static void remove_notes_attrs(struct module *mod)
++{
++	if (mod->notes_attrs)
++		free_notes_attrs(mod->notes_attrs, mod->notes_attrs->notes);
++}
++
++#else /* !CONFIG_KALLSYMS */
++static inline void add_sect_attrs(struct module *mod, const struct load_in=
+fo *info) { }
++static inline void remove_sect_attrs(struct module *mod) { }
++static inline void add_notes_attrs(struct module *mod, const struct load_i=
+nfo *info) { }
++static inline void remove_notes_attrs(struct module *mod) { }
++#endif /* CONFIG_KALLSYMS */
++
++void del_usage_links(struct module *mod)
++{
++#ifdef CONFIG_MODULE_UNLOAD
++	struct module_use *use;
++
++	mutex_lock(&module_mutex);
++	list_for_each_entry(use, &mod->target_list, target_list)
++		sysfs_remove_link(use->target->holders_dir, mod->name);
++	mutex_unlock(&module_mutex);
++#endif
++}
++
++static int add_usage_links(struct module *mod)
++{
++	int ret =3D 0;
++#ifdef CONFIG_MODULE_UNLOAD
++	struct module_use *use;
++
++	mutex_lock(&module_mutex);
++	list_for_each_entry(use, &mod->target_list, target_list) {
++		ret =3D sysfs_create_link(use->target->holders_dir,
++					&mod->mkobj.kobj, mod->name);
++		if (ret)
++			break;
++	}
++	mutex_unlock(&module_mutex);
++	if (ret)
++		del_usage_links(mod);
++#endif
++	return ret;
++}
++
++static int module_add_modinfo_attrs(struct module *mod)
++{
++	struct module_attribute *attr;
++	struct module_attribute *temp_attr;
++	int error =3D 0;
++	int i;
++
++	mod->modinfo_attrs =3D kzalloc((sizeof(struct module_attribute) *
++					(modinfo_attrs_count + 1)),
++					GFP_KERNEL);
++	if (!mod->modinfo_attrs)
++		return -ENOMEM;
++
++	temp_attr =3D mod->modinfo_attrs;
++	for (i =3D 0; (attr =3D modinfo_attrs[i]); i++) {
++		if (!attr->test || attr->test(mod)) {
++			memcpy(temp_attr, attr, sizeof(*temp_attr));
++			sysfs_attr_init(&temp_attr->attr);
++			error =3D sysfs_create_file(&mod->mkobj.kobj,
++					&temp_attr->attr);
++			if (error)
++				goto error_out;
++			++temp_attr;
++		}
++	}
++
++	return 0;
++
++error_out:
++	if (i > 0)
++		module_remove_modinfo_attrs(mod, --i);
++	else
++		kfree(mod->modinfo_attrs);
++	return error;
++}
++
++void module_remove_modinfo_attrs(struct module *mod, int end)
++{
++	struct module_attribute *attr;
++	int i;
++
++	for (i =3D 0; (attr =3D &mod->modinfo_attrs[i]); i++) {
++		if (end >=3D 0 && i > end)
++			break;
++		/* pick a field to test for end of list */
++		if (!attr->attr.name)
++			break;
++		sysfs_remove_file(&mod->mkobj.kobj, &attr->attr);
++		if (attr->free)
++			attr->free(mod);
++	}
++	kfree(mod->modinfo_attrs);
++}
++
++static void mod_kobject_put(struct module *mod)
++{
++	DECLARE_COMPLETION_ONSTACK(c);
++
++	mod->mkobj.kobj_completion =3D &c;
++	kobject_put(&mod->mkobj.kobj);
++	wait_for_completion(&c);
++}
++
++static int mod_sysfs_init(struct module *mod)
++{
++	int err;
++	struct kobject *kobj;
++
++	if (!module_sysfs_initialized) {
++		pr_err("%s: module sysfs not initialized\n", mod->name);
++		err =3D -EINVAL;
++		goto out;
++	}
++
++	kobj =3D kset_find_obj(module_kset, mod->name);
++	if (kobj) {
++		pr_err("%s: module is already loaded\n", mod->name);
++		kobject_put(kobj);
++		err =3D -EINVAL;
++		goto out;
++	}
++
++	mod->mkobj.mod =3D mod;
++
++	memset(&mod->mkobj.kobj, 0, sizeof(mod->mkobj.kobj));
++	mod->mkobj.kobj.kset =3D module_kset;
++	err =3D kobject_init_and_add(&mod->mkobj.kobj, &module_ktype, NULL,
++				   "%s", mod->name);
++	if (err)
++		mod_kobject_put(mod);
++
++out:
++	return err;
++}
++
++int mod_sysfs_setup(struct module *mod,
++			   const struct load_info *info,
++			   struct kernel_param *kparam,
++			   unsigned int num_params)
++{
++	int err;
++
++	err =3D mod_sysfs_init(mod);
++	if (err)
++		goto out;
++
++	mod->holders_dir =3D kobject_create_and_add("holders", &mod->mkobj.kobj);
++	if (!mod->holders_dir) {
++		err =3D -ENOMEM;
++		goto out_unreg;
++	}
++
++	err =3D module_param_sysfs_setup(mod, kparam, num_params);
++	if (err)
++		goto out_unreg_holders;
++
++	err =3D module_add_modinfo_attrs(mod);
++	if (err)
++		goto out_unreg_param;
++
++	err =3D add_usage_links(mod);
++	if (err)
++		goto out_unreg_modinfo_attrs;
++
++	add_sect_attrs(mod, info);
++	add_notes_attrs(mod, info);
++
++	return 0;
++
++out_unreg_modinfo_attrs:
++	module_remove_modinfo_attrs(mod, -1);
++out_unreg_param:
++	module_param_sysfs_remove(mod);
++out_unreg_holders:
++	kobject_put(mod->holders_dir);
++out_unreg:
++	mod_kobject_put(mod);
++out:
++	return err;
++}
++
++void mod_sysfs_fini(struct module *mod)
++{
++	remove_notes_attrs(mod);
++	remove_sect_attrs(mod);
++	mod_kobject_put(mod);
++}
++
++void init_param_lock(struct module *mod)
++{
++	mutex_init(&mod->param_lock);
++}
 -- =
 
 2.34.1
 
---===============6961400456096472127==--
+--===============0689150176245670248==--
 
