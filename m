@@ -1,294 +1,429 @@
-Content-Type: multipart/mixed; boundary="===============1296225595203551503=="
+Content-Type: multipart/mixed; boundary="===============6397901963707809666=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v3 07/13] module: Move extra signature support out of core code
-Date: Fri, 28 Jan 2022 13:23:15 +0000
-Message-ID: <20220128132321.529594-8-atomlin@redhat.com>
+Subject: [RFC PATCH v3 13/13] module: Move version support into a separate file
+Date: Fri, 28 Jan 2022 13:23:21 +0000
+Message-ID: <20220128132321.529594-14-atomlin@redhat.com>
 In-Reply-To: <20220128132321.529594-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1296225595203551503==
+--===============6397901963707809666==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 No functional change.
 
-This patch migrates additional module signature check
-code from core module code into kernel/module/signing.c.
+This patch migrates module version support out of core code into
+kernel/module/version.c. In addition simple code refactoring to
+make this possible.
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- include/linux/module.h   |  5 ++-
- kernel/module/internal.h |  9 +++++
- kernel/module/main.c     | 87 ----------------------------------------
- kernel/module/signing.c  | 75 ++++++++++++++++++++++++++++++++++
- 4 files changed, 87 insertions(+), 89 deletions(-)
+ kernel/module/Makefile   |   1 +
+ kernel/module/internal.h |  51 +++++++++++++
+ kernel/module/main.c     | 150 +--------------------------------------
+ kernel/module/version.c  | 110 ++++++++++++++++++++++++++++
+ 4 files changed, 164 insertions(+), 148 deletions(-)
+ create mode 100644 kernel/module/version.c
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 7bf93c0d87e6..68dabc036100 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -758,8 +758,8 @@ static inline bool set_livepatch_module(struct module *=
-mod)
- }
- #endif /* CONFIG_LIVEPATCH */
- =
-
--bool is_module_sig_enforced(void);
--void set_module_sig_enforced(void);
-+extern bool is_module_sig_enforced(void);
-+extern void set_module_sig_enforced(void);
- =
-
- #else /* !CONFIG_MODULES... */
- =
-
-@@ -949,6 +949,7 @@ static inline bool module_sig_ok(struct module *module)
- {
- 	return true;
- }
-+#define sig_enforce false
- #endif	/* CONFIG_MODULE_SIG */
- =
-
- int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+index 44b9b4924d71..8b88ae28e714 100644
+--- a/kernel/module/Makefile
++++ b/kernel/module/Makefile
+@@ -15,3 +15,4 @@ obj-$(CONFIG_DEBUG_KMEMLEAK) +=3D debug_kmemleak.o
+ obj-$(CONFIG_KALLSYMS) +=3D kallsyms.o
+ obj-$(CONFIG_PROC_FS) +=3D procfs.o
+ obj-$(CONFIG_SYSFS) +=3D sysfs.o
++obj-$(CONFIG_MODVERSIONS) +=3D version.o
 diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 0cd624179545..5aab87716d9f 100644
+index bf2746949e93..94c6cfddf0a2 100644
 --- a/kernel/module/internal.h
 +++ b/kernel/module/internal.h
-@@ -80,3 +80,12 @@ static inline void module_decompress_cleanup(struct load=
-_info *info)
- {
- }
- #endif
+@@ -59,7 +59,31 @@ struct load_info {
+ 	} index;
+ };
+ =
+
++struct symsearch {
++	const struct kernel_symbol *start, *stop;
++	const s32 *crcs;
++	enum mod_license {
++		NOT_GPL_ONLY,
++		GPL_ONLY,
++	} license;
++};
 +
-+#ifdef CONFIG_MODULE_SIG
-+extern int module_sig_check(struct load_info *info, int flags);
-+#else /* !CONFIG_MODULE_SIG */
-+static int module_sig_check(struct load_info *info, int flags)
++struct find_symbol_arg {
++	/* Input */
++	const char *name;
++	bool gplok;
++	bool warn;
++
++	/* Output */
++	struct module *owner;
++	const s32 *crc;
++	const struct kernel_symbol *sym;
++	enum mod_license license;
++};
++
+ extern int mod_verify_sig(const void *mod, struct load_info *info);
++extern int try_to_force_load(struct module *mod, const char *reason);
++extern bool find_symbol(struct find_symbol_arg *fsa);
+ extern struct module *find_module_all(const char *name, size_t len, bool e=
+ven_unformed);
+ extern unsigned long kernel_symbol_value(const struct kernel_symbol *sym);
+ extern int cmp_name(const void *name, const void *sym);
+@@ -149,3 +173,30 @@ static inline void module_remove_modinfo_attrs(struct =
+module *mod, int end) { }
+ static inline void del_usage_links(struct module *mod) { }
+ static inline void init_param_lock(struct module *mod) { }
+ #endif /* CONFIG_SYSFS */
++
++#ifdef CONFIG_MODVERSIONS
++extern int check_version(const struct load_info *info,
++			 const char *symname, struct module *mod, const s32 *crc);
++extern int check_modstruct_version(const struct load_info *info, struct mo=
+dule *mod);
++extern int same_magic(const char *amagic, const char *bmagic, bool has_crc=
+s);
++#else /* !CONFIG_MODVERSIONS */
++static inline int check_version(const struct load_info *info,
++				const char *symname,
++				struct module *mod,
++				const s32 *crc)
 +{
-+	return 0;
++	return 1;
 +}
-+#endif /* !CONFIG_MODULE_SIG */
++
++static inline int check_modstruct_version(const struct load_info *info,
++					  struct module *mod)
++{
++	return 1;
++}
++
++static inline int same_magic(const char *amagic, const char *bmagic,
++			    bool has_crcs)
++{
++	return strcmp(amagic, bmagic) =3D=3D 0;
++}
++#endif /* CONFIG_MODVERSIONS */
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 4f590b0c7aca..36ed4dd64cac 100644
+index 1f16e67f687f..0a1bd11d2a6e 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -22,7 +22,6 @@
- #include <linux/vmalloc.h>
- #include <linux/elf.h>
- #include <linux/proc_fs.h>
--#include <linux/security.h>
- #include <linux/seq_file.h>
- #include <linux/syscalls.h>
- #include <linux/fcntl.h>
-@@ -114,28 +113,6 @@ static void module_assert_mutex_or_preempt(void)
+@@ -231,28 +231,6 @@ static __maybe_unused void *any_section_objs(const str=
+uct load_info *info,
+ #define symversion(base, idx) ((base !=3D NULL) ? ((base) + (idx)) : NULL)
+ #endif
+ =
+
+-struct symsearch {
+-	const struct kernel_symbol *start, *stop;
+-	const s32 *crcs;
+-	enum mod_license {
+-		NOT_GPL_ONLY,
+-		GPL_ONLY,
+-	} license;
+-};
+-
+-struct find_symbol_arg {
+-	/* Input */
+-	const char *name;
+-	bool gplok;
+-	bool warn;
+-
+-	/* Output */
+-	struct module *owner;
+-	const s32 *crc;
+-	const struct kernel_symbol *sym;
+-	enum mod_license license;
+-};
+-
+ static bool check_exported_symbol(const struct symsearch *syms,
+ 				  struct module *owner,
+ 				  unsigned int symnum, void *data)
+@@ -323,7 +301,7 @@ static bool find_exported_symbol_in_section(const struc=
+t symsearch *syms,
+  * Find an exported symbol and return it, along with, (optional) crc and
+  * (optional) module which owns it.  Needs preempt disabled or module_mute=
+x.
+  */
+-static bool find_symbol(struct find_symbol_arg *fsa)
++bool find_symbol(struct find_symbol_arg *fsa)
+ {
+ 	static const struct symsearch arr[] =3D {
+ 		{ __start___ksymtab, __stop___ksymtab, __start___kcrctab,
+@@ -997,7 +975,7 @@ size_t modinfo_attrs_count =3D ARRAY_SIZE(modinfo_attrs=
+);
+ =
+
+ static const char vermagic[] =3D VERMAGIC_STRING;
+ =
+
+-static int try_to_force_load(struct module *mod, const char *reason)
++int try_to_force_load(struct module *mod, const char *reason)
+ {
+ #ifdef CONFIG_MODULE_FORCE_LOAD
+ 	if (!test_taint(TAINT_FORCED_MODULE))
+@@ -1009,115 +987,6 @@ static int try_to_force_load(struct module *mod, con=
+st char *reason)
  #endif
  }
  =
 
--#ifdef CONFIG_MODULE_SIG
--static bool sig_enforce =3D IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
--module_param(sig_enforce, bool_enable_only, 0644);
+-#ifdef CONFIG_MODVERSIONS
 -
--void set_module_sig_enforced(void)
+-static u32 resolve_rel_crc(const s32 *crc)
 -{
--	sig_enforce =3D true;
+-	return *(u32 *)((void *)crc + *crc);
 -}
--#else
--#define sig_enforce false
--#endif
 -
--/*
-- * Export sig_enforce kernel cmdline parameter to allow other subsystems r=
-ely
-- * on that instead of directly to CONFIG_MODULE_SIG_FORCE config.
-- */
--bool is_module_sig_enforced(void)
+-static int check_version(const struct load_info *info,
+-			 const char *symname,
+-			 struct module *mod,
+-			 const s32 *crc)
 -{
--	return sig_enforce;
--}
--EXPORT_SYMBOL(is_module_sig_enforced);
+-	Elf_Shdr *sechdrs =3D info->sechdrs;
+-	unsigned int versindex =3D info->index.vers;
+-	unsigned int i, num_versions;
+-	struct modversion_info *versions;
 -
- /* Block module loading/unloading? */
- int modules_disabled =3D 0;
- core_param(nomodule, modules_disabled, bint, 0);
-@@ -2516,70 +2493,6 @@ static inline void kmemleak_load_module(const struct=
- module *mod,
- }
- #endif
- =
-
--#ifdef CONFIG_MODULE_SIG
--static int module_sig_check(struct load_info *info, int flags)
--{
--	int err =3D -ENODATA;
--	const unsigned long markerlen =3D sizeof(MODULE_SIG_STRING) - 1;
--	const char *reason;
--	const void *mod =3D info->hdr;
--	bool mangled_module =3D flags & (MODULE_INIT_IGNORE_MODVERSIONS |
--				       MODULE_INIT_IGNORE_VERMAGIC);
--	/*
--	 * Do not allow mangled modules as a module with version information
--	 * removed is no longer the module that was signed.
--	 */
--	if (!mangled_module &&
--	    info->len > markerlen &&
--	    memcmp(mod + info->len - markerlen, MODULE_SIG_STRING, markerlen) =3D=
-=3D 0) {
--		/* We truncate the module to discard the signature */
--		info->len -=3D markerlen;
--		err =3D mod_verify_sig(mod, info);
--		if (!err) {
--			info->sig_ok =3D true;
--			return 0;
--		}
+-	/* Exporting module didn't supply crcs?  OK, we're already tainted. */
+-	if (!crc)
+-		return 1;
+-
+-	/* No versions at all?  modprobe --force does this. */
+-	if (versindex =3D=3D 0)
+-		return try_to_force_load(mod, symname) =3D=3D 0;
+-
+-	versions =3D (void *) sechdrs[versindex].sh_addr;
+-	num_versions =3D sechdrs[versindex].sh_size
+-		/ sizeof(struct modversion_info);
+-
+-	for (i =3D 0; i < num_versions; i++) {
+-		u32 crcval;
+-
+-		if (strcmp(versions[i].name, symname) !=3D 0)
+-			continue;
+-
+-		if (IS_ENABLED(CONFIG_MODULE_REL_CRCS))
+-			crcval =3D resolve_rel_crc(crc);
+-		else
+-			crcval =3D *crc;
+-		if (versions[i].crc =3D=3D crcval)
+-			return 1;
+-		pr_debug("Found checksum %X vs module %lX\n",
+-			 crcval, versions[i].crc);
+-		goto bad_version;
 -	}
 -
--	/*
--	 * We don't permit modules to be loaded into the trusted kernels
--	 * without a valid signature on them, but if we're not enforcing,
--	 * certain errors are non-fatal.
--	 */
--	switch (err) {
--	case -ENODATA:
--		reason =3D "unsigned module";
--		break;
--	case -ENOPKG:
--		reason =3D "module with unsupported crypto";
--		break;
--	case -ENOKEY:
--		reason =3D "module with unavailable key";
--		break;
+-	/* Broken toolchain. Warn once, then let it go.. */
+-	pr_warn_once("%s: no symbol version for %s\n", info->name, symname);
+-	return 1;
 -
--	default:
--		/*
--		 * All other errors are fatal, including lack of memory,
--		 * unparseable signatures, and signature check failures --
--		 * even if signatures aren't required.
--		 */
--		return err;
--	}
--
--	if (is_module_sig_enforced()) {
--		pr_notice("Loading of %s is rejected\n", reason);
--		return -EKEYREJECTED;
--	}
--
--	return security_locked_down(LOCKDOWN_MODULE_SIGNATURE);
--}
--#else /* !CONFIG_MODULE_SIG */
--static int module_sig_check(struct load_info *info, int flags)
--{
+-bad_version:
+-	pr_warn("%s: disagrees about version of symbol %s\n",
+-	       info->name, symname);
 -	return 0;
 -}
--#endif /* !CONFIG_MODULE_SIG */
 -
- static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
- {
- #if defined(CONFIG_64BIT)
-diff --git a/kernel/module/signing.c b/kernel/module/signing.c
-index 8aeb6d2ee94b..ff41541e982a 100644
---- a/kernel/module/signing.c
-+++ b/kernel/module/signing.c
-@@ -11,9 +11,28 @@
- #include <linux/module_signature.h>
- #include <linux/string.h>
- #include <linux/verification.h>
-+#include <linux/security.h>
- #include <crypto/public_key.h>
- #include "internal.h"
- =
-
-+static bool sig_enforce =3D IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
-+module_param(sig_enforce, bool_enable_only, 0644);
+-static inline int check_modstruct_version(const struct load_info *info,
+-					  struct module *mod)
+-{
+-	struct find_symbol_arg fsa =3D {
+-		.name	=3D "module_layout",
+-		.gplok	=3D true,
+-	};
+-
+-	/*
+-	 * Since this should be found in kernel (which can't be removed), no
+-	 * locking is necessary -- use preempt_disable() to placate lockdep.
+-	 */
+-	preempt_disable();
+-	if (!find_symbol(&fsa)) {
+-		preempt_enable();
+-		BUG();
+-	}
+-	preempt_enable();
+-	return check_version(info, "module_layout", mod, fsa.crc);
+-}
+-
+-/* First part is kernel version, which we ignore if module has crcs. */
+-static inline int same_magic(const char *amagic, const char *bmagic,
+-			     bool has_crcs)
+-{
+-	if (has_crcs) {
+-		amagic +=3D strcspn(amagic, " ");
+-		bmagic +=3D strcspn(bmagic, " ");
+-	}
+-	return strcmp(amagic, bmagic) =3D=3D 0;
+-}
+-#else
+-static inline int check_version(const struct load_info *info,
+-				const char *symname,
+-				struct module *mod,
+-				const s32 *crc)
+-{
+-	return 1;
+-}
+-
+-static inline int check_modstruct_version(const struct load_info *info,
+-					  struct module *mod)
+-{
+-	return 1;
+-}
+-
+-static inline int same_magic(const char *amagic, const char *bmagic,
+-			     bool has_crcs)
+-{
+-	return strcmp(amagic, bmagic) =3D=3D 0;
+-}
+-#endif /* CONFIG_MODVERSIONS */
+-
+ static char *get_modinfo(const struct load_info *info, const char *tag);
+ static char *get_next_modinfo(const struct load_info *info, const char *ta=
+g,
+ 			      char *prev);
+@@ -3229,18 +3098,3 @@ void print_modules(void)
+ 		pr_cont(" [last unloaded: %s]", last_unloaded_module);
+ 	pr_cont("\n");
+ }
+-
+-#ifdef CONFIG_MODVERSIONS
+-/*
+- * Generate the signature for all relevant module structures here.
+- * If these change, we don't want to try to parse the module.
+- */
+-void module_layout(struct module *mod,
+-		   struct modversion_info *ver,
+-		   struct kernel_param *kp,
+-		   struct kernel_symbol *ks,
+-		   struct tracepoint * const *tp)
+-{
+-}
+-EXPORT_SYMBOL(module_layout);
+-#endif
+diff --git a/kernel/module/version.c b/kernel/module/version.c
+new file mode 100644
+index 000000000000..6a2c9ae1c5c5
+--- /dev/null
++++ b/kernel/module/version.c
+@@ -0,0 +1,110 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Module version support
++ *
++ * Copyright (C) 2008 Rusty Russell
++ */
++
++#include <linux/module.h>
++#include <linux/string.h>
++#include <linux/printk.h>
++#include "internal.h"
 +
 +/*
-+ * Export sig_enforce kernel cmdline parameter to allow other subsystems r=
-ely
-+ * on that instead of directly to CONFIG_MODULE_SIG_FORCE config.
++ * Generate the signature for all relevant module structures here.
++ * If these change, we don't want to try to parse the module.
 + */
-+bool is_module_sig_enforced(void)
++void module_layout(struct module *mod,
++		   struct modversion_info *ver,
++		   struct kernel_param *kp,
++		   struct kernel_symbol *ks,
++		   struct tracepoint * const *tp)
 +{
-+	return sig_enforce;
 +}
-+EXPORT_SYMBOL(is_module_sig_enforced);
++EXPORT_SYMBOL(module_layout);
 +
-+void set_module_sig_enforced(void)
++static u32 resolve_rel_crc(const s32 *crc)
 +{
-+	sig_enforce =3D true;
++	return *(u32 *)((void *)crc + *crc);
 +}
 +
- /*
-  * Verify the signature on a module.
-  */
-@@ -43,3 +62,59 @@ int mod_verify_sig(const void *mod, struct load_info *in=
-fo)
- 				      VERIFYING_MODULE_SIGNATURE,
- 				      NULL, NULL);
- }
-+
-+int module_sig_check(struct load_info *info, int flags)
++int check_version(const struct load_info *info,
++			 const char *symname,
++			 struct module *mod,
++			 const s32 *crc)
 +{
-+	int err =3D -ENODATA;
-+	const unsigned long markerlen =3D sizeof(MODULE_SIG_STRING) - 1;
-+	const char *reason;
-+	const void *mod =3D info->hdr;
++	Elf_Shdr *sechdrs =3D info->sechdrs;
++	unsigned int versindex =3D info->index.vers;
++	unsigned int i, num_versions;
++	struct modversion_info *versions;
++
++	/* Exporting module didn't supply crcs?  OK, we're already tainted. */
++	if (!crc)
++		return 1;
++
++	/* No versions at all?  modprobe --force does this. */
++	if (versindex =3D=3D 0)
++		return try_to_force_load(mod, symname) =3D=3D 0;
++
++	versions =3D (void *) sechdrs[versindex].sh_addr;
++	num_versions =3D sechdrs[versindex].sh_size
++		/ sizeof(struct modversion_info);
++
++	for (i =3D 0; i < num_versions; i++) {
++		u32 crcval;
++
++		if (strcmp(versions[i].name, symname) !=3D 0)
++			continue;
++
++		if (IS_ENABLED(CONFIG_MODULE_REL_CRCS))
++			crcval =3D resolve_rel_crc(crc);
++		else
++			crcval =3D *crc;
++		if (versions[i].crc =3D=3D crcval)
++			return 1;
++		pr_debug("Found checksum %X vs module %lX\n",
++			 crcval, versions[i].crc);
++		goto bad_version;
++	}
++
++	/* Broken toolchain. Warn once, then let it go.. */
++	pr_warn_once("%s: no symbol version for %s\n", info->name, symname);
++	return 1;
++
++bad_version:
++	pr_warn("%s: disagrees about version of symbol %s\n",
++	       info->name, symname);
++	return 0;
++}
++
++inline int check_modstruct_version(const struct load_info *info,
++					  struct module *mod)
++{
++	struct find_symbol_arg fsa =3D {
++		.name	=3D "module_layout",
++		.gplok	=3D true,
++	};
 +
 +	/*
-+	 * Require flags =3D=3D 0, as a module with version information
-+	 * removed is no longer the module that was signed
++	 * Since this should be found in kernel (which can't be removed), no
++	 * locking is necessary -- use preempt_disable() to placate lockdep.
 +	 */
-+	if (flags =3D=3D 0 &&
-+	    info->len > markerlen &&
-+	    memcmp(mod + info->len - markerlen, MODULE_SIG_STRING, markerlen) =3D=
-=3D 0) {
-+		/* We truncate the module to discard the signature */
-+		info->len -=3D markerlen;
-+		err =3D mod_verify_sig(mod, info);
-+		if (!err) {
-+			info->sig_ok =3D true;
-+			return 0;
-+		}
++	preempt_disable();
++	if (!find_symbol(&fsa)) {
++		preempt_enable();
++		BUG();
 +	}
++	preempt_enable();
++	return check_version(info, "module_layout", mod, fsa.crc);
++}
 +
-+	/*
-+	 * We don't permit modules to be loaded into the trusted kernels
-+	 * without a valid signature on them, but if we're not enforcing,
-+	 * certain errors are non-fatal.
-+	 */
-+	switch (err) {
-+	case -ENODATA:
-+		reason =3D "unsigned module";
-+		break;
-+	case -ENOPKG:
-+		reason =3D "module with unsupported crypto";
-+		break;
-+	case -ENOKEY:
-+		reason =3D "module with unavailable key";
-+		break;
-+
-+	default:
-+		/*
-+		 * All other errors are fatal, including lack of memory,
-+		 * unparseable signatures, and signature check failures --
-+		 * even if signatures aren't required.
-+		 */
-+		return err;
++/* First part is kernel version, which we ignore if module has crcs. */
++inline int same_magic(const char *amagic, const char *bmagic,
++			     bool has_crcs)
++{
++	if (has_crcs) {
++		amagic +=3D strcspn(amagic, " ");
++		bmagic +=3D strcspn(bmagic, " ");
 +	}
-+
-+	if (is_module_sig_enforced()) {
-+		pr_notice("Loading of %s is rejected\n", reason);
-+		return -EKEYREJECTED;
-+	}
-+
-+	return security_locked_down(LOCKDOWN_MODULE_SIGNATURE);
++	return strcmp(amagic, bmagic) =3D=3D 0;
 +}
 -- =
 
 2.34.1
 
---===============1296225595203551503==--
+--===============6397901963707809666==--
 
