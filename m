@@ -1,147 +1,143 @@
-Content-Type: multipart/mixed; boundary="===============8310620616983011247=="
+Content-Type: multipart/mixed; boundary="===============8941758841584366594=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v3 08/13] module: Move kmemleak support to a separate file
-Date: Fri, 28 Jan 2022 13:23:16 +0000
-Message-ID: <20220128132321.529594-9-atomlin@redhat.com>
+Subject: [RFC PATCH v3 02/13] module: Simple refactor in preparation for split
+Date: Fri, 28 Jan 2022 13:23:10 +0000
+Message-ID: <20220128132321.529594-3-atomlin@redhat.com>
 In-Reply-To: <20220128132321.529594-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8310620616983011247==
+--===============8941758841584366594==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 No functional change.
 
-This patch migrates kmemleak code out of core module
-code into kernel/module/debug_kmemleak.c
+This patch makes it possible to move non-essential code
+out of core module code.
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- kernel/module/Makefile         |  1 +
- kernel/module/debug_kmemleak.c | 30 ++++++++++++++++++++++++++++++
- kernel/module/internal.h       |  8 ++++++++
- kernel/module/main.c           | 27 ---------------------------
- 4 files changed, 39 insertions(+), 27 deletions(-)
- create mode 100644 kernel/module/debug_kmemleak.c
+ kernel/module/internal.h | 22 ++++++++++++++++++++++
+ kernel/module/main.c     | 23 ++---------------------
+ 2 files changed, 24 insertions(+), 21 deletions(-)
 
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index c4198fcf4772..3901f0713f22 100644
---- a/kernel/module/Makefile
-+++ b/kernel/module/Makefile
-@@ -11,3 +11,4 @@ obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
- obj-$(CONFIG_MODULES_TREE_LOOKUP) +=3D tree_lookup.o
- obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) +=3D arch_strict_rwx.o
- obj-$(CONFIG_STRICT_MODULE_RWX) +=3D strict_rwx.o
-+obj-$(CONFIG_DEBUG_KMEMLEAK) +=3D debug_kmemleak.o
-diff --git a/kernel/module/debug_kmemleak.c b/kernel/module/debug_kmemleak.c
-new file mode 100644
-index 000000000000..e896c2268011
---- /dev/null
-+++ b/kernel/module/debug_kmemleak.c
-@@ -0,0 +1,30 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Module kmemleak support
-+ *
-+ * Copyright (C) 2009 Catalin Marinas
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kmemleak.h>
-+#include "internal.h"
-+
-+void kmemleak_load_module(const struct module *mod,
-+				 const struct load_info *info)
-+{
-+	unsigned int i;
-+
-+	/* only scan the sections containing data */
-+	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
-+
-+	for (i =3D 1; i < info->hdr->e_shnum; i++) {
-+		/* Scan all writable sections that's not executable */
-+		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
-+		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
-+		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
-+			continue;
-+
-+		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
-+				   info->sechdrs[i].sh_size, GFP_KERNEL);
-+	}
-+}
 diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 5aab87716d9f..ef9513070b88 100644
+index 8c381c99062f..e3c593f8767f 100644
 --- a/kernel/module/internal.h
 +++ b/kernel/module/internal.h
-@@ -6,6 +6,7 @@
-  */
+@@ -7,6 +7,28 @@
  =
 
  #include <linux/elf.h>
-+#include <linux/compiler.h>
  #include <asm/module.h>
- #include <linux/mutex.h>
++#include <linux/mutex.h>
++
++#ifndef ARCH_SHF_SMALL
++#define ARCH_SHF_SMALL 0
++#endif
++
++/* If this is set, the section belongs in the init part of the module */
++#define INIT_OFFSET_MASK (1UL << (BITS_PER_LONG-1))
++/* Maximum number of characters written by module_flags() */
++#define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
++#define MODULE_SECT_READ_SIZE (3 /* "0x", "\n" */ + (BITS_PER_LONG / 4))
++
++extern struct mutex module_mutex;
++extern struct list_head modules;
++
++/* Provided by the linker */
++extern const struct kernel_symbol __start___ksymtab[];
++extern const struct kernel_symbol __stop___ksymtab[];
++extern const struct kernel_symbol __start___ksymtab_gpl[];
++extern const struct kernel_symbol __stop___ksymtab_gpl[];
++extern const s32 __start___kcrctab[];
++extern const s32 __start___kcrctab_gpl[];
  =
 
-@@ -89,3 +90,10 @@ static int module_sig_check(struct load_info *info, int =
-flags)
- 	return 0;
- }
- #endif /* !CONFIG_MODULE_SIG */
-+
-+#ifdef CONFIG_DEBUG_KMEMLEAK
-+extern void kmemleak_load_module(const struct module *mod, const struct lo=
-ad_info *info);
-+#else /* !CONFIG_DEBUG_KMEMLEAK */
-+static inline void __maybe_unused kmemleak_load_module(const struct module=
- *mod,
-+						       const struct load_info *info) { }
-+#endif /* CONFIG_DEBUG_KMEMLEAK */
+ struct load_info {
+ 	const char *name;
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 36ed4dd64cac..6fb1c885d9c2 100644
+index d8c6269af6cf..fee64c4957f3 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2466,33 +2466,6 @@ bool __weak module_exit_section(const char *name)
- 	return strstarts(name, ".exit");
+@@ -63,10 +63,6 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/module.h>
+ =
+
+-#ifndef ARCH_SHF_SMALL
+-#define ARCH_SHF_SMALL 0
+-#endif
+-
+ /*
+  * Modules' sections will be aligned on page boundaries
+  * to ensure complete separation of code and data, but
+@@ -78,9 +74,6 @@
+ # define debug_align(X) (X)
+ #endif
+ =
+
+-/* If this is set, the section belongs in the init part of the module */
+-#define INIT_OFFSET_MASK (1UL << (BITS_PER_LONG-1))
+-
+ /*
+  * Mutex protects:
+  * 1) List of modules (also safely readable with preempt_disable),
+@@ -88,8 +81,8 @@
+  * 3) module_addr_min/module_addr_max.
+  * (delete and add uses RCU list operations).
+  */
+-static DEFINE_MUTEX(module_mutex);
+-static LIST_HEAD(modules);
++DEFINE_MUTEX(module_mutex);
++LIST_HEAD(modules);
+ =
+
+ /* Work queue for freeing init sections in success case */
+ static void do_free_init(struct work_struct *w);
+@@ -408,14 +401,6 @@ static __maybe_unused void *any_section_objs(const str=
+uct load_info *info,
+ 	return (void *)info->sechdrs[sec].sh_addr;
  }
  =
 
--#ifdef CONFIG_DEBUG_KMEMLEAK
--static void kmemleak_load_module(const struct module *mod,
--				 const struct load_info *info)
--{
--	unsigned int i;
+-/* Provided by the linker */
+-extern const struct kernel_symbol __start___ksymtab[];
+-extern const struct kernel_symbol __stop___ksymtab[];
+-extern const struct kernel_symbol __start___ksymtab_gpl[];
+-extern const struct kernel_symbol __stop___ksymtab_gpl[];
+-extern const s32 __start___kcrctab[];
+-extern const s32 __start___kcrctab_gpl[];
 -
--	/* only scan the sections containing data */
--	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
+ #ifndef CONFIG_MODVERSIONS
+ #define symversion(base, idx) NULL
+ #else
+@@ -1490,7 +1475,6 @@ struct module_sect_attrs {
+ 	struct module_sect_attr attrs[];
+ };
+ =
+
+-#define MODULE_SECT_READ_SIZE (3 /* "0x", "\n" */ + (BITS_PER_LONG / 4))
+ static ssize_t module_sect_read(struct file *file, struct kobject *kobj,
+ 				struct bin_attribute *battr,
+ 				char *buf, loff_t pos, size_t count)
+@@ -4555,9 +4539,6 @@ static void cfi_cleanup(struct module *mod)
+ #endif
+ }
+ =
+
+-/* Maximum number of characters written by module_flags() */
+-#define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
 -
--	for (i =3D 1; i < info->hdr->e_shnum; i++) {
--		/* Scan all writable sections that's not executable */
--		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
--		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
--		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
--			continue;
--
--		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
--				   info->sechdrs[i].sh_size, GFP_KERNEL);
--	}
--}
--#else
--static inline void kmemleak_load_module(const struct module *mod,
--					const struct load_info *info)
--{
--}
--#endif
--
- static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
+ /* Keep in sync with MODULE_FLAGS_BUF_SIZE !!! */
+ static char *module_flags(struct module *mod, char *buf)
  {
- #if defined(CONFIG_64BIT)
 -- =
 
 2.34.1
 
---===============8310620616983011247==--
+--===============8941758841584366594==--
 
