@@ -1,370 +1,391 @@
-Content-Type: multipart/mixed; boundary="===============1003286982901750700=="
+Content-Type: multipart/mixed; boundary="===============8685112700970186649=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v3 04/13] module: Move latched RB-tree support to a separate file
-Date: Fri, 28 Jan 2022 13:23:12 +0000
-Message-ID: <20220128132321.529594-5-atomlin@redhat.com>
+Subject: [RFC PATCH v3 10/13] module: Move procfs support into a separate file
+Date: Fri, 28 Jan 2022 13:23:18 +0000
+Message-ID: <20220128132321.529594-11-atomlin@redhat.com>
 In-Reply-To: <20220128132321.529594-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1003286982901750700==
+--===============8685112700970186649==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 No functional change.
 
-This patch migrates module latched RB-tree support
-(e.g. see __module_address()) from core module code
-into kernel/module/tree_lookup.c.
+This patch migrates code that allows one to generate a
+list of loaded/or linked modules via /proc when procfs
+support is enabled into kernel/module/procfs.c.
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- include/linux/module.h      |  37 +++++++++-
- kernel/module/Makefile      |   1 +
- kernel/module/main.c        | 134 ------------------------------------
- kernel/module/tree_lookup.c | 108 +++++++++++++++++++++++++++++
- 4 files changed, 144 insertions(+), 136 deletions(-)
- create mode 100644 kernel/module/tree_lookup.c
+ kernel/module/Makefile   |   1 +
+ kernel/module/internal.h |   1 +
+ kernel/module/main.c     | 131 +-----------------------------------
+ kernel/module/procfs.c   | 142 +++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 145 insertions(+), 130 deletions(-)
+ create mode 100644 kernel/module/procfs.c
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 8d49f12a7601..377bdb9952cf 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -340,11 +340,44 @@ struct module_layout {
- };
- =
-
- #ifdef CONFIG_MODULES_TREE_LOOKUP
-+struct mod_tree_root {
-+	struct latch_tree_root root;
-+	unsigned long addr_min;
-+	unsigned long addr_max;
-+} mod_tree __cacheline_aligned =3D {
-+	.addr_min =3D -1UL,
-+};
-+
-+#define module_addr_min mod_tree.addr_min
-+#define module_addr_max mod_tree.addr_max
-+
-+extern void mod_tree_insert(struct module *mod);
-+extern void mod_tree_remove_init(struct module *mod);
-+extern void mod_tree_remove(struct module *mod);
-+extern struct module *mod_find(unsigned long addr);
- /* Only touch one cacheline for common rbtree-for-core-layout case. */
- #define __module_layout_align ____cacheline_aligned
--#else
-+#else /* !CONFIG_MODULES_TREE_LOOKUP */
-+
-+static unsigned long module_addr_min =3D -1UL, module_addr_max;
-+
-+static void mod_tree_insert(struct module *mod) { }
-+static void mod_tree_remove_init(struct module *mod) { }
-+static void mod_tree_remove(struct module *mod) { }
-+static struct module *mod_find(unsigned long addr)
-+{
-+	struct module *mod;
-+
-+	list_for_each_entry_rcu(mod, &modules, list,
-+				lockdep_is_held(&module_mutex)) {
-+		if (within_module(addr, mod))
-+			return mod;
-+	}
-+
-+	return NULL;
-+}
- #define __module_layout_align
--#endif
-+#endif /* CONFIG_MODULES_TREE_LOOKUP */
- =
-
- struct mod_kallsyms {
- 	Elf_Sym *symtab;
 diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index ba3ebdb7055b..5990d2e4566d 100644
+index 5fb2a7fec743..f821903e2c5d 100644
 --- a/kernel/module/Makefile
 +++ b/kernel/module/Makefile
-@@ -8,3 +8,4 @@ obj-$(CONFIG_MODULE_DECOMPRESS) +=3D decompress.o
- obj-$(CONFIG_MODULE_SIG) +=3D signing.o
- obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D signature.o
- obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
-+obj-$(CONFIG_MODULES_TREE_LOOKUP) +=3D tree_lookup.o
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index c91c7e57bca7..5c7c3201b5b4 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -89,140 +89,6 @@ static void do_free_init(struct work_struct *w);
- static DECLARE_WORK(init_free_wq, do_free_init);
- static LLIST_HEAD(init_free_list);
+@@ -13,3 +13,4 @@ obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) +=3D arch_strict=
+_rwx.o
+ obj-$(CONFIG_STRICT_MODULE_RWX) +=3D strict_rwx.o
+ obj-$(CONFIG_DEBUG_KMEMLEAK) +=3D debug_kmemleak.o
+ obj-$(CONFIG_KALLSYMS) +=3D kallsyms.o
++obj-$(CONFIG_PROC_FS) +=3D procfs.o
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index e69d0249df6b..a067107c97bc 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -62,6 +62,7 @@ extern unsigned long kernel_symbol_value(const struct ker=
+nel_symbol *sym);
+ extern int cmp_name(const void *name, const void *sym);
+ extern long get_offset(struct module *mod, unsigned int *size, Elf_Shdr *s=
+echdr,
+ 		       unsigned int section);
++extern char *module_flags(struct module *mod, char *buf);
  =
 
--#ifdef CONFIG_MODULES_TREE_LOOKUP
--
--/*
-- * Use a latched RB-tree for __module_address(); this allows us to use
-- * RCU-sched lookups of the address from any context.
-- *
-- * This is conditional on PERF_EVENTS || TRACING because those can really =
-hit
-- * __module_address() hard by doing a lot of stack unwinding; potentially =
-from
-- * NMI context.
-- */
--
--static __always_inline unsigned long __mod_tree_val(struct latch_tree_node=
- *n)
+ #ifdef CONFIG_LIVEPATCH
+ extern int copy_module_elf(struct module *mod, struct load_info *info);
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 054f34de4e6c..78389be0eb5f 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -21,7 +21,6 @@
+ #include <linux/slab.h>
+ #include <linux/vmalloc.h>
+ #include <linux/elf.h>
+-#include <linux/proc_fs.h>
+ #include <linux/seq_file.h>
+ #include <linux/syscalls.h>
+ #include <linux/fcntl.h>
+@@ -801,31 +800,6 @@ SYSCALL_DEFINE2(delete_module, const char __user *, na=
+me_user,
+ 	return ret;
+ }
+ =
+
+-static inline void print_unload_info(struct seq_file *m, struct module *mo=
+d)
 -{
--	struct module_layout *layout =3D container_of(n, struct module_layout, mt=
-n.node);
+-	struct module_use *use;
+-	int printed_something =3D 0;
 -
--	return (unsigned long)layout->base;
+-	seq_printf(m, " %i ", module_refcount(mod));
+-
+-	/*
+-	 * Always include a trailing , so userspace can differentiate
+-	 * between this and the old multi-field proc format.
+-	 */
+-	list_for_each_entry(use, &mod->source_list, source_list) {
+-		printed_something =3D 1;
+-		seq_printf(m, "%s,", use->source->name);
+-	}
+-
+-	if (mod->init !=3D NULL && mod->exit =3D=3D NULL) {
+-		printed_something =3D 1;
+-		seq_puts(m, "[permanent],");
+-	}
+-
+-	if (!printed_something)
+-		seq_puts(m, "-");
 -}
 -
--static __always_inline unsigned long __mod_tree_size(struct latch_tree_nod=
-e *n)
+ void __symbol_put(const char *symbol)
+ {
+ 	struct find_symbol_arg fsa =3D {
+@@ -915,12 +889,6 @@ void module_put(struct module *module)
+ EXPORT_SYMBOL(module_put);
+ =
+
+ #else /* !CONFIG_MODULE_UNLOAD */
+-static inline void print_unload_info(struct seq_file *m, struct module *mo=
+d)
 -{
--	struct module_layout *layout =3D container_of(n, struct module_layout, mt=
-n.node);
--
--	return (unsigned long)layout->size;
+-	/* We don't know the usage count, or what modules are using. */
+-	seq_puts(m, " - -");
 -}
 -
--static __always_inline bool
--mod_tree_less(struct latch_tree_node *a, struct latch_tree_node *b)
+ static inline void module_unload_free(struct module *mod)
+ {
+ }
+@@ -3567,7 +3535,7 @@ static void cfi_cleanup(struct module *mod)
+ }
+ =
+
+ /* Keep in sync with MODULE_FLAGS_BUF_SIZE !!! */
+-static char *module_flags(struct module *mod, char *buf)
++char *module_flags(struct module *mod, char *buf)
+ {
+ 	int bx =3D 0;
+ =
+
+@@ -3590,103 +3558,6 @@ static char *module_flags(struct module *mod, char =
+*buf)
+ 	return buf;
+ }
+ =
+
+-#ifdef CONFIG_PROC_FS
+-/* Called by the /proc file system to return a list of modules. */
+-static void *m_start(struct seq_file *m, loff_t *pos)
 -{
--	return __mod_tree_val(a) < __mod_tree_val(b);
+-	mutex_lock(&module_mutex);
+-	return seq_list_start(&modules, *pos);
 -}
 -
--static __always_inline int
--mod_tree_comp(void *key, struct latch_tree_node *n)
+-static void *m_next(struct seq_file *m, void *p, loff_t *pos)
 -{
--	unsigned long val =3D (unsigned long)key;
--	unsigned long start, end;
+-	return seq_list_next(p, &modules, pos);
+-}
 -
--	start =3D __mod_tree_val(n);
--	if (val < start)
--		return -1;
+-static void m_stop(struct seq_file *m, void *p)
+-{
+-	mutex_unlock(&module_mutex);
+-}
 -
--	end =3D start + __mod_tree_size(n);
--	if (val >=3D end)
--		return 1;
+-static int m_show(struct seq_file *m, void *p)
+-{
+-	struct module *mod =3D list_entry(p, struct module, list);
+-	char buf[MODULE_FLAGS_BUF_SIZE];
+-	void *value;
 -
+-	/* We always ignore unformed modules. */
+-	if (mod->state =3D=3D MODULE_STATE_UNFORMED)
+-		return 0;
+-
+-	seq_printf(m, "%s %u",
+-		   mod->name, mod->init_layout.size + mod->core_layout.size);
+-	print_unload_info(m, mod);
+-
+-	/* Informative for users. */
+-	seq_printf(m, " %s",
+-		   mod->state =3D=3D MODULE_STATE_GOING ? "Unloading" :
+-		   mod->state =3D=3D MODULE_STATE_COMING ? "Loading" :
+-		   "Live");
+-	/* Used by oprofile and other similar tools. */
+-	value =3D m->private ? NULL : mod->core_layout.base;
+-	seq_printf(m, " 0x%px", value);
+-
+-	/* Taints info */
+-	if (mod->taints)
+-		seq_printf(m, " %s", module_flags(mod, buf));
+-
+-	seq_puts(m, "\n");
 -	return 0;
 -}
 -
--static const struct latch_tree_ops mod_tree_ops =3D {
--	.less =3D mod_tree_less,
--	.comp =3D mod_tree_comp,
+-/*
+- * Format: modulename size refcount deps address
+- *
+- * Where refcount is a number or -, and deps is a comma-separated list
+- * of depends or -.
+- */
+-static const struct seq_operations modules_op =3D {
+-	.start	=3D m_start,
+-	.next	=3D m_next,
+-	.stop	=3D m_stop,
+-	.show	=3D m_show
 -};
--
--static struct mod_tree_root {
--	struct latch_tree_root root;
--	unsigned long addr_min;
--	unsigned long addr_max;
--} mod_tree __cacheline_aligned =3D {
--	.addr_min =3D -1UL,
--};
--
--#define module_addr_min mod_tree.addr_min
--#define module_addr_max mod_tree.addr_max
--
--static noinline void __mod_tree_insert(struct mod_tree_node *node)
--{
--	latch_tree_insert(&node->node, &mod_tree.root, &mod_tree_ops);
--}
--
--static void __mod_tree_remove(struct mod_tree_node *node)
--{
--	latch_tree_erase(&node->node, &mod_tree.root, &mod_tree_ops);
--}
 -
 -/*
-- * These modifications: insert, remove_init and remove; are serialized by =
-the
-- * module_mutex.
+- * This also sets the "private" pointer to non-NULL if the
+- * kernel pointers should be hidden (so you can just test
+- * "m->private" to see if you should keep the values private).
+- *
+- * We use the same logic as for /proc/kallsyms.
 - */
--static void mod_tree_insert(struct module *mod)
+-static int modules_open(struct inode *inode, struct file *file)
 -{
--	mod->core_layout.mtn.mod =3D mod;
--	mod->init_layout.mtn.mod =3D mod;
+-	int err =3D seq_open(file, &modules_op);
 -
--	__mod_tree_insert(&mod->core_layout.mtn);
--	if (mod->init_layout.size)
--		__mod_tree_insert(&mod->init_layout.mtn);
--}
--
--static void mod_tree_remove_init(struct module *mod)
--{
--	if (mod->init_layout.size)
--		__mod_tree_remove(&mod->init_layout.mtn);
--}
--
--static void mod_tree_remove(struct module *mod)
--{
--	__mod_tree_remove(&mod->core_layout.mtn);
--	mod_tree_remove_init(mod);
--}
--
--static struct module *mod_find(unsigned long addr)
--{
--	struct latch_tree_node *ltn;
--
--	ltn =3D latch_tree_find((void *)addr, &mod_tree.root, &mod_tree_ops);
--	if (!ltn)
--		return NULL;
--
--	return container_of(ltn, struct mod_tree_node, node)->mod;
--}
--
--#else /* MODULES_TREE_LOOKUP */
--
--static unsigned long module_addr_min =3D -1UL, module_addr_max =3D 0;
--
--static void mod_tree_insert(struct module *mod) { }
--static void mod_tree_remove_init(struct module *mod) { }
--static void mod_tree_remove(struct module *mod) { }
--
--static struct module *mod_find(unsigned long addr)
--{
--	struct module *mod;
--
--	list_for_each_entry_rcu(mod, &modules, list,
--				lockdep_is_held(&module_mutex)) {
--		if (within_module(addr, mod))
--			return mod;
+-	if (!err) {
+-		struct seq_file *m =3D file->private_data;
+-		m->private =3D kallsyms_show_value(file->f_cred) ? NULL : (void *)8ul;
 -	}
 -
--	return NULL;
+-	return err;
 -}
 -
--#endif /* MODULES_TREE_LOOKUP */
+-static const struct proc_ops modules_proc_ops =3D {
+-	.proc_flags	=3D PROC_ENTRY_PERMANENT,
+-	.proc_open	=3D modules_open,
+-	.proc_read	=3D seq_read,
+-	.proc_lseek	=3D seq_lseek,
+-	.proc_release	=3D seq_release,
+-};
 -
- /*
-  * Bounds of module text, for speeding up __module_address.
-  * Protected by module_mutex.
-diff --git a/kernel/module/tree_lookup.c b/kernel/module/tree_lookup.c
+-static int __init proc_modules_init(void)
+-{
+-	proc_create("modules", 0, NULL, &modules_proc_ops);
+-	return 0;
+-}
+-module_init(proc_modules_init);
+-#endif
+-
+ /* Given an address, look for it in the module exception tables. */
+ const struct exception_table_entry *search_module_extables(unsigned long a=
+ddr)
+ {
+diff --git a/kernel/module/procfs.c b/kernel/module/procfs.c
 new file mode 100644
-index 000000000000..5f6d6de2dc60
+index 000000000000..d706a798b52e
 --- /dev/null
-+++ b/kernel/module/tree_lookup.c
-@@ -0,0 +1,108 @@
++++ b/kernel/module/procfs.c
+@@ -0,0 +1,142 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * Modules tree lookup
++ * Module proc support
 + *
-+ * Copyright (C) 2015 Peter Zijlstra
-+ * Copyright (C) 2015 Rusty Russell
++ * Copyright (C) 2008 Alexey Dobriyan
 + */
 +
 +#include <linux/module.h>
-+#include <linux/rbtree_latch.h>
++#include <linux/kallsyms.h>
++#include <linux/mutex.h>
++#include <linux/seq_file.h>
++#include <linux/proc_fs.h>
++#include "internal.h"
 +
-+/*
-+ * Use a latched RB-tree for __module_address(); this allows us to use
-+ * RCU-sched lookups of the address from any context.
-+ *
-+ * This is conditional on PERF_EVENTS || TRACING because those can really =
-hit
-+ * __module_address() hard by doing a lot of stack unwinding; potentially =
-from
-+ * NMI context.
-+ */
-+
-+__always_inline unsigned long __mod_tree_val(struct latch_tree_node *n)
++#ifdef CONFIG_MODULE_UNLOAD
++static inline void print_unload_info(struct seq_file *m, struct module *mo=
+d)
 +{
-+	struct module_layout *layout =3D container_of(n, struct module_layout, mt=
-n.node);
++	struct module_use *use;
++	int printed_something =3D 0;
 +
-+	return (unsigned long)layout->base;
++	seq_printf(m, " %i ", module_refcount(mod));
++
++	/*
++	 * Always include a trailing , so userspace can differentiate
++	 * between this and the old multi-field proc format.
++	 */
++	list_for_each_entry(use, &mod->source_list, source_list) {
++		printed_something =3D 1;
++		seq_printf(m, "%s,", use->source->name);
++	}
++
++	if (mod->init !=3D NULL && mod->exit =3D=3D NULL) {
++		printed_something =3D 1;
++		seq_puts(m, "[permanent],");
++	}
++
++	if (!printed_something)
++		seq_puts(m, "-");
++}
++#else /* !CONFIG_MODULE_UNLOAD */
++static inline void print_unload_info(struct seq_file *m, struct module *mo=
+d)
++{
++	/* We don't know the usage count, or what modules are using. */
++	seq_puts(m, " - -");
++}
++#endif /* CONFIG_MODULE_UNLOAD */
++
++/* Called by the /proc file system to return a list of modules. */
++static void *m_start(struct seq_file *m, loff_t *pos)
++{
++	mutex_lock(&module_mutex);
++	return seq_list_start(&modules, *pos);
 +}
 +
-+__always_inline unsigned long __mod_tree_size(struct latch_tree_node *n)
++static void *m_next(struct seq_file *m, void *p, loff_t *pos)
 +{
-+	struct module_layout *layout =3D container_of(n, struct module_layout, mt=
-n.node);
-+
-+	return (unsigned long)layout->size;
++	return seq_list_next(p, &modules, pos);
 +}
 +
-+__always_inline bool
-+mod_tree_less(struct latch_tree_node *a, struct latch_tree_node *b)
++static void m_stop(struct seq_file *m, void *p)
 +{
-+	return __mod_tree_val(a) < __mod_tree_val(b);
++	mutex_unlock(&module_mutex);
 +}
 +
-+__always_inline int
-+mod_tree_comp(void *key, struct latch_tree_node *n)
++static int m_show(struct seq_file *m, void *p)
 +{
-+	unsigned long val =3D (unsigned long)key;
-+	unsigned long start, end;
++	struct module *mod =3D list_entry(p, struct module, list);
++	char buf[MODULE_FLAGS_BUF_SIZE];
++	void *value;
 +
-+	start =3D __mod_tree_val(n);
-+	if (val < start)
-+		return -1;
++	/* We always ignore unformed modules. */
++	if (mod->state =3D=3D MODULE_STATE_UNFORMED)
++		return 0;
 +
-+	end =3D start + __mod_tree_size(n);
-+	if (val >=3D end)
-+		return 1;
++	seq_printf(m, "%s %u",
++		   mod->name, mod->init_layout.size + mod->core_layout.size);
++	print_unload_info(m, mod);
 +
++	/* Informative for users. */
++	seq_printf(m, " %s",
++		   mod->state =3D=3D MODULE_STATE_GOING ? "Unloading" :
++		   mod->state =3D=3D MODULE_STATE_COMING ? "Loading" :
++		   "Live");
++	/* Used by oprofile and other similar tools. */
++	value =3D m->private ? NULL : mod->core_layout.base;
++	seq_printf(m, " 0x%px", value);
++
++	/* Taints info */
++	if (mod->taints)
++		seq_printf(m, " %s", module_flags(mod, buf));
++
++	seq_puts(m, "\n");
 +	return 0;
 +}
 +
-+const struct latch_tree_ops mod_tree_ops =3D {
-+	.less =3D mod_tree_less,
-+	.comp =3D mod_tree_comp,
++/*
++ * Format: modulename size refcount deps address
++ *
++ * Where refcount is a number or -, and deps is a comma-separated list
++ * of depends or -.
++ */
++static const struct seq_operations modules_op =3D {
++	.start	=3D m_start,
++	.next	=3D m_next,
++	.stop	=3D m_stop,
++	.show	=3D m_show
 +};
 +
-+noinline void __mod_tree_insert(struct mod_tree_node *node)
-+{
-+	latch_tree_insert(&node->node, &mod_tree.root, &mod_tree_ops);
-+}
-+
-+void __mod_tree_remove(struct mod_tree_node *node)
-+{
-+	latch_tree_erase(&node->node, &mod_tree.root, &mod_tree_ops);
-+}
-+
 +/*
-+ * These modifications: insert, remove_init and remove; are serialized by =
-the
-+ * module_mutex.
++ * This also sets the "private" pointer to non-NULL if the
++ * kernel pointers should be hidden (so you can just test
++ * "m->private" to see if you should keep the values private).
++ *
++ * We use the same logic as for /proc/kallsyms.
 + */
-+void mod_tree_insert(struct module *mod)
++static int modules_open(struct inode *inode, struct file *file)
 +{
-+	mod->core_layout.mtn.mod =3D mod;
-+	mod->init_layout.mtn.mod =3D mod;
++	int err =3D seq_open(file, &modules_op);
 +
-+	__mod_tree_insert(&mod->core_layout.mtn);
-+	if (mod->init_layout.size)
-+		__mod_tree_insert(&mod->init_layout.mtn);
++	if (!err) {
++		struct seq_file *m =3D file->private_data;
++
++		m->private =3D kallsyms_show_value(file->f_cred) ? NULL : (void *)8ul;
++	}
++
++	return err;
 +}
 +
-+void mod_tree_remove_init(struct module *mod)
++static const struct proc_ops modules_proc_ops =3D {
++	.proc_flags	=3D PROC_ENTRY_PERMANENT,
++	.proc_open	=3D modules_open,
++	.proc_read	=3D seq_read,
++	.proc_lseek	=3D seq_lseek,
++	.proc_release	=3D seq_release,
++};
++
++static int __init proc_modules_init(void)
 +{
-+	if (mod->init_layout.size)
-+		__mod_tree_remove(&mod->init_layout.mtn);
++	proc_create("modules", 0, NULL, &modules_proc_ops);
++	return 0;
 +}
-+
-+void mod_tree_remove(struct module *mod)
-+{
-+	__mod_tree_remove(&mod->core_layout.mtn);
-+	mod_tree_remove_init(mod);
-+}
-+
-+struct module *mod_find(unsigned long addr)
-+{
-+	struct latch_tree_node *ltn;
-+
-+	ltn =3D latch_tree_find((void *)addr, &mod_tree.root, &mod_tree_ops);
-+	if (!ltn)
-+		return NULL;
-+
-+	return container_of(ltn, struct mod_tree_node, node)->mod;
-+}
++module_init(proc_modules_init);
 -- =
 
 2.34.1
 
---===============1003286982901750700==--
+--===============8685112700970186649==--
 
