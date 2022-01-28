@@ -1,160 +1,209 @@
-Content-Type: multipart/mixed; boundary="===============0343911914404813941=="
+Content-Type: multipart/mixed; boundary="===============3143396076493997034=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v3 01/13] module: Move all into module/
-Date: Fri, 28 Jan 2022 13:23:09 +0000
-Message-ID: <20220128132321.529594-2-atomlin@redhat.com>
+Subject: [RFC PATCH v3 05/13] module: Move arch strict rwx support to a separate file
+Date: Fri, 28 Jan 2022 13:23:13 +0000
+Message-ID: <20220128132321.529594-6-atomlin@redhat.com>
 In-Reply-To: <20220128132321.529594-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0343911914404813941==
+--===============3143396076493997034==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-No functional changes.
+No functional change.
 
-This patch moves all module related code into a separate directory,
-modifies each file name and creates a new Makefile. Note: this effort
-is in preparation to refactor core module code.
+This patch migrates applicable architecture code
+that support strict module rwx from core module code
+into kernel/module/arch_strict_rwx.c
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- MAINTAINERS                                         | 2 +-
- kernel/Makefile                                     | 5 +----
- kernel/module/Makefile                              | 9 +++++++++
- kernel/{module_decompress.c =3D> module/decompress.c} | 2 +-
- kernel/{module-internal.h =3D> module/internal.h}     | 0
- kernel/{module.c =3D> module/main.c}                  | 2 +-
- kernel/{module_signature.c =3D> module/signature.c}   | 0
- kernel/{module_signing.c =3D> module/signing.c}       | 2 +-
- 8 files changed, 14 insertions(+), 8 deletions(-)
- create mode 100644 kernel/module/Makefile
- rename kernel/{module_decompress.c =3D> module/decompress.c} (99%)
- rename kernel/{module-internal.h =3D> module/internal.h} (100%)
- rename kernel/{module.c =3D> module/main.c} (99%)
- rename kernel/{module_signature.c =3D> module/signature.c} (100%)
- rename kernel/{module_signing.c =3D> module/signing.c} (97%)
+ include/linux/module.h          | 17 +++++++++++
+ kernel/module/Makefile          |  1 +
+ kernel/module/arch_strict_rwx.c | 44 ++++++++++++++++++++++++++++
+ kernel/module/main.c            | 51 ---------------------------------
+ 4 files changed, 62 insertions(+), 51 deletions(-)
+ create mode 100644 kernel/module/arch_strict_rwx.c
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index acd112c42255..a98f4700acb7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12976,7 +12976,7 @@ L:	linux-kernel(a)vger.kernel.org
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git modu=
-les-next
- F:	include/linux/module.h
--F:	kernel/module.c
-+F:	kernel/module/main.c
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 377bdb9952cf..35552164830d 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -339,6 +339,23 @@ struct module_layout {
+ #endif
+ };
  =
 
- MONOLITHIC POWER SYSTEM PMIC DRIVER
- M:	Saravanan Sekar <sravanhome@gmail.com>
-diff --git a/kernel/Makefile b/kernel/Makefile
-index 56f4ee97f328..3a6380975c57 100644
---- a/kernel/Makefile
-+++ b/kernel/Makefile
-@@ -53,6 +53,7 @@ obj-y +=3D rcu/
- obj-y +=3D livepatch/
- obj-y +=3D dma/
- obj-y +=3D entry/
-+obj-y +=3D module/
- =
-
- obj-$(CONFIG_KCMP) +=3D kcmp.o
- obj-$(CONFIG_FREEZER) +=3D freezer.o
-@@ -66,10 +67,6 @@ ifneq ($(CONFIG_SMP),y)
- obj-y +=3D up.o
- endif
- obj-$(CONFIG_UID16) +=3D uid16.o
--obj-$(CONFIG_MODULES) +=3D module.o
--obj-$(CONFIG_MODULE_DECOMPRESS) +=3D module_decompress.o
--obj-$(CONFIG_MODULE_SIG) +=3D module_signing.o
--obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D module_signature.o
- obj-$(CONFIG_KALLSYMS) +=3D kallsyms.o
- obj-$(CONFIG_BSD_PROCESS_ACCT) +=3D acct.o
- obj-$(CONFIG_CRASH_CORE) +=3D crash_core.o
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-new file mode 100644
-index 000000000000..2902fc7d0ef1
---- /dev/null
-+++ b/kernel/module/Makefile
-@@ -0,0 +1,9 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Makefile for linux kernel module support
-+#
++/*
++ * Modules' sections will be aligned on page boundaries
++ * to ensure complete separation of code and data, but
++ * only when CONFIG_ARCH_HAS_STRICT_MODULE_RWX=3Dy
++ */
++#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
++# define debug_align(X) ALIGN(X, PAGE_SIZE)
 +
-+obj-$(CONFIG_MODULES) +=3D main.o
-+obj-$(CONFIG_MODULE_DECOMPRESS) +=3D decompress.o
-+obj-$(CONFIG_MODULE_SIG) +=3D signing.o
-+obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D signature.o
-diff --git a/kernel/module_decompress.c b/kernel/module/decompress.c
-similarity index 99%
-rename from kernel/module_decompress.c
-rename to kernel/module/decompress.c
-index b01c69c2ff99..c153fd8a4444 100644
---- a/kernel/module_decompress.c
-+++ b/kernel/module/decompress.c
-@@ -12,7 +12,7 @@
- #include <linux/sysfs.h>
- #include <linux/vmalloc.h>
- =
-
--#include "module-internal.h"
-+#include "internal.h"
- =
-
- static int module_extend_max_pages(struct load_info *info, unsigned int ex=
-tent)
- {
-diff --git a/kernel/module-internal.h b/kernel/module/internal.h
-similarity index 100%
-rename from kernel/module-internal.h
-rename to kernel/module/internal.h
-diff --git a/kernel/module.c b/kernel/module/main.c
-similarity index 99%
-rename from kernel/module.c
-rename to kernel/module/main.c
-index 387ee77bdbd6..d8c6269af6cf 100644
---- a/kernel/module.c
++extern void frob_text(const struct module_layout *layout,
++		      int (*set_memory)(unsigned long start, int num_pages));
++extern void module_enable_x(const struct module *mod);
++#else /* !CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
++# define debug_align(X) (X)
++
++static void module_enable_x(const struct module *mod) { }
++#endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
++
+ #ifdef CONFIG_MODULES_TREE_LOOKUP
+ struct mod_tree_root {
+ 	struct latch_tree_root root;
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+index 5990d2e4566d..71341f30c3f2 100644
+--- a/kernel/module/Makefile
++++ b/kernel/module/Makefile
+@@ -9,3 +9,4 @@ obj-$(CONFIG_MODULE_SIG) +=3D signing.o
+ obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D signature.o
+ obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
+ obj-$(CONFIG_MODULES_TREE_LOOKUP) +=3D tree_lookup.o
++obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) +=3D arch_strict_rwx.o
+diff --git a/kernel/module/arch_strict_rwx.c b/kernel/module/arch_strict_rw=
+x.c
+new file mode 100644
+index 000000000000..9801cb4fef36
+--- /dev/null
++++ b/kernel/module/arch_strict_rwx.c
+@@ -0,0 +1,44 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Module arch strict rwx
++ *
++ * Copyright (C) 2015 Rusty Russell
++ */
++
++#include <linux/module.h>
++#include <linux/set_memory.h>
++
++/*
++ * LKM RO/NX protection: protect module's text/ro-data
++ * from modification and any data from execution.
++ *
++ * General layout of module is:
++ *          [text] [read-only-data] [ro-after-init] [writable data]
++ * text_size -----^                ^               ^               ^
++ * ro_size ------------------------|               |               |
++ * ro_after_init_size -----------------------------|               |
++ * size -----------------------------------------------------------|
++ *
++ * These values are always page-aligned (as is base)
++ */
++
++/*
++ * Since some arches are moving towards PAGE_KERNEL module allocations ins=
+tead
++ * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() outside of =
+the
++ * CONFIG_STRICT_MODULE_RWX block below because they are needed regardless=
+ of
++ * whether we are strict.
++ */
++void frob_text(const struct module_layout *layout,
++		      int (*set_memory)(unsigned long start, int num_pages))
++{
++	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
++	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
++	set_memory((unsigned long)layout->base,
++		   layout->text_size >> PAGE_SHIFT);
++}
++
++void module_enable_x(const struct module *mod)
++{
++	frob_text(&mod->core_layout, set_memory_x);
++	frob_text(&mod->init_layout, set_memory_x);
++}
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 5c7c3201b5b4..fbac043b07d7 100644
+--- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -58,7 +58,7 @@
- #include <linux/dynamic_debug.h>
- #include <linux/audit.h>
- #include <uapi/linux/module.h>
--#include "module-internal.h"
-+#include "internal.h"
- =
-
+@@ -13,7 +13,6 @@
+ #include <linux/trace_events.h>
+ #include <linux/init.h>
+ #include <linux/kallsyms.h>
+-#include <linux/buildid.h>
+ #include <linux/file.h>
+ #include <linux/fs.h>
+ #include <linux/sysfs.h>
+@@ -63,17 +62,6 @@
  #define CREATE_TRACE_POINTS
  #include <trace/events/module.h>
-diff --git a/kernel/module_signature.c b/kernel/module/signature.c
-similarity index 100%
-rename from kernel/module_signature.c
-rename to kernel/module/signature.c
-diff --git a/kernel/module_signing.c b/kernel/module/signing.c
-similarity index 97%
-rename from kernel/module_signing.c
-rename to kernel/module/signing.c
-index 8723ae70ea1f..8aeb6d2ee94b 100644
---- a/kernel/module_signing.c
-+++ b/kernel/module/signing.c
-@@ -12,7 +12,7 @@
- #include <linux/string.h>
- #include <linux/verification.h>
- #include <crypto/public_key.h>
--#include "module-internal.h"
-+#include "internal.h"
  =
 
+-/*
+- * Modules' sections will be aligned on page boundaries
+- * to ensure complete separation of code and data, but
+- * only when CONFIG_ARCH_HAS_STRICT_MODULE_RWX=3Dy
+- */
+-#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+-# define debug_align(X) ALIGN(X, PAGE_SIZE)
+-#else
+-# define debug_align(X) (X)
+-#endif
+-
  /*
-  * Verify the signature on a module.
+  * Mutex protects:
+  * 1) List of modules (also safely readable with preempt_disable),
+@@ -1785,45 +1773,6 @@ static void mod_sysfs_teardown(struct module *mod)
+ 	mod_sysfs_fini(mod);
+ }
+ =
+
+-/*
+- * LKM RO/NX protection: protect module's text/ro-data
+- * from modification and any data from execution.
+- *
+- * General layout of module is:
+- *          [text] [read-only-data] [ro-after-init] [writable data]
+- * text_size -----^                ^               ^               ^
+- * ro_size ------------------------|               |               |
+- * ro_after_init_size -----------------------------|               |
+- * size -----------------------------------------------------------|
+- *
+- * These values are always page-aligned (as is base)
+- */
+-
+-/*
+- * Since some arches are moving towards PAGE_KERNEL module allocations ins=
+tead
+- * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() outside of =
+the
+- * CONFIG_STRICT_MODULE_RWX block below because they are needed regardless=
+ of
+- * whether we are strict.
+- */
+-#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+-static void frob_text(const struct module_layout *layout,
+-		      int (*set_memory)(unsigned long start, int num_pages))
+-{
+-	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
+-	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
+-	set_memory((unsigned long)layout->base,
+-		   layout->text_size >> PAGE_SHIFT);
+-}
+-
+-static void module_enable_x(const struct module *mod)
+-{
+-	frob_text(&mod->core_layout, set_memory_x);
+-	frob_text(&mod->init_layout, set_memory_x);
+-}
+-#else /* !CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
+-static void module_enable_x(const struct module *mod) { }
+-#endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
+-
+ #ifdef CONFIG_STRICT_MODULE_RWX
+ static void frob_rodata(const struct module_layout *layout,
+ 			int (*set_memory)(unsigned long start, int num_pages))
 -- =
 
 2.34.1
 
---===============0343911914404813941==--
+--===============3143396076493997034==--
 
