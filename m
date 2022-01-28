@@ -1,68 +1,147 @@
-Content-Type: multipart/mixed; boundary="===============8795972305038151097=="
+Content-Type: multipart/mixed; boundary="===============3725791943272243776=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v3 12/13] module: Move kdb_modules list out of core code
-Date: Fri, 28 Jan 2022 12:50:45 +0000
-Message-ID: <20220128125046.497173-13-atomlin@redhat.com>
+Subject: [RFC PATCH v3 08/13] module: Move kmemleak support to a separate file
+Date: Fri, 28 Jan 2022 12:50:41 +0000
+Message-ID: <20220128125046.497173-9-atomlin@redhat.com>
 In-Reply-To: <20220128125046.497173-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8795972305038151097==
+--===============3725791943272243776==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 No functional change.
 
-This patch migrates kdb_modules list to core kdb code
-since the list of added/or loaded modules is no longer
-private.
+This patch migrates kmemleak code out of core module
+code into kernel/module/debug_kmemleak.c
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- kernel/debug/kdb/kdb_main.c | 5 +++++
- kernel/module/main.c        | 4 ----
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ kernel/module/Makefile         |  1 +
+ kernel/module/debug_kmemleak.c | 30 ++++++++++++++++++++++++++++++
+ kernel/module/internal.h       |  8 ++++++++
+ kernel/module/main.c           | 27 ---------------------------
+ 4 files changed, 39 insertions(+), 27 deletions(-)
+ create mode 100644 kernel/module/debug_kmemleak.c
 
-diff --git a/kernel/debug/kdb/kdb_main.c b/kernel/debug/kdb/kdb_main.c
-index 0852a537dad4..f101f5f078f4 100644
---- a/kernel/debug/kdb/kdb_main.c
-+++ b/kernel/debug/kdb/kdb_main.c
-@@ -59,6 +59,11 @@ EXPORT_SYMBOL(kdb_grepping_flag);
- int kdb_grep_leading;
- int kdb_grep_trailing;
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+index c4198fcf4772..3901f0713f22 100644
+--- a/kernel/module/Makefile
++++ b/kernel/module/Makefile
+@@ -11,3 +11,4 @@ obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
+ obj-$(CONFIG_MODULES_TREE_LOOKUP) +=3D tree_lookup.o
+ obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) +=3D arch_strict_rwx.o
+ obj-$(CONFIG_STRICT_MODULE_RWX) +=3D strict_rwx.o
++obj-$(CONFIG_DEBUG_KMEMLEAK) +=3D debug_kmemleak.o
+diff --git a/kernel/module/debug_kmemleak.c b/kernel/module/debug_kmemleak.c
+new file mode 100644
+index 000000000000..e896c2268011
+--- /dev/null
++++ b/kernel/module/debug_kmemleak.c
+@@ -0,0 +1,30 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Module kmemleak support
++ *
++ * Copyright (C) 2009 Catalin Marinas
++ */
++
++#include <linux/module.h>
++#include <linux/kmemleak.h>
++#include "internal.h"
++
++void kmemleak_load_module(const struct module *mod,
++				 const struct load_info *info)
++{
++	unsigned int i;
++
++	/* only scan the sections containing data */
++	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
++
++	for (i =3D 1; i < info->hdr->e_shnum; i++) {
++		/* Scan all writable sections that's not executable */
++		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
++		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
++		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
++			continue;
++
++		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
++				   info->sechdrs[i].sh_size, GFP_KERNEL);
++	}
++}
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 9ff8c554fbc9..cebae885f119 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -6,6 +6,7 @@
+  */
  =
 
-+#ifdef CONFIG_MODULES
-+extern struct list_head modules;
-+struct list_head *kdb_modules =3D &modules; /* kdb needs the list of modul=
-es */
-+#endif /* CONFIG_MODULES */
+ #include <linux/elf.h>
++#include <linux/compiler.h>
+ #include <asm/module.h>
+ #include <linux/mutex.h>
+ =
+
+@@ -90,3 +91,10 @@ static int module_sig_check(struct load_info *info, int =
+flags)
+ 	return 0;
+ }
+ #endif /* !CONFIG_MODULE_SIG */
 +
- /*
-  * Kernel debugger state flags
-  */
++#ifdef CONFIG_DEBUG_KMEMLEAK
++extern void kmemleak_load_module(const struct module *mod, const struct lo=
+ad_info *info);
++#else /* !CONFIG_DEBUG_KMEMLEAK */
++static inline void __maybe_unused kmemleak_load_module(const struct module=
+ *mod,
++						       const struct load_info *info) { }
++#endif /* CONFIG_DEBUG_KMEMLEAK */
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 574cba3e0418..1f16e67f687f 100644
+index 36ed4dd64cac..6fb1c885d9c2 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -95,10 +95,6 @@ static void mod_update_bounds(struct module *mod)
- 		__mod_update_bounds(mod->init_layout.base, mod->init_layout.size);
+@@ -2466,33 +2466,6 @@ bool __weak module_exit_section(const char *name)
+ 	return strstarts(name, ".exit");
  }
  =
 
--#ifdef CONFIG_KGDB_KDB
--struct list_head *kdb_modules =3D &modules; /* kdb needs the list of modul=
-es */
--#endif /* CONFIG_KGDB_KDB */
+-#ifdef CONFIG_DEBUG_KMEMLEAK
+-static void kmemleak_load_module(const struct module *mod,
+-				 const struct load_info *info)
+-{
+-	unsigned int i;
 -
- static void module_assert_mutex_or_preempt(void)
+-	/* only scan the sections containing data */
+-	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
+-
+-	for (i =3D 1; i < info->hdr->e_shnum; i++) {
+-		/* Scan all writable sections that's not executable */
+-		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
+-		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
+-		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
+-			continue;
+-
+-		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
+-				   info->sechdrs[i].sh_size, GFP_KERNEL);
+-	}
+-}
+-#else
+-static inline void kmemleak_load_module(const struct module *mod,
+-					const struct load_info *info)
+-{
+-}
+-#endif
+-
+ static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
  {
- #ifdef CONFIG_LOCKDEP
+ #if defined(CONFIG_64BIT)
 -- =
 
 2.34.1
 
---===============8795972305038151097==--
+--===============3725791943272243776==--
 
