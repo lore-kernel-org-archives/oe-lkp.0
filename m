@@ -1,265 +1,294 @@
-Content-Type: multipart/mixed; boundary="===============6961662445195936393=="
+Content-Type: multipart/mixed; boundary="===============8730951444664828013=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v3 06/13] module: Move strict rwx support to a separate file
-Date: Fri, 28 Jan 2022 12:50:39 +0000
-Message-ID: <20220128125046.497173-7-atomlin@redhat.com>
+Subject: [RFC PATCH v3 07/13] module: Move extra signature support out of core code
+Date: Fri, 28 Jan 2022 12:50:40 +0000
+Message-ID: <20220128125046.497173-8-atomlin@redhat.com>
 In-Reply-To: <20220128125046.497173-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6961662445195936393==
+--===============8730951444664828013==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 No functional change.
 
-This patch migrates code that makes module text
-and rodata memory read-only and non-text memory
-non-executable from core module code into
-kernel/module/strict_rwx.c.
+This patch migrates additional module signature check
+code from core module code into kernel/module/signing.c.
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- include/linux/module.h     | 22 ++++++++++
- kernel/module/Makefile     |  1 +
- kernel/module/main.c       | 84 --------------------------------------
- kernel/module/strict_rwx.c | 83 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 106 insertions(+), 84 deletions(-)
- create mode 100644 kernel/module/strict_rwx.c
+ include/linux/module.h   |  5 ++-
+ kernel/module/internal.h |  9 +++++
+ kernel/module/main.c     | 87 ----------------------------------------
+ kernel/module/signing.c  | 75 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 87 insertions(+), 89 deletions(-)
 
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 35552164830d..7bf93c0d87e6 100644
+index 7bf93c0d87e6..68dabc036100 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
-@@ -356,6 +356,28 @@ extern void module_enable_x(const struct module *mod);
- static void module_enable_x(const struct module *mod) { }
- #endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
+@@ -758,8 +758,8 @@ static inline bool set_livepatch_module(struct module *=
+mod)
+ }
+ #endif /* CONFIG_LIVEPATCH */
  =
 
-+#ifdef CONFIG_STRICT_MODULE_RWX
-+extern void frob_rodata(const struct module_layout *layout,
-+			int (*set_memory)(unsigned long start, int num_pages));
-+extern void frob_ro_after_init(const struct module_layout *layout,
-+			       int (*set_memory)(unsigned long start, int num_pages));
-+extern void frob_writable_data(const struct module_layout *layout,
-+			       int (*set_memory)(unsigned long start, int num_pages));
-+extern void module_enable_ro(const struct module *mod, bool after_init);
-+extern void module_enable_nx(const struct module *mod);
-+extern int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+				       char *secstrings, struct module *mod);
+-bool is_module_sig_enforced(void);
+-void set_module_sig_enforced(void);
++extern bool is_module_sig_enforced(void);
++extern void set_module_sig_enforced(void);
+ =
+
+ #else /* !CONFIG_MODULES... */
+ =
+
+@@ -949,6 +949,7 @@ static inline bool module_sig_ok(struct module *module)
+ {
+ 	return true;
+ }
++#define sig_enforce false
+ #endif	/* CONFIG_MODULE_SIG */
+ =
+
+ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 3419a271ebed..9ff8c554fbc9 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -81,3 +81,12 @@ static inline void module_decompress_cleanup(struct load=
+_info *info)
+ {
+ }
+ #endif
 +
-+#else /* !CONFIG_STRICT_MODULE_RWX */
-+static void module_enable_nx(const struct module *mod) { }
-+static void module_enable_ro(const struct module *mod, bool after_init) {}
-+static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+				       char *secstrings, struct module *mod)
++#ifdef CONFIG_MODULE_SIG
++extern int module_sig_check(struct load_info *info, int flags);
++#else /* !CONFIG_MODULE_SIG */
++static int module_sig_check(struct load_info *info, int flags)
 +{
 +	return 0;
 +}
-+#endif /* CONFIG_STRICT_MODULE_RWX */
-+
- #ifdef CONFIG_MODULES_TREE_LOOKUP
- struct mod_tree_root {
- 	struct latch_tree_root root;
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index 71341f30c3f2..c4198fcf4772 100644
---- a/kernel/module/Makefile
-+++ b/kernel/module/Makefile
-@@ -10,3 +10,4 @@ obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D signature.o
- obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
- obj-$(CONFIG_MODULES_TREE_LOOKUP) +=3D tree_lookup.o
- obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) +=3D arch_strict_rwx.o
-+obj-$(CONFIG_STRICT_MODULE_RWX) +=3D strict_rwx.o
++#endif /* !CONFIG_MODULE_SIG */
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index fbac043b07d7..4f590b0c7aca 100644
+index 4f590b0c7aca..36ed4dd64cac 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -1773,90 +1773,6 @@ static void mod_sysfs_teardown(struct module *mod)
- 	mod_sysfs_fini(mod);
+@@ -22,7 +22,6 @@
+ #include <linux/vmalloc.h>
+ #include <linux/elf.h>
+ #include <linux/proc_fs.h>
+-#include <linux/security.h>
+ #include <linux/seq_file.h>
+ #include <linux/syscalls.h>
+ #include <linux/fcntl.h>
+@@ -114,28 +113,6 @@ static void module_assert_mutex_or_preempt(void)
+ #endif
  }
  =
 
--#ifdef CONFIG_STRICT_MODULE_RWX
--static void frob_rodata(const struct module_layout *layout,
--			int (*set_memory)(unsigned long start, int num_pages))
+-#ifdef CONFIG_MODULE_SIG
+-static bool sig_enforce =3D IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
+-module_param(sig_enforce, bool_enable_only, 0644);
+-
+-void set_module_sig_enforced(void)
 -{
--	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
--	set_memory((unsigned long)layout->base + layout->text_size,
--		   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
+-	sig_enforce =3D true;
 -}
+-#else
+-#define sig_enforce false
+-#endif
 -
--static void frob_ro_after_init(const struct module_layout *layout,
--				int (*set_memory)(unsigned long start, int num_pages))
+-/*
+- * Export sig_enforce kernel cmdline parameter to allow other subsystems r=
+ely
+- * on that instead of directly to CONFIG_MODULE_SIG_FORCE config.
+- */
+-bool is_module_sig_enforced(void)
 -{
--	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
--	set_memory((unsigned long)layout->base + layout->ro_size,
--		   (layout->ro_after_init_size - layout->ro_size) >> PAGE_SHIFT);
+-	return sig_enforce;
 -}
+-EXPORT_SYMBOL(is_module_sig_enforced);
 -
--static void frob_writable_data(const struct module_layout *layout,
--			       int (*set_memory)(unsigned long start, int num_pages))
+ /* Block module loading/unloading? */
+ int modules_disabled =3D 0;
+ core_param(nomodule, modules_disabled, bint, 0);
+@@ -2516,70 +2493,6 @@ static inline void kmemleak_load_module(const struct=
+ module *mod,
+ }
+ #endif
+ =
+
+-#ifdef CONFIG_MODULE_SIG
+-static int module_sig_check(struct load_info *info, int flags)
 -{
--	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->size & (PAGE_SIZE-1));
--	set_memory((unsigned long)layout->base + layout->ro_after_init_size,
--		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
--}
--
--static void module_enable_ro(const struct module *mod, bool after_init)
--{
--	if (!rodata_enabled)
--		return;
--
--	set_vm_flush_reset_perms(mod->core_layout.base);
--	set_vm_flush_reset_perms(mod->init_layout.base);
--	frob_text(&mod->core_layout, set_memory_ro);
--
--	frob_rodata(&mod->core_layout, set_memory_ro);
--	frob_text(&mod->init_layout, set_memory_ro);
--	frob_rodata(&mod->init_layout, set_memory_ro);
--
--	if (after_init)
--		frob_ro_after_init(&mod->core_layout, set_memory_ro);
--}
--
--static void module_enable_nx(const struct module *mod)
--{
--	frob_rodata(&mod->core_layout, set_memory_nx);
--	frob_ro_after_init(&mod->core_layout, set_memory_nx);
--	frob_writable_data(&mod->core_layout, set_memory_nx);
--	frob_rodata(&mod->init_layout, set_memory_nx);
--	frob_writable_data(&mod->init_layout, set_memory_nx);
--}
--
--static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
--				       char *secstrings, struct module *mod)
--{
--	const unsigned long shf_wx =3D SHF_WRITE|SHF_EXECINSTR;
--	int i;
--
--	for (i =3D 0; i < hdr->e_shnum; i++) {
--		if ((sechdrs[i].sh_flags & shf_wx) =3D=3D shf_wx) {
--			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
--				mod->name, secstrings + sechdrs[i].sh_name, i);
--			return -ENOEXEC;
+-	int err =3D -ENODATA;
+-	const unsigned long markerlen =3D sizeof(MODULE_SIG_STRING) - 1;
+-	const char *reason;
+-	const void *mod =3D info->hdr;
+-	bool mangled_module =3D flags & (MODULE_INIT_IGNORE_MODVERSIONS |
+-				       MODULE_INIT_IGNORE_VERMAGIC);
+-	/*
+-	 * Do not allow mangled modules as a module with version information
+-	 * removed is no longer the module that was signed.
+-	 */
+-	if (!mangled_module &&
+-	    info->len > markerlen &&
+-	    memcmp(mod + info->len - markerlen, MODULE_SIG_STRING, markerlen) =3D=
+=3D 0) {
+-		/* We truncate the module to discard the signature */
+-		info->len -=3D markerlen;
+-		err =3D mod_verify_sig(mod, info);
+-		if (!err) {
+-			info->sig_ok =3D true;
+-			return 0;
 -		}
 -	}
 -
--	return 0;
--}
+-	/*
+-	 * We don't permit modules to be loaded into the trusted kernels
+-	 * without a valid signature on them, but if we're not enforcing,
+-	 * certain errors are non-fatal.
+-	 */
+-	switch (err) {
+-	case -ENODATA:
+-		reason =3D "unsigned module";
+-		break;
+-	case -ENOPKG:
+-		reason =3D "module with unsupported crypto";
+-		break;
+-	case -ENOKEY:
+-		reason =3D "module with unavailable key";
+-		break;
 -
--#else /* !CONFIG_STRICT_MODULE_RWX */
--static void module_enable_nx(const struct module *mod) { }
--static void module_enable_ro(const struct module *mod, bool after_init) {}
--static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
--				       char *secstrings, struct module *mod)
+-	default:
+-		/*
+-		 * All other errors are fatal, including lack of memory,
+-		 * unparseable signatures, and signature check failures --
+-		 * even if signatures aren't required.
+-		 */
+-		return err;
+-	}
+-
+-	if (is_module_sig_enforced()) {
+-		pr_notice("Loading of %s is rejected\n", reason);
+-		return -EKEYREJECTED;
+-	}
+-
+-	return security_locked_down(LOCKDOWN_MODULE_SIGNATURE);
+-}
+-#else /* !CONFIG_MODULE_SIG */
+-static int module_sig_check(struct load_info *info, int flags)
 -{
 -	return 0;
 -}
--#endif /*  CONFIG_STRICT_MODULE_RWX */
+-#endif /* !CONFIG_MODULE_SIG */
 -
- void __weak module_memfree(void *module_region)
+ static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
  {
- 	/*
-diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
-new file mode 100644
-index 000000000000..39060021755a
---- /dev/null
-+++ b/kernel/module/strict_rwx.c
-@@ -0,0 +1,83 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
+ #if defined(CONFIG_64BIT)
+diff --git a/kernel/module/signing.c b/kernel/module/signing.c
+index 8aeb6d2ee94b..ff41541e982a 100644
+--- a/kernel/module/signing.c
++++ b/kernel/module/signing.c
+@@ -11,9 +11,28 @@
+ #include <linux/module_signature.h>
+ #include <linux/string.h>
+ #include <linux/verification.h>
++#include <linux/security.h>
+ #include <crypto/public_key.h>
+ #include "internal.h"
+ =
+
++static bool sig_enforce =3D IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
++module_param(sig_enforce, bool_enable_only, 0644);
++
 +/*
-+ * Module strict rwx
-+ *
-+ * Copyright (C) 2015 Rusty Russell
++ * Export sig_enforce kernel cmdline parameter to allow other subsystems r=
+ely
++ * on that instead of directly to CONFIG_MODULE_SIG_FORCE config.
 + */
-+
-+#include <linux/module.h>
-+#include <linux/vmalloc.h>
-+#include <linux/set_memory.h>
-+
-+void frob_rodata(const struct module_layout *layout,
-+			int (*set_memory)(unsigned long start, int num_pages))
++bool is_module_sig_enforced(void)
 +{
-+	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
-+	set_memory((unsigned long)layout->base + layout->text_size,
-+		   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
++	return sig_enforce;
++}
++EXPORT_SYMBOL(is_module_sig_enforced);
++
++void set_module_sig_enforced(void)
++{
++	sig_enforce =3D true;
 +}
 +
-+void frob_ro_after_init(const struct module_layout *layout,
-+				int (*set_memory)(unsigned long start, int num_pages))
+ /*
+  * Verify the signature on a module.
+  */
+@@ -43,3 +62,59 @@ int mod_verify_sig(const void *mod, struct load_info *in=
+fo)
+ 				      VERIFYING_MODULE_SIGNATURE,
+ 				      NULL, NULL);
+ }
++
++int module_sig_check(struct load_info *info, int flags)
 +{
-+	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
-+	set_memory((unsigned long)layout->base + layout->ro_size,
-+		   (layout->ro_after_init_size - layout->ro_size) >> PAGE_SHIFT);
-+}
++	int err =3D -ENODATA;
++	const unsigned long markerlen =3D sizeof(MODULE_SIG_STRING) - 1;
++	const char *reason;
++	const void *mod =3D info->hdr;
 +
-+void frob_writable_data(const struct module_layout *layout,
-+			       int (*set_memory)(unsigned long start, int num_pages))
-+{
-+	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->size & (PAGE_SIZE-1));
-+	set_memory((unsigned long)layout->base + layout->ro_after_init_size,
-+		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
-+}
-+
-+void module_enable_ro(const struct module *mod, bool after_init)
-+{
-+	if (!rodata_enabled)
-+		return;
-+
-+	set_vm_flush_reset_perms(mod->core_layout.base);
-+	set_vm_flush_reset_perms(mod->init_layout.base);
-+	frob_text(&mod->core_layout, set_memory_ro);
-+
-+	frob_rodata(&mod->core_layout, set_memory_ro);
-+	frob_text(&mod->init_layout, set_memory_ro);
-+	frob_rodata(&mod->init_layout, set_memory_ro);
-+
-+	if (after_init)
-+		frob_ro_after_init(&mod->core_layout, set_memory_ro);
-+}
-+
-+void module_enable_nx(const struct module *mod)
-+{
-+	frob_rodata(&mod->core_layout, set_memory_nx);
-+	frob_ro_after_init(&mod->core_layout, set_memory_nx);
-+	frob_writable_data(&mod->core_layout, set_memory_nx);
-+	frob_rodata(&mod->init_layout, set_memory_nx);
-+	frob_writable_data(&mod->init_layout, set_memory_nx);
-+}
-+
-+int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+				       char *secstrings, struct module *mod)
-+{
-+	const unsigned long shf_wx =3D SHF_WRITE|SHF_EXECINSTR;
-+	int i;
-+
-+	for (i =3D 0; i < hdr->e_shnum; i++) {
-+		if ((sechdrs[i].sh_flags & shf_wx) =3D=3D shf_wx) {
-+			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
-+				mod->name, secstrings + sechdrs[i].sh_name, i);
-+			return -ENOEXEC;
++	/*
++	 * Require flags =3D=3D 0, as a module with version information
++	 * removed is no longer the module that was signed
++	 */
++	if (flags =3D=3D 0 &&
++	    info->len > markerlen &&
++	    memcmp(mod + info->len - markerlen, MODULE_SIG_STRING, markerlen) =3D=
+=3D 0) {
++		/* We truncate the module to discard the signature */
++		info->len -=3D markerlen;
++		err =3D mod_verify_sig(mod, info);
++		if (!err) {
++			info->sig_ok =3D true;
++			return 0;
 +		}
 +	}
 +
-+	return 0;
++	/*
++	 * We don't permit modules to be loaded into the trusted kernels
++	 * without a valid signature on them, but if we're not enforcing,
++	 * certain errors are non-fatal.
++	 */
++	switch (err) {
++	case -ENODATA:
++		reason =3D "unsigned module";
++		break;
++	case -ENOPKG:
++		reason =3D "module with unsupported crypto";
++		break;
++	case -ENOKEY:
++		reason =3D "module with unavailable key";
++		break;
++
++	default:
++		/*
++		 * All other errors are fatal, including lack of memory,
++		 * unparseable signatures, and signature check failures --
++		 * even if signatures aren't required.
++		 */
++		return err;
++	}
++
++	if (is_module_sig_enforced()) {
++		pr_notice("Loading of %s is rejected\n", reason);
++		return -EKEYREJECTED;
++	}
++
++	return security_locked_down(LOCKDOWN_MODULE_SIGNATURE);
 +}
 -- =
 
 2.34.1
 
---===============6961662445195936393==--
+--===============8730951444664828013==--
 
