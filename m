@@ -1,148 +1,210 @@
-Content-Type: multipart/mixed; boundary="===============0311017306851667673=="
+Content-Type: multipart/mixed; boundary="===============2636944276849305108=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v4 08/13] module: Move kmemleak support to a separate file
-Date: Mon, 31 Jan 2022 12:45:37 +0000
-Message-ID: <20220131124542.1389280-8-atomlin@redhat.com>
+Subject: [RFC PATCH v4 05/13] module: Move arch strict rwx support to a separate file
+Date: Mon, 31 Jan 2022 12:45:34 +0000
+Message-ID: <20220131124542.1389280-5-atomlin@redhat.com>
 In-Reply-To: <20220131124542.1389280-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0311017306851667673==
+--===============2636944276849305108==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 No functional change.
 
-This patch migrates kmemleak code out of core module
-code into kernel/module/debug_kmemleak.c
+This patch migrates applicable architecture code
+that support strict module rwx from core module code
+into kernel/module/arch_strict_rwx.c
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- kernel/module/Makefile         |  1 +
- kernel/module/debug_kmemleak.c | 30 ++++++++++++++++++++++++++++++
- kernel/module/internal.h       |  8 ++++++++
- kernel/module/main.c           | 27 ---------------------------
- 4 files changed, 39 insertions(+), 27 deletions(-)
- create mode 100644 kernel/module/debug_kmemleak.c
+ include/linux/module.h          | 17 +++++++++++
+ kernel/module/Makefile          |  1 +
+ kernel/module/arch_strict_rwx.c | 44 ++++++++++++++++++++++++++++
+ kernel/module/main.c            | 51 ---------------------------------
+ 4 files changed, 62 insertions(+), 51 deletions(-)
+ create mode 100644 kernel/module/arch_strict_rwx.c
 
+diff --git a/include/linux/module.h b/include/linux/module.h
+index faeb7ae49b89..8b75380bc340 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -339,6 +339,23 @@ struct module_layout {
+ #endif
+ };
+ =
+
++/*
++ * Modules' sections will be aligned on page boundaries
++ * to ensure complete separation of code and data, but
++ * only when CONFIG_ARCH_HAS_STRICT_MODULE_RWX=3Dy
++ */
++#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
++# define debug_align(X) ALIGN(X, PAGE_SIZE)
++
++extern void frob_text(const struct module_layout *layout,
++		      int (*set_memory)(unsigned long start, int num_pages));
++extern void module_enable_x(const struct module *mod);
++#else /* !CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
++# define debug_align(X) (X)
++
++static void module_enable_x(const struct module *mod) { }
++#endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
++
+ #ifdef CONFIG_MODULES_TREE_LOOKUP
+ /* Only touch one cacheline for common rbtree-for-core-layout case. */
+ #define __module_layout_align ____cacheline_aligned
 diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index d1dada641ad6..10efb144551b 100644
+index fc6d7a053a62..146509978708 100644
 --- a/kernel/module/Makefile
 +++ b/kernel/module/Makefile
-@@ -12,4 +12,5 @@ obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
+@@ -10,4 +10,5 @@ obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D signature.o
+ ifdef CONFIG_MODULES
+ obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
  obj-$(CONFIG_MODULES_TREE_LOOKUP) +=3D tree_lookup.o
- obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) +=3D arch_strict_rwx.o
- obj-$(CONFIG_STRICT_MODULE_RWX) +=3D strict_rwx.o
-+obj-$(CONFIG_DEBUG_KMEMLEAK) +=3D debug_kmemleak.o
++obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) +=3D arch_strict_rwx.o
  endif
-diff --git a/kernel/module/debug_kmemleak.c b/kernel/module/debug_kmemleak.c
+diff --git a/kernel/module/arch_strict_rwx.c b/kernel/module/arch_strict_rw=
+x.c
 new file mode 100644
-index 000000000000..e896c2268011
+index 000000000000..9801cb4fef36
 --- /dev/null
-+++ b/kernel/module/debug_kmemleak.c
-@@ -0,0 +1,30 @@
++++ b/kernel/module/arch_strict_rwx.c
+@@ -0,0 +1,44 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * Module kmemleak support
++ * Module arch strict rwx
 + *
-+ * Copyright (C) 2009 Catalin Marinas
++ * Copyright (C) 2015 Rusty Russell
 + */
 +
 +#include <linux/module.h>
-+#include <linux/kmemleak.h>
-+#include "internal.h"
++#include <linux/set_memory.h>
 +
-+void kmemleak_load_module(const struct module *mod,
-+				 const struct load_info *info)
++/*
++ * LKM RO/NX protection: protect module's text/ro-data
++ * from modification and any data from execution.
++ *
++ * General layout of module is:
++ *          [text] [read-only-data] [ro-after-init] [writable data]
++ * text_size -----^                ^               ^               ^
++ * ro_size ------------------------|               |               |
++ * ro_after_init_size -----------------------------|               |
++ * size -----------------------------------------------------------|
++ *
++ * These values are always page-aligned (as is base)
++ */
++
++/*
++ * Since some arches are moving towards PAGE_KERNEL module allocations ins=
+tead
++ * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() outside of =
+the
++ * CONFIG_STRICT_MODULE_RWX block below because they are needed regardless=
+ of
++ * whether we are strict.
++ */
++void frob_text(const struct module_layout *layout,
++		      int (*set_memory)(unsigned long start, int num_pages))
 +{
-+	unsigned int i;
-+
-+	/* only scan the sections containing data */
-+	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
-+
-+	for (i =3D 1; i < info->hdr->e_shnum; i++) {
-+		/* Scan all writable sections that's not executable */
-+		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
-+		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
-+		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
-+			continue;
-+
-+		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
-+				   info->sechdrs[i].sh_size, GFP_KERNEL);
-+	}
++	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
++	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
++	set_memory((unsigned long)layout->base,
++		   layout->text_size >> PAGE_SHIFT);
 +}
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 2ec2a1d9dd9f..4c2f64a75401 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -6,6 +6,7 @@
-  */
- =
-
- #include <linux/elf.h>
-+#include <linux/compiler.h>
- #include <asm/module.h>
- #include <linux/mutex.h>
- =
-
-@@ -123,3 +124,10 @@ static int module_sig_check(struct load_info *info, in=
-t flags)
- 	return 0;
- }
- #endif /* !CONFIG_MODULE_SIG */
 +
-+#ifdef CONFIG_DEBUG_KMEMLEAK
-+extern void kmemleak_load_module(const struct module *mod, const struct lo=
-ad_info *info);
-+#else /* !CONFIG_DEBUG_KMEMLEAK */
-+static inline void __maybe_unused kmemleak_load_module(const struct module=
- *mod,
-+						       const struct load_info *info) { }
-+#endif /* CONFIG_DEBUG_KMEMLEAK */
++void module_enable_x(const struct module *mod)
++{
++	frob_text(&mod->core_layout, set_memory_x);
++	frob_text(&mod->init_layout, set_memory_x);
++}
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 90c7266087d7..80790d39a6b3 100644
+index 941be7788626..7e98ea12b146 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2475,33 +2475,6 @@ bool __weak module_exit_section(const char *name)
- 	return strstarts(name, ".exit");
+@@ -13,7 +13,6 @@
+ #include <linux/trace_events.h>
+ #include <linux/init.h>
+ #include <linux/kallsyms.h>
+-#include <linux/buildid.h>
+ #include <linux/file.h>
+ #include <linux/fs.h>
+ #include <linux/sysfs.h>
+@@ -63,17 +62,6 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/module.h>
+ =
+
+-/*
+- * Modules' sections will be aligned on page boundaries
+- * to ensure complete separation of code and data, but
+- * only when CONFIG_ARCH_HAS_STRICT_MODULE_RWX=3Dy
+- */
+-#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+-# define debug_align(X) ALIGN(X, PAGE_SIZE)
+-#else
+-# define debug_align(X) (X)
+-#endif
+-
+ /*
+  * Mutex protects:
+  * 1) List of modules (also safely readable with preempt_disable),
+@@ -1794,45 +1782,6 @@ static void mod_sysfs_teardown(struct module *mod)
+ 	mod_sysfs_fini(mod);
  }
  =
 
--#ifdef CONFIG_DEBUG_KMEMLEAK
--static void kmemleak_load_module(const struct module *mod,
--				 const struct load_info *info)
+-/*
+- * LKM RO/NX protection: protect module's text/ro-data
+- * from modification and any data from execution.
+- *
+- * General layout of module is:
+- *          [text] [read-only-data] [ro-after-init] [writable data]
+- * text_size -----^                ^               ^               ^
+- * ro_size ------------------------|               |               |
+- * ro_after_init_size -----------------------------|               |
+- * size -----------------------------------------------------------|
+- *
+- * These values are always page-aligned (as is base)
+- */
+-
+-/*
+- * Since some arches are moving towards PAGE_KERNEL module allocations ins=
+tead
+- * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() outside of =
+the
+- * CONFIG_STRICT_MODULE_RWX block below because they are needed regardless=
+ of
+- * whether we are strict.
+- */
+-#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+-static void frob_text(const struct module_layout *layout,
+-		      int (*set_memory)(unsigned long start, int num_pages))
 -{
--	unsigned int i;
--
--	/* only scan the sections containing data */
--	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
--
--	for (i =3D 1; i < info->hdr->e_shnum; i++) {
--		/* Scan all writable sections that's not executable */
--		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
--		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
--		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
--			continue;
--
--		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
--				   info->sechdrs[i].sh_size, GFP_KERNEL);
--	}
+-	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
+-	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
+-	set_memory((unsigned long)layout->base,
+-		   layout->text_size >> PAGE_SHIFT);
 -}
--#else
--static inline void kmemleak_load_module(const struct module *mod,
--					const struct load_info *info)
+-
+-static void module_enable_x(const struct module *mod)
 -{
+-	frob_text(&mod->core_layout, set_memory_x);
+-	frob_text(&mod->init_layout, set_memory_x);
 -}
--#endif
+-#else /* !CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
+-static void module_enable_x(const struct module *mod) { }
+-#endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
 -
- static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
- {
- #if defined(CONFIG_64BIT)
+ #ifdef CONFIG_STRICT_MODULE_RWX
+ static void frob_rodata(const struct module_layout *layout,
+ 			int (*set_memory)(unsigned long start, int num_pages))
 -- =
 
 2.34.1
 
---===============0311017306851667673==--
+--===============2636944276849305108==--
 
