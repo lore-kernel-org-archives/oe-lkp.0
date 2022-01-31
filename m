@@ -1,266 +1,148 @@
-Content-Type: multipart/mixed; boundary="===============8591086501814097321=="
+Content-Type: multipart/mixed; boundary="===============0311017306851667673=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v4 06/13] module: Move strict rwx support to a separate file
-Date: Mon, 31 Jan 2022 12:45:35 +0000
-Message-ID: <20220131124542.1389280-6-atomlin@redhat.com>
+Subject: [RFC PATCH v4 08/13] module: Move kmemleak support to a separate file
+Date: Mon, 31 Jan 2022 12:45:37 +0000
+Message-ID: <20220131124542.1389280-8-atomlin@redhat.com>
 In-Reply-To: <20220131124542.1389280-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8591086501814097321==
+--===============0311017306851667673==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 No functional change.
 
-This patch migrates code that makes module text
-and rodata memory read-only and non-text memory
-non-executable from core module code into
-kernel/module/strict_rwx.c.
+This patch migrates kmemleak code out of core module
+code into kernel/module/debug_kmemleak.c
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- include/linux/module.h     | 22 ++++++++++
- kernel/module/Makefile     |  1 +
- kernel/module/main.c       | 84 --------------------------------------
- kernel/module/strict_rwx.c | 83 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 106 insertions(+), 84 deletions(-)
- create mode 100644 kernel/module/strict_rwx.c
+ kernel/module/Makefile         |  1 +
+ kernel/module/debug_kmemleak.c | 30 ++++++++++++++++++++++++++++++
+ kernel/module/internal.h       |  8 ++++++++
+ kernel/module/main.c           | 27 ---------------------------
+ 4 files changed, 39 insertions(+), 27 deletions(-)
+ create mode 100644 kernel/module/debug_kmemleak.c
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 8b75380bc340..520c0f4bb968 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -356,6 +356,28 @@ extern void module_enable_x(const struct module *mod);
- static void module_enable_x(const struct module *mod) { }
- #endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
- =
-
-+#ifdef CONFIG_STRICT_MODULE_RWX
-+extern void frob_rodata(const struct module_layout *layout,
-+			int (*set_memory)(unsigned long start, int num_pages));
-+extern void frob_ro_after_init(const struct module_layout *layout,
-+			       int (*set_memory)(unsigned long start, int num_pages));
-+extern void frob_writable_data(const struct module_layout *layout,
-+			       int (*set_memory)(unsigned long start, int num_pages));
-+extern void module_enable_ro(const struct module *mod, bool after_init);
-+extern void module_enable_nx(const struct module *mod);
-+extern int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+				       char *secstrings, struct module *mod);
-+
-+#else /* !CONFIG_STRICT_MODULE_RWX */
-+static void module_enable_nx(const struct module *mod) { }
-+static void module_enable_ro(const struct module *mod, bool after_init) {}
-+static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+				       char *secstrings, struct module *mod)
-+{
-+	return 0;
-+}
-+#endif /* CONFIG_STRICT_MODULE_RWX */
-+
- #ifdef CONFIG_MODULES_TREE_LOOKUP
- /* Only touch one cacheline for common rbtree-for-core-layout case. */
- #define __module_layout_align ____cacheline_aligned
 diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index 146509978708..d1dada641ad6 100644
+index d1dada641ad6..10efb144551b 100644
 --- a/kernel/module/Makefile
 +++ b/kernel/module/Makefile
-@@ -11,4 +11,5 @@ ifdef CONFIG_MODULES
- obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
+@@ -12,4 +12,5 @@ obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
  obj-$(CONFIG_MODULES_TREE_LOOKUP) +=3D tree_lookup.o
  obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) +=3D arch_strict_rwx.o
-+obj-$(CONFIG_STRICT_MODULE_RWX) +=3D strict_rwx.o
+ obj-$(CONFIG_STRICT_MODULE_RWX) +=3D strict_rwx.o
++obj-$(CONFIG_DEBUG_KMEMLEAK) +=3D debug_kmemleak.o
  endif
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 7e98ea12b146..1a0e659a27bc 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -1782,90 +1782,6 @@ static void mod_sysfs_teardown(struct module *mod)
- 	mod_sysfs_fini(mod);
- }
- =
-
--#ifdef CONFIG_STRICT_MODULE_RWX
--static void frob_rodata(const struct module_layout *layout,
--			int (*set_memory)(unsigned long start, int num_pages))
--{
--	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
--	set_memory((unsigned long)layout->base + layout->text_size,
--		   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
--}
--
--static void frob_ro_after_init(const struct module_layout *layout,
--				int (*set_memory)(unsigned long start, int num_pages))
--{
--	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
--	set_memory((unsigned long)layout->base + layout->ro_size,
--		   (layout->ro_after_init_size - layout->ro_size) >> PAGE_SHIFT);
--}
--
--static void frob_writable_data(const struct module_layout *layout,
--			       int (*set_memory)(unsigned long start, int num_pages))
--{
--	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->size & (PAGE_SIZE-1));
--	set_memory((unsigned long)layout->base + layout->ro_after_init_size,
--		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
--}
--
--static void module_enable_ro(const struct module *mod, bool after_init)
--{
--	if (!rodata_enabled)
--		return;
--
--	set_vm_flush_reset_perms(mod->core_layout.base);
--	set_vm_flush_reset_perms(mod->init_layout.base);
--	frob_text(&mod->core_layout, set_memory_ro);
--
--	frob_rodata(&mod->core_layout, set_memory_ro);
--	frob_text(&mod->init_layout, set_memory_ro);
--	frob_rodata(&mod->init_layout, set_memory_ro);
--
--	if (after_init)
--		frob_ro_after_init(&mod->core_layout, set_memory_ro);
--}
--
--static void module_enable_nx(const struct module *mod)
--{
--	frob_rodata(&mod->core_layout, set_memory_nx);
--	frob_ro_after_init(&mod->core_layout, set_memory_nx);
--	frob_writable_data(&mod->core_layout, set_memory_nx);
--	frob_rodata(&mod->init_layout, set_memory_nx);
--	frob_writable_data(&mod->init_layout, set_memory_nx);
--}
--
--static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
--				       char *secstrings, struct module *mod)
--{
--	const unsigned long shf_wx =3D SHF_WRITE|SHF_EXECINSTR;
--	int i;
--
--	for (i =3D 0; i < hdr->e_shnum; i++) {
--		if ((sechdrs[i].sh_flags & shf_wx) =3D=3D shf_wx) {
--			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
--				mod->name, secstrings + sechdrs[i].sh_name, i);
--			return -ENOEXEC;
--		}
--	}
--
--	return 0;
--}
--
--#else /* !CONFIG_STRICT_MODULE_RWX */
--static void module_enable_nx(const struct module *mod) { }
--static void module_enable_ro(const struct module *mod, bool after_init) {}
--static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
--				       char *secstrings, struct module *mod)
--{
--	return 0;
--}
--#endif /*  CONFIG_STRICT_MODULE_RWX */
--
- void __weak module_memfree(void *module_region)
- {
- 	/*
-diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
+diff --git a/kernel/module/debug_kmemleak.c b/kernel/module/debug_kmemleak.c
 new file mode 100644
-index 000000000000..39060021755a
+index 000000000000..e896c2268011
 --- /dev/null
-+++ b/kernel/module/strict_rwx.c
-@@ -0,0 +1,83 @@
++++ b/kernel/module/debug_kmemleak.c
+@@ -0,0 +1,30 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * Module strict rwx
++ * Module kmemleak support
 + *
-+ * Copyright (C) 2015 Rusty Russell
++ * Copyright (C) 2009 Catalin Marinas
 + */
 +
 +#include <linux/module.h>
-+#include <linux/vmalloc.h>
-+#include <linux/set_memory.h>
++#include <linux/kmemleak.h>
++#include "internal.h"
 +
-+void frob_rodata(const struct module_layout *layout,
-+			int (*set_memory)(unsigned long start, int num_pages))
++void kmemleak_load_module(const struct module *mod,
++				 const struct load_info *info)
 +{
-+	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
-+	set_memory((unsigned long)layout->base + layout->text_size,
-+		   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
-+}
++	unsigned int i;
 +
-+void frob_ro_after_init(const struct module_layout *layout,
-+				int (*set_memory)(unsigned long start, int num_pages))
-+{
-+	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
-+	set_memory((unsigned long)layout->base + layout->ro_size,
-+		   (layout->ro_after_init_size - layout->ro_size) >> PAGE_SHIFT);
-+}
++	/* only scan the sections containing data */
++	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
 +
-+void frob_writable_data(const struct module_layout *layout,
-+			       int (*set_memory)(unsigned long start, int num_pages))
-+{
-+	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
-+	BUG_ON((unsigned long)layout->size & (PAGE_SIZE-1));
-+	set_memory((unsigned long)layout->base + layout->ro_after_init_size,
-+		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
-+}
++	for (i =3D 1; i < info->hdr->e_shnum; i++) {
++		/* Scan all writable sections that's not executable */
++		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
++		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
++		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
++			continue;
 +
-+void module_enable_ro(const struct module *mod, bool after_init)
-+{
-+	if (!rodata_enabled)
-+		return;
-+
-+	set_vm_flush_reset_perms(mod->core_layout.base);
-+	set_vm_flush_reset_perms(mod->init_layout.base);
-+	frob_text(&mod->core_layout, set_memory_ro);
-+
-+	frob_rodata(&mod->core_layout, set_memory_ro);
-+	frob_text(&mod->init_layout, set_memory_ro);
-+	frob_rodata(&mod->init_layout, set_memory_ro);
-+
-+	if (after_init)
-+		frob_ro_after_init(&mod->core_layout, set_memory_ro);
-+}
-+
-+void module_enable_nx(const struct module *mod)
-+{
-+	frob_rodata(&mod->core_layout, set_memory_nx);
-+	frob_ro_after_init(&mod->core_layout, set_memory_nx);
-+	frob_writable_data(&mod->core_layout, set_memory_nx);
-+	frob_rodata(&mod->init_layout, set_memory_nx);
-+	frob_writable_data(&mod->init_layout, set_memory_nx);
-+}
-+
-+int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+				       char *secstrings, struct module *mod)
-+{
-+	const unsigned long shf_wx =3D SHF_WRITE|SHF_EXECINSTR;
-+	int i;
-+
-+	for (i =3D 0; i < hdr->e_shnum; i++) {
-+		if ((sechdrs[i].sh_flags & shf_wx) =3D=3D shf_wx) {
-+			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
-+				mod->name, secstrings + sechdrs[i].sh_name, i);
-+			return -ENOEXEC;
-+		}
++		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
++				   info->sechdrs[i].sh_size, GFP_KERNEL);
 +	}
-+
-+	return 0;
 +}
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 2ec2a1d9dd9f..4c2f64a75401 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -6,6 +6,7 @@
+  */
+ =
+
+ #include <linux/elf.h>
++#include <linux/compiler.h>
+ #include <asm/module.h>
+ #include <linux/mutex.h>
+ =
+
+@@ -123,3 +124,10 @@ static int module_sig_check(struct load_info *info, in=
+t flags)
+ 	return 0;
+ }
+ #endif /* !CONFIG_MODULE_SIG */
++
++#ifdef CONFIG_DEBUG_KMEMLEAK
++extern void kmemleak_load_module(const struct module *mod, const struct lo=
+ad_info *info);
++#else /* !CONFIG_DEBUG_KMEMLEAK */
++static inline void __maybe_unused kmemleak_load_module(const struct module=
+ *mod,
++						       const struct load_info *info) { }
++#endif /* CONFIG_DEBUG_KMEMLEAK */
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 90c7266087d7..80790d39a6b3 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -2475,33 +2475,6 @@ bool __weak module_exit_section(const char *name)
+ 	return strstarts(name, ".exit");
+ }
+ =
+
+-#ifdef CONFIG_DEBUG_KMEMLEAK
+-static void kmemleak_load_module(const struct module *mod,
+-				 const struct load_info *info)
+-{
+-	unsigned int i;
+-
+-	/* only scan the sections containing data */
+-	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
+-
+-	for (i =3D 1; i < info->hdr->e_shnum; i++) {
+-		/* Scan all writable sections that's not executable */
+-		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
+-		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
+-		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
+-			continue;
+-
+-		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
+-				   info->sechdrs[i].sh_size, GFP_KERNEL);
+-	}
+-}
+-#else
+-static inline void kmemleak_load_module(const struct module *mod,
+-					const struct load_info *info)
+-{
+-}
+-#endif
+-
+ static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
+ {
+ #if defined(CONFIG_64BIT)
 -- =
 
 2.34.1
 
---===============8591086501814097321==--
+--===============0311017306851667673==--
 
