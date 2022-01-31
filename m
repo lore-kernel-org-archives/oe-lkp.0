@@ -1,159 +1,330 @@
-Content-Type: multipart/mixed; boundary="===============6021165908444241620=="
+Content-Type: multipart/mixed; boundary="===============8616589327321939421=="
 MIME-Version: 1.0
 From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: [RFC PATCH v4 01/13] module: Move all into module/
-Date: Mon, 31 Jan 2022 12:45:30 +0000
-Message-ID: <20220131124542.1389280-1-atomlin@redhat.com>
+Subject: [RFC PATCH v4 03/13] module: Move livepatch support to a separate file
+Date: Mon, 31 Jan 2022 12:45:32 +0000
+Message-ID: <20220131124542.1389280-3-atomlin@redhat.com>
+In-Reply-To: <20220131124542.1389280-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6021165908444241620==
+--===============8616589327321939421==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-No functional changes.
+No functional change.
 
-This patch moves all module related code into a separate directory,
-modifies each file name and creates a new Makefile. Note: this effort
-is in preparation to refactor core module code.
+This patch migrates livepatch support (i.e. used during module
+add/or load and remove/or deletion) from core module code into
+kernel/module/livepatch.c. At the moment it contains code to
+persist Elf information about a given livepatch module, only.
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- MAINTAINERS                                         | 2 +-
- kernel/Makefile                                     | 5 +----
- kernel/module/Makefile                              | 9 +++++++++
- kernel/{module_decompress.c =3D> module/decompress.c} | 2 +-
- kernel/{module-internal.h =3D> module/internal.h}     | 0
- kernel/{module.c =3D> module/main.c}                  | 2 +-
- kernel/{module_signature.c =3D> module/signature.c}   | 0
- kernel/{module_signing.c =3D> module/signing.c}       | 2 +-
- 8 files changed, 14 insertions(+), 8 deletions(-)
- create mode 100644 kernel/module/Makefile
- rename kernel/{module_decompress.c =3D> module/decompress.c} (99%)
- rename kernel/{module-internal.h =3D> module/internal.h} (100%)
- rename kernel/{module.c =3D> module/main.c} (99%)
- rename kernel/{module_signature.c =3D> module/signature.c} (100%)
- rename kernel/{module_signing.c =3D> module/signing.c} (97%)
+ include/linux/module.h    |  16 ++++--
+ kernel/module/Makefile    |   3 ++
+ kernel/module/internal.h  |  11 ++++
+ kernel/module/livepatch.c |  74 +++++++++++++++++++++++++++
+ kernel/module/main.c      | 102 ++++----------------------------------
+ 5 files changed, 109 insertions(+), 97 deletions(-)
+ create mode 100644 kernel/module/livepatch.c
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index acd112c42255..a98f4700acb7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12976,7 +12976,7 @@ L:	linux-kernel(a)vger.kernel.org
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git modu=
-les-next
- F:	include/linux/module.h
--F:	kernel/module.c
-+F:	kernel/module/main.c
+diff --git a/include/linux/module.h b/include/linux/module.h
+index f4338235ed2c..c7daac4d16ee 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -663,17 +663,23 @@ static inline bool module_requested_async_probing(str=
+uct module *module)
+ 	return module && module->async_probe_requested;
+ }
  =
 
- MONOLITHIC POWER SYSTEM PMIC DRIVER
- M:	Saravanan Sekar <sravanhome@gmail.com>
-diff --git a/kernel/Makefile b/kernel/Makefile
-index 56f4ee97f328..3a6380975c57 100644
---- a/kernel/Makefile
-+++ b/kernel/Makefile
-@@ -53,6 +53,7 @@ obj-y +=3D rcu/
- obj-y +=3D livepatch/
- obj-y +=3D dma/
- obj-y +=3D entry/
-+obj-y +=3D module/
- =
-
- obj-$(CONFIG_KCMP) +=3D kcmp.o
- obj-$(CONFIG_FREEZER) +=3D freezer.o
-@@ -66,10 +67,6 @@ ifneq ($(CONFIG_SMP),y)
- obj-y +=3D up.o
- endif
- obj-$(CONFIG_UID16) +=3D uid16.o
--obj-$(CONFIG_MODULES) +=3D module.o
--obj-$(CONFIG_MODULE_DECOMPRESS) +=3D module_decompress.o
--obj-$(CONFIG_MODULE_SIG) +=3D module_signing.o
--obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D module_signature.o
- obj-$(CONFIG_KALLSYMS) +=3D kallsyms.o
- obj-$(CONFIG_BSD_PROCESS_ACCT) +=3D acct.o
- obj-$(CONFIG_CRASH_CORE) +=3D crash_core.o
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-new file mode 100644
-index 000000000000..2902fc7d0ef1
---- /dev/null
-+++ b/kernel/module/Makefile
-@@ -0,0 +1,9 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Makefile for linux kernel module support
-+#
-+
-+obj-$(CONFIG_MODULES) +=3D main.o
-+obj-$(CONFIG_MODULE_DECOMPRESS) +=3D decompress.o
-+obj-$(CONFIG_MODULE_SIG) +=3D signing.o
-+obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D signature.o
-diff --git a/kernel/module_decompress.c b/kernel/module/decompress.c
-similarity index 99%
-rename from kernel/module_decompress.c
-rename to kernel/module/decompress.c
-index b01c69c2ff99..c153fd8a4444 100644
---- a/kernel/module_decompress.c
-+++ b/kernel/module/decompress.c
-@@ -12,7 +12,7 @@
- #include <linux/sysfs.h>
- #include <linux/vmalloc.h>
- =
-
--#include "module-internal.h"
-+#include "internal.h"
- =
-
- static int module_extend_max_pages(struct load_info *info, unsigned int ex=
-tent)
+-#ifdef CONFIG_LIVEPATCH
+ static inline bool is_livepatch_module(struct module *mod)
  {
-diff --git a/kernel/module-internal.h b/kernel/module/internal.h
-similarity index 100%
-rename from kernel/module-internal.h
-rename to kernel/module/internal.h
-diff --git a/kernel/module.c b/kernel/module/main.c
-similarity index 99%
-rename from kernel/module.c
-rename to kernel/module/main.c
-index 387ee77bdbd6..d8c6269af6cf 100644
---- a/kernel/module.c
+-	return mod->klp;
++	if (IS_ENABLED(CONFIG_LIVEPATCH)) {
++		if (mod->klp)
++			return true;
++	}
++	return false;
+ }
+-#else /* !CONFIG_LIVEPATCH */
+-static inline bool is_livepatch_module(struct module *mod)
++
++static inline bool set_livepatch_module(struct module *mod)
+ {
++	if (IS_ENABLED(CONFIG_LIVEPATCH)) {
++		mod->klp =3D true;
++		return true;
++	}
+ 	return false;
+ }
+-#endif /* CONFIG_LIVEPATCH */
+ =
+
+ bool is_module_sig_enforced(void);
+ void set_module_sig_enforced(void);
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+index 2902fc7d0ef1..ee20d864ad19 100644
+--- a/kernel/module/Makefile
++++ b/kernel/module/Makefile
+@@ -7,3 +7,6 @@ obj-$(CONFIG_MODULES) +=3D main.o
+ obj-$(CONFIG_MODULE_DECOMPRESS) +=3D decompress.o
+ obj-$(CONFIG_MODULE_SIG) +=3D signing.o
+ obj-$(CONFIG_MODULE_SIG_FORMAT) +=3D signature.o
++ifdef CONFIG_MODULES
++obj-$(CONFIG_LIVEPATCH) +=3D livepatch.o
++endif
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index e3c593f8767f..6150ec5ae042 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -57,6 +57,17 @@ struct load_info {
+ =
+
+ extern int mod_verify_sig(const void *mod, struct load_info *info);
+ =
+
++#ifdef CONFIG_LIVEPATCH
++extern int copy_module_elf(struct module *mod, struct load_info *info);
++extern void free_module_elf(struct module *mod);
++#else /* !CONFIG_LIVEPATCH */
++static inline int copy_module_elf(struct module *mod, struct load_info *in=
+fo)
++{
++	return 0;
++}
++static inline void free_module_elf(struct module *mod) { }
++#endif /* CONFIG_LIVEPATCH */
++
+ #ifdef CONFIG_MODULE_DECOMPRESS
+ int module_decompress(struct load_info *info, const void *buf, size_t size=
+);
+ void module_decompress_cleanup(struct load_info *info);
+diff --git a/kernel/module/livepatch.c b/kernel/module/livepatch.c
+new file mode 100644
+index 000000000000..961045d32332
+--- /dev/null
++++ b/kernel/module/livepatch.c
+@@ -0,0 +1,74 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Module livepatch support
++ *
++ * Copyright (C) 2016 Jessica Yu <jeyu@redhat.com>
++ */
++
++#include <linux/module.h>
++#include <linux/string.h>
++#include <linux/slab.h>
++#include "internal.h"
++
++/*
++ * Persist Elf information about a module. Copy the Elf header,
++ * section header table, section string table, and symtab section
++ * index from info to mod->klp_info.
++ */
++int copy_module_elf(struct module *mod, struct load_info *info)
++{
++	unsigned int size, symndx;
++	int ret;
++
++	size =3D sizeof(*mod->klp_info);
++	mod->klp_info =3D kmalloc(size, GFP_KERNEL);
++	if (mod->klp_info =3D=3D NULL)
++		return -ENOMEM;
++
++	/* Elf header */
++	size =3D sizeof(mod->klp_info->hdr);
++	memcpy(&mod->klp_info->hdr, info->hdr, size);
++
++	/* Elf section header table */
++	size =3D sizeof(*info->sechdrs) * info->hdr->e_shnum;
++	mod->klp_info->sechdrs =3D kmemdup(info->sechdrs, size, GFP_KERNEL);
++	if (mod->klp_info->sechdrs =3D=3D NULL) {
++		ret =3D -ENOMEM;
++		goto free_info;
++	}
++
++	/* Elf section name string table */
++	size =3D info->sechdrs[info->hdr->e_shstrndx].sh_size;
++	mod->klp_info->secstrings =3D kmemdup(info->secstrings, size, GFP_KERNEL);
++	if (mod->klp_info->secstrings =3D=3D NULL) {
++		ret =3D -ENOMEM;
++		goto free_sechdrs;
++	}
++
++	/* Elf symbol section index */
++	symndx =3D info->index.sym;
++	mod->klp_info->symndx =3D symndx;
++
++	/*
++	 * For livepatch modules, core_kallsyms.symtab is a complete
++	 * copy of the original symbol table. Adjust sh_addr to point
++	 * to core_kallsyms.symtab since the copy of the symtab in module
++	 * init memory is freed at the end of do_init_module().
++	 */
++	mod->klp_info->sechdrs[symndx].sh_addr =3D (unsigned long) mod->core_kall=
+syms.symtab;
++
++	return 0;
++
++free_sechdrs:
++	kfree(mod->klp_info->sechdrs);
++free_info:
++	kfree(mod->klp_info);
++	return ret;
++}
++
++void free_module_elf(struct module *mod)
++{
++	kfree(mod->klp_info->sechdrs);
++	kfree(mod->klp_info->secstrings);
++	kfree(mod->klp_info);
++}
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index fee64c4957f3..c91c7e57bca7 100644
+--- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -58,7 +58,7 @@
- #include <linux/dynamic_debug.h>
- #include <linux/audit.h>
- #include <uapi/linux/module.h>
--#include "module-internal.h"
-+#include "internal.h"
+@@ -2042,81 +2042,6 @@ static int module_enforce_rwx_sections(Elf_Ehdr *hdr=
+, Elf_Shdr *sechdrs,
+ }
+ #endif /*  CONFIG_STRICT_MODULE_RWX */
  =
 
- #define CREATE_TRACE_POINTS
- #include <trace/events/module.h>
-diff --git a/kernel/module_signature.c b/kernel/module/signature.c
-similarity index 100%
-rename from kernel/module_signature.c
-rename to kernel/module/signature.c
-diff --git a/kernel/module_signing.c b/kernel/module/signing.c
-similarity index 97%
-rename from kernel/module_signing.c
-rename to kernel/module/signing.c
-index 8723ae70ea1f..8aeb6d2ee94b 100644
---- a/kernel/module_signing.c
-+++ b/kernel/module/signing.c
-@@ -12,7 +12,7 @@
- #include <linux/string.h>
- #include <linux/verification.h>
- #include <crypto/public_key.h>
--#include "module-internal.h"
-+#include "internal.h"
+-#ifdef CONFIG_LIVEPATCH
+-/*
+- * Persist Elf information about a module. Copy the Elf header,
+- * section header table, section string table, and symtab section
+- * index from info to mod->klp_info.
+- */
+-static int copy_module_elf(struct module *mod, struct load_info *info)
+-{
+-	unsigned int size, symndx;
+-	int ret;
+-
+-	size =3D sizeof(*mod->klp_info);
+-	mod->klp_info =3D kmalloc(size, GFP_KERNEL);
+-	if (mod->klp_info =3D=3D NULL)
+-		return -ENOMEM;
+-
+-	/* Elf header */
+-	size =3D sizeof(mod->klp_info->hdr);
+-	memcpy(&mod->klp_info->hdr, info->hdr, size);
+-
+-	/* Elf section header table */
+-	size =3D sizeof(*info->sechdrs) * info->hdr->e_shnum;
+-	mod->klp_info->sechdrs =3D kmemdup(info->sechdrs, size, GFP_KERNEL);
+-	if (mod->klp_info->sechdrs =3D=3D NULL) {
+-		ret =3D -ENOMEM;
+-		goto free_info;
+-	}
+-
+-	/* Elf section name string table */
+-	size =3D info->sechdrs[info->hdr->e_shstrndx].sh_size;
+-	mod->klp_info->secstrings =3D kmemdup(info->secstrings, size, GFP_KERNEL);
+-	if (mod->klp_info->secstrings =3D=3D NULL) {
+-		ret =3D -ENOMEM;
+-		goto free_sechdrs;
+-	}
+-
+-	/* Elf symbol section index */
+-	symndx =3D info->index.sym;
+-	mod->klp_info->symndx =3D symndx;
+-
+-	/*
+-	 * For livepatch modules, core_kallsyms.symtab is a complete
+-	 * copy of the original symbol table. Adjust sh_addr to point
+-	 * to core_kallsyms.symtab since the copy of the symtab in module
+-	 * init memory is freed at the end of do_init_module().
+-	 */
+-	mod->klp_info->sechdrs[symndx].sh_addr =3D \
+-		(unsigned long) mod->core_kallsyms.symtab;
+-
+-	return 0;
+-
+-free_sechdrs:
+-	kfree(mod->klp_info->sechdrs);
+-free_info:
+-	kfree(mod->klp_info);
+-	return ret;
+-}
+-
+-static void free_module_elf(struct module *mod)
+-{
+-	kfree(mod->klp_info->sechdrs);
+-	kfree(mod->klp_info->secstrings);
+-	kfree(mod->klp_info);
+-}
+-#else /* !CONFIG_LIVEPATCH */
+-static int copy_module_elf(struct module *mod, struct load_info *info)
+-{
+-	return 0;
+-}
+-
+-static void free_module_elf(struct module *mod)
+-{
+-}
+-#endif /* CONFIG_LIVEPATCH */
+-
+ void __weak module_memfree(void *module_region)
+ {
+ 	/*
+@@ -3091,30 +3016,23 @@ static int copy_chunked_from_user(void *dst, const =
+void __user *usrc, unsigned l
+ 	return 0;
+ }
  =
 
- /*
-  * Verify the signature on a module.
+-#ifdef CONFIG_LIVEPATCH
+ static int check_modinfo_livepatch(struct module *mod, struct load_info *i=
+nfo)
+ {
+-	if (get_modinfo(info, "livepatch")) {
+-		mod->klp =3D true;
++	if (!get_modinfo(info, "livepatch"))
++		/* Nothing more to do */
++		return 0;
++
++	if (set_livepatch_module(mod)) {
+ 		add_taint_module(mod, TAINT_LIVEPATCH, LOCKDEP_STILL_OK);
+ 		pr_notice_once("%s: tainting kernel with TAINT_LIVEPATCH\n",
+-			       mod->name);
+-	}
+-
+-	return 0;
+-}
+-#else /* !CONFIG_LIVEPATCH */
+-static int check_modinfo_livepatch(struct module *mod, struct load_info *i=
+nfo)
+-{
+-	if (get_modinfo(info, "livepatch")) {
+-		pr_err("%s: module is marked as livepatch module, but livepatch support =
+is disabled",
+-		       mod->name);
+-		return -ENOEXEC;
++				mod->name);
++		return 0;
+ 	}
+ =
+
+-	return 0;
++	pr_err("%s: module is marked as livepatch module, but livepatch support i=
+s disabled",
++		mod->name);
++	return -ENOEXEC;
+ }
+-#endif /* CONFIG_LIVEPATCH */
+ =
+
+ static void check_modinfo_retpoline(struct module *mod, struct load_info *=
+info)
+ {
 -- =
 
 2.34.1
 
---===============6021165908444241620==--
+--===============8616589327321939421==--
 
