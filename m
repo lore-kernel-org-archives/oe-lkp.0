@@ -1,114 +1,68 @@
-Content-Type: multipart/mixed; boundary="===============7653202941560666184=="
+Content-Type: multipart/mixed; boundary="===============6328497066556155276=="
 MIME-Version: 1.0
-From: Christian Brauner <brauner@kernel.org>
+From: Aaron Tomlin <atomlin@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [fs/exec] 80bd5afdd8: xfstests.generic.633.fail
-Date: Mon, 31 Jan 2022 18:13:44 +0100
-Message-ID: <20220131171344.77iifun5wdilbqdz@wittgenstein>
-In-Reply-To: <20220131161415.wlvtsd4ecehyg3x5@wittgenstein>
+Subject: [RFC PATCH v4 12/13] module: Move kdb_modules list out of core code
+Date: Mon, 31 Jan 2022 12:45:41 +0000
+Message-ID: <20220131124542.1389280-12-atomlin@redhat.com>
+In-Reply-To: <20220131124542.1389280-1-atomlin@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7653202941560666184==
+--===============6328497066556155276==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 31, 2022 at 05:14:15PM +0100, Christian Brauner wrote:
-> On Mon, Jan 31, 2022 at 03:51:21PM +0000, Matthew Wilcox wrote:
-> > On Mon, Jan 31, 2022 at 04:37:07PM +0100, Christian Brauner wrote:
-> > > On Mon, Jan 31, 2022 at 03:19:22PM +0000, Matthew Wilcox wrote:
-> > > > On Mon, Jan 31, 2022 at 04:08:19PM +0100, Christian Brauner wrote:
-> > > > > On Mon, Jan 31, 2022 at 10:43:52PM +0800, kernel test robot wrote:
-> > > > > I can fix this rather simply in our upstream fstests with:
-> > > > > =
+No functional change.
 
-> > > > > static char *argv[] =3D {
-> > > > > 	"",
-> > > > > };
-> > > > > =
+This patch migrates kdb_modules list to core kdb code
+since the list of added/or loaded modules is no longer
+private.
 
-> > > > > I guess.
-> > > > > =
+Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+---
+ kernel/debug/kdb/kdb_main.c | 5 +++++
+ kernel/module/main.c        | 4 ----
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-> > > > > But doesn't
-> > > > > =
+diff --git a/kernel/debug/kdb/kdb_main.c b/kernel/debug/kdb/kdb_main.c
+index 0852a537dad4..f101f5f078f4 100644
+--- a/kernel/debug/kdb/kdb_main.c
++++ b/kernel/debug/kdb/kdb_main.c
+@@ -59,6 +59,11 @@ EXPORT_SYMBOL(kdb_grepping_flag);
+ int kdb_grep_leading;
+ int kdb_grep_trailing;
+ =
 
-> > > > > static char *argv[] =3D {
-> > > > > 	NULL,
-> > > > > };
-> > > > > =
++#ifdef CONFIG_MODULES
++extern struct list_head modules;
++struct list_head *kdb_modules =3D &modules; /* kdb needs the list of modul=
+es */
++#endif /* CONFIG_MODULES */
++
+ /*
+  * Kernel debugger state flags
+  */
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 1d16faea82b3..59e1c271812c 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -104,10 +104,6 @@ static void mod_update_bounds(struct module *mod)
+ 		__mod_update_bounds(mod->init_layout.base, mod->init_layout.size);
+ }
+ =
 
-> > > > > seem something that should work especially with execveat()?
-> > > > =
+-#ifdef CONFIG_KGDB_KDB
+-struct list_head *kdb_modules =3D &modules; /* kdb needs the list of modul=
+es */
+-#endif /* CONFIG_KGDB_KDB */
+-
+ static void module_assert_mutex_or_preempt(void)
+ {
+ #ifdef CONFIG_LOCKDEP
+-- =
 
-> > > > The problem is that the exec'ed program sees an argc of 0, which is=
- the
-> > > > problem we're trying to work around in the kernel (instead of leavi=
-ng
-> > > > it to ld.so to fix for suid programs).
-> > > =
+2.34.1
 
-> > > Ok, just seems a bit more intuitive for path-based exec than for
-> > > fd-based execveat().
-> > > =
-
-> > > What's argv[0] supposed to contain in these cases?
-> > > =
-
-> > > 1. execveat(fd, NULL, ..., AT_EMPTY_PATH)
-> > > 2. execveat(fd, "my-file", ..., )
-> > > =
-
-> > > "" in both 1. and 2.?
-> > > "" in 1. and "my-file" in 2.?
-> > =
-
-> > You didn't specify argv for either of those, so I have no idea.
-> > Programs shouldn't be assuming anything about argv[0]; it's purely
-> > advisory.  Unfortunately, some of them do.  And some of them are suid.
-> =
-
-> Yes, programs shouldn't assume anything about argv[0]. But a lot of
-> programs are used to setting argv[0] to the name of the executed binary.
-> The exec* manpages examples do this. Just looking at a random selftest, e=
-.g.
-> =
-
-> bpf/prog_tests/test_lsm.c
-> =
-
-> where we find:
-> =
-
-> 	char *CMD_ARGS[] =3D {"true", NULL};
-> 	execvp(CMD_ARGS[0], CMD_ARGS);
-> =
-
-> I'm just wondering how common this is for execveat() because it is not
-> as clear what the actual name of the binary is in these two examples
-> =
-
-> 	1.
-> 	fd =3D open("/bin/true", );
-> 	char *CMD_ARGS[] =3D {"", NULL};
-> 	execveat(fd, NULL, ..., AT_EMPTY_PATH)
-> 	=
-
-> 	2.
-> 	fd =3D open("/bin", );
-> 	char *CMD_ARGS[] =3D {"true", NULL};
-> 	execveat(fd, CMD_ARGS[0], CMD_ARGS 0)
-> =
-
-> in other words, the changes that you see CMD_ARGS[0] =3D=3D NULL for
-> execveat() seem higher than for path-based exec.
-> =
-
-> To counter that we should probably at least update the execveat()
-> manpage with a recommendation what CMD_ARGS[0] should be set to if it
-> isn't allowed to be set to NULL anymore. This is why was asking what
-> argv[0] is supposed to be if the binary doesn't take any arguments.
-
-Sent a fix to our fstests now replacing the argv[0] as NULL with "".
---===============7653202941560666184==--
+--===============6328497066556155276==--
 
