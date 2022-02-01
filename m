@@ -1,49 +1,79 @@
-Content-Type: multipart/mixed; boundary="===============7945863142018420781=="
+Content-Type: multipart/mixed; boundary="===============2258057297061349398=="
 MIME-Version: 1.0
-From: Christian Brauner <brauner@kernel.org>
+From: Sean Young <sean@mess.org>
 To: lkp@lists.01.org
-Subject: Re: [fs/exec] 80bd5afdd8: xfstests.generic.633.fail
-Date: Tue, 01 Feb 2022 14:28:46 +0100
-Message-ID: <20220201132846.7rrkosqyeidij47w@wittgenstein>
-In-Reply-To: <202201311447.4A1CCAF@keescook>
+Subject: Re: [tools headers UAPI] e2bcbd7769: kernel-selftests.ir.make_fail
+Date: Tue, 01 Feb 2022 16:51:39 +0000
+Message-ID: <YfllGx5PRMT9tDDc@gofer.mess.org>
+In-Reply-To: <347bae9f-f775-4976-3d27-b0c725211d78@linuxfoundation.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7945863142018420781==
+--===============2258057297061349398==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 31, 2022 at 02:49:36PM -0800, Kees Cook wrote:
-> On Mon, Jan 31, 2022 at 01:59:40PM -0800, Andrew Morton wrote:
-> > On Mon, 31 Jan 2022 18:13:44 +0100 Christian Brauner <brauner@kernel.=
-org> wrote:
-> > =
+On Fri, Jan 28, 2022 at 10:57:35AM -0700, Shuah Khan wrote:
+> On 1/28/22 10:38 AM, Sean Young wrote:
+> > On Fri, Jan 28, 2022 at 10:27:52AM -0700, Shuah Khan wrote:
+> > > On 1/28/22 9:49 AM, Alexei Starovoitov wrote:
+> > > > On Fri, Jan 28, 2022 at 1:32 AM Sean Young <sean@mess.org> wrote:
+> > > > > =
 
-> > > > in other words, the changes that you see CMD_ARGS[0] =3D=3D NULL for
-> > > > execveat() seem higher than for path-based exec.
-> > > > =
-
-> > > > To counter that we should probably at least update the execveat()
-> > > > manpage with a recommendation what CMD_ARGS[0] should be set to if =
-it
-> > > > isn't allowed to be set to NULL anymore. This is why was asking what
-> > > > argv[0] is supposed to be if the binary doesn't take any arguments.
 > > > =
 
-> > > Sent a fix to our fstests now replacing the argv[0] as NULL with "".
+> > > > > > ir_loopback.c: In function =E2=80=98main=E2=80=99:
+> > > > > > ir_loopback.c:147:20: error: =E2=80=98RC_PROTO_RCMM32=E2=80=99 =
+undeclared (first use in this function); did you mean =E2=80=98RC_PROTO_RC6=
+_MCE=E2=80=99?
+> > > > > >       if (rc_proto =3D=3D RC_PROTO_RCMM32 &&
+> > > > > >                       ^~~~~~~~~~~~~~~
+> > > > > >                       RC_PROTO_RC6_MCE
+> > > > > =
+
+> > > > > So this commit removes the copy of lirc.h from tools/include/uapi=
+/linux/lirc.h,
+> > > > > so now the test uses /usr/include/linux/lirc.h. It appears that t=
+his file
+> > > > > does not have RC_PROTO_RCMM32 defined on this system, which means=
+ it is a
+> > > > > kernel header from v5.1 or earlier (this was added in commit
+> > > > > 721074b03411327e7bf41555d4cc7c18f49313f7).
+> > > > > =
+
+> > > > > It looks like this machine is redhat 8.3, which ships with kernel=
+ 4.18.
+> > > > > =
+
+> > > > > I guess my change was far too optimistic; I had no ideal enterpri=
+se kernels
+> > > > > were so ancient.
+> =
+
+> > Hi Shuah,
 > > =
 
-> > As we hit this check so quickly, I'm thinking that Ariadne's patch
-> > "fs/exec: require argv[0] presence in do_execveat_common()" (which
-> > added the check) isn't something we'll be able to merge into mainline?
+> > I was thinking along the same lines, however RC_PROTO_RCMM32 is an enum
+> > value so a pre-processor #ifdef is not going to work. At the moment I h=
+aven't
+> > had any bright ideas other than doing a `#define RC_PROTO_RCMM32 26` at=
+ the
+> > top of the file.
+> > =
+
 > =
 
-> I think the next best would be to mutate an NULL argv into { "", NULL }.
-> However, I still think we should do the pr_warn().
-> =
+> One more idea. Let's see if this works. Check for RC_PROTO_MAX if it exis=
+ted
+> before this commit that RC_PROTO_RCMM32, you could define RC_PROTO_RCMM32
+> conditionally in the test scope. If not let's go woth your plan of defini=
+ng
+> it at the top with some info.
 
-> Thoughts?
+Good idea, this works! patch in another reply in this thread.
 
-+1
---===============7945863142018420781==--
+Sorry about the mess, thanks for the suggestions.
+
+Sean
+--===============2258057297061349398==--
 
