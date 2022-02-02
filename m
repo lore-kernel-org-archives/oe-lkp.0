@@ -1,57 +1,66 @@
-Content-Type: multipart/mixed; boundary="===============6534835850968222596=="
+Content-Type: multipart/mixed; boundary="===============5406044049875237222=="
 MIME-Version: 1.0
-From: Sean Young <sean@mess.org>
+From: Luis Chamberlain <mcgrof@kernel.org>
 To: lkp@lists.01.org
-Subject: [PATCH v2] selftests/ir: fix build with ancient kernel headers
-Date: Tue, 01 Feb 2022 18:38:36 +0000
-Message-ID: <Yfl+LOPk+KQdc0Us@gofer.mess.org>
+Subject: Re: [ocfs2] c42ff46f97: sysctl_table_check_failed
+Date: Tue, 01 Feb 2022 18:39:23 -0800
+Message-ID: <Yfnu216aFQibbZ25@bombadil.infradead.org>
+In-Reply-To: <CAHk-=wjzWVW1xvVLCOvw-MMoVK9kiRn5CUx2am8jPdo09mHgjA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6534835850968222596==
+--===============5406044049875237222==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Since commit e2bcbd7769ee ("tools headers UAPI: remove stale lirc.h"),
-the build of the selftests fails on rhel 8 since its version of
-/usr/include/linux/lirc.h has no definition of RC_PROTO_RCMM32, etc [1].
+On Fri, Jan 28, 2022 at 07:16:21PM +0200, Linus Torvalds wrote:
+> On Fri, Jan 28, 2022 at 6:49 PM Eric W. Biederman <ebiederm@xmission.co=
+m> wrote:
+> >
+> > Yes.  There is a register_sysctl_paths that can be used if you want/need
+> > the embedded directories.  That probably would have been a better
+> > choice for an automated conversion.
+> >
+> > But since this there is only the single file in a single directory
+> > register_sysctl() with the full path is perfectly fine in this case.
+> >
+> > Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
+> =
 
-[1] https://lkml.org/lkml/2022/1/28/275
+> I was doing filesystem pull requests anyway, and as a result (I tend
+> to group things by topic if there's multiple things pending) I already
+> committed that patch of mine based on Jan's reviewed/tested-by, so
+> this reviewed-by ended up not in the tree.
+> =
 
-Fixes: e2bcbd7769ee ("tools headers UAPI: remove stale lirc.h")
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Sean Young <sean@mess.org>
----
- tools/testing/selftests/ir/ir_loopback.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+> But maybe somebody should check the other automated conversions for
+> the same issue? Hint hint.
 
-diff --git a/tools/testing/selftests/ir/ir_loopback.c b/tools/testing/selft=
-ests/ir/ir_loopback.c
-index 06256c96df12..f4a15cbdd5ea 100644
---- a/tools/testing/selftests/ir/ir_loopback.c
-+++ b/tools/testing/selftests/ir/ir_loopback.c
-@@ -29,6 +29,16 @@
- #define SYSFS_PATH_MAX 256
- #define DNAME_PATH_MAX 256
- =
+I just double checked and indeed, the issue was that ocfs had a path
+underneath it, so indeed register_sysctl_paths() would have been better.
+The other drivers which were converted do not have paths underneath so
+they are safe.
 
-+/*
-+ * Support ancient lirc.h which does not have these values. Can be removed
-+ * once RHEL 8 is no longer a relevant testing platform.
-+ */
-+#if RC_PROTO_MAX < 26
-+#define RC_PROTO_RCMM12 24
-+#define RC_PROTO_RCMM24 25
-+#define RC_PROTO_RCMM32 26
-+#endif
-+
- static const struct {
- 	enum rc_proto proto;
- 	const char *name;
--- =
+> Also, I'm somewhat unhappy about the fact that apparently the kernel
+> test robot already found this issue back in November of last year, yet
+> it made it to mainline several months later without being fixed.
+> =
 
-2.34.1
+> It's hard to tell from this link:
+> =
 
---===============6534835850968222596==--
+>   https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org/thread/KQ2F6TPJ=
+WMDVEXJM4WTUC4DU3EH3YJVT/
+> =
+
+> but it does look like that original report only made it to that lkp
+> list and not the actual people listed on the commit itself? That would
+> explain why the report was overlooked.
+
+Odd, no I got Cc'd on the email as I get 0day testing on all my branches
+prior to pushing patches out. For some reason this failure fell through
+the cracks. Sorry about that!
+
+  Luis
+--===============5406044049875237222==--
 
