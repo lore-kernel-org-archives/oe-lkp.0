@@ -1,87 +1,76 @@
-Content-Type: multipart/mixed; boundary="===============7838016615458003555=="
+Content-Type: multipart/mixed; boundary="===============4050796119895545342=="
 MIME-Version: 1.0
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Matthew Wilcox <willy@infradead.org>
 To: lkp@lists.01.org
-Subject: [PATCH] workqueue: Use private WQ for schedule_on_each_cpu() API
-Date: Mon, 21 Feb 2022 19:38:09 +0900
-Message-ID: <3a20c799-c18e-dd3a-3161-fee6bca1491e@I-love.SAKURA.ne.jp>
-In-Reply-To: <20220221083358.GC835@xsang-OptiPlex-9020>
+Subject: Re: [mm/readahead] a0b99df1aa: xfstests.xfs.421.fail
+Date: Mon, 21 Feb 2022 13:56:55 +0000
+Message-ID: <YhOaJ4cZU/1MiNI2@casper.infradead.org>
+In-Reply-To: <20220221080217.GB835@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7838016615458003555==
+--===============4050796119895545342==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Since schedule_on_each_cpu() calls schedule_work_on() and flush_work(),
-we should avoid using system_wq in order to avoid unexpected locking
-dependency.
+On Mon, Feb 21, 2022 at 04:02:18PM +0800, kernel test robot wrote:
+> commit: a0b99df1aa37d714eb80be5fb54efd56c88a3336 ("mm/readahead: Add larg=
+e folio readahead")
 
-  [T1] Running RCU-tasks wait API self tests
-  [T9] Please do not flush events WQ.
-  [T9] CPU: 0 PID: 9 Comm: rcu_tasks_rude_ Not tainted 5.16.0-06523-g29bd19=
-9e4e73 #1
-  [T9] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1=
- 04/01/2014
-  [T9] Call Trace:
-  [T9]  <TASK>
-  [T9]  dump_stack_lvl+0x45/0x59
-  [T9]  check_flush_dependency.cold+0x18/0x49
-  [T9]  __flush_work+0x202/0xa00
-  [T9]  schedule_on_each_cpu+0x1d8/0x300
-  [T9]  rcu_tasks_kthread+0x21f/0x580
-  [T9]  kthread+0x3a4/0x480
-  [T9]  ret_from_fork+0x22/0x30
-  [T9]  </TASK>
-  [T1] Performance Events: unsupported p6 CPU model 42 no PMU driver, softw=
-are events only.
+> xfs/420	- output mismatch (see /lkp/benchmarks/xfstests/results//xfs/420.=
+out.bad)
+>     --- tests/xfs/420.out	2022-02-17 11:55:00.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//xfs/420.out.bad	2022-02-20 20:3=
+4:22.430378506 +0000
+>     @@ -13,9 +13,7 @@
+>      Seek holes and data in file2
+>      Whence	Result
+>      DATA	0
+>     -HOLE	131072
+>     -DATA	196608
+>     -HOLE	262144
+>     +HOLE	524288
 
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
-Tejun, are you OK with https://lkml.kernel.org/r/2f887679-c783-bf18-a2aa-aa=
-9a709bfb38(a)I-love.SAKURA.ne.jp ?
+Confirm this test now fails.  I don't think it's actually a bug,
+though.  I think the test is now using larger pages to cache the
+file, and it fails to report that there's a hole in the file.
+Maybe there actually isn't a hole in the file any more; using
+larger pages to cache the file means we'll now write more data
+than we used to.
 
- kernel/workqueue.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Adding XFS people for their thoughts.
 
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 8e6e64372441..6ebc6cb15c1c 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -3345,10 +3345,16 @@ int schedule_on_each_cpu(work_func_t func)
- {
- 	int cpu;
- 	struct work_struct __percpu *works;
-+	struct workqueue_struct *wq;
- =
+Complete output:
 
- 	works =3D alloc_percpu(struct work_struct);
- 	if (!works)
- 		return -ENOMEM;
-+	wq =3D alloc_workqueue("events_sync", 0, 0);
-+	if (!wq) {
-+		free_percpu(works);
-+		return -ENOMEM;
-+	}
- =
+$ diff -u ../ktest/tests/xfstests/tests/xfs/420.out ktest-out/xfstests/xfs/=
+420.out.bad
+--- ../ktest/tests/xfstests/tests/xfs/420.out	2021-07-05 15:49:45.539887305=
+ -0400
++++ ktest-out/xfstests/xfs/420.out.bad	2022-02-21 08:14:40.000000000 -0500
+@@ -13,9 +13,7 @@
+ Seek holes and data in file2
+ Whence	Result
+ DATA	0
+-HOLE	131072
+-DATA	196608
+-HOLE	262144
++HOLE	524288
+ Compare files
+ c2803804acc9936eef8aab42c119bfac  SCRATCH_MNT/test-420/file1
+ 017c08a9320aad844ce86aa9631afb98  SCRATCH_MNT/test-420/file2
+@@ -28,9 +26,7 @@
+ Seek holes and data in file2
+ Whence	Result
+ DATA	0
+-HOLE	131072
+-DATA	196608
+-HOLE	262144
++HOLE	524288
+ Compare files
+ c2803804acc9936eef8aab42c119bfac  SCRATCH_MNT/test-420/file1
+ 017c08a9320aad844ce86aa9631afb98  SCRATCH_MNT/test-420/file2
 
- 	cpus_read_lock();
- =
-
-@@ -3363,6 +3369,7 @@ int schedule_on_each_cpu(work_func_t func)
- 		flush_work(per_cpu_ptr(works, cpu));
- =
-
- 	cpus_read_unlock();
-+	destroy_workqueue(wq);
- 	free_percpu(works);
- 	return 0;
- }
--- =
-
-2.32.0
-
-
---===============7838016615458003555==--
+So the file checksums are right, which means I didn't break the COW
+functionality.  But we're no longer reporting a hole at 128k.
+--===============4050796119895545342==--
 
