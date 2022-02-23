@@ -1,64 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============7545789861924318537=="
+Content-Type: multipart/mixed; boundary="===============3139878351837748794=="
 MIME-Version: 1.0
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Tejun Heo <tj@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [PATCH] workqueue: Use private WQ for schedule_on_each_cpu() API
-Date: Thu, 24 Feb 2022 07:26:30 +0900
-Message-ID: <9a883d72-ea7d-1936-93e6-5c2a290509d4@I-love.SAKURA.ne.jp>
-In-Reply-To: <YhaoDiJ8MUOhRmp6@slm.duckdns.org>
+Date: Wed, 23 Feb 2022 12:29:01 -1000
+Message-ID: <Yha1LeX4OK3cLCV5@slm.duckdns.org>
+In-Reply-To: <9a883d72-ea7d-1936-93e6-5c2a290509d4@I-love.SAKURA.ne.jp>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7545789861924318537==
+--===============3139878351837748794==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2022/02/24 6:33, Tejun Heo wrote:
-> On Wed, Feb 23, 2022 at 09:57:27AM +0900, Tetsuo Handa wrote:
->> On 2022/02/23 2:29, Tejun Heo wrote:
->>> On Mon, Feb 21, 2022 at 07:38:09PM +0900, Tetsuo Handa wrote:
->>>> Since schedule_on_each_cpu() calls schedule_work_on() and flush_work(),
->>>> we should avoid using system_wq in order to avoid unexpected locking
->>>> dependency.
->>>
->>> I don't get it. schedule_on_each_cpu() is flushing each work item and t=
-hus
->>> shouldn't need its own flushing domain. What's this change for?
->>
->> A kernel test robot tested "[PATCH v2] workqueue: Warn flush attempt usi=
-ng
->> system-wide workqueues" on 5.16.0-06523-g29bd199e4e73 and hit a lockdep
->> warning ( https://lkml.kernel.org/r/20220221083358.GC835(a)xsang-OptiPle=
-x-9020 ).
->>
->> Although the circular locking dependency itself needs to be handled by
->> lockless console printing support, we won't be able to apply
->> "[PATCH v2] workqueue: Warn flush attempt using system-wide workqueues"
->> if schedule_on_each_cpu() continues using system-wide workqueues.
+On Thu, Feb 24, 2022 at 07:26:30AM +0900, Tetsuo Handa wrote:
+> > The patch seems pretty wrong. What's problematic is system workqueue fl=
+ushes
+> > (which flushes the entire workqueue), not work item flushes.
 > =
 
-> The patch seems pretty wrong. What's problematic is system workqueue flus=
-hes
-> (which flushes the entire workqueue), not work item flushes.
+> Why? My understanding is that
+> =
 
-Why? My understanding is that
+>   flushing a workqueue waits for completion of all work items in that wor=
+kqueue
+> =
 
-  flushing a workqueue waits for completion of all work items in that workq=
+>   flushing a work item waits for for completion of that work item using
+>   a workqueue specified as of queue_work()
+> =
+
+> and
+> =
+
+>   if a work item in some workqueue is blocked by other work in that workq=
 ueue
+>   (e.g. max_active limit, work items on that workqueue and locks they nee=
+d),
+>   it has a risk of deadlock
+> =
 
-  flushing a work item waits for for completion of that work item using
-  a workqueue specified as of queue_work()
+> . Then, how can flushing a work item using system-wide workqueues be free=
+ of deadlock risk?
+> Isn't it just "unlikely to deadlock" rather than "impossible to deadlock"?
 
-and
+If we're jamming system_wq with a combination of work items which need more
+than max_active to make forward progress, we're stuck regardless of flushes.
+What's needed at that point is increasing max_active (or something along
+that line).
 
-  if a work item in some workqueue is blocked by other work in that workque=
-ue
-  (e.g. max_active limit, work items on that workqueue and locks they need),
-  it has a risk of deadlock
+Thanks.
 
-. Then, how can flushing a work item using system-wide workqueues be free o=
-f deadlock risk?
-Isn't it just "unlikely to deadlock" rather than "impossible to deadlock"?
+-- =
 
---===============7545789861924318537==--
+tejun
+--===============3139878351837748794==--
 
