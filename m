@@ -1,48 +1,189 @@
-Content-Type: multipart/mixed; boundary="===============6727404264892465530=="
+Content-Type: multipart/mixed; boundary="===============3610619689906039452=="
 MIME-Version: 1.0
-From: Jordan <danijelaazahn@bratney.com>
+From: Qu Wenruo <quwenruo.btrfs@gmx.com>
 To: lkp@lists.01.org
-Subject: FedEx International: Not possible to make delivery
-Date: Tue, 01 Mar 2022 11:48:51 +0000
-Message-ID: <d65b1-d46e6e29-3a4e5@bratney.com>
+Subject: Re: [btrfs] 3626a285f8: divide_error:#[##]
+Date: Tue, 01 Mar 2022 15:47:38 +0800
+Message-ID: <e55fb58e-bb3a-ce51-b485-6302415b34e4@gmx.com>
+In-Reply-To: <20220301063026.GB13547@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6727404264892465530==
+--===============3610619689906039452==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
 
---===============6727404264892465530==
-Content-Type: text/html
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="attachment.htm"
 
-PGh0bWw+ICANCg0KICAgIA0KICAgIA0KICA8Ym9keT4gICANCg0KICAgIA0KIDxkaXYgc3R5bGU9
-Im1heC13aWR0aDo2ODBweDtjb2xvcjojNTU1NTU1O2ZvbnQ6MTNweCBBcmlhbDtib3JkZXI6c29s
-aWQgMXB4ICNkZmRmZGY7cGFkZGluZzoyMHB4OyI+ICAgICA8YiBzdHlsZT0iY29sb3I6IzRkMTQ4
-Yztmb250LXNpemU6MzJweDtmb250LXdlaWdodDpib2xkOyI+RmVkPC9iPjxiIHN0eWxlPSJjb2xv
-cjojYWRhZmIxO2ZvbnQtc2l6ZTozMnB4O2ZvbnQtd2VpZ2h0OmJvbGQ7Ij5FeDwvYj4gDQogICAg
-DQogICAgDQogICA8YnIgLz4gICAgIDxiciAvPiAgICBNYXJjaCAxLCAyMDIyPGJyIC8+DQoNCiAg
-ICANCiAgICANCg0KICAgIDxzcGFuIHN0eWxlPSJjb2xvcjojMjIyMjIyO2ZvbnQtd2VpZ2h0OmJv
-bGQ7Ij5EZWxpdmVyeSBwcm9ibGVtcyBub3RpZmljYXRpb24uPC9zcGFuPjxiciAvPg0KICANCgkg
-PGJyIC8+ICAgIA0KICANCg0KICANCiAgICAgIDxiciAvPiANCiAgIA0KDQogICAgDQogICANCiAg
-IA0KDQoNCg0KICAgIE91ciBjb21wYW55cyBjb3VyaWVyIGNvdWxkbnQgbWFrZSB0aGUgZGVsaXZl
-cnkuPGJyIC8+ICAgIA0KDQogIA0KICANCgkgPGJyIC8+ICANCiAgIA0KICAgDQoNCiAgIA0KIDxh
-IGhyZWY9Imh0dHA6Ly9tb3JldGhhbmRldi5jb20vYmlnZ2VzdGtuLnBocD91dG1fc291cmNlPTBm
-MiZ1dG1fY29udGVudD01ZGEwZWUwIiBzdHlsZT0iY29sb3I6IzRkMmM4Njt0ZXh0LWRlY29yYXRp
-b246dW5kZXJsaW5lOyI+PGI+VmlldyBkZXRhaWxzPC9iPjwvYT48YnIgLz4gIA0KICANCg0KIA0K
-ICANCiA8YnIgLz4gICAgDQogICAgDQogIA0KDQogICAgDQogIDxiciAvPiAgDQogDQogICAgDQog
-IA0KIA0KICAgPGRpdiBzdHlsZT0iZm9udC1zaXplOjExcHg7Ij6pIEZlZEV4IDE5OTUtMjAyMiB8
-ICA8YSBocmVmPSJodHRwOi8vd3d3LmZlZGV4LmNvbS8/bG9jYXRpb249aG9tZSIgc3R5bGU9ImNv
-bG9yOiM1NTU1NTU7dGV4dC1kZWNvcmF0aW9uOm5vbmU7Ij5HbG9iYWwgSG9tZTwvYT4gfCA8YSBo
-cmVmPSJodHRwOi8vd3d3LmZlZGV4LmNvbS91cy9sZWdhbC8iIHN0eWxlPSJjb2xvcjojNTU1NTU1
-O3RleHQtZGVjb3JhdGlvbjpub25lOyI+VGVybXMgb2YgVXNlPC9hPiB8IDxhIGhyZWY9Imh0dHA6
-Ly93d3cuZmVkZXguY29tL3VzL3NlY3VyaXR5LyIgc3R5bGU9ImNvbG9yOiM1NTU1NTU7dGV4dC1k
-ZWNvcmF0aW9uOm5vbmU7Ij5TZWN1cml0eSBhbmQgUHJpdmFjeTwvYT48L2Rpdj4gDQogICAgDQoN
-CiANCiANCiAgPC9kaXY+ICAgIA0KICA8L2JvZHk+IDwvaHRtbD4gICAgDQogDQoNCiAgICANCiAN
-Cg==
+On 2022/3/1 14:30, kernel test robot wrote:
+>
+>
+> Greeting,
+>
+> FYI, we noticed the following commit (built with gcc-9):
+>
+> commit: 3626a285f87dceb4ca649d0ef015d7b295206cdf ("btrfs: introduce dedic=
+ated helper to scrub simple-stripe based range")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>
+> in testcase: xfstests
+> version: xfstests-x86_64-1de1db8-1_20220217
+> with following parameters:
+>
+> 	disk: 6HDD
+> 	fs: btrfs
+> 	test: btrfs-group-07
+> 	ucode: 0x28
+>
+> test-description: xfstests is a regression test suite for xfs and other f=
+iles ystems.
+> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
+>
+>
+> on test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40=
+GHz with 8G memory
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+>
+>
+> [   65.408303][ T3224] BTRFS info (device sdb2): flagging fs with big met=
+adata feature
+> [   65.415944][ T3224] BTRFS info (device sdb2): disk space caching is en=
+abled
+> [   65.422842][ T3224] BTRFS info (device sdb2): has skinny extents
+> [   65.436656][ T3224] BTRFS info (device sdb2): checking UUID tree
+> [   66.134430][ T3293] BTRFS info (device sdb2): dev_replace from /dev/sd=
+b3 (devid 2) to /dev/sdb6 started
+> [   67.823326][ T3293] divide error: 0000 [#1] SMP KASAN PTI
+> [   67.828668][ T3293] CPU: 3 PID: 3293 Comm: btrfs Not tainted 5.17.0-rc=
+5-00101-g3626a285f87d #1
+> [   67.837169][ T3293] Hardware name: Dell Inc. OptiPlex 9020/0DNKMN, BIO=
+S A05 12/05/2013
+> [ 67.844982][ T3293] RIP: 0010:scrub_stripe (kbuild/src/consumer/fs/btrfs=
+/scrub.c:3448 kbuild/src/consumer/fs/btrfs/scrub.c:3486 kbuild/src/consumer=
+/fs/btrfs/scrub.c:3644) btrfs
+> [ 67.850976][ T3293] Code: 00 00 fc ff df 48 89 f9 48 c1 e9 03 0f b6 0c 1=
+1 48 89 fa 83 e2 07 83 c2 03 38 ca 7c 08 84 c9 0f 85 27 09 00 00 41 8b 5d 1=
+c 99 <f7> fb 48 8b 54 24 30 48 c1 ea 03 48 63 e8 48 b8 00 00 00 00 00 fc
+> All code
 
---===============6727404264892465530==--
+This is weird, the code is from simple_stripe_full_stripe_len(), which
+means the chunk map must be RAID0 or RAID10.
+
+In that case, their sub_stripes should be either 1 or 2, why we got 0 there?
+
+In fact, from volumes.c, all sub_stripes is from btrfs_raid_array[],
+which all have either 1 or 2 sub_stripes.
+
+
+Although the code is old, not the latest version, it should still not
+cause such problem.
+
+Mind to retest with my branch to see if it can be reproduced?
+https://github.com/adam900710/linux/tree/refactor_scrub
+
+Thanks,
+Qu
+
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>     0:	00 00                	add    %al,(%rax)
+>     2:	fc                   	cld
+>     3:	ff                   	(bad)
+>     4:	df 48 89             	fisttps -0x77(%rax)
+>     7:	f9                   	stc
+>     8:	48 c1 e9 03          	shr    $0x3,%rcx
+>     c:	0f b6 0c 11          	movzbl (%rcx,%rdx,1),%ecx
+>    10:	48 89 fa             	mov    %rdi,%rdx
+>    13:	83 e2 07             	and    $0x7,%edx
+>    16:	83 c2 03             	add    $0x3,%edx
+>    19:	38 ca                	cmp    %cl,%dl
+>    1b:	7c 08                	jl     0x25
+>    1d:	84 c9                	test   %cl,%cl
+>    1f:	0f 85 27 09 00 00    	jne    0x94c
+>    25:	41 8b 5d 1c          	mov    0x1c(%r13),%ebx
+>    29:	99                   	cltd
+>    2a:*	f7 fb                	idiv   %ebx		<-- trapping instruction
+>    2c:	48 8b 54 24 30       	mov    0x30(%rsp),%rdx
+>    31:	48 c1 ea 03          	shr    $0x3,%rdx
+>    35:	48 63 e8             	movslq %eax,%rbp
+>    38:	48                   	rex.W
+>    39:	b8 00 00 00 00       	mov    $0x0,%eax
+>    3e:	00 fc                	add    %bh,%ah
+>
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>     0:	f7 fb                	idiv   %ebx
+>     2:	48 8b 54 24 30       	mov    0x30(%rsp),%rdx
+>     7:	48 c1 ea 03          	shr    $0x3,%rdx
+>     b:	48 63 e8             	movslq %eax,%rbp
+>     e:	48                   	rex.W
+>     f:	b8 00 00 00 00       	mov    $0x0,%eax
+>    14:	00 fc                	add    %bh,%ah
+> [   67.870187][ T3293] RSP: 0018:ffffc9000a71f450 EFLAGS: 00010246
+> [   67.876028][ T3293] RAX: 0000000000000004 RBX: 0000000000000000 RCX: 0=
+000000000000000
+> [   67.883756][ T3293] RDX: 0000000000000000 RSI: 0000000000000004 RDI: f=
+fff888129ec6d1c
+> [   67.891491][ T3293] RBP: ffff8881453682a0 R08: 0000000000000001 R09: 0=
+000000000000000
+> [   67.899230][ T3293] R10: ffff88821534a063 R11: ffffed1042a6940c R12: f=
+fff888121238000
+> [   67.906955][ T3293] R13: ffff888129ec6d00 R14: ffff888145368000 R15: 0=
+000000000000008
+> [   67.914680][ T3293] FS:  00007f2851eb08c0(0000) GS:ffff8881a6d80000(00=
+00) knlGS:0000000000000000
+> [   67.923351][ T3293] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   67.929709][ T3293] CR2: 00007ffea4ff07f8 CR3: 000000010a0fc005 CR4: 0=
+0000000001706e0
+> [   67.937437][ T3293] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0=
+000000000000000
+> [   67.945163][ T3293] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0=
+000000000000400
+> [   67.952891][ T3293] Call Trace:
+> [   67.955992][ T3293]  <TASK>
+> [ 67.958749][ T3293] ? kasan_save_stack (kbuild/src/consumer/mm/kasan/com=
+mon.c:39)
+> [ 67.963395][ T3293] ? kasan_set_track (kbuild/src/consumer/mm/kasan/comm=
+on.c:45)
+> [ 67.967951][ T3293] ? kasan_set_free_info (kbuild/src/consumer/mm/kasan/=
+generic.c:372)
+> [ 67.972851][ T3293] ? mutex_unlock (kbuild/src/consumer/arch/x86/include=
+/asm/atomic64_64.h:190 kbuild/src/consumer/include/linux/atomic/atomic-long=
+.h:449 kbuild/src/consumer/include/linux/atomic/atomic-instrumented.h:1790 =
+kbuild/src/consumer/kernel/locking/mutex.c:178 kbuild/src/consumer/kernel/l=
+ocking/mutex.c:537)
+>
+>
+> To reproduce:
+>
+>          git clone https://github.com/intel/lkp-tests.git
+>          cd lkp-tests
+>          sudo bin/lkp install job.yaml           # job file is attached i=
+n this email
+>          bin/lkp split-job --compatible job.yaml # generate the yaml file=
+ for lkp run
+>          sudo bin/lkp run generated-yaml-file
+>
+>          # if come across any failure that blocks the test,
+>          # please remove ~/.lkp and /lkp dir to run from a clean state.
+>
+>
+>
+> ---
+> 0DAY/LKP+ Test Infrastructure                   Open Source Technology Ce=
+nter
+> https://lists.01.org/hyperkitty/list/lkp(a)lists.01.org       Intel Corpo=
+ration
+>
+> Thanks,
+> Oliver Sang
+>
+--===============3610619689906039452==--
 
