@@ -1,17 +1,26 @@
-Content-Type: multipart/mixed; boundary="===============4451011948086832445=="
+Content-Type: multipart/mixed; boundary="===============2204059454622640244=="
 MIME-Version: 1.0
 From: Paul E. McKenney <paulmck@kernel.org>
 To: lkp@lists.01.org
 Subject: Re: [srcu] 1385139340: will-it-scale.per_process_ops -6.4% regression
-Date: Wed, 02 Mar 2022 13:09:28 -0800
-Message-ID: <20220302210928.GW4285@paulmck-ThinkPad-P17-Gen-1>
+Date: Wed, 02 Mar 2022 13:10:48 -0800
+Message-ID: <20220302211048.GX4285@paulmck-ThinkPad-P17-Gen-1>
 In-Reply-To: <20220302061845.GK4548@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4451011948086832445==
+--===============2204059454622640244==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+
+[ Dropping CC. ]
+
+OK, so one obstacle is gone.  Whew!
+
+And please accept my apologies for not having gotten to your most
+excellent emails on SRCU resizing.  Fleet issues thus far this week.
+
+							Thanx, Paul
 
 On Wed, Mar 02, 2022 at 02:18:45PM +0800, Feng Tang wrote:
 > Hi Paul,
@@ -102,9 +111,14 @@ exist.
 
 > So this looks to be very specific for some case, and my personal thought
 > is this is not a critical blocking issue.
+> =
 
-Thank you both for the testing and the follow-up!
+> Thanks,
+> Feng
+> =
 
-							Thanx, Paul
---===============4451011948086832445==--
+> =
+
+>=20
+--===============2204059454622640244==--
 
