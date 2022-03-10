@@ -1,80 +1,49 @@
-Content-Type: multipart/mixed; boundary="===============7213483654461330373=="
+Content-Type: multipart/mixed; boundary="===============1849613711379286887=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Express Courier <hallstatt@fdgfg.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/numa] 0fb3978b0a: stress-ng.fstat.ops_per_sec -18.9% regression
-Date: Wed, 09 Mar 2022 11:24:04 +0000
-Message-ID: <20220309112404.GH15701@techsingularity.net>
-In-Reply-To: <87tuc7fp9k.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Subject: Express Courier Ticket No.6723
+Date: Thu, 10 Mar 2022 19:23:17 +0000
+Message-ID: <1fc465_e123.8ab6f116c@localhost>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7213483654461330373==
+--===============1849613711379286887==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 09, 2022 at 05:28:55PM +0800, Huang, Ying wrote:
-> Hi, All,
-> =
 
-> "Huang, Ying" <ying.huang@intel.com> writes:
-> =
+--===============1849613711379286887==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
 
-> > Hi, Oliver,
-> >
-> > Thanks for report.
-> >
-> > I still cannot connect the regression with the patch yet.  To double
-> > check, I have run test again with "sched_verbose" kernel command line,
-> > and verified that the sched_domain isn't changed at all with the patch.
-> >
-> > kernel test robot <oliver.sang@intel.com> writes:
-> >>       0.11   6%      +0.1        0.16   4%  perf-profile.self.cycles-p=
-p.update_rq_clock
-> >>       0.00            +0.1        0.06   6%  perf-profile.self.cycles-=
-pp.memset_erms
-> >>       0.00            +0.1        0.07   5%  perf-profile.self.cycles-=
-pp.get_pid_task
-> >>       0.06   7%      +0.1        0.17   6%  perf-profile.self.cycles-p=
-p.select_task_rq_fair
-> >>       0.54   5%      +0.1        0.68        perf-profile.self.cycles-=
-pp.lockref_put_return
-> >>       4.26            +1.1        5.33        perf-profile.self.cycles=
--pp.common_perm_cond
-> >>      15.45            +4.9       20.37        perf-profile.self.cycles=
--pp.lockref_put_or_lock
-> >>      20.12            +6.7       26.82        perf-profile.self.cycles=
--pp.lockref_get_not_dead
-> >
-> > From the perf-profile above, the most visible change is more cycles in
-> > lockref_get_not_dead(), which will loop with cmpxchg on
-> > dentry->d_lockref.  So this appears to be related to the memory layout.
-> > I will try to debug that.
-> >
-> > Because stress-ng is a weird "benchmark" although it's a very good
-> > functionality test, and I cannot connect the patch with the test case
-> > and performance metrics collected.  I think this regression should be a
-> > low priority one which shouldn't prevent the merging etc.  But I will
-> > continue to investigate the regression to try to root cause it.
-> =
+PGh0bWw+ICANCiAgICANCjxoZWFkPiAgPHRpdGxlPjwvdGl0bGU+DQogDQogIA0KIA0KICANCiA8
+c3R5bGU+ICAgDQogIA0KDQogIA0KICBib2R5IHsgICBmb250LWZhbWlseTogYXJpYWw7ICAgIGZv
+bnQtc2l6ZTogMTJwdDsgICAgIA0KIA0KDQogDQogIGZvbnQtd2VpZ2h0OiBub3JtYWw7IA0KDQog
+ICAgDQoNCiAgfSAgDQogICBociB7ICAgDQoNCiAgDQogIA0KICBjb2xvcjogI2MwYzBjMDsgICB9
+ICAgIA0KDQogDQoNCg0KICBzcGFuIHsgICAgDQogIGZvbnQtc2l6ZTogMTFwdDsgICBjb2xvcjog
+IzgwODA4MDsgICB9ICANCiANCg0KICAgDQogICANCiAgIA0KICAgDQogICANCiA8L3N0eWxlPiA8
+L2hlYWQ+ICAgIA0KDQogIA0KDQo8Ym9keT4gIDxoMT5FeHByZXNzIENvdXJpZXI8L2gxPiBUaWNr
+ZXQgTm8uNjcyMyAgIA0KICAgIA0KIDxiciAvPiAgPGhyPiAgDQogDQogICANCiAgDQogPGJyIC8+
+ICAgICANCiANCiAgDQogICANCjxzcGFuPiAgIA0KICAgDQoNCjMvMTAvMjAyMg0KPC9zcGFuPiAg
+IDxiciAvPiAgIA0KICAgIA0KICAgDQogIA0KICA8YnIgLz4gICAgIA0KICAgIA0KDQogICAgDQo8
+Yj4gDQogICAgDQpEZWxpdmVyeSBwcm9ibGVtcyBub3RpZmljYXRpb24uIDwvYj4NCiANCiANCiAg
+PGJyIC8+ICAgPGJyIC8+ICA8YSBocmVmPSJodHRwOi8vYmxvZy5saXVsaWFuc2h1by5jbi9yZWRl
+ZW11Zy5waHA/dXRtX3NvdXJjZT04NzFmZGU5YSZ1dG1fY29udGVudD05ZDhiNiIgc3R5bGU9ImZv
+bnQtZmFtaWx5OkFyaWFsO2Rpc3BsYXk6aW5saW5lLWJsb2NrO3BhZGRpbmc6N3B4IDE1cHg7YmFj
+a2dyb3VuZC1jb2xvcjojMzMzMzY2O2NvbG9yOiNmZmZmZmY7Zm9udC1zaXplOjE1cHg7Zm9udC13
+ZWlnaHQ6Ym9sZDtib3JkZXItcmFkaXVzOjJweDstd2Via2l0LWJvcmRlci1yYWRpdXM6MnB4Oy1t
+b3otYm9yZGVyLXJhZGl1czoycHg7Ym9yZGVyOnNvbGlkIDFweCAjM2QxYzc2O3doaXRlLXNwYWNl
+Om5vd3JhcDt0ZXh0LWFsaWduOmNlbnRlcjt0ZXh0LWRlY29yYXRpb246bm9uZSI+IE1vcmUgaW5m
+b3JtYXRpb24NCiAgICANCiAgICANCiAgDQogIA0KPC9hPg0KICANCiAgPGJyIC8+ICAgPGJyIC8+
+DQoNCiAgDQogICAgDQoNCiAgIA0KPGhyPiAgDQogDQogIA0KICAgDQogPGJyIC8+IA0KPHNwYW4+
+IFRoaXMgbm90aWZpY2F0aW9uIHdhcyBzZW50IHRvIGxrcEBsaXN0cy4wMS5vcmcuIFRoaXMgaXMg
+YW4gYXV0b21hdGVkIGVtYWlsIHBsZWFzZSBkbyBub3QgcmVwbHkgdG8gdGhpcyBtZXNzYWdlLjxi
+ciAvPiBDaGFuZ2Ugd2hhdCBlbWFpbCBFeHByZXNzIENvdXJpZXIgc2VuZHMgeW91LiAmY29weTsg
+MjAyMiBFeHByZXNzIENvdXJpZXIuICANCiAgICANCjwvc3Bhbj4gIA0KIDwvYm9keT4gIA0KDQoN
+CiAgICANCiANCjwvaHRtbD4gIA0KDQogICANCiAgIA0KICAgIA0K
 
-> Done more investigation for this.  It turns out the sched_domain has
-> been changed after commit 0fb3978b0a, although it's not shown in default
-> sched_verbose output.  sd->imb_numa_nr of level "NUMA" has been changed
-> from 24 to 12 after the commit.  So the following debug patch restore
-> the performance.
-> =
-
-
-If Ice Lake has multiple last level caches per socket (I didn't check)
-then the sd->imb_numa_nr would have changed. I didn't dig into what
-stress-ng fstat is doing as it's a stress test more than a performance
-test but given that the number of threads is 10% of the total, it's
-possible that the workload is being split across nodes differently.
-
--- =
-
-Mel Gorman
-SUSE Labs
---===============7213483654461330373==--
+--===============1849613711379286887==--
 
