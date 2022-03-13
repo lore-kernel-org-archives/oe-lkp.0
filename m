@@ -1,104 +1,122 @@
-Content-Type: multipart/mixed; boundary="===============1177516722202466100=="
+Content-Type: multipart/mixed; boundary="===============3441903488305107606=="
 MIME-Version: 1.0
-From: Nadav Amit <namit@vmware.com>
+From: Eric Dumazet <edumazet@google.com>
 To: lkp@lists.01.org
-Subject: Re: [x86/mm/tlb] 6035152d8e: will-it-scale.per_thread_ops -13.2% regression
-Date: Fri, 18 Mar 2022 03:02:49 +0000
-Message-ID: <DB87059A-66EC-43A6-82C5-2D890F7A02AF@vmware.com>
-In-Reply-To: <d4f62008-faa7-2931-5690-f29f9544b81b@intel.com>
+Subject: Re: [mm/page_alloc] 8212a964ee: vm-scalability.throughput 30.5% improvement
+Date: Sun, 13 Mar 2022 14:10:12 -0700
+Message-ID: <CANn89iJwBe4+C8KP--c_9O6QE_Tou+1Z0+ugtuniG-06nzxPmg@mail.gmail.com>
+In-Reply-To: <8f499c76-68cb-a2c3-01fd-c8759e2fd317@suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1177516722202466100==
+--===============3441903488305107606==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Sun, Mar 13, 2022 at 1:29 AM Vlastimil Babka <vbabka@suse.cz> wrote:
+>
+> On 3/13/22 00:26, Eric Dumazet wrote:
+> > On Sat, Mar 12, 2022 at 10:59 AM Vlastimil Babka <vbabka@suse.cz> wro=
+te:
+> >>
+> >> On 3/12/22 16:43, kernel test robot wrote:
+> >>>
+> >>>
+> >>> Greeting,
+> >>>
+> >>> FYI, we noticed a 30.5% improvement of vm-scalability.throughput due =
+to commit:
+> >>>
+> >>>
+> >>> commit: 8212a964ee020471104e34dce7029dec33c218a9 ("Re: [PATCH v2] mm/=
+page_alloc: call check_new_pages() while zone spinlock is not held")
+> >>> url: https://github.com/0day-ci/linux/commits/Mel-Gorman/Re-PATCH-v2-=
+mm-page_alloc-call-check_new_pages-while-zone-spinlock-is-not-held/20220309=
+-203504
+> >>> patch link: https://lore.kernel.org/lkml/20220309123245.GI15701(a)tec=
+hsingularity.net
+> >>
+> >> Heh, that's weird. I would expect some improvement from Eric's patch,
+> >> but this seems to be actually about Mel's "mm/page_alloc: check
+> >> high-order pages for corruption during PCP operations" applied directly
+> >> on 5.17-rc7 per the github url above. This was rather expected to make
+> >> performance worse if anything, so maybe the improvement is due to some
+> >> unexpected side-effect of different inlining decisions or cache alignm=
+ent...
+> >>
+> >
+> > I doubt this has anything to do with inlining or cache alignment.
+> >
+> > I am not familiar with the benchmark, but its name
+> > (anon-w-rand-hugetlb) hints at hugetlb ?
+> >
+> > After Mel fix, we go over 512 'struct page' to perform sanity checks,
+> > thus loading into cpu caches the 512 cache lines.
+>
+> Ah, that's true.
+>
+> > This caching is done while no lock is held.
+>
+> But I don't think this is. The test was AFAICS done without your patch,
+> so the lock is still held in rmqueue(). And it's also held in
+> rmqueue_bulk() -> check_pcp_refill().
 
+Note that Mel patch  touches both check_pcp_refill() and check_new_pcp()
 
-> On Mar 17, 2022, at 5:45 PM, Dave Hansen <dave.hansen@intel.com> wrote:
-> =
+__rmqueue_pcplist() definitely calls check_new_pcp() while the zone
+spinlock is _not_ held.
 
-> On 3/17/22 17:20, Nadav Amit wrote:
->> I don=E2=80=99t have other data right now. Let me run some measurements =
-later
->> tonight. I understand your explanation, but I still do not see how
->> much =E2=80=9Clater=E2=80=9D can the lazy check be that it really matter=
-s. Just
->> strange.
-> =
+Note that it is possible to defer calls to check_pcp_refill after the
+spinlock is released.
 
-> These will-it-scale tests are really brutal.  They're usually sitting in
-> really tight kernel entry/exit loops.  Everything is pounding on kernel
-> locks and bouncing cachelines around like crazy.  It might only be a few
-> thousand cycles between two successive kernel entries.
-> =
+Untested patch:
 
-> Things like the call_single_queue cacheline have to be dragged from
-> other CPUs *and* there are locks that you can spin on.  While a thread
-> is doing all this spinning, it is forcing more and more threads into the
-> lazy TLB state.  The longer you spin, the more threads have entered the
-> kernel, contended on the mmap_lock and gone idle.
-> =
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 1804287c1b792b8aa0e964b17eb002b6b1115258..3c504b4c068a5dbeeaf8f386bb0=
+9b673236f7a11
+100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -3024,6 +3024,7 @@ static int rmqueue_bulk(struct zone *zone,
+unsigned int order,
+                        unsigned long count, struct list_head *list,
+                        int migratetype, unsigned int alloc_flags)
+ {
++       struct page *page, *tmp;
+        int i, allocated =3D 0;
 
-> Is it really surprising that a loop that can take hundreds of locks can
-> take a long time?
-> =
+        /*
+@@ -3032,14 +3033,10 @@ static int rmqueue_bulk(struct zone *zone,
+unsigned int order,
+         */
+        spin_lock(&zone->lock);
+        for (i =3D 0; i < count; ++i) {
+-               struct page *page =3D __rmqueue(zone, order, migratetype,
+-                                                               alloc_flags=
+);
++               page =3D __rmqueue(zone, order, migratetype, alloc_flags);
+                if (unlikely(page =3D=3D NULL))
+                        break;
 
->                for_each_cpu(cpu, cfd->cpumask) {
->                        csd_lock(csd);
-> 			...
-> 		}
-
-Thanks for the clarification. It took me some time to rehash. Yes, my patch
-should get reverted.
-
-So I think I now get what you are talking about: this loop can take a lot
-of time, which beforehand I did not see. But I am not sure it is exactly as
-you describe (unless I am missing something). So I guess you are right, but=
- I
-am sharing my understanding.
-
-So let=E2=80=99s go over what overheads are induced (or not) in the loop:
-
-(1) Contended csd_lock(): csd_lock() is not a cross-core lock. In this
-workload, which does not use asynchronous IPIs, it is not contended.
-
-(2) Cache-misses on csd_lock(). I am not sure this really induces overheads=
- or
-at least has to induce overhead.
-
-On one hand, although two CSDs can reside in the same cacheline, we run
-csd_lock_wait() eventually to check our smp-call was served. So the cacheli=
-ne
-of the CSD should eventually be present in the IPI-initiator's cache
-(ready for the next invocation). On the other hand, as there is no write
-access by csd_lock_wait(), then due to MESI, the CSD cache-line might still
-be shared, and would require invalidation on the next csd_lock() invocation.
-
-I would presume that as there are no data dependencies the CPU can continue
-speculatively continue execution past csd_lock() even if there is a
-cache-miss. So I don=E2=80=99t see it really induing an overhead.
-
-(3) Cache-line misses on llist_add(). This makes perfect sense, and I don=
-=E2=80=99t
-see a easy way around, especially that apparently on x86 FAA and CAS
-latency is similar.
-
-(4) cpu_tlbstate_shared.is_lazy - well, this is only added once you revert =
-the
-patch.
-
-One thing to note, although I am not sure it is really relevant here
-(because your explanation on core stuck on mmap_lock makes sense), is that
-there are two possible reasons for fewer IPIs:
-
-(a) Skipping shootdowns (i.e., you find remote CPUs to be lazy); and
-(b) Save IPIs (i.e. llist_add() finds that another IPI is already pending).
-
-I have some vague ideas how to shorten the loop in
-smp_call_function_many_cond(), but I guess for now revert is the way to
-go.
-
-Thanks for you patience. Yes, revert.
---===============1177516722202466100==--
+-               if (unlikely(check_pcp_refill(page)))
+-                       continue;
+-
+                /*
+                 * Split buddy pages returned by expand() are received here=
+ in
+                 * physical page order. The page is added to the tail of
+@@ -3065,6 +3062,12 @@ static int rmqueue_bulk(struct zone *zone,
+unsigned int order,
+         */
+        __mod_zone_page_state(zone, NR_FREE_PAGES, -(i << order));
+        spin_unlock(&zone->lock);
++       list_for_each_entry_safe(page, tmp, list, lru) {
++               if (unlikely(check_pcp_refill(page))) {
++                       list_del(&page->lru);
++                       allocated--;
++               }
++       }
+        return allocated;
+ }
+--===============3441903488305107606==--
 
