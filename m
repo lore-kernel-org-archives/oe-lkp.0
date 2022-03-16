@@ -1,22 +1,20 @@
-Content-Type: multipart/mixed; boundary="===============2646320178898459417=="
+Content-Type: multipart/mixed; boundary="===============3377778503009390936=="
 MIME-Version: 1.0
-From: Oliver Sang <oliver.sang@intel.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [rcu] 758cf1496b: BUG:spinlock_bad_magic_on_CPU
-Date: Wed, 16 Mar 2022 14:16:28 +0800
-Message-ID: <20220316061628.GA19825@xsang-OptiPlex-9020>
-In-Reply-To: <20220314140653.GR4285@paulmck-ThinkPad-P17-Gen-1>
+Subject: Re: [fixup! EXP srcu] 7bf8d644f8: WARNING:at_kernel/rcu/srcutree.c:#process_srcu
+Date: Wed, 16 Mar 2022 09:53:42 -0700
+Message-ID: <20220316165342.GA1931135@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20220314203814.GZ4285@paulmck-ThinkPad-P17-Gen-1>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2646320178898459417==
+--===============3377778503009390936==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-hi, Paul,
-
-On Mon, Mar 14, 2022 at 07:06:53AM -0700, Paul E. McKenney wrote:
-> On Mon, Mar 14, 2022 at 01:50:57PM +0800, kernel test robot wrote:
+On Mon, Mar 14, 2022 at 01:38:14PM -0700, Paul E. McKenney wrote:
+> On Sat, Mar 12, 2022 at 11:59:19PM +0800, kernel test robot wrote:
 > > =
 
 > > =
@@ -27,17 +25,17 @@ On Mon, Mar 14, 2022 at 07:06:53AM -0700, Paul E. McKenney wrote:
 > > FYI, we noticed the following commit (built with gcc-9):
 > > =
 
-> > commit: 758cf1496b94442c47c339b10d80cbaadf613425 ("rcu: Make UP-vacuous=
- normal grace period advance sequence")
+> > commit: 7bf8d644f869260f63eaaedebabdd2054f59ecc4 ("fixup! EXP srcu: Che=
+ck for too many zero-delay srcu_reschedule() calls")
 > > https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/dev.2022.0=
-3.09a
+3.01a
 > > =
 
 > > in testcase: boot
 > > =
 
-> > on test machine: qemu-system-x86_64 -enable-kvm -cpu Icelake-Server -sm=
-p 4 -m 16G
+> > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2=
+ -m 16G
 > > =
 
 > > caused below changes (please refer to attached dmesg/kmsg for entire lo=
@@ -46,138 +44,68 @@ g/backtrace):
 
 > > =
 
-> > +--------------------------------------+------------+------------+
-> > |                                      | 6129c2b2dc | 758cf1496b |
-> > +--------------------------------------+------------+------------+
-> > | BUG:spinlock_bad_magic_on_CPU        | 0          | 16         |
-> > | WARNING:at_init/main.c:#start_kernel | 0          | 16         |
-> > | RIP:start_kernel                     | 0          | 16         |
-> > +--------------------------------------+------------+------------+
-> > =
-
 > > =
 
 > > If you fix the issue, kindly add following tag
 > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
+> > =
 
-> Does this fix it for you?
-> =
+> > =
 
-> 67792d475181 ("fixup! rcu: Make UP-vacuous normal grace period advance se=
-quence")
+> > [ 27.088275][ T42] WARNING: CPU: 1 PID: 42 at kernel/rcu/srcutree.c:155=
+5 process_srcu (kernel/rcu/srcutree.c:1555 (discriminator 3)) =
 
-yes, this fixed:
-
-6129c2b2dc65abde 758cf1496b94442c47c339b10d8 67792d4751810a675c5690ce2e9
----------------- --------------------------- ---------------------------
-       fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
-           |             |             |             |             |
-           :6          100%           6:6            0%            :20    d=
-mesg.BUG:spinlock_bad_magic_on_CPU
-           :6          100%           6:6            0%            :20    d=
-mesg.RIP:start_kernel
-           :6          100%           6:6            0%            :20    d=
-mesg.WARNING:at_init/main.c:#start_kernel
-
-
-> =
-
-> 							Thanx, Paul
-> =
-
-> > [    2.351596][    T0] BUG: spinlock bad magic on CPU#0, swapper/0/0
-> > [ 2.352231][ T0] lock: rcu_state+0x0/0xb35e0, .magic: 00000000, .owner:=
- <none>/-1, .owner_cpu: 0 =
-
-> > [    2.353152][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0=
--rc1-00188-g758cf1496b94 #1
-> > [    2.353978][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, =
+> > [   27.089252][   T42] Modules linked in: libata(+) serio_raw i2c_piix4=
+ parport_pc(+) parport ip_tables
+> > [   27.090253][   T42] CPU: 1 PID: 42 Comm: kworker/1:1 Not tainted 5.1=
+7.0-rc1-00191-g7bf8d644f869 #1
+> > [   27.091212][   T42] Hardware name: QEMU Standard PC (i440FX + PIIX, =
 1996), BIOS 1.12.0-1 04/01/2014
-> > [    2.354853][    T0] Call Trace:
-> > [    2.355161][    T0]  <TASK>
-> > [ 2.355451][ T0] dump_stack_lvl (lib/dump_stack.c:107) =
+> > [   27.092176][   T42] Workqueue: rcu_gp process_srcu
+> > [ 27.092718][ T42] RIP: 0010:process_srcu (kernel/rcu/srcutree.c:1555 (=
+discriminator 3)) =
 
-> > [ 2.355914][ T0] do_raw_spin_lock (kernel/locking/spinlock_debug.c:77 k=
-ernel/locking/spinlock_debug.c:85 kernel/locking/spinlock_debug.c:114) =
+> > [ 27.093653][ T42] Code: 6b f8 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 0=
+3 80 3c 02 00 0f 85 91 02 00 00 48 8b 43 f8 31 f6 48 83 f8 32 0f 86 02 fe f=
+f ff <0f> 0b e9 fb fd ff ff 4c 8d b3 58 ff ff ff 48 b8 00 00 00 00 00 fc
+> =
 
-> > [ 2.356425][ T0] ? rwlock_bug+0xc0/0xc0 =
+> I had a feeling that the simple fix wasn't going to cut it, so thank you
+> for finding a scenario that proves that to be the case.  Fix in progress,
+> to be folded into the original with attribution.
 
-> > [ 2.356973][ T0] synchronize_rcu (kernel/rcu/tree.c:3844) =
+OK, the attribution isn't quite there yet, but the squished-together
+commit is here:
 
-> > [ 2.357480][ T0] ? synchronize_rcu_expedited (kernel/rcu/tree.c:3833) =
+ea0098f19115 ("srcu: Prevent expedited GPs and blocking readers from consum=
+ing CPU")
 
-> > [ 2.358093][ T0] ? _printk (kernel/printk/printk.c:2261) =
+Does this version behave better for you?
 
-> > [ 2.358506][ T0] ? record_print_text.cold (kernel/printk/printk.c:2261) =
+							Thanx, Paul
 
-> > [ 2.359055][ T0] rcu_early_boot_tests (kernel/rcu/update.c:224 kernel/r=
-cu/update.c:564) =
-
-> > [ 2.359565][ T0] rcu_init (kernel/rcu/tree.c:4836 kernel/rcu/tree.c:486=
-9) =
-
-> > [ 2.359984][ T0] start_kernel (init/main.c:1020 (discriminator 3)) =
-
-> > [ 2.360480][ T0] secondary_startup_64_no_verify (arch/x86/kernel/head_6=
-4.S:300) =
-
-> > [    2.361117][    T0]  </TASK>
-> > [    2.361453][    T0] rcu: Hierarchical RCU implementation.
-> > [    2.362036][    T0] rcu: 	RCU lockdep checking is enabled.
-> > [    2.362612][    T0] rcu: 	RCU restricting CPUs from NR_CPUS=3D8192 t=
-o nr_cpu_ids=3D4.
-> > [    2.363370][    T0] 	RCU CPU stall warnings timeout set to 100 (rcu_=
-cpu_stall_timeout).
-> > [    2.364185][    T0] 	Rude variant of Tasks RCU enabled.
-> > [    2.364727][    T0] 	Tracing variant of Tasks RCU enabled.
-> > [    2.365294][    T0] rcu: RCU calculated value of scheduler-enlistmen=
-t delay is 100 jiffies.
-> > [    2.366142][    T0] rcu: Adjusting geometry for rcu_fanout_leaf=3D16=
-, nr_cpu_ids=3D4
-> > [    2.403326][    T0] NR_IRQS: 524544, nr_irqs: 456, preallocated irqs=
-: 16
-> > [    2.404729][    T0] rcu: srcu_init: Setting srcu_struct sizes based =
-on contention.
-> > [    2.405802][    T0] ------------[ cut here ]------------
-> > [    2.406397][    T0] Interrupts were enabled early
-> > [ 2.406929][ T0] WARNING: CPU: 0 PID: 0 at init/main.c:1055 start_kerne=
-l (init/main.c:1055 (discriminator 1)) =
-
-> > [    2.407793][    T0] Modules linked in:
-> > [    2.408205][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0=
--rc1-00188-g758cf1496b94 #1
-> > [    2.409126][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, =
-1996), BIOS 1.12.0-1 04/01/2014
-> > [ 2.410088][ T0] RIP: 0010:start_kernel (init/main.c:1055 (discriminato=
-r 1)) =
-
-> > [ 2.410628][ T0] Code: 0c 61 e8 20 12 01 00 e8 3b 1a 06 00 e8 40 35 41 =
-fd e8 6b 94 05 00 9c 58 0f ba e0 09 73 0e 48 c7 c7 c0 0d 80 9c e8 a4 a6 2f =
-fd <0f> 0b c6 05 a6 ba 7d ff 00 e8 99 cf fe fa fb e8 54 21 07 00 e8 67
 > > All code
 > > =3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:	0c 61                	or     $0x61,%al
-> >    2:	e8 20 12 01 00       	callq  0x11227
-> >    7:	e8 3b 1a 06 00       	callq  0x61a47
-> >    c:	e8 40 35 41 fd       	callq  0xfffffffffd413551
-> >   11:	e8 6b 94 05 00       	callq  0x59481
-> >   16:	9c                   	pushfq =
+> >    0:	6b f8 48             	imul   $0x48,%eax,%edi
+> >    3:	b8 00 00 00 00       	mov    $0x0,%eax
+> >    8:	00 fc                	add    %bh,%ah
+> >    a:	ff                   	(bad)  =
 
-> >   17:	58                   	pop    %rax
-> >   18:	0f ba e0 09          	bt     $0x9,%eax
-> >   1c:	73 0e                	jae    0x2c
-> >   1e:	48 c7 c7 c0 0d 80 9c 	mov    $0xffffffff9c800dc0,%rdi
-> >   25:	e8 a4 a6 2f fd       	callq  0xfffffffffd2fa6ce
+> >    b:	df 48 c1             	fisttps -0x3f(%rax)
+> >    e:	ea                   	(bad)  =
+
+> >    f:	03 80 3c 02 00 0f    	add    0xf00023c(%rax),%eax
+> >   15:	85 91 02 00 00 48    	test   %edx,0x48000002(%rcx)
+> >   1b:	8b 43 f8             	mov    -0x8(%rbx),%eax
+> >   1e:	31 f6                	xor    %esi,%esi
+> >   20:	48 83 f8 32          	cmp    $0x32,%rax
+> >   24:	0f 86 02 fe ff ff    	jbe    0xfffffffffffffe2c
 > >   2a:*	0f 0b                	ud2    		<-- trapping instruction
-> >   2c:	c6 05 a6 ba 7d ff 00 	movb   $0x0,-0x82455a(%rip)        # 0xffff=
-ffffff7dbad9
-> >   33:	e8 99 cf fe fa       	callq  0xfffffffffafecfd1
-> >   38:	fb                   	sti    =
-
-> >   39:	e8 54 21 07 00       	callq  0x72192
-> >   3e:	e8                   	.byte 0xe8
-> >   3f:	67                   	addr32
+> >   2c:	e9 fb fd ff ff       	jmpq   0xfffffffffffffe2c
+> >   31:	4c 8d b3 58 ff ff ff 	lea    -0xa8(%rbx),%r14
+> >   38:	48                   	rex.W
+> >   39:	b8 00 00 00 00       	mov    $0x0,%eax
+> >   3e:	00 fc                	add    %bh,%ah
 > > =
 
 > > Code starting with the faulting instruction
@@ -185,185 +113,172 @@ ffffff7dbad9
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 > >    0:	0f 0b                	ud2    =
 
-> >    2:	c6 05 a6 ba 7d ff 00 	movb   $0x0,-0x82455a(%rip)        # 0xffff=
-ffffff7dbaaf
-> >    9:	e8 99 cf fe fa       	callq  0xfffffffffafecfa7
-> >    e:	fb                   	sti    =
-
-> >    f:	e8 54 21 07 00       	callq  0x72168
-> >   14:	e8                   	.byte 0xe8
-> >   15:	67                   	addr32
-> > [    2.412704][    T0] RSP: 0000:ffffffff9d807f30 EFLAGS: 00010282
-> > [    2.413314][    T0] RAX: 0000000000000000 RBX: 0000000000000000 RCX:=
- 0000000000000000
-> > [    2.414169][    T0] RDX: c0000000ffff7fff RSI: ffffffff9d807c50 RDI:=
- fffffbfff3b00fd8
-> > [    2.415004][    T0] RBP: 0000000000000000 R08: 0000000000000000 R09:=
- fffffbfff3b00f74
-> > [    2.415873][    T0] R10: ffffffff9d807b9f R11: fffffbfff3b00f73 R12:=
- 0000000000000000
-> > [    2.416715][    T0] R13: 0000000000000000 R14: 0000000000000000 R15:=
- 0000000000000000
-> > [    2.417529][    T0] FS:  0000000000000000(0000) GS:ffff8883dd400000(=
+> >    2:	e9 fb fd ff ff       	jmpq   0xfffffffffffffe02
+> >    7:	4c 8d b3 58 ff ff ff 	lea    -0xa8(%rbx),%r14
+> >    e:	48                   	rex.W
+> >    f:	b8 00 00 00 00       	mov    $0x0,%eax
+> >   14:	00 fc                	add    %bh,%ah
+> > [   27.095572][   T42] RSP: 0018:ffffc90000187dc0 EFLAGS: 00010202
+> > [   27.096261][   T42] RAX: 0000000000000033 RBX: ffffffffa068dfc0 RCX:=
+ ffffffff9dd83100
+> > [   27.097146][   T42] RDX: 1ffffffff40d1bf7 RSI: 0000000000000000 RDI:=
+ ffffffffa068df30
+> > [   27.098030][   T42] RBP: ffffffffa068dfb8 R08: 0000000000000001 R09:=
+ fffff52000030fae
+> > [   27.098890][   T42] R10: ffffc90000187d6f R11: fffff52000030fad R12:=
+ ffffffffa068dea0
+> > [   27.099740][   T42] R13: 0000000000000033 R14: ffff88839d651418 R15:=
+ ffff88839d73bf05
+> > [   27.100590][   T42] FS:  0000000000000000(0000) GS:ffff88839d700000(=
 0000) knlGS:0000000000000000
-> > [    2.418485][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [    2.419166][    T0] CR2: ffff888289601000 CR3: 0000000286c2a001 CR4:=
- 00000000000606b0
-> > [    2.420023][    T0] DR0: 0000000000000000 DR1: 0000000000000000 DR2:=
+> > [   27.101533][   T42] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [   27.102210][   T42] CR2: 00007f9796b58e21 CR3: 000000015b4a8000 CR4:=
+ 00000000000406e0
+> > [   27.103063][   T42] DR0: 0000000000000000 DR1: 0000000000000000 DR2:=
  0000000000000000
-> > [    2.420889][    T0] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:=
+> > [   27.103906][   T42] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:=
  0000000000000400
-> > [    2.421702][    T0] Call Trace:
-> > [    2.422035][    T0]  <TASK>
-> > [ 2.422327][ T0] secondary_startup_64_no_verify (arch/x86/kernel/head_6=
-4.S:300) =
+> > [   27.104753][   T42] Call Trace:
+> > [   27.105166][   T42]  <TASK>
+> > [ 27.105569][ T42] process_one_work (arch/x86/include/asm/jump_label.h:=
+27 include/linux/jump_label.h:212 include/trace/events/workqueue.h:108 kern=
+el/workqueue.c:2312) =
 
-> > [    2.422986][    T0]  </TASK>
-> > [    2.423288][    T0] irq event stamp: 0
-> > [ 2.423686][ T0] hardirqs last enabled at (0): 0x0 =
+> > [ 27.106123][ T42] worker_thread (include/linux/list.h:292 kernel/workq=
+ueue.c:2455) =
 
-> > [ 2.424438][ T0] hardirqs last disabled at (0): 0x0 =
+> > [ 27.106626][ T42] ? __kthread_parkme (arch/x86/include/asm/bitops.h:20=
+7 (discriminator 4) include/asm-generic/bitops/instrumented-non-atomic.h:13=
+5 (discriminator 4) kernel/kthread.c:271 (discriminator 4)) =
 
-> > [ 2.425159][ T0] softirqs last enabled at (0): 0x0 =
+> > [ 27.107199][ T42] ? schedule (arch/x86/include/asm/bitops.h:207 (discr=
+iminator 1) include/asm-generic/bitops/instrumented-non-atomic.h:135 (discr=
+iminator 1) include/linux/thread_info.h:118 (discriminator 1) include/linux=
+/sched.h:2132 (discriminator 1) kernel/sched/core.c:6371 (discriminator 1)) =
 
-> > [ 2.425896][ T0] softirqs last disabled at (0): 0x0 =
+> > [ 27.107696][ T42] ? process_one_work (kernel/workqueue.c:2397) =
 
-> > [    2.426628][    T0] ---[ end trace 0000000000000000 ]---
-> > [    2.432024][    T0] Console: colour VGA+ 80x25
-> > [    2.518020][    T0] printk: console [tty0] enabled
-> > [    2.518563][    T0] printk: console [ttyS0] enabled
-> > [    2.519391][    T0] printk: bootconsole [earlyser0] disabled
-> > [    2.520343][    T0] Lock dependency validator: Copyright (c) 2006 Re=
-d Hat, Inc., Ingo Molnar
-> > [    2.521187][    T0] ... MAX_LOCKDEP_SUBCLASSES:  8
-> > [    2.521683][    T0] ... MAX_LOCK_DEPTH:          48
-> > [    2.522183][    T0] ... MAX_LOCKDEP_KEYS:        8192
-> > [    2.522699][    T0] ... CLASSHASH_SIZE:          4096
-> > [    2.523214][    T0] ... MAX_LOCKDEP_ENTRIES:     32768
-> > [    2.523739][    T0] ... MAX_LOCKDEP_CHAINS:      65536
-> > [    2.524265][    T0] ... CHAINHASH_SIZE:          32768
-> > [    2.524805][    T0]  memory used by lock dependency info: 6365 kB
-> > [    2.525555][    T0]  memory used for stack traces: 4224 kB
-> > [    2.526234][    T0]  per task-struct memory footprint: 1920 bytes
-> > [    2.527349][    T0] ACPI: Core revision 20211217
-> > [    2.528797][    T0] clocksource: hpet: mask: 0xffffffff max_cycles: =
-0xffffffff, max_idle_ns: 19112604467 ns
-> > [    2.530972][    T0] APIC: Switch to symmetric I/O mode setup
-> > [    2.532044][    T0] x2apic enabled
-> > [    2.532605][    T0] Switched APIC routing to physical x2apic.
-> > [    2.533324][    T0] masked ExtINT on CPU#0
-> > [    2.534282][    T0] ENABLING IO-APIC IRQs
-> > [    2.534892][    T0] init IO_APIC IRQs
-> > [    2.535565][    T0]  apic 0 pin 0 not connected
-> > [    2.536419][    T0] IOAPIC[0]: Preconfigured routing entry (0-1 -> I=
-RQ 1 Level:0 ActiveLow:0)
-> > [    2.537387][    T0] IOAPIC[0]: Preconfigured routing entry (0-2 -> I=
-RQ 0 Level:0 ActiveLow:0)
-> > [    2.538291][    T0] IOAPIC[0]: Preconfigured routing entry (0-3 -> I=
-RQ 3 Level:0 ActiveLow:0)
-> > [    2.539153][    T0] IOAPIC[0]: Preconfigured routing entry (0-4 -> I=
-RQ 4 Level:0 ActiveLow:0)
-> > [    2.540041][    T0] IOAPIC[0]: Preconfigured routing entry (0-5 -> I=
-RQ 5 Level:1 ActiveLow:0)
-> > [    2.540912][    T0] IOAPIC[0]: Preconfigured routing entry (0-6 -> I=
-RQ 6 Level:0 ActiveLow:0)
-> > [    2.541783][    T0] IOAPIC[0]: Preconfigured routing entry (0-7 -> I=
-RQ 7 Level:0 ActiveLow:0)
-> > [    2.542663][    T0] IOAPIC[0]: Preconfigured routing entry (0-8 -> I=
-RQ 8 Level:0 ActiveLow:0)
-> > [    2.543555][    T0] IOAPIC[0]: Preconfigured routing entry (0-9 -> I=
-RQ 9 Level:1 ActiveLow:0)
-> > [    2.544450][    T0] IOAPIC[0]: Preconfigured routing entry (0-10 -> =
-IRQ 10 Level:1 ActiveLow:0)
-> > [    2.547733][    T0] IOAPIC[0]: Preconfigured routing entry (0-11 -> =
-IRQ 11 Level:1 ActiveLow:0)
-> > [    2.549234][    T0] IOAPIC[0]: Preconfigured routing entry (0-12 -> =
-IRQ 12 Level:0 ActiveLow:0)
-> > [    2.550301][    T0] IOAPIC[0]: Preconfigured routing entry (0-13 -> =
-IRQ 13 Level:0 ActiveLow:0)
-> > [    2.551209][    T0] IOAPIC[0]: Preconfigured routing entry (0-14 -> =
-IRQ 14 Level:0 ActiveLow:0)
-> > [    2.552219][    T0] IOAPIC[0]: Preconfigured routing entry (0-15 -> =
-IRQ 15 Level:0 ActiveLow:0)
-> > [    2.553496][    T0]  apic 0 pin 16 not connected
-> > [    2.553987][    T0]  apic 0 pin 17 not connected
-> > [    2.554505][    T0]  apic 0 pin 18 not connected
-> > [    2.555300][    T0]  apic 0 pin 19 not connected
-> > [    2.556094][    T0]  apic 0 pin 20 not connected
-> > [    2.556845][    T0]  apic 0 pin 21 not connected
-> > [    2.557361][    T0]  apic 0 pin 22 not connected
-> > [    2.557837][    T0]  apic 0 pin 23 not connected
-> > [    2.558464][    T0] ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=
-=3D-1 pin2=3D-1
-> > [    2.559177][    T0] clocksource: tsc-early: mask: 0xffffffffffffffff=
- max_cycles: 0x1fa3704c1a9, max_idle_ns: 440795296692 ns
-> > [    2.560341][    T0] Calibrating delay loop (skipped) preset value.. =
-4389.83 BogoMIPS (lpj=3D2194916)
-> > [    2.561335][    T0] pid_max: default: 32768 minimum: 301
-> > [    2.562420][    T0] LSM: Security Framework initializing
-> > [    2.563009][    T0] landlock: Up and running.
-> > [    2.563334][    T0] Yama: becoming mindful.
-> > [    2.563915][    T0] Mount-cache hash table entries: 32768 (order: 6,=
- 262144 bytes, linear)
-> > [    2.564381][    T0] Mountpoint-cache hash table entries: 32768 (orde=
-r: 6, 262144 bytes, linear)
-> > Poking KASLR using RDRAND RDTSC...
-> > [    2.567292][    T0] x86/cpu: User Mode Instruction Prevention (UMIP)=
- activated
-> > [    2.567402][    T0] Last level iTLB entries: 4KB 0, 2MB 0, 4MB 0
-> > [    2.568334][    T0] Last level dTLB entries: 4KB 0, 2MB 0, 4MB 0, 1G=
-B 0
-> > [    2.569343][    T0] Spectre V1 : Mitigation: usercopy/swapgs barrier=
-s and __user pointer sanitization
-> > [    2.570339][    T0] Spectre V2 : Mitigation: Full generic retpoline
-> > [    2.570974][    T0] Spectre V2 : Spectre v2 / SpectreRSB mitigation:=
- Filling RSB on context switch
-> > [    2.571334][    T0] Speculative Store Bypass: Vulnerable
-> > [    2.572342][    T0] TAA: Vulnerable: Clear CPU buffers attempted, no=
- microcode
-> > [    2.573337][    T0] MDS: Vulnerable: Clear CPU buffers attempted, no=
- microcode
-> > [    2.578010][    T0] Freeing SMP alternatives memory: 40K
-> > [    2.578746][    T1] smpboot: CPU0: Intel Xeon Processor (Icelake) (f=
-amily: 0x6, model: 0x86, stepping: 0x0)
-> > [    2.580009][    T1] cblist_init_generic: Setting adjustable number o=
-f callback queues.
-> > [    2.580334][    T1] cblist_init_generic: Setting shift to 2 and lim =
-to 1.
-> > [    2.581082][    T1] cblist_init_generic: Setting shift to 2 and lim =
-to 1.
-> > [    2.581425][    T1] Running RCU-tasks wait API self tests
-> > [    2.582020][    T1] Performance Events: unsupported p6 CPU model 134=
- no PMU driver, software events only.
-> > [    2.582512][    T1] rcu: Hierarchical SRCU implementation.
-> > [    2.585292][    T1] NMI watchdog: Perf NMI watchdog permanently disa=
-bled
-> > [    2.586433][    T1] smp: Bringing up secondary CPUs ...
-> > [    2.587558][    T1] x86: Booting SMP configuration:
-> > [    2.588195][    T1] .... node  #0, CPUs:      #1
-> > [    0.151762][    T0] masked ExtINT on CPU#1
-> > [    0.151762][    T0] smpboot: CPU 1 Converting physical 0 to logical =
-die 1
-> > [    2.591069][    T1]  #2
-> > [    0.151762][    T0] masked ExtINT on CPU#2
-> > [    0.151762][    T0] smpboot: CPU 2 Converting physical 0 to logical =
-die 2
-> > [    2.594618][    T1]  #3
-> > [    0.151762][    T0] masked ExtINT on CPU#3
-> > [    0.151762][    T0] smpboot: CPU 3 Converting physical 0 to logical =
-die 3
-> > [    2.596429][    T1] smp: Brought up 1 node, 4 CPUs
-> > [    2.597346][    T1] smpboot: Max logical packages: 4
-> > [    2.598180][    T1] smpboot: Total of 4 processors activated (17559.=
-32 BogoMIPS)
-> > [    2.598374][   T10] Callback from call_rcu_tasks_trace() invoked.
-> > [    2.695355][    T9] Callback from call_rcu_tasks_rude() invoked.
-> > [    2.702666][   T31] node 0 deferred pages initialised in 102ms
-> > [    2.821489][    T1] allocated 201326592 bytes of page_ext
-> > [    2.822566][    T1] Node 0, zone      DMA: page owner found early al=
-located 0 pages
-> > [    2.826920][    T1] Node 0, zone    DMA32: page owner found early al=
-located 0 pages
+> > [ 27.108282][ T42] ? process_one_work (kernel/workqueue.c:2397) =
+
+> > [ 27.108855][ T42] kthread (kernel/kthread.c:377) =
+
+> > [ 27.109331][ T42] ? kthread_complete_and_exit (kernel/kthread.c:332) =
+
+> > [ 27.109923][ T42] ret_from_fork (arch/x86/entry/entry_64.S:301) =
+
+> > [   27.110421][   T42]  </TASK>
+> > [   27.110802][   T42] ---[ end trace 0000000000000000 ]---
+> > [  OK  ] Listening on D-Bus System Message Bus Socket.
+> > [  OK  ] Reached target Sockets.
+> > [  OK  ] Reached target Basic System.
+> > Starting LSB: OpenIPMI Driver init script...
+> > Starting Login Service...
+> > [   27.155875][  T198] libata version 3.00 loaded.
+> > [  OK  ] Started Regular background program processing daemon.
+> > [   27.267833][  T190] ACPI: bus type drm_connector registered
+> > Starting System Logging Service...
+> > [   27.305186][  T198] ata_piix 0000:00:01.1: version 2.13
+> > [  OK  ] Started Daily apt download activities.
+> > [  OK  ] Started Daily apt upgrade and clean activities.
+> > [   27.318846][  T198] scsi host0: ata_piix
+> > [  OK  ] Reached target Timers.
+> > [  OK  ] Started D-Bus System Message Bus.
+> > [   27.338455][  T198] scsi host1: ata_piix
+> > [   27.339842][  T198] ata1: PATA max MWDMA2 cmd 0x1f0 ctl 0x3f6 bmdma =
+0xc040 irq 14
+> > [   27.340920][  T198] ata2: PATA max MWDMA2 cmd 0x170 ctl 0x376 bmdma =
+0xc048 irq 15
+> > [  OK  ] Started Helper to synchronize boot up for ifupdown.
+> > [   27.410826][  T191] RAPL PMU: API unit is 2^-32 Joules, 0 fixed coun=
+ters, 10737418240 ms ovfl timer
+> > [   27.502464][  T223] ata2: found unknown device (class 0)
+> > [   27.503902][  T223] ata2.00: ATAPI: QEMU DVD-ROM, 2.5+, max UDMA/100
+> > [   27.523776][  T168] scsi 1:0:0:0: CD-ROM            QEMU     QEMU DV=
+D-ROM     2.5+ PQ: 0 ANSI: 5
+> > Starting Raise network interfaces...
+> > [   27.663689][  T235] IPMI message handler: version 39.2
+> > Starting LSB: Load kernel image with kexec...
+> > [  OK  ] Started Login Service.
+> > [   27.689420][  T235] ipmi device interface
+> > [  OK  ] Started LSB: Load kernel image with kexec.
+> > [  OK  ] Started Raise network interfaces.
+> > [  OK  ] Reached target Network.
+> > [   27.776957][  T190] bochs-drm 0000:00:02.0: vgaarb: deactivate vga c=
+onsole
+> > [   27.795582][  T190] Console: switching to colour dummy device 80x25
+> > Starting /etc/rc.local Compatibility...
+> > [   27.810246][  T256] ipmi_si: IPMI System Interface driver
+> > [   27.814584][  T256] ipmi_si: Unable to find any System Interface(s)
+> > Starting LKP bootstrap...
+> > [   27.825386][  T190] [drm] Found bochs VGA, ID 0xb0c0.
+> > [   27.825838][  T190] [drm] Framebuffer size 16384 kB @ 0xfd000000, mm=
+io @ 0xfebf0000.
+> > [   27.721831] rc.local[257]: PATH=3D/usr/local/sbin:/usr/local/bin:/us=
+r/sbin:/usr/bin:/sbin:/bin:/lkp/lkp/src/bin
+> > Starting Permit User Sessions...
+> > [   27.858471][  T183] ppdev: user-space parallel port driver
+> > [   27.771982] rc.local[257]: /lkp/lkp/src/bin/lkp-setup-rootfs: 78: /l=
+kp/lkp/src/bin/lkp-setup-rootfs: cannot create /sys/devices/system/cpu/micr=
+ocode/reload: Directory nonexistent
+> > [   27.930434][  T190] [drm] Initialized bochs-drm 1.0.0 20130925 for 0=
+000:00:02.0 on minor 0
+> > Starting OpenBSD Secure Shell server...
+> > [  OK  ] Started /etc/rc.local Compatibility.
+> > [   28.047199][  T190] fbcon: bochs-drmdrmfb (fb0) is primary device
+> > [   28.067849][  T190] Console: switching to colour frame buffer device=
+ 128x48
+> > [   28.085384][  T190] bochs-drm 0000:00:02.0: [drm] fb0: bochs-drmdrmf=
+b frame buffer device
+> > [  OK  ] Started Permit User Sessions.
+> > [  OK  ] Started Getty on tty1.
+> > [  OK  ] Reached target Login Prompts.
+> > [FAILED] Failed to start LSB: OpenIPMI Driver init script.
+> > See 'systemctl status openipmi.service' for details.
+> > [   28.164355][  T196] scsi 1:0:0:0: Attached scsi generic sg0 type 5
+> > [   28.214927][  T196] sr 1:0:0:0: [sr0] scsi3-mmc drive: 4x/4x cd/rw x=
+a/form2 tray
+> > [   28.215719][  T196] cdrom: Uniform CD-ROM driver Revision: 3.20
+> > [   28.238808][  T196] sr 1:0:0:0: Attached scsi CD-ROM sr0
+> > LKP: ttyS0: 265: Kernel tests: Boot OK!
+> > LKP: ttyS0: 265: HOSTNAME vm-snb-157, MAC 52:54:00:12:34:56, kernel 5.1=
+7.0-rc1-00191-g7bf8d644f869 1
+> > LKP: ttyS0: 265:  /lkp/lkp/src/bin/run-lkp /lkp/jobs/scheduled/vm-snb-1=
+57/boot-1-debian-10.4-x86_64-20200603.cgz-7bf8d644f869260f63eaaedebabdd2054=
+f59ecc4-20220310-128355-1v2pw5f-8.yaml
+> > [   29.609090][    C1] random: crng init done
+> > [   29.609649][    C1] random: 7 urandom warning(s) missed due to ratel=
+imiting
+> > [  OK  ] Started OpenBSD Secure Shell server.
+> > [   41.804947][  T280] LKP: stdout: 265: Kernel tests: Boot OK!
+> > [   41.804970][  T280]
+> > LKP: ttyS0: 265: LKP: rebooting forcely
+> > [   43.635670][  T265] sysrq: Emergency Sync
+> > [   43.636317][   T52] Emergency Sync complete
+> > [   43.636892][  T265] sysrq: Resetting
+> > =
+
+> > Kboot worker: lkp-worker57
+> > Elapsed time: 60
+> > =
+
+> > kvm=3D(
+> > qemu-system-x86_64
+> > -enable-kvm
+> > -cpu SandyBridge
+> > -kernel $kernel
+> > -initrd initrd-vm-snb-157.cgz
+> > -m 16384
+> > -smp 2
+> > -device e1000,netdev=3Dnet0
+> > -netdev user,id=3Dnet0,hostfwd=3Dtcp::32032-:22
+> > -boot order=3Dnc
+> > -no-reboot
+> > -watchdog i6300esb
+> > -watchdog-action debug
+> > -rtc base=3Dlocaltime
+> > -serial stdio
+> > -display none
+> > -monitor null
 > > =
 
 > > =
@@ -373,7 +288,7 @@ located 0 pages
 
 > >         # build kernel
 > > 	cd linux
-> > 	cp config-5.17.0-rc1-00188-g758cf1496b94 .config
+> > 	cp config-5.17.0-rc1-00191-g7bf8d644f869 .config
 > > 	make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Dx86_64 olddefconfig prepare modu=
 les_prepare bzImage modules
 > > 	make HOSTCC=3Dgcc-9 CC=3Dgcc-9 ARCH=3Dx86_64 INSTALL_MOD_PATH=3D<mod-i=
@@ -413,9 +328,9 @@ t is attached in this email
 > > # Automatically generated file; DO NOT EDIT.
 > > # Linux/x86_64 5.17.0-rc1 Kernel Configuration
 > > #
-> > CONFIG_CC_VERSION_TEXT=3D"gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0"
+> > CONFIG_CC_VERSION_TEXT=3D"gcc-9 (Debian 9.3.0-22) 9.3.0"
 > > CONFIG_CC_IS_GCC=3Dy
-> > CONFIG_GCC_VERSION=3D90400
+> > CONFIG_GCC_VERSION=3D90300
 > > CONFIG_CLANG_VERSION=3D0
 > > CONFIG_AS_IS_GNU=3Dy
 > > CONFIG_AS_VERSION=3D23502
@@ -463,7 +378,7 @@ t is attached in this email
 > > CONFIG_SYSVIPC_SYSCTL=3Dy
 > > CONFIG_POSIX_MQUEUE=3Dy
 > > CONFIG_POSIX_MQUEUE_SYSCTL=3Dy
-> > # CONFIG_WATCH_QUEUE is not set
+> > CONFIG_WATCH_QUEUE=3Dy
 > > CONFIG_CROSS_MEMORY_ATTACH=3Dy
 > > # CONFIG_USELIB is not set
 > > CONFIG_AUDIT=3Dy
@@ -482,7 +397,6 @@ t is attached in this email
 > > CONFIG_GENERIC_IRQ_INJECTION=3Dy
 > > CONFIG_HARDIRQS_SW_RESEND=3Dy
 > > CONFIG_IRQ_DOMAIN=3Dy
-> > CONFIG_IRQ_SIM=3Dy
 > > CONFIG_IRQ_DOMAIN_HIERARCHY=3Dy
 > > CONFIG_GENERIC_MSI_IRQ=3Dy
 > > CONFIG_GENERIC_MSI_IRQ_DOMAIN=3Dy
@@ -578,6 +492,7 @@ t is attached in this email
 > > CONFIG_SRCU=3Dy
 > > CONFIG_TREE_SRCU=3Dy
 > > CONFIG_TASKS_RCU_GENERIC=3Dy
+> > CONFIG_TASKS_RCU=3Dy
 > > CONFIG_TASKS_RUDE_RCU=3Dy
 > > CONFIG_TASKS_TRACE_RCU=3Dy
 > > CONFIG_RCU_STALL_COMMON=3Dy
@@ -663,7 +578,7 @@ t is attached in this email
 > > CONFIG_HAVE_UID16=3Dy
 > > CONFIG_SYSCTL_EXCEPTION_TRACE=3Dy
 > > CONFIG_HAVE_PCSPKR_PLATFORM=3Dy
-> > CONFIG_EXPERT=3Dy
+> > # CONFIG_EXPERT is not set
 > > CONFIG_UID16=3Dy
 > > CONFIG_MULTIUSER=3Dy
 > > CONFIG_SGETMASK_SYSCALL=3Dy
@@ -696,11 +611,9 @@ t is attached in this email
 > > CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE=3Dy
 > > CONFIG_KCMP=3Dy
 > > CONFIG_RSEQ=3Dy
-> > # CONFIG_DEBUG_RSEQ is not set
-> > CONFIG_EMBEDDED=3Dy
+> > # CONFIG_EMBEDDED is not set
 > > CONFIG_HAVE_PERF_EVENTS=3Dy
 > > CONFIG_GUEST_PERF_EVENTS=3Dy
-> > # CONFIG_PC104 is not set
 > > =
 
 > > #
@@ -716,10 +629,9 @@ t is attached in this email
 > > # CONFIG_COMPAT_BRK is not set
 > > # CONFIG_SLAB is not set
 > > CONFIG_SLUB=3Dy
-> > # CONFIG_SLOB is not set
 > > CONFIG_SLAB_MERGE_DEFAULT=3Dy
 > > CONFIG_SLAB_FREELIST_RANDOM=3Dy
-> > CONFIG_SLAB_FREELIST_HARDENED=3Dy
+> > # CONFIG_SLAB_FREELIST_HARDENED is not set
 > > CONFIG_SHUFFLE_PAGE_ALLOCATOR=3Dy
 > > CONFIG_SLUB_CPU_PARTIAL=3Dy
 > > CONFIG_SYSTEM_DATA_VERIFICATION=3Dy
@@ -770,7 +682,7 @@ t is attached in this email
 > > CONFIG_X86_MPPARSE=3Dy
 > > # CONFIG_GOLDFISH is not set
 > > CONFIG_RETPOLINE=3Dy
-> > CONFIG_X86_CPU_RESCTRL=3Dy
+> > # CONFIG_X86_CPU_RESCTRL is not set
 > > CONFIG_X86_EXTENDED_PLATFORM=3Dy
 > > # CONFIG_X86_NUMACHIP is not set
 > > # CONFIG_X86_VSMP is not set
@@ -810,7 +722,6 @@ t is attached in this email
 > > CONFIG_X86_DEBUGCTLMSR=3Dy
 > > CONFIG_IA32_FEAT_CTL=3Dy
 > > CONFIG_X86_VMX_FEATURE_NAMES=3Dy
-> > # CONFIG_PROCESSOR_SELECT is not set
 > > CONFIG_CPU_SUP_INTEL=3Dy
 > > CONFIG_CPU_SUP_AMD=3Dy
 > > CONFIG_CPU_SUP_HYGON=3Dy
@@ -894,7 +805,7 @@ t is attached in this email
 > > CONFIG_X86_INTEL_TSX_MODE_OFF=3Dy
 > > # CONFIG_X86_INTEL_TSX_MODE_ON is not set
 > > # CONFIG_X86_INTEL_TSX_MODE_AUTO is not set
-> > CONFIG_X86_SGX=3Dy
+> > # CONFIG_X86_SGX is not set
 > > CONFIG_EFI=3Dy
 > > CONFIG_EFI_STUB=3Dy
 > > CONFIG_EFI_MIXED=3Dy
@@ -943,7 +854,6 @@ t is attached in this email
 > > CONFIG_ARCH_HIBERNATION_HEADER=3Dy
 > > CONFIG_SUSPEND=3Dy
 > > CONFIG_SUSPEND_FREEZER=3Dy
-> > # CONFIG_SUSPEND_SKIP_SYNC is not set
 > > CONFIG_HIBERNATE_CALLBACKS=3Dy
 > > CONFIG_HIBERNATION=3Dy
 > > CONFIG_HIBERNATION_SNAPSHOT_DEV=3Dy
@@ -957,7 +867,6 @@ t is attached in this email
 > > # CONFIG_PM_ADVANCED_DEBUG is not set
 > > # CONFIG_PM_TEST_SUSPEND is not set
 > > CONFIG_PM_SLEEP_DEBUG=3Dy
-> > # CONFIG_DPM_WATCHDOG is not set
 > > # CONFIG_PM_TRACE_RTC is not set
 > > CONFIG_PM_CLK=3Dy
 > > # CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
@@ -1002,7 +911,6 @@ t is attached in this email
 > > CONFIG_ACPI_HED=3Dy
 > > # CONFIG_ACPI_CUSTOM_METHOD is not set
 > > CONFIG_ACPI_BGRT=3Dy
-> > # CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
 > > CONFIG_ACPI_NFIT=3Dm
 > > # CONFIG_NFIT_SECURITY_DEBUG is not set
 > > CONFIG_ACPI_NUMA=3Dy
@@ -1089,8 +997,6 @@ t is attached in this email
 > > CONFIG_PCI_DIRECT=3Dy
 > > CONFIG_PCI_MMCONFIG=3Dy
 > > CONFIG_MMCONF_FAM10H=3Dy
-> > # CONFIG_PCI_CNB20LE_QUIRK is not set
-> > # CONFIG_ISA_BUS is not set
 > > CONFIG_ISA_DMA_API=3Dy
 > > CONFIG_AMD_NB=3Dy
 > > # end of Bus options (PCI etc.)
@@ -1127,10 +1033,8 @@ t is attached in this email
 > > CONFIG_KVM_XFER_TO_GUEST_WORK=3Dy
 > > CONFIG_HAVE_KVM_PM_NOTIFIER=3Dy
 > > CONFIG_VIRTUALIZATION=3Dy
-> > CONFIG_KVM=3Dy
-> > # CONFIG_KVM_WERROR is not set
-> > CONFIG_KVM_INTEL=3Dy
-> > # CONFIG_X86_SGX_KVM is not set
+> > CONFIG_KVM=3Dm
+> > CONFIG_KVM_INTEL=3Dm
 > > # CONFIG_KVM_AMD is not set
 > > # CONFIG_KVM_XEN is not set
 > > CONFIG_KVM_MMU_AUDIT=3Dy
@@ -1242,7 +1146,7 @@ t is attached in this email
 > > CONFIG_HAVE_ARCH_VMAP_STACK=3Dy
 > > CONFIG_VMAP_STACK=3Dy
 > > CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET=3Dy
-> > CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT=3Dy
+> > # CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT is not set
 > > CONFIG_ARCH_HAS_STRICT_KERNEL_RWX=3Dy
 > > CONFIG_STRICT_KERNEL_RWX=3Dy
 > > CONFIG_ARCH_HAS_STRICT_MODULE_RWX=3Dy
@@ -1260,7 +1164,6 @@ t is attached in this email
 > > CONFIG_ARCH_HAS_ELFCORE_COMPAT=3Dy
 > > CONFIG_ARCH_HAS_PARANOID_L1D_FLUSH=3Dy
 > > CONFIG_DYNAMIC_SIGFRAME=3Dy
-> > CONFIG_HAVE_ARCH_NODE_DEV_GROUP=3Dy
 > > =
 
 > > #
@@ -1299,7 +1202,6 @@ t is attached in this email
 > > # CONFIG_MODULE_COMPRESS_ZSTD is not set
 > > # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 > > CONFIG_MODPROBE_PATH=3D"/sbin/modprobe"
-> > # CONFIG_TRIM_UNUSED_KSYMS is not set
 > > CONFIG_MODULES_TREE_LOOKUP=3Dy
 > > CONFIG_BLOCK=3Dy
 > > CONFIG_BLK_CGROUP_RWSTAT=3Dy
@@ -1308,7 +1210,7 @@ t is attached in this email
 > > CONFIG_BLK_DEV_BSGLIB=3Dy
 > > CONFIG_BLK_DEV_INTEGRITY=3Dy
 > > CONFIG_BLK_DEV_INTEGRITY_T10=3Dm
-> > # CONFIG_BLK_DEV_ZONED is not set
+> > CONFIG_BLK_DEV_ZONED=3Dy
 > > CONFIG_BLK_DEV_THROTTLING=3Dy
 > > # CONFIG_BLK_DEV_THROTTLING_LOW is not set
 > > CONFIG_BLK_WBT=3Dy
@@ -1318,6 +1220,7 @@ t is attached in this email
 > > # CONFIG_BLK_CGROUP_IOCOST is not set
 > > # CONFIG_BLK_CGROUP_IOPRIO is not set
 > > CONFIG_BLK_DEBUG_FS=3Dy
+> > CONFIG_BLK_DEBUG_FS_ZONED=3Dy
 > > # CONFIG_BLK_SED_OPAL is not set
 > > # CONFIG_BLK_INLINE_ENCRYPTION is not set
 > > =
@@ -1334,6 +1237,7 @@ t is attached in this email
 > > CONFIG_BLOCK_COMPAT=3Dy
 > > CONFIG_BLK_MQ_PCI=3Dy
 > > CONFIG_BLK_MQ_VIRTIO=3Dy
+> > CONFIG_BLK_MQ_RDMA=3Dy
 > > CONFIG_BLK_PM=3Dy
 > > CONFIG_BLOCK_HOLDER_DEPRECATED=3Dy
 > > =
@@ -1352,7 +1256,11 @@ t is attached in this email
 > > CONFIG_PREEMPT_NOTIFIERS=3Dy
 > > CONFIG_PADATA=3Dy
 > > CONFIG_ASN1=3Dy
-> > CONFIG_UNINLINE_SPIN_UNLOCK=3Dy
+> > CONFIG_INLINE_SPIN_UNLOCK_IRQ=3Dy
+> > CONFIG_INLINE_READ_UNLOCK=3Dy
+> > CONFIG_INLINE_READ_UNLOCK_IRQ=3Dy
+> > CONFIG_INLINE_WRITE_UNLOCK=3Dy
+> > CONFIG_INLINE_WRITE_UNLOCK_IRQ=3Dy
 > > CONFIG_ARCH_SUPPORTS_ATOMIC_RMW=3Dy
 > > CONFIG_MUTEX_SPIN_ON_OWNER=3Dy
 > > CONFIG_RWSEM_SPIN_ON_OWNER=3Dy
@@ -1428,7 +1336,11 @@ t is attached in this email
 > > CONFIG_USE_PERCPU_NUMA_NODE_ID=3Dy
 > > CONFIG_HAVE_SETUP_PER_CPU_AREA=3Dy
 > > CONFIG_FRONTSWAP=3Dy
-> > # CONFIG_CMA is not set
+> > CONFIG_CMA=3Dy
+> > # CONFIG_CMA_DEBUG is not set
+> > # CONFIG_CMA_DEBUGFS is not set
+> > # CONFIG_CMA_SYSFS is not set
+> > CONFIG_CMA_AREAS=3D19
 > > # CONFIG_MEM_SOFT_DIRTY is not set
 > > CONFIG_ZSWAP=3Dy
 > > # CONFIG_ZSWAP_COMPRESSOR_DEFAULT_DEFLATE is not set
@@ -1454,7 +1366,6 @@ t is attached in this email
 > > CONFIG_IDLE_PAGE_TRACKING=3Dy
 > > CONFIG_ARCH_HAS_CACHE_LINE_SIZE=3Dy
 > > CONFIG_ARCH_HAS_PTE_DEVMAP=3Dy
-> > CONFIG_ARCH_HAS_ZONE_DMA_SET=3Dy
 > > CONFIG_ZONE_DMA=3Dy
 > > CONFIG_ZONE_DMA32=3Dy
 > > CONFIG_ZONE_DEVICE=3Dy
@@ -1465,9 +1376,10 @@ t is attached in this email
 > > CONFIG_ARCH_USES_HIGH_VMA_FLAGS=3Dy
 > > CONFIG_ARCH_HAS_PKEYS=3Dy
 > > # CONFIG_PERCPU_STATS is not set
-> > CONFIG_GUP_TEST=3Dy
+> > # CONFIG_GUP_TEST is not set
 > > # CONFIG_READ_ONLY_THP_FOR_FS is not set
 > > CONFIG_ARCH_HAS_PTE_SPECIAL=3Dy
+> > CONFIG_SECRETMEM=3Dy
 > > # CONFIG_ANON_VMA_NAME is not set
 > > =
 
@@ -1480,9 +1392,9 @@ t is attached in this email
 > > =
 
 > > CONFIG_NET=3Dy
+> > CONFIG_COMPAT_NETLINK_MESSAGES=3Dy
 > > CONFIG_NET_INGRESS=3Dy
 > > CONFIG_NET_EGRESS=3Dy
-> > CONFIG_NET_REDIRECT=3Dy
 > > CONFIG_SKB_EXTENSIONS=3Dy
 > > =
 
@@ -1512,6 +1424,7 @@ t is attached in this email
 > > CONFIG_XFRM_IPCOMP=3Dm
 > > CONFIG_NET_KEY=3Dm
 > > CONFIG_NET_KEY_MIGRATE=3Dy
+> > # CONFIG_SMC is not set
 > > CONFIG_XDP_SOCKETS=3Dy
 > > # CONFIG_XDP_SOCKETS_DIAG is not set
 > > CONFIG_INET=3Dy
@@ -1526,10 +1439,10 @@ t is attached in this email
 > > CONFIG_IP_PNP_DHCP=3Dy
 > > # CONFIG_IP_PNP_BOOTP is not set
 > > # CONFIG_IP_PNP_RARP is not set
-> > CONFIG_NET_IPIP=3Dy
-> > CONFIG_NET_IPGRE_DEMUX=3Dy
-> > CONFIG_NET_IP_TUNNEL=3Dy
-> > CONFIG_NET_IPGRE=3Dy
+> > CONFIG_NET_IPIP=3Dm
+> > CONFIG_NET_IPGRE_DEMUX=3Dm
+> > CONFIG_NET_IP_TUNNEL=3Dm
+> > CONFIG_NET_IPGRE=3Dm
 > > CONFIG_NET_IPGRE_BROADCAST=3Dy
 > > CONFIG_IP_MROUTE_COMMON=3Dy
 > > CONFIG_IP_MROUTE=3Dy
@@ -1538,16 +1451,16 @@ t is attached in this email
 > > CONFIG_IP_PIMSM_V2=3Dy
 > > CONFIG_SYN_COOKIES=3Dy
 > > CONFIG_NET_IPVTI=3Dm
-> > CONFIG_NET_UDP_TUNNEL=3Dy
-> > CONFIG_NET_FOU=3Dy
-> > CONFIG_NET_FOU_IP_TUNNELS=3Dy
+> > CONFIG_NET_UDP_TUNNEL=3Dm
+> > # CONFIG_NET_FOU is not set
+> > # CONFIG_NET_FOU_IP_TUNNELS is not set
 > > CONFIG_INET_AH=3Dm
 > > CONFIG_INET_ESP=3Dm
 > > CONFIG_INET_ESP_OFFLOAD=3Dm
 > > # CONFIG_INET_ESPINTCP is not set
 > > CONFIG_INET_IPCOMP=3Dm
 > > CONFIG_INET_XFRM_TUNNEL=3Dm
-> > CONFIG_INET_TUNNEL=3Dy
+> > CONFIG_INET_TUNNEL=3Dm
 > > CONFIG_INET_DIAG=3Dm
 > > CONFIG_INET_TCP_DIAG=3Dm
 > > CONFIG_INET_UDP_DIAG=3Dm
@@ -1586,29 +1499,24 @@ t is attached in this email
 > > CONFIG_IPV6_MIP6=3Dm
 > > # CONFIG_IPV6_ILA is not set
 > > CONFIG_INET6_XFRM_TUNNEL=3Dm
-> > CONFIG_INET6_TUNNEL=3Dy
+> > CONFIG_INET6_TUNNEL=3Dm
 > > CONFIG_IPV6_VTI=3Dm
 > > CONFIG_IPV6_SIT=3Dm
 > > CONFIG_IPV6_SIT_6RD=3Dy
 > > CONFIG_IPV6_NDISC_NODETYPE=3Dy
-> > CONFIG_IPV6_TUNNEL=3Dy
-> > CONFIG_IPV6_GRE=3Dy
-> > CONFIG_IPV6_FOU=3Dy
-> > CONFIG_IPV6_FOU_TUNNEL=3Dy
+> > CONFIG_IPV6_TUNNEL=3Dm
+> > CONFIG_IPV6_GRE=3Dm
 > > CONFIG_IPV6_MULTIPLE_TABLES=3Dy
 > > # CONFIG_IPV6_SUBTREES is not set
 > > CONFIG_IPV6_MROUTE=3Dy
 > > CONFIG_IPV6_MROUTE_MULTIPLE_TABLES=3Dy
 > > CONFIG_IPV6_PIMSM_V2=3Dy
-> > CONFIG_IPV6_SEG6_LWTUNNEL=3Dy
+> > # CONFIG_IPV6_SEG6_LWTUNNEL is not set
 > > # CONFIG_IPV6_SEG6_HMAC is not set
-> > CONFIG_IPV6_SEG6_BPF=3Dy
 > > # CONFIG_IPV6_RPL_LWTUNNEL is not set
-> > CONFIG_IPV6_IOAM6_LWTUNNEL=3Dy
+> > # CONFIG_IPV6_IOAM6_LWTUNNEL is not set
 > > CONFIG_NETLABEL=3Dy
-> > CONFIG_MPTCP=3Dy
-> > CONFIG_INET_MPTCP_DIAG=3Dm
-> > CONFIG_MPTCP_IPV6=3Dy
+> > # CONFIG_MPTCP is not set
 > > CONFIG_NETWORK_SECMARK=3Dy
 > > CONFIG_NET_PTP_CLASSIFY=3Dy
 > > CONFIG_NETWORK_PHY_TIMESTAMPING=3Dy
@@ -1675,7 +1583,6 @@ t is attached in this email
 > > CONFIG_NF_TABLES_NETDEV=3Dy
 > > CONFIG_NFT_NUMGEN=3Dm
 > > CONFIG_NFT_CT=3Dm
-> > CONFIG_NFT_FLOW_OFFLOAD=3Dm
 > > CONFIG_NFT_CONNLIMIT=3Dm
 > > CONFIG_NFT_LOG=3Dm
 > > CONFIG_NFT_LIMIT=3Dm
@@ -1695,15 +1602,14 @@ t is attached in this email
 > > # CONFIG_NFT_XFRM is not set
 > > CONFIG_NFT_SOCKET=3Dm
 > > # CONFIG_NFT_OSF is not set
-> > CONFIG_NFT_TPROXY=3Dm
+> > # CONFIG_NFT_TPROXY is not set
 > > # CONFIG_NFT_SYNPROXY is not set
 > > CONFIG_NF_DUP_NETDEV=3Dm
 > > CONFIG_NFT_DUP_NETDEV=3Dm
 > > CONFIG_NFT_FWD_NETDEV=3Dm
 > > CONFIG_NFT_FIB_NETDEV=3Dm
 > > # CONFIG_NFT_REJECT_NETDEV is not set
-> > CONFIG_NF_FLOW_TABLE_INET=3Dm
-> > CONFIG_NF_FLOW_TABLE=3Dm
+> > # CONFIG_NF_FLOW_TABLE is not set
 > > CONFIG_NETFILTER_XTABLES=3Dy
 > > CONFIG_NETFILTER_XTABLES_COMPAT=3Dy
 > > =
@@ -1990,6 +1896,7 @@ t is attached in this email
 > > CONFIG_INET_SCTP_DIAG=3Dm
 > > # CONFIG_RDS is not set
 > > CONFIG_TIPC=3Dm
+> > # CONFIG_TIPC_MEDIA_IB is not set
 > > CONFIG_TIPC_MEDIA_UDP=3Dy
 > > CONFIG_TIPC_CRYPTO=3Dy
 > > CONFIG_TIPC_DIAG=3Dm
@@ -2005,20 +1912,20 @@ t is attached in this email
 > > CONFIG_L2TP_V3=3Dy
 > > CONFIG_L2TP_IP=3Dm
 > > CONFIG_L2TP_ETH=3Dm
-> > CONFIG_STP=3Dy
-> > CONFIG_GARP=3Dy
-> > CONFIG_MRP=3Dy
-> > CONFIG_BRIDGE=3Dy
+> > CONFIG_STP=3Dm
+> > CONFIG_GARP=3Dm
+> > CONFIG_MRP=3Dm
+> > CONFIG_BRIDGE=3Dm
 > > CONFIG_BRIDGE_IGMP_SNOOPING=3Dy
 > > CONFIG_BRIDGE_VLAN_FILTERING=3Dy
 > > # CONFIG_BRIDGE_MRP is not set
 > > # CONFIG_BRIDGE_CFM is not set
 > > # CONFIG_NET_DSA is not set
-> > CONFIG_VLAN_8021Q=3Dy
+> > CONFIG_VLAN_8021Q=3Dm
 > > CONFIG_VLAN_8021Q_GVRP=3Dy
 > > CONFIG_VLAN_8021Q_MVRP=3Dy
 > > # CONFIG_DECNET is not set
-> > CONFIG_LLC=3Dy
+> > CONFIG_LLC=3Dm
 > > # CONFIG_LLC2 is not set
 > > # CONFIG_ATALK is not set
 > > # CONFIG_X25 is not set
@@ -2050,11 +1957,11 @@ t is attached in this email
 > > CONFIG_NET_SCH_TEQL=3Dm
 > > CONFIG_NET_SCH_TBF=3Dm
 > > # CONFIG_NET_SCH_CBS is not set
-> > CONFIG_NET_SCH_ETF=3Dm
+> > # CONFIG_NET_SCH_ETF is not set
 > > # CONFIG_NET_SCH_TAPRIO is not set
 > > CONFIG_NET_SCH_GRED=3Dm
 > > CONFIG_NET_SCH_DSMARK=3Dm
-> > CONFIG_NET_SCH_NETEM=3Dy
+> > CONFIG_NET_SCH_NETEM=3Dm
 > > CONFIG_NET_SCH_DRR=3Dm
 > > CONFIG_NET_SCH_MQPRIO=3Dm
 > > # CONFIG_NET_SCH_SKBPRIO is not set
@@ -2066,15 +1973,14 @@ t is attached in this email
 > > CONFIG_NET_SCH_FQ=3Dm
 > > CONFIG_NET_SCH_HHF=3Dm
 > > CONFIG_NET_SCH_PIE=3Dm
-> > CONFIG_NET_SCH_FQ_PIE=3Dm
-> > CONFIG_NET_SCH_INGRESS=3Dy
+> > # CONFIG_NET_SCH_FQ_PIE is not set
+> > CONFIG_NET_SCH_INGRESS=3Dm
 > > CONFIG_NET_SCH_PLUG=3Dm
-> > CONFIG_NET_SCH_ETS=3Dm
+> > # CONFIG_NET_SCH_ETS is not set
 > > CONFIG_NET_SCH_DEFAULT=3Dy
 > > # CONFIG_DEFAULT_FQ is not set
 > > # CONFIG_DEFAULT_CODEL is not set
 > > CONFIG_DEFAULT_FQ_CODEL=3Dy
-> > # CONFIG_DEFAULT_FQ_PIE is not set
 > > # CONFIG_DEFAULT_SFQ is not set
 > > # CONFIG_DEFAULT_PFIFO_FAST is not set
 > > CONFIG_DEFAULT_NET_SCH=3D"fq_codel"
@@ -2105,34 +2011,30 @@ t is attached in this email
 > > CONFIG_NET_EMATCH_U32=3Dm
 > > CONFIG_NET_EMATCH_META=3Dm
 > > CONFIG_NET_EMATCH_TEXT=3Dm
-> > CONFIG_NET_EMATCH_CANID=3Dm
+> > # CONFIG_NET_EMATCH_CANID is not set
 > > CONFIG_NET_EMATCH_IPSET=3Dm
-> > CONFIG_NET_EMATCH_IPT=3Dm
+> > # CONFIG_NET_EMATCH_IPT is not set
 > > CONFIG_NET_CLS_ACT=3Dy
 > > CONFIG_NET_ACT_POLICE=3Dm
 > > CONFIG_NET_ACT_GACT=3Dm
 > > CONFIG_GACT_PROB=3Dy
 > > CONFIG_NET_ACT_MIRRED=3Dm
 > > CONFIG_NET_ACT_SAMPLE=3Dm
-> > CONFIG_NET_ACT_IPT=3Dm
+> > # CONFIG_NET_ACT_IPT is not set
 > > CONFIG_NET_ACT_NAT=3Dm
 > > CONFIG_NET_ACT_PEDIT=3Dm
 > > CONFIG_NET_ACT_SIMP=3Dm
 > > CONFIG_NET_ACT_SKBEDIT=3Dm
 > > CONFIG_NET_ACT_CSUM=3Dm
-> > CONFIG_NET_ACT_MPLS=3Dm
+> > # CONFIG_NET_ACT_MPLS is not set
 > > CONFIG_NET_ACT_VLAN=3Dm
 > > CONFIG_NET_ACT_BPF=3Dm
-> > CONFIG_NET_ACT_CONNMARK=3Dm
-> > CONFIG_NET_ACT_CTINFO=3Dm
+> > # CONFIG_NET_ACT_CONNMARK is not set
+> > # CONFIG_NET_ACT_CTINFO is not set
 > > CONFIG_NET_ACT_SKBMOD=3Dm
-> > CONFIG_NET_ACT_IFE=3Dm
+> > # CONFIG_NET_ACT_IFE is not set
 > > CONFIG_NET_ACT_TUNNEL_KEY=3Dm
-> > CONFIG_NET_ACT_CT=3Dm
 > > # CONFIG_NET_ACT_GATE is not set
-> > CONFIG_NET_IFE_SKBMARK=3Dm
-> > CONFIG_NET_IFE_SKBPRIO=3Dm
-> > CONFIG_NET_IFE_SKBTCINDEX=3Dm
 > > # CONFIG_NET_TC_SKB_EXT is not set
 > > CONFIG_NET_SCH_FIFO=3Dy
 > > CONFIG_DCB=3Dy
@@ -2140,8 +2042,6 @@ t is attached in this email
 > > # CONFIG_BATMAN_ADV is not set
 > > CONFIG_OPENVSWITCH=3Dm
 > > CONFIG_OPENVSWITCH_GRE=3Dm
-> > CONFIG_OPENVSWITCH_VXLAN=3Dm
-> > CONFIG_OPENVSWITCH_GENEVE=3Dm
 > > CONFIG_VSOCKETS=3Dm
 > > CONFIG_VSOCKETS_DIAG=3Dm
 > > CONFIG_VSOCKETS_LOOPBACK=3Dm
@@ -2150,7 +2050,7 @@ t is attached in this email
 > > CONFIG_VIRTIO_VSOCKETS_COMMON=3Dm
 > > CONFIG_NETLINK_DIAG=3Dm
 > > CONFIG_MPLS=3Dy
-> > CONFIG_NET_MPLS_GSO=3Dm
+> > CONFIG_NET_MPLS_GSO=3Dy
 > > CONFIG_MPLS_ROUTING=3Dm
 > > CONFIG_MPLS_IPTUNNEL=3Dm
 > > CONFIG_NET_NSH=3Dy
@@ -2255,22 +2155,23 @@ t is attached in this email
 > > # CONFIG_MCTP is not set
 > > CONFIG_FIB_RULES=3Dy
 > > CONFIG_WIRELESS=3Dy
+> > CONFIG_WEXT_CORE=3Dy
+> > CONFIG_WEXT_PROC=3Dy
 > > CONFIG_CFG80211=3Dm
 > > # CONFIG_NL80211_TESTMODE is not set
 > > # CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
-> > # CONFIG_CFG80211_CERTIFICATION_ONUS is not set
 > > CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=3Dy
 > > CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=3Dy
 > > CONFIG_CFG80211_DEFAULT_PS=3Dy
 > > # CONFIG_CFG80211_DEBUGFS is not set
 > > CONFIG_CFG80211_CRDA_SUPPORT=3Dy
-> > # CONFIG_CFG80211_WEXT is not set
+> > CONFIG_CFG80211_WEXT=3Dy
 > > CONFIG_MAC80211=3Dm
 > > CONFIG_MAC80211_HAS_RC=3Dy
 > > CONFIG_MAC80211_RC_MINSTREL=3Dy
 > > CONFIG_MAC80211_RC_DEFAULT_MINSTREL=3Dy
 > > CONFIG_MAC80211_RC_DEFAULT=3D"minstrel_ht"
-> > # CONFIG_MAC80211_MESH is not set
+> > CONFIG_MAC80211_MESH=3Dy
 > > CONFIG_MAC80211_LEDS=3Dy
 > > CONFIG_MAC80211_DEBUGFS=3Dy
 > > # CONFIG_MAC80211_MESSAGE_TRACING is not set
@@ -2283,36 +2184,15 @@ t is attached in this email
 > > CONFIG_NET_9P=3Dy
 > > CONFIG_NET_9P_FD=3Dy
 > > CONFIG_NET_9P_VIRTIO=3Dy
+> > # CONFIG_NET_9P_RDMA is not set
 > > # CONFIG_NET_9P_DEBUG is not set
 > > # CONFIG_CAIF is not set
 > > CONFIG_CEPH_LIB=3Dm
 > > # CONFIG_CEPH_LIB_PRETTYDEBUG is not set
 > > CONFIG_CEPH_LIB_USE_DNS_RESOLVER=3Dy
-> > CONFIG_NFC=3Dm
-> > # CONFIG_NFC_DIGITAL is not set
-> > CONFIG_NFC_NCI=3Dm
-> > # CONFIG_NFC_NCI_SPI is not set
-> > # CONFIG_NFC_NCI_UART is not set
-> > # CONFIG_NFC_HCI is not set
-> > =
-
-> > #
-> > # Near Field Communication (NFC) devices
-> > #
-> > CONFIG_NFC_VIRTUAL_NCI=3Dm
-> > # CONFIG_NFC_FDP is not set
-> > # CONFIG_NFC_PN533_USB is not set
-> > # CONFIG_NFC_PN533_I2C is not set
-> > # CONFIG_NFC_MRVL_USB is not set
-> > # CONFIG_NFC_ST_NCI_I2C is not set
-> > # CONFIG_NFC_ST_NCI_SPI is not set
-> > # CONFIG_NFC_NXP_NCI is not set
-> > # CONFIG_NFC_S3FWRN5_I2C is not set
-> > # end of Near Field Communication (NFC) devices
-> > =
-
+> > # CONFIG_NFC is not set
 > > CONFIG_PSAMPLE=3Dm
-> > CONFIG_NET_IFE=3Dm
+> > # CONFIG_NET_IFE is not set
 > > CONFIG_LWTUNNEL=3Dy
 > > CONFIG_LWTUNNEL_BPF=3Dy
 > > CONFIG_DST_CACHE=3Dy
@@ -2320,7 +2200,6 @@ t is attached in this email
 > > CONFIG_SOCK_VALIDATE_XMIT=3Dy
 > > CONFIG_NET_SELFTESTS=3Dy
 > > CONFIG_NET_SOCK_MSG=3Dy
-> > CONFIG_NET_DEVLINK=3Dy
 > > CONFIG_FAILOVER=3Dm
 > > CONFIG_ETHTOOL_NETLINK=3Dy
 > > =
@@ -2361,11 +2240,6 @@ t is attached in this email
 > > CONFIG_PCI_PASID=3Dy
 > > # CONFIG_PCI_P2PDMA is not set
 > > CONFIG_PCI_LABEL=3Dy
-> > # CONFIG_PCIE_BUS_TUNE_OFF is not set
-> > CONFIG_PCIE_BUS_DEFAULT=3Dy
-> > # CONFIG_PCIE_BUS_SAFE is not set
-> > # CONFIG_PCIE_BUS_PERFORMANCE is not set
-> > # CONFIG_PCIE_BUS_PEER2PEER is not set
 > > CONFIG_HOTPLUG_PCI=3Dy
 > > CONFIG_HOTPLUG_PCI_ACPI=3Dy
 > > CONFIG_HOTPLUG_PCI_ACPI_IBM=3Dm
@@ -2550,6 +2424,7 @@ t is attached in this email
 > > CONFIG_PNPACPI=3Dy
 > > CONFIG_BLK_DEV=3Dy
 > > CONFIG_BLK_DEV_NULL_BLK=3Dm
+> > CONFIG_BLK_DEV_NULL_BLK_FAULT_INJECTION=3Dy
 > > # CONFIG_BLK_DEV_FD is not set
 > > CONFIG_CDROM=3Dm
 > > # CONFIG_PARIDE is not set
@@ -2584,11 +2459,13 @@ t is attached in this email
 > > CONFIG_NVME_MULTIPATH=3Dy
 > > # CONFIG_NVME_HWMON is not set
 > > CONFIG_NVME_FABRICS=3Dm
+> > # CONFIG_NVME_RDMA is not set
 > > CONFIG_NVME_FC=3Dm
 > > # CONFIG_NVME_TCP is not set
 > > CONFIG_NVME_TARGET=3Dm
 > > # CONFIG_NVME_TARGET_PASSTHRU is not set
 > > CONFIG_NVME_TARGET_LOOP=3Dm
+> > # CONFIG_NVME_TARGET_RDMA is not set
 > > CONFIG_NVME_TARGET_FC=3Dm
 > > CONFIG_NVME_TARGET_FCLOOP=3Dm
 > > # CONFIG_NVME_TARGET_TCP is not set
@@ -2776,7 +2653,7 @@ t is attached in this email
 > > # CONFIG_SCSI_DC395x is not set
 > > # CONFIG_SCSI_AM53C974 is not set
 > > # CONFIG_SCSI_WD719X is not set
-> > # CONFIG_SCSI_DEBUG is not set
+> > CONFIG_SCSI_DEBUG=3Dm
 > > # CONFIG_SCSI_PMCRAID is not set
 > > # CONFIG_SCSI_PM8001 is not set
 > > # CONFIG_SCSI_BFA_FC is not set
@@ -2882,7 +2759,6 @@ t is attached in this email
 > > # CONFIG_PATA_MPIIX is not set
 > > # CONFIG_PATA_NS87410 is not set
 > > # CONFIG_PATA_OPTI is not set
-> > # CONFIG_PATA_PLATFORM is not set
 > > # CONFIG_PATA_RZ1000 is not set
 > > =
 
@@ -2900,7 +2776,7 @@ t is attached in this email
 > > CONFIG_MD_RAID1=3Dm
 > > CONFIG_MD_RAID10=3Dm
 > > CONFIG_MD_RAID456=3Dm
-> > # CONFIG_MD_MULTIPATH is not set
+> > CONFIG_MD_MULTIPATH=3Dm
 > > CONFIG_MD_FAULTY=3Dm
 > > CONFIG_MD_CLUSTER=3Dm
 > > # CONFIG_BCACHE is not set
@@ -2940,6 +2816,7 @@ t is attached in this email
 > > CONFIG_DM_SWITCH=3Dm
 > > CONFIG_DM_LOG_WRITES=3Dm
 > > CONFIG_DM_INTEGRITY=3Dm
+> > # CONFIG_DM_ZONED is not set
 > > CONFIG_DM_AUDIT=3Dy
 > > CONFIG_TARGET_CORE=3Dm
 > > CONFIG_TCM_IBLOCK=3Dm
@@ -2969,30 +2846,30 @@ t is attached in this email
 > > CONFIG_MII=3Dy
 > > CONFIG_NET_CORE=3Dy
 > > # CONFIG_BONDING is not set
-> > CONFIG_DUMMY=3Dy
+> > CONFIG_DUMMY=3Dm
 > > # CONFIG_WIREGUARD is not set
 > > # CONFIG_EQUALIZER is not set
 > > # CONFIG_NET_FC is not set
-> > CONFIG_IFB=3Dm
+> > # CONFIG_IFB is not set
 > > # CONFIG_NET_TEAM is not set
 > > # CONFIG_MACVLAN is not set
 > > # CONFIG_IPVLAN is not set
-> > CONFIG_VXLAN=3Dy
-> > CONFIG_GENEVE=3Dy
-> > CONFIG_BAREUDP=3Dm
+> > # CONFIG_VXLAN is not set
+> > # CONFIG_GENEVE is not set
+> > # CONFIG_BAREUDP is not set
 > > # CONFIG_GTP is not set
-> > CONFIG_AMT=3Dm
-> > CONFIG_MACSEC=3Dy
+> > # CONFIG_AMT is not set
+> > # CONFIG_MACSEC is not set
 > > CONFIG_NETCONSOLE=3Dm
 > > CONFIG_NETCONSOLE_DYNAMIC=3Dy
 > > CONFIG_NETPOLL=3Dy
 > > CONFIG_NET_POLL_CONTROLLER=3Dy
 > > CONFIG_TUN=3Dm
 > > # CONFIG_TUN_VNET_CROSS_LE is not set
-> > CONFIG_VETH=3Dy
+> > CONFIG_VETH=3Dm
 > > CONFIG_VIRTIO_NET=3Dm
 > > # CONFIG_NLMON is not set
-> > CONFIG_NET_VRF=3Dy
+> > # CONFIG_NET_VRF is not set
 > > # CONFIG_VSOCKMON is not set
 > > # CONFIG_ARCNET is not set
 > > CONFIG_ATM_DRIVERS=3Dy
@@ -3405,7 +3282,7 @@ t is attached in this email
 > > # CONFIG_ZD1211RW is not set
 > > CONFIG_WLAN_VENDOR_QUANTENNA=3Dy
 > > # CONFIG_QTNFMAC_PCIE is not set
-> > # CONFIG_MAC80211_HWSIM is not set
+> > CONFIG_MAC80211_HWSIM=3Dm
 > > # CONFIG_USB_NET_RNDIS_WLAN is not set
 > > # CONFIG_VIRT_WIFI is not set
 > > # CONFIG_WAN is not set
@@ -3430,7 +3307,7 @@ t is attached in this email
 
 > > # CONFIG_VMXNET3 is not set
 > > # CONFIG_FUJITSU_ES is not set
-> > CONFIG_NETDEVSIM=3Dm
+> > # CONFIG_NETDEVSIM is not set
 > > CONFIG_NET_FAILOVER=3Dm
 > > # CONFIG_ISDN is not set
 > > =
@@ -3519,7 +3396,38 @@ t is attached in this email
 > > # CONFIG_INPUT_JOYSTICK is not set
 > > # CONFIG_INPUT_TABLET is not set
 > > # CONFIG_INPUT_TOUCHSCREEN is not set
-> > # CONFIG_INPUT_MISC is not set
+> > CONFIG_INPUT_MISC=3Dy
+> > # CONFIG_INPUT_AD714X is not set
+> > # CONFIG_INPUT_BMA150 is not set
+> > # CONFIG_INPUT_E3X0_BUTTON is not set
+> > # CONFIG_INPUT_PCSPKR is not set
+> > # CONFIG_INPUT_MMA8450 is not set
+> > # CONFIG_INPUT_APANEL is not set
+> > # CONFIG_INPUT_GPIO_BEEPER is not set
+> > # CONFIG_INPUT_GPIO_DECODER is not set
+> > # CONFIG_INPUT_GPIO_VIBRA is not set
+> > # CONFIG_INPUT_ATLAS_BTNS is not set
+> > # CONFIG_INPUT_ATI_REMOTE2 is not set
+> > # CONFIG_INPUT_KEYSPAN_REMOTE is not set
+> > # CONFIG_INPUT_KXTJ9 is not set
+> > # CONFIG_INPUT_POWERMATE is not set
+> > # CONFIG_INPUT_YEALINK is not set
+> > # CONFIG_INPUT_CM109 is not set
+> > CONFIG_INPUT_UINPUT=3Dy
+> > # CONFIG_INPUT_PCF8574 is not set
+> > # CONFIG_INPUT_PWM_BEEPER is not set
+> > # CONFIG_INPUT_PWM_VIBRA is not set
+> > # CONFIG_INPUT_GPIO_ROTARY_ENCODER is not set
+> > # CONFIG_INPUT_DA7280_HAPTICS is not set
+> > # CONFIG_INPUT_ADXL34X is not set
+> > # CONFIG_INPUT_IMS_PCU is not set
+> > # CONFIG_INPUT_IQS269A is not set
+> > # CONFIG_INPUT_IQS626A is not set
+> > # CONFIG_INPUT_CMA3000 is not set
+> > # CONFIG_INPUT_IDEAPAD_SLIDEBAR is not set
+> > # CONFIG_INPUT_DRV260X_HAPTICS is not set
+> > # CONFIG_INPUT_DRV2665_HAPTICS is not set
+> > # CONFIG_INPUT_DRV2667_HAPTICS is not set
 > > CONFIG_RMI4_CORE=3Dm
 > > CONFIG_RMI4_I2C=3Dm
 > > CONFIG_RMI4_SPI=3Dm
@@ -3635,7 +3543,6 @@ t is attached in this email
 > > # CONFIG_NULL_TTY is not set
 > > CONFIG_HVC_DRIVER=3Dy
 > > # CONFIG_SERIAL_DEV_BUS is not set
-> > # CONFIG_TTY_PRINTK is not set
 > > CONFIG_PRINTER=3Dm
 > > # CONFIG_LP_CONSOLE is not set
 > > CONFIG_PPDEV=3Dm
@@ -3717,7 +3624,7 @@ t is attached in this email
 > > =
 
 > > CONFIG_I2C_HELPER_AUTO=3Dy
-> > CONFIG_I2C_SMBUS=3Dm
+> > CONFIG_I2C_SMBUS=3Dy
 > > CONFIG_I2C_ALGOBIT=3Dy
 > > CONFIG_I2C_ALGOPCA=3Dm
 > > =
@@ -3736,7 +3643,7 @@ t is attached in this email
 > > # CONFIG_I2C_AMD756 is not set
 > > # CONFIG_I2C_AMD8111 is not set
 > > # CONFIG_I2C_AMD_MP2 is not set
-> > CONFIG_I2C_I801=3Dm
+> > CONFIG_I2C_I801=3Dy
 > > CONFIG_I2C_ISCH=3Dm
 > > CONFIG_I2C_ISMT=3Dm
 > > CONFIG_I2C_PIIX4=3Dm
@@ -3925,7 +3832,6 @@ t is attached in this email
 > > CONFIG_GPIO_ACPI=3Dy
 > > CONFIG_GPIOLIB_IRQCHIP=3Dy
 > > # CONFIG_DEBUG_GPIO is not set
-> > CONFIG_GPIO_SYSFS=3Dy
 > > CONFIG_GPIO_CDEV=3Dy
 > > CONFIG_GPIO_CDEV_V1=3Dy
 > > =
@@ -4008,9 +3914,9 @@ t is attached in this email
 > > # Virtual GPIO drivers
 > > #
 > > # CONFIG_GPIO_AGGREGATOR is not set
-> > CONFIG_GPIO_MOCKUP=3Dm
+> > # CONFIG_GPIO_MOCKUP is not set
 > > # CONFIG_GPIO_VIRTIO is not set
-> > CONFIG_GPIO_SIM=3Dm
+> > # CONFIG_GPIO_SIM is not set
 > > # end of Virtual GPIO drivers
 > > =
 
@@ -4428,7 +4334,7 @@ t is attached in this email
 > > # CONFIG_HTC_PASIC3 is not set
 > > # CONFIG_HTC_I2CPLD is not set
 > > # CONFIG_MFD_INTEL_QUARK_I2C_GPIO is not set
-> > CONFIG_LPC_ICH=3Dm
+> > CONFIG_LPC_ICH=3Dy
 > > CONFIG_LPC_SCH=3Dm
 > > CONFIG_MFD_INTEL_LPSS=3Dy
 > > CONFIG_MFD_INTEL_LPSS_ACPI=3Dy
@@ -4507,7 +4413,7 @@ t is attached in this email
 > > CONFIG_IR_JVC_DECODER=3Dm
 > > CONFIG_IR_SONY_DECODER=3Dm
 > > CONFIG_IR_SANYO_DECODER=3Dm
-> > CONFIG_IR_SHARP_DECODER=3Dm
+> > # CONFIG_IR_SHARP_DECODER is not set
 > > CONFIG_IR_MCE_KBD_DECODER=3Dm
 > > # CONFIG_IR_XMP_DECODER is not set
 > > CONFIG_IR_IMON_DECODER=3Dm
@@ -4527,7 +4433,7 @@ t is attached in this email
 > > # CONFIG_IR_IGORPLUGUSB is not set
 > > # CONFIG_IR_IGUANA is not set
 > > # CONFIG_IR_TTUSBIR is not set
-> > CONFIG_RC_LOOPBACK=3Dm
+> > # CONFIG_RC_LOOPBACK is not set
 > > CONFIG_IR_SERIAL=3Dm
 > > CONFIG_IR_SERIAL_TRANSMITTER=3Dy
 > > # CONFIG_RC_XBOX_DVD is not set
@@ -4572,6 +4478,9 @@ t is attached in this email
 > > # end of Media drivers
 > > =
 
+> > CONFIG_MEDIA_HIDE_ANCILLARY_SUBDRV=3Dy
+> > =
+
 > > #
 > > # Media ancillary drivers
 > > #
@@ -4592,23 +4501,19 @@ t is attached in this email
 > > CONFIG_VGA_ARB=3Dy
 > > CONFIG_VGA_ARB_MAX_GPUS=3D64
 > > CONFIG_VGA_SWITCHEROO=3Dy
-> > CONFIG_DRM=3Dy
+> > CONFIG_DRM=3Dm
 > > CONFIG_DRM_MIPI_DSI=3Dy
 > > CONFIG_DRM_DP_AUX_CHARDEV=3Dy
-> > # CONFIG_DRM_DEBUG_MM is not set
-> > CONFIG_DRM_DEBUG_SELFTEST=3Dm
+> > # CONFIG_DRM_DEBUG_SELFTEST is not set
 > > CONFIG_DRM_KMS_HELPER=3Dm
-> > # CONFIG_DRM_DEBUG_DP_MST_TOPOLOGY_REFS is not set
-> > CONFIG_DRM_DEBUG_MODESET_LOCK=3Dy
 > > CONFIG_DRM_FBDEV_EMULATION=3Dy
 > > CONFIG_DRM_FBDEV_OVERALLOC=3D100
-> > # CONFIG_DRM_FBDEV_LEAK_PHYS_SMEM is not set
 > > CONFIG_DRM_LOAD_EDID_FIRMWARE=3Dy
 > > # CONFIG_DRM_DP_CEC is not set
 > > CONFIG_DRM_TTM=3Dm
 > > CONFIG_DRM_VRAM_HELPER=3Dm
 > > CONFIG_DRM_TTM_HELPER=3Dm
-> > CONFIG_DRM_GEM_SHMEM_HELPER=3Dy
+> > CONFIG_DRM_GEM_SHMEM_HELPER=3Dm
 > > =
 
 > > #
@@ -4637,27 +4542,6 @@ t is attached in this email
 > > CONFIG_DRM_I915_USERPTR=3Dy
 > > CONFIG_DRM_I915_GVT=3Dy
 > > # CONFIG_DRM_I915_GVT_KVMGT is not set
-> > =
-
-> > #
-> > # drm/i915 Debugging
-> > #
-> > # CONFIG_DRM_I915_WERROR is not set
-> > # CONFIG_DRM_I915_DEBUG is not set
-> > # CONFIG_DRM_I915_DEBUG_MMIO is not set
-> > # CONFIG_DRM_I915_SW_FENCE_DEBUG_OBJECTS is not set
-> > # CONFIG_DRM_I915_SW_FENCE_CHECK_DAG is not set
-> > # CONFIG_DRM_I915_DEBUG_GUC is not set
-> > # CONFIG_DRM_I915_SELFTEST is not set
-> > # CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS is not set
-> > # CONFIG_DRM_I915_DEBUG_VBLANK_EVADE is not set
-> > # CONFIG_DRM_I915_DEBUG_RUNTIME_PM is not set
-> > # end of drm/i915 Debugging
-> > =
-
-> > #
-> > # drm/i915 Profile Guided Optimisation
-> > #
 > > CONFIG_DRM_I915_REQUEST_TIMEOUT=3D20000
 > > CONFIG_DRM_I915_FENCE_TIMEOUT=3D10000
 > > CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND=3D250
@@ -4666,10 +4550,7 @@ t is attached in this email
 > > CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=3D8000
 > > CONFIG_DRM_I915_STOP_TIMEOUT=3D100
 > > CONFIG_DRM_I915_TIMESLICE_DURATION=3D1
-> > # end of drm/i915 Profile Guided Optimisation
-> > =
-
-> > CONFIG_DRM_VGEM=3Dy
+> > # CONFIG_DRM_VGEM is not set
 > > # CONFIG_DRM_VKMS is not set
 > > # CONFIG_DRM_VMWGFX is not set
 > > CONFIG_DRM_GMA500=3Dm
@@ -4717,10 +4598,8 @@ t is attached in this email
 > > # CONFIG_DRM_VBOXVIDEO is not set
 > > # CONFIG_DRM_GUD is not set
 > > # CONFIG_DRM_LEGACY is not set
-> > CONFIG_DRM_EXPORT_FOR_TESTS=3Dy
 > > CONFIG_DRM_PANEL_ORIENTATION_QUIRKS=3Dy
 > > CONFIG_DRM_NOMODESET=3Dy
-> > CONFIG_DRM_LIB_RANDOM=3Dy
 > > CONFIG_DRM_PRIVACY_SCREEN=3Dy
 > > =
 
@@ -5037,7 +4916,6 @@ t is attached in this email
 > > # CONFIG_USB_DYNAMIC_MINORS is not set
 > > # CONFIG_USB_OTG is not set
 > > # CONFIG_USB_OTG_PRODUCTLIST is not set
-> > # CONFIG_USB_OTG_DISABLE_EXTERNAL_HUB is not set
 > > CONFIG_USB_LEDS_TRIGGER_USBPORT=3Dy
 > > CONFIG_USB_AUTOSUSPEND_DELAY=3D2
 > > CONFIG_USB_MON=3Dy
@@ -5359,7 +5237,33 @@ _THINGM)
 > > # Simple LED drivers
 > > #
 > > # CONFIG_ACCESSIBILITY is not set
-> > # CONFIG_INFINIBAND is not set
+> > CONFIG_INFINIBAND=3Dm
+> > CONFIG_INFINIBAND_USER_MAD=3Dm
+> > CONFIG_INFINIBAND_USER_ACCESS=3Dm
+> > CONFIG_INFINIBAND_USER_MEM=3Dy
+> > CONFIG_INFINIBAND_ON_DEMAND_PAGING=3Dy
+> > CONFIG_INFINIBAND_ADDR_TRANS=3Dy
+> > CONFIG_INFINIBAND_ADDR_TRANS_CONFIGFS=3Dy
+> > CONFIG_INFINIBAND_VIRT_DMA=3Dy
+> > # CONFIG_INFINIBAND_MTHCA is not set
+> > # CONFIG_INFINIBAND_EFA is not set
+> > # CONFIG_MLX4_INFINIBAND is not set
+> > # CONFIG_INFINIBAND_OCRDMA is not set
+> > # CONFIG_INFINIBAND_USNIC is not set
+> > # CONFIG_INFINIBAND_RDMAVT is not set
+> > CONFIG_RDMA_RXE=3Dm
+> > CONFIG_RDMA_SIW=3Dm
+> > CONFIG_INFINIBAND_IPOIB=3Dm
+> > # CONFIG_INFINIBAND_IPOIB_CM is not set
+> > CONFIG_INFINIBAND_IPOIB_DEBUG=3Dy
+> > # CONFIG_INFINIBAND_IPOIB_DEBUG_DATA is not set
+> > CONFIG_INFINIBAND_SRP=3Dm
+> > CONFIG_INFINIBAND_SRPT=3Dm
+> > # CONFIG_INFINIBAND_ISER is not set
+> > # CONFIG_INFINIBAND_ISERT is not set
+> > # CONFIG_INFINIBAND_RTRS_CLIENT is not set
+> > # CONFIG_INFINIBAND_RTRS_SERVER is not set
+> > # CONFIG_INFINIBAND_OPA_VNIC is not set
 > > CONFIG_EDAC_ATOMIC_SCRUB=3Dy
 > > CONFIG_EDAC_SUPPORT=3Dy
 > > CONFIG_EDAC=3Dy
@@ -5540,14 +5444,13 @@ _THINGM)
 > > # DMABUF options
 > > #
 > > CONFIG_SYNC_FILE=3Dy
-> > CONFIG_SW_SYNC=3Dy
-> > CONFIG_UDMABUF=3Dy
+> > # CONFIG_SW_SYNC is not set
+> > # CONFIG_UDMABUF is not set
 > > # CONFIG_DMABUF_MOVE_NOTIFY is not set
 > > # CONFIG_DMABUF_DEBUG is not set
 > > # CONFIG_DMABUF_SELFTESTS is not set
-> > CONFIG_DMABUF_HEAPS=3Dy
+> > # CONFIG_DMABUF_HEAPS is not set
 > > # CONFIG_DMABUF_SYSFS_STATS is not set
-> > CONFIG_DMABUF_HEAPS_SYSTEM=3Dy
 > > # end of DMABUF options
 > > =
 
@@ -5575,7 +5478,7 @@ _THINGM)
 > > # CONFIG_VFIO_PCI_VGA is not set
 > > # CONFIG_VFIO_PCI_IGD is not set
 > > CONFIG_VFIO_MDEV=3Dm
-> > CONFIG_IRQ_BYPASS_MANAGER=3Dy
+> > CONFIG_IRQ_BYPASS_MANAGER=3Dm
 > > # CONFIG_VIRT_DRIVERS is not set
 > > CONFIG_VIRTIO=3Dy
 > > CONFIG_VIRTIO_PCI_LIB=3Dy
@@ -5608,37 +5511,7 @@ _THINGM)
 
 > > # CONFIG_GREYBUS is not set
 > > # CONFIG_COMEDI is not set
-> > CONFIG_STAGING=3Dy
-> > # CONFIG_PRISM2_USB is not set
-> > # CONFIG_RTL8192U is not set
-> > # CONFIG_RTLLIB is not set
-> > # CONFIG_RTL8723BS is not set
-> > # CONFIG_R8712U is not set
-> > # CONFIG_R8188EU is not set
-> > # CONFIG_RTS5208 is not set
-> > # CONFIG_VT6655 is not set
-> > # CONFIG_VT6656 is not set
-> > # CONFIG_FB_SM750 is not set
-> > # CONFIG_STAGING_MEDIA is not set
-> > =
-
-> > #
-> > # Android
-> > #
-> > # CONFIG_ASHMEM is not set
-> > # end of Android
-> > =
-
-> > # CONFIG_LTE_GDM724X is not set
-> > # CONFIG_FIREWIRE_SERIAL is not set
-> > # CONFIG_GS_FPGABOOT is not set
-> > # CONFIG_UNISYSSPAR is not set
-> > # CONFIG_FB_TFT is not set
-> > # CONFIG_KS7010 is not set
-> > # CONFIG_PI433 is not set
-> > # CONFIG_FIELDBUS_DEV is not set
-> > # CONFIG_QLGE is not set
-> > # CONFIG_WFX is not set
+> > # CONFIG_STAGING is not set
 > > CONFIG_X86_PLATFORM_DEVICES=3Dy
 > > CONFIG_ACPI_WMI=3Dm
 > > CONFIG_WMI_BMOF=3Dm
@@ -5947,8 +5820,7 @@ _THINGM)
 > > #
 > > # Android
 > > #
-> > CONFIG_ANDROID=3Dy
-> > # CONFIG_ANDROID_BINDER_IPC is not set
+> > # CONFIG_ANDROID is not set
 > > # end of Android
 > > =
 
@@ -6009,10 +5881,12 @@ _THINGM)
 > > CONFIG_DCACHE_WORD_ACCESS=3Dy
 > > # CONFIG_VALIDATE_FS_PARSER is not set
 > > CONFIG_FS_IOMAP=3Dy
-> > # CONFIG_EXT2_FS is not set
+> > CONFIG_EXT2_FS=3Dm
+> > CONFIG_EXT2_FS_XATTR=3Dy
+> > CONFIG_EXT2_FS_POSIX_ACL=3Dy
+> > CONFIG_EXT2_FS_SECURITY=3Dy
 > > # CONFIG_EXT3_FS is not set
 > > CONFIG_EXT4_FS=3Dy
-> > CONFIG_EXT4_USE_FOR_EXT2=3Dy
 > > CONFIG_EXT4_FS_POSIX_ACL=3Dy
 > > CONFIG_EXT4_FS_SECURITY=3Dy
 > > # CONFIG_EXT4_DEBUG is not set
@@ -6027,7 +5901,7 @@ _THINGM)
 > > CONFIG_XFS_POSIX_ACL=3Dy
 > > CONFIG_XFS_RT=3Dy
 > > CONFIG_XFS_ONLINE_SCRUB=3Dy
-> > # CONFIG_XFS_ONLINE_REPAIR is not set
+> > CONFIG_XFS_ONLINE_REPAIR=3Dy
 > > CONFIG_XFS_DEBUG=3Dy
 > > CONFIG_XFS_ASSERT_FATAL=3Dy
 > > CONFIG_GFS2_FS=3Dm
@@ -6050,11 +5924,12 @@ _THINGM)
 > > CONFIG_F2FS_STAT_FS=3Dy
 > > CONFIG_F2FS_FS_XATTR=3Dy
 > > CONFIG_F2FS_FS_POSIX_ACL=3Dy
-> > # CONFIG_F2FS_FS_SECURITY is not set
+> > CONFIG_F2FS_FS_SECURITY=3Dy
 > > # CONFIG_F2FS_CHECK_FS is not set
 > > # CONFIG_F2FS_FAULT_INJECTION is not set
 > > # CONFIG_F2FS_FS_COMPRESSION is not set
 > > CONFIG_F2FS_IOSTAT=3Dy
+> > # CONFIG_ZONEFS_FS is not set
 > > CONFIG_FS_DAX=3Dy
 > > CONFIG_FS_DAX_PMD=3Dy
 > > CONFIG_FS_POSIX_ACL=3Dy
@@ -6093,7 +5968,7 @@ _THINGM)
 > > #
 > > # Caches
 > > #
-> > CONFIG_NETFS_SUPPORT=3Dm
+> > CONFIG_NETFS_SUPPORT=3Dy
 > > CONFIG_NETFS_STATS=3Dy
 > > CONFIG_FSCACHE=3Dm
 > > CONFIG_FSCACHE_STATS=3Dy
@@ -6140,7 +6015,6 @@ _THINGM)
 > > CONFIG_PROC_PAGE_MONITOR=3Dy
 > > CONFIG_PROC_CHILDREN=3Dy
 > > CONFIG_PROC_PID_ARCH_STATUS=3Dy
-> > CONFIG_PROC_CPU_RESCTRL=3Dy
 > > CONFIG_KERNFS=3Dy
 > > CONFIG_SYSFS=3Dy
 > > CONFIG_TMPFS=3Dy
@@ -6186,7 +6060,7 @@ _THINGM)
 > > # CONFIG_SQUASHFS_EMBEDDED is not set
 > > CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE=3D3
 > > # CONFIG_VXFS_FS is not set
-> > # CONFIG_MINIX_FS is not set
+> > CONFIG_MINIX_FS=3Dm
 > > # CONFIG_OMFS_FS is not set
 > > # CONFIG_HPFS_FS is not set
 > > # CONFIG_QNX4FS_FS is not set
@@ -6203,8 +6077,8 @@ _THINGM)
 > > CONFIG_PSTORE_COMPRESS=3Dy
 > > CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT=3Dy
 > > CONFIG_PSTORE_COMPRESS_DEFAULT=3D"deflate"
-> > CONFIG_PSTORE_CONSOLE=3Dy
-> > CONFIG_PSTORE_PMSG=3Dy
+> > # CONFIG_PSTORE_CONSOLE is not set
+> > # CONFIG_PSTORE_PMSG is not set
 > > # CONFIG_PSTORE_FTRACE is not set
 > > CONFIG_PSTORE_RAM=3Dm
 > > # CONFIG_PSTORE_BLK is not set
@@ -6255,6 +6129,7 @@ _THINGM)
 > > CONFIG_RPCSEC_GSS_KRB5=3Dm
 > > # CONFIG_SUNRPC_DISABLE_INSECURE_ENCTYPES is not set
 > > CONFIG_SUNRPC_DEBUG=3Dy
+> > CONFIG_SUNRPC_XPRT_RDMA=3Dm
 > > CONFIG_CEPH_FS=3Dm
 > > # CONFIG_CEPH_FSCACHE is not set
 > > CONFIG_CEPH_FS_POSIX_ACL=3Dy
@@ -6270,12 +6145,15 @@ _THINGM)
 > > # CONFIG_CIFS_DEBUG_DUMP_KEYS is not set
 > > CONFIG_CIFS_DFS_UPCALL=3Dy
 > > # CONFIG_CIFS_SWN_UPCALL is not set
+> > # CONFIG_CIFS_SMB_DIRECT is not set
 > > # CONFIG_CIFS_FSCACHE is not set
 > > # CONFIG_SMB_SERVER is not set
 > > CONFIG_SMBFS_COMMON=3Dm
 > > # CONFIG_CODA_FS is not set
 > > # CONFIG_AFS_FS is not set
-> > # CONFIG_9P_FS is not set
+> > CONFIG_9P_FS=3Dy
+> > CONFIG_9P_FS_POSIX_ACL=3Dy
+> > # CONFIG_9P_FS_SECURITY is not set
 > > CONFIG_NLS=3Dy
 > > CONFIG_NLS_DEFAULT=3D"utf8"
 > > CONFIG_NLS_CODEPAGE_437=3Dy
@@ -6343,19 +6221,20 @@ _THINGM)
 > > CONFIG_TRUSTED_KEYS=3Dy
 > > CONFIG_ENCRYPTED_KEYS=3Dy
 > > # CONFIG_KEY_DH_OPERATIONS is not set
+> > # CONFIG_KEY_NOTIFICATIONS is not set
 > > # CONFIG_SECURITY_DMESG_RESTRICT is not set
 > > CONFIG_SECURITY=3Dy
 > > CONFIG_SECURITY_WRITABLE_HOOKS=3Dy
 > > CONFIG_SECURITYFS=3Dy
 > > CONFIG_SECURITY_NETWORK=3Dy
 > > CONFIG_PAGE_TABLE_ISOLATION=3Dy
+> > # CONFIG_SECURITY_INFINIBAND is not set
 > > CONFIG_SECURITY_NETWORK_XFRM=3Dy
-> > CONFIG_SECURITY_PATH=3Dy
+> > # CONFIG_SECURITY_PATH is not set
 > > CONFIG_INTEL_TXT=3Dy
 > > CONFIG_LSM_MMAP_MIN_ADDR=3D65535
 > > CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR=3Dy
 > > CONFIG_HARDENED_USERCOPY=3Dy
-> > # CONFIG_HARDENED_USERCOPY_PAGESPAN is not set
 > > CONFIG_FORTIFY_SOURCE=3Dy
 > > # CONFIG_STATIC_USERMODEHELPER is not set
 > > CONFIG_SECURITY_SELINUX=3Dy
@@ -6373,7 +6252,7 @@ _THINGM)
 > > CONFIG_SECURITY_YAMA=3Dy
 > > # CONFIG_SECURITY_SAFESETID is not set
 > > # CONFIG_SECURITY_LOCKDOWN_LSM is not set
-> > CONFIG_SECURITY_LANDLOCK=3Dy
+> > # CONFIG_SECURITY_LANDLOCK is not set
 > > CONFIG_INTEGRITY=3Dy
 > > CONFIG_INTEGRITY_SIGNATURE=3Dy
 > > CONFIG_INTEGRITY_ASYMMETRIC_KEYS=3Dy
@@ -6392,9 +6271,9 @@ _THINGM)
 > > # CONFIG_IMA_DEFAULT_HASH_SHA512 is not set
 > > CONFIG_IMA_DEFAULT_HASH=3D"sha1"
 > > CONFIG_IMA_WRITE_POLICY=3Dy
-> > CONFIG_IMA_READ_POLICY=3Dy
+> > # CONFIG_IMA_READ_POLICY is not set
 > > CONFIG_IMA_APPRAISE=3Dy
-> > CONFIG_IMA_ARCH_POLICY=3Dy
+> > # CONFIG_IMA_ARCH_POLICY is not set
 > > # CONFIG_IMA_APPRAISE_BUILD_POLICY is not set
 > > CONFIG_IMA_APPRAISE_BOOTPARAM=3Dy
 > > # CONFIG_IMA_APPRAISE_MODSIG is not set
@@ -6403,7 +6282,7 @@ _THINGM)
 > > # CONFIG_IMA_LOAD_X509 is not set
 > > CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS=3Dy
 > > CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS=3Dy
-> > CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT=3Dy
+> > # CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
 > > # CONFIG_IMA_DISABLE_HTABLE is not set
 > > CONFIG_EVM=3Dy
 > > CONFIG_EVM_ATTR_FSUUID=3Dy
@@ -6424,7 +6303,7 @@ x,smack,tomoyo,apparmor,bpf"
 > > # Memory initialization
 > > #
 > > CONFIG_INIT_STACK_NONE=3Dy
-> > CONFIG_INIT_ON_ALLOC_DEFAULT_ON=3Dy
+> > # CONFIG_INIT_ON_ALLOC_DEFAULT_ON is not set
 > > # CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
 > > # end of Memory initialization
 > > # end of Kernel hardening options
@@ -6591,7 +6470,7 @@ x,smack,tomoyo,apparmor,bpf"
 > > CONFIG_CRYPTO_SERPENT_SSE2_X86_64=3Dm
 > > CONFIG_CRYPTO_SERPENT_AVX_X86_64=3Dm
 > > CONFIG_CRYPTO_SERPENT_AVX2_X86_64=3Dm
-> > CONFIG_CRYPTO_SM4=3Dy
+> > # CONFIG_CRYPTO_SM4 is not set
 > > # CONFIG_CRYPTO_SM4_AESNI_AVX_X86_64 is not set
 > > # CONFIG_CRYPTO_SM4_AESNI_AVX2_X86_64 is not set
 > > CONFIG_CRYPTO_TEA=3Dm
@@ -6697,7 +6576,7 @@ x,smack,tomoyo,apparmor,bpf"
 > > CONFIG_GENERIC_STRNLEN_USER=3Dy
 > > CONFIG_GENERIC_NET_UTILS=3Dy
 > > CONFIG_CORDIC=3Dm
-> > CONFIG_PRIME_NUMBERS=3Dm
+> > # CONFIG_PRIME_NUMBERS is not set
 > > CONFIG_RATIONAL=3Dy
 > > CONFIG_GENERIC_PCI_IOMAP=3Dy
 > > CONFIG_GENERIC_IOMAP=3Dy
@@ -6723,7 +6602,6 @@ x,smack,tomoyo,apparmor,bpf"
 > > # CONFIG_CRYPTO_LIB_POLY1305 is not set
 > > # CONFIG_CRYPTO_LIB_CHACHA20POLY1305 is not set
 > > CONFIG_CRYPTO_LIB_SHA256=3Dy
-> > CONFIG_CRYPTO_LIB_SM4=3Dy
 > > # end of Crypto library routines
 > > =
 
@@ -6787,8 +6665,21 @@ x,smack,tomoyo,apparmor,bpf"
 > > CONFIG_NEED_DMA_MAP_STATE=3Dy
 > > CONFIG_ARCH_DMA_ADDR_T_64BIT=3Dy
 > > CONFIG_SWIOTLB=3Dy
+> > CONFIG_DMA_CMA=3Dy
+> > # CONFIG_DMA_PERNUMA_CMA is not set
+> > =
+
+> > #
+> > # Default contiguous memory area size:
+> > #
+> > CONFIG_CMA_SIZE_MBYTES=3D0
+> > CONFIG_CMA_SIZE_SEL_MBYTES=3Dy
+> > # CONFIG_CMA_SIZE_SEL_PERCENTAGE is not set
+> > # CONFIG_CMA_SIZE_SEL_MIN is not set
+> > # CONFIG_CMA_SIZE_SEL_MAX is not set
+> > CONFIG_CMA_ALIGNMENT=3D8
 > > # CONFIG_DMA_API_DEBUG is not set
-> > CONFIG_DMA_MAP_BENCHMARK=3Dy
+> > # CONFIG_DMA_MAP_BENCHMARK is not set
 > > CONFIG_SGL_ALLOC=3Dy
 > > CONFIG_CHECK_SIGNATURE=3Dy
 > > CONFIG_CPUMASK_OFFSTACK=3Dy
@@ -6801,6 +6692,7 @@ x,smack,tomoyo,apparmor,bpf"
 > > CONFIG_IRQ_POLL=3Dy
 > > CONFIG_MPILIB=3Dy
 > > CONFIG_SIGNATURE=3Dy
+> > CONFIG_DIMLIB=3Dy
 > > CONFIG_OID_REGISTRY=3Dy
 > > CONFIG_UCS2_STRING=3Dy
 > > CONFIG_HAVE_GENERIC_VDSO=3Dy
@@ -6852,14 +6744,13 @@ x,smack,tomoyo,apparmor,bpf"
 > > # Compile-time checks and compiler options
 > > #
 > > CONFIG_DEBUG_INFO=3Dy
-> > # CONFIG_DEBUG_INFO_REDUCED is not set
+> > CONFIG_DEBUG_INFO_REDUCED=3Dy
 > > # CONFIG_DEBUG_INFO_COMPRESSED is not set
 > > # CONFIG_DEBUG_INFO_SPLIT is not set
 > > # CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT is not set
 > > CONFIG_DEBUG_INFO_DWARF4=3Dy
-> > CONFIG_DEBUG_INFO_BTF=3Dy
+> > # CONFIG_DEBUG_INFO_DWARF5 is not set
 > > CONFIG_PAHOLE_HAS_SPLIT_BTF=3Dy
-> > CONFIG_DEBUG_INFO_BTF_MODULES=3Dy
 > > # CONFIG_GDB_SCRIPTS is not set
 > > CONFIG_FRAME_WARN=3D8192
 > > CONFIG_STRIP_ASM_SYMS=3Dy
@@ -6867,9 +6758,7 @@ x,smack,tomoyo,apparmor,bpf"
 > > # CONFIG_HEADERS_INSTALL is not set
 > > CONFIG_DEBUG_SECTION_MISMATCH=3Dy
 > > CONFIG_SECTION_MISMATCH_WARN_ONLY=3Dy
-> > # CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B is not set
 > > CONFIG_STACK_VALIDATION=3Dy
-> > # CONFIG_VMLINUX_MAP is not set
 > > # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
 > > # end of Compile-time checks and compiler options
 > > =
@@ -6943,7 +6832,6 @@ x,smack,tomoyo,apparmor,bpf"
 > > CONFIG_ARCH_HAS_DEBUG_VIRTUAL=3Dy
 > > # CONFIG_DEBUG_VIRTUAL is not set
 > > CONFIG_DEBUG_MEMORY_INIT=3Dy
-> > CONFIG_MEMORY_NOTIFIER_ERROR_INJECT=3Dm
 > > # CONFIG_DEBUG_PER_CPU_MAPS is not set
 > > CONFIG_HAVE_ARCH_KASAN=3Dy
 > > CONFIG_HAVE_ARCH_KASAN_VMALLOC=3Dy
@@ -7004,33 +6892,23 @@ x,smack,tomoyo,apparmor,bpf"
 > > # Lock Debugging (spinlocks, mutexes, etc...)
 > > #
 > > CONFIG_LOCK_DEBUGGING_SUPPORT=3Dy
-> > CONFIG_PROVE_LOCKING=3Dy
-> > # CONFIG_PROVE_RAW_LOCK_NESTING is not set
+> > # CONFIG_PROVE_LOCKING is not set
 > > # CONFIG_LOCK_STAT is not set
-> > CONFIG_DEBUG_RT_MUTEXES=3Dy
-> > CONFIG_DEBUG_SPINLOCK=3Dy
-> > CONFIG_DEBUG_MUTEXES=3Dy
-> > CONFIG_DEBUG_WW_MUTEX_SLOWPATH=3Dy
-> > CONFIG_DEBUG_RWSEMS=3Dy
-> > CONFIG_DEBUG_LOCK_ALLOC=3Dy
-> > CONFIG_LOCKDEP=3Dy
-> > CONFIG_LOCKDEP_BITS=3D15
-> > CONFIG_LOCKDEP_CHAINS_BITS=3D16
-> > CONFIG_LOCKDEP_STACK_TRACE_BITS=3D19
-> > CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS=3D14
-> > CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS=3D12
-> > # CONFIG_DEBUG_LOCKDEP is not set
+> > # CONFIG_DEBUG_RT_MUTEXES is not set
+> > # CONFIG_DEBUG_SPINLOCK is not set
+> > # CONFIG_DEBUG_MUTEXES is not set
+> > # CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
+> > # CONFIG_DEBUG_RWSEMS is not set
+> > # CONFIG_DEBUG_LOCK_ALLOC is not set
 > > CONFIG_DEBUG_ATOMIC_SLEEP=3Dy
 > > # CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
 > > # CONFIG_LOCK_TORTURE_TEST is not set
-> > CONFIG_WW_MUTEX_SELFTEST=3Dm
+> > # CONFIG_WW_MUTEX_SELFTEST is not set
 > > # CONFIG_SCF_TORTURE_TEST is not set
 > > # CONFIG_CSD_LOCK_WAIT_DEBUG is not set
 > > # end of Lock Debugging (spinlocks, mutexes, etc...)
 > > =
 
-> > CONFIG_TRACE_IRQFLAGS=3Dy
-> > CONFIG_TRACE_IRQFLAGS_NMI=3Dy
 > > # CONFIG_DEBUG_IRQFLAGS is not set
 > > CONFIG_STACKTRACE=3Dy
 > > # CONFIG_WARN_ALL_UNSEEDED_RANDOM is not set
@@ -7041,7 +6919,7 @@ x,smack,tomoyo,apparmor,bpf"
 > > # Debug kernel data structures
 > > #
 > > CONFIG_DEBUG_LIST=3Dy
-> > CONFIG_DEBUG_PLIST=3Dy
+> > # CONFIG_DEBUG_PLIST is not set
 > > # CONFIG_DEBUG_SG is not set
 > > # CONFIG_DEBUG_NOTIFIERS is not set
 > > CONFIG_BUG_ON_DATA_CORRUPTION=3Dy
@@ -7054,12 +6932,12 @@ x,smack,tomoyo,apparmor,bpf"
 > > #
 > > # RCU Debugging
 > > #
-> > CONFIG_PROVE_RCU=3Dy
+> > CONFIG_TORTURE_TEST=3Dm
 > > # CONFIG_RCU_SCALE_TEST is not set
 > > # CONFIG_RCU_TORTURE_TEST is not set
-> > # CONFIG_RCU_REF_SCALE_TEST is not set
+> > CONFIG_RCU_REF_SCALE_TEST=3Dm
 > > CONFIG_RCU_CPU_STALL_TIMEOUT=3D60
-> > CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=3D20
+> > CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=3D21000
 > > # CONFIG_RCU_TRACE is not set
 > > # CONFIG_RCU_EQS_DEBUG is not set
 > > # end of RCU Debugging
@@ -7087,8 +6965,6 @@ x,smack,tomoyo,apparmor,bpf"
 > > CONFIG_RING_BUFFER=3Dy
 > > CONFIG_EVENT_TRACING=3Dy
 > > CONFIG_CONTEXT_SWITCH_TRACER=3Dy
-> > CONFIG_RING_BUFFER_ALLOW_SWAP=3Dy
-> > CONFIG_PREEMPTIRQ_TRACEPOINTS=3Dy
 > > CONFIG_TRACING=3Dy
 > > CONFIG_GENERIC_TRACER=3Dy
 > > CONFIG_TRACING_SUPPORT=3Dy
@@ -7102,7 +6978,7 @@ x,smack,tomoyo,apparmor,bpf"
 > > CONFIG_DYNAMIC_FTRACE_WITH_ARGS=3Dy
 > > CONFIG_FUNCTION_PROFILER=3Dy
 > > CONFIG_STACK_TRACER=3Dy
-> > CONFIG_IRQSOFF_TRACER=3Dy
+> > # CONFIG_IRQSOFF_TRACER is not set
 > > CONFIG_SCHED_TRACER=3Dy
 > > CONFIG_HWLAT_TRACER=3Dy
 > > # CONFIG_OSNOISE_TRACER is not set
@@ -7110,7 +6986,7 @@ x,smack,tomoyo,apparmor,bpf"
 > > # CONFIG_MMIOTRACE is not set
 > > CONFIG_FTRACE_SYSCALLS=3Dy
 > > CONFIG_TRACER_SNAPSHOT=3Dy
-> > CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP=3Dy
+> > # CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP is not set
 > > CONFIG_BRANCH_PROFILE_NONE=3Dy
 > > # CONFIG_PROFILE_ANNOTATED_BRANCHES is not set
 > > CONFIG_BLK_DEV_IO_TRACE=3Dy
@@ -7135,29 +7011,12 @@ x,smack,tomoyo,apparmor,bpf"
 > > # CONFIG_FTRACE_SORT_STARTUP_TEST is not set
 > > # CONFIG_RING_BUFFER_STARTUP_TEST is not set
 > > # CONFIG_RING_BUFFER_VALIDATE_TIME_DELTAS is not set
-> > CONFIG_PREEMPTIRQ_DELAY_TEST=3Dm
+> > # CONFIG_PREEMPTIRQ_DELAY_TEST is not set
 > > # CONFIG_SYNTH_EVENT_GEN_TEST is not set
 > > # CONFIG_KPROBE_EVENT_GEN_TEST is not set
 > > # CONFIG_HIST_TRIGGERS_DEBUG is not set
 > > CONFIG_PROVIDE_OHCI1394_DMA_INIT=3Dy
-> > CONFIG_SAMPLES=3Dy
-> > # CONFIG_SAMPLE_AUXDISPLAY is not set
-> > # CONFIG_SAMPLE_TRACE_EVENTS is not set
-> > CONFIG_SAMPLE_TRACE_PRINTK=3Dm
-> > CONFIG_SAMPLE_FTRACE_DIRECT=3Dm
-> > # CONFIG_SAMPLE_FTRACE_DIRECT_MULTI is not set
-> > # CONFIG_SAMPLE_TRACE_ARRAY is not set
-> > # CONFIG_SAMPLE_KOBJECT is not set
-> > # CONFIG_SAMPLE_KPROBES is not set
-> > # CONFIG_SAMPLE_HW_BREAKPOINT is not set
-> > # CONFIG_SAMPLE_KFIFO is not set
-> > # CONFIG_SAMPLE_LIVEPATCH is not set
-> > # CONFIG_SAMPLE_CONFIGFS is not set
-> > # CONFIG_SAMPLE_VFIO_MDEV_MTTY is not set
-> > # CONFIG_SAMPLE_VFIO_MDEV_MDPY is not set
-> > # CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB is not set
-> > # CONFIG_SAMPLE_VFIO_MDEV_MBOCHS is not set
-> > # CONFIG_SAMPLE_WATCHDOG is not set
+> > # CONFIG_SAMPLES is not set
 > > CONFIG_HAVE_SAMPLE_FTRACE_DIRECT=3Dy
 > > CONFIG_HAVE_SAMPLE_FTRACE_DIRECT_MULTI=3Dy
 > > CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=3Dy
@@ -7197,16 +7056,24 @@ x,smack,tomoyo,apparmor,bpf"
 > > # Kernel Testing and Coverage
 > > #
 > > # CONFIG_KUNIT is not set
-> > CONFIG_NOTIFIER_ERROR_INJECTION=3Dy
-> > CONFIG_PM_NOTIFIER_ERROR_INJECT=3Dm
-> > # CONFIG_NETDEV_NOTIFIER_ERROR_INJECT is not set
+> > # CONFIG_NOTIFIER_ERROR_INJECTION is not set
 > > CONFIG_FUNCTION_ERROR_INJECTION=3Dy
-> > # CONFIG_FAULT_INJECTION is not set
+> > CONFIG_FAULT_INJECTION=3Dy
+> > # CONFIG_FAILSLAB is not set
+> > # CONFIG_FAIL_PAGE_ALLOC is not set
+> > # CONFIG_FAULT_INJECTION_USERCOPY is not set
+> > CONFIG_FAIL_MAKE_REQUEST=3Dy
+> > # CONFIG_FAIL_IO_TIMEOUT is not set
+> > # CONFIG_FAIL_FUTEX is not set
+> > CONFIG_FAULT_INJECTION_DEBUG_FS=3Dy
+> > # CONFIG_FAIL_FUNCTION is not set
+> > # CONFIG_FAIL_MMC_REQUEST is not set
+> > # CONFIG_FAIL_SUNRPC is not set
 > > CONFIG_ARCH_HAS_KCOV=3Dy
 > > CONFIG_CC_HAS_SANCOV_TRACE_PC=3Dy
 > > # CONFIG_KCOV is not set
 > > CONFIG_RUNTIME_TESTING_MENU=3Dy
-> > CONFIG_LKDTM=3Dy
+> > # CONFIG_LKDTM is not set
 > > # CONFIG_TEST_MIN_HEAP is not set
 > > # CONFIG_TEST_DIV64 is not set
 > > # CONFIG_BACKTRACE_SELF_TEST is not set
@@ -7220,34 +7087,34 @@ x,smack,tomoyo,apparmor,bpf"
 > > # CONFIG_TEST_HEXDUMP is not set
 > > # CONFIG_STRING_SELFTEST is not set
 > > # CONFIG_TEST_STRING_HELPERS is not set
-> > CONFIG_TEST_STRSCPY=3Dm
+> > # CONFIG_TEST_STRSCPY is not set
 > > # CONFIG_TEST_KSTRTOX is not set
-> > CONFIG_TEST_PRINTF=3Dm
-> > CONFIG_TEST_SCANF=3Dm
-> > CONFIG_TEST_BITMAP=3Dm
+> > # CONFIG_TEST_PRINTF is not set
+> > # CONFIG_TEST_SCANF is not set
+> > # CONFIG_TEST_BITMAP is not set
 > > # CONFIG_TEST_UUID is not set
 > > # CONFIG_TEST_XARRAY is not set
 > > # CONFIG_TEST_OVERFLOW is not set
 > > # CONFIG_TEST_RHASHTABLE is not set
 > > # CONFIG_TEST_SIPHASH is not set
 > > # CONFIG_TEST_IDA is not set
-> > CONFIG_TEST_LKM=3Dm
-> > CONFIG_TEST_BITOPS=3Dm
-> > CONFIG_TEST_VMALLOC=3Dm
-> > CONFIG_TEST_USER_COPY=3Dm
+> > # CONFIG_TEST_LKM is not set
+> > # CONFIG_TEST_BITOPS is not set
+> > # CONFIG_TEST_VMALLOC is not set
+> > # CONFIG_TEST_USER_COPY is not set
 > > CONFIG_TEST_BPF=3Dm
-> > CONFIG_TEST_BLACKHOLE_DEV=3Dm
+> > # CONFIG_TEST_BLACKHOLE_DEV is not set
 > > # CONFIG_FIND_BIT_BENCHMARK is not set
-> > CONFIG_TEST_FIRMWARE=3Dm
-> > CONFIG_TEST_SYSCTL=3Dy
+> > # CONFIG_TEST_FIRMWARE is not set
+> > # CONFIG_TEST_SYSCTL is not set
 > > # CONFIG_TEST_UDELAY is not set
-> > CONFIG_TEST_STATIC_KEYS=3Dm
-> > CONFIG_TEST_KMOD=3Dm
+> > # CONFIG_TEST_STATIC_KEYS is not set
+> > # CONFIG_TEST_KMOD is not set
 > > # CONFIG_TEST_MEMCAT_P is not set
-> > CONFIG_TEST_LIVEPATCH=3Dm
+> > # CONFIG_TEST_LIVEPATCH is not set
 > > # CONFIG_TEST_STACKINIT is not set
 > > # CONFIG_TEST_MEMINIT is not set
-> > CONFIG_TEST_HMM=3Dm
+> > # CONFIG_TEST_HMM is not set
 > > # CONFIG_TEST_FREE_PAGES is not set
 > > # CONFIG_TEST_FPU is not set
 > > # CONFIG_TEST_CLOCKSOURCE_WATCHDOG is not set
@@ -7270,53 +7137,53 @@ x,smack,tomoyo,apparmor,bpf"
 > > 	export queue_cmdline_keys=3D'branch
 > > commit'
 > > 	export queue=3D'validate'
-> > 	export testbox=3D'vm-icl-36'
-> > 	export tbox_group=3D'vm-icl'
-> > 	export branch=3D'ammarfaizi2-block/paulmck/linux-rcu/dev'
-> > 	export commit=3D'758cf1496b94442c47c339b10d80cbaadf613425'
-> > 	export kconfig=3D'x86_64-rhel-8.3-kselftests'
-> > 	export repeat_to=3D6
+> > 	export testbox=3D'vm-snb-157'
+> > 	export tbox_group=3D'vm-snb'
+> > 	export branch=3D'ammarfaizi2-block/paulmck/linux-rcu/dev.2022.03.01a'
+> > 	export commit=3D'7bf8d644f869260f63eaaedebabdd2054f59ecc4'
+> > 	export kconfig=3D'x86_64-rhel-8.3-func'
+> > 	export repeat_to=3D16
 > > 	export nr_vm=3D160
-> > 	export submit_id=3D'622ce907c93d475d56bd9d46'
-> > 	export job_file=3D'/lkp/jobs/scheduled/vm-icl-36/boot-1-yocto-i386-min=
-imal-20190520.cgz-758cf1496b94442c47c339b10d80cbaadf613425-20220313-89430-f=
-vvfat-4.yaml'
-> > 	export id=3D'973515790737a6a185a8f82be6155179c94fec9f'
+> > 	export submit_id=3D'6229cfc0a920e2f563b772ea'
+> > 	export job_file=3D'/lkp/jobs/scheduled/vm-snb-157/boot-1-debian-10.4-x=
+86_64-20200603.cgz-7bf8d644f869260f63eaaedebabdd2054f59ecc4-20220310-128355=
+-1v2pw5f-8.yaml'
+> > 	export id=3D'c2634508607ae7b6a04b90b5837c23cb4f9865ff'
 > > 	export queuer_version=3D'/lkp-src'
-> > 	export model=3D'qemu-system-x86_64 -enable-kvm -cpu Icelake-Server'
-> > 	export nr_cpu=3D4
+> > 	export model=3D'qemu-system-x86_64 -enable-kvm -cpu SandyBridge'
+> > 	export nr_cpu=3D2
 > > 	export memory=3D'16G'
 > > 	export need_kconfig=3D\{\"KVM_GUEST\"\=3D\>\"y\"\}
-> > 	export ssh_base_port=3D23600
+> > 	export ssh_base_port=3D23032
 > > 	export kernel_cmdline=3D'vmalloc=3D128M initramfs_async=3D0 page_owner=
 =3Don'
-> > 	export rootfs=3D'yocto-i386-minimal-20190520.cgz'
+> > 	export rootfs=3D'debian-10.4-x86_64-20200603.cgz'
 > > 	export compiler=3D'gcc-9'
-> > 	export enqueue_time=3D'2022-03-13 02:40:07 +0800'
-> > 	export _id=3D'622ce91dc93d475d56bd9d47'
-> > 	export _rt=3D'/result/boot/1/vm-icl/yocto-i386-minimal-20190520.cgz/x8=
-6_64-rhel-8.3-kselftests/gcc-9/758cf1496b94442c47c339b10d80cbaadf613425'
+> > 	export enqueue_time=3D'2022-03-10 18:15:28 +0800'
+> > 	export _id=3D'6229cfc0a920e2f563b772ea'
+> > 	export _rt=3D'/result/boot/1/vm-snb/debian-10.4-x86_64-20200603.cgz/x8=
+6_64-rhel-8.3-func/gcc-9/7bf8d644f869260f63eaaedebabdd2054f59ecc4'
 > > 	export user=3D'lkp'
 > > 	export LKP_SERVER=3D'internal-lkp-server'
-> > 	export result_root=3D'/result/boot/1/vm-icl/yocto-i386-minimal-2019052=
-0.cgz/x86_64-rhel-8.3-kselftests/gcc-9/758cf1496b94442c47c339b10d80cbaadf61=
-3425/3'
-> > 	export scheduler_version=3D'/lkp/lkp/.src-20220311-152040'
-> > 	export arch=3D'i386'
+> > 	export result_root=3D'/result/boot/1/vm-snb/debian-10.4-x86_64-2020060=
+3.cgz/x86_64-rhel-8.3-func/gcc-9/7bf8d644f869260f63eaaedebabdd2054f59ecc4/1=
+0'
+> > 	export scheduler_version=3D'/lkp/lkp/.src-20220310-172907'
+> > 	export arch=3D'x86_64'
 > > 	export max_uptime=3D600
-> > 	export initrd=3D'/osimage/yocto/yocto-i386-minimal-20190520.cgz'
+> > 	export initrd=3D'/osimage/debian/debian-10.4-x86_64-20200603.cgz'
 > > 	export bootloader_append=3D'root=3D/dev/ram0
-> > RESULT_ROOT=3D/result/boot/1/vm-icl/yocto-i386-minimal-20190520.cgz/x86=
-_64-rhel-8.3-kselftests/gcc-9/758cf1496b94442c47c339b10d80cbaadf613425/3
-> > BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-9/758cf1496b9444=
-2c47c339b10d80cbaadf613425/vmlinuz-5.17.0-rc1-00188-g758cf1496b94
-> > branch=3Dammarfaizi2-block/paulmck/linux-rcu/dev
-> > job=3D/lkp/jobs/scheduled/vm-icl-36/boot-1-yocto-i386-minimal-20190520.=
-cgz-758cf1496b94442c47c339b10d80cbaadf613425-20220313-89430-fvvfat-4.yaml
+> > RESULT_ROOT=3D/result/boot/1/vm-snb/debian-10.4-x86_64-20200603.cgz/x86=
+_64-rhel-8.3-func/gcc-9/7bf8d644f869260f63eaaedebabdd2054f59ecc4/10
+> > BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3-func/gcc-9/7bf8d644f869260f63ea=
+aedebabdd2054f59ecc4/vmlinuz-5.17.0-rc1-00191-g7bf8d644f869
+> > branch=3Dammarfaizi2-block/paulmck/linux-rcu/dev.2022.03.01a
+> > job=3D/lkp/jobs/scheduled/vm-snb-157/boot-1-debian-10.4-x86_64-20200603=
+.cgz-7bf8d644f869260f63eaaedebabdd2054f59ecc4-20220310-128355-1v2pw5f-8.yaml
 > > user=3Dlkp
 > > ARCH=3Dx86_64
-> > kconfig=3Dx86_64-rhel-8.3-kselftests
-> > commit=3D758cf1496b94442c47c339b10d80cbaadf613425
+> > kconfig=3Dx86_64-rhel-8.3-func
+> > commit=3D7bf8d644f869260f63eaaedebabdd2054f59ecc4
 > > vmalloc=3D128M initramfs_async=3D0 page_owner=3Don
 > > max_uptime=3D600
 > > LKP_SERVER=3Dinternal-lkp-server
@@ -7341,19 +7208,23 @@ cgz-758cf1496b94442c47c339b10d80cbaadf613425-20220313-89430-fvvfat-4.yaml
 > > console=3DttyS0,115200
 > > vga=3Dnormal
 > > rw'
-> > 	export modules_initrd=3D'/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-9/7=
-58cf1496b94442c47c339b10d80cbaadf613425/modules.cgz'
-> > 	export lkp_initrd=3D'/osimage/user/lkp/lkp-i386.cgz'
+> > 	export modules_initrd=3D'/pkg/linux/x86_64-rhel-8.3-func/gcc-9/7bf8d64=
+4f869260f63eaaedebabdd2054f59ecc4/modules.cgz'
+> > 	export bm_initrd=3D'/osimage/deps/debian-10.4-x86_64-20200603.cgz/run-=
+ipconfig_20200608.cgz,/osimage/deps/debian-10.4-x86_64-20200603.cgz/lkp_202=
+20105.cgz,/osimage/deps/debian-10.4-x86_64-20200603.cgz/rsync-rootfs_202006=
+08.cgz'
+> > 	export lkp_initrd=3D'/osimage/user/lkp/lkp-x86_64.cgz'
 > > 	export site=3D'inn'
 > > 	export LKP_CGI_PORT=3D80
 > > 	export LKP_CIFS_PORT=3D139
 > > 	export schedule_notify_address=3D
-> > 	export kernel=3D'/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-9/758cf1496=
-b94442c47c339b10d80cbaadf613425/vmlinuz-5.17.0-rc1-00188-g758cf1496b94'
-> > 	export dequeue_time=3D'2022-03-13 02:41:03 +0800'
-> > 	export job_initrd=3D'/lkp/jobs/scheduled/vm-icl-36/boot-1-yocto-i386-m=
-inimal-20190520.cgz-758cf1496b94442c47c339b10d80cbaadf613425-20220313-89430=
--fvvfat-4.cgz'
+> > 	export kernel=3D'/pkg/linux/x86_64-rhel-8.3-func/gcc-9/7bf8d644f869260=
+f63eaaedebabdd2054f59ecc4/vmlinuz-5.17.0-rc1-00191-g7bf8d644f869'
+> > 	export dequeue_time=3D'2022-03-10 18:20:10 +0800'
+> > 	export job_initrd=3D'/lkp/jobs/scheduled/vm-snb-157/boot-1-debian-10.4=
+-x86_64-20200603.cgz-7bf8d644f869260f63eaaedebabdd2054f59ecc4-20220310-1283=
+55-1v2pw5f-8.cgz'
 > > =
 
 > > 	[ -n "$LKP_SRC" ] ||
@@ -7419,5 +7290,5 @@ inimal-20190520.cgz-758cf1496b94442c47c339b10d80cbaadf613425-20220313-89430=
 > =
 
 >=20
---===============2646320178898459417==--
+--===============3377778503009390936==--
 
