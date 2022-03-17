@@ -1,48 +1,43 @@
-Content-Type: multipart/mixed; boundary="===============2310344058605027604=="
+Content-Type: multipart/mixed; boundary="===============8186017335044126085=="
 MIME-Version: 1.0
-From: Dave Hansen <dave.hansen@intel.com>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 To: lkp@lists.01.org
-Subject: Re: [x86/mm/tlb] 6035152d8e: will-it-scale.per_thread_ops -13.2% regression
-Date: Thu, 17 Mar 2022 13:49:48 -0700
-Message-ID: <285cf565-ebf7-8cf5-4e57-2245608e79fb@intel.com>
-In-Reply-To: <DC37F01B-A80F-4839-B4FB-C21F64943E64@vmware.com>
+Subject: Re: [PATCH v3] workqueue: Warn flushing of kernel-global workqueues
+Date: Fri, 18 Mar 2022 07:25:04 +0900
+Message-ID: <d1ed2184-00ee-9756-5ad2-7c8189634748@I-love.SAKURA.ne.jp>
+In-Reply-To: <Yh0XmUtuuyaO9j8j@slm.duckdns.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2310344058605027604==
+--===============8186017335044126085==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 3/17/22 13:32, Nadav Amit wrote:
-> Can you please clarify how the bot works - did it notice a performance
-> regression and then started bisecting, or did it just check one patch
-> at a time?
+On 2022/03/01 3:42, Tejun Heo wrote:
+> On Mon, Feb 28, 2022 at 11:03:47PM +0900, Tetsuo Handa wrote:
+>> Then, what about this?
+>> If this looks OK, I'll test this patch using linux-next via my tree.
+> =
 
-Oliver can tell us for sure, but it usually finds things by bisecting.
-It will pick an upstream commit and compare it to the latest baseline.
-If it sees a delta it starts bisecting for the triggering commit.
+> Yeah, looks good to me. Can you boot test and fix the obvious ones before
+> the pushing it to linux-next? It probably would be best if this is kept i=
+n a
+> separate branch together with all the fix-up patches. Once things settle
+> enough, we should be able to route the patches through the wq tree to Lin=
+us.
+> =
 
-It isn't a literal 'git bisect', but it's logically similar.
+> Thank you so much for doing this.
+> =
 
-I did ask the 0day folks privately if they had any more performance data
-on that commit: good, bad or neutral.
 
-That commit didn't actually look to me like it was fundamental to
-anything built after it.  It might not revert cleanly, but it doesn't
-look like it would be hard to logically remove.  What other side-effects
-are you worried about?
-
-BTW, there's also a dirt simple hack to do the on_each_cpu_cond_mask()
-without a retpoline:
-
-	if ((cond_func =3D=3D tlb_is_not_lazy) &&
-            !tlb_is_not_lazy(...))
-		continue;
-
-You can't do that literally in arch-independent code, but you get the point.
-
-I know folks have discussed ways of doing this kind of stuff for other
-high-value indirect calls.  I need to see if there's anything around
-that we could use.
---===============2310344058605027604==--
+This patch has been in linux-next.git as commit b9c20da356db1b39 ("workqueu=
+e:
+Warn flushing of kernel-global workqueues") since next-20220301, and I got =
+no
+failure reports. I think we can send this patch to linux.git in order to let
+each module's developers to write their patches. (I will drop this patch fr=
+om
+my tree when you pick up this patch.)
+--===============8186017335044126085==--
 
