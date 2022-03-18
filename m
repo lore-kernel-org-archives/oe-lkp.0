@@ -1,43 +1,59 @@
-Content-Type: multipart/mixed; boundary="===============8186017335044126085=="
+Content-Type: multipart/mixed; boundary="===============1352986470320665082=="
 MIME-Version: 1.0
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Dave Hansen <dave.hansen@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH v3] workqueue: Warn flushing of kernel-global workqueues
-Date: Fri, 18 Mar 2022 07:25:04 +0900
-Message-ID: <d1ed2184-00ee-9756-5ad2-7c8189634748@I-love.SAKURA.ne.jp>
-In-Reply-To: <Yh0XmUtuuyaO9j8j@slm.duckdns.org>
+Subject: Re: [x86/mm/tlb] 6035152d8e: will-it-scale.per_thread_ops -13.2% regression
+Date: Thu, 17 Mar 2022 17:16:18 -0700
+Message-ID: <dd8be93c-ded6-b962-50d4-96b1c3afb2b7@intel.com>
+In-Reply-To: <DC37F01B-A80F-4839-B4FB-C21F64943E64@vmware.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8186017335044126085==
+--===============1352986470320665082==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2022/03/01 3:42, Tejun Heo wrote:
-> On Mon, Feb 28, 2022 at 11:03:47PM +0900, Tetsuo Handa wrote:
->> Then, what about this?
->> If this looks OK, I'll test this patch using linux-next via my tree.
-> =
+On 3/17/22 13:32, Nadav Amit wrote:
+> I=E2=80=99m not married to this patch, but before a revert it would be go=
+od
+> to know why it even matters. I wonder whether you can confirm that
+> reverting the patch (without the rest of the series) even helps. If
+> it does, I=E2=80=99ll try to run some tests to understand what the heck is
+> going on.
 
-> Yeah, looks good to me. Can you boot test and fix the obvious ones before
-> the pushing it to linux-next? It probably would be best if this is kept i=
-n a
-> separate branch together with all the fix-up patches. Once things settle
-> enough, we should be able to route the patches through the wq tree to Lin=
-us.
-> =
+I went back and tested on a "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz"
+which is evidently a 6-core "Coffee Lake".  It needs retpolines:
 
-> Thank you so much for doing this.
-> =
+> /sys/devices/system/cpu/vulnerabilities/spectre_v2:Mitigation: Full
+generic retpoline, IBPB: conditional, IBRS_FW, STIBP: conditional, RSB
+filling
 
+I ran the will-it-scale test:
 
-This patch has been in linux-next.git as commit b9c20da356db1b39 ("workqueu=
-e:
-Warn flushing of kernel-global workqueues") since next-20220301, and I got =
-no
-failure reports. I think we can send this patch to linux.git in order to let
-each module's developers to write their patches. (I will drop this patch fr=
-om
-my tree when you pick up this patch.)
---===============8186017335044126085==--
+	./malloc1_threads -s 30 -t 12
+
+and took the 30-second average "ops/sec" at the two commits:
+
+	4c1ba3923e:197876
+	6035152d8e:199367 +0.75%
+
+Where bigger is better.  So, a small win, but probably mostly in the
+noise.  The number of IPIs definitely went up, probably 3-4% to get that
+win.
+
+IPI costs go up the more threads you throw at it.  The retpolines do
+too, though because you do *more* of them.  Systems with no retpolines
+get hit harder by the IPI costs and have no upsides from removing the
+retpoline.
+
+So, we've got a small (<1%, possibly zero) win on the bulk of systems
+(which have retpolines).  Newer, retpoline-free systems see a
+double-digit regression.  The bigger the system, the bigger the
+regression (probably).
+
+I tend to think the bigger regression wins and we should probably revert
+the patch, or@least back out its behavior.
+
+Nadav, do you have some different data or a different take?
+--===============1352986470320665082==--
 
