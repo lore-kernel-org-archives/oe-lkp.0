@@ -1,59 +1,87 @@
-Content-Type: multipart/mixed; boundary="===============1352986470320665082=="
+Content-Type: multipart/mixed; boundary="===============7462900908257099503=="
 MIME-Version: 1.0
-From: Dave Hansen <dave.hansen@intel.com>
+From: Nadav Amit <namit@vmware.com>
 To: lkp@lists.01.org
 Subject: Re: [x86/mm/tlb] 6035152d8e: will-it-scale.per_thread_ops -13.2% regression
-Date: Thu, 17 Mar 2022 17:16:18 -0700
-Message-ID: <dd8be93c-ded6-b962-50d4-96b1c3afb2b7@intel.com>
-In-Reply-To: <DC37F01B-A80F-4839-B4FB-C21F64943E64@vmware.com>
+Date: Fri, 18 Mar 2022 00:20:04 +0000
+Message-ID: <A185DAD5-3AA7-445B-B57D-AFAF6B55D144@vmware.com>
+In-Reply-To: <dd8be93c-ded6-b962-50d4-96b1c3afb2b7@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1352986470320665082==
+--===============7462900908257099503==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 3/17/22 13:32, Nadav Amit wrote:
-> I=E2=80=99m not married to this patch, but before a revert it would be go=
-od
-> to know why it even matters. I wonder whether you can confirm that
-> reverting the patch (without the rest of the series) even helps. If
-> it does, I=E2=80=99ll try to run some tests to understand what the heck is
-> going on.
 
-I went back and tested on a "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz"
-which is evidently a 6-core "Coffee Lake".  It needs retpolines:
 
-> /sys/devices/system/cpu/vulnerabilities/spectre_v2:Mitigation: Full
-generic retpoline, IBPB: conditional, IBRS_FW, STIBP: conditional, RSB
-filling
+> On Mar 17, 2022, at 5:16 PM, Dave Hansen <dave.hansen@intel.com> wrote:
+> =
 
-I ran the will-it-scale test:
+> On 3/17/22 13:32, Nadav Amit wrote:
+>> I=E2=80=99m not married to this patch, but before a revert it would be g=
+ood
+>> to know why it even matters. I wonder whether you can confirm that
+>> reverting the patch (without the rest of the series) even helps. If
+>> it does, I=E2=80=99ll try to run some tests to understand what the heck =
+is
+>> going on.
+> =
 
-	./malloc1_threads -s 30 -t 12
+> I went back and tested on a "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz"
+> which is evidently a 6-core "Coffee Lake".  It needs retpolines:
+> =
 
-and took the 30-second average "ops/sec" at the two commits:
+>> /sys/devices/system/cpu/vulnerabilities/spectre_v2:Mitigation: Full
+> generic retpoline, IBPB: conditional, IBRS_FW, STIBP: conditional, RSB
+> filling
+> =
 
-	4c1ba3923e:197876
-	6035152d8e:199367 +0.75%
+> I ran the will-it-scale test:
+> =
 
-Where bigger is better.  So, a small win, but probably mostly in the
-noise.  The number of IPIs definitely went up, probably 3-4% to get that
-win.
+> 	./malloc1_threads -s 30 -t 12
+> =
 
-IPI costs go up the more threads you throw at it.  The retpolines do
-too, though because you do *more* of them.  Systems with no retpolines
-get hit harder by the IPI costs and have no upsides from removing the
-retpoline.
+> and took the 30-second average "ops/sec" at the two commits:
+> =
 
-So, we've got a small (<1%, possibly zero) win on the bulk of systems
-(which have retpolines).  Newer, retpoline-free systems see a
-double-digit regression.  The bigger the system, the bigger the
-regression (probably).
+> 	4c1ba3923e:197876
+> 	6035152d8e:199367 +0.75%
+> =
 
-I tend to think the bigger regression wins and we should probably revert
-the patch, or@least back out its behavior.
+> Where bigger is better.  So, a small win, but probably mostly in the
+> noise.  The number of IPIs definitely went up, probably 3-4% to get that
+> win.
+> =
 
-Nadav, do you have some different data or a different take?
---===============1352986470320665082==--
+> IPI costs go up the more threads you throw at it.  The retpolines do
+> too, though because you do *more* of them.  Systems with no retpolines
+> get hit harder by the IPI costs and have no upsides from removing the
+> retpoline.
+> =
+
+> So, we've got a small (<1%, possibly zero) win on the bulk of systems
+> (which have retpolines).  Newer, retpoline-free systems see a
+> double-digit regression.  The bigger the system, the bigger the
+> regression (probably).
+> =
+
+> I tend to think the bigger regression wins and we should probably revert
+> the patch, or at least back out its behavior.
+> =
+
+> Nadav, do you have some different data or a different take?
+
+Thanks for testing.
+
+I don=E2=80=99t have other data right now. Let me run some measurements lat=
+er
+tonight. I understand your explanation, but I still do not see how
+much =E2=80=9Clater=E2=80=9D can the lazy check be that it really matters. =
+Just
+strange.
+
+
+--===============7462900908257099503==--
 
