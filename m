@@ -1,165 +1,81 @@
-Content-Type: multipart/mixed; boundary="===============0119756724173764232=="
+Content-Type: multipart/mixed; boundary="===============8148749412445783465=="
 MIME-Version: 1.0
-From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+From: Kees Cook <keescook@chromium.org>
 To: lkp@lists.01.org
-Subject: Re: [PATCH] tracing: Avoid adding duplicated tracer options when update_tracer_options is running in parallel
-Date: Wed, 23 Mar 2022 22:45:16 +0800
-Message-ID: <20220323144516.6602-1-mark-pk.tsai@mediatek.com>
-In-Reply-To: <20220323102831.1cf884d6@gandalf.local.home>
+Subject: Re: [scsi] 6aded12b10: kernel_BUG_at_mm/usercopy.c
+Date: Wed, 23 Mar 2022 08:40:30 -0700
+Message-ID: <202203230809.D63BF9511@keescook>
+In-Reply-To: <20220323071409.GA25480@lst.de>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0119756724173764232==
+--===============8148749412445783465==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-> On Wed, 23 Mar 2022 22:21:29 +0800
-> Mark-PK Tsai <mark-pk.tsai@mediatek.com> wrote:
+On Wed, Mar 23, 2022 at 08:14:10AM +0100, Christoph Hellwig wrote:
+> The actual warning is;
 > =
 
-> > > On Wed, 23 Mar 2022 11:24:42 +0800
-> > > Mark-PK Tsai <mark-pk.tsai@mediatek.com> wrote:
-> > >   =
-
-> > > > When update_tracer_options is running in parallel,
-> > > > tr->tops might be updated before the trace_types list traversal.
-> > > > Let update_tracer_options traverse the trace_types list safely in
-> > > > kernel init time and avoid the tr->tops update before it finish.  =
-
-> > > =
-
-> > > ??? Have you seen a bug here? I'm totally confused by this.  =
-
-> > =
-
-> > Sorry to make you confused.
-> > =
-
-> > After the below patch, update_tracer_options might be executed later th=
-an registering
-> > hwlat_tracer, which is in late_initcall.
-> > =
-
-> > https://lore.kernel.org/lkml/20220316151639.9216-1-mark-pk.tsai(a)media=
-tek.com/
+> [   34.496096][  T331] usercopy: Kernel memory overwrite attempt detected=
+ to spans multiple pages (off set 0, size 6)!
 > =
 
-> If you send patches that depend on patches that are not in the tree, you
-> need to explicitly state that.
-
-Got it.
-
+> This is for the cmnd field in struct scsi_cmnd, which is allocated by
+> the block layer as part of the request allocator.  So with a specific
+> packing it can legitimately span pages.
 > =
 
-> =
+> Kees: how can we annotate that this is ok?
 
-> > =
+The main problem is that CONFIG_HARDENED_USERCOPY_PAGESPAN=3Dy is broken
+(and nothing should be setting it).
 
-> > The init_hwlat_tracer initcall will put hwlat_tracer to tr->tops.
-> > Then when the later arrived __update_tracer_options is trying to
-> > update all the tracer options, create_trace_option_files show the
-> > below warning because hwlat_tracer is already in the list.
-> > =
+This series removes it:
+https://lore.kernel.org/linux-hardening/20220110231530.665970-1-willy(a)inf=
+radead.org/
 
-> > [ 6.680068 ][ T7 ] WARNING: CPU: 0 PID: 7 at kernel/trace/trace.c:8899 =
-create_trace_option_files (kernel/trace/trace.c:8899 (discriminator 1))
-> > =
+Matthew, what's the status of that series? Will it make the current
+merge window?
 
-> > full log: https://lore.kernel.org/lkml/20220322133339.GA32582(a)xsang-O=
-ptiPlex-9020/
-> =
+As for the SCSI changes, I'm a bit worried about type confusion, as I
+don't see anything actually validating types/sizes when converting:
 
-> So this is all dependent on patches not in the tree?
+static inline void *blk_mq_rq_to_pdu(struct request *rq)
+{
+        return rq + 1;
+}
 
-Yes...
+But I guess that ship has sailed. :P
 
-> =
+Regardless, I'm concerned that disabling PAGESPAN will just uncover
+further checks, though. Where is allocation happening? The check is here:
 
-> > =
+static int scsi_fill_sghdr_rq(struct scsi_device *sdev, struct request *rq,
+                struct sg_io_hdr *hdr, fmode_t mode)
+{
+        struct scsi_cmnd *scmd =3D blk_mq_rq_to_pdu(rq);
 
-> > =
+        if (hdr->cmd_len < 6)
+                return -EMSGSIZE;
+        if (copy_from_user(scmd->cmnd, hdr->cmdp, hdr->cmd_len))
+                return -EFAULT;
+	...
+}
 
-> > >   =
+I don't see any earlier marking for this copy_from_user(), so I assume
+the old allocation was a plain kmalloc().
 
-> > > > =
+For comparision, a related marking can be seen for a copy_to_user() case
+in commit 0afe76e88c57 ("scsi: Define usercopy region in scsi_sense_cache
+slab cache")
 
-> > > > Link: https://lore.kernel.org/lkml/20220322133339.GA32582(a)xsang-O=
-ptiPlex-9020/
-> > > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-> > > > ---
-> > > >  kernel/trace/trace.c | 7 +++++++
-> > > >  1 file changed, 7 insertions(+)
-> > > > =
+I *think* the allocation is happening in scsi_ioctl_reset()? But that's
+a plain kmalloc(), so I'm not sure why PAGESPAN would have tripped...
+are there other allocation paths?
 
-> > > > diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-> > > > index adb37e437a05..2974ae056068 100644
-> > > > --- a/kernel/trace/trace.c
-> > > > +++ b/kernel/trace/trace.c
-> > > > @@ -6317,12 +6317,18 @@ static void tracing_set_nop(struct trace_ar=
-ray *tr)
-> > > >  	tr->current_trace =3D &nop_trace;
-> > > >  }
-> > > >  =
+-- =
 
-> > > > +static bool tracer_options_updated;
-> > > > +
-> > > >  static void add_tracer_options(struct trace_array *tr, struct trac=
-er *t)
-> > > >  {
-> > > >  	/* Only enable if the directory has been created already. */
-> > > >  	if (!tr->dir)
-> > > >  		return;
-> > > >  =
-
-> > > > +	/* Only create trace option files after update_tracer_options fin=
-ish */
-> > > > +	if (!tracer_options_updated)
-> > > > +		return;
-> > > > +
-> > > >  	create_trace_option_files(tr, t);
-> > > >  }
-> > > >  =
-
-> > > > @@ -9133,6 +9139,7 @@ static void update_tracer_options(struct trac=
-e_array *tr)
-> > > >  {
-> > > >  	mutex_lock(&trace_types_lock);  =
-
-> > > =
-
-> > > How is update_trace_options run in parallel?
-> > > =
-
-> > > There's a mutex that protects it. =
-
-> > >   =
-
-> > =
-
-> > Oh sorry.
-> > What I trying to tell is that update_trace_options is run in parallel w=
-ith
-> > the initcall thread after:
-> > =
-
-> > https://lore.kernel.org/lkml/20220316151639.9216-1-mark-pk.tsai(a)media=
-tek.com/
-> > =
-
-> =
-
-> Again, this is not in the tree, so it should be part of that patch series,
-> which I haven't yet been able to fully review.
-
-Got it, I will collect these two patches in patch series v3 and rewrite the=
- bad commit message.
-Thanks!
-
-> =
-
-> -- Steve
-
-
---===============0119756724173764232==--
+Kees Cook
+--===============8148749412445783465==--
 
