@@ -1,62 +1,113 @@
-Content-Type: multipart/mixed; boundary="===============5652422076791094154=="
+Content-Type: multipart/mixed; boundary="===============7294131136384065931=="
 MIME-Version: 1.0
 From: Chen Yu <yu.chen.surf@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/fair] ddb3b1126f: hackbench.throughput -25.9% regression
-Date: Sat, 02 Apr 2022 02:04:09 +0800
-Message-ID: <CADjb_WQsTkdbwrvtzWwjt2O_jiuQTx+=Xy=yMPbAwKPmFDX-0w@mail.gmail.com>
-In-Reply-To: <7aa67fedb4b6dc9126bc59ee993fa18d0e472475.camel@linux.intel.com>
+Subject: Re: [sched/pelt] 2d02fa8cc2: stress-ng.pipeherd.ops_per_sec -9.7% regression
+Date: Sat, 02 Apr 2022 02:32:45 +0800
+Message-ID: <CADjb_WQL7ZTSrThgFHtoF2apwwqio8wgwGYmCOq9LBfamo3D0Q@mail.gmail.com>
+In-Reply-To: <CAKfTPtDFhORUyOfqr==ZrOSgBd8=vzvYgWMxw87bvq3pQmq7DQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5652422076791094154==
+--===============7294131136384065931==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 31, 2022 at 11:42 AM Tim Chen <tim.c.chen@linux.intel.com> wr=
-ote:
+On Fri, Apr 1, 2022 at 12:17 AM Vincent Guittot
+<vincent.guittot@linaro.org> wrote:
 >
-> On Wed, 2022-03-30 at 17:46 +0800, kernel test robot wrote:
+> On Thu, 31 Mar 2022 at 16:19, Chen Yu <yu.chen.surf@gmail.com> wrote:
 > >
-> > Greeting,
+> > Hi Vincent,
 > >
-> > FYI, we noticed a -25.9% regression of hackbench.throughput due to comm=
-it:
+> > On Wed, Feb 9, 2022 at 1:17 PM kernel test robot <oliver.sang@intel.c=
+om> wrote:
+> > >
+> > >
+> > >
+> > > Greeting,
+> > >
+> > > FYI, we noticed a -9.7% regression of stress-ng.pipeherd.ops_per_sec =
+due to commit:
+> > >
+> > >
+> > > commit: 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax =
+the sync of load_sum with load_avg")
+> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > >
+> > > in testcase: stress-ng
+> > > on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358=
+ CPU @ 2.60GHz with 128G memory
+> > > with following parameters:
+> > >
+> > >         nr_threads: 100%
+> > >         testtime: 60s
+> > >         class: memory
+> > >         test: pipeherd
+> > >         cpufreq_governor: performance
+> > >         ucode: 0xd000280
+> > >
+> > This week we have re-run the test result and it seems that this
+> > regression is still there.
+> > As we are evaluating whether this report is valid or if the
+> > downgrading is expected, appreciated
+> > if you could give suggestion on further steps:
 > >
+> > 1.  If I understand correctly,
+> > 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax the sync
+> > of load_sum with load_avg")
+> >      fixed the calculating of  load_sum.  Before this patch  the
+> > contribution part would be 'skipped' and caused the load_sum
+> >      to be lower than expected.
 >
-> Will try to check the regression seen.
+> Yes, you understand it correctly
 >
-Double check  that the regression could be reproduced on top of the
-latest sched/core branch:
-parent ("sched/fair: Don't rely on ->exec_start for migration")
-fbc  ("sched/fair: Simple runqueue order on migrate")
+> > 2. If above is true, after this patch, the load_sum becomes higher. Is
+> > there a scenario that higher load_sum added to 1 cfs_rq brings
+> >     more imbalance between this group and other sched_group, thus
+> > brings more task migration/wake up? (because in below perf result,
+> >     it seems that, with this patch applied, there are slightly more
+> > take wake up)
+>
+> This change should not impact load balance as it only does comparison
+> and I expect the load increase to happen on all cfs rq.
+> The only place that could be impacted, would be wake_affine_weight()
+> because it removes task load from previous cfs rq load before
+> comparing.
+> The task's load was not impacted by the underestimate which means that
+> the load of prev cfs  might be seen lower than current cfs after
+> subtracting the task's load whereas both cfs rqs were similarly
+> underestimated.
+> Now the load of prev cfs rq is not underestimated and becomes
+> comparable or slightly higher than the current cfs and the task
+> migrate on current cfs instead of staying on prev one at wakeup
+>
+Could you please elaborate a little more on this scenario, since both curre=
+nt
+and previous cfs rqs were underestimated, how could previous cfs rq has
+lower load than the current one before applying this patch?
 
-parent                                fbc
-91107           -40.8%      53897        hackbench.throughput
+Say, suppose the previous cfs rq has a load of L1, and current cfs rq has
+a load of L2, the waken task has a load of h, then wake_affine_weight()
+compares L1 - h  with L2 + h ,  when L1 < L2 + 2h, the task will remain on
+previous CPU.  Since L1 and L2 were underestimated in the same scale,
+I'm not quite sure how this patch would affect the choice between
+prev and current CPU.
+> One possible test would be to run the test with WA_WEIGHT features
+> disable and check if there is still a difference
+>
+Yes, after disabling WA_WEIGHT, the performance came back.
+The following score is the output of stress-ng.pipeherd.ops_per_sec
 
-and it is consistent with lkp's original report that the  context
-switch count is much higher with patch applied:
-9591919          +510.3%   58534937
-hackbench.time.involuntary_context_switches
-36451523          +281.5%  1.391e+08
-hackbench.time.voluntary_context_switches
-
-Considering that this patch  'raises' the priority of the migrated
-task, by giving it the cfs_rq->min_vruntime,
-it is possible that the migrated task would preempt the current
-running task more easily.
-
-0.00           +12.2       12.21
-perf-profile.calltrace.cycles-pp.enqueue_entity.enqueue_task_fair.ttwu_do_a=
-ctivate.try_to_wake_up.autoremove_wake_function
-and the patched version has  spent more time on enqueue_entity(),
-which might be caused by setting sched entity hierarchy from leaf to
-root,
-which was mentioned in another thread.
+WA_WEIGHT                 yes                        no
+-------------------
+patched
+        yes                      58069733.01          69940547.7*
+        no                        64591593.69          73503396.9
 
 -- =
 
 Thanks,
 Chenyu
---===============5652422076791094154==--
+--===============7294131136384065931==--
 
