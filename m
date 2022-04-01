@@ -1,32 +1,62 @@
-Content-Type: multipart/mixed; boundary="===============1205815695889218814=="
+Content-Type: multipart/mixed; boundary="===============5652422076791094154=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Chen Yu <yu.chen.surf@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [NUMA Balancing] e39bb6be9f: will-it-scale.per_thread_ops 64.4% improvement
-Date: Fri, 01 Apr 2022 09:35:24 -0700
-Message-ID: <CAHk-=wg+mJrTvun6qkdEnkZk9FSyj6vNYU2j7QY-iPn0g_y1nw@mail.gmail.com>
-In-Reply-To: <20220401094214.GA8368@xsang-OptiPlex-9020>
+Subject: Re: [sched/fair] ddb3b1126f: hackbench.throughput -25.9% regression
+Date: Sat, 02 Apr 2022 02:04:09 +0800
+Message-ID: <CADjb_WQsTkdbwrvtzWwjt2O_jiuQTx+=Xy=yMPbAwKPmFDX-0w@mail.gmail.com>
+In-Reply-To: <7aa67fedb4b6dc9126bc59ee993fa18d0e472475.camel@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1205815695889218814==
+--===============5652422076791094154==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 1, 2022 at 2:42 AM kernel test robot <oliver.sang@intel.com> =
-wrote:
+On Thu, Mar 31, 2022 at 11:42 AM Tim Chen <tim.c.chen@linux.intel.com> wr=
+ote:
 >
-> FYI, we noticed a 64.4% improvement of will-it-scale.per_thread_ops due t=
-o commit:
-> e39bb6be9f2b ("NUMA Balancing: add page promotion counter")
+> On Wed, 2022-03-30 at 17:46 +0800, kernel test robot wrote:
+> >
+> > Greeting,
+> >
+> > FYI, we noticed a -25.9% regression of hackbench.throughput due to comm=
+it:
+> >
+>
+> Will try to check the regression seen.
+>
+Double check  that the regression could be reproduced on top of the
+latest sched/core branch:
+parent ("sched/fair: Don't rely on ->exec_start for migration")
+fbc  ("sched/fair: Simple runqueue order on migrate")
 
-That looks odd and unlikely.
+parent                                fbc
+91107           -40.8%      53897        hackbench.throughput
 
-That commit only modifies some page counting statistics. Sure, it
-could be another cache layout thing, and maybe it's due to the subtle
-change in how NUMA_PAGE_MIGRATE gets counted, but it still looks a bit
-odd.
+and it is consistent with lkp's original report that the  context
+switch count is much higher with patch applied:
+9591919          +510.3%   58534937
+hackbench.time.involuntary_context_switches
+36451523          +281.5%  1.391e+08
+hackbench.time.voluntary_context_switches
 
-               Linus
---===============1205815695889218814==--
+Considering that this patch  'raises' the priority of the migrated
+task, by giving it the cfs_rq->min_vruntime,
+it is possible that the migrated task would preempt the current
+running task more easily.
+
+0.00           +12.2       12.21
+perf-profile.calltrace.cycles-pp.enqueue_entity.enqueue_task_fair.ttwu_do_a=
+ctivate.try_to_wake_up.autoremove_wake_function
+and the patched version has  spent more time on enqueue_entity(),
+which might be caused by setting sched entity hierarchy from leaf to
+root,
+which was mentioned in another thread.
+
+-- =
+
+Thanks,
+Chenyu
+--===============5652422076791094154==--
 
