@@ -1,84 +1,61 @@
-Content-Type: multipart/mixed; boundary="===============5541893845665311560=="
+Content-Type: multipart/mixed; boundary="===============6169825895046411978=="
 MIME-Version: 1.0
-From: Artem Savkov <asavkov@redhat.com>
+From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [net] 6ef3f95797: UBSAN:shift-out-of-bounds_in_kernel/time/timer.c
-Date: Sat, 02 Apr 2022 09:11:09 +0200
-Message-ID: <Ykf3DZ4VJQ0yLJss@sparkplug.usersys.redhat.com>
-In-Reply-To: <20220402030939.GA19395@xsang-OptiPlex-9020>
+Subject: Re: [NUMA Balancing] e39bb6be9f: will-it-scale.per_thread_ops 64.4% improvement
+Date: Sat, 02 Apr 2022 16:50:05 +0800
+Message-ID: <20220402085005.GC32311@shbuild999.sh.intel.com>
+In-Reply-To: <CAHk-=wg+mJrTvun6qkdEnkZk9FSyj6vNYU2j7QY-iPn0g_y1nw@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5541893845665311560==
+--===============6169825895046411978==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Apr 02, 2022 at 11:09:40AM +0800, kernel test robot wrote:
+Hi Linus,
+
+On Fri, Apr 01, 2022 at 09:35:24AM -0700, Linus Torvalds wrote:
+> On Fri, Apr 1, 2022 at 2:42 AM kernel test robot <oliver.sang@intel.com=
+> wrote:
+> >
+> > FYI, we noticed a 64.4% improvement of will-it-scale.per_thread_ops due=
+ to commit:
+> > e39bb6be9f2b ("NUMA Balancing: add page promotion counter")
 > =
 
+> That looks odd and unlikely.
 > =
 
-> Greeting,
-> =
+> That commit only modifies some page counting statistics. Sure, it
+> could be another cache layout thing, and maybe it's due to the subtle
+> change in how NUMA_PAGE_MIGRATE gets counted, but it still looks a bit
+> odd.
 
-> FYI, we noticed the following commit (built with gcc-9):
-> =
+We did a quick check about cache stuff by disabling HW cache prefetch
+completely (writing 0xf to MSR 0x1a4), and the performance change
+is almost gone:
 
-> commit: 6ef3f95797546781829db3bb6228c9990ba1d49f ("[PATCH v3 2/2] net: ma=
-ke tcp keepalive timer upper bound")
-> url: https://github.com/intel-lab-lkp/linux/commits/Artem-Savkov/timer-ad=
-d-a-function-to-adjust-timeouts-to-be-upper-bound/20220330-172140
-> base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git b166e52541=
-f2357ce126a92ce1d9a580fdca719d
-> patch link: https://lore.kernel.org/netdev/20220330082046.3512424-3-asavk=
-ov(a)redhat.com
-> =
+  ee97347fe058d020     e39bb6be9f2b39a6dbaeff48436 =
 
-> in testcase: kernel-selftests
-> version: kernel-selftests-x86_64-a17aac1b-1_20220328
-> with following parameters:
-> =
+  ----------------     --------------------------- =
 
-> 	group: tc-testing
-> 	ucode: 0xec
-> =
+    134793            -1.4%     132867        will-it-scale.per_thread_ops
 
-> test-description: The kernel contains a set of "self tests" under the too=
-ls/testing/selftests/ directory. These are intended to be small unit tests =
-to exercise individual code paths in the kernel.
-> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
-> =
+The test box is a Cascadelake machine with 4 nodes, and the similar trend
+is found on a 2 nodes machine, that the commit has 55% improvement with
+HW cache prefetch enabled, and has less than 1% change when disabled.
 
-> =
+Though we still cannot pin-point the exact place affected.
 
-> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 1=
-6G memory
-> =
+Also per our experience, the patch changing vm statistics can easily
+trigger strange performance bumps for micro-benchmarks like will-it-scale,
+stress-ng etc.
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
+Thanks,
+Feng
 
-> =
 
-> =
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
-
-> =
-
-> [  158.913672][    C1] UBSAN: shift-out-of-bounds in kernel/time/timer.c:=
-584:32
-> [  158.922603][    C1] shift exponent -3 is negative
-
-This is caused by LVL_START(0). Levels 0 and 1 need to be handled
-separately to insure we don't end up with negative values.
-
--- =
-
- Artem
-
---===============5541893845665311560==--
+>                Linus
+--===============6169825895046411978==--
 
