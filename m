@@ -1,97 +1,136 @@
-Content-Type: multipart/mixed; boundary="===============5083728366209371042=="
+Content-Type: multipart/mixed; boundary="===============1849125943844718359=="
 MIME-Version: 1.0
-From: Marco Elver <elver@google.com>
+From: Vincent Guittot <vincent.guittot@linaro.org>
 To: lkp@lists.01.org
-Subject: Re: [mm/slub] 555b8c8cb3: WARNING:at_lib/stackdepot.c:#stack_depot_fetch
-Date: Mon, 04 Apr 2022 10:10:03 +0200
-Message-ID: <Ykqn2z9UVfxFwiU+@elver.google.com>
-In-Reply-To: <YkpgjgM/aSXd29uj@hyeyoo>
+Subject: Re: [sched/pelt] 2d02fa8cc2: stress-ng.pipeherd.ops_per_sec -9.7% regression
+Date: Mon, 04 Apr 2022 11:52:51 +0200
+Message-ID: <CAKfTPtBEcbiqaOjY9jEAWoJH5VSixunQ_r6DcDHcp2cej9QFVA@mail.gmail.com>
+In-Reply-To: <CADjb_WQL7ZTSrThgFHtoF2apwwqio8wgwGYmCOq9LBfamo3D0Q@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5083728366209371042==
+--===============1849125943844718359==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 04, 2022 at 12:05PM +0900, Hyeonggon Yoo wrote:
-> On Sat, Apr 02, 2022 at 12:50:14AM +0900, Hyeonggon Yoo wrote:
-> > On Thu, Mar 24, 2022 at 09:52:18AM +0000, Hyeonggon Yoo wrote:
-> > > On Wed, Mar 23, 2022 at 05:05:20PM +0800, kernel test robot wrote:
-> > > > =
-
-> > > > =
-
-> > > > Greeting,
-> > > > =
-
-> > > > FYI, we noticed the following commit (built with gcc-9):
-> > > > =
-
-> > > > commit: 555b8c8cb3f335ec8fd9d1ffd25e1395790d102d ("mm/slub: use sta=
-ckdepot to save stack trace in objects")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/vbabka/linux.git slub-=
-stackdepot-v3r1
-> > > > =
-
-> > > > in testcase: rcutorture
-> > > > version: =
-
-> > > > with following parameters:
-> > > > =
-
-> > > > 	runtime: 300s
-> > > > 	test: cpuhotplug
-> > > > 	torture_type: tasks
-> > > > =
-
-> > > =
-
-> > > [+Cc Vlastimil, linux-mm, and people related to stackdepot]
-> > > =
-
-> > > I'm going to spend time on it.
-> > > I have no clue why this happened yet.
+On Fri, 1 Apr 2022 at 20:32, Chen Yu <yu.chen.surf@gmail.com> wrote:
+>
+> On Fri, Apr 1, 2022 at 12:17 AM Vincent Guittot
+> <vincent.guittot@linaro.org> wrote:
+> >
+> > On Thu, 31 Mar 2022 at 16:19, Chen Yu <yu.chen.surf@gmail.com> wrote:
 > > >
-> > =
+> > > Hi Vincent,
+> > >
+> > > On Wed, Feb 9, 2022 at 1:17 PM kernel test robot <oliver.sang@intel=
+.com> wrote:
+> > > >
+> > > >
+> > > >
+> > > > Greeting,
+> > > >
+> > > > FYI, we noticed a -9.7% regression of stress-ng.pipeherd.ops_per_se=
+c due to commit:
+> > > >
+> > > >
+> > > > commit: 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Rela=
+x the sync of load_sum with load_avg")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git mas=
+ter
+> > > >
+> > > > in testcase: stress-ng
+> > > > on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 83=
+58 CPU @ 2.60GHz with 128G memory
+> > > > with following parameters:
+> > > >
+> > > >         nr_threads: 100%
+> > > >         testtime: 60s
+> > > >         class: memory
+> > > >         test: pipeherd
+> > > >         cpufreq_governor: performance
+> > > >         ucode: 0xd000280
+> > > >
+> > > This week we have re-run the test result and it seems that this
+> > > regression is still there.
+> > > As we are evaluating whether this report is valid or if the
+> > > downgrading is expected, appreciated
+> > > if you could give suggestion on further steps:
+> > >
+> > > 1.  If I understand correctly,
+> > > 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax the sync
+> > > of load_sum with load_avg")
+> > >      fixed the calculating of  load_sum.  Before this patch  the
+> > > contribution part would be 'skipped' and caused the load_sum
+> > >      to be lower than expected.
+> >
+> > Yes, you understand it correctly
+> >
+> > > 2. If above is true, after this patch, the load_sum becomes higher. Is
+> > > there a scenario that higher load_sum added to 1 cfs_rq brings
+> > >     more imbalance between this group and other sched_group, thus
+> > > brings more task migration/wake up? (because in below perf result,
+> > >     it seems that, with this patch applied, there are slightly more
+> > > take wake up)
+> >
+> > This change should not impact load balance as it only does comparison
+> > and I expect the load increase to happen on all cfs rq.
+> > The only place that could be impacted, would be wake_affine_weight()
+> > because it removes task load from previous cfs rq load before
+> > comparing.
+> > The task's load was not impacted by the underestimate which means that
+> > the load of prev cfs  might be seen lower than current cfs after
+> > subtracting the task's load whereas both cfs rqs were similarly
+> > underestimated.
+> > Now the load of prev cfs rq is not underestimated and becomes
+> > comparable or slightly higher than the current cfs and the task
+> > migrate on current cfs instead of staying on prev one at wakeup
+> >
+> Could you please elaborate a little more on this scenario, since both cur=
+rent
+> and previous cfs rqs were underestimated, how could previous cfs rq has
+> lower load than the current one before applying this patch?
+>
+> Say, suppose the previous cfs rq has a load of L1, and current cfs rq has
+> a load of L2, the waken task has a load of h, then wake_affine_weight()
+> compares L1 - h  with L2 + h ,  when L1 < L2 + 2h, the task will remain on
+> previous CPU.  Since L1 and L2 were underestimated in the same scale,
+> I'm not quite sure how this patch would affect the choice between
+> prev and current CPU.
 
-> > I modified alloc/free debug processing to check if handle is valid, but
-> > it couldn't detect something wrong. Everything was fine when allocating=
-/freeing objects.
-> > =
+Let's take the example of  this_cpu load L1 =3D 0 and prev_cpu load L2 =3D
+2h'+d. h' reflects h in the cpu load and d is a small delta load. The
+task will migrate if we have the condition below:
 
-> > Handles must be modified outside SLUB code.
-> > (Or maybe SLUB code related to cpu hotplugging did cause this.)
-> > =
+    h < 2h'-h+d
 
-> > I reproduced this problem on x86_64 with KASAN enabled, but KASAN
-> > detects nothing.
-> > =
+With this patch, we assume that h' =3D=3D h as we don't underestimate the
+load of cfs rqs anymore. The condition for migrating the task is :
+    h < h+d
+And the task will migrate on this cpu as soon as there is a small load
+on prev_cpu in addition to the 2h.
 
-> > I suspect this would be memory corruption bug, race condition, or
-> > wrong calculation of object metadata offset. But still have no clue.
-> > =
+Without the patch, the load of cfs_rqs are underestimated which means
+that the task's load is underestimated in the cfs rq. This can be
+described as h'  =3D=3D h-U. U being the underestimated part. In this case
+the condition to migrate the task becomes:
+    h < h-2U+d
+The task will migrate on this cpu is d is large enough to compensate
+the underestimation so we will migrate less often
 
-> > I'm going to check if KCSAN detects something.
-> > =
-
-> =
-
-> KCSAN also didn't help.
-
-(Maybe CONFIG_KCSAN_STRICT=3Dy is going to yield something? I still doubt
-it thought, this bug is related to corrupted stackdepot handle
-somewhere...)
-
-> I noticed that it is not reproduced when KASAN=3Dy and KFENCE=3Dn (reprod=
-uced 0 of 181).
-> and it was reproduced 56 of 196 when KASAN=3Dn and KFENCE=3Dy
-> =
-
-> maybe this issue is related to kfence?
-
-What about KASAN=3Dn and KFENCE=3Dn?
-
-Thanks,
--- Marco
---===============5083728366209371042==--
+> > One possible test would be to run the test with WA_WEIGHT features
+> > disable and check if there is still a difference
+> >
+> Yes, after disabling WA_WEIGHT, the performance came back.
+> The following score is the output of stress-ng.pipeherd.ops_per_sec
+>
+> WA_WEIGHT                 yes                        no
+> -------------------
+> patched
+>         yes                      58069733.01          69940547.7*
+>         no                        64591593.69          73503396.9
+>
+> --
+> Thanks,
+> Chenyu
+--===============1849125943844718359==--
 
