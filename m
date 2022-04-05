@@ -1,141 +1,338 @@
-Content-Type: multipart/mixed; boundary="===============4765299805230776394=="
+Content-Type: multipart/mixed; boundary="===============1078545061478885992=="
 MIME-Version: 1.0
-From: Chen Yu <yu.chen.surf@gmail.com>
+From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 To: lkp@lists.01.org
-Subject: Re: [sched/pelt] 2d02fa8cc2: stress-ng.pipeherd.ops_per_sec -9.7% regression
-Date: Tue, 05 Apr 2022 22:22:48 +0800
-Message-ID: <CADjb_WRbm3pt9kqhPKhTRSAcJFt1whaKw2MMMyYzkdW=rDXFdA@mail.gmail.com>
-In-Reply-To: <CAKfTPtBEcbiqaOjY9jEAWoJH5VSixunQ_r6DcDHcp2cej9QFVA@mail.gmail.com>
+Subject: Re: [mm/slub] 555b8c8cb3: WARNING:at_lib/stackdepot.c:#stack_depot_fetch
+Date: Wed, 06 Apr 2022 07:47:55 +0900
+Message-ID: <YkzHG64zxu+nWbg3@hyeyoo>
+In-Reply-To: <YkwjCUbTbRqslphe@elver.google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4765299805230776394==
+--===============1078545061478885992==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 4, 2022 at 5:53 PM Vincent Guittot
-<vincent.guittot@linaro.org> wrote:
->
-> On Fri, 1 Apr 2022 at 20:32, Chen Yu <yu.chen.surf@gmail.com> wrote:
-> >
-> > On Fri, Apr 1, 2022 at 12:17 AM Vincent Guittot
-> > <vincent.guittot@linaro.org> wrote:
-> > >
-> > > On Thu, 31 Mar 2022 at 16:19, Chen Yu <yu.chen.surf@gmail.com> wrot=
-e:
+On Tue, Apr 05, 2022 at 01:07:53PM +0200, Marco Elver wrote:
+> On Tue, Apr 05, 2022 at 11:00AM +0900, Hyeonggon Yoo wrote:
+> > On Mon, Apr 04, 2022 at 05:18:16PM +0200, Marco Elver wrote:
+> > > On Mon, 4 Apr 2022 at 16:20, Vlastimil Babka <vbabka@suse.cz> wrote:
+> [...]
+> > > > But here we are in mem_dump_obj() -> kmem_dump_obj() -> kmem_obj_in=
+fo().
+> > > > Because kmem_valid_obj() returned true, fooled by folio_test_slab()
+> > > > returning true because of the /* Set required slab fields. */ code.
+> > > > Yet the illusion is not perfect and we read garbage instead of a va=
+lid
+> > > > stackdepot handle.
 > > > >
-> > > > Hi Vincent,
-> > > >
-> > > > On Wed, Feb 9, 2022 at 1:17 PM kernel test robot <oliver.sang@int=
-el.com> wrote:
-> > > > >
-> > > > >
-> > > > >
-> > > > > Greeting,
-> > > > >
-> > > > > FYI, we noticed a -9.7% regression of stress-ng.pipeherd.ops_per_=
-sec due to commit:
-> > > > >
-> > > > >
-> > > > > commit: 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Re=
-lax the sync of load_sum with load_avg")
-> > > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git m=
-aster
-> > > > >
-> > > > > in testcase: stress-ng
-> > > > > on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum =
-8358 CPU @ 2.60GHz with 128G memory
-> > > > > with following parameters:
-> > > > >
-> > > > >         nr_threads: 100%
-> > > > >         testtime: 60s
-> > > > >         class: memory
-> > > > >         test: pipeherd
-> > > > >         cpufreq_governor: performance
-> > > > >         ucode: 0xd000280
-> > > > >
-> > > > This week we have re-run the test result and it seems that this
-> > > > regression is still there.
-> > > > As we are evaluating whether this report is valid or if the
-> > > > downgrading is expected, appreciated
-> > > > if you could give suggestion on further steps:
-> > > >
-> > > > 1.  If I understand correctly,
-> > > > 2d02fa8cc21a93da35cfba462bf8ab87bf2db651 ("sched/pelt: Relax the sy=
-nc
-> > > > of load_sum with load_avg")
-> > > >      fixed the calculating of  load_sum.  Before this patch  the
-> > > > contribution part would be 'skipped' and caused the load_sum
-> > > >      to be lower than expected.
-> > >
-> > > Yes, you understand it correctly
-> > >
-> > > > 2. If above is true, after this patch, the load_sum becomes higher.=
- Is
-> > > > there a scenario that higher load_sum added to 1 cfs_rq brings
-> > > >     more imbalance between this group and other sched_group, thus
-> > > > brings more task migration/wake up? (because in below perf result,
-> > > >     it seems that, with this patch applied, there are slightly more
-> > > > take wake up)
-> > >
-> > > This change should not impact load balance as it only does comparison
-> > > and I expect the load increase to happen on all cfs rq.
-> > > The only place that could be impacted, would be wake_affine_weight()
-> > > because it removes task load from previous cfs rq load before
-> > > comparing.
-> > > The task's load was not impacted by the underestimate which means that
-> > > the load of prev cfs  might be seen lower than current cfs after
-> > > subtracting the task's load whereas both cfs rqs were similarly
-> > > underestimated.
-> > > Now the load of prev cfs rq is not underestimated and becomes
-> > > comparable or slightly higher than the current cfs and the task
-> > > migrate on current cfs instead of staying on prev one at wakeup
-> > >
-> > Could you please elaborate a little more on this scenario, since both c=
-urrent
-> > and previous cfs rqs were underestimated, how could previous cfs rq has
-> > lower load than the current one before applying this patch?
-> >
-> > Say, suppose the previous cfs rq has a load of L1, and current cfs rq h=
-as
-> > a load of L2, the waken task has a load of h, then wake_affine_weight()
-> > compares L1 - h  with L2 + h ,  when L1 < L2 + 2h, the task will remain=
- on
-> > previous CPU.  Since L1 and L2 were underestimated in the same scale,
-> > I'm not quite sure how this patch would affect the choice between
-> > prev and current CPU.
->
-> Let's take the example of  this_cpu load L1 =3D 0 and prev_cpu load L2 =
-=3D
-> 2h'+d. h' reflects h in the cpu load and d is a small delta load. The
-> task will migrate if we have the condition below:
->
->     h < 2h'-h+d
->
-> With this patch, we assume that h' =3D=3D h as we don't underestimate the
-> load of cfs rqs anymore. The condition for migrating the task is :
->     h < h+d
-> And the task will migrate on this cpu as soon as there is a small load
-> on prev_cpu in addition to the 2h.
->
-> Without the patch, the load of cfs_rqs are underestimated which means
-> that the task's load is underestimated in the cfs rq. This can be
-> described as h'  =3D=3D h-U. U being the underestimated part. In this case
-> the condition to migrate the task becomes:
->     h < h-2U+d
-> The task will migrate on this cpu is d is large enough to compensate
-> the underestimation so we will migrate less often
->
-I see. Thanks for this example! So in this scenario when previous CPU
-has some higher load than the current CPU, without this patch applied,
-the OS would have more chances to keep the task on the previous CPU,
-thus less migration and less rq lock contention(according to the perf resul=
-t).
-I don't have a good idea in mind on how to deal with this case, except that
-by disabling WA_WEIGHT or WA_BIAS(prefer 'this' CPU I suppose).
+> > > > IMHO we should e.g. add the appropriate is_kfence_address() test in=
+to
+> > > > kmem_valid_obj(), to exclude kfence-allocated objects? Sounds much =
+simpler
+> > > > than trying to extend the illusion further to make kmem_dump_obj() =
+work?
+> > > > Instead kfence could add its own specific handler to mem_dump_obj()=
+ to print
+> > > > its debugging data?
+> > > =
 
---
-Thanks,
-Chenyu
---===============4765299805230776394==--
+> > > I think this explanation makes sense!  Indeed, KFENCE already records
+> > > allocation stacks internally anyway, so it should be straightforward
+> > > to convince it to just print that.
+> > >
+> > =
+
+> > Thank you both! Yeah the explanation makes sense... thats why KASAN/KCS=
+AN couldn't yield anything -- it was not overwritten.
+> > =
+
+> > I'm writing a fix and will test if the bug disappears.
+> > This may take few days.
+>
+
+I did check the bug is not reproduced after simple fix. (reproduced 0 of 37=
+3)
+This approach was right.
+
+> The below should fix it -- I'd like to make kmem_obj_info() do something
+> useful for KFENCE objects.
+>
+
+Agreed.
+
+> I lightly tested it by calling mem_dump_obj() on a KFENCE object, and
+> prior to the below patch it'd produce garbage data.
+> =
+
+> Does that look reasonable to you?
+> =
+
+> Thanks,
+> -- Marco
+> =
+
+> ------ >8 ------
+> =
+
+> From 09f32964284110846ded8ade9a1a2bfcb17dc58e Mon Sep 17 00:00:00 2001
+> From: Marco Elver <elver@google.com>
+> Date: Tue, 5 Apr 2022 12:43:48 +0200
+> Subject: [PATCH RFC] kfence, slab, slub: support kmem_obj_info() with KFE=
+NCE
+>  objects
+> =
+
+> Calling kmem_obj_info() on KFENCE objects has been producing garbage
+> data due to the object not actually being maintained by SLAB or SLUB.
+> =
+
+> Fix this by asking KFENCE to copy missing KFENCE-specific information to
+> struct kmem_obj_info when the object was allocated by KFENCE.
+> =
+
+> Link: https://lore.kernel.org/all/20220323090520.GG16885(a)xsang-OptiPlex=
+-9020/
+> Fixes: b89fb5ef0ce6 ("mm, kfence: insert KFENCE hooks for SLUB")
+> Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Signed-off-by: Marco Elver <elver@google.com>
+> ---
+>  include/linux/kfence.h | 22 ++++++++++++++++++++++
+>  mm/kfence/core.c       | 21 ---------------------
+>  mm/kfence/kfence.h     | 21 +++++++++++++++++++++
+>  mm/kfence/report.c     | 34 ++++++++++++++++++++++++++++++++++
+>  mm/slab.c              |  4 ++++
+>  mm/slub.c              |  4 ++++
+>  6 files changed, 85 insertions(+), 21 deletions(-)
+> =
+
+> diff --git a/include/linux/kfence.h b/include/linux/kfence.h
+> index f49e64222628..4a7c633cb219 100644
+> --- a/include/linux/kfence.h
+> +++ b/include/linux/kfence.h
+> @@ -204,6 +204,23 @@ static __always_inline __must_check bool kfence_free=
+(void *addr)
+>   */
+>  bool __must_check kfence_handle_page_fault(unsigned long addr, bool is_w=
+rite, struct pt_regs *regs);
+>  =
+
+> +#ifdef CONFIG_PRINTK
+> +struct kmem_obj_info;
+> +/**
+> + * kfence_kmem_obj_info() - fill kmem_obj_info struct
+> + * @kpp: kmem_obj_info to be filled
+> + * @object: the object
+> + *
+> + * Return:
+> + * * false - not a KFENCE object
+> + * * true - a KFENCE object and filled @kpp
+> + *
+> + * Copies information to @kpp that kmem_obj_info() is unable to populate=
+ for
+> + * KFENCE objects.
+> + */
+> +bool kfence_kmem_obj_info(struct kmem_obj_info *kpp, void *object);
+> +#endif
+> +
+>  #else /* CONFIG_KFENCE */
+>  =
+
+>  static inline bool is_kfence_address(const void *addr) { return false; }
+> @@ -221,6 +238,11 @@ static inline bool __must_check kfence_handle_page_f=
+ault(unsigned long addr, boo
+>  	return false;
+>  }
+>  =
+
+> +#ifdef CONFIG_PRINTK
+> +struct kmem_obj_info;
+> +static inline bool kfence_kmem_obj_info(struct kmem_obj_info *kpp, void =
+*object) { return false; }
+> +#endif
+> +
+>  #endif
+>  =
+
+>  #endif /* _LINUX_KFENCE_H */
+> diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+> index a203747ad2c0..9b2b5f56f4ae 100644
+> --- a/mm/kfence/core.c
+> +++ b/mm/kfence/core.c
+> @@ -231,27 +231,6 @@ static bool kfence_unprotect(unsigned long addr)
+>  	return !KFENCE_WARN_ON(!kfence_protect_page(ALIGN_DOWN(addr, PAGE_SIZE)=
+, false));
+>  }
+>  =
+
+> -static inline struct kfence_metadata *addr_to_metadata(unsigned long add=
+r)
+> -{
+> -	long index;
+> -
+> -	/* The checks do not affect performance; only called from slow-paths. */
+> -
+> -	if (!is_kfence_address((void *)addr))
+> -		return NULL;
+> -
+> -	/*
+> -	 * May be an invalid index if called with an address at the edge of
+> -	 * __kfence_pool, in which case we would report an "invalid access"
+> -	 * error.
+> -	 */
+> -	index =3D (addr - (unsigned long)__kfence_pool) / (PAGE_SIZE * 2) - 1;
+> -	if (index < 0 || index >=3D CONFIG_KFENCE_NUM_OBJECTS)
+> -		return NULL;
+> -
+> -	return &kfence_metadata[index];
+> -}
+> -
+>  static inline unsigned long metadata_to_pageaddr(const struct kfence_met=
+adata *meta)
+>  {
+>  	unsigned long offset =3D (meta - kfence_metadata + 1) * PAGE_SIZE * 2;
+> diff --git a/mm/kfence/kfence.h b/mm/kfence/kfence.h
+> index 9a6c4b1b12a8..600f2e2431d6 100644
+> --- a/mm/kfence/kfence.h
+> +++ b/mm/kfence/kfence.h
+> @@ -96,6 +96,27 @@ struct kfence_metadata {
+>  =
+
+>  extern struct kfence_metadata kfence_metadata[CONFIG_KFENCE_NUM_OBJECTS];
+>  =
+
+> +static inline struct kfence_metadata *addr_to_metadata(unsigned long add=
+r)
+> +{
+> +	long index;
+> +
+> +	/* The checks do not affect performance; only called from slow-paths. */
+> +
+> +	if (!is_kfence_address((void *)addr))
+> +		return NULL;
+> +
+> +	/*
+> +	 * May be an invalid index if called with an address at the edge of
+> +	 * __kfence_pool, in which case we would report an "invalid access"
+> +	 * error.
+> +	 */
+> +	index =3D (addr - (unsigned long)__kfence_pool) / (PAGE_SIZE * 2) - 1;
+> +	if (index < 0 || index >=3D CONFIG_KFENCE_NUM_OBJECTS)
+> +		return NULL;
+> +
+> +	return &kfence_metadata[index];
+> +}
+> +
+>  /* KFENCE error types for report generation. */
+>  enum kfence_error_type {
+>  	KFENCE_ERROR_OOB,		/* Detected a out-of-bounds access. */
+> diff --git a/mm/kfence/report.c b/mm/kfence/report.c
+> index f93a7b2a338b..5887fa610c9d 100644
+> --- a/mm/kfence/report.c
+> +++ b/mm/kfence/report.c
+> @@ -273,3 +273,37 @@ void kfence_report_error(unsigned long address, bool=
+ is_write, struct pt_regs *r
+>  	/* We encountered a memory safety error, taint the kernel! */
+>  	add_taint(TAINT_BAD_PAGE, LOCKDEP_STILL_OK);
+>  }
+> +
+> +#ifdef CONFIG_PRINTK
+> +static void kfence_to_kp_stack(const struct kfence_track *track, void **=
+kp_stack)
+> +{
+> +	int i, j;
+> +
+> +	i =3D get_stack_skipnr(track->stack_entries, track->num_stack_entries, =
+NULL);
+> +	for (j =3D 0; i < track->num_stack_entries && j < KS_ADDRS_COUNT - 1; +=
++i, ++j)
+
+why KS_ADDRS_COUNT - 1 instead of KS_ADDRS_COUNT?
+
+> +		kp_stack[j] =3D (void *)track->stack_entries[i];
+> +	kp_stack[j] =3D NULL;
+> +}
+> +
+> +bool kfence_kmem_obj_info(struct kmem_obj_info *kpp, void *object)
+> +{
+> +	const struct kfence_metadata *meta =3D addr_to_metadata((unsigned long)=
+object);
+> +
+> +	if (!meta)
+> +		return false;
+> +
+> +	/* Requesting info an a never-used object is almost certainly a bug. */
+> +	if (WARN_ON(meta->state =3D=3D KFENCE_OBJECT_UNUSED))
+> +		return true;
+> +
+> +	kpp->kp_objp =3D (void *)meta->addr;
+> +
+
+no need to take meta->lock here?
+
+> +	kfence_to_kp_stack(&meta->alloc_track, kpp->kp_stack);
+> +	if (meta->state =3D=3D KFENCE_OBJECT_FREED)
+> +		kfence_to_kp_stack(&meta->free_track, kpp->kp_free_stack);
+> +	/* get_stack_skipnr() ensures the first entry is outside allocator. */
+> +	kpp->kp_ret =3D kpp->kp_stack[0];
+> +
+> +	return true;
+> +}
+
+kfence_kmem_obj_info() does not set kp_data_offset. kp_data_offset
+may not be zero when e.g.) mem_dump_obj(&rhp->func); in rcutorture case. =
+
+
+BTW, I would prefer implementing something like kfence_obj_info()
+(called by kmem_dump_obj() and called instead of kmem_obj_info())
+for better readability.
+
+And when mem_dump_obj() is called, I guess it's for debugging purpose.
+I think it would be better to let user know the object is allocated
+from kfence pool. maybe adding if (is_kfence_address(object)) pr_cont(" kfe=
+nce");
+in kmem_dump_obj() would be enough?
+
+Thanks!
+Hyeonggon
+
+> +#endif
+> diff --git a/mm/slab.c b/mm/slab.c
+> index b04e40078bdf..4d44b094e0ab 100644
+> --- a/mm/slab.c
+> +++ b/mm/slab.c
+> @@ -3675,6 +3675,10 @@ void kmem_obj_info(struct kmem_obj_info *kpp, void=
+ *object, struct slab *slab)
+>  	kpp->kp_slab =3D slab;
+>  	cachep =3D slab->slab_cache;
+>  	kpp->kp_slab_cache =3D cachep;
+> +
+> +	if (kfence_kmem_obj_info(kpp, object))
+> +		return;
+> +
+>  	objp =3D object - obj_offset(cachep);
+>  	kpp->kp_data_offset =3D obj_offset(cachep);
+>  	slab =3D virt_to_slab(objp);
+> diff --git a/mm/slub.c b/mm/slub.c
+> index 74d92aa4a3a2..c7d2cfd60b87 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -4325,6 +4325,10 @@ void kmem_obj_info(struct kmem_obj_info *kpp, void=
+ *object, struct slab *slab)
+>  	kpp->kp_ptr =3D object;
+>  	kpp->kp_slab =3D slab;
+>  	kpp->kp_slab_cache =3D s;
+> +
+> +	if (kfence_kmem_obj_info(kpp, object))
+> +		return;
+> +
+>  	base =3D slab_address(slab);
+>  	objp0 =3D kasan_reset_tag(object);
+>  #ifdef CONFIG_SLUB_DEBUG
+> -- =
+
+> 2.35.1.1094.g7c7d902a7c-goog
+>=20
+--===============1078545061478885992==--
 
