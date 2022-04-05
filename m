@@ -1,185 +1,292 @@
-Content-Type: multipart/mixed; boundary="===============4728248377060018463=="
+Content-Type: multipart/mixed; boundary="===============9215900931869168817=="
 MIME-Version: 1.0
-From: Liang, Kan <kan.liang@linux.intel.com>
+From: Marco Elver <elver@google.com>
 To: lkp@lists.01.org
-Subject: Re: [perf vendor events] 3f5f0df7bf: perf-sanity-tests.perf_all_metrics_test.fail
-Date: Wed, 13 Apr 2022 14:17:16 -0400
-Message-ID: <74d36e66-5b16-ee10-bcae-171e2b681845@linux.intel.com>
-In-Reply-To: <CAP-5=fXj+WT3ExNo-fL4d9b_Wm5swnKaCWd67rU85Q=QFg5KUw@mail.gmail.com>
+Subject: Re: [mm/slub] 555b8c8cb3: WARNING:at_lib/stackdepot.c:#stack_depot_fetch
+Date: Tue, 05 Apr 2022 13:07:53 +0200
+Message-ID: <YkwjCUbTbRqslphe@elver.google.com>
+In-Reply-To: <Ykui2prpzkMvaWBa@hyeyoo>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4728248377060018463==
+--===============9215900931869168817==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Tue, Apr 05, 2022 at 11:00AM +0900, Hyeonggon Yoo wrote:
+> On Mon, Apr 04, 2022 at 05:18:16PM +0200, Marco Elver wrote:
+> > On Mon, 4 Apr 2022 at 16:20, Vlastimil Babka <vbabka@suse.cz> wrote:
+[...]
+> > > But here we are in mem_dump_obj() -> kmem_dump_obj() -> kmem_obj_info=
+().
+> > > Because kmem_valid_obj() returned true, fooled by folio_test_slab()
+> > > returning true because of the /* Set required slab fields. */ code.
+> > > Yet the illusion is not perfect and we read garbage instead of a valid
+> > > stackdepot handle.
+> > >
+> > > IMHO we should e.g. add the appropriate is_kfence_address() test into
+> > > kmem_valid_obj(), to exclude kfence-allocated objects? Sounds much si=
+mpler
+> > > than trying to extend the illusion further to make kmem_dump_obj() wo=
+rk?
+> > > Instead kfence could add its own specific handler to mem_dump_obj() t=
+o print
+> > > its debugging data?
+> > =
 
-
-On 4/13/2022 1:09 PM, Ian Rogers wrote:
-> On Wed, Apr 13, 2022 at 9:37 AM Liang, Kan <kan.liang@linux.intel.com> =
-wrote:
->>
->>
->>
->> On 4/13/2022 12:03 PM, Ian Rogers wrote:
->>> 3) Weak group doesn't fall back to no group:
->>
->> That's because the group validation code doesn't take pinned events,
->> such as the NMI watchdog, into account.
->>
->> I proposed a kernel patch to fix it, but it's rejected. It should be
->> hard to find a generic way to fix it from the kernel side.
->> https://lore.kernel.org/lkml/1565977750-76693-1-git-send-email-kan.liang=
-(a)linux.intel.com/
->>
->> Maybe we can workaround it from the perf tool side?
->> For example, for each weak group with cycles event and NMI watchdog is
->> enabled, add an extra cycles event when opening the group. If the open
->> fails with the extra cycles event, fall back to no group. After the
->> extra cycles event check, remove the extra cycles.
->>
->> What do you think?
+> > I think this explanation makes sense!  Indeed, KFENCE already records
+> > allocation stacks internally anyway, so it should be straightforward
+> > to convince it to just print that.
+> >
 > =
 
-> Thanks Kan, it is a shame the kernel support is lacking here. I'm not
-> sure what you are proposing for the perf tool to do. So:
+> Thank you both! Yeah the explanation makes sense... thats why KASAN/KCSAN=
+ couldn't yield anything -- it was not overwritten.
 > =
 
->> for each weak group with cycles event and NMI watchdog
-> =
+> I'm writing a fix and will test if the bug disappears.
+> This may take few days.
 
-> Okay, let's try Branching_Overhead as mentioned in this report - but
-> the event is CPU_CLK_UNHALTED.THREAD here :-/
-> =
+The below should fix it -- I'd like to make kmem_obj_info() do something
+useful for KFENCE objects.
 
->> add an extra cycles event when opening the group
-> =
+I lightly tested it by calling mem_dump_obj() on a KFENCE object, and
+prior to the below patch it'd produce garbage data.
 
-> So the perf_event_open doesn't fail here for me:
-> $ perf stat -e '{BR_INST_RETIRED.NEAR_CALL,BR_INST_RETIRED.NEAR_TAKEN,BR_=
-INST_RETIRED.NOT_TAKEN,BR_INST_RETIRED.CONDITIONAL,CPU_CLK_UNHALTED.THREAD}=
-,cycles'
-> -a sleep 1
-> =
-
-
-No, I mean modifying the perf tool code and add an extra cycles in the =
-
-weak group.
-
-Here is a very initial POC patch, which should prove the idea.
-
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index b7fe88beb584..782c3d7f1b32 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -71,7 +71,9 @@
-  #include "util/bpf_counter.h"
-  #include "util/iostat.h"
-  #include "util/pmu-hybrid.h"
-+#include "util/util.h"
-  #include "asm/bug.h"
-+#include "perf-sys.h"
-
-  #include <linux/time64.h>
-  #include <linux/zalloc.h>
-@@ -777,6 +779,8 @@ static enum counter_recovery =
-
-stat_handle_error(struct evsel *counter)
-  	return COUNTER_FATAL;
-  }
-
-+#define FD(e, x, y) (*(int *)xyarray__entry(e->core.fd, x, y))
-+
-  static int __run_perf_stat(int argc, const char **argv, int run_idx)
-  {
-  	int interval =3D stat_config.interval;
-@@ -793,6 +797,7 @@ static int __run_perf_stat(int argc, const char =
-
-**argv, int run_idx)
-  	struct affinity saved_affinity, *affinity =3D NULL;
-  	int err;
-  	bool second_pass =3D false;
-+	bool has_cycles =3D false;
-
-  	if (forks) {
-  		if (evlist__prepare_workload(evsel_list, &target, argv, is_pipe, =
-
-workload_exec_failed_signal) < 0) {
-@@ -821,6 +826,8 @@ static int __run_perf_stat(int argc, const char =
-
-**argv, int run_idx)
-  	evlist__for_each_cpu(evlist_cpu_itr, evsel_list, affinity) {
-  		counter =3D evlist_cpu_itr.evsel;
-
-+		if (counter->core.attr.config =3D=3D 0x3c)
-+			has_cycles =3D true;
-  		/*
-  		 * bperf calls evsel__open_per_cpu() in bperf__load(), so
-  		 * no need to call it again here.
-@@ -867,6 +874,24 @@ static int __run_perf_stat(int argc, const char =
-
-**argv, int run_idx)
-  		counter->supported =3D true;
-  	}
-
-+	//make it model specific. need to move to a better place
-+	if (counter->supported && !second_pass && has_cycles && =
-
-counter->weak_group && sysctl__nmi_watchdog_enabled()) {
-+		struct evsel *leader =3D evsel__leader(counter);
-+		int group_fd =3D FD(leader, 0, 0);
-+		struct evsel *evsel;
-+		int fd;
-+
-+		evsel =3D evsel__new_cycles(0, PERF_TYPE_HARDWARE, =
-
-PERF_COUNT_HW_CPU_CYCLES);
-+		fd =3D sys_perf_event_open(&evsel->core.attr, -1, 0, group_fd, 0x8);
-+
-+		if (fd < 0) {
-+			evlist__reset_weak_group(evsel_list, counter, false);
-+			second_pass =3D true;
-+		} else {
-+			evsel__close(evsel);
-+		}
-+	}
-+
-  	if (second_pass) {
-  		/*
-  		 * Now redo all the weak group after closing them,
-
-With the above patch,
-
-$ sudo ./perf stat -e =
-
-'{BR_INST_RETIRED.NEAR_CALL,BR_INST_RETIRED.NEAR_TAKEN,BR_INST_RETIRED.NOT_=
-TAKEN,BR_INST_RETIRED.CONDITIONAL,CPU_CLK_UNHALTED.THREAD}:W' =
-
--C0 sleep 1
-
-  Performance counter stats for 'CPU(s) 0':
-
-            913,369      BR_INST_RETIRED.NEAR_CALL =
-
-                       (79.95%)
-          3,648,433      BR_INST_RETIRED.NEAR_TAKEN =
-
-                       (80.00%)
-          2,481,976      BR_INST_RETIRED.NOT_TAKEN =
-
-                       (80.05%)
-          3,696,298      BR_INST_RETIRED.CONDITIONAL =
-
-                       (80.04%)
-         27,792,053      CPU_CLK_UNHALTED.THREAD =
-
-                       (79.96%)
-
-        1.002224709 seconds time elapsed
-
+Does that look reasonable to you?
 
 Thanks,
-Kan
---===============4728248377060018463==--
+-- Marco
+
+------ >8 ------
+
+>From 09f32964284110846ded8ade9a1a2bfcb17dc58e Mon Sep 17 00:00:00 2001
+From: Marco Elver <elver@google.com>
+Date: Tue, 5 Apr 2022 12:43:48 +0200
+Subject: [PATCH RFC] kfence, slab, slub: support kmem_obj_info() with KFENCE
+ objects
+
+Calling kmem_obj_info() on KFENCE objects has been producing garbage
+data due to the object not actually being maintained by SLAB or SLUB.
+
+Fix this by asking KFENCE to copy missing KFENCE-specific information to
+struct kmem_obj_info when the object was allocated by KFENCE.
+
+Link: https://lore.kernel.org/all/20220323090520.GG16885(a)xsang-OptiPlex-9=
+020/
+Fixes: b89fb5ef0ce6 ("mm, kfence: insert KFENCE hooks for SLUB")
+Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Marco Elver <elver@google.com>
+---
+ include/linux/kfence.h | 22 ++++++++++++++++++++++
+ mm/kfence/core.c       | 21 ---------------------
+ mm/kfence/kfence.h     | 21 +++++++++++++++++++++
+ mm/kfence/report.c     | 34 ++++++++++++++++++++++++++++++++++
+ mm/slab.c              |  4 ++++
+ mm/slub.c              |  4 ++++
+ 6 files changed, 85 insertions(+), 21 deletions(-)
+
+diff --git a/include/linux/kfence.h b/include/linux/kfence.h
+index f49e64222628..4a7c633cb219 100644
+--- a/include/linux/kfence.h
++++ b/include/linux/kfence.h
+@@ -204,6 +204,23 @@ static __always_inline __must_check bool kfence_free(v=
+oid *addr)
+  */
+ bool __must_check kfence_handle_page_fault(unsigned long addr, bool is_wri=
+te, struct pt_regs *regs);
+ =
+
++#ifdef CONFIG_PRINTK
++struct kmem_obj_info;
++/**
++ * kfence_kmem_obj_info() - fill kmem_obj_info struct
++ * @kpp: kmem_obj_info to be filled
++ * @object: the object
++ *
++ * Return:
++ * * false - not a KFENCE object
++ * * true - a KFENCE object and filled @kpp
++ *
++ * Copies information to @kpp that kmem_obj_info() is unable to populate f=
+or
++ * KFENCE objects.
++ */
++bool kfence_kmem_obj_info(struct kmem_obj_info *kpp, void *object);
++#endif
++
+ #else /* CONFIG_KFENCE */
+ =
+
+ static inline bool is_kfence_address(const void *addr) { return false; }
+@@ -221,6 +238,11 @@ static inline bool __must_check kfence_handle_page_fau=
+lt(unsigned long addr, boo
+ 	return false;
+ }
+ =
+
++#ifdef CONFIG_PRINTK
++struct kmem_obj_info;
++static inline bool kfence_kmem_obj_info(struct kmem_obj_info *kpp, void *o=
+bject) { return false; }
++#endif
++
+ #endif
+ =
+
+ #endif /* _LINUX_KFENCE_H */
+diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+index a203747ad2c0..9b2b5f56f4ae 100644
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -231,27 +231,6 @@ static bool kfence_unprotect(unsigned long addr)
+ 	return !KFENCE_WARN_ON(!kfence_protect_page(ALIGN_DOWN(addr, PAGE_SIZE), =
+false));
+ }
+ =
+
+-static inline struct kfence_metadata *addr_to_metadata(unsigned long addr)
+-{
+-	long index;
+-
+-	/* The checks do not affect performance; only called from slow-paths. */
+-
+-	if (!is_kfence_address((void *)addr))
+-		return NULL;
+-
+-	/*
+-	 * May be an invalid index if called with an address at the edge of
+-	 * __kfence_pool, in which case we would report an "invalid access"
+-	 * error.
+-	 */
+-	index =3D (addr - (unsigned long)__kfence_pool) / (PAGE_SIZE * 2) - 1;
+-	if (index < 0 || index >=3D CONFIG_KFENCE_NUM_OBJECTS)
+-		return NULL;
+-
+-	return &kfence_metadata[index];
+-}
+-
+ static inline unsigned long metadata_to_pageaddr(const struct kfence_metad=
+ata *meta)
+ {
+ 	unsigned long offset =3D (meta - kfence_metadata + 1) * PAGE_SIZE * 2;
+diff --git a/mm/kfence/kfence.h b/mm/kfence/kfence.h
+index 9a6c4b1b12a8..600f2e2431d6 100644
+--- a/mm/kfence/kfence.h
++++ b/mm/kfence/kfence.h
+@@ -96,6 +96,27 @@ struct kfence_metadata {
+ =
+
+ extern struct kfence_metadata kfence_metadata[CONFIG_KFENCE_NUM_OBJECTS];
+ =
+
++static inline struct kfence_metadata *addr_to_metadata(unsigned long addr)
++{
++	long index;
++
++	/* The checks do not affect performance; only called from slow-paths. */
++
++	if (!is_kfence_address((void *)addr))
++		return NULL;
++
++	/*
++	 * May be an invalid index if called with an address at the edge of
++	 * __kfence_pool, in which case we would report an "invalid access"
++	 * error.
++	 */
++	index =3D (addr - (unsigned long)__kfence_pool) / (PAGE_SIZE * 2) - 1;
++	if (index < 0 || index >=3D CONFIG_KFENCE_NUM_OBJECTS)
++		return NULL;
++
++	return &kfence_metadata[index];
++}
++
+ /* KFENCE error types for report generation. */
+ enum kfence_error_type {
+ 	KFENCE_ERROR_OOB,		/* Detected a out-of-bounds access. */
+diff --git a/mm/kfence/report.c b/mm/kfence/report.c
+index f93a7b2a338b..5887fa610c9d 100644
+--- a/mm/kfence/report.c
++++ b/mm/kfence/report.c
+@@ -273,3 +273,37 @@ void kfence_report_error(unsigned long address, bool i=
+s_write, struct pt_regs *r
+ 	/* We encountered a memory safety error, taint the kernel! */
+ 	add_taint(TAINT_BAD_PAGE, LOCKDEP_STILL_OK);
+ }
++
++#ifdef CONFIG_PRINTK
++static void kfence_to_kp_stack(const struct kfence_track *track, void **kp=
+_stack)
++{
++	int i, j;
++
++	i =3D get_stack_skipnr(track->stack_entries, track->num_stack_entries, NU=
+LL);
++	for (j =3D 0; i < track->num_stack_entries && j < KS_ADDRS_COUNT - 1; ++i=
+, ++j)
++		kp_stack[j] =3D (void *)track->stack_entries[i];
++	kp_stack[j] =3D NULL;
++}
++
++bool kfence_kmem_obj_info(struct kmem_obj_info *kpp, void *object)
++{
++	const struct kfence_metadata *meta =3D addr_to_metadata((unsigned long)ob=
+ject);
++
++	if (!meta)
++		return false;
++
++	/* Requesting info an a never-used object is almost certainly a bug. */
++	if (WARN_ON(meta->state =3D=3D KFENCE_OBJECT_UNUSED))
++		return true;
++
++	kpp->kp_objp =3D (void *)meta->addr;
++
++	kfence_to_kp_stack(&meta->alloc_track, kpp->kp_stack);
++	if (meta->state =3D=3D KFENCE_OBJECT_FREED)
++		kfence_to_kp_stack(&meta->free_track, kpp->kp_free_stack);
++	/* get_stack_skipnr() ensures the first entry is outside allocator. */
++	kpp->kp_ret =3D kpp->kp_stack[0];
++
++	return true;
++}
++#endif
+diff --git a/mm/slab.c b/mm/slab.c
+index b04e40078bdf..4d44b094e0ab 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -3675,6 +3675,10 @@ void kmem_obj_info(struct kmem_obj_info *kpp, void *=
+object, struct slab *slab)
+ 	kpp->kp_slab =3D slab;
+ 	cachep =3D slab->slab_cache;
+ 	kpp->kp_slab_cache =3D cachep;
++
++	if (kfence_kmem_obj_info(kpp, object))
++		return;
++
+ 	objp =3D object - obj_offset(cachep);
+ 	kpp->kp_data_offset =3D obj_offset(cachep);
+ 	slab =3D virt_to_slab(objp);
+diff --git a/mm/slub.c b/mm/slub.c
+index 74d92aa4a3a2..c7d2cfd60b87 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -4325,6 +4325,10 @@ void kmem_obj_info(struct kmem_obj_info *kpp, void *=
+object, struct slab *slab)
+ 	kpp->kp_ptr =3D object;
+ 	kpp->kp_slab =3D slab;
+ 	kpp->kp_slab_cache =3D s;
++
++	if (kfence_kmem_obj_info(kpp, object))
++		return;
++
+ 	base =3D slab_address(slab);
+ 	objp0 =3D kasan_reset_tag(object);
+ #ifdef CONFIG_SLUB_DEBUG
+-- =
+
+2.35.1.1094.g7c7d902a7c-goog
+
+--===============9215900931869168817==--
 
