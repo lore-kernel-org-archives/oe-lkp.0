@@ -1,104 +1,157 @@
-Content-Type: multipart/mixed; boundary="===============6175531646168808603=="
+Content-Type: multipart/mixed; boundary="===============8999074146134143644=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Marco Elver <elver@google.com>
 To: lkp@lists.01.org
-Subject: Re: [NUMA Balancing] e39bb6be9f: will-it-scale.per_thread_ops 64.4% improvement
-Date: Wed, 06 Apr 2022 09:41:47 +0800
-Message-ID: <20220406014147.GA64277@shbuild999.sh.intel.com>
-In-Reply-To: <20220402085005.GC32311@shbuild999.sh.intel.com>
+Subject: Re: [mm/slub] 555b8c8cb3: WARNING:at_lib/stackdepot.c:#stack_depot_fetch
+Date: Wed, 06 Apr 2022 10:34:07 +0200
+Message-ID: <Yk1Qf73cufW6LjOW@elver.google.com>
+In-Reply-To: <YkzHG64zxu+nWbg3@hyeyoo>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6175531646168808603==
+--===============8999074146134143644==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Apr 02, 2022 at 04:50:05PM +0800, Feng Tang wrote:
-> Hi Linus,
+On Wed, Apr 06, 2022 at 07:47AM +0900, Hyeonggon Yoo wrote:
+> On Tue, Apr 05, 2022 at 01:07:53PM +0200, Marco Elver wrote:
+> > On Tue, Apr 05, 2022 at 11:00AM +0900, Hyeonggon Yoo wrote:
+> > > On Mon, Apr 04, 2022 at 05:18:16PM +0200, Marco Elver wrote:
+> > > > On Mon, 4 Apr 2022 at 16:20, Vlastimil Babka <vbabka@suse.cz> wro=
+te:
+> > [...]
+> > > > > But here we are in mem_dump_obj() -> kmem_dump_obj() -> kmem_obj_=
+info().
+> > > > > Because kmem_valid_obj() returned true, fooled by folio_test_slab=
+()
+> > > > > returning true because of the /* Set required slab fields. */ cod=
+e.
+> > > > > Yet the illusion is not perfect and we read garbage instead of a =
+valid
+> > > > > stackdepot handle.
+> > > > >
+> > > > > IMHO we should e.g. add the appropriate is_kfence_address() test =
+into
+> > > > > kmem_valid_obj(), to exclude kfence-allocated objects? Sounds muc=
+h simpler
+> > > > > than trying to extend the illusion further to make kmem_dump_obj(=
+) work?
+> > > > > Instead kfence could add its own specific handler to mem_dump_obj=
+() to print
+> > > > > its debugging data?
+> > > > =
+
+> > > > I think this explanation makes sense!  Indeed, KFENCE already recor=
+ds
+> > > > allocation stacks internally anyway, so it should be straightforward
+> > > > to convince it to just print that.
+> > > >
+> > > =
+
+> > > Thank you both! Yeah the explanation makes sense... thats why KASAN/K=
+CSAN couldn't yield anything -- it was not overwritten.
+> > > =
+
+> > > I'm writing a fix and will test if the bug disappears.
+> > > This may take few days.
+> >
 > =
 
-> On Fri, Apr 01, 2022 at 09:35:24AM -0700, Linus Torvalds wrote:
-> > On Fri, Apr 1, 2022 at 2:42 AM kernel test robot <oliver.sang@intel.c=
-om> wrote:
-> > >
-> > > FYI, we noticed a 64.4% improvement of will-it-scale.per_thread_ops d=
-ue to commit:
-> > > e39bb6be9f2b ("NUMA Balancing: add page promotion counter")
-> > =
-
-> > That looks odd and unlikely.
-> > =
-
-> > That commit only modifies some page counting statistics. Sure, it
-> > could be another cache layout thing, and maybe it's due to the subtle
-> > change in how NUMA_PAGE_MIGRATE gets counted, but it still looks a bit
-> > odd.
+> I did check the bug is not reproduced after simple fix. (reproduced 0 of =
+373)
+> This approach was right.
 > =
 
-> We did a quick check about cache stuff by disabling HW cache prefetch
-> completely (writing 0xf to MSR 0x1a4), and the performance change
-> is almost gone:
+> > The below should fix it -- I'd like to make kmem_obj_info() do something
+> > useful for KFENCE objects.
+> >
 > =
 
->   ee97347fe058d020     e39bb6be9f2b39a6dbaeff48436 =
-
->   ----------------     --------------------------- =
-
->     134793            -1.4%     132867        will-it-scale.per_thread_ops
+> Agreed.
 > =
 
-> The test box is a Cascadelake machine with 4 nodes, and the similar trend
-> is found on a 2 nodes machine, that the commit has 55% improvement with
-> HW cache prefetch enabled, and has less than 1% change when disabled.
+[...]
+> > +	i =3D get_stack_skipnr(track->stack_entries, track->num_stack_entries=
+, NULL);
+> > +	for (j =3D 0; i < track->num_stack_entries && j < KS_ADDRS_COUNT - 1;=
+ ++i, ++j)
 > =
 
-> Though we still cannot pin-point the exact place affected.
- =
+> why KS_ADDRS_COUNT - 1 instead of KS_ADDRS_COUNT?
 
-We did more tests and debugs, and here are some updates:
+For `kp_stack[j] =3D NULL` because KFENCE's stack_entries does not have a
+NULL-delimiter (we have num_stack_entries). But it seems for kp_stack
+it's only added if `j < KS_ADDR_COUNT`, so I've fixed that.
 
-* For the HW cache prefetcher, we narrowed down it to be related with
-  'L2 cache prefetcher', and not the 'L2 adjacent cache line prefetcher'.
-  We can't find any documents about the detail of the prefetcher, which
-  make it hard to analyze how the performance is affected
+> > +		kp_stack[j] =3D (void *)track->stack_entries[i];
+> > +	kp_stack[j] =3D NULL;
+[...]
+> > +	kpp->kp_objp =3D (void *)meta->addr;
+> > +
+> =
 
-* Debug shows the change is related with the struct 'mem_cgroup''s size
-  change, that with commit ee97347fe058d020, its size is 4096, which turns
-  to 4160 with commit e39bb6be9f2b3.
-  - commit e39bb6be9f2b adds one counter 'PGPROMOTE_SUCCESS' and some
-    code change, if we remove the code change and leave the counter,
-    the 60% improvement remains.
-  - revert e39bb6be9f2b, and only add 16 bytes padding inside 'mem_cgroup',
-    the 60% change also remains. Debug patch is as below:
+> no need to take meta->lock here?
 
-	diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-	index a68dce3873fcc..2bd56fb2e5b5f 100644
-	--- a/include/linux/memcontrol.h
-	+++ b/include/linux/memcontrol.h
-	@@ -303,6 +303,8 @@ struct mem_cgroup {
-		/* memory.stat */
-		struct memcg_vmstats	vmstats;
-	 =
+Yes, in case state is KFENCE_OBJECT_FREED there could be a race.
 
-	+	unsigned long padding[2];
-	+
-		/* memory.events */
-		atomic_long_t		memory_events[MEMCG_NR_MEMORY_EVENTS];
+> > +	kfence_to_kp_stack(&meta->alloc_track, kpp->kp_stack);
+> > +	if (meta->state =3D=3D KFENCE_OBJECT_FREED)
+> > +		kfence_to_kp_stack(&meta->free_track, kpp->kp_free_stack);
+> > +	/* get_stack_skipnr() ensures the first entry is outside allocator. */
+> > +	kpp->kp_ret =3D kpp->kp_stack[0];
+> > +
+> > +	return true;
+> > +}
+> =
+
+> kfence_kmem_obj_info() does not set kp_data_offset. kp_data_offset
+> may not be zero when e.g.) mem_dump_obj(&rhp->func); in rcutorture case. =
+
+
+kp_data_offset is the offset e.g. when SLUB has added a redzone:
+
+|		objp0 =3D kasan_reset_tag(object);
+|	#ifdef CONFIG_SLUB_DEBUG
+|		objp =3D restore_red_left(s, objp0);
+|	#else
+|		objp =3D objp0;
+|	#endif
+|		objnr =3D obj_to_index(s, slab, objp);
+|		kpp->kp_data_offset =3D (unsigned long)((char *)objp0 - (char *)objp);
+
+In !CONFIG_SLUB_DEBUG and !(s->flags & SLAB_RED_ZONE) cases it's always
+0, and otherwise it's
+
+	`objp0 - restore_red_left(objp0)` =3D=3D
+	`object - (object - s->red_left_pad)` =3D=3D
+	`s->red_left_pad`.
+
+This matters if kp_objp is not the object start accessible by the user.
+But in the KFENCE case this is always the case so kp_data_offset=3D0.
+
+> BTW, I would prefer implementing something like kfence_obj_info()
+> (called by kmem_dump_obj() and called instead of kmem_obj_info())
+> for better readability.
+
+Hmm, I guess that saves us from having to fix up both slab.c/slub.c. But
+it makes kmem_obj_info() error-prone to use. What if someone calls
+kmem_obj_info() in future somewhere else? That caller then would have to
+remember to also call kfence_obj_info().
+
+I'd prefer fixing it as close to the root-cause (in kmem_obj_info()) to
+avoid that.
+
+What do you prefer?
+
+> And when mem_dump_obj() is called, I guess it's for debugging purpose.
+> I think it would be better to let user know the object is allocated
+> from kfence pool. maybe adding if (is_kfence_address(object)) pr_cont(" k=
+fence");
+> in kmem_dump_obj() would be enough?
+
+We can add that.
 
 Thanks,
-Feng
-
-> Also per our experience, the patch changing vm statistics can easily
-> trigger strange performance bumps for micro-benchmarks like will-it-scale,
-> stress-ng etc.
-> =
-
-> Thanks,
-> Feng
-> =
-
-> =
-
-> >                Linus
---===============6175531646168808603==--
+-- Marco
+--===============8999074146134143644==--
 
