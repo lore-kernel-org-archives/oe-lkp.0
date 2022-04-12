@@ -1,70 +1,140 @@
-Content-Type: multipart/mixed; boundary="===============5026108706701372917=="
+Content-Type: multipart/mixed; boundary="===============5137414756179937569=="
 MIME-Version: 1.0
-From: Lee Jones <lee.jones@linaro.org>
+From: Paul Lemmermann <thepaulodoom@thepaulodoom.com>
 To: lkp@lists.01.org
-Subject: Re: [nl80211] 584f2e43bb: hwsim.ap_country.fail
-Date: Tue, 12 Apr 2022 11:23:20 +0100
-Message-ID: <YlVTGIhTvzCsZhmO@google.com>
-In-Reply-To: <eb5873b4afeee8a7e183a9b1f2e6af461bf7f69f.camel@sipsolutions.net>
+Subject: Re: [crypto] 8505b026c9: hwsim.fils_sk_hlp_oom.fail
+Date: Tue, 12 Apr 2022 15:36:47 -0500
+Message-ID: <YlXi3wmj30rM258J@hp-amd-paul>
+In-Reply-To: <20220411103421.GC21954@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5026108706701372917==
+--===============5137414756179937569==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 11 Apr 2022, Johannes Berg wrote:
-
-> On Mon, 2022-04-11 at 10:25 +0100, Lee Jones wrote:
-> > So what exactly happened here?=C2=A0 What does this failure tell us?
-> =
-
-> Probably nothing.
-> =
-
-> > Is the LKP test broken or did I overlook something in the kernel
-> > patch?
-> =
-
-> I think the test is just randomly fluking out.
-> =
-
-> > How does LKP make use of NL80211_ATTR_REG_ALPHA2?
-> > =
-
-> > I'm struggling to find any mention of 'hostapd.py' or 'ap_country' in
-> > LKP [0].=C2=A0 Are these benchmarks bespoke add-ons? =
-
-> > =
-
-> =
-
-> it's running the tests from hostap:
-> https://w1.fi/cgit/hostap/tree/tests/hwsim
-> =
-
-> Anyway, I think we'd better fix the issue like this:
-> =
-
-> -       [NL80211_ATTR_REG_ALPHA2] =3D { .type =3D NLA_STRING, .len =3D 2 =
-},
-> +       /* allow 3 for NUL-termination, we used to declare this NLA_STRIN=
-G */
-> +       [NL80211_ATTR_REG_ALPHA2] =3D NLA_POLICY_RANGE(NLA_BINARY, 2, 3),
+On Mon, Apr 11, 2022 at 06:34:21PM +0800, kernel test robot wrote:
 > =
 
 > =
 
-> What do you think?
+> Greeting,
+> =
 
-I'm not entirely sure of the semantics, but so long as it ensures the
-user declares enough space to hold both Bytes of data, I'd be happy.
+> FYI, we noticed the following commit (built with gcc-9):
+> =
 
--- =
+> commit: 8505b026c91a3e6d6c562a1fe46c2b8c20835de8 ("[PATCH] crypto: aes_ge=
+neric: fixed styling warnings")
 
-Lee Jones [=E6=9D=8E=E7=90=BC=E6=96=AF]
-Principal Technical Lead - Developer Services
-Linaro.org =E2=94=82 Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
---===============5026108706701372917==--
+According to the following emails, it was agreed to drop this patch:
+https://lore.kernel.org/linux-crypto/CAMj1kXHCR1nD24WDnYpD4Nu23x9+hw+=3D7EX=
+Opq7y7m9LDk2J0w(a)mail.gmail.com/
+https://lore.kernel.org/linux-crypto/20220328125137.bsbvroyxcjw6rl5m(a)hp-a=
+md-paul/
+
+Regards,
+Paul
+
+> url: https://github.com/intel-lab-lkp/linux/commits/Paul-Lemmermann/crypt=
+o-aes_generic-fixed-styling-warnings/20220327-014837
+> base: https://git.kernel.org/cgit/linux/kernel/git/herbert/cryptodev-2.6.=
+git master
+> patch link: https://lore.kernel.org/linux-crypto/20220326172051.14722-1-t=
+hepaulodoom(a)thepaulodoom.com
+> =
+
+> in testcase: hwsim
+> version: hwsim-x86_64-717e5d7-1_20220325
+> with following parameters:
+> =
+
+> 	test: group-36
+> 	ucode: 0x21
+> =
+
+> =
+
+> =
+
+> on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30=
+GHz with 8G memory
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
+
+> =
+
+> =
+
+> =
+
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> =
+
+> =
+
+> =
+
+> 2022-04-07 14:59:07 ./run-tests.py fils_sk_hlp_oom
+> DEV: wlan0: 02:00:00:00:00:00
+> DEV: wlan1: 02:00:00:00:01:00
+> DEV: wlan2: 02:00:00:00:02:00
+> APDEV: wlan3
+> APDEV: wlan4
+> START fils_sk_hlp_oom 1/1
+> Test: FILS SK HLP and hostapd OOM
+> Starting AP as-erp
+> Starting AP wlan3 (old add_ap argument type)
+> Connect STA wlan0 to AP
+> Connection timed out
+> Traceback (most recent call last):
+>   File "./run-tests.py", line 531, in main
+>     t(dev, apdev, params)
+>   File "/lkp/benchmarks/hwsim/tests/hwsim/test_fils.py", line 919, in tes=
+t_fils_sk_hlp_oom
+>     dev[0].wait_connected()
+>   File "/lkp/benchmarks/hwsim/tests/hwsim/wpasupplicant.py", line 1411, i=
+n wait_connected
+>     raise Exception(error)
+> Exception: Connection timed out
+> FAIL fils_sk_hlp_oom 10.282646 2022-04-07 14:59:18.241254
+> passed 0 test case(s)
+> skipped 0 test case(s)
+> failed tests: fils_sk_hlp_oom
+> =
+
+> =
+
+> =
+
+> To reproduce:
+> =
+
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         sudo bin/lkp install job.yaml           # job file is attached in=
+ this email
+>         bin/lkp split-job --compatible job.yaml # generate the yaml file =
+for lkp run
+>         sudo bin/lkp run generated-yaml-file
+> =
+
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+> =
+
+> =
+
+> =
+
+> -- =
+
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
+>=20
+--===============5137414756179937569==--
 
