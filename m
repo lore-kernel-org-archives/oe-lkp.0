@@ -1,107 +1,143 @@
-Content-Type: multipart/mixed; boundary="===============9129515333223543756=="
+Content-Type: multipart/mixed; boundary="===============4922488482058858274=="
 MIME-Version: 1.0
-From: Chandan Babu R <chandan.babu@oracle.com>
+From: Liang, Kan <kan.liang@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [xfs] 530d96220d: xfstests.xfs.533.fail
-Date: Mon, 18 Apr 2022 15:46:28 +0530
-Message-ID: <87o80ypugz.fsf@debian-BULLSEYE-live-builder-AMD64>
-In-Reply-To: <20220418090135.GA23098@xsang-OptiPlex-9020>
+Subject: Re: [perf vendor events] 3f5f0df7bf: perf-sanity-tests.perf_all_metrics_test.fail
+Date: Mon, 18 Apr 2022 08:42:49 -0400
+Message-ID: <fd562e7b-75f5-0db3-3677-89b052312083@linux.intel.com>
+In-Reply-To: <CAM9d7cic6AhJGrNF7wmyowUBpp0mPu8TdiVebL4XXcotFtLUuQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9129515333223543756==
+--===============4922488482058858274==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 18 Apr 2022 at 14:31, kernel test robot wrote:
-> Greeting,
->
-> FYI, we noticed the following commit (built with gcc-11):
->
-> commit: 530d96220d0d99cff9b5a3583210df2b5b5f6408 ("xfs: Directory's data =
-fork extent counter can never overflow")
-> url: https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220409-21491=
-3/Chandan-Babu-R/xfs-Extend-per-inode-extent-counters/20220406-174647
->
-> in testcase: xfstests
-> version: xfstests-x86_64-46e1b83-1_20220414
-> with following parameters:
->
-> 	disk: 4HDD
-> 	fs: xfs
-> 	test: xfs-group-53
-> 	ucode: 0x21
->
-> test-description: xfstests is a regression test suite for xfs and other f=
-iles ystems.
-> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
->
->
-> on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30=
-GHz with 8G memory
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
->
->
->
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
->
-> 2022-04-15 11:30:13 export TEST_DIR=3D/fs/sda1
-> 2022-04-15 11:30:13 export TEST_DEV=3D/dev/sda1
-> 2022-04-15 11:30:13 export FSTYP=3Dxfs
-> 2022-04-15 11:30:13 export SCRATCH_MNT=3D/fs/scratch
-> 2022-04-15 11:30:13 mkdir /fs/scratch -p
-> 2022-04-15 11:30:13 export SCRATCH_DEV=3D/dev/sda4
-> 2022-04-15 11:30:13 export SCRATCH_LOGDEV=3D/dev/sda2
-> 2022-04-15 11:30:13 export SCRATCH_XFS_LIST_METADATA_FIELDS=3Du3.sfdir3.h=
-dr.parent.i4
-> 2022-04-15 11:30:13 export SCRATCH_XFS_LIST_FUZZ_VERBS=3Drandom
-> 2022-04-15 11:30:13 sed "s:^:xfs/:" //lkp/benchmarks/xfstests/tests/xfs-g=
-roup-53
-> 2022-04-15 11:30:13 ./check xfs/531 xfs/532 xfs/533 xfs/534 xfs/538 xfs/5=
-39
-> FSTYP         -- xfs (debug)
-> PLATFORM      -- Linux/x86_64 lkp-ivb-d05 5.17.0-rc6-00044-g530d96220d0d =
-#1 SMP Fri Apr 15 17:47:01 CST 2022
-> MKFS_OPTIONS  -- -f /dev/sda4
-> MOUNT_OPTIONS -- /dev/sda4 /fs/scratch
->
-> xfs/531	 4s
-> xfs/532	 28s
-> xfs/533	[failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfs=
-tests/results//xfs/533.out.bad)
->     --- tests/xfs/533.out	2022-04-14 12:51:49.000000000 +0000
->     +++ /lkp/benchmarks/xfstests/results//xfs/533.out.bad	2022-04-15 11:3=
-1:08.365436563 +0000
->     @@ -6,12 +6,4 @@
->      Inject bmap_alloc_minlen_extent error tag
->      * Create directory entries
->      Verify directory's extent count
->     -* Rename: Populate destination directory
->     -Populate $dstdir by moving new directory entries
->     -Verify $dstdir's extent count
->     -* Create multiple hard links to a single file
->     ...
->     (Run 'diff -u /lkp/benchmarks/xfstests/tests/xfs/533.out /lkp/benchma=
-rks/xfstests/results//xfs/533.out.bad'  to see the entire diff)
 
-The "Large extent counter" patchset removes code which checked for directory
-extent count overflow since an operation on a directory can never cause its
-extent count to overflow. However, the following check is added to
-xfs_dinode_verify() to check for ondisk corruption when reading an inode fr=
-om
-disk,
 
-        if (S_ISDIR(mode) && nextents > mp->m_dir_geo->max_extents)
-                return __this_address;
+On 4/14/2022 6:58 PM, Namhyung Kim wrote:
+> Hi Kan,
+> =
 
-I have written a patch to remove xfs/533 from fstests. I will post it soon.
+> On Thu, Apr 14, 2022 at 12:06 PM Liang, Kan <kan.liang@linux.intel.com>=
+ wrote:
+>>
+>>
+>>
+>> On 4/14/2022 12:09 PM, Ian Rogers wrote:
+>>> ```
+>>> $ perf stat -e '{BR_INST_RETIRED.NEAR_CALL,BR_INST_RETIRED.NEAR_TAKEN,B=
+R_INST_RETIRED.NOT_TAKEN,cycles,cycles}:W'
+>>> -a sleep 1
+>>>    Performance counter stats for 'system wide':
+>>>
+>>>        <not counted>      BR_INST_RETIRED.NEAR_CALL
+>>>                  (0.00%)
+>>>        <not counted>      BR_INST_RETIRED.NEAR_TAKEN
+>>>                   (0.00%)
+>>>        <not counted>      BR_INST_RETIRED.NOT_TAKEN
+>>>                  (0.00%)
+>>>        <not counted>      cycles
+>>>                  (0.00%)
+>>>        <not counted>      cycles
+>>>                  (0.00%)
+>>>
+>>>          1.005599088 seconds time elapsed
+>>>
+>>> Some events weren't counted. Try disabling the NMI watchdog:
+>>>           echo 0 > /proc/sys/kernel/nmi_watchdog
+>>>           perf stat ...
+>>>           echo 1 > /proc/sys/kernel/nmi_watchdog
+>>> The events in group usually have to be from the same PMU. Try
+>>> reorganizing the group.
+>>> ```
+>>>
+>>> If we add two extra cycles or the original group is smaller then it is =
+"fixed":
+>>> ```
+>>> $ perf stat -e '{BR_INST_RETIRED.NEAR_CALL,BR_INST_RETIRED.NEAR_TAKEN,B=
+R_INST_RETIRED.NOT_TAKEN,cycles}:W'
+>>> -a sleep 1
+>>>
+>>>    Performance counter stats for 'system wide':
+>>>
+>>>           20,378,789      BR_INST_RETIRED.NEAR_CALL
+>>>          168,420,963      BR_INST_RETIRED.NEAR_TAKEN
+>>>           96,330,608      BR_INST_RETIRED.NOT_TAKEN
+>>>        1,652,230,042      cycles
+>>>
+>>>          1.008757590 seconds time elapsed
+>>>
+>>> $ perf stat -e '{BR_INST_RETIRED.NEAR_CALL,BR_INST_RETIRED.NEAR_TAKEN,B=
+R_INST_RETIRED.NOT_TAKEN,cycles,cycles,cycles}:W'
+>>> -a sleep 1
+>>>
+>>>    Performance counter stats for 'system wide':
+>>>
+>>>           37,696,638      BR_INST_RETIRED.NEAR_CALL
+>>>                  (66.62%)
+>>>          298,535,151      BR_INST_RETIRED.NEAR_TAKEN
+>>>                   (66.63%)
+>>>          297,011,663      BR_INST_RETIRED.NOT_TAKEN
+>>>                  (66.63%)
+>>>        3,155,711,474      cycles
+>>>                  (66.65%)
+>>>        3,194,919,959      cycles
+>>>                  (66.74%)
+>>>        3,126,664,102      cycles
+>>>                  (66.72%)
+>>>
+>>>          1.006237962 seconds time elapsed
+>>> ```
+>>>
+>>> So the extra cycles is needed to fix weak groups when the nmi watchdog
+>>> is enabled and the group is an architecture dependent size.
+>>
+>> Yes, the size of the group depends on the architecture, but perf tool
+>> doesn't need to know the HW details. For this case, perf tool just sends
+>> the request with an extra cycles event in the group and lets kernel deci=
+de.
+> =
 
--- =
+> I prefer doing this in the kernel even if it'd be incomplete.
 
-chandan
---===============9129515333223543756==--
+I tried a generic way to check all active pinned events from the kernel =
+
+side, but it's rejected.
+https://lore.kernel.org/lkml/1565977750-76693-1-git-send-email-kan.liang(a)=
+linux.intel.com/
+
+> For the NMI watchdog, is it possible to check if it's enabled
+> at the moment, and set the fake_cpuc->idxmsk to prevent
+> scheduling events in validate_group()?
+
+I think it's possible to check the status of the NMI watchdog via =
+
+nmi_watchdog_user_enabled. But I don't think we can simply change the =
+
+fake_cpuc->idxmsk. Because the fake_cpuc->event_constraint points to the =
+
+shared static event_constraint value, which should not be modified. What =
+
+we can do is to apply the dynamic constraint flag for all the events. =
+
+The kernel will create a copy of the constraint for each event. We can =
+
+change the idxmsk of the copy.
+
+No matter how we update the idxmsk. The critical path =
+
+x86_schedule_events() has to be modified, which may slightly impact the =
+
+performance I guess. Not sure whether it worth.
+
+Another benefit to implement the fix in the perf tool is that the fix =
+
+can be easily deployed on the stable env. It's much easier to upgrade =
+
+the perf tool than the kernel, right?
+
+Thanks,
+Kan
+--===============4922488482058858274==--
 
