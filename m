@@ -1,42 +1,40 @@
-Content-Type: multipart/mixed; boundary="===============1127244196663207717=="
+Content-Type: multipart/mixed; boundary="===============5751589358864596084=="
 MIME-Version: 1.0
-From: Yin Fengwei <fengwei.yin@intel.com>
+From: Shakeel Butt <shakeelb@google.com>
 To: lkp@lists.01.org
 Subject: Re: [memcg] a8c49af3be: hackbench.throughput -13.7% regression
-Date: Wed, 27 Apr 2022 12:59:20 +0800
-Message-ID: <1971eb3a-d689-8b35-e500-8a60f41765db@intel.com>
-In-Reply-To: <CAJD7tkaDWtgy3Ckhgo+vcbM7oYA8saPCVRvXLDKYHvRGYkKvoQ@mail.gmail.com>
+Date: Tue, 26 Apr 2022 22:02:28 -0700
+Message-ID: <CALvZod4_vNWYxzGR3BksZYgoti-9hOioMGwF2UVRnwcAGpFqXA@mail.gmail.com>
+In-Reply-To: <43598597-72e1-6750-9bee-031fd463fc3b@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1127244196663207717==
+--===============5751589358864596084==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Yosry,
+Hi Yin,
 
-On 4/27/2022 12:34 PM, Yosry Ahmed wrote:
-> I am not sure why this specific callsite causes regression, there are
-> many callsites that modify stats similarly (whether through
-> mod_memcg_state() directly or through other variants like
-> mod_lruvec_state()). Maybe the kmem call path is exercised more
-> heavily in this benchmark than other call paths that update stats.
-perf data didn't show the function commented out either. No idea how
-it impact the hackbench.
+On Tue, Apr 26, 2022 at 7:53 PM Yin Fengwei <fengwei.yin@intel.com> wrote:
+>
+[...]
+>
+> If I comment out one line added by the commit <a8c49af3be> :
+> static void memcg_account_kmem(struct mem_cgroup *memcg, int nr_pages)
+> {
+>         /* mod_memcg_state(memcg, MEMCG_KMEM, nr_pages); */  <--- comment=
+ out this line.
 
-> =
+Can you to comment out the following block instead of the above line
+and see if there is any impact?
 
-> The only seemingly expensive operation in the mod_memcg_state() path
-> is the call to cgroup_rstat_updated() (through memcg_rstat_updated()).
-> One idea off the top of my head is to batch calls to
-> cgroup_rstat_updated(), similar to what 11192d9c124d ("memcg: flush
-> stats only if updated") did on the flush side. I am interested to see
-> what memcg maintainers think about this problem (and the proposed
-> solution).
-OK. Let's wait.
-
-
-Regards
-Yin, Fengwei
---===============1127244196663207717==--
+>         if (!cgroup_subsys_on_dfl(memory_cgrp_subsys)) {
+>                 if (nr_pages > 0)
+>                         page_counter_charge(&memcg->kmem, nr_pages);
+>                 else
+>                         page_counter_uncharge(&memcg->kmem, -nr_pages);
+>         }
+> }
+>
+--===============5751589358864596084==--
 
