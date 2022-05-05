@@ -1,82 +1,88 @@
-Content-Type: multipart/mixed; boundary="===============7958903957939720721=="
+Content-Type: multipart/mixed; boundary="===============1462833589741347423=="
 MIME-Version: 1.0
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Mel Gorman <mgorman@techsingularity.net>
 To: lkp@lists.01.org
-Subject: Re: [serial] 4a218b277f: BUG:kernel_NULL_pointer_dereference, address
-Date: Thu, 05 May 2022 13:12:07 +0300
-Message-ID: <YnOi9zD44PwSODeX@smile.fi.intel.com>
-In-Reply-To: <20220505091843.GD10410@xsang-OptiPlex-9020>
+Subject: Re: [mm/page_alloc] f26b3fa046: netperf.Throughput_Mbps -18.0% regression
+Date: Thu, 05 May 2022 12:09:47 +0100
+Message-ID: <20220505110947.GD3441@techsingularity.net>
+In-Reply-To: <YnOKWNE3PZzzohNH@ziqianlu-desk1>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7958903957939720721==
+--===============1462833589741347423==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 05, 2022 at 05:18:43PM +0800, kernel test robot wrote:
+On Thu, May 05, 2022 at 04:27:04PM +0800, Aaron Lu wrote:
+> On Fri, Apr 29, 2022 at 02:39:18PM +0100, Mel Gorman wrote:
+> > On Fri, Apr 29, 2022 at 07:29:19PM +0800, Aaron Lu wrote:
 > =
 
+> ... ...
 > =
 
-> Greeting,
+> > > The said change looks like this:
+> > > (relevant comment will have to be adjusted)
+> > > =
+
+> > > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> > > index 505d59f7d4fa..130a02af8321 100644
+> > > --- a/mm/page_alloc.c
+> > > +++ b/mm/page_alloc.c
+> > > @@ -3332,18 +3332,19 @@ static int nr_pcp_high(struct per_cpu_pages *=
+pcp, struct zone *zone,
+> > >  		       bool free_high)
+> > >  {
+> > >  	int high =3D READ_ONCE(pcp->high);
+> > > +	int batch =3D READ_ONCE(pcp->batch);
+> > >  =
+
+> > > -	if (unlikely(!high || free_high))
+> > > +	if (unlikely(!high))
+> > >  		return 0;
+> > >  =
+
+> > > -	if (!test_bit(ZONE_RECLAIM_ACTIVE, &zone->flags))
+> > > -		return high;
+> > > -
+> > >  	/*
+> > >  	 * If reclaim is active, limit the number of pages that can be
+> > >  	 * stored on pcp lists
+> > >  	 */
+> > > -	return min(READ_ONCE(pcp->batch) << 2, high);
+> > > +	if (test_bit(ZONE_RECLAIM_ACTIVE, &zone->flags) || free_high)
+> > > +		return min(batch << 2, high);
+> > > +
+> > > +	return high;
+> > >  }
+> > >  =
+
+> > >  static void free_unref_page_commit(struct page *page, int migratetyp=
+e,
+> > > =
+
+> > > Does this look sane? If so, I can prepare a formal patch with proper
+> > > comment and changelog, thanks.
+> > =
+
+> > I think it looks reasonable sane. The corner case is that if
+> > ((high - (batch >> 2)) > cachesize) that the pages will not get recycled
 > =
 
-> FYI, we noticed the following commit (built with gcc-11):
+> When free_high is true, the above diff changed the return value of
+> nr_pcp_high() from 0 to min(batch << 2, pcp->high) so the corner case is
+> when (min(batch << 2, pcp->high) > cachesize)?
 > =
 
-> commit: 4a218b277fdba357d8e9022ae675c94e59d64b4e ("serial: 8250: dw: Crea=
-te a generic platform data structure")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> =
 
-> in testcase: reaim
-> version: reaim-x86_64-7.0.1.13-1_20220411
-> with following parameters:
-> =
-
-> 	runtime: 300s
-> 	nr_task: 100%
-> 	test: shared
-> 	cpufreq_governor: performance
-> 	ucode: 0xec
-> =
-
-> test-description: REAIM is an updated and improved version of AIM 7 bench=
-mark.
-> test-url: https://sourceforge.net/projects/re-aim-7/
-> =
-
-> =
-
-> on test machine: 16 threads 1 sockets Intel(R) Xeon(R) E-2278G CPU @ 3.40=
-GHz with 32G memory
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
-
-> =
-
-> +----------------+------------+------------+
-> |                | d9666dfb31 | 4a218b277f |
-> +----------------+------------+------------+
-> | boot_successes | 6          | 6          |
-> +----------------+------------+------------+
-> =
-
-> =
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-
-Isn't it what Heikki's patch should fix?
+Yes. It's not perfect due to cache aliasing so the actual point where it
+matters will be variable. Whatever the value is, there a value where the
+corner case applies that pages do not get recycled quickly enough and
+are no longer cache-hot.
 
 -- =
 
-With Best Regards,
-Andy Shevchenko
-
-
---===============7958903957939720721==--
+Mel Gorman
+SUSE Labs
+--===============1462833589741347423==--
 
