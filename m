@@ -1,130 +1,108 @@
-Content-Type: multipart/mixed; boundary="===============0688231434138254113=="
+Content-Type: multipart/mixed; boundary="===============7872054341985901738=="
 MIME-Version: 1.0
-From: Eric Dumazet <edumazet@google.com>
+From: Dave Chinner <dchinner@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [net] 72fd55c0db: invoked_oom-killer:gfp_mask=0x
-Date: Fri, 06 May 2022 01:15:40 -0700
-Message-ID: <CANn89iLkpsri3CxxP3Xc-jLJ_9V4K5pCHPRhdWEL69Z78VWCjw@mail.gmail.com>
-In-Reply-To: <20220506064439.GC23061@xsang-OptiPlex-9020>
+Subject: Re: [xfs] 83a21c1844: xfstests.xfs.533.fail
+Date: Fri, 06 May 2022 18:28:47 +1000
+Message-ID: <YnTcP86M0NV6lkfB@rh>
+In-Reply-To: <20220506080341.GF23061@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0688231434138254113==
+--===============7872054341985901738==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 5, 2022 at 11:44 PM kernel test robot <oliver.sang@intel.com>=
- wrote:
->
->
->
+On Fri, May 06, 2022 at 04:03:41PM +0800, kernel test robot wrote:
+> =
+
+> =
+
 > Greeting,
->
+> =
+
 > FYI, we noticed the following commit (built with gcc-11):
->
-> commit: 72fd55c0dbb1ad5ba283ca80abc9546702815a33 ("[PATCH v2 net-next] ne=
-t: generalize skb freeing deferral to per-cpu lists")
-> url: https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-gene=
-ralize-skb-freeing-deferral-to-per-cpu-lists/20220423-060710
-> base: https://git.kernel.org/cgit/linux/kernel/git/davem/net-next.git c78=
-c5a660439d4d341a03b651541fda3ebe76160
-> patch link: https://lore.kernel.org/netdev/20220422201237.416238-1-eric.d=
-umazet(a)gmail.com
->
+> =
 
-I think this commit had two follow up fixes.
-Make sure to test the tree after the fixes are included, otherwise
-this is adding unneeded noise.
-Thank you.
-
-commit f3412b3879b4f7c4313b186b03940d4791345534
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Wed Apr 27 13:41:47 2022 -0700
-
-    net: make sure net_rx_action() calls skb_defer_free_flush()
-
-And:
-
-commit 783d108dd71d97e4cac5fe8ce70ca43ed7dc7bb7
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Fri Apr 29 18:15:23 2022 -0700
-
-    tcp: drop skb dst in tcp_rcv_established()
-
+> commit: 83a21c18441f75aec64548692b52d34582b98a6a ("xfs: Directory's data =
+fork extent counter can never overflow")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> =
 
 > in testcase: xfstests
 > version: xfstests-x86_64-46e1b83-1_20220414
 > with following parameters:
->
->         disk: 4HDD
->         fs: ext4
->         fs2: smbv3
->         test: generic-group-10
->         ucode: 0xec
->
+> =
+
+> 	disk: 4HDD
+> 	fs: xfs
+> 	test: xfs-group-53
+> 	ucode: 0x21
+> =
+
 > test-description: xfstests is a regression test suite for xfs and other f=
 iles ystems.
 > test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
->
->
-> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 1=
-6G memory
->
+> =
+
+> =
+
+> on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30=
+GHz with 8G memory
+> =
+
 > caused below changes (please refer to attached dmesg/kmsg for entire log/=
 backtrace):
->
->
->
+> =
+
+> =
+
+> =
+
+> =
+
 > If you fix the issue, kindly add following tag
 > Reported-by: kernel test robot <oliver.sang@intel.com>
->
->
->
-> [   80.428226][ T1836] Attempt to set a LOCK_MAND lock via flock(2). This=
- support has been removed and the request ignored.
-> [   80.739189][  T370] generic/207       0s
-> [   80.739198][  T370]
-> [   80.785302][ T1696] run fstests generic/208 at 2022-05-06 02:42:26
-> [   81.143444][ T1836] Attempt to set a LOCK_MAND lock via flock(2). This=
- support has been removed and the request ignored.
-> [   89.609627][   T58] kworker/u16:5 invoked oom-killer: gfp_mask=3D0xcd0=
-(GFP_KERNEL|__GFP_RECLAIMABLE), order=3D0, oom_score_adj=3D0
-> [   89.620805][   T58] CPU: 0 PID: 58 Comm: kworker/u16:5 Not tainted 5.1=
-8.0-rc3-00568-g72fd55c0dbb1 #1
-> [   89.629899][   T58] Hardware name: HP HP Z240 SFF Workstation/802E, BI=
-OS N51 Ver. 01.63 10/05/2017
-> [   89.638822][   T58] Workqueue: writeback wb_workfn (flush-8:16)
-> [   89.644727][   T58] Call Trace:
-> [   89.647863][   T58]  <TASK>
-> [ 89.650649][ T58] dump_stack_lvl (kbuild/src/consumer/lib/dump_stack.c:1=
-07 (discriminator 1))
-> [ 89.654992][ T58] dump_header (kbuild/src/consumer/mm/oom_kill.c:73 kbui=
-ld/src/consumer/mm/oom_kill.c:461)
-> [ 89.659250][ T58] oom_kill_process.cold (kbuild/src/consumer/mm/oom_kill=
-.c:979)
-> [ 89.664110][ T58] out_of_memory (kbuild/src/consumer/mm/oom_kill.c:1119 =
-(discriminator 4))
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in=
- this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file =
-for lkp run
->         sudo bin/lkp run generated-yaml-file
->
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
->
->
---===============0688231434138254113==--
+> =
+
+> =
+
+> xfs/533	[failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfs=
+tests/results//xfs/533.out.bad)
+>     --- tests/xfs/533.out	2022-04-14 12:51:49.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//xfs/533.out.bad	2022-05-03 06:2=
+4:37.310381846 +0000
+>     @@ -6,12 +6,4 @@
+>      Inject bmap_alloc_minlen_extent error tag
+>      * Create directory entries
+>      Verify directory's extent count
+>     -* Rename: Populate destination directory
+>     -Populate $dstdir by moving new directory entries
+>     -Verify $dstdir's extent count
+>     -* Create multiple hard links to a single file
+>     ...
+>     (Run 'diff -u /lkp/benchmarks/xfstests/tests/xfs/533.out /lkp/benchma=
+rks/xfstests/results//xfs/533.out.bad'  to see the entire diff)
+
+Not a regression. This is testing directory data fork extent count
+overflow using error injection, but you might notice that the title
+of the commit is "Directory's data fork extent counter can never
+overflow".
+
+IOWs, we changed fine grained directory extent count overflow
+from a runtime check (on every dir op) to an inode verifier
+check that is only run when the directory inode is read from or
+written to disk.
+
+The test probably should be removed. Chandan?
+
+Cheers,
+
+Dave.
+-- =
+
+Dave Chinner
+dchinner(a)redhat.com
+
+--===============7872054341985901738==--
 
