@@ -1,201 +1,195 @@
-Content-Type: multipart/mixed; boundary="===============5598720190829007497=="
+Content-Type: multipart/mixed; boundary="===============7196852126999056238=="
 MIME-Version: 1.0
-From: Dave Chinner <david@fromorbit.com>
+From: ying.huang@intel.com
 To: lkp@lists.01.org
-Subject: Re: [xfs] 32678f1513: aim7.jobs-per-min -5.6% regression
-Date: Sat, 07 May 2022 07:29:24 +1000
-Message-ID: <20220506212924.GJ1098723@dread.disaster.area>
-In-Reply-To: <20220506092250.GI23061@xsang-OptiPlex-9020>
+Subject: Re: [mm/page_alloc] f26b3fa046: netperf.Throughput_Mbps -18.0% regression
+Date: Sat, 07 May 2022 08:54:35 +0800
+Message-ID: <7d20a9543f69523cfda280e3f5ab17d68db037ab.camel@intel.com>
+In-Reply-To: <YnURx04+hE0sQ3v3@ziqianlu-desk1>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5598720190829007497==
+--===============7196852126999056238==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 06, 2022 at 05:22:50PM +0800, kernel test robot wrote:
-> =
+On Fri, 2022-05-06 at 20:17 +0800, Aaron Lu wrote:
+> On Fri, May 06, 2022 at 04:40:45PM +0800, ying.huang(a)intel.com wrote:
+> > On Fri, 2022-04-29 at 19:29 +0800, Aaron Lu wrote:
+> > > Hi Mel,
+> > > =
+
+> > > On Wed, Apr 20, 2022 at 09:35:26AM +0800, kernel test robot wrote:
+> > > > =
+
+> > > > (please be noted we reported
+> > > > "[mm/page_alloc]  39907a939a:  netperf.Throughput_Mbps -18.1% regre=
+ssion"
+> > > > on
+> > > > https://lore.kernel.org/all/20220228155733.GF1643(a)xsang-OptiPlex-=
+9020/
+> > > > while the commit is on branch.
+> > > > now we still observe similar regression when it's on mainline, and =
+we also
+> > > > observe a 13.2% improvement on another netperf subtest.
+> > > > so report again for information)
+> > > > =
+
+> > > > Greeting,
+> > > > =
+
+> > > > FYI, we noticed a -18.0% regression of netperf.Throughput_Mbps due =
+to commit:
+> > > > =
+
+> > > > =
+
+> > > > commit: f26b3fa046116a7dedcaafe30083402113941451 ("mm/page_alloc: l=
+imit number of high-order pages on PCP during bulk free")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git mas=
+ter
+> > > > =
+
+> > > =
+
+> > > So what this commit did is: if a CPU is always doing free(pcp->free_f=
+actor > 0)
+> > =
+
+> > IMHO, this means the consumer and producer are running on different
+> > CPUs.
+> > =
 
 > =
 
-> Greeting,
+> Right.
 > =
 
-> FYI, we noticed a -5.6% regression of aim7.jobs-per-min due to commit:
-> =
+> > > and if the being freed high-order page's order is <=3D PAGE_ALLOC_COS=
+TLY_ORDER,
+> > > then do not use PCP but directly free the page directly to buddy.
+> > > =
+
+> > > The rationale as explained in the commit's changelog is:
+> > > "
+> > > Netperf running on localhost exhibits this pattern and while it does =
+not
+> > > matter for some machines, it does matter for others with smaller cach=
+es
+> > > where cache misses cause problems due to reduced page reuse. Pages
+> > > freed directly to the buddy list may be reused quickly while still ca=
+che
+> > > hot where as storing on the PCP lists may be cold by the time
+> > > free_pcppages_bulk() is called.
+> > > "
+> > > =
+
+> > > This regression occurred on a machine that has large caches so this
+> > > optimization brings no value to it but only overhead(skipped PCP), I
+> > > guess this is the reason why there is a regression.
+> > =
+
+> > Per my understanding, not only the cache size is larger, but also the L2
+> > cache (1MB) is per-core on this machine.  So if the consumer and
+> > producer are running on different cores, the cache-hot page may cause
+> > more core-to-core cache transfer.  This may hurt performance too.
+> > =
 
 > =
 
-> commit: 32678f151338b9a321e9e27139a63c81f353acb7 ("[PATCH 1/4] xfs: detec=
-t self referencing btree sibling pointers")
-> url: https://github.com/intel-lab-lkp/linux/commits/Dave-Chinner/xfs-fix-=
-random-format-verification-issues/20220502-162206
-> base: https://git.kernel.org/cgit/fs/xfs/xfs-linux.git for-next
-> patch link: https://lore.kernel.org/linux-xfs/20220502082018.1076561-2-da=
-vid(a)fromorbit.com
+> Client side allocates skb(page) and server side recvfrom() it.
+> recvfrom() copies the page data to server's own buffer and then releases
+> the page associated with the skb. Client does all the allocation and
+> server does all the free, page reuse happens at client side.
+> So I think core-2-core cache transfer due to page reuse can occur when
+> client task migrates.
 
-Well, that answers the concern I had about the impact of =
+The core-to-core cache transfering can be cross-socket or cross-L2 in
+one socket.  I mean the later one.
 
-changing the way endian conversions were done in that patch.
+> I have modified the job to have the client and server bound to a
+> specific CPU of different cores on the same node, and testing it on the
+> same Icelake 2 sockets server, the result is
+> =
 
-> a44a027a8b2a20fe 32678f151338b9a321e9e27139a =
+> =C2=A0=C2=A0kernel      throughput
+> 8b10b465d0e1     125168
+> f26b3fa04611     102039 -18%
+> =
 
-> ---------------- --------------------------- =
+> It's also a 18% drop. I think this means c2c is not a factor?
 
->          %stddev     %change         %stddev
->              \          |                \  =
+Can you test with client and server bound to 2 hardware threads
+(hyperthread) of one core?  The two hardware threads of one core will
+share the L2 cache.
 
->     464232            -5.6%     438315        aim7.jobs-per-min
-....
->       0.13 =C2=B1  5%      +0.2        0.33 =C2=B1  6%  perf-profile.chil=
-dren.cycles-pp.__xfs_btree_check_sblock
-....
->       0.11 =C2=B1  4%      +0.2        0.30 =C2=B1  5%  perf-profile.self=
-.cycles-pp.__xfs_btree_check_sblock
+> > > I have also tested this case on a small machine: a skylake desktop and
+> > > this commit shows improvement:
+> > > 8b10b465d0e1: "netperf.Throughput_Mbps": 72288.76,
+> > > f26b3fa04611: "netperf.Throughput_Mbps": 90784.4,  +25.6%
+> > > =
 
-Because there is it, right at the bottom of the profile.
+> > > So this means those directly freed pages get reused by allocator side
+> > > and that brings performance improvement for machines with smaller cac=
+he.
+> > =
 
-Can you try the patch below and see if that fixes the issue?
+> > Per my understanding, the L2 cache on this desktop machine is shared
+> > among cores.
+> > =
 
-Cheers,
+> =
 
-Dave.
--- =
+> The said CPU is i7-6700 and according to this wikipedia page,
+> L2 is per core:
+> https://en.wikipedia.org/wiki/Skylake_(microarchitecture)#Mainstream_desk=
+top_processors
 
-Dave Chinner
-david(a)fromorbit.com
+Sorry, my memory was wrong.  The skylake and later server has much
+larger private L2 cache (1MB vs 256KB of client), this may increase the
+possibility of core-2-core transfering.
+
+> > > I wonder if we should still use PCP a little bit under the above said
+> > > condition, for the purpose of:
+> > > 1 reduced overhead in the free path for machines with large cache;
+> > > 2 still keeps the benefit of reused pages for machines with smaller c=
+ache.
+> > > =
+
+> > > For this reason, I tested increasing nr_pcp_high() from returning 0 to
+> > > either returning pcp->batch or (pcp->batch << 2):
+> > > machine\nr_pcp_high() ret: pcp->high   0   pcp->batch (pcp->batch << =
+2)
+> > > skylake desktop:             72288   90784   92219       91528
+> > > icelake 2sockets:           120956   99177   98251      116108
+> > > =
+
+> > > note nr_pcp_high() returns pcp->high is the behaviour of this commit's
+> > > parent, returns 0 is the behaviour of this commit.
+> > > =
+
+> > > The result shows, if we effectively use a PCP high as (pcp->batch << =
+2)
+> > > for the described condition, then this workload's performance on
+> > > small machine can remain while the regression on large machines can be
+> > > greately reduced(from -18% to -4%).
+> > > =
+
+> > =
+
+> > Can we use cache size and topology information directly?
+> =
+
+> It can be complicated by the fact that the system can have multiple
+> producers(cpus that are doing free) running at the same time and getting
+> the perfect number can be a difficult job.
+
+We can discuss this after verifying whether it's core-2-core transfering
+related.
+
+Best Regards,
+Huang, Ying
 
 
-xfs: avoid unnecessary runtime sibling pointer endian conversions
-
-From: Dave Chinner <dchinner@redhat.com>
-
-Commit dc04db2aa7c9 has caused a small aim7 regression, showing a
-small increase in CPU usage in __xfs_btree_check_sblock() as a
-result of the extra checking.
-
-This is likely due to the endian conversion of the sibling poitners
-being unconditional instead of relying on the compiler to endian
-convert the NULL pointer at compile time and avoiding the runtime
-conversion for this common case.
-
-Rework the checks so that endian conversion of the sibling pointers
-is only done if they are not null as the original code did.
-
-Fixes: dc04db2aa7c9 ("xfs: detect self referencing btree sibling pointers")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Dave Chinner <dchinner@redhat.com>
----
- fs/xfs/libxfs/xfs_btree.c | 37 +++++++++++++++++++++++++------------
- 1 file changed, 25 insertions(+), 12 deletions(-)
-
-diff --git a/fs/xfs/libxfs/xfs_btree.c b/fs/xfs/libxfs/xfs_btree.c
-index 2aa300f7461f..4d673e943317 100644
---- a/fs/xfs/libxfs/xfs_btree.c
-+++ b/fs/xfs/libxfs/xfs_btree.c
-@@ -51,16 +51,25 @@ xfs_btree_magic(
- 	return magic;
- }
- =
-
-+/*
-+ * These sibling pointer checks are optimised for null sibling pointers. T=
-his
-+ * happens a lot, and we don't need to byte swap at runtime if the sibling
-+ * pointer is NULL.
-+ */
- static xfs_failaddr_t
- xfs_btree_check_lblock_siblings(
- 	struct xfs_mount	*mp,
- 	struct xfs_btree_cur	*cur,
- 	int			level,
- 	xfs_fsblock_t		fsb,
--	xfs_fsblock_t		sibling)
-+	__be64			dsibling)
- {
--	if (sibling =3D=3D NULLFSBLOCK)
-+	xfs_fsblock_t		sibling;
-+
-+	if (dsibling =3D=3D cpu_to_be64(NULLFSBLOCK))
- 		return NULL;
-+
-+	sibling =3D be64_to_cpu(dsibling);
- 	if (sibling =3D=3D fsb)
- 		return __this_address;
- 	if (level >=3D 0) {
-@@ -81,10 +90,14 @@ xfs_btree_check_sblock_siblings(
- 	int			level,
- 	xfs_agnumber_t		agno,
- 	xfs_agblock_t		agbno,
--	xfs_agblock_t		sibling)
-+	__be32			dsibling)
- {
--	if (sibling =3D=3D NULLAGBLOCK)
-+	xfs_agblock_t		sibling;
-+
-+	if (dsibling =3D=3D cpu_to_be32(NULLAGBLOCK))
- 		return NULL;
-+
-+	sibling =3D be32_to_cpu(dsibling);
- 	if (sibling =3D=3D agbno)
- 		return __this_address;
- 	if (level >=3D 0) {
-@@ -136,10 +149,10 @@ __xfs_btree_check_lblock(
- 		fsb =3D XFS_DADDR_TO_FSB(mp, xfs_buf_daddr(bp));
- =
-
- 	fa =3D xfs_btree_check_lblock_siblings(mp, cur, level, fsb,
--			be64_to_cpu(block->bb_u.l.bb_leftsib));
-+			block->bb_u.l.bb_leftsib);
- 	if (!fa)
- 		fa =3D xfs_btree_check_lblock_siblings(mp, cur, level, fsb,
--				be64_to_cpu(block->bb_u.l.bb_rightsib));
-+				block->bb_u.l.bb_rightsib);
- 	return fa;
- }
- =
-
-@@ -204,10 +217,10 @@ __xfs_btree_check_sblock(
- 	}
- =
-
- 	fa =3D xfs_btree_check_sblock_siblings(mp, cur, level, agno, agbno,
--			be32_to_cpu(block->bb_u.s.bb_leftsib));
-+			block->bb_u.s.bb_leftsib);
- 	if (!fa)
- 		fa =3D xfs_btree_check_sblock_siblings(mp, cur, level, agno,
--				 agbno, be32_to_cpu(block->bb_u.s.bb_rightsib));
-+				 agbno, block->bb_u.s.bb_rightsib);
- 	return fa;
- }
- =
-
-@@ -4523,10 +4536,10 @@ xfs_btree_lblock_verify(
- 	/* sibling pointer verification */
- 	fsb =3D XFS_DADDR_TO_FSB(mp, xfs_buf_daddr(bp));
- 	fa =3D xfs_btree_check_lblock_siblings(mp, NULL, -1, fsb,
--			be64_to_cpu(block->bb_u.l.bb_leftsib));
-+			block->bb_u.l.bb_leftsib);
- 	if (!fa)
- 		fa =3D xfs_btree_check_lblock_siblings(mp, NULL, -1, fsb,
--				be64_to_cpu(block->bb_u.l.bb_rightsib));
-+				block->bb_u.l.bb_rightsib);
- 	return fa;
- }
- =
-
-@@ -4580,10 +4593,10 @@ xfs_btree_sblock_verify(
- 	agno =3D xfs_daddr_to_agno(mp, xfs_buf_daddr(bp));
- 	agbno =3D xfs_daddr_to_agbno(mp, xfs_buf_daddr(bp));
- 	fa =3D xfs_btree_check_sblock_siblings(mp, NULL, -1, agno, agbno,
--			be32_to_cpu(block->bb_u.s.bb_leftsib));
-+			block->bb_u.s.bb_leftsib);
- 	if (!fa)
- 		fa =3D xfs_btree_check_sblock_siblings(mp, NULL, -1, agno, agbno,
--				be32_to_cpu(block->bb_u.s.bb_rightsib));
-+				block->bb_u.s.bb_rightsib);
- 	return fa;
- }
-=20
---===============5598720190829007497==--
+--===============7196852126999056238==--
 
