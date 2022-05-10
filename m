@@ -1,48 +1,80 @@
-Content-Type: multipart/mixed; boundary="===============8127062389161767723=="
+Content-Type: multipart/mixed; boundary="===============0546581714913979734=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Waiman Long <longman@redhat.com>
 To: lkp@lists.01.org
 Subject: Re: [mm/page_alloc] f26b3fa046: netperf.Throughput_Mbps -18.0% regression
-Date: Tue, 10 May 2022 21:27:08 +0200
-Message-ID: <20220510192708.GQ76023@worktop.programming.kicks-ass.net>
-In-Reply-To: <CAHk-=wjguW5nxjagV99GHvc_-E_7mSg+LMvGtFjJ9LUSx4Skig@mail.gmail.com>
+Date: Tue, 10 May 2022 15:46:46 -0400
+Message-ID: <149d85f2-8561-cfac-3447-425d6a4b8014@redhat.com>
+In-Reply-To: <CAHk-=wiEtdHOeBti66NpSZDQw0KxcU45UNHaO-+Zwbiq3JEu+g@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8127062389161767723==
+--===============0546581714913979734==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 10, 2022 at 11:05:01AM -0700, Linus Torvalds wrote:
+On 5/10/22 15:03, Linus Torvalds wrote:
+> On Tue, May 10, 2022 at 11:47 AM Waiman Long <longman@redhat.com> wrote=
+:>
+>> Qspinlock still has one head waiter spinning on the lock. This is much
+>> better than the original ticket spinlock where there will be n waiters
+>> spinning on the lock.
+> Oh, absolutely. I'm not saying we should look at going back. I'm more
+> asking whether maybe we could go even further..
 
-> I think from a pure lock standpoint, it's the right thing to do (no
-> unnecessary bouncing, with the lock releaser doing just one write, and
-> the head waiter spinning on it is doing the right thing).
-> =
+We can probably go a bit further, but there will be cost associated with it.
 
-> But I think this is an example of where you end up having that
-> spinning on the lock possibly then being a disturbance on the other
-> fields around the lock.
-> =
+>> That is the cost of a cheap unlock. There is no way to eliminate all
+>> lock spinning unless we use MCS lock directly which will require a
+>> change in locking API as well as more expensive unlock.
+> So there's no question that unlock would be more expensive for the
+> contention case, since it would have to always not only clear the lock
+> itself, as well as update the noce it points to.
+>
+> But does it actually require a change in the locking API?
 
-> I wonder if Waiman / PeterZ / Will have any comments on that. Maybe
-> that "spin on the lock itself" is just fundamentally the only correct
-> thing, but since my initial reaction was "no, we're spinning on the
-> mcs node", maybe that would be _possible_?
-> =
+Of course, it is not always necessary to change the locking API.
 
-> We do have a lot of those spinlocks embedded in other data structures
-> cases. And if "somebody else is waiting for the lock" contends badly
-> with "the lock holder is doing a lot of writes close to the lock",
-> then that's not great.
 
-The immediate problem is that we don't always have a node. Notably we
-only do the whole MCS queueing thing when there's more than 1 contender.
+>
+> The qspinlock slowpath already always allocates that mcs node (for
+> some definition of "always" - I am obviously ignoring all the trylock
+> cases both before and in the slowpath)
+>
+> But yes, clearly the simply store-release of the current
+> queued_spin_unlock() wouldn't work as-is, and maybe the cost of
+> replacing it with something else is much more expensive than any
+> possible win.
+At the minimum, we need to do a read to determine if the lock is =
 
-Always doing the MCS thing had a hefty performance penalty vs the
-simpler spinlock implementations for the uncontended and light contended
-lock cases (by far the most common scenario) due to the extra cache-miss
-of getting an MCS node.
+contended and also a write to clear the lock bit. An atomic write after =
 
---===============8127062389161767723==--
+read is expensive. There is also a possibility of race with non-atomic =
+
+read-write. Moreover, the tail stored in the lock can tell you the queue =
+
+tail, not its current head. So there is no easy way to notify the =
+
+current head waiter to acquire the lock. The only thing I can think of =
+
+is to do some kind of proportional backoff for the head waiter by slowly =
+
+increasing the time gap with successive spinning attempts on the lock =
+
+over time with the cost of an increased lock acquisition latency.
+> I think the PV case already basically does that - replacing the the
+> "store release" with a much more complex sequence. No?
+
+That is true for pvqspinlock as the unlock is an atomic operation with =
+
+increased cost. The original pv ticket spinlock that is now replaced by =
+
+pvqspinlock has similar expensive unlock due to the nature of reading =
+
+the lock to find out if the head waiter vCPU may have been preempted.
+
+Cheers,
+Longman
+
+--===============0546581714913979734==--
 
