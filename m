@@ -1,35 +1,48 @@
-Content-Type: multipart/mixed; boundary="===============4519076413556702249=="
+Content-Type: multipart/mixed; boundary="===============8127062389161767723=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
 Subject: Re: [mm/page_alloc] f26b3fa046: netperf.Throughput_Mbps -18.0% regression
-Date: Tue, 10 May 2022 12:25:17 -0700
-Message-ID: <CAHk-=wjpkeoyKVf9GVPcddFUDM1+fzFHmoseNZAcqAtjd3D85A@mail.gmail.com>
-In-Reply-To: <CAHk-=wiEtdHOeBti66NpSZDQw0KxcU45UNHaO-+Zwbiq3JEu+g@mail.gmail.com>
+Date: Tue, 10 May 2022 21:27:08 +0200
+Message-ID: <20220510192708.GQ76023@worktop.programming.kicks-ass.net>
+In-Reply-To: <CAHk-=wjguW5nxjagV99GHvc_-E_7mSg+LMvGtFjJ9LUSx4Skig@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4519076413556702249==
+--===============8127062389161767723==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 10, 2022 at 12:03 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> I think the PV case already basically does that - replacing the the
-> "store release" with a much more complex sequence. No?
+On Tue, May 10, 2022 at 11:05:01AM -0700, Linus Torvalds wrote:
 
-Looking around, the PV case is absolutely horrid, and does a
-cmpxchg_release() on the unlock path. Yeah, that would make the unlock
-*much* more expensive.
+> I think from a pure lock standpoint, it's the right thing to do (no
+> unnecessary bouncing, with the lock releaser doing just one write, and
+> the head waiter spinning on it is doing the right thing).
+> =
 
-And I guess that's fairly fundamental. Even if you were to avoid an
-explicitly atomic access - do the unlock a non-atomic write followed
-by a non-atomic "read pending and see if we need to something
-expensive", just that check would have to involve at a minimum a
-memory barrier, so it ends up being expensive even for the
-non-contended case.
+> But I think this is an example of where you end up having that
+> spinning on the lock possibly then being a disturbance on the other
+> fields around the lock.
+> =
 
-              Linus
---===============4519076413556702249==--
+> I wonder if Waiman / PeterZ / Will have any comments on that. Maybe
+> that "spin on the lock itself" is just fundamentally the only correct
+> thing, but since my initial reaction was "no, we're spinning on the
+> mcs node", maybe that would be _possible_?
+> =
+
+> We do have a lot of those spinlocks embedded in other data structures
+> cases. And if "somebody else is waiting for the lock" contends badly
+> with "the lock holder is doing a lot of writes close to the lock",
+> then that's not great.
+
+The immediate problem is that we don't always have a node. Notably we
+only do the whole MCS queueing thing when there's more than 1 contender.
+
+Always doing the MCS thing had a hefty performance penalty vs the
+simpler spinlock implementations for the uncontended and light contended
+lock cases (by far the most common scenario) due to the extra cache-miss
+of getting an MCS node.
+
+--===============8127062389161767723==--
 
