@@ -1,65 +1,84 @@
-Content-Type: multipart/mixed; boundary="===============3397865548315708193=="
+Content-Type: multipart/mixed; boundary="===============7808220642836843434=="
 MIME-Version: 1.0
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: ying.huang@intel.com
 To: lkp@lists.01.org
 Subject: Re: [mm/page_alloc] f26b3fa046: netperf.Throughput_Mbps -18.0% regression
-Date: Thu, 12 May 2022 11:49:53 -0700
-Message-ID: <CAHk-=wiyjnKiCZyou+fHYi7tNh1FC-BYy_kubusd+jrkDRsExA@mail.gmail.com>
-In-Reply-To: <20220512110634.712057e4663ecc5f697bf185@linux-foundation.org>
+Date: Fri, 13 May 2022 14:19:32 +0800
+Message-ID: <b6c74d994828a56485308e82f0598243cf0744a5.camel@intel.com>
+In-Reply-To: <CAHk-=whmeWNC-YH_cGRofdW3Spt8Y5nfWpoX=CipQ5pBYgnt2g@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3397865548315708193==
+--===============7808220642836843434==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 12, 2022 at 11:06 AM Andrew Morton
-<akpm@linux-foundation.org> wrote:
->
-> On Thu, 12 May 2022 10:42:09 -0700 Linus Torvalds <torvalds@linux-found=
-ation.org> wrote:
-> >
-> > In a perfect world, somebody would fix the locking to just not have as
-> > much contention. But assuming that isn't an option, maybe somebody
-> > should just look at that 'struct zone' layout a bit more.
->
-> (hopefully adds linux-mm to cc)
+On Thu, 2022-05-12 at 10:42 -0700, Linus Torvalds wrote:
+> On Thu, May 12, 2022 at 5:46 AM Aaron Lu <aaron.lu@intel.com> wrote:
+> > =
 
-So I suspect the people who do re-layout would have to be the intel
-people who actually see the regression.
+> > When nr_process=3D16, zone lock contention increased about 21% from 6% =
+to
+> > 27%, performance dropped 17.8%, overall lock contention increased 14.3%:
+> =
 
-Because the exact rules are quite complicated, and currently the
-comments about the layout don't really help much.
+> So the contention issue seems real and nasty, and while the queued
+> locks may have helped a bit, I don't think they ended up making a
+> *huge* change: the queued locks help make sure the lock itself doesn't
+> bounce all over the place, but clearly if the lock holder writes close
+> to the lock, it will still bounce with at least *one* lock waiter.
+> =
 
-For example, the "Read-mostly fields" comment doesn't necessarily mean
-that the fields in question should be kept away from the lock.
+> And having looked at the qspinlock code, I have to agree with Waiman
+> and PeterZ that I don't think the locking code can reasonably eb
+> changed - I'm sure this particular case could be improved, but the
+> downsides for other cases would be quite large enough to make that a
+> bad idea.
+> =
 
-Even if they are mostly read-only, if they are only read *under* the
-lock (because the lock still is what serializes them), then putting
-them in the same cacheline as the lock certainly won't hurt.
+> So I think the issue is that
+> =
 
-And the same is actually true of things that are actively written to:
-if they are written to under the lock, being in the same cacheline as
-the lock can be a *good* thing, since then you have only one dirty
-cacheline.
+> =C2=A0(a) that zone lock is too hot.
+> =
 
-It only becomes a problem when (a) the lock is contended (so you get
-the bouncing from other lockers trying to get it) _and_ (b) the
-writing is fairly intense (so you get active bouncing back-and-forth,
-not just one or two bounces).
+> =C2=A0(b) given lock contention, the fields that get written to under the
+> lock are too close to the lock
+> =
 
-And so to actually do any real analysis, you probably have to have
-multiple sockets, because without numbers to guide you to exactly
-_which_ writes are problematic, you're bound to get the heuristic
-wrong.
+> Now, the optimal fix would of course be to just fix the lock so that
+> it isn't so hot. But assuming that's not possible, just looking at the
+> definition of that 'struct zone', I do have to say that the
+> ZONE_PADDING fields seem to have bit-rotted over the years.
+> =
 
-And to make the issue even murkier, this whole thread is mixing up two
-different regressions that may not have all that much in common (ie
-the subject line is about one thing, but then we have that whole
-page_fault1 process mode results, and it's not clear that they have
-anything really to do with each other - just different examples of
-cache sensitivity).
+> The whole and only reason for them would be to avoid the cache
+> bouncing, but commit 6168d0da2b47 ("mm/lru: replace pgdat lru_lock
+> with lruvec lock") actively undid that for the 'lru_lock' case, and
+> way back when commit a368ab67aa55 ("mm: move zone lock to a different
+> cache line than order-0 free page lists") tried to make it true for
+> the 'lock' vs free_area[] cases, but did it without actually using the
+> ZONE_PADDING thing, but by moving things around, and not really
+> *guaranteeing* that 'lock' was in a different cacheline, but really
+> just making 'free_area[]' aligned, but still potentially in the same
+> cache-line as 'lock' (so now the lower-order 'free_area[]' entries are
+> not sharing a cache-line, but the higher-order 'free_area[]' ones
+> probably are).
+> =
 
-                   Linus
---===============3397865548315708193==--
+> So I get the feeling that those 'ZONE_PADDING' things are a bit random
+> and not really effective.
+> =
+
+> In a perfect world, somebody would fix the locking to just not have as
+> much contention. But assuming that isn't an option, maybe somebody
+> should just look at that 'struct zone' layout a bit more.
+
+Sure.  We will work on this.
+
+Best Regards,
+Huang, Ying
+
+
+--===============7808220642836843434==--
 
