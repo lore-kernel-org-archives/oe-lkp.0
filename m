@@ -1,28 +1,27 @@
-Content-Type: multipart/mixed; boundary="===============2159146818666323703=="
+Content-Type: multipart/mixed; boundary="===============8269241611843073470=="
 MIME-Version: 1.0
 From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
-Subject: Re: [xfs] 5349b2afc1: xfstests.xfs.299.fail
-Date: Fri, 03 Jun 2022 07:40:37 +1000
-Message-ID: <20220602214037.GE1098723@dread.disaster.area>
-In-Reply-To: <20220602085053.GC27190@xsang-OptiPlex-9020>
+Subject: Re: [xfs] 1eb70f54c4: xfstests.xfs.348.fail
+Date: Fri, 03 Jun 2022 07:44:36 +1000
+Message-ID: <20220602214436.GF1098723@dread.disaster.area>
+In-Reply-To: <20220602090409.GD27190@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2159146818666323703==
+--===============8269241611843073470==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 02, 2022 at 04:50:53PM +0800, kernel test robot wrote:
+On Thu, Jun 02, 2022 at 05:04:09PM +0800, kernel test robot wrote:
 > =
 
 > (please be noted we reported
-> "[xfs]  5349b2afc1: xfstests.xfs.050.fail"
+> "[xfs]  1eb70f54c4: xfstests.xfs.348.fail"
 > on
-> https://lore.kernel.org/all/20220518094120.GB15472(a)xsang-OptiPlex-9020/
-> when this commit was on linux-next/master
-> now we found there are still xfstests failure including xfs.050 on mainli=
-ne.
+> https://lore.kernel.org/all/20220518144504.GB22659(a)xsang-OptiPlex-9020/
+> while this commit was on linux-next/master
+> now we noticed the issue is still existing on mainline.
 > report again FYI)
 > =
 
@@ -34,8 +33,8 @@ ne.
 > FYI, we noticed the following commit (built with gcc-11):
 > =
 
-> commit: 5349b2afc117d87d35502f2fe1930692d6bfc68b ("xfs: don't set quota w=
-arning values")
+> commit: 1eb70f54c445fcbb25817841e774adb3d912f3e8 ("xfs: validate inode fo=
+rk size against fork format")
 > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 > =
 
@@ -46,7 +45,7 @@ arning values")
 
 > 	disk: 4HDD
 > 	fs: xfs
-> 	test: xfs-group-29
+> 	test: xfs-group-34
 > 	ucode: 0x21
 > =
 
@@ -75,53 +74,70 @@ backtrace):
 > Reported-by: kernel test robot <oliver.sang@intel.com>
 > =
 
-> 2022-05-17 15:49:39 export TEST_DIR=3D/fs/sdb1
-> 2022-05-17 15:49:39 export TEST_DEV=3D/dev/sdb1
-> 2022-05-17 15:49:39 export FSTYP=3Dxfs
-> 2022-05-17 15:49:39 export SCRATCH_MNT=3D/fs/scratch
-> 2022-05-17 15:49:39 mkdir /fs/scratch -p
-> 2022-05-17 15:49:39 export SCRATCH_DEV=3D/dev/sdb4
-> 2022-05-17 15:49:39 export SCRATCH_LOGDEV=3D/dev/sdb2
-> 2022-05-17 15:49:39 export SCRATCH_XFS_LIST_METADATA_FIELDS=3Du3.sfdir3.h=
+> 2022-05-18 11:47:42 export TEST_DIR=3D/fs/sdb1
+> 2022-05-18 11:47:42 export TEST_DEV=3D/dev/sdb1
+> 2022-05-18 11:47:42 export FSTYP=3Dxfs
+> 2022-05-18 11:47:42 export SCRATCH_MNT=3D/fs/scratch
+> 2022-05-18 11:47:42 mkdir /fs/scratch -p
+> 2022-05-18 11:47:42 export SCRATCH_DEV=3D/dev/sdb4
+> 2022-05-18 11:47:42 export SCRATCH_LOGDEV=3D/dev/sdb2
+> 2022-05-18 11:47:42 export SCRATCH_XFS_LIST_METADATA_FIELDS=3Du3.sfdir3.h=
 dr.parent.i4
-> 2022-05-17 15:49:39 export SCRATCH_XFS_LIST_FUZZ_VERBS=3Drandom
-> 2022-05-17 15:49:39 sed "s:^:xfs/:" //lkp/benchmarks/xfstests/tests/xfs-g=
-roup-29
-> 2022-05-17 15:49:39 ./check xfs/290 xfs/291 xfs/292 xfs/293 xfs/294 xfs/2=
-95 xfs/296 xfs/297 xfs/298 xfs/299
+> 2022-05-18 11:47:42 export SCRATCH_XFS_LIST_FUZZ_VERBS=3Drandom
+> 2022-05-18 11:47:42 sed "s:^:xfs/:" //lkp/benchmarks/xfstests/tests/xfs-g=
+roup-34
+> 2022-05-18 11:47:42 ./check xfs/348 xfs/349
 > FSTYP         -- xfs (debug)
-> PLATFORM      -- Linux/x86_64 lkp-ivb-d05 5.18.0-rc2-00103-g5349b2afc117 =
-#1 SMP Sun May 15 12:16:43 CST 2022
+> PLATFORM      -- Linux/x86_64 lkp-ivb-d05 5.18.0-rc2-00067-g1eb70f54c445 =
+#1 SMP Thu May 12 04:39:22 CST 2022
 > MKFS_OPTIONS  -- -f /dev/sdb4
 > MOUNT_OPTIONS -- /dev/sdb4 /fs/scratch
 > =
 
-> xfs/290	 2s
-> xfs/291	 130s
-> xfs/292	 3s
-> xfs/293	 1s
-> xfs/294	 63s
-> xfs/295	 30s
-> xfs/296	 14s
-> xfs/297	 209s
-> xfs/298	 14s
-> xfs/299	- output mismatch (see /lkp/benchmarks/xfstests/results//xfs/299.=
+> xfs/348	- output mismatch (see /lkp/benchmarks/xfstests/results//xfs/348.=
 out.bad)
->     --- tests/xfs/299.out	2022-05-16 16:42:32.000000000 +0000
->     +++ /lkp/benchmarks/xfstests/results//xfs/299.out.bad	2022-05-17 15:5=
-7:43.078827071 +0000
->     @@ -6,6 +6,7 @@
->      log      =3DLDEV bsize=3DXXX blocks=3DXXX
->      realtime =3DRDEV extsz=3DXXX blocks=3DXXX, rtextents=3DXXX
->      *** user, group, and project
->     +xfs_quota: cannot set warnings: Invalid argument
+>     --- tests/xfs/348.out	2022-05-16 16:42:32.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//xfs/348.out.bad	2022-05-18 11:4=
+7:58.897287914 +0000
+>     @@ -108,7 +108,7 @@
+>      would have junked entry "EMPTY" in directory PARENT_INO
+>      would have junked entry "FIFO" in directory PARENT_INO
+>      stat: 'SCRATCH_MNT/test/DIR' is a directory
+>     -stat: 'SCRATCH_MNT/test/DATA' is a directory
+>     +stat: cannot statx 'SCRATCH_MNT/test/DATA': Structure needs cleaning
+>      stat: cannot statx 'SCRATCH_MNT/test/EMPTY': Structure needs cleaning
+>      stat: cannot statx 'SCRATCH_MNT/test/SYMLINK': Structure needs clean=
+ing
 
-Not a kernel issue - this is fixed in the latest fstests release.
+Not a kernel issue - this is fixed in the latest fstests.
 
--Dave.
+>     ...
+>     (Run 'diff -u /lkp/benchmarks/xfstests/tests/xfs/348.out /lkp/benchma=
+rks/xfstests/results//xfs/348.out.bad'  to see the entire diff)
+> xfs/349	[failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfs=
+tests/results//xfs/349.out.bad)
+>     --- tests/xfs/349.out	2022-05-16 16:42:32.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//xfs/349.out.bad	2022-05-18 11:5=
+3:51.101272360 +0000
+>     @@ -1,3 +1,2 @@
+>      QA output created by 349
+>      Format and populate
+>     -Scrub
+>     ...
+>     (Run 'diff -u /lkp/benchmarks/xfstests/tests/xfs/349.out /lkp/benchma=
+rks/xfstests/results//xfs/349.out.bad'  to see the entire diff)
+
+You are running a test in the "dangerous_fuzzers" group that isn't
+in the auto group. This is a test for developers to find error
+detection issues and, as such, failure is kinda expected. It is not
+regression test that can be used for pass/fail testing....
+
+Cheers,
+
+Dave.
 -- =
 
 Dave Chinner
 david(a)fromorbit.com
---===============2159146818666323703==--
+--===============8269241611843073470==--
 
