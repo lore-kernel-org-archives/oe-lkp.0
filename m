@@ -1,19 +1,29 @@
-Content-Type: multipart/mixed; boundary="===============1417306208768195447=="
+Content-Type: multipart/mixed; boundary="===============2159146818666323703=="
 MIME-Version: 1.0
-From: Peter Zijlstra <peterz@infradead.org>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
-Subject: Re: [cpuidle] f01f07f0a5: WARNING:at_drivers/cpuidle/cpuidle.c:#cpuidle_enter_state
-Date: Thu, 02 Jun 2022 12:00:57 +0200
-Message-ID: <YpiKWcbyoNnvUU6W@hirez.programming.kicks-ass.net>
-In-Reply-To: <20220602092019.GE27190@xsang-OptiPlex-9020>
+Subject: Re: [xfs] 5349b2afc1: xfstests.xfs.299.fail
+Date: Fri, 03 Jun 2022 07:40:37 +1000
+Message-ID: <20220602214037.GE1098723@dread.disaster.area>
+In-Reply-To: <20220602085053.GC27190@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1417306208768195447==
+--===============2159146818666323703==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 02, 2022 at 05:20:19PM +0800, kernel test robot wrote:
+On Thu, Jun 02, 2022 at 04:50:53PM +0800, kernel test robot wrote:
+> =
+
+> (please be noted we reported
+> "[xfs]  5349b2afc1: xfstests.xfs.050.fail"
+> on
+> https://lore.kernel.org/all/20220518094120.GB15472(a)xsang-OptiPlex-9020/
+> when this commit was on linux-next/master
+> now we found there are still xfstests failure including xfs.050 on mainli=
+ne.
+> report again FYI)
 > =
 
 > =
@@ -24,124 +34,94 @@ On Thu, Jun 02, 2022 at 05:20:19PM +0800, kernel test robot wrote:
 > FYI, we noticed the following commit (built with gcc-11):
 > =
 
-> commit: f01f07f0a50134a775f8e60fdaa559d2f5d63663 ("cpuidle: Move IRQ stat=
-e validation")
-> https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git sched/idle
+> commit: 5349b2afc117d87d35502f2fe1930692d6bfc68b ("xfs: don't set quota w=
+arning values")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 > =
 
-> in testcase: netperf
-> version: netperf-x86_64-2.7-0_20220601
+> in testcase: xfstests
+> version: xfstests-x86_64-46e1b83-1_20220414
 > with following parameters:
 > =
 
-> 	ip: ipv4
-> 	runtime: 300s
-> 	nr_threads: 1
-> 	cluster: cs-localhost
-> 	send_size: 10K
-> 	test: SCTP_STREAM_MANY
-> 	cpufreq_governor: performance
-> 	ucode: 0xd000331
+> 	disk: 4HDD
+> 	fs: xfs
+> 	test: xfs-group-29
+> 	ucode: 0x21
 > =
 
-> test-description: Netperf is a benchmark that can be use to measure vario=
-us aspect of networking performance.
-> test-url: http://www.netperf.org/netperf/
+> test-description: xfstests is a regression test suite for xfs and other f=
+iles ystems.
+> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
 > =
 
 > =
 
-> on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU=
- @ 2.60GHz with 128G memory
-
-I know this is a bit of an ask, but would it at all be possible to
-translate that into a code name; specifically, that "Platinum 8358"
-thing is "Ice Lake".
-
-Our dear marketing department has made it absolutely impossible (without
-just plain googling it) to know what is what :/
-
+> on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30=
+GHz with 8G memory
 > =
 
 > caused below changes (please refer to attached dmesg/kmsg for entire log/=
 backtrace):
+> =
 
-Please, start the quote at the "------------[ cut here ]------------"
-marker, that's what it's for. Then you don't miss the actual warning:
+> =
 
-[    4.147181][    T0] ------------[ cut here ]------------
-[    4.147182][    T0] intel_idle leaked IRQ state
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^ is the useful bit that w=
-ent missing.
+> =
 
-> [ 4.147200][ T0] WARNING: CPU: 1 PID: 0 at drivers/cpuidle/cpuidle.c:239 =
-cpuidle_enter_state (drivers/cpuidle/cpuidle.c:239 (discriminator 3)) =
+> =
 
-> [    4.147205][    T0] Modules linked in:
-> [    4.147207][    T0] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.18.0-1=
-1271-gf01f07f0a501 #1
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> =
 
-That's commit c227233ad64c ("intel_idle: enable interrupts before C1 on Xeo=
-ns")
-breaking things. Fix below I suppose.
+> 2022-05-17 15:49:39 export TEST_DIR=3D/fs/sdb1
+> 2022-05-17 15:49:39 export TEST_DEV=3D/dev/sdb1
+> 2022-05-17 15:49:39 export FSTYP=3Dxfs
+> 2022-05-17 15:49:39 export SCRATCH_MNT=3D/fs/scratch
+> 2022-05-17 15:49:39 mkdir /fs/scratch -p
+> 2022-05-17 15:49:39 export SCRATCH_DEV=3D/dev/sdb4
+> 2022-05-17 15:49:39 export SCRATCH_LOGDEV=3D/dev/sdb2
+> 2022-05-17 15:49:39 export SCRATCH_XFS_LIST_METADATA_FIELDS=3Du3.sfdir3.h=
+dr.parent.i4
+> 2022-05-17 15:49:39 export SCRATCH_XFS_LIST_FUZZ_VERBS=3Drandom
+> 2022-05-17 15:49:39 sed "s:^:xfs/:" //lkp/benchmarks/xfstests/tests/xfs-g=
+roup-29
+> 2022-05-17 15:49:39 ./check xfs/290 xfs/291 xfs/292 xfs/293 xfs/294 xfs/2=
+95 xfs/296 xfs/297 xfs/298 xfs/299
+> FSTYP         -- xfs (debug)
+> PLATFORM      -- Linux/x86_64 lkp-ivb-d05 5.18.0-rc2-00103-g5349b2afc117 =
+#1 SMP Sun May 15 12:16:43 CST 2022
+> MKFS_OPTIONS  -- -f /dev/sdb4
+> MOUNT_OPTIONS -- /dev/sdb4 /fs/scratch
+> =
 
---- a/drivers/idle/intel_idle.c
-+++ b/drivers/idle/intel_idle.c
-@@ -129,21 +129,36 @@ static unsigned int mwait_substates __in
-  *
-  * Must be called under local_irq_disable().
-  */
--static __cpuidle int intel_idle(struct cpuidle_device *dev,
--				struct cpuidle_driver *drv, int index)
-+static __always_inline int __intel_idle(struct cpuidle_device *dev,
-+					struct cpuidle_driver *drv, int index)
- {
- 	struct cpuidle_state *state =3D &drv->states[index];
- 	unsigned long eax =3D flg2MWAIT(state->flags);
- 	unsigned long ecx =3D 1; /* break on interrupt flag */
- =
+> xfs/290	 2s
+> xfs/291	 130s
+> xfs/292	 3s
+> xfs/293	 1s
+> xfs/294	 63s
+> xfs/295	 30s
+> xfs/296	 14s
+> xfs/297	 209s
+> xfs/298	 14s
+> xfs/299	- output mismatch (see /lkp/benchmarks/xfstests/results//xfs/299.=
+out.bad)
+>     --- tests/xfs/299.out	2022-05-16 16:42:32.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//xfs/299.out.bad	2022-05-17 15:5=
+7:43.078827071 +0000
+>     @@ -6,6 +6,7 @@
+>      log      =3DLDEV bsize=3DXXX blocks=3DXXX
+>      realtime =3DRDEV extsz=3DXXX blocks=3DXXX, rtextents=3DXXX
+>      *** user, group, and project
+>     +xfs_quota: cannot set warnings: Invalid argument
 
--	if (state->flags & CPUIDLE_FLAG_IRQ_ENABLE)
--		local_irq_enable();
--
- 	mwait_idle_with_hints(eax, ecx);
- =
+Not a kernel issue - this is fixed in the latest fstests release.
 
- 	return index;
- }
- =
+-Dave.
+-- =
 
-+static __cpuidle int intel_idle(struct cpuidle_device *dev,
-+				struct cpuidle_driver *drv, int index)
-+{
-+	return __intel_idle(dev, drv, index);
-+}
-+
-+static __cpuidle int intel_idle_irq(struct cpuidle_device *dev,
-+				    struct cpuidle_driver *drv, int index)
-+{
-+	int ret;
-+
-+	raw_local_irq_enable();
-+	ret =3D __intel_idle(dev, drv, index);
-+	raw_local_irq_disable();
-+
-+	return ret;
-+}
-+
- /**
-  * intel_idle_s2idle - Ask the processor to enter the given idle state.
-  * @dev: cpuidle device of the target CPU.
-@@ -1801,6 +1816,9 @@ static void __init intel_idle_init_cstat
- 		/* Structure copy. */
- 		drv->states[drv->state_count] =3D cpuidle_state_table[cstate];
- =
-
-+		if (cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_IRQ_ENABLE)
-+			drv->states[drv->state_count].enter =3D intel_idle_irq;
-+
- 		if ((disabled_states_mask & BIT(drv->state_count)) ||
- 		    ((icpu->use_acpi || force_use_acpi) &&
- 		     intel_idle_off_by_default(mwait_hint) &&
---===============1417306208768195447==--
+Dave Chinner
+david(a)fromorbit.com
+--===============2159146818666323703==--
 
