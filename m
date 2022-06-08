@@ -1,97 +1,62 @@
-Content-Type: multipart/mixed; boundary="===============7016461121010811680=="
+Content-Type: multipart/mixed; boundary="===============8682658697571993767=="
 MIME-Version: 1.0
-From: Oliver Sang <oliver.sang@intel.com>
+From: Yin Fengwei <fengwei.yin@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [io_uring] 584b0180f0: phoronix-test-suite.fio.SequentialWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s -10.2% regression
-Date: Wed, 08 Jun 2022 16:00:54 +0800
-Message-ID: <20220608080054.GB22428@xsang-OptiPlex-9020>
-In-Reply-To: <2085bfef-a91c-8adb-402b-242e8c5d5c55@kernel.dk>
+Subject: Re: [tcp] e926147618: stress-ng.icmp-flood.ops_per_sec -8.7% regression
+Date: Wed, 08 Jun 2022 16:55:29 +0800
+Message-ID: <bf9be90c-0cb9-6b41-77c7-14578ca3a8b0@intel.com>
+In-Reply-To: <20220608073441.GE7547@1wt.eu>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7016461121010811680==
+--===============8682658697571993767==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jens Axboe,
 
-On Fri, May 27, 2022 at 07:50:27AM -0600, Jens Axboe wrote:
-> On 5/27/22 3:24 AM, kernel test robot wrote:
-> > =
-
-> > =
-
-> > Greeting,
-> > =
-
-> > FYI, we noticed a -10.2% regression of phoronix-test-suite.fio.Sequenti=
-alWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s due to commit:
-> > =
-
-> > =
-
-> > commit: 584b0180f0f4d67d7145950fe68c625f06c88b10 ("io_uring: move read/=
-write file prep state into actual opcode handler")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > =
-
-> > in testcase: phoronix-test-suite
-> > on test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ =
-2.10GHz with 512G memory
-> > with following parameters:
-> > =
-
-> > 	test: fio-1.14.1
-> > 	option_a: Sequential Write
-> > 	option_b: IO_uring
-> > 	option_c: Yes
-> > 	option_d: Yes
-> > 	option_e: 1MB
-> > 	option_f: Default Test Directory
-> > 	cpufreq_governor: performance
-> > 	ucode: 0x500320a
-> > =
-
-> > test-description: The Phoronix Test Suite is the most comprehensive tes=
-ting and benchmarking platform available that provides an extensible framew=
-ork for which new tests can be easily added.
-> > test-url: http://www.phoronix-test-suite.com/
+On 6/8/2022 3:34 PM, Willy Tarreau wrote:
+> On Wed, Jun 08, 2022 at 10:26:12AM +0300, Moshe Kol wrote:
+>> Hmm, How is the ICMP flood stress test related to TCP connections?
 > =
 
-> I'm a bit skeptical on this, but I'd like to try and run the test case.
-> Since it's just a fio test case, why can't I find it somewhere? Seems
-> very convoluted to have to setup lkp-tests just for this. Besides, I
-> tried, but it doesn't work on aarch64...
+> To me it's not directly related, unless the test pre-establishes many
+> connections, or is affected in a way or another by a larger memory
+> allocation of this part.
+Agree.
 
-we just follow doc on http://www.phoronix-test-suite.com/ to run tests in P=
-TS
-framework, so you don't need to care about lkp-tests.
+>From the perf profile:
 
-and for this fio test, the parameters we used just as:
-	test: fio-1.14.1
-	option_a: Sequential Write
-	option_b: IO_uring
-	option_c: Yes
-	option_d: Yes
-	option_e: 1MB
-	option_f: Default Test Directory
+     48.67            +4.0       52.65 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.ip_finish_output2.raw_send_hdrinc.raw_sendmsg.sock_sendmsg.__sys_s=
+endto
+     44.05            +4.1       48.12 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.ip_local_deliver_finish.__netif_receive_skb_one_core.process_backl=
+og.__napi_poll.net_rx_action
+     43.93            +4.1       48.00 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.ip_protocol_deliver_rcu.ip_local_deliver_finish.__netif_receive_sk=
+b_one_core.process_backlog.__napi_poll
+     43.72            +4.1       47.81 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.icmp_rcv.ip_protocol_deliver_rcu.ip_local_deliver_finish.__netif_r=
+eceive_skb_one_core.process_backlog
+     17.10 =C2=B1  7%      +6.0       23.10 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.ping_rcv.icmp_rcv.ip_protocol_deliver_rcu.ip_local_deliver_fi=
+nish.__netif_receive_skb_one_core
+     17.05 =C2=B1  7%      +6.0       23.06 =C2=B1  6%  perf-profile.calltr=
+ace.cycles-pp.ping_lookup.ping_rcv.icmp_rcv.ip_protocol_deliver_rcu.ip_loca=
+l_deliver_finish
+
+ping_lookup took more time after the patch applied(raised from 17.05% to
+23.06%). And still not direct connection with the patch.
 
 
-and yeah, we most focus on x86_64 and don't support lkp-tests to run on
-aarch64...
-
-
-if you have some idea that we could run other tests, could you let us know?
-it will be great pleasure to run more tests to check for us if we can suppo=
-rt.
-
-Thanks a lot!
+Regards
+Yin, Fengwei
 
 > =
 
-> -- =
-
-> Jens Axboe
->=20
---===============7016461121010811680==--
+> Willy
+> _______________________________________________
+> LKP mailing list -- lkp(a)lists.01.org
+> To unsubscribe send an email to lkp-leave(a)lists.01.org
+--===============8682658697571993767==--
 
