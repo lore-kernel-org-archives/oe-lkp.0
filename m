@@ -1,72 +1,45 @@
-Content-Type: multipart/mixed; boundary="===============6479493372440873528=="
+Content-Type: multipart/mixed; boundary="===============4791204603926993316=="
 MIME-Version: 1.0
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+From: Michal Koutný <mkoutny@suse.com>
 To: lkp@lists.01.org
 Subject: Re: [cgroup] 3c87862ca1: WARNING:at_kernel/softirq.c:#__local_bh_enable_ip
-Date: Thu, 09 Jun 2022 07:30:41 -0700
-Message-ID: <b39cdb9c-aa2a-0f49-318b-8632b2989433@linaro.org>
-In-Reply-To: <20220609085641.GB17678@xsang-OptiPlex-9020>
+Date: Thu, 09 Jun 2022 16:55:49 +0200
+Message-ID: <20220609145549.GA28484@blackbody.suse.cz>
+In-Reply-To: <b39cdb9c-aa2a-0f49-318b-8632b2989433@linaro.org>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6479493372440873528==
+--===============4791204603926993316==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 6/9/22 01:56, kernel test robot wrote:
-> =
+Hello Tadeusz.
 
-> Greeting,
-> =
+On Thu, Jun 09, 2022 at 07:30:41AM -0700, Tadeusz Struk <tadeusz.struk@li=
+naro.org> wrote:
+> Are you interested in fixing this at syzbot issue all?
 
-> FYI, we noticed the following commit (built with gcc-11):
-> =
+The (original) syzbot report is conditioned by allocation failure that's
+unlikely under normal conditions (AFAIU). Hence I don't treat it extra
+high urgent.
+OTOH, it's interesting and it points to some disparity worth fixing --
+so I try helping (as time permits, so far I can only run the reproducers
+via the syzbot).
 
-> commit: 3c87862ca13147416d900cf82ca56bb2f23910bf ("[PATCH v2] cgroup: ser=
-ialize css kill and release paths")
-> url:https://github.com/intel-lab-lkp/linux/commits/Tadeusz-Struk/cgroup-s=
-erialize-css-kill-and-release-paths/20220606-014132
-> base:https://git.kernel.org/cgit/linux/kernel/git/tj/cgroup.git  for-next
-> patch link:https://lore.kernel.org/netdev/20220603181321.443716-1-tadeusz=
-.struk(a)linaro.org
-> =
+> Do you have any more feedback on this?
 
-> in testcase: boot
-> =
+Ad the patch v2 with spinlock per css -- that looks like an overkill to
+me, I didn't look deeper into it.
 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
-m 16G
-> =
+Ad the in-thread patch with ancestry css_get(), the ->parent ref:
+  - is inc'd in init_and_link_css(),
+  - is dec'd in css_free_rwork_fn()
+and thanks to ->online_cnt offlining is ordered (child before parent).
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
+Where does your patch dec these ancestry references? (Or why would they
+be missing in the first place?)
 
-> =
-
-> =
-
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot<oliver.sang@intel.com>
-> =
-
-> =
-
-> [ 55.821003][ C1] WARNING: CPU: 1 PID: 1 at kernel/softirq.c:363 __local_=
-bh_enable_ip (kernel/softirq.c:363)
-
-Looks like that will need to be spin_lock_irq(&css->lock) instead of spin_l=
-ock_bh(&css->lock)
-I can respin the patch, but I would like to request some feedback on it fir=
-st.
-
-Tejun, Michal
-Are you interested in fixing this at syzbot issue all? Do you have any more=
- feedback on this?
-
--- =
-
-Thanks,
-Tadeusz
---===============6479493372440873528==--
+Thanks for digging into this!
+Michal
+--===============4791204603926993316==--
 
