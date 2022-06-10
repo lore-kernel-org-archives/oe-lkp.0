@@ -1,45 +1,53 @@
-Content-Type: multipart/mixed; boundary="===============4791204603926993316=="
+Content-Type: multipart/mixed; boundary="===============8619279746419199711=="
 MIME-Version: 1.0
-From: Michal Koutný <mkoutny@suse.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [cgroup] 3c87862ca1: WARNING:at_kernel/softirq.c:#__local_bh_enable_ip
-Date: Thu, 09 Jun 2022 16:55:49 +0200
-Message-ID: <20220609145549.GA28484@blackbody.suse.cz>
-In-Reply-To: <b39cdb9c-aa2a-0f49-318b-8632b2989433@linaro.org>
+Subject: Re: [btrfs] 62bd8124e2: WARNING:at_fs/btrfs/block-rsv.c:#btrfs_release_global_block_rsv[btrfs]
+Date: Fri, 10 Jun 2022 09:26:59 +0800
+Message-ID: <20220610012659.GA6844@xsang-OptiPlex-9020>
+In-Reply-To: <20220609094652.GB3668047@falcondesktop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4791204603926993316==
+--===============8619279746419199711==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hello Tadeusz.
+hi, Filipe Manana,
 
-On Thu, Jun 09, 2022 at 07:30:41AM -0700, Tadeusz Struk <tadeusz.struk@li=
-naro.org> wrote:
-> Are you interested in fixing this at syzbot issue all?
+On Thu, Jun 09, 2022 at 10:46:52AM +0100, Filipe Manana wrote:
+> =
 
-The (original) syzbot report is conditioned by allocation failure that's
-unlikely under normal conditions (AFAIU). Hence I don't treat it extra
-high urgent.
-OTOH, it's interesting and it points to some disparity worth fixing --
-so I try helping (as time permits, so far I can only run the reproducers
-via the syzbot).
+> I am unable to reproduce that on a 12 cores box.
+> I also don't see anything wrong that could lead to that by manual inspect=
+ion.
+> =
 
-> Do you have any more feedback on this?
+> How easy is it for you to trigger it?
 
-Ad the patch v2 with spinlock per css -- that looks like an overkill to
-me, I didn't look deeper into it.
+we reproduced this upon 62bd8124e2 4 times out of 6 runs.
+but since the other 2 runs crash early due to other issues (below (1)), we
+cannot say they are clean.
+at the same time, the 6 runs for parent are clean.
 
-Ad the in-thread patch with ancestry css_get(), the ->parent ref:
-  - is inc'd in init_and_link_css(),
-  - is dec'd in css_free_rwork_fn()
-and thanks to ->online_cnt offlining is ordered (child before parent).
+7e2bb5b3f3bca223 62bd8124e2f17910fcd89568e50
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :6           67%           4:6     dmesg.RIP:btrfs_release_globa=
+l_block_rsv[btrfs]
+           :6           67%           4:6     dmesg.WARNING:at_fs/btrfs/blo=
+ck-rsv.c:#btrfs_release_global_block_rsv[btrfs]
+           :6           33%           2:6     dmesg.kernel_BUG_at_fs/xfs/xf=
+s_message.c  <----- (1)
 
-Where does your patch dec these ancestry references? (Or why would they
-be missing in the first place?)
 
-Thanks for digging into this!
-Michal
---===============4791204603926993316==--
+> =
+
+> Can you also run it with CONFIG_BTRFS_ASSERT=3Dy set in the kernel config?
+
+got it, we will enable this config and rerun tests, for both this commit and
+parent.
+
+--===============8619279746419199711==--
 
