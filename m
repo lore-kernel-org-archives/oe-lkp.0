@@ -1,69 +1,120 @@
-Content-Type: multipart/mixed; boundary="===============6906904647261836769=="
+Content-Type: multipart/mixed; boundary="===============2914964344810056611=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Qiang, Chenyi <chenyi.qiang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [tcp] e926147618: stress-ng.icmp-flood.ops_per_sec -8.7% regression
-Date: Mon, 13 Jun 2022 10:09:43 +0800
-Message-ID: <20220613020943.GD75244@shbuild999.sh.intel.com>
-In-Reply-To: <20220608073441.GE7547@1wt.eu>
+Subject: Re: [KVM] a5202946dc: kernel-selftests.kvm.make_fail
+Date: Mon, 13 Jun 2022 04:02:11 +0000
+Message-ID: <SA2PR11MB50525D04633E934148F8132781AB9@SA2PR11MB5052.namprd11.prod.outlook.com>
+In-Reply-To: <20220613012644.GA7252@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6906904647261836769==
+--===============2914964344810056611==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Hi Oliver
 
-On Wed, Jun 08, 2022 at 09:34:41AM +0200, Willy Tarreau wrote:
-> On Wed, Jun 08, 2022 at 10:26:12AM +0300, Moshe Kol wrote:
-> > Hmm, How is the ICMP flood stress test related to TCP connections?
-> =
+I found this issue is already fixed by Sean in queue branch. Thanks for you=
+r testing and report.
 
-> To me it's not directly related, unless the test pre-establishes many
-> connections, or is affected in a way or another by a larger memory
-> allocation of this part.
+Thanks
+Chenyi
 
-Fengwei and I discussed and thought this could be a data alignment
-related case, that one module's data alignment change affects other
-modules' alignment, and we had a patch for detecting similar cases [1]
+-----Original Message-----
+From: Sang, Oliver <oliver.sang@intel.com> =
 
-After some debugging, this could be related with the bss section
-alignment changes, that if we forced all module's bss section to be
-4KB aligned, then the stress-ng icmp-flood case will have almost no
-performance difference for the 2 commits: =
-
-
-10025135            +0.8%   10105711 =C2=B1  2%  stress-ng.icmp-flood.ops_p=
-er_sec
-
-The debug patch is:
-
-diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index 7fda7f27e7620..7eb626b98620c 100644
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -378,7 +378,9 @@ SECTIONS
- =
-
- 	/* BSS */
- 	. =3D ALIGN(PAGE_SIZE);
--	.bss : AT(ADDR(.bss) - LOAD_OFFSET) {
-+	.bss : AT(ADDR(.bss) - LOAD_OFFSET)
-+	SUBALIGN(PAGE_SIZE)
-+	{
- 		__bss_start =3D .;
- 		*(.bss..page_aligned)
- 		. =3D ALIGN(PAGE_SIZE);
-
-The 'table_perturb[]' used to be in bss section, and with the commit
-of moving it to runtime allocation, other data structures following it
-in the .bss section will get affected accordingly.
-
-Thanks,
-Feng
+Sent: Monday, June 13, 2022 9:27 AM
+To: Qiang, Chenyi <chenyi.qiang@intel.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>; Christopherson,, Sean <seanjc@=
+google.com>; LKML <linux-kernel@vger.kernel.org>; kvm(a)vger.kernel.org; =
+Hu, Robert <robert.hu@intel.com>; Chen, Farrah <farrah.chen@intel.com>;=
+ Wei, Danmei <danmei.wei@intel.com>; lkp(a)lists.01.org; lkp <lkp@intel=
+.com>; Hao, Xudong <xudong.hao@intel.com>
+Subject: [KVM] a5202946dc: kernel-selftests.kvm.make_fail
 
 
-> Willy
---===============6906904647261836769==--
+
+Greeting,
+
+FYI, we noticed the following commit (built with gcc-11):
+
+commit: a5202946dc7b20bf2abe1bd35adf2f46aa155ac0 ("KVM: selftests: Add a te=
+st to get/set triple fault event") https://git.kernel.org/cgit/virt/kvm/kvm=
+.git lbr-for-weijiang
+
+in testcase: kernel-selftests
+version: kernel-selftests-x86_64-d889b151-1_20220608
+with following parameters:
+
+	group: kvm
+	ucode: 0xec
+
+test-description: The kernel contains a set of "self tests" under the tools=
+/testing/selftests/ directory. These are intended to be small unit tests to=
+ exercise individual code paths in the kernel.
+test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+
+
+on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 28G=
+ memory
+
+caused below changes (please refer to attached dmesg/kmsg for entire log/ba=
+cktrace):
+
+
+
+
+If you fix the issue, kindly add following tag
+Reported-by: kernel test robot <oliver.sang@intel.com>
+
+
+
+gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
+k-protector -fno-PIE -I../../../../tools/include -I../../../../tools/arch/x=
+86/include -I../../../../usr/include/ -Iinclude -Ix86_64 -Iinclude/x86_64 -=
+I..    -pthread  -no-pie   x86_64/triple_fault_event_test.c /usr/src/perf_s=
+elftests-x86_64-rhel-8.3-kselftests-a5202946dc7b20bf2abe1bd35adf2f46aa155ac=
+0/tools/testing/selftests/kvm/libkvm.a  -o /usr/src/perf_selftests-x86_64-r=
+hel-8.3-kselftests-a5202946dc7b20bf2abe1bd35adf2f46aa155ac0/tools/testing/s=
+elftests/kvm/x86_64/triple_fault_event_test
+x86_64/triple_fault_event_test.c: In function =E2=80=98main=E2=80=99:
+x86_64/triple_fault_event_test.c:50:10: error: =E2=80=98KVM_CAP_TRIPLE_FAUL=
+T_EVENT=E2=80=99 undeclared (first use in this function); did you mean =E2=
+=80=98KVM_CAP_X86_TRIPLE_FAULT_EVENT=E2=80=99?
+   50 |   .cap =3D KVM_CAP_TRIPLE_FAULT_EVENT,
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~
+      |          KVM_CAP_X86_TRIPLE_FAULT_EVENT
+x86_64/triple_fault_event_test.c:50:10: note: each undeclared identifier is=
+ reported only once for each function it appears in
+make: *** [../lib.mk:152: /usr/src/perf_selftests-x86_64-rhel-8.3-kselftest=
+s-a5202946dc7b20bf2abe1bd35adf2f46aa155ac0/tools/testing/selftests/kvm/x86_=
+64/triple_fault_event_test] Error 1
+make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
+-a5202946dc7b20bf2abe1bd35adf2f46aa155ac0/tools/testing/selftests/kvm'
+
+
+
+To reproduce:
+
+        git clone https://github.com/intel/lkp-tests.git
+        cd lkp-tests
+        sudo bin/lkp install job.yaml           # job file is attached in t=
+his email
+        bin/lkp split-job --compatible job.yaml # generate the yaml file fo=
+r lkp run
+        sudo bin/lkp run generated-yaml-file
+
+        # if come across any failure that blocks the test,
+        # please remove ~/.lkp and /lkp dir to run from a clean state.
+
+
+
+--
+0-DAY CI Kernel Test Service
+https://01.org/lkp
+
+
+
+--===============2914964344810056611==--
 
