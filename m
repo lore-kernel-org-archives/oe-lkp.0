@@ -1,98 +1,148 @@
-Content-Type: multipart/mixed; boundary="===============9115636319564170440=="
+Content-Type: multipart/mixed; boundary="===============6069081836307071450=="
 MIME-Version: 1.0
-From: Yin Fengwei <fengwei.yin@intel.com>
+From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [io_uring] 584b0180f0: phoronix-test-suite.fio.SequentialWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s -10.2% regression
-Date: Tue, 14 Jun 2022 09:54:05 +0800
-Message-ID: <2f623c4c-1837-4943-763c-d9b57e8cca95@intel.com>
-In-Reply-To: <2085bfef-a91c-8adb-402b-242e8c5d5c55@kernel.dk>
+Subject: Re: [mm/page_alloc] f26b3fa046: netperf.Throughput_Mbps -18.0% regression
+Date: Tue, 14 Jun 2022 10:09:30 +0800
+Message-ID: <20220614020930.GA31620@shbuild999.sh.intel.com>
+In-Reply-To: <CAHk-=wiyjnKiCZyou+fHYi7tNh1FC-BYy_kubusd+jrkDRsExA@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9115636319564170440==
+--===============6069081836307071450==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi Linus,
 
-On 5/27/2022 9:50 PM, Jens Axboe wrote:
-> On 5/27/22 3:24 AM, kernel test robot wrote:
->>
->>
->> Greeting,
->>
->> FYI, we noticed a -10.2% regression of phoronix-test-suite.fio.Sequentia=
-lWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s due to commit:
->>
->>
->> commit: 584b0180f0f4d67d7145950fe68c625f06c88b10 ("io_uring: move read/w=
-rite file prep state into actual opcode handler")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->>
->> in testcase: phoronix-test-suite
->> on test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2=
-.10GHz with 512G memory
->> with following parameters:
->>
->> 	test: fio-1.14.1
->> 	option_a: Sequential Write
->> 	option_b: IO_uring
->> 	option_c: Yes
->> 	option_d: Yes
->> 	option_e: 1MB
->> 	option_f: Default Test Directory
->> 	cpufreq_governor: performance
->> 	ucode: 0x500320a
->>
->> test-description: The Phoronix Test Suite is the most comprehensive test=
-ing and benchmarking platform available that provides an extensible framewo=
-rk for which new tests can be easily added.
->> test-url: http://www.phoronix-test-suite.com/
+On Fri, May 13, 2022 at 02:49:53AM +0800, Linus Torvalds wrote:
+> On Thu, May 12, 2022 at 11:06 AM Andrew Morton
+> <akpm@linux-foundation.org> wrote:
+> >
+> > On Thu, 12 May 2022 10:42:09 -0700 Linus Torvalds <torvalds@linux-fou=
+ndation.org> wrote:
+> > >
+> > > In a perfect world, somebody would fix the locking to just not have as
+> > > much contention. But assuming that isn't an option, maybe somebody
+> > > should just look at that 'struct zone' layout a bit more.
+> >
+> > (hopefully adds linux-mm to cc)
 > =
 
-> I'm a bit skeptical on this, but I'd like to try and run the test case.
-> Since it's just a fio test case, why can't I find it somewhere? Seems
-> very convoluted to have to setup lkp-tests just for this. Besides, I
-> tried, but it doesn't work on aarch64...
+> So I suspect the people who do re-layout would have to be the intel
+> people who actually see the regression.
 > =
 
-We re-run the test and still could get exactly same test result. We noticed
-following info from perf profile:
+> Because the exact rules are quite complicated, and currently the
+> comments about the layout don't really help much.
 
-     14.40 =C2=B1 21%     +71.3       85.71 =C2=B1  2%  perf-profile.calltr=
-ace.cycles-pp.io_wqe_worker.ret_from_fork
-     14.25 =C2=B1 21%     +71.4       85.64 =C2=B1  2%  perf-profile.calltr=
-ace.cycles-pp.io_worker_handle_work.io_wqe_worker.ret_from_fork
-     14.23 =C2=B1 21%     +71.4       85.63 =C2=B1  2%  perf-profile.calltr=
-ace.cycles-pp.io_issue_sqe.io_wq_submit_work.io_worker_handle_work.io_wqe_w=
-orker.ret_from_fork
-     14.23 =C2=B1 21%     +71.4       85.64 =C2=B1  2%  perf-profile.calltr=
-ace.cycles-pp.io_wq_submit_work.io_worker_handle_work.io_wqe_worker.ret_fro=
-m_fork
-     14.22 =C2=B1 21%     +71.4       85.63 =C2=B1  2%  perf-profile.calltr=
-ace.cycles-pp.io_write.io_issue_sqe.io_wq_submit_work.io_worker_handle_work=
-.io_wqe_worker
-     14.10 =C2=B1 21%     +71.5       85.62 =C2=B1  2%  perf-profile.calltr=
-ace.cycles-pp.ext4_buffered_write_iter.io_write.io_issue_sqe.io_wq_submit_w=
-ork.io_worker_handle_work
-      0.00           +80.9       80.92 =C2=B1  2%  perf-profile.calltrace.c=
-ycles-pp.osq_lock.rwsem_optimistic_spin.rwsem_down_write_slowpath.ext4_buff=
-ered_write_iter.io_write
-      0.00           +83.0       82.99 =C2=B1  2%  perf-profile.calltrace.c=
-ycles-pp.rwsem_optimistic_spin.rwsem_down_write_slowpath.ext4_buffered_writ=
-e_iter.io_write.io_issue_sqe
-      0.00           +83.6       83.63 =C2=B1  2%  perf-profile.calltrace.c=
-ycles-pp.rwsem_down_write_slowpath.ext4_buffered_write_iter.io_write.io_iss=
-ue_sqe.io_wq_submit_work
+We've re-run some cases which could trigger zone lock contention: =
 
-The above operations takes more time with the patch applied.
-It looks like the inode lock contention raised a lot with
-the patch.
+page_fault1 and page_fault2 case of 'will-it-scale'. From the test
+results:
 
-Frankly, we can't connect this behavior with the patch. Just
-list here for your information. Thanks.
+* The commit a368ab67aa55 ("mm: move zone lock to a different cache
+  line than order-0 free page lists") is still valid, that if we
+  revert it, there will be 9% ~ 26% regression for different 2/4
+  sockets machines (page_fault1 case)
+
+* With a368ab67aa55 reverted that zone lock sits in the same cache
+  line as free_area[0], we tested with 1-thread case (no contention),
+  which showed no performance diff. Maybe in this microbenchmark,
+  one cacheline or two cache lines doesn't matter much.
+
+* For the higher order 'free_area[]' in same cacheline as lock problem,
+  it's a valid concern, but we haven't found case in 0Day to expose the
+  cache bouncing. Network uses order-3 frequently, but it sits in the
+  middle of the free_area[] array, and has no interference with 'lock'
+
+  Another thing is the 'flag' and the 'lock' are still in the same
+  cacheline, and perf-c2c does catch some false sharing between them.
+
+  So adding a padding between 'flag' and 'lock' should help the 2 cases  =
+
+  above (except the 'adjacent cacheline prefetch' concern)
+
+  @@ -634,6 +634,7 @@ struct zone {
+	/* free areas of different sizes */
+	struct free_area	free_area[MAX_ORDER];
+		=
+
+	/* zone flags, see below */
+	unsigned long		flags;
+	 =
+
+  +	ZONE_PADDING(_pad4_)
+	/* Primarily protects free_area */
+	spinlock_t		lock;
+
+  But this patch only shows some small(<=3D%3) improvement or even some
+  regressions. We also tried putting aligned 'lock' in the start/end
+  of structure 'zone', and the performance data is similar .
+
+* While checking this, we found that the lruvec structure also has a
+  similar layout pattern with similar false sharing (confirmed by
+  perf c2c data)
+
+   struct lruvec {
+	struct list_head		lists[NR_LRU_LISTS];
+	/* per lruvec lru_lock for memcg */
+	spinlock_t			lru_lock;
+	...
+   }
+
+   Anyway this should be put into anothe thread :)
+
+> For example, the "Read-mostly fields" comment doesn't necessarily mean
+> that the fields in question should be kept away from the lock.
+> =
+
+> Even if they are mostly read-only, if they are only read *under* the
+> lock (because the lock still is what serializes them), then putting
+> them in the same cacheline as the lock certainly won't hurt.
+ =
+
+I Agree. And for structure zone, IIUC, these read-mostly fields at the
+start of the structure are mostly read outside the lock's protection,
+like the '_watermark', 'lowmem_reserve', so current layout seems to be
+fine. =
 
 
-Regards
-Yin, Fengwei
---===============9115636319564170440==--
+> And the same is actually true of things that are actively written to:
+> if they are written to under the lock, being in the same cacheline as
+> the lock can be a *good* thing, since then you have only one dirty
+> cacheline.
+> =
+
+> It only becomes a problem when (a) the lock is contended (so you get
+> the bouncing from other lockers trying to get it) _and_ (b) the
+> writing is fairly intense (so you get active bouncing back-and-forth,
+> not just one or two bounces).
+> =
+
+> And so to actually do any real analysis, you probably have to have
+> multiple sockets, because without numbers to guide you to exactly
+> _which_ writes are problematic, you're bound to get the heuristic
+> wrong.
+> =
+
+> And to make the issue even murkier, this whole thread is mixing up two
+> different regressions that may not have all that much in common (ie
+> the subject line is about one thing, but then we have that whole
+> page_fault1 process mode results, and it's not clear that they have
+> anything really to do with each other - just different examples of
+> cache sensitivity).
+ =
+
+In above tests, we only focused on the cache false sharing of the fields
+of struct zone, and may likely have missed some of your concerns. Please
+let us know if we went in wrong direction or want us to run some specific
+tests (we do have difficulties in finding more real-world like cases
+which can trigger the zone lock contentions than will-it-scale)
+
+Thanks,
+Feng
+
+>                    Linus
+--===============6069081836307071450==--
 
