@@ -1,166 +1,98 @@
-Content-Type: multipart/mixed; boundary="===============0211512073458015791=="
+Content-Type: multipart/mixed; boundary="===============9115636319564170440=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Yin Fengwei <fengwei.yin@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [tcp] e926147618: stress-ng.icmp-flood.ops_per_sec -8.7% regression
-Date: Tue, 14 Jun 2022 08:42:34 +0800
-Message-ID: <20220614004234.GA51079@shbuild999.sh.intel.com>
-In-Reply-To: <CANn89i+9Vq7Kiusp1jJBLgGMprb=psrVaWwz5u4F3dunw2vR3Q@mail.gmail.com>
+Subject: Re: [io_uring] 584b0180f0: phoronix-test-suite.fio.SequentialWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s -10.2% regression
+Date: Tue, 14 Jun 2022 09:54:05 +0800
+Message-ID: <2f623c4c-1837-4943-763c-d9b57e8cca95@intel.com>
+In-Reply-To: <2085bfef-a91c-8adb-402b-242e8c5d5c55@kernel.dk>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0211512073458015791==
+--===============9115636319564170440==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 13, 2022 at 10:10:57AM -0700, Eric Dumazet wrote:
-> On Sun, Jun 12, 2022 at 7:09 PM Feng Tang <feng.tang@intel.com> wrote:
-> >
-> > Hi,
-> >
-> > On Wed, Jun 08, 2022 at 09:34:41AM +0200, Willy Tarreau wrote:
-> > > On Wed, Jun 08, 2022 at 10:26:12AM +0300, Moshe Kol wrote:
-> > > > Hmm, How is the ICMP flood stress test related to TCP connections?
-> > >
-> > > To me it's not directly related, unless the test pre-establishes many
-> > > connections, or is affected in a way or another by a larger memory
-> > > allocation of this part.
-> >
-> > Fengwei and I discussed and thought this could be a data alignment
-> > related case, that one module's data alignment change affects other
-> > modules' alignment, and we had a patch for detecting similar cases [1]
-> >
-> > After some debugging, this could be related with the bss section
-> > alignment changes, that if we forced all module's bss section to be
-> > 4KB aligned, then the stress-ng icmp-flood case will have almost no
-> > performance difference for the 2 commits:
-> >
-> > 10025135            +0.8%   10105711 =C2=B1  2%  stress-ng.icmp-flood.o=
-ps_per_sec
-> >
-> > The debug patch is:
-> >
-> > diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.ld=
-s.S
-> > index 7fda7f27e7620..7eb626b98620c 100644
-> > --- a/arch/x86/kernel/vmlinux.lds.S
-> > +++ b/arch/x86/kernel/vmlinux.lds.S
-> > @@ -378,7 +378,9 @@ SECTIONS
-> >
-> >         /* BSS */
-> >         . =3D ALIGN(PAGE_SIZE);
-> > -       .bss : AT(ADDR(.bss) - LOAD_OFFSET) {
-> > +       .bss : AT(ADDR(.bss) - LOAD_OFFSET)
-> > +       SUBALIGN(PAGE_SIZE)
-> > +       {
-> >                 __bss_start =3D .;
-> >                 *(.bss..page_aligned)
-> >                 . =3D ALIGN(PAGE_SIZE);
-> >
-> > The 'table_perturb[]' used to be in bss section, and with the commit
-> > of moving it to runtime allocation, other data structures following it
-> > in the .bss section will get affected accordingly.
-> >
+
+On 5/27/2022 9:50 PM, Jens Axboe wrote:
+> On 5/27/22 3:24 AM, kernel test robot wrote:
+>>
+>>
+>> Greeting,
+>>
+>> FYI, we noticed a -10.2% regression of phoronix-test-suite.fio.Sequentia=
+lWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s due to commit:
+>>
+>>
+>> commit: 584b0180f0f4d67d7145950fe68c625f06c88b10 ("io_uring: move read/w=
+rite file prep state into actual opcode handler")
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>
+>> in testcase: phoronix-test-suite
+>> on test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2=
+.10GHz with 512G memory
+>> with following parameters:
+>>
+>> 	test: fio-1.14.1
+>> 	option_a: Sequential Write
+>> 	option_b: IO_uring
+>> 	option_c: Yes
+>> 	option_d: Yes
+>> 	option_e: 1MB
+>> 	option_f: Default Test Directory
+>> 	cpufreq_governor: performance
+>> 	ucode: 0x500320a
+>>
+>> test-description: The Phoronix Test Suite is the most comprehensive test=
+ing and benchmarking platform available that provides an extensible framewo=
+rk for which new tests can be easily added.
+>> test-url: http://www.phoronix-test-suite.com/
 > =
 
-> As the 'regression' is seen with ICMP workload, can you please share with=
- us
-> the symbols close to icmp_global (without your align patch)
-
-Here are the info for the 2 commits (kernels for the original reprot):
-
-$ egrep -8 "icmp_global$" System.map-5.18.0-rc4-00242-gca7af0402550
-ffffffff837adc00 b tcp_cong_list_lock
-ffffffff837adc08 b tcpmhash_entries
-ffffffff837adc10 b fastopen_seqlock
-ffffffff837adc18 b tcp_metrics_lock
-ffffffff837adc1c b tcp_ulp_list_lock
-ffffffff837adc20 B raw_v4_hashinfo
-ffffffff837ae440 B udp_encap_needed_key
-ffffffff837ae480 B udp_memory_allocated
-ffffffff837ae488 b icmp_global
-ffffffff837ae4a0 b inet_addr_lst
-ffffffff837aeca0 b inetsw_lock
-ffffffff837aecc0 b inetsw
-ffffffff837aed80 b fib_info_devhash
-ffffffff837af580 b fib_info_cnt
-ffffffff837af584 b fib_info_hash_bits
-ffffffff837af588 b fib_info_hash_size
-ffffffff837af590 b fib_info_laddrhash
-
-$ egrep -8 "icmp_global$" System.map-5.18.0-rc4-00243-ge9261476184b
-ffffffff837ad800 b tcp_cong_list_lock
-ffffffff837ad808 b tcpmhash_entries
-ffffffff837ad810 b fastopen_seqlock
-ffffffff837ad818 b tcp_metrics_lock
-ffffffff837ad81c b tcp_ulp_list_lock
-ffffffff837ad820 B raw_v4_hashinfo
-ffffffff837ae040 B udp_encap_needed_key
-ffffffff837ae080 B udp_memory_allocated
-ffffffff837ae088 b icmp_global
-ffffffff837ae0a0 b inet_addr_lst
-ffffffff837ae8a0 b inetsw_lock
-ffffffff837ae8c0 b inetsw
-ffffffff837ae980 b fib_info_devhash
-ffffffff837af180 b fib_info_cnt
-ffffffff837af184 b fib_info_hash_bits
-ffffffff837af188 b fib_info_hash_size
-ffffffff837af190 b fib_info_laddrhash
-
->From above we can see some symbols are offseted of 0x400 (1KB),
-like icmp_global or fib_xxx, as the 'table_perturb' used to be
-1KB long in bss section.
-
-> I suspect we should move icmp_global to a dedicated cache line.
+> I'm a bit skeptical on this, but I'd like to try and run the test case.
+> Since it's just a fio test case, why can't I find it somewhere? Seems
+> very convoluted to have to setup lkp-tests just for this. Besides, I
+> tried, but it doesn't work on aarch64...
 > =
 
-> $ nm -v vmlinux|egrep -8 "icmp_global$"
-> ffffffff835bc490 b tcp_cong_list_lock
-> ffffffff835bc494 b fastopen_seqlock
-> ffffffff835bc49c b tcp_metrics_lock
-> ffffffff835bc4a0 b tcpmhash_entries
-> ffffffff835bc4a4 b tcp_ulp_list_lock
-> ffffffff835bc4a8 B raw_v4_hashinfo
-> ffffffff835bccc0 B udp_memory_allocated      << Note sure why it is
-> not already in a dedicated cache line>>
+We re-run the test and still could get exactly same test result. We noticed
+following info from perf profile:
 
-IIUC, 0x....C0 means it is already cacheline aligned?
+     14.40 =C2=B1 21%     +71.3       85.71 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.io_wqe_worker.ret_from_fork
+     14.25 =C2=B1 21%     +71.4       85.64 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.io_worker_handle_work.io_wqe_worker.ret_from_fork
+     14.23 =C2=B1 21%     +71.4       85.63 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.io_issue_sqe.io_wq_submit_work.io_worker_handle_work.io_wqe_w=
+orker.ret_from_fork
+     14.23 =C2=B1 21%     +71.4       85.64 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.io_wq_submit_work.io_worker_handle_work.io_wqe_worker.ret_fro=
+m_fork
+     14.22 =C2=B1 21%     +71.4       85.63 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.io_write.io_issue_sqe.io_wq_submit_work.io_worker_handle_work=
+.io_wqe_worker
+     14.10 =C2=B1 21%     +71.5       85.62 =C2=B1  2%  perf-profile.calltr=
+ace.cycles-pp.ext4_buffered_write_iter.io_write.io_issue_sqe.io_wq_submit_w=
+ork.io_worker_handle_work
+      0.00           +80.9       80.92 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.osq_lock.rwsem_optimistic_spin.rwsem_down_write_slowpath.ext4_buff=
+ered_write_iter.io_write
+      0.00           +83.0       82.99 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.rwsem_optimistic_spin.rwsem_down_write_slowpath.ext4_buffered_writ=
+e_iter.io_write.io_issue_sqe
+      0.00           +83.6       83.63 =C2=B1  2%  perf-profile.calltrace.c=
+ycles-pp.rwsem_down_write_slowpath.ext4_buffered_write_iter.io_write.io_iss=
+ue_sqe.io_wq_submit_work
+
+The above operations takes more time with the patch applied.
+It looks like the inode lock contention raised a lot with
+the patch.
+
+Frankly, we can't connect this behavior with the patch. Just
+list here for your information. Thanks.
 
 
-> ffffffff835bccc8 B udp_encap_needed_key
-> ffffffff835bccd8 b icmp_global                               <<<HERE>>
-> ffffffff835bccf0 b inet_addr_lst
-> ffffffff835bd4f0 b inetsw_lock
-> ffffffff835bd500 b inetsw
-> ffffffff835bd5b0 b fib_info_lock
-> ffffffff835bd5b4 b fib_info_cnt
-> ffffffff835bd5b8 b fib_info_hash_size
-> ffffffff835bd5c0 b fib_info_hash
-> ffffffff835bd5c8 b fib_info_laddrhash
-
-Fengwei found that from the perf-profile info of report, there are
-quite difference around ping table handling.
-
-     43.72            +4.1       47.81 =C2=B1  2% icmp_rcv.ip_protocol_deli=
-ver_rcu.ip_local_deliver_finish.__netif_receive_skb_one_core.process_backlog
-     17.10 =C2=B1  7%      +6.0       23.10 =C2=B1  6%ping_rcv.icmp_rcv.ip_=
-protocol_deliver_rcu.ip_local_deliver_finish.__netif_receive_skb_one_core
-     17.05 =C2=B1  7%      +6.0       23.06 =C2=B1  6%ping_lookup.ping_rcv.=
-icmp_rcv.ip_protocol_deliver_rcu.ip_local_deliver_finish
-
-And the "ping_table[]" also sits in bss section and got affected:
-
-  Before: =
-
-  ffffffff837af600 b ping_table
-
-  After:
-  ffffffff837af200 b ping_table
-
-The cacheline alignment is not changed, and I suspect it cause some
-TLB changes.
-
-Thanks,
-Feng
---===============0211512073458015791==--
+Regards
+Yin, Fengwei
+--===============9115636319564170440==--
 
