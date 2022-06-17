@@ -1,56 +1,94 @@
-Content-Type: multipart/mixed; boundary="===============1332620694933061829=="
+Content-Type: multipart/mixed; boundary="===============0550445049516426980=="
 MIME-Version: 1.0
-From: David Sterba <dsterba@suse.cz>
+From: Filipe Manana <fdmanana@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [btrfs] 66a7a2412f: xfstests.btrfs.131.fail
-Date: Fri, 17 Jun 2022 00:00:36 +0200
-Message-ID: <20220616220036.GF20633@twin.jikos.cz>
-In-Reply-To: <Yqud1/SooVDamiuP@casper.infradead.org>
+Subject: Re: [btrfs] 62bd8124e2: WARNING:at_fs/btrfs/block-rsv.c:#btrfs_release_global_block_rsv[btrfs]
+Date: Fri, 17 Jun 2022 11:32:44 +0100
+Message-ID: <20220617103244.GA4042635@falcondesktop>
+In-Reply-To: <20220616024204.GA25633@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1332620694933061829==
+--===============0550445049516426980==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 16, 2022 at 10:17:11PM +0100, Matthew Wilcox wrote:
-> On Thu, Jun 16, 2022 at 10:37:10PM +0800, kernel test robot wrote:
-> > btrfs/131	- output mismatch (see /lkp/benchmarks/xfstests/results//btrf=
-s/131.out.bad)
-> >     --- tests/btrfs/131.out	2022-06-13 17:10:24.000000000 +0000
-> >     +++ /lkp/benchmarks/xfstests/results//btrfs/131.out.bad	2022-06-15 =
-18:54:06.505508542 +0000
-> >     @@ -2,9 +2,9 @@
-> >      Using free space cache
-> >      free space tree is disabled
-> >      Enabling free space tree
-> >     -free space tree is enabled
-> >     +free space tree is disabled
+On Thu, Jun 16, 2022 at 10:42:04AM +0800, Oliver Sang wrote:
+> hi, Filipe Manana,
 > =
 
-> I think I know what's going on here:
+> On Mon, Jun 13, 2022 at 11:50:05AM +0100, Filipe Manana wrote:
+> > =
+
+> > Thanks for running the test again Oliver.
+> > Running the fxmark test on my machines, I can't trigger anything.
+> > =
+
+> > May I ask you to run again the test but with the attached debug patch
+> > on top of it?
 > =
 
->         compat_ro=3D"$($BTRFS_UTIL_PROG inspect-internal dump-super "$SCR=
-ATCH_DEV"
->  | \
->                      sed -rn 's/^compat_ro_flags\s+(.*)$/\1/p')"
->         if ((compat_ro & 0x1)); then
->                 echo "free space tree is enabled"
->         else
->                 echo "free space tree is disabled"
->         fi
+> I reran the test by applied your patch upon 62bd8124e2. one dmesg is atta=
+ched.
 > =
 
-> dump-super is reading the super block out of the page cache, but this
-> change makes the page cache incoherent with what's on disc.  We could
-> fix that by invalidating the page out of the page cache, but it may be
-> easier to just dump this patch and fix how we use the page cache to
-> write back the superblocks?
+> not sure if it supplies enough information? we need some extra effort to
+> enable below ftrace in our auto-test framework. so if dmesg is good enoug=
+h,
+> please let us know, then we can save some efforts :) Thanks a lot!
 
-The build bot picks up the branch with some delay, I've removed it from
-the pushed branches. It's interesting to see that using the page cache
-vs direct write does have effects in tests, so it would need to be
-unified in kernel and user space.
---===============1332620694933061829==--
+Thanks Oliver.
+
+In the meanwhile I found a way to reproduce the issue with a test case
+from fstests, so I now have everything I need to debug and fix the issue.
+
+Thanks!
+
+> =
+
+> > =
+
+> > Also, if possible, with ftrace enabled like this:
+> > =
+
+> > modprobe btrfs
+> > echo 0 > /sys/kernel/debug/tracing/tracing_on
+> > echo > /sys/kernel/debug/tracing/trace
+> > echo $((1 << 24)) > /sys/kernel/debug/tracing/buffer_size_kb
+> > echo nop > /sys/kernel/debug/tracing/current_tracer
+> > echo 1 > /sys/kernel/tracing/events/btrfs/btrfs_space_reservation/enable
+> > =
+
+> > echo 1 > /sys/kernel/debug/tracing/tracing_on
+> > =
+
+> > <run the test>
+> > =
+
+> > echo 0 > /sys/kernel/debug/tracing/tracing_on
+> > =
+
+> > Then collect the trace to a file and send it over to me:
+> > =
+
+> > cat /sys/kernel/debug/tracing/trace | xz -9 > trace.txt.xz
+> > =
+
+> > And of course, the dmesg result as well.
+> > =
+
+> > Thanks!
+> > =
+
+> > =
+
+> > =
+
+> > >
+> > > >
+> =
+
+
+
+--===============0550445049516426980==--
 
