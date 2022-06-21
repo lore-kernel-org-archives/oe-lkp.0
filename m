@@ -1,56 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============5722666350690974701=="
+Content-Type: multipart/mixed; boundary="===============6269864329210828828=="
 MIME-Version: 1.0
-From: Jinpu Wang <jinpu.wang@ionos.com>
+From: Kong, Keith <keith.kong@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [locking/lockdep] 4051a81774: page_allocation_failure:order:#, mode:#(GFP_KERNEL), nodemask=(null)
-Date: Tue, 21 Jun 2022 17:27:22 +0200
-Message-ID: <CAMGffEksZGQrdHM9CS0H0Tq4TvfQMAbdcFYZej2KNWY=VxuBQg@mail.gmail.com>
-In-Reply-To: <YrBA7ysAif4I9nPv@linutronix.de>
+Subject: re-using lkp for CI
+Date: Tue, 21 Jun 2022 19:12:55 +0000
+Message-ID: <BY5PR11MB4452793984BE891A335D909D97B39@BY5PR11MB4452.namprd11.prod.outlook.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5722666350690974701==
+--===============6269864329210828828==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, there
+Hi,
 
-On Mon, Jun 20, 2022 at 11:42 AM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
->
-> + rtrs, infiniband folks.
->
-> On 2022-06-20 10:07:27 [+0800], kernel test robot wrote:
-> > Greeting,
-> >
-> > FYI, we noticed the following commit (built with gcc-11):
-> >
-> > commit: 4051a81774d6d8e28192742c26999d6f29bc0e68 ("locking/lockdep: Use=
- sched_clock() for random numbers")
-> > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git locking/urgent
-> =E2=80=A6
-> > in testcase: boot
-> >
-> > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2=
- -m 16G
-> >
-> =E2=80=A6
-> > [   17.451787][    T1] rtrs_server L2256: Loading module rtrs_server, p=
-roto 2.0: (max_chunk_size: 131072 (pure IO 126976, headers 4096) , sess_que=
-ue_depth: 512, always_invalidate: 1)
-> > [   17.470894][    T1] swapper: page allocation failure: order:5, mode:=
-0xcc0(GFP_KERNEL), nodemask=3D(null)
->
-> If I read this right, it allocates "512 * 10" chunks of order 5 / 128KiB
-> of memory (contiguous memory). And this appears to fail.
-> This is either a lot of memory or something that shouldn't be used on
-> i386.
-It allocates 512 * 128 KiB of memory, which is probably to big for
-this VM setup.
->
-> Either way, locking/urgent is innocent.
-Agree.
+My name is Keith Kong, and I am with the EPG SW NAT org at Intel.  We are c=
+ollaborating with Jamal's team to do some work with p4 kernel.  We thought =
+to ping you to see if we can-reuse existing testing infrastructure you may =
+already have.  Can you let us know how we can potentially integrate our CI =
+with your infrastructure?  What we have is based mostly on Jenkins but allo=
+w GitHub Actions to run in parallel.  Thanks!
 
-Thanks!
---===============5722666350690974701==--
+
+Keith
+
+--===============6269864329210828828==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="attachment.htm"
+
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+CjxoZWFkPgo8bWV0YSBodHRwLWVxdWl2PSJDb250ZW50LVR5cGUiIGNv
+bnRlbnQ9InRleHQvaHRtbDsgY2hhcnNldD11cy1hc2NpaSI+CjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPgo8c3R5bGU+
+PCEtLQovKiBGb250IERlZmluaXRpb25zICovCkBmb250LWZhY2UKCXtmb250LWZhbWlseToiQ2Ft
+YnJpYSBNYXRoIjsKCXBhbm9zZS0xOjIgNCA1IDMgNSA0IDYgMyAyIDQ7fQpAZm9udC1mYWNlCgl7
+Zm9udC1mYW1pbHk6Q2FsaWJyaTsKCXBhbm9zZS0xOjIgMTUgNSAyIDIgMiA0IDMgMiA0O30KLyog
+U3R5bGUgRGVmaW5pdGlvbnMgKi8KcC5Nc29Ob3JtYWwsIGxpLk1zb05vcm1hbCwgZGl2Lk1zb05v
+cm1hbAoJe21hcmdpbjowaW47Cglmb250LXNpemU6MTEuMHB0OwoJZm9udC1mYW1pbHk6IkNhbGli
+cmkiLHNhbnMtc2VyaWY7fQpzcGFuLkVtYWlsU3R5bGUxNwoJe21zby1zdHlsZS10eXBlOnBlcnNv
+bmFsLWNvbXBvc2U7Cglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjsKCWNvbG9yOndp
+bmRvd3RleHQ7fQouTXNvQ2hwRGVmYXVsdAoJe21zby1zdHlsZS10eXBlOmV4cG9ydC1vbmx5OwoJ
+Zm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7fQpAcGFnZSBXb3JkU2VjdGlvbjEKCXtz
+aXplOjguNWluIDExLjBpbjsKCW1hcmdpbjoxLjBpbiAxLjBpbiAxLjBpbiAxLjBpbjt9CmRpdi5X
+b3JkU2VjdGlvbjEKCXtwYWdlOldvcmRTZWN0aW9uMTt9Ci0tPjwvc3R5bGU+PCEtLVtpZiBndGUg
+bXNvIDldPjx4bWw+CjxvOnNoYXBlZGVmYXVsdHMgdjpleHQ9ImVkaXQiIHNwaWRtYXg9IjEwMjYi
+IC8+CjwveG1sPjwhW2VuZGlmXS0tPjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPgo8bzpzaGFwZWxh
+eW91dCB2OmV4dD0iZWRpdCI+CjxvOmlkbWFwIHY6ZXh0PSJlZGl0IiBkYXRhPSIxIiAvPgo8L286
+c2hhcGVsYXlvdXQ+PC94bWw+PCFbZW5kaWZdLS0+CjwvaGVhZD4KPGJvZHkgbGFuZz0iRU4tVVMi
+IGxpbms9IiMwNTYzQzEiIHZsaW5rPSIjOTU0RjcyIiBzdHlsZT0id29yZC13cmFwOmJyZWFrLXdv
+cmQiPgo8ZGl2IGNsYXNzPSJXb3JkU2VjdGlvbjEiPgo8cCBjbGFzcz0iTXNvTm9ybWFsIj5IaSw8
+bzpwPjwvbzpwPjwvcD4KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+
+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPk15IG5hbWUgaXMgS2VpdGggS29uZywgYW5kIEkgYW0gd2l0
+aCB0aGUgRVBHIFNXIE5BVCBvcmcgYXQgSW50ZWwuJm5ic3A7IFdlIGFyZSBjb2xsYWJvcmF0aW5n
+IHdpdGggSmFtYWwmIzgyMTc7cyB0ZWFtIHRvIGRvIHNvbWUgd29yayB3aXRoIHA0IGtlcm5lbC4m
+bmJzcDsgV2UgdGhvdWdodCB0byBwaW5nIHlvdSB0byBzZWUgaWYgd2UgY2FuLXJldXNlIGV4aXN0
+aW5nIHRlc3RpbmcgaW5mcmFzdHJ1Y3R1cmUgeW91IG1heSBhbHJlYWR5IGhhdmUuJm5ic3A7CiBD
+YW4geW91IGxldCB1cyBrbm93IGhvdyB3ZSBjYW4gcG90ZW50aWFsbHkgaW50ZWdyYXRlIG91ciBD
+SSB3aXRoIHlvdXIgaW5mcmFzdHJ1Y3R1cmU/Jm5ic3A7IFdoYXQgd2UgaGF2ZSBpcyBiYXNlZCBt
+b3N0bHkgb24gSmVua2lucyBidXQgYWxsb3cgR2l0SHViIEFjdGlvbnMgdG8gcnVuIGluIHBhcmFs
+bGVsLiZuYnNwOyBUaGFua3MhPG86cD48L286cD48L3A+CjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxv
+OnA+Jm5ic3A7PC9vOnA+PC9wPgo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpw
+PjwvcD4KPHAgY2xhc3M9Ik1zb05vcm1hbCI+S2VpdGg8bzpwPjwvbzpwPjwvcD4KPC9kaXY+Cjwv
+Ym9keT4KPC9odG1sPgo=
+
+--===============6269864329210828828==--
 
