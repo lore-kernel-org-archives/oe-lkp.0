@@ -1,152 +1,159 @@
-Content-Type: multipart/mixed; boundary="===============0483307281040946421=="
+Content-Type: multipart/mixed; boundary="===============2405587621881050325=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 To: lkp@lists.01.org
 Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-Date: Fri, 24 Jun 2022 14:00:53 +0800
-Message-ID: <20220624060053.GD79500@shbuild999.sh.intel.com>
-In-Reply-To: <CANn89iLwwN7hRsJD_skbcRNY9sBtPh1fhULKco5wosx_i4x6gg@mail.gmail.com>
+Date: Fri, 24 Jun 2022 08:07:53 +0200
+Message-ID: <CANn89i+rniKCC-ZiCvJ7KRtnxgYx-=xFVTOYU1E0h2nhLhn39w@mail.gmail.com>
+In-Reply-To: <20220624060053.GD79500@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0483307281040946421==
+--===============2405587621881050325==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 24, 2022 at 07:45:00AM +0200, Eric Dumazet wrote:
-> On Fri, Jun 24, 2022 at 7:14 AM Feng Tang <feng.tang@intel.com> wrote:
-> >
-> > Hi Eric,
-> >
-> > On Fri, Jun 24, 2022 at 06:13:51AM +0200, Eric Dumazet wrote:
-> > > On Fri, Jun 24, 2022 at 3:57 AM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
-> > > >
-> > > > On Thu, 23 Jun 2022 18:50:07 -0400 Xin Long wrote:
-> > > > > From the perf data, we can see __sk_mem_reduce_allocated() is the=
- one
-> > > > > using CPU the most more than before, and mem_cgroup APIs are also
-> > > > > called in this function. It means the mem cgroup must be enabled =
-in
-> > > > > the test env, which may explain why I couldn't reproduce it.
+On Fri, Jun 24, 2022 at 8:01 AM Feng Tang <feng.tang@intel.com> wrote:
+>
+> On Fri, Jun 24, 2022 at 07:45:00AM +0200, Eric Dumazet wrote:
+> > On Fri, Jun 24, 2022 at 7:14 AM Feng Tang <feng.tang@intel.com> wrote:
+> > >
+> > > Hi Eric,
+> > >
+> > > On Fri, Jun 24, 2022 at 06:13:51AM +0200, Eric Dumazet wrote:
+> > > > On Fri, Jun 24, 2022 at 3:57 AM Jakub Kicinski <kuba@kernel.org> =
+wrote:
 > > > > >
-> > > > > The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small as
-> > > > > possible") uses sk_mem_reclaim(checking reclaimable >=3D PAGE_SIZ=
-E) to
-> > > > > reclaim the memory, which is *more frequent* to call
-> > > > > __sk_mem_reduce_allocated() than before (checking reclaimable >=
+> > > > > On Thu, 23 Jun 2022 18:50:07 -0400 Xin Long wrote:
+> > > > > > From the perf data, we can see __sk_mem_reduce_allocated() is t=
+he one
+> > > > > > using CPU the most more than before, and mem_cgroup APIs are al=
+so
+> > > > > > called in this function. It means the mem cgroup must be enable=
+d in
+> > > > > > the test env, which may explain why I couldn't reproduce it.
+> > > > > >
+> > > > > > The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small=
+ as
+> > > > > > possible") uses sk_mem_reclaim(checking reclaimable >=3D PAGE_S=
+IZE) to
+> > > > > > reclaim the memory, which is *more frequent* to call
+> > > > > > __sk_mem_reduce_allocated() than before (checking reclaimable >=
 =3D
-> > > > > SK_RECLAIM_THRESHOLD). It might be cheap when
-> > > > > mem_cgroup_sockets_enabled is false, but I'm not sure if it's sti=
-ll
-> > > > > cheap when mem_cgroup_sockets_enabled is true.
+> > > > > > SK_RECLAIM_THRESHOLD). It might be cheap when
+> > > > > > mem_cgroup_sockets_enabled is false, but I'm not sure if it's s=
+till
+> > > > > > cheap when mem_cgroup_sockets_enabled is true.
+> > > > > >
+> > > > > > I think SCTP netperf could trigger this, as the CPU is the bott=
+leneck
+> > > > > > for SCTP netperf testing, which is more sensitive to the extra
+> > > > > > function calls than TCP.
+> > > > > >
+> > > > > > Can we re-run this testing without mem cgroup enabled?
 > > > > >
-> > > > > I think SCTP netperf could trigger this, as the CPU is the bottle=
-neck
-> > > > > for SCTP netperf testing, which is more sensitive to the extra
-> > > > > function calls than TCP.
-> > > > >
-> > > > > Can we re-run this testing without mem cgroup enabled?
+> > > > > FWIW I defer to Eric, thanks a lot for double checking the report
+> > > > > and digging in!
 > > > >
-> > > > FWIW I defer to Eric, thanks a lot for double checking the report
-> > > > and digging in!
+> > > > I did tests with TCP + memcg and noticed a very small additional co=
+st
+> > > > in memcg functions,
+> > > > because of suboptimal layout:
+> > > >
+> > > > Extract of an internal Google bug, update from June 9th:
+> > > >
+> > > > --------------------------------
+> > > > I have noticed a minor false sharing to fetch (struct
+> > > > mem_cgroup)->css.parent, at offset 0xc0,
+> > > > because it shares the cache line containing struct mem_cgroup.memor=
+y,
+> > > > at offset 0xd0
+> > > >
+> > > > Ideally, memcg->socket_pressure and memcg->parent should sit in a r=
+ead
+> > > > mostly cache line.
+> > > > -----------------------
+> > > >
+> > > > But nothing that could explain a "-69.4% regression"
 > > >
-> > > I did tests with TCP + memcg and noticed a very small additional cost
-> > > in memcg functions,
-> > > because of suboptimal layout:
+> > > We can double check that.
 > > >
-> > > Extract of an internal Google bug, update from June 9th:
+> > > > memcg has a very similar strategy of per-cpu reserves, with
+> > > > MEMCG_CHARGE_BATCH being 32 pages per cpu.
 > > >
-> > > --------------------------------
-> > > I have noticed a minor false sharing to fetch (struct
-> > > mem_cgroup)->css.parent, at offset 0xc0,
-> > > because it shares the cache line containing struct mem_cgroup.memory,
-> > > at offset 0xd0
+> > > We have proposed patch to increase the batch numer for stats
+> > > update, which was not accepted as it hurts the accuracy and
+> > > the data is used by many tools.
 > > >
-> > > Ideally, memcg->socket_pressure and memcg->parent should sit in a read
-> > > mostly cache line.
-> > > -----------------------
+> > > > It is not clear why SCTP with 10K writes would overflow this reserv=
+e constantly.
+> > > >
+> > > > Presumably memcg experts will have to rework structure alignments to
+> > > > make sure they can cope better
+> > > > with more charge/uncharge operations, because we are not going back=
+ to
+> > > > gigantic per-socket reserves,
+> > > > this simply does not scale.
 > > >
-> > > But nothing that could explain a "-69.4% regression"
-> >
-> > We can double check that.
-> >
-> > > memcg has a very similar strategy of per-cpu reserves, with
-> > > MEMCG_CHARGE_BATCH being 32 pages per cpu.
-> >
-> > We have proposed patch to increase the batch numer for stats
-> > update, which was not accepted as it hurts the accuracy and
-> > the data is used by many tools.
-> >
-> > > It is not clear why SCTP with 10K writes would overflow this reserve =
-constantly.
+> > > Yes, the memcg statitics and charge/unchage update is very sensitive
+> > > with the data alignemnt layout, and can easily trigger peformance
+> > > changes, as we've seen quite some similar cases in the past several
+> > > years.
 > > >
-> > > Presumably memcg experts will have to rework structure alignments to
-> > > make sure they can cope better
-> > > with more charge/uncharge operations, because we are not going back to
-> > > gigantic per-socket reserves,
-> > > this simply does not scale.
+> > > One pattern we've seen is, even if a memcg stats updating or charge
+> > > function only takes about 2%~3% of the CPU cycles in perf-profile dat=
+a,
+> > > once it got affected, the peformance change could be amplified to up =
+to
+> > > 60% or more.
+> > >
 > >
-> > Yes, the memcg statitics and charge/unchage update is very sensitive
-> > with the data alignemnt layout, and can easily trigger peformance
-> > changes, as we've seen quite some similar cases in the past several
-> > years.
+> > Reorganizing "struct mem_cgroup" to put "struct page_counter memory"
+> > in a separate cache line would be beneficial.
+>
+> That may help.
+>
+> And I also want to say the benchmarks(especially micro one) are very
+> sensitive to the layout of mem_cgroup. As the 'page_counter' is 112
+> bytes in size, I recently made a patch to make it cacheline aligned
+> (take 2 cachelines), which improved some hackbench/netperf test
+> cases, but caused huge (49%) drop for some vm-scalability tests.
+>
+> > Many low hanging fruits, assuming nobody will use __randomize_layout on=
+ it ;)
 > >
-> > One pattern we've seen is, even if a memcg stats updating or charge
-> > function only takes about 2%~3% of the CPU cycles in perf-profile data,
-> > once it got affected, the peformance change could be amplified to up to
-> > 60% or more.
+> > Also some fields are written even if their value is not changed.
 > >
-> =
+> > diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> > index abec50f31fe64100f4be5b029c7161b3a6077a74..53d9c1e581e78303ef73942=
+e2b34338567987b74
+> > 100644
+> > --- a/mm/memcontrol.c
+> > +++ b/mm/memcontrol.c
+> > @@ -7037,10 +7037,12 @@ bool mem_cgroup_charge_skmem(struct mem_cgroup
+> > *memcg, unsigned int nr_pages,
+> >                 struct page_counter *fail;
+> >
+> >                 if (page_counter_try_charge(&memcg->tcpmem, nr_pages, &=
+fail)) {
+> > -                       memcg->tcpmem_pressure =3D 0;
+> > +                       if (READ_ONCE(memcg->tcpmem_pressure))
+> > +                               WRITE_ONCE(memcg->tcpmem_pressure, 0);
+> >                         return true;
+> >                 }
+> > -               memcg->tcpmem_pressure =3D 1;
+> > +               if (!READ_ONCE(memcg->tcpmem_pressure))
+> > +                       WRITE_ONCE(memcg->tcpmem_pressure, 1);
+> >                 if (gfp_mask & __GFP_NOFAIL) {
+> >                         page_counter_charge(&memcg->tcpmem, nr_pages);
+> >                         return true;
+>
+> I will also try this patch, which may take some time.
 
-> Reorganizing "struct mem_cgroup" to put "struct page_counter memory"
-> in a separate cache line would be beneficial.
- =
+Note that applications can opt-in reserving memory for one socket,
+using SO_RESERVE_MEM
 
-That may help.
-
-And I also want to say the benchmarks(especially micro one) are very
-sensitive to the layout of mem_cgroup. As the 'page_counter' is 112
-bytes in size, I recently made a patch to make it cacheline aligned
-(take 2 cachelines), which improved some hackbench/netperf test
-cases, but caused huge (49%) drop for some vm-scalability tests. =
-
-
-> Many low hanging fruits, assuming nobody will use __randomize_layout on i=
-t ;)
-> =
-
-> Also some fields are written even if their value is not changed.
-> =
-
-> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> index abec50f31fe64100f4be5b029c7161b3a6077a74..53d9c1e581e78303ef73942e2=
-b34338567987b74
-> 100644
-> --- a/mm/memcontrol.c
-> +++ b/mm/memcontrol.c
-> @@ -7037,10 +7037,12 @@ bool mem_cgroup_charge_skmem(struct mem_cgroup
-> *memcg, unsigned int nr_pages,
->                 struct page_counter *fail;
-> =
-
->                 if (page_counter_try_charge(&memcg->tcpmem, nr_pages, &fa=
-il)) {
-> -                       memcg->tcpmem_pressure =3D 0;
-> +                       if (READ_ONCE(memcg->tcpmem_pressure))
-> +                               WRITE_ONCE(memcg->tcpmem_pressure, 0);
->                         return true;
->                 }
-> -               memcg->tcpmem_pressure =3D 1;
-> +               if (!READ_ONCE(memcg->tcpmem_pressure))
-> +                       WRITE_ONCE(memcg->tcpmem_pressure, 1);
->                 if (gfp_mask & __GFP_NOFAIL) {
->                         page_counter_charge(&memcg->tcpmem, nr_pages);
->                         return true;
-
-I will also try this patch, which may take some time.
-
-Thanks,
-Feng
---===============0483307281040946421==--
+This can be used for jobs with a controlled number of sockets, as this
+will avoid many charge/uncharge operations.
+--===============2405587621881050325==--
 
