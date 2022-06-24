@@ -1,20 +1,21 @@
-Content-Type: multipart/mixed; boundary="===============2196465586705060194=="
+Content-Type: multipart/mixed; boundary="===============6923495770053239541=="
 MIME-Version: 1.0
-From: Eric Dumazet <edumazet@google.com>
+From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-Date: Fri, 24 Jun 2022 06:22:42 +0200
-Message-ID: <CANn89iLZYGOjTFThvq-J678BtPtqsywwxFekt9XTcPxk_La8eg@mail.gmail.com>
+Date: Fri, 24 Jun 2022 13:13:51 +0800
+Message-ID: <20220624051351.GA72171@shbuild999.sh.intel.com>
 In-Reply-To: <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2196465586705060194==
+--===============6923495770053239541==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 24, 2022 at 6:13 AM Eric Dumazet <edumazet@google.com> wrote:
->
+Hi Eric,
+
+On Fri, Jun 24, 2022 at 06:13:51AM +0200, Eric Dumazet wrote:
 > On Fri, Jun 24, 2022 at 3:57 AM Jakub Kicinski <kuba@kernel.org> wrote:
 > >
 > > On Thu, 23 Jun 2022 18:50:07 -0400 Xin Long wrote:
@@ -39,44 +40,66 @@ On Fri, Jun 24, 2022 at 6:13 AM Eric Dumazet <edumazet@google.com> wrote:
 > >
 > > FWIW I defer to Eric, thanks a lot for double checking the report
 > > and digging in!
->
+> =
+
 > I did tests with TCP + memcg and noticed a very small additional cost
 > in memcg functions,
 > because of suboptimal layout:
->
+> =
+
 > Extract of an internal Google bug, update from June 9th:
->
+> =
+
 > --------------------------------
 > I have noticed a minor false sharing to fetch (struct
 > mem_cgroup)->css.parent, at offset 0xc0,
 > because it shares the cache line containing struct mem_cgroup.memory,
 > at offset 0xd0
->
+> =
+
 > Ideally, memcg->socket_pressure and memcg->parent should sit in a read
 > mostly cache line.
 > -----------------------
->
+> =
+
 > But nothing that could explain a "-69.4% regression"
+ =
 
-I guess the test now hits memcg limits more often, forcing expensive reclai=
-m,
-and the memcg limits need some adjustments.
-
-Overall, tests enabling memcg should probably need fine tuning, I will
-defer to Intel folks.
+We can double check that. =
 
 
->
 > memcg has a very similar strategy of per-cpu reserves, with
 > MEMCG_CHARGE_BATCH being 32 pages per cpu.
->
+ =
+
+We have proposed patch to increase the batch numer for stats
+update, which was not accepted as it hurts the accuracy and
+the data is used by many tools.
+
 > It is not clear why SCTP with 10K writes would overflow this reserve cons=
 tantly.
->
+> =
+
 > Presumably memcg experts will have to rework structure alignments to
 > make sure they can cope better
 > with more charge/uncharge operations, because we are not going back to
 > gigantic per-socket reserves,
 > this simply does not scale.
---===============2196465586705060194==--
+
+Yes, the memcg statitics and charge/unchage update is very sensitive
+with the data alignemnt layout, and can easily trigger peformance
+changes, as we've seen quite some similar cases in the past several
+years. =
+
+
+One pattern we've seen is, even if a memcg stats updating or charge
+function only takes about 2%~3% of the CPU cycles in perf-profile data,
+once it got affected, the peformance change could be amplified to up to
+60% or more.
+
+Thanks,
+Feng
+
+
+--===============6923495770053239541==--
 
