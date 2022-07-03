@@ -1,71 +1,70 @@
-Content-Type: multipart/mixed; boundary="===============6427053224211454873=="
+Content-Type: multipart/mixed; boundary="===============6385575965512194749=="
 MIME-Version: 1.0
-From: Andrew Morton <akpm@linux-foundation.org>
+From: Roman Gushchin <roman.gushchin@linux.dev>
 To: lkp@lists.01.org
-Subject: Re: [mm/page_alloc] 2bd8eec68f: BUG:sleeping_function_called_from_invalid_context_at_mm/gup.c
-Date: Sun, 03 Jul 2022 13:22:09 -0700
-Message-ID: <20220703132209.875b823d1cb7169a8d51d56d@linux-foundation.org>
-In-Reply-To: <YsFk/qU+QtWun04h@xsang-OptiPlex-9020>
+Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
+Date: Sun, 03 Jul 2022 15:55:31 -0700
+Message-ID: <YsIeYzEuj95PWMWO@castle>
+In-Reply-To: <20220703104353.GB62281@shbuild999.sh.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6427053224211454873==
+--===============6385575965512194749==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, 3 Jul 2022 17:44:30 +0800 kernel test robot <oliver.sang@intel.co=
-m> wrote:
-
-> FYI, we noticed the following commit (built with gcc-11):
+On Sun, Jul 03, 2022 at 06:43:53PM +0800, Feng Tang wrote:
+> Hi Shakeel,
 > =
 
-> commit: 2bd8eec68f740608db5ea58ecff06965228764cb ("[PATCH 7/7] mm/page_al=
-loc: Replace local_lock with normal spinlock")
-> url: https://github.com/intel-lab-lkp/linux/commits/Mel-Gorman/Drain-remo=
-te-per-cpu-directly/20220613-230139
-> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git b13=
-baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
-> patch link: https://lore.kernel.org/lkml/20220613125622.18628-8-mgorman(a=
-)techsingularity.net
+> On Fri, Jul 01, 2022 at 08:47:29AM -0700, Shakeel Butt wrote:
+> > On Mon, Jun 27, 2022 at 8:49 PM Feng Tang <feng.tang@intel.com> wrote:
+> > > I just tested it, it does perform better (the 4th is with your patch),
+> > > some perf-profile data is also listed.
+> > >
+> > >  7c80b038d23e1f4c 4890b686f4088c90432149bd6de 332b589c49656a45881bca4=
+ecc0 e719635902654380b23ffce908d
+> > > ---------------- --------------------------- ------------------------=
+--- ---------------------------
+> > >      15722           -69.5%       4792           -40.8%       9300   =
+        -27.9%      11341        netperf.Throughput_Mbps
+> > >
+> > >       0.00            +0.3        0.26 =C2=B1  5%      +0.5        0.=
+51            +1.3        1.27 =C2=B1  2%pp.self.__sk_mem_raise_allocated
+> > >       0.00            +0.3        0.32 =C2=B1 15%      +1.7        1.=
+74 =C2=B1  2%      +0.4        0.40 =C2=B1  2%  pp.self.propagate_protected=
+_usage
+> > >       0.00            +0.8        0.82 =C2=B1  7%      +0.9        0.=
+90            +0.8        0.84        pp.self.__mod_memcg_state
+> > >       0.00            +1.2        1.24 =C2=B1  4%      +1.0        1.=
+01            +1.4        1.44        pp.self.try_charge_memcg
+> > >       0.00            +2.1        2.06            +2.1        2.13   =
+         +2.1        2.11        pp.self.page_counter_uncharge
+> > >       0.00            +2.1        2.14 =C2=B1  4%      +2.7        2.=
+71            +2.6        2.60 =C2=B1  2%  pp.self.page_counter_try_charge
+> > >       1.12 =C2=B1  4%      +3.1        4.24            +1.1        2.=
+22            +1.4        2.51        pp.self.native_queued_spin_lock_slowp=
+ath
+> > >       0.28 =C2=B1  9%      +3.8        4.06 =C2=B1  4%      +0.2     =
+   0.48            +0.4        0.68        pp.self.sctp_eat_data
+> > >       0.00            +8.2        8.23            +0.8        0.83   =
+         +1.3        1.26        pp.self.__sk_mem_reduce_allocated
+> > >
+> > > And the size of 'mem_cgroup' is increased from 4224 Bytes to 4608.
+> > =
+
+> > Hi Feng, can you please try two more configurations? Take Eric's patch
+> > of adding ____cacheline_aligned_in_smp in page_counter and for first
+> > increase MEMCG_CHARGE_BATCH to 64 and for second increase it to 128.
+> > Basically batch increases combined with Eric's patch.
 > =
 
+> With increasing batch to 128, the regression could be reduced to -12.4%.
 
-Did this test include the followup patch
-mm-page_alloc-replace-local_lock-with-normal-spinlock-fix.patch?
+If we're going to bump it, I wonder if we should scale it dynamically depen=
+ding
+on the size of the memory cgroup?
 
-
-From: Mel Gorman <mgorman@techsingularity.net>
-Subject: mm/page_alloc: replace local_lock with normal spinlock -fix
-Date: Mon, 27 Jun 2022 09:46:45 +0100
-
-As noted by Yu Zhao, use pcp_spin_trylock_irqsave instead of
-pcpu_spin_trylock_irqsave.  This is a fix to the mm-unstable patch
-mm-page_alloc-replace-local_lock-with-normal-spinlock.patch
-
-Link: https://lkml.kernel.org/r/20220627084645.GA27531(a)techsingularity.net
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Reported-by: Yu Zhao <yuzhao@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
-
- mm/page_alloc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/mm/page_alloc.c~mm-page_alloc-replace-local_lock-with-normal-spinlock=
--fix
-+++ a/mm/page_alloc.c
-@@ -3497,7 +3497,7 @@ void free_unref_page(struct page *page,
- =
-
- 	zone =3D page_zone(page);
- 	pcp_trylock_prepare(UP_flags);
--	pcp =3D pcpu_spin_trylock_irqsave(struct per_cpu_pages, lock, zone->per_c=
-pu_pageset, flags);
-+	pcp =3D pcp_spin_trylock_irqsave(zone->per_cpu_pageset, flags);
- 	if (pcp) {
- 		free_unref_page_commit(zone, pcp, page, migratetype, order);
- 		pcp_spin_unlock_irqrestore(pcp, flags);
-_
-
---===============6427053224211454873==--
+Thanks!
+--===============6385575965512194749==--
 
