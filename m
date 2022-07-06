@@ -1,36 +1,94 @@
-Content-Type: multipart/mixed; boundary="===============8833139834683278441=="
+Content-Type: multipart/mixed; boundary="===============6119944057989758846=="
 MIME-Version: 1.0
-From: Bernhard Praschinger <shadowlord@utanet.at>
+From: Mel Gorman <mgorman@techsingularity.net>
 To: lkp@lists.01.org
-Subject: Linux Build Regression EMails
-Date: Thu, 07 Jul 2022 18:53:02 +0200
-Message-ID: <bbecc367-da6f-7737-e090-5ab00ef950d7@utanet.at>
+Subject: Re: [mm/page_alloc] 2bd8eec68f: BUG:sleeping_function_called_from_invalid_context_at_mm/gup.c
+Date: Wed, 06 Jul 2022 10:55:35 +0100
+Message-ID: <20220706095535.GD27531@techsingularity.net>
+In-Reply-To: <YsRB3fZHAfik0M/q@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8833139834683278441==
+--===============6119944057989758846==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hallo,
+On Tue, Jul 05, 2022 at 09:51:25PM +0800, Oliver Sang wrote:
+> Hi Andrew Morton,
+> =
 
-I hope that somebody reads this, an can tell me why Mails with a subject =
+> On Sun, Jul 03, 2022 at 01:22:09PM -0700, Andrew Morton wrote:
+> > On Sun, 3 Jul 2022 17:44:30 +0800 kernel test robot <oliver.sang@inte=
+l.com> wrote:
+> > =
 
-like that [linux-next:master] BUILD REGRESSION =
+> > > FYI, we noticed the following commit (built with gcc-11):
+> > > =
 
-b6f1f2fa2bddd69ff46a190b8120bd440fd50563
-are sent to the mjpeg-users(a)lists.sourceforge.net
+> > > commit: 2bd8eec68f740608db5ea58ecff06965228764cb ("[PATCH 7/7] mm/pag=
+e_alloc: Replace local_lock with normal spinlock")
+> > > url: https://github.com/intel-lab-lkp/linux/commits/Mel-Gorman/Drain-=
+remote-per-cpu-directly/20220613-230139
+> > > base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git=
+ b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+> > > patch link: https://lore.kernel.org/lkml/20220613125622.18628-8-mgorm=
+an(a)techsingularity.net
+> > > =
 
-I'm the list administrator =
+> > =
 
-(https://lists.sourceforge.net/lists/admindb/mjpeg-users), and I'm sure =
+> > Did this test include the followup patch
+> > mm-page_alloc-replace-local_lock-with-normal-spinlock-fix.patch?
+> =
 
-that I did not subscribe.
+> no, we just fetched original patch set and test upon it.
+> =
 
-How can the destination for that be changed to: =
+> now we applied the patch you pointed to us upon 2bd8eec68f and found the =
+issue
+> still exist.
+> (attached dmesg FYI)
+> =
 
-mjpeg-developer(a)lists.sourceforge.net ?
 
-Regards, Bernhard
---===============8833139834683278441==--
+Thanks Oliver.
+
+The trace is odd in that it hits in GUP when the page allocator is no
+longer active and the context is a syscall. First, is this definitely
+the first patch the problem occurs?
+
+Second, it's possible for IRQs to be enabled and an IRQ delivered before
+preemption is enabled. It's not clear why that would be a problem other
+than lacking symmetry or how it could result in the reported BUG but
+might as well rule it out. This is build tested only
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 934d1b5a5449..d0141e51e613 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -192,14 +192,14 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
+ =
+
+ #define pcpu_spin_unlock(member, ptr)					\
+ ({									\
+-	spin_unlock(&ptr->member);					\
+ 	pcpu_task_unpin();						\
++	spin_unlock(&ptr->member);					\
+ })
+ =
+
+ #define pcpu_spin_unlock_irqrestore(member, ptr, flags)			\
+ ({									\
+-	spin_unlock_irqrestore(&ptr->member, flags);			\
+ 	pcpu_task_unpin();						\
++	spin_unlock_irqrestore(&ptr->member, flags);			\
+ })
+ =
+
+ /* struct per_cpu_pages specific helpers. */
+ =
+
+
+
+--===============6119944057989758846==--
 
