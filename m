@@ -1,74 +1,162 @@
-Content-Type: multipart/mixed; boundary="===============1220284371698717953=="
+Content-Type: multipart/mixed; boundary="===============8636518387557644133=="
 MIME-Version: 1.0
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/page_alloc] 2bd8eec68f: BUG:sleeping_function_called_from_invalid_context_at_mm/gup.c
-Date: Fri, 08 Jul 2022 11:56:03 +0100
-Message-ID: <20220708105603.GI27531@techsingularity.net>
-In-Reply-To: <1d3a26ac-89b3-0211-f8f2-5165ffa732fd@suse.cz>
+Subject: Re: [bitops] 0e862838f2: BUG:KASAN:wild-memory-access_in_dmar_parse_one_rhsa
+Date: Fri, 08 Jul 2022 15:17:40 +0300
+Message-ID: <YsggZNUQcsKIU9xU@smile.fi.intel.com>
+In-Reply-To: <YsbpTNmDaam8pl+f@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1220284371698717953==
+--===============8636518387557644133==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 07, 2022 at 11:55:35PM +0200, Vlastimil Babka wrote:
-> On 7/5/22 15:51, Oliver Sang wrote:
-> > Hi Andrew Morton,
-> > =
-
-> > On Sun, Jul 03, 2022 at 01:22:09PM -0700, Andrew Morton wrote:
-> >> On Sun, 3 Jul 2022 17:44:30 +0800 kernel test robot <oliver.sang@int=
-el.com> wrote:
-> >> =
-
-> >> > FYI, we noticed the following commit (built with gcc-11):
-> >> > =
-
-> >> > commit: 2bd8eec68f740608db5ea58ecff06965228764cb ("[PATCH 7/7] mm/pa=
-ge_alloc: Replace local_lock with normal spinlock")
-> >> > url: https://github.com/intel-lab-lkp/linux/commits/Mel-Gorman/Drain=
--remote-per-cpu-directly/20220613-230139
-> >> > base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.gi=
-t b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
-> >> > patch link: https://lore.kernel.org/lkml/20220613125622.18628-8-mgor=
-man(a)techsingularity.net
-> >> > =
-
-> >> =
-
-> >> Did this test include the followup patch
-> >> mm-page_alloc-replace-local_lock-with-normal-spinlock-fix.patch?
-> > =
-
-> > no, we just fetched original patch set and test upon it.
+On Thu, Jul 07, 2022 at 10:10:20PM +0800, kernel test robot wrote:
 > =
 
-> It appears you fetched v4, not v5. I noticed it from the threading of your
-> report that was threaded in the v4 thread, and also the github url: above.
-> In v4, pcpu_spin_trylock_irqsave() was missing an unpin, and indeed it's
-> missing in the github branch you were testing:
+> (please be noted we reported
+> "[bitops]  001bea109d: BUG:KASAN:wild-memory-access_in_dmar_parse_one_rhs=
+a"
+> on
+> https://lore.kernel.org/all/YrnGLtDXAveqXGok(a)xsang-OptiPlex-9020/
+> now we noticed this commit has already been merged into linux-next/master,
+> and the issue is still existing. report again FYI)
 > =
 
+> Greeting,
+> =
 
-Thanks Vlastimil! This is my fault, I failed to verify that the code in
-my tree, Andrew's tree and what Oliver tested were the same so no wonder I
-could not find where the missing unpin was. I've gone through mm-unstable
-commits be42c869b8e..4143c9b5266 and can confirm that they are now identical
-to my own tree which includes Andrew's fix for the smatch warning that
-Dan reported.
+> FYI, we noticed the following commit (built with gcc-11):
+> =
 
-# git diff HEAD^..mm-pcpspinnoirq-v6r1-mmunstable | wc -l
-0
+> commit: 0e862838f290147ea9c16db852d8d494b552d38d ("bitops: unify non-atom=
+ic bitops prototypes across architectures")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> =
 
-The only difference between my tree and Andrew's is that there is a head
-commit for "mm/page_alloc: Do not disable IRQs for per-cpu allocations"
-which has been put on hold for now.
+> in testcase: xfstests
+> version: xfstests-x86_64-c1144bf-1_20220627
+> with following parameters:
+> =
+
+> 	disk: 2pmem
+> 	fs: ext4
+> 	test: ext4-dax
+> 	ucode: 0x700001c
+> =
+
+> test-description: xfstests is a regression test suite for xfs and other f=
+iles ystems.
+> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
+> =
+
+> =
+
+> on test machine: 16 threads 1 sockets Intel(R) Xeon(R) CPU D-1541 @ 2.10G=
+Hz with 48G memory
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+> =
+
+> =
+
+> =
+
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> =
+
+> =
+
+> [ 4.668325][ T0] BUG: KASAN: wild-memory-access in dmar_parse_one_rhsa (a=
+rch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/=
+asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:4=
+15 drivers/iommu/intel/dmar.c:497) =
+
+> [    4.676149][    T0] Read of size 8 at addr 1fffffff85115558 by task sw=
+apper/0/0
+> [    4.683454][    T0]
+> [    4.685638][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-r=
+c3-00004-g0e862838f290 #1
+> [    4.694331][    T0] Hardware name: Supermicro SYS-5018D-FN4T/X10SDV-8C=
+-TLN4F, BIOS 1.1 03/02/2016
+> [    4.703196][    T0] Call Trace:
+> [    4.706334][    T0]  <TASK>
+> [ 4.709133][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214=
+ arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-=
+non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:49=
+7) =
+
+> [ 4.714272][ T0] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1)) =
+
+> [ 4.718632][ T0] kasan_report (mm/kasan/report.c:162 mm/kasan/report.c:49=
+3) =
+
+> [ 4.722903][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214=
+ arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-=
+non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:49=
+7) =
+
+> [ 4.728042][ T0] kasan_check_range (mm/kasan/generic.c:190) =
+
+> [ 4.732750][ T0] dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 a=
+rch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-no=
+n-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497) =
+
+> [ 4.737715][ T0] dmar_walk_remapping_entries (drivers/iommu/intel/dmar.c:=
+609) =
+
+> [ 4.743375][ T0] parse_dmar_table (drivers/iommu/intel/dmar.c:671) =
+
+> [ 4.748079][ T0] ? dmar_table_detect (drivers/iommu/intel/dmar.c:633) =
+
+> [ 4.752872][ T0] ? dmar_free_dev_scope (drivers/iommu/intel/dmar.c:408) =
+
+> [ 4.758010][ T0] ? init_dmars (drivers/iommu/intel/iommu.c:3359) =
+
+> [ 4.762370][ T0] ? iommu_resume (drivers/iommu/intel/iommu.c:3419) =
+
+> [ 4.766903][ T0] ? dmar_walk_dsm_resource+0x300/0x300 =
+
+> [ 4.772909][ T0] ? dmar_acpi_insert_dev_scope (drivers/iommu/intel/dmar.c=
+:466) =
+
+> [ 4.778655][ T0] ? dmar_check_one_atsr (drivers/iommu/intel/iommu.c:3521) =
+
+> [ 4.783795][ T0] dmar_table_init (drivers/iommu/intel/dmar.c:846) =
+
+> [ 4.788239][ T0] intel_prepare_irq_remapping (drivers/iommu/intel/irq_rem=
+apping.c:742) =
+
+> [ 4.793811][ T0] irq_remapping_prepare (drivers/iommu/irq_remapping.c:102=
+) =
+
+> [ 4.798778][ T0] enable_IR_x2apic (arch/x86/kernel/apic/apic.c:1928) =
+
+> [ 4.803395][ T0] default_setup_apic_routing (arch/x86/kernel/apic/probe_6=
+4.c:25 (discriminator 1)) =
+
+> [ 4.808883][ T0] apic_intr_mode_init (arch/x86/kernel/apic/apic.c:1446) =
+
+> [ 4.813761][ T0] x86_late_time_init (arch/x86/kernel/time.c:101) =
+
+> [ 4.818467][ T0] start_kernel (init/main.c:1101) =
+
+> [ 4.822827][ T0] secondary_startup_64_no_verify (arch/x86/kernel/head_64.=
+S:358) =
+
+
+Seems like related to nodemask APIs.
 
 -- =
 
-Mel Gorman
-SUSE Labs
---===============1220284371698717953==--
+With Best Regards,
+Andy Shevchenko
+
+
+--===============8636518387557644133==--
 
