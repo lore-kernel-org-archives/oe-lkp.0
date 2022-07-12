@@ -1,181 +1,90 @@
-Content-Type: multipart/mixed; boundary="===============5890603110700318032=="
+Content-Type: multipart/mixed; boundary="===============6701249953662600432=="
 MIME-Version: 1.0
-From: Yury Norov <yury.norov@gmail.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [bitops] 0e862838f2: BUG:KASAN:wild-memory-access_in_dmar_parse_one_rhsa
-Date: Mon, 11 Jul 2022 11:24:42 -0700
-Message-ID: <CAAH8bW_fypvDtWEFX32iFSagyAS2Mi+yG+bafTeTynYynBdDWA@mail.gmail.com>
-In-Reply-To: <20220711161341.21605-1-alexandr.lobakin@intel.com>
+Subject: Re: [mm/page_alloc] 2bd8eec68f: BUG:sleeping_function_called_from_invalid_context_at_mm/gup.c
+Date: Tue, 12 Jul 2022 13:04:21 +0800
+Message-ID: <Ys0A1VPFpOnUSBqu@xsang-OptiPlex-9020>
+In-Reply-To: <20220708105603.GI27531@techsingularity.net>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5890603110700318032==
+--===============6701249953662600432==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 11, 2022 at 9:15 AM Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
->
-> From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Date: Fri, 8 Jul 2022 15:17:40 +0300
->
-> > On Thu, Jul 07, 2022 at 10:10:20PM +0800, kernel test robot wrote:
-> > >
-> > > (please be noted we reported
-> > > "[bitops]  001bea109d: BUG:KASAN:wild-memory-access_in_dmar_parse_one=
-_rhsa"
-> > > on
-> > > https://lore.kernel.org/all/YrnGLtDXAveqXGok(a)xsang-OptiPlex-9020/
-> > > now we noticed this commit has already been merged into linux-next/ma=
-ster,
-> > > and the issue is still existing. report again FYI)
-> > >
-> > > Greeting,
-> > >
-> > > FYI, we noticed the following commit (built with gcc-11):
-> > >
-> > > commit: 0e862838f290147ea9c16db852d8d494b552d38d ("bitops: unify non-=
-atomic bitops prototypes across architectures")
-> > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git mast=
-er
-> > >
-> > > in testcase: xfstests
-> > > version: xfstests-x86_64-c1144bf-1_20220627
-> > > with following parameters:
-> > >
-> > >     disk: 2pmem
-> > >     fs: ext4
-> > >     test: ext4-dax
-> > >     ucode: 0x700001c
-> > >
-> > > test-description: xfstests is a regression test suite for xfs and oth=
-er files ystems.
-> > > test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
-> > >
-> > >
-> > > on test machine: 16 threads 1 sockets Intel(R) Xeon(R) CPU D-1541 @ 2=
-.10GHz with 48G memory
-> > >
-> > > caused below changes (please refer to attached dmesg/kmsg for entire =
-log/backtrace):
-> > >
-> > >
-> > >
-> > > If you fix the issue, kindly add following tag
-> > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > >
-> > >
-> > > [ 4.668325][ T0] BUG: KASAN: wild-memory-access in dmar_parse_one_rhs=
-a (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 incl=
-ude/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask=
-.h:415 drivers/iommu/intel/dmar.c:497)
-> > > [    4.676149][    T0] Read of size 8 at addr 1fffffff85115558 by tas=
-k swapper/0/0
-> > > [    4.683454][    T0]
-> > > [    4.685638][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19=
-.0-rc3-00004-g0e862838f290 #1
-> > > [    4.694331][    T0] Hardware name: Supermicro SYS-5018D-FN4T/X10SD=
-V-8C-TLN4F, BIOS 1.1 03/02/2016
-> > > [    4.703196][    T0] Call Trace:
-> > > [    4.706334][    T0]  <TASK>
-> > > [ 4.709133][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h=
-:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumen=
-ted-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.=
-c:497)
-> > > [ 4.714272][ T0] dump_stack_lvl (lib/dump_stack.c:107 (discriminator =
-1))
-> > > [ 4.718632][ T0] kasan_report (mm/kasan/report.c:162 mm/kasan/report.=
-c:493)
-> > > [ 4.722903][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h=
-:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumen=
-ted-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.=
-c:497)
-> > > [ 4.728042][ T0] kasan_check_range (mm/kasan/generic.c:190)
-> > > [ 4.732750][ T0] dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:2=
-14 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumente=
-d-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:=
-497)
-> > > [ 4.737715][ T0] dmar_walk_remapping_entries (drivers/iommu/intel/dma=
-r.c:609)
-> > > [ 4.743375][ T0] parse_dmar_table (drivers/iommu/intel/dmar.c:671)
-> > > [ 4.748079][ T0] ? dmar_table_detect (drivers/iommu/intel/dmar.c:633)
-> > > [ 4.752872][ T0] ? dmar_free_dev_scope (drivers/iommu/intel/dmar.c:40=
-8)
-> > > [ 4.758010][ T0] ? init_dmars (drivers/iommu/intel/iommu.c:3359)
-> > > [ 4.762370][ T0] ? iommu_resume (drivers/iommu/intel/iommu.c:3419)
-> > > [ 4.766903][ T0] ? dmar_walk_dsm_resource+0x300/0x300
-> > > [ 4.772909][ T0] ? dmar_acpi_insert_dev_scope (drivers/iommu/intel/dm=
-ar.c:466)
-> > > [ 4.778655][ T0] ? dmar_check_one_atsr (drivers/iommu/intel/iommu.c:3=
-521)
-> > > [ 4.783795][ T0] dmar_table_init (drivers/iommu/intel/dmar.c:846)
-> > > [ 4.788239][ T0] intel_prepare_irq_remapping (drivers/iommu/intel/irq=
-_remapping.c:742)
-> > > [ 4.793811][ T0] irq_remapping_prepare (drivers/iommu/irq_remapping.c=
-:102)
-> > > [ 4.798778][ T0] enable_IR_x2apic (arch/x86/kernel/apic/apic.c:1928)
-> > > [ 4.803395][ T0] default_setup_apic_routing (arch/x86/kernel/apic/pro=
-be_64.c:25 (discriminator 1))
-> > > [ 4.808883][ T0] apic_intr_mode_init (arch/x86/kernel/apic/apic.c:144=
-6)
-> > > [ 4.813761][ T0] x86_late_time_init (arch/x86/kernel/time.c:101)
-> > > [ 4.818467][ T0] start_kernel (init/main.c:1101)
-> > > [ 4.822827][ T0] secondary_startup_64_no_verify (arch/x86/kernel/head=
-_64.S:358)
-> >
-> > Seems like related to nodemask APIs.
->
-> It points to arch_test_bit() (node_online() -> test_bit()),
-> converted from a macro to a function, more precisely, to
-> variable_test_bit(), which I didn't touch.
->
-> ...oh ok I got it!
->
-> pxm_to_node() can return %NUMA_NO_NODE which equals to -1. The
-> mentioned commit converts the macro to the function which now takes
-> `unsigned long` as @nr (bit number). So I guess it gets converted to
-> %ULONG_MAX - 1.
->
-> Now the question is: what should a bitop do if we have negative bit
-> number? Because there are 2 solutions:
->
-> 1. (I prefer it) A caller must check that bitop arguments are valid.
->    UB for negative (=3D=3D too big) bit numbers.
->    dmar_parse_one_rhsa() must be fixed so that it will check return
->    value of pxm_to_node():
->
->                         int node =3D pxm_to_node(rhsa->proximity_domain);
->
-> -                       if (!node_online(node))
-> +                       if (node !=3D NUMA_NO_NODE && !node_online(node))
+Hi Mel Gorman, Hi Vlastimil Babka,
 
-Would it make sense to check it inside node_online()?
+thanks a lot for information!
+normally we would discard a report if we found there is a new version for a
+patch set. however, for this one, we failed to fetch v5 from mailing list.
 
->                                 node =3D NUMA_NO_NODE;
->
-> 2. My code is broken, I shouldn't change `long` to `unsigned long`
->    or should change it for {constant,variable}_test_bit() as well
->    or do something else and let it behave as it was previously
->    (it wasn't crashing probably due to a good luck or...).
+sorry if any inconvenience.
 
-This is definitely a NUMA problem. Bitmap has 2 kernel-wide users:
-cpumasks and numa nodes. Both use negative indexes for their
-reasons, which is dangerous, as we can see from here, because
-bitmaps don't support them and don't handle it properly...
+On Fri, Jul 08, 2022 at 11:56:03AM +0100, Mel Gorman wrote:
+> On Thu, Jul 07, 2022 at 11:55:35PM +0200, Vlastimil Babka wrote:
+> > On 7/5/22 15:51, Oliver Sang wrote:
+> > > Hi Andrew Morton,
+> > > =
 
-Can you please send a fix dmar_parse_one_rhsa() as you suggested,
-so that I'll add the fix before the beginning of next merge window?
+> > > On Sun, Jul 03, 2022 at 01:22:09PM -0700, Andrew Morton wrote:
+> > >> On Sun, 3 Jul 2022 17:44:30 +0800 kernel test robot <oliver.sang@i=
+ntel.com> wrote:
+> > >> =
 
-Regarding a general path, this is what I'm thinking on (for a while):
- - #define NUMA_NO_NODE MAX_NUMNODES;
- - stronger typechecking, like you did in your series;
- - introduce CONFIG_DEBUG_BITMAP  to catch bad arguments
-   on-the-fly;
+> > >> > FYI, we noticed the following commit (built with gcc-11):
+> > >> > =
 
-I'm working on DEBUG_BITMAP, hopefully submit it for next merge
-cycle.
+> > >> > commit: 2bd8eec68f740608db5ea58ecff06965228764cb ("[PATCH 7/7] mm/=
+page_alloc: Replace local_lock with normal spinlock")
+> > >> > url: https://github.com/intel-lab-lkp/linux/commits/Mel-Gorman/Dra=
+in-remote-per-cpu-directly/20220613-230139
+> > >> > base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.=
+git b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+> > >> > patch link: https://lore.kernel.org/lkml/20220613125622.18628-8-mg=
+orman(a)techsingularity.net
+> > >> > =
 
-Thanks,
-Yury
---===============5890603110700318032==--
+> > >> =
+
+> > >> Did this test include the followup patch
+> > >> mm-page_alloc-replace-local_lock-with-normal-spinlock-fix.patch?
+> > > =
+
+> > > no, we just fetched original patch set and test upon it.
+> > =
+
+> > It appears you fetched v4, not v5. I noticed it from the threading of y=
+our
+> > report that was threaded in the v4 thread, and also the github url: abo=
+ve.
+> > In v4, pcpu_spin_trylock_irqsave() was missing an unpin, and indeed it's
+> > missing in the github branch you were testing:
+> > =
+
+> =
+
+> Thanks Vlastimil! This is my fault, I failed to verify that the code in
+> my tree, Andrew's tree and what Oliver tested were the same so no wonder I
+> could not find where the missing unpin was. I've gone through mm-unstable
+> commits be42c869b8e..4143c9b5266 and can confirm that they are now identi=
+cal
+> to my own tree which includes Andrew's fix for the smatch warning that
+> Dan reported.
+> =
+
+> # git diff HEAD^..mm-pcpspinnoirq-v6r1-mmunstable | wc -l
+> 0
+> =
+
+> The only difference between my tree and Andrew's is that there is a head
+> commit for "mm/page_alloc: Do not disable IRQs for per-cpu allocations"
+> which has been put on hold for now.
+> =
+
+> -- =
+
+> Mel Gorman
+> SUSE Labs
+--===============6701249953662600432==--
 
