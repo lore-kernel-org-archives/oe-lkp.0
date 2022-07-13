@@ -1,163 +1,166 @@
-Content-Type: multipart/mixed; boundary="===============2071116687352918054=="
+Content-Type: multipart/mixed; boundary="===============8877716825388970435=="
 MIME-Version: 1.0
-From: Baolin Wang <baolin.wang@linux.alibaba.com>
+From: Peter Zijlstra <peterz@infradead.org>
 To: lkp@lists.01.org
-Subject: Re: [mm] 0bf5cdf08f: BUG:Bad_page_state_in_process
-Date: Wed, 13 Jul 2022 17:17:44 +0800
-Message-ID: <1badee01-b872-8de8-4fe1-83d6dc6b756c@linux.alibaba.com>
-In-Reply-To: <Ys0P+ssAhAyfdA56@xsang-OptiPlex-9020>
+Subject: Re: [x86, static_call] ee88d363d1: WARNING:at_arch/x86/kernel/alternative.c:#apply_returns
+Date: Wed, 13 Jul 2022 14:28:55 +0200
+Message-ID: <Ys66hwtFcGbYmoiZ@hirez.programming.kicks-ass.net>
+In-Reply-To: <Ys58BxHxoDZ7rfpr@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2071116687352918054==
+--===============8877716825388970435==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+On Wed, Jul 13, 2022 at 04:02:15PM +0800, kernel test robot wrote:
 
+> [   22.065014][    T0] ------------[ cut here ]------------
+> [ 22.066738][ T0] WARNING: CPU: 0 PID: 0 at arch/x86/kernel/alternative.c=
+:557 apply_returns (arch/x86/kernel/alternative.c:557 (discriminator 1)) =
 
-On 7/12/2022 2:08 PM, kernel test robot wrote:
+> [   22.069534][    T0] Modules linked in:
+> [   22.070738][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-r=
+c4-00008-gee88d363d156 #1
+> [   22.072739][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
+96), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
+> [ 22.074741][ T0] RIP: 0010:apply_returns (arch/x86/kernel/alternative.c:=
+557 (discriminator 1)) =
+
+> [ 22.076739][ T0] Code: ff ff 74 cb 48 83 c5 04 49 39 ee 0f 87 81 fe ff f=
+f e9 22 ff ff ff 0f 0b 48 83 c5 04 49 39 ee 0f 87 6d fe ff ff e9 0e ff ff f=
+f <0f> 0b 48 83 c5 04 49 39 ee 0f 87 59 fe ff ff e9 fa fe ff ff 48 89
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:	ff                   	(bad)  =
+
+>    1:	ff 74 cb 48          	pushq  0x48(%rbx,%rcx,8)
+>    5:	83 c5 04             	add    $0x4,%ebp
+>    8:	49 39 ee             	cmp    %rbp,%r14
+>    b:	0f 87 81 fe ff ff    	ja     0xfffffffffffffe92
+>   11:	e9 22 ff ff ff       	jmpq   0xffffffffffffff38
+>   16:	0f 0b                	ud2    =
+
+>   18:	48 83 c5 04          	add    $0x4,%rbp
+>   1c:	49 39 ee             	cmp    %rbp,%r14
+>   1f:	0f 87 6d fe ff ff    	ja     0xfffffffffffffe92
+>   25:	e9 0e ff ff ff       	jmpq   0xffffffffffffff38
+>   2a:*	0f 0b                	ud2    		<-- trapping instruction
+>   2c:	48 83 c5 04          	add    $0x4,%rbp
+>   30:	49 39 ee             	cmp    %rbp,%r14
+>   33:	0f 87 59 fe ff ff    	ja     0xfffffffffffffe92
+>   39:	e9 fa fe ff ff       	jmpq   0xffffffffffffff38
+>   3e:	48                   	rex.W
+>   3f:	89                   	.byte 0x89
 > =
 
-> =
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:	0f 0b                	ud2    =
 
-> Greeting,
-> =
+>    2:	48 83 c5 04          	add    $0x4,%rbp
+>    6:	49 39 ee             	cmp    %rbp,%r14
+>    9:	0f 87 59 fe ff ff    	ja     0xfffffffffffffe68
+>    f:	e9 fa fe ff ff       	jmpq   0xffffffffffffff0e
+>   14:	48                   	rex.W
+>   15:	89                   	.byte 0x89
+> [   22.078738][    T0] RSP: 0000:ffffffffa2807dc0 EFLAGS: 00010202
+> [   22.080737][    T0] RAX: 0000000000000000 RBX: ffffffffa1b8fe05 RCX: 0=
+000000000000000
+> [   22.082546][    T0] RDX: 000000000000000f RSI: ffffffffa184a3e0 RDI: f=
+fffffffa1b8fe05
+> [   22.083738][    T0] RBP: ffffffffa42851e8 R08: 0000000000000001 R09: f=
+fffffffa1b8fe05
+> [   22.086491][    T0] R10: 0000000000000000 R11: 0000000000000000 R12: f=
+fffffffa1b8fe00
+> [   22.087738][    T0] R13: dffffc0000000000 R14: ffffffffa4299890 R15: 1=
+ffffffff4500fbb
+> [   22.089739][    T0] FS:  0000000000000000(0000) GS:ffff888396600000(00=
+00) knlGS:0000000000000000
+> [   22.091743][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   22.093738][    T0] CR2: ffff88843ffff000 CR3: 00000003a562a000 CR4: 0=
+0000000000006f0
+> [   22.095753][    T0] Call Trace:
+> [   22.097742][    T0]  <TASK>
+> [ 22.098765][ T0] ? rwlock_bug+0xc0/0xc0 =
 
-> FYI, we noticed the following commit (built with gcc-11):
-> =
+> [ 22.100230][ T0] ? apply_retpolines (arch/x86/kernel/alternative.c:538) =
 
-> commit: 0bf5cdf08f32bbb2d5dbc794fe609e1d97ca5257 ("[RFC PATCH v2 3/3] mm:=
- Add kernel PTE level pagetable pages account")
-> url: https://github.com/intel-lab-lkp/linux/commits/Baolin-Wang/Add-PUD-a=
-nd-kernel-PTE-level-pagetable-account/20220622-170051
-> base: https://git.kernel.org/cgit/linux/kernel/git/arnd/asm-generic.git m=
-aster
-> patch link: https://lore.kernel.org/linux-mm/7882bbf467440f9a3ebe41d96ba5=
-b6f384081bb7.1655887440.git.baolin.wang(a)linux.alibaba.com
-> =
+> [ 22.101791][ T0] ? int3_exception_notify (arch/x86/kernel/alternative.c:=
+849) =
 
-> in testcase: stress-ng
-> version: stress-ng-x86_64-0.11-06_20220709
-> with following parameters:
-> =
+> [ 22.103261][ T0] ? check_bugs (arch/x86/kernel/cpu/bugs.c:149) =
 
-> 	nr_threads: 10%
-> 	disk: 1HDD
-> 	testtime: 60s
-> 	fs: xfs
-> 	class: filesystem
-> 	test: dnotify
-> 	cpufreq_governor: performance
-> 	ucode: 0xb000280
-> =
+> [ 22.104751][ T0] alternative_instructions (arch/x86/kernel/alternative.c=
+:932) =
 
-> =
+> [ 22.106766][ T0] check_bugs (arch/x86/kernel/cpu/bugs.c:159) =
 
-> =
+> [ 22.108244][ T0] start_kernel (init/main.c:1132) =
 
-> on test machine: 96 threads 2 sockets Ice Lake with 256G memory
-> =
+> [ 22.109747][ T0] secondary_startup_64_no_verify (arch/x86/kernel/head_64=
+.S:358) =
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
+> [   22.111300][    T0]  </TASK>
+> [   22.112742][    T0] irq event stamp: 87769
+> [ 22.113741][ T0] hardirqs last enabled at (87781): __up_console_sem (arc=
+h/x86/include/asm/irqflags.h:45 (discriminator 1) arch/x86/include/asm/irqf=
+lags.h:80 (discriminator 1) arch/x86/include/asm/irqflags.h:138 (discrimina=
+tor 1) kernel/printk/printk.c:264 (discriminator 1)) =
 
-> =
+> [ 22.115740][ T0] hardirqs last disabled at (87794): __up_console_sem (ke=
+rnel/printk/printk.c:262 (discriminator 1)) =
 
-> =
+> [ 22.117739][ T0] softirqs last enabled at (2774): cgroup_idr_alloc+0x5b/=
+0x1c0 =
 
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
+> [ 22.119739][ T0] softirqs last disabled at (2772): cgroup_idr_alloc+0x2e=
+/0x1c0 =
 
-Thanks for reporting. I think I missed the changes in =
-
-pud_free_pmd_page(), which also can free a kernel pte page table.
-
-And I will use pte_free_kernel() instead in new version patch set.
-
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index 20f30762d618..f961578e2a54 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -828,6 +828,7 @@ int pud_free_pmd_page(pud_t *pud, unsigned long addr)
-         for (i =3D 0; i < PTRS_PER_PMD; i++) {
-                 if (!pmd_none(pmd_sv[i])) {
-                         pte =3D (pte_t *)pmd_page_vaddr(pmd_sv[i]);
-+                       pgtable_clear_and_dec(virt_to_page(pte));
-                         free_page((unsigned long)pte);
-                 }
-         }
+> [   22.121741][    T0] ---[ end trace 0000000000000000 ]---
 
 
-> =
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index d6858533e6e5..ff309e829192 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -555,8 +555,10 @@ void __init_or_module noinline apply_returns(s32 *star=
+t, s32 *end)
+ 			dest =3D addr + insn.length + insn.immediate.value;
+ =
 
-> =
+ 		if (__static_call_fixup(addr, op, dest) ||
+-		    WARN_ON_ONCE(dest !=3D &__x86_return_thunk))
++		    WARN_ON_ONCE(dest !=3D &__x86_return_thunk)) {
++			printk("XXX: %pS %pS : %*ph", addr, dest, 5, addr);
+ 			continue;
++		}
+ =
 
-> [   36.465236][ T1887] BUG: Bad page state in process ucfr  pfn:1ed9a9
-> [   36.465238][ T1887] page:00000000c52990fe refcount:0 mapcount:-512 map=
-ping:0000000000000000 index:0x0 pfn:0x1ed9a9
-> [   36.465244][ T1887] flags: 0x17ffffc0000000(node=3D0|zone=3D2|lastcpup=
-id=3D0x1fffff)
-> [   36.465248][ T1887] raw: 0017ffffc0000000 dead000000000100 dead0000000=
-00122 0000000000000000
-> [   36.465249][ T1887] raw: 0000000000000000 0000000000000000 00000000fff=
-ffdff 0000000000000000
-> [   36.465249][ T1887] page dumped because: nonzero mapcount
-> [   36.465250][ T1887] Modules linked in: acpi_cpufreq(-) device_dax(+) n=
-d_pmem nd_btt dax_pmem intel_rapl_msr intel_rapl_common btrfs ipmi_ssif x86=
-_pkg_temp_thermal blake2b_generic intel_powerclamp xor raid6_pq coretemp zs=
-td_compress libcrc32c nvme sd_mod ast drm_vram_helper sg drm_ttm_helper nvm=
-e_core kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel t=
-10_pi ghash_clmulni_intel ttm rapl drm_kms_helper crc64_rocksoft_generic ah=
-ci intel_cstate syscopyarea crc64_rocksoft libahci intel_uncore crc64 sysfi=
-llrect ioatdma sysimgblt joydev fb_sys_fops libata dca wmi acpi_ipmi ipmi_s=
-i ipmi_devintf ipmi_msghandler nfit libnvdimm acpi_pad acpi_power_meter drm=
- fuse ip_tables
-> [   36.465278][ T1887] CPU: 8 PID: 1887 Comm: ucfr Tainted: G S          =
-      5.19.0-rc2-00013-g0bf5cdf08f32 #1
-> [   36.465280][ T1887] Call Trace:
-> [   36.465283][ T1887]  <TASK>
-> [ 36.465285][ T1887] dump_stack_lvl (lib/dump_stack.c:107 (discriminator =
-1))
-> [ 36.465292][ T1887] bad_page.cold (mm/page_alloc.c:642)
-> [ 36.465296][ T1887] free_pcppages_bulk (mm/page_alloc.c:1526)
-> [ 36.465302][ T1887] free_unref_page (arch/x86/include/asm/irqflags.h:137=
- mm/page_alloc.c:3459)
-> [ 36.465304][ T1887] __mmdrop (arch/x86/include/asm/mmu_context.h:125 (di=
-scriminator 3) kernel/fork.c:789 (discriminator 3))
-> [ 36.465307][ T1887] finish_task_switch+0x200/0x2c0
-> [ 36.465312][ T1887] schedule_tail (arch/x86/include/asm/preempt.h:85 ker=
-nel/sched/core.c:5053)
-> [ 36.465315][ T1887] ret_from_fork (arch/x86/entry/entry_64.S:289)
-> [   36.465320][ T1887]  </TASK>
-> [   36.465320][ T1887] Disabling lock debugging due to kernel taint
-> [   37.204107][  T656] BUG: Bad page state in process kworker/7:1  pfn:40=
-67654
-> [   37.204114][  T656] page:0000000017c1d009 refcount:0 mapcount:-512 map=
-ping:0000000000000000 index:0x0 pfn:0x4067654
-> [   37.204120][  T656] flags: 0x57ffffc0000000(node=3D1|zone=3D2|lastcpup=
-id=3D0x1fffff)
-> [   37.204126][  T656] raw: 0057ffffc0000000 dead000000000100 dead0000000=
-00122 0000000000000000
-> [   37.204128][  T656] raw: 0000000000000000 0000000000000000 00000000fff=
-ffdff 0000000000000000
-> [   37.204128][  T656] page dumped because: nonzero mapcount
-> [   37.204129][  T656] Modules linked in: acpi_cpufreq(-) device_dax(+) n=
-d_pmem nd_btt dax_pmem intel_rapl_msr intel_rapl_common btrfs ipmi_ssif x86=
-_pkg_temp_thermal blake2b_generic intel_powerclamp xor raid6_pq coretemp zs=
-td_compress libcrc32c nvme sd_mod ast drm_vram_helper sg drm_ttm_helper nvm=
-e_core kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel t=
-10_pi ghash_clmulni_intel ttm rapl drm_kms_helper crc64_rocksoft_generic ah=
-ci intel_cstate syscopyarea crc64_rocksoft libahci intel_uncore crc64 sysfi=
-llrect ioatdma sysimgblt joydev fb_sys_fops libata dca wmi acpi_ipmi ipmi_s=
-i ipmi_devintf ipmi_msghandler nfit libnvdimm acpi_pad acpi_power_meter drm=
- fuse ip_tables
-> [   37.204165][  T656] CPU: 7 PID: 656 Comm: kworker/7:1 Tainted: G S  B =
-            5.19.0-rc2-00013-g0bf5cdf08f32 #1
-> [   37.204168][  T656] Workqueue: mm_percpu_wq vmstat_update
-> [   37.204181][  T656] Call Trace:
-> [   37.204184][  T656]  <TASK>
+ 		DPRINTK("return thunk at: %pS (%px) len: %d to: %pS",
+ 			addr, addr, insn.length,
 
-snip.
---===============2071116687352918054==--
+Gets me:
+
+[    2.559091][    T0] ---[ end trace 0000000000000000 ]---
+[    2.561092][    T0] XXX: lkdtm_rodata_do_nothing+0x0/0x1240 lkdtm_rodata=
+_do_nothing+0x5/0x1240 : e9 00 00 00 00
+
+which is a result of:
+
+drivers/misc/lkdtm/Makefile:OBJCOPYFLAGS_rodata_objcopy.o   :=3D \
+drivers/misc/lkdtm/Makefile:                        --rename-section .noins=
+tr.text=3D.rodata,alloc,readonly,load,contents
+
+which makes that:
+
+0000000000000000 <lkdtm_rodata_do_nothing>:
+   0:   e9 00 00 00 00          jmp    5 <lkdtm_rodata_do_nothing+0x5>  1: =
+R_X86_64_PLT32       __x86_return_thunk-0x4
+
+remains unresolved.
+
+Kees, what's up with that thing, this is 'weird' at best.
+--===============8877716825388970435==--
 
