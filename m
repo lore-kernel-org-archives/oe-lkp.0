@@ -1,131 +1,336 @@
-Content-Type: multipart/mixed; boundary="===============7809534234937096266=="
+Content-Type: multipart/mixed; boundary="===============2548854314955145825=="
 MIME-Version: 1.0
-From: Jens Axboe <axboe@kernel.dk>
+From: Greg Joyce <gjoyce@linux.vnet.ibm.com>
 To: lkp@lists.01.org
-Subject: Re: [io_uring] 584b0180f0: phoronix-test-suite.fio.SequentialWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s -10.2% regression
-Date: Fri, 15 Jul 2022 09:58:24 -0600
-Message-ID: <26d913ea-7aa0-467d-4caf-a93f8ca5b3ff@kernel.dk>
-In-Reply-To: <0d60aa42-a519-12ad-3c69-72ed12398865@intel.com>
+Subject: submitting corrected patch
+Date: Fri, 15 Jul 2022 17:09:20 -0500
+Message-ID: <2953bca5213bff727a2c76a6d28b947628d94e2f.camel@linux.vnet.ibm.com>
+In-Reply-To: <202207081010.mn8e8rca-lkp@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7809534234937096266==
+--===============2548854314955145825==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 7/12/22 2:06 AM, Yin Fengwei wrote:
-> Hi Jens,
+Hi,
+
+Can I just send an amended patch to this email? I believe that it just
+needed a dependency for a config option.
+
+-Greg
+
+On Fri, 2022-07-08 at 10:35 +0800, kernel test robot wrote:
+> Hi,
 > =
 
-> On 5/27/2022 9:50 PM, Jens Axboe wrote:
->> I'm a bit skeptical on this, but I'd like to try and run the test case.
->> Since it's just a fio test case, why can't I find it somewhere? Seems
->> very convoluted to have to setup lkp-tests just for this. Besides, I
->> tried, but it doesn't work on aarch64...
-> Recheck this regression report. The regression could be reproduced if
-> the following config file is used with fio (tag: fio-3.25) :
+> Thank you for the patch! Yet something to improve:
 > =
 
-> 	[global]
-> 	rw=3Dwrite
-> 	ioengine=3Dio_uring
-> 	iodepth=3D64
-> 	size=3D1g
-> 	direct=3D1
-> 	buffered=3D1
-> 	startdelay=3D5
-> 	force_async=3D4
-> 	ramp_time=3D5
-> 	runtime=3D20
-> 	time_based
-> 	clat_percentiles=3D0
-> 	disable_lat=3D1
-> 	disable_clat=3D1
-> 	disable_slat=3D1
-> 	filename=3Dtest_fiofile
-> 	[test]
-> 	name=3Dtest
-> 	bs=3D1M
-> 	stonewall
+> [auto build test ERROR on axboe-block/for-next]
+> [also build test ERROR on linus/master v5.19-rc5 next-20220707]
+> [If your patch is applied to the wrong git tree, kindly drop us a
+> note.
+> And when submitting patch, we suggest to use '--base' as documented
+> in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
 > =
 
-> Just FYI, a small change to commit: 584b0180f0f4d67d7145950fe68c625f06c88=
-b10:
+> url:    =
+
+> https://github.com/intel-lab-lkp/linux/commits/gjoyce-linux-vnet-ibm-com/=
+sed-opal-keyrings-discovery-revert-and-key-store/20220706-104204
+> base:   =
+
+> https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git
+>  for-next
+> config: arm-randconfig-r036-20220706 (
+> https://download.01.org/0day-ci/archive/20220708/202207081010.mn8e8rca-lk=
+p(a)intel.com/config
+> )
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project
+> f553287b588916de09c66e3e32bf75e5060f967f)
+> reproduce (this is a W=3D1 build):
+>         wget =
+
+> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
+>  -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install arm cross compiling tool for clang build
+>         # apt-get install binutils-arm-linux-gnueabi
+>         # =
+
+> https://github.com/intel-lab-lkp/linux/commit/b984dda112cdbda6b41045bf63f=
+790a3c2903c7a
+>         git remote add linux-review =
+
+> https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review gjoyce-linux-vnet-ibm-
+> com/sed-opal-keyrings-discovery-revert-and-key-store/20220706-104204
+>         git checkout b984dda112cdbda6b41045bf63f790a3c2903c7a
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dclang make.cross
+> W=3D1 O=3Dbuild_dir ARCH=3Darm SHELL=3D/bin/bash
 > =
 
-> diff --git a/fs/io_uring.c b/fs/io_uring.c
-> index 969f65de9972..616d857f8fc6 100644
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -3181,8 +3181,13 @@ static int io_prep_rw(struct io_kiocb *req, const =
-struct io_uring_sqe *sqe)
->  {
->         struct kiocb *kiocb =3D &req->rw.kiocb;
->         unsigned ioprio;
-> +       struct file *file =3D req->file;
->         int ret;
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
 > =
 
-> +       if (likely(file && (file->f_mode & FMODE_WRITE)))
-> +               if (!io_req_ffs_set(req))
-> +                       req->flags |=3D io_file_get_flags(file) << REQ_F_=
-SUPPORT_NOWAIT_BIT;
-> +
->         kiocb->ki_pos =3D READ_ONCE(sqe->off);
+> All error/warnings (new ones prefixed by >>):
 > =
 
->         ioprio =3D READ_ONCE(sqe->ioprio);
+> > > block/sed-opal.c:286:8: error: call to undeclared function
+> > > 'key_alloc'; ISO C99 and later do not support implicit function
+> > > declarations [-Wimplicit-function-declaration]
+>            key =3D key_alloc(&key_type_user, desc, GLOBAL_ROOT_UID,
+> GLOBAL_ROOT_GID,
+>                  ^
+> > > block/sed-opal.c:286:19: error: use of undeclared identifier
+> > > 'key_type_user'
+>            key =3D key_alloc(&key_type_user, desc, GLOBAL_ROOT_UID,
+> GLOBAL_ROOT_GID,
+>                             ^
+> > > block/sed-opal.c:288:5: error: use of undeclared identifier
+> > > 'KEY_USR_VIEW'
+>                                    KEY_USR_VIEW | KEY_USR_SEARCH |
+> KEY_USR_WRITE,
+>                                    ^
+> > > block/sed-opal.c:288:20: error: use of undeclared identifier
+> > > 'KEY_USR_SEARCH'
+>                                    KEY_USR_VIEW | KEY_USR_SEARCH |
+> KEY_USR_WRITE,
+>                                                   ^
+> > > block/sed-opal.c:288:37: error: use of undeclared identifier
+> > > 'KEY_USR_WRITE'
+>                                    KEY_USR_VIEW | KEY_USR_SEARCH |
+> KEY_USR_WRITE,
+>                                                                    ^
+> > > block/sed-opal.c:294:8: error: call to undeclared function
+> > > 'key_instantiate_and_link'; ISO C99 and later do not support
+> > > implicit function declarations [-Wimplicit-function-declaration]
+>            ret =3D key_instantiate_and_link(key, key_data, keylen,
+>                  ^
+>    block/sed-opal.c:294:8: note: did you mean 'd_instantiate_anon'?
+>    include/linux/dcache.h:223:24: note: 'd_instantiate_anon' declared
+> here
+>    extern struct dentry * d_instantiate_anon(struct dentry *, struct
+> inode *);
+>                           ^
+>    block/sed-opal.c:307:2: error: unknown type name 'key_ref_t'; did
+> you mean 'key_perm_t'?
+>            key_ref_t kref;
+>            ^~~~~~~~~
+>            key_perm_t
+>    include/linux/key.h:31:18: note: 'key_perm_t' declared here
+>    typedef uint32_t key_perm_t;
+>                     ^
+> > > block/sed-opal.c:313:9: error: call to undeclared function
+> > > 'keyring_search'; ISO C99 and later do not support implicit
+> > > function declarations [-Wimplicit-function-declaration]
+>            kref =3D keyring_search(make_key_ref(sed_opal_keyring,
+> true),
+>                   ^
+>    block/sed-opal.c:314:4: error: use of undeclared identifier
+> 'key_type_user'
+>                    &key_type_user,
+>                     ^
+> > > block/sed-opal.c:318:13: warning: incompatible integer to pointer
+> > > conversion passing 'key_perm_t' (aka 'unsigned int') to parameter
+> > > of type 'const void *' [-Wint-conversion]
+>            if (IS_ERR(kref)) {
+>                       ^~~~
+>    include/linux/err.h:34:60: note: passing argument to parameter
+> 'ptr' here
+>    static inline bool __must_check IS_ERR(__force const void *ptr)
+>                                                               ^
+>    block/sed-opal.c:319:17: warning: incompatible integer to pointer
+> conversion passing 'key_perm_t' (aka 'unsigned int') to parameter of
+> type 'const void *' [-Wint-conversion]
+>                    ret =3D PTR_ERR(kref);
+>                                  ^~~~
+>    include/linux/err.h:29:61: note: passing argument to parameter
+> 'ptr' here
+>    static inline long __must_check PTR_ERR(__force const void *ptr)
+>                                                                ^
+> > > block/sed-opal.c:322:17: error: incomplete definition of type
+> > > 'struct key'
+>                    down_read(&key->sem);
+>                               ~~~^
+>    include/linux/key.h:33:8: note: forward declaration of 'struct
+> key'
+>    struct key;
+>           ^
+>    block/sed-opal.c:325:20: error: incomplete definition of type
+> 'struct key'
+>                            if (buflen > key->datalen)
+>                                         ~~~^
+>    include/linux/key.h:33:8: note: forward declaration of 'struct
+> key'
+>    struct key;
+>           ^
+>    block/sed-opal.c:326:17: error: incomplete definition of type
+> 'struct key'
+>                                    buflen =3D key->datalen;
+>                                             ~~~^
+>    include/linux/key.h:33:8: note: forward declaration of 'struct
+> key'
+>    struct key;
+>           ^
+>    block/sed-opal.c:328:13: error: incomplete definition of type
+> 'struct key'
+>                            ret =3D key->type->read(key, (char *)buffer,
+> buflen);
+>                                  ~~~^
+>    include/linux/key.h:33:8: note: forward declaration of 'struct
+> key'
+>    struct key;
+>           ^
+>    block/sed-opal.c:330:15: error: incomplete definition of type
+> 'struct key'
+>                    up_read(&key->sem);
+>                             ~~~^
+>    include/linux/key.h:33:8: note: forward declaration of 'struct
+> key'
+>    struct key;
+>           ^
+> > > block/sed-opal.c:2938:7: error: call to undeclared function
+> > > 'keyring_alloc'; ISO C99 and later do not support implicit
+> > > function declarations [-Wimplicit-function-declaration]
+>            kr =3D keyring_alloc(".sed_opal",
+>                 ^
+> > > block/sed-opal.c:2940:4: error: use of undeclared identifier
+> > > 'KEY_POS_ALL'
+>                    (KEY_POS_ALL & ~KEY_POS_SETATTR) | KEY_USR_VIEW |
+>                     ^
+> > > block/sed-opal.c:2940:19: error: use of undeclared identifier
+> > > 'KEY_POS_SETATTR'
+>                    (KEY_POS_ALL & ~KEY_POS_SETATTR) | KEY_USR_VIEW |
+>                                    ^
+>    block/sed-opal.c:2940:38: error: use of undeclared identifier
+> 'KEY_USR_VIEW'
+>                    (KEY_POS_ALL & ~KEY_POS_SETATTR) | KEY_USR_VIEW |
+>                                                       ^
+> > > block/sed-opal.c:2941:3: error: use of undeclared identifier
+> > > 'KEY_USR_READ'
+>                    KEY_USR_READ | KEY_USR_SEARCH | KEY_USR_WRITE,
+>                    ^
+>    fatal error: too many errors emitted, stopping now [-ferror-
+> limit=3D]
+>    2 warnings and 20 errors generated.
 > =
 
-> could make regression gone. No idea how req->flags impact the write
-> performance. Thanks.
+> =
 
-I can't really explain that either, at least not immediately. I tried
-running with and without that patch, and don't see any difference here.
-In terms of making this more obvious, does the below also fix it for
-you?
+> vim +/key_alloc +286 block/sed-opal.c
+> =
 
-And what filesystem is this being run on?
+> 455a7b238cd6bc6 Scott Bauer 2017-02-03  274  =
 
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  275  /*
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  276   * Allocate/update a SED
+> Opal key and add it to the SED Opal keyring.
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  277   */
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  278  static int
+> update_sed_opal_key(const char *desc, u_char *key_data, int keylen)
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  279  {
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  280  	int ret;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  281  	struct key *key;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  282  =
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index a01ea49f3017..797fad99780d 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -4269,9 +4269,6 @@ static int io_rw_init_file(struct io_kiocb *req, fmod=
-e_t mode)
- 	if (unlikely(!file || !(file->f_mode & mode)))
- 		return -EBADF;
- =
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  283  	if (!sed_opal_keyring)
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  284  		return -ENOKEY;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  285  =
 
--	if (!io_req_ffs_set(req))
--		req->flags |=3D io_file_get_flags(file) << REQ_F_SUPPORT_NOWAIT_BIT;
--
- 	kiocb->ki_flags =3D iocb_flags(file);
- 	ret =3D kiocb_set_rw_flags(kiocb, req->rw.flags);
- 	if (unlikely(ret))
-@@ -8309,7 +8306,13 @@ static bool io_assign_file(struct io_kiocb *req, uns=
-igned int issue_flags)
- 	else
- 		req->file =3D io_file_get_normal(req, req->cqe.fd);
- =
+> 8a2b115580e8f7c Greg Joyce  2022-07-05 @286  	key =3D
+> key_alloc(&key_type_user, desc, GLOBAL_ROOT_UID, GLOBAL_ROOT_GID,
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  287  				=
 
--	return !!req->file;
-+	if (unlikely(!req->file))
-+		return false;
-+
-+	if (!io_req_ffs_set(req))
-+		req->flags |=3D io_file_get_flags(file) << REQ_F_SUPPORT_NOWAIT_BIT;
-+
-+	return true;
- }
- =
+> current_cred(),
+> 8a2b115580e8f7c Greg Joyce  2022-07-05 @288  				=
 
- static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
+> KEY_USR_VIEW | KEY_USR_SEARCH | KEY_USR_WRITE,
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  289  				=
 
--- =
+> 0,
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  290  				=
 
-Jens Axboe
+> NULL);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  291  	if (IS_ERR(key))
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  292  		return
+> PTR_ERR(key);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  293  =
 
---===============7809534234937096266==--
+> 8a2b115580e8f7c Greg Joyce  2022-07-05 @294  	ret =3D
+> key_instantiate_and_link(key, key_data, keylen,
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  295  			sed_opa
+> l_keyring, NULL);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  296  	key_put(key);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  297  =
+
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  298  	return ret;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  299  }
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  300  =
+
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  301  /*
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  302   * Read a SED Opal key
+> from the SED Opal keyring.
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  303   */
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  304  static int
+> read_sed_opal_key(const char *key_name, u_char *buffer, int buflen)
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  305  {
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  306  	int ret;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  307  	key_ref_t kref;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  308  	struct key *key;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  309  =
+
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  310  	if (!sed_opal_keyring)
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  311  		return -ENOKEY;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  312  =
+
+> 8a2b115580e8f7c Greg Joyce  2022-07-05 @313  	kref =3D
+> keyring_search(make_key_ref(sed_opal_keyring, true),
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  314  		&key_type_user,
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  315  		key_name,
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  316  		true);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  317  =
+
+> 8a2b115580e8f7c Greg Joyce  2022-07-05 @318  	if (IS_ERR(kref)) {
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  319  		ret =3D
+> PTR_ERR(kref);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  320  	} else {
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  321  		key =3D
+> key_ref_to_ptr(kref);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05 @322  		down_read(&key-
+> > sem);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  323  		ret =3D
+> key_validate(key);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  324  		if (ret =3D=3D 0) {
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  325  			if
+> (buflen > key->datalen)
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  326  				=
+
+> buflen =3D key->datalen;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  327  =
+
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  328  			ret =3D
+> key->type->read(key, (char *)buffer, buflen);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  329  		}
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  330  		up_read(&key-
+> > sem);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  331  =
+
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  332  		key_ref_put(kre
+> f);
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  333  	}
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  334  =
+
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  335  	return ret;
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  336  }
+> 8a2b115580e8f7c Greg Joyce  2022-07-05  337  =
+
+>=20
+
+--===============2548854314955145825==--
 
