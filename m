@@ -1,91 +1,107 @@
-Content-Type: multipart/mixed; boundary="===============3993388250987989695=="
+Content-Type: multipart/mixed; boundary="===============2911463543427474636=="
 MIME-Version: 1.0
-From: Darrick J. Wong <djwong@kernel.org>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
 Subject: Re: [xfs] 345a4666a7: vm-scalability.throughput -91.7% regression
-Date: Thu, 21 Jul 2022 19:21:39 -0700
-Message-ID: <YtoJs8mv7vle8Mhh@magnolia>
-In-Reply-To: <YtoG+kcaC8yfMEZW@xsang-OptiPlex-9020>
+Date: Fri, 22 Jul 2022 10:34:38 +0800
+Message-ID: <YtoMvmz21pM2LUsR@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3993388250987989695==
+--===============2911463543427474636==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 22, 2022 at 10:10:02AM +0800, Oliver Sang wrote:
-> Hi Darrick, Hi Dave, and all,
+
+(removed public list)
+
+Hi Darrick, Hi Dave,
+
+On Thu, Jul 21, 2022 at 02:38:51PM -0700, Darrick J. Wong wrote:
+> On Fri, Jul 22, 2022 at 07:33:37AM +1000, Dave Chinner wrote:
+> > On Thu, Jul 21, 2022 at 11:08:38PM +0800, kernel test robot wrote:
+> > > =
+
+> > > (just FYI for the possible performance impact of disabling large foli=
+os,
+> > > our config, as attached, set default N to XFS_LARGE_FOLIOS)
+> > > =
+
+> > > =
+
+> > > Greeting,
+> > > =
+
+> > > FYI, we noticed a -91.7% regression of vm-scalability.throughput due =
+to commit:
+> > > =
+
+> > > =
+
+> > > commit: 345a4666a721a81c343186768cdd95817767195f ("xfs: disable large=
+ folios except for developers")
+> > =
+
+> > Say what? I've never seen that change go past on a public list...
+
+we actually not only monitor mailing list, we also monitor public repos,
+such like this report is upon
+   https://git.kernel.org/cgit/linux/kernel/git/djwong/xfs-linux.git
+
+and currently it seems hard to us to differentiate if new changes in a repo
+will go to a public list. any suggestion?
+
+> > =
+
+> > > https://git.kernel.org/cgit/linux/kernel/git/djwong/xfs-linux.git xfs=
+-5.20-merge
+> > =
+
+> > Oh, it's in a developer's working tree, not something that has been
+> > proposed for review let alone been merged.
 > =
 
-> sorry for this report is annoying according to Darrick and Dave's comments
-> below.
-> we will investigate this case and refine our report process.
+> Correct, djwong-dev has a patch so that I can disable multipage folios
+> so that I could get other QA work done while willy and I try to sort out
+> the generic/522 corruption problems.
 
-FWIW, you can still send /me/ reports about the xfs development patches
-I post to djwong/xfs-linux.git, but it's not necessary to cc linux-xfs
-with that, since most of those patches are still under development
-and/or working their way through patch review.
+we monitor all branches on
+   https://git.kernel.org/cgit/linux/kernel/git/djwong/xfs-linux.git
+now.
 
---D
+any branch pattern you could kindly share with us that we could ignore?
+or should we only send reports to limited person (such like repo owner, pat=
+ch
+autor, etc.) for some particular branches?
+
+it's kind of hard for us to determine from branch names for now, since
+this repo has lots of branches:
+
+djwong-xfs$ git branch | wc -l
+295
 
 > =
 
-> On Thu, Jul 21, 2022 at 02:38:51PM -0700, Darrick J. Wong wrote:
-> > On Fri, Jul 22, 2022 at 07:33:37AM +1000, Dave Chinner wrote:
-> > > On Thu, Jul 21, 2022 at 11:08:38PM +0800, kernel test robot wrote:
-> > > > =
+> > So why is this report being sent to lkml, linux-xfs, etc as if it
+> > was a change merged into an upstream tree rather than just the
+> > developer who owns the tree the commit is in?
+> =
 
-> > > > (just FYI for the possible performance impact of disabling large fo=
-lios,
-> > > > our config, as attached, set default N to XFS_LARGE_FOLIOS)
-> > > > =
+> I was wondering that myself.
 
-> > > > =
+sorry for this, if you could give us some guidances based on above question=
+s,
+we could refine our report process to avoid this happen again. Thanks a lot!
 
-> > > > Greeting,
-> > > > =
+> =
 
-> > > > FYI, we noticed a -91.7% regression of vm-scalability.throughput du=
-e to commit:
-> > > > =
+> --D
+> =
 
-> > > > =
+> > -Dave.
+> > -- =
 
-> > > > commit: 345a4666a721a81c343186768cdd95817767195f ("xfs: disable lar=
-ge folios except for developers")
-> > > =
-
-> > > Say what? I've never seen that change go past on a public list...
-> > > =
-
-> > > > https://git.kernel.org/cgit/linux/kernel/git/djwong/xfs-linux.git x=
-fs-5.20-merge
-> > > =
-
-> > > Oh, it's in a developer's working tree, not something that has been
-> > > proposed for review let alone been merged.
-> > =
-
-> > Correct, djwong-dev has a patch so that I can disable multipage folios
-> > so that I could get other QA work done while willy and I try to sort out
-> > the generic/522 corruption problems.
-> > =
-
-> > > So why is this report being sent to lkml, linux-xfs, etc as if it
-> > > was a change merged into an upstream tree rather than just the
-> > > developer who owns the tree the commit is in?
-> > =
-
-> > I was wondering that myself.
-> > =
-
-> > --D
-> > =
-
-> > > -Dave.
-> > > -- =
-
-> > > Dave Chinner
-> > > david(a)fromorbit.com
---===============3993388250987989695==--
+> > Dave Chinner
+> > david(a)fromorbit.com
+--===============2911463543427474636==--
 
