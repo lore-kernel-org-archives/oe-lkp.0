@@ -1,42 +1,30 @@
-Content-Type: multipart/mixed; boundary="===============2586895994887740430=="
+Content-Type: multipart/mixed; boundary="===============0693759761351745283=="
 MIME-Version: 1.0
-From: Christoph Lameter <cl@gentwo.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To: lkp@lists.01.org
-Subject: Re: [mm/slub] 3616799128: BUG_kmalloc-#(Not_tainted):kmalloc_Redzone_overwritten
-Date: Mon, 01 Aug 2022 10:13:04 +0200
-Message-ID: <alpine.DEB.2.22.394.2208011011120.2493025@gentwo.de>
-In-Reply-To: <YueFZm1JHDZOKVw/@feng-skl>
+Subject: Re: [random] 9fdfe09a52: BUG:sleeping_function_called_from_invalid_context_at_include/linux/percpu-rwsem.h
+Date: Mon, 01 Aug 2022 11:38:23 +0200
+Message-ID: <YuefD4+Z15AFgkkE@linutronix.de>
+In-Reply-To: <YuYggHh84ArSJY6w@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2586895994887740430==
+--===============0693759761351745283==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 1 Aug 2022, Feng Tang wrote:
+On 2022-07-31 14:26:08 [+0800], kernel test robot wrote:
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> =
 
-> > Or does it make sense to prohibit KASAN+SLUB_DEBUG combination? Does
-> > SLUB_DEBUG add anything on top of KASAN?
->
-> I did a quick glance, seems the KASAN will select SLUB_DEBUG in
-> many cases, as shown in the lib/Kconfig.kasan:
->
-> 	config KASAN_GENERIC
-> 		...
-> 		select SLUB_DEBUG if SLUB
->
-> 	config KASAN_SW_TAGS
-> 		...
-> 		select SLUB_DEBUG if SLUB
+> =
 
-SLUB_DEBUG is on by default on all distros. This just means that debugging
-support is compiled in but not activated. Kasan etc could depend on
-SLUB_DEBUG. Without SLUB_DEBUG the debugging infrastructure of SLUB that
-is use by Kasan is not included.
+> [   11.543105][    C1] BUG: sleeping function called from invalid context=
+ at include/linux/percpu-rwsem.h:49
 
-If you want to enable debugging on bootup then you need to set
-SLUB_DEBUG_ON.
+Thank you for note, this patch has been dropped.
 
-
---===============2586895994887740430==--
+Sebastian
+--===============0693759761351745283==--
 
