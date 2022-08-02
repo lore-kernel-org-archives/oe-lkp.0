@@ -1,19 +1,19 @@
-Content-Type: multipart/mixed; boundary="===============0188815015275832389=="
+Content-Type: multipart/mixed; boundary="===============1087638935793162617=="
 MIME-Version: 1.0
 From: Dmitry Vyukov <dvyukov@google.com>
 To: lkp@lists.01.org
 Subject: Re: [mm/slub] 3616799128: BUG_kmalloc-#(Not_tainted):kmalloc_Redzone_overwritten
-Date: Tue, 02 Aug 2022 12:30:44 +0200
-Message-ID: <CACT4Y+asjzrBu8ogRDt9hYYaAB3tZ2pK5HBkzkuMp106vQwKWQ@mail.gmail.com>
+Date: Tue, 02 Aug 2022 12:31:42 +0200
+Message-ID: <CACT4Y+aJOLZpdHhYLQEwzmUkLTCDSQWDqs3wN_J_ZcTouGqO=A@mail.gmail.com>
 In-Reply-To: <85ec4ea8-ae4c-3592-5491-3db6d0ad8c59@suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0188815015275832389==
+--===============1087638935793162617==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-.On Tue, 2 Aug 2022 at 11:43, Vlastimil Babka <vbabka@suse.cz> wrote:
+On Tue, 2 Aug 2022 at 11:43, Vlastimil Babka <vbabka@suse.cz> wrote:
 >
 > On 8/2/22 09:06, Dmitry Vyukov wrote:
 > > On Tue, 2 Aug 2022 at 08:55, Feng Tang <feng.tang@intel.com> wrote:
@@ -92,11 +92,8 @@ the
 > >> help to verify this.
 >
 > Is there maybe some KASAN macro we can use instead of hardcoding 32?
-
-kasan_free_meta is placed in the object data after freeing, so it can
-be sizeof(kasan_free_meta)
-
-
+>
+> >
 > > Where is set_orig_size() function defined? Don't see it upstream nor
 > > in linux-next.
 > > This looks fine but my only concern is that this should not increase
@@ -109,7 +106,10 @@ ed.
 > It just fakes a bit the size that was passed to kmalloc() and which we ne=
 wly
 > store (thanks to Feng's patches) for statistics and debugging purposes.
->
+
+Then it looks good to me. Thanks for double checking.
+
+
 > >> Thanks,
 > >> Feng
 > >>
@@ -131,5 +131,5 @@ ups "kasan-dev" group.
 > >> To view this discussion on the web visit https://groups.google.com/d/m=
 sgid/kasan-dev/YujKCxu2lJJFm73P%40feng-skl.
 >
---===============0188815015275832389==--
+--===============1087638935793162617==--
 
