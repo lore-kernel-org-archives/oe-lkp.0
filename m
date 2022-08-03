@@ -1,154 +1,145 @@
-Content-Type: multipart/mixed; boundary="===============2347942146433609659=="
+Content-Type: multipart/mixed; boundary="===============7598676756933848506=="
 MIME-Version: 1.0
-From: Dmitry Vyukov <dvyukov@google.com>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/slub] 3616799128: BUG_kmalloc-#(Not_tainted):kmalloc_Redzone_overwritten
-Date: Tue, 02 Aug 2022 16:38:59 +0200
-Message-ID: <CACT4Y+Y6M5MqSGC0MERFqkxgKYK+LrMYvW5xPH5kUA2mFh5_Xw@mail.gmail.com>
-In-Reply-To: <YukoZEm4Q6CSEKKj@feng-skl>
+Subject: Re: [xfs] 016a23388c: stress-ng.xattr.ops_per_sec 58.4% improvement
+Date: Wed, 03 Aug 2022 11:02:46 +1000
+Message-ID: <20220803010246.GB3600936@dread.disaster.area>
+In-Reply-To: <9d4e37e2-417e-7a2f-a187-5c7b680c6777@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2347942146433609659==
+--===============7598676756933848506==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2 Aug 2022 at 15:37, Feng Tang <feng.tang@intel.com> wrote:
->
-> On Tue, Aug 02, 2022 at 06:30:44PM +0800, Dmitry Vyukov wrote:
-> > .On Tue, 2 Aug 2022 at 11:43, Vlastimil Babka <vbabka@suse.cz> wrote:
-> > >
-> > > On 8/2/22 09:06, Dmitry Vyukov wrote:
-> > > > On Tue, 2 Aug 2022 at 08:55, Feng Tang <feng.tang@intel.com> wrot=
-e:
-> > > >>
-> > > >> On Mon, Aug 01, 2022 at 10:23:23PM +0800, Vlastimil Babka wrote:
-> > > >> > On 8/1/22 08:21, Feng Tang wrote:
-> > > >> [snip]
-> > > >> > > Cc kansan  mail list.
-> > > >> > >
-> > > >> > > This is really related with KASAN debug, that in free path, so=
-me
-> > > >> > > kmalloc redzone ([orig_size+1, object_size]) area is written by
-> > > >> > > kasan to save free meta info.
-> > > >> > >
-> > > >> > > The callstack is:
-> > > >> > >
-> > > >> > >   kfree
-> > > >> > >     slab_free
-> > > >> > >       slab_free_freelist_hook
-> > > >> > >           slab_free_hook
-> > > >> > >             __kasan_slab_free
-> > > >> > >               ____kasan_slab_free
-> > > >> > >                 kasan_set_free_info
-> > > >> > >                   kasan_set_track
-> > > >> > >
-> > > >> > > And this issue only happens with "kmalloc-16" slab. Kasan has 2
-> > > >> > > tracks: alloc_track and free_track, for x86_64 test platform, =
-most
-> > > >> > > of the slabs will reserve space for alloc_track, and reuse the
-> > > >> > > 'object' area for free_track.  The kasan free_track is 16 bytes
-> > > >> > > large, that it will occupy the whole 'kmalloc-16's object area,
-> > > >> > > so when kmalloc-redzone is enabled by this patch, the 'overwri=
-tten'
-> > > >> > > error is triggered.
-> > > >> > >
-> > > >> > > But it won't hurt other kmalloc slabs, as kasan's free meta wo=
-n't
-> > > >> > > conflict with kmalloc-redzone which stay in the latter part of
-> > > >> > > kmalloc area.
-> > > >> > >
-> > > >> > > So the solution I can think of is:
-> > > >> > > * skip the kmalloc-redzone for kmalloc-16 only, or
-> > > >> > > * skip kmalloc-redzone if kasan is enabled, or
-> > > >> > > * let kasan reserve the free meta (16 bytes) outside of object
-> > > >> > >   just like for alloc meta
-> > > >> >
-> > > >> > Maybe we could add some hack that if both kasan and SLAB_STORE_U=
-SER is
-> > > >> > enabled, we bump the stored orig_size from <16 to 16? Similar to=
- what
-> > > >> > __ksize() does.
-> > > >>
-> > > >> How about the following patch:
-> > > >>
-> > > >> ---
-> > > >> diff --git a/mm/slub.c b/mm/slub.c
-> > > >> index added2653bb0..33bbac2afaef 100644
-> > > >> --- a/mm/slub.c
-> > > >> +++ b/mm/slub.c
-> > > >> @@ -830,6 +830,16 @@ static inline void set_orig_size(struct kmem_=
-cache *s,
-> > > >>         if (!slub_debug_orig_size(s))
-> > > >>                 return;
-> > > >>
-> > > >> +#ifdef CONFIG_KASAN
-> > > >> +       /*
-> > > >> +        * When kasan is enabled, it could save its free meta data=
- in the
-> > > >> +        * start part of object area, so skip the kmalloc redzone =
-check
-> > > >> +        * for small kmalloc slabs to avoid the data conflict.
-> > > >> +        */
-> > > >> +       if (s->object_size <=3D 32)
-> > > >> +               orig_size =3D s->object_size;
-> > > >> +#endif
-> > > >> +
-> > > >>         p +=3D get_info_end(s);
-> > > >>         p +=3D sizeof(struct track) * 2;
-> > > >>
-> > > >> I extend the size to 32 for potential's kasan meta data size incre=
-ase.
-> > > >> This is tested locally, if people are OK with it, I can ask for 0D=
-ay's
-> > > >> help to verify this.
-> > >
-> > > Is there maybe some KASAN macro we can use instead of hardcoding 32?
-> >
-> > kasan_free_meta is placed in the object data after freeing, so it can
-> > be sizeof(kasan_free_meta)
->
-> 'kasan_free_meta' is defined in mm/kasan/kasan.h, to use it we need to
-> include "../kasan/kasan.h" in slub.c, or move its definition to
-> "include/linux/kasan.h"
->
-> Another idea is to save the info in kasan_info, like:
->
-> ---
-> diff --git a/include/linux/kasan.h b/include/linux/kasan.h
-> index b092277bf48d..97e899948d0b 100644
-> --- a/include/linux/kasan.h
-> +++ b/include/linux/kasan.h
-> @@ -100,6 +100,7 @@ static inline bool kasan_has_integrated_init(void)
->  struct kasan_cache {
->         int alloc_meta_offset;
->         int free_meta_offset;
-> +       int free_meta_size;
+On Tue, Aug 02, 2022 at 02:36:00PM +0800, Yin, Fengwei wrote:
+> Hi Dave,
+> =
 
-Storing it here looks fine to me.
-But I would name it based on the meaning for external users (i.e. that
-many bytes are occupied by kasan in freed objects). For some caches
-KASAN does not store anything in freed objects at all.
+> On 7/22/2022 6:01 AM, Dave Chinner wrote:
+> > A huge amount of spinlock contention in the xlog_commit_cil() path
+> > went away. The commit identified doesn't remove/change any
+> > spinlocks, it actually adds more overhead to the critical section of
+> > the above spinlock in preparation for removing said spinlocks.
+> > =
 
+> > That removal happens in the next commit in that series - c0fb4765c508 (=
+"xfs:
+> > convert CIL to unordered per cpu lists") - so I'd be expecting a
+> > bisect to demonstrate that the spinlock contention goes away with
+> > the commit that removed the spinlocks (as it does in all the testing
+> > of this I've done over the past 2 years), not the commit this bisect
+> > identified. Hence I think the bisect went wrong somewhere...
+> =
 
+> We did some investigation and got:
+> =
 
->         bool is_kmalloc;
->  };
->
-> diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-> index c40c0e7b3b5f..7bd82c5ec264 100644
-> --- a/mm/kasan/common.c
-> +++ b/mm/kasan/common.c
-> @@ -178,6 +178,8 @@ void __kasan_cache_create(struct kmem_cache *cache, u=
-nsigned int *size,
->                 return;
->         }
->
-> +       cache->kasan_info.free_meta_size =3D sizeof(struct free_meta_offs=
-et);
+> commit:
+>   df7a4a2134b0a ("xfs: convert CIL busy extents to per-cpu")
+>   016a23388cdcb ("xfs: Add order IDs to log items in CIL")
+>   c0fb4765c5086 ("xfs: convert CIL to unordered per cpu lists")
+> =
+
+> df7a4a2134b0a201 016a23388cdcb2740deb1379dc4 c0fb4765c5086cfd00f1158f5f4
+> ---------------- --------------------------- ---------------------------
+>          %stddev     %change         %stddev     %change         %stddev
+>              \          |                \          |                \
+>      62.07            +0.0%      62.09            -0.0%      62.06       =
+ stress-ng.time.elapsed_time
+>      62.07            +0.0%      62.09            -0.0%      62.06       =
+ stress-ng.time.elapsed_time.max
+>       2237            +0.0%       2237            +0.0%       2237       =
+ stress-ng.time.file_system_inputs
+>       1842 =C2=B1  4%     +16.9%       2152 =C2=B1  3%     +17.6%       2=
+166        stress-ng.time.involuntary_context_switches
+>     551.00            -0.3%     549.10            -0.3%     549.40       =
+ stress-ng.time.major_page_faults
+>       6376            -1.1%       6305 =C2=B1  2%      +0.6%       6416  =
+      stress-ng.time.maximum_resident_set_size
+>       9704            -0.3%       9676            -0.1%       9691       =
+ stress-ng.time.minor_page_faults
+>       4096            +0.0%       4096            +0.0%       4096       =
+ stress-ng.time.page_size
+>     841.90            -2.4%     821.70            -2.4%     821.90       =
+ stress-ng.time.percent_of_cpu_this_job_got
+>     512.83            -3.4%     495.24            -3.6%     494.18       =
+ stress-ng.time.system_time
+>      10.05 =C2=B1  8%     +52.3%      15.30 =C2=B1  3%     +61.1%      16=
+.19 =C2=B1  2%  stress-ng.time.user_time
+>       2325 =C2=B1 16%     +66.5%       3873 =C2=B1  7%     +70.3%       3=
+962 =C2=B1  6%  stress-ng.time.voluntary_context_switches
+>       1544 =C2=B1  4%     +54.4%       2385           +63.9%       2531  =
+      stress-ng.xattr.ops
+> =
+
+> Yes. commit c0fb4765c5086 ("xfs: convert CIL to unordered per cpu lists")
+> could bring performance gain also. But the most performance gain (54.4%)
+> is from commit 016a23388cdcb ("xfs: Add order IDs to log items in CIL").
+> =
+
+> =
+
+> Based on commit 016a23388cdcb and add following change:
+> =
+
+> diff --git a/fs/xfs/xfs_log_cil.c b/fs/xfs/xfs_log_cil.c
+> index 6bc540898e3a..7c6c91a0a12d 100644
+> --- a/fs/xfs/xfs_log_cil.c
+> +++ b/fs/xfs/xfs_log_cil.c
+> @@ -659,9 +659,14 @@ xlog_cil_insert_items(
+>                         continue;
+>  =
+
+>                 lip->li_order_id =3D order;
+> -               if (!list_empty(&lip->li_cil))
+> -                       continue;
+> -               list_add_tail(&lip->li_cil, &cil->xc_cil);
 > +
->         /*
->          * Add free meta into redzone when it's not possible to store
->          * it in the object. This is the case when:
---===============2347942146433609659==--
+> +               /*
+> +                * Only move the item if it isn't already at the tail. Th=
+is is
+> +                * to prevent a transient list_empty() state when reinser=
+ting
+> +                * an item that is already the only item in the CIL.
+> +                */
+> +               if (!list_is_last(&lip->li_cil, &cil->xc_cil))
+> +                       list_move_tail(&lip->li_cil, &cil->xc_cil);
+>         }
+> =
+
+> The performance will drop to the same level as commit df7a4a2134b0a
+>  ("xfs: convert CIL busy extents to per-cpu"):
+
+Thanks for looking into this.
+
+This looks like a case of the workload being right at the threshold
+of catastrophic cache line contention breakdown on this workload.
+i.e.  a single extra exclusive cache miss inside the spin lock
+critical region is sufficient overload the memory bus bandwidth and
+so the cacheline contention on the lock from nothing to "all the
+spare CPU time is spent contending on the spin lock cache line".
+
+IOWs, the lock contention problem doesn't go away with this commit,
+it just falls back under the critical threshold where the cache
+coherency protocol runs out of memory bus bandwidth bouncing dirty
+cachelines around all the CPU cores and so causes spinlock overhead
+to go from linear cost to exponential cost.
+
+That a single cacheline miss avoids all the spinlock contention is
+just pure luck - it'll come back if other work is being done on the
+machine that consumes enough memory bandwidth to push this back over
+the edge. Hence the real fix for the spinlock contention problem is
+still the patch I pointed out that removes the spinlocks
+altogether...
+
+Cheers,
+
+Dave.
+-- =
+
+Dave Chinner
+david(a)fromorbit.com
+--===============7598676756933848506==--
 
