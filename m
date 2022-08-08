@@ -1,201 +1,210 @@
-Content-Type: multipart/mixed; boundary="===============8774406912037042561=="
+Content-Type: multipart/mixed; boundary="===============8772877371845268052=="
 MIME-Version: 1.0
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
-Date: Mon, 08 Aug 2022 07:52:17 -0700
-Message-ID: <1f498d4a-f93f-ceb4-b713-753196e5e08d@opensource.wdc.com>
-In-Reply-To: <YuzPMMnnY739Tnit@xsang-OptiPlex-9020>
+Subject: Re: [ACPI] 1d52f10917: BUG:KASAN:use-after-free_in_strlen
+Date: Mon, 08 Aug 2022 18:54:49 +0200
+Message-ID: <57f48ba3-d01c-f3d8-8e33-65d3cd9a349e@intel.com>
+In-Reply-To: <Yu+z9IMoxRrDTjpd@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8774406912037042561==
+--===============8772877371845268052==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2022/08/05 1:05, kernel test robot wrote:
-> =
+Hi Sakari,
 
-> =
-
+On 8/7/2022 2:45 PM, kernel test robot wrote:
+>
 > Greeting,
-> =
-
-> FYI, we noticed a -15.0% regression of stress-ng.copy-file.ops_per_sec du=
-e to commit:
-> =
-
-> =
-
-> commit: 0568e6122574dcc1aded2979cd0245038efe22b6 ("ata: libata-scsi: cap =
-ata_device->max_sectors according to shost->max_sectors")
+>
+> FYI, we noticed the following commit (built with gcc-11):
+>
+> commit: 1d52f10917a751f90e269a0ed9b6cca60dbe0300 ("ACPI: property: Tie da=
+ta nodes to acpi handles")
 > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> =
-
-> in testcase: stress-ng
-> on test machine: 96 threads 2 sockets Ice Lake with 256G memory
+>
+> in testcase: xsave-test
+> version: xsave-test-x86_64-c2e44fa-1_20220609
 > with following parameters:
-> =
-
-> 	nr_threads: 10%
-> 	disk: 1HDD
-> 	testtime: 60s
-> 	fs: f2fs
-> 	class: filesystem
-> 	test: copy-file
-> 	cpufreq_governor: performance
-> 	ucode: 0xb000280
-
-Without knowing what the device adapter is, hard to say where the problem i=
-s. I
-suspect that with the patch applied, we may be ending up with a small defau=
-lt
-max_sectors value, causing overhead due to more commands than necessary.
-
-Will check what I see with my test rig.
-
-> =
-
-> =
-
-> =
-
-> =
-
+>
+> 	ucode: 0xec
+>
+>
+>
+> on test machine: 12 threads 1 sockets Intel(R) Core(TM) i7-8700 CPU @ 3.2=
+0GHz with 16G memory
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+>
 > If you fix the issue, kindly add following tag
 > Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
 
-> =
+The crash below occurs right after a "Can't tag data node" message from =
 
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
-> =
+acpi_tie_nondev_subnodes() and I'm really unsure why acpi_attach_data() =
 
-> =
+has failed here, because none of the arguments is NULL.
 
+Can you have a look at this, please?
+
+
+>
+> [ 1.735553][ T1] BUG: KASAN: use-after-free in strlen (lib/string.c:487)
+> [    1.735787][    T1] Read of size 1 at addr ffff8881036e8820 by task sw=
+apper/0/1
+> [    1.735787][    T1]
+> [    1.735787][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-r=
+c8-00002-g1d52f10917a7 #1
+> [    1.735787][    T1] Hardware name: Dell Inc. Vostro 3670/0HVPDY, BIOS =
+1.5.11 12/24/2018
+> [    1.735787][    T1] Call Trace:
+> [    1.735787][    T1]  <TASK>
+> [ 1.735787][ T1] ? strlen (lib/string.c:487)
+> [ 1.735787][ T1] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1))
+> [ 1.735787][ T1] print_address_description+0x1f/0x200
+> [ 1.735787][ T1] ? strlen (lib/string.c:487)
+> [ 1.735787][ T1] print_report.cold (mm/kasan/report.c:430)
+> [ 1.735787][ T1] ? acpi_ns_opens_scope (drivers/acpi/acpica/nsutils.c:638)
+> [ 1.735787][ T1] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:=
+202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qspi=
+nlock.h:111 include/linux/spinlock.h:185 include/linux/spinlock_api_smp.h:1=
+11 kernel/locking/spinlock.c:162)
+> [ 1.735787][ T1] kasan_report (mm/kasan/report.c:162 mm/kasan/report.c:49=
+3)
+> [ 1.735787][ T1] ? strlen (lib/string.c:487)
+> [ 1.735787][ T1] strlen (lib/string.c:487)
+> [ 1.735787][ T1] kstrdup (mm/util.c:61)
+> [ 1.735787][ T1] kobject_set_name_vargs (lib/kobject.c:257)
+> [ 1.735787][ T1] ? kobject_init (arch/x86/include/asm/atomic.h:41 include=
+/linux/atomic/atomic-instrumented.h:42 include/linux/refcount.h:136 include=
+/linux/kref.h:31 lib/kobject.c:184 lib/kobject.c:180 lib/kobject.c:336)
+> [ 1.735787][ T1] kobject_init_and_add (lib/kobject.c:353 lib/kobject.c:44=
+1)
+> [ 1.735787][ T1] ? kobject_create_and_add (lib/kobject.c:434)
+> [ 1.735787][ T1] ? acpi_get_data (drivers/acpi/acpica/nsxfname.c:48)
+> [ 1.735787][ T1] ? sysfs_create_file_ns (fs/sysfs/file.c:347)
+> [ 1.735787][ T1] acpi_expose_nondev_subnodes (drivers/acpi/device_sysfs.c=
+:100)
+> [ 1.735787][ T1] acpi_device_setup_files (drivers/acpi/device_sysfs.c:598)
+> [ 1.735787][ T1] ? acpi_device_uevent_modalias (drivers/acpi/device_sysfs=
+.c:517)
+> [ 1.735787][ T1] __acpi_device_add (drivers/acpi/scan.c:745)
+> [ 1.735787][ T1] ? acpi_add_id (drivers/acpi/scan.c:460)
+> [ 1.735787][ T1] ? acpi_scan_check_dep (drivers/acpi/scan.c:674)
+> [ 1.735787][ T1] ? up (include/linux/list.h:292 kernel/locking/semaphore.=
+c:188)
+> [ 1.735787][ T1] ? acpi_ns_attach_data (drivers/acpi/acpica/nsobject.c:33=
+6)
+> [ 1.735787][ T1] ? acpi_os_signal_semaphore (drivers/acpi/osl.c:1307)
+> [ 1.735787][ T1] ? acpi_ut_release_mutex (drivers/acpi/acpica/utmutex.c:3=
+29)
+> [ 1.735787][ T1] acpi_add_single_object (drivers/acpi/scan.c:1868)
+> [ 1.735787][ T1] ? up (include/linux/list.h:292 kernel/locking/semaphore.=
+c:188)
+> [ 1.735787][ T1] acpi_bus_check_add (drivers/acpi/scan.c:2099)
+> [ 1.735787][ T1] ? acpi_add_single_object (drivers/acpi/scan.c:2052)
+> [ 1.735787][ T1] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:=
+202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qspi=
+nlock.h:111 include/linux/spinlock.h:185 include/linux/spinlock_api_smp.h:1=
+11 kernel/locking/spinlock.c:162)
+> [ 1.735787][ T1] ? _raw_read_unlock_irqrestore (kernel/locking/spinlock.c=
+:161)
+> [ 1.735787][ T1] ? acpi_scan_match_handler (drivers/acpi/scan.c:1936 driv=
+ers/acpi/scan.c:1952)
+> [ 1.735787][ T1] ? up (include/linux/list.h:292 kernel/locking/semaphore.=
+c:188)
+> [ 1.735787][ T1] acpi_ns_walk_namespace (drivers/acpi/acpica/nswalk.c:233)
+> [ 1.735787][ T1] ? acpi_bus_check_add_2 (drivers/acpi/scan.c:2113)
+> [ 1.735787][ T1] ? acpi_bus_check_add_2 (drivers/acpi/scan.c:2113)
+> [ 1.735787][ T1] acpi_walk_namespace (drivers/acpi/acpica/nsxfeval.c:606 =
+drivers/acpi/acpica/nsxfeval.c:554)
+> [ 1.735787][ T1] acpi_bus_scan (drivers/acpi/scan.c:2428)
+> [ 1.735787][ T1] ? acpi_bus_check_add_1 (drivers/acpi/scan.c:2420)
+> [ 1.735787][ T1] acpi_scan_init (drivers/acpi/scan.c:2600)
+> [ 1.735787][ T1] ? acpi_match_madt (drivers/acpi/scan.c:2550)
+> [ 1.735787][ T1] ? hest_ghes_dev_register (drivers/acpi/apei/hest.c:233)
+> [ 1.735787][ T1] ? acpi_install_address_space_handler (drivers/acpi/acpic=
+a/evxfregn.c:88)
+> [ 1.735787][ T1] acpi_init (drivers/acpi/bus.c:1405)
+> [ 1.735787][ T1] ? acpi_bus_init (drivers/acpi/bus.c:1379)
+> [ 1.735787][ T1] ? acpi_bus_init (drivers/acpi/bus.c:1379)
+> [ 1.735787][ T1] do_one_initcall (init/main.c:1295)
+> [ 1.735787][ T1] ? trace_event_raw_event_initcall_level (init/main.c:1286)
+> [ 1.735787][ T1] ? parse_one (kernel/params.c:170)
+> [ 1.735787][ T1] ? sysvec_call_function_single (arch/x86/kernel/apic/apic=
+.c:1106)
+> [ 1.735787][ T1] ? kasan_unpoison (mm/kasan/shadow.c:108 mm/kasan/shadow.=
+c:142)
+> [ 1.735787][ T1] do_initcalls (init/main.c:1367 init/main.c:1384)
+> [ 1.735787][ T1] kernel_init_freeable (init/main.c:1614)
+> [ 1.735787][ T1] ? console_on_rootfs (init/main.c:1581)
+> [ 1.735787][ T1] ? usleep_range_state (kernel/time/timer.c:1897)
+> [ 1.735787][ T1] ? _raw_spin_lock_bh (kernel/locking/spinlock.c:169)
+> [ 1.735787][ T1] ? rest_init (init/main.c:1491)
+> [ 1.735787][ T1] ? rest_init (init/main.c:1491)
+> [ 1.735787][ T1] kernel_init (init/main.c:1501)
+> [ 1.735787][ T1] ret_from_fork (arch/x86/entry/entry_64.S:306)
+> [    1.735787][    T1]  </TASK>
+> [    1.735787][    T1]
+> [    1.735787][    T1] Allocated by task 1:
+> [ 1.735787][ T1] kasan_save_stack (mm/kasan/common.c:39)
+> [ 1.735787][ T1] __kasan_kmalloc (mm/kasan/common.c:45 mm/kasan/common.c:=
+436 mm/kasan/common.c:515 mm/kasan/common.c:524)
+> [ 1.735787][ T1] acpi_ut_initialize_buffer (drivers/acpi/acpica/utalloc.c=
+:327)
+> [ 1.735787][ T1] acpi_evaluate_object (drivers/acpi/acpica/nsxfeval.c:400)
+> [ 1.735787][ T1] acpi_evaluate_object_typed (drivers/acpi/acpica/nsxfeval=
+.c:84)
+> [ 1.735787][ T1] acpi_init_properties (drivers/acpi/property.c:447)
+> [ 1.735787][ T1] acpi_init_device_object (drivers/acpi/scan.c:1105 driver=
+s/acpi/scan.c:1790)
+> [ 1.735787][ T1] acpi_add_single_object (drivers/acpi/scan.c:1844)
+> [ 1.735787][ T1] acpi_bus_check_add (drivers/acpi/scan.c:2099)
+> [ 1.735787][ T1] acpi_ns_walk_namespace (drivers/acpi/acpica/nswalk.c:233)
+> [ 1.735787][ T1] acpi_walk_namespace (drivers/acpi/acpica/nsxfeval.c:606 =
+drivers/acpi/acpica/nsxfeval.c:554)
+> [ 1.735787][ T1] acpi_bus_scan (drivers/acpi/scan.c:2428)
+> [ 1.735787][ T1] acpi_scan_init (drivers/acpi/scan.c:2600)
+> [ 1.735787][ T1] acpi_init (drivers/acpi/bus.c:1405)
+> [ 1.735787][ T1] do_one_initcall (init/main.c:1295)
+> [ 1.735787][ T1] do_initcalls (init/main.c:1367 init/main.c:1384)
+> [ 1.735787][ T1] kernel_init_freeable (init/main.c:1614)
+> [ 1.735787][ T1] kernel_init (init/main.c:1501)
+> [ 1.735787][ T1] ret_from_fork (arch/x86/entry/entry_64.S:306)
+> [    1.735787][    T1]
+> [    1.735787][    T1] Freed by task 1:
+> [ 1.735787][ T1] kasan_save_stack (mm/kasan/common.c:39)
+> [ 1.735787][ T1] kasan_set_track (mm/kasan/common.c:45)
+> [ 1.735787][ T1] kasan_set_free_info (mm/kasan/generic.c:372)
+> [ 1.735787][ T1] __kasan_slab_free (mm/kasan/common.c:368 mm/kasan/common=
+.c:328 mm/kasan/common.c:374)
+> [ 1.735787][ T1] kfree (mm/slub.c:1780 mm/slub.c:3536 mm/slub.c:4584)
+> [ 1.735787][ T1] acpi_init_properties (drivers/acpi/property.c:467)
+> [ 1.735787][ T1] acpi_init_device_object (drivers/acpi/scan.c:1105 driver=
+s/acpi/scan.c:1790)
+> [ 1.735787][ T1] acpi_add_single_object (drivers/acpi/scan.c:1844)
+>
+>
 > To reproduce:
-> =
+>
+>          git clone https://github.com/intel/lkp-tests.git
+>          cd lkp-tests
+>          sudo bin/lkp install job.yaml           # job file is attached i=
+n this email
+>          bin/lkp split-job --compatible job.yaml # generate the yaml file=
+ for lkp run
+>          sudo bin/lkp run generated-yaml-file
+>
+>          # if come across any failure that blocks the test,
+>          # please remove ~/.lkp and /lkp dir to run from a clean state.
+>
+>
+>
 
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in=
- this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file =
-for lkp run
->         sudo bin/lkp run generated-yaml-file
-> =
-
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
-> =
-
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> class/compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_gr=
-oup/test/testcase/testtime/ucode:
->   filesystem/gcc-11/performance/1HDD/f2fs/x86_64-rhel-8.3/10%/debian-11.1=
--x86_64-20220510.cgz/lkp-icl-2sp1/copy-file/stress-ng/60s/0xb000280
-> =
-
-> commit: =
-
->   4cbfca5f77 ("scsi: scsi_transport_sas: cap shost opt_sectors according =
-to DMA optimal limit")
->   0568e61225 ("ata: libata-scsi: cap ata_device->max_sectors according to=
- shost->max_sectors")
-> =
-
-> 4cbfca5f7750520f 0568e6122574dcc1aded2979cd0 =
-
-> ---------------- --------------------------- =
-
->          %stddev     %change         %stddev
->              \          |                \  =
-
->       1627           -14.9%       1385        stress-ng.copy-file.ops
->      27.01           -15.0%      22.96        stress-ng.copy-file.ops_per=
-_sec
->    8935079           -11.9%    7870629        stress-ng.time.file_system_=
-outputs
->      14.88 =C2=B1  5%     -31.8%      10.14 =C2=B1  3%  stress-ng.time.pe=
-rcent_of_cpu_this_job_got
->      50912           -14.7%      43413        vmstat.io.bo
->      93.78            +1.4%      95.10        iostat.cpu.idle
->       3.89           -31.6%       2.66        iostat.cpu.iowait
->       4.01            -1.3        2.74        mpstat.cpu.all.iowait%
->       0.23 =C2=B1  9%      -0.1        0.17 =C2=B1 11%  mpstat.cpu.all.sy=
-s%
->       1.66 =C2=B1 37%      -1.2        0.51 =C2=B1 55%  perf-profile.call=
-trace.cycles-pp.f2fs_write_end.generic_perform_write.f2fs_buffered_write_it=
-er.f2fs_file_write_iter.do_iter_readv_writev
->       1.66 =C2=B1 37%      -1.1        0.59 =C2=B1 25%  perf-profile.chil=
-dren.cycles-pp.f2fs_write_end
->       1.51 =C2=B1 40%      -1.1        0.45 =C2=B1 26%  perf-profile.chil=
-dren.cycles-pp.f2fs_dirty_data_folio
->       1.21 =C2=B1 49%      -1.0        0.23 =C2=B1 33%  perf-profile.chil=
-dren.cycles-pp.f2fs_update_dirty_folio
->       0.88 =C2=B1 56%      -0.8        0.04 =C2=B1111%  perf-profile.chil=
-dren.cycles-pp.native_queued_spin_lock_slowpath
->       0.14 =C2=B1 26%      +0.1        0.25 =C2=B1 28%  perf-profile.chil=
-dren.cycles-pp.page_cache_ra_unbounded
->       0.88 =C2=B1 56%      -0.8        0.04 =C2=B1112%  perf-profile.self=
-.cycles-pp.native_queued_spin_lock_slowpath
->    3164876 =C2=B1  9%     -20.2%    2524713 =C2=B1  7%  perf-stat.i.cache=
--misses
->  4.087e+08            -4.6%  3.899e+08        perf-stat.i.dTLB-loads
->     313050 =C2=B1 10%     -18.4%     255410 =C2=B1  6%  perf-stat.i.node-=
-loads
->     972573 =C2=B1  9%     -16.4%     812873 =C2=B1  6%  perf-stat.i.node-=
-stores
->    3114748 =C2=B1  9%     -20.2%    2484807 =C2=B1  7%  perf-stat.ps.cach=
-e-misses
->  4.022e+08            -4.6%  3.837e+08        perf-stat.ps.dTLB-loads
->     308178 =C2=B1 10%     -18.4%     251418 =C2=B1  6%  perf-stat.ps.node=
--loads
->     956996 =C2=B1  9%     -16.4%     799948 =C2=B1  6%  perf-stat.ps.node=
--stores
->     358486            -8.3%     328694        proc-vmstat.nr_active_file
->    1121620           -11.9%     987816        proc-vmstat.nr_dirtied
->     179906            -6.7%     167912        proc-vmstat.nr_dirty
->    1151201            -1.7%    1131322        proc-vmstat.nr_file_pages
->     100181            +9.9%     110078 =C2=B1  2%  proc-vmstat.nr_inactiv=
-e_file
->     846362           -14.6%     722471        proc-vmstat.nr_written
->     358486            -8.3%     328694        proc-vmstat.nr_zone_active_=
-file
->     100181            +9.9%     110078 =C2=B1  2%  proc-vmstat.nr_zone_in=
-active_file
->     180668            -6.8%     168456        proc-vmstat.nr_zone_write_p=
-ending
->     556469            -3.5%     536985        proc-vmstat.pgactivate
->    3385454           -14.6%    2889953        proc-vmstat.pgpgout
-> =
-
-> =
-
-> =
-
-> =
-
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
-> =
-
-> =
-
-
-
--- =
-
-Damien Le Moal
-Western Digital Research
---===============8774406912037042561==--
+--===============8772877371845268052==--
 
